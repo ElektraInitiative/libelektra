@@ -12,6 +12,7 @@ see more RESOLVER tasks below
 
 
 
+
 ## Profile
 
 According to the convention the current profile
@@ -456,6 +457,9 @@ resolver-posix
 	using HOME def. in posix: http://pubs.opengroup.org/onlinepubs/009695399/basedefs/xbd_chap08.html
 	using USER as fallback? not def. in posix, but often in shells
 
+
+use swap (renameat2 RENAME_EXCHANGE)
+	to never loose user data even if modified during commit
 
 ## improvements ##
 

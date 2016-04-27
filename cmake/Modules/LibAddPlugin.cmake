@@ -26,7 +26,7 @@ function (add_plugin PLUGIN_SHORT_NAME)
 	cmake_parse_arguments (ARG
 		"CPP" # optional keywords
 		"" # one value keywords
-		"CATEGORIES;SOURCES;SHARED_SOURCES;LINK_LIBRARIES;COMPILE_DEFINITIONS;INCLUDE_DIRECTORIES;LINK_ELEKTRA" # multi value keywords
+		"SOURCES;SHARED_SOURCES;LINK_LIBRARIES;COMPILE_DEFINITIONS;INCLUDE_DIRECTORIES;LINK_ELEKTRA" # multi value keywords
 		${ARGN}
 	)
 
@@ -46,12 +46,22 @@ function (add_plugin PLUGIN_SHORT_NAME)
 
 		set (NOT_INCLUDED "")
 		list (FIND PLUGINS "${PLUGIN_SHORT_NAME}" FOUND_NAME)
-		list (FIND PLUGINS "ALL" FOUND_ALL)
-		if (FOUND_NAME EQUAL -1 AND FOUND_ALL EQUAL -1)
+		if (FOUND_NAME EQUAL -1)
 			set (NOT_INCLUDED "Not include Plugin ${PLUGIN_SHORT_NAME}")
 		endif ()
 
-		foreach (CAT ${ARG_CATEGORIES})
+		FILE(READ ${CMAKE_CURRENT_SOURCE_DIR}/${PLUGIN_DIRECTORY_NAME}/README.md contents)
+		STRING (REGEX MATCH "- +infos/status *= *([-a-zA-Z0-9 ]*)" CATEGORIES "${contents}")
+		STRING (REGEX REPLACE "- +infos/status *= *([-a-zA-Z0-9 ]*)" "\\1" CATEGORIES "${CATEGORIES}")
+		STRING (REGEX REPLACE " " ";" CATEGORIES "${CATEGORIES}")
+
+		STRING (REGEX MATCH "- +infos/provides *= *([a-zA-Z0-9 ]*)" PROVIDES "${contents}")
+		STRING (REGEX REPLACE "- +infos/provides *= *([a-zA-Z0-9 ]*)" "\\1" PROVIDES "${PROVIDES}")
+		list (APPEND CATEGORIES "ALL" "${PROVIDES}")
+		STRING (TOUPPER "${CATEGORIES}" CATEGORIES)
+		#message (STATUS "CATEGORIES ${CATEGORIES}")
+
+		foreach (CAT ${CATEGORIES})
 			list (FIND PLUGINS "-${CAT}" FOUND_EXCLUDE_CATEGORY)
 			if (FOUND_EXCLUDE_CATEGORY GREATER -1)
 				message (STATUS "Exclude Plugin ${PLUGIN_SHORT_NAME} because of category ${CAT}")

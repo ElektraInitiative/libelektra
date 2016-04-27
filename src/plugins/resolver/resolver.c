@@ -68,6 +68,7 @@ static void resolverInit (resolverHandle * p, const char * path)
 	p->dirmode = KDB_FILE_MODE | KDB_DIR_MODE;
 	p->removalNeeded = 0;
 	p->isMissing = 0;
+	p->timeFix = 1;
 
 	p->filename = 0;
 	p->dirname = 0;
@@ -152,12 +153,13 @@ static int elektraLockFile (int fd ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSE
 	{
 		if (errno == EAGAIN || errno == EACCES)
 		{
-			ELEKTRA_SET_ERROR (30, parentKey, "conflict because other process writes to configuration indicated by file lock");
+			ELEKTRA_SET_ERROR (ELEKTRA_ERROR_CONFLICT, parentKey,
+					   "conflict because other process writes to configuration indicated by file lock");
 		}
 		else
 		{
-			ELEKTRA_SET_ERRORF (30, parentKey, "assuming conflict because of failed file lock with message: %s",
-					    strerror (errno));
+			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CONFLICT, parentKey,
+					    "assuming conflict because of failed file lock with message: %s", strerror (errno));
 		}
 		return -1;
 	}
@@ -213,12 +215,13 @@ static int elektraLockMutex (Key * parentKey ELEKTRA_UNUSED)
 		if (errno == EBUSY       // for trylock
 		    || errno == EDEADLK) // for error checking mutex, if enabled
 		{
-			ELEKTRA_SET_ERROR (30, parentKey, "conflict because other thread writes to configuration indicated by mutex lock");
+			ELEKTRA_SET_ERROR (ELEKTRA_ERROR_CONFLICT, parentKey,
+					   "conflict because other thread writes to configuration indicated by mutex lock");
 		}
 		else
 		{
-			ELEKTRA_SET_ERRORF (30, parentKey, "assuming conflict because of failed mutex lock with message: %s",
-					    strerror (errno));
+			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CONFLICT, parentKey,
+					    "assuming conflict because of failed mutex lock with message: %s", strerror (errno));
 		}
 		return -1;
 	}
@@ -543,7 +546,7 @@ static int elektraOpenFile (resolverHandle * pk, Key * parentKey)
 	{
 		if (errno == ENOENT)
 		{
-			ELEKTRA_SET_ERRORF (30, parentKey,
+			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CONFLICT, parentKey,
 					    "The configuration file \"%s\" was there earlier, "
 					    "now it is missing",
 					    pk->filename);
@@ -551,8 +554,9 @@ static int elektraOpenFile (resolverHandle * pk, Key * parentKey)
 		}
 		else if (pk->fd == -1)
 		{
-			ELEKTRA_SET_ERRORF (26, parentKey, "Could not reopen configuration file \"%s\" for writing because %s",
-					    pk->filename, strerror (errno));
+			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_COULD_NOT_OPEN, parentKey,
+					    "Could not reopen configuration file \"%s\" for writing because %s", pk->filename,
+					    strerror (errno));
 			return -1;
 		}
 		// successfully reopened
@@ -567,7 +571,7 @@ static int elektraOpenFile (resolverHandle * pk, Key * parentKey)
 		}
 		else if (errno == EEXIST)
 		{
-			ELEKTRA_SET_ERRORF (30, parentKey,
+			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CONFLICT, parentKey,
 					    "No configuration file was there earlier, "
 					    "now configuration file \"%s\" exists",
 					    pk->filename);
@@ -598,7 +602,8 @@ static int elektraCreateFile (resolverHandle * pk, Key * parentKey)
 
 	if (pk->fd == -1)
 	{
-		ELEKTRA_SET_ERRORF (26, parentKey, "Could not create configuration file \"%s\" because %s", pk->filename, strerror (errno));
+		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_COULD_NOT_OPEN, parentKey, "Could not create configuration file \"%s\" because %s",
+				    pk->filename, strerror (errno));
 		return -1;
 	}
 	return 0;
@@ -720,13 +725,13 @@ static int elektraCheckConflict (resolverHandle * pk, Key * parentKey)
 		ELEKTRA_ADD_WARNING (29, parentKey, errorText);
 		elektraFree (errorText);
 
-		ELEKTRA_SET_ERROR (30, parentKey, "assuming conflict because of failed stat (warning 29 for details)");
+		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_CONFLICT, parentKey, "assuming conflict because of failed stat (warning 29 for details)");
 		return -1;
 	}
 
 	if (statSeconds (buf) != pk->mtime.tv_sec || statNanoSeconds (buf) != pk->mtime.tv_nsec)
 	{
-		ELEKTRA_SET_ERRORF (30, parentKey,
+		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CONFLICT, parentKey,
 				    "conflict, file modification time stamp %ld.%ld is different than our time stamp %ld.%ld, config file "
 				    "name is \"%s\", "
 				    "our identity is uid: %u, euid: %u, gid: %u, egid: %u",
@@ -826,6 +831,40 @@ static int elektraSetPrepare (resolverHandle * pk, Key * parentKey)
 	return 0;
 }
 
+static void elektraModifyFileTime (resolverHandle * pk)
+{
+#ifdef HAVE_CLOCK_GETTIME
+	// for linux let us calculate a new ns timestamp to use
+	struct timespec ts;
+	clock_gettime (CLOCK_MONOTONIC, &ts);
+
+	if (ts.tv_sec == pk->mtime.tv_sec)
+	{
+		// for filesystems not supporting subseconds, make sure the second is changed, too
+		pk->mtime.tv_sec  += pk->timeFix;
+		pk->timeFix *= -1; // toggle timefix
+	}
+	else
+	{
+		pk->mtime.tv_sec = ts.tv_sec;
+	}
+
+	if (ts.tv_nsec == pk->mtime.tv_nsec)
+	{
+		// also slightly change nsec (same direction as seconds):
+		pk->mtime.tv_nsec  += pk->timeFix;
+	}
+	else
+	{
+		pk->mtime.tv_nsec = ts.tv_nsec;
+	}
+#else
+	// otherwise use simple time toggling schema of seconds
+	pk->mtime.tv_sec  += pk->timeFix;
+	pk->timeFix *= -1; // toggle timefix
+#endif
+}
+
 
 /* Update timestamp of old file to provoke conflicts in
  * stalling processes that might still wait with the old
@@ -868,6 +907,16 @@ static int elektraSetCommit (resolverHandle * pk, Key * parentKey)
 {
 	int ret = 0;
 
+	int fd = open (pk->tempfile, O_RDWR);
+	if (fd == -1)
+	{
+		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_COULD_NOT_OPEN, parentKey,
+				    "Could not open file again for changing properties of file because %s", strerror (errno));
+		ret = -1;
+	}
+
+	elektraLockFile (fd, parentKey);
+
 	if (rename (pk->tempfile, pk->filename) == -1)
 	{
 		ELEKTRA_SET_ERROR (31, parentKey, strerror (errno));
@@ -875,30 +924,48 @@ static int elektraSetCommit (resolverHandle * pk, Key * parentKey)
 	}
 
 	struct stat buf;
-	if (stat (pk->filename, &buf) == -1)
+	if (fstat (fd, &buf) == -1)
 	{
 		ELEKTRA_ADD_WARNING (29, parentKey, strerror (errno));
 	}
 	else
 	{
-		/* Update my timestamp */
-		pk->mtime.tv_sec = statSeconds (buf);
-		pk->mtime.tv_nsec = statNanoSeconds (buf);
+		if (!(pk->mtime.tv_sec == statSeconds (buf) && pk->mtime.tv_nsec == statNanoSeconds (buf)))
+		{
+			/* Update timestamp */
+			pk->mtime.tv_sec = statSeconds (buf);
+			pk->mtime.tv_nsec = statNanoSeconds (buf);
+		}
+		else
+		{
+			elektraModifyFileTime (pk);
+			// update file visible in filesystem:
+			int pfd = pk->fd;
+			pk->fd = fd;
+			elektraUpdateFileTime (pk, parentKey);
+			pk->fd = pfd;
+
+			/* @post
+			   For timejump backwards or time not changed,
+			   use time + 1ns
+			   This is needed to fulfill the postcondition
+			   that the timestamp changed at least slightly
+			   and makes sure that all processes that stat()ed
+			   the file will get a conflict. */
+		}
 	}
 
 	elektraUpdateFileTime (pk, parentKey);
+
 	if (buf.st_mode != pk->filemode)
 	{
 		// change mode to what it was before
-		chmod (pk->filename, pk->filemode);
+		fchmod (fd, pk->filemode);
 	}
 	if (buf.st_uid != pk->uid || buf.st_gid != pk->gid)
 	{
-		chown (pk->filename, pk->uid, pk->gid);
+		fchown (fd, pk->uid, pk->gid);
 	}
-	elektraUnlockFile (pk->fd, parentKey);
-	elektraCloseFile (pk->fd, parentKey);
-	elektraUnlockMutex (parentKey);
 
 	DIR * dirp = opendir (pk->dirname);
 	// checking dirp not needed, fsync will have EBADF
@@ -907,6 +974,12 @@ static int elektraSetCommit (resolverHandle * pk, Key * parentKey)
 		ELEKTRA_ADD_WARNINGF (88, parentKey, "Could not sync directory \"%s\", because %s", pk->dirname, strerror (errno));
 	}
 	closedir (dirp);
+
+	elektraUnlockFile (pk->fd, parentKey);
+	elektraCloseFile (pk->fd, parentKey);
+	elektraUnlockFile (fd, parentKey);
+	elektraCloseFile (fd, parentKey);
+	elektraUnlockMutex (parentKey);
 
 	return ret;
 }

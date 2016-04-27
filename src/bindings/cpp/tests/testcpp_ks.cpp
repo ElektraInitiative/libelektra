@@ -25,6 +25,9 @@ KeySet fun (size_t alloc, ...)
 
 TEST (ks, new)
 {
+	// would fail to compile with: error: call to ‘kdb::KeySet::KeySet’ declared with attribute error: wrong usage of API
+	// KeySet(Key("user", KEY_END), KS_END);
+
 	KeySet ks1;
 
 	KeySet ks2 (5, ckdb::keyNew ("user/key2", KEY_END), KS_END);

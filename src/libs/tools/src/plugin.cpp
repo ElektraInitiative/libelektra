@@ -42,6 +42,13 @@ Plugin::Plugin (PluginSpec const & spec_, KeySet & modules) : spec (spec_), firs
 	{
 		throw NoPlugin (errorKey);
 	}
+
+	// plugin->name might be different for default plugins:
+	if (spec.getName () != plugin->name)
+	{
+		spec.setRefName (spec.getName ()); // save virtual name as refname
+		spec.setName (plugin->name);       // use actual name
+	}
 }
 
 kdb::KeySet Plugin::getConfig ()
@@ -90,11 +97,6 @@ void Plugin::loadInfo ()
 {
 	Key infoKey ("system/elektra/modules", KEY_END);
 	infoKey.addBaseName (spec.getName ());
-
-	if (spec.getName () != plugin->name)
-	{
-		throw PluginWrongName ();
-	}
 
 	if (!plugin->kdbGet)
 	{

@@ -159,6 +159,7 @@ description:could not open configuration file
 severity:error
 ingroup:plugin
 module:resolver
+macro:COULD_NOT_OPEN
 
 number:27
 description:locking yield an error
@@ -179,6 +180,7 @@ ingroup:plugin
 module:resolver
 
 number:30
+macro:CONFLICT
 description:A conflict occurred: Another KDB instance modified the key database.
 severity:error
 ingroup:plugin
@@ -626,6 +628,7 @@ ingroup:plugin
 module:dump
 
 number:107
+macro:STATE
 description:Sync State is wrong, maybe kdbSet() is executed without prior kdbGet(). Reason states exact mountpoint.
 severity:error
 ingroup:kdb
@@ -851,3 +854,16 @@ description:shell plugin error
 severity:error
 ingroup:plugin
 module:shell
+
+number:145
+description:semlock plugin error
+severity:error
+ingroup:plugin
+module:semlock
+
+number:146
+description:could not get current directory
+severity:warning
+ingroup:plugin
+module:resolver
+macro:NOCWD

@@ -20,8 +20,8 @@
 #include <limits.h>
 
 /** The minimal allocation size of a keyset inclusive
-    NULL byte. ksGetAlloc() will return one less because
-    it says how much can actually be stored.*/
+	NULL byte. ksGetAlloc() will return one less because
+	it says how much can actually be stored.*/
 #define KEYSET_SIZE 16
 
 /** How many plugins can exist in an backend. */
@@ -119,7 +119,7 @@ typedef enum {
 			If name, value or metadata
 			are changed this flag will be set, so that the backend will sync
 			the key to database.*/
-	KEY_FLAG_RO_NAME = 1 << 1,  /*!<
+	KEY_FLAG_RO_NAME = 1 << 1,	/*!<
 			 Read only flag for name.
 			 Key name is read only and not allowed
 			 to be changed. All attempts to change the name
@@ -132,7 +132,7 @@ typedef enum {
 			 to be changed. All attempts to change the value
 			 will lead to an error.
 			 Needed for meta keys*/
-	KEY_FLAG_RO_META = 1 << 3   /*!<
+	KEY_FLAG_RO_META = 1 << 3	/*!<
 			 Read only flag for meta.
 			 Key meta is read only and not allowed
 			 to be changed. All attempts to change the value
@@ -248,7 +248,7 @@ struct _KeySet
 	size_t alloc; /**< Allocated size of array */
 
 	struct _Key * cursor; /**< Internal cursor */
-	size_t current;       /**< Current position of cursor */
+	size_t current;		  /**< Current position of cursor */
 
 	/**
 	 * Some control and internal flags.
@@ -266,7 +266,9 @@ typedef enum {
 	POSTROLLBACK,
 	PREGETSTORAGE,
 	POSTGETSTORAGE,
+	POSTGETCLEANUP,
 	PRESETSTORAGE,
+	PRESETCLEANUP,
 	PRECOMMIT,
 	POSTCOMMIT,
 	NR_GLOBAL_PLUGINS
@@ -338,18 +340,18 @@ struct _Backend
 	Plugin * getplugins[NR_OF_PLUGINS];
 	Plugin * errorplugins[NR_OF_PLUGINS];
 
-	ssize_t specsize;   /*!< The size of the spec key from the previous get.
-	    -1 if still uninitialized.
-	    Needed to know if a key was removed from a keyset. */
-	ssize_t dirsize;    /*!< The size of the dir key from the previous get.
-	    -1 if still uninitialized.
-	    Needed to know if a key was removed from a keyset. */
-	ssize_t usersize;   /*!< The size of the users key from the previous get.
-	    -1 if still uninitialized.
-	    Needed to know if a key was removed from a keyset. */
+	ssize_t specsize;	/*!< The size of the spec key from the previous get.
+		-1 if still uninitialized.
+		Needed to know if a key was removed from a keyset. */
+	ssize_t dirsize;	/*!< The size of the dir key from the previous get.
+		-1 if still uninitialized.
+		Needed to know if a key was removed from a keyset. */
+	ssize_t usersize;	/*!< The size of the users key from the previous get.
+		-1 if still uninitialized.
+		Needed to know if a key was removed from a keyset. */
 	ssize_t systemsize; /*!< The size of the systems key from the previous get.
-	    -1 if still uninitialized.
-	    Needed to know if a key was removed from a keyset. */
+		-1 if still uninitialized.
+		Needed to know if a key was removed from a keyset. */
 
 	size_t refcounter; /*!< This refcounter shows how often the backend
 	   is used.  Not cascading or default backends have 1 in it.
@@ -382,8 +384,8 @@ struct _Plugin
 	kdbOpenPtr kdbOpen;   /*!< The pointer to kdbOpen_template() of the backend. */
 	kdbClosePtr kdbClose; /*!< The pointer to kdbClose_template() of the backend. */
 
-	kdbGetPtr kdbGet;     /*!< The pointer to kdbGet_template() of the backend. */
-	kdbSetPtr kdbSet;     /*!< The pointer to kdbSet_template() of the backend. */
+	kdbGetPtr kdbGet;	  /*!< The pointer to kdbGet_template() of the backend. */
+	kdbSetPtr kdbSet;	  /*!< The pointer to kdbSet_template() of the backend. */
 	kdbErrorPtr kdbError; /*!< The pointer to kdbError_template() of the backend. */
 
 	const char * name; /*!< The name of the module responsible for that plugin. */
@@ -392,7 +394,7 @@ struct _Plugin
 	   is used.  Not shared plugins have 1 in it */
 
 	void * data; /*!< This handle can be used for a plugin to store
-     any data its want to. */
+	 any data its want to. */
 };
 
 
@@ -414,11 +416,11 @@ struct _Trie
 
 typedef enum {
 	SPLIT_FLAG_SYNC = 1, /*!< KeySet in Split need sync.
-	     Is there any key in there which need to be synced?
-	     If keys were popped from the Keyset
-	     this flag will be set, so that the backend will sync
-	     the keys to database.
-	     */
+		 Is there any key in there which need to be synced?
+		 If keys were popped from the Keyset
+		 this flag will be set, so that the backend will sync
+		 the keys to database.
+		 */
 
 	SPLIT_FLAG_CASCADING = 1 << 1 /*!< Do we need relative checks?
 			  Is this a cascading backend?
@@ -435,8 +437,8 @@ struct _Split
 {
 	size_t size;		/*!< Number of keysets */
 	size_t alloc;		/*!< How large the arrays are allocated  */
-	KeySet ** keysets;      /*!< The keysets */
-	Backend ** handles;     /*!< The KDB for the keyset */
+	KeySet ** keysets;		/*!< The keysets */
+	Backend ** handles;		/*!< The KDB for the keyset */
 	Key ** parents;		/*!< The parentkey for the keyset.
 				Is either the mountpoint of the backend
 				or "user", "system", "spec" for the split root/cascading backends */

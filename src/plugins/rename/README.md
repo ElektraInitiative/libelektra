@@ -8,7 +8,7 @@
 - infos/metadata = rename/to rename/toupper rename/tolower rename/cut
 - infos/description = renaming of keys
 
-## INTRODUCTION ##
+# INTRODUCTION #
 
 
 This plugin can be used to perform rename operations on keys. This is useful if a backend does not provide keys
@@ -16,6 +16,43 @@ with the required names or case.
 
 If keys are renamed, their original name is stored in the `origname` MetaKey.
 
+There are 2 types of transformations: 
+* basic
+* advanced
+
+
+# BASIC TRANSFORMATIONS #
+
+are applied before and after the advanced transformations.
+
+## GET ##
+
+first transformation to be applied to all keys on kdbGet.
+
+`get/case`
+* toupper
+* tolower
+* unchanged    // this is the default value if no configuration is given
+
+converts the whole keyname below the parentKey to upper- or lowercase. if no configuration or `unchanged` is used no transformation is done here.
+
+## SET ##
+
+last transformation to be applied to all keys on kdbSet.
+
+`set/case`
+* toupper
+* tolower
+* keyname
+* unchanged   // this is the default value if no configuration is given
+
+`toupper` or `tolower` tells the rename plugin to convert the whole keyname below below the parentKey to lower or uppercase.
+
+`unchanged` returnes the key to it's original name
+
+`keyname` tells the plugin to keep the name of the advanced transformation
+
+# ADVANCED TRANSFORMATIONS #
 
 ## CUT ##
 
@@ -91,6 +128,33 @@ kdb ls /rename
 user/rename
 user/rename/mixed/case/CONVERSION
 ```
+
+```
+% cat renameTest.ini
+test/removed/key = test
+
+% kdb mount renameTest.ini /rename ini rename get/case=toupper,set/case=keyname,/cut=REMOVED
+% kdb ls /rename
+user/rename/TEST/KEY
+
+% kdb set /rename
+Using name user/rename
+Create a new key user/rename with null value
+% cat renameTest.ini
+TEST/KEY = test
+```
+
+If you always want the keys in the configuration file upper case,
+but for your application lower case you would use:
+```
+$ kdb mount caseconversion.ini /rename ini rename get/case=tolower,set/case=toupper
+$ kdb set user/rename/section/key value
+$ cat ~/.config/caseconversion.ini
+[SECTION]
+KEY = value
+```
+
+
 
 ## PLANNED OPERATIONS ##
 

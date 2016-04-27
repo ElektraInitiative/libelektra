@@ -35,11 +35,11 @@ do
 	#succeed_if "Your plugin $PLUGIN does not have an entry ^<tab>$PLUGIN$ in $CACHE"
 
 	if [ $PLUGIN != doc ]; then
-		check_wrong_export GET $PLUGIN_DIR
-		check_wrong_export SET $PLUGIN_DIR
-		check_wrong_export OPEN $PLUGIN_DIR
-		check_wrong_export CLOSE $PLUGIN_DIR
-		check_wrong_export ERROR $PLUGIN_DIR
+		check_wrong_export GET "$PLUGIN_DIR"
+		check_wrong_export SET "$PLUGIN_DIR"
+		check_wrong_export OPEN "$PLUGIN_DIR"
+		check_wrong_export CLOSE "$PLUGIN_DIR"
+		check_wrong_export ERROR "$PLUGIN_DIR"
 	fi
 
 

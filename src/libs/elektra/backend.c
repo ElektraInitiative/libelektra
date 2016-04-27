@@ -251,8 +251,8 @@ Backend * elektraBackendOpenMissing (Key * mp)
 }
 
 /**
- * Opens a default backend using the plugin named KDB_DEFAULT_RESOLVER
- * and KDB_DEFAULT_STORAGE.
+ * Opens a default backend using the plugin named KDB_RESOLVER
+ * and KDB_STORAGE.
  *
  * @param modules the modules to work with
  * @param errorKey the key to issue warnings and errors to
@@ -266,7 +266,7 @@ Backend * elektraBackendOpenDefault (KeySet * modules, const char * file, Key * 
 
 	elektraKeySetName (errorKey, "", KEY_CASCADING_NAME | KEY_EMPTY_NAME);
 
-	Plugin * resolver = elektraPluginOpen (KDB_DEFAULT_RESOLVER, modules, resolverConfig, errorKey);
+	Plugin * resolver = elektraPluginOpen (KDB_RESOLVER, modules, resolverConfig, errorKey);
 	if (!resolver)
 	{
 		elektraFree (backend);
@@ -297,7 +297,7 @@ Backend * elektraBackendOpenDefault (KeySet * modules, const char * file, Key * 
 
 	KeySet * storageConfig = ksNew (5, KS_END);
 
-	Plugin * storage = elektraPluginOpen (KDB_DEFAULT_STORAGE, modules, storageConfig, errorKey);
+	Plugin * storage = elektraPluginOpen (KDB_STORAGE, modules, storageConfig, errorKey);
 	if (!storage)
 	{
 		elektraPluginClose (resolver, errorKey);
@@ -342,8 +342,14 @@ Backend * elektraBackendOpenModules (KeySet * modules, Key * errorKey)
 		return 0;
 	}
 
+
+
 	Key * mp = keyNew ("system/elektra/modules", KEY_VALUE, "modules", KEY_END);
-	keyAddBaseName (mp, keyBaseName (cur));
+
+	// for "virtual" plugins the keyBaseName (cur) would be "resolver" or "storage"
+	// thus we use plugin->name here, which must be handled by kdbGet() of every
+	// plugin properly by convention.
+	keyAddBaseName (mp, plugin->name);
 
 	backend->getplugins[0] = plugin;
 	plugin->refcounter = 1;

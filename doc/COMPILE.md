@@ -89,7 +89,6 @@ Some options, i.e. PLUGINS, BINDINGS and TOOLS are either:
 - a special uppercase element that gets replaced by a list of elements, that are:
   - ALL to include all elements (except elements with unfulfilled dependencies)
   - NODEP to include all elements without dependencies
-  - DEFAULT to go back to the situation that was there when nothing was changed
 - elements prefixed with a minus symbol (-) to exclude an element
 
 Examples for this are especially in the subsection PLUGINS below, but they work in the
@@ -119,7 +118,9 @@ The minimal set of plugins you should add:
   See [kdb-mount(1)](/doc/help/kdb-mount.md).
 
 By default nearly all plugins are added. Only experimental plugins
-will be omitted.
+will be omitted:
+
+	-DPLUGINS="ALL;-EXPERIMENTAL"
 
 To add also experimental plugins, you can use:
 
@@ -139,11 +140,13 @@ To add all plugins not having additional dependencies
 
 	-DPLUGINS=NODEP
 
-To manually set the default (same as not setting PLUGINS), you can use
+Note, that every `infos/provides` and `infos/status` field written uppercase can
+be used to select plugins that way.  You also can combine any of these fields
+and add/remove other plugins to/from it, e.g. to include all plugins without deps,
+that provide storage (except yajl) and are maintained, but not include all plugins
+that are experimental, you would use:
 
-	-DPLUGINS=DEFAULT
-
-You also can use NODEP and DEFAULT and add/remove other plugins to/from it.
+	-DPLUGINS="NODEP;STORAGE;-yajl;MAINTAINED;-EXPERIMENTAL"
 
 Note, that changing `PLUGINS` will not modifiy the defaults used
 after Elektra was installed.  For this endeavour you need to change:

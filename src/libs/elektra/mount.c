@@ -262,8 +262,9 @@ int elektraMountGlobals (KDB * kdb, KeySet * keys, KeySet * modules, Key * error
 			continue;
 		const char * placement = keyBaseName (cur);
 		const char * pluginName = keyString (cur);
-		const char * globalPlacements[NR_GLOBAL_PLUGINS] = { "prerollback",   "postrollback", "pregetstorage", "postgetstorage",
-								     "presetstorage", "precommit",    "postcommit" };
+		const char * globalPlacements[NR_GLOBAL_PLUGINS] = { "prerollback",    "postrollback",   "pregetstorage",
+								     "postgetstorage", "postgetcleanup", "presetstorage",
+								     "presetcleanup",  "precommit",      "postcommit" };
 
 
 		if (!strcmp (pluginName, ""))
@@ -272,11 +273,13 @@ int elektraMountGlobals (KDB * kdb, KeySet * keys, KeySet * modules, Key * error
 		}
 		for (GlobalpluginPositions i = 0; i < NR_GLOBAL_PLUGINS; ++i)
 		{
+			kdb->globalPlugins[i] = NULL;
 			if (!strcmp (placement, globalPlacements[i]))
 			{
 #if DEBUG && VERBOSE
 				printf ("mounting global plugin %s to %s\n", pluginName, placement);
 #endif
+
 				Plugin * plugin;
 				Key * refKey;
 				Key * searchKey = keyNew ("/", KEY_END);
@@ -357,12 +360,24 @@ int elektraMountModules (KDB * kdb, KeySet * modules, Key * errorKey)
 		return -1;
 	}
 
+	KeySet * alreadyMounted = ksNew (5, KS_END);
+	ssize_t oldSize = 0;
 
 	while ((cur = ksNext (modules)) != 0)
 	{
 		Backend * backend = elektraBackendOpenModules (modules, errorKey);
+		ksAppendKey(alreadyMounted, backend->mountpoint);
+		if (ksGetSize (alreadyMounted) == oldSize)
+		{
+			// we already mounted that before
+			elektraBackendClose (backend, errorKey);
+			continue;
+		}
+		++ oldSize;
 		elektraMountBackend (kdb, backend, errorKey);
 	}
+
+	ksDel (alreadyMounted);
 
 	return 0;
 }

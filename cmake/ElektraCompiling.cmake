@@ -55,6 +55,7 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 	#not supported by icc:
 	set (EXTRA_FLAGS "${EXTRA_FLAGS} -Wno-deprecated-declarations")
 	#set (EXTRA_FLAGS "${EXTRA_FLAGS} -Wno-ignored-qualifiers")
+	set (CXX_EXTRA_FLAGS "${CXX_EXTRA_FLAGS} -Wold-style-cast")
 
 	message (STATUS "Clang detected")
 endif()
@@ -67,6 +68,7 @@ if (CMAKE_COMPILER_IS_GNUCXX)
 		#not supported by icc:
 		set (EXTRA_FLAGS "${EXTRA_FLAGS} -Wno-deprecated-declarations")
 		#set (EXTRA_FLAGS "${EXTRA_FLAGS} -Wno-ignored-qualifiers")
+		set (CXX_EXTRA_FLAGS "${CXX_EXTRA_FLAGS} -Wold-style-cast")
 
 		#not supported by icc/clang:
 		set (CXX_EXTRA_FLAGS "${CXX_EXTRA_FLAGS} -Wstrict-null-sentinel")
@@ -123,7 +125,7 @@ endif (ENABLE_COVERAGE)
 
 
 set (CXX_EXTRA_FLAGS "${CXX_EXTRA_FLAGS} -Wno-missing-field-initializers")
-set (CXX_EXTRA_FLAGS "${CXX_EXTRA_FLAGS} -Wold-style-cast -Woverloaded-virtual  -Wsign-promo")
+set (CXX_EXTRA_FLAGS "${CXX_EXTRA_FLAGS} -Woverloaded-virtual  -Wsign-promo")
 
 #
 # Merge all flags

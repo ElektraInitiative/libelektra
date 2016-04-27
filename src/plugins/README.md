@@ -212,6 +212,8 @@ These plugins start an interpreter and allow you to use a bindings.
 - [dpkg](dpkg/) reads /var/lib/dpkg/{available,status} 
 - [curlget](curlget/) fetchs configuration file from a remote host
 - [shell](shell/) executes shell commandos after kdbGet, kdbSet and kdbError
+- [semlock](semlock/) a semaphore based global locking logic
+- [profile](profile/) links profile keys
 
 ## New Plugins ##
 

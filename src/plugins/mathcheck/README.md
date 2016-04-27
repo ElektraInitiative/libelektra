@@ -43,3 +43,8 @@ It also works with constants:
 	kdb get user/example/mathcheck/k       # 10.5
 	kdb set user/example/mathcheck/a 8.0
 	kdb get user/example/mathcheck/k       # 13
+
+## Limitations ##
+
+
+mathcheck does not work with icc 14.0.2 20140120

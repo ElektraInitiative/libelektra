@@ -15,6 +15,7 @@
 #include <kdberrors.h>
 
 #include <string.h>
+#include <time.h>
 
 #include "wresolver.h"
 #include <errno.h> /* errno in getcwd() */
@@ -46,6 +47,7 @@ struct _resolverHandle
 {
 	time_t mtime; ///< Previous timestamp of the file
 	mode_t mode;  ///< The mode to set
+	int state;    ///< 0 .. invalid -> kdbGet -> 1 .. ready to set -> kdbSet -> 2
 
 	char * filename; ///< the full path to the configuration file
 
@@ -97,6 +99,7 @@ static void resolverInit (resolverHandle * p, const char * path)
 {
 	p->mtime = 0;
 	p->mode = 0;
+	p->state = 0;
 
 	p->filename = 0;
 
@@ -157,18 +160,25 @@ static void elektraResolveDir (resolverHandle * p, Key * warningsKey)
 	DWORD dwRet = GetCurrentDirectory (MAX_PATH, dir);
 	if (dwRet == 0)
 	{
-		ELEKTRA_ADD_WARNINGF (90, warningsKey, "GetCurrentDirectory failed: %s", GetLastError ());
+		char buf[256];
+		FormatMessage (FORMAT_MESSAGE_FROM_SYSTEM, NULL, GetLastError (), MAKELANGID (LANG_NEUTRAL, SUBLANG_DEFAULT), buf, 256,
+			       NULL);
+		ELEKTRA_ADD_WARNINGF (ELEKTRA_WARNING_NOCWD, warningsKey, "GetCurrentDirectory failed: %s, defaulting to /", buf);
+		dir[0] = 0;
 	}
 	else if (dwRet > MAX_PATH)
 	{
-		ELEKTRA_ADD_WARNINGF (90, warningsKey, "GetCurrentDirectory failed, buffer size too small, needed: %ld", dwRet);
+		ELEKTRA_ADD_WARNINGF (ELEKTRA_WARNING_NOCWD, warningsKey, "GetCurrentDirectory failed, buffer size too small, needed: %ld",
+				      dwRet);
+		dir[0] = 0;
 	}
 	escapePath (dir);
 #else
 	char dir[KDB_MAX_PATH_LENGTH];
 	if (getcwd (dir, KDB_MAX_PATH_LENGTH) == 0)
 	{
-		ELEKTRA_ADD_WARNINGF (90, warningsKey, "getcwd failed: %s", strerror (errno));
+		ELEKTRA_ADD_WARNINGF (ELEKTRA_WARNING_NOCWD, warningsKey, "getcwd failed: %s, defaulting to /", strerror (errno));
+		dir[0] = 0;
 	}
 #endif
 
@@ -341,6 +351,8 @@ int elektraWresolverGet (Plugin * handle, KeySet * returned, Key * parentKey)
 	resolverHandle * pk = elektraGetResolverHandle (handle, parentKey);
 	keySetString (parentKey, pk->filename);
 
+	pk->state = 1;
+
 	struct stat buf;
 
 	if (stat (pk->filename, &buf) == -1)
@@ -367,13 +379,27 @@ int elektraWresolverSet (Plugin * handle, KeySet * returned ELEKTRA_UNUSED, Key 
 	resolverHandle * pk = elektraGetResolverHandle (handle, parentKey);
 	keySetString (parentKey, pk->filename);
 
+	switch (pk->state)
+	{
+	case 0:
+		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_STATE, parentKey, "kdbSet() called before kdbGet()");
+		return -1;
+	case 1:
+		++pk->state;
+		break;
+	case 2:
+		pk->state = 1;
+		// nothing to do on commit
+		return 1;
+	}
+
 	/* set all keys */
 	if (pk->mtime == 0)
 	{
 		// this can happen if the kdbGet() path found no file
 
 		// no conflict possible, so just return successfully
-		return 0;
+		return 1;
 	}
 
 	struct stat buf;
@@ -381,7 +407,7 @@ int elektraWresolverSet (Plugin * handle, KeySet * returned ELEKTRA_UNUSED, Key 
 	if (stat (pk->filename, &buf) == -1)
 	{
 		ELEKTRA_ADD_WARNINGF (29, parentKey, "could not stat config file \"%s\", ", pk->filename);
-		// no file found
+		// no file found, nothing to do
 		return 0;
 	}
 
@@ -389,11 +415,12 @@ int elektraWresolverSet (Plugin * handle, KeySet * returned ELEKTRA_UNUSED, Key 
 	if (pk->mtime != buf.st_mtime)
 	{
 		// conflict
-		ELEKTRA_ADD_WARNINGF (
-			29, parentKey,
-			"conflict, file modification time stamp %ld is different than our time stamp %ld, config file name is \"%s\", ",
-			buf.st_mtime, pk->mtime, pk->filename);
-		return 1; // stat unreliable for windows, keep it at warning
+		ELEKTRA_SET_ERRORF (
+			ELEKTRA_ERROR_CONFLICT, parentKey,
+			"conflict, file modification time stamp %ld is different than our time stamp %ld config file name is \"%s\", ",
+			(long)buf.st_mtime, (long)pk->mtime, pk->filename);
+		pk->state = 0; // invalid state, need to kdbGet again
+		return -1;
 	}
 
 	pk->mtime = buf.st_mtime;
@@ -403,7 +430,9 @@ int elektraWresolverSet (Plugin * handle, KeySet * returned ELEKTRA_UNUSED, Key 
 
 int elektraWresolverError (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
 {
-	/* set all keys */
+	resolverHandle * pk = elektraGetResolverHandle (handle, parentKey);
+	pk->state = 1;
+
 
 	return 1; /* success */
 }

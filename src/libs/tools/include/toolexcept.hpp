@@ -395,14 +395,6 @@ struct ResolverPlugin : public PluginCheckException
 	}
 };
 
-struct PluginWrongName : public PluginCheckException
-{
-	virtual const char * what () const throw () override
-	{
-		return "The real name of the plugin is different!";
-	}
-};
-
 struct PluginNoContract : public PluginCheckException
 {
 	virtual const char * what () const throw () override
