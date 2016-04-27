@@ -870,7 +870,7 @@ static int elektraSetPrepare (Split * split, Key * parentKey, Key ** errorKey, P
 
 			if (p == 0)
 			{
-				if (hooks[PREGETSTORAGE])
+				if (hooks[PRESETSTORAGE])
 				{
 					// the only place global presetstorage hooks can be executed
 					ksRewind (split->keysets[i]);
