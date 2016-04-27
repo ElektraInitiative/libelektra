@@ -52,10 +52,10 @@ static int checkLineEndings (const char * fileName, Lineending validLineEnding, 
 	uint8_t fc, sc;
 	unsigned long line = 1;
 	fc = sc = 0;
-	fread (&fc, 1, 1, fp);
+	(void)fread (&fc, 1, 1, fp);
 	while (!feof (fp))
 	{
-		fread (&sc, 1, 1, fp);
+		(void)fread (&sc, 1, 1, fp);
 		switch (fc)
 		{
 		case LF_BYTE:
@@ -77,7 +77,7 @@ static int checkLineEndings (const char * fileName, Lineending validLineEnding, 
 		}
 		if (found == CRLF || found == LFCR)
 		{
-			fread (&sc, 1, 1, fp);
+			(void)fread (&sc, 1, 1, fp);
 		}
 		if (lineEnding == NA && found != NA)
 		{
