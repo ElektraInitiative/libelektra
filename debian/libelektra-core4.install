@@ -9,8 +9,6 @@ usr/lib/libelektragetenv.so*
 usr/lib/elektra4/libelektra-resolver.so
 usr/lib/elektra4/libelektra-storage.so
 usr/lib/elektra4/libelektra-dump.so*
-usr/lib/elektra4/libelektra-template.so*
-usr/lib/elektra4/libelektra-doc.so*
 usr/lib/elektra4/libelektra-ccode.so*
 usr/lib/elektra4/libelektra-error.so*
 usr/lib/elektra4/libelektra-fstab.so*
