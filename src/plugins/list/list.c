@@ -275,23 +275,32 @@ static int runPlugins (KeySet * pluginKS, KeySet * modules, KeySet * plugins, Ke
 
 		if (op == GET)
 		{
-			if ((slave->kdbGet (slave, returned, parentKey)) == -1)
+			if (slave->kdbGet)
 			{
-				goto error;
+				if ((slave->kdbGet (slave, returned, parentKey)) == -1)
+				{
+					goto error;
+				}
 			}
 		}
 		else if (op == SET)
 		{
-			if ((slave->kdbSet (slave, returned, parentKey)) == -1)
+			if (slave->kdbSet)
 			{
-				goto error;
+				if ((slave->kdbSet (slave, returned, parentKey)) == -1)
+				{
+					goto error;
+				}
 			}
 		}
 		else if (op == ERR)
 		{
-			if ((slave->kdbError (slave, returned, parentKey)) == -1)
+			if (slave->kdbError)
 			{
-				goto error;
+				if ((slave->kdbError (slave, returned, parentKey)) == -1)
+				{
+					goto error;
+				}
 			}
 		}
 	}
