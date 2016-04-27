@@ -1,5 +1,6 @@
 find_package (Boost)
 if (Boost_FOUND)
+	include_directories (${Boost_INCLUDE_DIR})
 	add_plugin(tcl
 		CPP
 		SOURCES

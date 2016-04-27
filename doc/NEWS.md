@@ -42,7 +42,7 @@ See [http://libelektra.org](http://libelektra.org)
 - Resolver can also handle conflicts that happen
   within a single time tick (resolution of your clock)
   and also better handles NFS and older file systems
-- Overall many important fixes and improvements
+- Default storage and resolver can be changed by symlink.
 - shell plugin allows you to execute shell commands on every KDB access
 - curlget plugin allows you to download configuration files
   from a URL during KDB access.
@@ -57,7 +57,10 @@ See [http://libelektra.org](http://libelektra.org)
   numbers with signs such as `%` or `$`.
   It does not check if the suffixes are identical.
 - INI improved section, ordering and parsing
-- resolving by ~ as home directory also for system and spec namespaces, thanks to Thomas Waser
+- kdb mount now uses topological sorting to always
+  find a dependency solution if there is one,
+  many effort was put in that ordering is as requested, thanks to
+  Thomas Waser for the topological sorting implementation
 
 
 ## Plugins
@@ -72,6 +75,31 @@ kdb ls system/curltest  # every get access will redownload the file
 Thanks to Thomas Waser!
 
 
+### semlock
+
+semlock is an experimental plugin that uses semaphore to do inter-process locks.
+This is useful when locks on filesystems are not reliable, e.g. NFS.
+
+It needs /dev/shm to be mounted.
+
+Thanks to Kurt Micheli!
+
+
+###
+
+INI, TODO, what changed?
+
+- fixed key is below hacks
+- fixed ordering
+- custom delimiter
+- use meta array for comments
+- rewritten ordering
+- best effort order
+- fixed array support
+
+
+Thanks to Thomas Waser!
+
 
 ### shell
 
@@ -82,6 +110,76 @@ kdb set system/shelltest
 cat /tmp/log
 
 Thanks to Thomas Waser!
+
+
+### validation
+
+The validation plugin is not new, but got many new features.
+It allows you to match values by a regex and set your own
+error messages in case a validation did not match.
+
+Up to now, the regex was given as is to regcomp, which means
+that if the regex is contained *anywhere* in the value, the
+value is ok.
+
+Often this is not what we want, thus Thomas Waser added special
+support for icase, word and line validation.
+Additionally, flags allow you now to ignore the case or invert
+the match. This can be changed for every individual value
+or for the whole mountpoint.
+
+match=WORD
+
+
+Thanks to Thomas Waser!
+
+
+### rename
+
+Again not a new plugin, but the plugin was greatly improved
+and many test cases were added.
+
+Now you can set upper/lowercase individually for both sides:
+
+1. What applications see
+2. What the configuration file contains
+
+For example, if you always want the keys in the configuration file upper case,
+but for your application lower case you would use:
+```
+$ kdb mount caseconversion.ini /rename ini rename get/case=tolower,set/case=toupper
+$ kdb set user/rename/section/key valu
+$ cat ~/.config/caseconversion.ini
+[SECTION]
+KEY = value
+```
+
+Thanks to Thomas Waser!
+
+
+
+### Resolver
+
+resolving by ~ as home directory also for system and spec namespaces, thanks to Thomas Waser
+
+Files keep their previous owner, useful when root edits configuration files of others,
+thanks to Thomas Waser.
+
+The resolver has many improvements to better detect conflicts.
+
+The lock is now extended longer after the commit and already requested
+in the temporary file.
+
+The warnings were improved when getcwd fails.
+
+Resolver now can correctly handle conflicts with empty files.
+It can also better cope with frequent commits of the same binary.
+Elektra already reached some limits filesystems have.
+
+
+
+
+
 
 
 
@@ -104,6 +202,11 @@ of crashing at runtime.
 
 Value now supports convenience activations.
 Values can be used to activate context, no more layers are needed.
+Topological sorting makes sure that values are activated in the
+correct order, loops are not allowed anymore.
+
+The `bool operator<` is now correctly inline (allows to use it in more than
+one translation unit)
 
 
 
@@ -119,6 +222,17 @@ fixed countless spelling mistakes and other problems.
 - Daniel Bugl fixed all broken links
 - René Schwaiger also drew a new logo with SVG.
   It is already used on github as avatar for the organisation.
+- make all é use the same code point 233.
+
+
+## Testing
+
+- Tests work if the build path contains spaces
+- Tests: Fix problems locating memory checker
+- remove obsolete TestScript.cmake
+
+Thanks to René Schwaiger
+
 
 
 ## Maintainer
@@ -139,6 +253,7 @@ that are experimental, you would use:
 Details see [/doc/COMPILE.md].
 
 /etc/profile.d/kdb -> /etc/profile.d/kdb.sh
+(So that it works on arch linux, thanks to Gabriel Rauter)
 
 new files:
 
@@ -147,12 +262,17 @@ new files:
 /usr/lib/elektra4/libelektra-shell.so*
 /usr/lib/elektra4/libelektra-curlget.so*
 
-new links:
+new symlinks:
 
 /usr/lib/elektra4/libelektra-storage.so
 /usr/lib/elektra4/libelektra-resolver.so
 
 libraries libelektratools and libelektragetenv now have SOVERSION 0
+
+Following Plugins are excluded on specific platforms:
+
+- mathcheck on Intel compiler (reason: failing test cases)
+- simpleini on Apple (reason: not portable printf extension)
 
 
 
@@ -178,12 +298,28 @@ but instead information of README.md is parsed to correctly
 register the plugin to categories as stated by `infos/status`
 and `infos/provides`.
 
+The code generator for errors also yields macros. This
+avoids usage of the IDs, which can be problematic if
+multiple pullrequests are prepared at once.
+
 
 ## Compatibility
 
 This might be the last release supporting wheezy, because
 it gets more and more time-intensive to find workarounds
 for the old compiler. The C++11 regex do not work at all.
+
+### Global Hooks
+
+
+
+
+## Tools
+
+### Qt-gui
+
+Felix Berlakovich updated the qt-gui so that it uses a newly written sync-method
+added in libtools.
 
 
 
@@ -196,11 +332,33 @@ for the old compiler. The C++11 regex do not work at all.
   available in BSD.
 - Peter Nirschl improved detection of librt
 - Felix Berlakovich fixed searching of FindSystemd
+- MinGW64 uint8_t usage fixed, thanks to Thomas Waser
+- MinGW64 resolver now handles conflicts correctly and does not ignore them
+  anymore and now also is able to create empty files (but still not directories)
+
+### Mac OS X
+
+A lot of effort was invested to make all test cases also run on Mac OS X:
+
+- .template syntax
+- linking errors
+- fix regex in conditionals plugins
+
+Thanks to René Schwaiger
 
 
 ## Bugs
 
 - print null-environment correctly with `kdb getenv`
+- keyIs(Direct)Below didn't work with cascading keys
+- fix elektraKeyGetRelativeName (needed by ni) for cascading
+  keys and move it to libease, thanks to René Schwaiger
+- make nickel tests show correct test name, thanks to René Schwaiger
+- glib: replace cursor_t with gssize so that GElektra-4.0.gir
+  builds with gobject-introspection later than 1.47, thanks to Manuel Mausz
+- fixed out-of-bounds bug in timeofday plugin
+- elektraMetaArrayToKS correctly adds parent key, thanks to Thomas Waser
+- kdb-shell: Do not abort ksOutput on binary data.
 
 
 
