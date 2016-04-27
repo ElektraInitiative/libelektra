@@ -5,7 +5,7 @@
 - infos/needs =
 - infos/recommends = struct type path
 - infos/placements = getstorage setstorage
-- infos/status = unittest difficult unfinished old
+- infos/status = unittest experimental old
 - infos/description = Parses files in a syntax like /etc/fstab file
 
 ## Introduction ##

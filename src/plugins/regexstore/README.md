@@ -4,7 +4,7 @@
 - infos/needs =
 - infos/provides = storage
 - infos/placements = getstorage setstorage
-- infos/status = difficult preview unfinished
+- infos/status = experimental difficult unfinished
 - infos/description =
 
 ## Introduction ##
@@ -21,7 +21,7 @@ In the configuration, below the key (that must also exist)
 
 other keys define which regex are applied on a text file.
 
-The name of these config keys (with .../regexstore/ stripped of)
+The name of these config keys (with .../regexsore/ stripped of)
 will be used to build up the names of the keys:
 - #[0-9] will be replaced what the regex matched
 - If no or the wrong placeholder occurs in the name,
