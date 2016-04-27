@@ -500,7 +500,9 @@ static void test_modules ()
 	succeed_if (output_warnings (errorKey), "warnings found");
 	succeed_if (output_error (errorKey), "error found");
 
-	succeed_if (kdb->split->size == 8, "size of split not correct");
+	// output_split (kdb->split);
+
+	succeed_if (kdb->split->size == 6, "size of split not correct");
 	Key * mp = keyNew ("spec", KEY_VALUE, "root", KEY_END);
 	compare_key (mp, kdb->split->parents[0]);
 	keySetName (mp, "dir");
