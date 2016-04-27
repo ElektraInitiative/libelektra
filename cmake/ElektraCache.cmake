@@ -13,8 +13,8 @@ include(LibAddMacros)
 
 
 
-set (PLUGINS_DOC "Which plugins should be added? ALL for all available (default). See doc/COMPILE.md")
-set (PLUGINS "ALL" CACHE STRING ${PLUGINS_DOC})
+set (PLUGINS_DOC "Which plugins should be added? ALL\;-EXPERIMENTAL is default. See doc/COMPILE.md")
+set (PLUGINS "ALL;-EXPERIMENTAL" CACHE STRING ${PLUGINS_DOC})
 
 set (INFO_PLUGINS_DOC "only for informational purposes. Modify PLUGINS to change the list.")
 set (ADDED_PLUGINS_DOC "List of plugins already added, ${INFO_PLUGINS_DOC}")
