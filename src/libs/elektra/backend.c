@@ -251,7 +251,7 @@ Backend * elektraBackendOpenMissing (Key * mp)
 }
 
 /**
- * Opens a default backend using the plugin named KDB_DEFAULT_RESOLVER
+ * Opens a default backend using the plugin named KDB_RESOLVER
  * and KDB_STORAGE.
  *
  * @param modules the modules to work with
@@ -266,7 +266,7 @@ Backend * elektraBackendOpenDefault (KeySet * modules, const char * file, Key * 
 
 	elektraKeySetName (errorKey, "", KEY_CASCADING_NAME | KEY_EMPTY_NAME);
 
-	Plugin * resolver = elektraPluginOpen (KDB_DEFAULT_RESOLVER, modules, resolverConfig, errorKey);
+	Plugin * resolver = elektraPluginOpen (KDB_RESOLVER, modules, resolverConfig, errorKey);
 	if (!resolver)
 	{
 		elektraFree (backend);

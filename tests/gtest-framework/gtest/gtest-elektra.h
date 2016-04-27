@@ -119,7 +119,7 @@ public:
 
 		Backend b;
 		b.setMountpoint (Key (mountpoint_, KEY_END), KeySet (0, KS_END));
-		b.addPlugin (PluginSpec (KDB_DEFAULT_RESOLVER));
+		b.addPlugin (PluginSpec (KDB_RESOLVER));
 		b.useConfigFile (configFile);
 		b.addPlugin (PluginSpec ("dump"));
 		b.addPlugin (PluginSpec ("error"));
