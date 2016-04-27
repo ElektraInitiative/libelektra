@@ -5,7 +5,7 @@
 - infos/provides =
 - infos/recommends =
 - infos/placements = pregetstorage
-- infos/status = preview experimental unfinished nodoc
+- infos/status = preview unfinished nodoc
 - infos/metadata =
 - infos/description =
 
