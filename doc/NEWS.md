@@ -57,7 +57,10 @@ See [http://libelektra.org](http://libelektra.org)
   numbers with signs such as `%` or `$`.
   It does not check if the suffixes are identical.
 - INI improved section, ordering and parsing
-- resolving by ~ as home directory also for system and spec namespaces, thanks to Thomas Waser
+- kdb mount now uses topological sorting to always
+  find a dependency solution if there is one,
+  many effort was put in that ordering is as requested, thanks to
+  Thomas Waser for the topological sorting implementation
 
 
 ## Plugins
@@ -84,6 +87,42 @@ cat /tmp/log
 Thanks to Thomas Waser!
 
 
+### validation
+
+The validation plugin is not new, but got many new features.
+It allows you to match values by a regex and set your own
+error messages in case a validation did not match.
+
+Up to now, the regex was given as is to regcomp, which means
+that if the regex is contained *anywhere* in the value, the
+value is ok.
+
+Often this is not what we want, thus Thomas Waser added special
+support for icase, word and line validation.
+Additionally, flags allow you now to ignore the case or invert
+the match. This can be changed for every individual value
+or for the whole mountpoint.
+
+match=WORD
+
+
+Thanks to Thomas Waser!
+
+
+### Resolver
+
+resolving by ~ as home directory also for system and spec namespaces, thanks to Thomas Waser
+
+Files keep their previous owner, useful when root edits configuration files of others,
+thanks to Thomas Waser.
+
+The resolver has many improvements to better detect conflicts.
+
+
+
+
+
+
 
 
 
@@ -104,6 +143,11 @@ of crashing at runtime.
 
 Value now supports convenience activations.
 Values can be used to activate context, no more layers are needed.
+Topological sorting makes sure that values are activated in the
+correct order, loops are not allowed anymore.
+
+The `bool operator<` is now correctly inline (allows to use it in more than
+one translation unit)
 
 
 
@@ -119,6 +163,12 @@ fixed countless spelling mistakes and other problems.
 - Daniel Bugl fixed all broken links
 - René Schwaiger also drew a new logo with SVG.
   It is already used on github as avatar for the organisation.
+
+
+## Testing
+
+
+ 
 
 
 ## Maintainer
@@ -197,10 +247,25 @@ for the old compiler. The C++11 regex do not work at all.
 - Peter Nirschl improved detection of librt
 - Felix Berlakovich fixed searching of FindSystemd
 
+### Mac OS X
+
+A lot of effort was invested to make all test cases also run on Mac OS X:
+
+- .template syntax
+- linking errors
+
+Thanks to René Schwaiger
+
 
 ## Bugs
 
 - print null-environment correctly with `kdb getenv`
+- keyIs(Direct)Below didn't work with cascading keys
+- fix elektraKeyGetRelativeName (needed by ni) for cascading
+  keys and move it to libease, thanks to René Schwaiger
+- make nickel tests show correct test name, thanks to René Schwaiger
+- glib: replace cursor_t with gssize so that GElektra-4.0.gir
+  builds with gobject-introspection later than 1.47, thanks to Manuel Mausz
 
 
 
