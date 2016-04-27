@@ -252,7 +252,7 @@ Backend * elektraBackendOpenMissing (Key * mp)
 
 /**
  * Opens a default backend using the plugin named KDB_DEFAULT_RESOLVER
- * and KDB_DEFAULT_STORAGE.
+ * and KDB_STORAGE.
  *
  * @param modules the modules to work with
  * @param errorKey the key to issue warnings and errors to
@@ -297,7 +297,7 @@ Backend * elektraBackendOpenDefault (KeySet * modules, const char * file, Key * 
 
 	KeySet * storageConfig = ksNew (5, KS_END);
 
-	Plugin * storage = elektraPluginOpen (KDB_DEFAULT_STORAGE, modules, storageConfig, errorKey);
+	Plugin * storage = elektraPluginOpen (KDB_STORAGE, modules, storageConfig, errorKey);
 	if (!storage)
 	{
 		elektraPluginClose (resolver, errorKey);

@@ -52,7 +52,7 @@ fix all plugins mem-leak test
 
 check meta-data plugins with spec
 
-export/import/editor should use KDB_DEFAULT_STORAGE as default
+export/import/editor should use KDB_STORAGE as default
 
 check: run reformat and check if something changed
 
