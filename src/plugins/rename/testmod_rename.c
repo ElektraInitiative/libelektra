@@ -400,7 +400,7 @@ static void test_write ()
 	Key * parentKey = keyNew ("user/tests/rename", KEY_END);
 	KeySet * conf =
 		ksNew (20, keyNew ("system/tolower", KEY_VALUE, "1", KEY_END), keyNew ("system/get/case", KEY_VALUE, "toupper", KEY_END),
-		       keyNew ("system/set/case", KEY_VALUE, "keyname"), KS_END);
+		       keyNew ("system/set/case", KEY_VALUE, "keyname", KEY_END), KS_END);
 	KeySet * ks = ksNew (20, keyNew ("user/tests/rename/uppercase/uppercase/uppercase/LOWERCASE", KEY_VALUE, "test", KEY_END), KS_END);
 	ksAppendKey (ks, parentKey);
 	PLUGIN_OPEN ("rename");
@@ -420,7 +420,7 @@ static void test_write2 ()
 	Key * parentKey = keyNew ("user/tests/rename", KEY_END);
 	KeySet * conf =
 		ksNew (20, keyNew ("system/tolower", KEY_VALUE, "1", KEY_END), keyNew ("system/get/case", KEY_VALUE, "tolower", KEY_END),
-		       keyNew ("system/set/case", KEY_VALUE, "toupper"), KS_END);
+		       keyNew ("system/set/case", KEY_VALUE, "toupper", KEY_END), KS_END);
 	KeySet * ks = ksNew (20, keyNew ("user/tests/rename/UPPERCASE/UPPERCASE/UPPERCASE/LOWERCASE", KEY_VALUE, "test", KEY_END), KS_END);
 	ksAppendKey (ks, parentKey);
 	PLUGIN_OPEN ("rename");
