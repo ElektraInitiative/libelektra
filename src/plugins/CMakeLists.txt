@@ -49,13 +49,15 @@ if (output EQUAL -1)
 	message(SEND_ERROR "selected default resolver (${KDB_DEFAULT_RESOLVER}) is not selected in PLUGINS, please change KDB_DEFAULT_RESOLVER or PLUGINS")
 endif()
 
-mkdir (${CMAKE_LIBRARY_OUTPUT_DIRECTORY})
-create_lib_symlink (
-		libelektra-${KDB_DEFAULT_STORAGE}.so
-		libelektra-storage.so
-		)
+if (BUILD_SHARED)
+	mkdir (${CMAKE_LIBRARY_OUTPUT_DIRECTORY})
+	create_lib_symlink (
+			libelektra-${KDB_DEFAULT_STORAGE}.so
+			libelektra-storage.so
+			)
 
-create_lib_symlink (
-		libelektra-${KDB_DEFAULT_RESOLVER}.so
-		libelektra-resolver.so
-		)
+	create_lib_symlink (
+			libelektra-${KDB_DEFAULT_RESOLVER}.so
+			libelektra-resolver.so
+			)
+endif (BUILD_SHARED)
