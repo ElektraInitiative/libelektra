@@ -370,6 +370,7 @@ int elektraMountModules (KDB * kdb, KeySet * modules, Key * errorKey)
 		if (ksGetSize (alreadyMounted) == oldSize)
 		{
 			// we already mounted that before
+			elektraBackendClose (backend, errorKey);
 			continue;
 		}
 		++ oldSize;
