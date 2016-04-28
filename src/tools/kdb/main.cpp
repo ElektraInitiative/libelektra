@@ -111,8 +111,8 @@ int main (int argc, char ** argv)
 
 	try
 	{
-		std::vector<char*> origArguments (argv+1, argv+argc);
-		origArguments.push_back(0);
+		std::vector<char *> origArguments (argv + 1, argv + argc);
+		origArguments.push_back (0);
 		CommandPtr cmd = f.get (command);
 		Cmdline cl (argc, argv, cmd.get ());
 

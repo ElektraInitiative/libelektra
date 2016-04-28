@@ -36,10 +36,10 @@ Cmdline::Cmdline (int argc, char ** argv, Command * command)
 : helpText (), invalidOpt (false),
 
   /*XXX: Step 2: initialise your option here.*/
-  debug (), force (), load (), humanReadable (), help (), interactive (), noNewline (), test (), recursive (),
-  resolver (KDB_RESOLVER), strategy ("preserve"), verbose (), version (), withoutElektra (), null (), first (true), second (true),
-  third (true), withRecommends (false), all (), format (KDB_STORAGE), plugins ("sync"), globalPlugins ("spec"), pluginsConfig (""),
-  ns (""), editor (), bookmarks (), profile ("current"),
+  debug (), force (), load (), humanReadable (), help (), interactive (), noNewline (), test (), recursive (), resolver (KDB_RESOLVER),
+  strategy ("preserve"), verbose (), version (), withoutElektra (), null (), first (true), second (true), third (true),
+  withRecommends (false), all (), format (KDB_STORAGE), plugins ("sync"), globalPlugins ("spec"), pluginsConfig (""), ns (""), editor (),
+  bookmarks (), profile ("current"),
 
   executable (), commandName ()
 {

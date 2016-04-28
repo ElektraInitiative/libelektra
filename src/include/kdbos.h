@@ -62,7 +62,7 @@
 
 #ifdef __GNUC__
 #undef ELEKTRA_WRONG
-#define ELEKTRA_WRONG __attribute__((unused)) __attribute__((noinline)) __attribute__((error("wrong usage of API")))
+#define ELEKTRA_WRONG __attribute__ ((unused)) __attribute__ ((noinline)) __attribute__ ((error ("wrong usage of API")))
 #endif
 
 #ifdef __GNUC__

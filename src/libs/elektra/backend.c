@@ -343,7 +343,6 @@ Backend * elektraBackendOpenModules (KeySet * modules, Key * errorKey)
 	}
 
 
-
 	Key * mp = keyNew ("system/elektra/modules", KEY_VALUE, "modules", KEY_END);
 
 	// for "virtual" plugins the keyBaseName (cur) would be "resolver" or "storage"

@@ -59,7 +59,7 @@ public:
 	inline KeySet (ckdb::KeySet * k);
 	inline KeySet (const KeySet & other);
 
-	ELEKTRA_WRONG explicit KeySet(Key, ...);
+	ELEKTRA_WRONG explicit KeySet (Key, ...);
 
 	inline explicit KeySet (size_t alloc, ...) ELEKTRA_SENTINEL;
 	inline explicit KeySet (VaAlloc alloc, va_list ap);

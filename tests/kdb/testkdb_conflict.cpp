@@ -209,7 +209,7 @@ TEST_P (Conflict, DISABLED_ConflictWithRemovalLoop)
 	const int retries = 100;
 	for (int j = 0; j < retries; j++)
 	{
-		secondReturned.clear (); 
+		secondReturned.clear ();
 		second.get (secondReturned, parent);
 		second.set (secondReturned, parent);
 
@@ -219,9 +219,9 @@ TEST_P (Conflict, DISABLED_ConflictWithRemovalLoop)
 		// create file
 		first.get (firstReturned, parent);
 		firstReturned.append (Key ("system" + testRoot + "key1", KEY_VALUE, "value1", KEY_END));
-		first.set (firstReturned, parent); 
+		first.set (firstReturned, parent);
 
-		secondReturned.clear (); 
+		secondReturned.clear ();
 		EXPECT_THROW (second.set (secondReturned, parent), KDBException) << "should be conflict with existing file";
 	}
 	printWarnings (std::cout, parent);
