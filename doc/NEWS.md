@@ -310,6 +310,9 @@ for the old compiler. The C++11 regex do not work at all.
 Felix Berlakovich updated the qt-gui so that it uses a newly written sync-method
 added in libtools.
 
+Gabriel Rauter added a desktop file that uses the new svg logo from
+René Schwaiger.
+
 
 
 
