@@ -1,0 +1,16 @@
+Storage: hosts
+Mountpoint: system/test/hosts
+File: /tmp/hosts
+MountArgs: --with-recommends
+DiffType: File
+
+
+< set system/test/hosts/ipv4/localhost 127.0.0.1
+
+STDOUT: localhost
+< ls system/test/hosts
+
+STDOUT: 127.0.0.1
+< get system/test/hosts/ipv4/localhost
+
+< set system/test/hosts/ipv4/localhost ::1
