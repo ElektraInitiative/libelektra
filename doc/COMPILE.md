@@ -68,6 +68,7 @@ Additional gcc 4.6 armhf is tested regularly.
 |      mingw        | 4.6                         |      i386         |
 |      clang        | version 3.5.0-1~exp1        |x86_64-pc-linux-gnu|
 |      icc          | 14.0.2 20140120             |x86_64-pc-linux-gnu|
+|      gcc/g++      |                             | openbsd 4.9.3 (*) |
 
 
 To change the compiler, use
@@ -78,10 +79,12 @@ for example to use gcc-4.3
 
 	cmake -DCMAKE_C_COMPILER=gcc-4.3 -DCMAKE_CXX_COMPILER=g++-4.3 ..
 
-OpenBSD ships an old version of GCC per default, which can not compile Elektra.
+(*) OpenBSD ships an old version of GCC per default, which can not compile Elektra.
 A manual installation of egcc/eg++ is required. Note that not every OpenBSD
 mirror provides the eg++ package. Elektra builds are confirmed with
 egcc/eg++ 4.9.3 in OpenBSD 5.9.
+The packages are called gcc and g++.
+Compile with CC=/usr/local/bin/egcc CXX=/usr/local/bin/eg++
 
 ### OPTIONS ###
 
