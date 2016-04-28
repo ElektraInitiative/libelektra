@@ -76,7 +76,7 @@ TEST_P (Conflict, ConflictWithFile)
 	printWarnings (std::cout, parent);
 }
 
-TEST_P (Conflict, ConflictWithFileLoop)
+TEST_P (Conflict, DISABLED_ConflictWithFileLoop)
 {
 	using namespace kdb;
 
