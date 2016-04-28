@@ -331,6 +331,23 @@ This might be the last release supporting wheezy, because
 it gets more and more time-intensive to find workarounds
 for the old compiler. The C++11 regex do not work at all.
 
+### Binary Compatibility Test
+
+When you execute the testcases of 0.8.15 against Elektra 0.8.16
+following testcases fail. None of them effect the API.
+
+test_splitget test_splitset .. Internal restructuring
+testmod_crypto .. not included by default now
+testmod_ini .. section handling changed, line 178:
+               `nosectionkey contained no comment`
+testmod_rename .. internal API elektraKeyCreateNewName changed
+testmod_resolver .. internal data structure now contains more
+                    members to remember uid and gid
+testmod_template .. not present by default
+testtool_backend testtool_backendbuilder testtool_backendparser
+testtool_specreader .. changes in KDB tool before release
+check_kdb_internal_check .. experimental plugins are now excluded
+
 
 
 

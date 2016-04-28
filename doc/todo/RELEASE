@@ -69,12 +69,12 @@ Check if there are really >=135 or >=95 tests
 - Check binary compatibility
   Install libelektra-test of the previous version and run again:
 
-  CHECK_VERSION=NO kdb run_all
+  CHECK_VERSION=NO kdb run_all > ~elektra/$VERSION/run_all
 
 - Check which files changed
 
-  DESTDIR=III make install && cd III
-  find . | sort > ~elektra/$VERSION/filelist
+  DESTDIR=D make install && cd D
+  find . | sort > ~elektra/$VERSION/installed_files
 
 Check if [doc/todo/API] is fulfilled
 
