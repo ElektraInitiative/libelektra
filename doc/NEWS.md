@@ -243,27 +243,58 @@ that are experimental, you would use:
 
 Details see [/doc/COMPILE.md].
 
+### Renamed files:
+
+/usr/include/elektra/merging/kdbmerge.hpp ->
+  /usr/include/elektra/merging/mergingkdb.hpp
+
 /etc/profile.d/kdb -> /etc/profile.d/kdb.sh
+
 (So that it works on arch linux, thanks to Gabriel Rauter)
 
-new files:
 
-/usr/lib/elektra4/libelektra-profile.so*
-/usr/lib/elektra4/libelektra-dpkg.so*
-/usr/lib/elektra4/libelektra-shell.so*
+### removed files:
+
+It is no longer needed to
+
+/usr/lib/elektra/libelektra-crypto.so
+
+
+
+### new files:
+
 /usr/lib/elektra4/libelektra-curlget.so*
+/usr/lib/elektra4/libelektra-dpkg.so*
+/usr/lib/elektra4/libelektra-profile.so*
+/usr/lib/elektra4/libelektra-resolver_fm_hpu_b.so
+/usr/lib/elektra4/libelektra-shell.so*
 
-new symlinks:
+more new files with ALL or EXPERIMENTAL:
 
-/usr/lib/elektra4/libelektra-storage.so
-/usr/lib/elektra4/libelektra-resolver.so
+/usr/lib/elektra/libelektra-semlock.so
 
-libraries libelektratools and libelektragetenv now have SOVERSION 0
+
+new tests all in folder /usr/lib/elektra/tool_exec:
+testcpp_contextual_update testkdb_conflict test_keyname testmod_curlget
+testmod_dpkg testmod_jni testmod_profile testmod_semlock testmod_shell
+testtool_mergingkdb
+
 
 Following Plugins are excluded on specific platforms:
 
 - mathcheck on Intel compiler (reason: failing test cases)
-- simpleini on Apple (reason: not portable printf extension)
+- simpleini on non-glibc systems (reason: not portable printf extension)
+
+
+### new symlinks:
+
+/usr/lib/elektra4/libelektra-storage.so
+/usr/lib/elektra4/libelektra-resolver.so
+
+### new releases
+
+The first release of the libraries libelektratools-full, libelektratools
+and libelektragetenv. They now have SOVERSION 0.
 
 
 
