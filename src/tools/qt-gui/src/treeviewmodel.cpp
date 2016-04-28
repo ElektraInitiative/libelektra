@@ -34,7 +34,7 @@ TreeViewModel::TreeViewModel (QObject * parentModel) : m_root ("/", KEY_END), m_
 	Q_UNUSED (parentModel);
 }
 
-TreeViewModel::TreeViewModel (KDB & kdb, QObject * parentModel) : m_root ("/", KEY_END), m_kdb (kdb)
+TreeViewModel::TreeViewModel (MergingKDB * kdb, QObject * parentModel) : m_root ("/", KEY_END), m_kdb (kdb)
 {
 	Q_UNUSED (parentModel);
 }
@@ -478,7 +478,7 @@ void TreeViewModel::sink (ConfigNodePtr node, QStringList keys, const Key & key)
 void TreeViewModel::populateModel ()
 {
 	kdb::KeySet config;
-	m_kdb.get (config, m_root);
+	m_kdb->get (config, m_root);
 	populateModel (config);
 }
 
@@ -636,7 +636,7 @@ void TreeViewModel::synchronize ()
 		configuration.configureMerger (merger);
 
 		// write our config
-		m_kdb.synchronize (ours, m_root, merger);
+		m_kdb->synchronize (ours, m_root, merger);
 
 #if DEBUG && VERBOSE
 		std::cout << "guitest: after get" << std::endl;
