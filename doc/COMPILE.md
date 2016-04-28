@@ -78,7 +78,10 @@ for example to use gcc-4.3
 
 	cmake -DCMAKE_C_COMPILER=gcc-4.3 -DCMAKE_CXX_COMPILER=g++-4.3 ..
 
-
+OpenBSD ships an old version of GCC per default, which can not compile Elektra.
+A manual installation of egcc/eg++ is required. Note that not every OpenBSD
+mirror provides the eg++ package. Elektra builds are confirmed with
+egcc/eg++ 4.9.3 in OpenBSD 5.9.
 
 ### OPTIONS ###
 
