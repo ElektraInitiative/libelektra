@@ -42,6 +42,7 @@ usr/lib/elektra4/libelektra-regexstore.so*
 usr/lib/elektra4/libelektra-resolver_fm_b_b.so*
 usr/lib/elektra4/libelektra-resolver_fm_hb_b.so*
 usr/lib/elektra4/libelektra-resolver_fm_hp_b.so*
+usr/lib/elektra4/libelektra-resolver_fm_pb_b.so*
 usr/lib/elektra4/libelektra-resolver_fm_ub_x.so*
 usr/lib/elektra4/libelektra-resolver_fm_xb_x.so*
 usr/lib/elektra4/libelektra-resolver_fm_xp_x.so*
