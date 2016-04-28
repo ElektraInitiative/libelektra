@@ -137,9 +137,10 @@
 #define NOMINMAX
 #endif
 
+#include <windows.h>
+
 #include <limits.h>
 #include <sys/types.h>
-#include <windows.h>
 
 // # define usleep(x) Sleep(x)
 // # define ssize_t int
