@@ -5,12 +5,19 @@ MountArgs: --with-recommends
 DiffType: File
 
 
+RET: 0
+< mount $File $Mountpoint $Storage $MountArgs
+
+RET: 0
 < set system/test/hosts/ipv4/localhost 127.0.0.1
 
+RET: 0
 STDOUT: localhost
 < ls system/test/hosts
 
+RET: 0
 STDOUT: 127.0.0.1
 < get system/test/hosts/ipv4/localhost
 
+RET: 5
 < set system/test/hosts/ipv4/localhost ::1
