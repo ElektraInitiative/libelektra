@@ -300,7 +300,7 @@ void TreeViewModel::exportConfiguration (TreeViewModel * parentModel, int idx, Q
 
 	if (errors.isEmpty () && !warnings.isEmpty ())
 		emit showMessage (tr ("Information"), tr ("Successfully exported configuration below %1 to %2, warnings were issued.")
-							      .arg (QString::fromStdString (root.getName ()), file),
+								  .arg (QString::fromStdString (root.getName ()), file),
 				  "");
 	else if (!errors.isEmpty () && warnings.isEmpty ())
 		emit showMessage (
@@ -451,7 +451,7 @@ void TreeViewModel::sink (ConfigNodePtr node, QStringList keys, const Key & key)
 
 	if (node->hasChild (name) && !node->getChildByName (name)->isDirty ())
 	{
-		if (node->getChildByName (name)->getKey ())
+		if (node->getChildByName (name)->getKey () && node->getChildByName (name)->getKey ().getName() == key.getName())
 		{
 			node->getChildByName (name)->updateNode (key);
 		}
@@ -588,7 +588,7 @@ void printKeys (KeySet const & theirs, KeySet const & base, KeySet const & ours)
 		Key t = theirs.next ();
 		Key b = base.next ();
 		if (!((o && !o.getName ().compare (0, prefix.size (), prefix)) &&
-		      (t && !t.getName ().compare (0, prefix.size (), prefix)) && (b && !b.getName ().compare (0, prefix.size (), prefix))))
+			  (t && !t.getName ().compare (0, prefix.size (), prefix)) && (b && !b.getName ().compare (0, prefix.size (), prefix))))
 			continue;
 		std::cout << printKey (o);
 		;
