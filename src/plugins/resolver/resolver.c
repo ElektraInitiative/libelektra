@@ -841,7 +841,7 @@ static void elektraModifyFileTime (resolverHandle * pk)
 	if (ts.tv_sec == pk->mtime.tv_sec)
 	{
 		// for filesystems not supporting subseconds, make sure the second is changed, too
-		pk->mtime.tv_sec  += pk->timeFix;
+		pk->mtime.tv_sec += pk->timeFix;
 		pk->timeFix *= -1; // toggle timefix
 	}
 	else
@@ -852,7 +852,7 @@ static void elektraModifyFileTime (resolverHandle * pk)
 	if (ts.tv_nsec == pk->mtime.tv_nsec)
 	{
 		// also slightly change nsec (same direction as seconds):
-		pk->mtime.tv_nsec  += pk->timeFix;
+		pk->mtime.tv_nsec += pk->timeFix;
 	}
 	else
 	{
@@ -860,8 +860,8 @@ static void elektraModifyFileTime (resolverHandle * pk)
 	}
 #else
 	// otherwise use simple time toggling schema of seconds
-	pk->mtime.tv_sec  += pk->timeFix;
-	pk->timeFix *= -1; // toggle timefix
+	pk->mtime.tv_sec += pk->timeFix;
+	pk->timeFix *= -1;								    // toggle timefix
 #endif
 }
 

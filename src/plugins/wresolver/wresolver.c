@@ -15,7 +15,6 @@
 #include <kdberrors.h>
 
 #include <string.h>
-#include <time.h>
 
 #include "wresolver.h"
 #include <errno.h> /* errno in getcwd() */

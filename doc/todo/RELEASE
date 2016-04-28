@@ -64,7 +64,17 @@ If version numbers are correct in
 Rebuild cleanly, run all tests and also check for memleaks:
   cd ~build && ~e/scripts/configure-debian ~e && make -j5 && make run_all && make run_memcheck
 
-Check if there are really >=91 or >=68 tests
+Check if there are really >=135 or >=95 tests
+
+- Check binary compatibility
+  Install libelektra-test of the previous version and run again:
+
+  CHECK_VERSION=NO kdb run_all > ~elektra/$VERSION/run_all
+
+- Check which files changed
+
+  DESTDIR=D make install && cd D
+  find . | sort > ~elektra/$VERSION/installed_files
 
 Check if [doc/todo/API] is fulfilled
 

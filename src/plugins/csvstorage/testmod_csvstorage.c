@@ -53,7 +53,6 @@ static void testreadfixcolcount (const char * file)
 }
 static void testreadwriteinvalid (const char * file)
 {
-
 	Key * parentKey = keyNew ("user/tests/csvstorage", KEY_VALUE, srcdir_file (file), KEY_END);
 	KeySet * conf = ksNew (10, keyNew ("system/delimiter", KEY_VALUE, ";", KEY_END), KS_END);
 	KeySet * ks = ksNew (0, KS_END);
@@ -126,7 +125,8 @@ static void testSetColnames (const char * file)
 int main (int argc, char ** argv)
 {
 	printf ("CSVSTORAGE     TESTS\n");
-	printf ("==================\n\n");
+	printf ("====================\n\n");
+	printf ("Some tests report warnings because of invalid CSV files\n");
 
 	init (argc, argv);
 

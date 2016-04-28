@@ -498,7 +498,7 @@ static void test_arrayInsert (char * source, char * compare)
 }
 int main (int argc, char ** argv)
 {
-	printf ("INI	   TESTS\n");
+	printf ("INI         TESTS\n");
 	printf ("==================\n\n");
 
 	init (argc, argv);

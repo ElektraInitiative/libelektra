@@ -1192,7 +1192,7 @@ static void test_state ()
 
 	split->handles[0]->usersize = 1;
 	succeed_if (ksGetSize (split->keysets[0]) == 1, "wrong size");
-	output_split (split);
+	// output_split (split);
 	succeed_if (elektraSplitSync (split) == 0, "state nothing to do: same size");
 
 	split->handles[0]->usersize = 3;

@@ -10,7 +10,7 @@
 
 TEST (kdb, get_set)
 {
-	cout << "testing kdbSet() and kdbGet()" << endl;
+	// cout << "testing kdbSet() and kdbGet()" << endl;
 
 	{
 		KeySet ks_set (5, *Key ("user/tests/key3", KEY_DIR, KEY_END), *Key ("user/tests/key3/1", KEY_END),

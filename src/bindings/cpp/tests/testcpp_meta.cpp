@@ -14,7 +14,7 @@
 
 TEST (meta, basic)
 {
-	cout << "testing metainfo" << endl;
+	// cout << "testing metainfo" << endl;
 	Key test;
 
 	succeed_if (test.hasMeta ("mode") == false, "has meta?");
@@ -110,7 +110,7 @@ TEST (meta, iter)
 
 TEST (test, copy)
 {
-	cout << "testing copy meta" << std::endl;
+	// cout << "testing copy meta" << std::endl;
 
 	Key k ("user/metakey", KEY_META, "", "meta value", KEY_META, "a", "a meta value", KEY_META, "b", "b meta value", KEY_META, "c",
 	       "c meta value", KEY_END);

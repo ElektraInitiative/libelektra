@@ -3,7 +3,7 @@
 _Elektra serves as a universal and secure framework to access configuration
 parameters in a global, hierarchical key database._
 
-<img src="https://cdn.rawgit.com/ElektraInitiative/libelektra/master/doc/images/circle.svg" alt="Elektra" width="50" />
+<img src="https://cdn.rawgit.com/ElektraInitiative/libelektra/master/doc/images/circle.svg" alt="Elektra" width="150" />
 
 Elektra provides a mature, consistent and easily comprehensible API.
 Its modularity effectively avoids code duplication across applications

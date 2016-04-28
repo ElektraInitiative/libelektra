@@ -252,6 +252,8 @@ int elektraMountGlobals (KDB * kdb, KeySet * keys, KeySet * modules, Key * error
 		ksDel (keys);
 		return 0;
 	}
+	for (GlobalpluginPositions i = 0; i < NR_GLOBAL_PLUGINS; ++i)
+		kdb->globalPlugins[i] = NULL;
 	KeySet * global = ksCut (keys, root);
 	Key * cur;
 	KeySet * referencePlugins = ksNew (0, KS_END);
@@ -273,7 +275,7 @@ int elektraMountGlobals (KDB * kdb, KeySet * keys, KeySet * modules, Key * error
 		}
 		for (GlobalpluginPositions i = 0; i < NR_GLOBAL_PLUGINS; ++i)
 		{
-			kdb->globalPlugins[i] = NULL;
+			// kdb->globalPlugins[i] = NULL;
 			if (!strcmp (placement, globalPlacements[i]))
 			{
 #if DEBUG && VERBOSE
@@ -366,14 +368,14 @@ int elektraMountModules (KDB * kdb, KeySet * modules, Key * errorKey)
 	while ((cur = ksNext (modules)) != 0)
 	{
 		Backend * backend = elektraBackendOpenModules (modules, errorKey);
-		ksAppendKey(alreadyMounted, backend->mountpoint);
+		ksAppendKey (alreadyMounted, backend->mountpoint);
 		if (ksGetSize (alreadyMounted) == oldSize)
 		{
 			// we already mounted that before
 			elektraBackendClose (backend, errorKey);
 			continue;
 		}
-		++ oldSize;
+		++oldSize;
 		elektraMountBackend (kdb, backend, errorKey);
 	}
 
