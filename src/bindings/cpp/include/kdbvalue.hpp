@@ -595,14 +595,14 @@ public:
 		return m_key.getName ();
 	}
 
-	std::string layerId () const
+	std::string layerId () const override
 	{
 		const Key meta = m_spec.getMeta<const Key> ("layer/name");
 		if (meta) return meta.getString ();
 		return m_spec.getBaseName ();
 	}
 
-	std::string layerVal () const
+	std::string layerVal () const override
 	{
 		return m_key.getString ();
 	}

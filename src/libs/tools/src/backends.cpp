@@ -53,7 +53,7 @@ Backends::BackendInfoVector Backends::getBackendInfo (KeySet mountConf)
 			ret.push_back (bi);
 		}
 	}
-	return std::move (ret);
+	return ret;
 }
 
 /**
