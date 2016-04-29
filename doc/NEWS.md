@@ -1,8 +1,5 @@
 # 0.8.16 Release
 
-These release notes are in preparation.
-The release is expected to be today.
-
 - guid: 9c9247ee-ee9c-4f4a-a68e-76959def9b82
 - author: Markus Raab
 - pubDate: Fri, 29 Apr 2016 12:45:39 +0200
@@ -45,8 +42,8 @@ and
   Elektra applications.
   That means a user can select multiple configuration files to use,
   even if the application has no explicit support for it.
-  It is not a cascading feature (level $HOME before /etc), but allows
-  us to select different configuration for the same level.
+  It completes the cascading feature (level $HOME before /etc), to allows
+  us also to select different configuration for the same level.
 - Resolver can now better handle conflicts that happen
   when files are removed and others that happen
   within a single time tick (resolution of your clock)
@@ -54,8 +51,8 @@ and
 - Default storage and resolver can be changed by symlink.
   So no need to recompile Elektra to change the default storage
   from INI to dump.
-  INI now works quite reliable as default plugin thus it is
-  used by its author Thomas Waser as default.
+  INI now works quite reliable as default plugin and already
+  used by default by its author Thomas Waser.
 
 
 ## Other important features
@@ -82,6 +79,8 @@ and
 
 
 ## Plugins
+
+Many new or vastly improved plugins are waiting to be explored.
 
 ### curlget
 
@@ -270,12 +269,11 @@ Thanks to René Schwaiger
 
 ## Maintainer
 
-By default now ALL plugins are included.
-They will be automatically excluded if dependencies are missing.
+By default now ALL plugins except EXPERIMENTAL are included.
+Plugins will be automatically excluded if dependencies are missing.
 
-The PLUGINS syntax was vastly improved.
-Now many categories can be intermixed freely
-and also categories can be used for exclusion.
+The PLUGINS syntax was vastly improved.  Now many categories can be
+intermixed freely and also categories can be used for exclusion.
 
 E.g. to include all plugins without deps,
 that provide storage (except yajl) and are maintained, but not include all plugins
@@ -305,6 +303,8 @@ It is no longer needed to
 
 
 ### new files:
+
+/usr/include/kdbease.h
 
 /usr/lib/elektra4/libelektra-curlget.so*
 /usr/lib/elektra4/libelektra-dpkg.so*
