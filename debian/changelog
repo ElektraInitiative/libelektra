@@ -1,8 +1,8 @@
-elektra (0.8.16-1) UNRELEASED; urgency=medium
+elektra (0.8.16-1) unstable; urgency=medium
 
   * New upstream version.
 
- -- Markus Raab <debian@markus-raab.org>  Tue, 26 Apr 2016 22:04:12 +0200
+ -- Markus Raab <debian@markus-raab.org>  Fri, 29 Apr 2016 16:41:05 +0200
 
 elektra (0.8.15-1) unstable; urgency=medium
 
