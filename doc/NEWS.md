@@ -3,6 +3,10 @@
 These release notes are in preparation.
 The release is expected to be today.
 
+- guid: 9c9247ee-ee9c-4f4a-a68e-76959def9b82
+- author: Markus Raab
+- pubDate: Fri, 29 Apr 2016 12:45:39 +0200
+
 
 In case you do not yet know about it, here is an abstract about Elektra:
 
@@ -28,6 +32,11 @@ Elektra consists of three parts:
 3. Tools on top of LibElektra for administrators, such as CLI tools and GUIs.
 
 See [http://libelektra.org](http://libelektra.org)
+
+The same text as follows is also available
+[here as html](http://doc.libelektra.org/news/9c9247ee-ee9c-4f4a-a68e-76959def9b82.html)
+and
+[here on github](https://github.com/ElektraInitiative/libelektra/blob/master/doc/NEWS.md)
 
 ## Highlights
 
@@ -163,8 +172,8 @@ and many test cases were added.
 
 Now you can set upper/lowercase individually for both sides:
 
-1. What applications see
-2. What the configuration file contains
+1. What applications see.
+2. What the configuration file contains.
 
 For example, if you always want the keys in the configuration file upper case,
 but for your application lower case you would use:
@@ -182,21 +191,22 @@ Thanks to Thomas Waser!
 
 ### Resolver
 
-resolving by ~ as home directory also for system and spec namespaces, thanks to Thomas Waser
-
-Files keep their previous owner, useful when root edits configuration files of others,
+Resolving by ~ as home directory now also for system and spec namespaces,
 thanks to Thomas Waser.
+
+Files keep their previous owner, useful when root edits configuration
+files of others, thanks to Thomas Waser.
 
 The resolver has many improvements to better detect conflicts.
 
 The lock is now extended longer after the commit and already requested
 in the temporary file.
 
-The warnings were improved when getcwd fails.
+The warnings were improved when `getcwd` fails.
 
-Resolver now can correctly handle conflicts with empty files.
-It can also better cope with frequent commits of the same binary.
-Elektra already reached some limits filesystems have.
+Resolver now can correctly handle conflicts with empty files.  It can also
+better cope with frequent commits of the same binary.  Elektra already
+reached some limits filesystems have.
 
 
 
@@ -213,6 +223,7 @@ Elektra already reached some limits filesystems have.
 
 Marvin Mall improved the Java binding, fixed the appending
 of keysets, added lots of documentation, and many unit tests.
+
 
 ### C++
 
@@ -272,7 +283,8 @@ that are experimental, you would use:
 
 	-DPLUGINS="NODEP;STORAGE;-yajl;MAINTAINED;-EXPERIMENTAL"
 
-Details see [/doc/COMPILE.md].
+Details see [/doc/COMPILE.md](https://github.com/ElektraInitiative/libelektra/tree/master/doc/COMPILE.md).
+
 
 ### Renamed files:
 
@@ -444,6 +456,44 @@ Thanks to René Schwaiger
 - elektraMetaArrayToKS correctly adds parent key, thanks to Thomas Waser
 - kdb-shell: Do not abort ksOutput on binary data.
 - some rework for global hooks, still not stable
+
+
+## Get It!
+
+You can download the release from
+[here](http://www.libelektra.org/ftp/elektra/releases/elektra-0.8.16.tar.gz)
+and now also [here on github](https://github.com/ElektraInitiative/ftp/tree/master/releases/elektra-0.8.16.tar.gz)
+
+- name: elektra-0.8.16.tar.gz
+TODO: hashsums
+
+
+
+This release tarball now is also available
+[signed by me using gpg](http://www.libelektra.org/ftp/elektra/releases/elektra-0.8.16.tar.gz.gpg)
+
+already built API-Docu can be found [here](http://doc.libelektra.org/api/0.8.16/html/)
+
+
+## Stay tuned! ##
+
+Subscribe to the
+[RSS feed](http://doc.libelektra.org/news/feed.rss)
+to always get the release notifications.
+
+For any questions and comments, please contact the
+[Mailing List](https://lists.sourceforge.net/lists/listinfo/registry-list)
+the issue tracker [on github](http://git.libelektra.org/issues)
+or by mail elektra@markus-raab.org.
+
+[Permalink to this NEWS entry](http://doc.libelektra.org/news/9c9247ee-ee9c-4f4a-a68e-76959def9b82.html)
+
+For more information, see [http://libelektra.org](http://libelektra.org)
+
+Best regards,
+Markus
+
+
 
 
 
