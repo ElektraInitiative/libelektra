@@ -466,8 +466,11 @@ You can download the release from
 and now also [here on github](https://github.com/ElektraInitiative/ftp/tree/master/releases/elektra-0.8.16.tar.gz)
 
 - name: elektra-0.8.16.tar.gz
-TODO: hashsums
-
+- size: 2405443
+- md5sum: ef0c138b4a4fda017aa8bb6f812671ce
+- sha1: c6a6f9c26addd5fcc274cea635de02ef680cfb1a
+- sha256: 3cf0624eb027e533192ca9d612618df3d38ec3674c9cd20474f04ff269fad77e
+- sha512: b225e61379907365a423ea75ec7138e5257bb78c526bb05a1ec21f66a52eb4bad9e6f1eb23209d700670b21b86166497b47c3bc46bc9d45f6d366cd544afc326
 
 
 This release tarball now is also available
