@@ -38,7 +38,10 @@ The user should specify the format that the current configuration or keys are in
 - 12:
   could not start editor.
 - 13:
-  could not import configuration.
+  could not import configuration because of conflicts
+- 14:
+  could not import configuration because of error during kdbSet()
+  (Most likely a validation error)
 
 
 ## OPTIONS
