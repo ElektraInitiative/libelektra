@@ -1,0 +1,12 @@
+Mountpoint: user/examples/highlevel
+DiffType: Dump 
+
+
+< global-mount
+< mount $PWD/highlevel.ini spec/examples/highlevel ni
+< mount highlevel.ini $Mountpoint ini enum conditionals
+< set /examples/highlevel/device vehicle
+STDOUT: (full)
+< get /examples/highlevel/powersaving/gps
+< umount /examples/highlevel
+< umount spec/examples/highlevel
