@@ -166,7 +166,7 @@ int EditorCommand::execute (Cmdline const & cl)
 		catch (KDBException const & e)
 		{
 			std::cout << "Import of configuration failed with the error:\n";
-			std::cout << e.what();
+			std::cout << e.what ();
 			std::cout << "\n\n";
 			std::cout << "Your changes are not lost." << std::endl;
 			std::cout << "Please fix, import and remove \"" << filename << '"' << std::endl;
