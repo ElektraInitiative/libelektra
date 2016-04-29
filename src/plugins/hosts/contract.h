@@ -31,14 +31,16 @@ ksNew (30,
 		keyNew ("system/elektra/modules/hosts/config/needs/glob/set/#0",
 			KEY_VALUE, "/ipv4/*",
 			KEY_META, "check/ipaddr", "ipv4", 				/* Preferred way to check */
-			KEY_META, "validation/regex", "^[0-9.]+$", /* Can be checked additionally */
-			KEY_META, "validation/message", "Character present not suitable for ipv4 address",
+			KEY_META, "check/validation", "^[0-9.]+$", /* Can be checked additionally */
+			KEY_META, "check/validation/match", "LINE",
+			KEY_META, "check/validation/message", "Character present not suitable for ipv4 address",
 			KEY_END),
 		keyNew ("system/elektra/modules/hosts/config/needs/glob/set/#1",
 			KEY_VALUE, "/ipv6/*",
 			KEY_META, "check/ipaddr", "ipv6", 				/* Preferred way to check */
-			KEY_META, "validation/regex", "^[0-9.:]+$", /* Can be checked additionally */
-			KEY_META, "validation/message", "Character present not suitable for ipv6 address",
+			KEY_META, "check/validation", "^[0-9A-Fa-f.:]+$", /* Can be checked additionally */
+			KEY_META, "check/validation/match", "LINE",
+			KEY_META, "check/validation/message", "Character present not suitable for ipv6 address",
 			KEY_END),
 		KS_END);
 

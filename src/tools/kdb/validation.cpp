@@ -55,8 +55,9 @@ int ValidationCommand::execute (Cmdline const & cl)
 		validationmessage = "Regular expression " + validationregex + " does not match the supplied value";
 
 	k.setString (value);
-	k.setMeta<string> ("validation/regex", validationregex);
-	k.setMeta<string> ("validation/message", validationmessage);
+	k.setMeta<string> ("check/validation", validationregex);
+	k.setMeta<string> ("check/validation/match", "LINE");
+	k.setMeta<string> ("check/validation/message", validationmessage);
 
 	kdb.set (conf, parentKey);
 
