@@ -296,25 +296,26 @@ Details see [/doc/COMPILE.md](https://github.com/ElektraInitiative/libelektra/tr
 
 ### removed files:
 
-It is no longer needed to
+- /usr/lib/elektra/libelektra-crypto.so
 
-/usr/lib/elektra/libelektra-crypto.so
+was only necessary because of limitations of the build system and is
+now removed.  It never had actual functionality, but was only a stub
+without a crypto provider selected.
 
 
 
 ### new files:
 
-/usr/include/kdbease.h
-
-/usr/lib/elektra4/libelektra-curlget.so*
-/usr/lib/elektra4/libelektra-dpkg.so*
-/usr/lib/elektra4/libelektra-profile.so*
-/usr/lib/elektra4/libelektra-resolver_fm_hpu_b.so
-/usr/lib/elektra4/libelektra-shell.so*
+- /usr/include/kdbease.h
+- /usr/lib/elektra4/libelektra-curlget.so*
+- /usr/lib/elektra4/libelektra-dpkg.so*
+- /usr/lib/elektra4/libelektra-profile.so*
+- /usr/lib/elektra4/libelektra-resolver_fm_hpu_b.so
+- /usr/lib/elektra4/libelektra-shell.so*
 
 more new files with ALL or EXPERIMENTAL:
 
-/usr/lib/elektra/libelektra-semlock.so
+- /usr/lib/elektra/libelektra-semlock.so
 
 
 new tests all in folder /usr/lib/elektra/tool_exec:
@@ -331,8 +332,8 @@ Following Plugins are excluded on specific platforms:
 
 ### new symlinks:
 
-/usr/lib/elektra4/libelektra-storage.so
-/usr/lib/elektra4/libelektra-resolver.so
+- /usr/lib/elektra4/libelektra-storage.so
+- /usr/lib/elektra4/libelektra-resolver.so
 
 ### new releases
 
