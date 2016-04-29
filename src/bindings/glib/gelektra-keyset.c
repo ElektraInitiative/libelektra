@@ -3,30 +3,30 @@
 #include <string.h>
 
 G_DEFINE_TYPE (GElektraKeySet, gelektra_keyset, G_TYPE_OBJECT)
-static KeySet *gelektra_keyset_swap(GElektraKeySet *ks, KeySet *newks);
+static KeySet * gelektra_keyset_swap (GElektraKeySet * ks, KeySet * newks);
 
-static void gelektra_keyset_init(GElektraKeySet *self)
+static void gelektra_keyset_init (GElektraKeySet * self)
 {
 	/* initialize the object */
-	self->keyset = ksNew(0, KS_END);
+	self->keyset = ksNew (0, KS_END);
 }
 
-static void gelektra_keyset_finalize(GObject *object)
+static void gelektra_keyset_finalize (GObject * object)
 {
-	GElektraKeySet *self = GELEKTRA_KEYSET(object);
+	GElektraKeySet * self = GELEKTRA_KEYSET (object);
 
-	ksDel(self->keyset);
+	ksDel (self->keyset);
 
 	/* Always chain up to the parent class; as with dispose(), finalize()
 	 * is guaranteed to exist on the parent's class virtual function table
 	*/
-	G_OBJECT_CLASS(gelektra_keyset_parent_class)->finalize(object);
+	G_OBJECT_CLASS (gelektra_keyset_parent_class)->finalize (object);
 }
 
-static void gelektra_keyset_class_init(GElektraKeySetClass *klass)
+static void gelektra_keyset_class_init (GElektraKeySetClass * klass)
 {
-	GObjectClass *gobject_class = G_OBJECT_CLASS(klass);
-	gobject_class->finalize     = gelektra_keyset_finalize;
+	GObjectClass * gobject_class = G_OBJECT_CLASS (klass);
+	gobject_class->finalize = gelektra_keyset_finalize;
 }
 
 /*
@@ -42,23 +42,23 @@ static void gelektra_keyset_class_init(GElektraKeySetClass *klass)
  * Returns: A new #GElektraKeySet
  * see ksNew
  */
-GElektraKeySet *gelektra_keyset_new(gsize alloc, ...)
+GElektraKeySet * gelektra_keyset_new (gsize alloc, ...)
 {
 	va_list va;
 
-	GElektraKeySet *ks = g_object_new(GELEKTRA_TYPE_KEYSET, NULL);
+	GElektraKeySet * ks = g_object_new (GELEKTRA_TYPE_KEYSET, NULL);
 	if (alloc > 0)
 	{
-		ksResize(ks->keyset, alloc);
+		ksResize (ks->keyset, alloc);
 
-		va_start(va, alloc);
-		GElektraKey *key = (GElektraKey *)va_arg(va, GElektraKey *);
+		va_start (va, alloc);
+		GElektraKey * key = (GElektraKey *)va_arg (va, GElektraKey *);
 		while (key)
 		{
-			gelektra_keyset_append(ks, key);
-			key = (GElektraKey *)va_arg(va, GElektraKey *);
+			gelektra_keyset_append (ks, key);
+			key = (GElektraKey *)va_arg (va, GElektraKey *);
 		}
-		va_end(va);
+		va_end (va);
 	}
 	return ks;
 }
@@ -69,13 +69,12 @@ GElektraKeySet *gelektra_keyset_new(gsize alloc, ...)
  *
  * Returns: (transfer full): A new #GElektraKeySet holding the ownership of @ks
  */
-GElektraKeySet *gelektra_keyset_make(KeySet *ks)
+GElektraKeySet * gelektra_keyset_make (KeySet * ks)
 {
-	if (ks == NULL)
-		return NULL;
-	GElektraKeySet *ret = gelektra_keyset_new(0);
-	KeySet *old = gelektra_keyset_swap(ret, ks);
-	ksDel(old);
+	if (ks == NULL) return NULL;
+	GElektraKeySet * ret = gelektra_keyset_new (0);
+	KeySet * old = gelektra_keyset_swap (ret, ks);
+	ksDel (old);
 	return ret;
 }
 
@@ -87,23 +86,23 @@ GElektraKeySet *gelektra_keyset_make(KeySet *ks)
  * Returns: (transfer full): A duplicated #GElektraKeySet
  * see ksDup
  */
-GElektraKeySet *gelektra_keyset_dup(const GElektraKeySet *ks)
+GElektraKeySet * gelektra_keyset_dup (const GElektraKeySet * ks)
 {
-	return gelektra_keyset_make(ksDup(ks->keyset));
+	return gelektra_keyset_make (ksDup (ks->keyset));
 }
 
 /**
  * gelektra_keyset_copy: (skip)
  * see ksCopy
  */
-gint gelektra_keyset_copy(const GElektraKeySet *ks, GElektraKeySet *dest)
+gint gelektra_keyset_copy (const GElektraKeySet * ks, GElektraKeySet * dest)
 {
-	return ksCopy(dest->keyset, ks->keyset);
+	return ksCopy (dest->keyset, ks->keyset);
 }
 
-gint gelektra_keyset_clear(GElektraKeySet *ks)
+gint gelektra_keyset_clear (GElektraKeySet * ks)
 {
-	return ksClear(ks->keyset);
+	return ksClear (ks->keyset);
 }
 
 /**
@@ -113,9 +112,9 @@ gint gelektra_keyset_clear(GElektraKeySet *ks)
  *
  * Returns: The old underlying keyset
  */
-static KeySet *gelektra_keyset_swap(GElektraKeySet *ks, KeySet *newks)
+static KeySet * gelektra_keyset_swap (GElektraKeySet * ks, KeySet * newks)
 {
-	KeySet *oldks = ks->keyset;
+	KeySet * oldks = ks->keyset;
 	ks->keyset = newks;
 	return oldks;
 }
@@ -128,12 +127,10 @@ static KeySet *gelektra_keyset_swap(GElektraKeySet *ks, KeySet *newks)
  * Returns: The new len of the keyset
  * see ksAppendKey
  */
-gssize gelektra_keyset_append(GElektraKeySet *ks,
-	GElektraKey *key)
+gssize gelektra_keyset_append (GElektraKeySet * ks, GElektraKey * key)
 {
-	gssize ret = ksAppendKey(ks->keyset, key->key);
-	if (ret > 0)
-		g_object_unref(key);
+	gssize ret = ksAppendKey (ks->keyset, key->key);
+	if (ret > 0) g_object_unref (key);
 	return ret;
 }
 
@@ -147,10 +144,9 @@ gssize gelektra_keyset_append(GElektraKeySet *ks,
  * \note This is for GObject Introspection.
  * \note Do NOT use! Use gelektra_keyset_append instead
  */
-gssize gelektra_keyset_gi_append(GElektraKeySet *ks,
-	GElektraKey *key)
+gssize gelektra_keyset_gi_append (GElektraKeySet * ks, GElektraKey * key)
 {
-	return ksAppendKey(ks->keyset, key->key);
+	return ksAppendKey (ks->keyset, key->key);
 }
 
 /**
@@ -161,12 +157,10 @@ gssize gelektra_keyset_gi_append(GElektraKeySet *ks,
  * Returns: The new len of the keyset
  * see ksAppend
  */
-gssize gelektra_keyset_append_keyset(GElektraKeySet *ks,
-	GElektraKeySet *append)
+gssize gelektra_keyset_append_keyset (GElektraKeySet * ks, GElektraKeySet * append)
 {
-	gssize ret = ksAppend(ks->keyset, append->keyset);
-	if (ret > 0)
-		g_object_unref(append);
+	gssize ret = ksAppend (ks->keyset, append->keyset);
+	if (ret > 0) g_object_unref (append);
 	return ret;
 }
 
@@ -180,10 +174,9 @@ gssize gelektra_keyset_append_keyset(GElektraKeySet *ks,
  * \note This is for GObject Introspection.
  * \note Do NOT use! Use gelektra_keyset_append instead
  */
-gssize gelektra_keyset_gi_append_keyset(GElektraKeySet *ks,
-	GElektraKeySet *append)
+gssize gelektra_keyset_gi_append_keyset (GElektraKeySet * ks, GElektraKeySet * append)
 {
-	return ksAppend(ks->keyset, append->keyset);
+	return ksAppend (ks->keyset, append->keyset);
 }
 
 /**
@@ -193,9 +186,9 @@ gssize gelektra_keyset_gi_append_keyset(GElektraKeySet *ks,
  * Returns: (transfer full): The last #GElektraKey of @ks
  * see ksPop
  */
-GElektraKey *gelektra_keyset_pop(GElektraKeySet *ks)
+GElektraKey * gelektra_keyset_pop (GElektraKeySet * ks)
 {
-	return gelektra_key_make(ksPop(ks->keyset));
+	return gelektra_key_make (ksPop (ks->keyset));
 }
 
 /**
@@ -205,20 +198,19 @@ GElektraKey *gelektra_keyset_pop(GElektraKeySet *ks)
  * Returns: (transfer full): Cutted #GElektraKeySet
  * see ksCut
  */
-GElektraKeySet *gelektra_keyset_cut(GElektraKeySet *ks,
-	const GElektraKey *point)
+GElektraKeySet * gelektra_keyset_cut (GElektraKeySet * ks, const GElektraKey * point)
 {
-	return gelektra_keyset_make(ksCut(ks->keyset, point->key));
+	return gelektra_keyset_make (ksCut (ks->keyset, point->key));
 }
 
-gint gelektra_keyset_resize(GElektraKeySet *ks, gsize alloc)
+gint gelektra_keyset_resize (GElektraKeySet * ks, gsize alloc)
 {
-	return ksResize(ks->keyset, alloc);
+	return ksResize (ks->keyset, alloc);
 }
 
-gssize gelektra_keyset_len(const GElektraKeySet *ks)
+gssize gelektra_keyset_len (const GElektraKeySet * ks)
 {
-	return ksGetSize(ks->keyset);
+	return ksGetSize (ks->keyset);
 }
 
 /* searching */
@@ -231,10 +223,9 @@ gssize gelektra_keyset_len(const GElektraKeySet *ks)
  * Returns: (transfer full): Found #GElektraKey in @ks or NULL
  * see ksLookup
  */
-GElektraKey *gelektra_keyset_lookup(GElektraKeySet *ks, GElektraKey *key,
-	GElektraKdbOptions options)
+GElektraKey * gelektra_keyset_lookup (GElektraKeySet * ks, GElektraKey * key, GElektraKdbOptions options)
 {
-	return gelektra_key_make(ksLookup(ks->keyset, key->key, options));
+	return gelektra_key_make (ksLookup (ks->keyset, key->key, options));
 }
 
 /**
@@ -246,16 +237,15 @@ GElektraKey *gelektra_keyset_lookup(GElektraKeySet *ks, GElektraKey *key,
  * Returns: (transfer full): Found #GElektraKey in @ks or NULL
  * see ksLookupByName
  */
-GElektraKey *gelektra_keyset_lookup_byname(GElektraKeySet *ks, const char *name,
-	GElektraKdbOptions options)
+GElektraKey * gelektra_keyset_lookup_byname (GElektraKeySet * ks, const char * name, GElektraKdbOptions options)
 {
-	return gelektra_key_make(ksLookupByName(ks->keyset, name, options));
+	return gelektra_key_make (ksLookupByName (ks->keyset, name, options));
 }
 
 /* iterating */
-gint gelektra_keyset_rewind(GElektraKeySet *ks)
+gint gelektra_keyset_rewind (GElektraKeySet * ks)
 {
-	return ksRewind(ks->keyset);
+	return ksRewind (ks->keyset);
 }
 
 /**
@@ -265,9 +255,9 @@ gint gelektra_keyset_rewind(GElektraKeySet *ks)
  * Returns: (transfer full): Next #GElektraKey in @ks
  * see ksNext
  */
-GElektraKey *gelektra_keyset_next(GElektraKeySet *ks)
+GElektraKey * gelektra_keyset_next (GElektraKeySet * ks)
 {
-	return gelektra_key_make(ksNext(ks->keyset));
+	return gelektra_key_make (ksNext (ks->keyset));
 }
 
 /**
@@ -277,9 +267,9 @@ GElektraKey *gelektra_keyset_next(GElektraKeySet *ks)
  * Returns: (transfer full): Current #GElektraKey in @ks
  * see ksCurrent
  */
-GElektraKey *gelektra_keyset_current(const GElektraKeySet *ks)
+GElektraKey * gelektra_keyset_current (const GElektraKeySet * ks)
 {
-	return gelektra_key_make(ksCurrent(ks->keyset));
+	return gelektra_key_make (ksCurrent (ks->keyset));
 }
 
 /**
@@ -289,9 +279,9 @@ GElektraKey *gelektra_keyset_current(const GElektraKeySet *ks)
  * Returns: (transfer full): First #GElektraKey in @ks
  * see ksHead
  */
-GElektraKey *gelektra_keyset_head(const GElektraKeySet *ks)
+GElektraKey * gelektra_keyset_head (const GElektraKeySet * ks)
 {
-	return gelektra_key_make(ksHead(ks->keyset));
+	return gelektra_key_make (ksHead (ks->keyset));
 }
 
 /**
@@ -301,46 +291,45 @@ GElektraKey *gelektra_keyset_head(const GElektraKeySet *ks)
  * Returns: (transfer full): Last #GElektraKey in @ks
  * see ksTail
  */
-GElektraKey *gelektra_keyset_tail(const GElektraKeySet *ks)
+GElektraKey * gelektra_keyset_tail (const GElektraKeySet * ks)
 {
-	return gelektra_key_make(ksTail(ks->keyset));
+	return gelektra_key_make (ksTail (ks->keyset));
 }
 
 /**
  * gelektra_keyset_getcursor:
  * @ks: A #GElektraKeySet
  *
- * Returns: (type gssize) (transfer none): Current cursor position
+ * Returns: Current cursor position
  * see ksGetCursor
  */
-cursor_t gelektra_keyset_getcursor(const GElektraKeySet *ks)
+gssize gelektra_keyset_getcursor (const GElektraKeySet * ks)
 {
-	return ksGetCursor(ks->keyset);
+	return ksGetCursor (ks->keyset);
 }
 
 /**
  * gelektra_keyset_setcursor:
  * @ks: A #GElektraKeySet
- * @pos: (type gssize): The new cursor position
+ * @pos: The new cursor position
  *
  * see ksSetCursor
  */
-gint gelektra_keyset_setcursor(GElektraKeySet *ks, cursor_t pos)
+gint gelektra_keyset_setcursor (GElektraKeySet * ks, gssize pos)
 {
-	return ksSetCursor(ks->keyset, pos);
+	return ksSetCursor (ks->keyset, pos);
 }
 
 /**
  * gelektra_keyset_atcursor:
  * @ks: A #GElektraKeySet
- * @pos: (type gssize): The cursor position
+ * @pos: The cursor position
  *
  * Returns: (transfer full): #GElektraKey in @ks at @pos
  * see ksAtCursor
  */
-GElektraKey *gelektra_keyset_atcursor(GElektraKeySet *ks, cursor_t pos)
+GElektraKey * gelektra_keyset_atcursor (GElektraKeySet * ks, gssize pos)
 {
-	if (pos < 0)
-		pos += gelektra_keyset_len(ks);
-	return gelektra_key_make(ksAtCursor(ks->keyset, pos));
+	if (pos < 0) pos += gelektra_keyset_len (ks);
+	return gelektra_key_make (ksAtCursor (ks->keyset, pos));
 }

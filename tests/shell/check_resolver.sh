@@ -5,11 +5,7 @@ echo ELEKTRA CHECK RESOLVER
 echo
 
 #set tmp path (mainly for OS X compatibility)
-if [[ "$OSTYPE" == "darwin"* ]]; then
-	TMPPATH="/private/tmp"
-else
-	TMPPATH="/tmp"
-fi
+TMPPATH=`cd /tmp; pwd -P`
 
 #checks if resolver can be mounted and also partly checks if it resolves
 #correctly (more tests welcome).
@@ -62,17 +58,17 @@ check_resolver()
 
 	MOUNTPOINT=$1$ROOT_MOUNTPOINT
 
-	$KDB mount --resolver $PLUGIN $3 $MOUNTPOINT dump 1>/dev/null
-	succeed_if "could not mount root using: $KDB mount --resolver $PLUGIN $3 $MOUNTPOINT dump"
+	"$KDB" mount --resolver $PLUGIN $3 $MOUNTPOINT dump 1>/dev/null
+	succeed_if "could not mount root using: "$KDB" mount --resolver $PLUGIN $3 $MOUNTPOINT dump"
 
-	FILE=`$KDB file -N $1 -n $ROOT_MOUNTPOINT 2> /dev/null`
+	FILE=`"$KDB" file -N $1 -n $ROOT_MOUNTPOINT 2> /dev/null`
 	echo "For $1 $2 $3 we got $FILE"
 	[ "x$FILE"  = "x$4" ]
 	succeed_if "resolving of $MOUNTPOINT did not yield $4 but $FILE"
 
 	if [ "x$WRITE_TO_SYSTEM" = "xYES" ]; then
 		KEY=$ROOT_MOUNTPOINT/key
-		$KDB set -N $1 $KEY value
+		"$KDB" set -N $1 $KEY value
 		succeed_if "could not set $KEY"
 
 		echo "remove $FILE and its directories"
@@ -83,7 +79,7 @@ check_resolver()
 		rmdir -p --ignore-fail-on-non-empty `dirname $FILE`
 	fi
 
-	$KDB umount $MOUNTPOINT >/dev/null
+	"$KDB" umount $MOUNTPOINT >/dev/null
 	succeed_if "could not umount $MOUNTPOINT"
 }
 
@@ -132,7 +128,7 @@ check_resolver dir x /a $TMPPATH/a
 check_resolver dir x /a/b $TMPPATH/a/b
 check_resolver dir x a $TMPPATH/@KDB_DB_DIR@/a
 check_resolver dir x a/b $TMPPATH/@KDB_DB_DIR@/a/b
-cd $OD
+cd "$OD"
 
 fi # end of XDG tests
 
@@ -160,7 +156,7 @@ check_resolver dir w /a $TMPPATH//a
 check_resolver dir w /a/b $TMPPATH//a/b
 check_resolver dir w a $TMPPATH/a #@KDB_DB_DIR@ not impl
 check_resolver dir w a/b $TMPPATH/a/b #@KDB_DB_DIR@ not impl
-cd $OD
+cd "$OD"
 
 
 
@@ -203,7 +199,7 @@ check_resolver dir b /a/b $TMPPATH/a/b
 check_resolver dir b a $TMPPATH/@KDB_DB_DIR@/a
 check_resolver dir b a/b $TMPPATH/@KDB_DB_DIR@/a/b
 
-T="$(mktempdir_elektra)"
+T="`cd $(mktempdir_elektra); pwd -P`"
 
 cleanup()
 {

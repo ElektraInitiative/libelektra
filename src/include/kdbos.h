@@ -44,24 +44,35 @@
 
 #ifndef KDBOS_H
 #ifndef KDB_H
-# error you attempted to include kdbos.h outside from kdb.h, please include kdb.h instead
+#error you attempted to include kdbos.h outside from kdb.h, please include kdb.h instead
 #endif
 #define KDBOS_H
 
 #ifdef __cplusplus
-#define KS_END (static_cast<ckdb::Key*>(0))
+#define KS_END (static_cast<ckdb::Key *> (0))
 #else
-#define KS_END ((Key*)0)
+#define KS_END ((Key *)0)
 #endif
 
 
 #ifdef __GNUC__
 #undef ELEKTRA_SENTINEL
-#define ELEKTRA_SENTINEL  __attribute__ ((sentinel))
+#define ELEKTRA_SENTINEL __attribute__ ((sentinel))
 #endif
 
 #ifdef __GNUC__
-#define ELEKTRA_NOINLINE __attribute__((noinline))
+#undef ELEKTRA_WRONG
+#define ELEKTRA_WRONG __attribute__ ((unused)) __attribute__ ((noinline)) __attribute__ ((error ("wrong usage of API")))
+#endif
+
+// must be later, clang has __GNUC__ set, too
+#ifdef __clang__
+#undef ELEKTRA_WRONG
+#define ELEKTRA_WRONG __attribute__ ((unused)) __attribute__ ((noinline)) __attribute__ ((unavailable ("wrong usage of API")))
+#endif
+
+#ifdef __GNUC__
+#define ELEKTRA_NOINLINE __attribute__ ((noinline))
 #else
 #define ELEKTRA_NOINLINE
 #endif
@@ -88,7 +99,6 @@
  * Will be ORed together with KDB_FILE_MODE
  * to get the permissions of an directory.*/
 #define KDB_DIR_MODE 0100
-
 
 
 #ifndef _WIN32
@@ -130,10 +140,11 @@
 
 /* Avoid the most crazy things */
 #ifndef NOMINMAX
-# define NOMINMAX
+#define NOMINMAX
 #endif
 
 #include <windows.h>
+
 #include <limits.h>
 #include <sys/types.h>
 
@@ -142,7 +153,6 @@
 // # define snprintf _snprintf
 
 #define KDB_MAX_PATH_LENGTH 4096
-
 
 
 #endif /* _WIN32 */
@@ -185,7 +195,7 @@ typedef int elektraNamespace;
  *
  * for (i=0; i<KDB_MAX_UCHAR; ++i)
  * */
-#define KDB_MAX_UCHAR (UCHAR_MAX+1)
+#define KDB_MAX_UCHAR (UCHAR_MAX + 1)
 
 
 #endif /* KDBOS_H */

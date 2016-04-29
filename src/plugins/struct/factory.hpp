@@ -12,69 +12,72 @@
 #define FACTORY_HPP
 
 #include <map>
-#include <string>
-#include <stdexcept>
 #include <memory>
+#include <stdexcept>
+#include <string>
 
-//TODO: to add a new struct checker, 1.) include your header here
+// TODO: to add a new struct checker, 1.) include your header here
 #include "checker.hpp"
 
-namespace elektra {
+namespace elektra
+{
 
 class Instancer
 {
 public:
-	virtual Checker* get() = 0;
-	virtual ~Instancer() {}
-};
-
-template <class T>
-class Cnstancer: public Instancer
-{
-	virtual T* get() override
+	virtual Checker * get () = 0;
+	virtual ~Instancer ()
 	{
-		return new T();
 	}
 };
 
-class StructInstancer: public Instancer
+template <class T>
+class Cnstancer : public Instancer
+{
+	virtual T * get () override
+	{
+		return new T ();
+	}
+};
+
+class StructInstancer : public Instancer
 {
 	kdb::KeySet config;
 
 public:
-	StructInstancer (kdb::KeySet config_) :
-		config(config_)
-	{}
-
-	virtual StructChecker* get() override
+	StructInstancer (kdb::KeySet config_) : config (config_)
 	{
-		return new StructChecker(config);
+	}
+
+	virtual StructChecker * get () override
+	{
+		return new StructChecker (config);
 	}
 };
 
 class Factory
 {
-	std::map<std::string, Instancer*> m_factory;
-public:
-	Factory(kdb::KeySet config) :
-		m_factory()
-	{
-		config.rewind();
-		kdb::Key root = config.next();
+	std::map<std::string, Instancer *> m_factory;
 
-		m_factory.insert(std::make_pair("list", new Cnstancer<ListChecker>()));
+public:
+	Factory (kdb::KeySet config) : m_factory ()
+	{
+		config.rewind ();
+		kdb::Key root = config.next ();
+
+		m_factory.insert (std::make_pair ("list", new Cnstancer<ListChecker> ()));
 
 		kdb::Key k;
-		while ((k = config.next()))
+		while ((k = config.next ()))
 		{
-			if (!k.isDirectBelow(root)) throw "Factory: key for configuration is not direct below";
+			if (!k.isDirectBelow (root)) throw "Factory: key for configuration is not direct below";
 
-			kdb::KeySet cks(config.cut(k));
-			m_factory.insert(std::make_pair(k.getBaseName(), new StructInstancer(cks)));
+			kdb::KeySet cks (config.cut (k));
+			m_factory.insert (std::make_pair (k.getBaseName (), new StructInstancer (cks)));
 		}
 	}
 
-	~Factory()
+	~Factory ()
 	{
 		for (auto & elem : m_factory)
 		{
@@ -82,54 +85,57 @@ public:
 		}
 	}
 
-	CheckerPtr get(std::string const& which)
+	CheckerPtr get (std::string const & which)
 	{
-		Instancer* instancer = m_factory[which];
+		Instancer * instancer = m_factory[which];
 		if (instancer)
 		{
-			CheckerPtr ret(instancer->get());
+			CheckerPtr ret (instancer->get ());
 			return ret;
-		} else throw "Could not get instance";
+		}
+		else
+			throw "Could not get instance";
 	}
 };
 
 
-static inline void doCheck(Checker *c, kdb::KeySet ks)
+static inline void doCheck (Checker * c, kdb::KeySet ks)
 {
-	try {
-		c->check(ks);
+	try
+	{
+		c->check (ks);
 	}
 	catch (const char *)
 	{
 		/* Make sure that it will be released */
-		ks.release();
+		ks.release ();
 		throw;
 	}
 
-	ks.release();
+	ks.release ();
 }
 
 
-static inline Checker* buildChecker(kdb::KeySet config)
+static inline Checker * buildChecker (kdb::KeySet config)
 {
 	kdb::Key k = config.lookup ("/struct");
 	if (!k) throw "No Key describing the struct found";
 
-	Factory f (config.cut(k));
+	Factory f (config.cut (k));
 
-	std::stringstream ss (k.getString());
+	std::stringstream ss (k.getString ());
 
 	std::string whichChecker;
 	ss >> whichChecker;
 
-	CheckerPtr c = f.get(whichChecker);
-	if (!c.get()) throw "Could not create list";
+	CheckerPtr c = f.get (whichChecker);
+	if (!c.get ()) throw "Could not create list";
 
 	std::string whichParameter;
 	ss >> whichParameter;
 
-	c->buildup(f, whichParameter);
-	return c.release();
+	c->buildup (f, whichParameter);
+	return c.release ();
 }
 
 } // end namespace elektra

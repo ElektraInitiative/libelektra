@@ -8,7 +8,7 @@ gsettings has a similar feature.
 ## Constraints
 
 There are many constraints in providing such a feature because it is possible
-to get a inconsistent or unusable specification.
+to get an inconsistent or unusable specification.
 
 ## Assumptions
 

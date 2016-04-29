@@ -104,4 +104,3 @@ everything still works after the source is removed):
 	kdb lsmeta /freedesktop/openicc/device/camera/#0/EXIF_serial   # seems like there is a check/type
 	kdb set "/freedesktop/openicc/device/camera/#0/EXIF_serial" 203     # success, is a long
 	kdb set "set "/freedesktop/openicc/device/camera/#0/EXIF_serial" x   # fails, not a long
-

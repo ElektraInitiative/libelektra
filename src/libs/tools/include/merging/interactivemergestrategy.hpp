@@ -28,21 +28,16 @@ namespace merging
 class InteractiveMergeStrategy : public MergeConflictStrategy
 {
 public:
-
-	InteractiveMergeStrategy(std::istream & input,
-			std::ostream & output) :
-		inputStream (input),
-		outputStream (output)
+	InteractiveMergeStrategy (std::istream & input, std::ostream & output) : inputStream (input), outputStream (output)
 	{
 	}
 
-	virtual void resolveConflict(const MergeTask& task, Key& conflictKey, MergeResult& result) override;
+	virtual void resolveConflict (const MergeTask & task, Key & conflictKey, MergeResult & result) override;
 
 private:
-	std::istream& inputStream;
-	std::ostream& outputStream;
+	std::istream & inputStream;
+	std::ostream & outputStream;
 };
-
 }
 }
 }

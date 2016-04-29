@@ -11,8 +11,8 @@
 
 #include <keyset.hpp>
 
-#include <vector>
 #include <string>
+#include <vector>
 
 namespace elektra
 {
@@ -22,18 +22,18 @@ struct Printer
 	int nr_keys;
 	int nr_meta;
 
-	kdb::KeySet &current;
+	kdb::KeySet & current;
 
 	std::string keyname;
 	std::string metaname;
 
-	Printer (kdb::KeySet &ks);
+	Printer (kdb::KeySet & ks);
 
-	void add_key(std::vector<char> const& c);
-	void add_val(std::vector<char> const& c);
+	void add_key (std::vector<char> const & c);
+	void add_val (std::vector<char> const & c);
 
-	void add_metakey(std::vector<char> const& c);
-	void add_metaval(std::vector<char> const& c);
+	void add_metakey (std::vector<char> const & c);
+	void add_metaval (std::vector<char> const & c);
 };
 
 

@@ -547,8 +547,50 @@
    obj:*libcrypto.so*
    ...
 }
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Cond
+   fun:re_compile_fastmap_iter.isra.*
+   fun:re_compile_fastmap
+   fun:regcomp
+   fun:elektraValidationSet
+   fun:icase_test
+   fun:main
+}
 
 
+{
+   dynamic loading of plugins
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:calloc
+   fun:_dlerror_run
+   fun:dlopen@@GLIBC_2.2.5
+   fun:elektraModulesLoad
+   fun:elektraPluginOpen
+   ...
+}
 
+{
+   dynamic loading of plugins
+   Memcheck:Leak
+   match-leak-kinds: indirect
+   fun:malloc
+   obj:*
+   ...
+   obj:*
+   fun:elektraPluginOpen
+   fun:_ZN3kdb5tools6PluginC1ERKNS0_10PluginSpecERNS_6KeySetE
+}
 
-
+{
+   semlock plugin sem_open
+   Memcheck:Param
+   write(buf)
+   fun:__write_nocancel
+   fun:sem_open
+   fun:open*
+   fun:elektraSemlockOpen
+   fun:elektraPluginOpen
+   ...
+}

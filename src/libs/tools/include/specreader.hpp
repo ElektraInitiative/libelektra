@@ -13,9 +13,9 @@
 
 #include <kdb.hpp>
 
-#include <pluginspec.hpp>
-#include <plugindatabase.hpp>
 #include <backendbuilder.hpp>
+#include <plugindatabase.hpp>
+#include <pluginspec.hpp>
 
 #include <memory>
 #include <unordered_map>
@@ -34,7 +34,7 @@ class PluginDatabase;
 class SpecBackendBuilder : public MountBackendBuilder
 {
 public:
-	explicit SpecBackendBuilder(BackendBuilderInit const & bbi = BackendBuilderInit());
+	explicit SpecBackendBuilder (BackendBuilderInit const & bbi = BackendBuilderInit ());
 	int nodes;
 };
 
@@ -45,6 +45,7 @@ class SpecReader
 {
 public:
 	typedef std::unordered_map<Key, SpecBackendBuilder> Backends;
+
 private:
 	/**
 	 * @brief Contains all backends of all found mountpoints
@@ -58,16 +59,16 @@ private:
 	BackendBuilderInit bbi;
 
 public:
-	explicit SpecReader(BackendBuilderInit const & bbi = BackendBuilderInit());
+	explicit SpecReader (BackendBuilderInit const & bbi = BackendBuilderInit ());
 
-	~SpecReader();
+	~SpecReader ();
 
 	/**
 	 * @return backends without resolved needs
 	 *
 	 * @see resolveNeeds()
 	 */
-	Backends getBackends()
+	Backends getBackends ()
 	{
 		return backends;
 	}
@@ -81,9 +82,7 @@ public:
 	 */
 	void readSpecification (KeySet const & ks);
 };
-
 }
-
 }
 
 #endif

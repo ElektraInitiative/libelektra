@@ -142,8 +142,6 @@
  */
 
 
-
-
 #ifdef HAVE_KDBCONFIG_H
 #include "kdbconfig.h"
 #endif
@@ -165,9 +163,8 @@
 #endif
 
 #include "kdb.h"
-#include "kdbinternal.h"
 #include "kdbhelper.h"
-
+#include "kdbinternal.h"
 
 
 /*******************************************
@@ -215,11 +212,12 @@ keyDel(key);
  * @see keyUnescapedName to get an unescaped key name
  * @ingroup keyname
  */
-const char *keyName(const Key *key)
+const char * keyName (const Key * key)
 {
 	if (!key) return 0;
 
-	if (!key->key) {
+	if (!key->key)
+	{
 		return "";
 	}
 
@@ -241,7 +239,7 @@ const char *keyName(const Key *key)
  * @see keyGetUnescapedNameSize to get size of unescaped name
  * @ingroup keyname
  */
-ssize_t keyGetNameSize(const Key *key)
+ssize_t keyGetNameSize (const Key * key)
 {
 	if (!key) return -1;
 
@@ -249,7 +247,8 @@ ssize_t keyGetNameSize(const Key *key)
 	{
 		return 1;
 	}
-	else return key->keySize;
+	else
+		return key->keySize;
 }
 
 
@@ -272,15 +271,16 @@ ssize_t keyGetNameSize(const Key *key)
  * @retval "" if no name
  * @return the name in its unescaped form
  */
-const void *keyUnescapedName(const Key *key)
+const void * keyUnescapedName (const Key * key)
 {
 	if (!key) return 0;
 
-	if (!key->key) {
+	if (!key->key)
+	{
 		return "";
 	}
 
-	return key->key+key->keySize;
+	return key->key + key->keySize;
 }
 
 
@@ -294,7 +294,7 @@ const void *keyUnescapedName(const Key *key)
  * @retval -1 on null pointer
  * @retval 0 if no name
  */
-ssize_t keyGetUnescapedNameSize(const Key *key)
+ssize_t keyGetUnescapedNameSize (const Key * key)
 {
 	if (!key) return -1;
 
@@ -302,9 +302,9 @@ ssize_t keyGetUnescapedNameSize(const Key *key)
 	{
 		return 0;
 	}
-	else return key->keyUSize;
+	else
+		return key->keyUSize;
 }
-
 
 
 /**
@@ -333,7 +333,7 @@ keyGetName(key, getBack, keyGetNameSize(key));
  * @see keyGetNameSize(), keyGetFullName(), keyGetFullNameSize()
  * @ingroup keyname
  */
-ssize_t keyGetName(const Key *key, char *returnedName, size_t maxSize)
+ssize_t keyGetName (const Key * key, char * returnedName, size_t maxSize)
 {
 	if (!key) return -1;
 
@@ -343,18 +343,20 @@ ssize_t keyGetName(const Key *key, char *returnedName, size_t maxSize)
 
 	if (maxSize > SSIZE_MAX) return -1;
 
-	if (!key->key) {
+	if (!key->key)
+	{
 		/*errno=KDB_ERR_NOKEY;*/
-		returnedName[0]=0;
+		returnedName[0] = 0;
 		return 1;
 	}
 
-	if (key->keySize > maxSize) {
+	if (key->keySize > maxSize)
+	{
 		/*errno=KDB_ERR_TRUNC;*/
 		return -1;
 	}
 
-	strncpy(returnedName,key->key,maxSize);
+	strncpy (returnedName, key->key, maxSize);
 
 	return key->keySize;
 }
@@ -375,21 +377,20 @@ ssize_t keyGetName(const Key *key, char *returnedName, size_t maxSize)
  *
  * @param key
  */
-ssize_t elektraFinalizeName(Key *key)
+ssize_t elektraFinalizeName (Key * key)
 {
 	key->key[key->keySize - 1] = 0; /* finalize string */
 
-	key->keyUSize = elektraUnescapeKeyName(key->key,
-			key->key+key->keySize);
+	key->keyUSize = elektraUnescapeKeyName (key->key, key->key + key->keySize);
 
 	key->flags |= KEY_FLAG_SYNC;
 
 	return key->keySize;
 }
 
-ssize_t elektraFinalizeEmptyName(Key *key)
+ssize_t elektraFinalizeEmptyName (Key * key)
 {
-	key->key = elektraCalloc(2); // two null pointers
+	key->key = elektraCalloc (2); // two null pointers
 	key->keySize = 1;
 	key->keyUSize = 1;
 	key->flags |= KEY_FLAG_SYNC;
@@ -397,34 +398,34 @@ ssize_t elektraFinalizeEmptyName(Key *key)
 	return key->keySize;
 }
 
-static void elektraHandleUserName(Key *key, const char* newName)
+static void elektraHandleUserName (Key * key, const char * newName)
 {
-	const size_t userLength=sizeof("user");
-	key->keyUSize=key->keySize=userLength;
+	const size_t userLength = sizeof ("user");
+	key->keyUSize = key->keySize = userLength;
 
-	const char delim = newName[userLength-1];
+	const char delim = newName[userLength - 1];
 	// no owner, we are finished
 	if (delim == '/' || delim == '\0') return;
-	ELEKTRA_ASSERT(delim == ':');
+	ELEKTRA_ASSERT (delim == ':');
 
 	// handle owner (compatibility, to be removed)
-	keyNameGetOneLevel(newName, &key->keyUSize);
-	const size_t ownerLength=key->keyUSize-userLength;
+	keyNameGetOneLevel (newName, &key->keyUSize);
+	const size_t ownerLength = key->keyUSize - userLength;
 	++key->keyUSize;
-	char *owner=elektraMalloc(ownerLength+1);
+	char * owner = elektraMalloc (ownerLength + 1);
 	if (!owner) return; // out of memory, ok for owner
-	strncpy(owner,newName+userLength,ownerLength);
-	owner[ownerLength]=0;
-	keySetOwner(key, owner);
+	strncpy (owner, newName + userLength, ownerLength);
+	owner[ownerLength] = 0;
+	keySetOwner (key, owner);
 	elektraFree (owner);
 }
 
-static void elektraRemoveKeyName(Key *key)
+static void elektraRemoveKeyName (Key * key)
 {
-	if (key->key) elektraFree(key->key);
-	key->key=0;
-	key->keySize=0;
-	key->keyUSize=0;
+	if (key->key) elektraFree (key->key);
+	key->key = 0;
+	key->keySize = 0;
+	key->keyUSize = 0;
 }
 
 /**
@@ -435,10 +436,10 @@ static void elektraRemoveKeyName(Key *key)
  * @retval 0 if not only slashes
  * @retval 1 if only slashes
  */
-static int elektraOnlySlashes(const char *name)
+static int elektraOnlySlashes (const char * name)
 {
-	size_t nameLen = strlen(name);
-	for (size_t i=0; i<nameLen; ++i)
+	size_t nameLen = strlen (name);
+	for (size_t i = 0; i < nameLen; ++i)
 	{
 		if (name[i] != '/') return 0; // not only slashes
 	}
@@ -449,19 +450,24 @@ static int elektraOnlySlashes(const char *name)
 /**
  * @internal
  */
-static int keyGetNameNamespace(const char *name)
+static int keyGetNameNamespace (const char * name)
 {
 	if (!name) return KEY_NS_EMPTY;
-	if (!strcmp(name, "")) return KEY_NS_EMPTY;
-	if (name[0] == '/') return KEY_NS_CASCADING;
-	else if (keyNameIsSpec(name)) return KEY_NS_SPEC;
-	else if (keyNameIsProc(name)) return KEY_NS_PROC;
-	else if (keyNameIsDir(name)) return KEY_NS_DIR;
-	else if (keyNameIsUser(name)) return KEY_NS_USER;
-	else if (keyNameIsSystem(name)) return KEY_NS_SYSTEM;
+	if (!strcmp (name, "")) return KEY_NS_EMPTY;
+	if (name[0] == '/')
+		return KEY_NS_CASCADING;
+	else if (keyNameIsSpec (name))
+		return KEY_NS_SPEC;
+	else if (keyNameIsProc (name))
+		return KEY_NS_PROC;
+	else if (keyNameIsDir (name))
+		return KEY_NS_DIR;
+	else if (keyNameIsUser (name))
+		return KEY_NS_USER;
+	else if (keyNameIsSystem (name))
+		return KEY_NS_SYSTEM;
 	return KEY_NS_META;
 }
-
 
 
 /**
@@ -501,63 +507,76 @@ static int keyGetNameNamespace(const char *name)
  * @see keySetBaseName(), keyAddBaseName() to manipulate a name
  * @ingroup keyname
  */
-ssize_t keySetName(Key *key, const char *newName)
+ssize_t keySetName (Key * key, const char * newName)
 {
-	return elektraKeySetName(key, newName, 0);
+	return elektraKeySetName (key, newName, 0);
 }
 
-ssize_t elektraKeySetName(Key *key, const char *newName,
-		option_t options)
+ssize_t elektraKeySetName (Key * key, const char * newName, option_t options)
 {
 	if (!key) return -1;
-	if (test_bit(key->flags,  KEY_FLAG_RO_NAME)) return -1;
+	if (test_bit (key->flags, KEY_FLAG_RO_NAME)) return -1;
 
-	elektraRemoveKeyName(key);
+	elektraRemoveKeyName (key);
 	if (!(options & KEY_META_NAME)) keySetOwner (key, NULL);
 
-	switch (keyGetNameNamespace(newName))
+	switch (keyGetNameNamespace (newName))
 	{
-	case KEY_NS_NONE: ELEKTRA_ASSERT(0);
+	case KEY_NS_NONE:
+		ELEKTRA_ASSERT (0);
 	case KEY_NS_EMPTY:
-		elektraFinalizeEmptyName(key);
+		elektraFinalizeEmptyName (key);
 		return 0; // as documented
-	case KEY_NS_CASCADING: key->keyUSize=1;key->keySize=sizeof("/"); break;
-	case KEY_NS_SPEC: key->keyUSize=key->keySize=sizeof("spec"); break;
-	case KEY_NS_PROC: key->keyUSize=key->keySize=sizeof("proc"); break;
-	case KEY_NS_DIR: key->keyUSize=key->keySize=sizeof("dir"); break;
-	case KEY_NS_USER: elektraHandleUserName(key, newName); break;
-	case KEY_NS_SYSTEM: key->keyUSize=key->keySize=sizeof("system"); break;
+	case KEY_NS_CASCADING:
+		key->keyUSize = 1;
+		key->keySize = sizeof ("/");
+		break;
+	case KEY_NS_SPEC:
+		key->keyUSize = key->keySize = sizeof ("spec");
+		break;
+	case KEY_NS_PROC:
+		key->keyUSize = key->keySize = sizeof ("proc");
+		break;
+	case KEY_NS_DIR:
+		key->keyUSize = key->keySize = sizeof ("dir");
+		break;
+	case KEY_NS_USER:
+		elektraHandleUserName (key, newName);
+		break;
+	case KEY_NS_SYSTEM:
+		key->keyUSize = key->keySize = sizeof ("system");
+		break;
 	case KEY_NS_META:
 		if (!(options & KEY_META_NAME)) return -1;
-		keyNameGetOneLevel(newName,&key->keySize);
-		key->keyUSize = ++ key->keySize; // for null
+		keyNameGetOneLevel (newName, &key->keySize);
+		key->keyUSize = ++key->keySize; // for null
 		break;
 	} // Note that we abused keyUSize for cascading and user:owner
 
-	const size_t length = elektraStrLen(newName);
-	key->key=elektraMalloc(key->keySize*2);
-	memcpy(key->key, newName, key->keySize);
+	const size_t length = elektraStrLen (newName);
+	key->key = elektraMalloc (key->keySize * 2);
+	memcpy (key->key, newName, key->keySize);
 	if (length == key->keyUSize || length == key->keySize)
-	{	// use || because full length is keyUSize in user, but keySize for /
+	{ // use || because full length is keyUSize in user, but keySize for /
 		// newName consisted of root only
-		elektraFinalizeName(key);
+		elektraFinalizeName (key);
 		return key->keyUSize;
 	}
 
-	if (elektraOnlySlashes(newName+key->keyUSize-1))
+	if (elektraOnlySlashes (newName + key->keyUSize - 1))
 	{
-		elektraFinalizeName(key);
+		elektraFinalizeName (key);
 		return key->keySize;
 	}
 
-	key->key[key->keySize-1] = '\0';
-	const ssize_t ret = keyAddName(key, newName+key->keyUSize);
-	if (ret == -1) elektraRemoveKeyName(key);
-	else return key->keySize;
+	key->key[key->keySize - 1] = '\0';
+	const ssize_t ret = keyAddName (key, newName + key->keyUSize);
+	if (ret == -1)
+		elektraRemoveKeyName (key);
+	else
+		return key->keySize;
 	return ret;
 }
-
-
 
 
 /**
@@ -570,18 +589,17 @@ ssize_t elektraKeySetName(Key *key, const char *newName,
  * @see keyGetFullName(), keyGetNameSize()
  * @ingroup keyname
  */
-ssize_t keyGetFullNameSize(const Key *key)
+ssize_t keyGetFullNameSize (const Key * key)
 {
-	size_t returnedSize=0;
+	size_t returnedSize = 0;
 
 	if (!key) return -1;
 
 	if (!key->key) return 1;
 
-	returnedSize=elektraStrLen(key->key);
+	returnedSize = elektraStrLen (key->key);
 
-	if (keyNameIsUser(key->key) && keyGetMeta(key, "owner"))
-		returnedSize+=keyGetOwnerSize(key);
+	if (keyNameIsUser (key->key) && keyGetMeta (key, "owner")) returnedSize += keyGetOwnerSize (key);
 
 	/*
 	   After 2 elektraStrLen() calls looks like we counted one more NULL.
@@ -591,8 +609,6 @@ ssize_t keyGetFullNameSize(const Key *key)
 
 	return returnedSize;
 }
-
-
 
 
 /**
@@ -607,13 +623,13 @@ ssize_t keyGetFullNameSize(const Key *key)
  * @param maxSize maximum number of bytes that will fit in returnedName, including the final NULL
  * @ingroup keyname
  */
-ssize_t keyGetFullName(const Key *key, char *returnedName, size_t maxSize)
+ssize_t keyGetFullName (const Key * key, char * returnedName, size_t maxSize)
 {
-	size_t userSize=sizeof("user")-1;
+	size_t userSize = sizeof ("user") - 1;
 	size_t ownerSize;
 	ssize_t length;
 	ssize_t maxSSize;
-	char *cursor;
+	char * cursor;
 
 	if (!key) return -1;
 	if (!returnedName) return -1;
@@ -622,36 +638,41 @@ ssize_t keyGetFullName(const Key *key, char *returnedName, size_t maxSize)
 	if (maxSize > SSIZE_MAX) return -1;
 	maxSSize = maxSize;
 
-	length=keyGetFullNameSize(key);
-	if (length == 1) {
+	length = keyGetFullNameSize (key);
+	if (length == 1)
+	{
 		/*errno=KDB_ERR_NOKEY;*/
-		returnedName[0]=0;
+		returnedName[0] = 0;
 		return length;
 	}
-	else if (length < 0) return length;
-	else if (length > maxSSize) {
+	else if (length < 0)
+		return length;
+	else if (length > maxSSize)
+	{
 		/* errno=KDB_ERR_TRUNC; */
 		return -1;
 	}
 
-	cursor=returnedName;
-	if (keyIsUser(key))
+	cursor = returnedName;
+	if (keyIsUser (key))
 	{
-		strncpy(cursor,key->key,userSize);
-		cursor+=userSize;
-		if (keyGetMeta(key, "owner"))
+		strncpy (cursor, key->key, userSize);
+		cursor += userSize;
+		if (keyGetMeta (key, "owner"))
 		{
-			*cursor=':'; ++cursor;
-			ownerSize=keyGetValueSize(keyGetMeta(key, "owner"))-1;
-			strncpy(cursor,keyValue(keyGetMeta(key, "owner")),ownerSize);
-			cursor+=ownerSize;
+			*cursor = ':';
+			++cursor;
+			ownerSize = keyGetValueSize (keyGetMeta (key, "owner")) - 1;
+			strncpy (cursor, keyValue (keyGetMeta (key, "owner")), ownerSize);
+			cursor += ownerSize;
 		}
-		strcpy(cursor,key->key+userSize);
-	} else strcpy(cursor,key->key);
+		strcpy (cursor, key->key + userSize);
+	}
+	else
+		strcpy (cursor, key->key);
 
 	return length;
 }
-
 
 
 /**
@@ -684,20 +705,24 @@ ssize_t keyGetFullName(const Key *key, char *returnedName, size_t maxSize)
  * @see keyOwner() to get a pointer to the owner
  * @ingroup keyname
  */
-const char *keyBaseName(const Key *key)
+const char * keyBaseName (const Key * key)
 {
 	if (!key) return 0;
 	if (!key->key) return "";
 
-	char *p = key->key + key->keySize + key->keyUSize - 1;
+	char * p = key->key + key->keySize + key->keyUSize - 1;
 
-	char *base=p;
-	while (*(--p)) base=p;
+	char * base = p;
+	while (*(--p))
+	{
+		base = p;
+	}
 
-	if (base != (key->key + key->keyUSize)) return base;
-	else return "";
+	if (base != (key->key + key->keyUSize))
+		return base;
+	else
+		return "";
 }
-
 
 
 /**
@@ -717,14 +742,13 @@ const char *keyBaseName(const Key *key)
  * @see keyName(), keyGetName(), keySetName()
  * @ingroup keyname
  */
-ssize_t keyGetBaseNameSize(const Key *key)
+ssize_t keyGetBaseNameSize (const Key * key)
 {
-	const char * baseName = keyBaseName(key);
+	const char * baseName = keyBaseName (key);
 	if (!baseName) return -1;
 
-	return elektraStrLen(baseName);
+	return elektraStrLen (baseName);
 }
-
 
 
 /**
@@ -746,7 +770,7 @@ ssize_t keyGetBaseNameSize(const Key *key)
  * @see keyName(), keyGetName(), keySetName()
  * @ingroup keyname
  */
-ssize_t keyGetBaseName(const Key *key, char *returned, size_t maxSize)
+ssize_t keyGetBaseName (const Key * key, char * returned, size_t maxSize)
 {
 	if (!key) return -1;
 	if (!returned) return -1;
@@ -761,24 +785,22 @@ ssize_t keyGetBaseName(const Key *key, char *returned, size_t maxSize)
 		return 1;
 	}
 
-	ssize_t baseSize = keyGetBaseNameSize(key);
+	ssize_t baseSize = keyGetBaseNameSize (key);
 	if (maxSSize < baseSize)
 	{
 		return -1;
 	}
 
-	const char *baseName = keyBaseName(key);
+	const char * baseName = keyBaseName (key);
 
 	if (!baseName)
 	{
 		return -1;
 	}
 
-	strncpy(returned,baseName,baseSize);
+	strncpy (returned, baseName, baseSize);
 	return baseSize;
 }
-
-
 
 
 /**
@@ -816,17 +838,17 @@ ssize_t keyGetBaseName(const Key *key, char *returned, size_t maxSize)
  * @ingroup keyname
  *
  */
-ssize_t keyAddBaseName(Key *key, const char *baseName)
+ssize_t keyAddBaseName (Key * key, const char * baseName)
 {
 	if (!key) return -1;
 	if (!baseName) return key->keySize;
-	if (test_bit(key->flags,  KEY_FLAG_RO_NAME)) return -1;
+	if (test_bit (key->flags, KEY_FLAG_RO_NAME)) return -1;
 	if (!key->key) return -1;
 
-	char *escaped = elektraMalloc (strlen (baseName) * 2 + 2);
-	elektraEscapeKeyNamePart(baseName, escaped);
+	char * escaped = elektraMalloc (strlen (baseName) * 2 + 2);
+	elektraEscapeKeyNamePart (baseName, escaped);
 	size_t len = strlen (escaped);
-	if (!strcmp(key->key, "/"))
+	if (!strcmp (key->key, "/"))
 	{
 		key->keySize += len;
 	}
@@ -835,14 +857,14 @@ ssize_t keyAddBaseName(Key *key, const char *baseName)
 		key->keySize += len + 1;
 	}
 
-	elektraRealloc ((void**)&key->key, key->keySize*2);
+	elektraRealloc ((void **)&key->key, key->keySize * 2);
 	if (!key->key)
 	{
 		elektraFree (escaped);
 		return -1;
 	}
 
-	if (strcmp(key->key, "/"))
+	if (strcmp (key->key, "/"))
 	{
 		key->key[key->keySize - len - 2] = KDB_PATH_SEPARATOR;
 	}
@@ -850,7 +872,7 @@ ssize_t keyAddBaseName(Key *key, const char *baseName)
 
 	elektraFree (escaped);
 
-	elektraFinalizeName(key);
+	elektraFinalizeName (key);
 
 	return key->keySize;
 }
@@ -866,17 +888,17 @@ ssize_t keyAddBaseName(Key *key, const char *baseName)
  * @param key to remove one level
  * @param [out] avoidSlash set to 1 if / is already present (cascading)
  */
-static void elektraRemoveOneLevel(Key *key, int *avoidSlash)
+static void elektraRemoveOneLevel (Key * key, int * avoidSlash)
 {
 	int levels = 0;
-	char *x = key->key;
+	char * x = key->key;
 	size_t xsize = 0;
 	size_t sizeOfLastLevel = 0;
 	char * const last = &key->key[key->keySize];
 	const char save = *last;
 	*last = 0;
 
-	while (*(x=keyNameGetOneLevel(x+xsize,&xsize)))
+	while (*(x = keyNameGetOneLevel (x + xsize, &xsize)))
 	{
 		sizeOfLastLevel = xsize;
 		levels++;
@@ -884,8 +906,8 @@ static void elektraRemoveOneLevel(Key *key, int *avoidSlash)
 
 	if (levels > 1)
 	{
-		key->keySize -= sizeOfLastLevel+1;
-		key->key[key->keySize]=0;
+		key->keySize -= sizeOfLastLevel + 1;
+		key->key[key->keySize] = 0;
 	}
 	else if (*key->key == '/') // cascading key
 	{
@@ -930,47 +952,47 @@ static void elektraRemoveOneLevel(Key *key, int *avoidSlash)
  * @retval 0 if nothing was done because newName had only slashes, is too short, is empty or is null
  * @ingroup keyname
  */
-ssize_t keyAddName(Key *key, const char *newName)
+ssize_t keyAddName (Key * key, const char * newName)
 {
 	if (!key) return -1;
-	if (test_bit(key->flags,  KEY_FLAG_RO_NAME)) return -1;
+	if (test_bit (key->flags, KEY_FLAG_RO_NAME)) return -1;
 	if (!key->key) return -1;
-	if (!strcmp(key->key, "")) return -1;
+	if (!strcmp (key->key, "")) return -1;
 	if (!newName) return 0;
-	size_t const nameSize = elektraStrLen(newName);
+	size_t const nameSize = elektraStrLen (newName);
 	if (nameSize < 2) return 0;
-	if (!elektraValidateKeyName(newName, nameSize)) return -1;
+	if (!elektraValidateKeyName (newName, nameSize)) return -1;
 
 	const size_t origSize = key->keySize;
 	const size_t newSize = origSize + nameSize;
-	elektraRealloc ((void**)&key->key, newSize*2);
+	elektraRealloc ((void **)&key->key, newSize * 2);
 	if (!key->key) return -1;
 
-	size_t size=0;
+	size_t size = 0;
 	const char * p = newName;
 	int avoidSlash = 0;
 
 	if (*key->key == '/') avoidSlash = key->keySize == 2;
 
-	-- key->keySize; // loop assumes that key->key[key->keySize] is last character and not NULL
+	--key->keySize; // loop assumes that key->key[key->keySize] is last character and not NULL
 
 	/* iterate over each single folder name removing repeated '/', .  and .. */
-	while (*(p=keyNameGetOneLevel(p+size,&size)))
+	while (*(p = keyNameGetOneLevel (p + size, &size)))
 	{
-		if (size == 1 && strncmp (p, ".",1) == 0)
+		if (size == 1 && strncmp (p, ".", 1) == 0)
 		{
 			continue; /* just ignore current directory */
 		}
 		else if (size == 2 && strncmp (p, "..", 2) == 0) /* give away one level*/
 		{
-			elektraRemoveOneLevel(key, &avoidSlash);
+			elektraRemoveOneLevel (key, &avoidSlash);
 			continue;
 		}
 
 		if (!avoidSlash)
 		{
 			/* Add a '/' to the end of key name */
-			key->key[key->keySize]=KDB_PATH_SEPARATOR;
+			key->key[key->keySize] = KDB_PATH_SEPARATOR;
 			key->keySize++;
 		}
 		else
@@ -979,19 +1001,17 @@ ssize_t keyAddName(Key *key, const char *newName)
 		}
 
 		/* carefully append basenames */
-		char *d = key->key+key->keySize;
-		memcpy(d,p,size);
-		key->keySize+=size;
+		char * d = key->key + key->keySize;
+		memcpy (d, p, size);
+		key->keySize += size;
 	}
 
-	++ key->keySize; /*for \\0 ending*/
+	++key->keySize; /*for \\0 ending*/
 
-	elektraFinalizeName(key);
+	elektraFinalizeName (key);
 
 	return origSize == key->keySize ? 0 : key->keySize;
 }
-
-
 
 
 /**
@@ -1035,24 +1055,24 @@ ssize_t keyAddName(Key *key, const char *newName)
  * @see keySetName() to set a new name
  * @ingroup keyname
  */
-ssize_t keySetBaseName(Key *key, const char *baseName)
+ssize_t keySetBaseName (Key * key, const char * baseName)
 {
 	if (!key) return -1;
-	if (test_bit(key->flags,  KEY_FLAG_RO_NAME)) return -1;
+	if (test_bit (key->flags, KEY_FLAG_RO_NAME)) return -1;
 	if (!key->key) return -1;
 
-	size_t size=0;
-	char *searchBaseName=0;
-	size_t searchBaseSize=0;
-	char *p = key->key;
+	size_t size = 0;
+	char * searchBaseName = 0;
+	size_t searchBaseSize = 0;
+	char * p = key->key;
 
-	while (*(p=keyNameGetOneLevel(p+size,&size)))
+	while (*(p = keyNameGetOneLevel (p + size, &size)))
 	{
-		searchBaseName=p;
-		searchBaseSize=size+1;
+		searchBaseName = p;
+		searchBaseSize = size + 1;
 	}
 
-	if (!searchBaseName || searchBaseName==key->key)
+	if (!searchBaseName || searchBaseName == key->key)
 	{
 		return -1;
 	}
@@ -1063,29 +1083,28 @@ ssize_t keySetBaseName(Key *key, const char *baseName)
 	if (!baseName)
 	{
 		// just remove base name, so we are finished
-		elektraFinalizeName(key);
+		elektraFinalizeName (key);
 		return key->keySize;
 	}
 
-	char *escaped = elektraMalloc (strlen (baseName) * 2 + 2);
-	elektraEscapeKeyNamePart(baseName, escaped);
+	char * escaped = elektraMalloc (strlen (baseName) * 2 + 2);
+	elektraEscapeKeyNamePart (baseName, escaped);
 	size_t sizeEscaped = elektraStrLen (escaped);
 
-	elektraRealloc((void**)&key->key, (key->keySize+sizeEscaped)*2);
+	elektraRealloc ((void **)&key->key, (key->keySize + sizeEscaped) * 2);
 	if (!key->key)
 	{
 		elektraFree (escaped);
 		return -1;
 	}
 
-	key->key [key->keySize - 1] = KDB_PATH_SEPARATOR;
-	memcpy (key->key + key->keySize,
-			escaped, sizeEscaped);
+	key->key[key->keySize - 1] = KDB_PATH_SEPARATOR;
+	memcpy (key->key + key->keySize, escaped, sizeEscaped);
 
 	elektraFree (escaped);
 
 	key->keySize += sizeEscaped;
-	elektraFinalizeName(key);
+	elektraFinalizeName (key);
 
 	return key->keySize;
 }
@@ -1112,15 +1131,13 @@ ssize_t keySetBaseName(Key *key, const char *baseName)
  * @param key the key object to work with
  * @return the namespace of a key.
  */
-elektraNamespace keyGetNamespace(const Key *key)
+elektraNamespace keyGetNamespace (const Key * key)
 {
 	if (!key) return KEY_NS_NONE;
-	return keyGetNameNamespace(key->key);
+	return keyGetNameNamespace (key->key);
 }
-
 
 
 /**
  * @}
  */
-

@@ -6,3 +6,4 @@ On potential changes of the API/ABI, please check following list:
 - Still ABI/API compatible
 - All Bindings written
 - TODO add what needs to be done for symbol versioning
+- #ifdef for ELEKTRA_API present?

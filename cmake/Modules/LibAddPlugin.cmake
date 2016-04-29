@@ -1,5 +1,6 @@
 include(LibAddMacros)
 
+
 # add_plugin: add a plugin to Elektra
 #
 # SOURCES:
@@ -21,7 +22,7 @@ include(LibAddMacros)
 #
 # INCLUDE_DIRECTORIES:
 #  Append to include path (globally+plugin specific).
-function(add_plugin PLUGIN_SHORT_NAME)
+function (add_plugin PLUGIN_SHORT_NAME)
 	cmake_parse_arguments (ARG
 		"CPP" # optional keywords
 		"" # one value keywords
@@ -33,6 +34,84 @@ function(add_plugin PLUGIN_SHORT_NAME)
 	set (PLUGIN_OBJS ${PLUGIN_NAME}-objects)
 	set (PLUGIN_TARGET_OBJS "$<TARGET_OBJECTS:${PLUGIN_OBJS}>")
 	file(GLOB PLUGIN_SHARED_SOURCES ${ARG_SHARED_SOURCES})
+
+	#message (STATUS "enter add_plugin ${PLUGIN_SHORT_NAME}")
+
+	if (COLLECTION_PHASE)
+		list (FIND PLUGINS "-${PLUGIN_SHORT_NAME}" FOUND_EXCLUDE_NAME)
+		if (FOUND_EXCLUDE_NAME GREATER -1)
+			message (STATUS "Exclude ${PLUGIN_SHORT_NAME}")
+			return ()
+		endif ()
+
+		set (NOT_INCLUDED "")
+		list (FIND PLUGINS "${PLUGIN_SHORT_NAME}" FOUND_NAME)
+		if (FOUND_NAME EQUAL -1)
+			set (NOT_INCLUDED "Not include Plugin ${PLUGIN_SHORT_NAME}")
+		endif ()
+
+		FILE(READ ${CMAKE_CURRENT_SOURCE_DIR}/${PLUGIN_DIRECTORY_NAME}/README.md contents)
+		STRING (REGEX MATCH "- +infos/status *= *([-a-zA-Z0-9 ]*)" CATEGORIES "${contents}")
+		STRING (REGEX REPLACE "- +infos/status *= *([-a-zA-Z0-9 ]*)" "\\1" CATEGORIES "${CATEGORIES}")
+		STRING (REGEX REPLACE " " ";" CATEGORIES "${CATEGORIES}")
+
+		STRING (REGEX MATCH "- +infos/provides *= *([a-zA-Z0-9 ]*)" PROVIDES "${contents}")
+		STRING (REGEX REPLACE "- +infos/provides *= *([a-zA-Z0-9 ]*)" "\\1" PROVIDES "${PROVIDES}")
+		list (APPEND CATEGORIES "ALL" "${PROVIDES}")
+		STRING (TOUPPER "${CATEGORIES}" CATEGORIES)
+		#message (STATUS "CATEGORIES ${CATEGORIES}")
+
+		foreach (CAT ${CATEGORIES})
+			list (FIND PLUGINS "-${CAT}" FOUND_EXCLUDE_CATEGORY)
+			if (FOUND_EXCLUDE_CATEGORY GREATER -1)
+				message (STATUS "Exclude Plugin ${PLUGIN_SHORT_NAME} because of category ${CAT}")
+				return ()
+			endif ()
+			list (FIND PLUGINS "${CAT}" FOUND_CATEGORY)
+			if (FOUND_CATEGORY GREATER -1)
+				#message (STATUS "Include Plugin ${PLUGIN_SHORT_NAME} because of category ${CAT}")
+				set (NOT_INCLUDED "")
+				break ()
+			endif ()
+		endforeach ()
+
+		if (NOT_INCLUDED)
+			if (REMOVED_PLUGINS)
+				set (REMOVED_PLUGINS "${REMOVED_PLUGINS};${PLUGIN_SHORT_NAME}" CACHE STRING "${REMOVED_PLUGINS_DOC}" FORCE)
+			else ()
+				set (REMOVED_PLUGINS "${PLUGIN_SHORT_NAME}" CACHE STRING "${REMOVED_PLUGINS_DOC}" FORCE)
+			endif ()
+			message (STATUS "${NOT_INCLUDED}")
+			return ()
+		endif ()
+
+		if (ADDED_PLUGINS)
+			set (ADDED_PLUGINS "${ADDED_PLUGINS};${PLUGIN_SHORT_NAME}" CACHE STRING "${ADDED_PLUGINS_DOC}" FORCE)
+		else ()
+			set (ADDED_PLUGINS "${PLUGIN_SHORT_NAME}" CACHE STRING "${ADDED_PLUGINS_DOC}" FORCE)
+		endif ()
+
+		get_filename_component(VAR ${CMAKE_CURRENT_LIST_DIR} NAME)
+		if (ADDED_DIRECTORIES)
+			set (ADDED_DIRECTORIES "${ADDED_DIRECTORIES};${VAR}" CACHE STRING "${ADDED_DIRECTORIES_DOC}" FORCE)
+		else ()
+			set (ADDED_DIRECTORIES "${VAR}" CACHE STRING "${ADDED_DIRECTORIES_DOC}" FORCE)
+		endif ()
+
+		return()
+	endif ()
+
+	list (FIND ADDED_PLUGINS "${PLUGIN_SHORT_NAME}" FOUND_NAME)
+	if (FOUND_NAME EQUAL -1)
+		list (FIND REMOVED_PLUGINS "${PLUGIN_SHORT_NAME}" FOUND_NAME)
+		if (FOUND_NAME EQUAL -1)
+			message (FATAL_ERROR "Internally inconsistency, plugin is not there, but was not removed")
+		endif ()
+		# plugin was not added in previous phase or removed because of missing deps, exit quietly
+		return ()
+	endif ()
+
+	message (STATUS "Include Plugin ${PLUGIN_SHORT_NAME}")
 
 	#message (STATUS "name: ${PLUGIN_NAME}")
 	#message (STATUS "srcs are: ${ARG_SOURCES}")

@@ -26,7 +26,7 @@
  * plugins.
  *
  * To get started with writing plugins, first read our
- * plugin tutorial in doc/tutorials!
+ * <a href="doc_tutorials_plugins_md.html">Plugin Tutorial</a>.
  *
  * A plugin can implement any functionality related to
  * configuration.
@@ -41,6 +41,9 @@
  * - elektraDocError() will be called when kdbSet() failed (to give the
  *   plugin a chance to recover/undo its actions)
  * - elektraPluginExport() exports all methods for the plugin.
+ *
+ * Additionally, make sure that you write a contract in the README.md.
+ * It is used by the build system and the mounting tools.
  *
  * The names described here contain "Doc" within the method's name
  * just because the plugin described in this document is called doc
@@ -77,23 +80,30 @@
  * In case of trouble, in some methods you can use
  * the macro #ELEKTRA_SET_ERROR (in other methods it is not allowed).
  * You might add warnings with the macro #ELEKTRA_ADD_WARNING.
- * Read the documentation of the individual methods to
- * decide what you should do.
+ * You can also use their pedants that accept a format string
+ * as known by printf: #ELEKTRA_SET_ERRORF and #ELEKTRA_ADD_WARNINGF.
+ * Make sure to define and use a macro in the error specification
+ * (/src/error/specification) so that you can easily renumber
+ * your error/warning codes:
+ *
+ * @snippet doc.c plugin errors spec
  *
  * Use following include to have the macros for setting the error
  * and adding the warnings available:
  *
  * @snippet doc.c plugin errors include
  *
+ * and then you can use:
+ *
+ * @snippet doc.c plugin errors usage
+ *
+ * @par Further help
  * Do not hesitate to open an issue if anything
  * is unclear.
  *
  * @addtogroup plugin
  * @{
  */
-
-
-
 
 
 /**
@@ -161,12 +171,6 @@
  */
 #define ELEKTRA_ADD_WARNING(number, key, text)
 #undef ELEKTRA_ADD_WARNING
-
-
-
-
-
-
 
 
 /**
@@ -238,9 +242,7 @@
  * @see elektraDocClose()
  * @ingroup plugin
  */
-int elektraDocOpen(Plugin *handle, Key *warningsKey);
-
-
+int elektraDocOpen (Plugin * handle, Key * warningsKey);
 
 
 /**
@@ -275,7 +277,7 @@ int elektraDocOpen(Plugin *handle, Key *warningsKey);
  *      elektraPluginGetConfig()
  * @ingroup plugin
  */
-int elektraDocClose(Plugin *handle, Key *warningsKey);
+int elektraDocClose (Plugin * handle, Key * warningsKey);
 
 /**
  * @brief Get data from storage to application.
@@ -398,7 +400,7 @@ int elektraDocClose(Plugin *handle, Key *warningsKey);
  *
  * @ingroup plugin
  */
-int elektraDocGet(Plugin *handle, KeySet *returned, Key *parentKey);
+int elektraDocGet (Plugin * handle, KeySet * returned, Key * parentKey);
 
 /**
  * @brief Set data from application to storage.
@@ -459,8 +461,7 @@ int elektraDocGet(Plugin *handle, KeySet *returned, Key *parentKey);
  *
  * @ingroup plugin
  */
-int elektraDocSet(Plugin *handle, KeySet *returned, Key *parentKey);
-
+int elektraDocSet (Plugin * handle, KeySet * returned, Key * parentKey);
 
 
 /**
@@ -488,7 +489,7 @@ int elektraDocSet(Plugin *handle, KeySet *returned, Key *parentKey);
  *
  * @ingroup plugin
  */
-int elektraDocError(Plugin *handle, KeySet *returned, Key *parentKey);
+int elektraDocError (Plugin * handle, KeySet * returned, Key * parentKey);
 
 
 /**

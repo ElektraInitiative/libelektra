@@ -7,12 +7,12 @@ You might want to read
 ## Terminology
 
 It is sometimes unavoidable that errors
-occur that ultimately have an impact for the user.  Examples for such an
-error are that hard disc space is exhausted.  For a library it
+occur that ultimately have an impact for the user.  One example for such an
+error is that hard disc space is exhausted.  For a library it
 is necessary to pass information about the facts and circumstances to the
 user because the user wants to be informed why a requested action failed.
 So Elektra gathers all information in these situations.  We call this
-resulting information **error information** and
+resulting information **error information** or
 **warning information** depending on the severity.
 
 If the occurred error is critical and ultimately causes a situation that
@@ -43,7 +43,7 @@ to this message in which way to continue.
 
 ### Error vs. Warning Information
 
-When an error in an faulty state occurs, the error information must
+When an error in a faulty state occurs, the error information must
 still hold the original error information.  So even in problems that
 would cause a faulty state, otherwise, the error information must be
 omitted or transformed to a warning information.  In some places only
@@ -59,10 +59,10 @@ the adding of warning information is possible:
 - Also in `kdbOpen()`, only adding warning information is allowed.
   If `kdbOpen()` is not able to open a plugin, the affected backend will be
   dropped out.  The user is certainly interested why that happened.  But it
-  was decided not to make it an faulty state, because the application might
+  was decided not to make it a faulty state, because the application might
   not even access the faulty part of the key hierarchy.  An exception
   to this rule is if `kdbOpen()` fails to open the default backend.
-  This situation will induce an faulty state.
+  This situation will induce a faulty state.
 
 - In `kdbSet()`, the cleaning up of resources involves calling
   plugins.  But during this process Elektra is in a faulty state, so only
@@ -121,7 +121,7 @@ in the next chapter.
 
 As stated above, a library always informs the user about what
 has happened, but does not print or log anything itself.  One way
-to return an error information is to add a parameter containing the
+to return error information is to add a parameter containing the
 error information.  In the case of Elektra, all `KDB` methods have a
 key as parameter.  This key is additionally passed to every plugin.
 The idea is to add the error and warning information as metadata to
@@ -130,7 +130,7 @@ hold a potentially unlimited number of metakeys.
 
 The error information is categorised in metadata as follows:
 
-- [error] indicates that an faulty state is present.  The value
+- [error] indicates that a faulty state is present.  The value
 of the metakey contains the name of all the subkeys that are used for
 error indication.  Metakeys do not guarantee any particular order on
 iteration.  Instead the user can find out the information by looking at

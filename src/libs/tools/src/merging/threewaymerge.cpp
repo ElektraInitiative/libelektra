@@ -7,9 +7,9 @@
  *
  */
 
-#include <merging/threewaymerge.hpp>
 #include <helper/comparison.hpp>
 #include <helper/keyhelper.hpp>
+#include <merging/threewaymerge.hpp>
 
 using namespace std;
 using namespace kdb::tools::helper;
@@ -23,7 +23,7 @@ namespace tools
 namespace merging
 {
 
-inline void addAsymmetricConflict(MergeResult& result, Key& key, ConflictOperation our, ConflictOperation their, bool reverse)
+inline void addAsymmetricConflict (MergeResult & result, Key & key, ConflictOperation our, ConflictOperation their, bool reverse)
 {
 	if (!reverse)
 	{
@@ -35,7 +35,7 @@ inline void addAsymmetricConflict(MergeResult& result, Key& key, ConflictOperati
 	}
 }
 
-void ThreeWayMerge::detectConflicts(const MergeTask& task, MergeResult& mergeResult, bool reverseConflictMeta = false)
+void ThreeWayMerge::detectConflicts (const MergeTask & task, MergeResult & mergeResult, bool reverseConflictMeta = false)
 {
 	Key our;
 	cursor_t savedCursor = task.ours.getCursor ();
@@ -54,7 +54,7 @@ void ThreeWayMerge::detectConflicts(const MergeTask& task, MergeResult& mergeRes
 			// keydata matches, see if metakeys match
 			if (keyMetaEqual (our, theirLookupResult))
 			{
-				if (task.ourParent.getFullName() == task.mergeRoot.getFullName())
+				if (task.ourParent.getFullName () == task.mergeRoot.getFullName ())
 				{
 					// the key was not rebased, we can reuse our (prevents that the key is rewritten)
 					mergeResult.addMergeKey (our);
@@ -86,12 +86,14 @@ void ThreeWayMerge::detectConflicts(const MergeTask& task, MergeResult& mergeRes
 					if (!keyDataEqual (our, baseLookupResult) && keyDataEqual (theirLookupResult, baseLookupResult))
 					{
 						// the key was only modified in ours
-						addAsymmetricConflict (mergeResult, mergeKey, CONFLICT_MODIFY, CONFLICT_SAME, reverseConflictMeta);
+						addAsymmetricConflict (mergeResult, mergeKey, CONFLICT_MODIFY, CONFLICT_SAME,
+								       reverseConflictMeta);
 					}
 					else
 					{
 						// check if both modified it
-						if (!keyDataEqual (our, baseLookupResult) && !keyDataEqual (theirLookupResult, baseLookupResult))
+						if (!keyDataEqual (our, baseLookupResult) &&
+						    !keyDataEqual (theirLookupResult, baseLookupResult))
 						{
 							// the key was modified on both sides
 							mergeResult.addConflict (mergeKey, CONFLICT_MODIFY, CONFLICT_MODIFY);
@@ -104,12 +106,14 @@ void ThreeWayMerge::detectConflicts(const MergeTask& task, MergeResult& mergeRes
 					if (keyDataEqual (our, baseLookupResult))
 					{
 						// the key was deleted in theirs, and not modified in ours
-						addAsymmetricConflict (mergeResult, mergeKey, CONFLICT_SAME, CONFLICT_DELETE, reverseConflictMeta);
+						addAsymmetricConflict (mergeResult, mergeKey, CONFLICT_SAME, CONFLICT_DELETE,
+								       reverseConflictMeta);
 					}
 					else
 					{
 						// the key was deleted in theirs, but modified in ours
-						addAsymmetricConflict (mergeResult, mergeKey, CONFLICT_MODIFY, CONFLICT_DELETE, reverseConflictMeta);
+						addAsymmetricConflict (mergeResult, mergeKey, CONFLICT_MODIFY, CONFLICT_DELETE,
+								       reverseConflictMeta);
 					}
 				}
 			}
@@ -124,14 +128,16 @@ void ThreeWayMerge::detectConflicts(const MergeTask& task, MergeResult& mergeRes
 						if (keyMetaEqual (our, theirLookupResult))
 						{
 							// the key was added on both sides with the same value
-							if (task.ourParent.getFullName() == task.mergeRoot.getFullName())
+							if (task.ourParent.getFullName () == task.mergeRoot.getFullName ())
 							{
-								// the key was not rebased, we can reuse our and prevent the sync flag being set
+								// the key was not rebased, we can reuse our and prevent the sync flag being
+								// set
 								mergeResult.addMergeKey (our);
 							}
 							else
 							{
-								// the key causes no merge conflict, but the merge result is below a new parent
+								// the key causes no merge conflict, but the merge result is below a new
+								// parent
 								mergeResult.addMergeKey (mergeKey);
 							}
 						}
@@ -160,49 +166,44 @@ void ThreeWayMerge::detectConflicts(const MergeTask& task, MergeResult& mergeRes
 }
 
 
-MergeResult ThreeWayMerge::mergeKeySet(const MergeTask& task)
+MergeResult ThreeWayMerge::mergeKeySet (const MergeTask & task)
 {
 
 	MergeResult result;
 	detectConflicts (task, result);
 	detectConflicts (task.reverse (), result, true);
 
-	if (!result.hasConflicts()) return result;
+	if (!result.hasConflicts ()) return result;
 
 
 	// TODO: test this behaviour (would probably need mocks)
 	Key current;
-	KeySet conflicts = result.getConflictSet();
-	conflicts.rewind();
+	KeySet conflicts = result.getConflictSet ();
+	conflicts.rewind ();
 	while ((current = conflicts.next ()))
 	{
 		for (auto & elem : strategies)
 		{
 			(elem)->resolveConflict (task, current, result);
 
-			if (!result.isConflict(current))
-				break;
+			if (!result.isConflict (current)) break;
 		}
 	}
 
 	return result;
 }
 
-MergeResult ThreeWayMerge::mergeKeySet(const KeySet& base, const KeySet& ours,
-		const KeySet& theirs, const Key& mergeRoot)
+MergeResult ThreeWayMerge::mergeKeySet (const KeySet & base, const KeySet & ours, const KeySet & theirs, const Key & mergeRoot)
 {
 	Key ourkey = ours.head ().dup ();
 	Key theirkey = theirs.head ().dup ();
 	Key basekey = base.head ().dup ();
 
 	MergeResult merged = mergeKeySet (
-			MergeTask (BaseMergeKeys (base, basekey),
-					OurMergeKeys (ours, ourkey),
-					TheirMergeKeys (theirs, theirkey), mergeRoot));
+		MergeTask (BaseMergeKeys (base, basekey), OurMergeKeys (ours, ourkey), TheirMergeKeys (theirs, theirkey), mergeRoot));
 
 	return merged;
 }
-
 }
 }
 }

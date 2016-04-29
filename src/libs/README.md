@@ -72,7 +72,8 @@ of the contents in [METADATA.ini](/doc/METADATA.ini).
     <kdb.h> (key* and ks*)
 
 Contains the fundamental data-structures every participant of Elektra needs
-to link against.
+to link against. It should be the only part that access the internal
+data structures.
 
 ## Libtools
 

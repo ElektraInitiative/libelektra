@@ -12,16 +12,16 @@
 #define TOOLS_BACKEND_BUILDER_HPP
 
 
-#include <set>
 #include <memory>
+#include <set>
 #include <vector>
 
 #include <kdb.hpp>
 
-#include <plugin.hpp>
 #include <backend.hpp>
-#include <pluginspec.hpp>
+#include <plugin.hpp>
 #include <plugindatabase.hpp>
+#include <pluginspec.hpp>
 
 namespace kdb
 {
@@ -42,6 +42,7 @@ private:
 	PluginDatabasePtr pluginDatabase;
 
 	BackendFactory backendFactory;
+
 public:
 	BackendBuilderInit ();
 	BackendBuilderInit (PluginDatabasePtr const & plugins);
@@ -49,12 +50,12 @@ public:
 	BackendBuilderInit (PluginDatabasePtr const & plugins, BackendFactory const & bf);
 	BackendBuilderInit (BackendFactory const & bf, PluginDatabasePtr const & plugins);
 
-	PluginDatabasePtr getPluginDatabase() const
+	PluginDatabasePtr getPluginDatabase () const
 	{
 		return pluginDatabase;
 	}
 
-	BackendFactory getBackendFactory() const
+	BackendFactory getBackendFactory () const
 	{
 		return backendFactory;
 	}
@@ -87,33 +88,45 @@ private:
 	BackendFactory backendFactory;
 
 private:
-	void sort();
-	void collectNeeds(std::vector<std::string> & needs) const;
-	void collectRecommends(std::vector<std::string> & recommends) const;
-	void removeProvided(std::vector<std::string> & needs) const;
-	void removeMetadata(std::set<std::string> & needsMetadata) const;
+	void sort ();
+	void collectNeeds (std::vector<std::string> & needs) const;
+	void collectRecommends (std::vector<std::string> & recommends) const;
+	void removeProvided (std::vector<std::string> & needs) const;
+	void removeMetadata (std::set<std::string> & needsMetadata) const;
 
 public:
-	explicit BackendBuilder(BackendBuilderInit const & bbi = BackendBuilderInit());
+	explicit BackendBuilder (BackendBuilderInit const & bbi = BackendBuilderInit ());
 
 	typedef PluginSpecVector::const_iterator const_iterator;
 
-	const_iterator begin() const { return toAdd.begin(); }
-	const_iterator end() const { return toAdd.end(); }
-	const_iterator cbegin() const { return toAdd.begin(); }
-	const_iterator cend() const { return toAdd.end(); }
+	const_iterator begin () const
+	{
+		return toAdd.begin ();
+	}
+	const_iterator end () const
+	{
+		return toAdd.end ();
+	}
+	const_iterator cbegin () const
+	{
+		return toAdd.begin ();
+	}
+	const_iterator cend () const
+	{
+		return toAdd.end ();
+	}
 
-	PluginDatabasePtr const & getPluginDatabase() const
+	PluginDatabasePtr const & getPluginDatabase () const
 	{
 		return pluginDatabase;
 	}
 
-	BackendFactory const & getBackendFactory() const
+	BackendFactory const & getBackendFactory () const
 	{
 		return backendFactory;
 	}
 
-	~BackendBuilder();
+	~BackendBuilder ();
 
 	void addPlugins (PluginSpecVector const & plugins)
 	{
@@ -128,12 +141,12 @@ public:
 
 	void needMetadata (std::string metadata);
 	void needPlugin (std::string provider);
-	std::vector<std::string> resolveNeeds(bool addRecommends = true);
+	std::vector<std::string> resolveNeeds (bool addRecommends = true);
 
 	void recommendPlugin (std::string provider);
-	void resolveRecommends();
+	void resolveRecommends ();
 
-	void fillPlugins(BackendInterface & b) const;
+	void fillPlugins (BackendInterface & b) const;
 };
 
 /**
@@ -142,9 +155,9 @@ public:
 class GlobalPluginsBuilder : public BackendBuilder
 {
 public:
-	explicit GlobalPluginsBuilder(BackendBuilderInit const & bbi = BackendBuilderInit());
+	explicit GlobalPluginsBuilder (BackendBuilderInit const & bbi = BackendBuilderInit ());
 	static const char * globalPluginsPath;
-	void serialize (kdb::KeySet &ret);
+	void serialize (kdb::KeySet & ret);
 };
 
 /**
@@ -158,34 +171,33 @@ class MountBackendBuilder : public MountBackendInterface, public BackendBuilder
 	KeySet backendConf;
 	KeySet mountConf;
 	std::string configfile;
+
 public:
 	void addPlugin (PluginSpec const & spec)
 	{
-		return BackendBuilder::addPlugin(spec);
+		return BackendBuilder::addPlugin (spec);
 	}
 
-	explicit MountBackendBuilder(BackendBuilderInit const & bbi = BackendBuilderInit());
+	explicit MountBackendBuilder (BackendBuilderInit const & bbi = BackendBuilderInit ());
 
 	void setMountpoint (Key mountpoint, KeySet mountConf);
-	std::string getMountpoint() const;
+	std::string getMountpoint () const;
 
 	void setBackendConfig (KeySet const & ks);
-	KeySet getBackendConfig()
+	KeySet getBackendConfig ()
 	{
 		return backendConf;
 	}
 
 	void useConfigFile (std::string file);
-	std::string getConfigFile() const;
+	std::string getConfigFile () const;
 
-	void serialize (kdb::KeySet &ret);
+	void serialize (kdb::KeySet & ret);
 
 	void status (std::ostream & os) const;
 	bool validated () const;
 };
-
 }
-
 }
 
 #endif

@@ -155,10 +155,11 @@ severity:warning
 ingroup:trie
 
 number:26
-description:could not open lock file
+description:could not open configuration file
 severity:error
 ingroup:plugin
 module:resolver
+macro:COULD_NOT_OPEN
 
 number:27
 description:locking yield an error
@@ -179,7 +180,8 @@ ingroup:plugin
 module:resolver
 
 number:30
-description:A conflict occurred: another process modified the key database.
+macro:CONFLICT
+description:A conflict occurred: Another KDB instance modified the key database.
 severity:error
 ingroup:plugin
 module:resolver
@@ -357,6 +359,7 @@ number:60
 description:Invalid Line encountered
 severity:error
 ingroup:plugin
+macro:NOEOF
 module:simpleini
 
 number:61
@@ -626,6 +629,7 @@ ingroup:plugin
 module:dump
 
 number:107
+macro:STATE
 description:Sync State is wrong, maybe kdbSet() is executed without prior kdbGet(). Reason states exact mountpoint.
 severity:error
 ingroup:kdb
@@ -845,3 +849,22 @@ description:globbing warning
 severity:warning
 ingroup:plugin
 module:spec
+
+number:144
+description:shell plugin error
+severity:error
+ingroup:plugin
+module:shell
+
+number:145
+description:semlock plugin error
+severity:error
+ingroup:plugin
+module:semlock
+
+number:146
+description:could not get current directory
+severity:warning
+ingroup:plugin
+module:resolver
+macro:NOCWD

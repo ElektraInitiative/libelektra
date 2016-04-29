@@ -30,7 +30,7 @@ do
 	esac
 
 	> $FILE
-	$KDB check $PLUGIN 1> $FILE 2> $FILE
+	"$KDB" check $PLUGIN 1> $FILE 2> $FILE
 	succeed_if "check of plugin $PLUGIN failed"
 
 	test ! -s $FILE

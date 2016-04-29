@@ -9,20 +9,20 @@
 #ifndef ELEKTRA_PLUGIN_VALIDATION_H
 #define ELEKTRA_PLUGIN_VALIDATION_H
 
-#include <sys/types.h>
 #include <regex.h>
+#include <sys/types.h>
 
-#include <kdbplugin.h>
 #include <kdberrors.h>
+#include <kdbplugin.h>
 
-int elektraValidationOpen(Plugin *handle, Key *errorKey);
-int elektraValidationClose(Plugin *handle, Key *errorKey);
-int elektraValidationGet(Plugin *handle, KeySet *ks, Key *parentKey);
-int elektraValidationSet(Plugin *handle, KeySet *ks, Key *parentKey);
-int elektraValidationError(Plugin *handle, KeySet *ks, Key *parentKey);
+int elektraValidationOpen (Plugin * handle, Key * errorKey);
+int elektraValidationClose (Plugin * handle, Key * errorKey);
+int elektraValidationGet (Plugin * handle, KeySet * ks, Key * parentKey);
+int elektraValidationSet (Plugin * handle, KeySet * ks, Key * parentKey);
+int elektraValidationError (Plugin * handle, KeySet * ks, Key * parentKey);
 
-Key *ksLookupRE(KeySet *ks, const regex_t *regexp);
+Key * ksLookupRE (KeySet * ks, const regex_t * regexp);
 
-Plugin *ELEKTRA_PLUGIN_EXPORT(validation);
+Plugin * ELEKTRA_PLUGIN_EXPORT (validation);
 
 #endif

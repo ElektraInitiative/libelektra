@@ -1,6 +1,6 @@
 include (LibAddMacros)
 
-add_plugin(glob
+add_plugin (glob
 	SOURCES
 		glob.h
 		glob.c

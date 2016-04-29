@@ -6,6 +6,8 @@
  * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
  */
 
+// clang-format off
+
 @DISCLAMER@
 
 /***************************************************************************
@@ -39,11 +41,27 @@
 
 #define KDB_DB_INIT              "@KDB_DB_INIT@"
 
+/** Only to be used where really the specific
+  * storage is needed!
+  * Note that for mounting/export and so on
+  * KDB_STORAGE should be preferred.*/
 #define KDB_DEFAULT_STORAGE      "@KDB_DEFAULT_STORAGE@"
 
+/** Only to be used where really the specific
+  * resolver is needed!
+  * Note that for mounting/export and so on
+  * KDB_STORAGE should be preferred.*/
 #define KDB_DEFAULT_RESOLVER     "@KDB_DEFAULT_RESOLVER@"
 
-#define ELEKTRA_PLUGINS          "@PLUGINS@"
+/** To be used if you want the currently
+  * build-in default storage, whatever it is. */
+#define KDB_STORAGE      "storage"
+
+/** To be used if you want the currently
+  * build-in default resolver, whatever it is. */
+#define KDB_RESOLVER     "resolver"
+
+#define ELEKTRA_PLUGINS          "@ADDED_PLUGINS@"
 
 #define ELEKTRA_TOOLS            "@TOOLS@"
 
@@ -144,6 +162,12 @@
 #ifndef HAVE_TIME_H
 #cmakedefine HAVE_TIME_H
 #endif
+
+/* define if your system has the `clearenv' function. */
+#ifndef HAVE_CLOCK_GETTIME
+#cmakedefine HAVE_CLOCK_GETTIME
+#endif
+
 
 /* define if your system has the <unistd.h> header file. */
 #ifndef HAVE_UNISTD_H

@@ -28,11 +28,11 @@ using namespace kdb::tools;
  *
  * @post will update mountConf
  */
-void MountBaseCommand::readMountConf(Cmdline const& cl)
+void MountBaseCommand::readMountConf (Cmdline const & cl)
 {
-	Key parentKey(mountpointsPath, KEY_END);
+	Key parentKey (mountpointsPath, KEY_END);
 
-	kdb.get(mountConf, parentKey);
+	kdb.get (mountConf, parentKey);
 
 	if (!cl.null && cl.first && cl.second && cl.third)
 	{
@@ -40,9 +40,9 @@ void MountBaseCommand::readMountConf(Cmdline const& cl)
 	}
 }
 
-void MountBaseCommand::outputMissingRecommends(std::vector<std::string> missingRecommends)
+void MountBaseCommand::outputMissingRecommends (std::vector<std::string> missingRecommends)
 {
-	if (!missingRecommends.empty())
+	if (!missingRecommends.empty ())
 	{
 		std::cout << "Missing recommended plugins: ";
 		for (auto const & p : missingRecommends)
@@ -59,22 +59,24 @@ void MountBaseCommand::outputMissingRecommends(std::vector<std::string> missingR
  *
  * @see getName()
  */
-void MountBaseCommand::getMountpoint(Cmdline const& cl)
+void MountBaseCommand::getMountpoint (Cmdline const & cl)
 {
 	Key cur;
-	std::vector <std::string> mountpoints;
-	mountpoints.push_back("system/elektra");
-	mountConf.rewind();
-	while ((cur = mountConf.next()))
+	std::vector<std::string> mountpoints;
+	mountpoints.push_back ("system/elektra");
+	mountConf.rewind ();
+	while ((cur = mountConf.next ()))
 	{
-		if (cur.getBaseName() == "mountpoint")
+		if (cur.getBaseName () == "mountpoint")
 		{
-			if (cur.getString().at(0) == '/')
+			if (cur.getString ().at (0) == '/')
 			{
-				mountpoints.push_back(Key ("user" + cur.getString(), KEY_END).getName());
-				mountpoints.push_back(Key ("system" + cur.getString(), KEY_END).getName());
-			} else {
-				mountpoints.push_back(cur.getString());
+				mountpoints.push_back (Key ("user" + cur.getString (), KEY_END).getName ());
+				mountpoints.push_back (Key ("system" + cur.getString (), KEY_END).getName ());
+			}
+			else
+			{
+				mountpoints.push_back (cur.getString ());
 			}
 		};
 	}
@@ -82,8 +84,7 @@ void MountBaseCommand::getMountpoint(Cmdline const& cl)
 	if (cl.interactive)
 	{
 		cout << "Already used are: ";
-		std::copy (mountpoints.begin(), mountpoints.end(),
-				ostream_iterator<std::string>(cout, " "));
+		std::copy (mountpoints.begin (), mountpoints.end (), ostream_iterator<std::string> (cout, " "));
 		cout << endl;
 		cout << "Please start with / for a cascading backend" << endl;
 		cout << "Enter the mountpoint: ";
@@ -91,11 +92,11 @@ void MountBaseCommand::getMountpoint(Cmdline const& cl)
 	}
 	else
 	{
-		mp = cl.createKey(1).getName();
+		mp = cl.createKey (1).getName ();
 	}
 }
 
-void MountBaseCommand::askForConfirmation(Cmdline const& cl)
+void MountBaseCommand::askForConfirmation (Cmdline const & cl)
 {
 	if (cl.interactive)
 	{
@@ -108,10 +109,10 @@ void MountBaseCommand::askForConfirmation(Cmdline const& cl)
 	if (cl.debug)
 	{
 		cout << "The configuration which will be set is:" << endl;
-		mountConf.rewind();
-		while (Key k = mountConf.next())
+		mountConf.rewind ();
+		while (Key k = mountConf.next ())
 		{
-			cout << k.getName() << " " << k.getString() << endl;
+			cout << k.getName () << " " << k.getString () << endl;
 		}
 	}
 
@@ -120,7 +121,7 @@ void MountBaseCommand::askForConfirmation(Cmdline const& cl)
 		cout << "Are you sure you want to do that (y/N): ";
 		std::string answer;
 		cin >> answer;
-		if (answer != "y") throw CommandAbortException();
+		if (answer != "y") throw CommandAbortException ();
 	}
 
 	if (cl.debug)
@@ -132,36 +133,37 @@ void MountBaseCommand::askForConfirmation(Cmdline const& cl)
 class KDBMountException : public KDBException
 {
 	std::string msg;
+
 public:
-	KDBMountException(std::string const & e) :
-		KDBException (Key())
+	KDBMountException (std::string const & e) : KDBException (Key ())
 	{
 		msg = e;
 	}
 
-	virtual const char* what() const noexcept override
+	virtual const char * what () const noexcept override
 	{
-		return msg.c_str();
+		return msg.c_str ();
 	}
 };
 
 /**
  * @brief Really write out config
  */
-void MountBaseCommand::doIt()
+void MountBaseCommand::doIt ()
 {
-	Key parentKey(mountpointsPath, KEY_END);
+	Key parentKey (mountpointsPath, KEY_END);
 
-	try {
-		kdb.set(mountConf, parentKey);
+	try
+	{
+		kdb.set (mountConf, parentKey);
 	}
 	catch (KDBException const & e)
 	{
-		throw KDBMountException(std::string(e.what())+"\n\n"
-				"IMPORTANT: Make sure you can write to system namespace\n"
-				"           Usually you need to be root for that!");
+		throw KDBMountException (std::string (e.what ()) +
+					 "\n\n"
+					 "IMPORTANT: Make sure you can write to system namespace\n"
+					 "           Usually you need to be root for that!");
 	}
 
-	printWarnings(cerr, parentKey);
+	printWarnings (cerr, parentKey);
 }
-

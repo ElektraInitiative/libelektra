@@ -1,7 +1,7 @@
 # How-To: Write a Plugin #
 
 This file serves as a tutorial on how to write a storage plugin. Storage plugins are used by Elektra in order to store data in the Elektra Key Database
-in an intelligent way. They act as a liason between configuration files and the Key Database. Storage plugins are largely responsible for
+in an intelligent way. They act as a liaison between configuration files and the Key Database. Storage plugins are largely responsible for
 the functionality of Elektra and they allow many of its advanced features to work.
 
 ## Basics ##
@@ -52,6 +52,9 @@ important things are left to be done:
 After these two steps your plugin is ready to be compiled, installed and mounted for the first time. Have a look at
 [How-To: kdb mount](http://community.libelektra.org/wp/?p=31)
 
+
+
+
 ## Contract ##
 
 In Elektra, multiple plugins form a backend. If every plugin would do
@@ -78,6 +81,14 @@ But prefer to use
 	add_plugin(pluginname)
 
 where the readme (among many other things) are already done for you.
+More details about how to write the CMakeLists.txt will be discussed
+later in the tutorial.
+
+The `README.md` will be used by:
+
+- the build system (`-DPLUGINS=`), e.g. to exclude experimental plugins (`infos/status`)
+- the mount tool, e.g. to correctly place and order plugins
+- to know dependencies between plugin and what metadata they process
 
 
 ### Content of README.md ###
@@ -159,6 +170,71 @@ where this is already done correctly):
 
 	include_directories (${CMAKE_CURRENT_BINARY_DIR})
 
+
+
+## CMake ##
+
+For every plugin you have to write a CMakeLists.txt. If your plugin has
+no dependencies, you can jump this section. The full documentation of
+`add_plugin` is available [here](/cmake/Modules/LibAddPlugin.cmake).
+
+In order to understand how to write the CMakeLists.txt, you need to know that
+the same file is included multiple times for different reasons.
+
+1. The first time, only the name of plugins and directories are enquired.
+    In this phase, only the `add_plugin` should be executed.
+2. The second time (if the plugin is actually requested), the CMakeLists.txt
+    is used to detect if all dependencies are actually available.
+
+This means that in the first time, only the `add_plugin` should be executed
+and in the second time the detection code together with `add_plugin`.
+
+So that you can distinguish the first and second phase, the variable `DEPENDENCY_PHASE`
+is set to `ON` iff you should find for all needed cmake packages. You should avoid
+to search for packages otherwise, because this would:
+
+- clutter the output
+- introduce more variables into the CMakeCache which are irrelevant for the user
+- maybe even find libraries in wrong versions which are incompatible to what other
+  plugins need
+
+So usually you would have:
+
+	if (DEPENDENCY_PHASE)
+		find_package (LibXml2)
+		if (LIBXML2_FOUND)
+			# add testdata, testcases...
+		else ()
+			remove_plugin (xmltool "libxml2 not found")
+		endif ()
+	endif ()
+
+So if you are in the second phase (`DEPENDENCY_PHASE`), you will search for all
+dependencies, in this case `LibXml2`. If all dependencies are satisfied, you add
+everything needed for the plugin, except the plugin itself.
+This happens after `endif ()`:
+
+	add_plugin (xmltool
+		SOURCES
+			...
+		LINK_LIBRARIES
+			${LIBXML2_LIBRARIES}
+		DEPENDENCIES
+			${LIBXML2_FOUND}
+		)
+
+Important is that you pass the information which packages are found as boolean.
+The plugin will actually be added iff all of the `DEPENDENCIES` are true.
+
+Note that no code should be outside of `if (DEPENDENCY_PHASE)`
+thus it would be executed twice otherwise. The only exception is
+`add_plugin` which *must* be called twice to successfully add a plugin.
+
+If your plugin makes use of [compilation variants](/doc/tutorials/compilation-variants.md)
+you should also read the information there.
+
+
+
 ## Coding ##
 
 This section will focus on an overview of the kind of code you would use to develop a plugin. It gives examples from real plugins
@@ -176,7 +252,7 @@ Here is the trickier part to explain. Basically, at this point you will want to 
 inside of them according to what your plug-in is supposed to do. I will give a few examples of different plug-ins to better explain.
 
 The line plug-in was written to read files into a KeySet line by line using the newline character as a delimiter and naming the keys by their line
-number such as `#1`, `#2`, .. `#\_22` for a file with 22 lines. So once I open the file given by `parentKey`, every time a I read a line I create a new key,
+number such as `#1`, `#2`, .. `#_22` for a file with 22 lines. So once I open the file given by `parentKey`, every time as I read a line I create a new key,
 let's call it new_key using dupKey(parentKey). Then I set new_keys's name to lineNN (where NN is the line number) using `keyAddBaseName` and
 store the string value of the line into the key using `keySetString`. Once the key is initialized, I append it to the KeySet that was passed into the
 elektraPluginGet function, let's call it returned for now, using `ksAppendKey(return, new_key)`. Now the KeySet will contain `new_key` with the
@@ -204,7 +280,7 @@ First have a look at the signature of `elektraLineSet`:
 `elektraLineSet(Plugin *handle ELEKTRA_UNUSED, KeySet *toWrite, Key *parentKey)`
 
 Lets start with the most important parameters, the KeySet and the `parentKey`. The KeySet supplied is the KeySet that is going to be persisted in
-the file. In our case it would contain the Keys representing the lines. The `parentKey` is the topmost Key of the KeySet at serves several purposes.
+the file. In our case it would contain the Keys representing the lines. The `parentKey` is the topmost Key of the KeySet and serves several purposes.
 First, it contains the filename of the destination file as its value. Second, errors and warnings can be emitted via the parentKey. We will discuss
 error handling in more detail later. The Plugin handle can be used to persist state information in a threadsafe way with `elektraPluginSetData`.
 As our plugin is not stateful and therefore does not use the handle, it is marked as unused in order to suppress compiler warnings.
@@ -233,11 +309,11 @@ be called and the mounted file will be updated.
 
 We haven't discussed `ELEKTRA_SET_ERROR` yet. Because Elektra is a library, printing errors to stderr wouldn't be a good idea. Instead, errors
 and warnings can be appended to a key in the form of metadata. This is what `ELEKTRA_SET_ERROR` does. Because the parentKey always exists
-even if a critical error occurres, we append the error to the `parentKey`. The first parameter is an id specifying the general error that occurred.
+even if a critical error occurs, we append the error to the `parentKey`. The first parameter is an id specifying the general error that occurred.
 A listing of existing errors together with a short description and a categorization can be found at
 [error specification](https://github.com/ElektraInitiative/libelektra/blob/master/src/error/specification).
 The third parameter can be used to provide additional information about the error. In our case we simply supply the filename of the file that
-caused the error. The kdb tools will interprete this error and print it in a pretty way. Notice that this can be used in any plugin function where the
+caused the error. The kdb tools will interpret this error and print it in a pretty way. Notice that this can be used in any plugin function where the
 parentKey is available.
 
 ### elektraPluginOpen and elektraPluginClose ###
@@ -254,8 +330,8 @@ the plug-in exists and which methods it implements. The code from the line plugi
 	Plugin *ELEKTRA_PLUGIN_EXPORT(line)
 	{
 		return elektraPluginExport("line",
-		ELEKTRA_PLUGIN_GET, &amp;elektraLineGet,
-		ELEKTRA_PLUGIN_SET, &amp;elektraLineSet,
+		ELEKTRA_PLUGIN_GET, &elektraLineGet,
+		ELEKTRA_PLUGIN_SET, &elektraLineSet,
 		ELEKTRA_PLUGIN_END);
 	}
 

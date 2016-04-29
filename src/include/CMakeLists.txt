@@ -2,11 +2,12 @@ include(CheckIncludeFile)
 include(CheckSymbolExists)
 include(CheckTypeSize)
 
-check_symbol_exists(clearenv     "stdlib.h"         HAVE_CLEARENV)
-check_symbol_exists(setenv       "stdlib.h"         HAVE_SETENV)
-check_symbol_exists(futimens     "sys/stat.h"       HAVE_FUTIMENS)
-check_symbol_exists(futimes      "sys/time.h"       HAVE_FUTIMES)
-check_symbol_exists(glob         "glob.h"           HAVE_GLOB)
+check_symbol_exists(clearenv      "stdlib.h"         HAVE_CLEARENV)
+check_symbol_exists(setenv        "stdlib.h"         HAVE_SETENV)
+check_symbol_exists(futimens      "sys/stat.h"       HAVE_FUTIMENS)
+check_symbol_exists(futimes       "sys/time.h"       HAVE_FUTIMES)
+check_symbol_exists(glob          "glob.h"           HAVE_GLOB)
+check_symbol_exists(clock_gettime "time.h"           HAVE_CLOCK_GETTIME)
 
 check_include_file(ctype.h      HAVE_CTYPE_H)
 check_include_file(errno.h      HAVE_ERRNO_H)
@@ -54,6 +55,7 @@ install (FILES
 	"${CMAKE_CURRENT_BINARY_DIR}/kdbconfig.h"
 	kdbextension.h
 	kdbmeta.h
+	kdbease.h
 	kdbtypes.h
 	kdbhelper.h
 	"${CMAKE_CURRENT_BINARY_DIR}/kdb.h"

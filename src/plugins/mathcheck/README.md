@@ -4,7 +4,7 @@
 - infos/provides = check
 - infos/needs =
 - infos/placements = presetstorage
-- infos/status = maintained unittest
+- infos/status = maintained unittest discouraged
 - infos/metadata = check/math
 - infos/description =
 
@@ -43,3 +43,9 @@ It also works with constants:
 	kdb get user/example/mathcheck/k       # 10.5
 	kdb set user/example/mathcheck/a 8.0
 	kdb get user/example/mathcheck/k       # 13
+
+## Status ##
+
+mathcheck does not work with icc 14.0.2 20140120, and some gcc versions when using debug.
+Additionally, it fails to run on OpenBSD.
+Until these problems are fixed it is discouraged to use.

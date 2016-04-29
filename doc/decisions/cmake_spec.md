@@ -1,4 +1,4 @@
-# Template
+# CMake Spec
 
 ## Issue
 

@@ -41,16 +41,20 @@ The value is an ascending number. Ordering of aliases is NOT preserved.
 
 Mount the plugin:
 
-    $ kdb mount /etc/hosts system/hosts hosts
+    $ kdb mount --with-recommends /etc/hosts system/hosts hosts
 
 Print out all known hosts and their aliases:
 
     $ kdb ls system/hosts
 
-Get IP address of host "localhost":
+Get IP address of ipv4 host "localhost":
 
-    $ kdb get system/hosts/localhost
+    $ kdb get system/hosts/ipv4/localhost
 
-Fetch comment belonging to host "localhost":
+Check if a comment is belonging to host "localhost":
 
-    $ kdb getmeta system/hosts/localhost comment
+    $ kdb lsmeta system/hosts/ipv4/localhost
+
+Try to change the host "localhost", should fail because it is not an ipv4 adress:
+
+    $ kdb set system/hosts/ipv4/localhost ::1

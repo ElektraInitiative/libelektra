@@ -26,8 +26,8 @@
 
 #include <dlfcn.h>
 
-#include <kdbmodule.h>
 #include <kdberrors.h>
+#include <kdbmodule.h>
 
 #include <stdlib.h>
 #include <string.h>
@@ -36,14 +36,14 @@ typedef struct _Module Module;
 
 struct _Module
 {
-	void *handle;
+	void * handle;
 	union {
 		elektraPluginFactory f;
-		void *v;
+		void * v;
 	} symbol;
 };
 
-int elektraModulesInit (KeySet *modules, Key * error ELEKTRA_UNUSED)
+int elektraModulesInit (KeySet * modules, Key * error ELEKTRA_UNUSED)
 {
 	ksAppendKey (modules, keyNew ("system/elektra/modules", KEY_END));
 
@@ -51,102 +51,104 @@ int elektraModulesInit (KeySet *modules, Key * error ELEKTRA_UNUSED)
 }
 
 #ifdef _WIN32
-const char elektraPluginPostfix [] = ".dll";
+const char elektraPluginPostfix[] = ".dll";
 #else
-const char elektraPluginPostfix [] = ".so";
+const char elektraPluginPostfix[] = ".so";
 #endif
 
-elektraPluginFactory elektraModulesLoad (KeySet *modules, const char *name, Key *errorKey)
+elektraPluginFactory elektraModulesLoad (KeySet * modules, const char * name, Key * errorKey)
 {
-	Key *moduleKey = keyNew ("system/elektra/modules", KEY_END);
+	Key * moduleKey = keyNew ("system/elektra/modules", KEY_END);
 	keyAddBaseName (moduleKey, name);
-	Key *lookup = ksLookup(modules, moduleKey, 0);
+	Key * lookup = ksLookup (modules, moduleKey, 0);
 	if (lookup)
 	{
-		Module *module = (Module*)keyValue(lookup);
+		Module * module = (Module *)keyValue (lookup);
 		keyDel (moduleKey);
 		return module->symbol.f;
 	}
 
-	char *moduleName = elektraMalloc (sizeof("libelektra-")
-			+ strlen(name)
-			+ sizeof (elektraPluginPostfix)
-			+ 1);
+	char * moduleName = elektraMalloc (sizeof ("libelektra-") + strlen (name) + sizeof (elektraPluginPostfix) + 1);
 
 	strcpy (moduleName, "libelektra-");
 	strcat (moduleName, name);
 	strcat (moduleName, elektraPluginPostfix);
 
 	Module module;
-	module.handle = dlopen(moduleName, RTLD_NOW);
+	module.handle = dlopen (moduleName, RTLD_NOW);
 
 	if (module.handle == NULL)
 	{
-		ELEKTRA_ADD_WARNINGF(1, errorKey, "of module: %s, because: %s", moduleName, dlerror());
+		ELEKTRA_ADD_WARNINGF (1, errorKey, "of module: %s, because: %s", moduleName, dlerror ());
 		keyDel (moduleKey);
-		elektraFree(moduleName);
+		elektraFree (moduleName);
 		return 0;
 	}
 
-	module.symbol.v = dlsym(module.handle, "elektraPluginSymbol");
+	module.symbol.v = dlsym (module.handle, "elektraPluginSymbol");
 	if (module.symbol.v == NULL)
 	{
-		ELEKTRA_ADD_WARNINGF(2, errorKey, "of module: %s, because: %s", moduleName,  dlerror());
-		dlclose(module.handle);
+		ELEKTRA_ADD_WARNINGF (2, errorKey, "of module: %s, because: %s", moduleName, dlerror ());
+		dlclose (module.handle);
 		keyDel (moduleKey);
-		elektraFree(moduleName);
+		elektraFree (moduleName);
 		return 0;
 	}
 
 	keySetBinary (moduleKey, &module, sizeof (Module));
 	ksAppendKey (modules, moduleKey);
-	elektraFree(moduleName);
+	elektraFree (moduleName);
 
 	return module.symbol.f;
 }
 
-int elektraModulesClose (KeySet *modules, Key *errorKey)
+int elektraModulesClose (KeySet * modules, Key * errorKey)
 {
-	Key *root = ksLookupByName (modules, "system/elektra/modules", KDB_O_POP);
-	Key *cur;
-	KeySet *newModules = 0;
+	Key * root = ksLookupByName (modules, "system/elektra/modules", KDB_O_POP);
+	Key * cur;
+	KeySet * newModules = 0;
 	int ret = 0;
 
 	if (!root)
 	{
-		ELEKTRA_ADD_WARNING(3, errorKey, "no key system/elektra/modules");
+		ELEKTRA_ADD_WARNING (3, errorKey, "no key system/elektra/modules");
 		return -1;
 	}
 
-	while ((cur = ksPop(modules)) != 0)
+	while ((cur = ksPop (modules)) != 0)
 	{
-		Module *module = (Module*)keyValue(cur);
-		if (dlclose(module->handle) != 0)
+		Module * module = (Module *)keyValue (cur);
+		if (dlclose (module->handle) != 0)
 		{
 			if (ret != -1)
 			{
 				/* First failure, start saving handles where close did not work */
-				newModules = ksNew(0, KS_END);
+				newModules = ksNew (0, KS_END);
 				ksAppendKey (newModules, root);
 			}
 			ret = -1;
-			ELEKTRA_ADD_WARNING(4, errorKey, dlerror());
+			ELEKTRA_ADD_WARNING (4, errorKey, dlerror ());
 
-			ksAppendKey(newModules, cur);
-		} else {
+			ksAppendKey (newModules, cur);
+		}
+		else
+		{
 			keyDel (cur);
 		}
 	}
 
 	/* Clear dlerror */
-	dlerror();
+	dlerror ();
 
 	if (ret == -1)
 	{
 		ksAppend (modules, newModules);
 		ksDel (newModules);
 	}
-	else keyDel (root);
+	else
+	{
+		keyDel (root);
+	}
 
 	return ret;
 }

@@ -7,11 +7,11 @@
  *
  */
 
-#include <gtest/gtest.h>
-#include <merging/threewaymerge.hpp>
-#include <merging/onesidestrategy.hpp>
-#include <merging/metamergestrategy.hpp>
 #include "mergetestutils.cpp"
+#include <gtest/gtest.h>
+#include <merging/metamergestrategy.hpp>
+#include <merging/onesidestrategy.hpp>
+#include <merging/threewaymerge.hpp>
 
 using namespace std;
 using namespace kdb;
@@ -24,15 +24,15 @@ protected:
 	MergeTask task;
 	KeySet conflicts;
 
-	MetaMergeStrategyTest() : task (MergeTask (BaseMergeKeys (base, baseParent),
-				OurMergeKeys (ours, ourParent),
-				TheirMergeKeys (theirs, theirParent), mergeParent))
+	MetaMergeStrategyTest ()
+	: task (MergeTask (BaseMergeKeys (base, baseParent), OurMergeKeys (ours, ourParent), TheirMergeKeys (theirs, theirParent),
+			   mergeParent))
 	{
 		result = MergeResult (conflicts, mergeKeys);
 	}
 };
 
-TEST_F(MetaMergeStrategyTest, MergesMetaWithInnerStrategy)
+TEST_F (MetaMergeStrategyTest, MergesMetaWithInnerStrategy)
 {
 	base.lookup ("user/parentb/config/key1").setMeta ("testmeta", "valueb");
 	ours.lookup ("user/parento/config/key1").setMeta ("testmeta", "valueo");
@@ -42,19 +42,18 @@ TEST_F(MetaMergeStrategyTest, MergesMetaWithInnerStrategy)
 	conflictKey = result.getConflictSet ().at (0);
 
 	ThreeWayMerge merger;
-	MergeConflictStrategy *strategy = new OneSideStrategy (OURS);
+	MergeConflictStrategy * strategy = new OneSideStrategy (OURS);
 	merger.addConflictStrategy (strategy);
 	MetaMergeStrategy metaStrategy (merger);
 	metaStrategy.resolveConflict (task, conflictKey, result);
 	delete (strategy);
 
-	EXPECT_FALSE(result.hasConflicts()) << "Invalid conflict detected";
+	EXPECT_FALSE (result.hasConflicts ()) << "Invalid conflict detected";
 	KeySet merged = result.getMergedKeys ();
 	cout << merged << endl;
-	EXPECT_EQ(4, merged.size ());
+	EXPECT_EQ (4, merged.size ());
 
-	EXPECT_EQ("valueo", merged.lookup (mk1).getMeta<string> ("testmeta"));
+	EXPECT_EQ ("valueo", merged.lookup (mk1).getMeta<string> ("testmeta"));
 }
 
 // TODO: test conflict resolution
-

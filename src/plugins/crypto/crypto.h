@@ -30,7 +30,7 @@ enum ElektraCryptoHeaderFlags
 #include <gcrypt.h>
 typedef gcry_cipher_hd_t elektraCryptoHandle;
 
-#define CRYPTO_PLUGIN_FUNCTION(name) ELEKTRA_PLUGIN_FUNCTION(cryptogcrypt,name)
+#define CRYPTO_PLUGIN_FUNCTION(name) ELEKTRA_PLUGIN_FUNCTION (cryptogcrypt, name)
 
 #elif defined(ELEKTRA_CRYPTO_API_OPENSSL)
 
@@ -42,22 +42,22 @@ typedef struct
 	EVP_CIPHER_CTX decrypt;
 } elektraCryptoHandle;
 
-#define CRYPTO_PLUGIN_FUNCTION(name) ELEKTRA_PLUGIN_FUNCTION(cryptoopenssl,name)
+#define CRYPTO_PLUGIN_FUNCTION(name) ELEKTRA_PLUGIN_FUNCTION (cryptoopenssl, name)
 
 #else
 
 typedef void elektraCryptoHandle;
-#define CRYPTO_PLUGIN_FUNCTION(name) ELEKTRA_PLUGIN_FUNCTION(crypto,name)
+#define CRYPTO_PLUGIN_FUNCTION(name) ELEKTRA_PLUGIN_FUNCTION (crypto, name)
 
 #endif
 
 // kdb functions
-int CRYPTO_PLUGIN_FUNCTION(open)(Plugin *handle, Key *errorKey);
-int CRYPTO_PLUGIN_FUNCTION(close)(Plugin *handle, Key *errorKey);
-int CRYPTO_PLUGIN_FUNCTION(get)(Plugin *handle, KeySet *ks, Key *parentKey);
-int CRYPTO_PLUGIN_FUNCTION(set)(Plugin *handle, KeySet *ks, Key *parentKey);
-int CRYPTO_PLUGIN_FUNCTION(error)(Plugin *handle, KeySet *ks, Key *parentKey);
+int CRYPTO_PLUGIN_FUNCTION (open) (Plugin * handle, Key * errorKey);
+int CRYPTO_PLUGIN_FUNCTION (close) (Plugin * handle, Key * errorKey);
+int CRYPTO_PLUGIN_FUNCTION (get) (Plugin * handle, KeySet * ks, Key * parentKey);
+int CRYPTO_PLUGIN_FUNCTION (set) (Plugin * handle, KeySet * ks, Key * parentKey);
+int CRYPTO_PLUGIN_FUNCTION (error) (Plugin * handle, KeySet * ks, Key * parentKey);
 
-Plugin *ELEKTRA_PLUGIN_EXPORT(crypto);
+Plugin * ELEKTRA_PLUGIN_EXPORT (crypto);
 
 #endif

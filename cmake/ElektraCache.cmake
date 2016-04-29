@@ -7,184 +7,24 @@
 # If you add something here, make sure to also add it in
 # src/plugins/constants/
 
+
+
 include(LibAddMacros)
 
-remember_for_removal(PLUGINS TO_REMOVE_PLUGINS)
-
-#
-# the default list of plugins
-#
-# They are essential so that elektra can work
-#
-set (PLUGINS_LIST_DEFAULT
-	dump
-	resolver
-	sync
-	error
-	)
-
-#
-# force default list
-# (default plugins are always included, so PLUGINS_LIST is unset)
-#
-if (PLUGINS MATCHES "DEFAULT")
-	set (PLUGINS_FORCE FORCE)
-endif ()
-
-#
-# Those plugins can only be compiled, but cannot be used.
-# Should compile on every system where elektra compiles.
-#
-set (PLUGINS_LIST_COMPILE
-	template
-	doc
-	)
-
-#
-# Plugins which only need Ansi C/C++,
-# (like elektra core itself)
-# Should compile on every system where elektra compiles.
-#
-set (PLUGINS_LIST_NODEP
-	ccode
-	fstab
-	csvstorage
-	lineendings
-	hexcode
-	hidden
-	ni
-	null
-	struct
-	tracer
-	counter
-	type
-	constants
-	noresolver
-	wresolver
-	ini
-	list
-	logchange
-	iterate
-	spec
-	)
-
-#
-# Plugins which use some posix facility
-#
-set (PLUGINS_LIST_POSIX
-	glob
-	hosts
-	iconv
-	network
-	path
-	enum
-	mathcheck
-	conditionals
-	keytometa
-	rename
-	syslog
-	uname
-	timeofday
-	simpleini
-	line
-	validation
-	regexstore
-	filecheck
-	)
-
-#
-# force no dependency list
-#
-if (PLUGINS MATCHES "NODEP")
-	set (PLUGINS_LIST
-		${PLUGINS_LIST_COMPILE}
-		${PLUGINS_LIST_NODEP}
-		${PLUGINS_LIST_POSIX}
-	    )
-	set (PLUGINS_FORCE FORCE)
-endif ()
-
-#
-# some are handy for tests,
-# other are for standard-compliance
-#
-set (PLUGINS_LIST_RESOLVER
-	resolver_fm_b_b
-	resolver_fm_pb_b
-	resolver_fm_hb_b
-	resolver_fm_hp_b
-	resolver_fm_ub_x
-	resolver_fm_xb_x
-	resolver_fm_xp_x
-	resolver_fm_xhp_x
-	resolver_fm_uhb_xb
-	)
-
-#
-# plugins with dependencies
-#
-set (PLUGINS_LIST_DEP
-	yajl
-	dbus
-	tcl
-	xmltool
-	augeas
-	journald
-	jni
-	python
-	python2
-	lua
-	crypto
-	)
-
-#
-# force all plugins
-#
-if (PLUGINS MATCHES "ALL")
-	set (PLUGINS_LIST
-		${PLUGINS_LIST_COMPILE}
-		${PLUGINS_LIST_NODEP}
-		${PLUGINS_LIST_POSIX}
-		${PLUGINS_LIST_RESOLVER}
-		${PLUGINS_LIST_DEP}
-		)
-	set (PLUGINS_FORCE FORCE)
-endif ()
 
 
-set (PLUGINS_DOC "Which plugins should be added? ALL for all available, NODEP for plugins without additional dependencies and DEFAULT for minimal set.")
+set (PLUGINS_DOC "Which plugins should be added? ALL\;-EXPERIMENTAL is default. See doc/COMPILE.md")
+set (PLUGINS "ALL;-EXPERIMENTAL" CACHE STRING ${PLUGINS_DOC})
 
-#
-# compile variants for the crypto plugin
-#
-list (FIND PLUGINS "CRYPTO" FINDEX)
-if (PLUGINS MATCHES "ALL" OR FINDEX GREATER -1)
-    set (PLUGINS_LIST_CRYPTO
-            crypto
-            crypto_gcrypt
-            crypto_openssl
-    )
-endif ()
+set (INFO_PLUGINS_DOC "only for informational purposes. Modify PLUGINS to change the list.")
+set (ADDED_PLUGINS_DOC "List of plugins already added, ${INFO_PLUGINS_DOC}")
+set (ADDED_PLUGINS "" CACHE STRING ${PLUGINS_DOC} FORCE)
 
-#
-# now actually set the plugins cache variable
-#
-# Always include DEFAULT plugins, but maybe include more
-#
-set (PLUGINS
-	${PLUGINS_LIST_DEFAULT}
-	${PLUGINS_LIST}
-	${PLUGINS_LIST_CRYPTO}
-	CACHE STRING ${PLUGINS_DOC}
-	${PLUGINS_FORCE}
-	)
+set (REMOVED_PLUGINS_DOC "List of plugins removed, ${INFO_PLUGINS_DOC} ")
+set (REMOVED_PLUGINS "" CACHE STRING ${PLUGINS_DOC} FORCE)
 
-removal(PLUGINS TO_REMOVE_PLUGINS)
-set(PLUGINS ${PLUGINS} CACHE STRING ${PLUGINS_DOC} FORCE)
-
-
-
-
+set (ADDED_DIRECTORIES_DOC "List of directories already added, ${INFO_PLUGINS_DOC}")
+set (ADDED_DIRECTORIES "" CACHE STRING ${PLUGINS_DOC} FORCE)
 
 
 
@@ -343,19 +183,18 @@ set (KDB_DB_INIT "elektra.ecf" CACHE STRING
 set (KDB_DEFAULT_STORAGE "dump" CACHE STRING
 	"This storage plugin will be used initially (as default and for bootstrapping).")
 
+if (KDB_DEFAULT_STORAGE STREQUAL "storage")
+	message (FATAL_ERROR "KDB_DEFAULT_STORAGE must not be storage, pick a concrete storage, e.g. dump or ini")
+endif ()
 
-set (KDB_DEFAULT_RESOLVER "resolver" CACHE STRING
+
+set (KDB_DEFAULT_RESOLVER "resolver_fm_hpu_b" CACHE STRING
 	"This resolver plugin will be used initially (as default and for bootstrapping).")
 
-list (FIND PLUGINS ${KDB_DEFAULT_STORAGE} output)
-if (output EQUAL -1)
-	message(SEND_ERROR "selected default storage (${KDB_DEFAULT_STORAGE})  is not selected in PLUGINS, please change KDB_DEFAULT_STORAGE or PLUGINS")
-endif()
+if (KDB_DEFAULT_RESOLVER STREQUAL "resolver")
+	message (FATAL_ERROR "KDB_DEFAULT_RESOLVER must not be resolver, pick one of the variants, e.g. resolver_fm_hpu_b or wresolver")
+endif ()
 
-list (FIND PLUGINS ${KDB_DEFAULT_RESOLVER} output)
-if (output EQUAL -1)
-	message(SEND_ERROR "selected default resolver (${KDB_DEFAULT_RESOLVER}) is not selected in PLUGINS, please change KDB_DEFAULT_RESOLVER or PLUGINS")
-endif()
 
 
 #
@@ -533,14 +372,8 @@ set (LIB_SUFFIX ""
 		"Optional suffix to use on lib folders (e.g. 64 for lib64)"
     )
 
-set (MEMORYCHECK_COMMAND
-		/usr/bin/valgrind
-		CACHE FILEPATH
-		"Full path to valgrind"
-    )
-
 set(MEMORYCHECK_SUPPRESSIONS_FILE
-		${CMAKE_SOURCE_DIR}/tests/valgrind.suppression
+		"${CMAKE_SOURCE_DIR}/tests/valgrind.suppression"
 		CACHE FILEPATH
 		"Full path to suppression file for valgrind")
 

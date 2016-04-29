@@ -17,13 +17,13 @@
 
 #include <kdbinternal.h>
 
-void clear_sync (KeySet *ks);
-void output_plugin(Plugin *plugin);
-void output_backend(Backend *backend);
+void clear_sync (KeySet * ks);
+void output_plugin (Plugin * plugin);
+void output_backend (Backend * backend);
 
-void output_trie(Trie *trie);
+void output_trie (Trie * trie);
 
-void generate_split (Split *split);
-void output_split(Split *split);
+void generate_split (Split * split);
+void output_split (Split * split);
 
 #endif

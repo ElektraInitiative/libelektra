@@ -10,8 +10,8 @@
 #ifndef TOOLS_BACKENDS_HPP
 #define TOOLS_BACKENDS_HPP
 
-#include <vector>
 #include <string>
+#include <vector>
 
 #include <keyset.hpp>
 #include <toolexcept.hpp>
@@ -40,19 +40,17 @@ class Backends
 public:
 	typedef std::vector<BackendInfo> BackendInfoVector;
 
-	static BackendInfoVector getBackendInfo(KeySet mountConf);
+	static BackendInfoVector getBackendInfo (KeySet mountConf);
 
-	static BackendInfo findBackend(std::string const & backend, KeySet mountConf, bool verbose = false);
+	static BackendInfo findBackend (std::string const & backend, KeySet mountConf, bool verbose = false);
 
-	static bool umount(std::string const & backend, KeySet & mountConf);
+	static bool umount (std::string const & backend, KeySet & mountConf);
 
-	static std::string getBasePath(std::string name);
+	static std::string getBasePath (std::string name);
 
 	static const char * mountpointsPath;
 };
-
 }
-
 }
 
 #endif

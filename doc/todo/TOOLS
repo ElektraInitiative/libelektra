@@ -1,7 +1,29 @@
 = TOOLS =
 
 
+== MOUNT ==
 
+user/dir-mountpoints:
+	for mounting as non-root
+	make mountpoints specific for a namespace, e.g.
+	kdb mount --as-user file.x user/x
+	stored in user/elektra/mountpoints
+
+lazy-mount
+
+allow --no-env --no-arg --no-default arguments?
+
+
+
+
+
+
+
+== STATUS ==
+
+Plugin queries by status and other metadata
+
+evidence of plugins (architecture, compilation, tests)..
 
 
 
@@ -30,14 +52,6 @@ more testing
 
 
 
-== MOUNT ==
-
-multi-mount (e.g. all .ini from one folder)
-
-allow --no-env --no-arg --no-default arguments?
-
-
-
 
 
 
@@ -55,20 +69,13 @@ allow key array increments with kdb tool
 list existing plugins
 	dynamically detect them when installed
 
-allow change of symlink (resolver, storage)
-
 kdb-export:
 	in a way that it can be used as shell script to immediately
 	import
 
-kdb resolve feature:
-	output file how it would resolve for key
-
 kdb tool:
 	allow verification of local key database by exported file
 	tset (typesafe set)
-
-env-get env-set `kdb env-get`
 
 export should be able to export only configuration that was changed
 	suppress default config by some metadata
@@ -79,12 +86,16 @@ kdb tool:
 	request -f for rm, mv in system/elektra
 
 
+
+
 == GEN ==
 
 install kdb gen properly
 	search by default in installed pathes
 
 using python kdb for gen
+
+array support for kdbvalue.hpp (might already work with proper type conversion)
 
 code generator always yields LONG_MIN, LONG_MAX on any type!
 
@@ -115,20 +126,32 @@ genopt.hpp + include enforcement in template_dynamic?
 	generic command-line parsing
 	%% context evaluation?
 
+generator for:
+	exc classes
+	try catch blocks
+	as keyset
+	human readable text
 
+use spec+proc namespaces
+
+=== Validate
+
+using kdbSet+kdbGet?
+with constraint checking+solving and so on.
 
 
 
 
 == GUI ==
 
-commandline arguments:
+generic commandline arguments:
 	for self configuring
 	for proc namespace
 
 dbus-listener + notify single events, maybe zeromq
 	auto-completion for metadata
 
+see above for validate
 
 
 == GEN-BACKEND ==
@@ -153,10 +176,3 @@ upgrade
 web2.0:
 	share elektra xml files
 	web frontent to kdb with xml/generate output/paste
-
-
-== docu ==
-
-git-<command> like functionality
-ascii doc
-man pages

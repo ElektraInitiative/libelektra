@@ -10,7 +10,7 @@
 
 ## Introduction ##
 
-This plugin is a type checker plugin using the `COBRA` data types.
+This plugin is a type checker plugin using the `CORBA` data types.
 
 ## Additional Information ##
 

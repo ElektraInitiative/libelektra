@@ -8,10 +8,10 @@
 
 #include <keyset.hpp>
 
-#include <map>
-#include <string>
 #include <cassert>
 #include <iostream>
+#include <map>
+#include <string>
 
 namespace kdb
 {
@@ -27,19 +27,19 @@ namespace kdb
  *
  * @return the searched string (without slashes)
  */
-std::string nth_level_of_name(Key k, unsigned long n)
+std::string nth_level_of_name (Key k, unsigned long n)
 {
 	size_t pos = 0;
 	size_t prev = 0;
-	std::string name = k.getName();
+	std::string name = k.getName ();
 
-	for (unsigned long i=0; i<n; ++i)
+	for (unsigned long i = 0; i < n; ++i)
 	{
-		pos = name.find("/", prev);
-		prev = pos+1;
+		pos = name.find ("/", prev);
+		prev = pos + 1;
 	}
 
-	return name.substr(prev, name.find("/", prev)-prev);
+	return name.substr (prev, name.find ("/", prev) - prev);
 }
 
 /**
@@ -49,16 +49,16 @@ std::string nth_level_of_name(Key k, unsigned long n)
  *
  * @return the hierarchy depth of a key
  */
-unsigned long name_depth(Key k)
+unsigned long name_depth (Key k)
 {
-	std::string name = k.getName();
-	size_t pos = name.find("/", 0);
+	std::string name = k.getName ();
+	size_t pos = name.find ("/", 0);
 	unsigned long depth = 0;
 
 	while (pos != std::string::npos)
 	{
-		pos = name.find("/", pos+1);
-		++ depth;
+		pos = name.find ("/", pos + 1);
+		++depth;
 	}
 
 	return depth;
@@ -70,7 +70,7 @@ unsigned long name_depth(Key k)
 class Visitor
 {
 public:
-	virtual void visit(std::string name, unsigned long depth, Key k) = 0;
+	virtual void visit (std::string name, unsigned long depth, Key k) = 0;
 };
 
 class KeyHierarchy;
@@ -88,11 +88,9 @@ public:
 	typedef std::map<std::string, KeyNode> KeyNodeMap;
 	typedef KeyNodeMap::iterator KeyNodeIterator;
 
-	KeyNode(unsigned long depth, Key k = static_cast<ckdb::Key*>(nullptr)):
-		m_self(k),
-		m_subnodes(),
-		m_depth(depth)
-	{}
+	KeyNode (unsigned long depth, Key k = static_cast<ckdb::Key *> (nullptr)) : m_self (k), m_subnodes (), m_depth (depth)
+	{
+	}
 
 	/**
 	 * @brief (Recursively) add or update a key to nodes
@@ -104,17 +102,17 @@ public:
 	 * @param k the key to add
 	 * @param depth current depth of recursion
 	 */
-	void add(Key k, unsigned long depth)
+	void add (Key k, unsigned long depth)
 	{
-		assert(k);
-		assert(m_self ? m_self.isBelow(k) : true);
+		assert (k);
+		assert (m_self ? m_self.isBelow (k) : true);
 		depth++;
 
-		if (m_self.isDirectBelow(k) || depth == name_depth(k))
+		if (m_self.isDirectBelow (k) || depth == name_depth (k))
 		{
 			for (auto & elem : m_subnodes)
 			{
-				if (elem.first == k.getBaseName())
+				if (elem.first == k.getBaseName ())
 				{
 					// found node, update it
 					elem.second.m_self = k;
@@ -122,27 +120,26 @@ public:
 				}
 			}
 			// will add new subnode (direct below+not found)
-			m_subnodes.insert(std::make_pair(k.getBaseName(), KeyNode(depth, k)));
+			m_subnodes.insert (std::make_pair (k.getBaseName (), KeyNode (depth, k)));
 			return;
 		}
 
 		for (auto & elem : m_subnodes)
 		{
-			if (k.isBelow(elem.second.m_self))
+			if (k.isBelow (elem.second.m_self))
 			{
 				// found subnode, call recursively
-				elem.second.add(k, depth);
+				elem.second.add (k, depth);
 				return;
 			}
 		}
 
 		// create a structure key (without key, only name)
-		std::string name = nth_level_of_name(k, depth);
-		std::pair<KeyNodeIterator, bool> p = m_subnodes.insert(
-			std::make_pair(name, KeyNode(depth)));
-			// structure keys get a null key
+		std::string name = nth_level_of_name (k, depth);
+		std::pair<KeyNodeIterator, bool> p = m_subnodes.insert (std::make_pair (name, KeyNode (depth)));
+		// structure keys get a null key
 		auto it = p.first;
-		it->second.add(k, depth);
+		it->second.add (k, depth);
 	}
 
 	/**
@@ -150,12 +147,12 @@ public:
 	 *
 	 * @param visitor defines the action
 	 */
-	void accept(Visitor & visitor)
+	void accept (Visitor & visitor)
 	{
 		for (auto & elem : m_subnodes)
 		{
-			visitor.visit(elem.first, elem.second.m_depth,  elem.second.m_self);
-			elem.second.accept(visitor);
+			visitor.visit (elem.first, elem.second.m_depth, elem.second.m_self);
+			elem.second.accept (visitor);
 		}
 	}
 
@@ -176,12 +173,9 @@ private:
 class KeyHierarchy
 {
 public:
-	KeyHierarchy(KeySet & keyset) :
-		m_userRootNode(0),
-		m_systemRootNode(0),
-		m_keyset(keyset)
+	KeyHierarchy (KeySet & keyset) : m_userRootNode (0), m_systemRootNode (0), m_keyset (keyset)
 	{
-		add(keyset);
+		add (keyset);
 	}
 
 	/**
@@ -192,11 +186,11 @@ public:
 	 *
 	 * @param ks
 	 */
-	void add(KeySet const & ks)
+	void add (KeySet const & ks)
 	{
 		for (auto && k : ks)
 		{
-			add(k);
+			add (k);
 		}
 	}
 
@@ -205,30 +199,30 @@ public:
 	 *
 	 * @param k the key to add
 	 */
-	void add(Key k)
+	void add (Key k)
 	{
 		// update root nodes
-		if (k.getName() == "user")
+		if (k.getName () == "user")
 		{
 			m_userRootNode.m_self = k;
 		}
-		else if (k.getName() == "system")
+		else if (k.getName () == "system")
 		{
 			m_systemRootNode.m_self = k;
 		}
 		// if it is not a root node, update hierarchy
-		else if (k.isUser())
+		else if (k.isUser ())
 		{
-			m_userRootNode.add(k, 0);
+			m_userRootNode.add (k, 0);
 		}
 		else
 		{
-			m_systemRootNode.add(k, 0);
+			m_systemRootNode.add (k, 0);
 		}
 
 		// update keyset
-		m_keyset.lookup(k, KDB_O_POP);
-		m_keyset.append(k);
+		m_keyset.lookup (k, KDB_O_POP);
+		m_keyset.append (k);
 	}
 
 	/**
@@ -236,12 +230,12 @@ public:
 	 *
 	 * @param visitor to traverse
 	 */
-	void accept(Visitor & visitor)
+	void accept (Visitor & visitor)
 	{
-		visitor.visit("user", 0, m_userRootNode.m_self);
-		m_userRootNode.accept(visitor);
-		visitor.visit("system", 0, m_systemRootNode.m_self);
-		m_systemRootNode.accept(visitor);
+		visitor.visit ("user", 0, m_userRootNode.m_self);
+		m_userRootNode.accept (visitor);
+		visitor.visit ("system", 0, m_systemRootNode.m_self);
+		m_systemRootNode.accept (visitor);
 	}
 
 private:
@@ -250,11 +244,7 @@ private:
 
 	KeySet & m_keyset;
 };
-
 }
-
-
-
 
 
 /**
@@ -263,9 +253,9 @@ private:
 class PrintVisitor : public kdb::Visitor
 {
 public:
-	void visit(std::string name, unsigned long depth, kdb::Key k) override
+	void visit (std::string name, unsigned long depth, kdb::Key k) override
 	{
-		for (unsigned long i = 0; i<depth; ++i)
+		for (unsigned long i = 0; i < depth; ++i)
 		{
 			std::cout << "   ";
 		}
@@ -274,33 +264,31 @@ public:
 
 		if (k)
 		{
-			std::cout
-				<< "(" << k.getName() << ") = "
-				<< k.getString();
+			std::cout << "(" << k.getName () << ") = " << k.getString ();
 		}
 
 		std::cout << std::endl;
 	}
 };
 
-int main()
+int main ()
 {
 	using namespace kdb;
 	KeySet ks;
-	KeyHierarchy kh(ks);
-	kh.add(Key("user/hello", KEY_VALUE, "Hello world", KEY_END));
+	KeyHierarchy kh (ks);
+	kh.add (Key ("user/hello", KEY_VALUE, "Hello world", KEY_END));
 	PrintVisitor pv;
-	kh.accept(pv);
+	kh.accept (pv);
 	std::cout << std::endl;
 
-	kh.add(Key("system/b/s/t", KEY_VALUE, "Below", KEY_END));
-	kh.accept(pv);
+	kh.add (Key ("system/b/s/t", KEY_VALUE, "Below", KEY_END));
+	kh.accept (pv);
 	std::cout << std::endl;
 
-	kh.add(Key("system/b/s/t", KEY_VALUE, "Updated", KEY_END));
-	kh.accept(pv);
+	kh.add (Key ("system/b/s/t", KEY_VALUE, "Updated", KEY_END));
+	kh.accept (pv);
 	std::cout << std::endl;
 
-	kh.add(Key("system", KEY_VALUE, "root value", KEY_END));
-	kh.accept(pv);
+	kh.add (Key ("system", KEY_VALUE, "root value", KEY_END));
+	kh.accept (pv);
 }

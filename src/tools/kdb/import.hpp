@@ -17,33 +17,31 @@ class ImportCommand : public Command
 	kdb::KDB kdb;
 
 public:
-	ImportCommand();
-	~ImportCommand();
+	ImportCommand ();
+	~ImportCommand ();
 
-	virtual std::string getShortOptions() override
+	virtual std::string getShortOptions () override
 	{
 		return "svc";
 	}
 
-	virtual std::string getSynopsis() override
+	virtual std::string getSynopsis () override
 	{
 		return "<destination> [<format>]";
 	}
 
-	virtual std::string getShortHelpText() override
+	virtual std::string getShortHelpText () override
 	{
 		return "Import configuration to the key database.";
 	}
 
-	virtual std::string getLongHelpText() override
+	virtual std::string getLongHelpText () override
 	{
-		return
-			"The import utility allows you to import\n"
-			"all or parts of the configuration from stdin.\n"
-			;
+		return "The import utility allows you to import\n"
+		       "all or parts of the configuration from stdin.\n";
 	}
 
-	virtual int execute (Cmdline const& cmdline) override;
+	virtual int execute (Cmdline const & cmdline) override;
 };
 
 #endif

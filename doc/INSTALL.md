@@ -36,7 +36,7 @@ or in the build directory (will not honor DESTDIR!):
 
 ## CPACK ##
 
-First follow the steps in [COMPILE](COMPILE.md)..
+First follow the steps in [COMPILE](COMPILE.md).
 
 Then use:
 

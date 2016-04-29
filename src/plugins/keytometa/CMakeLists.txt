@@ -1,12 +1,12 @@
 include (LibAddMacros)
 
-add_plugin(keytometa
+add_plugin (keytometa
 	SOURCES
 		keytometa.h
 		keytometa.c
-	LINK_LIBRARIES
+	LINK_ELEKTRA
 		elektra-proposal
 		elektra-meta
 	)
 
-add_plugintest(keytometa)
+add_plugintest (keytometa)

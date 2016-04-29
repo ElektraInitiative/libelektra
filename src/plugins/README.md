@@ -187,7 +187,7 @@ copied by another plugin just before):
 - [path](path/) by checking files on filesystem
 - [type](type/) using runtime type checking (CORBA types/)
 - [enum](enum/) compares the keyvalue against a list of valid values
-- [mathcheck](mathcheck/) by mathematical expressions using keysvalues as operants
+- [mathcheck](mathcheck/) by mathematical expressions using keysvalues as operands
 - [conditionals](conditionals/) by using if-then-else like statements
 
 ## Interpreter ##
@@ -209,6 +209,11 @@ These plugins start an interpreter and allow you to use a bindings.
 - [list](list/) loads other plugins
 - [filecheck](filecheck/) does sanity checks on a file
 - [iterate](iterate/) iterate over all keys and run exported functions on tagged keys
+- [dpkg](dpkg/) reads /var/lib/dpkg/{available,status} 
+- [curlget](curlget/) fetchs configuration file from a remote host
+- [shell](shell/) executes shell commandos after kdbGet, kdbSet and kdbError
+- [semlock](semlock/) a semaphore based global locking logic
+- [profile](profile/) links profile keys
 
 ## New Plugins ##
 

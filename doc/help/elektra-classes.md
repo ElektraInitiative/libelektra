@@ -1,4 +1,4 @@
-elektra classes(7) -- introduction in Elektra's classes
+elektra classes(7) -- introduction to Elektra's classes
 =======================================================
 
 This overview complements the introduction in

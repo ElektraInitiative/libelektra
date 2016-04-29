@@ -28,12 +28,10 @@ namespace merging
 class ImportMergeConfiguration : public AutoMergeConfiguration
 {
 public:
-	virtual void configureMerger(ThreeWayMerge& merger) override;
+	virtual void configureMerger (ThreeWayMerge & merger) override;
 };
-
 }
 }
 }
 
 #endif /* IMPORTMERGECONFIGURATION_HPP_ */
-

@@ -12,11 +12,11 @@
 #include <kdbplugin.h>
 
 
-int elektraHiddenOpen(Plugin *handle, Key *errorKey);
-int elektraHiddenClose(Plugin *handle, Key *errorKey);
-int elektraHiddenGet(Plugin *handle, KeySet *ks, Key *parentKey);
-int elektraHiddenSet(Plugin *handle, KeySet *ks, Key *parentKey);
+int elektraHiddenOpen (Plugin * handle, Key * errorKey);
+int elektraHiddenClose (Plugin * handle, Key * errorKey);
+int elektraHiddenGet (Plugin * handle, KeySet * ks, Key * parentKey);
+int elektraHiddenSet (Plugin * handle, KeySet * ks, Key * parentKey);
 
-Plugin *ELEKTRA_PLUGIN_EXPORT(hidden);
+Plugin * ELEKTRA_PLUGIN_EXPORT (hidden);
 
 #endif

@@ -10,11 +10,11 @@
 
 #include <string.h>
 
-#include "yajl.h"
 #include "iterator.h"
+#include "yajl.h"
 
 // TODO defined privately in keyhelpers.c, API break possible..
-char *keyNameGetOneLevel(const char *name, size_t *size);
+char * keyNameGetOneLevel (const char * name, size_t * size);
 
 /**
  * @brief Count number of levels in name of key
@@ -23,7 +23,7 @@ char *keyNameGetOneLevel(const char *name, size_t *size);
  *
  * @return number of levels in key name
  */
-ssize_t elektraKeyCountLevel(const Key *cur)
+ssize_t elektraKeyCountLevel (const Key * cur)
 {
 	if (!cur)
 	{
@@ -31,8 +31,8 @@ ssize_t elektraKeyCountLevel(const Key *cur)
 	}
 
 	ssize_t curLevels = 0;
-	keyNameReverseIterator curIt =  elektraKeyNameGetReverseIterator(cur);
-	while (elektraKeyNameReverseNext(&curIt))
+	keyNameReverseIterator curIt = elektraKeyNameGetReverseIterator (cur);
+	while (elektraKeyNameReverseNext (&curIt))
 	{
 		++curLevels;
 	}
@@ -49,7 +49,7 @@ ssize_t elektraKeyCountLevel(const Key *cur)
  * @retval 0 on null pointers or nothing equal
  * @retval -1 when too many equal levels
  */
-ssize_t elektraKeyCountEqualLevel(const Key *cmp1, const Key *cmp2)
+ssize_t elektraKeyCountEqualLevel (const Key * cmp1, const Key * cmp2)
 {
 	if (!cmp1)
 	{
@@ -60,18 +60,16 @@ ssize_t elektraKeyCountEqualLevel(const Key *cmp1, const Key *cmp2)
 		return 0;
 	}
 
-	const char *pcmp1 = keyName(cmp1);
-	const char *pcmp2 = keyName(cmp2);
+	const char * pcmp1 = keyName (cmp1);
+	const char * pcmp2 = keyName (cmp2);
 	size_t size1 = 0;
 	size_t size2 = 0;
 	ssize_t counter = 0;
 
-	while (*(pcmp1=keyNameGetOneLevel(pcmp1+size1,&size1)) &&
-		*(pcmp2=keyNameGetOneLevel(pcmp2+size2,&size2)) &&
-		size1 == size2 &&
-		!strncmp(pcmp1, pcmp2, size1))
+	while (*(pcmp1 = keyNameGetOneLevel (pcmp1 + size1, &size1)) && *(pcmp2 = keyNameGetOneLevel (pcmp2 + size2, &size2)) &&
+	       size1 == size2 && !strncmp (pcmp1, pcmp2, size1))
 	{
-			++ counter;
+		++counter;
 	}
 
 	if (counter < 0)

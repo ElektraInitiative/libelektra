@@ -17,7 +17,7 @@ namespace kdb
 class Exception : public std::exception
 {
 public:
-	virtual const char* what() const throw()
+	virtual const char * what () const throw ()
 	{
 		return "Exception thrown by Elektra";
 	}
@@ -26,47 +26,48 @@ public:
 class KeyException : public Exception
 {
 public:
-	virtual const char* what() const throw()
+	virtual const char * what () const throw ()
 	{
-		return  "Exception thrown by a Key, typically "
-			"because you called a method on a null key. "
-			"Make sure to check this with !key first";
+		return "Exception thrown by a Key, typically "
+		       "because you called a method on a null key. "
+		       "Make sure to check this with !key first";
 	}
 };
 
 class KeyNotFoundException : public Exception
 {
 public:
-	KeyNotFoundException (std::string message) :
-		m_str (message)
-	{}
-
-	virtual const char* what() const throw()
+	KeyNotFoundException (std::string message) : m_str (message)
 	{
-		return  m_str.c_str();
 	}
+
+	virtual const char * what () const throw ()
+	{
+		return m_str.c_str ();
+	}
+
 private:
 	std::string m_str;
 };
 
-class KeyTypeMismatch: public KeyException
+class KeyTypeMismatch : public KeyException
 {
 public:
-	virtual const char* what() const throw()
+	virtual const char * what () const throw ()
 	{
-		return  "Binary/String key mismatch, use proper "
-			"getString()/getBinary() or use getValue() to get both.";
+		return "Binary/String key mismatch, use proper "
+		       "getString()/getBinary() or use getValue() to get both.";
 	}
 };
 
 class KeyTypeConversion : public KeyException
 {
 public:
-	virtual const char* what() const throw()
+	virtual const char * what () const throw ()
 	{
-		return  "Could not convert data to requested type. "
-			"Use get(Meta)<std::string> respectively get(Meta)<const Key> for more generic access "
-			"or specialize the template methods with your type.";
+		return "Could not convert data to requested type. "
+		       "Use get(Meta)<std::string> respectively get(Meta)<const Key> for more generic access "
+		       "or specialize the template methods with your type.";
 	}
 };
 
@@ -74,13 +75,12 @@ public:
 class KeyInvalidName : public KeyException
 {
 public:
-	virtual const char* what() const throw()
+	virtual const char * what () const throw ()
 	{
 		return "Invalid Keyname: keyname needs to start with /, spec/, proc/, dir/, user/ or system/ "
-			"or maybe you tried to change a key that is already in a KeySet.";
+		       "or maybe you tried to change a key that is already in a KeySet.";
 	}
 };
-
 }
 
 #endif

@@ -9,9 +9,9 @@
 #ifndef EDITKEYCOMMAND_HPP
 #define EDITKEYCOMMAND_HPP
 
-#include <QUndoCommand>
-#include "treeviewmodel.hpp"
 #include "datacontainer.hpp"
+#include "treeviewmodel.hpp"
+#include <QUndoCommand>
 
 /**
  * @brief The EditKeyCommand class. Remembers a node for redo/undo.
@@ -28,23 +28,22 @@ public:
 	 * @param data The data needed to undo/redo the edit.
 	 * @param parent An optional parent command.
 	 */
-	explicit        EditKeyCommand(TreeViewModel* model, int index, DataContainer* data, QUndoCommand* parent = nullptr);
+	explicit EditKeyCommand (TreeViewModel * model, int index, DataContainer * data, QUndoCommand * parent = nullptr);
 
-	virtual void    undo() override;
-	virtual void    redo() override;
+	virtual void undo () override;
+	virtual void redo () override;
 
 private:
+	TreeViewModel * m_model;
+	int m_index;
 
-	TreeViewModel*  m_model;
-	int             m_index;
+	QString m_oldName;
+	QString m_oldValue;
+	QVariantMap m_oldMetaData;
 
-	QString         m_oldName;
-	QString			m_oldValue;
-	QVariantMap     m_oldMetaData;
-
-	QString         m_newName;
-	QString			m_newValue;
-	QVariantMap     m_newMetaData;
+	QString m_newName;
+	QString m_newValue;
+	QVariantMap m_newMetaData;
 };
 
 #endif // EDITKEYCOMMAND_HPP

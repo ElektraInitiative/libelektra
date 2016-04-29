@@ -13,10 +13,10 @@
 #include <kdbplugin.h>
 
 
-int elektraLogchangeGet(Plugin *handle, KeySet *ks, Key *parentKey);
-int elektraLogchangeSet(Plugin *handle, KeySet *ks, Key *parentKey);
-int elektraLogchangeClose(Plugin *handle, Key *parentKey);
+int elektraLogchangeGet (Plugin * handle, KeySet * ks, Key * parentKey);
+int elektraLogchangeSet (Plugin * handle, KeySet * ks, Key * parentKey);
+int elektraLogchangeClose (Plugin * handle, Key * parentKey);
 
-Plugin *ELEKTRA_PLUGIN_EXPORT(logchange);
+Plugin * ELEKTRA_PLUGIN_EXPORT (logchange);
 
 #endif

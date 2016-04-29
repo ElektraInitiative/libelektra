@@ -1,10 +1,10 @@
-- infos = All information you want to know are in keys below
+- infos = All information you want to know is in keys below
 - infos/author = Markus Raab <elektra@markus-raab.org>
 - infos/licence = BSD
 - infos/provides = resolver
 - infos/needs =
 - infos/placements = rollback getresolver setresolver commit
-- infos/status = productive maintained specific unittest tested libc configurable
+- infos/status = productive maintained specific unittest tested libc configurable nodep
 - infos/description =
 ## Scope ##
 

@@ -34,17 +34,15 @@ protected:
 	vector<MergeConflictStrategy *> allocatedStrategies;
 
 public:
-	virtual ~MergeConfiguration()
+	virtual ~MergeConfiguration ()
 	{
 		for (auto & elem : allocatedStrategies)
 		{
 			delete (elem);
 		}
 	};
-	virtual void configureMerger(ThreeWayMerge& merger) = 0;
+	virtual void configureMerger (ThreeWayMerge & merger) = 0;
 };
-
-
 }
 }
 }

@@ -12,108 +12,107 @@ KDB * kdb;
 Key * key;
 KeySet * large;
 
-void benchmarkOpen()
+void benchmarkOpen ()
 {
-	kdb = kdbOpen(key);
+	kdb = kdbOpen (key);
 }
 
-void benchmarkInread()
+void benchmarkInread ()
 {
-	KeySet *n = ksNew(0, KS_END);
-	kdbGet(kdb, n, key);
-	ksDel(n);
+	KeySet * n = ksNew (0, KS_END);
+	kdbGet (kdb, n, key);
+	ksDel (n);
 }
 
-void benchmarkReadin()
+void benchmarkReadin ()
 {
-	KeySet *n = ksNew(0, KS_END);
-	kdbGet(kdb, n, key);
-	ksDel(n);
+	KeySet * n = ksNew (0, KS_END);
+	kdbGet (kdb, n, key);
+	ksDel (n);
 }
 
-void benchmarkLookupByName()
+void benchmarkLookupByName ()
 {
-	int i,j;
-	char name [KEY_NAME_LENGTH + 1];
+	int i, j;
+	char name[KEY_NAME_LENGTH + 1];
 
-	for (i=0; i< NUM_DIR; i++)
+	for (i = 0; i < NUM_DIR; i++)
 	{
 		snprintf (name, KEY_NAME_LENGTH, "%s/%s%d", KEY_ROOT, "dir", i);
-		ksLookupByName(large, name, 0);
-		for (j=0; j<NUM_KEY; j++)
+		ksLookupByName (large, name, 0);
+		for (j = 0; j < NUM_KEY; j++)
 		{
 			snprintf (name, KEY_NAME_LENGTH, "%s/%s%d/%s%d", KEY_ROOT, "dir", i, "key", j);
-			ksLookupByName(large, name, 0);
+			ksLookupByName (large, name, 0);
 		}
 	}
 }
 
-void benchmarkReread()
+void benchmarkReread ()
 {
-	kdbGet(kdb, large, key);
+	kdbGet (kdb, large, key);
 }
 
-void benchmarkInwrite()
+void benchmarkInwrite ()
 {
-	kdbSet(kdb, large, key);
+	kdbSet (kdb, large, key);
 }
 
-void benchmarkRewrite()
+void benchmarkRewrite ()
 {
-	kdbSet(kdb, large, key);
+	kdbSet (kdb, large, key);
 }
 
-void benchmarkWriteout()
+void benchmarkWriteout ()
 {
-	kdbSet(kdb, large, key);
+	kdbSet (kdb, large, key);
 }
 
-void benchmarkClose()
+void benchmarkClose ()
 {
-	kdbClose(kdb, key);
+	kdbClose (kdb, key);
 }
 
 
-int main()
+int main ()
 {
 	key = keyNew (KEY_ROOT, KEY_END);
 
 	timeInit ();
-	benchmarkCreate();
+	benchmarkCreate ();
 	timePrint ("Created empty keyset");
 
-	benchmarkFillup();
+	benchmarkFillup ();
 	timePrint ("New large keyset");
 
-	benchmarkOpen();
-	keySetName(key, KEY_ROOT);
+	benchmarkOpen ();
+	keySetName (key, KEY_ROOT);
 	timePrint ("Opened key database");
 
-	benchmarkInread();
+	benchmarkInread ();
 	timePrint ("Initialize read");
-	
-	benchmarkInwrite();
+
+	benchmarkInwrite ();
 	timePrint ("Initialize write");
 
-	benchmarkWriteout();
+	benchmarkWriteout ();
 	timePrint ("Write key database");
 
-	benchmarkRewrite();
+	benchmarkRewrite ();
 	timePrint ("Rewrite key database");
 
-	benchmarkReadin();
+	benchmarkReadin ();
 	timePrint ("Read in key database");
 
-	benchmarkLookupByName();
+	benchmarkLookupByName ();
 	timePrint ("Lookup key database");
 
-	benchmarkReread();
+	benchmarkReread ();
 	timePrint ("Re read key database");
 
-	benchmarkClose();
+	benchmarkClose ();
 	timePrint ("Closed key database");
 
 	ksDel (large);
 	keyDel (key);
 }
-

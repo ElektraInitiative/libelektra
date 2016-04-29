@@ -13,9 +13,9 @@
 #include <kdbplugin.h>
 
 
-int elektraMathcheckGet(Plugin *handle, KeySet *ks, Key *parentKey);
-int elektraMathcheckSet(Plugin *handle, KeySet *ks, Key *parentKey);
+int elektraMathcheckGet (Plugin * handle, KeySet * ks, Key * parentKey);
+int elektraMathcheckSet (Plugin * handle, KeySet * ks, Key * parentKey);
 
-Plugin *ELEKTRA_PLUGIN_EXPORT(mathcheck);
+Plugin * ELEKTRA_PLUGIN_EXPORT (mathcheck);
 
 #endif

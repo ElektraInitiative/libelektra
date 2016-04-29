@@ -7,6 +7,7 @@
 #
 # which disables a feature that seems to be popup-blocker for Windows
 
+find_package(Threads)
 
 macro (add_gtest source)
 	cmake_parse_arguments (ARG
@@ -28,6 +29,9 @@ macro (add_gtest source)
 
 	target_link_libraries (${source}
 		${ARG_LINK_LIBRARIES})
+
+	target_link_libraries(${source}
+		${CMAKE_THREAD_LIBS_INIT})
 
 	target_link_libraries(${source} gtest)
 	if (NOT ARG_NO_MAIN)

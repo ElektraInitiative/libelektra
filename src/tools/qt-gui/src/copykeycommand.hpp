@@ -9,9 +9,9 @@
 #ifndef COPYKEYCOMMAND_H
 #define COPYKEYCOMMAND_H
 
-#include <QUndoCommand>
 #include "confignode.hpp"
 #include <QDebug>
+#include <QUndoCommand>
 
 /**
  * @brief The CopyKeyCommand class
@@ -28,23 +28,23 @@ public:
 	 * @param target The ConfigNode that is the new parent node of the copied ConfigNode.
 	 * @param parent
 	 */
-	explicit CopyKeyCommand(QString type, ConfigNodePtr source, ConfigNodePtr target, QUndoCommand* parent = nullptr);
+	explicit CopyKeyCommand (QString type, ConfigNodePtr source, ConfigNodePtr target, QUndoCommand * parent = nullptr);
 
 	/**
 	 * @brief undo
 	 */
-	virtual void undo() override;
+	virtual void undo () override;
 
 	/**
 	 * @brief redo
 	 */
-	virtual void redo() override;
+	virtual void redo () override;
 
 private:
 	ConfigNodePtr m_source;
 	ConfigNodePtr m_target;
-	bool          m_isExpanded;
-	int           m_index;
+	bool m_isExpanded;
+	int m_index;
 };
 
 #endif // COPYKEYCOMMAND_H

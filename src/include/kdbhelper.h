@@ -13,7 +13,7 @@
 #define KDB_HELPER
 
 #ifndef HAVE_KDBCONFIG
-# include "kdbconfig.h"
+#include "kdbconfig.h"
 #endif
 
 #include <kdbtypes.h>
@@ -22,27 +22,28 @@
 #include <stddef.h>
 
 #ifdef __cplusplus
-namespace ckdb {
+namespace ckdb
+{
 extern "C" {
 #endif
 
 /* Memory handling */
-void *elektraMalloc (size_t size);
-void *elektraCalloc (size_t size);
-void  elektraFree (void *ptr);
-char *elektraStrDup (const char *s);
-int elektraRealloc(void **buffer, size_t size);
-char *elektraFormat(const char *format, ...);
-char *elektraVFormat(const char *format, va_list arg_list);
+void * elektraMalloc (size_t size);
+void * elektraCalloc (size_t size);
+void elektraFree (void * ptr);
+char * elektraStrDup (const char * s);
+int elektraRealloc (void ** buffer, size_t size);
+char * elektraFormat (const char * format, ...);
+char * elektraVFormat (const char * format, va_list arg_list);
 
 /* Compare */
-int elektraStrCmp (const char *s1, const char *s2);
-int elektraStrCaseCmp (const char *s1, const char *s2);
-int elektraMemCaseCmp (const char *s1, const char *s2, size_t size);
+int elektraStrCmp (const char * s1, const char * s2);
+int elektraStrCaseCmp (const char * s1, const char * s2);
+int elektraMemCaseCmp (const char * s1, const char * s2, size_t size);
 
 /* Len */
-size_t elektraStrLen(const char *s);
-int elektraWriteArrayNumber(char *newName, kdb_long_long_t newIndex);
+size_t elektraStrLen (const char * s);
+int elektraWriteArrayNumber (char * newName, kdb_long_long_t newIndex);
 
 
 #ifdef __cplusplus

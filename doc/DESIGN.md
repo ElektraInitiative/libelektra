@@ -40,7 +40,7 @@ to find bugs.
 Some calls that create data, have an opposite call that frees this
 data. For example after you call:
 
-    KDB * kdbOpen();
+	KDB * kdbOpen();
 
 you need to use:
 
@@ -171,7 +171,7 @@ by `dataSize`.
 ## Return Value ##
 
 Elektra's function share common error codes. Every function must return
-`-1` on error, if it return type is integer (like `int`, `ssize_t`). If
+`-1` on error, if its return type is integer (like `int`, `ssize_t`). If
 the function returns a pointer, `0` (`NULL`) will indicate an error.
 This behaviour can't be used for functions that return integers, since
 `0` is a valid size and can also be used to represent the boolean value

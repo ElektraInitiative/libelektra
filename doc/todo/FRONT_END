@@ -1,3 +1,9 @@
+## register
+
+elektraRegisterOpen(kdb, ..)
+elektraRegisterClose // not needed
+elektraRegisterInt()
+
 ## array support ##
 
 allow iteration over array members
@@ -5,9 +11,8 @@ allow iteration over array members
 
 ## logging ##
 
-add Logging Policy to log individual access of (in-memory) keys
+log individual access of (in-memory) keys
+	C++ Logging Policy
+	callback?
 
 
-## threading ##
-
-add multi-thread safe locking Policy

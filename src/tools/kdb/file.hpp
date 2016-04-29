@@ -18,34 +18,33 @@ class FileCommand : public Command
 	kdb::KDB kdb;
 
 public:
-	FileCommand();
-	~FileCommand();
+	FileCommand ();
+	~FileCommand ();
 
-	virtual std::string getShortOptions() override
+	virtual std::string getShortOptions () override
 	{
 		return "nN";
 	}
 
-	virtual std::string getSynopsis() override
+	virtual std::string getSynopsis () override
 	{
 		return "<name>";
 	}
 
-	virtual std::string getShortHelpText() override
+	virtual std::string getShortHelpText () override
 	{
 		return "Prints the file where a key is located.";
 	}
 
-	virtual std::string getLongHelpText() override
+	virtual std::string getLongHelpText () override
 	{
 		return "Elektra typically stores configuration in human-readable\n"
 		       "configuration files.\n"
 		       "This tool outputs where the configuration file is and where\n"
-		       "keys would be read from.\n"
-		       ;
+		       "keys would be read from.\n";
 	}
 
-	virtual int execute (Cmdline const& cmdline) override;
+	virtual int execute (Cmdline const & cmdline) override;
 };
 
 #endif

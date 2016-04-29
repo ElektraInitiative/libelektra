@@ -13,9 +13,10 @@ add_plugin(ini
 		${INIH_INCLUDE}
 	LINK_ELEKTRA
 		elektra-ease
+		elektra-meta
 		elektra-proposal
 	)
 
-install(DIRECTORY ini DESTINATION ${TARGET_TEST_DATA_FOLDER})
+install (DIRECTORY ini DESTINATION ${TARGET_TEST_DATA_FOLDER})
 
 add_plugintest (ini)

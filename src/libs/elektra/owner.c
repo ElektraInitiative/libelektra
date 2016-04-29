@@ -8,8 +8,8 @@
 
 #include <kdb.h>
 #include <kdbconfig.h>
-#include <kdbprivate.h>
 #include <kdbmeta.h>
+#include <kdbprivate.h>
 
 #ifdef HAVE_STDIO_H
 #include <stdio.h>
@@ -63,12 +63,12 @@ keyOwner(key); // you would expect "" here
  * @see keyName() for name without owner
  * @see keyGetFullName() for name with owner
  */
-const char *keyOwner(const Key *key)
+const char * keyOwner (const Key * key)
 {
-	const char *owner;
+	const char * owner;
 
 	if (!key) return 0;
-	owner = keyValue(keyGetMeta(key, "owner"));
+	owner = keyValue (keyGetMeta (key, "owner"));
 
 	if (!owner)
 	{
@@ -77,10 +77,6 @@ const char *keyOwner(const Key *key)
 
 	return owner;
 }
-
-
-
-
 
 
 /**
@@ -106,12 +102,12 @@ buffer = elektraMalloc (keyGetOwnerSize (key));
  * @retval -1 on NULL pointer
  * @see keyGetOwner()
  */
-ssize_t keyGetOwnerSize(const Key *key)
+ssize_t keyGetOwnerSize (const Key * key)
 {
 	ssize_t size;
 	if (!key) return -1;
 
-	size = keyGetValueSize(keyGetMeta (key, "owner"));
+	size = keyGetValueSize (keyGetMeta (key, "owner"));
 
 	if (!size || size == -1)
 	{
@@ -121,7 +117,6 @@ ssize_t keyGetOwnerSize(const Key *key)
 
 	return size;
 }
-
 
 
 /**
@@ -147,9 +142,9 @@ ssize_t keyGetOwnerSize(const Key *key)
  * @retval -1 when maxSize is 0, larger than SSIZE_MAX or too small for ownername
  * @see keySetName(), keySetOwner(), keyOwner(), keyGetFullName()
  */
-ssize_t keyGetOwner(const Key *key, char *returnedOwner, size_t maxSize)
+ssize_t keyGetOwner (const Key * key, char * returnedOwner, size_t maxSize)
 {
-	const char *owner;
+	const char * owner;
 	size_t ownerSize;
 	if (!key) return -1;
 
@@ -157,24 +152,24 @@ ssize_t keyGetOwner(const Key *key, char *returnedOwner, size_t maxSize)
 	if (!returnedOwner) return -1;
 	if (maxSize > SSIZE_MAX) return -1;
 
-	owner = keyValue(keyGetMeta(key, "owner"));
-	ownerSize = keyGetValueSize(keyGetMeta(key, "owner"));
+	owner = keyValue (keyGetMeta (key, "owner"));
+	ownerSize = keyGetValueSize (keyGetMeta (key, "owner"));
 
 	if (!owner)
 	{
 		/*errno=KDB_ERR_NODESC;*/
-		returnedOwner[0]=0;
+		returnedOwner[0] = 0;
 		return 1;
 	}
 
-	strncpy(returnedOwner,owner,maxSize);
-	if (maxSize < ownerSize) {
+	strncpy (returnedOwner, owner, maxSize);
+	if (maxSize < ownerSize)
+	{
 		/*errno=KDB_ERR_TRUNC;*/
 		return -1;
 	}
 	return ownerSize;
 }
-
 
 
 /**
@@ -194,10 +189,10 @@ ssize_t keyGetOwner(const Key *key, char *returnedOwner, size_t maxSize)
  * @retval -1 on null pointer or memory problems
  * @see keySetName(), keyGetOwner(), keyGetFullName()
  */
-ssize_t keySetOwner(Key *key, const char *newOwner)
+ssize_t keySetOwner (Key * key, const char * newOwner)
 {
 	if (!key) return -1;
-	if (!newOwner || *newOwner==0)
+	if (!newOwner || *newOwner == 0)
 	{
 		keySetMeta (key, "owner", 0);
 		return 1;
@@ -206,4 +201,3 @@ ssize_t keySetOwner(Key *key, const char *newOwner)
 	keySetMeta (key, "owner", newOwner);
 	return keyGetOwnerSize (key);
 }
-

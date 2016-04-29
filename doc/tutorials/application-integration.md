@@ -162,7 +162,7 @@ So (larger) applications should not directly use `KeySet`, but
 instead use code generation to provide a type-safe front-end.
 
 For more information about that, continue reading
-[here](https://github.com/ElektraInitiative/libelektra/tree/master/src/tools/gen)
+[here](https://github.com/ElektraInitiative/libelektra/tree/master/src/tools/gen).
 
 
 
@@ -192,9 +192,10 @@ are now available (in the meta data of respective `spec`-keys):
     the `fallback`-keys will be searched
 - `default`: this value will be used if nothing else was found
 
-They can be used like this:  
-	`kdb set /overrides/test "example override"`  
-	`sudo kdb setmeta spec/test override/#0 /overrides/test`
+They can be used like this:
+
+	kdb set /overrides/test "example override"
+	sudo kdb setmeta spec/test override/#0 /overrides/test
 
 This technique provides complete transparency how a program will fetch a configuration
 value. In practice that means that:

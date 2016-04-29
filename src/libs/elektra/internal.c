@@ -68,13 +68,13 @@
  * @retval 0 if nothing was done
  * @return size how many keys were copied
  */
-ssize_t elektraMemcpy (Key** array1, Key** array2, size_t size)
+ssize_t elektraMemcpy (Key ** array1, Key ** array2, size_t size)
 {
 	if (!array1) return -1;
 	if (!array2) return -1;
 	if (size > SSIZE_MAX) return -1;
 	if (size == 0) return 0;
-	memcpy (array1, array2, size * sizeof(Key*));
+	memcpy (array1, array2, size * sizeof (Key *));
 	return size;
 }
 
@@ -92,13 +92,13 @@ ssize_t elektraMemcpy (Key** array1, Key** array2, size_t size)
  * @retval 0 if nothing was done
  * @return size how many keys were copied
  */
-ssize_t elektraMemmove (Key** array1, Key** array2, size_t size)
+ssize_t elektraMemmove (Key ** array1, Key ** array2, size_t size)
 {
 	if (!array1) return -1;
 	if (!array2) return -1;
 	if (size > SSIZE_MAX) return -1;
 	if (size == 0) return 0;
-	memmove (array1, array2, size * sizeof(Key*));
+	memmove (array1, array2, size * sizeof (Key *));
 	return size;
 }
 
@@ -112,9 +112,9 @@ ssize_t elektraMemmove (Key** array1, Key** array2, size_t size)
  * @retval 0 if s1 matches s2
  * @return a positive number if s1 is greater than s2
  **/
-int elektraStrCmp (const char *s1, const char *s2)
+int elektraStrCmp (const char * s1, const char * s2)
 {
-	return strcmp(s1, s2);
+	return strcmp (s1, s2);
 }
 
 
@@ -128,9 +128,9 @@ int elektraStrCmp (const char *s1, const char *s2)
  * @retval 0 if s1 matches s2
  * @return a positive number if s1 is greater than s2
  **/
-int elektraStrCaseCmp (const char *s1, const char *s2)
+int elektraStrCaseCmp (const char * s1, const char * s2)
 {
-	return strcasecmp(s1, s2);
+	return strcasecmp (s1, s2);
 }
 
 /**
@@ -146,7 +146,7 @@ int elektraStrCaseCmp (const char *s1, const char *s2)
  * @retval 0 if s1 matches s2
  * @return a positive number if s1 is greater than s2
  */
-int elektraMemCaseCmp (const char *s1, const char *s2, size_t size)
+int elektraMemCaseCmp (const char * s1, const char * s2, size_t size)
 {
 	size_t i;
 	for (i = 0; i < size; i++)
@@ -156,8 +156,7 @@ int elektraMemCaseCmp (const char *s1, const char *s2, size_t size)
 		const int CMP1 = toupper (cmp1);
 		const int CMP2 = toupper (cmp2);
 		const int diff = CMP1 - CMP2;
-		if (diff)
-			return diff;
+		if (diff) return diff;
 	}
 	return 0;
 }
@@ -187,12 +186,14 @@ int elektraRealloc (void ** buffer, size_t size)
 {
 	void * ptr;
 	void * svr = *buffer;
-	ptr = realloc(*buffer, size);
+	ptr = realloc (*buffer, size);
 	if (ptr == NULL)
 	{
-		*buffer = svr;	/* restore old buffer*/
+		*buffer = svr; /* restore old buffer*/
 		return -1;
-	} else {
+	}
+	else
+	{
 		*buffer = ptr;
 		return 0;
 	}
@@ -218,7 +219,7 @@ if ((buffer = elektraMalloc (length)) == 0) {
  * @see elektraFree
  * @see elektraCalloc
  */
-void* elektraMalloc (size_t size)
+void * elektraMalloc (size_t size)
 {
 	return malloc (size);
 }
@@ -230,7 +231,7 @@ void* elektraMalloc (size_t size)
  * @param size the requested size
  * @see elektraMalloc
  */
-void* elektraCalloc (size_t size)
+void * elektraCalloc (size_t size)
 {
 	return calloc (1, size);
 }
@@ -242,7 +243,7 @@ void* elektraCalloc (size_t size)
  * @ingroup internal
  *@see elektraMalloc
  */
-void elektraFree (void *ptr)
+void elektraFree (void * ptr)
 {
 	free (ptr);
 }
@@ -265,12 +266,12 @@ void elektraFree (void *ptr)
  * @see elektraStrLen
  * @see elektraStrNDup
  */
-char *elektraStrDup (const char *s)
+char * elektraStrDup (const char * s)
 {
-	void *tmp = 0;
+	void * tmp = 0;
 	size_t l = 0;
 
-	l = elektraStrLen(s);
+	l = elektraStrLen (s);
 	tmp = elektraMalloc (l);
 	if (tmp) memcpy (tmp, s, l);
 
@@ -290,9 +291,9 @@ char *elektraStrDup (const char *s)
  * @param l the length of s
  * @ingroup internal
  */
-char *elektraStrNDup (const char *s, size_t l)
+char * elektraStrNDup (const char * s, size_t l)
 {
-	void *tmp = 0;
+	void * tmp = 0;
 
 	tmp = elektraMalloc (l);
 	if (tmp) memcpy (tmp, s, l);
@@ -318,10 +319,10 @@ char *elektraStrNDup (const char *s, size_t l)
  * @return number of bytes used by the string, including the final NULL.
  * @ingroup internal
  */
-size_t elektraStrLen(const char *s)
+size_t elektraStrLen (const char * s)
 {
-	char *found=strchr(s,0);
-	if (found) return found-s+1;
+	char * found = strchr (s, 0);
+	if (found) return found - s + 1;
 	return 0;
 }
 
@@ -333,11 +334,11 @@ size_t elektraStrLen(const char *s)
  *
  * @return new allocated memory (free with elektraFree)
  */
-char *elektraFormat(const char *format, ...)
+char * elektraFormat (const char * format, ...)
 {
 	va_list va;
-	va_start(va,format);
-	char * ret = elektraVFormat(format, va);
+	va_start (va, format);
+	char * ret = elektraVFormat (format, va);
 	va_end (va);
 	return ret;
 }
@@ -350,24 +351,20 @@ char *elektraFormat(const char *format, ...)
  *
  * @return new allocated memory (free with elektraFree)
  */
-char *elektraVFormat(const char *format, va_list arg_list)
+char * elektraVFormat (const char * format, va_list arg_list)
 {
 	static int const default_size = 512;
-	char *buffer = elektraMalloc(default_size);
+	char * buffer = elektraMalloc (default_size);
 	if (!buffer) return 0;
 
 	va_list arg_list_adj;
-	va_copy(arg_list_adj, arg_list);
+	va_copy (arg_list_adj, arg_list);
 
-	int const calculated_length =
-		vsnprintf(buffer,
-				default_size,
-				format,
-				arg_list);
+	int const calculated_length = vsnprintf (buffer, default_size, format, arg_list);
 
 	if (calculated_length == -1)
 	{
-		va_end(arg_list_adj);
+		va_end (arg_list_adj);
 		// before Glibc 2.0.6, always -1 is returned
 		// we won't do Glibc job, please upgrade
 		return 0;
@@ -375,7 +372,7 @@ char *elektraVFormat(const char *format, va_list arg_list)
 
 	if (calculated_length < default_size)
 	{
-		va_end(arg_list_adj);
+		va_end (arg_list_adj);
 		// content was written successfully into
 		// default sized buffer
 		return buffer;
@@ -385,23 +382,20 @@ char *elektraVFormat(const char *format, va_list arg_list)
 	// Allocate an intermediate buffer
 	// according to the calculated length from our last try
 	size_t const adjusted_buffer_size = calculated_length + 1;
-	elektraRealloc((void**)&buffer, adjusted_buffer_size);
+	elektraRealloc ((void **)&buffer, adjusted_buffer_size);
 	if (!buffer)
 	{
-		va_end(arg_list_adj);
+		va_end (arg_list_adj);
 		return 0;
 	}
 
-	int const ret = vsnprintf(buffer,
-			adjusted_buffer_size,
-			format,
-			arg_list_adj);
+	int const ret = vsnprintf (buffer, adjusted_buffer_size, format, arg_list_adj);
 
-	va_end(arg_list_adj);
+	va_end (arg_list_adj);
 
 	if (ret == -1)
 	{
-		elektraFree(buffer);
+		elektraFree (buffer);
 		return 0;
 	}
 	return buffer;
@@ -423,7 +417,7 @@ char *elektraVFormat(const char *format, va_list arg_list)
  * @retval true if the supplied keyname part is valid
  * @retval false if its invalid
  */
-int elektraValidateKeyName(const char *name, size_t size)
+int elektraValidateKeyName (const char * name, size_t size)
 {
 	size_t escapeCount = 0;
 
@@ -448,7 +442,7 @@ int elektraValidateKeyName(const char *name, size_t size)
  *        the written backslashes
  * @param number of backslashes to write
  */
-static void elektraWriteBackslashes(char **dest, size_t number)
+static void elektraWriteBackslashes (char ** dest, size_t number)
 {
 	char * dp = *dest;
 	while (number--)
@@ -480,10 +474,10 @@ static void elektraWriteBackslashes(char **dest, size_t number)
  * @retval 1 if key name part was handeled correctly (dest might be
  *         updated if it was needed)
  */
-int elektraUnescapeKeyNamePartBegin(const char *source, size_t size, char **dest)
+int elektraUnescapeKeyNamePartBegin (const char * source, size_t size, char ** dest)
 {
-	const char *sp = source;
-	char *dp = *dest;
+	const char * sp = source;
+	char * dp = *dest;
 	if (!strncmp ("%", sp, size))
 	{
 		// nothing to do, but part is finished
@@ -515,17 +509,17 @@ int elektraUnescapeKeyNamePartBegin(const char *source, size_t size, char **dest
 
 	if (!strncmp ("\\%", sp, size))
 	{
-		elektraWriteBackslashes(&dp, skippedBackslashes);
-		strcpy(dp, "%");
-		*dest = dp+1;
+		elektraWriteBackslashes (&dp, skippedBackslashes);
+		strcpy (dp, "%");
+		*dest = dp + 1;
 		return 1;
 	}
 
 	if (!strncmp ("\\.", sp, size))
 	{
-		elektraWriteBackslashes(&dp, skippedBackslashes);
-		strcpy(dp, ".");
-		*dest = dp+1;
+		elektraWriteBackslashes (&dp, skippedBackslashes);
+		strcpy (dp, ".");
+		*dest = dp + 1;
 		return 1;
 	}
 
@@ -537,9 +531,9 @@ int elektraUnescapeKeyNamePartBegin(const char *source, size_t size, char **dest
 
 	if (!strncmp ("\\..", sp, size))
 	{
-		elektraWriteBackslashes(&dp, skippedBackslashes);
-		strcpy(dp, "..");
-		*dest = dp+2;
+		elektraWriteBackslashes (&dp, skippedBackslashes);
+		strcpy (dp, "..");
+		*dest = dp + 2;
 		return 1;
 	}
 
@@ -566,25 +560,25 @@ int elektraUnescapeKeyNamePartBegin(const char *source, size_t size, char **dest
  *
  * @return the destination pointer how far it was written to
  */
-char *elektraUnescapeKeyNamePart(const char *source, size_t size, char *dest)
+char * elektraUnescapeKeyNamePart (const char * source, size_t size, char * dest)
 {
-	const char *sp = source;
-	char *dp = dest;
+	const char * sp = source;
+	char * dp = dest;
 	size_t count = 0;
 
 	while (size--)
 	{
 		if (*sp == '\\')
 		{
-			++ count;
+			++count;
 		}
 		else if (*sp == '/')
 		{
 			// we escape a part, so there had to be a
 			// backslash
-			ELEKTRA_ASSERT(count > 0);
+			ELEKTRA_ASSERT (count > 0);
 			// we counted an uneven number of backslashes
-			ELEKTRA_ASSERT((count % 2) == 1);
+			ELEKTRA_ASSERT ((count % 2) == 1);
 
 			count /= 2;
 			while (count)
@@ -614,7 +608,7 @@ char *elektraUnescapeKeyNamePart(const char *source, size_t size, char *dest)
 	}
 	// we counted an even number of backslashes
 	// otherwise we would not be at the end
-	ELEKTRA_ASSERT((count % 2)==0);
+	ELEKTRA_ASSERT ((count % 2) == 0);
 	count /= 2;
 	while (count)
 	{
@@ -635,7 +629,7 @@ char *elektraUnescapeKeyNamePart(const char *source, size_t size, char *dest)
  * May only need half the storage than the source string.
  * It is not safe to use the same string for source and dest.
 **/
-size_t elektraUnescapeKeyName(const char *source, char *dest)
+size_t elektraUnescapeKeyName (const char * source, char * dest)
 {
 	const char * sp = source;
 	char * dp = dest;
@@ -646,16 +640,16 @@ size_t elektraUnescapeKeyName(const char *source, char *dest)
 		*dp = 0;
 		++dp;
 	}
-	while (*(sp=keyNameGetOneLevel(sp+size,&size)))
+	while (*(sp = keyNameGetOneLevel (sp + size, &size)))
 	{
-		if (!elektraUnescapeKeyNamePartBegin(sp, size, &dp))
+		if (!elektraUnescapeKeyNamePartBegin (sp, size, &dp))
 		{
-			dp = elektraUnescapeKeyNamePart(sp, size, dp);
+			dp = elektraUnescapeKeyNamePart (sp, size, dp);
 		}
 		*dp = 0;
 		++dp;
 	}
-	return dp-dest;
+	return dp - dest;
 }
 
 /**
@@ -663,14 +657,14 @@ size_t elektraUnescapeKeyName(const char *source, char *dest)
  *
  * Escapes (a part of) a key name.
  */
-int elektraEscapeKeyNamePartBegin(const char *source, char *dest)
+int elektraEscapeKeyNamePartBegin (const char * source, char * dest)
 {
-	const char *sp = source;
-	char *dp = dest;
+	const char * sp = source;
+	char * dp = dest;
 
 	if (!strcmp ("", sp))
 	{
-		strcpy(dp,"%");
+		strcpy (dp, "%");
 		return 1;
 	}
 
@@ -684,22 +678,22 @@ int elektraEscapeKeyNamePartBegin(const char *source, char *dest)
 
 	if (!strcmp ("%", sp))
 	{
-		elektraWriteBackslashes(&dp, skippedBackslashes);
-		strcpy(dp, "\\%");
+		elektraWriteBackslashes (&dp, skippedBackslashes);
+		strcpy (dp, "\\%");
 		return 1;
 	}
 
 	if (!strcmp (".", sp))
 	{
-		elektraWriteBackslashes(&dp, skippedBackslashes);
-		strcpy(dp, "\\.");
+		elektraWriteBackslashes (&dp, skippedBackslashes);
+		strcpy (dp, "\\.");
 		return 1;
 	}
 
 	if (!strcmp ("..", sp))
 	{
-		elektraWriteBackslashes(&dp, skippedBackslashes);
-		strcpy(dp, "\\..");
+		elektraWriteBackslashes (&dp, skippedBackslashes);
+		strcpy (dp, "\\..");
 		return 1;
 	}
 
@@ -727,17 +721,17 @@ int elektraEscapeKeyNamePartBegin(const char *source, char *dest)
  *
  * @return pointer to destination
  */
-char *elektraEscapeKeyNamePart(const char *source, char *dest)
+char * elektraEscapeKeyNamePart (const char * source, char * dest)
 {
-	if (elektraEscapeKeyNamePartBegin(source, dest))
+	if (elektraEscapeKeyNamePartBegin (source, dest))
 	{
 		return dest;
 	}
 
-	size_t count=0;
+	size_t count = 0;
 
-	const char *sp = source;
-	char *dp = dest;
+	const char * sp = source;
+	char * dp = dest;
 	while (*sp)
 	{
 		if (*sp == '\\')
@@ -747,12 +741,12 @@ char *elektraEscapeKeyNamePart(const char *source, char *dest)
 		else if (*sp == '/')
 		{
 			// escape every slash
-			*dp='\\';
+			*dp = '\\';
 			++dp;
 			// and print escaped slashes
 			while (count)
 			{
-				*dp='\\';
+				*dp = '\\';
 				++dp;
 				--count;
 			}
@@ -768,11 +762,10 @@ char *elektraEscapeKeyNamePart(const char *source, char *dest)
 	// print other escaped backslashes at end of part
 	while (count)
 	{
-		*dp='\\';
+		*dp = '\\';
 		++dp;
 		--count;
 	}
 	*dp = 0;
 	return dest;
 }
-

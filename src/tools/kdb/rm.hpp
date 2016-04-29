@@ -18,30 +18,30 @@ class RemoveCommand : public Command
 	kdb::KDB kdb;
 
 public:
-	RemoveCommand();
-	~RemoveCommand();
+	RemoveCommand ();
+	~RemoveCommand ();
 
-	virtual std::string getShortOptions() override
+	virtual std::string getShortOptions () override
 	{
 		return "r";
 	}
 
-	virtual std::string getSynopsis() override
+	virtual std::string getSynopsis () override
 	{
 		return "<name>";
 	}
 
-	virtual std::string getShortHelpText() override
+	virtual std::string getShortHelpText () override
 	{
 		return "Remove key(s) from key database.";
 	}
 
-	virtual std::string getLongHelpText() override
+	virtual std::string getLongHelpText () override
 	{
 		return "";
 	}
 
-	virtual int execute (Cmdline const& cmdline) override;
+	virtual int execute (Cmdline const & cmdline) override;
 };
 
 #endif

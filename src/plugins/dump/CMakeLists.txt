@@ -1,9 +1,9 @@
-include(LibAddPlugin)
+include (LibAddPlugin)
 
-add_plugin(dump
+add_plugin (dump
 	SOURCES
 		dump.hpp
 		dump.cpp
 	)
 
-add_plugintest(dump)
+add_plugintest (dump)

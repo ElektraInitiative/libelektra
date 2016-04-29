@@ -12,12 +12,12 @@
 #include <kdbplugin.h>
 
 
-int elektraSimpleiniOpen(Plugin *handle, Key *errorKey);
-int elektraSimpleiniClose(Plugin *handle, Key *errorKey);
-int elektraSimpleiniGet(Plugin *handle, KeySet *ks, Key *parentKey);
-int elektraSimpleiniSet(Plugin *handle, KeySet *ks, Key *parentKey);
-int elektraSimpleiniError(Plugin *handle, KeySet *ks, Key *parentKey);
+int elektraSimpleiniOpen (Plugin * handle, Key * errorKey);
+int elektraSimpleiniClose (Plugin * handle, Key * errorKey);
+int elektraSimpleiniGet (Plugin * handle, KeySet * ks, Key * parentKey);
+int elektraSimpleiniSet (Plugin * handle, KeySet * ks, Key * parentKey);
+int elektraSimpleiniError (Plugin * handle, KeySet * ks, Key * parentKey);
 
-Plugin *ELEKTRA_PLUGIN_EXPORT(simpleini);
+Plugin * ELEKTRA_PLUGIN_EXPORT (simpleini);
 
 #endif

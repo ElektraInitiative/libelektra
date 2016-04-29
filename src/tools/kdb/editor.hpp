@@ -10,35 +10,33 @@ class EditorCommand : public Command
 {
 	std::string filename;
 	int fd;
+
 public:
-	EditorCommand();
-	~EditorCommand();
+	EditorCommand ();
+	~EditorCommand ();
 
-	virtual int execute (Cmdline const& cmdline);
-	void tmpFile();
+	virtual int execute (Cmdline const & cmdline);
+	void tmpFile ();
 
-	virtual std::string getShortOptions()
+	virtual std::string getShortOptions ()
 	{
 		return "esv";
 	}
 
-	virtual std::string getSynopsis()
+	virtual std::string getSynopsis ()
 	{
 		return "[options] key-name [format]";
 	}
 
-	virtual std::string getShortHelpText()
+	virtual std::string getShortHelpText ()
 	{
 		return "Use your editor for editing KDB.";
 	}
 
-	virtual std::string getLongHelpText()
+	virtual std::string getLongHelpText ()
 	{
-		return
-			"See kdb help editor\n"
-			;
+		return "See kdb help editor\n";
 	}
-
 };
 
 #endif

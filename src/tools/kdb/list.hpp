@@ -15,33 +15,31 @@
 class ListCommand : public Command
 {
 public:
-	ListCommand();
-	~ListCommand();
+	ListCommand ();
+	~ListCommand ();
 
-	virtual std::string getShortOptions() override
+	virtual std::string getShortOptions () override
 	{
 		return "0v";
 	}
 
-	virtual std::string getSynopsis() override
+	virtual std::string getSynopsis () override
 	{
 		return "";
 	}
 
-	virtual std::string getShortHelpText() override
+	virtual std::string getShortHelpText () override
 	{
 		return "List available plugins.";
 	}
 
-	virtual std::string getLongHelpText() override
+	virtual std::string getLongHelpText () override
 	{
-		return
-			"Currently it only lists plugins that were compiled\n"
-			"together with the source\n"
-			;
+		return "Currently it only lists plugins that were compiled\n"
+		       "together with the source\n";
 	}
 
-	virtual int execute (Cmdline const& cmdline) override;
+	virtual int execute (Cmdline const & cmdline) override;
 };
 
 #endif

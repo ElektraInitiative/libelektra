@@ -11,7 +11,7 @@
 
 #include "kdb.h"
 
-ssize_t elektraKeyCountLevel(const Key *cur);
-ssize_t elektraKeyCountEqualLevel(const Key *cmp1, const Key *cmp2);
+ssize_t elektraKeyCountLevel (const Key * cur);
+ssize_t elektraKeyCountEqualLevel (const Key * cmp1, const Key * cmp2);
 
 #endif

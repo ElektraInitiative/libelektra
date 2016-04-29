@@ -94,16 +94,14 @@ Use the Cmake macro add_plugintest for adding these tests.
 
 ### C++ Unit Tests ###
 
-C++ Unit tests are done using the gtest framework. See [architectural
-decision](/doc/decisions/unit_testing.md).
+C++ Unit tests are done using the gtest framework. See [architectural decision](/doc/decisions/unit_testing.md).
 
 Use the CMake macro add_gtest for adding these tests.
 
 
 ### Script Tests ###
 
-Script test are done using POSIX shell + CMake. See [architectural
-decision](/doc/decisions/script_testing.md).
+Script test are done using POSIX shell + CMake. See [architectural decision](/doc/decisions/script_testing.md).
 
 The script tests have different purposes:
 - End to End tests (usage of tools as a user would do)

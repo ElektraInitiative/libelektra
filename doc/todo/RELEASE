@@ -64,7 +64,17 @@ If version numbers are correct in
 Rebuild cleanly, run all tests and also check for memleaks:
   cd ~build && ~e/scripts/configure-debian ~e && make -j5 && make run_all && make run_memcheck
 
-Check if there are really >=91 or >=68 tests
+Check if there are really >=135 or >=95 tests
+
+- Check binary compatibility
+  Install libelektra-test of the previous version and run again:
+
+  CHECK_VERSION=NO kdb run_all > ~elektra/$VERSION/run_all
+
+- Check which files changed
+
+  DESTDIR=D make install && cd D
+  find . | sort > ~elektra/$VERSION/installed_files
 
 Check if [doc/todo/API] is fulfilled
 
@@ -117,6 +127,7 @@ UNRELEASED -> unstable
 
 Fix debian/ + document in NEWS what maintainer need to consider, then build the package:
  cp ~elektra-ftp/releases/elektra-$VERSION.tar.gz ~elektra/elektra_$VERSION.orig.tar.gz
+ gpg --decrypt <some file> # so that the step afterwards wont abort
  git-buildpackage -rfakeroot -k0B2F0DDC -sa
 
 Now move and install:
@@ -163,8 +174,8 @@ git clone git@github.com:oyranos-cms/oyranos.git
 cd oyranos
 mkdir build
 cd build
-cmake ..
-make -j5
+cmake .. # might fail, simply comment out missing libs
+make -j5 # not needed
 make test2 # or make test-2 for the most of the tests
 src/tests/test2 Elektra
 

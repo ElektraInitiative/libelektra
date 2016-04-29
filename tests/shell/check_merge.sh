@@ -14,115 +14,115 @@ MERGED_ROOT=$USER_ROOT/mergetest/merged
 
 echo "Testing trivial merging"
 
-$KDB set $OURS_ROOT/key "init" >/dev/null
+"$KDB" set $OURS_ROOT/key "init" >/dev/null
 exit_if_fail "could not set"
 
-$KDB set $THEIRS_ROOT/key "init" >/dev/null
+"$KDB" set $THEIRS_ROOT/key "init" >/dev/null
 exit_if_fail "could not set"
 
-$KDB set $BASE_ROOT/key "init" >/dev/null
+"$KDB" set $BASE_ROOT/key "init" >/dev/null
 exit_if_fail "could not set"
 
-$KDB ls $MERGED_ROOT
+"$KDB" ls $MERGED_ROOT
 
-$KDB merge $OURS_ROOT $THEIRS_ROOT $BASE_ROOT $MERGED_ROOT
+"$KDB" merge $OURS_ROOT $THEIRS_ROOT $BASE_ROOT $MERGED_ROOT
 exit_if_fail "could not merge"
 
-[ "x`$KDB ls $MERGED_ROOT/key 2> /dev/null`" = "x$MERGED_ROOT/key" ]
+[ "x`"$KDB" ls $MERGED_ROOT/key 2> /dev/null`" = "x$MERGED_ROOT/key" ]
 exit_if_fail "not exactly one result"
 
-[ "x`$KDB get $MERGED_ROOT/key 2> /dev/null`" = "xinit" ]
+[ "x`"$KDB" get $MERGED_ROOT/key 2> /dev/null`" = "xinit" ]
 
-$KDB rm -r $USER_ROOT/mergetest
+"$KDB" rm -r $USER_ROOT/mergetest
 
 
 
 echo "Testing conflict"
 
-$KDB set $OURS_ROOT/key "ours" >/dev/null
+"$KDB" set $OURS_ROOT/key "ours" >/dev/null
 exit_if_fail "could not set"
 
-$KDB set $THEIRS_ROOT/key "theirs" >/dev/null
+"$KDB" set $THEIRS_ROOT/key "theirs" >/dev/null
 exit_if_fail "could not set"
 
-$KDB set $BASE_ROOT/key "init" >/dev/null
+"$KDB" set $BASE_ROOT/key "init" >/dev/null
 exit_if_fail "could not set"
 
-$KDB merge $OURS_ROOT $THEIRS_ROOT $BASE_ROOT $MERGED_ROOT 2> /dev/null
+"$KDB" merge $OURS_ROOT $THEIRS_ROOT $BASE_ROOT $MERGED_ROOT 2> /dev/null
 [ $? != 0 ]
 succeed_if "Merging did not fail"
 
-[ "x`$KDB ls $MERGED_ROOT/key 2> /dev/null`" = "x" ]
+[ "x`"$KDB" ls $MERGED_ROOT/key 2> /dev/null`" = "x" ]
 exit_if_fail "should be no result"
 
-$KDB merge --strategy ours $OURS_ROOT $THEIRS_ROOT $BASE_ROOT $MERGED_ROOT
+"$KDB" merge --strategy ours $OURS_ROOT $THEIRS_ROOT $BASE_ROOT $MERGED_ROOT
 exit_if_fail "could not merge"
 
-[ "x`$KDB ls $MERGED_ROOT/key 2> /dev/null`" = "x$MERGED_ROOT/key" ]
+[ "x`"$KDB" ls $MERGED_ROOT/key 2> /dev/null`" = "x$MERGED_ROOT/key" ]
 exit_if_fail "not exactly one result"
 
-[ "x`$KDB get $MERGED_ROOT/key 2> /dev/null`" = "xours" ]
+[ "x`"$KDB" get $MERGED_ROOT/key 2> /dev/null`" = "xours" ]
 exit_if_fail "merge produced wrong result"
 
-$KDB rm -r $MERGED_ROOT/key
-$KDB rm -r $OURS_ROOT/key
-$KDB rm -r $THEIRS_ROOT/key
-$KDB rm -r $BASE_ROOT/key
+"$KDB" rm -r $MERGED_ROOT/key
+"$KDB" rm -r $OURS_ROOT/key
+"$KDB" rm -r $THEIRS_ROOT/key
+"$KDB" rm -r $BASE_ROOT/key
 
 echo "Testing binary data handling"
 
-$KDB set $OURS_ROOT/nullbinary  >/dev/null
+"$KDB" set $OURS_ROOT/nullbinary  >/dev/null
 exit_if_fail "could not set"
 
-$KDB getmeta $OURS_ROOT/nullbinary "binary" >/dev/null
+"$KDB" getmeta $OURS_ROOT/nullbinary "binary" >/dev/null
 exit_if_fail "created key is not binary"
 
-$KDB merge $OURS_ROOT $THEIRS_ROOT $BASE_ROOT $MERGED_ROOT
+"$KDB" merge $OURS_ROOT $THEIRS_ROOT $BASE_ROOT $MERGED_ROOT
 exit_if_fail "could not merge"
 
-[ "x`$KDB ls $MERGED_ROOT/nullbinary 2> /dev/null`" = "x$MERGED_ROOT/nullbinary" ]
+[ "x`"$KDB" ls $MERGED_ROOT/nullbinary 2> /dev/null`" = "x$MERGED_ROOT/nullbinary" ]
 exit_if_fail "not exactly one result"
 
-$KDB getmeta $MERGED_ROOT/nullbinary "binary" >/dev/null
+"$KDB" getmeta $MERGED_ROOT/nullbinary "binary" >/dev/null
 exit_if_fail "merged key is not binary"
 
-$KDB rm -r $USER_ROOT/mergetest
+"$KDB" rm -r $USER_ROOT/mergetest
 
 echo "Testing metadata"
 
-$KDB set $OURS_ROOT/key "init" >/dev/null
+"$KDB" set $OURS_ROOT/key "init" >/dev/null
 exit_if_fail "could not set"
 
-$KDB setmeta $OURS_ROOT/key comment "init" >/dev/null
+"$KDB" setmeta $OURS_ROOT/key comment "init" >/dev/null
 exit_if_fail "could not set meta"
 
-$KDB set $THEIRS_ROOT/key "init" >/dev/null
+"$KDB" set $THEIRS_ROOT/key "init" >/dev/null
 exit_if_fail "could not set"
 
-$KDB setmeta $THEIRS_ROOT/key comment "theirs" >/dev/null
+"$KDB" setmeta $THEIRS_ROOT/key comment "theirs" >/dev/null
 exit_if_fail "could not set meta"
 
-$KDB set $BASE_ROOT/key "init" >/dev/null
+"$KDB" set $BASE_ROOT/key "init" >/dev/null
 exit_if_fail "could not set"
 
-$KDB setmeta $BASE_ROOT/key comment "base" >/dev/null
+"$KDB" setmeta $BASE_ROOT/key comment "base" >/dev/null
 exit_if_fail "could not set meta"
 
-$KDB merge $OURS_ROOT $THEIRS_ROOT $BASE_ROOT $MERGED_ROOT 2> /dev/null
+"$KDB" merge $OURS_ROOT $THEIRS_ROOT $BASE_ROOT $MERGED_ROOT 2> /dev/null
 [ $? != 0 ]
 succeed_if "Merging did not failed"
 
-[ "x`$KDB ls $MERGED_ROOT/key 2> /dev/null`" = "x" ]
+[ "x`"$KDB" ls $MERGED_ROOT/key 2> /dev/null`" = "x" ]
 exit_if_fail "should be no result"
 
-$KDB merge --strategy ours $OURS_ROOT $THEIRS_ROOT $BASE_ROOT $MERGED_ROOT
+"$KDB" merge --strategy ours $OURS_ROOT $THEIRS_ROOT $BASE_ROOT $MERGED_ROOT
 exit_if_fail "could not merge"
 
-[ "x`$KDB ls $MERGED_ROOT/key 2> /dev/null`" = "x$MERGED_ROOT/key" ]
+[ "x`"$KDB" ls $MERGED_ROOT/key 2> /dev/null`" = "x$MERGED_ROOT/key" ]
 exit_if_fail "not exactly one result"
 
-[ "x`$KDB get $MERGED_ROOT/key 2> /dev/null`" = "xinit" ]
+[ "x`"$KDB" get $MERGED_ROOT/key 2> /dev/null`" = "xinit" ]
 
-$KDB rm -r $USER_ROOT/mergetest
+"$KDB" rm -r $USER_ROOT/mergetest
 
 end_script

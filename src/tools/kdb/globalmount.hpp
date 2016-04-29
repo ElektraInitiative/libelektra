@@ -17,41 +17,41 @@ namespace kdb
 {
 namespace tools
 {
-	class MountBackendInterface;
+class MountBackendInterface;
 }
 }
 
 class GlobalMountCommand : public MountBaseCommand
 {
-	void outputMtab (Cmdline const& cl);
-	void setMountpoint (Cmdline const& cl);
-	void buildBackend (Cmdline const& cl);
+	void outputMtab (Cmdline const & cl);
+	void setMountpoint (Cmdline const & cl);
+	void buildBackend (Cmdline const & cl);
 
 public:
-	GlobalMountCommand();
-	~GlobalMountCommand();
+	GlobalMountCommand ();
+	~GlobalMountCommand ();
 
-	virtual std::string getShortOptions() override
+	virtual std::string getShortOptions () override
 	{
 		return "W"; // TODO: c not implemented
 	}
 
-	virtual std::string getSynopsis() override
+	virtual std::string getSynopsis () override
 	{
 		return "[mountpoint] [plugin [config] [..]]";
 	}
 
-	virtual std::string getShortHelpText() override
+	virtual std::string getShortHelpText () override
 	{
 		return "Mount a new backend by specification.";
 	}
 
-	virtual std::string getLongHelpText() override
+	virtual std::string getLongHelpText () override
 	{
-		return "" ;
+		return "";
 	}
 
-	virtual int execute (Cmdline const& cmdline) override;
+	virtual int execute (Cmdline const & cmdline) override;
 };
 
 #endif

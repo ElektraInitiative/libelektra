@@ -7,6 +7,7 @@ endforeach (file ${TESTS})
 
 target_link_elektra(test_array elektra-ease)
 target_link_elektra(test_backend elektra-plugin)
+target_link_elektra(test_keyname elektra-ease)
 
 target_link_elektra(test_mount elektra-plugin)
 target_link_elektra(test_plugin elektra-plugin)

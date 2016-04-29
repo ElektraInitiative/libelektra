@@ -13,9 +13,10 @@
 #include <kdbplugin.h>
 
 
-int elektraSpecGet (Plugin *handle, KeySet *ks, Key *parentKey);
-int elektraSpecSet (Plugin *handle, KeySet *ks, Key *parentKey);
+int elektraSpecGet (Plugin * handle, KeySet * ks, Key * parentKey);
+int elektraSpecSet (Plugin * handle, KeySet * ks, Key * parentKey);
+int elektraSpecClose (Plugin * handle, Key * parentKey);
 
-Plugin *ELEKTRA_PLUGIN_EXPORT (spec);
+Plugin * ELEKTRA_PLUGIN_EXPORT (spec);
 
 #endif

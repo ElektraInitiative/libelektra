@@ -6,6 +6,8 @@
  * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
  */
 
+// clang-format off
+
 #include <kdb.h>
 #include <stdio.h>
 

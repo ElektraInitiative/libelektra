@@ -17,20 +17,21 @@ extern "C" {
 
 #include <stdio.h>
 
-typedef int (*KeyHandler)(void*, const char*, const char*, const char*, unsigned short lineContinuation);
-typedef int (*SectionHandler)(void *, const char *);
-typedef int (*CommentHandler)(void *, const char *);
-typedef void (*BomHandler)(void *, short);
+typedef int (*KeyHandler) (void *, const char *, const char *, const char *, unsigned short lineContinuation);
+typedef int (*SectionHandler) (void *, const char *);
+typedef int (*CommentHandler) (void *, const char *);
+typedef void (*BomHandler) (void *, short);
 
 struct IniConfig
 {
 	KeyHandler keyHandler;
 	SectionHandler sectionHandler;
 	CommentHandler commentHandler;
-    BomHandler bomHandler;
+	BomHandler bomHandler;
 	unsigned short supportMultiline;
 	unsigned short keyToMeta;
-    char *continuationString;
+	char * continuationString;
+	char delim;
 };
 
 /* Parse given INI-style file. May have [section]s, name=value pairs
@@ -46,11 +47,11 @@ struct IniConfig
    stop on first error), -1 on file open error, or -2 on memory allocation
    error (only when INI_USE_STACK is zero).
 */
-int ini_parse(const char* filename, const struct IniConfig* config, void* user);
+int ini_parse (const char * filename, const struct IniConfig * config, void * user);
 
 /* Same as ini_parse(), but takes a FILE* instead of filename. This doesn't
    close the file when it's finished -- the caller must do that. */
-int ini_parse_file(FILE* file,const struct IniConfig* config, void* user);
+int ini_parse_file (FILE * file, const struct IniConfig * config, void * user);
 
 /* Nonzero to allow multi-line value parsing, in the style of Python's
    ConfigParser. If allowed, ini_parse() will call the handler with the same

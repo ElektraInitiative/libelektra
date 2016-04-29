@@ -55,6 +55,7 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 	#not supported by icc:
 	set (EXTRA_FLAGS "${EXTRA_FLAGS} -Wno-deprecated-declarations")
 	#set (EXTRA_FLAGS "${EXTRA_FLAGS} -Wno-ignored-qualifiers")
+	set (CXX_EXTRA_FLAGS "${CXX_EXTRA_FLAGS} -Wold-style-cast")
 
 	message (STATUS "Clang detected")
 endif()
@@ -67,6 +68,7 @@ if (CMAKE_COMPILER_IS_GNUCXX)
 		#not supported by icc:
 		set (EXTRA_FLAGS "${EXTRA_FLAGS} -Wno-deprecated-declarations")
 		#set (EXTRA_FLAGS "${EXTRA_FLAGS} -Wno-ignored-qualifiers")
+		set (CXX_EXTRA_FLAGS "${CXX_EXTRA_FLAGS} -Wold-style-cast")
 
 		#not supported by icc/clang:
 		set (CXX_EXTRA_FLAGS "${CXX_EXTRA_FLAGS} -Wstrict-null-sentinel")
@@ -121,12 +123,9 @@ if (ENABLE_COVERAGE)
 	set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -fprofile-arcs -ftest-coverage -lgcov")
 endif (ENABLE_COVERAGE)
 
-if (UNIX AND NOT APPLE)
-	set(CMAKE_REALTIME_LIBS_INIT rt)
-endif()
 
 set (CXX_EXTRA_FLAGS "${CXX_EXTRA_FLAGS} -Wno-missing-field-initializers")
-set (CXX_EXTRA_FLAGS "${CXX_EXTRA_FLAGS} -Wold-style-cast -Woverloaded-virtual  -Wsign-promo")
+set (CXX_EXTRA_FLAGS "${CXX_EXTRA_FLAGS} -Woverloaded-virtual  -Wsign-promo")
 
 #
 # Merge all flags

@@ -21,4 +21,4 @@ foreach (file ${TESTS})
 	do_benchmark (${name})
 endforeach (file ${TESTS})
 
-target_link_libraries(benchmark_getenv elektragetenv)
+target_link_libraries(benchmark_getenv elektragetenv elektra-meta)

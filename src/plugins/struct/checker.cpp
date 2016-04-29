@@ -11,26 +11,28 @@
 #include "checker.hpp"
 #include "factory.hpp"
 
-namespace elektra {
+namespace elektra
+{
 
-Checker::~Checker()
-{}
-
-void StructChecker::buildup (Factory &, std::string const&)
+Checker::~Checker ()
 {
 }
 
-void ListChecker::buildup (Factory &f, std::string const& templateParameter)
+void StructChecker::buildup (Factory &, std::string const &)
 {
-	structure = f.get(templateParameter);
-	CheckerPtr c = f.get(templateParameter);
-	if (!c.get()) throw "Could not create structure of template Parameter";
+}
+
+void ListChecker::buildup (Factory & f, std::string const & templateParameter)
+{
+	structure = f.get (templateParameter);
+	CheckerPtr c = f.get (templateParameter);
+	if (!c.get ()) throw "Could not create structure of template Parameter";
 
 	// recursive handling code would belong here, but we don't have config
 	// at the moment in ListChecker...
-	c->buildup(f, "");
+	c->buildup (f, "");
 
-	structure = move(c);
+	structure = move (c);
 }
 
 } // end namespace elektra

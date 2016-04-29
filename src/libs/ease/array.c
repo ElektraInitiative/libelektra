@@ -10,15 +10,15 @@
 
 #include <kdb.h>
 #include <kdbease.h>
-#include <kdbtypes.h>
 #include <kdbhelper.h>
+#include <kdbtypes.h>
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <limits.h>
-#include <errno.h>
-#include <string.h>
 #include <ctype.h>
+#include <errno.h>
+#include <limits.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 /**
  * @internal
@@ -30,21 +30,21 @@
  * @retval 0 if start
  * @retval 1 if array element
  */
-int elektraArrayValidateName(const Key *key)
+int elektraArrayValidateName (const Key * key)
 {
 	if (!key)
 	{
 		return -1;
 	}
 
-	const char *current = keyBaseName(key);
+	const char * current = keyBaseName (key);
 
 	if (!current)
 	{
 		return -1;
 	}
 
-	if (!strcmp(current, "#"))
+	if (!strcmp (current, "#"))
 	{
 		return 0;
 	}
@@ -65,8 +65,8 @@ int elektraArrayValidateName(const Key *key)
 			digits++;
 		}
 
-		if (underscores != digits -1) return -1;
-		if (underscores + digits > ELEKTRA_MAX_ARRAY_SIZE-2)
+		if (underscores != digits - 1) return -1;
+		if (underscores + digits > ELEKTRA_MAX_ARRAY_SIZE - 2)
 		{
 			return -1;
 		}
@@ -79,12 +79,12 @@ int elektraArrayValidateName(const Key *key)
 	return 1;
 }
 
-int elektraReadArrayNumber(const char *baseName, kdb_long_long_t *oldIndex)
+int elektraReadArrayNumber (const char * baseName, kdb_long_long_t * oldIndex)
 {
 
 	int errnosave = errno;
 	errno = 0;
-	if (sscanf(baseName, ELEKTRA_LONG_LONG_F, oldIndex) != 1)
+	if (sscanf (baseName, ELEKTRA_LONG_LONG_F, oldIndex) != 1)
 	{
 		errno = errnosave;
 		return -1;
@@ -130,23 +130,23 @@ int elektraReadArrayNumber(const char *baseName, kdb_long_long_t *oldIndex)
  * @retval -1 on error (e.g. too large array, not validated array)
  * @retval 0 on success
  */
-int elektraArrayIncName(Key *key)
+int elektraArrayIncName (Key * key)
 {
-	const char * baseName = keyBaseName(key);
+	const char * baseName = keyBaseName (key);
 
-	int arrayElement = elektraArrayValidateName(key);
+	int arrayElement = elektraArrayValidateName (key);
 	if (arrayElement == -1)
 	{
 		return -1;
 	}
 
-	++baseName; // jump over #
+	++baseName;		 // jump over #
 	while (*baseName == '_') // jump over all _
 	{
 		++baseName;
 	}
 
-	kdb_long_long_t oldIndex  = 0;
+	kdb_long_long_t oldIndex = 0;
 	if (!arrayElement)
 	{
 		// we have a start element
@@ -154,18 +154,18 @@ int elektraArrayIncName(Key *key)
 	}
 	else
 	{
-		if (elektraReadArrayNumber(baseName, &oldIndex) == -1)
+		if (elektraReadArrayNumber (baseName, &oldIndex) == -1)
 		{
 			return -1;
 		}
 	}
 
-	kdb_long_long_t newIndex = oldIndex+1; // we increment by one
+	kdb_long_long_t newIndex = oldIndex + 1; // we increment by one
 
 	char newName[ELEKTRA_MAX_ARRAY_SIZE];
 
-	elektraWriteArrayNumber(newName, newIndex);
-	keySetBaseName(key, newName);
+	elektraWriteArrayNumber (newName, newIndex);
+	keySetBaseName (key, newName);
 
 	return 0;
 }
@@ -188,11 +188,11 @@ int elektraArrayIncName(Key *key)
  * array parent, 0 otherwise
  *
  */
-static int arrayFilter(const Key *key, void *argument)
+static int arrayFilter (const Key * key, void * argument)
 {
-	const Key *arrayParent = (const Key *) argument;
+	const Key * arrayParent = (const Key *)argument;
 
-	return keyIsDirectBelow(arrayParent, key) && elektraArrayValidateName(key);
+	return keyIsDirectBelow (arrayParent, key) && elektraArrayValidateName (key);
 }
 
 
@@ -214,14 +214,14 @@ static int arrayFilter(const Key *key, void *argument)
  * @return a keyset containing the arraykeys (if any)
  * @retval NULL on NULL pointers
  */
-KeySet *elektraArrayGet(const Key *arrayParent, KeySet *keys)
+KeySet * elektraArrayGet (const Key * arrayParent, KeySet * keys)
 {
 	if (!arrayParent) return 0;
 
 	if (!keys) return 0;
 
-	KeySet *arrayKeys = ksNew(ksGetSize(keys), KS_END);
-	elektraKsFilter(arrayKeys, keys, &arrayFilter, (void *)arrayParent);
+	KeySet * arrayKeys = ksNew (ksGetSize (keys), KS_END);
+	elektraKsFilter (arrayKeys, keys, &arrayFilter, (void *)arrayParent);
 	return arrayKeys;
 }
 
@@ -241,21 +241,21 @@ KeySet *elektraArrayGet(const Key *arrayParent, KeySet *keys)
  * @retval NULL if the passed array is empty
  * @retval NULL on NULL pointers or if an error occurs
  */
-Key *elektraArrayGetNextKey(KeySet *arrayKeys)
+Key * elektraArrayGetNextKey (KeySet * arrayKeys)
 {
 	if (!arrayKeys) return 0;
 
-	Key *last = ksPop(arrayKeys);
+	Key * last = ksPop (arrayKeys);
 
 	if (!last) return 0;
 
-	ksAppendKey(arrayKeys, last);
-	Key *newKey = keyDup(last);
-	int ret = elektraArrayIncName(newKey);
+	ksAppendKey (arrayKeys, last);
+	Key * newKey = keyDup (last);
+	int ret = elektraArrayIncName (newKey);
 
 	if (ret == -1)
 	{
-		keyDel(newKey);
+		keyDel (newKey);
 		return 0;
 	}
 

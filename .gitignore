@@ -19,3 +19,6 @@ build*
 
 #ignore emacs backup files
 \#*#
+
+#ignore Makefile in project root
+/Makefile

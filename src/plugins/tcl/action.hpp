@@ -14,12 +14,12 @@
 #include <ostream>
 
 #include <boost/bind.hpp>
-#include <boost/spirit/include/qi.hpp>
 #include <boost/fusion/include/std_pair.hpp>
+#include <boost/spirit/include/qi.hpp>
 
+#include <fstream>
 #include <iostream>
 #include <iterator>
-#include <fstream>
 #include <map>
 
 #include "printer.hpp"
@@ -32,21 +32,17 @@ namespace qi = boost::spirit::qi;
 namespace ascii = boost::spirit::ascii;
 
 template <typename Iterator>
-struct Action: qi::grammar<Iterator, ascii::space_type>
+struct Action : qi::grammar<Iterator, ascii::space_type>
 {
-	Action(kdb::KeySet &ks)
-		: Action::base_type(query),
-		p(ks)
+	Action (kdb::KeySet & ks) : Action::base_type (query), p (ks)
 	{
-		query =  '{' >> *(pair) > '}';
-		pair  =  '{' >> key > '=' >> val >>
-			*('{' >> metakey > '=' >> metaval > '}') >
-			'}';
+		query = '{' >> *(pair) > '}';
+		pair = '{' >> key > '=' >> val >> *('{' >> metakey > '=' >> metaval > '}') > '}';
 
-		key     =  (+(qi::char_ - qi::char_("={}[]<>"))) [boost::bind(&Printer::add_key, &p, _1)];
-		val     =  (+(qi::char_ - qi::char_("={}[]<>"))) [boost::bind(&Printer::add_val, &p, _1)];
-		metakey =  (+(qi::char_ - qi::char_("={}[]<>"))) [boost::bind(&Printer::add_metakey, &p, _1)];
-		metaval =  (+(qi::char_ - qi::char_("={}[]<>"))) [boost::bind(&Printer::add_metaval, &p, _1)];
+		key = (+(qi::char_ - qi::char_ ("={}[]<>")))[boost::bind (&Printer::add_key, &p, _1)];
+		val = (+(qi::char_ - qi::char_ ("={}[]<>")))[boost::bind (&Printer::add_val, &p, _1)];
+		metakey = (+(qi::char_ - qi::char_ ("={}[]<>")))[boost::bind (&Printer::add_metakey, &p, _1)];
+		metaval = (+(qi::char_ - qi::char_ ("={}[]<>")))[boost::bind (&Printer::add_metaval, &p, _1)];
 	}
 
 	Printer p;

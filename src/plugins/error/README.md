@@ -3,7 +3,7 @@
 - infos/licence = BSD
 - infos/provides = error
 - infos/needs =
-- infos/recommends = 
+- infos/recommends =
 - infos/placements = presetstorage
 - infos/status = productive maintained conformant shelltest unittest tested nodep libc discouraged
 - infos/metadata = trigger/warnings trigger/error
@@ -21,7 +21,7 @@ This plugin tackles this issue by yielding error/warnings on request.
 
 ### by meta data ###
 
-Mount this plugin additionally with an working resolver and an storage
+Mount this plugin additionally with a working resolver and a storage
 e.g.:
 
 	kdb mount error.dump /error error dump

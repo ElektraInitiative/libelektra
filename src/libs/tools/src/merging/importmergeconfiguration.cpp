@@ -20,21 +20,20 @@ namespace tools
 namespace merging
 {
 
-void ImportMergeConfiguration::configureMerger(ThreeWayMerge& merger)
+void ImportMergeConfiguration::configureMerger (ThreeWayMerge & merger)
 {
-	auto metaMergeStrategy = new MetaMergeStrategy(merger);
-	allocatedStrategies.push_back(metaMergeStrategy);
-	merger.addConflictStrategy(metaMergeStrategy);
+	auto metaMergeStrategy = new MetaMergeStrategy (merger);
+	allocatedStrategies.push_back (metaMergeStrategy);
+	merger.addConflictStrategy (metaMergeStrategy);
 
-	auto newKeyStrategy = new NewKeyStrategy();
-	allocatedStrategies.push_back(newKeyStrategy);
-	merger.addConflictStrategy(newKeyStrategy);
+	auto newKeyStrategy = new NewKeyStrategy ();
+	allocatedStrategies.push_back (newKeyStrategy);
+	merger.addConflictStrategy (newKeyStrategy);
 
-	auto oneSideValueStrategy = new OneSideValueStrategy(THEIRS);
-	allocatedStrategies.push_back(oneSideValueStrategy);
-	merger.addConflictStrategy(oneSideValueStrategy);
+	auto oneSideValueStrategy = new OneSideValueStrategy (THEIRS);
+	allocatedStrategies.push_back (oneSideValueStrategy);
+	merger.addConflictStrategy (oneSideValueStrategy);
 }
-
 }
 }
 }

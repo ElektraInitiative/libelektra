@@ -7,9 +7,9 @@
  *
  */
 
-#include <string>
 #include <helper/keyhelper.hpp>
 #include <merging/onesidevaluestrategy.hpp>
+#include <string>
 
 using namespace std;
 using namespace kdb::tools::helper;
@@ -23,7 +23,7 @@ namespace tools
 namespace merging
 {
 
-void OneSideValueStrategy::resolveConflict(const MergeTask& task, Key& conflictKey, MergeResult& result)
+void OneSideValueStrategy::resolveConflict (const MergeTask & task, Key & conflictKey, MergeResult & result)
 {
 	ConflictOperation ourOperation = getOurConflictOperation (conflictKey);
 	ConflictOperation theirOperation = getTheirConflictOperation (conflictKey);
@@ -33,7 +33,8 @@ void OneSideValueStrategy::resolveConflict(const MergeTask& task, Key& conflictK
 
 	// TODO: this is a subset of the onesidestrategy
 	// the onesidestrategy could be split up into several smaller strategies
-	if ((ourOperation == CONFLICT_SAME && theirOperation == CONFLICT_MODIFY) || (ourOperation == CONFLICT_MODIFY && theirOperation == CONFLICT_SAME))
+	if ((ourOperation == CONFLICT_SAME && theirOperation == CONFLICT_MODIFY) ||
+	    (ourOperation == CONFLICT_MODIFY && theirOperation == CONFLICT_SAME))
 	{
 		string lookupPath;
 		Key winningKey;
@@ -56,14 +57,12 @@ void OneSideValueStrategy::resolveConflict(const MergeTask& task, Key& conflictK
 
 		if (winningKey)
 		{
-			copyKeyValue(winningKey, conflictKey);
+			copyKeyValue (winningKey, conflictKey);
 			result.resolveConflict (conflictKey);
 			result.addMergeKey (conflictKey);
 		}
 	}
 }
-
 }
 }
 }
-

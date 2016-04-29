@@ -7,7 +7,6 @@
  */
 
 
-
 #ifdef HAVE_KDBCONFIG_H
 #include "kdbconfig.h"
 #endif
@@ -29,8 +28,8 @@
 #endif
 
 #include "kdb.h"
-#include "kdbprivate.h"
 #include "kdbinternal.h"
+#include "kdbprivate.h"
 
 
 /**
@@ -56,18 +55,17 @@
  * @ingroup keytest
  *
  */
-int keyClearSync (Key *key)
+int keyClearSync (Key * key)
 {
 	if (!key) return -1;
 
 	keyflag_t semiflag = KEY_FLAG_SYNC;
 
-	semiflag=~semiflag;
+	semiflag = ~semiflag;
 	key->flags &= semiflag;
 
 	return key->flags;
 }
-
 
 
 /**
@@ -97,7 +95,7 @@ int keyClearSync (Key *key)
  * @retval -1 on NULL pointer
  * @ingroup keytest
  */
-int keyNeedSync(const Key *key)
+int keyNeedSync (const Key * key)
 {
 	if (!key) return -1;
 
@@ -105,29 +103,35 @@ int keyNeedSync(const Key *key)
 }
 
 
-int keyIsSpec(const Key *key)
+int keyIsSpec (const Key * key)
 {
 	if (!key) return -1;
 
-	if (key->key) return keyNameIsSpec(key->key);
-	else return 0;
+	if (key->key)
+		return keyNameIsSpec (key->key);
+	else
+		return 0;
 }
 
-int keyIsProc(const Key *key)
+int keyIsProc (const Key * key)
 {
 	if (!key) return -1;
 
-	if (key->key) return keyNameIsProc(key->key);
-	else return 0;
+	if (key->key)
+		return keyNameIsProc (key->key);
+	else
+		return 0;
 }
 
 
-int keyIsDir(const Key *key)
+int keyIsDir (const Key * key)
 {
 	if (!key) return -1;
 
-	if (key->key) return keyNameIsDir(key->key);
-	else return 0;
+	if (key->key)
+		return keyNameIsDir (key->key);
+	else
+		return 0;
 }
 
 
@@ -141,15 +145,15 @@ int keyIsDir(const Key *key)
  * @ingroup keytest
  *
  */
-int keyIsSystem(const Key *key)
+int keyIsSystem (const Key * key)
 {
 	if (!key) return -1;
 
-	if (key->key) return keyNameIsSystem(key->key);
-	else return 0;
+	if (key->key)
+		return keyNameIsSystem (key->key);
+	else
+		return 0;
 }
-
-
 
 
 /**
@@ -162,39 +166,41 @@ int keyIsSystem(const Key *key)
  * @ingroup keytest
  *
  */
-int keyIsUser(const Key *key)
+int keyIsUser (const Key * key)
 {
 	if (!key) return -1;
 
-	if (key->key) return keyNameIsUser(key->key);
-	else return 0;
+	if (key->key)
+		return keyNameIsUser (key->key);
+	else
+		return 0;
 }
 
 /**
  * Check if the key check is below the key key or not.
  *
  * Example:
-@verbatim
-key user/sw/app
-check user/sw/app/key
-@endverbatim
+ @verbatim
+ key user/sw/app
+ check user/sw/app/key
+ @endverbatim
  *
  * returns true because check is below key
  *
  * Example:
-@verbatim
-key user/sw/app
-check user/sw/app/folder/key
-@endverbatim
+ @verbatim
+ key user/sw/app
+ check user/sw/app/folder/key
+ @endverbatim
  *
  * returns also true because check is indirect below key
  *
  * Obviously, there is no key above a namespace (e.g. user, system, /):
  *
-@verbatim
-key *
-check user
-@endverbatim
+ @verbatim
+ key *
+ check user
+ @endverbatim
  *
  * @param key the key object to work with
  * @param check the key to find the relative position of
@@ -204,26 +210,97 @@ check user
  * @ingroup keytest
  *
  */
-int keyIsBelow(const Key *key, const Key *check)
+
+int keyIsBelow (const Key * key, const Key * check)
 {
 	const char * keyname = 0;
 	const char * checkname = 0;
+	const char * ukeyname = 0;
+	const char * ucheckname = 0;
 	ssize_t keysize = 0;
 	ssize_t checksize = 0;
+	ssize_t ukeysize = 0;
+	ssize_t uchecksize = 0;
 
 	if (!key || !check) return -1;
 
-	keyname = keyName(key);
-	checkname = keyName(check);
-	keysize = keyGetNameSize(key);
-	checksize = keyGetNameSize(check);
-
-	if (keysize > checksize + 1) return 0;
-	if (strncmp (keyname, checkname, keysize - 1)) return 0;
-	if (!strcmp(checkname, "/")) return 0;
-	if (checkname[keysize - 1] != '/' && strcmp(keyname, "/")) return 0;
-	return 1;
+	keyname = keyName (key);
+	checkname = keyName (check);
+	ukeyname = keyUnescapedName (key);
+	ucheckname = keyUnescapedName (check);
+	keysize = keyGetNameSize (key);
+	checksize = keyGetNameSize (check);
+	ukeysize = keyGetUnescapedNameSize (key);
+	uchecksize = keyGetUnescapedNameSize (check);
+	if (!strcmp (checkname, "/")) return 0;
+	if (!strcmp (keyname, "/"))
+	{
+		if (checkname[0] == '/') return 1;
+		if (strchr (checkname, '/')) return 1;
+	}
+	else if (checkname[0] == '/')
+	{
+		if (keyname[0] == '/')
+		{
+			if (!strncmp (keyname, checkname, keysize - 1))
+			{
+				if (ucheckname[ukeysize - 1] == '\0' && uchecksize > ukeysize)
+				{
+					return 1;
+				}
+			}
+		}
+		else
+		{
+			size_t size = 0;
+			char * ptr = (char *)keyname;
+			ptr = keyNameGetOneLevel (ptr, &size);
+			if (size == (size_t)keysize)
+			{
+				return 1;
+			}
+			keyname += size;
+			keysize = elektraStrLen (keyname);
+			ptr = strrchr (ukeyname, '\0');
+			ukeysize -= (ptr - ukeyname);
+			if (!strncmp (keyname, checkname, keysize - 1))
+			{
+				if (ucheckname[ukeysize - 1] == '\0' && uchecksize > ukeysize)
+				{
+					return 1;
+				}
+			}
+		}
+	}
+	else if (keyname[0] == '/')
+	{
+		size_t size = 0;
+		char * ptr = (char *)checkname;
+		ptr = keyNameGetOneLevel (ptr, &size);
+		if (size == (size_t)checksize)
+		{
+			return 0;
+		}
+		checkname += size;
+		checksize = elektraStrLen (checkname);
+		ptr = strrchr (ucheckname, '\0');
+		uchecksize -= (ptr - ucheckname);
+		ucheckname = ptr;
+		if (!strncmp (keyname, checkname, keysize - 1))
+		{
+			if (ucheckname[ukeysize - 1] == '\0' && uchecksize > ukeysize)
+			{
+				return 1;
+			}
+		}
+	}
+	else if (!strncmp (keyname, checkname, keysize - 1))
+	{
+		if ((ucheckname[ukeysize - 1] == '\0') && (uchecksize > ukeysize)) return 1;
+	}
+	return 0;
 }
+
 
 /**
  * Check if a key is below or same or not.
@@ -231,15 +308,17 @@ int keyIsBelow(const Key *key, const Key *check)
  * @param key the key object to work with
  * @see keyIsBelow()
  */
-int keyIsBelowOrSame (const Key *key, const Key *check)
+int keyIsBelowOrSame (const Key * key, const Key * check)
 {
 	if (!key || !check) return -1;
 
-	const char *name1 = keyName(key);
-	const char *name2 = keyName(check);
+	const char * name1 = keyName (key);
+	const char * name2 = keyName (check);
 
-	if (keyIsBelow (key, check)) return 1;
-	else if (!strcmp (name1, name2)) return 1;
+	if (keyIsBelow (key, check))
+		return 1;
+	else if (!strcmp (name1, name2))
+		return 1;
 	return 0;
 }
 
@@ -247,7 +326,7 @@ int keyIsBelowOrSame (const Key *key, const Key *check)
 /**
  * Check if the key check is direct below the key key or not.
  *
-@verbatim
+ @verbatim
 Example:
 key user/sw/app
 check user/sw/app/key
@@ -270,17 +349,36 @@ does not return true, because there is only a indirect relation
  * @ingroup keytest
  *
  */
-int keyIsDirectBelow(const Key *key, const Key *check)
+int keyIsDirectBelow (const Key * key, const Key * check)
 {
 	if (!key || !check) return -1;
 
-	if (!keyIsBelow(key, check)) return 0;
+	if (!keyIsBelow (key, check)) return 0;
 
 
-	const char * checkname = keyUnescapedName(check);
-	ssize_t keysize = keyGetUnescapedNameSize(key);
-	ssize_t checksize = keyGetUnescapedNameSize(check);
-	if (strchr(checkname + keysize, '\0') == checkname + checksize - 1) return 1;
+	const char * checkname = keyUnescapedName (check);
+	ssize_t keysize = keyGetUnescapedNameSize (key);
+	ssize_t checksize = keyGetUnescapedNameSize (check);
+
+	char * startPtr = NULL;
+
+	if (keyName (key)[0] != '/')
+	{
+		startPtr = strrchr (checkname + keysize, '\0');
+	}
+	else
+	{
+		if (keyName (check)[0] != '/')
+		{
+			startPtr = strrchr (checkname, '\0');
+			startPtr = strrchr (startPtr + keysize, '\0');
+		}
+		else
+		{
+			startPtr = strrchr (checkname + keysize, '\0');
+		}
+	}
+	if (startPtr == checkname + checksize - 1) return 1;
 
 	return 0;
 }
@@ -296,15 +394,15 @@ int keyIsDirectBelow(const Key *key, const Key *check)
  *
  * - If the keys are the same 0 is returned.
  * So it is the key itself.
-@verbatim
-user/key
-user/key
-@endverbatim
+ @verbatim
+ user/key
+ user/key
+ @endverbatim
  *
  *@code
-keySetName (key, "user/key/folder");
-keySetName (check, "user/key/folder");
-succeed_if (keyRel (key, check) == 0, "should be same");
+ keySetName (key, "user/key/folder");
+ keySetName (check, "user/key/folder");
+ succeed_if (keyRel (key, check) == 0, "should be same");
  *@endcode
  *
  * @note this relation can be checked with keyCmp() too.
@@ -313,32 +411,32 @@ succeed_if (keyRel (key, check) == 0, "should be same");
  * - If the key is direct below the other one 1 is returned.
  * That means that, in terms of hierarchy, no other key is
  * between them - it is a direct child.
-@verbatim
-user/key/folder
-user/key/folder/child
-@endverbatim
+ @verbatim
+ user/key/folder
+ user/key/folder/child
+ @endverbatim
  *
  *@code
-keySetName (key, "user/key/folder");
-keySetName (check, "user/key/folder/child");
-succeed_if (keyRel (key, check) == 1, "should be direct below");
+ keySetName (key, "user/key/folder");
+ keySetName (check, "user/key/folder/child");
+ succeed_if (keyRel (key, check) == 1, "should be direct below");
  *@endcode
  *
  *
  * - If the key is below the other one, but not directly 2 is returned.
  * This is also called grand-child.
-@verbatim
-user/key/folder
-user/key/folder/any/depth/deeper/grand-child
-@endverbatim
+ @verbatim
+ user/key/folder
+ user/key/folder/any/depth/deeper/grand-child
+ @endverbatim
  *
  *
  *@code
-keySetName (key, "user/key/folder");
-keySetName (check, "user/key/folder/any/depth/deeper/grand-child");
-succeed_if (keyRel (key, check) >= 2, "should be below (but not direct)");
-succeed_if (keyRel (key, check) > 0, "should be below");
-succeed_if (keyRel (key, check) >= 0, "should be the same or below");
+ keySetName (key, "user/key/folder");
+ keySetName (check, "user/key/folder/any/depth/deeper/grand-child");
+ succeed_if (keyRel (key, check) >= 2, "should be below (but not direct)");
+ succeed_if (keyRel (key, check) > 0, "should be below");
+ succeed_if (keyRel (key, check) >= 0, "should be the same or below");
  *@endcode
  *
  *
@@ -350,15 +448,15 @@ succeed_if (keyRel (key, check) >= 0, "should be the same or below");
  *
  * - If the keys are in the same hierarchy, a value smaller then -2 is returned.
  * It means that the key is not below.
-@verbatim
-user/key/myself
-user/key/sibling
-@endverbatim
+ @verbatim
+ user/key/myself
+ user/key/sibling
+ @endverbatim
  *
  * @code
-keySetName (key, "user/key/folder");
-keySetName (check, "user/notsame/folder");
-succeed_if (keyRel (key, check) < -2, "key is not below, but same namespace");
+ keySetName (key, "user/key/folder");
+ keySetName (check, "user/notsame/folder");
+ succeed_if (keyRel (key, check) < -2, "key is not below, but same namespace");
  * @endcode
  *
  * @code
@@ -372,31 +470,31 @@ succeed_if (keyRel (key, check) < -2, "key is not below, but same namespace");
  * - If the keys are direct below a key which is next to the key, -2 is returned.
  * This is also called nephew. (TODO not implemented)
  * @verbatim
-user/key/myself
-user/key/sibling
-@endverbatim
+ user/key/myself
+ user/key/sibling
+ @endverbatim
  *
  * - If the keys are direct below a key which is next to the key, -2 is returned.
  * This is also called nephew. (TODO not implemented)
  * @verbatim
-user/key/myself
-user/key/sibling/nephew
-@endverbatim
+ user/key/myself
+ user/key/sibling/nephew
+ @endverbatim
  *
  * - If the keys are below a key which is next to the key, -3 is returned.
  * This is also called grand-nephew. (TODO not implemented)
-@verbatim
-user/key/myself
-user/key/sibling/any/depth/deeper/grand-nephew
-@endverbatim
+ @verbatim
+ user/key/myself
+ user/key/sibling/any/depth/deeper/grand-nephew
+ @endverbatim
  *
  * The same holds true for the other direction, but with negative values.
  * For no relation INT_MIN is returned.
  *
  * @note to check if the keys are the same, you must use
- *       keyCmp() == 0!
- *       keyRel() does not give you the information if it did not
- *       find a relation or if it is the same key.
+ *		keyCmp() == 0!
+ *		keyRel() does not give you the information if it did not
+ *		find a relation or if it is the same key.
  *
  * @return depending on the relation
  * @retval 2 if below
@@ -412,16 +510,16 @@ user/key/sibling/any/depth/deeper/grand-nephew
  * @param check the second key object to check the relation with
  * @ingroup keytest
  */
-int keyRel (const Key *key, const Key *check)
+int keyRel (const Key * key, const Key * check)
 {
 	if (!key || !check) return -1;
 	if (!key->key || !check->key) return -1;
 
-	if (!keyCmp(key,check)) return 0;
-	if (keyIsDirectBelow(key, check)) return 1;
-	if (keyIsBelow(key, check)) return 2;
-	if (keyIsUser(key) && keyIsUser(check)) return -3;
-	if (keyIsSystem(key) && keyIsSystem(check)) return -3;
+	if (!keyCmp (key, check)) return 0;
+	if (keyIsDirectBelow (key, check)) return 1;
+	if (keyIsBelow (key, check)) return 2;
+	if (keyIsUser (key) && keyIsUser (check)) return -3;
+	if (keyIsSystem (key) && keyIsSystem (check)) return -3;
 	// if (keyIsSibling(key, check)) return -4;
 	// if (keyIsNephew(key, check)) return -5;
 
@@ -450,17 +548,17 @@ int keyRel (const Key *key, const Key *check)
  * @ingroup keytest
  *
  */
-int keyIsInactive (const Key *key)
+int keyIsInactive (const Key * key)
 {
 	if (!key) return -1;
 
-	const char *p = keyName(key);
+	const char * p = keyName (key);
 	if (!p) return -1;
 	if (p[0] == '\0') return -1;
 
-	size_t size=0;
+	size_t size = 0;
 
-	while (*(p=keyNameGetOneLevel(p+size,&size)))
+	while (*(p = keyNameGetOneLevel (p + size, &size)))
 	{
 		if (size > 0)
 		{
@@ -473,7 +571,6 @@ int keyIsInactive (const Key *key)
 
 	return 0;
 }
-
 
 
 /**
@@ -493,11 +590,11 @@ int keyIsInactive (const Key *key)
  * @param key the key to check
  * @ingroup keytest
  */
-int keyIsBinary(const Key *key)
+int keyIsBinary (const Key * key)
 {
 	if (!key) return -1;
 
-	return keyGetMeta(key, "binary") != 0;
+	return keyGetMeta (key, "binary") != 0;
 }
 
 
@@ -517,15 +614,12 @@ int keyIsBinary(const Key *key)
  * @param key the key to check
  * @ingroup keytest
  */
-int keyIsString(const Key *key)
+int keyIsString (const Key * key)
 {
 	if (!key) return -1;
 
-	return keyGetMeta(key, "binary") == 0;
+	return keyGetMeta (key, "binary") == 0;
 }
-
-
-
 
 
 /**
@@ -543,8 +637,8 @@ int keyIsString(const Key *key)
  *
  * @par A very simple example would be
  * @code
-Key *key1, *key;
-uint32_t changes;
+ Key *key1, *key;
+ uint32_t changes;
 
 // omited key1 and key2 initialization and manipulation
 
@@ -553,38 +647,38 @@ changes=keyCompare(key1,key2);
 if (changes == 0) printf("key1 and key2 are identicall\n");
 
 if (changes & KEY_VALUE)
-	printf("key1 and key2 have different values\n");
- 
+printf("key1 and key2 have different values\n");
+
 if (changes & KEY_UID)
-	printf("key1 and key2 have different UID\n");
- 
+printf("key1 and key2 have different UID\n");
+
  *
  * @endcode
  *
- * 
+ *
  * @par Example of very powerful specific Key lookup in a KeySet:
  * @code
-Key *base = keyNew ("/sw/MyApp/something", KEY_END);
-KDB *handle = kdbOpen(base);
-KeySet *ks=ksNew(0, KS_END);
-Key *current;
-uint32_t match;
-uint32_t interests;
+ Key *base = keyNew ("/sw/MyApp/something", KEY_END);
+ KDB *handle = kdbOpen(base);
+ KeySet *ks=ksNew(0, KS_END);
+ Key *current;
+ uint32_t match;
+ uint32_t interests;
 
 
-kdbGet(handle, ks, base);
+ kdbGet(handle, ks, base);
 
 // we are interested only in key type and access permissions
 interests=(KEY_TYPE | KEY_MODE);
 
-ksRewind(ks);   // put cursor in the beginning
+ksRewind(ks);	// put cursor in the beginning
 while ((curren=ksNext(ks))) {
-	match=keyCompare(current,base);
-	
-	if ((~match & interests) == interests)
-		printf("Key %s has same type and permissions of base key",keyName(current));
+match=keyCompare(current,base);
 
-	// continue walking in the KeySet....
+if ((~match & interests) == interests)
+printf("Key %s has same type and permissions of base key",keyName(current));
+
+// continue walking in the KeySet....
 }
 
 // now we want same name and/or value
@@ -593,61 +687,66 @@ interests=(KEY_NAME | KEY_VALUE);
 // we don't really need ksRewind(), since previous loop achieved end of KeySet
 ksRewind(ks);
 while ((current=ksNext(ks))) {
-	match=keyCompare(current,base);
+match=keyCompare(current,base);
 
-	if ((~match & interests) == interests) {
-		printf("Key %s has same name, value, and sync status
-			of base key",keyName(current));
-	}
-	// continue walking in the KeySet....
+if ((~match & interests) == interests) {
+printf("Key %s has same name, value, and sync status
+of base key",keyName(current));
+}
+// continue walking in the KeySet....
 }
 
 ksDel(ks);
 kdbClose (handle, base);
 keyDel(base);
- * @endcode
- * 
- * @return a bit array pointing the differences
- * @param key1 first key
- * @param key2 second key
- * @see #keyswitch_t
- * @ingroup keytest
- */
-keyswitch_t keyCompare(const Key *key1, const Key *key2)
+* @endcode
+*
+* @return a bit array pointing the differences
+* @param key1 first key
+* @param key2 second key
+* @see #keyswitch_t
+* @ingroup keytest
+	*/
+keyswitch_t keyCompare (const Key * key1, const Key * key2)
 {
 	if (!key1 && !key2) return 0;
 	if (!key1 || !key2) return KEY_NULL;
 
 	keyswitch_t ret = 0;
-	ssize_t nsize1 = keyGetNameSize(key1);
-	ssize_t nsize2 = keyGetNameSize(key2);
-	const char *name1 = keyName(key1);
-	const char *name2 = keyName(key2);
-	const Key *comment1 = keyGetMeta(key1, "comment");
-	const Key *comment2 = keyGetMeta(key2, "comment");
-	const char *owner1 = keyOwner(key1);
-	const char *owner2 = keyOwner(key2);
-	const void *value1 = keyValue(key1);
-	const void *value2 = keyValue(key2);
-	ssize_t size1 = keyGetValueSize(key1);
-	ssize_t size2 = keyGetValueSize(key2);
+	ssize_t nsize1 = keyGetNameSize (key1);
+	ssize_t nsize2 = keyGetNameSize (key2);
+	const char * name1 = keyName (key1);
+	const char * name2 = keyName (key2);
+	const Key * comment1 = keyGetMeta (key1, "comment");
+	const Key * comment2 = keyGetMeta (key2, "comment");
+	const char * owner1 = keyOwner (key1);
+	const char * owner2 = keyOwner (key2);
+	const void * value1 = keyValue (key1);
+	const void * value2 = keyValue (key2);
+	ssize_t size1 = keyGetValueSize (key1);
+	ssize_t size2 = keyGetValueSize (key2);
 
 	// TODO: might be (binary) by chance
-	if (strcmp(keyString(comment1), keyString(comment2)))
-						 ret|=KEY_COMMENT;
+	if (strcmp (keyString (comment1), keyString (comment2))) ret |= KEY_COMMENT;
 
-	if (strcmp(owner1, owner2))              ret|=KEY_OWNER;
+	if (strcmp (owner1, owner2)) ret |= KEY_OWNER;
 
-	if (keyCompareMeta(key1, key2))          ret|=KEY_META;
+	if (keyCompareMeta (key1, key2)) ret |= KEY_META;
 
-	if (nsize1 != nsize2)                    ret|=KEY_NAME;
-	else if (!name1 || !name2)               ret|=KEY_NAME;
-	else if (strcmp(name1, name2))           ret|=KEY_NAME;
+	if (nsize1 != nsize2)
+		ret |= KEY_NAME;
+	else if (!name1 || !name2)
+		ret |= KEY_NAME;
+	else if (strcmp (name1, name2))
+		ret |= KEY_NAME;
 
 
-	if (size1 != size2)                      ret|=KEY_VALUE;
-	else if (!value1 || !value2)             ret|=KEY_VALUE;
-	else if (memcmp(value1, value2, size1))  ret|=KEY_VALUE;
+	if (size1 != size2)
+		ret |= KEY_VALUE;
+	else if (!value1 || !value2)
+		ret |= KEY_VALUE;
+	else if (memcmp (value1, value2, size1))
+		ret |= KEY_VALUE;
 
 	// TODO: rewind meta data to previous position
 	return ret;
@@ -669,7 +768,7 @@ int keyCompareMeta (const Key * k1, const Key * k2)
 
 	keyRewindMeta (key1);
 	keyRewindMeta (key2);
-	while ((meta1 = keyNextMeta (key1))!=0)
+	while ((meta1 = keyNextMeta (key1)) != 0)
 	{
 		meta2 = keyNextMeta (key2);
 		if (!meta2)
@@ -677,11 +776,10 @@ int keyCompareMeta (const Key * k1, const Key * k2)
 			return KEY_META;
 		}
 
-		if (strcmp(keyName(meta1), keyName(meta2))) return KEY_META;
-		if (strcmp(keyString(meta1), keyString(meta2))) return KEY_META;
+		if (strcmp (keyName (meta1), keyName (meta2))) return KEY_META;
+		if (strcmp (keyString (meta1), keyString (meta2))) return KEY_META;
 	}
 
 	// TODO: rewind meta data to previous position
 	return 0;
 }
-

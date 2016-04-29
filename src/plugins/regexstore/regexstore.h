@@ -12,9 +12,9 @@
 #include <kdbplugin.h>
 
 
-int elektraRegexstoreOpen(ckdb::Plugin *handle, ckdb::Key *errorKey);
-int elektraRegexstoreClose(ckdb::Plugin *handle, ckdb::Key *errorKey);
-int elektraRegexstoreGet(ckdb::Plugin *handle, ckdb::KeySet *ks, ckdb::Key *parentKey);
-int elektraRegexstoreSet(ckdb::Plugin *handle, ckdb::KeySet *ks, ckdb::Key *parentKey);
+int elektraRegexstoreOpen (ckdb::Plugin * handle, ckdb::Key * errorKey);
+int elektraRegexstoreClose (ckdb::Plugin * handle, ckdb::Key * errorKey);
+int elektraRegexstoreGet (ckdb::Plugin * handle, ckdb::KeySet * ks, ckdb::Key * parentKey);
+int elektraRegexstoreSet (ckdb::Plugin * handle, ckdb::KeySet * ks, ckdb::Key * parentKey);
 
 #endif

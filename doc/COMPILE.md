@@ -68,6 +68,7 @@ Additional gcc 4.6 armhf is tested regularly.
 |      mingw        | 4.6                         |      i386         |
 |      clang        | version 3.5.0-1~exp1        |x86_64-pc-linux-gnu|
 |      icc          | 14.0.2 20140120             |x86_64-pc-linux-gnu|
+|      gcc/g++      |                             | openbsd 4.9.3 (*) |
 
 
 To change the compiler, use
@@ -78,7 +79,12 @@ for example to use gcc-4.3
 
 	cmake -DCMAKE_C_COMPILER=gcc-4.3 -DCMAKE_CXX_COMPILER=g++-4.3 ..
 
-
+(*) OpenBSD ships an old version of GCC per default, which can not compile Elektra.
+A manual installation of egcc/eg++ is required. Note that not every OpenBSD
+mirror provides the eg++ package. Elektra builds are confirmed with
+egcc/eg++ 4.9.3 in OpenBSD 5.9.
+The packages are called gcc and g++.
+Compile with CC=/usr/local/bin/egcc CXX=/usr/local/bin/eg++
 
 ### OPTIONS ###
 
@@ -89,7 +95,6 @@ Some options, i.e. PLUGINS, BINDINGS and TOOLS are either:
 - a special uppercase element that gets replaced by a list of elements, that are:
   - ALL to include all elements (except elements with unfulfilled dependencies)
   - NODEP to include all elements without dependencies
-  - DEFAULT to go back to the situation that was there when nothing was changed
 - elements prefixed with a minus symbol (-) to exclude an element
 
 Examples for this are especially in the subsection PLUGINS below, but they work in the
@@ -105,7 +110,7 @@ commit the changes (resolver plugin, also takes care about how
 the configuration files are named) and also do many other
 tasks related to configuration.
 
-The default is also the minimal set of plugins you should add:
+The minimal set of plugins you should add:
 - dump is the default storage.
   If you remove it, make sure you add another one and set
   `KDB_DEFAULT_STORAGE` to it.
@@ -118,7 +123,12 @@ The default is also the minimal set of plugins you should add:
   (e.g. an empty value).
   See [kdb-mount(1)](/doc/help/kdb-mount.md).
 
-To add all plugins, you can use:
+By default nearly all plugins are added. Only experimental plugins
+will be omitted:
+
+	-DPLUGINS="ALL;-EXPERIMENTAL"
+
+To add also experimental plugins, you can use:
 
 	-DPLUGINS=ALL
 
@@ -136,13 +146,16 @@ To add all plugins not having additional dependencies
 
 	-DPLUGINS=NODEP
 
-To manually set the default (same as not setting PLUGINS), you can use
+Note, that every `infos/provides` and `infos/status` field written uppercase can
+be used to select plugins that way.  You also can combine any of these fields
+and add/remove other plugins to/from it, e.g. to include all plugins without deps,
+that provide storage (except yajl) and are maintained, but not include all plugins
+that are experimental, you would use:
 
-	-DPLUGINS=DEFAULT
+	-DPLUGINS="NODEP;STORAGE;-yajl;MAINTAINED;-EXPERIMENTAL"
 
-This only states the list of the plugins are the default list and does
-not mean that a different default is used after Elektra was installed.
-For this endeavour you need to change:
+Note, that changing `PLUGINS` will not modifiy the defaults used
+after Elektra was installed.  For this endeavour you need to change:
 
 	-DKDB_DEFAULT_RESOLVER=resolver
 
@@ -153,8 +166,7 @@ and
 The default resolver+storage will write to `KDB_DB_FILE` and `KDB_DB_INIT`
 ([for bootstrapping](/doc/help/elektra-bootstrapping.md)).
 
-!!! Note, that you cannot use NODEP or DEFAULT and add other plugins to it.
-Instead, you can pass the list of plugins you want, e.g.:
+Obviously, you can pass the exact list of plugins you want, e.g.:
 
 	-DPLUGINS="resolver;sync;dump"
 
@@ -193,16 +205,14 @@ The system flags are (the order matters!):
 
 E.g. one may use:
 
-	-DPLUGINS="resolver;resolver_lm_uhpb_b"
+	-DPLUGINS="resolver_lm_uhpb_b"
 
-!!! Note, that the base-plugin itself need to be part of PLUGINS, so that the
-variants will work, e.g., to add resolver_l_h_b you need to specify
+To add resolver_l_h_b you need to specify
 
 	-DPLUGINS="resolver;resolver_l_h_b"
 
-even if you actually do not want to have resolver.
 You can add resolver with any combination of the flags, even if they are
-not available in ALL.
+not available in `ALL`.
 
 
 
@@ -210,20 +220,17 @@ not available in ALL.
 
 Tools are used to add extra functionality to Elektra.
 The flag used to specify which tools are compiled is
-`-DTOOLS`, thus flag works similarly to the `-DPLUGINS` flag.
+`-DTOOLS`, thus flag works similarly to the `-DPLUGINS` flag,
+but is more limited in its functionality (which does not
+matter, because there are not so many tools).
 
 To add all tools, you can use::
 
 	-DTOOLS=ALL
 
-To add all plugins not having additional dependencies
-(they need only POSIX), you can use:
+To add all tools except of race, you can use:
 
-	-DTOOLS=NODEP
-
-To build only the default tools, you can use:
-
-	-DTOOLS=DEFAULT
+	-DTOOLS="ALL;-race"
 
 To specify specific tools you can use, e.g.:
 
@@ -232,7 +239,7 @@ To specify specific tools you can use, e.g.:
 
 #### BINDINGS ####
 
-Bindings are used in the same way as PLUGINS and TOOLS.
+Bindings are used in the same way as TOOLS.
 For example you can use:
 
 	-DBINDINGS=ALL

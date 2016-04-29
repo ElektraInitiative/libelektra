@@ -6,6 +6,8 @@
  * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
  */
 
+// clang-format off
+
 ksNew( 19 ,
 	keyNew ("user/tests/filesys/.HiddenBinaryKey"
 		, KEY_VALUE, "BinaryValue"
