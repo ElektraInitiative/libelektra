@@ -359,6 +359,7 @@ number:60
 description:Invalid Line encountered
 severity:error
 ingroup:plugin
+macro:NOEOF
 module:simpleini
 
 number:61
