@@ -413,6 +413,9 @@ in libmeta Thomas Waser added (partly based on ideas/code from Felix Berlakovich
 
 ### Qt-gui
 
+Raffael Pancheri fixed an important issue which broke the synchronization
+because an key related to Elektra's internal version information was missing.
+
 Felix Berlakovich updated the qt-gui so that it uses a newly written sync-method
 added in libtools.
 
