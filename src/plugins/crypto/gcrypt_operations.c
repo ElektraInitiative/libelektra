@@ -33,7 +33,8 @@ static Key * elektraCryptoReadParamKey (KeySet * config, Key * errorKey)
 	Key * key = ksLookupByName (config, ELEKTRA_CRYPTO_PARAM_KEY_PATH, 0);
 	if (key == NULL)
 	{
-		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CRYPTO_CONFIG_FAULT, errorKey, "missing %s in configuration", ELEKTRA_CRYPTO_PARAM_KEY_PATH);
+		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CRYPTO_CONFIG_FAULT, errorKey, "missing %s in configuration",
+				    ELEKTRA_CRYPTO_PARAM_KEY_PATH);
 	}
 	return key;
 }
@@ -48,7 +49,8 @@ static Key * elektraCryptoReadParamIv (KeySet * config, Key * errorKey)
 	Key * iv = ksLookupByName (config, ELEKTRA_CRYPTO_PARAM_IV_PATH, 0);
 	if (iv == NULL)
 	{
-		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CRYPTO_CONFIG_FAULT, errorKey, "missing %s in configuration", ELEKTRA_CRYPTO_PARAM_IV_PATH);
+		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CRYPTO_CONFIG_FAULT, errorKey, "missing %s in configuration",
+				    ELEKTRA_CRYPTO_PARAM_IV_PATH);
 	}
 	return iv;
 }
@@ -77,7 +79,8 @@ int elektraCryptoGcryInit (Key * errorKey)
 	// initialize the rest of the gcrypt library
 	if (!gcry_check_version (GCRYPT_VERSION))
 	{
-		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CRYPTO_INIT, errorKey, "Libgcrypt version check failed, looking for version: %s", GCRYPT_VERSION);
+		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CRYPTO_INIT, errorKey, "Libgcrypt version check failed, looking for version: %s",
+				    GCRYPT_VERSION);
 		return (-1);
 	}
 	gcry_control (GCRYCTL_DISABLE_SECMEM, 0);
@@ -223,7 +226,8 @@ int elektraCryptoGcryEncrypt (elektraCryptoHandle * handle, Key * k, Key * error
 						ELEKTRA_CRYPTO_GCRY_BLOCKSIZE);
 		if (gcry_err != 0)
 		{
-			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CRYPTO_ENCRYPT_FAIL, errorKey, "Encryption failed because: %s", gcry_strerror (gcry_err));
+			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CRYPTO_ENCRYPT_FAIL, errorKey, "Encryption failed because: %s",
+					    gcry_strerror (gcry_err));
 			elektraFree (output);
 			return (-1);
 		}
@@ -298,7 +302,8 @@ int elektraCryptoGcryDecrypt (elektraCryptoHandle * handle, Key * k, Key * error
 						ELEKTRA_CRYPTO_GCRY_BLOCKSIZE);
 		if (gcry_err != 0)
 		{
-			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CRYPTO_DECRYPT_FAIL, errorKey, "Decryption failed because: %s", gcry_strerror (gcry_err));
+			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CRYPTO_DECRYPT_FAIL, errorKey, "Decryption failed because: %s",
+					    gcry_strerror (gcry_err));
 			elektraFree (output);
 			return (-1);
 		}
