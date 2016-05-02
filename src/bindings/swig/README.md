@@ -21,12 +21,15 @@ debian wheezy needs:
 ## python2
 
 Please note that the python2 bindings has been deprecated!
+python2, however, is still needed for the
+[kdb gen tool](/src/tools/gen/gen)
+because of its dependency to cheetah.
 
 To use python2 on debian you might need following cmake defines:
 
-	-DPYTHON_EXECUTABLE:FILEPATH=/usr/bin/python2.7
-	-DPYTHON_INCLUDE_DIR:PATH=/usr/include/python2.7
-	-DPYTHON_LIBRARY:FILEPATH=/usr/lib/libpython2.7.so
+	-DPYTHON2_EXECUTABLE:FILEPATH=/usr/bin/python2.7
+	-DPYTHON2_INCLUDE_DIR:PATH=/usr/include/python2.7
+	-DPYTHON2_LIBRARY:FILEPATH=/usr/lib/libpython2.7.so
 
 and in the code you need to import the new print:
 
