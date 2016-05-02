@@ -97,6 +97,9 @@
  *
  * @snippet doc.c plugin errors usage
  *
+ * Note that you also need to return -1 in the case of error.
+ * See individual description of entry points to implement below.
+ *
  * @par Further help
  * Do not hesitate to open an issue if anything
  * is unclear.
