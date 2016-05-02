@@ -1,0 +1,90 @@
+#!/bin/bash
+
+if [ "$#" -ne 1 ];
+then
+	echo "Usage: metaini_to_header METADATA.ini"
+	exit 1
+fi
+
+if [ ! -e "$1" ];
+then
+	echo "File $1 doesn't exist"
+	exit 1
+fi
+
+(
+cat <<EOF
+const char * metaNames[] = 
+{
+EOF
+)
+
+METANAMES=$(grep -Po "(?<=^\[)(.*)(?=\]$)" $1)
+
+for key in $METANAMES;
+do
+	echo -e "\t\"$key\","
+done
+
+(
+cat <<EOF
+	NULL
+};
+
+const char * pluginMeta[][2] =
+{
+EOF
+)
+
+section=
+while read line;
+do
+	case $line in
+		\[*\])
+			section=$(grep -Po "(?<=\[)(.*)(?=\])" <<< $line)
+			;;
+		usedby\/plugin*)
+			plugins=$(grep -Po "(?<=usedby\/plugin= )(.*)" <<< $line)
+			for p in ${plugins};
+			do
+				echo -e -n "\t{\"$section\", \"$p\"},\n"
+			done
+			;;
+	esac
+done < $1
+
+(
+cat <<EOF
+	{NULL, NULL}
+};
+
+const char * apiMeta[][2] =
+{
+EOF
+)
+
+section=
+while read line;
+do
+	case $line in
+		\[*\])
+			section=$(grep -Po "(?<=\[)(.*)(?=\])" <<< $line)
+			;;
+		usedby\/api*)
+			apis=$(grep -Po "(?<=usedby\/api= )(.*)" <<< $line)
+			for a in ${apis};
+			do
+				echo -e -n "\t{\"$section\", \"$a\"},\n"
+			done
+			;;
+	esac
+done < $1
+
+(
+cat <<EOF
+	{NULL, NULL}
+};
+EOF
+)
+
+
