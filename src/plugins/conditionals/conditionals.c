@@ -520,14 +520,15 @@ static const char * isAssign (Key * key, char * expr, Key * parentKey, KeySet * 
 			lookupKey = keyNew (firstPtr, KEY_END);
 		}
 		Key * assign = ksLookup (ks, lookupKey, KDB_O_NONE);
-		keyDel (lookupKey);
 		if (!assign)
 		{
-			ELEKTRA_SET_ERRORF (133, parentKey, "Key %s not found", keyName(assign));
+			ELEKTRA_SET_ERRORF (133, parentKey, "Key %s not found", keyName(lookupKey));
+			keyDel (lookupKey);
 			return NULL;
 		}
 		else
 		{
+			keyDel (lookupKey);
 			return keyString (assign);
 		}
 	}
@@ -606,11 +607,11 @@ static CondResult parseCondition (Key * key, const char * condition, const Key *
 static CondResult parseConditionString (const Key * meta, const Key * suffixList, Key * parentKey, Key * key, KeySet * ks, Operation op)
 {
 	const char * conditionString = keyString (meta);
-	const char * regexString = "((\\((.*?)\\))[[:space:]]*\\?[[:space:]]*(\\((.*?)\\)))($|([[:space:]]*:[[:space:]]*(\\((.*)\\))))";
+	const char * regexString = "((\\(((.*)?)\\))[[:space:]]*\\?[[:space:]]*(\\(((.*)?)\\)))($|([[:space:]]*:[[:space:]]*(\\((.*)\\))))";
 
 	regex_t regex;
 	CondResult ret;
-	if ((ret = regcomp (&regex, regexString, REG_EXTENDED|REG_NEWLINE)))
+	if ((ret = regcomp (&regex, regexString, REGEX_FLAGS_CONDITION)))
 	{
 		ELEKTRA_SET_ERROR (87, parentKey, "Couldn't compile regex: most likely out of memory"); // the regex compiles so the only
 		// possible error would be out of
@@ -618,7 +619,7 @@ static CondResult parseConditionString (const Key * meta, const Key * suffixList
 		ksDel (ks);
 		return ERROR;
 	}
-	int subMatches = 10;
+	int subMatches = 12;
 	regmatch_t m[subMatches];
 	char * ptr = (char *)conditionString;
 	int nomatch = regexec (&regex, ptr, subMatches, m, 0);
@@ -630,7 +631,7 @@ static CondResult parseConditionString (const Key * meta, const Key * suffixList
 		ksDel (ks);
 		return ERROR;
 	}
-	if (m[2].rm_so == -1 || m[5].rm_so == -1)
+	if (m[2].rm_so == -1 || m[6].rm_so == -1)
 	{
 		ELEKTRA_SET_ERRORF (134, parentKey, "Invalid syntax: \"%s\". Check kdb info conditionals for additional information\n",
 				    conditionString);
@@ -649,16 +650,16 @@ static CondResult parseConditionString (const Key * meta, const Key * suffixList
 	strncpy (condition, conditionString + startPos, endPos - startPos);
 	condition[endPos - startPos] = '\0';
 
-	startPos = m[4].rm_so + (ptr - conditionString);
-	endPos = m[4].rm_eo + (ptr - conditionString);
+	startPos = m[5].rm_so + (ptr - conditionString);
+	endPos = m[5].rm_eo + (ptr - conditionString);
 	thenexpr = elektraMalloc (endPos - startPos + 1);
 	strncpy (thenexpr, conditionString + startPos, endPos - startPos);
 	thenexpr[endPos - startPos] = '\0';
 
-	if (m[8].rm_so != -1)
+	if (m[10].rm_so != -1)
 	{
-		startPos = m[8].rm_so + (ptr - conditionString);
-		endPos = m[8].rm_eo + (ptr - conditionString);
+		startPos = m[10].rm_so + (ptr - conditionString);
+		endPos = m[10].rm_eo + (ptr - conditionString);
 		elseexpr = elektraMalloc (endPos - startPos + 1);
 		strncpy (elseexpr, conditionString + startPos, endPos - startPos);
 		elseexpr[endPos - startPos] = '\0';
@@ -802,6 +803,8 @@ int elektraConditionalsGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned EL
 	CondResult ret = FALSE;
 	while ((cur = ksNext (returned)) != NULL)
 	{
+		if(keyGetNamespace(cur) == KEY_NS_SPEC)
+			continue;
 		Key * conditionMeta = (Key *)keyGetMeta (cur, "check/condition");
 		Key * assignMeta = (Key *)keyGetMeta (cur, "assign/condition");
 		Key * suffixList = (Key *)keyGetMeta (cur, "condition/validsuffix");
@@ -835,6 +838,8 @@ int elektraConditionalsSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned EL
 	CondResult ret = FALSE;
 	while ((cur = ksNext (returned)) != NULL)
 	{
+		if(keyGetNamespace(cur) == KEY_NS_SPEC)
+			continue;
 		Key * conditionMeta = (Key *)keyGetMeta (cur, "check/condition");
 		Key * assignMeta = (Key *)keyGetMeta (cur, "assign/condition");
 		Key * suffixList = (Key *)keyGetMeta (cur, "condition/validsuffix");

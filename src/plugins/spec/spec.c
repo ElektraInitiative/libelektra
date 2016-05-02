@@ -602,7 +602,7 @@ static void removeMeta (Key * key, Key * specKey, Key * parentKey ELEKTRA_UNUSED
 	}
 }
 
-static void copyMeta (Key * key, Key * specKey, Key * parentKey)
+static void copyMeta (Key * key, Key * specKey, Key * parentKey ELEKTRA_UNUSED)
 {
 	keyRewindMeta (specKey);
 	while (keyNextMeta (specKey) != NULL)
@@ -628,7 +628,7 @@ static void copyMeta (Key * key, Key * specKey, Key * parentKey)
 			}
 			else
 			{
-				keyCopyMeta (key, specKey, name);
+				keySetMeta (key, name, keyString(meta));
 			}
 		}
 	}
@@ -731,7 +731,7 @@ static int doGlobbing (Key * parentKey, KeySet * returned, KeySet * specKS, Conf
 			if (keyGetMeta (specKey, "assign/condition")) // hardcoded for now because only assign/conditional currently exists
 			{
 				Key * newKey = keyNew (strchr (keyName (specKey), '/'), KEY_CASCADING_NAME, KEY_END);
-				copyMeta (newKey, specKey, parentKey);
+				keySetMeta (newKey, "assign/condition", keyString(keyGetMeta(specKey, "assign/condition")));
 				ksAppendKey (returned, keyDup (newKey));
 				keyDel (newKey);
 			}
