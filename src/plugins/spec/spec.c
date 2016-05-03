@@ -874,7 +874,6 @@ int elektraSpecSet (Plugin * handle, KeySet * returned, Key * parentKey)
 	KeySet * config = elektraPluginGetConfig (handle);
 	Key * onConflictConf = ksLookupByName (config, "/conflict/set", KDB_O_NONE);
 	OnConflict onConflict = IGNORE;
-	ConflictHandling * ch = elektraMalloc (sizeof (ConflictHandling));
 	if (onConflictConf)
 	{
 		const char * onConflictString = keyName (onConflictConf);
@@ -906,6 +905,7 @@ int elektraSpecSet (Plugin * handle, KeySet * returned, Key * parentKey)
 		clean = 1;
 		pluginConfig->counter = 0;
 	}
+	ConflictHandling * ch = elektraMalloc (sizeof (ConflictHandling));
 	ch->member = onConflict;
 	ch->invalid = onConflict;
 	ch->count = onConflict;
