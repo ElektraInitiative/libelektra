@@ -40,19 +40,19 @@ int main (int argc, char ** argv)
 	printf ("==================\n\n");
 
 	init (argc, argv);
-	KeySet * ks = create_ks ("153", "== + bla/val1 + bla/val2 bla/val3");
+	KeySet * ks = create_ks ("153", "== + ../bla/val1 + ../bla/val2 ../bla/val3");
 	test (ks, 1);
 	ksDel (ks);
-	ks = create_ks ("250", "< + bla/val1 + bla/val2 bla/val3");
+	ks = create_ks ("250", "< + ../bla/val1 + ../bla/val2 ../bla/val3");
 	test (ks, (-1));
 	ksDel (ks);
-	ks = create_ks ("250", ">= + bla/val1 + bla/val2 bla/val3");
+	ks = create_ks ("250", ">= + @/bla/val1 + @/bla/val2 @/bla/val3");
 	test (ks, 1);
 	ksDel (ks);
-	ks = create_ks ("2", "== / bla/val1 bla/val2");
+	ks = create_ks ("2", "== / @/bla/val1 @/bla/val2");
 	test (ks, 1);
 	ksDel (ks);
-	ks = create_ks ("1", "== / bla/val1 bla/val3");
+	ks = create_ks ("1", "== / ../bla/val1 ../bla/val3");
 	test (ks, (-1));
 	ksDel (ks);
 	ks = create_ks ("3", "== + '1.5' '1.5'");
@@ -65,25 +65,25 @@ int main (int argc, char ** argv)
 	test (ks, (-1));
 	ksDel (ks);
 
-	ks = create_ks ("10", "== + bla/val3 '7'");
+	ks = create_ks ("10", "== + ../bla/val3 '7'");
 	test (ks, 1);
 	ksDel (ks);
 
-	ks = create_ks ("7", "== + bla/nonExisting '7'");
+	ks = create_ks ("7", "== + @/bla/nonExisting '7'");
 	test (ks, 1);
 	ksDel (ks);
 
-	ks = create_ks ("7", "== * bla/nonExisting '7'");
+	ks = create_ks ("7", "== * @/bla/nonExisting '7'");
 	test (ks, 1);
 	ksDel (ks);
 
-	ks = create_ks ("3", "== + bla/nonExisting + bla/nonExistingToo bla/val3");
+	ks = create_ks ("3", "== + ../bla/nonExisting + ../bla/nonExistingToo ../bla/val3");
 	test (ks, 1) ksDel (ks);
 
-	ks = create_ks ("3", "== / bla/nonExisting / bla/nonExistingToo bla/val3");
+	ks = create_ks ("3", "== / @/bla/nonExisting / ../bla/nonExistingToo @/bla/val3");
 	test (ks, 1) ksDel (ks);
 
-	ks = create_ks ("3", "== + bla/nonExisting / bla/nonExistingToo bla/val3");
+	ks = create_ks ("3", "== + @/bla/nonExisting / ../bla/nonExistingToo ../bla/val3");
 	test (ks, 1) ksDel (ks);
 
 	printf ("\ntestmod_mathcheck RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);

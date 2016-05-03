@@ -174,9 +174,9 @@ static PNElem doPrefixCalculation (PNElem * stack, PNElem * stackPtr)
 	result.value = stackPtr->value;
 	return result;
 }
-static PNElem parsePrefixString (const char * prefixString, KeySet * ks, Key * parentKey)
+static PNElem parsePrefixString (const char * prefixString, Key * curKey, KeySet * ks, Key * parentKey)
 {
-	const char * regexString = "((([[:alnum:]]*/)*[[:alnum:]]+))|('[0-9]*[.,]{0,1}[0-9]*')|([-+:/<>=!{*])";
+	const char * regexString = "(((\\.|\\.\\.|@|\\/)([[:alnum:]]*/)*[[:alnum:]]+))|('[0-9]*[.,]{0,1}[0-9]*')|([-+:/<>=!{*])";
 	char * ptr = (char *)prefixString;
 	regex_t regex;
 	Key * key;
@@ -296,10 +296,25 @@ static PNElem parsePrefixString (const char * prefixString, KeySet * ks, Key * p
 			else
 			{
 				ksRewind (ks);
-				searchKey = realloc (searchKey, len + 2 + strlen (keyName (parentKey)));
-				strcpy (searchKey, keyName (parentKey));
-				strcat (searchKey, "/");
-				strcat (searchKey, subString);
+				if (subString[0] == '@')
+				{
+					searchKey = realloc (searchKey, len + 2 + strlen (keyName (parentKey)));
+					strcpy (searchKey, keyName (parentKey));
+					strcat (searchKey, "/");
+					strcat (searchKey, subString + 2);
+				}
+				else if (subString[0] == '.')
+				{
+					searchKey = realloc (searchKey, len + 2 + strlen (keyName (curKey)));
+					strcpy (searchKey, keyName (curKey));
+					strcat (searchKey, "/");
+					strcat (searchKey, subString);
+				}
+				else
+				{
+					searchKey = realloc (searchKey, len + 1);
+					strcpy (searchKey, subString);
+				}
 				key = ksLookupByName (ks, searchKey, 0);
 				if (!key)
 				{
@@ -347,7 +362,7 @@ int elektraMathcheckSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key 
 	{
 		meta = keyGetMeta (cur, "check/math");
 		if (!meta) continue;
-		result = parsePrefixString (keyString (meta), ksDup (returned), parentKey);
+		result = parsePrefixString (keyString (meta), cur, ksDup (returned), parentKey);
 		char val1[MAX_CHARS_DOUBLE];
 		char val2[MAX_CHARS_DOUBLE];
 		strncpy (val1, keyString (cur), sizeof (val1));
