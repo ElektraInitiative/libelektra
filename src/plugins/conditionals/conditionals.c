@@ -499,9 +499,10 @@ static const char * isAssign (Key * key, char * expr, Key * parentKey, KeySet * 
 	{
 		if (lastPtr <= firstPtr)
 		{
-			ELEKTRA_SET_ERRORF (134, parentKey, "Invalid syntax: \"%s\". Check kdb info conditionals for additional information\n", expr);
+			ELEKTRA_SET_ERRORF (134, parentKey,
+					    "Invalid syntax: \"%s\". Check kdb info conditionals for additional information\n", expr);
 			return NULL;
-		}	
+		}
 		*(lastPtr + 1) = '\0';
 		Key * lookupKey;
 		if (*firstPtr == '@')
@@ -522,7 +523,7 @@ static const char * isAssign (Key * key, char * expr, Key * parentKey, KeySet * 
 		Key * assign = ksLookup (ks, lookupKey, KDB_O_NONE);
 		if (!assign)
 		{
-			ELEKTRA_SET_ERRORF (133, parentKey, "Key %s not found", keyName(lookupKey));
+			ELEKTRA_SET_ERRORF (133, parentKey, "Key %s not found", keyName (lookupKey));
 			keyDel (lookupKey);
 			return NULL;
 		}
@@ -536,13 +537,15 @@ static const char * isAssign (Key * key, char * expr, Key * parentKey, KeySet * 
 	{
 		if (firstPtr == lastPtr)
 		{
-			ELEKTRA_SET_ERRORF (134, parentKey, "Invalid syntax: \"%s\". Check kdb info conditionals for additional information\n", expr);
+			ELEKTRA_SET_ERRORF (134, parentKey,
+					    "Invalid syntax: \"%s\". Check kdb info conditionals for additional information\n", expr);
 			return NULL;
 		}
 		char * nextMark = strchr (firstPtr + 1, '\'');
 		if (nextMark != lastPtr)
 		{
-			ELEKTRA_SET_ERRORF (134, parentKey, "Invalid syntax: \"%s\". Check kdb info conditionals for additional information\n", expr);
+			ELEKTRA_SET_ERRORF (134, parentKey,
+					    "Invalid syntax: \"%s\". Check kdb info conditionals for additional information\n", expr);
 			return NULL;
 		}
 		*lastPtr = '\0';
@@ -803,8 +806,7 @@ int elektraConditionalsGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned EL
 	CondResult ret = FALSE;
 	while ((cur = ksNext (returned)) != NULL)
 	{
-		if(keyGetNamespace(cur) == KEY_NS_SPEC)
-			continue;
+		if (keyGetNamespace (cur) == KEY_NS_SPEC) continue;
 		Key * conditionMeta = (Key *)keyGetMeta (cur, "check/condition");
 		Key * assignMeta = (Key *)keyGetMeta (cur, "assign/condition");
 		Key * suffixList = (Key *)keyGetMeta (cur, "condition/validsuffix");
@@ -838,8 +840,7 @@ int elektraConditionalsSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned EL
 	CondResult ret = FALSE;
 	while ((cur = ksNext (returned)) != NULL)
 	{
-		if(keyGetNamespace(cur) == KEY_NS_SPEC)
-			continue;
+		if (keyGetNamespace (cur) == KEY_NS_SPEC) continue;
 		Key * conditionMeta = (Key *)keyGetMeta (cur, "check/condition");
 		Key * assignMeta = (Key *)keyGetMeta (cur, "assign/condition");
 		Key * suffixList = (Key *)keyGetMeta (cur, "condition/validsuffix");
