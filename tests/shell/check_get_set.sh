@@ -129,7 +129,9 @@ do
 		[ "x`"$KDB" get $KEY`" = "x$VALUE" ]
 		succeed_if "$KEY is not $VALUE"
 
-		for i in `seq 0 9`
+		i=0
+		j=9
+		while [ $i -le $j ]
 		do
 			KEY="$ROOT/hello/a/array/#$i"
 			VALUE="$i"
@@ -145,6 +147,7 @@ do
 				[ "x`"$KDB" get $KEY`" = "x$VALUE" ]
 				succeed_if "$KEY is not $VALUE"
 			fi
+			i=$((i+1))
 		done
 
 		"$KDB" rm -r "$ROOT"
