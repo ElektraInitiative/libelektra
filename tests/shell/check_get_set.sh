@@ -131,7 +131,7 @@ do
 
 		i=0
 		j=9
-		while [ $i -le $j ]
+		while [ "$i" -le "$j" ]
 		do
 			KEY="$ROOT/hello/a/array/#$i"
 			VALUE="$i"
