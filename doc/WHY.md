@@ -28,6 +28,7 @@ Features that rarely can be found elsewhere (at least in this combination):
   - cascading between `/etc`, `$HOME`, `cwd` and so on
   - you can change which Elektra path is connected to which configuration
     file with [mounting](/doc/help/elektra-mounting.md)
+  - Portable across OS (Linux, BSD, w64, mac os x,.. ) and desktop systems (GNOME, KDE,...)
 - No daemon, so no single point of failure but still having guarantees of consistent,
   validated files with good performance.
 - Provides 3-way merging for configuration upgrades.
