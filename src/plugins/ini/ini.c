@@ -25,6 +25,11 @@
 #include <stdlib.h>
 #include <string.h>
 
+#if defined(__APPLE__) || defined(__FreeBSD__) || defined(__NetBSD__) || defined(__OpenBSD__)
+#define SORT mergesort
+#else
+#define SORT qsort
+#endif
 
 char * keyNameGetOneLevel (const char *, size_t *);
 
@@ -1113,7 +1118,7 @@ static int iniWriteKeySet (FILE * fh, Key * parentKey, KeySet * returned, IniPlu
 	ssize_t arraySize = ksGetSize (returned);
 	keyArray = elektraCalloc (arraySize * sizeof (Key *));
 	elektraKsToMemArray (returned, keyArray);
-	mergesort (keyArray, arraySize, sizeof (Key *), iniCmpOrder);
+	SORT (keyArray, arraySize, sizeof (Key *), iniCmpOrder);
 	Key * cur = NULL;
 	Key * sectionKey = parentKey;
 	int ret = 1;
