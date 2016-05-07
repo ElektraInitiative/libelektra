@@ -52,3 +52,7 @@ The three main points relevant for most people are:
   - Performance: Improvements in the library benefits all applications.
   - The library only needs to be loaded once in the memory.
   - On fixes not all binaries of all applications need to be replaced.
+- All advantages maintained code with a community has:
+  - If something does not work, open an issue.
+  - If you have a question, open an issue.
+  - Regular releases.

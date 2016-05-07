@@ -85,3 +85,10 @@ Ideally it should get faster because of centralized optimization
 endeavours where everyone using Elektra can benefit from.
 
 Only pay for what you need.
+
+
+## Non-Goals ##
+
+- Support semantics that do not fit into the KeySet (key/value pairs) with an kdbGet()/kdbSet() interface.
+- Support for non-configuration issues, e.g. storing any key/value data.
+- Elektra is not a distributed CM, use Puppet, CFEngine on top or a distributed filesystem below Elektra.
