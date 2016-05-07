@@ -17,7 +17,10 @@ The three main points relevant for most people are:
    - [and much more](/src/plugins/README.md)
 
 
-### Further reasons ###
+
+### Unique Features ###
+
+Features that rarely can be found elsewhere (at least in this combination):
 
 - Bootstrap code and proper abstraction is included:
   - you do not need to worry about the file names of configuration files
@@ -25,6 +28,13 @@ The three main points relevant for most people are:
   - cascading between `/etc`, `$HOME`, `cwd` and so on
   - you can change which Elektra path is connected to which configuration
     file with [mounting](/doc/help/elektra-mounting.md)
+- No daemon, so no single point of failure but still having guarantees of consistent,
+  validated files with good performance.
+- Provides 3-way merging for configuration upgrades.
+
+
+### Further reasons ###
+
 - Links and automatic calculation of values:
    unlike with other solutions you do not need to duplicate
    configuration values for different applications but
@@ -33,7 +43,6 @@ The three main points relevant for most people are:
 - Allows us to easily create GUIs and web-UIs for the whole configuration
   on the system.
 - Allows you to import/export all parts of the configuration.
-- Provides 3-way merging for configuration upgrades.
 - Syntax independence: you can consistently use your favourite syntax.
 - Configuration Management (such as Puppet) can be used on top of it
   without having to fiddle with specifics of every configuration file.
