@@ -130,11 +130,11 @@ check_version()
 		return 0
 	fi
 
-	REAL_KDB_VERSION="`$KDB get system/elektra/version/constants/KDB_VERSION 2> /dev/null`"
+	REAL_KDB_VERSION="`"$KDB" get system/elektra/version/constants/KDB_VERSION 2> /dev/null`"
 	[ "x$REAL_KDB_VERSION" = "x$KDB_VERSION" ]
 	exit_if_fail "Script was not compiled ($KDB_VERSION) with this elektra version ($REAL_KDB_VERSION): KDB_VERSION mismatch use CHECK_VERSION=NO to disable"
 
-	REAL_SO_VERSION="`$KDB get system/elektra/version/constants/SO_VERSION 2> /dev/null`"
+	REAL_SO_VERSION="`"$KDB" get system/elektra/version/constants/SO_VERSION 2> /dev/null`"
 	[ "x$REAL_SO_VERSION" = "x$SO_VERSION" ]
 	exit_if_fail "Script was not compiled ($SO_VERSION) with this elektra version ($REAL_SO_VERSION): SO_VERSION mismatch"
 }
@@ -152,41 +152,41 @@ check_remaining_files()
 
 check_set_rm()
 {
-	$KDB set "$1" "$2" 1>/dev/null
+	"$KDB" set "$1" "$2" 1>/dev/null
 	succeed_if "could not set $1 with $2"
 
-	[ "x`$KDB get "$1" 2> /dev/null`" = "x$2" ]
+	[ "x`"$KDB" get "$1" 2> /dev/null`" = "x$2" ]
 	succeed_if "cant get $1 (expected $2)"
 
-	$KDB rm "$1" 1>/dev/null
+	"$KDB" rm "$1" 1>/dev/null
 	succeed_if "could not rm $1 (having value $2)"
 
-	[ "x`$KDB sget $1 defvalue 2> /dev/null`" = "xdefvalue" ]
+	[ "x`"$KDB" sget $1 defvalue 2> /dev/null`" = "xdefvalue" ]
 	succeed_if "Value still there after remove"
 }
 
 
 check_set_mv_rm()
 {
-	$KDB set "$1" "$3" 1>/dev/null
+	"$KDB" set "$1" "$3" 1>/dev/null
 	succeed_if "could not set $1 with $3"
 
-	[ "x`$KDB get "$1" 2> /dev/null`" = "x$3" ]
+	[ "x`"$KDB" get "$1" 2> /dev/null`" = "x$3" ]
 	succeed_if "cant get $1 (expected $3)"
 
-	$KDB mv "$1" "$2" 1>/dev/null
+	"$KDB" mv "$1" "$2" 1>/dev/null
 	succeed_if "could not mv $1 to $2"
 
-	[ "x`$KDB sget $1 defvalue 2> /dev/null`" = "xdefvalue" ]
+	[ "x`"$KDB" sget $1 defvalue 2> /dev/null`" = "xdefvalue" ]
 	succeed_if "Value still there after move"
 
-	[ "x`$KDB get "$2" 2> /dev/null`" = "x$3" ]
+	[ "x`"$KDB" get "$2" 2> /dev/null`" = "x$3" ]
 	succeed_if "cant get $2 (expected $3)"
 
-	$KDB rm "$2" 1>/dev/null
+	"$KDB" rm "$2" 1>/dev/null
 	succeed_if "could not rm $2 (having value $3)"
 
-	[ "x`$KDB sget $2 defvalue 2> /dev/null`" = "xdefvalue" ]
+	[ "x`"$KDB" sget $2 defvalue 2> /dev/null`" = "xdefvalue" ]
 	succeed_if "Value still there after remove"
 }
 
@@ -199,7 +199,7 @@ check_set_mv_rm()
 
 is_not_rw_storage()
 {
-	test ! "x`$KDB info $PLUGIN provides 2>/dev/null`" = "xstorage" \
+	test ! "x`"$KDB" info $PLUGIN provides 2>/dev/null`" = "xstorage" \
 	-o "x$PLUGIN" = "xhosts" \
 	-o "x$PLUGIN" = "xfstab" \
 	-o "x$PLUGIN" = "xline" \
@@ -208,7 +208,7 @@ is_not_rw_storage()
 	-o "x$PLUGIN" = "xaugeas" \
 	-o "x$PLUGIN" = "xcsvstorage" \
 	-o "x$PLUGIN" = "xdpkg" \
-	-o "x$PLUGIN" = "xregexstore" 
+	-o "x$PLUGIN" = "xregexstore"
 }
 
 is_plugin_available()

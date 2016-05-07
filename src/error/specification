@@ -155,10 +155,11 @@ severity:warning
 ingroup:trie
 
 number:26
-description:could not open lock file
+description:could not open configuration file
 severity:error
 ingroup:plugin
 module:resolver
+macro:COULD_NOT_OPEN
 
 number:27
 description:locking yield an error
@@ -179,7 +180,8 @@ ingroup:plugin
 module:resolver
 
 number:30
-description:A conflict occurred: another process modified the key database.
+macro:CONFLICT
+description:A conflict occurred: Another KDB instance modified the key database.
 severity:error
 ingroup:plugin
 module:resolver
@@ -357,6 +359,7 @@ number:60
 description:Invalid Line encountered
 severity:error
 ingroup:plugin
+macro:NOEOF
 module:simpleini
 
 number:61
@@ -626,6 +629,7 @@ ingroup:plugin
 module:dump
 
 number:107
+macro:STATE
 description:Sync State is wrong, maybe kdbSet() is executed without prior kdbGet(). Reason states exact mountpoint.
 severity:error
 ingroup:kdb
@@ -735,36 +739,42 @@ module:mathcheck
 
 number:125
 description:Failed to initialize the crypto library.
+macro:CRYPTO_INIT
 severity:error
 ingroup:plugin
 module:crypto
 
 number:126
 description:The crypto library reported an internal error.
+macro:CRYPTO_INTERNAL_ERROR
 severity:error
 ingroup:plugin
 module:crypto
 
 number:127
 description:Encryption failed due to an error reported by the crypto library.
+macro:CRYPTO_ENCRYPT_FAIL
 severity:error
 ingroup:plugin
 module:crypto
 
 number:128
 description:Decryption failed due to an error reported by the crypto library.
+macro:CRYPTO_DECRYPT_FAIL
 severity:error
 ingroup:plugin
 module:crypto
 
 number:129
 description:Decryption failed due to an error reported by the crypto library.
+macro:CRYPTO_DECRYPT_WARNING
 severity:warning
 ingroup:plugin
 module:crypto
 
 number:130
 description:The configuration is invalid or incomplete.
+macro:CRYPTO_CONFIG_FAULT
 severity:error
 ingroup:plugin
 module:crypto
@@ -845,3 +855,22 @@ description:globbing warning
 severity:warning
 ingroup:plugin
 module:spec
+
+number:144
+description:shell plugin error
+severity:error
+ingroup:plugin
+module:shell
+
+number:145
+description:semlock plugin error
+severity:error
+ingroup:plugin
+module:semlock
+
+number:146
+description:could not get current directory
+severity:warning
+ingroup:plugin
+module:resolver
+macro:NOCWD

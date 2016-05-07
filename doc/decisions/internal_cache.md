@@ -23,7 +23,11 @@ duplications exactly of the parts as requested.
 
 ## Decision
 
+Use global plugin to implement internal cache.
+
 ## Argument
+
+Semantics can be provided without additional code or overhead in the core.
 
 ## Implications
 
@@ -32,7 +36,7 @@ duplications exactly of the parts as requested.
 ## Notes
 
 internal caches lead to duplication of memory consumption
-(could be avoided by reference counting)
+(most of it is avoided by reference counting, though)
 
 in some cases caches cannot be avoided?
  -> filesys, databases?

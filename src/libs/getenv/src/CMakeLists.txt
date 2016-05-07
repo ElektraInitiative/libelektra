@@ -10,6 +10,13 @@ set (SOURCES ${SRC_FILES} ${HDR_FILES})
 add_library (elektragetenv SHARED ${SOURCES})
 
 target_link_libraries (elektragetenv ${CMAKE_DL_LIBS})
-target_link_libraries (elektragetenv elektra-kdb) # must be shared!
+target_link_libraries (elektragetenv elektra-kdb elektra-meta) # must be shared!
+
+set_target_properties (elektragetenv PROPERTIES
+	COMPILE_DEFINITIONS "HAVE_KDBCONFIG_H"
+	VERSION ${KDB_VERSION} SOVERSION ${SO_VERSION_GETENV}
+	CLEAN_DIRECT_OUTPUT 1
+	LINKER_LANGUAGE CXX
+)
 
 install (TARGETS elektragetenv DESTINATION lib${LIB_SUFFIX})

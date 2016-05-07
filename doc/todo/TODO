@@ -2,18 +2,32 @@ This is a list of TODO items which do not fit in
 the other TODO categories which should be resolved in 0.8.
 
 
-== GENERATORS ==
+== CONTRACT
 
-C++ code generated as frontend 
-	policy based (not available, conversion failed)
-	make it really simple to type and structure safe access configuration
-	allow notification+locking
+status:
+	add needsprivate (for abi)
+	relative keys?
 
-generator for:
-	exc classes
-	try catch blocks
-	as keyset
-	human readable text
+
+## ERRORS
+
+also rotate errors into warnings when they are overwritten
+
+
+== META DATA LIBRARY ==
+
+(maybe generate similar to gen/liberror)
+
+warning/error iterators
+
+comment iterators
+
+documentation:
+	comment -> meta data
+	split real meta data functions + kdbhelpers
+
+library for metadata access functions
+	array access
 
 
 == VARIANTS ==
@@ -21,16 +35,6 @@ generator for:
 for python plugin
  - fix symbol generator
  - avoid full/static for symbol clashes
-
-== OpenICC ==
-
-
-resolver:
-	pick most cruical features, e.g. xdg
-
-rebase:
-	python+C impl compare
-
 
 
 == unsorted ==
@@ -42,16 +46,8 @@ better errnostore solution?
 	https://github.com/fish-shell/fish-shell/commit/c70e92e98d34e14b1e1310a10677b7c0f6e2b54c
 	(even strerrno_r seems to deadlock from time to time because of translations?)
 
-roresolver: check if something is modified
-	for version, constants, uname
-	and/or remove value comparision in those plugins
-	kdbGet should return 0 if nothing modified, too
-
-jenkins:
-	build packages for dfc
-
 chroot
-	-c option which allows you to chroot before doing
+	-c option which allows you to chroot before doing operation
 	-u options which allows you to switch user (by setting env internally)
 	kdbOpen/kdbGet/kdbSet
 
@@ -69,10 +65,9 @@ script testing:
 		-> how to do without need of capabilities again? backends at serialization level?? (like with mount)
 
 use error value as exit (does it start with 0?)
-printError usw. Nicht von makro abhängig machen?
 
 
-== NOTIFICATION ==
+== inotify ==
 
 get list of involved configuration files and do inotify on it
 
@@ -94,19 +89,6 @@ kdbSet
 * create an error if no kdbSet was done (no plugin added)
 
 
-
-
-== META DATA LIBRARY ==
-
-(maybe generate similar to gen/liberror)
-
-warning/error iterators
-
-comment iterators
-
-documentation:
-	comment -> meta data
-	split real meta data functions + kdbhelpers
 
 
 
@@ -149,7 +131,6 @@ ksMerge
 http://en.wikipedia.org/wiki/Complement_(set_theory)
 ksComplement (Difference, SymmetricDifference)
 
-
 ksCopy -> ksAssign
 ksPopCurrent
 
@@ -163,10 +144,10 @@ AccessIterator
 	feature for error handling needed?
 	functors and same level iterators build on top of it
 
-KeySet as hash?
+=== Data transformation ===
 
+use Key's refcount to put it into different data structures
 
-Transform to propertY tree
-import or inherit from config
-commandline parser?
+- property tree
+- json objects
 

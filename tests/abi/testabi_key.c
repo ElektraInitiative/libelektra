@@ -1376,6 +1376,73 @@ static void test_keyBelow ()
 	succeed_if (!keyIsBelow (key1, key2), "Key should not be below");
 	succeed_if (!keyIsBelow (key2, key1), "Key should not be below");
 
+	keySetName (key1, "system/infos");
+	keySetName (key2, "/infos/constants");
+	succeed_if (keyIsBelow (key1, key2), "Key should be below");
+	succeed_if (!keyIsBelow (key2, key1), "Key should not be below");
+
+	keySetName (key1, "/");
+	keySetName (key2, "/infos/constants");
+	succeed_if (keyIsBelow (key1, key2), "Key should be below");
+	succeed_if (!keyIsBelow (key2, key1), "Key should not be below");
+
+	keySetName (key1, "system");
+	keySetName (key2, "/infos/constants");
+	succeed_if (keyIsBelow (key1, key2), "Key should be below");
+	succeed_if (!keyIsBelow (key2, key1), "Key should not be below");
+
+	keySetName (key1, "/infos");
+	keySetName (key2, "system/infos/constants");
+	succeed_if (keyIsBelow (key1, key2), "Key should be below");
+	succeed_if (!keyIsBelow (key2, key1), "Key should not be below");
+
+
+	keySetName (key1, "/");
+	keySetName (key2, "system/infos/constants");
+	succeed_if (keyIsBelow (key1, key2), "Key should be below");
+	succeed_if (!keyIsBelow (key2, key1), "Key should not be below");
+
+	keySetName (key1, "/infos");
+	keySetName (key2, "/infos/constants");
+	succeed_if (keyIsBelow (key1, key2), "Key should be below");
+	succeed_if (!keyIsBelow (key2, key1), "Key should not be below");
+
+	keySetName (key1, "/");
+	keySetName (key2, "system/infos/constants/version/version");
+	succeed_if (keyIsBelow (key1, key2), "Key should be below");
+	succeed_if (!keyIsBelow (key2, key1), "Key should not be below");
+
+	keySetName (key1, "user/valid");
+	keySetName (key2, "user/valid\\/e");
+	succeed_if (!keyIsBelow (key1, key2), "Key should not be below");
+	succeed_if (!keyIsBelow (key2, key1), "Key should not be below");
+
+	keySetName (key1, "user/valid\\/");
+	keySetName (key2, "user/valid/e");
+	succeed_if (!keyIsBelow (key1, key2), "Key should not be below");
+	succeed_if (!keyIsBelow (key2, key1), "Key should not be below");
+
+	keySetName (key1, "/valid\\/");
+	keySetName (key2, "user/valid\\//valid");
+	succeed_if (keyIsBelow (key1, key2), "Key should be below");
+	succeed_if (!keyIsBelow (key2, key1), "Key should not be below");
+
+	keySetName (key1, "/a/b/c");
+	keySetName (key2, "/a/b/d");
+	succeed_if (!keyIsBelow (key1, key2), "Key should be below");
+	succeed_if (!keyIsBelow (key2, key1), "Key should not be below");
+
+	keySetName (key1, "/a");
+	keySetName (key2, "/b");
+	succeed_if (!keyIsBelow (key1, key2), "Key should be below");
+	succeed_if (!keyIsBelow (key2, key1), "Key should not be below");
+
+	keySetName (key1, "/valid\\/");
+	keySetName (key2, "user/valid\\/valid");
+	succeed_if (!keyIsBelow (key1, key2), "Key should be below");
+	succeed_if (!keyIsBelow (key2, key1), "Key should not be below");
+
+
 	keySetName (key1, "user/valid");
 	keySetName (key2, "user/valid/valide");
 	succeed_if (keyIsDirectBelow (key1, key2), "Key should be below");

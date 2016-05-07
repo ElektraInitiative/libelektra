@@ -18,6 +18,6 @@ add_plugin (fstab
 	SOURCES
 		fstab.c
 		fstab.h
-	LINK_LIBRARIES
+	LINK_ELEKTRA
 		elektra-meta
 	)

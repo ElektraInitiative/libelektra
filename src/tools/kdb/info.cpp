@@ -68,6 +68,13 @@ int InfoCommand::execute (Cmdline const & cl)
 		{
 			plugin = modules.load (name, ks);
 		}
+
+		// fix name for virtual plugins
+		if (name != plugin->name ())
+		{
+			std::cerr << "Will use name " << plugin->name () << " for virtual plugin named " << name << std::endl;
+			name = plugin->name ();
+		}
 		conf.append (plugin->getInfo ());
 	}
 

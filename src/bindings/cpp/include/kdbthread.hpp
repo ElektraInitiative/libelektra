@@ -74,6 +74,12 @@ public:
 		return key_name;
 	}
 
+	std::string evaluate (std::string const & key_name,
+			      std::function<bool(std::string const &, std::string &, bool in_group)> const &) const
+	{
+		return key_name;
+	}
+
 	/**
 	 * @brief (Re)attaches a ValueSubject to a thread or simply
 	 *        execute code in a locked section.
@@ -142,7 +148,7 @@ public:
 	std::unique_lock<std::mutex> requireLock ()
 	{
 		std::unique_lock<std::mutex> lock (m_mutex);
-		return std::move (lock);
+		return lock;
 	}
 
 	Coordinator ()
@@ -274,7 +280,7 @@ private:
 		std::lock_guard<std::mutex> lock (m_mutex);
 		LayerMap ret;
 		ret.swap (m_updates[cc].toActivate);
-		return std::move (ret);
+		return ret;
 	}
 
 	/// stores per context updates not yet delievered
@@ -328,6 +334,23 @@ public:
 		return layer;
 	}
 
+	std::shared_ptr<Layer> activate (std::string key, std::string value)
+	{
+		syncLayers ();
+		std::shared_ptr<Layer> layer = Context::activate (key, value);
+		m_gc.globalActivate (this, layer);
+		return layer;
+	}
+
+	std::shared_ptr<Layer> activate (Wrapped const & value)
+	{
+		syncLayers ();
+		std::shared_ptr<Layer> layer = Context::activate (value);
+		m_gc.globalActivate (this, layer);
+		return layer;
+	}
+
+
 	template <typename T, typename... Args>
 	std::shared_ptr<Layer> deactivate (Args &&... args)
 	{
@@ -357,6 +380,12 @@ public:
 
 		// pull in assignments from other threads
 		m_gc.updateNewlyAssignedValues (this);
+	}
+
+	virtual void sync ()
+	{
+		syncLayers ();
+		notifyKeySetUpdate ();
 	}
 
 	/**

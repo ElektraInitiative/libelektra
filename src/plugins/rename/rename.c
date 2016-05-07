@@ -26,10 +26,12 @@
 #define ELEKTRA_ORIGINAL_NAME_META "origname"
 #define TOLOWER (-1)
 #define TOUPPER 1
+#define UNCHNGD 0
+#define KEYNAME 2
 // TODO defined privately in keyhelpers.c, API break possible..
 char * keyNameGetOneLevel (const char * name, size_t * size);
 
-static void doConversion (char * newName, int levels, int toCase)
+static void doConversion (char * newName, int levels, const int toCase)
 {
 	int (*conversion) (int);
 
@@ -74,7 +76,7 @@ static void doConversion (char * newName, int levels, int toCase)
 }
 
 Key * elektraKeyCreateNewName (const Key * key, const Key * parentKey, const char * cutPath, const char * replaceWith,
-			       const char * toUpperPath, const char * toLowerPath)
+			       const char * toUpperPath, const char * toLowerPath, const int initialConversion)
 {
 	size_t addToLen = 0;
 	if (replaceWith != NULL) addToLen = strlen (replaceWith);
@@ -89,8 +91,14 @@ Key * elektraKeyCreateNewName (const Key * key, const Key * parentKey, const cha
 	char * curKeyName = elektraMalloc (keyGetFullNameSize (key));
 	keyGetFullName (key, curKeyName, keyGetFullNameSize (key));
 
-	const char * afterParentString = curKeyName + (strlen (parentKeyName));
+	char * afterParentString = curKeyName + (strlen (parentKeyName));
 	char * ptr;
+
+	if (initialConversion != UNCHNGD)
+	{
+		doConversion (afterParentString, 0, initialConversion);
+		replace = 1;
+	}
 
 	if (cutPath && (cutPath[0] != '/') && ((ptr = strstr (afterParentString, cutPath)) != NULL))
 	{
@@ -165,7 +173,8 @@ static void keyAddUnescapedBasePath (Key * key, const char * path)
 	}
 }
 
-static Key * renameGet (Key * key, Key * parentKey, Key * cutConfig, Key * replaceWithConfig, Key * toUpperConfig, Key * toLowerConfig)
+static Key * renameGet (Key * key, Key * parentKey, Key * cutConfig, Key * replaceWithConfig, Key * toUpperConfig, Key * toLowerConfig,
+			Key * getCase)
 {
 	char * cutPath = 0;
 	char * replaceWith = 0;
@@ -175,6 +184,24 @@ static Key * renameGet (Key * key, Key * parentKey, Key * cutConfig, Key * repla
 	const Key * toMeta = keyGetMeta (key, "rename/to");
 	const Key * toUpperMeta = keyGetMeta (key, "rename/toupper");
 	const Key * toLowerMeta = keyGetMeta (key, "rename/tolower");
+
+	int initialConversion = 0;
+	if (getCase)
+	{
+		const char * str = keyString (getCase);
+		if (!strcmp (str, "toupper"))
+		{
+			initialConversion = TOUPPER;
+		}
+		else if (!strcmp (str, "tolower"))
+		{
+			initialConversion = TOLOWER;
+		}
+		else
+		{
+			initialConversion = UNCHNGD;
+		}
+	}
 	/* if the meta config exists, it takes precedence over the global config */
 	if (cutMeta)
 		cutPath = (char *)keyString (cutMeta);
@@ -193,7 +220,7 @@ static Key * renameGet (Key * key, Key * parentKey, Key * cutConfig, Key * repla
 	else if (toLowerConfig)
 		toLowerPath = (char *)keyString (toLowerConfig);
 
-	return elektraKeyCreateNewName (key, parentKey, cutPath, replaceWith, toUpperPath, toLowerPath);
+	return elektraKeyCreateNewName (key, parentKey, cutPath, replaceWith, toUpperPath, toLowerPath, initialConversion);
 }
 
 static Key * restoreKeyName (Key * key, const Key * parentKey, const Key * configKey)
@@ -265,10 +292,14 @@ int elektraRenameGet (Plugin * handle, KeySet * returned, Key * parentKey)
 	Key * toUpper = ksLookupByName (config, "/toupper", KDB_O_NONE);
 	Key * toLower = ksLookupByName (config, "/tolower", KDB_O_NONE);
 	Key * replaceWith = ksLookupByName (config, "/replacewith", KDB_O_NONE);
+	Key * getCase = ksLookupByName (config, "/get/case", KDB_O_NONE);
+
+
 	Key * key;
 	while ((key = ksNext (iterateKs)) != 0)
 	{
-		Key * renamedKey = renameGet (key, parentKey, cutConfig, replaceWith, toUpper, toLower);
+
+		Key * renamedKey = renameGet (key, parentKey, cutConfig, replaceWith, toUpper, toLower, getCase);
 
 		if (renamedKey)
 		{
@@ -315,29 +346,80 @@ int elektraRenameSet (Plugin * handle, KeySet * returned, Key * parentKey)
 	KeySet * config = elektraPluginGetConfig (handle);
 	Key * cutConfig = ksLookupByName (config, "/cut", KDB_O_NONE);
 
+	Key * setCase = ksLookupByName (config, "/set/case", KDB_O_NONE);
+
+	int writeConversion = 0;
+	if (setCase)
+	{
+		const char * str = keyString (setCase);
+		if (!strcmp (str, "toupper"))
+		{
+			writeConversion = TOUPPER;
+		}
+		else if (!strcmp (str, "tolower"))
+		{
+			writeConversion = TOLOWER;
+		}
+		else if (!strcmp (str, "keyname"))
+		{
+			writeConversion = KEYNAME;
+		}
+		else
+		{
+			writeConversion = UNCHNGD;
+		}
+	}
 	ksRewind (iterateKs);
 	Key * key;
+	char * parentKeyName = elektraMalloc (keyGetFullNameSize (parentKey));
+	keyGetFullName (parentKey, parentKeyName, keyGetFullNameSize (parentKey));
 	while ((key = ksNext (iterateKs)) != 0)
 	{
-		Key * renamedKey = restoreKeyName (key, parentKey, cutConfig);
-
-		if (renamedKey)
+		Key * renamedKey = NULL;
+		if (writeConversion != KEYNAME)
 		{
+			renamedKey = restoreKeyName (key, parentKey, cutConfig);
+
+			if (!renamedKey) renamedKey = keyDup (key);
+			if (writeConversion == TOUPPER || writeConversion == TOLOWER)
+			{
+				char * curKeyName = elektraMalloc (keyGetFullNameSize (renamedKey));
+				keyGetFullName (renamedKey, curKeyName, keyGetFullNameSize (renamedKey));
+
+				char * afterParentString = curKeyName + (strlen (parentKeyName));
+
+				doConversion (afterParentString, 0, writeConversion);
+
+				keySetName (renamedKey, curKeyName);
+				elektraFree (curKeyName);
+			}
 			/*
 			 * if something is restored from the parentKey, do
 			 * not delete the parentKey (might cause troubles)
 			 */
 			if (keyCmp (key, parentKey) != 0)
 			{
-				ksLookup (returned, key, KDB_O_POP);
-				keyDel (key);
+				keyDel (ksLookup (returned, key, KDB_O_POP));
 			}
 			ksAppendKey (returned, renamedKey);
+			keyDel (renamedKey);
+		}
+		else
+		{
+			if (keyCmp (key, parentKey) != 0)
+			{
+				keyDel (ksLookupByName (returned, keyString (keyGetMeta (key, ELEKTRA_ORIGINAL_NAME_META)), KDB_O_POP));
+			}
+			ksAppendKey (returned, key);
 		}
 	}
 
+	keyIncRef (parentKey);
 	ksDel (iterateKs);
+	keyDecRef (parentKey);
 
+	ksRewind (returned);
+	elektraFree (parentKeyName);
 	return 1; /* success */
 }
 
@@ -349,4 +431,3 @@ Plugin * ELEKTRA_PLUGIN_EXPORT (rename)
 		ELEKTRA_PLUGIN_SET,	&elektraRenameSet,
 		ELEKTRA_PLUGIN_END);
 }
-

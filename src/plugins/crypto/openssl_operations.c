@@ -34,7 +34,8 @@ static Key * elektraCryptoReadParamKey (KeySet * config, Key * errorKey)
 	Key * key = ksLookupByName (config, ELEKTRA_CRYPTO_PARAM_KEY_PATH, 0);
 	if (key == NULL)
 	{
-		ELEKTRA_SET_ERRORF (130, errorKey, "missing %s in configuration", ELEKTRA_CRYPTO_PARAM_KEY_PATH);
+		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CRYPTO_CONFIG_FAULT, errorKey, "missing %s in configuration",
+				    ELEKTRA_CRYPTO_PARAM_KEY_PATH);
 	}
 	return key;
 }
@@ -49,7 +50,8 @@ static Key * elektraCryptoReadParamIv (KeySet * config, Key * errorKey)
 	Key * iv = ksLookupByName (config, ELEKTRA_CRYPTO_PARAM_IV_PATH, 0);
 	if (iv == NULL)
 	{
-		ELEKTRA_SET_ERRORF (130, errorKey, "missing %s in configuration", ELEKTRA_CRYPTO_PARAM_IV_PATH);
+		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CRYPTO_CONFIG_FAULT, errorKey, "missing %s in configuration",
+				    ELEKTRA_CRYPTO_PARAM_IV_PATH);
 	}
 	return iv;
 }
@@ -92,7 +94,8 @@ int elektraCryptoOpenSSLInit (Key * errorKey)
 
 	if (ERR_peek_error ())
 	{
-		ELEKTRA_SET_ERRORF (125, errorKey, "libcrypto initialization failed. error code was: %lu", ERR_get_error ());
+		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CRYPTO_INIT, errorKey, "libcrypto initialization failed. error code was: %lu",
+				    ERR_get_error ());
 		return (-1);
 	}
 
@@ -131,13 +134,13 @@ int elektraCryptoOpenSSLHandleCreate (elektraCryptoHandle ** handle, KeySet * co
 
 	if (keyGetValueSize (key) != ELEKTRA_CRYPTO_SSL_KEYSIZE)
 	{
-		ELEKTRA_SET_ERROR (130, errorKey, "Failed to create handle! Invalid key length.");
+		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_CRYPTO_CONFIG_FAULT, errorKey, "Failed to create handle! Invalid key length.");
 		return (-1);
 	}
 
 	if (keyGetValueSize (iv) != ELEKTRA_CRYPTO_SSL_BLOCKSIZE)
 	{
-		ELEKTRA_SET_ERROR (130, errorKey, "Failed to create handle! Invalid IV length.");
+		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_CRYPTO_CONFIG_FAULT, errorKey, "Failed to create handle! Invalid IV length.");
 		return (-1);
 	}
 
@@ -161,7 +164,8 @@ int elektraCryptoOpenSSLHandleCreate (elektraCryptoHandle ** handle, KeySet * co
 
 	if (ERR_peek_error ())
 	{
-		ELEKTRA_SET_ERRORF (130, errorKey, "Failed to create handle! libcrypto error code was: %lu", ERR_get_error ());
+		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CRYPTO_CONFIG_FAULT, errorKey, "Failed to create handle! libcrypto error code was: %lu",
+				    ERR_get_error ());
 		elektraFree (*handle);
 		*handle = NULL;
 		return (-1);
@@ -283,7 +287,8 @@ int elektraCryptoOpenSSLEncrypt (elektraCryptoHandle * handle, Key * k, Key * er
 	return 1;
 
 error:
-	ELEKTRA_SET_ERRORF (127, errorKey, "Encryption error! libcrypto error code was: %lu", ERR_get_error ());
+	ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CRYPTO_ENCRYPT_FAIL, errorKey, "Encryption error! libcrypto error code was: %lu",
+			    ERR_get_error ());
 	BIO_free_all (encrypted);
 	return (-1);
 }
@@ -317,7 +322,7 @@ int elektraCryptoOpenSSLDecrypt (elektraCryptoHandle * handle, Key * k, Key * er
 	// plausibility check
 	if (valueLen % ELEKTRA_CRYPTO_SSL_BLOCKSIZE != 0)
 	{
-		ELEKTRA_SET_ERROR (128, errorKey, "value length is not a multiple of the block size");
+		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_CRYPTO_DECRYPT_FAIL, errorKey, "value length is not a multiple of the block size");
 		return (-1);
 	}
 
@@ -359,7 +364,7 @@ int elektraCryptoOpenSSLDecrypt (elektraCryptoHandle * handle, Key * k, Key * er
 	plaintextLen = BIO_get_mem_data (decrypted, &plaintext);
 	if (plaintextLen < headerLen)
 	{
-		ELEKTRA_SET_ERROR (128, errorKey, "Decryption error! header data is incomplete.");
+		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_CRYPTO_DECRYPT_FAIL, errorKey, "Decryption error! header data is incomplete.");
 		goto error;
 	}
 
@@ -371,7 +376,7 @@ int elektraCryptoOpenSSLDecrypt (elektraCryptoHandle * handle, Key * k, Key * er
 
 	if ((plaintextLen - headerLen) != contentLen)
 	{
-		ELEKTRA_SET_ERROR (128, errorKey, "Decryption error! corrupted data.");
+		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_CRYPTO_DECRYPT_FAIL, errorKey, "Decryption error! corrupted data.");
 		goto error;
 	}
 
@@ -393,7 +398,8 @@ int elektraCryptoOpenSSLDecrypt (elektraCryptoHandle * handle, Key * k, Key * er
 	return 1;
 
 error:
-	ELEKTRA_SET_ERRORF (128, errorKey, "Decryption error! libcrypto error code was: %lu", ERR_get_error ());
+	ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CRYPTO_DECRYPT_FAIL, errorKey, "Decryption error! libcrypto error code was: %lu",
+			    ERR_get_error ());
 	BIO_free_all (decrypted);
 	return (-1);
 }

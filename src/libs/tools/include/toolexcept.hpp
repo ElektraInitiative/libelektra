@@ -205,6 +205,17 @@ struct OrderingViolation : public PluginCheckException
 	}
 };
 
+struct CyclicOrderingViolation : public OrderingViolation
+{
+	virtual const char * what () const throw () override
+	{
+		return "Ordering Violation!\n"
+		       "Could not order plugins by their dependency because of cycle.\n"
+		       "Either fix plugins or try with other plugins.";
+	}
+};
+
+
 struct ConflictViolation : public PluginCheckException
 {
 	virtual const char * what () const throw () override
@@ -381,14 +392,6 @@ struct ResolverPlugin : public PluginCheckException
 	virtual const char * what () const throw () override
 	{
 		return "There need to be exactly one resolver plugin!";
-	}
-};
-
-struct PluginWrongName : public PluginCheckException
-{
-	virtual const char * what () const throw () override
-	{
-		return "The real name of the plugin is different!";
 	}
 };
 

@@ -14,8 +14,8 @@ export PATH="@CMAKE_INSTALL_PREFIX@/@TARGET_TOOL_EXEC_FOLDER@:$PATH"
 
 if [ "$#" -eq 0 ]
 then
-	echo "Usage: $0 <application> <arguments>"
-	echo "For help run $0 <application> --elektra-help"
+	echo "Usage: kdb elektrify-getenv <application> <arguments>"
+	echo "For help run kdb elektrify-getenv <application> --elektra-help"
 	echo "Path to library is:"
 	echo "$GETENV"
 else

@@ -82,6 +82,32 @@ ostream & operator<< (ostream & os, parse_t & p)
 			continue;
 		}
 
+		if (p[i]["macro"].empty ())
+		{
+			continue;
+		}
+
+		os << "#define ELEKTRA_";
+		if (p[i]["severity"] == "warning")
+		{
+			os << "WARNING_";
+		}
+		else
+		{
+			os << "ERROR_";
+		}
+		os << p[i]["macro"] << " " << i << endl;
+	}
+
+	os << endl << endl;
+
+	for (size_t i = 1; i < p.size (); ++i)
+	{
+		if (p[i]["unused"] == "yes")
+		{
+			continue;
+		}
+
 		if (p[i]["severity"] == "warning")
 		{
 			for (int f = 0; f < 2; ++f)

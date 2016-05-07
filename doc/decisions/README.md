@@ -14,16 +14,16 @@ section here.
 - [Capabilities](capabilities.md)
 - [Library Split](library_split.md)
 - [Bootstrap](bootstrap.md)
+- [Empty Files](empty_files.md)
 
 ## Decided
 
 - [Relative Storages](relative.md)
+- [Internal Cache](internal_cache.md)
 
 ## In Discussion
 
 - [CMake spec](cmake_spec.md)
-- [Empty Files](empty_files.md)
-- [Internal Cache](internal_cache.md)
 - [Definition of Bool](bool.md)
 - [Publish Subscribe](pubsub.md)
 

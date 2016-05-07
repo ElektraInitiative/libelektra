@@ -7,12 +7,12 @@ http://code.google.com/p/inih/
 
 */
 
-#include <stdio.h>
-#include <stdlib.h>
+#include "inih.h"
 #include <ctype.h>
 #include <regex.h>
+#include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
-#include "inih.h"
 
 #if !INI_USE_STACK
 #include <stdlib.h>
@@ -110,6 +110,7 @@ int ini_parse_file (FILE * file, const struct IniConfig * config, void * user)
 	char * end;
 	char * name;
 	char * value;
+	char delim = config->delim;
 	int lineno = 0;
 	int error = 0;
 
@@ -139,7 +140,7 @@ int ini_parse_file (FILE * file, const struct IniConfig * config, void * user)
 #endif
 		if (*start == '\n')
 		{
-			if (!config->commentHandler (user, " ") && !error) error = lineno;
+			if (!config->commentHandler (user, "") && !error) error = lineno;
 			continue;
 		}
 		start = lskip (line);
@@ -207,7 +208,7 @@ int ini_parse_file (FILE * file, const struct IniConfig * config, void * user)
 		}
 		else if (isComment (line))
 		{
-			start += 1;
+			start = line;
 			end = line + (strlen (line) - 1);
 			if (*end == '\n') *end = '\0';
 			if (!config->commentHandler (user, start) && !error) error = lineno;
@@ -220,7 +221,7 @@ int ini_parse_file (FILE * file, const struct IniConfig * config, void * user)
 			unsigned int assign = 0;
 			while (*ptr)
 			{
-				if (*ptr == '=' || *ptr == ':')
+				if (*ptr == delim)
 				{
 					++assign;
 				}
@@ -230,8 +231,7 @@ int ini_parse_file (FILE * file, const struct IniConfig * config, void * user)
 			if (assign == 1)
 			{
 				name = start;
-				end = strchr (start, '=');
-				if (!end) end = strchr (start, ':');
+				end = strchr (start, delim);
 				if (*name == '"')
 				{
 					if (*(end - 2) == '"')
@@ -269,12 +269,11 @@ int ini_parse_file (FILE * file, const struct IniConfig * config, void * user)
 						name = prev_name;
 					}
 				}
-				if (*end != '=' && *end != ':')
+				if (*end != delim)
 				{
 					ptr = lskip (end + 1);
-					end = strchr (ptr, '=');
-					if (!end) end = strchr (ptr, ':');
-					if (*end == '=' || *end == ':') *end = '\0';
+					end = strchr (ptr, delim);
+					if (*end == delim) *end = '\0';
 				}
 				else
 				{
@@ -378,71 +377,79 @@ int ini_parse_file (FILE * file, const struct IniConfig * config, void * user)
 				ptr = start + 1;
 				while (*ptr)
 				{
-					if (*ptr == '=' || *ptr == ':')
+					if (*ptr == delim)
 					{
 						if (*(ptr + 1) == '"' || *(ptr + 2) == '"' || *(ptr - 1) == '"' || *(ptr - 2) == '"') break;
 					}
 					++ptr;
 				}
-				end = strstr (ptr + 1, " = ");
-				if (!end) end = strstr (ptr + 1, " : ");
-				name = NULL;
-				if (end)
+				if (*ptr)
 				{
-					// keyname == ":", "=", " : " or " = "
-					if (*(ptr + 1) == '"')
+					char tmpDel[4] = { ' ', delim, ' ', '\0' };
+					end = strstr (ptr, tmpDel);
+					name = NULL;
+					if (end)
 					{
-						*(ptr + 1) = '\0';
-						end = (ptr + 2);
+						// keyname == "=" or " = " where '=' is the delimiter
+						if (*(ptr + 1) == '"')
+						{
+							*(ptr + 1) = '\0';
+							end = (ptr + 2);
+						}
+						else if (*(ptr + 2) == '"')
+						{
+							*(ptr + 2) = '\0';
+							end = (ptr + 3);
+						}
+						if (*(ptr - 1) == '"')
+							*(ptr - 1) = '\0';
+						else if (*(ptr - 2) == '"')
+							*(ptr - 2) = '\0';
+						name = ptr;
 					}
-					else if (*(ptr + 2) == '"')
+					else if (*ptr == delim)
 					{
-						*(ptr + 2) = '\0';
-						end = (ptr + 3);
+						*ptr = '\0';
+						end = rstrip (start);
+						if (*start == '"') ++start;
+						if (*(ptr - 1) == '"')
+							*(ptr - 1) = '\0';
+						else if (*(ptr - 2) == '"')
+							*(ptr - 2) = '\0';
+						name = start;
 					}
-					if (*(ptr - 1) == '"')
-						*(ptr - 1) = '\0';
-					else if (*(ptr - 2) == '"')
-						*(ptr - 2) = '\0';
-					name = ptr;
-				}
-				else if (*ptr == '=' || *ptr == ':')
-				{
-					*ptr = '\0';
-					end = rstrip (start);
-					if (*start == '"') ++start;
-					if (*(ptr - 1) == '"')
-						*(ptr - 1) = '\0';
-					else if (*(ptr - 2) == '"')
-						*(ptr - 2) = '\0';
-					name = start;
+					else
+					{
+						if (!end) end = strrstr (start + 1, tmpDel);
+						*end = '\0';
+						ptr = end + 2;
+						end = rstrip (start);
+						name = start;
+					}
+					value = ptr + 1;
+
+					end = find_char_or_comment (value, '\0');
+					if (*end == ';') *end = '\0';
+					rstrip (value);
+					if (*value == '"' || *(value + 1) == '"')
+					{
+						if (*value == '"')
+							*(value++) = '\0';
+						else if (*(value + 1) == '"')
+						{
+							*(value + 1) = '\0';
+							value += 2;
+						}
+						while ((*end != '"') && !isprint (*end) && end > value)
+							--end;
+						if (*end == '"') *end = '\0';
+					}
 				}
 				else
 				{
-					if (!end) end = strrstr (start + 1, " = ");
-					if (!end) end = strrstr (start + 1, " : ");
-					*end = '\0';
-					ptr = end + 2;
-					end = rstrip (start);
+					rstrip (start);
 					name = start;
-				}
-				value = ptr + 1;
-
-				end = find_char_or_comment (value, '\0');
-				if (*end == ';') *end = '\0';
-				rstrip (value);
-				if (*value == '"' || *(value + 1) == '"')
-				{
-					if (*value == '"')
-						*(value++) = '\0';
-					else if (*(value + 1) == '"')
-					{
-						*(value + 1) = '\0';
-						value += 2;
-					}
-					while ((*end != '"') && !isprint (*end) && end > value)
-						--end;
-					if (*end == '"') *end = '\0';
+					value = NULL;
 				}
 				strncpy0 (prev_name, name, sizeof (prev_name));
 

@@ -68,6 +68,7 @@ Additional gcc 4.6 armhf is tested regularly.
 |      mingw        | 4.6                         |      i386         |
 |      clang        | version 3.5.0-1~exp1        |x86_64-pc-linux-gnu|
 |      icc          | 14.0.2 20140120             |x86_64-pc-linux-gnu|
+|      gcc/g++      |                             | openbsd 4.9.3 (*) |
 
 
 To change the compiler, use
@@ -78,7 +79,12 @@ for example to use gcc-4.3
 
 	cmake -DCMAKE_C_COMPILER=gcc-4.3 -DCMAKE_CXX_COMPILER=g++-4.3 ..
 
-
+(*) OpenBSD ships an old version of GCC per default, which can not compile Elektra.
+A manual installation of egcc/eg++ is required. Note that not every OpenBSD
+mirror provides the eg++ package. Elektra builds are confirmed with
+egcc/eg++ 4.9.3 in OpenBSD 5.9.
+The packages are called gcc and g++.
+Compile with CC=/usr/local/bin/egcc CXX=/usr/local/bin/eg++
 
 ### OPTIONS ###
 
@@ -89,7 +95,6 @@ Some options, i.e. PLUGINS, BINDINGS and TOOLS are either:
 - a special uppercase element that gets replaced by a list of elements, that are:
   - ALL to include all elements (except elements with unfulfilled dependencies)
   - NODEP to include all elements without dependencies
-  - DEFAULT to go back to the situation that was there when nothing was changed
 - elements prefixed with a minus symbol (-) to exclude an element
 
 Examples for this are especially in the subsection PLUGINS below, but they work in the
@@ -119,7 +124,9 @@ The minimal set of plugins you should add:
   See [kdb-mount(1)](/doc/help/kdb-mount.md).
 
 By default nearly all plugins are added. Only experimental plugins
-will be omitted.
+will be omitted:
+
+	-DPLUGINS="ALL;-EXPERIMENTAL"
 
 To add also experimental plugins, you can use:
 
@@ -139,11 +146,21 @@ To add all plugins not having additional dependencies
 
 	-DPLUGINS=NODEP
 
-To manually set the default (same as not setting PLUGINS), you can use
+Note, that every `infos/provides` and `infos/status` field written uppercase can
+be used to select plugins that way.  You also can combine any of these fields
+and add/remove other plugins to/from it, e.g. to include all plugins without deps,
+that provide storage (except yajl) and are maintained, but not include all plugins
+that are experimental, you would use:
 
-	-DPLUGINS=DEFAULT
+	-DPLUGINS="NODEP;STORAGE;-yajl;MAINTAINED;-EXPERIMENTAL"
 
-You also can use NODEP and DEFAULT and add/remove other plugins to/from it.
+The inclusion is determined by following preferences:
+
+1. if the plugin is explicit excluded with "-plugin"
+2. if the plugin is explicit included with "plugin"
+3. if the plugin is excluded via a category "-CATEGORY"
+4. if the plugin is included via a category "CATEGORY"
+5. the plugin is excluded if it is not mentioned at all
 
 Note, that changing `PLUGINS` will not modifiy the defaults used
 after Elektra was installed.  For this endeavour you need to change:

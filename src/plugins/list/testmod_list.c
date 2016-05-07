@@ -34,7 +34,7 @@ static void doTest ()
 	ksAppendKey (ks, parentKey);
 	PLUGIN_OPEN ("list");
 
-	Plugin * check = elektraPluginOpen ("keytometa", modules, ksNew(5, KS_END), errorKey);
+	Plugin * check = elektraPluginOpen ("keytometa", modules, ksNew (5, KS_END), errorKey);
 	if (!check)
 	{
 		printf ("Abort test case, keytometa is missing");
@@ -42,7 +42,7 @@ static void doTest ()
 	}
 	elektraPluginClose (check, 0);
 
-	check = elektraPluginOpen ("rename", modules,  ksNew(5, KS_END), errorKey);
+	check = elektraPluginOpen ("rename", modules, ksNew (5, KS_END), errorKey);
 	if (!check)
 	{
 		printf ("Abort test case, rename is missing");

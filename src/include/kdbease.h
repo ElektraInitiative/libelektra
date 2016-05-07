@@ -12,6 +12,8 @@ extern "C" {
 int elektraArrayIncName (Key * key);
 int elektraKsFilter (KeySet * result, KeySet * input, int (*filter) (const Key * k, void * argument), void * argument);
 
+const char * elektraKeyGetRelativeName (Key const * cur, Key const * parentKey);
+
 KeySet * elektraArrayGet (const Key * arrayParent, KeySet * keys);
 Key * elektraArrayGetNextKey (KeySet * arrayKeys);
 

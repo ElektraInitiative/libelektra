@@ -29,23 +29,20 @@ using namespace kdb;
 using namespace kdb::tools;
 using namespace kdb::tools::merging;
 
-TreeViewModel::TreeViewModel (QObject * parentModel) : m_root ("/", KEY_END), m_kdb (nullptr), m_base ()
+TreeViewModel::TreeViewModel (QObject * parentModel) : m_root ("/", KEY_END), m_kdb ()
 {
 	Q_UNUSED (parentModel);
 }
 
-TreeViewModel::TreeViewModel (KDB * kdb, QObject * parentModel) : m_root ("/", KEY_END), m_kdb (kdb), m_base ()
+TreeViewModel::TreeViewModel (MergingKDB * kdb, QObject * parentModel) : m_root ("/", KEY_END), m_kdb (kdb)
 {
 	Q_UNUSED (parentModel);
 }
 
-TreeViewModel::TreeViewModel (const TreeViewModel & other) : QAbstractListModel ()
+TreeViewModel::TreeViewModel (const TreeViewModel & other)
+: QAbstractListModel (), m_model (other.m_model), m_root (other.m_root), m_kdb (other.m_kdb)
+
 {
-	// copy from other
-	m_model = other.m_model;
-	m_root = other.m_root;
-	m_kdb = other.m_kdb;
-	m_base = other.m_base;
 }
 
 int TreeViewModel::rowCount (const QModelIndex & parentIndex) const
@@ -454,7 +451,7 @@ void TreeViewModel::sink (ConfigNodePtr node, QStringList keys, const Key & key)
 
 	if (node->hasChild (name) && !node->getChildByName (name)->isDirty ())
 	{
-		if (node->getChildByName (name)->getKey ())
+		if (node->getChildByName (name)->getKey () && node->getChildByName (name)->getKey ().getName () == key.getName ())
 		{
 			node->getChildByName (name)->updateNode (key);
 		}
@@ -523,7 +520,6 @@ void TreeViewModel::populateModel (KeySet const & keySet)
 		if (toAdd) m_model << toAdd;
 	}
 
-	m_base = keySet;
 	createNewNodes (keySet);
 }
 
@@ -604,6 +600,7 @@ void printKeys (KeySet const & theirs, KeySet const & base, KeySet const & ours)
 	}
 }
 #endif
+}
 
 QStringList getConflicts (KeySet const & conflictSet)
 {
@@ -623,43 +620,6 @@ QStringList getConflicts (KeySet const & conflictSet)
 	return conflicts;
 }
 
-KeySet handleConflict (KeySet const & theirs, KeySet const & m_base, KeySet const & ours)
-{
-	Key root ("/", KEY_END);
-	KeySet base = m_base;
-
-	ThreeWayMerge merger;
-
-	AutoMergeConfiguration configuration;
-	configuration.configureMerger (merger);
-
-#if DEBUG && VERBOSE
-	std::cout << "guitest: handleConflict: before merge" << std::endl;
-	printKeys (theirs, base, ours);
-#endif
-
-	MergeResult result =
-		merger.mergeKeySet (MergeTask (BaseMergeKeys (base, root), OurMergeKeys (ours, root), TheirMergeKeys (theirs, root), root));
-
-#if DEBUG && VERBOSE
-	std::cout << "guitest: handleConflict: after merge" << std::endl;
-	printKeys (theirs, base, result.getMergedKeys ());
-#endif
-
-	if (!result.hasConflicts ())
-	{
-		KeySet resultKeys = result.getMergedKeys ();
-		return resultKeys;
-	}
-	else
-	{
-		KeySet conflictSet = result.getConflictSet ();
-		QStringList conflicts = getConflicts (conflictSet);
-		throw conflicts;
-	}
-}
-}
-
 void TreeViewModel::synchronize ()
 {
 	KeySet ours = collectCurrentKeySet ();
@@ -671,48 +631,34 @@ void TreeViewModel::synchronize ()
 		printKeys (ours, ours, ours);
 #endif
 
+		ThreeWayMerge merger;
+		AutoMergeConfiguration configuration;
+		configuration.configureMerger (merger);
+
 		// write our config
-		m_kdb->set (ours, m_root);
-		// update our config (if no conflict)
-		m_kdb->get (ours, m_root);
+		m_kdb->synchronize (ours, m_root, merger);
 
 #if DEBUG && VERBOSE
 		std::cout << "guitest: after get" << std::endl;
 		printKeys (ours, ours, ours);
 #endif
 
-		m_base = ours;
-		m_base = ours;
 		createNewNodes (ours);
 	}
-	catch (KDBException const &)
+	catch (MergingKDBException const & exc)
 	{
-		try
-		{
-			KeySet theirs = ours.dup ();
-			m_kdb->get (theirs, m_root);
-
-			KeySet result = handleConflict (theirs, m_base, ours);
-
-			m_kdb->set (result, m_root);
 
 #if DEBUG && VERBOSE
-			std::cout << "guitest: exception: now after set" << std::endl;
-			printKeys (theirs, result, ours);
+		std::cout << "guitest: exception: now after set" << std::endl;
+		printKeys (theirs, result, ours);
 #endif
 
-			m_base = result;
-			m_base = result;
-			createNewNodes (result);
-		}
-		catch (KDBException const & e)
-		{
-			emit showMessage (tr ("Error"), tr ("Synchronizing failed, could not write merged configuration."), e.what ());
-		}
-		catch (QStringList const & conflicts)
-		{
-			emit showMessage (tr ("Error"), tr ("Synchronizing failed, conflicts occured."), conflicts.join ("\n"));
-		}
+		QStringList conflicts = getConflicts (exc.getConflicts ());
+		emit showMessage (tr ("Error"), tr ("Synchronizing failed, conflicts occured."), conflicts.join ("\n"));
+	}
+	catch (KDBException const & e)
+	{
+		emit showMessage (tr ("Error"), tr ("Synchronizing failed, could not write merged configuration."), e.what ());
 	}
 }
 

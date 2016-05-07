@@ -111,6 +111,8 @@ int main (int argc, char ** argv)
 
 	try
 	{
+		std::vector<char *> origArguments (argv + 1, argv + argc);
+		origArguments.push_back (0);
 		CommandPtr cmd = f.get (command);
 		Cmdline cl (argc, argv, cmd.get ());
 
@@ -124,7 +126,7 @@ int main (int argc, char ** argv)
 		// differently for external command
 		if (dynamic_cast<ExternalCommand *> (cmd.get ()))
 		{
-			tryExternalCommand (argv + 1);
+			tryExternalCommand (&origArguments[0]);
 			// does not return, but may throw
 		}
 

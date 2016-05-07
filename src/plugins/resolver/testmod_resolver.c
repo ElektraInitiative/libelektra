@@ -49,7 +49,7 @@ void test_resolve ()
 	succeed_if (plugin->kdbSet != 0, "no open pointer");
 	succeed_if (plugin->kdbError != 0, "no open pointer");
 
-	succeed_if (!strncmp (plugin->name, "resolver", strlen("resolver")), "got wrong name");
+	succeed_if (!strncmp (plugin->name, "resolver", strlen ("resolver")), "got wrong name");
 
 	resolverHandles * h = elektraPluginGetData (plugin);
 	exit_if_fail (h != 0, "no plugin handle");
@@ -97,7 +97,7 @@ void test_name ()
 	succeed_if (plugin->kdbSet != 0, "no open pointer");
 	succeed_if (plugin->kdbError != 0, "no open pointer");
 
-	succeed_if (!strncmp (plugin->name, "resolver", strlen("resolver")), "got wrong name");
+	succeed_if (!strncmp (plugin->name, "resolver", strlen ("resolver")), "got wrong name");
 
 	resolverHandles * h = elektraPluginGetData (plugin);
 	succeed_if (h != 0, "no plugin handle");
@@ -134,7 +134,7 @@ void test_lockname ()
 	succeed_if (plugin->kdbSet != 0, "no open pointer");
 	succeed_if (plugin->kdbError != 0, "no open pointer");
 
-	succeed_if (!strncmp (plugin->name, "resolver", strlen("resolver")), "got wrong name");
+	succeed_if (!strncmp (plugin->name, "resolver", strlen ("resolver")), "got wrong name");
 
 	resolverHandles * h = elektraPluginGetData (plugin);
 	succeed_if (h != 0, "no plugin handle");
@@ -171,7 +171,7 @@ void test_tempname ()
 	succeed_if (plugin->kdbSet != 0, "no open pointer");
 	succeed_if (plugin->kdbError != 0, "no open pointer");
 
-	succeed_if (!strncmp (plugin->name, "resolver", strlen("resolver")), "got wrong name");
+	succeed_if (!strncmp (plugin->name, "resolver", strlen ("resolver")), "got wrong name");
 
 	resolverHandles * h = elektraPluginGetData (plugin);
 	succeed_if (h != 0, "no plugin handle");
@@ -188,6 +188,8 @@ void test_tempname ()
 
 void test_checkfile ()
 {
+	printf ("Check file\n");
+
 	KeySet * modules = ksNew (0, KS_END);
 	elektraModulesInit (modules, 0);
 	Plugin * plugin = elektraPluginOpen ("resolver", modules, set_pluginconf (), 0);
@@ -213,20 +215,20 @@ void test_checkfile ()
 	func_t checkFile = conversation.f;
 
 
-	succeed_if (checkFile("valid") == 1, "valid file not recognised");
-	succeed_if (checkFile("/valid") == 0, "valid absolute file not recognised");
-	succeed_if (checkFile("/absolute/valid") == 0, "valid absolute file not recognised");
-	succeed_if (checkFile("../valid") == -1, "invalid file not recognised");
-	succeed_if (checkFile("valid/..") == -1, "invalid file not recognised");
-	succeed_if (checkFile("/../valid") == -1, "invalid absolute file not recognised");
-	succeed_if (checkFile("/valid/..") == -1, "invalid absolute file not recognised");
-	succeed_if (checkFile("very..strict") == -1, "resolver is currently very strict");
-	succeed_if (checkFile("very/..strict") == -1, "resolver is currently very strict");
-	succeed_if (checkFile("very../strict") == -1, "resolver is currently very strict");
-	succeed_if (checkFile("very/../strict") == -1, "resolver is currently very strict");
-	succeed_if (checkFile("/") == -1, "invalid absolute file not recognised");
-	succeed_if (checkFile(".") == -1, "invalid file not recognised");
-	succeed_if (checkFile("..") == -1, "invalid file not recognised");
+	succeed_if (checkFile ("valid") == 1, "valid file not recognised");
+	succeed_if (checkFile ("/valid") == 0, "valid absolute file not recognised");
+	succeed_if (checkFile ("/absolute/valid") == 0, "valid absolute file not recognised");
+	succeed_if (checkFile ("../valid") == -1, "invalid file not recognised");
+	succeed_if (checkFile ("valid/..") == -1, "invalid file not recognised");
+	succeed_if (checkFile ("/../valid") == -1, "invalid absolute file not recognised");
+	succeed_if (checkFile ("/valid/..") == -1, "invalid absolute file not recognised");
+	succeed_if (checkFile ("very..strict") == -1, "resolver is currently very strict");
+	succeed_if (checkFile ("very/..strict") == -1, "resolver is currently very strict");
+	succeed_if (checkFile ("very../strict") == -1, "resolver is currently very strict");
+	succeed_if (checkFile ("very/../strict") == -1, "resolver is currently very strict");
+	succeed_if (checkFile ("/") == -1, "invalid absolute file not recognised");
+	succeed_if (checkFile (".") == -1, "invalid file not recognised");
+	succeed_if (checkFile ("..") == -1, "invalid file not recognised");
 
 	ksDel (contract);
 	keyDel (root);
@@ -234,6 +236,30 @@ void test_checkfile ()
 	elektraPluginClose (plugin, 0);
 	elektraModulesClose (modules, 0);
 	ksDel (modules);
+}
+
+static void check_xdg ()
+{
+	KeySet * modules = ksNew (0, KS_END);
+	elektraModulesInit (modules, 0);
+	Plugin * plugin = elektraPluginOpen ("resolver", modules, set_pluginconf (), 0);
+	exit_if_fail (plugin, "did not find a resolver");
+
+	int abort = 0;
+	if (strchr (plugin->name, 'x') != NULL)
+	{
+		printf ("Will abort successfully because default resolver is an XDG resolver (%s)\n", plugin->name);
+		abort = 1;
+	}
+
+	elektraPluginClose (plugin, 0);
+	elektraModulesClose (modules, 0);
+	ksDel (modules);
+
+	if (abort)
+	{
+		exit (0);
+	}
 }
 
 
@@ -244,11 +270,14 @@ int main (int argc, char ** argv)
 
 	init (argc, argv);
 
+	test_checkfile ();
+
+	check_xdg ();
+
 	test_resolve ();
 	test_name ();
 	test_lockname ();
 	test_tempname ();
-	test_checkfile ();
 
 
 	printf ("\ntest_backendhelpers RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);

@@ -12,22 +12,27 @@
 #include "kdbconfig.h"
 #endif
 
-#include <string.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <kdberrors.h>
-#include <regex.h>
 #include <ctype.h>
-#include <math.h>
 #include <errno.h>
 #include <kdbease.h>
+#include <kdberrors.h>
+#include <math.h>
+#include <regex.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 #include "conditionals.h"
 
 #define EPSILON 0.00001
 
-typedef enum
-{
+#if defined(__APPLE__)
+#define REGEX_FLAGS_CONDITION (REG_EXTENDED | REG_NEWLINE | REG_ENHANCED | REG_MINIMAL)
+#else
+#define REGEX_FLAGS_CONDITION (REG_EXTENDED | REG_NEWLINE)
+#endif
+
+typedef enum {
 	EQU,
 	NOT,
 	LT,
@@ -40,14 +45,9 @@ typedef enum
 	OR,
 } Comparator;
 
-typedef enum
-{
-	CONDITION,
-	ASSIGN
-} Operation;
+typedef enum { CONDITION, ASSIGN } Operation;
 
-typedef enum
-{
+typedef enum {
 	TRUE = 1,
 	FALSE = 0,
 	ERROR = -1,
@@ -557,11 +557,11 @@ static CondResult parseCondition (const char * condition, const Key * suffixList
 static CondResult parseConditionString (const Key * meta, const Key * suffixList, Key * parentKey, Key * key, KeySet * ks, Operation op)
 {
 	const char * conditionString = keyString (meta);
-	const char * regexString = "((\\((.*?)\\))[[:space:]]*\\?[[:space:]]*(\\((.*?)\\)))($|([[:space:]]*:[[:space:]]*(\\((.*)\\))))";
+	const char * regexString = "((\\(((.*)?)\\))[[:space:]]*\\?[[:space:]]*(\\(((.*)?)\\)))($|([[:space:]]*:[[:space:]]*(\\((.*)\\))))";
 
 	regex_t regex;
 	CondResult ret;
-	if ((ret = regcomp (&regex, regexString, REG_EXTENDED | REG_NEWLINE)))
+	if ((ret = regcomp (&regex, regexString, REGEX_FLAGS_CONDITION)))
 	{
 		ELEKTRA_SET_ERROR (87, parentKey, "Couldn't compile regex: most likely out of memory"); // the regex compiles so the only
 		// possible error would be out of
@@ -569,7 +569,7 @@ static CondResult parseConditionString (const Key * meta, const Key * suffixList
 		ksDel (ks);
 		return ERROR;
 	}
-	int subMatches = 10;
+	int subMatches = 12;
 	regmatch_t m[subMatches];
 	char * ptr = (char *)conditionString;
 	int nomatch = regexec (&regex, ptr, subMatches, m, 0);
@@ -581,7 +581,7 @@ static CondResult parseConditionString (const Key * meta, const Key * suffixList
 		ksDel (ks);
 		return ERROR;
 	}
-	if (m[2].rm_so == -1 || m[5].rm_so == -1)
+	if (m[2].rm_so == -1 || m[6].rm_so == -1)
 	{
 		ELEKTRA_SET_ERRORF (134, parentKey, "Invalid syntax: \"%s\". Check kdb info conditionals for additional information\n",
 				    conditionString);
@@ -600,17 +600,16 @@ static CondResult parseConditionString (const Key * meta, const Key * suffixList
 	strncpy (condition, conditionString + startPos, endPos - startPos);
 	condition[endPos - startPos] = '\0';
 
-	startPos = m[4].rm_so + (ptr - conditionString);
-	endPos = m[4].rm_eo + (ptr - conditionString);
+	startPos = m[5].rm_so + (ptr - conditionString);
+	endPos = m[5].rm_eo + (ptr - conditionString);
 	thenexpr = elektraMalloc (endPos - startPos + 1);
 	strncpy (thenexpr, conditionString + startPos, endPos - startPos);
 	thenexpr[endPos - startPos] = '\0';
 
-
-	if (m[8].rm_so != -1)
+	if (m[10].rm_so != -1)
 	{
-		startPos = m[8].rm_so + (ptr - conditionString);
-		endPos = m[8].rm_eo + (ptr - conditionString);
+		startPos = m[10].rm_so + (ptr - conditionString);
+		endPos = m[10].rm_eo + (ptr - conditionString);
 		elseexpr = elektraMalloc (endPos - startPos + 1);
 		strncpy (elseexpr, conditionString + startPos, endPos - startPos);
 		elseexpr[endPos - startPos] = '\0';
@@ -822,8 +821,8 @@ int elektraConditionalsSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned EL
 Plugin * ELEKTRA_PLUGIN_EXPORT (conditionals)
 {
 	// clang-format off
-	return elektraPluginExport ("conditionals", 
-					ELEKTRA_PLUGIN_GET, &elektraConditionalsGet, 
-					ELEKTRA_PLUGIN_SET, &elektraConditionalsSet, 
+	return elektraPluginExport ("conditionals",
+					ELEKTRA_PLUGIN_GET, &elektraConditionalsGet,
+					ELEKTRA_PLUGIN_SET, &elektraConditionalsSet,
 					ELEKTRA_PLUGIN_END);
 }

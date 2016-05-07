@@ -15,6 +15,7 @@
 #include <QtQml>
 #include <QtTest/qtestcase.h>
 #include <kdb.hpp>
+#include <merging/mergingkdb.hpp>
 
 #include "confignode.hpp"
 #include "datacontainer.hpp"
@@ -46,7 +47,7 @@ int main (int argc, char * argv[])
 	UndoManager manager;
 	GUIBackend backend;
 	GUISettings settings;
-	kdb::KDB kdb;
+	kdb::tools::merging::MergingKDB kdb;
 	TreeViewModel treeModel (&kdb);
 
 	engine.setObjectOwnership (&treeModel, QQmlApplicationEngine::CppOwnership);

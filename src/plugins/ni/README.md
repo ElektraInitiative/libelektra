@@ -43,7 +43,7 @@ the meta data for the parent key has following syntax:
 
 Line continuation works by ending the line with `\\`.
 
-Exporting a KeySet to the nickle format:
+Exporting a KeySet to the nickel format:
 
     kdb export spec/ni ni > example.ni
 

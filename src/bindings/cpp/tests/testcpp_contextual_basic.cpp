@@ -165,26 +165,6 @@ public:
 	}
 };
 
-class KeyValueLayer : public kdb::Layer
-{
-public:
-	KeyValueLayer (std::string key, std::string value_) : m_key (std::move (key)), m_value (std::move (value_))
-	{
-	}
-	std::string id () const override
-	{
-		return m_key;
-	}
-	std::string operator() () const override
-	{
-		return m_value;
-	}
-
-private:
-	std::string m_key;
-	std::string m_value;
-};
-
 class ProfileLayer : public kdb::Layer
 {
 public:
@@ -473,13 +453,13 @@ TYPED_TEST (test_contextual_basic, groups)
 	String s (ks, c, Key ("/%x%", KEY_CASCADING_NAME, KEY_META, "default", "anonymous", KEY_END));
 	c.template activate<ProfileLayer> (s);
 	ASSERT_EQ (i.getName (), "/main/%/%/serial_number");
-	c.template activate<KeyValueLayer> ("version", "1");
+	c.activate ("version", "1");
 	ASSERT_EQ (i.getName (), "/main/%1%anonymous/%/serial_number");
-	c.template activate<KeyValueLayer> ("module", "M1");
+	c.activate ("module", "M1");
 	ASSERT_EQ (i.getName (), "/main/%1%anonymous/%/serial_number");
-	c.template activate<KeyValueLayer> ("manufacturer", "hp");
+	c.activate ("manufacturer", "hp");
 	ASSERT_EQ (i.getName (), "/main/%1%anonymous/%hp/serial_number");
-	c.template activate<KeyValueLayer> ("family", "EliteBook");
+	c.activate ("family", "EliteBook");
 	ASSERT_EQ (i.getName (), "/main/%1%anonymous/%hp/serial_number");
 	c.template activate<KeyValueLayer> ("type", "MobileWorkstation");
 	ASSERT_EQ (i.getName (), "/main/%1%anonymous/%hp%MobileWorkstation%EliteBook/serial_number");
@@ -503,6 +483,78 @@ TYPED_TEST (test_contextual_basic, groups)
 						   "") ([&] { ASSERT_EQ (i.getName (), "/main/%4%anonymous%40%M1/%HP/serial_number"); });
 		ASSERT_EQ (i.getName (), "/main/%4%anonymous%40%M1/%HP%Notebook%EliteBook%8570/serial_number");
 	});
+}
+
+class myId : public kdb::Wrapped
+{
+	virtual std::string layerId () const
+	{
+		return "id";
+	}
+
+	virtual std::string layerVal () const
+	{
+		return "my";
+	}
+};
+
+
+TYPED_TEST (test_contextual_basic, wrapped)
+{
+	using namespace kdb;
+
+	KeySet ks;
+	TypeParam c = this->context;
+	Value<int, ContextPolicyIs<TypeParam>> i (ks, c, Key ("/%id%/key", KEY_META, "default", s_value, KEY_END));
+	ASSERT_EQ (i.getName (), "/%/key");
+	c.activate (myId ());
+	ASSERT_EQ (i.getName (), "/my/key");
+}
+
+
+TYPED_TEST (test_contextual_basic, cvWrapped)
+{
+	using namespace kdb;
+
+	KeySet ks;
+	TypeParam c = this->context;
+	Value<std::string, ContextPolicyIs<TypeParam>> i (ks, c, Key ("/ignore/id", KEY_META, "default", "my", KEY_END));
+
+	Value<int, ContextPolicyIs<TypeParam>> x (ks, c, Key ("/%id%/key", KEY_META, "default", s_value, KEY_END));
+
+	ASSERT_EQ (x.getName (), "/%/key");
+	ASSERT_TRUE (ks.lookup ("/%/key"));
+	c.activate (i);
+	ASSERT_EQ (x.getName (), "/my/key");
+	ASSERT_TRUE (ks.lookup ("/my/key"));
+
+	ks.append (Key ("/other/key", KEY_VALUE, "88", KEY_END));
+	i = "other";
+	c.activate (i);
+	ASSERT_EQ (x.getName (), "/other/key");
+	ASSERT_TRUE (ks.lookup ("/other/key"));
+	ASSERT_EQ (x, 88);
+	ASSERT_EQ (ks.lookup ("/other/key").getString (), "88");
+
+	ks.append (Key ("/other/key", KEY_VALUE, "100", KEY_END));
+	ASSERT_EQ (ks.lookup ("/other/key").getString (), "100");
+	ASSERT_EQ (x, 88) << "updated from KeySet?";
+}
+
+
+TYPED_TEST (test_contextual_basic, cvWrappedInt)
+{
+	using namespace kdb;
+
+	KeySet ks;
+	TypeParam c = this->context;
+	Value<int, ContextPolicyIs<TypeParam>> i (ks, c, Key ("/ignore/id", KEY_META, "default", "88", KEY_END));
+
+	Value<int, ContextPolicyIs<TypeParam>> x (ks, c, Key ("/%id%/key", KEY_META, "default", s_value, KEY_END));
+
+	ASSERT_EQ (x.getName (), "/%/key");
+	c.activate (i);
+	ASSERT_EQ (x.getName (), "/88/key");
 }
 
 
@@ -627,9 +679,14 @@ struct MockObserver : kdb::ValueObserver
 	{
 	}
 
-	virtual void updateContext () const override
+	virtual void updateContext (bool) const override
 	{
 		++counter;
+	}
+
+	virtual kdb::Key getDepKey () const override
+	{
+		throw "should not happen";
 	}
 
 	mutable long long counter;

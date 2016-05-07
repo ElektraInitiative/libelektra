@@ -42,6 +42,7 @@ function (add_scripttest testname)
 		if (TARGET)
 			#cascading of if is && for poor people
 			if (INSTALL_TESTING)
+			if (NOT ${testname_we} STREQUAL "check_formatting")
 			if (NOT ${testname_we} STREQUAL "check_plugins")
 			if (NOT ${testname_we} STREQUAL "check_gen")
 			if (NOT ${testname_we} STREQUAL "check_external")
@@ -71,6 +72,7 @@ function (add_scripttest testname)
 			endif (NOT ${testname_we} STREQUAL "check_external")
 			endif (NOT ${testname_we} STREQUAL "check_gen")
 			endif (NOT ${testname_we} STREQUAL "check_plugins")
+			endif (NOT ${testname_we} STREQUAL "check_formatting")
 			endif(INSTALL_TESTING)
 		else (TARGET)
 			if (ENABLE_KDB_TESTING)
@@ -87,7 +89,7 @@ function (add_scripttest testname)
 			endif ()
 			set(RACE_COMMAND "${CMAKE_BINARY_DIR}/bin/race")
 			set(INCLUDE_COMMON
-				"${INCLUDE_COMMON_FILE}KDB=${KDB_COMMAND}"
+				"${INCLUDE_COMMON_FILE}KDB=\"${KDB_COMMAND}\""
 				)
 			set(testscriptname
 				"${CMAKE_CURRENT_BINARY_DIR}/testscr_${testname}")

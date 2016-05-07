@@ -22,8 +22,7 @@
 
 void test_match ()
 {
-	int ret = fnmatch ("user/*/to/key", "user/path/to/key", FNM_PATHNAME);
-	printf ("%d", ret);
+	succeed_if (fnmatch ("user/*/to/key", "user/path/to/key", FNM_PATHNAME) == 0, "could not do simple fnmatch");
 }
 
 void testKeys (KeySet * ks)

@@ -1,0 +1,20 @@
+#!/bin/sh
+
+# a variant where everything is in a home-directory
+# below .config by default
+
+. "$(dirname "$0")/configure-common"
+
+cd $BUILD
+cmake	-DSWIG_EXECUTABLE=/usr/bin/swig3.0 \
+	-DKDB_DEFAULT_STORAGE="ini" \
+	-DKDB_DB_FILE="default.ini" \
+	-DKDB_DB_INIT="elektra.ini" \
+	-DKDB_DEFAULT_STORAGE=ini \
+	-DKDB_DB_USER=".config/kdb/user" \
+	-DKDB_DB_SYSTEM="~/.config/kdb/system" \
+	-DTOOLS="ALL" \
+	-DBINDINGS="ALL" \
+	$*
+
+	#-DKDB_DB_SPEC="~/.config/kdb/spec" \ # see ##691

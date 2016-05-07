@@ -40,7 +40,7 @@ object:
 
 	kdb::KeySet ks;
 	kdb::Context c;
-    kdb::Parameters par(ks,c);
+	kdb::Parameters par(ks,c);
 
 and access the keys as if they were variables:
 
@@ -75,6 +75,11 @@ contain placeholders, e.g.:
 
 	[/firefox/%profile%/username]
 	type=string
+	default=none
+
+Note that the current implementation always requires a default
+value to be present which will be used when no configuration could
+be loaded.
 
 The placeholder %profile% will be replaced by the current profile.
 Now we need a so-called layer to actually switch the profile:
@@ -112,6 +117,7 @@ item in the specification:
 	type=string
 	opt=P
 	opt/long=profile
+	default=none
 
 The specification entries "opt" and "opt/long" will generate, next to
 the contextual value `firefox.profile` additional code parsing can be 

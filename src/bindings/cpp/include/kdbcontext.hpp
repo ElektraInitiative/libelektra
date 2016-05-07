@@ -11,6 +11,7 @@
 
 #include <kdbconfig.h>
 
+#include <kdbmeta.h>
 #include <kdbvalue.hpp>
 
 #include <cassert>
@@ -29,18 +30,38 @@ class Subject
 public:
 	virtual ~Subject () = 0;
 	typedef std::vector<std::string> Events;
-	virtual void attachObserver (std::string const & event, ValueObserver &);
-	// notify all given events
+	virtual void attachObserver (ValueObserver &);
+	virtual void attachObserverByEvent (std::string const & event, ValueObserver &);
+
+	/**
+	 * @brief Notify all with given events
+	 *
+	 * @param events the event to be notify (observers need to listen to)
+	 */
 	virtual void notifyByEvents (Events const & events) const;
-	// notify all events
+
+	/**
+	 * @brief Notify by every event.
+	 *
+	 * Calls notifyByEvents () with every possible event.
+	 */
 	virtual void notifyAllEvents () const;
+
+	/**
+	 * @brief Notify on KeySet update.
+	 *
+	 * Not only notify keys that have a layer to update, because
+	 * every value might be updated now.
+	 */
+	virtual void notifyKeySetUpdate () const;
 
 protected:
 	Subject ();
 
 private:
 	typedef std::set<ValueObserver::reference> ObserverSet;
-	mutable std::unordered_map<std::string, ObserverSet> m_observers;
+	ObserverSet m_observers;
+	mutable std::unordered_map<std::string, ObserverSet> m_events;
 };
 
 inline Subject::Subject ()
@@ -51,14 +72,19 @@ inline Subject::~Subject ()
 {
 }
 
-inline void Subject::attachObserver (std::string const & event, ValueObserver & observer)
+inline void Subject::attachObserver (ValueObserver & observer)
 {
-	auto it = m_observers.find (event);
-	if (it == m_observers.end ())
+	m_observers.insert (std::ref (observer));
+}
+
+inline void Subject::attachObserverByEvent (std::string const & event, ValueObserver & observer)
+{
+	auto it = m_events.find (event);
+	if (it == m_events.end ())
 	{
 		// add first observer for that event
 		// (creating a new vector)
-		ObserverSet & os = m_observers[event];
+		ObserverSet & os = m_events[event];
 		os.insert (std::ref (observer));
 	}
 	else
@@ -72,8 +98,8 @@ inline void Subject::notifyByEvents (Events const & events) const
 	ObserverSet os;
 	for (auto & e : events)
 	{
-		auto it = m_observers.find (e);
-		if (it != m_observers.end ())
+		auto it = m_events.find (e);
+		if (it != m_events.end ())
 		{
 			for (auto & o : it->second)
 			{
@@ -97,13 +123,36 @@ inline void Subject::notifyByEvents (Events const & events) const
 inline void Subject::notifyAllEvents () const
 {
 	Events events;
-	for (auto & o : m_observers)
+	for (auto & o : m_events)
 	{
 		events.push_back (o.first);
 	}
 	notifyByEvents (events);
 }
 
+inline void Subject::notifyKeySetUpdate () const
+{
+	KeySet deps;
+	size_t i = 0;
+	for (auto & o : m_observers)
+	{
+		Key dep (o.get ().getDepKey ());
+		dep.set<size_t> (i);
+		++i;
+		deps.append (dep);
+	}
+
+	std::vector<ckdb::Key *> ordered;
+	ordered.resize (deps.size ());
+	int ret = elektraSortTopology (deps.getKeySet (), &ordered[0]);
+	if (ret == 0) throw std::runtime_error ("Cycle in layer dependencies");
+	if (ret == -1) throw std::logic_error ("elektraSortTopology used wrongly");
+
+	for (auto & o : ordered)
+	{
+		std::next (m_observers.begin (), Key (o).get<size_t> ())->get ().updateContext (false);
+	}
+}
 
 /**
  * @brief Provides a context for configuration
@@ -159,8 +208,9 @@ public:
 	 */
 	void attachByName (std::string const & key_name, ValueObserver & observer)
 	{
+		this->attachObserver (observer);
 		evaluate (key_name, [&](std::string const & current_id, std::string &, bool) {
-			this->attachObserver (current_id, observer);
+			this->attachObserverByEvent (current_id, observer);
 			return false;
 		});
 	}
@@ -325,6 +375,8 @@ protected:
 			p.first->second = layer; // update
 		}
 
+		notifyByEvents ({ layer->id () });
+
 #if DEBUG && VERBOSE
 		std::cout << "activate layer: " << layer->id () << std::endl;
 #endif
@@ -343,7 +395,20 @@ public:
 	{
 		std::shared_ptr<Layer> layer = std::make_shared<T> (std::forward<Args> (args)...);
 		activateLayer (layer);
-		notifyByEvents ({ layer->id () });
+		return layer;
+	}
+
+	std::shared_ptr<Layer> activate (Wrapped const & value)
+	{
+		std::shared_ptr<Layer> layer = std::make_shared<WrapLayer> (value);
+		activateLayer (layer);
+		return layer;
+	}
+
+	std::shared_ptr<Layer> activate (std::string key, std::string value)
+	{
+		std::shared_ptr<Layer> layer = std::make_shared<KeyValueLayer> (key, value);
+		activateLayer (layer);
 		return layer;
 	}
 

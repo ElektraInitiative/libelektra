@@ -13,6 +13,7 @@ add_plugin(ini
 		${INIH_INCLUDE}
 	LINK_ELEKTRA
 		elektra-ease
+		elektra-meta
 		elektra-proposal
 	)
 

@@ -24,12 +24,20 @@ int elektraNetworkAddrInfo (Key * toCheck)
 
 	struct addrinfo hints;
 	memset (&hints, 0, sizeof (struct addrinfo));
-	hints.ai_family = AF_UNSPEC;     /* Allow IPv4 or IPv6 */
+	hints.ai_family = AF_UNSPEC; /* Allow IPv4 or IPv6 */
+	if (!strcmp (keyString (meta), "ipv4"))
+	{
+		hints.ai_family = AF_INET;
+	}
+	else if (!strcmp (keyString (meta), "ipv6"))
+	{
+		hints.ai_family = AF_INET6;
+	}
 	hints.ai_socktype = SOCK_DGRAM;  /* Datagram socket */
 	hints.ai_flags = AI_NUMERICHOST; /* Only accept numeric hosts */
 	hints.ai_protocol = 0;		 /* Any protocol */
 
-	s = getaddrinfo (keyString (toCheck), keyString (meta), &hints, &result);
+	s = getaddrinfo (keyString (toCheck), "", &hints, &result);
 
 	if (s != 0)
 	{
@@ -61,14 +69,13 @@ int elektraNetworkGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * 
 
 int elektraNetworkSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
 {
-	/* set all keys */
+	/* check all keys */
 	Key * cur;
-	int s;
 
 	ksRewind (returned);
 	while ((cur = ksNext (returned)) != 0)
 	{
-		s = elektraNetworkAddrInfo (cur);
+		int s = elektraNetworkAddrInfo (cur);
 		if (s != 0)
 		{
 			const char * gaimsg = gai_strerror (s);

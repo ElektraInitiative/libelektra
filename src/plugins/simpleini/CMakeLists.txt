@@ -1,7 +1,10 @@
 include (LibAddMacros)
 
-# silently ignore plugin on apple
-if(NOT APPLE)
+include (CheckSymbolExists)
+check_symbol_exists (__GNU_LIBRARY__ "features.h"    HAVE_GLIBC)
+
+# silently ignore plugin on non-glibc systems
+if (HAVE_GLIBC)
 	add_plugin (simpleini
 		SOURCES
 			simpleini.h

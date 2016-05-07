@@ -13,14 +13,6 @@ macro (do_doc target folder file install)
 	# sometimes doxygen is too slow and fails with "Could not create output directory .../doc/html"
 	file(MAKE_DIRECTORY ${folder})
 
-	add_custom_command (
-		OUTPUT ${folder}/${file}
-		COMMAND ${DOXYGEN_EXECUTABLE}
-		ARGS ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile
-		DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile markdownlinkconverter
-		WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
-	)
-
 	#get_filename_component (name ${target} NAME_WE)
 
 	add_custom_target (${target} ALL
@@ -73,10 +65,15 @@ if (DOXYGEN_FOUND)
 		${TARGET_DOCUMENTATION_HTML_FOLDER})
 	do_doc(man3 ${OUTPUT_DIRECTORY}/man/man3elektra/ kdb.3elektra
 		"${TARGET_DOCUMENTATION_MAN_FOLDER};PATTERN;_*;EXCLUDE")
+	add_dependencies(man3 html)
+	set(outputs ${OUTPUT_DIRECTORY}/html/index.html
+		${OUTPUT_DIRECTORY}/man/man3elektra/kdb.3elektra)
 
 	if (WITH_LATEX)
 		do_doc(latex ${OUTPUT_DIRECTORY}/latex/ refman.tex
 			${TARGET_DOCUMENTATION_LATEX_FOLDER})
+		add_dependencies(latex man3 html)
+		list(APPEND outputs ${OUTPUT_DIRECTORY}/latex/refman.tex)
 
 		file (COPY "${CMAKE_CURRENT_SOURCE_DIR}/markdownlinkconverter/elektraSpecialCharacters.sty"
 				DESTINATION "${OUTPUT_DIRECTORY}/latex/")
@@ -93,11 +90,17 @@ if (DOXYGEN_FOUND)
 		add_custom_target (pdf ALL
 			DEPENDS ${OUTPUT_DIRECTORY}/latex/refman.pdf
 		)
-
-		# needed because some .tex files are written after refman.tex (#470):
-		add_custom_target (.NOTPARALLEL pdf)
+		add_dependencies(pdf latex)
 
 	endif (WITH_LATEX)
+
+	add_custom_command (
+		OUTPUT ${outputs}
+		COMMAND ${DOXYGEN_EXECUTABLE}
+		ARGS ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile
+		DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile markdownlinkconverter
+		WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+	)
 else (DOXYGEN_FOUND)
 	message (WARNING "Doxygen not found, Reference Manual can't be created even though requested with BUILD_DOCUMENTATION.")
 endif (DOXYGEN_FOUND)

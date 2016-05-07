@@ -23,7 +23,8 @@ add_plugin (xmltool
 		kscompare.c
 	INCLUDE_DIRECTORIES
 		${LIBXML2_INCLUDE_DIR}
-	LINK_LIBRARIES
+	LINK_ELEKTRA
 		elektra-meta
+	LINK_LIBRARIES
 		${LIBXML2_LIBRARIES}
 	)

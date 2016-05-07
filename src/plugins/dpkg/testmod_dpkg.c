@@ -22,9 +22,7 @@ int main (int argc, char ** argv)
 
 	init (argc, argv);
 
-	printf ("\ntestmod_dpkg RESULTS: %d test(s) done. %d error(s).\n",
-			nbTest, nbError);
+	printf ("\ntestmod_dpkg RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 
 	return nbError;
 }
-

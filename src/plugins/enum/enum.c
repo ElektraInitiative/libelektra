@@ -12,12 +12,12 @@
 #include "kdbconfig.h"
 #endif
 
-#include <string.h>
+#include "enum.h"
+#include <kdberrors.h>
+#include <regex.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <regex.h>
-#include <kdberrors.h>
-#include "enum.h"
+#include <string.h>
 
 #define VALIDATE_KEY_SUBMATCHES 3 // first submatch is the string we want, second submatch , or EOL
 

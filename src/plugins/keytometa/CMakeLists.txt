@@ -4,7 +4,7 @@ add_plugin (keytometa
 	SOURCES
 		keytometa.h
 		keytometa.c
-	LINK_LIBRARIES
+	LINK_ELEKTRA
 		elektra-proposal
 		elektra-meta
 	)

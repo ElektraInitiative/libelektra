@@ -214,6 +214,11 @@ These plugins start an interpreter and allow you to use a bindings.
 - [filecheck](filecheck/) does sanity checks on a file
 - [iterate](iterate/) iterate over all keys and run exported functions on tagged keys
 - [dpkg](dpkg/) reads /var/lib/dpkg/{available,status} 
+- [curlget](curlget/) fetchs configuration file from a remote host
+- [shell](shell/) executes shell commandos after kdbGet, kdbSet and kdbError
+- [semlock](semlock/) a semaphore based global locking logic
+- [profile](profile/) links profile keys
+
 ## New Plugins ##
 
 To add a new plugin you can copy the template plugin. Please make sure

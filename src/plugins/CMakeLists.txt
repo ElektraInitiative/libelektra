@@ -9,8 +9,9 @@ set (ADDTESTING_PHASE OFF)
 file (GLOB DIRECTORIES RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/*)
 
 foreach (plugin ${DIRECTORIES})
-	message (STATUS ${plugin})
+	#message (STATUS ${plugin})
 	if (IS_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/${plugin} AND NOT ${plugin} STREQUAL CMakeFiles)
+		set (PLUGIN_DIRECTORY_NAME ${plugin})
 		include ("${plugin}/CMakeLists.txt")
 	endif ()
 endforeach(plugin)
@@ -29,6 +30,7 @@ set (ADDTESTING_PHASE OFF)
 
 foreach (plugin ${ADDED_DIRECTORIES})
 	if (IS_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/${plugin})
+		set (PLUGIN_DIRECTORY_NAME ${plugin})
 		add_subdirectory ("${plugin}")
 	else ()
 		message (WARNING "${plugin} is not a valid directory")
@@ -47,15 +49,15 @@ if (output EQUAL -1)
 	message(SEND_ERROR "selected default resolver (${KDB_DEFAULT_RESOLVER}) is not selected in PLUGINS, please change KDB_DEFAULT_RESOLVER or PLUGINS")
 endif()
 
+if (BUILD_SHARED)
+	mkdir (${CMAKE_LIBRARY_OUTPUT_DIRECTORY})
+	create_lib_symlink (
+			libelektra-${KDB_DEFAULT_STORAGE}.so
+			libelektra-storage.so
+			)
 
-
-#TODO:
-# - symlink for default plugin instead of having it in code?
-#
-#	shouldn't that be at installation time??
-#	mkdir (${CMAKE_BINARY_DIR}/dist/lib${LIB_SUFFIX}/${TARGET_PLUGIN_FOLDER})
-#	create_symlink (
-#			libelektra-${BACKEND_DEFAULT}.so
-#			${CMAKE_BINARY_DIR}/dist/lib${LIB_SUFFIX}/${TARGET_PLUGIN_FOLDER}/libelektra-default.so
-#			)
-#	message (STATUS "Default backend: ${BACKEND_DEFAULT}")
+	create_lib_symlink (
+			libelektra-${KDB_DEFAULT_RESOLVER}.so
+			libelektra-resolver.so
+			)
+endif (BUILD_SHARED)

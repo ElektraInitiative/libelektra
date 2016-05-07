@@ -52,12 +52,12 @@ do
 
 	check_remaining_files $FILE
 
-	$KDB mount $FILE $MOUNTPOINT $MOUNT_PLUGIN 1>/dev/null
+	"$KDB" mount $FILE $MOUNTPOINT $MOUNT_PLUGIN 1>/dev/null
 	exit_if_fail "could not mount $FILE at $MOUNTPOINT using $MOUNT_PLUGIN"
 
 	cleanup()
 	{
-		$KDB umount $MOUNTPOINT >/dev/null
+		"$KDB" umount $MOUNTPOINT >/dev/null
 		succeed_if "could not umount $MOUNTPOINT"
 		rm -f $USER_FOLDER/$FILE
 		rm -f $SYSTEM_FOLDER/$FILE
@@ -76,7 +76,7 @@ do
 	echo "Running tests for $PLUGIN"
 	for ROOT in $USER_ROOT $SYSTEM_ROOT
 	do
-		$KDB test "$ROOT" $TESTS
+		"$KDB" test "$ROOT" $TESTS
 		succeed_if "could not run test suite"
 	done
 

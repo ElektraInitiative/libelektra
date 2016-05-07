@@ -13,8 +13,8 @@ include(LibAddMacros)
 
 
 
-set (PLUGINS_DOC "Which plugins should be added? ALL for all available (default). See doc/COMPILE.md")
-set (PLUGINS "ALL" CACHE STRING ${PLUGINS_DOC})
+set (PLUGINS_DOC "Which plugins should be added? ALL\;-EXPERIMENTAL is default. See doc/COMPILE.md")
+set (PLUGINS "ALL;-EXPERIMENTAL" CACHE STRING ${PLUGINS_DOC})
 
 set (INFO_PLUGINS_DOC "only for informational purposes. Modify PLUGINS to change the list.")
 set (ADDED_PLUGINS_DOC "List of plugins already added, ${INFO_PLUGINS_DOC}")
@@ -183,11 +183,18 @@ set (KDB_DB_INIT "elektra.ecf" CACHE STRING
 set (KDB_DEFAULT_STORAGE "dump" CACHE STRING
 	"This storage plugin will be used initially (as default and for bootstrapping).")
 
+if (KDB_DEFAULT_STORAGE STREQUAL "storage")
+	message (FATAL_ERROR "KDB_DEFAULT_STORAGE must not be storage, pick a concrete storage, e.g. dump or ini")
+endif ()
 
-#TODO: Change default
-#set (KDB_DEFAULT_RESOLVER "resolver_fm_hpu_b" CACHE STRING
-set (KDB_DEFAULT_RESOLVER "resolver" CACHE STRING
+
+set (KDB_DEFAULT_RESOLVER "resolver_fm_hpu_b" CACHE STRING
 	"This resolver plugin will be used initially (as default and for bootstrapping).")
+
+if (KDB_DEFAULT_RESOLVER STREQUAL "resolver")
+	message (FATAL_ERROR "KDB_DEFAULT_RESOLVER must not be resolver, pick one of the variants, e.g. resolver_fm_hpu_b or wresolver")
+endif ()
+
 
 
 #
@@ -365,14 +372,8 @@ set (LIB_SUFFIX ""
 		"Optional suffix to use on lib folders (e.g. 64 for lib64)"
     )
 
-set (MEMORYCHECK_COMMAND
-		/usr/bin/valgrind
-		CACHE FILEPATH
-		"Full path to valgrind"
-    )
-
 set(MEMORYCHECK_SUPPRESSIONS_FILE
-		${CMAKE_SOURCE_DIR}/tests/valgrind.suppression
+		"${CMAKE_SOURCE_DIR}/tests/valgrind.suppression"
 		CACHE FILEPATH
 		"Full path to suppression file for valgrind")
 

@@ -1,6 +1,52 @@
 include(LibAddMacros)
 
 
+function (plugin_check_if_included PLUGIN_SHORT_NAME)
+	list (FIND PLUGINS "-${PLUGIN_SHORT_NAME}" FOUND_EXCLUDE_NAME)
+	if (FOUND_EXCLUDE_NAME GREATER -1)
+		set (NOT_INCLUDED "Exclude Plugin ${PLUGIN_SHORT_NAME}" PARENT_SCOPE)
+		# let explicit exclusion win
+		return ()
+	endif ()
+
+	list (FIND PLUGINS "${PLUGIN_SHORT_NAME}" FOUND_NAME)
+	if (FOUND_NAME EQUAL -1)
+		set (NOT_INCLUDED "Not include Plugin ${PLUGIN_SHORT_NAME}" PARENT_SCOPE)
+		# maybe it is included by category
+	else ()
+		# plugin is given explicit
+		return ()
+	endif ()
+
+	FILE(READ ${CMAKE_CURRENT_SOURCE_DIR}/${PLUGIN_DIRECTORY_NAME}/README.md contents)
+	STRING (REGEX MATCH "- +infos/status *= *([-a-zA-Z0-9 ]*)" CATEGORIES "${contents}")
+	STRING (REGEX REPLACE "- +infos/status *= *([-a-zA-Z0-9 ]*)" "\\1" CATEGORIES "${CATEGORIES}")
+	STRING (REGEX REPLACE " " ";" CATEGORIES "${CATEGORIES}")
+
+	STRING (REGEX MATCH "- +infos/provides *= *([a-zA-Z0-9 ]*)" PROVIDES "${contents}")
+	STRING (REGEX REPLACE "- +infos/provides *= *([a-zA-Z0-9 ]*)" "\\1" PROVIDES "${PROVIDES}")
+	list (APPEND CATEGORIES "ALL" "${PROVIDES}")
+	STRING (TOUPPER "${CATEGORIES}" CATEGORIES)
+	#message (STATUS "CATEGORIES ${CATEGORIES}")
+
+	foreach (CAT ${CATEGORIES})
+		list (FIND PLUGINS "-${CAT}" FOUND_EXCLUDE_CATEGORY)
+		if (FOUND_EXCLUDE_CATEGORY GREATER -1)
+			set (NOT_INCLUDED "Exclude Plugin ${PLUGIN_SHORT_NAME} because of category ${CAT}" PARENT_SCOPE)
+			return ()
+		endif ()
+	endforeach ()
+
+	foreach (CAT ${CATEGORIES})
+		list (FIND PLUGINS "${CAT}" FOUND_CATEGORY)
+		if (FOUND_CATEGORY GREATER -1)
+			set (NOT_INCLUDED "" PARENT_SCOPE)
+			return ()
+		endif ()
+	endforeach ()
+endfunction ()
+
+
 # add_plugin: add a plugin to Elektra
 #
 # SOURCES:
@@ -26,7 +72,7 @@ function (add_plugin PLUGIN_SHORT_NAME)
 	cmake_parse_arguments (ARG
 		"CPP" # optional keywords
 		"" # one value keywords
-		"CATEGORIES;SOURCES;SHARED_SOURCES;LINK_LIBRARIES;COMPILE_DEFINITIONS;INCLUDE_DIRECTORIES;LINK_ELEKTRA" # multi value keywords
+		"SOURCES;SHARED_SOURCES;LINK_LIBRARIES;COMPILE_DEFINITIONS;INCLUDE_DIRECTORIES;LINK_ELEKTRA" # multi value keywords
 		${ARGN}
 	)
 
@@ -38,32 +84,8 @@ function (add_plugin PLUGIN_SHORT_NAME)
 	#message (STATUS "enter add_plugin ${PLUGIN_SHORT_NAME}")
 
 	if (COLLECTION_PHASE)
-		list (FIND PLUGINS "-${PLUGIN_SHORT_NAME}" FOUND_EXCLUDE_NAME)
-		if (FOUND_EXCLUDE_NAME GREATER -1)
-			message (STATUS "Exclude ${PLUGIN_SHORT_NAME}")
-			return ()
-		endif ()
-
 		set (NOT_INCLUDED "")
-		list (FIND PLUGINS "${PLUGIN_SHORT_NAME}" FOUND_NAME)
-		list (FIND PLUGINS "ALL" FOUND_ALL)
-		if (FOUND_NAME EQUAL -1 AND FOUND_ALL EQUAL -1)
-			set (NOT_INCLUDED "Not include Plugin ${PLUGIN_SHORT_NAME}")
-		endif ()
-
-		foreach (CAT ${ARG_CATEGORIES})
-			list (FIND PLUGINS "-${CAT}" FOUND_EXCLUDE_CATEGORY)
-			if (FOUND_EXCLUDE_CATEGORY GREATER -1)
-				message (STATUS "Exclude Plugin ${PLUGIN_SHORT_NAME} because of category ${CAT}")
-				return ()
-			endif ()
-			list (FIND PLUGINS "${CAT}" FOUND_CATEGORY)
-			if (FOUND_CATEGORY GREATER -1)
-				#message (STATUS "Include Plugin ${PLUGIN_SHORT_NAME} because of category ${CAT}")
-				set (NOT_INCLUDED "")
-				break ()
-			endif ()
-		endforeach ()
+		plugin_check_if_included (${PLUGIN_SHORT_NAME})
 
 		if (NOT_INCLUDED)
 			if (REMOVED_PLUGINS)
@@ -95,7 +117,7 @@ function (add_plugin PLUGIN_SHORT_NAME)
 	if (FOUND_NAME EQUAL -1)
 		list (FIND REMOVED_PLUGINS "${PLUGIN_SHORT_NAME}" FOUND_NAME)
 		if (FOUND_NAME EQUAL -1)
-			message (FATAL_ERROR "Internally inconsistency, plugin is not there, but was not removed")
+			message (FATAL_ERROR "Internally inconsistency, plugin ${PLUGIN_SHORT_NAME} is not there, but was not removed: ${REMOVED_PLUGINS}")
 		endif ()
 		# plugin was not added in previous phase or removed because of missing deps, exit quietly
 		return ()

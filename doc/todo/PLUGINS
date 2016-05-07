@@ -2,6 +2,112 @@ Ideas for new PLUGINS in elektra.
 Prefer using great frameworks to do that in short time with high quality.
 
 
+## Resolver
+
+git-plugin
+	commit files on set()
+	using libgit
+
+see more RESOLVER tasks below
+
+
+
+
+## Profile
+
+According to the convention the current profile
+should be used by default:
+
+    /sw/apache/httpd/#0/current
+
+A plugin should create (and remove in set direction) link
+keys to non-present keys. The default profile is given
+via /sw/apache/httpd/#0/profile, i.e.:
+
+    /sw/apache/httpd/#0/profile = someprofile
+
+So if /sw/apache/httpd/#0/someprofile/key is present it
+would create a link:
+
+    /sw/apache/httpd/#0/current/key
+       override/#0 = /sw/apache/httpd/#0/someprofile/key
+
+Or if /sw/apache/httpd/#0/someprofile/key
+is not present, but /sw/apache/httpd/#0/%/key is:
+
+    /sw/apache/httpd/#0/current/key
+       override = /sw/apache/httpd/#0/%/key
+
+
+## TYPE ##
+
+range: check/range 5-20,23-45 (for number types)
+
+units-of-measurements
+	(e.g. 20m, 5kg, A, ..)
+
+allow numbers to enter:
+	binary (e.g. 0b1000110)
+	hex (e.g. 0x...)
+		or even mix: 0x20kg
+	oct (e.g. 0332, would disallow prefix 0?)
+
+calculate default values
+	same as assign, but with very low priority
+
+(dependend) optionality:
+	make a key only optional on some condition
+	otherwise fail if key is not present
+
+
+## REWRITE plugin ##
+
+meta data rewriter into value
+replaces NULL plugin
+
+binary, type and any other meta data
+encoded into string value
+also encode null value (only possible in binary)
+and binary (including encoding of null bytes and terminating null?)
+
+should play together with recode plugins nicely
+
+
+
+
+## LOGGING ##
+
+logging API:
+	showing/allowing multiple errors
+	macros for error/warning numbers
+
+
+## Others
+
+lock plugin
+
+inherit/copy meta-data/bind mounts:
+	kdb setmeta spec/something inherit/override/# '"/elsewhere/key/" + basename'
+	und ein inherit-Plugin kopiert dann automatisch ein override /elsewhere/key/ (mit dem richtigen basename dran) in alle Subkeys (die nicht ein anderes inherit/override haben).
+
+werror plugin:
+	turn specified warnings into errors (for both get+set pathes)
+
+logging plugin:
+	improve error messages for validation
+
+List plugin:
+	Whitelist (ignore error codes, transform error->warning)
+	lazy loading of plugins (already implemented?)
+
+## Function plugin
+
+allow to use functional programming in Elektra
+	e.g. if(true(abc), isnull(aaa), not('ab'))
+
+allow to load function (foo) of another plugin (check), too:
+
+	e.g. check::foo('abc', def)
 
 
 ## Rework plugins
@@ -24,7 +130,6 @@ checking for broken links:
 	if there is any cycle
 
 
-
 ## OS abstraction ##
 
 chdir/getcwd
@@ -38,15 +143,13 @@ getenv plugin: for /env/current
 Shell expansion
 Environment expansion
 
-noresolver: make it always return 0?
-
 single file plugins for /proc:
 	one file <-> one key/value
 
 
 ## logging
 
-undo  plugin
+undo plugin
 write log files on every kdbSet() that allow to undo what happened in this commit
 
 log all warnings that happened
@@ -76,6 +179,9 @@ on the file (in the value of the parentKey), including:
 
 ## rename ##
 
+based on meta-data
+	with fnmatch/regex
+
 further renaming features
 
 recode of names (using iconv)
@@ -90,6 +196,10 @@ arbitrary encodings via python/lua function
 
 Idea: fix limitations of current plugins using other plugins
 
+dir2leafvalue:
+	for testing INI
+	https://github.com/ElektraInitiative/libelektra/issues/106
+
 Needed for yajl+ini:
 	rewrite of values in directories as subkeys
 
@@ -102,34 +212,21 @@ fstab:
 allow to lock down configuration for guis
 
 
-## Helper Library for storage plugins ##
-
-Refactoring hosts + ini?
-
-path plugin:
-	allow random-generated parts in filenames
-	check NFS, mounting properties
-
-
 # Storage plugins #
 
 ## Generic ##
 
-generic simpleini (customizable printf/scanf format strings)
+plugin that uses the content of file as value
 
-Build a generic storage plugin to replace dump:
-- preserving order
-- preserving comments
-- human read+writeable
+lexer plugin:
+	create elektra Keys instead of Token
 
 
 ## JSON ##
 
-* should handle cppcms config files
-  http://cppcms.com/wikipp/en/page/cppcms_1x_config
-* should handle openicc
-  doc/standards/OpenICC_device_config_DB.json
-  http://www.freedesktop.org/wiki/Specifications/icc_meta_tag_for_monitor_profiles
+types
+make validator that fails for inconsistent arrays #
+
 
 == Elektra types ==
 
@@ -186,6 +283,8 @@ folder:
 
 https://github.com/toml-lang/toml
 
+https://github.com/martinh/libconfuse
+
 MacOSX plist files
 
 http://rfc.zeromq.org/spec:4/ZPL
@@ -217,6 +316,7 @@ compile lenses as plugin:
 	+ may be faster?
 
 xfconf file storage (see #47)
+
 
 ### binary
 
@@ -294,31 +394,43 @@ restrict plugins to be written to
 plugin: readonly (do not allow to be written to backend)
 
 
-## METAREWRITE plugin ##
 
-meta data rewriter into value
-replaces NULL plugin
+## CHECKERS ##
 
-binary, type and any other meta data
-encoded into string value
-also encode null value (only possible in binary)
-and binary (including encoding of null bytes and terminating null?)
+check if hosts are reachable (e.g. by ping)
 
-
-## TYPE ##
-
-struct: checker
-	cannot be deeply nested
-	don't throw char*
-	check arrays
-
-Checkers:
-	check if hosts are reachable (e.g. by ping)
-
-units-of-measurements (e.g. m, kg, A, ..)
-
+path plugin:
+	allow random-generated parts in filenames
+	check NFS, mounting properties
 
 # RESOLVER #
+
+resolving using config/env vars ${HOME}/abc
+
+    /$HOME$/abc.conf  will resolve to  /home/markus/abc.conf if env var HOME=/home/markus
+
+Environment variable names are started and terminated with $. Note it is not possible to refer to a variable name that contains a $. I think this limitation is irrelevant (using = as terminating character would not have this limitation, but I think it would be confusing).
+
+If you want in the filename that contains $, you need to double it. So:
+
+    abc$USER$ -> USER as environment variable
+    abc$$USER$$ -> file name called abc$USER$
+    abc$USER -> error: used invalid unquoted $; checkFile should return -1
+
+
+
+curl resolver:
+	a resolver that downloads file from http/ftp/ssh/sftp/etc and uses them
+
+
+## no/ro resolver ##
+
+roresolver: check if something is modified
+	for version, constants, uname
+	and/or remove value comparision in those plugins
+	kdbGet should return 0 if nothing modified, too
+
+noresolver: make it always return 0?
 
 ## split up ##
 
@@ -340,6 +452,9 @@ resolver-posix
 	using HOME def. in posix: http://pubs.opengroup.org/onlinepubs/009695399/basedefs/xbd_chap08.html
 	using USER as fallback? not def. in posix, but often in shells
 
+
+use swap (renameat2 RENAME_EXCHANGE)
+	to never loose user data even if modified during commit
 
 ## improvements ##
 

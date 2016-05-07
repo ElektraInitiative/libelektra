@@ -24,12 +24,12 @@ TEST (GetEnv, SimpleFork)
 	EXPECT_EQ (getenv ("does-exist"), std::string ("hello"));
 	pid_t f;
 	f = fork ();
-	std::cerr << "FORK " << f << std::endl;
+	// std::cerr << "FORK " << f << std::endl;
 	ASSERT_NE (getenv ("does-exist"), static_cast<char *> (nullptr));
 	EXPECT_EQ (getenv ("does-exist"), std::string ("hello"));
 
 	f = fork ();
-	std::cerr << "FORK " << f << std::endl;
+	// std::cerr << "FORK " << f << std::endl;
 	ASSERT_NE (getenv ("does-exist"), static_cast<char *> (nullptr));
 	EXPECT_EQ (getenv ("does-exist"), std::string ("hello"));
 	elektraClose ();
