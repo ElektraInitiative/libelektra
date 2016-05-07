@@ -1113,7 +1113,7 @@ static int iniWriteKeySet (FILE * fh, Key * parentKey, KeySet * returned, IniPlu
 	ssize_t arraySize = ksGetSize (returned);
 	keyArray = elektraCalloc (arraySize * sizeof (Key *));
 	elektraKsToMemArray (returned, keyArray);
-	qsort (keyArray, arraySize, sizeof (Key *), iniCmpOrder);
+	mergesort (keyArray, arraySize, sizeof (Key *), iniCmpOrder);
 	Key * cur = NULL;
 	Key * sectionKey = parentKey;
 	int ret = 1;
