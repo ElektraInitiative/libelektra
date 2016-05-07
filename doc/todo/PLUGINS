@@ -218,11 +218,6 @@ allow to lock down configuration for guis
 
 plugin that uses the content of file as value
 
-plugin which uses C KeySet as persistent storage (ksNew(keyNew(....))
-
-generic simpleini (customizable printf/scanf format strings)
-	/etc/sysctl.conf Format (. instead of /, # as comment)
-
 lexer plugin:
 	create elektra Keys instead of Token
 
