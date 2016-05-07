@@ -237,7 +237,6 @@ static int iniKeyToElektraArray (CallbackHandle * handle, Key * existingKey, Key
 		keySetString (appendKey, value);
 		keySetMeta (appendKey, "ini/arrayMember", "");
 		keySetMeta (appendKey, "order", keyString (keyGetMeta (existingKey, "order")));
-		keySetMeta (appendKey, "keyNo", keyBaseName (appendKey));
 		ksAppendKey (handle->result, appendKey);
 		keySetMeta (existingKey, "ini/array", keyBaseName (appendKey));
 		ksAppendKey (handle->result, existingKey);
@@ -263,7 +262,6 @@ static int iniKeyToElektraArray (CallbackHandle * handle, Key * existingKey, Key
 			return -1;
 		}
 		keySetString (appendKey, origVal);
-		keySetMeta (appendKey, "keyNo", keyBaseName (appendKey));
 		ksAppendKey (handle->result, keyDup (appendKey));
 		free (origVal);
 		if (elektraArrayIncName (appendKey) == -1)
@@ -272,7 +270,6 @@ static int iniKeyToElektraArray (CallbackHandle * handle, Key * existingKey, Key
 		}
 		keySetMeta (appendKey, "parent", 0);
 		keySetString (appendKey, value);
-		keySetMeta (appendKey, "keyNo", keyBaseName (appendKey));
 		ksAppendKey (handle->result, keyDup (appendKey));
 		keyDel (appendKey);
 		keyDel (sectionKey);
@@ -901,7 +898,7 @@ void arrayHandler (Key * parentKey, Key * newKey, Key * cur, Key * sectionKey, K
 	{
 		const char * oldVal = keyString (arrayParent);
 		keySetMeta (arrayParent, "ini/array", keyBaseName (cur));
-
+		keySetMeta (arrayParent, "keyNo", 0);
 		if (oldVal && strlen (oldVal))
 		{
 			Key * arrayInitKey = keyDup (arrayParent);
@@ -935,6 +932,7 @@ void arrayHandler (Key * parentKey, Key * newKey, Key * cur, Key * sectionKey, K
 			ksAppendKey (newKS, arrayParent);
 			insertKeyIntoKeySet (parentKey, arrayParent, newKS);
 			keySetMeta (arrayParent, "lastChild", 0);
+			keySetMeta (arrayParent, "keyNo", 0);
 		}
 		keySetBinary (newKey, 0, 0);
 		keySetMeta (arrayParent, "ini/array", keyBaseName (cur));
@@ -944,6 +942,7 @@ void arrayHandler (Key * parentKey, Key * newKey, Key * cur, Key * sectionKey, K
 		keySetMeta (newKey, "binary", 0);
 		keySetString (newKey, keyString (cur));
 		keySetMeta (newKey, "lastChild", 0);
+		keySetMeta (newKey, "keyNo", 0);
 	}
 	else if (keyIsDirectBelow (parentKey, newKey))
 	{
