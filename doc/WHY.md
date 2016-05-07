@@ -35,8 +35,6 @@ The three main points relevant for most people are:
 - Allows you to import/export all parts of the configuration.
 - Provides 3-way merging for configuration upgrades.
 - Syntax independence: you can consistently use your favourite syntax.
-- Performance: Improvements in the library benefits all applications.
-  The library only needs to be loaded once in the memory.
 - Configuration Management (such as Puppet) can be used on top of it
   without having to fiddle with specifics of every configuration file.
 - CLI-tool available
@@ -45,3 +43,12 @@ The three main points relevant for most people are:
   that store values of this path).
 - Allows us to also (integrate commandline arguments and environment)[/src/libs/getenv]
   into a consistent place for configuration.
+- Reduces huge amount of code: Nearly every application has very similar code:
+  - finding the correct configuration file (for different OS)
+  - parsing configuration files
+  - validating configuration files
+  - replace configuration files on changes
+- All advantages libraries have:
+  - Performance: Improvements in the library benefits all applications.
+  - The library only needs to be loaded once in the memory.
+  - On fixes not all binaries of all applications need to be replaced.
