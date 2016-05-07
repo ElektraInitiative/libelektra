@@ -1042,9 +1042,18 @@ static int iniCmpOrder (const void * a, const void * b)
 	const Key * kbkm = keyGetMeta (kb, "keyNo");
 
 	int ret = keyGetNamespace (ka) - keyGetNamespace (kb);
-	if (!ret) ret = strcmp (keyString (kaom), keyString (kbom));
 	if (!ret)
 	{
+		if (!kaom && !kbom) return 0;
+		if (kaom && !kbom) return 1;
+		if (!kaom && kbom) return -1;
+		ret = strcmp (keyString (kaom), keyString (kbom));
+	}
+	if (!ret)
+	{
+		if (!kakm && kbkm) return -1;
+		if (!kakm && !kbkm) return strcmp (keyName (ka), keyName (kb));
+		if (kakm && !kbkm) return 1;
 		if (kakm && kbkm) ret = strcmp (keyString (kakm), keyString (kbkm));
 	}
 
