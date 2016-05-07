@@ -154,6 +154,14 @@ that are experimental, you would use:
 
 	-DPLUGINS="NODEP;STORAGE;-yajl;MAINTAINED;-EXPERIMENTAL"
 
+The inclusion is determined by following preferences:
+
+1. if the plugin is explicit excluded with "-plugin"
+2. if the plugin is explicit included with "plugin"
+3. if the plugin is excluded via a category "-CATEGORY"
+4. if the plugin is included via a category "CATEGORY"
+5. the plugin is excluded if it is not mentioned at all
+
 Note, that changing `PLUGINS` will not modifiy the defaults used
 after Elektra was installed.  For this endeavour you need to change:
 
