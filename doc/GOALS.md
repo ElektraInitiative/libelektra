@@ -44,7 +44,7 @@ Special care for simplicity is taken for the users:
   Elektra so that it flawlessly integrate with their system.
 - Plugin Programmers: it should be simple to extend Elektra
   in any desired way.
-- Application`s Maintainers to correctly setup+upgrade KDB
+- Application's Maintainers to correctly setup+upgrade KDB
 - Administrators that want to change the maintainers setup
   according to their needs
 

@@ -43,7 +43,7 @@ In case you're worried about linking to such a powerful library. The core is a s
 implemented in C, works cross-platform, and does not need any external dependencies. There are
 [bindings](src/bindings) for other languages in case C is too low-level for you.
 
-[Why should I use Elektra?](#goals)
+[Why should I use Elektra?](doc/WHY.md)
 
 
 ## Contact ##
