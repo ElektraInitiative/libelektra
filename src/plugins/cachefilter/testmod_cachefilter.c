@@ -12,27 +12,23 @@
 
 #include <tests_internal.h>
 
-#include <kdbinternal.h>
 #include <kdbconfig.h>
+#include <kdbinternal.h>
 
 #include <tests_plugin.h>
 
 static KeySet * createTestKeysToCache ()
 {
-	return ksNew (3,
-	        keyNew ("user/tests/cachefilter/will/be/cached/key1", KEY_VALUE, "cached1", KEY_END),
-            keyNew ("user/tests/cachefilter/will/be/cached/key2", KEY_VALUE, "cached2", KEY_END),
-            keyNew ("user/tests/cachefilter/will/be/cached", KEY_VALUE, "cached", KEY_END),
-    KS_END);
+	return ksNew (3, keyNew ("user/tests/cachefilter/will/be/cached/key1", KEY_VALUE, "cached1", KEY_END),
+		      keyNew ("user/tests/cachefilter/will/be/cached/key2", KEY_VALUE, "cached2", KEY_END),
+		      keyNew ("user/tests/cachefilter/will/be/cached", KEY_VALUE, "cached", KEY_END), KS_END);
 }
 
 static KeySet * createTestKeysToNotCache ()
 {
-    return ksNew (3,
-		    keyNew ("user/tests/cachefilter/will/not/be/cached/key1", KEY_VALUE, "not-cached1", KEY_END),
-		    keyNew ("user/tests/cachefilter/will/not/be/cached/key2", KEY_VALUE, "not-cached2", KEY_END),
-		    keyNew ("user/tests/cachefilter/will/not/be/cached", KEY_VALUE, "not-cached", KEY_END),
-    KS_END);
+	return ksNew (3, keyNew ("user/tests/cachefilter/will/not/be/cached/key1", KEY_VALUE, "not-cached1", KEY_END),
+		      keyNew ("user/tests/cachefilter/will/not/be/cached/key2", KEY_VALUE, "not-cached2", KEY_END),
+		      keyNew ("user/tests/cachefilter/will/not/be/cached", KEY_VALUE, "not-cached", KEY_END), KS_END);
 }
 
 static void compareKeySets (KeySet * ks, KeySet * expected)
@@ -55,23 +51,29 @@ static void test_successfulCache ()
 	PLUGIN_OPEN ("cachefilter");
 
 	KeySet * ks = createTestKeysToCache ();
-	ksAppend(ks, createTestKeysToNotCache ());
+	ksAppend (ks, createTestKeysToNotCache ());
 
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) >= 1, "call to kdbGet was not successful");
 	succeed_if (output_error (parentKey), "error in kdbGet");
 	succeed_if (output_warnings (parentKey), "warnings in kdbGet");
-	succeed_if (ksGetSize(ks) == 3, "wrong number of keys in result, expected 3");
+	succeed_if (ksGetSize (ks) == 3, "wrong number of keys in result, expected 3");
 
 	KeySet * expected = createTestKeysToNotCache ();
 	compareKeySets (ks, expected);
-	
-	succeed_if (plugin->kdbSet(plugin, ks, parentKey) >= 1, "call to kdbSet was not successful");
+	ksDel (expected);
+
+	// kdbSet() result >= 0 because nothing had to be done and should be successful
+	succeed_if (plugin->kdbSet (plugin, ks, parentKey) >= 0, "call to kdbSet was not successful");
 	succeed_if (output_error (parentKey), "error in kdbGet");
 	succeed_if (output_warnings (parentKey), "warnings in kdbGet");
-	succeed_if (ksGetSize(ks) == 6, "wrong number of keys in result, expected 6");
-	
-	keyDel (parentKey);
+	succeed_if (ksGetSize (ks) == 6, "wrong number of keys in result, expected 6");
+
+	expected = createTestKeysToNotCache ();
+	ksAppend (expected, createTestKeysToCache ());
+	compareKeySets (ks, expected);
 	ksDel (expected);
+
+	keyDel (parentKey);
 	ksDel (ks);
 	PLUGIN_CLOSE ();
 }
