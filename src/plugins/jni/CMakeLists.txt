@@ -13,7 +13,8 @@ if (DEPENDENCY_PHASE)
 		check_symbol_exists (JNI_VERSION_1_8 jni.h JNI_CORRECT_VERSION)
 		if (JNI_CORRECT_VERSION)
 
-			if (jna) # necessary binding was built
+			list (FIND BINDINGS "jna" FINDEX)
+			if (BUILD_TESTING AND FINDEX GREATER -1)
 				set (libelektra_jar ${CMAKE_BINARY_DIR}/src/bindings/jna/libelektra.jar)
 
 				configure_file (
@@ -23,6 +24,8 @@ if (DEPENDENCY_PHASE)
 
 				include_directories (${CMAKE_CURRENT_BINARY_DIR})
 				add_plugintest(jni MEMLEAK)
+			else ()
+				message (WARNING "jna bindings are required for testing, test deactivated")
 			endif ()
 		else ()
 			remove_plugin (jni "jni.h does not define JNI_VERSION_1_8")
