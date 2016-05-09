@@ -43,6 +43,20 @@ Configuration will be in arrays below the keys:
         precommit
         postcommit
 
+Additionally, below every of these position following subpositions
+exist:
+
+     before/init
+     after/deinit
+     before/once
+     after/once
+     before/foreach
+     after/foreach
+
+With different semantics each:
+`init` is always paired with `deinit` and can be used for locking purposes.
+`foreach` will be called for every single mountpoint, `once` only per `kdbGet()/kdbSet()`.
+
 Plugins state in contract that they will work as global plugin, i.e.
 do not need to work on individual config files, when following contract
 is present:
@@ -101,6 +115,40 @@ Or even more advanced ways to copy information from specification to the keys, e
 
 It should be possible to write plugins which need all file names of all resolver plugins.
 E.g. journalling, global mmap.
+
+For mmap it could work the following way:
+
+        preget/after/foreach
+
+is responsible to check if all files resolved are still the same file (and same number of files),
+and if the `mtime` of the mmap file is newer than the resolved file.
+Iff this is the case for every mountpoint we will (try) to load the mmaped file in:
+
+        preget/after/once
+
+The loading of the mmap might fail:
+
+- some checksums missing/wrong (file was tampered with)
+- endianness different
+- size of types different
+
+If the loading failed, we will continue by returning 1,
+if the loading was successful we prematurely abort `kdbGet` by returning 0.
+
+If we continued with `kdbGet` we want to persist the KeySet for
+the next `kdbGet()` with the same parameters using the global hook:
+
+        postget/after/once
+
+Additionally, below every of these position following subpositions
+exist:
+
+     before/init
+     after/deinit
+     before/once
+     after/once
+     before/foreach
+     after/foreach
 
 
 ## Implications

@@ -26,6 +26,7 @@ section here.
 - [CMake spec](cmake_spec.md)
 - [Definition of Bool](bool.md)
 - [Publish Subscribe](pubsub.md)
+- [Global Plugins](global_plugins.md)
 
 ## Drafts
 
