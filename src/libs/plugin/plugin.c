@@ -117,6 +117,7 @@ KeySet * elektraPluginGetConfig (Plugin * handle)
 /**
  * @brief Store a pointer to any plugin related data.
  *
+ * @see elektraPluginGetData
  * @param plugin a pointer to the plugin
  * @param data the pointer to the data
  * @ingroup plugin
@@ -129,6 +130,9 @@ void elektraPluginSetData (Plugin * plugin, void * data)
 /**
  * @brief Get a pointer to any plugin related data stored before.
  *
+ * If elektraPluginSetData() was not called earlier, NULL will be returned.
+ *
+ * @see elektraPluginSetData
  * @param plugin a pointer to the plugin
  * @return a pointer to the data
  * @ingroup plugin
