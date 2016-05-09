@@ -29,9 +29,22 @@ int elektraCachefilterGet (Plugin * handle, KeySet * returned, Key * parentKey)
 		return 1; // success
 	}
 
-	// filter keys that need to be cached
+	// initialize working KeySets
+	KeySet * toBeCached = 0;
 	KeySet * temp = 0;
-	KeySet * toBeCached = ksNew (ksGetSize (returned), KS_END);
+
+	// get old cache data
+	void * cachedData = elektraPluginGetData (handle);
+	if (cachedData != NULL)
+	{
+		toBeCached = (KeySet *)cachedData;
+	}
+	else
+	{
+		toBeCached = ksNew (ksGetSize (returned), KS_END);
+	}
+
+	// filter keys that need to be cached
 	temp = ksCut (returned, parentKey);
 	ksAppend (toBeCached, returned);
 	ksClear (returned);
