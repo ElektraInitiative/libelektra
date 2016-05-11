@@ -1,4 +1,10 @@
 #!/bin/sh
+#
+# @author Markus Raab <elektra@markus-raab.org>
+# @desc Configure a debain build
+# @date 02.09.2014
+# @tags configure
+# @system debain
 
 . "$(dirname "$0")/configure-common"
 

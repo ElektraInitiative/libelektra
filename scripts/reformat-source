@@ -1,4 +1,10 @@
 #!/bin/sh
+#
+# @author Markus Raab <elektra@markus-raab.org>
+# @desc Reformats the whole source code
+# @date 18.02.2016
+# @tags reformat
+# @system all
 
 SELF=$(readlink -f "$0")
 SCRIPTS=$(dirname "$SELF")

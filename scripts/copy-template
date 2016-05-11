@@ -1,4 +1,10 @@
 #!/bin/sh
+#
+# @author Markus Raab <elektra@markus-raab.org>
+# @desc Creates a plugin out of the template plugin
+# @date 05.05.2012
+# @tags template
+# @system all
 
 set -e
 
