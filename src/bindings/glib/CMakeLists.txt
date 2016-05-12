@@ -1,5 +1,12 @@
 include (LibAddMacros)
 
+if (CMAKE_MAJOR_VERSION EQUAL 2 AND CMAKE_MINOR_VERSION EQUAL 8)
+	if (CMAKE_PATCH_VERSION LESS 12)
+		remove_binding(jna "cmake 2.8.12 needed for glib")
+		return()
+	endif()
+endif()
+
 find_package (PkgConfig)
 pkg_check_modules (GOBJECT gobject-2.0>=2.36)
 
