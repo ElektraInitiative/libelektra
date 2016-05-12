@@ -139,6 +139,61 @@ static void test_successfulCacheLong ()
 	PLUGIN_CLOSE ();
 }
 
+static void test_successfulGetSetGetSet ()
+{
+	Key * parentKey = keyNew ("user/tests/cachefilter/will/not/be/cached", KEY_END);
+	KeySet * conf = ksNew (0, KS_END);
+	PLUGIN_OPEN ("cachefilter");
+
+	KeySet * ks = createTestKeysToCache ();
+	ksAppend (ks, createTestKeysToNotCache ());
+
+    // kdbGet() first
+	succeed_if (plugin->kdbGet (plugin, ks, parentKey) >= 1, "call to kdbGet was not successful");
+	succeed_if (output_error (parentKey), "error in kdbGet");
+	succeed_if (output_warnings (parentKey), "warnings in kdbGet");
+	succeed_if (ksGetSize (ks) == 3, "wrong number of keys in result, expected 3");
+
+	KeySet * expected = createTestKeysToNotCache ();
+	compare_keyset (ks, expected);
+	ksDel (expected);
+
+	// kdbSet() result >= 0 because nothing had to be done and should be successful
+	succeed_if (plugin->kdbSet (plugin, ks, parentKey) >= 0, "call to kdbSet was not successful");
+	succeed_if (output_error (parentKey), "error in kdbGet");
+	succeed_if (output_warnings (parentKey), "warnings in kdbGet");
+	succeed_if (ksGetSize (ks) == 6, "wrong number of keys in result, expected 6");
+
+	expected = createTestKeysToNotCache ();
+	ksAppend (expected, createTestKeysToCache ());
+	compare_keyset (ks, expected);
+	ksDel (expected);
+	
+	// another kdbGet() call
+	succeed_if (plugin->kdbGet (plugin, ks, parentKey) >= 1, "call to kdbGet was not successful");
+	succeed_if (output_error (parentKey), "error in kdbGet");
+	succeed_if (output_warnings (parentKey), "warnings in kdbGet");
+	succeed_if (ksGetSize (ks) == 3, "wrong number of keys in result, expected 3");
+
+	expected = createTestKeysToNotCache ();
+	compare_keyset (ks, expected);
+	ksDel (expected);
+	
+	// another kdbSet() call
+	succeed_if (plugin->kdbSet (plugin, ks, parentKey) >= 0, "call to kdbSet was not successful");
+	succeed_if (output_error (parentKey), "error in kdbGet");
+	succeed_if (output_warnings (parentKey), "warnings in kdbGet");
+	succeed_if (ksGetSize (ks) == 6, "wrong number of keys in result, expected 6");
+
+	expected = createTestKeysToNotCache ();
+	ksAppend (expected, createTestKeysToCache ());
+	compare_keyset (ks, expected);
+	ksDel (expected);
+
+	keyDel (parentKey);
+	ksDel (ks);
+	PLUGIN_CLOSE ();
+}
 
 int main (int argc, char ** argv)
 {
@@ -149,6 +204,7 @@ int main (int argc, char ** argv)
 
 	test_successfulCache ();
 	test_successfulCacheLong ();
+	test_successfulGetSetGetSet ();
 
 	printf ("\ntestmod_cachefilter RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 
