@@ -12,18 +12,18 @@ else()
 
 	file (GLOB GELEKTRA_HDR_FILES *.h)
 	file (GLOB GELEKTRA_SRC_FILES *.c)
-
 	add_headers (ELEKTRA_HEADERS)
 	set (SOURCES ${GELEKTRA_SRC_FILES} ${GELEKTRA_HDR_FILES} ${ELEKTRA_HEADERS})
 
-	include_directories (${CMAKE_CURRENT_SOURCE_DIR})
-
-	add_definitions (${GOBJECT_CFLAGS})
-
 	add_library (${GELEKTRA_LIBRARY} SHARED ${SOURCES})
 
-	target_link_libraries (${GELEKTRA_LIBRARY} elektra-core elektra-kdb)
-	target_link_libraries (${GELEKTRA_LIBRARY} ${GOBJECT_LIBRARIES})
+	target_include_directories (${GELEKTRA_LIBRARY} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+	target_include_directories (${GELEKTRA_LIBRARY} SYSTEM PUBLIC ${GOBJECT_INCLUDE_DIRS})
+
+	target_compile_options (${GELEKTRA_LIBRARY} PUBLIC ${GOBJECT_CFLAGS_OTHER})
+
+	target_link_libraries (${GELEKTRA_LIBRARY} PUBLIC elektra-core elektra-kdb)
+	target_link_libraries (${GELEKTRA_LIBRARY} PUBLIC ${GOBJECT_LDFLAGS})
 
 	install (
 		TARGETS ${GELEKTRA_LIBRARY}
