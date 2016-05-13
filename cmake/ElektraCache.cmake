@@ -152,11 +152,11 @@ set(TOOLS ${TOOLS} CACHE STRING ${TOOLS_DOC} FORCE)
 # Runtime paths for KDB
 #
 
-set (KDB_DB_SYSTEM "/etc/kdb" CACHE PATH
+set (KDB_DB_SYSTEM "/etc/kdb" CACHE STRING
 		"The path to the system key database."
 		)
 
-set (KDB_DB_HOME "/home" CACHE PATH
+set (KDB_DB_HOME "/home" CACHE STRING
 		"The compiled-in fallback path to users home directories."
 		)
 
