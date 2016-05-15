@@ -74,12 +74,14 @@ void test_addr ()
 			KEY_META, "check/ipaddr", "",
 			KEY_END);
 	succeed_if (elektraNetworkAddrInfo(k) == 0, "could not do addr check (without specifying ipv4/ipv6)");
+	keyDel (k);
 
 	k = keyNew ("user/anything",
 			KEY_VALUE, "::1",
 			KEY_META, "check/ipaddr", "",
 			KEY_END);
 	succeed_if (elektraNetworkAddrInfo(k) == 0, "could not do addr check (without specifying ipv4/ipv6)");
+	keyDel (k);
 
 	k = keyNew ("user/anything",
 			KEY_VALUE, "x",
