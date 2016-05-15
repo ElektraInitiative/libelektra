@@ -9,6 +9,6 @@
 #ifndef TESTMOD_JNI_H_IN
 #define TESTMOD_JNI_H_IN
 
-#define CLASSPATH "@jna@:@libelektra_jar@"
+#define CLASSPATH "@jna@:@libelektra_jar@:/usr/share/java"
 
 #endif
