@@ -83,19 +83,18 @@ Elektra.
 Now that we have Elektra installed, we can start using the [kdb command](/doc/help/kdb.md) and
 the [qt-gui](/src/tools/qt-gui/).
 
-You can use the `kdb` command to configure your applications:
+Here a small demo:
 
-```bash
-kdb set user/env/override/HTTP_PROXY "http://my.proxy:8080"
-```
+<div style="height:420px;margin:20px;">
+	<script type="text/javascript"
+	src="https://asciinema.org/a/67xubv7tfkpu2434cx3aibjby.js"
+	id="asciicast-67xubv7tfkpu2434cx3aibjby"
+	async
+	data-speed="2"
+	></script>
+</div>
 
-This will set the `HTTP_PROXY` environment variable to `http://my.proxy:8080`.
-Configuration can be retrieved with `kdb get`:
-
-```bash
-kdb get /env/override/HTTP_PROXY
-```
-
+For import/export/mount formats see [Plugins](src/plugins/).
 For information about elektrified environment variables, see
 [/src/libgetenv/README.md](/src/libs/getenv/README.md)
 
