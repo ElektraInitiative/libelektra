@@ -85,14 +85,7 @@ the [qt-gui](/src/tools/qt-gui/).
 
 Here a small demo:
 
-<div style="height:420px;margin:20px;">
-	<script type="text/javascript"
-	src="https://asciinema.org/a/67xubv7tfkpu2434cx3aibjby.js"
-	id="asciicast-67xubv7tfkpu2434cx3aibjby"
-	async
-	data-speed="2"
-	></script>
-</div>
+[![asciicast](https://asciinema.org/a/67xubv7tfkpu2434cx3aibjby.png)](https://asciinema.org/a/67xubv7tfkpu2434cx3aibjby)
 
 For import/export/mount formats see [Plugins](src/plugins/).
 For information about elektrified environment variables, see
