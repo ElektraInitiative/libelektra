@@ -1,0 +1,57 @@
+#
+# Turn off email notifications entirely
+#
+notifications:
+  email: false
+
+language: generic
+
+#
+# Define the build matrix
+#
+matrix:
+  include:
+#    - services: docker
+#      env: OS_RELEASE=debian_unstable
+#      sudo: required
+#      script:
+#        - docker-compose -f scripts/docker/docker-compose.yml build $OS_RELEASE
+#        - docker-compose -f scripts/docker/docker-compose.yml run $OS_RELEASE /bin/bash /workspace/code/scripts/travis.sh
+    - os: osx
+
+#
+# Some of the OS X images don't have cmake, contrary to what people
+# on the Internet say
+#
+before_install:
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
+      brew update &&
+      which cmake || brew install cmake &&
+      which swig || brew install swig &&
+      which python3 || brew install python3 &&
+      which lua || brew install lua &&
+      brew install gobject-introspection &&
+      brew install yajl &&
+      brew install augeas;
+    fi
+
+#
+# Source is checked out in $TRAVIS_BUILD_DIR
+# Build directory will be TRAVIS_BUILD_DIR/../build
+#
+before_script:
+  - cd $TRAVIS_BUILD_DIR/..
+  - mkdir build && cd build
+  - CMAKE_OPT=()
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
+      libffi_ver=$(brew ls --versions libffi | awk '{print $2}') &&
+      cp -nv /usr/local/Cellar/libffi/${libffi_ver}/lib/pkgconfig/libffi.pc /usr/local/lib/pkgconfig/ &&
+      python3_ver=$(python3 -c 'import sys; print(".".join(map(str, sys.version_info[:2])))') &&
+      CMAKE_OPT+=("-DPYTHON_INCLUDE_DIR:PATH=$(python3-config --prefix)/include/python${python3_ver}m") &&
+      CMAKE_OPT+=("-DPYTHON_LIBRARY:FILEPATH=$(python3-config --prefix)/lib/libpython${python3_ver}.dylib");
+    fi
+  - cmake -DBUILD_STATIC=OFF -DBINDINGS=ALL -DPLUGINS="ALL;-crypto_openssl" -DCMAKE_INSTALL_PREFIX=$TRAVIS_BUILD_DIR/../install -DKDB_DB_SYSTEM=$TRAVIS_BUILD_DIR/../kdbsystem ${CMAKE_OPT[@]} $TRAVIS_BUILD_DIR
+
+script:
+  - make -j3
+  - make -j3 test
