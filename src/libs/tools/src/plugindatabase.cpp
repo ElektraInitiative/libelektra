@@ -223,6 +223,21 @@ std::string ModulesPluginDatabase::lookupInfo (PluginSpec const & spec, std::str
 	return plugin->lookupInfo (which);
 }
 
+PluginDatabase::func_t ModulesPluginDatabase::getSymbol (PluginSpec const & spec, std::string const & which) const
+{
+	PluginPtr plugin;
+	try
+	{
+		plugin = impl->modules.load (spec.getName (), spec.getConfig ());
+	}
+	catch (...)
+	{
+		throw;
+	}
+
+	return plugin->getSymbol (which);
+}
+
 PluginSpec ModulesPluginDatabase::lookupMetadata (std::string const & which) const
 {
 	std::vector<std::string> allPlugins = listAllPlugins ();
@@ -366,6 +381,13 @@ std::string MockPluginDatabase::lookupInfo (PluginSpec const & spec, std::string
 	}
 
 	return "";
+}
+
+PluginDatabase::func_t MockPluginDatabase::getSymbol (PluginSpec const & spec ELEKTRA_UNUSED,
+						      std::string const & which ELEKTRA_UNUSED) const
+{
+	// TODO implement mockup
+	return NULL;
 }
 }
 }
