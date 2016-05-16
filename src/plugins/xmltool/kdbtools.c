@@ -423,13 +423,13 @@ static int isValidXML(xmlDocPtr doc,char *schemaPath)
  *
  * To check if the xml file is valid (best before you read from it):
  * @code
-#include 
+#include
 char schemaPath[513];
 schemaPath[0]=0;
 ret=kdbGetString(handle, KDB_SCHEMA_PATH_KEY,schemaPath,sizeof(schemaPath));
 
 if (ret==0) ret = isValidXML(filename,schemaPath);
-else ret = isValidXML(filename,KDB_SCHEMA_PATH); 
+else ret = isValidXML(filename,KDB_SCHEMA_PATH);
  * @endcode
  *
  * @retval -1 on error
