@@ -23,6 +23,8 @@
 #include <string>
 #include <vector>
 
+#include "ansicolors.hpp"
+
 class Command;
 
 namespace kdb
@@ -78,6 +80,7 @@ public:
 	std::string plugins;
 	std::string globalPlugins;
 	std::string pluginsConfig;
+	bool color; /*!< To disable colored output */
 	std::string ns;
 	std::string editor;
 
@@ -98,6 +101,8 @@ public:
 
 	/** The arguments given on the commandline. */
 	std::vector<std::string> arguments;
+
+	const std::string getColor (ANSI_COLOR ansicolor, ANSI_COLOR_LAYER layer = ANSI_COLOR_LAYER::FG) const;
 };
 
 std::ostream & operator<< (std::ostream & os, Cmdline & cl);

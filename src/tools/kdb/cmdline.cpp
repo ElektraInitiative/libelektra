@@ -38,8 +38,8 @@ Cmdline::Cmdline (int argc, char ** argv, Command * command)
   /*XXX: Step 2: initialise your option here.*/
   debug (), force (), load (), humanReadable (), help (), interactive (), noNewline (), test (), recursive (), resolver (KDB_RESOLVER),
   strategy ("preserve"), verbose (), version (), withoutElektra (), null (), first (true), second (true), third (true),
-  withRecommends (false), all (), format (KDB_STORAGE), plugins ("sync"), globalPlugins ("spec"), pluginsConfig (""), ns (""), editor (),
-  bookmarks (), profile ("current"),
+  withRecommends (false), all (), format (KDB_STORAGE), plugins ("sync"), globalPlugins ("spec"), pluginsConfig (""), color (true), ns (""),
+  editor (), bookmarks (), profile ("current"),
 
   executable (), commandName ()
 {
@@ -221,6 +221,13 @@ Cmdline::Cmdline (int argc, char ** argv, Command * command)
 		long_options.push_back (o);
 		helpText += "-c --plugins-config      Add a plugin configuration.\n";
 	}
+	optionPos = acceptedOptions.find ('C');
+	if (optionPos != string::npos)
+	{
+		option o = { "nocolor", no_argument, nullptr, 'C' };
+		long_options.push_back (o);
+		helpText += "-C --nocolor             Disable colored output.\n";
+	}
 
 	int index = 0;
 	option o = { nullptr, 0, nullptr, 0 };
@@ -320,6 +327,9 @@ Cmdline::Cmdline (int argc, char ** argv, Command * command)
 		/*XXX: Step 5: and now process the option.*/
 		case 'a':
 			all = true;
+			break;
+		case 'C':
+			color = false;
 			break;
 		case 'd':
 			debug = true;
@@ -479,6 +489,12 @@ kdb::Key Cmdline::createKey (int pos) const
 	}
 
 	return root;
+}
+
+const std::string Cmdline::getColor (ANSI_COLOR ansicolor, ANSI_COLOR_LAYER layer) const
+{
+	if (!color) return "";
+	return getColorEscape (ansicolor, layer);
 }
 
 std::ostream & operator<< (std::ostream & os, Cmdline & cl)
