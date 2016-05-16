@@ -384,12 +384,18 @@ void BackendBuilder::recommendPlugin (std::string name)
  * @pre Needs to be a unique new name (use refname if you want to add the same module multiple times)
  *
  * Will automatically resolve virtual plugins to actual plugins.
+ * 
+ * Also calls the checkconf function if provided by the plugin. The checkconf function has the 
+ * following signature: int checkconf (Key * errorKey, KeySet * config) and allows a plugin to 
+ * verify its configuration at mount time.
  *
  * @see resolveNeeds()
  * @param plugin
  */
 void BackendBuilder::addPlugin (PluginSpec const & plugin)
 {
+	typedef int (*checkConfPtr) (ckdb::Key *, ckdb::KeySet *);
+
 	for (auto & p : toAdd)
 	{
 		if (p.getFullName () == plugin.getFullName ())
@@ -407,6 +413,29 @@ void BackendBuilder::addPlugin (PluginSpec const & plugin)
 		// keep our config and refname
 		newPlugin.setName (provides.getName ());
 		newPlugin.appendConfig (provides.getConfig ());
+	}
+
+	// call plugin's checkconf function (if provided)
+	// this enables a plugin to verify its configuration at mount time
+	checkConfPtr checkConfFunction = nullptr;
+	try
+	{
+		checkConfFunction = reinterpret_cast<checkConfPtr> (pluginDatabase->getSymbol (newPlugin, "checkconf"));
+	}
+	catch (...)
+	{
+		// the checkconf operation is optional, so no worries if it was not found
+	}
+
+	if (checkConfFunction != nullptr)
+	{
+		ckdb::Key * errorKey = ckdb::keyNew (0);
+		int checkResult = checkConfFunction (errorKey, newPlugin.getConfig ().getKeySet ());
+		if (checkResult != 0)
+		{
+			throw PluginConfigInvalid (errorKey);
+		}
+		ckdb::keyDel (errorKey);
 	}
 
 	toAdd.push_back (newPlugin);
