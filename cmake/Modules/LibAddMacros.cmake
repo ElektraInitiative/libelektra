@@ -131,11 +131,11 @@ macro (add_plugintest testname)
 		return ()
 	endif ()
 
-	if (BUILD_TESTING AND (BUILD_STATIC OR BUILD_FULL))
+	if (BUILD_TESTING)
 		cmake_parse_arguments (ARG
-			"MEMLEAK" # optional keywords
+			"MEMLEAK;LINK_PLUGIN" # optional keywords
 			""        # one value keywords
-			"COMPILE_DEFINITIONS;INCLUDE_DIRECTORIES;LINK_LIBRARIES;WORKING_DIRECTORY" # multi value keywords
+			"COMPILE_DEFINITIONS;INCLUDE_DIRECTORIES;LINK_LIBRARIES;LINK_ELEKTRA;WORKING_DIRECTORY" # multi value keywords
 			${ARGN}
 		)
 		set (TEST_SOURCES
@@ -150,7 +150,7 @@ macro (add_plugintest testname)
 			install (TARGETS testmod_${testname}
 				DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
 		endif (INSTALL_TESTING)
-		target_link_elektra(testmod_${testname})
+		target_link_elektra(testmod_${testname} elektra-kdb ${ARG_LINK_ELEKTRA})
 		target_link_libraries (testmod_${testname} ${ARG_LINK_LIBRARIES})
 		set_target_properties (testmod_${testname} PROPERTIES
 				COMPILE_DEFINITIONS "HAVE_KDBCONFIG_H;${ARG_COMPILE_DEFINITIONS}")
@@ -165,6 +165,12 @@ macro (add_plugintest testname)
 			set_property(TEST testmod_${testname} PROPERTY
 				LABELS memleak)
 		endif (ARG_MEMLEAK)
+		if (ARG_LINK_PLUGIN)
+			set_property(TARGET testmod_${testname}
+					APPEND PROPERTY INCLUDE_DIRECTORIES
+					${CMAKE_CURRENT_BINARY_DIR}) #for readme
+			target_link_elektra(testmod_${testname} elektra-plugin)
+		endif (ARG_LINK_PLUGIN)
 	endif ()
 endmacro (add_plugintest)
 
