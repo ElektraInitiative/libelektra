@@ -15,6 +15,7 @@
 int elektraTemplateOpen (Plugin * handle ELEKTRA_UNUSED, Key * errorKey ELEKTRA_UNUSED)
 {
 	// plugin initialization logic
+	// this function is optional
 
 	return 1; // success
 }
@@ -22,6 +23,7 @@ int elektraTemplateOpen (Plugin * handle ELEKTRA_UNUSED, Key * errorKey ELEKTRA_
 int elektraTemplateClose (Plugin * handle ELEKTRA_UNUSED, Key * errorKey ELEKTRA_UNUSED)
 {
 	// free all plugin resources and shut it down
+	// this function is optional
 
 	return 1; // success
 }
@@ -54,6 +56,7 @@ int elektraTemplateGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTR
 int elektraTemplateSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
 {
 	// get all keys
+	// this function is optional
 
 	return 1; // success
 }
@@ -61,6 +64,7 @@ int elektraTemplateSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTR
 int elektraTemplateError (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
 {
 	// set all keys
+	// this function is optional
 
 	return 1; // success
 }
@@ -69,7 +73,6 @@ int elektraTemplateCheckConfig (Key * errorKey, KeySet * conf)
 {
 	// validate plugin configuration
 	// this function is optional
-	// if the export symbol "exports/checkconf" is provided, the function will be called during the mount phase
 
 	return 1; // success
 }
