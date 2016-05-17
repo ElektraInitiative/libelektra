@@ -23,6 +23,7 @@ Additionally, there is one more function called
 [ELEKTRA_PLUGIN_EXPORT](http://doc.libelektra.org/api/current/html/group__plugin.html#gabe78724d2d477eef39997fd9b85bff16),
 where once again `Plugin` should be replaced with the name of the plug-in, this time in lower-case. So for my line plugin this function would be
 `ELEKTRA_PLUGIN_EXPORT(line)`.
+The developer may define elektraPluginCheckConf() if configuration validation at mount time is desired.
 
 The KDB relies on the first five functions for interacting with configuration files stored in the key database.
 Calls for kdbGet() and kdbClose() will call the functions elektraPluginGet() and elektraPluginClose() respectively for the
@@ -321,6 +322,14 @@ parentKey is available.
 The `elektraPluginOpen` and `elektraPluginClose` functions are not commonly used for storage plug-ins, but they can be useful and are worth
 reviewing. `elektraPluginOpen` function runs before `elektraPluginGet` and is useful to do initialization if necessary for the plug-in. On the other
 hand `elektraPluginClose` is run after other functions of the plug-in and can be useful for freeing up resources.
+
+### elektraPluginCheckConf ###
+
+The `elektraPluginCheckConf` function may be used for validation of the plugin configuration during mount time. The signature of the function is:
+
+	int elektraLineCheckConfig (Key * errorKey, KeySet * conf)
+
+The configuration of the plugin is provided as `conf`. The function may report errors using the `errorKey` and the return value.
 
 ### ELEKTRA_PLUGIN_EXPORT ###
 
