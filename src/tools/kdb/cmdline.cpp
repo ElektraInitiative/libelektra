@@ -300,6 +300,9 @@ Cmdline::Cmdline (int argc, char ** argv, Command * command)
 
 			map nks = conf.get<map> (dirname + "bookmarks");
 			bookmarks.insert (nks.begin (), nks.end ());
+
+			k = conf.lookup (dirname + "color");
+			if (k) colors () = color = k.get<std::string> ();
 		}
 	}
 	catch (kdb::KDBException const & ce)
