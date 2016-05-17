@@ -48,8 +48,8 @@ Use `kdb file system/elektra/mountpoints` to find out where exactly it will writ
   Note that the resolver will only added as dependency, but not directly added.
 - `-c`, `--plugins-config`=<config>:
   Add a plugin configuration for all plugins.
-- `-C`, `--nocolor`:
-  Disable colored output.
+- `-C`, `--color`=[when]:
+  Print never/auto(default)/always colored output.
 - `-W`, `--with-recommends`:
   Also add recommended plugins and warn if they are not available.
 

@@ -119,7 +119,7 @@ int InfoCommand::execute (Cmdline const & cl)
 	{
 		while ((k = conf.next ()) && k.isBelow (root))
 		{
-			cout << getColorEscape (ANSI_COLOR::BOLD) << k.getBaseName () << ": " << getColorEscape (ANSI_COLOR::RESET)
+			cout << getStdColor (ANSI_COLOR::BOLD) << k.getBaseName () << ": " << getStdColor (ANSI_COLOR::RESET)
 			     << k.getString () << endl;
 		}
 	}

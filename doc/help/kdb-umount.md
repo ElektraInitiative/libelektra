@@ -19,8 +19,8 @@ Unmount backend from key database.
   Use a different kdb profile.
 - `-v`, `--verbose`:
   Show which mountpoints were considered.
-- `-C`, `--nocolor`:
-  Disable colored output.
+- `-C`, `--color`=[when]:
+  Print never/auto(default)/always colored output.
 
 ## SEE ALSO
 

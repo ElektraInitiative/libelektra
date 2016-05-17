@@ -51,8 +51,8 @@ Currently the following strategies exist for importing configurations:
   Explain what is happening.
 - `-c`, `--plugins-config`:
   Add a configuration to the format plugin.
-- `-C`, `--nocolor`:
-  Disable colored output.
+- `-C`, `--color`=[when]:
+  Print never/auto(default)/always colored output.
 
 
 ## EXAMPLES

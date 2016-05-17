@@ -22,8 +22,8 @@ If no meta keys are associated with the given key, nothing will be printed.
   Use binary 0 termination.
 - `-v`, `--verbose`:
   Show which key will be used.
-- `-C`, `--nocolor`:
-  Disable colored output.
+- `-C`, `--color`=[when]:
+  Print never/auto(default)/always colored output.
 
 
 ## EXAMPLE

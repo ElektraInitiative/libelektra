@@ -38,8 +38,8 @@ Cmdline::Cmdline (int argc, char ** argv, Command * command)
   /*XXX: Step 2: initialise your option here.*/
   debug (), force (), load (), humanReadable (), help (), interactive (), noNewline (), test (), recursive (), resolver (KDB_RESOLVER),
   strategy ("preserve"), verbose (), version (), withoutElektra (), null (), first (true), second (true), third (true),
-  withRecommends (false), all (), format (KDB_STORAGE), plugins ("sync"), globalPlugins ("spec"), pluginsConfig (""), color (true), ns (""),
-  editor (), bookmarks (), profile ("current"),
+  withRecommends (false), all (), format (KDB_STORAGE), plugins ("sync"), globalPlugins ("spec"), pluginsConfig (""), color ("auto"),
+  ns (""), editor (), bookmarks (), profile ("current"),
 
   executable (), commandName ()
 {
@@ -224,9 +224,9 @@ Cmdline::Cmdline (int argc, char ** argv, Command * command)
 	optionPos = acceptedOptions.find ('C');
 	if (optionPos != string::npos)
 	{
-		option o = { "nocolor", no_argument, nullptr, 'C' };
+		option o = { "color", optional_argument, nullptr, 'C' };
 		long_options.push_back (o);
-		helpText += "-C --nocolor             Disable colored output.\n";
+		helpText += "-C --color[=WHEN]        Print never/auto(default)/always colored output.\n";
 	}
 
 	int index = 0;
@@ -329,8 +329,12 @@ Cmdline::Cmdline (int argc, char ** argv, Command * command)
 			all = true;
 			break;
 		case 'C':
-			color = false;
-			nocolors () = true;
+			if (!optarg)
+			{
+				colors () = "auto";
+				break;
+			}
+			colors () = color = optarg;
 			break;
 		case 'd':
 			debug = true;

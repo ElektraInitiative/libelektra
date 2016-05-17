@@ -22,8 +22,8 @@ This command removes key(s) from the Key database.
   Use a different kdb profile.
 - `-r`, `--recursive`:
   Work in a recursive mode.
-- `-C`, `--nocolor`:
-  Disable colored output.
+- `-C`, `--color`=[when]:
+  Print never/auto(default)/always colored output.
 
 ## EXAMPLES
 

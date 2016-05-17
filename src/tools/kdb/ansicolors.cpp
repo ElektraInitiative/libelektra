@@ -1,14 +1,27 @@
-#include "ansicolors.hpp"
+/**
+ * @file
+ *
+ * @brief
+ *
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ */
 
-bool & nocolors ()
+#include "ansicolors.hpp"
+#ifdef _WIN32
+#include <stdio.h>
+#define STDERR_FILENO _fileno (stderr)
+#define STDOUT_FILENO _fileno (stdout)
+#else
+#include <unistd.h>
+#endif
+std::string & colors ()
 {
-	static bool nocolors;
+	static std::string nocolors = "auto";
 	return nocolors;
 }
 
 std::string getColorEscape (ANSI_COLOR color, ANSI_COLOR_LAYER layer)
 {
-	if (nocolors ()) return "";
 	if (color == ANSI_COLOR::RESET) return "\x1b[0m";
 	if (color == ANSI_COLOR::BOLD) return "\x1b[1m";
 	if (color == ANSI_COLOR::UNDERSCORE) return "\x1b[4m";
@@ -76,4 +89,15 @@ std::string getColorEscape (ANSI_COLOR color, ANSI_COLOR_LAYER layer)
 			return "";
 		}
 	}
+}
+
+std::string getErrorColor (ANSI_COLOR color, ANSI_COLOR_LAYER layer)
+{
+	if (colors ().compare ("never") == 0 || (colors ().compare ("auto") == 0 && !isatty (STDERR_FILENO))) return "";
+	return getColorEscape (color, layer);
+}
+std::string getStdColor (ANSI_COLOR color, ANSI_COLOR_LAYER layer)
+{
+	if (colors ().compare ("never") == 0 || (colors ().compare ("auto") == 0 && !isatty (STDOUT_FILENO))) return "";
+	return getColorEscape (color, layer);
 }

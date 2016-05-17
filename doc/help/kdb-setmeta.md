@@ -28,8 +28,8 @@ that is the place where you usually want to set meta data.
   Use a different kdb profile.
 - `-v`, `--verbose`:
   Explain what is happening.
-- `-C`, `--nocolor`:
-  Disable colored output.
+- `-C`, `--color`=[when]:
+  Print never/auto(default)/always colored output.
 
 
 ## EXAMPLES

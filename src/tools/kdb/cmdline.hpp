@@ -80,7 +80,7 @@ public:
 	std::string plugins;
 	std::string globalPlugins;
 	std::string pluginsConfig;
-	bool color; /*!< To disable colored output */
+	std::string color; /*!< To disable colored output */
 	std::string ns;
 	std::string editor;
 

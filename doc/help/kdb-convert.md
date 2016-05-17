@@ -32,8 +32,8 @@ If either `import-file` or `export-file` are not specified, `stdin` and `stdout`
   Use a different kdb profile.
 - `-v`, `--verbose`:
   Explain what is happening.
-- `-C`, `--nocolor`:
-  Disable colored output.
+- `-C`, `--color`=[when]:
+  Print never/auto(default)/always colored output.
 
 
 ## EXAMPLES
