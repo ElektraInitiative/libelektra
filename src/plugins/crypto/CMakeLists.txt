@@ -85,7 +85,7 @@ if (DEPENDENCY_PHASE)
 	unset (plugin)
 
 	if (HAS_OPENSSL_4SURE OR HAS_GCRYPT_4SURE)
-		add_plugintest (crypto)
+		add_plugintest (crypto LINK_PLUGIN)
 	endif ()
 endif ()
 

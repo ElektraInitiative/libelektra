@@ -7,7 +7,12 @@ if (DEPENDENCY_PHASE)
 		include_directories (${DBUS_ARCH_INCLUDE_DIR})
 		add_plugintest (dbus
 				sendmessage.c receivemessage.c
-				)
+			INCLUDE_DIRECTORIES
+				${DBUS_INCLUDE_DIR}
+				${DBUS_ARCH_INCLUDE_DIR}
+			LINK_LIBRARIES
+				${DBUS_LIBRARIES}
+		)
 	else (DBUS_FOUND)
 		remove_plugin (dbus "dbus not found")
 	endif (DBUS_FOUND)

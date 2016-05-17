@@ -2,7 +2,7 @@ include (LibAddPlugin)
 
 if (DEPENDENCY_PHASE)
 	find_package (Threads)
-	add_plugintest (resolver)
+	add_plugintest (resolver LINK_PLUGIN)
 endif ()
 
 set (SOURCES resolver.h resolver.c filename.c)

@@ -6,4 +6,4 @@ add_plugin (network
 		network.c
 	)
 
-add_plugintest (network)
+add_plugintest (network network.h network.c LINK_PLUGIN)

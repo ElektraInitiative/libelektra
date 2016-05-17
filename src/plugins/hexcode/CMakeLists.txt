@@ -6,4 +6,4 @@ add_plugin (hexcode
 		hexcode.c
 	)
 
-add_plugintest (hexcode)
+add_plugintest (hexcode hexcode.h hexcode.c LINK_PLUGIN)

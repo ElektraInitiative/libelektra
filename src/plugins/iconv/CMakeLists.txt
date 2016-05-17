@@ -2,7 +2,7 @@ if (DEPENDENCY_PHASE)
 	find_package(Iconv)
 
 	if (ICONV_FOUND)
-		add_plugintest (iconv)
+		add_plugintest (iconv conv.h iconv.c LINK_PLUGIN)
 	else ()
 		remove_plugin (iconv "Can't find iconv library")
 	endif ()

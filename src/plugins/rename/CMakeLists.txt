@@ -6,4 +6,4 @@ add_plugin (rename
 		rename.c
 	)
 
-add_plugintest (rename)
+add_plugintest (rename rename.h rename.c LINK_PLUGIN)

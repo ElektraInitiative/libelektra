@@ -7,4 +7,4 @@ add_plugin (validation
 		lookupre.c
 	)
 
-add_plugintest (validation)
+add_plugintest (validation lookupre.c)

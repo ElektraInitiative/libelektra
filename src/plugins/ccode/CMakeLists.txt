@@ -6,4 +6,4 @@ add_plugin (ccode
 		ccode.c
 	)
 
-add_plugintest (ccode)
+add_plugintest (ccode ccode.h ccode.c LINK_PLUGIN)

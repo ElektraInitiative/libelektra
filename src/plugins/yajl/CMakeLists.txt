@@ -10,7 +10,7 @@ if (DEPENDENCY_PHASE)
 		install(DIRECTORY yajl DESTINATION ${TARGET_TEST_DATA_FOLDER})
 
 		include_directories(${CMAKE_CURRENT_BINARY_DIR})
-		add_plugintest (yajl
+		add_plugintest (yajl iterator.h iterator.c name.h name.c
 			INCLUDE_DIRECTORIES
 				${YAJL_INCLUDE_DIR}
 			)

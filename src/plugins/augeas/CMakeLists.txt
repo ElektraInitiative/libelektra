@@ -16,7 +16,7 @@ if (DEPENDENCY_PHASE)
 
 			install(DIRECTORY augeas DESTINATION ${TARGET_TEST_DATA_FOLDER})
 
-			add_plugintest(augeas)
+			add_plugintest(augeas LINK_ELEKTRA elektra-proposal)
 		else (HAS_LIBAUGEAS16)
 			remove_plugin (augeas "symbols aug_text_store and aug_text_retrieve not found. Make sure you have libaugeas 0.16 or higher. This library version is included in Augeas 1.0 or higher")
 		endif (HAS_LIBAUGEAS16)

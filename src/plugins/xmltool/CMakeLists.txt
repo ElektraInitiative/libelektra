@@ -4,7 +4,13 @@ if (DEPENDENCY_PHASE)
 	if (LIBXML2_FOUND)
 		include (LibAddMacros)
 
-		add_plugintest (xmltool
+		add_plugintest (xmltool stream.c kdbtools.c
+			INCLUDE_DIRECTORIES
+				${LIBXML2_INCLUDE_DIR}
+			LINK_ELEKTRA
+				elektra-meta
+			LINK_LIBRARIES
+				${LIBXML2_LIBRARIES}
 			MEMLEAK)
 
 		install(DIRECTORY xmltool DESTINATION ${TARGET_TEST_DATA_FOLDER})
