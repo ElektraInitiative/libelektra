@@ -35,7 +35,7 @@ add_plugin (lua
 if (ADDTESTING_PHASE)
 	# bindings are required for tests
 	list (FIND BINDINGS "swig_lua" FINDEX)
-	if (BUILD_TESTING AND FINDEX GREATER -1)
+	if (NOT BUILD_SHARED AND BUILD_TESTING AND FINDEX GREATER -1)
 		# test environment clears env so setting LUA_CPATH is no option
 		# we workaround this by changing the current directory to our bindings
 		# output directory + per default lua loads modules from current directory

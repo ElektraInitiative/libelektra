@@ -50,7 +50,7 @@ endif ()
 if (ADDTESTING_PHASE)
 	# bindings are required for tests
 	list (FIND BINDINGS "swig_python2" FINDEX)
-	if (BUILD_TESTING AND FINDEX GREATER -1)
+	if (NOT BUILD_SHARED AND BUILD_TESTING AND FINDEX GREATER -1)
 		# test environment clears env so setting PYTHONPATH is no option
 		# we workaround this by changing the current directory to our bindings
 		# output directory + our test adds the current directory to pythons sys.path
