@@ -69,7 +69,7 @@ int elektraTemplateError (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEK
 	return 1; // success
 }
 
-int elektraTemplateCheckConfig (Key * errorKey, KeySet * conf)
+int elektraTemplateCheckConfig (Key * errorKey ELEKTRA_UNUSED, KeySet * conf ELEKTRA_UNUSED)
 {
 	// validate plugin configuration
 	// this function is optional
