@@ -12,8 +12,8 @@
 #include <string>
 #include <vector>
 
-#include <command.hpp>
 #include "coloredkdbio.hpp"
+#include <command.hpp>
 #include <kdb.hpp>
 
 class TestCommand : public Command

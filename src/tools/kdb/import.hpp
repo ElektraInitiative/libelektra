@@ -9,8 +9,8 @@
 #ifndef IMPORT_HPP
 #define IMPORT_HPP
 
-#include <command.hpp>
 #include "coloredkdbio.hpp"
+#include <command.hpp>
 #include <kdb.hpp>
 
 class ImportCommand : public Command

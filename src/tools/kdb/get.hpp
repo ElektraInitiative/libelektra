@@ -9,8 +9,8 @@
 #ifndef GET_HPP
 #define GET_HPP
 
-#include <command.hpp>
 #include "coloredkdbio.hpp"
+#include <command.hpp>
 #include <kdb.hpp>
 
 class GetCommand : public Command

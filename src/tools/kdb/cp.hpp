@@ -9,8 +9,8 @@
 #ifndef CP_HPP
 #define CP_HPP
 
-#include <command.hpp>
 #include "coloredkdbio.hpp"
+#include <command.hpp>
 #include <kdb.hpp>
 
 class CpCommand : public Command

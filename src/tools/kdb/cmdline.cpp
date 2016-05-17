@@ -330,7 +330,7 @@ Cmdline::Cmdline (int argc, char ** argv, Command * command)
 			break;
 		case 'C':
 			color = false;
-			nocolors() = true;
+			nocolors () = true;
 			break;
 		case 'd':
 			debug = true;

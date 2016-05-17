@@ -9,8 +9,8 @@
 #ifndef LS_H
 #define LS_H
 
-#include <command.hpp>
 #include "coloredkdbio.hpp"
+#include <command.hpp>
 #include <kdb.hpp>
 
 class LsCommand : public Command

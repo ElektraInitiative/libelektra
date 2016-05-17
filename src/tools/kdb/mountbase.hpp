@@ -9,8 +9,8 @@
 #ifndef MOUNTBASE_HPP_
 #define MOUNTBASE_HPP_
 
-#include <command.hpp>
 #include "ansicolors.hpp"
+#include <command.hpp>
 #include <kdb.hpp>
 
 #include <backends.hpp>

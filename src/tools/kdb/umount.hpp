@@ -9,8 +9,8 @@
 #ifndef UMOUNT_HPP
 #define UMOUNT_HPP
 
-#include <command.hpp>
 #include "coloredkdbio.hpp"
+#include <command.hpp>
 #include <kdb.hpp>
 
 class UmountCommand : public Command

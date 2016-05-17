@@ -9,8 +9,8 @@
 #ifndef METAGET_HPP
 #define METAGET_HPP
 
-#include <command.hpp>
 #include "coloredkdbio.hpp"
+#include <command.hpp>
 #include <kdb.hpp>
 
 class MetaGetCommand : public Command

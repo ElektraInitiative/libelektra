@@ -9,8 +9,8 @@
 #ifndef SET_HPP
 #define SET_HPP
 
-#include <command.hpp>
 #include "coloredkdbio.hpp"
+#include <command.hpp>
 #include <kdb.hpp>
 
 class SetCommand : public Command

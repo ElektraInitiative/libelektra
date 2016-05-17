@@ -9,8 +9,8 @@
 #ifndef MV_HPP
 #define MV_HPP
 
-#include <command.hpp>
 #include "coloredkdbio.hpp"
+#include <command.hpp>
 #include <kdb.hpp>
 
 class MvCommand : public Command

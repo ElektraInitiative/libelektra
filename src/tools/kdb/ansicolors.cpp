@@ -1,10 +1,14 @@
 #include "ansicolors.hpp"
 
-bool& nocolors() { static bool nocolors; return nocolors; }
+bool & nocolors ()
+{
+	static bool nocolors;
+	return nocolors;
+}
 
 std::string getColorEscape (ANSI_COLOR color, ANSI_COLOR_LAYER layer)
 {
-  if (nocolors()) return "";
+	if (nocolors ()) return "";
 	if (color == ANSI_COLOR::RESET) return "\x1b[0m";
 	if (color == ANSI_COLOR::BOLD) return "\x1b[1m";
 	if (color == ANSI_COLOR::UNDERSCORE) return "\x1b[4m";

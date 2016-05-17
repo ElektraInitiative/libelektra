@@ -9,8 +9,8 @@
 #ifndef EXPORT_H
 #define EXPORT_H
 
-#include <command.hpp>
 #include "coloredkdbio.hpp"
+#include <command.hpp>
 #include <kdb.hpp>
 
 class ExportCommand : public Command

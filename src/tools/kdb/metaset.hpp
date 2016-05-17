@@ -9,8 +9,8 @@
 #ifndef METASET_HPP
 #define METASET_HPP
 
-#include <command.hpp>
 #include "coloredkdbio.hpp"
+#include <command.hpp>
 #include <kdb.hpp>
 
 class MetaSetCommand : public Command

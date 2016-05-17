@@ -1,8 +1,8 @@
 #ifndef EDITOR_HPP
 #define EDITOR_HPP
 
-#include <command.hpp>
 #include "coloredkdbio.hpp"
+#include <command.hpp>
 #include <kdb.hpp>
 
 using namespace std;
