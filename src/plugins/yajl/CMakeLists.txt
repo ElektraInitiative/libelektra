@@ -1,22 +1,14 @@
 if (DEPENDENCY_PHASE)
 	find_package(Yajl)
 
-	if (YAJL_FOUND)
-		configure_file (
-			"${CMAKE_CURRENT_SOURCE_DIR}/yajl.h.in"
-			"${CMAKE_CURRENT_BINARY_DIR}/yajl.h"
-			)
+	set (INCL
+		${YAJL_INCLUDE_DIR}
+		${CMAKE_CURRENT_BINARY_DIR}
+	    )
 
-		install(DIRECTORY yajl DESTINATION ${TARGET_TEST_DATA_FOLDER})
-
-		include_directories(${CMAKE_CURRENT_BINARY_DIR})
-		add_plugintest (yajl
-			INCLUDE_DIRECTORIES
-				${YAJL_INCLUDE_DIR}
-			)
-	else (YAJL_FOUND)
+	if (NOT YAJL_FOUND)
 		remove_plugin (yajl "yajl not found")
-	endif (YAJL_FOUND)
+	endif (NOT YAJL_FOUND)
 endif ()
 
 add_plugin(yajl
@@ -25,11 +17,19 @@ add_plugin(yajl
 		yajl_gen_open.c  yajl_gen_close.c
 		yajl_parse.c name.c
 		"${CMAKE_CURRENT_BINARY_DIR}/yajl.h"
+	ADD_TEST
+	INSTALL_TEST_DATA
 	INCLUDE_DIRECTORIES
-		${YAJL_INCLUDE_DIR}
-		${CMAKE_CURRENT_BINARY_DIR}
+		"${INCL}"
 	LINK_ELEKTRA
 		elektra-ease
 	LINK_LIBRARIES
 		${YAJL_LIBRARIES}
 	)
+
+if (ADDTESTING_PHASE)
+	configure_file (
+		"${CMAKE_CURRENT_SOURCE_DIR}/yajl.h.in"
+		"${CMAKE_CURRENT_BINARY_DIR}/yajl.h"
+		)
+endif ()

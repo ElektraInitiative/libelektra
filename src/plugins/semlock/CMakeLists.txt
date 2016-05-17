@@ -7,6 +7,5 @@ add_plugin (semlock
 		semlock.c
 	LINK_LIBRARIES
 		${CMAKE_THREAD_LIBS_INIT}
+	ADD_TEST
 	)
-
-add_plugintest (semlock)

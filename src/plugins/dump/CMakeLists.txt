@@ -4,6 +4,5 @@ add_plugin (dump
 	SOURCES
 		dump.hpp
 		dump.cpp
+	ADD_TEST
 	)
-
-add_plugintest (dump)

@@ -67,12 +67,12 @@ endmacro (add_testheaders HDR_FILES)
 
 # for generic targets (not tools) use this function to link against elektra
 function (target_link_elektra TARGET)
-	if (BUILD_FULL)
+	if (BUILD_SHARED)
+		target_link_libraries (${TARGET} elektra-core ${ARGN})
+	elseif (BUILD_FULL)
 		target_link_libraries (${TARGET} elektra-full)
 	elseif (BUILD_STATIC)
 		target_link_libraries (${TARGET} elektra-static)
-	elseif (BUILD_SHARED)
-		target_link_libraries (${TARGET} elektra-core ${ARGN})
 	else ()
 		message(SEND_ERROR "no elektra to link for ${TARGET}, please enable BUILD_FULL, BUILD_STATIC or BUILD_SHARED")
 	endif ()
@@ -80,12 +80,12 @@ function (target_link_elektra TARGET)
 endfunction()
 
 function (target_link_elektratools TARGET)
-	if (BUILD_FULL)
+	if (BUILD_SHARED)
+		target_link_libraries (${TARGET} elektratools elektra-kdb elektra-core ${ARGN})
+	elseif (BUILD_FULL)
 		target_link_libraries (${TARGET} elektratools-full)
 	elseif (BUILD_STATIC)
 		target_link_libraries (${TARGET} elektratools-static)
-	elseif (BUILD_SHARED)
-		target_link_libraries (${TARGET} elektratools ${ARGN})
 	else ()
 		message(SEND_ERROR "no elektratools to link for ${TARGET}, please enable BUILD_FULL, BUILD_STATIC or BUILD_SHARED")
 	endif ()
@@ -117,56 +117,6 @@ macro(tool_link_elektratools TARGET)
 	endif ()
 endmacro()
 
-
-# Add a test for a plugin
-#
-# will include the common tests.h file + its source file
-# additional source files can be added as additional arguments
-#
-# links the executeable (only if build_static or build_full)
-# and adds a test
-macro (add_plugintest testname)
-	list (FIND ADDED_PLUGINS "${testname}" FOUND_NAME)
-	if (NOT DEPENDENCY_PHASE)
-		return ()
-	endif ()
-
-	if (BUILD_TESTING AND (BUILD_STATIC OR BUILD_FULL))
-		cmake_parse_arguments (ARG
-			"MEMLEAK" # optional keywords
-			""        # one value keywords
-			"COMPILE_DEFINITIONS;INCLUDE_DIRECTORIES;LINK_LIBRARIES;WORKING_DIRECTORY" # multi value keywords
-			${ARGN}
-		)
-		set (TEST_SOURCES
-				$<TARGET_OBJECTS:cframework>
-				${ARG_UNPARSED_ARGUMENTS}
-				)
-		add_headers(TEST_SOURCES)
-		add_testheaders(TEST_SOURCES)
-		include_directories ("${CMAKE_SOURCE_DIR}/tests/cframework")
-		add_executable (testmod_${testname} ${TEST_SOURCES} testmod_${testname}.c)
-		if (INSTALL_TESTING)
-			install (TARGETS testmod_${testname}
-				DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
-		endif (INSTALL_TESTING)
-		target_link_elektra(testmod_${testname})
-		target_link_libraries (testmod_${testname} ${ARG_LINK_LIBRARIES})
-		set_target_properties (testmod_${testname} PROPERTIES
-				COMPILE_DEFINITIONS "HAVE_KDBCONFIG_H;${ARG_COMPILE_DEFINITIONS}")
-		set_property(TARGET testmod_${testname}
-				APPEND PROPERTY INCLUDE_DIRECTORIES
-				${ARG_INCLUDE_DIRECTORIES})
-		add_test (NAME testmod_${testname}
-				COMMAND "${CMAKE_BINARY_DIR}/bin/testmod_${testname}" "${CMAKE_CURRENT_SOURCE_DIR}"
-				WORKING_DIRECTORY ${ARG_WORKING_DIRECTORY}
-				)
-		if (ARG_MEMLEAK)
-			set_property(TEST testmod_${testname} PROPERTY
-				LABELS memleak)
-		endif (ARG_MEMLEAK)
-	endif ()
-endmacro (add_plugintest)
 
 macro(find_swig)
 	if (NOT SWIG_FOUND)
@@ -299,6 +249,10 @@ macro (remove_plugin name reason)
 	set (TMP ${ADDED_PLUGINS})
 	list (REMOVE_ITEM TMP ${name})
 	set (ADDED_PLUGINS ${TMP} CACHE STRING ${ADDED_PLUGINS_DOC} FORCE)
+
+	set (TMP ${ADDED_DIRECTORIES})
+	list (REMOVE_ITEM TMP ${name})
+	set (ADDED_DIRECTORIES ${TMP} CACHE STRING ${ADDED_PLUGINS_DOC} FORCE)
 
 	if (REMOVED_PLUGINS)
 		set (REMOVED_PLUGINS "${REMOVED_PLUGINS};${name}" CACHE STRING "${REMOVED_PLUGINS_DOC}" FORCE)

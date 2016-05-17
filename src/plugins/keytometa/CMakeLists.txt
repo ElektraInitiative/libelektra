@@ -7,6 +7,5 @@ add_plugin (keytometa
 	LINK_ELEKTRA
 		elektra-proposal
 		elektra-meta
+	ADD_TEST
 	)
-
-add_plugintest (keytometa)

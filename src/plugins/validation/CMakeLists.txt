@@ -5,6 +5,5 @@ add_plugin (validation
 		validation.h
 		validation.c
 		lookupre.c
+	ADD_TEST
 	)
-
-add_plugintest (validation)
