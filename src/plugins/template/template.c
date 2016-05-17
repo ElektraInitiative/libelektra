@@ -38,6 +38,7 @@ int elektraTemplateGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTR
 			       keyNew ("system/elektra/modules/template/exports/get", KEY_FUNC, elektraTemplateGet, KEY_END),
 			       keyNew ("system/elektra/modules/template/exports/set", KEY_FUNC, elektraTemplateSet, KEY_END),
 			       keyNew ("system/elektra/modules/template/exports/error", KEY_FUNC, elektraTemplateError, KEY_END),
+			       keyNew ("system/elektra/modules/template/exports/checkconf", KEY_FUNC, elektraTemplateCheckConfig, KEY_END),
 #include ELEKTRA_README (template)
 			       keyNew ("system/elektra/modules/template/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 		ksAppend (returned, contract);
@@ -60,6 +61,15 @@ int elektraTemplateSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTR
 int elektraTemplateError (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
 {
 	// set all keys
+
+	return 1; // success
+}
+
+int elektraTemplateCheckConfig (Key * errorKey, KeySet * conf)
+{
+	// validate plugin configuration
+	// this function is optional
+	// if the export symbol "exports/checkconf" is provided, the function will be called during the mount phase
 
 	return 1; // success
 }
