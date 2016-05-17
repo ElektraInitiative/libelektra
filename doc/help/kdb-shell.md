@@ -39,6 +39,8 @@ The kdb shell offers a number of commands to interact with the key database.
   Print version info.
 - `-p`, `--profile`=<profile>:
   Use a different kdb profile.
+- `-C`, `--nocolor`:
+  Disable colored output.
 
 ## EXAMPLES
 

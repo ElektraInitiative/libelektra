@@ -101,8 +101,6 @@ public:
 
 	/** The arguments given on the commandline. */
 	std::vector<std::string> arguments;
-
-	const std::string getColor (ANSI_COLOR ansicolor, ANSI_COLOR_LAYER layer = ANSI_COLOR_LAYER::FG) const;
 };
 
 std::ostream & operator<< (std::ostream & os, Cmdline & cl);

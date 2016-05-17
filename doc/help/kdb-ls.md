@@ -23,6 +23,8 @@ This command will list the name of all keys below a given path.
   Explain what is happening.
 - `-0`, `--null`:
   Use binary 0 termination.
+- `-C`, `--nocolor`:
+  Disable colored output.
 
 ## EXAMPLES
 

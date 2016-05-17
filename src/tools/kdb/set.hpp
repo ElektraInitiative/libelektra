@@ -10,7 +10,7 @@
 #define SET_HPP
 
 #include <command.hpp>
-
+#include "coloredkdbio.hpp"
 #include <kdb.hpp>
 
 class SetCommand : public Command
@@ -23,7 +23,7 @@ public:
 
 	virtual std::string getShortOptions () override
 	{
-		return "vN";
+		return "vNC";
 	}
 
 	virtual std::string getSynopsis () override

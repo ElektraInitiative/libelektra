@@ -2,6 +2,7 @@
 #define EDITOR_HPP
 
 #include <command.hpp>
+#include "coloredkdbio.hpp"
 #include <kdb.hpp>
 
 using namespace std;
@@ -20,7 +21,7 @@ public:
 
 	virtual std::string getShortOptions ()
 	{
-		return "esv";
+		return "esvC";
 	}
 
 	virtual std::string getSynopsis ()

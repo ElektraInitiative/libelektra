@@ -10,6 +10,7 @@
 #define LS_H
 
 #include <command.hpp>
+#include "coloredkdbio.hpp"
 #include <kdb.hpp>
 
 class LsCommand : public Command
@@ -24,7 +25,7 @@ public:
 
 	virtual std::string getShortOptions () override
 	{
-		return "v0";
+		return "v0C";
 	}
 
 	virtual std::string getSynopsis () override

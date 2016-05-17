@@ -10,6 +10,7 @@
 #define MOUNTBASE_HPP_
 
 #include <command.hpp>
+#include "ansicolors.hpp"
 #include <kdb.hpp>
 
 #include <backends.hpp>

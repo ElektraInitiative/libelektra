@@ -11,6 +11,7 @@
 
 #include <command.hpp>
 
+#include "coloredkdbio.hpp"
 #include <kdb.hpp>
 
 class CheckCommand : public Command
@@ -21,7 +22,7 @@ public:
 
 	virtual std::string getShortOptions () override
 	{
-		return "vcf";
+		return "vcfC";
 	}
 
 	virtual std::string getSynopsis () override

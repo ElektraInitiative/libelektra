@@ -26,6 +26,8 @@ You can move keys to another directory within the database or even below another
   Work in a recursive mode.
 - `-v`, `--verbose`:
   Explain what is happening.
+- `-C`, `--nocolor`:
+  Disable colored output.
 
 ## EXAMPLES
 

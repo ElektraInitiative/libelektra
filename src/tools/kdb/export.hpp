@@ -10,6 +10,7 @@
 #define EXPORT_H
 
 #include <command.hpp>
+#include "coloredkdbio.hpp"
 #include <kdb.hpp>
 
 class ExportCommand : public Command
@@ -23,7 +24,7 @@ public:
 
 	virtual std::string getShortOptions () override
 	{
-		return "Ec";
+		return "EcC";
 	}
 
 	virtual std::string getSynopsis () override

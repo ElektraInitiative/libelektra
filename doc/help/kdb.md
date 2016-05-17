@@ -39,6 +39,8 @@ Every core-tool has the following options:
   Print version info.
 - `-p`, `--profile`=<profile>:
   Use a different kdb profile, see below.
+- `-C`, `--nocolor`:
+  Disable colored output.
 
 ## KDB
 

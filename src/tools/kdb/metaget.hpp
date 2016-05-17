@@ -10,7 +10,7 @@
 #define METAGET_HPP
 
 #include <command.hpp>
-
+#include "coloredkdbio.hpp"
 #include <kdb.hpp>
 
 class MetaGetCommand : public Command
@@ -23,7 +23,7 @@ public:
 
 	virtual std::string getShortOptions () override
 	{
-		return "n";
+		return "nC";
 	}
 
 	virtual std::string getSynopsis () override

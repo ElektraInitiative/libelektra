@@ -10,6 +10,7 @@
 #define IMPORT_HPP
 
 #include <command.hpp>
+#include "coloredkdbio.hpp"
 #include <kdb.hpp>
 
 class ImportCommand : public Command
@@ -22,7 +23,7 @@ public:
 
 	virtual std::string getShortOptions () override
 	{
-		return "svc";
+		return "svcC";
 	}
 
 	virtual std::string getSynopsis () override

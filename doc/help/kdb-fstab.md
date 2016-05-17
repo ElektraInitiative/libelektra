@@ -27,6 +27,8 @@ This command will create the new entry with a name of `ZZZNewFstabName` which sh
   Use a different kdb profile.
 - `-v`, `--verbose`:
   Explain what is happening.
+- `-C`, `--nocolor`:
+  Disable colored output.
 
 
 ## EXAMPLES

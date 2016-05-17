@@ -10,7 +10,7 @@
 #define MV_HPP
 
 #include <command.hpp>
-
+#include "coloredkdbio.hpp"
 #include <kdb.hpp>
 
 class MvCommand : public Command
@@ -23,7 +23,7 @@ public:
 
 	virtual std::string getShortOptions () override
 	{
-		return "rv";
+		return "rvC";
 	}
 
 	virtual std::string getSynopsis () override

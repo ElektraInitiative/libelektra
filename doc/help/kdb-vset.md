@@ -26,6 +26,8 @@ Note: In order for this command to work, the `validation` plugin must be mounted
   Print version info.
 - `-p`, `--profile`=<profile>:
   Use a different kdb profile.
+- `-C`, `--nocolor`:
+  Disable colored output.
 
 
 ## EXAMPLES

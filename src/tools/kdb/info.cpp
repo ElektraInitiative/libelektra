@@ -15,6 +15,8 @@
 
 #include <iostream>
 
+#include "ansicolors.hpp"
+
 using namespace std;
 using namespace kdb;
 using namespace kdb::tools;
@@ -117,7 +119,7 @@ int InfoCommand::execute (Cmdline const & cl)
 	{
 		while ((k = conf.next ()) && k.isBelow (root))
 		{
-			cout << cl.getColor (ANSI_COLOR::BOLD) << k.getBaseName () << cl.getColor (ANSI_COLOR::RESET) << ": "
+			cout << getColorEscape(ANSI_COLOR::BOLD) << k.getBaseName () << ": " << getColorEscape (ANSI_COLOR::RESET)
 			     << k.getString () << endl;
 		}
 	}

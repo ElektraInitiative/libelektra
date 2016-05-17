@@ -58,6 +58,8 @@ The user should specify the format that the current configuration or keys are in
   Explain what is happening.
 - `-e`, `--editor <editor>`:
   Which editor to use.
+- `-C`, `--nocolor`:
+  Disable colored output.
 
 
 ## EXAMPLES

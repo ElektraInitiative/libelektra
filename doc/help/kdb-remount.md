@@ -26,6 +26,8 @@ This command allows a user to use an existing backend (such as one from a previo
 - `-i`, `--interactive`:
   Instead of passing all information by parameters
   ask the user interactively.
+- `-C`, `--nocolor`:
+  Disable colored output.
 
 ## EXAMPLES
 

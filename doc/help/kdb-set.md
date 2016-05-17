@@ -29,6 +29,8 @@ To set a key to an empty value, `""` should be passed for the `value` argument.
 - `-N`, `--namespace`=<ns>:
   Specify the namespace to use when writing cascading keys.
   See [below in KDB](#KDB).
+- `-C`, `--nocolor`:
+  Disable colored output.
 
 ## KDB
 

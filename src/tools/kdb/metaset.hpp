@@ -10,7 +10,7 @@
 #define METASET_HPP
 
 #include <command.hpp>
-
+#include "coloredkdbio.hpp"
 #include <kdb.hpp>
 
 class MetaSetCommand : public Command
@@ -23,7 +23,7 @@ public:
 
 	virtual std::string getShortOptions () override
 	{
-		return "v";
+		return "vC";
 	}
 
 	virtual std::string getSynopsis () override

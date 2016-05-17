@@ -330,6 +330,7 @@ Cmdline::Cmdline (int argc, char ** argv, Command * command)
 			break;
 		case 'C':
 			color = false;
+			nocolors() = true;
 			break;
 		case 'd':
 			debug = true;
@@ -489,12 +490,6 @@ kdb::Key Cmdline::createKey (int pos) const
 	}
 
 	return root;
-}
-
-const std::string Cmdline::getColor (ANSI_COLOR ansicolor, ANSI_COLOR_LAYER layer) const
-{
-	if (!color) return "";
-	return getColorEscape (ansicolor, layer);
 }
 
 std::ostream & operator<< (std::ostream & os, Cmdline & cl)

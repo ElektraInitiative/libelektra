@@ -57,6 +57,8 @@ Use `kdb file system/elektra/mountpoints` to find out where exactly it will writ
   Suppress the third column.
 - `-c`, `--plugins-config`=<config>:
   Add a plugin configuration for all plugins.
+- `-C`, `--nocolor`:
+  Disable colored output.
 - `-W`, `--with-recommends`:
   Also add recommended plugins and warn if they are not available.
 

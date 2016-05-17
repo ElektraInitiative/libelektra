@@ -28,6 +28,8 @@ Note that when using the `-r` flag, `source` as well as all of the keys below it
   Recursively copy keys.
 - `-v`, `--verbose`:
   Explain what is happening.
+- `-C`, `--nocolor`:
+  Disable colored output.
 
 
 

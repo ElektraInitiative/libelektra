@@ -13,6 +13,7 @@
 #include <vector>
 
 #include <command.hpp>
+#include "coloredkdbio.hpp"
 #include <kdb.hpp>
 
 class TestCommand : public Command
@@ -37,7 +38,7 @@ public:
 
 	virtual std::string getShortOptions () override
 	{
-		return "";
+		return "C";
 	}
 
 	virtual std::string getSynopsis () override

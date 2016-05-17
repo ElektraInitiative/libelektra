@@ -32,6 +32,9 @@ enum class ANSI_COLOR_LAYER
 	BG
 };
 
+bool& nocolors();
+/*YYY: If you add colored escaped to your command remembter to add the C option
+       If you want colored warnings error include coloredkdbio.hpp before kdb.hpp */
 std::string getColorEscape (ANSI_COLOR color, ANSI_COLOR_LAYER layer = ANSI_COLOR_LAYER::FG);
 
 #endif

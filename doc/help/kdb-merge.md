@@ -62,6 +62,8 @@ To interactively resolve conflicts, use the `-i` option.
   Explain what is happening.
 - `-i`, `--interactive`
   Interactively resolve the conflicts.
+- `-C`, `--nocolor`:
+  Disable colored output.
 
 
 ## EXAMPLES
