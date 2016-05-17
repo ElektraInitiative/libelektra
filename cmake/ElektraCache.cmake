@@ -218,8 +218,8 @@ set (CMAKE_STATIC_FLAGS ""
 
 
 option (BUILD_SHARED "Build the shared version of elektra." ON)
-option (BUILD_FULL "Build the full version of elektra (shared with all selected backends included)." ON)
-option (BUILD_STATIC "Build the static version of elektra (all selected backends included statically)." ON)
+option (BUILD_FULL "Build the full version of elektra (shared with all selected backends included)." OFF)
+option (BUILD_STATIC "Build the static version of elektra (all selected backends included statically)." OFF)
 
 option (BUILD_DOCUMENTATION "Build the documentation (API, man pages)" ON)
 if (BUILD_DOCUMENTATION)
@@ -398,4 +398,22 @@ MARK_AS_ADVANCED(FORCE
 	SWIG_DIR SWIG_EXECUTABLE SWIG_VERSION
 	gtest_build_samples gtest_build_tests gtest_disable_pthreads
 	gtest_force_shared_crt BUILD_SHARED_LIBS
+
+	ADDED_DIRECTORIES
+	ADDED_PLUGINS
+	REMOVED_PLUGINS
+
+	LIBGCRYPTCONFIG_EXECUTABLE
+	RONN_LOC
+
+	jna
+
+	Qt5Core_DIR
+	Qt5Gui_DIR
+	Qt5Network_DIR
+	Qt5Qml_DIR
+	Qt5Quick_DIR
+	Qt5Test_DIR
+	Qt5Widgets_DIR
+	Qt5_DIR
 	)
