@@ -28,16 +28,19 @@ ksNew (30,
 			KEY_END),
 		keyNew ("system/elektra/modules/hosts/config", KEY_END),
 		keyNew ("system/elektra/modules/hosts/config/needs", KEY_END),
-		keyNew ("system/elektra/modules/hosts/config/needs/glob/set/#1",
-			KEY_VALUE, "/*/*",
-			KEY_META, "check/ipaddr", "", 				/* Preferred way to check */
-			KEY_META, "validation/regex", "^[0-9.:]+$", /* Can be checked additionally */
-			KEY_META, "validation/message", "Character present not suitable for ip address",
+		keyNew ("system/elektra/modules/hosts/config/needs/glob/set/#0",
+			KEY_VALUE, "/ipv4/*",
+			KEY_META, "check/ipaddr", "ipv4", 				/* Preferred way to check */
+			KEY_META, "check/validation", "^[0-9.]+$", /* Can be checked additionally */
+			KEY_META, "check/validation/match", "LINE",
+			KEY_META, "check/validation/message", "Character present not suitable for ipv4 address",
 			KEY_END),
-		keyNew ("system/elektra/modules/hosts/config/needs/glob/set/#2",
-			KEY_VALUE, "/*/*",
-			KEY_META, "validation/regex", "^[0-9a-zA-Z.:]+$", /* Only basic character validation */
-			KEY_META, "validation/message", "Character present not suitable for host address",
+		keyNew ("system/elektra/modules/hosts/config/needs/glob/set/#1",
+			KEY_VALUE, "/ipv6/*",
+			KEY_META, "check/ipaddr", "ipv6", 				/* Preferred way to check */
+			KEY_META, "check/validation", "^[0-9A-Fa-f.:]+$", /* Can be checked additionally */
+			KEY_META, "check/validation/match", "LINE",
+			KEY_META, "check/validation/message", "Character present not suitable for ipv6 address",
 			KEY_END),
 		KS_END);
 

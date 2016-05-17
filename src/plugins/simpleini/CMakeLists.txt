@@ -11,5 +11,3 @@ if (HAVE_GLIBC)
 			simpleini.c
 		)
 endif()
-
-#add_plugintest (simpleini)

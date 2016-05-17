@@ -5,5 +5,3 @@ add_plugin (null
 		null.h
 		null.c
 	)
-
-#add_plugintest (null)

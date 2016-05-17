@@ -14,7 +14,7 @@
 cat /tmp/curltest.ini
 cat: /tmp/curltest.ini: No such file or directory
 
-kdb mount -R noresolver /tmp/curltest.ini system/curltest ini curl url="https://raw.githubusercontent.com/ElektraInitiative/libelektra/master/src/plugins/ini/ini/plainini"
+kdb mount -R noresolver /tmp/curltest.ini system/curltest ini curlget url="https://raw.githubusercontent.com/ElektraInitiative/libelektra/master/src/plugins/ini/ini/plainini"
 
 kdb ls system/curltest
 system/curltest/nosectionkey

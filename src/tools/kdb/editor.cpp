@@ -156,10 +156,22 @@ int EditorCommand::execute (Cmdline const & cl)
 		KeySet resultKeys = result.getMergedKeys ();
 		if (cl.verbose) std::cout << "about to write result keys " << resultKeys << std::endl;
 		ours.append (resultKeys);
-		kdb.set (ours, root);
-		if (cl.verbose) std::cout << "successful, cleaning up " << filename << std::endl;
-		unlink (filename.c_str ());
-		ret = 0;
+		try
+		{
+			kdb.set (ours, root);
+			if (cl.verbose) std::cout << "successful, cleaning up " << filename << std::endl;
+			unlink (filename.c_str ());
+			ret = 0;
+		}
+		catch (KDBException const & e)
+		{
+			std::cout << "Import of configuration failed with the error:\n";
+			std::cout << e.what ();
+			std::cout << "\n\n";
+			std::cout << "Your changes are not lost." << std::endl;
+			std::cout << "Please fix, import and remove \"" << filename << '"' << std::endl;
+			ret = 14;
+		}
 	}
 	else
 	{

@@ -34,6 +34,8 @@ itself is stored.  After mounting all backends, Elektra checks if
 `system/elektra` still resides at the default backend.  If not,
 the init backend will be mounted there.
 
+## SUMMARY ##
+
 To summarise, this approach delivers a good out-of-the-box experience
 capable of storing configuration. For special use cases, applications
 and administrators can mount specific backends anywhere except at, and
@@ -47,6 +49,17 @@ The backend is mounted to root (`/`), so any keys can be
 stored in it. The implementation of the core guarantees that user and
 system keys always stay separated.
 
-## SEE ALSO
+
+## TRACEABILITY ##
+
+- elektraOpenBootstrap() implements above algorithm
+- elektraBackendOpenDefault() opens the default backend
+- /src/include/kdbconfig.h.in contains above KDB_* variables
+- src/plugins/CMakeLists.txt creates the symlinks
+- cmake/Modules/LibAddMacros.cmake create_lib_symlink function
+
+
+## SEE ALSO ##
 
 - [bootstrap decision](/doc/decisions/bootstrap.md)
+

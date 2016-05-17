@@ -454,12 +454,13 @@ static int elektraGetCheckUpdateNeeded (Split * split, Key * parentKey)
 		Backend * backend = split->handles[i];
 		clear_bit (split->syncbits[i], 1);
 
-		if (backend->getplugins[0])
+		if (backend->getplugins[RESOLVER_PLUGIN])
 		{
 			ksRewind (split->keysets[i]);
 			keySetName (parentKey, keyName (split->parents[i]));
 			keySetString (parentKey, "");
-			ret = backend->getplugins[0]->kdbGet (backend->getplugins[0], split->keysets[i], parentKey);
+			ret = backend->getplugins[RESOLVER_PLUGIN]->kdbGet (backend->getplugins[RESOLVER_PLUGIN], split->keysets[i],
+									    parentKey);
 			// store resolved filename
 			keySetString (split->parents[i], keyString (parentKey));
 			// no keys in that backend

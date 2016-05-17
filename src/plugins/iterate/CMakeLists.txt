@@ -4,6 +4,5 @@ add_plugin (iterate
 	SOURCES
 		iterate.h
 		iterate.c
+	ADD_TEST
 	)
-
-add_plugintest (iterate)

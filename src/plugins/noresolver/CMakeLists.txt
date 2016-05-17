@@ -5,5 +5,3 @@ add_plugin (noresolver
 		noresolver.h
 		noresolver.c
 	)
-
-#add_plugintest (noresolver)

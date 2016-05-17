@@ -4,6 +4,5 @@ add_plugin (dpkg
 	SOURCES
 		dpkg.h
 		dpkg.c
+	ADD_TEST
 	)
-
-add_plugintest (dpkg)

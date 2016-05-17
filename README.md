@@ -43,7 +43,7 @@ In case you're worried about linking to such a powerful library. The core is a s
 implemented in C, works cross-platform, and does not need any external dependencies. There are
 [bindings](src/bindings) for other languages in case C is too low-level for you.
 
-[Why should I use Elektra?](#goals)
+[Why should I use Elektra?](doc/WHY.md)
 
 
 ## Contact ##
@@ -83,19 +83,11 @@ Elektra.
 Now that we have Elektra installed, we can start using the [kdb command](/doc/help/kdb.md) and
 the [qt-gui](/src/tools/qt-gui/).
 
-You can use the `kdb` command to configure your applications:
+Here a small demo:
 
-```bash
-kdb set user/env/override/HTTP_PROXY "http://my.proxy:8080"
-```
+[![asciicast](https://asciinema.org/a/67xubv7tfkpu2434cx3aibjby.png)](https://asciinema.org/a/67xubv7tfkpu2434cx3aibjby)
 
-This will set the `HTTP_PROXY` environment variable to `http://my.proxy:8080`.
-Configuration can be retrieved with `kdb get`:
-
-```bash
-kdb get /env/override/HTTP_PROXY
-```
-
+For import/export/mount formats see [Plugins](src/plugins/).
 For information about elektrified environment variables, see
 [/src/libgetenv/README.md](/src/libs/getenv/README.md)
 
@@ -167,6 +159,7 @@ And in terms of quality, we want:
 
 ## News ##
 
+ - [29 Apr 2016 0.8.16](http://doc.libelektra.org/news/9c9247ee-ee9c-4f4a-a68e-76959def9b82.html) stability improvements
  - [16 Feb 2016 0.8.15](http://doc.libelektra.org/news/1ab4a560-c286-46d2-a058-1a8e7e208fe8.html) lib split, improved mount
  - [19 Nov 2015 0.8.14](http://doc.libelektra.org/news/519cbfac-6db5-4594-8a38-dec4c84b134f.html) adds docu and plugins
  - [17 Sep 2015 0.8.13](http://doc.libelektra.org/news/3c00a5f1-c017-4555-92b5-a2cf6e0803e3.html) adds elektrify-getenv

@@ -148,7 +148,7 @@ public:
 	std::unique_lock<std::mutex> requireLock ()
 	{
 		std::unique_lock<std::mutex> lock (m_mutex);
-		return std::move (lock);
+		return lock;
 	}
 
 	Coordinator ()
@@ -280,7 +280,7 @@ private:
 		std::lock_guard<std::mutex> lock (m_mutex);
 		LayerMap ret;
 		ret.swap (m_updates[cc].toActivate);
-		return std::move (ret);
+		return ret;
 	}
 
 	/// stores per context updates not yet delievered

@@ -5,7 +5,7 @@
 ### Mountpoint: ###
 
 This is the only configuration Variable that has to be set. It is used to determine where the shell_recorder should look for changes.
-e.g. `Mountoint: user/test` tells the shell_recorder that you will be working under `user/test`.
+e.g. `Mountpoint: user/test` tells the shell_recorder that you will be working under `user/test`.
 
 ### DiffType: ###
 

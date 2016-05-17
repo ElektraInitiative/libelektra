@@ -4,14 +4,9 @@ if (DEPENDENCY_PHASE)
 			"${PROJECT_SOURCE_DIR}/src/plugins/fstab/testmntent.c"
 			)
 
-	if (HAS_MNTENT)
-
-		install(DIRECTORY fstab DESTINATION ${TARGET_TEST_DATA_FOLDER})
-
-		add_plugintest (fstab)
-	else (HAS_MNTENT)
-		remove_plugin (fstab "mntent is missing")
-	endif (HAS_MNTENT)
+	if (NOT HAS_MNTENT)
+		remove_plugin (fstab "function mntent is missing")
+	endif ()
 endif ()
 
 add_plugin (fstab
@@ -20,4 +15,6 @@ add_plugin (fstab
 		fstab.h
 	LINK_ELEKTRA
 		elektra-meta
+	ADD_TEST
+	INSTALL_TEST_DATA
 	)

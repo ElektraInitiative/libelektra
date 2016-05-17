@@ -39,7 +39,7 @@ can be compared against the return values of the shell commandos.
  % cat /tmp/log
 cat: /tmp/log: No such file or directory
 
- % kdb mount /tmp/test.ini system/shelltest ini array= shell execute/set='echo set >> /tmp/log',execute/get='echo get >> /tmp/log',execute/get/return='0'
+ % kdb mount /tmp/test.ini system/shelltest ini array= shell 'execute/set=echo set >> /tmp/log,execute/get=echo get >> /tmp/log,execute/get/return=0'
 
  % kdb set system/shelltest
 Create a new key system/shelltest with null value

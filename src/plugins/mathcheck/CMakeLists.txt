@@ -8,6 +8,6 @@ if (NOT CMAKE_CXX_COMPILER_ID STREQUAL "Intel")
 			floathelper.h
 			floathelper.c
 		)
-endif ()
 
-add_plugintest (mathcheck)
+	add_plugintest (mathcheck)
+endif ()

@@ -24,6 +24,10 @@ check_type_size("long long"     SIZEOF_LONG_LONG)
 check_type_size("long double"   SIZEOF_LONG_DOUBLE)
 check_type_size(mode_t          SIZEOF_MODE_T)
 
+set(CMAKE_EXTRA_INCLUDE_FILES "sys/time.h")
+	check_type_size("((struct timeval*)0)->tv_usec" SIZEOF_TV_USEC)
+set(CMAKE_EXTRA_INCLUDE_FILES)
+
 set (BUILTIN_EXEC_FOLDER
 	"${CMAKE_INSTALL_PREFIX}/${TARGET_TOOL_EXEC_FOLDER}")
 set (BUILTIN_DATA_FOLDER
@@ -55,6 +59,7 @@ install (FILES
 	"${CMAKE_CURRENT_BINARY_DIR}/kdbconfig.h"
 	kdbextension.h
 	kdbmeta.h
+	kdbease.h
 	kdbtypes.h
 	kdbhelper.h
 	"${CMAKE_CURRENT_BINARY_DIR}/kdb.h"

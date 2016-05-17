@@ -84,6 +84,12 @@ where the readme (among many other things) are already done for you.
 More details about how to write the CMakeLists.txt will be discussed
 later in the tutorial.
 
+The `README.md` will be used by:
+
+- the build system (`-DPLUGINS=`), e.g. to exclude experimental plugins (`infos/status`)
+- the mount tool, e.g. to correctly place and order plugins
+- to know dependencies between plugin and what metadata they process
+
 
 ### Content of README.md ###
 

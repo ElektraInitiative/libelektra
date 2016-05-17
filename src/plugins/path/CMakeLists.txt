@@ -5,5 +5,3 @@ add_plugin (path
 		path.h
 		path.c
 	)
-
-#add_plugintest (path)

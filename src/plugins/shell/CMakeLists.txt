@@ -4,6 +4,5 @@ add_plugin (shell
 	SOURCES
 		shell.h
 		shell.c
+	ADD_TEST
 	)
-
-add_plugintest (shell)

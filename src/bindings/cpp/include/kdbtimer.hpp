@@ -13,6 +13,7 @@
 #include <sstream>
 #include <string>
 #include <sys/time.h>
+#include <vector>
 
 #ifdef __GNUC__
 #define TIMER_NOINLINE __attribute__ ((noinline))

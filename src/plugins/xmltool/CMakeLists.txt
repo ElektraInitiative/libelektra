@@ -1,17 +1,9 @@
 if (DEPENDENCY_PHASE)
 	find_package (LibXml2)
 
-	if (LIBXML2_FOUND)
-		include (LibAddMacros)
-
-		add_plugintest (xmltool
-			MEMLEAK)
-
-		install(DIRECTORY xmltool DESTINATION ${TARGET_TEST_DATA_FOLDER})
-
-	else (LIBXML2_FOUND)
+	if (NOT LIBXML2_FOUND)
 		remove_plugin (xmltool "libxml2 not found")
-	endif (LIBXML2_FOUND)
+	endif ()
 endif ()
 
 add_plugin (xmltool
@@ -21,6 +13,7 @@ add_plugin (xmltool
 		stream.c
 		kdbtools.c
 		kscompare.c
+	INSTALL_TEST_DATA
 	INCLUDE_DIRECTORIES
 		${LIBXML2_INCLUDE_DIR}
 	LINK_ELEKTRA
@@ -28,3 +21,11 @@ add_plugin (xmltool
 	LINK_LIBRARIES
 		${LIBXML2_LIBRARIES}
 	)
+
+if (ADDTESTING_PHASE)
+	include (LibAddMacros)
+
+#add_plugintest (xmltool
+#	INSTALL_TEST_DATA
+#	MEMLEAK)
+endif ()

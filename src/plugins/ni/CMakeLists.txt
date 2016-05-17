@@ -17,17 +17,12 @@ add_plugin(ni
 		${NI}/src/include
 	LINK_ELEKTRA
 		elektra-ease
+	ADD_TEST
 	)
 
-include_directories (${NI}/include)
-file (GLOB NI_INI_FILES ${NI}/src/tests/*.ini)
-foreach (NI_INI_FILE ${NI_INI_FILES})
-	copy_file (${NI_INI_FILE} "${CMAKE_CURRENT_BINARY_DIR}")
-endforeach ()
-
-# testmod_ni mainly tests nickel functions so we need to
-# link against nickel objects
-add_plugintest (ni ${NI_FILES}
-	INCLUDE_DIRECTORIES
-		${NI}/include
-		${NI}/src/include)
+if (ADDTESTING_PHASE)
+	file (GLOB NI_INI_FILES ${NI}/src/tests/*.ini)
+	foreach (NI_INI_FILE ${NI_INI_FILES})
+		copy_file (${NI_INI_FILE} "${CMAKE_CURRENT_BINARY_DIR}")
+	endforeach ()
+endif ()

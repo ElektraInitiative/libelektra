@@ -359,6 +359,7 @@ number:60
 description:Invalid Line encountered
 severity:error
 ingroup:plugin
+macro:NOEOF
 module:simpleini
 
 number:61
@@ -738,36 +739,42 @@ module:mathcheck
 
 number:125
 description:Failed to initialize the crypto library.
+macro:CRYPTO_INIT
 severity:error
 ingroup:plugin
 module:crypto
 
 number:126
 description:The crypto library reported an internal error.
+macro:CRYPTO_INTERNAL_ERROR
 severity:error
 ingroup:plugin
 module:crypto
 
 number:127
 description:Encryption failed due to an error reported by the crypto library.
+macro:CRYPTO_ENCRYPT_FAIL
 severity:error
 ingroup:plugin
 module:crypto
 
 number:128
 description:Decryption failed due to an error reported by the crypto library.
+macro:CRYPTO_DECRYPT_FAIL
 severity:error
 ingroup:plugin
 module:crypto
 
 number:129
 description:Decryption failed due to an error reported by the crypto library.
+macro:CRYPTO_DECRYPT_WARNING
 severity:warning
 ingroup:plugin
 module:crypto
 
 number:130
 description:The configuration is invalid or incomplete.
+macro:CRYPTO_CONFIG_FAULT
 severity:error
 ingroup:plugin
 module:crypto

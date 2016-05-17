@@ -20,8 +20,8 @@ It covers:
 - external C-API (See Modules above), which are the essential core parts
 - C++-API (See Data Structures above) from a direct binding to high-level
   functionality, such as mounting functionality
-- plugins API
-- all other documentation of Elektra (See Related Pages)
+- plugins API, see @ref plugin
+- all other documentation of Elektra (See Related Pages next to Main Page)
 
 On the one hand it gives an overview and an introduction for
 developers using Elektra, on the
@@ -64,7 +64,8 @@ Read about [compiling elektra](/doc/COMPILE.md).
 * [Namespaces](/doc/tutorials/namespaces.md)
 * [Plugins](/doc/tutorials/plugins.md)
 
-[List of all available Plugins](/src/plugins/)
+[List of all available Plugins](/src/plugins/) and get started by developing
+your own plugins @ref plugin.
 
 ##  Elektra API ##
 
@@ -175,7 +176,8 @@ with Elektra from the user point of view. You should be familiar with
 the data structures: [Key](@ref key) and [KeySet](@ref keyset)
 Then you can start reading about Backends that are composed out of
 [Plugin](@ref plugin).
-To get started with writing plugins, first read our plugin tutorial in doc/tutorials!
+To get started with writing plugins, first read our [plugin tutorial](/doc/tutorials/plugins.md)
+and then lookup details in the API description in @ref plugin.
 
 Read more about [mounting](/doc/help/elektra-mounting.md)
 
@@ -184,3 +186,4 @@ Read more about [mounting](/doc/help/elektra-mounting.md)
 - See [elektra-glossary(7)](/doc/help/elektra-glossary.md)
 - More information about [elektra-backends(7)](/doc/help/elektra-backends.md)
 - More information about [elektra-plugins-framework(7)](/doc/help/elektra-plugins-framework.md)
+

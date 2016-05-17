@@ -65,6 +65,12 @@
 #define ELEKTRA_WRONG __attribute__ ((unused)) __attribute__ ((noinline)) __attribute__ ((error ("wrong usage of API")))
 #endif
 
+// must be later, clang has __GNUC__ set, too
+#ifdef __clang__
+#undef ELEKTRA_WRONG
+#define ELEKTRA_WRONG __attribute__ ((unused)) __attribute__ ((noinline)) __attribute__ ((unavailable ("wrong usage of API")))
+#endif
+
 #ifdef __GNUC__
 #define ELEKTRA_NOINLINE __attribute__ ((noinline))
 #else

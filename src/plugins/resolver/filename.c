@@ -10,6 +10,7 @@
 
 #include <errno.h>
 #include <kdbproposal.h>
+#include <kdbtypes.h>
 #include <libgen.h>
 #include <pwd.h>
 #include <stdbool.h>
@@ -75,7 +76,7 @@ static void elektraGenTempFilename (char * where, const char * filename)
 	struct timeval tv;
 	gettimeofday (&tv, 0);
 	size_t len = sprintf (where, "%s", filename);
-	snprintf (where + len, POSTFIX_SIZE - 1, ".%d:%ld.%ld.tmp", getpid (), tv.tv_sec, tv.tv_usec);
+	snprintf (where + len, POSTFIX_SIZE - 1, ".%d:%ld." ELEKTRA_TIME_USEC_F ".tmp", getpid (), tv.tv_sec, tv.tv_usec);
 }
 /**
  * @brief Given filename, calcualtes dirname+tempfile

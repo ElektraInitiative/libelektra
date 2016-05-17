@@ -20,9 +20,19 @@ gives a regular expression to check against. If it is present,
 `check/validation/message` may contain an optional humanly readable
 message that will be passed with the error information.
 
+Important:
 To validate against the whole string, you have to start the regular
 expression with `^` and end it with `$`. Otherwise expressions that
-match the empty string, always return true.
+e.g. match the empty string, always return true.
+Alternatively, you can use `check/validation/match=LINE`.
+
+## Configuration ##
+
+Metadata can be supplied to configure the validation:
+
+- `check/validation/match`: You can check against `LINE`, `WORD` or `ANY`
+- `check/validation/ignorecase`: If you want to ignore case.
+- `check/validation/invert`: If you want to invert match.
 
 ## Implementation ##
 
