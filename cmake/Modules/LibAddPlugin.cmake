@@ -174,7 +174,7 @@ function (restore_variable PLUGIN_NAME VARIABLE)
 		if (DEFINED ${VARIABLE})
 			# both stored and given by user: do consistency check
 			#message (STATUS "consistency check, plugin ${PLUGIN_NAME} got ${VARIABLE} reset to ${VAR}")
-			if (NOT "${VARIABLE}" STREQUAL "${VAR}")
+			if (NOT ${VARIABLE} STREQUAL "${VAR}")
 				message (FATAL_ERROR "Internally inconsistency, plugin ${PLUGIN_NAME} got different values for variable ${VARIABLE}: '${${VARIABLE}}' != '${VAR}'")
 			endif ()
 		else ()
