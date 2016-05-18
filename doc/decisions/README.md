@@ -15,6 +15,7 @@ section here.
 - [Library Split](library_split.md)
 - [Bootstrap](bootstrap.md)
 - [Empty Files](empty_files.md)
+- [CMake Plugins](cmake_plugins.md)
 
 ## Decided
 

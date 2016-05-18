@@ -2,7 +2,7 @@ if (DEPENDENCY_PHASE)
 	find_package (DBus)
 
 	if (NOT DBUS_FOUND)
-		remove_plugin (dbus "dbus not found")
+		remove_plugin (dbus "dbus package not found")
 	endif ()
 endif ()
 

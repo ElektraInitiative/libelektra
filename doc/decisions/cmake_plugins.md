@@ -2,18 +2,24 @@
 
 ## Issue
 
-- Plugin names and plugin folders must exactly match (resolver_*, crypto_*)
-- Non-existing plugin variants are not checked
-- Default plugin collection is too small
-- Duplicate of all plugin names in different folder
-- Only one category per plugin
+- Plugin names and plugin folders not always exactly
+  match (resolver_*, crypto_*)
+- plugin should be able to register new variants
+- there should be only one place to define a new plugin
+- Multiple categories should be possible per plugin,
+  defined in README.md
 - On some OS some plugins won't work (simpleini)
+- Some unit tests depend on bindings
 
 ## Constraints
 
-## Assumptions
+- should work with supported cmake
+- It should be easy to add trivial plugins
+  (without dependency and variants)
+- It should be possible to add complex plugins
+  (with dependencies on plugins/unit tests and many variants)
 
-- Many plugins work without dependencies and variants, this should be simple
+## Assumptions
 
 ## Considered Alternatives
 
@@ -40,33 +46,36 @@ Names for flag:
 
 ## Decision
 
-Introduce a cmake process where all plugins are processed two times:
-
-1.) collection phase (`DEPENDENCY_PHASE` is `OFF`),
-  with:
-  - `ADDED_PLUGINS`
-  - `REMOVED_PLUGINS`
-  - `ADDED_DIRECTORIES`
-  - add_plugin, but without actually adding internally
-2.) assemble dependency phase (`DEPENDENCY_PHASE` is `ON`, only considering `ADDED_DIRECTORIES`),
-  with:
-  - add_libraries, actually search for libraries on the system
-  - add_plugin, with *actually adding* the plugins
-
-Use following cmake variables for the phases:
+Introduce a cmake process where all plugins are processed three times.
+Following cmake variables are used for the phases:
 
 - `COLLECTION_PHASE` .. collect all `add_plugins`
 - `DEPENDENCY_PHASE` .. resolve all dependencies, do `add_plugins` again
 - `ADDTESTING_PHASE` .. (reserve for potential 3rd phase)
 
+
+
+1.) Collection phase (`COLLECTION_PHASE` is `ON`),
+  add_plugin internally builds up:
+  - `ADDED_PLUGINS`
+  - `REMOVED_PLUGINS`
+  - `ADDED_DIRECTORIES`
+2.) assemble dependency phase (`DEPENDENCY_PHASE` is `ON`, only considering `ADDED_DIRECTORIES`),
+  with:
+  - find_libraries, actually search for libraries on the system
+    (only relevant libraries of plugins that are considered for inclusion)
+  - add_plugin, with *actually adding* the plugins
+3.) assemble all unit tests (`ADDTESTING_PHASE` is `ON`), either
+  - with `ADD_TEST` in `add_plugin`, or
+  - with `add_plugintest` (for unittests that have dependencies to bindings)
+
 ## Argument
 
-Solves all the issues without adding too much complexity.
-Can be extended to three phases if we need that for tests
-(they need knowledge about which plugins actually were added)
+Solves all the issues without adding too much complexity for actually adding plugins.
 
 Maintaining additional mappings is very time-consuming.
-Simply adding all plugins directories is problematic. It would:
+Simply adding all plugins directories is problematic.
+It would:
 
 - clutter the cmake output (especially in the case of errors)
 - introduce more variables into the CMakeCache which are irrelevant for the user
@@ -76,8 +85,15 @@ Simply adding all plugins directories is problematic. It would:
 
 ## Implications
 
-- need to adopt all CMakeLists.txt to use `find_package` only in the second phase
+- need to adopt all CMakeLists.txt
 
 ## Related decisions
 
 ## Notes
+
+## Limitations
+
+- `ADDED_DIRECTORIES` of variants will be kept
+- Typos in plugin names are currently not checked,
+  strings that are not plugin names are simply ignored.
+
