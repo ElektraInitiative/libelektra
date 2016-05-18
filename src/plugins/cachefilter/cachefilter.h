@@ -15,6 +15,7 @@
 
 int elektraCachefilterGet (Plugin * handle, KeySet * ks, Key * parentKey);
 int elektraCachefilterSet (Plugin * handle, KeySet * ks, Key * parentKey);
+int elektraCachefilterClose (Plugin * handle, Key * parentKey);
 
 Plugin * ELEKTRA_PLUGIN_EXPORT (cachefilter);
 
