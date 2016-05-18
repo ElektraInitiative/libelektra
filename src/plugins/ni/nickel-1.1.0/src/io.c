@@ -660,7 +660,8 @@ elektraNi_PRIVATE int PutSection (FILE * restrict f, const char * restrict name,
  * on success, 0 on failure.  May have written only part of the string to f if
  * it fails.
  */
-elektraNi_PRIVATE int PutEntry (FILE * restrict f, const char * restrict key, int key_len, const char * restrict value, int value_len, int level)
+elektraNi_PRIVATE int PutEntry (FILE * restrict f, const char * restrict key, int key_len, const char * restrict value, int value_len,
+				int level)
 {
 	int i;
 	int success = 0;

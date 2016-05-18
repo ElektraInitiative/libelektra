@@ -39,8 +39,8 @@ struct elektraNi_node_struct
 	struct elektraNi_node_struct * parent; // the immediate parent of this node (set for all except root)
 
 	char name[elektraNi_KEY_SIZE]; // this node's name (set for all except root)
-	int name_len;		// strlen of name
-	Ds_hash_t hash;		// the hash value of name and thus this node
+	int name_len;		       // strlen of name
+	Ds_hash_t hash;		       // the hash value of name and thus this node
 
 	Ds_str value; // this node's value (only set for nodes that have a value)
 	int modified; // whether this value has been "modified", which the application can use however they want
@@ -60,7 +60,8 @@ struct elektraNi_node_struct
 #define GetEntry(n) ((Ds_hash_entry *)((unsigned char *)(n)-offsetof (Ds_hash_entry, item)))
 
 // Inits the node and adds it as a child of the parent.
-static elektraNi_node AddNode (elektraNi_node restrict n, elektraNi_node restrict parent, const char * restrict name, int name_len, Ds_hash_t hash);
+static elektraNi_node AddNode (elektraNi_node restrict n, elektraNi_node restrict parent, const char * restrict name, int name_len,
+			       Ds_hash_t hash);
 
 // Initializes internals of a node.
 static int InitNode (elektraNi_node restrict n, elektraNi_node restrict parent);
@@ -211,7 +212,8 @@ elektraNi_PUBLIC elektraNi_node elektraNi_GetNextChild (elektraNi_node restrict 
  * either add_if_new was 0 or it failed to allocate a new node (in either case,
  * added_out will be 0).
  */
-elektraNi_PUBLIC elektraNi_node elektraNi_GetChild (elektraNi_node restrict n, const char * restrict name, int name_len, int add_if_new, int * restrict added_out)
+elektraNi_PUBLIC elektraNi_node elektraNi_GetChild (elektraNi_node restrict n, const char * restrict name, int name_len, int add_if_new,
+						    int * restrict added_out)
 {
 	elektraNi_node child = NULL;
 	struct elektraNi_node_struct c;
@@ -619,14 +621,14 @@ elektraNi_PUBLIC int elektraNi_ReadFile (elektraNi_node restrict n, const char *
  */
 elektraNi_PUBLIC int elektraNi_ReadStream (elektraNi_node restrict n, FILE * restrict stream, int fold_case)
 {
-	file_buf fb = FILE_BUF_INIT;      // the file buffer we're reading
+	file_buf fb = FILE_BUF_INIT;		 // the file buffer we're reading
 	char key[elektraNi_KEY_SIZE] = { '\0' }; // section/key name for GetNextIdentifier
-	int key_len;			  // length of string in 'key' buffer
-	int key_level;			  // how many ['s were in front of key, if section
-	int cur_level = 0;		  // where we currently are in the tree
-	Ds_str value = Ds_STR_INIT;       // value holder string
-	int result;			  // the result of internal operations
-	elektraNi_node child;			  // a child
+	int key_len;				 // length of string in 'key' buffer
+	int key_level;				 // how many ['s were in front of key, if section
+	int cur_level = 0;			 // where we currently are in the tree
+	Ds_str value = Ds_STR_INIT;		 // value holder string
+	int result;				 // the result of internal operations
+	elektraNi_node child;			 // a child
 	int i;
 
 	int success = 0;
@@ -717,7 +719,8 @@ elektraNi_PUBLIC int elektraNi_ReadStream (elektraNi_node restrict n, FILE * res
  * parent's table, and adds the node as its child.  Returns NULL if it fails,
  * or the added node if it succeeds.
  */
-static elektraNi_node AddNode (elektraNi_node restrict n, elektraNi_node restrict parent, const char * restrict name, int name_len, Ds_hash_t hash)
+static elektraNi_node AddNode (elektraNi_node restrict n, elektraNi_node restrict parent, const char * restrict name, int name_len,
+			       Ds_hash_t hash)
 {
 	int success = 0;
 	elektraNi_node child = NULL;

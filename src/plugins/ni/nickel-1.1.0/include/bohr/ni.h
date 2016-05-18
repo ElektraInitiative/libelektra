@@ -363,7 +363,8 @@ elektraNi_PUBLIC elektraNi_node elektraNi_GetNextChild (elektraNi_node restrict 
  * either add_if_new was 0 or it failed to allocate a new node (in either case,
  * added_out will be 0).
  */
-elektraNi_PUBLIC elektraNi_node elektraNi_GetChild (elektraNi_node restrict n, const char * restrict name, int name_len, int add_if_new, int * restrict added_out);
+elektraNi_PUBLIC elektraNi_node elektraNi_GetChild (elektraNi_node restrict n, const char * restrict name, int name_len, int add_if_new,
+						    int * restrict added_out);
 
 /* Returns the modified state of a node.  When nodes are created, they are "not
  * modified".  As soon as you call a elektraNi_SetValue() (or elektraNi_ValuePrint())
