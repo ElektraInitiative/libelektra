@@ -331,6 +331,12 @@ The `elektraPluginCheckConf` function may be used for validation of the plugin c
 
 The configuration of the plugin is provided as `conf`. The function may report errors using the `errorKey` and the return value.
 
+The following convention was established for the return value of `elektraPluginCheckConf`:
+
+- 0: config was not changed (was ok)
+- 1: config is changed (now ok)
+- -1: config not ok, could not fix it
+
 ### ELEKTRA_PLUGIN_EXPORT ###
 
 The last function, one that is always needed in a plug-in, is `ELEKTRA_PLUGIN_EXPORT`. This functions is responsible for letting Elektra know that
