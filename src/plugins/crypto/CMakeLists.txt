@@ -125,6 +125,8 @@ add_plugin (crypto_openssl
 
 if (ADDTESTING_PHASE)
 	if (HAS_OPENSSL_4SURE OR HAS_GCRYPT_4SURE)
-		add_plugintest (crypto LINK_PLUGIN "<no>")
+		add_plugintest (crypto
+				MEMLEAK
+				LINK_PLUGIN "<no>")
 	endif ()
 endif ()
