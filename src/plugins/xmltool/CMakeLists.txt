@@ -25,7 +25,7 @@ add_plugin (xmltool
 if (ADDTESTING_PHASE)
 	include (LibAddMacros)
 
-#add_plugintest (xmltool
-#	INSTALL_TEST_DATA
-#	MEMLEAK)
+add_plugintest (xmltool
+	INSTALL_TEST_DATA
+	MEMLEAK)
 endif ()
