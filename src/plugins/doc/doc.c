@@ -107,6 +107,7 @@ int elektraDocGet (Plugin * plugin ELEKTRA_UNUSED, KeySet * returned, Key * pare
 			       keyNew ("system/elektra/modules/doc/exports/get", KEY_FUNC, elektraDocGet, KEY_END),
 			       keyNew ("system/elektra/modules/doc/exports/set", KEY_FUNC, elektraDocSet, KEY_END),
 			       keyNew ("system/elektra/modules/doc/exports/error", KEY_FUNC, elektraDocError, KEY_END),
+			       keyNew ("system/elektra/modules/doc/exports/checkconf", KEY_FUNC, elektraDocCheckConf, KEY_END),
 #include ELEKTRA_README (doc)
 			       keyNew ("system/elektra/modules/doc/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 		ksAppend (returned, contract);
@@ -182,6 +183,19 @@ static Plugin * findPlugin (KDB * handle ELEKTRA_UNUSED)
 static void saveToDisc (Key * k ELEKTRA_UNUSED)
 {
 }
+
+//![validate configuration]
+int elektraDocCheckConf (Key * errorKey ELEKTRA_UNUSED, KeySet * conf ELEKTRA_UNUSED)
+{
+	/* validate plugin configuration */
+
+	// the return codes have the following meaning:
+	// 0: config was not changed (was ok)
+	// 1: config is changed (now ok)
+	// -1: config not ok, could not fix
+	return 0;
+}
+//![validate configuration]
 
 //![set full]
 static void usercode (KDB * handle, KeySet * keyset, Key * key)
