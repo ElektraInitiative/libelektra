@@ -1,8 +1,14 @@
 ## register
 
-elektraRegisterOpen(kdb, ..)
+elektraRegisterOpen(kdb, ..) // register as global plugin
 elektraRegisterClose // not needed
-elektraRegisterInt()
+
+int a;
+elektraRegisterInt(&a, "/app/a");
+char *;
+elektraRegisterString(&c, "/app/c");
+
+elektraRegisterCallback(f, "/app/f");
 
 ## array support ##
 
