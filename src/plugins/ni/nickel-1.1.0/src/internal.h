@@ -26,11 +26,11 @@
 
 // Controls export behavior.
 #ifdef _WIN32
-#define Ni_PUBLIC __declspec(dllexport)
-#define Ni_PRIVATE
+#define elektraNi_PUBLIC __declspec(dllexport)
+#define elektraNi_PRIVATE
 #else
-#define Ni_PUBLIC __attribute__ ((visibility ("default")))
-#define Ni_PRIVATE __attribute__ ((visibility ("hidden")))
+#define elektraNi_PUBLIC __attribute__ ((visibility ("default")))
+#define elektraNi_PRIVATE __attribute__ ((visibility ("hidden")))
 #endif
 
 // Nix non-critical C99 keywords in compilers that don't support them.
@@ -40,8 +40,8 @@
 
 
 // Internally, it's a pointer to our node struct.
-typedef struct Ni_node_struct * Ni_node;
-#define _Ni_NODE_DEFINED
+typedef struct elektraNi_node_struct * elektraNi_node;
+#define _elektraNi_NODE_DEFINED
 
 
 // A wrapper around FILE.

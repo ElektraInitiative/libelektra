@@ -81,7 +81,7 @@ static int PutUtf8Char (FILE * restrict f, const unsigned char * restrict str, i
  * size of the buffer required to hold it into len_out.  Returns 0 if it
  * reaches the eof before it finds a valid identifier, or 1 if it found a
  * section identifier, or 2 if it found a key of a key/value pair.  May return
- * -1 on error.  idfr_out must be at least Ni_KEY_SIZE chars in length--this
+ * -1 on error.  idfr_out must be at least elektraNi_KEY_SIZE chars in length--this
  * function stops after that minus one, placing a NULL as the last character.
  * If this function returns 0, the contents of idfr_out and len_out may have
  * changed, or they may not've.  Note that to parse a .ini file correctly, if
@@ -89,7 +89,7 @@ static int PutUtf8Char (FILE * restrict f, const unsigned char * restrict str, i
  * GetNextIdentifier().  level_out will be filled with how many ['s were before
  * the section name, assuming the function returns 1.
  */
-Ni_PRIVATE int GetNextIdentifier (file_buf * restrict fb, char * restrict idfr_out, int * restrict len_out, int * restrict level_out)
+elektraNi_PRIVATE int GetNextIdentifier (file_buf * restrict fb, char * restrict idfr_out, int * restrict len_out, int * restrict level_out)
 {
 // State values for the FSM.
 #define ST_DONE 0	 // stop parsing
@@ -119,7 +119,7 @@ Ni_PRIVATE int GetNextIdentifier (file_buf * restrict fb, char * restrict idfr_o
 // Another space-saver--checks size of existing data and puts c into out,
 // incrementing len if it'll fit.
 #define put(c)                                                                                                                             \
-	if (len < Ni_KEY_SIZE - 1) idfr_out[len++] = (c)
+	if (len < elektraNi_KEY_SIZE - 1) idfr_out[len++] = (c)
 
 // Another space-saver--resets len and graph_len to 0, i.e. erases what we
 // already had in the output.
@@ -280,7 +280,7 @@ Ni_PRIVATE int GetNextIdentifier (file_buf * restrict fb, char * restrict idfr_o
 			{
 				state = ST_SKIP; // if ], skip remainder of line (no trim spaces) and return ok
 				rc = 1;
-				graph_len = Ni_KEY_SIZE - 1;
+				graph_len = elektraNi_KEY_SIZE - 1;
 			}
 			else if (!isspace (c))
 			{
@@ -348,7 +348,7 @@ Ni_PRIVATE int GetNextIdentifier (file_buf * restrict fb, char * restrict idfr_o
 			{
 				state = ST_DONE; // if =, we're GOOD and done (and don't strip spaces)
 				rc = 2;
-				graph_len = Ni_KEY_SIZE - 1;
+				graph_len = elektraNi_KEY_SIZE - 1;
 			}
 			else if (!isspace (c))
 			{
@@ -409,7 +409,7 @@ Ni_PRIVATE int GetNextIdentifier (file_buf * restrict fb, char * restrict idfr_o
  * on error, or 1 if ok.  Puts the value into value_out.  Erases anything that
  * was in value_out before.
  */
-Ni_PRIVATE int GetValue (file_buf * restrict fb, Ds_str * restrict value_out)
+elektraNi_PRIVATE int GetValue (file_buf * restrict fb, Ds_str * restrict value_out)
 {
 // State values for the FSM.
 #define ST_DONE 0    // done parsing
@@ -616,7 +616,7 @@ Ni_PRIVATE int GetValue (file_buf * restrict fb, Ds_str * restrict value_out)
  * nonzero on success, 0 on failure.  May have written only part of the string
  * to f if it fails.
  */
-Ni_PRIVATE int PutSection (FILE * restrict f, const char * restrict name, int name_len, int level)
+elektraNi_PRIVATE int PutSection (FILE * restrict f, const char * restrict name, int name_len, int level)
 {
 	int i;
 	int success = 0;
@@ -660,7 +660,7 @@ Ni_PRIVATE int PutSection (FILE * restrict f, const char * restrict name, int na
  * on success, 0 on failure.  May have written only part of the string to f if
  * it fails.
  */
-Ni_PRIVATE int PutEntry (FILE * restrict f, const char * restrict key, int key_len, const char * restrict value, int value_len, int level)
+elektraNi_PRIVATE int PutEntry (FILE * restrict f, const char * restrict key, int key_len, const char * restrict value, int value_len, int level)
 {
 	int i;
 	int success = 0;
