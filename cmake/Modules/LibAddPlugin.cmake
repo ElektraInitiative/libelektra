@@ -90,13 +90,8 @@ function (add_plugintest testname)
 			endif ()
 		endif (INSTALL_TESTING)
 
-		if (BUILD_SHARED)
-			if (ARG_LINK_ELEKTRA)
-				target_link_libraries (${testexename} elektra-kdb elektra-plugin ${ARG_LINK_ELEKTRA})
-			else()
-				target_link_libraries (${testexename} elektra-kdb elektra-plugin)
-			endif ()
-		endif ()
+		target_link_elektra(${testexename} elektra-kdb elektra-plugin ${ARG_LINK_ELEKTRA})
+
 		target_link_libraries (${testexename} ${ARG_LINK_LIBRARIES})
 		set_target_properties (${testexename} PROPERTIES
 				COMPILE_DEFINITIONS "HAVE_KDBCONFIG_H;ELEKTRA_PLUGIN_TEST;${ARG_COMPILE_DEFINITIONS}")
