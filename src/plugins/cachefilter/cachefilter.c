@@ -9,9 +9,9 @@
 
 #include "cachefilter.h"
 
-#include <kdbhelper.h>
-#include <kdberrors.h>
 #include <errno.h>
+#include <kdberrors.h>
+#include <kdbhelper.h>
 
 
 int elektraCachefilterGet (Plugin * handle, KeySet * returned, Key * parentKey)
@@ -64,11 +64,11 @@ int elektraCachefilterSet (Plugin * handle, KeySet * returned, Key * parentKey E
 {
 	// get cached keys
 	KeySet * cachedKeys = (KeySet *)elektraPluginGetData (handle);
-	if(cachedKeys == NULL)
+	if (cachedKeys == NULL)
 	{
-    	ELEKTRA_SET_ERROR_SET(parentKey);
-	    return -1; // did not call kdbGet() before and therefore
-	               // also no elektraCachefilterGet()
+		ELEKTRA_SET_ERROR_SET (parentKey);
+		return -1; // did not call kdbGet() before and therefore
+			   // also no elektraCachefilterGet()
 	}
 
 	// mix all keys that need to be stored together

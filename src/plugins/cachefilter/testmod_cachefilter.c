@@ -148,7 +148,7 @@ static void test_successfulGetSetGetSet ()
 	KeySet * ks = createTestKeysToCache ();
 	ksAppend (ks, createTestKeysToNotCache ());
 
-    // kdbGet() first
+	// kdbGet() first
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) >= 1, "call to kdbGet was not successful");
 	succeed_if (output_error (parentKey), "error in kdbGet");
 	succeed_if (output_warnings (parentKey), "warnings in kdbGet");
@@ -168,7 +168,7 @@ static void test_successfulGetSetGetSet ()
 	ksAppend (expected, createTestKeysToCache ());
 	compare_keyset (ks, expected);
 	ksDel (expected);
-	
+
 	// another kdbGet() call
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) >= 1, "call to kdbGet was not successful");
 	succeed_if (output_error (parentKey), "error in kdbGet");
@@ -178,7 +178,7 @@ static void test_successfulGetSetGetSet ()
 	expected = createTestKeysToNotCache ();
 	compare_keyset (ks, expected);
 	ksDel (expected);
-	
+
 	// another kdbSet() call
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) >= 0, "call to kdbSet was not successful");
 	succeed_if (output_error (parentKey), "error in kdbGet");
