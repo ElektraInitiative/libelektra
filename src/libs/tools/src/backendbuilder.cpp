@@ -431,7 +431,7 @@ void BackendBuilder::addPlugin (PluginSpec const & plugin)
 	{
 		ckdb::Key * errorKey = ckdb::keyNew (0);
 		int checkResult = checkConfFunction (errorKey, newPlugin.getConfig ().getKeySet ());
-		if (checkResult != 1)
+		if (checkResult == -1)
 		{
 			throw PluginConfigInvalid (errorKey);
 		}

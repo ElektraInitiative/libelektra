@@ -74,7 +74,11 @@ int elektraTemplateCheckConfig (Key * errorKey ELEKTRA_UNUSED, KeySet * conf ELE
 	// validate plugin configuration
 	// this function is optional
 
-	return 1; // success
+	// the return codes have the following meaning:
+	// 0: config was not changed (was ok)
+	// 1: config is changed (now ok)
+	// -1: config not ok, could not fix
+	return 0;
 }
 
 Plugin * ELEKTRA_PLUGIN_EXPORT (template)
