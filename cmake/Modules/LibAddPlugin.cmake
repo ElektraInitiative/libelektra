@@ -295,7 +295,6 @@ function (add_plugin PLUGIN_SHORT_NAME)
 			set (ADDED_DIRECTORIES "${VAR}" CACHE STRING "${ADDED_DIRECTORIES_DOC}" FORCE)
 		endif ()
 
-		message (STATUS "Include Plugin ${PLUGIN_SHORT_NAME}")
 		return()
 	endif ()
 
@@ -309,7 +308,7 @@ function (add_plugin PLUGIN_SHORT_NAME)
 		return ()
 	endif ()
 
-	#message (STATUS "Include Plugin ${PLUGIN_SHORT_NAME}")
+	message (STATUS "Include Plugin ${PLUGIN_SHORT_NAME}")
 
 	#message (STATUS "name: ${PLUGIN_NAME}")
 	#message (STATUS "srcs are: ${ARG_SOURCES}")
