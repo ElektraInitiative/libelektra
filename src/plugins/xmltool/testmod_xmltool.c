@@ -219,7 +219,6 @@ void test_keyset ()
 	ksDel (ks);
 }
 
-#include "kscompare.c"
 #define MAX_SIZE 200
 
 static void test_ksCommonParentName ()
