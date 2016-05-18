@@ -229,6 +229,10 @@ function (add_plugin PLUGIN_SHORT_NAME)
 	restore_variable (${PLUGIN_NAME} ARG_ADD_TEST)
 	restore_variable (${PLUGIN_NAME} ARG_INSTALL_TEST_DATA)
 
+	if (ARG_UNPARSED_ARGUMENTS)
+		message (FATAL_ERROR "Parsed a wrong argument to plugin ${PLUGIN_SHORT_NAME}: ${ARG_UNPARSED_ARGUMENTS}")
+	endif ()
+
 	if (ADDTESTING_PHASE)
 		if (ARG_INSTALL_TEST_DATA AND NOT ARG_ADD_TEST)
 			if (INSTALL_TESTING)
