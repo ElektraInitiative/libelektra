@@ -1,5 +1,3 @@
-include_directories (${CMAKE_SOURCE_DIR}/tests)
-
 set (TEST_FILES $<TARGET_OBJECTS:cframework>)
 add_testheaders(TEST_FILES)
 
@@ -14,9 +12,7 @@ macro (do_glib_test file)
 		COMPILE_DEFINITIONS HAVE_KDBCONFIG_H
 	)
 
-	set (GLIBS ${GELEKTRA_LIBRARY} ${GOBJECT_LIBRARIES})
-	tool_link_elektra (${name})
-	target_link_libraries (${name} ${GLIBS})
+	target_link_libraries (${name} PRIVATE ${GELEKTRA_LIBRARY})
 
 	add_test (
 		NAME ${name}

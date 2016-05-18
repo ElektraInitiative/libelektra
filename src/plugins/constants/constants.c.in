@@ -168,6 +168,9 @@ static void elektraAddConstants (KeySet * ks, Key * parentKey)
 	keySetString (key, "@TARGET_PLUGIN_FOLDER@");
 	ksAppendKey (ks, key);
 
+	elektraAddKeyValue (ks, parentKey, "cmake/BUILTIN_PLUGIN_FOLDER", BUILTIN_PLUGIN_FOLDER);
+	elektraAddKeyValue (ks, parentKey, "cmake/BUILTIN_DATA_FOLDER", BUILTIN_DATA_FOLDER);
+	elektraAddKeyValue (ks, parentKey, "cmake/BUILTIN_EXEC_FOLDER", BUILTIN_EXEC_FOLDER);
 
 	key = keyDup (parentKey);
 	keyAddName (key, "cmake/TARGET_PKGCONFIG_FOLDER");

@@ -6,9 +6,7 @@ if (DEPENDENCY_PHASE)
 
 	include(LibAddMacros)
 
-	if (HAS_UNAME)
-		add_plugintest (uname)
-	else()
+	if (NOT HAS_UNAME)
 		remove_plugin (uname "uname is missing")
 	endif()
 endif ()
@@ -17,4 +15,5 @@ add_plugin (uname
 	SOURCES
 		uname.h
 		uname.c
+	ADD_TEST
 )

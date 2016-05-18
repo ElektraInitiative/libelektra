@@ -36,48 +36,48 @@ int elektraNiGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * paren
 		return 1;
 	}
 
-	Ni_node root = Ni_New ();
+	elektraNi_node root = elektraNi_New ();
 	int errnosave = errno;
-	int error = Ni_ReadFile (root, keyString (parentKey), 0);
+	int error = elektraNi_ReadFile (root, keyString (parentKey), 0);
 	if (error == 0)
 	{
-		Ni_Free (root);
+		elektraNi_Free (root);
 		ELEKTRA_SET_ERROR_GET (parentKey);
 		errno = errnosave;
 		return -1;
 	}
 
-	Ni_node current = NULL;
-	while ((current = Ni_GetNextChild (root, current)) != NULL)
+	elektraNi_node current = NULL;
+	while ((current = elektraNi_GetNextChild (root, current)) != NULL)
 	{
 		Key * k = keyNew (keyName (parentKey), KEY_END);
-		keyAddName (k, Ni_GetName (current, NULL));
-		keySetString (k, Ni_GetValue (current, NULL));
-		Ni_node mcur = NULL;
-		while ((mcur = Ni_GetNextChild (current, mcur)) != NULL)
+		keyAddName (k, elektraNi_GetName (current, NULL));
+		keySetString (k, elektraNi_GetValue (current, NULL));
+		elektraNi_node mcur = NULL;
+		while ((mcur = elektraNi_GetNextChild (current, mcur)) != NULL)
 		{
-			keySetMeta (k, Ni_GetName (mcur, NULL), Ni_GetValue (mcur, NULL));
-			// printf("get meta %s %s from %s\n", Ni_GetName(mcur, NULL), Ni_GetValue (mcur, NULL), keyName(k));
+			keySetMeta (k, elektraNi_GetName (mcur, NULL), elektraNi_GetValue (mcur, NULL));
+			// printf("get meta %s %s from %s\n", elektraNi_GetName(mcur, NULL), elektraNi_GetValue (mcur, NULL), keyName(k));
 		}
 		ksAppendKey (returned, k);
 	}
 
-	Ni_Free (root);
+	elektraNi_Free (root);
 
 	return 1; /* success */
 }
 
-static void keyMetaToNi (Ni_node add, Key * cur)
+static void keyMetaToNi (elektraNi_node add, Key * cur)
 {
-	Ni_SetValue (add, keyString (cur), keyGetValueSize (cur) - 1);
+	elektraNi_SetValue (add, keyString (cur), keyGetValueSize (cur) - 1);
 
 	const Key * m;
 	keyRewindMeta (cur);
 	while ((m = keyNextMeta (cur)) != 0)
 	{
 		// printf("set meta %s %s from %s\n", keyName(m), keyString(m), keyName(cur));
-		Ni_node madd = Ni_GetChild (add, keyName (m), keyGetNameSize (m) - 1, 1, 0);
-		Ni_SetValue (madd, keyString (m), keyGetValueSize (m) - 1);
+		elektraNi_node madd = elektraNi_GetChild (add, keyName (m), keyGetNameSize (m) - 1, 1, 0);
+		elektraNi_SetValue (madd, keyString (m), keyGetValueSize (m) - 1);
 	}
 }
 
@@ -85,7 +85,7 @@ int elektraNiSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * paren
 {
 	/* set all keys */
 
-	Ni_node root = Ni_New ();
+	elektraNi_node root = elektraNi_New ();
 
 	Key * cur;
 	ksRewind (returned);
@@ -93,7 +93,7 @@ int elektraNiSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * paren
 	if (keyCmp (ksHead (returned), parentKey) == 0)
 	{
 		// printf ("found parentkey");
-		Ni_node add = Ni_GetChild (root, NULL, 0, 1, 0);
+		elektraNi_node add = elektraNi_GetChild (root, NULL, 0, 1, 0);
 		keyMetaToNi (add, ksHead (returned));
 		ksNext (returned); // do not process parent in loop again
 	}
@@ -101,13 +101,13 @@ int elektraNiSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * paren
 	while ((cur = ksNext (returned)) != 0)
 	{
 		const char * name = elektraKeyGetRelativeName (cur, parentKey);
-		Ni_node add = Ni_GetChild (root, name, strlen (name), 1, 0);
+		elektraNi_node add = elektraNi_GetChild (root, name, strlen (name), 1, 0);
 		keyMetaToNi (add, cur);
 	}
 
 	int errnosave = errno;
-	int error = Ni_WriteFile (root, keyString (parentKey), 0);
-	Ni_Free (root);
+	int error = elektraNi_WriteFile (root, keyString (parentKey), 0);
+	elektraNi_Free (root);
 
 	if (error == 0)
 	{

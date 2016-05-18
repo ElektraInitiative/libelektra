@@ -417,7 +417,11 @@ If you want in the filename that contains $, you need to double it. So:
     abc$$USER$$ -> file name called abc$USER$
     abc$USER -> error: used invalid unquoted $; checkFile should return -1
 
+Block resolver:
+	only take care of a block within the configuration file, leave the rest untouched
 
+Multi-file resolver:
+	resolve a directory of conf files with a backend each
 
 curl resolver:
 	a resolver that downloads file from http/ftp/ssh/sftp/etc and uses them

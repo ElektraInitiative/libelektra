@@ -32,152 +32,152 @@ int any_fail = 0;
 
 
 BEGIN_TEST (ver)
-uint32_t lib_version = Ni_GetVersion ();
-TEST_COND (lib_version == Ni_VERSION);
+uint32_t lib_version = elektraNi_GetVersion ();
+TEST_COND (lib_version == elektraNi_VERSION);
 END_TEST ()
 
 BEGIN_TEST (new)
-Ni_node node = Ni_New ();
+elektraNi_node node = elektraNi_New ();
 assert (node != NULL);
 
-const char * name = Ni_GetName (node, NULL);
+const char * name = elektraNi_GetName (node, NULL);
 TEST_COND (name == NULL);
 
-Ni_node root = Ni_GetRoot (node);
+elektraNi_node root = elektraNi_GetRoot (node);
 TEST_COND (root == node);
 
-Ni_node parent = Ni_GetParent (node);
+elektraNi_node parent = elektraNi_GetParent (node);
 TEST_COND (parent == NULL);
 
-int children = Ni_GetNumChildren (node);
+int children = elektraNi_GetNumChildren (node);
 TEST_COND (children == 0);
 
-int modified = Ni_GetModified (node);
+int modified = elektraNi_GetModified (node);
 TEST_COND (modified == 0);
 
-const char * value = Ni_GetValue (node, NULL);
+const char * value = elektraNi_GetValue (node, NULL);
 TEST_COND (value == NULL);
 
-int error = Ni_SetValue (node, "", 0);
+int error = elektraNi_SetValue (node, "", 0);
 TEST_COND (error < 0);
 
-Ni_Free (node);
+elektraNi_Free (node);
 END_TEST ()
 
 BEGIN_TEST (tree)
-Ni_node node = Ni_New ();
+elektraNi_node node = elektraNi_New ();
 assert (node != NULL);
 
-Ni_node child = Ni_GetChild (node, "a", -1, 1, NULL);
+elektraNi_node child = elektraNi_GetChild (node, "a", -1, 1, NULL);
 assert (child != NULL);
 
-int children = Ni_GetNumChildren (node);
+int children = elektraNi_GetNumChildren (node);
 TEST_COND (children == 1);
 
-Ni_node child2 = Ni_GetChild (child, "b", -1, 1, NULL);
+elektraNi_node child2 = elektraNi_GetChild (child, "b", -1, 1, NULL);
 assert (child2 != NULL);
 
-int children2 = Ni_GetNumChildren (child);
+int children2 = elektraNi_GetNumChildren (child);
 TEST_COND (children2 == 1);
 
-Ni_node child3 = Ni_GetChild (node, "a", -1, 1, NULL);
+elektraNi_node child3 = elektraNi_GetChild (node, "a", -1, 1, NULL);
 TEST_COND (child3 == child);
 
-Ni_node child4 = Ni_GetChild (child, "b", -1, 1, NULL);
+elektraNi_node child4 = elektraNi_GetChild (child, "b", -1, 1, NULL);
 TEST_COND (child4 == child2);
 
-Ni_Free (node);
+elektraNi_Free (node);
 END_TEST ()
 
 BEGIN_TEST (values)
-Ni_node node = Ni_New ();
+elektraNi_node node = elektraNi_New ();
 assert (node != NULL);
 
-Ni_node child = Ni_GetChild (node, "", 0, 1, NULL);
+elektraNi_node child = elektraNi_GetChild (node, "", 0, 1, NULL);
 assert (child != NULL);
 
-int len = Ni_SetValue (child, "1", 1);
+int len = elektraNi_SetValue (child, "1", 1);
 assert (len >= 0);
 TEST_COND (len == 1);
 
 len = 0;
-const char * value = Ni_GetValue (child, &len);
+const char * value = elektraNi_GetValue (child, &len);
 TEST_COND (!strcmp (value, "1"));
 TEST_COND (len == 1);
 
-long ivalue = Ni_GetValueInt (child);
+long ivalue = elektraNi_GetValueInt (child);
 TEST_COND (ivalue == 1);
 
-double fvalue = Ni_GetValueFloat (child);
+double fvalue = elektraNi_GetValueFloat (child);
 TEST_COND (fvalue == 1.0);
 
-int bvalue = Ni_GetValueBool (child);
+int bvalue = elektraNi_GetValueBool (child);
 TEST_COND (bvalue != 0);
 
 int scanned_ivalue;
-len = Ni_ValueScan (child, "%i", &scanned_ivalue);
+len = elektraNi_ValueScan (child, "%i", &scanned_ivalue);
 TEST_COND (len == 1);
 TEST_COND (scanned_ivalue == 1);
 
-len = Ni_ValuePrint (child, "%.3f", 3.333);
+len = elektraNi_ValuePrint (child, "%.3f", 3.333);
 assert (len >= 0);
 TEST_COND (len == 5);
 
-value = Ni_GetValue (child, &len);
+value = elektraNi_GetValue (child, &len);
 TEST_COND (!strcmp (value, "3.333"));
 TEST_COND (len == 5);
 
-ivalue = Ni_GetValueInt (child);
+ivalue = elektraNi_GetValueInt (child);
 TEST_COND (ivalue == 3);
 
-fvalue = Ni_GetValueFloat (child);
+fvalue = elektraNi_GetValueFloat (child);
 TEST_COND (fvalue == 3.333);
 
-bvalue = Ni_GetValueBool (child);
+bvalue = elektraNi_GetValueBool (child);
 TEST_COND (bvalue != 0);
 
 float scanned_fvalue;
-len = Ni_ValueScan (child, "%f", &scanned_fvalue);
+len = elektraNi_ValueScan (child, "%f", &scanned_fvalue);
 TEST_COND (len == 1);
 TEST_COND (scanned_fvalue == 3.333f);
 
-len = Ni_SetValueInt (child, 23);
+len = elektraNi_SetValueInt (child, 23);
 assert (len >= 0);
 TEST_COND (len == 2);
 
 len = 0;
-value = Ni_GetValue (child, &len);
+value = elektraNi_GetValue (child, &len);
 TEST_COND (!strcmp (value, "23"));
 TEST_COND (len == 2);
 
-len = Ni_SetValueFloat (child, 4.5);
+len = elektraNi_SetValueFloat (child, 4.5);
 assert (len >= 0);
 TEST_COND (len == 3);
 
 len = 0;
-value = Ni_GetValue (child, &len);
+value = elektraNi_GetValue (child, &len);
 TEST_COND (!strcmp (value, "4.5"));
 TEST_COND (len == 3);
 
-len = Ni_SetValueBool (child, 1);
+len = elektraNi_SetValueBool (child, 1);
 assert (len >= 0);
 TEST_COND (len == 4);
 
 len = 0;
-value = Ni_GetValue (child, &len);
+value = elektraNi_GetValue (child, &len);
 TEST_COND (!strcmp (value, "true"));
 TEST_COND (len == 4);
 
-len = Ni_ValuePrint (child, "%s", "WHOAH!");
+len = elektraNi_ValuePrint (child, "%s", "WHOAH!");
 assert (len >= 0);
 TEST_COND (len == 6);
 
 char sval[7];
-len = Ni_ValueScan (child, "%7s", sval);
+len = elektraNi_ValueScan (child, "%7s", sval);
 TEST_COND (len == 1);
 TEST_COND (!strcmp (sval, "WHOAH!"));
 
-Ni_Free (node);
+elektraNi_Free (node);
 END_TEST ()
 
 BEGIN_TEST (parse_spaces_quotes)
@@ -186,129 +186,129 @@ char * names[24] = { "a", "b",  "c", "d",  "e ", "f", " g", "h", "i",  "j", "k",
 char * values[24] = { "1",  "2",  "3",  "4",  "5",  "6",  "7",  "8",  "9",  "10", "11", "12",
 		      "13", "14", "15", "16", NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL };
 
-Ni_node node = Ni_New ();
+elektraNi_node node = elektraNi_New ();
 assert (node != NULL);
 
-int error = Ni_ReadFile (node, "ni_parse_spaces_quotes.ini", 1);
+int error = elektraNi_ReadFile (node, "ni_parse_spaces_quotes.ini", 1);
 assert (error != 0);
 
-int children = Ni_GetNumChildren (node);
+int children = elektraNi_GetNumChildren (node);
 TEST_COND (children == 24);
 
 int i;
 for (i = 0; i < 24; ++i)
 {
-	Ni_node child = Ni_GetChild (node, names[i], -1, 0, NULL);
+	elektraNi_node child = elektraNi_GetChild (node, names[i], -1, 0, NULL);
 	TEST_COND (child != NULL);
 
-	const char * value = Ni_GetValue (child, NULL);
+	const char * value = elektraNi_GetValue (child, NULL);
 	TEST_COND ((!value && !values[i]) || (value && values[i] && !strcmp (value, values[i])));
 }
 
-Ni_Free (node);
+elektraNi_Free (node);
 END_TEST ()
 
 BEGIN_TEST (parse_children)
-Ni_node node = Ni_New ();
+elektraNi_node node = elektraNi_New ();
 assert (node != NULL);
 
-int error = Ni_ReadFile (node, "ni_parse_children.ini", 1);
+int error = elektraNi_ReadFile (node, "ni_parse_children.ini", 1);
 assert (error != 0);
 
-int children = Ni_GetNumChildren (node);
+int children = elektraNi_GetNumChildren (node);
 TEST_COND (children == 3);
 
-Ni_node child = Ni_GetChild (node, "1", -1, 0, NULL);
+elektraNi_node child = elektraNi_GetChild (node, "1", -1, 0, NULL);
 TEST_COND (child != NULL);
 
-const char * value = Ni_GetValue (child, NULL);
+const char * value = elektraNi_GetValue (child, NULL);
 TEST_COND (value && !strcmp (value, "has a value and children"));
 
-children = Ni_GetNumChildren (child);
+children = elektraNi_GetNumChildren (child);
 TEST_COND (children == 2);
 
-Ni_node child2 = Ni_GetChild (child, "2", -1, 0, NULL);
+elektraNi_node child2 = elektraNi_GetChild (child, "2", -1, 0, NULL);
 TEST_COND (child2 != NULL);
 
-value = Ni_GetValue (child2, NULL);
+value = elektraNi_GetValue (child2, NULL);
 TEST_COND (value == NULL);
 
-children = Ni_GetNumChildren (child2);
+children = elektraNi_GetNumChildren (child2);
 TEST_COND (children == 0);
 
-child2 = Ni_GetChild (child, "2 also", -1, 0, NULL);
+child2 = elektraNi_GetChild (child, "2 also", -1, 0, NULL);
 TEST_COND (child2 != NULL);
 
-value = Ni_GetValue (child2, NULL);
+value = elektraNi_GetValue (child2, NULL);
 TEST_COND (value == NULL);
 
-children = Ni_GetNumChildren (child2);
+children = elektraNi_GetNumChildren (child2);
 TEST_COND (children == 0);
 
-child = Ni_GetChild (node, "1 again", -1, 0, NULL);
+child = elektraNi_GetChild (node, "1 again", -1, 0, NULL);
 TEST_COND (child != NULL);
 
-value = Ni_GetValue (child, NULL);
+value = elektraNi_GetValue (child, NULL);
 TEST_COND (value == NULL);
 
-children = Ni_GetNumChildren (child);
+children = elektraNi_GetNumChildren (child);
 TEST_COND (children == 1);
 
-child2 = Ni_GetChild (child, NULL, 0, 0, NULL);
+child2 = elektraNi_GetChild (child, NULL, 0, 0, NULL);
 TEST_COND (child2 != NULL);
 
-value = Ni_GetValue (child2, NULL);
+value = elektraNi_GetValue (child2, NULL);
 TEST_COND (value == NULL);
 
-children = Ni_GetNumChildren (child2);
+children = elektraNi_GetNumChildren (child2);
 TEST_COND (children == 1);
 
-Ni_node child3 = Ni_GetChild (child2, "3 now", -1, 0, NULL);
+elektraNi_node child3 = elektraNi_GetChild (child2, "3 now", -1, 0, NULL);
 TEST_COND (child3 != NULL);
 
-value = Ni_GetValue (child3, NULL);
+value = elektraNi_GetValue (child3, NULL);
 TEST_COND (value == NULL);
 
-children = Ni_GetNumChildren (child3);
+children = elektraNi_GetNumChildren (child3);
 TEST_COND (children == 1);
 
-child2 = Ni_GetChild (child3, NULL, 0, 0, NULL);
+child2 = elektraNi_GetChild (child3, NULL, 0, 0, NULL);
 TEST_COND (child2 != NULL);
 
-value = Ni_GetValue (child2, NULL);
+value = elektraNi_GetValue (child2, NULL);
 TEST_COND (value == NULL);
 
-children = Ni_GetNumChildren (child2);
+children = elektraNi_GetNumChildren (child2);
 TEST_COND (children == 1);
 
-child3 = Ni_GetChild (child2, "5", -1, 0, NULL);
+child3 = elektraNi_GetChild (child2, "5", -1, 0, NULL);
 TEST_COND (child3 != NULL);
 
-value = Ni_GetValue (child3, NULL);
+value = elektraNi_GetValue (child3, NULL);
 TEST_COND (value == NULL);
 
-children = Ni_GetNumChildren (child3);
+children = elektraNi_GetNumChildren (child3);
 TEST_COND (children == 0);
 
-child = Ni_GetChild (node, "back to 1", -1, 0, NULL);
+child = elektraNi_GetChild (node, "back to 1", -1, 0, NULL);
 TEST_COND (child != NULL);
 
-value = Ni_GetValue (child, NULL);
+value = elektraNi_GetValue (child, NULL);
 TEST_COND (value == NULL);
 
-children = Ni_GetNumChildren (child);
+children = elektraNi_GetNumChildren (child);
 TEST_COND (children == 1);
 
-child2 = Ni_GetChild (child, "and 2", -1, 0, NULL);
+child2 = elektraNi_GetChild (child, "and 2", -1, 0, NULL);
 TEST_COND (child2 != NULL);
 
-value = Ni_GetValue (child2, NULL);
+value = elektraNi_GetValue (child2, NULL);
 TEST_COND (value == NULL);
 
-children = Ni_GetNumChildren (child2);
+children = elektraNi_GetNumChildren (child2);
 TEST_COND (children == 0);
 
-Ni_Free (node);
+elektraNi_Free (node);
 END_TEST ()
 
 BEGIN_TEST (parse_oddities)
@@ -327,26 +327,26 @@ char * names[10] = {
 char * values[10] = { "not ignored",     "",     "multi line", "enated", "line\ninside quotes", "\\\a\r\n\x11\b\056\t\\t\\xj",
 		      "; not a comment", "yeah", "truncated",  "" };
 
-Ni_node node = Ni_New ();
+elektraNi_node node = elektraNi_New ();
 assert (node != NULL);
 
-int error = Ni_ReadFile (node, "ni_parse_oddities.ini", 1);
+int error = elektraNi_ReadFile (node, "ni_parse_oddities.ini", 1);
 assert (error != 0);
 
-int children = Ni_GetNumChildren (node);
+int children = elektraNi_GetNumChildren (node);
 TEST_COND (children == 10);
 
 int i;
 for (i = 0; i < 10; ++i)
 {
-	Ni_node child = Ni_GetChild (node, names[i], -1, 0, NULL);
+	elektraNi_node child = elektraNi_GetChild (node, names[i], -1, 0, NULL);
 	TEST_COND (child != NULL);
 
-	const char * value = Ni_GetValue (child, NULL);
+	const char * value = elektraNi_GetValue (child, NULL);
 	TEST_COND (value && !strcmp (value, values[i]));
 }
 
-Ni_Free (node);
+elektraNi_Free (node);
 END_TEST ()
 
 BEGIN_TEST (output)
@@ -359,31 +359,31 @@ char desired[] = {
 	"  3 = 3's value\n"
 };
 
-Ni_node node = Ni_New ();
+elektraNi_node node = elektraNi_New ();
 assert (node != NULL);
 
-Ni_node child = Ni_GetChild (node, "1", -1, 1, NULL);
+elektraNi_node child = elektraNi_GetChild (node, "1", -1, 1, NULL);
 assert (child != NULL);
 
-int len = Ni_SetValue (child, "1's value", -1);
+int len = elektraNi_SetValue (child, "1's value", -1);
 assert (len >= 0);
 
-Ni_node child2 = Ni_GetChild (child, "2", -1, 1, NULL);
+elektraNi_node child2 = elektraNi_GetChild (child, "2", -1, 1, NULL);
 assert (child2 != NULL);
 
-Ni_node child3 = Ni_GetChild (child2, "3", -1, 1, NULL);
+elektraNi_node child3 = elektraNi_GetChild (child2, "3", -1, 1, NULL);
 assert (child3 != NULL);
 
-len = Ni_SetValue (child3, "3's value", -1);
+len = elektraNi_SetValue (child3, "3's value", -1);
 assert (len >= 0);
 
-Ni_node child4 = Ni_GetChild (node, "back to 1", -1, 1, NULL);
+elektraNi_node child4 = elektraNi_GetChild (node, "back to 1", -1, 1, NULL);
 assert (child4 != NULL);
 
 FILE * temp = tmpfile ();
 assert (temp != NULL);
 
-int error = Ni_WriteStream (node, temp, 0);
+int error = elektraNi_WriteStream (node, temp, 0);
 assert (error != 0);
 
 rewind (temp);
@@ -396,7 +396,7 @@ buf[len] = '\0';
 TEST_COND (len * sizeof (char) == sizeof (desired) - sizeof (char) && !strcmp (buf, desired));
 
 fclose (temp);
-Ni_Free (node);
+elektraNi_Free (node);
 END_TEST ()
 
 BEGIN_TEST (output_modified)
@@ -406,35 +406,35 @@ char desired[] = {
 	"3 = 3's value\n"
 };
 
-Ni_node node = Ni_New ();
+elektraNi_node node = elektraNi_New ();
 assert (node != NULL);
 
-Ni_node child = Ni_GetChild (node, "1", -1, 1, NULL);
+elektraNi_node child = elektraNi_GetChild (node, "1", -1, 1, NULL);
 assert (child != NULL);
 
-int len = Ni_SetValue (child, "1's value", -1);
+int len = elektraNi_SetValue (child, "1's value", -1);
 assert (len >= 0);
 
-Ni_node child2 = Ni_GetChild (node, "2", -1, 1, NULL);
+elektraNi_node child2 = elektraNi_GetChild (node, "2", -1, 1, NULL);
 assert (child2 != NULL);
 
-Ni_node child3 = Ni_GetChild (node, "3", -1, 1, NULL);
+elektraNi_node child3 = elektraNi_GetChild (node, "3", -1, 1, NULL);
 assert (child3 != NULL);
 
-len = Ni_SetValue (child3, "3's value", -1);
+len = elektraNi_SetValue (child3, "3's value", -1);
 assert (len >= 0);
 
-Ni_node child4 = Ni_GetChild (node, "4", -1, 1, NULL);
+elektraNi_node child4 = elektraNi_GetChild (node, "4", -1, 1, NULL);
 assert (child4 != NULL);
 
-Ni_SetModified (node, 0, 1);
-Ni_SetModified (child3, 1, 0);
-Ni_SetModified (child4, 1, 0);
+elektraNi_SetModified (node, 0, 1);
+elektraNi_SetModified (child3, 1, 0);
+elektraNi_SetModified (child4, 1, 0);
 
 FILE * temp = tmpfile ();
 assert (temp != NULL);
 
-int error = Ni_WriteStream (node, temp, 1);
+int error = elektraNi_WriteStream (node, temp, 1);
 assert (error != 0);
 
 rewind (temp);
@@ -447,7 +447,7 @@ buf[len] = '\0';
 TEST_COND (len * sizeof (char) == sizeof (desired) - sizeof (char) && !strcmp (buf, desired));
 
 fclose (temp);
-Ni_Free (node);
+elektraNi_Free (node);
 END_TEST ()
 
 BEGIN_TEST (parse_output)
@@ -528,16 +528,16 @@ const char * stored_name0 =
 
 assert (sizeof (values) / sizeof (values[0]) == NUM_parse_output_NODES);
 
-Ni_node node = Ni_New ();
+elektraNi_node node = elektraNi_New ();
 assert (node != NULL);
 
 int i;
 for (i = 0; i < NUM_parse_output_NODES; ++i)
 {
-	Ni_node child = Ni_GetChild (node, names[i], -1, 1, NULL);
+	elektraNi_node child = elektraNi_GetChild (node, names[i], -1, 1, NULL);
 	assert (child != NULL);
 
-	int len = Ni_SetValue (child, values[i], -1);
+	int len = elektraNi_SetValue (child, values[i], -1);
 	assert (len >= 0);
 }
 
@@ -545,36 +545,36 @@ for (i = 0; i < NUM_parse_output_NODES; ++i)
 FILE * temp = tmpfile ();
 assert (temp != NULL);
 
-int error = Ni_WriteStream (node, temp, 0);
+int error = elektraNi_WriteStream (node, temp, 0);
 assert (error != 0);
 
 rewind (temp);
-Ni_Free (node);
+elektraNi_Free (node);
 
-node = Ni_New ();
+node = elektraNi_New ();
 assert (node != NULL);
 
-error = Ni_ReadStream (node, temp, 0);
+error = elektraNi_ReadStream (node, temp, 0);
 assert (error != 0);
 
-int children = Ni_GetNumChildren (node);
+int children = elektraNi_GetNumChildren (node);
 TEST_COND (children == NUM_parse_output_NODES);
 
 for (i = 0; i < NUM_parse_output_NODES; ++i)
 {
-	Ni_node child = Ni_GetChild (node, names[i], -1, 0, NULL);
+	elektraNi_node child = elektraNi_GetChild (node, names[i], -1, 0, NULL);
 	TEST_COND (child != NULL);
 
-	const char * name = Ni_GetName (child, NULL);
+	const char * name = elektraNi_GetName (child, NULL);
 	TEST_COND (name && !strcmp (name, (i == 0 ? stored_name0 : names[i])));
 
-	const char * value = Ni_GetValue (child, NULL);
+	const char * value = elektraNi_GetValue (child, NULL);
 	TEST_COND (value && !strcmp (value, values[i]));
 }
 
-// Ni_WriteFile(node, "temp2.ini", 0);
+// elektraNi_WriteFile(node, "temp2.ini", 0);
 fclose (temp);
-Ni_Free (node);
+elektraNi_Free (node);
 #undef NUM_parse_output_NODES
 END_TEST ()
 
@@ -582,26 +582,26 @@ BEGIN_TEST (big_oct)
 char * names[9] = { "a", "b", "c", "d", "e", "f", "g", "h", "i" };
 char * values[9] = { "\xff", "\xbf", "\x7f", "\x3f", "\xff", "\xbf", "\x7f", "\x9c", "\x1a" };
 
-Ni_node node = Ni_New ();
+elektraNi_node node = elektraNi_New ();
 assert (node != NULL);
 
-int error = Ni_ReadFile (node, "ni_big_oct.ini", 1);
+int error = elektraNi_ReadFile (node, "ni_big_oct.ini", 1);
 assert (error != 0);
 
-int children = Ni_GetNumChildren (node);
+int children = elektraNi_GetNumChildren (node);
 TEST_COND (children == 9);
 
 int i;
 for (i = 0; i < 9; ++i)
 {
-	Ni_node child = Ni_GetChild (node, names[i], -1, 0, NULL);
+	elektraNi_node child = elektraNi_GetChild (node, names[i], -1, 0, NULL);
 	TEST_COND (child != NULL);
 
-	const char * value = Ni_GetValue (child, NULL);
+	const char * value = elektraNi_GetValue (child, NULL);
 	TEST_COND (value && !strcmp (value, values[i]));
 }
 
-Ni_Free (node);
+elektraNi_Free (node);
 END_TEST ()
 
 int main (int argc, char * argv[])

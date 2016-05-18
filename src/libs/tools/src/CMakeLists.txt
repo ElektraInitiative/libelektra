@@ -13,15 +13,10 @@ set (__symbols_file ${CMAKE_CURRENT_SOURCE_DIR}/libelektratools-symbols.map)
 if (BUILD_SHARED)
 	add_library (elektratools SHARED ${SOURCES})
 
-	set_property(TARGET elektratools
-		APPEND PROPERTY COMPILE_DEFINITIONS
-		"ELEKTRA_SHARED"
-		)
-
 	target_link_libraries (elektratools elektra-core elektra-kdb elektra-plugin elektra-ease elektra-meta)
 
 	set_target_properties (elektratools PROPERTIES
-		COMPILE_DEFINITIONS "HAVE_KDBCONFIG_H"
+		COMPILE_DEFINITIONS "HAVE_KDBCONFIG_H;ELEKTRA_SHARED"
 		VERSION ${KDB_VERSION} SOVERSION ${SO_VERSION_TOOLS}
 		CLEAN_DIRECT_OUTPUT 1
 		LINKER_LANGUAGE CXX

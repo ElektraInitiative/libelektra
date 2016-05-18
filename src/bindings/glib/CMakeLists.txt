@@ -1,5 +1,15 @@
 include (LibAddMacros)
 
+if (CMAKE_MAJOR_VERSION EQUAL 2 AND CMAKE_MINOR_VERSION EQUAL 8)
+	if (CMAKE_PATCH_VERSION LESS 12)
+		# needed for PRIVATE and PUBLIC flags in target_link_libraries
+		# also in tests subdirectory
+		# see also https://cmake.org/cmake/help/v3.0/policy/CMP0023.html
+		remove_binding(jna "cmake 2.8.12 needed for glib")
+		return()
+	endif()
+endif()
+
 find_package (PkgConfig)
 pkg_check_modules (GOBJECT gobject-2.0>=2.36)
 
@@ -12,18 +22,18 @@ else()
 
 	file (GLOB GELEKTRA_HDR_FILES *.h)
 	file (GLOB GELEKTRA_SRC_FILES *.c)
-
 	add_headers (ELEKTRA_HEADERS)
 	set (SOURCES ${GELEKTRA_SRC_FILES} ${GELEKTRA_HDR_FILES} ${ELEKTRA_HEADERS})
 
-	include_directories (${CMAKE_CURRENT_SOURCE_DIR})
-
-	add_definitions (${GOBJECT_CFLAGS})
-
 	add_library (${GELEKTRA_LIBRARY} SHARED ${SOURCES})
 
-	target_link_libraries (${GELEKTRA_LIBRARY} elektra-core elektra-kdb)
-	target_link_libraries (${GELEKTRA_LIBRARY} ${GOBJECT_LIBRARIES})
+	target_include_directories (${GELEKTRA_LIBRARY} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+	target_include_directories (${GELEKTRA_LIBRARY} SYSTEM PUBLIC ${GOBJECT_INCLUDE_DIRS})
+
+	target_compile_options (${GELEKTRA_LIBRARY} PUBLIC ${GOBJECT_CFLAGS_OTHER})
+
+	target_link_libraries (${GELEKTRA_LIBRARY} PUBLIC elektra-core elektra-kdb)
+	target_link_libraries (${GELEKTRA_LIBRARY} PUBLIC ${GOBJECT_LDFLAGS})
 
 	install (
 		TARGETS ${GELEKTRA_LIBRARY}

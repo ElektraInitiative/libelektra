@@ -13,6 +13,7 @@ cmake	-DSWIG_EXECUTABLE=/usr/bin/swig3.0 \
 	-DKDB_DEFAULT_STORAGE=ini \
 	-DKDB_DB_USER=".config/kdb/user" \
 	-DKDB_DB_SYSTEM="~/.config/kdb/system" \
+	-DKDB_DB_SPEC="~/.config/kdb/spec" \
 	-DTOOLS="ALL" \
 	-DBINDINGS="ALL" \
 	$*
