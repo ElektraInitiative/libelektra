@@ -34,8 +34,10 @@ You have some options to avoid running them as root:
    `-DINSTALL_SYSTEM_FILES=OFF -DCMAKE_INSTALL_PREFIX=$WORKSPACE/local -DKDB_DB_SYSTEM=$WORKSPACE/system`
 4. Use the XDG resolver (see `scripts/configure-xdg`) and set
    `XDG_CONFIG_DIRS`, currently lacks #734.
-5. Give your user the permissions to the relevant pathes, i.e.
+5. Give your user the permissions to the relevant pathes, i.e. (once as root):
+
    ```
+   kdb mount-info
    chown -R `whoami` `kdb get system/info/constants/cmake/CMAKE_INSTALL_PREFIX`/`kdb get system/info/constants/cmake/KDB_DB_SPEC`
    chown -R `whoami` `kdb get system/info/constants/cmake/KDB_DB_SYSTEM`
    ```
