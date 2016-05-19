@@ -29,7 +29,7 @@ GUIBackend::GUIBackend (QObject * parentBackend) : QObject (parentBackend), m_ba
 
 void GUIBackend::createBackend (const QString & mountpoint)
 {
-	m_backend = QSharedPointer<MountBackendInterface> (new MountBackendBuilder ());
+	m_backend = QSharedPointer<MountBackendBuilder> (new MountBackendBuilder ());
 
 	Key parentKey (Backends::mountpointsPath, KEY_END);
 
@@ -74,18 +74,37 @@ void GUIBackend::addPath (const QString & path)
 	}
 }
 
-void GUIBackend::addPlugin (QString name)
+void GUIBackend::addPlugin (QString plugin, bool recommended)
 {
-	name.chop (name.length () - name.indexOf ("[") + 1);
+	plugin.chop (plugin.length () - plugin.indexOf ("[") + 1);
 
 	try
 	{
-		PluginSpec spec (name.toStdString (), m_pluginConfigModel->collectCurrentKeySet ().dup ());
+		PluginSpec spec (plugin.toStdString (), m_pluginConfigModel->collectCurrentKeySet ().dup ());
 		m_backend->addPlugin (spec);
+		m_backend->resolveNeeds(recommended);
 	}
 	catch (PluginCheckException const & ex)
 	{
-		emit showMessage (tr ("Error"), tr ("Could not add plugin \"%1\".").arg (name), ex.what ());
+		emit showMessage (tr ("Error"), tr ("Could not add plugin \"%1\".").arg (plugin), ex.what ());
+	}
+
+	resetModel ();
+}
+
+void GUIBackend::removePlugin (QString plugin)
+{
+	if(plugin.indexOf ("[") > -1)
+		plugin.chop (plugin.length () - plugin.indexOf ("[") + 1);
+
+	try
+	{
+		PluginSpec spec (plugin.toStdString (), m_pluginConfigModel->collectCurrentKeySet ().dup ());
+		m_backend->remPlugin (spec);
+	}
+	catch (PluginCheckException const & ex)
+	{
+		emit showMessage (tr ("Error"), tr ("Could not remove plugin \"%1\".").arg (plugin), ex.what ());
 	}
 
 	resetModel ();
@@ -114,6 +133,32 @@ void GUIBackend::serialise (TreeViewModel * model)
 	{
 		emit showMessage (tr ("Error"), tr ("Could not write backend to configuration."), ex.what ());
 	}
+}
+
+QStringList GUIBackend::addedPlugins() const
+{
+	QStringList pluginList;
+
+	for (PluginSpec const & elem : *m_backend)
+	{
+		pluginList.append(QString::fromStdString(elem.getName()));
+	}
+
+	return pluginList;
+}
+
+bool GUIBackend::pluginAlreadyAdded(QString plugin) const
+{
+	if (plugin.indexOf ("[") > -1)
+		plugin.chop (plugin.length () - plugin.indexOf ("[") + 1);
+
+	for (PluginSpec const & elem : *m_backend)
+	{
+		if (QString::fromStdString(elem.getName()) == plugin)
+			return true;
+	}
+
+	return false;
 }
 
 bool GUIBackend::validated ()
@@ -225,7 +270,7 @@ QStringList GUIBackend::availablePlugins (bool includeStorage, bool includeResol
 		}
 
 		ptr->loadInfo ();
-		type = QString::fromStdString (ptr->lookupInfo ("provides"));
+		type = pluginType(QString::fromStdString(s));
 
 		if (!((!includeStorage && type == "storage") || (!includeResolver && type == "resolver")))
 		{
@@ -236,6 +281,23 @@ QStringList GUIBackend::availablePlugins (bool includeStorage, bool includeResol
 	availPlugins.sort ();
 
 	return availPlugins;
+}
+
+QString GUIBackend::pluginType(QString plugin) const
+{
+	Modules modules;
+	PluginPtr ptr;
+
+	try
+	{
+		ptr = modules.load(plugin.toStdString());
+	}
+	catch (NoPlugin & ex)
+	{
+		return "";
+	}
+
+	return QString::fromStdString (ptr->lookupInfo ("provides"));
 }
 
 QStringList GUIBackend::nameFilters ()

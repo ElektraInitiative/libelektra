@@ -627,39 +627,42 @@ void TreeViewModel::synchronize ()
 {
 	KeySet ours = collectCurrentKeySet ();
 
-	try
-	{
-#if DEBUG && VERBOSE
-		std::cout << "guitest: start" << std::endl;
-		printKeys (ours, ours, ours);
-#endif
+		try
+		{
+	#if DEBUG && VERBOSE
+			std::cout << "guitest: start" << std::endl;
+			printKeys (ours, ours, ours);
+	#endif
 
-		ThreeWayMerge merger;
-		AutoMergeConfiguration configuration;
-		configuration.configureMerger (merger);
+			ThreeWayMerge merger;
+			AutoMergeConfiguration configuration;
+			configuration.configureMerger (merger);
 
-		// write our config
-		m_kdb->synchronize (ours, m_root, merger);
+			// write our config
+			m_kdb->synchronize (ours, m_root, merger);
 
-#if DEBUG && VERBOSE
-		std::cout << "guitest: after get" << std::endl;
-		printKeys (ours, ours, ours);
-#endif
-		createNewNodes (ours);
-	}
-	catch (MergingKDBException const & exc)
-	{
+	#if DEBUG && VERBOSE
+			std::cout << "guitest: after get" << std::endl;
+			printKeys (ours, ours, ours);
+	#endif
 
-#if DEBUG && VERBOSE
-		std::cout << "guitest: exception: now after set" << std::endl;
-		printKeys (theirs, result, ours);
-#endif
-		emit showMessage (tr ("Error"), tr ("Synchronizing failed, conflicts occured."), conflicts.join ("\n"));
-	}
-	catch (KDBException const & e)
-	{
-		emit showMessage (tr ("Error"), tr ("Synchronizing failed, could not write merged configuration."), e.what ());
-	}
+			createNewNodes (ours);
+		}
+		catch (MergingKDBException const & exc)
+		{
+
+	#if DEBUG && VERBOSE
+			std::cout << "guitest: exception: now after set" << std::endl;
+			printKeys (theirs, result, ours);
+	#endif
+
+			QStringList conflicts = getConflicts (exc.getConflicts ());
+			emit showMessage (tr ("Error"), tr ("Synchronizing failed, conflicts occured."), conflicts.join ("\n"));
+		}
+		catch (KDBException const & e)
+		{
+			emit showMessage (tr ("Error"), tr ("Synchronizing failed, could not write merged configuration."), e.what ());
+		}
 }
 
 void TreeViewModel::clearMetaModel ()
