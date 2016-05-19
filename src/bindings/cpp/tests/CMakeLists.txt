@@ -7,7 +7,7 @@ add_cppheaders (HDR_FILES)
 file (GLOB TESTS testcpp_*.cpp)
 foreach (file ${TESTS})
 	get_filename_component (name ${file} NAME_WE)
-	add_gtest (${name} LINK_LIBRARIES elektra-kdb elektra-meta)
+	add_gtest (${name} LINK_ELEKTRA elektra-kdb elektra-meta)
 endforeach (file ${TESTS})
 
 set_property(TEST testcpp_kdb
