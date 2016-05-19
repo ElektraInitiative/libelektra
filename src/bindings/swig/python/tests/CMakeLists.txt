@@ -9,7 +9,9 @@ macro (do_python_test source)
 
 	set_property (
 		TEST ${name}
-		PROPERTY ENVIRONMENT "PYTHONPATH=${PYTHON_MODULEPATH}"
+		PROPERTY ENVIRONMENT
+			"PYTHONPATH=${PYTHON_MODULEPATH}"
+			"LD_LIBRARY_PATH=${CMAKE_LIBRARY_OUTPUT_DIRECTORY}"
 	)
 
 	set_property (
