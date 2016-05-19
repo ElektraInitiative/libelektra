@@ -13,7 +13,7 @@ macro (add_gtest source)
 	cmake_parse_arguments (ARG
 		"MEMLEAK;KDBTESTS;NO_MAIN;LINK_TOOLS" # optional keywords
 		"" # one value keywords
-		"LINK_LIBRARIES;SOURCES" # multi value keywords
+		"LINK_LIBRARIES;LINK_ELEKTRA;SOURCES" # multi value keywords
 		${ARGN}
 	)
 
@@ -22,9 +22,9 @@ macro (add_gtest source)
 	add_executable (${source} ${SOURCES})
 
 	if (ARG_LINK_TOOLS)
-		target_link_elektratools(${source})
+		target_link_elektratools(${source} ${ARG_LINK_ELEKTRA})
 	else (ARG_LINK_TOOLS)
-		target_link_elektra(${source})
+		target_link_elektra(${source} ${ARG_LINK_ELEKTRA})
 	endif (ARG_LINK_TOOLS)
 
 	target_link_libraries (${source}
