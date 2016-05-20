@@ -125,6 +125,7 @@ signals:
 	void nodeWithoutKeyColorChanged ();
 
 private:
+	void setDefaults ();
 	void getKDB ();
 
 	kdb::KeySet m_config;
