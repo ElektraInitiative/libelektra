@@ -54,7 +54,7 @@ static void test_successfulCache ()
 	KeySet * testKeysCache = createTestKeysToCache ();
 	KeySet * testKeysNoCache = createTestKeysToNotCache ();
 
-	KeySet * ks = ksNew (ksGetSize (testKeysCache) + ksGetSize (testKeysNoCache));
+	KeySet * ks = ksNew (0, KS_END);
 	ksAppend (ks, testKeysCache);
 	ksAppend (ks, testKeysNoCache);
 
@@ -63,7 +63,7 @@ static void test_successfulCache ()
 	succeed_if (output_warnings (parentKey), "warnings in kdbGet");
 	succeed_if (ksGetSize (ks) == 3, "wrong number of keys in result, expected 3");
 
-	KeySet * expected = ksNew (ksGetSize (testKeysNoCache));
+	KeySet * expected = ksNew (0, KS_END);
 	ksAppend (expected, testKeysNoCache);
 	compare_keyset (ks, expected);
 	ksDel (expected);
@@ -74,7 +74,7 @@ static void test_successfulCache ()
 	succeed_if (output_warnings (parentKey), "warnings in kdbGet");
 	succeed_if (ksGetSize (ks) == 6, "wrong number of keys in result, expected 6");
 
-	expected = ksNew (ksGetSize (testKeysCache) + ksGetSize (testKeysNoCache));
+	expected = ksNew (0, KS_END);
 	ksAppend (expected, testKeysNoCache);
 	ksAppend (expected, testKeysCache);
 	compare_keyset (ks, expected);
@@ -100,7 +100,7 @@ static void test_successfulCacheLong ()
 	KeySet * testKeysCache3 = createTestKeysToCache3 ();
 	KeySet * testKeysNoCache = createTestKeysToNotCache ();
 
-	KeySet * ks = ksNew (ksGetSize (testKeysCache) + ksGetSize (testKeysNoCache));
+	KeySet * ks = ksNew (0, KS_END);
 	ksAppend (ks, testKeysCache);
 	ksAppend (ks, testKeysNoCache);
 
@@ -109,7 +109,7 @@ static void test_successfulCacheLong ()
 	succeed_if (output_warnings (parentKey), "warnings in kdbGet");
 	succeed_if (ksGetSize (ks) == 3, "wrong number of keys in result, expected 3");
 
-	KeySet * expected = ksNew (ksGetSize (testKeysNoCache));
+	KeySet * expected = ksNew (0, KS_END);
 	ksAppend (expected, testKeysNoCache);
 	compare_keyset (ks, expected);
 	ksDel (expected);
@@ -122,7 +122,7 @@ static void test_successfulCacheLong ()
 	succeed_if (output_warnings (parentKey), "warnings in kdbGet");
 	succeed_if (ksGetSize (ks) == 3, "wrong number of keys in result, expected 3");
 
-	expected = ksNew (ksGetSize (testKeysNoCache));
+	expected = ksNew (0, KS_END);
 	ksAppend (expected, testKeysNoCache);
 	compare_keyset (ks, expected);
 	ksDel (expected);
@@ -135,7 +135,7 @@ static void test_successfulCacheLong ()
 	succeed_if (output_warnings (parentKey), "warnings in kdbGet");
 	succeed_if (ksGetSize (ks) == 3, "wrong number of keys in result, expected 3");
 
-	expected = ksNew (ksGetSize (testKeysNoCache));
+	expected = ksNew (0, KS_END);
 	ksAppend (expected, testKeysNoCache);
 	compare_keyset (ks, expected);
 	ksDel (expected);
@@ -146,8 +146,7 @@ static void test_successfulCacheLong ()
 	succeed_if (output_warnings (parentKey), "warnings in kdbGet");
 	succeed_if (ksGetSize (ks) == 12, "wrong number of keys in result, expected 12");
 
-	expected =
-		ksNew (ksGetSize (testKeysNoCache) + ksGetSize (testKeysCache) + ksGetSize (testKeysCache2) + ksGetSize (testKeysCache3));
+	expected = ksNew (0, KS_END);
 	ksAppend (expected, testKeysNoCache);
 	ksAppend (expected, testKeysCache);
 	ksAppend (expected, testKeysCache2);
@@ -175,7 +174,7 @@ static void test_successfulGetSetGetSet ()
 	KeySet * testKeysCache = createTestKeysToCache ();
 	KeySet * testKeysNoCache = createTestKeysToNotCache ();
 
-	KeySet * ks = ksNew (ksGetSize (testKeysCache) + ksGetSize (testKeysNoCache));
+	KeySet * ks = ksNew (0, KS_END);
 	ksAppend (ks, testKeysCache);
 	ksAppend (ks, testKeysNoCache);
 
@@ -185,7 +184,7 @@ static void test_successfulGetSetGetSet ()
 	succeed_if (output_warnings (parentKey), "warnings in kdbGet");
 	succeed_if (ksGetSize (ks) == 3, "wrong number of keys in result, expected 3");
 
-	KeySet * expected = ksNew (ksGetSize (testKeysNoCache));
+	KeySet * expected = ksNew (0, KS_END);
 	ksAppend (expected, testKeysNoCache);
 	compare_keyset (ks, expected);
 	ksDel (expected);
@@ -196,7 +195,7 @@ static void test_successfulGetSetGetSet ()
 	succeed_if (output_warnings (parentKey), "warnings in kdbGet");
 	succeed_if (ksGetSize (ks) == 6, "wrong number of keys in result, expected 6");
 
-	expected = ksNew (ksGetSize (testKeysNoCache) + ksGetSize (testKeysCache));
+	expected = ksNew (0, KS_END);
 	ksAppend (expected, testKeysNoCache);
 	ksAppend (expected, testKeysCache);
 	compare_keyset (ks, expected);
@@ -208,7 +207,7 @@ static void test_successfulGetSetGetSet ()
 	succeed_if (output_warnings (parentKey), "warnings in kdbGet");
 	succeed_if (ksGetSize (ks) == 3, "wrong number of keys in result, expected 3");
 
-	expected = ksNew (ksGetSize (testKeysNoCache));
+	expected = ksNew (0, KS_END);
 	ksAppend (expected, testKeysNoCache);
 	compare_keyset (ks, expected);
 	ksDel (expected);
@@ -219,7 +218,7 @@ static void test_successfulGetSetGetSet ()
 	succeed_if (output_warnings (parentKey), "warnings in kdbGet");
 	succeed_if (ksGetSize (ks) == 6, "wrong number of keys in result, expected 6");
 
-	expected = ksNew (ksGetSize (testKeysNoCache) + ksGetSize (testKeysCache));
+	expected = ksNew (0, KS_END);
 	ksAppend (expected, testKeysNoCache);
 	ksAppend (expected, testKeysCache);
 	compare_keyset (ks, expected);
