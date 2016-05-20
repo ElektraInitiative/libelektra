@@ -28,6 +28,19 @@ inline QColor Key::get () const
 }
 }
 
+void GUISettings::setDefaults ()
+{
+	QPalette palette;
+	palette.setCurrentColorGroup (QPalette::Active);
+
+	m_highlightColor = palette.highlight ().color ();
+	m_frameColor = palette.dark ().color ();
+	m_nodeWithKeyColor = palette.windowText ().color ();
+	m_nodeWithoutKeyColor = palette.windowText ().color ();
+
+	palette.setCurrentColorGroup (QPalette::Disabled);
+}
+
 GUISettings::GUISettings (QObject * parentGUISettings)
 : QObject (parentGUISettings), m_profile ("/current/"), m_base ("/sw/elektra/qtgui/#0/"), m_highlightColorString ("color/highlight"),
   m_frameColorString ("color/frame"), m_nodeWKeyColorString ("color/node/with"), m_nodeWOKeyColorString ("color/node/without"),
@@ -35,16 +48,8 @@ GUISettings::GUISettings (QObject * parentGUISettings)
   m_legacyFrameColorString ("frame_color"), m_legacyNodeWKeyColorString ("node_with_key_color"),
   m_legacyNodeWOKeyColorString ("node_without_key_color")
 {
-	QPalette palette;
-	palette.setCurrentColorGroup (QPalette::Active);
-
 	// initialize with hardcoded default colors
-	m_highlightColor = palette.highlight ().color ();
-	m_frameColor = palette.dark ().color ();
-	m_nodeWithKeyColor = palette.windowText ().color ();
-	m_nodeWithoutKeyColor = palette.windowText ().color ();
-
-	palette.setCurrentColorGroup (QPalette::Disabled);
+	setDefaults ();
 
 	// check if stored colors exist, if so, load them
 	getKDB ();
@@ -203,6 +208,6 @@ void GUISettings::getKDB ()
 
 void GUISettings::reset ()
 {
-	getKDB ();
+	setDefaults ();
 	setKDB ();
 }
