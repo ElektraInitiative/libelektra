@@ -142,6 +142,8 @@ public:
 class MockPluginDatabase : public ModulesPluginDatabase
 {
 public:
+	typedef int (*checkConfPtr) (ckdb::Key *, ckdb::KeySet *);
+
 	/// only data from here will be returned
 	/// @note that it is ordered by name, i.e., different ref-names cannot be distinguished
 	mutable std::unordered_map<PluginSpec, std::unordered_map<std::string, std::string>, PluginSpecHash, PluginSpecName> data;
@@ -150,6 +152,10 @@ public:
 	PluginDatabase::Status status (PluginSpec const & whichplugin) const;
 	std::string lookupInfo (PluginSpec const & spec, std::string const & which) const;
 	func_t getSymbol (PluginSpec const & whichplugin, std::string const & which) const;
+	void setCheckconfFunction (checkConfPtr const newCheckconf);
+
+private:
+	checkConfPtr checkconf = NULL;
 };
 }
 }
