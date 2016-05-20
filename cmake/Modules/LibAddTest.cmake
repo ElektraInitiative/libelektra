@@ -32,9 +32,9 @@ macro (add_gtest source)
 
 	if (NOT ARG_NO_MAIN)
 		target_link_libraries (${source} gtest_main)
-	else (NOT ARG_NO_MAIN)
-		target_link_libraries (${source} gtest)
 	endif (NOT ARG_NO_MAIN)
+
+	target_link_libraries (${source} gtest)
 
 	target_link_libraries(${source}
 		${CMAKE_THREAD_LIBS_INIT})
