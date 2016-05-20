@@ -190,9 +190,9 @@ int elektraDocCheckConf (Key * errorKey ELEKTRA_UNUSED, KeySet * conf ELEKTRA_UN
 	/* validate plugin configuration */
 
 	// the return codes have the following meaning:
-	// 0: config was not changed (was ok)
-	// 1: config is changed (now ok)
-	// -1: config not ok, could not fix
+	// 0: The configuration was OK and has not been changed
+	// 1: The configuration has been changed and now it is OK
+	// -1: The configuration was not OK and could not be fixed. An error has to be set to errorKey.
 	return 0;
 }
 //![validate configuration]

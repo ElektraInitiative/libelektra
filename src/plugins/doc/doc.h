@@ -506,9 +506,9 @@ int elektraDocError (Plugin * handle, KeySet * returned, Key * parentKey);
  * @param errorKey is used to propagate error messages to the caller
  * @param conf contains the plugin configuration to be validated
  * 
- * @retval 1 on success: config is changed (now ok)
- * @retval 0 on success: config was not changed (was ok)
- * @retval -1 on failure: config not ok, could not be fixed
+ * @retval 1 on success: the configuration was OK and has not been changed.
+ * @retval 0 on success: the configuration has been changed and now it is OK.
+ * @retval -1 on failure: the configuration was not OK and could not be fixed.
  *   Set an error using #ELEKTRA_SET_ERROR to inform the user what went wrong.
  *   Additionally you can add any number of warnings with
  *   #ELEKTRA_ADD_WARNING.

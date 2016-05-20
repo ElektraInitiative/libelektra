@@ -329,13 +329,13 @@ The `elektraPluginCheckConf` function may be used for validation of the plugin c
 
 	int elektraLineCheckConfig (Key * errorKey, KeySet * conf)
 
-The configuration of the plugin is provided as `conf`. The function may report errors using the `errorKey` and the return value.
+The configuration of the plugin is provided as `conf`. The function may report an error or warnings using the `errorKey` and the return value.
 
 The following convention was established for the return value of `elektraPluginCheckConf`:
 
-- 0: config was not changed (was ok)
-- 1: config is changed (now ok)
-- -1: config not ok, could not fix it
+- 0: The configuration was OK and has not been changed
+- 1: The configuration has been changed and now it is OK
+- -1: The configuration was not OK and could not be fixed. An error has to be set to errorKey.
 
 ### ELEKTRA_PLUGIN_EXPORT ###
 
