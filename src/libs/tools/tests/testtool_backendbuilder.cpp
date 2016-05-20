@@ -546,3 +546,73 @@ TEST (BackendBuilder, resolveDoubleRecommends)
 	EXPECT_EQ (bb.cbegin ()[1], PluginSpec ("a"));
 	EXPECT_EQ (bb.cbegin ()[2], PluginSpec ("c"));
 }
+
+TEST (BackendBuilder, checkconfOkNoChange)
+{
+	using namespace kdb;
+	using namespace kdb::tools;
+	std::shared_ptr<MockPluginDatabase> mpd = std::make_shared<MockPluginDatabase> ();
+	mpd->data[PluginSpec ("checkconf1")]["provides"] = "test123";
+	BackendBuilderInit bbi (mpd);
+	BackendBuilder bb (bbi);
+	PluginSpec spec ("checkconf1");
+	KeySet pluginConfig;
+	Key a;
+	a.setName ("user/a");
+	a.setString ("abc");
+	Key b;
+	b.setName ("user/b");
+	pluginConfig.append (a);
+	pluginConfig.append (b);
+	spec.appendConfig (pluginConfig);
+	bb.addPlugin (spec);
+}
+
+TEST (BackendBuilder, checkconfOkChanged)
+{
+	using namespace kdb;
+	using namespace kdb::tools;
+	std::shared_ptr<MockPluginDatabase> mpd = std::make_shared<MockPluginDatabase> ();
+	mpd->data[PluginSpec ("checkconf1")]["provides"] = "test123";
+	BackendBuilderInit bbi (mpd);
+	BackendBuilder bb (bbi);
+	PluginSpec spec ("checkconf1");
+	KeySet pluginConfig;
+	Key a;
+	a.setName ("user/a");
+	a.setString ("abc");
+	pluginConfig.append (a);
+	spec.appendConfig (pluginConfig);
+	bb.addPlugin (spec);
+	// we expect b to be added now
+	spec.getConfig ().get<std::string> ("user/b");
+}
+
+TEST (BackendBuilder, checkconfNotOKwrongValue)
+{
+	using namespace kdb;
+	using namespace kdb::tools;
+	std::shared_ptr<MockPluginDatabase> mpd = std::make_shared<MockPluginDatabase> ();
+	mpd->data[PluginSpec ("checkconf1")]["provides"] = "test123";
+	BackendBuilderInit bbi (mpd);
+	BackendBuilder bb (bbi);
+	PluginSpec spec ("checkconf1");
+	KeySet pluginConfig;
+	Key a;
+	a.setName ("user/a");
+	a.setString ("wrong value");
+	pluginConfig.append (a);
+	spec.appendConfig (pluginConfig);
+	EXPECT_THROW (bb.addPlugin (spec), PluginConfigInvalid);
+}
+
+TEST (BackendBuilder, checkconfNotOKmissing)
+{
+	using namespace kdb;
+	using namespace kdb::tools;
+	std::shared_ptr<MockPluginDatabase> mpd = std::make_shared<MockPluginDatabase> ();
+	mpd->data[PluginSpec ("checkconf3")]["c"] = "something";
+	BackendBuilderInit bbi (mpd);
+	BackendBuilder bb (bbi);
+	EXPECT_THROW (bb.addPlugin (PluginSpec ("checkconf3")), PluginConfigInvalid);
+}

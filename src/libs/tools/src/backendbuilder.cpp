@@ -430,10 +430,21 @@ void BackendBuilder::addPlugin (PluginSpec const & plugin)
 	if (checkConfFunction != nullptr)
 	{
 		ckdb::Key * errorKey = ckdb::keyNew (0);
-		int checkResult = checkConfFunction (errorKey, newPlugin.getConfig ().getKeySet ());
+		ckdb::KeySet * pluginConfig = newPlugin.getConfig ().dup ();
+		int checkResult = checkConfFunction (errorKey, pluginConfig);
 		if (checkResult == -1)
 		{
+			ckdb::ksDel (pluginConfig);
 			throw PluginConfigInvalid (errorKey);
+		}
+		else if (checkResult == 1)
+		{
+			KeySet modifiedPluginConfig = KeySet (pluginConfig);
+			newPlugin.appendConfig (modifiedPluginConfig);
+		}
+		else
+		{
+			ckdb::ksDel (pluginConfig);
 		}
 		ckdb::keyDel (errorKey);
 	}

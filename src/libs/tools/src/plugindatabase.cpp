@@ -365,10 +365,37 @@ std::string MockPluginDatabase::lookupInfo (PluginSpec const & spec, std::string
 	return "";
 }
 
-PluginDatabase::func_t MockPluginDatabase::getSymbol (PluginSpec const & spec ELEKTRA_UNUSED,
-						      std::string const & which ELEKTRA_UNUSED) const
+/**
+* @brief reference checkconf implementation for the unit tests.
+* 
+* Checks for the key "a" to be set to "abc" and fails if it can not find it.
+* Checks for the key "b" and appends it to the configuration if it can not find it.
+*/
+static int checkconfMock (ckdb::Key * errorKey, ckdb::KeySet * conf)
 {
-	// TODO implement mockup
+	ckdb::Key * k;
+
+	k = ckdb::ksLookupByName (conf, "user/a", 0);
+	if (!k || strncmp (ckdb::keyString (k), "abc", 3))
+	{
+		return -1; // invalid config, could not fix
+	}
+
+	k = ckdb::ksLookupByName (conf, "user/b", 0);
+	if (!k)
+	{
+		ckdb::ksAppendKey (conf, ckdb::keyNew ("user/b", 0));
+		return 1; // changed config, OK
+	}
+	return 0; // did not change config, OK
+}
+
+PluginDatabase::func_t MockPluginDatabase::getSymbol (PluginSpec const & spec, std::string const & which) const
+{
+	if (which.find ("checkconf") != std::string::npos && spec.getFullName ().find ("checkconf") != std::string::npos)
+	{
+		return reinterpret_cast<func_t> (checkconfMock);
+	}
 	return NULL;
 }
 }
