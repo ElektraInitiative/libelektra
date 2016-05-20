@@ -210,15 +210,13 @@ PluginDatabase::Status ModulesPluginDatabase::status (PluginSpec const & spec) c
 
 std::string ModulesPluginDatabase::lookupInfo (PluginSpec const & spec, std::string const & which) const
 {
-	PluginPtr plugin;
-	plugin = impl->modules.load (spec.getName (), spec.getConfig ());
+	PluginPtr plugin = impl->modules.load (spec.getName (), spec.getConfig ());
 	return plugin->lookupInfo (which);
 }
 
 PluginDatabase::func_t ModulesPluginDatabase::getSymbol (PluginSpec const & spec, std::string const & which) const
 {
-	PluginPtr plugin;
-	plugin = impl->modules.load (spec.getName (), spec.getConfig ());
+	PluginPtr plugin = impl->modules.load (spec.getName (), spec.getConfig ());
 	return plugin->getSymbol (which);
 }
 
