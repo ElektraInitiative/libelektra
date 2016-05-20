@@ -337,6 +337,24 @@ The following convention was established for the return value of `elektraPluginC
 - 1: The configuration has been changed and now it is OK
 - -1: The configuration was not OK and could not be fixed. An error has to be set to errorKey.
 
+The following example demonstrates how to limit the length of the values within the plugin configuration to 3 charaters.
+
+	int elektraLineCheckConfig (Key * errorKey, KeySet * conf)
+	{
+		Key * cur;
+		ksRewind (conf);
+		while ((cur = ksNext (conf)) != 0)
+		{
+			const char * value = keyString (cur);
+			if (strlen (value) > 3)
+			{
+				ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_VALUE_LENGTH, errorKey, "value %s is more than 3 characters long", value);
+				return -1; // The configuration was not OK and could not be fixed
+			}
+		}
+		return 0; // The configuration was OK and has not been changed
+	}
+
 ### ELEKTRA_PLUGIN_EXPORT ###
 
 The last function, one that is always needed in a plug-in, is `ELEKTRA_PLUGIN_EXPORT`. This functions is responsible for letting Elektra know that
