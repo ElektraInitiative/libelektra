@@ -14,5 +14,4 @@ add_definitions(-DGTEST_HAS_PTHREAD=1)
 # with one of them.
 add_library(gtest STATIC src/gtest-all.cc)
 add_library(gtest_main STATIC src/gtest_main.cc)
-target_link_libraries(gtest_main gtest)
 
