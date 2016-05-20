@@ -77,7 +77,7 @@ public:
 	 * @param whichplugin from which plugin?
 	 * @param which which symbol would you like to look up?
 	 *
-	 * @return the function pointer to the exported symbol
+	 * @return the function pointer to the exported symbol or NULL if the symbol was not found
 	 */
 	virtual func_t getSymbol (PluginSpec const & whichplugin, std::string const & which) const = 0;
 

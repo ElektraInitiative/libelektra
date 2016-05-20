@@ -216,8 +216,15 @@ std::string ModulesPluginDatabase::lookupInfo (PluginSpec const & spec, std::str
 
 PluginDatabase::func_t ModulesPluginDatabase::getSymbol (PluginSpec const & spec, std::string const & which) const
 {
-	PluginPtr plugin = impl->modules.load (spec.getName (), spec.getConfig ());
-	return plugin->getSymbol (which);
+	try
+	{
+		PluginPtr plugin = impl->modules.load (spec.getName (), spec.getConfig ());
+		return plugin->getSymbol (which);
+	}
+	catch (...)
+	{
+		return NULL;
+	}
 }
 
 PluginSpec ModulesPluginDatabase::lookupMetadata (std::string const & which) const

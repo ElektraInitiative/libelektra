@@ -417,17 +417,8 @@ void BackendBuilder::addPlugin (PluginSpec const & plugin)
 
 	// call plugin's checkconf function (if provided)
 	// this enables a plugin to verify its configuration at mount time
-	checkConfPtr checkConfFunction = nullptr;
-	try
-	{
-		checkConfFunction = reinterpret_cast<checkConfPtr> (pluginDatabase->getSymbol (newPlugin, "checkconf"));
-	}
-	catch (...)
-	{
-		// the checkconf operation is optional, so no worries if it was not found
-	}
-
-	if (checkConfFunction != nullptr)
+	checkConfPtr checkConfFunction = reinterpret_cast<checkConfPtr> (pluginDatabase->getSymbol (newPlugin, "checkconf"));
+	if (checkConfFunction)
 	{
 		ckdb::Key * errorKey = ckdb::keyNew (0);
 		ckdb::KeySet * pluginConfig = newPlugin.getConfig ().dup ();
