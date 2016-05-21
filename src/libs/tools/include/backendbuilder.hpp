@@ -169,7 +169,13 @@ class MountBackendBuilder : public MountBackendInterface, public BackendBuilder
 {
 	Key mountpoint;
 	KeySet backendConf;
+
+	/**
+	 * Contains the keys of system/elektra/mountpoints.
+	 * It is needed to detect if a mountpoint already exists.
+	 */
 	KeySet mountConf;
+
 	std::string configfile;
 
 public:
