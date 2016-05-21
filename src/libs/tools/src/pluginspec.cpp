@@ -196,6 +196,17 @@ void PluginSpec::appendConfig (KeySet c)
 }
 
 /**
+ * @brief Set plugin config
+ *
+ * @param c new config to be used as plugin config
+ */
+void PluginSpec::setConfig (KeySet c)
+{
+	config.clear ();
+	config.append (c);
+}
+
+/**
  * @brief Check if str starts with a-z and then only has chars a-z, 0-9 or underscore (_)
  *
  * @param n the string to check
@@ -222,7 +233,7 @@ void PluginSpec::validate (std::string const & n) const
  * @brief Compare two pluginspec if their value is equal
  * @note the content of getConfig() will be only compared with keynames, not content!
  */
-bool operator== (PluginSpec const & self, PluginSpec const & other)
+bool operator==(PluginSpec const & self, PluginSpec const & other)
 {
 	return self.getName () == other.getName () && self.getRefName () == other.getRefName () && self.getConfig () == other.getConfig ();
 }
@@ -231,7 +242,7 @@ bool operator== (PluginSpec const & self, PluginSpec const & other)
  * @brief Compare two pluginspec if their value is not equal
  * @note the content of getConfig() will be only compared with keynames, not content!
  */
-bool operator!= (PluginSpec const & self, PluginSpec const & other)
+bool operator!=(PluginSpec const & self, PluginSpec const & other)
 {
 	return !(self == other);
 }
@@ -239,7 +250,7 @@ bool operator!= (PluginSpec const & self, PluginSpec const & other)
 /**
  * @brief Output the name, refname and size of config
  */
-std::ostream & operator<< (std::ostream & os, PluginSpec const & spec)
+std::ostream & operator<<(std::ostream & os, PluginSpec const & spec)
 {
 	os << "name: " << spec.getName () << " refname: " << spec.getRefName () << " configsize: " << spec.getConfig ().size ();
 	return os;

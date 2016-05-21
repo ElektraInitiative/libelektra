@@ -51,6 +51,7 @@ public:
 	void setName (std::string const & name);
 
 	void appendConfig (KeySet config);
+	void setConfig (KeySet config);
 
 	void validate (std::string const & str) const;
 
@@ -97,13 +98,13 @@ struct PluginSpecHash
 };
 
 #ifdef ELEKTRA_PLUGINSPEC_WITH_COMPARE
-bool operator== (PluginSpec const & self, PluginSpec const & other);
-bool operator!= (PluginSpec const & self, PluginSpec const & other);
+bool operator==(PluginSpec const & self, PluginSpec const & other);
+bool operator!=(PluginSpec const & self, PluginSpec const & other);
 #endif
 
 typedef std::vector<PluginSpec> PluginSpecVector;
 
-std::ostream & operator<< (std::ostream & os, PluginSpec const & spec);
+std::ostream & operator<<(std::ostream & os, PluginSpec const & spec);
 }
 }
 

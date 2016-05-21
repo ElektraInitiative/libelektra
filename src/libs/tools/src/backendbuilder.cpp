@@ -431,7 +431,7 @@ void BackendBuilder::addPlugin (PluginSpec const & plugin)
 		else if (checkResult == 1)
 		{
 			KeySet modifiedPluginConfig = KeySet (pluginConfig);
-			newPlugin.appendConfig (modifiedPluginConfig);
+			newPlugin.setConfig (modifiedPluginConfig);
 		}
 		else
 		{
