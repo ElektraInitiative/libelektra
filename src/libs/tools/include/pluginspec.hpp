@@ -98,13 +98,13 @@ struct PluginSpecHash
 };
 
 #ifdef ELEKTRA_PLUGINSPEC_WITH_COMPARE
-bool operator==(PluginSpec const & self, PluginSpec const & other);
-bool operator!=(PluginSpec const & self, PluginSpec const & other);
+bool operator== (PluginSpec const & self, PluginSpec const & other);
+bool operator!= (PluginSpec const & self, PluginSpec const & other);
 #endif
 
 typedef std::vector<PluginSpec> PluginSpecVector;
 
-std::ostream & operator<<(std::ostream & os, PluginSpec const & spec);
+std::ostream & operator<< (std::ostream & os, PluginSpec const & spec);
 }
 }
 
