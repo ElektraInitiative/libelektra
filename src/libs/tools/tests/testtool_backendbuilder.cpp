@@ -590,13 +590,8 @@ TEST (BackendBuilder, checkconfNotOKmissing)
 
 static int checkconfAppend (ckdb::Key * errorKey, ckdb::KeySet * config)
 {
-	ckdb::Key * k = ckdb::ksLookupByName (config, "user/b", 0);
-	if (!k)
-	{
-		ckdb::ksAppendKey (config, ckdb::keyNew ("user/b", KEY_VALUE, "test", KEY_END));
-		return 1;
-	}
-	return 0;
+	ckdb::ksAppendKey (config, ckdb::keyNew ("user/b", KEY_VALUE, "test", KEY_END));
+	return 1;
 }
 
 TEST (BackendBuilder, checkconfOkChanged)
