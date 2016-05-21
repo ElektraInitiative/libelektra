@@ -1191,7 +1191,9 @@ static void test_ksLookupName ()
 	succeed_if (ksLookupByName (ks, "what", 0) == 0, "found key with broken entry");
 	succeed_if (ksLookupByName (ks, "", 0) == 0, "found key with empty entry");
 	succeed_if (ksLookupByName (ks, "_", 0) == 0, "found key with broken entry");
+#ifdef COMPAT
 	succeed_if (ksLookupByName (ks, "\\", 0) == 0, "found key with broken entry");
+#endif
 	succeed_if (ksLookupByName (ks, "\\/", 0) == 0, "found key with broken entry");
 
 	// now try to find them, and compare value
