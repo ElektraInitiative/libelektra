@@ -8,8 +8,8 @@
 
 #include "ansicolors.hpp"
 #ifdef _WIN32
-#include <stdio.h>
 #include <io.h>
+#include <stdio.h>
 #undef STDERR_FILENO
 #undef STDOUT_FILENO
 #define STDERR_FILENO _fileno (stderr)
