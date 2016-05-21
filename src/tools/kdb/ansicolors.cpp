@@ -9,10 +9,12 @@
 #include "ansicolors.hpp"
 #ifdef _WIN32
 #include <stdio.h>
+#include <io.h>
 #undef STDERR_FILENO
 #undef STDOUT_FILENO
 #define STDERR_FILENO _fileno (stderr)
 #define STDOUT_FILENO _fileno (stdout)
+#define isatty _isatty
 #else
 #include <unistd.h>
 #endif
@@ -105,6 +107,7 @@ std::string getStdColor (ANSI_COLOR color, ANSI_COLOR_LAYER layer)
 }
 
 #ifdef _WIN32
+#undef isatty
 #undef STDERR_FILENO
 #undef STDOUT_FILENO
 #endif
