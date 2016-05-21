@@ -9,6 +9,8 @@
 #include "ansicolors.hpp"
 #ifdef _WIN32
 #include <stdio.h>
+#undef STDERR_FILENO
+#undef STDOUT_FILENO
 #define STDERR_FILENO _fileno (stderr)
 #define STDOUT_FILENO _fileno (stdout)
 #else
@@ -101,3 +103,8 @@ std::string getStdColor (ANSI_COLOR color, ANSI_COLOR_LAYER layer)
 	if (colors ().compare ("never") == 0 || (colors ().compare ("auto") == 0 && !isatty (STDOUT_FILENO))) return "";
 	return getColorEscape (color, layer);
 }
+
+#ifdef _WIN32
+#undef STDERR_FILENO
+#undef STDOUT_FILENO
+#endif
