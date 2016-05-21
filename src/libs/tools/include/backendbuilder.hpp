@@ -144,7 +144,6 @@ public:
 	std::vector<std::string> resolveNeeds (bool addRecommends = true);
 
 	void recommendPlugin (std::string provider);
-	void resolveRecommends ();
 
 	void fillPlugins (BackendInterface & b) const;
 };
