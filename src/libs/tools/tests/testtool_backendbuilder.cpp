@@ -616,3 +616,31 @@ TEST (BackendBuilder, checkconfOkChanged)
 	spec = *bb.begin ();
 	EXPECT_EQ (spec.getConfig ().get<std::string> ("user/b"), "test");
 }
+
+static int checkconfDelete (ckdb::Key * errorKey, ckdb::KeySet * config)
+{
+	ckdb::ksCopy (config, NULL);
+	return 1;
+}
+
+TEST (BackendBuilder, checkconfOkRemoved)
+{
+	using namespace kdb;
+	using namespace kdb::tools;
+	std::shared_ptr<MockPluginDatabase> mpd = std::make_shared<MockPluginDatabase> ();
+	mpd->data[PluginSpec ("checkconf1")]["provides"] = "test123";
+	mpd->setCheckconfFunction (checkconfDelete);
+	BackendBuilderInit bbi (mpd);
+	BackendBuilder bb (bbi);
+	PluginSpec spec ("checkconf1");
+	KeySet pluginConfig;
+	Key a;
+	a.setName ("user/a");
+	a.setString ("abc");
+	pluginConfig.append (a);
+	spec.appendConfig (pluginConfig);
+	bb.addPlugin (spec);
+	// we expect b to be added now
+	spec = *bb.begin ();
+	EXPECT_THROW (spec.getConfig ().get<std::string> ("user/a"), KeyNotFoundException);
+}
