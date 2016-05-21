@@ -20,8 +20,6 @@
 #include <string>
 #include <unordered_map>
 
-#include <string.h>
-
 #include <gtest/gtest.h>
 #include <kdb.hpp>
 
@@ -549,10 +547,10 @@ TEST (BackendBuilder, resolveDoubleRecommends)
 	EXPECT_EQ (bb.cbegin ()[2], PluginSpec ("c"));
 }
 
-static int checkconfLookup_a_abc (ckdb::Key * errorKey, ckdb::KeySet * config)
+static int checkconfLookup (ckdb::Key * errorKey, ckdb::KeySet * config)
 {
 	ckdb::Key * k = ckdb::ksLookupByName (config, "/a", 0);
-	if (k && strcmp (ckdb::keyString (k), "abc") == 0)
+	if (k)
 	{
 		return 0;
 	}
@@ -565,7 +563,7 @@ TEST (BackendBuilder, checkconfOkNoChange)
 	using namespace kdb::tools;
 	std::shared_ptr<MockPluginDatabase> mpd = std::make_shared<MockPluginDatabase> ();
 	mpd->data[PluginSpec ("checkconf1")]["provides"] = "test123";
-	mpd->setCheckconfFunction (checkconfLookup_a_abc);
+	mpd->setCheckconfFunction (checkconfLookup);
 	BackendBuilderInit bbi (mpd);
 	BackendBuilder bb (bbi);
 	PluginSpec spec ("checkconf1");
@@ -578,38 +576,19 @@ TEST (BackendBuilder, checkconfOkNoChange)
 	bb.addPlugin (spec);
 }
 
-TEST (BackendBuilder, checkconfNotOKwrongValue)
-{
-	using namespace kdb;
-	using namespace kdb::tools;
-	std::shared_ptr<MockPluginDatabase> mpd = std::make_shared<MockPluginDatabase> ();
-	mpd->data[PluginSpec ("checkconf1")]["provides"] = "test123";
-	mpd->setCheckconfFunction (checkconfLookup_a_abc);
-	BackendBuilderInit bbi (mpd);
-	BackendBuilder bb (bbi);
-	PluginSpec spec ("checkconf1");
-	KeySet pluginConfig;
-	Key a;
-	a.setName ("user/a");
-	a.setString ("wrong value");
-	pluginConfig.append (a);
-	spec.appendConfig (pluginConfig);
-	EXPECT_THROW (bb.addPlugin (spec), PluginConfigInvalid);
-}
-
 TEST (BackendBuilder, checkconfNotOKmissing)
 {
 	using namespace kdb;
 	using namespace kdb::tools;
 	std::shared_ptr<MockPluginDatabase> mpd = std::make_shared<MockPluginDatabase> ();
 	mpd->data[PluginSpec ("checkconf3")]["c"] = "something";
-	mpd->setCheckconfFunction (checkconfLookup_a_abc);
+	mpd->setCheckconfFunction (checkconfLookup);
 	BackendBuilderInit bbi (mpd);
 	BackendBuilder bb (bbi);
 	EXPECT_THROW (bb.addPlugin (PluginSpec ("checkconf3")), PluginConfigInvalid);
 }
 
-static int checkconfAppend_b_bcd (ckdb::Key * errorKey, ckdb::KeySet * config)
+static int checkconfAppend (ckdb::Key * errorKey, ckdb::KeySet * config)
 {
 	ckdb::Key * k = ckdb::ksLookupByName (config, "user/b", 0);
 	if (!k)
@@ -626,7 +605,7 @@ TEST (BackendBuilder, checkconfOkChanged)
 	using namespace kdb::tools;
 	std::shared_ptr<MockPluginDatabase> mpd = std::make_shared<MockPluginDatabase> ();
 	mpd->data[PluginSpec ("checkconf1")]["provides"] = "test123";
-	mpd->setCheckconfFunction (checkconfAppend_b_bcd);
+	mpd->setCheckconfFunction (checkconfAppend);
 	BackendBuilderInit bbi (mpd);
 	BackendBuilder bb (bbi);
 	PluginSpec spec ("checkconf1");
