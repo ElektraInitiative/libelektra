@@ -1076,7 +1076,7 @@ static uint32_t hashbig (const void * restrict key, size_t length, uint32_t init
 #endif
 
 
-Ni_PRIVATE uint32_t Hash (const void * restrict key, size_t length, uint32_t initval)
+elektraNi_PRIVATE uint32_t Hash (const void * restrict key, size_t length, uint32_t initval)
 {
 #if (HASH_BIG_ENDIAN)
 	return hashbig (key, length, initval);

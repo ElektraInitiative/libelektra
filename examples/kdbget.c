@@ -15,12 +15,14 @@ int main ()
 	Key * key = keyNew ("/sw/MyApp", KEY_CASCADING_NAME, KEY_END);
 	KDB * handle = kdbOpen (key);
 
-	kdbGet (handle, myConfig, key);
 	// to get an intention of proper error handling see kdbget_error.c
 
-	keyDel (key);
+//! [basic usage]
+kdbGet (handle, myConfig, key);
+Key * result = ksLookupByName (myConfig, "/sw/tests/myapp/#0/current/testkey1", 0);
+//! [basic usage]
 
-	Key * result = ksLookupByName (myConfig, "/sw/MyApp/Tests/TestKey1", 0);
+	keyDel (key);
 
 	const char * key_name = keyName (result);
 	const char * key_value = keyString (result);

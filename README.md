@@ -248,6 +248,8 @@ For wheezy:
 ## Develop ##
 
 To start development, just clone the repo and start hacking!
+We prepared [beginner friendly tasks](https://github.com/ElektraInitiative/libelektra/issues?q=is%3Aissue+is%3Aopen+label%3A%22beginner+friendly%22)
+for you.
 
 - We encourage you to improve documentation, especially the README.md
   as if they were a webpage.

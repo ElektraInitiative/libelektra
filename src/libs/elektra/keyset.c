@@ -62,16 +62,14 @@
  * The most important methods of KeySet:
  *
  * - With ksNew() you can create a new KeySet.
- * - You can add keys with ksAppendKey().
- * - Using ksAppend() you can append a whole keyset.
- * - Using ksLookup() you can lookup a key.
- * - ksGetSize() tells you the current size.
+ * - You can append keys with ksAppendKey() or
+ *   with ksAppend() you can append a whole keyset.
+ * - Using ksLookup() you can lookup (or pop with #KDB_O_POP) a key.
+ * - With ksRewind() and ksNext() you can iterate through the keyset.
+ *   Be assured that you will get every key of the set in a stable
+ *   order (parents before children).
  *
  * @copydetails doxygenFlatCopy
- *
- * With ksRewind() and ksNext() you can iterate through the keyset.
- * Be assured that you will get every key of the set in a stable
- * order (parents before children).
  *
  * KeySets have an @link ksCurrent() internal cursor @endlink.
  * Methods should avoid to change this cursor, unless they want
@@ -277,7 +275,7 @@ KeySet * ksDeepDup (const KeySet * source)
 
 
 /**
- * Copy a keyset.
+ * Replace the content of a keyset with another one.
  *
  * Most often you may want a duplicate of a keyset, see
  * ksDup() or append keys, see ksAppend().
@@ -285,10 +283,11 @@ KeySet * ksDeepDup (const KeySet * source)
  * keyset to a existing keyset, for that this function
  * exists.
  *
- * You can also use it to clear a keyset when you pass
+ * @note You can also use it to clear a keyset when you pass
  * a NULL pointer as @p source.
  *
- * Note that all keys in @p dest will be deleted. Afterwards
+ * @par Implementation:
+ * First all keys in @p dest will be deleted. Afterwards
  * the content of the source will be added to the destination
  * and the ksCurrent() is set properly in @p dest.
  *
@@ -1170,7 +1169,8 @@ ksDel (ks2);
  * @return the last key of @p ks
  * @retval NULL if @p ks is empty or on NULL pointer
  * @param ks KeySet to work with
- * @see ksAppendKey(), ksAppend()
+ * @see ksLookup() to pop keys by name
+ * @see ksCopy() to pop all keys
  * @see commandList() for an example
  *
  */
@@ -1918,10 +1918,9 @@ static Key * elektraLookupCreateKey (KeySet * ks, Key * key, ELEKTRA_UNUSED opti
  *
  * This function is efficient by using binary search. Together with
  * kdbGet() which can you load the whole configuration
- * you can write very effective but short
- * code for configuration:
+ * you can write very effective but short code for configuration:
  *
- * @snippet ksCallback.c basic usage
+ * @snippet kdbget.c basic usage
  *
  * This is the way programs should get their configuration and
  * search after the values. It is guaranteed that more namespaces can be
@@ -2076,31 +2075,19 @@ Key * ksLookup (KeySet * ks, Key * key, option_t options)
  * Cascading is done if the first character is a /. This leads to ignoring
  * the prefix like system/ and user/.
  * @code
-if (kdbGet(handle, "user/sw/myapp/current", myConfig, parentKey ) == -1)
+if (kdbGet(handle, "/sw/tests/myapp/#0/current", myConfig, parentKey ) == -1)
 	errorHandler ("Could not get Keys", parentKey);
 
-if (kdbGet(handle, "system/sw/myapp/current", myConfig, parentKey ) == -1)
-	errorHandler ("Could not get Keys", parentKey);
-
-if ((myKey = ksLookupByName (myConfig, "/myapp/current/key", 0)) == NULL)
+if ((myKey = ksLookupByName (myConfig, "/sw/tests/myapp/#0/current/key", 0)) == NULL)
 	errorHandler ("Could not Lookup Key");
  * @endcode
  *
  * This is the way multi user programs should get their configuration and
  * search after the values. It is guaranteed that more namespaces can be
  * added easily and that all values can be set by admin and user.
- *
- * It is up to the application to implement a sophisticated cascading
- * algorithm, for e.g. a list of profiles (specific, group and fallback):
- * @code
-if ((myKey = ksLookupByName (myConfig, "/myapp/current/specific/key", 0)) == NULL)
-	if ((myKey = ksLookupByName (myConfig, "/myapp/current/group/key", 0)) == NULL)
-		if ((myKey = ksLookupByName (myConfig, "/myapp/current/fallback/key", 0)) == NULL)
-			errorHandler ("All fallbacks failed to lookup key");
- * @endcode
- *
- * Note that for every profile both the user and the system key are
- * searched. The first key found will be used.
+ * Also profile-features are available via plugins.
+ * Applications should not implement cascading algorithms, but only
+ * do a single lookup and put cascading functionality into plugins.
  *
  * @section fullsearch Full Search
  *
@@ -2115,16 +2102,10 @@ if ((myKey = ksLookupByName (myConfig, "/myapp/current/specific/key", 0)) == NUL
  * @param ks where to look for
  * @param name key name you are looking for
  * @param options some @p KDB_O_* option bits:
- * 	- @p KDB_O_NOCASE @n
- * 		Lookup ignoring case.
- * 	- @p KDB_O_WITHOWNER @n
- * 		Also consider correct owner.
- * 	- @p KDB_O_NOALL @n
- * 		Only search from ksCurrent() to end of keyset, see above text.
  * 	- @p KDB_O_POP @n
  * 		Pop the key which was found.
+ * 	- See ksLookup() for others
  *
- * 	Currently no options supported.
  * @return pointer to the Key found, 0 otherwise
  * @retval 0 on NULL pointers
  * @see keyCompare() for very powerful Key lookups in KeySets

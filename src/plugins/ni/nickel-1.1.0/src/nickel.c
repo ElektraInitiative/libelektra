@@ -28,19 +28,19 @@
 // time-consuming.
 #define INITIAL_BUCKETS 32
 
-// How big to initialize the buffer for reading values in Ni_ReadStream().
+// How big to initialize the buffer for reading values in elektraNi_ReadStream().
 #define INITIAL_VALUE_BUFFER 1024
 
 
 // A node in our Ni tree.
-struct Ni_node_struct
+struct elektraNi_node_struct
 {
-	struct Ni_node_struct * root;   // root node in this tree (ALWAYS set for valid nodes)
-	struct Ni_node_struct * parent; // the immediate parent of this node (set for all except root)
+	struct elektraNi_node_struct * root;   // root node in this tree (ALWAYS set for valid nodes)
+	struct elektraNi_node_struct * parent; // the immediate parent of this node (set for all except root)
 
-	char name[Ni_KEY_SIZE]; // this node's name (set for all except root)
-	int name_len;		// strlen of name
-	Ds_hash_t hash;		// the hash value of name and thus this node
+	char name[elektraNi_KEY_SIZE]; // this node's name (set for all except root)
+	int name_len;		       // strlen of name
+	Ds_hash_t hash;		       // the hash value of name and thus this node
 
 	Ds_str value; // this node's value (only set for nodes that have a value)
 	int modified; // whether this value has been "modified", which the application can use however they want
@@ -53,54 +53,55 @@ struct Ni_node_struct
 	}
 
 
-// Returns a Ds_hash_entry's item as a Ni_node.
-#define GetItem(e) ((Ni_node) ((e)->item))
+// Returns a Ds_hash_entry's item as a elektraNi_node.
+#define GetItem(e) ((elektraNi_node) ((e)->item))
 
 // Returns the Ds_hash_entry the node belongs to.
 #define GetEntry(n) ((Ds_hash_entry *)((unsigned char *)(n)-offsetof (Ds_hash_entry, item)))
 
 // Inits the node and adds it as a child of the parent.
-static Ni_node AddNode (Ni_node restrict n, Ni_node restrict parent, const char * restrict name, int name_len, Ds_hash_t hash);
+static elektraNi_node AddNode (elektraNi_node restrict n, elektraNi_node restrict parent, const char * restrict name, int name_len,
+			       Ds_hash_t hash);
 
 // Initializes internals of a node.
-static int InitNode (Ni_node restrict n, Ni_node restrict parent);
+static int InitNode (elektraNi_node restrict n, elektraNi_node restrict parent);
 
 // Frees internals of a node.
-static void FreeNode (Ni_node restrict n);
+static void FreeNode (elektraNi_node restrict n);
 
 // Frees internals of this node and all its children.
-static void RecursiveFree (Ni_node restrict n);
+static void RecursiveFree (elektraNi_node restrict n);
 
 // Sets the modified state for this node and all its children.
-static void RecursiveSetModified (Ni_node restrict n, int modified);
+static void RecursiveSetModified (elektraNi_node restrict n, int modified);
 
 // Recursively outputs to the stream.
-static int RecursiveWrite (Ni_node restrict n, FILE * restrict stream, int modified_only, int level);
+static int RecursiveWrite (elektraNi_node restrict n, FILE * restrict stream, int modified_only, int level);
 
 // Compares two hash entries.
 static int Compare (const void * restrict key, size_t key_size, const void * restrict item, size_t item_size);
 
 
 /* Returns the version of Ni this library was compiled with.  Compare this
- * value to Ni_VERSION to see if the header matches.
+ * value to elektraNi_VERSION to see if the header matches.
  */
-Ni_PUBLIC uint32_t Ni_GetVersion (void)
+elektraNi_PUBLIC uint32_t elektraNi_GetVersion (void)
 {
-	return Ni_HEADER_VERSION;
+	return elektraNi_HEADER_VERSION;
 }
 
 /* Allocates an entirely new node, not connected to any others, and returns it.
  * This new node is the root of ... well, so far, just itself, but anything you
  * add to it will be its children.  Returns NULL if it fails.  Note that to
  * allocate a node that will be a child of another node, you must use
- * Ni_GetChild() instead of this function; this only allocates entirely new
+ * elektraNi_GetChild() instead of this function; this only allocates entirely new
  * trees.
  */
-Ni_PUBLIC Ni_node Ni_New (void)
+elektraNi_PUBLIC elektraNi_node elektraNi_New (void)
 {
-	Ni_node n;
+	elektraNi_node n;
 
-	if ((n = (Ni_node)malloc (sizeof (struct Ni_node_struct))) != NULL)
+	if ((n = (elektraNi_node)malloc (sizeof (struct elektraNi_node_struct))) != NULL)
 	{
 		if (!InitNode (n, NULL))
 		{
@@ -116,7 +117,7 @@ Ni_PUBLIC Ni_node Ni_New (void)
  * also checks if it has a parent and severs itself as a branch, so the entire
  * tree is kept synchronized.
  */
-Ni_PUBLIC void Ni_Free (Ni_node restrict n)
+elektraNi_PUBLIC void elektraNi_Free (elektraNi_node restrict n)
 {
 	if (n)
 	{
@@ -143,7 +144,7 @@ Ni_PUBLIC void Ni_Free (Ni_node restrict n)
  * returned string's length in len_out.  Note that all nodes have a name except
  * the root--but names can be "".
  */
-Ni_PUBLIC const char * Ni_GetName (Ni_node restrict n, int * restrict len_out)
+elektraNi_PUBLIC const char * elektraNi_GetName (elektraNi_node restrict n, int * restrict len_out)
 {
 	const char * name = NULL;
 	int len = 0;
@@ -162,10 +163,10 @@ Ni_PUBLIC const char * Ni_GetName (Ni_node restrict n, int * restrict len_out)
 }
 
 /* Returns the root of the tree the node belongs to.  You can check if a node
- * is a root node if n == Ni_GetRoot(n) is nonzero.  Returns NULL if you pass
+ * is a root node if n == elektraNi_GetRoot(n) is nonzero.  Returns NULL if you pass
  * an invalid node.
  */
-Ni_PUBLIC Ni_node Ni_GetRoot (Ni_node restrict n)
+elektraNi_PUBLIC elektraNi_node elektraNi_GetRoot (elektraNi_node restrict n)
 {
 	return (n ? n->root : NULL);
 }
@@ -173,14 +174,14 @@ Ni_PUBLIC Ni_node Ni_GetRoot (Ni_node restrict n)
 /* Returns the parent node of a node, or NULL if you pass an invalid node or a
  * root node (as they have no parent).
  */
-Ni_PUBLIC Ni_node Ni_GetParent (Ni_node restrict n)
+elektraNi_PUBLIC elektraNi_node elektraNi_GetParent (elektraNi_node restrict n)
 {
 	return (n ? n->parent : NULL);
 }
 
 /* Returns the number of children a node has, or 0 if you pass an invalid node.
  */
-Ni_PUBLIC int Ni_GetNumChildren (Ni_node restrict n)
+elektraNi_PUBLIC int elektraNi_GetNumChildren (elektraNi_node restrict n)
 {
 	return (n ? n->children.num : 0);
 }
@@ -189,9 +190,9 @@ Ni_PUBLIC int Ni_GetNumChildren (Ni_node restrict n)
  * first child, then pass the previous return value as child to get the next,
  * etc.  Returns NULL if there's an error or there are no more children.
  */
-Ni_PUBLIC Ni_node Ni_GetNextChild (Ni_node restrict n, Ni_node restrict child)
+elektraNi_PUBLIC elektraNi_node elektraNi_GetNextChild (elektraNi_node restrict n, elektraNi_node restrict child)
 {
-	Ni_node next = NULL;
+	elektraNi_node next = NULL;
 	Ds_hash_entry * e;
 
 	if (n)
@@ -211,10 +212,11 @@ Ni_PUBLIC Ni_node Ni_GetNextChild (Ni_node restrict n, Ni_node restrict child)
  * either add_if_new was 0 or it failed to allocate a new node (in either case,
  * added_out will be 0).
  */
-Ni_PUBLIC Ni_node Ni_GetChild (Ni_node restrict n, const char * restrict name, int name_len, int add_if_new, int * restrict added_out)
+elektraNi_PUBLIC elektraNi_node elektraNi_GetChild (elektraNi_node restrict n, const char * restrict name, int name_len, int add_if_new,
+						    int * restrict added_out)
 {
-	Ni_node child = NULL;
-	struct Ni_node_struct c;
+	elektraNi_node child = NULL;
+	struct elektraNi_node_struct c;
 	Ds_hash_entry * e;
 	int added = 0;
 	Ds_hash_t hash;
@@ -229,7 +231,7 @@ Ni_PUBLIC Ni_node Ni_GetChild (Ni_node restrict n, const char * restrict name, i
 		{
 			name_len = strlen (name);
 		}
-		if (name_len > Ni_KEY_SIZE - 1) name_len = Ni_KEY_SIZE - 1;
+		if (name_len > elektraNi_KEY_SIZE - 1) name_len = elektraNi_KEY_SIZE - 1;
 
 		hash = Hash (name, (size_t)name_len, 0xbadc0de5);
 
@@ -249,9 +251,9 @@ Ni_PUBLIC Ni_node Ni_GetChild (Ni_node restrict n, const char * restrict name, i
 }
 
 /* Returns the modified state of a node.  When nodes are created, they are "not
- * modified".  As soon as you call a Ni_SetValue() (or Ni_ValuePrint())
+ * modified".  As soon as you call a elektraNi_SetValue() (or elektraNi_ValuePrint())
  * function, its modified state changes to "modified".  Use this to check
- * whether it's modified or not.  You can tell Ni_WriteFile() or -Stream() to
+ * whether it's modified or not.  You can tell elektraNi_WriteFile() or -Stream() to
  * only write modified values--this is useful for having a global options file
  * with a local override file (you'd read the global options in, set all nodes
  * to "not modified", then read in the local options over top of it, and any
@@ -259,7 +261,7 @@ Ni_PUBLIC Ni_node Ni_GetChild (Ni_node restrict n, const char * restrict name, i
  * out, you only get the options set by the override file or ones you set since
  * it was loaded).
  */
-Ni_PUBLIC int Ni_GetModified (Ni_node restrict n)
+elektraNi_PUBLIC int elektraNi_GetModified (elektraNi_node restrict n)
 {
 	return (n ? n->modified : 0);
 }
@@ -268,7 +270,7 @@ Ni_PUBLIC int Ni_GetModified (Ni_node restrict n)
  * all the node's children and their children, etc.  See the note in the above
  * function how this is useful.
  */
-Ni_PUBLIC void Ni_SetModified (Ni_node restrict n, int modified, int recurse)
+elektraNi_PUBLIC void elektraNi_SetModified (elektraNi_node restrict n, int modified, int recurse)
 {
 	if (n)
 	{
@@ -284,13 +286,13 @@ Ni_PUBLIC void Ni_SetModified (Ni_node restrict n, int modified, int recurse)
 }
 
 /* Returns a node's value.  Any node except a root node can have a value, but
- * not all of them do.  Until a node's value is set with a Ni_SetValue() (or
- * Ni_PrintValue()) function, it does NOT have a value.  Returns the value as a
+ * not all of them do.  Until a node's value is set with a elektraNi_SetValue() (or
+ * elektraNi_PrintValue()) function, it does NOT have a value.  Returns the value as a
  * string, or NULL if the function doesn't have a value or you pass an invalid
  * or root node.  If you care about the length of the value string, pass a non-
  * NULL len_out and its length is returned there.
  */
-Ni_PUBLIC const char * Ni_GetValue (Ni_node restrict n, int * restrict len_out)
+elektraNi_PUBLIC const char * elektraNi_GetValue (elektraNi_node restrict n, int * restrict len_out)
 {
 	const char * value = NULL;
 	int len = 0;
@@ -309,15 +311,15 @@ Ni_PUBLIC const char * Ni_GetValue (Ni_node restrict n, int * restrict len_out)
 }
 
 /* Returns a node's value interpreted as a long, or 0 if the node doesn't have
- * a value (see Ni_GetValue()).  Note that it uses strtol()'s base detection so
+ * a value (see elektraNi_GetValue()).  Note that it uses strtol()'s base detection so
  * strings starting with 0 are considered octal, and 0x are considered hex.
  */
-Ni_PUBLIC long Ni_GetValueInt (Ni_node restrict n)
+elektraNi_PUBLIC long elektraNi_GetValueInt (elektraNi_node restrict n)
 {
 	long i = 0L;
 	const char * v;
 
-	if ((v = Ni_GetValue (n, NULL)) != NULL)
+	if ((v = elektraNi_GetValue (n, NULL)) != NULL)
 	{
 		i = strtol (v, NULL, 0);
 	}
@@ -326,14 +328,14 @@ Ni_PUBLIC long Ni_GetValueInt (Ni_node restrict n)
 }
 
 /* Returns the node's value interpreted as a double, or 0.0 if the node doesn't
- * have a value (see Ni_GetValue()).
+ * have a value (see elektraNi_GetValue()).
  */
-Ni_PUBLIC double Ni_GetValueFloat (Ni_node restrict n)
+elektraNi_PUBLIC double elektraNi_GetValueFloat (elektraNi_node restrict n)
 {
 	double d = 0.0;
 	const char * v;
 
-	if ((v = Ni_GetValue (n, NULL)) != NULL)
+	if ((v = elektraNi_GetValue (n, NULL)) != NULL)
 	{
 		d = strtod (v, NULL);
 	}
@@ -342,19 +344,19 @@ Ni_PUBLIC double Ni_GetValueFloat (Ni_node restrict n)
 }
 
 /* Returns the node's value interpreted as a boolean integer (0/1), or 0 if the
- * node doesn't have a value (see Ni_GetValue()).  The following strings are
+ * node doesn't have a value (see elektraNi_GetValue()).  The following strings are
  * considered "true" and have a nonzero return value from this function: any
  * string starting with T or Y, the string "on", (case is ignored in all those
  * cases), or any nonzero integer.  Everything else is considered "false" and
  * will result in a 0 return value.
  */
-Ni_PUBLIC int Ni_GetValueBool (Ni_node restrict n)
+elektraNi_PUBLIC int elektraNi_GetValueBool (elektraNi_node restrict n)
 {
 	int b = 0;
 	const char * v;
 	int len;
 
-	if ((v = Ni_GetValue (n, &len)) != NULL)
+	if ((v = elektraNi_GetValue (n, &len)) != NULL)
 	{
 		if (*v == 'T' || *v == 't' || *v == 'Y' || *v == 'y' || strtol (v, NULL, 0) ||
 		    (len == 2 && (*v == 'o' || *v == 'O') && (*(v + 1) == 'n' || *(v + 1) == 'N')))
@@ -370,13 +372,13 @@ Ni_PUBLIC int Ni_GetValueBool (Ni_node restrict n)
  * formatted argument string, and any arguments for scanf() are passed after
  * format.  Returns what scanf() returns: the number of translated items.
  */
-Ni_PUBLIC int Ni_ValueScan (Ni_node restrict n, const char * restrict format, ...)
+elektraNi_PUBLIC int elektraNi_ValueScan (elektraNi_node restrict n, const char * restrict format, ...)
 {
 	int rc;
 	va_list args;
 
 	va_start (args, format);
-	rc = Ni_ValueVScan (n, format, args);
+	rc = elektraNi_ValueVScan (n, format, args);
 	va_end (args);
 
 	return rc;
@@ -384,12 +386,12 @@ Ni_PUBLIC int Ni_ValueScan (Ni_node restrict n, const char * restrict format, ..
 
 /* Same as above, except you pass a va_list instead of the args directly.
  */
-Ni_PUBLIC int Ni_ValueVScan (Ni_node restrict n, const char * restrict format, va_list args)
+elektraNi_PUBLIC int elektraNi_ValueVScan (elektraNi_node restrict n, const char * restrict format, va_list args)
 {
 	int items = 0;
 	const char * v;
 
-	if ((v = Ni_GetValue (n, NULL)) != NULL)
+	if ((v = elektraNi_GetValue (n, NULL)) != NULL)
 	{
 		items = vsscanf (v, format, args);
 	}
@@ -401,7 +403,7 @@ Ni_PUBLIC int Ni_ValueVScan (Ni_node restrict n, const char * restrict format, v
  * that string (which can be any length--specify its length in value_len, or
  * pass a negative value in value_len and it'll be calculated automatically
  * using strlen()).  If value is NULL (value_len is ignored in this case), its
- * value is removed--subsequent calls to Ni_GetValue() will return NULL (until
+ * value is removed--subsequent calls to elektraNi_GetValue() will return NULL (until
  * you set its value to something non-NULL, anyway).  Returns the length of
  * value, either as passed or calculated, or -1 if it fails, or 0 if you're
  * removing a value (so a negative return value always indicates error).  If
@@ -411,7 +413,7 @@ Ni_PUBLIC int Ni_ValueVScan (Ni_node restrict n, const char * restrict format, v
  * setting the value, the value string you pass need not persist after the
  * call--its contents are copied.
  */
-Ni_PUBLIC int Ni_SetValue (Ni_node restrict n, const char * restrict value, int value_len)
+elektraNi_PUBLIC int elektraNi_SetValue (elektraNi_node restrict n, const char * restrict value, int value_len)
 {
 	int len = -1;
 
@@ -455,29 +457,29 @@ Ni_PUBLIC int Ni_SetValue (Ni_node restrict n, const char * restrict value, int 
 }
 
 /* Sets a node's value to the value of a long.  Semantics are similar to those
- * of Ni_SetValue(), except you can't remove a node's value with this function.
+ * of elektraNi_SetValue(), except you can't remove a node's value with this function.
  */
-Ni_PUBLIC int Ni_SetValueInt (Ni_node restrict n, long value)
+elektraNi_PUBLIC int elektraNi_SetValueInt (elektraNi_node restrict n, long value)
 {
-	return Ni_ValuePrint (n, "%ld", value);
+	return elektraNi_ValuePrint (n, "%ld", value);
 }
 
 /* Sets a node's value to the value of a double.  Semantics are similar to
- * those of Ni_SetValue(), except you can't remove a node's value with this
+ * those of elektraNi_SetValue(), except you can't remove a node's value with this
  * function.
  */
-Ni_PUBLIC int Ni_SetValueFloat (Ni_node restrict n, double value)
+elektraNi_PUBLIC int elektraNi_SetValueFloat (elektraNi_node restrict n, double value)
 {
-	return Ni_ValuePrint (n, "%.17g", value);
+	return elektraNi_ValuePrint (n, "%.17g", value);
 }
 
 /* Sets a node's value to "true" or "false" based on a boolean integer.
- * Semantics are similar to those of Ni_SetValue(), except you can't remove a
+ * Semantics are similar to those of elektraNi_SetValue(), except you can't remove a
  * node's value with this function.
  */
-Ni_PUBLIC int Ni_SetValueBool (Ni_node restrict n, int value)
+elektraNi_PUBLIC int elektraNi_SetValueBool (elektraNi_node restrict n, int value)
 {
-	return Ni_SetValue (n, (value ? "true" : "false"), (value ? 4 : 5));
+	return elektraNi_SetValue (n, (value ? "true" : "false"), (value ? 4 : 5));
 }
 
 /* Uses printf() formatting to set the node's value.  You can't remove a node's
@@ -490,13 +492,13 @@ Ni_PUBLIC int Ni_SetValueBool (Ni_node restrict n, int value)
  * garbage if you're only writing modified values.  I don't know what else to
  * do, really.
  */
-Ni_PUBLIC int Ni_ValuePrint (Ni_node restrict n, const char * restrict format, ...)
+elektraNi_PUBLIC int elektraNi_ValuePrint (elektraNi_node restrict n, const char * restrict format, ...)
 {
 	int rc;
 	va_list args;
 
 	va_start (args, format);
-	rc = Ni_ValueVPrint (n, format, args);
+	rc = elektraNi_ValueVPrint (n, format, args);
 	va_end (args);
 
 	return rc;
@@ -505,7 +507,7 @@ Ni_PUBLIC int Ni_ValuePrint (Ni_node restrict n, const char * restrict format, .
 /* Same as above, except it expects a va_list instead of the args passed after
  * the format string.
  */
-Ni_PUBLIC int Ni_ValueVPrint (Ni_node restrict n, const char * restrict format, va_list args)
+elektraNi_PUBLIC int elektraNi_ValueVPrint (elektraNi_node restrict n, const char * restrict format, va_list args)
 {
 	int len = -1;
 
@@ -534,7 +536,7 @@ Ni_PUBLIC int Ni_ValueVPrint (Ni_node restrict n, const char * restrict format, 
 }
 
 /* Writes the contents of the tree starting at the node out to a file, in a
- * format that is parsable by Ni_ReadFile() or -Stream(), and roughly
+ * format that is parsable by elektraNi_ReadFile() or -Stream(), and roughly
  * compatible with .ini files.  Note that you can pass any node of a tree to
  * this function--only its children and downward are output.  If you pass
  * modified_only as nonzero, values are only output if the node's modified
@@ -543,7 +545,7 @@ Ni_PUBLIC int Ni_ValueVPrint (Ni_node restrict n, const char * restrict format, 
  * Returns 0 on error, or nonzero on success.  The file is opened with
  * fopen(filename, "w"), so its contents will be erased.
  */
-Ni_PUBLIC int Ni_WriteFile (Ni_node restrict n, const char * restrict filename, int modified_only)
+elektraNi_PUBLIC int elektraNi_WriteFile (elektraNi_node restrict n, const char * restrict filename, int modified_only)
 {
 	int rc = 0;
 	FILE * fp = NULL;
@@ -552,7 +554,7 @@ Ni_PUBLIC int Ni_WriteFile (Ni_node restrict n, const char * restrict filename, 
 	{
 		if ((fp = fopen (filename, "w")) != NULL)
 		{
-			rc = Ni_WriteStream (n, fp, modified_only);
+			rc = elektraNi_WriteStream (n, fp, modified_only);
 			fclose (fp);
 		}
 	}
@@ -564,7 +566,7 @@ Ni_PUBLIC int Ni_WriteFile (Ni_node restrict n, const char * restrict filename, 
  * file or a stream (like stdout).  The file must be writable, but need not be
  * seekable.
  */
-Ni_PUBLIC int Ni_WriteStream (Ni_node restrict n, FILE * restrict stream, int modified_only)
+elektraNi_PUBLIC int elektraNi_WriteStream (elektraNi_node restrict n, FILE * restrict stream, int modified_only)
 {
 	int success = 0;
 	do
@@ -596,7 +598,7 @@ Ni_PUBLIC int Ni_WriteStream (Ni_node restrict n, FILE * restrict stream, int mo
  * converted to lowercase as they're read in.  Since "Name" and "name" are
  * different names, this makes the files less strict with case.
  */
-Ni_PUBLIC int Ni_ReadFile (Ni_node restrict n, const char * restrict filename, int fold_case)
+elektraNi_PUBLIC int elektraNi_ReadFile (elektraNi_node restrict n, const char * restrict filename, int fold_case)
 {
 	int rc = 0;
 	FILE * fp = NULL;
@@ -605,7 +607,7 @@ Ni_PUBLIC int Ni_ReadFile (Ni_node restrict n, const char * restrict filename, i
 	{
 		if ((fp = fopen (filename, "r")) != NULL)
 		{
-			rc = Ni_ReadStream (n, fp, fold_case);
+			rc = elektraNi_ReadStream (n, fp, fold_case);
 			fclose (fp);
 		}
 	}
@@ -617,16 +619,16 @@ Ni_PUBLIC int Ni_ReadFile (Ni_node restrict n, const char * restrict filename, i
  * or stream (like stdin).  The file must be readable, but need not be
  * seekable.
  */
-Ni_PUBLIC int Ni_ReadStream (Ni_node restrict n, FILE * restrict stream, int fold_case)
+elektraNi_PUBLIC int elektraNi_ReadStream (elektraNi_node restrict n, FILE * restrict stream, int fold_case)
 {
-	file_buf fb = FILE_BUF_INIT;      // the file buffer we're reading
-	char key[Ni_KEY_SIZE] = { '\0' }; // section/key name for GetNextIdentifier
-	int key_len;			  // length of string in 'key' buffer
-	int key_level;			  // how many ['s were in front of key, if section
-	int cur_level = 0;		  // where we currently are in the tree
-	Ds_str value = Ds_STR_INIT;       // value holder string
-	int result;			  // the result of internal operations
-	Ni_node child;			  // a child
+	file_buf fb = FILE_BUF_INIT;		 // the file buffer we're reading
+	char key[elektraNi_KEY_SIZE] = { '\0' }; // section/key name for GetNextIdentifier
+	int key_len;				 // length of string in 'key' buffer
+	int key_level;				 // how many ['s were in front of key, if section
+	int cur_level = 0;			 // where we currently are in the tree
+	Ds_str value = Ds_STR_INIT;		 // value holder string
+	int result;				 // the result of internal operations
+	elektraNi_node child;			 // a child
 	int i;
 
 	int success = 0;
@@ -657,14 +659,14 @@ Ni_PUBLIC int Ni_ReadStream (Ni_node restrict n, FILE * restrict stream, int fol
 				while (key_level - cur_level > 1)
 				{
 					// get or add nameless children, as necessary
-					if (!(n = Ni_GetChild (n, "", 0, 1, NULL))) break;
+					if (!(n = elektraNi_GetChild (n, "", 0, 1, NULL))) break;
 					++cur_level;
 				}
 				// if key_level is less deeply nested than we are currently, by more
 				// than 1
 				while (key_level - cur_level < 1)
 				{
-					if (!(n = Ni_GetParent (n))) break;
+					if (!(n = elektraNi_GetParent (n))) break;
 					--cur_level;
 				}
 
@@ -673,7 +675,7 @@ Ni_PUBLIC int Ni_ReadStream (Ni_node restrict n, FILE * restrict stream, int fol
 			if (result < 0) break;
 
 			// get/add the child
-			if (!(child = Ni_GetChild (n, key, key_len, 1, NULL)))
+			if (!(child = elektraNi_GetChild (n, key, key_len, 1, NULL)))
 			{
 				result = -1;
 				break;
@@ -694,7 +696,7 @@ Ni_PUBLIC int Ni_ReadStream (Ni_node restrict n, FILE * restrict stream, int fol
 				}
 
 				// set the new child's value
-				if (Ni_SetValue (child, value.str, value.len) < 0)
+				if (elektraNi_SetValue (child, value.str, value.len) < 0)
 				{
 					result = -1;
 					break;
@@ -717,15 +719,16 @@ Ni_PUBLIC int Ni_ReadStream (Ni_node restrict n, FILE * restrict stream, int fol
  * parent's table, and adds the node as its child.  Returns NULL if it fails,
  * or the added node if it succeeds.
  */
-static Ni_node AddNode (Ni_node restrict n, Ni_node restrict parent, const char * restrict name, int name_len, Ds_hash_t hash)
+static elektraNi_node AddNode (elektraNi_node restrict n, elektraNi_node restrict parent, const char * restrict name, int name_len,
+			       Ds_hash_t hash)
 {
 	int success = 0;
-	Ni_node child = NULL;
+	elektraNi_node child = NULL;
 	Ds_hash_entry * e = NULL;
 
 	assert (n != NULL);
 	assert (parent != NULL);
-	assert (name_len < Ni_KEY_SIZE);
+	assert (name_len < elektraNi_KEY_SIZE);
 
 	do
 	{
@@ -743,7 +746,7 @@ static Ni_node AddNode (Ni_node restrict n, Ni_node restrict parent, const char 
 			break;
 
 		// insert it
-		if (!(e = Ds_InsertHashItem (&parent->children, n, sizeof (struct Ni_node_struct), hash))) break;
+		if (!(e = Ds_InsertHashItem (&parent->children, n, sizeof (struct elektraNi_node_struct), hash))) break;
 		child = GetItem (e); // get the inserted item
 
 		success = 1;
@@ -760,11 +763,11 @@ static Ni_node AddNode (Ni_node restrict n, Ni_node restrict parent, const char 
 
 /* Initializes the contents of the node.
  */
-static int InitNode (Ni_node restrict n, Ni_node restrict parent)
+static int InitNode (elektraNi_node restrict n, elektraNi_node restrict parent)
 {
 	assert (n);
 
-	*n = (struct Ni_node_struct)NODE_STRUCT_INIT;
+	*n = (struct elektraNi_node_struct)NODE_STRUCT_INIT;
 
 	n->root = (parent ? parent->root : n);
 	n->parent = parent;
@@ -775,7 +778,7 @@ static int InitNode (Ni_node restrict n, Ni_node restrict parent)
 
 /* Frees the contents of the node.
  */
-static void FreeNode (Ni_node restrict n)
+static void FreeNode (elektraNi_node restrict n)
 {
 	assert (n != NULL);
 
@@ -785,7 +788,7 @@ static void FreeNode (Ni_node restrict n)
 
 /* Calls the above on the node and all its children.
  */
-static void RecursiveFree (Ni_node restrict n)
+static void RecursiveFree (elektraNi_node restrict n)
 {
 	Ds_hash_entry * e = NULL;
 
@@ -799,7 +802,7 @@ static void RecursiveFree (Ni_node restrict n)
 
 /* Sets a node's modified state recursively.
  */
-static void RecursiveSetModified (Ni_node restrict n, int modified)
+static void RecursiveSetModified (elektraNi_node restrict n, int modified)
 {
 	Ds_hash_entry * e = NULL;
 
@@ -815,9 +818,9 @@ static void RecursiveSetModified (Ni_node restrict n, int modified)
  * out, then writes section names and calls itself recursively for any children
  * that have children.  Returns 0 if it fails, nonzero on success.
  */
-static int RecursiveWrite (Ni_node restrict n, FILE * restrict stream, int modified_only, int level)
+static int RecursiveWrite (elektraNi_node restrict n, FILE * restrict stream, int modified_only, int level)
 {
-	Ni_node child;
+	elektraNi_node child;
 	const char * name;
 	int name_len;
 	const char * value;
@@ -830,15 +833,15 @@ static int RecursiveWrite (Ni_node restrict n, FILE * restrict stream, int modif
 	{
 		// loop through all children
 		child = NULL;
-		while ((child = Ni_GetNextChild (n, child)) != NULL)
+		while ((child = elektraNi_GetNextChild (n, child)) != NULL)
 		{
 			// get its name
-			name = Ni_GetName (child, &name_len);
+			name = elektraNi_GetName (child, &name_len);
 			assert (name != NULL);
 
 			// get its value and only do anything if it's modified or we're writing
 			// all children
-			if ((value = Ni_GetValue (child, &value_len)) != NULL && (!modified_only || Ni_GetModified (child)))
+			if ((value = elektraNi_GetValue (child, &value_len)) != NULL && (!modified_only || elektraNi_GetModified (child)))
 			{
 				// put the actual key/value pair
 				if (!PutEntry (stream, name, name_len, value, value_len, level + 1)) break;
@@ -849,13 +852,13 @@ static int RecursiveWrite (Ni_node restrict n, FILE * restrict stream, int modif
 
 		// go through all children again
 		child = NULL;
-		while ((child = Ni_GetNextChild (n, child)) != NULL)
+		while ((child = elektraNi_GetNextChild (n, child)) != NULL)
 		{
 			// if this child has children
-			if (Ni_GetNumChildren (child) > 0)
+			if (elektraNi_GetNumChildren (child) > 0)
 			{
 				// get the child's name
-				name = Ni_GetName (child, &name_len);
+				name = elektraNi_GetName (child, &name_len);
 				assert (name != NULL);
 
 				// put it as a section name
@@ -873,18 +876,18 @@ static int RecursiveWrite (Ni_node restrict n, FILE * restrict stream, int modif
 	return success;
 }
 
-/* Compares a key with a Ni_node_struct's name for Ds_SearchHashTable().
+/* Compares a key with a elektraNi_node_struct's name for Ds_SearchHashTable().
  */
 static int Compare (const void * restrict key, size_t key_size, const void * restrict item, size_t item_size ELEKTRA_UNUSED)
 {
-	const struct Ni_node_struct * n;
-	n = (const struct Ni_node_struct *)item;
+	const struct elektraNi_node_struct * n;
+	n = (const struct elektraNi_node_struct *)item;
 
-	assert (item_size == sizeof (struct Ni_node_struct));
+	assert (item_size == sizeof (struct elektraNi_node_struct));
 	assert (key != NULL);
 	assert (n->name != NULL);
-	assert (key_size < Ni_KEY_SIZE);
-	assert (n->name_len < Ni_KEY_SIZE);
+	assert (key_size < elektraNi_KEY_SIZE);
+	assert (n->name_len < elektraNi_KEY_SIZE);
 	const size_t n_name_len = n->name_len;
 
 	return (key_size != n_name_len || memcmp (key, n->name, key_size));

@@ -22,7 +22,7 @@
 
 /* Initializes the file_buf.
  */
-Ni_PRIVATE int InitFileBuf (file_buf * restrict b, FILE * restrict f)
+elektraNi_PRIVATE int InitFileBuf (file_buf * restrict b, FILE * restrict f)
 {
 	*b = (file_buf)FILE_BUF_INIT;
 	b->stream = f;
@@ -31,7 +31,7 @@ Ni_PRIVATE int InitFileBuf (file_buf * restrict b, FILE * restrict f)
 
 /* Frees memory associated with the file_buf.
  */
-Ni_PRIVATE void FreeFileBuf (file_buf * restrict b)
+elektraNi_PRIVATE void FreeFileBuf (file_buf * restrict b)
 {
 	Ds_FreeVector_uc (&b->buffer);
 	*b = (file_buf)FILE_BUF_INIT;
@@ -40,7 +40,7 @@ Ni_PRIVATE void FreeFileBuf (file_buf * restrict b)
 /* Basically like fgetc on our file_buf.  Translates newlines automatically for
  * us.  Returns EOF if error or the file is done.
  */
-Ni_PRIVATE int BufGetC (file_buf * restrict b)
+elektraNi_PRIVATE int BufGetC (file_buf * restrict b)
 {
 	int c;
 
@@ -77,7 +77,7 @@ Ni_PRIVATE int BufGetC (file_buf * restrict b)
 /* Basically like fseek(b, -n_back, SEEK_CUR).  It undoes n_back BufGetC()
  * calls, regardless of whether BufGetC() returned EOF.
  */
-Ni_PRIVATE void BufSeekBack (file_buf * restrict b, size_t n_back)
+elektraNi_PRIVATE void BufSeekBack (file_buf * restrict b, size_t n_back)
 {
 	assert (b->pos >= n_back);
 
@@ -87,7 +87,7 @@ Ni_PRIVATE void BufSeekBack (file_buf * restrict b, size_t n_back)
 /* Flushes the internal buffer without affecting the stream position.  This
  * lets us keep the memory footprint down.
  */
-Ni_PRIVATE void BufFlush (file_buf * restrict b)
+elektraNi_PRIVATE void BufFlush (file_buf * restrict b)
 {
 	b->pos = 0;
 	b->buffer.num = 0;

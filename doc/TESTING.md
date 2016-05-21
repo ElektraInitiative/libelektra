@@ -22,6 +22,26 @@ In the build directory, internally ctest is used, so you can also call
 ctest with its options. On the target (installed) system our own scripts
 drive the tests.
 
+The `testscr` and `testkdb` tests write in system pathes.
+You have some options to avoid running them as root:
+
+1. Avoid running these test cases, e.g. with, run ctest with:
+   `ctest --output-on-failure -E '(testscr|testkdb)_.*`
+2. Compile Elektra so that build-in pathes are not system pathes, use cmake options:
+   `-DINSTALL_SYSTEM_FILES=OFF -DCMAKE_INSTALL_PREFIX=$WORKSPACE/local -DKDB_DB_SYSTEM=$WORKSPACE/system`
+   (or via `scripts/configure-home`, currently pending #691)
+3. Compile Elektra so that default pathes are not system pathes, use cmake options:
+   `-DINSTALL_SYSTEM_FILES=OFF -DCMAKE_INSTALL_PREFIX=$WORKSPACE/local -DKDB_DB_SYSTEM=$WORKSPACE/system`
+4. Use the XDG resolver (see `scripts/configure-xdg`) and set
+   `XDG_CONFIG_DIRS`, currently lacks #734.
+5. Give your user the permissions to the relevant pathes, i.e. (once as root):
+
+   ```
+   kdb mount-info
+   chown -R `whoami` `kdb get system/info/constants/cmake/CMAKE_INSTALL_PREFIX`/`kdb get system/info/constants/cmake/KDB_DB_SPEC`
+   chown -R `whoami` `kdb get system/info/constants/cmake/KDB_DB_SYSTEM`
+   ```
+
 
 
 ## Conventions ##
