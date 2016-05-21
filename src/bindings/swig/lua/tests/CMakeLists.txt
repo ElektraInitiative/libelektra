@@ -4,7 +4,7 @@ macro (do_lua_test source)
 	get_filename_component (name ${source} NAME)
 	add_test (
 		NAME ${name}
-		COMMAND "lua" ${source}
+		COMMAND ${LUA_EXECUTABLE} ${source}
 	)
 
 	set_property (
