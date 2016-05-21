@@ -97,6 +97,9 @@ Some general things you can do with each class are:
 - [Create](@ref ksNew) and [Delete](@ref ksDel)
 - Append [a single key](@ref ksAppendKey) or an
 entire [KeySet](@ref ksAppend)
+- [Lookup keys](@ref ksLookup)
+- Pop [the last key](@ref ksPop), [a key by name](@ref ksLookup),
+  or [every key](@ref ksCopy)
 - [Work with](@ref ksNext) its [internal cursor](@ref ksCurrent)
 - See [class documentation](@ref keyset) for more
 
