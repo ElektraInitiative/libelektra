@@ -1141,7 +1141,7 @@ KeySet * ksCut (KeySet * ks, const Key * cutpoint)
  *
  * The reference counter will be decremented by one.
  *
- * The KeySets cursor will not be effected if it did not
+ * The KeySets cursor will not be affected if it did not
  * point to the popped key.
  *
  * @note You need to keyDel() the key afterwards, if
@@ -1286,7 +1286,7 @@ Key * ksCurrent (const KeySet * ks)
 /**
  * Return the first key in the KeySet.
  *
- * The KeySets cursor will not be effected.
+ * The KeySets cursor will not be affected.
  *
  * If ksCurrent()==ksHead() you know you are
  * on the first key.
@@ -1311,7 +1311,7 @@ Key * ksHead (const KeySet * ks)
 /**
  * Return the last key in the KeySet.
  *
- * The KeySets cursor will not be effected.
+ * The KeySets cursor will not be affected.
  *
  * If ksCurrent()==ksTail() you know you
  * are on the last key. ksNext() will return

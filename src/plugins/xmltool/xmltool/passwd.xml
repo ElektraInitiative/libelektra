@@ -19,8 +19,8 @@
 	 /etc/shadow
 
 	It defines 2 trees, system/users and system/groups
-	All keys must be owned by root with RO permissions to others, exept for the
-	password keys which should be readable only to root.
+	All keys must be owned by root with RO permissions to others, except for the
+	password keys which should be readable only by root.
 
 	In this example we'll define the 'jdoe' user and 'root' keys.
 

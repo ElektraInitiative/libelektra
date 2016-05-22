@@ -41,7 +41,7 @@
  *   place of a key within the key database.
  *   To be unique, it is always absolute and canonical.
  * - Key names are composed out of many *key name parts* split by a
- *   separator. These *key name parts* do not contain a unescaped
+ *   separator. These *key name parts* do not contain an unescaped
  *   separator.
  * - A *key base name* (see keySetBaseName() and keyAddBaseName()) is
  *   the last part of the key name.
@@ -919,7 +919,7 @@ static void elektraRemoveOneLevel (Key * key, int * avoidSlash)
 }
 
 /**
- * @brief Add a already escaped name to the keyname.
+ * @brief Add an already escaped name to the keyname.
  *
  * The same way as in keySetName() this method finds the canonical pathname:
  * - it will ignore /./
