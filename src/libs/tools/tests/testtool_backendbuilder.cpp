@@ -618,7 +618,7 @@ static int checkconfDelete (ckdb::Key * errorKey, ckdb::KeySet * config)
 	return 1;
 }
 
-TEST (BackendBuilder, checkconfOkRemoved)
+TEST (BackendBuilder, checkconfOkRemovedPluginConfig)
 {
 	using namespace kdb;
 	using namespace kdb::tools;
@@ -635,7 +635,55 @@ TEST (BackendBuilder, checkconfOkRemoved)
 	pluginConfig.append (a);
 	spec.appendConfig (pluginConfig);
 	bb.addPlugin (spec);
-	// we expect b to be added now
+	// we expect a to be removed now
 	spec = *bb.begin ();
 	EXPECT_THROW (spec.getConfig ().get<std::string> ("user/a"), KeyNotFoundException);
+}
+
+TEST (BackendBuilder, checkconfOkRemovedBackendConfig)
+{
+	using namespace kdb;
+	using namespace kdb::tools;
+	std::shared_ptr<MockPluginDatabase> mpd = std::make_shared<MockPluginDatabase> ();
+	mpd->data[PluginSpec ("checkconf1")]["provides"] = "test123";
+	mpd->setCheckconfFunction (checkconfDelete);
+	BackendBuilderInit bbi (mpd);
+	BackendBuilder bb (bbi);
+	PluginSpec spec ("checkconf1");
+	KeySet pluginConfig;
+	spec.appendConfig (pluginConfig);
+	KeySet backendConfig;
+	Key b;
+	b.setName ("system/b");
+	b.setString ("xyz");
+	backendConfig.append (b);
+	bb.setBackendConfig (backendConfig);
+	bb.addPlugin (spec);
+	// we expect b to be removed now
+	spec = *bb.begin ();
+	EXPECT_THROW (bb.getBackendConfig ().get<std::string> ("system/b"), KeyNotFoundException);
+}
+
+static int checkconfAppendBackendConf (ckdb::Key * errorKey, ckdb::KeySet * config)
+{
+	ckdb::ksAppendKey (config, ckdb::keyNew ("system/a", KEY_VALUE, "abc", KEY_END));
+	return 1;
+}
+
+TEST (BackendBuilder, checkconfOkAppendBackendConfig)
+{
+	using namespace kdb;
+	using namespace kdb::tools;
+	std::shared_ptr<MockPluginDatabase> mpd = std::make_shared<MockPluginDatabase> ();
+	mpd->data[PluginSpec ("checkconf1")]["provides"] = "test123";
+	mpd->setCheckconfFunction (checkconfAppendBackendConf);
+	BackendBuilderInit bbi (mpd);
+	BackendBuilder bb (bbi);
+	PluginSpec spec ("checkconf1");
+	KeySet pluginConfig;
+	spec.appendConfig (pluginConfig);
+	bb.addPlugin (spec);
+	// we expect b to be added now
+	spec = *bb.begin ();
+	EXPECT_EQ (bb.getBackendConfig ().get<std::string> ("system/a"), "abc");
 }

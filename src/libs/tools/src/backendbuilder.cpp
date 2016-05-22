@@ -421,7 +421,12 @@ void BackendBuilder::addPlugin (PluginSpec const & plugin)
 	if (checkConfFunction)
 	{
 		ckdb::Key * errorKey = ckdb::keyNew (0);
+
+		// merge plugin config and backend config together
 		ckdb::KeySet * pluginConfig = newPlugin.getConfig ().dup ();
+		ckdb::ksAppend (pluginConfig, backendConf.getKeySet ());
+
+		// call the plugin's checkconf function
 		int checkResult = checkConfFunction (errorKey, pluginConfig);
 		if (checkResult == -1)
 		{
@@ -430,8 +435,16 @@ void BackendBuilder::addPlugin (PluginSpec const & plugin)
 		}
 		else if (checkResult == 1)
 		{
+			// separate plugin config from the backend config
+			ckdb::Key * backendParent = ckdb::keyNew ("system/", KEY_END);
+			ckdb::KeySet * newBackendConfig = ckdb::ksCut (pluginConfig, backendParent);
+
+			// take over the new configuration
 			KeySet modifiedPluginConfig = KeySet (pluginConfig);
+			KeySet modifiedBackendConfig = KeySet (newBackendConfig);
+
 			newPlugin.setConfig (modifiedPluginConfig);
+			setBackendConfig (modifiedBackendConfig);
 		}
 		else
 		{
