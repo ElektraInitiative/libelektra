@@ -445,6 +445,8 @@ void BackendBuilder::addPlugin (PluginSpec const & plugin)
 
 			newPlugin.setConfig (modifiedPluginConfig);
 			setBackendConfig (modifiedBackendConfig);
+
+			ckdb::keyDel (backendParent);
 		}
 		else
 		{
