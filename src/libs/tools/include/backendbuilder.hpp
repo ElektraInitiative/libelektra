@@ -94,6 +94,9 @@ private:
 	void removeProvided (std::vector<std::string> & needs) const;
 	void removeMetadata (std::set<std::string> & needsMetadata) const;
 
+protected:
+	KeySet backendConf;
+
 public:
 	explicit BackendBuilder (BackendBuilderInit const & bbi = BackendBuilderInit ());
 
@@ -147,6 +150,9 @@ public:
 	void resolveRecommends ();
 
 	void fillPlugins (BackendInterface & b) const;
+
+	void setBackendConfig (KeySet const & ks);
+	KeySet getBackendConfig ();
 };
 
 /**
@@ -168,7 +174,6 @@ public:
 class MountBackendBuilder : public MountBackendInterface, public BackendBuilder
 {
 	Key mountpoint;
-	KeySet backendConf;
 
 	/**
 	 * Contains the keys of system/elektra/mountpoints.
@@ -190,10 +195,6 @@ public:
 	std::string getMountpoint () const;
 
 	void setBackendConfig (KeySet const & ks);
-	KeySet getBackendConfig ()
-	{
-		return backendConf;
-	}
 
 	void useConfigFile (std::string file);
 	std::string getConfigFile () const;

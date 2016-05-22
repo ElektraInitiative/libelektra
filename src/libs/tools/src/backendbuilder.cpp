@@ -459,6 +459,16 @@ void BackendBuilder::fillPlugins (BackendInterface & b) const
 	}
 }
 
+void BackendBuilder::setBackendConfig (KeySet const & ks)
+{
+	backendConf = ks;
+}
+
+KeySet BackendBuilder::getBackendConfig ()
+{
+	return backendConf;
+}
+
 GlobalPluginsBuilder::GlobalPluginsBuilder (BackendBuilderInit const & bbi) : BackendBuilder (bbi)
 {
 }
@@ -520,7 +530,7 @@ std::string MountBackendBuilder::getMountpoint () const
 
 void MountBackendBuilder::setBackendConfig (KeySet const & ks)
 {
-	backendConf = ks;
+	BackendBuilder::setBackendConfig (ks);
 }
 
 void MountBackendBuilder::useConfigFile (std::string file)
