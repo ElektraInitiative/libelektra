@@ -9,6 +9,7 @@
 #ifndef EXPORT_H
 #define EXPORT_H
 
+#include "coloredkdbio.hpp"
 #include <command.hpp>
 #include <kdb.hpp>
 
@@ -23,7 +24,7 @@ public:
 
 	virtual std::string getShortOptions () override
 	{
-		return "Ec";
+		return "EcC";
 	}
 
 	virtual std::string getSynopsis () override

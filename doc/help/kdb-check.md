@@ -28,6 +28,8 @@ Special values are returned upon exit to represent the outcome of a check.
   Explain what is happening.
 - `-c`, `--plugins-config`=<pluginconfig>:
   Add a plugin configuration in addition to `/module`.
+- `-C`, `--color`=[when]:
+  Print never/auto(default)/always colored output.
 
 
 ## RETURN VALUES

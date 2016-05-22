@@ -9,8 +9,8 @@
 #ifndef GET_HPP
 #define GET_HPP
 
+#include "coloredkdbio.hpp"
 #include <command.hpp>
-
 #include <kdb.hpp>
 
 class GetCommand : public Command
@@ -21,7 +21,7 @@ public:
 
 	virtual std::string getShortOptions () override
 	{
-		return "anv";
+		return "anvC";
 	}
 
 	virtual std::string getSynopsis () override
