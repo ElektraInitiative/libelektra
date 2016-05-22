@@ -114,9 +114,12 @@ function (verify_lua_executable_version)
 	)
 	
 	# Compare only MAJOR.MINOR
-	string (SUBSTRING ${LUABIN_VERSION_STRING} "4" "3" LUABIN_VERSION_STRING)
-	string (COMPARE EQUAL ${LUABIN_VERSION_STRING} "${_LUA_VERSION_MAJOR}.${_LUA_VERSION_MINOR}" VERSION_MATCHES)
-	
+	if (NOT LUABIN_VERSION_STRING STREQUAL "")
+		string (SUBSTRING ${LUABIN_VERSION_STRING} "4" "3" LUABIN_VERSION_STRING)
+		string (COMPARE EQUAL ${LUABIN_VERSION_STRING} "${_LUA_VERSION_MAJOR}.${_LUA_VERSION_MINOR}" VERSION_MATCHES)
+	else()
+		set (VERSION_MATCHES FALSE)
+	endif()
 	if (NOT VERSION_MATCHES)
 		message ("Warning: Lua executable does not match lua library version")
 		message ("Lua library: ${_LUA_VERSION_MAJOR}.${_LUA_VERSION_MINOR}")
