@@ -1,29 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <!--
-	 
+
 	Subversion stuff
-	 
+
 	$Id$
-	 
+
 	 -->
 
 <!--
-	 
+
 	This specification-by-example defines a key tree layout for users, groups and password.
-	 
+
 	Its purpose is similar to the Unix well-known files:
-	 
+
 	 /etc/passwd
 	 /etc/group
 	 /etc/shadow
-	 
+
 	It defines 2 trees, system/users and system/groups
-	All keys must be owned by root with RO permissions to others, exept for the
-	password keys which should be readable only to root.
-	 
+	All keys must be owned by root with RO permissions to others, except for the
+	password keys which should be readable only by root.
+
 	In this example we'll define the 'jdoe' user and 'root' keys.
-	 
+
 	Avi Alkalay
 	<avi at unix.sh>
 	Nov 2005
@@ -65,28 +65,28 @@
 
 		<!-- Obsolete key.... from /etc/passwd -->
 		<key basename="password" mode="0644" value="x"/>
-		
+
 		<!-- Real password goes here in encrypted form -->
 		<key basename="shadowPassword" mode="0600" value="an encrypted passwd should appear here"/>
 	</key>
 
-	
+
 	<!-- The group which jdoe is member of -->
 	<key basename="groups/guests">
 		<key basename="gid" value="800"/>
 		<key basename="members" value="jdoe,miriam,ana"/>
 	</key>
-	
 
 
 
 
 
 
-	
+
+
 
 	<!-- The 'root' record -->
-	
+
 	<key basename="users/root">
 		<key basename="gecos" value="root"/>
 		<key basename="uid" value="0"/>
@@ -116,6 +116,6 @@
 		<key basename="gid" value="3"/>
 		<key basename="members" value="root,bin,adm"/>
 	</key>
-	
+
 
 </keyset>

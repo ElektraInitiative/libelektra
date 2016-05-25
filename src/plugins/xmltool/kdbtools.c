@@ -22,10 +22,10 @@
  *
  * See keyToStream() for an example of a <key> node.
  *
- * This function is completelly dependent on libxml.
+ * This function is completely dependent on libxml.
  *
- * @param ks where to put the resulting reded key
- * @param context a prent key name, so a full name can be calculated
+ * @param ks where to put the resulting read key
+ * @param context a parent key name, so a full name can be calculated
  *        if the XML node for the current key only provides a basename
  * @param reader where to read from
  */
@@ -81,7 +81,7 @@ static int consumeKeyNode (KeySet * ks, const char * context, xmlTextReaderPtr r
 		}
 
 
-		/* test for a short value attribute, instead of <value> bellow */
+		/* test for a short value attribute, instead of <value> below */
 		buffer = xmlTextReaderGetAttribute (reader, (const xmlChar *)"value");
 		if (buffer)
 		{
@@ -333,7 +333,7 @@ static int consumeKeySetNode (KeySet * ks, const char * context, xmlTextReaderPt
 
 
 /*
- * This is the workhorse behind for ksFromXML() and ksFromXMLfile().
+ * This is the workhorse behind ksFromXML() and ksFromXMLfile().
  * It will process the entire XML document in reader and convert and
  * save it in ks KeySet. Each node is processed by the processNode() function.
  *
@@ -423,13 +423,13 @@ static int isValidXML(xmlDocPtr doc,char *schemaPath)
  *
  * To check if the xml file is valid (best before you read from it):
  * @code
-#include 
+#include
 char schemaPath[513];
 schemaPath[0]=0;
 ret=kdbGetString(handle, KDB_SCHEMA_PATH_KEY,schemaPath,sizeof(schemaPath));
 
 if (ret==0) ret = isValidXML(filename,schemaPath);
-else ret = isValidXML(filename,KDB_SCHEMA_PATH); 
+else ret = isValidXML(filename,KDB_SCHEMA_PATH);
  * @endcode
  *
  * @retval -1 on error
@@ -476,7 +476,7 @@ int ksFromXMLfile (KeySet * ks, const char * filename)
  * schema, process nodes, convert and save it in the @p ks KeySet.
  *
  * @param ks keyset
- * @param fd POSIX file descriptior
+ * @param fd POSIX file descriptor
  * @ingroup stream
  */
 int ksFromXML (KeySet * ks, int fd)
