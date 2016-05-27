@@ -25,6 +25,7 @@ include_directories (
 	${Qt5Qml_INCLUDE_DIRS}
 	${Qt5Widgets_INCLUDE_DIRS}
 	${Qt5Test_INCLUDE_DIRS}
+	${Qt5Svg_INCLUDE_DIRS}
 	src/markdownconverter
 	)
 
@@ -49,11 +50,13 @@ target_link_libraries(qt-gui ${DISCOUNT_LIBRARIES})
 
 target_link_libraries(qt-gui ${Qt5Quick_LIBRARIES} ${Qt5Gui_LIBRARIES}
 	${Qt5Core_LIBRARIES} ${Qt5Qml_LIBRARIES} ${Qt5Widgets_LIBRARIES}
-	${Qt5Test_LIBRARIES})
+	${Qt5Svg_LIBRARIES} ${Qt5Test_LIBRARIES})
 tool_link_elektratools(qt-gui elektra-ease)
 
 install(TARGETS qt-gui DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
-install(FILES org.elektra.elektra-qt.desktop DESTINATION share/applications)
+set_target_properties(qt-gui PROPERTIES OUTPUT_NAME "elektra-qt-editor")
+install(TARGETS qt-gui DESTINATION bin)
+install(FILES org.libelektra.elektra-qt-editor.desktop DESTINATION share/applications)
 install(FILES ../../../doc/images/circle.svg DESTINATION share/icons/hicolor/scalable/apps RENAME elektra.svg)
 
 generate_manpage (kdb-qt-gui FILENAME ${CMAKE_CURRENT_SOURCE_DIR}/README.md)

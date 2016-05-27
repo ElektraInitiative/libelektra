@@ -39,14 +39,16 @@ void GUISettings::setDefaults ()
 	m_nodeWithoutKeyColor = palette.windowText ().color ();
 
 	palette.setCurrentColorGroup (QPalette::Disabled);
+
+	m_useSystemIconTheme = true;
 }
 
 GUISettings::GUISettings (QObject * parentGUISettings)
 : QObject (parentGUISettings), m_profile ("/current/"), m_base ("/sw/elektra/qtgui/#0/"), m_highlightColorString ("color/highlight"),
   m_frameColorString ("color/frame"), m_nodeWKeyColorString ("color/node/with"), m_nodeWOKeyColorString ("color/node/without"),
-  m_legacyBase ("/sw/libelektra.org/qt-gui/#0/"), m_legacyHighlightColorString ("highlight_color"),
-  m_legacyFrameColorString ("frame_color"), m_legacyNodeWKeyColorString ("node_with_key_color"),
-  m_legacyNodeWOKeyColorString ("node_without_key_color")
+  m_useSystemIconThemeString ("icons/system"), m_legacyBase ("/sw/libelektra.org/qt-gui/#0/"),
+  m_legacyHighlightColorString ("highlight_color"), m_legacyFrameColorString ("frame_color"),
+  m_legacyNodeWKeyColorString ("node_with_key_color"), m_legacyNodeWOKeyColorString ("node_without_key_color")
 {
 	// initialize with hardcoded default colors
 	setDefaults ();
@@ -75,12 +77,18 @@ QColor GUISettings::nodeWithoutKeyColor () const
 	return m_nodeWithoutKeyColor;
 }
 
+
+bool GUISettings::useSystemIconTheme () const
+{
+	return m_useSystemIconTheme;
+}
+
 void GUISettings::setHighlightColor (const QColor & color)
 {
 	if (color != m_highlightColor)
 	{
 		m_highlightColor = color;
-		append (m_highlightColorString, color);
+		appendColor (m_highlightColorString, color);
 
 		emit highlightColorChanged ();
 	}
@@ -91,7 +99,7 @@ void GUISettings::setFrameColor (const QColor & color)
 	if (color != m_frameColor)
 	{
 		m_frameColor = color;
-		append (m_frameColorString, color);
+		appendColor (m_frameColorString, color);
 
 		emit frameColorChanged ();
 	}
@@ -102,7 +110,7 @@ void GUISettings::setNodeWithKeyColor (const QColor & color)
 	if (color != m_nodeWithKeyColor)
 	{
 		m_nodeWithKeyColor = color;
-		append (m_nodeWKeyColorString, color);
+		appendColor (m_nodeWKeyColorString, color);
 
 		emit nodeWithKeyColorChanged ();
 	}
@@ -113,16 +121,32 @@ void GUISettings::setNodeWithoutKeyColor (const QColor & color)
 	if (color != m_nodeWithoutKeyColor)
 	{
 		m_nodeWithoutKeyColor = color;
-		append (m_nodeWOKeyColorString, color);
+		appendColor (m_nodeWOKeyColorString, color);
 
 		emit nodeWithoutKeyColorChanged ();
 	}
 }
 
-void GUISettings::append (const std::string & keyName, const QColor & color)
+void GUISettings::useSystemIconTheme (const bool & use)
+{
+	if (use != m_useSystemIconTheme)
+	{
+		m_useSystemIconTheme = use;
+		appendBool (m_useSystemIconThemeString, use);
+		emit useSystemIconThemeChanged ();
+	}
+}
+
+void GUISettings::appendColor (const std::string & keyName, const QColor & color)
 {
 	std::string name = "user" + m_base + m_profile + keyName;
 	m_config.append (Key (name, KEY_VALUE, color.name ().toStdString ().c_str (), KEY_END));
+}
+
+void GUISettings::appendBool (const std::string & keyName, const bool value)
+{
+	std::string name = "user" + m_base + m_profile + keyName;
+	m_config.append (Key (name, KEY_VALUE, (value ? "true" : "false"), KEY_END));
 }
 
 void GUISettings::lookupColor (const std::string & keyName, QColor & toSet) const
@@ -134,6 +158,22 @@ void GUISettings::lookupColor (const std::string & keyName, QColor & toSet) cons
 	try
 	{
 		toSet = key.get<QColor> ();
+	}
+	catch (const KeyTypeConversion & ex)
+	{
+		qDebug () << ex.what ();
+	}
+}
+
+void GUISettings::lookupBool (const std::string & keyName, bool & value) const
+{
+	Key key = m_config.lookup (keyName);
+
+	if (!key) return; // nothing to do
+
+	try
+	{
+		value = (key.get<std::string> ().compare ("true") == 0 ? true : false);
 	}
 	catch (const KeyTypeConversion & ex)
 	{
@@ -203,6 +243,7 @@ void GUISettings::getKDB ()
 		lookupColor (m_base + profile + m_frameColorString, m_frameColor);
 		lookupColor (m_base + profile + m_nodeWKeyColorString, m_nodeWithKeyColor);
 		lookupColor (m_base + profile + m_nodeWOKeyColorString, m_nodeWithoutKeyColor);
+		lookupBool (m_base + profile + m_useSystemIconThemeString, m_useSystemIconTheme);
 	}
 }
 

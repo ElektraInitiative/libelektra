@@ -18,7 +18,9 @@ TextField {
 			rightMargin: defaultMargins
 			verticalCenter: parent.verticalCenter
 		}
-		source: "icons/edit-clear.png"
+		sourceSize.width: 16
+		sourceSize.height: 16
+		source: (guiSettings.useSystemIconTheme) ? "image://theme/edit-clear" : "icons/edit-clear.png"
 		opacity: 0
 
 		MouseArea {

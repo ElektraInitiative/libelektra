@@ -12,6 +12,7 @@ ToolBar {
 		ToolButton {
 			id:tbNew
 			iconSource: "icons/document-new.png"
+			iconName: (guiSettings.useSystemIconTheme) ? "document-new" : ""
 			enabled: guiActions.newKeyAction.enabled
 			tooltip: qsTr("New ...")
 			menu: Menu {
@@ -96,7 +97,9 @@ ToolBar {
 		}
 		Image {
 			id: searchLogo
-			source: "icons/edit-find.png"
+			sourceSize.width: 16
+			sourceSize.height: 16
+			source: (guiSettings.useSystemIconTheme) ? "image://theme/edit-find" : "icons/edit-find.png"
 		}
 		SearchField {
 			id: searchField

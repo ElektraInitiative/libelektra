@@ -21,6 +21,8 @@ RESOURCES += \
 
 OTHER_FILES +=	$$PWD/qml/*.qml\
 				$$PWD/qml/*.js
+				
+TRANSLATIONS = qml/i18n/lang_de_DE.tx
 
 SUBDIRS += \
 	unittest/unittest.pro \

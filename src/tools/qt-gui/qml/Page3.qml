@@ -12,6 +12,7 @@ WizardTemplate {
 
 	buttonRow.nextButton.action.text: qsTr("&Finish")
 	buttonRow.nextButton.action.iconSource: "icons/dialog-ok.png"
+	buttonRow.nextButton.action.iconName: (guiSettings.useSystemIconTheme) ? "dialog-ok" : ""
 	buttonRow.nextButton.action.enabled: textField.text !== ""
 	buttonRow.nextButton.action.onTriggered: {
 		guiBackend.addPath(textField.text)
