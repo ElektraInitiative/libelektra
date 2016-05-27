@@ -4,7 +4,7 @@ import QtQuick.Controls 1.1
 
 BasicWindow {
 
-	title: qsTr("About Elektra Editor")
+	title: qsTr("About Elektra Qt Editor")
 
 	width: Math.ceil(mainWindow.width*0.25)
 	height: Math.ceil(mainWindow.width*0.25)
@@ -16,11 +16,11 @@ BasicWindow {
 		RowLayout {
 			spacing: 2*defaultMargins
 			Image {
-				source: "icons/elektra-logo.png"
+				source: (guiSettings.useSystemIconTheme) ? "image://theme/elektra" : "icons/elektra.png"
 			}
 			Column {
 				Text {
-					text: "Elektra Editor"
+					text: "Elektra Qt Editor"
 					font.bold: true
 					color: activePalette.windowText
 				}

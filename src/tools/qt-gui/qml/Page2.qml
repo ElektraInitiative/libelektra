@@ -75,6 +75,7 @@ Item {
 				implicitHeight: pluginDropdown.height
 
 				iconSource: "icons/list-add.png"
+				iconName: (guiSettings.useSystemIconTheme) ? "list-add" : ""
 				tooltip: qsTr("Add Plugin")
 
 				onClicked: {
@@ -223,6 +224,7 @@ Item {
 			anchors.top: pluginInfoRectangle.top
 
 			iconSource:  "icons/applications-system"
+			iconName:  (guiSettings.useSystemIconTheme) ? "applications-system" : ""
 			tooltip: qsTr("Edit Plugin Configuration")
 
 			onClicked: {
@@ -277,6 +279,7 @@ Item {
 		PropertyChanges {
 			target: configInfoSwitch
 			iconSource: "icons/help-about.png"
+			iconName: (guiSettings.useSystemIconTheme) ? "help-about" : ""
 			tooltip: qsTr("Show Plugin Info")
 		}
 	}
@@ -313,6 +316,7 @@ Item {
 			action: Action {
 				text: qsTr("New Key ...")
 				iconSource: "icons/document-new.png"
+				iconName: (guiSettings.useSystemIconTheme) ? "document-new" : ""
 				tooltip: qsTr("New Key")
 				enabled: contextMenuEnabled
 				onTriggered: newPluginConfigWindow.show()
@@ -322,6 +326,7 @@ Item {
 			id: p2cmEdit
 			action: Action {
 				iconSource: "icons/edit-rename.png"
+				iconName: (guiSettings.useSystemIconTheme) ? "edit-rename" : ""
 				text: qsTr("Edit ...")
 				tooltip: qsTr("Edit")
 				enabled: contextMenuEnabled
@@ -338,6 +343,7 @@ Item {
 			action: Action {
 				text: qsTr("Delete")
 				iconSource: "icons/document-close.png"
+				iconName: (guiSettings.useSystemIconTheme) ? "document-close" : ""
 				tooltip: qsTr("Delete")
 				shortcut: StandardKey.Delete
 				enabled: contextMenuEnabled

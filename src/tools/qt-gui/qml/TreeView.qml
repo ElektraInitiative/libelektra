@@ -148,7 +148,9 @@ ScrollView {
 								Image {
 									id: expander
 
-									source: "icons/arrow-right.png"
+									source: (guiSettings.useSystemIconTheme) ? "image://theme/arrow-right" : "icons/arrow-right.png"
+									sourceSize.height: 16
+									sourceSize.width: 16
 									opacity: mouse.containsMouse ? 1 : 0.7
 									anchors.centerIn: parent
 									rotation: itemLoader.expanded ? 90 : 0

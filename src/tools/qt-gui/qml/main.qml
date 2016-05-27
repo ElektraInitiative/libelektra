@@ -15,7 +15,7 @@ ApplicationWindow {
 	width: Screen.desktopAvailableWidth
 	height: Screen.desktopAvailableHeight
 
-	title: "Elektra Editor"
+	title: "Elektra Qt Editor"
 
 	onClosing: {
 		if (!undoManager.isClean()){
@@ -171,8 +171,8 @@ ApplicationWindow {
 		id: pluginInfo
 	}
 
-	ChooseColorWindow {
-		id: chooseColorWindow
+	AppearanceSettingsWindow {
+		id: appearanceSettingsWindow
 	}
 
 	//**Dialogs************************************************************************************************//
@@ -204,19 +204,19 @@ ApplicationWindow {
 		onAccepted: {
 			if (type === "highlight" && guiSettings.highlightColor !== colorDialog.color) {
 				guiSettings.highlightColor = colorDialog.color
-				chooseColorWindow.colorEdited = true
+				appearanceSettingsWindow.colorEdited = true
 			}
 			else if (type === "frame" && guiSettings.frameColor !== colorDialog.color) {
 				guiSettings.frameColor =  colorDialog.color
-				chooseColorWindow.colorEdited = true
+				appearanceSettingsWindow.colorEdited = true
 			}
 			else if (type === "nodeWith" && guiSettings.nodeWithKeyColor !== colorDialog.color) {
 				guiSettings.nodeWithKeyColor = colorDialog.color
-				chooseColorWindow.colorEdited = true
+				appearanceSettingsWindow.colorEdited = true
 			}
 			else if (type === "nodeWithout" && guiSettings.nodeWithoutKeyColor !== colorDialog.color) {
 				guiSettings.nodeWithoutKeyColor = colorDialog.color
-				chooseColorWindow.colorEdited = true
+				appearanceSettingsWindow.colorEdited = true
 			}
 
 			close()
@@ -472,6 +472,7 @@ ApplicationWindow {
 					id: searchResultsCloseButton
 
 					iconSource: "icons/dialog-close.png"
+					iconName: (guiSettings.useSystemIconTheme) ? "dialog-close" : ""
 					anchors.right: parent.right
 					anchors.top: parent.top
 					anchors.margins: defaultSpacing

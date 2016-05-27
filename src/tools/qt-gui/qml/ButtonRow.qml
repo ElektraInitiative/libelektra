@@ -22,6 +22,7 @@ RowLayout {
 		action: Action {
 			text: qsTr("&Next")
 			iconSource: "icons/go-next.png"
+			iconName: (guiSettings.useSystemIconTheme) ? "go-next" : ""
 		}
 	}
 	Button {
@@ -30,6 +31,7 @@ RowLayout {
 		action: Action {
 			text: qsTr("&Cancel")
 			iconSource: "icons/dialog-cancel.png"
+			iconName: (guiSettings.useSystemIconTheme) ? "dialog-cancel" : ""
 		}
 	}
 }

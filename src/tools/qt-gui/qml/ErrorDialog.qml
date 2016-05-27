@@ -30,14 +30,10 @@ BasicWindow {
 			Image {
 				id: icon
 				source: {
-					if (title === "Error")
-						"icons/dialog-error.png"
-					else if (title === "Information")
-						"icons/dialog-information.png"
-					else if (title === "Warning")
-						"icons/dialog-warning.png"
-					else
-						"icons/dialog-error.png"
+					if (title === "Error") (guiSettings.useSystemIconTheme) ? "image://theme/dialog-error" : "icons/dialog-error.png"
+					else if (title === "Information")(guiSettings.useSystemIconTheme) ? "image://theme/dialog-information" : "icons/dialog-information.png"
+					else if (title === "Warning") (guiSettings.useSystemIconTheme) ? "image://theme/dialog-warning" : "icons/dialog-warning.png"
+					else (guiSettings.useSystemIconTheme) ? "image://theme/dialog-error" : "icons/dialog-error.png"
 				}
 			}
 

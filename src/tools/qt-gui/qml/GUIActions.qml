@@ -23,13 +23,14 @@ Item {
 	property alias whatsThisAction: whatsThisAction
 	property alias pluginInfoAction: pluginInfoAction
 	property alias quitAction: quitAction
-	property alias chooseColorAction: chooseColorAction
+	property alias chooseAppearanceAction: chooseAppearanceAction
 
 	Action {
 		id: newKeyAction
 
 		text: qsTr("&Key ...")
 		iconSource: "icons/document-new.png"
+		iconName: (guiSettings.useSystemIconTheme) ? "document-new" : ""
 		tooltip: qsTr("New Key")
 		enabled: treeView.currentItem !== null
 		onTriggered: {
@@ -50,6 +51,7 @@ Item {
 
 		text: qsTr("&Array Entry ...")
 		iconSource: "icons/new-array.png"
+		iconName: (guiSettings.useSystemIconTheme) ? "view-grid" : ""
 		tooltip: qsTr("New Array Entry")
 		enabled: treeView.currentItem !== null
 		onTriggered: {
@@ -70,6 +72,7 @@ Item {
 
 		text: qsTr("Delete")
 		iconSource: "icons/document-close.png"
+		iconName: (guiSettings.useSystemIconTheme) ? "user-trash" : ""
 		tooltip: qsTr("Delete")
 		shortcut: StandardKey.Delete
 		enabled: !(searchResultsSelectedItem === null && treeView.currentNode === null && keyAreaSelectedItem === null)
@@ -88,6 +91,7 @@ Item {
 
 		text: qsTr("&Import Configuration ... ")
 		iconSource: "icons/import.png"
+		iconName: (guiSettings.useSystemIconTheme) ? "document-import" : ""
 		tooltip: qsTr("Import Configuration")
 		enabled: treeView.currentItem !== null
 		onTriggered: importDialog.show()
@@ -98,6 +102,7 @@ Item {
 
 		text: qsTr("E&xport Configuration ... ")
 		iconSource: "icons/export.png"
+		iconName: (guiSettings.useSystemIconTheme) ? "document-export" : ""
 		tooltip: qsTr("Export Configuration")
 		enabled: treeView.currentItem !== null
 		onTriggered: {
@@ -111,6 +116,7 @@ Item {
 
 		text: qsTr("Undo")
 		iconSource: "icons/edit-undo.png"
+		iconName: (guiSettings.useSystemIconTheme) ? "edit-undo" : ""
 		tooltip: qsTr("Undo")
 		shortcut: StandardKey.Undo
 		enabled: undoManager.canUndo
@@ -180,6 +186,7 @@ Item {
 
 		text: qsTr("Redo")
 		iconSource: "icons/edit-redo.png"
+		iconName: (guiSettings.useSystemIconTheme) ? "edit-redo" : ""
 		tooltip: qsTr("Redo")
 		shortcut: StandardKey.Redo
 		enabled: undoManager.canRedo
@@ -242,6 +249,7 @@ Item {
 
 		text: qsTr("Synchronize")
 		iconSource: "icons/view-refresh.png"
+		iconName: (guiSettings.useSystemIconTheme) ? "view-refresh" : ""
 		tooltip: qsTr("Synchronize")
 		shortcut: StandardKey.Refresh
 		onTriggered: {
@@ -256,6 +264,7 @@ Item {
 
 		text: qsTr("&Mount Backend ...")
 		iconSource: "icons/mount.png"
+		iconName: (guiSettings.useSystemIconTheme) ? "list-add" : ""
 		tooltip: qsTr("Mount Backend")
 		onTriggered: {
 			wizardLoader.usedNames = guiBackend.mountPoints()
@@ -268,6 +277,7 @@ Item {
 
 		text: qsTr("&Unmount Backend ...")
 		iconSource: "icons/unmount.png"
+		iconName: (guiSettings.useSystemIconTheme) ? "list-remove" : ""
 		tooltip: qsTr("Unmount Backend")
 		onTriggered: {
 			unmountBackendWindow.mountedBackendsView.model = treeView.treeModel.mountedBackends()
@@ -280,6 +290,7 @@ Item {
 		id: editAction
 
 		iconSource: "icons/edit-rename.png"
+		iconName: (guiSettings.useSystemIconTheme) ? "edit-rename" : ""
 		text: qsTr("Edit ...")
 		tooltip: qsTr("Edit")
 		enabled: !(treeView.currentNode === null && keyAreaSelectedItem === null && searchResultsSelectedItem === null)
@@ -297,6 +308,7 @@ Item {
 		id: cutAction
 
 		iconSource: "icons/edit-cut.png"
+		iconName: (guiSettings.useSystemIconTheme) ? "edit-cut" : ""
 		text: qsTr("Cut")
 		tooltip: qsTr("Cut")
 		shortcut: StandardKey.Cut
@@ -314,6 +326,7 @@ Item {
 		id: copyAction
 
 		iconSource: "icons/edit-copy.png"
+		iconName: (guiSettings.useSystemIconTheme) ? "edit-copy" : ""
 		text: qsTr("Copy")
 		tooltip: qsTr("Copy")
 		shortcut: StandardKey.Copy
@@ -331,6 +344,7 @@ Item {
 		id: pasteAction
 
 		iconSource: "icons/edit-paste.png"
+		iconName: (guiSettings.useSystemIconTheme) ? "edit-paste" : ""
 		text: qsTr("Paste")
 		tooltip: qsTr("Paste")
 		shortcut: StandardKey.Paste
@@ -342,8 +356,9 @@ Item {
 	Action {
 		id: aboutAction
 
-		text: qsTr("About E&lektra Editor")
-		iconSource: "icons/elektra-logo.png"
+		text: qsTr("About E&lektra Qt Editor")
+		iconSource: "icons/elektra.png"
+		iconName: (guiSettings.useSystemIconTheme) ? "elektra" : ""
 		onTriggered: aboutWindow.show()
 	}
 
@@ -352,6 +367,7 @@ Item {
 
 		text: qsTr("What's This?")
 		iconSource: "icons/whats_this.png"
+		iconName: (guiSettings.useSystemIconTheme) ? "help-contextual" : ""
 		onTriggered: helpMode ? helpMode = false : helpMode = true
 		shortcut: "Shift+F1"
 	}
@@ -360,6 +376,7 @@ Item {
 		id: pluginInfoAction
 		text: qsTr("Show &Plugin Info ...")
 		iconSource: "icons/help-about.png"
+		iconName: (guiSettings.useSystemIconTheme) ? "help-about" : ""
 		onTriggered: pluginInfo.show()
 	}
 
@@ -367,6 +384,7 @@ Item {
 		id: quitAction
 		text: qsTr("Quit")
 		iconSource: "icons/application-exit.png"
+		iconName: (guiSettings.useSystemIconTheme) ? "application-exit" : ""
 		onTriggered: {
 			if(!undoManager.isClean())
 				exitDialog.open()
@@ -377,10 +395,11 @@ Item {
 	}
 
 	Action {
-		id: chooseColorAction
-		text: qsTr("Choose Colors ...")
-		iconSource: "icons/color.png"
-		onTriggered: chooseColorWindow.show()
+		id: chooseAppearanceAction
+		text: qsTr("Choose Appearance ...")
+		iconSource: "icons/applications-system.png"
+		iconName: (guiSettings.useSystemIconTheme) ? "configure" : ""
+		onTriggered: appearanceSettingsWindow.show()
 	}
 }
 
