@@ -1,6 +1,7 @@
 import QtQuick 2.2
 import QtQuick.Layouts 1.1
 import QtQuick.Controls 1.1
+import "HelperFunctions.js" as Helper
 
 BasicWindow {
 
@@ -16,7 +17,7 @@ BasicWindow {
 		RowLayout {
 			spacing: 2*defaultMargins
 			Image {
-				source: "icons/elektra-logo.png"
+				source: Helper.useIconSource("elektra")
 			}
 			Column {
 				Text {

@@ -5,6 +5,7 @@ import QtQuick.Controls.Styles 1.1
 import QtQuick.Layouts 1.1
 import QtQuick.Dialogs 1.1
 import "MainFunctions.js" as MFunctions
+import "HelperFunctions.js" as Helper
 import "ErrorDialogCreator.js" as ErrorDialog
 import org.libelektra.qtgui 1.0
 
@@ -472,6 +473,7 @@ ApplicationWindow {
 					id: searchResultsCloseButton
 
 					iconSource: "icons/dialog-close.png"
+					iconName: Helper.useIcon("dialog-close")
 					anchors.right: parent.right
 					anchors.top: parent.top
 					anchors.margins: defaultSpacing

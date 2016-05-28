@@ -1,6 +1,7 @@
 import QtQuick 2.2
 import QtQuick.Controls 1.2
 import "MainFunctions.js" as MFunctions
+import "HelperFunctions.js" as Helper
 
 Item {
 	property alias newKeyAction: newKeyAction
@@ -30,6 +31,7 @@ Item {
 
 		text: qsTr("&Key ...")
 		iconSource: "icons/document-new.png"
+		iconName: Helper.useIcon("document-new")
 		tooltip: qsTr("New Key")
 		enabled: treeView.currentItem !== null
 		onTriggered: {
@@ -50,6 +52,7 @@ Item {
 
 		text: qsTr("&Array Entry ...")
 		iconSource: "icons/new-array.png"
+		iconName: Helper.useIcon("view-grid")
 		tooltip: qsTr("New Array Entry")
 		enabled: treeView.currentItem !== null
 		onTriggered: {
@@ -70,6 +73,7 @@ Item {
 
 		text: qsTr("Delete")
 		iconSource: "icons/document-close.png"
+		iconName: Helper.useIcon("user-trash")
 		tooltip: qsTr("Delete")
 		shortcut: StandardKey.Delete
 		enabled: !(searchResultsSelectedItem === null && treeView.currentNode === null && keyAreaSelectedItem === null)
@@ -88,6 +92,7 @@ Item {
 
 		text: qsTr("&Import Configuration ... ")
 		iconSource: "icons/import.png"
+		iconName: Helper.useIcon("document-import")
 		tooltip: qsTr("Import Configuration")
 		enabled: treeView.currentItem !== null
 		onTriggered: importDialog.show()
@@ -98,6 +103,7 @@ Item {
 
 		text: qsTr("E&xport Configuration ... ")
 		iconSource: "icons/export.png"
+		iconName: Helper.useIcon("document-export")
 		tooltip: qsTr("Export Configuration")
 		enabled: treeView.currentItem !== null
 		onTriggered: {
@@ -111,6 +117,7 @@ Item {
 
 		text: qsTr("Undo")
 		iconSource: "icons/edit-undo.png"
+		iconName: Helper.useIcon("edit-undo")
 		tooltip: qsTr("Undo")
 		shortcut: StandardKey.Undo
 		enabled: undoManager.canUndo
@@ -180,6 +187,7 @@ Item {
 
 		text: qsTr("Redo")
 		iconSource: "icons/edit-redo.png"
+		iconName: Helper.useIcon("edit-redo")
 		tooltip: qsTr("Redo")
 		shortcut: StandardKey.Redo
 		enabled: undoManager.canRedo
@@ -242,6 +250,7 @@ Item {
 
 		text: qsTr("Synchronize")
 		iconSource: "icons/view-refresh.png"
+		iconName: Helper.useIcon("view-refresh")
 		tooltip: qsTr("Synchronize")
 		shortcut: StandardKey.Refresh
 		onTriggered: {
@@ -256,6 +265,7 @@ Item {
 
 		text: qsTr("&Mount Backend ...")
 		iconSource: "icons/mount.png"
+		iconName: Helper.useIcon("list-add")
 		tooltip: qsTr("Mount Backend")
 		onTriggered: {
 			wizardLoader.usedNames = guiBackend.mountPoints()
@@ -268,6 +278,7 @@ Item {
 
 		text: qsTr("&Unmount Backend ...")
 		iconSource: "icons/unmount.png"
+		iconName: Helper.useIcon("list-remove")
 		tooltip: qsTr("Unmount Backend")
 		onTriggered: {
 			unmountBackendWindow.mountedBackendsView.model = treeView.treeModel.mountedBackends()
@@ -280,6 +291,7 @@ Item {
 		id: editAction
 
 		iconSource: "icons/edit-rename.png"
+		iconName: Helper.useIcon("edit-rename")
 		text: qsTr("Edit ...")
 		tooltip: qsTr("Edit")
 		enabled: !(treeView.currentNode === null && keyAreaSelectedItem === null && searchResultsSelectedItem === null)
@@ -297,6 +309,7 @@ Item {
 		id: cutAction
 
 		iconSource: "icons/edit-cut.png"
+		iconName: Helper.useIcon("edit-cut")
 		text: qsTr("Cut")
 		tooltip: qsTr("Cut")
 		shortcut: StandardKey.Cut
@@ -314,6 +327,7 @@ Item {
 		id: copyAction
 
 		iconSource: "icons/edit-copy.png"
+		iconName: Helper.useIcon("edit-copy")
 		text: qsTr("Copy")
 		tooltip: qsTr("Copy")
 		shortcut: StandardKey.Copy
@@ -331,6 +345,7 @@ Item {
 		id: pasteAction
 
 		iconSource: "icons/edit-paste.png"
+		iconName: Helper.useIcon("edit-paste")
 		text: qsTr("Paste")
 		tooltip: qsTr("Paste")
 		shortcut: StandardKey.Paste
@@ -343,7 +358,8 @@ Item {
 		id: aboutAction
 
 		text: qsTr("About E&lektra Editor")
-		iconSource: "icons/elektra-logo.png"
+		iconSource: "icons/elektra.png"
+		iconName: Helper.useIcon("elektra")
 		onTriggered: aboutWindow.show()
 	}
 
@@ -352,6 +368,7 @@ Item {
 
 		text: qsTr("What's This?")
 		iconSource: "icons/whats_this.png"
+		iconName: Helper.useIcon("help-contextual")
 		onTriggered: helpMode ? helpMode = false : helpMode = true
 		shortcut: "Shift+F1"
 	}
@@ -360,6 +377,7 @@ Item {
 		id: pluginInfoAction
 		text: qsTr("Show &Plugin Info ...")
 		iconSource: "icons/help-about.png"
+		iconName: Helper.useIcon("help-about")
 		onTriggered: pluginInfo.show()
 	}
 
@@ -367,6 +385,7 @@ Item {
 		id: quitAction
 		text: qsTr("Quit")
 		iconSource: "icons/application-exit.png"
+		iconName: Helper.useIcon("application-exit")
 		onTriggered: {
 			if(!undoManager.isClean())
 				exitDialog.open()
@@ -380,6 +399,7 @@ Item {
 		id: chooseAppearanceAction
 		text: qsTr("Choose Appearance ...")
 		iconSource: "icons/color.png"
+		iconName: Helper.useIcon("configure")
 		onTriggered: appearanceSettingsWindow.show()
 	}
 }

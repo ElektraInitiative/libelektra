@@ -2,6 +2,7 @@ import QtQuick 2.2
 import QtQml 2.2
 import QtQuick.Controls 1.1
 import "TooltipCreator.js" as TooltipCreator
+import "HelperFunctions.js" as Helper
 
 //TreeView is based on code user "Jens" posted in the qt-project forum (http://qt-project.org/forums/viewthread/30521/#146845)
 
@@ -148,7 +149,9 @@ ScrollView {
 								Image {
 									id: expander
 
-									source: "icons/arrow-right.png"
+									source: Helper.useIconSource("arrow-right")
+									sourceSize.width: 16
+									sourceSize.height: 16
 									opacity: mouse.containsMouse ? 1 : 0.7
 									anchors.centerIn: parent
 									rotation: itemLoader.expanded ? 90 : 0

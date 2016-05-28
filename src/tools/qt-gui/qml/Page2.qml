@@ -4,6 +4,7 @@ import QtQuick.Controls 1.1
 import QtQuick.Controls.Styles 1.1
 import org.libelektra.qtgui 1.0
 import "MainFunctions.js" as MFunctions
+import "HelperFunctions.js" as Helper
 
 Item {
 	id: page2
@@ -75,6 +76,7 @@ Item {
 				implicitHeight: pluginDropdown.height
 
 				iconSource: "icons/list-add.png"
+				iconName: Helper.useIcon("list-add")
 				tooltip: qsTr("Add Plugin")
 
 				onClicked: {
@@ -223,6 +225,7 @@ Item {
 			anchors.top: pluginInfoRectangle.top
 
 			iconSource:  "icons/applications-system"
+			iconName: Helper.useIcon("applications-system")
 			tooltip: qsTr("Edit Plugin Configuration")
 
 			onClicked: {
@@ -277,6 +280,7 @@ Item {
 		PropertyChanges {
 			target: configInfoSwitch
 			iconSource: "icons/help-about.png"
+			iconName: Helper.useIcon("help-about")
 			tooltip: qsTr("Show Plugin Info")
 		}
 	}
@@ -313,6 +317,7 @@ Item {
 			action: Action {
 				text: qsTr("New Key ...")
 				iconSource: "icons/document-new.png"
+				iconName: Helper.useIcon("document-new")
 				tooltip: qsTr("New Key")
 				enabled: contextMenuEnabled
 				onTriggered: newPluginConfigWindow.show()
@@ -322,6 +327,7 @@ Item {
 			id: p2cmEdit
 			action: Action {
 				iconSource: "icons/edit-rename.png"
+				iconName: Helper.useIcon("edit-rename")
 				text: qsTr("Edit ...")
 				tooltip: qsTr("Edit")
 				enabled: contextMenuEnabled
@@ -338,6 +344,7 @@ Item {
 			action: Action {
 				text: qsTr("Delete")
 				iconSource: "icons/document-close.png"
+				iconName: Helper.useIcon("user-trash")
 				tooltip: qsTr("Delete")
 				shortcut: StandardKey.Delete
 				enabled: contextMenuEnabled

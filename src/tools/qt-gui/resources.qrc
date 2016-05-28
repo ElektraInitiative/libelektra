@@ -36,7 +36,7 @@
         <file>qml/icons/edit-paste.png</file>
         <file>qml/icons/edit-rename.png</file>
         <file>qml/icons/new-array.png</file>
-        <file>qml/icons/elektra-logo.png</file>
+        <file>qml/icons/elektra.png</file>
         <file>qml/Page1.qml</file>
         <file>qml/Page2.qml</file>
         <file>qml/Page3.qml</file>
@@ -71,5 +71,6 @@
         <file>qml/MergeStrategyComboBox.qml</file>
         <file>qml/icons/dialog-information.png</file>
         <file>qml/GUIActions.qml</file>
+        <file>qml/HelperFunctions.js</file>
     </qresource>
 </RCC>
