@@ -11,7 +11,7 @@ macro (do_lua_test source)
 		TEST ${name}
 		PROPERTY ENVIRONMENT
 			"LUA_CPATH=${LUA_MODULEPATH}/?.so"
-			"LD_LIBRARY_PATH=${CMAKE_LIBRARY_OUTPUT_DIRECTORY}"
+			"LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib"
 	)
 
 	set_property (

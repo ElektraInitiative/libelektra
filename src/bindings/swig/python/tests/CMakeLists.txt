@@ -11,7 +11,7 @@ macro (do_python_test source)
 		TEST ${name}
 		PROPERTY ENVIRONMENT
 			"PYTHONPATH=${PYTHON_MODULEPATH}"
-			"LD_LIBRARY_PATH=${CMAKE_LIBRARY_OUTPUT_DIRECTORY}"
+			"LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib"
 	)
 
 	set_property (
