@@ -101,6 +101,10 @@ ToolBar {
 			source: Helper.useIconSource("edit-find")
 			sourceSize.width: 16
 			sourceSize.height: 16
+			MouseArea {
+				anchors.fill: parent
+				onClicked: searchField.forceActiveFocus()
+			}
 		}
 		SearchField {
 			id: searchField
