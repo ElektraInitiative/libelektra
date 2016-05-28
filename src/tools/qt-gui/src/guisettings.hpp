@@ -25,6 +25,7 @@ class GUISettings : public QObject
 	Q_PROPERTY (QColor nodeWithKeyColor READ nodeWithKeyColor () WRITE setNodeWithKeyColor (QColor) NOTIFY nodeWithKeyColorChanged ())
 	Q_PROPERTY (QColor nodeWithoutKeyColor READ nodeWithoutKeyColor () WRITE setNodeWithoutKeyColor (QColor)
 			    NOTIFY nodeWithoutKeyColorChanged ())
+	Q_PROPERTY (bool useSystemIconTheme READ useSystemIconTheme () WRITE useSystemIconTheme (bool) NOTIFY useSystemIconThemeChanged ())
 
 public:
 	/**
@@ -67,6 +68,12 @@ public:
 	QColor nodeWithoutKeyColor () const;
 
 	/**
+	 * @brief if the system icon theme should be used instead of qt guis own icon set
+	 * @return true if the system icon theme should be used
+	 */
+	bool useSystemIconTheme () const;
+
+	/**
 	 * @brief setKDB Makes the current color settings permanent.
 	 */
 	Q_INVOKABLE void setKDB ();
@@ -101,6 +108,12 @@ public slots:
 	 */
 	void setNodeWithoutKeyColor (const QColor & color);
 
+	/**
+	 * @brief set if the system icon theme should be used instead of qt guis own icon set
+	 * @param use bool if the system icon theme should be used or not
+	 */
+	void useSystemIconTheme (const bool & use);
+
 signals:
 	/**
 	 * @brief highlightColorChanged This signal is emitted if the highlight color is changed. The view will update accordingly.
@@ -124,6 +137,11 @@ signals:
 	 */
 	void nodeWithoutKeyColorChanged ();
 
+	/**
+	 * @brief This signal is emitted if the direction if the system icon theme should be used or not.
+	 */
+	void useSystemIconThemeChanged ();
+
 private:
 	void setDefaults ();
 	void getKDB ();
@@ -135,6 +153,8 @@ private:
 	QColor m_nodeWithKeyColor;
 	QColor m_nodeWithoutKeyColor;
 
+	bool m_useSystemIconTheme;
+
 	std::string m_profile;
 
 	std::string m_base;
@@ -142,6 +162,7 @@ private:
 	std::string m_frameColorString;
 	std::string m_nodeWKeyColorString;
 	std::string m_nodeWOKeyColorString;
+	std::string m_useSystemIconThemeString;
 
 	std::string m_legacyBase;
 	std::string m_legacyHighlightColorString;
@@ -150,11 +171,18 @@ private:
 	std::string m_legacyNodeWOKeyColorString;
 
 	/**
-	 * @brief append Updates a color. On the next @link setKDB() action this color will be permanent.
+	 * @brief appendColor Updates a color. On the next @link setKDB() action this color will be permanent.
 	 * @param keyName The type of the color (e.g. "highlight_color")
 	 * @param color The color.
 	 */
-	void append (const std::string & keyName, const QColor & color);
+	void appendColor (const std::string & keyName, const QColor & color);
+
+	/**
+	 * @brief setBool Updates a boolean setting. On the next @link setKDB() action this settings value will be permanent.
+	 * @param keyName The name of the setting (e.g. "use_system_icon_theme")
+	 * @param value The boolean value for the option
+	 */
+	void appendBool (const std::string & keyName, const bool value);
 
 	/**
 	 * @brief lookupColor Retrieves the current color for an item.
@@ -162,6 +190,13 @@ private:
 	 * @param color the color to set
 	 */
 	void lookupColor (const std::string & keyName, QColor & color) const;
+
+	/**
+	 * @brief lookup bool option retrieves the current boolean value for an option.
+	 * @param keyName The name of the setting (e.g. "use_system_icon_theme")
+	 * @param value the value of the looked up setting
+	 */
+	void lookupBool (const std::string & keyName, bool & value) const;
 };
 
 Q_DECLARE_METATYPE (GUISettings)
