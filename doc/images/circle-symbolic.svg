@@ -29,8 +29,8 @@
   </metadata>
   <sodipodi:namedview
      inkscape:object-paths="true"
-     inkscape:cy="13.538501"
-     inkscape:current-layer="layer11"
+     inkscape:cy="6.9844876"
+     inkscape:current-layer="g4187"
      inkscape:window-width="1920"
      pagecolor="#555753"
      showborder="false"
@@ -49,12 +49,12 @@
      inkscape:snap-global="true"
      inkscape:window-y="27"
      gridtolerance="10"
-     inkscape:zoom="22.627417"
+     inkscape:zoom="32"
      inkscape:window-height="1136"
      borderopacity="1"
      guidetolerance="10"
      inkscape:snap-bbox-midpoints="false"
-     inkscape:cx="10.013777"
+     inkscape:cx="6.8110988"
      inkscape:bbox-paths="false"
      inkscape:snap-grids="true"
      inkscape:pageopacity="1"
@@ -72,7 +72,106 @@
   <title
      id="title9167">Gnome Symbolic Icon Theme</title>
   <defs
-     id="defs7386" />
+     id="defs7386">
+    <inkscape:path-effect
+       effect="bend_path"
+       id="path-effect4182"
+       is_visible="true"
+       bendpath="m 116.24997,115.87503 c 88.86935,-4.47912 -58.957899,-48.035512 348.00009,0"
+       prop_scale="1"
+       scale_y_rel="false"
+       vertical="false"
+       bendpath-nodetypes="cc" />
+    <inkscape:path-effect
+       effect="envelope"
+       id="path-effect4180"
+       is_visible="true"
+       yy="true"
+       xx="true"
+       bendpath1="m 116.24997,18 348.00009,0"
+       bendpath2="m 464.25006,18 0,195.75007"
+       bendpath3="m 116.24997,213.75007 348.00009,0"
+       bendpath4="m 116.24997,18 0,195.75007" />
+    <inkscape:path-effect
+       effect="interpolate"
+       id="path-effect4178"
+       is_visible="true"
+       trajectory="M 0,0 0,0"
+       equidistant_spacing="true"
+       steps="5" />
+    <inkscape:path-effect
+       effect="knot"
+       id="path-effect4176"
+       is_visible="true"
+       interruption_width="3"
+       prop_to_stroke_width="true"
+       add_stroke_width="true"
+       add_other_stroke_width="true"
+       switcher_size="15"
+       crossing_points_vector="" />
+    <inkscape:path-effect
+       effect="skeletal"
+       id="path-effect4174"
+       is_visible="true"
+       pattern="M 0,0 1,0"
+       copytype="single_stretched"
+       prop_scale="1"
+       scale_y_rel="false"
+       spacing="0"
+       normal_offset="0"
+       tang_offset="0"
+       prop_units="false"
+       vertical_pattern="false"
+       fuse_tolerance="0" />
+    <inkscape:path-effect
+       effect="powerstroke"
+       id="path-effect4172"
+       is_visible="true"
+       offset_points="0,1 | 3.5,1"
+       sort_points="true"
+       interpolator_type="CubicBezierFit"
+       interpolator_beta="0.15384615"
+       start_linecap_type="round"
+       linejoin_type="round"
+       miter_limit="4"
+       end_linecap_type="round" />
+    <inkscape:path-effect
+       effect="spiro"
+       id="path-effect4166"
+       is_visible="true" />
+    <inkscape:path-effect
+       effect="curvestitching"
+       id="path-effect4164"
+       is_visible="true"
+       count="5"
+       startpoint_edge_variation="0;1"
+       startpoint_spacing_variation="0;1"
+       endpoint_edge_variation="0;1"
+       endpoint_spacing_variation="0;1"
+       strokepath="m 116.24997,115.87503 348.00009,0"
+       prop_scale="1"
+       scale_y_rel="false" />
+    <inkscape:path-effect
+       effect="vonkoch"
+       id="path-effect4162"
+       is_visible="true"
+       ref_path="m 116.13372,115.85703 348.00009,0"
+       generator="m 116.13372,213.73207 116.00003,0 m 116.00003,0 116.00003,0"
+       similar_only="false"
+       nbgenerations="1"
+       drawall="true"
+       maxComplexity="1000" />
+    <inkscape:path-effect
+       effect="envelope"
+       id="path-effect4160"
+       is_visible="true"
+       yy="true"
+       xx="true"
+       bendpath1="m 116.24997,18 348.00009,0"
+       bendpath2="m 464.25006,18 0,195.75007"
+       bendpath3="m 116.24997,213.75007 348.00009,0"
+       bendpath4="m 116.24997,18 0,195.75007" />
+  </defs>
   <g
      transform="translate(-202.0002,-490)"
      inkscape:groupmode="layer"
@@ -96,24 +195,25 @@
       <title
          id="title4189">Canvas 1</title>
       <g
-         id="g4191">
+         id="g4191"
+         transform="matrix(0.97521366,0,0,0.97521366,6.126598,6.1322433)">
         <title
            id="title4193">Layer 1</title>
         <path
+           style="fill:#bebebe;fill-opacity:1"
+           d="m 350.77539,135.2832 c -5.48711,0.0927 -4.9332,7.68349 -0.97266,9.72071 20.12402,16.09339 37.79548,35.49568 49.26199,58.66932 24.0907,46.63567 25.15213,104.43113 1.17824,151.43132 -22.99909,46.8259 -68.62108,81.7744 -120.00569,90.6607 -33.38246,6.27628 -68.30684,1.80916 -99.53219,-11.57775 -5.04026,-1.03125 -8.69289,5.92571 -4.24414,9.10938 10.54828,10.54206 24.43521,16.97326 37.62047,23.53417 56.80812,25.55636 126.84547,19.11339 177.39235,-17.5829 49.41735,-34.94144 79.65382,-95.77742 75.67908,-156.4075 -2.92654,-55.8617 -32.99598,-109.86812 -80.11133,-140.39867 -11.13712,-7.19317 -23.16009,-14.56496 -36.26612,-17.15878 z"
            id="path4195"
-           d="m 354.8217,141.92289 c 29.74952,22.53237 52.50623,54.76472 62.91312,93.60418 24.87215,92.82318 -30.2131,188.23365 -123.03642,213.10533 -38.83938,10.40708 -78.13174,6.81538 -112.5201,-7.68225 41.34954,31.31827 96.20842,43.8973 150.1922,29.43225 C 425.19381,445.5107 480.27907,350.10025 455.40692,257.27706 440.94213,203.29319 402.6189,162.07351 354.8217,141.9229 Z"
-           inkscape:connector-curvature="0"
-           style="fill:#bebebe;fill-opacity:1" />
+           inkscape:connector-curvature="0" />
         <path
+           style="fill:#bebebe;fill-opacity:1"
+           d="M 137.72461,77.871094 C 122.7093,80.574167 110.02882,89.988399 97.423403,97.989476 46.443178,133.86111 16.331233,197.48075 22.213709,259.70309 c 4.895175,59.77928 41.23301,116.29757 94.702311,143.9766 49.26324,26.2912 110.91664,28.50071 161.34375,4.03515 13.00827,-6.27554 26.20524,-13.47362 36.18359,-24.01367 2.2872,-4.82461 -4.46098,-8.6319 -8.35365,-6.01589 -20.08506,7.66316 -41.12296,13.36528 -62.76876,13.41788 C 186.98166,392.46335 130.67222,364.08568 99.6764,316.5054 69.022288,270.828 62.40378,210.2236 83.851379,159.44949 c 11.493143,-28.44383 31.193691,-53.1158 55.379091,-71.73074 2.97181,-2.231898 5.29454,-8.349731 0.22461,-9.611328 -0.5617,-0.120121 -1.15588,-0.368094 -1.73047,-0.236328 z"
            id="path4199"
-           d="m 306.84628,383.45218 c -34.38837,14.49765 -73.68075,18.08936 -112.52015,7.68227 C 101.50281,366.26277 46.417557,270.85231 71.28971,178.02912 81.6966,139.18968 104.45328,106.95735 134.20278,84.42498 86.405594,104.5756 48.082395,145.79526 33.617613,199.77912 8.7454606,292.6023 63.830716,388.01277 156.65403,412.88444 c 53.9838,14.46506 108.8427,1.88602 150.19225,-29.43227 z"
-           inkscape:connector-curvature="0"
-           style="fill:#bebebe;fill-opacity:1" />
+           inkscape:connector-curvature="0" />
         <path
+           style="fill:#bebebe;fill-opacity:1"
+           d="M 288.11133,12.011719 C 217.98227,11.939466 150.29398,57.469821 124.1592,122.5984 c -12.52669,30.2747 -17.53018,64.33001 -11.14358,96.62621 2.18094,4.82801 9.91368,2.73829 9.74053,-2.47738 3.22739,-16.60588 6.15665,-33.30074 13.48994,-48.65795 23.34303,-53.71806 76.4193,-93.685209 134.79273,-99.531653 53.59169,-6.260509 110.08852,14.6817 145.40246,56.011723 23.08268,26.24877 37.26813,59.28796 41.3263,93.82909 1.61912,4.88799 9.48436,4.57984 10.01367,-0.87305 3.82408,-14.11964 2.46376,-29.06286 1.6619,-43.48114 C 463.59355,113.39269 424.91947,56.884628 369.82933,30.505713 344.53675,18.072225 316.3053,11.589906 288.11133,12.011719 Z"
            id="path4203"
-           d="m 117.60656,213.75007 c 4.63885,-37.03003 21.17453,-72.85408 49.60704,-101.28645 67.95116,-67.951507 178.12167,-67.951507 246.07283,0 28.4325,28.43235 44.96817,64.25638 49.60703,101.28639 6.44764,-51.46889 -10.08803,-105.26758 -49.60703,-144.78638 -67.95116,-67.9515072 -178.12167,-67.9515072 -246.07283,0 -39.51902,39.51881 -56.05469,93.31754 -49.60703,144.78644 z"
-           inkscape:connector-curvature="0"
-           style="fill:#bebebe;fill-opacity:1" />
+           inkscape:connector-curvature="0" />
       </g>
     </g>
   </g>
