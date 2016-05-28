@@ -67,6 +67,7 @@ BasicWindow {
 						property string loose: "mailto:christian.loose@hamburg.de"
 						property string jens: "http://qt-project.org/forums/viewthread/30521/#146845"
 						property string ian: "mailto:easyxtarget@gmail.com"
+						property string gabriel: "mailto:rauter.gabriel@gmail.com"
 						readOnly: true
 						textFormat: TextEdit.RichText
 						textMargin: defaultMargins
@@ -79,6 +80,7 @@ BasicWindow {
 							  "<p>DiscountMarkdownConverter used with kind permission by <a href=\"" + loose + "\">Christian Loose</a></p>" +
 							  "<p>TreeView based on code <a href=\"" + jens + "\">posted by Jens</a></p>" +
 							  "<p>Helptext by <a href=\"" + ian + "\">Ian Donelly</a></p>" +
+							  "<p>XDG Icon Theme support by <a href=\"" + gabriel + "\">Gabriel Rauter</a></p>" +
 							  "</html>"
 						onLinkActivated: {
 							Qt.openUrlExternally(link)
