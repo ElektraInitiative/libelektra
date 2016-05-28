@@ -15,7 +15,7 @@ ApplicationWindow {
 	width: Screen.desktopAvailableWidth
 	height: Screen.desktopAvailableHeight
 
-	title: "Elektra Editor"
+	title: "Elektra Qt Editor"
 
 	onClosing: {
 		if (!undoManager.isClean()){

@@ -4,7 +4,7 @@ import QtQuick.Controls 1.1
 
 BasicWindow {
 
-	title: qsTr("About Elektra Editor")
+	title: qsTr("About Elektra Qt Editor")
 
 	width: Math.ceil(mainWindow.width*0.25)
 	height: Math.ceil(mainWindow.width*0.25)
@@ -20,7 +20,7 @@ BasicWindow {
 			}
 			Column {
 				Text {
-					text: "Elektra Editor"
+					text: "Elektra Qt Editor"
 					font.bold: true
 					color: activePalette.windowText
 				}
@@ -74,7 +74,7 @@ BasicWindow {
 						frameVisible: false
 						text: "<html>" +
 							  "<style type=\"text/css\"></style>" +
-							  "<p>Elektra Editor designed and implemented by <a href=\"" + pancheri + "\">Raffael Pancheri</a></p>" +
+							  "<p>Elektra Qt Editor designed and implemented by <a href=\"" + pancheri + "\">Raffael Pancheri</a></p>" +
 							  "<p>DiscountMarkdownConverter used with kind permission by <a href=\"" + loose + "\">Christian Loose</a></p>" +
 							  "<p>TreeView based on code <a href=\"" + jens + "\">posted by Jens</a></p>" +
 							  "<p>Helptext by <a href=\"" + ian + "\">Ian Donelly</a></p>" +
