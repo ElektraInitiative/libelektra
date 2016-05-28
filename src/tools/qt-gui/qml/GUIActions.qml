@@ -23,7 +23,7 @@ Item {
 	property alias whatsThisAction: whatsThisAction
 	property alias pluginInfoAction: pluginInfoAction
 	property alias quitAction: quitAction
-	property alias chooseColorAction: chooseColorAction
+	property alias chooseAppearanceAction: chooseAppearanceAction
 
 	Action {
 		id: newKeyAction
@@ -377,10 +377,10 @@ Item {
 	}
 
 	Action {
-		id: chooseColorAction
-		text: qsTr("Choose Colors ...")
+		id: chooseAppearanceAction
+		text: qsTr("Choose Appearance ...")
 		iconSource: "icons/color.png"
-		onTriggered: chooseColorWindow.show()
+		onTriggered: appearanceSettingsWindow.show()
 	}
 }
 
