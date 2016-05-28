@@ -58,6 +58,7 @@ install(PROGRAMS ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/qt-gui DESTINATION bin RENAME
 install(FILES org.libelektra.elektra-qt-editor.desktop DESTINATION share/applications)
 install(FILES org.libelektra.elektra-qt-editor.appdata.xml DESTINATION share/appdata)
 install(FILES ../../../doc/images/circle.svg DESTINATION share/icons/hicolor/scalable/apps RENAME elektra.svg)
+install(FILES ../../../doc/images/circle-symbolic.svg DESTINATION share/icons/hicolor/scalable/apps RENAME elektra-symbolic.svg)
 
 generate_manpage (kdb-qt-gui FILENAME ${CMAKE_CURRENT_SOURCE_DIR}/README.md)
 
