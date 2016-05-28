@@ -7,7 +7,7 @@ BasicWindow {
 
 	title: qsTr("Choose Appearance")
 
-	property bool colorEdited: false
+	property bool optionEdited: false
 
 	ColumnLayout {
 		Layout.fillHeight: false
@@ -135,6 +135,7 @@ BasicWindow {
 					checked: guiSettings.useSystemIconTheme
 					onCheckedChanged: {
 						guiSettings.useSystemIconTheme = checked
+						optionEdited = true
 					}
 				}
 			}
@@ -142,12 +143,12 @@ BasicWindow {
 	}
 	cancelButton.action.text: qsTr("&Close")
 	cancelButton.action.onTriggered: {
-		if (colorEdited)
+		if (optionEdited)
 			guiSettings.setKDB()
 			treeView.treeModel.synchronize()
 			treeView.treeModel.refresh()
 		close()
-		colorEdited = false
+		optionEdited = false
 	}
 	okButton.visible: false
 }

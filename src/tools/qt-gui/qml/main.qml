@@ -204,19 +204,19 @@ ApplicationWindow {
 		onAccepted: {
 			if (type === "highlight" && guiSettings.highlightColor !== colorDialog.color) {
 				guiSettings.highlightColor = colorDialog.color
-				appearanceSettingsWindow.colorEdited = true
+				appearanceSettingsWindow.optionEdited = true
 			}
 			else if (type === "frame" && guiSettings.frameColor !== colorDialog.color) {
 				guiSettings.frameColor =  colorDialog.color
-				appearanceSettingsWindow.colorEdited = true
+				appearanceSettingsWindow.optionEdited = true
 			}
 			else if (type === "nodeWith" && guiSettings.nodeWithKeyColor !== colorDialog.color) {
 				guiSettings.nodeWithKeyColor = colorDialog.color
-				appearanceSettingsWindow.colorEdited = true
+				appearanceSettingsWindow.optionEdited = true
 			}
 			else if (type === "nodeWithout" && guiSettings.nodeWithoutKeyColor !== colorDialog.color) {
 				guiSettings.nodeWithoutKeyColor = colorDialog.color
-				appearanceSettingsWindow.colorEdited = true
+				appearanceSettingsWindow.optionEdited = true
 			}
 
 			close()
