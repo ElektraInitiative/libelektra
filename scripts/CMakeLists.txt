@@ -20,23 +20,21 @@ install (PROGRAMS upgrade-bootstrap DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
 
 install (PROGRAMS umount-all DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
 
-set(USE_HOME_FOLDER_FOR_SCRIPTS OFF BOOL "if xdg home directorys should be used for script install")
-#There is no default profile.d in $HOME/.config, but using .config/profile seems ok to use
-if (USE_HOME_FOLDER_FOR_SCRIPTS)
-	if(DEFINED ENV{XDG_CONFIG_HOME})
-		set(BASH_COMPLETION_PATH "ENV{XDG_CONFIG_HOME}/bash_completion" PATH)
-		set(PROFILE_D_PATH "ENV{XDG_CONFIG_HOME}/profile" PATH)
-	else()
-		set(BASH_COMPLETION_PATH "$ENV{HOME}/.config/bash_completion" PATH)
-		set(PROFILE_D_PATH "ENV{HOME}/.config/profile" PATH)
-	endif()
-	message(WARNING "remember to source " ${PROFILE_D_PATH}
-else()
-	set(BASH_COMPLETION_PATH "etc/bash_completion.d" PATH)
-	set(PROFILE_D_PATH "etc/profile.d" PATH)
-endif()
-
 if (INSTALL_SYSTEM_FILES)
+	set(BASH_COMPLETION_PATH "/etc/bash_completion.d" CACHE PATH "Path to bash completion scripts")
+	set(PROFILE_D_PATH "/etc/profile.d" CACHE PATH "Path to profile.d scripts")
+	option(USE_HOME_FOLDER_FOR_SCRIPTS "use xdg home directorys for scripts" OFF)
+	#There is no default profile.d in $HOME/.config, but using .config/profile seems ok to use
+	if (USE_HOME_FOLDER_FOR_SCRIPTS)
+		if(DEFINED ENV{XDG_CONFIG_HOME})
+			set(BASH_COMPLETION_PATH "ENV{XDG_CONFIG_HOME}/bash_completion")
+			set(PROFILE_D_PATH "ENV{XDG_CONFIG_HOME}/profile")
+		else()
+			set(BASH_COMPLETION_PATH "$ENV{HOME}/.config/bash_completion")
+			set(PROFILE_D_PATH "ENV{HOME}/.config/profile")
+		endif()
+		message(WARNING "remember to source " ${PROFILE_D_PATH})
+	endif()
 	install (FILES kdb-bash-completion
 			DESTINATION ${BASH_COMPLETION_PATH}
 			RENAME kdb)
