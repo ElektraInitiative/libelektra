@@ -35,7 +35,7 @@ TEST (SpecReader, withDatabase)
 	EXPECT_EQ (bi.nodes, 2);
 	EXPECT_EQ (bi.getMountpoint (), "/mp");
 	EXPECT_EQ (bi.getConfigFile (), "file.ini");
-	EXPECT_EQ (bi.getBackendConfig (), KeySet (5, *Key ("user/something", "here", KEY_END), KS_END));
+	EXPECT_EQ (bi.getBackendConfig (), KeySet (5, *Key ("user/something", KEY_VALUE, "here", KEY_END), KS_END));
 	EXPECT_FALSE (bi.validated ());
 	ASSERT_EQ (std::distance (bi.begin (), bi.end ()), 0) << "there should be no plugin added";
 }
@@ -74,7 +74,7 @@ TEST (SpecReader, withNeeds)
 	EXPECT_EQ (bi.nodes, 2);
 	EXPECT_EQ (bi.getMountpoint (), "/mp");
 	EXPECT_EQ (bi.getConfigFile (), "file.ini");
-	EXPECT_EQ (bi.getBackendConfig (), KeySet (5, *Key ("user/something", "here", KEY_END), KS_END));
+	EXPECT_EQ (bi.getBackendConfig (), KeySet (5, *Key ("user/something", KEY_VALUE, "here", KEY_END), KS_END));
 	EXPECT_FALSE (bi.validated ());
 	ASSERT_EQ (std::distance (bi.begin (), bi.end ()), 0);
 	bi.resolveNeeds ();
@@ -110,7 +110,7 @@ TEST (SpecReader, withNeedsResolved)
 	EXPECT_EQ (bi.getMountpoint (), "/mp");
 	EXPECT_EQ (bi.getConfigFile (), "file.ini");
 	EXPECT_EQ (bi.getBackendConfig (),
-		   KeySet (5, *Key ("user/something", "here", KEY_END), *Key ("user/else", "too", KEY_END), KS_END));
+		   KeySet (5, *Key ("user/something", KEY_VALUE, "here", KEY_END), *Key ("user/else", KEY_VALUE, "too", KEY_END), KS_END));
 	bi.resolveNeeds ();
 	ASSERT_EQ (std::distance (bi.begin (), bi.end ()), 2) << "there should be a resolver and storage added";
 	EXPECT_EQ (bi.begin ()[0], PluginSpec ("b", "resolver"));

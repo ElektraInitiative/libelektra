@@ -140,18 +140,6 @@ static void elektraAddConstants (KeySet * ks, Key * parentKey)
 
 
 	key = keyDup (parentKey);
-	keyAddName (key, "cmake/ELEKTRA_DEBUG_BUILD");
-	keySetString (key, "@ELEKTRA_DEBUG_BUILD@");
-	ksAppendKey (ks, key);
-
-
-	key = keyDup (parentKey);
-	keyAddName (key, "cmake/ELEKTRA_VERBOSE_BUILD");
-	keySetString (key, "@ELEKTRA_VERBOSE_BUILD@");
-	ksAppendKey (ks, key);
-
-
-	key = keyDup (parentKey);
 	keyAddName (key, "cmake/TARGET_INCLUDE_FOLDER");
 	keySetString (key, "@TARGET_INCLUDE_FOLDER@");
 	ksAppendKey (ks, key);
@@ -167,6 +155,9 @@ static void elektraAddConstants (KeySet * ks, Key * parentKey)
 	keyAddName (key, "cmake/TARGET_PLUGIN_FOLDER");
 	keySetString (key, "@TARGET_PLUGIN_FOLDER@");
 	ksAppendKey (ks, key);
+
+	elektraAddKeyValue (ks, parentKey, "cmake/ENABLE_DEBUG", "@ENABLE_DEBUG@");
+	elektraAddKeyValue (ks, parentKey, "cmake/ENABLE_LOGGER", "@ENABLE_LOGGER@");
 
 	elektraAddKeyValue (ks, parentKey, "cmake/BUILTIN_PLUGIN_FOLDER", BUILTIN_PLUGIN_FOLDER);
 	elektraAddKeyValue (ks, parentKey, "cmake/BUILTIN_DATA_FOLDER", BUILTIN_DATA_FOLDER);

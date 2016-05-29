@@ -1098,7 +1098,7 @@ int kdbSet (KDB * handle, KeySet * ks, Key * parentKey)
 
 	// 2.) Search for changed sizes
 	syncstate |= elektraSplitSync (split);
-	ELEKTRA_ASSERT (syncstate == 0 || syncstate == 1);
+	ELEKTRA_ASSERT (syncstate <= 1);
 	if (syncstate != 1)
 	{
 		/* No update is needed */

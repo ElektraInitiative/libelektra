@@ -9,6 +9,7 @@
 #ifndef LS_H
 #define LS_H
 
+#include "coloredkdbio.hpp"
 #include <command.hpp>
 #include <kdb.hpp>
 
@@ -24,7 +25,7 @@ public:
 
 	virtual std::string getShortOptions () override
 	{
-		return "v0";
+		return "v0C";
 	}
 
 	virtual std::string getSynopsis () override

@@ -9,8 +9,8 @@
 #ifndef CP_HPP
 #define CP_HPP
 
+#include "coloredkdbio.hpp"
 #include <command.hpp>
-
 #include <kdb.hpp>
 
 class CpCommand : public Command
@@ -23,7 +23,7 @@ public:
 
 	virtual std::string getShortOptions () override
 	{
-		return "rv";
+		return "rvC";
 	}
 
 	virtual std::string getSynopsis () override

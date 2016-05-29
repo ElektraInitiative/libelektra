@@ -272,21 +272,20 @@ option (INSTALL_BUILD_TOOLS "Install build tools for cross-compilation" OFF)
 # Developer builds (debug or verbose build)
 #
 
-option (ELEKTRA_DEBUG_BUILD "Build with extra debug print messages (to debug elektra).")
-if (ELEKTRA_DEBUG_BUILD)
+option (ENABLE_DEBUG "Build with assertions and optimize for developing with Elektra.")
+if (ENABLE_DEBUG)
 	set (DEBUG "1")
-else (ELEKTRA_DEBUG_BUILD)
+else (ENABLE_DEBUG)
 	set (DEBUG "0")
-endif (ELEKTRA_DEBUG_BUILD)
-MARK_AS_ADVANCED(ELEKTRA_DEBUG_BUILD)
+endif (ENABLE_DEBUG)
 
-option (ELEKTRA_VERBOSE_BUILD "Build with even more print messages (to debug elektra).")
-if (ELEKTRA_VERBOSE_BUILD)
+option (ENABLE_LOGGER "Allows Elektra to write logs (DO NOT USE, currently writes to stdout).")
+if (ENABLE_LOGGER)
 	set (VERBOSE "1")
-else (ELEKTRA_VERBOSE_BUILD)
+else (ENABLE_LOGGER)
 	set (VERBOSE "0")
-endif (ELEKTRA_VERBOSE_BUILD)
-MARK_AS_ADVANCED(ELEKTRA_VERBOSE_BUILD)
+endif (ENABLE_LOGGER)
+MARK_AS_ADVANCED(ENABLE_LOGGER)
 
 
 #

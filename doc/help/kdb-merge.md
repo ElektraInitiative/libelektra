@@ -62,6 +62,8 @@ To interactively resolve conflicts, use the `-i` option.
   Explain what is happening.
 - `-i`, `--interactive`
   Interactively resolve the conflicts.
+- `-C`, `--color`=[when]:
+  Print never/auto(default)/always colored output.
 
 
 ## EXAMPLES

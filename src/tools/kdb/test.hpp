@@ -12,6 +12,7 @@
 #include <string>
 #include <vector>
 
+#include "coloredkdbio.hpp"
 #include <command.hpp>
 #include <kdb.hpp>
 
@@ -37,7 +38,7 @@ public:
 
 	virtual std::string getShortOptions () override
 	{
-		return "";
+		return "C";
 	}
 
 	virtual std::string getSynopsis () override

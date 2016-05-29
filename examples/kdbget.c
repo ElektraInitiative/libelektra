@@ -17,10 +17,12 @@ int main ()
 
 	// to get an intention of proper error handling see kdbget_error.c
 
+	// clang-format off
 //! [basic usage]
 kdbGet (handle, myConfig, key);
 Key * result = ksLookupByName (myConfig, "/sw/tests/myapp/#0/current/testkey1", 0);
 //! [basic usage]
+	// clang-format on
 
 	keyDel (key);
 

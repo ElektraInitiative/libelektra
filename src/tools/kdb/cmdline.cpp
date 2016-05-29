@@ -38,8 +38,8 @@ Cmdline::Cmdline (int argc, char ** argv, Command * command)
   /*XXX: Step 2: initialise your option here.*/
   debug (), force (), load (), humanReadable (), help (), interactive (), noNewline (), test (), recursive (), resolver (KDB_RESOLVER),
   strategy ("preserve"), verbose (), version (), withoutElektra (), null (), first (true), second (true), third (true),
-  withRecommends (false), all (), format (KDB_STORAGE), plugins ("sync"), globalPlugins ("spec"), pluginsConfig (""), ns (""), editor (),
-  bookmarks (), profile ("current"),
+  withRecommends (false), all (), format (KDB_STORAGE), plugins ("sync"), globalPlugins ("spec"), pluginsConfig (""), color ("auto"),
+  ns (""), editor (), bookmarks (), profile ("current"),
 
   executable (), commandName ()
 {
@@ -221,6 +221,13 @@ Cmdline::Cmdline (int argc, char ** argv, Command * command)
 		long_options.push_back (o);
 		helpText += "-c --plugins-config      Add a plugin configuration.\n";
 	}
+	optionPos = acceptedOptions.find ('C');
+	if (optionPos != string::npos)
+	{
+		option o = { "color", optional_argument, nullptr, 'C' };
+		long_options.push_back (o);
+		helpText += "-C --color[=WHEN]        Print never/auto(default)/always colored output.\n";
+	}
 
 	int index = 0;
 	option o = { nullptr, 0, nullptr, 0 };
@@ -293,6 +300,9 @@ Cmdline::Cmdline (int argc, char ** argv, Command * command)
 
 			map nks = conf.get<map> (dirname + "bookmarks");
 			bookmarks.insert (nks.begin (), nks.end ());
+
+			k = conf.lookup (dirname + "color");
+			if (k) colors () = color = k.get<std::string> ();
 		}
 	}
 	catch (kdb::KDBException const & ce)
@@ -320,6 +330,14 @@ Cmdline::Cmdline (int argc, char ** argv, Command * command)
 		/*XXX: Step 5: and now process the option.*/
 		case 'a':
 			all = true;
+			break;
+		case 'C':
+			if (!optarg)
+			{
+				colors () = "auto";
+				break;
+			}
+			colors () = color = optarg;
 			break;
 		case 'd':
 			debug = true;

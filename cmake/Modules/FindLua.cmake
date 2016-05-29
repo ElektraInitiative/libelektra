@@ -96,6 +96,42 @@ endfunction(set_lua_version_vars)
 
 set_lua_version_vars()
 
+function (verify_lua_executable_version)
+    set (LUA_EXECUTABLE_VERSION_MATCHED FALSE PARENT_SCOPE)
+    
+    find_program (LUA_EXECUTABLE
+        NAMES
+        "lua-${_LUA_VERSION_MAJOR}.${_LUA_VERSION_MINOR}"
+        "lua${_LUA_VERSION_MAJOR}.${_LUA_VERSION_MINOR}"
+        "lua${_LUA_VERSION_MAJOR}${_LUA_VERSION_MINOR}"
+        "lua"
+        PATH
+    )
+
+    execute_process (COMMAND ${LUA_EXECUTABLE} "-v"
+        OUTPUT_VARIABLE LUABIN_VERSION_STRING
+        ERROR_VARIABLE LUABIN_VERSION_STRING
+        OUTPUT_STRIP_TRAILING_WHITESPACE
+        ERROR_STRIP_TRAILING_WHITESPACE
+    )
+
+    if (LUA_EXECUTABLE AND (NOT LUABIN_VERSION_STRING STREQUAL ""))
+        # Compare only MAJOR.MINOR
+        string (SUBSTRING ${LUABIN_VERSION_STRING} "4" "3" LUABIN_VERSION_STRING)
+        string (COMPARE EQUAL ${LUABIN_VERSION_STRING} "${_LUA_VERSION_MAJOR}.${_LUA_VERSION_MINOR}" VERSION_MATCHES)
+
+        if (NOT VERSION_MATCHES)
+            message (WARNING "Lua executable does not match lua library version")
+            message ("Lua library: ${_LUA_VERSION_MAJOR}.${_LUA_VERSION_MINOR}")
+            message ("Lua executable: ${LUABIN_VERSION_STRING}")
+        else ()
+            set (LUA_EXECUTABLE_VERSION_MATCHED TRUE PARENT_SCOPE)
+        endif(NOT VERSION_MATCHES)
+    else ()
+        message (WARNING "Lua executable not found")
+    endif(LUA_EXECUTABLE AND (NOT LUABIN_VERSION_STRING STREQUAL ""))
+endfunction (verify_lua_executable_version)
+
 find_path(LUA_INCLUDE_DIR lua.h
   HINTS
     ENV LUA_DIR
@@ -157,9 +193,12 @@ if (LUA_INCLUDE_DIR AND EXISTS "${LUA_INCLUDE_DIR}/lua.h")
         string(REGEX REPLACE "^[0-9]+\\.([0-9]+)[0-9.]*$" "\\1" LUA_VERSION_MINOR "${LUA_VERSION_STRING}")
         string(REGEX REPLACE "^[0-9]+\\.[0-9]+\\.([0-9]).*" "\\1" LUA_VERSION_PATCH "${LUA_VERSION_STRING}")
     endif ()
-
+    set(_LUA_VERSION_MAJOR "${LUA_VERSION_MAJOR}")
+    set(_LUA_VERSION_MINOR "${LUA_VERSION_MINOR}")
     unset(lua_version_strings)
 endif()
+
+verify_lua_executable_version() # LUA_VERSION_STRING available from here
 
 include(FindPackageHandleStandardArgs)
 # handle the QUIETLY and REQUIRED arguments and set LUA_FOUND to TRUE if

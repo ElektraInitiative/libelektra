@@ -4,14 +4,14 @@ macro (do_lua_test source)
 	get_filename_component (name ${source} NAME)
 	add_test (
 		NAME ${name}
-		COMMAND "lua" ${source}
+		COMMAND ${LUA_EXECUTABLE} ${source}
 	)
 
 	set_property (
 		TEST ${name}
 		PROPERTY ENVIRONMENT
 			"LUA_CPATH=${LUA_MODULEPATH}/?.so"
-			"LD_LIBRARY_PATH=${CMAKE_LIBRARY_OUTPUT_DIRECTORY}"
+			"LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib"
 	)
 
 	set_property (
