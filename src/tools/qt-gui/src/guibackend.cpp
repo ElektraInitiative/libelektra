@@ -237,7 +237,7 @@ QString GUIBackend::pluginInfo (QString pluginName) const
 		while ((k = info.next ()) && k.isBelow (root))
 		{
 			infoString.append (QString::fromStdString (k.getBaseName ()) + ": " + QString::fromStdString (k.getString ()) +
-					   "\n\n");
+			"\n\n");
 		}
 	}
 	else
@@ -266,7 +266,7 @@ QStringList GUIBackend::availablePlugins (bool includeStorage, bool includeResol
 		}
 		catch (NoPlugin & ex)
 		{
-			break;
+			continue;
 		}
 
 		ptr->loadInfo ();

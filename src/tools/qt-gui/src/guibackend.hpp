@@ -116,9 +116,27 @@ public:
 	 */
 	Q_INVOKABLE TreeViewModel * pluginConfigModel () const;
 
+	/**
+	 * @brief Return the already added plugins of the backend as QStringList.
+	 *
+	 * @return The already added plugins of the backend as QStringList.
+	 */
 	Q_INVOKABLE QStringList addedPlugins() const;
 
+	/**
+	 * @brief Returns if a plugin is already added to the backend.
+	 *
+	 * @param plugin The plugin
+	 * @return true if the plugin is already added to the backend
+	 */
 	Q_INVOKABLE bool	pluginAlreadyAdded(QString plugin) const;
+
+	/**
+	 * @brief Returns the type of a plugin.
+	 *
+	 * @param plugin The plugin
+	 * @return The type of a plugin.
+	 */
 	Q_INVOKABLE QString pluginType(QString plugin) const;
 
 private:
