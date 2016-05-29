@@ -1,0 +1,7 @@
+debian_unstable:
+  build: .
+  dockerfile: Dockerfile.debian_unstable
+  volumes:
+    - ../..:/workspace/code
+  environment:
+    - OS_RELEASE=debian_unstable
