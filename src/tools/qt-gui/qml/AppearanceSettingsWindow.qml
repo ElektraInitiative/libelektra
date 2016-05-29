@@ -143,12 +143,15 @@ BasicWindow {
 	}
 	cancelButton.action.text: qsTr("&Close")
 	cancelButton.action.onTriggered: {
-		if (optionEdited)
+		close()
+	}
+	onClosing: {
+		if (optionEdited) {
 			guiSettings.setKDB()
 			treeView.treeModel.synchronize()
 			treeView.treeModel.refresh()
-		close()
-		optionEdited = false
+			optionEdited = false
+		}
 	}
 	okButton.visible: false
 }
