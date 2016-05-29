@@ -138,7 +138,7 @@ signals:
 	void nodeWithoutKeyColorChanged ();
 
 	/**
-	 * @brief This signal is emitted if the direction if the system icon theme should be used or not.
+	 * @brief This signal is emitted if the setting to use system icon theme has changed.
 	 */
 	void useSystemIconThemeChanged ();
 
