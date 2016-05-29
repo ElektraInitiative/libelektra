@@ -202,6 +202,11 @@ ApplicationWindow {
 		title: qsTr("Please choose a color")
 		modality: Qt.ApplicationModal
 
+		/* This is a workaround, as of now (Qt5.6) does not set color before onAccepted */
+		onCurrentColorChanged: {
+			colorDialog.color = currentColor
+		}
+
 		onAccepted: {
 			if (type === "highlight" && guiSettings.highlightColor !== colorDialog.color) {
 				guiSettings.highlightColor = colorDialog.color
