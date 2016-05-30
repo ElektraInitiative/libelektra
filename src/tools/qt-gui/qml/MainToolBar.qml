@@ -1,6 +1,7 @@
 import QtQuick 2.2
 import QtQuick.Controls 1.1
 import QtQuick.Layouts 1.0
+import "HelperFunctions.js" as Helper
 
 ToolBar {
 
@@ -12,6 +13,7 @@ ToolBar {
 		ToolButton {
 			id:tbNew
 			iconSource: "icons/document-new.png"
+			iconName: Helper.useIcon("document-new")
 			enabled: guiActions.newKeyAction.enabled
 			tooltip: qsTr("New ...")
 			menu: Menu {
@@ -96,7 +98,13 @@ ToolBar {
 		}
 		Image {
 			id: searchLogo
-			source: "icons/edit-find.png"
+			source: Helper.useIconSource("edit-find")
+			sourceSize.width: 16
+			sourceSize.height: 16
+			MouseArea {
+				anchors.fill: parent
+				onClicked: searchField.forceActiveFocus()
+			}
 		}
 		SearchField {
 			id: searchField

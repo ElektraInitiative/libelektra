@@ -14,6 +14,7 @@ In order to compile and use the new `qt-gui` there are a few dependencies which 
 - qt5.3 or greater
 - libdrm-dev
 - libdiscount (libmarkdown2-dev)
+- the following qt5 modules: `declarative` `quickcontrols` `svg`
 
 Additionally, you may need `qtdeclarative5-dev` which is available in `wheezy-backports`.
 

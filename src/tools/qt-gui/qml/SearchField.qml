@@ -1,5 +1,6 @@
 import QtQuick 2.2
 import QtQuick.Controls 1.1
+import "HelperFunctions.js" as Helper
 
 TextField {
 	id: searchField
@@ -18,7 +19,9 @@ TextField {
 			rightMargin: defaultMargins
 			verticalCenter: parent.verticalCenter
 		}
-		source: "icons/edit-clear.png"
+		source: Helper.useIconSource("edit-clear")
+		sourceSize.width: 16
+		sourceSize.height: 16
 		opacity: 0
 
 		MouseArea {

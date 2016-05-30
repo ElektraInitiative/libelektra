@@ -17,6 +17,8 @@
 #include <kdb.hpp>
 #include <merging/mergingkdb.hpp>
 
+#include "QQuickThemeIconProvider.hpp"
+
 #include "confignode.hpp"
 #include "datacontainer.hpp"
 #include "guibackend.hpp"
@@ -41,8 +43,14 @@ int main (int argc, char * argv[])
 	translator.load (QString (":/qml/i18n/lang_") + locale + QString (".qm"));
 	app.installTranslator (&translator);
 
+	app.setOrganizationName ("ElektraInitiative");
+	app.setOrganizationDomain ("libelektra.org");
+	app.setApplicationName ("org.libelektra.elektra-qt-editor");
+	app.setApplicationDisplayName ("Elektra Qt Editor");
+
 	QQmlApplicationEngine engine;
 	QQmlContext * ctxt = engine.rootContext ();
+	engine.addImageProvider (QLatin1String ("theme"), new QQuickThemeIconProvider);
 
 	UndoManager manager;
 	GUIBackend backend;
