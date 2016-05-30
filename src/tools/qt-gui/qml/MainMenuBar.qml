@@ -109,7 +109,7 @@ MenuBar {
 		title: qsTr("Settings")
 
 		MenuItem {
-			action: guiActions.chooseColorAction
+			action: guiActions.chooseAppearanceAction
 		}
 	}
 

@@ -82,7 +82,7 @@ void GUIBackend::addPlugin (QString plugin, bool recommended)
 	{
 		PluginSpec spec (plugin.toStdString (), m_pluginConfigModel->collectCurrentKeySet ().dup ());
 		m_backend->addPlugin (spec);
-		m_backend->resolveNeeds(recommended);
+		m_backend->resolveNeeds (recommended);
 	}
 	catch (PluginCheckException const & ex)
 	{
@@ -94,8 +94,7 @@ void GUIBackend::addPlugin (QString plugin, bool recommended)
 
 void GUIBackend::removePlugin (QString plugin)
 {
-	if(plugin.indexOf ("[") > -1)
-		plugin.chop (plugin.length () - plugin.indexOf ("[") + 1);
+	if (plugin.indexOf ("[") > -1) plugin.chop (plugin.length () - plugin.indexOf ("[") + 1);
 
 	try
 	{
@@ -135,27 +134,25 @@ void GUIBackend::serialise (TreeViewModel * model)
 	}
 }
 
-QStringList GUIBackend::addedPlugins() const
+QStringList GUIBackend::addedPlugins () const
 {
 	QStringList pluginList;
 
 	for (PluginSpec const & elem : *m_backend)
 	{
-		pluginList.append(QString::fromStdString(elem.getName()));
+		pluginList.append (QString::fromStdString (elem.getName ()));
 	}
 
 	return pluginList;
 }
 
-bool GUIBackend::pluginAlreadyAdded(QString plugin) const
+bool GUIBackend::pluginAlreadyAdded (QString plugin) const
 {
-	if (plugin.indexOf ("[") > -1)
-		plugin.chop (plugin.length () - plugin.indexOf ("[") + 1);
+	if (plugin.indexOf ("[") > -1) plugin.chop (plugin.length () - plugin.indexOf ("[") + 1);
 
 	for (PluginSpec const & elem : *m_backend)
 	{
-		if (QString::fromStdString(elem.getName()) == plugin)
-			return true;
+		if (QString::fromStdString (elem.getName ()) == plugin) return true;
 	}
 
 	return false;
@@ -237,7 +234,7 @@ QString GUIBackend::pluginInfo (QString pluginName) const
 		while ((k = info.next ()) && k.isBelow (root))
 		{
 			infoString.append (QString::fromStdString (k.getBaseName ()) + ": " + QString::fromStdString (k.getString ()) +
-			"\n\n");
+					   "\n\n");
 		}
 	}
 	else
@@ -270,7 +267,7 @@ QStringList GUIBackend::availablePlugins (bool includeStorage, bool includeResol
 		}
 
 		ptr->loadInfo ();
-		type = pluginType(QString::fromStdString(s));
+		type = pluginType (QString::fromStdString (s));
 
 		if (!((!includeStorage && type == "storage") || (!includeResolver && type == "resolver")))
 		{
@@ -283,14 +280,14 @@ QStringList GUIBackend::availablePlugins (bool includeStorage, bool includeResol
 	return availPlugins;
 }
 
-QString GUIBackend::pluginType(QString plugin) const
+QString GUIBackend::pluginType (QString plugin) const
 {
 	Modules modules;
 	PluginPtr ptr;
 
 	try
 	{
-		ptr = modules.load(plugin.toStdString());
+		ptr = modules.load (plugin.toStdString ());
 	}
 	catch (NoPlugin & ex)
 	{

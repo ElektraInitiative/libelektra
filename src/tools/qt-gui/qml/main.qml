@@ -5,6 +5,7 @@ import QtQuick.Controls.Styles 1.1
 import QtQuick.Layouts 1.1
 import QtQuick.Dialogs 1.1
 import "MainFunctions.js" as MFunctions
+import "HelperFunctions.js" as Helper
 import "ErrorDialogCreator.js" as ErrorDialog
 import org.libelektra.qtgui 1.0
 
@@ -15,7 +16,7 @@ ApplicationWindow {
 	width: Screen.desktopAvailableWidth
 	height: Screen.desktopAvailableHeight
 
-	title: "Elektra Editor"
+	title: "Elektra Qt Editor"
 
 	onClosing: {
 		if (!undoManager.isClean()){
@@ -171,8 +172,8 @@ ApplicationWindow {
 		id: pluginInfo
 	}
 
-	ChooseColorWindow {
-		id: chooseColorWindow
+	AppearanceSettingsWindow {
+		id: appearanceSettingsWindow
 	}
 
 	//**Dialogs************************************************************************************************//
@@ -201,22 +202,27 @@ ApplicationWindow {
 		title: qsTr("Please choose a color")
 		modality: Qt.ApplicationModal
 
+		/* This is a workaround, as of now (Qt5.6) does not set color before onAccepted */
+		onCurrentColorChanged: {
+			colorDialog.color = currentColor
+		}
+
 		onAccepted: {
 			if (type === "highlight" && guiSettings.highlightColor !== colorDialog.color) {
 				guiSettings.highlightColor = colorDialog.color
-				chooseColorWindow.colorEdited = true
+				appearanceSettingsWindow.optionEdited = true
 			}
 			else if (type === "frame" && guiSettings.frameColor !== colorDialog.color) {
 				guiSettings.frameColor =  colorDialog.color
-				chooseColorWindow.colorEdited = true
+				appearanceSettingsWindow.optionEdited = true
 			}
 			else if (type === "nodeWith" && guiSettings.nodeWithKeyColor !== colorDialog.color) {
 				guiSettings.nodeWithKeyColor = colorDialog.color
-				chooseColorWindow.colorEdited = true
+				appearanceSettingsWindow.optionEdited = true
 			}
 			else if (type === "nodeWithout" && guiSettings.nodeWithoutKeyColor !== colorDialog.color) {
 				guiSettings.nodeWithoutKeyColor = colorDialog.color
-				chooseColorWindow.colorEdited = true
+				appearanceSettingsWindow.optionEdited = true
 			}
 
 			close()
@@ -472,6 +478,7 @@ ApplicationWindow {
 					id: searchResultsCloseButton
 
 					iconSource: "icons/dialog-close.png"
+					iconName: Helper.useIcon("dialog-close")
 					anchors.right: parent.right
 					anchors.top: parent.top
 					anchors.margins: defaultSpacing

@@ -1,0 +1,247 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   id="svg7384"
+   version="1.1"
+   inkscape:version="0.91 r13725"
+   height="16"
+   sodipodi:docname="circle-symbolic.svg"
+   width="16">
+  <metadata
+     id="metadata90">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title>Gnome Symbolic Icon Theme</dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <sodipodi:namedview
+     inkscape:object-paths="true"
+     inkscape:cy="6.9844876"
+     inkscape:current-layer="g4187"
+     inkscape:window-width="1920"
+     pagecolor="#555753"
+     showborder="false"
+     showguides="true"
+     inkscape:snap-nodes="false"
+     objecttolerance="10"
+     showgrid="true"
+     inkscape:object-nodes="true"
+     inkscape:pageshadow="2"
+     inkscape:guide-bbox="true"
+     inkscape:window-x="0"
+     inkscape:snap-bbox="true"
+     bordercolor="#666666"
+     id="namedview88"
+     inkscape:window-maximized="1"
+     inkscape:snap-global="true"
+     inkscape:window-y="27"
+     gridtolerance="10"
+     inkscape:zoom="32"
+     inkscape:window-height="1136"
+     borderopacity="1"
+     guidetolerance="10"
+     inkscape:snap-bbox-midpoints="false"
+     inkscape:cx="6.8110988"
+     inkscape:bbox-paths="false"
+     inkscape:snap-grids="true"
+     inkscape:pageopacity="1"
+     inkscape:snap-to-guides="true">
+    <inkscape:grid
+       visible="true"
+       spacingx="1px"
+       type="xygrid"
+       spacingy="1px"
+       id="grid4866"
+       empspacing="2"
+       enabled="true"
+       snapvisiblegridlinesonly="true" />
+  </sodipodi:namedview>
+  <title
+     id="title9167">Gnome Symbolic Icon Theme</title>
+  <defs
+     id="defs7386">
+    <inkscape:path-effect
+       effect="bend_path"
+       id="path-effect4182"
+       is_visible="true"
+       bendpath="m 116.24997,115.87503 c 88.86935,-4.47912 -58.957899,-48.035512 348.00009,0"
+       prop_scale="1"
+       scale_y_rel="false"
+       vertical="false"
+       bendpath-nodetypes="cc" />
+    <inkscape:path-effect
+       effect="envelope"
+       id="path-effect4180"
+       is_visible="true"
+       yy="true"
+       xx="true"
+       bendpath1="m 116.24997,18 348.00009,0"
+       bendpath2="m 464.25006,18 0,195.75007"
+       bendpath3="m 116.24997,213.75007 348.00009,0"
+       bendpath4="m 116.24997,18 0,195.75007" />
+    <inkscape:path-effect
+       effect="interpolate"
+       id="path-effect4178"
+       is_visible="true"
+       trajectory="M 0,0 0,0"
+       equidistant_spacing="true"
+       steps="5" />
+    <inkscape:path-effect
+       effect="knot"
+       id="path-effect4176"
+       is_visible="true"
+       interruption_width="3"
+       prop_to_stroke_width="true"
+       add_stroke_width="true"
+       add_other_stroke_width="true"
+       switcher_size="15"
+       crossing_points_vector="" />
+    <inkscape:path-effect
+       effect="skeletal"
+       id="path-effect4174"
+       is_visible="true"
+       pattern="M 0,0 1,0"
+       copytype="single_stretched"
+       prop_scale="1"
+       scale_y_rel="false"
+       spacing="0"
+       normal_offset="0"
+       tang_offset="0"
+       prop_units="false"
+       vertical_pattern="false"
+       fuse_tolerance="0" />
+    <inkscape:path-effect
+       effect="powerstroke"
+       id="path-effect4172"
+       is_visible="true"
+       offset_points="0,1 | 3.5,1"
+       sort_points="true"
+       interpolator_type="CubicBezierFit"
+       interpolator_beta="0.15384615"
+       start_linecap_type="round"
+       linejoin_type="round"
+       miter_limit="4"
+       end_linecap_type="round" />
+    <inkscape:path-effect
+       effect="spiro"
+       id="path-effect4166"
+       is_visible="true" />
+    <inkscape:path-effect
+       effect="curvestitching"
+       id="path-effect4164"
+       is_visible="true"
+       count="5"
+       startpoint_edge_variation="0;1"
+       startpoint_spacing_variation="0;1"
+       endpoint_edge_variation="0;1"
+       endpoint_spacing_variation="0;1"
+       strokepath="m 116.24997,115.87503 348.00009,0"
+       prop_scale="1"
+       scale_y_rel="false" />
+    <inkscape:path-effect
+       effect="vonkoch"
+       id="path-effect4162"
+       is_visible="true"
+       ref_path="m 116.13372,115.85703 348.00009,0"
+       generator="m 116.13372,213.73207 116.00003,0 m 116.00003,0 116.00003,0"
+       similar_only="false"
+       nbgenerations="1"
+       drawall="true"
+       maxComplexity="1000" />
+    <inkscape:path-effect
+       effect="envelope"
+       id="path-effect4160"
+       is_visible="true"
+       yy="true"
+       xx="true"
+       bendpath1="m 116.24997,18 348.00009,0"
+       bendpath2="m 464.25006,18 0,195.75007"
+       bendpath3="m 116.24997,213.75007 348.00009,0"
+       bendpath4="m 116.24997,18 0,195.75007" />
+  </defs>
+  <g
+     transform="translate(-202.0002,-490)"
+     inkscape:groupmode="layer"
+     id="layer9"
+     inkscape:label="status"
+     style="display:inline" />
+  <g
+     transform="translate(-202.0002,-490)"
+     inkscape:groupmode="layer"
+     id="layer10"
+     inkscape:label="devices" />
+  <g
+     transform="translate(-202.0002,-490)"
+     inkscape:groupmode="layer"
+     id="layer11"
+     inkscape:label="apps">
+    <g
+       id="g4187"
+       transform="matrix(0.03488851,0,0,0.03488851,201.41945,489.37803)"
+       style="fill:none;fill-opacity:1;stroke:none;stroke-dasharray:none;stroke-opacity:1">
+      <title
+         id="title4189">Canvas 1</title>
+      <g
+         id="g4191"
+         transform="matrix(0.97521366,0,0,0.97521366,6.126598,6.1322433)">
+        <title
+           id="title4193">Layer 1</title>
+        <path
+           style="fill:#bebebe;fill-opacity:1"
+           d="m 350.77539,135.2832 c -5.48711,0.0927 -4.9332,7.68349 -0.97266,9.72071 20.12402,16.09339 37.79548,35.49568 49.26199,58.66932 24.0907,46.63567 25.15213,104.43113 1.17824,151.43132 -22.99909,46.8259 -68.62108,81.7744 -120.00569,90.6607 -33.38246,6.27628 -68.30684,1.80916 -99.53219,-11.57775 -5.04026,-1.03125 -8.69289,5.92571 -4.24414,9.10938 10.54828,10.54206 24.43521,16.97326 37.62047,23.53417 56.80812,25.55636 126.84547,19.11339 177.39235,-17.5829 49.41735,-34.94144 79.65382,-95.77742 75.67908,-156.4075 -2.92654,-55.8617 -32.99598,-109.86812 -80.11133,-140.39867 -11.13712,-7.19317 -23.16009,-14.56496 -36.26612,-17.15878 z"
+           id="path4195"
+           inkscape:connector-curvature="0" />
+        <path
+           style="fill:#bebebe;fill-opacity:1"
+           d="M 137.72461,77.871094 C 122.7093,80.574167 110.02882,89.988399 97.423403,97.989476 46.443178,133.86111 16.331233,197.48075 22.213709,259.70309 c 4.895175,59.77928 41.23301,116.29757 94.702311,143.9766 49.26324,26.2912 110.91664,28.50071 161.34375,4.03515 13.00827,-6.27554 26.20524,-13.47362 36.18359,-24.01367 2.2872,-4.82461 -4.46098,-8.6319 -8.35365,-6.01589 -20.08506,7.66316 -41.12296,13.36528 -62.76876,13.41788 C 186.98166,392.46335 130.67222,364.08568 99.6764,316.5054 69.022288,270.828 62.40378,210.2236 83.851379,159.44949 c 11.493143,-28.44383 31.193691,-53.1158 55.379091,-71.73074 2.97181,-2.231898 5.29454,-8.349731 0.22461,-9.611328 -0.5617,-0.120121 -1.15588,-0.368094 -1.73047,-0.236328 z"
+           id="path4199"
+           inkscape:connector-curvature="0" />
+        <path
+           style="fill:#bebebe;fill-opacity:1"
+           d="M 288.11133,12.011719 C 217.98227,11.939466 150.29398,57.469821 124.1592,122.5984 c -12.52669,30.2747 -17.53018,64.33001 -11.14358,96.62621 2.18094,4.82801 9.91368,2.73829 9.74053,-2.47738 3.22739,-16.60588 6.15665,-33.30074 13.48994,-48.65795 23.34303,-53.71806 76.4193,-93.685209 134.79273,-99.531653 53.59169,-6.260509 110.08852,14.6817 145.40246,56.011723 23.08268,26.24877 37.26813,59.28796 41.3263,93.82909 1.61912,4.88799 9.48436,4.57984 10.01367,-0.87305 3.82408,-14.11964 2.46376,-29.06286 1.6619,-43.48114 C 463.59355,113.39269 424.91947,56.884628 369.82933,30.505713 344.53675,18.072225 316.3053,11.589906 288.11133,12.011719 Z"
+           id="path4203"
+           inkscape:connector-curvature="0" />
+      </g>
+    </g>
+  </g>
+  <g
+     transform="translate(-202.0002,-490)"
+     inkscape:groupmode="layer"
+     id="layer12"
+     inkscape:label="actions" />
+  <g
+     transform="translate(-202.0002,-490)"
+     inkscape:groupmode="layer"
+     id="layer13"
+     inkscape:label="places" />
+  <g
+     transform="translate(-202.0002,-490)"
+     inkscape:groupmode="layer"
+     id="layer14"
+     inkscape:label="mimetypes" />
+  <g
+     transform="translate(-202.0002,-490)"
+     inkscape:groupmode="layer"
+     id="layer15"
+     inkscape:label="emblems"
+     style="display:inline" />
+  <g
+     transform="translate(-202.0002,-490)"
+     inkscape:groupmode="layer"
+     id="g4953"
+     inkscape:label="categories"
+     style="display:inline" />
+</svg>

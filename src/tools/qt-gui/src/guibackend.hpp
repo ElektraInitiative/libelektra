@@ -64,7 +64,7 @@ public:
 	 *
 	 * @param name The name of the plugin.
 	 */
-	Q_INVOKABLE void removePlugin(QString plugin);
+	Q_INVOKABLE void removePlugin (QString plugin);
 
 	/**
 	 * @brief Provides information about a plugin.
@@ -121,7 +121,7 @@ public:
 	 *
 	 * @return The already added plugins of the backend as QStringList.
 	 */
-	Q_INVOKABLE QStringList addedPlugins() const;
+	Q_INVOKABLE QStringList addedPlugins () const;
 
 	/**
 	 * @brief Returns if a plugin is already added to the backend.
@@ -129,7 +129,7 @@ public:
 	 * @param plugin The plugin
 	 * @return true if the plugin is already added to the backend
 	 */
-	Q_INVOKABLE bool	pluginAlreadyAdded(QString plugin) const;
+	Q_INVOKABLE bool pluginAlreadyAdded (QString plugin) const;
 
 	/**
 	 * @brief Returns the type of a plugin.
@@ -137,7 +137,7 @@ public:
 	 * @param plugin The plugin
 	 * @return The type of a plugin.
 	 */
-	Q_INVOKABLE QString pluginType(QString plugin) const;
+	Q_INVOKABLE QString pluginType (QString plugin) const;
 
 private:
 	QSharedPointer<kdb::tools::MountBackendBuilder> m_backend;
