@@ -100,7 +100,7 @@ static gboolean elektra_settings_write_string (GSettingsBackend * backend, const
 {
 	ElektraSettingsBackend * esb = (ElektraSettingsBackend *)backend;
 	GElektraKey * gkey = gelektra_keyset_lookup_byname (esb->gks, keypathname, GELEKTRA_KDB_O_NONE);
-	const gchar * string_value = g_variant_print (value, TRUE);
+	const gchar * string_value = g_variant_print (value, FALSE);
 	if (gkey == NULL)
 	{
 		gkey = gelektra_key_new (keypathname, KEY_VALUE, string_value, KEY_END);
