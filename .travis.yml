@@ -30,17 +30,17 @@ before_install:
       brew install yajl;
       brew install augeas --HEAD;
       brew install dbus;
-      brew install Caskroom/cask/java;
-      brew outdated libffi || brew install libffi;
+      brew install qt5;
+      brew install discount;
+      brew install libffi;
       libffi_ver=$(brew ls --versions libffi | awk '{print $2}') &&
       gi_ver=$(brew ls --versions gobject-introspection | awk '{print $2}') &&
       PKG_CONFIG_PATH=/usr/local/Cellar/libffi/${libffi_ver}/lib/pkgconfig/ &&
       PKG_CONFIG_PATH=$PKG_CONFIG_PATH:/usr/local/Cellar/gobject-introspection/${gi_ver}/lib/pkgconfig &&
       luarocks install lgi;
-      export JAVA_HOME=$(/usr/libexec/java_home -v 1.8);
-      java -version;
-      echo $JAVA_HOME;
       which luarocks;
+      export Qt5_DIR=/usr/local/opt/qt5;
+      brew config;
     fi
 
 #
@@ -60,7 +60,7 @@ before_script:
       CMAKE_OPT+=("-DPYTHON_INCLUDE_DIR:PATH=$(python3-config --prefix)/include/python${python3_ver}m") &&
       CMAKE_OPT+=("-DPYTHON_LIBRARY:FILEPATH=$(python3-config --prefix)/lib/libpython${python3_ver}.dylib");
     fi
-  - cmake -DBUILD_STATIC=OFF -DBINDINGS=ALL -DCMAKE_INSTALL_PREFIX=$TRAVIS_BUILD_DIR/../install -DKDB_DB_SYSTEM=$TRAVIS_BUILD_DIR/../kdbsystem ${CMAKE_OPT[@]} $TRAVIS_BUILD_DIR
+  - cmake -DBUILD_STATIC=OFF -DBINDINGS=ALL -DTOOLS=ALL -DCMAKE_INSTALL_PREFIX=$TRAVIS_BUILD_DIR/../install -DKDB_DB_SYSTEM=$TRAVIS_BUILD_DIR/../kdbsystem ${CMAKE_OPT[@]} $TRAVIS_BUILD_DIR
 
 script:
   - make -j3
