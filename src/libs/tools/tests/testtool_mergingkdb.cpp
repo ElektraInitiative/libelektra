@@ -132,11 +132,11 @@ TEST_F (MergingKDBTest, DISABLED_RemoveKey)
 
 	{
 		KeySet ks (3, *Key ("system" + testRoot + "key", KEY_VALUE, "value", KEY_END), KS_END);
-		EXPECT_EQ (1, ks.size());
+		EXPECT_EQ (1, ks.size ());
 		KDB keyAdder;
 		KeySet discard;
-		keyAdder.get(discard, parent);
-		keyAdder.set(ks, parent);
+		keyAdder.get (discard, parent);
+		keyAdder.set (ks, parent);
 	}
 
 	MergingKDB mergingKDB;
@@ -145,14 +145,14 @@ TEST_F (MergingKDBTest, DISABLED_RemoveKey)
 	{
 		KDB first;
 		first.get (firstReturned, parent);
-		EXPECT_EQ (1, firstReturned.size());
+		EXPECT_EQ (1, firstReturned.size ());
 		firstReturned.lookup ("system" + testRoot + "key", KDB_O_POP);
-		EXPECT_EQ (0, firstReturned.size());
+		EXPECT_EQ (0, firstReturned.size ());
 		EXPECT_EQ (1, first.set (firstReturned, parent));
 	}
 
 	mergingKDB.synchronize (secondReturned, parent, merger);
-	EXPECT_EQ (0, secondReturned.size());
+	EXPECT_EQ (0, secondReturned.size ());
 }
 
 TEST_F (MergingKDBTest, DISABLED_RemoveKey2)
@@ -160,14 +160,13 @@ TEST_F (MergingKDBTest, DISABLED_RemoveKey2)
 	Key parent (testRoot, KEY_END);
 
 	{
-		KeySet ks (3,   *Key ("system" + testRoot + "key1", KEY_VALUE, "value", KEY_END),
-				*Key ("system" + testRoot + "key2", KEY_VALUE, "value", KEY_END),
-				KS_END);
-		EXPECT_EQ (1, ks.size());
+		KeySet ks (3, *Key ("system" + testRoot + "key1", KEY_VALUE, "value", KEY_END),
+			   *Key ("system" + testRoot + "key2", KEY_VALUE, "value", KEY_END), KS_END);
+		EXPECT_EQ (1, ks.size ());
 		KDB keyAdder;
 		KeySet discard;
-		keyAdder.get(discard, parent);
-		keyAdder.set(ks, parent);
+		keyAdder.get (discard, parent);
+		keyAdder.set (ks, parent);
 	}
 
 	MergingKDB mergingKDB;
@@ -176,13 +175,12 @@ TEST_F (MergingKDBTest, DISABLED_RemoveKey2)
 	{
 		KDB first;
 		first.get (firstReturned, parent);
-		EXPECT_EQ (2, firstReturned.size());
+		EXPECT_EQ (2, firstReturned.size ());
 		firstReturned.lookup ("system" + testRoot + "key2", KDB_O_POP);
-		EXPECT_EQ (1, firstReturned.size());
+		EXPECT_EQ (1, firstReturned.size ());
 		EXPECT_EQ (1, first.set (firstReturned, parent));
 	}
 
 	mergingKDB.synchronize (secondReturned, parent, merger);
-	EXPECT_EQ (1, secondReturned.size());
+	EXPECT_EQ (1, secondReturned.size ());
 }
-
