@@ -68,8 +68,6 @@ G_DEFINE_TYPE (ElektraSettingsBackend, elektra_settings_backend, G_TYPE_SETTINGS
 static GVariant * elektra_settings_read_string (GSettingsBackend * backend, gchar * keypathname, const GVariantType * expected_type)
 {
 	ElektraSettingsBackend * esb = (ElektraSettingsBackend *)backend;
-	/* Make sure our keys are up to date */
-	gelektra_kdb_get (esb->gkdb, esb->gks, esb->gkey);
 	/* Lookup the requested key */
 	GElektraKey * gkey = gelektra_keyset_lookup_byname (esb->gks, keypathname, GELEKTRA_KDB_O_NONE);
 	/* free the passed path string */
@@ -101,7 +99,6 @@ static gboolean elektra_settings_write_string (GSettingsBackend * backend, const
 					       gpointer origin_tag)
 {
 	ElektraSettingsBackend * esb = (ElektraSettingsBackend *)backend;
-	gelektra_kdb_get (esb->gkdb, esb->gks, esb->gkey);
 	GElektraKey * gkey = gelektra_keyset_lookup_byname (esb->gks, keypathname, GELEKTRA_KDB_O_NONE);
 	const gchar * string_value = g_variant_print (value, TRUE);
 	if (gkey == NULL)
@@ -116,17 +113,8 @@ static gboolean elektra_settings_write_string (GSettingsBackend * backend, const
 		// Should we check if correct value is set?
 		gelektra_key_setstring (gkey, string_value);
 	}
-	switch (gelektra_kdb_set (esb->gkdb, esb->gks, esb->gkey))
-	{
-	case -1:
-		return FALSE;
-	case 1:
-		g_settings_backend_changed (backend, key, origin_tag);
-	case 0:
-		return TRUE;
-	default:
-		return FALSE;
-	}
+	g_settings_backend_changed (backend, key, origin_tag);
+	return TRUE;
 }
 
 /* elektra_settings_backend_read implements g_settings_backend_read:
@@ -257,13 +245,11 @@ static void elektra_settings_backend_reset (GSettingsBackend * backend, const gc
 	g_log (G_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, "%s %s\n", "Reset key:", key);
 	ElektraSettingsBackend * esb = (ElektraSettingsBackend *)backend;
 	gchar * keypathname = g_strconcat (G_ELEKTRA_SETTINGS_USER, G_ELEKTRA_SETTINGS_SW, key, NULL);
-	gelektra_kdb_get (esb->gkdb, esb->gks, esb->gkey);
 	GElektraKey * gkey = gelektra_keyset_lookup_byname (esb->gks, keypathname, GELEKTRA_KDB_O_NONE);
 	g_free (keypathname);
 	if (gkey != NULL)
 	{ // TODO check on errors
 		gelektra_keyset_lookup(esb->gks, gkey, KDB_O_POP);
-		gelektra_kdb_set (esb->gkdb, esb->gks, esb->gkey);
 	}
 }
 
@@ -287,7 +273,6 @@ static gboolean elektra_settings_backend_get_writable (GSettingsBackend * backen
 	ElektraSettingsBackend * esb = (ElektraSettingsBackend *)backend;
 
 	gchar * pathToWrite = g_strconcat (G_ELEKTRA_SETTINGS_USER, G_ELEKTRA_SETTINGS_SW, name, NULL);
-	gelektra_kdb_get (esb->gkdb, esb->gks, esb->gkey);
 	GElektraKey * gkey = gelektra_keyset_lookup_byname (esb->gks, pathToWrite, GELEKTRA_KDB_O_NONE);
 	if (gkey == NULL)
 	{
@@ -295,8 +280,6 @@ static gboolean elektra_settings_backend_get_writable (GSettingsBackend * backen
 		g_free (pathToWrite);
 		if (gkey == NULL) return FALSE;
 	}
-	//TODO further writability testing
-	gelektra_kdb_get (esb->gkdb, esb->gks, esb->gkey);
 	return TRUE;
 }
 
