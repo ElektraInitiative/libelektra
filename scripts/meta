@@ -37,8 +37,15 @@ def get_scripts():
 	scripts = defaultdict(dict)
 	scripts_path = os.path.dirname(os.path.realpath(__file__))
 
-	for f in os.listdir('.'):
+	for f in os.listdir(scripts_path):
+		f = os.path.join(scripts_path,f)
 		if not os.path.isfile(f):
+			continue
+
+		# If file not readable, skip it
+		try:
+			head = list (get_head (f))
+		except UnicodeDecodeError:
 			continue
 
 		# Do not process txt, default is '#'
@@ -58,9 +65,7 @@ def get_scripts():
 		s = os.stat(f)
 		fn = os.path.basename(f)
 		scripts[fn]["perm"] = (s.st_mode & 64)
-		scripts[fn]["mtime"] = s.st_mtime 
-
-		head = list (get_head (f))
+		scripts[fn]["mtime"] = s.st_mtime
 
 		if head[0].startswith("#!"):
 			scripts[fn]["shebang"] = head[0]

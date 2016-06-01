@@ -23,3 +23,21 @@ Beware, that these metatags should be applied at the beginning of the file (in t
 ## Tags ##
 
 If you choose to add a tag to the `\@tags` then do not forget to add it in the tags map of the `meta` script.
+
+## How to add Meta info to a script ##
+
+Just set the Tags as described above as comments at the start (within 10 lines) of your script.
+
+
+Example from `meta`:
+
+```
+<Start of File>
+#!/usr/bin/env python
+#
+# @author Sebastian Bachmann support by <kurt.micheli@libelektra.org>
+# @desc This script is used to organize scripts
+# @date 10.05.2016
+# @tags
+# @system all
+```
