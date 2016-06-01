@@ -8,7 +8,7 @@
 
 metatags = ["date", "desc", "author", "tags", "system", "depends"]
 
-# If you create own Tags, please document them here! 
+# If you create own Tags, please document them here!
 tags = {	'configure':"This script is used for the build configuration",
 		'convert':"This script is used convert things",
 		'generator':"This script is a generator",
@@ -118,7 +118,7 @@ def main():
 
 	if args.warnings:
 		for s, d in sorted(scripts.items()):
-			message = [] 
+			message = []
 			if d["shebang"] == "":
 				message.append("No Shebang")
 			if d["perm"] == 0:
