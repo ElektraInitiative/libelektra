@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# @author Sebastian Bachmann support by <kurt.micheli@libelektra.org>
+# @author Sebastian Bachmann, Kurt Micheli <kurt.micheli@libelektra.org>
 # @brief This script is used to search for scripts
 # @date 10.05.2016
 
@@ -69,7 +69,7 @@ def get_scripts():
 		if head[0].startswith("#!"):
 			scripts[fn]["shebang"] = head[0]
 		else:
-			scripts[fn]["shebang"] = "" 
+			scripts[fn]["shebang"] = ""
 
 		# Look for a line that looks like a vim modeline:
 		scripts[fn]["modeline"] = ""
