@@ -1,7 +1,7 @@
-# Meta #
+# Kdb Meta #
 
-Meta tags as comments in the beginning of a script are parsed by the meta script
-The aim of this script is to find the right script in no time!
+Meta tags as comments in the beginning of a script are parsed by the meta script.
+The aim of `kdb meta` is to find the right script in no time!
 
 The Metatag System of Epydoc is used (http://epydoc.sourceforge.net/manual-fields.html#module-metadata-variables)
 and extendet with the following special tags:
@@ -11,33 +11,46 @@ and extendet with the following special tags:
 | \@date    | Date when the script was created, use DD.MM.YYYY as format           |
 | \@desc    | A Short Description (One Line!)                                      |
 | \@author  | Name of the Author and email in < >                                  |
-| \@tags    | Comma Seperated List of Tags, there is a list of common tags below   |
-| \@system  | Name of the System that the script is intended for (comma seperated) |
+| \@tags    | Comma Separated List of Tags, there is a list of common tags below   |
+| \@system  | Name of the System that the script is intended for (comma separated) |
 | \@depends | Other script names that depend on (the output) of this script        |
 
 Do not mind the '\' at the beginning it is a doxygen escaping.
 
-Because there are not only python scripts, we use the @ declaration, inside the comment.
+Because there are not only python scripts, we use the '@' declaration, inside the comment.
 Beware, that these metatags should be applied at the beginning of the file (in the first 10 rows)
 
 ## Tags ##
 
-If you choose to add a tag to the `\@tags` then do not forget to add it in the tags map of the `meta` script.
+List of Common Tags:
+
+| \@tags    | Description                                     |
+|-----------|-------------------------------------------------|
+| configure | This script is used for the build configuration |
+| convert   | This script is used convert things              |
+| generator | This script is a generator                      |
+| creator   | This script creates things                      |
+| env       | This script does some env stuff                 |
+| mount     | This script mounts things                       |
+| reformat  | This script reformats things                    |
+
+
+If you choose to add a tag to the `\@tags` then do not forget to add it in the tags map of the `meta` script
+and in the table here.
 
 ## How to add Meta info to a script ##
 
 Just set the Tags as described above as comments at the start (within 10 lines) of your script.
 
-
 Example from `meta`:
 
 ```
 <Start of File>
-#!/usr/bin/env python
+#!/usr/bin/bash
 #
-# @author Sebastian Bachmann support by <kurt.micheli@libelektra.org>
-# @desc This script is used to organize scripts
-# @date 10.05.2016
-# @tags
-# @system all
+# @author Kurt Micheli <kurt.micheli@libelektra.org>
+# @desc This script is not existing
+# @date 01.06.2016
+# @tags configure, creator
+# @system debain, arch
 ```
