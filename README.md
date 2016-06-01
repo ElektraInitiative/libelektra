@@ -9,8 +9,9 @@
  * Basic operations are functional, but neither well tested nor error prove.
 
 # What is not
- * `subscribe`, `unsubscribe` an `writeTree` implemenations are still missing
+ * `subscribe`, `unsubscribe` implemenations are still missing
  * proper error handling
+ * optimizations
 
 #Building
 ## Dependencies
@@ -34,7 +35,18 @@ make
  you do not want this module to be chosen as default gsetttings backend, lower the
  value bellow `100` as that is the value dconf currently gives his backend.
 
-#Debugging
+# Migration
+
+For now you can export your exising dconf database trough:
+'''shell
+dconf dump > ~/.config/dconf.ini
+'''
+and mount it in elektra
+'''shell
+(sudo) kdb mount dconf.ini /sw/ ini
+'''
+
+# Debugging
 
 `G_MESSAGES_DEBUG=ElektraSettings` will enable debug output of the backend. If you
 set the priority of the module below `100` you also have to set `GSETTINGS_BACKEND=elektra`

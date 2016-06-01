@@ -52,4 +52,5 @@ static GVariant * elektra_settings_read_string (GSettingsBackend * backend, gcha
  * Returns: the value that was read, or %NULL
  */
 static gboolean elektra_settings_write_string (GSettingsBackend * backend, const gchar * key, gchar * keypathname, GVariant * value, gpointer origin_tag);
+static gint elektra_settings_notify_treekey_changed (gpointer key, gpointer value, gpointer data);
 #endif ELEKTRA_SETTINGS_H
