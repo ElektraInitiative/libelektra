@@ -1,40 +1,21 @@
 #!/usr/bin/env python
-# vim: noexpandtab:tabstop=4:shiftwidth=4:fileencoding=UTF-8
 #
-# @author Sebastian Bachmann <sebastian.bachmann@tuwien.ac.at>
+# @author Sebastian Bachmann support by <kurt.micheli@libelektra.org>
 # @desc This script is used to organize scripts
 # @date 10.05.2016
 # @tags
 # @system all
-#
-# Comments in the Beginning of a script define some things and are parsed by this meta script
-# The aim of this script is to find the right script in no time!
-#
-# The Metatag System of Epydoc is used (http://epydoc.sourceforge.net/manual-fields.html#module-metadata-variables)
-# and extendet with the following special tags:
-# 
-# MetaTag					Meaning
-# ----------------------------------------------------------
-# @date						The Date when the script was created, use DD.MM.YYYY as format
-# @desc						A Short Description (One Line!)
-# @author					Name of the Author and email in < >
-# @tags						Comma Seperated List of Tags, there is a list of common tags below
-# @system					Name of the System that the script is intended for (comma seperated)
-# @depends					Other script names that depend on (the output) of this script
 
 metatags = ["date", "desc", "author", "tags", "system", "depends"]
 
-# 
-# Because there are not only python scripts, we use the @ declaration, inside the comment.
-# Beware, that these metatags should be applied at the beginning of the file (in the first 10 rows)
-#
 # If you create own Tags, please document them here! 
-tags = {'configure': "This script is used for the build configuration",
-		'convert': "This script is used convert things",
-		'template': "This script is used to create a template",
-		'env': "This script does some env stuff",
-		'mount': "This script mounts things",
-		'reformat': "This script reformats things"}
+tags = {	'configure':"This script is used for the build configuration",
+		'convert':"This script is used convert things",
+		'generator':"This script is a generator",
+		'creator':"This script creates things",
+		'env':"This script does some env stuff",
+		'mount':"This script mounts things",
+		'reformat':"This script reformats things"}
 
 # No changes below this line necassary!
 
@@ -56,13 +37,25 @@ def get_scripts():
 	scripts = defaultdict(dict)
 	scripts_path = os.path.dirname(os.path.realpath(__file__))
 
-	# FIXME we believe that every script uses a hash as comment marker...
-	tag_match = re.compile("^#[ ]*@(%s) (.*)$" % "|".join(metatags))
-
 	for f in os.listdir('.'):
 		if not os.path.isfile(f):
 			continue
-		s = os.stat(f)	
+
+		# Do not process txt, default is '#'
+		filesDict = {'.sh': '#', '.py': '#', ".txt": -1, ".md": -1}
+
+		comment = '#'
+
+		for key in filesDict.keys():
+			if (f.endswith(key)):
+				comment = filesDict[key]
+
+		if (comment == -1):
+			continue
+
+		tag_match = re.compile("^"+comment+"[ ]*@(%s) (.*)$" % "|".join(metatags))
+
+		s = os.stat(f)
 		fn = os.path.basename(f)
 		scripts[fn]["perm"] = (s.st_mode & 64)
 		scripts[fn]["mtime"] = s.st_mtime 
@@ -82,7 +75,6 @@ def get_scripts():
 				break
 
 		# just look at lines that have a metatag
-
 		scripts[fn]["tags"] = {k: v for k, v in map(lambda x: tag_match.match(x).groups(), filter(lambda x: tag_match.match(x), head))}
 
 	return scripts
@@ -97,7 +89,7 @@ def main():
 
 	so = parser.add_argument_group('Search Options. If multiple are given, they will be concatenated with AND')
 	so.add_argument("-a", "--author", help="Search by author")
-	so.add_argument("-d", "--date", help="Search by semester")
+	so.add_argument("-d", "--date", help="Search by date (format DD.MM.YYYY)")
 	so.add_argument("-t", "--tags", help="Search by tags", nargs="+")
 	so.add_argument("-s", "--system", help="Search by systems", nargs="+")
 	so.add_argument("-n", "--description", help="Search inside the description")
@@ -113,7 +105,7 @@ def main():
 		for s, d  in scripts.items():
 			if "tags" in d["tags"]:
 				for tag in d["tags"]["tags"].split(","):
-					stags.add(tag)
+					stags.add(tag.strip())
 
 		print("\n".join(sorted(stags)))
 		return None
@@ -142,11 +134,11 @@ def main():
 		if args.author is not None:
 			scripts = {k: v for k, v in scripts.items() if "author" in v["tags"].keys() and args.author.lower() in v["tags"]["author"].lower()}
 		if args.date is not None:
-			scripts = {k: v for k, v in scripts.items() if "date" in v["tags"].keys() and args.date.lower()in v["tags"]["date"].lower()}
+			scripts = {k: v for k, v in scripts.items() if "date" in v["tags"].keys() and args.date.lower() in v["tags"]["date"].lower()}
 		if args.tags is not None:
-			scripts = {k: v for k, v in scripts.items() if "tags" in v["tags"].keys() and len(set(args.tags) & set(v["tags"]["tags"].split(","))) > 0}
+			scripts = {k: v for k, v in scripts.items() if "tags" in v["tags"].keys() and len(set(args.tags) & set(map(str.strip, v["tags"]["tags"].split(",")))) > 0 }
 		if args.system is not None:
-			scripts = {k: v for k, v in scripts.items() if "system" in v["tags"].keys() and len(set(args.system) & set(v["tags"]["system"].split(","))) > 0}
+			scripts = {k: v for k, v in scripts.items() if "system" in v["tags"].keys() and len(set(args.system) & set(map(str.strip, v["tags"]["system"].split(",")))) > 0}
 		if args.description is not None:
 			scripts = {k: v for k, v in scripts.items() if "desc" in v["tags"].keys() and args.description.lower() in v["tags"]["desc"].lower()}
 		if args.execute is not None:
