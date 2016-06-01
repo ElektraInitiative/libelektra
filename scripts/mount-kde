@@ -1,10 +1,9 @@
 #!/bin/sh
 #
 # @author Markus Raab <elektra@markus-raab.org>
-# @desc Mounts all config files from .kde/share/config
+# @brief Mounts all config files from .kde/share/config
 # @date 08.11.2014
 # @tags mount
-# @system kde
 
 if [ -z "$KDB" ]; then
 	KDB=kdb

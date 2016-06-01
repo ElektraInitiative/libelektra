@@ -1,12 +1,10 @@
 #!/usr/bin/env python
 #
 # @author Sebastian Bachmann support by <kurt.micheli@libelektra.org>
-# @desc This script is used to organize scripts
+# @brief This script is used to search for scripts
 # @date 10.05.2016
-# @tags
-# @system all
 
-metatags = ["date", "desc", "author", "tags", "system", "depends"]
+metatags = ["date", "brief", "author", "tags"]
 
 # If you create own Tags, please document them here!
 tags = {	'configure':"This script is used for the build configuration",
@@ -15,7 +13,8 @@ tags = {	'configure':"This script is used for the build configuration",
 		'creator':"This script creates things",
 		'env':"This script does some env stuff",
 		'mount':"This script mounts things",
-		'reformat':"This script reformats things"}
+		'reformat':"This script reformats things",
+		'debian':"Special script for debian system"}
 
 # No changes below this line necassary!
 
@@ -48,7 +47,7 @@ def get_scripts():
 		except UnicodeDecodeError:
 			continue
 
-		# Do not process txt, default is '#'
+		# Do not process txt and md, default is '#'
 		filesDict = {'.sh': '#', '.py': '#', ".txt": -1, ".md": -1}
 
 		comment = '#'
@@ -86,7 +85,7 @@ def get_scripts():
 
 
 def main():
-	parser = argparse.ArgumentParser(description = "Meta Tool for PK Scripts")
+	parser = argparse.ArgumentParser(description = "KDB Tool finder")
 
 	parser.add_argument("--warnings", help="Print a list of all scripts that does not contain a shebang and or metatags", dest="warnings", action="store_true", default=False)
 	parser.add_argument("--good", help="Print a list of all scripts that are compliant with the Meta System", dest="good", action="store_true", default=False)
@@ -96,10 +95,9 @@ def main():
 	so.add_argument("-a", "--author", help="Search by author")
 	so.add_argument("-d", "--date", help="Search by date (format DD.MM.YYYY)")
 	so.add_argument("-t", "--tags", help="Search by tags", nargs="+")
-	so.add_argument("-s", "--system", help="Search by systems", nargs="+")
-	so.add_argument("-n", "--description", help="Search inside the description")
+	so.add_argument("-b", "--brief", help="Search inside the brief text")
 	so.add_argument("-e", "--execute", help="Search by file executeable (shebang)")
-	so.add_argument("-p", "--depends", help="Search for a script that depends on this argument")
+
 
 	args = parser.parse_args()
 
@@ -133,7 +131,7 @@ def main():
 	elif args.good:
 		for s, d in sorted(scripts.items()):
 			if d["shebang"] != "" and d["perm"] != 0 and d["tags"] != {}:
-				print ("%s%s%s%s%s" % (s, " "*(2 + max(map(len, scripts.keys())) - len(s)), d["shebang"][2:], " "*(30 - len(d["shebang"])), d["tags"]["desc"] if "desc" in d["tags"].keys() else ""))
+				print ("%s%s%s%s%s" % (s, " "*(2 + max(map(len, scripts.keys())) - len(s)), d["shebang"][2:], " "*(30 - len(d["shebang"])), d["tags"]["brief"] if "brief" in d["tags"].keys() else ""))
 	else:
 		# Search instead!
 		if args.author is not None:
@@ -142,17 +140,14 @@ def main():
 			scripts = {k: v for k, v in scripts.items() if "date" in v["tags"].keys() and args.date.lower() in v["tags"]["date"].lower()}
 		if args.tags is not None:
 			scripts = {k: v for k, v in scripts.items() if "tags" in v["tags"].keys() and len(set(args.tags) & set(map(str.strip, v["tags"]["tags"].split(",")))) > 0 }
-		if args.system is not None:
-			scripts = {k: v for k, v in scripts.items() if "system" in v["tags"].keys() and len(set(args.system) & set(map(str.strip, v["tags"]["system"].split(",")))) > 0}
-		if args.description is not None:
-			scripts = {k: v for k, v in scripts.items() if "desc" in v["tags"].keys() and args.description.lower() in v["tags"]["desc"].lower()}
+		if args.brief is not None:
+			scripts = {k: v for k, v in scripts.items() if "brief" in v["tags"].keys() and args.brief.lower() in v["tags"]["brief"].lower()}
 		if args.execute is not None:
 			scripts = {k: v for k, v in scripts.items() if args.execute.lower() in v["shebang"].lower()}
-		if args.depends is not None:
-			scripts = {k: v for k, v in scripts.items() if "depends" in v["tags"].keys() and args.depends.lower() in v["tags"]["depends"].lower()}
+
 
 		for s, d in sorted(scripts.items()):
-			print ("%s%s%s%s%s" % (s, " "*(2 + max(map(len, scripts.keys())) - len(s)), d["shebang"][2:], " "*(30 - len(d["shebang"])), d["tags"]["desc"] if "desc" in d["tags"].keys() else ""))
+			print ("%s%s%s%s%s" % (s, " "*(2 + max(map(len, scripts.keys())) - len(s)), d["shebang"][2:], " "*(30 - len(d["shebang"])), d["tags"]["brief"] if "brief" in d["tags"].keys() else ""))
 
 
 if __name__ == "__main__":

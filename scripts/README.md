@@ -4,16 +4,14 @@ Meta tags as comments in the beginning of a script are parsed by the meta script
 The aim of `kdb meta` is to find the right script in no time!
 
 The Metatag System of Epydoc is used (http://epydoc.sourceforge.net/manual-fields.html#module-metadata-variables)
-and extendet with the following special tags:
+and extended with the following special tags:
 
 | MetaTag   | Meaning                                                              |
 |-----------|----------------------------------------------------------------------|
 | \@date    | Date when the script was created, use DD.MM.YYYY as format           |
-| \@desc    | A Short Description (One Line!)                                      |
+| \@brief    | A Short Description (One Line!)                                      |
 | \@author  | Name of the Author and email in < >                                  |
 | \@tags    | Comma Separated List of Tags, there is a list of common tags below   |
-| \@system  | Name of the System that the script is intended for (comma separated) |
-| \@depends | Other script names that depend on (the output) of this script        |
 
 Do not mind the '\' at the beginning it is a doxygen escaping.
 
@@ -33,6 +31,7 @@ List of Common Tags:
 | env       | This script does some env stuff                 |
 | mount     | This script mounts things                       |
 | reformat  | This script reformats things                    |
+| debian    | Special script for debian system                |
 
 
 If you choose to add a tag to the `\@tags` then do not forget to add it in the tags map of the `meta` script
@@ -49,8 +48,7 @@ Example from `meta`:
 #!/usr/bin/bash
 #
 # @author Kurt Micheli <kurt.micheli@libelektra.org>
-# @desc This script is not existing
+# @brief This is a example
 # @date 01.06.2016
-# @tags configure, creator
-# @system debain, arch
+# @tags configure, creator, arch
 ```

@@ -1,10 +1,9 @@
 #!/bin/sh
 #
 # @author Markus Raab <elektra@markus-raab.org>
-# @desc Creates a plugin out of the template plugin
+# @brief Creates a plugin out of the template plugin
 # @date 05.05.2012
 # @tags generator, creator
-# @system all
 
 set -e
 
