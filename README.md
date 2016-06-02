@@ -39,11 +39,11 @@ make
 
 For now you can export your exising dconf database trough:
 '''shell
-dconf dump > ~/.config/dconf.ini
+dconf dump > dconf.ini
 '''
-and mount it in elektra
+and import it in elektra
 '''shell
-(sudo) kdb mount dconf.ini /sw/ ini
+(sudo) echo dconf.init | kdb import /sw ini
 '''
 
 # Debugging
