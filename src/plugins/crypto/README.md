@@ -126,6 +126,16 @@ The following example configuration illustrates this concept:
 
 Only keys marked with a certain meta-key will be considered for encryption/decryption.
 
+## Configuration ##
+
+The following key must be set to `"true"` within the plugin configuration,
+if the plugin should shut down the crypto library:
+
+	/crypto/shutdown
+
+Per default shutdown is disabled to prevent applications like the qt-gui from crashing.
+Shutdown is enabled in the unit tests to prevent memory leaks.
+
 ## Examples ##
 
 ### Metadata based encyption ###
