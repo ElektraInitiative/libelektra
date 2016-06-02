@@ -33,7 +33,7 @@ else()
 	target_compile_options (${GELEKTRA_LIBRARY} PUBLIC ${GOBJECT_CFLAGS_OTHER})
 
 	target_link_libraries (${GELEKTRA_LIBRARY} PUBLIC elektra-core elektra-kdb)
-	target_link_libraries (${GELEKTRA_LIBRARY} PUBLIC ${GOBJECT_LDFLAGS})
+	target_link_libraries (${GELEKTRA_LIBRARY} PUBLIC ${GOBJECT_LIBRARIES})
 
 	install (
 		TARGETS ${GELEKTRA_LIBRARY}
@@ -65,4 +65,19 @@ else()
 	if (BUILD_TESTING)
 		add_subdirectory (tests)
 	endif (BUILD_TESTING)
+
+	find_package (GtkDoc 1.25)
+	if (GTKDOC_FOUND)
+		include (GNUInstallDirs)
+		gtk_doc_add_module (
+			gelektra SOURCE ${CMAKE_CURRENT_SOURCE_DIR}
+			XML ${CMAKE_SOURCE_DIR}/doc/glib/gelektra-docs.xml
+			LIBRARIES ${GELEKTRA_LIBRARY}
+		)
+		add_custom_target (
+			gelektra-doc ALL DEPENDS doc-gelektra)
+			install (DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/gelektra/html/
+		    DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/gtk-doc/html/gelektra
+        )
+	endif (GTKDOC_FOUND)
 endif()
