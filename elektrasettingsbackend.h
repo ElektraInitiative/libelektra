@@ -28,29 +28,26 @@
  */
 static GVariant * elektra_settings_read_string (GSettingsBackend * backend, gchar * keypathname, const GVariantType * expected_type);
 
-/*< private >
+/* < private >
  * elektra_settings_write_string:
- * @backend: the #GSettingsBackend implementation ElektraSettingsBackend
- * @key: the key to write (used for notification)
- * @keypathname: the full keypath to write to Elektra
- * @value: the value to write as #GVariantType
- * @origin_tag: the origin tag (used for notification)
+ * @backend: a #GSettingsBackend implementation
+ * @key: the name of the key
+ * @value: a #GVariant value to write to this key
+ * @origin_tag: the origin tag
  *
- * Reads a key. This call will never block.
+ * Writes exactly one key.
  *
- * If the key exists, the value associated with it will be returned.
- * If the key does not exist, %NULL will be returned.
+ * This call does not fail.  During this call a
+ * #GSettingsBackend::changed signal will be emitted if the value of the
+ * key has changed.  The updated key value will be visible to any signal
+ * callbacks.
  *
- * The returned value will be of the type given in @expected_type.  If
- * the backend stored a value of a different type then %NULL will be
- * returned.
+ * One possible method that an implementation might deal with failures is
+ * to emit a second "changed" signal (either during this call, or later)
+ * to indicate that the affected keys have suddenly "changed back" to their
+ * old values.
  *
- * If @default_value is %TRUE then this gets the default value from the
- * backend (ie: the one that the backend would contain if
- * g_settings_reset() were called).
- *
- * Returns: the value that was read, or %NULL
+ * Returns: %TRUE if the write succeeded, %FALSE if the key was not writable
  */
 static gboolean elektra_settings_write_string (GSettingsBackend * backend, const gchar * key, gchar * keypathname, GVariant * value, gpointer origin_tag);
-static gint elektra_settings_notify_treekey_changed (gpointer key, gpointer value, gpointer data);
 #endif ELEKTRA_SETTINGS_H

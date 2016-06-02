@@ -101,7 +101,7 @@ static gboolean elektra_settings_write_string (GSettingsBackend * backend, const
 {
 	ElektraSettingsBackend * esb = (ElektraSettingsBackend *)backend;
 	GElektraKey * gkey = gelektra_keyset_lookup_byname (esb->gks, keypathname, GELEKTRA_KDB_O_NONE);
-	const gchar * string_value = g_variant_print (value, FALSE);
+	gchar * string_value = (value != NULL ? g_variant_print ((GVariant *)value, FALSE) : NULL);
 	if (gkey == NULL)
 	{
 		gkey = gelektra_key_new (keypathname, KEY_VALUE, string_value, KEY_END);
@@ -274,6 +274,7 @@ static void elektra_settings_backend_reset (GSettingsBackend * backend, const gc
 	g_free (keypathname);
 	if (gkey != NULL)
 	{ // TODO check on errors
+		// TODO needs change notification
 		gelektra_keyset_lookup(esb->gks, gkey, KDB_O_POP);
 	}
 }
