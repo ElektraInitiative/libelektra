@@ -221,7 +221,7 @@ int CRYPTO_PLUGIN_FUNCTION (close) (Plugin * handle, Key * errorKey ELEKTRA_UNUS
 	}
 	else
 	{
-		if (strcmp (keyString (shutdown), "true") != 0)
+		if (!strcmp (keyString (shutdown), "1"))
 		{
 			return 1; // applying default behaviour -> success
 		}

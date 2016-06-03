@@ -128,7 +128,7 @@ Only keys marked with a certain meta-key will be considered for encryption/decry
 
 ## Configuration ##
 
-The following key must be set to `"true"` within the plugin configuration,
+The following key must be set to `"1"` within the plugin configuration,
 if the plugin should shut down the crypto library:
 
 	/crypto/shutdown
