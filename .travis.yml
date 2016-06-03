@@ -22,7 +22,9 @@ before_install:
       brew tap caskroom/cask;
       brew install cmake;
       brew install swig;
-      brew install gobject-introspection;
+      brew install --universal gobject-introspection;
+      brew install --universal gettext;
+      brew install --universal glib;
       brew install python3;
       brew install python;
       brew install pygobject3 --with-python --with-python3;

@@ -68,7 +68,7 @@ else()
 		add_subdirectory (tests)
 	endif (BUILD_TESTING)
 
-	find_package (GtkDoc 1.25)
+	find_package (GtkDoc 1.25 QUIET)
 	if (GTKDOC_FOUND)
 		include (GNUInstallDirs)
 		gtk_doc_add_module (
