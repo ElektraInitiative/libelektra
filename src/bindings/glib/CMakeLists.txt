@@ -35,6 +35,8 @@ else()
 	target_link_libraries (${GELEKTRA_LIBRARY} PUBLIC elektra-core elektra-kdb)
 	target_link_libraries (${GELEKTRA_LIBRARY} PUBLIC ${GOBJECT_LIBRARIES})
 
+	message(WARNING "GOBJECT LIBRARIES: " ${GOBJECT_LIBRARIES})
+	message(WARNING "GOBJECT LDFLAGS: " ${GOBJECT_LDFLAGS})
 	install (
 		TARGETS ${GELEKTRA_LIBRARY}
 		LIBRARY DESTINATION lib${LIB_SUFFIX}
@@ -71,13 +73,15 @@ else()
 		include (GNUInstallDirs)
 		gtk_doc_add_module (
 			gelektra SOURCE ${CMAKE_CURRENT_SOURCE_DIR}
-			XML ${CMAKE_SOURCE_DIR}/doc/glib/gelektra-docs.xml
+			XML ${CMAKE_SOURCE_DIR}/doc/devhelp/gelektra-docs.xml
 			LIBRARIES ${GELEKTRA_LIBRARY}
 		)
 		add_custom_target (
 			gelektra-doc ALL DEPENDS doc-gelektra)
 			install (DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/gelektra/html/
-		    DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/gtk-doc/html/gelektra
-        )
+			DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/gtk-doc/html/gelektra
+		)
+	else()
+		message (STATUS "GtkDoc not found. Disabling devhalp generation.")
 	endif (GTKDOC_FOUND)
 endif()
