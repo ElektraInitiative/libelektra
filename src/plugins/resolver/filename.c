@@ -104,12 +104,15 @@ static int elektraResolveSystemBuildin (resolverHandle * p, Key * warningsKey)
 	size_t filenameSize = sizeof (KDB_DB_SYSTEM) + strlen (p->path) + sizeof ("/") + 1;
 	if (KDB_DB_SYSTEM[0] == '~')
 	{
+		const char * oldPath = p->path;
 		char * path = elektraMalloc (filenameSize);
 		strcpy (path, KDB_DB_SYSTEM);
 		strcat (path, "/");
 		strcat (path, p->path);
 		p->path = path;
 		elektraResolvePasswdHome (p, warningsKey);
+		elektraFree (path);
+		p->path = oldPath;
 	}
 	else
 	{
@@ -421,12 +424,15 @@ static int elektraResolveSpec (resolverHandle * p, Key * warningsKey ELEKTRA_UNU
 	{
 		if (KDB_DB_SPEC[0] == '~')
 		{
+			const char * oldPath = p->path;
 			char * path = elektraMalloc (filenameSize);
 			strcpy (path, KDB_DB_SPEC);
 			strcat (path, "/");
 			strcat (path, p->path);
 			p->path = path;
 			elektraResolvePasswdHome (p, warningsKey);
+			elektraFree (path);
+			p->path = oldPath;
 		}
 		else
 		{
