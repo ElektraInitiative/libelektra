@@ -1,0 +1,164 @@
+#compdef kdb
+# This file needs to be renamed to _kdb to work and must be in the $fpath
+#
+# ZSH completion file for KDB
+#
+# Sebastian Bachmann <hello@reox.at>, 2016
+
+
+# These are the functions for each command
+_kdb-check () { }
+_kdb-convert () { }
+_kdb-cp () { }
+_kdb-export () { }
+_kdb-file () { }
+_kdb-fstab () { }
+_kdb-get () { }
+_kdb-getmeta () { }
+_kdb-import () { }
+_kdb-info () { }
+_kdb-list () { }
+_kdb-ls () {
+# Example how to get more arguments in this case
+    _arguments -w -C -S -s \
+        "--foo[dunno]" \
+        "--bar[sdfdsf]" && return
+}
+_kdb-lsmeta () { }
+_kdb-merge () { }
+_kdb-mount () { }
+_kdb-mv () { }
+_kdb-remount () { }
+_kdb-rm () {
+    # TODO this will add foo, bla and bar to the allowed completions
+    # How we can get this to work as an array?
+    compadd foo
+    compadd bla
+    compadd bar
+}
+_kdb-set () {
+# Example how to get files as completion in this stage
+    _path_files -W /home/reox/git/tuwien
+}
+_kdb-setmeta () { }
+_kdb-sget () { }
+_kdb-shell () { }
+_kdb-test () { }
+_kdb-umount () { }
+_kdb-vset () { }
+_kdb-help () { }
+_kdb-list-tools () { }
+
+_kdb_commands () {
+    # TODO Copy&Paste from git completion
+    # I have absolutely no idea what is going on here...
+
+    local -a cmdtypes
+    cmdtypes=(main_commands)
+
+    local -a $cmdtypes
+
+    main_commands=(
+        check:'Do some basic checks on a plugin.'
+        convert:'Convert configuration.'
+        cp:'Copy keys within the key database.'
+        export:'Export configuration from the key database.'
+        file:'Prints the file where a key is located.'
+        fstab:'Create a new fstab entry.'
+        get:'Get the value of an individual key.'
+        getmeta:'Get a meta value.'
+        import:'Import configuration to the key database.'
+        info:'Print information about a plugin.'
+        list:'List available plugins.'
+        ls:'List the names of keys below a given name.'
+        lsmeta:'Get all meta information of an individual key.'
+        merge:'Three-way merge of KeySets.'
+        mount:'Mount a new backend.'
+        mv:'Move configuration within the key database.'
+        remount:'Remount an existing backend with a different filename.'
+        rm:'Remove key(s) from key database.'
+        set:'Set the value of an individual key.'
+        setmeta:'Set a meta value.'
+        sget:'Get the value of an individual key within a shell script.'
+        shell:'Start a kdb shell.'
+        test:'Run key database test suite.'
+        umount:'Unmount backend from key database.'
+        vset:'Set a value together with a validation regex.'
+        help:'View the man page of a tool'
+        list-tools:'List all external tools')
+
+  zstyle -a :completion:$curcontext: user-commands user_commands
+
+  local command
+  for command in $_kdb_third_party_commands; do
+    (( $+commands[kdb-${command%%:*}] )) && third_party_commands+=$command
+  done
+
+  local -a aliases
+  aliases=()
+  local cmdtype len dup sep
+  local -a allcmds allmatching alts disp expl
+
+  zstyle -s ":completion:${curcontext}:" list-separator sep || sep=--
+  for cmdtype in $cmdtypes aliases; do
+    if [[ $cmdtype = aliases ]]; then
+      for dup in ${${aliases%:*}:*allcmds}; do
+	aliases=( ${aliases:#$dup:*} )
+      done
+    fi
+    local -a ${cmdtype}_m
+    set -A ${cmdtype}_m ${(P)cmdtype%%:*}
+    allcmds+=( ${(P)${:-${cmdtype}_m}} )
+  done
+  zstyle -T ":completion:${curcontext}:" verbose && disp=(-ld '${cmdtype}_d')
+  _description '' expl '' # get applicable matchers
+  compadd "$expl[@]" -O allmatching -a allcmds
+  len=${#${(O)allmatching//?/.}[1]} # length of longest match
+  for cmdtype in aliases $cmdtypes; do
+    local -a ${cmdtype}_d
+    (( $#disp )) && set -A ${cmdtype}_d \
+        ${${(r.COLUMNS-4.)${(P)cmdtype}/(#s)(#m)[^:]##:/${(r.len.)MATCH[1,-2]} $sep }%% #}
+    alts+=( "${cmdtype//_/-}:${${cmdtype//_/ }%%(e|)s}:compadd ${(e)disp} -a ${cmdtype}_m" )
+  done
+
+  _alternative $alts
+}
+
+
+# Main Function
+_kdb () {
+    local curcontext=$curcontext state line
+
+    integer ret=1
+
+    _arguments -C \
+                   '-H[show the man page]'\
+                   '--help[show the man page]'\
+                   '-V[Print version info]'\
+                   '--version[Print version info]'\
+                   '-v[Explain what is happening]'\
+                   '--verbose[Explain what is happening]'\
+                   '(-): :->command' \
+                   '(-)*:: :->option-or-argument' && return
+
+    case $state in
+        (command)
+            _kdb_commands
+        ;;
+        (option-or-argument)
+            curcontext=${curcontext%:*:*}:git-$words[1]:
+
+            if ! _call_function ret _kdb-$words[1]; then
+                if zstyle -T :completion:$curcontext: use-fallback; then
+                    _default && ret=0
+                else
+                    _message "unknown sub-command: $words[1]"
+                fi
+            fi
+        ;;
+    esac
+
+    return ret
+}
+
+_kdb
