@@ -44,7 +44,7 @@ static KeySet * newWorkingConfiguration (int shutdown)
 
 	if (shutdown)
 	{
-		Key * configShutdown = keyNew ("user/crypto/shutdown", KEY_END);
+		Key * configShutdown = keyNew ("user/shutdown", KEY_END);
 		keySetString (configShutdown, "1");
 		return ksNew (3, configKey, configIv, configShutdown, KS_END);
 	}

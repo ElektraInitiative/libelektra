@@ -131,7 +131,7 @@ Only keys marked with a certain meta-key will be considered for encryption/decry
 The following key must be set to `"1"` within the plugin configuration,
 if the plugin should shut down the crypto library:
 
-	/crypto/shutdown
+	/shutdown
 
 Per default shutdown is disabled to prevent applications like the qt-gui from crashing.
 Shutdown is enabled in the unit tests to prevent memory leaks.
