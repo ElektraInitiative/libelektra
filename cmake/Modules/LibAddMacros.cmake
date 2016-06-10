@@ -491,7 +491,7 @@ endmacro()
 
 
 function (generate_manpage NAME)
-if (RONN_LOC) # disable function when RONN_LOC is not set
+if (BUILD_DOCUMENTATION AND RONN_LOC) # disable function when RONN_LOC is not set
 
 	cmake_parse_arguments (ARG
 		"" # optional keywords
@@ -529,7 +529,7 @@ if (RONN_LOC) # disable function when RONN_LOC is not set
 			DESTINATION share/man/man${SECTION}
 			)
 	endif ()
-endif (RONN_LOC)
+endif (BUILD_DOCUMENTATION AND RONN_LOC)
 endfunction ()
 
 
