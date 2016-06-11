@@ -17,12 +17,10 @@ Item {
 	}
 	property bool	contextMenuEnabled: pluginConfigTreeView.currentItem !== null
 	property int	stackIndex: undoManager.index()
-	property alias	includedPluginsModel: includedPluginsModel
 
 	Connections {
 		target: wizardLoader
 		onClosing: {
-			includedPluginsModel.clear()
 			loader.source = "Page1.qml"
 			includeStorage = true
 			includeResolver = true
@@ -50,8 +48,10 @@ Item {
 			margins: defaultMargins
 		}
 
-		RowLayout {
-			spacing: defaultSpacing
+		GridLayout {
+
+			rows: 2
+			columns: 2
 
 			Text {
 				id: text
@@ -62,49 +62,86 @@ Item {
 				text: qsTr("Please select the plugins you want to include in the backend. Make sure to add exactly one resolver, " +
 						   "one storage plugin and other plugins they might need.")
 			}
-			ComboBox {
-				id: pluginDropdown
+			RowLayout {
+				spacing: defaultSpacing
 
-				Layout.fillWidth: true
-				model: guiBackend.availablePlugins(includeStorage, includeResolver)
-				onCurrentTextChanged: infoText.text = guiBackend.pluginInfo(pluginDropdown.currentText)
-			}
-			Button {
-				id: addButton
+				ComboBox {
+					id: pluginDropdown
 
-				implicitWidth:  pluginDropdown.height
-				implicitHeight: pluginDropdown.height
+					Layout.fillWidth: true
+					model: guiBackend.availablePlugins(includeStorage, includeResolver)
+					onCurrentTextChanged: infoText.text = guiBackend.pluginInfo(pluginDropdown.currentText)
+				}
+				Button {
+					id: addButton
 
-				iconSource: "icons/list-add.png"
-				iconName: Helper.useIcon("list-add")
-				tooltip: qsTr("Add Plugin")
+					implicitWidth:  pluginDropdown.height
+					implicitHeight: pluginDropdown.height
 
-				onClicked: {
-					if (!alreadyInList(pluginDropdown.currentText)){
-						guiBackend.addPlugin(pluginDropdown.currentText)
+					iconSource: "icons/list-add.png"
+					iconName: Helper.useIcon("list-add")
+					tooltip: qsTr("Add Plugin")
 
-						if (!error){
-							includedPluginsModel.append({"pluginName" : pluginDropdown.currentText})
-							buttonRow.nextButton.action.enabled = guiBackend.validated()
+					onClicked: {
+						if (!guiBackend.pluginAlreadyAdded(pluginDropdown.currentText)){
+							guiBackend.addPlugin(pluginDropdown.currentText, recommendCheck.checked)
 
-							if (pluginDropdown.currentText.indexOf("[storage]") > -1)
-								includeStorage = false
-							else if (pluginDropdown.currentText.indexOf("[resolver]") > -1)
-								includeResolver = false
+							if (!error){
+								if (pluginDropdown.currentText.indexOf("[storage]") > -1)
+									includeStorage = false//only one storage plugin needed
+								else if (pluginDropdown.currentText.indexOf("[resolver]") > -1)
+									includeResolver = false//only one resolver plugin needed
 
-							clearConfig()
-							configModel.clear()
-							page2.state = ""
+								checkState()
+							}
+						}
+					}
+				}
+				Button {
+					id: removeButton
+
+					implicitWidth:  pluginDropdown.height
+					implicitHeight: pluginDropdown.height
+
+					iconSource: "icons/list-remove.png"
+					iconName: Helper.useIcon("list-remove")
+					tooltip: qsTr("Remove Plugin")
+
+					onClicked: {
+						if (guiBackend.pluginAlreadyAdded(pluginDropdown.currentText)){
+							guiBackend.removePlugin(pluginDropdown.currentText)
+
+							if (!error){
+								checkState()
+							}
 						}
 					}
 				}
 			}
+			Item {
+				Layout.fillWidth: true
+			}
+
+			GridLayout {
+				rows: 2
+				columns: 2
+
+				CheckBox {
+					id: recommendCheck
+				}
+				Label {
+					id: recommendLabel
+
+					text: qsTr("Add recommended plugins.")
+				}
+			}
+
 		}
 		Item {
 			id: spacer
 
 			Layout.fillWidth: true
-			height: 2*defaultMargins
+			height: defaultMargins
 		}
 		Label {
 			id: includedPluginsLabel
@@ -132,18 +169,47 @@ Item {
 				ListView {
 					id: includedPluginsView
 
-					model: ListModel {
-						id: includedPluginsModel
-					}
-					delegate: Rectangle {
+					model: guiBackend.addedPlugins()
+
+					delegate: Item {
 						width: parent.width
-						height: pluginLabel.paintedHeight
-						color: "transparent"
-						Label {
-							id: pluginLabel
+						height: pluginLabel.height + defaultSpacing
+
+						RowLayout {
 							anchors.fill: parent
-							anchors.leftMargin: defaultSpacing
-							text: pluginName
+
+							Label {
+								id: pluginLabel
+
+								Layout.fillWidth: true
+								text: modelData
+							}
+							ToolButton {
+								id: removeListButton
+
+								implicitWidth:  pluginLabel.height + defaultSpacing
+								implicitHeight: implicitWidth
+
+								iconSource: "icons/list-remove.png"
+								iconName: Helper.useIcon("list-remove")
+								tooltip: qsTr("Remove Plugin")
+
+								onClicked: {
+									if (guiBackend.pluginAlreadyAdded(modelData)){
+
+										if (guiBackend.pluginType(modelData).indexOf("storage") > -1)
+											includeStorage = true
+										else if (guiBackend.pluginType(modelData).indexOf("resolver") > -1)
+											includeResolver = true
+
+										guiBackend.removePlugin(modelData)
+
+										if (!error){
+											checkState()
+										}
+									}
+								}
+							}
 						}
 					}
 				}
@@ -243,18 +309,17 @@ Item {
 		id: buttonRow
 
 		Component.onCompleted: nextButton.action.enabled = false
+
 		nextButton.action.onTriggered: {
 			loader.source = "Page3.qml"
 			includeStorage = true
 			includeResolver = true
-			includedPluginsModel.clear()
 
 			if (undoManager.index() > stackIndex)
 				undoManager.setIndex(stackIndex)
 		}
 		cancelButton.action.onTriggered: {
 			wizardLoader.close()
-			includedPluginsModel.clear()
 			loader.source = "Page1.qml"
 			includeStorage = true
 			includeResolver = true
@@ -285,15 +350,6 @@ Item {
 		}
 	}
 
-	function alreadyInList(plugin) {
-
-		for (var i = 0; i < includedPluginsModel.count; i++){
-			if (includedPluginsModel.get(i).pluginName === plugin)
-				return true
-		}
-		return false
-	}
-
 	function alreadyInConfig(key) {
 		for (var i = 0; i < config.length; i++){
 			if (config[i].toString() === key)
@@ -303,10 +359,18 @@ Item {
 	}
 
 	function clearConfig() {
-
 		while (config.length > 0) {
 			config.pop();
 		}
+	}
+
+	function checkState() {
+		includedPluginsView.model = guiBackend.addedPlugins()
+		buttonRow.nextButton.action.enabled = guiBackend.validated()
+
+		clearConfig()
+		configModel.clear()
+		page2.state = ""
 	}
 
 	Menu {

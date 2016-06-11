@@ -453,7 +453,10 @@ void TreeViewModel::sink (ConfigNodePtr node, QStringList keys, const Key & key)
 	{
 		if (node->getChildByName (name)->getKey () && node->getChildByName (name)->getKey ().getName () == key.getName ())
 		{
-			node->getChildByName (name)->updateNode (key);
+			if (node->getChildByName (name)->getKey ().getName () == key.getName ())
+			{
+				node->getChildByName (name)->updateNode (key);
+			}
 		}
 
 		sink (node->getChildByName (name), keys, key);

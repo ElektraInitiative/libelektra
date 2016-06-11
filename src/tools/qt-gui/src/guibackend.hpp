@@ -12,7 +12,7 @@
 #include "treeviewmodel.hpp"
 #include <QObject>
 #include <QStringList>
-#include <backend.hpp>
+#include <backendbuilder.hpp>
 
 /**
  * @brief The GUIBackend class. It interacts with the wizard in the GUI to create new backends.
@@ -55,16 +55,24 @@ public:
 	 * @brief Add a plugin to a backend.
 	 *
 	 * @param name The name of the plugin.
+	 * @param recommended Wether to include recommended plugins.
 	 */
-	Q_INVOKABLE void addPlugin (QString name);
+	Q_INVOKABLE void addPlugin (QString plugin, bool recommended);
+
+	/**
+	 * @brief Remove a plugin from a backend.
+	 *
+	 * @param name The name of the plugin.
+	 */
+	Q_INVOKABLE void removePlugin (QString plugin);
 
 	/**
 	 * @brief Provides information about a plugin.
 	 *
-	 * @param pluginName The plugin.
+	 * @param plugin The plugin.
 	 * @return The information about the plugin.
 	 */
-	Q_INVOKABLE QString pluginInfo (QString pluginName) const;
+	Q_INVOKABLE QString pluginInfo (QString plugin) const;
 
 	/**
 	 * @brief Returns a list of currently used mountpoints.
@@ -108,8 +116,31 @@ public:
 	 */
 	Q_INVOKABLE TreeViewModel * pluginConfigModel () const;
 
+	/**
+	 * @brief Return the already added plugins of the backend as QStringList.
+	 *
+	 * @return The already added plugins of the backend as QStringList.
+	 */
+	Q_INVOKABLE QStringList addedPlugins () const;
+
+	/**
+	 * @brief Returns if a plugin is already added to the backend.
+	 *
+	 * @param plugin The plugin
+	 * @return true if the plugin is already added to the backend
+	 */
+	Q_INVOKABLE bool pluginAlreadyAdded (QString plugin) const;
+
+	/**
+	 * @brief Returns the type of a plugin.
+	 *
+	 * @param plugin The plugin
+	 * @return The type of a plugin.
+	 */
+	Q_INVOKABLE QString pluginType (QString plugin) const;
+
 private:
-	QSharedPointer<kdb::tools::MountBackendInterface> m_backend;
+	QSharedPointer<kdb::tools::MountBackendBuilder> m_backend;
 	kdb::KeySet m_mountConf;
 	kdb::KDB m_kdb;
 	QString m_name;
