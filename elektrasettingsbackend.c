@@ -375,7 +375,7 @@ static void elektra_settings_key_changed (GDBusConnection * connection, const gc
 	do
 	{
 		g_log (G_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, "%s!", "Checking if bellow…");
-		if (gelektra_key_isbelow (key, gelektra_keyset_current (ks)))
+		if (gelektra_key_isbeloworsame (key, gelektra_keyset_current (ks)))
 		{
 			g_log (G_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, "%s!", "Subscribed key changed");
 			gchar * gsettingskeyname = g_strdup (g_strstr_len (g_strstr_len (keypathname, -1, "/") + 1, -1, "/"));
@@ -437,10 +437,15 @@ static void elektra_settings_backend_subscribe (GSettingsBackend * backend, cons
 	GElektraKey * gkey = gelektra_keyset_lookup_byname (esb->subscription_gks, pathToSubscribe, GELEKTRA_KDB_O_NONE);
 	if (gkey != NULL)
 	{
-		g_log (G_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, "%s", "Key is already subscribed");
+		(*(guint * )gelektra_key_getvalue(gkey))++;
+		g_log (G_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, "%s", "Key is already subscribed, adding to subscription");
 		return;
 	}
-	gkey = gelektra_key_new (pathToSubscribe, KEY_VALUE, G_ELEKTRA_TEST_STRING, KEY_END);
+	guint counter = 1;
+	gkey = gelektra_key_new (pathToSubscribe, KEY_BINARY,
+							KEY_SIZE, sizeof(guint),               // now the size is important
+							KEY_VALUE, &counter,    // sets the binary value ("some")
+							KEY_END);
 	g_free (pathToSubscribe);
 	if (gelektra_keyset_append (esb->subscription_gks, gkey) == -1)
 	{
@@ -465,8 +470,12 @@ static void elektra_settings_backend_unsubscribe (GSettingsBackend * backend, co
 	GElektraKey * gkey = gelektra_keyset_lookup_byname (esb->subscription_gks, pathToUnsubscribe, GELEKTRA_KDB_O_NONE);
 	if (gkey != NULL)
 	{
-		g_log (G_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, "%s", "Subscription found deleting");
-		gelektra_keyset_lookup (esb->subscription_gks, gkey, KDB_O_POP);
+		guint * counter = (guint *)gelektra_key_getvalue(gkey);
+		(*counter)--;
+		if (*counter == 0) {
+			g_log (G_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, "%s", "Subscription found deleting");
+			gelektra_keyset_lookup (esb->subscription_gks, gkey, KDB_O_POP);
+		}
 		return;
 	}
 	g_log (G_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, "%s", "Subscription not found");
