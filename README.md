@@ -61,9 +61,10 @@ cat dconf.ini | kdb import /sw ini
 ```
 
 ## Mount dbus plugin
-export current settings
+export current settings and delete them so they will not be hidden
 ```shell
 kdb export /sw dump > tmp
+kdb rm -r /sw
 ```
 mount sw at you prefered location
 ```shell

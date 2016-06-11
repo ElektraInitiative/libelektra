@@ -364,23 +364,25 @@ static void elektra_settings_key_changed (GDBusConnection * connection, const gc
 	g_log (G_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, "%s %s.", "dbus signal that key has changed", g_variant_print (parameters, FALSE));
 	GVariant * variant = g_variant_get_child_value (parameters, 0);
 	GError * err = NULL;
-	const gchar * keypathname = g_variant_get_string (variant, NULL);
+	gchar const * keypathname = g_variant_get_string (variant, NULL);
 	ElektraSettingsBackend * esb = (ElektraSettingsBackend *)user_data;
-	gelektra_keyset_rewind (esb->subscription_gks);
+	GElektraKeySet * ks = gelektra_keyset_dup(esb->subscription_gks);
+	gelektra_keyset_rewind (ks);
 	GElektraKey * key = gelektra_key_new (keypathname, KEY_VALUE, "", KEY_END);
 	g_log (G_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, "%s %s!", "GSEttings Path: ",
 	       (g_strstr_len (g_strstr_len (keypathname, -1, "/") + 1, -1, "/")));
-	gelektra_keyset_next (esb->subscription_gks);
+	gelektra_keyset_next (ks);
 	do
 	{
 		g_log (G_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, "%s!", "Checking if bellow…");
-		if (gelektra_key_isbelow (key, gelektra_keyset_current (esb->subscription_gks)))
+		if (gelektra_key_isbelow (key, gelektra_keyset_current (ks)))
 		{
 			g_log (G_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, "%s!", "Subscribed key changed");
-			g_settings_backend_changed (user_data, (g_strstr_len (g_strstr_len (keypathname, -1, "/") + 1, -1, "/")), NULL);
+			gchar * gsettingskeyname = g_strdup (g_strstr_len (g_strstr_len (keypathname, -1, "/") + 1, -1, "/"));
+			g_settings_backend_changed (user_data, gsettingskeyname, NULL);
+			g_free(gsettingskeyname);
 		}
-	} while (gelektra_keyset_next (esb->subscription_gks) != NULL);
-	gelektra_keyset_rewind (esb->subscription_gks);
+	} while (gelektra_keyset_next (ks) != NULL);
 	g_variant_unref (variant);
 }
 
@@ -396,7 +398,7 @@ static void elektra_settings_bus_connected (GObject * source_object, GAsyncResul
 	else if (esb->dbus_connections[1] == NULL)
 	{
 		esb->dbus_connections[1] = connection;
-	}
+	} else return;
 	if (err != NULL)
 	{
 		g_log (G_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, "%s %s!", "Error on connectin to dbus:", err->message);
@@ -464,7 +466,7 @@ static void elektra_settings_backend_unsubscribe (GSettingsBackend * backend, co
 	if (gkey != NULL)
 	{
 		g_log (G_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, "%s", "Subscription found deleting");
-		gelektra_keyset_lookup (esb->gks, gkey, KDB_O_POP);
+		gelektra_keyset_lookup (esb->subscription_gks, gkey, KDB_O_POP);
 		return;
 	}
 	g_log (G_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, "%s", "Subscription not found");
