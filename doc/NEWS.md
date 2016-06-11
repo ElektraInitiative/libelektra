@@ -1,3 +1,301 @@
+# 0.8.17 Release
+
+In preparation and not yet released!
+
+## Why should I use Elektra? ##
+
+The three main points relevant for most people are:
+
+1. Even though Elektra provides a global keydatabase
+   configuration files stay human read- and writable
+   which allows us to integrate unmodified software.
+2. Flexible adoption on how the configuration is accessed
+   via plugins: you can run arbitrary code, e.g. do a
+   `git commit` or log/notify when configuration files
+   are changed.
+3. Elektra allows you to specify configuration values:
+   - use the value of other configuration values (symbolic links)
+   - calculate the values based on other configuration values
+   - validation configuration files
+   - [generate code based on it](/src/tools/gen)
+   - [and much more](/src/plugins/README.md)
+
+Read more about [Why using Elektra](/doc/WHY.md),
+which also contains since this release unique features,
+further reasons and limitations.
+
+## Highlights
+
+- Many important bug fixes
+- Qt-Gui reworked mounting and native icons
+- Full Mac OS X Support
+- Build Server Improvements
+- cmake plugin adding improved
+- beginner friendly tasks
+- allow to mount json and xml (and other common provider names)
+  without needing to know plugin names
+- colored output for kdb tools
+
+
+## Asciinema
+
+## Mac OS X Support
+
+Because of its POSIX support one might think it would be trivial
+to support Mac OS X. Unfortunately there were many small issues,
+especially in the regular expression handling and the filesystem.
+
+Nevertheless we finally fully support it and the newly added
+travis build server makes sure it will stay this way.
+
+A huge thanks to Manuel Mausz and Mihael Pranjić for fixing the
+issues and setting up travis:
+
+- jni plugin now can load Elektra (avoids using `.so`)
+  thanks to Mihael Pranjić
+- initial creation of travis.yml
+  thanks to Manuel Mausz
+- Add all 3 different XCode setups and some Mac OS X fixes
+  thanks to Mihael Pranjić
+
+## jenkins
+
+
+## Fixes
+
+- fix inconsistency with one excluded compilation variant,
+  thanks to Harald Geyer for reporting #698
+- fix dynamic searching of installed plugins,
+  needed so that kdb list-tools works correctly
+  thanks to Harald Geyer for reporting
+- kdbtimer, `include <vector>` as needed by some compilers,
+  a big thanks to Andreas Bombe for the non-maintainer
+  upload in Debian to fix it for upcoming Debian release
+- also find yajl header files if installed in non-standard
+  include directories,
+  thanks to Mihael Pranjić
+- glib: make sure we use all definitions returned by pkg-config #719,
+  fixes build on FreeBSD
+  now glib bindings need cmake 2.8.12
+  thanks to Mihael Pranjić for reporting/testing
+  and Manuel Mausz  for fixing
+- fix INI for Mac OS X (did require some non-portable sorting
+  properties of `qsort`.)
+- INI makes INI-specific meta-data private by prefixing `ini`.
+- `kdb export` also works under MinGW,
+  thanks to Gabriel Rauter
+
+## Rework Add Plugin
+
+
+- prefer to link shared
+- add plugin tests when using link shared
+- make ADD_TEST simpler (without calling add_plugintest)
+- make installation of test data simpler + honor INSTALL_TESTING option
+- fix installation of test_data (do not install whole dir)
+- introduce cache so that it is enough to pass parameters
+  to add_plugin* once
+- avoid PLUGIN_DIRECTORY_NAME and change CMAKE_CURRENT_SOURCE_DIR
+  and CMAKE_CURRENT_BINARY_DIR instead
+- add_plugin: remove unused option SHARED_SOURCES
+- implement a 3rd phase to add test cases:
+  correctly handles dependencies of testcases to bindings
+- fix testmod_jni
+
+
+## CMake
+
+- BUILD_STATIC and BUILD_FULL is now OFF by default
+  (nearly) all unit tests now also work with BUILD_SHARED
+- to support shared unit tests, a third phase was added when
+  adding plugins
+  inconsistent adding (across phases) of plugins and unit tests is reported
+- adding plugin tests is now much simpler, simply use `ADD_TEST`
+  in `add_plugin`.
+- KDB_DB_SYSTEM and KDB_DB_HOME are now STRING and not PATH because
+  of incorrect resolving of `~`.
+- lua bindings tests: make sure lua executable matches with the lua libraries version
+  thanks to Mihael Pranjić
+
+
+## Common Provider Names
+
+Mounting now supports to mount commonly known names even if the name is not a plugin.
+If more than one plugin is available automatically the best one is selected.
+The selection process works by annotating different qualities of the plugins,
+see `infos/status` in the README.md of individual plugins.
+
+E.g. to mount a file using a json plugin (called yajl because of the library's name
+it build upon)
+
+    kdb mount file.json json
+
+
+## New Cachefilter Plugin
+
+stores filtered keys internally so that they
+do not get accidentally lost and can be written to the storage again without
+the user having to remember including them in the writeout
+
+Thanks to Marvin Mall.
+
+
+## Qt GUI 0.0.12
+
+The Qt GUI receives new features and a better gnome integration.
+Its version number was updated to 0.0.12 (beta).
+
+- Reset to defaults now reverts back to build-in defaults.
+- Qt GUI xdg icon theme support rework
+- Make clicks on search icon focus on search textfield.
+- save settings when settings dialog is closed.
+- fix crash of qt-gui when crypto plugin was enabled
+  thanks to Peter Nirschl
+- Add new layout elements to backend wizard
+  thanks to Raffael Pancheri
+- fix qt-gui fails to synchronize because of readonly plugins
+  thanks to Raffael Pancheri
+- Integrate new BackendBuilder functionality (See Common Provider Names) to qt-gui
+  thanks to Raffael Pancheri
+
+Rename desktop file: correct reverse url from org.elektra to org.libelektra. Rename elektra-qt to elektra-qt-editor and use that in future references to the qt-gui as it is a clearer name about the function of the program and binary.
+
+Rename ChooseColorWindow: The ChooseColorWindows will be replaced by a
+AppearanceSettingsWindow, all references to ChooseColor, choose color have been
+replaced by AppearanceSettings or choose appearance.
+
+Install elektra-qt-editor binary so both the desktop files TryExec works
+and people not starting the gui trough `kdb qt-gui` have a speaking name
+in their process list.
+
+Replace occurences of `Elektra Editor` with `Elektra Qt Editor` so that
+we use the same name in all places apart from the tools binary.
+
+Introduce Appearance Settings Window: Appearance Settings Window
+contains both color settings as well as a switch to disable or enable
+the system icon theme. For this to work we had to introduce the setting
+in `guisettings`. We also added a private function in `guisettings` to
+get and set settings with a boolean value.
+
+Tree reload on Settings close: We now synch and refresh the tree view on
+closing of the settings window if any settings have been changed, so
+changes can be seen imediatly in the tree.
+
+Add qt5 svg module as dependency: the qt5 svg module is needed so we can
+display icon themes that provide svg as icon format.
+
+Add and install symbolic icon with the installation of the Elektra
+Qt Editor.
+
+
+## Colored kdb tool
+
+A big thanks to Gabriel Rauter for improving the user experience with the kdb tool.
+On errors and in `kdb info` it was often quite hard to find the relevant text.
+
+Now important parts are highlighted by bold or colorful text.
+This helps to spot the important information immediately without sacrificing
+information that would be important for a detailed analysis.
+
+Every tool now has the option `--color` and `-C` which is set to `auto` per default.
+By writing to
+
+    kdb set +kdb/color off
+
+one can go back to previous behavior.
+
+
+## Documentation
+
+- improve documentation about how to pop a key
+- document how to avoid running test cases as root in
+  [TESTING.md](doc/TESTING.md).
+- document gurantees ofelektraPluginGetData,
+  thanks to Marvin Mall
+- doc mentions that -1 should be returned
+  *always* when an error is set
+- many more spelling mistakes were fixed and useless whitespace was removed,
+  thanks to René Schwaiger
+- Fix cmake configure when BUILD_DOCUMENTATION is set to OFF
+  thanks to Kurt Micheli
+
+## ELEKTRA_DEBUG build
+
+ENABLE_DEBUG now enables a debug build for Elektra.
+It has nothing to do with debug symbols, but with:
+
+- it enables the internal assertions
+- plugins will not be closed so that stack traces are more useful
+  (using RTLD_NODELETE)
+
+ENABLE_DEBUG is recommended for everyone developing *with* Elektra.
+The assertions will give you hints on API misusage.
+
+Especially `keyNew` was known to be error-prone. ENABLE_DEBUG now will report
+wrong parameters by an assertion.
+
+The old options ELEKTRA_DEBUG and ELEKTRA_VERBOSE are not available anymore.
+
+Thanks to:
+- Thomas Waser for pointing to RTLD_NODELETE
+- Gabriel Rauter for fixing qt-gui with -DENABLE_DEBUG=ON
+
+
+The constants plugin was updated to provide cmake/ENABLE_LOGGER cmake/ENABLE_DEBUG
+and will no longer provide cmake/ELEKTRA_DEBUG_BUILD cmake/ELEKTRA_VERBOSE_BUILD
+
+## Other
+
+- Gabriel Rauter is now listed in [AUTHORS](/doc/AUTHORS)
+- libtool: remove not-implemented function resolveRecommends from header-file.
+- constants plugin: configure_file now uses current binary directory, not cluttering
+  the main build directory.
+- fix ssize_t for VS2015,
+  thanks to Gabriel Rauter
+- gtest: fix linking when using arch systemd-nspawn,
+  thanks to Marvin Mall
+- LD_LIBRARY_PATH is added to lua and python bindings needed for Mac OS X,
+  thanks to Mihael Pranjić
+- Fix external unit test for Ubuntu 15.04 by putting files before
+  the flags,
+  thanks to Marvin Mall
+- symbols in Ni_ namespace are now in elektraNi_
+- add more ipv4 and ipv6 test cases for IP adress validation
+  checker
+- crypto-plugin avoid usage of hardcoded error numbers,
+  thanks to Peter Nirschl
+- do not use number for resolver position
+- to fix a compiler warning in Mac OS X, we made the printf
+  format specifier of time_t more portable,
+  thanks to René Schwaiger
+- many preparations for global plugins and mmap
+- in the constants plugin cmake/BUILTIN_PLUGIN_FOLDER, BUILTIN_DATA_FOLDER
+  and BUILTIN_EXEC_FOLDER were added.
+- doxygen is only run once during build,
+  thanks to René Schwaiger
+- add script configure-home to build Elektra
+  that it will resolve all pathes to home-directories
+  (TODO, needs fix)
+- add script metaini-to-c that converts METADATA.ini
+  to C-code, thanks to Thomas Waser
+- add note that default values must be present for
+  code generation, thanks to Martin Schleiss
+- avoid `seq` as it is not available in some `*BSD`,
+  thanks to Mihael Pranjić
+- make jni testmod check consistent to others
+
+
+
+
+
+
+
+
+
+
+
+
+
 # 0.8.16 Release
 
 - guid: 9c9247ee-ee9c-4f4a-a68e-76959def9b82
