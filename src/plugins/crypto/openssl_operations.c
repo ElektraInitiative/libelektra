@@ -78,6 +78,7 @@ int elektraCryptoOpenSSLInit (Key * errorKey)
 	// check if libcrypto has already been initialized (possibly by the application)
 	if (CRYPTO_get_locking_callback ())
 	{
+		cryptoSetup = 1;
 		return 1;
 	}
 
