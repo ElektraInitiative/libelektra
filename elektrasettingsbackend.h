@@ -50,7 +50,7 @@ static GVariant * elektra_settings_read_string (GSettingsBackend * backend, gcha
  * Returns: %TRUE if the write succeeded, %FALSE if the key was not writable
  */
 static gboolean elektra_settings_write_string (GSettingsBackend * backend, const gchar * key, gchar * keypathname, GVariant * value, gpointer origin_tag);
-void elektra_check_bus_connection (GSettingsBackend * backend);
+void elektra_settings_check_bus_connection (GSettingsBackend * backend);
 void(*GAsyncReadyCallback) elektra_settings_bus_connected (GObject * source_object, GAsyncResult * res, gpointer user_data);
 void(*GDBusSignalCallback)
 	elektra_settings_key_changed (GDBusConnection * connection, const gchar * sender_name, const gchar * object_path,

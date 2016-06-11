@@ -338,13 +338,12 @@ static void elektra_settings_backend_reset (GSettingsBackend * backend, const gc
  *
  * Returns: %TRUE if the key is writable
  */
+//NOTE elektra does not have a clear definition of what is writable or not
 static gboolean elektra_settings_backend_get_writable (GSettingsBackend * backend, const gchar * name)
 {
 	g_log (G_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, "%s %s.", "Function get_writable:", name);
 
 	ElektraSettingsBackend * esb = (ElektraSettingsBackend *)backend;
-
-	//TODO ask when we define a key is writable?
 	gchar * pathToWrite = g_strconcat (G_ELEKTRA_SETTINGS_USER, G_ELEKTRA_SETTINGS_SW, name, NULL);
 	GElektraKey * gkey = gelektra_keyset_lookup_byname (esb->gks, pathToWrite, GELEKTRA_KDB_O_NONE);
 	if (gkey == NULL)
@@ -408,7 +407,7 @@ static void elektra_settings_bus_connected (GObject * source_object, GAsyncResul
 					    G_DBUS_SIGNAL_FLAGS_NONE, elektra_settings_key_changed, user_data, NULL);
 }
 
-static void elektra_check_bus_connection (GSettingsBackend * backend)
+static void elektra_settings_check_bus_connection (ElektraSettingsBackend * backend)
 {
 	ElektraSettingsBackend * esb = (ElektraSettingsBackend *)backend;
 	GCancellable * g_cancellable = g_cancellable_new ();
@@ -430,7 +429,6 @@ static void elektra_check_bus_connection (GSettingsBackend * backend)
  */
 static void elektra_settings_backend_subscribe (GSettingsBackend * backend, const gchar * name)
 {
-	elektra_check_bus_connection (backend);
 	g_log (G_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, "%s %s.", "Subscribe to:", name);
 	gchar * pathToSubscribe = g_strconcat (G_ELEKTRA_SETTINGS_SW, name, NULL);
 	ElektraSettingsBackend * esb = (ElektraSettingsBackend *)backend;
@@ -463,7 +461,6 @@ static void elektra_settings_backend_subscribe (GSettingsBackend * backend, cons
  */
 static void elektra_settings_backend_unsubscribe (GSettingsBackend * backend, const gchar * name)
 {
-	elektra_check_bus_connection (backend);
 	g_log (G_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, "%s %s.", "Unsubscribe:", name);
 	gchar * pathToUnsubscribe = g_strconcat (G_ELEKTRA_SETTINGS_SW, name, NULL);
 	ElektraSettingsBackend * esb = (ElektraSettingsBackend *)backend;
@@ -512,6 +509,7 @@ static void elektra_settings_backend_init (ElektraSettingsBackend * esb)
 	esb->gks = gelektra_keyset_new (0, GELEKTRA_KEYSET_END);
 	esb->subscription_gks = gelektra_keyset_new (0, GELEKTRA_KEYSET_END);
 	gelektra_kdb_get (esb->gkdb, esb->gks, esb->gkey);
+	elektra_settings_check_bus_connection (esb);
 }
 
 /*
