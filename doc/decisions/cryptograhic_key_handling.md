@@ -22,23 +22,31 @@ operations, thus:
 ## Assumptions
 
 - The user knows or is willing to learn how to use GPG.
-- The user is willing to configure `gpg` and `pinentry` on her system, as it does not always run out of the box (depending on the distribution)
+- The user is willing to configure `pinentry` on her system, as it does not always run out of the box (depending on the distribution)
+- The user knows how to create and identify an asymmetric key pair using `gpg`
 
 ## Considered Alternatives
 
-We considered passing the key and IV in form of plugin configuration and meta-keys, but this approach violates our constraints.
+We considered passing the key and IV in form of plugin configuration and meta-keys, but this approach possibly exposes the key to other modules.
+Thus our constraints are violated.
+
+Also we considered using the gpg-agent (or pcscd, which uses a similar protocol) for providing asymmetric cryptographic operations.
+The problem with gpg-agent is that it only provides operations which require the private part of the key-pair (i.e. signing and decrypting).
+We would still have to implement the counterpart operations (i.e. verifying and encrypting) on our own.
+Starting the gpg-agent and the whole interprocess communication is either tedious work (when implemented by oneself) or adds another dependency (when using libassuan).
+So we do not consider the gpg-agent to be a viable option.
 
 ## Decision
 
 ### General Approach
 
-The introduction of a KDF will enable the user to provide a single password, which is used to derive the key and the IV for the cryptographic operations. Both OpenSSL and libgcrypt have built-in support for the PBKDF2 (see RFC 2898).
+The introduction of a GPG interface enables the user to utilize her existing key-pairs for cryptographic operations in Elektra.
+The private key is used for encrypting a random sequence, which serves as seed for a key derivation function (KDF).
+This way we can safely derivate cryptographic keys for symmetric value encryption.
+Both OpenSSL and libgcrypt have built-in support for the PBKDF2 (see RFC 2898).
 
-Instead of having the keys `crypto/iv` and `crypto/key` within the plugin configuration, we will have `crypto/password` for the moment. In the future there will be other ways of requesting this password (like the pgp-agent but this will be another issue).
-
-The Key `crypto/password` (as part of the plugin config) will be used to derive the cryptographic key and the IV.
-
-The PBKDF2 needs an iteration number and a salt in order to work. Those values will be stored per Key as MetaKey.
+The PBKDF2 needs an iteration number and a salt in order to work.
+Those values will be stored per Key as MetaKey.
 
 ### Implementation Details
 
