@@ -131,10 +131,6 @@ please do not use them in a production system.
 To build the GSettings backend you have to explicitly add it to bindings.
 e.g. `-DBINDINGS=gsettings`
 
-To manually install the backend, after building it copy the `libelektrasettings.so` into
-the gio module dir. Both `GElektra` and `Elektra` libraries have to be installed for the
-backend to work.
-
 All needed core functionality of a GSettings backend is already implemented.
 This includes notification support if you have your `/sw` mounted with the dbus plugin.
 
