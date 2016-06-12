@@ -150,6 +150,15 @@ static void test_init ()
 		elektraPluginClose (plugin, 0);
 	}
 
+	// Botan tests
+	plugin = elektraPluginOpen ("crypto_botan", modules, newWorkingConfiguration (0), 0);
+	if (plugin)
+	{
+		succeed_if (!strcmp (plugin->name, "crypto_botan"), "got wrong name");
+		test_init_internal (plugin, parentKey);
+		elektraPluginClose (plugin, 0);
+	}
+
 	elektraModulesClose (modules, 0);
 	ksDel (modules);
 	keyDel (parentKey);
@@ -187,6 +196,11 @@ static void test_config_errors ()
 	test_config_errors_internal ("crypto_openssl", newWorkingConfiguration (0), 1, "kdbSet failed with valid config");
 	test_config_errors_internal ("crypto_openssl", newInvalidConfiguration (), -1, "kdbSet succeeded with invalid config");
 	test_config_errors_internal ("crypto_openssl", newIncompleteConfiguration (), -1, "kdbSet succeeded with incomplete config");
+
+	// Botan tests
+	test_config_errors_internal ("crypto_botan", newWorkingConfiguration (0), 1, "kdbSet failed with valid config");
+	test_config_errors_internal ("crypto_botan", newInvalidConfiguration (), -1, "kdbSet succeeded with invalid config");
+	test_config_errors_internal ("crypto_botan", newIncompleteConfiguration (), -1, "kdbSet succeeded with incomplete config");
 }
 
 static void test_crypto_operations_internal (Plugin * plugin, Key * parentKey)
@@ -239,6 +253,15 @@ static void test_crypto_operations ()
 	// OpenSSL tests
 	// FINAL unit test -> call crypto cleanup code
 	plugin = elektraPluginOpen ("crypto_openssl", modules, newWorkingConfiguration (1), 0);
+	if (plugin)
+	{
+		test_crypto_operations_internal (plugin, parentKey);
+		elektraPluginClose (plugin, 0);
+	}
+
+	// Botan tests
+	// FINAL unit test -> call crypto cleanup code
+	plugin = elektraPluginOpen ("crypto_botan", modules, newWorkingConfiguration (1), 0);
 	if (plugin)
 	{
 		test_crypto_operations_internal (plugin, parentKey);
