@@ -187,7 +187,7 @@ static int compareStrings (const char * s1, const char * s2, const Key * suffixL
 	return retval;
 }
 
-static CondResult evalCondition (Key * curKey, const char * leftSide, Comparator cmpOp, const char * rightSide, const char * condition,
+static CondResult evalCondition (const Key * curKey, const char * leftSide, Comparator cmpOp, const char * rightSide, const char * condition,
 				 const Key * suffixList, KeySet * ks, Key * parentKey)
 {
 	char * lookupName = NULL;
@@ -220,7 +220,7 @@ static CondResult evalCondition (Key * curKey, const char * leftSide, Comparator
 			// not a literal, it has to be a key
 			if (rightSide[0] == '@')
 				len = keyGetNameSize (parentKey) + elektraStrLen (rightSide);
-			else if (!strncmp (rightSide, "..", 2) || !strncmp (rightSide, ".", 1))
+			else if (!strncmp (rightSide, "..", 2) || (rightSide[0] == '.'))
 				len = keyGetNameSize (curKey) + elektraStrLen (rightSide);
 			else
 				len = elektraStrLen (rightSide);
@@ -233,7 +233,7 @@ static CondResult evalCondition (Key * curKey, const char * leftSide, Comparator
 			}
 			if (rightSide[0] == '@')
 				snprintf (lookupName, len, "%s/%s", keyName (parentKey), rightSide + 1);
-			else if (rightSide[0] == '.')
+			else if (rightSide[0] == '.')  //either starts with . or .., doesn't matter at this point
 				snprintf (lookupName, len, "%s/%s", keyName (curKey), rightSide);
 			else
 				snprintf (lookupName, len, "%s", rightSide);
@@ -260,7 +260,7 @@ static CondResult evalCondition (Key * curKey, const char * leftSide, Comparator
 	}
 	if (leftSide[0] == '@')
 		len = keyGetNameSize (parentKey) + elektraStrLen (leftSide);
-	else if (!strncmp (leftSide, "..", 2) || !strncmp (leftSide, ".", 1))
+	else if (!strncmp (leftSide, "..", 2) || (leftSide[0] == '.'))
 		len = keyGetNameSize (curKey) + elektraStrLen (leftSide);
 	else
 		len = elektraStrLen (leftSide);
@@ -273,7 +273,7 @@ static CondResult evalCondition (Key * curKey, const char * leftSide, Comparator
 	}
 	if (leftSide[0] == '@')
 		snprintf (lookupName, len, "%s/%s", keyName (parentKey), leftSide + 1);
-	else if (leftSide[0] == '.')
+	else if (leftSide[0] == '.')   //either . or .., doesn't matter here
 		snprintf (lookupName, len, "%s/%s", keyName (curKey), leftSide);
 	else
 		snprintf (lookupName, len, "%s", leftSide);
@@ -402,7 +402,7 @@ static char * condition2cmpOp (const char * condition, Comparator * cmpOp)
 	return opStr;
 }
 
-static CondResult parseSingleCondition (Key * key, const char * condition, const Key * suffixList, KeySet * ks, Key * parentKey)
+static CondResult parseSingleCondition (const Key * key, const char * condition, const Key * suffixList, KeySet * ks, Key * parentKey)
 {
 	Comparator cmpOp;
 	char * opStr;
@@ -500,7 +500,7 @@ static const char * isAssign (Key * key, char * expr, Key * parentKey, KeySet * 
 		if (lastPtr <= firstPtr)
 		{
 			ELEKTRA_SET_ERRORF (134, parentKey,
-					    "Invalid syntax: \"%s\". Check kdb info conditionals for additional information\n", expr);
+					    "Invalid syntax: \"%s\". Check kdb info conditionals for additional information", expr);
 			return NULL;
 		}
 		*(lastPtr + 1) = '\0';
@@ -535,17 +535,17 @@ static const char * isAssign (Key * key, char * expr, Key * parentKey, KeySet * 
 	}
 	else
 	{
-		if (firstPtr == lastPtr)
+		if (firstPtr == lastPtr)  //only one quote in the assign string, invalid syntax
 		{
 			ELEKTRA_SET_ERRORF (134, parentKey,
-					    "Invalid syntax: \"%s\". Check kdb info conditionals for additional information\n", expr);
+					    "Invalid syntax: \"%s\". Check kdb info conditionals for additional information", expr);
 			return NULL;
 		}
 		char * nextMark = strchr (firstPtr + 1, '\'');
-		if (nextMark != lastPtr)
+		if (nextMark != lastPtr)  //more than two quotes, invalid syntax too
 		{
 			ELEKTRA_SET_ERRORF (134, parentKey,
-					    "Invalid syntax: \"%s\". Check kdb info conditionals for additional information\n", expr);
+					    "Invalid syntax: \"%s\". Check kdb info conditionals for additional information", expr);
 			return NULL;
 		}
 		*lastPtr = '\0';
@@ -628,7 +628,7 @@ static CondResult parseConditionString (const Key * meta, const Key * suffixList
 	int nomatch = regexec (&regex, ptr, subMatches, m, 0);
 	if (nomatch)
 	{
-		ELEKTRA_SET_ERRORF (134, parentKey, "Invalid syntax: \"%s\". Check kdb info conditionals for additional information\n",
+		ELEKTRA_SET_ERRORF (134, parentKey, "Invalid syntax: \"%s\". Check kdb info conditionals for additional information",
 				    conditionString);
 		regfree (&regex);
 		ksDel (ks);
@@ -636,7 +636,7 @@ static CondResult parseConditionString (const Key * meta, const Key * suffixList
 	}
 	if (m[2].rm_so == -1 || m[6].rm_so == -1)
 	{
-		ELEKTRA_SET_ERRORF (134, parentKey, "Invalid syntax: \"%s\". Check kdb info conditionals for additional information\n",
+		ELEKTRA_SET_ERRORF (134, parentKey, "Invalid syntax: \"%s\". Check kdb info conditionals for additional information",
 				    conditionString);
 		regfree (&regex);
 		ksDel (ks);
@@ -697,7 +697,7 @@ static CondResult parseConditionString (const Key * meta, const Key * suffixList
 			else if (ret == ERROR)
 			{
 				ELEKTRA_SET_ERRORF (134, parentKey,
-						    "Invalid syntax: \"%s\". Check kdb info conditionals for additional information\n",
+						    "Invalid syntax: \"%s\". Check kdb info conditionals for additional information",
 						    thenexpr);
 			}
 		}
@@ -733,7 +733,7 @@ static CondResult parseConditionString (const Key * meta, const Key * suffixList
 				{
 					ELEKTRA_SET_ERRORF (
 						134, parentKey,
-						"Invalid syntax: \"%s\". Check kdb info conditionals for additional information\n",
+						"Invalid syntax: \"%s\". Check kdb info conditionals for additional information",
 						elseexpr);
 				}
 			}
@@ -745,7 +745,7 @@ static CondResult parseConditionString (const Key * meta, const Key * suffixList
 	}
 	else if (ret == ERROR)
 	{
-		ELEKTRA_SET_ERRORF (134, parentKey, "Invalid syntax: \"%s\". Check kdb info conditionals for additional information\n",
+		ELEKTRA_SET_ERRORF (134, parentKey, "Invalid syntax: \"%s\". Check kdb info conditionals for additional information",
 				    condition);
 	}
 
