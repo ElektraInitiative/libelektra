@@ -357,12 +357,14 @@ static gboolean elektra_settings_backend_get_writable (GSettingsBackend * backen
 	ElektraSettingsBackend * esb = (ElektraSettingsBackend *)backend;
 	gchar * pathToWrite = g_strconcat (G_ELEKTRA_SETTINGS_USER, G_ELEKTRA_SETTINGS_PATH, name, NULL);
 	GElektraKey * gkey = gelektra_keyset_lookup_byname (esb->gks, pathToWrite, GELEKTRA_KDB_O_NONE);
+	// TODO answer why inside the if block
 	if (gkey == NULL)
 	{
 		gkey = gelektra_key_new (pathToWrite, KEY_VALUE, G_ELEKTRA_TEST_STRING, KEY_END);
 		g_free (pathToWrite);
 		if (gkey == NULL) return FALSE;
 	}
+	g_free (pathToWrite);
 	return TRUE;
 }
 
@@ -384,7 +386,6 @@ static void elektra_settings_key_changed (GDBusConnection * connection, const gc
 	gelektra_keyset_next (ks);
 	do
 	{
-		g_log (G_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, "%s!", "Checking if bellow…");
 		if (gelektra_key_isbeloworsame (key, gelektra_keyset_current (ks)))
 		{
 			g_log (G_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, "%s!", "Subscribed key changed");
@@ -477,6 +478,7 @@ static void elektra_settings_backend_unsubscribe (GSettingsBackend * backend, co
 	gchar * pathToUnsubscribe = g_strconcat (G_ELEKTRA_SETTINGS_PATH, name, NULL);
 	ElektraSettingsBackend * esb = (ElektraSettingsBackend *)backend;
 	GElektraKey * gkey = gelektra_keyset_lookup_byname (esb->subscription_gks, pathToUnsubscribe, GELEKTRA_KDB_O_NONE);
+	// TODO CHECK VALUE BEFORE working with it
 	if (gkey != NULL)
 	{
 		guint * counter = (guint *)gelektra_key_getvalue (gkey);
@@ -554,6 +556,7 @@ static void elektra_settings_backend_class_init (GSettingsBackendClass * class)
 	class->sync = elektra_settings_backend_sync;
 }
 
+// TODO check if this is changable at runtime
 void g_io_module_load (GIOModule * module)
 {
 	g_type_module_use (G_TYPE_MODULE (module));

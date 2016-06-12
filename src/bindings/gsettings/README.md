@@ -27,12 +27,12 @@
 
 # Going to Change
  * default write path in elektra (currently this is /sw), this will probably going to be
- either a setting in kdb or an environament variable.
+ either a setting in kdb or an environment variable.
 
 #Building
 ## Dependencies
- * elektra
- * gelektra
+ * elektra (for standalone build)
+ * gelektra (for standalone build)
  * glib
  * gio
  * dbus
@@ -46,7 +46,7 @@ make
 ```
 ### Standalone Build
 ```shell
-cd ./src
+cd GSETTINGS_SOURCE
 mkdir build && cd build
 cmake -GSETTINGS_MODULE_PRIORITY=200 ..
 make
@@ -60,7 +60,7 @@ make
 (sudo) make install
 ```
 
-If you do a system installation consider doing a migration, so you can imediatly keep using your settings.
+If you do a system installation consider doing a migration, so you can immediately keep using your settings.
 
 # Migration
 ## Import dconf user settings
@@ -89,12 +89,12 @@ import settings again
 rm tmp
 ```
 
-If you want notfifications to work you have to mount /sw with the dbus plugin.
+If you want notifications to work you have to mount /sw with the dbus plugin.
 
 # Debugging
 `G_MESSAGES_DEBUG=ElektraSettings` will enable debug output of the backend. If you have
-set the priority of the module below `100` you also have to set `GSETTINGS_BACKEND=elektra`
-to be able to test elektra as default backend.
+set the priority of the module below `100` and dconf installed you also have to
+set `GSETTINGS_BACKEND=elektra` to be able to test elektra as default backend.
 
 ##examples:
 ### Get/Set and Reset a Gsettings Value
@@ -114,7 +114,3 @@ G_MESSAGES_DEBUG=ElektraSettings GSETTINGS_BACKEND=elektra gedit
 ```
 
 an application can still request a different backend then elektra with `g_settings_new_with_backend ()`
-
-# Note
-This repository exists only for development reasen, it will be later integrated 
-in [libelektra](https://github.com/ElektraInitiative/libelektra) once it is mature enough.
