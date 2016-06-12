@@ -55,6 +55,22 @@ configure_file (
 	"${CMAKE_CURRENT_BINARY_DIR}/kdbversion.h"
 	)
 
+file (MAKE_DIRECTORY ${CMAKE_BINARY_DIR}include/)
+configure_file (
+	"${CMAKE_CURRENT_SOURCE_DIR}/kdb.h.in"
+	"${CMAKE_BINARY_DIR}/include/kdb.h"
+	)
+
+configure_file (
+	"${CMAKE_CURRENT_SOURCE_DIR}/kdbconfig.h.in"
+	"${CMAKE_BINARY_DIR}/include/kdbconfig.h"
+	)
+
+configure_file (
+	"${CMAKE_CURRENT_SOURCE_DIR}/kdbversion.h.in"
+	"${CMAKE_BINARY_DIR}/include/kdbversion.h"
+	)
+
 install (FILES
 	"${CMAKE_CURRENT_BINARY_DIR}/kdbconfig.h"
 	kdbextension.h
@@ -70,3 +86,10 @@ install (FILES
 	kdbproposal.h
 	"${CMAKE_CURRENT_BINARY_DIR}/kdbversion.h"
 	DESTINATION include/${TARGET_INCLUDE_FOLDER})
+
+
+
+add_custom_target(
+    elektra_config_headers ALL
+    DEPENDS ${CMAKE_BINARY_DIR}/include/kdb.h
+)

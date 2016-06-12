@@ -12,34 +12,47 @@
   * reset (delete) a key
   * synchronitation (no conflict handling yet)
   * subscribing and unsubscribing for changes (needs elektras [dbus plugin](https://github.com/ElektraInitiative/libelektra/tree/master/src/plugins/dbus) mounted on subscribed path)
-  * get writability of key (need info on how elektra defines writability)
+  * get writability of key (As far as definable as writable from Elektra)
 
 # What is not
  * synchronitation conflict handling
  * code cleanup
  * proper error handling
  * optimizations
- * get permission = am i allowed to write bellow path? (needs info if doable in elektra)
+ * get permission (Elektra does not support this)
+ * Setting write path in Elektra
 
-# Outstanding decissions
- * default write path in elektra (currently this is /sw)
+# Pending Issues
+ * See #762, #302, #775, #768
+
+# Going to Change
+ * default write path in elektra (currently this is /sw), this will probably going to be
+ either a setting in kdb or an environament variable.
 
 #Building
 ## Dependencies
  * elektra
+ * gelektra
  * glib
  * gio
  * dbus
 
 ## Build
+### As part of Elektra Build
 ```shell
-cd src
 mkdir build && cd build
-cmake -DMODULE_PRIORITY=200 ..
+cmake -GSETTINGS_MODULE_PRIORITY=200 -DBINDINGS=gsettings ..
+make
+```
+### Standalone Build
+```shell
+cd ./src
+mkdir build && cd build
+cmake -GSETTINGS_MODULE_PRIORITY=200 ..
 make
 ```
 
- * MODULE_PRIORITY set this value above the value of othe GSettingsBackend modules so it gets selected as default
+ * GSETTINGS_MODULE_PRIORITY set this value above the value of othe GSettingsBackend modules so it gets selected as default
   * the dconf GSettingsBackend is known to have a value of `100`
 
 # Installation
