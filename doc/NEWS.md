@@ -35,6 +35,7 @@ further reasons and limitations.
 - allow to mount json and xml (and other common provider names)
   without needing to know plugin names
 - colored output for kdb tools
+- Experimental GSettings support
 
 
 ## Asciinema
@@ -117,6 +118,31 @@ issues and setting up travis:
 - lua bindings tests: make sure lua executable matches with the lua libraries version
   thanks to Mihael Pranjić
 
+## Experimental GSettings support
+
+As part of the ongoing work of the bachelor thesis
+`Integration of Elektra into the GNOME desktop environment`
+we now have experimental support for Elektra as a GSettings backend on Linux
+(We will look into getting OS X support on a later date).
+When installed, applications using GSettings default backend will write to Elektra
+below the `/sw` key. The GSettings bindings are intended as a preview version so
+please do not use them in a production system.
+
+To build the GSettings backend you have to explicitly add it to bindings.
+e.g. `-DBINDINGS=gsettings`
+
+To manually install the backend, after building it copy the `libelektrasettings.so` into
+the gio module dir. Both `GElektra` and `Elektra` libraries have to be installed for the
+backend to work.
+
+All needed core functionality of a GSettings backend is already implemented.
+This includes notification support if you have your `/sw` mounted with the dbus plugin.
+
+Please report any bugs you encounter.
+
+For further information regarding the status of the implementations
+please refer to the corresponding [README](https://github.com/elektrainitiative/libelektra/tree/gsettings-backend/src/bindings/gsettings)
+and [ticket](https://github.com/ElektraInitiative/libelektra/issues/775).
 
 ## Common Provider Names
 
