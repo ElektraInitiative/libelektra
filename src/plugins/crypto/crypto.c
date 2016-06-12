@@ -205,15 +205,35 @@ int CRYPTO_PLUGIN_FUNCTION (open) (Plugin * handle ELEKTRA_UNUSED, Key * errorKe
  * @retval 1 on success
  * @retval -1 on failure
  */
-int CRYPTO_PLUGIN_FUNCTION (close) (Plugin * handle ELEKTRA_UNUSED, Key * errorKey ELEKTRA_UNUSED)
+int CRYPTO_PLUGIN_FUNCTION (close) (Plugin * handle, Key * errorKey ELEKTRA_UNUSED)
 {
+	/* default behaviour: no teardown except the user/system requests it */
+	KeySet * pluginConfig = elektraPluginGetConfig (handle);
+	if (!pluginConfig)
+	{
+		return -1; // failure because of missing plugin config
+	}
+
+	Key * shutdown = ksLookupByName (pluginConfig, ELEKTRA_CRYPTO_PARAM_SHUTDOWN, 0);
+	if (!shutdown)
+	{
+		return 1; // applying default behaviour -> success
+	}
+	else
+	{
+		if (strcmp (keyString (shutdown), "1") != 0)
+		{
+			return 1; // applying default behaviour -> success
+		}
+	}
+
 	pthread_mutex_lock (&mutex_ref_cnt);
 	if (--ref_cnt == 0)
 	{
 		elektraCryptoTeardown ();
 	}
 	pthread_mutex_unlock (&mutex_ref_cnt);
-	return 1;
+	return 1; // success
 }
 
 /**
