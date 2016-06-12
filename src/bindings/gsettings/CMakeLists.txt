@@ -45,7 +45,8 @@ else()
 	target_link_libraries (elektrasettings ${GLIB_LIBRARIES} ${GMODULE_LIBRARIES} ${GIO_LIBRARIES} ${GELEKTRA_LIBRARIES})
 endif ()
 
-install (TARGETS elektrasettings LIBRARY DESTINATION "lib/gio/modules/")
+pkg_get_variable(GIO_MODULE_DIR gio-2.0 giomoduledir)
+install (TARGETS elektrasettings LIBRARY DESTINATION GIO_MODULE_DIR)
 
 if (CMAKE_SOURCE_DIR STREQUAL CMAKE_BINARY_DIR)
 	if (NOT FORCE_IN_SOURCE_BUILD)
