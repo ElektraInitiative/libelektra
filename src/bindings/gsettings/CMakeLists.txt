@@ -44,8 +44,14 @@ else()
 	include_directories (${GELEKTRA_INCLUDE_DIRS})
 	target_link_libraries (elektrasettings ${GLIB_LIBRARIES} ${GMODULE_LIBRARIES} ${GIO_LIBRARIES} ${GELEKTRA_LIBRARIES})
 endif ()
-
-pkg_get_variable(GIO_MODULE_DIR gio-2.0 giomoduledir)
+if (CMAKE_VERSION GREATER 3.3)
+	pkg_get_variable (GIO_MODULE_DIR gio-2.0 giomoduledir)
+else ()
+	execute_process (
+		COMMAND PKG_CONFIG_EXECUTABLE --variable=giomoduledir
+		OUTPUT GIO_MODULE_DIR
+	)
+endif ()
 install (TARGETS elektrasettings LIBRARY DESTINATION GIO_MODULE_DIR)
 
 if (CMAKE_SOURCE_DIR STREQUAL CMAKE_BINARY_DIR)
