@@ -128,8 +128,8 @@ When installed, applications using GSettings default backend will write to Elekt
 below the `/sw` key. The GSettings bindings are intended as a preview version so
 please do not use them in a production system.
 
-To build the GSettings backend you have to explicitly add it to bindings.
-e.g. `-DBINDINGS=gsettings`
+To build the GSettings backend you have to explicitly add the binding even when `ALL` is given.
+e.g. `-DBINDINGS=gsettings` `-DBINDINGS="ALL;gsettings"`
 
 All needed core functionality of a GSettings backend is already implemented.
 This includes notification support if you have your `/sw` mounted with the dbus plugin.
