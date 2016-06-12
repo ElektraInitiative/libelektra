@@ -17,6 +17,7 @@ if (NOT GOBJECT_FOUND)
 	set (REGEX "gi_.*")
 	list_filter(BINDINGS REGEX)
 	remove_binding (glib "No gobject found using pkg-config, also remove gi bindings because they depend on it")
+	remove_binding (gsettings "Also remove gsettings bindings because they depend on glib.")
 else()
 	message(STATUS "Include Binding glib")
 
