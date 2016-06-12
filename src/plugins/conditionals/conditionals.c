@@ -187,8 +187,8 @@ static int compareStrings (const char * s1, const char * s2, const Key * suffixL
 	return retval;
 }
 
-static CondResult evalCondition (const Key * curKey, const char * leftSide, Comparator cmpOp, const char * rightSide, const char * condition,
-				 const Key * suffixList, KeySet * ks, Key * parentKey)
+static CondResult evalCondition (const Key * curKey, const char * leftSide, Comparator cmpOp, const char * rightSide,
+				 const char * condition, const Key * suffixList, KeySet * ks, Key * parentKey)
 {
 	char * lookupName = NULL;
 	char * compareTo = NULL;
@@ -233,7 +233,7 @@ static CondResult evalCondition (const Key * curKey, const char * leftSide, Comp
 			}
 			if (rightSide[0] == '@')
 				snprintf (lookupName, len, "%s/%s", keyName (parentKey), rightSide + 1);
-			else if (rightSide[0] == '.')  //either starts with . or .., doesn't matter at this point
+			else if (rightSide[0] == '.') // either starts with . or .., doesn't matter at this point
 				snprintf (lookupName, len, "%s/%s", keyName (curKey), rightSide);
 			else
 				snprintf (lookupName, len, "%s", rightSide);
@@ -273,7 +273,7 @@ static CondResult evalCondition (const Key * curKey, const char * leftSide, Comp
 	}
 	if (leftSide[0] == '@')
 		snprintf (lookupName, len, "%s/%s", keyName (parentKey), leftSide + 1);
-	else if (leftSide[0] == '.')   //either . or .., doesn't matter here
+	else if (leftSide[0] == '.') // either . or .., doesn't matter here
 		snprintf (lookupName, len, "%s/%s", keyName (curKey), leftSide);
 	else
 		snprintf (lookupName, len, "%s", leftSide);
@@ -535,14 +535,14 @@ static const char * isAssign (Key * key, char * expr, Key * parentKey, KeySet * 
 	}
 	else
 	{
-		if (firstPtr == lastPtr)  //only one quote in the assign string, invalid syntax
+		if (firstPtr == lastPtr) // only one quote in the assign string, invalid syntax
 		{
 			ELEKTRA_SET_ERRORF (134, parentKey,
 					    "Invalid syntax: \"%s\". Check kdb info conditionals for additional information", expr);
 			return NULL;
 		}
 		char * nextMark = strchr (firstPtr + 1, '\'');
-		if (nextMark != lastPtr)  //more than two quotes, invalid syntax too
+		if (nextMark != lastPtr) // more than two quotes, invalid syntax too
 		{
 			ELEKTRA_SET_ERRORF (134, parentKey,
 					    "Invalid syntax: \"%s\". Check kdb info conditionals for additional information", expr);
@@ -733,8 +733,7 @@ static CondResult parseConditionString (const Key * meta, const Key * suffixList
 				{
 					ELEKTRA_SET_ERRORF (
 						134, parentKey,
-						"Invalid syntax: \"%s\". Check kdb info conditionals for additional information",
-						elseexpr);
+						"Invalid syntax: \"%s\". Check kdb info conditionals for additional information", elseexpr);
 				}
 			}
 		}
