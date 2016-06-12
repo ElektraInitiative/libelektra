@@ -92,7 +92,6 @@ static GVariant * elektra_settings_read_string (GSettingsBackend * backend, gcha
 	{
 		g_log (G_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, "%s ", "Key found");
 		GVariant * read_gvariant;
-		gssize length;
 		GError * err = NULL;
 		gchar * string_value = g_malloc (gelektra_key_getvaluesize (gkey));
 		if (gelektra_key_getstring (gkey, string_value, gelektra_key_getvaluesize (gkey)) == -1)
@@ -375,7 +374,6 @@ static void elektra_settings_key_changed (GDBusConnection * connection, const gc
 {
 	g_log (G_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, "%s %s.", "dbus signal that key has changed", g_variant_print (parameters, FALSE));
 	GVariant * variant = g_variant_get_child_value (parameters, 0);
-	GError * err = NULL;
 	gchar const * keypathname = g_variant_get_string (variant, NULL);
 	ElektraSettingsBackend * esb = (ElektraSettingsBackend *)user_data;
 	GElektraKeySet * ks = gelektra_keyset_dup (esb->subscription_gks);
@@ -534,8 +532,9 @@ static void elektra_settings_backend_finalize (GObject * object)
 {
 	g_log (G_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, "%s.", "Finalize ElektraSettingsBackend");
 	ElektraSettingsBackend * esb = (ElektraSettingsBackend *)object;
-	GElektraKey * errorkey;
+	GElektraKey * errorkey = gelektra_key_new (0);
 	gelektra_kdb_close (esb->gkdb, errorkey);
+	// TODO error handling
 	G_OBJECT_CLASS (elektra_settings_backend_parent_class)->finalize (object);
 }
 
