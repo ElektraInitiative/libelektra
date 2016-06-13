@@ -611,7 +611,7 @@ static int elektraGetDoUpdateWithGlobalHooks (KDB * handle, Split * split, KeySe
 /**
  * @brief Retrieve keys in an atomic and universal way.
  *
- * @pre The @p handle must be passed as returned from kdbOpen()
+ * @pre The @p handle must be passed as returned from kdbOpen().
  *
  * @pre The @p returned KeySet must be a valid KeySet, e.g. constructed
  *     with ksNew().
@@ -619,15 +619,14 @@ static int elektraGetDoUpdateWithGlobalHooks (KDB * handle, Split * split, KeySe
  * @pre The @p parentKey Key must be a valid Key, e.g. constructed with
  *     keyNew().
  *
- * If you pass NULL, which violates the preconditions,
- * on any parameter kdbGet() will fail immediately without doing anything.
+ * If you pass NULL on any parameter kdbGet() will fail immediately without doing anything.
  *
  * The @p returned KeySet may already contain some keys, e.g. from previous
  * kdbGet() calls. The new retrieved keys will be appended using
  * ksAppendKey().
  *
- * It will fully retrieve, at least, all keys under the @p parentKey
- * folder, with all subfolders and their children.
+ * If not done earlier kdbGet() will fully retrieve all keys under the @p parentKey
+ * folder recursively (See Optimization below when it will not be done).
  *
  * @note kdbGet() might retrieve more keys then requested (that are not
  *     below parentKey). These keys must be passed to calls of kdbSet(),
@@ -652,22 +651,22 @@ static int elektraGetDoUpdateWithGlobalHooks (KDB * handle, Split * split, KeySe
  * error and warning information in the @p parentKey.
  * The parameter @p returned will not be changed.
  *
- * @par Updates:
+ * @par Optimization:
  * In the first run of kdbGet all requested (or more) keys are retrieved. On subsequent
  * calls only the keys are retrieved where something was changed
- * inside the key database. The other keys stay unchanged in the
- * keyset, even if they were manipulated.
+ * inside the key database. The other keys stay in the
+ * KeySet returned as passed.
  *
  * It is your responsibility to save the original keyset if you
  * need it afterwards.
  *
- * If you want to get the same keyset again, you need to open a
+ * If you want to be sure to get a fresh keyset again, you need to open a
  * second handle to the key database using kdbOpen().
  *
  * @param handle contains internal information of @link kdbOpen() opened @endlink key database
  * @param parentKey is used to add warnings and set an error
- *         information. Additionally, its name is an hint which keys
- *         should be retrieved (it is possible that more are retrieved).
+ *         information. Additionally, its name is a hint which keys
+ *         should be retrieved (it is possible that more are retrieved, see Note above).
  *           - cascading keys (starting with /) will retrieve the same path in all namespaces
  *           - / will retrieve all keys
  * @param ks the (pre-initialized) KeySet returned with all keys found
@@ -992,16 +991,22 @@ static void elektraSetRollback (Split * split, Key * parentKey)
  *     with ksNew().
  *
  * @pre The @p parentKey Key must be a valid Key, e.g. constructed with
+ *     keyNew().
+ *
+ * If you pass NULL on any parameter kdbSet() will fail immediately without doing anything.
  *
  * With @p parentKey you can give an hint which part of the given keyset
- * is of interest for you. Then you promise, you only modified or
- * removed keys below this key.
+ * is of interest for you. Then you promise to only modify or
+ * remove keys below this key. All others would be passed back
+ * as they were retrieved by kdbGet().
  *
  * @par Errors
- * If some error occurs, kdbSet() will stop. In this situation the KeySet
- * internal cursor will be set on the key that generated the error.
- * None of the keys are actually committed in this situation (no
- * configuration file will be modified).
+ * If some error occurs:
+ * - kdbSet() will leave the KeySet's * internal cursor on the key that generated the error.
+ * - Error information will be written into the meta data of
+ *   the parent key.
+ * - None of the keys are actually committed in this situation, i.e. no
+ *   configuration file will be modified.
  *
  * In case of errors you should present the error message to the user and let the user decide what
  * to do. Possible solutions are:
@@ -1012,14 +1017,14 @@ static void elektraSetRollback (Split * split, Key * parentKey)
  *   - drop the old keyset (in favour of what was set from another application)
  *   - merge the original, your own and the other keyset
  * - export the configuration into a file (for unresolvable errors)
- * - repeat the same kdbSet might be of limited use if the operator does
+ * - repeat the same kdbSet might be of limited use if the user does
  *   not explicitly request it, because temporary
  *   errors are rare and its unlikely that they fix themselves
  *   (e.g. disc full, permission problems)
  *
  * @par Optimization
- * Each key is checked with keyNeedSync() before being actually committed. So
- * only changed keys are updated. If no key of a backend needs to be synced
+ * Each key is checked with keyNeedSync() before being actually committed.
+ * If no key of a backend needs to be synced
  * any affairs to backends are omitted and 0 is returned.
  *
  * @snippet kdbset.c set
