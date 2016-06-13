@@ -590,9 +590,14 @@ static int elektraGetDoUpdateWithGlobalHooks (KDB * handle, Split * split, KeySe
 					Key * cutKey = keyNew ("/", KEY_CASCADING_NAME, KEY_END);
 					keyAddName (cutKey, strchr (keyName (parentKey), '/'));
 					KeySet * cutKS = ksCut (ks, cutKey);
+					Key * specCutKey = keyNew ("spec", KEY_END);
+					KeySet * specKS = ksCut (ks, specCutKey);
+					keyDel (specCutKey);
 					ksRewind (cutKS);
 					ret = backend->getplugins[p]->kdbGet (backend->getplugins[p], cutKS, parentKey);
+					ksAppend (ks, specKS);
 					ksAppend (ks, cutKS);
+					ksDel (specKS);
 					ksDel (cutKS);
 					keyDel (cutKey);
 				}
