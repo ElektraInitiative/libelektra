@@ -686,7 +686,8 @@ if (result >= 0)
 ssize_t ksSearchInternal (const KeySet * ks, const Key * toAppend)
 {
 	ssize_t left = 0;
-	ssize_t right = ks->size - 1;
+	ssize_t right = ks->size;
+	--right;
 	register int cmpresult = 1;
 	ssize_t middle = -1;
 	ssize_t insertpos = 0;
@@ -918,7 +919,7 @@ ssize_t ksCopyInternal (KeySet * ks, size_t to, size_t from)
 	if (length < 0) return -1;
 	if (ks->size < to) return -1;
 
-	ks->size = ks->size + sizediff;
+	ks->size += sizediff;
 	ret = elektraMemmove (ks->array + to, ks->array + from, length);
 	ks->array[ks->size] = 0;
 	return ret;

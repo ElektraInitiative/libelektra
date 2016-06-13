@@ -445,10 +445,11 @@ int elektraValidateKeyName (const char * name, size_t size)
 static void elektraWriteBackslashes (char ** dest, size_t number)
 {
 	char * dp = *dest;
-	while (number--)
+	while (number)
 	{
 		*dp = '\\';
 		++dp;
+		--number;
 	}
 	*dest = dp;
 }
@@ -566,7 +567,7 @@ char * elektraUnescapeKeyNamePart (const char * source, size_t size, char * dest
 	char * dp = dest;
 	size_t count = 0;
 
-	while (size--)
+	while (size)
 	{
 		if (*sp == '\\')
 		{
@@ -605,7 +606,9 @@ char * elektraUnescapeKeyNamePart (const char * source, size_t size, char * dest
 			++dp;
 		}
 		++sp;
+		--size;
 	}
+
 	// we counted an even number of backslashes
 	// otherwise we would not be at the end
 	ELEKTRA_ASSERT ((count % 2) == 0);
