@@ -12,15 +12,32 @@ make sure to do:
 	git config --global merge.ff false
 	git config merge.ff false
 
+## The Commit Message ##
+
+A commit message should have the following syntax:
+`component: short change description`
+
+For a clean and meaningful log the commit
+message should fullfil the following:
+
+- use imperative in the subject line
+- the subject line should not be longer than 50 characters
+- start the subject line with the module name (e.g. resolver:, cpp bindings:)
+- separate subject from body with a blank line
+- in the body describe in detail what you did, and possibly why
+- metadata like "Fixes #123" should be kept at the bottom of the commit message and definitely not in the title
+
+Most commits should have a longer description in the body.
+
 ## Remote Branches ##
 
 To list all remote branches use:
 
-	git-branch -a
+	git branch -a
 
 To checkout a remote branch initially use:
 
-	git-checkout -b <branchname> origin/<branchname>
+	git checkout -b <branchname> origin/<branchname>
 
 Once you have done this, it will be a local branch, too.
 Following remote branches should exist:
@@ -50,19 +67,19 @@ master.  (see config option above)
 
 You should always make your own feature branch with:
 
-	git-checkout -b <feature-branch-name>
+	git checkout -b <feature-branch-name>
 
 On this branch it is not so important that every
 commit compiles or all test cases run.
 
 To merge a branch use (no-fastforward):
 
-	git-merge --no-ff <branchname>
+	git merge --no-ff <branchname>
 
 If you already did some commits, but want them in a branch,
 you can do:
 
-	git-branch foo
+	git branch foo
 	git reset HEAD^^  (for 2 commits back)
 	git reset origin/master
 
@@ -71,7 +88,7 @@ you can do:
 ## Github ##
 
 When doing merge requests our [buildserver](http://build.libelektra.org:8080)
-will build authorized users. If you are not yet authorized following
+will build authorized users. If you are not yet authorized, the following
 question will be asked (by user markus2330):
 
 	Can one of the admins verify if this patch should be build?
