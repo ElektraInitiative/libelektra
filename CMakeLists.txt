@@ -82,11 +82,13 @@ include (cmake/ElektraPackaging.cmake)
 
 #now add all directories
 add_subdirectory (cmake)
-add_subdirectory (scripts)
 
 if (BUILD_DOCUMENTATION)
 	add_subdirectory (doc)
 endif (BUILD_DOCUMENTATION)
+
+# add scripts after doc
+add_subdirectory (scripts)
 
 #is there anything to build except documentation?
 if (BUILD_FULL OR BUILD_STATIC OR BUILD_SHARED)
