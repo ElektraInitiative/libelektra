@@ -422,11 +422,11 @@ static int elektraResolveSpec (resolverHandle * p, Key * warningsKey ELEKTRA_UNU
 	}
 	else
 	{
-		if (KDB_DB_SPEC[0] == '~')
+		if (KDB_DB_SPEC_REAL[0] == '~')
 		{
 			const char * oldPath = p->path;
 			char * path = elektraMalloc (filenameSize);
-			strcpy (path, KDB_DB_SPEC);
+			strcpy (path, KDB_DB_SPEC_REAL);
 			strcat (path, "/");
 			strcat (path, p->path);
 			p->path = path;
