@@ -1,0 +1,9 @@
+<schemalist>
+  <schema id="org.libelektra.elektrasettings" path="/org/libelektra/elektrasettings/">
+    <key name="teststring" type="s">
+      <default>''</default>
+      <summary>Teststring to test dbus notifications</summary>
+      <description>Some Test String</description>
+    </key>
+  </schema>
+</schemalist>
