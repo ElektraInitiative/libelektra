@@ -26,11 +26,9 @@ further reasons and limitations.
 
 ## Highlights
 
-- Many important bug fixes
 - Qt-Gui reworked mounting and native icons
 - Full Mac OS X Support
-- Build Server Improvements
-- cmake plugin adding improved
+- Build Server improvements
 - beginner friendly tasks
 - allow to mount json and xml (and other common provider names)
   without needing to know plugin names
@@ -38,7 +36,28 @@ further reasons and limitations.
 - Experimental GSettings support
 
 
-## Asciinema
+## Beginner friendly tasks
+
+In this release developing Elektra could much easier
+as described in the release notes:
+
+- cmake-side of a plugin is improved, in most cases it
+  should be not more than calling a single function,
+  even if unit tests are present
+- ELEKTRA_DEBUG adds run-time checks and makes stack traces
+  as if Elektra would not use plugins
+- We prepared [beginner friendly tasks](https://github.com/ElektraInitiative/libelektra/issues?q=is%3Aissue+is%3Aopen+label%3A%22beginner+friendly%22)
+  for you.
+
+
+## Find-Tools
+
+There is now a fine collection of external scripts which can
+executed by `kdb + <script>`. The new script `kdb find-tools`
+provides full text search over the meta data as provided by
+the scripts.
+
+Thanks to Kurt Micheli!
 
 ## Mac OS X Support
 
@@ -61,6 +80,17 @@ issues and setting up travis:
 
 ## jenkins
 
+Now (nearly) every build job can be triggered from Pull Requests
+making it. For example:
+
+* jenkins build [git-buildpackage-jessie](http://build.libelektra.org:8080/job/elektra-git-buildpackage-jessie/) please
+* jenkins build [git-buildpackage-wheezy](http://build.libelektra.org:8080/job/elektra-git-buildpackage-wheezy/) please
+* jenkins build [icc](http://build.libelektra.org:8080/job/elektra-icc/) please
+* jenkins build [local-installation](http://build.libelektra.org:8080/job/elektra-local-installation/) please
+
+For a full list see [https://github.com/elektrainitiative/libelektra/tree/doc/GIT.md]()
+
+Thanks to Mihael Pranjić for the setup!
 
 ## Fixes
 
@@ -247,13 +277,14 @@ ENABLE_DEBUG now enables a debug build for Elektra.
 It has nothing to do with debug symbols, but with:
 
 - it enables the internal assertions
+- it enables [undefinied behavior sanitizer](http://clang.llvm.org/docs/UndefinedBehaviorSanitizer.html)
 - plugins will not be closed so that stack traces are more useful
   (using RTLD_NODELETE)
 
-ENABLE_DEBUG is recommended for everyone developing *with* Elektra.
-The assertions will give you hints on API misusage.
+ENABLE_DEBUG is recommended for every developer, even if you are not
+modifying Elektra itself. The assertions will give you hints on API misusage.
 
-Especially `keyNew` was known to be error-prone. ENABLE_DEBUG now will report
+For example, `keyNew` was known to be error-prone. ENABLE_DEBUG now will report
 wrong parameters by an assertion.
 
 The old options ELEKTRA_DEBUG and ELEKTRA_VERBOSE are not available anymore.
