@@ -368,9 +368,9 @@ static gboolean elektra_settings_backend_get_writable (GSettingsBackend * backen
 }
 
 
-static void elektra_settings_key_changed (GDBusConnection * connection, const gchar * sender_name, const gchar * object_path,
-					  const gchar * interface_name, const gchar * signal_name, GVariant * parameters,
-					  gpointer user_data)
+static void elektra_settings_key_changed (GDBusConnection * connection G_GNUC_UNUSED, const gchar * sender_name G_GNUC_UNUSED,
+					  const gchar * object_path G_GNUC_UNUSED, const gchar * interface_name G_GNUC_UNUSED,
+					  const gchar * signal_name G_GNUC_UNUSED, GVariant * parameters, gpointer user_data)
 {
 	g_log (G_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, "%s %s.", "dbus signal that key has changed", g_variant_print (parameters, FALSE));
 	GVariant * variant = g_variant_get_child_value (parameters, 0);
@@ -395,7 +395,7 @@ static void elektra_settings_key_changed (GDBusConnection * connection, const gc
 	g_variant_unref (variant);
 }
 
-static void elektra_settings_bus_connected (GObject * source_object, GAsyncResult * res, gpointer user_data)
+static void elektra_settings_bus_connected (GObject * source_object G_GNUC_UNUSED, GAsyncResult * res, gpointer user_data)
 {
 	GError * err = NULL;
 	ElektraSettingsBackend * esb = (ElektraSettingsBackend *)user_data;
@@ -563,7 +563,7 @@ void g_io_module_load (GIOModule * module)
 					G_ELEKTRA_SETTINGS_MODULE_PRIORITY);
 }
 
-void g_io_module_unload (GIOModule * module)
+void g_io_module_unload (GIOModule * module G_GNUC_UNUSED)
 {
 	g_assert_not_reached ();
 }
