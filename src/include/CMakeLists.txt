@@ -39,6 +39,8 @@ set (ELEKTRA_UNUSED "__attribute__ ((unused))")
 
 set (BUILTIN_SPEC_FOLDER
 	"${CMAKE_INSTALL_PREFIX}/${KDB_DB_SPEC}")
+set (BUILTIN_SPEC_REAL_FOLDER
+    "${KDB_DB_SPEC}")
 
 configure_file (
 	"${CMAKE_CURRENT_SOURCE_DIR}/kdb.h.in"
