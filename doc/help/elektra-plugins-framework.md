@@ -122,7 +122,7 @@ not in a productive environment.
 
 But the plugin's implementation is allowed to change without being
 remounted if it is a subtype of the earlier version.  Only in this
-situation it can be a drop-in placement.  With a good testing framework
+situation it can be a drop-in replacement.  With a good testing framework
 the behaviour can be checked to some extent.
 
 We also see in the listing above that the code responsible for generating

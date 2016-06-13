@@ -39,6 +39,8 @@ set (ELEKTRA_UNUSED "__attribute__ ((unused))")
 
 set (BUILTIN_SPEC_FOLDER
 	"${CMAKE_INSTALL_PREFIX}/${KDB_DB_SPEC}")
+set (BUILTIN_SPEC_REAL_FOLDER
+    "${KDB_DB_SPEC}")
 
 configure_file (
 	"${CMAKE_CURRENT_SOURCE_DIR}/kdb.h.in"
@@ -70,3 +72,10 @@ install (FILES
 	kdbproposal.h
 	"${CMAKE_CURRENT_BINARY_DIR}/kdbversion.h"
 	DESTINATION include/${TARGET_INCLUDE_FOLDER})
+
+
+
+add_custom_target(
+    elektra_config_headers ALL
+    DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/kdb.h ${CMAKE_CURRENT_BINARY_DIR}/kdbconfig.h ${CMAKE_CURRENT_BINARY_DIR}/kdbversion.h
+)

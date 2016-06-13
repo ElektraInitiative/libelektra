@@ -589,7 +589,7 @@
    write(buf)
    fun:__write_nocancel
    fun:sem_open
-   fun:open*
+   ...
    fun:elektraSemlockOpen
    fun:elektraPluginOpen
    ...
