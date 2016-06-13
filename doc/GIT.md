@@ -97,8 +97,32 @@ or if just a single build of the mergerequest should be started:
 
 or if specific jobs should be started:
 
-	jenkins build bindings please
-	jenkins build ini please
+* jenkins build [bindings](http://build.libelektra.org:8080/job/elektra-test-bindings/) please
+* jenkins build [clang](http://build.libelektra.org:8080/job/elektra-clang/) please
+* jenkins build [fast](http://build.libelektra.org:8080/job/elektra-mergerequests-fast/) please
+* jenkins build [gcc](http://build.libelektra.org:8080/job/elektra-gcc/) please
+* jenkins build [gcc-configure-debian](http://build.libelektra.org:8080/job/elektra-gcc-configure-debian/) please
+* jenkins build [gcc-configure-debian-intree](http://build.libelektra.org:8080/job/elektra-gcc-configure-debian-intree/) please
+* jenkins build [gcc-configure-debian-musl](http://build.libelektra.org:8080/job/elektra-gcc-configure-debian-musl/) please
+* jenkins build [gcc-configure-debian-notest](http://build.libelektra.org:8080/job/elektra-gcc-configure-debian-notest/) please
+* jenkins build [gcc-configure-debian-shared](http://build.libelektra.org:8080/job/elektra-gcc-configure-debian-shared/) please
+* jenkins build [gcc-configure-debian-stretch](http://build.libelektra.org:8080/job/elektra-gcc-configure-debian-stretch/) please
+* jenkins build [gcc-configure-debian-wheezy](http://build.libelektra.org:8080/job/elektra-gcc-configure-debian-wheezy/) please
+* jenkins build [gcc-configure-xdg](http://build.libelektra.org:8080/job/elektra-gcc-configure-xdg/) please
+* jenkins build [gcc-i386](http://build.libelektra.org:8080/job/elektra-gcc-i386/) please
+* jenkins build [gcc47-all](http://build.libelektra.org:8080/job/elektra-gcc47-all/) please
+* jenkins build [git-buildpackage-jessie](http://build.libelektra.org:8080/job/elektra-git-buildpackage-jessie/) please
+* jenkins build [git-buildpackage-wheezy](http://build.libelektra.org:8080/job/elektra-git-buildpackage-wheezy/) please
+* jenkins build [icc](http://build.libelektra.org:8080/job/elektra-icc/) please
+* jenkins build [ini](http://build.libelektra.org:8080/job/elektra-ini-mergerequests/) please
+* jenkins build [local-installation](http://build.libelektra.org:8080/job/elektra-local-installation/) please
+* jenkins build [mingw64](http://build.libelektra.org:8080/job/elektra-gcc-configure-mingw-w64/) please
+* jenkins build [multiconfig-gcc-stable](http://build.libelektra.org:8080/job/elektra-multiconfig-gcc-stable/) please
+* jenkins build [multiconfig-gcc-unstable](http://build.libelektra.org:8080/job/elektra-multiconfig-gcc-unstable/) please
+* jenkins build [multiconfig-gcc47-cmake-options](http://build.libelektra.org:8080/job/elektra-multiconfig-gcc47-cmake-options/) please
+* jenkins build [source-package-test](http://build.libelektra.org:8080/job/elektra-source-package-test/) please
+* jenkins build [stable](http://build.libelektra.org:8080/job/elektra-mergerequests-stable/) please
+* jenkins build [unstable](http://build.libelektra.org:8080/job/elektra-mergerequests-unstable/) please
 
 If you want any configuration changes, please contact
 `Markus Raab <elektra@markus-raab.org>`.
