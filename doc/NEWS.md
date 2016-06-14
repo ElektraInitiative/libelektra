@@ -23,11 +23,11 @@ It will be available till 18.07.2016 (anywhere on earth).
 For every thoroughly and not anonymously finished survey € 40 cent
 will be donated to one of the following organizations of your choice:
 
+- LimeSurvey (LimeService, kindly hosts this survey)
 - SPI (General Donation: 0 A.D., LibreOffice, Debian, ArchLinux, …)
 - FSFE
 - GNOME
 - KDE
-- LimeSurvey (LimeService, kindly hosts this survey)
 - Mozilla (Firefox)
 - Wikimedia Foundation (Wikipedia)
 
