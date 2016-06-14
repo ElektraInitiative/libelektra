@@ -1,10 +1,10 @@
-cmake_minimum_required (VERSION 2.8)
+cmake_minimum_required (VERSION 3.0)
 
 if (POLICY CMP0048)
-	cmake_policy(SET CMP0048 OLD) # avoid warning about resetting PROJECT_VERSION
+	cmake_policy(SET CMP0048 NEW) # avoid warning about resetting PROJECT_VERSION
 endif()
 
-project (elektrasettings)
+project (elektrasettings VERSION 0.1.1 LANGUAGES C)
 
 find_package (PkgConfig REQUIRED)
 pkg_check_modules (GLIB glib-2.0>=2.42 QUIET)
@@ -28,6 +28,15 @@ add_library (elektrasettings SHARED elektrasettingsbackend.c ${ELEKTRA_HEADERS})
 add_dependencies (elektrasettings elektra_config_headers)
 set (GSETTINGS_MODULE_PRIORITY 200 CACHE STRING "GIO Module Priority. Lower then 100 means dconf backend will be default.")
 target_compile_definitions (elektrasettings PRIVATE G_ELEKTRA_SETTINGS_MODULE_PRIORITY=${GSETTINGS_MODULE_PRIORITY})
+if (CMAKE_VERSION GREATER 3.3)
+	pkg_get_variable (GIO_MODULE_DIR gio-2.0 giomoduledir)
+else ()
+	execute_process (
+		COMMAND ${PKG_CONFIG_EXECUTABLE} --variable=giomoduledir gio-2.0
+		OUTPUT_VARIABLE GIO_MODULE_DIR
+		OUTPUT_STRIP_TRAILING_WHITESPACE
+	)
+endif ()
 if (GELEKTRA_LIBRARY)
 	file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/include/elektra/)
 	file (GLOB GS_ELEKTRA_HEADERS ../glib/*.h)
@@ -41,6 +50,9 @@ if (GELEKTRA_LIBRARY)
 	include_directories (${CMAKE_BINARY_DIR}/include/)
 	include_directories (${CMAKE_BINARY_DIR}/src/include/)
 	target_link_libraries (elektrasettings ${GLIB_LIBRARIES} ${GMODULE_LIBRARIES} ${GIO_LIBRARIES} ${GELEKTRA_LIBRARY} elektra-core)
+	if (INSTALL_SYSTEM_FILES)
+		install (TARGETS elektrasettings LIBRARY DESTINATION ${GIO_MODULE_DIR})
+	endif ()
 else()
 	pkg_check_modules (GELEKTRA gelektra-4.0>=0.8.16 QUIET)
 	if (!GELEKTRA_FOUND)
@@ -48,20 +60,8 @@ else()
 	endif()
 	include_directories (${GELEKTRA_INCLUDE_DIRS})
 	target_link_libraries (elektrasettings ${GLIB_LIBRARIES} ${GMODULE_LIBRARIES} ${GIO_LIBRARIES} ${GELEKTRA_LIBRARIES})
-endif ()
-if (CMAKE_VERSION GREATER 3.3)
-	pkg_get_variable (GIO_MODULE_DIR gio-2.0 giomoduledir)
-else ()
-	execute_process (
-		COMMAND ${PKG_CONFIG_EXECUTABLE} --variable=giomoduledir gio-2.0
-		OUTPUT_VARIABLE GIO_MODULE_DIR
-		OUTPUT_STRIP_TRAILING_WHITESPACE
-	)
-endif ()
-
-if (INSTALL_SYSTEM_FILES)
 	install (TARGETS elektrasettings LIBRARY DESTINATION ${GIO_MODULE_DIR})
-endif (INSTALL_SYSTEM_FILES)
+endif ()
 
 if (CMAKE_SOURCE_DIR STREQUAL CMAKE_BINARY_DIR)
 	if (NOT FORCE_IN_SOURCE_BUILD)
