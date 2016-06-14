@@ -137,22 +137,27 @@ Now move and install:
 
 
 Run some basic commands, at least:
- kdb --version
+ kdb --version > deb/$DVERSION/version
  kdb qt-gui
- strace kdb mount file.ecf user/release_test
- strace kdb file user/release_test/b
- strace kdb set user/release_test/b
- strace kdb get user/release_test/b
- strace kdb rm user/release_test/b
 
+Strace what tools are doing:
 
-Run local tests:
- kdb run_all
- KDB=kdb kdb run_all
- KDB=kdb-static kdb run_all
+ strace -o deb/$DVERSION/mount.strace kdb mount file.ecf user/release_test
+ strace -o deb/$DVERSION/file.strace kdb file user/release_test/b
+ strace -o deb/$DVERSION/set.strace kdb set user/release_test/b
+ strace -o deb/$DVERSION/get.strace kdb get user/release_test/b
+ strace -o deb/$DVERSION/rm.strace kdb rm user/release_test/b
+ strace -o deb/$DVERSION/umount.strace kdb umount user/release_test
+
+Run tests:
+
+ kdb run_all > deb/$DVERSION/run_all 2>&1
+ KDB=kdb-static kdb-static run_all > deb/$DVERSION/run_all_static 2>&1
+ KDB=kdb-full kdb-full run_all > deb/$DVERSION/run_all_full 2>&1
 
 Install libelektra-test of the previous version and run again:
- CHECK_VERSION=NO kdb run_all
+
+ CHECK_VERSION=NO kdb run_all > deb/$DVERSION/run_all_abi 2>&1
 
 
 == Test external tools ==

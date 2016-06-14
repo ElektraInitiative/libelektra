@@ -68,15 +68,15 @@ further reasons and limitations.
 
 In this release starting developing Elektra gets easier:
 
-- ELEKTRA_DEBUG adds run-time checks and makes stack traces
+- `ELEKTRA_DEBUG` adds run-time checks and makes stack traces
   as if Elektra would not use plugins
-- CMakeLists.txt for plugins got simplified, in most cases it
+- `CMakeLists.txt` for plugins got simplified, in most cases it
   should be not more than calling a single function,
-  even if unit tests are present
+  even if unit tests and test data are present
 - We prepared [beginner friendly tasks](https://github.com/ElektraInitiative/libelektra/issues?q=is%3Aissue+is%3Aopen+label%3A%22beginner+friendly%22)
   for you.
 
-For details, see below.
+For details about `ELEKTRA_DEBUG` and cmake, see individual points below.
 
 
 
@@ -98,9 +98,9 @@ Thanks to Kurt Micheli!
 
 ## Mac OS X Support
 
-Because of its POSIX support one might think it would be trivial
-to support Mac OS X. Unfortunately there were many small issues,
-especially in the regular expression handling and the filesystem.
+Because of its POSIX support one might think it would be trivial to
+support Mac OS X. Unfortunately there were many small issues, especially
+in the regular expression handling and the filesystem.
 
 Nevertheless we finally fully support Mac OS X and the newly added
 travis build server makes sure it will stay this way.
@@ -326,9 +326,9 @@ This helps to spot the important information immediately without sacrificing
 information that would be important for a detailed analysis.
 
 Every tool now has the option `--color` and `-C` which is set to `auto` per default.
-By writing to
+By writing to:
 
-    kdb set +kdb/color off
+    kdb set user/sw/elektra/kdb/#0/color off
 
 one can go back to previous behavior.
 
@@ -345,49 +345,50 @@ one can go back to previous behavior.
 - many more spelling mistakes were fixed and useless whitespace was removed,
   thanks to René Schwaiger
 - describe preferences when plugins are included/excluded
-- improvements in `ksCopy`, `ksPop`, `kdbGet` and `kdbSet` API description
+- improvements in `ksCopy`, `ksPop`, `kdbGet` and `kdbSet`
+  [API description](http://doc.libelektra.org/api/0.8.17/html/)
 - added [WHY document](https://github.com/elektrainitiative/libelektra/tree/doc/WHY.md)
 - updated [plugin decision](https://github.com/elektrainitiative/libelektra/tree/cmake_plugins.md) to include 3rd phase
 
 ## ELEKTRA_DEBUG build
 
 ENABLE_DEBUG now enables a debug build for Elektra.
-It has nothing to do with debug symbols, but with:
+It has nothing to do with debug symbols, but:
 
-- it enables the internal assertions
+- it enables assertions
 - it enables [undefinied behavior sanitizer](http://clang.llvm.org/docs/UndefinedBehaviorSanitizer.html)
+  for clang
 - plugins will not be closed so that stack traces are more useful
-  (using RTLD_NODELETE)
+  (using `RTLD_NODELETE`)
 
-ENABLE_DEBUG is recommended for every developer, even if you are not
+`ENABLE_DEBUG` is recommended for every developer, even if you are not
 modifying Elektra itself. The assertions will give you hints on API misusage.
 
-For example, `keyNew` was known to be error-prone. ENABLE_DEBUG now will report
+For example, `keyNew` was known to be error-prone. `ENABLE_DEBUG` now will report
 wrong parameters by an assertion.
 
-The old options ELEKTRA_DEBUG and ELEKTRA_VERBOSE are not available anymore.
+The old options `ELEKTRA_DEBUG` and `ELEKTRA_VERBOSE` are not available anymore.
 
 Thanks to:
-- Thomas Waser for pointing to RTLD_NODELETE
-- Gabriel Rauter for fixing qt-gui with -DENABLE_DEBUG=ON
+- Thomas Waser for pointing to `RTLD_NODELETE`
+- Gabriel Rauter for fixing qt-gui with `-DENABLE_DEBUG=ON`
 
 
-The constants plugin was updated to provide cmake/ENABLE_LOGGER cmake/ENABLE_DEBUG
-and will no longer provide cmake/ELEKTRA_DEBUG_BUILD cmake/ELEKTRA_VERBOSE_BUILD
+The constants plugin was updated to provide `cmake/ENABLE_LOGGER` `cmake/ENABLE_DEBUG`
+and will no longer provide `cmake/ELEKTRA_DEBUG_BUILD` `cmake/ELEKTRA_VERBOSE_BUILD`
 
 
 ## Other
 
 - Gabriel Rauter is now listed in
   [AUTHORS](https://github.com/elektrainitiative/libelektra/tree/doc/AUTHORS)
-- libtool: remove not-implemented function resolveRecommends from header-file.
 - constants plugin: configure_file now uses current binary directory, not cluttering
   the main build directory.
 - fix ssize_t for VS2015,
   thanks to Gabriel Rauter
 - gtest: fix linking when using arch systemd-nspawn,
   thanks to Marvin Mall
-- LD_LIBRARY_PATH is added to lua and python bindings needed for Mac OS X,
+- `LD_LIBRARY_PATH` is added to lua and python bindings needed for Mac OS X,
   thanks to Mihael Pranjić
 - Fix external unit test for Ubuntu 15.04 by putting files before
   the flags,
@@ -402,8 +403,8 @@ and will no longer provide cmake/ELEKTRA_DEBUG_BUILD cmake/ELEKTRA_VERBOSE_BUILD
   format specifier of time_t more portable,
   thanks to René Schwaiger
 - many preparations for global plugins and mmap
-- in the constants plugin cmake/BUILTIN_PLUGIN_FOLDER, BUILTIN_DATA_FOLDER
-  and BUILTIN_EXEC_FOLDER were added.
+- in the constants plugin `cmake/BUILTIN_PLUGIN_FOLDER`, `BUILTIN_DATA_FOLDER`
+  and `BUILTIN_EXEC_FOLDER` were added.
 - doxygen is only run once during build,
   thanks to René Schwaiger
 - add script configure-home to build Elektra
@@ -423,7 +424,7 @@ and will no longer provide cmake/ELEKTRA_DEBUG_BUILD cmake/ELEKTRA_VERBOSE_BUILD
 As always, the ABI and API is fully forward- and backward-compatible, i.e. programs
 compiled against an older 0.8 version of Elektra will continue to work
 (ABI) and you will be able to recompile every program without errors
-(API). You can even compile programs against 0.8.17 and run with 0.8.16.
+(API). This time you can even compile programs against 0.8.17 and run with 0.8.16.
 
 For the qt-gui the svg module is added as dependency.
 
@@ -443,11 +444,14 @@ Renamed files:
 - `applications/org.elektra.elektra-qt.desktop` got renamed to
   `applications/org.libelektra.elektra-qt-editor.desktop`.
 
-(Temporarily) removed files:
+Removed files:
 
 - Some of the installed "test data" actually was source code from
   Elektra. Test data from the following plugins is affected:
   `hosts`, `ini`, `lineendings`, 
+
+Temporarily removed files:
+
 - `testmod_lua`, `testmod_python` and `testmod_python2` do not work in a shared build
   and are temporarily disabled if `BUILD_SHARED` is enabled.
   Also their test data is affected.
@@ -460,6 +464,10 @@ You can download the release from
 and now also [here on github](https://github.com/ElektraInitiative/ftp/tree/master/releases/elektra-0.8.17.tar.gz)
 
 - name: elektra-0.8.17.tar.gz
+- size: 2459542
+- md5sum: e53efdb9a5e0852c58b21280b1e6c07d
+- sha1: a1abcd4ac5aabfc60c34da98a02c4636e4634b5c
+- sha256: a6a41afb0160feef84f7d1e0d199da26022ff8cb52ed455a0d306b589838d8f5
 
 
 This release tarball now is also available
@@ -477,11 +485,18 @@ to always get the release notifications.
 For any questions and comments, please contact the
 [Mailing List](https://lists.sourceforge.net/lists/listinfo/registry-list)
 the issue tracker [on github](http://git.libelektra.org/issues)
-or by mail elektra@markus-raab.org.
+or by email elektra@markus-raab.org.
 
 [Permalink to this NEWS entry](http://doc.libelektra.org/news/e6153a39-c4bd-41c3-bc86-785d451eb6c5.html)
 
 For more information, see [http://libelektra.org](http://libelektra.org)
+
+Best regards,
+Markus
+
+
+
+
 
 
 
