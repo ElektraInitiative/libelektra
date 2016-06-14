@@ -14,7 +14,7 @@ person we are looking for.
 
 It would be a great help if you take this survey:
 
-http://elektra.limequery.org/625192
+[survey](http://elektra.limequery.org/625192)
 
 It will be available till 18.07.2016 (anywhere on earth).
 
@@ -44,14 +44,16 @@ The three main points relevant for most people are:
    - use the value of other configuration values (symbolic links)
    - calculate the values based on other configuration values
    - validation configuration files
-   - [generate code based on it](/src/tools/gen)
-   - [and much more](/src/plugins/README.md)
+   - [generate code based on it](https://github.com/elektrainitiative/libelektra/tree/master/src/tools/gen)
+   - [and much more](https://github.com/elektrainitiative/libelektra/tree/master/src/plugins/README.md)
 
-Read more about [Why using Elektra](/doc/WHY.md),
+Read more about [Why using Elektra](https://github.com/elektrainitiative/libelektra/tree/master/doc/WHY.md),
 which also contains since this release unique features,
 further reasons and limitations.
 
-For a small demo see https://asciinema.org/a/cantr04assr4jkv8v34uz9b8r
+For a small demo see here
+
+[![asciicast](https://asciinema.org/a/cantr04assr4jkv8v34uz9b8r.png)](https://asciinema.org/a/cantr04assr4jkv8v34uz9b8r)
 
 ## Highlights
 
@@ -92,7 +94,7 @@ the scripts.
    * `kdb find-tools -d DATE` to search for a creation date.
    * `kdb find-tools -e EXECUTE` to search for a type.
 
-Developers should now [add MetaData for their scripts.](https://github.com/elektrainitiative/libelektra/tree/scripts/README.md).
+Developers should now [add MetaData for their scripts.](https://github.com/elektrainitiative/libelektra/tree/master/scripts/README.md).
 
 Thanks to Kurt Micheli!
 
@@ -125,7 +127,7 @@ making it. For example:
 * jenkins build [icc](http://build.libelektra.org:8080/job/elektra-icc/) please
 * jenkins build [local-installation](http://build.libelektra.org:8080/job/elektra-local-installation/) please
 
-For a full list see [here](https://github.com/elektrainitiative/libelektra/tree/doc/GIT.md).
+For a full list see [here](https://github.com/elektrainitiative/libelektra/tree/master/doc/GIT.md).
 
 Thanks to Mihael Pranjić for the setup!
 
@@ -204,7 +206,7 @@ and fixes:
   thanks to Kurt Micheli
 
 See more about changes to plugin adding in cmake in the
-[plugin decision](https://github.com/elektrainitiative/libelektra/tree/cmake_plugins.md).
+[plugin decision](https://github.com/elektrainitiative/libelektra/tree/master/cmake_plugins.md).
 
 ## Experimental GSettings support
 
@@ -225,7 +227,7 @@ This includes notification support if you have your `/sw` mounted with the dbus 
 Please report any bugs you encounter.
 
 For further information regarding the status of the implementations
-please refer to the corresponding [README](https://github.com/elektrainitiative/libelektra/tree/gsettings-backend/src/bindings/gsettings)
+please refer to the corresponding [README](https://github.com/elektrainitiative/libelektra/tree/master/gsettings-backend/src/bindings/gsettings)
 and [ticket](https://github.com/ElektraInitiative/libelektra/issues/775).
 
 ## Common Provider Names
@@ -337,7 +339,7 @@ one can go back to previous behavior.
 
 - improve documentation about how to pop a key
 - document how to avoid running test cases as root in
-  [TESTING.md](https://github.com/elektrainitiative/libelektra/tree/doc/TESTING.md).
+  [TESTING.md](https://github.com/elektrainitiative/libelektra/tree/master/doc/TESTING.md).
 - document guarantees of `elektraPluginGetData`,
   thanks to Marvin Mall
 - doc mentions that -1 should be returned
@@ -347,8 +349,8 @@ one can go back to previous behavior.
 - describe preferences when plugins are included/excluded
 - improvements in `ksCopy`, `ksPop`, `kdbGet` and `kdbSet`
   [API description](http://doc.libelektra.org/api/0.8.17/html/)
-- added [WHY document](https://github.com/elektrainitiative/libelektra/tree/doc/WHY.md)
-- updated [plugin decision](https://github.com/elektrainitiative/libelektra/tree/cmake_plugins.md) to include 3rd phase
+- added [WHY document](https://github.com/elektrainitiative/libelektra/tree/master/doc/WHY.md)
+- updated [plugin decision](https://github.com/elektrainitiative/libelektra/tree/master/doc/decisions/cmake_plugins.md) to include 3rd phase
 
 ## ELEKTRA_DEBUG build
 
@@ -381,7 +383,7 @@ and will no longer provide `cmake/ELEKTRA_DEBUG_BUILD` `cmake/ELEKTRA_VERBOSE_BU
 ## Other
 
 - Gabriel Rauter is now listed in
-  [AUTHORS](https://github.com/elektrainitiative/libelektra/tree/doc/AUTHORS)
+  [AUTHORS](https://github.com/elektrainitiative/libelektra/tree/master/doc/AUTHORS)
 - constants plugin: configure_file now uses current binary directory, not cluttering
   the main build directory.
 - fix ssize_t for VS2015,
