@@ -32,10 +32,9 @@ further reasons and limitations.
 ## Highlights
 
 - Qt-Gui reworked mounting and native icons
-- Full Mac OS X Support
-- Build Server improvements
-- beginner friendly tasks
-- allow to mount json and xml (and other common provider names)
+- Full Mac OS X Support, Build Server improvements
+  and new beginner friendly tasks
+- allows us to mount csv, json and xml (and other common provider names)
   without needing to know plugin names
 - colored output for kdb tools
 - Experimental GSettings support
@@ -43,17 +42,17 @@ further reasons and limitations.
 
 ## Beginner friendly tasks
 
-In this release developing Elektra could much easier
-as described in the release notes:
+In this release starting developing Elektra gets easier:
 
-- cmake-side of a plugin is improved, in most cases it
-  should be not more than calling a single function,
-  even if unit tests are present
 - ELEKTRA_DEBUG adds run-time checks and makes stack traces
   as if Elektra would not use plugins
+- CMakeLists.txt for plugins got simplified, in most cases it
+  should be not more than calling a single function,
+  even if unit tests are present
 - We prepared [beginner friendly tasks](https://github.com/ElektraInitiative/libelektra/issues?q=is%3Aissue+is%3Aopen+label%3A%22beginner+friendly%22)
   for you.
 
+For details, see below.
 
 
 
@@ -79,7 +78,7 @@ Because of its POSIX support one might think it would be trivial
 to support Mac OS X. Unfortunately there were many small issues,
 especially in the regular expression handling and the filesystem.
 
-Nevertheless we finally fully support it and the newly added
+Nevertheless we finally fully support Mac OS X and the newly added
 travis build server makes sure it will stay this way.
 
 A huge thanks to Manuel Mausz and Mihael Pranjić for fixing the
@@ -102,7 +101,7 @@ making it. For example:
 * jenkins build [icc](http://build.libelektra.org:8080/job/elektra-icc/) please
 * jenkins build [local-installation](http://build.libelektra.org:8080/job/elektra-local-installation/) please
 
-For a full list see [https://github.com/elektrainitiative/libelektra/tree/doc/GIT.md]()
+For a full list see [here](https://github.com/elektrainitiative/libelektra/tree/doc/GIT.md).
 
 Thanks to Mihael Pranjić for the setup!
 
