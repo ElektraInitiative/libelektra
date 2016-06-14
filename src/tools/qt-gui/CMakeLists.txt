@@ -3,7 +3,7 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(DISCOUNT_FIND_QUIETLY ON)
 
 set(QCOMPONENTS Core Quick Gui Qml Widgets Test)
-find_package(Qt5 COMPONENTS ${QCOMPONENTS})
+find_package(Qt5 COMPONENTS ${QCOMPONENTS} OPTIONAL_COMPONENTS Svg)
 find_package(Discount)
 
 if (NOT Qt5_FOUND)
@@ -11,6 +11,10 @@ if (NOT Qt5_FOUND)
 elseif (NOT DISCOUNT_FOUND)
 	remove_tool(qt-gui "discount or libmarkdown-dev not found")
 else()
+
+if (NOT Qt5Svg_FOUND)
+	message(STATUS "No Qt5 svg module found. Svg icons themes will not be supported.")
+endif ()
 
 include_directories (
 	${CMAKE_SOURCE_DIR}
