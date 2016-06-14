@@ -159,6 +159,7 @@ And in terms of quality, we want:
 
 ## News ##
 
+ - [14 Jun 2016 0.8.17](http://doc.libelektra.org/news/e6153a39-c4bd-41c3-bc86-785d451eb6c5.html) survey, usability improvements
  - [29 Apr 2016 0.8.16](http://doc.libelektra.org/news/9c9247ee-ee9c-4f4a-a68e-76959def9b82.html) stability improvements
  - [16 Feb 2016 0.8.15](http://doc.libelektra.org/news/1ab4a560-c286-46d2-a058-1a8e7e208fe8.html) lib split, improved mount
  - [19 Nov 2015 0.8.14](http://doc.libelektra.org/news/519cbfac-6db5-4594-8a38-dec4c84b134f.html) adds docu and plugins

@@ -1,7 +1,5 @@
 # 0.8.17 Release
 
-In preparation and not yet released!
-
 - guid: e6153a39-c4bd-41c3-bc86-785d451eb6c5
 - author: Markus Raab
 - pubDate: Tue, 14 Jun 2016 08:32:44 +0200
