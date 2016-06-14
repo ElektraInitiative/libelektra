@@ -482,11 +482,13 @@ endmacro()
 
 macro(removal ELEMENTS TO_REMOVE_ELEMENTS)
 	set(MY_ELEMENTS ${${ELEMENTS}})
-	list(REMOVE_DUPLICATES MY_ELEMENTS)
-	foreach(B ${${TO_REMOVE_ELEMENTS}})
-		list(REMOVE_ITEM MY_ELEMENTS ${B})
-	endforeach(B)
-	set(${ELEMENTS} ${MY_ELEMENTS})
+	if (${ELEMENTS})
+		list(REMOVE_DUPLICATES MY_ELEMENTS)
+		foreach(B ${${TO_REMOVE_ELEMENTS}})
+			list(REMOVE_ITEM MY_ELEMENTS ${B})
+		endforeach(B)
+		set(${ELEMENTS} ${MY_ELEMENTS})
+	endif(${ELEMENTS})
 endmacro()
 
 
