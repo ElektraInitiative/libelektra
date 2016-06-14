@@ -7,6 +7,30 @@ In preparation and not yet released!
 - pubDate: Tue, 14 Jun 2016 08:32:44 +0200
 
 
+## Survey
+
+First off: We created a survey questionnaire to gather more knowledge
+about the relevance of configuration systems.  If you are involved in
+the development of free and open source software (FLOSS) you are the
+person we are looking for.
+
+It would be a great help if you take this survey:
+
+http://elektra.limequery.org/625192
+
+It will be available till 18.07.2016 (anywhere on earth).
+
+For every thoroughly and not anonymously finished survey € 40 cent
+will be donated to one of the following organizations of your choice:
+
+- SPI (General Donation: 0 A.D., LibreOffice, Debian, ArchLinux, …)
+- FSFE
+- GNOME
+- KDE
+- LimeSurvey (LimeService, kindly hosts this survey)
+- Mozilla (Firefox)
+- Wikimedia Foundation (Wikipedia)
+
 ## Why should I use Elektra? ##
 
 The three main points relevant for most people are:
