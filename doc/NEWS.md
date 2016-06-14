@@ -206,7 +206,7 @@ and fixes:
   thanks to Kurt Micheli
 
 See more about changes to plugin adding in cmake in the
-[plugin decision](https://github.com/elektrainitiative/libelektra/tree/master/cmake_plugins.md).
+[plugin decision](https://github.com/elektrainitiative/libelektra/tree/master/doc/decisions/cmake_plugins.md).
 
 ## Experimental GSettings support
 
@@ -227,7 +227,7 @@ This includes notification support if you have your `/sw` mounted with the dbus 
 Please report any bugs you encounter.
 
 For further information regarding the status of the implementations
-please refer to the corresponding [README](https://github.com/elektrainitiative/libelektra/tree/master/gsettings-backend/src/bindings/gsettings)
+please refer to the corresponding [README](https://github.com/elektrainitiative/libelektra/tree/master/src/bindings/gsettings)
 and [ticket](https://github.com/ElektraInitiative/libelektra/issues/775).
 
 ## Common Provider Names
@@ -463,7 +463,7 @@ Temporarily removed files:
 
 You can download the release from
 [here](http://www.libelektra.org/ftp/elektra/releases/elektra-0.8.17.tar.gz)
-and now also [here on github](https://github.com/ElektraInitiative/ftp/tree/master/releases/elektra-0.8.17.tar.gz)
+and also [here on github](https://github.com/ElektraInitiative/ftp/tree/master/releases/elektra-0.8.17.tar.gz)
 
 - name: elektra-0.8.17.tar.gz
 - size: 2459542
