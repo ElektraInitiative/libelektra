@@ -1,11 +1,6 @@
 include (LibAddPlugin)
 
-if (DEPENDENCY_PHASE)
-	find_package (Threads)
-	add_plugintest (resolver)
-endif ()
-
-set (SOURCES resolver.h resolver.c filename.c)
+find_package (Threads)
 
 if (KDB_DEFAULT_RESOLVER MATCHES "resolver_.*")
 	set (RESOLVERS "${KDB_DEFAULT_RESOLVER}") # default resolver
@@ -60,10 +55,12 @@ foreach (plugin ${RESOLVERS})
 		string(FIND "${variant_base}" "m" out_var_n)
 		if (NOT "${out_var_n}" EQUAL "-1")
 			set (FURTHER_DEFINITIONS ${FURTHER_DEFINITIONS} "ELEKTRA_LOCK_MUTEX")
-			set(FURTHER_LIBRARIES ${FURTHER_LIBRARIES}
+			set (FURTHER_LIBRARIES ${FURTHER_LIBRARIES}
 				${CMAKE_THREAD_LIBS_INIT}
 				${CMAKE_REALTIME_LIBS_INIT})
 		endif ()
+
+		set (SOURCES resolver.h resolver.c filename.c)
 
 		add_plugin(${plugin}
 			SOURCES
@@ -78,6 +75,14 @@ foreach (plugin ${RESOLVERS})
 				ELEKTRA_PLUGIN_NAME=\"${plugin}\"
 				${FURTHER_DEFINITIONS}
 			)
+
+		if (variant MATCHES "fm_hpu_b")
+			add_plugintest (resolver
+				LINK_LIBRARIES
+					${FURTHER_LIBRARIES}
+				LINK_PLUGIN
+					resolver_fm_hpu_b
+				)
+		endif ()
 	endif()
 endforeach(plugin)
-

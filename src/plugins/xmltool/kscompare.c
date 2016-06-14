@@ -99,7 +99,7 @@ ssize_t ksGetCommonParentName (const KeySet * working, char * returnedCommonPare
 			{
 				*returnedCommonParent = 0;
 				parentSize = 0;
-				break; /* Better don't make comparision with parentSize-1 now */
+				break; /* Better don't make comparison with parentSize-1 now */
 			}
 		}
 		else

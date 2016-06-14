@@ -11,9 +11,6 @@ add_plugin (hosts
 		elektra-ease
 		elektra-proposal
 		elektra-meta
+	ADD_TEST
+	INSTALL_TEST_DATA
 	)
-
-
-install (DIRECTORY hosts DESTINATION ${TARGET_TEST_DATA_FOLDER})
-
-add_plugintest(hosts)

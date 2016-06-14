@@ -1,7 +1,7 @@
 - infos = Information about crypto plugin is in keys below
 - infos/author = Peter Nirschl <peter.nirschl@gmail.com>
 - infos/licence = BSD
-- infos/provides = filefilter
+- infos/provides = filefilter crypto
 - infos/needs =
 - infos/recommends =
 - infos/placements = postgetstorage presetstorage
@@ -125,6 +125,16 @@ The following example configuration illustrates this concept:
 	system/elektra/crypto/config/key-file/path/#1 = /etc/elektra/id_aes
 
 Only keys marked with a certain meta-key will be considered for encryption/decryption.
+
+## Configuration ##
+
+The following key must be set to `"1"` within the plugin configuration,
+if the plugin should shut down the crypto library:
+
+	/shutdown
+
+Per default shutdown is disabled to prevent applications like the qt-gui from crashing.
+Shutdown is enabled in the unit tests to prevent memory leaks.
 
 ## Examples ##
 

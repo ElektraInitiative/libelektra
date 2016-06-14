@@ -24,6 +24,8 @@ The best plugins will be the last in the list.
   `infos/status` clause in the contract.
 - `-0`, `--null`:
   Use binary 0 termination
+- `-C`, `--color`=[when]:
+  Print never/auto(default)/always colored output.
 
 ## EXAMPLES
 

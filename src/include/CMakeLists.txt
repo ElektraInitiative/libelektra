@@ -24,6 +24,10 @@ check_type_size("long long"     SIZEOF_LONG_LONG)
 check_type_size("long double"   SIZEOF_LONG_DOUBLE)
 check_type_size(mode_t          SIZEOF_MODE_T)
 
+set(CMAKE_EXTRA_INCLUDE_FILES "sys/time.h")
+	check_type_size("((struct timeval*)0)->tv_usec" SIZEOF_TV_USEC)
+set(CMAKE_EXTRA_INCLUDE_FILES)
+
 set (BUILTIN_EXEC_FOLDER
 	"${CMAKE_INSTALL_PREFIX}/${TARGET_TOOL_EXEC_FOLDER}")
 set (BUILTIN_DATA_FOLDER
@@ -35,6 +39,8 @@ set (ELEKTRA_UNUSED "__attribute__ ((unused))")
 
 set (BUILTIN_SPEC_FOLDER
 	"${CMAKE_INSTALL_PREFIX}/${KDB_DB_SPEC}")
+set (BUILTIN_SPEC_REAL_FOLDER
+    "${KDB_DB_SPEC}")
 
 configure_file (
 	"${CMAKE_CURRENT_SOURCE_DIR}/kdb.h.in"
@@ -66,3 +72,10 @@ install (FILES
 	kdbproposal.h
 	"${CMAKE_CURRENT_BINARY_DIR}/kdbversion.h"
 	DESTINATION include/${TARGET_INCLUDE_FOLDER})
+
+
+
+add_custom_target(
+    elektra_config_headers ALL
+    DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/kdb.h ${CMAKE_CURRENT_BINARY_DIR}/kdbconfig.h ${CMAKE_CURRENT_BINARY_DIR}/kdbversion.h
+)

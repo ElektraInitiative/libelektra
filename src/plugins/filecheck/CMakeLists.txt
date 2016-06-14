@@ -2,11 +2,8 @@ include (LibAddMacros)
 if (DEPENDENCY_PHASE)
 	find_package (Iconv)
 
-	if (ICONV_FOUND)
-		install(DIRECTORY filecheck DESTINATION ${TARGET_TEST_DATA_FOLDER})
-		add_plugintest (filecheck)
-	else ()
-		remove_plugin(filecheck "Can't find iconv library")
+	if (NOT ICONV_FOUND)
+		remove_plugin(filecheck "Cannot find iconv library")
 	endif ()
 endif ()
 
@@ -18,4 +15,6 @@ add_plugin (filecheck
 		${ICONV_INCLUDE_DIR}	
 	LINK_LIBRARIES
 		${ICONV_LIBRARIES}
+	ADD_TEST
+	INSTALL_TEST_DATA
 )

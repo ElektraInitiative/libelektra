@@ -23,6 +23,8 @@
 #include <string>
 #include <vector>
 
+#include "ansicolors.hpp"
+
 class Command;
 
 namespace kdb
@@ -78,6 +80,7 @@ public:
 	std::string plugins;
 	std::string globalPlugins;
 	std::string pluginsConfig;
+	std::string color; /*!< colormode "never", "always" and "auto" to print color if output channel is a tty */
 	std::string ns;
 	std::string editor;
 

@@ -4,14 +4,9 @@ if (DEPENDENCY_PHASE)
 		"${PROJECT_SOURCE_DIR}/src/plugins/line/testgetline.c"
 		)
 
-	if (COMPAT_GETLINE)
-		install(DIRECTORY line DESTINATION ${TARGET_TEST_DATA_FOLDER})
-
-		add_plugintest (line)
-	else (COMPAT_GETLINE)
+	if (NOT COMPAT_GETLINE)
 		remove_plugin (line "Unable to use getline function. Check libc version, should be higher than 4.6.27.")
-
-	endif (COMPAT_GETLINE)
+	endif ()
 endif ()
 
 add_plugin (line
@@ -20,4 +15,11 @@ add_plugin (line
 		line.c
 	LINK_ELEKTRA
 		elektra-ease
+	INSTALL_TEST_DATA
 	)
+
+if (ADDTESTING_PHASE)
+	add_plugintest (line
+		INSTALL_TEST_DATA
+			)
+endif ()

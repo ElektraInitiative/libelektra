@@ -58,6 +58,11 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 	set (CXX_EXTRA_FLAGS "${CXX_EXTRA_FLAGS} -Wold-style-cast")
 
 	message (STATUS "Clang detected")
+
+	if (ENABLE_DEBUG)
+		set (EXTRA_FLAGS "${EXTRA_FLAGS} -fsanitize=undefined -fsanitize=integer")
+		set (CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -fsanitize=undefined -fsanitize=integer")
+	endif()
 endif()
 
 if (CMAKE_COMPILER_IS_GNUCXX)

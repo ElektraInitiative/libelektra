@@ -10,6 +10,7 @@
 
 #include <errno.h>
 #include <kdbproposal.h>
+#include <kdbtypes.h>
 #include <libgen.h>
 #include <pwd.h>
 #include <stdbool.h>
@@ -75,7 +76,7 @@ static void elektraGenTempFilename (char * where, const char * filename)
 	struct timeval tv;
 	gettimeofday (&tv, 0);
 	size_t len = sprintf (where, "%s", filename);
-	snprintf (where + len, POSTFIX_SIZE - 1, ".%d:%ld.%ld.tmp", getpid (), tv.tv_sec, tv.tv_usec);
+	snprintf (where + len, POSTFIX_SIZE - 1, ".%d:%ld." ELEKTRA_TIME_USEC_F ".tmp", getpid (), tv.tv_sec, tv.tv_usec);
 }
 /**
  * @brief Given filename, calcualtes dirname+tempfile
@@ -96,14 +97,30 @@ static void elektraResolveFinishByFilename (resolverHandle * p)
 }
 
 
-static int elektraResolveSystemBuildin (resolverHandle * p)
+static int elektraResolvePasswdHome (resolverHandle * p, Key * warningsKey);
+
+static int elektraResolveSystemBuildin (resolverHandle * p, Key * warningsKey)
 {
 	size_t filenameSize = sizeof (KDB_DB_SYSTEM) + strlen (p->path) + sizeof ("/") + 1;
-	p->filename = elektraMalloc (filenameSize);
-	strcpy (p->filename, KDB_DB_SYSTEM);
-	strcat (p->filename, "/");
-	strcat (p->filename, p->path);
-
+	if (KDB_DB_SYSTEM[0] == '~')
+	{
+		const char * oldPath = p->path;
+		char * path = elektraMalloc (filenameSize);
+		strcpy (path, KDB_DB_SYSTEM);
+		strcat (path, "/");
+		strcat (path, p->path);
+		p->path = path;
+		elektraResolvePasswdHome (p, warningsKey);
+		elektraFree (path);
+		p->path = oldPath;
+	}
+	else
+	{
+		p->filename = elektraMalloc (filenameSize);
+		strcpy (p->filename, KDB_DB_SYSTEM);
+		strcat (p->filename, "/");
+		strcat (p->filename, p->path);
+	}
 	elektraResolveFinishByFilename (p);
 	return 1;
 }
@@ -236,7 +253,7 @@ static int elektraResolveSystem (char variant, resolverHandle * p, Key * warning
 	case 'x':
 		return elektraResolveSystemXDG (p, warningsKey);
 	case 'b':
-		return elektraResolveSystemBuildin (p);
+		return elektraResolveSystemBuildin (p, warningsKey);
 		// TODO: also document in doc/COMPILE.md
 	}
 	return -1;
@@ -394,9 +411,9 @@ static int elektraResolveBuildin (resolverHandle * p)
 static int elektraResolveSpec (resolverHandle * p, Key * warningsKey ELEKTRA_UNUSED)
 {
 	size_t filenameSize = sizeof (KDB_DB_SPEC) + strlen (p->path) + sizeof ("/") + 1;
-	p->filename = elektraMalloc (filenameSize);
 	if (p->path[0] == '/')
 	{
+		p->filename = elektraMalloc (filenameSize);
 		strcpy (p->filename, p->path);
 	}
 	else if (p->path[0] == '~')
@@ -405,11 +422,26 @@ static int elektraResolveSpec (resolverHandle * p, Key * warningsKey ELEKTRA_UNU
 	}
 	else
 	{
-		strcpy (p->filename, KDB_DB_SPEC);
-		strcat (p->filename, "/");
-		strcat (p->filename, p->path);
+		if (KDB_DB_SPEC_REAL[0] == '~')
+		{
+			const char * oldPath = p->path;
+			char * path = elektraMalloc (filenameSize);
+			strcpy (path, KDB_DB_SPEC_REAL);
+			strcat (path, "/");
+			strcat (path, p->path);
+			p->path = path;
+			elektraResolvePasswdHome (p, warningsKey);
+			elektraFree (path);
+			p->path = oldPath;
+		}
+		else
+		{
+			p->filename = elektraMalloc (filenameSize);
+			strcpy (p->filename, KDB_DB_SPEC);
+			strcat (p->filename, "/");
+			strcat (p->filename, p->path);
+		}
 	}
-
 	elektraResolveFinishByFilename (p);
 	return 1;
 }

@@ -23,6 +23,8 @@ This command will either print the value of the key it retrives or a default val
   Print version info.
 - `-p`, `--profile`=<profile>:
   Use a different kdb profile.
+- `-C`, `--color`=[when]:
+  Print never/auto(default)/always colored output.
 
 
 ## EXAMPLES

@@ -14,11 +14,12 @@ In order to compile and use the new `qt-gui` there are a few dependencies which 
 - qt5.3 or greater
 - libdrm-dev
 - libdiscount (libmarkdown2-dev)
+- the following qt5 modules: `declarative` `quickcontrols` `svg`
 
 Additionally, you may need `qtdeclarative5-dev` which is available in `wheezy-backports`.
 
 I was able to install the correct dependencies on my system, running Kubuntu 14.10 using the command:	
-`sudo apt-get install qt5-default qml-module-qtquick-controls qml-module-qtquick-dialogs qml-module-qtquick-layouts qml-module-qtgraphicaleffects libdrm-dev libmarkdown2-dev`
+`sudo apt-get install qt5-default qml-module-qtquick-controls qml-module-qtquick-dialogs qml-module-qtquick-layouts qml-module-qtgraphicaleffects libdrm-dev libmarkdown2-dev libqt5svg5-dev`
 
 
 

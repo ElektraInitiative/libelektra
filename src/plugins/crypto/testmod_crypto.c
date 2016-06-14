@@ -31,14 +31,23 @@ static const kdb_octet_t binVal[] = { 0x01, 0x02, 0x03, 0x04 };
 
 /**
  * @brief create new KeySet and add a working configuration to it.
+ * @param shutdown set to 1 if the shutdown key should be appended.
+ *                 If this key is set, the crypto library will be de cleaned up.
  */
-static KeySet * newWorkingConfiguration ()
+static KeySet * newWorkingConfiguration (int shutdown)
 {
 	Key * configKey = keyNew ("user/crypto/key", KEY_END);
 	keySetBinary (configKey, key, sizeof (key));
 
 	Key * configIv = keyNew ("user/crypto/iv", KEY_END);
 	keySetBinary (configIv, iv, sizeof (iv));
+
+	if (shutdown)
+	{
+		Key * configShutdown = keyNew ("user/shutdown", KEY_END);
+		keySetString (configShutdown, "1");
+		return ksNew (3, configKey, configIv, configShutdown, KS_END);
+	}
 
 	return ksNew (2, configKey, configIv, KS_END);
 }
@@ -124,7 +133,7 @@ static void test_init ()
 	elektraModulesInit (modules, 0);
 
 	// gcrypt tests
-	plugin = elektraPluginOpen ("crypto_gcrypt", modules, newWorkingConfiguration (), 0);
+	plugin = elektraPluginOpen ("crypto_gcrypt", modules, newWorkingConfiguration (0), 0);
 	if (plugin)
 	{
 		succeed_if (!strcmp (plugin->name, "crypto_gcrypt"), "got wrong name");
@@ -133,7 +142,7 @@ static void test_init ()
 	}
 
 	// OpenSSL tests
-	plugin = elektraPluginOpen ("crypto_openssl", modules, newWorkingConfiguration (), 0);
+	plugin = elektraPluginOpen ("crypto_openssl", modules, newWorkingConfiguration (0), 0);
 	if (plugin)
 	{
 		succeed_if (!strcmp (plugin->name, "crypto_openssl"), "got wrong name");
@@ -170,12 +179,12 @@ static void test_config_errors_internal (const char * pluginName, KeySet * plugi
 static void test_config_errors ()
 {
 	// gcrypt tests
-	test_config_errors_internal ("crypto_gcrypt", newWorkingConfiguration (), 1, "kdbSet failed with valid config");
+	test_config_errors_internal ("crypto_gcrypt", newWorkingConfiguration (0), 1, "kdbSet failed with valid config");
 	test_config_errors_internal ("crypto_gcrypt", newInvalidConfiguration (), -1, "kdbSet succeeded with invalid config");
 	test_config_errors_internal ("crypto_gcrypt", newIncompleteConfiguration (), -1, "kdbSet succeeded with incomplete config");
 
 	// OpenSSL tests
-	test_config_errors_internal ("crypto_openssl", newWorkingConfiguration (), 1, "kdbSet failed with valid config");
+	test_config_errors_internal ("crypto_openssl", newWorkingConfiguration (0), 1, "kdbSet failed with valid config");
 	test_config_errors_internal ("crypto_openssl", newInvalidConfiguration (), -1, "kdbSet succeeded with invalid config");
 	test_config_errors_internal ("crypto_openssl", newIncompleteConfiguration (), -1, "kdbSet succeeded with incomplete config");
 }
@@ -220,7 +229,7 @@ static void test_crypto_operations ()
 	elektraModulesInit (modules, 0);
 
 	// gcrypt tests
-	plugin = elektraPluginOpen ("crypto_gcrypt", modules, newWorkingConfiguration (), 0);
+	plugin = elektraPluginOpen ("crypto_gcrypt", modules, newWorkingConfiguration (0), 0);
 	if (plugin)
 	{
 		test_crypto_operations_internal (plugin, parentKey);
@@ -228,7 +237,8 @@ static void test_crypto_operations ()
 	}
 
 	// OpenSSL tests
-	plugin = elektraPluginOpen ("crypto_openssl", modules, newWorkingConfiguration (), 0);
+	// FINAL unit test -> call crypto cleanup code
+	plugin = elektraPluginOpen ("crypto_openssl", modules, newWorkingConfiguration (1), 0);
 	if (plugin)
 	{
 		test_crypto_operations_internal (plugin, parentKey);

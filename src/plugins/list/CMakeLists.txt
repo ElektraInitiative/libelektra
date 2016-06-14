@@ -6,6 +6,5 @@ add_plugin (list
 		list.c
 	LINK_ELEKTRA
 		elektra-kdb
+	ADD_TEST
 	)
-
-add_plugintest (list)

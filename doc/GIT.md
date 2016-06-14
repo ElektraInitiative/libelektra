@@ -12,15 +12,32 @@ make sure to do:
 	git config --global merge.ff false
 	git config merge.ff false
 
+## The Commit Message ##
+
+A commit message should have the following syntax:
+`component: short change description`
+
+For a clean and meaningful log the commit
+message should fullfil the following:
+
+- use imperative in the subject line
+- the subject line should not be longer than 50 characters
+- start the subject line with the module name (e.g. resolver:, cpp bindings:)
+- separate subject from body with a blank line
+- in the body describe in detail what you did, and possibly why
+- metadata like "Fixes #123" should be kept at the bottom of the commit message and definitely not in the title
+
+Most commits should have a longer description in the body.
+
 ## Remote Branches ##
 
 To list all remote branches use:
 
-	git-branch -a
+	git branch -a
 
 To checkout a remote branch initially use:
 
-	git-checkout -b <branchname> origin/<branchname>
+	git checkout -b <branchname> origin/<branchname>
 
 Once you have done this, it will be a local branch, too.
 Following remote branches should exist:
@@ -50,19 +67,19 @@ master.  (see config option above)
 
 You should always make your own feature branch with:
 
-	git-checkout -b <feature-branch-name>
+	git checkout -b <feature-branch-name>
 
 On this branch it is not so important that every
 commit compiles or all test cases run.
 
 To merge a branch use (no-fastforward):
 
-	git-merge --no-ff <branchname>
+	git merge --no-ff <branchname>
 
 If you already did some commits, but want them in a branch,
 you can do:
 
-	git-branch foo
+	git branch foo
 	git reset HEAD^^  (for 2 commits back)
 	git reset origin/master
 
@@ -71,7 +88,7 @@ you can do:
 ## Github ##
 
 When doing merge requests our [buildserver](http://build.libelektra.org:8080)
-will build authorized users. If you are not yet authorized following
+will build authorized users. If you are not yet authorized, the following
 question will be asked (by user markus2330):
 
 	Can one of the admins verify if this patch should be build?
@@ -97,8 +114,32 @@ or if just a single build of the mergerequest should be started:
 
 or if specific jobs should be started:
 
-	jenkins build bindings please
-	jenkins build ini please
+* jenkins build [bindings](http://build.libelektra.org:8080/job/elektra-test-bindings/) please
+* jenkins build [clang](http://build.libelektra.org:8080/job/elektra-clang/) please
+* jenkins build [fast](http://build.libelektra.org:8080/job/elektra-mergerequests-fast/) please
+* jenkins build [gcc](http://build.libelektra.org:8080/job/elektra-gcc/) please
+* jenkins build [gcc-configure-debian](http://build.libelektra.org:8080/job/elektra-gcc-configure-debian/) please
+* jenkins build [gcc-configure-debian-intree](http://build.libelektra.org:8080/job/elektra-gcc-configure-debian-intree/) please
+* jenkins build [gcc-configure-debian-musl](http://build.libelektra.org:8080/job/elektra-gcc-configure-debian-musl/) please
+* jenkins build [gcc-configure-debian-notest](http://build.libelektra.org:8080/job/elektra-gcc-configure-debian-notest/) please
+* jenkins build [gcc-configure-debian-shared](http://build.libelektra.org:8080/job/elektra-gcc-configure-debian-shared/) please
+* jenkins build [gcc-configure-debian-stretch](http://build.libelektra.org:8080/job/elektra-gcc-configure-debian-stretch/) please
+* jenkins build [gcc-configure-debian-wheezy](http://build.libelektra.org:8080/job/elektra-gcc-configure-debian-wheezy/) please
+* jenkins build [gcc-configure-xdg](http://build.libelektra.org:8080/job/elektra-gcc-configure-xdg/) please
+* jenkins build [gcc-i386](http://build.libelektra.org:8080/job/elektra-gcc-i386/) please
+* jenkins build [gcc47-all](http://build.libelektra.org:8080/job/elektra-gcc47-all/) please
+* jenkins build [git-buildpackage-jessie](http://build.libelektra.org:8080/job/elektra-git-buildpackage-jessie/) please
+* jenkins build [git-buildpackage-wheezy](http://build.libelektra.org:8080/job/elektra-git-buildpackage-wheezy/) please
+* jenkins build [icc](http://build.libelektra.org:8080/job/elektra-icc/) please
+* jenkins build [ini](http://build.libelektra.org:8080/job/elektra-ini-mergerequests/) please
+* jenkins build [local-installation](http://build.libelektra.org:8080/job/elektra-local-installation/) please
+* jenkins build [mingw64](http://build.libelektra.org:8080/job/elektra-gcc-configure-mingw-w64/) please
+* jenkins build [multiconfig-gcc-stable](http://build.libelektra.org:8080/job/elektra-multiconfig-gcc-stable/) please
+* jenkins build [multiconfig-gcc-unstable](http://build.libelektra.org:8080/job/elektra-multiconfig-gcc-unstable/) please
+* jenkins build [multiconfig-gcc47-cmake-options](http://build.libelektra.org:8080/job/elektra-multiconfig-gcc47-cmake-options/) please
+* jenkins build [source-package-test](http://build.libelektra.org:8080/job/elektra-source-package-test/) please
+* jenkins build [stable](http://build.libelektra.org:8080/job/elektra-mergerequests-stable/) please
+* jenkins build [unstable](http://build.libelektra.org:8080/job/elektra-mergerequests-unstable/) please
 
 If you want any configuration changes, please contact
 `Markus Raab <elektra@markus-raab.org>`.

@@ -69,9 +69,10 @@ set (REVERSE_DOMAIN org.libelektra)
 
 set (KDB_VERSION_MAJOR 0)
 set (KDB_VERSION_MINOR 8)
-set (KDB_VERSION_MICRO 16)
+set (KDB_VERSION_MICRO 17)
 
 set (KDB_VERSION "${KDB_VERSION_MAJOR}.${KDB_VERSION_MINOR}.${KDB_VERSION_MICRO}")
+message (STATUS "You are building Elektra ${KDB_VERSION}")
 
 set (SO_VERSION 4)
 set (SO_VERSION_TOOLS 0)
@@ -82,11 +83,13 @@ include (cmake/ElektraPackaging.cmake)
 
 #now add all directories
 add_subdirectory (cmake)
-add_subdirectory (scripts)
 
 if (BUILD_DOCUMENTATION)
 	add_subdirectory (doc)
 endif (BUILD_DOCUMENTATION)
+
+# add scripts after doc
+add_subdirectory (scripts)
 
 #is there anything to build except documentation?
 if (BUILD_FULL OR BUILD_STATIC OR BUILD_SHARED)

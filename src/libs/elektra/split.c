@@ -762,7 +762,7 @@ int elektraSplitSync (Split * split)
 			// Check if we are in correct state
 			if (split->handles[i]->specsize == -1)
 			{
-				return -i - 2;
+				return -(int)i - 2;
 			}
 			/* Check for spec keyset for removed keys */
 			if (split->handles[i]->specsize != ksGetSize (split->keysets[i]))
@@ -775,7 +775,7 @@ int elektraSplitSync (Split * split)
 			// Check if we are in correct state
 			if (split->handles[i]->dirsize == -1)
 			{
-				return -i - 2;
+				return -(int)i - 2;
 			}
 			/* Check for dir keyset for removed keys */
 			if (split->handles[i]->dirsize != ksGetSize (split->keysets[i]))
@@ -788,7 +788,7 @@ int elektraSplitSync (Split * split)
 			// Check if we are in correct state
 			if (split->handles[i]->usersize == -1)
 			{
-				return -i - 2;
+				return -(int)i - 2;
 			}
 			/* Check for user keyset for removed keys */
 			if (split->handles[i]->usersize != ksGetSize (split->keysets[i]))
@@ -801,7 +801,7 @@ int elektraSplitSync (Split * split)
 			// Check if we are in correct state
 			if (split->handles[i]->systemsize == -1)
 			{
-				return -i - 2;
+				return -(int)i - 2;
 			}
 			/* Check for system keyset for removed keys */
 			if (split->handles[i]->systemsize != ksGetSize (split->keysets[i]))
@@ -833,8 +833,9 @@ int elektraSplitSync (Split * split)
  */
 void elektraSplitPrepare (Split * split)
 {
-	for (size_t i = 0; i < split->size; ++i)
+	for (size_t i = 0; i < split->size;)
 	{
+		int inc = 1;
 		if ((split->syncbits[i] & 1) == 1)
 		{
 			KeySet * n = ksDeepDup (split->keysets[i]);
@@ -845,7 +846,8 @@ void elektraSplitPrepare (Split * split)
 		{
 			/* We don't need i anymore */
 			elektraSplitRemove (split, i);
-			--i;
+			inc = 0;
 		}
+		i += inc;
 	}
 }

@@ -3,6 +3,7 @@ import QtQuick.Controls 1.1
 import QtQuick.Dialogs 1.1
 import QtQuick.Window 2.1
 import QtQuick.Layouts 1.1
+import "HelperFunctions.js" as Helper
 
 BasicWindow {
 	id: dialog
@@ -31,13 +32,13 @@ BasicWindow {
 				id: icon
 				source: {
 					if (title === "Error")
-						"icons/dialog-error.png"
+						Helper.useIconSource("dialog-error")
 					else if (title === "Information")
-						"icons/dialog-information.png"
+						Helper.useIconSource("dialog-information")
 					else if (title === "Warning")
-						"icons/dialog-warning.png"
+						Helper.useIconSource("dialog-warning")
 					else
-						"icons/dialog-error.png"
+						Helper.useIconSource("dialog-error")
 				}
 			}
 

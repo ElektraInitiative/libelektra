@@ -75,7 +75,11 @@ elektraPluginFactory elektraModulesLoad (KeySet * modules, const char * name, Ke
 	strcat (moduleName, elektraPluginPostfix);
 
 	Module module;
-	module.handle = dlopen (moduleName, RTLD_NOW);
+	module.handle = dlopen (moduleName,
+#if DEBUG
+				RTLD_NODELETE |
+#endif
+					RTLD_NOW);
 
 	if (module.handle == NULL)
 	{

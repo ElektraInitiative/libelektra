@@ -37,6 +37,8 @@ This command returns the following exit statuses:
   Load plugin even if system/elektra is available.
 - `-c`, `--plugins-config`:
   Add a plugin configuration.
+- `-C`, `--color`=[when]:
+  Print never/auto(default)/always colored output.
 
 ## EXAMPLES
 

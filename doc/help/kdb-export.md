@@ -31,6 +31,8 @@ The `storage` plugin can be configured at compile-time or changed by the link `l
   Omit the `system/elektra` directory.
 - `-c`, `--plugins-config`=<pluginconfig>:
   Add a configuration to the format plugin.
+- `-C`, `--color`=[when]:
+  Print never/auto(default)/always colored output.
 
 ## KDB
 

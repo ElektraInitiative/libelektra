@@ -1,7 +1,7 @@
 - infos = Information about ni plugin is in keys below
 - infos/author = Markus Raab <elektra@libelektra.org>
 - infos/licence = BSD
-- infos/provides = storage
+- infos/provides = storage ini
 - infos/needs =
 - infos/placements = getstorage setstorage
 - infos/status = maintained libc

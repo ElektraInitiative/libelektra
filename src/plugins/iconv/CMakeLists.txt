@@ -1,10 +1,8 @@
 if (DEPENDENCY_PHASE)
 	find_package(Iconv)
 
-	if (ICONV_FOUND)
-		add_plugintest (iconv)
-	else ()
-		remove_plugin (iconv "Can't find iconv library")
+	if (NOT ICONV_FOUND)
+		remove_plugin (iconv "Cannot find iconv library")
 	endif ()
 endif ()
 
@@ -16,4 +14,5 @@ add_plugin (iconv
 		${ICONV_INCLUDE_DIR}	
 	LINK_LIBRARIES
 		${ICONV_LIBRARIES}
+	ADD_TEST
 )

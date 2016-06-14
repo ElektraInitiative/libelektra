@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=Elektra Qt Editor
+GenericName=Configuration Editor
+Comment=Directly edit your entire Elektra configuration with a Qt GUI
+TryExec=elektra-qt-editor
+Exec=elektra-qt-editor
+Terminal=false
+Type=Application
+Icon=elektra
+Categories=Elektra;System;Configuration;

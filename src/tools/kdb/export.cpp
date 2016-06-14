@@ -47,7 +47,11 @@ int ExportCommand::execute (Cmdline const & cl)
 	string format = cl.format;
 	if (argc > 1) format = cl.arguments[1];
 
+#ifdef _WIN32
+	string file = "CON";
+#else
 	string file = "/dev/stdout";
+#endif
 	if (argc > 2 && cl.arguments[2] != "-") file = cl.arguments[2];
 
 	Modules modules;

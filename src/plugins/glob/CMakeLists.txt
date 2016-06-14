@@ -4,6 +4,5 @@ add_plugin (glob
 	SOURCES
 		glob.h
 		glob.c
-	)	
-
-add_plugintest (glob)
+	ADD_TEST
+	)

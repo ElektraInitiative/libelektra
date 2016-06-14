@@ -4,6 +4,7 @@ import QtQuick.Window 2.1
 import QtQuick.Controls.Styles 1.1
 import QtQuick.Layouts 1.1
 import QtQuick.Dialogs 1.1
+import "HelperFunctions.js" as Helper
 
 RowLayout {
 
@@ -22,6 +23,7 @@ RowLayout {
 		action: Action {
 			text: qsTr("&Next")
 			iconSource: "icons/go-next.png"
+			iconName: Helper.useIcon("go-next")
 		}
 	}
 	Button {
@@ -30,6 +32,7 @@ RowLayout {
 		action: Action {
 			text: qsTr("&Cancel")
 			iconSource: "icons/dialog-cancel.png"
+			iconName: Helper.useIcon("dialog-cancel")
 		}
 	}
 }

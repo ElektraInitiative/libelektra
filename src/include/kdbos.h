@@ -148,6 +148,11 @@
 #include <limits.h>
 #include <sys/types.h>
 
+/* If MSVC use SSIZE_T type */
+#ifdef _MSC_VER
+#undef ssize_t
+typedef SSIZE_T ssize_t;
+#endif
 // # define usleep(x) Sleep(x)
 // # define ssize_t int
 // # define snprintf _snprintf

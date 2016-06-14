@@ -22,6 +22,7 @@ enum ElektraCryptoHeaderFlags
 
 #define ELEKTRA_CRYPTO_PARAM_KEY_PATH ("/crypto/key")
 #define ELEKTRA_CRYPTO_PARAM_IV_PATH ("/crypto/iv")
+#define ELEKTRA_CRYPTO_PARAM_SHUTDOWN ("/shutdown")
 #define ELEKTRA_CRYPTO_META_ENCRYPT ("crypto/encrypt")
 
 #if defined(ELEKTRA_CRYPTO_API_GCRYPT)

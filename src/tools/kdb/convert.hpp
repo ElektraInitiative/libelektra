@@ -10,6 +10,7 @@
 #define CONVERT_HPP
 
 #include <command.hpp>
+
 #include <kdb.hpp>
 
 class ConvertCommand : public Command
@@ -22,7 +23,7 @@ public:
 
 	virtual std::string getShortOptions () override
 	{
-		return "v";
+		return "vC";
 	}
 
 	virtual std::string getSynopsis () override

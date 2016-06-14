@@ -1,10 +1,11 @@
 import QtQuick 2.2
 import QtQuick.Layouts 1.1
 import QtQuick.Controls 1.1
+import "HelperFunctions.js" as Helper
 
 BasicWindow {
 
-	title: qsTr("About Elektra Editor")
+	title: qsTr("About Elektra Qt Editor")
 
 	width: Math.ceil(mainWindow.width*0.25)
 	height: Math.ceil(mainWindow.width*0.25)
@@ -16,11 +17,11 @@ BasicWindow {
 		RowLayout {
 			spacing: 2*defaultMargins
 			Image {
-				source: "icons/elektra-logo.png"
+				source: Helper.useIconSource("elektra")
 			}
 			Column {
 				Text {
-					text: "Elektra Editor"
+					text: "Elektra Qt Editor"
 					font.bold: true
 					color: activePalette.windowText
 				}
@@ -66,6 +67,7 @@ BasicWindow {
 						property string loose: "mailto:christian.loose@hamburg.de"
 						property string jens: "http://qt-project.org/forums/viewthread/30521/#146845"
 						property string ian: "mailto:easyxtarget@gmail.com"
+						property string gabriel: "mailto:rauter.gabriel@gmail.com"
 						readOnly: true
 						textFormat: TextEdit.RichText
 						textMargin: defaultMargins
@@ -74,10 +76,11 @@ BasicWindow {
 						frameVisible: false
 						text: "<html>" +
 							  "<style type=\"text/css\"></style>" +
-							  "<p>Elektra Editor designed and implemented by <a href=\"" + pancheri + "\">Raffael Pancheri</a></p>" +
+							  "<p>Elektra Qt Editor designed and implemented by <a href=\"" + pancheri + "\">Raffael Pancheri</a></p>" +
 							  "<p>DiscountMarkdownConverter used with kind permission by <a href=\"" + loose + "\">Christian Loose</a></p>" +
 							  "<p>TreeView based on code <a href=\"" + jens + "\">posted by Jens</a></p>" +
 							  "<p>Helptext by <a href=\"" + ian + "\">Ian Donelly</a></p>" +
+							  "<p>XDG Icon Theme support by <a href=\"" + gabriel + "\">Gabriel Rauter</a></p>" +
 							  "</html>"
 						onLinkActivated: {
 							Qt.openUrlExternally(link)

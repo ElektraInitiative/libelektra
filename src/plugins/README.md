@@ -130,6 +130,10 @@ Most filter plugins available now encode and decode values.
 Storage plugins that use characters to separate key names, values or
 metadata will not work without them.
 
+- [cachefilter](cachefilter/) stores filtered keys internally so that they
+  do not get accidentally lost and can be written to the storage again without
+  the user having to remember including them in the writeout
+
 ### Encoding ###
 
 Rewrite unwanted characters with different techniques:

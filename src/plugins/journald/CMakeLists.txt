@@ -1,17 +1,11 @@
 if (DEPENDENCY_PHASE)
 	find_package(SystemdJournal)
 
-	if (LIBSYSTEMD_JOURNAL_FOUND)
-
-		include (LibAddMacros)
-
-		#add_plugintest (journald)
-
-	else (LIBSYSTEMD_JOURNAL_FOUND)
+	if (NOT LIBSYSTEMD_JOURNAL_FOUND)
 
 		remove_plugin (journald "systemd-journal not found")
 
-	endif (LIBSYSTEMD_JOURNAL_FOUND)
+	endif ()
 endif ()
 
 add_plugin(journald

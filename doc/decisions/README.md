@@ -15,6 +15,7 @@ section here.
 - [Library Split](library_split.md)
 - [Bootstrap](bootstrap.md)
 - [Empty Files](empty_files.md)
+- [CMake Plugins](cmake_plugins.md)
 
 ## Decided
 
@@ -25,11 +26,11 @@ section here.
 
 - [CMake spec](cmake_spec.md)
 - [Definition of Bool](bool.md)
-- [Publish Subscribe](pubsub.md)
+- [Global Plugins](global_plugins.md)
 
 ## Drafts
 
 - [Specification](specification.md)
 - [Script Testing](script_testing.md)
 - [Null Pointer Checks](null_pointer_checks.md)
-- [Pub/Sub Communication](pubsub.md)
+- [Publish Subscribe](pubsub.md)

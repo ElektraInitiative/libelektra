@@ -37,6 +37,8 @@ This command will return the following values as an exit status:
   Use a different kdb profile.
 - `-n`, `--no-newline`:
   Suppress the newline at the end of the output.
+- `-C`, `--color`=[when]:
+  Print never/auto(default)/always colored output.
 
 ## EXAMPLES
 

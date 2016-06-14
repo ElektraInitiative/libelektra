@@ -11,7 +11,7 @@ public interface Elektra extends Library {
 	 * Overall native binding to the elektra library
 	 */
 	Elektra INSTANCE = (Elektra)
-		Native.loadLibrary(("libelektra.so"), Elektra.class);
+		Native.loadLibrary(("elektra"), Elektra.class);
 
 
 	/**************************************

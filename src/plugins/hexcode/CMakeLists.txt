@@ -4,6 +4,5 @@ add_plugin (hexcode
 	SOURCES
 		hexcode.h
 		hexcode.c
+	ADD_TEST
 	)
-
-add_plugintest (hexcode)

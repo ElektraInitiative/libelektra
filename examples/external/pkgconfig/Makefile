@@ -1,2 +1,2 @@
 application:application.c
-	gcc -o application `pkg-config --cflags --libs elektra` application.c
+	gcc application.c `pkg-config --cflags --libs elektra` -o application

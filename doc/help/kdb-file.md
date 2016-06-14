@@ -26,6 +26,8 @@ This command makes use of Elektra's `resolver` plugin which the uer can learn mo
   Suppress the newline at the end of the output.
 - `-N`, `--namespace`=<ns>:
   Specify the namespace to use when writing cascading keys.
+- `-C`, `--color`=[when]:
+  Print never/auto(default)/always colored output.
 
 ## KDB
 

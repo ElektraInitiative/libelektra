@@ -158,7 +158,7 @@ BasicWindow {
 		isEdited = false
 		accessFromSearchResults = false
 		qmlMetaKeyModel.clear()
-		selectedNode = null
+//		selectedNode = null
 		nameTextField.readOnly = false
 		nameTextField.textColor = activePalette.text
 	}

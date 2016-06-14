@@ -9,6 +9,7 @@
 #ifndef IMPORT_HPP
 #define IMPORT_HPP
 
+#include "coloredkdbio.hpp"
 #include <command.hpp>
 #include <kdb.hpp>
 
@@ -22,7 +23,7 @@ public:
 
 	virtual std::string getShortOptions () override
 	{
-		return "svc";
+		return "svcC";
 	}
 
 	virtual std::string getSynopsis () override

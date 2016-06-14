@@ -4,6 +4,7 @@ set(DISCOUNT_FIND_QUIETLY ON)
 
 set(QCOMPONENTS Core Quick Gui Qml Widgets Test)
 find_package(Qt5 COMPONENTS ${QCOMPONENTS})
+find_package(Qt5 OPTIONAL_COMPONENTS Svg QUIET)
 find_package(Discount)
 
 if (NOT Qt5_FOUND)
@@ -11,6 +12,10 @@ if (NOT Qt5_FOUND)
 elseif (NOT DISCOUNT_FOUND)
 	remove_tool(qt-gui "discount or libmarkdown-dev not found")
 else()
+
+if (NOT Qt5Svg_FOUND)
+	message(WARNING "No Qt5 svg module found. Svg icons themes will not be supported.")
+endif ()
 
 include_directories (
 	${CMAKE_SOURCE_DIR}
@@ -25,6 +30,7 @@ include_directories (
 	${Qt5Qml_INCLUDE_DIRS}
 	${Qt5Widgets_INCLUDE_DIRS}
 	${Qt5Test_INCLUDE_DIRS}
+	${Qt5Svg_INCLUDE_DIRS}
 	src/markdownconverter
 	)
 
@@ -49,12 +55,15 @@ target_link_libraries(qt-gui ${DISCOUNT_LIBRARIES})
 
 target_link_libraries(qt-gui ${Qt5Quick_LIBRARIES} ${Qt5Gui_LIBRARIES}
 	${Qt5Core_LIBRARIES} ${Qt5Qml_LIBRARIES} ${Qt5Widgets_LIBRARIES}
-	${Qt5Test_LIBRARIES})
+	${Qt5Svg_LIBRARIES} ${Qt5Test_LIBRARIES})
 tool_link_elektratools(qt-gui elektra-ease)
 
 install(TARGETS qt-gui DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
-install(FILES org.elektra.elektra-qt.desktop DESTINATION share/applications)
+install(PROGRAMS ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/qt-gui DESTINATION bin RENAME elektra-qt-editor)
+install(FILES org.libelektra.elektra-qt-editor.desktop DESTINATION share/applications)
+install(FILES org.libelektra.elektra-qt-editor.appdata.xml DESTINATION share/appdata)
 install(FILES ../../../doc/images/circle.svg DESTINATION share/icons/hicolor/scalable/apps RENAME elektra.svg)
+install(FILES ../../../doc/images/circle-symbolic.svg DESTINATION share/icons/hicolor/scalable/apps RENAME elektra-symbolic.svg)
 
 generate_manpage (kdb-qt-gui FILENAME ${CMAKE_CURRENT_SOURCE_DIR}/README.md)
 

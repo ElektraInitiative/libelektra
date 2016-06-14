@@ -1,5 +1,24 @@
 include (LibAddPlugin)
 
+if (ADDTESTING_PHASE)
+	set (COLLECTION_PHASE OFF)
+	set (DEPENDENCY_PHASE OFF)
+	set (ADDTESTING_PHASE ON)
+
+	foreach (plugin ${ADDED_DIRECTORIES})
+		set (CMAKE_CURRENT_SOURCE_DIR_TOPSAFE ${CMAKE_CURRENT_SOURCE_DIR})
+		set (CMAKE_CURRENT_BINARY_DIR_TOPSAFE ${CMAKE_CURRENT_BINARY_DIR})
+		set (PLUGIN_DIRECTORY_NAME ${plugin})
+		set (CMAKE_CURRENT_SOURCE_DIR "${CMAKE_SOURCE_DIR}/src/plugins/${plugin}")
+		set (CMAKE_CURRENT_BINARY_DIR "${CMAKE_BINARY_DIR}/src/plugins/${plugin}")
+		include ("${plugin}/CMakeLists.txt")
+		set (CMAKE_CURRENT_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR_TOPSAFE})
+		set (CMAKE_CURRENT_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR_TOPSAFE})
+	endforeach(plugin)
+	return ()
+endif ()
+
+
 generate_manpage (elektra-plugins FILENAME ${CMAKE_CURRENT_SOURCE_DIR}/README.md SECTION 7)
 
 set (COLLECTION_PHASE ON)
@@ -11,18 +30,20 @@ file (GLOB DIRECTORIES RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_SOUR
 foreach (plugin ${DIRECTORIES})
 	#message (STATUS ${plugin})
 	if (IS_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/${plugin} AND NOT ${plugin} STREQUAL CMakeFiles)
+		set (CMAKE_CURRENT_SOURCE_DIR_TOPSAFE ${CMAKE_CURRENT_SOURCE_DIR})
+		set (CMAKE_CURRENT_BINARY_DIR_TOPSAFE ${CMAKE_CURRENT_BINARY_DIR})
 		set (PLUGIN_DIRECTORY_NAME ${plugin})
+		set (CMAKE_CURRENT_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/${plugin}")
+		set (CMAKE_CURRENT_BINARY_DIR "${CMAKE_CURRENT_BINARY_DIR}/${plugin}")
 		include ("${plugin}/CMakeLists.txt")
+		set (CMAKE_CURRENT_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR_TOPSAFE})
+		set (CMAKE_CURRENT_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR_TOPSAFE})
 	endif ()
 endforeach(plugin)
 
 #
 # Now ADDED_DIRECTORIES and ADDED_PLUGINS is modified accordingly
 #
-
-list (SORT ADDED_DIRECTORIES)
-list (REMOVE_DUPLICATES ADDED_DIRECTORIES)
-
 
 set (COLLECTION_PHASE OFF)
 set (DEPENDENCY_PHASE ON)
@@ -37,8 +58,6 @@ foreach (plugin ${ADDED_DIRECTORIES})
 	endif ()
 endforeach(plugin)
 
-
-
 list (FIND ADDED_PLUGINS ${KDB_DEFAULT_STORAGE} output)
 if (output EQUAL -1)
 	message(SEND_ERROR "selected default storage (${KDB_DEFAULT_STORAGE})  is not selected in PLUGINS, please change KDB_DEFAULT_STORAGE or PLUGINS")
@@ -48,6 +67,7 @@ list (FIND ADDED_PLUGINS ${KDB_DEFAULT_RESOLVER} output)
 if (output EQUAL -1)
 	message(SEND_ERROR "selected default resolver (${KDB_DEFAULT_RESOLVER}) is not selected in PLUGINS, please change KDB_DEFAULT_RESOLVER or PLUGINS")
 endif()
+
 
 if (BUILD_SHARED)
 	mkdir (${CMAKE_LIBRARY_OUTPUT_DIRECTORY})
@@ -61,3 +81,4 @@ if (BUILD_SHARED)
 			libelektra-resolver.so
 			)
 endif (BUILD_SHARED)
+

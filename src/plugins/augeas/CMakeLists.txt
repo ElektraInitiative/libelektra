@@ -11,15 +11,9 @@ if (DEPENDENCY_PHASE)
 				-DLINK_LIBRARIES:PATH=${LIBAUGEAS_LIBRARIES}\;${LIBXML2_LIBRARIES}
 			)
 
-		if (HAS_LIBAUGEAS16)
-			include (LibAddMacros)
-
-			install(DIRECTORY augeas DESTINATION ${TARGET_TEST_DATA_FOLDER})
-
-			add_plugintest(augeas)
-		else (HAS_LIBAUGEAS16)
+		if (NOT HAS_LIBAUGEAS16)
 			remove_plugin (augeas "symbols aug_text_store and aug_text_retrieve not found. Make sure you have libaugeas 0.16 or higher. This library version is included in Augeas 1.0 or higher")
-		endif (HAS_LIBAUGEAS16)
+		endif (NOT HAS_LIBAUGEAS16)
 	else (LIBAUGEAS_FOUND AND LIBXML2_FOUND AND)
 		remove_plugin (augeas "augeas not found")
 	endif (LIBAUGEAS_FOUND AND LIBXML2_FOUND )
@@ -29,6 +23,8 @@ add_plugin(augeas
 	SOURCES
 		aug.h
 		augeas.c
+	ADD_TEST
+	INSTALL_TEST_DATA
 	INCLUDE_DIRECTORIES
 		${LIBAUGEAS_INCLUDE_DIR}
 		${LIBXML2_INCLUDE_DIR}
@@ -39,3 +35,7 @@ add_plugin(augeas
 		${LIBAUGEAS_LIBRARIES}
 		${LIBXML2_LIBRARIES}
 	)
+
+if (ADDTESTING_PHASE)
+	include (LibAddMacros)
+endif ()

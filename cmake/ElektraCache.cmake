@@ -74,6 +74,15 @@ if (BINDINGS MATCHES "ALL" OR FINDEX GREATER -1)
 	set (BINDINGS_FORCE FORCE)
 endif ()
 
+list (FIND BINDINGS "gsettings" FINDEX)
+if (FINDEX GREATER -1)
+	set (BINDINGS_LIST_GSETTINGS
+		glib
+		gsettings
+		)
+	set (BINDINGS_FORCE FORCE)
+endif ()
+
 if (BINDINGS MATCHES "ALL")
 	set(BINDINGS_LIST_ALL
 		jna
@@ -87,6 +96,7 @@ set (BINDINGS
 	${BINDINGS_LIST_DEFAULT}
 	${BINDINGS_LIST_SWIG}
 	${BINDINGS_LIST_GI}
+	${BINDINGS_LIST_GSETTINGS}
 	${BINDINGS_LIST_ALL}
 	CACHE STRING ${BINDINGS_DOC}
 	${BINDINGS_FORCE}
@@ -152,11 +162,11 @@ set(TOOLS ${TOOLS} CACHE STRING ${TOOLS_DOC} FORCE)
 # Runtime paths for KDB
 #
 
-set (KDB_DB_SYSTEM "/etc/kdb" CACHE PATH
+set (KDB_DB_SYSTEM "/etc/kdb" CACHE STRING
 		"The path to the system key database."
 		)
 
-set (KDB_DB_HOME "/home" CACHE PATH
+set (KDB_DB_HOME "/home" CACHE STRING
 		"The compiled-in fallback path to users home directories."
 		)
 
@@ -218,8 +228,8 @@ set (CMAKE_STATIC_FLAGS ""
 
 
 option (BUILD_SHARED "Build the shared version of elektra." ON)
-option (BUILD_FULL "Build the full version of elektra (shared with all selected backends included)." ON)
-option (BUILD_STATIC "Build the static version of elektra (all selected backends included statically)." ON)
+option (BUILD_FULL "Build the full version of elektra (shared with all selected backends included)." OFF)
+option (BUILD_STATIC "Build the static version of elektra (all selected backends included statically)." OFF)
 
 option (BUILD_DOCUMENTATION "Build the documentation (API, man pages)" ON)
 if (BUILD_DOCUMENTATION)
@@ -272,21 +282,20 @@ option (INSTALL_BUILD_TOOLS "Install build tools for cross-compilation" OFF)
 # Developer builds (debug or verbose build)
 #
 
-option (ELEKTRA_DEBUG_BUILD "Build with extra debug print messages (to debug elektra).")
-if (ELEKTRA_DEBUG_BUILD)
+option (ENABLE_DEBUG "Build with assertions and optimize for developing with Elektra.")
+if (ENABLE_DEBUG)
 	set (DEBUG "1")
-else (ELEKTRA_DEBUG_BUILD)
+else (ENABLE_DEBUG)
 	set (DEBUG "0")
-endif (ELEKTRA_DEBUG_BUILD)
-MARK_AS_ADVANCED(ELEKTRA_DEBUG_BUILD)
+endif (ENABLE_DEBUG)
 
-option (ELEKTRA_VERBOSE_BUILD "Build with even more print messages (to debug elektra).")
-if (ELEKTRA_VERBOSE_BUILD)
+option (ENABLE_LOGGER "Allows Elektra to write logs (DO NOT USE, currently writes to stdout).")
+if (ENABLE_LOGGER)
 	set (VERBOSE "1")
-else (ELEKTRA_VERBOSE_BUILD)
+else (ENABLE_LOGGER)
 	set (VERBOSE "0")
-endif (ELEKTRA_VERBOSE_BUILD)
-MARK_AS_ADVANCED(ELEKTRA_VERBOSE_BUILD)
+endif (ENABLE_LOGGER)
+MARK_AS_ADVANCED(ENABLE_LOGGER)
 
 
 #
@@ -398,4 +407,22 @@ MARK_AS_ADVANCED(FORCE
 	SWIG_DIR SWIG_EXECUTABLE SWIG_VERSION
 	gtest_build_samples gtest_build_tests gtest_disable_pthreads
 	gtest_force_shared_crt BUILD_SHARED_LIBS
+
+	ADDED_DIRECTORIES
+	ADDED_PLUGINS
+	REMOVED_PLUGINS
+
+	LIBGCRYPTCONFIG_EXECUTABLE
+	RONN_LOC
+
+	jna
+
+	Qt5Core_DIR
+	Qt5Gui_DIR
+	Qt5Network_DIR
+	Qt5Qml_DIR
+	Qt5Quick_DIR
+	Qt5Test_DIR
+	Qt5Widgets_DIR
+	Qt5_DIR
 	)
