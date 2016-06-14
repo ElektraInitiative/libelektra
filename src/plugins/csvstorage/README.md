@@ -1,7 +1,7 @@
 - infos = Information about the csvstorage plugin is in keys below
 - infos/author = Thomas Waser <thomas.waser@libelektra.org>
 - infos/licence = BSD
-- infos/provides = storage
+- infos/provides = storage csv
 - infos/needs =
 - infos/recommends =
 - infos/placements = getstorage setstorage
