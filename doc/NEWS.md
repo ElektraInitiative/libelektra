@@ -50,12 +50,21 @@ as described in the release notes:
   for you.
 
 
+
+
 ## Find-Tools
 
 There is now a fine collection of external scripts which can
 executed by `kdb + <script>`. The new script `kdb find-tools`
 provides full text search over the meta data as provided by
 the scripts.
+
+   * `kdb find-tools -b BRIEF` to search for a short text.
+   * `kdb find-tools -a AUTHOR` to search for a author.
+   * `kdb find-tools -d DATE` to search for a creation date.
+   * `kdb find-tools -e EXECUTE` to search for a type.
+
+Developers should now [add MetaData for their scripts.](https://github.com/elektrainitiative/libelektra/tree/scripts/README.md).
 
 Thanks to Kurt Micheli!
 
@@ -136,17 +145,38 @@ Thanks to Mihael Pranjić for the setup!
 
 ## CMake
 
+for maintainers:
+
+- The cmake variables KDB_DB_SYSTEM and KDB_DB_HOME are now STRING and not PATH.
+- BUILD_FULL and BUILD_STATIC are now OFF by default
+- building with BUILD_SHARED is now preferred (for all examples, test cases,...)
+- ELEKTRA_DEBUG_BUILD and ELEKTRA_VERBOSE_BUILD is not used anymore.
+- ENABLE_DEBUG was added: it does not add debug symbols but run-time assertions.
+- More cmake variables are marked as advanced.
+
+for developers:
+
 - BUILD_STATIC and BUILD_FULL is now OFF by default
   (nearly) all unit tests now also work with BUILD_SHARED
 - to support shared unit tests, a third phase was added when
   adding plugins
   inconsistent adding (across phases) of plugins and unit tests is reported
+- in `add_plugin` remove SHARED_SOURCES, and add `ADD_TEST` and `INSTALL_TEST_DATA`.
+
+and fixes:
+
 - adding plugin tests is now much simpler, simply use `ADD_TEST`
   in `add_plugin`.
 - KDB_DB_SYSTEM and KDB_DB_HOME are now STRING and not PATH because
   of incorrect resolving of `~`.
 - lua bindings tests: make sure lua executable matches with the lua libraries version
   thanks to Mihael Pranjić
+- lua bindings: do not use hard-coded `lua` executable.
+- Fix cmake configure when BUILD_DOCUMENTATION is set to OFF
+  thanks to Kurt Micheli
+
+See more about changes to plugin adding in cmake in the
+[plugin decision](https://github.com/elektrainitiative/libelektra/tree/cmake_plugins.md).
 
 ## Experimental GSettings support
 
@@ -158,7 +188,7 @@ When installed, applications using GSettings default backend will write to Elekt
 below the `/sw` key. The GSettings bindings are intended as a preview version so
 please do not use them in a production system.
 
-To build the GSettings backend you have to explicitly add the binding even when `ALL` is given.
+To build the GSettings backend you have to explicitly add the binding even if `ALL` is given.
 e.g. `-DBINDINGS=gsettings` `-DBINDINGS="ALL;gsettings"`
 
 All needed core functionality of a GSettings backend is already implemented.
@@ -189,6 +219,13 @@ stores filtered keys internally so that they
 do not get accidentally lost and can be written to the storage again without
 the user having to remember including them in the writeout
 
+The longer term goal is to add such global plugins per default, so that
+the usage of the API is easier.
+
+For now you can simply add it using:
+
+     kdb global-mount cachefilter
+
 Thanks to Marvin Mall.
 
 
@@ -196,25 +233,38 @@ Thanks to Marvin Mall.
 
 The Qt GUI receives new features and a better gnome integration.
 Its version number was updated to 0.0.12 (beta).
+Major features:
+
+- use native icons (Qt GUI xdg icon theme support rework)
+  thanks to Gabriel Rauter
+- update desktop entry org.libelektra.elektra-qt-editor.desktop
+  with new symbolic icon of Elektra's logo
+  so that qt-gui can nicely started from within Gnome
+  thanks to Gabriel Rauter
+- Add new layout elements to backend wizard
+  and integrate new BackendBuilder functionality (See Common Provider Names) to qt-gui
+  thanks to Raffael Pancheri
+
+
+Bug fixes:
 
 - Reset to defaults now reverts back to build-in defaults.
-- Qt GUI xdg icon theme support rework
 - Make clicks on search icon focus on search textfield.
 - save settings when settings dialog is closed.
 - fix crash of qt-gui when crypto plugin was enabled
+  (and added /shutdown option to enable previous behaviour)
   thanks to Peter Nirschl
-- Add new layout elements to backend wizard
-  thanks to Raffael Pancheri
 - fix qt-gui fails to synchronize because of readonly plugins
   thanks to Raffael Pancheri
-- Integrate new BackendBuilder functionality (See Common Provider Names) to qt-gui
-  thanks to Raffael Pancheri
+- Rename desktop file: correct reverse url from org.elektra to org.libelektra.
+- Rename elektra-qt to elektra-qt-editor.
+- Rename ChooseColorWindow: The ChooseColorWindows will be replaced by a
+  AppearanceSettingsWindow, all references to ChooseColor, choose color have been
+  replaced by AppearanceSettings or choose appearance.
 
-Rename desktop file: correct reverse url from org.elektra to org.libelektra. Rename elektra-qt to elektra-qt-editor and use that in future references to the qt-gui as it is a clearer name about the function of the program and binary.
 
-Rename ChooseColorWindow: The ChooseColorWindows will be replaced by a
-AppearanceSettingsWindow, all references to ChooseColor, choose color have been
-replaced by AppearanceSettings or choose appearance.
+Thanks to Gabriel Rauter and Raffael Pancheri for the engagement in
+improving qt-gui.
 
 Install elektra-qt-editor binary so both the desktop files TryExec works
 and people not starting the gui trough `kdb qt-gui` have a speaking name
@@ -261,15 +311,17 @@ one can go back to previous behavior.
 
 - improve documentation about how to pop a key
 - document how to avoid running test cases as root in
-  [TESTING.md](doc/TESTING.md).
-- document gurantees ofelektraPluginGetData,
+  [TESTING.md](https://github.com/elektrainitiative/libelektra/tree/doc/TESTING.md).
+- document guarantees of `elektraPluginGetData`,
   thanks to Marvin Mall
 - doc mentions that -1 should be returned
   *always* when an error is set
 - many more spelling mistakes were fixed and useless whitespace was removed,
   thanks to René Schwaiger
-- Fix cmake configure when BUILD_DOCUMENTATION is set to OFF
-  thanks to Kurt Micheli
+- describe preferences when plugins are included/excluded
+- improvements in `ksCopy`, `ksPop`, `kdbGet` and `kdbSet` API description
+- added [WHY document](https://github.com/elektrainitiative/libelektra/tree/doc/WHY.md)
+- updated [plugin decision](https://github.com/elektrainitiative/libelektra/tree/cmake_plugins.md) to include 3rd phase
 
 ## ELEKTRA_DEBUG build
 
@@ -296,6 +348,7 @@ Thanks to:
 
 The constants plugin was updated to provide cmake/ENABLE_LOGGER cmake/ENABLE_DEBUG
 and will no longer provide cmake/ELEKTRA_DEBUG_BUILD cmake/ELEKTRA_VERBOSE_BUILD
+
 
 ## Other
 
