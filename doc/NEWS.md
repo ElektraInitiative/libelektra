@@ -2,6 +2,11 @@
 
 In preparation and not yet released!
 
+- guid: e6153a39-c4bd-41c3-bc86-785d451eb6c5
+- author: Markus Raab
+- pubDate: Tue, 14 Jun 2016 08:32:44 +0200
+
+
 ## Why should I use Elektra? ##
 
 The three main points relevant for most people are:
@@ -263,31 +268,29 @@ Bug fixes:
   replaced by AppearanceSettings or choose appearance.
 
 
+Other improvements:
+
+- Install `elektra-qt-editor` binary so both the desktop files TryExec works
+  and people not starting the gui trough `kdb qt-gui` have a speaking name
+  in their process list.
+- Replace occurences of `Elektra Editor` with `Elektra Qt Editor` so that
+  we use the same name in all places apart from the tools binary.
+- Introduce Appearance Settings Window: Appearance Settings Window
+  contains both color settings as well as a switch to disable or enable
+  the system icon theme. For this to work we had to introduce the setting
+  in `guisettings`. We also added a private function in `guisettings` to
+  get and set settings with a boolean value.
+- Tree reload on Settings close: We now synch and refresh the tree view on
+  closing of the settings window if any settings have been changed, so
+  changes can be seen imediatly in the tree.
+- Add qt5 svg module as dependency: the qt5 svg module is needed so we can
+  display icon themes that provide svg as icon format.
+- Add and install symbolic icon with the installation of the Elektra
+  Qt Editor.
+
+
 Thanks to Gabriel Rauter and Raffael Pancheri for the engagement in
 improving qt-gui.
-
-Install elektra-qt-editor binary so both the desktop files TryExec works
-and people not starting the gui trough `kdb qt-gui` have a speaking name
-in their process list.
-
-Replace occurences of `Elektra Editor` with `Elektra Qt Editor` so that
-we use the same name in all places apart from the tools binary.
-
-Introduce Appearance Settings Window: Appearance Settings Window
-contains both color settings as well as a switch to disable or enable
-the system icon theme. For this to work we had to introduce the setting
-in `guisettings`. We also added a private function in `guisettings` to
-get and set settings with a boolean value.
-
-Tree reload on Settings close: We now synch and refresh the tree view on
-closing of the settings window if any settings have been changed, so
-changes can be seen imediatly in the tree.
-
-Add qt5 svg module as dependency: the qt5 svg module is needed so we can
-display icon themes that provide svg as icon format.
-
-Add and install symbolic icon with the installation of the Elektra
-Qt Editor.
 
 
 ## Colored kdb tool
@@ -352,7 +355,8 @@ and will no longer provide cmake/ELEKTRA_DEBUG_BUILD cmake/ELEKTRA_VERBOSE_BUILD
 
 ## Other
 
-- Gabriel Rauter is now listed in [AUTHORS](/doc/AUTHORS)
+- Gabriel Rauter is now listed in
+  [AUTHORS](https://github.com/elektrainitiative/libelektra/tree/doc/AUTHORS)
 - libtool: remove not-implemented function resolveRecommends from header-file.
 - constants plugin: configure_file now uses current binary directory, not cluttering
   the main build directory.
@@ -381,7 +385,6 @@ and will no longer provide cmake/ELEKTRA_DEBUG_BUILD cmake/ELEKTRA_VERBOSE_BUILD
   thanks to René Schwaiger
 - add script configure-home to build Elektra
   that it will resolve all pathes to home-directories
-  (TODO, needs fix)
 - add script metaini-to-c that converts METADATA.ini
   to C-code, thanks to Thomas Waser
 - add note that default values must be present for
@@ -389,6 +392,74 @@ and will no longer provide cmake/ELEKTRA_DEBUG_BUILD cmake/ELEKTRA_VERBOSE_BUILD
 - avoid `seq` as it is not available in some `*BSD`,
   thanks to Mihael Pranjić
 - make jni testmod check consistent to others
+
+
+
+## Compatibility
+
+As always, the ABI and API is fully forward- and backward-compatible, i.e. programs
+compiled against an older 0.8 version of Elektra will continue to work
+(ABI) and you will be able to recompile every program without errors
+(API). You can even compile programs against 0.8.17 and run with 0.8.16.
+
+For the qt-gui the svg module is added as dependency.
+
+New and missing files in the installation:
+
+- `elektra-qt-editor` is installed in the path (needed for TryExec in Desktop file)
+- `libelektrasettings.so` will be installed if `gsettings` binding is enabled
+- `libelektra-cachefilter.so` is the new cachefilter plugin
+- `tool_exec/testmod_cachefilter` is its unit test
+- `tool_exec/find-tools` is a new python script to find other tools
+- `appdata/org.libelektra.elektra-qt-editor.appdata.xml`
+- `icons/hicolor/scalable/apps/elektra-symbolic.svg`
+- `share/man/man1/kdb-find-tools.1`
+
+Renamed files:
+
+- `applications/org.elektra.elektra-qt.desktop` got renamed to
+  `applications/org.libelektra.elektra-qt-editor.desktop`.
+
+(Temporarily) removed files:
+
+- Some of the installed "test data" actually was source code from
+  Elektra. Test data from the following plugins is affected:
+  `hosts`, `ini`, `lineendings`, 
+- `testmod_lua`, `testmod_python` and `testmod_python2` do not work in a shared build
+  and are temporarily disabled if `BUILD_SHARED` is enabled.
+  Also their test data is affected.
+
+
+## Get It!
+
+You can download the release from
+[here](http://www.libelektra.org/ftp/elektra/releases/elektra-0.8.17.tar.gz)
+and now also [here on github](https://github.com/ElektraInitiative/ftp/tree/master/releases/elektra-0.8.17.tar.gz)
+
+- name: elektra-0.8.17.tar.gz
+
+
+This release tarball now is also available
+[signed by me using gpg](http://www.libelektra.org/ftp/elektra/releases/elektra-0.8.17.tar.gz.gpg)
+
+already built API-Docu can be found [here](http://doc.libelektra.org/api/0.8.17/html/)
+
+
+## Stay tuned! ##
+
+Subscribe to the
+[RSS feed](http://doc.libelektra.org/news/feed.rss)
+to always get the release notifications.
+
+For any questions and comments, please contact the
+[Mailing List](https://lists.sourceforge.net/lists/listinfo/registry-list)
+the issue tracker [on github](http://git.libelektra.org/issues)
+or by mail elektra@markus-raab.org.
+
+[Permalink to this NEWS entry](http://doc.libelektra.org/news/e6153a39-c4bd-41c3-bc86-785d451eb6c5.html)
+
+For more information, see [http://libelektra.org](http://libelektra.org)
+
 
 
 
