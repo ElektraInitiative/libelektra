@@ -3,7 +3,8 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(DISCOUNT_FIND_QUIETLY ON)
 
 set(QCOMPONENTS Core Quick Gui Qml Widgets Test)
-find_package(Qt5 COMPONENTS ${QCOMPONENTS} OPTIONAL_COMPONENTS Svg)
+find_package(Qt5 COMPONENTS ${QCOMPONENTS})
+find_package(Qt5 OPTIONAL_COMPONENTS Svg QUIET)
 find_package(Discount)
 
 if (NOT Qt5_FOUND)
