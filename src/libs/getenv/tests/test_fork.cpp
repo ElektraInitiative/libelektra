@@ -8,8 +8,8 @@
  */
 
 #include <gtest/gtest.h>
-#include <kdbgetenv.h>
 #include <kdbconfig.h>
+#include <kdbgetenv.h>
 
 namespace ckdb
 {
