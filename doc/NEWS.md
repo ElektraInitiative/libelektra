@@ -53,6 +53,8 @@ Read more about [Why using Elektra](/doc/WHY.md),
 which also contains since this release unique features,
 further reasons and limitations.
 
+For a small demo see https://asciinema.org/a/cantr04assr4jkv8v34uz9b8r
+
 ## Highlights
 
 - Qt-Gui reworked mounting and native icons

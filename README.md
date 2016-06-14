@@ -85,7 +85,7 @@ the [qt-gui](/src/tools/qt-gui/).
 
 Here a small demo:
 
-[![asciicast](https://asciinema.org/a/67xubv7tfkpu2434cx3aibjby.png)](https://asciinema.org/a/67xubv7tfkpu2434cx3aibjby)
+[![asciicast](https://asciinema.org/a/cantr04assr4jkv8v34uz9b8r.png)](https://asciinema.org/a/cantr04assr4jkv8v34uz9b8r)
 
 For import/export/mount formats see [Plugins](src/plugins/).
 For information about elektrified environment variables, see
