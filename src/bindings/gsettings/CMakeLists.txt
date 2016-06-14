@@ -1,4 +1,9 @@
 cmake_minimum_required (VERSION 2.8)
+
+if (POLICY CMP0048)
+	cmake_policy(SET CMP0048 OLD) # avoid warning about resetting PROJECT_VERSION
+endif()
+
 project (elektrasettings)
 
 find_package (PkgConfig REQUIRED)
