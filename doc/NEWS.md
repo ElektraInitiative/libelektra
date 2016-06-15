@@ -119,8 +119,8 @@ issues and setting up travis:
 
 ## jenkins
 
-Now (nearly) every build job can be triggered from Pull Requests
-making it. For example:
+Now (nearly) every build job can be triggered from Pull Requests.
+For example:
 
 * jenkins build [git-buildpackage-jessie](http://build.libelektra.org:8080/job/elektra-git-buildpackage-jessie/) please
 * jenkins build [git-buildpackage-wheezy](http://build.libelektra.org:8080/job/elektra-git-buildpackage-wheezy/) please
