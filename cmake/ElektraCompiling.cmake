@@ -68,7 +68,12 @@ endif()
 if (ENABLE_ASAN)
 	set (EXTRA_FLAGS "${EXTRA_FLAGS} -fsanitize=address -fno-omit-frame-pointer")
 	set (ASAN_LIBRARY "-lasan") #this is needed for GIR to put asan in front
-	set (CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -lasan")
+	if (CMAKE_COMPILER_IS_GNUCXX)
+		set (CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -fsanitize=address")
+		# this is currently a workaround so gtests compile with ASAN
+		#TODO someone with expertise migrate this into LibAddTest
+		set (COMMON_FLAGS "${COMMON_FLAGS} -lpthread")
+	endif ()
 	set (DISABLE_LSAN "LSAN_OPTIONS=detect_leaks=0") #this is needed so ASAN is not used during GIR compilation
 	message (STATUS "To use ASAN:\n"
 		 "   ASAN_OPTIONS=symbolize=1 ASAN_SYMBOLIZER_PATH=$(shell which llvm-symbolizer) ./bin \n"
