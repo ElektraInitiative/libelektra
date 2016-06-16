@@ -71,8 +71,8 @@ if (ENABLE_ASAN)
 	if (CMAKE_COMPILER_IS_GNUCXX)
 		set (CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -fsanitize=address")
 		# this is currently a workaround so gtests compile with ASAN
-		#TODO someone with expertise migrate this into LibAddTest
-		set (COMMON_FLAGS "${COMMON_FLAGS} -lpthread")
+		find_package(Threads)
+		set (COMMON_FLAGS "${COMMON_FLAGS} ${CMAKE_THREAD_LIBS_INIT}")
 	endif ()
 	set (DISABLE_LSAN "LSAN_OPTIONS=detect_leaks=0") #this is needed so ASAN is not used during GIR compilation
 	message (STATUS "To use ASAN:\n"
