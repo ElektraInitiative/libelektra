@@ -606,3 +606,35 @@
    fun:elektraCryptoBotanEncrypt
    ...
 }
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: possible
+   fun:*
+   ...
+   obj:/usr/lib/libbotan-1.10.so.0.8
+   ...
+   fun:elektraCryptoBotanInit
+   ...
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: possible
+   fun:*
+   ...
+   obj:/usr/lib/libbotan-1.10.so.0.8
+   ...
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:_Znwm
+   obj:/usr/lib/libbotan-1.10.so.0.8
+   obj:/usr/lib/libbotan-1.10.so.0.8
+   fun:_ZN5Botan10get_cipherERKSsNS_10Cipher_DirE
+   fun:_ZN5Botan10get_cipherERKSsRKNS_11OctetStringES4_NS_10Cipher_DirE
+   fun:elektraCryptoBotanEncrypt
+   ...
+}
