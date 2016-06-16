@@ -594,3 +594,15 @@
    fun:elektraPluginOpen
    ...
 }
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:_Znwm
+   obj:/usr/lib64/libbotan-1.10.so.1.13
+   obj:/usr/lib64/libbotan-1.10.so.1.13
+   fun:_ZN5Botan10get_cipherERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEENS_10Cipher_DirE
+   fun:_ZN5Botan10get_cipherERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEERKNS_11OctetStringESA_NS_10Cipher_DirE
+   fun:elektraCryptoBotanEncrypt
+   ...
+}

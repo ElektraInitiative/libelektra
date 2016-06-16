@@ -125,10 +125,10 @@ openssl_error:
 	{
 		if (elektraCryptoBotanEncrypt (pluginConfig, k, errorKey) != 1)
 		{
-			return -1;
+			return -1; // failure, error has been set by elektraCryptoBotanEncrypt
 		}
 	}
-	return 1;
+	return 1; // success
 
 #else
 	return 1;

@@ -14,6 +14,7 @@
 
 #define ELEKTRA_CRYPTO_BOTAN_KEYSIZE (32)
 #define ELEKTRA_CRYPTO_BOTAN_BLOCKSIZE (16)
+#define ELEKTRA_CRYPTO_BOTAN_ALGORITHM "AES-256/CBC"
 
 int elektraCryptoBotanInit (Key * errorKey);
 int elektraCryptoBotanEncrypt (KeySet * pluginConfig, Key * k, Key * errorKey);
