@@ -11,6 +11,13 @@ and tools regarding configuration tasks. Elektra abstracts from
 cross-platform-related issues and allows applications to be aware of other
 applications' configurations, leveraging easy application integration.
 
+## Current News
+
+- Please [fill out survey](http://elektra.limequery.org/625192)
+- [14 Jun 2016 0.8.17](http://doc.libelektra.org/news/e6153a39-c4bd-41c3-bc86-785d451eb6c5.html) survey, usability improvements
+
+## Overview
+
 Elektra consists of three parts:
 
 1. *LibElektra* is a modular configuration access toolkit to
