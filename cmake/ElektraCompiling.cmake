@@ -65,23 +65,6 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 	endif()
 endif()
 
-if (ENABLE_ASAN)
-	set (EXTRA_FLAGS "${EXTRA_FLAGS} -fsanitize=address -fno-omit-frame-pointer")
-	set (ASAN_LIBRARY "-lasan") #this is needed for GIR to put asan in front
-	if (CMAKE_COMPILER_IS_GNUCXX)
-		set (CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -fsanitize=address")
-		# this is currently a workaround so gtests compile with ASAN
-		find_package(Threads)
-		set (COMMON_FLAGS "${COMMON_FLAGS} ${CMAKE_THREAD_LIBS_INIT}")
-	endif ()
-	set (DISABLE_LSAN "LSAN_OPTIONS=detect_leaks=0") #this is needed so ASAN is not used during GIR compilation
-	message (STATUS "To use ASAN:\n"
-		 "   ASAN_OPTIONS=symbolize=1 ASAN_SYMBOLIZER_PATH=$(shell which llvm-symbolizer) ./bin \n"
-		 "   It could also happen that you need to preload ASAN library: \n"
-		 "   e.g. LD_PRELOAD=/usr/lib/clang/3.8.0/lib/linux/libclang_rt.asan-x86_64.so ./bin \n"
-	)
-endif ()
-
 if (CMAKE_COMPILER_IS_GNUCXX)
 	execute_process(COMMAND ${CMAKE_C_COMPILER} -dumpversion OUTPUT_VARIABLE GCC_VERSION)
 	if (WIN32)
@@ -117,6 +100,22 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "Intel")
 	set(CMAKE_INCLUDE_SYSTEM_FLAG_CXX "-isystem ")
 endif ()
 
+if (ENABLE_ASAN)
+	set (EXTRA_FLAGS "${EXTRA_FLAGS} -fsanitize=address -fno-omit-frame-pointer")
+	set (ASAN_LIBRARY "-lasan") #this is needed for GIR to put asan in front
+	if (CMAKE_COMPILER_IS_GNUCXX)
+		set (CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -fsanitize=address")
+		# this is needed because of wrong pthread detection https://gcc.gnu.org/bugzilla/show_bug.cgi?id=69443
+		find_package(Threads)
+		set (THREAD_LIBS_AS_NEEDED "${COMMON_FLAGS} -Wl,--as-needed ${CMAKE_THREAD_LIBS_INIT}")
+	endif ()
+	set (DISABLE_LSAN "LSAN_OPTIONS=detect_leaks=0") #this is needed so ASAN is not used during GIR compilation
+	message (STATUS "To use ASAN:\n"
+		 "   ASAN_OPTIONS=symbolize=1 ASAN_SYMBOLIZER_PATH=$(shell which llvm-symbolizer) ./bin \n"
+		 "   It could also happen that you need to preload ASAN library: \n"
+		 "   e.g. LD_PRELOAD=/usr/lib/clang/3.8.0/lib/linux/libclang_rt.asan-x86_64.so ./bin \n"
+	)
+endif ()
 
 #
 # Common flags can be used by both C and C++
@@ -152,8 +151,8 @@ set (CXX_EXTRA_FLAGS "${CXX_EXTRA_FLAGS} -Woverloaded-virtual  -Wsign-promo")
 #
 # Merge all flags
 #
-set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${C_STD} ${EXTRA_FLAGS} ${COMMON_FLAGS} -Wsign-compare -Wfloat-equal -Wformat-security")
-set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CXX_STD} ${EXTRA_FLAGS} ${CXX_EXTRA_FLAGS} ${COMMON_FLAGS}")
+set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${C_STD} ${EXTRA_FLAGS} ${COMMON_FLAGS} -Wsign-compare -Wfloat-equal -Wformat-security ${THREAD_LIBS_AS_NEEDED}")
+set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CXX_STD} ${EXTRA_FLAGS} ${CXX_EXTRA_FLAGS} ${COMMON_FLAGS} ${THREAD_LIBS_AS_NEEDED}")
 
 message (STATUS "C flags are ${CMAKE_C_FLAGS}")
 message (STATUS "CXX flags are ${CMAKE_CXX_FLAGS}")
