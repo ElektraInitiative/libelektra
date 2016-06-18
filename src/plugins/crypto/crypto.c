@@ -53,9 +53,6 @@ static int elektraCryptoInit (Key * errorKey ELEKTRA_UNUSED)
  */
 static void elektraCryptoTeardown ()
 {
-#ifdef ELEKTRA_CRYPTO_API_OPENSSL
-	elektraCryptoOpenSSLTeardown ();
-#endif
 }
 
 /**
