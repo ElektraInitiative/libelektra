@@ -82,6 +82,10 @@ int elektraCryptoOpenSSLInit (Key * errorKey)
 		return 1;
 	}
 
+	// initialize OpenSSL according to https://wiki.openssl.org/index.php/Library_Initialization
+	OpenSSL_add_all_algorithms ();
+	ERR_load_crypto_strings ();
+
 	// initialize the internal locking system based on the suggestions by the OpenSSL demos.
 	// see demos/threads/mttest.c in the OpenSSL repository for further information
 	cryptoNumLocks = CRYPTO_num_locks ();
