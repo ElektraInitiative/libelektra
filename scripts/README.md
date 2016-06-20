@@ -3,7 +3,7 @@ kdb-find-tools(1) -- The tool for finding tools
 
 ## SYNOPSIS
 
-`kdb find-tools` [-h] [--warnings] [--good] [--alltags] [-a AUTHOR] [-d DATE] [-t TAGS [TAGS ...]] [-b BRIEF] [-e EXECUTE]
+`kdb find-tools` [-h] [--warnings] [--good] [--alltags] [-n NAME] [-a AUTHOR] [-d DATE] [-t TAGS [TAGS ...]] [-b BRIEF] [-e EXECUTE]
 
 ## DESCRIPTION
 
@@ -19,6 +19,7 @@ If you are looking for something special, then there are two ways:
    Then you can search with `kdb -t [TAGS [TAGS ...]]`
 
 2. Full Text Search:
+   * `kdb find-tools -n NAME` to search for a script name.
    * `kdb find-tools -b BRIEF` to search for a short text.
    * `kdb find-tools -a AUTHOR` to search for a author.
    * `kdb find-tools -d DATE` to search for a creation date.
