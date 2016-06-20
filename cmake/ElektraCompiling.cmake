@@ -101,10 +101,10 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "Intel")
 endif ()
 
 if (ENABLE_ASAN)
-	set (EXTRA_FLAGS "${EXTRA_FLAGS} -fsanitize=address -fno-omit-frame-pointer")
+	set (EXTRA_FLAGS "-fsanitize=address -fno-omit-frame-pointer ${EXTRA_FLAGS}")
 	set (ASAN_LIBRARY "-lasan") #this is needed for GIR to put asan in front
 	if (CMAKE_COMPILER_IS_GNUCXX)
-		set (CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -fsanitize=address")
+		set (CMAKE_SHARED_LINKER_FLAGS "-fsanitize=address ${CMAKE_SHARED_LINKER_FLAGS}")
 		# this is needed because of wrong pthread detection https://gcc.gnu.org/bugzilla/show_bug.cgi?id=69443
 		find_package(Threads)
 		set (THREAD_LIBS_AS_NEEDED "${COMMON_FLAGS} -Wl,--as-needed ${CMAKE_THREAD_LIBS_INIT}")
