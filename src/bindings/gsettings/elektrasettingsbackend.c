@@ -357,13 +357,9 @@ static gboolean elektra_settings_backend_get_writable (GSettingsBackend * backen
 	gchar * pathToWrite = g_strconcat (G_ELEKTRA_SETTINGS_USER, G_ELEKTRA_SETTINGS_PATH, name, NULL);
 	GElektraKey * gkey = gelektra_keyset_lookup_byname (esb->gks, pathToWrite, GELEKTRA_KDB_O_NONE);
 	// TODO answer why inside the if block
-	if (gkey == NULL)
-	{
-		gkey = gelektra_key_new (pathToWrite, KEY_VALUE, G_ELEKTRA_TEST_STRING, KEY_END);
-		g_free (pathToWrite);
-		if (gkey == NULL) return FALSE;
-	}
+	if (gkey == NULL) gkey = gelektra_key_new (pathToWrite, KEY_VALUE, G_ELEKTRA_TEST_STRING, KEY_END);
 	g_free (pathToWrite);
+	if (gkey == NULL) return FALSE;
 	return TRUE;
 }
 
