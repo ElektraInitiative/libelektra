@@ -167,6 +167,10 @@ struct PluginConfigInvalid : public PluginCheckException
 	{
 	}
 
+	virtual ~PluginConfigInvalid () throw ()
+	{
+	}
+
 	virtual const char * what () const throw () override
 	{
 		if (m_str.empty ())
