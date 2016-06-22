@@ -83,6 +83,7 @@ execute()
 
     if [ ! -z "$RETCMP" ];
     then
+        nbTest=$(( nbTest + 1 ))
         echo "$RETVAL" | grep -Ewq $RETCMP
         if [ "$?" -ne "0" ];
         then
@@ -115,9 +116,10 @@ execute()
 
     STDERR=$(cat ./stderr)
 
-    printf "STDERR: %s\0\n" "$STDERR" >> "OutFile"
+    printf "STDERR: %s\0\n" "$STDERR" >> "$OutFile"
     if [ ! -z "$STDERRCMP" ];
     then
+        nbTest=$(( nbTest + 1 ))
         echo "$STDERR" | grep -Eqz --text "$STDERRCMP"
         if [ "$?" -ne "0" ];
         then
@@ -134,6 +136,7 @@ execute()
     printf "STDOUT: %s\0\n" "$STDOUT" >> "$OutFile"
     if [ ! -z "$STDOUTCMP" ];
     then
+        nbTest=$(( nbTest + 1 ))
         echo "$STDOUT" | grep -Eqz --text "$STDOUTCMP"
         if [ "$?" -ne "0" ];
         then
@@ -150,6 +153,7 @@ execute()
     printf "WARNINGS: %s\0\n" "$WARNINGS" >> "$OutFile"
     if [ ! -z "$WARNINGSCMP" ];
     then
+        nbTest=$(( nbTest + 1 ))
         echo "$WARNINGS" | grep -Eqz --text "($WARNINGSCMP)"
         if [ "$?" -ne "0" ];
         then
@@ -168,6 +172,7 @@ execute()
     printf "ERRORS: %s\0\n" "$ERRORS" >> "$OutFile"
     if [ ! -z "$ERRORSCMP" ];
     then
+        nbTest=$(( nbTest + 1 ))
         echo "$ERRORS" | grep -Eqz --text "($ERRORSCMP)"
         if [ "$?" -ne "0" ];
         then
@@ -182,6 +187,7 @@ execute()
     printf "DIFF: \0\n" "%s" >> "$OutFile"
     if [ ! -z "$DIFFCMP" ];
     then
+        nbTest=$(( nbTest + 1 ))
         echo "$DIFF" | grep -Eqz --text "($DIFFCMP)"
         if [ "$?" -ne "0" ];
         then
@@ -253,7 +259,6 @@ run_script()
             STDOUTCMP=
             STDERRCMP=
             DIFFCMP=
-            nbTest=$(( nbTest + 1 ))
         fi
     done < "$FILE"
 }

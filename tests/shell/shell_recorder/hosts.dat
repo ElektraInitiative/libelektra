@@ -21,3 +21,5 @@ STDOUT: 127.0.0.1
 
 RET: 5
 < set system/test/hosts/ipv4/localhost ::1
+
+< umount $Mountpoint

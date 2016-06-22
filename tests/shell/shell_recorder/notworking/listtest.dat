@@ -15,3 +15,5 @@ RET: 0
 < set $Mountpoint test
 
 < ls $Mountpoint 
+
+< umount $Mountpoint
