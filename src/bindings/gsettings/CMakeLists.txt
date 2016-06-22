@@ -50,14 +50,30 @@ if (GELEKTRA_LIBRARY)
 		install (TARGETS elektrasettings LIBRARY DESTINATION ${GIO_MODULE_DIR})
 	endif ()
 else()
-	pkg_check_modules (GELEKTRA gelektra-4.0>=0.8.16 QUIET)
-	if (!GELEKTRA_FOUND)
-		remove_binding (glib "elektra glib bindings needed for gsettings backend")
-	endif()
+	pkg_check_modules (GELEKTRA gelektra-4.0>=0.8.16 REQUIRED)
 	include_directories (${GELEKTRA_INCLUDE_DIRS})
 	target_link_libraries (elektrasettings ${GLIB_LIBRARIES} ${GMODULE_LIBRARIES} ${GIO_LIBRARIES} ${GELEKTRA_LIBRARIES})
 	install (TARGETS elektrasettings LIBRARY DESTINATION ${GIO_MODULE_DIR})
 endif ()
+
+if (BUILD_TESTING)
+	include (ExternalProject)
+	ExternalProject_Add (GSettingsTests GIT_REPOSITORY https://github.com/sirblackheart/gsettings-tests INSTALL_COMMAND "")
+	ExternalProject_Get_Property (GSettingsTests binary_dir)
+	message (STATUS ${binary_dir})
+	add_custom_command(
+		TARGET elektrasettings
+		POST_BUILD
+		COMMAND ${CMAKE_COMMAND} -E copy
+			${CMAKE_BINARY_DIR}/lib/$<TARGET_FILE_NAME:elektrasettings>
+			${binary_dir}
+		)
+	add_test (
+		NAME test_gsettings
+		COMMAND "${binary_dir}/gsettings"
+	)
+	set_property (TEST test_gsettings PROPERTY ENVIRONMENT "GIO_MODULE_DIR=${binary_dir};GSETTINGS_BACKEND=elektra")
+endif (BUILD_TESTING)
 
 if (CMAKE_SOURCE_DIR STREQUAL CMAKE_BINARY_DIR)
 	if (NOT FORCE_IN_SOURCE_BUILD)
