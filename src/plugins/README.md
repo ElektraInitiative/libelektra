@@ -179,6 +179,11 @@ Log/Send out all changes to configuration to:
 - [journald](journald/) logs key database changes to journald
 - [logchange](logchange/) prints the change of every key on the console
 
+Notification of key changes:
+
+- [internalnotification](internalnotification/) automatically update integer variables when a key is changed from inside an application
+
+
 ### Debug
 
 Trace everything that happens within KDB:
