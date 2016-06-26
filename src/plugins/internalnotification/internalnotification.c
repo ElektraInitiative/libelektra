@@ -178,17 +178,23 @@ int elektraInternalnotificationClose (Plugin * handle, Key * parentKey ELEKTRA_U
 #endif
 
 	ListPointer * listPointer = elektraPluginGetData (handle);
-
-	// Free registrations
-	KeyRegistration * current = listPointer->head;
-	KeyRegistration * next;
-	while (current != NULL)
+	if (listPointer != NULL)
 	{
-		next = current->next;
-		elektraFree (current->name);
-		elektraFree (current);
+		// Free registrations
+		KeyRegistration * current = listPointer->head;
+		KeyRegistration * next;
+		while (current != NULL)
+		{
+			next = current->next;
+			elektraFree (current->name);
+			elektraFree (current);
 
-		current = next;
+			current = next;
+		}
+
+		// Free list pointer
+		elektraFree(listPointer);
+		elektraPluginSetData (handle, NULL);
 	}
 
 	return 1;

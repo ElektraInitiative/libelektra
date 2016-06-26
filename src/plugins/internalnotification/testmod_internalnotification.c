@@ -205,6 +205,7 @@ static void test_updateWithCascadingKey ()
 	succeed_if (value == 42, "registered value was not updated");
 
 	keyDel (parentKey);
+	keyDel (registeredKey);
 	ksDel (ks);
 	PLUGIN_CLOSE ();
 }
