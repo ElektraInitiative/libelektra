@@ -16,56 +16,59 @@
 #include <tests_plugin.h>
 
 
-typedef int (*elektraInternalnotificationRegisterIntCallback)(int* variable, Key* key);
+static int internalnotificationRegisterInt(Plugin * plugin, int* variable, Key* key) {
+  typedef int (*elektraInternalnotificationRegisterIntCallback)(Plugin * handle, int* variable, Key* key);
 
-static elektraInternalnotificationRegisterIntCallback getInternalnotificationRegisterInt(Plugin * plugin) {
-  char* NOTIFICATION_BASE = "system/elektra/modules/internalnotification";
-  char* EXPORTED_FUNCTION = "system/elektra/modules/internalnotification/exports/elektraInternalnotificationRegisterInt";
-  Key *parentKey = keyNew(
-    NOTIFICATION_BASE,
-    KEY_END
-  );
+  static size_t address = 0;
 
-  KeySet *conf = ksNew(1, KS_END);
-  plugin->kdbGet(plugin, conf, parentKey);
-  Key *k = ksLookupByName(conf,
-    EXPORTED_FUNCTION,
-    0);
+  if (address == 0) {
+    char* NOTIFICATION_BASE = "system/elektra/modules/internalnotification";
+    char* EXPORTED_FUNCTION = "system/elektra/modules/internalnotification/exports/elektraInternalnotificationRegisterInt";
+    Key *parentKey = keyNew(
+      NOTIFICATION_BASE,
+      KEY_END
+    );
 
-  if (!keyIsBinary(k)) {
-    // Key value is not binary
-    return NULL;
+    KeySet *conf = ksNew(20, KS_END);
+    plugin->kdbGet(plugin, conf, parentKey);
+    Key *k = ksLookupByName(conf,
+      EXPORTED_FUNCTION,
+      0);
+
+    if (k == 0 || !keyIsBinary(k)) {
+      // Key value is not binary
+      return -1;
+    }
+
+    size_t* buffer;
+    size_t bufferSize = keyGetValueSize(k);
+    buffer = (size_t*)elektraMalloc(bufferSize);
+    if (buffer == NULL) {
+      // Malloc failed
+      return -1;
+    }
+    if (keyGetBinary(k, buffer, bufferSize) == -1) {
+      return -1;
+    }
+
+    // verify that address is not null
+    if (buffer == NULL) {
+      return -1;
+    }
+
+    // convert address from buffer
+    address = *buffer;
+
+    // free buffer
+    elektraFree(buffer);
   }
 
-  size_t* buffer;
-  size_t bufferSize = keyGetValueSize(k);
-  buffer = (size_t*)elektraMalloc(bufferSize);
-  if (buffer == NULL) {
-    // Malloc failed
-    return NULL;
-  }
-  if (keyGetBinary(k, buffer, bufferSize) == -1) {
-    return NULL;
-  }
-
-  // convert address from buffer
-  size_t address = *buffer;
-
-  // verify that address is not null
-  if (buffer == NULL) {
-    return NULL;
-  }
-
-  // free buffer
-  elektraFree(buffer);
-
-  return (elektraInternalnotificationRegisterIntCallback)address;
+  // Call function
+  return ((elektraInternalnotificationRegisterIntCallback)address)(plugin, variable, key);
 }
 
 static void pluginRegisterInt(Plugin* plugin, int* variable, Key* key) {
-  elektraInternalnotificationRegisterIntCallback callback = getInternalnotificationRegisterInt(plugin);
-  exit_if_fail(callback != NULL, "getInternalnotificationRegisterInt failed!");
-	succeed_if(callback(variable, key) == 1, "call to elektraInternalnotificationRegisterInt was not successful");
+  succeed_if(internalnotificationRegisterInt(plugin, variable, key) == 1, "call to elektraInternalnotificationRegisterInt was not successful");
 }
 
 static int digits(long long number) {
@@ -126,10 +129,9 @@ static void test_updateOnKdbGet ()
 	KeySet * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("internalnotification");
 
-	Key *valueKey = keyNew("user/test/internalnotification/value");
+	Key *valueKey = keyNew("user/test/internalnotification/value", KEY_END);
 
 	int value = 0;
-	//pluginRegisterInt(plugin, &value, "user/test/internalnotification/value");
 	pluginRegisterInt(plugin, &value, valueKey);
 
 	keySetString(valueKey, "42");
@@ -154,7 +156,7 @@ static void test_updateOnKdbSet ()
 	KeySet * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("internalnotification");
 
-	Key *valueKey = keyNew("user/test/internalnotification/value");
+	Key *valueKey = keyNew("user/test/internalnotification/value", KEY_END);
 
 	int value = 0;
 	pluginRegisterInt(plugin, &value, valueKey);
@@ -181,13 +183,12 @@ static void test_updateWithCascadingKey ()
 	KeySet * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("internalnotification");
 
-  //char* registeredKey = "/test/internalnotification/value";
-  Key* registeredKey = keyNew("/test/internalnotification/value");
+  Key* registeredKey = keyNew("/test/internalnotification/value", KEY_END);
 
   int value = 0;
   pluginRegisterInt(plugin, &value, registeredKey);
 
-  Key* valueKey = keyNew("user/test/internalnotification/value");
+  Key* valueKey = keyNew("user/test/internalnotification/value", KEY_END);
 	keySetString(valueKey, "42");
 
 	KeySet * ks = ksNew (1, KS_END);
@@ -210,7 +211,7 @@ static void test_noUpdateWithInvalidValue ()
 	KeySet * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("internalnotification");
 
-  Key *valueKey = keyNew("user/test/internalnotification/value");
+  Key *valueKey = keyNew("user/test/internalnotification/value", KEY_END);
 
 	int value = 123;
 	pluginRegisterInt(plugin, &value, valueKey);
@@ -237,7 +238,7 @@ static void test_updateWithValueNotYetExceedingIntMax ()
 	KeySet * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("internalnotification");
 
-  Key *valueKey = keyNew("user/test/internalnotification/value");
+  Key *valueKey = keyNew("user/test/internalnotification/value", KEY_END);
 
 	int value = 123;
 	pluginRegisterInt(plugin, &value, valueKey);
@@ -267,7 +268,7 @@ static void test_noUpdateWithValueExceedingIntMax ()
 	KeySet * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("internalnotification");
 
-  Key *valueKey = keyNew("user/test/internalnotification/value");
+  Key *valueKey = keyNew("user/test/internalnotification/value", KEY_END);
 
 	int value = 123;
 	pluginRegisterInt(plugin, &value, valueKey);
@@ -298,7 +299,7 @@ static void test_updateWithValueNotYetExceedingIntMin ()
 	KeySet * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("internalnotification");
 
-  Key *valueKey = keyNew("user/test/internalnotification/value");
+  Key *valueKey = keyNew("user/test/internalnotification/value", KEY_END);
 
 	int value = 123;
 	pluginRegisterInt(plugin, &value, valueKey);
@@ -328,7 +329,7 @@ static void test_noUpdateWithValueExceedingIntMin ()
 	KeySet * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("internalnotification");
 
-  Key *valueKey = keyNew("user/test/internalnotification/value");
+  Key *valueKey = keyNew("user/test/internalnotification/value", KEY_END);
 
 	int value = 123;
 	pluginRegisterInt(plugin, &value, valueKey);
@@ -358,14 +359,14 @@ int main (int argc, char ** argv)
 	init (argc, argv);
 
 	test_basics ();
-	/*test_updateOnKdbGet ();
+	test_updateOnKdbGet ();
 	test_updateOnKdbSet ();
 	test_updateWithCascadingKey ();
-  test_noUpdateWithInvalidValue ();*/
-  //test_updateWithValueNotYetExceedingIntMax ();
+  test_noUpdateWithInvalidValue ();
+  test_updateWithValueNotYetExceedingIntMax ();
   test_noUpdateWithValueExceedingIntMax ();
-  /*test_updateWithValueNotYetExceedingIntMin ();
-  test_noUpdateWithValueExceedingIntMin ();*/
+  test_updateWithValueNotYetExceedingIntMin ();
+  test_noUpdateWithValueExceedingIntMin ();
 
 	printf ("\ntestmod_internalnotification RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 
