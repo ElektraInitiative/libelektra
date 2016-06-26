@@ -9,9 +9,7 @@
 
 #include "internalnotification.h"
 
-//#define PLUGIN_INTERNALNOTIFICATION_VERBOSE
-
-#ifdef PLUGIN_INTERNALNOTIFICATION_VERBOSE
+#if PLUGIN_INTERNALNOTIFICATION_VERBOSE
 #include <stdio.h>
 #endif
 
@@ -65,14 +63,14 @@ static void elektraInternalnotificationUpdateRegisteredKeys (ListPointer * listP
 	KeyRegistration * registeredKey = listPointer->head;
 	while (registeredKey != NULL)
 	{
-#ifdef PLUGIN_INTERNALNOTIFICATION_VERBOSE
+#if PLUGIN_INTERNALNOTIFICATION_VERBOSE
 		fprintf (stderr, "elektraInternalnotificationUpdateRegisteredKeys looking up registeredKey=%s\n", registeredKey->name);
 #endif
 
 		Key * key = ksLookupByName (keySet, registeredKey->name, 0);
 		if (key != 0)
 		{
-#ifdef PLUGIN_INTERNALNOTIFICATION_VERBOSE
+#if PLUGIN_INTERNALNOTIFICATION_VERBOSE
 			fprintf (stderr, "elektraInternalnotificationUpdateRegisteredKeys found registeredKey=%s; updating variable=%p with string value %s\n", registeredKey->name, (void *)registeredKey->variable, keyString (key));
 #endif
 			// Convert string value to long
@@ -84,7 +82,7 @@ static void elektraInternalnotificationUpdateRegisteredKeys (ListPointer * listP
 			{
 				*(registeredKey->variable) = value;
 			}
-#ifdef PLUGIN_INTERNALNOTIFICATION_VERBOSE
+#if PLUGIN_INTERNALNOTIFICATION_VERBOSE
 			else
 			{
 				fprintf (stderr, "elektraInternalnotificationUpdateRegisteredKeys conversion failed! keyString=%s, *end=%c, errno=%d, value=%ld\n", keyString (key), *end, errno, value);
@@ -121,7 +119,7 @@ int elektraInternalnotificationGet (Plugin * handle, KeySet * returned, Key * pa
 
 		return 1;
 	}
-#ifdef PLUGIN_INTERNALNOTIFICATION_VERBOSE
+#if PLUGIN_INTERNALNOTIFICATION_VERBOSE
 	fprintf (stderr, "elektraInternalnotificationGet keyName=%s\n", parentKeyName);
 #endif
 
@@ -134,7 +132,7 @@ int elektraInternalnotificationGet (Plugin * handle, KeySet * returned, Key * pa
 int elektraInternalnotificationSet (Plugin * handle, KeySet * returned, Key * parentKey)
 {
 
-#ifdef PLUGIN_INTERNALNOTIFICATION_VERBOSE
+#if PLUGIN_INTERNALNOTIFICATION_VERBOSE
 	fprintf (stderr, "elektraInternalnotificationSet keyName=%s\n", keyName (parentKey));
 #endif
 
@@ -146,7 +144,7 @@ int elektraInternalnotificationSet (Plugin * handle, KeySet * returned, Key * pa
 
 int elektraInternalnotificationOpen (Plugin * handle, Key * parentKey ELEKTRA_UNUSED)
 {
-#ifdef PLUGIN_INTERNALNOTIFICATION_VERBOSE
+#if PLUGIN_INTERNALNOTIFICATION_VERBOSE
 	fprintf (stderr, "elektraInternalnotificationOpen\n");
 #endif
 
@@ -156,7 +154,7 @@ int elektraInternalnotificationOpen (Plugin * handle, Key * parentKey ELEKTRA_UN
 		listPointer = elektraMalloc (sizeof *listPointer);
 		if (listPointer == NULL)
 		{
-#ifdef PLUGIN_INTERNALNOTIFICATION_VERBOSE
+#if PLUGIN_INTERNALNOTIFICATION_VERBOSE
 			fprintf (stderr, "elektraInternalnotificationOpen elektraMalloc failed!\n");
 #endif
 			return -1;
@@ -173,7 +171,7 @@ int elektraInternalnotificationOpen (Plugin * handle, Key * parentKey ELEKTRA_UN
 
 int elektraInternalnotificationClose (Plugin * handle, Key * parentKey ELEKTRA_UNUSED)
 {
-#ifdef PLUGIN_INTERNALNOTIFICATION_VERBOSE
+#if PLUGIN_INTERNALNOTIFICATION_VERBOSE
 	fprintf (stderr, "elektraInternalnotificationClose\n");
 #endif
 
@@ -204,7 +202,7 @@ int elektraInternalnotificationRegisterInt (Plugin * handle, int * variable, Key
 {
 	ListPointer * listPointer = elektraPluginGetData (handle);
 
-#ifdef PLUGIN_INTERNALNOTIFICATION_VERBOSE
+#if PLUGIN_INTERNALNOTIFICATION_VERBOSE
 	fprintf (stderr, "elektraInternalnotificationRegisterInt variable=%p, keyName=%s\n", (void *)variable, keyName (key));
 #endif
 
@@ -231,7 +229,7 @@ int elektraInternalnotificationRegisterInt (Plugin * handle, int * variable, Key
 	registeredKey->name = nameBuffer;
 	registeredKey->variable = variable;
 
-#ifdef PLUGIN_INTERNALNOTIFICATION_VERBOSE
+#if PLUGIN_INTERNALNOTIFICATION_VERBOSE
 	fprintf (stderr, "elektraInternalnotificationRegisterInt registered key (name=%s, variable=%p)\n", registeredKey->name, (void *)registeredKey->variable);
 #endif
 
