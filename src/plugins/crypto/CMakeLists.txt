@@ -115,8 +115,6 @@ if (DEPENDENCY_PHASE)
 		endif ()
 	endif ()
 
-	set( MEMORYCHECK_COMMAND_OPTIONS "--gen-suppressions=all" )
-
 	# clean up for dependency phase
 	unset (OPENSSL_MANUAL_OSX_HACK)
 	unset (LIBGCRYPT_MANUAL_OSX_HACK)
