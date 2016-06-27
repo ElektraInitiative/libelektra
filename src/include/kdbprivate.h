@@ -539,6 +539,54 @@ int elektraKeyLock (Key * key, enum elektraLockOptions what);
 
 ssize_t ksSearchInternal (const KeySet * ks, const Key * toAppend);
 
+/**
+ * The Vstack structure. Used in the OPMPHM.
+ *
+ * A stack implementation with dynamical memory allocation.
+ * The space gets doubled if full and reduced by half if used only a quarter of it,
+ * but not less than minSize.
+ */
+
+typedef struct
+{
+	int minSize;  /*!< the minimal size of the stack > */
+	int size;     /*!< The maximal size of the stack */
+	void ** data; /*!< The data array */
+	void ** head; /*!< The stack pointer, which points to the head */
+} Vstack;
+
+Vstack * elektraVstackInit (int minSize);
+int elektraVstackPush (Vstack * stack, void * data);
+void * elektraVstackPop (Vstack * stack);
+int elektraVstackIsEmpty (Vstack * stack);
+void elektraVstackDestroy (Vstack * stack);
+
+/**
+ * The Vheap structure. Used in the OPMPHM.
+ *
+ * A heap implementation with dynamical memory allocation.
+ * The space gets doubled if full and reduced by half if used only a quarter of it,
+ * but not less than minSize.
+ *
+ * To construct a max heap the comparison function comp (a, b), must return
+ * 1 on a > b and 0 otherwise. For a min heap 1 on a < b and 0 otherwise.
+ */
+
+typedef struct
+{
+	int minSize;		      /*!< the minimal size of the heap > */
+	int size;		      /*!< The size of the heap */
+	int count;		      /*!< The current number of elements in the heap */
+	int (*comp) (void *, void *); /*!< The comparison function */
+	void ** data;		      /*!< The data array */
+} Vheap;
+
+Vheap * elektraVheapInit (int (*comp) (void *, void *), int minSize);
+void elektraVheapDestroy (Vheap * vheap);
+int elektraVheapIsEmpty (Vheap * vheap);
+int elektraVheapInsert (Vheap * vheap, void * data);
+void * elektraVheapRemove (Vheap * vheap);
+
 /*Used for internal memcpy/memmove*/
 ssize_t elektraMemcpy (Key ** array1, Key ** array2, size_t size);
 ssize_t elektraMemmove (Key ** array1, Key ** array2, size_t size);
