@@ -23,12 +23,13 @@ install (PROGRAMS upgrade-bootstrap DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
 
 install (PROGRAMS umount-all DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
 
+include (GNUInstallDirs)
 if (INSTALL_SYSTEM_FILES)
 	install (FILES kdb-bash-completion
-			DESTINATION /etc/bash_completion.d
+			DESTINATION ${CMAKE_INSTALL_FULL_SYSCONFDIR}/bash_completion.d
 			RENAME kdb)
 	install (FILES elektraenv.sh
-			DESTINATION /etc/profile.d
+			DESTINATION ${CMAKE_INSTALL_FULL_SYSCONFDIR}/profile.d
 			RENAME kdb.sh)
 endif()
 
