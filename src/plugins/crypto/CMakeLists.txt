@@ -184,5 +184,6 @@ if (ADDTESTING_PHASE)
 		add_plugintest (crypto
 				MEMLEAK
 				LINK_PLUGIN "<no>")
+		set_property (TEST testmod_crypto PROPERTY LABELS memleak)
 	endif ()
 endif ()
