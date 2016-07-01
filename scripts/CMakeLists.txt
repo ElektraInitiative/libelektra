@@ -23,14 +23,13 @@ install (PROGRAMS upgrade-bootstrap DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
 
 install (PROGRAMS umount-all DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
 
-if (INSTALL_SYSTEM_FILES)
-	install (FILES kdb-bash-completion
-			DESTINATION /etc/bash_completion.d
-			RENAME kdb)
-	install (FILES elektraenv.sh
-			DESTINATION /etc/profile.d
-			RENAME kdb.sh)
-endif()
+include (GNUInstallDirs)
+install (FILES kdb-bash-completion
+		DESTINATION ${CMAKE_INSTALL_FULL_SYSCONFDIR}/bash_completion.d
+		RENAME kdb)
+install (FILES elektraenv.sh
+		DESTINATION ${CMAKE_INSTALL_FULL_SYSCONFDIR}/profile.d
+		RENAME kdb.sh)
 
 configure_file(
 	"${CMAKE_CURRENT_SOURCE_DIR}/elektrify-getenv.in"
