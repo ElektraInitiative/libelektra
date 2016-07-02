@@ -57,10 +57,12 @@ else()
 endif ()
 
 if (BUILD_TESTING)
+	if (GLIB_VERSION VERSION_LESS 2.48)
+		message (WARNING "excluding GSettingsTests: requires GLib >= 2.48")
+	else ()
 	include (ExternalProject)
 	ExternalProject_Add (GSettingsTests GIT_REPOSITORY https://github.com/sirblackheart/gsettings-tests INSTALL_COMMAND "")
 	ExternalProject_Get_Property (GSettingsTests binary_dir)
-	message (STATUS ${binary_dir})
 	add_custom_command(
 		TARGET elektrasettings
 		POST_BUILD
@@ -73,6 +75,7 @@ if (BUILD_TESTING)
 		COMMAND "${binary_dir}/gsettings"
 	)
 	set_property (TEST test_gsettings PROPERTY ENVIRONMENT "GIO_MODULE_DIR=${binary_dir};GSETTINGS_BACKEND=elektra")
+	endif()
 endif (BUILD_TESTING)
 
 if (CMAKE_SOURCE_DIR STREQUAL CMAKE_BINARY_DIR)
