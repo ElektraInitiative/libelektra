@@ -19,10 +19,12 @@ $ sudo kdb global-mount internalnotification
 
 ## Exported Methods ##
 
-The plugin exports the function `int elektraInternalnotificationRegisterInt(int* variable, Key* key)`.
-If the given key is contained in a KeySet (e.g. in a result of kdbGet or on kdbSet), its value is
-converted from string to integer and the given integer variable is updated with the current value.
-Also works if the registered key is a cascading key.
+This plugin exports the function `int elektraInternalnotificationRegisterInt (Plugin * handle, int * variable, Key * key)`.
+If the given key is contained in a KeySet on a kdbGet or kdbSet operation, its value is
+converted from string to integer and the registered variable is updated with the current value.
+This also works if the registered key is a cascading key.
+The function address is exported as `system/elektra/modules/internalnotification/exports/elektraInternalnotificationRegisterInt`.
+The plugin handle required for this plugin is exported as `system/elektra/modules/internalnotification/exports/handle`.
 
 ## Todo/Issues ##
 
