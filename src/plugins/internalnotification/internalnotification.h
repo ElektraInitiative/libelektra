@@ -18,7 +18,7 @@ int elektraInternalnotificationSet (Plugin * handle, KeySet * ks, Key * parentKe
 int elektraInternalnotificationClose (Plugin * handle, Key * errorKey);
 int elektraInternalnotificationOpen (Plugin * handle, Key * errorKey);
 
-int elektraInternalnotificationRegisterInt(Plugin * handle, int* variable, Key* key);
+int elektraInternalnotificationRegisterInt (Plugin * handle, int * variable, Key * key);
 
 Plugin * ELEKTRA_PLUGIN_EXPORT (internalnotification);
 

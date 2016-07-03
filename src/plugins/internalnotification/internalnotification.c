@@ -13,8 +13,8 @@
 #include <stdio.h>
 #endif
 
-#include <stdlib.h>
 #include <errno.h>
+#include <stdlib.h>
 
 #include <kdbhelper.h>
 
@@ -71,7 +71,10 @@ static void elektraInternalnotificationUpdateRegisteredKeys (ListPointer * listP
 		if (key != 0)
 		{
 #if PLUGIN_INTERNALNOTIFICATION_VERBOSE
-			fprintf (stderr, "elektraInternalnotificationUpdateRegisteredKeys found registeredKey=%s; updating variable=%p with string value %s\n", registeredKey->name, (void *)registeredKey->variable, keyString (key));
+			fprintf (stderr,
+				 "elektraInternalnotificationUpdateRegisteredKeys found registeredKey=%s; updating variable=%p with string "
+				 "value %s\n",
+				 registeredKey->name, (void *)registeredKey->variable, keyString (key));
 #endif
 			// Convert string value to long
 			char * end;
@@ -85,7 +88,10 @@ static void elektraInternalnotificationUpdateRegisteredKeys (ListPointer * listP
 #if PLUGIN_INTERNALNOTIFICATION_VERBOSE
 			else
 			{
-				fprintf (stderr, "elektraInternalnotificationUpdateRegisteredKeys conversion failed! keyString=%s, *end=%c, errno=%d, value=%ld\n", keyString (key), *end, errno, value);
+				fprintf (stderr,
+					 "elektraInternalnotificationUpdateRegisteredKeys conversion failed! keyString=%s, *end=%c, "
+					 "errno=%d, value=%ld\n",
+					 keyString (key), *end, errno, value);
 			}
 #endif
 		}
@@ -100,20 +106,28 @@ int elektraInternalnotificationGet (Plugin * handle, KeySet * returned, Key * pa
 
 	if (!elektraStrCmp (parentKeyName, "system/elektra/modules/internalnotification"))
 	{
-		KeySet * contract =
-			ksNew (30, keyNew ("system/elektra/modules/internalnotification", KEY_VALUE, "internalnotification plugin waits for your orders", KEY_END),
-				keyNew ("system/elektra/modules/internalnotification/exports", KEY_END),
-				keyNew ("system/elektra/modules/internalnotification/exports/get", KEY_FUNC, elektraInternalnotificationGet, KEY_END),
-				keyNew ("system/elektra/modules/internalnotification/exports/set", KEY_FUNC, elektraInternalnotificationSet, KEY_END),
-				keyNew ("system/elektra/modules/internalnotification/exports/open", KEY_FUNC, elektraInternalnotificationOpen, KEY_END),
-				keyNew ("system/elektra/modules/internalnotification/exports/close", KEY_FUNC, elektraInternalnotificationClose, KEY_END),
+		KeySet * contract = ksNew (
+			30, keyNew ("system/elektra/modules/internalnotification", KEY_VALUE,
+				    "internalnotification plugin waits for your orders", KEY_END),
+			keyNew ("system/elektra/modules/internalnotification/exports", KEY_END),
+			keyNew ("system/elektra/modules/internalnotification/exports/get", KEY_FUNC, elektraInternalnotificationGet,
+				KEY_END),
+			keyNew ("system/elektra/modules/internalnotification/exports/set", KEY_FUNC, elektraInternalnotificationSet,
+				KEY_END),
+			keyNew ("system/elektra/modules/internalnotification/exports/open", KEY_FUNC, elektraInternalnotificationOpen,
+				KEY_END),
+			keyNew ("system/elektra/modules/internalnotification/exports/close", KEY_FUNC, elektraInternalnotificationClose,
+				KEY_END),
 
-				keyNew ("system/elektra/modules/internalnotification/exports/handle", KEY_BINARY, KEY_SIZE, sizeof handle, KEY_VALUE, &handle, KEY_END),
-				keyNew ("system/elektra/modules/internalnotification/exports/elektraInternalnotificationRegisterInt", KEY_FUNC, elektraInternalnotificationRegisterInt, KEY_END),
+			// Export registerInt function and required plugin handle
+			keyNew ("system/elektra/modules/internalnotification/exports/elektraInternalnotificationRegisterInt", KEY_FUNC,
+				elektraInternalnotificationRegisterInt, KEY_END),
+			keyNew ("system/elektra/modules/internalnotification/exports/handle", KEY_BINARY, KEY_SIZE, sizeof handle,
+				KEY_VALUE, &handle, KEY_END),
 
 #include ELEKTRA_README (internalnotification)
-				keyNew ("system/elektra/modules/internalnotification/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END),
-				KS_END);
+
+			keyNew ("system/elektra/modules/internalnotification/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 		ksAppend (returned, contract);
 		ksDel (contract);
 
@@ -136,7 +150,7 @@ int elektraInternalnotificationSet (Plugin * handle, KeySet * returned, Key * pa
 	fprintf (stderr, "elektraInternalnotificationSet keyName=%s\n", keyName (parentKey));
 #endif
 
-	ListPointer* listPointer = elektraPluginGetData (handle);
+	ListPointer * listPointer = elektraPluginGetData (handle);
 	elektraInternalnotificationUpdateRegisteredKeys (listPointer, returned);
 
 	return 1;
@@ -191,7 +205,7 @@ int elektraInternalnotificationClose (Plugin * handle, Key * parentKey ELEKTRA_U
 		}
 
 		// Free list pointer
-		elektraFree(listPointer);
+		elektraFree (listPointer);
 		elektraPluginSetData (handle, NULL);
 	}
 
@@ -220,7 +234,7 @@ int elektraInternalnotificationRegisterInt (Plugin * handle, int * variable, Key
 		return -1;
 	}
 	ssize_t result = keyGetName (key, nameBuffer, nameBufferSize);
-  if (result == 1 || result == -1)
+	if (result == 1 || result == -1)
 	{
 		return -1;
 	}
@@ -230,7 +244,8 @@ int elektraInternalnotificationRegisterInt (Plugin * handle, int * variable, Key
 	registeredKey->variable = variable;
 
 #if PLUGIN_INTERNALNOTIFICATION_VERBOSE
-	fprintf (stderr, "elektraInternalnotificationRegisterInt registered key (name=%s, variable=%p)\n", registeredKey->name, (void *)registeredKey->variable);
+	fprintf (stderr, "elektraInternalnotificationRegisterInt registered key (name=%s, variable=%p)\n", registeredKey->name,
+		 (void *)registeredKey->variable);
 #endif
 
 	return 1;
