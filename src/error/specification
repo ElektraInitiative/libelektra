@@ -874,3 +874,15 @@ severity:warning
 ingroup:plugin
 module:resolver
 macro:NOCWD
+
+number:147
+description:issue while interfacing with git
+severity:error
+ingroup:plugin
+module:gitresolver
+
+number:148
+description:A conflict occured. There are new commits in the repository.
+severity:error
+ingroup:plugin
+module:gitresolver
