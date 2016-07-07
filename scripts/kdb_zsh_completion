@@ -8,18 +8,24 @@
 
 _kdb_paths () {
     # It seems this is enough to get all keys into the compsystem
-    # TODO it would be great to have better control over the paths, and only show the next choices
-    
-    # TODO $PREFIX contains the currently written string. we need to check if we can expand that...
-    _message -e "foobar $PREFIX"
 
     typeset -a paths
-    if [ $# -eq 0 ]; then
+    # Count the number of slashes to know where we are
+    slashes=${#PREFIX//[^\\\/]/}
+    if [ $slashes -eq 0 ]; then
+        # If no slashes, we perfom search on /
         paths=($(kdb ls / | cut -d "/" -f 1 | uniq))
     else
-        paths=($(kdb ls $1 | sed -e "s*$1**" | cut -d "/" -f 2 | sort | uniq))
+        # Otherwise we query for the current prefix
+        # TODO This leads to a problem: If the user enters some string that is only part of the 
+        # path, this will return nothing!
+        # Maybe check if kdb's exit code is != 0 and strip the path to it's last /
+        _message -e "$PREFIX"
+        paths=($(kdb ls $PREFIX | cut -d "/" -f -$(( slashes + 1 )) ))
     fi
-    compadd $paths
+    _values -s / 'kdb path' $paths
+    # TODO this function must return nothing if a leaf is entered. 
+    # How can we check that?
 }
 
 # These are the functions for each command
@@ -30,9 +36,7 @@ _kdb-export () { }
 _kdb-file () { }
 _kdb-fstab () { }
 _kdb-get () { 
-    # $CURRENT contains the index of the parameter we are processing
-    # $words is an array of the parameters.
-    _kdb_paths $words[$CURRENT]
+    _kdb_paths
 }
 _kdb-getmeta () { }
 _kdb-import () { }
@@ -103,11 +107,6 @@ _kdb_commands () {
         list-tools:'List all external tools')
 
   zstyle -a :completion:$curcontext: user-commands user_commands
-
-  local command
-  for command in $_kdb_third_party_commands; do
-    (( $+commands[kdb-${command%%:*}] )) && third_party_commands+=$command
-  done
 
   local -a aliases
   aliases=()
