@@ -68,9 +68,13 @@ _kdb-vset () { }
 _kdb-help () { }
 _kdb-list-tools () { }
 
+
+# This function handles the commands of kdb and passes them
+# to the function which actually shows the options.
+
 _kdb_commands () {
     # TODO Copy&Paste from git completion
-    # I have absolutely no idea what is going on here...
+    # I have some clue what is going on here, but need to rewrite that someday
 
     local -a cmdtypes
     cmdtypes=(main_commands)
@@ -145,7 +149,6 @@ _kdb () {
 
     integer ret=1
 
-    # TODO profile and color has arguments.
     _arguments -C \
                    '-H[show the man page]'\
                    '--help[show the man page]'\
@@ -153,31 +156,19 @@ _kdb () {
                    '--version[Print version info]'\
                    '-v[Explain what is happening]'\
                    '--verbose[Explain what is happening]'\
-                   '-C[Print never/auto(default)/always colored output]'\
-                   '--color[Print never/auto(default)/always colored output]'\
-                   '-p[Use a different kdb profile, see below]'\
-                   '--profile[Use a different kdb profile, see below]'\
-                   '(-): :->command' \
-                   '(-)*:: :->option-or-argument' && return
+                   '-C[Print never/auto(default)/always colored output]:when'\
+                   '--color=-[Print never/auto(default)/always colored output]: :'\
+                   '-p[Use a different kdb profile]:profile'\
+                   '--profile=-[Use a different kdb profile]: :'\
+                   '(-): :->command' && return
 
     case $state in
         (command)
             _kdb_commands
         ;;
-        (option-or-argument)
-            curcontext=${curcontext%:*:*}:kdb-$words[1]:
-
-            if ! _call_function ret _kdb-$words[1]; then
-                if zstyle -T :completion:$curcontext: use-fallback; then
-                    _default && ret=0
-                else
-                    _message "unknown sub-command: $words[1]"
-                fi
-            fi
-        ;;
     esac
 
-    return ret
+    return
 }
 
 _kdb
