@@ -6,6 +6,22 @@
 # Sebastian Bachmann <hello@reox.at>, 2016
 
 
+_kdb_paths () {
+    # It seems this is enough to get all keys into the compsystem
+    # TODO it would be great to have better control over the paths, and only show the next choices
+    
+    # TODO $PREFIX contains the currently written string. we need to check if we can expand that...
+    _message -e "foobar $PREFIX"
+
+    typeset -a paths
+    if [ $# -eq 0 ]; then
+        paths=($(kdb ls / | cut -d "/" -f 1 | uniq))
+    else
+        paths=($(kdb ls $1 | sed -e "s*$1**" | cut -d "/" -f 2 | sort | uniq))
+    fi
+    compadd $paths
+}
+
 # These are the functions for each command
 _kdb-check () { }
 _kdb-convert () { }
@@ -13,7 +29,11 @@ _kdb-cp () { }
 _kdb-export () { }
 _kdb-file () { }
 _kdb-fstab () { }
-_kdb-get () { }
+_kdb-get () { 
+    # $CURRENT contains the index of the parameter we are processing
+    # $words is an array of the parameters.
+    _kdb_paths $words[$CURRENT]
+}
 _kdb-getmeta () { }
 _kdb-import () { }
 _kdb-info () { }
@@ -30,11 +50,6 @@ _kdb-mount () { }
 _kdb-mv () { }
 _kdb-remount () { }
 _kdb-rm () {
-    # TODO this will add foo, bla and bar to the allowed completions
-    # How we can get this to work as an array?
-    compadd foo
-    compadd bla
-    compadd bar
 }
 _kdb-set () {
 # Example how to get files as completion in this stage
@@ -131,6 +146,7 @@ _kdb () {
 
     integer ret=1
 
+    # TODO profile and color has arguments.
     _arguments -C \
                    '-H[show the man page]'\
                    '--help[show the man page]'\
@@ -138,6 +154,10 @@ _kdb () {
                    '--version[Print version info]'\
                    '-v[Explain what is happening]'\
                    '--verbose[Explain what is happening]'\
+                   '-C[Print never/auto(default)/always colored output]'\
+                   '--color[Print never/auto(default)/always colored output]'\
+                   '-p[Use a different kdb profile, see below]'\
+                   '--profile[Use a different kdb profile, see below]'\
                    '(-): :->command' \
                    '(-)*:: :->option-or-argument' && return
 
@@ -146,7 +166,7 @@ _kdb () {
             _kdb_commands
         ;;
         (option-or-argument)
-            curcontext=${curcontext%:*:*}:git-$words[1]:
+            curcontext=${curcontext%:*:*}:kdb-$words[1]:
 
             if ! _call_function ret _kdb-$words[1]; then
                 if zstyle -T :completion:$curcontext: use-fallback; then
