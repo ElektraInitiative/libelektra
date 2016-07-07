@@ -5,7 +5,6 @@
 #
 # Sebastian Bachmann <hello@reox.at>, 2016
 
-
 _kdb_paths () {
     # It seems this is enough to get all keys into the compsystem
 
@@ -16,16 +15,36 @@ _kdb_paths () {
         # If no slashes, we perfom search on /
         paths=($(kdb ls / | cut -d "/" -f 1 | uniq))
     else
-        # Otherwise we query for the current prefix
-        # TODO This leads to a problem: If the user enters some string that is only part of the 
-        # path, this will return nothing!
-        # Maybe check if kdb's exit code is != 0 and strip the path to it's last /
-        _message -e "$PREFIX"
-        paths=($(kdb ls $PREFIX | cut -d "/" -f -$(( slashes + 1 )) ))
+        # Check if key is a leaf
+        kdb ls / | grep -q -e "^${PREFIX}$"
+        if [ $? -eq 0 ]; then
+            _message "$PREFIX is a leaf."
+            return
+        fi
+        kdb ls / | grep -q -e "^$PREFIX"
+        if [ $? -ne 0 ]; then
+            # TODO need to check here for the key w/o /. 
+            # probably move into a function
+            kdb ls / | grep -q -e "^${PREFIX:0:-1}$"
+            if [ $? -eq 0 ]; then
+                _message "${PREFIX:0:-1} is a leaf."
+                return
+            fi
+            _message -e "Could not find $PREFIX as a valid path"
+        fi
+
+        # We need to check if the last char is a /
+        # If not, we remove the garbled part at the end and search from there.
+        if [ ${PREFIX[-1]} == "/" ]; then
+            _message -e "here... $PREFIX"
+            paths=($(kdb ls $PREFIX | cut -d "/" -f -$(( slashes + 1 )) ))
+        else
+            _message -e "inside prefix $slashes"
+            paths=($(kdb ls $PREFIX | cut -d "/" -f -$slashes ))
+        fi
+
     fi
     _values -s / 'kdb path' $paths
-    # TODO this function must return nothing if a leaf is entered. 
-    # How can we check that?
 }
 
 # These are the functions for each command
@@ -149,6 +168,7 @@ _kdb () {
 
     integer ret=1
 
+    # TODO disallow multiple kdb paths
     _arguments -C \
                    '-H[show the man page]'\
                    '--help[show the man page]'\
@@ -160,12 +180,25 @@ _kdb () {
                    '--color=-[Print never/auto(default)/always colored output]: :'\
                    '-p[Use a different kdb profile]:profile'\
                    '--profile=-[Use a different kdb profile]: :'\
-                   '(-): :->command' && return
+                   '(-): :->command' \
+                   '(-)*:: :->option-or-argument' && return
 
     case $state in
         (command)
             _kdb_commands
         ;;
+        (option-or-argument)
+            curcontext=${curcontext%:*:*}:kdb-$words[1]:
+
+            if ! _call_function ret _kdb-$words[1]; then
+                if zstyle -T :completion:$curcontext: use-fallback; then
+                    _default && ret=0
+                else
+                    _message "unknown sub-command: $words[1]"
+                fi
+            fi
+        ;;
+
     esac
 
     return
