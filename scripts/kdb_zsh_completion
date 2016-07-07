@@ -36,11 +36,10 @@ _kdb_paths () {
         # We need to check if the last char is a /
         # If not, we remove the garbled part at the end and search from there.
         if [ ${PREFIX[-1]} == "/" ]; then
-            _message -e "here... $PREFIX"
             paths=($(kdb ls $PREFIX | cut -d "/" -f -$(( slashes + 1 )) ))
         else
-            _message -e "inside prefix $slashes"
-            paths=($(kdb ls $PREFIX | cut -d "/" -f -$slashes ))
+            pre=$(cut -d "/" -f -$slashes <<< $PREFIX)
+            paths=($(kdb ls $pre | cut -d "/" -f -$(( slashes + 1 )) ))
         fi
 
     fi
