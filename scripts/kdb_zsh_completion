@@ -54,6 +54,7 @@ _kdb-export () { }
 _kdb-file () { }
 _kdb-fstab () { }
 _kdb-get () { 
+    # TODO disallow multiple kdb paths
     _kdb_paths
 }
 _kdb-getmeta () { }
@@ -61,12 +62,12 @@ _kdb-import () { }
 _kdb-info () { }
 _kdb-list () { }
 _kdb-ls () {
-# Example how to get more arguments in this case
-    _arguments -w -C -S -s \
-        "--foo[dunno]" \
-        "--bar[sdfdsf]" && return
+    # TODO disallow multiple kdb paths
+    _kdb_paths
 }
-_kdb-lsmeta () { }
+_kdb-lsmeta () { 
+    _kdb_paths
+}
 _kdb-merge () { }
 _kdb-mount () { }
 _kdb-mv () { }
@@ -167,7 +168,6 @@ _kdb () {
 
     integer ret=1
 
-    # TODO disallow multiple kdb paths
     _arguments -C \
                    '-H[show the man page]'\
                    '--help[show the man page]'\
