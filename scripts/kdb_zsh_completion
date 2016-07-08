@@ -10,6 +10,9 @@ _kdb_paths () {
 
     typeset -a paths
     # Count the number of slashes to know where we are
+    # TODO this seems to be not working in a zsh without configuratin
+    # e.g. my configuration does something weird.
+    # it should be ${#PREFIX//[^\/]/}
     slashes=${#PREFIX//[^\\\/]/}
     if [ $slashes -eq 0 ]; then
         # If no slashes, we perfom search on /
