@@ -1,7 +1,7 @@
 /**
  * @file
  *
- * @brief cryptographic interface using the gcrypt library
+ * @brief cryptographic interface using the Botan library
  *
  * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
  *
