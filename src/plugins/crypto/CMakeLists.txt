@@ -139,7 +139,6 @@ add_plugin (crypto_gcrypt
 		ELEKTRA_PLUGIN_NAME=\"crypto_gcrypt\"
 		ELEKTRA_VARIANT=gcrypt
 		ELEKTRA_CRYPTO_API_GCRYPT
-	ADD_TEST
 )
 
 #
@@ -159,7 +158,6 @@ add_plugin (crypto_openssl
 		ELEKTRA_PLUGIN_NAME=\"crypto_openssl\"
 		ELEKTRA_VARIANT=openssl
 		ELEKTRA_CRYPTO_API_OPENSSL
-	ADD_TEST
 )
 
 #
@@ -179,6 +177,28 @@ add_plugin (crypto_botan
 		ELEKTRA_PLUGIN_NAME=\"crypto_botan\"
 		ELEKTRA_VARIANT=botan
 		ELEKTRA_CRYPTO_API_BOTAN
-	ADD_TEST
 )
+
+if (ADDTESTING_PHASE)
+	if (HAS_OPENSSL_4SURE)
+		add_plugintest (crypto_openssl
+				MEMLEAK
+				LINK_PLUGIN "<no>")
+		set_property (TEST "testmod_crypto_openssl" PROPERTY LABELS memleak)
+	endif ()
+
+	if (HAS_GCRYPT_4SURE)
+		add_plugintest (crypto_gcrypt
+				MEMLEAK
+				LINK_PLUGIN "<no>")
+		set_property (TEST "testmod_crypto_gcrypt" PROPERTY LABELS memleak)
+	endif ()
+
+	if (HAS_BOTAN_4SURE)
+		add_plugintest (crypto_botan
+				MEMLEAK
+				LINK_PLUGIN "<no>")
+		set_property (TEST "testmod_crypto_botan" PROPERTY LABELS memleak)
+	endif ()
+endif ()
 
