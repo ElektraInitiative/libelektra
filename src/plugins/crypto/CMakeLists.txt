@@ -183,7 +183,6 @@ if (ADDTESTING_PHASE)
 	if (HAS_OPENSSL_4SURE)
 		add_plugintest (crypto_openssl
 				LINK_PLUGIN "<no>")
-		set_property (TEST "testmod_crypto_openssl" PROPERTY LABELS memleak)
 	endif ()
 
 	if (HAS_GCRYPT_4SURE)
@@ -196,7 +195,6 @@ if (ADDTESTING_PHASE)
 	if (HAS_BOTAN_4SURE)
 		add_plugintest (crypto_botan
 				LINK_PLUGIN "<no>")
-		set_property (TEST "testmod_crypto_botan" PROPERTY LABELS memleak)
 	endif ()
 endif ()
 
