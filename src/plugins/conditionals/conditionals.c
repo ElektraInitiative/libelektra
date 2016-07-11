@@ -692,7 +692,8 @@ static CondResult parseConditionString (const Key * meta, const Key * suffixList
 			ret = parseCondition (key, thenexpr, suffixList, ks, parentKey);
 			if (ret == FALSE)
 			{
-				ELEKTRA_SET_ERRORF (135, parentKey, "Validation of %s failed. (%s failed)", conditionString, thenexpr);
+				ELEKTRA_SET_ERRORF (135, parentKey, "Validation of Key %s: %s failed. (%s failed)",
+						    keyName (key) + strlen (keyName (parentKey)) + 1, conditionString, thenexpr);
 			}
 			else if (ret == ERROR)
 			{
@@ -726,8 +727,8 @@ static CondResult parseConditionString (const Key * meta, const Key * suffixList
 				ret = parseCondition (key, elseexpr, suffixList, ks, parentKey);
 				if (ret == FALSE)
 				{
-					ELEKTRA_SET_ERRORF (135, parentKey, "Validation of %s failed. (%s failed)", conditionString,
-							    elseexpr);
+					ELEKTRA_SET_ERRORF (135, parentKey, "Validation of Key %s: %s failed. (%s failed)",
+							    keyName (key) + strlen (keyName (parentKey)) + 1, conditionString, elseexpr);
 				}
 				else if (ret == ERROR)
 				{
