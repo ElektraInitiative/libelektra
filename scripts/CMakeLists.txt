@@ -24,8 +24,19 @@ install (PROGRAMS upgrade-bootstrap DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
 install (PROGRAMS umount-all DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
 
 if (INSTALL_SYSTEM_FILES)
+	find_package (bash-completion QUIET)
+	if (NOT BASH_COMPLETION_COMPLETIONSDIR)
+		find_package (PkgConfig REQUIRED)
+		pkg_check_modules (BASH_COMPLETION bash-completion QUIET)
+		if (BASH_COMPLETION_FOUND)
+			include (LibFindMacros)
+			pkg_get_variable (BASH_COMPLETION_COMPLETIONSDIR bash-completion completionsdir)
+		else ()
+			set (BASH_COMPLETION_COMPLETIONSDIR "/etc/bash_completion.d")
+		endif ()
+	endif ()
 	install (FILES kdb-bash-completion
-			DESTINATION /etc/bash_completion.d
+			DESTINATION ${BASH_COMPLETION_COMPLETIONSDIR}
 			RENAME kdb)
 	install (FILES elektraenv.sh
 			DESTINATION /etc/profile.d
