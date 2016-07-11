@@ -39,10 +39,10 @@ execute()
     fi
 
     [ -z "$Storage" ] && Storage="dump"
-    command=$(echo ${proto//'$Mountpoint'/$Mountpoint})
-    command=$(echo ${command//'$File'/$DBFile})
-    command=$(echo ${command//'$Storage'/$Storage})
-    command=$(echo ${command//'$MountArgs'/$MountArgs})
+    command=$(echo $proto | sed "s~\$Mountpoint~${Mountpoint}~g")
+    command=$(echo $command | sed "s~\$File~${DBFile}~g")
+    command=$(echo $command | sed "s~\$Storage~${Storage}~g")
+    command=$(echo $command | sed "s~\$MountArgs~${MountArgs}~g")
 
     case "$DiffType" in 
         File)
@@ -61,13 +61,13 @@ execute()
 
     echo "$command"
 
-    echo -e "CMD: $command\0" >> $OutFile
+    printf "%s\0" "CMD: $command" >> $OutFile
 
     bash -c "kdb $command 2>stderr 1>stdout"
 
     RETVAL="$?"
 
-    echo -e "RET: $RETVAL\0" >> $OutFile
+    printf "%s\0" "RET: $RETVAL" >> $OutFile
 
     if [ ! -z "$RETCMP" ];
     then
@@ -75,7 +75,7 @@ execute()
         if [ "$?" -ne "0" ];
         then
             echo "Return value $RETVAL doesn't match $RETCMP"
-            echo -e "=== FAILED return value doesn't match expected pattern $RETCMP\0" >> $OutFile
+            printf "%s\0" "=== FAILED return value doesn't match expected pattern $RETCMP" >> $OutFile
         fi
     fi
 
@@ -100,31 +100,31 @@ execute()
 
 
 
-    STDERR=$(<./stderr)
+    STDERR=$(cat ./stderr)
 
-    echo -e "STDERR: $STDERR\0" >> $OutFile
+    printf "%s\0" "STDERR: $STDERR" >> $OutFile
     if [ ! -z "$STDERRCMP" ];
     then
         echo "$STDERR" | grep -Eqz --text "$STDERRCMP"
         if [ "$?" -ne "0" ];
         then
             echo "STDERR doesn't match $STDERRCMP"
-            echo -e "=== FAILED stderr doesn't match expected patter $STDERRCMP\0" >> $OutFile
+            printf "%s\0" "=== FAILED stderr doesn't match expected patter $STDERRCMP" >> $OutFile
         fi
     fi
 
 
 
-    STDOUT=$(<./stdout)
+    STDOUT=$(cat ./stdout)
 
-    echo -e "STDOUT: $STDOUT\0" >> $OutFile
+    printf "%s\0" "STDOUT: $STDOUT" >> $OutFile
     if [ ! -z "$STDOUTCMP" ];
     then
         echo "$STDOUT" | grep -Eqz --text "$STDOUTCMP"
         if [ "$?" -ne "0" ];
         then
             echo "STDOUT doesn't match $STDOUTCMP"
-            echo -e "=== FAILED stdout doesn't match expected pattern $STDOUTCMP\0" >> $OutFile
+            printf "%s\0" "=== FAILED stdout doesn't match expected pattern $STDOUTCMP" >> $OutFile
         fi
     fi
 
@@ -132,14 +132,14 @@ execute()
 
     WARNINGS=$(echo "$STDERR" | grep -Po "(?<=Warning number: )([[:digit:]]*)" | tr '\n' ',')
 
-    echo -e "WARNINGS: $WARNINGS\0" >> $OutFile
+    printf "%s\0" "WARNINGS: $WARNINGS" >> $OutFile
     if [ ! -z "$WARNINGSCMP" ];
     then
         echo "$WARNINGS" | grep -Eqz --text "($WARNINGSCMP)"
         if [ "$?" -ne "0" ];
         then
             echo "WARNINGS doesn't match $WARNINGSCMP"
-            echo -e "=== FAILED Warnings don't match expected pattern $WARNINGSCMP\0" >> $OutFile
+            printf "%s\0" "=== FAILED Warnings don't match expected pattern $WARNINGSCMP" >> $OutFile
         fi
     fi
 
@@ -149,27 +149,27 @@ execute()
     ERRORS=$(echo "$STDERR" | grep -Po "(?<=Error \(\#)([[:digit:]]*)" | tr '\n' ',')
 
 
-    echo -e "ERRORS: $ERRORS\0" >> $OutFile
+    printf "%s\0" "ERRORS: $ERRORS" >> $OutFile
     if [ ! -z "$ERRORSCMP" ];
     then
         echo "$ERRORS" | grep -Eqz --text "($ERRORSCMP)"
         if [ "$?" -ne "0" ];
         then
             echo "ERRORS doesn't match $ERRORSCMP"
-            echo -e "=== FAILED Errors don't match expected pattern $ERRORSCMP\0" >> $OutFile
+            printf "%s\0" "=== FAILED Errors don't match expected pattern $ERRORSCMP" >> $OutFile
         fi
     fi
 
 
 
-    echo -e "DIFF: $DIFF\0" >> $OutFile
+    printf "%s\0" "DIFF: $DIFF" >> $OutFile
     if [ ! -z "$DIFFCMP" ];
     then
         echo "$DIFF" | grep -Eqz --text "($DIFFCMP)"
         if [ "$?" -ne "0" ];
         then
             echo "Changes to $DBFile don't match $DIFFCMP"
-            echo -e "=== FAILED changes to database file ($DBFILE) don't match $DIFFCMP\0" >> $OutFile
+            printf "%s\0" "=== FAILED changes to database file ($DBFILE) don't match $DIFFCMP" >> $OutFile
         fi
     fi
 
@@ -183,50 +183,50 @@ run_script()
     do
         OP=
         ARG=
-        cmd=$(cut -d ' ' -f1 <<< $line)
+        cmd=$(echo $line|cut -d ' ' -f1)
         case "$cmd" in
             Mountpoint:)
-                Mountpoint=$(cut -d ' ' -f2 <<< $line)
+                Mountpoint=$(echo $line|cut -d ' ' -f2)
                 ;;
             File:)
-                DBFile=$(cut -d ' ' -f2 <<< $line)
+                DBFile=$(echo $line|cut -d ' ' -f2)
                 ;;
             Storage:)
-                Storage=$(cut -d ' ' -f2 <<< $line)
+                Storage=$(echo $line|cut -d ' ' -f2)
                 ;;
             MountArgs:)
-                MountArgs=$(cut -d ' ' -f2- <<< $line)
+                MountArgs=$(echo $line|cut -d ' ' -f2-)
                 ;;
             Echo:)
-                echo "$(cut -d ' ' -f2- <<< $line)"
+                echo "$(echo $line|cut -d ' ' -f2-)"
                 ;;
             DiffType:)
-                DiffType=$(cut -d ' ' -f2 <<< $line)
+                DiffType=$(echo $line|cut -d ' ' -f2)
                 ;;
             RET:)
-                RETCMP=$(cut -d ' ' -f2- <<< $line)
+                RETCMP=$(echo $line|cut -d ' ' -f2-)
                 ;;
             ERRORS:)
-                ERRORSCMP=$(cut -d ' ' -f2- <<< $line)
+                ERRORSCMP=$(echo $line|cut -d ' ' -f2-)
                 ;;
             WARNINGS:)
-                WARNINGSCMP=$(cut -d ' ' -f2- <<< $line)
+                WARNINGSCMP=$(echo $line|cut -d ' ' -f2-)
                 ;;
             STDOUT:)
-                STDOUTCMP=$(cut -d ' ' -f2- <<< $line)
+                STDOUTCMP=$(echo $line|cut -d ' ' -f2-)
                 ;;
             STDERR:)
-                STDERRCMP=$(cut -d ' ' -f2- <<< $line)
+                STDERRCMP=$(echo $line|cut -d ' ' -f2-)
                 ;;
             DIFF:)
-                DIFFCMP=$(cut -d ' ' -f2- <<< $line)
+                DIFFCMP=$(echo $line|cut -d ' ' -f2-)
                 ;;
             \<)
                 OP="$cmd"
-                ARG=$(cut -d ' ' -f2- <<< $line)
+                ARG=$(echo $line|cut -d ' ' -f2-)
                 ;;
         esac
-        if [ "$OP" == "<" ];
+        if [ "$OP" = "<" ];
         then
             execute $ARG
             RETCMP=
@@ -246,7 +246,7 @@ if [ "$#" -lt "1" ] || [ "$#" -gt "2" ];
 then
     echo "Usage: ./shell_recorder inputscript [protocol to compare]"
     rm $OutFile
-	exit 0
+    exit 0
 fi
 
 BACKUP=1
@@ -266,12 +266,12 @@ then
     RESULT=$(diff -N --text "$2" "$OutFile" 2>/dev/null)
     if [ "$?" -ne "0" ];
     then
-        echo -e "=======================================\nReplay test failed, protocols differ"
+        printf "%s\0" "=======================================\nReplay test failed, protocols differ"
         echo "$RESULT"
-        echo -en "\n\n"
+        printf "%s\0" "\n\n"
         EVAL=1
     else
-         echo -e "=======================================\nReplay test succeeded"
+        printf "%s\0" "=======================================\nReplay test succeeded"
     fi
 fi
 
