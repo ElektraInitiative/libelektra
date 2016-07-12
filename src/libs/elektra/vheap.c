@@ -1,23 +1,23 @@
 #include "kdbprivate.h"
 
 /**
- * Inits the Vheap.
+ * Allocates all space needed.
  *
- * To construct a max heap the comparison function comp (a, b), must return
+ * To construct a max heap the comparison function VheapComp (a, b), must return
  * 1 on a > b and 0 otherwise. For a min heap 1 on a < b and 0 otherwise.
  *
  * @ingroup vheap
- * @param VheapComp the comparison function of the heap
+ * @param comp the comparison function of the heap
  * @param minSize the minimum size of the heap
  * @return a Vheap pointer
  * @return NULL error
  */
-Vheap * elektraVheapInit (int (*VheapComp) (void *, void *), int minSize)
+Vheap * elektraVheapInit (VheapComp comp, int minSize)
 {
-	if (minSize < 1 || !VheapComp) return NULL;
+	if (minSize < 1 || !comp) return NULL;
 	Vheap * newVheap = elektraMalloc (sizeof (Vheap));
 	if (!newVheap) return NULL;
-	newVheap->comp = VheapComp;
+	newVheap->comp = comp;
 	newVheap->size = minSize;
 	newVheap->minSize = minSize;
 	newVheap->count = 0;
@@ -44,11 +44,11 @@ int elektraVheapIsEmpty (Vheap * vheap)
 }
 
 /**
- * Destroys the heap.
+ * Deletes the heap, by freeing all the memory.
  *
  * @ingroup vheap
  */
-void elektraVheapDestroy (Vheap * vheap)
+void elektraVheapDel (Vheap * vheap)
 {
 	if (!vheap) return;
 	elektraFree (vheap->data);
@@ -56,7 +56,8 @@ void elektraVheapDestroy (Vheap * vheap)
 }
 
 /**
- * Inserts an element in the Vheap.
+ * Inserts an element in the Vheap, by finding the right position.
+ * Resizes the memory first if needed.
  *
  * @ingroup vheap
  * @param data the element
@@ -87,7 +88,9 @@ int elektraVheapInsert (Vheap * vheap, void * data)
 }
 
 /**
- * Removes and returns an element from the Vheap.
+ * Removes and returns an element from the Vheap, by taking the first
+ * element which is ordered by VheapComp, after removal the remaining elements
+ * get ordered again. Resizes the heap if needed.
  *
  * @ingroup vheap
  * @return the element

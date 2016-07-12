@@ -19,7 +19,7 @@ static void test_errors ()
 	Vstack * s = elektraVstackInit (1);
 	exit_if_fail (s, "vstack ini error");
 	succeed_if (!elektraVstackPop (s), "push empty working");
-	elektraVstackDestroy (s);
+	elektraVstackDel (s);
 
 	succeed_if (!elektraVstackIsEmpty (NULL), "isEmpty NULL working");
 }
@@ -44,7 +44,7 @@ static void test_empty ()
 	succeed_if (!elektraVstackIsEmpty (s), "should not be empty");
 	elektraVstackPop (s);
 	succeed_if (elektraVstackIsEmpty (s), "should be empty");
-	elektraVstackDestroy (s);
+	elektraVstackDel (s);
 }
 
 static void test_data ()
@@ -78,7 +78,7 @@ static void test_data ()
 	succeed_if (data4 == check4, "data int *");
 	succeed_if (*data4 == *check4, "data int * eval");
 
-	elektraVstackDestroy (s);
+	elektraVstackDel (s);
 }
 
 static void test_grow_shrink ()
@@ -112,7 +112,7 @@ static void test_grow_shrink ()
 			succeed_if (s->data[i] == *s->head, "shrink head error");
 			succeed_if (s->size == size, "shrink size error");
 		}
-		elektraVstackDestroy (s);
+		elektraVstackDel (s);
 	}
 }
 

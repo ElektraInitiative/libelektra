@@ -539,8 +539,10 @@ int elektraKeyLock (Key * key, enum elektraLockOptions what);
 
 ssize_t ksSearchInternal (const KeySet * ks, const Key * toAppend);
 
+#ifdef LOOKUP_OPMPHM
+
 /**
- * The Vstack structure. Used in the OPMPHM.
+ * The Vstack structure.
  *
  * A stack implementation with dynamical memory allocation.
  * The space gets doubled if full and reduced by half if used only a quarter of it,
@@ -559,33 +561,40 @@ Vstack * elektraVstackInit (int minSize);
 int elektraVstackPush (Vstack * stack, void * data);
 void * elektraVstackPop (Vstack * stack);
 int elektraVstackIsEmpty (Vstack * stack);
-void elektraVstackDestroy (Vstack * stack);
+void elektraVstackDel (Vstack * stack);
 
 /**
- * The Vheap structure. Used in the OPMPHM.
+ * The Vheap structure.
  *
- * A heap implementation with dynamical memory allocation.
+ * A heap is a Data structure which keeps the data ordered.
+ * Elements can only be retrieved in this order! Insertions and retrieves need log (n).
+ *
+ * This implementation allocates memory dynamically.
  * The space gets doubled if full and reduced by half if used only a quarter of it,
  * but not less than minSize.
  *
- * To construct a max heap the comparison function comp (a, b), must return
+ * To construct a max heap the comparison function VheapComp (a, b), must return
  * 1 on a > b and 0 otherwise. For a min heap 1 on a < b and 0 otherwise.
  */
+
+typedef int (*VheapComp) (void *, void *);
 
 typedef struct
 {
 	int minSize;		      /*!< the minimal size of the heap > */
 	int size;		      /*!< The size of the heap */
 	int count;		      /*!< The current number of elements in the heap */
-	int (*comp) (void *, void *); /*!< The comparison function */
+	VheapComp comp; 	      /*!< The comparison function */
 	void ** data;		      /*!< The data array */
 } Vheap;
 
 Vheap * elektraVheapInit (int (*comp) (void *, void *), int minSize);
-void elektraVheapDestroy (Vheap * vheap);
+void elektraVheapDel (Vheap * vheap);
 int elektraVheapIsEmpty (Vheap * vheap);
 int elektraVheapInsert (Vheap * vheap, void * data);
 void * elektraVheapRemove (Vheap * vheap);
+
+#endif
 
 /*Used for internal memcpy/memmove*/
 ssize_t elektraMemcpy (Key ** array1, Key ** array2, size_t size);

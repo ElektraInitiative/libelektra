@@ -1,7 +1,7 @@
 #include "kdbprivate.h"
 
 /**
- * Inits the Vstack.
+ * Allocates the needed space and sets the stack pointer.
  *
  * @ingroup vstack
  * @param minSize the minimum size of the stack
@@ -26,7 +26,7 @@ Vstack * elektraVstackInit (int minSize)
 }
 
 /**
- * Pushes an element in the Vstack.
+ * Pushes an element in the Vstack and resizes the stack if needed.
  *
  * @ingroup vstack
  * @param data the element
@@ -55,7 +55,7 @@ int elektraVstackPush (Vstack * stack, void * data)
 }
 
 /**
- * Pops an element from the Vstack.
+ * Pops an element from the Vstack and resizes the stack if needed.
  *
  * @ingroup vstack
  * @return the element
@@ -94,11 +94,11 @@ int elektraVstackIsEmpty (Vstack * stack)
 }
 
 /**
- * Destroys the stack.
+ * Deletes the stack, by freeing all memory.
  *
  * @ingroup vstack
  */
-void elektraVstackDestroy (Vstack * stack)
+void elektraVstackDel (Vstack * stack)
 {
 	if (!stack) return;
 	elektraFree (stack->data);

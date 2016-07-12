@@ -38,7 +38,7 @@ static void test_errors ()
 	Vheap * h = elektraVheapInit (mincomp, 4);
 	exit_if_fail (h, "vheap init error");
 	succeed_if (!elektraVheapRemove (NULL), "remove empty working");
-	elektraVheapDestroy (h);
+	elektraVheapDel (h);
 
 	succeed_if (!elektraVheapInsert (NULL, NULL), "insert NULL working");
 }
@@ -53,7 +53,7 @@ static void test_empty ()
 	succeed_if (!elektraVheapIsEmpty (h), "should not be empty");
 	elektraVheapRemove (h);
 	succeed_if (elektraVheapIsEmpty (h), "should be empty");
-	elektraVheapDestroy (h);
+	elektraVheapDel (h);
 }
 
 static void test_data_max_ordered ()
@@ -76,7 +76,7 @@ static void test_data_max_ordered ()
 		succeed_if (d < max, "ascending error");
 		max = d;
 	}
-	elektraVheapDestroy (h);
+	elektraVheapDel (h);
 
 	h = elektraVheapInit (maxcomp, 100);
 	exit_if_fail (h, "vheap init error");
@@ -94,7 +94,7 @@ static void test_data_max_ordered ()
 		succeed_if (d < max, "descending error");
 		max = d;
 	}
-	elektraVheapDestroy (h);
+	elektraVheapDel (h);
 }
 
 static void test_data_min_ordered ()
@@ -116,7 +116,7 @@ static void test_data_min_ordered ()
 		succeed_if (d > min, "ascending error");
 		min = d;
 	}
-	elektraVheapDestroy (h);
+	elektraVheapDel (h);
 
 	h = elektraVheapInit (mincomp, 100);
 	exit_if_fail (h, "vheap init error");
@@ -134,7 +134,7 @@ static void test_data_min_ordered ()
 		succeed_if (d > min, "descending error");
 		min = d;
 	}
-	elektraVheapDestroy (h);
+	elektraVheapDel (h);
 }
 
 static void test_grow_shrink ()
@@ -166,7 +166,7 @@ static void test_grow_shrink ()
 			}
 			succeed_if (actualSize == h->size, "shrink error");
 		}
-		elektraVheapDestroy (h);
+		elektraVheapDel (h);
 	}
 }
 
@@ -190,7 +190,7 @@ static void test_data_max_mixed ()
 		succeed_if (d < max || d == max, "ascending error");
 		max = d;
 	}
-	elektraVheapDestroy (h);
+	elektraVheapDel (h);
 
 	h = elektraVheapInit (maxcomp, 100);
 	exit_if_fail (h, "vheap init error");
@@ -208,7 +208,7 @@ static void test_data_max_mixed ()
 		succeed_if (d < max || d == max, "descending error");
 		max = d;
 	}
-	elektraVheapDestroy (h);
+	elektraVheapDel (h);
 }
 
 static void test_data_min_mixed ()
@@ -230,7 +230,7 @@ static void test_data_min_mixed ()
 		succeed_if (d > min || d == min, "ascending error");
 		min = d;
 	}
-	elektraVheapDestroy (h);
+	elektraVheapDel (h);
 
 	h = elektraVheapInit (mincomp, 100);
 	exit_if_fail (h, "vheap init error");
@@ -248,7 +248,7 @@ static void test_data_min_mixed ()
 		succeed_if (d > min || d == min, "descending error");
 		min = d;
 	}
-	elektraVheapDestroy (h);
+	elektraVheapDel (h);
 }
 
 int main (int argc, char ** argv)

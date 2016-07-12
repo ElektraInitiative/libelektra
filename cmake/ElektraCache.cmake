@@ -277,6 +277,12 @@ option (INSTALL_SYSTEM_FILES "Install files to system directories" ON)
 
 option (INSTALL_BUILD_TOOLS "Install build tools for cross-compilation" OFF)
 
+option (LOOKUP_OPMPHM "Add the possibility to lookup with an Order Preserving Minimal Perfect Hash Map" ON)
+if (LOOKUP_OPMPHM)
+	add_definitions(-DLOOKUP_OPMPHM=1)
+endif (LOOKUP_OPMPHM)
+
+
 
 #
 # Developer builds (debug or verbose build)
