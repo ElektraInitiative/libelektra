@@ -32,6 +32,7 @@ At the moment the following crypto APIs are supported:
 
 - OpenSSL (libcrypto)
 - libgcrypt
+- Botan
 
 ## Dependencies ##
 
@@ -41,6 +42,9 @@ At the moment the following crypto APIs are supported:
 #ifdef ELEKTRA_CRYPTO_API_OPENSSL
 - `libssl-dev` or `openssl-devel`
 #endif
+#ifdef ELEKTRA_CRYPTO_API_BOTAN
+- `libbotan1.10-dev` or `botan-devel`
+#endif
 
 ## How to compile ##
 
@@ -48,6 +52,7 @@ The following compile variants are available:
 
 1. crypto_gcrypt
 2. crypto_openssl
+3. crypto_botan
 
 Add "crypto" and the variants, that you want (you can add one of them or all), to the `PLUGINS` variable in `CMakeCache.txt` and re-run `cmake`.
 
@@ -55,7 +60,7 @@ In order to add all compile variants you can add "CRYPTO" to the `PLUGINS` varia
 
 An example `CMakeCache.txt` may contain the following variable:
 
-    PLUGINS=crypto;crypto_gcrypt;crypto_openssl
+    PLUGINS=crypto;crypto_gcrypt;crypto_openssl;crypto_botan
 
 or it may look like:
 
@@ -74,6 +79,11 @@ For a custom libgcrypt location set:
 
 - *LIBGCRYPT_INCLUDE_DIR* to the library's header files
 - *LIBGCRYPT_LIBRARIES* to the library's binary file
+
+For a custom Botan development file location set:
+
+- *BOTAN_INCLUDE_DIRS* to Botan's header files (includes)
+- *BOTAN_LIBRARIES* to Botan's binary file
 
 ### Mac OS X ###
 
