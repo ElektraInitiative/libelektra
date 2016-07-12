@@ -134,6 +134,11 @@ static Key * createKeyFromPath (Key * parentKey, const char * treePath)
 	return key;
 }
 
+/**
+ * Creates a new Elektra key from the specified Augeas key.
+ * If any step during key conversion fails, an error is returned
+ * in order to prevent inconsistent keys.
+ */
 static int convertToKey (augeas * handle, const char * treePath, void * data)
 {
 	struct KeyConversion * conversionData = (struct KeyConversion *)data;
@@ -141,6 +146,7 @@ static int convertToKey (augeas * handle, const char * treePath, void * data)
 	const char * value = 0;
 	result = aug_get (handle, treePath, &value);
 
+	/* we were unable to retrieve the augeas value */
 	if (result < 0) return result;
 
 	Key * key = createKeyFromPath (conversionData->parentKey, treePath);
@@ -150,6 +156,7 @@ static int convertToKey (augeas * handle, const char * treePath, void * data)
 	conversionData->currentOrder++;
 	result = keySetOrderMeta (key, conversionData->currentOrder);
 
+	/* setting the correct key order failed */
 	if (result < 0) return result;
 
 	result = ksAppendKey (conversionData->ks, key);
@@ -157,6 +164,11 @@ static int convertToKey (augeas * handle, const char * treePath, void * data)
 	return result;
 }
 
+/**
+ * Checks whether a given path must be pruned from the Augeas tree by comparing
+ * it with the supplied keyset. If any operation during pruning fails, an error
+ * is returned in order to prevent invalid keys.
+ */
 static int removeOrphan (augeas * handle, const char * treePath, void * data)
 {
 	int result;
@@ -230,6 +242,9 @@ static int foreachAugeasNode (augeas * handle, const char * treePath, ForeachAug
 
 		result = (*callback) (handle, curPath, callbackData);
 
+		/* if handling the key failed, abort with an error as
+		 * the failed key could be a crucial one
+		 */
 		if (result < 0) break;
 
 		elektraFree (curPath);
@@ -337,7 +352,7 @@ static int saveTree (augeas * augeasHandle, KeySet * ks, const char * lensPath, 
 	data->ks = ks;
 	data->parentKey = parentKey;
 
-	foreachAugeasNode (augeasHandle, AUGEAS_TREE_ROOT, &removeOrphan, data);
+	ret = foreachAugeasNode (augeasHandle, AUGEAS_TREE_ROOT, &removeOrphan, data);
 
 	elektraFree (data);
 
