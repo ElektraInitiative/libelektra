@@ -581,11 +581,11 @@ typedef int (*VheapComp) (void *, void *);
 
 typedef struct
 {
-	int minSize;		      /*!< the minimal size of the heap > */
-	int size;		      /*!< The size of the heap */
-	int count;		      /*!< The current number of elements in the heap */
-	VheapComp comp; 	      /*!< The comparison function */
-	void ** data;		      /*!< The data array */
+	int minSize;    /*!< the minimal size of the heap > */
+	int size;       /*!< The size of the heap */
+	int count;      /*!< The current number of elements in the heap */
+	VheapComp comp; /*!< The comparison function */
+	void ** data;   /*!< The data array */
 } Vheap;
 
 Vheap * elektraVheapInit (int (*comp) (void *, void *), int minSize);
