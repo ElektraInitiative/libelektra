@@ -266,7 +266,7 @@ int main (int argc, char ** argv)
 	test_data_min_mixed ();
 	test_empty ();
 
-	printf ("\ntest_vheap RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
+	printf ("\ntest_opmphm_vheap RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 
 	return nbError;
 }

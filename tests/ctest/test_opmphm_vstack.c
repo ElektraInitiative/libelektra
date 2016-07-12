@@ -128,7 +128,7 @@ int main (int argc, char ** argv)
 	test_empty ();
 	test_data ();
 
-	printf ("\ntest_vstack RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
+	printf ("\ntest_opmphm_vstack RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 
 	return nbError;
 }
