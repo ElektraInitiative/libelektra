@@ -539,7 +539,7 @@ int elektraKeyLock (Key * key, enum elektraLockOptions what);
 
 ssize_t ksSearchInternal (const KeySet * ks, const Key * toAppend);
 
-#ifdef LOOKUP_OPMPHM
+#ifdef HASHLOOKUP
 
 /**
  * The Vstack structure.
