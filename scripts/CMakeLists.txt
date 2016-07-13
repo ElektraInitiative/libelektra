@@ -41,6 +41,9 @@ if (INSTALL_SYSTEM_FILES)
 	install (FILES elektraenv.sh
 			DESTINATION /etc/profile.d
 			RENAME kdb.sh)
+	install (FILES kdb_zsh_completion
+			DESTINATION /usr/share/zsh/vendor-completions
+			RENAME _kdb)
 endif()
 
 configure_file(
