@@ -189,7 +189,6 @@ if (ADDTESTING_PHASE)
 		add_plugintest (crypto_gcrypt
 				MEMLEAK
 				LINK_PLUGIN "<no>")
-		set_property (TEST "testmod_crypto_gcrypt" PROPERTY LABELS memleak)
 	endif ()
 
 	if (HAS_BOTAN_4SURE)
