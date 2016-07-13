@@ -50,45 +50,133 @@ _kdb_paths () {
 }
 
 # These are the functions for each command
-_kdb-check () { }
-_kdb-convert () { }
-_kdb-cp () { }
-_kdb-export () { }
-_kdb-file () { }
-_kdb-fstab () { }
+_kdb-check () {
+    # TODO [plugin]
+}
+
+_kdb-convert () {
+    # TODO [import format] [export format] [import file] [export file]
+}
+
+_kdb-cp () {
+    # TODO src dst
+    _kdb_paths
+}
+
+_kdb-export () {
+    # TODO src [format]
+    _kdb_paths
+}
+
+_kdb-file () {
+    # TODO path
+    _kdb_path
+}
+
+_kdb-fstab () {
+    # TODO key-path fs_spec fs_file fs_vfstype fs_mntops
+    _kdb_path
+}
+
 _kdb-get () { 
     # TODO disallow multiple kdb paths
     _kdb_paths
 }
-_kdb-getmeta () { }
-_kdb-import () { }
-_kdb-info () { }
-_kdb-list () { }
+
+_kdb-getmeta () { 
+    # TODO key-name meta-name
+    _kdb_paths
+}
+
+_kdb-import () {
+    # TODO dst [format]
+    _kdb_paths
+}
+
+_kdb-info () {
+    # TODO plugin [clause name]
+}
+
+_kdb-list () {
+    _message -e "No Arguments for list"
+    return
+}
+
 _kdb-ls () {
     # TODO disallow multiple kdb paths
     _kdb_paths
 }
+
 _kdb-lsmeta () { 
     _kdb_paths
 }
-_kdb-merge () { }
-_kdb-mount () { }
-_kdb-mv () { }
-_kdb-remount () { }
+
+_kdb-merge () {
+    # TODO ourpath theirpath basepath resultpath
+}
+
+_kdb-mount () {
+    # TODO [path mountpoint] [plugin config] ...
+}
+
+_kdb-mv () {
+    # TODO src dst
+    _kdb_paths
+}
+
+_kdb-remount () { 
+    # TODO new-path new-mountpoint existing-mountpoint
+    _kdb_paths
+}
+
 _kdb-rm () {
+    # TODO single path
+    _kdb_paths
 }
+
 _kdb-set () {
-# Example how to get files as completion in this stage
-    _path_files -W /home/reox/git/tuwien
+    # TODO after a path comes something else
+    _kdb_paths
 }
-_kdb-setmeta () { }
-_kdb-sget () { }
-_kdb-shell () { }
-_kdb-test () { }
-_kdb-umount () { }
-_kdb-vset () { }
-_kdb-help () { }
-_kdb-list-tools () { }
+
+_kdb-setmeta () { 
+    # TODO key-name meta-name meta-value
+    _kdb_paths
+}
+
+_kdb-sget () {
+    # TODO single path and default value
+    _kdb_paths 
+}
+
+_kdb-shell () { 
+    _message -e "No Arguments for shell"
+    return
+}
+
+_kdb-test () {
+    # TODO path [testname ...]
+    _kdb_paths
+}
+
+_kdb-umount () { 
+    # TODO name
+    _kdb_paths
+}
+
+_kdb-vset () {
+    # TODO path value regex [message]
+    _kdb_paths
+}
+
+_kdb-help () { 
+    # TODO can we get the command list all over again?
+}
+
+_kdb-list-tools () {
+    _message -e "No Arguments for list-tools"
+    return
+}
 
 
 # This function handles the commands of kdb and passes them
