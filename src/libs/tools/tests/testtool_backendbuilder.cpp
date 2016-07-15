@@ -22,6 +22,7 @@
 
 #include <gtest/gtest.h>
 #include <kdb.hpp>
+#include <kdbhelper.h>
 
 TEST (BackendBuilder, withDatabase)
 {
@@ -547,7 +548,7 @@ TEST (BackendBuilder, resolveDoubleRecommends)
 	EXPECT_EQ (bb.cbegin ()[2], PluginSpec ("c"));
 }
 
-static int checkconfLookup (ckdb::Key * errorKey, ckdb::KeySet * config)
+static int checkconfLookup (ckdb::Key * errorKey ELEKTRA_UNUSED, ckdb::KeySet * config)
 {
 	ckdb::Key * k = ckdb::ksLookupByName (config, "/a", 0);
 	if (k)
@@ -588,7 +589,7 @@ TEST (BackendBuilder, checkconfNotOKmissing)
 	EXPECT_THROW (bb.addPlugin (PluginSpec ("checkconf3")), PluginConfigInvalid);
 }
 
-static int checkconfAppend (ckdb::Key * errorKey, ckdb::KeySet * config)
+static int checkconfAppend (ckdb::Key * errorKey ELEKTRA_UNUSED, ckdb::KeySet * config)
 {
 	ckdb::ksAppendKey (config, ckdb::keyNew ("user/b", KEY_VALUE, "test", KEY_END));
 	return 1;
@@ -612,7 +613,7 @@ TEST (BackendBuilder, checkconfOkChanged)
 	EXPECT_EQ (spec.getConfig ().get<std::string> ("user/b"), "test");
 }
 
-static int checkconfDelete (ckdb::Key * errorKey, ckdb::KeySet * config)
+static int checkconfDelete (ckdb::Key * errorKey ELEKTRA_UNUSED, ckdb::KeySet * config)
 {
 	ckdb::ksCopy (config, NULL);
 	return 1;
@@ -664,7 +665,7 @@ TEST (BackendBuilder, checkconfOkRemovedBackendConfig)
 	EXPECT_THROW (bb.getBackendConfig ().get<std::string> ("system/b"), KeyNotFoundException);
 }
 
-static int checkconfAppendBackendConf (ckdb::Key * errorKey, ckdb::KeySet * config)
+static int checkconfAppendBackendConf (ckdb::Key * errorKey ELEKTRA_UNUSED, ckdb::KeySet * config)
 {
 	ckdb::ksAppendKey (config, ckdb::keyNew ("system/a", KEY_VALUE, "abc", KEY_END));
 	return 1;
