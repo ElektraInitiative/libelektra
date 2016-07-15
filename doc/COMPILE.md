@@ -342,7 +342,6 @@ Currently the installed system files are as following:
 |   Module        |         Description             |      Install Path                      |
 |-----------------|---------------------------------|----------------------------------------|
 | bash-completion | bash tab auto completion file   | `BASH_COMPLETION_COMPLETIONSDIR` variable in bash-completions cmake file and pkg-config. Falls back to `/etc/bash_completion.d`.|
-| elektraenv.sh   | elektra environment setup file  | `/etc/profile.d`               |
 | GIR             | introspection file for bindings | `INTROSPECTION_GIRDIR` from pkg-config |
 | GSettings       | GSettings backend module        | `GIO_MODULE_DIR` from pkg-config       |
 
