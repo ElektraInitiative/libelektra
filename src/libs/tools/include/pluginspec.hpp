@@ -51,6 +51,7 @@ public:
 	void setName (std::string const & name);
 
 	void appendConfig (KeySet config);
+	void setConfig (KeySet config);
 
 	void validate (std::string const & str) const;
 

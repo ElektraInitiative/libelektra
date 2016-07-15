@@ -11,6 +11,10 @@ include (LibAddPlugin)
 # - LIBGCRYPT_INCLUDE_DIR
 # - LIBGCRYPT_LIBRARIES
 #
+# in order to set up Botan development files manually, please provide:
+# - BOTAN_INCLUDE_DIRS
+# - BOTAN_LIBRARIES
+#
 if (DEPENDENCY_PHASE)
 	#
 	# HACK for Apple
@@ -30,6 +34,14 @@ if (DEPENDENCY_PHASE)
 		set (LIBGCRYPT_MANUAL_OSX_HACK off)
 	endif ()
 
+	if (APPLE AND DEFINED BOTAN_INCLUDE_DIRS AND DEFINED BOTAN_LIBRARIES)
+		set (BOTAN_MANUAL_OSX_HACK on)
+		set (BOTAN_FOUND on)
+	else ()
+		set (BOTAN_MANUAL_OSX_HACK off)
+	endif ()
+
+	# Plugin variant: crypto_openssl
 	set (plugin crypto_openssl)
 	if (NOT OPENSSL_MANUAL_OSX_HACK)
 		include (FindPkgConfig)
@@ -48,14 +60,13 @@ if (DEPENDENCY_PHASE)
 				-DLINK_LIBRARIES:PATH=${OPENSSL_LIBRARIES}
 		)
 
-		if (HAS_OPENSSL_4SURE)
-		else ()
+		if (NOT HAS_OPENSSL_4SURE)
 			remove_plugin ( ${plugin} "OpenSSL compilation test failed")
 			set (OPENSSL_FOUND off)
-		endif (HAS_OPENSSL_4SURE)
+		endif ()
 	endif ((NOT OPENSSL_FOUND) AND (NOT OPENSSL_MANUAL_OSX_HACK))
 
-
+	# Plugin variant: crypto_gcrypt
 	set (plugin crypto_gcrypt)
 	if (NOT LIBGCRYPT_MANUAL_OSX_HACK)
 		find_package (LibGcrypt)
@@ -73,15 +84,41 @@ if (DEPENDENCY_PHASE)
 				-DLINK_LIBRARIES:PATH=${LIBGCRYPT_LIBRARIES}
 		)
 
-		if (HAS_GCRYPT_4SURE)
-		else ()
+		if (NOT HAS_GCRYPT_4SURE)
 			remove_plugin ( ${plugin} "libgcrypt compilation test failed")
 			set (LIBGCRYPT_FOUND off)
-		endif (HAS_GCRYPT_4SURE)
+		endif ()
 	endif ((NOT LIBGCRYPT_FOUND) AND (NOT LIBGCRYPT_MANUAL_OSX_HACK))
 
+	# Plugin variant: crypto_botan
+	set (plugin crypto_botan)
+	if (NOT BOTAN_MANUAL_OSX_HACK)
+		include (FindPkgConfig)
+		pkg_search_module (BOTAN botan-1.10 botan-1.9 botan-1.8 botan)
+	endif ()
+
+	if ((NOT BOTAN_FOUND) AND (NOT BOTAN_MANUAL_OSX_HACK))
+		remove_plugin ( ${plugin} "botan development files not found")
+	else ()
+
+		try_compile (HAS_BOTAN_4SURE
+			"${CMAKE_BINARY_DIR}"
+			"${PROJECT_SOURCE_DIR}/src/plugins/crypto/compile_botan.cpp"
+			CMAKE_FLAGS
+				-DINCLUDE_DIRECTORIES:STRING=${BOTAN_INCLUDE_DIRS}
+				-DLINK_LIBRARIES:PATH=${BOTAN_LIBRARIES}
+		)
+
+		if (NOT HAS_BOTAN_4SURE)
+			remove_plugin ( ${plugin} "botan compilation test failed")
+			set (BOTAN_FOUND off)
+		endif ()
+	endif ()
+
+	# clean up for dependency phase
 	unset (OPENSSL_MANUAL_OSX_HACK)
 	unset (LIBGCRYPT_MANUAL_OSX_HACK)
+	unset (BOTAN_MANUAL_OSX_HACK)
 	unset (plugin)
 endif ()
 
@@ -123,10 +160,40 @@ add_plugin (crypto_openssl
 		ELEKTRA_CRYPTO_API_OPENSSL
 )
 
+#
+# Compile Variant: Botan
+#
+add_plugin (crypto_botan
+	SOURCES
+		botan_operations.h
+		botan_operations.cpp
+		crypto.h
+		crypto.c
+	INCLUDE_DIRECTORIES
+		${BOTAN_INCLUDE_DIRS}
+	LINK_LIBRARIES
+		${BOTAN_LIBRARIES}
+	COMPILE_DEFINITIONS
+		ELEKTRA_PLUGIN_NAME=\"crypto_botan\"
+		ELEKTRA_VARIANT=botan
+		ELEKTRA_CRYPTO_API_BOTAN
+)
+
 if (ADDTESTING_PHASE)
-	if (HAS_OPENSSL_4SURE OR HAS_GCRYPT_4SURE)
-		add_plugintest (crypto
+	if (HAS_OPENSSL_4SURE)
+		add_plugintest (crypto_openssl
+				LINK_PLUGIN "<no>")
+	endif ()
+
+	if (HAS_GCRYPT_4SURE)
+		add_plugintest (crypto_gcrypt
 				MEMLEAK
 				LINK_PLUGIN "<no>")
 	endif ()
+
+	if (HAS_BOTAN_4SURE)
+		add_plugintest (crypto_botan
+				LINK_PLUGIN "<no>")
+	endif ()
 endif ()
+

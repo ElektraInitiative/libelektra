@@ -45,6 +45,10 @@ Multiple conditions can be nested and combined using parentheses and `&&` (logic
 The `condition/validsuffix` can be used to define a list of valid suffixes to numeric values. If two operants have the same valid suffix or one of them no suffix they will be treated by their numeric value ignoring their suffix.
 `condition/validsuffix = 'm', 'cm', 'km'` would treat `2.3m` just as the numeric value `2.3` when comparing to another value having the same or no suffix.
 
+### Keynames ###
+
+Keynames are all either relative to to-be-tested key (starting with `./` or `../`), relative to the parentkey (starting with `@/`) or absolute (e.g. `system/key`).
+
 ## Example ##
 
 `(this/key  != 'value') ? (then/key == some/other/key) : (or/key <= '125')` 
@@ -57,12 +61,12 @@ Another full example:
 	kdb mount conditionals.dump /tmount/conditionals conditionals dump
 	kdb set user/tmount/conditionals/fkey 3.0
 	kdb set user/tmount/conditionals/hkey hello
-	kdb setmeta user/tmount/conditionals/key check/condition "(hkey == 'hello') ? (fkey == '3.0')" # success
-	kdb setmeta user/tmount/conditionals/key check/condition "(hkey == 'hello') ? (fkey == '5.0')" # fail
+	kdb setmeta user/tmount/conditionals/key check/condition "(../hkey == 'hello') ? (../fkey == '3.0')" # success
+	kdb setmeta user/tmount/conditionals/key check/condition "(../hkey == 'hello') ? (../fkey == '5.0')" # fail
 
 Assignment example:
 
 	kdb mount conditionals.dump /tmount/conditionals conditionals dump
 	kdb set user/tmount/conditionals/hkey Hello
-	kdb setmeta user/tmount/conditionals/hkey assign/condition "(hkey == 'Hello') ? ('World')"
+	kdb setmeta user/tmount/conditionals/hkey assign/condition "(./hkey == 'Hello') ? ('World')"
 	kdb get user/tmount/conditionals/hkey # output: World

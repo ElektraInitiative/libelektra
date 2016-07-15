@@ -45,7 +45,7 @@ Currently the following strategies exist for importing configurations:
   Print version info.
 - `-p`, `--profile`=<profile>:
   Use a different kdb profile.
-- `s`, `--strategy <name>`:
+- `-s`, `--strategy <name>`:
   Specify which strategy should be used to resolve conflicts.
 - `-v`, `--verbose`:
   Explain what is happening.

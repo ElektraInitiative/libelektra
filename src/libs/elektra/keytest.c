@@ -45,7 +45,8 @@
  *
  */
 
-/** \internal
+/**
+ * @internal
  *
  * Clear sync flag of a key.
  *
@@ -136,6 +137,8 @@ int keyIsDir (const Key * key)
 
 
 /**
+ * @internal
+ *
  * Check whether a key is under the @p system namespace or not
  *
  * @param key the key object to work with
@@ -157,6 +160,8 @@ int keyIsSystem (const Key * key)
 
 
 /**
+ * @internal
+ *
  * Check whether a key is under the @p user namespace or not.
  *
  * @param key the key object to work with

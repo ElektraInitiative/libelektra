@@ -210,17 +210,21 @@ PluginDatabase::Status ModulesPluginDatabase::status (PluginSpec const & spec) c
 
 std::string ModulesPluginDatabase::lookupInfo (PluginSpec const & spec, std::string const & which) const
 {
-	PluginPtr plugin;
+	PluginPtr plugin = impl->modules.load (spec.getName (), spec.getConfig ());
+	return plugin->lookupInfo (which);
+}
+
+PluginDatabase::func_t ModulesPluginDatabase::getSymbol (PluginSpec const & spec, std::string const & which) const
+{
 	try
 	{
-		plugin = impl->modules.load (spec.getName (), spec.getConfig ());
+		PluginPtr plugin = impl->modules.load (spec.getName (), spec.getConfig ());
+		return plugin->getSymbol (which);
 	}
 	catch (...)
 	{
-		throw;
+		return NULL;
 	}
-
-	return plugin->lookupInfo (which);
 }
 
 PluginSpec ModulesPluginDatabase::lookupMetadata (std::string const & which) const
@@ -366,6 +370,20 @@ std::string MockPluginDatabase::lookupInfo (PluginSpec const & spec, std::string
 	}
 
 	return "";
+}
+
+PluginDatabase::func_t MockPluginDatabase::getSymbol (PluginSpec const & spec ELEKTRA_UNUSED, std::string const & which) const
+{
+	if (which == "checkconf")
+	{
+		return reinterpret_cast<func_t> (checkconf);
+	}
+	return NULL;
+}
+
+void MockPluginDatabase::setCheckconfFunction (const MockPluginDatabase::checkConfPtr newCheckconf)
+{
+	checkconf = newCheckconf;
 }
 }
 }

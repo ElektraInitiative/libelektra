@@ -116,6 +116,7 @@ or if specific jobs should be started:
 
 * jenkins build [bindings](http://build.libelektra.org:8080/job/elektra-test-bindings/) please
 * jenkins build [clang](http://build.libelektra.org:8080/job/elektra-clang/) please
+* jenkins build [clang-asan](http://build.libelektra.org:8080/job/elektra-clang-asan/) please
 * jenkins build [fast](http://build.libelektra.org:8080/job/elektra-mergerequests-fast/) please
 * jenkins build [gcc](http://build.libelektra.org:8080/job/elektra-gcc/) please
 * jenkins build [gcc-configure-debian](http://build.libelektra.org:8080/job/elektra-gcc-configure-debian/) please

@@ -20,9 +20,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-static pthread_mutex_t * lockCs;
-static int cryptoNumLocks;
-static unsigned char cryptoSetup = 0;
+static pthread_mutex_t mutex_ssl = PTHREAD_MUTEX_INITIALIZER;
 
 /**
  * @brief read the cryptographic key from the given keyset.
@@ -56,67 +54,15 @@ static Key * elektraCryptoReadParamIv (KeySet * config, Key * errorKey)
 	return iv;
 }
 
-static void internalLockingCallback (int mode, int type, const char * file ELEKTRA_UNUSED, int line ELEKTRA_UNUSED)
-{
-	if (mode & CRYPTO_LOCK)
-	{
-		pthread_mutex_lock (&(lockCs[type]));
-	}
-	else
-	{
-		pthread_mutex_unlock (&(lockCs[type]));
-	}
-}
-
-static void internalThreadId (CRYPTO_THREADID * tid)
-{
-	CRYPTO_THREADID_set_numeric (tid, (unsigned long)pthread_self ());
-}
-
 int elektraCryptoOpenSSLInit (Key * errorKey)
 {
-	// check if libcrypto has already been initialized (possibly by the application)
-	if (CRYPTO_get_locking_callback ())
-	{
-		cryptoSetup = 1;
-		return 1;
-	}
-
-	// initialize the internal locking system based on the suggestions by the OpenSSL demos.
-	// see demos/threads/mttest.c in the OpenSSL repository for further information
-	cryptoNumLocks = CRYPTO_num_locks ();
-	lockCs = elektraMalloc (cryptoNumLocks * sizeof (pthread_mutex_t));
-	for (int i = 0; i < cryptoNumLocks; i++)
-	{
-		pthread_mutex_init (&(lockCs[i]), NULL);
-	}
-	CRYPTO_THREADID_set_callback (internalThreadId);
-	CRYPTO_set_locking_callback (internalLockingCallback);
-
-	if (ERR_peek_error ())
-	{
-		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CRYPTO_INIT, errorKey, "libcrypto initialization failed. error code was: %lu",
-				    ERR_get_error ());
-		return (-1);
-	}
-
-	cryptoSetup = 1;
+	// initialize OpenSSL according to
+	// https://wiki.openssl.org/index.php/Library_Initialization
+	pthread_mutex_lock (&mutex_ssl);
+	OpenSSL_add_all_algorithms ();
+	ERR_load_crypto_strings ();
+	pthread_mutex_unlock (&mutex_ssl);
 	return 1;
-}
-
-void elektraCryptoOpenSSLTeardown (void)
-{
-	if (!cryptoSetup)
-	{
-		return;
-	}
-
-	CRYPTO_set_locking_callback (NULL);
-	for (int i = 0; i < cryptoNumLocks; i++)
-	{
-		pthread_mutex_destroy (&(lockCs[i]));
-	}
-	elektraFree (lockCs);
 }
 
 int elektraCryptoOpenSSLHandleCreate (elektraCryptoHandle ** handle, KeySet * config, Key * errorKey)
@@ -157,6 +103,8 @@ int elektraCryptoOpenSSLHandleCreate (elektraCryptoHandle ** handle, KeySet * co
 		return (-1);
 	}
 
+	pthread_mutex_lock (&mutex_ssl);
+
 	EVP_EncryptInit (&((*handle)->encrypt), EVP_aes_256_cbc (), keyBuffer, ivBuffer);
 	EVP_DecryptInit (&((*handle)->decrypt), EVP_aes_256_cbc (), keyBuffer, ivBuffer);
 
@@ -169,9 +117,10 @@ int elektraCryptoOpenSSLHandleCreate (elektraCryptoHandle ** handle, KeySet * co
 				    ERR_get_error ());
 		elektraFree (*handle);
 		*handle = NULL;
+		pthread_mutex_unlock (&mutex_ssl);
 		return (-1);
 	}
-
+	pthread_mutex_unlock (&mutex_ssl);
 	return 1;
 }
 
@@ -179,8 +128,10 @@ void elektraCryptoOpenSSLHandleDestroy (elektraCryptoHandle * handle)
 {
 	if (handle)
 	{
+		pthread_mutex_lock (&mutex_ssl);
 		EVP_CIPHER_CTX_cleanup (&(handle->encrypt));
 		EVP_CIPHER_CTX_cleanup (&(handle->decrypt));
+		pthread_mutex_unlock (&mutex_ssl);
 		elektraFree (handle);
 	}
 }
@@ -223,10 +174,13 @@ int elektraCryptoOpenSSLEncrypt (elektraCryptoHandle * handle, Key * k, Key * er
 		break;
 	}
 
+	pthread_mutex_lock (&mutex_ssl);
+
 	encrypted = BIO_new (BIO_s_mem ());
 	if (!encrypted)
 	{
 		ELEKTRA_SET_ERROR (87, errorKey, "Memory allocation failed");
+		pthread_mutex_unlock (&mutex_ssl);
 		return (-1);
 	}
 
@@ -285,12 +239,14 @@ int elektraCryptoOpenSSLEncrypt (elektraCryptoHandle * handle, Key * k, Key * er
 		keySetBinary (k, output, outputLen);
 	}
 	BIO_free_all (encrypted);
+	pthread_mutex_unlock (&mutex_ssl);
 	return 1;
 
 error:
 	ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CRYPTO_ENCRYPT_FAIL, errorKey, "Encryption error! libcrypto error code was: %lu",
 			    ERR_get_error ());
 	BIO_free_all (encrypted);
+	pthread_mutex_unlock (&mutex_ssl);
 	return (-1);
 }
 
@@ -327,11 +283,14 @@ int elektraCryptoOpenSSLDecrypt (elektraCryptoHandle * handle, Key * k, Key * er
 		return (-1);
 	}
 
+	pthread_mutex_lock (&mutex_ssl);
+
 	// prepare sink for plain text output
 	BIO * decrypted = BIO_new (BIO_s_mem ());
 	if (!decrypted)
 	{
 		ELEKTRA_SET_ERROR (87, errorKey, "Memory allocation failed");
+		pthread_mutex_unlock (&mutex_ssl);
 		return (-1);
 	}
 
@@ -396,11 +355,13 @@ int elektraCryptoOpenSSLDecrypt (elektraCryptoHandle * handle, Key * k, Key * er
 	}
 
 	BIO_free_all (decrypted);
+	pthread_mutex_unlock (&mutex_ssl);
 	return 1;
 
 error:
 	ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CRYPTO_DECRYPT_FAIL, errorKey, "Decryption error! libcrypto error code was: %lu",
 			    ERR_get_error ());
 	BIO_free_all (decrypted);
+	pthread_mutex_unlock (&mutex_ssl);
 	return (-1);
 }

@@ -10,10 +10,12 @@ kdb-spec-mount(1) - Mount a spec file to the key database
 - `plugin` are be extra Elektra plugins to be used (next to the one specified in `spec/`).
 - Plugins may be followed by a `,` separated list of `keys=values` pairs which will be used as plugin configuration.
 
+`kdb smount` is an alias and can be used in the same way as `kdb spec-mount`.
+
 
 ## DESCRIPTION
 
-This command allows a user to mount a new *backend* described by an already mounted specification.
+This command allows a user to mount a new *backend* described by a previously mounted specification.
 To mount a specification file first use [kdb-mount(7)](kdb-mount.md).
 
 The idea of mounting is explained [in elektra-mounting(7)](elektra-mounting.md) and.

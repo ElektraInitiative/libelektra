@@ -43,12 +43,17 @@ struct OrphanSearch
 
 typedef int (*ForeachAugNodeClb) (augeas *, const char *, void *);
 
-void keySetOrderMeta (Key * key, int order)
+int keySetOrderMeta (Key * key, int order)
 {
 	char * buffer;
-	asprintf (&buffer, "%d", order);
-	keySetMeta (key, "order", buffer);
+	int result;
+	result = asprintf (&buffer, "%d", order);
+
+	if (result < 0) return result;
+
+	result = keySetMeta (key, "order", buffer);
 	elektraFree (buffer);
+	return result;
 }
 
 static int keyCmpOrderWrapper (const void * a, const void * b)
@@ -129,6 +134,11 @@ static Key * createKeyFromPath (Key * parentKey, const char * treePath)
 	return key;
 }
 
+/**
+ * Creates a new Elektra key from the specified Augeas key.
+ * If any step during key conversion fails, an error is returned
+ * in order to prevent inconsistent keys.
+ */
 static int convertToKey (augeas * handle, const char * treePath, void * data)
 {
 	struct KeyConversion * conversionData = (struct KeyConversion *)data;
@@ -136,6 +146,7 @@ static int convertToKey (augeas * handle, const char * treePath, void * data)
 	const char * value = 0;
 	result = aug_get (handle, treePath, &value);
 
+	/* we were unable to retrieve the augeas value */
 	if (result < 0) return result;
 
 	Key * key = createKeyFromPath (conversionData->parentKey, treePath);
@@ -143,14 +154,24 @@ static int convertToKey (augeas * handle, const char * treePath, void * data)
 	/* fill key values */
 	keySetString (key, value);
 	conversionData->currentOrder++;
-	keySetOrderMeta (key, conversionData->currentOrder);
+	result = keySetOrderMeta (key, conversionData->currentOrder);
+
+	/* setting the correct key order failed */
+	if (result < 0) return result;
+
 	result = ksAppendKey (conversionData->ks, key);
 
 	return result;
 }
 
+/**
+ * Checks whether a given path must be pruned from the Augeas tree by comparing
+ * it with the supplied keyset. If any operation during pruning fails, an error
+ * is returned in order to prevent invalid keys.
+ */
 static int removeOrphan (augeas * handle, const char * treePath, void * data)
 {
+	int result;
 	struct OrphanSearch * orphanData = (struct OrphanSearch *)data;
 
 	Key * key = createKeyFromPath (orphanData->parentKey, treePath);
@@ -159,7 +180,10 @@ static int removeOrphan (augeas * handle, const char * treePath, void * data)
 	{
 		char * nodeMatch;
 		char ** matches;
-		asprintf (&nodeMatch, "%s/*", treePath);
+		result = asprintf (&nodeMatch, "%s/*", treePath);
+
+		if (result < 0) return -1;
+
 		int numChildNodes = aug_match (handle, nodeMatch, &matches);
 		elektraFree (nodeMatch);
 
@@ -198,7 +222,10 @@ static int removeOrphan (augeas * handle, const char * treePath, void * data)
 static int foreachAugeasNode (augeas * handle, const char * treePath, ForeachAugNodeClb callback, void * callbackData)
 {
 	char * matchPath;
-	asprintf (&matchPath, "%s//*", treePath);
+	int result = 0;
+	result = asprintf (&matchPath, "%s//*", treePath);
+
+	if (result < 0) return -1;
 
 	/* must be non NULL for aug_match to return matches */
 	char ** matches = (char **)1;
@@ -208,7 +235,6 @@ static int foreachAugeasNode (augeas * handle, const char * treePath, ForeachAug
 	if (numMatches < 0) return numMatches;
 
 	int i;
-	int result = 0;
 	for (i = 0; i < numMatches; i++)
 	{
 		/* retrieve the value from augeas */
@@ -216,6 +242,9 @@ static int foreachAugeasNode (augeas * handle, const char * treePath, ForeachAug
 
 		result = (*callback) (handle, curPath, callbackData);
 
+		/* if handling the key failed, abort with an error as
+		 * the failed key could be a crucial one
+		 */
 		if (result < 0) break;
 
 		elektraFree (curPath);
@@ -296,11 +325,7 @@ static int saveTree (augeas * augeasHandle, KeySet * ks, const char * lensPath, 
 	Key ** keyArray = calloc (ksGetSize (ks), sizeof (Key *));
 	ret = elektraKsToMemArray (ks, keyArray);
 
-	if (ret < 0)
-	{
-		elektraFree (keyArray);
-		return -1;
-	}
+	if (ret < 0) goto memoryerror;
 
 	qsort (keyArray, arraySize, sizeof (Key *), keyCmpOrderWrapper);
 
@@ -309,7 +334,10 @@ static int saveTree (augeas * augeasHandle, KeySet * ks, const char * lensPath, 
 	{
 		Key * key = keyArray[i];
 		char * nodeName;
-		asprintf (&nodeName, AUGEAS_TREE_ROOT "%s", (keyName (key) + prefixSize));
+		ret = asprintf (&nodeName, AUGEAS_TREE_ROOT "%s", (keyName (key) + prefixSize));
+
+		if (ret < 0) goto memoryerror;
+
 		aug_set (augeasHandle, nodeName, keyString (key));
 		elektraFree (nodeName);
 	}
@@ -324,25 +352,44 @@ static int saveTree (augeas * augeasHandle, KeySet * ks, const char * lensPath, 
 	data->ks = ks;
 	data->parentKey = parentKey;
 
-	foreachAugeasNode (augeasHandle, AUGEAS_TREE_ROOT, &removeOrphan, data);
+	ret = foreachAugeasNode (augeasHandle, AUGEAS_TREE_ROOT, &removeOrphan, data);
 
 	elektraFree (data);
 
 	/* build the tree */
 	ret = aug_text_retrieve (augeasHandle, lensPath, AUGEAS_CONTENT_ROOT, AUGEAS_TREE_ROOT, AUGEAS_OUTPUT_ROOT);
 
+	if (ret < 0)
+	{
+		/* report the augeas specific error */
+		ELEKTRA_SET_ERROR (85, parentKey, getAugeasError (augeasHandle));
+	}
+
 	return ret;
+
+memoryerror:
+	elektraFree (keyArray);
+	ELEKTRA_SET_ERROR (87, parentKey, "Unable to allocate memory while saving the augeas tree");
+	return -1;
 }
 
 int elektraAugeasOpen (Plugin * handle, Key * parentKey)
 {
 	augeas * augeasHandle;
 	augeasHandle = aug_init (NULL, NULL, AUG_NO_MODL_AUTOLOAD | AUG_NO_ERR_CLOSE);
+	int ret;
 
 	if (aug_error (augeasHandle) != AUG_NOERROR)
 	{
 		char * errormessage;
-		asprintf (&errormessage, "Unable to initialize augeas: %s", aug_error_message (augeasHandle));
+		ret = asprintf (&errormessage, "Unable to initialize augeas: %s", aug_error_message (augeasHandle));
+
+		if (ret >= 0)
+		{
+			ELEKTRA_SET_ERROR (87, parentKey, "Unable to allocate memory for a detailed augeas error message");
+			return -1;
+		}
+
 		ELEKTRA_SET_ERROR (85, parentKey, errormessage);
 		elektraFree (errormessage);
 		return -1;
@@ -502,8 +549,8 @@ int elektraAugeasSet (Plugin * handle, KeySet * returned, Key * parentKey)
 	if (ret < 0)
 	{
 		fclose (fh);
-		/* TODO: this is not always an Augeas error (could be an elektraMalloc error) */
-		ELEKTRA_SET_AUGEAS_ERROR (augeasHandle, parentKey);
+		errno = errnosave;
+		return -1;
 	}
 
 	/* write the Augeas tree to the file */

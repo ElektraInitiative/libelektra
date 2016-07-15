@@ -384,12 +384,18 @@ void BackendBuilder::recommendPlugin (std::string name)
  * @pre Needs to be a unique new name (use refname if you want to add the same module multiple times)
  *
  * Will automatically resolve virtual plugins to actual plugins.
+ * 
+ * Also calls the checkconf function if provided by the plugin. The checkconf function has the 
+ * following signature: int checkconf (Key * errorKey, KeySet * config) and allows a plugin to 
+ * verify its configuration at mount time.
  *
  * @see resolveNeeds()
  * @param plugin
  */
 void BackendBuilder::addPlugin (PluginSpec const & plugin)
 {
+	typedef int (*checkConfPtr) (ckdb::Key *, ckdb::KeySet *);
+
 	for (auto & p : toAdd)
 	{
 		if (p.getFullName () == plugin.getFullName ())
@@ -409,6 +415,46 @@ void BackendBuilder::addPlugin (PluginSpec const & plugin)
 		newPlugin.appendConfig (provides.getConfig ());
 	}
 
+	// call plugin's checkconf function (if provided)
+	// this enables a plugin to verify its configuration at mount time
+	checkConfPtr checkConfFunction = reinterpret_cast<checkConfPtr> (pluginDatabase->getSymbol (newPlugin, "checkconf"));
+	if (checkConfFunction)
+	{
+		ckdb::Key * errorKey = ckdb::keyNew (0);
+
+		// merge plugin config and backend config together
+		ckdb::KeySet * pluginConfig = newPlugin.getConfig ().dup ();
+		ckdb::ksAppend (pluginConfig, backendConf.getKeySet ());
+
+		// call the plugin's checkconf function
+		int checkResult = checkConfFunction (errorKey, pluginConfig);
+		if (checkResult == -1)
+		{
+			ckdb::ksDel (pluginConfig);
+			throw PluginConfigInvalid (errorKey);
+		}
+		else if (checkResult == 1)
+		{
+			// separate plugin config from the backend config
+			ckdb::Key * backendParent = ckdb::keyNew ("system/", KEY_END);
+			ckdb::KeySet * newBackendConfig = ckdb::ksCut (pluginConfig, backendParent);
+
+			// take over the new configuration
+			KeySet modifiedPluginConfig = KeySet (pluginConfig);
+			KeySet modifiedBackendConfig = KeySet (newBackendConfig);
+
+			newPlugin.setConfig (modifiedPluginConfig);
+			setBackendConfig (modifiedBackendConfig);
+
+			ckdb::keyDel (backendParent);
+		}
+		else
+		{
+			ckdb::ksDel (pluginConfig);
+		}
+		ckdb::keyDel (errorKey);
+	}
+
 	toAdd.push_back (newPlugin);
 	sort ();
 }
@@ -426,6 +472,16 @@ void BackendBuilder::fillPlugins (BackendInterface & b) const
 	{
 		b.addPlugin (plugin);
 	}
+}
+
+void BackendBuilder::setBackendConfig (KeySet const & ks)
+{
+	backendConf = ks;
+}
+
+KeySet BackendBuilder::getBackendConfig ()
+{
+	return backendConf;
 }
 
 GlobalPluginsBuilder::GlobalPluginsBuilder (BackendBuilderInit const & bbi) : BackendBuilder (bbi)
@@ -489,7 +545,7 @@ std::string MountBackendBuilder::getMountpoint () const
 
 void MountBackendBuilder::setBackendConfig (KeySet const & ks)
 {
-	backendConf = ks;
+	BackendBuilder::setBackendConfig (ks);
 }
 
 void MountBackendBuilder::useConfigFile (std::string file)
