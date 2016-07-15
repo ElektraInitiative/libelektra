@@ -1,7 +1,7 @@
 #include "kdbprivate.h"
 
 /**
- * Allocates all space needed.
+ * Allocates vheap with size specified by parameter minSize
  *
  * To construct a max heap the comparison function VheapComp (a, b), must return
  * 1 on a > b and 0 otherwise. For a min heap 1 on a < b and 0 otherwise.
@@ -12,7 +12,7 @@
  * @return a Vheap pointer
  * @return NULL error
  */
-Vheap * elektraVheapInit (VheapComp comp, int minSize)
+Vheap * elektraVheapInit (VheapComp comp, size_t minSize)
 {
 	if (minSize < 1 || !comp) return NULL;
 	Vheap * newVheap = elektraMalloc (sizeof (Vheap));
@@ -37,7 +37,7 @@ Vheap * elektraVheapInit (VheapComp comp, int minSize)
  * @return 1 on empty
  * @return 0 on non empty
  */
-int elektraVheapIsEmpty (Vheap * vheap)
+int elektraVheapIsEmpty (const Vheap * vheap)
 {
 	if (!vheap) return 0;
 	return (vheap->count == 0) ? 1 : 0;
@@ -76,9 +76,10 @@ int elektraVheapInsert (Vheap * vheap, void * data)
 			return 0;
 		}
 	}
-	unsigned int parent, pos;
+	size_t parent, pos;
 	for (pos = vheap->count - 1; pos; pos = parent)
 	{
+		// calculates the position of the parent in the data array
 		parent = (pos - 1) >> 1;
 		if (vheap->comp (vheap->data[parent], data)) break;
 		vheap->data[pos] = vheap->data[parent];
@@ -102,6 +103,7 @@ void * elektraVheapRemove (Vheap * vheap)
 	if (elektraVheapIsEmpty (vheap)) return NULL;
 	// shrink
 	--vheap->count;
+	// check size against min size fist
 	if (vheap->size > vheap->minSize && vheap->count <= vheap->size >> 2)
 	{
 		vheap->size >>= 1;
@@ -112,7 +114,7 @@ void * elektraVheapRemove (Vheap * vheap)
 	}
 	void * ret = vheap->data[0];
 	vheap->data[0] = vheap->data[vheap->count];
-	int elem, child;
+	size_t elem, child;
 	elem = 0;
 	child = 1;
 	while (child < vheap->count)

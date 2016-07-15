@@ -99,7 +99,7 @@ static void test_grow_shrink ()
 				size <<= 1;
 			}
 			succeed_if (s->data[i - 1] == *(s->head - 1), "grow head error");
-			succeed_if (s->size == size, "size error");
+			succeed_if (s->size == (size_t)size, "size error");
 		}
 		for (int i = maxElem - 1; i >= 0; --i)
 		{
@@ -110,7 +110,7 @@ static void test_grow_shrink ()
 				size >>= 1;
 			}
 			succeed_if (s->data[i] == *s->head, "shrink head error");
-			succeed_if (s->size == size, "shrink size error");
+			succeed_if (s->size == (size_t)size, "shrink size error");
 		}
 		elektraVstackDel (s);
 	}

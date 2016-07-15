@@ -346,8 +346,8 @@ Currently the installed system files are as following:
 | GIR             | introspection file for bindings | `INTROSPECTION_GIRDIR` from pkg-config |
 | GSettings       | GSettings backend module        | `GIO_MODULE_DIR` from pkg-config       |
 
-#### HASHLOOKUP ####
-Specifies if the Order Preserving Minimal Perfect Hash Map should be included.
+#### ENABLE_OPTIMIZATIONS ####
+In order to keep the binaries as small as possible this flag allows to trade memory for speed.
 
 ## BUILDING ##
 

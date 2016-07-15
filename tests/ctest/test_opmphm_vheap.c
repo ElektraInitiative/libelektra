@@ -8,7 +8,10 @@
 
 #include <tests_internal.h>
 
-int maxcomp (void * a, void * b)
+/**
+ * Comparison function for a maximum int heap
+ */
+static int maxcomp (void * a, void * b)
 {
 	if (!a || !b) return 1;
 	if (*((int *)a) > *((int *)b))
@@ -17,7 +20,10 @@ int maxcomp (void * a, void * b)
 		return 0;
 }
 
-int mincomp (void * a, void * b)
+/**
+ * Comparison function for a minimum int heap
+ */
+static int mincomp (void * a, void * b)
 {
 	if (!a || !b) return 1;
 	if (*((int *)a) < *((int *)b))
@@ -154,7 +160,7 @@ static void test_grow_shrink ()
 				// grow
 				actualSize <<= 1;
 			}
-			succeed_if (actualSize == h->size, "grow error");
+			succeed_if ((size_t)actualSize == h->size, "grow error");
 		}
 		for (int i = maxElem - 1; i >= 0; --i)
 		{
@@ -164,7 +170,7 @@ static void test_grow_shrink ()
 				// shrink
 				actualSize >>= 1;
 			}
-			succeed_if (actualSize == h->size, "shrink error");
+			succeed_if ((size_t)actualSize == h->size, "shrink error");
 		}
 		elektraVheapDel (h);
 	}

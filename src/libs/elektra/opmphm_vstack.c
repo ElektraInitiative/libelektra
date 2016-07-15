@@ -1,14 +1,14 @@
 #include "kdbprivate.h"
 
 /**
- * Allocates the needed space and sets the stack pointer.
+ * Allocates vstack with size specified by parameter minSize and sets the stack pointer.
  *
  * @ingroup vstack
  * @param minSize the minimum size of the stack
  * @return a Vstack pointer
  * @return NULL error
  */
-Vstack * elektraVstackInit (int minSize)
+Vstack * elektraVstackInit (size_t minSize)
 {
 	if (minSize < 1) return NULL;
 	Vstack * newStack = elektraMalloc (sizeof (Vstack));
@@ -37,7 +37,7 @@ int elektraVstackPush (Vstack * stack, void * data)
 {
 	if (!stack) return 0;
 	// grow
-	if (stack->head - stack->data >= stack->size)
+	if ((size_t)(stack->head - stack->data) >= stack->size)
 	{
 		stack->size <<= 1;
 		// save head
@@ -67,7 +67,7 @@ void * elektraVstackPop (Vstack * stack)
 	if (elektraVstackIsEmpty (stack)) return NULL;
 	stack->head--;
 	// shrink
-	if (stack->size > stack->minSize && stack->head - stack->data <= stack->size >> 2)
+	if (stack->size > stack->minSize && (size_t)(stack->head - stack->data) <= stack->size >> 2)
 	{
 		stack->size >>= 1;
 		int diff = stack->head - stack->data;
@@ -87,7 +87,7 @@ void * elektraVstackPop (Vstack * stack)
  * @return 1 on empty
  * @return 0 on non empty
  */
-int elektraVstackIsEmpty (Vstack * stack)
+int elektraVstackIsEmpty (const Vstack * stack)
 {
 	if (!stack) return 0;
 	return (stack->head == stack->data);

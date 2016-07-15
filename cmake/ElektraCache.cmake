@@ -277,13 +277,7 @@ option (INSTALL_SYSTEM_FILES "Install files to system directories" ON)
 
 option (INSTALL_BUILD_TOOLS "Install build tools for cross-compilation" OFF)
 
-option (HASHLOOKUP "Add the possibility to lookup with an Order Preserving Minimal Perfect Hash Map" ON)
-if (HASHLOOKUP)
-	add_definitions(-DHASHLOOKUP=1)
-else (HASHLOOKUP)
-	message (STATUS "Order Preserving Minimal Perfect Hash Map not included")
-endif (HASHLOOKUP)
-
+option (ENABLE_OPTIMIZATIONS "Turn on optimizations that trade memory for speed" ON)
 
 
 #
