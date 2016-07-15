@@ -32,15 +32,15 @@ if (INSTALL_SYSTEM_FILES)
 			include (LibFindMacros)
 			pkg_get_variable (BASH_COMPLETION_COMPLETIONSDIR bash-completion completionsdir)
 		else ()
-			set (BASH_COMPLETION_COMPLETIONSDIR "/etc/bash_completion.d")
+			set (BASH_COMPLETION_COMPLETIONSDIR "/usr/share/bash-completion/completions")
 		endif ()
 	endif ()
 	install (FILES kdb-bash-completion
 			DESTINATION ${BASH_COMPLETION_COMPLETIONSDIR}
 			RENAME kdb)
 	install (FILES kdb_zsh_completion
-			DESTINATION /usr/share/zsh/vendor-completions
-			RENAME _kdb)
+			DESTINATION "/usr/share/zsh/vendor-completions"
+			RENAME "_kdb")
 endif()
 
 configure_file(
