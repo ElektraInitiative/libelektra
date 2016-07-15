@@ -17,6 +17,7 @@
 
 #include <command.hpp>
 #include <external.hpp>
+#include <ansicolors.hpp>
 
 // TODO: to add a new command, 1.) include your header here
 #include <check.hpp>
@@ -120,13 +121,17 @@ public:
 		std::vector<std::string> ret;
 		for (auto & elem : m_factory)
 		{
-			std::string text = elem.first;
+			std::string text = getStdColor (ANSI_COLOR::BOLD);
+			text += elem.first;
+			text += getStdColor (ANSI_COLOR::RESET);
 			text += "\t";
 			Command * cmd = elem.second->get ();
 			text += cmd->getShortHelpText ();
 			delete cmd;
 			ret.push_back (text);
 		}
+		ret.push_back(getStdColor (ANSI_COLOR::BOLD) + "help"  + getStdColor (ANSI_COLOR::RESET) + "\t" + "View the man page of a tool");
+		ret.push_back(getStdColor (ANSI_COLOR::BOLD) + "list-tools"  + getStdColor (ANSI_COLOR::RESET) + "\t" + "List all external tool");
 		return ret;
 	}
 
