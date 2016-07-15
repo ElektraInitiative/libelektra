@@ -45,6 +45,11 @@ typedef struct
 
 #define CRYPTO_PLUGIN_FUNCTION(name) ELEKTRA_PLUGIN_FUNCTION (cryptoopenssl, name)
 
+#elif defined(ELEKTRA_CRYPTO_API_BOTAN)
+
+typedef void elektraCryptoHandle;
+#define CRYPTO_PLUGIN_FUNCTION(name) ELEKTRA_PLUGIN_FUNCTION (cryptobotan, name)
+
 #else
 
 typedef void elektraCryptoHandle;

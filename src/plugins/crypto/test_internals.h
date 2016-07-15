@@ -1,7 +1,8 @@
 /**
  * @file
  *
- * @brief test suite for the crypto plugin
+ * @brief test suite for the crypto plugin.
+ * Contains shared functions for all compile variants.
  *
  * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
  *
@@ -125,27 +126,17 @@ static void test_init_internal (Plugin * plugin, Key * parentKey)
 	succeed_if (plugin->kdbClose (plugin, parentKey) == 1, "kdb close failed");
 }
 
-static void test_init ()
+static void test_init (const char * pluginName)
 {
 	Plugin * plugin = NULL;
 	Key * parentKey = keyNew ("system", KEY_END);
 	KeySet * modules = ksNew (0, KS_END);
 	elektraModulesInit (modules, 0);
 
-	// gcrypt tests
-	plugin = elektraPluginOpen ("crypto_gcrypt", modules, newWorkingConfiguration (0), 0);
+	plugin = elektraPluginOpen (pluginName, modules, newWorkingConfiguration (0), 0);
 	if (plugin)
 	{
-		succeed_if (!strcmp (plugin->name, "crypto_gcrypt"), "got wrong name");
-		test_init_internal (plugin, parentKey);
-		elektraPluginClose (plugin, 0);
-	}
-
-	// OpenSSL tests
-	plugin = elektraPluginOpen ("crypto_openssl", modules, newWorkingConfiguration (0), 0);
-	if (plugin)
-	{
-		succeed_if (!strcmp (plugin->name, "crypto_openssl"), "got wrong name");
+		succeed_if (!strcmp (plugin->name, pluginName), "got wrong name");
 		test_init_internal (plugin, parentKey);
 		elektraPluginClose (plugin, 0);
 	}
@@ -176,17 +167,11 @@ static void test_config_errors_internal (const char * pluginName, KeySet * plugi
 	keyDel (parentKey);
 }
 
-static void test_config_errors ()
+static void test_config_errors (const char * pluginName)
 {
-	// gcrypt tests
-	test_config_errors_internal ("crypto_gcrypt", newWorkingConfiguration (0), 1, "kdbSet failed with valid config");
-	test_config_errors_internal ("crypto_gcrypt", newInvalidConfiguration (), -1, "kdbSet succeeded with invalid config");
-	test_config_errors_internal ("crypto_gcrypt", newIncompleteConfiguration (), -1, "kdbSet succeeded with incomplete config");
-
-	// OpenSSL tests
-	test_config_errors_internal ("crypto_openssl", newWorkingConfiguration (0), 1, "kdbSet failed with valid config");
-	test_config_errors_internal ("crypto_openssl", newInvalidConfiguration (), -1, "kdbSet succeeded with invalid config");
-	test_config_errors_internal ("crypto_openssl", newIncompleteConfiguration (), -1, "kdbSet succeeded with incomplete config");
+	test_config_errors_internal (pluginName, newWorkingConfiguration (0), 1, "kdbSet failed with valid config");
+	test_config_errors_internal (pluginName, newInvalidConfiguration (), -1, "kdbSet succeeded with invalid config");
+	test_config_errors_internal (pluginName, newIncompleteConfiguration (), -1, "kdbSet succeeded with incomplete config");
 }
 
 static void test_crypto_operations_internal (Plugin * plugin, Key * parentKey)
@@ -221,24 +206,14 @@ static void test_crypto_operations_internal (Plugin * plugin, Key * parentKey)
 	ksDel (original);
 }
 
-static void test_crypto_operations ()
+static void test_crypto_operations (const char * pluginName)
 {
 	Plugin * plugin = NULL;
 	Key * parentKey = keyNew ("system", KEY_END);
 	KeySet * modules = ksNew (0, KS_END);
 	elektraModulesInit (modules, 0);
 
-	// gcrypt tests
-	plugin = elektraPluginOpen ("crypto_gcrypt", modules, newWorkingConfiguration (0), 0);
-	if (plugin)
-	{
-		test_crypto_operations_internal (plugin, parentKey);
-		elektraPluginClose (plugin, 0);
-	}
-
-	// OpenSSL tests
-	// FINAL unit test -> call crypto cleanup code
-	plugin = elektraPluginOpen ("crypto_openssl", modules, newWorkingConfiguration (1), 0);
+	plugin = elektraPluginOpen (pluginName, modules, newWorkingConfiguration (1), 0);
 	if (plugin)
 	{
 		test_crypto_operations_internal (plugin, parentKey);
@@ -248,19 +223,4 @@ static void test_crypto_operations ()
 	elektraModulesClose (modules, 0);
 	ksDel (modules);
 	keyDel (parentKey);
-}
-
-int main (int argc, char ** argv)
-{
-	printf ("CYPTO        TESTS\n");
-	printf ("==================\n\n");
-
-	init (argc, argv);
-
-	test_init ();
-	test_config_errors ();
-	test_crypto_operations ();
-
-	printf ("\ntestmod_crypto RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
-	return nbError;
 }

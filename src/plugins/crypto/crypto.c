@@ -17,6 +17,9 @@
 #ifdef ELEKTRA_CRYPTO_API_OPENSSL
 #include "openssl_operations.h"
 #endif
+#ifdef ELEKTRA_CRYPTO_API_BOTAN
+#include "botan_operations.h"
+#endif
 #include <kdberrors.h>
 #include <pthread.h>
 #include <string.h>
@@ -36,6 +39,8 @@ static int elektraCryptoInit (Key * errorKey ELEKTRA_UNUSED)
 	return elektraCryptoGcryInit (errorKey);
 #elif defined(ELEKTRA_CRYPTO_API_OPENSSL)
 	return elektraCryptoOpenSSLInit (errorKey);
+#elif defined(ELEKTRA_CRYPTO_API_BOTAN)
+	return elektraCryptoBotanInit (errorKey);
 #else
 	return 1;
 #endif
@@ -48,9 +53,6 @@ static int elektraCryptoInit (Key * errorKey ELEKTRA_UNUSED)
  */
 static void elektraCryptoTeardown ()
 {
-#ifdef ELEKTRA_CRYPTO_API_OPENSSL
-	elektraCryptoOpenSSLTeardown ();
-#endif
 }
 
 /**
@@ -60,10 +62,13 @@ static void elektraCryptoTeardown ()
  */
 static int elektraCryptoEncrypt (Plugin * handle ELEKTRA_UNUSED, KeySet * data ELEKTRA_UNUSED, Key * errorKey ELEKTRA_UNUSED)
 {
-#if defined(ELEKTRA_CRYPTO_API_GCRYPT) || defined(ELEKTRA_CRYPTO_API_OPENSSL)
+#if defined(ELEKTRA_CRYPTO_API_GCRYPT) || defined(ELEKTRA_CRYPTO_API_OPENSSL) || defined(ELEKTRA_CRYPTO_API_BOTAN)
 	Key * k;
-	elektraCryptoHandle * cryptoHandle = NULL;
 	KeySet * pluginConfig = elektraPluginGetConfig (handle);
+#endif
+
+#if defined(ELEKTRA_CRYPTO_API_GCRYPT) || defined(ELEKTRA_CRYPTO_API_OPENSSL)
+	elektraCryptoHandle * cryptoHandle = NULL;
 #endif
 
 #if defined(ELEKTRA_CRYPTO_API_GCRYPT)
@@ -110,6 +115,18 @@ openssl_error:
 	elektraCryptoOpenSSLHandleDestroy (cryptoHandle);
 	return -1;
 
+#elif defined(ELEKTRA_CRYPTO_API_BOTAN)
+
+	ksRewind (data);
+	while ((k = ksNext (data)) != 0)
+	{
+		if (elektraCryptoBotanEncrypt (pluginConfig, k, errorKey) != 1)
+		{
+			return -1; // failure, error has been set by elektraCryptoBotanEncrypt
+		}
+	}
+	return 1; // success
+
 #else
 	return 1;
 #endif
@@ -122,10 +139,13 @@ openssl_error:
  */
 static int elektraCryptoDecrypt (Plugin * handle ELEKTRA_UNUSED, KeySet * data ELEKTRA_UNUSED, Key * errorKey ELEKTRA_UNUSED)
 {
-#if defined(ELEKTRA_CRYPTO_API_GCRYPT) || defined(ELEKTRA_CRYPTO_API_OPENSSL)
+#if defined(ELEKTRA_CRYPTO_API_GCRYPT) || defined(ELEKTRA_CRYPTO_API_OPENSSL) || defined(ELEKTRA_CRYPTO_API_BOTAN)
 	Key * k;
-	elektraCryptoHandle * cryptoHandle = NULL;
 	KeySet * pluginConfig = elektraPluginGetConfig (handle);
+#endif
+
+#if defined(ELEKTRA_CRYPTO_API_GCRYPT) || defined(ELEKTRA_CRYPTO_API_OPENSSL)
+	elektraCryptoHandle * cryptoHandle = NULL;
 #endif
 
 #if defined(ELEKTRA_CRYPTO_API_GCRYPT)
@@ -171,6 +191,18 @@ static int elektraCryptoDecrypt (Plugin * handle ELEKTRA_UNUSED, KeySet * data E
 openssl_error:
 	elektraCryptoOpenSSLHandleDestroy (cryptoHandle);
 	return -1;
+
+#elif defined(ELEKTRA_CRYPTO_API_BOTAN)
+
+	ksRewind (data);
+	while ((k = ksNext (data)) != 0)
+	{
+		if (elektraCryptoBotanDecrypt (pluginConfig, k, errorKey) != 1)
+		{
+			return -1;
+		}
+	}
+	return 1;
 
 #else
 	return 1;

@@ -10,6 +10,16 @@ elektrify-getenv(1) -- elektrify the environment of applications
 `elektrify-getenv` <application> <options>
 
 
+## EXAMPLE
+
+    kdb elektrify-getenv curl --elektra-version
+    kdb elektrify-getenv curl http://www.libelektra.org
+    kdb set system/env/override/HTTP_PROXY http://proxy.hogege.com:8000/
+    kdb elektrify-getenv curl http://www.libelektra.org
+
+By using `elektrify-getenv` the last curl invocation will use a different http proxy.
+
+
 ## DESCRIPTION
 
 When an application is elektrified using libelektragetenv,
@@ -23,7 +33,7 @@ Its main purpose is to:
 - allow a hierarchical structure for environment
 - allow settings to only apply for individual applications or only in special context
 - still preserve the advantages (inheriting of environment to subprocesses)
-- Availability in at, cron and similar scripts.
+- availability of same environment in at, cron and similar scripts
 
 It is implemented using a LD_PRELOAD technique, see [USAGE](#USAGE) below for
 global activation.
