@@ -38,7 +38,7 @@ _kdb_paths () {
 
         # We need to check if the last char is a /
         # If not, we remove the garbled part at the end and search from there.
-        if [ ${PREFIX[-1]} == "/" ]; then
+        if [[ ${PREFIX[-1]} == "/" ]]; then
             paths=($(kdb ls $PREFIX | cut -d "/" -f -$(( slashes + 1 )) ))
         else
             pre=$(cut -d "/" -f -$slashes <<< $PREFIX)
