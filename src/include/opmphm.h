@@ -11,10 +11,10 @@
 
 typedef struct
 {
-	size_t minSize;  /*!< the minimal size of the stack > */
-	size_t size;     /*!< The maximal size of the stack */
-	void ** data; /*!< The data array */
-	void ** head; /*!< The stack pointer, which points to the head */
+	size_t minSize; /*!< the minimal size of the stack > */
+	size_t size;    /*!< The maximal size of the stack */
+	void ** data;   /*!< The data array */
+	void ** head;   /*!< The stack pointer, which points to the head */
 } Vstack;
 
 Vstack * elektraVstackInit (size_t minSize);
@@ -41,9 +41,9 @@ typedef int (*VheapComp) (void *, void *);
 
 typedef struct
 {
-	size_t minSize;    /*!< the minimal size of the heap > */
-	size_t size;       /*!< The size of the heap */
-	size_t count;      /*!< The current number of elements in the heap */
+	size_t minSize; /*!< the minimal size of the heap > */
+	size_t size;    /*!< The size of the heap */
+	size_t count;   /*!< The current number of elements in the heap */
 	VheapComp comp; /*!< The comparison function */
 	void ** data;   /*!< The data array */
 } Vheap;

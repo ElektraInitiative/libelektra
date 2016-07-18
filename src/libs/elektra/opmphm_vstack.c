@@ -37,7 +37,7 @@ int elektraVstackPush (Vstack * stack, void * data)
 {
 	if (!stack) return 0;
 	// grow
-	if ((size_t)(stack->head - stack->data) >= stack->size)
+	if ((size_t) (stack->head - stack->data) >= stack->size)
 	{
 		stack->size <<= 1;
 		// save head
@@ -67,7 +67,7 @@ void * elektraVstackPop (Vstack * stack)
 	if (elektraVstackIsEmpty (stack)) return NULL;
 	stack->head--;
 	// shrink
-	if (stack->size > stack->minSize && (size_t)(stack->head - stack->data) <= stack->size >> 2)
+	if (stack->size > stack->minSize && (size_t) (stack->head - stack->data) <= stack->size >> 2)
 	{
 		stack->size >>= 1;
 		int diff = stack->head - stack->data;
