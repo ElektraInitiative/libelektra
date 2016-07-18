@@ -9,7 +9,7 @@ DiffType: File
 RET: 0
 < mount $File $Mountpoint $Storage
 
-RET: 2
+RET: 0
 < set $Mountpoint teststring
 
 < set $Mountpoint/testkey testval
@@ -17,12 +17,10 @@ RET: 2
 < get $Mountpoint/testkey
 
 STDOUT: test.?ey
-STDERR: blaaaa
 < ls $Mountpoint
 
 < setmeta $Mountpoint/testkey metacomment "comment blaa"
 
 < get $Mountpoint/michgibtsgarnicht
 
-WARNINGS: 79|80
 < umount $Mountpoint
