@@ -389,6 +389,18 @@ int elektraGitresolverGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELE
 	return 1; // success
 }
 
+static void addFileToIndex(git_repository *repo, GitData *data, git_index *index)
+{
+        git_blob * blob;
+		git_oid blobID;
+
+        git_index_entry ie;
+		ie.path = data->file;
+		ie.mode = GIT_FILEMODE_BLOB;
+		git_blob_create_fromdisk (&blobID, repo, data->tmpFile);
+		git_blob_lookup (&blob, repo, &blobID);
+		git_index_add_frombuffer (index, &ie, git_blob_rawcontent (blob), git_blob_rawsize (blob));
+}
 
 int elektraGitresolverSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
 {
@@ -457,30 +469,47 @@ int elektraGitresolverSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELE
 #ifdef DEVMODE
 		fprintf (stderr, "commit phase\n");
 #endif
+		
+        //get repo index
 		git_index * index;
-		git_oid commitID;
-		git_oid parentID;
+        git_repository_index (&index, repo);
+
+        //add file
+        addFileToIndex(repo, data, index);        
+		
+        git_index_write (index);
+	    
+        //get tree id    
 		git_oid treeID;
-		git_tree * tree;
-		git_signature * sig;
+        git_index_write_tree (&treeID, index);
+		
+        //get parent commit 
+		git_oid parentID;
 		git_commit * parent;
-		git_blob * blob;
-		git_oid blobID;
-		git_signature_now (&sig, "Elektra", "@libelektra.org");
-		git_repository_index (&index, repo);
-		git_index_entry ie;
-		ie.path = data->file;
-		ie.mode = GIT_FILEMODE_BLOB;
-		git_blob_create_fromdisk (&blobID, repo, data->tmpFile);
-		git_blob_lookup (&blob, repo, &blobID);
-		git_index_add_frombuffer (index, &ie, git_blob_rawcontent (blob), git_blob_rawsize (blob));
-		git_index_write (index);
-		git_index_write_tree (&treeID, index);
-		git_reference_name_to_id (&parentID, repo, "HEAD");
+        git_reference_name_to_id (&parentID, repo, "HEAD");
 		git_commit_lookup (&parent, repo, &parentID);
-		git_tree_lookup (&tree, repo, &treeID);
-		git_commit_create (&commitID, repo, "HEAD", sig, sig, NULL, "gitresolver demo commit", tree, 1,
+
+        //extract default git user
+		git_signature * sig;
+        int rc = git_signature_default(&sig, repo);
+        if(rc == GIT_ENOTFOUND)
+        {
+#ifdef DEVMODE
+            fprintf(stderr, "couldn't get default git user\n");
+#endif
+            git_signature_now (&sig, "Elektra", "@libelektra.org");
+        } 
+
+	    //get git tree	
+        git_tree * tree;
+        git_tree_lookup (&tree, repo, &treeID);
+		
+        //create default commit
+		git_oid commitID;
+        git_commit_create (&commitID, repo, "HEAD", sig, sig, NULL, "kdb git autocommit", tree, 1,
 				   (const git_commit **)&parent);
+
+
 		git_signature_free (sig);
 		git_commit_free (parent);
 	}

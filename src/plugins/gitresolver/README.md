@@ -11,13 +11,6 @@
 
 ## Usage ##
 
-Copy this gitresolver if you want to start a new
-plugin written in C.
-
-You can use scripts/copy-gitresolver
-to automatically rename everything to your
-plugin name:
-
-	cd src/plugins
-	../../scripts/copy-gitresolver yourplugin
-
+```
+kdb mount -R gitresolver /path/to/my/gitrepo/file.ini system/gittest ini shell execute/set='cd /path/to/my/gitrepo/ && git commit --amend'
+```
