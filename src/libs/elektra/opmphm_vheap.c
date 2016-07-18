@@ -117,7 +117,8 @@ void * elektraVheapRemove (Vheap * vheap)
 	size_t elem, child;
 	elem = 0;
 	child = 1;
-	while (child < vheap->count)
+	int comp = 1;
+	while (comp && child < vheap->count)
 	{
 		if (child + 1 < vheap->count)
 		{
@@ -126,17 +127,14 @@ void * elektraVheapRemove (Vheap * vheap)
 				++child;
 			}
 		}
-		if (vheap->comp (vheap->data[child], vheap->data[elem]))
+		comp = vheap->comp (vheap->data[child], vheap->data[elem]);
+		if (comp)
 		{
 			void * temp = vheap->data[child];
 			vheap->data[child] = vheap->data[elem];
 			vheap->data[elem] = temp;
 			elem = child;
 			child = (child << 1) + 1;
-		}
-		else
-		{
-			break;
 		}
 	}
 	return ret;
