@@ -346,9 +346,6 @@ Currently the installed system files are as following:
 | GIR             | introspection file for bindings | `INTROSPECTION_GIRDIR` from pkg-config |
 | GSettings       | GSettings backend module        | `GIO_MODULE_DIR` from pkg-config       |
 
-(*) variable in bash-completions cmake file.
-Without the variable set and pkg-config it will fall back to `/usr/share/bash-completion/completions`.
-
 #### ENABLE_OPTIMIZATIONS ####
 In order to keep the binaries as small as possible this flag allows to trade memory for speed.
 
