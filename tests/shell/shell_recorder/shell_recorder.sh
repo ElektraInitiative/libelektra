@@ -6,7 +6,7 @@ DBFile=
 Storage=
 MountArgs=
 DiffType=File
-OutFile=$(mktemp -p /tmp tmp.XXXXXXXXXX)
+OutFile=$(mktemp "${TMPDIR:-/tmp}/tmp.XXXXXXXXX")
 
 RETCMP=
 ERRORSCMP=
