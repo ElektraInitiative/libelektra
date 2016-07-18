@@ -17,6 +17,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sys/time.h>
+#include <sys/stat.h>
 #include <unistd.h>
 
 #define TV_MAX_DIGITS 26
@@ -32,15 +33,16 @@ typedef enum {
 
 typedef struct
 {
-	char * tmpFile;    // temporary filename for checkout
-	char * repo;       // path to repo (currently only local)
-	char * branch;     // branchname
-	char * file;       // filename
-	char * refName;    // git reference name e.g. refs/heads/master
-	char * headID;     // id of the most recent commit
-	char * objID;      // most recent id of the file
-	Tracking tracking; // track commit ids or object ids
-	int setPhase;      // Set phase counter, 0 setresolver, 1 commit
+	char * tmpFile;         // temporary filename for checkout
+	char * repo;            // path to repo (currently only local)
+	char * branch;          // branchname
+	char * file;            // filename
+	char * refName;         // git reference name e.g. refs/heads/master
+	char * headID;          // id of the most recent commit
+	char * objID;           // most recent id of the file
+	Tracking tracking;      // track commit ids or object ids
+	int setPhase;           // Set phase counter, 0 setresolver, 1 commit
+    time_t mtime;    //creation timestamp of tmp file
 } GitData;
 
 
@@ -382,8 +384,17 @@ int elektraGitresolverGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELE
 		return -1;
 	}
 	fwrite (git_blob_rawcontent ((git_blob *)blob), (size_t)git_blob_rawsize ((git_blob *)blob), 1, outFile);
-	fclose (outFile);
-	git_object_free (blob);
+    struct stat buf;
+    int fd;
+    fd = fileno(outFile);
+    if(fstat(fd, &buf) == -1)
+    {
+        //this shouldn't happen anyway
+    }    
+    data->mtime = buf.st_mtime;
+	
+    fclose (outFile);
+    git_object_free (blob);
 	git_repository_free (repo);
 	git_libgit2_shutdown ();
 	return 1; // success
@@ -469,7 +480,17 @@ int elektraGitresolverSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELE
 #ifdef DEVMODE
 		fprintf (stderr, "commit phase\n");
 #endif
-		
+        int fd = open(data->tmpFile, O_RDONLY);
+        struct stat buf;
+        fstat(fd, &buf);
+        close(fd);
+        if(data->mtime == buf.st_mtime)
+        {
+            //file hasn't changed, nothing to do here
+            git_repository_free(repo);
+            git_libgit2_shutdown();
+            return 0;
+        }        
         //get repo index
 		git_index * index;
         git_repository_index (&index, repo);
