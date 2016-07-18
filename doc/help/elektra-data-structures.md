@@ -377,26 +377,7 @@ if the memory usage gets under a quarter.
 
 The data will be stored as void pointer and can be inserted with the push call.
 Retrieve is possible through the pop call.
-Besides the classical init and del functions, an is empty check is also implemented.
-
-The typedef `Vstack` contains the following fields:
-
-	typedef struct
-	{
-		size_t minSize;
-		size_t size;
-		void ** data;
-		void ** head;
-	} Vstack;
-
-- **minSize**: Is the minimum size of the `Vstack`. After each pop a check is performed to see if a shrink is needed.
-This field defines the minimum size, which the `Vstack` size will never get below.
-
-- **size**: Is the actual allocated size of the `Vstack`
-
-- **data**: Is the array in which the data will be stored.
-
-- **head**: Is the stack pointer for fast insertion and retrieve. After each push or pop the stack pointer gets incremented or decremented.
+Besides the classical init and del functions, an is-empty check is also implemented.
 
 ### Vheap
 
@@ -406,40 +387,17 @@ The allocation works like the `Vstack` allocation.
 
 The data will be stored as void pointer and can be inserted with the insert call.
 At the insert the data will be stored in a binary tree, where each parent and his childs obey the order.
-The order is defined by the
+The order is defined by a compare function, set at init.
 
-	typedef int (*VheapComp) (void *, void *);
-
-function. This order function compares two elements and shall return 1 on a > b and 0 otherwise to construct a maximum heap.
+The compare function compares two elements and shall return 1 on a > b and 0 otherwise to construct a maximum heap.
 And 1 on a < b and 0 otherwise to construct a minimum heap.
-Example:
-If the order function constructs a maximum heap it holds for all elements if they have any childs:
-
-parent > child0 and parent > child1
 
 At the removal the fist element in the data array will be taken and the data gets reordered.
 The ordering takes log (n) time so the complexity for the insert and remove is log (n).
 
-Beside the classical init and del functions a is empty check is also implemented.
+Beside the classical init and del functions a is-empty check is also implemented.
 
-The typedef `Vheap` contains the following fields:
+####Example
+If the order function constructs a maximum heap it holds for all elements if they have any childs:
 
-typedef struct
-{
-	size_t minSize;
-	size_t size;
-	size_t count;
-	VheapComp comp;
-	void ** data;
-} Vheap;
-
-- **minSize**: Is the minimum size of the `Vheap`. After each remove a check is performed to see if a shrink is needed.
-This field defines the minimum size, which the `Vheap` size will never get below.
-
-- **size**: Is the actual allocated size of the `Vheap`
-
-- **count**: Is the actual number of elements in the `Vheap`
-
-- **comp**: Is the order function defined by the VheapComp
-
-- **data**: Is the array in which the data will be stored.
+parent > child0 and parent > child1

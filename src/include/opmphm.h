@@ -14,7 +14,7 @@ typedef struct
 	size_t minSize; /*!< the minimal size of the stack > */
 	size_t size;    /*!< The maximal size of the stack */
 	void ** data;   /*!< The data array */
-	void ** head;   /*!< The stack pointer, which points to the head */
+	void ** head;   /*!< The stack pointer, which gets incremented or decremented after each push or pop. */
 } Vstack;
 
 Vstack * elektraVstackInit (size_t minSize);
