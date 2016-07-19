@@ -66,6 +66,30 @@ KeySet * elektraKeyGetMetaKeySet (const Key * key);
 Key * ksPrev (KeySet * ks);
 Key * ksPopAtCursor (KeySet * ks, cursor_t c);
 
+
+
+typedef enum
+{
+    BelowSameNS,        //Below Same Namespace, cascading namespace matches only cascading namespace
+    BelowIgnoreNS,        //Below Ignore Namespace, namespaces are ignored
+    BelowCascadingNS,        //Below (allow) Cascading Namespace, cascading namespace matches all namespaces
+    DirectBelowSameNS,       //Direct Below Same Namespace
+    DirectBelowIgnoreNS,       //Direct Below Ignore Namespace
+    DirectBelowCascadingNS,       //Direct Below (allow) Cascading Namespace
+    SilblingSameNS,     //Silbling Same Namespace
+    SilblingIgnoreNS,     //Silbling Ignore Namespace
+    SilblingCascadingNS,     //Silbling (allow) Cascading Namespace
+    NephewSameNS,     //Nephew Same Namespace
+    NephewIgnoreNS,     //Nephew Ignore Namespace
+    NephewCascadingNS,     //Nephew (allow) Cascading Namespace
+}KeyRelType;
+
+int keyRel2 (const Key *k1, const Key *k2, KeyRelType which);
+Key *keyAsCascading(const Key *key);
+int keyGetLevelsBelow(const Key *k1, const Key *k2);
+
+
+
 #ifdef __cplusplus
 }
 }
