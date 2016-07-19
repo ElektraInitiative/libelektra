@@ -3,10 +3,12 @@
 getTempDir()
 {
 	if [ -z "$TMPDIR" ]; then
-		TMPDIR="/tmp"
+		TMPDIR="/tmp/tmp.XXXXXXXXX"
 	else
 		if [[ "$TMPDIR" == */ ]]; then
-			TMPDIR=$(echo $TMPDIR | head -c -2)
+			TMPDIR="$TMPDIR""tmp.XXXXXXXXX"
+		else
+			TMPDIR="$TMPDIR/tmp.XXXXXXXXX"
 		fi
 	fi
 	echo "$TMPDIR"
@@ -18,7 +20,7 @@ DBFile=
 Storage=
 MountArgs=
 DiffType=File
-OutFile=$(mktemp "$(getTempDir)/tmp.XXXXXXXXX")
+OutFile=$(mktemp "$(getTempDir)")
 
 RETCMP=
 ERRORSCMP=
@@ -133,7 +135,7 @@ execute()
     if [ ! -z "$STDERRCMP" ];
     then
         nbTest=$(( nbTest + 1 ))
-        echo "$STDERR" | grep -Eq --null --text "$STDERRCMP"
+        echo "$STDERR" | grep -Eq --text "$STDERRCMP"
         if [ "$?" -ne "0" ];
         then
             echo "STDERR doesn't match $STDERRCMP"
@@ -150,7 +152,7 @@ execute()
     if [ ! -z "$STDOUTCMP" ];
     then
         nbTest=$(( nbTest + 1 ))
-        echo "$STDOUT" | grep -Eq --null --text "$STDOUTCMP"
+        echo "$STDOUT" | grep -Eq --text "$STDOUTCMP"
         if [ "$?" -ne "0" ];
         then
             echo "STDOUT doesn't match $STDOUTCMP"
@@ -167,7 +169,7 @@ execute()
     if [ ! -z "$WARNINGSCMP" ];
     then
         nbTest=$(( nbTest + 1 ))
-        echo "$WARNINGS" | grep -Eq --null --text "($WARNINGSCMP)"
+        echo "$WARNINGS" | grep -Eq --text "($WARNINGSCMP)"
         if [ "$?" -ne "0" ];
         then
             echo "WARNINGS doesn't match $WARNINGSCMP"
@@ -201,7 +203,7 @@ execute()
     if [ ! -z "$DIFFCMP" ];
     then
         nbTest=$(( nbTest + 1 ))
-        echo "$DIFF" | grep -Eq --null --text "($DIFFCMP)"
+        echo "$DIFF" | grep -Eq --text "($DIFFCMP)"
         if [ "$?" -ne "0" ];
         then
             echo "Changes to $DBFile don't match $DIFFCMP"
