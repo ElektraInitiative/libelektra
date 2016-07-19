@@ -1,12 +1,24 @@
 #!/bin/bash
 
+getTempDir()
+{
+	if [ -z "$TMPDIR" ]; then
+		TMPDIR="/tmp"
+	else
+		if [[ "$TMPDIR" == */ ]]; then
+			TMPDIR=$(echo $TMPDIR | head -c -2)
+		fi
+	fi
+	echo "$TMPDIR"
+}
+
 FILE=$1
 Mountpoint=
 DBFile=
 Storage=
 MountArgs=
 DiffType=File
-OutFile=$(mktemp "${TMPDIR:-/tmp}/tmp.XXXXXXXXX")
+OutFile=$(mktemp "$(getTempDir)/tmp.XXXXXXXXX")
 
 RETCMP=
 ERRORSCMP=
