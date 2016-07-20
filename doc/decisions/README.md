@@ -27,6 +27,7 @@ section here.
 - [CMake spec](cmake_spec.md)
 - [Definition of Bool](bool.md)
 - [Global Plugins](global_plugins.md)
+- [Logging](logging.md)
 
 ## Drafts
 
