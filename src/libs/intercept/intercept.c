@@ -21,6 +21,7 @@ struct _Node
 	char * key;
 	char * value;
 	unsigned short flags;
+	unsigned short isOpen;
 	struct _Node * next;
 };
 typedef struct _Node Node;
@@ -153,7 +154,7 @@ void cleanup ()
 	}
 }
 
-static const Node * resolvePathname (const char * pathname)
+static Node * resolvePathname (const char * pathname)
 {
 	Node * node = NULL;
 	if (pathname)
@@ -191,7 +192,7 @@ typedef int (*orig_open_f_type) (const char * pathname, int flags, ...);
 
 int open (const char * pathname, int flags, ...)
 {
-	const Node * node = resolvePathname (pathname);
+	Node * node = resolvePathname (pathname);
 	const char * newPath = NULL;
 	unsigned short newFlags = (unsigned short)-1;
 	if (!node)
@@ -200,10 +201,11 @@ int open (const char * pathname, int flags, ...)
 	{
 		newPath = node->value;
 		newFlags = node->flags;
+		node->isOpen = 1;
 	}
 	if (newFlags == O_RDONLY)
 	{
-		flags = (flags & (~(0 | O_WRONLY)));
+		flags = (flags & (~(0 | O_WRONLY | O_APPEND)));
 	}
 
 	orig_open_f_type orig_open;
@@ -227,7 +229,7 @@ int open (const char * pathname, int flags, ...)
 }
 int open64 (const char * pathname, int flags, ...)
 {
-	const Node * node = resolvePathname (pathname);
+	Node * node = resolvePathname (pathname);
 	const char * newPath = NULL;
 	unsigned short newFlags = (unsigned short)-1;
 	if (!node)
@@ -236,10 +238,11 @@ int open64 (const char * pathname, int flags, ...)
 	{
 		newPath = node->value;
 		newFlags = node->flags;
+		node->isOpen = 1;
 	}
 	if (newFlags == O_RDONLY)
 	{
-		flags = (flags & (~(0 | O_WRONLY)));
+		flags = (flags & (~(0 | O_WRONLY | O_APPEND)));
 	}
 
 	orig_open_f_type orig_open64;
