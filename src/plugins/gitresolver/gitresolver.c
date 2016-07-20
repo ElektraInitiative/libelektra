@@ -279,7 +279,7 @@ int elektraGitresolverGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELE
 	git_repository * repo = connectToLocalRepo (data);
 	if (!repo)
 	{
-		ELEKTRA_SET_ERRORF (147, parentKey, "Failed to open Repository %s\n", data->repo);
+		ELEKTRA_SET_ERRORF (GITRESOLVER_RESOLVING_ISSUE, parentKey, "Failed to open Repository %s\n", data->repo);
 		git_libgit2_shutdown ();
 		return -1;
 	}
@@ -292,7 +292,7 @@ int elektraGitresolverGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELE
 	const git_oid * headObj = getHeadRef (data, repo);
 	if (!headObj)
 	{
-		ELEKTRA_SET_ERRORF (147, parentKey, "Failed to get reference %s\n", data->refName);
+		ELEKTRA_SET_ERRORF (GITRESOLVER_RESOLVING_ISSUE, parentKey, "Failed to get reference %s\n", data->refName);
 		git_repository_free (repo);
 		git_libgit2_shutdown ();
 		return -1;
@@ -423,14 +423,14 @@ int elektraGitresolverSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELE
 	git_repository * repo = connectToLocalRepo (data);
 	if (!repo)
 	{
-		ELEKTRA_SET_ERRORF (147, parentKey, "Failed to open Repository %s\n", data->repo);
+		ELEKTRA_SET_ERRORF (GITRESOLVER_RESOLVING_ISSUE, parentKey, "Failed to open Repository %s\n", data->repo);
 		git_libgit2_shutdown ();
 		return -1;
 	}
 	const git_oid * headObj = getHeadRef (data, repo);
 	if (!headObj)
 	{
-		ELEKTRA_SET_ERRORF (147, parentKey, "Failed to get reference %s\n", data->refName);
+		ELEKTRA_SET_ERRORF (GITRESOLVER_RESOLVING_ISSUE, parentKey, "Failed to get reference %s\n", data->refName);
 		git_repository_free (repo);
 		git_libgit2_shutdown ();
 		return -1;
@@ -441,7 +441,7 @@ int elektraGitresolverSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELE
 		if (newCommit)
 		{
 			// newer commit in repo - abort
-			ELEKTRA_SET_ERROR (148, parentKey, "The repository has been updated and is ahead of you");
+			ELEKTRA_SET_ERROR (GITRESOLVER_CONFLICT, parentKey, "The repository has been updated and is ahead of you");
 			elektraFree (newCommit);
 			git_repository_free (repo);
 			git_libgit2_shutdown ();
@@ -457,7 +457,7 @@ int elektraGitresolverSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELE
 			char * newObj = hasNewObjectCommit (data, blob);
 			if (newObj)
 			{
-				ELEKTRA_SET_ERROR (148, parentKey, "The repository has been updated and is ahead of you");
+				ELEKTRA_SET_ERROR (GITRESOLVER_CONFLICT, parentKey, "The repository has been updated and is ahead of you");
 				elektraFree (newObj);
 				git_object_free (blob);
 				git_repository_free (repo);
