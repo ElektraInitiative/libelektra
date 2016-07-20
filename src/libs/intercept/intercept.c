@@ -20,10 +20,12 @@ struct _Node
 {
 	char * key;
 	char * value;
+	unsigned short flags;
 	struct _Node * next;
 };
 typedef struct _Node Node;
 static Node * head = NULL;
+
 
 static void canonicalizePath (char * buffer, size_t bufSize, char * toAppend)
 {
@@ -107,7 +109,16 @@ void init ()
 		Node * tmp = calloc (1, sizeof (Node));
 		tmp->key = createAbsolutePath (keyBaseName (key), cwd);
 		tmp->value = createAbsolutePath (keyString (key), cwd);
-		;
+		const Key * meta = keyGetMeta (key, "open/mode");
+		if (meta)
+		{
+			if (!strcmp (keyString (meta), "ro"))
+				tmp->flags = O_RDONLY;
+			else
+				tmp->flags = 0;
+		}
+		else
+			tmp->flags = 0;
 		tmp->next = NULL;
 		if (current == NULL)
 		{
@@ -142,14 +153,11 @@ void cleanup ()
 	}
 }
 
-typedef int (*orig_open_f_type) (const char * pathname, int flags, ...);
-
-int open (const char * pathname, int flags, ...)
+static const Node * resolvePathname (const char * pathname)
 {
-	char * newPath = NULL;
+	Node * node = NULL;
 	if (pathname)
 	{
-		//        fprintf(stderr, "Path: %s\n", pathname);
 		char cwd[PATH_MAX];
 		getcwd (cwd, PATH_MAX);
 		char * resolvedPath = NULL;
@@ -164,22 +172,43 @@ int open (const char * pathname, int flags, ...)
 			memset (resolvedPath, 0, sizeof (resolvedPath));
 			canonicalizePath (resolvedPath, sizeof (resolvedPath), (char *)pathname);
 		}
-		//        fprintf(stderr, "resolved: %s\n", resolvedPath);
 		Node * current = head;
 		while (current)
 		{
 			if (!strcmp (current->key, resolvedPath))
 			{
-				newPath = current->value;
+				node = current;
 				break;
 			}
 			current = current->next;
 		}
-		if (!newPath) newPath = (char *)pathname;
 		free (resolvedPath);
 	}
+	return node;
+}
+
+typedef int (*orig_open_f_type) (const char * pathname, int flags, ...);
+
+int open (const char * pathname, int flags, ...)
+{
+	const Node * node = resolvePathname (pathname);
+	const char * newPath = NULL;
+	unsigned short newFlags = (unsigned short)-1;
+	if (!node)
+		newPath = pathname;
+	else
+	{
+		newPath = node->value;
+		newFlags = node->flags;
+	}
+	if (newFlags == O_RDONLY)
+	{
+		flags = (flags & (~(0 | O_WRONLY)));
+	}
+
 	orig_open_f_type orig_open;
 	orig_open = (orig_open_f_type)dlsym (RTLD_NEXT, "open");
+
 	int fd;
 	if (flags & O_CREAT)
 	{
@@ -196,42 +225,26 @@ int open (const char * pathname, int flags, ...)
 	}
 	return fd;
 }
-
-
 int open64 (const char * pathname, int flags, ...)
 {
-	char * newPath = NULL;
-	if (pathname)
+	const Node * node = resolvePathname (pathname);
+	const char * newPath = NULL;
+	unsigned short newFlags = (unsigned short)-1;
+	if (!node)
+		newPath = pathname;
+	else
 	{
-		char cwd[PATH_MAX];
-		getcwd (cwd, PATH_MAX);
-		char * resolvedPath = NULL;
-		size_t pathlen = 0;
-		if (pathname[0] != '/')
-		{
-			resolvedPath = createAbsolutePath (pathname, cwd);
-		}
-		else
-		{
-			resolvedPath = calloc (strlen (pathname), sizeof (char));
-			memset (resolvedPath, 0, sizeof (resolvedPath));
-			canonicalizePath (resolvedPath, sizeof (resolvedPath), (char *)pathname);
-		}
-		Node * current = head;
-		while (current)
-		{
-			if (!strcmp (current->key, resolvedPath))
-			{
-				newPath = current->value;
-				break;
-			}
-			current = current->next;
-		}
-		if (!newPath) newPath = (char *)pathname;
-		free (resolvedPath);
+		newPath = node->value;
+		newFlags = node->flags;
 	}
-	orig_open_f_type orig_open;
-	orig_open = (orig_open_f_type)dlsym (RTLD_NEXT, "open64");
+	if (newFlags == O_RDONLY)
+	{
+		flags = (flags & (~(0 | O_WRONLY)));
+	}
+
+	orig_open_f_type orig_open64;
+	orig_open64 = (orig_open_f_type)dlsym (RTLD_NEXT, "open64");
+
 	int fd;
 	if (flags & O_CREAT)
 	{
@@ -240,11 +253,11 @@ int open64 (const char * pathname, int flags, ...)
 		va_start (argptr, flags);
 		mode = va_arg (argptr, int);
 		va_end (argptr);
-		fd = orig_open (newPath, flags, mode);
+		fd = orig_open64 (newPath, flags, mode);
 	}
 	else
 	{
-		fd = orig_open (newPath, flags);
+		fd = orig_open64 (newPath, flags);
 	}
 	return fd;
 }
