@@ -16,8 +16,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <sys/time.h>
 #include <sys/stat.h>
+#include <sys/time.h>
 #include <unistd.h>
 
 #define TV_MAX_DIGITS 26
@@ -33,16 +33,16 @@ typedef enum {
 
 typedef struct
 {
-	char * tmpFile;         // temporary filename for checkout
-	char * repo;            // path to repo (currently only local)
-	char * branch;          // branchname
-	char * file;            // filename
-	char * refName;         // git reference name e.g. refs/heads/master
-	char * headID;          // id of the most recent commit
-	char * objID;           // most recent id of the file
-	Tracking tracking;      // track commit ids or object ids
-	int setPhase;           // Set phase counter, 0 setresolver, 1 commit
-    time_t mtime;    //creation timestamp of tmp file
+	char * tmpFile;    // temporary filename for checkout
+	char * repo;       // path to repo (currently only local)
+	char * branch;     // branchname
+	char * file;       // filename
+	char * refName;    // git reference name e.g. refs/heads/master
+	char * headID;     // id of the most recent commit
+	char * objID;      // most recent id of the file
+	Tracking tracking; // track commit ids or object ids
+	int setPhase;      // Set phase counter, 0 setresolver, 1 commit
+	time_t mtime;      // creation timestamp of tmp file
 } GitData;
 
 
@@ -384,33 +384,33 @@ int elektraGitresolverGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELE
 		return -1;
 	}
 	fwrite (git_blob_rawcontent ((git_blob *)blob), (size_t)git_blob_rawsize ((git_blob *)blob), 1, outFile);
-    struct stat buf;
-    int fd;
-    fd = fileno(outFile);
-    if(fstat(fd, &buf) == -1)
-    {
-        //this shouldn't happen anyway
-    }    
-    data->mtime = buf.st_mtime;
-	
-    fclose (outFile);
-    git_object_free (blob);
+	struct stat buf;
+	int fd;
+	fd = fileno (outFile);
+	if (fstat (fd, &buf) == -1)
+	{
+		// this shouldn't happen anyway
+	}
+	data->mtime = buf.st_mtime;
+
+	fclose (outFile);
+	git_object_free (blob);
 	git_repository_free (repo);
 	git_libgit2_shutdown ();
 	return 1; // success
 }
 
-static void addFileToIndex(git_repository *repo, GitData *data, git_index *index)
+static void addFileToIndex (git_repository * repo, GitData * data, git_index * index)
 {
-        git_blob * blob;
-		git_oid blobID;
+	git_blob * blob;
+	git_oid blobID;
 
-        git_index_entry ie;
-		ie.path = data->file;
-		ie.mode = GIT_FILEMODE_BLOB;
-		git_blob_create_fromdisk (&blobID, repo, data->tmpFile);
-		git_blob_lookup (&blob, repo, &blobID);
-		git_index_add_frombuffer (index, &ie, git_blob_rawcontent (blob), git_blob_rawsize (blob));
+	git_index_entry ie;
+	ie.path = data->file;
+	ie.mode = GIT_FILEMODE_BLOB;
+	git_blob_create_fromdisk (&blobID, repo, data->tmpFile);
+	git_blob_lookup (&blob, repo, &blobID);
+	git_index_add_frombuffer (index, &ie, git_blob_rawcontent (blob), git_blob_rawsize (blob));
 }
 
 int elektraGitresolverSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
@@ -480,55 +480,54 @@ int elektraGitresolverSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELE
 #ifdef DEVMODE
 		fprintf (stderr, "commit phase\n");
 #endif
-        int fd = open(data->tmpFile, O_RDONLY);
-        struct stat buf;
-        fstat(fd, &buf);
-        close(fd);
-        if(data->mtime == buf.st_mtime)
-        {
-            //file hasn't changed, nothing to do here
-            git_repository_free(repo);
-            git_libgit2_shutdown();
-            return 0;
-        }        
-        //get repo index
+		int fd = open (data->tmpFile, O_RDONLY);
+		struct stat buf;
+		fstat (fd, &buf);
+		close (fd);
+		if (data->mtime == buf.st_mtime)
+		{
+			// file hasn't changed, nothing to do here
+			git_repository_free (repo);
+			git_libgit2_shutdown ();
+			return 0;
+		}
+		// get repo index
 		git_index * index;
-        git_repository_index (&index, repo);
+		git_repository_index (&index, repo);
 
-        //add file
-        addFileToIndex(repo, data, index);        
-		
-        git_index_write (index);
-	    
-        //get tree id    
+		// add file
+		addFileToIndex (repo, data, index);
+
+		git_index_write (index);
+
+		// get tree id
 		git_oid treeID;
-        git_index_write_tree (&treeID, index);
-		
-        //get parent commit 
+		git_index_write_tree (&treeID, index);
+
+		// get parent commit
 		git_oid parentID;
 		git_commit * parent;
-        git_reference_name_to_id (&parentID, repo, "HEAD");
+		git_reference_name_to_id (&parentID, repo, "HEAD");
 		git_commit_lookup (&parent, repo, &parentID);
 
-        //extract default git user
+		// extract default git user
 		git_signature * sig;
-        int rc = git_signature_default(&sig, repo);
-        if(rc == GIT_ENOTFOUND)
-        {
+		int rc = git_signature_default (&sig, repo);
+		if (rc == GIT_ENOTFOUND)
+		{
 #ifdef DEVMODE
-            fprintf(stderr, "couldn't get default git user\n");
+			fprintf (stderr, "couldn't get default git user\n");
 #endif
-            git_signature_now (&sig, "Elektra", "@libelektra.org");
-        } 
+			git_signature_now (&sig, "Elektra", "@libelektra.org");
+		}
 
-	    //get git tree	
-        git_tree * tree;
-        git_tree_lookup (&tree, repo, &treeID);
-		
-        //create default commit
+		// get git tree
+		git_tree * tree;
+		git_tree_lookup (&tree, repo, &treeID);
+
+		// create default commit
 		git_oid commitID;
-        git_commit_create (&commitID, repo, "HEAD", sig, sig, NULL, "kdb git autocommit", tree, 1,
-				   (const git_commit **)&parent);
+		git_commit_create (&commitID, repo, "HEAD", sig, sig, NULL, "kdb git autocommit", tree, 1, (const git_commit **)&parent);
 
 
 		git_signature_free (sig);

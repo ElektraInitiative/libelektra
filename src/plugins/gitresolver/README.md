@@ -9,7 +9,17 @@
 - infos/metadata =
 - infos/description =
 
-## Usage ##
+## Description ##
+
+gitresolver is a resolver that fetches from a local git repository during the get-phase and commits them back at the end of the set-phase.
+It operates on a temporary copy of the latest version of your file fetched from the repository. If the temporary copy modified, a new commit with the modified version will be created. Local files won't be touched.
+
+## Limitations ##
+
+Currently it only works on already existing files inside existing git repositories. 
+
+
+## Examples ##
 
 ```
 kdb mount -R gitresolver /path/to/my/gitrepo/file.ini system/gittest ini shell execute/set='cd /path/to/my/gitrepo/ && git commit --amend'
