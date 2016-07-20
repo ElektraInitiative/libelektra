@@ -67,7 +67,6 @@ static int listParseConfiguration (Placements * placements, KeySet * config)
 		}
 		if (keyBaseName (cur)[0] == '#')
 		{
-			fprintf (stderr, "%s\n", keyBaseName (cur));
 			if (strcmp (lastIndex, keyBaseName (cur)) < 0)
 			{
 				snprintf (lastIndex, ELEKTRA_MAX_ARRAY_SIZE, "%s", keyBaseName (cur));
@@ -353,7 +352,7 @@ int elektraListGet (Plugin * handle, KeySet * returned, Key * parentKey)
 			       keyNew ("system/elektra/modules/list/exports/set", KEY_FUNC, elektraListSet, KEY_END),
 			       keyNew ("system/elektra/modules/list/exports/error", KEY_FUNC, elektraListError, KEY_END),
 			       keyNew ("system/elektra/modules/list/exports/addPlugin", KEY_FUNC, elektraListAddPlugin, KEY_END),
-			       keyNew ("system/elektra/modules/list/exports/lastIndex", KEY_FUNC, elektraListGetLastIndex, KEY_END),
+			       keyNew ("system/elektra/modules/list/exports/editPlugin", KEY_FUNC, elektraListEditPlugin, KEY_END),
 #include ELEKTRA_README (list)
 			       keyNew ("system/elektra/modules/list/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 		ksAppend (returned, contract);
@@ -413,23 +412,59 @@ int elektraListError (Plugin * handle, KeySet * returned, Key * parentKey)
 	return ret;
 }
 
-const char * elektraListGetLastIndex (void)
-{
-	return lastIndex;
-}
-
 int elektraListAddPlugin (Plugin * handle, KeySet * pluginConfig)
 {
 	if (!pluginConfig)
 	{
 		return 0;
 	}
+	ksRewind (pluginConfig);
+	Key * lookup = ksNext (pluginConfig);
+	lookup = ksNext (pluginConfig);
+	if (keyBaseName (lookup)[0] != '#')
+	{
+		return -1;
+	}
+	else
+	{
+		if (strcmp (lastIndex, keyBaseName (lookup)) >= 0)
+		{
+			return -1;
+		}
+	}
 	Placements * placements = elektraPluginGetData (handle);
 	KeySet * conf = ksDup (pluginConfig);
 	ksRewind (conf);
 	int rc = listParseConfiguration (placements, conf);
 	ksDel (conf);
+	return rc;
+}
 
+int elektraListEditPlugin (Plugin * handle, KeySet * pluginConfig)
+{
+	if (!pluginConfig)
+	{
+		return 0;
+	}
+	ksRewind (pluginConfig);
+	Key * lookup = ksNext (pluginConfig);
+	lookup = ksNext (pluginConfig);
+	if (keyBaseName (lookup)[0] != '#')
+	{
+		return -1;
+	}
+	else
+	{
+		if (strcmp (lastIndex, keyBaseName (lookup)) < 0)
+		{
+			return -1;
+		}
+	}
+	Placements * placements = elektraPluginGetData (handle);
+	KeySet * conf = ksDup (pluginConfig);
+	ksRewind (conf);
+	int rc = listParseConfiguration (placements, conf);
+	ksDel (conf);
 	return rc;
 }
 

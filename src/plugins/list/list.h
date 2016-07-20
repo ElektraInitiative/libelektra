@@ -18,7 +18,7 @@ int elektraListGet (Plugin * handle, KeySet * ks, Key * parentKey);
 int elektraListSet (Plugin * handle, KeySet * ks, Key * parentKey);
 int elektraListError (Plugin * handle, KeySet * ks, Key * parentKey);
 int elektraListAddPlugin (Plugin * handle, KeySet * pluginConfig);
-const char * elektraListGetLastIndex (void);
+int elektraListEditPlugin (Plugin * handle, KeySet * pluginConfig);
 Plugin * ELEKTRA_PLUGIN_EXPORT (list);
 
 #endif

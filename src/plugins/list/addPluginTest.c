@@ -6,6 +6,18 @@
 #include <stdlib.h>
 #include <string.h>
 
+void * getFunction (Plugin * plugin, const char * name)
+{
+	KeySet * exports = ksNew (0, KS_END);
+	Key * pk = keyNew ("system/elektra/modules", KEY_END);
+	keyAddBaseName (pk, plugin->name);
+	plugin->kdbGet (plugin, exports, pk);
+	ksRewind (exports);
+	keyAddBaseName (pk, "exports");
+	keyAddBaseName (pk, name);
+	return keyValue (ksLookup (exports, pk, 0));
+}
+
 int main (int argc, char const * argv[])
 {
 	KeySet * modules = ksNew (0, KS_END);
@@ -29,44 +41,23 @@ int main (int argc, char const * argv[])
 	Key * errorKey = keyNew ("", KEY_END);
 	elektraModulesInit (modules, 0);
 	Plugin * list = elektraPluginOpen ("list", modules, conf, errorKey);
-	KeySet * mks = ksNew (0, KS_END);
-	Key * pk = keyNew ("system/elektra/modules/list/exports", KEY_END);
-
-	ksRewind (modules);
-	Key * cur;
-	while (cur = ksNext (modules))
-		fprintf (stderr, "%s:(%s)\n", keyName (cur), keyString (cur));
-
-	KDB * handle;
-	handle = kdbOpen (keyNew ("", KEY_END));
-	if (!handle) fprintf (stderr, "ERROR!\n");
-	kdbGet (handle, mks, pk);
-	ksRewind (mks);
-
+	getFunction (list, "addPlugin");
+	KeySet * exports = ksNew (0, KS_END);
+	Key * pk = keyNew ("system/elektra/modules/list", KEY_END);
+	list->kdbGet (list, exports, pk);
+	ksRewind (exports);
 	int rc = list->kdbGet (list, ks, parentKey);
 	typedef int (*addPlugin) (Plugin *, void *);
-	addPlugin ptr = *(addPlugin **)keyValue (ksLookupByName (mks, "system/elektra/modules/list/exports/addPlugin", 0));
-	typedef char * (*lastIndexF) (void);
-	lastIndexF lastIndex = *(lastIndexF **)keyValue (ksLookupByName (mks, "system/elektra/modules/list/exports/lastIndex", 0));
-
-	fprintf (stderr, "lastIndex: %s\n", lastIndex ());
+	addPlugin addPtr = *(addPlugin **)getFunction (list, "addPlugin");
+	typedef int (*editPlugin) (Plugin *, void *);
+	addPlugin editPtr = *(editPlugin **)getFunction (list, "editPlugin");
 
 	KeySet * appendPlugin =
 		ksNew (20, keyNew ("user/plugins", KEY_END), keyNew ("user/plugins/#3", KEY_VALUE, "timeofday", KEY_END),
 		       keyNew ("user/plugins/#3/placements", KEY_END),
 		       keyNew ("user/plugins/#3/placements/get", KEY_VALUE, "pregetstorage postgetstorage", KEY_END), KS_END);
-	ptr (list, appendPlugin);
+	addPtr (list, appendPlugin);
 	rc = list->kdbGet (list, ks, parentKey);
-	KeySet * delPlugin = ksNew (20, keyNew ("user/plugins", KEY_END), keyNew ("user/plugins/#3", KEY_VALUE, "keytometa", KEY_END),
-				    keyNew ("user/plugins/#3/placements", KEY_END),
-				    keyNew ("user/plugins/#3/placements/get", KEY_VALUE, "pregetstorage postgetstorage", KEY_END), KS_END);
-	ptr (list, delPlugin);
-	fprintf (stderr, "lastIndex: %s\n", lastIndex ());
-	rc = list->kdbGet (list, ks, parentKey);
-	rc = list->kdbGet (list, ks, parentKey);
-
-	ksRewind (modules);
-
 	if (rc != 1)
 	{
 		fprintf (stderr, "kdb get failed\n");
@@ -84,5 +75,15 @@ int main (int argc, char const * argv[])
 		fprintf (stderr, "failed2\n");
 		return;
 	}
+	KeySet * delPlugin = ksNew (20, keyNew ("user/plugins", KEY_END), keyNew ("user/plugins/#3", KEY_END),
+				    keyNew ("user/plugins/#3/placements", KEY_END),
+				    keyNew ("user/plugins/#3/placements/get", KEY_VALUE, "pregetstorage postgetstorage", KEY_END), KS_END);
+	editPtr (list, delPlugin);
+	rc = list->kdbGet (list, ks, parentKey);
+	rc = list->kdbGet (list, ks, parentKey);
+
+	ksRewind (modules);
+
+
 	return 0;
 }
