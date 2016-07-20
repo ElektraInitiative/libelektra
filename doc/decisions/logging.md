@@ -4,14 +4,14 @@
 
 Both code comments and assertions are unfortunately not very popular.
 A quite efficient way to still get some documentation about the code
-are logging statements. They are currently inconsistent and unusable.
-Thus there is an urge for this decision.
+are logging statements. In Elektra there are currently inconsistent
+and unusable. Thus there is an urge for this decision.
 
 ## Constraints
 
-(also to be discussed)
+(to be discussed)
 
-- should completely compile away when ELEKTRA_LOGGING=OFF
+- should completely compile away with ELEKTRA_LOGGING=OFF
 - should support minimalistic, compile-time filtering
   (per modules and verbosity level?) and some sinks (stderr, syslog
   or files)
@@ -19,9 +19,11 @@ Thus there is an urge for this decision.
 ## Assumptions
 
 - run-time problems are checked via assertions, not logged
-- opinions about if logging should be to  stderr or files differ
+- opinions about if logging should be to stderr or files differ
 - filtering with grep is not enough
-- performance is not so important (thus it is usually turned off
+- per default there should be no output, even with ELEKTRA_LOGGING=ON
+  (You need to change filtering to get output)
+- performance is not so important (because logging is usually turned off
   anyway)
 
 ## Considered Alternatives
@@ -32,8 +34,8 @@ Thus there is an urge for this decision.
   just work, even if application does not initialize anything
 - using syslog: no info from which source file the logging statement
   comes from
-- using journald: adds dep problematic for non-linux
-- zlog: unusable because of LGPL
+- using journald: adds deps problematic for non-linux
+- zlog: incompatible licence (LGPL)
 
 ## Decision
 
@@ -46,7 +48,7 @@ that calls
     elektraLog ([as above], const char * function, const char * file,
 	    const int line, ...)
 
-with adding function, file and line to its arguments.
+and adds current function, file and line to `elektraLog`'s arguments.
 
 `elektraLog` is implemented in a separate `log.c` file. If someone
 needs filtering, logging to different sources or similar, he/she
@@ -82,7 +84,7 @@ A more complex system seems to be overkill. Thus libraries should not have
 any effects other than what is described by their API, logging should nearly
 always be disabled.
 
-A more "hackable" logger seems to be more suitable for very individual needs.
+A more "hackable" logger seems to be more suitable for individual needs.
 Having a separate `log.c` means that the logger can be changed without the
 need to recompile anything but a single file. It also removes the dependency
 of `stdio.h` from every individual file to a single place.
