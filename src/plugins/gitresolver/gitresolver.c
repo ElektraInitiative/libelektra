@@ -24,8 +24,6 @@
 #define DEFAULT_CHECKOUT_LOCATION "/tmp/"
 #define REFSTRING "refs/heads/"
 
-//#define DEVMODE
-
 typedef enum {
 	OBJECT,
 	HEAD,
@@ -103,9 +101,6 @@ static int initData (Plugin * handle, Key * parentKey)
 
 		Key * key = ksLookupByName (config, "/path", KDB_O_NONE);
 		data->repo = (char *)keyString (key);
-#ifdef DEVMODE
-		fprintf (stderr, "Repo: %s\n", data->repo);
-#endif
 		if (!key)
 		{
 			ELEKTRA_SET_ERROR (34, parentKey, "no repository specified");
@@ -119,9 +114,6 @@ static int initData (Plugin * handle, Key * parentKey)
 			data->branch = (char *)defaultBranch;
 		else
 			data->branch = (char *)keyString (key);
-#ifdef DEVMODE
-		fprintf (stderr, "Branch: %s\n", data->branch);
-#endif
 
 		key = ksLookupByName (config, "/tracking", KDB_O_NONE);
 		if (!key)
@@ -133,19 +125,9 @@ static int initData (Plugin * handle, Key * parentKey)
 			else
 				data->tracking = HEAD;
 		}
-#ifdef DEVMODE
-		if (data->tracking == HEAD)
-			fprintf (stderr, "Tracking HEAD\n");
-		else
-			fprintf (stderr, "Tracking OBJECT\n");
-#endif
 		size_t refLen = strlen (REFSTRING) + strlen (data->branch) + 1;
 		data->refName = elektraCalloc (refLen);
 		snprintf (data->refName, refLen, "%s%s", REFSTRING, data->branch);
-
-#ifdef DEVMODE
-		fprintf (stderr, "RefName: %s\n", data->refName);
-#endif
 
 		elektraPluginSetData (handle, data);
 	}
@@ -164,9 +146,6 @@ static git_repository * connectToLocalRepo (GitData * data)
 	}
 	const char * repoPath = git_repository_workdir (repo);
 	data->file = data->repo + strlen (repoPath);
-#ifdef DEVMODE
-	fprintf (stderr, "WorkDir: %s, File: %s\n", data->repo, data->file);
-#endif
 	return repo;
 }
 
@@ -239,9 +218,6 @@ static git_object * getBlob (GitData * data, git_repository * repo)
 	git_object * blob;
 	char spec[strlen (data->refName) + strlen (data->file) + 2];
 	snprintf (spec, sizeof (spec), "%s:%s", data->refName, data->file);
-#ifdef DEVMODE
-	fprintf (stderr, "REF: %s\n", spec);
-#endif
 	int rc = git_revparse_single (&blob, repo, spec);
 	if (rc)
 	{
@@ -279,7 +255,7 @@ int elektraGitresolverGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELE
 	git_repository * repo = connectToLocalRepo (data);
 	if (!repo)
 	{
-		ELEKTRA_SET_ERRORF (GITRESOLVER_RESOLVING_ISSUE, parentKey, "Failed to open Repository %s\n", data->repo);
+		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_GITRESOLVER_RESOLVING_ISSUE, parentKey, "Failed to open Repository %s\n", data->repo);
 		git_libgit2_shutdown ();
 		return -1;
 	}
@@ -292,7 +268,7 @@ int elektraGitresolverGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELE
 	const git_oid * headObj = getHeadRef (data, repo);
 	if (!headObj)
 	{
-		ELEKTRA_SET_ERRORF (GITRESOLVER_RESOLVING_ISSUE, parentKey, "Failed to get reference %s\n", data->refName);
+		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_GITRESOLVER_RESOLVING_ISSUE, parentKey, "Failed to get reference %s\n", data->refName);
 		git_repository_free (repo);
 		git_libgit2_shutdown ();
 		return -1;
@@ -302,19 +278,13 @@ int elektraGitresolverGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELE
 		char * newCommit = hasNewCommit (data, headObj);
 		if (data->headID && !newCommit)
 		{
-// still newest commit, no need to update
-#ifdef DEVMODE
-			fprintf (stderr, "Get: no new commits\n");
-#endif
+			// still newest commit, no need to update
 			git_repository_free (repo);
 			git_libgit2_shutdown ();
 			return 0;
 		}
 		else if (data->headID && newCommit)
 		{
-#ifdef DEVMODE
-			fprintf (stderr, "Get:new commit\n");
-#endif
 			elektraFree (data->headID);
 			data->headID = newCommit;
 		}
@@ -322,9 +292,6 @@ int elektraGitresolverGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELE
 		{
 			data->headID = newCommit;
 		}
-#ifdef DEVMODE
-		fprintf (stderr, "HeadID: %s\n", data->headID);
-#endif
 		elektraPluginSetData (handle, data);
 		data = elektraPluginGetData (handle);
 	}
@@ -336,19 +303,11 @@ int elektraGitresolverGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELE
 		git_libgit2_shutdown ();
 		return 0;
 	}
-#ifdef DEVMODE
-	char * objID = hasNewObjectCommit (data, blob);
-	if (objID) fprintf (stderr, "Object ID: %s\n", objID);
-	elektraFree (objID);
-#endif
 	if (data->tracking == OBJECT)
 	{
 		char * newObj = hasNewObjectCommit (data, blob);
 		if (!newObj)
 		{
-#ifdef DEVMODE
-			fprintf (stderr, "Get: no new object commits - nothing to do\n");
-#endif
 			git_object_free (blob);
 			git_repository_free (repo);
 			git_libgit2_shutdown ();
@@ -373,9 +332,6 @@ int elektraGitresolverGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELE
 	outFile = fopen (data->tmpFile, "w+");
 	if (!outFile)
 	{
-#ifdef DEVMODE
-		fprintf (stderr, "Couldn't open File %s\n", data->tmpFile);
-#endif
 		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_COULD_NOT_OPEN, parentKey, "Failed to check out file %s to %s\n", data->file,
 				    data->tmpFile);
 		git_object_free (blob);
@@ -423,14 +379,14 @@ int elektraGitresolverSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELE
 	git_repository * repo = connectToLocalRepo (data);
 	if (!repo)
 	{
-		ELEKTRA_SET_ERRORF (GITRESOLVER_RESOLVING_ISSUE, parentKey, "Failed to open Repository %s\n", data->repo);
+		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_GITRESOLVER_RESOLVING_ISSUE, parentKey, "Failed to open Repository %s\n", data->repo);
 		git_libgit2_shutdown ();
 		return -1;
 	}
 	const git_oid * headObj = getHeadRef (data, repo);
 	if (!headObj)
 	{
-		ELEKTRA_SET_ERRORF (GITRESOLVER_RESOLVING_ISSUE, parentKey, "Failed to get reference %s\n", data->refName);
+		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_GITRESOLVER_RESOLVING_ISSUE, parentKey, "Failed to get reference %s\n", data->refName);
 		git_repository_free (repo);
 		git_libgit2_shutdown ();
 		return -1;
@@ -441,7 +397,8 @@ int elektraGitresolverSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELE
 		if (newCommit)
 		{
 			// newer commit in repo - abort
-			ELEKTRA_SET_ERROR (GITRESOLVER_CONFLICT, parentKey, "The repository has been updated and is ahead of you");
+			ELEKTRA_SET_ERROR (ELEKTRA_ERROR_GITRESOLVER_CONFLICT, parentKey,
+					   "The repository has been updated and is ahead of you");
 			elektraFree (newCommit);
 			git_repository_free (repo);
 			git_libgit2_shutdown ();
@@ -457,7 +414,8 @@ int elektraGitresolverSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELE
 			char * newObj = hasNewObjectCommit (data, blob);
 			if (newObj)
 			{
-				ELEKTRA_SET_ERROR (GITRESOLVER_CONFLICT, parentKey, "The repository has been updated and is ahead of you");
+				ELEKTRA_SET_ERROR (ELEKTRA_ERROR_GITRESOLVER_CONFLICT, parentKey,
+						   "The repository has been updated and is ahead of you");
 				elektraFree (newObj);
 				git_object_free (blob);
 				git_repository_free (repo);
@@ -469,17 +427,11 @@ int elektraGitresolverSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELE
 	}
 	if (!data->setPhase)
 	{
-#ifdef DEVMODE
-		fprintf (stderr, "setresolver\n");
-#endif
 		++(data->setPhase);
 	}
 	else if (data->setPhase == 1)
 	{
-// commit phase
-#ifdef DEVMODE
-		fprintf (stderr, "commit phase\n");
-#endif
+		// commit phase
 		int fd = open (data->tmpFile, O_RDONLY);
 		struct stat buf;
 		fstat (fd, &buf);
@@ -515,9 +467,6 @@ int elektraGitresolverSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELE
 		int rc = git_signature_default (&sig, repo);
 		if (rc == GIT_ENOTFOUND)
 		{
-#ifdef DEVMODE
-			fprintf (stderr, "couldn't get default git user\n");
-#endif
 			git_signature_now (&sig, "Elektra", "@libelektra.org");
 		}
 
