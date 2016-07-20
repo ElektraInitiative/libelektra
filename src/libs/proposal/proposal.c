@@ -224,7 +224,7 @@ Key * ksPopAtCursor (KeySet * ks, cursor_t pos)
  * keyRel replacement
  */
 
-//keyRel2 helper, turns key into a cascading key ( removes namespace)
+// keyRel2 helper, turns key into a cascading key ( removes namespace)
 Key * keyAsCascading (const Key * key)
 {
 	if (keyName (key)[0] == '/')
@@ -254,7 +254,7 @@ Key * keyAsCascading (const Key * key)
 	}
 }
 
-//keyRel2 helper, returns how many levels check is below key, or 0 if check isn't below
+// keyRel2 helper, returns how many levels check is below key, or 0 if check isn't below
 int keyGetLevelsBelow (const Key * key, const Key * check)
 {
 	if (!keyIsBelow (key, check)) return 0;
@@ -288,8 +288,8 @@ int keyRel2 (const Key * key, const Key * check, KeyRelType which)
 {
 	if (!key || !check) return -1;
 	if (!key->key || !check->key) return -1;
-	
-    Key * cKey = keyAsCascading (key);
+
+	Key * cKey = keyAsCascading (key);
 	Key * cCheck = keyAsCascading (check);
 	Key * cKeyParent = keyDup (cKey);
 	keySetBaseName (cKeyParent, 0);
@@ -303,46 +303,46 @@ int keyRel2 (const Key * key, const Key * check, KeyRelType which)
 	int retVal = 0;
 	switch (which)
 	{
-	case BelowSameNS:
+	case ELEKTRA_REL_BELOW_SAME_NS:
 		if (isBelow && (keyNamespace == checkNamespace)) retVal = isBelow;
 		break;
-	case BelowIgnoreNS:
+	case ELEKTRA_REL_BELOW_IGNORE_NS:
 		if (isBelow) retVal = isBelow;
 		break;
-	case BelowCascadingNS:
+	case ELEKTRA_REL_BELOW_CASCADING_NS:
 		if (isBelow && ((checkNamespace == KEY_NS_CASCADING) || (keyNamespace == KEY_NS_CASCADING))) retVal = isBelow;
 		break;
-	case DirectBelowSameNS:
+	case ELEKTRA_REL_DIRECT_BELOW_SAME_NS:
 		if ((isBelow == 1) && (keyNamespace == checkNamespace)) retVal = 1;
 		break;
-	case DirectBelowIgnoreNS:
+	case ELEKTRA_REL_DIRECT_BELOW_IGNORE_NS:
 		if (isBelow == 1) retVal = 1;
 		break;
-	case DirectBelowCascadingNS:
+	case ELEKTRA_REL_DIRECT_BELOW_CASCADING_NS:
 		if ((isBelow == 1) && ((checkNamespace == KEY_NS_CASCADING) || (keyNamespace == KEY_NS_CASCADING))) retVal = 1;
 		break;
-	case SilblingSameNS:
+	case ELEKTRA_REL_SILBLING_SAME_NS:
 		if ((isSilblingNephew == 1) && (keyNamespace == checkNamespace)) retVal = 1;
 		break;
-	case SilblingIgnoreNS:
+	case ELEKTRA_REL_SILBLING_IGNORE_NS:
 		if (isSilblingNephew == 1) retVal = 1;
 		break;
-	case SilblingCascadingNS:
+	case ELEKTRA_REL_SILBLING_CASCADING_NS:
 		if ((isSilblingNephew == 1) && ((checkNamespace == KEY_NS_CASCADING) || (keyNamespace == KEY_NS_CASCADING))) retVal = 1;
 		break;
-	case NephewSameNS:
+	case ELEKTRA_REL_NEPHEW_SAME_NS:
 		if ((isSilblingNephew > 1) && (keyNamespace == checkNamespace)) retVal = isSilblingNephew - 1;
 		break;
-	case NephewIgnoreNS:
+	case ELEKTRA_REL_NEPHEW_IGNORE_NS:
 		if (isSilblingNephew > 1) retVal = isSilblingNephew - 1;
 		break;
-	case NephewCascadingNS:
+	case ELEKTRA_REL_NEPHEW_CASCADING_NS:
 		if ((isSilblingNephew > 1) && ((checkNamespace == KEY_NS_CASCADING) || (keyNamespace == KEY_NS_CASCADING)))
 			retVal = isSilblingNephew - 1;
 		break;
-    default:
-        retVal = -1;
-        break;
+	default:
+		retVal = -1;
+		break;
 	}
 	keyDel (cKey);
 	keyDel (cCheck);

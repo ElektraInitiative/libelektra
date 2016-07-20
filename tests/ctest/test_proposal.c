@@ -119,43 +119,67 @@ static void test_keyRel2 ()
 	Key * userGrandNephew = keyNew ("user/silbling/nephew/grandnephew", KEY_END);
 	Key * cascadingGrandNephew = keyNew ("/silbling/nephew/grandnephew", KEY_CASCADING_NAME, KEY_END);
 
-	succeed_if (keyRel2 (systemParent, systemChild, BelowSameNS) == 1, "BelowSameNS keyRel2 failed\n");
-	succeed_if (keyRel2 (systemParent, userChild, BelowSameNS) == 0, "BelowSameNS keyRel2 should have failed\n");
-	succeed_if (keyRel2 (systemParent, userChild, BelowIgnoreNS) == 1, "BelowIgnoreNS keyRel2 failed\n");
-	succeed_if (keyRel2 (systemParent, cascadingChild, BelowSameNS) == 0, "BelowSameNS keyRel2 with cascading child should have failed\n");
-	succeed_if (keyRel2 (systemParent, cascadingChild, BelowCascadingNS) == 1, "BelowSameNS keyRel2 with cascading child failed\n");
-	succeed_if (keyRel2 (systemParent, systemGrandChild, BelowSameNS) == 2, "BelowSameNS keyRel2 failed\n");
-	succeed_if (keyRel2 (systemParent, userGrandChild, BelowSameNS) == 0, "BelowSameNS keyRel2 should have failed\n");
-	succeed_if (keyRel2 (systemParent, userGrandChild, BelowIgnoreNS) == 2, "BelowIgnoreNS keyRel2 failed\n");
-	succeed_if (keyRel2 (systemParent, cascadingGrandChild, BelowSameNS) == 0, "BelowSameNS keyRel2 with cascading child should have failed\n");
-	succeed_if (keyRel2 (systemParent, cascadingGrandChild, BelowCascadingNS) == 2, "BelowSameNS keyRel2 with cascading child failed\n");
-	succeed_if (keyRel2 (systemParent, userParent, BelowIgnoreNS) == 0, "BelowIgnoreNS keyRel2 with silblings should have returned 0\n");
-	succeed_if (keyRel2 (systemParent, systemChild, DirectBelowSameNS) == 1, "DirectBelowSameNS keyRel2 failed\n");
-	succeed_if (keyRel2 (systemParent, userChild, DirectBelowSameNS) == 0, "DirectBelowSameNS keyRel2 should have failed\n");
-	succeed_if (keyRel2 (systemParent, userChild, DirectBelowIgnoreNS) == 1, "DirectBelowIgnoreNS keyRel2 failed\n");
-	succeed_if (keyRel2 (systemParent, cascadingChild, DirectBelowSameNS) == 0, "DirectBelowSameNS keyRel2 with cascading child should have failed\n");
-	succeed_if (keyRel2 (systemParent, cascadingChild, DirectBelowCascadingNS) == 1, "DirectBelowSameNS keyRel2 with cascading child failed\n");
+	succeed_if (keyRel2 (systemParent, systemChild, ELEKTRA_REL_BELOW_SAME_NS) == 1, "ELEKTRA_REL_BELOW_SAME_NS keyRel2 failed\n");
+	succeed_if (keyRel2 (systemParent, userChild, ELEKTRA_REL_BELOW_SAME_NS) == 0,
+		    "ELEKTRA_REL_BELOW_SAME_NS keyRel2 should have failed\n");
+	succeed_if (keyRel2 (systemParent, userChild, ELEKTRA_REL_BELOW_IGNORE_NS) == 1, "ELEKTRA_REL_BELOW_IGNORE_NS keyRel2 failed\n");
+	succeed_if (keyRel2 (systemParent, cascadingChild, ELEKTRA_REL_BELOW_SAME_NS) == 0,
+		    "ELEKTRA_REL_BELOW_SAME_NS keyRel2 with cascading child should have failed\n");
+	succeed_if (keyRel2 (systemParent, cascadingChild, ELEKTRA_REL_BELOW_CASCADING_NS) == 1,
+		    "ELEKTRA_REL_BELOW_SAME_NS keyRel2 with cascading child failed\n");
+	succeed_if (keyRel2 (systemParent, systemGrandChild, ELEKTRA_REL_BELOW_SAME_NS) == 2, "ELEKTRA_REL_BELOW_SAME_NS keyRel2 failed\n");
+	succeed_if (keyRel2 (systemParent, userGrandChild, ELEKTRA_REL_BELOW_SAME_NS) == 0,
+		    "ELEKTRA_REL_BELOW_SAME_NS keyRel2 should have failed\n");
+	succeed_if (keyRel2 (systemParent, userGrandChild, ELEKTRA_REL_BELOW_IGNORE_NS) == 2,
+		    "ELEKTRA_REL_BELOW_IGNORE_NS keyRel2 failed\n");
+	succeed_if (keyRel2 (systemParent, cascadingGrandChild, ELEKTRA_REL_BELOW_SAME_NS) == 0,
+		    "ELEKTRA_REL_BELOW_SAME_NS keyRel2 with cascading child should have failed\n");
+	succeed_if (keyRel2 (systemParent, cascadingGrandChild, ELEKTRA_REL_BELOW_CASCADING_NS) == 2,
+		    "ELEKTRA_REL_BELOW_SAME_NS keyRel2 with cascading child failed\n");
+	succeed_if (keyRel2 (systemParent, userParent, ELEKTRA_REL_BELOW_IGNORE_NS) == 0,
+		    "ELEKTRA_REL_BELOW_IGNORE_NS keyRel2 with silblings should have returned 0\n");
+	succeed_if (keyRel2 (systemParent, systemChild, ELEKTRA_REL_DIRECT_BELOW_SAME_NS) == 1,
+		    "ELEKTRA_REL_DIRECT_BELOW_SAME_NS keyRel2 failed\n");
+	succeed_if (keyRel2 (systemParent, userChild, ELEKTRA_REL_DIRECT_BELOW_SAME_NS) == 0,
+		    "ELEKTRA_REL_DIRECT_BELOW_SAME_NS keyRel2 should have failed\n");
+	succeed_if (keyRel2 (systemParent, userChild, ELEKTRA_REL_DIRECT_BELOW_IGNORE_NS) == 1,
+		    "ELEKTRA_REL_DIRECT_BELOW_IGNORE_NS keyRel2 failed\n");
+	succeed_if (keyRel2 (systemParent, cascadingChild, ELEKTRA_REL_DIRECT_BELOW_SAME_NS) == 0,
+		    "ELEKTRA_REL_DIRECT_BELOW_SAME_NS keyRel2 with cascading child should have failed\n");
+	succeed_if (keyRel2 (systemParent, cascadingChild, ELEKTRA_REL_DIRECT_BELOW_CASCADING_NS) == 1,
+		    "ELEKTRA_REL_DIRECT_BELOW_SAME_NS keyRel2 with cascading child failed\n");
 
-	succeed_if (keyRel2 (systemParent, systemSilbling, SilblingSameNS) == 1, "SilblingSameNS keyRel2 failed\n");
-	succeed_if (keyRel2 (systemParent, userSilbling, SilblingSameNS) == 0, "SilblingSameNS keyRel2 should have failed\n");
-	succeed_if (keyRel2 (systemParent, userSilbling, SilblingIgnoreNS) == 1, "SilblingIgnoreNS keyRel2 failed\n");
-	succeed_if (keyRel2 (systemParent, cascadingSilbling, SilblingSameNS) == 0, "SilblingSameNS keyRel2 with cascading child should have failed\n");
-	succeed_if (keyRel2 (systemParent, cascadingSilbling, SilblingCascadingNS) == 1, "SilblingSameNS keyRel2 with cascading child failed\n");
+	succeed_if (keyRel2 (systemParent, systemSilbling, ELEKTRA_REL_SILBLING_SAME_NS) == 1,
+		    "ELEKTRA_REL_SILBLINGSAME_NS keyRel2 failed\n");
+	succeed_if (keyRel2 (systemParent, userSilbling, ELEKTRA_REL_SILBLING_SAME_NS) == 0,
+		    "ELEKTRA_REL_SILBLINGSAME_NS keyRel2 should have failed\n");
+	succeed_if (keyRel2 (systemParent, userSilbling, ELEKTRA_REL_SILBLING_IGNORE_NS) == 1,
+		    "ELEKTRA_REL_SILBLINGIGNORE_NS keyRel2 failed\n");
+	succeed_if (keyRel2 (systemParent, cascadingSilbling, ELEKTRA_REL_SILBLING_SAME_NS) == 0,
+		    "ELEKTRA_REL_SILBLINGSAME_NS keyRel2 with cascading child should have failed\n");
+	succeed_if (keyRel2 (systemParent, cascadingSilbling, ELEKTRA_REL_SILBLING_CASCADING_NS) == 1,
+		    "ELEKTRA_REL_SILBLINGSAME_NS keyRel2 with cascading child failed\n");
 
-	succeed_if (keyRel2 (systemParent, systemNephew, NephewSameNS) == 1, "NephewSameNS keyRel2 failed\n");
-	succeed_if (keyRel2 (systemParent, userNephew, NephewSameNS) == 0, "NephewSameNS keyRel2 should have failed\n");
-	succeed_if (keyRel2 (systemParent, userNephew, NephewIgnoreNS) == 1, "NephewIgnoreNS keyRel2 failed\n");
-	succeed_if (keyRel2 (systemParent, cascadingNephew, NephewSameNS) == 0, "NephewSameNS keyRel2 with cascading child should have failed\n");
-	succeed_if (keyRel2 (systemParent, cascadingNephew, NephewCascadingNS) == 1, "NephewSameNS keyRel2 with cascading child failed\n");
+	succeed_if (keyRel2 (systemParent, systemNephew, ELEKTRA_REL_NEPHEW_SAME_NS) == 1, "NephewSAME_NS keyRel2 failed\n");
+	succeed_if (keyRel2 (systemParent, userNephew, ELEKTRA_REL_NEPHEW_SAME_NS) == 0, "NephewSAME_NS keyRel2 should have failed\n");
+	succeed_if (keyRel2 (systemParent, userNephew, ELEKTRA_REL_NEPHEW_IGNORE_NS) == 1, "NephewIGNORE_NS keyRel2 failed\n");
+	succeed_if (keyRel2 (systemParent, cascadingNephew, ELEKTRA_REL_NEPHEW_SAME_NS) == 0,
+		    "NephewSAME_NS keyRel2 with cascading child should have failed\n");
+	succeed_if (keyRel2 (systemParent, cascadingNephew, ELEKTRA_REL_NEPHEW_CASCADING_NS) == 1,
+		    "NephewSAME_NS keyRel2 with cascading child failed\n");
 
-	succeed_if (keyRel2 (systemParent, systemGrandNephew, NephewSameNS) == 2, "NephewSameNS keyRel2 failed\n");
-	succeed_if (keyRel2 (systemParent, userGrandNephew, NephewSameNS) == 0, "NephewSameNS keyRel2 should have failed\n");
-	succeed_if (keyRel2 (systemParent, userGrandNephew, NephewIgnoreNS) == 2, "NephewIgnoreNS keyRel2 failed\n");
-	succeed_if (keyRel2 (systemParent, cascadingGrandNephew, NephewSameNS) == 0, "NephewSameNS keyRel2 with cascading child should have failed\n");
-	succeed_if (keyRel2 (systemParent, cascadingGrandNephew, NephewCascadingNS) == 2, "NephewSameNS keyRel2 with cascading child failed\n");
+	succeed_if (keyRel2 (systemParent, systemGrandNephew, ELEKTRA_REL_NEPHEW_SAME_NS) == 2, "NephewSAME_NS keyRel2 failed\n");
+	succeed_if (keyRel2 (systemParent, userGrandNephew, ELEKTRA_REL_NEPHEW_SAME_NS) == 0, "NephewSAME_NS keyRel2 should have failed\n");
+	succeed_if (keyRel2 (systemParent, userGrandNephew, ELEKTRA_REL_NEPHEW_IGNORE_NS) == 2, "NephewIGNORE_NS keyRel2 failed\n");
+	succeed_if (keyRel2 (systemParent, cascadingGrandNephew, ELEKTRA_REL_NEPHEW_SAME_NS) == 0,
+		    "NephewSAME_NS keyRel2 with cascading child should have failed\n");
+	succeed_if (keyRel2 (systemParent, cascadingGrandNephew, ELEKTRA_REL_NEPHEW_CASCADING_NS) == 2,
+		    "NephewSAME_NS keyRel2 with cascading child failed\n");
 
-	succeed_if (keyRel2 (systemParent, systemGrandChild, NephewSameNS) == 0, "NephewSameNS keyRel2 should have failed\n");
-	succeed_if (keyRel2 (systemParent, systemChild, SilblingSameNS) == 0, "SilblingSameNS keyRel2 should have failed\n");
+	succeed_if (keyRel2 (systemParent, systemGrandChild, ELEKTRA_REL_NEPHEW_SAME_NS) == 0,
+		    "NephewSAME_NS keyRel2 should have failed\n");
+	succeed_if (keyRel2 (systemParent, systemChild, ELEKTRA_REL_SILBLING_SAME_NS) == 0,
+		    "ELEKTRA_REL_SILBLINGSAME_NS keyRel2 should have failed\n");
 
 	keyDel (systemParent);
 	keyDel (userParent);
@@ -186,9 +210,9 @@ int main (int argc, char ** argv)
 	test_ksPopAtCursor ();
 	test_ksToArray ();
 
-    test_keyAsCascading ();
-    test_keyGetLevelsBelow ();
-    test_keyRel2 ();
+	test_keyAsCascading ();
+	test_keyGetLevelsBelow ();
+	test_keyRel2 ();
 
 	printf ("\ntest_proposal RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 }
