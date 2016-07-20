@@ -12,13 +12,13 @@
 
 #include <kdbplugin.h>
 
-
 int elektraListOpen (Plugin * handle, Key * errorKey);
 int elektraListClose (Plugin * handle, Key * errorKey);
 int elektraListGet (Plugin * handle, KeySet * ks, Key * parentKey);
 int elektraListSet (Plugin * handle, KeySet * ks, Key * parentKey);
 int elektraListError (Plugin * handle, KeySet * ks, Key * parentKey);
-
+int elektraListAddPlugin (Plugin * handle, KeySet * pluginConfig);
+const char * elektraListGetLastIndex (void);
 Plugin * ELEKTRA_PLUGIN_EXPORT (list);
 
 #endif
