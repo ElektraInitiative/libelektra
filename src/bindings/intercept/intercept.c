@@ -11,27 +11,33 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/time.h>
 #include <sys/types.h>
 #include <unistd.h>
 
+#include <kdbmodule.h>
+#include <kdbprivate.h>
+
 #define PRELOAD_PATH "/preload/open"
+#define TV_MAX_DIGITS 26
 
 struct _Node
 {
 	char * key;
 	char * value;
-	unsigned short flags;
-	unsigned short isOpen;
+	unsigned short oflags;
+	char * exportType;
+	char * exportPath;
 	struct _Node * next;
 };
 typedef struct _Node Node;
 static Node * head = NULL;
 
 
-static void canonicalizePath (char * buffer, size_t bufSize, char * toAppend)
+static void canonicalizePath (char * buffer, char * toAppend)
 {
 	char * destPtr = buffer + strlen (buffer);
-	for (int i = 0; i < strlen (toAppend); ++i)
+	for (unsigned int i = 0; i < strlen (toAppend); ++i)
 	{
 		if (!strncmp ((toAppend + i), "../", 3))
 		{
@@ -83,7 +89,7 @@ static char * createAbsolutePath (const char * path, const char * cwd)
 			snprintf (absPath, pathlen, "%s/", cwd);
 			pathPtr = (char *)path;
 		}
-		canonicalizePath (absPath, pathlen, pathPtr);
+		canonicalizePath (absPath, pathPtr);
 		return absPath;
 	}
 }
@@ -109,17 +115,27 @@ void init ()
 	{
 		Node * tmp = calloc (1, sizeof (Node));
 		tmp->key = createAbsolutePath (keyBaseName (key), cwd);
-		tmp->value = createAbsolutePath (keyString (key), cwd);
 		const Key * meta = keyGetMeta (key, "open/mode");
 		if (meta)
 		{
 			if (!strcmp (keyString (meta), "ro"))
-				tmp->flags = O_RDONLY;
+				tmp->oflags = O_RDONLY;
 			else
-				tmp->flags = 0;
+				tmp->oflags = 0;
 		}
 		else
-			tmp->flags = 0;
+			tmp->oflags = 0;
+		meta = keyGetMeta (key, "open/create");
+		if (meta)
+		{
+			tmp->exportType = strdup (keyString (meta));
+			tmp->value = strdup (keyString (key));
+		}
+		else
+		{
+			tmp->exportType = NULL;
+			tmp->value = createAbsolutePath (keyString (key), cwd);
+		}
 		tmp->next = NULL;
 		if (current == NULL)
 		{
@@ -149,6 +165,8 @@ void cleanup ()
 		Node * tmp = current;
 		free (current->key);
 		free (current->value);
+		if (current->exportType) free (current->exportType);
+		if (current->exportPath) free (current->exportPath);
 		current = current->next;
 		free (tmp);
 	}
@@ -162,7 +180,6 @@ static Node * resolvePathname (const char * pathname)
 		char cwd[PATH_MAX];
 		getcwd (cwd, PATH_MAX);
 		char * resolvedPath = NULL;
-		size_t pathlen = 0;
 		if (pathname[0] != '/')
 		{
 			resolvedPath = createAbsolutePath (pathname, cwd);
@@ -170,8 +187,9 @@ static Node * resolvePathname (const char * pathname)
 		else
 		{
 			resolvedPath = calloc (strlen (pathname), sizeof (char));
-			memset (resolvedPath, 0, sizeof (resolvedPath));
-			canonicalizePath (resolvedPath, sizeof (resolvedPath), (char *)pathname);
+			size_t size = sizeof(resolvedPath);
+			memset (resolvedPath, 0, size);
+			canonicalizePath (resolvedPath, (char *)pathname);
 		}
 		Node * current = head;
 		while (current)
@@ -188,6 +206,42 @@ static Node * resolvePathname (const char * pathname)
 	return node;
 }
 
+static const char * genTemporaryFilename (void)
+{
+	struct timeval tv;
+	gettimeofday (&tv, 0);
+	const char * fileName = "/tmp/.elektra_generated";
+	size_t len = strlen (fileName) + TV_MAX_DIGITS + 1;
+	char * tmpFile = elektraCalloc (len);
+	snprintf (tmpFile, len, "%s_%lu:%lu", fileName, tv.tv_sec, tv.tv_usec);
+	return tmpFile;
+}
+
+static void exportConfiguration (const char * pathname, Node * node)
+{
+	Key * key = keyNew (node->value, KEY_END);
+	KDB * handle = kdbOpen (key);
+	KeySet * ks = ksNew (0, KS_END);
+	kdbGet (handle, ks, key);
+	KeySet * exportKS;
+	exportKS = ksCut (ks, key);
+	KeySet * modules = ksNew (0, KS_END);
+	elektraModulesInit (modules, 0);
+	KeySet * conf = ksNew (0, KS_END);
+	Plugin * check = elektraPluginOpen (node->exportType, modules, conf, key);
+	keySetString (key, pathname);
+	ksRewind (exportKS);
+	check->kdbSet (check, exportKS, key);
+	ksDel (conf);
+	ksAppend (ks, exportKS);
+	ksDel (exportKS);
+	elektraModulesClose (modules, 0);
+	keyDel (key);
+	ksDel (ks);
+	kdbClose (handle, 0);
+}
+
+
 typedef int (*orig_open_f_type) (const char * pathname, int flags, ...);
 
 int open (const char * pathname, int flags, ...)
@@ -199,9 +253,17 @@ int open (const char * pathname, int flags, ...)
 		newPath = pathname;
 	else
 	{
-		newPath = node->value;
-		newFlags = node->flags;
-		node->isOpen = 1;
+		if (!(node->exportType))
+		{
+			newPath = node->value;
+			newFlags = node->oflags;
+		}
+		else
+		{
+			node->exportPath = (char *)genTemporaryFilename ();
+			newPath = node->exportPath;
+			exportConfiguration (newPath, node);
+		}
 	}
 	if (newFlags == O_RDONLY)
 	{
@@ -236,9 +298,17 @@ int open64 (const char * pathname, int flags, ...)
 		newPath = pathname;
 	else
 	{
-		newPath = node->value;
-		newFlags = node->flags;
-		node->isOpen = 1;
+		if (!(node->exportType))
+		{
+			newPath = node->value;
+			newFlags = node->oflags;
+		}
+		else
+		{
+			node->exportPath = (char *)genTemporaryFilename ();
+			newPath = node->exportPath;
+			exportConfiguration (newPath, node);
+		}
 	}
 	if (newFlags == O_RDONLY)
 	{

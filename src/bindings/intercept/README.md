@@ -32,3 +32,18 @@ When the an application tries to call `open` or `open64` it canonicalizes the pa
 % LD_PRELOAD=/path/to/intercept.so cat ~/testfile
 testreplacement
 ```
+```
+% kdb set /preload/open/\~\\/testfile system/elektra
+% kdb setmeta /preload/open/\~\\/testfile "open/create" ini
+
+% LD_PRELOAD=/path/to/intercept.so cat ~/testfile
+globalplugins =
+version = Below are version information of the Elektra Library you are currently using
+globalplugins/postcommit = list
+globalplugins/postcommit/user = list
+globalplugins/postcommit/user/placements =
+globalplugins/postcommit/user/placements/error = prerollback postrollback
+globalplugins/postcommit/user/placements/get = pregetstorage postgetstorage postgetcleanup
+globalplugins/postcommit/user/placements/set = presetstorage precommit postcommit
+...
+```
