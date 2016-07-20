@@ -187,7 +187,7 @@ static Node * resolvePathname (const char * pathname)
 		else
 		{
 			resolvedPath = calloc (strlen (pathname), sizeof (char));
-			size_t size = sizeof(resolvedPath);
+			size_t size = sizeof (resolvedPath);
 			memset (resolvedPath, 0, size);
 			canonicalizePath (resolvedPath, (char *)pathname);
 		}
