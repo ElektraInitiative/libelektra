@@ -41,7 +41,7 @@ if (FINDEX GREATER -1)
 endif ()
 list (FIND BINDINGS "intercept" FINDEX)
 if (FINDEX GREATER -1)
-	message (STATUS "Building intercept.so")
+    message (STATUS "Include elektraintercept")
 	add_subdirectory (intercept)
 endif()
 

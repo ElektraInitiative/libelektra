@@ -15,6 +15,7 @@
 #include <sys/types.h>
 #include <unistd.h>
 
+#include <kdb.h>
 #include <kdbmodule.h>
 #include <kdbprivate.h>
 
@@ -26,8 +27,6 @@ struct _Node
 	char * key;
 	char * value;
 	unsigned short oflags;
-	char * exportType;
-	char * exportPath;
 	struct _Node * next;
 };
 typedef struct _Node Node;
@@ -113,29 +112,22 @@ void init ()
 	ksNext (ks); // skip head
 	while ((key = ksNext (ks)) != NULL)
 	{
+		if (!keyIsDirectBelow (parentKey, key)) continue;
 		Node * tmp = calloc (1, sizeof (Node));
 		tmp->key = createAbsolutePath (keyBaseName (key), cwd);
-		const Key * meta = keyGetMeta (key, "open/mode");
-		if (meta)
+		tmp->value = createAbsolutePath (keyString (key), cwd);
+		tmp->oflags = (unsigned short)-1;
+		Key * lookupKey = keyDup (key);
+		keyAddBaseName (lookupKey, "readonly");
+		Key * found = ksLookup (ks, lookupKey, 0);
+		if (found)
 		{
-			if (!strcmp (keyString (meta), "ro"))
+			if (!strcmp (keyString (found), "1"))
+			{
 				tmp->oflags = O_RDONLY;
-			else
-				tmp->oflags = 0;
+			}
 		}
-		else
-			tmp->oflags = 0;
-		meta = keyGetMeta (key, "open/create");
-		if (meta)
-		{
-			tmp->exportType = strdup (keyString (meta));
-			tmp->value = strdup (keyString (key));
-		}
-		else
-		{
-			tmp->exportType = NULL;
-			tmp->value = createAbsolutePath (keyString (key), cwd);
-		}
+		keyDel (lookupKey);
 		tmp->next = NULL;
 		if (current == NULL)
 		{
@@ -165,8 +157,6 @@ void cleanup ()
 		Node * tmp = current;
 		free (current->key);
 		free (current->value);
-		if (current->exportType) free (current->exportType);
-		if (current->exportPath) free (current->exportPath);
 		current = current->next;
 		free (tmp);
 	}
@@ -206,42 +196,6 @@ static Node * resolvePathname (const char * pathname)
 	return node;
 }
 
-static const char * genTemporaryFilename (void)
-{
-	struct timeval tv;
-	gettimeofday (&tv, 0);
-	const char * fileName = "/tmp/.elektra_generated";
-	size_t len = strlen (fileName) + TV_MAX_DIGITS + 1;
-	char * tmpFile = elektraCalloc (len);
-	snprintf (tmpFile, len, "%s_%lu:%lu", fileName, tv.tv_sec, tv.tv_usec);
-	return tmpFile;
-}
-
-static void exportConfiguration (const char * pathname, Node * node)
-{
-	Key * key = keyNew (node->value, KEY_END);
-	KDB * handle = kdbOpen (key);
-	KeySet * ks = ksNew (0, KS_END);
-	kdbGet (handle, ks, key);
-	KeySet * exportKS;
-	exportKS = ksCut (ks, key);
-	KeySet * modules = ksNew (0, KS_END);
-	elektraModulesInit (modules, 0);
-	KeySet * conf = ksNew (0, KS_END);
-	Plugin * check = elektraPluginOpen (node->exportType, modules, conf, key);
-	keySetString (key, pathname);
-	ksRewind (exportKS);
-	check->kdbSet (check, exportKS, key);
-	ksDel (conf);
-	ksAppend (ks, exportKS);
-	ksDel (exportKS);
-	elektraModulesClose (modules, 0);
-	keyDel (key);
-	ksDel (ks);
-	kdbClose (handle, 0);
-}
-
-
 typedef int (*orig_open_f_type) (const char * pathname, int flags, ...);
 
 int open (const char * pathname, int flags, ...)
@@ -250,20 +204,13 @@ int open (const char * pathname, int flags, ...)
 	const char * newPath = NULL;
 	unsigned short newFlags = (unsigned short)-1;
 	if (!node)
+	{
 		newPath = pathname;
+	}
 	else
 	{
-		if (!(node->exportType))
-		{
-			newPath = node->value;
-			newFlags = node->oflags;
-		}
-		else
-		{
-			node->exportPath = (char *)genTemporaryFilename ();
-			newPath = node->exportPath;
-			exportConfiguration (newPath, node);
-		}
+		newPath = node->value;
+		newFlags = node->oflags;
 	}
 	if (newFlags == O_RDONLY)
 	{
@@ -295,20 +242,13 @@ int open64 (const char * pathname, int flags, ...)
 	const char * newPath = NULL;
 	unsigned short newFlags = (unsigned short)-1;
 	if (!node)
+	{
 		newPath = pathname;
+	}
 	else
 	{
-		if (!(node->exportType))
-		{
-			newPath = node->value;
-			newFlags = node->oflags;
-		}
-		else
-		{
-			node->exportPath = (char *)genTemporaryFilename ();
-			newPath = node->exportPath;
-			exportConfiguration (newPath, node);
-		}
+		newPath = node->value;
+		newFlags = node->oflags;
 	}
 	if (newFlags == O_RDONLY)
 	{
