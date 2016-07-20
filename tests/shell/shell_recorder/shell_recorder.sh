@@ -1,26 +1,12 @@
 #!/bin/bash
 
-getTempDir()
-{
-	if [ -z "$TMPDIR" ]; then
-		TMPDIR="/tmp/tmp.XXXXXXXXX"
-	else
-		if [[ "$TMPDIR" == */ ]]; then
-			TMPDIR="$TMPDIR""tmp.XXXXXXXXX"
-		else
-			TMPDIR="$TMPDIR/tmp.XXXXXXXXX"
-		fi
-	fi
-	echo "$TMPDIR"
-}
-
 FILE=$1
 Mountpoint=
 DBFile=
 Storage=
 MountArgs=
 DiffType=File
-OutFile=$(mktemp "$(getTempDir)")
+OutFile=$(mktemp -t elektraenv.XXXXXXXXX 2>/dev/null || mktemp -t 'elektraenv')
 
 RETCMP=
 ERRORSCMP=
@@ -135,7 +121,7 @@ execute()
     if [ ! -z "$STDERRCMP" ];
     then
         nbTest=$(( nbTest + 1 ))
-        echo "$STDERR" | grep -Eq --text "$STDERRCMP"
+        echo "$STDERR" | grep -Eqz --text "$STDERRCMP"
         if [ "$?" -ne "0" ];
         then
             echo "STDERR doesn't match $STDERRCMP"
@@ -152,7 +138,7 @@ execute()
     if [ ! -z "$STDOUTCMP" ];
     then
         nbTest=$(( nbTest + 1 ))
-        echo "$STDOUT" | grep -Eq --text "$STDOUTCMP"
+        echo "$STDOUT" | grep -Eqz --text "$STDOUTCMP"
         if [ "$?" -ne "0" ];
         then
             echo "STDOUT doesn't match $STDOUTCMP"
@@ -169,7 +155,7 @@ execute()
     if [ ! -z "$WARNINGSCMP" ];
     then
         nbTest=$(( nbTest + 1 ))
-        echo "$WARNINGS" | grep -Eq --text "($WARNINGSCMP)"
+        echo "$WARNINGS" | grep -Eqz --text "($WARNINGSCMP)"
         if [ "$?" -ne "0" ];
         then
             echo "WARNINGS doesn't match $WARNINGSCMP"
@@ -188,7 +174,7 @@ execute()
     if [ ! -z "$ERRORSCMP" ];
     then
         nbTest=$(( nbTest + 1 ))
-        echo "$ERRORS" | grep -Eq -null --text "($ERRORSCMP)"
+        echo "$ERRORS" | grep -Eqz --text "($ERRORSCMP)"
         if [ "$?" -ne "0" ];
         then
             echo "ERRORS doesn't match $ERRORSCMP"
@@ -203,7 +189,7 @@ execute()
     if [ ! -z "$DIFFCMP" ];
     then
         nbTest=$(( nbTest + 1 ))
-        echo "$DIFF" | grep -Eq --text "($DIFFCMP)"
+        echo "$DIFF" | grep -Eqz --text "($DIFFCMP)"
         if [ "$?" -ne "0" ];
         then
             echo "Changes to $DBFile don't match $DIFFCMP"
