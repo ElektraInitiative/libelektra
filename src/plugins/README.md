@@ -67,7 +67,7 @@ determined (will be automatically added by kdb mount):
 - [resolver](resolver/) uses POSIX APIs to handle conflicts gracefully
 - [wresolver](wresolver/) minimalistic resolver for non-POSIX systems
 - [noresolver](noresolver/) does not resolve, but can act as one
-
+- [gitresolver](gitresolver/) checks out and commits files to a local git repository
 and afterwards the configuration file must be synced with
 harddisc (recommended to add at every kdb mount):
 
