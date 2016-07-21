@@ -1,0 +1,5 @@
+include (LibAddMacros)
+add_headers(HDR_FILES)
+add_library(elektraintercept SHARED "intercept.c")
+target_link_libraries (elektraintercept elektra-kdb elektra-meta)
+install (TARGETS elektraintercept DESTINATION lib${LIB_SUFFIX})
