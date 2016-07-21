@@ -66,6 +66,27 @@ KeySet * elektraKeyGetMetaKeySet (const Key * key);
 Key * ksPrev (KeySet * ks);
 Key * ksPopAtCursor (KeySet * ks, cursor_t c);
 
+
+typedef enum {
+	ELEKTRA_REL_BELOW_SAME_NS,	     // Below Same Namespace, cascading namespace matches only cascading namespace
+	ELEKTRA_REL_BELOW_IGNORE_NS,	   // Below Ignore Namespace, namespaces are ignored
+	ELEKTRA_REL_BELOW_CASCADING_NS,	// Below (allow) Cascading Namespace, cascading namespace matches all namespaces
+	ELEKTRA_REL_DIRECT_BELOW_SAME_NS,      // Direct Below Same Namespace
+	ELEKTRA_REL_DIRECT_BELOW_IGNORE_NS,    // Direct Below Ignore Namespace
+	ELEKTRA_REL_DIRECT_BELOW_CASCADING_NS, // Direct Below (allow) Cascading Namespace
+	ELEKTRA_REL_SILBLING_SAME_NS,	  // ELEKTRA_REL_SILBLING Same Namespace
+	ELEKTRA_REL_SILBLING_IGNORE_NS,	// ELEKTRA_REL_SILBLING Ignore Namespace
+	ELEKTRA_REL_SILBLING_CASCADING_NS,     // ELEKTRA_REL_SILBLING (allow) Cascading Namespace
+	ELEKTRA_REL_NEPHEW_SAME_NS,	    // Nephew Same Namespace
+	ELEKTRA_REL_NEPHEW_IGNORE_NS,	  // Nephew Ignore Namespace
+	ELEKTRA_REL_NEPHEW_CASCADING_NS,       // Nephew (allow) Cascading Namespace
+} KeyRelType;
+
+int keyRel2 (const Key * k1, const Key * k2, KeyRelType which);
+Key * keyAsCascading (const Key * key);
+int keyGetLevelsBelow (const Key * k1, const Key * k2);
+
+
 #ifdef __cplusplus
 }
 }
