@@ -29,6 +29,6 @@ When the an application tries to call `open` or `open64` it canonicalizes the pa
 
 % kdb set /preload/open/\~\\/testfile "~/testreplacement"
 
-% LD_PRELOAD=/path/to/intercept.so cat ~/testfile
+% LD_PRELOAD=/path/to/libelektraintercept.so cat ~/testfile
 testreplacement
 ```
