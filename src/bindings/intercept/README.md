@@ -25,7 +25,7 @@ When the an application tries to call `open` or `open64` it canonicalizes the pa
 
 ```
 % echo testfile > ~/testfile
-% echo testreplacement > ~/testreplacement"
+% echo testreplacement > ~/testreplacement
 
 % kdb set /preload/open/\~\\/testfile "~/testreplacement"
 
