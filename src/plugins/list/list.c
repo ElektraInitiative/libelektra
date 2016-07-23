@@ -331,11 +331,6 @@ static int runPlugins (KeySet * pluginKS, KeySet * modules, KeySet * plugins, Ke
 
 error:
 	ksDel (configOrig);
-	if (slave)
-	{
-		elektraPluginClose (slave, parentKey);
-	}
-	elektraModulesClose (modules, NULL);
 	return -1;
 }
 
