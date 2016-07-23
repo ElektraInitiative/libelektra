@@ -18,7 +18,7 @@ bibliography: paper.bib
 
 Applications today typically directly work with custom configuration files.
 Up to now, it was difficult to integrate and specify the configuration of such applications.
-Elektra provides a framework to bridge this gap [@raab2010thesis].
+Elektra [@elektra] provides a framework to bridge this gap [@raab2010thesis].
 
 The research value of Elektra is two-fold:
 First Elektra allows us to intercept unmodified applications [@raab2016unanticipated] and extend their configuration access with the features Elektra has [@raab2015kps].
