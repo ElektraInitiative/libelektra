@@ -204,12 +204,20 @@ macro (add_headers HDR_FILES)
 
 	find_util(elektra-export-errors EXE_ERR_LOC EXE_ERR_ARG)
 
-	add_custom_command (
-			OUTPUT ${BINARY_INCLUDE_DIR}/kdberrors.h
-			DEPENDS elektra-export-errors
-			COMMAND ${EXE_ERR_LOC}
-			ARGS ${EXE_ERR_ARG} ${CMAKE_SOURCE_DIR}/src/error/specification ${BINARY_INCLUDE_DIR}/kdberrors.h
-			)
+	GET_PROPERTY(KDB_ERRORS_GENERATED GLOBAL PROPERTY KDB_ERRORS_COMMAND_ADDED)
+	IF(NOT KDB_ERRORS_GENERATED)
+		add_custom_command (
+				OUTPUT ${BINARY_INCLUDE_DIR}/kdberrors.h
+				DEPENDS elektra-export-errors
+				COMMAND ${EXE_ERR_LOC}
+				ARGS ${EXE_ERR_ARG} ${CMAKE_SOURCE_DIR}/src/error/specification ${BINARY_INCLUDE_DIR}/kdberrors.h
+				)
+		SET_PROPERTY(GLOBAL PROPERTY KDB_ERRORS_COMMAND_ADDED
+			"Command to generate `kdberrors.h` already added")
+	ENDIF()
+	set_source_files_properties(${BINARY_INCLUDE_DIR}/kdberrors.h PROPERTIES
+		GENERATED ON)
+
 	list (APPEND ${HDR_FILES} "${BINARY_INCLUDE_DIR}/kdberrors.h")
 endmacro (add_headers)
 
