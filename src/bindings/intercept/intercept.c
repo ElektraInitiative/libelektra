@@ -32,7 +32,6 @@ struct _Node
 typedef struct _Node Node;
 static Node * head = NULL;
 
-
 static void canonicalizePath (char * buffer, char * toAppend)
 {
 	char * destPtr = buffer + strlen (buffer);
@@ -196,7 +195,14 @@ static Node * resolvePathname (const char * pathname)
 	return node;
 }
 
+
 typedef int (*orig_open_f_type) (const char * pathname, int flags, ...);
+
+typedef union {
+	void * d;
+	orig_open_f_type f;
+} Symbol;
+
 
 int open (const char * pathname, int flags, ...)
 {
@@ -216,9 +222,8 @@ int open (const char * pathname, int flags, ...)
 	{
 		flags = (flags & (~(0 | O_WRONLY | O_APPEND)));
 	}
-
-	orig_open_f_type orig_open;
-	orig_open = (orig_open_f_type)dlsym (RTLD_NEXT, "open");
+	Symbol orig_open;
+	orig_open.d = dlsym (RTLD_NEXT, "open");
 
 	int fd;
 	if (flags & O_CREAT)
@@ -228,11 +233,11 @@ int open (const char * pathname, int flags, ...)
 		va_start (argptr, flags);
 		mode = va_arg (argptr, int);
 		va_end (argptr);
-		fd = orig_open (newPath, flags, mode);
+		fd = orig_open.f (newPath, flags, mode);
 	}
 	else
 	{
-		fd = orig_open (newPath, flags);
+		fd = orig_open.f (newPath, flags);
 	}
 	return fd;
 }
@@ -255,8 +260,8 @@ int open64 (const char * pathname, int flags, ...)
 		flags = (flags & (~(0 | O_WRONLY | O_APPEND)));
 	}
 
-	orig_open_f_type orig_open64;
-	orig_open64 = (orig_open_f_type)dlsym (RTLD_NEXT, "open64");
+	Symbol orig_open64;
+	orig_open64.d = dlsym (RTLD_NEXT, "open64");
 
 	int fd;
 	if (flags & O_CREAT)
@@ -266,11 +271,11 @@ int open64 (const char * pathname, int flags, ...)
 		va_start (argptr, flags);
 		mode = va_arg (argptr, int);
 		va_end (argptr);
-		fd = orig_open64 (newPath, flags, mode);
+		fd = orig_open64.f (newPath, flags, mode);
 	}
 	else
 	{
-		fd = orig_open64 (newPath, flags);
+		fd = orig_open64.f (newPath, flags);
 	}
 	return fd;
 }
