@@ -54,7 +54,7 @@ static Key * elektraCryptoReadParamIv (KeySet * config, Key * errorKey)
 	return iv;
 }
 
-int elektraCryptoOpenSSLInit (Key * errorKey)
+int elektraCryptoOpenSSLInit (Key * errorKey ELEKTRA_UNUSED)
 {
 	// initialize OpenSSL according to
 	// https://wiki.openssl.org/index.php/Library_Initialization
