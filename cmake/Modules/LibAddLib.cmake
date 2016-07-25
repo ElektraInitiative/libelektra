@@ -13,6 +13,7 @@ function(add_lib name)
 
 	if (BUILD_SHARED)
 		add_library (elektra-${name} SHARED ${ARG_SOURCES})
+		add_dependencies (elektra-${name} kdberrors_generated)
 
 		target_link_libraries (elektra-${name} elektra-core ${ARG_LINK_ELEKTRA})
 	endif (BUILD_SHARED)

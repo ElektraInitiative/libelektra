@@ -8,6 +8,7 @@ macro (do_example source)
 	include_directories ("${CMAKE_CURRENT_SOURCE_DIR}")
 	set (SOURCES ${HDR_FILES} ${source}.cpp)
 	add_executable (${source} ${SOURCES})
+	add_dependencies (${source} kdberrors_generated)
 
 	target_link_elektratools(${source})
 

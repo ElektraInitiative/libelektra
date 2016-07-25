@@ -12,6 +12,7 @@ set (SOURCES ${SRC_FILES} ${HDR_FILES})
 
 if (BUILD_SHARED)
 	add_executable (kdb ${SOURCES})
+	add_dependencies (kdb kdberrors_generated)
 
 	target_link_libraries (kdb elektra-core elektra-kdb elektratools)
 
@@ -20,6 +21,7 @@ endif (BUILD_SHARED)
 
 if (BUILD_FULL)
 	add_executable (kdb-full ${SOURCES})
+	add_dependencies (kdb-full kdberrors_generated)
 
 	target_link_libraries (kdb-full elektra-full elektratools-full)
 
@@ -28,6 +30,7 @@ endif (BUILD_FULL)
 
 if (BUILD_STATIC)
 	add_executable (kdb-static ${SOURCES})
+	add_dependencies (kdb-static kdberrors_generated)
 
 	set_target_properties (kdb-static PROPERTIES LINKER_LANGUAGE CXX)
 	set_target_properties (kdb-static PROPERTIES
