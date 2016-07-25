@@ -6,6 +6,9 @@
  */
 
 /**
+ * @defgroup vstack Vstack
+ * @ingroup internaldatastructs
+ *
  * The Vstack structure.
  *
  * A stack implementation with dynamical memory allocation.
@@ -30,6 +33,9 @@ void elektraVstackDel (Vstack * stack);
 
 typedef int (*VheapComp) (void *, void *);
 /**
+ * @defgroup vheap Vheap
+ * @ingroup internaldatastructs
+ *
  * The Vheap structure.
  *
  * A heap is a Data structure which keeps the data ordered.

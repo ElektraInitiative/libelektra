@@ -6,7 +6,7 @@
  * To construct a max heap the comparison function VheapComp (a, b), must return
  * 1 on a > b and 0 otherwise. For a min heap 1 on a < b and 0 otherwise.
  *
- *
+ * @ingroup vheap
  * @param comp the comparison function of the heap
  * @param minSize the minimum size of the heap
  * @return a Vheap pointer
@@ -33,7 +33,7 @@ Vheap * elektraVheapInit (VheapComp comp, size_t minSize)
 /**
  * Checks if the heap is empty.
  *
- *
+ * @ingroup vheap
  * @return 1 on empty
  * @return 0 on non empty
  */
@@ -45,7 +45,7 @@ int elektraVheapIsEmpty (const Vheap * vheap)
 
 /**
  * Deletes the heap, by freeing all the memory.
- *
+ * @ingroup vheap
  *
  */
 void elektraVheapDel (Vheap * vheap)
@@ -59,7 +59,7 @@ void elektraVheapDel (Vheap * vheap)
  * Inserts an element in the Vheap, by finding the right position.
  * Resizes the memory first if needed.
  *
- *
+ * @ingroup vheap
  * @param data the element
  * @return 0 on error
  * @return 1 otherwise
@@ -93,7 +93,7 @@ int elektraVheapInsert (Vheap * vheap, void * data)
  * element which is ordered by VheapComp, after removal the remaining elements
  * get ordered again. Resizes the heap if needed.
  *
- *
+ * @ingroup vheap
  * @return the element
  * @return NULL on error
  */
