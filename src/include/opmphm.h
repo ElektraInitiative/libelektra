@@ -2,6 +2,10 @@
 #define OPMPHM_H
 
 /**
+ * The requirements are described in doc/help/elektra-data-structures.md.
+ */
+
+/**
  * The Vstack structure.
  *
  * A stack implementation with dynamical memory allocation.
@@ -23,6 +27,8 @@ void * elektraVstackPop (Vstack * stack);
 int elektraVstackIsEmpty (const Vstack * stack);
 void elektraVstackDel (Vstack * stack);
 
+
+typedef int (*VheapComp) (void *, void *);
 /**
  * The Vheap structure.
  *
@@ -36,9 +42,6 @@ void elektraVstackDel (Vstack * stack);
  * To construct a max heap the comparison function VheapComp (a, b), must return
  * 1 on a > b and 0 otherwise. For a min heap 1 on a < b and 0 otherwise.
  */
-
-typedef int (*VheapComp) (void *, void *);
-
 typedef struct
 {
 	size_t minSize; /*!< the minimal size of the heap > */

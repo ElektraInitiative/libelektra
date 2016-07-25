@@ -3,7 +3,7 @@
 /**
  * Allocates vstack with size specified by parameter minSize and sets the stack pointer.
  *
- * @ingroup vstack
+ *
  * @param minSize the minimum size of the stack
  * @return a Vstack pointer
  * @return NULL error
@@ -28,7 +28,7 @@ Vstack * elektraVstackInit (size_t minSize)
 /**
  * Pushes an element in the Vstack and resizes the stack if needed.
  *
- * @ingroup vstack
+ *
  * @param data the element
  * @return 0 on error
  * @return 1 otherwise
@@ -57,7 +57,7 @@ int elektraVstackPush (Vstack * stack, void * data)
 /**
  * Pops an element from the Vstack and resizes the stack if needed.
  *
- * @ingroup vstack
+ *
  * @return the element
  * @return NULL on empty
  */
@@ -83,7 +83,7 @@ void * elektraVstackPop (Vstack * stack)
 /**
  * Checks if the stack is empty.
  *
- * @ingroup vstack
+ *
  * @return 1 on empty
  * @return 0 on non empty
  */
@@ -96,7 +96,7 @@ int elektraVstackIsEmpty (const Vstack * stack)
 /**
  * Deletes the stack, by freeing all memory.
  *
- * @ingroup vstack
+ *
  */
 void elektraVstackDel (Vstack * stack)
 {

@@ -369,6 +369,8 @@ Continue reading [with the error handling](elektra-error-handling.md).
 
 ## Order Preserving Minimal Perfect Hash Map
 
+All structs are defined [in](/src/include/opmphm.h).
+
 ### Vstack
 
 The `Vstack` is a virtual stack implementation with dynamical memory allocation.
@@ -378,6 +380,9 @@ if the memory usage gets under a quarter.
 The data will be stored as void pointer and can be inserted with the push call.
 Retrieve is possible through the pop call.
 Besides the classical init and del functions, an is-empty check is also implemented.
+
+The following [link](/src/libs/elektra/opmphm_vstack.c) leads to the code and
+[this](@ref Vstack) one to the docu.
 
 ### Vheap
 
@@ -396,6 +401,9 @@ At the removal the fist element in the data array will be taken and the data get
 The ordering takes log (n) time so the complexity for the insert and remove is log (n).
 
 Beside the classical init and del functions a is-empty check is also implemented.
+
+The following [link](/src/libs/elektra/opmphm_vheap.c) leads to the code and
+[this](@ref Vheap) one to the docu.
 
 ####Example
 If the order function constructs a maximum heap it holds for all elements if they have any childs:
