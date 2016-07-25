@@ -78,6 +78,7 @@ function (add_plugintest testname)
 		endif ()
 		set (testexename testmod_${testname})
 		add_executable (${testexename} ${TEST_SOURCES})
+		add_dependencies (${testexename} kdberrors_generated)
 
 		# alternative approach to restore_variable
 		#get_target_property(TARGET_COMPILE_DEFINITIONS PLUGIN_TARGET_OBJS COMPILE_DEFINITIONS)
@@ -330,6 +331,7 @@ function (add_plugin PLUGIN_SHORT_NAME)
 	endif (ARG_CPP)
 
 	add_library (${PLUGIN_OBJS} OBJECT ${ARG_SOURCES})
+	add_dependencies (${PLUGIN_OBJS} kdberrors_generated)
 
 	add_dependencies(${PLUGIN_OBJS} readme_${PLUGIN_SHORT_NAME}.c)
 
@@ -361,6 +363,7 @@ function (add_plugin PLUGIN_SHORT_NAME)
 
 	if (BUILD_SHARED)
 		add_library (${PLUGIN_NAME} MODULE ${ARG_SOURCES})
+		add_dependencies (${PLUGIN_NAME} kdberrors_generated)
 		if (ARG_LINK_ELEKTRA)
 			target_link_libraries (${PLUGIN_NAME} elektra-plugin ${ARG_LINK_ELEKTRA})
 		else()

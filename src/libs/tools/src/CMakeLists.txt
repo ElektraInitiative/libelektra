@@ -12,6 +12,7 @@ set (__symbols_file ${CMAKE_CURRENT_SOURCE_DIR}/libelektratools-symbols.map)
 
 if (BUILD_SHARED)
 	add_library (elektratools SHARED ${SOURCES})
+	add_dependencies (elektratools kdberrors_generated)
 
 	target_link_libraries (elektratools elektra-core elektra-kdb elektra-plugin elektra-ease elektra-meta)
 
@@ -33,6 +34,7 @@ endif (BUILD_SHARED)
 
 if (BUILD_FULL)
 	add_library (elektratools-full SHARED ${SOURCES})
+	add_dependencies (elektratools-full kdberrors_generated)
 
 	target_link_libraries (elektratools-full elektra-full)
 
@@ -54,6 +56,7 @@ endif (BUILD_FULL)
 
 if (BUILD_STATIC)
 	add_library (elektratools-static STATIC ${SOURCES})
+	add_dependencies (elektratools-static kdberrors_generated)
 
 	target_link_libraries (elektratools-static elektra-static)
 
