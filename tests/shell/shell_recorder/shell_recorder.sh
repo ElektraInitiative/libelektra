@@ -16,7 +16,7 @@ STDERRCMP=
 DIFFCMP=
 
 BACKUP=0
-TMPFILE=$(mktemp)
+TMPFILE=$(mktemp -t elektraenv.XXXXXXXXX 2>/dev/null || mktemp -t 'elektraenv')
 
 # variables to count up errors and tests
 nbError=0
