@@ -121,7 +121,7 @@ execute()
     if [ ! -z "$STDERRCMP" ];
     then
         nbTest=$(( nbTest + 1 ))
-        echo "$STDERR" | sed -e ':a' -e 'N' -e '$!ba' -e 's/\n//g' | grep -Eq --text "$STDERRCMP"
+        echo "$STDERR" | grep -Eqz --text "$STDERRCMP"
         if [ "$?" -ne "0" ];
         then
             echo "STDERR doesn't match $STDERRCMP"
@@ -138,7 +138,7 @@ execute()
     if [ ! -z "$STDOUTCMP" ];
     then
         nbTest=$(( nbTest + 1 ))
-        echo "$STDOUT" | sed -e ':a' -e 'N' -e '$!ba' -e 's/\n//g' | grep -Eq --text "$STDOUTCMP"
+        echo "$STDOUT" | grep -Eqz --text "$STDOUTCMP"
         if [ "$?" -ne "0" ];
         then
             echo "STDOUT doesn't match $STDOUTCMP"
@@ -155,7 +155,7 @@ execute()
     if [ ! -z "$WARNINGSCMP" ];
     then
         nbTest=$(( nbTest + 1 ))
-        echo "$WARNINGS" | sed -e ':a' -e 'N' -e '$!ba' -e 's/\n//g' | grep -Eq --text "($WARNINGSCMP)"
+        echo "$WARNINGS" | grep -Eqz --text "($WARNINGSCMP)"
         if [ "$?" -ne "0" ];
         then
             echo "WARNINGS doesn't match $WARNINGSCMP"
@@ -174,7 +174,7 @@ execute()
     if [ ! -z "$ERRORSCMP" ];
     then
         nbTest=$(( nbTest + 1 ))
-        echo "$ERRORS" | sed -e ':a' -e 'N' -e '$!ba' -e 's/\n//g' | grep -Eq --text "($ERRORSCMP)"
+        echo "$ERRORS" | grep -Eqz --text "($ERRORSCMP)"
         if [ "$?" -ne "0" ];
         then
             echo "ERRORS doesn't match $ERRORSCMP"
@@ -189,7 +189,7 @@ execute()
     if [ ! -z "$DIFFCMP" ];
     then
         nbTest=$(( nbTest + 1 ))
-        echo "$DIFF" | sed -e ':a' -e 'N' -e '$!ba' -e 's/\n//g' | grep -Eq --text "($DIFFCMP)"
+        echo "$DIFF" | grep -Eqz --text "($DIFFCMP)"
         if [ "$?" -ne "0" ];
         then
             echo "Changes to $DBFile don't match $DIFFCMP"
