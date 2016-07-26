@@ -37,7 +37,7 @@ execute()
     then
         echo "Error: no mountpoint specified in script"
         exit 1
-    fi 
+    fi
     if [ -z "$DBFile" ];
     then
         DBFile=$("$KDBCOMMAND" file $Mountpoint 2>/dev/null)
@@ -56,7 +56,7 @@ execute()
     command=$(echo $command | sed "s~\$Storage~${Storage}~g")
     command=$(echo $command | sed "s~\$MountArgs~${MountArgs}~g")
 
-    case "$DiffType" in 
+    case "$DiffType" in
         File)
             rm "${DBFile}.1" 2>/dev/null
             cp "${DBFile}" "${DBFile}.1" 2>/dev/null
