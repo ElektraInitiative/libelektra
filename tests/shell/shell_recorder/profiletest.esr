@@ -1,5 +1,5 @@
 DiffType: Dump
-Mountpoint: user
+Mountpoint: system/
 
 < set system/elektra/globalplugins ""
 < set system/elektra/globalplugins/postcommit list

@@ -1,7 +1,4 @@
-Storage: dump
-Mountpoint: system/testmount/list
-File: /tmp/listtest.dump
-MountArgs: 
+Mountpoint: system/
 DiffType: File
 
 

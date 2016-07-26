@@ -6,7 +6,7 @@ DBFile=
 Storage=
 MountArgs=
 DiffType=File
-OutFile=`mktemp`
+OutFile=$(mktemp -t elektraenv.XXXXXXXXX 2>/dev/null || mktemp -t 'elektraenv')
 
 RETCMP=
 ERRORSCMP=
@@ -16,7 +16,19 @@ STDERRCMP=
 DIFFCMP=
 
 BACKUP=0
-TMPFILE=$(mktemp)
+TMPFILE=$(mktemp -t elektraenv.XXXXXXXXX 2>/dev/null || mktemp -t 'elektraenv')
+
+# variables to count up errors and tests
+nbError=0
+nbTest=0
+
+if [ -z "@USE_CMAKE_KDB_COMMAND@" ]; then
+        KDBCOMMAND="@KDB_COMMAND@"
+else
+        KDBCOMMAND="kdb"
+fi
+
+
 
 execute()
 {
@@ -25,17 +37,17 @@ execute()
     then
         echo "Error: no mountpoint specified in script"
         exit 1
-    fi 
+    fi
     if [ -z "$DBFile" ];
     then
-        DBFile=$(kdb file $Mountpoint 2>/dev/null)
+        DBFile=$("$KDBCOMMAND" file $Mountpoint 2>/dev/null)
     fi
 
     if [ "$BACKUP" -eq "1" ];
     then
-        kdb export $Mountpoint > $TMPFILE 2>/dev/null
+        "$KDBCOMMAND" export $Mountpoint > "$TMPFILE" 2>/dev/null
         BACKUP=0
-        kdb rm -r $Mountpoint 2>/dev/null
+        "$KDBCOMMAND" rm -r $Mountpoint 2>/dev/null
     fi
 
     [ -z "$Storage" ] && Storage="dump"
@@ -44,54 +56,56 @@ execute()
     command=$(echo $command | sed "s~\$Storage~${Storage}~g")
     command=$(echo $command | sed "s~\$MountArgs~${MountArgs}~g")
 
-    case "$DiffType" in 
+    case "$DiffType" in
         File)
             rm "${DBFile}.1" 2>/dev/null
             cp "${DBFile}" "${DBFile}.1" 2>/dev/null
             ;;
         Ini)
             rm ./previousState 2>/dev/null
-            kdb export $Mountpoint simpleini > ./previousState 2>/dev/null 
+            "$KDBCOMMAND" export $Mountpoint simpleini > ./previousState 2>/dev/null
             ;;
         Dump)
             rm ./previousState 2>/dev/null
-            kdb export $Mountpoint dump > ./previousState 2>/dev/null
+            "$KDBCOMMAND" export $Mountpoint dump > ./previousState 2>/dev/null
             ;;
     esac
 
     echo "$command"
 
-    printf "%s\0" "CMD: $command" >> $OutFile
+    printf "%s\0" "CMD: $command" >> "$OutFile"
 
-    bash -c "kdb $command 2>stderr 1>stdout"
+    bash -c "\"$KDBCOMMAND\" $command 2>stderr 1>stdout"
 
     RETVAL="$?"
 
-    printf "%s\0" "RET: $RETVAL" >> $OutFile
+    printf "%s\0" "RET: $RETVAL" >> "$OutFile"
 
     if [ ! -z "$RETCMP" ];
     then
+        nbTest=$(( nbTest + 1 ))
         echo "$RETVAL" | grep -Ewq $RETCMP
         if [ "$?" -ne "0" ];
         then
             echo "Return value $RETVAL doesn't match $RETCMP"
-            printf "%s\0" "=== FAILED return value doesn't match expected pattern $RETCMP" >> $OutFile
+            printf "%s\0" "=== FAILED return value doesn't match expected pattern $RETCMP" >> "$OutFile"
+            nbError=$(( nbError + 1 ))
         fi
     fi
 
     DIFF=
     case "$DiffType" in
         File)
-            DIFF=$(diff -N --text ${DBFile} "${DBFile}.1" 2>/dev/null)
+            DIFF=$(diff -N --text "${DBFile}" "${DBFile}.1" 2>/dev/null)
             ;;
         Ini)
-            kdb export $Mountpoint simpleini > ./newState 2>/dev/null
+            "$KDBCOMMAND" export $Mountpoint simpleini > ./newState 2>/dev/null
             DIFF=$(diff -N --text ./previousState ./newState 2>/dev/null)
             rm ./newState 2>/dev/null
             rm ./previousState 2>/dev/null
             ;;
         Dump)
-            kdb export $Mountpoint dump > ./newState 2>/dev/null
+            "$KDBCOMMAND" export $Mountpoint dump > ./newState 2>/dev/null
             DIFF=$(diff -N --text ./previousState ./newState 2>/dev/null)
             rm ./newState 2>/dev/null
             rm ./previousState 2>/dev/null
@@ -102,14 +116,17 @@ execute()
 
     STDERR=$(cat ./stderr)
 
-    printf "%s\0" "STDERR: $STDERR" >> $OutFile
+
+    printf "%s\0" "STDERR: $STDERR" >> "$OutFile"
     if [ ! -z "$STDERRCMP" ];
     then
+        nbTest=$(( nbTest + 1 ))
         echo "$STDERR" | grep -Eqz --text "$STDERRCMP"
         if [ "$?" -ne "0" ];
         then
             echo "STDERR doesn't match $STDERRCMP"
-            printf "%s\0" "=== FAILED stderr doesn't match expected patter $STDERRCMP" >> $OutFile
+            printf "%s\0" "=== FAILED stderr doesn't match expected patter $STDERRCMP" >> "$OutFile"
+            nbError=$(( nbError + 1 ))
         fi
     fi
 
@@ -117,14 +134,16 @@ execute()
 
     STDOUT=$(cat ./stdout)
 
-    printf "%s\0" "STDOUT: $STDOUT" >> $OutFile
+    printf "%s\0" "STDOUT: $STDOUT" >> "$OutFile"
     if [ ! -z "$STDOUTCMP" ];
     then
+        nbTest=$(( nbTest + 1 ))
         echo "$STDOUT" | grep -Eqz --text "$STDOUTCMP"
         if [ "$?" -ne "0" ];
         then
             echo "STDOUT doesn't match $STDOUTCMP"
-            printf "%s\0" "=== FAILED stdout doesn't match expected pattern $STDOUTCMP" >> $OutFile
+            printf "%s\0" "=== FAILED stdout doesn't match expected pattern $STDOUTCMP" >> "$OutFile"
+            nbError=$(( nbError + 1 ))
         fi
     fi
 
@@ -132,14 +151,16 @@ execute()
 
     WARNINGS=$(echo "$STDERR" | grep -Po "(?<=Warning number: )([[:digit:]]*)" | tr '\n' ',')
 
-    printf "%s\0" "WARNINGS: $WARNINGS" >> $OutFile
+    printf "%s\0" "WARNINGS: $WARNINGS" >> "$OutFile"
     if [ ! -z "$WARNINGSCMP" ];
     then
+        nbTest=$(( nbTest + 1 ))
         echo "$WARNINGS" | grep -Eqz --text "($WARNINGSCMP)"
         if [ "$?" -ne "0" ];
         then
             echo "WARNINGS doesn't match $WARNINGSCMP"
-            printf "%s\0" "=== FAILED Warnings don't match expected pattern $WARNINGSCMP" >> $OutFile
+            printf "%s\0" "=== FAILED Warnings don't match expected pattern $WARNINGSCMP" >> "$OutFile"
+            nbError=$(( nbError + 1 ))
         fi
     fi
 
@@ -149,32 +170,36 @@ execute()
     ERRORS=$(echo "$STDERR" | grep -Po "(?<=Error \(\#)([[:digit:]]*)" | tr '\n' ',')
 
 
-    printf "%s\0" "ERRORS: $ERRORS" >> $OutFile
+    printf "%s\0" "ERRORS: $ERRORS" >> "$OutFile"
     if [ ! -z "$ERRORSCMP" ];
     then
+        nbTest=$(( nbTest + 1 ))
         echo "$ERRORS" | grep -Eqz --text "($ERRORSCMP)"
         if [ "$?" -ne "0" ];
         then
             echo "ERRORS doesn't match $ERRORSCMP"
-            printf "%s\0" "=== FAILED Errors don't match expected pattern $ERRORSCMP" >> $OutFile
+            printf "%s\0" "=== FAILED Errors don't match expected pattern $ERRORSCMP" >> "$OutFile"
+            nbError=$(( nbError + 1 ))
         fi
     fi
 
 
 
-    printf "%s\0" "DIFF: $DIFF" >> $OutFile
+    printf "%s\0" "DIFF: $DIFF" >> "$OutFile"
     if [ ! -z "$DIFFCMP" ];
     then
+        nbTest=$(( nbTest + 1 ))
         echo "$DIFF" | grep -Eqz --text "($DIFFCMP)"
         if [ "$?" -ne "0" ];
         then
             echo "Changes to $DBFile don't match $DIFFCMP"
-            printf "%s\0" "=== FAILED changes to database file ($DBFILE) don't match $DIFFCMP" >> $OutFile
+            printf "%s\0" "=== FAILED changes to database file ($DBFile) don't match $DIFFCMP" >> "$OutFile"
+            nbError=$(( nbError + 1 ))
         fi
     fi
 
 
-    echo >> $OutFile 
+    echo >> "$OutFile"
 }
 
 run_script()
@@ -228,7 +253,7 @@ run_script()
         esac
         if [ "$OP" = "<" ];
         then
-            execute $ARG
+            execute "$ARG"
             RETCMP=
             ERRORSCMP=
             WARNINGSCMP=
@@ -236,7 +261,7 @@ run_script()
             STDERRCMP=
             DIFFCMP=
         fi
-    done < $FILE
+    done < "$FILE"
 }
 
 rm ./stdout 2>/dev/null
@@ -245,7 +270,7 @@ rm ./stderr 2>/dev/null
 if [ "$#" -lt "1" ] || [ "$#" -gt "2" ];
 then
     echo "Usage: ./shell_recorder inputscript [protocol to compare]"
-    rm $OutFile
+    rm "$OutFile"
     exit 0
 fi
 
@@ -255,11 +280,18 @@ echo "protocol file: $OutFile"
 
 run_script
 
-kdb rm -r $Mountpoint 2>/dev/null
-cat "$TMPFILE" | kdb import $Mountpoint 2>/dev/null
+"$KDBCOMMAND" rm -r "$Mountpoint" 2>/dev/null
+cat "$TMPFILE" | "$KDBCOMMAND" import $Mountpoint 2>/dev/null
 rm "${DBFile}.1" 2>/dev/null
 
 EVAL=0
+
+if [ "$#" -eq "1" ];
+then
+    echo -n "shell_recorder $1 RESULTS: $nbTest test(s) done"
+    echo " $nbError error(s)."
+    EVAL=$nbError
+fi
 
 if [ "$#" -eq "2" ];
 then
@@ -275,9 +307,9 @@ then
     fi
 fi
 
-
+# this should be in temporary files, and/or in a trap exit
 rm ./stdout 2>/dev/null
 rm ./stderr 2>/dev/null
 
-rm ${TMPFILE}
+rm "${TMPFILE}"
 exit "$EVAL"

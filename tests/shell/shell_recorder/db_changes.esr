@@ -1,0 +1,8 @@
+DiffType: Dump
+Mountpoint: user
+
+DIFF: (> keyNew.*user/test/key)
+< set user/test/key val
+
+DIFF: (> keyNew.*user/test/key3)
+< set user/test/key3 val2

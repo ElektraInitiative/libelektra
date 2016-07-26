@@ -10,8 +10,10 @@ RET: 0
 < mount $File $Mountpoint $Storage $MountArgs
 
 STDOUT: (tracer.*){3}
-STDERR: (set.*di.*pos.*){3}
+STDERR: (set.*di.*pos.*){2}
 RET: 0
 < set $Mountpoint test
 
 < ls $Mountpoint 
+
+< umount $Mountpoint
