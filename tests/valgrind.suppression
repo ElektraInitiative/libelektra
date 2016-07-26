@@ -1874,3 +1874,15 @@
    fun:test_config_errors
    fun:main
 }
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:realloc
+   fun:CRYPTO_realloc
+   fun:lh_insert
+   ...
+   fun:elektraPluginOpen
+   fun:test_init
+   fun:main
+}
