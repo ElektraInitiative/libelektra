@@ -40,14 +40,14 @@ execute()
     fi 
     if [ -z "$DBFile" ];
     then
-        DBFile=$($KDBCOMMAND file $Mountpoint 2>/dev/null)
+        DBFile=$("$KDBCOMMAND" file $Mountpoint 2>/dev/null)
     fi
 
     if [ "$BACKUP" -eq "1" ];
     then
-        $KDBCOMMAND export $Mountpoint > "$TMPFILE" 2>/dev/null
+        "$KDBCOMMAND" export $Mountpoint > "$TMPFILE" 2>/dev/null
         BACKUP=0
-        $KDBCOMMAND rm -r $Mountpoint 2>/dev/null
+        "$KDBCOMMAND" rm -r $Mountpoint 2>/dev/null
     fi
 
     [ -z "$Storage" ] && Storage="dump"
@@ -63,11 +63,11 @@ execute()
             ;;
         Ini)
             rm ./previousState 2>/dev/null
-            $KDBCOMMAND export $Mountpoint simpleini > ./previousState 2>/dev/null
+            "$KDBCOMMAND" export $Mountpoint simpleini > ./previousState 2>/dev/null
             ;;
         Dump)
             rm ./previousState 2>/dev/null
-            $KDBCOMMAND export $Mountpoint dump > ./previousState 2>/dev/null
+            "$KDBCOMMAND" export $Mountpoint dump > ./previousState 2>/dev/null
             ;;
     esac
 
@@ -75,7 +75,7 @@ execute()
 
     printf "%s\0" "CMD: $command" >> "$OutFile"
 
-    bash -c "$KDBCOMMAND $command 2>stderr 1>stdout"
+    bash -c "\"$KDBCOMMAND\" $command 2>stderr 1>stdout"
 
     RETVAL="$?"
 
@@ -99,13 +99,13 @@ execute()
             DIFF=$(diff -N --text "${DBFile}" "${DBFile}.1" 2>/dev/null)
             ;;
         Ini)
-            $KDBCOMMAND export $Mountpoint simpleini > ./newState 2>/dev/null
+            "$KDBCOMMAND" export $Mountpoint simpleini > ./newState 2>/dev/null
             DIFF=$(diff -N --text ./previousState ./newState 2>/dev/null)
             rm ./newState 2>/dev/null
             rm ./previousState 2>/dev/null
             ;;
         Dump)
-            $KDBCOMMAND export $Mountpoint dump > ./newState 2>/dev/null
+            "$KDBCOMMAND" export $Mountpoint dump > ./newState 2>/dev/null
             DIFF=$(diff -N --text ./previousState ./newState 2>/dev/null)
             rm ./newState 2>/dev/null
             rm ./previousState 2>/dev/null
@@ -280,8 +280,8 @@ echo "protocol file: $OutFile"
 
 run_script
 
-$KDBCOMMAND rm -r "$Mountpoint" 2>/dev/null
-cat "$TMPFILE" | $KDBCOMMAND import $Mountpoint 2>/dev/null
+"$KDBCOMMAND" rm -r "$Mountpoint" 2>/dev/null
+cat "$TMPFILE" | "$KDBCOMMAND" import $Mountpoint 2>/dev/null
 rm "${DBFile}.1" 2>/dev/null
 
 EVAL=0
