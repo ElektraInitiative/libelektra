@@ -238,8 +238,8 @@ To use the debian repository of the latest builds from master put following file
 /etc/apt/sources.list.
 For jessie:
 
-        deb     [trusted=yes] http://194.117.254.29/elektra-stable/ jessie main
-        deb-src [trusted=yes] http://194.117.254.29/elektra-stable/ jessie main
+        deb     [trusted=yes] http://debian-stable.libelektra.org/elektra-stable/ jessie main
+        deb-src [trusted=yes] http://debian-stable.libelektra.org/elektra-stable/ jessie main
 
 For wheezy:
 
