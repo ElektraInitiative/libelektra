@@ -30,7 +30,9 @@ else
         KDBCOMMAND="kdb"
 fi
 
-
+replace_newline_null () {
+	tr '\n' '⏎' | tr '\000' '\n'
+}
 
 execute()
 {
@@ -123,7 +125,7 @@ execute()
     if [ ! -z "$STDERRCMP" ];
     then
         nbTest=$(( nbTest + 1 ))
-        echo "$STDERR" | grep -Eqz --text "$STDERRCMP"
+        echo "$STDERR" | replace_newline_null | grep -Eq --text "$STDERRCMP"
         if [ "$?" -ne "0" ];
         then
             echo "STDERR doesn't match $STDERRCMP"
@@ -140,7 +142,7 @@ execute()
     if [ ! -z "$STDOUTCMP" ];
     then
         nbTest=$(( nbTest + 1 ))
-        echo "$STDOUT" | grep -Eqz --text "$STDOUTCMP"
+        echo "$STDOUT" | replace_newline_null | grep -Eq --text "$STDOUTCMP"
         if [ "$?" -ne "0" ];
         then
             echo "STDOUT doesn't match $STDOUTCMP"
@@ -151,13 +153,13 @@ execute()
 
 
 
-    WARNINGS=$(echo "$STDERR" | grep -Po "(?<=Warning number: )([[:digit:]]*)" | tr '\n' ',')
+    WARNINGS=$(echo "$STDERR" | sed -nE  "s/Warning number: (\d*)/\1/p" | tr '\n' ',')
 
     printf "%s\0" "WARNINGS: $WARNINGS" >> "$OutFile"
     if [ ! -z "$WARNINGSCMP" ];
     then
         nbTest=$(( nbTest + 1 ))
-        echo "$WARNINGS" | grep -Eqz --text "($WARNINGSCMP)"
+        echo "$WARNINGS" | replace_newline_null | grep -Eq --text "($WARNINGSCMP)"
         if [ "$?" -ne "0" ];
         then
             echo "WARNINGS doesn't match $WARNINGSCMP"
@@ -169,14 +171,14 @@ execute()
 
 
 
-    ERRORS=$(echo "$STDERR" | grep -Po "(?<=Error \(\#)([[:digit:]]*)" | tr '\n' ',')
+    ERRORS=$(echo "$STDERR" | sed -nE  "s/Error \(\#(\d*)/\1/p" | tr '\n' ',')
 
 
     printf "%s\0" "ERRORS: $ERRORS" >> "$OutFile"
     if [ ! -z "$ERRORSCMP" ];
     then
         nbTest=$(( nbTest + 1 ))
-        echo "$ERRORS" | grep -Eqz --text "($ERRORSCMP)"
+        echo "$ERRORS" | replace_newline_null | grep -Eq --text "($ERRORSCMP)"
         if [ "$?" -ne "0" ];
         then
             echo "ERRORS doesn't match $ERRORSCMP"
@@ -191,7 +193,7 @@ execute()
     if [ ! -z "$DIFFCMP" ];
     then
         nbTest=$(( nbTest + 1 ))
-        echo "$DIFF" | grep -Eqz --text "($DIFFCMP)"
+        echo "$DIFF" | replace_newline_null | grep -Eq --text "($DIFFCMP)"
         if [ "$?" -ne "0" ];
         then
             echo "Changes to $DBFile don't match $DIFFCMP"
