@@ -215,6 +215,9 @@ run_script()
                 ;;
             File:)
                 DBFile=$(echo $line|cut -d ' ' -f2)
+                if [ "$DBFile" = "mktemp" ]; then
+			DBFile=$(mktemp -t elektraenv.XXXXXXXXX 2>/dev/null || mktemp -t 'elektraenv')
+                fi
                 ;;
             Storage:)
                 Storage=$(echo $line|cut -d ' ' -f2)

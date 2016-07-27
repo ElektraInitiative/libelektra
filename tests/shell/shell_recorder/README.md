@@ -17,7 +17,7 @@ Available:
 ### File: ###
 
 Tells the shell_recorder what file to use for diffs.
-
+If File is set to `mktemp` a fresh temp file will be provided for every run.
 
 
 ## Checks ##
