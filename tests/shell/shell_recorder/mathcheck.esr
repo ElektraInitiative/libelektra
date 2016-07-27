@@ -1,0 +1,115 @@
+Mountpoint: user/test
+DiffType: File
+File:
+Storage: mathcheck
+
+# Setup
+
+< mount $File $Mountpoint $Storage
+
+# Test ../
+
+< set $Mountpoint/check/test0/points 5.9
+< set $Mountpoint/check/test1/points 4.5
+
+< set $Mountpoint/check/gp
+
+< setmeta $Mountpoint/check/gp check/math ":= + ../test0/points ../test1/points"
+
+STDOUT: 10.4
+< get $Mountpoint/check/gp
+
+RET: 0
+< rm -r $Mountpoint
+
+
+# Test ./
+
+< set $Mountpoint/check/test0/points 5.9
+< set $Mountpoint/check/test1/points 4.5
+
+< set $Mountpoint/check/gp
+
+< setmeta $Mountpoint/check/gp check/math ":= + ./test0/points ./test1/points"
+
+STDOUT: 10.4
+< get $Mountpoint/check/gp
+
+RET: 0
+< rm -r $Mountpoint
+
+# Test @/
+
+< set $Mountpoint/check/test0/points 5.9
+< set $Mountpoint/check/test1/points 4.5
+
+< set $Mountpoint/check/gp
+
+< setmeta $Mountpoint/check/gp check/math ":= + @/check/test0/points @/check/test1/points"
+
+STDOUT: 10.4
+< get $Mountpoint/check/gp
+
+RET: 0
+< rm -r $Mountpoint
+
+# Test Null sum
+
+< set $Mountpoint/key0 5
+
+< set $Mountpoint/sum
+
+< setmeta $Mountpoint/sum check/math ":= + @/key0 @/key1"
+
+STDOUT: 5
+< get $Mountpoint/sum
+
+RET: 0
+< rm -r $Mountpoint
+
+# Test Null sub
+
+< set $Mountpoint/key0 5
+
+< set $Mountpoint/sub
+
+< setmeta $Mountpoint/sub check/math ":= - @/key0 @/key1"
+
+STDOUT: 5
+< get $Mountpoint/sub
+
+RET: 0
+< rm -r $Mountpoint
+
+# Test Null mul
+
+< set $Mountpoint/key0 5
+
+< set $Mountpoint/mul
+
+< setmeta $Mountpoint/mul check/math ":= * @/key0 @/key1"
+
+STDOUT: 5
+< get $Mountpoint/mul
+
+RET: 0
+< rm -r $Mountpoint
+
+# Test Null div
+
+< set $Mountpoint/key0 5
+
+< set $Mountpoint/div
+
+< setmeta $Mountpoint/div check/math ":= / @/key0 @/key1"
+
+STDOUT: 5
+< get $Mountpoint/div
+
+RET: 0
+< rm -r $Mountpoint
+
+
+# Cleanup
+
+< umount $Mountpoint
