@@ -1,4 +1,6 @@
-#!/bin/bash
+#!/bin/sh
+
+set -f
 
 FILE=$1
 Mountpoint=
@@ -75,7 +77,7 @@ execute()
 
     printf "%s\0" "CMD: $command" >> "$OutFile"
 
-    bash -c "\"$KDBCOMMAND\" $command 2>stderr 1>stdout"
+    sh -c -f "\"$KDBCOMMAND\" $command 2>stderr 1>stdout"
 
     RETVAL="$?"
 
