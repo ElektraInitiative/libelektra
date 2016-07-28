@@ -1824,3 +1824,65 @@
    fun:test_crypto_operations
    fun:main
 }
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: indirect
+   fun:_Znwm
+   obj:/usr/lib/libbotan-1.10.so.0.8
+   obj:/usr/lib/libbotan-1.10.so.0.8
+   obj:/usr/lib/libbotan-1.10.so.0.8
+   fun:_ZN5Botan10get_cipherERKSsNS_10Cipher_DirE
+   fun:_ZN5Botan10get_cipherERKSsRKNS_11OctetStringES4_NS_10Cipher_DirE
+   obj:*
+   obj:*
+   fun:test_config_errors_internal
+   fun:test_config_errors
+   fun:main
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: indirect
+   fun:_Znwm
+   fun:_ZNSt6vectorIPN5Botan6FilterESaIS2_EE14_M_fill_insertEN9__gnu_cxx17__normal_iteratorIPS2_S4_EEmRKS2_
+   fun:_ZN5Botan6FilterC1Ev
+   fun:_ZN5Botan14CBC_EncryptionC1EPNS_11BlockCipherEPNS_28BlockCipherModePaddingMethodE
+   obj:/usr/lib/libbotan-1.10.so.0.8
+   obj:/usr/lib/libbotan-1.10.so.0.8
+   fun:_ZN5Botan10get_cipherERKSsNS_10Cipher_DirE
+   fun:_ZN5Botan10get_cipherERKSsRKNS_11OctetStringES4_NS_10Cipher_DirE
+   obj:*
+   obj:*
+   fun:test_config_errors_internal
+   fun:test_config_errors
+   fun:main
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: indirect
+   fun:_Znwm
+   fun:_ZNK5Botan7AES_2565cloneEv
+   obj:/usr/lib/libbotan-1.10.so.0.8
+   obj:/usr/lib/libbotan-1.10.so.0.8
+   fun:_ZN5Botan10get_cipherERKSsNS_10Cipher_DirE
+   fun:_ZN5Botan10get_cipherERKSsRKNS_11OctetStringES4_NS_10Cipher_DirE
+   obj:*
+   obj:*
+   fun:test_config_errors_internal
+   fun:test_config_errors
+   fun:main
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:realloc
+   fun:CRYPTO_realloc
+   fun:lh_insert
+   ...
+   fun:elektraPluginOpen
+   fun:test_init
+   fun:main
+}
