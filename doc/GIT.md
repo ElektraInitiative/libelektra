@@ -85,6 +85,15 @@ you can do:
 
 	git-ref-log # recover
 
+## Definition of Done ##
+
+- keep everything working as before
+- add unit tests
+- good commit message
+- refer to issue you are working on
+- affected docu is fixed
+- add code comments, logging, assertion
+
 ## Github ##
 
 When doing merge requests our [buildserver](http://build.libelektra.org:8080)
