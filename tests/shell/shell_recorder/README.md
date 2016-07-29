@@ -9,7 +9,7 @@ e.g. `Mountpoint: user/test` tells the shell_recorder that you will be working u
 
 ### DiffType: ###
 
-Available: 
+Available:
 
 `Dump`, `Ini` exports the keys below `Mountpoint` using either the dump or ini format and diffs the changes.
 `File` does a diff on the configuration file mounted to `Mountpoint`.
@@ -24,7 +24,7 @@ If File is preset but empty a fresh database temp file will be provided for ever
 
 Posix-extended regex is used to check and validate return values and outputs.
 
-Options: 
+Options:
 
 * STDOUT:
 * STDERR:
@@ -35,7 +35,7 @@ Options:
 
 ## Commands ##
 
-A command starts with `<` followed by the usual kdb commands. 
+A command starts with `<` followed by the usual kdb commands.
 
 
 ## Examples ##
