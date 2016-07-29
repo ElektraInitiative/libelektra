@@ -17,7 +17,7 @@ Available:
 ### File: ###
 
 Tells the shell_recorder what file to use for diffs.
-
+If File is preset but empty a fresh database temp file will be provided for every run.
 
 
 ## Checks ##
