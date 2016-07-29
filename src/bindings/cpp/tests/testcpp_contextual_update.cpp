@@ -329,7 +329,7 @@ TEST_F (test_contextual_update, activateLayersByCV)
 	EXPECT_EQ (c["id"], "my");
 	EXPECT_EQ (c["key"], "5") << "not synced properly";
 
-	ks.append(Key ("user/my/key", KEY_VALUE, "99", KEY_END));
+	ks.append (Key ("user/my/key", KEY_VALUE, "99", KEY_END));
 
 	c.sync ();
 	ASSERT_EQ (x.getName (), "user/my/key");
