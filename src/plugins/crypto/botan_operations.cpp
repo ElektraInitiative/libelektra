@@ -7,6 +7,7 @@
  *
  */
 
+#include <botan/auto_rng.h>
 #include <botan/filters.h>
 #include <botan/init.h>
 #include <botan/lookup.h>
@@ -21,6 +22,7 @@ extern "C" {
 
 #include "botan_operations.h"
 #include "crypto.h"
+#include "rand_helper.h"
 #include <kdberrors.h>
 #include <string.h>
 
@@ -233,6 +235,27 @@ int elektraCryptoBotanDecrypt (KeySet * pluginConfig, Key * k, Key * errorKey)
 	delete cryptoIv;
 	delete cryptoKey;
 	return 1; // success
+}
+
+char * elektraCryptoBotanCreateRandomString (const kdb_unsigned_short_t length)
+{
+	try
+	{
+		kdb_octet_t * buffer = new kdb_octet_t[length];
+		if (!buffer)
+		{
+			return 0;
+		}
+
+		AutoSeeded_RNG rng;
+		rng.randomize (buffer, length - 1);
+		elektraCryptoNormalizeRandomString (buffer, length);
+		return reinterpret_cast<char *> (buffer);
+	}
+	catch (std::exception & e)
+	{
+		return 0;
+	}
 }
 
 } // extern "C"

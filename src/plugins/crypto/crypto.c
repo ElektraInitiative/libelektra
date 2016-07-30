@@ -21,6 +21,7 @@
 #include "botan_operations.h"
 #endif
 #include <kdberrors.h>
+#include <kdbtypes.h>
 #include <pthread.h>
 #include <string.h>
 
@@ -53,6 +54,24 @@ static int elektraCryptoInit (Key * errorKey ELEKTRA_UNUSED)
  */
 static void elektraCryptoTeardown ()
 {
+}
+
+/**
+ * @brief create a random master password using the crypto backend's SRNG.
+ * @param length limit the length of the generated string to length characters (including the 0x00 terminator)
+ * @return a random character sequence with length characters of size.
+ */
+static char * elektraCryptoCreateRandomString (const kdb_unsigned_short_t length ELEKTRA_UNUSED)
+{
+#if defined(ELEKTRA_CRYPO_API_GCRYPT)
+	return elektraCryptoGcryCreateRandomString (length);
+#elif defined(ELEKTRA_CRYPTO_API_OPENSSL)
+	return elektraCryptoOpenSSLCreateRandomString (length);
+#elif defined(ELEKTRA_CRYPTO_API_BOTAN)
+	return elektraCryptoBotanCreateRandomString (length);
+#else
+	return 0;
+#endif
 }
 
 /**

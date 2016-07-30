@@ -10,6 +10,7 @@
 #include "crypto.h"
 
 #include "gcrypt_operations.h"
+#include "rand_helper.h"
 
 #include <errno.h>
 #include <gcrypt.h>
@@ -334,4 +335,15 @@ int elektraCryptoGcryDecrypt (elektraCryptoHandle * handle, Key * k, Key * error
 
 	elektraFree (output);
 	return 1;
+}
+
+char * elektraCryptoGcryCreateRandomString (const kdb_unsigned_short_t length)
+{
+	kdb_octet_t * buffer = gcry_random_bytes (length, GCRY_STRONG_RANDOM);
+	if (!buffer)
+	{
+		return 0;
+	}
+	elektraCryptoNormalizeRandomString (buffer, length);
+	return (char *)buffer;
 }
