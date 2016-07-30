@@ -10,12 +10,14 @@
 #include "crypto.h"
 
 #include "openssl_operations.h"
+#include "rand_helper.h"
 
 #include <kdberrors.h>
 #include <kdbtypes.h>
 #include <openssl/buffer.h>
 #include <openssl/crypto.h>
 #include <openssl/err.h>
+#include <openssl/rand.h>
 #include <pthread.h>
 #include <stdlib.h>
 #include <string.h>
@@ -364,4 +366,19 @@ error:
 	BIO_free_all (decrypted);
 	pthread_mutex_unlock (&mutex_ssl);
 	return (-1);
+}
+
+char * elektraCryptoOpenSSLCreateRandomString (const kdb_unsigned_short_t length)
+{
+	kdb_octet_t * buffer = elektraMalloc (length);
+	if (!buffer)
+	{
+		return 0;
+	}
+	if (!RAND_bytes (buffer, length - 1))
+	{
+		return 0;
+	}
+	elektraCryptoNormalizeRandomString (buffer, length);
+	return (char *)buffer;
 }
