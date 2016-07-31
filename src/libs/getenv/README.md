@@ -153,6 +153,15 @@ E.g. to have a different home directory for any user and application:
     kdb set user/users/markus/konqueror/HOME /home/download
     kdb setmeta spec/env/override/HOME context  /users/%user%/%name%/HOME
 
+Or to have a different lock/suspend program per computer (that all have the same config):
+
+    kdb mount-info system/env/info            # must be below /env to be available
+    kdb setmeta spec/env/layer/hostname override/#0 system/env/info/uname/nodename
+    kdb setmeta spec/env/override/lock context /env/info/lock/%hostname%
+    kdb set user/env/info/lock/computer1 "systemctl suspend -i
+    kdb set user/env/info/lock/computer2 "xset dpms force off && xtrlock"
+    `kdb getenv lock`  # call the appropriate lock method for the current computer
+
 
 
 ## BUGS
