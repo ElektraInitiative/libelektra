@@ -459,6 +459,7 @@ static int elektraGetCheckUpdateNeeded (Split * split, Key * parentKey)
 
 		if (backend->getplugins[RESOLVER_PLUGIN] && backend->getplugins[RESOLVER_PLUGIN]->kdbGet)
 		{
+			// GLOBAL: getresolver
 			ksRewind (split->keysets[i]);
 			keySetName (parentKey, keyName (split->parents[i]));
 			keySetString (parentKey, "");
@@ -772,6 +773,7 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 		ELEKTRA_SET_ERROR (37, parentKey, "handle or ks null pointer");
 		goto error;
 	}
+	// GLOBAL: pregetstorage
 	if (handle->globalPlugins[PREGETSTORAGE])
 	{
 		handle->globalPlugins[PREGETSTORAGE]->kdbGet (handle->globalPlugins[PREGETSTORAGE], ks, parentKey);
@@ -811,6 +813,7 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 		goto error;
 	}
 
+	// GLOBAL: postgetstorage
 	if (handle->globalPlugins[POSTGETSTORAGE] || handle->globalPlugins[POSTGETCLEANUP])
 	{
 		clearError (parentKey);
@@ -954,6 +957,7 @@ static int elektraSetPrepare (Split * split, Key * parentKey, Key ** errorKey, P
 			{
 				if (hooks[PRESETSTORAGE])
 				{
+					// GLOBAL: presetstorage
 					// the only place global presetstorage hooks can be executed
 					ksRewind (split->keysets[i]);
 					hooks[PRESETSTORAGE]->kdbSet (hooks[PRESETSTORAGE], split->keysets[i], parentKey);
@@ -1226,16 +1230,19 @@ int kdbSet (KDB * handle, KeySet * ks, Key * parentKey)
 		copyError (parentKey, oldError);
 	}
 	keySetName (parentKey, keyName (initialParent));
+	// GLOBAL: precommit
 	if (handle->globalPlugins[PRECOMMIT])
 	{
 		handle->globalPlugins[PRECOMMIT]->kdbSet (handle->globalPlugins[PRECOMMIT], ks, parentKey);
 	}
 
 	elektraSetCommit (split, parentKey);
+	// GLOBAL: commit
 
 	splitUpdateSize (split);
 
 	keySetName (parentKey, keyName (initialParent));
+	// GLOBAL: postcommit
 	if (handle->globalPlugins[POSTCOMMIT])
 	{
 		handle->globalPlugins[POSTCOMMIT]->kdbSet (handle->globalPlugins[POSTCOMMIT], ks, parentKey);
@@ -1257,12 +1264,14 @@ int kdbSet (KDB * handle, KeySet * ks, Key * parentKey)
 
 error:
 	keySetName (parentKey, keyName (initialParent));
+	// GLOBAL: prerollback
 	if (handle->globalPlugins[PREROLLBACK])
 	{
 		handle->globalPlugins[PREROLLBACK]->kdbError (handle->globalPlugins[PREROLLBACK], ks, parentKey);
 	}
 
 	elektraSetRollback (split, parentKey);
+	// GLOBAL: rollback
 
 	if (errorKey)
 	{
@@ -1274,6 +1283,7 @@ error:
 	}
 
 	keySetName (parentKey, keyName (initialParent));
+	// GLOBAL: postrollback
 	if (handle->globalPlugins[POSTROLLBACK])
 	{
 		handle->globalPlugins[POSTROLLBACK]->kdbError (handle->globalPlugins[POSTROLLBACK], ks, parentKey);
