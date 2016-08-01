@@ -48,7 +48,11 @@ file (GLOB SRC_FILES *.c)
 
 #remove those we don't want..
 file (GLOB RM_FILES exportsymbols.c kdbmainpage.c)
-list (REMOVE_ITEM SRC_FILES ${RM_FILES} ${WIN32_RM_FILES})
+unset (RM_LOG_FILE)
+if (NOT HAVE_LOGGER)
+	file (GLOB RM_LOG_FILE log.c)
+endif (NOT HAVE_LOGGER)
+list (REMOVE_ITEM SRC_FILES ${RM_FILES} ${RM_LOG_FILE})
 
 #remove the opmphm files
 if (NOT ENABLE_OPTIMIZATIONS)

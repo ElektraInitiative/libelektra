@@ -13,6 +13,7 @@
 #include <kdbconfig.h>
 #include <kdberrors.h>
 #include <kdbextension.h>
+#include <kdblogger.h>
 #include <kdbmodule.h>
 #include <kdbobsolete.h>
 #include <kdbplugin.h>

@@ -28,8 +28,10 @@
 #include <unistd.h>
 
 #include <dirent.h>
-#include <kdberrors.h>
 #include <sys/types.h>
+
+#include <kdberrors.h>
+#include <kdblogger.h>
 
 #ifdef ELEKTRA_LOCK_MUTEX
 #include <pthread.h>
@@ -464,6 +466,7 @@ int ELEKTRA_PLUGIN_FUNCTION (resolver, get) (Plugin * handle, KeySet * returned,
 	int errnoSave = errno;
 	struct stat buf;
 
+	ELEKTRA_LOG (ELEKTRA_LOG_MODULE_RESOLVER, "stat file %s", pk->filename);
 	/* Start file IO with stat() */
 	if (stat (pk->filename, &buf) == -1)
 	{
