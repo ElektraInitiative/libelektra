@@ -63,7 +63,7 @@ static void elektraCryptoTeardown ()
  */
 static char * elektraCryptoCreateRandomString (const kdb_unsigned_short_t length ELEKTRA_UNUSED)
 {
-#if defined(ELEKTRA_CRYPO_API_GCRYPT)
+#if defined(ELEKTRA_CRYPTO_API_GCRYPT)
 	return elektraCryptoGcryCreateRandomString (length);
 #elif defined(ELEKTRA_CRYPTO_API_OPENSSL)
 	return elektraCryptoOpenSSLCreateRandomString (length);
@@ -332,6 +332,51 @@ int CRYPTO_PLUGIN_FUNCTION (set) (Plugin * handle, KeySet * ks, Key * parentKey)
 	// we may add more options in the future
 
 	return elektraCryptoEncrypt (handle, ks, parentKey);
+}
+
+/**
+ * @brief Checks for the existense of the master password, that is used for encryption and decryption.
+ *
+ * If the master password can not be found it will be generated randomly.
+ * Then it will be encrypted and stored in conf.
+ *
+ * If the master password can be found, it will be decrypted temporarily in order to verify its correctness.
+ * conf will not be modified in this case.
+ *
+ * An error might occur during the password generation, encryption and decryption.
+ * The error will be appended to errorKey.
+ *
+ * @retval 0 no changes were made to the configuration
+ * @retval 1 the master password has been appended to the configuration
+ * @retval -1 an error occured. Check errorKey
+ */
+int CRYPTO_PLUGIN_FUNCTION (checkconf) (Key * errorKey, KeySet * conf)
+{
+	Key * k = ksLookupByName (conf, ELEKTRA_CRYPTO_PARAM_MASTER_PWD, 0);
+	if (k)
+	{
+		// TODO call gpg module to verify that we own the correct key
+		return 0;
+	}
+	else
+	{
+		// generate random master password r
+		const char * r = elektraCryptoCreateRandomString (12);
+		if (!r)
+		{
+			// TODO append error to errorKey
+			return -1;
+		}
+
+		// TODO make password length configurable, use stronger default
+		// TODO call gpg module to encrypt the master password
+
+		// store password in configuration
+		k = keyNew ("user/" ELEKTRA_CRYPTO_PARAM_MASTER_PWD, KEY_END);
+		keySetString (k, r);
+		ksAppendKey (conf, k);
+		return 1;
+	}
 }
 
 /**
