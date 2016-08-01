@@ -377,6 +377,7 @@ char * elektraCryptoOpenSSLCreateRandomString (const kdb_unsigned_short_t length
 	}
 	if (!RAND_bytes (buffer, length - 1))
 	{
+		elektraFree (buffer);
 		return 0;
 	}
 	elektraCryptoNormalizeRandomString (buffer, length);
