@@ -339,11 +339,13 @@ int elektraCryptoGcryDecrypt (elektraCryptoHandle * handle, Key * k, Key * error
 
 char * elektraCryptoGcryCreateRandomString (const kdb_unsigned_short_t length)
 {
-	kdb_octet_t * buffer = gcry_random_bytes (length, GCRY_STRONG_RANDOM);
+	kdb_octet_t * buffer = elektraMalloc (length);
 	if (!buffer)
 	{
 		return 0;
 	}
+
+	gcry_create_nonce (buffer, length - 1);
 	elektraCryptoNormalizeRandomString (buffer, length);
 	return (char *)buffer;
 }
