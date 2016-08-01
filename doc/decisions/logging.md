@@ -63,8 +63,8 @@ in these situations).
 So we would have:
 
         ELEKTRA_LOG_WARNING    warning conditions
-        ELEKTRA_LOG            NOTICE  normal, but significant, condition
-        ELEKTRA_LOG_INFO       informational message
+        ELEKTRA_LOG_NOTICE     normal, but significant, condition
+        ELEKTRA_LOG            INFO    informational message
         ELEKTRA_LOG_DEBUG      debug-level message
 
 
