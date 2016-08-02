@@ -20,9 +20,11 @@
 #ifdef ELEKTRA_CRYPTO_API_BOTAN
 #include "botan_operations.h"
 #endif
+#include <kdb.h>
 #include <kdberrors.h>
 #include <kdbtypes.h>
 #include <pthread.h>
+#include <stdlib.h>
 #include <string.h>
 
 static pthread_mutex_t mutex_ref_cnt = PTHREAD_MUTEX_INITIALIZER;
@@ -54,6 +56,26 @@ static int elektraCryptoInit (Key * errorKey ELEKTRA_UNUSED)
  */
 static void elektraCryptoTeardown ()
 {
+}
+
+/**
+ * @brief read the plugin configuration for the supposed length of the master password.
+ *
+ * @param conf the plugin configuration
+ * @return the expected length of the master password
+ */
+static kdb_unsigned_short_t elektraCryptoGetRandomPasswordLength (KeySet * conf)
+{
+	Key * k = ksLookupByName (conf, ELEKTRA_CRYPTO_PARAM_MASTER_PWD_LEN, 0);
+	if (k && keyIsString (k) > 0)
+	{
+		const char * value = keyString (k);
+		if (strlen (value) > 0)
+		{
+			return (kdb_unsigned_short_t)strtoul (value, NULL, 10);
+		}
+	}
+	return ELEKTRA_CRYPTO_DEFAULT_MASTER_PWD_LENGTH;
 }
 
 /**
@@ -361,14 +383,14 @@ int CRYPTO_PLUGIN_FUNCTION (checkconf) (Key * errorKey, KeySet * conf)
 	else
 	{
 		// generate random master password r
-		const char * r = elektraCryptoCreateRandomString (12);
+		const kdb_unsigned_short_t passwordLen = elektraCryptoGetRandomPasswordLength (conf);
+		const char * r = elektraCryptoCreateRandomString (passwordLen);
 		if (!r)
 		{
 			ELEKTRA_SET_ERROR (ELEKTRA_ERROR_CRYPTO_RANDOM_GEN_FAULT, errorKey, "Random password generation failed");
 			return -1;
 		}
 
-		// TODO make password length configurable, use stronger default
 		// TODO call gpg module to encrypt the master password
 
 		// store password in configuration

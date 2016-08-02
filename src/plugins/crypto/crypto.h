@@ -20,6 +20,8 @@ enum ElektraCryptoHeaderFlags
 	ELEKTRA_CRYPTO_FLAG_NULL = 2
 };
 
+#define ELEKTRA_CRYPTO_DEFAULT_MASTER_PWD_LENGTH (30)
+#define ELEKTRA_CRYPTO_PARAM_MASTER_PWD_LEN "/crypto/masterpasswordlength"
 #define ELEKTRA_CRYPTO_PARAM_MASTER_PWD "/crypto/masterpassword"
 #define ELEKTRA_CRYPTO_PARAM_KEY_PATH ("/crypto/key")
 #define ELEKTRA_CRYPTO_PARAM_IV_PATH ("/crypto/iv")
