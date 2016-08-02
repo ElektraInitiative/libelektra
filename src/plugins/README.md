@@ -106,6 +106,7 @@ productive use:
 - [regexstore](regexstore/)
 - [simpleini](simpleini/) is ini without sections
 - [csvstorage](csvstorage/) for csv files
+- [passwd](passwd/) read/write passwd files
 
 ## System Information ##
 
