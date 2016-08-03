@@ -9,6 +9,7 @@
 
 #include "passwd.h"
 
+#include <kdberrors.h>
 #include <kdbhelper.h>
 
 #include <pwd.h>
@@ -106,7 +107,11 @@ int elektraPasswdGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_
 	struct passwd * pwd;
 #ifdef HAS_FGETPWENT
 	FILE * pwfile = fopen (keyString (parentKey), "r");
-	if (!pwfile) return -1;
+	if (!pwfile)
+	{
+		ELEKTRA_SET_ERRORF (110, parentKey, "Failed to open configuration file %s\n", keyString (parentKey));
+		return -1;
+	}
 	while ((pwd = fgetpwent (pwfile)) != NULL)
 #else
 	while ((pwd = getpwent ()) != NULL)
@@ -159,7 +164,11 @@ static struct passwd * KStoPasswd (KeySet * ks, SortBy index)
 static int writeKS (KeySet * returned, Key * parentKey, SortBy index)
 {
 	FILE * pwfile = fopen (keyString (parentKey), "w");
-	if (!pwfile) return -1;
+	if (!pwfile)
+	{
+		ELEKTRA_SET_ERRORF (75, parentKey, "Failed to open %s for writing\n", keyString (parentKey));
+		return -1;
+	}
 	Key * cur;
 	while ((cur = ksNext (returned)) != NULL)
 	{
