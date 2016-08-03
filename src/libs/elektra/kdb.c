@@ -450,6 +450,8 @@ int kdbClose (KDB * handle, Key * errorKey)
  */
 static int elektraGetCheckUpdateNeeded (Split * split, Key * parentKey)
 {
+	// GLOBAL: getresolver [init]
+	// GLOBAL: getresolver [max once]
 	int updateNeededOccurred = 0;
 	for (size_t i = 0; i < split->size; i++)
 	{
@@ -459,7 +461,7 @@ static int elektraGetCheckUpdateNeeded (Split * split, Key * parentKey)
 
 		if (backend->getplugins[RESOLVER_PLUGIN] && backend->getplugins[RESOLVER_PLUGIN]->kdbGet)
 		{
-			// GLOBAL: getresolver
+			// GLOBAL: getresolver [foreach]
 			ksRewind (split->keysets[i]);
 			keySetName (parentKey, keyName (split->parents[i]));
 			keySetString (parentKey, "");
@@ -490,6 +492,7 @@ static int elektraGetCheckUpdateNeeded (Split * split, Key * parentKey)
 			return -1;
 		}
 	}
+	// GLOBAL: getresolver [deinit]
 	return updateNeededOccurred;
 }
 
@@ -568,6 +571,13 @@ static int elektraGetDoUpdateWithGlobalHooks (KDB * handle, Split * split, KeySe
 	const int bypassedSplits = 1;
 	int pgs_done = 0;
 	int pgc_done = 0;
+
+	// GLOBAL: getstorage [init]
+	// GLOBAL: getstorage [max once]
+
+	// GLOBAL: postgetstorage [init]
+	// GLOBAL: postgetstorage [max once]
+
 	for (size_t i = 0; i < split->size - bypassedSplits; i++)
 	{
 		if (!test_bit (split->syncbits[i], SPLIT_FLAG_SYNC))
@@ -593,6 +603,10 @@ static int elektraGetDoUpdateWithGlobalHooks (KDB * handle, Split * split, KeySe
 		for (int p = start; p < end; ++p)
 		{
 			int ret = 0;
+
+			// GLOBAL: getstorage [foreach]
+			// GLOBAL: postgetstorage [foreach]
+
 			if (!pgs_done && (p == (STORAGE_PLUGIN + 1)) && handle->globalPlugins[POSTGETSTORAGE])
 			{
 				pgs_done = 1;
@@ -629,10 +643,14 @@ static int elektraGetDoUpdateWithGlobalHooks (KDB * handle, Split * split, KeySe
 			{
 				// Ohh, an error occurred,
 				// lets stop the process.
+				// GLOBAL: getstorage [deinit]
+				// GLOBAL: postgetstorage [deinit]
 				return -1;
 			}
 		}
 	}
+	// GLOBAL: getstorage [deinit]
+	// GLOBAL: postgetstorage [deinit]
 	return 0;
 }
 
@@ -773,7 +791,10 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 		ELEKTRA_SET_ERROR (37, parentKey, "handle or ks null pointer");
 		goto error;
 	}
-	// GLOBAL: pregetstorage
+	// GLOBAL: pregetstorage [init]
+	// GLOBAL: pregetstorage [max once]
+	// GLOBAL: pregetstorage [foreach]
+	// GLOBAL: pregetstorage [deinit]
 	if (handle->globalPlugins[PREGETSTORAGE])
 	{
 		handle->globalPlugins[PREGETSTORAGE]->kdbGet (handle->globalPlugins[PREGETSTORAGE], ks, parentKey);
@@ -813,7 +834,6 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 		goto error;
 	}
 
-	// GLOBAL: postgetstorage
 	if (handle->globalPlugins[POSTGETSTORAGE] || handle->globalPlugins[POSTGETCLEANUP])
 	{
 		clearError (parentKey);
@@ -913,11 +933,27 @@ error:
 static int elektraSetPrepare (Split * split, Key * parentKey, Key ** errorKey, Plugin ** hooks)
 {
 	int any_error = 0;
+
+	// GLOBAL: setresolver [init]
+	// GLOBAL: setresolver [max once]
+
+	// GLOBAL: presetstorage [init]
+	// GLOBAL: presetstorage [max once]
+
+	// GLOBAL: setstorage [init]
+	// GLOBAL: setstorage [max once]
+
 	for (size_t i = 0; i < split->size; i++)
 	{
 		for (size_t p = 0; p < COMMIT_PLUGIN; ++p)
 		{
 			int ret = 0; // last return value
+
+			// if (p == RESOLVER_PLUGIN)
+			// GLOBAL: setresolver [foreach]
+
+			// if (p == STORAGE_PLUGIN)
+			// GLOBAL: setstorage [foreach]
 
 			Backend * backend = split->handles[i];
 			ksRewind (split->keysets[i]);
@@ -955,9 +991,9 @@ static int elektraSetPrepare (Split * split, Key * parentKey, Key ** errorKey, P
 
 			if (p == 0)
 			{
+				// GLOBAL: presetstorage [foreach]
 				if (hooks[PRESETSTORAGE])
 				{
-					// GLOBAL: presetstorage
 					// the only place global presetstorage hooks can be executed
 					ksRewind (split->keysets[i]);
 					hooks[PRESETSTORAGE]->kdbSet (hooks[PRESETSTORAGE], split->keysets[i], parentKey);
@@ -988,6 +1024,9 @@ static int elektraSetPrepare (Split * split, Key * parentKey, Key ** errorKey, P
 			}
 		}
 	}
+	// GLOBAL: setresolver [deinit]
+	// GLOBAL: presetstorage [deinit]
+	// GLOBAL: setstorage [deinit]
 	return any_error;
 }
 
@@ -1230,19 +1269,28 @@ int kdbSet (KDB * handle, KeySet * ks, Key * parentKey)
 		copyError (parentKey, oldError);
 	}
 	keySetName (parentKey, keyName (initialParent));
-	// GLOBAL: precommit
+	// GLOBAL: precommit [init]
+	// GLOBAL: precommit [max once]
+	// GLOBAL: precommit [foreach]
+	// GLOBAL: precommit [deinit]
 	if (handle->globalPlugins[PRECOMMIT])
 	{
 		handle->globalPlugins[PRECOMMIT]->kdbSet (handle->globalPlugins[PRECOMMIT], ks, parentKey);
 	}
 
 	elektraSetCommit (split, parentKey);
-	// GLOBAL: commit
+	// GLOBAL: commit [init]
+	// GLOBAL: commit [max once]
+	// GLOBAL: commit [foreach]
+	// GLOBAL: commit [deinit]
 
 	splitUpdateSize (split);
 
 	keySetName (parentKey, keyName (initialParent));
-	// GLOBAL: postcommit
+	// GLOBAL: postcommit [init]
+	// GLOBAL: postcommit [max once]
+	// GLOBAL: postcommit [foreach]
+	// GLOBAL: postcommit [deinit]
 	if (handle->globalPlugins[POSTCOMMIT])
 	{
 		handle->globalPlugins[POSTCOMMIT]->kdbSet (handle->globalPlugins[POSTCOMMIT], ks, parentKey);
@@ -1264,14 +1312,22 @@ int kdbSet (KDB * handle, KeySet * ks, Key * parentKey)
 
 error:
 	keySetName (parentKey, keyName (initialParent));
-	// GLOBAL: prerollback
+	// GLOBAL: prerollback [init]
+	// GLOBAL: prerollback [max once]
+	// GLOBAL: prerollback [foreach]
+	// GLOBAL: prerollback [deinit]
 	if (handle->globalPlugins[PREROLLBACK])
 	{
 		handle->globalPlugins[PREROLLBACK]->kdbError (handle->globalPlugins[PREROLLBACK], ks, parentKey);
 	}
 
 	elektraSetRollback (split, parentKey);
-	// GLOBAL: rollback
+	// position for rollback seems superfluous / the same as postrollback
+	// TODO: maybe a different postition was meant in the global-plugins proposal
+	// GLOBAL: rollback [init]
+	// GLOBAL: rollback [max once]
+	// GLOBAL: rollback [foreach]
+	// GLOBAL: rollback [deinit]
 
 	if (errorKey)
 	{
@@ -1283,7 +1339,10 @@ error:
 	}
 
 	keySetName (parentKey, keyName (initialParent));
-	// GLOBAL: postrollback
+	// GLOBAL: postrollback [init]
+	// GLOBAL: postrollback [max once]
+	// GLOBAL: postrollback [foreach]
+	// GLOBAL: postrollback [deinit]
 	if (handle->globalPlugins[POSTROLLBACK])
 	{
 		handle->globalPlugins[POSTROLLBACK]->kdbError (handle->globalPlugins[POSTROLLBACK], ks, parentKey);
