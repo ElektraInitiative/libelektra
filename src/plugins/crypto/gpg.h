@@ -16,7 +16,6 @@
 #define ELEKTRA_CRYPTO_DEFAULT_GPG_BIN "/usr/bin/gpg2"
 #define ELEKTRA_CRYPTO_MESSAGE_MAX_LEN (1024)
 
-int elektraCryptoGpgCall (Key * errorKey, char * argv[], size_t argc, kdb_octet_t * input, kdb_unsigned_long_t inputBufferSize,
-			  kdb_octet_t * output, kdb_unsigned_long_t outputBufferSize, kdb_unsigned_long_t * outputLength);
+int elektraCryptoGpgCall (Key * errorKey, Key * msgKey, char * argv[], size_t argc);
 
 #endif

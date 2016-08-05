@@ -10,6 +10,7 @@
 #include "gpg.h"
 #include <assert.h>
 #include <errno.h>
+#include <kdbhelper.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -26,24 +27,22 @@ static void closePipe (int * pipe)
  * @brief call the gpg binary to perform the requested operation.
  *
  * @param errorKey holds the error description in case of failure
+ * @param msgKey holds the message to be transformed
  * @param argv array holds the arguments passed on to the gpg process
  * @param argc contains the number of elements in argv, i.e. the size of argv
- * @param input buffer containing the content to be passed on to the gpg process
- * @param inputBufferSize is the allocated size of the input buffer
- * @param output buffer where the output of gpg is written to
- * @param outputBufferSize is the allocated size of the output buffer
- * @param outputLength is the actual number of bytes read from the gpg output. If set to NULL it will be ignored.
  *
  * @retval 1 on success
  * @retval -1 on failure
  */
-int elektraCryptoGpgCall (Key * errorKey, char * argv[], size_t argc, kdb_octet_t * input, kdb_unsigned_long_t inputBufferSize,
-			  kdb_octet_t * output, kdb_unsigned_long_t outputBufferSize, kdb_unsigned_long_t * outputLength)
+int elektraCryptoGpgCall (Key * errorKey, Key * msgKey, char * argv[], size_t argc)
 {
 	pid_t pid;
 	int status;
 	int pipe_stdin[2];
 	int pipe_stdout[2];
+	kdb_octet_t * buffer = NULL;
+	const ssize_t bufferSize = 2 * keyGetValueSize (msgKey);
+	ssize_t outputLen;
 
 	assert (argc > 1);
 
@@ -61,6 +60,16 @@ int elektraCryptoGpgCall (Key * errorKey, char * argv[], size_t argc, kdb_octet_
 		return -1;
 	}
 
+	// allocate buffer for gpg output
+	// estimated maximum output size = 2 * input (including headers, etc.)
+	if (!(buffer = elektraMalloc (bufferSize)))
+	{
+		closePipe (pipe_stdin);
+		closePipe (pipe_stdout);
+		// TODO append errorKey
+		return -1;
+	}
+
 	// sanitize the argument vector
 	argv[0] = ELEKTRA_CRYPTO_DEFAULT_GPG_BIN;
 	argv[argc - 1] = NULL;
@@ -73,6 +82,7 @@ int elektraCryptoGpgCall (Key * errorKey, char * argv[], size_t argc, kdb_octet_
 		// TODO append errorKey
 		closePipe (pipe_stdin);
 		closePipe (pipe_stdout);
+		elektraFree (buffer);
 		return -1;
 
 	case 0:
@@ -105,7 +115,7 @@ int elektraCryptoGpgCall (Key * errorKey, char * argv[], size_t argc, kdb_octet_
 	close (pipe_stdout[1]);
 
 	// pass the message to the gpg process
-	write (pipe_stdin[1], input, inputBufferSize);
+	write (pipe_stdin[1], keyValue (msgKey), keyGetValueSize (msgKey));
 	close (pipe_stdin[1]);
 
 	// wait for the gpg process to finish
@@ -114,16 +124,11 @@ int elektraCryptoGpgCall (Key * errorKey, char * argv[], size_t argc, kdb_octet_
 	// receive the output of the gpg process
 	if (status == 0)
 	{
-		if (outputLength)
-		{
-			*outputLength = read (pipe_stdout[0], output, outputBufferSize);
-		}
-		else
-		{
-			read (pipe_stdout[0], output, outputBufferSize);
-		}
+		outputLen = read (pipe_stdout[0], buffer, bufferSize);
+		keySetBinary (msgKey, buffer, outputLen);
 	}
 	close (pipe_stdout[0]);
+	elektraFree (buffer);
 
 	if (status != 0)
 	{
