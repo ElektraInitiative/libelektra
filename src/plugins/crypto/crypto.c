@@ -20,6 +20,7 @@
 #ifdef ELEKTRA_CRYPTO_API_BOTAN
 #include "botan_operations.h"
 #endif
+#include "gpg.h"
 #include <kdb.h>
 #include <kdberrors.h>
 #include <kdbtypes.h>
@@ -391,11 +392,13 @@ int CRYPTO_PLUGIN_FUNCTION (checkconf) (Key * errorKey, KeySet * conf)
 			return -1;
 		}
 
-		// TODO call gpg module to encrypt the master password
-
 		// store password in configuration
 		k = keyNew ("user/" ELEKTRA_CRYPTO_PARAM_MASTER_PWD, KEY_END);
 		keySetString (k, r);
+		if (elektraCryptoGpgEncryptMasterPassword (conf, errorKey, k) != 1)
+		{
+			return -1;
+		}
 		ksAppendKey (conf, k);
 		return 1;
 	}
