@@ -10,6 +10,7 @@
 #include "gpg.h"
 #include <assert.h>
 #include <errno.h>
+#include <kdberrors.h>
 #include <kdbhelper.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -23,9 +24,32 @@ static void closePipe (int * pipe)
 	close (pipe[1]);
 }
 
+static char * getGpgBinary (KeySet * conf)
+{
+	return ELEKTRA_CRYPTO_DEFAULT_GPG_BIN;
+}
+
+/**
+ * @brief call the gpg binary to encrypt the random master password r.
+ *
+ * @param conf holds the backend/plugin configuration
+ * @param errorKey holds the error description in case of failure
+ * @param msgKey holds the master password to be encrypted
+ *
+ * @retval 1 on success
+ * @retval -1 on failure
+ */
+int elektraCryptoGpgEncryptMasterPassword (KeySet * conf, Key * errorKey, Key * msgKey)
+{
+	char * argv[] = { "", "-r", "859E2AD7", "-e", NULL };
+	// TODO use conf to determine the recipient
+	return elektraCryptoGpgCall (conf, errorKey, msgKey, argv, 5);
+}
+
 /**
  * @brief call the gpg binary to perform the requested operation.
  *
+ * @param conf holds the backend/plugin configuration
  * @param errorKey holds the error description in case of failure
  * @param msgKey holds the message to be transformed
  * @param argv array holds the arguments passed on to the gpg process
@@ -34,7 +58,7 @@ static void closePipe (int * pipe)
  * @retval 1 on success
  * @retval -1 on failure
  */
-int elektraCryptoGpgCall (Key * errorKey, Key * msgKey, char * argv[], size_t argc)
+int elektraCryptoGpgCall (KeySet * conf, Key * errorKey, Key * msgKey, char * argv[], size_t argc)
 {
 	pid_t pid;
 	int status;
@@ -47,15 +71,15 @@ int elektraCryptoGpgCall (Key * errorKey, Key * msgKey, char * argv[], size_t ar
 	assert (argc > 1);
 
 	// initialize pipes
-	if (!pipe (pipe_stdin))
+	if (pipe (pipe_stdin))
 	{
-		// TODO append errorKey
+		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_CRYPTO_GPG_FAULT, errorKey, "Pipe initialization failed");
 		return -1;
 	}
 
-	if (!pipe (pipe_stdout))
+	if (pipe (pipe_stdout))
 	{
-		// TODO append errorKey
+		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_CRYPTO_GPG_FAULT, errorKey, "Pipe initialization failed");
 		closePipe (pipe_stdin);
 		return -1;
 	}
@@ -64,14 +88,14 @@ int elektraCryptoGpgCall (Key * errorKey, Key * msgKey, char * argv[], size_t ar
 	// estimated maximum output size = 2 * input (including headers, etc.)
 	if (!(buffer = elektraMalloc (bufferSize)))
 	{
+		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_CRYPTO_GPG_FAULT, errorKey, "Memory allocation failed");
 		closePipe (pipe_stdin);
 		closePipe (pipe_stdout);
-		// TODO append errorKey
 		return -1;
 	}
 
 	// sanitize the argument vector
-	argv[0] = ELEKTRA_CRYPTO_DEFAULT_GPG_BIN;
+	argv[0] = getGpgBinary (conf);
 	argv[argc - 1] = NULL;
 
 	// fork into the gpg binary
@@ -79,7 +103,7 @@ int elektraCryptoGpgCall (Key * errorKey, Key * msgKey, char * argv[], size_t ar
 	{
 	case -1:
 		// fork() failed
-		// TODO append errorKey
+		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_CRYPTO_GPG_FAULT, errorKey, "fork failed");
 		closePipe (pipe_stdin);
 		closePipe (pipe_stdout);
 		elektraFree (buffer);
@@ -102,9 +126,9 @@ int elektraCryptoGpgCall (Key * errorKey, Key * msgKey, char * argv[], size_t ar
 
 		// finally call the gpg executable
 		// TODO make gpg binary configurable
-		if (execv (ELEKTRA_CRYPTO_DEFAULT_GPG_BIN, argv) < 0)
+		if (execv (argv[0], argv) < 0)
 		{
-			// TODO append errorKey
+			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CRYPTO_GPG_FAULT, errorKey, "failed to start the gpg binary: %s", argv[0]);
 			return -1;
 		}
 		// end of the child process
@@ -133,7 +157,7 @@ int elektraCryptoGpgCall (Key * errorKey, Key * msgKey, char * argv[], size_t ar
 	if (status != 0)
 	{
 		// gpg exited with an error
-		// TODO append errorKey
+		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CRYPTO_GPG_FAULT, errorKey, "GPG returned %d", status);
 		return -1;
 	}
 	return 1;
