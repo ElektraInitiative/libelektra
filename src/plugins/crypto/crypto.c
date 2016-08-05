@@ -397,6 +397,7 @@ int CRYPTO_PLUGIN_FUNCTION (checkconf) (Key * errorKey, KeySet * conf)
 		keySetString (k, r);
 		if (elektraCryptoGpgEncryptMasterPassword (conf, errorKey, k) != 1)
 		{
+			keyDel (k);
 			return -1;
 		}
 		ksAppendKey (conf, k);
