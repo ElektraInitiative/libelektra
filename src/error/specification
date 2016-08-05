@@ -902,3 +902,10 @@ macro:CRYPTO_RANDOM_GEN_FAULT
 ingroup:plugin
 module:crypto
 severity:error
+
+number:150
+description:Error in the GPG module.
+macro:CRYPTO_GPG_FAULT
+ingroup:plugin
+module:crypto
+severity:error
