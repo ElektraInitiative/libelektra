@@ -42,14 +42,7 @@ static int validatepwent (struct passwd * pwd)
 	if (pwd->pw_gid == (gid_t)-1) return -1;
 	if (!pwd->pw_gecos) return -1;
 	if (!pwd->pw_dir) return -1;
-	if (strlen (pwd->pw_dir) == 0) return -1;
-	struct stat home;
-	if (stat (pwd->pw_dir, &home)) return -1;
-	if ((!S_ISDIR (home.st_mode)) && (!S_ISLNK (home.st_mode))) return -1;
 	if (!pwd->pw_shell) return -1;
-	if (strlen (pwd->pw_shell) == 0) return -1;
-	struct stat shell;
-	if (stat (pwd->pw_shell, &shell)) return -1;
 	return 0;
 }
 
@@ -250,11 +243,11 @@ static int writeKS (KeySet * returned, Key * parentKey, SortBy index)
 		}
 		else
 		{
-#ifndef HAS_PUTPWENT
+#if HAS_PUTPWENT
+			putpwent (pwd, pwfile);
+#else
 			fprintf (pwfile, "%s:%s:%u:%u:%s:%s:%s\n", pwd->pw_name, pwd->pw_passwd, pwd->pw_uid, pwd->pw_gid, pwd->pw_gecos,
 				 pwd->pw_dir, pwd->pw_shell);
-#else
-			putpwent (pwd, pwfile);
 #endif
 		}
 		elektraFree (pwd);
