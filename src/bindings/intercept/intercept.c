@@ -94,6 +94,17 @@ static char * createAbsolutePath (const char * path, const char * cwd)
 	}
 }
 
+static const char * genTemporaryFilename (void)
+{
+	struct timeval tv;
+	gettimeofday (&tv, 0);
+	const char * fileName = "/tmp/.elektra_generated";
+	size_t len = strlen (fileName) + TV_MAX_DIGITS + 1;
+	char * tmpFile = elektraCalloc (len);
+	snprintf (tmpFile, len, "%s_%lu:%lu", fileName, tv.tv_sec, tv.tv_usec);
+	return tmpFile;
+}
+
 static void init (void) __attribute__ ((constructor));
 static void cleanup (void) __attribute__ ((destructor));
 void init ()
@@ -116,7 +127,10 @@ void init ()
 		if (!keyIsDirectBelow (parentKey, key)) continue;
 		Node * tmp = calloc (1, sizeof (Node));
 		tmp->key = createAbsolutePath (keyBaseName (key), cwd);
-		tmp->value = createAbsolutePath (keyString (key), cwd);
+		if (!strcmp (keyString (key), ""))
+			tmp->value = NULL;
+		else
+			tmp->value = createAbsolutePath (keyString (key), cwd);
 		tmp->oflags = (unsigned short)-1;
 		Key * lookupKey = keyDup (key);
 		keyAddBaseName (lookupKey, "readonly");
@@ -133,6 +147,7 @@ void init ()
 		found = ksLookup (ks, lookupKey, 0);
 		if (found)
 		{
+			if (tmp->value == NULL) tmp->value = genTemporaryFilename ();
 			tmp->exportKey = strdup (keyString (found));
 			keyAddBaseName (lookupKey, "plugin");
 			found = ksLookup (ks, lookupKey, 0);
@@ -152,6 +167,7 @@ void init ()
 			tmp->exportType = NULL;
 		}
 		keyDel (lookupKey);
+		if (tmp->value == NULL) tmp->value = createAbsolutePath (keyBaseName (key), cwd);
 		tmp->next = NULL;
 		if (current == NULL)
 		{
@@ -180,7 +196,7 @@ void cleanup ()
 	{
 		Node * tmp = current;
 		free (current->key);
-		free (current->value);
+		if (current->value) free (current->value);
 		if (current->exportKey)
 		{
 			free (current->exportKey);
