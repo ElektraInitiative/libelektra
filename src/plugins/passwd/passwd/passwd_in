@@ -1,0 +1,5 @@
+bin:x:128:128:bin:/bin:/usr/sbin/nologin
+daemon:x:64:64:daemon:/usr/sbin:/usr/sbin/nologin
+root:x:32:32:root:/root:/bin/zsh
+sync:x:512:512:sync:/bin:/bin/sync
+sys:x:256:256:sys:/dev:/usr/sbin/nologin

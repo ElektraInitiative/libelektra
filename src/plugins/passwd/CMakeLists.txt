@@ -12,4 +12,5 @@ add_plugin (passwd
 	passwd.h
 	passwd.c
     ADD_TEST
+    INSTALL_TEST_DATA
     )

@@ -170,6 +170,7 @@ static int writeKS (KeySet * returned, Key * parentKey, SortBy index)
 		return -1;
 	}
 	Key * cur;
+	ksRewind (returned);
 	while ((cur = ksNext (returned)) != NULL)
 	{
 		if (!keyIsDirectBelow (parentKey, cur)) continue;
