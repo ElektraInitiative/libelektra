@@ -11,7 +11,11 @@
 
 ## Introduction ##
 
-This plugin parses `passwd` files, e.g. `/etc/passwd`. If present, the not-posix complient `fgetpwent` function will be used to read the file supplied by the resolver, if not, `getpwent` will be used. For writing, if present, `putpwent` will be used, if not a simple implementation writing straight to the config file.
+This plugin parses `passwd` files, e.g. `/etc/passwd`. 
+
+## Implementation Details ##
+
+If present, the not-posix complient `fgetpwent` function will be used to read the file supplied by the resolver, if not, `getpwent` will be used. For writing, if present, `putpwent` will be used, if not a simple implementation writing straight to the config file.
 
 ## Configuration ##
 
@@ -19,12 +23,12 @@ If the config key `index` is set to `name` passwd entrys will be sorted by name,
 
 ## Fields ##
 
-`gecos` contains the full name of the account
-`gid` contains the accounts primary group id
-`home` contains the path to the accounts home directoy
-`shell` contains the accounts default shell
-`uid` contains the accounts uid
-`name` contains the account name
+- `gecos` contains the full name of the account
+- `gid` contains the accounts primary group id
+- `home` contains the path to the accounts home directoy
+- `shell` contains the accounts default shell
+- `uid` contains the accounts uid
+- `name` contains the account name
 
 ## Usage ##
 

@@ -16,6 +16,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/stat.h>
 
 #define ID_MAX_CHARACTERS 11
 
@@ -23,6 +24,34 @@ typedef enum {
 	NAME,
 	UID,
 } SortBy;
+
+static int validatepwent (struct passwd * pwd)
+{
+	if (!pwd->pw_name) return -1;
+	if (strlen (pwd->pw_name) == 0) return -1;
+	if (pwd->pw_name[0] == '-') // Posix.1-208 3.431 User Name
+		return -1;
+	const char * invalidCharacters =
+		"\/:;<=>?@[\\]^`"; // POSIX.1-2008 3.278 Portable File Character Set - invalid characters > 45 && <= 122
+	for (char * ptr = pwd->pw_name; *ptr != '\0'; ++ptr)
+	{
+		if ((*ptr < 45) || (*ptr > 122) || (strchr (invalidCharacters, *ptr) != NULL)) return -1;
+	}
+	if (!pwd->pw_passwd) return -1;
+	if (pwd->pw_uid == (uid_t)-1) return -1;
+	if (pwd->pw_gid == (gid_t)-1) return -1;
+	if (!pwd->pw_gecos) return -1;
+	if (!pwd->pw_dir) return -1;
+	if (strlen (pwd->pw_dir) == 0) return -1;
+	struct stat home;
+	if (stat (pwd->pw_dir, &home)) return -1;
+	if (!S_ISDIR (home.st_mode) || !S_ISLNK (home.st_mode)) return -1;
+	if (!pwd->pw_shell) return -1;
+	if (strlen (pwd->pw_shell) == 0) return -1;
+	struct stat shell;
+	if (stat (pwd->pw_shell, &shell)) return -1;
+	return 0;
+}
 
 static KeySet * pwentToKS (struct passwd * pwd, Key * parentKey, SortBy index)
 {
@@ -134,28 +163,65 @@ static struct passwd * KStoPasswd (KeySet * ks, SortBy index)
 	ksRewind (ks);
 	Key * parent = ksNext (ks);
 	Key * lookup = keyDup (parent);
+	Key * found = NULL;
 	if (index == UID)
 	{
-		pwd->pw_uid = atoi (keyBaseName (ksLookup (ks, parent, 0)));
+		found = ksLookup (ks, parent, 0);
+		if (!found)
+			pwd->pw_uid = (uid_t)-1;
+		else
+			pw_uid = atoi (keyBaseName (found));
 		keyAddBaseName (lookup, "name");
-		pwd->pw_name = (char *)keyString (ksLookup (ks, lookup, 0));
+		found = ksLookup (ks, lookup, 0);
+		if (!found)
+			pwd->pw_name = NULL;
+		else
+			pwd->pw_name = (char *)keyString (found);
 	}
 	else
 	{
-		pwd->pw_name = (char *)keyBaseName (ksLookup (ks, parent, 0));
+		found = ksLookup (ks, parent, 0);
+		if (!found)
+			pwd->pw_name = NULL;
+		else
+			pwd->pw_name = (char *)keyBaseName (found);
 		keyAddBaseName (lookup, "uid");
-		pwd->pw_uid = atoi (keyString (ksLookup (ks, lookup, 0)));
+		found = ksLookup (ks, lookup, 0);
+		if (!found)
+			pwd->pw_uid = (uid_t)-1;
+		else
+			pwd->pw_uid = atoi (keyString (found));
 	}
 	keySetBaseName (lookup, "shell");
-	pwd->pw_shell = (char *)keyString (ksLookup (ks, lookup, 0));
+	found = ksLookup (ks, lookup, 0);
+	if (!found)
+		pwd->shell = NULL;
+	else
+		pwd->pw_shell = (char *)keyString (found);
 	keySetBaseName (lookup, "gid");
-	pwd->pw_gid = atoi (keyString (ksLookup (ks, lookup, 0)));
+	found = ksLookup (ks, lookup, 0);
+	if (!found)
+		pwd->pw_gid = (gid_t)-1;
+	else
+		pwd->pw_gid = atoi (keyString (found));
 	keySetBaseName (lookup, "home");
-	pwd->pw_dir = (char *)keyString (ksLookup (ks, lookup, 0));
+	found = ksLookup (ks, lookup, 0);
+	if (!found)
+		pwd->pw_dir = NULL;
+	else
+		pwd->pw_dir = (char *)keyString (found);
 	keySetBaseName (lookup, "gecos");
-	pwd->pw_gecos = (char *)keyString (ksLookup (ks, lookup, 0));
+	found = ksLookup (ks, lookup, 0);
+	if (!found)
+		pwd->pw_gecos = "";
+	else
+		pwd->pw_gecos = (char *)keyString (found);
 	keySetBaseName (lookup, "passwd");
-	pwd->pw_passwd = (char *)keyString (ksLookup (ks, lookup, 0));
+	found = ksLookup (ks, lookup, 0);
+	if (!found)
+		pwd->pw_passwd = "";
+	else
+		pwd->pw_passwd = (char *)keyString (found);
 	keyDel (parent);
 	keyDel (lookup);
 	return pwd;
@@ -176,12 +242,21 @@ static int writeKS (KeySet * returned, Key * parentKey, SortBy index)
 		if (!keyIsDirectBelow (parentKey, cur)) continue;
 		KeySet * cutKS = ksCut (returned, cur);
 		struct passwd * pwd = KStoPasswd (cutKS, index);
+		if (validatepwent (pwd) == -1)
+		{
+			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_PASSWD_VALIDATION_ERROR, parentKey, "Invalid passwd entry %s:%s:%u:%u:%s:%s:%s\n",
+					    pwd->pw_name, pwd->pw_passwd, pwd->pw_uid, pwd->pw_gid, pwd->pw_gecos, pwd->pw_dir,
+					    pwd->pw_shell);
+		}
+		else
+		{
 #ifndef HAS_PUTPWENT
-		fprintf (pwfile, "%s:%s:%u:%u:%s:%s:%s\n", pwd->pw_name, pwd->pw_passwd, pwd->pw_uid, pwd->pw_gid, pwd->pw_gecos,
-			 pwd->pw_dir, pwd->pw_shell);
+			fprintf (pwfile, "%s:%s:%u:%u:%s:%s:%s\n", pwd->pw_name, pwd->pw_passwd, pwd->pw_uid, pwd->pw_gid, pwd->pw_gecos,
+				 pwd->pw_dir, pwd->pw_shell);
 #else
-		putpwent (pwd, pwfile);
+			putpwent (pwd, pwfile);
 #endif
+		}
 		elektraFree (pwd);
 		ksAppend (returned, cutKS);
 		ksDel (cutKS);
