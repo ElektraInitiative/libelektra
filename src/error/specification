@@ -894,4 +894,4 @@ description:validaten of passwd entry failed
 severity:error
 ingroup:plugin
 module:passwd
-macor:PASSWD_VALIDATION_ERROR
+macro:PASSWD_VALIDATION_ERROR

@@ -51,7 +51,7 @@ void test_write ()
 void test_read_write ()
 {
 	Key * parentKeyRead = keyNew ("user/tests/passwd-write", KEY_VALUE, srcdir_file ("passwd/passwd_in"), KEY_END);
-	Key * parentKeyWrite = keyNew ("user/tests/passwd-write", KEY_VALUE, "/tmp/passwd_out", KEY_END); // elektraFilename(), KEY_END);
+	Key * parentKeyWrite = keyNew ("user/tests/passwd-write", KEY_VALUE, elektraFilename (), KEY_END);
 	KeySet * conf = ksNew (10, keyNew ("system/index", KEY_VALUE, "name", KEY_END), KS_END);
 	PLUGIN_OPEN ("passwd");
 	KeySet * ks = ksNew (0, KS_END);

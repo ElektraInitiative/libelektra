@@ -32,7 +32,7 @@ static int validatepwent (struct passwd * pwd)
 	if (pwd->pw_name[0] == '-') // Posix.1-208 3.431 User Name
 		return -1;
 	const char * invalidCharacters =
-		"\/:;<=>?@[\\]^`"; // POSIX.1-2008 3.278 Portable File Character Set - invalid characters > 45 && <= 122
+		"/:;<=>?@[\\]^`"; // POSIX.1-2008 3.278 Portable File Character Set - invalid characters > 45 && <= 122
 	for (char * ptr = pwd->pw_name; *ptr != '\0'; ++ptr)
 	{
 		if ((*ptr < 45) || (*ptr > 122) || (strchr (invalidCharacters, *ptr) != NULL)) return -1;
@@ -45,7 +45,7 @@ static int validatepwent (struct passwd * pwd)
 	if (strlen (pwd->pw_dir) == 0) return -1;
 	struct stat home;
 	if (stat (pwd->pw_dir, &home)) return -1;
-	if (!S_ISDIR (home.st_mode) || !S_ISLNK (home.st_mode)) return -1;
+	if ((!S_ISDIR (home.st_mode)) && (!S_ISLNK (home.st_mode))) return -1;
 	if (!pwd->pw_shell) return -1;
 	if (strlen (pwd->pw_shell) == 0) return -1;
 	struct stat shell;
@@ -134,7 +134,7 @@ int elektraPasswdGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_
 	else
 		index = UID;
 	struct passwd * pwd;
-#ifdef HAS_FGETPWENT
+#if HAS_FGETPWENT
 	FILE * pwfile = fopen (keyString (parentKey), "r");
 	if (!pwfile)
 	{
@@ -151,7 +151,7 @@ int elektraPasswdGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_
 		ksDel (ks);
 	}
 	endpwent ();
-#ifdef HAS_FGETPWENT
+#if HAS_FGETPWENT
 	fclose (pwfile);
 #endif
 	return 1; // success
@@ -170,7 +170,7 @@ static struct passwd * KStoPasswd (KeySet * ks, SortBy index)
 		if (!found)
 			pwd->pw_uid = (uid_t)-1;
 		else
-			pw_uid = atoi (keyBaseName (found));
+			pwd->pw_uid = atoi (keyBaseName (found));
 		keyAddBaseName (lookup, "name");
 		found = ksLookup (ks, lookup, 0);
 		if (!found)
@@ -195,7 +195,7 @@ static struct passwd * KStoPasswd (KeySet * ks, SortBy index)
 	keySetBaseName (lookup, "shell");
 	found = ksLookup (ks, lookup, 0);
 	if (!found)
-		pwd->shell = NULL;
+		pwd->pw_shell = NULL;
 	else
 		pwd->pw_shell = (char *)keyString (found);
 	keySetBaseName (lookup, "gid");
