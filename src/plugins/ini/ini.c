@@ -712,6 +712,7 @@ int elektraIniGet (Plugin * handle, KeySet * returned, Key * parentKey)
 		ksAppend (returned, cbHandle.result);
 		if (pluginConfig->sectionHandling == ALWAYS)
 		{
+			if (pluginConfig->oldKS) ksDel (pluginConfig->oldKS);
 			pluginConfig->oldKS = ksDup (returned);
 		}
 		elektraPluginSetData (handle, pluginConfig);
