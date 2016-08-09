@@ -129,6 +129,5 @@ int elektraLog (int module ELEKTRA_UNUSED, int level ELEKTRA_UNUSED, const char 
 		va_end (args);
 	}
 #endif
-	// TODO: add logging to file
 	return ret;
 }
