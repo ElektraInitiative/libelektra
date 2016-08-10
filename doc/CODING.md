@@ -60,29 +60,37 @@ Up-to-date code comments are essential to make code understandable for others.
 1. Ideally you should use assertions to state what should be true at a specific
    position in the code. Their syntax is checked and they are automatically
    verified at run-time. So they are not only useful for people reading the
-   code.
+   code:
+
    ```c
    #include <kdbassert.h>
    ELEKTRA_ASSERT (condition, "text to be printed when assert fails", ...)
    ```
+
 2. If the "comment" might be useful to be printed during execution, use logging.
    First introduce your module `modulename` in `kdblog.h`.
    Then you can use it:
+
    ```c
    #define ELEKTRA_LOG_MODULE modulename
    #include <kdblog.h>
    ELEKTRA_LOG ("text to be printed according log filters", ...)
    ```
+
    Or if multiple modules are intermixed in the same file:
+
    ```c
    #include <kdblog.h>
    ELEKTRA_LOG (modulename, "text to be printed according log filters", ...)
    ```
 
 3. Prefer to comment functions with Doxygen, see below.
+
 4. Prefer to introduce variables and functions with good names that make the
    purpose clear.
+
 5. Otherwise comment with `//`.
+
 
 
 
