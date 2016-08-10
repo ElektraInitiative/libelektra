@@ -114,6 +114,8 @@ Information compiled in Elektra:
   core so that it cannot give wrong version information
 - [constants](constants/) various constants, including version
   information
+- [desktop](desktop/) contains information which desktop is
+  currently running
 
 Providing information found on the system not available in persistent
 files:

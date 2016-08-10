@@ -12,4 +12,5 @@ fi
 
 $KDB mount --resolver noresolver none $MOUNTPOINT/constants constants
 $KDB mount --resolver noresolver none $MOUNTPOINT/uname uname
+$KDB mount --resolver noresolver none $MOUNTPOINT/desktop desktop
 

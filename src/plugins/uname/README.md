@@ -1,7 +1,7 @@
 - infos = Information about the uname plugin is in keys below
 - infos/author = Markus Raab <elektra@libelektra.org>
 - infos/licence = BSD
-- infos/provides = storage
+- infos/provides = storage info
 - infos/needs =
 - infos/placements = getstorage setstorage
 - infos/status = maintained unittest shelltest concept
