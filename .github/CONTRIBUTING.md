@@ -5,6 +5,14 @@ or README.md can be done without any further considerations!
 Simply do the fixes in your cloned repo and create a pull request.
 
 
+## Issues
+
+If you have any questions you can ask them using
+[github issue](https://github.com/ElektraInitiative/libelektra/issues/new).
+Simply ignore the template in this case.
+
+
+
 ## Code
 
 Before you issue a pull request that modifies code:
@@ -20,5 +28,5 @@ Before you start making fundamental changes:
 
 - Propose it by creating a [github issue](https://github.com/ElektraInitiative/libelektra/issues/new)
   for discussions.
-- Create a [decisions](/doc/decisions/README.md) describing you want to do
-  to keep the discussion more efficient.
+- Create a [decision](/doc/decisions/README.md) describing you want to do
+  to keep the discussion more efficient and architecture documented.
