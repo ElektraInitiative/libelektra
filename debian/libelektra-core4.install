@@ -64,3 +64,4 @@ usr/lib/elektra4/libelektra-profile.so*
 usr/lib/elektra4/libelektra-dpkg.so*
 usr/lib/elektra4/libelektra-shell.so*
 usr/lib/elektra4/libelektra-curlget.so*
+usr/lib/elektra4/libelektra-desktop.so*
