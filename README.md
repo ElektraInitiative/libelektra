@@ -248,7 +248,7 @@ For wheezy:
 
 
 
-## Develop ##
+## Contributing ##
 
 To start development, just clone the repo and start hacking!
 We prepared [beginner friendly tasks](https://github.com/ElektraInitiative/libelektra/issues?q=is%3Aissue+is%3Aopen+label%3A%22beginner+friendly%22)
@@ -256,13 +256,8 @@ for you.
 
 - We encourage you to improve documentation, especially the README.md
   as if they were a webpage.
-- You should read the [coding document](doc/CODING.md) before you issue a
-  pull request.
-- Make yourself familiar with the [KeySet](/doc/help/elektra-data-structures.md)
-  (also in the [API docu](http://doc.libelektra.org/api/latest/html/group__keyset.html))
-  the central data structure in Elektra.
-- You should read the [design document](doc/DESIGN.md) before you make
-  design relevant decisions.
 - In the source code, you should look into [libs](src/libs/) and [plugins](/src/plugins/).
 - You can always peek into the [TODOs](doc/todo), if you don't know
   what to do.
+- You should read the [CONTRIBUTING](.github/CONTRIBUTING.md) before you issue a
+  pull request.
