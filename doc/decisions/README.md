@@ -35,3 +35,4 @@ section here.
 - [Script Testing](script_testing.md)
 - [Null Pointer Checks](null_pointer_checks.md)
 - [Publish Subscribe](pubsub.md)
+- [Global Validation](global_validation.md)

@@ -18,6 +18,9 @@ with the respective `kdbGet`.
   1. first do `kdbGet` on the `spec/`-namespace
   2. then calculate which backends are needed
   3. then fetch all backends as needed
+- split loops in `kdbGet` not only according placements
+  but also according namespace (get spec first)
+
 
 ## Decision
 
