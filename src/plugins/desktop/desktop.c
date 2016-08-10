@@ -9,8 +9,8 @@
 
 #include "desktop.h"
 
-#include <stdlib.h> // for getenv
-#include <ctype.h> // for tolower
+#include <ctype.h>   // for tolower
+#include <stdlib.h>  // for getenv
 #include <strings.h> // for strcasecmp
 
 #include <kdbhelper.h>
@@ -67,16 +67,16 @@ int elektraDesktopGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA
 	{
 		ksAppendKey (returned, keyNew (keyName (parentKey), KEY_VALUE, "tde", KEY_END));
 	}
-	else if (!strcasecmp(getenv("DESKTOP_SESSION"), "unity") )
+	else if (!strcasecmp (getenv ("DESKTOP_SESSION"), "unity"))
 	{
 		ksAppendKey (returned, keyNew (keyName (parentKey), KEY_VALUE, "unity", KEY_END));
 	}
-	else if ((desktop = getenv("XDG_CURRENT_DESKTOP")))
+	else if ((desktop = getenv ("XDG_CURRENT_DESKTOP")))
 	{
 		char * str = elektraStrDup (desktop);
-		for(int i = 0; str[i]; i++)
+		for (int i = 0; str[i]; i++)
 		{
-			str[i] = tolower(str[i]);
+			str[i] = tolower (str[i]);
 		}
 		ksAppendKey (returned, keyNew (keyName (parentKey), KEY_VALUE, str, KEY_END));
 		elektraFree (str);
