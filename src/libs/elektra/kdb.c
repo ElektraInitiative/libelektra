@@ -450,11 +450,11 @@ static int elektraGetCheckUpdateNeeded (Split * split, Key * parentKey)
 	int updateNeededOccurred = 0;
 	for (size_t i = 0; i < split->size; i++)
 	{
-		int ret = 0;
+		int ret = -1;
 		Backend * backend = split->handles[i];
 		clear_bit (split->syncbits[i], 1);
 
-		if (backend->getplugins[RESOLVER_PLUGIN])
+		if (backend->getplugins[RESOLVER_PLUGIN] && backend->getplugins[RESOLVER_PLUGIN]->kdbGet)
 		{
 			ksRewind (split->keysets[i]);
 			keySetName (parentKey, keyName (split->parents[i]));
@@ -466,6 +466,8 @@ static int elektraGetCheckUpdateNeeded (Split * split, Key * parentKey)
 			// no keys in that backend
 			elektraBackendUpdateSize (backend, split->parents[i], 0);
 		}
+		// TODO: set error in else case!
+
 		switch (ret)
 		{
 		case 1:
@@ -512,7 +514,8 @@ static int elektraGetDoUpdate (Split * split, Key * parentKey)
 		for (size_t p = 1; p < NR_OF_PLUGINS; ++p)
 		{
 			int ret = 0;
-			if (backend->getplugins[p])
+			// TODO backend->getplugins[p]->kdbGet should be assert
+			if (backend->getplugins[p] && backend->getplugins[p]->kdbGet)
 			{
 				ret = backend->getplugins[p]->kdbGet (backend->getplugins[p], split->keysets[i], parentKey);
 			}
@@ -578,7 +581,8 @@ static int elektraGetDoUpdateWithGlobalHooks (KDB * handle, Split * split, KeySe
 				keySetName (parentKey, keyName (split->parents[i]));
 			}
 
-			if (backend->getplugins[p])
+			// TODO backend->getplugins[p]->kdbGet should be assert
+			if (backend->getplugins[p] && backend->getplugins[p]->kdbGet)
 			{
 				if (p <= STORAGE_PLUGIN)
 				{
@@ -836,7 +840,7 @@ static int elektraSetPrepare (Split * split, Key * parentKey, Key ** errorKey, P
 
 			Backend * backend = split->handles[i];
 			ksRewind (split->keysets[i]);
-			if (backend->setplugins[p])
+			if (backend->setplugins[p] && backend->setplugins[p]->kdbSet)
 			{
 				if (p != 0)
 				{
@@ -921,7 +925,7 @@ static void elektraSetCommit (Split * split, Key * parentKey)
 			int ret = 0;
 			Backend * backend = split->handles[i];
 
-			if (backend->setplugins[p])
+			if (backend->setplugins[p] && backend->setplugins[p]->kdbSet)
 			{
 				if (p != COMMIT_PLUGIN)
 				{
