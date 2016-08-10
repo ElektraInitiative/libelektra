@@ -13,12 +13,7 @@
 #include <kdbplugin.h>
 
 
-int elektraDesktopOpen (Plugin * handle, Key * errorKey);
-int elektraDesktopClose (Plugin * handle, Key * errorKey);
 int elektraDesktopGet (Plugin * handle, KeySet * ks, Key * parentKey);
-int elektraDesktopSet (Plugin * handle, KeySet * ks, Key * parentKey);
-int elektraDesktopError (Plugin * handle, KeySet * ks, Key * parentKey);
-int elektraDesktopCheckConfig (Key * errorKey, KeySet * conf);
 
 Plugin * ELEKTRA_PLUGIN_EXPORT (desktop);
 
