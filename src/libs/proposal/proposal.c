@@ -301,6 +301,12 @@ int keyRel2 (const Key * key, const Key * check, KeyRelType which)
 	elektraNamespace keyNamespace = keyGetNamespace (key);
 	elektraNamespace checkNamespace = keyGetNamespace (check);
 	int retVal = 0;
+	int bits = 0;
+	for (KeyRelType type = 1; type != 0; type <<= 1)
+	{
+		if (type & which) ++bits;
+	}
+	if (bits != 1) return -1;
 	switch (which)
 	{
 	case ELEKTRA_REL_BELOW_SAME_NS:
