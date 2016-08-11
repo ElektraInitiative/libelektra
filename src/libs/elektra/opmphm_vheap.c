@@ -9,8 +9,8 @@
  * @ingroup vheap
  * @param comp the comparison function of the heap
  * @param minSize the minimum size of the heap
- * @return a Vheap pointer
- * @return NULL error
+ * @retval a Vheap pointer
+ * @retval NULL error
  */
 Vheap * elektraVheapInit (VheapComp comp, size_t minSize)
 {
@@ -34,13 +34,14 @@ Vheap * elektraVheapInit (VheapComp comp, size_t minSize)
  * Checks if the heap is empty.
  *
  * @ingroup vheap
- * @return 1 on empty
- * @return 0 on non empty
+ * @retval 1 on empty
+ * @retval 0 on non empty
+ * @retval -1 on error
  */
 int elektraVheapIsEmpty (const Vheap * vheap)
 {
-	if (!vheap) return 0;
-	return (vheap->count == 0) ? 1 : 0;
+	if (!vheap) return -1;
+	return (vheap->count == 0);
 }
 
 /**
@@ -61,8 +62,8 @@ void elektraVheapDel (Vheap * vheap)
  *
  * @ingroup vheap
  * @param data the element
- * @return 0 on error
- * @return 1 otherwise
+ * @retval 0 on error
+ * @retval 1 otherwise
  */
 int elektraVheapInsert (Vheap * vheap, void * data)
 {
@@ -73,6 +74,8 @@ int elektraVheapInsert (Vheap * vheap, void * data)
 		vheap->size <<= 1;
 		if (elektraRealloc ((void **)&vheap->data, vheap->size * sizeof (void *)) == -1)
 		{
+			--vheap->count;
+			vheap->size >>= 1;
 			return 0;
 		}
 	}
@@ -94,8 +97,8 @@ int elektraVheapInsert (Vheap * vheap, void * data)
  * get ordered again. Resizes the heap if needed.
  *
  * @ingroup vheap
- * @return the element
- * @return NULL on error
+ * @retval the element
+ * @retval NULL on error
  */
 void * elektraVheapRemove (Vheap * vheap)
 {
@@ -109,6 +112,8 @@ void * elektraVheapRemove (Vheap * vheap)
 		vheap->size >>= 1;
 		if (elektraRealloc ((void **)&vheap->data, vheap->size * sizeof (void *)) == -1)
 		{
+			++vheap->count;
+			vheap->size <<= 1;
 			return NULL;
 		}
 	}
@@ -120,12 +125,9 @@ void * elektraVheapRemove (Vheap * vheap)
 	int comp = 1;
 	while (comp && child < vheap->count)
 	{
-		if (child + 1 < vheap->count)
+		if (child + 1 < vheap->count && vheap->comp (vheap->data[child + 1], vheap->data[child]))
 		{
-			if (vheap->comp (vheap->data[child + 1], vheap->data[child]))
-			{
-				++child;
-			}
+			++child;
 		}
 		comp = vheap->comp (vheap->data[child], vheap->data[elem]);
 		if (comp)
@@ -138,4 +140,20 @@ void * elektraVheapRemove (Vheap * vheap)
 		}
 	}
 	return ret;
+}
+
+/**
+ * Clears the heap in a fast fashion.
+ * Set the count to zero and does not reallocate memory.
+ * The next reallocation happens at Remove.
+ *
+ * @ingroup vheap
+ * @retval 1 on success
+ * @retval 0 on error
+ */
+int elektraVheapClear (Vheap * vheap)
+{
+	if (!vheap) return 0;
+	vheap->count = 0;
+	return 1;
 }

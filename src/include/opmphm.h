@@ -29,6 +29,7 @@ int elektraVstackPush (Vstack * stack, void * data);
 void * elektraVstackPop (Vstack * stack);
 int elektraVstackIsEmpty (const Vstack * stack);
 void elektraVstackDel (Vstack * stack);
+int elektraVstackClear (Vstack * stack);
 
 
 typedef int (*VheapComp) (void *, void *);
@@ -59,6 +60,7 @@ typedef struct
 
 Vheap * elektraVheapInit (int (*comp) (void *, void *), size_t minSize);
 void elektraVheapDel (Vheap * vheap);
+int elektraVheapClear (Vheap * vheap);
 int elektraVheapIsEmpty (const Vheap * vheap);
 int elektraVheapInsert (Vheap * vheap, void * data);
 void * elektraVheapRemove (Vheap * vheap);

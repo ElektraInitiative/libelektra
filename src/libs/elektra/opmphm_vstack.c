@@ -5,8 +5,8 @@
  *
  * @ingroup vstack
  * @param minSize the minimum size of the stack
- * @return a Vstack pointer
- * @return NULL error
+ * @retval a Vstack pointer
+ * @retval NULL error
  */
 Vstack * elektraVstackInit (size_t minSize)
 {
@@ -30,8 +30,8 @@ Vstack * elektraVstackInit (size_t minSize)
  *
  * @ingroup vstack
  * @param data the element
- * @return 0 on error
- * @return 1 otherwise
+ * @retval 0 on error
+ * @retval 1 otherwise
  */
 int elektraVstackPush (Vstack * stack, void * data)
 {
@@ -44,6 +44,7 @@ int elektraVstackPush (Vstack * stack, void * data)
 		int diff = stack->head - stack->data;
 		if (elektraRealloc ((void **)&stack->data, stack->size * sizeof (void *)) == -1)
 		{
+			stack->size >>= 1;
 			return 0;
 		}
 		// restore head
@@ -58,14 +59,14 @@ int elektraVstackPush (Vstack * stack, void * data)
  * Pops an element from the Vstack and resizes the stack if needed.
  *
  * @ingroup vstack
- * @return the element
- * @return NULL on empty
+ * @retval the element
+ * @retval NULL on empty
  */
 void * elektraVstackPop (Vstack * stack)
 {
 	if (!stack) return NULL;
 	if (elektraVstackIsEmpty (stack)) return NULL;
-	stack->head--;
+	--stack->head;
 	// shrink
 	if (stack->size > stack->minSize && (size_t) (stack->head - stack->data) <= stack->size >> 2)
 	{
@@ -73,6 +74,8 @@ void * elektraVstackPop (Vstack * stack)
 		int diff = stack->head - stack->data;
 		if (elektraRealloc ((void **)&stack->data, stack->size * sizeof (void *)) == -1)
 		{
+			++stack->head;
+			stack->size <<= 1;
 			return NULL;
 		}
 		stack->head = stack->data + diff;
@@ -84,12 +87,13 @@ void * elektraVstackPop (Vstack * stack)
  * Checks if the stack is empty.
  *
  * @ingroup vstack
- * @return 1 on empty
- * @return 0 on non empty
+ * @retval 1 on empty
+ * @retval 0 on non empty
+ * @retval -1 on error
  */
 int elektraVstackIsEmpty (const Vstack * stack)
 {
-	if (!stack) return 0;
+	if (!stack) return -1;
 	return (stack->head == stack->data);
 }
 
@@ -103,4 +107,20 @@ void elektraVstackDel (Vstack * stack)
 	if (!stack) return;
 	elektraFree (stack->data);
 	elektraFree (stack);
+}
+
+/**
+ * Clears the stack in a fast fashion.
+ * Resets the stackpointer to the base and does not reallocate memory.
+ * The next reallocation happens at Pop.
+ *
+ * @ingroup vstack
+ * @retval 1 on success
+ * @retval 0 on error
+ */
+int elektraVstackClear (Vstack * stack)
+{
+	if (!stack) return 0;
+	stack->head = stack->data;
+	return 1;
 }

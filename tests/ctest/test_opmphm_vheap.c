@@ -14,10 +14,7 @@
 static int maxcomp (void * a, void * b)
 {
 	if (!a || !b) return 1;
-	if (*((int *)a) > *((int *)b))
-		return 1;
-	else
-		return 0;
+	return (*((int *)a) > *((int *)b));
 }
 
 /**
@@ -26,10 +23,7 @@ static int maxcomp (void * a, void * b)
 static int mincomp (void * a, void * b)
 {
 	if (!a || !b) return 1;
-	if (*((int *)a) < *((int *)b))
-		return 1;
-	else
-		return 0;
+	return (*((int *)a) < *((int *)b));
 }
 
 static void test_errors ()
@@ -38,7 +32,9 @@ static void test_errors ()
 	succeed_if (!elektraVheapInit (mincomp, -1), "init -1 working");
 	succeed_if (!elektraVheapInit (NULL, 1), "init NULL cmp working");
 
-	succeed_if (!elektraVheapIsEmpty (NULL), "isEmpty NULL working");
+	succeed_if (elektraVheapIsEmpty (NULL) == -1, "isEmpty NULL working");
+
+	succeed_if (!elektraVheapClear (NULL), "clear NULL working");
 
 	succeed_if (!elektraVheapRemove (NULL), "remove NULL working");
 	Vheap * h = elektraVheapInit (mincomp, 4);
@@ -158,7 +154,7 @@ static void test_grow_shrink ()
 			if (i > actualSize)
 			{
 				// grow
-				actualSize <<= 1;
+				actualSize *= 2;
 			}
 			succeed_if ((size_t)actualSize == h->size, "grow error");
 		}
@@ -168,7 +164,7 @@ static void test_grow_shrink ()
 			if (actualSize > minSize && i <= actualSize >> 2)
 			{
 				// shrink
-				actualSize >>= 1;
+				actualSize /= 2;
 			}
 			succeed_if ((size_t)actualSize == h->size, "shrink error");
 		}
@@ -257,6 +253,39 @@ static void test_data_min_mixed ()
 	elektraVheapDel (h);
 }
 
+static void test_clear ()
+{
+	Vheap * h = elektraVheapInit (mincomp, 5);
+	exit_if_fail (h, "vheap init error");
+	succeed_if (elektraVheapClear (h), "clear fresh error");
+	succeed_if (h->size == h->minSize, "minsize error");
+	int data = 42;
+	for (int i = 0; i < 11; ++i)
+	{
+		succeed_if (elektraVheapInsert (h, &data), "insert error");
+	}
+	size_t size = h->size;
+	succeed_if (elektraVheapClear (h), "clear error");
+	succeed_if (elektraVheapIsEmpty (h), "empty error");
+
+	succeed_if (h->count == 0, "count error");
+	succeed_if (h->size == size, "size error");
+
+	// insert again
+	succeed_if (elektraVheapInsert (h, &data), "insert error");
+	succeed_if (elektraVheapInsert (h, &data), "insert error");
+
+	succeed_if (h->size == size, "size error");
+
+	// remove to trigger shrink
+	succeed_if (elektraVheapRemove (h), "remove error");
+	succeed_if (elektraVheapRemove (h), "remove error");
+
+	succeed_if (h->size == h->minSize, "minsize error");
+
+	elektraVheapDel (h);
+}
+
 int main (int argc, char ** argv)
 {
 	printf ("VHEAP       TESTS\n");
@@ -271,6 +300,7 @@ int main (int argc, char ** argv)
 	test_data_max_mixed ();
 	test_data_min_mixed ();
 	test_empty ();
+	test_clear ();
 
 	printf ("\ntest_opmphm_vheap RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 
