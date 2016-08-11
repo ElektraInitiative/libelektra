@@ -4,7 +4,7 @@
 
 Both code comments and assertions are unfortunately not very popular.
 A quite efficient way to still get some documentation about the code
-are logging statements. In Elektra there are currently inconsistent
+are logging statements. In Elektra they are currently inconsistent
 and unusable. Thus there is an urge for this decision.
 
 ## Constraints
