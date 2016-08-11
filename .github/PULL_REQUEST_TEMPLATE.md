@@ -1,9 +1,9 @@
-## Purpose
+# Purpose
 
 Describe the purpose of the pull request.
 (Long descriptions should be in documentation, not here)
 
-## Checklist
+# Checklist
 
 Please only check relevant points.
 For docu fixes, spell checking and similar nothing
