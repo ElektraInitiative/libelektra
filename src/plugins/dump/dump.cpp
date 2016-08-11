@@ -12,6 +12,7 @@
 using namespace ckdb;
 
 #include <kdberrors.h>
+#include <kdblogger.h>
 
 
 namespace dump
@@ -213,6 +214,8 @@ int elektraDumpGet (ckdb::Plugin *, ckdb::KeySet * returned, ckdb::Key * parentK
 	}
 	keyDel (root);
 	int errnosave = errno;
+
+	// ELEKTRA_LOG (ELEKTRA_LOG_MODULE_DUMP, "opening file %s", keyString (parentKey));
 	std::ifstream ofs (keyString (parentKey), std::ios::binary);
 	if (!ofs.is_open ())
 	{
@@ -227,6 +230,7 @@ int elektraDumpGet (ckdb::Plugin *, ckdb::KeySet * returned, ckdb::Key * parentK
 int elektraDumpSet (ckdb::Plugin *, ckdb::KeySet * returned, ckdb::Key * parentKey)
 {
 	int errnosave = errno;
+	// ELEKTRA_LOG (ELEKTRA_LOG_MODULE_DUMP, "opening file %s", keyString (parentKey));
 	std::ofstream ofs (keyString (parentKey), std::ios::binary);
 	if (!ofs.is_open ())
 	{

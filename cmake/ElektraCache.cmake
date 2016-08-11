@@ -289,13 +289,12 @@ else (ENABLE_DEBUG)
 	set (DEBUG "0")
 endif (ENABLE_DEBUG)
 
-option (ENABLE_LOGGER "Allows Elektra to write logs (DO NOT USE, currently writes to stdout).")
+option (ENABLE_LOGGER "Allows Elektra to write logs.")
 if (ENABLE_LOGGER)
-	set (VERBOSE "1")
+	set (HAVE_LOGGER "1")
 else (ENABLE_LOGGER)
-	set (VERBOSE "0")
+	set (HAVE_LOGGER "0")
 endif (ENABLE_LOGGER)
-MARK_AS_ADVANCED(ENABLE_LOGGER)
 
 
 #

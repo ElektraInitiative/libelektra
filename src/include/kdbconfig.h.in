@@ -95,15 +95,19 @@
 # define SIZEOF_LONG_DOUBLE       @SIZEOF_LONG_DOUBLE@
 #endif
 
-/* disable debug output messages */
+/* debug mode */
 #define DEBUG @DEBUG@
 
 #ifndef DEBUG
 # define NDEBUG
 #endif
 
-/* disable verbose output messages */
-#define VERBOSE @VERBOSE@
+/* disable output messages to stdout (to be migrated to logger) */
+#define VERBOSE 0
+
+#ifndef HAVE_LOGGER
+#cmakedefine HAVE_LOGGER
+#endif
 
 /* define if your system has the `clearenv' function. */
 #ifndef HAVE_CLEARENV
