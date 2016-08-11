@@ -27,6 +27,8 @@ struct _Node
 	char * key;
 	char * value;
 	unsigned short oflags;
+	char * exportType;
+	char * exportKey;
 	struct _Node * next;
 };
 typedef struct _Node Node;
@@ -92,6 +94,17 @@ static char * createAbsolutePath (const char * path, const char * cwd)
 	}
 }
 
+static const char * genTemporaryFilename (void)
+{
+	struct timeval tv;
+	gettimeofday (&tv, 0);
+	const char * fileName = "/tmp/.elektra_generated";
+	size_t len = strlen (fileName) + TV_MAX_DIGITS + 1;
+	char * tmpFile = elektraCalloc (len);
+	snprintf (tmpFile, len, "%s_%lu:%lu", fileName, tv.tv_sec, tv.tv_usec);
+	return tmpFile;
+}
+
 static void init (void) __attribute__ ((constructor));
 static void cleanup (void) __attribute__ ((destructor));
 void init ()
@@ -114,7 +127,10 @@ void init ()
 		if (!keyIsDirectBelow (parentKey, key)) continue;
 		Node * tmp = calloc (1, sizeof (Node));
 		tmp->key = createAbsolutePath (keyBaseName (key), cwd);
-		tmp->value = createAbsolutePath (keyString (key), cwd);
+		if (!strcmp (keyString (key), ""))
+			tmp->value = NULL;
+		else
+			tmp->value = createAbsolutePath (keyString (key), cwd);
 		tmp->oflags = (unsigned short)-1;
 		Key * lookupKey = keyDup (key);
 		keyAddBaseName (lookupKey, "readonly");
@@ -126,7 +142,32 @@ void init ()
 				tmp->oflags = O_RDONLY;
 			}
 		}
+		keySetBaseName (lookupKey, 0);
+		keyAddBaseName (lookupKey, "generate");
+		found = ksLookup (ks, lookupKey, 0);
+		if (found)
+		{
+			if (tmp->value == NULL) tmp->value = genTemporaryFilename ();
+			tmp->exportKey = strdup (keyString (found));
+			keyAddBaseName (lookupKey, "plugin");
+			found = ksLookup (ks, lookupKey, 0);
+			if (found)
+			{
+				tmp->exportType = strdup (keyString (found));
+			}
+			else
+			{
+				tmp->exportKey = NULL;
+				tmp->exportType = NULL;
+			}
+		}
+		else
+		{
+			tmp->exportKey = NULL;
+			tmp->exportType = NULL;
+		}
 		keyDel (lookupKey);
+		if (tmp->value == NULL) tmp->value = createAbsolutePath (keyBaseName (key), cwd);
 		tmp->next = NULL;
 		if (current == NULL)
 		{
@@ -155,7 +196,12 @@ void cleanup ()
 	{
 		Node * tmp = current;
 		free (current->key);
-		free (current->value);
+		if (current->value) free (current->value);
+		if (current->exportKey)
+		{
+			free (current->exportKey);
+			free (current->exportType);
+		}
 		current = current->next;
 		free (tmp);
 	}
@@ -175,7 +221,7 @@ static Node * resolvePathname (const char * pathname)
 		}
 		else
 		{
-			resolvedPath = calloc (strlen (pathname), sizeof (char));
+			resolvedPath = calloc (strlen (pathname) + 1, sizeof (char));
 			size_t size = sizeof (resolvedPath);
 			memset (resolvedPath, 0, size);
 			canonicalizePath (resolvedPath, (char *)pathname);
@@ -195,6 +241,30 @@ static Node * resolvePathname (const char * pathname)
 	return node;
 }
 
+static void exportConfiguration (Node * node)
+{
+	Key * key = keyNew (node->exportKey, KEY_END);
+	KDB * handle = kdbOpen (key);
+	KeySet * ks = ksNew (0, KS_END);
+	kdbGet (handle, ks, key);
+	KeySet * exportKS;
+	exportKS = ksCut (ks, key);
+	KeySet * modules = ksNew (0, KS_END);
+	elektraModulesInit (modules, 0);
+	KeySet * conf = ksNew (0, KS_END);
+	Plugin * check = elektraPluginOpen (node->exportType, modules, conf, key);
+	keySetString (key, node->value);
+	ksRewind (exportKS);
+	check->kdbSet (check, exportKS, key);
+	ksDel (conf);
+	ksAppend (ks, exportKS);
+	ksDel (exportKS);
+	elektraModulesClose (modules, 0);
+	ksDel (modules);
+	keyDel (key);
+	ksDel (ks);
+	kdbClose (handle, 0);
+}
 
 typedef int (*orig_open_f_type) (const char * pathname, int flags, ...);
 
@@ -215,8 +285,16 @@ int open (const char * pathname, int flags, ...)
 	}
 	else
 	{
-		newPath = node->value;
-		newFlags = node->oflags;
+		if (!(node->exportType))
+		{
+			newPath = node->value;
+			newFlags = node->oflags;
+		}
+		else
+		{
+			newPath = node->value;
+			exportConfiguration (node);
+		}
 	}
 	if (newFlags == O_RDONLY)
 	{
