@@ -75,7 +75,6 @@ static int elektraLogFile (int module ELEKTRA_UNUSED, int level ELEKTRA_UNUSED, 
 		elektraLoggerFileHandle = fopen ("elektra.log", "a");
 	}
 	return vfprintf (elektraLoggerFileHandle, msg, args);
-	return 0;
 }
 #endif
 
