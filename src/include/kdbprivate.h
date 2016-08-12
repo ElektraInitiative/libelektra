@@ -17,7 +17,7 @@
 #include <kdbproposal.h>
 #include <kdbtypes.h>
 #ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
-#include <opmphm.h>
+#include <kdbopmphm.h>
 #endif
 
 #include <limits.h>
