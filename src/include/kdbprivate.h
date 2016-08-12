@@ -16,6 +16,9 @@
 #include <kdbplugin.h>
 #include <kdbproposal.h>
 #include <kdbtypes.h>
+#ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
+#include <kdbopmphm.h>
+#endif
 
 #include <limits.h>
 
@@ -398,7 +401,17 @@ struct _Plugin
 };
 
 
-/** The private trie structure.
+/**
+ * @defgroup internaldatastructs Internal Datastructures
+ * @brief Internal used Datastructures
+ */
+
+
+/**
+ * @defgroup trie Trie
+ * @ingroup internaldatastructs
+ *
+ * The private trie structure.
  *
  * A trie is a data structure which can handle the longest prefix matching very
  * fast. This is exactly what needs to be done when using kdbGet() and kdbSet()

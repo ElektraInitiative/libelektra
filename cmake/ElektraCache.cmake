@@ -277,6 +277,8 @@ option (INSTALL_SYSTEM_FILES "Install files to system directories" ON)
 
 option (INSTALL_BUILD_TOOLS "Install build tools for cross-compilation" OFF)
 
+option (ENABLE_OPTIMIZATIONS "Turn on optimizations that trade memory for speed" ON)
+
 
 #
 # Developer builds (debug or verbose build)

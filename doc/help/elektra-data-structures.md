@@ -366,3 +366,50 @@ The algorithm uses the `syncbits` to decide if the key set needs to be
 synchronised.
 
 Continue reading [with the error handling](elektra-error-handling.md).
+
+## Order Preserving Minimal Perfect Hash Map
+
+All structs are defined in [opmphm.h](/src/include/opmphm.h).
+
+### Vstack
+
+The `Vstack` is a virtual stack implementation with dynamic memory allocation.
+The allocation doubles the space if the `Vstack` is full and reduces the space by half
+if the memory usage drops below a quarter.
+
+The data will be stored as void pointer and can be inserted with the push call.
+Retrieve is possible through the pop call.
+Besides the classical init and del functions, an is-empty check is also implemented.
+
+To gain performance a clear function is also present to reset the `Vstack` for reuse.
+Allocation will not be performed until the first pop.
+
+The following [link](/src/libs/elektra/opmphm_vstack.c) leads to the code and
+[this](@ref Vstack) one to the docu.
+
+### Vheap
+
+The `Vheap` is a virtual heap implementation with dynamic memory allocation.
+A heap is an efficient data structure, if an ordered retrieval is needed.
+The allocation works like the `Vstack` allocation.
+
+The data will be stored as void pointer and can be inserted with the insert call.
+At the point of insertion the data will be stored in a binary tree, where each parent and his children obey the order.
+The order is defined by a compare function, set at init.
+
+The compare function compares two elements and shall return 1 on a > b and 0 otherwise to construct a maximum heap.
+And 1 on a < b and 0 otherwise to construct a minimum heap.
+
+At the removal the fist element in the data array will be taken and the data gets reordered.
+The ordering takes log (n) time so the complexity for the insert and remove is log (n).
+
+Beside the classical init and del functions an is-empty check is also implemented.
+The `Vheap` can also be cleared, reallocation works like the `Vstack` clear.
+
+The following [link](/src/libs/elektra/opmphm_vheap.c) leads to the code and
+[this](@ref Vheap) one to the docu.
+
+####Example
+If the order function constructs a maximum heap it holds for all elements if they have any children:
+
+parent > child0 and parent > child1

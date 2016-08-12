@@ -50,6 +50,12 @@ file (GLOB SRC_FILES *.c)
 file (GLOB RM_FILES exportsymbols.c kdbmainpage.c)
 list (REMOVE_ITEM SRC_FILES ${RM_FILES} ${WIN32_RM_FILES})
 
+#remove the opmphm files
+if (NOT ENABLE_OPTIMIZATIONS)
+	file (GLOB OPMPHM_FILES opmphm*.c)
+	list (REMOVE_ITEM SRC_FILES ${OPMPHM_FILES})
+endif (NOT ENABLE_OPTIMIZATIONS)
+
 #now add all source files of other folders
 get_property (elektra_SRCS GLOBAL PROPERTY elektra_SRCS)
 list (APPEND SRC_FILES ${elektra_SRCS})
