@@ -199,7 +199,7 @@ int elektraCryptoGcryHandleCreate (elektraCryptoHandle ** handle, KeySet * confi
 		break;
 
 	case ELEKTRA_CRYPTO_DECRYPT:
-		if (getKeyIvForDecryption (config, errorkey, k, key, iv) != 1)
+		if (getKeyIvForDecryption (config, errorKey, k, key, iv) != 1)
 		{
 			keyDel (key);
 			keyDel (iv);
