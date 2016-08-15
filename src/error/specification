@@ -930,3 +930,17 @@ severity:warning
 ingroup:plugin
 module:boolean
 macro:INVALID_BOOL
+
+number:155
+description:Failed to extract block.
+severity:error
+ingroup:plugin
+module:blockresolver
+macro:BLOCKRESOLVER_EXTRACT
+
+number:156
+description:End of block not found
+severity:error
+ingroup:plugin
+module:blockresolver
+macro:BLOCKRESOLVER_NO_EOB

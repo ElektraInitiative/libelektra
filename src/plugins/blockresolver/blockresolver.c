@@ -9,6 +9,7 @@
 
 #include "blockresolver.h"
 
+#include <kdberrors.h>
 #include <kdbhelper.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -200,24 +201,34 @@ int elektraBlockresolverGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned E
 	if (data->getPass > 0)
 	{
 		struct stat buf;
-		if (stat (data->realFile, &buf)) return -1;
+		if (stat (data->realFile, &buf))
+		{
+			ELEKTRA_ADD_WARNINGF (29, parentKey, "Failed to stat file %s\n", data->realFile);
+			return -1;
+		}
 		if (buf.st_mtime == data->mtime) return 0;
 	}
 
 	fin = fopen (data->realFile, "r");
-	if (!fin) goto GET_CLEANUP;
+	if (!fin)
+	{
+		ELEKTRA_SET_ERRORF (26, parentKey, "Couldn't open %s for reading", data->realFile);
+		goto GET_CLEANUP;
+	}
 
 	data->startPos = getBlockStart (fin, data->identifier);
 	if (data->startPos == -1) goto GET_CLEANUP;
 	data->endPos = getBlockEnd (fin, data->identifier, data->startPos);
 	if (data->endPos == -1)
 	{
+		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_BLOCKRESOLVER_NO_EOB, parentKey, "Couldn't find end of block %s", data->identifier);
 		retVal = -1;
 		goto GET_CLEANUP;
 	}
 	block = (char *)getBlock (fin, data->startPos, data->endPos);
 	if (!block)
 	{
+		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_BLOCKRESOLVER_EXTRACT, parentKey, "Failed to extract block %s\n", data->identifier);
 		retVal = -1;
 		goto GET_CLEANUP;
 	}
@@ -226,6 +237,7 @@ int elektraBlockresolverGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned E
 	fout = fopen (data->tmpFile, "w");
 	if (!fout)
 	{
+		ELEKTRA_SET_ERRORF (26, parentKey, "Couldn't open %s for writing", data->tmpFile);
 		retVal = -1;
 		goto GET_CLEANUP;
 	}
@@ -246,8 +258,16 @@ int elektraBlockresolverSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned E
 	if (!data) return -1;
 	keySetString (parentKey, data->tmpFile);
 	struct stat buf;
-	if (stat (data->realFile, &buf)) return -1;
-	if (buf.st_mtime > data->mtime) return -1;
+	if (stat (data->realFile, &buf))
+	{
+		ELEKTRA_ADD_WARNINGF (29, parentKey, "Failed to stat file %s\n", data->realFile);
+		return -1;
+	}
+	if (buf.st_mtime > data->mtime)
+	{
+		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CONFLICT, parentKey, "%s has been modified", data->realFile);
+		return -1;
+	}
 	FILE * fout = NULL;
 	FILE * fin = NULL;
 	char * block = NULL;
@@ -263,21 +283,43 @@ int elektraBlockresolverSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned E
 		// commit phase
 		mergeFile = (char *)genTempFilename ();
 		fout = fopen (mergeFile, "w");
-		if (!fout) goto SET_CLEANUP;
+		if (!fout)
+		{
+			ELEKTRA_SET_ERRORF (26, parentKey, "Couldn't open %s for writing", data->realFile);
+			goto SET_CLEANUP;
+		}
 		fin = fopen (data->realFile, "r");
-		if (!fin) goto SET_CLEANUP;
+		if (!fin)
+		{
+			ELEKTRA_SET_ERRORF (26, parentKey, "Couldn't open %s for reading", data->realFile);
+			goto SET_CLEANUP;
+		}
 		block = (char *)getBlock (fin, 0, data->startPos);
-		if (!block) goto SET_CLEANUP;
+		if (!block)
+		{
+			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_BLOCKRESOLVER_EXTRACT, parentKey, "Failed to extract block before %s\n",
+					    data->identifier);
+			goto SET_CLEANUP;
+		}
 		fwrite (block, 1, data->startPos, fout);
 		fseek (fin, 0, SEEK_END);
 		elektraFree (block);
 		block = NULL;
 		size_t blockSize = ftell (fin) - data->endPos;
 		block = (char *)getBlock (fin, data->endPos, ftell (fin));
-		if (!block) goto SET_CLEANUP;
+		if (!block)
+		{
+			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_BLOCKRESOLVER_EXTRACT, parentKey, "Failed to extract block after %s\n",
+					    data->identifier);
+			goto SET_CLEANUP;
+		}
 		fclose (fin);
 		fin = fopen (data->tmpFile, "r");
-		if (!fin) goto SET_CLEANUP;
+		if (!fin)
+		{
+			ELEKTRA_SET_ERRORF (26, parentKey, "Couldn't open %s for reading", data->tmpFile);
+			goto SET_CLEANUP;
+		}
 		char buffer[BUFSIZE_MAX];
 		size_t read = 0;
 		while ((read = fread (buffer, 1, sizeof (buffer), fin)) > 0)
