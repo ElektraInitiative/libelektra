@@ -888,3 +888,10 @@ severity:error
 ingroup:plugin
 module:gitresolver
 macro:GITRESOLVER_CONFLICT
+
+number:149
+description:validation of passwd entry failed
+severity:error
+ingroup:plugin
+module:passwd
+macro:PASSWD_VALIDATION
