@@ -271,14 +271,6 @@ int elektraCryptoGcryEncrypt (elektraCryptoHandle * handle, Key * k, Key * error
 	kdb_octet_t cipherBuffer[ELEKTRA_CRYPTO_GCRY_BLOCKSIZE];
 	kdb_octet_t contentBuffer[ELEKTRA_CRYPTO_GCRY_BLOCKSIZE] = { 0 };
 
-	// check if key has been marked for encryption
-	const Key * metaEncrypt = keyGetMeta (k, ELEKTRA_CRYPTO_META_ENCRYPT);
-	if (metaEncrypt == NULL || strlen (keyValue (metaEncrypt)) == 0)
-	{
-		// nothing to do
-		return 1;
-	}
-
 	// prepare the crypto header data
 	const kdb_unsigned_long_t contentLen = keyGetValueSize (k);
 	kdb_octet_t flags;
@@ -370,14 +362,6 @@ int elektraCryptoGcryDecrypt (elektraCryptoHandle * handle, Key * k, Key * error
 	// initialize crypto header data
 	kdb_unsigned_long_t contentLen = 0;
 	kdb_octet_t flags = ELEKTRA_CRYPTO_FLAG_NONE;
-
-	// check if key has been encrypted in the first place
-	const Key * metaEncrypted = keyGetMeta (k, ELEKTRA_CRYPTO_META_ENCRYPT);
-	if (metaEncrypted == NULL || strlen (keyValue (metaEncrypted)) == 0)
-	{
-		// nothing to do
-		return 1;
-	}
 
 	// plausibility check
 	if (valueLen % ELEKTRA_CRYPTO_GCRY_BLOCKSIZE != 0)

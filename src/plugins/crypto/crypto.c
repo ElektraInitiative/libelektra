@@ -31,6 +31,21 @@
 static pthread_mutex_t mutex_ref_cnt = PTHREAD_MUTEX_INITIALIZER;
 static unsigned int ref_cnt = 0;
 
+/**
+ * @brief checks if a Key has been marked for encryption by checking the Key's metadata.
+ * @param k the Key to be checked
+ * @retval 0 if the Key has not been marked for encryption
+ * @retval 1 if the Key has been marked for encryption
+ */
+static int isMarkedForEncryption (const Key * k)
+{
+	const Key * metaEncrypt = keyGetMeta (k, ELEKTRA_CRYPTO_META_ENCRYPT);
+	if (metaEncrypt == NULL || strlen (keyValue (metaEncrypt)) == 0)
+	{
+		return 0;
+	}
+	return 1;
+}
 
 /**
  * @brief initialize the crypto backend
@@ -118,6 +133,11 @@ static int elektraCryptoEncrypt (Plugin * handle ELEKTRA_UNUSED, KeySet * data E
 	ksRewind (data);
 	while ((k = ksNext (data)) != 0)
 	{
+		if (!isMarkedForEncryption (k))
+		{
+			continue;
+		}
+
 		if (elektraCryptoGcryHandleCreate (&cryptoHandle, pluginConfig, errorKey, k, ELEKTRA_CRYPTO_ENCRYPT) != 1)
 		{
 			return -1;
@@ -196,6 +216,11 @@ static int elektraCryptoDecrypt (Plugin * handle ELEKTRA_UNUSED, KeySet * data E
 	ksRewind (data);
 	while ((k = ksNext (data)) != 0)
 	{
+		if (!isMarkedForEncryption (k))
+		{
+			continue;
+		}
+
 		if (elektraCryptoGcryHandleCreate (&cryptoHandle, pluginConfig, errorKey, k, ELEKTRA_CRYPTO_DECRYPT) != 1)
 		{
 			return -1;
