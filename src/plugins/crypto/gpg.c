@@ -47,6 +47,22 @@ int elektraCryptoGpgEncryptMasterPassword (KeySet * conf, Key * errorKey, Key * 
 }
 
 /**
+ * @brief call the gpg binary to decrypt the random master password r.
+ *
+ * @param conf holds the backend/plugin configuration
+ * @param errorKey holds the error description in case of failure
+ * @param msgKey holds the master password to be decrypted. Note that the content of this key will be modified.
+ *
+ * @retval 1 on success
+ * @retval -1 on failure
+ */
+int elektraCryptoGpgDecryptMasterPassword (KeySet * conf, Key * errorKey, Key * msgKey)
+{
+	char * argv[] = { "", "-d", NULL };
+	return elektraCryptoGpgCall (conf, errorKey, msgKey, argv, 3);
+}
+
+/**
  * @brief call the gpg binary to perform the requested operation.
  *
  * @param conf holds the backend/plugin configuration

@@ -20,13 +20,22 @@ enum ElektraCryptoHeaderFlags
 	ELEKTRA_CRYPTO_FLAG_NULL = 2
 };
 
+enum ElektraCryptoOperation
+{
+	ELEKTRA_CRYPTO_ENCRYPT = 0,
+	ELEKTRA_CRYPTO_DECRYPT = 1
+};
+
 #define ELEKTRA_CRYPTO_DEFAULT_MASTER_PWD_LENGTH (30)
+#define ELEKTRA_CRYPTO_DEFAULT_ITERATION_COUNT (2048)
+#define ELEKTRA_CRYPTO_DEFAULT_SALT_LEN (12)
 #define ELEKTRA_CRYPTO_PARAM_MASTER_PWD_LEN "/crypto/masterpasswordlength"
 #define ELEKTRA_CRYPTO_PARAM_MASTER_PWD "/crypto/masterpassword"
-#define ELEKTRA_CRYPTO_PARAM_KEY_PATH ("/crypto/key")
-#define ELEKTRA_CRYPTO_PARAM_IV_PATH ("/crypto/iv")
-#define ELEKTRA_CRYPTO_PARAM_SHUTDOWN ("/shutdown")
-#define ELEKTRA_CRYPTO_META_ENCRYPT ("crypto/encrypt")
+#define ELEKTRA_CRYPTO_PARAM_KEY_PATH "/crypto/key"
+#define ELEKTRA_CRYPTO_PARAM_IV_PATH "/crypto/iv"
+#define ELEKTRA_CRYPTO_PARAM_SHUTDOWN "/shutdown"
+#define ELEKTRA_CRYPTO_META_ENCRYPT "crypto/encrypt"
+#define ELEKTRA_CRYPTO_META_SALT "crypto/salt"
 
 #if defined(ELEKTRA_CRYPTO_API_GCRYPT)
 

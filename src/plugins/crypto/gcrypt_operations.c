@@ -10,6 +10,7 @@
 #include "crypto.h"
 
 #include "gcrypt_operations.h"
+#include "gpg.h"
 #include "rand_helper.h"
 
 #include <errno.h>
@@ -24,36 +25,121 @@
 // NOTE: old versions of libgcrypt require the functions defined in this macro!
 GCRY_THREAD_OPTION_PTHREAD_IMPL;
 
+
 /**
- * @brief read the cryptographic key from the given keyset.
- * @retval NULL on error
- * @retval address of the (Elektra) key in the given keyset holding the cryptographic key to be used.
+ * @brief derive the cryptographic key and IV for a given (Elektra) Key k
+ * @param config KeySet holding the plugin/backend configuration
+ * @param errorKey holds an error description in case of failure
+ * @param k the (Elektra)-Key to be encrypted
+ * @param cKey (Elektra)-Key holding the cryptographic material
+ * @param cIv (Elektra)-Key holding the initialization vector
+ * @retval -1 on failure. errorKey holds the error description.
+ * @retval 1 on success
  */
-static Key * elektraCryptoReadParamKey (KeySet * config, Key * errorKey)
+static int getKeyIvForEncryption (KeySet * config, Key * errorKey, Key * k, Key * cKey, Key * cIv)
 {
-	Key * key = ksLookupByName (config, ELEKTRA_CRYPTO_PARAM_KEY_PATH, 0);
-	if (key == NULL)
+	kdb_octet_t salt[ELEKTRA_CRYPTO_DEFAULT_SALT_LEN];
+	const size_t keyBufferSize = ELEKTRA_CRYPTO_GCRY_KEYSIZE + ELEKTRA_CRYPTO_GCRY_BLOCKSIZE;
+	kdb_octet_t keyBuffer[keyBufferSize];
+
+	// generate the salt
+	gcry_create_nonce (salt, sizeof (salt));
+	elektraCryptoNormalizeRandomString (salt, sizeof (salt));
+	keySetMeta (k, ELEKTRA_CRYPTO_META_SALT, (char *)salt);
+
+	// read iteration count
+	// TODO make iteration count configurable
+	const kdb_unsigned_long_t iterations = ELEKTRA_CRYPTO_DEFAULT_ITERATION_COUNT;
+
+	// receive master password from the configuration
+	Key * master = ksLookupByName (config, ELEKTRA_CRYPTO_PARAM_MASTER_PWD, 0);
+	if (!master)
 	{
-		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CRYPTO_CONFIG_FAULT, errorKey, "missing %s in configuration",
-				    ELEKTRA_CRYPTO_PARAM_KEY_PATH);
+		// TODO append error to errorKey
+		return -1;
 	}
-	return key;
+	Key * msg = keyDup (master);
+	if (elektraCryptoGpgDecryptMasterPassword (config, errorKey, msg) != 1)
+	{
+		goto error;
+	}
+
+	// generate/derive the cryptographic key and the IV
+	if (gcry_kdf_derive (keyValue (msg), keyGetValueSize (msg), GCRY_KDF_PBKDF2, 0, salt, sizeof (salt), iterations, keyBufferSize,
+			     keyBuffer))
+	{
+		// TODO append error to errorKey
+		goto error;
+	}
+
+	keySetBinary (cKey, keyBuffer, ELEKTRA_CRYPTO_GCRY_KEYSIZE);
+	keySetBinary (cIv, keyBuffer + ELEKTRA_CRYPTO_GCRY_KEYSIZE, ELEKTRA_CRYPTO_GCRY_BLOCKSIZE);
+
+	keyDel (msg);
+	return 1;
+
+error:
+	keyDel (msg);
+	return -1;
 }
 
 /**
- * @brief read the cryptographic initialization vector (IV) from the given keyset.
- * @retval NULL on error
- * @retval address of the (Elektra) key in the given keyset holding the IV to be used.
+ * @brief derive the cryptographic key and IV for a given (Elektra) Key k
+ * @param config KeySet holding the plugin/backend configuration
+ * @param errorKey holds an error description in case of failure
+ * @param k the (Elektra)-Key to be encrypted
+ * @param cKey (Elektra)-Key holding the cryptographic material
+ * @param cIv (Elektra)-Key holding the initialization vector
+ * @retval -1 on failure. errorKey holds the error description.
+ * @retval 1 on success
  */
-static Key * elektraCryptoReadParamIv (KeySet * config, Key * errorKey)
+static int getKeyIvForDecryption (KeySet * config, Key * errorKey, Key * k, Key * cKey, Key * cIv)
 {
-	Key * iv = ksLookupByName (config, ELEKTRA_CRYPTO_PARAM_IV_PATH, 0);
-	if (iv == NULL)
+	const size_t keyBufferSize = ELEKTRA_CRYPTO_GCRY_KEYSIZE + ELEKTRA_CRYPTO_GCRY_BLOCKSIZE;
+	kdb_octet_t keyBuffer[keyBufferSize];
+
+	// get the salt
+	const Key * salt = keyGetMeta (k, ELEKTRA_CRYPTO_META_SALT);
+	if (!salt)
 	{
-		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CRYPTO_CONFIG_FAULT, errorKey, "missing %s in configuration",
-				    ELEKTRA_CRYPTO_PARAM_IV_PATH);
+		// TODO append error to errorKey
+		return -1;
 	}
-	return iv;
+
+	// get the iteration count
+	// TODO make iteration count configurable
+	const kdb_unsigned_long_t iterations = ELEKTRA_CRYPTO_DEFAULT_ITERATION_COUNT;
+
+	// receive master password from the configuration
+	Key * master = ksLookupByName (config, ELEKTRA_CRYPTO_PARAM_MASTER_PWD, 0);
+	if (!master)
+	{
+		// TODO append error to errorKey
+		return -1;
+	}
+	Key * msg = keyDup (master);
+	if (elektraCryptoGpgDecryptMasterPassword (config, errorKey, msg) != 1)
+	{
+		goto error;
+	}
+
+	// derive the cryptographic key and the IV
+	if (gcry_kdf_derive (keyValue (msg), keyGetValueSize (msg), GCRY_KDF_PBKDF2, 0, keyValue (salt), keyGetValueSize (salt), iterations,
+			     keyBufferSize, keyBuffer))
+	{
+		// TODO append error to errorKey
+		goto error;
+	}
+
+	keySetBinary (cKey, keyBuffer, ELEKTRA_CRYPTO_GCRY_KEYSIZE);
+	keySetBinary (cIv, keyBuffer + ELEKTRA_CRYPTO_GCRY_KEYSIZE, ELEKTRA_CRYPTO_GCRY_BLOCKSIZE);
+
+	keyDel (msg);
+	return 1;
+
+error:
+	keyDel (msg);
+	return -1;
 }
 
 void elektraCryptoGcryHandleDestroy (elektraCryptoHandle * handle)
@@ -89,7 +175,8 @@ int elektraCryptoGcryInit (Key * errorKey)
 	return 1;
 }
 
-int elektraCryptoGcryHandleCreate (elektraCryptoHandle ** handle, KeySet * config, Key * errorKey)
+int elektraCryptoGcryHandleCreate (elektraCryptoHandle ** handle, KeySet * config, Key * errorKey, Key * k,
+				   const enum ElektraCryptoOperation op)
 {
 	gcry_error_t gcry_err;
 	unsigned char keyBuffer[64], ivBuffer[64];
@@ -97,12 +184,33 @@ int elektraCryptoGcryHandleCreate (elektraCryptoHandle ** handle, KeySet * confi
 
 	(*handle) = NULL;
 
-	// retrieve keys from configuration
-	Key * key = elektraCryptoReadParamKey (config, errorKey);
-	Key * iv = elektraCryptoReadParamIv (config, errorKey);
-	if (key == NULL || iv == NULL)
+	// retrieve/derive the cryptographic material
+	Key * key = keyNew (0);
+	Key * iv = keyNew (0);
+	switch (op)
 	{
-		return (-1);
+	case ELEKTRA_CRYPTO_ENCRYPT:
+		if (getKeyIvForEncryption (config, errorKey, k, key, iv) != 1)
+		{
+			keyDel (key);
+			keyDel (iv);
+			return -1;
+		}
+		break;
+
+	case ELEKTRA_CRYPTO_DECRYPT:
+		if (getKeyIvForDecryption (config, errorkey, k, key, iv) != 1)
+		{
+			keyDel (key);
+			keyDel (iv);
+			return -1;
+		}
+		break;
+
+	default: // not supported
+		keyDel (key);
+		keyDel (iv);
+		return -1;
 	}
 
 	keyLength = keyGetBinary (key, keyBuffer, sizeof (keyBuffer));
@@ -114,6 +222,8 @@ int elektraCryptoGcryHandleCreate (elektraCryptoHandle ** handle, KeySet * confi
 	{
 		memset (keyBuffer, 0, sizeof (keyBuffer));
 		memset (ivBuffer, 0, sizeof (ivBuffer));
+		keyDel (key);
+		keyDel (iv);
 		ELEKTRA_SET_ERROR (87, errorKey, "Memory allocation failed");
 		return (-1);
 	}
@@ -135,6 +245,8 @@ int elektraCryptoGcryHandleCreate (elektraCryptoHandle ** handle, KeySet * confi
 
 	memset (keyBuffer, 0, sizeof (keyBuffer));
 	memset (ivBuffer, 0, sizeof (ivBuffer));
+	keyDel (key);
+	keyDel (iv);
 	return 1;
 
 error:
@@ -144,6 +256,8 @@ error:
 	gcry_cipher_close (**handle);
 	elektraFree (*handle);
 	(*handle) = NULL;
+	keyDel (key);
+	keyDel (iv);
 	return (-1);
 }
 
