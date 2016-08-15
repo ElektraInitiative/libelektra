@@ -18,7 +18,8 @@
 
 char * elektraCryptoGcryCreateRandomString (const kdb_unsigned_short_t length);
 int elektraCryptoGcryInit (Key * errorKey);
-int elektraCryptoGcryHandleCreate (elektraCryptoHandle ** handle, KeySet * config, Key * errorKey);
+int elektraCryptoGcryHandleCreate (elektraCryptoHandle ** handle, KeySet * config, Key * errorKey, Key * k,
+				   const enum ElektraCryptoOperation op);
 void elektraCryptoGcryHandleDestroy (elektraCryptoHandle * handle);
 int elektraCryptoGcryEncrypt (elektraCryptoHandle * handle, Key * k, Key * errorKey);
 int elektraCryptoGcryDecrypt (elektraCryptoHandle * handle, Key * k, Key * errorKey);
