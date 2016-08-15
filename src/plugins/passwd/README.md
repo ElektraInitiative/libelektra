@@ -5,7 +5,7 @@
 - infos/provides = storage
 - infos/recommends =
 - infos/placements = getstorage setstorage
-- infos/status = recommended productive maintained reviewed conformant compatible coverage specific unittest shelltest tested nodep libc configurable final preview memleak experimental difficult unfinished old nodoc concept orphan obsolete discouraged -1000000
+- infos/status = maintained reviewed conformant compatible coverage specific unittest tested nodep libc configurable experimental
 - infos/metadata =
 - infos/description =
 
@@ -15,11 +15,11 @@ This plugin parses `passwd` files, e.g. `/etc/passwd`.
 
 ## Implementation Details ##
 
-If present, the not-posix complient `fgetpwent` function will be used to read the file supplied by the resolver, if not, `getpwent` will be used. For writing, if present, `putpwent` will be used, if not a simple implementation writing straight to the config file.
+If present, the not-posix compliant `fgetpwent` function will be used to read the file supplied by the resolver, otherwise `getpwent` will be used. For writing, if present, `putpwent` will be used, if not a simple implementation writing straight to the config file.
 
 ## Configuration ##
 
-If the config key `index` is set to `name` passwd entrys will be sorted by name, if not set or set to `uid` passwd entry will be sorted by uid
+If the config key `index` is set to `name` passwd entrys will be sorted by name, if not set or set to `uid` passwd entries will be sorted by uid
 
 ## Fields ##
 

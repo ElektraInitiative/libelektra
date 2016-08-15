@@ -25,17 +25,18 @@ typedef enum {
 	UID,
 } SortBy;
 
+// simple validation of passwd entries
 static int validatepwent (struct passwd * pwd)
 {
 	if (!pwd->pw_name) return -1;
 	if (strlen (pwd->pw_name) == 0) return -1;
-	if (pwd->pw_name[0] == '-') // Posix.1-208 3.431 User Name
+	if (pwd->pw_name[0] == '-') // POSIX.1-2008 3.431 User Name
 		return -1;
 	const char * invalidCharacters =
 		"/:;<=>?@[\\]^`"; // POSIX.1-2008 3.278 Portable File Character Set - invalid characters > 45 && <= 122
 	for (char * ptr = pwd->pw_name; *ptr != '\0'; ++ptr)
 	{
-		if ((*ptr < 45) || (*ptr > 122) || (strchr (invalidCharacters, *ptr) != NULL)) return -1;
+		if ((*ptr < '-') || (*ptr > 'z') || (strchr (invalidCharacters, *ptr) != NULL)) return -1;
 	}
 	if (!pwd->pw_passwd) return -1;
 	if (pwd->pw_uid == (uid_t)-1) return -1;
@@ -237,7 +238,7 @@ static int writeKS (KeySet * returned, Key * parentKey, SortBy index)
 		struct passwd * pwd = KStoPasswd (cutKS, index);
 		if (validatepwent (pwd) == -1)
 		{
-			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_PASSWD_VALIDATION_ERROR, parentKey, "Invalid passwd entry %s:%s:%u:%u:%s:%s:%s\n",
+			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_PASSWD_VALIDATION, parentKey, "Invalid passwd entry %s:%s:%u:%u:%s:%s:%s\n",
 					    pwd->pw_name, pwd->pw_passwd, pwd->pw_uid, pwd->pw_gid, pwd->pw_gecos, pwd->pw_dir,
 					    pwd->pw_shell);
 		}

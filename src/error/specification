@@ -890,8 +890,8 @@ module:gitresolver
 macro:GITRESOLVER_CONFLICT
 
 number:149
-description:validaten of passwd entry failed
+description:validation of passwd entry failed
 severity:error
 ingroup:plugin
 module:passwd
-macro:PASSWD_VALIDATION_ERROR
+macro:PASSWD_VALIDATION
