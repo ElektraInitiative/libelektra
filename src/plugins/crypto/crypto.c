@@ -115,22 +115,23 @@ static int elektraCryptoEncrypt (Plugin * handle ELEKTRA_UNUSED, KeySet * data E
 
 #if defined(ELEKTRA_CRYPTO_API_GCRYPT)
 
-	if (elektraCryptoGcryHandleCreate (&cryptoHandle, pluginConfig, errorKey) != 1)
-	{
-		return -1;
-	}
-
 	ksRewind (data);
 	while ((k = ksNext (data)) != 0)
 	{
+		if (elektraCryptoGcryHandleCreate (&cryptoHandle, pluginConfig, errorKey, k, ELEKTRA_CRYPTO_ENCRYPT) != 1)
+		{
+			return -1;
+		}
+
+
 		if (elektraCryptoGcryEncrypt (cryptoHandle, k, errorKey) != 1)
 		{
 			elektraCryptoGcryHandleDestroy (cryptoHandle);
 			return -1;
 		}
-	}
 
-	elektraCryptoGcryHandleDestroy (cryptoHandle);
+		elektraCryptoGcryHandleDestroy (cryptoHandle);
+	}
 	return 1;
 
 #elif defined(ELEKTRA_CRYPTO_API_OPENSSL)
@@ -192,22 +193,22 @@ static int elektraCryptoDecrypt (Plugin * handle ELEKTRA_UNUSED, KeySet * data E
 
 #if defined(ELEKTRA_CRYPTO_API_GCRYPT)
 
-	if (elektraCryptoGcryHandleCreate (&cryptoHandle, pluginConfig, errorKey) != 1)
-	{
-		return -1;
-	}
-
 	ksRewind (data);
 	while ((k = ksNext (data)) != 0)
 	{
+		if (elektraCryptoGcryHandleCreate (&cryptoHandle, pluginConfig, errorKey, k, ELEKTRA_CRYPTO_DECRYPT) != 1)
+		{
+			return -1;
+		}
+
 		if (elektraCryptoGcryDecrypt (cryptoHandle, k, errorKey) != 1)
 		{
 			elektraCryptoGcryHandleDestroy (cryptoHandle);
 			return -1;
 		}
-	}
 
-	elektraCryptoGcryHandleDestroy (cryptoHandle);
+		elektraCryptoGcryHandleDestroy (cryptoHandle);
+	}
 	return 1;
 
 #elif defined(ELEKTRA_CRYPTO_API_OPENSSL)
