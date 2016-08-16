@@ -76,6 +76,9 @@ Remove/Refactor/Rename obsolete/not needed methods:
 
 - remove mountpoint name concept
  - system/elektra/mountpoints/system\/info\/uname/mountpoint key not needed (system/info/uname already in name present!)
+- remove numbers in backend mounting (placements only per name)
+- have consistent instantiate+backreferencing syntax for both backend+global mounting
+   (system/elektra/mountpoints and system/elektra/globalplugins)
 - remove legacy bootstrapping: always use KDB_FILE_INIT (elektra.ecf)
 
 
