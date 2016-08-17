@@ -38,6 +38,7 @@ GCRY_THREAD_OPTION_PTHREAD_IMPL;
  */
 static int getKeyIvForEncryption (KeySet * config, Key * errorKey, Key * k, Key * cKey, Key * cIv)
 {
+	gcry_error_t gcry_err;
 	kdb_octet_t salt[ELEKTRA_CRYPTO_DEFAULT_SALT_LEN];
 	const size_t keyBufferSize = ELEKTRA_CRYPTO_GCRY_KEYSIZE + ELEKTRA_CRYPTO_GCRY_BLOCKSIZE;
 	kdb_octet_t keyBuffer[keyBufferSize];
@@ -55,7 +56,7 @@ static int getKeyIvForEncryption (KeySet * config, Key * errorKey, Key * k, Key 
 	Key * master = ksLookupByName (config, ELEKTRA_CRYPTO_PARAM_MASTER_PWD, 0);
 	if (!master)
 	{
-		// TODO append error to errorKey
+		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CRYPTO_CONFIG_FAULT, errorKey, "missing %s", ELEKTRA_CRYPTO_PARAM_MASTER_PWD);
 		return -1;
 	}
 	Key * msg = keyDup (master);
@@ -65,10 +66,10 @@ static int getKeyIvForEncryption (KeySet * config, Key * errorKey, Key * k, Key 
 	}
 
 	// generate/derive the cryptographic key and the IV
-	if (gcry_kdf_derive (keyValue (msg), keyGetValueSize (msg), GCRY_KDF_PBKDF2, 0, salt, sizeof (salt), iterations, keyBufferSize,
-			     keyBuffer))
+	if ((gcry_err = gcry_kdf_derive (keyValue (msg), keyGetValueSize (msg), GCRY_KDF_PBKDF2, 0, salt, sizeof (salt), iterations,
+					 keyBufferSize, keyBuffer)))
 	{
-		// TODO append error to errorKey
+		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CRYPTO_INTERNAL_ERROR, errorKey, "PBKDF2 failed because: %s", gcry_strerror (gcry_err));
 		goto error;
 	}
 
@@ -95,6 +96,7 @@ error:
  */
 static int getKeyIvForDecryption (KeySet * config, Key * errorKey, Key * k, Key * cKey, Key * cIv)
 {
+	gcry_error_t gcry_err;
 	const size_t keyBufferSize = ELEKTRA_CRYPTO_GCRY_KEYSIZE + ELEKTRA_CRYPTO_GCRY_BLOCKSIZE;
 	kdb_octet_t keyBuffer[keyBufferSize];
 
@@ -102,7 +104,8 @@ static int getKeyIvForDecryption (KeySet * config, Key * errorKey, Key * k, Key 
 	const Key * salt = keyGetMeta (k, ELEKTRA_CRYPTO_META_SALT);
 	if (!salt)
 	{
-		// TODO append error to errorKey
+		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CRYPTO_CONFIG_FAULT, errorKey, "missing salt as meta-key %s for key %s",
+				    ELEKTRA_CRYPTO_META_SALT, keyName (k));
 		return -1;
 	}
 
@@ -114,7 +117,7 @@ static int getKeyIvForDecryption (KeySet * config, Key * errorKey, Key * k, Key 
 	Key * master = ksLookupByName (config, ELEKTRA_CRYPTO_PARAM_MASTER_PWD, 0);
 	if (!master)
 	{
-		// TODO append error to errorKey
+		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CRYPTO_CONFIG_FAULT, errorKey, "missing %s", ELEKTRA_CRYPTO_PARAM_MASTER_PWD);
 		return -1;
 	}
 	Key * msg = keyDup (master);
@@ -124,10 +127,10 @@ static int getKeyIvForDecryption (KeySet * config, Key * errorKey, Key * k, Key 
 	}
 
 	// derive the cryptographic key and the IV
-	if (gcry_kdf_derive (keyValue (msg), keyGetValueSize (msg), GCRY_KDF_PBKDF2, 0, keyValue (salt), keyGetValueSize (salt), iterations,
-			     keyBufferSize, keyBuffer))
+	if ((gcry_err = gcry_kdf_derive (keyValue (msg), keyGetValueSize (msg), GCRY_KDF_PBKDF2, 0, keyValue (salt), keyGetValueSize (salt),
+					 iterations, keyBufferSize, keyBuffer)))
 	{
-		// TODO append error to errorKey
+		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CRYPTO_INTERNAL_ERROR, errorKey, "PBKDF2 failed because: %s", gcry_strerror (gcry_err));
 		goto error;
 	}
 
