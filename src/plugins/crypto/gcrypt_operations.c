@@ -66,7 +66,7 @@ static int getKeyIvForEncryption (KeySet * config, Key * errorKey, Key * k, Key 
 	}
 
 	// generate/derive the cryptographic key and the IV
-	if ((gcry_err = gcry_kdf_derive (keyValue (msg), keyGetValueSize (msg), GCRY_KDF_PBKDF2, 0, salt, sizeof (salt), iterations,
+	if ((gcry_err = gcry_kdf_derive (keyValue (msg), keyGetValueSize (msg), GCRY_KDF_PBKDF2, GCRY_MD_SHA512, salt, sizeof (salt), iterations,
 					 keyBufferSize, keyBuffer)))
 	{
 		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CRYPTO_INTERNAL_ERROR, errorKey, "PBKDF2 failed because: %s", gcry_strerror (gcry_err));
@@ -127,7 +127,7 @@ static int getKeyIvForDecryption (KeySet * config, Key * errorKey, Key * k, Key 
 	}
 
 	// derive the cryptographic key and the IV
-	if ((gcry_err = gcry_kdf_derive (keyValue (msg), keyGetValueSize (msg), GCRY_KDF_PBKDF2, 0, keyValue (salt), keyGetValueSize (salt),
+	if ((gcry_err = gcry_kdf_derive (keyValue (msg), keyGetValueSize (msg), GCRY_KDF_PBKDF2, GCRY_MD_SHA512, keyValue (salt), keyGetValueSize (salt),
 					 iterations, keyBufferSize, keyBuffer)))
 	{
 		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CRYPTO_INTERNAL_ERROR, errorKey, "PBKDF2 failed because: %s", gcry_strerror (gcry_err));
