@@ -31,6 +31,8 @@
 static pthread_mutex_t mutex_ref_cnt = PTHREAD_MUTEX_INITIALIZER;
 static unsigned int ref_cnt = 0;
 
+#if defined(ELEKTRA_CRYPTO_API_GCRYPT)
+
 /**
  * @brief checks if a Key has been marked for encryption by checking the Key's metadata.
  * @param k the Key to be checked
@@ -46,6 +48,8 @@ static int isMarkedForEncryption (const Key * k)
 	}
 	return 1;
 }
+
+#endif
 
 /**
  * @brief initialize the crypto backend
