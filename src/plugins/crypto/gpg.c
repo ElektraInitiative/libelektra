@@ -18,7 +18,7 @@
 #include <sys/wait.h>
 #include <unistd.h>
 
-static void closePipe (int * pipe)
+static inline void closePipe (int * pipe)
 {
 	close (pipe[0]);
 	close (pipe[1]);
