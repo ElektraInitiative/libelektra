@@ -38,3 +38,10 @@ Should only be used on embedded systems (where whole application stack is done b
 
 Contains kdb* symbols and applications should link against it.
 
+# Exported symbols
+
+Exported symbols are defined in [libelektra-symbols.map](/src/libs/elektra/libelektra-symbols.map).
+The function names must confirm to this naming to conventions to be externally visible, e.g.,
+for unit tests.
+
+Please avoid exposing internal interfaces and instead use `static` methods whenever possible.
