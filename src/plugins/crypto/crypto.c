@@ -31,7 +31,7 @@
 static pthread_mutex_t mutex_ref_cnt = PTHREAD_MUTEX_INITIALIZER;
 static unsigned int ref_cnt = 0;
 
-#if defined(ELEKTRA_CRYPTO_API_GCRYPT) || defined(ELEKTRA_CRYPTO_API_OPENSSL)
+#if defined(ELEKTRA_CRYPTO_API_GCRYPT) || defined(ELEKTRA_CRYPTO_API_OPENSSL) || defined(ELEKTRA_CRYPTO_API_BOTAN)
 
 /**
  * @brief checks if a Key has been marked for encryption by checking the Key's metadata.
@@ -192,6 +192,11 @@ openssl_error:
 	ksRewind (data);
 	while ((k = ksNext (data)) != 0)
 	{
+		if (!isMarkedForEncryption (k))
+		{
+			continue;
+		}
+
 		if (elektraCryptoBotanEncrypt (pluginConfig, k, errorKey) != 1)
 		{
 			return -1; // failure, error has been set by elektraCryptoBotanEncrypt
@@ -279,6 +284,11 @@ openssl_error:
 	ksRewind (data);
 	while ((k = ksNext (data)) != 0)
 	{
+		if (!isMarkedForEncryption (k))
+		{
+			continue;
+		}
+
 		if (elektraCryptoBotanDecrypt (pluginConfig, k, errorKey) != 1)
 		{
 			return -1;
