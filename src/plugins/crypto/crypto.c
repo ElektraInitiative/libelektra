@@ -31,7 +31,7 @@
 static pthread_mutex_t mutex_ref_cnt = PTHREAD_MUTEX_INITIALIZER;
 static unsigned int ref_cnt = 0;
 
-#if defined(ELEKTRA_CRYPTO_API_GCRYPT)
+#if defined(ELEKTRA_CRYPTO_API_GCRYPT) || defined(ELEKTRA_CRYPTO_API_OPENSSL)
 
 /**
  * @brief checks if a Key has been marked for encryption by checking the Key's metadata.
@@ -163,7 +163,12 @@ static int elektraCryptoEncrypt (Plugin * handle ELEKTRA_UNUSED, KeySet * data E
 	ksRewind (data);
 	while ((k = ksNext (data)) != 0)
 	{
-		if (elektraCryptoOpenSSLHandleCreate (&cryptoHandle, pluginConfig, errorKey) != 1)
+		if (!isMarkedForEncryption (k))
+		{
+			continue;
+		}
+
+		if (elektraCryptoOpenSSLHandleCreate (&cryptoHandle, pluginConfig, errorKey, k, ELEKTRA_CRYPTO_ENCRYPT) != 1)
 		{
 			goto openssl_error;
 		}
@@ -245,7 +250,12 @@ static int elektraCryptoDecrypt (Plugin * handle ELEKTRA_UNUSED, KeySet * data E
 	ksRewind (data);
 	while ((k = ksNext (data)) != 0)
 	{
-		if (elektraCryptoOpenSSLHandleCreate (&cryptoHandle, pluginConfig, errorKey) != 1)
+		if (!isMarkedForEncryption (k))
+		{
+			continue;
+		}
+
+		if (elektraCryptoOpenSSLHandleCreate (&cryptoHandle, pluginConfig, errorKey, k, ELEKTRA_CRYPTO_DECRYPT) != 1)
 		{
 			goto openssl_error;
 		}
