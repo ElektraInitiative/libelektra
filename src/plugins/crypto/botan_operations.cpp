@@ -11,6 +11,7 @@
 #include <botan/filters.h>
 #include <botan/init.h>
 #include <botan/lookup.h>
+#include <botan/pbkdf2.h>
 #include <botan/pipe.h>
 #include <botan/symkey.h>
 #include <kdbplugin.h>
@@ -22,44 +23,134 @@ extern "C" {
 
 #include "botan_operations.h"
 #include "crypto.h"
+#include "gpg.h"
 #include "rand_helper.h"
 #include <kdberrors.h>
 #include <string.h>
 
 /**
- * @brief read the cryptographic key from the given keyset.
- * @retval NULL on error
- * @retval a SymmetricKey to be used for the cryptographic operation
+ * @brief derive the cryptographic key and IV for a given (Elektra) Key k
+ * @param config KeySet holding the plugin/backend configuration
+ * @param errorKey holds an error description in case of failure
+ * @param k the (Elektra)-Key to be encrypted
+ * @param cKey pointer to the SymmetricKey
+ * @param cIv pointer to the InitializationVector
+ * @retval -1 on failure. errorKey holds the error description.
+ * @retval 1 on success
  */
-static SymmetricKey * getSymmKey (KeySet * config, Key * errorKey)
+static int getKeyIvForEncryption (KeySet * config, Key * errorKey, Key * k, SymmetricKey ** cKey, InitializationVector ** cIv)
 {
-	Key * key = ksLookupByName (config, ELEKTRA_CRYPTO_PARAM_KEY_PATH, 0);
-	if (key == NULL)
+	byte salt[ELEKTRA_CRYPTO_DEFAULT_SALT_LEN];
+	const size_t requiredKeyBytes = ELEKTRA_CRYPTO_BOTAN_KEYSIZE + ELEKTRA_CRYPTO_BOTAN_BLOCKSIZE;
+	Key * msg = NULL;
+
+	try
 	{
-		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CRYPTO_CONFIG_FAULT, errorKey, "missing %s in configuration",
-				    ELEKTRA_CRYPTO_PARAM_KEY_PATH);
-		return NULL;
+		// generate the salt
+		AutoSeeded_RNG rng;
+		rng.randomize (salt, ELEKTRA_CRYPTO_DEFAULT_SALT_LEN - 1);
+		elektraCryptoNormalizeRandomString (salt, sizeof (salt));
+		keySetMeta (k, ELEKTRA_CRYPTO_META_SALT, (char *)salt);
+
+		// read iteration count
+		// TODO make iteration count configurable
+		const kdb_unsigned_long_t iterations = ELEKTRA_CRYPTO_DEFAULT_ITERATION_COUNT;
+
+		// receive master password from the configuration
+		Key * master = ksLookupByName (config, ELEKTRA_CRYPTO_PARAM_MASTER_PWD, 0);
+		if (!master)
+		{
+			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CRYPTO_CONFIG_FAULT, errorKey, "missing %s", ELEKTRA_CRYPTO_PARAM_MASTER_PWD);
+			return -1;
+		}
+		msg = keyDup (master);
+		if (elektraCryptoGpgDecryptMasterPassword (config, errorKey, msg) != 1)
+		{
+			keyDel (msg);
+			return -1;
+		}
+
+		// generate/derive the cryptographic key and the IV
+		PBKDF * pbkdf = get_pbkdf ("PBKDF2(SHA-256)");
+		OctetString derived = pbkdf->derive_key (requiredKeyBytes, std::string (keyString (msg)), salt, sizeof (salt), iterations);
+
+		*cKey = new SymmetricKey (derived.begin (), ELEKTRA_CRYPTO_BOTAN_KEYSIZE);
+		*cIv = new InitializationVector (derived.begin () + ELEKTRA_CRYPTO_BOTAN_KEYSIZE, ELEKTRA_CRYPTO_BOTAN_BLOCKSIZE);
+
+		delete pbkdf;
+		keyDel (msg);
+		return 1;
 	}
-	return new SymmetricKey (static_cast<const byte *> (keyValue (key)), keyGetValueSize (key));
+	catch (std::exception & e)
+	{
+		if (msg) keyDel (msg);
+		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CRYPTO_INIT, errorKey, "Botan PBKDF2 key derivation failed: %s", e.what ());
+		return -1;
+	}
 }
 
 /**
- * @brief read the cryptographic initialization vector (IV) from the given keyset.
- * @retval NULL on error
- * @retval an InitializationVector to be used for the cryptographic operation
+ * @brief derive the cryptographic key and IV for a given (Elektra) Key k
+ * @param config KeySet holding the plugin/backend configuration
+ * @param errorKey holds an error description in case of failure
+ * @param k the (Elektra)-Key to be encrypted
+ * @param cKey pointer to the SymmetricKey
+ * @param cIv pointer to the InitializationVector
+ * @retval -1 on failure. errorKey holds the error description.
+ * @retval 1 on success
  */
-static InitializationVector * getIv (KeySet * config, Key * errorKey)
+static int getKeyIvForDecryption (KeySet * config, Key * errorKey, Key * k, SymmetricKey ** cKey, InitializationVector ** cIv)
 {
-	Key * iv = ksLookupByName (config, ELEKTRA_CRYPTO_PARAM_IV_PATH, 0);
-	if (iv == NULL)
-	{
-		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CRYPTO_CONFIG_FAULT, errorKey, "missing %s in configuration",
-				    ELEKTRA_CRYPTO_PARAM_IV_PATH);
-		return NULL;
-	}
-	return new InitializationVector (static_cast<const byte *> (keyValue (iv)), keyGetValueSize (iv));
-}
+	const size_t requiredKeyBytes = ELEKTRA_CRYPTO_BOTAN_KEYSIZE + ELEKTRA_CRYPTO_BOTAN_BLOCKSIZE;
 
+	// get the salt
+	const Key * salt = keyGetMeta (k, ELEKTRA_CRYPTO_META_SALT);
+	if (!salt)
+	{
+		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CRYPTO_CONFIG_FAULT, errorKey, "missing salt as meta-key %s for key %s",
+				    ELEKTRA_CRYPTO_META_SALT, keyName (k));
+		return -1;
+	}
+
+	// get the iteration count
+	// TODO make iteration count configurable
+	const kdb_unsigned_long_t iterations = ELEKTRA_CRYPTO_DEFAULT_ITERATION_COUNT;
+
+	// receive master password from the configuration
+	Key * master = ksLookupByName (config, ELEKTRA_CRYPTO_PARAM_MASTER_PWD, 0);
+	if (!master)
+	{
+		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CRYPTO_CONFIG_FAULT, errorKey, "missing %s", ELEKTRA_CRYPTO_PARAM_MASTER_PWD);
+		return -1;
+	}
+	Key * msg = keyDup (master);
+	if (elektraCryptoGpgDecryptMasterPassword (config, errorKey, msg) != 1)
+	{
+		keyDel (msg);
+		return -1;
+	}
+
+	try
+	{
+		// derive the cryptographic key and the IV
+		PBKDF * pbkdf = get_pbkdf ("PBKDF2(SHA-256)");
+		OctetString derived = pbkdf->derive_key (requiredKeyBytes, std::string (keyString (msg)),
+							 static_cast<const byte *> (keyValue (salt)), keyGetValueSize (salt), iterations);
+
+		*cKey = new SymmetricKey (derived.begin (), ELEKTRA_CRYPTO_BOTAN_KEYSIZE);
+		*cIv = new InitializationVector (derived.begin () + ELEKTRA_CRYPTO_BOTAN_KEYSIZE, ELEKTRA_CRYPTO_BOTAN_BLOCKSIZE);
+
+		delete pbkdf;
+		keyDel (msg);
+		return 1;
+	}
+	catch (std::exception & e)
+	{
+		if (msg) keyDel (msg);
+		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CRYPTO_INIT, errorKey, "Botan PBKDF2 key derivation failed: %s", e.what ());
+		return -1;
+	}
+}
 
 int elektraCryptoBotanInit (Key * errorKey)
 {
@@ -77,26 +168,14 @@ int elektraCryptoBotanInit (Key * errorKey)
 
 int elektraCryptoBotanEncrypt (KeySet * pluginConfig, Key * k, Key * errorKey)
 {
-	// check if key has been marked for encryption
-	const Key * metaEncrypt = keyGetMeta (k, ELEKTRA_CRYPTO_META_ENCRYPT);
-	if (metaEncrypt == NULL || strlen (keyString (metaEncrypt)) == 0)
-	{
-		// nothing to do
-		return 1;
-	}
-
 	// get cryptographic material
-	SymmetricKey * cryptoKey = getSymmKey (pluginConfig, errorKey);
-	if (!cryptoKey)
+	SymmetricKey * cryptoKey = NULL;
+	InitializationVector * cryptoIv = NULL;
+	if (getKeyIvForEncryption (pluginConfig, errorKey, k, &cryptoKey, &cryptoIv) != 1)
 	{
-		return -1; // failure, error has been set by getSymmKey(...)
-	}
-
-	InitializationVector * cryptoIv = getIv (pluginConfig, errorKey);
-	if (!cryptoIv)
-	{
-		delete cryptoKey;
-		return -1; // failure, error has been set by getIv(...)
+		if (cryptoKey) delete cryptoKey;
+		if (cryptoIv) delete cryptoIv;
+		return -1;
 	}
 
 	try
@@ -162,26 +241,14 @@ int elektraCryptoBotanEncrypt (KeySet * pluginConfig, Key * k, Key * errorKey)
 
 int elektraCryptoBotanDecrypt (KeySet * pluginConfig, Key * k, Key * errorKey)
 {
-	// check if key has been marked for encryption
-	const Key * metaEncrypt = keyGetMeta (k, ELEKTRA_CRYPTO_META_ENCRYPT);
-	if (metaEncrypt == NULL || strlen (keyString (metaEncrypt)) == 0)
-	{
-		// nothing to do
-		return 1;
-	}
-
 	// get cryptographic material
-	SymmetricKey * cryptoKey = getSymmKey (pluginConfig, errorKey);
-	if (!cryptoKey)
+	SymmetricKey * cryptoKey = NULL;
+	InitializationVector * cryptoIv = NULL;
+	if (getKeyIvForDecryption (pluginConfig, errorKey, k, &cryptoKey, &cryptoIv) != 1)
 	{
-		return -1; // failure, error has been set by getSymmKey(...)
-	}
-
-	InitializationVector * cryptoIv = getIv (pluginConfig, errorKey);
-	if (!cryptoIv)
-	{
-		delete cryptoKey;
-		return -1; // failure, error has been set by getIv(...)
+		if (cryptoKey) delete cryptoKey;
+		if (cryptoIv) delete cryptoIv;
+		return -1;
 	}
 
 	try
