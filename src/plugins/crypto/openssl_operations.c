@@ -55,8 +55,7 @@ static int getKeyIvForEncryption (KeySet * config, Key * errorKey, Key * k, Key 
 	keySetMeta (k, ELEKTRA_CRYPTO_META_SALT, (char *)salt);
 
 	// read iteration count
-	// TODO make iteration count configurable
-	const kdb_unsigned_long_t iterations = ELEKTRA_CRYPTO_DEFAULT_ITERATION_COUNT;
+	const kdb_unsigned_long_t iterations = elektraCryptoGetIterationCount (config);
 
 	// receive master password from the configuration
 	Key * master = ksLookupByName (config, ELEKTRA_CRYPTO_PARAM_MASTER_PWD, 0);
@@ -117,8 +116,7 @@ static int getKeyIvForDecryption (KeySet * config, Key * errorKey, Key * k, Key 
 	}
 
 	// get the iteration count
-	// TODO make iteration count configurable
-	const kdb_unsigned_long_t iterations = ELEKTRA_CRYPTO_DEFAULT_ITERATION_COUNT;
+	const kdb_unsigned_long_t iterations = elektraCryptoGetIterationCount (config);
 
 	// receive master password from the configuration
 	Key * master = ksLookupByName (config, ELEKTRA_CRYPTO_PARAM_MASTER_PWD, 0);

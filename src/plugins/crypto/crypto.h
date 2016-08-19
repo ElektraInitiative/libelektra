@@ -26,14 +26,20 @@ enum ElektraCryptoOperation
 	ELEKTRA_CRYPTO_DECRYPT = 1
 };
 
+// plugin defaults
 #define ELEKTRA_CRYPTO_DEFAULT_MASTER_PWD_LENGTH (30)
 #define ELEKTRA_CRYPTO_DEFAULT_ITERATION_COUNT (15000)
 #define ELEKTRA_CRYPTO_DEFAULT_SALT_LEN (17)
+
+// plugin configuration parameters
 #define ELEKTRA_CRYPTO_PARAM_MASTER_PWD_LEN "/crypto/masterpasswordlength"
 #define ELEKTRA_CRYPTO_PARAM_MASTER_PWD "/crypto/masterpassword"
 #define ELEKTRA_CRYPTO_PARAM_KEY_PATH "/crypto/key"
 #define ELEKTRA_CRYPTO_PARAM_IV_PATH "/crypto/iv"
 #define ELEKTRA_CRYPTO_PARAM_SHUTDOWN "/shutdown"
+#define ELEKTRA_CRYPTO_PARAM_ITERATION_COUNT "/crypto/iterations"
+
+// meta keys
 #define ELEKTRA_CRYPTO_META_ENCRYPT "crypto/encrypt"
 #define ELEKTRA_CRYPTO_META_SALT "crypto/salt"
 
@@ -59,6 +65,7 @@ typedef struct
 
 #elif defined(ELEKTRA_CRYPTO_API_BOTAN)
 
+// Botan specific declarations
 typedef void elektraCryptoHandle;
 #define CRYPTO_PLUGIN_FUNCTION(name) ELEKTRA_PLUGIN_FUNCTION (cryptobotan, name)
 
