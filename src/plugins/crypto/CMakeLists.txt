@@ -127,8 +127,8 @@ endif ()
 #
 add_plugin (crypto_gcrypt
 	SOURCES
-		rand_helper.c
-		rand_helper.h
+		helper.c
+		helper.h
 		gpg.c
 		gpg.h
 		gcrypt_operations.h
@@ -150,8 +150,8 @@ add_plugin (crypto_gcrypt
 #
 add_plugin (crypto_openssl
 	SOURCES
-		rand_helper.c
-		rand_helper.h
+		helper.c
+		helper.h
 		gpg.c
 		gpg.h
 		openssl_operations.h
@@ -173,8 +173,8 @@ add_plugin (crypto_openssl
 #
 add_plugin (crypto_botan
 	SOURCES
-		rand_helper.c
-		rand_helper.h
+		helper.c
+		helper.h
 		gpg.c
 		gpg.h
 		botan_operations.h

@@ -24,7 +24,7 @@ extern "C" {
 #include "botan_operations.h"
 #include "crypto.h"
 #include "gpg.h"
-#include "rand_helper.h"
+#include "helper.h"
 #include <kdberrors.h>
 #include <string.h>
 

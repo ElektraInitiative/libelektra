@@ -1,13 +1,13 @@
 /**
  * @file
  *
- * @brief helper functions for dealing with random values
+ * @brief helper functions for the crypto plugin
  *
  * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
  *
  */
 
-#include "rand_helper.h"
+#include "helper.h"
 #include "crypto.h"
 #include <stdlib.h>
 
