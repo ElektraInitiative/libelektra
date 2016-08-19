@@ -13,6 +13,7 @@
 #include <kdb.h>
 #include <kdbtypes.h>
 
+#define ELEKTRA_CRYPTO_PARAM_GPG_BIN "/crypto/gpg"
 #define ELEKTRA_CRYPTO_DEFAULT_GPG_BIN "/usr/bin/gpg2"
 #define ELEKTRA_CRYPTO_MESSAGE_MAX_LEN (1024)
 
