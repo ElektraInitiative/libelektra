@@ -24,8 +24,17 @@ static inline void closePipe (int * pipe)
 	close (pipe[1]);
 }
 
-static char * getGpgBinary (KeySet * conf)
+static const char * getGpgBinary (KeySet * conf)
 {
+	Key * k = ksLookupByName (conf, ELEKTRA_CRYPTO_PARAM_GPG_BIN, 0);
+	if (k)
+	{
+		const char * path = keyString (k);
+		if (strlen (path) > 0)
+		{
+			return path;
+		}
+	}
 	return ELEKTRA_CRYPTO_DEFAULT_GPG_BIN;
 }
 
