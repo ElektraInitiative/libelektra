@@ -428,7 +428,15 @@ int CRYPTO_PLUGIN_FUNCTION (checkconf) (Key * errorKey, KeySet * conf)
 	Key * k = ksLookupByName (conf, ELEKTRA_CRYPTO_PARAM_MASTER_PWD, 0);
 	if (k)
 	{
-		// TODO call gpg module to verify that we own the correct key
+		// call gpg module to verify that we own the required key
+		Key * msg = keyDup (k);
+		if (elektraCryptoGpgDecryptMasterPassword (conf, errorKey, msg) != 1)
+		{
+			ELEKTRA_SET_ERROR (ELEKTRA_ERROR_CRYPTO_CONFIG_FAULT, errorKey, "Master password decryption failed");
+			keyDel (msg);
+			return -1;
+		}
+		keyDel (msg);
 		return 0;
 	}
 	else
