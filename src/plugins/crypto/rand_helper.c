@@ -8,6 +8,27 @@
  */
 
 #include "rand_helper.h"
+#include "crypto.h"
+#include <stdlib.h>
+
+/**
+ * @brief read the desired iteration count from config
+ * @param config KeySet holding the plugin configuration
+ * @returns the number of iterations for the key derivation function
+ */
+kdb_unsigned_long_t elektraCryptoGetIterationCount (KeySet * config)
+{
+	Key * k = ksLookupByName (config, ELEKTRA_CRYPTO_PARAM_ITERATION_COUNT, 0);
+	if (k)
+	{
+		const kdb_unsigned_long_t iterations = strtoul (keyString (k), NULL, 10);
+		if (iterations > 0)
+		{
+			return iterations;
+		}
+	}
+	return ELEKTRA_CRYPTO_DEFAULT_ITERATION_COUNT;
+}
 
 /**
  * @brief normalizes a string to ASCII characters between 0x20 and 0x7E.
