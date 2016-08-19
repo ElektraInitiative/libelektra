@@ -45,6 +45,7 @@ At the moment the following crypto APIs are supported:
 #ifdef ELEKTRA_CRYPTO_API_BOTAN
 - `libbotan1.10-dev` or `botan-devel`
 #endif
+- gpg command
 
 ## How to compile ##
 
@@ -109,34 +110,35 @@ Set the CMake variables `OPENSSL_INCLUDE_DIR` and `OPENSSL_LIBRARIES` to your de
 
 The crypto plugin will encrypt and decrypt values using AES-256 in CBC mode.
 
-The key derivation is still WIP.
+The GPG binary is required for handling the cryptographic keys.
 
-### Planned Features ###
-
-- Encryption of values
-- Decryption of values
-- Key derivation by metadata (password provided within a meta-key)
-- Key derivation by using a specified key-file (like the SSH client does)
-- Key derivation by utilizing the pgp-agent
-
-The encryption and decryption of values is a straight forward process, once the key and IV are supplied.
-The key-derivation process in a library is a bit tricky.
-
-The crypto plugin itself can hold configuration data about the order of the applied key derivation functions.
-For example, if a password is provided by a meta-key, it will be used, otherwise we look for a key file.
-If no key file has been configured, we try to trigger the PGP agent, etc.
-
-The following example configuration illustrates this concept:
-
-	system/elektra/crypto/config/key-derivation/#0 = meta
-	system/elektra/crypto/config/key-derivation/#1 = file
-	system/elektra/crypto/config/key-derivation/#2 = agent
-	system/elektra/crypto/config/key-file/path/#0 = ~/.elektra/id_aes
-	system/elektra/crypto/config/key-file/path/#1 = /etc/elektra/id_aes
-
-Only keys marked with a certain meta-key will be considered for encryption/decryption.
+At the moment the plugins will only run in a UNIX/Linux-like system.
 
 ## Configuration ##
+
+### GPG Configuration ###
+
+The path to the gpg binary can be specified in
+
+	/crypto/gpg
+
+The GPG recipient keys can be specified as `/crypto/key` directly.
+If you want to use more than one key, just enumerate like:
+
+	/crypto/key/#0
+	/crypto/key/#1
+
+### Cryptographic Operations ###
+
+The length of the master password that protects all the other keys can be set in:
+
+	/crypto/masterpasswordlength
+
+The number of iterations that are to be performed in the PBKDF2 call can be set in:
+
+	/crypto/iterations
+
+### Library Shutdown ###
 
 The following key must be set to `"1"` within the plugin configuration,
 if the plugin should shut down the crypto library:
@@ -148,23 +150,18 @@ Shutdown is enabled in the unit tests to prevent memory leaks.
 
 ## Examples ##
 
-### Metadata based encyption ###
+To mount a backend with the gcrypt plugin variant that uses the GPG key 859E2AD7, use:
 
-You specify the parameters of the cryptographic operations in a KeySet together with the keys to be encrypted.
-The following parameters are required:
+	kdb mount test.ecf user/t crypto_gcrypt "crypto/key=859E2AD7"
 
-- **Key** - the symmetric cryptographic key for encryption
-- **IV** - the initialization vector (IV) that is required by the CBC mode
+Now you can specify a key `user/t/a` and protect its content by using:
 
-The following keys are required for metadata based encryption:
+	kdb set user/t/a
+	kdb setmeta user/t/a crypto/encrypt 1
+	kdb set user/t/a "secret"
 
-	/elektra/modules/crypto/key
-	/elektra/modules/crypto/iv
+The value of `user/t/a` will be stored encrypted.
+But you can still access the original value using `kdb get`:
 
-You can use the following meta-key to mark a key for encryption:
-
-	crypto/encrypt
-
-If this meta-key has a value with a string-length greater than 0 (``strlen() > 0``) then
-the crypto-plugin will try to encrypt it.
+	kdb get user/t/a
 
