@@ -10,8 +10,8 @@
 #include "crypto.h"
 
 #include "gpg.h"
+#include "helper.h"
 #include "openssl_operations.h"
-#include "rand_helper.h"
 
 #include <kdberrors.h>
 #include <kdbtypes.h>

@@ -11,7 +11,7 @@
 
 #include "gcrypt_operations.h"
 #include "gpg.h"
-#include "rand_helper.h"
+#include "helper.h"
 
 #include <errno.h>
 #include <gcrypt.h>
