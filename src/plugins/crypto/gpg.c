@@ -56,9 +56,66 @@ static char * getGpgBinary (KeySet * conf)
  */
 int elektraCryptoGpgEncryptMasterPassword (KeySet * conf, Key * errorKey, Key * msgKey)
 {
-	char * argv[] = { "", "-r", "859E2AD7", "-e", NULL };
-	// TODO use conf to determine the recipient
-	return elektraCryptoGpgCall (conf, errorKey, msgKey, argv, 5);
+	Key * k;
+
+	// determine the number of total GPG keys to be used
+	kdb_unsigned_short_t recipientCount = 0;
+	Key * root = ksLookupByName (conf, ELEKTRA_CRYPTO_PARAM_GPG_KEY, 0);
+
+	// check root key crypto/key
+	if (root && strlen (keyString (root)) > 0)
+	{
+		recipientCount++;
+	}
+
+	// check for key beneath crypto/key (like crypto/key/#0 etc)
+	ksRewind (conf);
+	while ((k = ksNext (conf)) != 0)
+	{
+		if (keyIsBelow (k, root))
+		{
+			recipientCount++;
+		}
+	}
+
+	if (recipientCount == 0)
+	{
+		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CRYPTO_CONFIG_FAULT, errorKey,
+				    "Missing GPG key (specified as %s) in plugin configuration.", ELEKTRA_CRYPTO_PARAM_GPG_KEY);
+		return -1;
+	}
+
+	// initialize argument vector for gpg call
+	const kdb_unsigned_short_t argc = (2 * recipientCount) + 3;
+	kdb_unsigned_short_t i = 1;
+	char * argv[argc];
+
+	// append root (crypto/key) as gpg recipient
+	if (root && strlen (keyString (root)) > 0)
+	{
+		argv[i] = "-r";
+		// NOTE argv[] values will not be modified, so const can be discarded safely
+		argv[i + 1] = (char *)keyString (root);
+		i = i + 2;
+	}
+
+	// append keys beneath root (crypto/key/#_) as gpg recipients
+	ksRewind (conf);
+	while ((k = ksNext (conf)) != 0)
+	{
+		if (keyIsBelow (k, root))
+		{
+			argv[i] = "-r";
+			// NOTE argv[] values will not be modified, so const can be discarded safely
+			argv[i + 1] = (char *)keyString (k);
+			i = i + 2;
+		}
+	}
+
+	argv[argc - 2] = "-e";
+
+	// call gpg
+	return elektraCryptoGpgCall (conf, errorKey, msgKey, argv, argc);
 }
 
 /**
