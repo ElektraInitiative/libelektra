@@ -24,7 +24,12 @@ static inline void closePipe (int * pipe)
 	close (pipe[1]);
 }
 
-static const char * getGpgBinary (KeySet * conf)
+/**
+ * @brief lookup the path to the gpg binary in conf.
+ * @param conf KeySet holding the plugin configuration.
+ * @returns the path to the gpg binary to use. This value must not be modified!
+ */
+static char * getGpgBinary (KeySet * conf)
 {
 	Key * k = ksLookupByName (conf, ELEKTRA_CRYPTO_PARAM_GPG_BIN, 0);
 	if (k)
@@ -32,7 +37,8 @@ static const char * getGpgBinary (KeySet * conf)
 		const char * path = keyString (k);
 		if (strlen (path) > 0)
 		{
-			return path;
+			// NOTE const is save to discard because the return value is not being modified
+			return (char *)path;
 		}
 	}
 	return ELEKTRA_CRYPTO_DEFAULT_GPG_BIN;
@@ -150,7 +156,6 @@ int elektraCryptoGpgCall (KeySet * conf, Key * errorKey, Key * msgKey, char * ar
 		close (pipe_stdout[1]);
 
 		// finally call the gpg executable
-		// TODO make gpg binary configurable
 		if (execv (argv[0], argv) < 0)
 		{
 			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CRYPTO_GPG_FAULT, errorKey, "failed to start the gpg binary: %s", argv[0]);
