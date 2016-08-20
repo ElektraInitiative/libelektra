@@ -137,13 +137,17 @@ But you can still access the original value using `kdb get`:
 
 The path to the gpg binary can be specified in
 
-	/crypto/gpg
+	/gpg/bin
 
-The GPG recipient keys can be specified as `/crypto/key` directly.
+The GPG recipient keys can be specified as `/gpg/key` directly.
 If you want to use more than one key, just enumerate like:
 
-	/crypto/key/#0
-	/crypto/key/#1
+	/gpg/key/#0
+	/gpg/key/#1
+
+If more than one key is defined, every owner of the corresponding private key can decrypt the values of the backend.
+This might be useful if applications run with their own user but the administrator has to update the configuration.
+The administrator then only needs the public key of the application user in her keyring, set the values and the application will be able to decrypt the values.
 
 ### Cryptographic Operations ###
 
