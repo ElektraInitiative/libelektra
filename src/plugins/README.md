@@ -70,6 +70,7 @@ determined (will be automatically added by kdb mount):
 - [gitresolver](gitresolver/) checks out and commits files to a local git repository
 and afterwards the configuration file must be synced with
 harddisc (recommended to add at every kdb mount):
+- [curlget](curlget/) fetches configuration file from a remote host
 
 - [sync](sync/) uses POSIX APIs to sync configuration file with harddisc
 
@@ -107,6 +108,7 @@ productive use:
 - [simpleini](simpleini/) is ini without sections
 - [csvstorage](csvstorage/) for csv files
 - [passwd](passwd/) read/write passwd files
+- [dpkg](dpkg/) reads /var/lib/dpkg/{available,status} 
 
 ## System Information ##
 
@@ -196,6 +198,7 @@ copied by another plugin just before):
 - [enum](enum/) compares the keyvalue against a list of valid values
 - [mathcheck](mathcheck/) by mathematical expressions using keysvalues as operands
 - [conditionals](conditionals/) by using if-then-else like statements
+- [filecheck](filecheck/) does sanity checks on a file
 
 ## Interpreter ##
 
@@ -205,6 +208,7 @@ These plugins start an interpreter and allow you to use a bindings.
 - [python](python/) Python 3 plugins
 - [python2](python2/) Python 2 plugins (deprecated)
 - [lua](lua/) Lua plugins
+- [shell](shell/) executes shell commandos
 
 
 ## Others ##
@@ -214,18 +218,6 @@ These plugins start an interpreter and allow you to use a bindings.
 - [template](template/) to be copied for new plugins
 - [lineendings](lineendings/) tests file for consistent line endings
 - [list](list/) loads other plugins
-- [filecheck](filecheck/) does sanity checks on a file
 - [iterate](iterate/) iterate over all keys and run exported functions on tagged keys
-- [dpkg](dpkg/) reads /var/lib/dpkg/{available,status} 
-- [curlget](curlget/) fetchs configuration file from a remote host
-- [shell](shell/) executes shell commandos after kdbGet, kdbSet and kdbError
 - [semlock](semlock/) a semaphore based global locking logic
 - [profile](profile/) links profile keys
-
-## New Plugins ##
-
-To add a new plugin you can copy the template plugin. Please make sure
-to add your plugin:
-
-- to this list, at least in Others
-- to [cmake](/cmake/ElektraCache.cmake), at least in ALL
