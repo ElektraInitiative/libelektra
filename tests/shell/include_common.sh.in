@@ -209,7 +209,8 @@ is_not_rw_storage()
 	-o "x$PLUGIN" = "xcsvstorage" \
 	-o "x$PLUGIN" = "xdpkg" \
 	-o "x$PLUGIN" = "xregexstore" \
-	-o "x$PLUGIN" = "xpasswd"
+	-o "x$PLUGIN" = "xpasswd" \
+	-o "x$PLUGIN" = "xprefs"
 }
 
 is_plugin_available()
