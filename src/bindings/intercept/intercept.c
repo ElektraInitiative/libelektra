@@ -21,6 +21,7 @@
 
 #define PRELOAD_PATH "/preload/open"
 #define TV_MAX_DIGITS 26
+#define RELEVANT_FRAME 1
 
 struct _Node
 {
@@ -273,6 +274,22 @@ static void exportConfiguration (Node * node)
 	if (!__xstat (3, node->value, &buf)) node->creationTime = buf.st_mtim.tv_sec;
 }
 
+
+// e.g. we intercept successive calls of stat and open
+static inline int createdWithinTimeframe (int (*f) (int, const char *, struct stat *), Node * node, int frame)
+{
+	struct stat buf;
+	if (!f (3, node->value, &buf))
+	{
+		if (node->creationTime && ((node->creationTime + frame) < buf.st_mtim.tv_sec)) return 0;
+	}
+	else
+	{
+		return 0;
+	}
+	return 1;
+}
+
 typedef int (*orig_open_f_type) (const char * pathname, int flags, ...);
 
 typedef union {
@@ -300,16 +317,7 @@ int open (const char * pathname, int flags, ...)
 		else
 		{
 			newPath = node->value;
-
-			// don't export config to file if the file is less than 1 second old
-			// e.g. we intercept successive calls of stat and open
-			struct stat buf;
-			if (!__xstat (3, newPath, &buf))
-			{
-				if (node->creationTime && ((node->creationTime + 1) < buf.st_mtim.tv_sec)) exportConfiguration (node);
-			}
-			else
-				exportConfiguration (node);
+			if (!createdWithinTimeframe (__xstat, node, RELEVANT_FRAME)) exportConfiguration (node);
 		}
 	}
 	if (newFlags == O_RDONLY)
@@ -354,16 +362,7 @@ int open64 (const char * pathname, int flags, ...)
 		else
 		{
 			newPath = node->value;
-
-			// don't export config to file if the file is less than 1 second old
-			// e.g. we intercept successive calls of stat and open
-			struct stat64 buf;
-			if (!__xstat64 (3, newPath, &buf))
-			{
-				if (node->creationTime && ((node->creationTime + 1) < buf.st_mtim.tv_sec)) exportConfiguration (node);
-			}
-			else
-				exportConfiguration (node);
+			if (!createdWithinTimeframe (__xstat, node, RELEVANT_FRAME)) exportConfiguration (node);
 		}
 	}
 	if (newFlags == O_RDONLY)
@@ -421,16 +420,7 @@ int __xstat (int ver, const char * path, struct stat * buf)
 		else
 		{
 			newPath = node->value;
-
-			// don't export config to file if the file is less than 1 second old
-			// e.g. we intercept successive calls of stat and open
-			struct stat tmpbuf;
-			if (!orig_xstat.f (ver, newPath, &tmpbuf))
-			{
-				if (node->creationTime && ((node->creationTime + 1) < tmpbuf.st_mtim.tv_sec)) exportConfiguration (node);
-			}
-			else
-				exportConfiguration (node);
+			if (!createdWithinTimeframe (orig_xstat.f, node, RELEVANT_FRAME)) exportConfiguration (node);
 		}
 	}
 
@@ -454,16 +444,7 @@ int __xstat64 (int ver, const char * path, struct stat64 * buf)
 		else
 		{
 			newPath = node->value;
-
-			// don't export config to file if the file is less than 1 second old
-			// e.g. we intercept successive calls of stat and open
-			struct stat64 tmpbuf;
-			if (!orig_xstat64.f (ver, newPath, &tmpbuf))
-			{
-				if (node->creationTime && ((node->creationTime + 1) < tmpbuf.st_mtim.tv_sec)) exportConfiguration (node);
-			}
-			else
-				exportConfiguration (node);
+			if (!createdWithinTimeframe (__xstat, node, RELEVANT_FRAME)) exportConfiguration (node);
 		}
 	}
 
