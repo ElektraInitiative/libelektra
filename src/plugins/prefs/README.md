@@ -5,19 +5,103 @@
 - infos/provides = storage
 - infos/recommends =
 - infos/placements = getstorage setstorage
-- infos/status = recommended productive maintained reviewed conformant compatible coverage specific unittest shelltest tested nodep libc configurable final preview memleak experimental difficult unfinished old nodoc concept 
+- infos/status = maintained reviewed conformant compatible coverage specific tested nodep libc preview experimental difficult unfinished nodoc concept 
 - infos/metadata =
 - infos/description =
 
-## Usage ##
+## Basics ##
 
-Copy this prefs if you want to start a new
-plugin written in C.
+### Preference Types ###
 
-You can use scripts/copy-prefs
-to automatically rename everything to your
-plugin name:
+- Default preferences: below `mountpoint/preferences/pref/`.
+- User preferences: below `mountpoint/preferences/user/`.
+- Lock preferences: below `mountpoint/preferences/lock/`.
 
-	cd src/plugins
-	../../scripts/copy-prefs yourplugin
+User preferences will override default preferences. Lock preferences can't be overwritten by user or default preferences. 
+Only user preferences will be saved to `prefs.js`.
+
+### Data Types ###
+
+- `integer`
+- `string`
+- `boolean`
+
+
+## Example ##
+
+Append
+```
+user_pref("elektra.config.file", "/tmp/myPrefs.js");
+user_pref("elektra.config.reload_trigger_port", 12345);
+```
+to `prefs.js` in `$HOME/.mozilla/firefox/<profile_dir>/`
+
+Move `autoconfig/firefox.cfg` to the directory containing the firefox binary (e.g. `/usr/lib/firefox-esr/`)
+
+Move `autoconfig/autoconfig.js` to the preferences directory inside the folder containing the firefox binary (e.g. `/usr/lib/firefox-esr/defaults/pref/`)
+
+
+```
+% kdb mount autoconfig/preload.ini /preload ini
+% kdb export /preload
+
+[open]
+\/tmp\/myPrefs.js =
+\/tmp\/myPrefs.js/generate = system/prefs/gen
+\/tmp\/myPrefs.js/generate/plugin = prefs
+
+
+% kdb mount autoconfig/prefExample.js system/prefs/gen prefs shell execute/set='echo -n "reload"|nc 127.0.0.1 12345'
+% kdb export system/prefs/gen
+
+[functions]
+[preferences]
+[preferences/lock/a/lock]
+1 = lock1
+2 = lock2
+[preferences/pref/a/default]
+1 = 1
+2 = 2
+[preferences/user/a/user]
+f = false
+t = true
+[variables]
+
+% kdb export system/prefs/gen prefs
+
+lockPref("a.lock.1", "lock1");
+lockPref("a.lock.2", "lock2");
+pref("a.default.1", 1);
+pref("a.default.2", 2);
+user_pref("a.user.f", false);
+user_pref("a.user.t", true);
+```
+
+```
+% LD_PRELOAD=/usr/local/lib/libelektraintercept.so firefox-esr "about:config"
+```
+
+![about:config before](./autoconfig/config_1.jpg)
+```
+% kdb setmeta system/prefs/gen/preferences/lock/a/lock/3 type boolean
+% kdb set system/prefs/gen/preferences/lock/a/lock/3 true
+% kdb export system/prefs/gen
+
+[functions]
+[preferences]
+[preferences/lock/a/lock]
+1 = lock1
+2 = lock2
+3 = true
+[preferences/pref/a/default]
+1 = 1
+2 = 2
+[preferences/user/a/user]
+f = false
+t = true
+[variables]
+```
+![about:config after](./autoconfig/config_2.jpg)
+
+
 
