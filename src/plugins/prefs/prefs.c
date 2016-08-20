@@ -23,32 +23,11 @@ typedef enum {
 	STICKY,
 	PREF_END,
 } PrefType;
-typedef enum {
-	VAR = 0,
-	CONST,
-	DATA_END,
-} DataType;
 
-const char * data[] = { "var", "const" };
 
 const char * function[] = { "pref", "user_pref", "lockPref", "sticky_pref" };
 const char * prefix[] = { "pref", "user", "lock", "sticky" };
 
-int elektraPrefsOpen (Plugin * handle ELEKTRA_UNUSED, Key * errorKey ELEKTRA_UNUSED)
-{
-	// plugin initialization logic
-	// this function is optional
-
-	return 1; // success
-}
-
-int elektraPrefsClose (Plugin * handle ELEKTRA_UNUSED, Key * errorKey ELEKTRA_UNUSED)
-{
-	// free all plugin resources and shut it down
-	// this function is optional
-
-	return 1; // success
-}
 
 static inline void lskip (char ** p)
 {
@@ -120,12 +99,6 @@ static Key * prefToKey (Key * parentKey, PrefType type, const char * pref)
 	return key;
 }
 
-static Key * varToKey (Key * parentKey, DataType d, const char * string)
-{
-	Key * key = keyNew (keyString (parentKey), KEY_END);
-	keyAddBaseName (parentKey, "variables");
-	return key;
-}
 
 int elektraPrefsGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
 {
@@ -134,12 +107,8 @@ int elektraPrefsGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * pa
 		KeySet * contract =
 			ksNew (30, keyNew ("system/elektra/modules/prefs", KEY_VALUE, "prefs plugin waits for your orders", KEY_END),
 			       keyNew ("system/elektra/modules/prefs/exports", KEY_END),
-			       keyNew ("system/elektra/modules/prefs/exports/open", KEY_FUNC, elektraPrefsOpen, KEY_END),
-			       keyNew ("system/elektra/modules/prefs/exports/close", KEY_FUNC, elektraPrefsClose, KEY_END),
 			       keyNew ("system/elektra/modules/prefs/exports/get", KEY_FUNC, elektraPrefsGet, KEY_END),
 			       keyNew ("system/elektra/modules/prefs/exports/set", KEY_FUNC, elektraPrefsSet, KEY_END),
-			       keyNew ("system/elektra/modules/prefs/exports/error", KEY_FUNC, elektraPrefsError, KEY_END),
-			       keyNew ("system/elektra/modules/prefs/exports/checkconf", KEY_FUNC, elektraPrefsCheckConfig, KEY_END),
 #include ELEKTRA_README (prefs)
 			       keyNew ("system/elektra/modules/prefs/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 		ksAppend (returned, contract);
@@ -179,15 +148,6 @@ int elektraPrefsGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * pa
 		char * ptr = buffer;
 		lskip (&ptr);
 		if (!strncmp (buffer, "//", 2)) continue;
-		for (DataType d = VAR; d < DATA_END; ++d)
-		{
-			if (!strncmp (ptr, data[d], strlen (data[d])))
-			{
-				key = varToKey (parentKey, d, ptr);
-				ksAppendKey (returned, key);
-				goto LOOP_END;
-			}
-		}
 		for (PrefType p = PREF; p < PREF_END; ++p)
 		{
 			if (!strncmp (ptr, function[p], strlen (function[p])))
@@ -314,35 +274,12 @@ int elektraPrefsSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * pa
 	return 1; // success
 }
 
-int elektraPrefsError (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
-{
-	// set all keys
-	// this function is optional
-
-	return 1; // success
-}
-
-int elektraPrefsCheckConfig (Key * errorKey ELEKTRA_UNUSED, KeySet * conf ELEKTRA_UNUSED)
-{
-	// validate plugin configuration
-	// this function is optional
-
-	// the return codes have the following meaning:
-	// 0: The configuration was OK and has not been changed
-	// 1: The configuration has been changed and now it is OK
-	// -1: The configuration was not OK and could not be fixed. An error has to be set to errorKey.
-	return 0;
-}
-
 Plugin * ELEKTRA_PLUGIN_EXPORT (prefs)
 {
 	// clang-format off
 	return elektraPluginExport ("prefs",
-			ELEKTRA_PLUGIN_OPEN,	&elektraPrefsOpen,
-			ELEKTRA_PLUGIN_CLOSE,	&elektraPrefsClose,
 			ELEKTRA_PLUGIN_GET,	&elektraPrefsGet,
 			ELEKTRA_PLUGIN_SET,	&elektraPrefsSet,
-			ELEKTRA_PLUGIN_ERROR,	&elektraPrefsError,
 			ELEKTRA_PLUGIN_END);
 }
 
