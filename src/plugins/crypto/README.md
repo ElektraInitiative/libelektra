@@ -112,7 +112,7 @@ The crypto plugin will encrypt and decrypt values using AES-256 in CBC mode.
 
 The GPG binary is required for handling the cryptographic keys.
 
-At the moment the plugins will only run in UNIX/Linux-like systems, that implement `fork ()`.
+At the moment the plugins will only run on UNIX/Linux-like systems, that implement `fork ()`.
 
 ## Examples ##
 
