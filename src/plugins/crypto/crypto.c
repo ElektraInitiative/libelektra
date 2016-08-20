@@ -35,6 +35,10 @@ static unsigned int ref_cnt = 0;
 
 /**
  * @brief checks if a Key has been marked for encryption by checking the Key's metadata.
+ *
+ * If the meta-key ELEKTRA_CRYPTO_META_ENCRYPT has the value "1" it is considered to be true.
+ * Every other value or the non-existence of the meta-key is considered to be false.
+ *
  * @param k the Key to be checked
  * @retval 0 if the Key has not been marked for encryption
  * @retval 1 if the Key has been marked for encryption
@@ -42,11 +46,11 @@ static unsigned int ref_cnt = 0;
 static int isMarkedForEncryption (const Key * k)
 {
 	const Key * metaEncrypt = keyGetMeta (k, ELEKTRA_CRYPTO_META_ENCRYPT);
-	if (metaEncrypt == NULL || strlen (keyValue (metaEncrypt)) == 0)
+	if (metaEncrypt && strcmp (keyString (metaEncrypt), "1") == 0)
 	{
-		return 0;
+		return 1;
 	}
-	return 1;
+	return 0;
 }
 
 #endif
