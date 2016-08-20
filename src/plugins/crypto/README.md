@@ -112,7 +112,24 @@ The crypto plugin will encrypt and decrypt values using AES-256 in CBC mode.
 
 The GPG binary is required for handling the cryptographic keys.
 
-At the moment the plugins will only run in a UNIX/Linux-like system.
+At the moment the plugins will only run in UNIX/Linux-like systems, that implement `fork ()`.
+
+## Examples ##
+
+To mount a backend with the gcrypt plugin variant that uses the GPG key 9CCC3B514E196C6308CCD230666260C14A525406, use:
+
+	kdb mount test.ecf user/t crypto_gcrypt "crypto/key=9CCC3B514E196C6308CCD230666260C14A525406"
+
+Now you can specify a key `user/t/a` and protect its content by using:
+
+	kdb set user/t/a
+	kdb setmeta user/t/a crypto/encrypt 1
+	kdb set user/t/a "secret"
+
+The value of `user/t/a` will be stored encrypted.
+But you can still access the original value using `kdb get`:
+
+	kdb get user/t/a
 
 ## Configuration ##
 
@@ -147,21 +164,4 @@ if the plugin should shut down the crypto library:
 
 Per default shutdown is disabled to prevent applications like the qt-gui from crashing.
 Shutdown is enabled in the unit tests to prevent memory leaks.
-
-## Examples ##
-
-To mount a backend with the gcrypt plugin variant that uses the GPG key 859E2AD7, use:
-
-	kdb mount test.ecf user/t crypto_gcrypt "crypto/key=859E2AD7"
-
-Now you can specify a key `user/t/a` and protect its content by using:
-
-	kdb set user/t/a
-	kdb setmeta user/t/a crypto/encrypt 1
-	kdb set user/t/a "secret"
-
-The value of `user/t/a` will be stored encrypted.
-But you can still access the original value using `kdb get`:
-
-	kdb get user/t/a
 
