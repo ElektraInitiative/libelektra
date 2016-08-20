@@ -11,6 +11,7 @@
 
 #include <kdbhelper.h>
 
+#include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -49,6 +50,22 @@ int elektraPrefsClose (Plugin * handle ELEKTRA_UNUSED, Key * errorKey ELEKTRA_UN
 	return 1; // success
 }
 
+static inline void lskip (char ** p)
+{
+	while (**p && isspace (**p))
+		++(*p);
+}
+
+static inline void rstrip (const char * s, char ** p)
+{
+	while ((*p > s) && **p && isspace (**p))
+	{
+		**p = '\0';
+		--(*p);
+	}
+}
+
+
 static Key * prefToKey (Key * parentKey, PrefType type, const char * pref)
 {
 	Key * key = keyNew (keyName (parentKey), KEY_END);
@@ -61,7 +78,7 @@ static Key * prefToKey (Key * parentKey, PrefType type, const char * pref)
 	++sPtr;
 	*sPtr++ = '\0';
 	char * ePtr = cPtr - 1;
-	*ePtr = '\0';
+	rstrip (sPtr, &ePtr);
 	size_t keyLen = ePtr - sPtr;
 	char * prefKey = elektraMalloc (keyLen + 1);
 	snprintf (prefKey, keyLen + 1, "%s", sPtr);
@@ -72,28 +89,30 @@ static Key * prefToKey (Key * parentKey, PrefType type, const char * pref)
 		keyAddBaseName (key, tPtr);
 	}
 	elektraFree (prefKey);
-	sPtr = cPtr + 2;
+	sPtr = cPtr + 1;
+	lskip (&sPtr);
 	ePtr = strrchr (sPtr, ')');
-	*ePtr = '\0';
-	size_t argLen = ePtr - sPtr;
+	*ePtr-- = '\0';
+	rstrip (sPtr, &ePtr);
+	size_t argLen = ePtr - sPtr + 1;
 	char * prefArg = elektraMalloc (argLen + 1);
 	snprintf (prefArg, argLen + 1, "%s", sPtr);
 	if (!strcmp (prefArg, "true") || !(strcmp (prefArg, "false")))
 	{
-		keySetMeta (key, "pref/type", "boolean");
+		keySetMeta (key, "type", "boolean");
 		keySetString (key, prefArg);
 	}
 	else if (prefArg[0] == '"' && prefArg[strlen (prefArg) - 1] == '"')
 	{
 		// TODO: else if list
-		keySetMeta (key, "pref/type", "string");
+		keySetMeta (key, "type", "string");
 		*prefArg = '\0';
 		*(prefArg + (strlen (prefArg + 1))) = '\0';
 		keySetString (key, (prefArg + 1));
 	}
 	else
 	{
-		keySetMeta (key, "pref/type", "integer");
+		keySetMeta (key, "type", "integer");
 		keySetString (key, prefArg);
 	}
 	elektraFree (prefArg);
@@ -108,7 +127,7 @@ static Key * varToKey (Key * parentKey, DataType d, const char * string)
 	return key;
 }
 
-int elektraPrefsGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
+int elektraPrefsGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
 {
 	if (!elektraStrCmp (keyName (parentKey), "system/elektra/modules/prefs"))
 	{
@@ -148,7 +167,7 @@ int elektraPrefsGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_U
 	{
 		if (buffer[strlen (buffer) - 1] != '\n')
 		{
-			fseek (fp, ((len - 1) * (-1)), ftell (fp));
+			fseek (fp, ((len - 1) * (-1)), SEEK_CUR);
 			len *= 2;
 			elektraRealloc ((void **)&buffer, len * sizeof (char));
 			continue;
@@ -157,21 +176,23 @@ int elektraPrefsGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_U
 		{
 			buffer[strlen (buffer) - 1] = '\0';
 		}
+		char * ptr = buffer;
+		lskip (&ptr);
 		if (!strncmp (buffer, "//", 2)) continue;
 		for (DataType d = VAR; d < DATA_END; ++d)
 		{
-			if (!strncmp (buffer, data[d], strlen (data[d])))
+			if (!strncmp (ptr, data[d], strlen (data[d])))
 			{
-				key = varToKey (parentKey, d, buffer);
+				key = varToKey (parentKey, d, ptr);
 				ksAppendKey (returned, key);
 				goto LOOP_END;
 			}
 		}
 		for (PrefType p = PREF; p < PREF_END; ++p)
 		{
-			if (!strncmp (buffer, function[p], strlen (function[p])))
+			if (!strncmp (ptr, function[p], strlen (function[p])))
 			{
-				key = prefToKey (parentKey, p, buffer + strlen (function[p]));
+				key = prefToKey (parentKey, p, ptr + strlen (function[p]));
 				ksAppendKey (returned, key);
 				goto LOOP_END;
 			}
@@ -184,11 +205,113 @@ int elektraPrefsGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_U
 	return 1; // success
 }
 
-int elektraPrefsSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
+static char * keyNameToPrefName (const char * prefName)
+{
+	char * buffer = elektraCalloc (strlen (prefName) + 1);
+	char * src = (char *)prefName;
+	char * dst = buffer;
+	unsigned short flag = 0;
+	while (*src)
+	{
+		switch (*src)
+		{
+		case '\\':
+			if (flag)
+			{
+				*dst++ = *src;
+				flag = 0;
+			}
+			else
+				flag = 1;
+			break;
+		case '/':
+			*dst++ = '.';
+			break;
+		default:
+			*dst++ = *src;
+			break;
+		}
+		++src;
+	}
+	return buffer;
+}
+
+static inline const char * prefTypToFunction (PrefType pref)
+{
+	if (pref >= PREF_END) return NULL;
+	return function[pref];
+}
+
+static char * prefArgToString (const Key * key)
+{
+	const Key * typeMeta = keyGetMeta (key, "type");
+	if (!typeMeta) return NULL;
+	char * buffer = NULL;
+	if (!strcmp (keyString (typeMeta), "boolean"))
+	{
+		buffer = strdup (keyString (key));
+	}
+	else if (!strcmp (keyString (typeMeta), "string"))
+	{
+		ssize_t len = keyGetValueSize (key) + 2; // size of string + leading and trailing '"'
+		buffer = elektraCalloc (len);
+		snprintf (buffer, len, "\"%s\"", keyString (key));
+	}
+	else if (!strcmp (keyString (typeMeta), "integer"))
+	{
+		buffer = strdup (keyString (key));
+	}
+	return buffer;
+}
+
+static void writeKey (FILE * fp, const Key * parentKey, const Key * key)
+{
+	char * prefName = (char *)keyName (key) + strlen (keyName (parentKey)) + 1; // skip parentKey name + '/'
+	if (strncmp (prefName, "preferences", sizeof ("preferences") - 1))
+		return;
+	else
+		prefName += sizeof ("preferences");
+	unsigned short flag = 0;
+	PrefType pref = PREF;
+	for (; pref < PREF_END; ++pref)
+	{
+		if (!strncmp (prefName, prefix[pref], strlen (prefix[pref])))
+		{
+			flag = 1;
+			prefName += strlen (prefix[pref]) + 1; // skip prefix len + '/'
+			break;
+		}
+	}
+	if (!flag) return;
+
+	char * realPrefName = keyNameToPrefName (prefName);
+	if (!realPrefName) return;
+	const char * functionName = prefTypToFunction (pref);
+	char * argString = NULL;
+	if (!functionName) goto WRITE_CLEANUP;
+	argString = prefArgToString (key);
+	if (!argString) goto WRITE_CLEANUP;
+	fprintf (fp, "%s(\"%s\", %s);\n", functionName, realPrefName, argString);
+WRITE_CLEANUP:
+	if (realPrefName) elektraFree (realPrefName);
+	if (argString) elektraFree (argString);
+}
+
+int elektraPrefsSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
 {
 	// get all keys
 	// this function is optional
 
+	FILE * fp = fopen (keyString (parentKey), "w");
+	if (!fp) return -1;
+	fprintf(fp, "//\n");
+	Key * cur;
+	while ((cur = ksNext (returned)) != NULL)
+	{
+		if (!strcmp (keyName (parentKey), keyName (cur))) continue;
+		writeKey (fp, parentKey, cur);
+	}
+	fclose(fp);
 	return 1; // success
 }
 
@@ -216,11 +339,11 @@ Plugin * ELEKTRA_PLUGIN_EXPORT (prefs)
 {
 	// clang-format off
 	return elektraPluginExport ("prefs",
-		ELEKTRA_PLUGIN_OPEN,	&elektraPrefsOpen,
-		ELEKTRA_PLUGIN_CLOSE,	&elektraPrefsClose,
-		ELEKTRA_PLUGIN_GET,	&elektraPrefsGet,
-		ELEKTRA_PLUGIN_SET,	&elektraPrefsSet,
-		ELEKTRA_PLUGIN_ERROR,	&elektraPrefsError,
-		ELEKTRA_PLUGIN_END);
+			ELEKTRA_PLUGIN_OPEN,	&elektraPrefsOpen,
+			ELEKTRA_PLUGIN_CLOSE,	&elektraPrefsClose,
+			ELEKTRA_PLUGIN_GET,	&elektraPrefsGet,
+			ELEKTRA_PLUGIN_SET,	&elektraPrefsSet,
+			ELEKTRA_PLUGIN_ERROR,	&elektraPrefsError,
+			ELEKTRA_PLUGIN_END);
 }
 
