@@ -31,7 +31,7 @@ typedef enum {
 
 const char * data[] = { "var", "const" };
 
-const char * function[] = { "pref", "user_pref", "lock_pref", "sticky_pref" };
+const char * function[] = { "pref", "user_pref", "lockPref", "sticky_pref" };
 const char * prefix[] = { "pref", "user", "lock", "sticky" };
 
 int elektraPrefsOpen (Plugin * handle ELEKTRA_UNUSED, Key * errorKey ELEKTRA_UNUSED)
@@ -304,14 +304,13 @@ int elektraPrefsSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * pa
 
 	FILE * fp = fopen (keyString (parentKey), "w");
 	if (!fp) return -1;
-	fprintf(fp, "//\n");
 	Key * cur;
 	while ((cur = ksNext (returned)) != NULL)
 	{
 		if (!strcmp (keyName (parentKey), keyName (cur))) continue;
 		writeKey (fp, parentKey, cur);
 	}
-	fclose(fp);
+	fclose (fp);
 	return 1; // success
 }
 
