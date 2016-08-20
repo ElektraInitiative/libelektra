@@ -29,6 +29,7 @@ struct _Node
 	unsigned short oflags;
 	char * exportType;
 	char * exportKey;
+	time_t creationTime;
 	struct _Node * next;
 };
 typedef struct _Node Node;
@@ -147,7 +148,7 @@ void init ()
 		found = ksLookup (ks, lookupKey, 0);
 		if (found)
 		{
-			if (tmp->value == NULL) tmp->value = genTemporaryFilename ();
+			if (tmp->value == NULL) tmp->value = (char *)genTemporaryFilename ();
 			tmp->exportKey = strdup (keyString (found));
 			keyAddBaseName (lookupKey, "plugin");
 			found = ksLookup (ks, lookupKey, 0);
@@ -168,6 +169,7 @@ void init ()
 		}
 		keyDel (lookupKey);
 		if (tmp->value == NULL) tmp->value = createAbsolutePath (keyBaseName (key), cwd);
+		tmp->creationTime = 0;
 		tmp->next = NULL;
 		if (current == NULL)
 		{
@@ -241,6 +243,9 @@ static Node * resolvePathname (const char * pathname)
 	return node;
 }
 
+int __xstat (int ver, const char * path, struct stat * buf);
+int __xstat64 (int ver, const char * path, struct stat64 * buf);
+
 static void exportConfiguration (Node * node)
 {
 	Key * key = keyNew (node->exportKey, KEY_END);
@@ -264,6 +269,8 @@ static void exportConfiguration (Node * node)
 	keyDel (key);
 	ksDel (ks);
 	kdbClose (handle, 0);
+	struct stat buf;
+	if (!__xstat (3, node->value, &buf)) node->creationTime = buf.st_mtim.tv_sec;
 }
 
 typedef int (*orig_open_f_type) (const char * pathname, int flags, ...);
@@ -271,7 +278,7 @@ typedef int (*orig_open_f_type) (const char * pathname, int flags, ...);
 typedef union {
 	void * d;
 	orig_open_f_type f;
-} Symbol;
+} OpenSymbol;
 
 
 int open (const char * pathname, int flags, ...)
@@ -293,14 +300,23 @@ int open (const char * pathname, int flags, ...)
 		else
 		{
 			newPath = node->value;
-			exportConfiguration (node);
+
+			// don't export config to file if the file is less than 1 second old
+			// e.g. we intercept successive calls of stat and open
+			struct stat buf;
+			if (!__xstat (3, newPath, &buf))
+			{
+				if (node->creationTime && ((node->creationTime + 1) < buf.st_mtim.tv_sec)) exportConfiguration (node);
+			}
+			else
+				exportConfiguration (node);
 		}
 	}
 	if (newFlags == O_RDONLY)
 	{
 		flags = (flags & (~(0 | O_WRONLY | O_APPEND)));
 	}
-	Symbol orig_open;
+	OpenSymbol orig_open;
 	orig_open.d = dlsym (RTLD_NEXT, "open");
 
 	int fd;
@@ -330,15 +346,32 @@ int open64 (const char * pathname, int flags, ...)
 	}
 	else
 	{
-		newPath = node->value;
-		newFlags = node->oflags;
+		if (!(node->exportType))
+		{
+			newPath = node->value;
+			newFlags = node->oflags;
+		}
+		else
+		{
+			newPath = node->value;
+
+			// don't export config to file if the file is less than 1 second old
+			// e.g. we intercept successive calls of stat and open
+			struct stat64 buf;
+			if (!__xstat64 (3, newPath, &buf))
+			{
+				if (node->creationTime && ((node->creationTime + 1) < buf.st_mtim.tv_sec)) exportConfiguration (node);
+			}
+			else
+				exportConfiguration (node);
+		}
 	}
 	if (newFlags == O_RDONLY)
 	{
 		flags = (flags & (~(0 | O_WRONLY | O_APPEND)));
 	}
 
-	Symbol orig_open64;
+	OpenSymbol orig_open64;
 	orig_open64.d = dlsym (RTLD_NEXT, "open64");
 
 	int fd;
@@ -356,4 +389,99 @@ int open64 (const char * pathname, int flags, ...)
 		fd = orig_open64.f (newPath, flags);
 	}
 	return fd;
+}
+
+typedef int (*orig_xstat_f_type) (int ver, const char * path, struct stat * buf);
+typedef int (*orig_xstat64_f_type) (int ver, const char * path, struct stat64 * buf);
+
+typedef union {
+	void * d;
+	orig_xstat_f_type f;
+} XstatSymbol;
+
+typedef union {
+	void * d;
+	orig_xstat64_f_type f;
+} Xstat64Symbol;
+
+int __xstat (int ver, const char * path, struct stat * buf)
+{
+	Node * node = resolvePathname (path);
+	const char * newPath = NULL;
+	XstatSymbol orig_xstat;
+	orig_xstat.d = dlsym (RTLD_NEXT, "__xstat");
+	if (!node)
+		newPath = path;
+	else
+	{
+		if (!(node->exportType))
+		{
+			newPath = node->value;
+		}
+		else
+		{
+			newPath = node->value;
+
+			// don't export config to file if the file is less than 1 second old
+			// e.g. we intercept successive calls of stat and open
+			struct stat tmpbuf;
+			if (!orig_xstat.f (ver, newPath, &tmpbuf))
+			{
+				if (node->creationTime && ((node->creationTime + 1) < tmpbuf.st_mtim.tv_sec)) exportConfiguration (node);
+			}
+			else
+				exportConfiguration (node);
+		}
+	}
+
+	return orig_xstat.f (ver, newPath, buf);
+}
+
+int __xstat64 (int ver, const char * path, struct stat64 * buf)
+{
+	Node * node = resolvePathname (path);
+	const char * newPath = NULL;
+	Xstat64Symbol orig_xstat64;
+	orig_xstat64.d = dlsym (RTLD_NEXT, "__xstat64");
+	if (!node)
+		newPath = path;
+	else
+	{
+		if (!(node->exportType))
+		{
+			newPath = node->value;
+		}
+		else
+		{
+			newPath = node->value;
+
+			// don't export config to file if the file is less than 1 second old
+			// e.g. we intercept successive calls of stat and open
+			struct stat64 tmpbuf;
+			if (!orig_xstat64.f (ver, newPath, &tmpbuf))
+			{
+				if (node->creationTime && ((node->creationTime + 1) < tmpbuf.st_mtim.tv_sec)) exportConfiguration (node);
+			}
+			else
+				exportConfiguration (node);
+		}
+	}
+
+	return orig_xstat64.f (ver, newPath, buf);
+}
+
+typedef int (*orig_access_f_type) (const char * pathname, int mode);
+
+typedef union {
+	void * d;
+	orig_access_f_type f;
+} AccessSymbol;
+
+int access (const char * pathname, int mode)
+{
+	Node * node = resolvePathname (pathname);
+	if (node && mode == F_OK) return 0;
+	AccessSymbol orig_access;
+	orig_access.d = dlsym (RTLD_NEXT, "access");
+	return orig_access.f (pathname, mode);
 }
