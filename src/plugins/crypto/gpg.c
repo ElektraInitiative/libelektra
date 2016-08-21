@@ -25,6 +25,22 @@ static inline void closePipe (int * pipe)
 }
 
 /**
+ * @brief lookup if the test mode for unit testing is enabled.
+ * @param conf KeySet holding the plugin configuration.
+ * @retval 0 test mode is not enabled
+ * @retval 1 test mode is enabled
+ */
+static int inTestMode (KeySet * conf)
+{
+	Key * k = ksLookupByName (conf, ELEKTRA_CRYPTO_PARAM_GPG_UNIT_TEST, 0);
+	if (k && !strcmp (keyString (k), "1"))
+	{
+		return 1;
+	}
+	return 0;
+}
+
+/**
  * @brief lookup the path to the gpg binary in conf.
  * @param conf KeySet holding the plugin configuration.
  * @returns the path to the gpg binary to use. This value must not be modified!
@@ -60,6 +76,7 @@ int elektraCryptoGpgEncryptMasterPassword (KeySet * conf, Key * errorKey, Key * 
 
 	// determine the number of total GPG keys to be used
 	kdb_unsigned_short_t recipientCount = 0;
+	kdb_unsigned_short_t testMode = 0;
 	Key * root = ksLookupByName (conf, ELEKTRA_CRYPTO_PARAM_GPG_KEY, 0);
 
 	// check root key crypto/key
@@ -85,8 +102,14 @@ int elektraCryptoGpgEncryptMasterPassword (KeySet * conf, Key * errorKey, Key * 
 		return -1;
 	}
 
+	if (inTestMode (conf))
+	{
+		// add two parameters for unit testing
+		testMode = 2;
+	}
+
 	// initialize argument vector for gpg call
-	const kdb_unsigned_short_t argc = (2 * recipientCount) + 3;
+	const kdb_unsigned_short_t argc = (2 * recipientCount) + 3 + testMode;
 	kdb_unsigned_short_t i = 1;
 	char * argv[argc];
 
@@ -112,6 +135,13 @@ int elektraCryptoGpgEncryptMasterPassword (KeySet * conf, Key * errorKey, Key * 
 		}
 	}
 
+	// append option for unit tests
+	if (testMode)
+	{
+		argv[argc - 4] = "--trust-model";
+		argv[argc - 3] = "always";
+	}
+
 	argv[argc - 2] = "-e";
 
 	// call gpg
@@ -130,8 +160,16 @@ int elektraCryptoGpgEncryptMasterPassword (KeySet * conf, Key * errorKey, Key * 
  */
 int elektraCryptoGpgDecryptMasterPassword (KeySet * conf, Key * errorKey, Key * msgKey)
 {
-	char * argv[] = { "", "-d", NULL };
-	return elektraCryptoGpgCall (conf, errorKey, msgKey, argv, 3);
+	if (inTestMode (conf))
+	{
+		char * argv[] = { "", "--trust-model", "always", "-d", NULL };
+		return elektraCryptoGpgCall (conf, errorKey, msgKey, argv, 5);
+	}
+	else
+	{
+		char * argv[] = { "", "-d", NULL };
+		return elektraCryptoGpgCall (conf, errorKey, msgKey, argv, 3);
+	}
 }
 
 /**

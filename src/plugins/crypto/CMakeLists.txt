@@ -194,18 +194,18 @@ add_plugin (crypto_botan
 if (ADDTESTING_PHASE)
 	if (HAS_OPENSSL_4SURE)
 		add_plugintest (crypto_openssl
-				LINK_PLUGIN "<no>")
+				LINK_PLUGIN "crypto_openssl")
 	endif ()
 
 	if (HAS_GCRYPT_4SURE)
 		add_plugintest (crypto_gcrypt
 				MEMLEAK
-				LINK_PLUGIN "<no>")
+				LINK_PLUGIN "crypto_gcrypt")
 	endif ()
 
 	if (HAS_BOTAN_4SURE)
 		add_plugintest (crypto_botan
-				LINK_PLUGIN "<no>")
+				LINK_PLUGIN "crypto_botan")
 	endif ()
 endif ()
 
