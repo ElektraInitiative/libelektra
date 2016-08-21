@@ -128,18 +128,18 @@ setPreload()
 setPrefs()
 {
     kdb mount "$ConfigFile" "$MountPoint" prefs shell execute/set="echo -n \"reload\"|nc 127.0.0.1 $TriggerPort"
-    kdb setmeta "${MountPoint}/preferences/lock/a/lock/1" type string
-    kdb set "${MountPoint}/preferences/lock/a/lock/1" "lock1"
-    kdb setmeta "${MountPoint}/preferences/lock/a/lock/2" type string
-    kdb set "${MountPoint}/preferences/lock/a/lock/2" "lock2"
-    kdb setmeta "${MountPoint}/preferences/pref/a/default/1" type integer
-    kdb set "${MountPoint}/preferences/pref/a/default/1" 1
-    kdb setmeta "${MountPoint}/preferences/pref/a/default/2" type integer
-    kdb set "${MountPoint}/preferences/pref/a/default/2" 2
-    kdb setmeta "${MountPoint}/preferences/user/a/user/t" type boolean 
-    kdb set "${MountPoint}/preferences/user/a/user/t" true
-    kdb setmeta "${MountPoint}/preferences/user/a/user/f" type boolean
-    kdb set "${MountPoint}/preferences/user/a/user/f" false
+    kdb setmeta "${MountPoint}/lock/a/lock/1" type string
+    kdb set "${MountPoint}/lock/a/lock/1" "lock1"
+    kdb setmeta "${MountPoint}/lock/a/lock/2" type string
+    kdb set "${MountPoint}/lock/a/lock/2" "lock2"
+    kdb setmeta "${MountPoint}/pref/a/default/1" type integer
+    kdb set "${MountPoint}/pref/a/default/1" 1
+    kdb setmeta "${MountPoint}/pref/a/default/2" type integer
+    kdb set "${MountPoint}/pref/a/default/2" 2
+    kdb setmeta "${MountPoint}/user/a/user/t" type boolean 
+    kdb set "${MountPoint}/user/a/user/t" true
+    kdb setmeta "${MountPoint}/user/a/user/f" type boolean
+    kdb set "${MountPoint}/user/a/user/f" false
 
 }
 
