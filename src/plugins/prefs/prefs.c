@@ -48,7 +48,6 @@ static inline void rstrip (const char * s, char ** p)
 static Key * prefToKey (Key * parentKey, PrefType type, const char * pref)
 {
 	Key * key = keyNew (keyName (parentKey), KEY_END);
-	keyAddBaseName (key, "preferences");
 	keyAddBaseName (key, prefix[type]);
 	char * localString = strdup (pref);
 	char * cPtr = strstr (localString, ",");
@@ -122,15 +121,6 @@ int elektraPrefsGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * pa
 	int len = 1024;
 	char * buffer = elektraMalloc (len * sizeof (char));
 	Key * key;
-	Key * sectionKey = keyNew (keyName (parentKey), KEY_END);
-	keySetBinary (sectionKey, 0, 0);
-	keyAddBaseName (sectionKey, "preferences");
-	ksAppendKey (returned, keyDup (sectionKey));
-	keySetBaseName (sectionKey, "variables");
-	ksAppendKey (returned, keyDup (sectionKey));
-	keySetBaseName (sectionKey, "functions");
-	ksAppendKey (returned, keyDup (sectionKey));
-	keyDel (sectionKey);
 
 	while (fgets (buffer, len, fp))
 	{
@@ -205,7 +195,6 @@ static inline const char * prefTypToFunction (PrefType pref)
 static char * prefArgToString (const Key * key)
 {
 	const Key * typeMeta = keyGetMeta (key, "type");
-	if (!typeMeta) return NULL;
 	char * buffer = NULL;
 	if (!strcmp (keyString (typeMeta), "boolean"))
 	{
@@ -221,16 +210,18 @@ static char * prefArgToString (const Key * key)
 	{
 		buffer = strdup (keyString (key));
 	}
+	else
+	{
+		ssize_t len = keyGetValueSize (key) + 2;
+		buffer = elektraCalloc (len);
+		snprintf (buffer, len, "\"%s\"", keyString (key));
+	}
 	return buffer;
 }
 
 static void writeKey (FILE * fp, const Key * parentKey, const Key * key)
 {
 	char * prefName = (char *)keyName (key) + strlen (keyName (parentKey)) + 1; // skip parentKey name + '/'
-	if (strncmp (prefName, "preferences", sizeof ("preferences") - 1))
-		return;
-	else
-		prefName += sizeof ("preferences");
 	unsigned short flag = 0;
 	PrefType pref = PREF;
 	for (; pref < PREF_END; ++pref)
