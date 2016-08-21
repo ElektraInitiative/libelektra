@@ -9,6 +9,7 @@
  */
 
 #include "crypto.h"
+#include "gpg.h"
 #include <kdb.h>
 #include <kdbinternal.h>
 #include <stdio.h>
@@ -17,68 +18,24 @@
 #include <tests_internal.h>
 #include <tests_plugin.h>
 
-/*
- * The test vectors are taken from NIST SP 800-38A, section F.2.5 "CBC-AES256.Encrypt"
- * See <http://csrc.nist.gov/publications/nistpubs/800-38a/sp800-38a.pdf> for further information.
- */
-static const unsigned char key[] = { 0x60, 0x3d, 0xeb, 0x10, 0x15, 0xca, 0x71, 0xbe, 0x2b, 0x73, 0xae, 0xf0, 0x85, 0x7d, 0x77, 0x81,
-				     0x1f, 0x35, 0x2c, 0x07, 0x3b, 0x61, 0x08, 0xd7, 0x2d, 0x98, 0x10, 0xa3, 0x09, 0x14, 0xdf, 0xf4 };
+#include "test_key.h"
 
-static const unsigned char iv[] = { 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f };
+#define TEST_KEY_ID "DDEBEF9EE2DC931701338212DAF635B17F230E8D"
 
+#define MIN(a, b) (((a) < (b)) ? (a) : (b))
+#define MAX(a, b) (((a) > (b)) ? (a) : (b))
 
 static const char strVal[] = "abcde";
 static const kdb_octet_t binVal[] = { 0x01, 0x02, 0x03, 0x04 };
 
-/**
- * @brief create new KeySet and add a working configuration to it.
- * @param shutdown set to 1 if the shutdown key should be appended.
- *                 If this key is set, the crypto library will be de cleaned up.
- */
-static KeySet * newWorkingConfiguration (int shutdown)
+static int isMarkedForEncryption (const Key * k)
 {
-	Key * configKey = keyNew ("user/crypto/key", KEY_END);
-	keySetBinary (configKey, key, sizeof (key));
-
-	Key * configIv = keyNew ("user/crypto/iv", KEY_END);
-	keySetBinary (configIv, iv, sizeof (iv));
-
-	if (shutdown)
+	const Key * metaEncrypt = keyGetMeta (k, ELEKTRA_CRYPTO_META_ENCRYPT);
+	if (metaEncrypt && strcmp (keyString (metaEncrypt), "1") == 0)
 	{
-		Key * configShutdown = keyNew ("user/shutdown", KEY_END);
-		keySetString (configShutdown, "1");
-		return ksNew (3, configKey, configIv, configShutdown, KS_END);
+		return 1;
 	}
-
-	return ksNew (2, configKey, configIv, KS_END);
-}
-
-/**
- * @brief create new KeySet and add an invalid configuration to it.
- *
- * The cryptographic key in the returned KeySet has an invalid size.
- */
-static KeySet * newInvalidConfiguration ()
-{
-	const unsigned char wrongKey[] = { 0x01, 0x02, 0x03 };
-
-	Key * configKey = keyNew ("user/crypto/key", KEY_END);
-	keySetBinary (configKey, wrongKey, sizeof (wrongKey));
-
-	Key * configIv = keyNew ("user/crypto/iv", KEY_END);
-	keySetBinary (configIv, iv, sizeof (iv));
-
-	return ksNew (2, configKey, configIv, KS_END);
-}
-
-/**
- * @brief create new KeySet and add an incomplete configuration to it.
- *
- * The required key "/crypto/key-derivation/key" is missing.
- */
-static KeySet * newIncompleteConfiguration ()
-{
-	return ksNew (0, KS_END);
+	return 0;
 }
 
 /**
@@ -95,35 +52,29 @@ static KeySet * newTestdataKeySet ()
 	keySetString (kUnchanged1, strVal);
 
 	keySetString (kUnchanged2, strVal);
-	keySetMeta (kUnchanged2, ELEKTRA_CRYPTO_META_ENCRYPT, "");
+	keySetMeta (kUnchanged2, ELEKTRA_CRYPTO_META_ENCRYPT, "0");
 
 	keySetBinary (kNull, 0, 0);
-	keySetMeta (kNull, ELEKTRA_CRYPTO_META_ENCRYPT, "X");
+	keySetMeta (kNull, ELEKTRA_CRYPTO_META_ENCRYPT, "1");
 
 	keySetString (kString, strVal);
-	keySetMeta (kString, ELEKTRA_CRYPTO_META_ENCRYPT, "X");
+	keySetMeta (kString, ELEKTRA_CRYPTO_META_ENCRYPT, "1");
 
 	keySetBinary (kBin, binVal, sizeof (binVal));
-	keySetMeta (kBin, ELEKTRA_CRYPTO_META_ENCRYPT, "X");
+	keySetMeta (kBin, ELEKTRA_CRYPTO_META_ENCRYPT, "1");
 
 	return ksNew (5, kUnchanged1, kUnchanged2, kNull, kString, kBin, KS_END);
 }
 
-static void test_init_internal (Plugin * plugin, Key * parentKey)
+static inline void setPluginShutdown (KeySet * config)
 {
-	KeySet * config = elektraPluginGetConfig (plugin);
-	succeed_if (config != 0, "there should be a config");
+	ksAppendKey (config, keyNew (ELEKTRA_CRYPTO_PARAM_SHUTDOWN, KEY_VALUE, "1", 0));
+}
 
-	succeed_if (plugin->kdbOpen != 0, "no open pointer");
-	succeed_if (plugin->kdbClose != 0, "no close pointer");
-	succeed_if (plugin->kdbGet != 0, "no get pointer");
-	succeed_if (plugin->kdbSet != 0, "no set pointer");
-	succeed_if (plugin->kdbError != 0, "no error pointer");
-
-	// try re-opening the plugin
-	succeed_if (plugin->kdbClose (plugin, parentKey) == 1, "kdb close failed");
-	succeed_if (plugin->kdbOpen (plugin, parentKey) == 1, "re-opening the plugin failed");
-	succeed_if (plugin->kdbClose (plugin, parentKey) == 1, "kdb close failed");
+static KeySet * newPluginConfiguration ()
+{
+	return ksNew (2, keyNew (ELEKTRA_CRYPTO_PARAM_GPG_KEY, KEY_VALUE, TEST_KEY_ID, KEY_END),
+		      keyNew (ELEKTRA_CRYPTO_PARAM_GPG_UNIT_TEST, KEY_VALUE, "1", KEY_END), KS_END);
 }
 
 static void test_init (const char * pluginName)
@@ -131,79 +82,35 @@ static void test_init (const char * pluginName)
 	Plugin * plugin = NULL;
 	Key * parentKey = keyNew ("system", KEY_END);
 	KeySet * modules = ksNew (0, KS_END);
+	KeySet * configKs = newPluginConfiguration ();
 	elektraModulesInit (modules, 0);
 
-	plugin = elektraPluginOpen (pluginName, modules, newWorkingConfiguration (0), 0);
+	plugin = elektraPluginOpen (pluginName, modules, configKs, 0);
+	succeed_if (plugin != 0, "failed to open the plugin");
 	if (plugin)
 	{
 		succeed_if (!strcmp (plugin->name, pluginName), "got wrong name");
-		test_init_internal (plugin, parentKey);
+
+		KeySet * config = elektraPluginGetConfig (plugin);
+		succeed_if (config != 0, "there should be a config");
+
+		succeed_if (plugin->kdbOpen != 0, "no open pointer");
+		succeed_if (plugin->kdbClose != 0, "no close pointer");
+		succeed_if (plugin->kdbGet != 0, "no get pointer");
+		succeed_if (plugin->kdbSet != 0, "no set pointer");
+		succeed_if (plugin->kdbError != 0, "no error pointer");
+
+		// try re-opening the plugin
+		succeed_if (plugin->kdbClose (plugin, parentKey) == 1, "kdb close failed");
+		succeed_if (plugin->kdbOpen (plugin, parentKey) == 1, "re-opening the plugin failed");
+		succeed_if (plugin->kdbClose (plugin, parentKey) == 1, "kdb close failed");
+
 		elektraPluginClose (plugin, 0);
 	}
 
 	elektraModulesClose (modules, 0);
 	ksDel (modules);
 	keyDel (parentKey);
-}
-
-static void test_config_errors_internal (const char * pluginName, KeySet * pluginConfig, int expectedResult, const char * message)
-{
-	Plugin * plugin = NULL;
-	Key * parentKey = keyNew ("system", KEY_END);
-	KeySet * data = newTestdataKeySet ();
-	KeySet * modules = ksNew (0, KS_END);
-	elektraModulesInit (modules, 0);
-
-	plugin = elektraPluginOpen (pluginName, modules, pluginConfig, 0);
-	if (plugin)
-	{
-		succeed_if (plugin->kdbSet (plugin, data, parentKey) == expectedResult, message);
-		elektraPluginClose (plugin, 0);
-	}
-
-	elektraModulesClose (modules, 0);
-	ksDel (modules);
-	ksDel (data);
-	keyDel (parentKey);
-}
-
-static void test_config_errors (const char * pluginName)
-{
-	test_config_errors_internal (pluginName, newWorkingConfiguration (0), 1, "kdbSet failed with valid config");
-	test_config_errors_internal (pluginName, newInvalidConfiguration (), -1, "kdbSet succeeded with invalid config");
-	test_config_errors_internal (pluginName, newIncompleteConfiguration (), -1, "kdbSet succeeded with incomplete config");
-}
-
-static void test_crypto_operations_internal (Plugin * plugin, Key * parentKey)
-{
-	Key * k;
-	KeySet * original = newTestdataKeySet ();
-
-	// encrypt data by calling kdbSet
-	KeySet * data = newTestdataKeySet ();
-	succeed_if (plugin->kdbSet (plugin, data, parentKey) == 1, "kdb set failed");
-
-	// verify data changes
-	ksRewind (data);
-	while ((k = ksNext (data)) != 0)
-	{
-		const char * name = keyName (k);
-
-		// verify that keys without the encrpytion meta-key value did not change
-		if (strstr (name, "nochange"))
-		{
-			succeed_if (strcmp (strVal, keyString (k)) == 0, "value of non-marked key changed");
-		}
-	}
-
-	// decrypt data by calling kdbGet
-	succeed_if (plugin->kdbGet (plugin, data, parentKey) == 1, "kdb get failed");
-
-	// now we expect the same keySet like before the encryption took place
-	compare_keyset (data, original);
-
-	ksDel (data);
-	ksDel (original);
 }
 
 static void test_crypto_operations (const char * pluginName)
@@ -211,16 +118,77 @@ static void test_crypto_operations (const char * pluginName)
 	Plugin * plugin = NULL;
 	Key * parentKey = keyNew ("system", KEY_END);
 	KeySet * modules = ksNew (0, KS_END);
+	KeySet * config = newPluginConfiguration ();
+
+	setPluginShutdown (config);
+
 	elektraModulesInit (modules, 0);
 
-	plugin = elektraPluginOpen (pluginName, modules, newWorkingConfiguration (1), 0);
+	plugin = elektraPluginOpen (pluginName, modules, config, 0);
 	if (plugin)
 	{
-		test_crypto_operations_internal (plugin, parentKey);
+		Key * k;
+		KeySet * data = newTestdataKeySet ();
+		KeySet * original = ksDup (data);
+
+		// run checkconf to generate the master password
+
+		/*
+		 * TODO call the checkconf function
+		 * succeed_if (plugin->getSymbol("checkconf")->(parentKey, config), "checkconf failed");
+		*/
+
+		// test encryption with kdb set
+		succeed_if (plugin->kdbSet (plugin, data, parentKey) == 1, "kdb set failed");
+
+		// verify key set
+		ksRewind (data);
+		while ((k = ksNext (data)) != 0)
+		{
+			if (isMarkedForEncryption (k))
+			{
+				succeed_if (keyIsBinary (k), "Key value is not binary although it should have been encrypted");
+				succeed_if (keyGetValueSize (k) > 0, "NULL Key must have encrypted meta-data and can not have length 0");
+				succeed_if (memcmp (keyValue (k), binVal, MIN (keyGetValueSize (k), (ssize_t)sizeof (binVal))),
+					    "encryption failed");
+				succeed_if (memcmp (keyValue (k), strVal, MIN (keyGetValueSize (k), (ssize_t)sizeof (strVal))),
+					    "encryption failed");
+			}
+			else
+			{
+				succeed_if (!strcmp (keyString (k), strVal), "Key value changed without being marked for encryption");
+			}
+		}
+
+		// test decryption with kdb get
+		succeed_if (plugin->kdbGet (plugin, data, parentKey) == 1, "kdb get failed");
+		compare_keyset (data, original);
+
+		ksDel (original);
+		ksDel (data);
 		elektraPluginClose (plugin, 0);
 	}
 
 	elektraModulesClose (modules, 0);
 	ksDel (modules);
 	keyDel (parentKey);
+}
+
+static void test_gpg (void)
+{
+	// Plugin configuration
+	KeySet * conf = newPluginConfiguration ();
+	Key * errorKey = keyNew (0);
+
+	// install the gpg key
+	char * argv[] = { "", "-a", "--import", NULL };
+	const size_t argc = 4;
+	Key * msg = keyNew (0);
+	keySetBinary (msg, test_key_asc, test_key_asc_len);
+
+	succeed_if (elektraCryptoGpgCall (conf, errorKey, msg, argv, argc) == 1, "failed to install the GPG test key");
+
+	keyDel (msg);
+	keyDel (errorKey);
+	ksDel (conf);
 }
