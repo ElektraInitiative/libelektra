@@ -13,9 +13,9 @@
 
 ### Preference Types ###
 
-- Default preferences: below `mountpoint/preferences/pref/`.
-- User preferences: below `mountpoint/preferences/user/`.
-- Lock preferences: below `mountpoint/preferences/lock/`.
+- Default preferences: below `mountpoint/pref/`.
+- User preferences: below `mountpoint/user/`.
+- Lock preferences: below `mountpoint/lock/`.
 
 User preferences will override default preferences. Lock preferences can't be overwritten by user or default preferences. 
 Only user preferences will be saved to `prefs.js`.
@@ -54,18 +54,15 @@ Move `autoconfig/autoconfig.js` to the preferences directory inside the folder c
 % kdb mount autoconfig/prefExample.js system/prefs/gen prefs shell execute/set='echo -n "reload"|nc 127.0.0.1 12345'
 % kdb export system/prefs/gen
 
-[functions]
-[preferences]
-[preferences/lock/a/lock]
+[lock/a/lock]
 1 = lock1
 2 = lock2
-[preferences/pref/a/default]
+[pref/a/default]
 1 = 1
 2 = 2
-[preferences/user/a/user]
+[user/a/user]
 f = false
 t = true
-[variables]
 
 % kdb export system/prefs/gen prefs
 
@@ -83,25 +80,20 @@ user_pref("a.user.t", true);
 
 ![about:config before](./autoconfig/config_1.jpg)
 ```
-% kdb setmeta system/prefs/gen/preferences/lock/a/lock/3 type boolean
-% kdb set system/prefs/gen/preferences/lock/a/lock/3 true
+% kdb setmeta system/prefs/gen/lock/a/lock/3 type boolean
+% kdb set system/prefs/gen/lock/a/lock/3 true
 % kdb export system/prefs/gen
 
-[functions]
-[preferences]
-[preferences/lock/a/lock]
+[lock/a/lock]
 1 = lock1
 2 = lock2
 3 = true
-[preferences/pref/a/default]
+[pref/a/default]
 1 = 1
 2 = 2
-[preferences/user/a/user]
+[user/a/user]
 f = false
 t = true
-[variables]
 ```
 ![about:config after](./autoconfig/config_2.jpg)
-
-
 
