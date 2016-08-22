@@ -196,6 +196,23 @@ int elektraCryptoGpgCall (KeySet * conf, Key * errorKey, Key * msgKey, char * ar
 
 	assert (argc > 1);
 
+	// sanitize the argument vector
+	argv[0] = getGpgBinary (conf);
+	argv[argc - 1] = NULL;
+
+	// check that the gpg binary exists and that it is executable
+	if (access (argv[0], F_OK))
+	{
+		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CRYPTO_GPG_FAULT, errorKey, "gpg binary %s not found", argv[0]);
+		return -1;
+	}
+
+	if (access (argv[0], X_OK))
+	{
+		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CRYPTO_GPG_FAULT, errorKey, "gpg binary %s has no permission to execute", argv[0]);
+		return -1;
+	}
+
 	// initialize pipes
 	if (pipe (pipe_stdin))
 	{
@@ -219,10 +236,6 @@ int elektraCryptoGpgCall (KeySet * conf, Key * errorKey, Key * msgKey, char * ar
 		closePipe (pipe_stdout);
 		return -1;
 	}
-
-	// sanitize the argument vector
-	argv[0] = getGpgBinary (conf);
-	argv[argc - 1] = NULL;
 
 	// fork into the gpg binary
 	switch (pid = fork ())
@@ -279,11 +292,20 @@ int elektraCryptoGpgCall (KeySet * conf, Key * errorKey, Key * msgKey, char * ar
 	close (pipe_stdout[0]);
 	elektraFree (buffer);
 
-	if (status != 0)
+	switch (status)
 	{
-		// gpg exited with an error
-		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CRYPTO_GPG_FAULT, errorKey, "GPG returned %d", status);
+	case 0:
+		// everything ok
+		return 1;
+
+	case 1:
+		// bad signature
+		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_CRYPTO_GPG_FAULT, errorKey, "GPG reported a bad signature");
+		return -1;
+
+	default:
+		// other errors
+		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CRYPTO_GPG_FAULT, errorKey, "GPG failed with return value  %d", status);
 		return -1;
 	}
-	return 1;
 }
