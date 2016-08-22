@@ -35,9 +35,9 @@ else()
 	set (CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_SWIG_OUTDIR}")
 	set (CMAKE_SWIG_FLAGS "-O")
 
-	swig_add_module (swig-ruby ruby kdb.i)
+  swig_add_module (swig-ruby ruby kdb.i)
   swig_link_libraries (swig-ruby elektra-core elektra-kdb)
-  #set_target_properties (_swig-ruby PROPERTIES OUTPUT_NAME _kdb)
+  set_target_properties (swig-ruby PROPERTIES OUTPUT_NAME kdb)
   
   set_source_files_properties (
           ${swig_generated_file_fullname} PROPERTIES 
@@ -64,5 +64,5 @@ else()
 	include_directories (${CMAKE_CURRENT_SOURCE_DIR})
   #include_directories (${CMAKE_SOURCE_DIR}/src/swig/)
 
-  #add_subdirectory (tests)
+  add_subdirectory (tests)
 endif()
