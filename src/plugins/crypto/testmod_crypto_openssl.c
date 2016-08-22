@@ -20,6 +20,7 @@ int main (int argc, char ** argv)
 
 	test_gpg ();
 	test_init (PLUGIN_NAME);
+	test_incomplete_config (PLUGIN_NAME);
 	test_crypto_operations (PLUGIN_NAME);
 
 	printf ("\n" PLUGIN_NAME " RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
