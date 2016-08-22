@@ -25,6 +25,8 @@
 #define MIN(a, b) (((a) < (b)) ? (a) : (b))
 #define MAX(a, b) (((a) > (b)) ? (a) : (b))
 
+typedef int (*checkConfPtr) (Key *, KeySet *);
+
 static const char strVal[] = "abcde";
 static const kdb_octet_t binVal[] = { 0x01, 0x02, 0x03, 0x04 };
 
@@ -113,8 +115,36 @@ static void test_init (const char * pluginName)
 	keyDel (parentKey);
 }
 
+static void test_incomplete_config (const char * pluginName)
+{
+	Plugin * plugin = NULL;
+	Key * parentKey = keyNew ("system", KEY_END);
+	KeySet * modules = ksNew (0, KS_END);
+	KeySet * configKs = ksNew (0, KS_END);
+	elektraModulesInit (modules, 0);
+
+	plugin = elektraPluginOpen (pluginName, modules, configKs, 0);
+	succeed_if (plugin != 0, "failed to open the plugin");
+	if (plugin)
+	{
+		KeySet * data = newTestdataKeySet ();
+		succeed_if (plugin->kdbSet (plugin, data, parentKey) == -1, "kdb set succeeded with incomplete configuration");
+		ksDel (data);
+		elektraPluginClose (plugin, 0);
+	}
+
+	elektraModulesClose (modules, 0);
+	ksDel (modules);
+	keyDel (parentKey);
+}
+
 static void test_crypto_operations (const char * pluginName)
 {
+	union {
+		checkConfPtr f;
+		void * v;
+	} conversation;
+
 	Plugin * plugin = NULL;
 	Key * parentKey = keyNew ("system", KEY_END);
 	KeySet * modules = ksNew (0, KS_END);
@@ -131,12 +161,29 @@ static void test_crypto_operations (const char * pluginName)
 		KeySet * data = newTestdataKeySet ();
 		KeySet * original = ksDup (data);
 
-		// run checkconf to generate the master password
+		// read and check the contract
+		KeySet * contract = ksNew (0, KS_END);
+		Key * contractParent = keyNew ("system/elektra/modules/" ELEKTRA_PLUGIN_NAME, KEY_END);
+		succeed_if (plugin->kdbGet (plugin, contract, contractParent) == 1, "kdb get for contract failed");
 
-		/*
-		 * TODO call the checkconf function
-		 * succeed_if (plugin->getSymbol("checkconf")->(parentKey, config), "checkconf failed");
-		*/
+		// run checkconf to generate the master password
+		Key * function = ksLookupByName (contract, "system/elektra/modules/" ELEKTRA_PLUGIN_NAME "/exports/checkconf", 0);
+		succeed_if (function, "no symbol exported for the checkconf function");
+		if (function)
+		{
+			succeed_if (keyGetBinary (function, &conversation.v, sizeof (conversation)) == sizeof (conversation),
+				    "type mismatch in function pointer to checkconf");
+			succeed_if (conversation.f, "exported NULL pointer as checkconf function");
+
+			if (conversation.f)
+			{
+				KeySet * pluginConfig = elektraPluginGetConfig (plugin);
+				succeed_if (conversation.f (parentKey, pluginConfig) != -1, "checkconf call failed");
+			}
+		}
+
+		keyDel (contractParent);
+		ksDel (contract);
 
 		// test encryption with kdb set
 		succeed_if (plugin->kdbSet (plugin, data, parentKey) == 1, "kdb set failed");
