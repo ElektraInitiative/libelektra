@@ -1,0 +1,286 @@
+#!/bin/bash
+
+TriggerPort=65432
+MountPoint="user/prefs"
+PrefsSetupMountPoint="system/firefox/prefs"
+ConfigFile="myPrefs.js"
+Decoy="/tmp/imnotreal.js"
+AutoConfigScript="elektra.cfg"
+AutoConfigLauncher="autoconfig.js"
+FFInterceptKey="system/firefox/intercept/running"
+
+PrefsFile=
+FFLibDir=
+
+testFFRunning()
+{
+    pgrep firefox &>/dev/null
+    echo $?
+}
+
+initialize()
+{
+    kdb check prefs &>/dev/null
+
+    hasPrefsPlugin=$?
+
+    if [ "$hasPrefsPlugin" -ne 0 ]; 
+    then
+	echo "Error, prefs plugin not found"
+	exit 1
+    fi
+
+    kdb mount-info &>/dev/null
+
+    libDir=$(kdb get system/info/constants/package/libdir)
+    if [ -z "$libDir" ];
+    then
+	echo "Error, elektra libdir not found"
+	exit 1
+    fi
+
+    interceptFile="${libDir}/libelektraintercept.so"
+
+    if [ ! -e "$interceptFile" ];
+    then
+	echo "Error, libelektraintercept.so not found"
+	exit 1
+    fi
+
+    FFLibDir=$(find /usr/lib /usr/lib32 /usr/lib64 /usr/local/lib -name "firefox*" -type f | xargs dirname 2>/dev/null|sort|uniq)
+    if [ -z "$FFLibDir" ];
+    then
+	echo "Error, couldn't find any Firefox library directory"
+	exit 1
+    fi
+    resNo=$(echo "$FFLibDir" | wc -l)
+    if [ "$resNo" -gt 1 ];
+    then
+	i=1;
+	for line in ${FFLibDir};
+	do
+	    echo "$i) $line"
+	    i=$((++i))
+	done
+
+	echo -n "Select your Firefox library directory: "
+	read -r sel
+
+	FFLibDir=$(sed "${sel}q;d" <<< "$FFLibDir")
+    fi
+
+    echo "Firefox library directory: $FFLibDir"
+    echo
+
+    Profile=$(find "${HOME}/.mozilla/firefox/" -maxdepth 1 -mindepth 1 -type d 2>/dev/null|sort|uniq)
+    if [ -z "$Profile" ];
+    then
+	echo "Couldn't finde Firefox profile directories in ${HOME}/.mozillla/Firefox/"
+	echo -n "Please enter specify your Firefox profile directory: "
+	read -r Profile
+    fi
+    if [ -z "$Profile" ];
+    then
+	echo "Invalid profile directory"
+	exit 1
+    fi
+
+    resNo=$(echo "$Profile" | wc -l)
+    if [ "$resNo" -gt 1 ];
+    then
+	i=1;
+	for line in ${Profile};
+	do
+	    echo "$i) `basename $line`"
+	    i=$((++i))
+	done
+	echo -n "Select your Firefox profile directory: "
+	read -r sel
+	Profile=$(sed "${sel}q;d" <<< "$Profile")
+    fi
+
+    echo "Firefox profile directory: `basename $Profile`"
+    echo
+
+    PrefsFile=$(readlink -f "${Profile}/prefs.js")
+    echo "prefsFile: $PrefsFile"
+    if [ ! -e "$PrefsFile" ];
+    then
+	echo "Error, prefs file $PrefsFile doesn't exist"
+	exit 1
+    fi
+
+    FFrunning=$( testFFRunning )
+    if [ "$FFrunning" -eq "0" ];
+    then
+	echo "Warning, can't continue while Firefox is still running"
+	read -p "Please close Firefox and press any key to continue "
+    fi
+    FFrunning=$( testFFRunning )
+    if [ "$FFrunning" -eq "0" ];
+    then
+	echo "Error, Firefox is sill running"
+	exit 1
+    fi
+}
+
+testAutoPrefs()
+{
+    unset prefTest
+    unset errCount
+    errCount=0
+    prefTest=$(kdb sget "${PrefsSetupMountPoint}/user/elektra/config/file" NA)
+    if [ "$prefTest" != "$Decoy" ];
+    then
+	echo "Error, failed to set elektra.config.file in $PrefsFile"
+	errCount=$((++errCount))
+    fi
+    unset prefTest
+    prefTest=$(kdb sget "${PrefsSetupMountPoint}/user/elektra/config/reload_trigger_port" NA)
+    if [ "$prefTest" != "$TriggerPort" ];
+    then
+	echo "Error, failed to set elektra.config.reload_trigger_port in $PrefsFile"
+	errCount=$((++errCount))
+    fi
+    echo $errCount
+}
+
+setAutoPrefs()
+{
+    kdb mount "$PrefsFile" "$PrefsSetupMountPoint" prefs &>/dev/null
+    if [ $? -ne 0 ];
+    then
+	echo "Error, Mountpoint $PrefsSetupMountPoint already in use"
+	exit 1
+    fi
+    kdb setmeta "${PrefsSetupMountPoint}/user/elektra/config/file" type string &>/dev/null
+    kdb set "${PrefsSetupMountPoint}/user/elektra/config/file" "$Decoy" &>/dev/null
+    kdb setmeta "${PrefsSetupMountPoint}/user/elektra/config/reload_trigger_port" type string &>/dev/null
+    kdb set "${PrefsSetupMountPoint}/user/elektra/config/reload_trigger_port" "$TriggerPort" &>/dev/null
+    errCount=$( testAutoPrefs )
+    kdb umount "$PrefsSetupMountPoint" &>/dev/null
+    if [ "$errCount" -gt "0" ];
+    then
+	exit 1
+    fi
+}
+
+testPreload()
+{
+    escapedDecoy=$(echo "$Decoy"|sed 's/\//\\\//g')
+    unset valTest
+    unset errCount
+    errCount=0
+    valTest=$(kdb sget "/preload/open/${escapedDecoy}" NA)
+    if [ "$valTest" == "NA" ];
+    then
+	errCount=$((++errCount))
+    fi
+    valTest=$(kdb sget "/preload/open/${escapedDecoy}/generate" NA)
+    if [ "$valTest" != "$MountPoint" ];
+    then
+	errCount=$((++errCount))
+    fi
+    valTest=$(kdb sget "/preload/open/${escapedDecoy}/generate/plugin" NA)
+    if [ "$valTest" != "prefs" ];
+    then
+	errCount=$((++errCount))
+    fi
+    if [ $errCount -ne 0 ];
+    then
+	echo "Error, failed to setup /preload/open configuration"
+	exit 1
+    fi
+}
+
+setPreload()
+{
+    kdb set /preload/open 
+    escapedDecoy=$(echo "$Decoy"|sed 's/\//\\\//g')
+    kdb set "/preload/open/${escapedDecoy}" ""
+    kdb set "/preload/open/${escapedDecoy}/generate" "$MountPoint"
+    kdb set "/preload/open/${escapedDecoy}/generate/plugin" prefs
+}
+
+setTestPrefs()
+{
+    kdb mount "$ConfigFile" "$MountPoint" prefs shell execute/set="echo -n \"reload\"|nc 127.0.0.1 $TriggerPort"
+    kdb setmeta "${MountPoint}/lock/a/lock/1" type string
+    kdb set "${MountPoint}/lock/a/lock/1" "lock1"
+    kdb setmeta "${MountPoint}/lock/a/lock/2" type string
+    kdb set "${MountPoint}/lock/a/lock/2" "lock2"
+    kdb setmeta "${MountPoint}/pref/a/default/1" type integer
+    kdb set "${MountPoint}/pref/a/default/1" 1
+    kdb setmeta "${MountPoint}/pref/a/default/2" type integer
+    kdb set "${MountPoint}/pref/a/default/2" 2
+    kdb setmeta "${MountPoint}/user/a/user/t" type boolean 
+    kdb set "${MountPoint}/user/a/user/t" true
+    kdb setmeta "${MountPoint}/user/a/user/f" type boolean
+    kdb set "${MountPoint}/user/a/user/f" false
+
+}
+
+setupAutoConfig()
+{
+    set -x
+    su -c "./writeConfigFiles.sh \"$FFLibDir\" \"$AutoConfigScript\" \"$AutoConfigLauncher\""
+    set +x
+}
+
+main()
+{
+    isSetup=$(kdb sget $FFInterceptKey "false")
+    if [ "$isSetup" == "true" ];
+    then
+	return
+    fi 
+    initialize
+
+    setAutoPrefs
+
+    setPreload &>/dev/null
+    testPreload
+
+    setupAutoConfig
+
+    kdb set ${FFInterceptKey} "true"
+}
+
+usage()
+{
+    echo -e "Usage: ./easySetup -cst\n\tc) Add new peference\n\ts) Setup only\n\tt) Setup with test values"
+}
+
+
+if [ "$#" -eq 0 ];
+then
+    usage
+    exit 0
+fi
+
+while getopts "cst" opt;
+do
+    case "$opt" in
+	t)
+	    echo "Setting up with test values"
+	    main
+	    setTestPrefs &>/dev/null
+	    exit 0
+	    ;;
+	c)
+	    echo "Add new preferences"
+	    main
+	    ( . ./setupConfig.sh )
+	    exit 0
+	    ;;
+	s)
+	    echo "Setup only"
+	    main
+	    exit 0
+	    ;;
+	*)
+	    usage
+	    exit 0
+	    ;;
+    esac
+done

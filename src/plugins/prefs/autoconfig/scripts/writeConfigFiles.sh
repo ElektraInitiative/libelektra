@@ -1,3 +1,8 @@
+FFLibDir=$1
+AutoConfigScript=$2
+AutoConfigLauncher=$3
+
+cat << EOF > "${FFLibDir}/${AutoConfigScript}"
 //
 
 
@@ -22,36 +27,43 @@ function reload()
     let prefService = Components.classes[PrefServiceContractID].getService(nsIPrefService);
 
     prefService.readUserPrefs(infile);
-    prefService.savePrefFile(outfile); 	  	//save user prefs to prefs.js
-    prefService.readUserPrefs(outfile);   	//don't own my input file!!! 
+    prefService.savePrefFile(outfile);          //save user prefs to prefs.js
+    prefService.readUserPrefs(outfile);         //don't own my input file!!!
 }
 
 var listener = {
 onSocketAccepted: function(serverSocket, clientSocket) {
-		      var stream = clientSocket.openInputStream(0,0,0);
-		      var sin = Components.classes["@mozilla.org/scriptableinputstream;1"].createInstance(Components.interfaces.nsIScriptableInputStream);
-		      try{            
-			  sin.init(stream);
-			  var bytes = sin.available();
-			  var request = "";
-			  request = sin.read(bytes);
-			  console.logStringMessage("Elektra autoconfig: received message: "+request);
-			  if (request.valueOf() == "reload"){
-			      reload();
-			  }
-		      } finally {
-			  sin.close();
-			  stream.close();
-		      }
+                      var stream = clientSocket.openInputStream(0,0,0);
+                      var sin = Components.classes["@mozilla.org/scriptableinputstream;1"].createInstance(Components.interfaces.nsIScriptableInputStream);
+                      try{
+                          sin.init(stream);
+                          var bytes = sin.available();
+                          var request = "";
+                          request = sin.read(bytes);
+                          console.logStringMessage("Elektra autoconfig: received message: "+request);
+                          if (request.valueOf() == "reload"){
+                              reload();
+                          }
+                      } finally {
+                          sin.close();
+                          stream.close();
+                      }
 
-		  }
+                  }
 }
 
-reload(); 	//read once on startup
+reload();       //read once on startup
 
 var serverSocket = Components.classes["@mozilla.org/network/server-socket;1"].createInstance(Components.interfaces.nsIServerSocket);
-serverSocket.init(serverPort, true, 1); 	//only listen on loopback
+serverSocket.init(serverPort, true, 1);         //only listen on loopback
 
 console.logStringMessage("Elektra autoconfig: server socket started");
 
 serverSocket.asyncListen(listener);
+EOF
+
+cat << EOF > "${FFLibDir}/defaults/pref/${AutoConfigLauncher}"
+pref("general.config.filename", "${AutoConfigScript}");
+pref("general.config.obscure_value", 0);
+EOF
+
