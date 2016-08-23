@@ -12,7 +12,7 @@ foreach (file ${TESTS})
         set_property (
                 TEST ${name}
                 PROPERTY ENVIRONMENT
-                "RUBYLIB=${CMAKE_CURRENT_BINARY_DIR}/.."
+                "RUBYLIB=${CMAKE_CURRENT_BINARY_DIR}/..:${CMAKE_CURRENT_SOURCE_DIR}/.."
         )
     
 endforeach (file ${TESTS})

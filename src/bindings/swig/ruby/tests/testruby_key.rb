@@ -34,6 +34,46 @@ class KdbKeyTestCases < Test::Unit::TestCase
     end
   end
 
+  def test_key_new_with_options
+    assert_nothing_raised do
+      name = "user/tmp/ks1"
+      k = Kdb::Key.new name
+      assert_true k.isValid
+      assert_equal name, k.getName
+      assert_equal "", k.getString # TODO: should we return nil here
+
+      v = "val"
+      k = Kdb::Key.new name, value: v
+      assert_true k.isValid
+      assert_equal name, k.getName
+      assert_equal v, k.getString
+
+      k = Kdb::Key.new name, value: v, owner: "me", comment: "ccc"
+      assert_true k.isValid
+      assert_equal name, k.getName
+      assert_equal v, k.getString
+      assert_equal "me", k.getMeta("owner")
+      assert_equal "me", k.getMeta(:owner)
+      assert_equal "ccc", k.getMeta("comment")
+      assert_equal "ccc", k.getMeta(:comment)
+
+      k = Kdb::Key.new(name, 
+                       owner: "me", 
+                       comment: "ccc",
+                       flags: Kdb::KEY_BINARY)
+      assert_true k.isValid
+      assert_true k.isBinary
+      assert_equal name, k.getName
+      assert_equal "me", k.getMeta("owner")
+      assert_equal "me", k.getMeta(:owner)
+      assert_equal "ccc", k.getMeta("comment")
+      assert_equal "ccc", k.getMeta(:comment)
+      assert_equal "", k.getMeta("flags")
+      assert_equal "", k.getMeta(:flags)
+
+    end
+  end
+
   def test_key_get_set_name
     assert_nothing_raised do
       k = Kdb::Key.new

@@ -6,7 +6,7 @@
  * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
  */
 
-%module kdb
+%module kdb_
 
 %include "stl.i"
 /* %include "../common.i" */
@@ -47,7 +47,25 @@
 
 
 %ignore kdb::Key::Key (const char *keyName, va_list ap);
+%ignore kdb::Key::Key (char const *keyName, ...);
+%ignore kdb::Key::Key (ckdb::Key *k);
+%ignore kdb::Key::Key (Key &k);
+%ignore kdb::Key::Key (Key const &k);
 
 %include "key.hpp"
+
+// meta data
+//%template(getMeta) kdb::Key::getMeta<const kdb::Key>;
+%template(getMeta) kdb::Key::getMeta<std::string>;
+%template(setMeta) kdb::Key::setMeta<std::string>;
+
+
+%extend kdb::Key {
+  Key(const char *name, int flags = 0) {
+    return new kdb::Key(name,
+      KEY_FLAGS, flags,
+      KEY_END);
+  }
+}
 
 %include "kdb.hpp"
