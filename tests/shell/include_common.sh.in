@@ -210,7 +210,7 @@ is_not_rw_storage()
 	-o "x$PLUGIN" = "xdpkg" \
 	-o "x$PLUGIN" = "xregexstore" \
 	-o "x$PLUGIN" = "xpasswd" \
-	-o "x$PLUGIN" = "xprefs"
+	-o "x$PLUGIN" = "xmozprefs"
 }
 
 is_plugin_available()
