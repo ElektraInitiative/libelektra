@@ -49,6 +49,12 @@ configure_file(
 install (PROGRAMS "${CMAKE_CURRENT_BINARY_DIR}/elektrify-getenv" DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
 
 configure_file(
+	"${CMAKE_CURRENT_SOURCE_DIR}/elektrify-open.in"
+	"${CMAKE_CURRENT_BINARY_DIR}/elektrify-open")
+install (PROGRAMS "${CMAKE_CURRENT_BINARY_DIR}/elektrify-open" DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
+
+
+configure_file(
 	"${CMAKE_CURRENT_SOURCE_DIR}/make-source-package.in"
 	"${CMAKE_CURRENT_BINARY_DIR}/make-source-package")
 

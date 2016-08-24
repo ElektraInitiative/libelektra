@@ -13,12 +13,13 @@
 
 This plugin works on [Mozilla preference files](https://developer.mozilla.org/en-US/docs/Mozilla/Preferences/A_brief_guide_to_Mozilla_preferences).
 
+
 ### Preference Types ###
 
-- Default preferences: below `mountpoint/pref/`.
-- User preferences: below `mountpoint/user/`.
-- Lock preferences: below `mountpoint/lock/`.
-- Sticky preferences: below `mountpoint/sticky/`.
+- Default preferences: `pref(....`, keys below `mountpoint/pref/`.
+- User preferences: `user_pref(....`, keys below `mountpoint/user/`.
+- Lock preferences: `lockPref(....`, keys below `mountpoint/lock/`.
+- Sticky preferences: `sticky_pref(....`, keys below `mountpoint/sticky/`.
 
 Only Keys below one of these points are valid, everything else will be dropped
 
@@ -31,13 +32,14 @@ Only Keys below one of these points are valid, everything else will be dropped
 ### Hierarchy ###
 
 In Mozilla preference files `.` is used to separate sections, while elektra uses `/`. For simplification, and because `/` isn't allowed in preference keys, the plugin treats `.` and `/` equally. 
+
 ```
-kdb set system/prefs/lock/a/lock/key 1
-kdb set system/prefs/lock/a/lock.key 1
-kdb set system/prefs/lock/a.lock.key 1
+kdb set system/prefs/lock/a/lock/key lock
+kdb set system/prefs/lock/a/lock.key lock
+kdb set system/prefs/lock/a.lock.key lock
 ```
-will all result in `lockPref("a.lock.key", 1);`
-  
+
+will all result in `lockPref("a.lock.key", "lock");`
 
 
 ## Example ##
@@ -59,5 +61,12 @@ key = true
 key = i'm a default key
 [user/a/user]
 key = 123
+
+
+% cat `kdb file user/prefs`
+
+lockPref("a.lock.key", true);
+pref("a.default.key", "i'm a default key");
+user_pref("a.user.key", 123);
 
 ```
