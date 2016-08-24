@@ -73,11 +73,12 @@ initialize()
 
     echo "Firefox library directory: $FFLibDir"
     echo
-
-    Profile=$(find "${HOME}/.mozilla/firefox/" -maxdepth 1 -mindepth 1 -type d 2>/dev/null|sort|uniq)
+    
+    userConfigDir="${HOME}/.mozilla/firefox/"
+    Profile=$(find "$userConfigDir" -maxdepth 1 -mindepth 1 -type d 2>/dev/null|sort|uniq)
     if [ -z "$Profile" ];
     then
-	echo "Couldn't find Firefox profile directory in ${HOME}/.mozillla/Firefox/"
+	echo "Couldn't find Firefox profile directory in $userConfigDir"
 	echo -n "Please enter your Firefox profile directory: "
 	read -r Profile
     fi
