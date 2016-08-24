@@ -74,6 +74,24 @@ class KdbKeyTestCases < Test::Unit::TestCase
     end
   end
 
+  def test_key_get_set_meta
+    assert_nothing_raised do
+      k = Kdb::Key.new "user/asdf"
+
+      assert_true k.is_valid?
+
+      k.set_meta "comment", "hello"
+      assert_equal "hello", k.get_meta("comment")
+      assert_equal "hello", k["comment"]
+
+      k["owner"] = "me"
+      assert_equal "me", k.get_meta("owner")
+      assert_equal "me", k["owner"]
+
+    end
+  end
+
+
   def test_key_get_name 
     assert_nothing_raised do
       k = Kdb::Key.new

@@ -75,12 +75,15 @@
 %rename("set_meta") kdb::Key::setMeta<std::string>;
 %rename("get_meta") kdb::Key::getMeta<std::string>;
 
+%alias kdb::Key::setMeta<std::string> "[]="
+%alias kdb::Key::getMeta<std::string> "[]"
+
 %include "key.hpp"
 
 // meta data
 //%template(getMeta) kdb::Key::getMeta<const kdb::Key>;
-%template(set_meta) kdb::Key::setMeta<std::string>;
-%template(get_meta) kdb::Key::getMeta<std::string>;
+%template("set_meta") kdb::Key::setMeta<std::string>;
+%template("get_meta") kdb::Key::getMeta<std::string>;
 
 
 %extend kdb::Key {
