@@ -18,6 +18,10 @@ elektrify-getenv(1) -- elektrify the environment of applications
     kdb elektrify-getenv curl http://www.libelektra.org
 
 By using `elektrify-getenv` the last curl invocation will use a different http proxy.
+Or you can also reload while the application is running:
+
+    ELEKTRA_RELOAD_TIMEOUT=100 kdb elektrify-getenv firefox
+    kdb set system/env/override/http_proxy http://www.example.com
 
 
 ## DESCRIPTION
