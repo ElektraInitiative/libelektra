@@ -22,7 +22,7 @@ if(configName && serverPort)
 else
 {
     console.logStringMessage("Elektra autoconfig: no configuration found, disabling autoconfig script");
-    displayError("Initializing Elektra autoconfig failed, please run configure-firefox.sh -s again");
+    displayError("Initializing Elektra autoconfig failed, please run kdb configure-firefox -s again");
 }
 
 function reload()

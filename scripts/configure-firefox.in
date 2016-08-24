@@ -1,6 +1,6 @@
 #!/bin/bash
 
-WorkingDir=$(dirname $0)
+WorkingDir="@CMAKE_INSTALL_PREFIX@/@TARGET_TOOL_EXEC_FOLDER@/"
 TriggerPort=65432
 MountPoint="user/prefs"
 PrefsSetupMountPoint="system/firefox/prefs"
@@ -32,16 +32,7 @@ initialize()
 	exit 1
     fi
 
-    kdb mount-info &>/dev/null
-
-    libDir=$(kdb get system/info/constants/package/libdir)
-    if [ -z "$libDir" ];
-    then
-	echo "Error, elektra libdir not found"
-	exit 1
-    fi
-
-    interceptFile="${libDir}/libelektraintercept.so"
+    interceptFile="@CMAKE_INSTALL_PREFIX@/lib@LIB_SUFFIX@/libelektraintercept.so"
 
     if [ ! -e "$interceptFile" ];
     then
@@ -73,7 +64,7 @@ initialize()
 
     echo "Firefox library directory: $FFLibDir"
     echo
-    
+
     userConfigDir="${HOME}/.mozilla/firefox/"
     Profile=$(find "$userConfigDir" -maxdepth 1 -mindepth 1 -type d 2>/dev/null|sort|uniq)
     if [ -z "$Profile" ];
@@ -227,7 +218,7 @@ setTestPrefs()
 setupAutoConfig()
 {
     set -x
-    su -c "${WorkingDir}/writeConfigFiles.sh \"$FFLibDir\" \"$AutoConfigScript\" \"$AutoConfigLauncher\""
+    su -c "${WorkingDir}/ffconfig/writeConfigFiles \"$FFLibDir\" \"$AutoConfigScript\" \"$AutoConfigLauncher\""
     set +x
     kdb set "$FFInterceptLibDir" "$FFLibDir"
 }
@@ -237,12 +228,18 @@ main()
     isSetup=$(kdb sget $FFInterceptKey "false")
     if [ "$isSetup" == "true" ];
     then
-	echo "Overwrite existing configuration ? (y/n)"
-	read -s -n 1 sel
-	if [ "$sel" != "y" ];
+	if [ "$1" != "add" ];
 	then
+	    echo "Overwrite existing configuration ? (y/n)"
+	    read -s -n 1 sel
+	    if [ "$sel" != "y" ];
+	    then
+		return
+	    fi
+	else
 	    return
 	fi
+
     fi 
     initialize
 
@@ -258,7 +255,7 @@ main()
 
 usage()
 {
-    echo -e "Usage: ./configure-firefox.sh -arst\n\ta) Add new peference\n\tc) Clear preferences\n\tr) Remove everything\n\ts) Setup only\n\tt) Setup with test values"
+    echo -e "Usage: kdb configure-firefox -arst\n\ta) Add new peference\n\tc) Clear preferences\n\tr) Remove everything\n\ts) Setup only\n\tt) Setup with test values"
 }
 
 removePrefs()
@@ -269,7 +266,7 @@ removePrefs()
 	kdb rm "$FFInterceptKey" &>/dev/null
 	escapedDecoy=$(echo "$Decoy"|sed 's/\//\\\//g')
 	kdb rm -r "/preload/open/${espacedDecoy}" &>/dev/null
-        kdb rm -r "$MountPoint" &>/dev/null
+	kdb rm -r "$MountPoint" &>/dev/null
 	kdb umount "$MountPoint" &>/dev/null
 	tmpPrefsFile=$(kdb get "$FFInterceptConfig")
 	kdb mount "$tmpPrefsFile" "$PrefsSetupMountPoint" mozprefs &>/dev/null
@@ -290,7 +287,7 @@ clearPrefs()
     isSetup=$(kdb sget $FFInterceptKey "false")
     if [ "$isSetup" == "true" ];
     then
-        kdb rm -r "$MountPoint" &>/dev/null
+	kdb rm -r "$MountPoint" &>/dev/null
     fi
 }
 
@@ -311,8 +308,8 @@ do
 	    ;;
 	a)
 	    echo "Add new preferences"
-	    main
-	    ( . "${WorkingDir}/setupConfig.sh" )
+	    main add
+	    ( . "${WorkingDir}/ffconfig/setupConfig" )
 	    exit 0
 	    ;;
 	c)

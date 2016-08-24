@@ -37,10 +37,10 @@ prefSetup()
     do
 	case "$input" in
 	    1)
-    		( . "${WorkingDir}/setupProxy.sh")
+    		( . "${WorkingDir}/ffconfig/setupProxy")
 		;;
 	    2)
-		( . "${WorkingDir}/setupHomepage.sh")
+		( . "${WorkingDir}/ffconfig/setupHomepage")
 		;;
 	    0)
 		exit 0

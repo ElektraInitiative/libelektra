@@ -4,7 +4,7 @@ This file explains how Firefox preferences can be manipulated at runtime using e
 
 ## Basics ##
 
-`scripts/configure-firefox.sh -s` will configure everything needed in get started.
+`kdb configure-firefox -s` will configure everything needed in get started.
 
 ### Files ###
 
@@ -33,10 +33,10 @@ This file explains how Firefox preferences can be manipulated at runtime using e
 
 #### Guided setup ####
 
-Running `scripts/configure-firefox -a` provides a guided setup for adding http_proxy and homepage preferences.
+Running `kdb configure-firefox -a` provides a guided setup for adding http_proxy and homepage preferences.
 
 ```
-% scripts/configure-firefox.sh -a
+% kdb configure-firefox -a
 Add new preferences
 Config Setup:
 
@@ -82,7 +82,7 @@ This example shows how to manually setup a preferences. It's equivalent to the e
 
 ### Test Setup ###
 
-Running `scripts/configure-firefox -t` will set up some test values.
+Running `kdb configure-firefox -t` will set up some test values.
 
 ```
 % kdb export /preload
