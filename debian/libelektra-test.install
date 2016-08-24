@@ -13,3 +13,4 @@ usr/share/libelektra-test/test-data/xmltool/*
 usr/share/libelektra-test/test-data/csvstorage/*
 usr/share/libelektra-test/test-data/filecheck/*
 usr/share/libelektra-test/test-data/lineendings/*
+usr/share/libelektra-test/test-data/mozprefs/*

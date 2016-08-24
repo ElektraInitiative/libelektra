@@ -7,8 +7,9 @@
 binary/libelektra-bin binary/libelektra-dev:: binary/libelektra
 
 # Which plugins and tools should be built
-ELEKTRA_PLUGINS='ALL;-python;-EXPERIMENTAL'
+ELEKTRA_PLUGINS='ALL;-python;-EXPERIMENTAL;mozprefs'
 ELEKTRA_TOOLS='ALL'
+ELEKTRA_BINDINGS='cpp;swig_lua;swig_python2;intercept'
 
 #workaround for hardening flags
 CPPFLAGS:=$(shell dpkg-buildflags --get CPPFLAGS)
@@ -21,6 +22,7 @@ CMAKE_FLAGS = \
 	-DTARGET_PLUGIN_FOLDER=elektra4 \
 	-DPLUGINS="$(ELEKTRA_PLUGINS)" \
 	-DTOOLS="$(ELEKTRA_TOOLS)" \
+	-DBINDINGS="$(ELEKTRA_BINDINGS)" \
 	-DKDB_DB_SYSTEM:PATH="/etc/kdb" \
 	-DKDB_DB_HOME:PATH="/home" \
 	-DKDB_DB_USER:PATH=".config" \
@@ -33,7 +35,6 @@ CMAKE_FLAGS = \
 	-DBUILD_PDF=OFF \
 	-DBUILD_FULL=ON \
 	-DBUILD_STATIC=ON \
-	-DBINDINGS="cpp;swig_lua;swig_python2" \
 	-DTARGET_TEST_DATA_FOLDER=share/libelektra-test/test-data \
 	-DCMAKE_C_FLAGS="$(CFLAGS)" \
 	-DCMAKE_CXX_FLAGS="$(CXXFLAGS)" \
