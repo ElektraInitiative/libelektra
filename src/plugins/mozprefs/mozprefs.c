@@ -1,13 +1,13 @@
 /**
  * @file
  *
- * @brief Source for prefs plugin
+ * @brief Source for mozprefs plugin
  *
  * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
  *
  */
 
-#include "prefs.h"
+#include "mozprefs.h"
 
 #include <kdbhelper.h>
 
@@ -99,17 +99,17 @@ static Key * prefToKey (Key * parentKey, PrefType type, const char * pref)
 }
 
 
-int elektraPrefsGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
+int elektraMozprefsGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
 {
-	if (!elektraStrCmp (keyName (parentKey), "system/elektra/modules/prefs"))
+	if (!elektraStrCmp (keyName (parentKey), "system/elektra/modules/mozprefs"))
 	{
 		KeySet * contract =
-			ksNew (30, keyNew ("system/elektra/modules/prefs", KEY_VALUE, "prefs plugin waits for your orders", KEY_END),
-			       keyNew ("system/elektra/modules/prefs/exports", KEY_END),
-			       keyNew ("system/elektra/modules/prefs/exports/get", KEY_FUNC, elektraPrefsGet, KEY_END),
-			       keyNew ("system/elektra/modules/prefs/exports/set", KEY_FUNC, elektraPrefsSet, KEY_END),
-#include ELEKTRA_README (prefs)
-			       keyNew ("system/elektra/modules/prefs/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
+			ksNew (30, keyNew ("system/elektra/modules/mozprefs", KEY_VALUE, "mozprefs plugin waits for your orders", KEY_END),
+			       keyNew ("system/elektra/modules/mozprefs/exports", KEY_END),
+			       keyNew ("system/elektra/modules/mozprefs/exports/get", KEY_FUNC, elektraMozprefsGet, KEY_END),
+			       keyNew ("system/elektra/modules/mozprefs/exports/set", KEY_FUNC, elektraMozprefsSet, KEY_END),
+#include ELEKTRA_README (mozprefs)
+			       keyNew ("system/elektra/modules/mozprefs/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 		ksAppend (returned, contract);
 		ksDel (contract);
 
@@ -248,7 +248,7 @@ WRITE_CLEANUP:
 	if (argString) elektraFree (argString);
 }
 
-int elektraPrefsSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
+int elektraMozprefsSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
 {
 	// get all keys
 	// this function is optional
@@ -265,12 +265,12 @@ int elektraPrefsSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * pa
 	return 1; // success
 }
 
-Plugin * ELEKTRA_PLUGIN_EXPORT (prefs)
+Plugin * ELEKTRA_PLUGIN_EXPORT (mozprefs)
 {
 	// clang-format off
-	return elektraPluginExport ("prefs",
-			ELEKTRA_PLUGIN_GET,	&elektraPrefsGet,
-			ELEKTRA_PLUGIN_SET,	&elektraPrefsSet,
+	return elektraPluginExport ("mozprefs",
+			ELEKTRA_PLUGIN_GET,	&elektraMozprefsGet,
+			ELEKTRA_PLUGIN_SET,	&elektraMozprefsSet,
 			ELEKTRA_PLUGIN_END);
 }
 

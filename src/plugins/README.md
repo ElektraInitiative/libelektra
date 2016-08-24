@@ -109,7 +109,7 @@ productive use:
 - [csvstorage](csvstorage/) for csv files
 - [passwd](passwd/) read/write passwd files
 - [dpkg](dpkg/) reads /var/lib/dpkg/{available,status} 
-- [prefs](prefs/) read/write mozilla preference files
+- [mozprefs](mozprefs/) read/write mozilla preference files
 
 ## System Information ##
 

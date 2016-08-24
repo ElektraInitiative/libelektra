@@ -1,5 +1,6 @@
 #!/bin/bash
 
+WorkingDir=$(dirname $0)
 TriggerPort=65432
 MountPoint="user/prefs"
 PrefsSetupMountPoint="system/firefox/prefs"
@@ -20,13 +21,13 @@ testFFRunning()
 
 initialize()
 {
-    kdb check prefs &>/dev/null
+    kdb check mozprefs &>/dev/null
 
     hasPrefsPlugin=$?
 
     if [ "$hasPrefsPlugin" -ne 0 ]; 
     then
-	echo "Error, prefs plugin not found"
+	echo "Error, mozprefs plugin not found"
 	exit 1
     fi
 
@@ -75,8 +76,8 @@ initialize()
     Profile=$(find "${HOME}/.mozilla/firefox/" -maxdepth 1 -mindepth 1 -type d 2>/dev/null|sort|uniq)
     if [ -z "$Profile" ];
     then
-	echo "Couldn't finde Firefox profile directories in ${HOME}/.mozillla/Firefox/"
-	echo -n "Please enter specify your Firefox profile directory: "
+	echo "Couldn't find Firefox profile directory in ${HOME}/.mozillla/Firefox/"
+	echo -n "Please enter your Firefox profile directory: "
 	read -r Profile
     fi
     if [ -z "$Profile" ];
@@ -113,8 +114,8 @@ initialize()
     FFrunning=$( testFFRunning )
     if [ "$FFrunning" -eq "0" ];
     then
-	echo "Warning, can't continue while Firefox is still running"
-	read -p "Please close Firefox and press any key to continue "
+	echo "We detected that Firefox is running on your computer."
+	read -p "Please close Firefox that uses $PrefsFile and press any key to continue."
     fi
     FFrunning=$( testFFRunning )
     if [ "$FFrunning" -eq "0" ];
@@ -147,7 +148,7 @@ testAutoPrefs()
 
 setAutoPrefs()
 {
-    kdb mount "$PrefsFile" "$PrefsSetupMountPoint" prefs &>/dev/null
+    kdb mount "$PrefsFile" "$PrefsSetupMountPoint" mozprefs &>/dev/null
     if [ $? -ne 0 ];
     then
 	echo "Error, Mountpoint $PrefsSetupMountPoint already in use"
@@ -182,7 +183,7 @@ testPreload()
 	errCount=$((++errCount))
     fi
     valTest=$(kdb sget "/preload/open/${escapedDecoy}/generate/plugin" NA)
-    if [ "$valTest" != "prefs" ];
+    if [ "$valTest" != "mozprefs" ];
     then
 	errCount=$((++errCount))
     fi
@@ -199,12 +200,12 @@ setPreload()
     escapedDecoy=$(echo "$Decoy"|sed 's/\//\\\//g')
     kdb set "/preload/open/${escapedDecoy}" ""
     kdb set "/preload/open/${escapedDecoy}/generate" "$MountPoint"
-    kdb set "/preload/open/${escapedDecoy}/generate/plugin" prefs
+    kdb set "/preload/open/${escapedDecoy}/generate/plugin" mozprefs
 }
 
 setTestPrefs()
 {
-    kdb mount "$ConfigFile" "$MountPoint" prefs shell execute/set="echo -n \"reload\"|nc 127.0.0.1 $TriggerPort"
+    kdb mount "$ConfigFile" "$MountPoint" mozprefs shell execute/set="echo -n \"reload\"|nc 127.0.0.1 $TriggerPort"
     kdb setmeta "${MountPoint}/lock/a/lock/1" type string
     kdb set "${MountPoint}/lock/a/lock/1" "lock1"
     kdb setmeta "${MountPoint}/lock/a/lock/2" type string
@@ -270,7 +271,7 @@ do
 	c)
 	    echo "Add new preferences"
 	    main
-	    ( . ./setupConfig.sh )
+	    ( . "${WorkingDir}/setupConfig.sh" )
 	    exit 0
 	    ;;
 	s)

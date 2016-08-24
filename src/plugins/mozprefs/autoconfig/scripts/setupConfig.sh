@@ -30,20 +30,23 @@ readPrefType()
 
 prefSetup()
 {
-    kdb mount "$ConfigFile" "$MountPoint" prefs shell execute/set="echo -n \"reload\"|nc 127.0.0.1 $TriggerPort" &>/dev/null
-    echo -e "Config Setup:\n\n1) Proxy\n0) Exit"
+    kdb mount "$ConfigFile" "$MountPoint" mozprefs shell execute/set="echo -n \"reload\"|nc 127.0.0.1 $TriggerPort" &>/dev/null
+    echo -e "Config Setup:\n\n1) Proxy\n2) Homepage\n0) Exit"
     read -n1 -s input
     while true;
     do
 	case "$input" in
 	    1)
-    		( . ./setupProxy.sh)
+    		( . "${WorkingDir}/setupProxy.sh")
+		;;
+	    2)
+		( . "${WorkingDir}/setupHomepage.sh")
 		;;
 	    0)
 		exit 0
 		;;
     	esac
-	echo -e "\n\nConfig Setup:\n\n1) Proxy\n0) Exit"
+	echo -e "\n\nConfig Setup:\n\n1) Proxy\n2) Homepage\n0) Exit"
 	read -n1 -s input
     done
 }

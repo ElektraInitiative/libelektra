@@ -1,7 +1,7 @@
 /**
  * @file
  *
- * @brief Tests for prefs plugin
+ * @brief Tests for mozprefs plugin
  *
  * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
  *
@@ -21,7 +21,7 @@ int main (int argc, char ** argv)
 
 	init (argc, argv);
 
-	printf ("\ntestmod_prefs RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
+	printf ("\ntestmod_mozprefs RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 
 	return nbError;
 }
