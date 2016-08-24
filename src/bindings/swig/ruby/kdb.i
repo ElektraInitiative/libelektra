@@ -52,12 +52,35 @@
 %ignore kdb::Key::Key (Key &k);
 %ignore kdb::Key::Key (Key const &k);
 
+%ignore kdb::Key::operator->;
+
+// predicate methods rename to "is_xxx?" and return Rubys boolean
+%predicate kdb::Key::isValid;
+%predicate kdb::Key::isSystem;
+%predicate kdb::Key::isUser;
+%predicate kdb::Key::isString;
+%predicate kdb::Key::isBinary;
+%predicate kdb::Key::isInactive;
+%predicate kdb::Key::isBelow;
+%predicate kdb::Key::isBelowOrSame;
+%predicate kdb::Key::isDirectBelow;
+%predicate kdb::Key::hasMeta;
+%predicate kdb::Key::isNull; // TODO: do we need something special here??? 
+%predicate kdb::Key::needSync;
+
+%rename("name") kdb::Key::getName;
+%rename("name=") kdb::Key::setName;
+
+// autorename and templates has some problems
+%rename("set_meta") kdb::Key::setMeta<std::string>;
+%rename("get_meta") kdb::Key::getMeta<std::string>;
+
 %include "key.hpp"
 
 // meta data
 //%template(getMeta) kdb::Key::getMeta<const kdb::Key>;
-%template(getMeta) kdb::Key::getMeta<std::string>;
-%template(setMeta) kdb::Key::setMeta<std::string>;
+%template(set_meta) kdb::Key::setMeta<std::string>;
+%template(get_meta) kdb::Key::getMeta<std::string>;
 
 
 %extend kdb::Key {
@@ -67,5 +90,6 @@
       KEY_END);
   }
 }
+
 
 %include "kdb.hpp"

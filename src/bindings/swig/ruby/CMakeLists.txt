@@ -33,7 +33,7 @@ else()
 	
   set (CMAKE_SWIG_OUTDIR "${CMAKE_CURRENT_BINARY_DIR}")
 	set (CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_SWIG_OUTDIR}")
-	set (CMAKE_SWIG_FLAGS "-O")
+  set (CMAKE_SWIG_FLAGS "-O;-autorename")
 
   swig_add_module (swig-ruby ruby kdb.i)
   swig_link_libraries (swig-ruby elektra-core elektra-kdb)

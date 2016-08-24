@@ -22,9 +22,9 @@ module Kdb
       options.each { |key, value|
         key = key.to_s
         if key == "value"
-          setString value.to_s
+          set_string value.to_s
         else
-          setMeta(key, value)
+          set_meta(key, value)
         end
       }
     end
@@ -32,11 +32,11 @@ module Kdb
     # override set|getMeta to allow passing 
     # also symbols as meta name, since we are using
     # symbols within our custom constructor
-    def setMeta name, value
+    def set_meta name, value
       super name.to_s, value.to_s
     end
 
-    def getMeta name
+    def get_meta name
       super name.to_s
     end
 
