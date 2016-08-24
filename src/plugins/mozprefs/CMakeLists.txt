@@ -5,4 +5,5 @@ add_plugin (mozprefs
 		mozprefs.h
 		mozprefs.c
 	ADD_TEST
+	INSTALL_TEST_DATA
 	)
