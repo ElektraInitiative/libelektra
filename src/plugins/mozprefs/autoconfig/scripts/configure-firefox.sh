@@ -236,7 +236,12 @@ main()
     isSetup=$(kdb sget $FFInterceptKey "false")
     if [ "$isSetup" == "true" ];
     then
-	return
+	echo "Overwrite existing configuration ? (y/n)"
+	read -s -n 1 sel
+	if [ "$sel" != "y" ];
+	then
+	    return
+	fi
     fi 
     initialize
 

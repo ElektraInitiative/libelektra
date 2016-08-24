@@ -13,6 +13,18 @@ console.logStringMessage("Elektra autoconfig: config file: "+configName);
 const serverPort = getPref("elektra.config.reload_trigger_port");
 console.logStringMessage("Elektra autoconfig: Server port: "+serverPort);
 
+var enable=0;
+
+if(configName && serverPort)
+{
+    enable=1;
+}
+else
+{
+    console.logStringMessage("Elektra autoconfig: no configuration found, disabling autoconfig script");
+    displayError("Initializing Elektra autoconfig failed, please run configure-firefox.sh -s again");
+}
+
 function reload()
 {
 
@@ -24,7 +36,7 @@ function reload()
 
     const nsIPrefService = Components.interfaces.nsIPrefService;
     const PrefServiceContractID = "@mozilla.org/preferences-service;1"
-    let prefService = Components.classes[PrefServiceContractID].getService(nsIPrefService);
+        let prefService = Components.classes[PrefServiceContractID].getService(nsIPrefService);
 
     prefService.readUserPrefs(infile);
     prefService.savePrefFile(outfile);          //save user prefs to prefs.js
@@ -52,14 +64,23 @@ onSocketAccepted: function(serverSocket, clientSocket) {
                   }
 }
 
-reload();       //read once on startup
+function init()
+{
+    reload();       //read once on startup
 
-var serverSocket = Components.classes["@mozilla.org/network/server-socket;1"].createInstance(Components.interfaces.nsIServerSocket);
-serverSocket.init(serverPort, true, 1);         //only listen on loopback
+    var serverSocket = Components.classes["@mozilla.org/network/server-socket;1"].createInstance(Components.interfaces.nsIServerSocket);
+    serverSocket.init(serverPort, true, 1);         //only listen on loopback
 
-console.logStringMessage("Elektra autoconfig: server socket started");
+    console.logStringMessage("Elektra autoconfig: server socket started");
 
-serverSocket.asyncListen(listener);
+    serverSocket.asyncListen(listener);
+}
+
+if(enable == 1)
+{
+    init();
+}
+
 EOF
 
 cat << EOF > "${FFLibDir}/defaults/pref/${AutoConfigLauncher}"
