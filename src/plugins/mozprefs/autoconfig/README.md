@@ -33,10 +33,10 @@ This file explains how Firefox preferences can be manipulated at runtime using e
 
 #### Guided setup ####
 
-Running `scripts/configure-firefox -c` provides a guided setup for the http_proxy preference.
+Running `scripts/configure-firefox -a` provides a guided setup for adding http_proxy and homepage preferences.
 
 ```
-% scripts/configure-firefox.sh -c
+% scripts/configure-firefox.sh -a
 Add new preferences
 Config Setup:
 

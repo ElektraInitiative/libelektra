@@ -9,7 +9,8 @@ Decoy="/tmp/imnotreal.js"
 AutoConfigScript="elektra.cfg"
 AutoConfigLauncher="autoconfig.js"
 FFInterceptKey="system/firefox/intercept/running"
-
+FFInterceptConfig="system/firefox/intercept/userprefs"
+FFInterceptLibDir="system/firefox/intercept/libdir"
 PrefsFile=
 FFLibDir=
 
@@ -164,6 +165,7 @@ setAutoPrefs()
     then
 	exit 1
     fi
+    kdb set "$FFInterceptConfig" "$PrefsFile" &>/dev/null
 }
 
 testPreload()
@@ -224,8 +226,9 @@ setTestPrefs()
 setupAutoConfig()
 {
     set -x
-    su -c "./writeConfigFiles.sh \"$FFLibDir\" \"$AutoConfigScript\" \"$AutoConfigLauncher\""
+    su -c "${WorkingDir}/writeConfigFiles.sh \"$FFLibDir\" \"$AutoConfigScript\" \"$AutoConfigLauncher\""
     set +x
+    kdb set "$FFInterceptLibDir" "$FFLibDir"
 }
 
 main()
@@ -249,9 +252,41 @@ main()
 
 usage()
 {
-    echo -e "Usage: ./easySetup -cst\n\tc) Add new peference\n\ts) Setup only\n\tt) Setup with test values"
+    echo -e "Usage: ./configure-firefox.sh -arst\n\ta) Add new peference\n\tc) Clear preferences\n\tr) Remove everything\n\ts) Setup only\n\tt) Setup with test values"
 }
 
+removePrefs()
+{
+    isSetup=$(kdb sget $FFInterceptKey "false")
+    if [ "$isSetup" == "true" ];
+    then
+	kdb rm "$FFInterceptKey" &>/dev/null
+	escapedDecoy=$(echo "$Decoy"|sed 's/\//\\\//g')
+	kdb rm -r "/preload/open/${espacedDecoy}" &>/dev/null
+        kdb rm -r "$MountPoint" &>/dev/null
+	kdb umount "$MountPoint" &>/dev/null
+	tmpPrefsFile=$(kdb get "$FFInterceptConfig")
+	kdb mount "$tmpPrefsFile" "$PrefsSetupMountPoint" mozprefs &>/dev/null
+	kdb rm -r "${PrefsSetupMountPoint}/user/elektra" &>/dev/null
+	kdb umount "$PrefsSetupMountPoint" &>/dev/null
+	tmpLibDir=$(kdb get "$FFInterceptLibDir")
+	set -x
+	su -c "rm ${tmpLibDir}/${AutoConfigScript}; rm ${tmpLibDir}/defaults/pref/${AutoConfigLauncher}"
+	set +x
+	kdb rm "$FFInterceptKey" &>/dev/null
+	kdb rm "$FFInterceptConfig" &>/dev/null
+	kdb rm "$FFInterceptLibDir" &>/dev/null
+    fi
+}
+
+clearPrefs()
+{
+    isSetup=$(kdb sget $FFInterceptKey "false")
+    if [ "$isSetup" == "true" ];
+    then
+        kdb rm -r "$MountPoint" &>/dev/null
+    fi
+}
 
 if [ "$#" -eq 0 ];
 then
@@ -259,7 +294,7 @@ then
     exit 0
 fi
 
-while getopts "cst" opt;
+while getopts "acstr" opt;
 do
     case "$opt" in
 	t)
@@ -268,15 +303,25 @@ do
 	    setTestPrefs &>/dev/null
 	    exit 0
 	    ;;
-	c)
+	a)
 	    echo "Add new preferences"
 	    main
 	    ( . "${WorkingDir}/setupConfig.sh" )
 	    exit 0
 	    ;;
+	c)
+	    echo "Clear preferences"
+	    clearPrefs
+	    exit 0
+	    ;;
 	s)
 	    echo "Setup only"
 	    main
+	    exit 0
+	    ;;
+	r)
+	    echo "Remove everything"
+	    removePrefs
 	    exit 0
 	    ;;
 	*)
