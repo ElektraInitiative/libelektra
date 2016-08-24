@@ -11,7 +11,7 @@
 
 ## Basics ##
 
-This plugin works on [Mozilla preference files](https://developer.mozilla.org/en-US/docs/Mozilla/Preferences/A_brief_guide_to_Mozilla_preferences).
+This plugin works on [Mozilla preference files](https://developer.mozilla.org/en-US/docs/Mozilla/Preferences/A_brief_guide_to_Mozilla_preferences) and is used in Elektras [Firefox autoconfig script](./autconfig/README.md). 
 
 
 ### Preference Types ###

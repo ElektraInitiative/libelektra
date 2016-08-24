@@ -6,7 +6,7 @@ if [ ! -f "$interceptOpen" ]
 then
 	echo "You do not have $interceptOpen installed"
 	echo "Maybe your system is not supported (currently needs to be glibc-based)"
-	exit 0
+	exit 1
 fi
 
 if [ "$#" -eq 0 ]

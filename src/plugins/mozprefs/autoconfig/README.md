@@ -1,10 +1,10 @@
 ## Introduction ##
 
-This file explains how Firefox preferences can be manipulated at runtime using elektras intercept open and a custom autoconfig script. 
+This file explains how Firefox preferences can be manipulated at runtime using Elektras intercept open and a custom autoconfig script. 
 
 ## Basics ##
 
-`kdb configure-firefox -s` will configure everything needed in get started.
+`kdb configure-firefox -s` will configure everything needed to get started.
 
 ### Files ###
 
@@ -142,4 +142,4 @@ t = true
 
 ## Limitations ##
 
-Currently it's not possible to lock existing values without restarting.
+Currently Firefox doesn't support locking of existing values or changing locked values without restarting.

@@ -1,3 +1,5 @@
+# creates autoconfig.js and elektra.cfs for configure-firefox
+
 FFLibDir=$1
 AutoConfigScript=$2
 AutoConfigLauncher=$3

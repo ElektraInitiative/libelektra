@@ -144,10 +144,10 @@ int elektraMozprefsGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key *
 			{
 				key = prefToKey (parentKey, p, ptr + strlen (function[p]));
 				ksAppendKey (returned, key);
-				goto LOOP_END;
+				goto loop_end;
 			}
 		}
-	LOOP_END:
+	loop_end:
 		continue;
 	}
 	elektraFree (buffer);
@@ -191,6 +191,9 @@ static inline const char * prefTypToFunction (PrefType pref)
 	if (pref >= PREF_END) return NULL;
 	return function[pref];
 }
+
+// returns a string representing the preference value depending on
+// it's type as a quoted string, integer or boolean value
 
 static char * prefArgToString (const Key * key)
 {
@@ -239,11 +242,11 @@ static void writeKey (FILE * fp, const Key * parentKey, const Key * key)
 	if (!realPrefName) return;
 	const char * functionName = prefTypToFunction (pref);
 	char * argString = NULL;
-	if (!functionName) goto WRITE_CLEANUP;
+	if (!functionName) goto write_cleanup;
 	argString = prefArgToString (key);
-	if (!argString) goto WRITE_CLEANUP;
+	if (!argString) goto write_cleanup;
 	fprintf (fp, "%s(\"%s\", %s);\n", functionName, realPrefName, argString);
-WRITE_CLEANUP:
+write_cleanup:
 	if (realPrefName) elektraFree (realPrefName);
 	if (argString) elektraFree (argString);
 }

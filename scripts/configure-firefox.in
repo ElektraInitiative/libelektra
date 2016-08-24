@@ -8,9 +8,9 @@ ConfigFile="myPrefs.js"
 Decoy="/tmp/imnotreal.js"
 AutoConfigScript="elektra.cfg"
 AutoConfigLauncher="autoconfig.js"
-FFInterceptKey="system/firefox/intercept/running"
-FFInterceptConfig="system/firefox/intercept/userprefs"
-FFInterceptLibDir="system/firefox/intercept/libdir"
+FFInterceptKey="/firefox/intercept/running"
+FFInterceptConfig="/firefox/intercept/userprefs"
+FFInterceptLibDir="/firefox/intercept/libdir"
 PrefsFile=
 FFLibDir=
 
@@ -36,8 +36,7 @@ initialize()
 
     if [ ! -e "$interceptFile" ];
     then
-	echo "Error, libelektraintercept.so not found"
-	exit 1
+	echo "Warning, libelektraintercept.so not found"
     fi
 
     FFLibDir=$(find /usr/lib /usr/lib32 /usr/lib64 /usr/local/lib -name "firefox*" -type f | xargs dirname 2>/dev/null|sort|uniq)
@@ -108,7 +107,7 @@ initialize()
     if [ "$FFrunning" -eq "0" ];
     then
 	echo "We detected that Firefox is running on your computer."
-	read -p "Please close Firefox that uses $PrefsFile and press any key to continue."
+	read -n 1 -s -p "Please close Firefox that uses $PrefsFile and press any key to continue."
     fi
     FFrunning=$( testFFRunning )
     if [ "$FFrunning" -eq "0" ];
@@ -118,6 +117,8 @@ initialize()
     fi
 }
 
+
+# check if configuration in prefs.js is set correctly
 testAutoPrefs()
 {
     unset prefTest
@@ -230,7 +231,7 @@ main()
     then
 	if [ "$1" != "add" ];
 	then
-	    echo "Overwrite existing configuration ? (y/n)"
+	    echo "Overwrite existing autoconfig configuration? (y/n)"
 	    read -s -n 1 sel
 	    if [ "$sel" != "y" ];
 	    then
