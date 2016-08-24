@@ -28,6 +28,7 @@
 typedef int (*checkConfPtr) (Key *, KeySet *);
 
 static const char strVal[] = "abcde";
+static const char strValLong[] = "Oh loooooooooooooooooooong Johnson";
 static const kdb_octet_t binVal[] = { 0x01, 0x02, 0x03, 0x04 };
 
 static int isMarkedForEncryption (const Key * k)
@@ -49,6 +50,7 @@ static KeySet * newTestdataKeySet ()
 	Key * kUnchanged2 = keyNew ("user/crypto/test/nochange2", KEY_END);
 	Key * kNull = keyNew ("user/crypto/test/mynull", KEY_END);
 	Key * kString = keyNew ("user/crypto/test/mystring", KEY_END);
+	Key * kStringLong = keyNew ("user/crypto/test/myextralongstring", KEY_END);
 	Key * kBin = keyNew ("user/crypto/test/mybin", KEY_END);
 
 	keySetString (kUnchanged1, strVal);
@@ -62,10 +64,13 @@ static KeySet * newTestdataKeySet ()
 	keySetString (kString, strVal);
 	keySetMeta (kString, ELEKTRA_CRYPTO_META_ENCRYPT, "1");
 
+	keySetString (kStringLong, strValLong);
+	keySetMeta (kStringLong, ELEKTRA_CRYPTO_META_ENCRYPT, "1");
+
 	keySetBinary (kBin, binVal, sizeof (binVal));
 	keySetMeta (kBin, ELEKTRA_CRYPTO_META_ENCRYPT, "1");
 
-	return ksNew (5, kUnchanged1, kUnchanged2, kNull, kString, kBin, KS_END);
+	return ksNew (6, kUnchanged1, kUnchanged2, kNull, kString, kStringLong, kBin, KS_END);
 }
 
 static inline void setPluginShutdown (KeySet * config)
@@ -199,6 +204,8 @@ static void test_crypto_operations (const char * pluginName)
 				succeed_if (memcmp (keyValue (k), binVal, MIN (keyGetValueSize (k), (ssize_t)sizeof (binVal))),
 					    "encryption failed");
 				succeed_if (memcmp (keyValue (k), strVal, MIN (keyGetValueSize (k), (ssize_t)sizeof (strVal))),
+					    "encryption failed");
+				succeed_if (memcmp (keyValue (k), strValLong, MIN (keyGetValueSize (k), (ssize_t)sizeof (strValLong))),
 					    "encryption failed");
 			}
 			else
