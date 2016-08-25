@@ -21,15 +21,28 @@ install (PROGRAMS upgrade-bootstrap DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
 install (PROGRAMS umount-all DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
 
 if (INSTALL_SYSTEM_FILES)
-	install (FILES kdb-bash-completion
-			DESTINATION /etc/bash_completion.d
-			RENAME kdb)
 	install (FILES elektraenv.sh
 			DESTINATION /etc/profile.d
 			RENAME kdb.sh)
-	install (FILES kdb_zsh_completion
-			DESTINATION /usr/share/zsh/vendor-completions
-			RENAME _kdb)
+    if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+        # On Mac OS X we need to copy this into another folder.
+        # Because of "System Integrity Protection", we need to 
+        # use a /usr/local path
+        install (FILES kdb_zsh_completion
+                DESTINATION /usr/local/share/zsh/site-functions
+                RENAME _kdb)
+        install (FILES kdb-bash-completion
+                DESTINATION /usr/local/etc/bash_completion.d
+                RENAME kdb)
+    else()
+        install (FILES kdb-bash-completion
+                DESTINATION /etc/bash_completion.d
+                RENAME kdb)
+        # This Folder is at least the valid folder for Debian
+        install (FILES kdb_zsh_completion
+                DESTINATION /usr/share/zsh/vendor-completions
+                RENAME _kdb)
+    endif()
 endif()
 
 configure_file(
