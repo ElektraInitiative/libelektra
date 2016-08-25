@@ -266,19 +266,15 @@ void elektraCryptoOpenSSLHandleDestroy (elektraCryptoHandle * handle)
 
 int elektraCryptoOpenSSLEncrypt (elektraCryptoHandle * handle, Key * k, Key * errorKey)
 {
-	// NOTE to prevent memory overflows in libcrypto the buffer holding the encrypted content
-	//      is one block bigger than the inupt buffer.
+	// NOTE to prevent memory overflows in libcrypto the buffer holding the encrypted content (cipherBuffer) is 2 cipher blocks long.
 	kdb_octet_t cipherBuffer[2 * ELEKTRA_CRYPTO_SSL_BLOCKSIZE];
-	kdb_octet_t contentBuffer[ELEKTRA_CRYPTO_SSL_BLOCKSIZE] = { 0 };
-	kdb_octet_t * output;
+	kdb_octet_t headerBuffer[ELEKTRA_CRYPTO_SSL_BLOCKSIZE];
 	int written = 0;
-	size_t outputLen;
 	BIO * encrypted;
-	const kdb_octet_t * value = (kdb_octet_t *)keyValue (k);
 
 	// prepare the crypto header data
-	const kdb_unsigned_long_t contentLen = keyGetValueSize (k);
 	kdb_octet_t flags;
+	const size_t contentLen = keyGetValueSize (k);
 	const size_t headerLen = sizeof (flags) + sizeof (contentLen);
 
 	switch (keyIsString (k))
@@ -305,9 +301,9 @@ int elektraCryptoOpenSSLEncrypt (elektraCryptoHandle * handle, Key * k, Key * er
 	}
 
 	// encrypt the header data
-	memcpy (contentBuffer, &flags, sizeof (flags));
-	memcpy (contentBuffer + sizeof (flags), &contentLen, sizeof (contentLen));
-	EVP_EncryptUpdate (&(handle->encrypt), cipherBuffer, &written, contentBuffer, headerLen);
+	memcpy (headerBuffer, &flags, sizeof (flags));
+	memcpy (headerBuffer + sizeof (flags), &contentLen, sizeof (contentLen));
+	EVP_EncryptUpdate (&(handle->encrypt), cipherBuffer, &written, headerBuffer, headerLen);
 	if (written > 0)
 	{
 		BIO_write (encrypted, cipherBuffer, written);
@@ -318,18 +314,21 @@ int elektraCryptoOpenSSLEncrypt (elektraCryptoHandle * handle, Key * k, Key * er
 		goto error;
 	}
 
-	// encrypt content block by block (i = start of the current block)
-	for (kdb_unsigned_long_t i = 0; i < contentLen; i += ELEKTRA_CRYPTO_SSL_BLOCKSIZE)
-	{
-		// load content partition into the content buffer
-		kdb_unsigned_long_t partitionLen = ELEKTRA_CRYPTO_SSL_BLOCKSIZE;
-		if ((i + 1) * ELEKTRA_CRYPTO_SSL_BLOCKSIZE > contentLen)
-		{
-			partitionLen = contentLen - (i * ELEKTRA_CRYPTO_SSL_BLOCKSIZE);
-		}
-		memcpy (contentBuffer, (value + i), partitionLen);
+	// encrypt content block by block
+	kdb_octet_t * content = (kdb_octet_t *)keyValue (k);
+	size_t processed = 0;
 
-		EVP_EncryptUpdate (&(handle->encrypt), cipherBuffer, &written, contentBuffer, partitionLen);
+	while (processed < contentLen)
+	{
+		kdb_unsigned_long_t partitionLen = ELEKTRA_CRYPTO_SSL_BLOCKSIZE;
+		// the last partition may not fill an entire cipher block
+		if (processed + ELEKTRA_CRYPTO_SSL_BLOCKSIZE > contentLen)
+		{
+			// length of last partition = total content length - number of bytes already processed
+			partitionLen = contentLen - processed;
+		}
+
+		EVP_EncryptUpdate (&(handle->encrypt), cipherBuffer, &written, content, partitionLen);
 		if (written > 0)
 		{
 			BIO_write (encrypted, cipherBuffer, written);
@@ -339,6 +338,10 @@ int elektraCryptoOpenSSLEncrypt (elektraCryptoHandle * handle, Key * k, Key * er
 		{
 			goto error;
 		}
+
+		// move content pointer to the next partition
+		processed += partitionLen;
+		content += partitionLen;
 	}
 
 	EVP_EncryptFinal (&(handle->encrypt), cipherBuffer, &written);
@@ -353,7 +356,8 @@ int elektraCryptoOpenSSLEncrypt (elektraCryptoHandle * handle, Key * k, Key * er
 	}
 
 	// write back the cipher text to the key
-	outputLen = BIO_get_mem_data (encrypted, &output);
+	kdb_octet_t * output;
+	size_t outputLen = BIO_get_mem_data (encrypted, &output);
 	if (outputLen > 0)
 	{
 		keySetBinary (k, output, outputLen);
@@ -375,9 +379,7 @@ int elektraCryptoOpenSSLDecrypt (elektraCryptoHandle * handle, Key * k, Key * er
 	const kdb_octet_t * value = (kdb_octet_t *)keyValue (k);
 	const size_t valueLen = keyGetValueSize (k);
 
-	kdb_octet_t cipherBuffer[ELEKTRA_CRYPTO_SSL_BLOCKSIZE];
-	// NOTE to prevent memory overflows in libcrypto the buffer holding the decrypted content
-	//      is one block bigger than the inupt buffer.
+	// NOTE to prevent memory overflows in libcrypto the buffer holding the decrypted content (contentBuffer) is two cipher blocks long
 	kdb_octet_t contentBuffer[2 * ELEKTRA_CRYPTO_SSL_BLOCKSIZE];
 	int written = 0;
 	kdb_octet_t * plaintext;
@@ -409,8 +411,7 @@ int elektraCryptoOpenSSLDecrypt (elektraCryptoHandle * handle, Key * k, Key * er
 	// decrypt the whole BLOB and store the plain text into the memory sink
 	for (kdb_unsigned_long_t i = 0; i < valueLen; i += ELEKTRA_CRYPTO_SSL_BLOCKSIZE)
 	{
-		memcpy (cipherBuffer, (value + i), ELEKTRA_CRYPTO_SSL_BLOCKSIZE);
-		EVP_DecryptUpdate (&(handle->decrypt), contentBuffer, &written, cipherBuffer, ELEKTRA_CRYPTO_SSL_BLOCKSIZE);
+		EVP_DecryptUpdate (&(handle->decrypt), contentBuffer, &written, (value + i), ELEKTRA_CRYPTO_SSL_BLOCKSIZE);
 		if (written > 0)
 		{
 			BIO_write (decrypted, contentBuffer, written);
