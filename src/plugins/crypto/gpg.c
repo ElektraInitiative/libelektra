@@ -41,23 +41,141 @@ static int inTestMode (KeySet * conf)
 }
 
 /**
- * @brief lookup the path to the gpg binary in conf.
- * @param conf KeySet holding the plugin configuration.
- * @returns the path to the gpg binary to use. This value must not be modified!
+ * @brief concatenates dir and file.
+ * @param errorKey holds an error description in case of failure.
+ * @param dir contains the path to a directory
+ * @param file contains a file name
+ * @returns an allocated string containing "dir/file" which must be freed by the caller or NULL in case of error.
  */
-static char * getGpgBinary (KeySet * conf)
+static char * genGpgCandidate (Key * errorKey, char * dir, const char * file)
 {
+	const size_t resultLen = strlen (dir) + strlen (file) + 2;
+	char * result = elektraMalloc (resultLen);
+	if (!result)
+	{
+		ELEKTRA_SET_ERROR (87, errorKey, "Memory allocation failed");
+		return NULL;
+	}
+	snprintf (result, resultLen, "%s/%s", dir, file);
+	return result;
+}
+
+/**
+ * @brief lookup binary file bin in the PATH environment variable.
+ * @param errorKey holds an error description in case of failure.
+ * @param bin the binary file to look for
+ * @param result holds an allocated string containing the full path to the binary file or NULL in case of error. Must be freed by the caller.
+ * @retval -1 if an error occured. See errorKey for a description.
+ * @retval 0 if the binary could not be found within PATH.
+ * @retval 1 if the binary was found and the full path was stored in result.
+ */
+static int searchPathForBin (Key * errorKey, const char * bin, char ** result)
+{
+	*result = NULL;
+
+	const char * envPath = getenv ("PATH");
+	if (envPath)
+	{
+		const size_t envPathLen = strlen (envPath) + 1;
+		char * dir;
+
+		char * path = elektraMalloc (envPathLen);
+		if (!path)
+		{
+			ELEKTRA_SET_ERROR (87, errorKey, "Memory allocation failed");
+			return -1;
+		}
+		memcpy (path, envPath, envPathLen);
+		// save start of path as strsep() modifies path while splitting it up
+		char * pathBegin = path;
+		while ((dir = strsep (&path, ":")) != NULL)
+		{
+			char * candidate = genGpgCandidate (errorKey, dir, bin);
+			if (!candidate)
+			{
+				elektraFree (pathBegin);
+				return -1;
+			}
+			if (access (candidate, X_OK) == 0)
+			{
+				*result = candidate;
+				elektraFree (pathBegin);
+				return 1;
+			}
+			elektraFree (candidate);
+		}
+		elektraFree (pathBegin);
+	}
+	return 0;
+}
+
+/**
+ * @brief lookup the path to the gpg binary in conf.
+ * @param gpgBin holds allocated path to the gpg binary to be used or NULL in case of an error. Must bee freed by the caller.
+ * @param conf KeySet holding the plugin configuration.
+ * @param errorKey holds an error description if something goes wrong.
+ * @retval 1 on success.
+ * @retval -1 on error. In this case errorkey holds an error description.
+ */
+static int getGpgBinary (char ** gpgBin, KeySet * conf, Key * errorKey)
+{
+	*gpgBin = NULL;
+
+	// plugin configuration has highest priority
 	Key * k = ksLookupByName (conf, ELEKTRA_CRYPTO_PARAM_GPG_BIN, 0);
 	if (k)
 	{
-		const char * path = keyString (k);
-		if (strlen (path) > 0)
+		const char * configPath = keyString (k);
+		const size_t configPathLen = strlen (configPath);
+		if (configPathLen > 0)
 		{
-			// NOTE const is save to discard because the return value is not being modified
-			return (char *)path;
+			*gpgBin = elektraMalloc (configPathLen + 1);
+			if (!(*gpgBin))
+			{
+				ELEKTRA_SET_ERROR (87, errorKey, "Memory allocation failed");
+				return -1;
+			}
+			strncpy (*gpgBin, configPath, configPathLen);
+			return 1;
 		}
 	}
-	return ELEKTRA_CRYPTO_DEFAULT_GPG_BIN;
+
+	// search PATH for gpg and gpg2 binaries
+	switch (searchPathForBin (errorKey, "gpg2", gpgBin))
+	{
+	case 1: // success
+		return 1;
+
+	case -1: // error
+		return -1;
+
+	default: // not found
+		break;
+	}
+
+	switch (searchPathForBin (errorKey, "gpg", gpgBin))
+	{
+	case 1: // success
+		return 1;
+
+	case -1: // error
+		return -1;
+
+	default: // not found
+		break;
+	}
+
+
+	// last resort
+	const size_t defaultLen = strlen (ELEKTRA_CRYPTO_DEFAULT_GPG_BIN);
+	*gpgBin = elektraMalloc (defaultLen + 1);
+	if (!(*gpgBin))
+	{
+		ELEKTRA_SET_ERROR (87, errorKey, "Memory allocation failed");
+		return -1;
+	}
+	strncpy (*gpgBin, ELEKTRA_CRYPTO_DEFAULT_GPG_BIN, defaultLen);
+	return 1;
 }
 
 /**
@@ -197,19 +315,24 @@ int elektraCryptoGpgCall (KeySet * conf, Key * errorKey, Key * msgKey, char * ar
 	assert (argc > 1);
 
 	// sanitize the argument vector
-	argv[0] = getGpgBinary (conf);
+	if (getGpgBinary (&argv[0], conf, errorKey) != 1)
+	{
+		return -1;
+	}
 	argv[argc - 1] = NULL;
 
 	// check that the gpg binary exists and that it is executable
 	if (access (argv[0], F_OK))
 	{
 		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CRYPTO_GPG_FAULT, errorKey, "gpg binary %s not found", argv[0]);
+		elektraFree (argv[0]);
 		return -1;
 	}
 
 	if (access (argv[0], X_OK))
 	{
 		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CRYPTO_GPG_FAULT, errorKey, "gpg binary %s has no permission to execute", argv[0]);
+		elektraFree (argv[0]);
 		return -1;
 	}
 
@@ -217,6 +340,7 @@ int elektraCryptoGpgCall (KeySet * conf, Key * errorKey, Key * msgKey, char * ar
 	if (pipe (pipe_stdin))
 	{
 		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_CRYPTO_GPG_FAULT, errorKey, "Pipe initialization failed");
+		elektraFree (argv[0]);
 		return -1;
 	}
 
@@ -224,6 +348,7 @@ int elektraCryptoGpgCall (KeySet * conf, Key * errorKey, Key * msgKey, char * ar
 	{
 		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_CRYPTO_GPG_FAULT, errorKey, "Pipe initialization failed");
 		closePipe (pipe_stdin);
+		elektraFree (argv[0]);
 		return -1;
 	}
 
@@ -234,6 +359,7 @@ int elektraCryptoGpgCall (KeySet * conf, Key * errorKey, Key * msgKey, char * ar
 		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_CRYPTO_GPG_FAULT, errorKey, "Memory allocation failed");
 		closePipe (pipe_stdin);
 		closePipe (pipe_stdout);
+		elektraFree (argv[0]);
 		return -1;
 	}
 
@@ -246,6 +372,7 @@ int elektraCryptoGpgCall (KeySet * conf, Key * errorKey, Key * msgKey, char * ar
 		closePipe (pipe_stdin);
 		closePipe (pipe_stdout);
 		elektraFree (buffer);
+		elektraFree (argv[0]);
 		return -1;
 
 	case 0:
@@ -291,6 +418,7 @@ int elektraCryptoGpgCall (KeySet * conf, Key * errorKey, Key * msgKey, char * ar
 	}
 	close (pipe_stdout[0]);
 	elektraFree (buffer);
+	elektraFree (argv[0]);
 
 	switch (status)
 	{
