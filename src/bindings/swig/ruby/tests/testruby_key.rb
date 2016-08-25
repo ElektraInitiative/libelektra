@@ -52,6 +52,7 @@ class KdbKeyTestCases < Test::Unit::TestCase
       assert_true k.is_valid?
       assert_equal name, k.name
       assert_equal v, k.get_string
+      assert_equal v, k.value
       assert_equal "me", k.get_meta("owner")
       assert_equal "me", k.get_meta(:owner)
       assert_equal "ccc", k.get_meta("comment")
@@ -73,6 +74,70 @@ class KdbKeyTestCases < Test::Unit::TestCase
 
     end
   end
+
+  def test_key_binary_value
+    assert_nothing_raised do
+
+      name = "user/tmp/k1"
+      v1 = "\000\000\001"
+      v2 = "\002\003\004"
+            
+      k = Kdb::Key.new(name,
+                       value: v1,
+                       flags: Kdb::KEY_BINARY)
+      assert_true k.is_valid?
+      assert_true k.is_binary?
+      assert_equal v1, k.get_binary
+      assert_equal v1, k.get
+      assert_equal v1, k.value
+
+      k.value= v2
+      assert_true k.is_valid?
+      assert_true k.is_binary?
+      assert_equal v2, k.get_binary
+      assert_equal v2, k.get
+      assert_equal v2, k.value
+
+      k.set_binary v1
+      assert_true k.is_valid?
+      assert_true k.is_binary?
+      assert_equal v1, k.get_binary
+      assert_equal v1, k.get
+      assert_equal v1, k.value
+
+      k.set_string "abc"
+      assert_true k.is_valid?
+      assert_false k.is_binary?
+      assert_equal "abc", k.get_string
+      assert_equal "abc", k.get
+      assert_equal "abc", k.value
+
+      k = Kdb::Key.new name, flags: Kdb::KEY_BINARY
+      assert_true k.is_valid?
+      assert_true k.is_binary?
+      k.value= v2
+      assert_equal v2, k.get_binary
+      assert_equal v2, k.get
+      assert_equal v2, k.value
+
+      k = Kdb::Key.new name
+      k.set_binary v1
+      assert_true k.is_valid?
+      assert_true k.is_binary?
+      assert_equal v1, k.value
+
+      k = Kdb::Key.new name
+      k.value= v2
+      assert_true k.is_valid?
+      assert_false k.is_binary?
+      assert_equal v2, k.value
+      k.set_binary v1
+      assert_true k.is_binary?
+      assert_equal v1, k.value
+    end
+  end
+
+
 
   def test_key_get_set_meta
     assert_nothing_raised do
@@ -128,4 +193,39 @@ class KdbKeyTestCases < Test::Unit::TestCase
   end
 
 
+  def test_meta_iterator
+    assert_nothing_raised do
+      k = Kdb::Key.new("user/asdf",
+                       owner: "me",
+                       comment: "hello",
+                       meta1: "meta1 value",
+                       othermeta: "othermeta value")
+
+      assert_equal "me", k["owner"]
+      assert_equal "hello", k[:comment]
+      assert_equal "meta1 value", k["meta1"]
+      assert_equal "othermeta value", k["othermeta"]
+     
+      k.rewind_meta
+      mk = k.current_meta
+      assert_instance_of Kdb::Key, mk
+      assert_not_nil mk
+      #puts mk.class
+
+      # This throws a Kdb::KeyException (null key?)
+      #assert_equal "hello", mk.value
+      #assert_equal "comment", mk.name
+
+
+      #assert_equal "hello", k.current_meta.value
+      #assert_equal "comment", k.current_meta.name
+
+      #k.next_meta
+      #
+      #assert_equal "meta1 value", k.current_meta.value
+      #assert_equal "meta1", k.current_meta.name
+
+
+    end
+  end
 end

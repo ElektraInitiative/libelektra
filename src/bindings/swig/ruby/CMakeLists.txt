@@ -37,7 +37,7 @@ else()
 
   swig_add_module (swig-ruby ruby kdb.i)
   swig_link_libraries (swig-ruby elektra-core elektra-kdb)
-  set_target_properties (swig-ruby PROPERTIES OUTPUT_NAME kdb_)
+  set_target_properties (swig-ruby PROPERTIES OUTPUT_NAME kdb)
   
   set_source_files_properties (
           ${swig_generated_file_fullname} PROPERTIES 
