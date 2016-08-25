@@ -29,6 +29,8 @@ typedef int (*checkConfPtr) (Key *, KeySet *);
 
 static const char strVal[] = "abcde";
 static const char strValLong[] = "Oh loooooooooooooooooooong Johnson";
+static const char strFullBlockSingle[] = "abcdefghijklmno";
+static const char strFullBlockDouble[] = "I am root!!!!!!!!!!!!!!!!!!!!!?";
 static const kdb_octet_t binVal[] = { 0x01, 0x02, 0x03, 0x04 };
 
 static int isMarkedForEncryption (const Key * k)
@@ -51,6 +53,8 @@ static KeySet * newTestdataKeySet ()
 	Key * kNull = keyNew ("user/crypto/test/mynull", KEY_END);
 	Key * kString = keyNew ("user/crypto/test/mystring", KEY_END);
 	Key * kStringLong = keyNew ("user/crypto/test/myextralongstring", KEY_END);
+	Key * kStringFullBlockSingle = keyNew ("user/crypto/test/myfullblocksingle", KEY_END);
+	Key * kStringFullBlockDouble = keyNew ("user/crypto/test/myfullblockdouble", KEY_END);
 	Key * kBin = keyNew ("user/crypto/test/mybin", KEY_END);
 
 	keySetString (kUnchanged1, strVal);
@@ -67,10 +71,17 @@ static KeySet * newTestdataKeySet ()
 	keySetString (kStringLong, strValLong);
 	keySetMeta (kStringLong, ELEKTRA_CRYPTO_META_ENCRYPT, "1");
 
+	keySetString (kStringFullBlockSingle, strFullBlockSingle);
+	keySetMeta (kStringFullBlockSingle, ELEKTRA_CRYPTO_META_ENCRYPT, "1");
+
+	keySetString (kStringFullBlockDouble, strFullBlockDouble);
+	keySetMeta (kStringFullBlockDouble, ELEKTRA_CRYPTO_META_ENCRYPT, "1");
+
 	keySetBinary (kBin, binVal, sizeof (binVal));
 	keySetMeta (kBin, ELEKTRA_CRYPTO_META_ENCRYPT, "1");
 
-	return ksNew (6, kUnchanged1, kUnchanged2, kNull, kString, kStringLong, kBin, KS_END);
+	return ksNew (8, kUnchanged1, kUnchanged2, kNull, kString, kStringLong, kStringFullBlockSingle, kStringFullBlockDouble, kBin,
+		      KS_END);
 }
 
 static inline void setPluginShutdown (KeySet * config)
