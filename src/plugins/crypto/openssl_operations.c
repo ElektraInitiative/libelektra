@@ -447,9 +447,11 @@ int elektraCryptoOpenSSLDecrypt (elektraCryptoHandle * handle, Key * k, Key * er
 	memcpy (&contentLen, plaintext, sizeof (contentLen));
 	plaintext += sizeof (contentLen);
 
-	if ((plaintextLen - headerLen) != contentLen)
+	// validate restored header
+	if (contentLen > (plaintextLen - headerLen))
 	{
-		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_CRYPTO_DECRYPT_FAIL, errorKey, "Decryption error! corrupted data.");
+		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_CRYPTO_DECRYPT_FAIL, errorKey,
+				   "Content length is bigger than amount of decrypted data. Data is possibly corrupted.");
 		goto error;
 	}
 
