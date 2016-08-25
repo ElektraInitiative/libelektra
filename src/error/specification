@@ -895,3 +895,17 @@ severity:error
 ingroup:plugin
 module:passwd
 macro:PASSWD_VALIDATION
+
+number:150
+description:Failed to generate a random master password.
+macro:CRYPTO_RANDOM_GEN_FAULT
+ingroup:plugin
+module:crypto
+severity:error
+
+number:151
+description:Error in the GPG module.
+macro:CRYPTO_GPG_FAULT
+ingroup:plugin
+module:crypto
+severity:error

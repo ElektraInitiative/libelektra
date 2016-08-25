@@ -20,13 +20,40 @@
 #ifdef ELEKTRA_CRYPTO_API_BOTAN
 #include "botan_operations.h"
 #endif
+#include "gpg.h"
+#include <kdb.h>
 #include <kdberrors.h>
+#include <kdbtypes.h>
 #include <pthread.h>
+#include <stdlib.h>
 #include <string.h>
 
 static pthread_mutex_t mutex_ref_cnt = PTHREAD_MUTEX_INITIALIZER;
 static unsigned int ref_cnt = 0;
 
+#if defined(ELEKTRA_CRYPTO_API_GCRYPT) || defined(ELEKTRA_CRYPTO_API_OPENSSL) || defined(ELEKTRA_CRYPTO_API_BOTAN)
+
+/**
+ * @brief checks if a Key has been marked for encryption by checking the Key's metadata.
+ *
+ * If the meta-key ELEKTRA_CRYPTO_META_ENCRYPT has the value "1" it is considered to be true.
+ * Every other value or the non-existence of the meta-key is considered to be false.
+ *
+ * @param k the Key to be checked
+ * @retval 0 if the Key has not been marked for encryption
+ * @retval 1 if the Key has been marked for encryption
+ */
+static int isMarkedForEncryption (const Key * k)
+{
+	const Key * metaEncrypt = keyGetMeta (k, ELEKTRA_CRYPTO_META_ENCRYPT);
+	if (metaEncrypt && strcmp (keyString (metaEncrypt), "1") == 0)
+	{
+		return 1;
+	}
+	return 0;
+}
+
+#endif
 
 /**
  * @brief initialize the crypto backend
@@ -56,6 +83,44 @@ static void elektraCryptoTeardown ()
 }
 
 /**
+ * @brief read the plugin configuration for the supposed length of the master password.
+ *
+ * @param conf the plugin configuration
+ * @return the expected length of the master password
+ */
+static kdb_unsigned_short_t elektraCryptoGetRandomPasswordLength (KeySet * conf)
+{
+	Key * k = ksLookupByName (conf, ELEKTRA_CRYPTO_PARAM_MASTER_PWD_LEN, 0);
+	if (k && keyIsString (k) > 0)
+	{
+		const char * value = keyString (k);
+		if (strlen (value) > 0)
+		{
+			return (kdb_unsigned_short_t)strtoul (value, NULL, 10);
+		}
+	}
+	return ELEKTRA_CRYPTO_DEFAULT_MASTER_PWD_LENGTH;
+}
+
+/**
+ * @brief create a random master password using the crypto backend's SRNG.
+ * @param length limit the length of the generated string to length characters (including the 0x00 terminator)
+ * @return a random character sequence with length characters of size.
+ */
+static char * elektraCryptoCreateRandomString (const kdb_unsigned_short_t length ELEKTRA_UNUSED)
+{
+#if defined(ELEKTRA_CRYPTO_API_GCRYPT)
+	return elektraCryptoGcryCreateRandomString (length);
+#elif defined(ELEKTRA_CRYPTO_API_OPENSSL)
+	return elektraCryptoOpenSSLCreateRandomString (length);
+#elif defined(ELEKTRA_CRYPTO_API_BOTAN)
+	return elektraCryptoBotanCreateRandomString (length);
+#else
+	return 0;
+#endif
+}
+
+/**
  * @brief encrypt the content of the Key k
  * @retval 1 on success
  * @retval -1 on failure
@@ -73,22 +138,28 @@ static int elektraCryptoEncrypt (Plugin * handle ELEKTRA_UNUSED, KeySet * data E
 
 #if defined(ELEKTRA_CRYPTO_API_GCRYPT)
 
-	if (elektraCryptoGcryHandleCreate (&cryptoHandle, pluginConfig, errorKey) != 1)
-	{
-		return -1;
-	}
-
 	ksRewind (data);
 	while ((k = ksNext (data)) != 0)
 	{
+		if (!isMarkedForEncryption (k))
+		{
+			continue;
+		}
+
+		if (elektraCryptoGcryHandleCreate (&cryptoHandle, pluginConfig, errorKey, k, ELEKTRA_CRYPTO_ENCRYPT) != 1)
+		{
+			return -1;
+		}
+
+
 		if (elektraCryptoGcryEncrypt (cryptoHandle, k, errorKey) != 1)
 		{
 			elektraCryptoGcryHandleDestroy (cryptoHandle);
 			return -1;
 		}
-	}
 
-	elektraCryptoGcryHandleDestroy (cryptoHandle);
+		elektraCryptoGcryHandleDestroy (cryptoHandle);
+	}
 	return 1;
 
 #elif defined(ELEKTRA_CRYPTO_API_OPENSSL)
@@ -96,7 +167,12 @@ static int elektraCryptoEncrypt (Plugin * handle ELEKTRA_UNUSED, KeySet * data E
 	ksRewind (data);
 	while ((k = ksNext (data)) != 0)
 	{
-		if (elektraCryptoOpenSSLHandleCreate (&cryptoHandle, pluginConfig, errorKey) != 1)
+		if (!isMarkedForEncryption (k))
+		{
+			continue;
+		}
+
+		if (elektraCryptoOpenSSLHandleCreate (&cryptoHandle, pluginConfig, errorKey, k, ELEKTRA_CRYPTO_ENCRYPT) != 1)
 		{
 			goto openssl_error;
 		}
@@ -120,6 +196,11 @@ openssl_error:
 	ksRewind (data);
 	while ((k = ksNext (data)) != 0)
 	{
+		if (!isMarkedForEncryption (k))
+		{
+			continue;
+		}
+
 		if (elektraCryptoBotanEncrypt (pluginConfig, k, errorKey) != 1)
 		{
 			return -1; // failure, error has been set by elektraCryptoBotanEncrypt
@@ -150,22 +231,27 @@ static int elektraCryptoDecrypt (Plugin * handle ELEKTRA_UNUSED, KeySet * data E
 
 #if defined(ELEKTRA_CRYPTO_API_GCRYPT)
 
-	if (elektraCryptoGcryHandleCreate (&cryptoHandle, pluginConfig, errorKey) != 1)
-	{
-		return -1;
-	}
-
 	ksRewind (data);
 	while ((k = ksNext (data)) != 0)
 	{
+		if (!isMarkedForEncryption (k))
+		{
+			continue;
+		}
+
+		if (elektraCryptoGcryHandleCreate (&cryptoHandle, pluginConfig, errorKey, k, ELEKTRA_CRYPTO_DECRYPT) != 1)
+		{
+			return -1;
+		}
+
 		if (elektraCryptoGcryDecrypt (cryptoHandle, k, errorKey) != 1)
 		{
 			elektraCryptoGcryHandleDestroy (cryptoHandle);
 			return -1;
 		}
-	}
 
-	elektraCryptoGcryHandleDestroy (cryptoHandle);
+		elektraCryptoGcryHandleDestroy (cryptoHandle);
+	}
 	return 1;
 
 #elif defined(ELEKTRA_CRYPTO_API_OPENSSL)
@@ -173,7 +259,12 @@ static int elektraCryptoDecrypt (Plugin * handle ELEKTRA_UNUSED, KeySet * data E
 	ksRewind (data);
 	while ((k = ksNext (data)) != 0)
 	{
-		if (elektraCryptoOpenSSLHandleCreate (&cryptoHandle, pluginConfig, errorKey) != 1)
+		if (!isMarkedForEncryption (k))
+		{
+			continue;
+		}
+
+		if (elektraCryptoOpenSSLHandleCreate (&cryptoHandle, pluginConfig, errorKey, k, ELEKTRA_CRYPTO_DECRYPT) != 1)
 		{
 			goto openssl_error;
 		}
@@ -197,6 +288,11 @@ openssl_error:
 	ksRewind (data);
 	while ((k = ksNext (data)) != 0)
 	{
+		if (!isMarkedForEncryption (k))
+		{
+			continue;
+		}
+
 		if (elektraCryptoBotanDecrypt (pluginConfig, k, errorKey) != 1)
 		{
 			return -1;
@@ -313,6 +409,62 @@ int CRYPTO_PLUGIN_FUNCTION (set) (Plugin * handle, KeySet * ks, Key * parentKey)
 	// we may add more options in the future
 
 	return elektraCryptoEncrypt (handle, ks, parentKey);
+}
+
+/**
+ * @brief Checks for the existense of the master password, that is used for encryption and decryption.
+ *
+ * If the master password can not be found it will be generated randomly.
+ * Then it will be encrypted and stored in conf.
+ *
+ * If the master password can be found, it will be decrypted temporarily in order to verify its correctness.
+ * conf will not be modified in this case.
+ *
+ * An error might occur during the password generation, encryption and decryption.
+ * The error will be appended to errorKey.
+ *
+ * @retval 0 no changes were made to the configuration
+ * @retval 1 the master password has been appended to the configuration
+ * @retval -1 an error occured. Check errorKey
+ */
+int CRYPTO_PLUGIN_FUNCTION (checkconf) (Key * errorKey, KeySet * conf)
+{
+	Key * k = ksLookupByName (conf, ELEKTRA_CRYPTO_PARAM_MASTER_PWD, 0);
+	if (k)
+	{
+		// call gpg module to verify that we own the required key
+		Key * msg = keyDup (k);
+		if (elektraCryptoGpgDecryptMasterPassword (conf, errorKey, msg) != 1)
+		{
+			ELEKTRA_SET_ERROR (ELEKTRA_ERROR_CRYPTO_CONFIG_FAULT, errorKey, "Master password decryption failed");
+			keyDel (msg);
+			return -1;
+		}
+		keyDel (msg);
+		return 0;
+	}
+	else
+	{
+		// generate random master password r
+		const kdb_unsigned_short_t passwordLen = elektraCryptoGetRandomPasswordLength (conf);
+		const char * r = elektraCryptoCreateRandomString (passwordLen);
+		if (!r)
+		{
+			ELEKTRA_SET_ERROR (ELEKTRA_ERROR_CRYPTO_RANDOM_GEN_FAULT, errorKey, "Random password generation failed");
+			return -1;
+		}
+
+		// store password in configuration
+		k = keyNew ("user/" ELEKTRA_CRYPTO_PARAM_MASTER_PWD, KEY_END);
+		keySetString (k, r);
+		if (elektraCryptoGpgEncryptMasterPassword (conf, errorKey, k) != 1)
+		{
+			keyDel (k);
+			return -1;
+		}
+		ksAppendKey (conf, k);
+		return 1;
+	}
 }
 
 /**
