@@ -15,9 +15,9 @@ add_custom_command (
 		ARGS ${EXE_ERR_ARG} ${CMAKE_SOURCE_DIR}/src/error/specification ${BINARY_INCLUDE_DIR}/kdberrors.h
 		)
 add_custom_target (
-    kdberrors_generated ALL
-    DEPENDS ${BINARY_INCLUDE_DIR}/kdberrors.h
-    )
+	kdberrors_generated ALL
+	DEPENDS ${BINARY_INCLUDE_DIR}/kdberrors.h
+	)
 
 add_executable(exporttranslations exporttranslations.cpp parser.hpp parser.cpp)
 
