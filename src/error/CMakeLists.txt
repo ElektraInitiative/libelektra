@@ -12,7 +12,7 @@ add_custom_command (
 		OUTPUT ${BINARY_INCLUDE_DIR}/kdberrors.h
 		DEPENDS elektra-export-errors ${CMAKE_CURRENT_SOURCE_DIR}/specification
 		COMMAND ${EXE_ERR_LOC}
-		ARGS ${EXE_ERR_ARG} ${CMAKE_SOURCE_DIR}/src/error/specification ${BINARY_INCLUDE_DIR}/kdberrors.h
+		ARGS ${EXE_ERR_ARG} ${CMAKE_CURRENT_SOURCE_DIR}/specification ${BINARY_INCLUDE_DIR}/kdberrors.h
 		)
 add_custom_target (
 	kdberrors_generated ALL
