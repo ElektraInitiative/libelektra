@@ -450,7 +450,7 @@ int CRYPTO_PLUGIN_FUNCTION (checkconf) (Key * errorKey, KeySet * conf)
 		const char * r = elektraCryptoCreateRandomString (passwordLen);
 		if (!r)
 		{
-			ELEKTRA_SET_ERROR (ELEKTRA_ERROR_CRYPTO_RANDOM_GEN_FAULT, errorKey, "Random password generation failed");
+			ELEKTRA_SET_ERROR (ELEKTRA_ERROR_CRYPTO_RANDOM_GEN, errorKey, "Random password generation failed");
 			return -1;
 		}
 

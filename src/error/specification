@@ -898,14 +898,14 @@ macro:PASSWD_VALIDATION
 
 number:150
 description:Failed to generate a random master password.
-macro:CRYPTO_RANDOM_GEN_FAULT
+macro:CRYPTO_RANDOM_GEN
 ingroup:plugin
 module:crypto
 severity:error
 
 number:151
 description:Error in the GPG module.
-macro:CRYPTO_GPG_FAULT
+macro:CRYPTO_GPG
 ingroup:plugin
 module:crypto
 severity:error
