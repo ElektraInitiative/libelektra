@@ -122,19 +122,16 @@ if (DEPENDENCY_PHASE)
 	unset (plugin)
 endif ()
 
+set (CRYPTO_COMMON_FILES helper.h helper.c gpg.h gpg.c crypto.h crypto.c)
+
 #
 # Compile Variant: OpenSSL
 #
 add_plugin (crypto_gcrypt
 	SOURCES
-		helper.c
-		helper.h
-		gpg.c
-		gpg.h
 		gcrypt_operations.h
 		gcrypt_operations.c
-		crypto.h
-		crypto.c
+		${CRYPTO_COMMON_FILES}
 	INCLUDE_DIRECTORIES
 		${LIBGCRYPT_INCLUDE_DIR}
 	LINK_LIBRARIES
@@ -150,14 +147,9 @@ add_plugin (crypto_gcrypt
 #
 add_plugin (crypto_openssl
 	SOURCES
-		helper.c
-		helper.h
-		gpg.c
-		gpg.h
 		openssl_operations.h
 		openssl_operations.c
-		crypto.h
-		crypto.c
+		${CRYPTO_COMMON_FILES}
 	INCLUDE_DIRECTORIES
 		${OPENSSL_INCLUDE_DIR}
 	LINK_LIBRARIES
@@ -173,14 +165,9 @@ add_plugin (crypto_openssl
 #
 add_plugin (crypto_botan
 	SOURCES
-		helper.c
-		helper.h
-		gpg.c
-		gpg.h
 		botan_operations.h
 		botan_operations.cpp
-		crypto.h
-		crypto.c
+		${CRYPTO_COMMON_FILES}
 	INCLUDE_DIRECTORIES
 		${BOTAN_INCLUDE_DIRS}
 	LINK_LIBRARIES
@@ -209,3 +196,4 @@ if (ADDTESTING_PHASE)
 	endif ()
 endif ()
 
+unset (CRYPTO_COMMON_FILES)
