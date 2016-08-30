@@ -50,7 +50,7 @@ static int getKeyIvForEncryption (KeySet * config, Key * errorKey, Key * k, Symm
 		AutoSeeded_RNG rng;
 		rng.randomize (salt, ELEKTRA_CRYPTO_DEFAULT_SALT_LEN - 1);
 		elektraCryptoNormalizeRandomString (salt, sizeof (salt));
-		keySetMeta (k, ELEKTRA_CRYPTO_META_SALT, (char *)salt);
+		keySetMeta (k, ELEKTRA_CRYPTO_META_SALT, reinterpret_cast<char *> (salt));
 
 		// read iteration count
 		const kdb_unsigned_long_t iterations = elektraCryptoGetIterationCount (config);
