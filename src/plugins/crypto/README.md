@@ -45,7 +45,14 @@ At the moment the following crypto APIs are supported:
 #ifdef ELEKTRA_CRYPTO_API_BOTAN
 - `libbotan1.10-dev` or `botan-devel`
 #endif
-- gpg command
+
+### GnuPG (GPG) ###
+
+GPG is a runtime dependency for all crypto plugin variants.
+Either the `gpg` or the `gpg2` binary should be installed when using the plugin.
+Note that `gpg2` will be prefered if both versions are available.
+The GPG binary can be configured in the plugin configuration as `/gpg/bin` (see _GPG Configuration_ below).
+If no such configuration is provided, the plugin will look at the PATH environment variable to find the GPG binaries.
 
 ## How to compile ##
 
@@ -108,11 +115,7 @@ Set the CMake variables `OPENSSL_INCLUDE_DIR` and `OPENSSL_LIBRARIES` to your de
 
 ## Restrictions ##
 
-The crypto plugin will encrypt and decrypt values using AES-256 in CBC mode.
-
-The GPG binary is required for handling the cryptographic keys.
-
-At the moment the plugins will only run on UNIX/Linux-like systems, that implement `fork ()`.
+At the moment the plugin will only run on UNIX/Linux-like systems, that provide implementations for `fork ()` and `execv ()`.
 
 ## Examples ##
 
