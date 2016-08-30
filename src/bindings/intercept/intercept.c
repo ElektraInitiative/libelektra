@@ -19,7 +19,7 @@
 #include <kdbmodule.h>
 #include <kdbprivate.h>
 
-#define PRELOAD_PATH "/preload/open"
+#define PRELOAD_PATH "/elektra/intercept/open"
 #define TV_MAX_DIGITS 26
 #define RELEVANT_FRAME 1
 
