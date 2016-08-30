@@ -68,7 +68,7 @@ Assignment example:
 
 	kdb mount conditionals.dump /tmount/conditionals conditionals dump
 	kdb set user/tmount/conditionals/hkey Hello
-	kdb setmeta user/tmount/conditionals/hkey assign/condition "(./hkey == 'Hello') ? ('World')"
+	kdb setmeta user/tmount/conditionals/hkey assign/condition "(./ == 'Hello') ? ('World')" # alternative: "(../hkey == 'Hello') ? ('World')
 	kdb get user/tmount/conditionals/hkey # output: World
 
 Global plugin example:
