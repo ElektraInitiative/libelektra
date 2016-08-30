@@ -227,7 +227,7 @@ int elektraCryptoGpgEncryptMasterPassword (KeySet * conf, Key * errorKey, Key * 
 	}
 
 	// initialize argument vector for gpg call
-	const kdb_unsigned_short_t argc = (2 * recipientCount) + 3 + testMode;
+	const kdb_unsigned_short_t argc = (2 * recipientCount) + 4 + testMode;
 	kdb_unsigned_short_t i = 1;
 	char * argv[argc];
 
@@ -256,10 +256,11 @@ int elektraCryptoGpgEncryptMasterPassword (KeySet * conf, Key * errorKey, Key * 
 	// append option for unit tests
 	if (testMode)
 	{
-		argv[argc - 4] = "--trust-model";
-		argv[argc - 3] = "always";
+		argv[argc - 5] = "--trust-model";
+		argv[argc - 4] = "always";
 	}
 
+	argv[argc - 3] = "--batch";
 	argv[argc - 2] = "-e";
 
 	// call gpg
@@ -280,13 +281,13 @@ int elektraCryptoGpgDecryptMasterPassword (KeySet * conf, Key * errorKey, Key * 
 {
 	if (inTestMode (conf))
 	{
-		char * argv[] = { "", "--trust-model", "always", "-d", NULL };
-		return elektraCryptoGpgCall (conf, errorKey, msgKey, argv, 5);
+		char * argv[] = { "", "--batch", "--trust-model", "always", "-d", NULL };
+		return elektraCryptoGpgCall (conf, errorKey, msgKey, argv, 6);
 	}
 	else
 	{
-		char * argv[] = { "", "-d", NULL };
-		return elektraCryptoGpgCall (conf, errorKey, msgKey, argv, 3);
+		char * argv[] = { "", "--batch", "-d", NULL };
+		return elektraCryptoGpgCall (conf, errorKey, msgKey, argv, 4);
 	}
 }
 
@@ -308,6 +309,8 @@ int elektraCryptoGpgCall (KeySet * conf, Key * errorKey, Key * msgKey, char * ar
 	int status;
 	int pipe_stdin[2];
 	int pipe_stdout[2];
+	int pipe_stderr[2];
+	char errorBuffer[512] = "";
 	kdb_octet_t * buffer = NULL;
 	const ssize_t bufferSize = 2 * keyGetValueSize (msgKey);
 	ssize_t outputLen;
@@ -352,6 +355,15 @@ int elektraCryptoGpgCall (KeySet * conf, Key * errorKey, Key * msgKey, char * ar
 		return -1;
 	}
 
+	if (pipe (pipe_stderr))
+	{
+		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_CRYPTO_GPG, errorKey, "Pipe initialization failed");
+		closePipe (pipe_stdin);
+		closePipe (pipe_stdout);
+		elektraFree (argv[0]);
+		return -1;
+	}
+
 	// allocate buffer for gpg output
 	// estimated maximum output size = 2 * input (including headers, etc.)
 	if (!(buffer = elektraMalloc (bufferSize)))
@@ -359,6 +371,7 @@ int elektraCryptoGpgCall (KeySet * conf, Key * errorKey, Key * msgKey, char * ar
 		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_CRYPTO_GPG, errorKey, "Memory allocation failed");
 		closePipe (pipe_stdin);
 		closePipe (pipe_stdout);
+		closePipe (pipe_stderr);
 		elektraFree (argv[0]);
 		return -1;
 	}
@@ -371,6 +384,7 @@ int elektraCryptoGpgCall (KeySet * conf, Key * errorKey, Key * msgKey, char * ar
 		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_CRYPTO_GPG, errorKey, "fork failed");
 		closePipe (pipe_stdin);
 		closePipe (pipe_stdout);
+		closePipe (pipe_stderr);
 		elektraFree (buffer);
 		elektraFree (argv[0]);
 		return -1;
@@ -379,6 +393,7 @@ int elektraCryptoGpgCall (KeySet * conf, Key * errorKey, Key * msgKey, char * ar
 		// start of the forked child process
 		close (pipe_stdin[1]);
 		close (pipe_stdout[0]);
+		close (pipe_stderr[0]);
 
 		// redirect stdin to pipe
 		close (STDIN_FILENO);
@@ -389,6 +404,11 @@ int elektraCryptoGpgCall (KeySet * conf, Key * errorKey, Key * msgKey, char * ar
 		close (STDOUT_FILENO);
 		dup (pipe_stdout[1]);
 		close (pipe_stdout[1]);
+
+		// redirect stderr to pipe
+		close (STDERR_FILENO);
+		dup (pipe_stderr[1]);
+		close (pipe_stderr[1]);
 
 		// finally call the gpg executable
 		if (execv (argv[0], argv) < 0)
@@ -402,6 +422,7 @@ int elektraCryptoGpgCall (KeySet * conf, Key * errorKey, Key * msgKey, char * ar
 	// parent process
 	close (pipe_stdin[0]);
 	close (pipe_stdout[1]);
+	close (pipe_stderr[1]);
 
 	// pass the message to the gpg process
 	write (pipe_stdin[1], keyValue (msgKey), keyGetValueSize (msgKey));
@@ -410,30 +431,36 @@ int elektraCryptoGpgCall (KeySet * conf, Key * errorKey, Key * msgKey, char * ar
 	// wait for the gpg process to finish
 	waitpid (pid, &status, 0);
 
-	// receive the output of the gpg process
-	if (status == 0)
-	{
-		outputLen = read (pipe_stdout[0], buffer, bufferSize);
-		keySetBinary (msgKey, buffer, outputLen);
-	}
-	close (pipe_stdout[0]);
-	elektraFree (buffer);
-	elektraFree (argv[0]);
-
+	// evaluate return code of finished child process
+	int retval = -1;
 	switch (status)
 	{
 	case 0:
-		// everything ok
-		return 1;
+		// everything ok - receive the output of the gpg process
+		outputLen = read (pipe_stdout[0], buffer, bufferSize);
+		keySetBinary (msgKey, buffer, outputLen);
+		retval = 1;
+		break;
 
 	case 1:
 		// bad signature
 		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_CRYPTO_GPG, errorKey, "GPG reported a bad signature");
-		return -1;
+		break;
 
 	default:
 		// other errors
-		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CRYPTO_GPG, errorKey, "GPG failed with return value  %d", status);
-		return -1;
+		outputLen = read (pipe_stderr[0], errorBuffer, sizeof (errorBuffer));
+		if (outputLen < 1)
+		{
+			errorBuffer[0] = '\0';
+		}
+		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CRYPTO_GPG, errorKey, "GPG failed with return value %d. %s", status, errorBuffer);
+		break;
 	}
+
+	elektraFree (buffer);
+	elektraFree (argv[0]);
+	close (pipe_stdout[0]);
+	close (pipe_stderr[0]);
+	return retval;
 }
