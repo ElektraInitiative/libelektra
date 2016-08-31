@@ -8,8 +8,6 @@
 
 %module kdb
 
-%include "stl.i"
-/* %include "../common.i" */
 %feature("autodoc", "3");
 
 %include "attribute.i"

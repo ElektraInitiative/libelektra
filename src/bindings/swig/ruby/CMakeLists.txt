@@ -33,7 +33,7 @@ else()
 	
   set (CMAKE_SWIG_OUTDIR "${CMAKE_CURRENT_BINARY_DIR}")
 	set (CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_SWIG_OUTDIR}")
-  set (CMAKE_SWIG_FLAGS "-O;-autorename")
+  set (CMAKE_SWIG_FLAGS "-O;-autorename;-DSWIG_NO_EXPORT_ITERATOR_METHODS;-v")
 
   swig_add_module (swig-ruby ruby kdb.i)
   swig_link_libraries (swig-ruby elektra-core elektra-kdb)
@@ -41,7 +41,7 @@ else()
   
   set_source_files_properties (
           ${swig_generated_file_fullname} PROPERTIES 
-          COMPILE_FLAGS "${SWIG_COMPILE_FLAGS} -DSWIG_TYPE_TABLE=kdb"
+          COMPILE_FLAGS "${SWIG_COMPILE_FLAGS} -Wno-unused-parameter -DSWIG_TYPE_TABLE=kdb"
   )
 
   #set (PYTHON_GET_MODULES_DIR_COMMAND "from distutils.sysconfig import get_python_lib; print(get_python_lib(True, prefix='${CMAKE_INSTALL_PREFIX}'))")
