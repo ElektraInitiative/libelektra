@@ -75,12 +75,6 @@ static int initData (Plugin * handle)
 	}
 	return 0;
 }
-int elektraBlockresolverOpen (Plugin * handle ELEKTRA_UNUSED, Key * errorKey ELEKTRA_UNUSED)
-{
-	// plugin initialization logic
-	// this function is optional
-	return 1; // success
-}
 
 int elektraBlockresolverClose (Plugin * handle ELEKTRA_UNUSED, Key * errorKey ELEKTRA_UNUSED)
 {
@@ -173,13 +167,9 @@ int elektraBlockresolverGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned E
 			30,
 			keyNew ("system/elektra/modules/blockresolver", KEY_VALUE, "blockresolver plugin waits for your orders", KEY_END),
 			keyNew ("system/elektra/modules/blockresolver/exports", KEY_END),
-			keyNew ("system/elektra/modules/blockresolver/exports/open", KEY_FUNC, elektraBlockresolverOpen, KEY_END),
 			keyNew ("system/elektra/modules/blockresolver/exports/close", KEY_FUNC, elektraBlockresolverClose, KEY_END),
 			keyNew ("system/elektra/modules/blockresolver/exports/get", KEY_FUNC, elektraBlockresolverGet, KEY_END),
 			keyNew ("system/elektra/modules/blockresolver/exports/set", KEY_FUNC, elektraBlockresolverSet, KEY_END),
-			keyNew ("system/elektra/modules/blockresolver/exports/error", KEY_FUNC, elektraBlockresolverError, KEY_END),
-			keyNew ("system/elektra/modules/blockresolver/exports/checkconf", KEY_FUNC, elektraBlockresolverCheckConfig,
-				KEY_END),
 			keyNew ("system/elektra/modules/blockresolver/exports/checkfile", KEY_FUNC, elektraBlockresolverCheckFile, KEY_END),
 #include ELEKTRA_README (blockresolver)
 			keyNew ("system/elektra/modules/blockresolver/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
@@ -347,35 +337,13 @@ SET_CLEANUP:
 	return retVal; // success
 }
 
-int elektraBlockresolverError (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
-{
-	// set all keys
-	// this function is optional
-
-	return 1; // success
-}
-
-int elektraBlockresolverCheckConfig (Key * errorKey ELEKTRA_UNUSED, KeySet * conf ELEKTRA_UNUSED)
-{
-	// validate plugin configuration
-	// this function is optional
-
-	// the return codes have the following meaning:
-	// 0: The configuration was OK and has not been changed
-	// 1: The configuration has been changed and now it is OK
-	// -1: The configuration was not OK and could not be fixed. An error has to be set to errorKey.
-	return 0;
-}
-
 Plugin * ELEKTRA_PLUGIN_EXPORT (blockresolver)
 {
 	// clang-format off
     return elektraPluginExport ("blockresolver",
-	    ELEKTRA_PLUGIN_OPEN,	&elektraBlockresolverOpen,
 	    ELEKTRA_PLUGIN_CLOSE,	&elektraBlockresolverClose,
 	    ELEKTRA_PLUGIN_GET,	&elektraBlockresolverGet,
 	    ELEKTRA_PLUGIN_SET,	&elektraBlockresolverSet,
-	    ELEKTRA_PLUGIN_ERROR,	&elektraBlockresolverError,
 	    ELEKTRA_PLUGIN_END);
 }
 
