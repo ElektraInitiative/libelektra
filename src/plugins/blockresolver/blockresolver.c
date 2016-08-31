@@ -147,7 +147,7 @@ static const char * getBlock (FILE * fp, const long startPos, const long endPos)
 	if (endPos <= startPos) return NULL;
 	size_t blockSize = endPos - startPos;
 	if (blockSize <= 0) return NULL;
-	char * block = elektraMalloc (blockSize);
+	char * block = elektraMalloc (blockSize + 1);
 	if (!block) return NULL;
 	size_t read = fread (block, 1, blockSize, fp);
 	if (read != blockSize)
