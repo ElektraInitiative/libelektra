@@ -11,7 +11,7 @@ Elektra web consists of multiple components:
  * a single cluster management server to communicate with the elektra daemons (clusterd)
  * a client (web browser) that accesses the Web UI on the cluster management server
 
-![https://cdn.rawgit.com/ElektraInitiative/libelektra/http-api-proposal/doc/webui/network_structure.png](https://cdn.rawgit.com/ElektraInitiative/libelektra/http-api-proposal/doc/webui/network_structure.png)
+![https://cdn.rawgit.com/omnidan/libelektra/http-api-proposal/doc/webui/network_structure.png](https://cdn.rawgit.com/omnidan/libelektra/http-api-proposal/doc/webui/network_structure.png)
 
 
 ## GUI
@@ -22,14 +22,14 @@ edited, the changes are pushed to all instances in the cluster. Furthermore,
 single instances can be configured independently.
 
 The configuration view of elektra web is similar to the tree view of the
-[qt-gui](https://github.com/ElektraInitiative/libelektra/tree/master/src/tools/qt-gui).
+[qt-gui](https://github.com/omnidan/libelektra/tree/master/src/tools/qt-gui).
 
-![https://cdn.rawgit.com/ElektraInitiative/libelektra/http-api-proposal/doc/webui/ui_structure.png](https://cdn.rawgit.com/ElektraInitiative/libelektra/http-api-proposal/doc/webui/ui_structure.png)
+![https://cdn.rawgit.com/omnidan/libelektra/http-api-proposal/doc/webui/ui_structure.png](https://cdn.rawgit.com/omnidan/libelektra/http-api-proposal/doc/webui/ui_structure.png)
 
 
 ## API
 
-![https://cdn.rawgit.com/ElektraInitiative/libelektra/http-api-proposal/doc/webui/daemon_structure.png](https://cdn.rawgit.com/ElektraInitiative/libelektra/http-api-proposal/doc/webui/daemon_structure.png)
+![https://cdn.rawgit.com/omnidan/libelektra/http-api-proposal/doc/webui/daemon_structure.png](https://cdn.rawgit.com/omnidan/libelektra/http-api-proposal/doc/webui/daemon_structure.png)
 
 TODO: change second elektrad to clusterd
 
