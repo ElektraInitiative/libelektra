@@ -1,0 +1,56 @@
+# elektra web
+
+_a web user interface (Web UI) to remotely manage multiple elektra instances_
+
+
+## Overview
+
+Elektra web consists of multiple components:
+
+ * (multiple) servers running an elektra daemon (elektrad)
+ * a single cluster management server to communicate with the elektra daemons (clusterd)
+ * a client (web browser) that accesses the Web UI on the cluster management server
+
+![https://cdn.rawgit.com/ElektraInitiative/libelektra/http-api-proposal/doc/webui/network_structure.png](https://cdn.rawgit.com/ElektraInitiative/libelektra/http-api-proposal/doc/webui/network_structure.png)
+
+
+## GUI
+
+The Web UI allows the user to add new instances to the network, as well as
+combine multiple instances into a cluster. If the configuration of a cluster is
+edited, the changes are pushed to all instances in the cluster. Furthermore,
+single instances can be configured independently.
+
+The configuration view of elektra web is similar to the tree view of the
+[qt-gui](https://github.com/ElektraInitiative/libelektra/tree/master/src/tools/qt-gui).
+
+![https://cdn.rawgit.com/ElektraInitiative/libelektra/http-api-proposal/doc/webui/ui_structure.png](https://cdn.rawgit.com/ElektraInitiative/libelektra/http-api-proposal/doc/webui/ui_structure.png)
+
+
+## API
+
+![https://cdn.rawgit.com/ElektraInitiative/libelektra/http-api-proposal/doc/webui/daemon_structure.png](https://cdn.rawgit.com/ElektraInitiative/libelektra/http-api-proposal/doc/webui/daemon_structure.png)
+
+TODO: change second elektrad to clusterd
+
+To access single instances, each elektra daemon (elektrad) provides a RESTful
+HTTP API:
+
+ * TODO
+
+The cluster management server (clusterd) also provides a RESTful HTTP API.
+Single instances can be configured as follows:
+
+ * TODO
+
+It is also possible to create and manage groups of multiple elektra instances (clusters):
+
+ * **GET /clusters** - get a list of all clusters
+ * **POST /clusters** - create a new cluster
+ * **GET /clusters/:id** - get information about a single cluster
+ * **POST /clusters/:id** - edit a single cluster
+ * **GET /clusters/:id/kdb** - get full configuration of a cluster
+ * **GET /clusters/:id/kdb/:path** - get `path` configuration of a cluster (similar to `kdb get path`)
+ * **POST /clusters/:id/kdb/:path** - edit `path` configuration of a cluster (similar to `kdb set path`)
+
+TODO: blueprint
