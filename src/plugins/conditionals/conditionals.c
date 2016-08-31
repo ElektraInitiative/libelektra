@@ -16,6 +16,8 @@
 #include <errno.h>
 #include <kdbease.h>
 #include <kdberrors.h>
+#include <kdbmeta.h>
+#include <kdbproposal.h>
 #include <math.h>
 #include <regex.h>
 #include <stdio.h>
@@ -785,6 +787,129 @@ static CondResult evaluateKey (const Key * meta, const Key * suffixList, Key * p
 	return TRUE;
 }
 
+static KeySet * getDependencies (const char * expr, Key * cur, Key * parentKey)
+{
+	char * localExpr = strdup (expr);
+	char * ptr = localExpr;
+	KeySet * deps = ksNew (0, KS_END);
+	int isEscaped = 0;
+	int hasQuote = 0;
+	for (; *ptr; ++ptr)
+	{
+		switch (*ptr)
+		{
+		case '\'':
+			if (isEscaped)
+			{
+				isEscaped = 0;
+				continue;
+			}
+			else if (hasQuote)
+			{
+				hasQuote = 0;
+				continue;
+			}
+			else
+			{
+				hasQuote = 1;
+				continue;
+			}
+			break;
+		case '\\':
+			if (isEscaped)
+			{
+				isEscaped = 0;
+				continue;
+			}
+			else
+			{
+				isEscaped = 1;
+				continue;
+			}
+			break;
+		case '(':
+		case ')':
+			continue;
+			break;
+		default:
+			if (isEscaped)
+			{
+				isEscaped = 0;
+				continue;
+			}
+			else if (hasQuote)
+			{
+				continue;
+			}
+			else
+			{
+				char * startPtr = ptr;
+				char * endPtr = NULL;
+				int isEscaped2 = 0;
+				if (*startPtr == '.' || *startPtr == '@' || !strncmp (startPtr, "user/", 5) ||
+				    !strncmp (startPtr, "system/", 7) || !strncmp (startPtr, "/", 1))
+				{
+					for (; *ptr; ++ptr)
+					{
+						if (!(*ptr))
+						{
+							goto getDependenciesEnd;
+							;
+						}
+						if (*ptr == '\\')
+						{
+							if (!isEscaped2)
+							{
+								isEscaped2 = 1;
+								continue;
+							}
+						}
+						else if (*ptr == '!' || *ptr == '=' || *ptr == '<' || *ptr == '>' || *ptr == ':' ||
+							 *ptr == ' ')
+						{
+							if (isEscaped2)
+							{
+								isEscaped2 = 0;
+								continue;
+							}
+							else
+							{
+								endPtr = ptr;
+								break;
+							}
+						}
+					}
+					if (!endPtr) goto getDependenciesEnd;
+					*endPtr = '\0';
+					Key * key;
+					if (*startPtr == '.')
+					{
+						key = keyNew (keyName (cur), KEY_END);
+						keyAddName (key, startPtr);
+					}
+					else if (*startPtr == '@')
+					{
+						key = keyNew (keyName (parentKey), KEY_END);
+						keyAddName (key, startPtr + 1);
+					}
+					else
+					{
+						key = keyNew (startPtr, KEY_END);
+					}
+
+					ksAppendKey (deps, key);
+					keyDel (key);
+					++ptr;
+				}
+			}
+			break;
+		}
+	}
+getDependenciesEnd:
+	elektraFree (localExpr);
+	return deps;
+}
+
 int elektraConditionalsGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
 {
 	if (!strcmp (keyName (parentKey), "system/elektra/modules/conditionals"))
@@ -803,9 +928,37 @@ int elektraConditionalsGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned EL
 	}
 	Key * cur;
 	ksRewind (returned);
-	CondResult ret = FALSE;
 	while ((cur = ksNext (returned)) != NULL)
 	{
+		if (keyGetNamespace (cur) == KEY_NS_SPEC) continue;
+		Key * assignMeta = (Key *)keyGetMeta (cur, "assign/condition");
+		Key * checkMeta = (Key *)keyGetMeta (cur, "check/condition");
+		Key * meta;
+		if (assignMeta)
+			meta = assignMeta;
+		else if (checkMeta)
+			meta = checkMeta;
+		else
+			continue;
+		KeySet * dependencies = getDependencies (keyString (meta), cur, parentKey);
+		ksRewind (dependencies);
+		Key * tmp;
+		while ((tmp = ksNext (dependencies)) != NULL)
+		{
+			elektraMetaArrayAdd (cur, "dep", keyName (tmp));
+		}
+		ksDel (dependencies);
+	}
+	Key ** array = elektraMalloc (ksGetSize (returned) * sizeof (Key *));
+	int rc = elektraSortTopology (returned, array);
+	if (rc != 1) elektraKsToMemArray (returned, array);
+
+	ksRewind (returned);
+	CondResult ret = FALSE;
+	// while ((cur = ksNext (returned)) != NULL)
+	for (int i = 0; i < ksGetSize (returned); ++i)
+	{
+		cur = array[i];
 		if (keyGetNamespace (cur) == KEY_NS_SPEC) continue;
 		Key * conditionMeta = (Key *)keyGetMeta (cur, "check/condition");
 		Key * assignMeta = (Key *)keyGetMeta (cur, "assign/condition");
@@ -829,6 +982,7 @@ int elektraConditionalsGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned EL
 		}
 	}
 	if (ret == TRUE) keySetMeta (parentKey, "error", 0);
+	elektraFree (array);
 	return ret; /* success */
 }
 
@@ -837,9 +991,37 @@ int elektraConditionalsSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned EL
 {
 	Key * cur;
 	ksRewind (returned);
-	CondResult ret = FALSE;
 	while ((cur = ksNext (returned)) != NULL)
 	{
+		if (keyGetNamespace (cur) == KEY_NS_SPEC) continue;
+		Key * assignMeta = (Key *)keyGetMeta (cur, "assign/condition");
+		Key * checkMeta = (Key *)keyGetMeta (cur, "check/condition");
+		Key * meta;
+		if (assignMeta)
+			meta = assignMeta;
+		else if (checkMeta)
+			meta = checkMeta;
+		else
+			continue;
+		KeySet * dependencies = getDependencies (keyString (meta), cur, parentKey);
+		ksRewind (dependencies);
+		Key * tmp;
+		while ((tmp = ksNext (dependencies)) != NULL)
+		{
+			elektraMetaArrayAdd (cur, "dep", keyName (tmp));
+		}
+		ksDel (dependencies);
+	}
+	Key ** array = elektraMalloc (ksGetSize (returned) * sizeof (Key *));
+	int rc = elektraSortTopology (returned, array);
+	if (rc != 1) elektraKsToMemArray (returned, array);
+
+	ksRewind (returned);
+	CondResult ret = FALSE;
+	// while ((cur = ksNext (returned)) != NULL)
+	for (int i = 0; i < ksGetSize (returned); ++i)
+	{
+		cur = array[i];
 		if (keyGetNamespace (cur) == KEY_NS_SPEC) continue;
 		Key * conditionMeta = (Key *)keyGetMeta (cur, "check/condition");
 		Key * assignMeta = (Key *)keyGetMeta (cur, "assign/condition");
@@ -863,6 +1045,7 @@ int elektraConditionalsSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned EL
 		}
 	}
 	if (ret == TRUE) keySetMeta (parentKey, "error", 0);
+	elektraFree (array);
 	return ret;
 }
 
