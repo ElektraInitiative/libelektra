@@ -5,4 +5,5 @@ add_plugin (blockresolver
 		blockresolver.h
 		blockresolver.c
 	ADD_TEST
+	INSTALL_TEST_DATA
 	)

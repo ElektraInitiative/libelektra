@@ -168,6 +168,7 @@ int elektraBlockresolverGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned E
 			keyNew ("system/elektra/modules/blockresolver", KEY_VALUE, "blockresolver plugin waits for your orders", KEY_END),
 			keyNew ("system/elektra/modules/blockresolver/exports", KEY_END),
 			keyNew ("system/elektra/modules/blockresolver/exports/close", KEY_FUNC, elektraBlockresolverClose, KEY_END),
+			keyNew ("system/elektra/modules/blockresolver/exports/error", KEY_FUNC, elektraBlockresolverError, KEY_END),
 			keyNew ("system/elektra/modules/blockresolver/exports/get", KEY_FUNC, elektraBlockresolverGet, KEY_END),
 			keyNew ("system/elektra/modules/blockresolver/exports/set", KEY_FUNC, elektraBlockresolverSet, KEY_END),
 			keyNew ("system/elektra/modules/blockresolver/exports/checkfile", KEY_FUNC, elektraBlockresolverCheckFile, KEY_END),
@@ -337,11 +338,20 @@ SET_CLEANUP:
 	return retVal; // success
 }
 
+int elektraBlockresolverError (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
+{
+	// set all keys
+	// this function is optional
+
+	return 1; // success
+}
+
 Plugin * ELEKTRA_PLUGIN_EXPORT (blockresolver)
 {
 	// clang-format off
     return elektraPluginExport ("blockresolver",
 	    ELEKTRA_PLUGIN_CLOSE,	&elektraBlockresolverClose,
+	    ELEKTRA_PLUGIN_ERROR, &elektraBlockresolverError,
 	    ELEKTRA_PLUGIN_GET,	&elektraBlockresolverGet,
 	    ELEKTRA_PLUGIN_SET,	&elektraBlockresolverSet,
 	    ELEKTRA_PLUGIN_END);
