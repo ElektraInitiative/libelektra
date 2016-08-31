@@ -331,8 +331,6 @@ SET_CLEANUP:
 		if (rename (mergeFile, data->realFile) == -1) retVal = -1;
 		elektraFree (mergeFile);
 		mergeFile = NULL;
-		elektraFree (data->tmpFile);
-		data->tmpFile = NULL;
 	}
 	if (mergeFile) elektraFree (mergeFile);
 	return retVal; // success
