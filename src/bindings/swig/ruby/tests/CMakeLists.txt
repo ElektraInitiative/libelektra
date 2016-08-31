@@ -5,7 +5,7 @@ foreach (file ${TESTS})
         get_filename_component (name ${file} NAME_WE)
         add_test (
                 NAME ${name}
-                COMMAND ${RUBY_EXECUTABLE} ${file} 
+                COMMAND ${RUBY_EXECUTABLE} ${file} --verbose=verbose 
         )
 
         # set RUBYLIB to find newly built binding lib

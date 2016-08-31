@@ -43,6 +43,7 @@
 %ignore ckdb;
 %include "kdb.h"
 
+
 /*
  * kdb::Key
  */
@@ -55,8 +56,14 @@
 %ignore kdb::Key::Key (Key &k);
 %ignore kdb::Key::Key (Key const &k);
 
+%ignore kdb::Key::operator++;
+%ignore kdb::Key::operator--;
+%ignore kdb::Key::operator=;
 %ignore kdb::Key::operator->;
 %ignore kdb::Key::operator bool;
+
+/* This seems to be implemented in ruby by '! ==' */
+%ignore kdb::Key::operator!=;
 
 // we do not need the raw key
 %ignore kdb::Key::getKey;
@@ -222,7 +229,6 @@
 // Iterators
 // exclude them for now
 #define ELEKTRA_WITHOUT_ITERATOR
-
 
  
 %include "key.hpp"

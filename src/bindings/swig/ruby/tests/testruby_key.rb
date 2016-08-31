@@ -187,11 +187,47 @@ class KdbKeyTestCases < Test::Unit::TestCase
 
   def throw_KeyInvalidName_exception_invalid_name 
     assert_raised Kdb::KeyInvalidName do
-      k = Kdb.Key.new
+      k = Kdb::Key.new
       k.name = "invalidname"
     end
   end
 
+  def test_KeyName_comperators
+    assert_nothing_raised do
+      k1 = Kdb::Key.new "user/test"
+      k2 = Kdb::Key.new "user/test"
+
+      assert_true k1.name == k2.name
+      assert_true k1 == k2
+      assert_true k1 <= k2
+      assert_true k1 >= k2
+
+      k2 = Kdb::Key.new "user/anothertest"
+
+      assert_false k1.name == k2.name
+      assert_false k1 == k2
+      assert_true k1 != k2
+
+      assert_true k1 > k2
+      assert_true k2 < k1
+    end
+  end
+
+  def test_KeyName_hierarchy
+    assert_nothing_raised do
+      k1 = Kdb::Key.new "user/app"
+      k2 = Kdb::Key.new "user/app/v1"
+      k3 = Kdb::Key.new "user/app/v1/conf1"
+      
+      assert_true k1.is_valid?
+      assert_true k2.is_valid?
+      assert_true k3.is_valid?
+
+      assert_true k2.is_below? k1
+      assert_true k2.is_direct_below? k1
+
+    end
+  end
 
   def test_meta_iterator
     assert_nothing_raised do
