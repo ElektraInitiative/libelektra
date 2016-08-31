@@ -10,24 +10,41 @@ readPrefType()
     echo -e "1) lock\n2) default\n3) user\n0) Exit"
     read -s -n 1 sel
     case "$sel" in
-	1)
-	    prefType="lock"
-	    prefString="lockPref"
-	    ;;
-	2)
-	    prefType="pref"
-	    prefString="defaultPref"
-	    ;;
-	3)
-	    prefType="user"
-	    prefString="userPref"
-	    ;;
-	*)
-	    echo "Error, invalid selection"
-	    return
-	    ;;
+    1)
+        prefType="lock"
+        prefString="lockPref"
+        ;;
+    2)
+        prefType="pref"
+        prefString="defaultPref"
+        ;;
+    3)
+        prefType="user"
+        prefString="userPref"
+        ;;
+    *)
+        echo "Error, invalid selection"
+        return
+        ;;
     esac
 
+}
+
+# common function for preference setup scripts
+# turns preference name, type and value into a string that can be passed to kdb shell
+# arguments: 1: prefernce name, 2: type, 3: value
+
+createCommandString()
+{
+    if [ "$#" -ne 3 ];
+    then
+        return
+    fi
+
+    nameString="$1"
+    typeString="$2"
+    valueString="$3"
+    echo -en "kdbGet ${MountPoint}\nkeySetName ${MountPoint}/${prefType}/${nameString}\nkeySetMeta type ${typeString}\nkeySetString ${valueString}\nksAppendKey\nkdbSet ${MountPoint}\n"
 }
 
 prefSetup()
@@ -37,19 +54,19 @@ prefSetup()
     read -n1 -s input
     while true;
     do
-	case "$input" in
-	    1)
-    		( . "${WorkingDir}/ffconfig/setupProxy")
-		;;
-	    2)
-		( . "${WorkingDir}/ffconfig/setupHomepage")
-		;;
-	    0)
-		exit 0
-		;;
-    	esac
-	echo -e "\n\nConfig Setup:\n\n1) Proxy\n2) Homepage\n0) Exit"
-	read -n1 -s input
+        case "$input" in
+        1)
+            ( . "${WorkingDir}/ffconfig/setupProxy")
+            ;;
+        2)
+            ( . "${WorkingDir}/ffconfig/setupHomepage")
+            ;;
+        0)
+            exit 0
+            ;;
+        esac
+        echo -e "\n\nConfig Setup:\n\n1) Proxy\n2) Homepage\n0) Exit"
+        read -n1 -s input
     done
 }
 
