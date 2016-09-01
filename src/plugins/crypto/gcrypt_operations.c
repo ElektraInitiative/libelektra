@@ -20,6 +20,7 @@
 #include <pthread.h>
 #include <stdlib.h>
 
+#define KEY_BUFFER_SIZE (ELEKTRA_CRYPTO_GCRY_KEYSIZE + ELEKTRA_CRYPTO_GCRY_BLOCKSIZE)
 
 // initialize the gcrypt threading subsystem
 // NOTE: old versions of libgcrypt require the functions defined in this macro!
@@ -40,8 +41,7 @@ static int getKeyIvForEncryption (KeySet * config, Key * errorKey, Key * k, Key 
 {
 	gcry_error_t gcry_err;
 	kdb_octet_t salt[ELEKTRA_CRYPTO_DEFAULT_SALT_LEN];
-	const size_t keyBufferSize = ELEKTRA_CRYPTO_GCRY_KEYSIZE + ELEKTRA_CRYPTO_GCRY_BLOCKSIZE;
-	kdb_octet_t keyBuffer[keyBufferSize];
+	kdb_octet_t keyBuffer[KEY_BUFFER_SIZE];
 
 	// generate the salt
 	gcry_create_nonce (salt, sizeof (salt));
@@ -66,7 +66,7 @@ static int getKeyIvForEncryption (KeySet * config, Key * errorKey, Key * k, Key 
 
 	// generate/derive the cryptographic key and the IV
 	if ((gcry_err = gcry_kdf_derive (keyValue (msg), keyGetValueSize (msg), GCRY_KDF_PBKDF2, GCRY_MD_SHA512, salt, sizeof (salt),
-					 iterations, keyBufferSize, keyBuffer)))
+					 iterations, KEY_BUFFER_SIZE, keyBuffer)))
 	{
 		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CRYPTO_INTERNAL_ERROR, errorKey, "PBKDF2 failed because: %s", gcry_strerror (gcry_err));
 		goto error;
@@ -96,8 +96,7 @@ error:
 static int getKeyIvForDecryption (KeySet * config, Key * errorKey, Key * k, Key * cKey, Key * cIv)
 {
 	gcry_error_t gcry_err;
-	const size_t keyBufferSize = ELEKTRA_CRYPTO_GCRY_KEYSIZE + ELEKTRA_CRYPTO_GCRY_BLOCKSIZE;
-	kdb_octet_t keyBuffer[keyBufferSize];
+	kdb_octet_t keyBuffer[KEY_BUFFER_SIZE];
 
 	// get the salt
 	const Key * salt = keyGetMeta (k, ELEKTRA_CRYPTO_META_SALT);
@@ -126,7 +125,7 @@ static int getKeyIvForDecryption (KeySet * config, Key * errorKey, Key * k, Key 
 
 	// derive the cryptographic key and the IV
 	if ((gcry_err = gcry_kdf_derive (keyValue (msg), keyGetValueSize (msg), GCRY_KDF_PBKDF2, GCRY_MD_SHA512, keyValue (salt),
-					 keyGetValueSize (salt), iterations, keyBufferSize, keyBuffer)))
+					 keyGetValueSize (salt), iterations, KEY_BUFFER_SIZE, keyBuffer)))
 	{
 		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CRYPTO_INTERNAL_ERROR, errorKey, "PBKDF2 failed because: %s", gcry_strerror (gcry_err));
 		goto error;
