@@ -53,6 +53,16 @@ static int isMarkedForEncryption (const Key * k)
 	return 0;
 }
 
+/**
+ * @brief checks if a given Key k is in the spec namespace.
+ * @retval 0 if the Key k is in the spec namespace.
+ * @retval 1 if the Key k is NOT in the spec namespace.
+ */
+static inline int isSpecNamespace (const Key * k)
+{
+	return (keyGetNamespace (k) == KEY_NS_SPEC);
+}
+
 #endif
 
 /**
@@ -141,7 +151,7 @@ static int elektraCryptoEncrypt (Plugin * handle ELEKTRA_UNUSED, KeySet * data E
 	ksRewind (data);
 	while ((k = ksNext (data)) != 0)
 	{
-		if (!isMarkedForEncryption (k))
+		if (!isMarkedForEncryption (k) || isSpecNamespace (k))
 		{
 			continue;
 		}
@@ -167,7 +177,7 @@ static int elektraCryptoEncrypt (Plugin * handle ELEKTRA_UNUSED, KeySet * data E
 	ksRewind (data);
 	while ((k = ksNext (data)) != 0)
 	{
-		if (!isMarkedForEncryption (k))
+		if (!isMarkedForEncryption (k) || isSpecNamespace (k))
 		{
 			continue;
 		}
@@ -196,7 +206,7 @@ openssl_error:
 	ksRewind (data);
 	while ((k = ksNext (data)) != 0)
 	{
-		if (!isMarkedForEncryption (k))
+		if (!isMarkedForEncryption (k) || isSpecNamespace (k))
 		{
 			continue;
 		}
@@ -234,7 +244,7 @@ static int elektraCryptoDecrypt (Plugin * handle ELEKTRA_UNUSED, KeySet * data E
 	ksRewind (data);
 	while ((k = ksNext (data)) != 0)
 	{
-		if (!isMarkedForEncryption (k))
+		if (!isMarkedForEncryption (k) || isSpecNamespace (k))
 		{
 			continue;
 		}
@@ -259,7 +269,7 @@ static int elektraCryptoDecrypt (Plugin * handle ELEKTRA_UNUSED, KeySet * data E
 	ksRewind (data);
 	while ((k = ksNext (data)) != 0)
 	{
-		if (!isMarkedForEncryption (k))
+		if (!isMarkedForEncryption (k) || isSpecNamespace (k))
 		{
 			continue;
 		}
@@ -288,7 +298,7 @@ openssl_error:
 	ksRewind (data);
 	while ((k = ksNext (data)) != 0)
 	{
-		if (!isMarkedForEncryption (k))
+		if (!isMarkedForEncryption (k) || isSpecNamespace (k))
 		{
 			continue;
 		}
