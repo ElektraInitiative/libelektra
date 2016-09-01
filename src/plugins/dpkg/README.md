@@ -4,7 +4,7 @@
 - infos/needs =
 - infos/provides = storage
 - infos/placements = getstorage setstorage
-- infos/status = nodoc unfinished
+- infos/status = nodoc unfinished nodep
 - infos/description =
 
 ## Example ##

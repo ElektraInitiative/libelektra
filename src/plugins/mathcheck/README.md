@@ -4,7 +4,7 @@
 - infos/provides = check
 - infos/needs =
 - infos/placements = presetstorage
-- infos/status = maintained unittest discouraged
+- infos/status = maintained unittest discouraged nodep
 - infos/metadata = check/math
 - infos/description =
 

@@ -5,7 +5,7 @@
 - infos/provides =
 - infos/recommends =
 - infos/placements = postgetstorage presetstorage
-- infos/status = maintained libc preview unfinished nodoc global
+- infos/status = maintained libc preview unfinished nodoc global nodep
 - infos/metadata =
 - infos/description =
 

@@ -4,7 +4,7 @@
 - infos/needs =
 - infos/provides =
 - infos/placements = postgetstorage postcommit postrollback
-- infos/status = preview unfinished nodoc
+- infos/status = preview unfinished nodoc nodep
 - infos/description =
 
 ## Usage ##
