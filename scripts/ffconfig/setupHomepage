@@ -6,8 +6,7 @@ welcomeSetup()
     readPrefType
     read -p "New URL: " welcomeURL
     echo "Setting $prefString Homepage to $welcomeURL"
-    kdb setmeta "${MountPoint}/${prefType}/browser/startup/homepage" type string
-    kdb set "${MountPoint}/${prefType}/browser/startup/homepage" "$welcomeURL"
+    createCommandString "browser/startup/homepage" "string" "${welcomeURL}"|kdb shell &>/dev/null
 }
 
 welcomeSetup

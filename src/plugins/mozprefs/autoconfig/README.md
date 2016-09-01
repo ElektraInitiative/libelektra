@@ -142,4 +142,4 @@ t = true
 
 ## Limitations ##
 
-Currently Firefox doesn't support locking of existing values or changing locked values without restarting.
+Changing locked values doesn't work without restarting.
