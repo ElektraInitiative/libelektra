@@ -23,6 +23,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#define KEY_BUFFER_SIZE (ELEKTRA_CRYPTO_SSL_KEYSIZE + ELEKTRA_CRYPTO_SSL_BLOCKSIZE)
+
 static pthread_mutex_t mutex_ssl = PTHREAD_MUTEX_INITIALIZER;
 
 /**
@@ -38,8 +40,7 @@ static pthread_mutex_t mutex_ssl = PTHREAD_MUTEX_INITIALIZER;
 static int getKeyIvForEncryption (KeySet * config, Key * errorKey, Key * k, Key * cKey, Key * cIv)
 {
 	kdb_octet_t salt[ELEKTRA_CRYPTO_DEFAULT_SALT_LEN];
-	const size_t keyBufferSize = ELEKTRA_CRYPTO_SSL_KEYSIZE + ELEKTRA_CRYPTO_SSL_BLOCKSIZE;
-	kdb_octet_t keyBuffer[keyBufferSize];
+	kdb_octet_t keyBuffer[KEY_BUFFER_SIZE];
 
 	// generate the salt
 	pthread_mutex_lock (&mutex_ssl);
@@ -72,7 +73,7 @@ static int getKeyIvForEncryption (KeySet * config, Key * errorKey, Key * k, Key 
 
 	// generate/derive the cryptographic key and the IV
 	pthread_mutex_lock (&mutex_ssl);
-	if (!PKCS5_PBKDF2_HMAC_SHA1 (keyValue (msg), keyGetValueSize (msg), salt, sizeof (salt), iterations, keyBufferSize, keyBuffer))
+	if (!PKCS5_PBKDF2_HMAC_SHA1 (keyValue (msg), keyGetValueSize (msg), salt, sizeof (salt), iterations, KEY_BUFFER_SIZE, keyBuffer))
 	{
 		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CRYPTO_INTERNAL_ERROR, errorKey, "PBKDF2 failed with error code %lu", ERR_get_error ());
 		pthread_mutex_unlock (&mutex_ssl);
@@ -103,8 +104,7 @@ error:
  */
 static int getKeyIvForDecryption (KeySet * config, Key * errorKey, Key * k, Key * cKey, Key * cIv)
 {
-	const size_t keyBufferSize = ELEKTRA_CRYPTO_SSL_KEYSIZE + ELEKTRA_CRYPTO_SSL_BLOCKSIZE;
-	kdb_octet_t keyBuffer[keyBufferSize];
+	kdb_octet_t keyBuffer[KEY_BUFFER_SIZE];
 
 	// get the salt
 	const Key * salt = keyGetMeta (k, ELEKTRA_CRYPTO_META_SALT);
@@ -134,7 +134,7 @@ static int getKeyIvForDecryption (KeySet * config, Key * errorKey, Key * k, Key 
 	// derive the cryptographic key and the IV
 	pthread_mutex_lock (&mutex_ssl);
 	if (!PKCS5_PBKDF2_HMAC_SHA1 (keyValue (msg), keyGetValueSize (msg), keyValue (salt), keyGetValueSize (salt), iterations,
-				     keyBufferSize, keyBuffer))
+				     KEY_BUFFER_SIZE, keyBuffer))
 	{
 		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CRYPTO_INTERNAL_ERROR, errorKey, "PBKDF2 failed with error code %lu", ERR_get_error ());
 		pthread_mutex_unlock (&mutex_ssl);
