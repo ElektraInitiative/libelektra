@@ -10,8 +10,14 @@
 #
 # Redistribution and use is allowed according to the terms of the BSD license.
 # For details see the accompanying COPYING-CMAKE-SCRIPTS file.
-
+#
 # libgcrypt is moving to pkg-config, but earlier version don't have it
+#
+#
+# CHANGES made by Peter Nirschl <peter.nirschl@gmail.com>
+#
+# LIBGCRYPT_INCLUDE_DIR - set to the path where gcrypt's include files are stored$
+#
 
 #search in typical paths for libgcrypt-config
 FIND_PROGRAM(LIBGCRYPTCONFIG_EXECUTABLE NAMES libgcrypt-config)
@@ -42,6 +48,14 @@ if (LIBGCRYPT_FOUND)
    if (NOT LibGcrypt_FIND_QUIETLY)
       message(STATUS "Found libgcrypt: ${LIBGCRYPT_LIBRARIES}")
    endif (NOT LibGcrypt_FIND_QUIETLY)
+
+   # parse include directory from C-Flags
+   string (LENGTH "${LIBGCRYPT_CFLAGS}" LIBGCRYPT_CFLAGS_LEN)
+   if (${LIBGCRYPT_CFLAGS_LEN} GREATER 1)
+      string (REPLACE "-I" "" LIBGCRYPT_INCLUDE_DIR "${LIBGCRYPT_CFLAGS}")
+   endif ()
+   unset (LIBGCRYPT_CFLAGS_LEN)
+
 else (LIBGCRYPT_FOUND)
    if (LibGcrypt_FIND_REQUIRED)
       message(FATAL_ERROR "Could not find libgcrypt libraries")
