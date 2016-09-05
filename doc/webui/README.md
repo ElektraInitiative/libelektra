@@ -35,8 +35,8 @@ To access single instances, each elektra daemon (`elektrad`) provides a RESTful
 HTTP API:
 
  * **GET /version** - get `elektrad` version
- * **GET /kdb/:path** - get `path` configuration (similar to `kdb get path`)
- * **POST /kdb/:path** - edit `path` configuration (similar to `kdb set path`)
+ * **GET /kdb/:path** - get `path` configuration (same as `kdb get path`)
+ * **POST /kdb/:path** - edit `path` configuration (same as `kdb set path`)
 
 The cluster management server (`clusterd`) also provides a RESTful HTTP API.
 Single instances can be configured as follows:
@@ -47,8 +47,8 @@ Single instances can be configured as follows:
  * **PUT /instances/:id** - edit a single instance
  * **DELETE /instances/:id** - delete a single instance
  * **GET /instances/:id/kdb** - get full configuration of an instance
- * **GET /instances/:id/kdb/:path** - get `path` configuration of an instance (similar to `kdb get path`)
- * **POST /instances/:id/kdb/:path** - edit `path` configuration of an instance (similar to `kdb set path`)
+ * **GET /instances/:id/kdb/:path** - get `path` configuration of an instance (same as `kdb get path`)
+ * **POST /instances/:id/kdb/:path** - edit `path` configuration of an instance (same as `kdb set path`)
  * **GET /instances/:id/version** - get `elektrad` version of an instance
 
 It is also possible to create and manage groups of multiple elektra instances (clusters). The API is the same as above, but with `/clusters` instead of `/instances`. Additionally, you can get the `clusterd` version:
