@@ -146,13 +146,29 @@ void elektraRemoveMetaData (Key * key, const char * searchfor)
 
 /**
  * @internal
- * Helper function to execute global plugins
+ * Helper functions to execute global plugins
  */
-void elektraExecGlobalPlugin (KDB * handle, KeySet * ks, Key * parentKey, int position, int subPosition)
+void elektraGlobalGet (KDB * handle, KeySet * ks, Key * parentKey, int position, int subPosition)
 {
 	if (handle && handle->globalPlugins[position][subPosition])
 	{
 		handle->globalPlugins[position][subPosition]->kdbGet (handle->globalPlugins[position][subPosition], ks, parentKey);
+	}
+}
+
+void elektraGlobalSet (KDB * handle, KeySet * ks, Key * parentKey, int position, int subPosition)
+{
+	if (handle && handle->globalPlugins[position][subPosition])
+	{
+		handle->globalPlugins[position][subPosition]->kdbSet (handle->globalPlugins[position][subPosition], ks, parentKey);
+	}
+}
+
+void elektraGlobalError (KDB * handle, KeySet * ks, Key * parentKey, int position, int subPosition)
+{
+	if (handle && handle->globalPlugins[position][subPosition])
+	{
+		handle->globalPlugins[position][subPosition]->kdbError (handle->globalPlugins[position][subPosition], ks, parentKey);
 	}
 }
 
@@ -811,7 +827,7 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 	// GLOBAL: pregetstorage [foreach]
 	// GLOBAL: pregetstorage [deinit]
 
-	elektraExecGlobalPlugin(handle, ks, parentKey, PREGETSTORAGE, MAXONCE);
+	elektraGlobalGet(handle, ks, parentKey, PREGETSTORAGE, MAXONCE);
 
 	if (splitBuildup (split, handle, parentKey) == -1)
 	{
@@ -919,7 +935,7 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 
 error:
 	keySetName (parentKey, keyName (initialParent));
-	elektraExecGlobalPlugin(handle, ks, parentKey, POSTGETSTORAGE, MAXONCE);
+	elektraGlobalGet(handle, ks, parentKey, POSTGETSTORAGE, MAXONCE);
 
 	keySetName (parentKey, keyName (initialParent));
 	if (handle) splitUpdateFileName (split, handle, parentKey);
@@ -1284,7 +1300,7 @@ int kdbSet (KDB * handle, KeySet * ks, Key * parentKey)
 	// GLOBAL: precommit [max once]
 	// GLOBAL: precommit [foreach]
 	// GLOBAL: precommit [deinit]
-	elektraExecGlobalPlugin(handle, ks, parentKey, PRECOMMIT, MAXONCE);
+	elektraGlobalSet(handle, ks, parentKey, PRECOMMIT, MAXONCE);
 
 	elektraSetCommit (split, parentKey);
 	// GLOBAL: commit [init]
@@ -1296,12 +1312,12 @@ int kdbSet (KDB * handle, KeySet * ks, Key * parentKey)
 
 	keySetName (parentKey, keyName (initialParent));
 	// GLOBAL: postcommit [init]
-	elektraExecGlobalPlugin(handle, ks, parentKey, POSTCOMMIT, INIT);
+	elektraGlobalSet(handle, ks, parentKey, POSTCOMMIT, INIT);
 
 	// GLOBAL: postcommit [max once]
 	// GLOBAL: postcommit [foreach]
 	// GLOBAL: postcommit [deinit]
-	elektraExecGlobalPlugin(handle, ks, parentKey, POSTCOMMIT, MAXONCE);
+	elektraGlobalSet(handle, ks, parentKey, POSTCOMMIT, MAXONCE);
 
 	for (size_t i = 0; i < ks->size; ++i)
 	{
@@ -1323,7 +1339,7 @@ error:
 	// GLOBAL: prerollback [max once]
 	// GLOBAL: prerollback [foreach]
 	// GLOBAL: prerollback [deinit]
-	elektraExecGlobalPlugin(handle, ks, parentKey, PREROLLBACK, MAXONCE);
+	elektraGlobalError (handle, ks, parentKey, PREROLLBACK, MAXONCE);
 
 	elektraSetRollback (split, parentKey);
 	// position for rollback seems superfluous / the same as postrollback
@@ -1347,7 +1363,7 @@ error:
 	// GLOBAL: postrollback [max once]
 	// GLOBAL: postrollback [foreach]
 	// GLOBAL: postrollback [deinit]
-	elektraExecGlobalPlugin(handle, ks, parentKey, POSTROLLBACK, MAXONCE);
+	elektraGlobalError (handle, ks, parentKey, POSTROLLBACK, MAXONCE);
 
 	keySetName (parentKey, keyName (initialParent));
 	keyDel (initialParent);
