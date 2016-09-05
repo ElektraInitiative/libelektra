@@ -38,9 +38,11 @@ namespace std {
 
 %apply long { ssize_t }
 
-/*
+/****************************************************************************
+ *
  * kdb.h
- */
+ *
+ ****************************************************************************/
 %constant void *KS_END = KS_END;
 %constant const char *VERSION = KDB_VERSION;
 %constant const short VERSION_MAJOR = KDB_VERSION_MAJOR;
@@ -51,10 +53,12 @@ namespace std {
 %include "kdb.h"
 
 
-/*
- * kdb::Key
- */
 
+/****************************************************************************
+ *
+ * kdb::Key
+ *
+ ****************************************************************************/
 
 /* 
  * Exceptions 
@@ -343,6 +347,61 @@ namespace std {
 %template("set_meta") kdb::Key::setMeta<std::string>;
 %template("get_meta") kdb::Key::getMeta<std::string>;
 
+
+
+
+/****************************************************************************
+ *
+ * kdb::KeySet
+ *
+ ****************************************************************************/
+
+%ignore kdb::KeySet::KeySet (ckdb::KeySet * k);
+%ignore kdb::KeySet::KeySet (const KeySet & other);
+%ignore kdb::KeySet::KeySet (Key, ...);
+%ignore kdb::KeySet::KeySet (size_t alloc, ...);
+%ignore kdb::KeySet::KeySet (VaAlloc alloc, va_list ap);
+
+%ignore kdb::VaAlloc;
+
+
+/* ignore raw ckdb::KeySet methods */
+%ignore kdb::KeySet::getKeySet;
+%ignore kdb::KeySet::setKeySet;
+
+/* ignore unused operators */
+%ignore kdb::KeySet::operator=;
+%ignore kdb::operator== (const KeySet &, const KeySet &);
+%ignore kdb::operator!= (const KeySet &, const KeySet &);
+
+
+/* 
+ * KeySet.each
+ */
+%extend kdb::KeySet {
+  void each() {
+    if (rb_block_given_p()) {
+
+      for ( $self->rewind(); $self->next(); ) {
+        VALUE cur;
+        Key * t = new Key($self->current());
+        cur = SWIG_NewPointerObj(t, SWIGTYPE_p_kdb__Key, 0);
+
+        rb_yield(cur);
+
+        delete t;
+        // TODO: do we have to free also the Ruby obj?
+      }
+    }
+  }
+}
+
+%alias kdb::KeySet::append "<<"
+
+/* 
+ * parse keyset.hpp
+ */
+%include "keyset.hpp"
 
 
 
