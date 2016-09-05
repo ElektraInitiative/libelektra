@@ -52,10 +52,10 @@ static int getKeyIvForEncryption (KeySet * config, Key * errorKey, Key * k, Key 
 	const kdb_unsigned_long_t iterations = elektraCryptoGetIterationCount (config);
 
 	// receive master password from the configuration
-	Key * master = ksLookupByName (config, ELEKTRA_CRYPTO_PARAM_MASTER_PWD, 0);
+	Key * master = ksLookupByName (config, ELEKTRA_CRYPTO_PARAM_MASTER_PASSWORD, 0);
 	if (!master)
 	{
-		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CRYPTO_CONFIG_FAULT, errorKey, "missing %s", ELEKTRA_CRYPTO_PARAM_MASTER_PWD);
+		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CRYPTO_CONFIG_FAULT, errorKey, "missing %s", ELEKTRA_CRYPTO_PARAM_MASTER_PASSWORD);
 		return -1;
 	}
 	Key * msg = keyDup (master);
@@ -111,10 +111,10 @@ static int getKeyIvForDecryption (KeySet * config, Key * errorKey, Key * k, Key 
 	const kdb_unsigned_long_t iterations = elektraCryptoGetIterationCount (config);
 
 	// receive master password from the configuration
-	Key * master = ksLookupByName (config, ELEKTRA_CRYPTO_PARAM_MASTER_PWD, 0);
+	Key * master = ksLookupByName (config, ELEKTRA_CRYPTO_PARAM_MASTER_PASSWORD, 0);
 	if (!master)
 	{
-		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CRYPTO_CONFIG_FAULT, errorKey, "missing %s", ELEKTRA_CRYPTO_PARAM_MASTER_PWD);
+		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CRYPTO_CONFIG_FAULT, errorKey, "missing %s", ELEKTRA_CRYPTO_PARAM_MASTER_PASSWORD);
 		return -1;
 	}
 	Key * msg = keyDup (master);

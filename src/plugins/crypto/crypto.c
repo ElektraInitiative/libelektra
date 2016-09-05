@@ -101,7 +101,7 @@ static void elektraCryptoTeardown ()
  */
 static kdb_unsigned_short_t elektraCryptoGetRandomPasswordLength (KeySet * conf)
 {
-	Key * k = ksLookupByName (conf, ELEKTRA_CRYPTO_PARAM_MASTER_PWD_LEN, 0);
+	Key * k = ksLookupByName (conf, ELEKTRA_CRYPTO_PARAM_MASTER_PASSWORD_LEN, 0);
 	if (k && keyIsString (k) > 0)
 	{
 		const char * value = keyString (k);
@@ -440,7 +440,7 @@ int CRYPTO_PLUGIN_FUNCTION (set) (Plugin * handle, KeySet * ks, Key * parentKey)
  */
 int CRYPTO_PLUGIN_FUNCTION (checkconf) (Key * errorKey, KeySet * conf)
 {
-	Key * k = ksLookupByName (conf, ELEKTRA_CRYPTO_PARAM_MASTER_PWD, 0);
+	Key * k = ksLookupByName (conf, ELEKTRA_CRYPTO_PARAM_MASTER_PASSWORD, 0);
 	if (k)
 	{
 		// call gpg module to verify that we own the required key
@@ -466,7 +466,7 @@ int CRYPTO_PLUGIN_FUNCTION (checkconf) (Key * errorKey, KeySet * conf)
 		}
 
 		// store password in configuration
-		k = keyNew ("user/" ELEKTRA_CRYPTO_PARAM_MASTER_PWD, KEY_END);
+		k = keyNew ("user/" ELEKTRA_CRYPTO_PARAM_MASTER_PASSWORD, KEY_END);
 		keySetString (k, r);
 		if (elektraCryptoGpgEncryptMasterPassword (conf, errorKey, k) != 1)
 		{
