@@ -45,6 +45,7 @@ Single instances can be configured as follows:
  * **POST /instances** - create a new instance
  * **GET /instances/:id** - get information about a single instance
  * **PUT /instances/:id** - edit a single instance
+ * **DELETE /instances/:id** - delete a single instance
  * **GET /instances/:id/kdb** - get full configuration of an instance
  * **GET /instances/:id/kdb/:path** - get `path` configuration of an instance (similar to `kdb get path`)
  * **POST /instances/:id/kdb/:path** - edit `path` configuration of an instance (similar to `kdb set path`)
