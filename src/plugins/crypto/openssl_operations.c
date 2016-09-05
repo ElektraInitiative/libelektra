@@ -210,7 +210,7 @@ int elektraCryptoOpenSSLHandleCreate (elektraCryptoHandle ** handle, KeySet * co
 		keyDel (key);
 		keyDel (iv);
 		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_CRYPTO_CONFIG_FAULT, errorKey, "Failed to create handle! Invalid key length.");
-		return (-1);
+		return -1;
 	}
 
 	if (keyGetValueSize (iv) != ELEKTRA_CRYPTO_SSL_BLOCKSIZE)
@@ -218,7 +218,7 @@ int elektraCryptoOpenSSLHandleCreate (elektraCryptoHandle ** handle, KeySet * co
 		keyDel (key);
 		keyDel (iv);
 		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_CRYPTO_CONFIG_FAULT, errorKey, "Failed to create handle! Invalid IV length.");
-		return (-1);
+		return -1;
 	}
 
 	keyGetBinary (key, keyBuffer, sizeof (keyBuffer));
@@ -233,7 +233,7 @@ int elektraCryptoOpenSSLHandleCreate (elektraCryptoHandle ** handle, KeySet * co
 		memset (keyBuffer, 0, sizeof (keyBuffer));
 		memset (ivBuffer, 0, sizeof (ivBuffer));
 		ELEKTRA_SET_ERROR (87, errorKey, "Memory allocation failed");
-		return (-1);
+		return -1;
 	}
 
 	pthread_mutex_lock (&mutex_ssl);
@@ -251,7 +251,7 @@ int elektraCryptoOpenSSLHandleCreate (elektraCryptoHandle ** handle, KeySet * co
 		elektraFree (*handle);
 		*handle = NULL;
 		pthread_mutex_unlock (&mutex_ssl);
-		return (-1);
+		return -1;
 	}
 	pthread_mutex_unlock (&mutex_ssl);
 	return 1;
@@ -302,7 +302,7 @@ int elektraCryptoOpenSSLEncrypt (elektraCryptoHandle * handle, Key * k, Key * er
 	{
 		ELEKTRA_SET_ERROR (87, errorKey, "Memory allocation failed");
 		pthread_mutex_unlock (&mutex_ssl);
-		return (-1);
+		return -1;
 	}
 
 	// encrypt the header data
@@ -376,7 +376,7 @@ error:
 			    ERR_get_error ());
 	BIO_free_all (encrypted);
 	pthread_mutex_unlock (&mutex_ssl);
-	return (-1);
+	return -1;
 }
 
 int elektraCryptoOpenSSLDecrypt (elektraCryptoHandle * handle, Key * k, Key * errorKey)
@@ -399,7 +399,7 @@ int elektraCryptoOpenSSLDecrypt (elektraCryptoHandle * handle, Key * k, Key * er
 	if (valueLen % ELEKTRA_CRYPTO_SSL_BLOCKSIZE != 0)
 	{
 		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_CRYPTO_DECRYPT_FAIL, errorKey, "value length is not a multiple of the block size");
-		return (-1);
+		return -1;
 	}
 
 	pthread_mutex_lock (&mutex_ssl);
@@ -410,7 +410,7 @@ int elektraCryptoOpenSSLDecrypt (elektraCryptoHandle * handle, Key * k, Key * er
 	{
 		ELEKTRA_SET_ERROR (87, errorKey, "Memory allocation failed");
 		pthread_mutex_unlock (&mutex_ssl);
-		return (-1);
+		return -1;
 	}
 
 	// decrypt the whole BLOB and store the plain text into the memory sink
@@ -483,7 +483,7 @@ error:
 			    ERR_get_error ());
 	BIO_free_all (decrypted);
 	pthread_mutex_unlock (&mutex_ssl);
-	return (-1);
+	return -1;
 }
 
 /**

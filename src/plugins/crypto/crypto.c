@@ -330,7 +330,7 @@ int CRYPTO_PLUGIN_FUNCTION (open) (Plugin * handle ELEKTRA_UNUSED, Key * errorKe
 		if (elektraCryptoInit (errorKey) != 1)
 		{
 			pthread_mutex_unlock (&mutex_ref_cnt);
-			return (-1);
+			return -1;
 		}
 	}
 	ref_cnt++;

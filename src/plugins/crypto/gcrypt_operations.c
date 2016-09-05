@@ -168,7 +168,7 @@ int elektraCryptoGcryInit (Key * errorKey)
 	{
 		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CRYPTO_INIT, errorKey, "Libgcrypt version check failed, looking for version: %s",
 				    GCRYPT_VERSION);
-		return (-1);
+		return -1;
 	}
 	gcry_control (GCRYCTL_DISABLE_SECMEM, 0);
 	gcry_control (GCRYCTL_INITIALIZATION_FINISHED, 0);
@@ -225,7 +225,7 @@ int elektraCryptoGcryHandleCreate (elektraCryptoHandle ** handle, KeySet * confi
 		keyDel (key);
 		keyDel (iv);
 		ELEKTRA_SET_ERROR (87, errorKey, "Memory allocation failed");
-		return (-1);
+		return -1;
 	}
 
 	if ((gcry_err = gcry_cipher_open (*handle, GCRY_CIPHER_AES256, GCRY_CIPHER_MODE_CBC, 0)) != 0)
@@ -258,7 +258,7 @@ error:
 	(*handle) = NULL;
 	keyDel (key);
 	keyDel (iv);
-	return (-1);
+	return -1;
 }
 
 int elektraCryptoGcryEncrypt (elektraCryptoHandle * handle, Key * k, Key * errorKey)
@@ -299,7 +299,7 @@ int elektraCryptoGcryEncrypt (elektraCryptoHandle * handle, Key * k, Key * error
 	if (!output)
 	{
 		ELEKTRA_SET_ERROR (87, errorKey, "Memory allocation failed");
-		return (-1);
+		return -1;
 	}
 
 	// encrypt the header (1st block) using gcrypt's in-place encryption
@@ -311,7 +311,7 @@ int elektraCryptoGcryEncrypt (elektraCryptoHandle * handle, Key * k, Key * error
 		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CRYPTO_ENCRYPT_FAIL, errorKey, "Encryption failed because: %s", gcry_strerror (gcry_err));
 		memset (output, 0, outputLen);
 		elektraFree (output);
-		return (-1);
+		return -1;
 	}
 
 	// encrypt the value using gcrypt's in-place encryption
@@ -324,7 +324,7 @@ int elektraCryptoGcryEncrypt (elektraCryptoHandle * handle, Key * k, Key * error
 		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CRYPTO_ENCRYPT_FAIL, errorKey, "Encryption failed because: %s", gcry_strerror (gcry_err));
 		memset (output, 0, outputLen);
 		elektraFree (output);
-		return (-1);
+		return -1;
 	}
 
 	// write back the cipher text to the key
@@ -344,7 +344,7 @@ int elektraCryptoGcryDecrypt (elektraCryptoHandle * handle, Key * k, Key * error
 	if (valueLen % ELEKTRA_CRYPTO_GCRY_BLOCKSIZE != 0)
 	{
 		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_CRYPTO_DECRYPT_FAIL, errorKey, "value length is not a multiple of the block size");
-		return (-1);
+		return -1;
 	}
 
 	// prepare buffer for plain text output and crypto operations
@@ -352,7 +352,7 @@ int elektraCryptoGcryDecrypt (elektraCryptoHandle * handle, Key * k, Key * error
 	if (!output)
 	{
 		ELEKTRA_SET_ERROR (87, errorKey, "Memory allocation failed");
-		return (-1);
+		return -1;
 	}
 
 	// initialize crypto header data
@@ -367,7 +367,7 @@ int elektraCryptoGcryDecrypt (elektraCryptoHandle * handle, Key * k, Key * error
 		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CRYPTO_DECRYPT_FAIL, errorKey, "Decryption failed because: %s", gcry_strerror (gcry_err));
 		memset (output, 0, valueLen);
 		elektraFree (output);
-		return (-1);
+		return -1;
 	}
 
 	// restore the header data
@@ -385,7 +385,7 @@ int elektraCryptoGcryDecrypt (elektraCryptoHandle * handle, Key * k, Key * error
 			"restored content length is bigger than the available amount of decrypted data. The header is possibly corrupted.");
 		memset (output, 0, valueLen);
 		elektraFree (output);
-		return (-1);
+		return -1;
 	}
 
 	// restore the key to its original status
