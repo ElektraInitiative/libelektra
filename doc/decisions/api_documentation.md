@@ -2,7 +2,7 @@
 
 ## Issue
 
-A standard way of describing REST APIs offered by tools and plugins for Elektra is required to ease development and usage for and of these. Because many good standards for describing APIs are out there already, an existing one shall be used.
+A standard way of describing REST APIs offered by tools and plugins for Elektra is required to ease development for and usage of these. Because many good standards for describing APIs are out there already, an existing one shall be used.
 
 ## Constraints
 
@@ -44,3 +44,5 @@ Additionally to modeling data apart from the API, **API Blueprints** also suppor
 ## Notes
 
 There are many tools available to use with **API Blueprints**, for example the [CLI tool](https://github.com/apiaryio/apiary-client) of apiary. Other tools can be found on the [official website](https://apiblueprint.org/tools.html) of the standard.
+
+Decision discussions have taken place in #917. An API proposal for cluster configurations was made in #912, whereas initial discussion started in #829.
