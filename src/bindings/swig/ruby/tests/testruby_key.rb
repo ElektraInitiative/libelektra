@@ -185,10 +185,50 @@ class KdbKeyTestCases < Test::Unit::TestCase
     end
   end
 
-  def throw_KeyInvalidName_exception_invalid_name 
-    assert_raised Kdb::KeyInvalidName do
-      k = Kdb::Key.new
+  def test_throw_KeyInvalidName_exception_invalid_name 
+    k = Kdb::Key.new
+
+    assert_raise Kdb::KeyInvalidName do
       k.name = "invalidname"
+    end
+    
+    assert_raise Kdb::KeyInvalidName do
+      k.add_name "x"
+    end
+    
+    assert_raise Kdb::KeyInvalidName do
+      k.set_base_name "x"
+    end
+    
+    assert_raise Kdb::KeyInvalidName do
+      k.add_base_name "x"
+    end
+    
+    assert_nothing_raised do
+      k.name = "user/keyname"
+      assert_equal "user/keyname", k.name
+    end
+
+
+  end
+
+  def test_throw_KeyTypeMismatch_on_wrong_get_method
+    k = Kdb::Key.new "user/mykey"
+    k.set_binary "\000\001\002"
+    
+    assert_true k.is_binary?
+   
+    assert_raise Kdb::KeyTypeMismatch do
+      k.get_string
+    end
+
+    k = Kdb::Key.new "user/mykey2"
+    k.set_string "hello world"
+
+    assert_false k.is_binary?
+
+    assert_raise Kdb::KeyTypeMismatch do
+      k.get_binary
     end
   end
 

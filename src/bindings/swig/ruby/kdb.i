@@ -14,6 +14,13 @@
 %include "std_string.i"
 %include "stdint.i"
 %include "exception.i"
+%include "std_except.i"
+
+/* add mapping for std::bad_alloc exception */
+namespace std {
+  %std_exception_map(bad_alloc, SWIG_MemoryError);
+}
+
 
 %{
   extern "C" {
@@ -48,6 +55,37 @@
  * kdb::Key
  */
 
+
+/* 
+ * Exceptions 
+ */
+%exceptionclass kdb::Exception;
+%rename("to_s") kdb::Exception::what;
+
+%exceptionclass kdb::KeyInvalidName;
+%exceptionclass kdb::KeyException;
+%exceptionclass kdb::KeyNotFoundException;
+%exceptionclass kdb::KeyTypeException;
+%exceptionclass kdb::KeyTypeConversion;
+
+%include "keyexcept.hpp"
+
+/* define which methods are throwing which exceptions */
+%catches (kdb::KeyException) kdb::Key::getName;
+%catches (kdb::KeyException) kdb::Key::getFullName;
+
+%catches (kdb::KeyInvalidName) kdb::Key::setName;
+%catches (kdb::KeyInvalidName) kdb::Key::addName;
+%catches (kdb::KeyInvalidName) kdb::Key::setBaseName;
+%catches (kdb::KeyInvalidName) kdb::Key::addBaseName;
+
+%catches (kdb::KeyTypeMismatch, kdb::KeyException) kdb::Key::getString;
+%catches (kdb::KeyTypeMismatch, kdb::KeyException) kdb::Key::getBinary;
+
+%catches (std::bad_alloc) kdb::Key::Key;
+
+
+/* ignore certain methods */
 //%ignore kdb::Key::Key ();
 //%ignore kdb::Key::Key (const std::string keyName, ...);
 //%ignore kdb::Key::Key (const char *keyName, va_list ap);
@@ -65,19 +103,19 @@
 /* This seems to be implemented in ruby by '! ==' */
 %ignore kdb::Key::operator!=;
 
-// we do not need the raw key
+/* we do not need the raw key */
 %ignore kdb::Key::getKey;
 %ignore kdb::Key::operator*;
 
-// we do not need the string sizes functions, since the give wrong
-// (size + 1) size info
+/* we do not need the string sizes functions, since the give wrong
+ * (size + 1) size info */
 %ignore kdb::Key::getNameSize;
 %ignore kdb::Key::getBaseNameSize;
 %ignore kdb::Key::getFullNameSize;
 %ignore kdb::Key::getStringSize;
 
 
-// predicate methods rename to "is_xxx?" and return Rubys boolean
+/* predicate methods rename to "is_xxx?" and return Rubys boolean */
 %predicate kdb::Key::isValid;
 %predicate kdb::Key::isSystem;
 %predicate kdb::Key::isUser;
@@ -91,10 +129,11 @@
 %predicate kdb::Key::isNull; // TODO: do we need something special here??? 
 %predicate kdb::Key::needSync;
 
+/* rename some methods to meet the Ruby naming conventions */
 %rename("name") kdb::Key::getName;
 %rename("name=") kdb::Key::setName;
 
-// autorename and templates has some problems
+/* autorename and templates has some problems */
 %rename("get") kdb::Key::get<std::string>;
 %rename("set") kdb::Key::set<std::string>;
 %alias kdb::Key::get<std::string> "value"
@@ -106,6 +145,9 @@
 %alias kdb::Key::setMeta<std::string> "[]="
 %alias kdb::Key::getMeta<std::string> "[]"
 
+/* getMeta Typemap
+ * This is used to convert the input argument to a Ruby string. In certain
+ * cases this is useful, to allow passing in Symbols as meta names. */
 %typemap(in) (const std::string & metaName) {
   // typemap in for getMeta
   $input = rb_funcall($input, rb_intern("to_s"), 0, NULL);
@@ -116,21 +158,26 @@
   delete $1;
 }
 
+/* Typemap for setBinary
+ * pass raw data pointer of a Ruby String and its length */
 %typemap(in) (const void * newBinary, size_t dataSize) {
   $1 = (void *) StringValuePtr($input);
   $2 = RSTRING_LEN($input);
 }
 
+
+/* 'imitate' va_list as Ruby Hash
+ * 
+ * "missuse" the exception feature of SWIG to provide a custom
+ *  method invocation. This allows us to pass a Ruby argument hash
+ *  as a va_list. This way, we can imitate the variable argument
+ *  list (and keyword argument) features
+ */
 %typemap(in) (va_list ap) {
   // we expect to be $input to be a Ruby Hash
   Check_Type($input, T_HASH);
 }
 
-/* "missuse" the exception feature of SWIG to provide a custom
-   method invocation. This allows us to pass a Ruby argument hash
-   as a va_list. This way, we can imitate the variable argument
-   list (and keyword argument) features.
-*/
 %feature("except") kdb::Key::Key (const char *keyName, va_list ap) {
   /* standard method invocation would be: 
   $action
@@ -167,11 +214,15 @@
   }
   /* invoke method
      since we can't use arg2 here (is of type va_list)
-     we have to do it ourself (new very portable)
+     we have to do it ourself (not very portable)
   */
-  result = (kdb::Key *)new kdb::Key((char const *)arg1, 
+  try {
+    result = (kdb::Key *)new kdb::Key((char const *)arg1, 
       KEY_FLAGS, flags,
       KEY_END);
+  } catch (std::bad_alloc &_e) {
+    SWIG_exception_fail(SWIG_MemoryError, (&_e)->what());
+  }
   DATA_PTR(self) = result;
   
   if (hash_size > 0) {
@@ -200,6 +251,11 @@
 }
 
 
+/* universal 'get' and 'set' (value) methods
+ *
+ * This allows the univeral use of get/set methods, while really
+ * calling get|setBinary|String depending on the current Key
+ * type */
 %feature("except") kdb::Key::get<std::string> {
   // redefine our Key::get 
   /*
@@ -226,20 +282,33 @@
 }
 
 
-// Iterators
+/* 
+ * Iterators
+ */
 // exclude them for now
 #define ELEKTRA_WITHOUT_ITERATOR
 
  
 %include "key.hpp"
 
-// value methods
+/* 
+ * used Templates
+ */
+/* value methods */
 %template("get") kdb::Key::get<std::string>;
 %template("set") kdb::Key::set<std::string>;
 
-// meta data
+/* meta data */
 //%template(getMeta) kdb::Key::getMeta<const kdb::Key>;
 %template("set_meta") kdb::Key::setMeta<std::string>;
 %template("get_meta") kdb::Key::getMeta<std::string>;
+
+
+
+
+/*
+ * kdb.hpp
+ */
+
 
 %include "kdb.hpp"
