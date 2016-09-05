@@ -44,23 +44,15 @@ Single instances can be configured as follows:
  * **GET /instances** - get a list of all instances
  * **POST /instances** - create a new instance
  * **GET /instances/:id** - get information about a single instance
- * **POST /instances/:id** - edit a single instance
+ * **PUT /instances/:id** - edit a single instance
  * **GET /instances/:id/kdb** - get full configuration of an instance
  * **GET /instances/:id/kdb/:path** - get `path` configuration of an instance (similar to `kdb get path`)
  * **POST /instances/:id/kdb/:path** - edit `path` configuration of an instance (similar to `kdb set path`)
  * **GET /instances/:id/version** - get `elektrad` version of an instance
 
-It is also possible to create and manage groups of multiple elektra instances (clusters):
+It is also possible to create and manage groups of multiple elektra instances (clusters). The API is the same as above, but with `/clusters` instead of `/instances`. Additionally, you can get the `clusterd` version:
 
  * **GET /version** - get `clusterd` version
- * **GET /clusters** - get a list of all clusters
- * **POST /clusters** - create a new cluster
- * **GET /clusters/:id** - get information about a single cluster
- * **POST /clusters/:id** - edit a single cluster
- * **GET /clusters/:id/kdb** - get full configuration of a cluster
- * **GET /clusters/:id/kdb/:path** - get `path` configuration of a cluster (similar to `kdb get path`)
- * **POST /clusters/:id/kdb/:path** - edit `path` configuration of a cluster (similar to `kdb set path`)
- * **GET /clusters/:id/version** - get list of `elektrad` versions of all instances in the cluster
 
 Cluster configuration is stored on the cluster management server and persisted
 to all instances.
