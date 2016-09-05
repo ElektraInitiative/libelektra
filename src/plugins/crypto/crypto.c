@@ -132,22 +132,24 @@ static char * elektraCryptoCreateRandomString (const kdb_unsigned_short_t length
 }
 
 /**
- * @brief encrypt the content of the Key k
+ * @brief encrypt the (Elektra) Keys contained in data.
+ * @param handle for the current plugin instance
+ * @param data the KeySet holding the data
+ * @param errorKey holds an error description in case of failure
  * @retval 1 on success
- * @retval -1 on failure
+ * @retval -1 on failure. errorKey holds an error description.
  */
 static int elektraCryptoEncrypt (Plugin * handle ELEKTRA_UNUSED, KeySet * data ELEKTRA_UNUSED, Key * errorKey ELEKTRA_UNUSED)
 {
-#if defined(ELEKTRA_CRYPTO_API_GCRYPT) || defined(ELEKTRA_CRYPTO_API_OPENSSL) || defined(ELEKTRA_CRYPTO_API_BOTAN)
 	Key * k;
+
+#if defined(ELEKTRA_CRYPTO_API_GCRYPT) || defined(ELEKTRA_CRYPTO_API_OPENSSL) || defined(ELEKTRA_CRYPTO_API_BOTAN)
 	KeySet * pluginConfig = elektraPluginGetConfig (handle);
 #endif
 
 #if defined(ELEKTRA_CRYPTO_API_GCRYPT) || defined(ELEKTRA_CRYPTO_API_OPENSSL)
 	elektraCryptoHandle * cryptoHandle = NULL;
 #endif
-
-#if defined(ELEKTRA_CRYPTO_API_GCRYPT)
 
 	ksRewind (data);
 	while ((k = ksNext (data)) != 0)
@@ -157,11 +159,12 @@ static int elektraCryptoEncrypt (Plugin * handle ELEKTRA_UNUSED, KeySet * data E
 			continue;
 		}
 
+#if defined(ELEKTRA_CRYPTO_API_GCRYPT)
+
 		if (elektraCryptoGcryHandleCreate (&cryptoHandle, pluginConfig, errorKey, k, ELEKTRA_CRYPTO_ENCRYPT) != 1)
 		{
 			return -1;
 		}
-
 
 		if (elektraCryptoGcryEncrypt (cryptoHandle, k, errorKey) != 1)
 		{
@@ -170,69 +173,50 @@ static int elektraCryptoEncrypt (Plugin * handle ELEKTRA_UNUSED, KeySet * data E
 		}
 
 		elektraCryptoGcryHandleDestroy (cryptoHandle);
-	}
-	return 1;
+		cryptoHandle = NULL;
 
 #elif defined(ELEKTRA_CRYPTO_API_OPENSSL)
 
-	ksRewind (data);
-	while ((k = ksNext (data)) != 0)
-	{
-		if (!isMarkedForEncryption (k) || isSpecNamespace (k))
-		{
-			continue;
-		}
-
 		if (elektraCryptoOpenSSLHandleCreate (&cryptoHandle, pluginConfig, errorKey, k, ELEKTRA_CRYPTO_ENCRYPT) != 1)
 		{
-			goto openssl_error;
+			elektraCryptoOpenSSLHandleDestroy (cryptoHandle);
+			return -1;
 		}
 
 		if (elektraCryptoOpenSSLEncrypt (cryptoHandle, k, errorKey) != 1)
 		{
-			goto openssl_error;
+			elektraCryptoOpenSSLHandleDestroy (cryptoHandle);
+			return -1;
 		}
 
 		elektraCryptoOpenSSLHandleDestroy (cryptoHandle);
 		cryptoHandle = NULL;
-	}
-	return 1;
-
-openssl_error:
-	elektraCryptoOpenSSLHandleDestroy (cryptoHandle);
-	return -1;
 
 #elif defined(ELEKTRA_CRYPTO_API_BOTAN)
-
-	ksRewind (data);
-	while ((k = ksNext (data)) != 0)
-	{
-		if (!isMarkedForEncryption (k) || isSpecNamespace (k))
-		{
-			continue;
-		}
 
 		if (elektraCryptoBotanEncrypt (pluginConfig, k, errorKey) != 1)
 		{
 			return -1; // failure, error has been set by elektraCryptoBotanEncrypt
 		}
-	}
-	return 1; // success
 
-#else
-	return 1;
 #endif
+	}
+	return 1;
 }
 
 /**
- * @brief decrypt the content of the Key k
+ * @brief decrypt the (Elektra) Keys contained in data.
+ * @param handle for the current plugin instance
+ * @param data the KeySet holding the data
+ * @param errorKey holds an error description in case of failure
  * @retval 1 on success
- * @retval -1 on failure
+ * @retval -1 on failure. errorKey holds an error description.
  */
 static int elektraCryptoDecrypt (Plugin * handle ELEKTRA_UNUSED, KeySet * data ELEKTRA_UNUSED, Key * errorKey ELEKTRA_UNUSED)
 {
-#if defined(ELEKTRA_CRYPTO_API_GCRYPT) || defined(ELEKTRA_CRYPTO_API_OPENSSL) || defined(ELEKTRA_CRYPTO_API_BOTAN)
 	Key * k;
+
+#if defined(ELEKTRA_CRYPTO_API_GCRYPT) || defined(ELEKTRA_CRYPTO_API_OPENSSL) || defined(ELEKTRA_CRYPTO_API_BOTAN)
 	KeySet * pluginConfig = elektraPluginGetConfig (handle);
 #endif
 
@@ -240,8 +224,6 @@ static int elektraCryptoDecrypt (Plugin * handle ELEKTRA_UNUSED, KeySet * data E
 	elektraCryptoHandle * cryptoHandle = NULL;
 #endif
 
-#if defined(ELEKTRA_CRYPTO_API_GCRYPT)
-
 	ksRewind (data);
 	while ((k = ksNext (data)) != 0)
 	{
@@ -249,6 +231,8 @@ static int elektraCryptoDecrypt (Plugin * handle ELEKTRA_UNUSED, KeySet * data E
 		{
 			continue;
 		}
+
+#if defined(ELEKTRA_CRYPTO_API_GCRYPT)
 
 		if (elektraCryptoGcryHandleCreate (&cryptoHandle, pluginConfig, errorKey, k, ELEKTRA_CRYPTO_DECRYPT) != 1)
 		{
@@ -262,58 +246,35 @@ static int elektraCryptoDecrypt (Plugin * handle ELEKTRA_UNUSED, KeySet * data E
 		}
 
 		elektraCryptoGcryHandleDestroy (cryptoHandle);
-	}
-	return 1;
+		cryptoHandle = NULL;
 
 #elif defined(ELEKTRA_CRYPTO_API_OPENSSL)
 
-	ksRewind (data);
-	while ((k = ksNext (data)) != 0)
-	{
-		if (!isMarkedForEncryption (k) || isSpecNamespace (k))
-		{
-			continue;
-		}
-
 		if (elektraCryptoOpenSSLHandleCreate (&cryptoHandle, pluginConfig, errorKey, k, ELEKTRA_CRYPTO_DECRYPT) != 1)
 		{
-			goto openssl_error;
+			elektraCryptoOpenSSLHandleDestroy (cryptoHandle);
+			return -1;
 		}
 
 		if (elektraCryptoOpenSSLDecrypt (cryptoHandle, k, errorKey) != 1)
 		{
-			goto openssl_error;
+			elektraCryptoOpenSSLHandleDestroy (cryptoHandle);
+			return -1;
 		}
 
 		elektraCryptoOpenSSLHandleDestroy (cryptoHandle);
 		cryptoHandle = NULL;
-	}
-	return 1;
-
-openssl_error:
-	elektraCryptoOpenSSLHandleDestroy (cryptoHandle);
-	return -1;
 
 #elif defined(ELEKTRA_CRYPTO_API_BOTAN)
 
-	ksRewind (data);
-	while ((k = ksNext (data)) != 0)
-	{
-		if (!isMarkedForEncryption (k) || isSpecNamespace (k))
-		{
-			continue;
-		}
-
 		if (elektraCryptoBotanDecrypt (pluginConfig, k, errorKey) != 1)
 		{
-			return -1;
+			return -1; // failure, error has been set by elektraCryptoBotanDecrypt
 		}
+
+#endif
 	}
 	return 1;
-
-#else
-	return 1;
-#endif
 }
 
 /**
