@@ -133,6 +133,13 @@ namespace std {
 %rename("name") kdb::Key::getName;
 %rename("name=") kdb::Key::setName;
 
+%rename("base_name") kdb::Key::getBaseName;
+%rename("base_name=") kdb::Key::setBaseName;
+
+%rename("full_name") kdb::Key::getFullName;
+
+%rename("namespace") kdb::Key::getNamespace;
+
 /* autorename and templates has some problems */
 %rename("get") kdb::Key::get<std::string>;
 %rename("set") kdb::Key::set<std::string>;

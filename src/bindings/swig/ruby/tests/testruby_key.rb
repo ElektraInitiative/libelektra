@@ -165,23 +165,24 @@ class KdbKeyTestCases < Test::Unit::TestCase
       name = "user/tmp/k1"
       k.name = name
       assert_equal name, k.name
-      assert_equal name.split('/').reverse[0], k.get_base_name
+      assert_equal name.split('/').reverse[0], k.base_name
+      assert_equal "user", k.namespace
 
       k.add_base_name "b1"
-      assert_equal "b1", k.get_base_name
-      assert_equal "#{name}/b1", k.get_full_name
+      assert_equal "b1", k.base_name
+      assert_equal "#{name}/b1", k.full_name
 
       k.add_base_name "bb2"
-      assert_equal "bb2", k.get_base_name
-      assert_equal "#{name}/b1/bb2", k.get_full_name
+      assert_equal "bb2", k.base_name
+      assert_equal "#{name}/b1/bb2", k.full_name
 
       k.add_name "n1/n2"
-      assert_equal "n2", k.get_base_name
-      assert_equal "#{name}/b1/bb2/n1/n2", k.get_full_name
+      assert_equal "n2", k.base_name
+      assert_equal "#{name}/b1/bb2/n1/n2", k.full_name
 
       k.add_name "../../../../new1"
-      assert_equal "new1", k.get_base_name
-      assert_equal "#{name}/new1", k.get_full_name
+      assert_equal "new1", k.base_name
+      assert_equal "#{name}/new1", k.full_name
     end
   end
 
@@ -197,7 +198,7 @@ class KdbKeyTestCases < Test::Unit::TestCase
     end
     
     assert_raise Kdb::KeyInvalidName do
-      k.set_base_name "x"
+      k.base_name= "x"
     end
     
     assert_raise Kdb::KeyInvalidName do
