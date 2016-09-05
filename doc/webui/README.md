@@ -57,3 +57,13 @@ It is also possible to create and manage groups of multiple elektra instances (c
 
 Cluster configuration is stored on the cluster management server and persisted
 to all instances.
+
+### Response codes
+
+ * 200: success
+ * 404: non-existing key
+ * 403: authorization failure
+
+For cluster responses, the results of the operation are grouped together. If
+everything is a success, the status code of the combined document will be 200.
+Otherwise, it will show an error (400).
