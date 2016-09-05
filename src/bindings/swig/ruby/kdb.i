@@ -106,6 +106,7 @@ namespace std {
 /* we do not need the raw key */
 %ignore kdb::Key::getKey;
 %ignore kdb::Key::operator*;
+%ignore kdb::Key::release;
 
 /* we do not need the string sizes functions, since the give wrong
  * (size + 1) size info */
@@ -316,9 +317,19 @@ namespace std {
 
 
 /*
+ * Key callback methods
+ * (ignore them for now, TODO: implement this stuff
+ */
+%ignore kdb::Key::setCallback;
+%ignore kdb::Key::getFunc;
+
+ 
+
+/*
  * parse key.hpp
  */
 %include "key.hpp"
+
 
 /* 
  * used Templates
