@@ -360,7 +360,6 @@ int elektraMathcheckSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key 
 	PNElem result;
 	while ((cur = ksNext (returned)) != NULL)
 	{
-		if (keyGetNamespace (cur) == KEY_NS_SPEC) continue;
 		meta = keyGetMeta (cur, "check/math");
 		if (!meta) continue;
 		result = parsePrefixString (keyString (meta), cur, ksDup (returned), parentKey);

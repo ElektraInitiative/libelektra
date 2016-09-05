@@ -806,7 +806,6 @@ int elektraConditionalsGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned EL
 	CondResult ret = FALSE;
 	while ((cur = ksNext (returned)) != NULL)
 	{
-		if (keyGetNamespace (cur) == KEY_NS_SPEC) continue;
 		Key * conditionMeta = (Key *)keyGetMeta (cur, "check/condition");
 		Key * assignMeta = (Key *)keyGetMeta (cur, "assign/condition");
 		Key * suffixList = (Key *)keyGetMeta (cur, "condition/validsuffix");
@@ -840,7 +839,6 @@ int elektraConditionalsSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned EL
 	CondResult ret = FALSE;
 	while ((cur = ksNext (returned)) != NULL)
 	{
-		if (keyGetNamespace (cur) == KEY_NS_SPEC) continue;
 		Key * conditionMeta = (Key *)keyGetMeta (cur, "check/condition");
 		Key * assignMeta = (Key *)keyGetMeta (cur, "assign/condition");
 		Key * suffixList = (Key *)keyGetMeta (cur, "condition/validsuffix");

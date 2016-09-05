@@ -533,6 +533,32 @@ static int elektraGetDoUpdate (Split * split, Key * parentKey)
 
 typedef enum { FIRST, LAST } UpdatePass;
 
+static KeySet * prepareGlobalKS (KeySet * ks, Key * parentKey)
+{
+	ksRewind (ks);
+	Key * cutKey = keyNew ("/", KEY_CASCADING_NAME, KEY_END);
+	keyAddName (cutKey, strchr (keyName (parentKey), '/'));
+	KeySet * cutKS = ksCut (ks, cutKey);
+	Key * specCutKey = keyNew ("spec", KEY_END);
+	KeySet * specCut = ksCut (cutKS, specCutKey);
+	ksRewind (specCut);
+	Key * cur;
+	while ((cur = ksNext (specCut)) != NULL)
+	{
+		if (keyGetNamespace (cur) == KEY_NS_CASCADING)
+		{
+			ksAppendKey (cutKS, cur);
+			keyDel (ksLookup (specCut, cur, KDB_O_POP));
+		}
+	}
+	ksAppend (ks, specCut);
+	ksDel (specCut);
+	keyDel (specCutKey);
+	keyDel (cutKey);
+	ksRewind (cutKS);
+	return cutKS;
+}
+
 static int elektraGetDoUpdateWithGlobalHooks (KDB * handle, Split * split, KeySet * ks, Key * parentKey, Key * initialParent,
 					      UpdatePass run)
 {
@@ -590,15 +616,10 @@ static int elektraGetDoUpdateWithGlobalHooks (KDB * handle, Split * split, KeySe
 				}
 				else
 				{
-					ksRewind (ks);
-					Key * cutKey = keyNew ("/", KEY_CASCADING_NAME, KEY_END);
-					keyAddName (cutKey, strchr (keyName (parentKey), '/'));
-					KeySet * cutKS = ksCut (ks, cutKey);
-					ksRewind (cutKS);
+					KeySet * cutKS = prepareGlobalKS (ks, parentKey);
 					ret = backend->getplugins[p]->kdbGet (backend->getplugins[p], cutKS, parentKey);
 					ksAppend (ks, cutKS);
 					ksDel (cutKS);
-					keyDel (cutKey);
 				}
 			}
 
