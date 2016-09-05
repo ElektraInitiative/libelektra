@@ -7,7 +7,7 @@
 
 if [ -z "$1" ];
 then
-	echo "Usage: httpLinksChecker <linkfile>"
+	echo "Usage: link-checker <linkfile>"
 	exit
 fi
 
@@ -37,7 +37,7 @@ PIDS=""
 while read -r line;
 do
 	check "$line" &
-	PIDS+=" $!"
+	PIDS="$PIDS $!"
 	THREADCOUNT=$((THREADCOUNT+1))
 	printf "%i/%i\r" "$COUNTLINKS" "$NUMLINKS"
 	COUNTLINKS=$((COUNTLINKS+1))

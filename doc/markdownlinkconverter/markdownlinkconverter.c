@@ -32,7 +32,7 @@
 #define TEMP_FILENAME "temp"
 #define INVALIDLINK_MESS "%s|%i col 0| warning: invalid link '%s'\n"
 #define HTTPLINK_FORMAT "%s|%i col 0| %s\n"
-#define HTTPLINK_FILENAME "httpLinks.txt"
+#define HTTPLINK_FILENAME "external-links.txt"
 
 // Link Blacklist: do not convert links with the following starting and ending
 // ignore http, ftp, @ref and #anchor

@@ -35,7 +35,7 @@ which the link refers to.
 
 ### external links
 
-Every link starting with `http`, `https` or `ftp` will be written to a file named `httpLinks.txt` located in your
+Every link starting with `http`, `https` or `ftp` will be written to a file named `external-links.txt` located in your
 build folder. With the following syntax:
 
 	<file>|<line> col 0 | <url>
@@ -43,7 +43,7 @@ build folder. With the following syntax:
 Note: Due to the nature of the Markdown Link Converter the file can only be opened in append mode. So delete it and rerun the
 html build process (`make clean` could be needed) to get a list without duplicates.
 
-In the script folder is a script named `httpLinksChecker`. This script can be used to validate the links.
+In the script folder is a script named `link-checker`. This script can be used to validate the links.
 Broken links will be printed. False positive not excluded (very rare).
 
 ## Further improvements (which will be introduced in a later version):
