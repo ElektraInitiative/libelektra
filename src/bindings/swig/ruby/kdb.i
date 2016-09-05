@@ -113,6 +113,7 @@ namespace std {
 %ignore kdb::Key::getBaseNameSize;
 %ignore kdb::Key::getFullNameSize;
 %ignore kdb::Key::getStringSize;
+/* kdb::Key::getBinarySize could be useful */
 
 
 /* predicate methods rename to "is_xxx?" and return Rubys boolean */
@@ -139,6 +140,7 @@ namespace std {
 %rename("full_name") kdb::Key::getFullName;
 
 %rename("namespace") kdb::Key::getNamespace;
+
 
 /* autorename and templates has some problems */
 %rename("get") kdb::Key::get<std::string>;
@@ -295,7 +297,27 @@ namespace std {
 // exclude them for now
 #define ELEKTRA_WITHOUT_ITERATOR
 
- 
+/* 
+ * Key clonging
+ */
+%ignore kdb::Key::dup;
+%ignore kdb::Key::copy;
+
+%alias kdb::Key::clone() "dup"
+
+%extend kdb::Key {
+  kdb::Key *clone() {
+    kdb::Key *k;
+    k = new kdb::Key();
+    k->copy(*$self);
+    return k;
+  }
+}
+
+
+/*
+ * parse key.hpp
+ */
 %include "key.hpp"
 
 /* 
