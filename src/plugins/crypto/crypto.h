@@ -34,8 +34,6 @@ enum ElektraCryptoOperation
 // plugin configuration parameters
 #define ELEKTRA_CRYPTO_PARAM_MASTER_PASSWORD_LEN "/crypto/masterpasswordlength"
 #define ELEKTRA_CRYPTO_PARAM_MASTER_PASSWORD "/crypto/masterpassword"
-#define ELEKTRA_CRYPTO_PARAM_KEY_PATH "/crypto/key"
-#define ELEKTRA_CRYPTO_PARAM_IV_PATH "/crypto/iv"
 #define ELEKTRA_CRYPTO_PARAM_SHUTDOWN "/shutdown"
 #define ELEKTRA_CRYPTO_PARAM_ITERATION_COUNT "/crypto/iterations"
 
