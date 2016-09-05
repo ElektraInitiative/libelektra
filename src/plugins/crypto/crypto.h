@@ -39,7 +39,7 @@ enum ElektraCryptoOperation
 #define ELEKTRA_CRYPTO_PARAM_SHUTDOWN "/shutdown"
 #define ELEKTRA_CRYPTO_PARAM_ITERATION_COUNT "/crypto/iterations"
 
-// meta keys
+// metakeys
 #define ELEKTRA_CRYPTO_META_ENCRYPT "crypto/encrypt"
 #define ELEKTRA_CRYPTO_META_SALT "crypto/salt"
 

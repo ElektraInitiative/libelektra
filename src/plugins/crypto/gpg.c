@@ -179,7 +179,7 @@ static int getGpgBinary (char ** gpgBin, KeySet * conf, Key * errorKey)
 }
 
 /**
- * @brief call the gpg binary to encrypt the random master password r.
+ * @brief call the gpg binary to encrypt the random master password.
  *
  * @param conf holds the backend/plugin configuration
  * @param errorKey holds the error description in case of failure
@@ -190,6 +190,8 @@ static int getGpgBinary (char ** gpgBin, KeySet * conf, Key * errorKey)
  */
 int elektraCryptoGpgEncryptMasterPassword (KeySet * conf, Key * errorKey, Key * msgKey)
 {
+	// [0]: <path to binary>, [argc-3]: --batch, [argc-2]: -e, [argc-1]: NULL-terminator
+	static const kdb_unsigned_short_t staticArgumentsCount = 4;
 	Key * k;
 
 	// determine the number of total GPG keys to be used
@@ -227,7 +229,7 @@ int elektraCryptoGpgEncryptMasterPassword (KeySet * conf, Key * errorKey, Key * 
 	}
 
 	// initialize argument vector for gpg call
-	const kdb_unsigned_short_t argc = (2 * recipientCount) + 4 + testMode;
+	const kdb_unsigned_short_t argc = (2 * recipientCount) + staticArgumentsCount + testMode;
 	kdb_unsigned_short_t i = 1;
 	char * argv[argc];
 
@@ -268,7 +270,7 @@ int elektraCryptoGpgEncryptMasterPassword (KeySet * conf, Key * errorKey, Key * 
 }
 
 /**
- * @brief call the gpg binary to decrypt the random master password r.
+ * @brief call the gpg binary to decrypt the random master password.
  *
  * @param conf holds the backend/plugin configuration
  * @param errorKey holds the error description in case of failure

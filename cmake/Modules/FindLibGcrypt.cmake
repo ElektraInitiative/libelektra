@@ -16,7 +16,7 @@
 #
 # CHANGES made by Peter Nirschl <peter.nirschl@gmail.com>
 #
-# LIBGCRYPT_INCLUDE_DIR - set to the path where gcrypt's include files are stored$
+# LIBGCRYPT_INCLUDE_DIR - set to the path where gcrypt's include files are stored
 #
 
 #search in typical paths for libgcrypt-config

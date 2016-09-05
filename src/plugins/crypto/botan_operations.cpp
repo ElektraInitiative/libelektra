@@ -33,8 +33,8 @@ extern "C" {
  * @param config KeySet holding the plugin/backend configuration
  * @param errorKey holds an error description in case of failure
  * @param k the (Elektra)-Key to be encrypted
- * @param cKey pointer to the SymmetricKey
- * @param cIv pointer to the InitializationVector
+ * @param cKey holds a pointer to an allocated SymmetricKey. Must be freed by the caller.
+ * @param cIv holds a pointer to an allocated InitializationVector. Must be freed by the caller.
  * @retval -1 on failure. errorKey holds the error description.
  * @retval 1 on success
  */
@@ -93,8 +93,8 @@ static int getKeyIvForEncryption (KeySet * config, Key * errorKey, Key * k, Symm
  * @param config KeySet holding the plugin/backend configuration
  * @param errorKey holds an error description in case of failure
  * @param k the (Elektra)-Key to be encrypted
- * @param cKey pointer to the SymmetricKey
- * @param cIv pointer to the InitializationVector
+ * @param cKey holds a pointer to an allocated SymmetricKey. Must be freed by the caller.
+ * @param cIv holds a pointer to an allocated InitializationVector. Must be freed by the caller.
  * @retval -1 on failure. errorKey holds the error description.
  * @retval 1 on success
  */
@@ -106,7 +106,7 @@ static int getKeyIvForDecryption (KeySet * config, Key * errorKey, Key * k, Symm
 	const Key * salt = keyGetMeta (k, ELEKTRA_CRYPTO_META_SALT);
 	if (!salt)
 	{
-		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CRYPTO_CONFIG_FAULT, errorKey, "missing salt as meta-key %s for key %s",
+		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CRYPTO_CONFIG_FAULT, errorKey, "missing salt as metakey %s for key %s",
 				    ELEKTRA_CRYPTO_META_SALT, keyName (k));
 		return -1;
 	}
@@ -302,6 +302,11 @@ int elektraCryptoBotanDecrypt (KeySet * pluginConfig, Key * k, Key * errorKey)
 	return 1; // success
 }
 
+/**
+ * @brief create a random sequence of characters with given length.
+ * @param length the number of random bytes to be generated.
+ * @returns allocated buffer holding length bytes. Must be freed by the caller.
+ */
 char * elektraCryptoBotanCreateRandomString (const kdb_unsigned_short_t length)
 {
 	try
@@ -315,6 +320,7 @@ char * elektraCryptoBotanCreateRandomString (const kdb_unsigned_short_t length)
 		AutoSeeded_RNG rng;
 		rng.randomize (buffer, length - 1);
 		elektraCryptoNormalizeRandomString (buffer, length);
+		// cast from unsigned char to char
 		return reinterpret_cast<char *> (buffer);
 	}
 	catch (std::exception & e)

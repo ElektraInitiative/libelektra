@@ -31,13 +31,14 @@
 static pthread_mutex_t mutex_ref_cnt = PTHREAD_MUTEX_INITIALIZER;
 static unsigned int ref_cnt = 0;
 
+// gurads against compiler warnings because the functions are only used within the specified compile variants
 #if defined(ELEKTRA_CRYPTO_API_GCRYPT) || defined(ELEKTRA_CRYPTO_API_OPENSSL) || defined(ELEKTRA_CRYPTO_API_BOTAN)
 
 /**
  * @brief checks if a Key has been marked for encryption by checking the Key's metadata.
  *
- * If the meta-key ELEKTRA_CRYPTO_META_ENCRYPT has the value "1" it is considered to be true.
- * Every other value or the non-existence of the meta-key is considered to be false.
+ * If the metakey ELEKTRA_CRYPTO_META_ENCRYPT has the value "1" it is considered to be true.
+ * Every other value or the non-existence of the metakey is considered to be false.
  *
  * @param k the Key to be checked
  * @retval 0 if the Key has not been marked for encryption
@@ -455,7 +456,7 @@ int CRYPTO_PLUGIN_FUNCTION (checkconf) (Key * errorKey, KeySet * conf)
 	}
 	else
 	{
-		// generate random master password r
+		// generate random master password
 		const kdb_unsigned_short_t passwordLen = elektraCryptoGetRandomPasswordLength (conf);
 		const char * r = elektraCryptoCreateRandomString (passwordLen);
 		if (!r)

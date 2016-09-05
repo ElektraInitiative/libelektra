@@ -102,7 +102,7 @@ static int getKeyIvForDecryption (KeySet * config, Key * errorKey, Key * k, Key 
 	const Key * salt = keyGetMeta (k, ELEKTRA_CRYPTO_META_SALT);
 	if (!salt)
 	{
-		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CRYPTO_CONFIG_FAULT, errorKey, "missing salt as meta-key %s for key %s",
+		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CRYPTO_CONFIG_FAULT, errorKey, "missing salt as metakey %s for key %s",
 				    ELEKTRA_CRYPTO_META_SALT, keyName (k));
 		return -1;
 	}
@@ -407,6 +407,11 @@ int elektraCryptoGcryDecrypt (elektraCryptoHandle * handle, Key * k, Key * error
 	return 1;
 }
 
+/**
+ * @brief create a random sequence of characters with given length.
+ * @param length the number of random bytes to be generated.
+ * @returns allocated buffer holding length bytes. Must be freed by the caller.
+ */
 char * elektraCryptoGcryCreateRandomString (const kdb_unsigned_short_t length)
 {
 	kdb_octet_t * buffer = elektraMalloc (length);
