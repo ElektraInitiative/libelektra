@@ -10,6 +10,7 @@
 
 #include "crypto.h"
 #include "gpg.h"
+#include "helper.h"
 #include <kdb.h>
 #include <kdbinternal.h>
 #include <stdio.h>
@@ -256,4 +257,43 @@ static void test_gpg (void)
 	keyDel (msg);
 	keyDel (errorKey);
 	ksDel (conf);
+}
+
+static void test_hex (void)
+{
+	Key * errorKey = keyNew (0);
+
+	// test bin2hex
+	static const kdb_octet_t example[] = { 0xca, 0xfe, 0xdb, 0x01, 0x23, 0x45, 0x67, 0x89 };
+	static const char hex[] = "CAFEDB0123456789";
+
+	char * c = elektraCryptoBin2Hex (errorKey, example, sizeof (example));
+	succeed_if (c, "bin2hex conversion failed");
+	if (c)
+	{
+		succeed_if (!strcmp (c, hex), "bin2hex conversion failed, result does not match expected output");
+		elektraFree (c);
+	}
+
+	// test hex2bin
+	kdb_octet_t * buffer;
+
+	buffer = elektraCryptoHex2Bin (errorKey, hex);
+	succeed_if (buffer, "hex2bin conversion failed with valid hex-string");
+	if (buffer)
+	{
+		succeed_if (!memcmp (buffer, example, sizeof (example)), "hex2bin conversion failed, result is not valid");
+		elektraFree (buffer);
+	}
+
+	// test hex2bin with faulty string
+	buffer = elektraCryptoHex2Bin (errorKey, "01GA");
+	succeed_if (!buffer, "invalid hex-string was converted without error");
+	if (buffer) elektraFree (buffer);
+
+	buffer = elektraCryptoHex2Bin (errorKey, "010");
+	succeed_if (!buffer, "hex-string with invalid length was converted without error");
+	if (buffer) elektraFree (buffer);
+
+	keyDel (errorKey);
 }
