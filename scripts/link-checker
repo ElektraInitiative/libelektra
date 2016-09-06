@@ -1,0 +1,60 @@
+#!/bin/sh
+#
+# @author Kurt Micheli <kurt.micheli@libelektra.org>
+# @brief Checks http, https and ftp links if they are broken.
+# @date 05.09.2016
+# @tags validation
+
+if [ -z "$1" ];
+then
+	echo "Usage: link-checker <linkfile>"
+	exit
+fi
+
+
+NUMTHREADS=10
+
+check ()
+{
+	link=$(echo "$1" | grep  -oE "(https|http|ftp):.*")
+	if [ -z "$link" ];
+	then
+		echo "check the link format of $1"
+		return
+	fi
+	wget --spider --quiet "$link"
+	if [ "$?" -ne "0" ];
+	then
+		echo "$1"
+	fi
+}
+
+COUNTLINKS=0
+THREADCOUNT=0;
+NUMLINKS=$(wc -l < "$1")
+PIDS=""
+
+while read -r line;
+do
+	check "$line" &
+	PIDS="$PIDS $!"
+	THREADCOUNT=$((THREADCOUNT+1))
+	printf "%i/%i\r" "$COUNTLINKS" "$NUMLINKS"
+	COUNTLINKS=$((COUNTLINKS+1))
+	if [ "$THREADCOUNT" -eq "$NUMTHREADS" ];
+	then
+		for pid in $PIDS;
+		do
+			wait "$pid"
+		done
+		PIDS=""
+		THREADCOUNT=1;
+	fi
+done < "$1"
+
+for pid in $PIDS;
+do
+	wait "$pid"
+done
+
+echo ""
