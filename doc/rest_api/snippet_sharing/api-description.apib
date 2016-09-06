@@ -1,0 +1,410 @@
+FORMAT: 1.0
+
+# REST service API for sharing configuration snippets
+
+This is a description of the API provided by the REST service that can be used to share, search and download configuration snippets.
+
+
+# API Description [/]
+
+## List API methods [GET]
+
+Returns an overview of available API methods with required parameters and a description.
+
++ Response 200 (text/html; charset=utf-8)
+
+
+
+# Authentication endpoint [/auth]
+
+## Authenticate [POST]
+
+The API will try to authenticate the user by the submitted credentials. In case of success a session token (JWT) will be returned, which can be used for further requests to the API.
+
++ Request (application/x-www-form-urlencoded)
+    + Attributes
+        + username: the_username (string, required)
+        + password: aSecretPassword (string, required)
+        
+    + Schema
+    
+            {
+                "type": "object",
+                "properties": {
+                    "username": {
+                        "description": "Name of the user that wants to authenticate",
+                        "type": "string"
+                    },
+                    "password": {
+                        "description": "Password for the username in question",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "username",
+                    "password"
+                ],
+                "additionalProperties": false
+            }
+ 
++ Response 200 (application/json)
+    + Body
+
+            {
+                "status": 200,
+                "token": "eyJ...Q2tY="
+            }
+            
+    + Schema
+    
+            {
+                "type": "object",
+                "properties": {
+                    "status": {
+                        "description": "HTTP status code",
+                        "type": "integer",
+                        "minimum": 0
+                    },
+                    "token": {
+                        "description": "Session token to be used as authentication for further requests.",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "status",
+                    "token"
+                ],
+                "additionalProperties": false
+            }
+
++ Response 401 (application/json)
+    + Body
+    
+            {
+                "status": 401,
+                "error": "Unauthorized",
+                "message": "You have to supply an username and a password.",
+                "loca": "AUTH_NEED_USERNAME_PASSWORD"
+            }
+            
+    + Schema
+
+            {
+                "type": "object",
+                "properties": {
+                    "status": {
+                        "description": "HTTP status code",
+                        "type": "integer",
+                        "minimum": 0
+                    },
+                    "error": {
+                        "description": "Textual description of HTTP status code",
+                        "type": "string"
+                    },
+                    "message": {
+                        "description": "Detailed information about the error.",
+                        "type": "string"
+                    },
+                    "loca": {
+                        "description": "Unique message token that can be used for localization in a frontend application.",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "status",
+                    "message",
+                    "loca"
+                ],
+                "additionalProperties": false
+            }
+
+
+## Retrieve current user [GET /user]
+
+Retrieves the currently authenticated users details.
+        
++ Response 200 (application/json)
+    + Body
+    
+            {
+                "status": 200,
+                "username": "the_username",
+                "rank": 1
+            }
+            
+    + Schema
+    
+            {
+                "type": "object",
+                "properties": {
+                    "status": {
+                        "description": "HTTP status code",
+                        "type": "integer",
+                        "minimum": 0
+                    },
+                    "username": {
+                        "description": "The authenticated users name",
+                        "type": "string"
+                    },
+                    "rank": {
+                        "description": "The authenticated users rank",
+                        "type": "integer"
+                    }
+                },
+                "required": [
+                    "status",
+                    "username",
+                    "rank"
+                ],
+                "additionalProperties": false
+            }
+
++ Response 401 (application/json)
+    + Body
+    
+            {
+                "status": 401,
+                "error": "Unauthorized",
+                "message": "You need to be authenticated to perform this action.",
+                "loca": "NEED_AUTHENTICATION"
+            }
+            
+    + Schema
+
+            {
+                "type": "object",
+                "properties": {
+                    "status": {
+                        "description": "HTTP status code",
+                        "type": "integer",
+                        "minimum": 0
+                    },
+                    "error": {
+                        "description": "Textual description of HTTP status code",
+                        "type": "string"
+                    },
+                    "message": {
+                        "description": "Detailed information about the error.",
+                        "type": "string"
+                    },
+                    "loca": {
+                        "description": "Unique message token that can be used for localization in a frontend application.",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "status",
+                    "message",
+                    "loca"
+                ],
+                "additionalProperties": false
+            }
+        
+
+## Register [POST /register]
+
+This method can be used to register for the service. An user account will grant access to more functionality.
+
++ Request Register via form (application/x-www-form-urlencoded)
+    + Attributes
+        + username: the_username (string, required)
+        
+            The username must be between 3 and 20 signs long and may contain only letters a-z (lower- and upper-case), the numbers 0-9 and dots (.) as well as dashes (-).
+            
+        + password: somePassword (string, required) - A non-empty password
+        + email: an@email.com (string, required) - A valid email address
+        
++ Response 200 (application/json)
+    + Body
+    
+            {
+                "status":200,
+                "message":"Your account has been created successfully!",
+                "loca":"AUTH_REGISTER_USER_CREATED_SUCCESSFULLY"
+            }
+            
+    + Schema
+
+            {
+                "type": "object",
+                "properties": {
+                    "status": {
+                        "description": "HTTP status code",
+                        "type": "integer",
+                        "minimum": 0
+                    },
+                    "error": {
+                        "description": "Textual description of HTTP status code",
+                        "type": "string"
+                    },
+                    "message": {
+                        "description": "Detailed information about the error.",
+                        "type": "string"
+                    },
+                    "loca": {
+                        "description": "Unique message token that can be used for localization in a frontend application.",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "status",
+                    "message",
+                    "loca"
+                ],
+                "additionalProperties": false
+            }
+        
++ Response 400 (application/json)
+    + Body
+
+            {
+                "status":400,
+                "error":"Bad Request",
+                "message":"You have to supply an username, a password and an email.",
+                "loca":"AUTH_REGISTER_NEED_USERNAME_PASSWORD_EMAIL"
+            }
+        
+    + Schema
+
+            {
+                "type": "object",
+                "properties": {
+                    "status": {
+                        "description": "HTTP status code",
+                        "type": "integer",
+                        "minimum": 0
+                    },
+                    "error": {
+                        "description": "Textual description of HTTP status code",
+                        "type": "string"
+                    },
+                    "message": {
+                        "description": "Detailed information about the error.",
+                        "type": "string"
+                    },
+                    "loca": {
+                        "description": "Unique message token that can be used for localization in a frontend application.",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "status",
+                    "message",
+                    "loca"
+                ],
+                "additionalProperties": false
+            }
+        
+        
+## Set user rank [POST /setrank]
+
+This method can be used to set the rank of an user. Only users with a rank high enough have the privilegue to set the rank of users.
+
++ Request Set rank via form (application/x-www-form-urlencoded)
+    + Attributes
+        + username: the_username (string, required)
+        + rank: 3 (number, required)
+        
+    + Schema
+            
+            {
+                "type": "object",
+                "properties": {
+                    "username": {
+                        "description": "The users name who shall be changed",
+                        "type": "string"
+                    },
+                    "rank": {
+                        "description": "The new rank to apply to the user",
+                        "type": "integer",
+                        "minimum": 0
+                    }
+                },
+                "required": [
+                    "username",
+                    "rank"
+                ],
+                "additionalProperties": false
+            }
+            
++ Response 200 (application/json)
+    + Body
+    
+            {
+                "status": 200,
+                "message": "The rank has been set successfully.",
+                "loca": "USER_SET_RANK_SUCCESSFULLY"
+            }
+            
+    + Schema
+    
+            {
+                "type": "object",
+                "properties": {
+                    "status": {
+                        "description": "HTTP status code",
+                        "type": "integer",
+                        "minimum": 0
+                    },
+                    "error": {
+                        "description": "Textual description of HTTP status code",
+                        "type": "string"
+                    },
+                    "message": {
+                        "description": "Detailed information about the error.",
+                        "type": "string"
+                    },
+                    "loca": {
+                        "description": "Unique message token that can be used for localization in a frontend application.",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "status",
+                    "message",
+                    "loca"
+                ],
+                "additionalProperties": false
+            }
+
+
++ Response 400 (application/json)
+    + Body
+
+            {
+                "status":400,
+                "error":"Bad Request",
+                "message":"An username and a rank has to be given.",
+                "loca":"AUTH_SETRANK_MISSING_USERNAME_RANK"
+            }
+        
+    + Schema
+
+            {
+                "type": "object",
+                "properties": {
+                    "status": {
+                        "description": "HTTP status code",
+                        "type": "integer",
+                        "minimum": 0
+                    },
+                    "error": {
+                        "description": "Textual description of HTTP status code",
+                        "type": "string"
+                    },
+                    "message": {
+                        "description": "Detailed information about the error.",
+                        "type": "string"
+                    },
+                    "loca": {
+                        "description": "Unique message token that can be used for localization in a frontend application.",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "status",
+                    "message",
+                    "loca"
+                ],
+                "additionalProperties": false
+            }
