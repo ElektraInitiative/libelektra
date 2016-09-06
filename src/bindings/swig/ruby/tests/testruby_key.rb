@@ -250,6 +250,9 @@ class KdbKeyTestCases < Test::Unit::TestCase
       assert_true k1 <= k2
       assert_true k1 >= k2
 
+      assert_equal 0, k1 <=> k2
+
+
       k2 = Kdb::Key.new "user/anothertest"
 
       assert_false k1.name == k2.name
@@ -258,6 +261,10 @@ class KdbKeyTestCases < Test::Unit::TestCase
 
       assert_true k1 > k2
       assert_true k2 < k1
+
+      assert_equal -1, k2 <=> k1
+      assert_equal 1, k1 <=> k2
+
     end
   end
 

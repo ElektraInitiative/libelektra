@@ -327,6 +327,19 @@ namespace std {
 %ignore kdb::Key::setCallback;
 %ignore kdb::Key::getFunc;
 
+/*
+ * spaceship operator, useful for sorting methods
+ */
+//%rename("<=>") kdb::Key::spaceship;
+%alias kdb::Key::spaceship "<=>"
+%extend kdb::Key {
+  int spaceship(const kdb::Key &comp) {
+    int ret = ckdb::keyCmp ($self->getKey(), comp.getKey());
+    if (ret < 0) return -1;
+    if (ret > 0) return 1;
+    return 0;
+  }
+}
  
 
 /*
@@ -377,26 +390,42 @@ namespace std {
 
 /* 
  * KeySet.each
+ * Hint: this implementation of 'each' only works wich references to keys
+ * so any modifications of the keys are persisted
  */
 %extend kdb::KeySet {
   void each() {
     if (rb_block_given_p()) {
+      cursor_t cur_pos = $self->getCursor();
 
       for ( $self->rewind(); $self->next(); ) {
         VALUE cur;
         Key * t = new Key($self->current());
-        cur = SWIG_NewPointerObj(t, SWIGTYPE_p_kdb__Key, 0);
+        cur = SWIG_NewPointerObj(t, SWIGTYPE_p_kdb__Key, 1);
 
         rb_yield(cur);
 
-        delete t;
-        // TODO: do we have to free also the Ruby obj?
+        /* TODO: do we have to free anything ? */
       }
+      /* restore current cursor position */
+      $self->setCursor(cur_pos);
     }
   }
 }
+/* include Enumerable which adds lots of Ruby iter., search... functions */
+%mixin kdb::KeySet "Enumerable";
+
+
 
 %alias kdb::KeySet::append "<<"
+
+
+/* cursor operations */
+%apply long { cursor_t }
+%rename("cursor") kdb::KeySet::getCursor;
+%rename("cursor=") kdb::KeySet::setCursor;
+
+%alias kdb::KeySet::at "[]"
 
 /* 
  * parse keyset.hpp
