@@ -289,7 +289,7 @@ Retrieves the currently authenticated users details.
 
 ## Register [POST /register]
 
-This method can be used to register for the service. An user account will grant access to more functionality.
+This method can be used to register for the service. An user account will grant access to more functions.
 
 + Request Register via form (application/x-www-form-urlencoded)
     + Attributes
@@ -473,7 +473,9 @@ This method can be used to register for the service. An user account will grant 
         
 ## Set user rank [POST /setrank]
 
-This method can be used to set the rank of an user. The higher the rank, the more permissions an user has. Rank 1 is considered a normal user, 2 a moderator and 3 an admin. Only users with the highest rank (3) have the privilegue to set the rank of other users.
+This method can be used to change the rank of an user. The higher the rank, the more permissions an user has. Rank 1 is considered a normal user, 2 a moderator and 3 an admin.
+
+This operation can only be executed by admins (rank 3).
 
 + Request Set rank via form (application/x-www-form-urlencoded)
     + Attributes
@@ -998,7 +1000,9 @@ Can be used to create a new entry in the database. An entry consists of a unique
 
 ## Update an existing entry [PUT /database/{organization}/{application}/{scope}/{slug}]
 
-Updates the entry with the specified key (path). All fields will be overridden with the supplied data. If no or empty data is supplied, it will be used instead (especially important for `tags`).
+Updates the entry with the specified key (path). All fields will be overridden with the supplied data. If no or empty data is supplied, it will also override the old one (especially important for `tags`).
+
+This operation can only be executed by the owner of an entry as well as moderators (rank 2) or higher.
 
 + Parameters
     + organization (string, required) - The `organization` who built the `application` for which the configuration of the entry is meant
@@ -1186,7 +1190,9 @@ Updates the entry with the specified key (path). All fields will be overridden w
 
 ## Delete an entry [DELETE /database/{organization}/{application}/{scope}/{slug}]
 
-Deletes an entry from the database. This operation can only be executed by the owner of an entry as well as moderators (rank 2) or higher.
+Deletes an entry from the database. 
+
+This operation can only be executed by the owner of an entry as well as moderators (rank 2) or higher.
 
 + Parameters
     + organization (string, required) - The `organization` who built the `application` for which the configuration of the entry is meant
