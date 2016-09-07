@@ -642,15 +642,14 @@ This method can be used to set the rank of an user. The higher the rank, the mor
 
 # Database endpoint [/database{?offset}{?rows}{?sort}{?search}{?raw}]
 
-## List database entries [GET /database/{scope}/{organization}/{application}/{appscope}{?offset}{?rows}{?sort}{?search}]
+## List database entries [GET /database/{organization}/{application}/{scope}{?offset}{?rows}{?sort}{?search}]
 
 Returns a list of database entries. The result can be adjusted by additional, but optional parameters.
 
 + Parameters
-    + scope (string, optional) - Only search within a given `scope` for entries
     + organization (string, optional) - Only search within a given `organization` for entries
     + application (string, optional) - Only search within a given `application` for entries
-    + appscope (string, optional) - Only search within a given `scope` of an `application` for entries
+    + scope (string, optional) - Only search within a given `scope` of an `application` for entries
     + offset (number, optional) - How many entries to skip for the output, can be used for pagination.
         + Default: `0`
     + rows (number, optional) - How many entries will be added to the output at max.
@@ -666,15 +665,14 @@ Returns a list of database entries. The result can be adjusted by additional, bu
     + Attributes (Entry List)
 
 
-## Get details for entry [GET /database/{scope}/{organization}/{application}/{appscope}/{slug}{?raw}]
+## Get details for entry [GET /database/{organization}/{application}/{scope}/{slug}{?raw}]
 
 Returns detailed information about the entry with the specified key (path). If the optional parameter `raw` is supplied, a raw configuration is returned instead of the normal response.
 
 + Parameters
-    + scope (string, required) - The `scope` for the configuration snippet of the entry
     + organization (string, required) - The `organization` who built the `application` for which the configuration of the entry is meant
     + application (string, required) - The `application` to which the configuration of the entry belongs to
-    + appscope (string, required) - The `application` specific `scope` to which the configuration of the entry belongs to
+    + scope (string, required) - The `application` specific `scope` to which the configuration of the entry belongs to
     + slug (string, required) - The unique identifier of the requested entry
     + raw (string, optional) - If this parameter is supplied, the API will attempt to return the requested configuration snippet in the given `raw` format
 
@@ -684,10 +682,9 @@ Returns detailed information about the entry with the specified key (path). If t
         + data (object) - The actual details about the entry
             + key (object) - The key and its separate parts
                 + full (string) - The full key (path) of the entry
-                + scope (string) - The scope of the configuration snippet
                 + organization (string) - The organization of the application to which the snippet belongs to
                 + application (string) - The application to which the snippet belongs to
-                + appscope (string) - The application internal scope for the configuration snippet
+                + scope (string) - The application internal scope for the configuration snippet
                 + slug (string) - The unique identification slug of the entry
             + meta (object) - Additional information about the entry
                 + title (string) - The descriptive title of the entry
@@ -746,10 +743,6 @@ Can be used to create a new entry in the database. An entry consists of a unique
 
 + Request (application/x-www-form-urlencoded)
     + Attributes
-        + scope: `sw` (string, required)
-
-            The scope of the new configuration snippet. Common scopes are `sw` for software and `env` for environment for example.
-
         + organization: `org.apache` (string, required)
 
             The organization which built the software for which the configuration is meant.
@@ -758,7 +751,7 @@ Can be used to create a new entry in the database. An entry consists of a unique
 
             The application for which the configuration is meant.
 
-        + appscope: `database` (string, required)
+        + scope: `database` (string, required)
 
             Often different parts of an application have different configurations. Here the application specific scope can be defined.
 
@@ -787,10 +780,6 @@ Can be used to create a new entry in the database. An entry consists of a unique
             {
                 "type": "object",
                 "properties": {
-                    "scope": {
-                        "description": "The scope of the new configuration snippet",
-                        "type": "string"
-                    },
                     "organization": {
                         "description": "The organization which built the software for which the configuration is meant",
                         "type": "string"
@@ -799,7 +788,7 @@ Can be used to create a new entry in the database. An entry consists of a unique
                         "description": "The application for which the configuration is meant",
                         "type": "string"
                     },
-                    "appscope": {
+                    "scope": {
                         "description": "The scope within the application for which the configuration is meant",
                         "type": "string"
                     },
@@ -829,10 +818,9 @@ Can be used to create a new entry in the database. An entry consists of a unique
                     }
                 },
                 "required": [
-                    "scope",
                     "organization",
                     "application",
-                    "appscope",
+                    "scope",
                     "slug",
                     "title",
                     "description",
@@ -889,9 +877,9 @@ Can be used to create a new entry in the database. An entry consists of a unique
         + i18n (string) - A unique token representing above error description message; can be used for internationalization in frontends
 
             A comprehensive list of possible errors:
-            - `ENTRY_MISSING_KEY_PARTS` if one of the five key parts (`scope`, `organization`, `application`, `appscope` and `slug`) is missing
+            - `ENTRY_MISSING_KEY_PARTS` if one of the four key parts (`organization`, `application`, `scope` and `slug`) is missing
             - `ENTRY_MISSING_BASIC_VALUES` if one of the descriptive inputs (`title`, `description`, `configuration`) is missing
-            - `ENTRY_INVALID_KEY_PARTS` if one of the five key parts (`scope`, `organization`, `application`, `appscope` and `slug`) is malformed (regex: [a-zA-Z0-9\.\-]+).
+            - `ENTRY_INVALID_KEY_PARTS` if one of the four key parts (`organization`, `application`, `scope` and `slug`) is malformed (regex: [a-zA-Z0-9\.\-]+).
             - `ENTRY_INVALID_CONFIGURATION` if the submitted configuration snippet has an unsupported format.
 
     + Schema
@@ -974,7 +962,7 @@ Can be used to create a new entry in the database. An entry consists of a unique
         + i18n (string) - A unique token representing above error description message; can be used for internationalization in frontends
 
             A comprehensive list of possible errors:
-            - `ENTRY_DOES_ALREADY_EXIST` if an entry with the supplied key parts (`scope`, `organization`, `application`, `appscope` and `slug`) does already exist.
+            - `ENTRY_DOES_ALREADY_EXIST` if an entry with the supplied four key parts (`organization`, `application`, `scope` and `slug`) does already exist.
         
     + Schema
 
@@ -1008,15 +996,14 @@ Can be used to create a new entry in the database. An entry consists of a unique
             }
 
 
-## Update an existing entry [PUT /database/{scope}/{organization}/{application}/{appscope}/{slug}]
+## Update an existing entry [PUT /database/{organization}/{application}/{scope}/{slug}]
 
 Updates the entry with the specified key (path). All fields will be overridden with the supplied data. If no or empty data is supplied, it will be used instead (especially important for `tags`).
 
 + Parameters
-    + scope (string, required) - The `scope` for the configuration snippet of the entry
     + organization (string, required) - The `organization` who built the `application` for which the configuration of the entry is meant
     + application (string, required) - The `application` to which the configuration of the entry belongs to
-    + appscope (string, required) - The `application` specific `scope` to which the configuration of the entry belongs to
+    + scope (string, required) - The `application` specific `scope` to which the configuration of the entry belongs to
     + slug (string, required) - The unique identifier of the requested entry
 
 + Request (application/x-www-form-urlencoded)
@@ -1197,15 +1184,14 @@ Updates the entry with the specified key (path). All fields will be overridden w
             }
 
 
-## Delete an entry [DELETE /database/{scope}/{organization}/{application}/{appscope}/{slug}]
+## Delete an entry [DELETE /database/{organization}/{application}/{scope}/{slug}]
 
-Deletes an entry from the database. This operation requires moderator permissions (rank 2).
+Deletes an entry from the database. This operation can only be executed by the owner of an entry as well as moderators (rank 2) or higher.
 
 + Parameters
-    + scope (string, required) - The `scope` for the configuration snippet of the entry
     + organization (string, required) - The `organization` who built the `application` for which the configuration of the entry is meant
     + application (string, required) - The `application` to which the configuration of the entry belongs to
-    + appscope (string, required) - The `application` specific `scope` to which the configuration of the entry belongs to
+    + scope (string, required) - The `application` specific `scope` to which the configuration of the entry belongs to
     + slug (string, required) - The unique identifier of the requested entry
 
 + Response 200 (application/json)
