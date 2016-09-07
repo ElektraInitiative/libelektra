@@ -332,7 +332,7 @@ void addLayers ()
 	Key * c;
 	KeySet * lookupConfig = ksDup (elektraConfig);
 	ksRewind (elektraConfig);
-	std::string fallbackPrefix = "/env";
+	std::string fallbackPrefix = "/env/layer/";
 	while ((c = ksNext (elektraConfig)))
 	{
 		std::string fullName = keyName (c);
