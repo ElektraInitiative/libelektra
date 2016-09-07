@@ -83,7 +83,7 @@ int main (int argc, char ** argv)
 	ks = create_ks ("3", "== / @/bla/nonExisting / ../bla/nonExistingToo @/bla/val3");
 	test (ks, 1) ksDel (ks);
 
-	ks = create_ks ("3", "== + @/bla/nonExisting / ../bla/nonExistingToo ../bla/val3");
+	ks = create_ks ("3", "== + @/bla/nonExisting / ../bla/val3 ../bla/nonExistingToo");
 	test (ks, 1) ksDel (ks);
 
 	printf ("\ntestmod_mathcheck RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
