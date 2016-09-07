@@ -23,8 +23,13 @@ The API will try to authenticate the user by the submitted credentials. In case 
 
 + Request (application/x-www-form-urlencoded)
     + Attributes
-        + username: the_username (string, required)
-        + password: aSecretPassword (string, required)
+        + username: `the_username` (string, required)
+        
+            The name of the user account which should be tried to authenticate.
+        
+        + password: `aSecretPassword` (string, required)
+        
+            The corresponding password for the supplied user account.
         
     + Schema
     
@@ -48,12 +53,9 @@ The API will try to authenticate the user by the submitted credentials. In case 
             }
  
 + Response 200 (application/json)
-    + Body
-
-            {
-                "status": 200,
-                "token": "eyJ...Q2tY="
-            }
+    + Attributes (object)
+        + status (number) - HTTP status code
+        + token (string) - The session token which can be used to authenticate against the server in further requests
             
     + Schema
     
@@ -77,15 +79,57 @@ The API will try to authenticate the user by the submitted credentials. In case 
                 "additionalProperties": false
             }
 
-+ Response 401 (application/json)
-    + Body
-    
++ Response 400 (application/json)
+    + Attributes (object)
+        + status (number) - HTTP status code
+        + error (string) - Textual description of the HTTP status
+        + message (string) - Detailed error information, e.g. hint about malformed request
+        + i18n (string) - A unique token representing above error description message; can be used for internationalization in frontends
+
+            A comprehensive list of possible errors:
+            - `AUTH_NEED_USERNAME_PASSWORD` in case either the `username` or the `password` field is missing in the request
+
+    + Schema
+
             {
-                "status": 401,
-                "error": "Unauthorized",
-                "message": "You have to supply an username and a password.",
-                "loca": "AUTH_NEED_USERNAME_PASSWORD"
+                "type": "object",
+                "properties": {
+                    "status": {
+                        "description": "HTTP status code",
+                        "type": "integer",
+                        "minimum": 0
+                    },
+                    "error": {
+                        "description": "Textual description of HTTP status code",
+                        "type": "string"
+                    },
+                    "message": {
+                        "description": "Detailed information about the error.",
+                        "type": "string"
+                    },
+                    "i18n": {
+                        "description": "Unique message token that can be used for localization in a frontend application.",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "status",
+                    "message",
+                    "i18n"
+                ],
+                "additionalProperties": false
             }
+
++ Response 401 (application/json)
+    + Attributes (object)
+        + status (number) - HTTP status code
+        + error (string) - Textual description of the HTTP status
+        + message (string) - Detailed error information, e.g. hint about malformed request
+        + i18n (string) - A unique token representing above error description message; can be used for internationalization in frontends
+
+            A comprehensive list of possible errors:
+            - `AUTH_UNKNOWN_USERNAME` if there is no user registered witht he given name
+            - `AUTH_INVALID_PASSWORD` if the given password does not match the password saved for the given account
             
     + Schema
 
@@ -105,7 +149,7 @@ The API will try to authenticate the user by the submitted credentials. In case 
                         "description": "Detailed information about the error.",
                         "type": "string"
                     },
-                    "loca": {
+                    "i18n": {
                         "description": "Unique message token that can be used for localization in a frontend application.",
                         "type": "string"
                     }
@@ -113,7 +157,48 @@ The API will try to authenticate the user by the submitted credentials. In case 
                 "required": [
                     "status",
                     "message",
-                    "loca"
+                    "i18n"
+                ],
+                "additionalProperties": false
+            }
+
++ Response 500 (application/json)
+    + Attributes (object)
+        + status (number) - HTTP status code
+        + error (string) - Textual description of the HTTP status
+        + message (string) - Detailed error information, e.g. hint about malformed request
+        + i18n (string) - A unique token representing above error description message; can be used for internationalization in frontends
+
+            A comprehensive list of possible errors:
+            - `AUTH_CREATE_JWT_ERROR` if the session token could not be created
+
+    + Schema
+
+            {
+                "type": "object",
+                "properties": {
+                    "status": {
+                        "description": "HTTP status code",
+                        "type": "integer",
+                        "minimum": 0
+                    },
+                    "error": {
+                        "description": "Textual description of HTTP status code",
+                        "type": "string"
+                    },
+                    "message": {
+                        "description": "Detailed information about the error.",
+                        "type": "string"
+                    },
+                    "i18n": {
+                        "description": "Unique message token that can be used for localization in a frontend application.",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "status",
+                    "message",
+                    "i18n"
                 ],
                 "additionalProperties": false
             }
@@ -124,13 +209,14 @@ The API will try to authenticate the user by the submitted credentials. In case 
 Retrieves the currently authenticated users details.
         
 + Response 200 (application/json)
-    + Body
-    
-            {
-                "status": 200,
-                "username": "the_username",
-                "rank": 1
-            }
+    + Attributes (object)
+        + status (number) - HTTP status code
+        + username (string) - The name of the currently authenticated user
+        + rank (enum[number]) - The rank of the currently authenticated user (higher means more permissions)
+            + Members
+                + `1` - Normal user
+                + `2` - Moderator
+                + `3` - Admin
             
     + Schema
     
@@ -147,8 +233,8 @@ Retrieves the currently authenticated users details.
                         "type": "string"
                     },
                     "rank": {
-                        "description": "The authenticated users rank",
-                        "type": "integer"
+                        "description": "The authenticated users rank. The higher the rank, the more permissions the user has. 1 is considered a normal user, 2 a moderator and 3 an admin.",
+                        "enum": [1, 2, 3]
                     }
                 },
                 "required": [
@@ -160,14 +246,14 @@ Retrieves the currently authenticated users details.
             }
 
 + Response 401 (application/json)
-    + Body
-    
-            {
-                "status": 401,
-                "error": "Unauthorized",
-                "message": "You need to be authenticated to perform this action.",
-                "loca": "NEED_AUTHENTICATION"
-            }
+    + Attributes (object)
+        + status (number) - HTTP status code
+        + error (string) - Textual description of the HTTP status
+        + message (string) - Detailed error information, e.g. hint about malformed request
+        + i18n (string) - A unique token representing above error description message; can be used for internationalization in frontends
+
+            A comprehensive list of possible errors:
+            - `NEED_AUTHENTICATION` if no valid session token has been supplied or the user for whom the token has been created does not exist (anymore)
             
     + Schema
 
@@ -187,7 +273,7 @@ Retrieves the currently authenticated users details.
                         "description": "Detailed information about the error.",
                         "type": "string"
                     },
-                    "loca": {
+                    "i18n": {
                         "description": "Unique message token that can be used for localization in a frontend application.",
                         "type": "string"
                     }
@@ -195,7 +281,7 @@ Retrieves the currently authenticated users details.
                 "required": [
                     "status",
                     "message",
-                    "loca"
+                    "i18n"
                 ],
                 "additionalProperties": false
             }
@@ -207,21 +293,26 @@ This method can be used to register for the service. An user account will grant 
 
 + Request Register via form (application/x-www-form-urlencoded)
     + Attributes
-        + username: the_username (string, required)
+        + username: `the_username` (string, required)
         
             The username must be between 3 and 20 signs long and may contain only letters a-z (lower- and upper-case), the numbers 0-9 and dots (.) as well as dashes (-).
             
-        + password: somePassword (string, required) - A non-empty password
-        + email: an@email.com (string, required) - A valid email address
+        + password: `somePassword` (string, required)
+        
+            The password must be at least 8 signs long and contain at least one lower-case and one upper-case letter. To harden security, the user is encouraged to use special characters as well.
+        
+        + email: `an@email.com` (string, required)
+        
+            The user has to supply a valid email address.
         
 + Response 200 (application/json)
-    + Body
-    
-            {
-                "status":200,
-                "message":"Your account has been created successfully!",
-                "loca":"AUTH_REGISTER_USER_CREATED_SUCCESSFULLY"
-            }
+    + Attributes (object)
+        + status (number) - HTTP status code
+        + message (string) - Detailed response information, normally success message
+        + i18n (string) - A unique token representing above message; can be used for internationalization in frontends
+
+            A comprehensive list of possible messages:
+            - `AUTH_REGISTER_USER_CREATED_SUCCESSFULLY` if the account has been created successfully
             
     + Schema
 
@@ -241,7 +332,7 @@ This method can be used to register for the service. An user account will grant 
                         "description": "Detailed information about the error.",
                         "type": "string"
                     },
-                    "loca": {
+                    "i18n": {
                         "description": "Unique message token that can be used for localization in a frontend application.",
                         "type": "string"
                     }
@@ -249,20 +340,22 @@ This method can be used to register for the service. An user account will grant 
                 "required": [
                     "status",
                     "message",
-                    "loca"
+                    "i18n"
                 ],
                 "additionalProperties": false
             }
         
 + Response 400 (application/json)
-    + Body
+    + Attributes (object)
+        + status (number) - HTTP status code
+        + error (string) - Textual description of the HTTP status
+        + message (string) - Detailed error information, e.g. hint about malformed request
+        + i18n (string) - A unique token representing above error description message; can be used for internationalization in frontends
 
-            {
-                "status":400,
-                "error":"Bad Request",
-                "message":"You have to supply an username, a password and an email.",
-                "loca":"AUTH_REGISTER_NEED_USERNAME_PASSWORD_EMAIL"
-            }
+            A comprehensive list of possible errors:
+            - `AUTH_REGISTER_NEED_USERNAME_PASSWORD_EMAIL` if either no `username`, no `password` or no `email` has been supplied
+            - `AUTH_REGISTER_INVALID_USERNAME` if the supplied `username` does not match the given criteria (regex: [a-zA-Z0-9\-\.]{3,20})
+            - `AUTH_REGISTER_INVALID_EMAIL` if the supplied `email` is not a valid email
         
     + Schema
 
@@ -282,7 +375,7 @@ This method can be used to register for the service. An user account will grant 
                         "description": "Detailed information about the error.",
                         "type": "string"
                     },
-                    "loca": {
+                    "i18n": {
                         "description": "Unique message token that can be used for localization in a frontend application.",
                         "type": "string"
                     }
@@ -290,7 +383,89 @@ This method can be used to register for the service. An user account will grant 
                 "required": [
                     "status",
                     "message",
-                    "loca"
+                    "i18n"
+                ],
+                "additionalProperties": false
+            }
+
++ Response 422 (application/json)
+    + Attributes (object)
+        + status (number) - HTTP status code
+        + error (string) - Textual description of the HTTP status
+        + message (string) - Detailed error information, e.g. hint about malformed request
+        + i18n (string) - A unique token representing above error description message; can be used for internationalization in frontends
+
+            A comprehensive list of possible errors:
+            - `AUTH_REGISTER_USERNAME_DOES_ALREADY_EXIST` if the supplied `username` is already taken
+        
+    + Schema
+
+            {
+                "type": "object",
+                "properties": {
+                    "status": {
+                        "description": "HTTP status code",
+                        "type": "integer",
+                        "minimum": 0
+                    },
+                    "error": {
+                        "description": "Textual description of HTTP status code",
+                        "type": "string"
+                    },
+                    "message": {
+                        "description": "Detailed information about the error.",
+                        "type": "string"
+                    },
+                    "i18n": {
+                        "description": "Unique message token that can be used for localization in a frontend application.",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "status",
+                    "message",
+                    "i18n"
+                ],
+                "additionalProperties": false
+            }
+
++ Response 500 (application/json)
+    + Attributes (object)
+        + status (number) - HTTP status code
+        + error (string) - Textual description of the HTTP status
+        + message (string) - Detailed error information, e.g. hint about malformed request
+        + i18n (string) - A unique token representing above error description message; can be used for internationalization in frontends
+
+            A comprehensive list of possible errors:
+            - `AUTH_REGISTER_UNKNOWN_ERROR` if the account could not be created due to an internal server error
+        
+    + Schema
+
+            {
+                "type": "object",
+                "properties": {
+                    "status": {
+                        "description": "HTTP status code",
+                        "type": "integer",
+                        "minimum": 0
+                    },
+                    "error": {
+                        "description": "Textual description of HTTP status code",
+                        "type": "string"
+                    },
+                    "message": {
+                        "description": "Detailed information about the error.",
+                        "type": "string"
+                    },
+                    "i18n": {
+                        "description": "Unique message token that can be used for localization in a frontend application.",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "status",
+                    "message",
+                    "i18n"
                 ],
                 "additionalProperties": false
             }
@@ -298,12 +473,22 @@ This method can be used to register for the service. An user account will grant 
         
 ## Set user rank [POST /setrank]
 
-This method can be used to set the rank of an user. Only users with a rank high enough have the privilegue to set the rank of users.
+This method can be used to set the rank of an user. The higher the rank, the more permissions an user has. Rank 1 is considered a normal user, 2 a moderator and 3 an admin. Only users with the highest rank (3) have the privilegue to set the rank of other users.
 
 + Request Set rank via form (application/x-www-form-urlencoded)
     + Attributes
-        + username: the_username (string, required)
-        + rank: 3 (number, required)
+        + username: `the_username` (string, required)
+            
+            The name of the user whos rank should be altered.
+        
+        + rank: `3` (enum[number], required)
+        
+            The new rank to apply to the submitted user.
+        
+            + Members
+                + `1` - Normal user
+                + `2` - Moderator
+                + `3` - Admin
         
     + Schema
             
@@ -316,8 +501,7 @@ This method can be used to set the rank of an user. Only users with a rank high 
                     },
                     "rank": {
                         "description": "The new rank to apply to the user",
-                        "type": "integer",
-                        "minimum": 0
+                        "enum": [1, 2, 3]
                     }
                 },
                 "required": [
@@ -328,13 +512,13 @@ This method can be used to set the rank of an user. Only users with a rank high 
             }
             
 + Response 200 (application/json)
-    + Body
-    
-            {
-                "status": 200,
-                "message": "The rank has been set successfully.",
-                "loca": "USER_SET_RANK_SUCCESSFULLY"
-            }
+    + Attributes (object)
+        + status (number) - HTTP status code
+        + message (string) - Detailed response information, normally success message
+        + i18n (string) - A unique token representing above message; can be used for internationalization in frontends
+
+            A comprehensive list of possible messages:
+            - `USER_SET_RANK_SUCCESSFULLY` if the rank of the supplied user has been changed successfully
             
     + Schema
     
@@ -354,7 +538,7 @@ This method can be used to set the rank of an user. Only users with a rank high 
                         "description": "Detailed information about the error.",
                         "type": "string"
                     },
-                    "loca": {
+                    "i18n": {
                         "description": "Unique message token that can be used for localization in a frontend application.",
                         "type": "string"
                     }
@@ -362,21 +546,24 @@ This method can be used to set the rank of an user. Only users with a rank high 
                 "required": [
                     "status",
                     "message",
-                    "loca"
+                    "i18n"
                 ],
                 "additionalProperties": false
             }
 
 
 + Response 400 (application/json)
-    + Body
+    + Attributes (object)
+        + status (number) - HTTP status code
+        + error (string) - Textual description of the HTTP status
+        + message (string) - Detailed error information, e.g. hint about malformed request
+        + i18n (string) - A unique token representing above error description message; can be used for internationalization in frontends
 
-            {
-                "status":400,
-                "error":"Bad Request",
-                "message":"An username and a rank has to be given.",
-                "loca":"AUTH_SETRANK_MISSING_USERNAME_RANK"
-            }
+            A comprehensive list of possible errors:
+            - `AUTH_SETRANK_MISSING_USERNAME_RANK` if either the `username` or the `rank` has not been supplied
+            - `AUTH_SETRANK_NONNUMERIC_RANK` if the supplied `rank` is not of numeric type
+            - `AUTH_SETRANK_INVALID_RANK` if the supplied `rank` is out of the allowed range (1-3)
+            - `USER_DOES_NOT_EXIST` if no account with the supplied `username` exists
         
     + Schema
 
@@ -396,7 +583,7 @@ This method can be used to set the rank of an user. Only users with a rank high 
                         "description": "Detailed information about the error.",
                         "type": "string"
                     },
-                    "loca": {
+                    "i18n": {
                         "description": "Unique message token that can be used for localization in a frontend application.",
                         "type": "string"
                     }
@@ -404,7 +591,733 @@ This method can be used to set the rank of an user. Only users with a rank high 
                 "required": [
                     "status",
                     "message",
-                    "loca"
+                    "i18n"
                 ],
                 "additionalProperties": false
             }
+
++ Response 401 (application/json)
+    + Attributes (object)
+        + status (number) - HTTP status code
+        + error (string) - Textual description of the HTTP status
+        + message (string) - Detailed error information, e.g. hint about malformed request
+        + i18n (string) - A unique token representing above error description message; can be used for internationalization in frontends
+
+            A comprehensive list of possible errors:
+            - `NEED_AUTHENTICATION` if no valid session token has been supplied or the user for whom the token has been created does not exist (anymore)
+            - `USER_INSUFFICIENT_RIGHTS_TO_SET_RANK` if the currently authenticated user has insufficient permissions (due to his rank) to perform this action
+            
+    + Schema
+
+            {
+                "type": "object",
+                "properties": {
+                    "status": {
+                        "description": "HTTP status code",
+                        "type": "integer",
+                        "minimum": 0
+                    },
+                    "error": {
+                        "description": "Textual description of HTTP status code",
+                        "type": "string"
+                    },
+                    "message": {
+                        "description": "Detailed information about the error.",
+                        "type": "string"
+                    },
+                    "i18n": {
+                        "description": "Unique message token that can be used for localization in a frontend application.",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "status",
+                    "message",
+                    "i18n"
+                ],
+                "additionalProperties": false
+            }
+
+
+
+# Database endpoint [/database{?offset}{?rows}{?sort}{?search}{?raw}]
+
+## List database entries [GET /database/{scope}/{organization}/{application}/{appscope}{?offset}{?rows}{?sort}{?search}]
+
+Returns a list of database entries. The result can be adjusted by additional, but optional parameters.
+
++ Parameters
+    + scope (string, optional) - Only search within a given `scope` for entries
+    + organization (string, optional) - Only search within a given `organization` for entries
+    + application (string, optional) - Only search within a given `application` for entries
+    + appscope (string, optional) - Only search within a given `scope` of an `application` for entries
+    + offset (number, optional) - How many entries to skip for the output, can be used for pagination.
+        + Default: `0`
+    + rows (number, optional) - How many entries will be added to the output at max.
+        + Default: `200`
+    + sort (enum[string], optional) - How to sort the entries for the output.
+        + Default: `asc`
+        + Members
+            + `asc`
+            + `desc`
+    + search (string, optional) - Only entries containing the search string in either their path, title, description, author or tags will be added to the output.
+
++ Response 200 (application/json)
+    + Attributes (Entry List)
+
+
+## Get details for entry [GET /database/{scope}/{organization}/{application}/{appscope}/{slug}{?raw}]
+
+Returns detailed information about the entry with the specified key (path). If the optional parameter `raw` is supplied, a raw configuration is returned instead of the normal response.
+
++ Parameters
+    + scope (string, required) - The `scope` for the configuration snippet of the entry
+    + organization (string, required) - The `organization` who built the `application` for which the configuration of the entry is meant
+    + application (string, required) - The `application` to which the configuration of the entry belongs to
+    + appscope (string, required) - The `application` specific `scope` to which the configuration of the entry belongs to
+    + slug (string, required) - The unique identifier of the requested entry
+    + raw (string, optional) - If this parameter is supplied, the API will attempt to return the requested configuration snippet in the given `raw` format
+
++ Response 200 (application/json)
+    + Attributes (object)
+        + status (number) - HTTP status code
+        + data (object) - The actual details about the entry
+            + key (object) - The key and its separate parts
+                + full (string) - The full key (path) of the entry
+                + scope (string) - The scope of the configuration snippet
+                + organization (string) - The organization of the application to which the snippet belongs to
+                + application (string) - The application to which the snippet belongs to
+                + appscope (string) - The application internal scope for the configuration snippet
+                + slug (string) - The unique identification slug of the entry
+            + meta (object) - Additional information about the entry
+                + title (string) - The descriptive title of the entry
+                + description (string) - The extended description of the entry
+                + author (string) - The name of the creator of the entry
+                + created_at (number) - A timestamp of the creation date of the entry
+            + value (array[object])
+                + format (string) - A configuration format, e.g. **ini**
+                + value (string) - The configuration snippet in above mentioned format
+
++ Response 404 (application/json)
+    + Attributes (object)
+        + status (number) - HTTP status code
+        + error (string) - Textual description of the HTTP status
+        + message (string) - Detailed error information, e.g. hint about malformed request
+        + i18n (string) - A unique token representing above error description message; can be used for internationalization in frontends
+
+            A comprehensive list of possible errors:
+            - `ENTRY_DOES_NOT_EXIST` if an entry with the given key (path) does not exist in the database
+
+    + Schema
+
+            {
+                "type": "object",
+                "properties": {
+                    "status": {
+                        "description": "HTTP status code",
+                        "type": "integer",
+                        "minimum": 0
+                    },
+                    "error": {
+                        "description": "Textual description of HTTP status code",
+                        "type": "string"
+                    },
+                    "message": {
+                        "description": "Detailed information about the error.",
+                        "type": "string"
+                    },
+                    "i18n": {
+                        "description": "Unique message token that can be used for localization in a frontend application.",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "status",
+                    "message",
+                    "i18n"
+                ],
+                "additionalProperties": false
+            }
+
+
+## Create database entry [POST]
+
+Can be used to create a new entry in the database. An entry consists of a unique key (path) that is built from several individual inputs, a title, description and a configuration snippet in any supported format.
+
++ Request (application/x-www-form-urlencoded)
+    + Attributes
+        + scope: `sw` (string, required)
+
+            The scope of the new configuration snippet. Common scopes are `sw` for software and `env` for environment for example.
+
+        + organization: `org.apache` (string, required)
+
+            The organization which built the software for which the configuration is meant.
+
+        + application: `hive` (string, required)
+
+            The application for which the configuration is meant.
+
+        + appscope: `database` (string, required)
+
+            Often different parts of an application have different configurations. Here the application specific scope can be defined.
+
+        + slug: `sample-snippet-for-devs` (string, required)
+
+            A unique slug that identifies the entry and configuration snippet further.
+
+        + title: `Sample snippet for developers` (string, required)
+
+            A title for the entry that ideally explains already what the snippet is about.
+
+        + description: `This is a sample conf snippet for Apaches Hive database module.` (string, required)
+
+            An extended description for the entry that explains in detail what the snippet is about. It can also contain instructions on how to use the snippet.
+
+        + tags: `dev`, `developer`, `db-dev` (array[string], optional)
+
+            A list of tags that shall be added to the entry. Tags may be used for search, so they ideally add additional information that is not already available by the other inputs.
+
+        + configuration: `sampleKey = sampleValue` (string, required)
+        
+            The configuration for which a new database entry should be created. It can be of any supported format, in this example **ini** is used.
+        
+    + Schema
+    
+            {
+                "type": "object",
+                "properties": {
+                    "scope": {
+                        "description": "The scope of the new configuration snippet",
+                        "type": "string"
+                    },
+                    "organization": {
+                        "description": "The organization which built the software for which the configuration is meant",
+                        "type": "string"
+                    },
+                    "application": {
+                        "description": "The application for which the configuration is meant",
+                        "type": "string"
+                    },
+                    "appscope": {
+                        "description": "The scope within the application for which the configuration is meant",
+                        "type": "string"
+                    },
+                    "slug": {
+                        "description": "A unique slug that identifies the entry and configuration snippet further",
+                        "type": "string"
+                    },
+                    "title": {
+                        "description": "A title for the entry that tells what the snippet is about",
+                        "type": "string"
+                    },
+                    "description": {
+                        "description": "An extended description for the entry that explains in detail what the snippet is about",
+                        "type": "string"
+                    },
+                    "tags": {
+                        "description": "A list of tags that shall be added to the entry",
+                        "type": "array",
+                        "items": { 
+                            "type": "string"
+                        },
+                        "uniqueItems": true
+                    },
+                    "configuration": {
+                        "description": "The configuration snippet in any supported format",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "scope",
+                    "organization",
+                    "application",
+                    "appscope",
+                    "slug",
+                    "title",
+                    "description",
+                    "configuration"
+                ],
+                "additionalProperties": false
+            }
+
++ Response 200 (application/json)
+    + Attributes (object)
+        + status (number) - HTTP status code
+        + message (string) - Detailed error information, e.g. hint about malformed request
+        + i18n (string) - A unique token representing above error description message; can be used for internationalization in frontends
+
+            A comprehensive list of possible messages:
+            - `ENTRY_CREATED_SUCCESSFULLY` if the entry has been added successfully to the database
+
+    + Schema
+
+            {
+                "type": "object",
+                "properties": {
+                    "status": {
+                        "description": "HTTP status code",
+                        "type": "integer",
+                        "minimum": 0
+                    },
+                    "error": {
+                        "description": "Textual description of HTTP status code",
+                        "type": "string"
+                    },
+                    "message": {
+                        "description": "Detailed information about the error.",
+                        "type": "string"
+                    },
+                    "i18n": {
+                        "description": "Unique message token that can be used for localization in a frontend application.",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "status",
+                    "message",
+                    "i18n"
+                ],
+                "additionalProperties": false
+            }
+
++ Response 400 (application/json)
+    + Attributes (object)
+        + status (number) - HTTP status code
+        + error (string) - Textual description of the HTTP status
+        + message (string) - Detailed error information, e.g. hint about malformed request
+        + i18n (string) - A unique token representing above error description message; can be used for internationalization in frontends
+
+            A comprehensive list of possible errors:
+            - `ENTRY_MISSING_KEY_PARTS` if one of the five key parts (`scope`, `organization`, `application`, `appscope` and `slug`) is missing
+            - `ENTRY_MISSING_BASIC_VALUES` if one of the descriptive inputs (`title`, `description`, `configuration`) is missing
+            - `ENTRY_INVALID_KEY_PARTS` if one of the five key parts (`scope`, `organization`, `application`, `appscope` and `slug`) is malformed (regex: [a-zA-Z0-9\.\-]+).
+            - `ENTRY_INVALID_CONFIGURATION` if the submitted configuration snippet has an unsupported format.
+
+    + Schema
+
+            {
+                "type": "object",
+                "properties": {
+                    "status": {
+                        "description": "HTTP status code",
+                        "type": "integer",
+                        "minimum": 0
+                    },
+                    "error": {
+                        "description": "Textual description of HTTP status code",
+                        "type": "string"
+                    },
+                    "message": {
+                        "description": "Detailed information about the error.",
+                        "type": "string"
+                    },
+                    "i18n": {
+                        "description": "Unique message token that can be used for localization in a frontend application.",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "status",
+                    "message",
+                    "i18n"
+                ],
+                "additionalProperties": false
+            }
+
++ Response 401 (application/json)
+    + Attributes (object)
+        + status (number) - HTTP status code
+        + error (string) - Textual description of the HTTP status
+        + message (string) - Detailed error information, e.g. hint about malformed request
+        + i18n (string) - A unique token representing above error description message; can be used for internationalization in frontends
+
+            A comprehensive list of possible errors:
+            - `NEED_AUTHENTICATION` if no valid session token has been supplied or the user for whom the token has been created does not exist (anymore)
+
+    + Schema
+
+            {
+                "type": "object",
+                "properties": {
+                    "status": {
+                        "description": "HTTP status code",
+                        "type": "integer",
+                        "minimum": 0
+                    },
+                    "error": {
+                        "description": "Textual description of HTTP status code",
+                        "type": "string"
+                    },
+                    "message": {
+                        "description": "Detailed information about the error.",
+                        "type": "string"
+                    },
+                    "i18n": {
+                        "description": "Unique message token that can be used for localization in a frontend application.",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "status",
+                    "message",
+                    "i18n"
+                ],
+                "additionalProperties": false
+            }
+
++ Response 422 (application/json)
+    + Attributes (object)
+        + status (number) - HTTP status code
+        + error (string) - Textual description of the HTTP status
+        + message (string) - Detailed error information, e.g. hint about malformed request
+        + i18n (string) - A unique token representing above error description message; can be used for internationalization in frontends
+
+            A comprehensive list of possible errors:
+            - `ENTRY_DOES_ALREADY_EXIST` if an entry with the supplied key parts (`scope`, `organization`, `application`, `appscope` and `slug`) does already exist.
+        
+    + Schema
+
+            {
+                "type": "object",
+                "properties": {
+                    "status": {
+                        "description": "HTTP status code",
+                        "type": "integer",
+                        "minimum": 0
+                    },
+                    "error": {
+                        "description": "Textual description of HTTP status code",
+                        "type": "string"
+                    },
+                    "message": {
+                        "description": "Detailed information about the error.",
+                        "type": "string"
+                    },
+                    "i18n": {
+                        "description": "Unique message token that can be used for localization in a frontend application.",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "status",
+                    "message",
+                    "i18n"
+                ],
+                "additionalProperties": false
+            }
+
+
+## Update an existing entry [PUT /database/{scope}/{organization}/{application}/{appscope}/{slug}]
+
+Updates the entry with the specified key (path). All fields will be overridden with the supplied data. If no or empty data is supplied, it will be used instead (especially important for `tags`).
+
++ Parameters
+    + scope (string, required) - The `scope` for the configuration snippet of the entry
+    + organization (string, required) - The `organization` who built the `application` for which the configuration of the entry is meant
+    + application (string, required) - The `application` to which the configuration of the entry belongs to
+    + appscope (string, required) - The `application` specific `scope` to which the configuration of the entry belongs to
+    + slug (string, required) - The unique identifier of the requested entry
+
++ Request (application/x-www-form-urlencoded)
+    + Attributes
+        + title: `Sample snippet for developers` (string, required)
+
+            A title for the entry that ideally explains already what the snippet is about.
+
+        + description: `This is a sample conf snippet for Apaches Hive database module.` (string, required)
+
+            An extended description for the entry that explains in detail what the snippet is about. It can also contain instructions on how to use the snippet.
+
+        + tags: `dev`, `developer`, `db-dev` (array[string], optional)
+
+            A list of tags that shall be added to the entry. Tags may be used for search, so they ideally add additional information that is not already available by the other inputs.
+
+        + configuration: `sampleKey = sampleValue` (string, required)
+        
+            The configuration for which a new database entry should be created. It can be of any supported format, in this example **ini** is used.
+        
+    + Schema
+    
+            {
+                "type": "object",
+                "properties": {
+                    "title": {
+                        "description": "A title for the entry that tells what the snippet is about",
+                        "type": "string"
+                    },
+                    "description": {
+                        "description": "An extended description for the entry that explains in detail what the snippet is about",
+                        "type": "string"
+                    },
+                    "tags": {
+                        "description": "A list of tags that shall be added to the entry",
+                        "type": "array",
+                        "items": { 
+                            "type": "string"
+                        },
+                        "uniqueItems": true
+                    },
+                    "configuration": {
+                        "description": "The configuration snippet in any supported format",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "title",
+                    "description",
+                    "configuration"
+                ],
+                "additionalProperties": false
+            }
+
++ Response 400 (application/json)
+    + Attributes (object)
+        + status (number) - HTTP status code
+        + error (string) - Textual description of the HTTP status
+        + message (string) - Detailed error information, e.g. hint about malformed request
+        + i18n (string) - A unique token representing above error description message; can be used for internationalization in frontends
+
+            A comprehensive list of possible errors:
+            - `ENTRY_MISSING_BASIC_VALUES` if one of the descriptive inputs (`title`, `description`, `configuration`) is missing
+            - `ENTRY_INVALID_CONFIGURATION` if the submitted configuration snippet has an unsupported format.
+
+    + Schema
+
+            {
+                "type": "object",
+                "properties": {
+                    "status": {
+                        "description": "HTTP status code",
+                        "type": "integer",
+                        "minimum": 0
+                    },
+                    "error": {
+                        "description": "Textual description of HTTP status code",
+                        "type": "string"
+                    },
+                    "message": {
+                        "description": "Detailed information about the error.",
+                        "type": "string"
+                    },
+                    "i18n": {
+                        "description": "Unique message token that can be used for localization in a frontend application.",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "status",
+                    "message",
+                    "i18n"
+                ],
+                "additionalProperties": false
+            }
+
++ Response 401 (application/json)
+    + Attributes (object)
+        + status (number) - HTTP status code
+        + error (string) - Textual description of the HTTP status
+        + message (string) - Detailed error information, e.g. hint about malformed request
+        + i18n (string) - A unique token representing above error description message; can be used for internationalization in frontends
+
+            A comprehensive list of possible errors:
+            - `NEED_AUTHENTICATION` if no valid session token has been supplied or the user for whom the token has been created does not exist (anymore)
+            - `ENTRY_INSUFFICIENT_RIGHTS_TO_MANIPULATE` if the currently authenticated user has insufficient rights to update the entry (i.e. normal user, but not owner)
+
+    + Schema
+
+            {
+                "type": "object",
+                "properties": {
+                    "status": {
+                        "description": "HTTP status code",
+                        "type": "integer",
+                        "minimum": 0
+                    },
+                    "error": {
+                        "description": "Textual description of HTTP status code",
+                        "type": "string"
+                    },
+                    "message": {
+                        "description": "Detailed information about the error.",
+                        "type": "string"
+                    },
+                    "i18n": {
+                        "description": "Unique message token that can be used for localization in a frontend application.",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "status",
+                    "message",
+                    "i18n"
+                ],
+                "additionalProperties": false
+            }
+
++ Response 404 (application/json)
+    + Attributes (object)
+        + status (number) - HTTP status code
+        + error (string) - Textual description of the HTTP status
+        + message (string) - Detailed error information, e.g. hint about malformed request
+        + i18n (string) - A unique token representing above error description message; can be used for internationalization in frontends
+
+            A comprehensive list of possible errors:
+            - `ENTRY_TO_UPDATE_DOES_NOT_EXIST` if the entry that specified by the URI does not exist in the database
+
+    + Schema
+
+            {
+                "type": "object",
+                "properties": {
+                    "status": {
+                        "description": "HTTP status code",
+                        "type": "integer",
+                        "minimum": 0
+                    },
+                    "error": {
+                        "description": "Textual description of HTTP status code",
+                        "type": "string"
+                    },
+                    "message": {
+                        "description": "Detailed information about the error.",
+                        "type": "string"
+                    },
+                    "i18n": {
+                        "description": "Unique message token that can be used for localization in a frontend application.",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "status",
+                    "message",
+                    "i18n"
+                ],
+                "additionalProperties": false
+            }
+
+
+## Delete an entry [DELETE /database/{scope}/{organization}/{application}/{appscope}/{slug}]
+
+Deletes an entry from the database. This operation requires moderator permissions (rank 2).
+
++ Parameters
+    + scope (string, required) - The `scope` for the configuration snippet of the entry
+    + organization (string, required) - The `organization` who built the `application` for which the configuration of the entry is meant
+    + application (string, required) - The `application` to which the configuration of the entry belongs to
+    + appscope (string, required) - The `application` specific `scope` to which the configuration of the entry belongs to
+    + slug (string, required) - The unique identifier of the requested entry
+
++ Response 200 (application/json)
+    + Attributes (object)
+        + status (number) - HTTP status code
+        + message (string) - Detailed error information, e.g. hint about malformed request
+        + i18n (string) - A unique token representing above error description message; can be used for internationalization in frontends
+
+            A comprehensive list of possible messages:
+            - `ENTRY_DELETED_SUCCESSFULLY` if the entry has been deleted successfully from the database
+
++ Response 401 (application/json)
+    + Attributes (object)
+        + status (number) - HTTP status code
+        + error (string) - Textual description of the HTTP status
+        + message (string) - Detailed error information, e.g. hint about malformed request
+        + i18n (string) - A unique token representing above error description message; can be used for internationalization in frontends
+
+            A comprehensive list of possible errors:
+            - `NEED_AUTHENTICATION` if no valid session token has been supplied or the user for whom the token has been created does not exist (anymore)
+            - `ENTRY_INSUFFICIENT_RIGHTS_TO_DELETE` if the currently authenticated user has insufficient permissions to delete the entry
+            
+    + Schema
+
+            {
+                "type": "object",
+                "properties": {
+                    "status": {
+                        "description": "HTTP status code",
+                        "type": "integer",
+                        "minimum": 0
+                    },
+                    "error": {
+                        "description": "Textual description of HTTP status code",
+                        "type": "string"
+                    },
+                    "message": {
+                        "description": "Detailed information about the error.",
+                        "type": "string"
+                    },
+                    "i18n": {
+                        "description": "Unique message token that can be used for localization in a frontend application.",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "status",
+                    "message",
+                    "i18n"
+                ],
+                "additionalProperties": false
+            }
+
++ Response 404 (application/json)
+    + Attributes (object)
+        + status (number) - HTTP status code
+        + error (string) - Textual description of the HTTP status
+        + message (string) - Detailed error information, e.g. hint about malformed request
+        + i18n (string) - A unique token representing above error description message; can be used for internationalization in frontends
+
+            A comprehensive list of possible errors:
+            - `ENTRY_TO_DELETE_DOES_NOT_EXIST if the entry that specified by the URI does not exist in the database
+
+    + Schema
+
+            {
+                "type": "object",
+                "properties": {
+                    "status": {
+                        "description": "HTTP status code",
+                        "type": "integer",
+                        "minimum": 0
+                    },
+                    "error": {
+                        "description": "Textual description of HTTP status code",
+                        "type": "string"
+                    },
+                    "message": {
+                        "description": "Detailed information about the error.",
+                        "type": "string"
+                    },
+                    "i18n": {
+                        "description": "Unique message token that can be used for localization in a frontend application.",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "status",
+                    "message",
+                    "i18n"
+                ],
+                "additionalProperties": false
+            }
+    
+
+
+# Data Structures
+
+## Entry List (object)
+
++ status (number) - HTTP status code
++ elements (number) - How many entries the response list contains
++ entries (array[Entry Preview]) - A list of previews for entries
++ offset (number) - How many entries have been skipped for the output; this information can be used for pagination
++ remaining (number) - How many entries have not been displayed yet; when adding this value to the offset (and not exceeding the row limit), all entries should have been displayed once
++ formats (array[string]) - A list of available (enabled) configuration formats; formats in this list can be selected for export
+
+
+## Entry Preview (object)
+
++ key (string) - Storage path of the entry and also the unique identifier
++ title (string) - How the entry/snippet has been named by the creator
++ description (string) - A description of the entry
++ author (string) - The username of the creator of the entry
++ created_at (number) - A timestamp of when the entry has been created
