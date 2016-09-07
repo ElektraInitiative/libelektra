@@ -1383,7 +1383,7 @@ TopSortCleanup:
 	ksDel (done);
 	keyDel (orderCounter);
 	elektraFree (localArray);
-	for (unsigned int j = 0; j < size; ++j)
+	for (ssize_t j = 0; j < size; ++j)
 	{
 		elektraFree (adjMatrix[j].deps);
 	}
