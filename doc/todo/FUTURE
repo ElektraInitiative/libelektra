@@ -23,6 +23,8 @@ Start arrays with _ (and not with #)?
 make KEY_END, ELEKTRA_PLUGIN_END also pointers and check them with
 sentinel, have a single way how to terminate vaargs
 
+remove obsolete key/keyset flags
+
 _t is reserved by POSIX, so cursor_t, keyswitch_t and option_t
 should be renamed to something elektra specific
 
