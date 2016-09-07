@@ -8,6 +8,8 @@ user/dir-mountpoints:
 	make mountpoints specific for a namespace, e.g.
 	kdb mount --as-user file.x user/x
 	stored in user/elektra/mountpoints
+	make flag, e.g. system/elektra/security/mountpoints/user/enable
+	or add list of plugins?
 
 lazy-mount
 
