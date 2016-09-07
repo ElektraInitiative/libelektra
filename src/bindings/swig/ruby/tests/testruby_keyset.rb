@@ -17,6 +17,87 @@ class KdbKeySetTestCases < Test::Unit::TestCase
     end
   end
 
+  def test_keySet_new_with_key
+    assert_nothing_raised do
+      k = Kdb::Key.new "user/key", value: "hello"
+      ks = Kdb::KeySet.new k
+
+      assert_equal 1, ks.size
+      assert_equal k, ks.head
+    end
+  end
+
+  def test_keySet_new_with_invalid_argument
+    assert_raise ArgumentError do
+      ks = Kdb::KeySet.new "not a key"
+    end
+  end
+
+  def test_keySet_new_with_keySet
+    assert_nothing_raised do
+      ks1 = Kdb::KeySet.new
+      ks1 << Kdb::Key.new("user/ks1")
+      ks1 << Kdb::Key.new("user/ks2")
+
+      ks2 = Kdb::KeySet.new ks1
+
+      assert_equal 2, ks2.size
+
+      ks2 << Kdb::Key.new("user/ks3")
+
+      assert_equal 3, ks2.size
+      assert_equal "user/ks3", ks2.tail.name
+      
+      # ensure old KeySet holds only the first 2 Keys
+      assert_equal 2, ks1.size
+      assert_equal "user/ks2", ks1.tail.name
+    end
+  end
+
+  def test_keySet_new_with_array
+    assert_nothing_raised do
+      a = Array.new
+      a << Kdb::Key.new("user/ks1")
+      a << Kdb::Key.new("user/ks2")
+      a << Kdb::Key.new("user/ks3")
+      a << Kdb::Key.new("user/ks4")
+
+      ks = Kdb::KeySet.new a
+
+      assert_equal 4, ks.size
+      i = 0
+      ks.each { |e|
+        assert_equal a[i], e
+        i += 1
+      }
+
+      ks = Kdb::KeySet.new [
+        Kdb::Key.new("user/key1"),
+        Kdb::Key.new("user/key2"),
+        Kdb::Key.new("user/key3")
+      ]
+
+      assert_equal 3, ks.size
+      assert_equal "key1", ks.head.base_name
+
+      # ensure also larger arrays, with more than 16 (preallocated) elements
+      # work correctly
+      a = (1..40).map { |i| Kdb::Key.new("user/key%02d" % i) }
+      ks = Kdb::KeySet.new a
+
+      assert_equal 40, ks.size
+      assert_equal "key40", ks.tail.base_name
+    end
+
+    assert_raise ArgumentError do
+      ks = Kdb::KeySet.new [
+        Kdb::Key.new("user/key"),
+        "not a key",
+        1
+      ]
+    end
+  end
+
   #def test_keySet_new_alloc_size
   #  ks = Kdb::KeySet.new 100
 
@@ -47,6 +128,73 @@ class KdbKeySetTestCases < Test::Unit::TestCase
       assert_equal "user/ks2", ks.tail.name
 
     end  
+  end
+
+  def test_keySet_append_KeySet
+    assert_nothing_raised do
+      ks1 = Kdb::KeySet.new
+
+      ks1 << Kdb::Key.new("user/ks1")
+      ks1 << Kdb::Key.new("user/ks2")
+
+      ks2 = Kdb::KeySet.new
+
+      ks2 << Kdb::Key.new("user/ks3")
+      ks2 << Kdb::Key.new("user/ks4")
+
+      ks1 << ks2
+
+      assert_equal 4, ks1.size
+      assert_equal 2, ks2.size
+    end
+  end
+
+  def test_keySet_append_array
+    assert_nothing_raised do
+      a = Array.new
+      a << Kdb::Key.new("user/ks2")
+      a << Kdb::Key.new("user/ks1")
+
+      ks = Kdb::KeySet.new
+
+      ks.append a
+
+      assert_equal 2, ks.size
+      assert_equal a[0], ks[1]
+      assert_equal a[1], ks[0]
+    end
+
+    assert_nothing_raised do
+      ks = Kdb::KeySet.new
+
+      ks << [
+        Kdb::Key.new("user/ks1"),
+        Kdb::Key.new("user/ks2"),
+        Kdb::Key.new("user/ks3")
+      ]
+
+      assert_equal 3, ks.size
+      assert_equal "user/ks1", ks.head.name
+    end
+
+    assert_raise ArgumentError do
+      a = Array.new
+      a << "not a Key"
+      a << 1
+
+      ks = Kdb::KeySet.new
+
+      ks.append a
+    end
+
+  end
+
+  def test_keySet_append_invalid_type
+    assert_raise ArgumentError do
+      ks = Kdb::KeySet.new
+
+      ks.append "not a Key"
+    end
   end
 
 

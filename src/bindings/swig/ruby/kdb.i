@@ -25,6 +25,7 @@ namespace std {
 %{
   extern "C" {
     #include "kdbconfig.h"
+    #include "kdbprivate.h" /* required for KEYSET_SIZE */
     #include "kdb.h"
   }
 
@@ -48,7 +49,7 @@ namespace std {
 %constant const short VERSION_MAJOR = KDB_VERSION_MAJOR;
 %constant const short VERSION_MINOR = KDB_VERSION_MINOR;
 %constant const short VERSION_MICRO = KDB_VERSION_MICRO;
-// we only care about the enums. ignore the c functions
+/* we only care about the enums. ignore the c functions */
 %ignore ckdb;
 %include "kdb.h"
 
@@ -369,9 +370,8 @@ namespace std {
  *
  ****************************************************************************/
 
+/* ignore unused constructors */
 %ignore kdb::KeySet::KeySet (ckdb::KeySet * k);
-%ignore kdb::KeySet::KeySet (const KeySet & other);
-%ignore kdb::KeySet::KeySet (Key, ...);
 %ignore kdb::KeySet::KeySet (size_t alloc, ...);
 %ignore kdb::KeySet::KeySet (VaAlloc alloc, va_list ap);
 
@@ -386,6 +386,65 @@ namespace std {
 %ignore kdb::KeySet::operator=;
 %ignore kdb::operator== (const KeySet &, const KeySet &);
 %ignore kdb::operator!= (const KeySet &, const KeySet &);
+
+
+/*
+ * Constructors
+ */
+
+/* special mapping for KeySet::KeySet(Key, ...) constructor
+ * to enable passing a single Key, or an Array of Keys.
+ * This allows KeySet creation in a more Ruby way */
+/* first check if we've got a Key or a Ruby-array */
+%typemap(in) (kdb::Key, ...) {
+  $2 = NULL;
+  if (!RB_TYPE_P($input, T_ARRAY)){
+    if (SWIG_ConvertPtr($input, (void**)&$2, SWIGTYPE_p_kdb__Key, 0) == -1) {
+      rb_raise(rb_eArgError, "Argument has to be of Type Kdb::Key or Array");
+      SWIG_fail;
+    }
+  }
+}
+/* define a custom KeySet creation to be able to append the given Key 
+ * arguments to the newly created KeySet */
+%feature("except") kdb::KeySet::KeySet (Key, ...) {
+  /* original action
+  $action
+  */
+
+  if (arg2 != NULL) {
+    /* we got a kdb::Key argument (see corresponding typemap) */
+    kdb::Key *k = (kdb::Key *)arg2;
+    result = (kdb::KeySet *)new kdb::KeySet();
+    result->append(*k);
+  } else {
+    /* Ruby-Array */
+    if (RARRAY_LEN(argv[0]) > KEYSET_SIZE) {
+      /* if we know that the Array is bigger than the default KeySet size
+         create a KeySet which is able to hold all elements without 
+         reallocation */
+      result = (kdb::KeySet *)new kdb::KeySet(RARRAY_LEN(argv[0]), KS_END);
+    } else {
+      result = (kdb::KeySet *)new kdb::KeySet();
+    }
+    /* append each array element, while checking if we really got a Key */
+    for (int i = 0; i < RARRAY_LEN(argv[0]); i++) {
+      VALUE e;
+      kdb::Key *ek = NULL;
+      e = rb_ary_entry(argv[0], i);
+      if (SWIG_ConvertPtr(e, (void**)&ek, SWIGTYPE_p_kdb__Key, 0) == -1) {
+        rb_raise(rb_eArgError, 
+            "Array element at index %d is not of Type Kdb::Key", i);
+        delete result;
+        SWIG_fail;
+      }
+      result->append(*ek);
+    }
+  }
+  DATA_PTR(self) = result;
+}
+
+
 
 
 /* 
@@ -416,11 +475,48 @@ namespace std {
 %mixin kdb::KeySet "Enumerable";
 
 
-
+/* 
+ * append methods 
+ */
 %alias kdb::KeySet::append "<<"
 
+/* define special typemap for append(KeySet), to allow
+ * passing a Ruby-Array also (a little bit hacky) */
+%typemap(in) (const kdb::KeySet & toAppend) {
+  /* in case we have an array, append each element and return */
+  if (RB_TYPE_P($input, T_ARRAY)) {
+    int size = RARRAY_LEN($input);
+    //fprintf(stderr,"append Array of Keys of len %d\n", size);
+    for ( int i = 0; i < size; ++i) {
+      Key* k;
+      int reskey = 0;
+      reskey = SWIG_ConvertPtr(
+          rb_ary_entry($input, i), (void**)&k, SWIGTYPE_p_kdb__Key, 0);
+      if (!SWIG_IsOK(reskey)) {
+        rb_raise(rb_eArgError, 
+            "Array element at index %d is not of Type Kdb::Key", i);
+        SWIG_fail;
+      }
+      arg1->append(*k);
+    }
+    return 0;
+    
+  } else {
+  /* standard case for KeySet, just convert and check for correct type */
+    //fprintf(stderr, "append KeySet\n");
+    if (!SWIG_IsOK(
+          SWIG_ConvertPtr($input, (void**)&$1, SWIGTYPE_p_kdb__KeySet, 0))) {
+      rb_raise(rb_eArgError,
+          "Argument not of Type Kdb::KeySet");
+      SWIG_fail;
+    }
+  }
+}
 
-/* cursor operations */
+
+/* 
+ * cursor operations 
+ */
 %apply long { cursor_t }
 %rename("cursor") kdb::KeySet::getCursor;
 %rename("cursor=") kdb::KeySet::setCursor;
@@ -434,9 +530,10 @@ namespace std {
 
 
 
-/*
+/****************************************************************************
+ *
  * kdb.hpp
- */
-
+ *
+ ****************************************************************************/
 
 %include "kdb.hpp"
