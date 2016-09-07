@@ -219,7 +219,7 @@ run_script()
                 ;;
             File:)
                 DBFile=$(echo "$line"|cut -d ' ' -f2)
-                if [ "$DBFile" = "File:" -o -z "$DBFile" ]; then
+                if [ "$DBFile" = "File:" ] || [ -z "$DBFile" ]; then
 			DBFile=$(mktemp -t elektraenv.XXXXXXXXX 2>/dev/null || mktemp -t 'elektraenv')
                 fi
                 ;;
@@ -230,7 +230,7 @@ run_script()
                 MountArgs=$(echo "$line"|cut -d ' ' -f2-)
                 ;;
             Echo:)
-                echo "$(echo "$line"|cut -d ' ' -f2-)"
+                echo "$line"|cut -d ' ' -f2-
                 ;;
             DiffType:)
                 DiffType=$(echo "$line"|cut -d ' ' -f2)
@@ -288,7 +288,7 @@ echo "protocol file: $OutFile"
 run_script
 
 "$KDBCOMMAND" rm -r "$Mountpoint" 2>/dev/null
-cat "$TMPFILE" | "$KDBCOMMAND" import $Mountpoint 2>/dev/null
+"$KDBCOMMAND" import "$Mountpoint" 2>/dev/null < "$TMPFILE" 
 rm "${DBFile}.1" 2>/dev/null
 
 EVAL=0
