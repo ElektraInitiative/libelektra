@@ -384,6 +384,7 @@ namespace std {
 
 /* ignore unused operators */
 %ignore kdb::KeySet::operator=;
+/* KeySet == operator see below */
 %ignore kdb::operator== (const KeySet &, const KeySet &);
 %ignore kdb::operator!= (const KeySet &, const KeySet &);
 
@@ -522,6 +523,19 @@ namespace std {
 %rename("cursor=") kdb::KeySet::setCursor;
 
 %alias kdb::KeySet::at "[]"
+
+
+/*
+ * comparision operator
+ * this is required, since operator== is not part of KeySet, thus
+ * SWIG doesn't add this to class KeySet
+ * (otherwise 'kdb::== ks1, ks2' would be required)
+ */
+%extend kdb::KeySet {
+  bool operator== (const KeySet & rhs) {
+    return *$self == rhs;
+  }
+}
 
 /* 
  * parse keyset.hpp

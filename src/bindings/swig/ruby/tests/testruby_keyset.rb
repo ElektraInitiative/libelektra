@@ -294,4 +294,28 @@ class KdbKeySetTestCases < Test::Unit::TestCase
     end
   end
 
+  def test_keySet_comparison
+    assert_nothing_raised do
+      a = (1..5).map { |i| Kdb::Key.new "user/key#{i}" }
+
+      ks1 = Kdb::KeySet.new a
+      ks2 = Kdb::KeySet.new a
+
+      assert_equal ks1.size, ks2.size
+      assert_equal ks1[0], ks2[0]
+      assert_equal ks1[1], ks2[1]
+      assert_equal ks1[2], ks2[2]
+      assert_equal ks1[3], ks2[3]
+      assert_equal ks1[4], ks2[4]
+
+      assert_true ks1 == ks2
+      assert_false ks1 != ks2
+
+      ks2 << Kdb::Key.new("user/key100")
+
+      assert_false ks1 == ks2
+      assert_true ks1 != ks2
+    end
+  end
+
 end
