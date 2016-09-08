@@ -23,11 +23,12 @@ The API will try to authenticate the user by the submitted credentials. In case 
 
 + Request (application/json)
     + Attributes (object)
-        + username: `the_username` (string, required)
+        + username: `the-username` (string, required)
         
             The name of the user account which should be tried to authenticate.
+            Regex: ^[a-zA-Z0-9\-\.]{3,20}$
         
-        + password: `aSecretPassword` (string, required)
+        + password: `a5ecretP4ssword` (string, required)
         
             The corresponding password for the supplied user account.
         
@@ -87,7 +88,8 @@ The API will try to authenticate the user by the submitted credentials. In case 
         + i18n (string) - A unique token representing above error description message; can be used for internationalization in frontends
 
             A comprehensive list of possible errors:
-            - `AUTH_NEED_USERNAME_PASSWORD` in case either the `username` or the `password` field is missing in the request
+            - `AUTH_MISSING_USERNAME` if no input for `username` was submitted
+            - `AUTH_MISSING_PASSWORD` if no input for `password` was submitted
 
     + Schema
 
@@ -170,7 +172,7 @@ The API will try to authenticate the user by the submitted credentials. In case 
         + i18n (string) - A unique token representing above error description message; can be used for internationalization in frontends
 
             A comprehensive list of possible errors:
-            - `AUTH_CREATE_JWT_ERROR` if the session token could not be created
+            - `AUTH_CREATE_TOKEN_ERROR` if the session token could not be created
 
     + Schema
 
@@ -296,10 +298,13 @@ This method can be used to register for the service. An user account will grant 
         + username: `the_username` (string, required)
         
             The username must be between 3 and 20 signs long and may contain only letters a-z (lower- and upper-case), the numbers 0-9 and dots (.) as well as dashes (-).
+            Regex: ^[a-zA-Z0-9\-\.]{3,20}$
             
         + password: `somePassword` (string, required)
         
-            The password must be at least 8 signs long and contain at least one lower-case and one upper-case letter. To harden security, the user is encouraged to use special characters as well.
+            The password must be at least 8 signs long and contain at least one lower-case letter, one upper-case letter and one digit. 
+            To harden security, the user is encouraged to use special characters as well.
+            Regex: ^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$
         
         + email: `an@email.com` (string, required)
         
@@ -312,7 +317,7 @@ This method can be used to register for the service. An user account will grant 
         + i18n (string) - A unique token representing above message; can be used for internationalization in frontends
 
             A comprehensive list of possible messages:
-            - `AUTH_REGISTER_USER_CREATED_SUCCESSFULLY` if the account has been created successfully
+            - `REGISTER_USER_CREATED_SUCCESSFULLY` if the account has been created successfully
             
     + Schema
 
@@ -353,9 +358,12 @@ This method can be used to register for the service. An user account will grant 
         + i18n (string) - A unique token representing above error description message; can be used for internationalization in frontends
 
             A comprehensive list of possible errors:
-            - `AUTH_REGISTER_NEED_USERNAME_PASSWORD_EMAIL` if either no `username`, no `password` or no `email` has been supplied
-            - `AUTH_REGISTER_INVALID_USERNAME` if the supplied `username` does not match the given criteria (regex: [a-zA-Z0-9\-\.]{3,20})
-            - `AUTH_REGISTER_INVALID_EMAIL` if the supplied `email` is not a valid email
+            - `REGISTER_MISSING_USERNAME` if no input for `username` was submitted
+            - `REGISTER_MISSING_PASSWORD` if no input for `password` was submitted
+            - `REGISTER_MISSING_EMAIL` if no input for `email` was submitted
+            - `REGISTER_INVALID_USERNAME` if the supplied `username` does not match the given criteria (regex: ^[a-zA-Z0-9\-\.]{3,20}$)
+            - `REGISTER_INVALID_PASSWORD` if the supplied `password` does not satisfy the given criteria (regex: ^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$)
+            - `REGISTER_INVALID_EMAIL` if the supplied `email` is not a valid email
         
     + Schema
 
@@ -396,7 +404,7 @@ This method can be used to register for the service. An user account will grant 
         + i18n (string) - A unique token representing above error description message; can be used for internationalization in frontends
 
             A comprehensive list of possible errors:
-            - `AUTH_REGISTER_USERNAME_DOES_ALREADY_EXIST` if the supplied `username` is already taken
+            - `REGISTER_USERNAME_DOES_ALREADY_EXIST` if the supplied `username` is already taken
         
     + Schema
 
@@ -437,7 +445,7 @@ This method can be used to register for the service. An user account will grant 
         + i18n (string) - A unique token representing above error description message; can be used for internationalization in frontends
 
             A comprehensive list of possible errors:
-            - `AUTH_REGISTER_UNKNOWN_ERROR` if the account could not be created due to an internal server error
+            - `REGISTER_UNKNOWN_ERROR` if the account could not be created due to an internal server error
         
     + Schema
 
@@ -482,10 +490,12 @@ This operation can only be executed by admins (rank 3).
         + username: `the_username` (string, required)
             
             The name of the user whos rank should be altered.
+            Regex: ^[a-zA-Z0-9\\-\\.]{3,20}$
         
         + rank: `3` (enum[number], required)
         
             The new rank to apply to the submitted user.
+            Regex: ^[1-3]$
         
             + Members
                 + `1` - Normal user
@@ -562,9 +572,10 @@ This operation can only be executed by admins (rank 3).
         + i18n (string) - A unique token representing above error description message; can be used for internationalization in frontends
 
             A comprehensive list of possible errors:
-            - `AUTH_SETRANK_MISSING_USERNAME_RANK` if either the `username` or the `rank` has not been supplied
-            - `AUTH_SETRANK_NONNUMERIC_RANK` if the supplied `rank` is not of numeric type
-            - `AUTH_SETRANK_INVALID_RANK` if the supplied `rank` is out of the allowed range (1-3)
+            - `SETRANK_MISSING_USERNAME` if no input for `username` was submitted
+            - `SETRANK_MISSING_RANK` if no input for `rank` was submitted
+            - `SETRANK_INVALID_USERNAME` if the submitted `username` is malformed (regex: ^[a-zA-Z0-9\\-\\.]{3,20}$)
+            - `SETRANK_INVALID_RANK` if the submitted `rank` is malformed or out of range (regex: ^[1-3]$)
             - `USER_DOES_NOT_EXIST` if no account with the supplied `username` exists
         
     + Schema
@@ -607,7 +618,7 @@ This operation can only be executed by admins (rank 3).
 
             A comprehensive list of possible errors:
             - `NEED_AUTHENTICATION` if no valid session token has been supplied or the user for whom the token has been created does not exist (anymore)
-            - `USER_INSUFFICIENT_RIGHTS_TO_SET_RANK` if the currently authenticated user has insufficient permissions (due to his rank) to perform this action
+            - `USER_INSUFFICIENT_PERMISSIONS` if the currently authenticated user has insufficient permissions (due to his rank) to perform this action
             
     + Schema
 
@@ -642,9 +653,9 @@ This operation can only be executed by admins (rank 3).
 
 
 
-# Database endpoint [/database{?offset}{?rows}{?sort}{?search}{?raw}]
+# Database endpoint [/database{?offset}{?rows}{?sort}{?sortby}{?filter}{?filterby}{?raw}]
 
-## List database entries [GET /database/{organization}/{application}/{scope}{?offset}{?rows}{?sort}{?search}]
+## List database entries [GET /database/{organization}/{application}/{scope}{?offset}{?rows}{?sort}{?sortby}{?filter}{?filterby}]
 
 Returns a list of database entries. The result can be adjusted by additional, but optional parameters.
 
@@ -661,7 +672,27 @@ Returns a list of database entries. The result can be adjusted by additional, bu
         + Members
             + `asc`
             + `desc`
-    + search (string, optional) - Only entries containing the search string in either their path, title, description, author or tags will be added to the output.
+    + sortby (enum[string], optional) - What criteria should be used for sorting
+        + Default: `key`
+        + Members
+            + `key` - Absolute entry path
+            + `title` - Entry title
+            + `created_at` - Creation date
+            + `author` - Authors name
+            + `organization` - Organization to which the application of the configuration belongs to
+            + `application` - Application for which the configuration is meant
+            + `scope` - Application internal scope
+            + `slug` - Entry specific unique slug
+    + filter (string, optional) - Only entries containing the search string in either their path, title, description, author or tags will be added to the output.
+    + filterby (enum[string], optional) - On what fields the filter should be applied to (i.e. what fields to involve in search)
+        + Default: `all`
+        + Members
+            + `all` - All fields: key, title, description, author and tags
+            + `key` - Only the key
+            + `title` - Only the title
+            + `description` - Only the description
+            + `author` - Only the authors name
+            + `tags` - Only tags
 
 + Response 200 (application/json)
     + Attributes (Entry List)
@@ -696,6 +727,8 @@ Returns detailed information about the entry with the specified key (path). If t
             + value (array[object])
                 + format (string) - A configuration format, e.g. **ini**
                 + value (string) - The configuration snippet in above mentioned format
+
++ Response 200 (text/plain)
 
 + Response 404 (application/json)
     + Attributes (object)
@@ -748,30 +781,37 @@ Can be used to create a new entry in the database. An entry consists of a unique
         + organization: `org.apache` (string, required)
 
             The organization which built the software for which the configuration is meant.
+            Regex: ^[a-zA-Z0-9\.\-]+$
 
         + application: `hive` (string, required)
 
             The application for which the configuration is meant.
+            Regex: ^[a-zA-Z0-9\.\-]+$
 
         + scope: `database` (string, required)
 
             Often different parts of an application have different configurations. Here the application specific scope can be defined.
+            Regex: ^[a-zA-Z0-9\.\-]+$
 
         + slug: `sample-snippet-for-devs` (string, required)
 
             A unique slug that identifies the entry and configuration snippet further.
+            Regex: ^[a-zA-Z0-9\.\-]+$
 
         + title: `Sample snippet for developers` (string, required)
 
             A title for the entry that ideally explains already what the snippet is about.
+            Regex: ^[^\n\r]{3,}$
 
         + description: `This is a sample conf snippet for Apaches Hive database module.` (string, required)
 
             An extended description for the entry that explains in detail what the snippet is about. It can also contain instructions on how to use the snippet.
+            Regex: ^[\S\s]{3,}$
 
         + tags: `dev`, `developer`, `db-dev` (array[string], optional)
 
             A list of tags that shall be added to the entry. Tags may be used for search, so they ideally add additional information that is not already available by the other inputs.
+            Regex: ^[a-z0-9\-\.]{3,20}$
 
         + configuration: `sampleKey = sampleValue` (string, required)
         
@@ -879,10 +919,21 @@ Can be used to create a new entry in the database. An entry consists of a unique
         + i18n (string) - A unique token representing above error description message; can be used for internationalization in frontends
 
             A comprehensive list of possible errors:
-            - `ENTRY_MISSING_KEY_PARTS` if one of the four key parts (`organization`, `application`, `scope` and `slug`) is missing
-            - `ENTRY_MISSING_BASIC_VALUES` if one of the descriptive inputs (`title`, `description`, `configuration`) is missing
-            - `ENTRY_INVALID_KEY_PARTS` if one of the four key parts (`organization`, `application`, `scope` and `slug`) is malformed (regex: [a-zA-Z0-9\.\-]+).
-            - `ENTRY_INVALID_CONFIGURATION` if the submitted configuration snippet has an unsupported format.
+            - `ENTRY_MISSING_ORGANIZATION` if no input for `organization` was submitted
+            - `ENTRY_MISSING_APPLICATION` if no input for `application` was submitted
+            - `ENTRY_MISSING_SCOPE` if no input for `scope` was submitted
+            - `ENTRY_MISSING_SLUG` if no input for `slug` was submitted
+            - `ENTRY_MISSING_TITLE` if no input for `title` was submitted
+            - `ENTRY_MISSING_DESCRIPTION` if no input for `description` was submitted
+            - `ENTRY_MISSING_CONFIGURATION` if no input for `configuration` was submitted
+            - `ENTRY_INVALID_ORGANIZATION` if the submitted `organization` is malformed (regex: ^[a-zA-Z0-9\.\-]+$)
+            - `ENTRY_INVALID_APPLICATION` if the submitted `application` is malformed (regex: ^[a-zA-Z0-9\.\-]+$)
+            - `ENTRY_INVALID_SCOPE` if the submitted `scope` is malformed (regex: ^[a-zA-Z0-9\.\-]+$)
+            - `ENTRY_INVALID_SLUG` if the submitted `slug` is malformed (regex: ^[a-zA-Z0-9\.\-]+$)
+            - `ENTRY_INVALID_TITLE` if the submitted `title` is malformed (regex: ^[^\n\r]{3,}$)
+            - `ENTRY_INVALID_DESCRIPTION` if the submitted `description` is malformed (regex: ^[\s\S]{3,}$)
+            - `ENTRY_INVALID_TAG` if one of the submitted `tags` is malformed (regex: ^[a-z0-9\-\.]{3,20}$)
+            - `ENTRY_INVALID_CONFIGURATION` if the submitted configuration snippet has an unsupported format
 
     + Schema
 
@@ -964,7 +1015,7 @@ Can be used to create a new entry in the database. An entry consists of a unique
         + i18n (string) - A unique token representing above error description message; can be used for internationalization in frontends
 
             A comprehensive list of possible errors:
-            - `ENTRY_DOES_ALREADY_EXIST` if an entry with the supplied four key parts (`organization`, `application`, `scope` and `slug`) does already exist.
+            - `ENTRY_DOES_ALREADY_EXIST` if an entry with the supplied four key parts (`organization`, `application`, `scope` and `slug`) does already exist
         
     + Schema
 
@@ -1015,18 +1066,21 @@ This operation can only be executed by the owner of an entry as well as moderato
         + title: `Sample snippet for developers` (string, required)
 
             A title for the entry that ideally explains already what the snippet is about.
+            Regex: ^[^\n\r]{3,}$
 
         + description: `This is a sample conf snippet for Apaches Hive database module.` (string, required)
 
             An extended description for the entry that explains in detail what the snippet is about. It can also contain instructions on how to use the snippet.
+            Regex: ^[\S\s]{3,}$
 
         + tags: `dev`, `developer`, `db-dev` (array[string], optional)
 
             A list of tags that shall be added to the entry. Tags may be used for search, so they ideally add additional information that is not already available by the other inputs.
+            Regex: ^[a-z0-9\-\.]{3,20}$
 
         + configuration: `sampleKey = sampleValue` (string, required)
         
-            The configuration for which a new database entry should be created. It can be of any supported format, in this example **ini** is used.
+            The new configuration snippet. It can be of any supported format, in this example **ini** is used.
         
     + Schema
     
@@ -1070,8 +1124,13 @@ This operation can only be executed by the owner of an entry as well as moderato
         + i18n (string) - A unique token representing above error description message; can be used for internationalization in frontends
 
             A comprehensive list of possible errors:
-            - `ENTRY_MISSING_BASIC_VALUES` if one of the descriptive inputs (`title`, `description`, `configuration`) is missing
-            - `ENTRY_INVALID_CONFIGURATION` if the submitted configuration snippet has an unsupported format.
+            - `ENTRY_MISSING_TITLE` if no input for `title` was submitted
+            - `ENTRY_MISSING_DESCRIPTION` if no input for `description` was submitted
+            - `ENTRY_MISSING_CONFIGURATION` if no input for `configuration` was submitted
+            - `ENTRY_INVALID_TITLE` if the submitted `title` is malformed (regex: ^[^\n\r]{3,}$)
+            - `ENTRY_INVALID_DESCRIPTION` if the submitted `description` is malformed (regex: ^[\s\S]{3,}$)
+            - `ENTRY_INVALID_TAG` if one of the submitted `tags` is malformed (regex: ^[a-z0-9\-\.]{3,20}$)
+            - `ENTRY_INVALID_CONFIGURATION` if the submitted configuration snippet has an unsupported format
 
     + Schema
 
@@ -1113,7 +1172,7 @@ This operation can only be executed by the owner of an entry as well as moderato
 
             A comprehensive list of possible errors:
             - `NEED_AUTHENTICATION` if no valid session token has been supplied or the user for whom the token has been created does not exist (anymore)
-            - `ENTRY_INSUFFICIENT_RIGHTS_TO_MANIPULATE` if the currently authenticated user has insufficient rights to update the entry (i.e. normal user, but not owner)
+            - `USER_INSUFFICIENT_PERMISSIONS` if the currently authenticated user has insufficient rights to update the entry (i.e. normal user, but not owner)
 
     + Schema
 
@@ -1154,7 +1213,7 @@ This operation can only be executed by the owner of an entry as well as moderato
         + i18n (string) - A unique token representing above error description message; can be used for internationalization in frontends
 
             A comprehensive list of possible errors:
-            - `ENTRY_TO_UPDATE_DOES_NOT_EXIST` if the entry that specified by the URI does not exist in the database
+            - `ENTRY_DOES_NOT_EXIST` if the entry specified by the URI does not exist in the database
 
     + Schema
 
@@ -1218,7 +1277,7 @@ This operation can only be executed by the owner of an entry as well as moderato
 
             A comprehensive list of possible errors:
             - `NEED_AUTHENTICATION` if no valid session token has been supplied or the user for whom the token has been created does not exist (anymore)
-            - `ENTRY_INSUFFICIENT_RIGHTS_TO_DELETE` if the currently authenticated user has insufficient permissions to delete the entry
+            - `USER_INSUFFICIENT_PERMISSIONS` if the currently authenticated user has insufficient permissions to delete the entry
             
     + Schema
 
@@ -1259,7 +1318,7 @@ This operation can only be executed by the owner of an entry as well as moderato
         + i18n (string) - A unique token representing above error description message; can be used for internationalization in frontends
 
             A comprehensive list of possible errors:
-            - `ENTRY_TO_DELETE_DOES_NOT_EXIST if the entry that specified by the URI does not exist in the database
+            - `ENTRY_DOES_NOT_EXIST` if the entry specified by the URI does not exist in the database
 
     + Schema
 
