@@ -21,8 +21,8 @@ Returns an overview of available API methods with required parameters and a desc
 
 The API will try to authenticate the user by the submitted credentials. In case of success a session token (JWT) will be returned, which can be used for further requests to the API.
 
-+ Request (application/x-www-form-urlencoded)
-    + Attributes
++ Request (application/json)
+    + Attributes (object)
         + username: `the_username` (string, required)
         
             The name of the user account which should be tried to authenticate.
@@ -291,8 +291,8 @@ Retrieves the currently authenticated users details.
 
 This method can be used to register for the service. An user account will grant access to more functions.
 
-+ Request Register via form (application/x-www-form-urlencoded)
-    + Attributes
++ Request (application/json)
+    + Attributes (object)
         + username: `the_username` (string, required)
         
             The username must be between 3 and 20 signs long and may contain only letters a-z (lower- and upper-case), the numbers 0-9 and dots (.) as well as dashes (-).
@@ -477,8 +477,8 @@ This method can be used to change the rank of an user. The higher the rank, the 
 
 This operation can only be executed by admins (rank 3).
 
-+ Request Set rank via form (application/x-www-form-urlencoded)
-    + Attributes
++ Request (application/json)
+    + Attributes (object)
         + username: `the_username` (string, required)
             
             The name of the user whos rank should be altered.
@@ -743,8 +743,8 @@ Returns detailed information about the entry with the specified key (path). If t
 
 Can be used to create a new entry in the database. An entry consists of a unique key (path) that is built from several individual inputs, a title, description and a configuration snippet in any supported format.
 
-+ Request (application/x-www-form-urlencoded)
-    + Attributes
++ Request (application/json)
+    + Attributes (object)
         + organization: `org.apache` (string, required)
 
             The organization which built the software for which the configuration is meant.
@@ -1010,8 +1010,8 @@ This operation can only be executed by the owner of an entry as well as moderato
     + scope (string, required) - The `application` specific `scope` to which the configuration of the entry belongs to
     + slug (string, required) - The unique identifier of the requested entry
 
-+ Request (application/x-www-form-urlencoded)
-    + Attributes
++ Request (application/json)
+    + Attributes (object)
         + title: `Sample snippet for developers` (string, required)
 
             A title for the entry that ideally explains already what the snippet is about.
