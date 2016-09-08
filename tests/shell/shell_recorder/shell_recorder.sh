@@ -36,7 +36,7 @@ replace_newline_return () {
 
 execute()
 {
-    proto="$@"
+    proto="$*"
     if [ -z "$Mountpoint" ];
     then
         echo "Error: no mountpoint specified in script"
@@ -55,10 +55,10 @@ execute()
     fi
 
     [ -z "$Storage" ] && Storage="dump"
-    command=$(echo $proto | sed "s~\$Mountpoint~${Mountpoint}~g")
-    command=$(echo $command | sed "s~\$File~${DBFile}~g")
-    command=$(echo $command | sed "s~\$Storage~${Storage}~g")
-    command=$(echo $command | sed "s~\$MountArgs~${MountArgs}~g")
+    command=$(echo "$proto" | sed "s~\$Mountpoint~${Mountpoint}~g")
+    command=$(echo "$command" | sed "s~\$File~${DBFile}~g")
+    command=$(echo "$command" | sed "s~\$Storage~${Storage}~g")
+    command=$(echo "$command" | sed "s~\$MountArgs~${MountArgs}~g")
 
     case "$DiffType" in
         File)
@@ -208,54 +208,54 @@ execute()
 
 run_script()
 {
-    while read line;
+    while read -r line;
     do
         OP=
         ARG=
-        cmd=$(echo $line|cut -d ' ' -f1)
+        cmd=$(echo "$line"|cut -d ' ' -f1)
         case "$cmd" in
             Mountpoint:)
-                Mountpoint=$(echo $line|cut -d ' ' -f2)
+                Mountpoint=$(echo "$line"|cut -d ' ' -f2)
                 ;;
             File:)
-                DBFile=$(echo $line|cut -d ' ' -f2)
-                if [ "$DBFile" = "File:" -o -z "$DBFile" ]; then
+                DBFile=$(echo "$line"|cut -d ' ' -f2)
+                if [ "$DBFile" = "File:" ] || [ -z "$DBFile" ]; then
 			DBFile=$(mktemp -t elektraenv.XXXXXXXXX 2>/dev/null || mktemp -t 'elektraenv')
                 fi
                 ;;
             Storage:)
-                Storage=$(echo $line|cut -d ' ' -f2)
+                Storage=$(echo "$line"|cut -d ' ' -f2)
                 ;;
             MountArgs:)
-                MountArgs=$(echo $line|cut -d ' ' -f2-)
+                MountArgs=$(echo "$line"|cut -d ' ' -f2-)
                 ;;
             Echo:)
-                echo "$(echo $line|cut -d ' ' -f2-)"
+                echo "$line"|cut -d ' ' -f2-
                 ;;
             DiffType:)
-                DiffType=$(echo $line|cut -d ' ' -f2)
+                DiffType=$(echo "$line"|cut -d ' ' -f2)
                 ;;
             RET:)
-                RETCMP=$(echo $line|cut -d ' ' -f2-)
+                RETCMP=$(echo "$line"|cut -d ' ' -f2-)
                 ;;
             ERRORS:)
-                ERRORSCMP=$(echo $line|cut -d ' ' -f2-)
+                ERRORSCMP=$(echo "$line"|cut -d ' ' -f2-)
                 ;;
             WARNINGS:)
-                WARNINGSCMP=$(echo $line|cut -d ' ' -f2-)
+                WARNINGSCMP=$(echo "$line"|cut -d ' ' -f2-)
                 ;;
             STDOUT:)
-                STDOUTCMP=$(echo $line|cut -d ' ' -f2-)
+                STDOUTCMP=$(echo "$line"|cut -d ' ' -f2-)
                 ;;
             STDERR:)
-                STDERRCMP=$(echo $line|cut -d ' ' -f2-)
+                STDERRCMP=$(echo "$line"|cut -d ' ' -f2-)
                 ;;
             DIFF:)
-                DIFFCMP=$(echo $line|cut -d ' ' -f2-)
+                DIFFCMP=$(echo "$line"|cut -d ' ' -f2-)
                 ;;
             \<)
                 OP="$cmd"
-                ARG=$(echo $line|cut -d ' ' -f2-)
+                ARG=$(echo "$line"|cut -d ' ' -f2-)
                 ;;
         esac
         if [ "$OP" = "<" ];
@@ -288,14 +288,14 @@ echo "protocol file: $OutFile"
 run_script
 
 "$KDBCOMMAND" rm -r "$Mountpoint" 2>/dev/null
-cat "$TMPFILE" | "$KDBCOMMAND" import $Mountpoint 2>/dev/null
+"$KDBCOMMAND" import "$Mountpoint" 2>/dev/null < "$TMPFILE" 
 rm "${DBFile}.1" 2>/dev/null
 
 EVAL=0
 
 if [ "$#" -eq "1" ];
 then
-    echo -n "shell_recorder $1 RESULTS: $nbTest test(s) done"
+    printf "%s\0" "shell_recorder $1 RESULTS: $nbTest test(s) done"
     echo " $nbError error(s)."
     EVAL=$nbError
 fi
