@@ -16,7 +16,7 @@
 #define ELEKTRA_CRYPTO_SSL_KEYSIZE (32)
 #define ELEKTRA_CRYPTO_SSL_BLOCKSIZE (16)
 
-char * elektraCryptoOpenSSLCreateRandomString (const kdb_unsigned_short_t length);
+char * elektraCryptoOpenSSLCreateRandomString (Key * errorKey, const kdb_unsigned_short_t length);
 int elektraCryptoOpenSSLInit (Key * errorKey);
 int elektraCryptoOpenSSLHandleCreate (elektraCryptoHandle ** handle, KeySet * config, Key * errorKey, Key * k,
 				      const enum ElektraCryptoOperation op);

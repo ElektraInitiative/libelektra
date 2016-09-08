@@ -115,20 +115,27 @@ static kdb_unsigned_short_t elektraCryptoGetRandomPasswordLength (KeySet * conf)
 
 /**
  * @brief create a random master password using the crypto backend's SRNG.
+ * @param errorKey holds an error description in case of failure.
+ * @param buffer is used to store the allocated hex-encoded random string. Must be freed by the caller.
  * @param length limit the length of the generated string to length characters (including the 0x00 terminator)
- * @return a random character sequence with length characters of size.
+ * @retval 1 on success
+ * @retval -1 on error. errorKey holds a description.
  */
-static char * elektraCryptoCreateRandomString (const kdb_unsigned_short_t length ELEKTRA_UNUSED)
+static int elektraCryptoCreateRandomString (Key * errorKey ELEKTRA_UNUSED, char ** buffer ELEKTRA_UNUSED,
+					    const kdb_unsigned_short_t length ELEKTRA_UNUSED)
 {
+	*buffer = NULL;
+
 #if defined(ELEKTRA_CRYPTO_API_GCRYPT)
-	return elektraCryptoGcryCreateRandomString (length);
+	*buffer = elektraCryptoGcryCreateRandomString (errorKey, length);
 #elif defined(ELEKTRA_CRYPTO_API_OPENSSL)
-	return elektraCryptoOpenSSLCreateRandomString (length);
+	*buffer = elektraCryptoOpenSSLCreateRandomString (errorKey, length);
 #elif defined(ELEKTRA_CRYPTO_API_BOTAN)
-	return elektraCryptoBotanCreateRandomString (length);
-#else
-	return 0;
+	*buffer = elektraCryptoBotanCreateRandomString (errorKey, length);
 #endif
+
+	if (*buffer) return 1;
+	return -1;
 }
 
 /**
@@ -408,9 +415,8 @@ int CRYPTO_PLUGIN_FUNCTION (checkconf) (Key * errorKey, KeySet * conf)
 		Key * msg = keyDup (k);
 		if (elektraCryptoGpgDecryptMasterPassword (conf, errorKey, msg) != 1)
 		{
-			ELEKTRA_SET_ERROR (ELEKTRA_ERROR_CRYPTO_CONFIG_FAULT, errorKey, "Master password decryption failed");
 			keyDel (msg);
-			return -1;
+			return -1; // error set by elektraCryptoGpgDecryptMasterPassword()
 		}
 		keyDel (msg);
 		return 0;
@@ -419,20 +425,20 @@ int CRYPTO_PLUGIN_FUNCTION (checkconf) (Key * errorKey, KeySet * conf)
 	{
 		// generate random master password
 		const kdb_unsigned_short_t passwordLen = elektraCryptoGetRandomPasswordLength (conf);
-		const char * r = elektraCryptoCreateRandomString (passwordLen);
-		if (!r)
+		char * r = NULL;
+		if (elektraCryptoCreateRandomString (errorKey, &r, passwordLen) != 1)
 		{
-			ELEKTRA_SET_ERROR (ELEKTRA_ERROR_CRYPTO_RANDOM_GEN, errorKey, "Random password generation failed");
-			return -1;
+			return -1; // error set by elektraCryptoCreateRandomString()
 		}
 
 		// store password in configuration
 		k = keyNew ("user/" ELEKTRA_CRYPTO_PARAM_MASTER_PASSWORD, KEY_END);
 		keySetString (k, r);
+		elektraFree (r);
 		if (elektraCryptoGpgEncryptMasterPassword (conf, errorKey, k) != 1)
 		{
 			keyDel (k);
-			return -1;
+			return -1; // error set by elektraCryptoGpgEncryptMasterPassword()
 		}
 		ksAppendKey (conf, k);
 		return 1;

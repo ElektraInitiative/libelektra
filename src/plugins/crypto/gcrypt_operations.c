@@ -42,27 +42,21 @@ static int getKeyIvForEncryption (KeySet * config, Key * errorKey, Key * k, Key 
 	gcry_error_t gcry_err;
 	kdb_octet_t salt[ELEKTRA_CRYPTO_DEFAULT_SALT_LEN];
 	kdb_octet_t keyBuffer[KEY_BUFFER_SIZE];
+	char * saltHexString = NULL;
 
 	// generate the salt
 	gcry_create_nonce (salt, sizeof (salt));
-	elektraCryptoNormalizeRandomString (salt, sizeof (salt));
-	keySetMeta (k, ELEKTRA_CRYPTO_META_SALT, (char *)salt);
+	saltHexString = elektraCryptoBin2Hex (errorKey, salt, sizeof (salt));
+	if (!saltHexString) return -1; // error set by elektraCryptoBin2Hex()
+	keySetMeta (k, ELEKTRA_CRYPTO_META_SALT, saltHexString);
+	elektraFree (saltHexString);
 
 	// read iteration count
 	const kdb_unsigned_long_t iterations = elektraCryptoGetIterationCount (config);
 
 	// receive master password from the configuration
-	Key * master = ksLookupByName (config, ELEKTRA_CRYPTO_PARAM_MASTER_PASSWORD, 0);
-	if (!master)
-	{
-		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CRYPTO_CONFIG_FAULT, errorKey, "missing %s", ELEKTRA_CRYPTO_PARAM_MASTER_PASSWORD);
-		return -1;
-	}
-	Key * msg = keyDup (master);
-	if (elektraCryptoGpgDecryptMasterPassword (config, errorKey, msg) != 1)
-	{
-		goto error;
-	}
+	Key * msg = elektraCryptoGetMasterPassword (errorKey, config);
+	if (!msg) goto error; // error set by elektraCryptoGetMasterPassword()
 
 	// generate/derive the cryptographic key and the IV
 	if ((gcry_err = gcry_kdf_derive (keyValue (msg), keyGetValueSize (msg), GCRY_KDF_PBKDF2, GCRY_MD_SHA512, salt, sizeof (salt),
@@ -79,7 +73,7 @@ static int getKeyIvForEncryption (KeySet * config, Key * errorKey, Key * k, Key 
 	return 1;
 
 error:
-	keyDel (msg);
+	if (msg) keyDel (msg);
 	return -1;
 }
 
@@ -97,6 +91,8 @@ static int getKeyIvForDecryption (KeySet * config, Key * errorKey, Key * k, Key 
 {
 	gcry_error_t gcry_err;
 	kdb_octet_t keyBuffer[KEY_BUFFER_SIZE];
+	kdb_octet_t * saltBuffer = NULL;
+	size_t saltBufferLen = 0;
 
 	// get the salt
 	const Key * salt = keyGetMeta (k, ELEKTRA_CRYPTO_META_SALT);
@@ -106,26 +102,19 @@ static int getKeyIvForDecryption (KeySet * config, Key * errorKey, Key * k, Key 
 				    ELEKTRA_CRYPTO_META_SALT, keyName (k));
 		return -1;
 	}
+	elektraCryptoHex2Bin (errorKey, keyString (salt), &saltBuffer, &saltBufferLen);
+	if (!saltBuffer) return -1; // error set by elektraCryptoHex2Bin()
 
 	// get the iteration count
 	const kdb_unsigned_long_t iterations = elektraCryptoGetIterationCount (config);
 
 	// receive master password from the configuration
-	Key * master = ksLookupByName (config, ELEKTRA_CRYPTO_PARAM_MASTER_PASSWORD, 0);
-	if (!master)
-	{
-		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CRYPTO_CONFIG_FAULT, errorKey, "missing %s", ELEKTRA_CRYPTO_PARAM_MASTER_PASSWORD);
-		return -1;
-	}
-	Key * msg = keyDup (master);
-	if (elektraCryptoGpgDecryptMasterPassword (config, errorKey, msg) != 1)
-	{
-		goto error;
-	}
+	Key * msg = elektraCryptoGetMasterPassword (errorKey, config);
+	if (!msg) goto error; // error set by elektraCryptoGetMasterPassword()
 
 	// derive the cryptographic key and the IV
-	if ((gcry_err = gcry_kdf_derive (keyValue (msg), keyGetValueSize (msg), GCRY_KDF_PBKDF2, GCRY_MD_SHA512, keyValue (salt),
-					 keyGetValueSize (salt), iterations, KEY_BUFFER_SIZE, keyBuffer)))
+	if ((gcry_err = gcry_kdf_derive (keyValue (msg), keyGetValueSize (msg), GCRY_KDF_PBKDF2, GCRY_MD_SHA512, saltBuffer, saltBufferLen,
+					 iterations, KEY_BUFFER_SIZE, keyBuffer)))
 	{
 		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CRYPTO_INTERNAL_ERROR, errorKey, "PBKDF2 failed because: %s", gcry_strerror (gcry_err));
 		goto error;
@@ -135,10 +124,12 @@ static int getKeyIvForDecryption (KeySet * config, Key * errorKey, Key * k, Key 
 	keySetBinary (cIv, keyBuffer + ELEKTRA_CRYPTO_GCRY_KEYSIZE, ELEKTRA_CRYPTO_GCRY_BLOCKSIZE);
 
 	keyDel (msg);
+	elektraFree (saltBuffer);
 	return 1;
 
 error:
-	keyDel (msg);
+	if (msg) keyDel (msg);
+	elektraFree (saltBuffer);
 	return -1;
 }
 
@@ -409,18 +400,13 @@ int elektraCryptoGcryDecrypt (elektraCryptoHandle * handle, Key * k, Key * error
 
 /**
  * @brief create a random sequence of characters with given length.
+ * @param errorKey holds an error description in case of failure.
  * @param length the number of random bytes to be generated.
- * @returns allocated buffer holding length bytes. Must be freed by the caller.
+ * @returns allocated buffer holding a hex-encoded random string or NULL in case of error. Must be freed by the caller.
  */
-char * elektraCryptoGcryCreateRandomString (const kdb_unsigned_short_t length)
+char * elektraCryptoGcryCreateRandomString (Key * errorKey, const kdb_unsigned_short_t length)
 {
-	kdb_octet_t * buffer = elektraMalloc (length);
-	if (!buffer)
-	{
-		return 0;
-	}
-
-	gcry_create_nonce (buffer, length - 1);
-	elektraCryptoNormalizeRandomString (buffer, length);
-	return (char *)buffer;
+	kdb_octet_t buffer[length];
+	gcry_create_nonce (buffer, length);
+	return elektraCryptoBin2Hex (errorKey, buffer, length);
 }

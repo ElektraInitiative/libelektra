@@ -16,7 +16,7 @@
 #define ELEKTRA_CRYPTO_GCRY_KEYSIZE (32)
 #define ELEKTRA_CRYPTO_GCRY_BLOCKSIZE (16)
 
-char * elektraCryptoGcryCreateRandomString (const kdb_unsigned_short_t length);
+char * elektraCryptoGcryCreateRandomString (Key * errorKey, const kdb_unsigned_short_t length);
 int elektraCryptoGcryInit (Key * errorKey);
 int elektraCryptoGcryHandleCreate (elektraCryptoHandle ** handle, KeySet * config, Key * errorKey, Key * k,
 				   const enum ElektraCryptoOperation op);

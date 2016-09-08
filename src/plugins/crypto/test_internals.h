@@ -278,7 +278,7 @@ static void test_hex (void)
 	// test hex2bin
 	kdb_octet_t * buffer;
 
-	buffer = elektraCryptoHex2Bin (errorKey, hex);
+	elektraCryptoHex2Bin (errorKey, hex, &buffer, NULL);
 	succeed_if (buffer, "hex2bin conversion failed with valid hex-string");
 	if (buffer)
 	{
@@ -287,11 +287,11 @@ static void test_hex (void)
 	}
 
 	// test hex2bin with faulty string
-	buffer = elektraCryptoHex2Bin (errorKey, "01GA");
+	elektraCryptoHex2Bin (errorKey, "01GA", &buffer, NULL);
 	succeed_if (!buffer, "invalid hex-string was converted without error");
 	if (buffer) elektraFree (buffer);
 
-	buffer = elektraCryptoHex2Bin (errorKey, "010");
+	elektraCryptoHex2Bin (errorKey, "010", &buffer, NULL);
 	succeed_if (!buffer, "hex-string with invalid length was converted without error");
 	if (buffer) elektraFree (buffer);
 

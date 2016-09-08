@@ -46,6 +46,7 @@ static int getKeyIvForEncryption (KeySet * config, Key * errorKey, Key * k, Key 
 {
 	kdb_octet_t salt[ELEKTRA_CRYPTO_DEFAULT_SALT_LEN];
 	kdb_octet_t keyBuffer[KEY_BUFFER_SIZE];
+	char * saltHexString = NULL;
 
 	// generate the salt
 	pthread_mutex_lock (&mutex_ssl);
@@ -57,24 +58,17 @@ static int getKeyIvForEncryption (KeySet * config, Key * errorKey, Key * k, Key 
 		return -1;
 	}
 	pthread_mutex_unlock (&mutex_ssl);
-	elektraCryptoNormalizeRandomString (salt, sizeof (salt));
-	keySetMeta (k, ELEKTRA_CRYPTO_META_SALT, (char *)salt);
+	saltHexString = elektraCryptoBin2Hex (errorKey, salt, sizeof (salt));
+	if (!saltHexString) return -1; // error set by elektraCryptoBin2Hex()
+	keySetMeta (k, ELEKTRA_CRYPTO_META_SALT, saltHexString);
+	elektraFree (saltHexString);
 
 	// read iteration count
 	const kdb_unsigned_long_t iterations = elektraCryptoGetIterationCount (config);
 
 	// receive master password from the configuration
-	Key * master = ksLookupByName (config, ELEKTRA_CRYPTO_PARAM_MASTER_PASSWORD, 0);
-	if (!master)
-	{
-		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CRYPTO_CONFIG_FAULT, errorKey, "missing %s", ELEKTRA_CRYPTO_PARAM_MASTER_PASSWORD);
-		return -1;
-	}
-	Key * msg = keyDup (master);
-	if (elektraCryptoGpgDecryptMasterPassword (config, errorKey, msg) != 1)
-	{
-		goto error;
-	}
+	Key * msg = elektraCryptoGetMasterPassword (errorKey, config);
+	if (!msg) goto error; // error set by elektraCryptoGetMasterPassword()
 
 	// generate/derive the cryptographic key and the IV
 	pthread_mutex_lock (&mutex_ssl);
@@ -93,7 +87,7 @@ static int getKeyIvForEncryption (KeySet * config, Key * errorKey, Key * k, Key 
 	return 1;
 
 error:
-	keyDel (msg);
+	if (msg) keyDel (msg);
 	return -1;
 }
 
@@ -110,6 +104,8 @@ error:
 static int getKeyIvForDecryption (KeySet * config, Key * errorKey, Key * k, Key * cKey, Key * cIv)
 {
 	kdb_octet_t keyBuffer[KEY_BUFFER_SIZE];
+	kdb_octet_t * saltBuffer = NULL;
+	size_t saltBufferLen = 0;
 
 	// get the salt
 	const Key * salt = keyGetMeta (k, ELEKTRA_CRYPTO_META_SALT);
@@ -119,27 +115,20 @@ static int getKeyIvForDecryption (KeySet * config, Key * errorKey, Key * k, Key 
 				    ELEKTRA_CRYPTO_META_SALT, keyName (k));
 		return -1;
 	}
+	elektraCryptoHex2Bin (errorKey, keyString (salt), &saltBuffer, &saltBufferLen);
+	if (!saltBuffer) return -1; // error set by elektraCryptoHex2Bin()
 
 	// get the iteration count
 	const kdb_unsigned_long_t iterations = elektraCryptoGetIterationCount (config);
 
 	// receive master password from the configuration
-	Key * master = ksLookupByName (config, ELEKTRA_CRYPTO_PARAM_MASTER_PASSWORD, 0);
-	if (!master)
-	{
-		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CRYPTO_CONFIG_FAULT, errorKey, "missing %s", ELEKTRA_CRYPTO_PARAM_MASTER_PASSWORD);
-		return -1;
-	}
-	Key * msg = keyDup (master);
-	if (elektraCryptoGpgDecryptMasterPassword (config, errorKey, msg) != 1)
-	{
-		goto error;
-	}
+	Key * msg = elektraCryptoGetMasterPassword (errorKey, config);
+	if (!msg) goto error; // error set by elektraCryptoGetMasterPassword()
 
 	// derive the cryptographic key and the IV
 	pthread_mutex_lock (&mutex_ssl);
-	if (!PKCS5_PBKDF2_HMAC_SHA1 (keyValue (msg), keyGetValueSize (msg), keyValue (salt), keyGetValueSize (salt), iterations,
-				     KEY_BUFFER_SIZE, keyBuffer))
+	if (!PKCS5_PBKDF2_HMAC_SHA1 (keyValue (msg), keyGetValueSize (msg), saltBuffer, saltBufferLen, iterations, KEY_BUFFER_SIZE,
+				     keyBuffer))
 	{
 		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CRYPTO_INTERNAL_ERROR, errorKey, "PBKDF2 failed with error code %lu", ERR_get_error ());
 		pthread_mutex_unlock (&mutex_ssl);
@@ -151,10 +140,12 @@ static int getKeyIvForDecryption (KeySet * config, Key * errorKey, Key * k, Key 
 	keySetBinary (cIv, keyBuffer + ELEKTRA_CRYPTO_SSL_KEYSIZE, ELEKTRA_CRYPTO_SSL_BLOCKSIZE);
 
 	keyDel (msg);
+	elektraFree (saltBuffer);
 	return 1;
 
 error:
-	keyDel (msg);
+	elektraFree (saltBuffer);
+	if (msg) keyDel (msg);
 	return -1;
 }
 
@@ -488,24 +479,21 @@ error:
 
 /**
  * @brief create a random sequence of characters with given length.
+ * @param errorKey holds an error description in case of failure.
  * @param length the number of random bytes to be generated.
- * @returns allocated buffer holding length bytes. Must be freed by the caller.
+ * @returns allocated buffer holding a hex-encoded random string or NULL in case of error. Must be freed by the caller.
   */
-char * elektraCryptoOpenSSLCreateRandomString (const kdb_unsigned_short_t length)
+char * elektraCryptoOpenSSLCreateRandomString (Key * errorKey, const kdb_unsigned_short_t length)
 {
-	kdb_octet_t * buffer = elektraMalloc (length);
-	if (!buffer)
-	{
-		return 0;
-	}
+	kdb_octet_t buffer[length];
 	pthread_mutex_lock (&mutex_ssl);
-	if (!RAND_bytes (buffer, length - 1))
+	if (!RAND_bytes (buffer, length))
 	{
+		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CRYPTO_INTERNAL_ERROR, errorKey,
+				    "Failed to generate random string. libcrypto error code was: %lu", ERR_get_error ());
 		pthread_mutex_unlock (&mutex_ssl);
-		elektraFree (buffer);
-		return 0;
+		return NULL;
 	}
 	pthread_mutex_unlock (&mutex_ssl);
-	elektraCryptoNormalizeRandomString (buffer, length);
-	return (char *)buffer;
+	return elektraCryptoBin2Hex (errorKey, buffer, length);
 }

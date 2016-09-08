@@ -41,6 +41,7 @@ extern "C" {
 static int getKeyIvForEncryption (KeySet * config, Key * errorKey, Key * k, SymmetricKey ** cKey, InitializationVector ** cIv)
 {
 	byte salt[ELEKTRA_CRYPTO_DEFAULT_SALT_LEN];
+	char * saltHexString = NULL;
 	const size_t requiredKeyBytes = ELEKTRA_CRYPTO_BOTAN_KEYSIZE + ELEKTRA_CRYPTO_BOTAN_BLOCKSIZE;
 	Key * msg = NULL;
 
@@ -48,31 +49,24 @@ static int getKeyIvForEncryption (KeySet * config, Key * errorKey, Key * k, Symm
 	{
 		// generate the salt
 		AutoSeeded_RNG rng;
-		rng.randomize (salt, ELEKTRA_CRYPTO_DEFAULT_SALT_LEN - 1);
-		elektraCryptoNormalizeRandomString (salt, sizeof (salt));
-		keySetMeta (k, ELEKTRA_CRYPTO_META_SALT, reinterpret_cast<char *> (salt));
+		rng.randomize (salt, sizeof (salt));
+		saltHexString = elektraCryptoBin2Hex (errorKey, salt, sizeof (salt));
+		if (!saltHexString) return -1; // error set by elektraCryptoBin2Hex()
+		keySetMeta (k, ELEKTRA_CRYPTO_META_SALT, saltHexString);
+		elektraFree (saltHexString);
 
 		// read iteration count
 		const kdb_unsigned_long_t iterations = elektraCryptoGetIterationCount (config);
 
 		// receive master password from the configuration
-		Key * master = ksLookupByName (config, ELEKTRA_CRYPTO_PARAM_MASTER_PASSWORD, 0);
-		if (!master)
-		{
-			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CRYPTO_CONFIG_FAULT, errorKey, "missing %s",
-					    ELEKTRA_CRYPTO_PARAM_MASTER_PASSWORD);
-			return -1;
-		}
-		msg = keyDup (master);
-		if (elektraCryptoGpgDecryptMasterPassword (config, errorKey, msg) != 1)
-		{
-			keyDel (msg);
-			return -1;
-		}
+		msg = elektraCryptoGetMasterPassword (errorKey, config);
+		if (!msg) return -1; // error set by elektraCryptoGetMasterPassword()
 
 		// generate/derive the cryptographic key and the IV
 		PBKDF * pbkdf = get_pbkdf ("PBKDF2(SHA-256)");
-		OctetString derived = pbkdf->derive_key (requiredKeyBytes, std::string (keyString (msg)), salt, sizeof (salt), iterations);
+		OctetString derived = pbkdf->derive_key (
+			requiredKeyBytes, std::string (reinterpret_cast<const char *> (keyValue (msg)), keyGetValueSize (msg)), salt,
+			sizeof (salt), iterations);
 
 		*cKey = new SymmetricKey (derived.begin (), ELEKTRA_CRYPTO_BOTAN_KEYSIZE);
 		*cIv = new InitializationVector (derived.begin () + ELEKTRA_CRYPTO_BOTAN_KEYSIZE, ELEKTRA_CRYPTO_BOTAN_BLOCKSIZE);
@@ -102,6 +96,8 @@ static int getKeyIvForEncryption (KeySet * config, Key * errorKey, Key * k, Symm
 static int getKeyIvForDecryption (KeySet * config, Key * errorKey, Key * k, SymmetricKey ** cKey, InitializationVector ** cIv)
 {
 	const size_t requiredKeyBytes = ELEKTRA_CRYPTO_BOTAN_KEYSIZE + ELEKTRA_CRYPTO_BOTAN_BLOCKSIZE;
+	kdb_octet_t * saltBuffer;
+	size_t saltBufferLen = 0;
 
 	// get the salt
 	const Key * salt = keyGetMeta (k, ELEKTRA_CRYPTO_META_SALT);
@@ -111,40 +107,39 @@ static int getKeyIvForDecryption (KeySet * config, Key * errorKey, Key * k, Symm
 				    ELEKTRA_CRYPTO_META_SALT, keyName (k));
 		return -1;
 	}
+	elektraCryptoHex2Bin (errorKey, keyString (salt), &saltBuffer, &saltBufferLen);
+	if (!saltBuffer) return -1; // error set by elektraCryptoHex2Bin()
 
 	// get the iteration count
 	const kdb_unsigned_long_t iterations = elektraCryptoGetIterationCount (config);
 
 	// receive master password from the configuration
-	Key * master = ksLookupByName (config, ELEKTRA_CRYPTO_PARAM_MASTER_PASSWORD, 0);
-	if (!master)
+	Key * msg = elektraCryptoGetMasterPassword (errorKey, config);
+	if (!msg)
 	{
-		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CRYPTO_CONFIG_FAULT, errorKey, "missing %s", ELEKTRA_CRYPTO_PARAM_MASTER_PASSWORD);
-		return -1;
-	}
-	Key * msg = keyDup (master);
-	if (elektraCryptoGpgDecryptMasterPassword (config, errorKey, msg) != 1)
-	{
-		keyDel (msg);
-		return -1;
+		elektraFree (saltBuffer);
+		return -1; // error set by elektraCryptoGetMasterPassword()
 	}
 
 	try
 	{
 		// derive the cryptographic key and the IV
 		PBKDF * pbkdf = get_pbkdf ("PBKDF2(SHA-256)");
-		OctetString derived = pbkdf->derive_key (requiredKeyBytes, std::string (keyString (msg)),
-							 static_cast<const byte *> (keyValue (salt)), keyGetValueSize (salt), iterations);
+		OctetString derived = pbkdf->derive_key (
+			requiredKeyBytes, std::string (reinterpret_cast<const char *> (keyValue (msg)), keyGetValueSize (msg)), saltBuffer,
+			saltBufferLen, iterations);
 
 		*cKey = new SymmetricKey (derived.begin (), ELEKTRA_CRYPTO_BOTAN_KEYSIZE);
 		*cIv = new InitializationVector (derived.begin () + ELEKTRA_CRYPTO_BOTAN_KEYSIZE, ELEKTRA_CRYPTO_BOTAN_BLOCKSIZE);
 
 		delete pbkdf;
 		keyDel (msg);
+		elektraFree (saltBuffer);
 		return 1;
 	}
 	catch (std::exception & e)
 	{
+		elektraFree (saltBuffer);
 		if (msg) keyDel (msg);
 		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CRYPTO_INIT, errorKey, "Botan PBKDF2 key derivation failed: %s", e.what ());
 		return -1;
@@ -305,27 +300,25 @@ int elektraCryptoBotanDecrypt (KeySet * pluginConfig, Key * k, Key * errorKey)
 
 /**
  * @brief create a random sequence of characters with given length.
+ * @param errorKey holds an error description in case of failure.
  * @param length the number of random bytes to be generated.
- * @returns allocated buffer holding length bytes. Must be freed by the caller.
+ * @returns allocated buffer holding a hex-encoded random string or NULL in case of error. Must be freed by the caller.
  */
-char * elektraCryptoBotanCreateRandomString (const kdb_unsigned_short_t length)
+char * elektraCryptoBotanCreateRandomString (Key * errorKey, const kdb_unsigned_short_t length)
 {
 	try
 	{
 		kdb_octet_t * buffer = new kdb_octet_t[length];
-		if (!buffer)
-		{
-			return 0;
-		}
-
 		AutoSeeded_RNG rng;
-		rng.randomize (buffer, length - 1);
-		elektraCryptoNormalizeRandomString (buffer, length);
-		// cast from unsigned char to char
-		return reinterpret_cast<char *> (buffer);
+		rng.randomize (buffer, length);
+		char * hexString = elektraCryptoBin2Hex (errorKey, buffer, length);
+		delete[] buffer;
+		return hexString;
 	}
 	catch (std::exception & e)
 	{
+		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CRYPTO_INTERNAL_ERROR, errorKey, "Failed to generate random string because: %s",
+				    e.what ());
 		return 0;
 	}
 }
