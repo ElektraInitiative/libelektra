@@ -97,18 +97,13 @@ static int getKeyIvForDecryption (KeySet * config, Key * errorKey, Key * k, Symm
 {
 	const size_t requiredKeyBytes = ELEKTRA_CRYPTO_BOTAN_KEYSIZE + ELEKTRA_CRYPTO_BOTAN_BLOCKSIZE;
 	kdb_octet_t * saltBuffer;
-	size_t saltBufferLen = 0;
+	kdb_unsigned_long_t saltBufferLen = 0;
 
 	// get the salt
-	const Key * salt = keyGetMeta (k, ELEKTRA_CRYPTO_META_SALT);
-	if (!salt)
+	if (elektraCryptoGetSaltFromCryptoPayload (errorKey, k, &saltBuffer, &saltBufferLen) != 1)
 	{
-		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CRYPTO_CONFIG_FAULT, errorKey, "missing salt as metakey %s for key %s",
-				    ELEKTRA_CRYPTO_META_SALT, keyName (k));
-		return -1;
+		return -1; // error set by elektraCryptoGetSaltFromCryptoPayload()
 	}
-	elektraCryptoHex2Bin (errorKey, keyString (salt), &saltBuffer, &saltBufferLen);
-	if (!saltBuffer) return -1; // error set by elektraCryptoHex2Bin()
 
 	// get the iteration count
 	const kdb_unsigned_long_t iterations = elektraCryptoGetIterationCount (config);
@@ -134,12 +129,10 @@ static int getKeyIvForDecryption (KeySet * config, Key * errorKey, Key * k, Symm
 
 		delete pbkdf;
 		keyDel (msg);
-		elektraFree (saltBuffer);
 		return 1;
 	}
 	catch (std::exception & e)
 	{
-		elektraFree (saltBuffer);
 		if (msg) keyDel (msg);
 		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CRYPTO_INIT, errorKey, "Botan PBKDF2 key derivation failed: %s", e.what ());
 		return -1;
@@ -171,6 +164,18 @@ int elektraCryptoBotanEncrypt (KeySet * pluginConfig, Key * k, Key * errorKey)
 		if (cryptoIv) delete cryptoIv;
 		return -1;
 	}
+
+	// prepare the salt for payload output
+	kdb_unsigned_long_t saltLen = 0;
+	kdb_octet_t * salt = NULL;
+
+	if (elektraCryptoGetSaltFromMetaKey (errorKey, k, &salt, &saltLen) != 1)
+	{
+		return -1; // error set by elektraCryptoGetSaltFromMetaKey()
+	}
+
+	// remove salt as metakey because it will be encoded into the crypto payload
+	keySetMeta (k, ELEKTRA_CRYPTO_META_SALT, NULL);
 
 	try
 	{
@@ -206,17 +211,21 @@ int elektraCryptoBotanEncrypt (KeySet * pluginConfig, Key * k, Key * errorKey)
 		}
 		encryptor.end_msg ();
 
-		// write the encrypted data back to the Key
+		// write the salt and the encrypted data back to the Key
 		const size_t msgLength = encryptor.remaining ();
 		if (msgLength > 0)
 		{
-			byte * buffer = new byte[msgLength];
+			byte * buffer = new byte[msgLength + sizeof (kdb_unsigned_long_t) + saltLen];
 			if (!buffer)
 			{
 				throw std::bad_alloc ();
 			}
-			const size_t buffered = encryptor.read (buffer, msgLength);
-			keySetBinary (k, buffer, buffered);
+
+			memcpy (buffer, &saltLen, sizeof (kdb_unsigned_long_t));
+			memcpy (buffer + sizeof (kdb_unsigned_long_t), salt, saltLen);
+
+			const size_t buffered = encryptor.read (buffer + sizeof (kdb_unsigned_long_t) + saltLen, msgLength);
+			keySetBinary (k, buffer, buffered + sizeof (kdb_unsigned_long_t) + saltLen);
 			delete[] buffer;
 		}
 	}
@@ -225,11 +234,13 @@ int elektraCryptoBotanEncrypt (KeySet * pluginConfig, Key * k, Key * errorKey)
 		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CRYPTO_ENCRYPT_FAIL, errorKey, "Encryption failed because: %s", e.what ());
 		delete cryptoIv;
 		delete cryptoKey;
+		elektraFree (salt);
 		return -1; // failure
 	}
 
 	delete cryptoIv;
 	delete cryptoKey;
+	elektraFree (salt);
 	return 1; // success
 }
 
@@ -245,6 +256,20 @@ int elektraCryptoBotanDecrypt (KeySet * pluginConfig, Key * k, Key * errorKey)
 		return -1;
 	}
 
+	// parse salt length from crypto payload
+	kdb_unsigned_long_t saltLen = 0;
+	if (elektraCryptoGetSaltFromCryptoPayload (errorKey, k, NULL, &saltLen) != 1)
+	{
+		if (cryptoKey) delete cryptoKey;
+		if (cryptoIv) delete cryptoIv;
+		return -1; // error set by elektraCryptoGetSaltFromCryptoPayload()
+	}
+	saltLen += sizeof (kdb_unsigned_long_t);
+
+	// set payload pointer
+	const byte * payload = reinterpret_cast<const byte *> (keyValue (k)) + saltLen;
+	const size_t payloadLen = keyGetValueSize (k) - saltLen;
+
 	try
 	{
 		// setup pipe and crypto filter
@@ -252,7 +277,7 @@ int elektraCryptoBotanDecrypt (KeySet * pluginConfig, Key * k, Key * errorKey)
 		kdb_octet_t flags = ELEKTRA_CRYPTO_FLAG_NONE;
 
 		// decrypt the conent
-		decryptor.process_msg (static_cast<const byte *> (keyValue (k)), keyGetValueSize (k));
+		decryptor.process_msg (payload, payloadLen);
 
 		if (decryptor.remaining () > 0)
 		{

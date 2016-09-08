@@ -13,6 +13,77 @@
 #include <kdberrors.h>
 #include <stdlib.h>
 
+
+/**
+ * @brief parse the hex-encoded salt from the metakey.
+ * @param errorKey holds an error description in case of failure.
+ * @param k holds the salt as metakey
+ * @param salt is set to an allocated buffer containing the salt. Must be freed by the caller.
+ * @param saltLen is set to the length of the salt. Ignored if NULL is provided.
+ * @retval 1 on success
+ * @retval -1 on error. errorKey holds a description.
+*/
+int elektraCryptoGetSaltFromMetaKey (Key * errorKey, Key * k, kdb_octet_t ** salt, kdb_unsigned_long_t * saltLen)
+{
+	const Key * meta = keyGetMeta (k, ELEKTRA_CRYPTO_META_SALT);
+	if (!meta)
+	{
+		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CRYPTO_INTERNAL_ERROR, errorKey, "missing salt as metakey %s in key %s",
+				    ELEKTRA_CRYPTO_META_SALT, keyName (k));
+		return -1;
+	}
+	elektraCryptoHex2Bin (errorKey, keyString (meta), salt, saltLen);
+	if (*salt)
+	{
+		return 1;
+	}
+	return -1; // error set by elektraCryptoHex2Bin()
+}
+
+/**
+ * @brief parse the salt from the crypto payload in the given (Elektra) Key.
+ * @param errorKey holds an error description in case of failure.
+ * @param k holds the crypto paylaod.
+ * @param salt is set to the location of the salt within the crypto payload. Ignored if NULL is provided.
+ * @param saltLen is set to the length of the salt. Ignored if NULL is provided.
+ * @retval 1 on success
+ * @retval -1 on error. errorKey holds a description.
+*/
+int elektraCryptoGetSaltFromCryptoPayload (Key * errorKey, Key * k, kdb_octet_t ** salt, kdb_unsigned_long_t * saltLen)
+{
+	static const size_t headerLen = sizeof (kdb_unsigned_long_t);
+	const ssize_t payloadLen = keyGetValueSize (k);
+	const kdb_octet_t * payload = (kdb_octet_t *)keyValue (k);
+	kdb_unsigned_long_t restoredSaltLen = 0;
+
+	// validate payload length
+	if ((size_t)payloadLen < sizeof (size_t) || payloadLen < 0)
+	{
+		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CRYPTO_INTERNAL_ERROR, errorKey,
+				    "payload is too small to contain a salt (payload length is: %lu)", payloadLen);
+		if (salt) *salt = NULL;
+		return -1;
+	}
+
+	// restore salt length
+	memcpy (&restoredSaltLen, payload, headerLen);
+	if (saltLen) *saltLen = restoredSaltLen;
+
+	// validate restored salt length
+	if (restoredSaltLen < 1 || restoredSaltLen > (payloadLen - headerLen))
+	{
+		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CRYPTO_INTERNAL_ERROR, errorKey,
+				    "restored salt has invalid length of %u (payload length is: %lu)", restoredSaltLen, payloadLen);
+		if (salt) *salt = NULL;
+		return -1;
+	}
+
+	// restore salt
+	if (salt) *salt = ((kdb_octet_t *)(payload)) + headerLen;
+
+	return 1;
+}
+
 /**
 * @brief read the encrypted password form the configuration and decrypt it.
 * @param errorKey holds an error description in case of failure.
@@ -85,7 +156,7 @@ static short hexChar2Short (char c)
  * @param outputLen holds the address where the number of output bytes is written to. Ignored if set to NULL.
  * @returns
  */
-void elektraCryptoHex2Bin (Key * errorKey, const char * hexBuffer, kdb_octet_t ** output, size_t * outputLen)
+void elektraCryptoHex2Bin (Key * errorKey, const char * hexBuffer, kdb_octet_t ** output, kdb_unsigned_long_t * outputLen)
 {
 	const size_t length = strlen (hexBuffer);
 

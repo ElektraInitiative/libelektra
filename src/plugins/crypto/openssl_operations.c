@@ -105,18 +105,13 @@ static int getKeyIvForDecryption (KeySet * config, Key * errorKey, Key * k, Key 
 {
 	kdb_octet_t keyBuffer[KEY_BUFFER_SIZE];
 	kdb_octet_t * saltBuffer = NULL;
-	size_t saltBufferLen = 0;
+	kdb_unsigned_long_t saltBufferLen = 0;
 
 	// get the salt
-	const Key * salt = keyGetMeta (k, ELEKTRA_CRYPTO_META_SALT);
-	if (!salt)
+	if (elektraCryptoGetSaltFromCryptoPayload (errorKey, k, &saltBuffer, &saltBufferLen) != 1)
 	{
-		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CRYPTO_CONFIG_FAULT, errorKey, "missing salt as metakey %s for key %s",
-				    ELEKTRA_CRYPTO_META_SALT, keyName (k));
-		return -1;
+		return -1; // error set by elektraCryptoGetSaltFromCryptoPayload()
 	}
-	elektraCryptoHex2Bin (errorKey, keyString (salt), &saltBuffer, &saltBufferLen);
-	if (!saltBuffer) return -1; // error set by elektraCryptoHex2Bin()
 
 	// get the iteration count
 	const kdb_unsigned_long_t iterations = elektraCryptoGetIterationCount (config);
@@ -140,11 +135,9 @@ static int getKeyIvForDecryption (KeySet * config, Key * errorKey, Key * k, Key 
 	keySetBinary (cIv, keyBuffer + ELEKTRA_CRYPTO_SSL_KEYSIZE, ELEKTRA_CRYPTO_SSL_BLOCKSIZE);
 
 	keyDel (msg);
-	elektraFree (saltBuffer);
 	return 1;
 
 error:
-	elektraFree (saltBuffer);
 	if (msg) keyDel (msg);
 	return -1;
 }
@@ -268,6 +261,18 @@ int elektraCryptoOpenSSLEncrypt (elektraCryptoHandle * handle, Key * k, Key * er
 	int written = 0;
 	BIO * encrypted;
 
+	// prepare the salt for payload output
+	kdb_unsigned_long_t saltLen = 0;
+	kdb_octet_t * salt = NULL;
+
+	if (elektraCryptoGetSaltFromMetaKey (errorKey, k, &salt, &saltLen) != 1)
+	{
+		return -1; // error set by elektraCryptoGetSaltFromMetaKey()
+	}
+
+	// remove salt as metakey because it will be encoded into the crypto payload
+	keySetMeta (k, ELEKTRA_CRYPTO_META_SALT, NULL);
+
 	// prepare the crypto header data
 	kdb_octet_t flags;
 	const size_t contentLen = keyGetValueSize (k);
@@ -293,8 +298,13 @@ int elektraCryptoOpenSSLEncrypt (elektraCryptoHandle * handle, Key * k, Key * er
 	{
 		ELEKTRA_SET_ERROR (87, errorKey, "Memory allocation failed");
 		pthread_mutex_unlock (&mutex_ssl);
+		elektraFree (salt);
 		return -1;
 	}
+
+	// encode the salt into the payload
+	BIO_write (encrypted, &saltLen, sizeof (saltLen));
+	BIO_write (encrypted, salt, saltLen);
 
 	// encrypt the header data
 	memcpy (headerBuffer, &flags, sizeof (flags));
@@ -360,6 +370,7 @@ int elektraCryptoOpenSSLEncrypt (elektraCryptoHandle * handle, Key * k, Key * er
 	}
 	BIO_free_all (encrypted);
 	pthread_mutex_unlock (&mutex_ssl);
+	elektraFree (salt);
 	return 1;
 
 error:
@@ -367,19 +378,29 @@ error:
 			    ERR_get_error ());
 	BIO_free_all (encrypted);
 	pthread_mutex_unlock (&mutex_ssl);
+	elektraFree (salt);
 	return -1;
 }
 
 int elektraCryptoOpenSSLDecrypt (elektraCryptoHandle * handle, Key * k, Key * errorKey)
 {
-	const kdb_octet_t * value = (kdb_octet_t *)keyValue (k);
-	const size_t valueLen = keyGetValueSize (k);
-
 	// NOTE to prevent memory overflows in libcrypto the buffer holding the decrypted content (contentBuffer) is two cipher blocks long
 	kdb_octet_t contentBuffer[2 * ELEKTRA_CRYPTO_SSL_BLOCKSIZE];
 	int written = 0;
 	kdb_octet_t * plaintext;
 	size_t plaintextLen;
+
+	// parse salt length from crypto payload
+	kdb_unsigned_long_t saltLen = 0;
+	if (elektraCryptoGetSaltFromCryptoPayload (errorKey, k, NULL, &saltLen) != 1)
+	{
+		return -1; // error set by elektraCryptoGetSaltFromCryptoPayload()
+	}
+	saltLen += sizeof (kdb_unsigned_long_t);
+
+	// set payload pointer
+	const kdb_octet_t * payload = ((kdb_octet_t *)keyValue (k)) + saltLen;
+	const size_t payloadLen = keyGetValueSize (k) - saltLen;
 
 	// initialize crypto header data
 	kdb_unsigned_long_t contentLen = 0;
@@ -387,7 +408,7 @@ int elektraCryptoOpenSSLDecrypt (elektraCryptoHandle * handle, Key * k, Key * er
 	const size_t headerLen = sizeof (flags) + sizeof (contentLen);
 
 	// plausibility check
-	if (valueLen % ELEKTRA_CRYPTO_SSL_BLOCKSIZE != 0)
+	if (payloadLen % ELEKTRA_CRYPTO_SSL_BLOCKSIZE != 0)
 	{
 		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_CRYPTO_DECRYPT_FAIL, errorKey, "value length is not a multiple of the block size");
 		return -1;
@@ -405,9 +426,9 @@ int elektraCryptoOpenSSLDecrypt (elektraCryptoHandle * handle, Key * k, Key * er
 	}
 
 	// decrypt the whole BLOB and store the plain text into the memory sink
-	for (kdb_unsigned_long_t i = 0; i < valueLen; i += ELEKTRA_CRYPTO_SSL_BLOCKSIZE)
+	for (kdb_unsigned_long_t i = 0; i < payloadLen; i += ELEKTRA_CRYPTO_SSL_BLOCKSIZE)
 	{
-		EVP_DecryptUpdate (&(handle->decrypt), contentBuffer, &written, (value + i), ELEKTRA_CRYPTO_SSL_BLOCKSIZE);
+		EVP_DecryptUpdate (&(handle->decrypt), contentBuffer, &written, (payload + i), ELEKTRA_CRYPTO_SSL_BLOCKSIZE);
 		if (written > 0)
 		{
 			BIO_write (decrypted, contentBuffer, written);

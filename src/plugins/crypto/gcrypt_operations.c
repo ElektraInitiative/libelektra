@@ -92,18 +92,13 @@ static int getKeyIvForDecryption (KeySet * config, Key * errorKey, Key * k, Key 
 	gcry_error_t gcry_err;
 	kdb_octet_t keyBuffer[KEY_BUFFER_SIZE];
 	kdb_octet_t * saltBuffer = NULL;
-	size_t saltBufferLen = 0;
+	kdb_unsigned_long_t saltBufferLen = 0;
 
 	// get the salt
-	const Key * salt = keyGetMeta (k, ELEKTRA_CRYPTO_META_SALT);
-	if (!salt)
+	if (elektraCryptoGetSaltFromCryptoPayload (errorKey, k, &saltBuffer, &saltBufferLen) != 1)
 	{
-		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CRYPTO_CONFIG_FAULT, errorKey, "missing salt as metakey %s for key %s",
-				    ELEKTRA_CRYPTO_META_SALT, keyName (k));
-		return -1;
+		return -1; // error set by elektraCryptoGetSaltFromCryptoPayload()
 	}
-	elektraCryptoHex2Bin (errorKey, keyString (salt), &saltBuffer, &saltBufferLen);
-	if (!saltBuffer) return -1; // error set by elektraCryptoHex2Bin()
 
 	// get the iteration count
 	const kdb_unsigned_long_t iterations = elektraCryptoGetIterationCount (config);
@@ -124,12 +119,10 @@ static int getKeyIvForDecryption (KeySet * config, Key * errorKey, Key * k, Key 
 	keySetBinary (cIv, keyBuffer + ELEKTRA_CRYPTO_GCRY_KEYSIZE, ELEKTRA_CRYPTO_GCRY_BLOCKSIZE);
 
 	keyDel (msg);
-	elektraFree (saltBuffer);
 	return 1;
 
 error:
 	if (msg) keyDel (msg);
-	elektraFree (saltBuffer);
 	return -1;
 }
 
@@ -257,6 +250,18 @@ int elektraCryptoGcryEncrypt (elektraCryptoHandle * handle, Key * k, Key * error
 	size_t outputLen;
 	gcry_error_t gcry_err;
 
+	// prepare the salt for payload output
+	kdb_unsigned_long_t saltLen = 0;
+	kdb_octet_t * salt = NULL;
+
+	if (elektraCryptoGetSaltFromMetaKey (errorKey, k, &salt, &saltLen) != 1)
+	{
+		return -1; // error set by elektraCryptoGetSaltFromMetaKey()
+	}
+
+	// remove salt as metakey because it will be encoded into the crypto payload
+	keySetMeta (k, ELEKTRA_CRYPTO_META_SALT, NULL);
+
 	// prepare the crypto header data
 	const kdb_octet_t * content = keyValue (k);
 	const kdb_unsigned_long_t contentLen = keyGetValueSize (k);
@@ -286,35 +291,47 @@ int elektraCryptoGcryEncrypt (elektraCryptoHandle * handle, Key * k, Key * error
 		outputLen = (contentLen / ELEKTRA_CRYPTO_GCRY_BLOCKSIZE) + 2;
 	}
 	outputLen *= ELEKTRA_CRYPTO_GCRY_BLOCKSIZE;
+	outputLen += sizeof (kdb_unsigned_long_t) + saltLen;
 	kdb_octet_t * output = elektraMalloc (outputLen);
 	if (!output)
 	{
 		ELEKTRA_SET_ERROR (87, errorKey, "Memory allocation failed");
+		elektraFree (salt);
 		return -1;
 	}
+
+	// encode the salt into the crypto payload
+	kdb_octet_t * current = output;
+
+	memcpy (current, &saltLen, sizeof (kdb_unsigned_long_t));
+	current += sizeof (kdb_unsigned_long_t);
+	memcpy (current, salt, saltLen);
+	current += saltLen;
 
 	// encrypt the header (1st block) using gcrypt's in-place encryption
-	memcpy (output, &flags, sizeof (flags));
-	memcpy (output + sizeof (flags), &contentLen, sizeof (contentLen));
-	gcry_err = gcry_cipher_encrypt (*handle, output, ELEKTRA_CRYPTO_GCRY_BLOCKSIZE, NULL, 0);
+	memcpy (current, &flags, sizeof (flags));
+	memcpy (current + sizeof (flags), &contentLen, sizeof (contentLen));
+	gcry_err = gcry_cipher_encrypt (*handle, current, ELEKTRA_CRYPTO_GCRY_BLOCKSIZE, NULL, 0);
 	if (gcry_err != 0)
 	{
 		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CRYPTO_ENCRYPT_FAIL, errorKey, "Encryption failed because: %s", gcry_strerror (gcry_err));
 		memset (output, 0, outputLen);
 		elektraFree (output);
+		elektraFree (salt);
 		return -1;
 	}
+	current += ELEKTRA_CRYPTO_GCRY_BLOCKSIZE;
 
 	// encrypt the value using gcrypt's in-place encryption
-	kdb_octet_t * dataOut = output + ELEKTRA_CRYPTO_GCRY_BLOCKSIZE;
-	const size_t dataLen = outputLen - ELEKTRA_CRYPTO_GCRY_BLOCKSIZE;
-	memcpy (dataOut, content, contentLen);
-	gcry_err = gcry_cipher_encrypt (*handle, dataOut, dataLen, NULL, 0);
+	const size_t dataLen = outputLen - ELEKTRA_CRYPTO_GCRY_BLOCKSIZE - sizeof (kdb_unsigned_long_t) - saltLen;
+	memcpy (current, content, contentLen);
+	gcry_err = gcry_cipher_encrypt (*handle, current, dataLen, NULL, 0);
 	if (gcry_err != 0)
 	{
 		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CRYPTO_ENCRYPT_FAIL, errorKey, "Encryption failed because: %s", gcry_strerror (gcry_err));
 		memset (output, 0, outputLen);
 		elektraFree (output);
+		elektraFree (salt);
 		return -1;
 	}
 
@@ -322,24 +339,35 @@ int elektraCryptoGcryEncrypt (elektraCryptoHandle * handle, Key * k, Key * error
 	keySetBinary (k, output, outputLen);
 	memset (output, 0, outputLen);
 	elektraFree (output);
+	elektraFree (salt);
 	return 1;
 }
 
 int elektraCryptoGcryDecrypt (elektraCryptoHandle * handle, Key * k, Key * errorKey)
 {
-	const kdb_octet_t * value = (kdb_octet_t *)keyValue (k);
-	const size_t valueLen = keyGetValueSize (k);
 	gcry_error_t gcry_err;
 
+	// parse salt length from crypto payload
+	kdb_unsigned_long_t saltLen = 0;
+	if (elektraCryptoGetSaltFromCryptoPayload (errorKey, k, NULL, &saltLen) != 1)
+	{
+		return -1; // error set by elektraCryptoGetSaltFromCryptoPayload()
+	}
+	saltLen += sizeof (kdb_unsigned_long_t);
+
+	// set payload pointer
+	const kdb_octet_t * payload = ((kdb_octet_t *)keyValue (k)) + saltLen;
+	const size_t payloadLen = keyGetValueSize (k) - saltLen;
+
 	// plausibility check
-	if (valueLen % ELEKTRA_CRYPTO_GCRY_BLOCKSIZE != 0)
+	if (payloadLen % ELEKTRA_CRYPTO_GCRY_BLOCKSIZE != 0)
 	{
 		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_CRYPTO_DECRYPT_FAIL, errorKey, "value length is not a multiple of the block size");
 		return -1;
 	}
 
 	// prepare buffer for plain text output and crypto operations
-	kdb_octet_t * output = elektraMalloc (valueLen);
+	kdb_octet_t * output = elektraMalloc (payloadLen);
 	if (!output)
 	{
 		ELEKTRA_SET_ERROR (87, errorKey, "Memory allocation failed");
@@ -350,13 +378,13 @@ int elektraCryptoGcryDecrypt (elektraCryptoHandle * handle, Key * k, Key * error
 	kdb_unsigned_long_t contentLen = 0;
 	kdb_octet_t flags = ELEKTRA_CRYPTO_FLAG_NONE;
 
-	// decrypt the header (1st block)
-	memcpy (output, value, valueLen);
-	gcry_err = gcry_cipher_decrypt (*handle, output, valueLen, NULL, 0);
+	// in-place decryption
+	memcpy (output, payload, payloadLen);
+	gcry_err = gcry_cipher_decrypt (*handle, output, payloadLen, NULL, 0);
 	if (gcry_err != 0)
 	{
 		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CRYPTO_DECRYPT_FAIL, errorKey, "Decryption failed because: %s", gcry_strerror (gcry_err));
-		memset (output, 0, valueLen);
+		memset (output, 0, payloadLen);
 		elektraFree (output);
 		return -1;
 	}
@@ -366,7 +394,7 @@ int elektraCryptoGcryDecrypt (elektraCryptoHandle * handle, Key * k, Key * error
 	memcpy (&contentLen, output + sizeof (flags), sizeof (contentLen));
 
 	const kdb_octet_t * data = output + ELEKTRA_CRYPTO_GCRY_BLOCKSIZE;
-	const size_t dataLen = valueLen - ELEKTRA_CRYPTO_GCRY_BLOCKSIZE;
+	const size_t dataLen = payloadLen - ELEKTRA_CRYPTO_GCRY_BLOCKSIZE;
 
 	// validate restored content length
 	if (contentLen > dataLen)
@@ -374,7 +402,7 @@ int elektraCryptoGcryDecrypt (elektraCryptoHandle * handle, Key * k, Key * error
 		ELEKTRA_SET_ERROR (
 			ELEKTRA_ERROR_CRYPTO_DECRYPT_FAIL, errorKey,
 			"restored content length is bigger than the available amount of decrypted data. The header is possibly corrupted.");
-		memset (output, 0, valueLen);
+		memset (output, 0, payloadLen);
 		elektraFree (output);
 		return -1;
 	}
@@ -393,7 +421,7 @@ int elektraCryptoGcryDecrypt (elektraCryptoHandle * handle, Key * k, Key * error
 		keySetBinary (k, data, contentLen);
 	}
 
-	memset (output, 0, valueLen);
+	memset (output, 0, payloadLen);
 	elektraFree (output);
 	return 1;
 }
