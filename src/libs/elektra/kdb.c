@@ -150,25 +150,28 @@ void elektraRemoveMetaData (Key * key, const char * searchfor)
  */
 void elektraGlobalGet (KDB * handle, KeySet * ks, Key * parentKey, int position, int subPosition)
 {
-	if (handle && handle->globalPlugins[position][subPosition])
+	Plugin * plugin;
+	if (handle && (plugin = handle->globalPlugins[position][subPosition]))
 	{
-		handle->globalPlugins[position][subPosition]->kdbGet (handle->globalPlugins[position][subPosition], ks, parentKey);
+		plugin->kdbGet (plugin, ks, parentKey);
 	}
 }
 
 void elektraGlobalSet (KDB * handle, KeySet * ks, Key * parentKey, int position, int subPosition)
 {
-	if (handle && handle->globalPlugins[position][subPosition])
+	Plugin * plugin;
+	if (handle && (plugin = handle->globalPlugins[position][subPosition]))
 	{
-		handle->globalPlugins[position][subPosition]->kdbSet (handle->globalPlugins[position][subPosition], ks, parentKey);
+		plugin->kdbSet (plugin, ks, parentKey);
 	}
 }
 
 void elektraGlobalError (KDB * handle, KeySet * ks, Key * parentKey, int position, int subPosition)
 {
-	if (handle && handle->globalPlugins[position][subPosition])
+	Plugin * plugin;
+	if (handle && (plugin = handle->globalPlugins[position][subPosition]))
 	{
-		handle->globalPlugins[position][subPosition]->kdbError (handle->globalPlugins[position][subPosition], ks, parentKey);
+		plugin->kdbError (plugin, ks, parentKey);
 	}
 }
 
