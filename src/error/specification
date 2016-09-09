@@ -681,7 +681,7 @@ number:115
 description:inconsistent line endings
 severity:error
 ingroup:plugin
-module:lineendings 
+module:lineendings
 
 number:116
 description: couldn't open file
@@ -909,3 +909,10 @@ macro:CRYPTO_GPG
 ingroup:plugin
 module:crypto
 severity:error
+
+number:152
+description:The configuration is invalid or incomplete but a default value can be used instead.
+macro:CRYPTO_CONFIG
+severity:warning
+ingroup:plugin
+module:crypto

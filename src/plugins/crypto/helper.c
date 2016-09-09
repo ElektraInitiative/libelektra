@@ -103,17 +103,18 @@ Key * elektraCryptoGetMasterPassword (Key * errorKey, KeySet * config)
 	if (elektraCryptoGpgDecryptMasterPassword (config, errorKey, msg) != 1)
 	{
 		keyDel (msg);
-		return NULL;
+		return NULL; // error set by elektraCryptoGpgDecryptMasterPassword()
 	}
 	return msg;
 }
 
 /**
  * @brief read the desired iteration count from config
+ * @param errorKey may hold a warning if an invalid configuration is provided
  * @param config KeySet holding the plugin configuration
  * @returns the number of iterations for the key derivation function
  */
-kdb_unsigned_long_t elektraCryptoGetIterationCount (KeySet * config)
+kdb_unsigned_long_t elektraCryptoGetIterationCount (Key * errorKey, KeySet * config)
 {
 	Key * k = ksLookupByName (config, ELEKTRA_CRYPTO_PARAM_ITERATION_COUNT, 0);
 	if (k)
@@ -122,6 +123,12 @@ kdb_unsigned_long_t elektraCryptoGetIterationCount (KeySet * config)
 		if (iterations > 0)
 		{
 			return iterations;
+		}
+		else
+		{
+			ELEKTRA_ADD_WARNING (ELEKTRA_WARNING_CRYPTO_CONFIG, errorKey,
+					     "iteration count provided at " ELEKTRA_CRYPTO_PARAM_ITERATION_COUNT
+					     " is invalid. Using default value instead.");
 		}
 	}
 	return ELEKTRA_CRYPTO_DEFAULT_ITERATION_COUNT;

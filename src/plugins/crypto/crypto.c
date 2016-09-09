@@ -95,19 +95,25 @@ static void elektraCryptoTeardown ()
 
 /**
  * @brief read the plugin configuration for the supposed length of the master password.
- *
+ * @param errorKey may hold a warning if the provided configuration is invalid
  * @param conf the plugin configuration
  * @return the expected length of the master password
  */
-static kdb_unsigned_short_t elektraCryptoGetRandomPasswordLength (KeySet * conf)
+static kdb_unsigned_short_t elektraCryptoGetRandomPasswordLength (Key * errorKey, KeySet * conf)
 {
 	Key * k = ksLookupByName (conf, ELEKTRA_CRYPTO_PARAM_MASTER_PASSWORD_LEN, 0);
 	if (k && keyIsString (k) > 0)
 	{
-		const char * value = keyString (k);
-		if (strlen (value) > 0)
+		kdb_unsigned_short_t passwordLen = (kdb_unsigned_short_t)strtoul (keyString (k), NULL, 10);
+		if (passwordLen > 0)
 		{
-			return (kdb_unsigned_short_t)strtoul (value, NULL, 10);
+			return passwordLen;
+		}
+		else
+		{
+			ELEKTRA_ADD_WARNING (ELEKTRA_WARNING_CRYPTO_CONFIG, errorKey,
+					     "Master password length provided at " ELEKTRA_CRYPTO_PARAM_MASTER_PASSWORD_LEN
+					     " is invalid. Using default value instead.");
 		}
 	}
 	return ELEKTRA_CRYPTO_DEFAULT_MASTER_PWD_LENGTH;
@@ -424,7 +430,7 @@ int CRYPTO_PLUGIN_FUNCTION (checkconf) (Key * errorKey, KeySet * conf)
 	else
 	{
 		// generate random master password
-		const kdb_unsigned_short_t passwordLen = elektraCryptoGetRandomPasswordLength (conf);
+		const kdb_unsigned_short_t passwordLen = elektraCryptoGetRandomPasswordLength (errorKey, conf);
 		char * r = NULL;
 		if (elektraCryptoCreateRandomString (errorKey, &r, passwordLen) != 1)
 		{

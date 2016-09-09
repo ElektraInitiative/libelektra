@@ -64,7 +64,7 @@ static int getKeyIvForEncryption (KeySet * config, Key * errorKey, Key * k, Key 
 	elektraFree (saltHexString);
 
 	// read iteration count
-	const kdb_unsigned_long_t iterations = elektraCryptoGetIterationCount (config);
+	const kdb_unsigned_long_t iterations = elektraCryptoGetIterationCount (errorKey, config);
 
 	// receive master password from the configuration
 	Key * msg = elektraCryptoGetMasterPassword (errorKey, config);
@@ -74,7 +74,9 @@ static int getKeyIvForEncryption (KeySet * config, Key * errorKey, Key * k, Key 
 	pthread_mutex_lock (&mutex_ssl);
 	if (!PKCS5_PBKDF2_HMAC_SHA1 (keyValue (msg), keyGetValueSize (msg), salt, sizeof (salt), iterations, KEY_BUFFER_SIZE, keyBuffer))
 	{
-		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CRYPTO_INTERNAL_ERROR, errorKey, "PBKDF2 failed with error code %lu", ERR_get_error ());
+		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CRYPTO_INTERNAL_ERROR, errorKey,
+				    "Failed to create a cryptographic key for encryption. Libcrypto returned error code: %lu",
+				    ERR_get_error ());
 		pthread_mutex_unlock (&mutex_ssl);
 		goto error;
 	}
@@ -114,7 +116,7 @@ static int getKeyIvForDecryption (KeySet * config, Key * errorKey, Key * k, Key 
 	}
 
 	// get the iteration count
-	const kdb_unsigned_long_t iterations = elektraCryptoGetIterationCount (config);
+	const kdb_unsigned_long_t iterations = elektraCryptoGetIterationCount (errorKey, config);
 
 	// receive master password from the configuration
 	Key * msg = elektraCryptoGetMasterPassword (errorKey, config);
@@ -125,7 +127,9 @@ static int getKeyIvForDecryption (KeySet * config, Key * errorKey, Key * k, Key 
 	if (!PKCS5_PBKDF2_HMAC_SHA1 (keyValue (msg), keyGetValueSize (msg), saltBuffer, saltBufferLen, iterations, KEY_BUFFER_SIZE,
 				     keyBuffer))
 	{
-		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CRYPTO_INTERNAL_ERROR, errorKey, "PBKDF2 failed with error code %lu", ERR_get_error ());
+		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CRYPTO_INTERNAL_ERROR, errorKey,
+				    "Failed to restore the cryptographic key for decryption. Libcrypto returned the error code: %lu",
+				    ERR_get_error ());
 		pthread_mutex_unlock (&mutex_ssl);
 		goto error;
 	}

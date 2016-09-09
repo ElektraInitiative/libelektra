@@ -52,7 +52,7 @@ static int getKeyIvForEncryption (KeySet * config, Key * errorKey, Key * k, Key 
 	elektraFree (saltHexString);
 
 	// read iteration count
-	const kdb_unsigned_long_t iterations = elektraCryptoGetIterationCount (config);
+	const kdb_unsigned_long_t iterations = elektraCryptoGetIterationCount (errorKey, config);
 
 	// receive master password from the configuration
 	Key * msg = elektraCryptoGetMasterPassword (errorKey, config);
@@ -62,7 +62,8 @@ static int getKeyIvForEncryption (KeySet * config, Key * errorKey, Key * k, Key 
 	if ((gcry_err = gcry_kdf_derive (keyValue (msg), keyGetValueSize (msg), GCRY_KDF_PBKDF2, GCRY_MD_SHA512, salt, sizeof (salt),
 					 iterations, KEY_BUFFER_SIZE, keyBuffer)))
 	{
-		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CRYPTO_INTERNAL_ERROR, errorKey, "PBKDF2 failed because: %s", gcry_strerror (gcry_err));
+		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CRYPTO_INTERNAL_ERROR, errorKey,
+				    "Failed to create a cryptographic key for encryption because: %s", gcry_strerror (gcry_err));
 		goto error;
 	}
 
@@ -101,7 +102,7 @@ static int getKeyIvForDecryption (KeySet * config, Key * errorKey, Key * k, Key 
 	}
 
 	// get the iteration count
-	const kdb_unsigned_long_t iterations = elektraCryptoGetIterationCount (config);
+	const kdb_unsigned_long_t iterations = elektraCryptoGetIterationCount (errorKey, config);
 
 	// receive master password from the configuration
 	Key * msg = elektraCryptoGetMasterPassword (errorKey, config);
@@ -111,7 +112,8 @@ static int getKeyIvForDecryption (KeySet * config, Key * errorKey, Key * k, Key 
 	if ((gcry_err = gcry_kdf_derive (keyValue (msg), keyGetValueSize (msg), GCRY_KDF_PBKDF2, GCRY_MD_SHA512, saltBuffer, saltBufferLen,
 					 iterations, KEY_BUFFER_SIZE, keyBuffer)))
 	{
-		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CRYPTO_INTERNAL_ERROR, errorKey, "PBKDF2 failed because: %s", gcry_strerror (gcry_err));
+		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CRYPTO_INTERNAL_ERROR, errorKey,
+				    "Failed to restore the cryptographic key for decryption because: %s", gcry_strerror (gcry_err));
 		goto error;
 	}
 

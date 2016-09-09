@@ -16,7 +16,7 @@
 int elektraCryptoGetSaltFromMetaKey (Key * errorKey, Key * k, kdb_octet_t ** salt, kdb_unsigned_long_t * saltLen);
 int elektraCryptoGetSaltFromCryptoPayload (Key * errorKey, Key * k, kdb_octet_t ** salt, kdb_unsigned_long_t * saltLen);
 Key * elektraCryptoGetMasterPassword (Key * errorKey, KeySet * config);
-kdb_unsigned_long_t elektraCryptoGetIterationCount (KeySet * config);
+kdb_unsigned_long_t elektraCryptoGetIterationCount (Key * errorKey, KeySet * config);
 void elektraCryptoHex2Bin (Key * errorKey, const char * hexBuffer, kdb_octet_t ** output, kdb_unsigned_long_t * outputLen);
 char * elektraCryptoBin2Hex (Key * errorKey, const kdb_octet_t * buffer, const size_t length);
 

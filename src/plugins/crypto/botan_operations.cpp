@@ -56,7 +56,7 @@ static int getKeyIvForEncryption (KeySet * config, Key * errorKey, Key * k, Symm
 		elektraFree (saltHexString);
 
 		// read iteration count
-		const kdb_unsigned_long_t iterations = elektraCryptoGetIterationCount (config);
+		const kdb_unsigned_long_t iterations = elektraCryptoGetIterationCount (errorKey, config);
 
 		// receive master password from the configuration
 		msg = elektraCryptoGetMasterPassword (errorKey, config);
@@ -78,7 +78,8 @@ static int getKeyIvForEncryption (KeySet * config, Key * errorKey, Key * k, Symm
 	catch (std::exception & e)
 	{
 		if (msg) keyDel (msg);
-		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CRYPTO_INIT, errorKey, "Botan PBKDF2 key derivation failed: %s", e.what ());
+		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CRYPTO_INIT, errorKey, "Failed to create a cryptographic key for encryption because: %s",
+				    e.what ());
 		return -1;
 	}
 }
@@ -106,7 +107,7 @@ static int getKeyIvForDecryption (KeySet * config, Key * errorKey, Key * k, Symm
 	}
 
 	// get the iteration count
-	const kdb_unsigned_long_t iterations = elektraCryptoGetIterationCount (config);
+	const kdb_unsigned_long_t iterations = elektraCryptoGetIterationCount (errorKey, config);
 
 	// receive master password from the configuration
 	Key * msg = elektraCryptoGetMasterPassword (errorKey, config);
@@ -134,7 +135,8 @@ static int getKeyIvForDecryption (KeySet * config, Key * errorKey, Key * k, Symm
 	catch (std::exception & e)
 	{
 		if (msg) keyDel (msg);
-		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CRYPTO_INIT, errorKey, "Botan PBKDF2 key derivation failed: %s", e.what ());
+		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CRYPTO_INIT, errorKey,
+				    "Failed to restore the cryptographic key for decryption because: %s", e.what ());
 		return -1;
 	}
 }
