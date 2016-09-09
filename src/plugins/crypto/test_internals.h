@@ -28,8 +28,7 @@
 	test_gpg ();                                                                                                                       \
 	test_init (PLUGIN_NAME);                                                                                                           \
 	test_incomplete_config (PLUGIN_NAME);                                                                                              \
-	test_crypto_operations (PLUGIN_NAME);                                                                                              \
-	test_invalid_config (PLUGIN_NAME);
+	test_crypto_operations (PLUGIN_NAME);
 
 typedef int (*checkConfPtr) (Key *, KeySet *);
 
