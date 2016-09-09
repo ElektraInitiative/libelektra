@@ -23,9 +23,6 @@
 
 #define TEST_KEY_ID "DDEBEF9EE2DC931701338212DAF635B17F230E8D"
 
-#define MIN(a, b) (((a) < (b)) ? (a) : (b))
-#define MAX(a, b) (((a) > (b)) ? (a) : (b))
-
 typedef int (*checkConfPtr) (Key *, KeySet *);
 
 static const char strVal[] = "abcde";
@@ -33,6 +30,11 @@ static const char strValLong[] = "Oh loooooooooooooooooooong Johnson";
 static const char strFullBlockSingle[] = "abcdefghijklmno";
 static const char strFullBlockDouble[] = "I am root!!!!!!!!!!!!!!!!!!!!!?";
 static const kdb_octet_t binVal[] = { 0x01, 0x02, 0x03, 0x04 };
+
+static inline ssize_t MIN (ssize_t a, ssize_t b)
+{
+	return (a < b) ? a : b;
+}
 
 static int isMarkedForEncryption (const Key * k)
 {
@@ -277,12 +279,14 @@ static void test_hex (void)
 
 	// test hex2bin
 	kdb_octet_t * buffer;
+	kdb_unsigned_long_t bufferLen;
 
-	elektraCryptoHex2Bin (errorKey, hex, &buffer, NULL);
+	elektraCryptoHex2Bin (errorKey, hex, &buffer, &bufferLen);
 	succeed_if (buffer, "hex2bin conversion failed with valid hex-string");
 	if (buffer)
 	{
-		succeed_if (!memcmp (buffer, example, sizeof (example)), "hex2bin conversion failed, result is not valid");
+		succeed_if (!memcmp (buffer, example, MIN ((ssize_t)bufferLen, (ssize_t)sizeof (example))),
+			    "hex2bin conversion failed, result is not valid");
 		elektraFree (buffer);
 	}
 
