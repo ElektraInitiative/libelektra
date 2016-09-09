@@ -23,6 +23,14 @@
 
 #define TEST_KEY_ID "DDEBEF9EE2DC931701338212DAF635B17F230E8D"
 
+#define TEST_SUITE(PLUGIN_NAME)                                                                                                            \
+	test_hex ();                                                                                                                       \
+	test_gpg ();                                                                                                                       \
+	test_init (PLUGIN_NAME);                                                                                                           \
+	test_incomplete_config (PLUGIN_NAME);                                                                                              \
+	test_crypto_operations (PLUGIN_NAME);                                                                                              \
+	test_invalid_config (PLUGIN_NAME);
+
 typedef int (*checkConfPtr) (Key *, KeySet *);
 
 static const char strVal[] = "abcde";
