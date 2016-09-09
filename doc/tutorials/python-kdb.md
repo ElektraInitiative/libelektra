@@ -42,10 +42,7 @@ with kdb.KDB() as k:
 	# if you for some reason want to loop through the keyset last key first use: for i in reversed(ks):
 	for i in ks: 
 		# print for every key in the keyset the key and the value
-		print 'key: '
-		print i
-		print 'value: '
-		print ks[i]
+		print 'key: '+ str(i) + 'value: ' + str(ks[i])
 	
 ```
 
@@ -57,7 +54,7 @@ with kdb.KDB() as k:
 	ks = kdb.KeySet()
 	k.get(ks, '/path/to/keys')
 	try:
-                print 'The value to the key /user/sw/pk/key_name is ' + ks["/user/sw/pk/key_name"] + '!'
+                print 'The value to the key /user/sw/pk/key_name is ' + str(ks['/user/sw/pk/key_name']) + '!'
         except KeyError:
                 print 'The key does not exist!'
 ```
@@ -77,7 +74,7 @@ with kdb.KDB() as k:
 	
 ```
 
-Slicing works just like for normal lists in python:
+Slicing works just like for normal lists in python. But be careful: Afterwards the result will be a list - not a keyset.
 
 ```
 import kdb
@@ -110,14 +107,42 @@ with kdb.KDB() as k:
 	# by changing the path here it is for instance possible to set the keyset of one user identical to another users
 ```
 
-## Operations with keys
-
-Finding out if any given key exists within a keyset is easy as you simply need to try an access it. To add a new key to a keyset you simply call `append` for for the right keyset. With `ks.lookup("path/to/keys/key_name").string` it is possible to print the current value of the specified key.
+If you have a key a very simple way to get it's name and value:
 
 ```
-try:
-	key = ks['/path/to/keys/key_name']
-except KeyError:
-	ks.append(kdb.Key("/path/to/keys/key_name", kdb.KEY_VALUE, "key_value"))
+import kdb
+with kdb.KDB() as k:
+	ks = kdb.KeySet()
+	k.get(ks, '/path/to/keys')
+	for i in ks:
+		print 'key-name: ' + i.name
+		print 'key-value: ' + i.value
+		print 'key-value: ' + ks.lookup(i).string
 ```
+
+It is possible to create new keys:
+
+```
+import kdb
+with kdb.KDB() as k:
+	# the first argument is the path to the key, the third argument is the key-value
+	new_key = kdb.Key('/user/sw/pk/key_name', kdb.KEY_VALUE, 'key_value')
+```
+
+Keys can be added to a keyset using `append`. If the key already exists, the value will be updated. Calling `keyset_name['/path/to/key'] = 'new_value` does not work for updating keys already in a keyset.
+
+```
+import kdb
+with kdb.KDB() as k:
+	ks = kdb.KeySet()
+	k.get(ks, '/path/to/keys')
+	new_key = kdb.Key('/user/sw/pk/key_name', kdb.KEY_VALUE, 'key_value')
+	# adding new_key to the existing key-set, ks['/user/sw/pk/key_name'].value == 'key_value'
+	ks.append(new_key)
+	newer_key = kdb.Key('/user/sw/pk/key_name', kdb.KEY_VALUE, 'other_key_value')
+	# adding newer_key to the existing key-set, by doing so replacing new_key, ks['/user/sw/pk/key_name'].value == 'other_key_value'
+	ks.append(newer_key)
+```
+
+
 
