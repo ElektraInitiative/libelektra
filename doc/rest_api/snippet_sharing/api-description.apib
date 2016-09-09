@@ -55,7 +55,6 @@ The API will try to authenticate the user by the submitted credentials. In case 
  
 + Response 200 (application/json)
     + Attributes (object)
-        + status (number) - HTTP status code
         + token (string) - The session token which can be used to authenticate against the server in further requests
             
     + Schema
@@ -63,18 +62,12 @@ The API will try to authenticate the user by the submitted credentials. In case 
             {
                 "type": "object",
                 "properties": {
-                    "status": {
-                        "description": "HTTP status code",
-                        "type": "integer",
-                        "minimum": 0
-                    },
                     "token": {
                         "description": "Session token to be used as authentication for further requests.",
                         "type": "string"
                     }
                 },
                 "required": [
-                    "status",
                     "token"
                 ],
                 "additionalProperties": false
@@ -82,7 +75,6 @@ The API will try to authenticate the user by the submitted credentials. In case 
 
 + Response 400 (application/json)
     + Attributes (object)
-        + status (number) - HTTP status code
         + error (string) - Textual description of the HTTP status
         + message (string) - Detailed error information, e.g. hint about malformed request
         + i18n (string) - A unique token representing above error description message; can be used for internationalization in frontends
@@ -96,11 +88,6 @@ The API will try to authenticate the user by the submitted credentials. In case 
             {
                 "type": "object",
                 "properties": {
-                    "status": {
-                        "description": "HTTP status code",
-                        "type": "integer",
-                        "minimum": 0
-                    },
                     "error": {
                         "description": "Textual description of HTTP status code",
                         "type": "string"
@@ -115,7 +102,6 @@ The API will try to authenticate the user by the submitted credentials. In case 
                     }
                 },
                 "required": [
-                    "status",
                     "message",
                     "i18n"
                 ],
@@ -124,7 +110,6 @@ The API will try to authenticate the user by the submitted credentials. In case 
 
 + Response 401 (application/json)
     + Attributes (object)
-        + status (number) - HTTP status code
         + error (string) - Textual description of the HTTP status
         + message (string) - Detailed error information, e.g. hint about malformed request
         + i18n (string) - A unique token representing above error description message; can be used for internationalization in frontends
@@ -138,11 +123,6 @@ The API will try to authenticate the user by the submitted credentials. In case 
             {
                 "type": "object",
                 "properties": {
-                    "status": {
-                        "description": "HTTP status code",
-                        "type": "integer",
-                        "minimum": 0
-                    },
                     "error": {
                         "description": "Textual description of HTTP status code",
                         "type": "string"
@@ -157,7 +137,6 @@ The API will try to authenticate the user by the submitted credentials. In case 
                     }
                 },
                 "required": [
-                    "status",
                     "message",
                     "i18n"
                 ],
@@ -166,7 +145,6 @@ The API will try to authenticate the user by the submitted credentials. In case 
 
 + Response 500 (application/json)
     + Attributes (object)
-        + status (number) - HTTP status code
         + error (string) - Textual description of the HTTP status
         + message (string) - Detailed error information, e.g. hint about malformed request
         + i18n (string) - A unique token representing above error description message; can be used for internationalization in frontends
@@ -179,11 +157,6 @@ The API will try to authenticate the user by the submitted credentials. In case 
             {
                 "type": "object",
                 "properties": {
-                    "status": {
-                        "description": "HTTP status code",
-                        "type": "integer",
-                        "minimum": 0
-                    },
                     "error": {
                         "description": "Textual description of HTTP status code",
                         "type": "string"
@@ -198,7 +171,6 @@ The API will try to authenticate the user by the submitted credentials. In case 
                     }
                 },
                 "required": [
-                    "status",
                     "message",
                     "i18n"
                 ],
@@ -212,7 +184,6 @@ Retrieves the currently authenticated users details.
         
 + Response 200 (application/json)
     + Attributes (object)
-        + status (number) - HTTP status code
         + username (string) - The name of the currently authenticated user
         + rank (enum[number]) - The rank of the currently authenticated user (higher means more permissions)
             + Members
@@ -225,11 +196,6 @@ Retrieves the currently authenticated users details.
             {
                 "type": "object",
                 "properties": {
-                    "status": {
-                        "description": "HTTP status code",
-                        "type": "integer",
-                        "minimum": 0
-                    },
                     "username": {
                         "description": "The authenticated users name",
                         "type": "string"
@@ -240,7 +206,6 @@ Retrieves the currently authenticated users details.
                     }
                 },
                 "required": [
-                    "status",
                     "username",
                     "rank"
                 ],
@@ -249,7 +214,6 @@ Retrieves the currently authenticated users details.
 
 + Response 401 (application/json)
     + Attributes (object)
-        + status (number) - HTTP status code
         + error (string) - Textual description of the HTTP status
         + message (string) - Detailed error information, e.g. hint about malformed request
         + i18n (string) - A unique token representing above error description message; can be used for internationalization in frontends
@@ -262,11 +226,6 @@ Retrieves the currently authenticated users details.
             {
                 "type": "object",
                 "properties": {
-                    "status": {
-                        "description": "HTTP status code",
-                        "type": "integer",
-                        "minimum": 0
-                    },
                     "error": {
                         "description": "Textual description of HTTP status code",
                         "type": "string"
@@ -281,7 +240,6 @@ Retrieves the currently authenticated users details.
                     }
                 },
                 "required": [
-                    "status",
                     "message",
                     "i18n"
                 ],
@@ -312,7 +270,6 @@ This method can be used to register for the service. An user account will grant 
         
 + Response 200 (application/json)
     + Attributes (object)
-        + status (number) - HTTP status code
         + message (string) - Detailed response information, normally success message
         + i18n (string) - A unique token representing above message; can be used for internationalization in frontends
 
@@ -324,11 +281,6 @@ This method can be used to register for the service. An user account will grant 
             {
                 "type": "object",
                 "properties": {
-                    "status": {
-                        "description": "HTTP status code",
-                        "type": "integer",
-                        "minimum": 0
-                    },
                     "error": {
                         "description": "Textual description of HTTP status code",
                         "type": "string"
@@ -343,7 +295,6 @@ This method can be used to register for the service. An user account will grant 
                     }
                 },
                 "required": [
-                    "status",
                     "message",
                     "i18n"
                 ],
@@ -352,7 +303,6 @@ This method can be used to register for the service. An user account will grant 
         
 + Response 400 (application/json)
     + Attributes (object)
-        + status (number) - HTTP status code
         + error (string) - Textual description of the HTTP status
         + message (string) - Detailed error information, e.g. hint about malformed request
         + i18n (string) - A unique token representing above error description message; can be used for internationalization in frontends
@@ -370,11 +320,6 @@ This method can be used to register for the service. An user account will grant 
             {
                 "type": "object",
                 "properties": {
-                    "status": {
-                        "description": "HTTP status code",
-                        "type": "integer",
-                        "minimum": 0
-                    },
                     "error": {
                         "description": "Textual description of HTTP status code",
                         "type": "string"
@@ -389,7 +334,6 @@ This method can be used to register for the service. An user account will grant 
                     }
                 },
                 "required": [
-                    "status",
                     "message",
                     "i18n"
                 ],
@@ -398,7 +342,6 @@ This method can be used to register for the service. An user account will grant 
 
 + Response 422 (application/json)
     + Attributes (object)
-        + status (number) - HTTP status code
         + error (string) - Textual description of the HTTP status
         + message (string) - Detailed error information, e.g. hint about malformed request
         + i18n (string) - A unique token representing above error description message; can be used for internationalization in frontends
@@ -411,11 +354,6 @@ This method can be used to register for the service. An user account will grant 
             {
                 "type": "object",
                 "properties": {
-                    "status": {
-                        "description": "HTTP status code",
-                        "type": "integer",
-                        "minimum": 0
-                    },
                     "error": {
                         "description": "Textual description of HTTP status code",
                         "type": "string"
@@ -430,7 +368,6 @@ This method can be used to register for the service. An user account will grant 
                     }
                 },
                 "required": [
-                    "status",
                     "message",
                     "i18n"
                 ],
@@ -439,7 +376,6 @@ This method can be used to register for the service. An user account will grant 
 
 + Response 500 (application/json)
     + Attributes (object)
-        + status (number) - HTTP status code
         + error (string) - Textual description of the HTTP status
         + message (string) - Detailed error information, e.g. hint about malformed request
         + i18n (string) - A unique token representing above error description message; can be used for internationalization in frontends
@@ -452,11 +388,6 @@ This method can be used to register for the service. An user account will grant 
             {
                 "type": "object",
                 "properties": {
-                    "status": {
-                        "description": "HTTP status code",
-                        "type": "integer",
-                        "minimum": 0
-                    },
                     "error": {
                         "description": "Textual description of HTTP status code",
                         "type": "string"
@@ -471,7 +402,6 @@ This method can be used to register for the service. An user account will grant 
                     }
                 },
                 "required": [
-                    "status",
                     "message",
                     "i18n"
                 ],
@@ -525,7 +455,6 @@ This operation can only be executed by admins (rank 3).
             
 + Response 200 (application/json)
     + Attributes (object)
-        + status (number) - HTTP status code
         + message (string) - Detailed response information, normally success message
         + i18n (string) - A unique token representing above message; can be used for internationalization in frontends
 
@@ -537,11 +466,6 @@ This operation can only be executed by admins (rank 3).
             {
                 "type": "object",
                 "properties": {
-                    "status": {
-                        "description": "HTTP status code",
-                        "type": "integer",
-                        "minimum": 0
-                    },
                     "error": {
                         "description": "Textual description of HTTP status code",
                         "type": "string"
@@ -556,7 +480,6 @@ This operation can only be executed by admins (rank 3).
                     }
                 },
                 "required": [
-                    "status",
                     "message",
                     "i18n"
                 ],
@@ -566,7 +489,6 @@ This operation can only be executed by admins (rank 3).
 
 + Response 400 (application/json)
     + Attributes (object)
-        + status (number) - HTTP status code
         + error (string) - Textual description of the HTTP status
         + message (string) - Detailed error information, e.g. hint about malformed request
         + i18n (string) - A unique token representing above error description message; can be used for internationalization in frontends
@@ -583,11 +505,6 @@ This operation can only be executed by admins (rank 3).
             {
                 "type": "object",
                 "properties": {
-                    "status": {
-                        "description": "HTTP status code",
-                        "type": "integer",
-                        "minimum": 0
-                    },
                     "error": {
                         "description": "Textual description of HTTP status code",
                         "type": "string"
@@ -602,7 +519,6 @@ This operation can only be executed by admins (rank 3).
                     }
                 },
                 "required": [
-                    "status",
                     "message",
                     "i18n"
                 ],
@@ -611,7 +527,6 @@ This operation can only be executed by admins (rank 3).
 
 + Response 401 (application/json)
     + Attributes (object)
-        + status (number) - HTTP status code
         + error (string) - Textual description of the HTTP status
         + message (string) - Detailed error information, e.g. hint about malformed request
         + i18n (string) - A unique token representing above error description message; can be used for internationalization in frontends
@@ -625,11 +540,6 @@ This operation can only be executed by admins (rank 3).
             {
                 "type": "object",
                 "properties": {
-                    "status": {
-                        "description": "HTTP status code",
-                        "type": "integer",
-                        "minimum": 0
-                    },
                     "error": {
                         "description": "Textual description of HTTP status code",
                         "type": "string"
@@ -644,7 +554,6 @@ This operation can only be executed by admins (rank 3).
                     }
                 },
                 "required": [
-                    "status",
                     "message",
                     "i18n"
                 ],
@@ -711,7 +620,6 @@ Returns detailed information about the entry with the specified key (path). If t
 
 + Response 200 (application/json)
     + Attributes (object)
-        + status (number) - HTTP status code
         + data (object) - The actual details about the entry
             + key (object) - The key and its separate parts
                 + full (string) - The full key (path) of the entry
@@ -732,7 +640,6 @@ Returns detailed information about the entry with the specified key (path). If t
 
 + Response 404 (application/json)
     + Attributes (object)
-        + status (number) - HTTP status code
         + error (string) - Textual description of the HTTP status
         + message (string) - Detailed error information, e.g. hint about malformed request
         + i18n (string) - A unique token representing above error description message; can be used for internationalization in frontends
@@ -745,11 +652,6 @@ Returns detailed information about the entry with the specified key (path). If t
             {
                 "type": "object",
                 "properties": {
-                    "status": {
-                        "description": "HTTP status code",
-                        "type": "integer",
-                        "minimum": 0
-                    },
                     "error": {
                         "description": "Textual description of HTTP status code",
                         "type": "string"
@@ -764,7 +666,6 @@ Returns detailed information about the entry with the specified key (path). If t
                     }
                 },
                 "required": [
-                    "status",
                     "message",
                     "i18n"
                 ],
@@ -873,7 +774,6 @@ Can be used to create a new entry in the database. An entry consists of a unique
 
 + Response 200 (application/json)
     + Attributes (object)
-        + status (number) - HTTP status code
         + message (string) - Detailed error information, e.g. hint about malformed request
         + i18n (string) - A unique token representing above error description message; can be used for internationalization in frontends
 
@@ -885,11 +785,6 @@ Can be used to create a new entry in the database. An entry consists of a unique
             {
                 "type": "object",
                 "properties": {
-                    "status": {
-                        "description": "HTTP status code",
-                        "type": "integer",
-                        "minimum": 0
-                    },
                     "error": {
                         "description": "Textual description of HTTP status code",
                         "type": "string"
@@ -904,7 +799,6 @@ Can be used to create a new entry in the database. An entry consists of a unique
                     }
                 },
                 "required": [
-                    "status",
                     "message",
                     "i18n"
                 ],
@@ -913,7 +807,6 @@ Can be used to create a new entry in the database. An entry consists of a unique
 
 + Response 400 (application/json)
     + Attributes (object)
-        + status (number) - HTTP status code
         + error (string) - Textual description of the HTTP status
         + message (string) - Detailed error information, e.g. hint about malformed request
         + i18n (string) - A unique token representing above error description message; can be used for internationalization in frontends
@@ -940,11 +833,6 @@ Can be used to create a new entry in the database. An entry consists of a unique
             {
                 "type": "object",
                 "properties": {
-                    "status": {
-                        "description": "HTTP status code",
-                        "type": "integer",
-                        "minimum": 0
-                    },
                     "error": {
                         "description": "Textual description of HTTP status code",
                         "type": "string"
@@ -959,7 +847,6 @@ Can be used to create a new entry in the database. An entry consists of a unique
                     }
                 },
                 "required": [
-                    "status",
                     "message",
                     "i18n"
                 ],
@@ -968,7 +855,6 @@ Can be used to create a new entry in the database. An entry consists of a unique
 
 + Response 401 (application/json)
     + Attributes (object)
-        + status (number) - HTTP status code
         + error (string) - Textual description of the HTTP status
         + message (string) - Detailed error information, e.g. hint about malformed request
         + i18n (string) - A unique token representing above error description message; can be used for internationalization in frontends
@@ -981,11 +867,6 @@ Can be used to create a new entry in the database. An entry consists of a unique
             {
                 "type": "object",
                 "properties": {
-                    "status": {
-                        "description": "HTTP status code",
-                        "type": "integer",
-                        "minimum": 0
-                    },
                     "error": {
                         "description": "Textual description of HTTP status code",
                         "type": "string"
@@ -1000,7 +881,6 @@ Can be used to create a new entry in the database. An entry consists of a unique
                     }
                 },
                 "required": [
-                    "status",
                     "message",
                     "i18n"
                 ],
@@ -1009,7 +889,6 @@ Can be used to create a new entry in the database. An entry consists of a unique
 
 + Response 422 (application/json)
     + Attributes (object)
-        + status (number) - HTTP status code
         + error (string) - Textual description of the HTTP status
         + message (string) - Detailed error information, e.g. hint about malformed request
         + i18n (string) - A unique token representing above error description message; can be used for internationalization in frontends
@@ -1022,11 +901,6 @@ Can be used to create a new entry in the database. An entry consists of a unique
             {
                 "type": "object",
                 "properties": {
-                    "status": {
-                        "description": "HTTP status code",
-                        "type": "integer",
-                        "minimum": 0
-                    },
                     "error": {
                         "description": "Textual description of HTTP status code",
                         "type": "string"
@@ -1041,7 +915,6 @@ Can be used to create a new entry in the database. An entry consists of a unique
                     }
                 },
                 "required": [
-                    "status",
                     "message",
                     "i18n"
                 ],
@@ -1118,7 +991,6 @@ This operation can only be executed by the owner of an entry as well as moderato
 
 + Response 400 (application/json)
     + Attributes (object)
-        + status (number) - HTTP status code
         + error (string) - Textual description of the HTTP status
         + message (string) - Detailed error information, e.g. hint about malformed request
         + i18n (string) - A unique token representing above error description message; can be used for internationalization in frontends
@@ -1137,11 +1009,6 @@ This operation can only be executed by the owner of an entry as well as moderato
             {
                 "type": "object",
                 "properties": {
-                    "status": {
-                        "description": "HTTP status code",
-                        "type": "integer",
-                        "minimum": 0
-                    },
                     "error": {
                         "description": "Textual description of HTTP status code",
                         "type": "string"
@@ -1156,7 +1023,6 @@ This operation can only be executed by the owner of an entry as well as moderato
                     }
                 },
                 "required": [
-                    "status",
                     "message",
                     "i18n"
                 ],
@@ -1165,7 +1031,6 @@ This operation can only be executed by the owner of an entry as well as moderato
 
 + Response 401 (application/json)
     + Attributes (object)
-        + status (number) - HTTP status code
         + error (string) - Textual description of the HTTP status
         + message (string) - Detailed error information, e.g. hint about malformed request
         + i18n (string) - A unique token representing above error description message; can be used for internationalization in frontends
@@ -1179,11 +1044,6 @@ This operation can only be executed by the owner of an entry as well as moderato
             {
                 "type": "object",
                 "properties": {
-                    "status": {
-                        "description": "HTTP status code",
-                        "type": "integer",
-                        "minimum": 0
-                    },
                     "error": {
                         "description": "Textual description of HTTP status code",
                         "type": "string"
@@ -1198,7 +1058,6 @@ This operation can only be executed by the owner of an entry as well as moderato
                     }
                 },
                 "required": [
-                    "status",
                     "message",
                     "i18n"
                 ],
@@ -1207,7 +1066,6 @@ This operation can only be executed by the owner of an entry as well as moderato
 
 + Response 404 (application/json)
     + Attributes (object)
-        + status (number) - HTTP status code
         + error (string) - Textual description of the HTTP status
         + message (string) - Detailed error information, e.g. hint about malformed request
         + i18n (string) - A unique token representing above error description message; can be used for internationalization in frontends
@@ -1220,11 +1078,6 @@ This operation can only be executed by the owner of an entry as well as moderato
             {
                 "type": "object",
                 "properties": {
-                    "status": {
-                        "description": "HTTP status code",
-                        "type": "integer",
-                        "minimum": 0
-                    },
                     "error": {
                         "description": "Textual description of HTTP status code",
                         "type": "string"
@@ -1239,7 +1092,6 @@ This operation can only be executed by the owner of an entry as well as moderato
                     }
                 },
                 "required": [
-                    "status",
                     "message",
                     "i18n"
                 ],
@@ -1261,7 +1113,6 @@ This operation can only be executed by the owner of an entry as well as moderato
 
 + Response 200 (application/json)
     + Attributes (object)
-        + status (number) - HTTP status code
         + message (string) - Detailed error information, e.g. hint about malformed request
         + i18n (string) - A unique token representing above error description message; can be used for internationalization in frontends
 
@@ -1270,7 +1121,6 @@ This operation can only be executed by the owner of an entry as well as moderato
 
 + Response 401 (application/json)
     + Attributes (object)
-        + status (number) - HTTP status code
         + error (string) - Textual description of the HTTP status
         + message (string) - Detailed error information, e.g. hint about malformed request
         + i18n (string) - A unique token representing above error description message; can be used for internationalization in frontends
@@ -1284,11 +1134,6 @@ This operation can only be executed by the owner of an entry as well as moderato
             {
                 "type": "object",
                 "properties": {
-                    "status": {
-                        "description": "HTTP status code",
-                        "type": "integer",
-                        "minimum": 0
-                    },
                     "error": {
                         "description": "Textual description of HTTP status code",
                         "type": "string"
@@ -1303,7 +1148,6 @@ This operation can only be executed by the owner of an entry as well as moderato
                     }
                 },
                 "required": [
-                    "status",
                     "message",
                     "i18n"
                 ],
@@ -1312,7 +1156,6 @@ This operation can only be executed by the owner of an entry as well as moderato
 
 + Response 404 (application/json)
     + Attributes (object)
-        + status (number) - HTTP status code
         + error (string) - Textual description of the HTTP status
         + message (string) - Detailed error information, e.g. hint about malformed request
         + i18n (string) - A unique token representing above error description message; can be used for internationalization in frontends
@@ -1325,11 +1168,6 @@ This operation can only be executed by the owner of an entry as well as moderato
             {
                 "type": "object",
                 "properties": {
-                    "status": {
-                        "description": "HTTP status code",
-                        "type": "integer",
-                        "minimum": 0
-                    },
                     "error": {
                         "description": "Textual description of HTTP status code",
                         "type": "string"
@@ -1344,7 +1182,6 @@ This operation can only be executed by the owner of an entry as well as moderato
                     }
                 },
                 "required": [
-                    "status",
                     "message",
                     "i18n"
                 ],
@@ -1357,7 +1194,6 @@ This operation can only be executed by the owner of an entry as well as moderato
 
 ## Entry List (object)
 
-+ status (number) - HTTP status code
 + elements (number) - How many entries the response list contains
 + entries (array[Entry Preview]) - A list of previews for entries
 + offset (number) - How many entries have been skipped for the output; this information can be used for pagination
