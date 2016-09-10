@@ -18,9 +18,7 @@ int main (int argc, char ** argv)
 
 	init (argc, argv);
 
-	test_init (PLUGIN_NAME);
-	test_config_errors (PLUGIN_NAME);
-	test_crypto_operations (PLUGIN_NAME);
+	TEST_SUITE (PLUGIN_NAME);
 
 	printf ("\n" PLUGIN_NAME " RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 	return nbError;

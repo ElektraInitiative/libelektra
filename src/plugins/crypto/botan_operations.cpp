@@ -7,9 +7,11 @@
  *
  */
 
+#include <botan/auto_rng.h>
 #include <botan/filters.h>
 #include <botan/init.h>
 #include <botan/lookup.h>
+#include <botan/pbkdf2.h>
 #include <botan/pipe.h>
 #include <botan/symkey.h>
 #include <kdbplugin.h>
@@ -21,43 +23,123 @@ extern "C" {
 
 #include "botan_operations.h"
 #include "crypto.h"
+#include "gpg.h"
+#include "helper.h"
 #include <kdberrors.h>
 #include <string.h>
 
 /**
- * @brief read the cryptographic key from the given keyset.
- * @retval NULL on error
- * @retval a SymmetricKey to be used for the cryptographic operation
+ * @brief derive the cryptographic key and IV for a given (Elektra) Key k
+ * @param config KeySet holding the plugin/backend configuration
+ * @param errorKey holds an error description in case of failure
+ * @param k the (Elektra)-Key to be encrypted
+ * @param cKey holds a pointer to an allocated SymmetricKey. Must be freed by the caller.
+ * @param cIv holds a pointer to an allocated InitializationVector. Must be freed by the caller.
+ * @retval -1 on failure. errorKey holds the error description.
+ * @retval 1 on success
  */
-static SymmetricKey * getSymmKey (KeySet * config, Key * errorKey)
+static int getKeyIvForEncryption (KeySet * config, Key * errorKey, Key * k, SymmetricKey ** cKey, InitializationVector ** cIv)
 {
-	Key * key = ksLookupByName (config, ELEKTRA_CRYPTO_PARAM_KEY_PATH, 0);
-	if (key == NULL)
+	byte salt[ELEKTRA_CRYPTO_DEFAULT_SALT_LEN];
+	char * saltHexString = NULL;
+	const size_t requiredKeyBytes = ELEKTRA_CRYPTO_BOTAN_KEYSIZE + ELEKTRA_CRYPTO_BOTAN_BLOCKSIZE;
+	Key * msg = NULL;
+
+	try
 	{
-		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CRYPTO_CONFIG_FAULT, errorKey, "missing %s in configuration",
-				    ELEKTRA_CRYPTO_PARAM_KEY_PATH);
-		return NULL;
+		// generate the salt
+		AutoSeeded_RNG rng;
+		rng.randomize (salt, sizeof (salt));
+		saltHexString = elektraCryptoBin2Hex (errorKey, salt, sizeof (salt));
+		if (!saltHexString) return -1; // error set by elektraCryptoBin2Hex()
+		keySetMeta (k, ELEKTRA_CRYPTO_META_SALT, saltHexString);
+		elektraFree (saltHexString);
+
+		// read iteration count
+		const kdb_unsigned_long_t iterations = elektraCryptoGetIterationCount (errorKey, config);
+
+		// receive master password from the configuration
+		msg = elektraCryptoGetMasterPassword (errorKey, config);
+		if (!msg) return -1; // error set by elektraCryptoGetMasterPassword()
+
+		// generate/derive the cryptographic key and the IV
+		PBKDF * pbkdf = get_pbkdf ("PBKDF2(SHA-256)");
+		OctetString derived = pbkdf->derive_key (
+			requiredKeyBytes, std::string (reinterpret_cast<const char *> (keyValue (msg)), keyGetValueSize (msg)), salt,
+			sizeof (salt), iterations);
+
+		*cKey = new SymmetricKey (derived.begin (), ELEKTRA_CRYPTO_BOTAN_KEYSIZE);
+		*cIv = new InitializationVector (derived.begin () + ELEKTRA_CRYPTO_BOTAN_KEYSIZE, ELEKTRA_CRYPTO_BOTAN_BLOCKSIZE);
+
+		delete pbkdf;
+		keyDel (msg);
+		return 1;
 	}
-	return new SymmetricKey (static_cast<const byte *> (keyValue (key)), keyGetValueSize (key));
+	catch (std::exception & e)
+	{
+		if (msg) keyDel (msg);
+		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CRYPTO_INIT, errorKey, "Failed to create a cryptographic key for encryption because: %s",
+				    e.what ());
+		return -1;
+	}
 }
 
 /**
- * @brief read the cryptographic initialization vector (IV) from the given keyset.
- * @retval NULL on error
- * @retval an InitializationVector to be used for the cryptographic operation
+ * @brief derive the cryptographic key and IV for a given (Elektra) Key k
+ * @param config KeySet holding the plugin/backend configuration
+ * @param errorKey holds an error description in case of failure
+ * @param k the (Elektra)-Key to be encrypted
+ * @param cKey holds a pointer to an allocated SymmetricKey. Must be freed by the caller.
+ * @param cIv holds a pointer to an allocated InitializationVector. Must be freed by the caller.
+ * @retval -1 on failure. errorKey holds the error description.
+ * @retval 1 on success
  */
-static InitializationVector * getIv (KeySet * config, Key * errorKey)
+static int getKeyIvForDecryption (KeySet * config, Key * errorKey, Key * k, SymmetricKey ** cKey, InitializationVector ** cIv)
 {
-	Key * iv = ksLookupByName (config, ELEKTRA_CRYPTO_PARAM_IV_PATH, 0);
-	if (iv == NULL)
-	{
-		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CRYPTO_CONFIG_FAULT, errorKey, "missing %s in configuration",
-				    ELEKTRA_CRYPTO_PARAM_IV_PATH);
-		return NULL;
-	}
-	return new InitializationVector (static_cast<const byte *> (keyValue (iv)), keyGetValueSize (iv));
-}
+	const size_t requiredKeyBytes = ELEKTRA_CRYPTO_BOTAN_KEYSIZE + ELEKTRA_CRYPTO_BOTAN_BLOCKSIZE;
+	kdb_octet_t * saltBuffer;
+	kdb_unsigned_long_t saltBufferLen = 0;
 
+	// get the salt
+	if (elektraCryptoGetSaltFromCryptoPayload (errorKey, k, &saltBuffer, &saltBufferLen) != 1)
+	{
+		return -1; // error set by elektraCryptoGetSaltFromCryptoPayload()
+	}
+
+	// get the iteration count
+	const kdb_unsigned_long_t iterations = elektraCryptoGetIterationCount (errorKey, config);
+
+	// receive master password from the configuration
+	Key * msg = elektraCryptoGetMasterPassword (errorKey, config);
+	if (!msg)
+	{
+		elektraFree (saltBuffer);
+		return -1; // error set by elektraCryptoGetMasterPassword()
+	}
+
+	try
+	{
+		// derive the cryptographic key and the IV
+		PBKDF * pbkdf = get_pbkdf ("PBKDF2(SHA-256)");
+		OctetString derived = pbkdf->derive_key (
+			requiredKeyBytes, std::string (reinterpret_cast<const char *> (keyValue (msg)), keyGetValueSize (msg)), saltBuffer,
+			saltBufferLen, iterations);
+
+		*cKey = new SymmetricKey (derived.begin (), ELEKTRA_CRYPTO_BOTAN_KEYSIZE);
+		*cIv = new InitializationVector (derived.begin () + ELEKTRA_CRYPTO_BOTAN_KEYSIZE, ELEKTRA_CRYPTO_BOTAN_BLOCKSIZE);
+
+		delete pbkdf;
+		keyDel (msg);
+		return 1;
+	}
+	catch (std::exception & e)
+	{
+		if (msg) keyDel (msg);
+		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CRYPTO_INIT, errorKey,
+				    "Failed to restore the cryptographic key for decryption because: %s", e.what ());
+		return -1;
+	}
+}
 
 int elektraCryptoBotanInit (Key * errorKey)
 {
@@ -75,27 +157,27 @@ int elektraCryptoBotanInit (Key * errorKey)
 
 int elektraCryptoBotanEncrypt (KeySet * pluginConfig, Key * k, Key * errorKey)
 {
-	// check if key has been marked for encryption
-	const Key * metaEncrypt = keyGetMeta (k, ELEKTRA_CRYPTO_META_ENCRYPT);
-	if (metaEncrypt == NULL || strlen (keyString (metaEncrypt)) == 0)
-	{
-		// nothing to do
-		return 1;
-	}
-
 	// get cryptographic material
-	SymmetricKey * cryptoKey = getSymmKey (pluginConfig, errorKey);
-	if (!cryptoKey)
+	SymmetricKey * cryptoKey = NULL;
+	InitializationVector * cryptoIv = NULL;
+	if (getKeyIvForEncryption (pluginConfig, errorKey, k, &cryptoKey, &cryptoIv) != 1)
 	{
-		return -1; // failure, error has been set by getSymmKey(...)
+		if (cryptoKey) delete cryptoKey;
+		if (cryptoIv) delete cryptoIv;
+		return -1;
 	}
 
-	InitializationVector * cryptoIv = getIv (pluginConfig, errorKey);
-	if (!cryptoIv)
+	// prepare the salt for payload output
+	kdb_unsigned_long_t saltLen = 0;
+	kdb_octet_t * salt = NULL;
+
+	if (elektraCryptoGetSaltFromMetaKey (errorKey, k, &salt, &saltLen) != 1)
 	{
-		delete cryptoKey;
-		return -1; // failure, error has been set by getIv(...)
+		return -1; // error set by elektraCryptoGetSaltFromMetaKey()
 	}
+
+	// remove salt as metakey because it will be encoded into the crypto payload
+	keySetMeta (k, ELEKTRA_CRYPTO_META_SALT, NULL);
 
 	try
 	{
@@ -131,17 +213,21 @@ int elektraCryptoBotanEncrypt (KeySet * pluginConfig, Key * k, Key * errorKey)
 		}
 		encryptor.end_msg ();
 
-		// write the encrypted data back to the Key
+		// write the salt and the encrypted data back to the Key
 		const size_t msgLength = encryptor.remaining ();
 		if (msgLength > 0)
 		{
-			byte * buffer = new byte[msgLength];
+			byte * buffer = new byte[msgLength + sizeof (kdb_unsigned_long_t) + saltLen];
 			if (!buffer)
 			{
 				throw std::bad_alloc ();
 			}
-			const size_t buffered = encryptor.read (buffer, msgLength);
-			keySetBinary (k, buffer, buffered);
+
+			memcpy (buffer, &saltLen, sizeof (kdb_unsigned_long_t));
+			memcpy (buffer + sizeof (kdb_unsigned_long_t), salt, saltLen);
+
+			const size_t buffered = encryptor.read (buffer + sizeof (kdb_unsigned_long_t) + saltLen, msgLength);
+			keySetBinary (k, buffer, buffered + sizeof (kdb_unsigned_long_t) + saltLen);
 			delete[] buffer;
 		}
 	}
@@ -150,37 +236,41 @@ int elektraCryptoBotanEncrypt (KeySet * pluginConfig, Key * k, Key * errorKey)
 		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CRYPTO_ENCRYPT_FAIL, errorKey, "Encryption failed because: %s", e.what ());
 		delete cryptoIv;
 		delete cryptoKey;
+		elektraFree (salt);
 		return -1; // failure
 	}
 
 	delete cryptoIv;
 	delete cryptoKey;
+	elektraFree (salt);
 	return 1; // success
 }
 
 int elektraCryptoBotanDecrypt (KeySet * pluginConfig, Key * k, Key * errorKey)
 {
-	// check if key has been marked for encryption
-	const Key * metaEncrypt = keyGetMeta (k, ELEKTRA_CRYPTO_META_ENCRYPT);
-	if (metaEncrypt == NULL || strlen (keyString (metaEncrypt)) == 0)
-	{
-		// nothing to do
-		return 1;
-	}
-
 	// get cryptographic material
-	SymmetricKey * cryptoKey = getSymmKey (pluginConfig, errorKey);
-	if (!cryptoKey)
+	SymmetricKey * cryptoKey = NULL;
+	InitializationVector * cryptoIv = NULL;
+	if (getKeyIvForDecryption (pluginConfig, errorKey, k, &cryptoKey, &cryptoIv) != 1)
 	{
-		return -1; // failure, error has been set by getSymmKey(...)
+		if (cryptoKey) delete cryptoKey;
+		if (cryptoIv) delete cryptoIv;
+		return -1;
 	}
 
-	InitializationVector * cryptoIv = getIv (pluginConfig, errorKey);
-	if (!cryptoIv)
+	// parse salt length from crypto payload
+	kdb_unsigned_long_t saltLen = 0;
+	if (elektraCryptoGetSaltFromCryptoPayload (errorKey, k, NULL, &saltLen) != 1)
 	{
-		delete cryptoKey;
-		return -1; // failure, error has been set by getIv(...)
+		if (cryptoKey) delete cryptoKey;
+		if (cryptoIv) delete cryptoIv;
+		return -1; // error set by elektraCryptoGetSaltFromCryptoPayload()
 	}
+	saltLen += sizeof (kdb_unsigned_long_t);
+
+	// set payload pointer
+	const byte * payload = reinterpret_cast<const byte *> (keyValue (k)) + saltLen;
+	const size_t payloadLen = keyGetValueSize (k) - saltLen;
 
 	try
 	{
@@ -189,7 +279,7 @@ int elektraCryptoBotanDecrypt (KeySet * pluginConfig, Key * k, Key * errorKey)
 		kdb_octet_t flags = ELEKTRA_CRYPTO_FLAG_NONE;
 
 		// decrypt the conent
-		decryptor.process_msg (static_cast<const byte *> (keyValue (k)), keyGetValueSize (k));
+		decryptor.process_msg (payload, payloadLen);
 
 		if (decryptor.remaining () > 0)
 		{
@@ -233,6 +323,31 @@ int elektraCryptoBotanDecrypt (KeySet * pluginConfig, Key * k, Key * errorKey)
 	delete cryptoIv;
 	delete cryptoKey;
 	return 1; // success
+}
+
+/**
+ * @brief create a random sequence of characters with given length.
+ * @param errorKey holds an error description in case of failure.
+ * @param length the number of random bytes to be generated.
+ * @returns allocated buffer holding a hex-encoded random string or NULL in case of error. Must be freed by the caller.
+ */
+char * elektraCryptoBotanCreateRandomString (Key * errorKey, const kdb_unsigned_short_t length)
+{
+	try
+	{
+		kdb_octet_t * buffer = new kdb_octet_t[length];
+		AutoSeeded_RNG rng;
+		rng.randomize (buffer, length);
+		char * hexString = elektraCryptoBin2Hex (errorKey, buffer, length);
+		delete[] buffer;
+		return hexString;
+	}
+	catch (std::exception & e)
+	{
+		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CRYPTO_INTERNAL_ERROR, errorKey, "Failed to generate random string because: %s",
+				    e.what ());
+		return 0;
+	}
 }
 
 } // extern "C"

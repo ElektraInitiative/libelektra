@@ -122,6 +122,8 @@ if (DEPENDENCY_PHASE)
 	unset (plugin)
 endif ()
 
+set (CRYPTO_COMMON_FILES helper.h helper.c gpg.h gpg.c crypto.h crypto.c)
+
 #
 # Compile Variant: OpenSSL
 #
@@ -129,8 +131,7 @@ add_plugin (crypto_gcrypt
 	SOURCES
 		gcrypt_operations.h
 		gcrypt_operations.c
-		crypto.h
-		crypto.c
+		${CRYPTO_COMMON_FILES}
 	INCLUDE_DIRECTORIES
 		${LIBGCRYPT_INCLUDE_DIR}
 	LINK_LIBRARIES
@@ -148,8 +149,7 @@ add_plugin (crypto_openssl
 	SOURCES
 		openssl_operations.h
 		openssl_operations.c
-		crypto.h
-		crypto.c
+		${CRYPTO_COMMON_FILES}
 	INCLUDE_DIRECTORIES
 		${OPENSSL_INCLUDE_DIR}
 	LINK_LIBRARIES
@@ -167,8 +167,7 @@ add_plugin (crypto_botan
 	SOURCES
 		botan_operations.h
 		botan_operations.cpp
-		crypto.h
-		crypto.c
+		${CRYPTO_COMMON_FILES}
 	INCLUDE_DIRECTORIES
 		${BOTAN_INCLUDE_DIRS}
 	LINK_LIBRARIES
@@ -182,18 +181,19 @@ add_plugin (crypto_botan
 if (ADDTESTING_PHASE)
 	if (HAS_OPENSSL_4SURE)
 		add_plugintest (crypto_openssl
-				LINK_PLUGIN "<no>")
+				LINK_PLUGIN "crypto_openssl")
 	endif ()
 
 	if (HAS_GCRYPT_4SURE)
 		add_plugintest (crypto_gcrypt
 				MEMLEAK
-				LINK_PLUGIN "<no>")
+				LINK_PLUGIN "crypto_gcrypt")
 	endif ()
 
 	if (HAS_BOTAN_4SURE)
 		add_plugintest (crypto_botan
-				LINK_PLUGIN "<no>")
+				LINK_PLUGIN "crypto_botan")
 	endif ()
 endif ()
 
+unset (CRYPTO_COMMON_FILES)
