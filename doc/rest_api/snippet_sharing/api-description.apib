@@ -310,6 +310,15 @@ Returns detailed information about the entry with the specified key (path). If t
 
 + Response 200 (text/plain)
 
++ Response 401 (application/json)
+    + Attributes (object)
+        + status (string) - Textual description of the HTTP status
+        + message (string) - Detailed error information, e.g. hint about malformed request
+        + i18n (string) - A unique token representing above error description message; can be used for internationalization in frontends
+
+            A comprehensive list of possible errors:
+            - `ENTRY_UNSUPPORTED_FORMAT` if an unsupported `raw` format has been supplied
+
 + Response 404 (application/json)
     + Attributes (object)
         + status (string) - Textual description of the HTTP status
