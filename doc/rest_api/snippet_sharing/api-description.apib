@@ -19,7 +19,7 @@ Returns an overview of available API methods with required parameters and a desc
 
 ## Authenticate [POST]
 
-The API will try to authenticate the user by the submitted credentials. In case of success a session token (JWT) will be returned, which can be used for further requests to the API.
+The API will try to authenticate the user by the submitted credentials. In case of success a session token will be returned, which can be used for further requests to the API.
 
 + Request (application/json)
     + Attributes (object)
@@ -31,27 +31,6 @@ The API will try to authenticate the user by the submitted credentials. In case 
         + password: `a5ecretP4ssword` (string, required)
         
             The corresponding password for the supplied user account.
-        
-    + Schema
-    
-            {
-                "type": "object",
-                "properties": {
-                    "username": {
-                        "description": "Name of the user that wants to authenticate",
-                        "type": "string"
-                    },
-                    "password": {
-                        "description": "Password for the username in question",
-                        "type": "string"
-                    }
-                },
-                "required": [
-                    "username",
-                    "password"
-                ],
-                "additionalProperties": false
-            }
  
 + Response 200 (application/json)
     + Attributes (object)
