@@ -19,13 +19,14 @@ Returns an overview of available API methods with required parameters and a desc
 
 ## Authenticate [POST]
 
-The API will try to authenticate the user by the submitted credentials. In case of success a session token will be returned, which can be used for further requests to the API.
+The API will try to authenticate the user by the submitted credentials. In case of success a session token, which can be used for further requests to the API, will be returned.
 
 + Request (application/json)
     + Attributes (object)
         + username: `the-username` (string, required)
         
             The name of the user account which should be tried to authenticate.
+
             Regex: ^[a-zA-Z0-9\-\.]{3,20}$
         
         + password: `a5ecretP4ssword` (string, required)
@@ -38,7 +39,7 @@ The API will try to authenticate the user by the submitted credentials. In case 
 
 + Response 400 (application/json)
     + Attributes (object)
-        + error (string) - Textual description of the HTTP status
+        + status (string) - Textual description of the HTTP status
         + message (string) - Detailed error information, e.g. hint about malformed request
         + i18n (string) - A unique token representing above error description message; can be used for internationalization in frontends
 
@@ -48,7 +49,7 @@ The API will try to authenticate the user by the submitted credentials. In case 
 
 + Response 401 (application/json)
     + Attributes (object)
-        + error (string) - Textual description of the HTTP status
+        + status (string) - Textual description of the HTTP status
         + message (string) - Detailed error information, e.g. hint about malformed request
         + i18n (string) - A unique token representing above error description message; can be used for internationalization in frontends
 
@@ -56,24 +57,52 @@ The API will try to authenticate the user by the submitted credentials. In case 
             - `AUTH_UNKNOWN_USERNAME` if there is no user registered witht he given name
             - `AUTH_INVALID_PASSWORD` if the given password does not match the password saved for the given account
 
-+ Response 500 (application/json)
-    + Attributes (object)
-        + error (string) - Textual description of the HTTP status
-        + message (string) - Detailed error information, e.g. hint about malformed request
-        + i18n (string) - A unique token representing above error description message; can be used for internationalization in frontends
 
-            A comprehensive list of possible errors:
-            - `AUTH_CREATE_TOKEN_ERROR` if the session token could not be created
+# Users endpoint [/users{?rows}{?sort}{?sortby}{?filter}{?filterby}{?current}]
 
+## User list [GET]
 
-## Retrieve current user [GET /user]
+Retrieves a list of users. The result can be adjusted by additional, but optional parameters. This operation requires moderator permissions (rank 2) or higher.
 
-Retrieves the currently authenticated users details.
++ Parameters
+    + rows (number, optional) - How many entries will be added to the output at max.
+        + Default: `200`
+    + sort (enum[string], optional) - How to sort the entries for the output.
+        + Default: `asc`
+        + Members
+            + `asc`
+            + `desc`
+    + sortby (enum[string], optional) - What criteria should be used for sorting
+        + Default: `username`
+        + Members
+            + `username` - The users name
+            + `email` - email
+            + `created_at` - Creation date
+    + filter (string, optional) - Only users containing the search string in either their name or their email will be added to the output.
+    + filterby (enum[string], optional) - On what fields the filter should be applied to (i.e. what fields to involve in search)
+        + Default: `all`
+        + Members
+            + `all` - All fields: username and email
+            + `username` - Only the username
+            + `email` - Only the email
+
++ Response 200 (application/json)
+    + Attributes (User List)
+
+## Retrieve user details [GET /{name}{?current}]
+
+Retrieves the details of the specified user. If the parameter `current` is specified, the currently authenticated user will be chosen as target. Retrieving details of other users requires moderator permissions (rank 2) or higher.
+
++ Parameters
+    + current (boolean, optional) - If the currently authenticated users details should be fetched
+        + Default: `false`
+    + name (string, required) - The `username` of the user whose details should be fetched
         
 + Response 200 (application/json)
     + Attributes (object)
-        + username (string) - The name of the currently authenticated user
-        + rank (enum[number]) - The rank of the currently authenticated user (higher means more permissions)
+        + username (string) - The name of the user
+        + email (string) - The email of the user
+        + rank (enum[number]) - The rank of the user (higher means more permissions)
             + Members
                 + `1` - Normal user
                 + `2` - Moderator
@@ -81,7 +110,7 @@ Retrieves the currently authenticated users details.
 
 + Response 401 (application/json)
     + Attributes (object)
-        + error (string) - Textual description of the HTTP status
+        + status (string) - Textual description of the HTTP status
         + message (string) - Detailed error information, e.g. hint about malformed request
         + i18n (string) - A unique token representing above error description message; can be used for internationalization in frontends
 
@@ -89,21 +118,23 @@ Retrieves the currently authenticated users details.
             - `NEED_AUTHENTICATION` if no valid session token has been supplied or the user for whom the token has been created does not exist (anymore)
         
 
-## Register [POST /register]
+## Create user [POST]
 
-This method can be used to register for the service. An user account will grant access to more functions.
+This method can be used to register for the service by creating a new user account. An user account will grant access to more functions.
 
 + Request (application/json)
     + Attributes (object)
         + username: `the_username` (string, required)
         
             The username must be between 3 and 20 signs long and may contain only letters a-z (lower- and upper-case), the numbers 0-9 and dots (.) as well as dashes (-).
+
             Regex: ^[a-zA-Z0-9\-\.]{3,20}$
             
         + password: `somePassword` (string, required)
         
             The password must be at least 8 signs long and contain at least one lower-case letter, one upper-case letter and one digit. 
             To harden security, the user is encouraged to use special characters as well.
+
             Regex: ^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$
         
         + email: `an@email.com` (string, required)
@@ -116,57 +147,55 @@ This method can be used to register for the service. An user account will grant 
         + i18n (string) - A unique token representing above message; can be used for internationalization in frontends
 
             A comprehensive list of possible messages:
-            - `REGISTER_USER_CREATED_SUCCESSFULLY` if the account has been created successfully
+            - `USER_CREATED_SUCCESSFULLY` if the account has been created successfully
         
 + Response 400 (application/json)
     + Attributes (object)
-        + error (string) - Textual description of the HTTP status
+        + status (string) - Textual description of the HTTP status
         + message (string) - Detailed error information, e.g. hint about malformed request
         + i18n (string) - A unique token representing above error description message; can be used for internationalization in frontends
 
             A comprehensive list of possible errors:
-            - `REGISTER_MISSING_USERNAME` if no input for `username` was submitted
-            - `REGISTER_MISSING_PASSWORD` if no input for `password` was submitted
-            - `REGISTER_MISSING_EMAIL` if no input for `email` was submitted
-            - `REGISTER_INVALID_USERNAME` if the supplied `username` does not match the given criteria (regex: ^[a-zA-Z0-9\-\.]{3,20}$)
-            - `REGISTER_INVALID_PASSWORD` if the supplied `password` does not satisfy the given criteria (regex: ^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$)
-            - `REGISTER_INVALID_EMAIL` if the supplied `email` is not a valid email
+            - `USER_CREATE_MISSING_USERNAME` if no input for `username` was submitted
+            - `USER_CREATE_MISSING_PASSWORD` if no input for `password` was submitted
+            - `USER_CREATE_MISSING_EMAIL` if no input for `email` was submitted
+            - `USER_CREATE_INVALID_USERNAME` if the supplied `username` does not match the given criteria (regex: ^[a-zA-Z0-9\-\.]{3,20}$)
+            - `USER_CREATE_INVALID_PASSWORD` if the supplied `password` does not satisfy the given criteria (regex: ^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$)
+            - `USER_CREATE_INVALID_EMAIL` if the supplied `email` is not a valid email
 
 + Response 422 (application/json)
     + Attributes (object)
-        + error (string) - Textual description of the HTTP status
+        + status (string) - Textual description of the HTTP status
         + message (string) - Detailed error information, e.g. hint about malformed request
         + i18n (string) - A unique token representing above error description message; can be used for internationalization in frontends
 
             A comprehensive list of possible errors:
-            - `REGISTER_USERNAME_DOES_ALREADY_EXIST` if the supplied `username` is already taken
-
-+ Response 500 (application/json)
-    + Attributes (object)
-        + error (string) - Textual description of the HTTP status
-        + message (string) - Detailed error information, e.g. hint about malformed request
-        + i18n (string) - A unique token representing above error description message; can be used for internationalization in frontends
-
-            A comprehensive list of possible errors:
-            - `REGISTER_UNKNOWN_ERROR` if the account could not be created due to an internal server error
+            - `USER_CREATE_USERNAME_DOES_ALREADY_EXIST` if the supplied `username` is already taken
         
         
-## Set user rank [POST /setrank]
+## Update user [PUT /{name}]
 
-This method can be used to change the rank of an user. The higher the rank, the more permissions an user has. Rank 1 is considered a normal user, 2 a moderator and 3 an admin.
+This method can be used to edit an user. If no `name` is supplied, the currently authenticated user is chosen as target. By using this method it is also possible to change the rank of users. Changing the rank as well as other users in general can only be done by admins (rank 3) though.
 
-This operation can only be executed by admins (rank 3).
++ Parameters
+    + name (string, optional) - The `username` of an user which is then taken as target for the operation
 
 + Request (application/json)
     + Attributes (object)
-        + username: `the_username` (string, required)
+        + email: `a-new@email.com` (string, optional)
             
-            The name of the user whos rank should be altered.
-            Regex: ^[a-zA-Z0-9\\-\\.]{3,20}$
+            The new email address which should be used for the user. It has to be a valid email.
+
+        + password: `a_new-secureP4ssw0rd` (string, optional)
+
+            The new password for the user.
+
+            Regex: ^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$
         
-        + rank: `3` (enum[number], required)
+        + rank: `3` (enum[number], optional)
         
-            The new rank to apply to the submitted user.
+            The new rank which should be set for the user. Setting this parameter does only result in a change if the currently authenticated user has the permission to change ranks.
+
             Regex: ^[1-3]$
         
             + Members
@@ -180,24 +209,22 @@ This operation can only be executed by admins (rank 3).
         + i18n (string) - A unique token representing above message; can be used for internationalization in frontends
 
             A comprehensive list of possible messages:
-            - `USER_SET_RANK_SUCCESSFULLY` if the rank of the supplied user has been changed successfully
+            - `USER_UPDATED_SUCCESSFULLY` if the changes to the user have been stored successfully
 
 + Response 400 (application/json)
     + Attributes (object)
-        + error (string) - Textual description of the HTTP status
+        + status (string) - Textual description of the HTTP status
         + message (string) - Detailed error information, e.g. hint about malformed request
         + i18n (string) - A unique token representing above error description message; can be used for internationalization in frontends
 
             A comprehensive list of possible errors:
-            - `SETRANK_MISSING_USERNAME` if no input for `username` was submitted
-            - `SETRANK_MISSING_RANK` if no input for `rank` was submitted
-            - `SETRANK_INVALID_USERNAME` if the submitted `username` is malformed (regex: ^[a-zA-Z0-9\\-\\.]{3,20}$)
-            - `SETRANK_INVALID_RANK` if the submitted `rank` is malformed or out of range (regex: ^[1-3]$)
-            - `USER_DOES_NOT_EXIST` if no account with the supplied `username` exists
+            - `USER_UPDATE_INVALID_PASSWORD` if the supplied `password` does not satisfy the given criteria (regex: ^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$)
+            - `USER_UPDATE_INVALID_EMAIL` if the supplied `email` is not a valid email
+            - `USER_UPDATE_INVALID_RANK` if the supplied `rank` is not a valid rank (regex: ^[1-3]$)
 
 + Response 401 (application/json)
     + Attributes (object)
-        + error (string) - Textual description of the HTTP status
+        + status (string) - Textual description of the HTTP status
         + message (string) - Detailed error information, e.g. hint about malformed request
         + i18n (string) - A unique token representing above error description message; can be used for internationalization in frontends
 
@@ -285,7 +312,7 @@ Returns detailed information about the entry with the specified key (path). If t
 
 + Response 404 (application/json)
     + Attributes (object)
-        + error (string) - Textual description of the HTTP status
+        + status (string) - Textual description of the HTTP status
         + message (string) - Detailed error information, e.g. hint about malformed request
         + i18n (string) - A unique token representing above error description message; can be used for internationalization in frontends
 
@@ -302,36 +329,43 @@ Can be used to create a new entry in the database. An entry consists of a unique
         + organization: `org.apache` (string, required)
 
             The organization which built the software for which the configuration is meant.
+
             Regex: ^[a-zA-Z0-9\.\-]+$
 
         + application: `hive` (string, required)
 
             The application for which the configuration is meant.
+
             Regex: ^[a-zA-Z0-9\.\-]+$
 
         + scope: `database` (string, required)
 
             Often different parts of an application have different configurations. Here the application specific scope can be defined.
+
             Regex: ^[a-zA-Z0-9\.\-]+$
 
         + slug: `sample-snippet-for-devs` (string, required)
 
             A unique slug that identifies the entry and configuration snippet further.
+
             Regex: ^[a-zA-Z0-9\.\-]+$
 
         + title: `Sample snippet for developers` (string, required)
 
             A title for the entry that ideally explains already what the snippet is about.
+
             Regex: ^[^\n\r]{3,}$
 
         + description: `This is a sample conf snippet for Apaches Hive database module.` (string, required)
 
             An extended description for the entry that explains in detail what the snippet is about. It can also contain instructions on how to use the snippet.
+
             Regex: ^[\S\s]{3,}$
 
         + tags: `dev`, `developer`, `db-dev` (array[string], optional)
 
             A list of tags that shall be added to the entry. Tags may be used for search, so they ideally add additional information that is not already available by the other inputs.
+
             Regex: ^[a-z0-9\-\.]{3,20}$
 
         + configuration: `sampleKey = sampleValue` (string, required)
@@ -348,7 +382,7 @@ Can be used to create a new entry in the database. An entry consists of a unique
 
 + Response 400 (application/json)
     + Attributes (object)
-        + error (string) - Textual description of the HTTP status
+        + status (string) - Textual description of the HTTP status
         + message (string) - Detailed error information, e.g. hint about malformed request
         + i18n (string) - A unique token representing above error description message; can be used for internationalization in frontends
 
@@ -371,7 +405,7 @@ Can be used to create a new entry in the database. An entry consists of a unique
 
 + Response 401 (application/json)
     + Attributes (object)
-        + error (string) - Textual description of the HTTP status
+        + status (string) - Textual description of the HTTP status
         + message (string) - Detailed error information, e.g. hint about malformed request
         + i18n (string) - A unique token representing above error description message; can be used for internationalization in frontends
 
@@ -380,7 +414,7 @@ Can be used to create a new entry in the database. An entry consists of a unique
 
 + Response 422 (application/json)
     + Attributes (object)
-        + error (string) - Textual description of the HTTP status
+        + status (string) - Textual description of the HTTP status
         + message (string) - Detailed error information, e.g. hint about malformed request
         + i18n (string) - A unique token representing above error description message; can be used for internationalization in frontends
 
@@ -405,16 +439,19 @@ This operation can only be executed by the owner of an entry as well as moderato
         + title: `Sample snippet for developers` (string, required)
 
             A title for the entry that ideally explains already what the snippet is about.
+
             Regex: ^[^\n\r]{3,}$
 
         + description: `This is a sample conf snippet for Apaches Hive database module.` (string, required)
 
             An extended description for the entry that explains in detail what the snippet is about. It can also contain instructions on how to use the snippet.
+
             Regex: ^[\S\s]{3,}$
 
         + tags: `dev`, `developer`, `db-dev` (array[string], optional)
 
             A list of tags that shall be added to the entry. Tags may be used for search, so they ideally add additional information that is not already available by the other inputs.
+
             Regex: ^[a-z0-9\-\.]{3,20}$
 
         + configuration: `sampleKey = sampleValue` (string, required)
@@ -423,7 +460,7 @@ This operation can only be executed by the owner of an entry as well as moderato
 
 + Response 400 (application/json)
     + Attributes (object)
-        + error (string) - Textual description of the HTTP status
+        + status (string) - Textual description of the HTTP status
         + message (string) - Detailed error information, e.g. hint about malformed request
         + i18n (string) - A unique token representing above error description message; can be used for internationalization in frontends
 
@@ -438,7 +475,7 @@ This operation can only be executed by the owner of an entry as well as moderato
 
 + Response 401 (application/json)
     + Attributes (object)
-        + error (string) - Textual description of the HTTP status
+        + status (string) - Textual description of the HTTP status
         + message (string) - Detailed error information, e.g. hint about malformed request
         + i18n (string) - A unique token representing above error description message; can be used for internationalization in frontends
 
@@ -448,7 +485,7 @@ This operation can only be executed by the owner of an entry as well as moderato
 
 + Response 404 (application/json)
     + Attributes (object)
-        + error (string) - Textual description of the HTTP status
+        + status (string) - Textual description of the HTTP status
         + message (string) - Detailed error information, e.g. hint about malformed request
         + i18n (string) - A unique token representing above error description message; can be used for internationalization in frontends
 
@@ -478,7 +515,7 @@ This operation can only be executed by the owner of an entry as well as moderato
 
 + Response 401 (application/json)
     + Attributes (object)
-        + error (string) - Textual description of the HTTP status
+        + status (string) - Textual description of the HTTP status
         + message (string) - Detailed error information, e.g. hint about malformed request
         + i18n (string) - A unique token representing above error description message; can be used for internationalization in frontends
 
@@ -488,7 +525,7 @@ This operation can only be executed by the owner of an entry as well as moderato
 
 + Response 404 (application/json)
     + Attributes (object)
-        + error (string) - Textual description of the HTTP status
+        + status (string) - Textual description of the HTTP status
         + message (string) - Detailed error information, e.g. hint about malformed request
         + i18n (string) - A unique token representing above error description message; can be used for internationalization in frontends
 
@@ -498,6 +535,19 @@ This operation can only be executed by the owner of an entry as well as moderato
 
 
 # Data Structures
+
+## User List (object)
+
++ elements (number) - How many users the response list contains
++ users (array[User Preview]) - A list of previews for users
++ offset (number) - How many entries have been skipped for the output; this information can be used for pagination
++ remaining (number) - How many entries have not been displayed yet; when adding this value to the offset (and not exceeding the row limit), all entries should have been displayed once
+
+## User Preview (object)
+
++ username (string) - The users name
++ email (string) - The users email
++ created_at (number) - A timestamp of the moment when the entry has been created
 
 ## Entry List (object)
 
@@ -514,4 +564,4 @@ This operation can only be executed by the owner of an entry as well as moderato
 + title (string) - How the entry/snippet has been named by the creator
 + description (string) - A description of the entry
 + author (string) - The username of the creator of the entry
-+ created_at (number) - A timestamp of when the entry has been created
++ created_at (number) - A timestamp of the moment when the entry has been created
