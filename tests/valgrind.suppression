@@ -2,129 +2,34 @@
    <insert_a_suppression_name_here>
    Memcheck:Leak
    match-leak-kinds: reachable
-   ...
-   fun:call_init.part.0
-   fun:call_init
-   fun:_dl_init
-   ...
-   obj:*/ld-2.19.so
-}
-{
-   <insert_a_suppression_name_here>
-   Memcheck:Leak
-   match-leak-kinds: reachable
-   ...
-   fun:calloc
-   fun:_dlerror_run
-   fun:dlsym
-   fun:(below main)
-}
-{
-   <insert_a_suppression_name_here>
-   Memcheck:Leak
-   match-leak-kinds: reachable
-   fun:calloc
-   ...
-   fun:dlopen_doit
-   fun:_dl_catch_error
-}
-{
-   <insert_a_suppression_name_here>
-   Memcheck:Leak
-   match-leak-kinds: reachable
-   fun:malloc
-   fun:open_path
-   ...
-   fun:_dl_catch_error
-   fun:_dlerror_run
-   fun:dlopen@@GLIBC_2.2.5
-   fun:elektraModulesLoad
+   fun:_Znwm
+   obj:/usr/lib/libbotan-1.10.so.1.12
+   obj:/usr/lib/libbotan-1.10.so.1.12
+   fun:_ZN5Botan17Algorithm_Factory13prototype_macERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEES8_
+   fun:_ZN5Botan17Algorithm_Factory12providers_ofERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE
+   fun:_ZN5Botan13algorithm_katERKNS_9SCAN_NameERKSt3mapINSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEES9_St4lessIS9_ESaISt4pairIKS9_S9_EEERNS_17Algorithm_FactoryE
+   obj:/usr/lib/libbotan-1.10.so.1.12
+   fun:_ZN5Botan26confirm_startup_self_testsERNS_17Algorithm_FactoryE
+   fun:_ZN5Botan13Library_State10initializeEb
+   fun:_ZN5Botan18LibraryInitializer10initializeERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE
+   obj:*
+   obj:*
    fun:elektraPluginOpen
-}
-{
-   <insert_a_suppression_name_here>
-   Memcheck:Leak
-   match-leak-kinds: reachable
-   fun:calloc
-   fun:_dl_check_map_versions
-   fun:dl_open_worker
-   fun:_dl_catch_error
-   fun:_dl_open
-   fun:dlopen_doit
-   fun:_dl_catch_error
-   fun:_dlerror_run
-   fun:dlopen@@GLIBC_2.2.5
-   fun:elektraModulesLoad
-   fun:elektraPluginOpen
-   fun:elektraProcessPlugins
-}
-{
-   <insert_a_suppression_name_here>
-   Memcheck:Leak
-   match-leak-kinds: reachable
-   fun:calloc
-   fun:_dl_check_map_versions
-   fun:dl_open_worker
-   fun:_dl_catch_error
-   fun:_dl_open
-   fun:dlopen_doit
-   fun:_dl_catch_error
-   fun:_dlerror_run
-   fun:dlopen@@GLIBC_2.2.5
-   fun:elektraModulesLoad
-   fun:elektraPluginOpen
-   fun:elektraBackendOpenDefault
+   fun:test_crypto_operations
+   fun:main
 }
 {
    <insert_a_suppression_name_here>
    Memcheck:Leak
    match-leak-kinds: reachable
    fun:malloc
-   fun:_dl_new_object
-   fun:_dl_map_object_from_fd
-   fun:_dl_map_object
-   fun:dl_open_worker
-   fun:_dl_catch_error
-   fun:_dl_open
-   fun:dlopen_doit
-   fun:_dl_catch_error
-   fun:_dlerror_run
-   fun:dlopen@@GLIBC_2.2.5
-   fun:elektraModulesLoad
-}
-{
-   <insert_a_suppression_name_here>
-   Memcheck:Leak
-   match-leak-kinds: reachable
-   fun:malloc
-   ...
-   fun:_dl_catch_error
-   fun:_dlerror_run
-}
-{
-   <insert_a_suppression_name_here>
-   Memcheck:Leak
-   match-leak-kinds: reachable
-   fun:malloc
-   ...
-   fun:dlopen_doit
-   fun:_dl_catch_error
-}
-
-
-
-
-
-
-
-
-{
-   <insert_a_suppression_name_here>
-   Memcheck:Leak
-   fun:malloc
-   ...
-   obj:*/libjvm.so
-   obj:*/libjvm.so
+   obj:*libgcrypt.so.20*
+   obj:*libgcrypt.so.20*
+   obj:*libgcrypt.so.20*
+   obj:*libgcrypt.so.20*
+   fun:elektraCryptoGcryInit
+   fun:test_init
+   fun:main
 }
 {
    <insert_a_suppression_name_here>
@@ -142,580 +47,11 @@
 {
    <insert_a_suppression_name_here>
    Memcheck:Cond
-   fun:elektraCryptoGcryDecrypt
-   fun:test_enc_and_dec_with_binary
-   fun:main
-}
-{
-   <insert_a_suppression_name_here>
-   Memcheck:Cond
-   fun:elektraCryptoGcryDecrypt
-   fun:test_enc_and_dec_with_binary
-   fun:main
-}
-{
-   <insert_a_suppression_name_here>
-   Memcheck:Cond
-   fun:elektraCryptoGcryDecrypt
-   fun:test_enc_and_dec_with_binary
-   fun:main
-}
-{
-   <insert_a_suppression_name_here>
-   Memcheck:Cond
-   fun:elektraCryptoGcryDecrypt
-   fun:test_enc_and_dec_with_binary
-   fun:main
-}
-{
-   <insert_a_suppression_name_here>
-   Memcheck:Cond
-   fun:keySetBinary
-   fun:elektraCryptoGcryDecrypt
-   fun:test_enc_and_dec_with_binary
-   fun:main
-}
-{
-   <insert_a_suppression_name_here>
-   Memcheck:Cond
-   fun:keySetBinary
-   fun:elektraCryptoGcryDecrypt
-   fun:test_enc_and_dec_with_binary
-   fun:main
-}
-{
-   <insert_a_suppression_name_here>
-   Memcheck:Cond
-   fun:keySetRaw
-   fun:elektraCryptoGcryDecrypt
-   fun:test_enc_and_dec_with_binary
-   fun:main
-}
-{
-   <insert_a_suppression_name_here>
-   Memcheck:Cond
-   fun:realloc
-   fun:keySetRaw
-   fun:elektraCryptoGcryDecrypt
-   fun:test_enc_and_dec_with_binary
-   fun:main
-}
-{
-   <insert_a_suppression_name_here>
-   Memcheck:Cond
    fun:is_overlap
    fun:memcpy@@GLIBC_2.14
    fun:keySetRaw
    fun:elektraCryptoGcryDecrypt
    fun:test_enc_and_dec_with_binary
-   fun:main
-}
-{
-   <insert_a_suppression_name_here>
-   Memcheck:Cond
-   fun:memcpy@@GLIBC_2.14
-   fun:keySetRaw
-   fun:elektraCryptoGcryDecrypt
-   fun:test_enc_and_dec_with_binary
-   fun:main
-}
-{
-   <insert_a_suppression_name_here>
-   Memcheck:Cond
-   fun:memcpy@@GLIBC_2.14
-   fun:keySetRaw
-   fun:elektraCryptoGcryDecrypt
-   fun:test_enc_and_dec_with_binary
-   fun:main
-}
-{
-   <insert_a_suppression_name_here>
-   Memcheck:Cond
-   fun:memcpy@@GLIBC_2.14
-   fun:keySetRaw
-   fun:elektraCryptoGcryDecrypt
-   fun:test_enc_and_dec_with_binary
-   fun:main
-}
-{
-   <insert_a_suppression_name_here>
-   Memcheck:Cond
-   fun:memcpy@@GLIBC_2.14
-   fun:keySetRaw
-   fun:elektraCryptoGcryDecrypt
-   fun:test_enc_and_dec_with_binary
-   fun:main
-}
-{
-   <insert_a_suppression_name_here>
-   Memcheck:Cond
-   fun:memcpy@@GLIBC_2.14
-   fun:keySetRaw
-   fun:elektraCryptoGcryDecrypt
-   fun:test_enc_and_dec_with_binary
-   fun:main
-}
-{
-   <insert_a_suppression_name_here>
-   Memcheck:Cond
-   fun:memcpy@@GLIBC_2.14
-   fun:keySetRaw
-   fun:elektraCryptoGcryDecrypt
-   fun:test_enc_and_dec_with_binary
-   fun:main
-}
-{
-   <insert_a_suppression_name_here>
-   Memcheck:Cond
-   fun:memcpy@@GLIBC_2.14
-   fun:keySetRaw
-   fun:elektraCryptoGcryDecrypt
-   fun:test_enc_and_dec_with_binary
-   fun:main
-}
-{
-   <insert_a_suppression_name_here>
-   Memcheck:Cond
-   fun:memcpy@@GLIBC_2.14
-   fun:keySetRaw
-   fun:elektraCryptoGcryDecrypt
-   fun:test_enc_and_dec_with_binary
-   fun:main
-}
-{
-   <insert_a_suppression_name_here>
-   Memcheck:Cond
-   fun:keyGetBinary
-   fun:test_enc_and_dec_with_binary
-   fun:main
-}
-{
-   <insert_a_suppression_name_here>
-   Memcheck:Cond
-   fun:is_overlap
-   fun:memcpy@@GLIBC_2.14
-   fun:keyGetBinary
-   fun:test_enc_and_dec_with_binary
-   fun:main
-}
-{
-   <insert_a_suppression_name_here>
-   Memcheck:Cond
-   fun:memcpy@@GLIBC_2.14
-   fun:keyGetBinary
-   fun:test_enc_and_dec_with_binary
-   fun:main
-}
-{
-   <insert_a_suppression_name_here>
-   Memcheck:Cond
-   fun:memcpy@@GLIBC_2.14
-   fun:keyGetBinary
-   fun:test_enc_and_dec_with_binary
-   fun:main
-}
-{
-   <insert_a_suppression_name_here>
-   Memcheck:Cond
-   fun:memcpy@@GLIBC_2.14
-   fun:keyGetBinary
-   fun:test_enc_and_dec_with_binary
-   fun:main
-}
-{
-   <insert_a_suppression_name_here>
-   Memcheck:Cond
-   fun:memcpy@@GLIBC_2.14
-   fun:keyGetBinary
-   fun:test_enc_and_dec_with_binary
-   fun:main
-}
-{
-   <insert_a_suppression_name_here>
-   Memcheck:Cond
-   fun:memcpy@@GLIBC_2.14
-   fun:keyGetBinary
-   fun:test_enc_and_dec_with_binary
-   fun:main
-}
-{
-   <insert_a_suppression_name_here>
-   Memcheck:Cond
-   fun:memcpy@@GLIBC_2.14
-   fun:keyGetBinary
-   fun:test_enc_and_dec_with_binary
-   fun:main
-}
-{
-   <insert_a_suppression_name_here>
-   Memcheck:Cond
-   fun:memcpy@@GLIBC_2.14
-   fun:keyGetBinary
-   fun:test_enc_and_dec_with_binary
-   fun:main
-}
-{
-   <insert_a_suppression_name_here>
-   Memcheck:Cond
-   fun:memcpy@@GLIBC_2.14
-   fun:keyGetBinary
-   fun:test_enc_and_dec_with_binary
-   fun:main
-}
-{
-   <insert_a_suppression_name_here>
-   Memcheck:Cond
-   fun:test_enc_and_dec_with_binary
-   fun:main
-}
-{
-   <insert_a_suppression_name_here>
-   Memcheck:Cond
-   fun:__memcmp_sse4_1
-   fun:test_enc_and_dec_with_binary
-   fun:main
-}
-{
-   <insert_a_suppression_name_here>
-   Memcheck:Cond
-   fun:__memcmp_sse4_1
-   fun:test_enc_and_dec_with_binary
-   fun:main
-}
-{
-   <insert_a_suppression_name_here>
-   Memcheck:Cond
-   fun:elektraCryptoGcryDecrypt
-   fun:test_enc_and_dec_with_null
-   fun:main
-}
-{
-   <insert_a_suppression_name_here>
-   Memcheck:Cond
-   fun:elektraCryptoGcryDecrypt
-   fun:test_enc_and_dec_with_null
-   fun:main
-}
-{
-   <insert_a_suppression_name_here>
-   Memcheck:Cond
-   fun:elektraCryptoGcryDecrypt
-   fun:test_enc_and_dec_with_null
-   fun:main
-}
-{
-   <insert_a_suppression_name_here>
-   Memcheck:Cond
-   fun:elektraCryptoGcryDecrypt
-   fun:test_enc_and_dec_with_null
-   fun:main
-}
-{
-   <insert_a_suppression_name_here>
-   Memcheck:Leak
-   match-leak-kinds: reachable
-   fun:malloc
-   obj:*libgcrypt.so.20*
-   obj:*libgcrypt.so.20*
-   obj:*libgcrypt.so.20*
-   obj:*libgcrypt.so.20*
-   obj:*libgcrypt.so.20*
-   obj:*libgcrypt.so.20*
-   obj:*libgcrypt.so.20*
-   fun:elektraCryptoGcryInit
-   fun:test_init
-   fun:main
-}
-{
-   <insert_a_suppression_name_here>
-   Memcheck:Leak
-   match-leak-kinds: reachable
-   fun:malloc
-   obj:*libgcrypt.so.20*
-   obj:*libgcrypt.so.20*
-   obj:*libgcrypt.so.20*
-   obj:*libgcrypt.so.20*
-   obj:*libgcrypt.so.20*
-   obj:*libgcrypt.so.20*
-   obj:*libgcrypt.so.20*
-   fun:elektraCryptoGcryInit
-   fun:test_init
-   fun:main
-}
-{
-   <insert_a_suppression_name_here>
-   Memcheck:Leak
-   match-leak-kinds: reachable
-   fun:malloc
-   obj:*libgcrypt.so.20*
-   obj:*libgcrypt.so.20*
-   obj:*libgcrypt.so.20*
-   obj:*libgcrypt.so.20*
-   obj:*libgcrypt.so.20*
-   obj:*libgcrypt.so.20*
-   fun:elektraCryptoGcryInit
-   fun:test_init
-   fun:main
-}
-{
-   <insert_a_suppression_name_here>
-   Memcheck:Leak
-   match-leak-kinds: reachable
-   fun:malloc
-   obj:*libgcrypt.so.20*
-   obj:*libgcrypt.so.20*
-   obj:*libgcrypt.so.20*
-   obj:*libgcrypt.so.20*
-   obj:*libgcrypt.so.20*
-   obj:*libgcrypt.so.20*
-   obj:*libgcrypt.so.20*
-   fun:elektraCryptoGcryInit
-   fun:test_init
-   fun:main
-}
-{
-   <insert_a_suppression_name_here>
-   Memcheck:Leak
-   match-leak-kinds: reachable
-   fun:malloc
-   obj:*libgcrypt.so.20*
-   obj:*libgcrypt.so.20*
-   obj:*libgcrypt.so.20*
-   obj:*libgcrypt.so.20*
-   fun:elektraCryptoGcryInit
-   fun:test_init
-   fun:main
-}
-{
-   <insert_a_suppression_name_here>
-   Memcheck:Leak
-   match-leak-kinds: reachable
-   fun:malloc
-   obj:*libgcrypt.so.20*
-   fun:gcry_control
-   ...
-   fun:main
-}
-{
-   <insert_a_suppression_name_here>
-   Memcheck:Leak
-   match-leak-kinds: reachable
-   fun:malloc
-   obj:*libgcrypt.so.20.*
-   ...
-   fun:main
-}
-{
-   <insert_a_suppression_name_here>
-   Memcheck:Leak
-   match-leak-kinds: reachable
-   fun:malloc
-   obj:*libgcrypt.so.20*
-   ...
-   fun:main
-}
-{
-   <insert_a_suppression_name_here>
-   Memcheck:Leak
-   fun:malloc
-   obj:*libstdc++.so.6*
-}
-{
-   <insert_a_suppression_name_here>
-   Memcheck:Leak
-   match-leak-kinds: reachable
-   fun:calloc
-   fun:_dl_new_object
-   fun:_dl_map_object_from_fd
-   ...
-   fun:_dl_catch_error
-   fun:_dlerror_run
-   fun:dlopen@@GLIBC_2.2.5
-   fun:elektraModulesLoad
-}
-{
-   <insert_a_suppression_name_here>
-   Memcheck:Leak
-   match-leak-kinds: reachable
-   fun:malloc
-   ...
-   obj:*libcrypto.so*
-   ...
-}
-{
-   <insert_a_suppression_name_here>
-   Memcheck:Cond
-   fun:re_compile_fastmap_iter.isra.*
-   fun:re_compile_fastmap
-   fun:regcomp
-   fun:elektraValidationSet
-   fun:icase_test
-   fun:main
-}
-
-
-{
-   dynamic loading of plugins
-   Memcheck:Leak
-   match-leak-kinds: reachable
-   fun:calloc
-   fun:_dlerror_run
-   fun:dlopen@@GLIBC_2.2.5
-   fun:elektraModulesLoad
-   fun:elektraPluginOpen
-   ...
-}
-
-{
-   dynamic loading of plugins
-   Memcheck:Leak
-   match-leak-kinds: indirect
-   fun:malloc
-   obj:*
-   ...
-   obj:*
-   fun:elektraPluginOpen
-   fun:_ZN3kdb5tools6PluginC1ERKNS0_10PluginSpecERNS_6KeySetE
-}
-
-{
-   semlock plugin sem_open
-   Memcheck:Param
-   write(buf)
-   fun:__write_nocancel
-   fun:sem_open
-   ...
-   fun:elektraSemlockOpen
-   fun:elektraPluginOpen
-   ...
-}
-{
-   <insert_a_suppression_name_here>
-   Memcheck:Leak
-   match-leak-kinds: definite
-   fun:_Znwm
-   obj:/usr/lib64/libbotan-1.10.so.1.13
-   obj:/usr/lib64/libbotan-1.10.so.1.13
-   fun:_ZN5Botan10get_cipherERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEENS_10Cipher_DirE
-   fun:_ZN5Botan10get_cipherERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEERKNS_11OctetStringESA_NS_10Cipher_DirE
-   fun:elektraCryptoBotanEncrypt
-   ...
-}
-{
-   <insert_a_suppression_name_here>
-   Memcheck:Leak
-   match-leak-kinds: possible
-   fun:*
-   ...
-   obj:/usr/lib/libbotan-1.10.so.0.8
-   ...
-   fun:elektraCryptoBotanInit
-   ...
-}
-{
-   <insert_a_suppression_name_here>
-   Memcheck:Leak
-   match-leak-kinds: possible
-   fun:*
-   ...
-   obj:/usr/lib/libbotan-1.10.so.0.8
-   ...
-}
-{
-   <insert_a_suppression_name_here>
-   Memcheck:Leak
-   match-leak-kinds: definite
-   fun:_Znwm
-   obj:/usr/lib/libbotan-1.10.so.0.8
-   obj:/usr/lib/libbotan-1.10.so.0.8
-   fun:_ZN5Botan10get_cipherERKSsNS_10Cipher_DirE
-   fun:_ZN5Botan10get_cipherERKSsRKNS_11OctetStringES4_NS_10Cipher_DirE
-   fun:elektraCryptoBotanEncrypt
-   ...
-}
-{
-   <insert_a_suppression_name_here>
-   Memcheck:Leak
-   match-leak-kinds: definite
-   fun:_Znwm
-   obj:/usr/lib/libbotan-1.10.so.0.8
-   obj:/usr/lib/libbotan-1.10.so.0.8
-   fun:_ZN5Botan10get_cipherERKSsNS_10Cipher_DirE
-   fun:_ZN5Botan10get_cipherERKSsRKNS_11OctetStringES4_NS_10Cipher_DirE
-   obj:*
-   obj:*
-   fun:test_config_errors_internal
-   fun:test_config_errors
-   fun:main
-}
-{
-   <insert_a_suppression_name_here>
-   Memcheck:Leak
-   match-leak-kinds: reachable
-   fun:realloc
-   fun:CRYPTO_realloc
-   fun:lh_insert
-   fun:OBJ_NAME_add
-   fun:OpenSSL_add_all_digests
-   obj:*
-   obj:*
-   fun:elektraPluginOpen
-   fun:test_init
-   fun:main
-}
-{
-   <insert_a_suppression_name_here>
-   Memcheck:Leak
-   match-leak-kinds: reachable
-   fun:realloc
-   fun:CRYPTO_realloc
-   fun:lh_insert
-   obj:/usr/lib/x86_64-linux-gnu/libcrypto.so.1.0.2
-   fun:ERR_load_strings
-   obj:*
-   obj:*
-   fun:elektraPluginOpen
-   fun:test_init
-   fun:main
-}
-{
-   <insert_a_suppression_name_here>
-   Memcheck:Leak
-   match-leak-kinds: reachable
-   fun:_Znwm
-   obj:/usr/lib/libbotan-1.10.so.1.12
-   obj:/usr/lib/libbotan-1.10.so.1.12
-   fun:_ZN5Botan17Algorithm_Factory13prototype_macERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEES8_
-   fun:_ZN5Botan17Algorithm_Factory12providers_ofERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE
-   fun:_ZN5Botan13algorithm_katERKNS_9SCAN_NameERKSt3mapINSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEES9_St4lessIS9_ESaISt4pairIKS9_S9_EEERNS_17Algorithm_FactoryE
-   obj:/usr/lib/libbotan-1.10.so.1.12
-   fun:_ZN5Botan26confirm_startup_self_testsERNS_17Algorithm_FactoryE
-   fun:_ZN5Botan13Library_State10initializeEb
-   fun:_ZN5Botan18LibraryInitializer10initializeERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE
-   obj:*
-   obj:*
-   fun:elektraPluginOpen
-   fun:test_crypto_operations
-   fun:main
-}
-{
-   <insert_a_suppression_name_here>
-   Memcheck:Leak
-   match-leak-kinds: reachable
-   fun:_Znwm
-   obj:/usr/lib/libbotan-1.10.so.1.12
-   obj:/usr/lib/libbotan-1.10.so.1.12
-   fun:_ZN5Botan17Algorithm_Factory22prototype_block_cipherERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEES8_
-   fun:_ZN5Botan17Algorithm_Factory12providers_ofERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE
-   fun:_ZN5Botan13algorithm_katERKNS_9SCAN_NameERKSt3mapINSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEES9_St4lessIS9_ESaISt4pairIKS9_S9_EEERNS_17Algorithm_FactoryE
-   obj:/usr/lib/libbotan-1.10.so.1.12
-   fun:_ZN5Botan26confirm_startup_self_testsERNS_17Algorithm_FactoryE
-   fun:_ZN5Botan13Library_State10initializeEb
-   fun:_ZN5Botan18LibraryInitializer10initializeERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE
-   obj:*
-   obj:*
-   fun:elektraPluginOpen
-   fun:test_crypto_operations
    fun:main
 }
 {
@@ -731,39 +67,6 @@
    obj:*
    obj:*
    fun:test_crypto_operations_internal
-   fun:test_crypto_operations
-   fun:main
-}
-{
-   <insert_a_suppression_name_here>
-   Memcheck:Leak
-   match-leak-kinds: reachable
-   fun:_Znwm
-   obj:/usr/lib/libbotan-1.10.so.1.12
-   fun:_ZN5Botan13Library_State10initializeEb
-   fun:_ZN5Botan18LibraryInitializer10initializeERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE
-   obj:*
-   obj:*
-   fun:elektraPluginOpen
-   fun:test_crypto_operations
-   fun:main
-}
-{
-   <insert_a_suppression_name_here>
-   Memcheck:Leak
-   match-leak-kinds: reachable
-   fun:_Znwm
-   obj:/usr/lib/libbotan-1.10.so.1.12
-   fun:_ZN5Botan17Algorithm_Factory22prototype_block_cipherERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEES8_
-   fun:_ZN5Botan17Algorithm_Factory12providers_ofERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE
-   fun:_ZN5Botan13algorithm_katERKNS_9SCAN_NameERKSt3mapINSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEES9_St4lessIS9_ESaISt4pairIKS9_S9_EEERNS_17Algorithm_FactoryE
-   obj:/usr/lib/libbotan-1.10.so.1.12
-   fun:_ZN5Botan26confirm_startup_self_testsERNS_17Algorithm_FactoryE
-   fun:_ZN5Botan13Library_State10initializeEb
-   fun:_ZN5Botan18LibraryInitializer10initializeERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE
-   obj:*
-   obj:*
-   fun:elektraPluginOpen
    fun:test_crypto_operations
    fun:main
 }
@@ -776,628 +79,6 @@
    fun:_ZN5Botan17Algorithm_Factory10add_engineEPNS_6EngineE
    fun:_ZN5Botan13Library_State10initializeEb
    fun:_ZN5Botan18LibraryInitializer10initializeERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE
-   obj:*
-   obj:*
-   fun:elektraPluginOpen
-   fun:test_crypto_operations
-   fun:main
-}
-{
-   <insert_a_suppression_name_here>
-   Memcheck:Leak
-   match-leak-kinds: reachable
-   fun:_Znwm
-   obj:/usr/lib/libbotan-1.10.so.1.12
-   fun:_ZN5Botan17Algorithm_FactoryC1ERNS_13Mutex_FactoryE
-   fun:_ZN5Botan13Library_State10initializeEb
-   fun:_ZN5Botan18LibraryInitializer10initializeERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE
-   obj:*
-   obj:*
-   fun:elektraPluginOpen
-   fun:test_crypto_operations
-   fun:main
-}
-{
-   <insert_a_suppression_name_here>
-   Memcheck:Leak
-   match-leak-kinds: reachable
-   fun:_Znwm
-   fun:_ZN5Botan18LibraryInitializer10initializeERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE
-   obj:*
-   obj:*
-   fun:elektraPluginOpen
-   fun:test_crypto_operations
-   fun:main
-}
-{
-   <insert_a_suppression_name_here>
-   Memcheck:Leak
-   match-leak-kinds: reachable
-   fun:_Znwm
-   obj:/usr/lib/libbotan-1.10.so.1.12
-   obj:/usr/lib/libbotan-1.10.so.1.12
-   fun:_ZN5Botan17Algorithm_Factory22prototype_block_cipherERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEES8_
-   obj:/usr/lib/libbotan-1.10.so.1.12
-   fun:_ZN5Botan10get_cipherERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEENS_10Cipher_DirE
-   fun:_ZN5Botan10get_cipherERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEERKNS_11OctetStringESA_NS_10Cipher_DirE
-   obj:*
-   obj:*
-   fun:test_crypto_operations_internal
-   fun:test_crypto_operations
-   fun:main
-}
-{
-   <insert_a_suppression_name_here>
-   Memcheck:Leak
-   match-leak-kinds: reachable
-   fun:_Znwm
-   fun:_ZNSt3mapINSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEES_IS5_PN5Botan12HashFunctionESt4lessIS5_ESaISt4pairIKS5_S8_EEESA_SaISB_ISC_SF_EEEixERSC_
-   obj:/usr/lib/libbotan-1.10.so.1.12
-   fun:_ZN5Botan17Algorithm_Factory23prototype_hash_functionERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEES8_
-   fun:_ZN5Botan17Algorithm_Factory12providers_ofERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE
-   fun:_ZN5Botan13algorithm_katERKNS_9SCAN_NameERKSt3mapINSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEES9_St4lessIS9_ESaISt4pairIKS9_S9_EEERNS_17Algorithm_FactoryE
-   obj:/usr/lib/libbotan-1.10.so.1.12
-   fun:_ZN5Botan26confirm_startup_self_testsERNS_17Algorithm_FactoryE
-   fun:_ZN5Botan13Library_State10initializeEb
-   fun:_ZN5Botan18LibraryInitializer10initializeERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE
-   obj:*
-   obj:*
-   fun:elektraPluginOpen
-   fun:test_crypto_operations
-   fun:main
-}
-{
-   <insert_a_suppression_name_here>
-   Memcheck:Leak
-   match-leak-kinds: indirect
-   fun:_Znwm
-   obj:/usr/lib/libbotan-1.10.so.1.12
-   obj:/usr/lib/libbotan-1.10.so.1.12
-   obj:/usr/lib/libbotan-1.10.so.1.12
-   fun:_ZN5Botan10get_cipherERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEENS_10Cipher_DirE
-   fun:_ZN5Botan10get_cipherERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEERKNS_11OctetStringESA_NS_10Cipher_DirE
-   obj:*
-   obj:*
-   fun:test_config_errors_internal.constprop.2
-   fun:test_config_errors
-   fun:main
-}
-{
-   <insert_a_suppression_name_here>
-   Memcheck:Leak
-   match-leak-kinds: reachable
-   fun:_Znwm
-   fun:_ZNSt3mapINSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEES_IS5_PN5Botan11BlockCipherESt4lessIS5_ESaISt4pairIKS5_S8_EEESA_SaISB_ISC_SF_EEEixERSC_
-   obj:/usr/lib/libbotan-1.10.so.1.12
-   fun:_ZN5Botan17Algorithm_Factory22prototype_block_cipherERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEES8_
-   fun:_ZN5Botan17Algorithm_Factory12providers_ofERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE
-   fun:_ZN5Botan13algorithm_katERKNS_9SCAN_NameERKSt3mapINSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEES9_St4lessIS9_ESaISt4pairIKS9_S9_EEERNS_17Algorithm_FactoryE
-   obj:/usr/lib/libbotan-1.10.so.1.12
-   fun:_ZN5Botan26confirm_startup_self_testsERNS_17Algorithm_FactoryE
-   fun:_ZN5Botan13Library_State10initializeEb
-   fun:_ZN5Botan18LibraryInitializer10initializeERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE
-   obj:*
-   obj:*
-   fun:elektraPluginOpen
-   fun:test_crypto_operations
-   fun:main
-}
-{
-   <insert_a_suppression_name_here>
-   Memcheck:Leak
-   match-leak-kinds: reachable
-   fun:_Znwm
-   obj:/usr/lib/libbotan-1.10.so.1.12
-   obj:/usr/lib/libbotan-1.10.so.1.12
-   obj:/usr/lib/libbotan-1.10.so.1.12
-   fun:_ZN5Botan11OctetString6changeERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE
-   obj:/usr/lib/libbotan-1.10.so.1.12
-   fun:_ZN5Botan26confirm_startup_self_testsERNS_17Algorithm_FactoryE
-   fun:_ZN5Botan13Library_State10initializeEb
-   fun:_ZN5Botan18LibraryInitializer10initializeERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE
-   obj:*
-   obj:*
-   fun:elektraPluginOpen
-   fun:test_crypto_operations
-   fun:main
-}
-{
-   <insert_a_suppression_name_here>
-   Memcheck:Leak
-   match-leak-kinds: reachable
-   fun:_Znwm
-   fun:_ZN5Botan13Library_State3setERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEES8_S8_b
-   obj:/usr/lib/libbotan-1.10.so.1.12
-   fun:_ZN5Botan13Library_State19load_default_configEv
-   fun:_ZN5Botan13Library_State10initializeEb
-   fun:_ZN5Botan18LibraryInitializer10initializeERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE
-   obj:*
-   obj:*
-   fun:elektraPluginOpen
-   fun:test_crypto_operations
-   fun:main
-}
-{
-   <insert_a_suppression_name_here>
-   Memcheck:Leak
-   match-leak-kinds: reachable
-   fun:_Znwm
-   fun:_ZNSt3mapINSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEES_IS5_PN5Botan25MessageAuthenticationCodeESt4lessIS5_ESaISt4pairIKS5_S8_EEESA_SaISB_ISC_SF_EEEixERSC_
-   obj:/usr/lib/libbotan-1.10.so.1.12
-   fun:_ZN5Botan17Algorithm_Factory13prototype_macERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEES8_
-   fun:_ZN5Botan17Algorithm_Factory12providers_ofERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE
-   fun:_ZN5Botan13algorithm_katERKNS_9SCAN_NameERKSt3mapINSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEES9_St4lessIS9_ESaISt4pairIKS9_S9_EEERNS_17Algorithm_FactoryE
-   obj:/usr/lib/libbotan-1.10.so.1.12
-   fun:_ZN5Botan26confirm_startup_self_testsERNS_17Algorithm_FactoryE
-   fun:_ZN5Botan13Library_State10initializeEb
-   fun:_ZN5Botan18LibraryInitializer10initializeERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE
-   obj:*
-   obj:*
-   fun:elektraPluginOpen
-   fun:test_crypto_operations
-   fun:main
-}
-{
-   <insert_a_suppression_name_here>
-   Memcheck:Leak
-   match-leak-kinds: reachable
-   fun:_Znwm
-   fun:_ZNK5Botan12SHA_160_SSE25cloneEv
-   obj:/usr/lib/libbotan-1.10.so.1.12
-   fun:_ZN5Botan17Algorithm_Factory13prototype_macERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEES8_
-   fun:_ZN5Botan17Algorithm_Factory12providers_ofERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE
-   fun:_ZN5Botan13algorithm_katERKNS_9SCAN_NameERKSt3mapINSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEES9_St4lessIS9_ESaISt4pairIKS9_S9_EEERNS_17Algorithm_FactoryE
-   obj:/usr/lib/libbotan-1.10.so.1.12
-   fun:_ZN5Botan26confirm_startup_self_testsERNS_17Algorithm_FactoryE
-   fun:_ZN5Botan13Library_State10initializeEb
-   fun:_ZN5Botan18LibraryInitializer10initializeERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE
-   obj:*
-   obj:*
-   fun:elektraPluginOpen
-   fun:test_crypto_operations
-   fun:main
-}
-{
-   <insert_a_suppression_name_here>
-   Memcheck:Leak
-   match-leak-kinds: indirect
-   fun:_Znwm
-   fun:_ZNSt6vectorIPN5Botan6FilterESaIS2_EE14_M_fill_insertEN9__gnu_cxx17__normal_iteratorIPS2_S4_EEmRKS2_
-   fun:_ZN5Botan6FilterC1Ev
-   fun:_ZN5Botan14CBC_EncryptionC1EPNS_11BlockCipherEPNS_28BlockCipherModePaddingMethodE
-   obj:/usr/lib/libbotan-1.10.so.1.12
-   obj:/usr/lib/libbotan-1.10.so.1.12
-   fun:_ZN5Botan10get_cipherERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEENS_10Cipher_DirE
-   fun:_ZN5Botan10get_cipherERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEERKNS_11OctetStringESA_NS_10Cipher_DirE
-   obj:*
-   obj:*
-   fun:test_config_errors_internal.constprop.2
-   fun:test_config_errors
-   fun:main
-}
-{
-   <insert_a_suppression_name_here>
-   Memcheck:Leak
-   match-leak-kinds: reachable
-   fun:_Znwm
-   fun:_ZNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEE9_M_assignERKS4_
-   fun:_ZN5Botan13Library_State3setERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEES8_S8_b
-   obj:/usr/lib/libbotan-1.10.so.1.12
-   fun:_ZN5Botan13Library_State10initializeEb
-   fun:_ZN5Botan18LibraryInitializer10initializeERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE
-   obj:*
-   obj:*
-   fun:elektraPluginOpen
-   fun:test_crypto_operations
-   fun:main
-}
-{
-   <insert_a_suppression_name_here>
-   Memcheck:Leak
-   match-leak-kinds: reachable
-   fun:_Znwm
-   fun:_ZN5Botan17Algorithm_FactoryC1ERNS_13Mutex_FactoryE
-   fun:_ZN5Botan13Library_State10initializeEb
-   fun:_ZN5Botan18LibraryInitializer10initializeERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE
-   obj:*
-   obj:*
-   fun:elektraPluginOpen
-   fun:test_crypto_operations
-   fun:main
-}
-{
-   <insert_a_suppression_name_here>
-   Memcheck:Leak
-   match-leak-kinds: reachable
-   fun:_Znwm
-   fun:_ZN5Botan13Library_State13add_allocatorEPNS_9AllocatorE
-   fun:_ZN5Botan13Library_State10initializeEb
-   fun:_ZN5Botan18LibraryInitializer10initializeERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE
-   obj:*
-   obj:*
-   fun:elektraPluginOpen
-   fun:test_crypto_operations
-   fun:main
-}
-{
-   <insert_a_suppression_name_here>
-   Memcheck:Leak
-   match-leak-kinds: reachable
-   fun:_Znwm
-   fun:_ZN5Botan13Library_State10initializeEb
-   fun:_ZN5Botan18LibraryInitializer10initializeERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE
-   obj:*
-   obj:*
-   fun:elektraPluginOpen
-   fun:test_crypto_operations
-   fun:main
-}
-{
-   <insert_a_suppression_name_here>
-   Memcheck:Leak
-   match-leak-kinds: reachable
-   fun:_Znwm
-   fun:_ZN5Botan13Library_State3setERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEES8_S8_b
-   fun:_ZN5Botan13Library_State9add_aliasERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEES8_
-   obj:/usr/lib/libbotan-1.10.so.1.12
-   fun:_ZN5Botan13Library_State19load_default_configEv
-   fun:_ZN5Botan13Library_State10initializeEb
-   fun:_ZN5Botan18LibraryInitializer10initializeERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE
-   obj:*
-   obj:*
-   fun:elektraPluginOpen
-   fun:test_crypto_operations
-   fun:main
-}
-{
-   <insert_a_suppression_name_here>
-   Memcheck:Leak
-   match-leak-kinds: reachable
-   fun:_Znwm
-   fun:_ZNSt6vectorISt4pairIPvmESaIS2_EE13_M_insert_auxEN9__gnu_cxx17__normal_iteratorIPS2_S4_EERKS2_
-   obj:/usr/lib/libbotan-1.10.so.1.12
-   obj:/usr/lib/libbotan-1.10.so.1.12
-   fun:_ZN5Botan11OctetString6changeERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE
-   obj:/usr/lib/libbotan-1.10.so.1.12
-   fun:_ZN5Botan26confirm_startup_self_testsERNS_17Algorithm_FactoryE
-   fun:_ZN5Botan13Library_State10initializeEb
-   fun:_ZN5Botan18LibraryInitializer10initializeERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE
-   obj:*
-   obj:*
-   fun:elektraPluginOpen
-   fun:test_crypto_operations
-   fun:main
-}
-{
-   <insert_a_suppression_name_here>
-   Memcheck:Leak
-   match-leak-kinds: reachable
-   fun:_Znwm
-   fun:_ZNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEE9_M_assignERKS4_
-   fun:_ZN5Botan13Library_State3setERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEES8_S8_b
-   obj:/usr/lib/libbotan-1.10.so.1.12
-   obj:/usr/lib/libbotan-1.10.so.1.12
-   fun:_ZN5Botan13Library_State19load_default_configEv
-   fun:_ZN5Botan13Library_State10initializeEb
-   fun:_ZN5Botan18LibraryInitializer10initializeERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE
-   obj:*
-   obj:*
-   fun:elektraPluginOpen
-   fun:test_crypto_operations
-   fun:main
-}
-{
-   <insert_a_suppression_name_here>
-   Memcheck:Leak
-   match-leak-kinds: reachable
-   fun:_Znwm
-   fun:_ZNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEE9_M_assignERKS4_
-   fun:_ZN5Botan13Library_State3setERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEES8_S8_b
-   fun:_ZN5Botan13Library_State9add_aliasERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEES8_
-   obj:/usr/lib/libbotan-1.10.so.1.12
-   fun:_ZN5Botan13Library_State19load_default_configEv
-   fun:_ZN5Botan13Library_State10initializeEb
-   fun:_ZN5Botan18LibraryInitializer10initializeERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE
-   obj:*
-   obj:*
-   fun:elektraPluginOpen
-   fun:test_crypto_operations
-   fun:main
-}
-{
-   <insert_a_suppression_name_here>
-   Memcheck:Leak
-   match-leak-kinds: reachable
-   fun:_Znwm
-   fun:_ZNK5Botan7SHA_2565cloneEv
-   obj:/usr/lib/libbotan-1.10.so.1.12
-   fun:_ZN5Botan17Algorithm_Factory13prototype_macERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEES8_
-   fun:_ZN5Botan17Algorithm_Factory12providers_ofERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE
-   fun:_ZN5Botan13algorithm_katERKNS_9SCAN_NameERKSt3mapINSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEES9_St4lessIS9_ESaISt4pairIKS9_S9_EEERNS_17Algorithm_FactoryE
-   obj:/usr/lib/libbotan-1.10.so.1.12
-   fun:_ZN5Botan26confirm_startup_self_testsERNS_17Algorithm_FactoryE
-   fun:_ZN5Botan13Library_State10initializeEb
-   fun:_ZN5Botan18LibraryInitializer10initializeERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE
-   obj:*
-   obj:*
-   fun:elektraPluginOpen
-   fun:test_crypto_operations
-   fun:main
-}
-{
-   <insert_a_suppression_name_here>
-   Memcheck:Leak
-   match-leak-kinds: reachable
-   fun:_Znwm
-   fun:_ZN5Botan13Library_State3setERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEES8_S8_b
-   obj:/usr/lib/libbotan-1.10.so.1.12
-   obj:/usr/lib/libbotan-1.10.so.1.12
-   fun:_ZN5Botan13Library_State19load_default_configEv
-   fun:_ZN5Botan13Library_State10initializeEb
-   fun:_ZN5Botan18LibraryInitializer10initializeERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE
-   obj:*
-   obj:*
-   fun:elektraPluginOpen
-   fun:test_crypto_operations
-   fun:main
-}
-{
-   <insert_a_suppression_name_here>
-   Memcheck:Leak
-   match-leak-kinds: definite
-   fun:_Znwm
-   obj:/usr/lib/libbotan-1.10.so.1.12
-   obj:/usr/lib/libbotan-1.10.so.1.12
-   fun:_ZN5Botan10get_cipherERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEENS_10Cipher_DirE
-   fun:_ZN5Botan10get_cipherERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEERKNS_11OctetStringESA_NS_10Cipher_DirE
-   obj:*
-   obj:*
-   fun:test_config_errors_internal.constprop.2
-   fun:test_config_errors
-   fun:main
-}
-{
-   <insert_a_suppression_name_here>
-   Memcheck:Leak
-   match-leak-kinds: reachable
-   fun:_Znwm
-   obj:/usr/lib/libbotan-1.10.so.1.12
-   fun:_ZN5Botan17Algorithm_Factory13prototype_macERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEES8_
-   fun:_ZN5Botan17Algorithm_Factory12providers_ofERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE
-   fun:_ZN5Botan13algorithm_katERKNS_9SCAN_NameERKSt3mapINSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEES9_St4lessIS9_ESaISt4pairIKS9_S9_EEERNS_17Algorithm_FactoryE
-   obj:/usr/lib/libbotan-1.10.so.1.12
-   fun:_ZN5Botan26confirm_startup_self_testsERNS_17Algorithm_FactoryE
-   fun:_ZN5Botan13Library_State10initializeEb
-   fun:_ZN5Botan18LibraryInitializer10initializeERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE
-   obj:*
-   obj:*
-   fun:elektraPluginOpen
-   fun:test_crypto_operations
-   fun:main
-}
-{
-   <insert_a_suppression_name_here>
-   Memcheck:Leak
-   match-leak-kinds: reachable
-   fun:_Znwm
-   fun:_ZNSt6vectorIPN5Botan9AllocatorESaIS2_EE13_M_insert_auxEN9__gnu_cxx17__normal_iteratorIPS2_S4_EERKS2_
-   fun:_ZN5Botan13Library_State13add_allocatorEPNS_9AllocatorE
-   fun:_ZN5Botan13Library_State10initializeEb
-   fun:_ZN5Botan18LibraryInitializer10initializeERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE
-   obj:*
-   obj:*
-   fun:elektraPluginOpen
-   fun:test_crypto_operations
-   fun:main
-}
-{
-   <insert_a_suppression_name_here>
-   Memcheck:Leak
-   match-leak-kinds: reachable
-   fun:_Znwm
-   fun:_ZN5Botan13Library_State3setERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEES8_S8_b
-   obj:/usr/lib/libbotan-1.10.so.1.12
-   fun:_ZN5Botan13Library_State10initializeEb
-   fun:_ZN5Botan18LibraryInitializer10initializeERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE
-   obj:*
-   obj:*
-   fun:elektraPluginOpen
-   fun:test_crypto_operations
-   fun:main
-}
-{
-   <insert_a_suppression_name_here>
-   Memcheck:Leak
-   match-leak-kinds: indirect
-   fun:_Znwm
-   fun:_ZNK5Botan7AES_2565cloneEv
-   obj:/usr/lib/libbotan-1.10.so.1.12
-   obj:/usr/lib/libbotan-1.10.so.1.12
-   fun:_ZN5Botan10get_cipherERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEENS_10Cipher_DirE
-   fun:_ZN5Botan10get_cipherERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEERKNS_11OctetStringESA_NS_10Cipher_DirE
-   obj:*
-   obj:*
-   fun:test_config_errors_internal.constprop.2
-   fun:test_config_errors
-   fun:main
-}
-{
-   <insert_a_suppression_name_here>
-   Memcheck:Leak
-   match-leak-kinds: reachable
-   fun:_Znwm
-   obj:/usr/lib/libbotan-1.10.so.1.12
-   fun:_ZN5Botan17Algorithm_Factory23prototype_hash_functionERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEES8_
-   fun:_ZN5Botan17Algorithm_Factory12providers_ofERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE
-   fun:_ZN5Botan13algorithm_katERKNS_9SCAN_NameERKSt3mapINSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEES9_St4lessIS9_ESaISt4pairIKS9_S9_EEERNS_17Algorithm_FactoryE
-   obj:/usr/lib/libbotan-1.10.so.1.12
-   fun:_ZN5Botan26confirm_startup_self_testsERNS_17Algorithm_FactoryE
-   fun:_ZN5Botan13Library_State10initializeEb
-   fun:_ZN5Botan18LibraryInitializer10initializeERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE
-   obj:*
-   obj:*
-   fun:elektraPluginOpen
-   fun:test_crypto_operations
-   fun:main
-}
-{
-   <insert_a_suppression_name_here>
-   Memcheck:Leak
-   match-leak-kinds: reachable
-   fun:_Znwm
-   fun:_ZNSt3mapINSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEES_IS5_PN5Botan11BlockCipherESt4lessIS5_ESaISt4pairIKS5_S8_EEESA_SaISB_ISC_SF_EEEixERSC_
-   obj:/usr/lib/libbotan-1.10.so.1.12
-   fun:_ZN5Botan17Algorithm_Factory22prototype_block_cipherERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEES8_
-   obj:/usr/lib/libbotan-1.10.so.1.12
-   fun:_ZN5Botan10get_cipherERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEENS_10Cipher_DirE
-   fun:_ZN5Botan10get_cipherERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEERKNS_11OctetStringESA_NS_10Cipher_DirE
-   obj:*
-   obj:*
-   fun:test_crypto_operations_internal
-   fun:test_crypto_operations
-   fun:main
-}
-{
-   <insert_a_suppression_name_here>
-   Memcheck:Leak
-   match-leak-kinds: reachable
-   fun:_Znwm
-   obj:/usr/lib/libbotan-1.10.so.1.12
-   obj:/usr/lib/libbotan-1.10.so.1.12
-   fun:_ZN5Botan17Algorithm_Factory23prototype_hash_functionERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEES8_
-   fun:_ZN5Botan17Algorithm_Factory12providers_ofERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE
-   fun:_ZN5Botan13algorithm_katERKNS_9SCAN_NameERKSt3mapINSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEES9_St4lessIS9_ESaISt4pairIKS9_S9_EEERNS_17Algorithm_FactoryE
-   obj:/usr/lib/libbotan-1.10.so.1.12
-   fun:_ZN5Botan26confirm_startup_self_testsERNS_17Algorithm_FactoryE
-   fun:_ZN5Botan13Library_State10initializeEb
-   fun:_ZN5Botan18LibraryInitializer10initializeERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE
-   obj:*
-   obj:*
-   fun:elektraPluginOpen
-   fun:test_crypto_operations
-   fun:main
-}
-{
-   <insert_a_suppression_name_here>
-   Memcheck:Leak
-   match-leak-kinds: reachable
-   fun:malloc
-   obj:/usr/lib/libbotan-1.10.so.1.12
-   obj:/usr/lib/libbotan-1.10.so.1.12
-   obj:/usr/lib/libbotan-1.10.so.1.12
-   fun:_ZN5Botan11OctetString6changeERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE
-   obj:/usr/lib/libbotan-1.10.so.1.12
-   fun:_ZN5Botan26confirm_startup_self_testsERNS_17Algorithm_FactoryE
-   fun:_ZN5Botan13Library_State10initializeEb
-   fun:_ZN5Botan18LibraryInitializer10initializeERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE
-   obj:*
-   obj:*
-   fun:elektraPluginOpen
-   fun:test_crypto_operations
-   fun:main
-}
-{
-   <insert_a_suppression_name_here>
-   Memcheck:Leak
-   match-leak-kinds: reachable
-   fun:realloc
-   fun:CRYPTO_realloc
-   fun:lh_insert
-   fun:OBJ_NAME_add
-   fun:OpenSSL_add_all_ciphers
-   fun:OPENSSL_add_all_algorithms_noconf
-   obj:*
-   obj:*
-   fun:elektraPluginOpen
-   fun:test_init
-   fun:main
-}
-{
-   <insert_a_suppression_name_here>
-   Memcheck:Leak
-   match-leak-kinds: reachable
-   fun:realloc
-   fun:CRYPTO_realloc
-   fun:lh_insert
-   fun:int_err_set_item
-   fun:err_load_strings
-   obj:*
-   obj:*
-   fun:elektraPluginOpen
-   fun:test_init
-   fun:main
-}
-{
-   <insert_a_suppression_name_here>
-   Memcheck:Leak
-   match-leak-kinds: reachable
-   fun:_Znwm
-   fun:_ZN5Botan13Library_State10initializeEb
-   fun:_ZN5Botan18LibraryInitializer10initializeERKSs
-   obj:*
-   obj:*
-   fun:elektraPluginOpen
-   fun:test_crypto_operations
-   fun:main
-}
-{
-   <insert_a_suppression_name_here>
-   Memcheck:Leak
-   match-leak-kinds: reachable
-   fun:_Znwm
-   fun:_ZNSt8_Rb_treeISsSt4pairIKSsPN5Botan9AllocatorEESt10_Select1stIS5_ESt4lessISsESaIS5_EE17_M_insert_unique_ESt23_Rb_tree_const_iteratorIS5_ERKS5_
-   fun:_ZN5Botan13Library_State13add_allocatorEPNS_9AllocatorE
-   fun:_ZN5Botan13Library_State10initializeEb
-   fun:_ZN5Botan18LibraryInitializer10initializeERKSs
-   obj:*
-   obj:*
-   fun:elektraPluginOpen
-   fun:test_crypto_operations
-   fun:main
-}
-{
-   <insert_a_suppression_name_here>
-   Memcheck:Leak
-   match-leak-kinds: reachable
-   fun:_Znwm
-   fun:_ZNSt6vectorISt4pairIPvmESaIS2_EE13_M_insert_auxEN9__gnu_cxx17__normal_iteratorIPS2_S4_EERKS2_
-   obj:/usr/lib/libbotan-1.10.so.0.8
-   obj:/usr/lib/libbotan-1.10.so.0.8
-   fun:_ZN5Botan11OctetString6changeERKSs
-   obj:/usr/lib/libbotan-1.10.so.0.8
-   fun:_ZN5Botan26confirm_startup_self_testsERNS_17Algorithm_FactoryE
-   fun:_ZN5Botan13Library_State10initializeEb
-   fun:_ZN5Botan18LibraryInitializer10initializeERKSs
-   obj:*
-   obj:*
-   fun:elektraPluginOpen
-   fun:test_crypto_operations
-   fun:main
-}
-{
-   <insert_a_suppression_name_here>
-   Memcheck:Leak
-   match-leak-kinds: reachable
-   fun:_Znwm
-   fun:_ZNSt8_Rb_treeISsSt4pairIKSsSt3mapISsPN5Botan11BlockCipherESt4lessISsESaIS0_IS1_S5_EEEESt10_Select1stISB_ES7_SaISB_EE17_M_insert_unique_ESt23_Rb_tree_const_iteratorISB_ERKSB_
-   fun:_ZNSt3mapISsS_ISsPN5Botan11BlockCipherESt4lessISsESaISt4pairIKSsS2_EEES4_SaIS5_IS6_S9_EEEixERS6_
-   obj:/usr/lib/libbotan-1.10.so.0.8
-   fun:_ZN5Botan17Algorithm_Factory22prototype_block_cipherERKSsS2_
-   obj:/usr/lib/libbotan-1.10.so.0.8
-   fun:_ZN5Botan10get_cipherERKSsNS_10Cipher_DirE
-   fun:_ZN5Botan10get_cipherERKSsRKNS_11OctetStringES4_NS_10Cipher_DirE
-   obj:*
-   obj:*
-   fun:test_crypto_operations_internal
-   fun:test_crypto_operations
-   fun:main
-}
-{
-   <insert_a_suppression_name_here>
-   Memcheck:Leak
-   match-leak-kinds: reachable
-   fun:_Znwm
-   fun:_ZN5Botan18LibraryInitializer10initializeERKSs
    obj:*
    obj:*
    fun:elektraPluginOpen
@@ -1426,20 +107,53 @@
 }
 {
    <insert_a_suppression_name_here>
+   Memcheck:Cond
+   fun:elektraCryptoGcryDecrypt
+   fun:test_enc_and_dec_with_null
+   fun:main
+}
+{
+   <insert_a_suppression_name_here>
    Memcheck:Leak
-   match-leak-kinds: indirect
+   match-leak-kinds: reachable
    fun:_Znwm
-   fun:_ZNSt6vectorIPN5Botan6FilterESaIS2_EE14_M_fill_insertEN9__gnu_cxx17__normal_iteratorIPS2_S4_EEmRKS2_
-   fun:_ZN5Botan6FilterC1Ev
-   fun:_ZN5Botan14CBC_EncryptionC1EPNS_11BlockCipherEPNS_28BlockCipherModePaddingMethodE
-   obj:/usr/lib/libbotan-1.10.so.0.8
-   obj:/usr/lib/libbotan-1.10.so.0.8
-   fun:_ZN5Botan10get_cipherERKSsNS_10Cipher_DirE
-   fun:_ZN5Botan10get_cipherERKSsRKNS_11OctetStringES4_NS_10Cipher_DirE
+   obj:/usr/lib/libbotan-1.10.so.1.12
+   fun:_ZN5Botan17Algorithm_FactoryC1ERNS_13Mutex_FactoryE
+   fun:_ZN5Botan13Library_State10initializeEb
+   fun:_ZN5Botan18LibraryInitializer10initializeERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE
    obj:*
    obj:*
-   fun:test_config_errors_internal.constprop.2
-   fun:test_config_errors
+   fun:elektraPluginOpen
+   fun:test_crypto_operations
+   fun:main
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:calloc
+   fun:_dl_check_map_versions
+   fun:dl_open_worker
+   fun:_dl_catch_error
+   fun:_dl_open
+   fun:dlopen_doit
+   fun:_dl_catch_error
+   fun:_dlerror_run
+   fun:dlopen@@GLIBC_2.2.5
+   fun:elektraModulesLoad
+   fun:elektraPluginOpen
+   fun:elektraBackendOpenDefault
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:_Znwm
+   fun:_ZN5Botan18LibraryInitializer10initializeERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE
+   obj:*
+   obj:*
+   fun:elektraPluginOpen
+   fun:test_crypto_operations
    fun:main
 }
 {
@@ -1498,6 +212,20 @@
    Memcheck:Leak
    match-leak-kinds: reachable
    fun:_Znwm
+   fun:_ZNK5Botan11Core_Engine10find_pbkdfERKNS_9SCAN_NameERNS_17Algorithm_FactoryE
+   fun:_ZN5Botan17Algorithm_Factory15prototype_pbkdfERKSsS2_
+   fun:_ZN5Botan17Algorithm_Factory10make_pbkdfERKSsS2_
+   fun:_ZN5Botan9get_pbkdfERKSs
+   obj:*
+   obj:*
+   fun:test_crypto_operations
+   fun:main
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:_Znwm
    fun:_ZNSt6vectorIPN5Botan9AllocatorESaIS2_EE13_M_insert_auxEN9__gnu_cxx17__normal_iteratorIPS2_S4_EERKS2_
    fun:_ZN5Botan13Library_State13add_allocatorEPNS_9AllocatorE
    fun:_ZN5Botan13Library_State10initializeEb
@@ -1505,6 +233,497 @@
    obj:*
    obj:*
    fun:elektraPluginOpen
+   fun:test_crypto_operations
+   fun:main
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:_Znwm
+   fun:_ZNSt6vectorIiSaIiEE13_M_insert_auxEN9__gnu_cxx17__normal_iteratorIPiS1_EERKi
+   fun:_ZN5Botan20Device_EntropySourceC1ERKSt6vectorISsSaISsEE
+   fun:_ZN5Botan13Library_State15make_global_rngERNS_17Algorithm_FactoryEPNS_5MutexE
+   fun:_ZN5Botan13Library_State10global_rngEv
+   obj:*
+   obj:*
+   fun:test_crypto_operations
+   fun:main
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Cond
+   fun:keySetBinary
+   fun:elektraCryptoGcryDecrypt
+   fun:test_enc_and_dec_with_binary
+   fun:main
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:_Znwm
+   fun:_ZNSt3mapINSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEES_IS5_PN5Botan11BlockCipherESt4lessIS5_ESaISt4pairIKS5_S8_EEESA_SaISB_ISC_SF_EEEixERSC_
+   obj:/usr/lib/libbotan-1.10.so.1.12
+   fun:_ZN5Botan17Algorithm_Factory22prototype_block_cipherERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEES8_
+   fun:_ZN5Botan17Algorithm_Factory12providers_ofERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE
+   fun:_ZN5Botan13algorithm_katERKNS_9SCAN_NameERKSt3mapINSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEES9_St4lessIS9_ESaISt4pairIKS9_S9_EEERNS_17Algorithm_FactoryE
+   obj:/usr/lib/libbotan-1.10.so.1.12
+   fun:_ZN5Botan26confirm_startup_self_testsERNS_17Algorithm_FactoryE
+   fun:_ZN5Botan13Library_State10initializeEb
+   fun:_ZN5Botan18LibraryInitializer10initializeERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE
+   obj:*
+   obj:*
+   fun:elektraPluginOpen
+   fun:test_crypto_operations
+   fun:main
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: indirect
+   fun:_Znwm
+   obj:/usr/lib/libbotan-1.10.so.0.8
+   obj:/usr/lib/libbotan-1.10.so.0.8
+   obj:/usr/lib/libbotan-1.10.so.0.8
+   fun:_ZN5Botan10get_cipherERKSsNS_10Cipher_DirE
+   fun:_ZN5Botan10get_cipherERKSsRKNS_11OctetStringES4_NS_10Cipher_DirE
+   obj:*
+   obj:*
+   fun:test_config_errors_internal
+   fun:test_config_errors
+   fun:main
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:_Znwm
+   fun:_ZN5Botan17Algorithm_FactoryC1ERNS_13Mutex_FactoryE
+   fun:_ZN5Botan13Library_State10initializeEb
+   fun:_ZN5Botan18LibraryInitializer10initializeERKSs
+   obj:*
+   obj:*
+   fun:elektraPluginOpen
+   fun:test_crypto_operations
+   fun:main
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:calloc
+   fun:_dl_check_map_versions
+   fun:dl_open_worker
+   fun:_dl_catch_error
+   fun:_dl_open
+   fun:dlopen_doit
+   fun:_dl_catch_error
+   fun:_dlerror_run
+   fun:dlopen@@GLIBC_2.2.5
+   fun:elektraModulesLoad
+   fun:elektraPluginOpen
+   fun:elektraProcessPlugins
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Cond
+   fun:keySetRaw
+   fun:elektraCryptoGcryDecrypt
+   fun:test_enc_and_dec_with_binary
+   fun:main
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:_Znwm
+   obj:/usr/lib/libbotan-1.10.so.1.12
+   obj:/usr/lib/libbotan-1.10.so.1.12
+   obj:/usr/lib/libbotan-1.10.so.1.12
+   fun:_ZN5Botan11OctetString6changeERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE
+   obj:/usr/lib/libbotan-1.10.so.1.12
+   fun:_ZN5Botan26confirm_startup_self_testsERNS_17Algorithm_FactoryE
+   fun:_ZN5Botan13Library_State10initializeEb
+   fun:_ZN5Botan18LibraryInitializer10initializeERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE
+   obj:*
+   obj:*
+   fun:elektraPluginOpen
+   fun:test_crypto_operations
+   fun:main
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:_Znwm
+   obj:/usr/lib/libbotan-1.10.so.0.8
+   fun:_ZN5Botan13Library_State10initializeEb
+   fun:_ZN5Botan18LibraryInitializer10initializeERKSs
+   obj:*
+   obj:*
+   fun:elektraPluginOpen
+   fun:test_crypto_operations
+   fun:main
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:_Znwm
+   fun:_ZNK5Botan12SHA_160_SSE25cloneEv
+   obj:/usr/lib/libbotan-1.10.so.1.12
+   fun:_ZN5Botan17Algorithm_Factory13prototype_macERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEES8_
+   fun:_ZN5Botan17Algorithm_Factory12providers_ofERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE
+   fun:_ZN5Botan13algorithm_katERKNS_9SCAN_NameERKSt3mapINSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEES9_St4lessIS9_ESaISt4pairIKS9_S9_EEERNS_17Algorithm_FactoryE
+   obj:/usr/lib/libbotan-1.10.so.1.12
+   fun:_ZN5Botan26confirm_startup_self_testsERNS_17Algorithm_FactoryE
+   fun:_ZN5Botan13Library_State10initializeEb
+   fun:_ZN5Botan18LibraryInitializer10initializeERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE
+   obj:*
+   obj:*
+   fun:elektraPluginOpen
+   fun:test_crypto_operations
+   fun:main
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: indirect
+   fun:_Znwm
+   fun:_ZNSt6vectorIPN5Botan6FilterESaIS2_EE14_M_fill_insertEN9__gnu_cxx17__normal_iteratorIPS2_S4_EEmRKS2_
+   fun:_ZN5Botan6FilterC1Ev
+   fun:_ZN5Botan14CBC_EncryptionC1EPNS_11BlockCipherEPNS_28BlockCipherModePaddingMethodE
+   obj:/usr/lib/libbotan-1.10.so.1.12
+   obj:/usr/lib/libbotan-1.10.so.1.12
+   fun:_ZN5Botan10get_cipherERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEENS_10Cipher_DirE
+   fun:_ZN5Botan10get_cipherERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEERKNS_11OctetStringESA_NS_10Cipher_DirE
+   obj:*
+   obj:*
+   fun:test_config_errors_internal.constprop.2
+   fun:test_config_errors
+   fun:main
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:_Znwm
+   fun:_ZNSt8_Rb_treeISsSt4pairIKSsSsESt10_Select1stIS2_ESt4lessISsESaIS2_EE17_M_insert_unique_ESt23_Rb_tree_const_iteratorIS2_ERKS2_
+   fun:_ZN5Botan13Library_State3setERKSsS2_S2_b
+   obj:/usr/lib/libbotan-1.10.so.0.8
+   fun:_ZN5Botan13Library_State10initializeEb
+   fun:_ZN5Botan18LibraryInitializer10initializeERKSs
+   obj:*
+   obj:*
+   fun:elektraPluginOpen
+   fun:test_crypto_operations
+   fun:main
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: indirect
+   fun:_Znwm
+   fun:_ZNK5Botan7AES_2565cloneEv
+   obj:/usr/lib/libbotan-1.10.so.0.8
+   obj:/usr/lib/libbotan-1.10.so.0.8
+   fun:_ZN5Botan10get_cipherERKSsNS_10Cipher_DirE
+   fun:_ZN5Botan10get_cipherERKSsRKNS_11OctetStringES4_NS_10Cipher_DirE
+   obj:*
+   obj:*
+   fun:test_config_errors_internal
+   fun:test_config_errors
+   fun:main
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:malloc
+   obj:*libgcrypt.so.20*
+   fun:gcry_control
+   ...
+   fun:main
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:calloc
+   fun:_dl_new_object
+   fun:_dl_map_object_from_fd
+   ...
+   fun:_dl_catch_error
+   fun:_dlerror_run
+   fun:dlopen@@GLIBC_2.2.5
+   fun:elektraModulesLoad
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Cond
+   fun:realloc
+   fun:keySetRaw
+   fun:elektraCryptoGcryDecrypt
+   fun:elektraCryptoDecrypt
+   fun:libelektra_cryptogcrypt_gcrypt_LTX_elektraPluginget
+   fun:test_crypto_operations
+   fun:main
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Cond
+   fun:keySetString
+   fun:elektraCryptoGcryDecrypt
+   fun:elektraCryptoDecrypt
+   fun:libelektra_cryptogcrypt_gcrypt_LTX_elektraPluginget
+   fun:test_crypto_operations
+   fun:main
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:_Znwm
+   fun:_ZNSt8_Rb_treeISsSt4pairIKSsSsESt10_Select1stIS2_ESt4lessISsESaIS2_EE17_M_insert_unique_ESt23_Rb_tree_const_iteratorIS2_ERKS2_
+   fun:_ZN5Botan13Library_State3setERKSsS2_S2_b
+   fun:_ZN5Botan13Library_State9add_aliasERKSsS2_
+   obj:/usr/lib/libbotan-1.10.so.0.8
+   fun:_ZN5Botan13Library_State19load_default_configEv
+   fun:_ZN5Botan13Library_State10initializeEb
+   fun:_ZN5Botan18LibraryInitializer10initializeERKSs
+   obj:*
+   obj:*
+   fun:elektraPluginOpen
+   fun:test_crypto_operations
+   fun:main
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:malloc
+   fun:_dl_new_object
+   fun:_dl_map_object_from_fd
+   fun:_dl_map_object
+   fun:dl_open_worker
+   fun:_dl_catch_error
+   fun:_dl_open
+   fun:dlopen_doit
+   fun:_dl_catch_error
+   fun:_dlerror_run
+   fun:dlopen@@GLIBC_2.2.5
+   fun:elektraModulesLoad
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:_Znwm
+   fun:_ZN5Botan13Library_State3setERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEES8_S8_b
+   fun:_ZN5Botan13Library_State9add_aliasERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEES8_
+   obj:/usr/lib/libbotan-1.10.so.1.12
+   fun:_ZN5Botan13Library_State19load_default_configEv
+   fun:_ZN5Botan13Library_State10initializeEb
+   fun:_ZN5Botan18LibraryInitializer10initializeERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE
+   obj:*
+   obj:*
+   fun:elektraPluginOpen
+   fun:test_crypto_operations
+   fun:main
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:_Znwm
+   fun:_ZNSt8_Rb_treeISsSt4pairIKSsSsESt10_Select1stIS2_ESt4lessISsESaIS2_EE17_M_insert_unique_ESt23_Rb_tree_const_iteratorIS2_ERKS2_
+   fun:_ZN5Botan13Library_State3setERKSsS2_S2_b
+   obj:/usr/lib/libbotan-1.10.so.0.8
+   fun:_ZN5Botan13Library_State19load_default_configEv
+   fun:_ZN5Botan13Library_State10initializeEb
+   fun:_ZN5Botan18LibraryInitializer10initializeERKSs
+   obj:*
+   obj:*
+   fun:elektraPluginOpen
+   fun:test_crypto_operations
+   fun:main
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Cond
+   fun:is_overlap
+   fun:memcpy@@GLIBC_2.14
+   fun:keySetRaw
+   fun:elektraCryptoGcryDecrypt
+   fun:elektraCryptoDecrypt
+   fun:libelektra_cryptogcrypt_gcrypt_LTX_elektraPluginget
+   fun:test_crypto_operations
+   fun:main
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:_Znwm
+   fun:_ZNK5Botan7SHA_2565cloneEv
+   obj:/usr/lib/libbotan-1.10.so.1.12
+   fun:_ZN5Botan17Algorithm_Factory13prototype_macERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEES8_
+   fun:_ZN5Botan17Algorithm_Factory12providers_ofERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE
+   fun:_ZN5Botan13algorithm_katERKNS_9SCAN_NameERKSt3mapINSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEES9_St4lessIS9_ESaISt4pairIKS9_S9_EEERNS_17Algorithm_FactoryE
+   obj:/usr/lib/libbotan-1.10.so.1.12
+   fun:_ZN5Botan26confirm_startup_self_testsERNS_17Algorithm_FactoryE
+   fun:_ZN5Botan13Library_State10initializeEb
+   fun:_ZN5Botan18LibraryInitializer10initializeERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE
+   obj:*
+   obj:*
+   fun:elektraPluginOpen
+   fun:test_crypto_operations
+   fun:main
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:_Znwm
+   obj:/usr/lib/libbotan-1.10.so.0.8
+   obj:/usr/lib/libbotan-1.10.so.0.8
+   obj:/usr/lib/libbotan-1.10.so.0.8
+   fun:_ZN5Botan11OctetString6changeERKSs
+   obj:/usr/lib/libbotan-1.10.so.0.8
+   fun:_ZN5Botan26confirm_startup_self_testsERNS_17Algorithm_FactoryE
+   fun:_ZN5Botan13Library_State10initializeEb
+   fun:_ZN5Botan18LibraryInitializer10initializeERKSs
+   obj:*
+   obj:*
+   fun:elektraPluginOpen
+   fun:test_crypto_operations
+   fun:main
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:_Znwm
+   fun:_ZNK5Botan7SHA_5125cloneEv
+   fun:_ZNK5Botan4HMAC5cloneEv
+   fun:_ZN5Botan13Library_State15make_global_rngERNS_17Algorithm_FactoryEPNS_5MutexE
+   fun:_ZN5Botan13Library_State10global_rngEv
+   obj:*
+   obj:*
+   fun:test_crypto_operations
+   fun:main
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:_Znwm
+   fun:_ZN5Botan13Library_State3setERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEES8_S8_b
+   obj:/usr/lib/libbotan-1.10.so.1.12
+   fun:_ZN5Botan13Library_State10initializeEb
+   fun:_ZN5Botan18LibraryInitializer10initializeERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE
+   obj:*
+   obj:*
+   fun:elektraPluginOpen
+   fun:test_crypto_operations
+   fun:main
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Cond
+   fun:realloc
+   fun:keySetRaw
+   fun:elektraCryptoGcryDecrypt
+   fun:test_enc_and_dec_with_binary
+   fun:main
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:realloc
+   fun:CRYPTO_realloc
+   fun:lh_insert
+   obj:/usr/lib/x86_64-linux-gnu/libcrypto.so.1.0.2
+   fun:ERR_load_strings
+   obj:*
+   obj:*
+   fun:elektraPluginOpen
+   fun:test_init
+   fun:main
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:_Znwm
+   obj:/usr/lib/libbotan-1.10.so.1.12
+   fun:_ZN5Botan17Algorithm_Factory22prototype_block_cipherERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEES8_
+   fun:_ZN5Botan17Algorithm_Factory12providers_ofERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE
+   fun:_ZN5Botan13algorithm_katERKNS_9SCAN_NameERKSt3mapINSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEES9_St4lessIS9_ESaISt4pairIKS9_S9_EEERNS_17Algorithm_FactoryE
+   obj:/usr/lib/libbotan-1.10.so.1.12
+   fun:_ZN5Botan26confirm_startup_self_testsERNS_17Algorithm_FactoryE
+   fun:_ZN5Botan13Library_State10initializeEb
+   fun:_ZN5Botan18LibraryInitializer10initializeERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE
+   obj:*
+   obj:*
+   fun:elektraPluginOpen
+   fun:test_crypto_operations
+   fun:main
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:_Znwm
+   fun:_ZNSt6vectorISt4pairIPvmESaIS2_EE13_M_insert_auxEN9__gnu_cxx17__normal_iteratorIPS2_S4_EERKS2_
+   obj:/usr/lib/libbotan-1.10.so.0.8
+   obj:/usr/lib/libbotan-1.10.so.0.8
+   fun:_ZN5Botan11OctetString6changeERKSs
+   obj:/usr/lib/libbotan-1.10.so.0.8
+   fun:_ZN5Botan26confirm_startup_self_testsERNS_17Algorithm_FactoryE
+   fun:_ZN5Botan13Library_State10initializeEb
+   fun:_ZN5Botan18LibraryInitializer10initializeERKSs
+   obj:*
+   obj:*
+   fun:elektraPluginOpen
+   fun:test_crypto_operations
+   fun:main
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Cond
+   fun:keySetBinary
+   fun:elektraCryptoGcryDecrypt
+   fun:elektraCryptoDecrypt
+   fun:libelektra_cryptogcrypt_gcrypt_LTX_elektraPluginget
+   fun:test_crypto_operations
+   fun:main
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:malloc
+   obj:*libgcrypt.so.20.*
+   ...
+   fun:main
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:_Znwm
+   obj:/usr/lib/libbotan-1.10.so.1.12
+   obj:/usr/lib/libbotan-1.10.so.1.12
+   fun:_ZN5Botan17Algorithm_Factory22prototype_block_cipherERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEES8_
+   obj:/usr/lib/libbotan-1.10.so.1.12
+   fun:_ZN5Botan10get_cipherERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEENS_10Cipher_DirE
+   fun:_ZN5Botan10get_cipherERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEERKNS_11OctetStringESA_NS_10Cipher_DirE
+   obj:*
+   obj:*
+   fun:test_crypto_operations_internal
    fun:test_crypto_operations
    fun:main
 }
@@ -1551,13 +770,1055 @@
    <insert_a_suppression_name_here>
    Memcheck:Leak
    match-leak-kinds: reachable
+   fun:malloc
+   ...
+   fun:_dl_catch_error
+   fun:_dlerror_run
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Cond
+   fun:rawmemchr
+   fun:elektraStrLen
+   fun:keySetString
+   fun:elektraCryptoGcryDecrypt
+   fun:elektraCryptoDecrypt
+   fun:libelektra_cryptogcrypt_gcrypt_LTX_elektraPluginget
+   fun:test_crypto_operations
+   fun:main
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: reachable
    fun:_Znwm
-   fun:_ZN5Botan17Algorithm_FactoryC1ERNS_13Mutex_FactoryE
+   fun:_ZNSt3mapINSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEES_IS5_PN5Botan12HashFunctionESt4lessIS5_ESaISt4pairIKS5_S8_EEESA_SaISB_ISC_SF_EEEixERSC_
+   obj:/usr/lib/libbotan-1.10.so.1.12
+   fun:_ZN5Botan17Algorithm_Factory23prototype_hash_functionERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEES8_
+   fun:_ZN5Botan17Algorithm_Factory12providers_ofERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE
+   fun:_ZN5Botan13algorithm_katERKNS_9SCAN_NameERKSt3mapINSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEES9_St4lessIS9_ESaISt4pairIKS9_S9_EEERNS_17Algorithm_FactoryE
+   obj:/usr/lib/libbotan-1.10.so.1.12
+   fun:_ZN5Botan26confirm_startup_self_testsERNS_17Algorithm_FactoryE
+   fun:_ZN5Botan13Library_State10initializeEb
+   fun:_ZN5Botan18LibraryInitializer10initializeERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE
+   obj:*
+   obj:*
+   fun:elektraPluginOpen
+   fun:test_crypto_operations
+   fun:main
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:_Znwm
+   fun:_ZN5Botan15Algorithm_CacheINS_5PBKDFEE3addEPS1_RKSsS5_
+   fun:_ZN5Botan17Algorithm_Factory15prototype_pbkdfERKSsS2_
+   fun:_ZN5Botan17Algorithm_Factory10make_pbkdfERKSsS2_
+   fun:_ZN5Botan9get_pbkdfERKSs
+   obj:*
+   obj:*
+   fun:test_crypto_operations
+   fun:main
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:_Znwm
+   fun:_ZN5Botan13Library_State3setERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEES8_S8_b
+   obj:/usr/lib/libbotan-1.10.so.1.12
+   fun:_ZN5Botan13Library_State19load_default_configEv
+   fun:_ZN5Botan13Library_State10initializeEb
+   fun:_ZN5Botan18LibraryInitializer10initializeERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE
+   obj:*
+   obj:*
+   fun:elektraPluginOpen
+   fun:test_crypto_operations
+   fun:main
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: possible
+   fun:*
+   ...
+   obj:/usr/lib/libbotan-1.10.so.0.8
+   ...
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:_Znwm
+   fun:_ZNK5Botan4HMAC5cloneEv
+   fun:_ZN5Botan13Library_State15make_global_rngERNS_17Algorithm_FactoryEPNS_5MutexE
+   fun:_ZN5Botan13Library_State10global_rngEv
+   obj:*
+   obj:*
+   fun:test_crypto_operations
+   fun:main
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:_Znwm
+   fun:_ZNK5Botan14OpenSSL_Engine17find_block_cipherERKNS_9SCAN_NameERNS_17Algorithm_FactoryE
+   fun:_ZN5Botan17Algorithm_Factory22prototype_block_cipherERKSsS2_
+   fun:_ZN5Botan17Algorithm_Factory17make_block_cipherERKSsS2_
+   fun:_ZN5Botan13Library_State15make_global_rngERNS_17Algorithm_FactoryEPNS_5MutexE
+   fun:_ZN5Botan13Library_State10global_rngEv
+   obj:*
+   obj:*
+   fun:test_crypto_operations
+   fun:main
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:_Znwm
+   obj:/usr/lib/libbotan-1.10.so.0.8
+   fun:_ZN5Botan17Algorithm_Factory22prototype_block_cipherERKSsS2_
+   obj:/usr/lib/libbotan-1.10.so.0.8
+   fun:_ZN5Botan10get_cipherERKSsNS_10Cipher_DirE
+   fun:_ZN5Botan10get_cipherERKSsRKNS_11OctetStringES4_NS_10Cipher_DirE
+   obj:*
+   obj:*
+   fun:test_crypto_operations_internal
+   fun:test_crypto_operations
+   fun:main
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:_Znwm
+   fun:_ZN5Botan13Library_State15make_global_rngERNS_17Algorithm_FactoryEPNS_5MutexE
+   fun:_ZN5Botan13Library_State10global_rngEv
+   obj:*
+   obj:*
+   fun:test_crypto_operations
+   fun:main
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:_Znwm
+   fun:_ZNSt8_Rb_treeISsSt4pairIKSsSt3mapISsPN5Botan12HashFunctionESt4lessISsESaIS0_IS1_S5_EEEESt10_Select1stISB_ES7_SaISB_EE17_M_insert_unique_ESt23_Rb_tree_const_iteratorISB_ERKSB_
+   fun:_ZNSt3mapISsS_ISsPN5Botan12HashFunctionESt4lessISsESaISt4pairIKSsS2_EEES4_SaIS5_IS6_S9_EEEixERS6_
+   fun:_ZN5Botan15Algorithm_CacheINS_12HashFunctionEE3addEPS1_RKSsS5_
+   fun:_ZN5Botan17Algorithm_Factory23prototype_hash_functionERKSsS2_
+   fun:_ZN5Botan17Algorithm_Factory18make_hash_functionERKSsS2_
+   fun:_ZNK5Botan11Core_Engine8find_macERKNS_9SCAN_NameERNS_17Algorithm_FactoryE
+   fun:_ZN5Botan17Algorithm_Factory13prototype_macERKSsS2_
+   fun:_ZN5Botan17Algorithm_Factory8make_macERKSsS2_
+   fun:_ZN5Botan13Library_State15make_global_rngERNS_17Algorithm_FactoryEPNS_5MutexE
+   fun:_ZN5Botan13Library_State10global_rngEv
+   obj:*
+   obj:*
+   fun:test_crypto_operations
+   fun:main
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:realloc
+   fun:CRYPTO_realloc
+   fun:lh_insert
+   ...
+   fun:elektraPluginOpen
+   fun:test_init
+   fun:main
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   fun:malloc
+   obj:*libstdc++.so.6*
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:_Znwm
+   fun:_ZNSt8_Rb_treeISsSt4pairIKSsSt3mapISsPN5Botan25MessageAuthenticationCodeESt4lessISsESaIS0_IS1_S5_EEEESt10_Select1stISB_ES7_SaISB_EE17_M_insert_unique_ESt23_Rb_tree_const_iteratorISB_ERKSB_
+   fun:_ZN5Botan15Algorithm_CacheINS_25MessageAuthenticationCodeEE3addEPS1_RKSsS5_
+   fun:_ZN5Botan17Algorithm_Factory13prototype_macERKSsS2_
+   fun:_ZN5Botan17Algorithm_Factory8make_macERKSsS2_
+   fun:_ZN5Botan13Library_State15make_global_rngERNS_17Algorithm_FactoryEPNS_5MutexE
+   fun:_ZN5Botan13Library_State10global_rngEv
+   obj:*
+   obj:*
+   fun:test_crypto_operations
+   fun:main
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:_Znwm
+   fun:_ZNSt8_Rb_treeISsSt4pairIKSsSt3mapISsPN5Botan12HashFunctionESt4lessISsESaIS0_IS1_S5_EEEESt10_Select1stISB_ES7_SaISB_EE17_M_insert_unique_ESt23_Rb_tree_const_iteratorISB_ERKSB_
+   fun:_ZNSt3mapISsS_ISsPN5Botan12HashFunctionESt4lessISsESaISt4pairIKSsS2_EEES4_SaIS5_IS6_S9_EEEixERS6_
+   obj:/usr/lib/libbotan-1.10.so.0.8
+   fun:_ZN5Botan17Algorithm_Factory23prototype_hash_functionERKSsS2_
+   fun:_ZN5Botan17Algorithm_Factory12providers_ofERKSs
+   fun:_ZN5Botan13algorithm_katERKNS_9SCAN_NameERKSt3mapISsSsSt4lessISsESaISt4pairIKSsSsEEERNS_17Algorithm_FactoryE
+   obj:/usr/lib/libbotan-1.10.so.0.8
+   fun:_ZN5Botan26confirm_startup_self_testsERNS_17Algorithm_FactoryE
    fun:_ZN5Botan13Library_State10initializeEb
    fun:_ZN5Botan18LibraryInitializer10initializeERKSs
    obj:*
    obj:*
    fun:elektraPluginOpen
+   fun:test_crypto_operations
+   fun:main
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Cond
+   fun:re_compile_fastmap_iter.isra.*
+   fun:re_compile_fastmap
+   fun:regcomp
+   fun:elektraValidationSet
+   fun:icase_test
+   fun:main
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:realloc
+   fun:CRYPTO_realloc
+   fun:lh_insert
+   fun:int_err_set_item
+   fun:err_load_strings
+   obj:*
+   obj:*
+   fun:elektraPluginOpen
+   fun:test_init
+   fun:main
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:_Znwm
+   fun:_ZN5Botan15Algorithm_CacheINS_12HashFunctionEE3addEPS1_RKSsS5_
+   fun:_ZN5Botan17Algorithm_Factory23prototype_hash_functionERKSsS2_
+   fun:_ZN5Botan17Algorithm_Factory18make_hash_functionERKSsS2_
+   fun:_ZNK5Botan11Core_Engine8find_macERKNS_9SCAN_NameERNS_17Algorithm_FactoryE
+   fun:_ZN5Botan17Algorithm_Factory13prototype_macERKSsS2_
+   fun:_ZN5Botan17Algorithm_Factory8make_macERKSsS2_
+   fun:_ZN5Botan13Library_State15make_global_rngERNS_17Algorithm_FactoryEPNS_5MutexE
+   fun:_ZN5Botan13Library_State10global_rngEv
+   obj:*
+   obj:*
+   fun:test_crypto_operations
+   fun:main
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:_Znwm
+   fun:_ZN5Botan13Library_State13add_allocatorEPNS_9AllocatorE
+   fun:_ZN5Botan13Library_State10initializeEb
+   fun:_ZN5Botan18LibraryInitializer10initializeERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE
+   obj:*
+   obj:*
+   fun:elektraPluginOpen
+   fun:test_crypto_operations
+   fun:main
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: indirect
+   fun:_Znwm
+   fun:_ZNSt6vectorIPN5Botan6FilterESaIS2_EE14_M_fill_insertEN9__gnu_cxx17__normal_iteratorIPS2_S4_EEmRKS2_
+   fun:_ZN5Botan6FilterC1Ev
+   fun:_ZN5Botan14CBC_EncryptionC1EPNS_11BlockCipherEPNS_28BlockCipherModePaddingMethodE
+   obj:/usr/lib/libbotan-1.10.so.0.8
+   obj:/usr/lib/libbotan-1.10.so.0.8
+   fun:_ZN5Botan10get_cipherERKSsNS_10Cipher_DirE
+   fun:_ZN5Botan10get_cipherERKSsRKNS_11OctetStringES4_NS_10Cipher_DirE
+   obj:*
+   obj:*
+   fun:test_config_errors_internal
+   fun:test_config_errors
+   fun:main
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Cond
+   fun:elektraCryptoGcryDecrypt
+   fun:test_enc_and_dec_with_binary
+   fun:main
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:_Znwm
+   fun:_ZNSt6vectorISt4pairIPvmESaIS2_EE13_M_insert_auxEN9__gnu_cxx17__normal_iteratorIPS2_S4_EERKS2_
+   obj:/usr/lib/libbotan-1.10.so.1.12
+   obj:/usr/lib/libbotan-1.10.so.1.12
+   fun:_ZN5Botan11OctetString6changeERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE
+   obj:/usr/lib/libbotan-1.10.so.1.12
+   fun:_ZN5Botan26confirm_startup_self_testsERNS_17Algorithm_FactoryE
+   fun:_ZN5Botan13Library_State10initializeEb
+   fun:_ZN5Botan18LibraryInitializer10initializeERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE
+   obj:*
+   obj:*
+   fun:elektraPluginOpen
+   fun:test_crypto_operations
+   fun:main
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:_Znwm
+   fun:_ZNSt6vectorIN5Botan12Unix_ProgramESaIS1_EE15_M_range_insertIPKS1_EEvN9__gnu_cxx17__normal_iteratorIPS1_S3_EET_SB_St20forward_iterator_tag
+   fun:_ZN5Botan18Unix_EntropySource11add_sourcesEPKNS_12Unix_ProgramEm
+   fun:_ZN5Botan18Unix_EntropySourceC1ERKSt6vectorISsSaISsEE
+   fun:_ZN5Botan13Library_State15make_global_rngERNS_17Algorithm_FactoryEPNS_5MutexE
+   fun:_ZN5Botan13Library_State10global_rngEv
+   obj:*
+   obj:*
+   fun:test_crypto_operations
+   fun:main
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Cond
+   fun:elektraCryptoGcryDecrypt
+   fun:elektraCryptoDecrypt
+   fun:libelektra_cryptogcrypt_gcrypt_LTX_elektraPluginget
+   fun:test_crypto_operations
+   fun:main
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Cond
+   fun:memcpy@@GLIBC_2.14
+   fun:keySetRaw
+   fun:elektraCryptoGcryDecrypt
+   fun:elektraCryptoDecrypt
+   fun:libelektra_cryptogcrypt_gcrypt_LTX_elektraPluginget
+   fun:test_crypto_operations
+   fun:main
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:malloc
+   obj:*libgcrypt.so.20*
+   obj:*libgcrypt.so.20*
+   obj:*libgcrypt.so.20*
+   obj:*libgcrypt.so.20*
+   obj:*libgcrypt.so.20*
+   obj:*libgcrypt.so.20*
+   obj:*libgcrypt.so.20*
+   fun:elektraCryptoGcryInit
+   fun:test_init
+   fun:main
+}
+{
+   dynamic loading of plugins
+   Memcheck:Leak
+   match-leak-kinds: indirect
+   fun:malloc
+   obj:*
+   ...
+   obj:*
+   fun:elektraPluginOpen
+   fun:_ZN3kdb5tools6PluginC1ERKNS0_10PluginSpecERNS_6KeySetE
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   ...
+   fun:call_init.part.0
+   fun:call_init
+   fun:_dl_init
+   ...
+   obj:*/ld-2.19.so
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:_Znwm
+   obj:/usr/lib/libbotan-1.10.so.1.12
+   fun:_ZN5Botan17Algorithm_Factory13prototype_macERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEES8_
+   fun:_ZN5Botan17Algorithm_Factory12providers_ofERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE
+   fun:_ZN5Botan13algorithm_katERKNS_9SCAN_NameERKSt3mapINSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEES9_St4lessIS9_ESaISt4pairIKS9_S9_EEERNS_17Algorithm_FactoryE
+   obj:/usr/lib/libbotan-1.10.so.1.12
+   fun:_ZN5Botan26confirm_startup_self_testsERNS_17Algorithm_FactoryE
+   fun:_ZN5Botan13Library_State10initializeEb
+   fun:_ZN5Botan18LibraryInitializer10initializeERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE
+   obj:*
+   obj:*
+   fun:elektraPluginOpen
+   fun:test_crypto_operations
+   fun:main
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:_Znwm
+   obj:/usr/lib/libbotan-1.10.so.0.8
+   fun:_ZN5Botan17Algorithm_Factory22prototype_block_cipherERKSsS2_
+   fun:_ZN5Botan17Algorithm_Factory12providers_ofERKSs
+   fun:_ZN5Botan13algorithm_katERKNS_9SCAN_NameERKSt3mapISsSsSt4lessISsESaISt4pairIKSsSsEEERNS_17Algorithm_FactoryE
+   obj:/usr/lib/libbotan-1.10.so.0.8
+   fun:_ZN5Botan26confirm_startup_self_testsERNS_17Algorithm_FactoryE
+   fun:_ZN5Botan13Library_State10initializeEb
+   fun:_ZN5Botan18LibraryInitializer10initializeERKSs
+   obj:*
+   obj:*
+   fun:elektraPluginOpen
+   fun:test_crypto_operations
+   fun:main
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:_Znwm
+   obj:/usr/lib/libbotan-1.10.so.1.12
+   fun:_ZN5Botan17Algorithm_Factory23prototype_hash_functionERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEES8_
+   fun:_ZN5Botan17Algorithm_Factory12providers_ofERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE
+   fun:_ZN5Botan13algorithm_katERKNS_9SCAN_NameERKSt3mapINSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEES9_St4lessIS9_ESaISt4pairIKS9_S9_EEERNS_17Algorithm_FactoryE
+   obj:/usr/lib/libbotan-1.10.so.1.12
+   fun:_ZN5Botan26confirm_startup_self_testsERNS_17Algorithm_FactoryE
+   fun:_ZN5Botan13Library_State10initializeEb
+   fun:_ZN5Botan18LibraryInitializer10initializeERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE
+   obj:*
+   obj:*
+   fun:elektraPluginOpen
+   fun:test_crypto_operations
+   fun:main
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:_Znwm
+   fun:_ZNSt3mapINSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEES_IS5_PN5Botan11BlockCipherESt4lessIS5_ESaISt4pairIKS5_S8_EEESA_SaISB_ISC_SF_EEEixERSC_
+   obj:/usr/lib/libbotan-1.10.so.1.12
+   fun:_ZN5Botan17Algorithm_Factory22prototype_block_cipherERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEES8_
+   obj:/usr/lib/libbotan-1.10.so.1.12
+   fun:_ZN5Botan10get_cipherERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEENS_10Cipher_DirE
+   fun:_ZN5Botan10get_cipherERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEERKNS_11OctetStringESA_NS_10Cipher_DirE
+   obj:*
+   obj:*
+   fun:test_crypto_operations_internal
+   fun:test_crypto_operations
+   fun:main
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:_Znwm
+   obj:/usr/lib/libbotan-1.10.so.1.12
+   obj:/usr/lib/libbotan-1.10.so.1.12
+   fun:_ZN5Botan17Algorithm_Factory23prototype_hash_functionERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEES8_
+   fun:_ZN5Botan17Algorithm_Factory12providers_ofERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE
+   fun:_ZN5Botan13algorithm_katERKNS_9SCAN_NameERKSt3mapINSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEES9_St4lessIS9_ESaISt4pairIKS9_S9_EEERNS_17Algorithm_FactoryE
+   obj:/usr/lib/libbotan-1.10.so.1.12
+   fun:_ZN5Botan26confirm_startup_self_testsERNS_17Algorithm_FactoryE
+   fun:_ZN5Botan13Library_State10initializeEb
+   fun:_ZN5Botan18LibraryInitializer10initializeERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE
+   obj:*
+   obj:*
+   fun:elektraPluginOpen
+   fun:test_crypto_operations
+   fun:main
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:_Znwm
+   fun:_ZN5Botan13Library_State10initializeEb
+   fun:_ZN5Botan18LibraryInitializer10initializeERKSs
+   obj:*
+   obj:*
+   fun:elektraPluginOpen
+   fun:test_crypto_operations
+   fun:main
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:malloc
+   fun:open_path
+   ...
+   fun:_dl_catch_error
+   fun:_dlerror_run
+   fun:dlopen@@GLIBC_2.2.5
+   fun:elektraModulesLoad
+   fun:elektraPluginOpen
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:_Znwm
+   fun:_ZNSt8_Rb_treeISsSt4pairIKSsPN5Botan9AllocatorEESt10_Select1stIS5_ESt4lessISsESaIS5_EE17_M_insert_unique_ESt23_Rb_tree_const_iteratorIS5_ERKS5_
+   fun:_ZN5Botan13Library_State13add_allocatorEPNS_9AllocatorE
+   fun:_ZN5Botan13Library_State10initializeEb
+   fun:_ZN5Botan18LibraryInitializer10initializeERKSs
+   obj:*
+   obj:*
+   fun:elektraPluginOpen
+   fun:test_crypto_operations
+   fun:main
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:_Znwm
+   fun:_ZNSt8_Rb_treeISsSt4pairIKSsSt3mapISsPN5Botan11BlockCipherESt4lessISsESaIS0_IS1_S5_EEEESt10_Select1stISB_ES7_SaISB_EE17_M_insert_unique_ESt23_Rb_tree_const_iteratorISB_ERKSB_
+   fun:_ZNSt3mapISsS_ISsPN5Botan11BlockCipherESt4lessISsESaISt4pairIKSsS2_EEES4_SaIS5_IS6_S9_EEEixERS6_
+   obj:/usr/lib/libbotan-1.10.so.0.8
+   fun:_ZN5Botan17Algorithm_Factory22prototype_block_cipherERKSsS2_
+   obj:/usr/lib/libbotan-1.10.so.0.8
+   fun:_ZN5Botan10get_cipherERKSsNS_10Cipher_DirE
+   fun:_ZN5Botan10get_cipherERKSsRKNS_11OctetStringES4_NS_10Cipher_DirE
+   obj:*
+   obj:*
+   fun:test_crypto_operations_internal
+   fun:test_crypto_operations
+   fun:main
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:_Znwm
+   fun:_ZNSt8_Rb_treeISsSt4pairIKSsSt3mapISsPN5Botan11BlockCipherESt4lessISsESaIS0_IS1_S5_EEEESt10_Select1stISB_ES7_SaISB_EE17_M_insert_unique_ESt23_Rb_tree_const_iteratorISB_ERKSB_
+   fun:_ZNSt3mapISsS_ISsPN5Botan11BlockCipherESt4lessISsESaISt4pairIKSsS2_EEES4_SaIS5_IS6_S9_EEEixERS6_
+   fun:_ZN5Botan15Algorithm_CacheINS_11BlockCipherEE3addEPS1_RKSsS5_
+   fun:_ZN5Botan17Algorithm_Factory22prototype_block_cipherERKSsS2_
+   fun:_ZN5Botan17Algorithm_Factory17make_block_cipherERKSsS2_
+   fun:_ZN5Botan13Library_State15make_global_rngERNS_17Algorithm_FactoryEPNS_5MutexE
+   fun:_ZN5Botan13Library_State10global_rngEv
+   obj:*
+   obj:*
+   fun:test_crypto_operations
+   fun:main
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:_Znwm
+   obj:/usr/lib/libbotan-1.10.so.0.8
+   obj:/usr/lib/libbotan-1.10.so.0.8
+   fun:_ZN5Botan10get_cipherERKSsNS_10Cipher_DirE
+   fun:_ZN5Botan10get_cipherERKSsRKNS_11OctetStringES4_NS_10Cipher_DirE
+   fun:elektraCryptoBotanEncrypt
+   ...
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:_Znwm
+   fun:_ZN5Botan15Algorithm_CacheINS_25MessageAuthenticationCodeEE3addEPS1_RKSsS5_
+   fun:_ZN5Botan17Algorithm_Factory13prototype_macERKSsS2_
+   fun:_ZN5Botan17Algorithm_Factory8make_macERKSsS2_
+   fun:_ZN5Botan13Library_State15make_global_rngERNS_17Algorithm_FactoryEPNS_5MutexE
+   fun:_ZN5Botan13Library_State10global_rngEv
+   obj:*
+   obj:*
+   fun:test_crypto_operations
+   fun:main
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: indirect
+   fun:_Znwm
+   fun:_ZNSt6vectorIPN5Botan6FilterESaIS2_EE14_M_fill_insertEN9__gnu_cxx17__normal_iteratorIPS2_S4_EEmRKS2_
+   fun:_ZN5Botan6FilterC1Ev
+   fun:_ZN5Botan14CBC_EncryptionC1EPNS_11BlockCipherEPNS_28BlockCipherModePaddingMethodE
+   obj:/usr/lib/libbotan-1.10.so.0.8
+   obj:/usr/lib/libbotan-1.10.so.0.8
+   fun:_ZN5Botan10get_cipherERKSsNS_10Cipher_DirE
+   fun:_ZN5Botan10get_cipherERKSsRKNS_11OctetStringES4_NS_10Cipher_DirE
+   obj:*
+   obj:*
+   fun:test_config_errors_internal.constprop.2
+   fun:test_config_errors
+   fun:main
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:_Znwm
+   obj:/usr/lib/libbotan-1.10.so.0.8
+   obj:/usr/lib/libbotan-1.10.so.0.8
+   fun:_ZN5Botan10get_cipherERKSsNS_10Cipher_DirE
+   fun:_ZN5Botan10get_cipherERKSsRKNS_11OctetStringES4_NS_10Cipher_DirE
+   obj:*
+   obj:*
+   fun:test_config_errors_internal
+   fun:test_config_errors
+   fun:main
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:_Znwm
+   fun:_ZN5Botan15Algorithm_CacheINS_11BlockCipherEE3addEPS1_RKSsS5_
+   fun:_ZN5Botan17Algorithm_Factory22prototype_block_cipherERKSsS2_
+   fun:_ZN5Botan17Algorithm_Factory17make_block_cipherERKSsS2_
+   fun:_ZN5Botan13Library_State15make_global_rngERNS_17Algorithm_FactoryEPNS_5MutexE
+   fun:_ZN5Botan13Library_State10global_rngEv
+   obj:*
+   obj:*
+   fun:test_crypto_operations
+   fun:main
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Cond
+   fun:test_enc_and_dec_with_binary
+   fun:main
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:_Znwm
+   fun:_ZN5Botan18Unix_EntropySourceC1ERKSt6vectorISsSaISsEE
+   fun:_ZN5Botan13Library_State15make_global_rngERNS_17Algorithm_FactoryEPNS_5MutexE
+   fun:_ZN5Botan13Library_State10global_rngEv
+   obj:*
+   obj:*
+   fun:test_crypto_operations
+   fun:main
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:calloc
+   ...
+   fun:dlopen_doit
+   fun:_dl_catch_error
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:_Znwm
+   fun:_ZNK5Botan11Core_Engine8find_macERKNS_9SCAN_NameERNS_17Algorithm_FactoryE
+   fun:_ZN5Botan17Algorithm_Factory13prototype_macERKSsS2_
+   fun:_ZN5Botan17Algorithm_Factory8make_macERKSsS2_
+   fun:_ZN5Botan13Library_State15make_global_rngERNS_17Algorithm_FactoryEPNS_5MutexE
+   fun:_ZN5Botan13Library_State10global_rngEv
+   obj:*
+   obj:*
+   fun:test_crypto_operations
+   fun:main
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: indirect
+   fun:_Znwm
+   obj:/usr/lib/libbotan-1.10.so.1.12
+   obj:/usr/lib/libbotan-1.10.so.1.12
+   obj:/usr/lib/libbotan-1.10.so.1.12
+   fun:_ZN5Botan10get_cipherERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEENS_10Cipher_DirE
+   fun:_ZN5Botan10get_cipherERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEERKNS_11OctetStringESA_NS_10Cipher_DirE
+   obj:*
+   obj:*
+   fun:test_config_errors_internal.constprop.2
+   fun:test_config_errors
+   fun:main
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:malloc
+   ...
+   fun:dlopen_doit
+   fun:_dl_catch_error
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:_Znwm
+   obj:/usr/lib64/libbotan-1.10.so.1.13
+   obj:/usr/lib64/libbotan-1.10.so.1.13
+   fun:_ZN5Botan10get_cipherERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEENS_10Cipher_DirE
+   fun:_ZN5Botan10get_cipherERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEERKNS_11OctetStringESA_NS_10Cipher_DirE
+   fun:elektraCryptoBotanEncrypt
+   ...
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:_Znwm
+   fun:_ZNSt8_Rb_treeISsSt4pairIKSsSsESt10_Select1stIS2_ESt4lessISsESaIS2_EE17_M_insert_unique_ESt23_Rb_tree_const_iteratorIS2_ERKS2_
+   fun:_ZNSt3mapISsSsSt4lessISsESaISt4pairIKSsSsEEEixERS3_
+   fun:_ZN5Botan15Algorithm_CacheINS_5PBKDFEE3addEPS1_RKSsS5_
+   fun:_ZN5Botan17Algorithm_Factory15prototype_pbkdfERKSsS2_
+   fun:_ZN5Botan17Algorithm_Factory10make_pbkdfERKSsS2_
+   fun:_ZN5Botan9get_pbkdfERKSs
+   obj:*
+   obj:*
+   fun:test_crypto_operations
+   fun:main
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:_Znwm
+   fun:_ZNSt3mapINSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEES_IS5_PN5Botan25MessageAuthenticationCodeESt4lessIS5_ESaISt4pairIKS5_S8_EEESA_SaISB_ISC_SF_EEEixERSC_
+   obj:/usr/lib/libbotan-1.10.so.1.12
+   fun:_ZN5Botan17Algorithm_Factory13prototype_macERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEES8_
+   fun:_ZN5Botan17Algorithm_Factory12providers_ofERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE
+   fun:_ZN5Botan13algorithm_katERKNS_9SCAN_NameERKSt3mapINSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEES9_St4lessIS9_ESaISt4pairIKS9_S9_EEERNS_17Algorithm_FactoryE
+   obj:/usr/lib/libbotan-1.10.so.1.12
+   fun:_ZN5Botan26confirm_startup_self_testsERNS_17Algorithm_FactoryE
+   fun:_ZN5Botan13Library_State10initializeEb
+   fun:_ZN5Botan18LibraryInitializer10initializeERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE
+   obj:*
+   obj:*
+   fun:elektraPluginOpen
+   fun:test_crypto_operations
+   fun:main
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:_Znwm
+   fun:_ZNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEE9_M_assignERKS4_
+   fun:_ZN5Botan13Library_State3setERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEES8_S8_b
+   obj:/usr/lib/libbotan-1.10.so.1.12
+   fun:_ZN5Botan13Library_State10initializeEb
+   fun:_ZN5Botan18LibraryInitializer10initializeERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE
+   obj:*
+   obj:*
+   fun:elektraPluginOpen
+   fun:test_crypto_operations
+   fun:main
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: indirect
+   fun:_Znwm
+   obj:/usr/lib/libbotan-1.10.so.0.8
+   obj:/usr/lib/libbotan-1.10.so.0.8
+   obj:/usr/lib/libbotan-1.10.so.0.8
+   fun:_ZN5Botan10get_cipherERKSsNS_10Cipher_DirE
+   fun:_ZN5Botan10get_cipherERKSsRKNS_11OctetStringES4_NS_10Cipher_DirE
+   obj:*
+   obj:*
+   fun:test_config_errors_internal.constprop.2
+   fun:test_config_errors
+   fun:main
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:malloc
+   obj:*libgcrypt.so.20*
+   ...
+   fun:main
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:_Znwm
+   fun:_ZNK5Botan14OpenSSL_Engine9find_hashERKNS_9SCAN_NameERNS_17Algorithm_FactoryE
+   fun:_ZN5Botan17Algorithm_Factory23prototype_hash_functionERKSsS2_
+   fun:_ZN5Botan17Algorithm_Factory18make_hash_functionERKSsS2_
+   fun:_ZNK5Botan11Core_Engine8find_macERKNS_9SCAN_NameERNS_17Algorithm_FactoryE
+   fun:_ZN5Botan17Algorithm_Factory13prototype_macERKSsS2_
+   fun:_ZN5Botan17Algorithm_Factory8make_macERKSsS2_
+   fun:_ZN5Botan13Library_State15make_global_rngERNS_17Algorithm_FactoryEPNS_5MutexE
+   fun:_ZN5Botan13Library_State10global_rngEv
+   obj:*
+   obj:*
+   fun:test_crypto_operations
+   fun:main
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:_Znwm
+   obj:/usr/lib/libbotan-1.10.so.0.8
+   fun:_ZN5Botan17Algorithm_Factory23prototype_hash_functionERKSsS2_
+   fun:_ZN5Botan17Algorithm_Factory12providers_ofERKSs
+   fun:_ZN5Botan13algorithm_katERKNS_9SCAN_NameERKSt3mapISsSsSt4lessISsESaISt4pairIKSsSsEEERNS_17Algorithm_FactoryE
+   obj:/usr/lib/libbotan-1.10.so.0.8
+   fun:_ZN5Botan26confirm_startup_self_testsERNS_17Algorithm_FactoryE
+   fun:_ZN5Botan13Library_State10initializeEb
+   fun:_ZN5Botan18LibraryInitializer10initializeERKSs
+   obj:*
+   obj:*
+   fun:elektraPluginOpen
+   fun:test_crypto_operations
+   fun:main
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:_Znwm
+   fun:_ZN5Botan13Library_State10initializeEb
+   fun:_ZN5Botan18LibraryInitializer10initializeERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE
+   obj:*
+   obj:*
+   fun:elektraPluginOpen
+   fun:test_crypto_operations
+   fun:main
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:malloc
+   obj:*libgcrypt.so.20*
+   obj:*libgcrypt.so.20*
+   obj:*libgcrypt.so.20*
+   obj:*libgcrypt.so.20*
+   obj:*libgcrypt.so.20*
+   obj:*libgcrypt.so.20*
+   fun:elektraCryptoGcryInit
+   fun:test_init
+   fun:main
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:_Znwm
+   obj:/usr/lib/libbotan-1.10.so.0.8
+   fun:_ZN5Botan17Algorithm_Factory10add_engineEPNS_6EngineE
+   fun:_ZN5Botan13Library_State10initializeEb
+   fun:_ZN5Botan18LibraryInitializer10initializeERKSs
+   obj:*
+   obj:*
+   fun:elektraPluginOpen
+   fun:test_crypto_operations
+   fun:main
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:malloc
+   ...
+   obj:*libcrypto.so*
+   ...
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Cond
+   fun:__memcmp_sse4_1
+   fun:test_enc_and_dec_with_binary
+   fun:main
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:_Znwm
+   fun:_ZNK5Botan7SHA_5125cloneEv
+   fun:_ZNK5Botan11Core_Engine8find_macERKNS_9SCAN_NameERNS_17Algorithm_FactoryE
+   fun:_ZN5Botan17Algorithm_Factory13prototype_macERKSsS2_
+   fun:_ZN5Botan17Algorithm_Factory8make_macERKSsS2_
+   fun:_ZN5Botan13Library_State15make_global_rngERNS_17Algorithm_FactoryEPNS_5MutexE
+   fun:_ZN5Botan13Library_State10global_rngEv
+   obj:*
+   obj:*
+   fun:test_crypto_operations
+   fun:main
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Cond
+   fun:memcpy@@GLIBC_2.14
+   fun:keyGetBinary
+   fun:test_enc_and_dec_with_binary
+   fun:main
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:_Znwm
+   fun:_ZNK5Botan11Core_Engine9find_hashERKNS_9SCAN_NameERNS_17Algorithm_FactoryE
+   fun:_ZN5Botan17Algorithm_Factory23prototype_hash_functionERKSsS2_
+   fun:_ZN5Botan17Algorithm_Factory18make_hash_functionERKSsS2_
+   fun:_ZNK5Botan11Core_Engine8find_macERKNS_9SCAN_NameERNS_17Algorithm_FactoryE
+   fun:_ZN5Botan17Algorithm_Factory13prototype_macERKSsS2_
+   fun:_ZN5Botan17Algorithm_Factory8make_macERKSsS2_
+   fun:_ZN5Botan13Library_State15make_global_rngERNS_17Algorithm_FactoryEPNS_5MutexE
+   fun:_ZN5Botan13Library_State10global_rngEv
+   obj:*
+   obj:*
+   fun:test_crypto_operations
+   fun:main
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: indirect
+   fun:_Znwm
+   fun:_ZNK5Botan7AES_2565cloneEv
+   obj:/usr/lib/libbotan-1.10.so.1.12
+   obj:/usr/lib/libbotan-1.10.so.1.12
+   fun:_ZN5Botan10get_cipherERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEENS_10Cipher_DirE
+   fun:_ZN5Botan10get_cipherERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEERKNS_11OctetStringESA_NS_10Cipher_DirE
+   obj:*
+   obj:*
+   fun:test_config_errors_internal.constprop.2
+   fun:test_config_errors
+   fun:main
+}
+{
+   semlock plugin sem_open
+   Memcheck:Param
+   write(buf)
+   fun:__write_nocancel
+   fun:sem_open
+   ...
+   fun:elektraSemlockOpen
+   fun:elektraPluginOpen
+   ...
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:_Znwm
+   obj:/usr/lib/libbotan-1.10.so.1.12
+   obj:/usr/lib/libbotan-1.10.so.1.12
+   fun:_ZN5Botan17Algorithm_Factory22prototype_block_cipherERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEES8_
+   fun:_ZN5Botan17Algorithm_Factory12providers_ofERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE
+   fun:_ZN5Botan13algorithm_katERKNS_9SCAN_NameERKSt3mapINSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEES9_St4lessIS9_ESaISt4pairIKS9_S9_EEERNS_17Algorithm_FactoryE
+   obj:/usr/lib/libbotan-1.10.so.1.12
+   fun:_ZN5Botan26confirm_startup_self_testsERNS_17Algorithm_FactoryE
+   fun:_ZN5Botan13Library_State10initializeEb
+   fun:_ZN5Botan18LibraryInitializer10initializeERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE
+   obj:*
+   obj:*
+   fun:elektraPluginOpen
+   fun:test_crypto_operations
+   fun:main
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Cond
+   fun:keySetRaw
+   fun:elektraCryptoGcryDecrypt
+   fun:elektraCryptoDecrypt
+   fun:libelektra_cryptogcrypt_gcrypt_LTX_elektraPluginget
+   fun:test_crypto_operations
+   fun:main
+}
+{
+   dynamic loading of plugins
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:calloc
+   fun:_dlerror_run
+   fun:dlopen@@GLIBC_2.2.5
+   fun:elektraModulesLoad
+   fun:elektraPluginOpen
+   ...
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:_Znwm
+   obj:/usr/lib/libbotan-1.10.so.1.12
+   fun:_ZN5Botan13Library_State10initializeEb
+   fun:_ZN5Botan18LibraryInitializer10initializeERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE
+   obj:*
+   obj:*
+   fun:elektraPluginOpen
+   fun:test_crypto_operations
+   fun:main
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Cond
+   fun:is_overlap
+   fun:memcpy@@GLIBC_2.14
+   fun:keyGetBinary
+   fun:test_enc_and_dec_with_binary
+   fun:main
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:_Znwm
+   fun:_ZN5Botan18LibraryInitializer10initializeERKSs
+   obj:*
+   obj:*
+   fun:elektraPluginOpen
+   fun:test_crypto_operations
+   fun:main
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:realloc
+   fun:CRYPTO_realloc
+   fun:lh_insert
+   fun:OBJ_NAME_add
+   fun:OpenSSL_add_all_digests
+   obj:*
+   obj:*
+   fun:elektraPluginOpen
+   fun:test_init
+   fun:main
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:_Znwm
+   fun:_ZNK5Botan7AES_2565cloneEv
+   fun:_ZN5Botan13Library_State15make_global_rngERNS_17Algorithm_FactoryEPNS_5MutexE
+   fun:_ZN5Botan13Library_State10global_rngEv
+   obj:*
+   obj:*
    fun:test_crypto_operations
    fun:main
 }
@@ -1598,47 +1859,29 @@
 {
    <insert_a_suppression_name_here>
    Memcheck:Leak
-   match-leak-kinds: reachable
+   fun:malloc
+   ...
+   obj:*/libjvm.so
+   obj:*/libjvm.so
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: possible
    fun:_Znwm
-   obj:/usr/lib/libbotan-1.10.so.0.8
-   fun:_ZN5Botan13Library_State10initializeEb
-   fun:_ZN5Botan18LibraryInitializer10initializeERKSs
+   fun:_ZNSs4_Rep9_S_createEmmRKSaIcE
+   fun:_ZNSs12_S_constructIPKcEEPcT_S3_RKSaIcESt20forward_iterator_tag
+   fun:_ZNSsC1EPKcRKSaIcE
    obj:*
    obj:*
-   fun:elektraPluginOpen
    fun:test_crypto_operations
    fun:main
 }
 {
    <insert_a_suppression_name_here>
-   Memcheck:Leak
-   match-leak-kinds: indirect
-   fun:_Znwm
-   obj:/usr/lib/libbotan-1.10.so.0.8
-   obj:/usr/lib/libbotan-1.10.so.0.8
-   obj:/usr/lib/libbotan-1.10.so.0.8
-   fun:_ZN5Botan10get_cipherERKSsNS_10Cipher_DirE
-   fun:_ZN5Botan10get_cipherERKSsRKNS_11OctetStringES4_NS_10Cipher_DirE
-   obj:*
-   obj:*
-   fun:test_config_errors_internal.constprop.2
-   fun:test_config_errors
-   fun:main
-}
-{
-   <insert_a_suppression_name_here>
-   Memcheck:Leak
-   match-leak-kinds: reachable
-   fun:_Znwm
-   fun:_ZNSt8_Rb_treeISsSt4pairIKSsSsESt10_Select1stIS2_ESt4lessISsESaIS2_EE17_M_insert_unique_ESt23_Rb_tree_const_iteratorIS2_ERKS2_
-   fun:_ZN5Botan13Library_State3setERKSsS2_S2_b
-   obj:/usr/lib/libbotan-1.10.so.0.8
-   fun:_ZN5Botan13Library_State10initializeEb
-   fun:_ZN5Botan18LibraryInitializer10initializeERKSs
-   obj:*
-   obj:*
-   fun:elektraPluginOpen
-   fun:test_crypto_operations
+   Memcheck:Cond
+   fun:keyGetBinary
+   fun:test_enc_and_dec_with_binary
    fun:main
 }
 {
@@ -1665,14 +1908,109 @@
    Memcheck:Leak
    match-leak-kinds: reachable
    fun:_Znwm
-   obj:/usr/lib/libbotan-1.10.so.0.8
+   fun:_ZNK5Botan7SHA_2565cloneEv
+   fun:_ZNK5Botan4HMAC5cloneEv
+   fun:_ZN5Botan13Library_State15make_global_rngERNS_17Algorithm_FactoryEPNS_5MutexE
+   fun:_ZN5Botan13Library_State10global_rngEv
+   obj:*
+   obj:*
+   fun:test_crypto_operations
+   fun:main
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:_Znwm
+   fun:_ZN5Botan17Algorithm_FactoryC1ERNS_13Mutex_FactoryE
+   fun:_ZN5Botan13Library_State10initializeEb
+   fun:_ZN5Botan18LibraryInitializer10initializeERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE
+   obj:*
+   obj:*
+   fun:elektraPluginOpen
+   fun:test_crypto_operations
+   fun:main
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:_Znwm
+   fun:_ZNSt8_Rb_treeISsSt4pairIKSsSt3mapISsPN5Botan5PBKDFESt4lessISsESaIS0_IS1_S5_EEEESt10_Select1stISB_ES7_SaISB_EE17_M_insert_unique_ESt23_Rb_tree_const_iteratorISB_ERKSB_
+   fun:_ZNSt3mapISsS_ISsPN5Botan5PBKDFESt4lessISsESaISt4pairIKSsS2_EEES4_SaIS5_IS6_S9_EEEixERS6_
+   fun:_ZN5Botan15Algorithm_CacheINS_5PBKDFEE3addEPS1_RKSsS5_
+   fun:_ZN5Botan17Algorithm_Factory15prototype_pbkdfERKSsS2_
+   fun:_ZN5Botan17Algorithm_Factory10make_pbkdfERKSsS2_
+   fun:_ZN5Botan9get_pbkdfERKSs
+   obj:*
+   obj:*
+   fun:test_crypto_operations
+   fun:main
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:_Znwm
+   fun:_ZNK5Botan4HMAC5cloneEv
+   fun:_ZNK5Botan11Core_Engine10find_pbkdfERKNS_9SCAN_NameERNS_17Algorithm_FactoryE
+   fun:_ZN5Botan17Algorithm_Factory15prototype_pbkdfERKSsS2_
+   fun:_ZN5Botan17Algorithm_Factory10make_pbkdfERKSsS2_
+   fun:_ZN5Botan9get_pbkdfERKSs
+   obj:*
+   obj:*
+   fun:test_crypto_operations
+   fun:main
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Cond
+   fun:memcpy@@GLIBC_2.14
+   fun:keySetRaw
+   fun:elektraCryptoGcryDecrypt
+   fun:test_enc_and_dec_with_binary
+   fun:main
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   ...
+   fun:calloc
+   fun:_dlerror_run
+   fun:dlsym
+   fun:(below main)
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:_Znwm
+   fun:_ZNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEE9_M_assignERKS4_
+   fun:_ZN5Botan13Library_State3setERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEES8_S8_b
+   obj:/usr/lib/libbotan-1.10.so.1.12
+   obj:/usr/lib/libbotan-1.10.so.1.12
+   fun:_ZN5Botan13Library_State19load_default_configEv
+   fun:_ZN5Botan13Library_State10initializeEb
+   fun:_ZN5Botan18LibraryInitializer10initializeERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE
+   obj:*
+   obj:*
+   fun:elektraPluginOpen
+   fun:test_crypto_operations
+   fun:main
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:_Znwm
+   fun:_ZNK5Botan11Core_Engine17find_block_cipherERKNS_9SCAN_NameERNS_17Algorithm_FactoryE
    fun:_ZN5Botan17Algorithm_Factory22prototype_block_cipherERKSsS2_
-   obj:/usr/lib/libbotan-1.10.so.0.8
-   fun:_ZN5Botan10get_cipherERKSsNS_10Cipher_DirE
-   fun:_ZN5Botan10get_cipherERKSsRKNS_11OctetStringES4_NS_10Cipher_DirE
+   fun:_ZN5Botan17Algorithm_Factory17make_block_cipherERKSsS2_
+   fun:_ZN5Botan13Library_State15make_global_rngERNS_17Algorithm_FactoryEPNS_5MutexE
+   fun:_ZN5Botan13Library_State10global_rngEv
    obj:*
    obj:*
-   fun:test_crypto_operations_internal
    fun:test_crypto_operations
    fun:main
 }
@@ -1681,13 +2019,13 @@
    Memcheck:Leak
    match-leak-kinds: reachable
    fun:_Znwm
-   fun:_ZNSt8_Rb_treeISsSt4pairIKSsSsESt10_Select1stIS2_ESt4lessISsESaIS2_EE17_M_insert_unique_ESt23_Rb_tree_const_iteratorIS2_ERKS2_
-   fun:_ZN5Botan13Library_State3setERKSsS2_S2_b
-   fun:_ZN5Botan13Library_State9add_aliasERKSsS2_
-   obj:/usr/lib/libbotan-1.10.so.0.8
+   fun:_ZNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEE9_M_assignERKS4_
+   fun:_ZN5Botan13Library_State3setERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEES8_S8_b
+   fun:_ZN5Botan13Library_State9add_aliasERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEES8_
+   obj:/usr/lib/libbotan-1.10.so.1.12
    fun:_ZN5Botan13Library_State19load_default_configEv
    fun:_ZN5Botan13Library_State10initializeEb
-   fun:_ZN5Botan18LibraryInitializer10initializeERKSs
+   fun:_ZN5Botan18LibraryInitializer10initializeERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE
    obj:*
    obj:*
    fun:elektraPluginOpen
@@ -1699,19 +2037,12 @@
    Memcheck:Leak
    match-leak-kinds: reachable
    fun:_Znwm
-   fun:_ZNSt8_Rb_treeISsSt4pairIKSsSt3mapISsPN5Botan12HashFunctionESt4lessISsESaIS0_IS1_S5_EEEESt10_Select1stISB_ES7_SaISB_EE17_M_insert_unique_ESt23_Rb_tree_const_iteratorISB_ERKSB_
-   fun:_ZNSt3mapISsS_ISsPN5Botan12HashFunctionESt4lessISsESaISt4pairIKSsS2_EEES4_SaIS5_IS6_S9_EEEixERS6_
-   obj:/usr/lib/libbotan-1.10.so.0.8
-   fun:_ZN5Botan17Algorithm_Factory23prototype_hash_functionERKSsS2_
-   fun:_ZN5Botan17Algorithm_Factory12providers_ofERKSs
-   fun:_ZN5Botan13algorithm_katERKNS_9SCAN_NameERKSt3mapISsSsSt4lessISsESaISt4pairIKSsSsEEERNS_17Algorithm_FactoryE
-   obj:/usr/lib/libbotan-1.10.so.0.8
-   fun:_ZN5Botan26confirm_startup_self_testsERNS_17Algorithm_FactoryE
-   fun:_ZN5Botan13Library_State10initializeEb
-   fun:_ZN5Botan18LibraryInitializer10initializeERKSs
+   fun:_ZNSt6vectorIPN5Botan13EntropySourceESaIS2_EE13_M_insert_auxEN9__gnu_cxx17__normal_iteratorIPS2_S4_EERKS2_
+   fun:_ZN5Botan8HMAC_RNG18add_entropy_sourceEPNS_13EntropySourceE
+   fun:_ZN5Botan13Library_State15make_global_rngERNS_17Algorithm_FactoryEPNS_5MutexE
+   fun:_ZN5Botan13Library_State10global_rngEv
    obj:*
    obj:*
-   fun:elektraPluginOpen
    fun:test_crypto_operations
    fun:main
 }
@@ -1719,51 +2050,16 @@
    <insert_a_suppression_name_here>
    Memcheck:Leak
    match-leak-kinds: reachable
-   fun:_Znwm
-   obj:/usr/lib/libbotan-1.10.so.0.8
-   fun:_ZN5Botan17Algorithm_Factory23prototype_hash_functionERKSsS2_
-   fun:_ZN5Botan17Algorithm_Factory12providers_ofERKSs
-   fun:_ZN5Botan13algorithm_katERKNS_9SCAN_NameERKSt3mapISsSsSt4lessISsESaISt4pairIKSsSsEEERNS_17Algorithm_FactoryE
-   obj:/usr/lib/libbotan-1.10.so.0.8
-   fun:_ZN5Botan26confirm_startup_self_testsERNS_17Algorithm_FactoryE
-   fun:_ZN5Botan13Library_State10initializeEb
-   fun:_ZN5Botan18LibraryInitializer10initializeERKSs
+   fun:realloc
+   fun:CRYPTO_realloc
+   fun:lh_insert
+   fun:OBJ_NAME_add
+   fun:OpenSSL_add_all_ciphers
+   fun:OPENSSL_add_all_algorithms_noconf
    obj:*
    obj:*
    fun:elektraPluginOpen
-   fun:test_crypto_operations
-   fun:main
-}
-{
-   <insert_a_suppression_name_here>
-   Memcheck:Leak
-   match-leak-kinds: reachable
-   fun:_Znwm
-   fun:_ZNSt8_Rb_treeISsSt4pairIKSsSsESt10_Select1stIS2_ESt4lessISsESaIS2_EE17_M_insert_unique_ESt23_Rb_tree_const_iteratorIS2_ERKS2_
-   fun:_ZN5Botan13Library_State3setERKSsS2_S2_b
-   obj:/usr/lib/libbotan-1.10.so.0.8
-   fun:_ZN5Botan13Library_State19load_default_configEv
-   fun:_ZN5Botan13Library_State10initializeEb
-   fun:_ZN5Botan18LibraryInitializer10initializeERKSs
-   obj:*
-   obj:*
-   fun:elektraPluginOpen
-   fun:test_crypto_operations
-   fun:main
-}
-{
-   <insert_a_suppression_name_here>
-   Memcheck:Leak
-   match-leak-kinds: reachable
-   fun:_Znwm
-   obj:/usr/lib/libbotan-1.10.so.0.8
-   fun:_ZN5Botan17Algorithm_Factory10add_engineEPNS_6EngineE
-   fun:_ZN5Botan13Library_State10initializeEb
-   fun:_ZN5Botan18LibraryInitializer10initializeERKSs
-   obj:*
-   obj:*
-   fun:elektraPluginOpen
-   fun:test_crypto_operations
+   fun:test_init
    fun:main
 }
 {
@@ -1791,98 +2087,105 @@
    Memcheck:Leak
    match-leak-kinds: reachable
    fun:_Znwm
-   obj:/usr/lib/libbotan-1.10.so.0.8
-   fun:_ZN5Botan17Algorithm_Factory22prototype_block_cipherERKSsS2_
-   fun:_ZN5Botan17Algorithm_Factory12providers_ofERKSs
-   fun:_ZN5Botan13algorithm_katERKNS_9SCAN_NameERKSt3mapISsSsSt4lessISsESaISt4pairIKSsSsEEERNS_17Algorithm_FactoryE
-   obj:/usr/lib/libbotan-1.10.so.0.8
-   fun:_ZN5Botan26confirm_startup_self_testsERNS_17Algorithm_FactoryE
-   fun:_ZN5Botan13Library_State10initializeEb
-   fun:_ZN5Botan18LibraryInitializer10initializeERKSs
+   fun:_ZNSt6vectorIN5Botan17EGD_EntropySource10EGD_SocketESaIS2_EE13_M_insert_auxEN9__gnu_cxx17__normal_iteratorIPS2_S4_EERKS2_
+   fun:_ZN5Botan17EGD_EntropySourceC1ERKSt6vectorISsSaISsEE
+   fun:_ZN5Botan13Library_State15make_global_rngERNS_17Algorithm_FactoryEPNS_5MutexE
+   fun:_ZN5Botan13Library_State10global_rngEv
    obj:*
    obj:*
-   fun:elektraPluginOpen
    fun:test_crypto_operations
    fun:main
 }
 {
    <insert_a_suppression_name_here>
    Memcheck:Leak
-   match-leak-kinds: reachable
-   fun:_Znwm
-   obj:/usr/lib/libbotan-1.10.so.0.8
-   obj:/usr/lib/libbotan-1.10.so.0.8
-   obj:/usr/lib/libbotan-1.10.so.0.8
-   fun:_ZN5Botan11OctetString6changeERKSs
-   obj:/usr/lib/libbotan-1.10.so.0.8
-   fun:_ZN5Botan26confirm_startup_self_testsERNS_17Algorithm_FactoryE
-   fun:_ZN5Botan13Library_State10initializeEb
-   fun:_ZN5Botan18LibraryInitializer10initializeERKSs
-   obj:*
-   obj:*
-   fun:elektraPluginOpen
-   fun:test_crypto_operations
-   fun:main
-}
-{
-   <insert_a_suppression_name_here>
-   Memcheck:Leak
-   match-leak-kinds: indirect
-   fun:_Znwm
-   obj:/usr/lib/libbotan-1.10.so.0.8
-   obj:/usr/lib/libbotan-1.10.so.0.8
-   obj:/usr/lib/libbotan-1.10.so.0.8
-   fun:_ZN5Botan10get_cipherERKSsNS_10Cipher_DirE
-   fun:_ZN5Botan10get_cipherERKSsRKNS_11OctetStringES4_NS_10Cipher_DirE
-   obj:*
-   obj:*
-   fun:test_config_errors_internal
-   fun:test_config_errors
-   fun:main
-}
-{
-   <insert_a_suppression_name_here>
-   Memcheck:Leak
-   match-leak-kinds: indirect
-   fun:_Znwm
-   fun:_ZNSt6vectorIPN5Botan6FilterESaIS2_EE14_M_fill_insertEN9__gnu_cxx17__normal_iteratorIPS2_S4_EEmRKS2_
-   fun:_ZN5Botan6FilterC1Ev
-   fun:_ZN5Botan14CBC_EncryptionC1EPNS_11BlockCipherEPNS_28BlockCipherModePaddingMethodE
-   obj:/usr/lib/libbotan-1.10.so.0.8
-   obj:/usr/lib/libbotan-1.10.so.0.8
-   fun:_ZN5Botan10get_cipherERKSsNS_10Cipher_DirE
-   fun:_ZN5Botan10get_cipherERKSsRKNS_11OctetStringES4_NS_10Cipher_DirE
-   obj:*
-   obj:*
-   fun:test_config_errors_internal
-   fun:test_config_errors
-   fun:main
-}
-{
-   <insert_a_suppression_name_here>
-   Memcheck:Leak
-   match-leak-kinds: indirect
-   fun:_Znwm
-   fun:_ZNK5Botan7AES_2565cloneEv
-   obj:/usr/lib/libbotan-1.10.so.0.8
-   obj:/usr/lib/libbotan-1.10.so.0.8
-   fun:_ZN5Botan10get_cipherERKSsNS_10Cipher_DirE
-   fun:_ZN5Botan10get_cipherERKSsRKNS_11OctetStringES4_NS_10Cipher_DirE
-   obj:*
-   obj:*
-   fun:test_config_errors_internal
-   fun:test_config_errors
-   fun:main
-}
-{
-   <insert_a_suppression_name_here>
-   Memcheck:Leak
-   match-leak-kinds: reachable
-   fun:realloc
-   fun:CRYPTO_realloc
-   fun:lh_insert
+   match-leak-kinds: possible
+   fun:*
    ...
+   obj:/usr/lib/libbotan-1.10.so.0.8
+   ...
+   fun:elektraCryptoBotanInit
+   ...
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:_Znwm
+   fun:_ZN5Botan13Library_State3setERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEES8_S8_b
+   obj:/usr/lib/libbotan-1.10.so.1.12
+   obj:/usr/lib/libbotan-1.10.so.1.12
+   fun:_ZN5Botan13Library_State19load_default_configEv
+   fun:_ZN5Botan13Library_State10initializeEb
+   fun:_ZN5Botan18LibraryInitializer10initializeERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE
+   obj:*
+   obj:*
    fun:elektraPluginOpen
-   fun:test_init
+   fun:test_crypto_operations
+   fun:main
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:_Znwm
+   obj:/usr/lib/libbotan-1.10.so.1.12
+   obj:/usr/lib/libbotan-1.10.so.1.12
+   fun:_ZN5Botan10get_cipherERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEENS_10Cipher_DirE
+   fun:_ZN5Botan10get_cipherERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEERKNS_11OctetStringESA_NS_10Cipher_DirE
+   obj:*
+   obj:*
+   fun:test_config_errors_internal.constprop.2
+   fun:test_config_errors
+   fun:main
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:_Znwm
+   fun:_ZNSt6vectorIPN5Botan9AllocatorESaIS2_EE13_M_insert_auxEN9__gnu_cxx17__normal_iteratorIPS2_S4_EERKS2_
+   fun:_ZN5Botan13Library_State13add_allocatorEPNS_9AllocatorE
+   fun:_ZN5Botan13Library_State10initializeEb
+   fun:_ZN5Botan18LibraryInitializer10initializeERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE
+   obj:*
+   obj:*
+   fun:elektraPluginOpen
+   fun:test_crypto_operations
+   fun:main
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:_Znwm
+   fun:_ZNK5Botan7SHA_2565cloneEv
+   fun:_ZNK5Botan4HMAC5cloneEv
+   fun:_ZNK5Botan11Core_Engine10find_pbkdfERKNS_9SCAN_NameERNS_17Algorithm_FactoryE
+   fun:_ZN5Botan17Algorithm_Factory15prototype_pbkdfERKSsS2_
+   fun:_ZN5Botan17Algorithm_Factory10make_pbkdfERKSsS2_
+   fun:_ZN5Botan9get_pbkdfERKSs
+   obj:*
+   obj:*
+   fun:test_crypto_operations
+   fun:main
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:malloc
+   obj:/usr/lib/libbotan-1.10.so.1.12
+   obj:/usr/lib/libbotan-1.10.so.1.12
+   obj:/usr/lib/libbotan-1.10.so.1.12
+   fun:_ZN5Botan11OctetString6changeERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE
+   obj:/usr/lib/libbotan-1.10.so.1.12
+   fun:_ZN5Botan26confirm_startup_self_testsERNS_17Algorithm_FactoryE
+   fun:_ZN5Botan13Library_State10initializeEb
+   fun:_ZN5Botan18LibraryInitializer10initializeERKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE
+   obj:*
+   obj:*
+   fun:elektraPluginOpen
+   fun:test_crypto_operations
    fun:main
 }
