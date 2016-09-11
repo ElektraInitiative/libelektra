@@ -961,9 +961,16 @@ ingroup:plugin
 module:line
 macro:NO_INC
 
-number:159
+number:160
 description:Non-required key found
 severity:error
 ingroup:plugin
 module:required
 macro:REQUIRED
+
+number:161
+description:Can not delete the unencrypted original file.
+macro:FCRYPT_REMOVE
+severity:error
+ingroup:plugin
+module:fcrypt
