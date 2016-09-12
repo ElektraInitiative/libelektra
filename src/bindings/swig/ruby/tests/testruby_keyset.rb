@@ -238,6 +238,43 @@ class KdbKeySetTestCases < Test::Unit::TestCase
     end
   end
 
+  def test_keySet_pop
+    assert_nothing_raised do
+      ks = Kdb::KeySet.new
+
+      assert_nil ks.pop
+
+      k = Kdb::Key.new("user/k0")
+      ks << k
+      assert_equal 1, ks.size
+      assert_equal k, ks.pop
+      assert_equal 0, ks.size
+
+      k = Kdb::Key.new("user/k1")
+      ks << k
+      assert_equal 1, ks.size
+      assert_equal k, ks.pop
+      assert_equal 0, ks.size
+
+      k2 = Kdb::Key.new("user/k2")
+      k3 = Kdb::Key.new("user/k3")
+      k4 = Kdb::Key.new("user/k4")
+      k5 = Kdb::Key.new("user/k5")
+
+      ks << [k2, k3, k4, k5]
+
+      assert_equal 4, ks.size
+      assert_equal k5, ks.pop
+      assert_equal k4, ks.pop
+      assert_equal k3, ks.pop
+      assert_equal k2, ks.pop
+      assert_equal 0, ks.size
+      assert_nil ks.pop
+    end
+  end
+
+
+
   def test_keySet_head_tail
     assert_nothing_raised do
       ks = Kdb::KeySet.new
@@ -268,8 +305,21 @@ class KdbKeySetTestCases < Test::Unit::TestCase
 
       assert_equal a[0], ks.head
       assert_equal a[3], ks.tail
+
+      assert_equal a[3], ks.pop
+      assert_equal a[2], ks.tail
+
+      assert_equal a[2], ks.pop
+      assert_equal a[1], ks.tail
+
+      assert_equal a[1], ks.pop
+      assert_equal a[0], ks.tail
+
+      assert_equal a[0], ks.pop
+      assert_nil ks.tail
     end
   end
+
 
 
   def test_keySet_each_enumeralbe
