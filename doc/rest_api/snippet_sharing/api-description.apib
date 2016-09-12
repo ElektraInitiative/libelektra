@@ -57,7 +57,7 @@ The API will try to authenticate the user by the submitted credentials. In case 
             A comprehensive list of possible errors:
             - `AUTH_MISSING_USERNAME` if no input for `username` was submitted
             - `AUTH_MISSING_PASSWORD` if no input for `password` was submitted
-            - `REQUEST_UNSUPPORTED_CONTENT_TYPE` if the submitted content and/or Content-Type is not `application/json`
+            - `REQUEST_MALFORMED_DATA` if the submitted data in the request body does not match the Content-Type or is unparseable
 
 + Response 401 (application/json)
     + Attributes (object)
@@ -68,6 +68,16 @@ The API will try to authenticate the user by the submitted credentials. In case 
             A comprehensive list of possible errors:
             - `AUTH_UNKNOWN_USERNAME` if there is no user registered witht he given name
             - `AUTH_INVALID_PASSWORD` if the given password does not match the password saved for the given account
+
++ Response 406 (application/json)
+    + Attributes (object)
+        + status (string) - Textual description of the HTTP status
+        + message (string) - Detailed error information, e.g. hint about malformed request
+        + i18n (string) - A unique token representing above error description message; can be used for internationalization in frontends
+
+            A comprehensive list of possible errors:
+            - `REQUEST_UNSUPPORTED_CONTENT_TYPE` if the submitted Content-Type is not `application/json`
+
 
 
 # Users endpoint [/users{?rows}{?sort}{?sortby}{?filter}{?filterby}{?current}]
@@ -174,7 +184,16 @@ This method can be used to register for the service by creating a new user accou
             - `USER_CREATE_INVALID_USERNAME` if the supplied `username` does not match the given criteria (regex: ^[a-zA-Z0-9\-\.]{3,20}$)
             - `USER_CREATE_INVALID_PASSWORD` if the supplied `password` does not satisfy the given criteria (regex: ^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$)
             - `USER_CREATE_INVALID_EMAIL` if the supplied `email` is not a valid email
-            - `REQUEST_UNSUPPORTED_CONTENT_TYPE` if the submitted content and/or Content-Type is not `application/json`
+            - `REQUEST_MALFORMED_DATA` if the submitted data in the request body does not match the Content-Type or is unparseable
+
++ Response 406 (application/json)
+    + Attributes (object)
+        + status (string) - Textual description of the HTTP status
+        + message (string) - Detailed error information, e.g. hint about malformed request
+        + i18n (string) - A unique token representing above error description message; can be used for internationalization in frontends
+
+            A comprehensive list of possible errors:
+            - `REQUEST_UNSUPPORTED_CONTENT_TYPE` if the submitted Content-Type is not `application/json`
 
 + Response 422 (application/json)
     + Attributes (object)
@@ -234,7 +253,7 @@ This method can be used to edit an user. If no `name` is supplied, the currently
             - `USER_UPDATE_INVALID_PASSWORD` if the supplied `password` does not satisfy the given criteria (regex: ^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$)
             - `USER_UPDATE_INVALID_EMAIL` if the supplied `email` is not a valid email
             - `USER_UPDATE_INVALID_RANK` if the supplied `rank` is not a valid rank (regex: ^[1-3]$)
-            - `REQUEST_UNSUPPORTED_CONTENT_TYPE` if the submitted content and/or Content-Type is not `application/json`
+            - `REQUEST_MALFORMED_DATA` if the submitted data in the request body does not match the Content-Type or is unparseable
 
 + Response 401 (application/json)
     + Attributes (object)
@@ -245,6 +264,15 @@ This method can be used to edit an user. If no `name` is supplied, the currently
             A comprehensive list of possible errors:
             - `NEED_AUTHENTICATION` if no valid session token has been supplied or the user for whom the token has been created does not exist (anymore)
             - `USER_INSUFFICIENT_PERMISSIONS` if the currently authenticated user has insufficient permissions (due to his rank) to perform this action
+
++ Response 406 (application/json)
+    + Attributes (object)
+        + status (string) - Textual description of the HTTP status
+        + message (string) - Detailed error information, e.g. hint about malformed request
+        + i18n (string) - A unique token representing above error description message; can be used for internationalization in frontends
+
+            A comprehensive list of possible errors:
+            - `REQUEST_UNSUPPORTED_CONTENT_TYPE` if the submitted Content-Type is not `application/json`
 
 
 
@@ -425,7 +453,7 @@ Can be used to create a new entry in the database. An entry consists of a unique
             - `ENTRY_INVALID_DESCRIPTION` if the submitted `description` is malformed (regex: ^[\s\S]{3,}$)
             - `ENTRY_INVALID_TAG` if one of the submitted `tags` is malformed (regex: ^[a-z0-9\-\.]{3,20}$)
             - `ENTRY_INVALID_CONFIGURATION` if the submitted configuration snippet has an unsupported format
-            - `REQUEST_UNSUPPORTED_CONTENT_TYPE` if the submitted content and/or Content-Type is not `application/json`
+            - `REQUEST_MALFORMED_DATA` if the submitted data in the request body does not match the Content-Type or is unparseable
 
 + Response 401 (application/json)
     + Attributes (object)
@@ -435,6 +463,15 @@ Can be used to create a new entry in the database. An entry consists of a unique
 
             A comprehensive list of possible errors:
             - `NEED_AUTHENTICATION` if no valid session token has been supplied or the user for whom the token has been created does not exist (anymore)
+
++ Response 406 (application/json)
+    + Attributes (object)
+        + status (string) - Textual description of the HTTP status
+        + message (string) - Detailed error information, e.g. hint about malformed request
+        + i18n (string) - A unique token representing above error description message; can be used for internationalization in frontends
+
+            A comprehensive list of possible errors:
+            - `REQUEST_UNSUPPORTED_CONTENT_TYPE` if the submitted Content-Type is not `application/json`
 
 + Response 422 (application/json)
     + Attributes (object)
@@ -496,7 +533,7 @@ This operation can only be executed by the owner of an entry as well as moderato
             - `ENTRY_INVALID_DESCRIPTION` if the submitted `description` is malformed (regex: ^[\s\S]{3,}$)
             - `ENTRY_INVALID_TAG` if one of the submitted `tags` is malformed (regex: ^[a-z0-9\-\.]{3,20}$)
             - `ENTRY_INVALID_CONFIGURATION` if the submitted configuration snippet has an unsupported format
-            - `REQUEST_UNSUPPORTED_CONTENT_TYPE` if the submitted content and/or Content-Type is not `application/json`
+            - `REQUEST_MALFORMED_DATA` if the submitted data in the request body does not match the Content-Type or is unparseable
 
 + Response 401 (application/json)
     + Attributes (object)
@@ -516,6 +553,15 @@ This operation can only be executed by the owner of an entry as well as moderato
 
             A comprehensive list of possible errors:
             - `ENTRY_DOES_NOT_EXIST` if the entry specified by the URI does not exist in the database
+
++ Response 406 (application/json)
+    + Attributes (object)
+        + status (string) - Textual description of the HTTP status
+        + message (string) - Detailed error information, e.g. hint about malformed request
+        + i18n (string) - A unique token representing above error description message; can be used for internationalization in frontends
+
+            A comprehensive list of possible errors:
+            - `REQUEST_UNSUPPORTED_CONTENT_TYPE` if the submitted Content-Type is not `application/json`
 
 
 ## Delete an entry [DELETE /database/{organization}/{application}/{scope}/{slug}]
