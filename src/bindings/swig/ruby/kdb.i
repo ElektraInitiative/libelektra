@@ -550,6 +550,7 @@ namespace kdb {
  * SWIG doesn't add this to class KeySet
  * (otherwise 'kdb::== ks1, ks2' would be required)
  */
+%alias kdb::KeySet::operator== "eql?"
 %extend kdb::KeySet {
   bool operator== (const KeySet & rhs) {
     return *$self == rhs;
@@ -579,6 +580,17 @@ namespace kdb {
 %alias kdb::KeySet::dup "clone"
 
 
+/*
+ * handy helper methods or common aliases
+ */
+%rename("empty?") kdb::KeySet::empty;
+%extend kdb::KeySet {
+  bool empty () {
+    return $self->size() == 0;
+  }
+}
+
+%alias kdb::KeySet::size "length"
 
 /* 
  * parse keyset.hpp

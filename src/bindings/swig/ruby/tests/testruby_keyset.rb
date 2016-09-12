@@ -435,10 +435,16 @@ class KdbKeySetTestCases < Test::Unit::TestCase
       assert_true ks1 == ks2
       assert_false ks1 != ks2
 
+      assert_true ks1.eql?(ks2)
+      assert_true ks2.eql?(ks1)
+
       ks2 << Kdb::Key.new("user/key100")
 
       assert_false ks1 == ks2
       assert_true ks1 != ks2
+
+      assert_false ks1.eql?(ks2)
+      assert_false ks2.eql?(ks1)
     end
   end
 
@@ -484,6 +490,7 @@ class KdbKeySetTestCases < Test::Unit::TestCase
       
       assert_equal ks.size, ks_dup.size
       assert_true ks == ks_dup
+      assert_true ks.__id__ != ks_dup.__id__
 
       ks_dup << Kdb::Key.new("user/key5")
 
@@ -549,6 +556,61 @@ class KdbKeySetTestCases < Test::Unit::TestCase
       assert_equal 4, ks.size
       assert_equal 0, app4.size
 
+    end
+  end
+
+  def test_keySet_to_array
+    assert_nothing_raised do
+      ks = Kdb::KeySet.new (0..5).map { |i| Kdb::Key.new "user/key#{i}" }
+
+      a = ks.to_a
+
+      assert_instance_of Kdb::KeySet, ks
+      assert_instance_of Array, a
+
+      assert_equal ks.size, a.size
+
+      for i in (0..5) do
+        assert_equal ks[i], a[i]
+      end
+
+    end
+  end
+
+  def test_keySet_empty
+    assert_nothing_raised do
+      ks = Kdb::KeySet.new
+
+      assert_true ks.empty?
+
+      ks << Kdb::Key.new("user/k1")
+
+      assert_false ks.empty?
+
+      ks << Kdb::Key.new("user/k2")
+
+      assert_false ks.empty?
+
+      ks.pop
+      assert_false ks.empty?
+      ks.pop
+      assert_true ks.empty?
+      ks.pop
+      assert_true ks.empty?
+    end
+  end
+
+  def test_keySet_length
+    assert_nothing_raised do
+      ks = Kdb::KeySet.new
+
+      assert_equal 0, ks.size
+      assert_equal 0, ks.length
+
+      ks << Kdb::Key.new("user/k1")
+
+      assert_equal 1, ks.size
+      assert_equal 1, ks.length
     end
   end
 
