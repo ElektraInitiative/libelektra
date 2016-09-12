@@ -167,8 +167,8 @@ static int getGpgBinary (char ** gpgBin, KeySet * conf, Key * errorKey)
 
 
 	// last resort
-	const size_t defaultLen = strlen (ELEKTRA_CRYPTO_DEFAULT_GPG_BIN);
-	*gpgBin = elektraMalloc (defaultLen + 1);
+	const size_t defaultLen = strlen (ELEKTRA_CRYPTO_DEFAULT_GPG_BIN) + 1;
+	*gpgBin = elektraMalloc (defaultLen);
 	if (!(*gpgBin))
 	{
 		ELEKTRA_SET_ERROR (87, errorKey, "Memory allocation failed");

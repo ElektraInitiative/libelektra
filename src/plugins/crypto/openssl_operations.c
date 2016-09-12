@@ -44,8 +44,8 @@ static pthread_mutex_t mutex_ssl = PTHREAD_MUTEX_INITIALIZER;
  */
 static int getKeyIvForEncryption (KeySet * config, Key * errorKey, Key * k, Key * cKey, Key * cIv)
 {
-	kdb_octet_t salt[ELEKTRA_CRYPTO_DEFAULT_SALT_LEN];
-	kdb_octet_t keyBuffer[KEY_BUFFER_SIZE];
+	kdb_octet_t salt[ELEKTRA_CRYPTO_DEFAULT_SALT_LEN] = { 0 };
+	kdb_octet_t keyBuffer[KEY_BUFFER_SIZE] = { 0 };
 	char * saltHexString = NULL;
 
 	// generate the salt
