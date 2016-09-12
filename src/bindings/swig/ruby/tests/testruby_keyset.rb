@@ -197,6 +197,80 @@ class KdbKeySetTestCases < Test::Unit::TestCase
     end
   end
 
+  def test_keySet_get_by_cursor_or_index
+    assert_nothing_raised do
+      ks = Kdb::KeySet.new (0..9).map { |i| Kdb::Key.new "user/key%02d" % i }
+
+      assert_equal 10, ks.size
+
+      # test get by index
+      for i in (0..9) do
+        assert_equal ("user/key%02d" % i), ks.at(i).name
+        assert_equal ("user/key%02d" % i), ks[i].name
+      end
+
+      # test get by cursor
+      ks.rewind
+      puts "cursor at: %d" % ks.cursor
+      assert_true ks.cursor < 0
+
+      assert_nil ks.current
+
+      for i in (0..9) do
+        nxt = ks.next
+        cur = ks.current
+        assert_equal ("user/key%02d" % i), nxt.name
+        assert_equal cur, nxt
+        
+        assert_equal i, ks.cursor
+      end
+
+      assert_nil ks.next
+      assert_nil ks.current
+
+      puts "cursor at: %d" % ks.cursor
+      assert_true ks.cursor < 0
+
+      # test get by invalid index
+      assert_nil ks[10]
+      assert_nil ks[-11]
+      assert_nil ks.at(200)
+    end
+  end
+
+  def test_keySet_head_tail
+    assert_nothing_raised do
+      ks = Kdb::KeySet.new
+
+      assert_equal 0, ks.size
+
+      assert_nil ks.head
+      assert_nil ks.tail
+
+      a = (0..3).map { |i| Kdb::Key.new "user/key#{i}" }
+
+      ks << a[0]
+
+      assert_equal a[0], ks.head
+      assert_equal a[0], ks.tail
+
+      ks << a[1]
+
+      assert_equal a[0], ks.head
+      assert_equal a[1], ks.tail
+
+      ks << a[2]
+
+      assert_equal a[0], ks.head
+      assert_equal a[2], ks.tail
+
+      ks << a[3]
+
+      assert_equal a[0], ks.head
+      assert_equal a[3], ks.tail
+    end
+  end
+
 
   def test_keySet_each_enumeralbe
     assert_nothing_raised do
@@ -315,6 +389,36 @@ class KdbKeySetTestCases < Test::Unit::TestCase
 
       assert_false ks1 == ks2
       assert_true ks1 != ks2
+    end
+  end
+
+  def test_keySet_lookup_lookupByName
+    assert_nothing_raised do
+      ks = Kdb::KeySet.new (1..10).map { |i| Kdb::Key.new("user/key%02d" % i) }
+
+      assert_equal 10, ks.size
+
+      # lookupByName
+      assert_equal "user/key01", ks.lookup("user/key01").name
+      assert_equal Kdb::Key.new("user/key02"), ks.lookup("user/key02")
+
+      # lookup
+      assert_equal "user/key03", ks.lookup(Kdb::Key.new "user/key03").name
+
+      # lookup unknown key
+      assert_nil ks.lookup("user/key_now_in_keyset")
+      assert_nil ks.lookup(Kdb::Key.new "user/key_now_in_keyset")
+
+      # with options
+      #lookupkey = Kdb::Key.new "user/key04"
+      #assert_equal lookupkey, ks.lookup(lookupkey, Kdb::KDB_O_DEL)
+      #assert_true lookupkey.is_null? # TODO: should this really work this way
+
+      lookupkey = Kdb::Key.new "user/key05"
+      assert_equal lookupkey, ks.lookup(lookupkey, Kdb::KDB_O_POP)
+      assert_equal 9, ks.size
+      assert_nil ks.lookup(lookupkey)
+
     end
   end
 

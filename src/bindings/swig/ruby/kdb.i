@@ -447,6 +447,24 @@ namespace std {
 
 
 
+/* 
+ * be more Ruby native: 
+ * for all methods, which return a Key, for which Key.is_null? returns true
+ * (null-key), return NIL instead */
+namespace kdb {
+  class KeySet;
+
+  %typemap(out) Key {
+    if ($1.isNull()) {
+      $result = Qnil;
+    } else {
+      $result = SWIG_NewPointerObj(new kdb::Key($1), 
+                                    SWIGTYPE_p_kdb__Key, 
+                                    SWIG_POINTER_OWN | 0);
+    }
+  }
+}
+
 
 /* 
  * KeySet.each
@@ -536,6 +554,13 @@ namespace std {
     return *$self == rhs;
   }
 }
+
+
+/*
+ * lookup
+ */
+%apply int { option_t }
+
 
 /* 
  * parse keyset.hpp
