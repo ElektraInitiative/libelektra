@@ -4,7 +4,7 @@
 - infos/provides = filefilter crypto
 - infos/needs =
 - infos/recommends =
-- infos/placements = pregetstorage postcommit
+- infos/placements = pregetstorage postgetstorage precommit
 - infos/status = experimental unfinished discouraged
 - infos/metadata =
 - infos/description = File Encryption

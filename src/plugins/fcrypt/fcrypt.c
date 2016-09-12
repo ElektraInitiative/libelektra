@@ -18,17 +18,19 @@
 #include <stdlib.h>
 #include <string.h>
 
+
 /**
- * @brief Allocates a new string holding the name of the encrypted file.
+ * @brief Allocates a new string holding the name of the temporary file.
  * @param file holds the path to the original file
  * @returns an allocated string holding the name of the encrypted file. Must be freed by the caller.
  */
-static char * getEncryptedFileName (const char * file)
+static char * getTemporaryFileName (const char * file)
 {
-	const size_t newFileAllocated = strlen (file) + 5;
+	const size_t newFileAllocated = strlen (file) + 7;
 	char * newFile = elektraMalloc (newFileAllocated);
 	if (!newFile) return NULL;
-	snprintf (newFile, newFileAllocated, "%s.gpg", file);
+	snprintf (newFile, newFileAllocated, "%sXXXXXX", file);
+	mktemp (newFile);
 	return newFile;
 }
 
@@ -80,27 +82,43 @@ int ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME, get) (Plugin * handle, KeySet 
 		return 1;
 	}
 
+	// TODO encrypt if this is a `postgetstorage` call
+
 	// regular decryption business
 	KeySet * pluginConfig = elektraPluginGetConfig (handle);
 
 	// decrypt the file with gpg - prepare argument vector for gpg call
 	static const int argc = 8;
 	char * argv[8] = { NULL, "--batch", "--yes", "-o", NULL, "-d", NULL, NULL };
-	char * encryptedFile = getEncryptedFileName (keyString (parentKey));
-
-	if (!encryptedFile)
+	char * tmpFile = getTemporaryFileName (keyString (parentKey));
+	if (!tmpFile)
 	{
 		ELEKTRA_SET_ERROR (87, parentKey, "Memory allocation failed");
 		return -1;
 	}
 
+	argv[4] = tmpFile;
 	// safely discarding const from keyString() return value
-	argv[4] = (char *)keyString (parentKey);
-	argv[6] = encryptedFile;
+	argv[6] = (char *)keyString (parentKey);
+
+	// NOTE the decryption process works like this:
+	// gpg2 --batch --yes -o tmpfile -d configFile
+	// mv tmpfile configFile
 
 	int result = elektraCryptoGpgCall (pluginConfig, parentKey, NULL, argv, argc);
 
-	elektraFree (encryptedFile);
+	if (result == 1)
+	{
+		// encryption successful, overwrite the original file with the encrypted data
+		if (rename (tmpFile, keyString (parentKey)) != 0)
+		{
+			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_FCRYPT_RENAME, parentKey, "Renaming file %s to %s failed.", tmpFile,
+					    keyString (parentKey));
+			result = -1;
+		}
+	}
+
+	elektraFree (tmpFile);
 	return result;
 }
 
@@ -112,19 +130,19 @@ int ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME, get) (Plugin * handle, KeySet 
 int ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME, set) (Plugin * handle, KeySet * ks ELEKTRA_UNUSED, Key * parentKey)
 {
 	KeySet * pluginConfig = elektraPluginGetConfig (handle);
-	char * encryptedFile = getEncryptedFileName (keyString (parentKey));
-	if (!encryptedFile)
-	{
-		ELEKTRA_SET_ERROR (87, parentKey, "Memory allocation failed");
-		return -1;
-	}
 
 	const size_t recipientCount = getRecipientCount (pluginConfig);
-
 	if (recipientCount == 0)
 	{
 		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CRYPTO_CONFIG_FAULT, parentKey,
 				    "Missing GPG key (specified as %s) in plugin configuration.", ELEKTRA_CRYPTO_PARAM_GPG_KEY);
+		return -1;
+	}
+
+	char * tmpFile = getTemporaryFileName (keyString (parentKey));
+	if (!tmpFile)
+	{
+		ELEKTRA_SET_ERROR (87, parentKey, "Memory allocation failed");
 		return -1;
 	}
 
@@ -135,7 +153,7 @@ int ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME, set) (Plugin * handle, KeySet 
 	argv[i++] = NULL;
 	argv[i++] = "--batch";
 	argv[i++] = "-o";
-	argv[i++] = encryptedFile;
+	argv[i++] = tmpFile;
 	argv[i++] = "--yes"; // overwrite files if they exist
 
 	// add recipients
@@ -167,19 +185,24 @@ int ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME, set) (Plugin * handle, KeySet 
 	argv[i++] = (char *)keyString (parentKey);
 	argv[i++] = NULL;
 
+	// NOTE the encryption process works like this:
+	// gpg2 --batch --yes -o encryptedFile -r keyID -e configFile
+	// mv encryptedFile configFile
+
 	int result = elektraCryptoGpgCall (pluginConfig, parentKey, NULL, argv, argc);
 
 	if (result == 1)
 	{
-		// encryption successful, now remove the original file
-		if (remove (keyString (parentKey)) != 0)
+		// encryption successful, overwrite the original file with the encrypted data
+		if (rename (tmpFile, keyString (parentKey)) != 0)
 		{
-			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_FCRYPT_REMOVE, parentKey, "File: %s", keyString (parentKey));
+			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_FCRYPT_RENAME, parentKey, "Renaming file %s to %s failed.", tmpFile,
+					    keyString (parentKey));
 			result = -1;
 		}
 	}
 
-	elektraFree (encryptedFile);
+	elektraFree (tmpFile);
 	return result;
 }
 
@@ -210,7 +233,7 @@ int ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME, checkconf) (Key * errorKey, Ke
 	return 0;
 }
 
-Plugin * ELEKTRA_PLUGIN_EXPORT (crypto)
+Plugin * ELEKTRA_PLUGIN_EXPORT (fcrypt)
 {
 	// clang-format off
 	return elektraPluginExport(ELEKTRA_PLUGIN_NAME,

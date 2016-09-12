@@ -961,16 +961,16 @@ ingroup:plugin
 module:line
 macro:NO_INC
 
-number:160
+number:159
 description:Non-required key found
 severity:error
 ingroup:plugin
 module:required
 macro:REQUIRED
 
-number:161
-description:Can not delete the unencrypted original file.
-macro:FCRYPT_REMOVE
+number:160
+description:Can not replace the existing file with the temporary file.
+macro:FCRYPT_RENAME
 severity:error
 ingroup:plugin
 module:fcrypt
