@@ -381,6 +381,7 @@ namespace std {
 /* ignore raw ckdb::KeySet methods */
 %ignore kdb::KeySet::getKeySet;
 %ignore kdb::KeySet::setKeySet;
+%ignore kdb::KeySet::release;
 
 /* ignore unused operators */
 %ignore kdb::KeySet::operator=;
@@ -560,6 +561,23 @@ namespace kdb {
  * lookup
  */
 %apply int { option_t }
+
+
+
+/*
+ * dup, copy, clone
+ * shallow copy KeySet
+ */
+
+/* return a kdb::KeySet instead of a ckdb::KeySet */
+%typemap(out) ckdb::KeySet* kdb::KeySet::dup {
+  $result = SWIG_NewPointerObj(new KeySet($1), 
+                                SWIGTYPE_p_kdb__KeySet,
+                                SWIG_POINTER_OWN | 0);
+}
+
+%alias kdb::KeySet::dup "clone"
+
 
 
 /* 

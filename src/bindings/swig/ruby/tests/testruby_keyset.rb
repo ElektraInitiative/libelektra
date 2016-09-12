@@ -472,4 +472,84 @@ class KdbKeySetTestCases < Test::Unit::TestCase
     end
   end
 
+  def test_keySet_dup_or_clone
+    assert_nothing_raised do
+      a = (0..4).map { |i| Kdb::Key.new "user/key#{i}" }
+
+      ks = Kdb::KeySet.new a
+
+      assert_equal 5, ks.size
+
+      ks_dup = ks.dup
+      
+      assert_equal ks.size, ks_dup.size
+      assert_true ks == ks_dup
+
+      ks_dup << Kdb::Key.new("user/key5")
+
+      assert_equal 5, ks.size
+      assert_equal 6, ks_dup.size
+
+      assert_equal "user/key4", ks.tail.name
+      assert_equal "user/key5", ks_dup.tail.name
+
+      assert_equal a[4], ks.pop
+      assert_equal 4, ks.size
+      assert_equal 6, ks_dup.size
+      assert_equal "user/key3", ks.tail.name
+      assert_equal "user/key5", ks_dup.tail.name
+
+      # however, its just a shallow copy, thus modifying keys has effect 
+      # to both key sets
+
+      assert_equal "", ks[1].value
+      assert_equal "", ks_dup[1].value
+
+      new_value = "some important value"
+      ks[1].value = new_value
+
+      assert_equal new_value, ks[1].value
+      assert_equal new_value, ks_dup[1].value
+    end
+  end
+
+  def test_keySet_cut
+    assert_nothing_raised do
+      ks = Kdb::KeySet.new [
+        Kdb::Key.new("user/app1/setting1"),
+        Kdb::Key.new("user/app1/setting2"),
+        Kdb::Key.new("user/app1/setting3"),
+        Kdb::Key.new("user/app2/setting1"),
+        Kdb::Key.new("user/app2/common/setting1"),
+        Kdb::Key.new("user/app2/common/setting2"),
+        Kdb::Key.new("user/app2/setting2"),
+        Kdb::Key.new("user/app3/setting1")
+      ]
+
+      assert_equal 8, ks.size
+
+      app2 = ks.cut Kdb::Key.new("user/app2")
+
+      assert_equal 4, app2.size
+      assert_equal 4, ks.size
+
+      assert_equal "user/app1/setting1", ks[0].name
+      assert_equal "user/app1/setting2", ks[1].name
+      assert_equal "user/app1/setting3", ks[2].name
+      assert_equal "user/app3/setting1", ks[3].name
+
+      assert_equal "user/app2/common/setting1", app2[0].name
+      assert_equal "user/app2/common/setting2", app2[1].name
+      assert_equal "user/app2/setting1", app2[2].name
+      assert_equal "user/app2/setting2", app2[3].name
+
+
+      app4 = ks.cut Kdb::Key.new("user/app4")
+
+      assert_equal 4, ks.size
+      assert_equal 0, app4.size
+
+    end
+  end
+
 end
