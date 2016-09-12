@@ -57,6 +57,7 @@ The API will try to authenticate the user by the submitted credentials. In case 
             A comprehensive list of possible errors:
             - `AUTH_MISSING_USERNAME` if no input for `username` was submitted
             - `AUTH_MISSING_PASSWORD` if no input for `password` was submitted
+            - `REQUEST_UNSUPPORTED_CONTENT_TYPE` if the submitted content and/or Content-Type is not `application/json`
 
 + Response 401 (application/json)
     + Attributes (object)
@@ -173,6 +174,7 @@ This method can be used to register for the service by creating a new user accou
             - `USER_CREATE_INVALID_USERNAME` if the supplied `username` does not match the given criteria (regex: ^[a-zA-Z0-9\-\.]{3,20}$)
             - `USER_CREATE_INVALID_PASSWORD` if the supplied `password` does not satisfy the given criteria (regex: ^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$)
             - `USER_CREATE_INVALID_EMAIL` if the supplied `email` is not a valid email
+            - `REQUEST_UNSUPPORTED_CONTENT_TYPE` if the submitted content and/or Content-Type is not `application/json`
 
 + Response 422 (application/json)
     + Attributes (object)
@@ -232,6 +234,7 @@ This method can be used to edit an user. If no `name` is supplied, the currently
             - `USER_UPDATE_INVALID_PASSWORD` if the supplied `password` does not satisfy the given criteria (regex: ^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$)
             - `USER_UPDATE_INVALID_EMAIL` if the supplied `email` is not a valid email
             - `USER_UPDATE_INVALID_RANK` if the supplied `rank` is not a valid rank (regex: ^[1-3]$)
+            - `REQUEST_UNSUPPORTED_CONTENT_TYPE` if the submitted content and/or Content-Type is not `application/json`
 
 + Response 401 (application/json)
     + Attributes (object)
@@ -321,7 +324,7 @@ Returns detailed information about the entry with the specified key (path). If t
 
 + Response 200 (text/plain)
 
-+ Response 401 (application/json)
++ Response 400 (application/json)
     + Attributes (object)
         + status (string) - Textual description of the HTTP status
         + message (string) - Detailed error information, e.g. hint about malformed request
@@ -422,6 +425,7 @@ Can be used to create a new entry in the database. An entry consists of a unique
             - `ENTRY_INVALID_DESCRIPTION` if the submitted `description` is malformed (regex: ^[\s\S]{3,}$)
             - `ENTRY_INVALID_TAG` if one of the submitted `tags` is malformed (regex: ^[a-z0-9\-\.]{3,20}$)
             - `ENTRY_INVALID_CONFIGURATION` if the submitted configuration snippet has an unsupported format
+            - `REQUEST_UNSUPPORTED_CONTENT_TYPE` if the submitted content and/or Content-Type is not `application/json`
 
 + Response 401 (application/json)
     + Attributes (object)
@@ -492,6 +496,7 @@ This operation can only be executed by the owner of an entry as well as moderato
             - `ENTRY_INVALID_DESCRIPTION` if the submitted `description` is malformed (regex: ^[\s\S]{3,}$)
             - `ENTRY_INVALID_TAG` if one of the submitted `tags` is malformed (regex: ^[a-z0-9\-\.]{3,20}$)
             - `ENTRY_INVALID_CONFIGURATION` if the submitted configuration snippet has an unsupported format
+            - `REQUEST_UNSUPPORTED_CONTENT_TYPE` if the submitted content and/or Content-Type is not `application/json`
 
 + Response 401 (application/json)
     + Attributes (object)
