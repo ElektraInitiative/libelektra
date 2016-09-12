@@ -346,24 +346,45 @@ class KdbKeyTestCases < Test::Unit::TestCase
      
       k.rewind_meta
       mk = k.current_meta
+      assert_nil k.current_meta
+
+      mk = k.next_meta
       assert_instance_of Kdb::Key, mk
-      assert_not_nil mk
-      #puts mk.class
+      assert_equal "hello", mk.value
+      assert_equal "comment", mk.name
+      assert_equal "hello", k.current_meta.value
+      assert_equal "comment", k.current_meta.name
 
-      # This throws a Kdb::KeyException (null key?)
-      #assert_equal "hello", mk.value
-      #assert_equal "comment", mk.name
+      mk = k.next_meta
+      assert_equal "meta1 value", mk.value
+      assert_equal "meta1", mk.name
+      assert_equal "meta1 value", k.current_meta.value
+      assert_equal "meta1", k.current_meta.name
 
+      mk = k.next_meta
+      assert_equal "othermeta value", mk.value
+      assert_equal "othermeta", mk.name
+      assert_equal "othermeta value", k.current_meta.value
+      assert_equal "othermeta", k.current_meta.name
 
-      #assert_equal "hello", k.current_meta.value
-      #assert_equal "comment", k.current_meta.name
+      mk = k.next_meta
+      assert_equal "me", mk.value
+      assert_equal "owner", mk.name
+      assert_equal "me", k.current_meta.value
+      assert_equal "owner", k.current_meta.name
 
-      #k.next_meta
-      #
-      #assert_equal "meta1 value", k.current_meta.value
-      #assert_equal "meta1", k.current_meta.name
+      assert_nil k.next_meta
+      assert_nil k.current_meta
 
+      # test Ruby-style meta iterator
+      assert_instance_of Kdb::KeySet, k.meta
 
+      a = ["comment", "meta1", "othermeta", "owner"]
+      i = 0;
+      k.meta.each { |m|
+        assert_equal a[i], m.name
+        i += 1
+      }
     end
   end
 end

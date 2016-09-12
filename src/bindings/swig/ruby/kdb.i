@@ -136,6 +136,24 @@ namespace std {
 %predicate kdb::Key::isNull; // TODO: do we need something special here??? 
 %predicate kdb::Key::needSync;
 
+/* 
+ * be more Ruby native: 
+ * for all methods, which return a Key, for which Key.is_null? returns true
+ * (null-key), return NIL instead */
+namespace kdb {
+
+  %typemap(out) Key {
+    if ($1.isNull()) {
+      $result = Qnil;
+    } else {
+      $result = SWIG_NewPointerObj(new kdb::Key($1), 
+                                    SWIGTYPE_p_kdb__Key, 
+                                    SWIG_POINTER_OWN | 0);
+    }
+  }
+}
+
+
 /* rename some methods to meet the Ruby naming conventions */
 %rename("name") kdb::Key::getName;
 %rename("name=") kdb::Key::setName;
@@ -159,6 +177,15 @@ namespace std {
 
 %alias kdb::Key::setMeta<std::string> "[]="
 %alias kdb::Key::getMeta<std::string> "[]"
+
+/* expose Keys meta KeySet
+ * this allows Ruby-style meta iterator, e.g. k.meta.each ... */
+%extend kdb::Key {
+  kdb::KeySet* meta() {
+    return new kdb::KeySet($self->getKey()->meta);
+  }
+}
+
 
 /* getMeta Typemap
  * This is used to convert the input argument to a Ruby string. In certain
@@ -446,25 +473,6 @@ namespace std {
   DATA_PTR(self) = result;
 }
 
-
-
-/* 
- * be more Ruby native: 
- * for all methods, which return a Key, for which Key.is_null? returns true
- * (null-key), return NIL instead */
-namespace kdb {
-  class KeySet;
-
-  %typemap(out) Key {
-    if ($1.isNull()) {
-      $result = Qnil;
-    } else {
-      $result = SWIG_NewPointerObj(new kdb::Key($1), 
-                                    SWIGTYPE_p_kdb__Key, 
-                                    SWIG_POINTER_OWN | 0);
-    }
-  }
-}
 
 
 /* 
