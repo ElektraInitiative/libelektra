@@ -157,7 +157,7 @@ This method can be used to register for the service by creating a new user accou
             The password must be at least 8 signs long and contain at least one lower-case letter, one upper-case letter and one digit. 
             To harden security, the user is encouraged to use special characters as well.
 
-            Regex: ^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$
+            Regex: ^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9]).{8,}$
         
         + email: `an@email.com` (string, required)
         
@@ -182,7 +182,7 @@ This method can be used to register for the service by creating a new user accou
             - `USER_CREATE_MISSING_PASSWORD` if no input for `password` was submitted
             - `USER_CREATE_MISSING_EMAIL` if no input for `email` was submitted
             - `USER_CREATE_INVALID_USERNAME` if the supplied `username` does not match the given criteria (regex: ^[a-zA-Z0-9\-\.]{3,20}$)
-            - `USER_CREATE_INVALID_PASSWORD` if the supplied `password` does not satisfy the given criteria (regex: ^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$)
+            - `USER_CREATE_INVALID_PASSWORD` if the supplied `password` does not satisfy the given criteria (regex: ^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9]).{8,}$)
             - `USER_CREATE_INVALID_EMAIL` if the supplied `email` is not a valid email
             - `REQUEST_MALFORMED_DATA` if the submitted data in the request body does not match the Content-Type or is unparseable
 
@@ -222,7 +222,7 @@ This method can be used to edit an user. If no `name` is supplied, the currently
 
             The new password for the user.
 
-            Regex: ^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$
+            Regex: ^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9]).{8,}$
         
         + rank: `3` (enum[number], optional)
         
@@ -250,7 +250,7 @@ This method can be used to edit an user. If no `name` is supplied, the currently
         + i18n (string) - A unique token representing above error description message; can be used for internationalization in frontends
 
             A comprehensive list of possible errors:
-            - `USER_UPDATE_INVALID_PASSWORD` if the supplied `password` does not satisfy the given criteria (regex: ^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$)
+            - `USER_UPDATE_INVALID_PASSWORD` if the supplied `password` does not satisfy the given criteria (regex: ^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9]).{8,}$)
             - `USER_UPDATE_INVALID_EMAIL` if the supplied `email` is not a valid email
             - `USER_UPDATE_INVALID_RANK` if the supplied `rank` is not a valid rank (regex: ^[1-3]$)
             - `REQUEST_MALFORMED_DATA` if the submitted data in the request body does not match the Content-Type or is unparseable
