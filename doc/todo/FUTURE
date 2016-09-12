@@ -34,6 +34,7 @@ problems on binary serialisation + unified behaviour (array sizes..)
 empty/invalid keys should lead to an error in kdbGet
 
 KEY_* -> KEY_O_* to avoid clashes
+consistently use singular (KEY_FLAGS -> KEY_FLAG)
 kdb.h -> elektra/kdb.h to avoid clashes
 
 Remove/Refactor/Rename obsolete/not needed methods:
