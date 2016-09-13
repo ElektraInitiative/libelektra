@@ -41,7 +41,7 @@ The API will try to authenticate the user by the submitted credentials. In case 
 
             Regex: ^[a-zA-Z0-9\-\.]{3,20}$
         
-        + password: `a5ecretP4ssword` (string, required)
+        + password: `ks_4m3kk4JDal.` (string, required)
         
             The corresponding password for the supplied user account.
  
@@ -85,7 +85,7 @@ The API will try to authenticate the user by the submitted credentials. In case 
 
 ## User list [GET]
 
-Retrieves a list of users. The result can be adjusted by additional, but optional parameters. This operation requires moderator permissions (rank 2) or higher.
+Retrieves a list of users. The result can be adjusted by additional, but optional parameters. This operation requires moderator permissions (rank 50) or higher.
 
 + Parameters
     + offset (number, optional) - How many entries to skip for the output, can be used for pagination.
@@ -116,7 +116,7 @@ Retrieves a list of users. The result can be adjusted by additional, but optiona
 
 ## Retrieve user details [GET /{name}{?current}]
 
-Retrieves the details of the specified user. If the parameter `current` is specified, the currently authenticated user will be chosen as target. Retrieving details of other users requires moderator permissions (rank 2) or higher.
+Retrieves the details of the specified user. If the parameter `current` is specified, the currently authenticated user will be chosen as target. Retrieving details of other users requires moderator permissions (rank 50) or higher.
 
 + Parameters
     + current (boolean, optional) - If the currently authenticated users details should be fetched
@@ -124,14 +124,7 @@ Retrieves the details of the specified user. If the parameter `current` is speci
     + name (string, required) - The `username` of the user whose details should be fetched
         
 + Response 200 (application/json)
-    + Attributes (object)
-        + username (string) - The name of the user
-        + email (string) - The email of the user
-        + rank (enum[number]) - The rank of the user (higher means more permissions)
-            + Members
-                + `1` - Normal user
-                + `2` - Moderator
-                + `3` - Admin
+    + Attributes (User Preview)
 
 + Response 401 (application/json)
     + Attributes (object)
@@ -210,33 +203,33 @@ This method can be used to register for the service by creating a new user accou
         
 ## Update user [PUT /{name}]
 
-This method can be used to edit an user. If no `name` is supplied, the currently authenticated user is chosen as target. By using this method it is also possible to change the rank of users. Changing the rank as well as other users in general can only be done by admins (rank 3) though.
+This method can be used to edit an user. If no `name` is supplied, the currently authenticated user is chosen as target. By using this method it is also possible to change the rank of users. Changing the rank as well as other users in general can only be done by admins (rank 100) though.
 
 + Parameters
     + name (string, optional) - The `username` of an user which is then taken as target for the operation
 
 + Request (application/json)
     + Attributes (object)
-        + email: `a-new@email.com` (string, optional)
+        + email: `some-new-chosen@email.com` (string, optional)
             
             The new email address which should be used for the user. It has to be a valid email.
 
-        + password: `a_new-secureP4ssw0rd` (string, optional)
+        + password: `ask23hsDja_231l` (string, optional)
 
             The new password for the user.
 
             Regex: ^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9]).{8,}$
         
-        + rank: `3` (enum[number], optional)
+        + rank: `50` (enum[number], optional)
         
             The new rank which should be set for the user. Setting this parameter does only result in a change if the currently authenticated user has the permission to change ranks.
 
-            Regex: ^[1-3]$
+            Regex: ^(10|50|100)$
         
             + Members
-                + `1` - Normal user
-                + `2` - Moderator
-                + `3` - Admin
+                + `10` - Normal user
+                + `50` - Moderator
+                + `100` - Admin
             
 + Response 200 (application/json)
     + Attributes (object)
@@ -255,7 +248,7 @@ This method can be used to edit an user. If no `name` is supplied, the currently
             A comprehensive list of possible errors:
             - `USER_UPDATE_INVALID_PASSWORD` if the supplied `password` does not satisfy the given criteria (regex: ^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9]).{8,}$)
             - `USER_UPDATE_INVALID_EMAIL` if the supplied `email` is not a valid email
-            - `USER_UPDATE_INVALID_RANK` if the supplied `rank` is not a valid rank (regex: ^[1-3]$)
+            - `USER_UPDATE_INVALID_RANK` if the supplied `rank` is not a valid rank (regex: ^(10|50|100)$)
             - `REQUEST_MALFORMED_DATA` if the submitted data in the request body does not match the Content-Type or is unparseable
 
 + Response 401 (application/json)
@@ -490,7 +483,7 @@ Can be used to create a new entry in the database. An entry consists of a unique
 
 Updates the entry with the specified key (path). All fields will be overridden with the supplied data. If no or empty data is supplied, it will also override the old one (especially important for `tags`).
 
-This operation can only be executed by the owner of an entry as well as moderators (rank 2) or higher.
+This operation can only be executed by the owner of an entry as well as moderators (rank 50) or higher.
 
 + Parameters
     + organization (string, required) - The `organization` who built the `application` for which the configuration of the entry is meant
@@ -571,7 +564,7 @@ This operation can only be executed by the owner of an entry as well as moderato
 
 Deletes an entry from the database. 
 
-This operation can only be executed by the owner of an entry as well as moderators (rank 2) or higher.
+This operation can only be executed by the owner of an entry as well as moderators (rank 50) or higher.
 
 + Parameters
     + organization (string, required) - The `organization` who built the `application` for which the configuration of the entry is meant
@@ -621,7 +614,12 @@ This operation can only be executed by the owner of an entry as well as moderato
 
 + username (string) - The users name
 + email (string) - The users email
-+ created_at (number) - A timestamp of the moment when the entry has been created
++ rank (enum[number]) - The users rank (higher means more permissions)
+    + Members
+        + `10` - Normal user
+        + `50` - Moderator
+        + `100` - Admin
++ created_at (number) - A timestamp of the moment when the user has been created
 
 ## Entry List (object)
 
