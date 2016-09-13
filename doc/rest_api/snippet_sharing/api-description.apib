@@ -16,13 +16,14 @@ Returns an overview of available API methods with required parameters and a desc
 
 ## API Version [GET /version]
 
-Returns the currently used version of the API. A version consists of two numbers (format: a.b), where the first number (a) is the major version and the second number (b) the minor version. Minor versions may not contain breaking changes (i.e. backwards-compatibility is ensured), but major versions may. This means that minor versions may only extend the API.
+Returns the current version of API and Elektra. For further information see [doc/VERSION.md](https://github.com/ElektraInitiative/libelektra/blob/master/doc/VERSION.md).
 
 + Response 200 (application/json)
     + Attributes (object)
         + version (string) - The currently used version in its complete format
         + major (number) - The currently used major version
         + minor (number) - The currently used minor version
+        + micro (number) - The currently used micro version
 
 
 
