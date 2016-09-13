@@ -67,7 +67,7 @@ The API will try to authenticate the user by the submitted credentials. In case 
         + i18n (string) - A unique token representing above error description message; can be used for internationalization in frontends
 
             A comprehensive list of possible errors:
-            - `AUTH_UNKNOWN_USERNAME` if there is no user registered witht he given name
+            - `AUTH_UNKNOWN_USERNAME` if there is no user registered with the given name
             - `AUTH_INVALID_PASSWORD` if the given password does not match the password saved for the given account
 
 + Response 406 (application/json)
@@ -88,6 +88,8 @@ The API will try to authenticate the user by the submitted credentials. In case 
 Retrieves a list of users. The result can be adjusted by additional, but optional parameters. This operation requires moderator permissions (rank 2) or higher.
 
 + Parameters
+    + offset (number, optional) - How many entries to skip for the output, can be used for pagination.
+        + Default: `0`
     + rows (number, optional) - How many entries will be added to the output at max.
         + Default: `200`
     + sort (enum[string], optional) - How to sort the entries for the output.
