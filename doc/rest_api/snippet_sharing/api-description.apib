@@ -138,7 +138,7 @@ Retrieves the details of the specified user. If the parameter `current` is speci
 
 ## Create user [POST]
 
-This method can be used to register for the service by creating a new user account. An user account will grant access to more functions.
+This method can be used to register for the service by creating a new user account. A user account will grant access to more functions.
 
 + Request (application/json)
     + Attributes (object)
@@ -203,10 +203,10 @@ This method can be used to register for the service by creating a new user accou
         
 ## Update user [PUT /{name}]
 
-This method can be used to edit an user. If no `name` is supplied, the currently authenticated user is chosen as target. By using this method it is also possible to change the rank of users. Changing the rank as well as other users in general can only be done by admins (rank 100) though.
+This method can be used to edit a user. If no `name` is supplied, the currently authenticated user is chosen as target. By using this method it is also possible to change the rank of users. Changing the rank as well as other users in general can only be done by admins (rank 100) though.
 
 + Parameters
-    + name (string, optional) - The `username` of an user which is then taken as target for the operation
+    + name (string, optional) - The `username` of a user which is then taken as target for the operation
 
 + Request (application/json)
     + Attributes (object)
@@ -301,7 +301,7 @@ Returns a list of database entries. The result can be adjusted by additional, bu
             + `organization` - Organization to which the application of the configuration belongs to
             + `application` - Application for which the configuration is meant
             + `scope` - Application internal scope
-            + `slug` - Entry specific unique slug
+            + `slug` - Entry specific slug
     + filter (string, optional) - Only entries containing the search string in either their path, title, description, author or tags will be added to the output.
     + filterby (enum[string], optional) - On what fields the filter should be applied to (i.e. what fields to involve in search)
         + Default: `all`
@@ -325,7 +325,7 @@ Returns detailed information about the entry with the specified key (path). If t
     + organization (string, required) - The `organization` who built the `application` for which the configuration of the entry is meant
     + application (string, required) - The `application` to which the configuration of the entry belongs to
     + scope (string, required) - The `application` specific `scope` to which the configuration of the entry belongs to
-    + slug (string, required) - The unique identifier of the requested entry
+    + slug (string, required) - The identifier of the requested entry that is unique within the namespace created by `organization`, `application` and `scope`
     + raw (string, optional) - If this parameter is supplied, the API will attempt to return the requested configuration snippet in the given `raw` format
 
 + Response 200 (application/json)
@@ -336,7 +336,7 @@ Returns detailed information about the entry with the specified key (path). If t
                 + organization (string) - The organization of the application to which the snippet belongs to
                 + application (string) - The application to which the snippet belongs to
                 + scope (string) - The application internal scope for the configuration snippet
-                + slug (string) - The unique identification slug of the entry
+                + slug (string) - The identifying slug of the entry that is unique within the namespace created by `organization`, `application` and `scope`
             + meta (object) - Additional information about the entry
                 + title (string) - The descriptive title of the entry
                 + description (string) - The extended description of the entry
@@ -393,7 +393,7 @@ Can be used to create a new entry in the database. An entry consists of a unique
 
         + slug: `sample-snippet-for-devs` (string, required)
 
-            A unique slug that identifies the entry and configuration snippet further.
+            A unique slug that identifies the entry and configuration snippet further. It only needs to be unique within the namespace created by `organization`, `application` and `scope`.
 
             Regex: ^[a-zA-Z0-9\.\-]+$
 
@@ -489,7 +489,7 @@ This operation can only be executed by the owner of an entry as well as moderato
     + organization (string, required) - The `organization` who built the `application` for which the configuration of the entry is meant
     + application (string, required) - The `application` to which the configuration of the entry belongs to
     + scope (string, required) - The `application` specific `scope` to which the configuration of the entry belongs to
-    + slug (string, required) - The unique identifier of the requested entry
+    + slug (string, required) - The identifier of the entry that is unique within the namespace created by `organization`, `application` and `scope`
 
 + Request (application/json)
     + Attributes (object)
@@ -570,7 +570,7 @@ This operation can only be executed by the owner of an entry as well as moderato
     + organization (string, required) - The `organization` who built the `application` for which the configuration of the entry is meant
     + application (string, required) - The `application` to which the configuration of the entry belongs to
     + scope (string, required) - The `application` specific `scope` to which the configuration of the entry belongs to
-    + slug (string, required) - The unique identifier of the requested entry
+    + slug (string, required) - The identifier of the entry that is unique within the namespace created by `organization`, `application` and `scope`
 
 + Response 200 (application/json)
     + Attributes (object)
