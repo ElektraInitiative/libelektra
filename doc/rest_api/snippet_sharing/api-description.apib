@@ -126,6 +126,15 @@ Retrieves the details of the specified user. If the parameter `current` is speci
 + Response 200 (application/json)
     + Attributes (User Preview)
 
++ Response 400 (application/json)
+    + Attributes (object)
+        + status (string) - Textual description of the HTTP status
+        + message (string) - Detailed error information, e.g. hint about malformed request
+        + i18n (string) - A unique token representing above error description message; can be used for internationalization in frontends
+
+            A comprehensive list of possible errors:
+            - `NO_CURRENT_USER` if the user details of the currently authenticated user were requested, but no authentication is active
+
 + Response 401 (application/json)
     + Attributes (object)
         + status (string) - Textual description of the HTTP status
@@ -134,6 +143,15 @@ Retrieves the details of the specified user. If the parameter `current` is speci
 
             A comprehensive list of possible errors:
             - `NEED_AUTHENTICATION` if no valid session token has been supplied or the user for whom the token has been created does not exist (anymore)
+
++ Response 404 (application/json)
+    + Attributes (object)
+        + status (string) - Textual description of the HTTP status
+        + message (string) - Detailed error information, e.g. hint about malformed request
+        + i18n (string) - A unique token representing above error description message; can be used for internationalization in frontends
+
+            A comprehensive list of possible errors:
+            - `USER_NOT_FOUND` if the requested user does not exist in the database
         
 
 ## Create user [POST]
@@ -260,6 +278,15 @@ This method can be used to edit a user. If no `name` is supplied, the currently 
             A comprehensive list of possible errors:
             - `NEED_AUTHENTICATION` if no valid session token has been supplied or the user for whom the token has been created does not exist (anymore)
             - `USER_INSUFFICIENT_PERMISSIONS` if the currently authenticated user has insufficient permissions (due to his rank) to perform this action
+
++ Response 404 (application/json)
+    + Attributes (object)
+        + status (string) - Textual description of the HTTP status
+        + message (string) - Detailed error information, e.g. hint about malformed request
+        + i18n (string) - A unique token representing above error description message; can be used for internationalization in frontends
+
+            A comprehensive list of possible errors:
+            - `USER_NOT_FOUND` if the requested user does not exist in the database
 
 + Response 406 (application/json)
     + Attributes (object)
