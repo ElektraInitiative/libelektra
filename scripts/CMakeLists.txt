@@ -23,7 +23,7 @@ install (PROGRAMS upgrade-bootstrap DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
 
 install (PROGRAMS umount-all DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
 
-install (PROGRAMS install_completion DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
+install (PROGRAMS install-sh-completion DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
 
 if (INSTALL_SYSTEM_FILES)
 	set (BASH_COMPLETION_COMPLETIONSDIR "/usr/share/bash-completion/completions" CACHE INTERNAL "bash completions dir")
