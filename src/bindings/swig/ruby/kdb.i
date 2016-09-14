@@ -613,4 +613,13 @@ namespace kdb {
  *
  ****************************************************************************/
 
+%include "kdbexcept.hpp"
+
+%exceptionclass kdb::KDBException;
+
+%catches (kdb::KDBException) kdb::KDB::KDB;
+%catches (kdb::KDBException) kdb::KDB::open;
+%catches (kdb::KDBException) kdb::KDB::get;
+%catches (kdb::KDBException) kdb::KDB::set;
+
 %include "kdb.hpp"
