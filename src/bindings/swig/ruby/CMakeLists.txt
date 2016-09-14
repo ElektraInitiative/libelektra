@@ -41,7 +41,7 @@ else()
   
   set_source_files_properties (
           ${swig_generated_file_fullname} PROPERTIES 
-          COMPILE_FLAGS "${SWIG_COMPILE_FLAGS} -Wno-unused-parameter -DSWIG_TYPE_TABLE=kdb"
+          COMPILE_FLAGS "${SWIG_COMPILE_FLAGS} -Wno-unused-parameter -Wno-unused-but-set-variable -DSWIG_TYPE_TABLE=kdb"
   )
 
   #set (PYTHON_GET_MODULES_DIR_COMMAND "from distutils.sysconfig import get_python_lib; print(get_python_lib(True, prefix='${CMAKE_INSTALL_PREFIX}'))")
