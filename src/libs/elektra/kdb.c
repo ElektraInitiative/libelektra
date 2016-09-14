@@ -606,8 +606,8 @@ static int elektraGetDoUpdateWithGlobalHooks (KDB * handle, Split * split, KeySe
 	int pgs_done = 0;
 	int pgc_done = 0;
 
-	// GLOBAL: getstorage [init]
-	// GLOBAL: getstorage [max once]
+	elektraGlobalGet(handle, ks, parentKey, GETSTORAGE, INIT);
+	elektraGlobalGet(handle, ks, parentKey, GETSTORAGE, MAXONCE);
 
 	// GLOBAL: postgetstorage [init]
 	// GLOBAL: postgetstorage [max once]
@@ -677,13 +677,13 @@ static int elektraGetDoUpdateWithGlobalHooks (KDB * handle, Split * split, KeySe
 			{
 				// Ohh, an error occurred,
 				// lets stop the process.
-				// GLOBAL: getstorage [deinit]
+				elektraGlobalGet(handle, ks, parentKey, GETSTORAGE, DEINIT);
 				// GLOBAL: postgetstorage [deinit]
 				return -1;
 			}
 		}
 	}
-	// GLOBAL: getstorage [deinit]
+	elektraGlobalGet(handle, ks, parentKey, GETSTORAGE, DEINIT);
 	// GLOBAL: postgetstorage [deinit]
 	return 0;
 }
