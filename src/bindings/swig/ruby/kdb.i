@@ -1,14 +1,32 @@
 /**
  * @file
  *
- * @brief
+ * @brief Swig interface file for KDB Ruby bindings
  *
  * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
  */
 
-%module kdb
-
 %feature("autodoc", "3");
+
+%define DOCSTRING
+"This module is a SWIG generated binding for KDB (http://www.libelektra.org),
+therefore the module provide wrapper classes to KDBs C++ interface and is 
+mainly a 1 to 1 relation. However, to provide a more Ruby-style API to KDB,
+this module differs to the C++ API in the following way:
+ * C++ iterators for Key/KeySet are excluded. Instead KeySet implements
+   a 'each' method and includes 'Enumerable' and should be very similar to
+   a Ruby-Array. However, the KeySet cursor methods are still available.
+ * Access to native C-level KDB structures (such as ckdb::Key) is not
+   possible, as this does not make much sense within Ruby.
+ * method names are renamed to follow Ruby naming conventions
+ * Key and KeySet methods directly modify the underlaying Key/KeySet
+
+Please note, this documentaition will show C++ types also (e.g. std::string).
+"
+%enddef
+
+%module(docstring=DOCSTRING) kdb
+
 
 %include "attribute.i"
 %include "std_string.i"
@@ -358,6 +376,7 @@ namespace kdb {
 /*
  * spaceship operator, useful for sorting methods
  */
+%feature("autodoc", "<=>(Key comp) -> int") kdb::Key::spaceship;
 //%rename("<=>") kdb::Key::spaceship;
 %alias kdb::Key::spaceship "<=>"
 %extend kdb::Key {
