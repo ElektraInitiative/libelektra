@@ -30,3 +30,13 @@ Before you start making fundamental changes:
   for discussions.
 - Create a [decision](/doc/decisions/README.md) describing you want to do
   to keep the discussion more efficient and architecture documented.
+
+
+# Labels
+
+
+- If you do not want your PR to be merged, please label
+  the PR with the label "work in progress".
+- If you included changes after a review and you think you
+  are ready, please tag your PR with the label "ready to merge".
+
