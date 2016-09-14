@@ -1,0 +1,17 @@
+Summary:
+----------------------------
+Title: viel details for specific configuration snippet
+Scope: Detailed View
+Level: User Goal
+Actors: Anonymous User (+ all others)
+Brief: Any user can view all details about an entry (configuration snippet).
+
+Scenarios:
+----------------------------
+Preconditions: URI of a snippet entry is known
+Main success scenario: User retrieves a response containing all information about the entry, including tags and other meta information like a description, as well as the configuration snippet converted into all supported formats.
+Alternative scenario: The requested entry (URI) cannot be found, therefore the server responds with an error.
+Error scenario: Technical problems prevent server from responding with detailed information. The user is informed about the issue through an error response.
+Postcondition: User retrieves detailed information about a database entry containing a configuration snippet, but the database remains unchanged.
+Non-functional Constraints: 
+	- Essential functionality of the program

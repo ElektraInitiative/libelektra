@@ -1,0 +1,17 @@
+Summary:
+----------------------------
+Title: search for configuration snippet
+Scope: Search
+Level: User Goal
+Actors: Anonymous User (+ all others)
+Brief: Any user can use the search to lookup configuration snippets.
+
+Scenarios:
+----------------------------
+Precondition:
+Main success scenario: User retrieves a response from the server containing a list of search results, fitting the given search parameters.
+Alternative scenario: The search did not find any entry matching the given search parameters, which will result in an empty list in the response.
+Error scenario: Technical problems prevent the search from succeeding. The user receives a response containing detailed error information.
+Postcondition: The information given in the search response can be used to lookup more detailed information of entries.
+Non-functional Constraints: 
+	- Essential functionality of the program

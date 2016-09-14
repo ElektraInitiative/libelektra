@@ -1,0 +1,17 @@
+Summary:
+----------------------------
+Title: search for users
+Scope: Search
+Level: User Goal
+Actors: Administrators
+Brief: Administrators can view and search all registered users.
+
+Scenarios:
+----------------------------
+Precondition:
+Main success scenario: Administrator retrieves a response from the server containing a list of search results, fitting the given search parameters.
+Alternative scenario: The search did not find any user matching the given search parameters, which will result in an empty list in the response.
+Error scenario: Technical problems prevent the search from succeeding. The administrator receives a response containing detailed error information.
+Postcondition: 
+Non-functional Constraints: 
+	- Administrative feature

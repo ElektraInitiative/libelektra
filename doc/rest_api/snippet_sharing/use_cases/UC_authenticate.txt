@@ -1,0 +1,18 @@
+Summary:
+----------------------------
+Title: authenticate
+Scope: Authentication
+Level: User Goal
+Actors: Anonymous User
+Brief: Any not logged in user can authenticate to the service.
+
+Scenarios:
+----------------------------
+Precondition:
+Main success scenario: User successfully authenticates against the server. Server responds with a session token that is used for authentication in further requests.
+Alternative scenario: The authentication was not successful (e.g. wrong credentials) and the server responds with an error.
+Error scenario: Technical problems prevent the authentication from succeeding (e.g. connection issues). The user is informed through an error response.
+Postcondition: Service is in authenticated state, meaning that all subsequent requests will use the authentication token to identify to the server.
+Non-functional Constraints: 
+	- Security mechanism
+	- Is precondition to use other functions
