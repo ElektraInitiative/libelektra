@@ -62,8 +62,7 @@ fi
 
 if ask "Install for bash?" Y; then
     if [[ -f ~/.bashrc ]]; then
-        read -p "Would you like to create a backup of your .bashrc? [Yn]" -n 1 -r
-        if [[ $REPLY =~ ^[Yy]$ ]]; then
+        if ask "Create a backup of .bashrc?" Y; then
             cp -i ~/.bashrc ~/.bashrc.bak_kdb
         fi
     fi
