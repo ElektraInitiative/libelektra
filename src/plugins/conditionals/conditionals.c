@@ -27,11 +27,7 @@
 
 #define EPSILON 0.00001
 
-#if defined(__APPLE__)
-#define REGEX_FLAGS_CONDITION (REG_EXTENDED | REG_ENHANCED | REG_MINIMAL)
-#else
 #define REGEX_FLAGS_CONDITION (REG_EXTENDED)
-#endif
 
 typedef enum {
 	EQU,
