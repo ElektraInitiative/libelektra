@@ -104,7 +104,6 @@ void BackendBuilder::sort ()
 		deps.append (dep);
 		std::string v = to_string (i);
 		dep.set<size_t> (i);
-		// TODO: use #__ here
 		dep.setMeta<size_t> ("order", i);
 		++i;
 	}
