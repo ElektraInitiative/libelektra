@@ -26,6 +26,18 @@
 		PLUGIN_CLOSE ();                                                                                                           \
 	}
 
+#define testSet(ks, value)                                                                                                                 \
+	{                                                                                                                                  \
+		Key * parentKey = keyNew ("user/tests/mathcheck", KEY_VALUE, "", KEY_END);                                                 \
+		KeySet * conf = ksNew (0, KS_END);                                                                                         \
+		PLUGIN_OPEN ("mathcheck");                                                                                                 \
+		ksRewind (ks);                                                                                                             \
+		plugin->kdbSet (plugin, ks, parentKey);                                                                                    \
+		succeed_if (!strcmp (keyString (ksLookupByName (ks, "user/tests/mathcheck/sum", 0)), value), "error");                     \
+		keyDel (parentKey);                                                                                                        \
+		PLUGIN_CLOSE ();                                                                                                           \
+	}
+
 static KeySet * create_ks (const char * res, const char * meta)
 {
 	return ksNew (5, keyNew ("user/tests/mathcheck/sum", KEY_VALUE, res, KEY_META, "check/math", meta, KEY_END),
@@ -52,6 +64,9 @@ int main (int argc, char ** argv)
 	ks = create_ks ("2", "== / @/bla/val1 @/bla/val2");
 	test (ks, 1);
 	ksDel (ks);
+	ks = create_ks ("", ":= / @/bla/val1 @/bla/val2");
+	testSet (ks, "2");
+	ksDel (ks);
 	ks = create_ks ("1", "== / ../bla/val1 ../bla/val3");
 	test (ks, (-1));
 	ksDel (ks);
@@ -61,6 +76,11 @@ int main (int argc, char ** argv)
 	ks = create_ks ("4.5", "== + '1.5' + '1.5' '1.5'");
 	test (ks, 1);
 	ksDel (ks);
+
+	ks = create_ks ("", ":= + '1.5' + '1.5' '1.5'");
+	testSet (ks, "4.5");
+	ksDel (ks);
+
 	ks = create_ks ("1", "== + '1.5' '1.5'");
 	test (ks, (-1));
 	ksDel (ks);
@@ -73,18 +93,29 @@ int main (int argc, char ** argv)
 	test (ks, 1);
 	ksDel (ks);
 
+	ks = create_ks ("", ":= + @/bla/nonExisting '7'");
+	testSet (ks, "7");
+	ksDel (ks);
+
 	ks = create_ks ("7", "== * @/bla/nonExisting '7'");
 	test (ks, 1);
 	ksDel (ks);
 
 	ks = create_ks ("3", "== + ../bla/nonExisting + ../bla/nonExistingToo ../bla/val3");
-	test (ks, 1) ksDel (ks);
+	test (ks, 1);
+	ksDel (ks);
+
+	ks = create_ks ("", ":= + ../bla/nonExisting + ../bla/nonExistingToo ../bla/val3");
+	testSet (ks, "3");
+	ksDel (ks);
 
 	ks = create_ks ("3", "== / @/bla/nonExisting / ../bla/nonExistingToo @/bla/val3");
-	test (ks, 1) ksDel (ks);
+	test (ks, 1);
+	ksDel (ks);
 
 	ks = create_ks ("3", "== + @/bla/nonExisting / ../bla/val3 ../bla/nonExistingToo");
-	test (ks, 1) ksDel (ks);
+	test (ks, 1);
+	ksDel (ks);
 
 	printf ("\ntestmod_mathcheck RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 
