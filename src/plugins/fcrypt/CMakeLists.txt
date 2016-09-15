@@ -8,6 +8,8 @@ add_plugin (fcrypt
 		../crypto/gpg.c
 		fcrypt.h
 		fcrypt.c
+	INCLUDE_DIRECTORIES
+		${CMAKE_SOURCE_DIR}/src/plugins/crypto/
 	COMPILE_DEFINITIONS
 		ELEKTRA_PLUGIN_NAME=\"fcrypt\"
 )

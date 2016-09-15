@@ -10,8 +10,8 @@
 #ifndef HAVE_KDBCONFIG
 #include "kdbconfig.h"
 #endif
-#include "../crypto/gpg.h"
 #include "fcrypt.h"
+#include <gpg.h>
 #include <kdb.h>
 #include <kdberrors.h>
 #include <kdbtypes.h>
