@@ -165,6 +165,7 @@ Transformations:
 Doing other stuff:
 
 - [crypto](crypto/) encrypts / decrypts confidential values
+- [fcrypt](fcrypt/) encrypts / decrypts entire backend files
 - [iconv](iconv/) make sure the configuration will have correct
   character encoding
 - [hidden](hidden/) hides keys whose names start with a `.`.
