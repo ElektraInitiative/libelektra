@@ -21,16 +21,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/types.h>
 
 #include "conditionals.h"
 
 #define EPSILON 0.00001
 
-#if defined(__APPLE__)
-#define REGEX_FLAGS_CONDITION (REG_EXTENDED | REG_NEWLINE | REG_ENHANCED | REG_MINIMAL)
-#else
-#define REGEX_FLAGS_CONDITION (REG_EXTENDED | REG_NEWLINE)
-#endif
+#define REGEX_FLAGS_CONDITION (REG_EXTENDED)
 
 typedef enum {
 	EQU,
@@ -610,11 +607,12 @@ static CondResult parseCondition (Key * key, const char * condition, const Key *
 static CondResult parseConditionString (const Key * meta, const Key * suffixList, Key * parentKey, Key * key, KeySet * ks, Operation op)
 {
 	const char * conditionString = keyString (meta);
-	const char * regexString = "((\\(((.*)?)\\))[[:space:]]*\\?[[:space:]]*(\\(((.*)?)\\)))($|([[:space:]]*:[[:space:]]*(\\((.*)\\))))";
-
-	regex_t regex;
+	const char * regexString1 = "(\\(((.*)?)\\))[[:space:]]*\\?";
+	const char * regexString2 = "\\?[[:space:]]*(\\(((.*)?)\\))";
+	const char * regexString3 = ":[[:space:]]*(\\(((.*)?)\\))";
+	regex_t regex1, regex2, regex3;
 	CondResult ret;
-	if ((ret = regcomp (&regex, regexString, REGEX_FLAGS_CONDITION)))
+	if ((ret = regcomp (&regex1, regexString1, REGEX_FLAGS_CONDITION)))
 	{
 		ELEKTRA_SET_ERROR (87, parentKey, "Couldn't compile regex: most likely out of memory"); // the regex compiles so the only
 		// possible error would be out of
@@ -622,23 +620,45 @@ static CondResult parseConditionString (const Key * meta, const Key * suffixList
 		ksDel (ks);
 		return ERROR;
 	}
-	int subMatches = 12;
+	if ((ret = regcomp (&regex2, regexString2, REGEX_FLAGS_CONDITION)))
+	{
+		ELEKTRA_SET_ERROR (87, parentKey, "Couldn't compile regex: most likely out of memory"); // the regex compiles so the only
+		// possible error would be out of
+		// memory
+		regfree (&regex1);
+		ksDel (ks);
+		return ERROR;
+	}
+	if ((ret = regcomp (&regex3, regexString3, REGEX_FLAGS_CONDITION)))
+	{
+		ELEKTRA_SET_ERROR (87, parentKey, "Couldn't compile regex: most likely out of memory"); // the regex compiles so the only
+		// possible error would be out of
+		// memory
+		regfree (&regex1);
+		regfree (&regex2);
+		ksDel (ks);
+		return ERROR;
+	}
+	int subMatches = 6;
 	regmatch_t m[subMatches];
-	char * ptr = (char *)conditionString;
-	int nomatch = regexec (&regex, ptr, subMatches, m, 0);
+	int nomatch = regexec (&regex1, conditionString, subMatches, m, 0);
 	if (nomatch)
 	{
 		ELEKTRA_SET_ERRORF (134, parentKey, "Invalid syntax: \"%s\". Check kdb info conditionals for additional information",
 				    conditionString);
-		regfree (&regex);
+		regfree (&regex1);
+		regfree (&regex2);
+		regfree (&regex3);
 		ksDel (ks);
 		return ERROR;
 	}
-	if (m[2].rm_so == -1 || m[6].rm_so == -1)
+	if (m[1].rm_so == -1)
 	{
 		ELEKTRA_SET_ERRORF (134, parentKey, "Invalid syntax: \"%s\". Check kdb info conditionals for additional information",
 				    conditionString);
-		regfree (&regex);
+		regfree (&regex1);
+		regfree (&regex2);
+		regfree (&regex3);
 		ksDel (ks);
 		return ERROR;
 	}
@@ -647,27 +667,60 @@ static CondResult parseConditionString (const Key * meta, const Key * suffixList
 	char * elseexpr = NULL;
 	int startPos;
 	int endPos;
-	startPos = m[2].rm_so + (ptr - conditionString);
-	endPos = m[2].rm_eo + (ptr - conditionString);
+	startPos = m[1].rm_so;
+	endPos = m[1].rm_eo;
 	condition = elektraMalloc (endPos - startPos + 1);
 	strncpy (condition, conditionString + startPos, endPos - startPos);
 	condition[endPos - startPos] = '\0';
+	nomatch = regexec (&regex2, conditionString, subMatches, m, 0);
+	if (nomatch)
+	{
+		ELEKTRA_SET_ERRORF (134, parentKey, "Invalid syntax: \"%s\". Check kdb info conditionals for additional information",
+				    conditionString);
+		regfree (&regex1);
+		regfree (&regex2);
+		regfree (&regex3);
+		ksDel (ks);
+		return ERROR;
+	}
+	if (m[1].rm_so == -1)
+	{
+		ELEKTRA_SET_ERRORF (134, parentKey, "Invalid syntax: \"%s\". Check kdb info conditionals for additional information",
+				    conditionString);
+		regfree (&regex1);
+		regfree (&regex2);
+		regfree (&regex3);
+		ksDel (ks);
+		return ERROR;
+	}
 
-	startPos = m[5].rm_so + (ptr - conditionString);
-	endPos = m[5].rm_eo + (ptr - conditionString);
+	startPos = m[1].rm_so;
+	endPos = m[1].rm_eo;
 	thenexpr = elektraMalloc (endPos - startPos + 1);
 	strncpy (thenexpr, conditionString + startPos, endPos - startPos);
 	thenexpr[endPos - startPos] = '\0';
 
-	if (m[10].rm_so != -1)
+	nomatch = regexec (&regex3, conditionString, subMatches, m, 0);
+	if (!nomatch)
 	{
-		startPos = m[10].rm_so + (ptr - conditionString);
-		endPos = m[10].rm_eo + (ptr - conditionString);
+		if (m[1].rm_so == -1)
+		{
+			ELEKTRA_SET_ERRORF (134, parentKey,
+					    "Invalid syntax: \"%s\". Check kdb info conditionals for additional information",
+					    conditionString);
+			regfree (&regex1);
+			regfree (&regex2);
+			regfree (&regex3);
+			ksDel (ks);
+			return ERROR;
+		}
+		thenexpr[strlen (thenexpr) - ((m[0].rm_eo - m[0].rm_so))] = '\0';
+		startPos = m[1].rm_so;
+		endPos = m[1].rm_eo;
 		elseexpr = elektraMalloc (endPos - startPos + 1);
 		strncpy (elseexpr, conditionString + startPos, endPos - startPos);
 		elseexpr[endPos - startPos] = '\0';
 	}
-
 
 	ret = parseCondition (key, condition, suffixList, ks, parentKey);
 	if (ret == TRUE)
@@ -725,6 +778,7 @@ static CondResult parseConditionString (const Key * meta, const Key * suffixList
 			else
 			{
 				ret = parseCondition (key, elseexpr, suffixList, ks, parentKey);
+
 				if (ret == FALSE)
 				{
 					ELEKTRA_SET_ERRORF (135, parentKey, "Validation of Key %s: %s failed. (%s failed)",
@@ -753,7 +807,9 @@ CleanUp:
 	elektraFree (condition);
 	elektraFree (thenexpr);
 	if (elseexpr) elektraFree (elseexpr);
-	regfree (&regex);
+	regfree (&regex1);
+	regfree (&regex2);
+	regfree (&regex3);
 	ksDel (ks);
 	return ret;
 }
@@ -867,8 +923,8 @@ int elektraConditionalsSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned EL
 Plugin * ELEKTRA_PLUGIN_EXPORT (conditionals)
 {
 	// clang-format off
-	return elektraPluginExport ("conditionals",
-					ELEKTRA_PLUGIN_GET, &elektraConditionalsGet,
-					ELEKTRA_PLUGIN_SET, &elektraConditionalsSet,
-					ELEKTRA_PLUGIN_END);
+    return elektraPluginExport ("conditionals",
+	    ELEKTRA_PLUGIN_GET, &elektraConditionalsGet,
+	    ELEKTRA_PLUGIN_SET, &elektraConditionalsSet,
+	    ELEKTRA_PLUGIN_END);
 }
