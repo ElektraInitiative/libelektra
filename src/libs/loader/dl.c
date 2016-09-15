@@ -77,7 +77,9 @@ elektraPluginFactory elektraModulesLoad (KeySet * modules, const char * name, Ke
 	Module module;
 	module.handle = dlopen (moduleName,
 #if DEBUG
+#ifdef RTLD_NODELETE
 				RTLD_NODELETE |
+#endif
 #endif
 					RTLD_NOW);
 

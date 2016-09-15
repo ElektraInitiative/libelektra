@@ -5,7 +5,9 @@ add_sources (elektra-full "static.c")
 if (BUILD_SHARED)
 	add_sources (elektra-shared "dl.c")
 	add_includes (elektra-shared)
-
+	if (CMAKE_SYSTEM_NAME MATCHES "kOpenBSD.*|OpenBSD.*")
+	    set(OPENBSD TRUE)
+	endif()
 	if (${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
 		set(BUILD_ARGS -DCMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}
 			-DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR>
