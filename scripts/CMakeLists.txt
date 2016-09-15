@@ -25,6 +25,11 @@ install (PROGRAMS umount-all DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
 
 install (PROGRAMS install-sh-completion DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
 
+file(READ "kdb_zsh_completion" CONTENT_OF_ZSH_COMP)
+file(READ "kdb-bash-completion" CONTENT_OF_BASH_COMP)
+configure_file ( install-sh-completion.in install-sh-completion @ONLY)
+
+
 if (INSTALL_SYSTEM_FILES)
 	set (BASH_COMPLETION_COMPLETIONSDIR "/usr/share/bash-completion/completions" CACHE INTERNAL "bash completions dir")
 	find_package (bash-completion QUIET)
