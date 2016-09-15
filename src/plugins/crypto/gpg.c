@@ -199,7 +199,7 @@ static int getGpgBinary (char ** gpgBin, KeySet * conf, Key * errorKey)
 
 	// last resort number one - check for gpg2 at /usr/bin/gpg2
 	// NOTE this might happen if the PATH variable is empty
-	*gpgBin = strdup (ELEKTRA_CRYPTO_DEFAULT_GPG2_BIN);
+	*gpgBin = elektraStrDup (ELEKTRA_CRYPTO_DEFAULT_GPG2_BIN);
 	if (!(*gpgBin))
 	{
 		ELEKTRA_SET_ERROR (87, errorKey, "Memory allocation failed");
@@ -213,7 +213,7 @@ static int getGpgBinary (char ** gpgBin, KeySet * conf, Key * errorKey)
 	elektraFree (*gpgBin);
 
 	// last last resort - check for /usr/bin/gpg
-	*gpgBin = strdup (ELEKTRA_CRYPTO_DEFAULT_GPG1_BIN);
+	*gpgBin = elektraStrDup (ELEKTRA_CRYPTO_DEFAULT_GPG1_BIN);
 	if (!(*gpgBin))
 	{
 		ELEKTRA_SET_ERROR (87, errorKey, "Memory allocation failed");
