@@ -25,6 +25,37 @@ static inline void closePipe (int * pipe)
 }
 
 /**
+ * @brief checks whether or not a given file exists and is executable.
+ * @param file holds the path to the file that should be checked
+ * @param errorKey holds an error description if the file does not exist or if it is not executable. Ignored if set to NULL.
+ * @retval 0 if the file exists and is executable
+ * @retval -1 if the file can not be found
+ * @retval -2 if the file exsits but it can not be executed
+*/
+static int isExecutable (const char * file, Key * errorKey)
+{
+	if (access (file, F_OK))
+	{
+		if (errorKey)
+		{
+			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CRYPTO_GPG, errorKey, "gpg binary %s not found", file);
+		}
+		return -1;
+	}
+
+	if (access (file, X_OK))
+	{
+		if (errorKey)
+		{
+			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CRYPTO_GPG, errorKey, "gpg binary %s has no permission to execute", file);
+		}
+		return -2;
+	}
+
+	return 0;
+}
+
+/**
  * @brief lookup if the test mode for unit testing is enabled.
  * @param conf KeySet holding the plugin configuration.
  * @retval 0 test mode is not enabled
@@ -166,16 +197,39 @@ static int getGpgBinary (char ** gpgBin, KeySet * conf, Key * errorKey)
 	}
 
 
-	// last resort
-	const size_t defaultLen = strlen (ELEKTRA_CRYPTO_DEFAULT_GPG_BIN) + 1;
-	*gpgBin = elektraMalloc (defaultLen);
+	// last resort number one - check for gpg2 at /usr/bin/gpg2
+	// NOTE this might happen if the PATH variable is empty
+	*gpgBin = strdup (ELEKTRA_CRYPTO_DEFAULT_GPG2_BIN);
 	if (!(*gpgBin))
 	{
 		ELEKTRA_SET_ERROR (87, errorKey, "Memory allocation failed");
 		return -1;
 	}
-	strncpy (*gpgBin, ELEKTRA_CRYPTO_DEFAULT_GPG_BIN, defaultLen);
-	return 1;
+
+	if (isExecutable (*gpgBin, NULL) == 0)
+	{
+		return 1;
+	}
+	elektraFree (*gpgBin);
+
+	// last last resort - check for /usr/bin/gpg
+	*gpgBin = strdup (ELEKTRA_CRYPTO_DEFAULT_GPG1_BIN);
+	if (!(*gpgBin))
+	{
+		ELEKTRA_SET_ERROR (87, errorKey, "Memory allocation failed");
+		return -1;
+	}
+
+	if (isExecutable (*gpgBin, NULL) == 0)
+	{
+		return 1;
+	}
+	elektraFree (*gpgBin);
+	*gpgBin = NULL;
+
+	// no GPG for us :-(
+	ELEKTRA_SET_ERROR (ELEKTRA_ERROR_CRYPTO_GPG, errorKey, "no gpg binary found. Please make sure GnuPG is installed and executable.");
+	return -1;
 }
 
 /**
@@ -327,18 +381,10 @@ int elektraCryptoGpgCall (KeySet * conf, Key * errorKey, Key * msgKey, char * ar
 	argv[argc - 1] = NULL;
 
 	// check that the gpg binary exists and that it is executable
-	if (access (argv[0], F_OK))
+	if (isExecutable (argv[0], errorKey) < 0)
 	{
-		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CRYPTO_GPG, errorKey, "gpg binary %s not found", argv[0]);
 		elektraFree (argv[0]);
-		return -1;
-	}
-
-	if (access (argv[0], X_OK))
-	{
-		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CRYPTO_GPG, errorKey, "gpg binary %s has no permission to execute", argv[0]);
-		elektraFree (argv[0]);
-		return -1;
+		return -1; // error set by isExecutable()
 	}
 
 	// initialize pipes
