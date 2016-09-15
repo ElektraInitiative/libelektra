@@ -4,7 +4,7 @@ Title: delete configuration snippet
 Scope: Entry Management
 Level: User Goal
 Actors: Authenticated user, Moderator
-Brief: Users can delete their own database entries the same way that moderators can delete any configuration snippet in the database.
+Brief: Users can delete their own database entries. Moderators can also delete configuration snippets of other users.
 
 Scenarios:
 ----------------------------

@@ -4,7 +4,7 @@ Title: edit configuration snippet
 Scope: Entry Management
 Level: User Goal
 Actors: Authenticated user, Moderator
-Brief: Users can edit their own database entries the same way that moderators can edit any configuration snippet in the database.
+Brief: Users can edit their own database entries. Moderators can edit all configuration snippets in the database, also the ones of other users.
 
 Scenarios:
 ----------------------------

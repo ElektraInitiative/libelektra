@@ -4,7 +4,7 @@ Title: edit user
 Scope: User Management
 Level: User Goal
 Actors: Authenticated user, Administrator
-Brief: Users can edit their own account information the same way Administrators can do it for them. Administrators can also change permissions of users.
+Brief: Users can edit their own account information (e.g. change password). Administrators can change all user accounts in the database. Administrators can also change permissions of users.
 
 Scenarios:
 ----------------------------
