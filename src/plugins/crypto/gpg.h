@@ -16,7 +16,8 @@
 #define ELEKTRA_CRYPTO_PARAM_GPG_BIN "/gpg/bin"
 #define ELEKTRA_CRYPTO_PARAM_GPG_KEY "/gpg/key"
 #define ELEKTRA_CRYPTO_PARAM_GPG_UNIT_TEST "/gpg/unit_test"
-#define ELEKTRA_CRYPTO_DEFAULT_GPG_BIN "/usr/bin/gpg2"
+#define ELEKTRA_CRYPTO_DEFAULT_GPG2_BIN "/usr/bin/gpg2"
+#define ELEKTRA_CRYPTO_DEFAULT_GPG1_BIN "/usr/bin/gpg"
 
 int elektraCryptoGpgEncryptMasterPassword (KeySet * conf, Key * errorKey, Key * msgKey);
 int elektraCryptoGpgDecryptMasterPassword (KeySet * conf, Key * errorKey, Key * msgKey);
