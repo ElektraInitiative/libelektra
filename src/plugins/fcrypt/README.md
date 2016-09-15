@@ -19,6 +19,13 @@ This plugin encrypts backend files before the commit is executed (thus `precommi
 The plugin decrypts the backend files before the getstorage opens it (thus `pregetstorage`).
 After the getstorage plugin has read the backend file, the plugin decrypts the backend file again (thus `postgetstorage`).
 
+## Security Considerations ##
+
+During decryption the plugin temporarily writes the decrypted plain text to the same directory as the original (encrypted) file.
+This is a vulnerability as an attacker might have access to the plain text for a short period of time (the time between pregetstorage and postgetstorage calls).
+Furthermore it is important to notice that removing the temporary file does not mean that the content gets overwritten.
+Most operating systems simply delete the index to the file, so residues of the plain text might remain on the drive.
+
 ## Dependencies ##
 
 This plugin uses parts of the `crypto` plugin.
