@@ -18,6 +18,17 @@
 #include <stdlib.h>
 #include <string.h>
 
+enum fcryptGetState
+{
+	PREGETSTORAGE = 0,
+	POSTGETSTORAGE = 1
+};
+
+struct _fcryptState
+{
+	enum fcryptGetState getState;
+};
+typedef struct _fcryptState fcryptState;
 
 /**
  * @brief Allocates a new string holding the name of the temporary file.
@@ -30,7 +41,7 @@ static char * getTemporaryFileName (const char * file)
 	char * newFile = elektraMalloc (newFileAllocated);
 	if (!newFile) return NULL;
 	snprintf (newFile, newFileAllocated, "%sXXXXXX", file);
-	mktemp (newFile);
+	mkstemp (newFile);
 	return newFile;
 }
 
@@ -65,72 +76,14 @@ static size_t getRecipientCount (KeySet * config)
 }
 
 /**
- * @brief establish the Elektra plugin contract and decrypt the file provded at parentKey using GPG.
+ * @brief encrypt the file speicied at parentKey
+ * @param pluginConfig holds the plugin configuration
+ * @pararm parentKey holds the path to the file to be encrpted. Will hold an error description in case of failure.
  * @retval 1 on success
- * @retval -1 on failure
+ * @retval -1 on error, errorKey holds an error description
  */
-int ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME, get) (Plugin * handle, KeySet * ks ELEKTRA_UNUSED, Key * parentKey)
+static int encrypt (KeySet * pluginConfig, Key * parentKey)
 {
-	// Publish module configuration to Elektra (establish the contract)
-	if (!strcmp (keyName (parentKey), "system/elektra/modules/" ELEKTRA_PLUGIN_NAME))
-	{
-		KeySet * moduleConfig = ksNew (30,
-#include "contract.h"
-					       KS_END);
-		ksAppend (ks, moduleConfig);
-		ksDel (moduleConfig);
-		return 1;
-	}
-
-	// TODO encrypt if this is a `postgetstorage` call
-
-	// regular decryption business
-	KeySet * pluginConfig = elektraPluginGetConfig (handle);
-
-	// decrypt the file with gpg - prepare argument vector for gpg call
-	static const int argc = 8;
-	char * argv[8] = { NULL, "--batch", "--yes", "-o", NULL, "-d", NULL, NULL };
-	char * tmpFile = getTemporaryFileName (keyString (parentKey));
-	if (!tmpFile)
-	{
-		ELEKTRA_SET_ERROR (87, parentKey, "Memory allocation failed");
-		return -1;
-	}
-
-	argv[4] = tmpFile;
-	// safely discarding const from keyString() return value
-	argv[6] = (char *)keyString (parentKey);
-
-	// NOTE the decryption process works like this:
-	// gpg2 --batch --yes -o tmpfile -d configFile
-	// mv tmpfile configFile
-
-	int result = elektraCryptoGpgCall (pluginConfig, parentKey, NULL, argv, argc);
-
-	if (result == 1)
-	{
-		// encryption successful, overwrite the original file with the encrypted data
-		if (rename (tmpFile, keyString (parentKey)) != 0)
-		{
-			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_FCRYPT_RENAME, parentKey, "Renaming file %s to %s failed.", tmpFile,
-					    keyString (parentKey));
-			result = -1;
-		}
-	}
-
-	elektraFree (tmpFile);
-	return result;
-}
-
-/**
- * @brief Encrypt the file provided at parentKey using GPG.
- * @retval 1 on success
- * @retval -1 on failure
- */
-int ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME, set) (Plugin * handle, KeySet * ks ELEKTRA_UNUSED, Key * parentKey)
-{
-	KeySet * pluginConfig = elektraPluginGetConfig (handle);
-
 	const size_t recipientCount = getRecipientCount (pluginConfig);
 	if (recipientCount == 0)
 	{
@@ -207,6 +160,129 @@ int ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME, set) (Plugin * handle, KeySet 
 }
 
 /**
+ * @brief decrypt the file speicied at parentKey
+ * @param pluginConfig holds the plugin configuration
+ * @pararm parentKey holds the path to the file to be encrpted. Will hold an error description in case of failure.
+ * @retval 1 on success
+ * @retval -1 on error, errorKey holds an error description
+ */
+static int decrypt (KeySet * pluginConfig, Key * parentKey)
+{
+	static const int argc = 8;
+	char * argv[8] = { NULL, "--batch", "--yes", "-o", NULL, "-d", NULL, NULL };
+	char * tmpFile = getTemporaryFileName (keyString (parentKey));
+	if (!tmpFile)
+	{
+		ELEKTRA_SET_ERROR (87, parentKey, "Memory allocation failed");
+		return -1;
+	}
+
+	argv[4] = tmpFile;
+	// safely discarding const from keyString() return value
+	argv[6] = (char *)keyString (parentKey);
+
+	// NOTE the decryption process works like this:
+	// gpg2 --batch --yes -o tmpfile -d configFile
+	// mv tmpfile configFile
+
+	int result = elektraCryptoGpgCall (pluginConfig, parentKey, NULL, argv, argc);
+
+	if (result == 1)
+	{
+		// encryption successful, overwrite the original file with the encrypted data
+		if (rename (tmpFile, keyString (parentKey)) != 0)
+		{
+			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_FCRYPT_RENAME, parentKey, "Renaming file %s to %s failed.", tmpFile,
+					    keyString (parentKey));
+			result = -1;
+		}
+	}
+
+	elektraFree (tmpFile);
+	return result;
+}
+
+/**
+ * @brief allocates plugin state handle and initializes the plugin state
+ * @retval 1 on success
+ * @retval -1 on failure
+ */
+int ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME, open) (Plugin * handle, KeySet * ks ELEKTRA_UNUSED, Key * parentKey)
+{
+	fcryptState * s = elektraMalloc (sizeof (fcryptState));
+	if (!s)
+	{
+		ELEKTRA_SET_ERROR (87, parentKey, "Memory allocation failed");
+		return -1;
+	}
+
+	s->getState = PREGETSTORAGE;
+
+	elektraPluginSetData (handle, s);
+	return 1;
+}
+
+/**
+ * @brief frees the plugin state handle
+ * @retval 1 on success
+ * @retval -1 on failure
+ */
+int ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME, close) (Plugin * handle, KeySet * ks ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
+{
+	fcryptState * s = (fcryptState *)elektraPluginGetData (handle);
+	if (s)
+	{
+		elektraFree (s);
+	}
+	return 1;
+}
+
+/**
+ * @brief establish the Elektra plugin contract and decrypt the file provded at parentKey using GPG.
+ * @retval 1 on success
+ * @retval -1 on failure
+ */
+int ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME, get) (Plugin * handle, KeySet * ks ELEKTRA_UNUSED, Key * parentKey)
+{
+	// Publish module configuration to Elektra (establish the contract)
+	if (!strcmp (keyName (parentKey), "system/elektra/modules/" ELEKTRA_PLUGIN_NAME))
+	{
+		KeySet * moduleConfig = ksNew (30,
+#include "contract.h"
+					       KS_END);
+		ksAppend (ks, moduleConfig);
+		ksDel (moduleConfig);
+		return 1;
+	}
+
+	// check plugin state
+	KeySet * pluginConfig = elektraPluginGetConfig (handle);
+	fcryptState * s = (fcryptState *)elektraPluginGetData (handle);
+
+	if (s && s->getState == POSTGETSTORAGE)
+	{
+		// encrypt if this is a postgetstorage call
+		return encrypt (pluginConfig, parentKey);
+	}
+
+	// now this is a pregetstorage call
+	// next time treat the kdb get call as postgetstorage call to trigger encryption after the file has been read
+	s->getState = POSTGETSTORAGE;
+	return decrypt (pluginConfig, parentKey);
+}
+
+/**
+ * @brief Encrypt the file provided at parentKey using GPG.
+ * @retval 1 on success
+ * @retval -1 on failure
+ */
+int ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME, set) (Plugin * handle, KeySet * ks ELEKTRA_UNUSED, Key * parentKey)
+{
+	KeySet * pluginConfig = elektraPluginGetConfig (handle);
+	return encrypt (pluginConfig, parentKey);
+}
+
+/**
  * @brief Checks for the existense of the master password, that is used for encryption and decryption.
  *
  * If the master password can not be found it will be generated randomly.
@@ -237,6 +313,8 @@ Plugin * ELEKTRA_PLUGIN_EXPORT (fcrypt)
 {
 	// clang-format off
 	return elektraPluginExport(ELEKTRA_PLUGIN_NAME,
+			ELEKTRA_PLUGIN_OPEN,  &ELEKTRA_PLUGIN_FUNCTION(ELEKTRA_PLUGIN_NAME, open),
+			ELEKTRA_PLUGIN_CLOSE, &ELEKTRA_PLUGIN_FUNCTION(ELEKTRA_PLUGIN_NAME, close),
 			ELEKTRA_PLUGIN_GET,   &ELEKTRA_PLUGIN_FUNCTION(ELEKTRA_PLUGIN_NAME, get),
 			ELEKTRA_PLUGIN_SET,   &ELEKTRA_PLUGIN_FUNCTION(ELEKTRA_PLUGIN_NAME, set),
 			ELEKTRA_PLUGIN_END);
