@@ -27,7 +27,7 @@ function (add_plugintest testname)
 	if (BUILD_TESTING)
 		cmake_parse_arguments (ARG
 			"MEMLEAK;INSTALL_TEST_DATA" # optional keywords
-			""        # one value keywords
+			"INCLUDE_SYSTEM_DIRECTORIES"        # one value keywords
 			"COMPILE_DEFINITIONS;INCLUDE_DIRECTORIES;LINK_LIBRARIES;LINK_ELEKTRA;LINK_PLUGIN;WORKING_DIRECTORY" # multi value keywords
 			${ARGN}
 		)
@@ -44,6 +44,7 @@ function (add_plugintest testname)
 		restore_variable (${PLUGIN_NAME} ARG_LINK_LIBRARIES)
 		restore_variable (${PLUGIN_NAME} ARG_COMPILE_DEFINITIONS)
 		restore_variable (${PLUGIN_NAME} ARG_INCLUDE_DIRECTORIES)
+		restore_variable (${PLUGIN_NAME} ARG_INCLUDE_SYSTEM_DIRECTORIES)
 		restore_variable (${PLUGIN_NAME} ARG_LINK_ELEKTRA)
 		restore_variable (${PLUGIN_NAME} ARG_ADD_TEST)
 		restore_variable (${PLUGIN_NAME} ARG_INSTALL_TEST_DATA)
@@ -99,6 +100,12 @@ function (add_plugintest testname)
 		set_property(TARGET ${testexename}
 				APPEND PROPERTY INCLUDE_DIRECTORIES
 				${ARG_INCLUDE_DIRECTORIES})
+		if (ARG_INCLUDE_SYSTEM_DIRECTORIES)
+			set_property(TARGET ${testexename}
+					APPEND PROPERTY COMPILE_FLAGS
+					"${CMAKE_INCLUDE_SYSTEM_FLAG_CXX} ${ARG_INCLUDE_SYSTEM_DIRECTORIES}")
+		endif ()
+
 
 		if (ARG_WORKING_DIRECTORY)
 			set (WORKING_DIRECTORY "${ARG_WORKING_DIRECTORY}")
@@ -205,6 +212,11 @@ endfunction ()
 # INCLUDE_DIRECTORIES:
 #  Append to include path (globally+plugin specific).
 #
+# INCLUDE_SYSTEM_DIRECTORIES
+#  Same as INCLUDE_DIRECTORIES, but avoids warnings and dependency calculation
+#  for these include folders. (TODO currently allows only a single argument because
+#  ; -> " " is not yet implemented)
+#
 # ADD_TEST:
 #  Add a plugin test case written in C (alternatively you can use add_gtest)
 #
@@ -214,7 +226,7 @@ endfunction ()
 function (add_plugin PLUGIN_SHORT_NAME)
 	cmake_parse_arguments (ARG
 		"CPP;ADD_TEST;INSTALL_TEST_DATA" # optional keywords
-		"" # one value keywords
+		"INCLUDE_SYSTEM_DIRECTORIES" # one value keywords
 		"SOURCES;LINK_LIBRARIES;COMPILE_DEFINITIONS;INCLUDE_DIRECTORIES;LINK_ELEKTRA" # multi value keywords
 		${ARGN}
 	)
@@ -227,6 +239,7 @@ function (add_plugin PLUGIN_SHORT_NAME)
 	restore_variable (${PLUGIN_NAME} ARG_SOURCES)
 	restore_variable (${PLUGIN_NAME} ARG_COMPILE_DEFINITIONS)
 	restore_variable (${PLUGIN_NAME} ARG_INCLUDE_DIRECTORIES)
+	restore_variable (${PLUGIN_NAME} ARG_INCLUDE_SYSTEM_DIRECTORIES)
 	restore_variable (${PLUGIN_NAME} ARG_LINK_ELEKTRA)
 	restore_variable (${PLUGIN_NAME} ARG_ADD_TEST)
 	restore_variable (${PLUGIN_NAME} ARG_INSTALL_TEST_DATA)
@@ -258,6 +271,7 @@ function (add_plugin PLUGIN_SHORT_NAME)
 					LINK_PLUGIN "${PLUGIN_SHORT_NAME}"
 					COMPILE_DEFINITIONS "${ARG_COMPILE_DEFINITIONS}"
 					INCLUDE_DIRECTORIES "${ARG_INCLUDE_DIRECTORIES}"
+					INCLUDE_SYSTEM_DIRECTORIES "${ARG_INCLUDE_SYSTEM_DIRECTORIES}"
 					LINK_ELEKTRA "${ARG_LINK_ELEKTRA}"
 					"${HAS_CPP}"
 					"${HAS_INSTALL_TEST_DATA}"
@@ -321,6 +335,7 @@ function (add_plugin PLUGIN_SHORT_NAME)
 	#message (STATUS "deps are: ${ARG_LINK_LIBRARIES}")
 	#message (STATUS "comp are: ${ARG_COMPILE_DEFINITIONS}")
 	#message (STATUS "incl are: ${ARG_INCLUDE_DIRECTORIES}")
+	#message (STATUS "system incl are: ${ARG_INCLUDE_SYSTEM_DIRECTORIES}")
 	#message (STATUS "current bin ${CMAKE_CURRENT_BINARY_DIR}")
 
 	message (STATUS "Include Plugin ${PLUGIN_SHORT_NAME}")
@@ -352,10 +367,17 @@ function (add_plugin PLUGIN_SHORT_NAME)
 		${CMAKE_CURRENT_BINARY_DIR} #for readme
 		)
 
-	set_property(TARGET ${PLUGIN_OBJS}
-		APPEND PROPERTY COMPILE_FLAGS
-		${CMAKE_PIC_FLAGS} # needed for shared libraries
-		)
+	if (ARG_INCLUDE_SYSTEM_DIRECTORIES)
+		set_property(TARGET ${PLUGIN_OBJS}
+			APPEND PROPERTY COMPILE_FLAGS
+			"${CMAKE_INCLUDE_SYSTEM_FLAG_CXX} ${ARG_INCLUDE_SYSTEM_DIRECTORIES} ${CMAKE_PIC_FLAGS}"
+			)
+	else()
+		set_property(TARGET ${PLUGIN_OBJS}
+			APPEND PROPERTY COMPILE_FLAGS
+			${CMAKE_PIC_FLAGS} # needed for shared libraries
+			)
+	endif ()
 
 	# needs cmake 3.0:
 	#set_property(TARGET ${PLUGIN_OBJS}
@@ -386,6 +408,12 @@ function (add_plugin PLUGIN_SHORT_NAME)
 			${ARG_INCLUDE_DIRECTORIES}
 			${CMAKE_CURRENT_BINARY_DIR} #for readme
 			)
+		if (ARG_INCLUDE_SYSTEM_DIRECTORIES)
+			set_property(TARGET ${PLUGIN_NAME}
+				APPEND PROPERTY COMPILE_FLAGS
+				"${CMAKE_INCLUDE_SYSTEM_FLAG_CXX} ${ARG_INCLUDE_SYSTEM_DIRECTORIES}"
+				)
+		endif ()
 		if (${LD_ACCEPTS_VERSION_SCRIPT})
 			set_property(TARGET ${PLUGIN_NAME}
 				APPEND PROPERTY LINK_FLAGS
