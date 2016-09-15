@@ -28,7 +28,7 @@ static inline void closePipe (int * pipe)
  * @brief checks whether or not a given file exists and is executable.
  * @param file holds the path to the file that should be checked
  * @param errorKey holds an error description if the file does not exist or if it is not executable. Ignored if set to NULL.
- * @retval 0 if the file exists and is executable
+ * @retval 1 if the file exists and is executable
  * @retval -1 if the file can not be found
  * @retval -2 if the file exsits but it can not be executed
 */
@@ -52,7 +52,7 @@ static int isExecutable (const char * file, Key * errorKey)
 		return -2;
 	}
 
-	return 0;
+	return 1;
 }
 
 /**
@@ -199,7 +199,7 @@ static int getGpgBinary (char ** gpgBin, KeySet * conf, Key * errorKey)
 
 	// last resort number one - check for gpg2 at /usr/bin/gpg2
 	// NOTE this might happen if the PATH variable is empty
-	if (isExecutable (ELEKTRA_CRYPTO_DEFAULT_GPG2_BIN, NULL) == 0)
+	if (isExecutable (ELEKTRA_CRYPTO_DEFAULT_GPG2_BIN, NULL) == 1)
 	{
 		*gpgBin = elektraStrDup (ELEKTRA_CRYPTO_DEFAULT_GPG2_BIN);
 		if (!(*gpgBin))
@@ -211,7 +211,7 @@ static int getGpgBinary (char ** gpgBin, KeySet * conf, Key * errorKey)
 	}
 
 	// last last resort - check for /usr/bin/gpg
-	if (isExecutable (ELEKTRA_CRYPTO_DEFAULT_GPG1_BIN, NULL) == 0)
+	if (isExecutable (ELEKTRA_CRYPTO_DEFAULT_GPG1_BIN, NULL) == 1)
 	{
 		*gpgBin = elektraStrDup (ELEKTRA_CRYPTO_DEFAULT_GPG1_BIN);
 		if (!(*gpgBin))
@@ -376,7 +376,7 @@ int elektraCryptoGpgCall (KeySet * conf, Key * errorKey, Key * msgKey, char * ar
 	argv[argc - 1] = NULL;
 
 	// check that the gpg binary exists and that it is executable
-	if (isExecutable (argv[0], errorKey) < 0)
+	if (isExecutable (argv[0], errorKey) != 1)
 	{
 		elektraFree (argv[0]);
 		return -1; // error set by isExecutable()
