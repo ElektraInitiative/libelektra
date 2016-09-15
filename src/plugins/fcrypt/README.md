@@ -13,21 +13,23 @@
 
 ## Introduction ##
 
-TODO
+This plugin enables file based encryption and decryption using GPG.
+
+This plugin encrypts backend files before the commit is executed (thus `precommit`).
+The plugin decrypts the backend files before the getstorage opens it (thus `pregetstorage`).
+After the getstorage plugin has read the backend file, the plugin decrypts the backend file again (thus `postgetstorage`).
 
 ## Dependencies ##
 
+This plugin uses parts of the `crypto` plugin.
+
 ### GnuPG (GPG) ###
 
-GPG is a runtime dependency for the fcrypt plugin.
-Either the `gpg` or the `gpg2` binary should be installed when using the plugin.
-Note that `gpg2` will be prefered if both versions are available.
-The GPG binary can be configured in the plugin configuration as `/gpg/bin` (see _GPG Configuration_ below).
-If no such configuration is provided, the plugin will look at the PATH environment variable to find the GPG binaries.
+Please refer to [crypto](../crypto/).
 
 ## Restrictions ##
 
-At the moment the plugin will only run on UNIX/Linux-like systems, that provide implementations for `fork ()` and `execv ()`.
+Please refer to [crypto](../crypto/).
 
 ## Examples ##
 
@@ -37,16 +39,4 @@ TODO
 
 ### GPG Configuration ###
 
-The path to the gpg binary can be specified in
-
-	/gpg/bin
-
-The GPG recipient keys can be specified as `/gpg/key` directly.
-If you want to use more than one key, just enumerate like:
-
-	/gpg/key/#0
-	/gpg/key/#1
-
-If more than one key is defined, every owner of the corresponding private key can decrypt the values of the backend.
-This might be useful if applications run with their own user but the administrator has to update the configuration.
-The administrator then only needs the public key of the application user in her keyring, set the values and the application will be able to decrypt the values.
+The GPG Configuration is described in [crypto](../crypto/).
