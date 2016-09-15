@@ -69,7 +69,7 @@ TEST (GetEnv, ExistFallbackFallback)
 {
 	using namespace ckdb;
 	elektraOpen (nullptr, nullptr);
-	ksAppendKey (elektraConfig, keyNew ("user/elektra/intercept/getenv/fallback/does-exist-fb", KEY_VALUE, "hello", KEY_END));
+	ksAppendKey (elektraConfig, keyNew ("user/env/fallback/does-exist-fb", KEY_VALUE, "hello", KEY_END));
 	ASSERT_NE (getenv ("does-exist-fb"), static_cast<char *> (nullptr));
 	EXPECT_EQ (getenv ("does-exist-fb"), std::string ("hello"));
 	elektraClose ();
