@@ -1,70 +1,23 @@
 - infos = Information about the boolean plugin is in keys below
-- infos/author = Name <name@libelektra.org>
+- infos/author = Thomas Waser <thomas.waser@libelektra.org>
 - infos/licence = BSD
 - infos/needs =
-- infos/provides =
+- infos/provides = check
 - infos/recommends =
 - infos/placements = postgetstorage presetstorage
-- infos/status = recommended productive maintained reviewed conformant compatible coverage specific unittest shelltest tested nodep libc configurable preview nodoc concept
+- infos/status = recommended productive maintained reviewed conformant compatible coverage specific unittest tested nodep configurable
 - infos/metadata =
 - infos/description =
 
-## Example ##
+## Introduction ##
 
-```
-% kdb umount /booltest
-% kdb mount bool.dump /booltest dump
-% kdb export /booltest ini -c meta=
+Different configurations might use different values for `TRUE`/`FALSE`. The `boolean` plugin canonicalizes boolean values.
 
-k1 = true
-k2 = tRUe
-k3 = i won't be true
-k4 = false
-k5 = FalsE
-k6 = i'm not false
-k7 = off
-k8 = on
-[k1]
-check/type = boolean
-[k2]
-check/type = boolean
-[k3]
-check/type = boolean
-[k4]
-check/type = boolean
-[k5]
-check/type = boolean
-[k6]
-check/type = boolean
-[k7]
-check/type = boolean
-[k8]
-check/type = boolean
+## Configuration ##
 
-% kdb umount /booltest
-% kdb mount bool.dump /booltest dump boolean false='FALSE; OFF; 0',true='TRUE; ON; 1',set/true='this should be true',set/false='this should be false'
-% kdb export /booltest
-
-k1 = this should be true
-k2 = this should be true
-k3 = i won't be true
-k4 = this should be false
-k5 = this should be false
-k6 = i'm not false
-k7 = this should be false
-k8 = this should be true
-
-% kdb set /booltest
-
-Using name user/booltest
-Set null value
-The command set failed while accessing the key database with the info:
-Error (#150) occurred!
-Description: not a valid boolean value
-Ingroup: plugin
-Module: boolean
-At: /home/thomas/Dev/libelektra/src/plugins/boolean/boolean.c:277
-Reason: i won't be true is not a valid boolean value
-Mountpoint: user/booltest
-Configfile: /home/thomas/.config/bool.dump.15332:1473271325.447866.tmp
-```
+- `on/true` specifies the normalized value for `TRUE`. Default: `1`
+- `on/false` specifies the normalized value for `FALSE`. Default: `0`
+- `on/invalid` specifies the normalized value for keys that don't containe a valid boolean value. Values: `TRUE`, `FALSE`. Default: `TRUE`.
+- `on/invalid/warning` specifies if the plugin will yield a warning when a invalid value is found during kdbGet. Values: `TRUE`, `FALSE`. `Default: `TRUE`
+- `true` specifies a (case insensitive) list of valid `TRUE`-values. The values have to be separated by a `;`. Default: `TRUE; 1; ON; ENABLE; ENABLED; YES` 
+- `false` specifies a (case insensitive) list of valid `FALSE`-values. The values have to be separated by a `;`. Default: `FALSE; 0; OFF; DISABLE; DISABLED; NO; NOT`

@@ -266,7 +266,12 @@ static void parseConfig (KeySet * config, BoolData * data)
 	}
 	if (invalidWarningKey)
 	{
-		data->invalid |= WARNING;
+		if (!stricmp (keyString (invalidWarningKey), "TRUE"))
+			data->invalid |= WARNING;
+		else if (!stricmp (keyString (invalidWarningKey), "FALSE"))
+			data->invalid &= WARNING;
+		else
+			data->invalid |= WARNING;
 	}
 	data->true = (char *)trueValue;
 	data->false = (char *)falseValue;
