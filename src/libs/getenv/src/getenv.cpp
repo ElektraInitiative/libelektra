@@ -326,31 +326,10 @@ void parseEnvironment ()
 	}
 }
 
-void addLayers ()
+void addLayersHelper (KeySet * lookupConfig, string prefix)
 {
-	using namespace ckdb;
+	ksRewind (elektraConfig);
 	Key * c;
-	KeySet * lookupConfig = ksDup (elektraConfig);
-	ksRewind (elektraConfig);
-	std::string fallbackPrefix = "/env/layer/";
-	while ((c = ksNext (elektraConfig)))
-	{
-		std::string fullName = keyName (c);
-		size_t pos = fullName.find ('/');
-		if (pos != string::npos && fullName.substr (pos, fallbackPrefix.size ()) == fallbackPrefix)
-		{
-			std::string cascadingName = fullName.substr (fullName.find ('/'));
-			Key * found = ksLookupByName (lookupConfig, cascadingName.c_str (), 0);
-			string name = fullName.substr (fullName.find ('/') + fallbackPrefix.size ());
-			string value = keyString (found);
-			LOG << "Will add layer " << name << " with " << value << endl;
-			elektraEnvContext.addLayer (name, value);
-		}
-	}
-
-	// override fallback config if new config is found
-	ksRewind (elektraConfig);
-	std::string prefix = "/elektra/intercept/getenv/layer/";
 	while ((c = ksNext (elektraConfig)))
 	{
 		std::string fullName = keyName (c);
@@ -365,6 +344,17 @@ void addLayers ()
 			elektraEnvContext.addLayer (name, value);
 		}
 	}
+}
+
+void addLayers ()
+{
+	using namespace ckdb;
+	KeySet * lookupConfig = ksDup (elektraConfig);
+
+	// add fallback config
+	addLayersHelper (lookupConfig, "/env/layer/");
+	// override fallback config if new config is found
+	addLayersHelper (lookupConfig, "/elektra/intercept/getenv/layer/");
 
 	ksDel (lookupConfig);
 }
