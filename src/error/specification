@@ -916,3 +916,17 @@ macro:CRYPTO_CONFIG
 severity:warning
 ingroup:plugin
 module:crypto
+
+number:153
+description:not a valid boolean value
+severity:error
+ingroup:plugin
+module:boolean
+macro:INVALID_BOOL
+
+number:154
+description:not a valid boolean value
+severity:warning
+ingroup:plugin
+module:boolean
+macro:INVALID_BOOL
