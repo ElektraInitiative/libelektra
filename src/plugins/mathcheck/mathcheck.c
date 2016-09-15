@@ -27,7 +27,25 @@
 #define str(s) #s
 #define xstr(s) str (s)
 
-typedef enum { ERROR, ADD, SUB, MUL, DIV, NOT, EQU, LT, GT, LE, GE, RES, VAL, END, SET, NA, EMPTY } Operation;
+typedef enum {
+	ERROR = 0,
+	ADD = 1,
+	SUB = 2,
+	MUL = 3,
+	DIV = 4,
+	NOT = 5,
+	EQU = 6,
+	LT = 7,
+	GT = 8,
+	LE = 9,
+	GE = 10,
+	RES = 11,
+	VAL = 12,
+	END = 13,
+	SET = 14,
+	NA = 15,
+	EMPTY = 16
+} Operation;
 typedef struct
 {
 	double value;
@@ -91,12 +109,12 @@ static PNElem doPrefixCalculation (PNElem * stack, PNElem * stackPtr)
 	}
 	while (stackPtr >= stack)
 	{
-		if (stackPtr->op == VAL && stackPtr != stack)
+		if ((stackPtr->op == VAL || stackPtr->op == NA) && stackPtr != stack)
 		{
 			--stackPtr;
 			continue;
 		}
-		else if (stackPtr->op == VAL && stackPtr == stack)
+		else if ((stackPtr->op == VAL || stackPtr->op == NA) && stackPtr == stack)
 		{
 			break;
 		}
@@ -128,7 +146,6 @@ static PNElem doPrefixCalculation (PNElem * stack, PNElem * stackPtr)
 				e2.op = VAL;
 			}
 		}
-
 		if (e1.op == VAL && e2.op == VAL)
 		{
 			switch (stackPtr->op)
@@ -157,6 +174,8 @@ static PNElem doPrefixCalculation (PNElem * stack, PNElem * stackPtr)
 			default:
 				break;
 			}
+			result.op = stackPtr->op;
+			result.value = stackPtr->value;
 		}
 		else
 		{
@@ -176,7 +195,7 @@ static PNElem doPrefixCalculation (PNElem * stack, PNElem * stackPtr)
 }
 static PNElem parsePrefixString (const char * prefixString, Key * curKey, KeySet * ks, Key * parentKey)
 {
-	const char * regexString = "(((\\.|\\.\\.|@|\\/)([[:alnum:]]*/)*[[:alnum:]]+))|('[0-9]*[.,]{0,1}[0-9]*')|([-+:/<>=!{*])";
+	const char * regexString = "((((\\.|\\.\\.|@|\\/)([[:alnum:]]*/)*[[:alnum:]]+))|('[0-9]*[.,]{0,1}[0-9]*')|(==)|([-+:/<>=!{*]))";
 	char * ptr = (char *)prefixString;
 	regex_t regex;
 	Key * key;
@@ -200,6 +219,8 @@ static PNElem parsePrefixString (const char * prefixString, Key * curKey, KeySet
 	char * searchKey = NULL;
 	while (1)
 	{
+		stackPtr->op = ERROR;
+		stackPtr->value = 0;
 		nomatch = regexec (&regex, ptr, 1, &match, 0);
 		if (nomatch)
 		{
@@ -207,26 +228,28 @@ static PNElem parsePrefixString (const char * prefixString, Key * curKey, KeySet
 		}
 		len = match.rm_eo - match.rm_so;
 		start = match.rm_so + (ptr - prefixString);
-		if (len == 1 && !isalpha (prefixString[start]))
+		if (!strncmp (prefixString + start, "==", 2))
 		{
+			resultOp = EQU;
+		}
+		else if (len == 1 && !isalpha (prefixString[start]) && prefixString[start] != '\'' && prefixString[start] != '.' &&
+			 prefixString[start] != '@')
+		{
+
 			switch (prefixString[start])
 			{
 
 			case '+':
 				stackPtr->op = ADD;
-				++stackPtr;
 				break;
 			case '-':
 				stackPtr->op = SUB;
-				++stackPtr;
 				break;
 			case '/':
 				stackPtr->op = DIV;
-				++stackPtr;
 				break;
 			case '*':
 				stackPtr->op = MUL;
-				++stackPtr;
 				break;
 			case ':':
 				resultOp = SET;
@@ -281,8 +304,6 @@ static PNElem parsePrefixString (const char * prefixString, Key * curKey, KeySet
 		}
 		else
 		{
-			stackPtr->op = ERROR;
-			stackPtr->value = 0;
 			char * subString = elektraMalloc (len + 1);
 			strncpy (subString, prefixString + start, len);
 			subString[len] = '\0';
@@ -328,8 +349,8 @@ static PNElem parsePrefixString (const char * prefixString, Key * curKey, KeySet
 				elektraFree (subString);
 			}
 			if (stackPtr->op != NA) stackPtr->op = VAL;
-			++stackPtr;
 		}
+		++stackPtr;
 		int offset = stackPtr - stack;
 		stack = realloc (stack, (offset + 1) * sizeof (PNElem));
 		stackPtr = stack;
