@@ -114,6 +114,17 @@ Retrieves a list of users. The result can be adjusted by additional, but optiona
 + Response 200 (application/json)
     + Attributes (User List)
 
++ Response 401 (application/json)
+    + Attributes (object)
+        + status (string) - Textual description of the HTTP status
+        + message (string) - Detailed error information, e.g. hint about malformed request
+        + i18n (string) - A unique token representing above error description message; can be used for internationalization in frontends
+
+            A comprehensive list of possible errors:
+            - `NEED_AUTHENTICATION` if no valid session token has been supplied or the user for whom the token has been created does not exist (anymore)
+            - `USER_INSUFFICIENT_PERMISSIONS` if the currently authenticated user has insufficient permissions (due to his rank) to perform this action
+    
+
 ## Retrieve user details [GET /{name}{?current}]
 
 Retrieves the details of the specified user. If the parameter `current` is specified, the currently authenticated user will be chosen as target. Retrieving details of other users requires moderator permissions (rank 50) or higher.
@@ -143,6 +154,7 @@ Retrieves the details of the specified user. If the parameter `current` is speci
 
             A comprehensive list of possible errors:
             - `NEED_AUTHENTICATION` if no valid session token has been supplied or the user for whom the token has been created does not exist (anymore)
+            - `USER_INSUFFICIENT_PERMISSIONS` if the currently authenticated user has insufficient permissions (due to his rank) to perform this action
 
 + Response 404 (application/json)
     + Attributes (object)
@@ -296,6 +308,41 @@ This method can be used to edit a user. If no `name` is supplied, the currently 
 
             A comprehensive list of possible errors:
             - `REQUEST_UNSUPPORTED_CONTENT_TYPE` if the submitted Content-Type is not `application/json`
+
+
+## Delete user [DELETE /{name}]
+
+This method can be used to delete a user. If no `name` is supplied, the currently authenticated user is chosen as target. Deleting other users is only possible for admins (rank 100) though.
+
++ Parameters
+    + name (string, optional) - The `username` of a user which is then taken as target for the operation
+
++ Response 200 (application/json)
+    + Attributes (object)
+        + message (string) - Detailed response information, normally success message
+        + i18n (string) - A unique token representing above message; can be used for internationalization in frontends
+
+            A comprehensive list of possible messages:
+            - `USER_DELETED_SUCCESSFULLY` if the changes to the user have been stored successfully
+
++ Response 401 (application/json)
+    + Attributes (object)
+        + status (string) - Textual description of the HTTP status
+        + message (string) - Detailed error information, e.g. hint about malformed request
+        + i18n (string) - A unique token representing above error description message; can be used for internationalization in frontends
+
+            A comprehensive list of possible errors:
+            - `NEED_AUTHENTICATION` if no valid session token has been supplied or the user for whom the token has been created does not exist (anymore)
+            - `USER_INSUFFICIENT_PERMISSIONS` if the currently authenticated user has insufficient permissions (due to his rank) to perform this action
+
++ Response 404 (application/json)
+    + Attributes (object)
+        + status (string) - Textual description of the HTTP status
+        + message (string) - Detailed error information, e.g. hint about malformed request
+        + i18n (string) - A unique token representing above error description message; can be used for internationalization in frontends
+
+            A comprehensive list of possible errors:
+            - `USER_NOT_FOUND` if the requested user does not exist in the database
 
 
 
