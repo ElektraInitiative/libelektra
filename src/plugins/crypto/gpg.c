@@ -199,33 +199,28 @@ static int getGpgBinary (char ** gpgBin, KeySet * conf, Key * errorKey)
 
 	// last resort number one - check for gpg2 at /usr/bin/gpg2
 	// NOTE this might happen if the PATH variable is empty
-	*gpgBin = elektraStrDup (ELEKTRA_CRYPTO_DEFAULT_GPG2_BIN);
-	if (!(*gpgBin))
+	if (isExecutable (ELEKTRA_CRYPTO_DEFAULT_GPG2_BIN, NULL) == 0)
 	{
-		ELEKTRA_SET_ERROR (87, errorKey, "Memory allocation failed");
-		return -1;
-	}
-
-	if (isExecutable (*gpgBin, NULL) == 0)
-	{
+		*gpgBin = elektraStrDup (ELEKTRA_CRYPTO_DEFAULT_GPG2_BIN);
+		if (!(*gpgBin))
+		{
+			ELEKTRA_SET_ERROR (87, errorKey, "Memory allocation failed");
+			return -1;
+		}
 		return 1;
 	}
-	elektraFree (*gpgBin);
 
 	// last last resort - check for /usr/bin/gpg
-	*gpgBin = elektraStrDup (ELEKTRA_CRYPTO_DEFAULT_GPG1_BIN);
-	if (!(*gpgBin))
+	if (isExecutable (ELEKTRA_CRYPTO_DEFAULT_GPG1_BIN, NULL) == 0)
 	{
-		ELEKTRA_SET_ERROR (87, errorKey, "Memory allocation failed");
-		return -1;
-	}
-
-	if (isExecutable (*gpgBin, NULL) == 0)
-	{
+		*gpgBin = elektraStrDup (ELEKTRA_CRYPTO_DEFAULT_GPG1_BIN);
+		if (!(*gpgBin))
+		{
+			ELEKTRA_SET_ERROR (87, errorKey, "Memory allocation failed");
+			return -1;
+		}
 		return 1;
 	}
-	elektraFree (*gpgBin);
-	*gpgBin = NULL;
 
 	// no GPG for us :-(
 	ELEKTRA_SET_ERROR (ELEKTRA_ERROR_CRYPTO_GPG, errorKey, "no gpg binary found. Please make sure GnuPG is installed and executable.");
