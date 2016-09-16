@@ -261,7 +261,7 @@ static void test_gpg (void)
 	Key * msg = keyNew (0);
 	keySetBinary (msg, test_key_asc, test_key_asc_len);
 
-	succeed_if (elektraCryptoGpgCall (conf, errorKey, msg, argv, argc) == 1, "failed to install the GPG test key");
+	succeed_if (CRYPTO_PLUGIN_FUNCTION (gpgCall) (conf, errorKey, msg, argv, argc) == 1, "failed to install the GPG test key");
 
 	keyDel (msg);
 	keyDel (errorKey);
@@ -276,7 +276,7 @@ static void test_hex (void)
 	static const kdb_octet_t example[] = { 0xca, 0xfe, 0xdb, 0x01, 0x23, 0x45, 0x67, 0x89 };
 	static const char hex[] = "CAFEDB0123456789";
 
-	char * c = elektraCryptoBin2Hex (errorKey, example, sizeof (example));
+	char * c = CRYPTO_PLUGIN_FUNCTION (bin2hex) (errorKey, example, sizeof (example));
 	succeed_if (c, "bin2hex conversion failed");
 	if (c)
 	{
@@ -288,7 +288,7 @@ static void test_hex (void)
 	kdb_octet_t * buffer;
 	kdb_unsigned_long_t bufferLen;
 
-	elektraCryptoHex2Bin (errorKey, hex, &buffer, &bufferLen);
+	CRYPTO_PLUGIN_FUNCTION (hex2bin) (errorKey, hex, &buffer, &bufferLen);
 	succeed_if (buffer, "hex2bin conversion failed with valid hex-string");
 	if (buffer)
 	{
@@ -298,11 +298,11 @@ static void test_hex (void)
 	}
 
 	// test hex2bin with faulty string
-	elektraCryptoHex2Bin (errorKey, "01GA", &buffer, NULL);
+	CRYPTO_PLUGIN_FUNCTION (hex2bin) (errorKey, "01GA", &buffer, NULL);
 	succeed_if (!buffer, "invalid hex-string was converted without error");
 	if (buffer) elektraFree (buffer);
 
-	elektraCryptoHex2Bin (errorKey, "010", &buffer, NULL);
+	CRYPTO_PLUGIN_FUNCTION (hex2bin) (errorKey, "010", &buffer, NULL);
 	succeed_if (!buffer, "hex-string with invalid length was converted without error");
 	if (buffer) elektraFree (buffer);
 

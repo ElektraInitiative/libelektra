@@ -23,7 +23,7 @@
  * @retval 1 on success
  * @retval -1 on error. errorKey holds a description.
 */
-int elektraCryptoGetSaltFromMetaKey (Key * errorKey, Key * k, kdb_octet_t ** salt, kdb_unsigned_long_t * saltLen)
+int CRYPTO_PLUGIN_FUNCTION (getSaltFromMetakey) (Key * errorKey, Key * k, kdb_octet_t ** salt, kdb_unsigned_long_t * saltLen)
 {
 	const Key * meta = keyGetMeta (k, ELEKTRA_CRYPTO_META_SALT);
 	if (!meta)
@@ -32,12 +32,12 @@ int elektraCryptoGetSaltFromMetaKey (Key * errorKey, Key * k, kdb_octet_t ** sal
 				    ELEKTRA_CRYPTO_META_SALT, keyName (k));
 		return -1;
 	}
-	elektraCryptoHex2Bin (errorKey, keyString (meta), salt, saltLen);
+	CRYPTO_PLUGIN_FUNCTION (hex2bin) (errorKey, keyString (meta), salt, saltLen);
 	if (*salt)
 	{
 		return 1;
 	}
-	return -1; // error set by elektraCryptoHex2Bin()
+	return -1; // error set by CRYPTO_PLUGIN_FUNCTION(hex2bin)()
 }
 
 /**
@@ -49,7 +49,7 @@ int elektraCryptoGetSaltFromMetaKey (Key * errorKey, Key * k, kdb_octet_t ** sal
  * @retval 1 on success
  * @retval -1 on error. errorKey holds a description.
 */
-int elektraCryptoGetSaltFromCryptoPayload (Key * errorKey, Key * k, kdb_octet_t ** salt, kdb_unsigned_long_t * saltLen)
+int CRYPTO_PLUGIN_FUNCTION (getSaltFromPayload) (Key * errorKey, Key * k, kdb_octet_t ** salt, kdb_unsigned_long_t * saltLen)
 {
 	static const size_t headerLen = sizeof (kdb_unsigned_long_t);
 	const ssize_t payloadLen = keyGetValueSize (k);
@@ -90,7 +90,7 @@ int elektraCryptoGetSaltFromCryptoPayload (Key * errorKey, Key * k, kdb_octet_t 
 * @param config holds the plugin configuration.
 * @returns the decrypted master password as (Elektra) Key or NULL in case of error. Must be freed by the caller.
 */
-Key * elektraCryptoGetMasterPassword (Key * errorKey, KeySet * config)
+Key * CRYPTO_PLUGIN_FUNCTION (getMasterPassword) (Key * errorKey, KeySet * config)
 {
 	Key * master = ksLookupByName (config, ELEKTRA_CRYPTO_PARAM_MASTER_PASSWORD, 0);
 	if (!master)
@@ -100,10 +100,10 @@ Key * elektraCryptoGetMasterPassword (Key * errorKey, KeySet * config)
 		return NULL;
 	}
 	Key * msg = keyDup (master);
-	if (elektraCryptoGpgDecryptMasterPassword (config, errorKey, msg) != 1)
+	if (CRYPTO_PLUGIN_FUNCTION (gpgDecryptMasterPassword) (config, errorKey, msg) != 1)
 	{
 		keyDel (msg);
-		return NULL; // error set by elektraCryptoGpgDecryptMasterPassword()
+		return NULL; // error set by CRYPTO_PLUGIN_FUNCTION(gpgDecryptMasterPassword)()
 	}
 	return msg;
 }
@@ -114,7 +114,7 @@ Key * elektraCryptoGetMasterPassword (Key * errorKey, KeySet * config)
  * @param config KeySet holding the plugin configuration
  * @returns the number of iterations for the key derivation function
  */
-kdb_unsigned_long_t elektraCryptoGetIterationCount (Key * errorKey, KeySet * config)
+kdb_unsigned_long_t CRYPTO_PLUGIN_FUNCTION (getIterationCount) (Key * errorKey, KeySet * config)
 {
 	Key * k = ksLookupByName (config, ELEKTRA_CRYPTO_PARAM_ITERATION_COUNT, 0);
 	if (k)
@@ -163,7 +163,7 @@ static short hexChar2Short (char c)
  * @param outputLen holds the address where the number of output bytes is written to. Ignored if set to NULL.
  * @returns
  */
-void elektraCryptoHex2Bin (Key * errorKey, const char * hexBuffer, kdb_octet_t ** output, kdb_unsigned_long_t * outputLen)
+void CRYPTO_PLUGIN_FUNCTION (hex2bin) (Key * errorKey, const char * hexBuffer, kdb_octet_t ** output, kdb_unsigned_long_t * outputLen)
 {
 	const size_t length = strlen (hexBuffer);
 
@@ -210,7 +210,7 @@ void elektraCryptoHex2Bin (Key * errorKey, const char * hexBuffer, kdb_octet_t *
  * @param length is the number of bytes to be converted
  * @returns an allocated character array holding the hex-representation of buffer. Must be freed by the caller. If NULL is returned, errorKey holds an error description.
  */
-char * elektraCryptoBin2Hex (Key * errorKey, const kdb_octet_t * buffer, const size_t length)
+char * CRYPTO_PLUGIN_FUNCTION (bin2hex) (Key * errorKey, const kdb_octet_t * buffer, const size_t length)
 {
 	// every byte is represented by 2 hexadecimal digits, thus 2 * length + a NULL terminator
 	char * hexBuffer = elektraMalloc (2 * length + 1);
