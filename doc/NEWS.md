@@ -1,3 +1,172 @@
+# 0.8.18 Release
+
+Release did not happen yet but is expected for today!
+
+- guid: 190576e0-9fef-486e-b8da-c4e75be08329
+- author: Markus Raab
+- pubDate: Fri, 16 Sep 2016 23:31:27 +0200
+
+
+
+## What is Elektra?
+
+Elektra serves as a universal and secure framework to access configuration
+parameters in a global, hierarchical key database.
+For a small demo see here:
+
+[![asciicast](https://asciinema.org/a/cantr04assr4jkv8v34uz9b8r.png)](https://asciinema.org/a/cantr04assr4jkv8v34uz9b8r)
+
+## Highlights
+
+- Intercept open syscalls which allows Elektra to dynamically
+  generate config files from its database
+- Experimental version of cryptographic plugins
+- A new zsh completion file (next to the bash completion file)
+- Gitresolver allows to directly read and write config files
+  from git instead of files present in the file system.
+- Survey completed successfully (and debts paid), we now
+  prepare raw data
+
+### Crypto Plugin
+
+A new botan backend was implemented.
+
+Furthermore gpg is used to decrypt a master password, which is used
+by the individual backends.
+
+Thanks to Peter Nirschl.
+
+### Open Interception
+
+When Elektra directly modifies config files which are on the disc,
+and applications read the config files without Elektra, Elektra has
+no control over the access, e.g. we cannot dynamically calculate
+values. To avoid this, we wrote a library that
+intercepts the `open`-call.
+
+Together with the `mozprefs` plugin, we got control over the configuration
+of Firefox and can dynamically change config values with all possibilities
+Elektra provides.
+
+For easy setup, we implemented the script `configure-firefox`.
+
+Thanks to Thomas Waser.
+
+
+
+### zsh completion
+
+Added zsh completion file, thanks to Sebastian Bachmann
+
+## Documentation
+
+- fix kdb-import man page, thanks to Kurt Micheli
+- mark keyIsSystem/keyIsUser as internal
+- fix doxygen reference to example
+- better document that `global-mount` or `gmount` will overwrite
+  previously mounted global plugins
+- fix spelling mistake, thanks to René Schwaiger
+- Wrote tutorial how to use Elektra-python bindings,
+  thanks to Ulrike Schäfer
+
+
+## Quality
+
+- find-tools now pep and pyflakes happy, thanks to Kurt Micheli
+- fix bashism, thanks to Thomas Waser and Kurt Micheli
+- better error message for conditionals plugin, thanks to Thomas Waser
+- better error message for augeas plugin, thanks to Felix Berlakovich
+- Many compilation warnings fixed, thanks to Gabriel Rauter, Thomas Waser
+
+
+## Compatibility
+
+As always, the ABI and API of kdb.h is fully compatible, i.e. programs
+compiled against an older 0.8 version of Elektra will continue to work
+(ABI) and you will be able to recompile programs without errors (API).
+
+### Libtools
+
+Libtools got a new major version (SOVERSION 0 -> 1):
+
+- resolveRecommends was never implemented and was now removed
+- backend/plugin configs are now validated by plugins (needed
+  by gpg plugin, which checks if wrong key IDs are supplied during mount)
+
+## Development
+
+- github descriptions+workflow (showed when creating PRs and issues)
+- many new trigger phases for github, see [doc/GIT](http://git.libelektra.org/tree/master/doc/GIT.md)
+  thanks to Mihael Pranjić
+- valgrind suppressions are great again, thanks to Peter Nirschl
+- Plugins get a new namespace `internal` which can be used for meta-data that is not
+  relevant for other plugins.
+- kdberrors.h is only generated once, which allows us to use other build systems,
+  thanks to René Schwaiger
+- shell recorder test cases now run during `make test`, thanks to Kurt Micheli and René Schwaiger
+
+## Packaging
+
+- bash-completion is installed to where pkg-config tells us, thanks to Gabriel Rauter
+  (fallback is now `/usr/share/bash-completion/completions`)
+- zsh `/usr/share/zsh/vendor-completions`
+- `elektraenv.sh` was removed (and is no longer installed)
+
+
+## Issues
+
+- GSettings: fix double free, thanks to Gabriel Rauter
+
+
+## Other
+
+- Conditionals and mathcheck plugins got support to specify relative keys, thanks to
+  Thomas Waser
+- `kdb` command-list: commands are written in bold
+- GSettings backend can be build standalone, thanks to Gabriel Rauter
+- first data structures for order preserving minimal perfect hash map, thanks to Kurt Micheli
+- added a new passwd plugin, thanks to Thomas Waser
+- boolean plugin to normalize boolean values, thanks to Thomas Waser
+
+
+## Get It!
+
+You can download the release from
+[here](http://www.libelektra.org/ftp/elektra/releases/elektra-0.8.18.tar.gz)
+and also [here on github](https://github.com/ElektraInitiative/ftp/tree/master/releases/elektra-0.8.18.tar.gz)
+
+<<`scripts/generate-hashsums`>>
+
+This release tarball now is also available
+[signed by me using gpg](http://www.libelektra.org/ftp/elektra/releases/elektra-0.8.18.tar.gz.gpg)
+
+already built API-Docu can be found [here](http://doc.libelektra.org/api/0.8.18/html/)
+
+
+## Stay tuned! ##
+
+Subscribe to the
+[RSS feed](http://doc.libelektra.org/news/feed.rss)
+to always get the release notifications.
+
+For any questions and comments, please contact the
+[Mailing List](https://lists.sourceforge.net/lists/listinfo/registry-list)
+the issue tracker [on github](http://git.libelektra.org/issues)
+or by email elektra@markus-raab.org.
+
+[Permalink to this NEWS entry](http://doc.libelektra.org/news/190576e0-9fef-486e-b8da-c4e75be08329.html)
+
+For more information, see [http://libelektra.org](http://libelektra.org)
+
+
+
+
+
+
+
+
+
+
 # 0.8.17 Release
 
 - guid: e6153a39-c4bd-41c3-bc86-785d451eb6c5
