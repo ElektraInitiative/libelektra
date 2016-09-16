@@ -116,6 +116,7 @@ in syntax.
   (fallback is now `/usr/share/bash-completion/completions`)
 - zsh `/usr/share/zsh/vendor-completions`
 - `elektraenv.sh` was removed (and is no longer installed)
+- added script install-sh-completion
 
 
 ## Issues
