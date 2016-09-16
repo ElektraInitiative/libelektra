@@ -23,11 +23,14 @@ install (PROGRAMS upgrade-bootstrap DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
 
 install (PROGRAMS umount-all DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
 
-install (PROGRAMS install-sh-completion DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
-
 file(READ "kdb_zsh_completion" CONTENT_OF_ZSH_COMP)
 file(READ "kdb-bash-completion" CONTENT_OF_BASH_COMP)
-configure_file ( install-sh-completion.in install-sh-completion @ONLY)
+configure_file (
+	"${CMAKE_CURRENT_SOURCE_DIR}/install-sh-completion.in"
+	"${CMAKE_CURRENT_BINARY_DIR}/install-sh-completion"
+	@ONLY)
+
+install (PROGRAMS "${CMAKE_CURRENT_BINARY_DIR}/install-sh-completion" DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
 
 
 if (INSTALL_SYSTEM_FILES)
@@ -61,12 +64,12 @@ if (INSTALL_SYSTEM_FILES)
 	endif ()
 endif()
 
-configure_file(
+configure_file (
 	"${CMAKE_CURRENT_SOURCE_DIR}/elektrify-getenv.in"
 	"${CMAKE_CURRENT_BINARY_DIR}/elektrify-getenv")
 install (PROGRAMS "${CMAKE_CURRENT_BINARY_DIR}/elektrify-getenv" DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
 
-configure_file(
+configure_file (
 	"${CMAKE_CURRENT_SOURCE_DIR}/elektrify-open.in"
 	"${CMAKE_CURRENT_BINARY_DIR}/elektrify-open")
 install (PROGRAMS "${CMAKE_CURRENT_BINARY_DIR}/elektrify-open" DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
