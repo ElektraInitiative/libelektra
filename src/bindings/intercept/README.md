@@ -16,7 +16,7 @@ Syntax:
 `/elektra/intercept/open/path\/to\/realfile = path/to/myfile`
 `/elektra/intercept/open/path\/to\/realfile/readonly = 1`
 `/elektra/intercept/open/path\/to\/realfile/generate = system/info`
-`/preload/opeh/path/\to\/realfile/generate/plugin = ini`
+`/preload/open/path/\to\/realfile/generate/plugin = ini`
 
 ## INTERNALS
 
