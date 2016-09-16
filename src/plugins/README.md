@@ -71,6 +71,7 @@ determined (will be automatically added by kdb mount):
 and afterwards the configuration file must be synced with
 harddisc (recommended to add at every kdb mount):
 - [curlget](curlget/) fetches configuration file from a remote host
+- [blockresolver](blockresolver/) resolves tagged blocks inside config files
 
 - [sync](sync/) uses POSIX APIs to sync configuration file with harddisc
 

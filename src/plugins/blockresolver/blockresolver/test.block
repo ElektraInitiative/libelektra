@@ -1,0 +1,8 @@
+[section]
+key = outside start
+### block config start
+[section]
+key = inside block
+### block config stop
+[section]
+key = outside end
