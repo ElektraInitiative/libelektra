@@ -67,3 +67,4 @@ usr/lib/elektra4/libelektra-shell.so*
 usr/lib/elektra4/libelektra-curlget.so*
 usr/lib/elektra4/libelektra-desktop.so*
 usr/lib/elektra4/libelektra-mozprefs.so*
+usr/lib/elektra4/libelektra-boolean.so*
