@@ -30,7 +30,7 @@ or no key if no desktop was detected.
 ## Purpose ##
 
 The plugin is informational and mainly be used to provide context for
-other other configuration. See [elektrify-getenv](src/libs/getenv/README.md).
+other other configuration. See [elektrify-getenv](/src/libs/getenv/README.md).
 
 
 ## Supported Desktop ##

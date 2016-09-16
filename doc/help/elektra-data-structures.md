@@ -369,7 +369,7 @@ Continue reading [with the error handling](elektra-error-handling.md).
 
 ## Order Preserving Minimal Perfect Hash Map
 
-All structs are defined in [opmphm.h](/src/include/opmphm.h).
+All structs are defined in [opmphm.h](/src/include/kdbopmphm.h).
 
 ### Vstack
 

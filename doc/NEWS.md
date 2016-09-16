@@ -2022,7 +2022,7 @@ or by mail elektra@markus-raab.org.
 For more information, see [http://libelektra.org](http://libelektra.org)
 
 Btw. the whole release happened with
-[elektrify-getenv](http://libelektra.org/blob/master/src/libgetenv/README.md)
+[elektrify-getenv](http://libelektra.org/blob/master/src/libs/getenv/README.md)
 enabled.
 
 Best regards,
@@ -2126,7 +2126,7 @@ applications would decide differently, e.g.:
 - it uses mutex for multi-threading safety
 - the API getenv(3) only returns `char*` and has no support for other data types
 
-For more information see [src/libgetenv/README.md](http://git.libelektra.org/blob/master/src/libgetenv/README.md)
+For more information see [src/libgetenv/README.md](http://git.libelektra.org/blob/master/src/libs/getenv/README.md)
 
 
 
@@ -2147,7 +2147,7 @@ in all bindings:
  - [jna (java)](http://git.libelektra.org/blob/master/src/bindings/jna/HelloElektra.java)
  - [lua](http://git.libelektra.org/blob/master/src/bindings/swig/lua/tests/test_key.lua)
  - [python2](http://git.libelektra.org/blob/master/src/bindings/swig/python2/tests/testpy2_key.py)
- - [python3](http://git.libelektra.org/blob/master/src/bindings/swig/python3/tests/test_key.py)
+ - [python3](http://git.libelektra.org/blob/master/src/bindings/swig/python/tests/test_key.py)
 
 Other small changes/additions in bindings:
 

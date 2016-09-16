@@ -122,7 +122,7 @@ available as build-in function. It is used to validate
 or even correct/finish the plugin's configuration.
 
 If you want to use an exported function from a symbol,
-please look at [Plugin::parse](src/libs/tools/src/plugin.cpp).
+please look at [Plugin::parse](/src/libs/tools/src/plugin.cpp).
 
 ## Changing Plugins
 
