@@ -93,6 +93,11 @@ Libtools got a new major version (SOVERSION 0 -> 1):
 - backend/plugin configs are now validated by plugins (needed
   by gpg plugin, which checks if wrong key IDs are supplied during mount)
 
+### Plugins
+
+The plugins conditionals and mathcheck are incompatible because of changes
+in syntax.
+
 ## Development
 
 - github descriptions+workflow (showed when creating PRs and issues)
