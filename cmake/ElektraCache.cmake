@@ -273,7 +273,7 @@ set (COVERAGE_PREFIX
 		"Full path to common prefix of build+source directory"
     )
 
-if (APPLE)
+if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
 	option (INSTALL_SYSTEM_FILES "Install files to system directories" OFF)
 else ()
 	option (INSTALL_SYSTEM_FILES "Install files to system directories" ON)
