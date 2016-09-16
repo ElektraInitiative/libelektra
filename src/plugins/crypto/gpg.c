@@ -237,7 +237,7 @@ static int getGpgBinary (char ** gpgBin, KeySet * conf, Key * errorKey)
  * @retval 1 on success
  * @retval -1 on failure
  */
-int elektraCryptoGpgEncryptMasterPassword (KeySet * conf, Key * errorKey, Key * msgKey)
+int CRYPTO_PLUGIN_FUNCTION (gpgEncryptMasterPassword) (KeySet * conf, Key * errorKey, Key * msgKey)
 {
 	// [0]: <path to binary>, [argc-3]: --batch, [argc-2]: -e, [argc-1]: NULL-terminator
 	static const kdb_unsigned_short_t staticArgumentsCount = 4;
@@ -315,7 +315,7 @@ int elektraCryptoGpgEncryptMasterPassword (KeySet * conf, Key * errorKey, Key * 
 	argv[argc - 2] = "-e";
 
 	// call gpg
-	return elektraCryptoGpgCall (conf, errorKey, msgKey, argv, argc);
+	return CRYPTO_PLUGIN_FUNCTION (gpgCall) (conf, errorKey, msgKey, argv, argc);
 }
 
 /**
@@ -328,17 +328,17 @@ int elektraCryptoGpgEncryptMasterPassword (KeySet * conf, Key * errorKey, Key * 
  * @retval 1 on success
  * @retval -1 on failure
  */
-int elektraCryptoGpgDecryptMasterPassword (KeySet * conf, Key * errorKey, Key * msgKey)
+int CRYPTO_PLUGIN_FUNCTION (gpgDecryptMasterPassword) (KeySet * conf, Key * errorKey, Key * msgKey)
 {
 	if (inTestMode (conf))
 	{
 		char * argv[] = { "", "--batch", "--trust-model", "always", "-d", NULL };
-		return elektraCryptoGpgCall (conf, errorKey, msgKey, argv, 6);
+		return CRYPTO_PLUGIN_FUNCTION (gpgCall) (conf, errorKey, msgKey, argv, 6);
 	}
 	else
 	{
 		char * argv[] = { "", "--batch", "-d", NULL };
-		return elektraCryptoGpgCall (conf, errorKey, msgKey, argv, 4);
+		return CRYPTO_PLUGIN_FUNCTION (gpgCall) (conf, errorKey, msgKey, argv, 4);
 	}
 }
 
@@ -354,7 +354,7 @@ int elektraCryptoGpgDecryptMasterPassword (KeySet * conf, Key * errorKey, Key * 
  * @retval 1 on success
  * @retval -1 on failure
  */
-int elektraCryptoGpgCall (KeySet * conf, Key * errorKey, Key * msgKey, char * argv[], size_t argc)
+int CRYPTO_PLUGIN_FUNCTION (gpgCall) (KeySet * conf, Key * errorKey, Key * msgKey, char * argv[], size_t argc)
 {
 	pid_t pid;
 	int status;

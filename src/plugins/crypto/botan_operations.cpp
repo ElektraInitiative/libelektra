@@ -50,17 +50,17 @@ static int getKeyIvForEncryption (KeySet * config, Key * errorKey, Key * k, Symm
 		// generate the salt
 		AutoSeeded_RNG rng;
 		rng.randomize (salt, sizeof (salt));
-		saltHexString = elektraCryptoBin2Hex (errorKey, salt, sizeof (salt));
-		if (!saltHexString) return -1; // error set by elektraCryptoBin2Hex()
+		saltHexString = CRYPTO_PLUGIN_FUNCTION (bin2hex) (errorKey, salt, sizeof (salt));
+		if (!saltHexString) return -1; // error set by CRYPTO_PLUGIN_FUNCTION(bin2hex)()
 		keySetMeta (k, ELEKTRA_CRYPTO_META_SALT, saltHexString);
 		elektraFree (saltHexString);
 
 		// read iteration count
-		const kdb_unsigned_long_t iterations = elektraCryptoGetIterationCount (errorKey, config);
+		const kdb_unsigned_long_t iterations = CRYPTO_PLUGIN_FUNCTION (getIterationCount) (errorKey, config);
 
 		// receive master password from the configuration
-		msg = elektraCryptoGetMasterPassword (errorKey, config);
-		if (!msg) return -1; // error set by elektraCryptoGetMasterPassword()
+		msg = CRYPTO_PLUGIN_FUNCTION (getMasterPassword) (errorKey, config);
+		if (!msg) return -1; // error set by CRYPTO_PLUGIN_FUNCTION(getMasterPassword)()
 
 		// generate/derive the cryptographic key and the IV
 		PBKDF * pbkdf = get_pbkdf ("PBKDF2(SHA-256)");
@@ -101,20 +101,20 @@ static int getKeyIvForDecryption (KeySet * config, Key * errorKey, Key * k, Symm
 	kdb_unsigned_long_t saltBufferLen = 0;
 
 	// get the salt
-	if (elektraCryptoGetSaltFromCryptoPayload (errorKey, k, &saltBuffer, &saltBufferLen) != 1)
+	if (CRYPTO_PLUGIN_FUNCTION (getSaltFromPayload) (errorKey, k, &saltBuffer, &saltBufferLen) != 1)
 	{
-		return -1; // error set by elektraCryptoGetSaltFromCryptoPayload()
+		return -1; // error set by CRYPTO_PLUGIN_FUNCTION(getSaltFromPayload)()
 	}
 
 	// get the iteration count
-	const kdb_unsigned_long_t iterations = elektraCryptoGetIterationCount (errorKey, config);
+	const kdb_unsigned_long_t iterations = CRYPTO_PLUGIN_FUNCTION (getIterationCount) (errorKey, config);
 
 	// receive master password from the configuration
-	Key * msg = elektraCryptoGetMasterPassword (errorKey, config);
+	Key * msg = CRYPTO_PLUGIN_FUNCTION (getMasterPassword) (errorKey, config);
 	if (!msg)
 	{
 		elektraFree (saltBuffer);
-		return -1; // error set by elektraCryptoGetMasterPassword()
+		return -1; // error set by CRYPTO_PLUGIN_FUNCTION(getMasterPassword)()
 	}
 
 	try
@@ -171,9 +171,9 @@ int elektraCryptoBotanEncrypt (KeySet * pluginConfig, Key * k, Key * errorKey)
 	kdb_unsigned_long_t saltLen = 0;
 	kdb_octet_t * salt = NULL;
 
-	if (elektraCryptoGetSaltFromMetaKey (errorKey, k, &salt, &saltLen) != 1)
+	if (CRYPTO_PLUGIN_FUNCTION (getSaltFromMetakey) (errorKey, k, &salt, &saltLen) != 1)
 	{
-		return -1; // error set by elektraCryptoGetSaltFromMetaKey()
+		return -1; // error set by CRYPTO_PLUGIN_FUNCTION(getSaltFromMetakey)()
 	}
 
 	// remove salt as metakey because it will be encoded into the crypto payload
@@ -260,11 +260,11 @@ int elektraCryptoBotanDecrypt (KeySet * pluginConfig, Key * k, Key * errorKey)
 
 	// parse salt length from crypto payload
 	kdb_unsigned_long_t saltLen = 0;
-	if (elektraCryptoGetSaltFromCryptoPayload (errorKey, k, NULL, &saltLen) != 1)
+	if (CRYPTO_PLUGIN_FUNCTION (getSaltFromPayload) (errorKey, k, NULL, &saltLen) != 1)
 	{
 		if (cryptoKey) delete cryptoKey;
 		if (cryptoIv) delete cryptoIv;
-		return -1; // error set by elektraCryptoGetSaltFromCryptoPayload()
+		return -1; // error set by CRYPTO_PLUGIN_FUNCTION(getSaltFromPayload)()
 	}
 	saltLen += sizeof (kdb_unsigned_long_t);
 
@@ -338,7 +338,7 @@ char * elektraCryptoBotanCreateRandomString (Key * errorKey, const kdb_unsigned_
 		kdb_octet_t * buffer = new kdb_octet_t[length];
 		AutoSeeded_RNG rng;
 		rng.randomize (buffer, length);
-		char * hexString = elektraCryptoBin2Hex (errorKey, buffer, length);
+		char * hexString = CRYPTO_PLUGIN_FUNCTION (bin2hex) (errorKey, buffer, length);
 		delete[] buffer;
 		return hexString;
 	}

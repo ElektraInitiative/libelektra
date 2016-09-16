@@ -419,10 +419,10 @@ int CRYPTO_PLUGIN_FUNCTION (checkconf) (Key * errorKey, KeySet * conf)
 	{
 		// call gpg module to verify that we own the required key
 		Key * msg = keyDup (k);
-		if (elektraCryptoGpgDecryptMasterPassword (conf, errorKey, msg) != 1)
+		if (CRYPTO_PLUGIN_FUNCTION (gpgDecryptMasterPassword) (conf, errorKey, msg) != 1)
 		{
 			keyDel (msg);
-			return -1; // error set by elektraCryptoGpgDecryptMasterPassword()
+			return -1; // error set by CRYPTO_PLUGIN_FUNCTION(gpgDecryptMasterPassword)()
 		}
 		keyDel (msg);
 		return 0;
@@ -441,10 +441,10 @@ int CRYPTO_PLUGIN_FUNCTION (checkconf) (Key * errorKey, KeySet * conf)
 		k = keyNew ("user/" ELEKTRA_CRYPTO_PARAM_MASTER_PASSWORD, KEY_END);
 		keySetString (k, r);
 		elektraFree (r);
-		if (elektraCryptoGpgEncryptMasterPassword (conf, errorKey, k) != 1)
+		if (CRYPTO_PLUGIN_FUNCTION (gpgEncryptMasterPassword) (conf, errorKey, k) != 1)
 		{
 			keyDel (k);
-			return -1; // error set by elektraCryptoGpgEncryptMasterPassword()
+			return -1; // error set by CRYPTO_PLUGIN_FUNCTION(gpgEncryptMasterPassword)()
 		}
 		ksAppendKey (conf, k);
 		return 1;
