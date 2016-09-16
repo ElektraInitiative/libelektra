@@ -14,7 +14,7 @@ elektrify-getenv(1) -- elektrify the environment of applications
 
     kdb elektrify-getenv curl --elektra-version
     kdb elektrify-getenv curl http://www.libelektra.org
-    kdb set system/elektra/intercept/getenv/override/HTTP_PROXY http://proxy.hogege.com:8000/
+    kdb set system/elektra/intercept/getenv/override/http_proxy http://www.example.com/
     kdb elektrify-getenv curl http://www.libelektra.org
 
 By using `elektrify-getenv` the last curl invocation will use a different http proxy.
