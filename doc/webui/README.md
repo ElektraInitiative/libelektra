@@ -2,7 +2,7 @@ FORMAT: 1A
 
 # elektra web
 
-_a web user interface (Web UI) to remotely manage multiple elektra instances_
+_an API and web user interface to remotely manage multiple elektra instances_
 
 
 ## Overview
@@ -35,7 +35,7 @@ The configuration view of elektra web is similar to the tree view of the
 
 ### Group elektrad API
 
-To access single instances, each elektra daemon (`elektrad`) provides a RESTful
+To access single instances, each elektra daemon (`elektrad`) provides a REST
 HTTP API:
 
 #### GET /version
@@ -70,7 +70,7 @@ this is the same as calling `kdb get {path}`
 
 + Response 404
 
-##### set configuration [POST]
+##### set configuration [PUT]
 
 this is the same as calling `kdb set {path}`
 
@@ -96,7 +96,7 @@ this is the same as calling `kdb rm {path}`
 
 ### Group clusterd API
 
-The cluster management server (`clusterd`) also provides a RESTful HTTP API:
+The cluster management server (`clusterd`) also provides a REST HTTP API:
 
 #### GET /
 
@@ -223,7 +223,7 @@ this is the same as calling `kdb get {path}` on the instance
 
 + Response 404
 
-##### set configuration [POST]
+##### set configuration [PUT]
 
 this is the same as calling `kdb set {path}` on the instance
 
