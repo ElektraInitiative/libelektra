@@ -24,4 +24,5 @@ usr/lib/elektra/tool_exec/upgrade-bootstrap
 usr/lib/elektra/tool_exec/find-tools
 usr/lib/elektra/tool_exec/configure-firefox
 usr/lib/elektra/tool_exec/elektrify-open
+usr/lib/elektra/tool_exec/install-sh-completion
 usr/share/man/man1/*
