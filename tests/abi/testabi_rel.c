@@ -22,11 +22,11 @@ static void test_keyCmp ()
 	succeed_if (keyCmp (nk1, 0) == 1, "null pointer is smaller");
 	succeed_if (keyCmp (0, nk2) == -1, "null pointer is smaller");
 
-	//! [base null]
+	//! [cmp null]
 	succeed_if (keyCmp (0, 0) == 0, "all null pointers same");
 	succeed_if (keyCmp (k1, 0) == 1, "null pointer is smaller");
 	succeed_if (keyCmp (0, k2) == -1, "null pointer is smaller");
-	//! [base null]
+	//! [cmp null]
 
 	succeed_if (keyCmp (nk1, nk1) == 0, "all null keys are same");
 	succeed_if (keyCmp (k1, nk1) == 1, "null keys are smaller");

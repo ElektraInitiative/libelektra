@@ -11,12 +11,15 @@
 #define ELEKTRA_PLUGIN_GCRYPT_OPERATIONS_H
 
 #include <kdb.h>
+#include <kdbtypes.h>
 
 #define ELEKTRA_CRYPTO_GCRY_KEYSIZE (32)
 #define ELEKTRA_CRYPTO_GCRY_BLOCKSIZE (16)
 
+char * elektraCryptoGcryCreateRandomString (Key * errorKey, const kdb_unsigned_short_t length);
 int elektraCryptoGcryInit (Key * errorKey);
-int elektraCryptoGcryHandleCreate (elektraCryptoHandle ** handle, KeySet * config, Key * errorKey);
+int elektraCryptoGcryHandleCreate (elektraCryptoHandle ** handle, KeySet * config, Key * errorKey, Key * k,
+				   const enum ElektraCryptoOperation op);
 void elektraCryptoGcryHandleDestroy (elektraCryptoHandle * handle);
 int elektraCryptoGcryEncrypt (elektraCryptoHandle * handle, Key * k, Key * errorKey);
 int elektraCryptoGcryDecrypt (elektraCryptoHandle * handle, Key * k, Key * errorKey);

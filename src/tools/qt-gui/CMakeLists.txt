@@ -47,6 +47,7 @@ set(qt-gui_RSCS	resources.qrc)
 qt5_add_resources(RSCS ${qt-gui_RSCS})
 
 add_executable(qt-gui ${qt-gui_SRCS} ${qt-gui_HDRS} ${UIS} ${RSCS} ${TRS})
+add_dependencies (qt-gui kdberrors_generated)
 
 qt5_use_modules(qt-gui Quick Gui Core Qml Widgets)
 

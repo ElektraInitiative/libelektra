@@ -5,7 +5,7 @@
 - infos/needs =
 - infos/ordering = check
 - infos/placements = presetstorage
-- infos/status = unfinished concept
+- infos/status = unfinished concept nodep
 - infos/description = Copies meta data to keys using struct
 
 ## Introduction ##

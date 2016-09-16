@@ -9,7 +9,7 @@ e.g. `Mountpoint: user/test` tells the shell_recorder that you will be working u
 
 ### DiffType: ###
 
-Available: 
+Available:
 
 `Dump`, `Ini` exports the keys below `Mountpoint` using either the dump or ini format and diffs the changes.
 `File` does a diff on the configuration file mounted to `Mountpoint`.
@@ -17,14 +17,37 @@ Available:
 ### File: ###
 
 Tells the shell_recorder what file to use for diffs.
-
+If File is preset but empty a fresh database temp file will be provided for every run.
 
 
 ## Checks ##
 
 Posix-extended regex is used to check and validate return values and outputs.
 
-Options: 
+**Remark:** Shell Recorder uses the `⏎` symbol as line terminator. This means that you need to use the character `⏎`  (instead of `\n`) if you want to match a line ending in a multiline output. For example: Assume there are exactly two keys with the name `key1` and `key2` located under the path `user/test`. The output of the command `kdb ls user/test` would then be the following
+
+```
+user/test/key1
+user/test/key2
+```
+
+You can check this exact output in a shell recorder script via the following code:
+
+```
+STDOUT: user/test/key1⏎user/test/key2
+< ls user/test
+```
+
+If you only want to check that `key1` and `key2` are part of the output you can use the regex `key1.*key2` instead:
+
+```
+STDOUT: key1.*key2
+< ls user/test
+```
+
+As you can see the line ending is considered  a normal character (`.`) in the output.
+
+Options:
 
 * STDOUT:
 * STDERR:
@@ -35,7 +58,7 @@ Options:
 
 ## Commands ##
 
-A command starts with `<` followed by the usual kdb commands. 
+A command starts with `<` followed by the usual kdb commands.
 
 
 ## Examples ##

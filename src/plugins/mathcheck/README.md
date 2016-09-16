@@ -4,7 +4,7 @@
 - infos/provides = check
 - infos/needs =
 - infos/placements = presetstorage
-- infos/status = maintained unittest discouraged
+- infos/status = maintained unittest discouraged nodep
 - infos/metadata = check/math
 - infos/description =
 
@@ -16,10 +16,15 @@ How the values are compared is specified at the beginning of the metakey using t
 `:=` is used to set key values.
 All values are interpreted as `double` floating point values.
 
+### Keynames ###
+
+Keynames are all either relative to to-be-tested key (starting with `./` or `../`), relative to the parentkey (starting with `@/`) or absolute (e.g. `system/key`).
+
+
 ## Examples ##
 
-`check/math = "== + testval1 + testval2 testval3"` compares the keyvalue to the sum of testval1-3 and yields an error if the values are not equal.
-`check/math = "<= - testval1 * testval2 testval3"` tests if the keyvalue is less than or equal to testval1 - (testval2 * testval3) and yields an error if not.
+`check/math = "== + ../testval1 + ../testval2 ../testval3"` compares the keyvalue to the sum of testval1-3 and yields an error if the values are not equal.
+`check/math = "<= - @/testval1 * @/testval2 @/testval3"` tests if the keyvalue is less than or equal to testval1 - (testval2 * testval3) and yields an error if not.
 
 Full example:
 
@@ -27,19 +32,19 @@ Full example:
 	kdb set user/example/mathcheck/a 3.1
 	kdb set user/example/mathcheck/b 4.5
 	kdb set user/example/mathcheck/k 7.6
-	kdb setmeta user/example/mathcheck/k check/math "== + a b"
+	kdb setmeta user/example/mathcheck/k check/math "== + ../a ../b"
 	kdb set user/example/mathcheck/k 7.7   # fails
 
 To calculate values on-demand you can use:
 
-	kdb setmeta user/example/mathcheck/k check/math ":= + a b"
+	kdb setmeta user/example/mathcheck/k check/math ":= + @/a @/b"
 	kdb get user/example/mathcheck/k       # 12.5
 	kdb set user/example/mathcheck/a 5.5
 	kdb get user/example/mathcheck/k       # 10
 
 It also works with constants:
 
-	kdb setmeta user/example/mathcheck/k check/math ":= + a '5'"
+	kdb setmeta user/example/mathcheck/k check/math ":= + ../a '5'"
 	kdb get user/example/mathcheck/k       # 10.5
 	kdb set user/example/mathcheck/a 8.0
 	kdb get user/example/mathcheck/k       # 13

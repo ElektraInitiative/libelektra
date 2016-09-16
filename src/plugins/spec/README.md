@@ -4,7 +4,7 @@
 - infos/needs =
 - infos/provides = check
 - infos/placements = postgetstorage presetstorage
-- infos/status = maintained preview global
+- infos/status = maintained preview global nodep
 - infos/description =
 
 ## INTRODUCTION ##

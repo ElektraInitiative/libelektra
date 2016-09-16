@@ -4,22 +4,15 @@ SELF=$(readlink -f "$0")
 
 if [ "$#" -ne 1 ] || ! [ -d "$1" ]
 then
-	echo "Usage: $SELF build-dir [source-dir]"
+	echo "Usage: $SELF build-dir"
 	exit 1
 fi
 
 BDIR="$1"
+SDIR=$(dirname "$SELF")
+EDIR=$(dirname "$SDIR")
 
-if [ "$#" -ne 2 ] || ! [ -d "$1" ]
-then
-	SDIR=$(dirname "$SELF")
-	EDIR=$(dirname "$SDIR")
-else
-	EDIR="$2"
-fi
-
-
-echo "Elektra Source is assumed at $EDIR, build directory is assumed at $BDIR"
+echo "Elektra Source is assumed at $EDIR, build directory is given at $BDIR"
 
 # quit with error if cbmc fails
 set -ex
@@ -31,7 +24,7 @@ YINC="-I /usr/include/yajl -I $BDIR/src/plugins/yajl"
 cd $EDIR/src/plugins/yajl
 cbmc --function elektraYajlSet $ARG $YINC $EINC yajl_gen.c
 
-cd $EDIR/src/libelektra
-cbmc --function kdbSet $ARG $EINC kdb.c
+cd $EDIR/src/libs/elektra
+cbmc -D HAVE_KDBCONFIG_H --function kdbSet $ARG $EINC kdb.c
 
 

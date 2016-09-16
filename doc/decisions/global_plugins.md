@@ -53,21 +53,17 @@ Configuration will be in arrays below the keys:
 Additionally, below every of these position following subpositions
 exist:
 
-                                            /before/init
-                                            /after/deinit
-                                            /before/once
-                                            /after/once
-                                            /before/foreach
-                                            /after/foreach
+                                            /init
+                                            /deinit
+                                            /foreach
 
 With different semantics each:
 
 - `init` is always paired with `deinit` and can be used for locking purposes.
+  It is guaranteed that `deinit` will be called, if `init` was called before.
 - `foreach` will be called for every single mountpoint.
-- `once` will be called only once per `kdbGet()/kdbSet()`.
-- `once` will be called after/before `foreach` calls.
-
-If not given, per default `once` and `after` will be used.
+- `max once` (without any subposition) will be called maximum once per `kdbGet()/kdbSet()`
+  outside the loop. It must be called after `init`, and before `deinit`.
 
 
 ### Return values

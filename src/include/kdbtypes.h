@@ -98,10 +98,12 @@ typedef long double kdb_long_double_t;
 typedef long double kdb_long_double_t;
 #endif
 
-#if SIZEOF_TV_USEC == SIZEOF_INT
-#define ELEKTRA_TIME_USEC_F "%d"
-#else
+#if SIZEOF_TV_USEC == SIZEOF_LONG
 #define ELEKTRA_TIME_USEC_F "%ld"
+#elif SIZEOF_TV_USEC == SIZEOF_LONG_LONG
+#define ELEKTRA_TIME_USEC_F "%lli"
+#else
+#define ELEKTRA_TIME_USEC_F "%d"
 #endif
 
 #endif

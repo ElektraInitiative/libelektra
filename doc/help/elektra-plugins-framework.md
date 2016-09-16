@@ -108,6 +108,22 @@ have to `return 1` at the end of the contract to not execute the regular
 functionality of the plugin.
 
 
+## Exports
+
+Plugins can also export arbitrary additional functions.
+To export it, simply add another `exports` symbol to
+the contract:
+
+				keyNew ("system/elektra/modules/dump/exports/checkconf", KEY_FUNC,
+					elektraCcodeCheckConf, KEY_END),
+
+`checkconf` is the most important function that is not
+available as build-in function. It is used to validate
+or even correct/finish the plugin's configuration.
+
+If you want to use an exported function from a symbol,
+please look at [Plugin::parse](/src/libs/tools/src/plugin.cpp).
+
 ## Changing Plugins
 
 This configuration is static and contains the contract information.

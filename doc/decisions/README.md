@@ -21,12 +21,14 @@ section here.
 
 - [Relative Storages](relative.md)
 - [Internal Cache](internal_cache.md)
+- [API Documentation](api_documentation.md)
 
 ## In Discussion
 
 - [CMake spec](cmake_spec.md)
 - [Definition of Bool](bool.md)
 - [Global Plugins](global_plugins.md)
+- [Logging](logging.md)
 
 ## Drafts
 
@@ -34,3 +36,4 @@ section here.
 - [Script Testing](script_testing.md)
 - [Null Pointer Checks](null_pointer_checks.md)
 - [Publish Subscribe](pubsub.md)
+- [Global Validation](global_validation.md)

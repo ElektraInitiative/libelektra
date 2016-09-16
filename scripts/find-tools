@@ -7,38 +7,39 @@
 metatags = ["date", "brief", "author", "tags"]
 
 # If you create own Tags, please document them here!
-tags = {	'configure':"This script is used for the build configuration",
-		'convert':"This script is used convert things",
-		'generator':"This script is a generator",
-		'creator':"This script creates things",
-		'env':"This script does some env stuff",
-		'mount':"This script mounts things",
-		'reformat':"This script reformats things",
-		'debian':"Special script for debian system"}
+tags = {	'configure': "This script is used for the build configuration",
+		'convert': "This script is used convert things",
+		'generator': "This script is a generator",
+		'creator': "This script creates things",
+		'validation': "This script is used to validate stuff",
+		'env': "This script does some env stuff",
+		'mount': "This script mounts things",
+		'reformat': "This script reformats things",
+		'debian': "Special script for debian system"}
 
 # No changes below this line necassary!
 
-import glob
 from itertools import islice
 import os
 from collections import defaultdict
 import re
 import argparse
 
-def get_head(filename, n=10):
+
+def get_head (filename, n=10):
 	head = ""
-	with open(filename, "r") as myfile:
-		head = map(lambda x: x.replace("\n", "").replace("\r", ""), list(islice(myfile, n)))
+	with open (filename, "r") as myfile:
+		head = map (lambda x: x.replace ("\n", "").replace ("\r", ""), list (islice(myfile, n)))
 	return head
 
 
-def get_scripts():
-	scripts = defaultdict(dict)
-	scripts_path = os.path.dirname(os.path.realpath(__file__))
+def get_scripts ():
+	scripts = defaultdict (dict)
+	scripts_path = os.path.dirname (os.path.realpath (__file__))
 
-	for f in os.listdir(scripts_path):
-		f = os.path.join(scripts_path,f)
-		if not os.path.isfile(f):
+	for f in os.listdir (scripts_path):
+		f = os.path.join (scripts_path, f)
+		if not os.path.isfile (f):
 			continue
 
 		# If file not readable, skip it
@@ -52,21 +53,21 @@ def get_scripts():
 
 		comment = '#'
 
-		for key in filesDict.keys():
+		for key in filesDict.keys ():
 			if (f.endswith(key)):
 				comment = filesDict[key]
 
 		if (comment == -1):
 			continue
 
-		tag_match = re.compile("^"+comment+"[ ]*@(%s) (.*)$" % "|".join(metatags))
+		tag_match = re.compile ("^"+comment+"[ ]*@(%s) (.*)$" % "|".join (metatags))
 
-		s = os.stat(f)
-		fn = os.path.basename(f)
+		s = os.stat (f)
+		fn = os.path.basename (f)
 		scripts[fn]["perm"] = (s.st_mode & 64)
 		scripts[fn]["mtime"] = s.st_mtime
 
-		if head[0].startswith("#!"):
+		if head[0].startswith ("#!"):
 			scripts[fn]["shebang"] = head[0]
 		else:
 			scripts[fn]["shebang"] = ""
@@ -74,80 +75,80 @@ def get_scripts():
 		# Look for a line that looks like a vim modeline:
 		scripts[fn]["modeline"] = ""
 		for line in head:
-			if re.match(r"^#[ ]*vim: .*$", line):
+			if re.match (r"^#[ ]*vim: .*$", line):
 				scripts[fn]["modeline"] = line
 				break
 
 		# just look at lines that have a metatag
-		scripts[fn]["tags"] = {k: v for k, v in map(lambda x: tag_match.match(x).groups(), filter(lambda x: tag_match.match(x), head))}
+		scripts[fn]["tags"] = {k: v for k, v in map (lambda x: tag_match.match(x).groups(), filter(lambda x: tag_match.match(x), head))}
 
 	return scripts
 
 
 def main():
-	parser = argparse.ArgumentParser(description = "KDB Tool finder")
+	parser = argparse.ArgumentParser (description="KDB Tool finder")
 
-	parser.add_argument("--warnings", help="Print a list of all scripts that does not contain a shebang and or metatags", dest="warnings", action="store_true", default=False)
-	parser.add_argument("--good", help="Print a list of all scripts that are compliant with the Meta System", dest="good", action="store_true", default=False)
-	parser.add_argument("--alltags", help="Print a list of all known tags", dest="alltags", action="store_true", default=False)
+	parser.add_argument ("--warnings", help="Print a list of all scripts that does not contain a shebang and or metatags", dest="warnings", action="store_true", default=False)
+	parser.add_argument ("--good", help="Print a list of all scripts that are compliant with the Meta System", dest="good", action="store_true", default=False)
+	parser.add_argument ("--alltags", help="Print a list of all known tags", dest="alltags", action="store_true", default=False)
 
-	so = parser.add_argument_group('Search Options. If multiple are given, they will be concatenated with AND')
-	so.add_argument("-a", "--author", help="Search by author")
-	so.add_argument("-d", "--date", help="Search by date (format DD.MM.YYYY)")
-	so.add_argument("-t", "--tags", help="Search by tags", nargs="+")
-	so.add_argument("-b", "--brief", help="Search inside the brief text")
-	so.add_argument("-e", "--execute", help="Search by file executeable (shebang)")
+	so = parser.add_argument_group ('Search Options. If multiple are given, they will be concatenated with AND')
+	so.add_argument ("-n", "--name", help="Search by file name")
+	so.add_argument ("-a", "--author", help="Search by author")
+	so.add_argument ("-d", "--date", help="Search by date (format DD.MM.YYYY)")
+	so.add_argument ("-t", "--tags", help="Search by tags", nargs="+")
+	so.add_argument ("-b", "--brief", help="Search inside the brief text")
+	so.add_argument ("-e", "--execute", help="Search by file executeable (shebang)")
 
+	args = parser.parse_args ()
 
-	args = parser.parse_args()
-
-	scripts = get_scripts()
+	scripts = get_scripts ()
 
 	if args.alltags:
-		stags = set()
-		for s, d  in scripts.items():
+		stags = set ()
+		for s, d in scripts.items ():
 			if "tags" in d["tags"]:
 				for tag in d["tags"]["tags"].split(","):
-					stags.add(tag.strip())
+					stags.add (tag.strip ())
 
-		print("\n".join(sorted(stags)))
+		print("\n".join (sorted (stags)))
 		return None
 
-
 	if args.warnings:
-		for s, d in sorted(scripts.items()):
+		for s, d in sorted (scripts.items ()):
 			message = []
 			if d["shebang"] == "":
-				message.append("No Shebang")
+				message.append ("No Shebang")
 			if d["perm"] == 0:
-				message.append("Not executeable")
+				message.append ("Not executeable")
 			if d["tags"] == {}:
-				message.append("No Metatags")
+				message.append ("No Metatags")
 			if d["modeline"] == "":
-				message.append("No Modeline")
+				message.append ("No Modeline")
 
 			if message != []:
 				print ("%s%s%s" % (s, " "*(2 + max(map(len, scripts.keys())) - len(s)), ", ".join(message)))
 	elif args.good:
-		for s, d in sorted(scripts.items()):
+		for s, d in sorted (scripts.items ()):
 			if d["shebang"] != "" and d["perm"] != 0 and d["tags"] != {}:
-				print ("%s%s%s%s%s" % (s, " "*(2 + max(map(len, scripts.keys())) - len(s)), d["shebang"][2:], " "*(30 - len(d["shebang"])), d["tags"]["brief"] if "brief" in d["tags"].keys() else ""))
+				print("%s%s%s%s%s" % (s, " "*(2 + max(map(len, scripts.keys())) - len(s)), d["shebang"][2:], " "*(30 - len(d["shebang"])), d["tags"]["brief"] if "brief" in d["tags"].keys() else ""))
 	else:
 		# Search instead!
+		if args.name is not None:
+			scripts = {k: v for k, v in scripts.items() if args.name.lower() in k.lower()}
 		if args.author is not None:
 			scripts = {k: v for k, v in scripts.items() if "author" in v["tags"].keys() and args.author.lower() in v["tags"]["author"].lower()}
 		if args.date is not None:
 			scripts = {k: v for k, v in scripts.items() if "date" in v["tags"].keys() and args.date.lower() in v["tags"]["date"].lower()}
 		if args.tags is not None:
-			scripts = {k: v for k, v in scripts.items() if "tags" in v["tags"].keys() and len(set(args.tags) & set(map(str.strip, v["tags"]["tags"].split(",")))) > 0 }
+			scripts = {k: v for k, v in scripts.items() if "tags" in v["tags"].keys() and len(set(args.tags) & set(map(str.strip, v["tags"]["tags"].split(",")))) > 0}
 		if args.brief is not None:
 			scripts = {k: v for k, v in scripts.items() if "brief" in v["tags"].keys() and args.brief.lower() in v["tags"]["brief"].lower()}
 		if args.execute is not None:
 			scripts = {k: v for k, v in scripts.items() if args.execute.lower() in v["shebang"].lower()}
 
-
-		for s, d in sorted(scripts.items()):
-			print ("%s%s%s%s%s" % (s, " "*(2 + max(map(len, scripts.keys())) - len(s)), d["shebang"][2:], " "*(30 - len(d["shebang"])), d["tags"]["brief"] if "brief" in d["tags"].keys() else ""))
+		for s, d in sorted (scripts.items ()):
+			print("%s%s%s%s%s" % (s, " "*(2 + max(map(len, scripts.keys())) - len(s)), d["shebang"][2:], " "*(30 - len(d["shebang"])), d["tags"]["brief"] if "brief" in d["tags"].keys() else ""))
 
 
 if __name__ == "__main__":

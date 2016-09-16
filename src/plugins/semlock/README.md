@@ -4,7 +4,7 @@
 - infos/needs =
 - infos/provides =
 - infos/placements = pregetstorage postgetstorage presetstorage postcommit postrollback
-- infos/status = maintained global reviewed experimental unfinished -10000
+- infos/status = maintained global reviewed experimental unfinished nodep -10000
 - infos/description =
 
 ## SEMLOCK ##

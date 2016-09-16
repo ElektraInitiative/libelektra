@@ -69,13 +69,13 @@ set (REVERSE_DOMAIN org.libelektra)
 
 set (KDB_VERSION_MAJOR 0)
 set (KDB_VERSION_MINOR 8)
-set (KDB_VERSION_MICRO 17)
+set (KDB_VERSION_MICRO 18)
 
 set (KDB_VERSION "${KDB_VERSION_MAJOR}.${KDB_VERSION_MINOR}.${KDB_VERSION_MICRO}")
 message (STATUS "You are building Elektra ${KDB_VERSION}")
 
 set (SO_VERSION 4)
-set (SO_VERSION_TOOLS 0)
+set (SO_VERSION_TOOLS 1)
 set (SO_VERSION_GETENV 0)
 
 #needs version above

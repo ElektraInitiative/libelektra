@@ -4,7 +4,7 @@
 - infos/needs =
 - infos/provides = 
 - infos/placements = pregetstorage precommit
-- infos/status = maintained configurable
+- infos/status = maintained configurable nodep
 - infos/description =
 
 ## Introduction ##

@@ -4,6 +4,13 @@ if [ -z "$KDB" ]; then
 	KDB=kdb
 fi
 
-$KDB mount --resolver noresolver none system/info/constants constants
-$KDB mount --resolver noresolver none system/info/uname uname
+if [ -z "$1" ]; then
+	MOUNTPOINT=system/info
+else
+	MOUNTPOINT="$1"
+fi
+
+$KDB mount --resolver noresolver none $MOUNTPOINT/constants constants
+$KDB mount --resolver noresolver none $MOUNTPOINT/uname uname
+$KDB mount --resolver noresolver none $MOUNTPOINT/desktop desktop
 

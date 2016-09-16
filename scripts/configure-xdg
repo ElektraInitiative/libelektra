@@ -5,6 +5,6 @@
 XDG_RESOLVER="resolver_mf_xp_x"
 
 cd $BUILD
-cmake	-DPLUGINS="$XDG_RESOLVER;dump;sync;error" \
+cmake	-DPLUGINS="$XDG_RESOLVER;dump;sync;error;list;timeofday;profile;mathcheck;tracer;hosts;network;glob" \
 	-DKDB_DEFAULT_RESOLVER="$XDG_RESOLVER" \
 	$*

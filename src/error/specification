@@ -681,7 +681,7 @@ number:115
 description:inconsistent line endings
 severity:error
 ingroup:plugin
-module:lineendings 
+module:lineendings
 
 number:116
 description: couldn't open file
@@ -874,3 +874,73 @@ severity:warning
 ingroup:plugin
 module:resolver
 macro:NOCWD
+
+number:147
+description:issue while interfacing with git
+severity:error
+ingroup:plugin
+module:gitresolver
+macro:GITRESOLVER_RESOLVING_ISSUE
+
+number:148
+description:A conflict occured. There are new commits in the repository.
+severity:error
+ingroup:plugin
+module:gitresolver
+macro:GITRESOLVER_CONFLICT
+
+number:149
+description:validation of passwd entry failed
+severity:error
+ingroup:plugin
+module:passwd
+macro:PASSWD_VALIDATION
+
+number:150
+description:Failed to generate a random master password.
+macro:CRYPTO_RANDOM_GEN
+ingroup:plugin
+module:crypto
+severity:error
+
+number:151
+description:Error in the GPG module.
+macro:CRYPTO_GPG
+ingroup:plugin
+module:crypto
+severity:error
+
+number:152
+description:The configuration is invalid or incomplete but a default value can be used instead.
+macro:CRYPTO_CONFIG
+severity:warning
+ingroup:plugin
+module:crypto
+
+number:153
+description:not a valid boolean value
+severity:error
+ingroup:plugin
+module:boolean
+macro:INVALID_BOOL
+
+number:154
+description:not a valid boolean value
+severity:warning
+ingroup:plugin
+module:boolean
+macro:INVALID_BOOL
+
+number:155
+description:Failed to extract block.
+severity:error
+ingroup:plugin
+module:blockresolver
+macro:BLOCKRESOLVER_EXTRACT
+
+number:156
+description:End of block not found
+severity:error
+ingroup:plugin
+module:blockresolver
+macro:BLOCKRESOLVER_NO_EOB

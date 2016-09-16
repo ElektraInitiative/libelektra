@@ -15,6 +15,7 @@
 int elektraTemplateOpen (Plugin * handle ELEKTRA_UNUSED, Key * errorKey ELEKTRA_UNUSED)
 {
 	// plugin initialization logic
+	// this function is optional
 
 	return 1; // success
 }
@@ -22,6 +23,7 @@ int elektraTemplateOpen (Plugin * handle ELEKTRA_UNUSED, Key * errorKey ELEKTRA_
 int elektraTemplateClose (Plugin * handle ELEKTRA_UNUSED, Key * errorKey ELEKTRA_UNUSED)
 {
 	// free all plugin resources and shut it down
+	// this function is optional
 
 	return 1; // success
 }
@@ -38,6 +40,7 @@ int elektraTemplateGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTR
 			       keyNew ("system/elektra/modules/template/exports/get", KEY_FUNC, elektraTemplateGet, KEY_END),
 			       keyNew ("system/elektra/modules/template/exports/set", KEY_FUNC, elektraTemplateSet, KEY_END),
 			       keyNew ("system/elektra/modules/template/exports/error", KEY_FUNC, elektraTemplateError, KEY_END),
+			       keyNew ("system/elektra/modules/template/exports/checkconf", KEY_FUNC, elektraTemplateCheckConfig, KEY_END),
 #include ELEKTRA_README (template)
 			       keyNew ("system/elektra/modules/template/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 		ksAppend (returned, contract);
@@ -53,6 +56,7 @@ int elektraTemplateGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTR
 int elektraTemplateSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
 {
 	// get all keys
+	// this function is optional
 
 	return 1; // success
 }
@@ -60,8 +64,21 @@ int elektraTemplateSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTR
 int elektraTemplateError (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
 {
 	// set all keys
+	// this function is optional
 
 	return 1; // success
+}
+
+int elektraTemplateCheckConfig (Key * errorKey ELEKTRA_UNUSED, KeySet * conf ELEKTRA_UNUSED)
+{
+	// validate plugin configuration
+	// this function is optional
+
+	// the return codes have the following meaning:
+	// 0: The configuration was OK and has not been changed
+	// 1: The configuration has been changed and now it is OK
+	// -1: The configuration was not OK and could not be fixed. An error has to be set to errorKey.
+	return 0;
 }
 
 Plugin * ELEKTRA_PLUGIN_EXPORT (template)

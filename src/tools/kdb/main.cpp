@@ -48,8 +48,6 @@ int displayHelp (std::string app, Factory const & f)
 	{
 		std::cout << command << std::endl;
 	}
-	std::cout << "help         View the man page of a tool" << std::endl;
-	std::cout << "list-tools   List all external tools" << std::endl;
 	return 0;
 }
 

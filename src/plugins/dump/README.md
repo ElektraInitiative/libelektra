@@ -1,9 +1,9 @@
 - infos = Information about dump plugin is in keys below
 - infos/author = Markus Raab <elektra@libelektra.org>
 - infos/licence = BSD
+- infos/needs =
 - infos/provides = storage
-- infos/needs = 
-- infos/recommends = 
+- infos/recommends =
 - infos/placements = getstorage setstorage
 - infos/status = productive maintained conformant unittest tested nodep -1000
 - infos/metadata =

@@ -219,6 +219,144 @@ Key * ksPopAtCursor (KeySet * ks, cursor_t pos)
 	return elektraKsPopAtCursor (ks, pos);
 }
 
+
+/**
+ * keyRel replacement
+ */
+
+// keyRel2 helper, turns key into a cascading key ( removes namespace)
+Key * keyAsCascading (const Key * key)
+{
+	if (keyName (key)[0] == '/')
+	{
+		return keyDup (key);
+	}
+	else
+	{
+		const char * name = keyName (key);
+		const char * ptr = strchr (name, '/');
+		if (!ptr)
+		{
+			return keyNew ("/", KEY_CASCADING_NAME, KEY_END);
+		}
+		else
+		{
+			ssize_t length = keyGetNameSize (key);
+			if ((ptr - name) == (length - 1))
+			{
+				return keyNew ("/", KEY_CASCADING_NAME, KEY_END);
+			}
+			else
+			{
+				return keyNew (ptr, KEY_CASCADING_NAME, KEY_END);
+			}
+		}
+	}
+}
+
+// keyRel2 helper, returns how many levels check is below key, or 0 if check isn't below
+int keyGetLevelsBelow (const Key * key, const Key * check)
+{
+	if (!keyIsBelow (key, check)) return 0;
+	if (keyGetNamespace (key) != keyGetNamespace (check)) return 0;
+	Key * toCheck = keyDup (check);
+	int levels = 0;
+	while (strcmp (keyName (key), keyName (toCheck)))
+	{
+		keySetBaseName (toCheck, 0);
+		if (keyName (toCheck)[0] == '\0') keySetName (toCheck, "/");
+		++levels;
+	}
+	keyDel (toCheck);
+	return levels;
+}
+
+/**
+ * @brief Replacement proposal for keyRel
+ * @return depending on relation type
+ * @retval -1 usage error
+ * @retval 0 test failed
+ * @retval >1 true for binary tests, number of levels below for other relation tests
+ *
+ * @param key the key object to work with
+ * @param check the second key object to check the relation with
+ * @param which what kind of relationship test should be done
+ */
+
+
+int keyRel2 (const Key * key, const Key * check, KeyRelType which)
+{
+	if (!key || !check) return -1;
+	if (!key->key || !check->key) return -1;
+
+	Key * cKey = keyAsCascading (key);
+	Key * cCheck = keyAsCascading (check);
+	Key * cKeyParent = keyDup (cKey);
+	keySetBaseName (cKeyParent, 0);
+	if (keyName (cKeyParent)[0] == '\0') keySetName (cKeyParent, "/");
+	int isBelow = 0;
+	int isSilblingNephew = 0;
+	isBelow = keyGetLevelsBelow (cKey, cCheck);
+	if (!isBelow) isSilblingNephew = keyGetLevelsBelow (cKeyParent, cCheck);
+	elektraNamespace keyNamespace = keyGetNamespace (key);
+	elektraNamespace checkNamespace = keyGetNamespace (check);
+	int retVal = 0;
+	int bits = 0;
+	for (KeyRelType type = 1; type != 0; type <<= 1)
+	{
+		if (type & which) ++bits;
+	}
+	if (bits != 1) return -1;
+	switch (which)
+	{
+	case ELEKTRA_REL_BELOW_SAME_NS:
+		if (isBelow && (keyNamespace == checkNamespace)) retVal = isBelow;
+		break;
+	case ELEKTRA_REL_BELOW_IGNORE_NS:
+		if (isBelow) retVal = isBelow;
+		break;
+	case ELEKTRA_REL_BELOW_CASCADING_NS:
+		if (isBelow && ((checkNamespace == KEY_NS_CASCADING) || (keyNamespace == KEY_NS_CASCADING))) retVal = isBelow;
+		break;
+	case ELEKTRA_REL_DIRECT_BELOW_SAME_NS:
+		if ((isBelow == 1) && (keyNamespace == checkNamespace)) retVal = 1;
+		break;
+	case ELEKTRA_REL_DIRECT_BELOW_IGNORE_NS:
+		if (isBelow == 1) retVal = 1;
+		break;
+	case ELEKTRA_REL_DIRECT_BELOW_CASCADING_NS:
+		if ((isBelow == 1) && ((checkNamespace == KEY_NS_CASCADING) || (keyNamespace == KEY_NS_CASCADING))) retVal = 1;
+		break;
+	case ELEKTRA_REL_SILBLING_SAME_NS:
+		if ((isSilblingNephew == 1) && (keyNamespace == checkNamespace)) retVal = 1;
+		break;
+	case ELEKTRA_REL_SILBLING_IGNORE_NS:
+		if (isSilblingNephew == 1) retVal = 1;
+		break;
+	case ELEKTRA_REL_SILBLING_CASCADING_NS:
+		if ((isSilblingNephew == 1) && ((checkNamespace == KEY_NS_CASCADING) || (keyNamespace == KEY_NS_CASCADING))) retVal = 1;
+		break;
+	case ELEKTRA_REL_NEPHEW_SAME_NS:
+		if ((isSilblingNephew > 1) && (keyNamespace == checkNamespace)) retVal = isSilblingNephew - 1;
+		break;
+	case ELEKTRA_REL_NEPHEW_IGNORE_NS:
+		if (isSilblingNephew > 1) retVal = isSilblingNephew - 1;
+		break;
+	case ELEKTRA_REL_NEPHEW_CASCADING_NS:
+		if ((isSilblingNephew > 1) && ((checkNamespace == KEY_NS_CASCADING) || (keyNamespace == KEY_NS_CASCADING)))
+			retVal = isSilblingNephew - 1;
+		break;
+	default:
+		retVal = -1;
+		break;
+	}
+	keyDel (cKey);
+	keyDel (cCheck);
+	keyDel (cKeyParent);
+	return retVal;
+}
+
+
 /**
  * @}
  */

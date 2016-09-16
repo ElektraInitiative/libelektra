@@ -8,6 +8,8 @@ kdb-global-mount(1) - Globally mount plugins
 - `plugin` are the Elektra plugins to be mounted globally.
 - Plugins may be followed by a `,` separated list of `keys=values` pairs which will be used as plugin configuration.
 
+`kdb gmount` is an alias and can be used in the same way as `kdb global-mount`.
+
 
 ## DESCRIPTION
 

@@ -1,0 +1,18 @@
+{
+  "@context": "https://raw.githubusercontent.com/mbjones/codemeta/master/codemeta.jsonld",
+  "@type": "Code",
+  "author": [
+  "Markus Raab",
+  "et al. (see AUTHORS)"
+  ],
+  "identifier": "",
+  "codeRepository": "http://www.libelektra.org",
+  "datePublished": "2016-07-23",
+  "dateModified": "2016-07-23",
+  "dateCreated": "2016-07-23",
+  "description": "Elektra serves as a universal and secure framework to access configuration parameters in a global, hierarchical key database.",
+  "keywords": "configuration, context awareness, configuration files, interception, integration",
+  "license": "BSD",
+  "title": "Elektra",
+  "version": "0.8.17"
+}

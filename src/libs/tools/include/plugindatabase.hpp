@@ -30,6 +30,9 @@ namespace tools
  */
 class PluginDatabase
 {
+protected:
+	typedef void (*func_t) ();
+
 public:
 	/**
 	 * @brief list all plugins
@@ -67,6 +70,16 @@ public:
 	 * @return the clause of the contract
 	 */
 	virtual std::string lookupInfo (PluginSpec const & whichplugin, std::string const & which) const = 0;
+
+	/**
+	 * @brief get exported plugin symbol
+	 *
+	 * @param whichplugin from which plugin?
+	 * @param which which symbol would you like to look up?
+	 *
+	 * @return the function pointer to the exported symbol or NULL if the symbol was not found
+	 */
+	virtual func_t getSymbol (PluginSpec const & whichplugin, std::string const & which) const = 0;
 
 	/**
 	 * @brief lookup which plugin handles meta data
@@ -118,6 +131,7 @@ public:
 	std::vector<std::string> listAllPlugins () const;
 	PluginDatabase::Status status (PluginSpec const & whichplugin) const;
 	std::string lookupInfo (PluginSpec const & spec, std::string const & which) const;
+	func_t getSymbol (PluginSpec const & whichplugin, std::string const & which) const;
 	PluginSpec lookupMetadata (std::string const & which) const;
 	PluginSpec lookupProvides (std::string const & provides) const;
 };
@@ -128,6 +142,8 @@ public:
 class MockPluginDatabase : public ModulesPluginDatabase
 {
 public:
+	typedef int (*checkConfPtr) (ckdb::Key *, ckdb::KeySet *);
+
 	/// only data from here will be returned
 	/// @note that it is ordered by name, i.e., different ref-names cannot be distinguished
 	mutable std::unordered_map<PluginSpec, std::unordered_map<std::string, std::string>, PluginSpecHash, PluginSpecName> data;
@@ -135,6 +151,11 @@ public:
 	std::vector<std::string> listAllPlugins () const;
 	PluginDatabase::Status status (PluginSpec const & whichplugin) const;
 	std::string lookupInfo (PluginSpec const & spec, std::string const & which) const;
+	func_t getSymbol (PluginSpec const & whichplugin, std::string const & which) const;
+	void setCheckconfFunction (checkConfPtr const newCheckconf);
+
+private:
+	checkConfPtr checkconf = NULL;
 };
 }
 }

@@ -360,6 +360,22 @@ public:
 		return layer;
 	}
 
+	std::shared_ptr<Layer> deactivate (std::string key, std::string value)
+	{
+		syncLayers ();
+		std::shared_ptr<Layer> layer = Context::deactivate (key, value);
+		m_gc.globalDeactivate (this, layer);
+		return layer;
+	}
+
+	std::shared_ptr<Layer> deactivate (Wrapped const & value)
+	{
+		syncLayers ();
+		std::shared_ptr<Layer> layer = Context::deactivate (value);
+		m_gc.globalDeactivate (this, layer);
+		return layer;
+	}
+
 	void syncLayers () override
 	{
 		// now activate/deactive layers

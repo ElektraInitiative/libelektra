@@ -95,6 +95,9 @@
 # define SIZEOF_LONG_DOUBLE       @SIZEOF_LONG_DOUBLE@
 #endif
 
+/* ENABLE_OPTIMIZATIONS */
+#define ELEKTRA_ENABLE_OPTIMIZATIONS @ELEKTRA_ENABLE_OPTIMIZATIONS@
+
 /* disable debug output messages */
 #define DEBUG @DEBUG@
 

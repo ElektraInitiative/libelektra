@@ -23,6 +23,8 @@ Start arrays with _ (and not with #)?
 make KEY_END, ELEKTRA_PLUGIN_END also pointers and check them with
 sentinel, have a single way how to terminate vaargs
 
+remove obsolete key/keyset flags
+
 _t is reserved by POSIX, so cursor_t, keyswitch_t and option_t
 should be renamed to something elektra specific
 
@@ -32,6 +34,7 @@ problems on binary serialisation + unified behaviour (array sizes..)
 empty/invalid keys should lead to an error in kdbGet
 
 KEY_* -> KEY_O_* to avoid clashes
+consistently use singular (KEY_FLAGS -> KEY_FLAG)
 kdb.h -> elektra/kdb.h to avoid clashes
 
 Remove/Refactor/Rename obsolete/not needed methods:
@@ -76,6 +79,9 @@ Remove/Refactor/Rename obsolete/not needed methods:
 
 - remove mountpoint name concept
  - system/elektra/mountpoints/system\/info\/uname/mountpoint key not needed (system/info/uname already in name present!)
+- remove numbers in backend mounting (placements only per name)
+- have consistent instantiate+backreferencing syntax for both backend+global mounting
+   (system/elektra/mountpoints and system/elektra/globalplugins)
 - remove legacy bootstrapping: always use KDB_FILE_INIT (elektra.ecf)
 
 

@@ -1,0 +1,12 @@
+# guided setup for homepage preferences used by configure-firefox
+
+welcomeSetup()
+{
+    echo "Setting up Homepage"
+    readPrefType
+    read -p "New URL: " welcomeURL
+    echo "Setting $prefString Homepage to $welcomeURL"
+    createCommandString "browser/startup/homepage" "string" "${welcomeURL}"|kdb shell &>/dev/null
+}
+
+welcomeSetup

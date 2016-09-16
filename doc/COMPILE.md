@@ -281,12 +281,15 @@ build documentation with doxygen the kdb tool does only have the integrated docu
 
 
 #### CMAKE_INSTALL_PREFIX ####
-By default all files will installed below /usr/local.
-Edit that cache entry to change that behaviour.
+`CMAKE_INSTALL_PREFIX` defaults to `/usr/local`.
+So by default most files will installed below `/usr/local`.
+Exceptions to this are files handled by [INSTALL_SYSTEM_FILES](#install_system_files).
+
+Edit that cache entry to change that behavior.
 Also called system prefix within the documentation.
 
 If you want to create a package afterwards it is ok to use
-paths that you can write to (e.g. CMAKE_INSTALL_PREFIX /home/markus/bin)
+paths that you can write to (e.g. `-DCMAKE_INSTALL_PREFIX=/home/username/`)
 
 #### LIB_SUFFIX ####
 Lets you install libraries into architecture specific folder.
@@ -324,6 +327,30 @@ resolved) and then g to generate.  Finally press e to exit.
 Specifies that the build tools, i.e. `elektra-export-symbols` and `elektra-export-symbols`
 are installed (by default off). Is needed for cross-compilation.
 
+#### INSTALL_SYSTEM_FILES ####
+Some of Elektras targets require to be installed into specific folders in the
+file system hierarchy to work properly.
+
+This variable is enabled by default but requires the install target to have the
+rights to write into the corresponding folders. Set `-DINSTALL_SYSTEM_FILES=OFF`
+if you do not need any of them.
+
+If you do not have root rights you can copy them manually to your user folder.
+
+Currently the installed system files are as following:
+
+|   Module        |         Description             |      Install Path                      |
+|-----------------|---------------------------------|----------------------------------------|
+| bash-completion | bash tab auto completion file   | `completionsdir` from pkg-config (*)   |
+| zsh-completion  | zsh tab auto completion file    | /usr/share/zsh/vendor-completions      |
+| GIR             | introspection file for bindings | `INTROSPECTION_GIRDIR` from pkg-config |
+| GSettings       | GSettings backend module        | `GIO_MODULE_DIR` from pkg-config       |
+
+
+(*) Or `/usr/share/bash-completion/completions` as fallback.
+
+#### ENABLE_OPTIMIZATIONS ####
+In order to keep the binaries as small as possible this flag allows to trade memory for speed.
 
 ## BUILDING ##
 

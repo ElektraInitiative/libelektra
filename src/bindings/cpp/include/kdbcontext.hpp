@@ -454,6 +454,22 @@ public:
 		return layer;
 	}
 
+	std::shared_ptr<Layer> deactivate (Wrapped const & value)
+	{
+		std::shared_ptr<Layer> layer = std::make_shared<WrapLayer> (value);
+		deactivateLayer (layer);
+		notifyByEvents ({ layer->id () });
+		return layer;
+	}
+
+	std::shared_ptr<Layer> deactivate (std::string key, std::string value)
+	{
+		std::shared_ptr<Layer> layer = std::make_shared<KeyValueLayer> (key, value);
+		deactivateLayer (layer);
+		notifyByEvents ({ layer->id () });
+		return layer;
+	}
+
 public:
 	Context & withl (std::shared_ptr<Layer> & l)
 	{

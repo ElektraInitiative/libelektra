@@ -42,6 +42,27 @@ TEST (SameMountpoint, setMountpoints)
 	EXPECT_EQ (b1.getMountpoint (), "user/hello");
 }
 
+TEST (SameMountpoint, setMountpointsNamespaces)
+{
+	using namespace kdb;
+	using namespace kdb::tools;
+	KeySet ks;
+
+	Backend b1;
+
+	b1.setMountpoint (Key ("dir", KEY_END), ks);
+	EXPECT_EQ (b1.getMountpoint (), "dir");
+
+	b1.setMountpoint (Key ("system", KEY_END), ks);
+	EXPECT_EQ (b1.getMountpoint (), "system");
+
+	b1.setMountpoint (Key ("user", KEY_END), ks);
+	EXPECT_EQ (b1.getMountpoint (), "user");
+
+	b1.setMountpoint (Key ("spec", KEY_END), ks);
+	EXPECT_EQ (b1.getMountpoint (), "spec");
+}
+
 TEST (SameMountpoint, strangeMountpoints)
 {
 	using namespace kdb;
@@ -120,6 +141,14 @@ TEST (SameMountpoint, wrongElektraMountpoints)
 	KeySet ks;
 
 	Backend b1;
+	ASSERT_THROW (b1.setMountpoint (Key ("proc", KEY_END), ks), kdb::tools::MountpointAlreadyInUseException);
+	EXPECT_EQ (b1.getMountpoint (), "");
+	ASSERT_THROW (b1.setMountpoint (Key ("proc/elektra", KEY_END), ks), kdb::tools::MountpointAlreadyInUseException);
+	EXPECT_EQ (b1.getMountpoint (), "");
+	ASSERT_THROW (b1.setMountpoint (Key ("spec/elektra", KEY_END), ks), kdb::tools::MountpointAlreadyInUseException);
+	EXPECT_EQ (b1.getMountpoint (), "");
+	ASSERT_THROW (b1.setMountpoint (Key ("dir/elektra", KEY_END), ks), kdb::tools::MountpointAlreadyInUseException);
+	EXPECT_EQ (b1.getMountpoint (), "");
 	ASSERT_THROW (b1.setMountpoint (Key ("system/elektra", KEY_END), ks), kdb::tools::MountpointAlreadyInUseException);
 	EXPECT_EQ (b1.getMountpoint (), "");
 	ASSERT_THROW (b1.setMountpoint (Key ("system/elektra/mountpoints", KEY_END), ks), kdb::tools::MountpointAlreadyInUseException);

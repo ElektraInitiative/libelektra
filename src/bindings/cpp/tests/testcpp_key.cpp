@@ -269,7 +269,7 @@ TEST (key, cast)
 
 TEST (key, value)
 {
-	cout << "testing value" << endl;
+	// cout << "testing value" << endl;
 	Key test;
 	succeed_if (test.getString () == "", "String should be empty");
 
@@ -397,6 +397,11 @@ TEST (key, name)
 	succeed_if (!test.isDirectBelow (Key ("user/dir/otherdir", KEY_END)), "key is not direct below");
 	succeed_if (!test.isDirectBelow (Key ("user/otherdir", KEY_END)), "key is not direct below");
 	succeed_if (!test.isDirectBelow (Key ("user", KEY_END)), "key is not direct below");
+
+	test.setName ("system/elektra");
+	succeed_if (test.isBelow (Key ("system", KEY_END)), "system/elektra is not below system");
+	test.setName ("system");
+	succeed_if (!test.isBelow (Key ("system/elektra", KEY_END)), "system is below system/elektra");
 }
 
 void f (Key)
@@ -570,7 +575,7 @@ TEST (key, keynamespace)
 {
 	succeed_if (Key ("user", KEY_END).getNamespace () == "user", "namespace wrong");
 	succeed_if (Key ("user/a", KEY_END).getNamespace () == "user", "namespace wrong");
-	std::cout << Key ("user/a", KEY_END).getNamespace () << std::endl;
+	// std::cout << Key ("user/a", KEY_END).getNamespace () << std::endl;
 	succeed_if (Key ("user/a/b/c", KEY_END).getNamespace () == "user", "namespace wrong");
 	succeed_if (Key ("user/a/../..", KEY_END).getNamespace () == "user", "namespace wrong");
 	succeed_if (Key ("user/a/../../x/f/v", KEY_END).getNamespace () == "user", "namespace wrong");

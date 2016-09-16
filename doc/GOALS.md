@@ -53,12 +53,18 @@ Special care for simplicity is taken for the users:
 
 Configuration Systems today suffer badly from:
 
+- different behaviour on different systems
 - weak input validation
 - faulty transformations from strings to other types
 - no error messages
 - undefined behaviour
+- migration from one version to another
 
-We want to tackle this problem.
+We want to tackle this problem by introducing an abstraction layer where
+all these problems can be dealt with. The goal is that code changes
+are necessary only within Elektra and not in the applications using
+Elektra! This makes your code not only portable towards more systems,
+but also enables global improvements in the configuration systems.
 
 
 3.) Extensibility

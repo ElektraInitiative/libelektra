@@ -273,6 +273,112 @@ TEST_F (test_contextual_update, notifyAssignKeySetUpdateLayerActivate)
 	EXPECT_EQ (ks.at (5).getString (), "144");
 }
 
+TEST_F (test_contextual_update, activateLayersByCV)
+{
+	EXPECT_EQ (c["doesnotexist"], "");
+	EXPECT_EQ (c["id"], "");
+	EXPECT_EQ (c["key"], "");
+	ASSERT_EQ (x.getName (), "/%/key");
+	EXPECT_EQ (ks.at (0).getName (), "/%/key");
+	EXPECT_EQ (ks.at (0).getString (), "33");
+
+	c.activate (x);
+	ASSERT_EQ (x.getName (), "/%/key");
+	EXPECT_EQ (c["key"], "33");
+	EXPECT_EQ (c["id"], "");
+
+	c.activate (i);
+	ASSERT_EQ (x.getName (), "/my/key") << "spec should be changed";
+	EXPECT_EQ (c["id"], "my");
+	EXPECT_EQ (c["key"], "33") << "must be still 33, not synced";
+
+	x = 5;
+	EXPECT_EQ (c["key"], "5") << "direct assignment";
+	EXPECT_EQ (c["id"], "my");
+
+	i = "other";
+	ASSERT_EQ (x.getName (), "user/my/key") << "spec should still refer to my";
+	EXPECT_EQ (c["id"], "other");
+	EXPECT_EQ (c["key"], "5") << "must be still 5, not synced";
+
+	ASSERT_GE (ks.size (), 5);
+	EXPECT_EQ (ks.size (), 5);
+	EXPECT_EQ (ks.at (0).getName (), "/%/key");
+	EXPECT_EQ (ks.at (0).getString (), "33");
+	EXPECT_EQ (ks.at (1).getName (), "/ignore/id");
+	EXPECT_EQ (ks.at (1).getString (), "my");
+	EXPECT_EQ (ks.at (2).getName (), "/my/key");
+	EXPECT_EQ (ks.at (2).getString (), "33");
+	EXPECT_EQ (ks.at (3).getName (), "user/ignore/id");
+	EXPECT_EQ (ks.at (3).getString (), "other");
+	EXPECT_EQ (ks.at (4).getName (), "user/my/key");
+	EXPECT_EQ (ks.at (4).getString (), "5");
+
+	c.sync ();
+	ASSERT_EQ (x.getName (), "/other/key") << "spec should refer to other after sync";
+	EXPECT_EQ (c["id"], "other");
+	EXPECT_EQ (c["key"], "33") << "must be still 5, not synced";
+
+	i = "my";
+	ASSERT_EQ (x.getName (), "/other/key") << "sync pending";
+	EXPECT_EQ (c["id"], "my");
+	EXPECT_EQ (c["key"], "33");
+
+	c.sync ();
+	ASSERT_EQ (x.getName (), "user/my/key") << "sync done";
+	EXPECT_EQ (c["id"], "my");
+	EXPECT_EQ (c["key"], "5") << "not synced properly";
+
+	ks.append (Key ("user/my/key", KEY_VALUE, "99", KEY_END));
+
+	c.sync ();
+	ASSERT_EQ (x.getName (), "user/my/key");
+	EXPECT_EQ (c["id"], "my");
+	EXPECT_EQ (c["key"], "99") << "not synced properly";
+
+
+	i = "";
+	ASSERT_EQ (x.getName (), "user/my/key") << "key pending";
+	EXPECT_EQ (c["id"], "") << "but layer should be changed";
+	EXPECT_EQ (c["key"], "99") << "still 99, not synced";
+
+	c.sync ();
+	EXPECT_EQ (c["id"], "");
+	EXPECT_EQ (c["key"], "33") << "go back to old value because of sync";
+
+	ASSERT_GE (ks.size (), 6);
+	EXPECT_EQ (ks.size (), 6);
+	EXPECT_EQ (ks.at (0).getName (), "/%/key");
+	EXPECT_EQ (ks.at (0).getString (), "33");
+	EXPECT_EQ (ks.at (1).getName (), "/ignore/id");
+	EXPECT_EQ (ks.at (1).getString (), "my");
+	EXPECT_EQ (ks.at (2).getName (), "/my/key");
+	EXPECT_EQ (ks.at (2).getString (), "33");
+	EXPECT_EQ (ks.at (3).getName (), "/other/key");
+	EXPECT_EQ (ks.at (3).getString (), "33");
+	EXPECT_EQ (ks.at (4).getName (), "user/ignore/id");
+	EXPECT_EQ (ks.at (4).getString (), "");
+	EXPECT_EQ (ks.at (5).getName (), "user/my/key");
+	EXPECT_EQ (ks.at (5).getString (), "99");
+
+	i = "hello";
+	EXPECT_EQ (c["id"], "hello");
+	EXPECT_EQ (c["key"], "33");
+
+	c.deactivate (i);
+	EXPECT_EQ (c["id"], "");
+	EXPECT_EQ (c["key"], "33");
+
+	c.deactivate (x);
+	EXPECT_EQ (c["id"], "");
+	EXPECT_EQ (c["key"], "");
+
+	i = "hi_again";
+	EXPECT_EQ (c["id"], "");
+	EXPECT_EQ (c["key"], "");
+}
+
+
 TEST_F (test_contextual_update, notifyAssignKeySetUpdateMore)
 {
 	ThreadValue<std::string> j (

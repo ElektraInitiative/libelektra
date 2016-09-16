@@ -1,6 +1,235 @@
-# 0.8.17 Release
+# 0.8.18 Release
 
-In preparation and not yet released!
+Release did not happen yet but is expected for today!
+
+- guid: 190576e0-9fef-486e-b8da-c4e75be08329
+- author: Markus Raab
+- pubDate: Fri, 16 Sep 2016 23:31:27 +0200
+
+
+
+## What is Elektra?
+
+Elektra serves as a universal and secure framework to access configuration
+parameters in a global, hierarchical key database.
+For a small demo see here:
+
+[![asciicast](https://asciinema.org/a/cantr04assr4jkv8v34uz9b8r.png)](https://asciinema.org/a/cantr04assr4jkv8v34uz9b8r)
+
+## Highlights
+
+- Intercept open syscalls which allows Elektra to dynamically
+  generate config files from its database
+- Experimental version of cryptographic plugins
+- A new zsh completion file (next to the bash completion file)
+- Gitresolver allows to directly read and write config files
+  from git instead of files present in the file system.
+- Survey completed successfully (and debts paid), we now
+  prepare raw data
+
+
+### Crypto Plugin
+
+Gpg is now used to decrypt a master password, which is used
+by the individual crypto backends.
+
+Furthermore, a new [botan](https://botan.randombit.net) backend
+was implemented.
+
+[See here](http://git.libelektra.org/tree/master/src/plugins/crypto)
+
+Thanks to Peter Nirschl.
+
+
+### Open Interception
+
+When Elektra directly modifies config files which are on the disc,
+and applications read the config files without Elektra, Elektra has
+no control over the access, e.g. we cannot dynamically calculate
+values. To avoid this, we wrote a library that
+intercepts the `open`-call.
+
+Together with the `mozprefs` plugin, we got control over the configuration
+of Firefox and can dynamically change config values with all possibilities
+Elektra provides.
+
+For easy setup, we implemented the script `configure-firefox`.
+
+[See here](http://git.libelektra.org/tree/master/src/bindings/intercept)
+
+Thanks to Thomas Waser.
+
+
+### Resolver
+
+Resolvers in Elektra are the code that are responsible to determine where
+content should be read from and stored to. They are independent of the
+actual configuration file syntax.
+
+The [gitresolver](http://git.libelektra.org/tree/master/src/plugins/gitresolver)
+allows you to get/store config data in git.
+
+The [blockresolver](http://git.libelektra.org/tree/master/src/plugins/blockresolver)
+allows Elektra to take control of parts of the configuration
+file. This is useful for config files such as vim or zsh, which contain
+program code. The plugin allows you to split config files with special markers
+into parts containing code and others controlled by Elektra.
+
+
+### zsh completion
+
+Added zsh completion file, and a script (`kdb install-sh-completion`)
+that installs bash+zsh completion when the default installation places
+do not work (e.g. for Mac OS X).
+
+Thanks to Sebastian Bachmann.
+
+
+## Documentation
+
+- fix kdb-import man page, thanks to Kurt Micheli
+- mark keyIsSystem/keyIsUser as internal
+- fix doxygen reference to example
+- better document that `global-mount` or `gmount` will overwrite
+  previously mounted global plugins
+- fix spelling mistake, thanks to René Schwaiger
+- Wrote tutorial how to use Elektra-python bindings,
+  thanks to Ulrike Schäfer
+
+
+## Quality
+
+- shell recorder test cases now run during `make test`, thanks to Kurt
+  Micheli and René Schwaiger
+- find-tools now pep and pyflakes happy, thanks to Kurt Micheli
+- fix bashism, thanks to Thomas Waser and Kurt Micheli
+- better error message for conditionals plugin, thanks to Thomas Waser
+- better error message for augeas plugin, thanks to Felix Berlakovich
+- Many compilation warnings fixed, thanks to Gabriel Rauter, Thomas Waser
+- GSettings: fix double free, thanks to Gabriel Rauter
+- Fix external links and add an external link checker,
+  thanks to Kurt Micheli
+- Fix openwrt/musl warnings with wrong printf format, thanks to
+  Thomas Waser
+- Fix NODEP metadata, allows you to build all plugins that do not
+  have dependencies.
+
+
+## Compatibility
+
+As always, the ABI and API of kdb.h is fully compatible, i.e. programs
+compiled against an older 0.8 version of Elektra will continue to work
+(ABI) and you will be able to recompile programs without errors (API).
+
+### Libtools
+
+Libtools got a new major version (SOVERSION 0 -> 1):
+
+- resolveRecommends was never implemented and was now removed
+- backend/plugin configs are now validated by plugins (needed
+  by gpg plugin, which checks if wrong key IDs are supplied during mount)
+
+### Plugins
+
+The plugins conditionals and mathcheck are incompatible because of changes
+in syntax.
+
+## Development
+
+- github descriptions+workflow (showed when creating PRs and issues)
+- new trigger phases for github, see
+  [doc/GIT](http://git.libelektra.org/tree/master/doc/GIT.md)
+  thanks to Mihael Pranjić
+- valgrind suppressions are great again, thanks to Peter Nirschl
+- Plugins get a new namespace `internal` which can be used for meta-data
+  that is not relevant for other plugins.
+- kdberrors.h is only generated once, which allows us to use other build
+  systems, thanks to René Schwaiger
+- `INCLUDE_SYSTEM_DIRECTORIES` in add_plugin allows you to add a include
+  path where warnings are suppressed (useful for boost).
+- `infos/provides` now allows multiple entries
+
+## Packaging
+
+- Plugin-provider `CRYPTO` can be used to enable/disable all crypto
+  plugin variants.
+- Config option `ENABLE_OPTIMIZATIONS`, enable by default: trade more
+  memory for speed (can be turned off on embedded systems)
+- `INSTALL_SYSTEM_FILES` is now off by default on Mac OS X.
+- bash-completion is installed to where pkg-config tells us,
+  thanks to Gabriel Rauter
+  (fallback is now `/usr/share/bash-completion/completions/kdb`)
+  was `/etc/bash_completion.d/kdb` (removed)
+- zsh is now installed to `/usr/share/zsh/vendor-completions/_kdb`
+  (except for Darwin)
+- removed /etc/profile.d/kdb.sh: the script `elektraenv.sh` was
+  removed (and is no longer installed)
+- added scripts install-sh-completion configure-firefox elektrify-open
+- added plugins libelektra-blockresolver.so  libelektra-boolean.so
+  libelektra-crypto_botan.so libelektra-crypto_openssl.so
+  libelektra-desktop.so libelektra-mozprefs.so libelektra-passwd.so
+- added tests testmod_blockresolver testmod_boolean
+  testmod_crypto_botan testmod_crypto
+  gcrypt testmod_crypto_openssl testmod_mozprefs testmod_passwd
+  test_opmphm_vheap test_opmphm_vstack
+- added test data blockresolver mozprefs passwd
+
+## Other
+
+- Conditionals and mathcheck plugins got support to specify relative
+  keys, thanks to Thomas Waser
+- `kdb` command-list: commands are written in bold
+- GSettings backend can be build standalone, thanks to Gabriel Rauter
+- first data structures for order preserving minimal perfect hash map,
+  thanks to Kurt Micheli
+- added a new passwd plugin, thanks to Thomas Waser
+- [boolean]((http://git.libelektra.org/tree/master/src/plugins/boolean)
+  plugin to normalize boolean values, thanks to Thomas Waser
+- [desktop](http://git.libelektra.org/tree/master/src/plugins/desktop)
+  plugin to detect which desktop currently is running (supports kde,
+  gnome, tde, unity or any other XDG conformant desktop)
+- `doc/paper` contains some info for [joss](https://github.com/openjournals/joss)
+
+
+## Get It!
+
+You can download the release from
+[here](http://www.libelektra.org/ftp/elektra/releases/elektra-0.8.18.tar.gz)
+and also [here on github](https://github.com/ElektraInitiative/ftp/tree/master/releases/elektra-0.8.18.tar.gz)
+
+<<`scripts/generate-hashsums`>>
+
+This release tarball now is also available
+[signed by me using gpg](http://www.libelektra.org/ftp/elektra/releases/elektra-0.8.18.tar.gz.gpg)
+
+already built API-Docu can be found [here](http://doc.libelektra.org/api/0.8.18/html/)
+
+
+## Stay tuned! ##
+
+Subscribe to the
+[RSS feed](http://doc.libelektra.org/news/feed.rss)
+to always get the release notifications.
+
+For any questions and comments, please contact the
+[Mailing List](https://lists.sourceforge.net/lists/listinfo/registry-list)
+the issue tracker [on github](http://git.libelektra.org/issues)
+or by email elektra@markus-raab.org.
+
+[Permalink to this NEWS entry](http://doc.libelektra.org/news/190576e0-9fef-486e-b8da-c4e75be08329.html)
+
+For more information, see [http://libelektra.org](http://libelektra.org)
+
+
+
+
+
+
+
+
+
+
+# 0.8.17 Release
 
 - guid: e6153a39-c4bd-41c3-bc86-785d451eb6c5
 - author: Markus Raab
@@ -16,7 +245,7 @@ person we are looking for.
 
 It would be a great help if you take this survey:
 
-http://elektra.limequery.org/625192
+[survey](http://elektra.limequery.org/625192)
 
 It will be available till 18.07.2016 (anywhere on earth).
 
@@ -46,12 +275,16 @@ The three main points relevant for most people are:
    - use the value of other configuration values (symbolic links)
    - calculate the values based on other configuration values
    - validation configuration files
-   - [generate code based on it](/src/tools/gen)
-   - [and much more](/src/plugins/README.md)
+   - [generate code based on it](https://github.com/elektrainitiative/libelektra/tree/master/src/tools/gen)
+   - [and much more](https://github.com/elektrainitiative/libelektra/tree/master/src/plugins/README.md)
 
-Read more about [Why using Elektra](/doc/WHY.md),
+Read more about [Why using Elektra](https://github.com/elektrainitiative/libelektra/tree/master/doc/WHY.md),
 which also contains since this release unique features,
 further reasons and limitations.
+
+For a small demo see here
+
+[![asciicast](https://asciinema.org/a/cantr04assr4jkv8v34uz9b8r.png)](https://asciinema.org/a/cantr04assr4jkv8v34uz9b8r)
 
 ## Highlights
 
@@ -68,15 +301,15 @@ further reasons and limitations.
 
 In this release starting developing Elektra gets easier:
 
-- ELEKTRA_DEBUG adds run-time checks and makes stack traces
+- `ELEKTRA_DEBUG` adds run-time checks and makes stack traces
   as if Elektra would not use plugins
-- CMakeLists.txt for plugins got simplified, in most cases it
+- `CMakeLists.txt` for plugins got simplified, in most cases it
   should be not more than calling a single function,
-  even if unit tests are present
+  even if unit tests and test data are present
 - We prepared [beginner friendly tasks](https://github.com/ElektraInitiative/libelektra/issues?q=is%3Aissue+is%3Aopen+label%3A%22beginner+friendly%22)
   for you.
 
-For details, see below.
+For details about `ELEKTRA_DEBUG` and cmake, see individual points below.
 
 
 
@@ -92,15 +325,15 @@ the scripts.
    * `kdb find-tools -d DATE` to search for a creation date.
    * `kdb find-tools -e EXECUTE` to search for a type.
 
-Developers should now [add MetaData for their scripts.](https://github.com/elektrainitiative/libelektra/tree/scripts/README.md).
+Developers should now [add MetaData for their scripts.](https://github.com/elektrainitiative/libelektra/tree/master/scripts/README.md).
 
 Thanks to Kurt Micheli!
 
 ## Mac OS X Support
 
-Because of its POSIX support one might think it would be trivial
-to support Mac OS X. Unfortunately there were many small issues,
-especially in the regular expression handling and the filesystem.
+Because of its POSIX support one might think it would be trivial to
+support Mac OS X. Unfortunately there were many small issues, especially
+in the regular expression handling and the filesystem.
 
 Nevertheless we finally fully support Mac OS X and the newly added
 travis build server makes sure it will stay this way.
@@ -117,15 +350,15 @@ issues and setting up travis:
 
 ## jenkins
 
-Now (nearly) every build job can be triggered from Pull Requests
-making it. For example:
+Now (nearly) every build job can be triggered from Pull Requests.
+For example:
 
 * jenkins build [git-buildpackage-jessie](http://build.libelektra.org:8080/job/elektra-git-buildpackage-jessie/) please
 * jenkins build [git-buildpackage-wheezy](http://build.libelektra.org:8080/job/elektra-git-buildpackage-wheezy/) please
 * jenkins build [icc](http://build.libelektra.org:8080/job/elektra-icc/) please
 * jenkins build [local-installation](http://build.libelektra.org:8080/job/elektra-local-installation/) please
 
-For a full list see [here](https://github.com/elektrainitiative/libelektra/tree/doc/GIT.md).
+For a full list see [here](https://github.com/elektrainitiative/libelektra/tree/master/doc/GIT.md).
 
 Thanks to Mihael Pranjić for the setup!
 
@@ -204,7 +437,7 @@ and fixes:
   thanks to Kurt Micheli
 
 See more about changes to plugin adding in cmake in the
-[plugin decision](https://github.com/elektrainitiative/libelektra/tree/cmake_plugins.md).
+[plugin decision](https://github.com/elektrainitiative/libelektra/tree/master/doc/decisions/cmake_plugins.md).
 
 ## Experimental GSettings support
 
@@ -225,7 +458,7 @@ This includes notification support if you have your `/sw` mounted with the dbus 
 Please report any bugs you encounter.
 
 For further information regarding the status of the implementations
-please refer to the corresponding [README](https://github.com/elektrainitiative/libelektra/tree/gsettings-backend/src/bindings/gsettings)
+please refer to the corresponding [README](https://github.com/elektrainitiative/libelektra/tree/master/src/bindings/gsettings)
 and [ticket](https://github.com/ElektraInitiative/libelektra/issues/775).
 
 ## Common Provider Names
@@ -326,9 +559,9 @@ This helps to spot the important information immediately without sacrificing
 information that would be important for a detailed analysis.
 
 Every tool now has the option `--color` and `-C` which is set to `auto` per default.
-By writing to
+By writing to:
 
-    kdb set +kdb/color off
+    kdb set user/sw/elektra/kdb/#0/color off
 
 one can go back to previous behavior.
 
@@ -337,7 +570,7 @@ one can go back to previous behavior.
 
 - improve documentation about how to pop a key
 - document how to avoid running test cases as root in
-  [TESTING.md](https://github.com/elektrainitiative/libelektra/tree/doc/TESTING.md).
+  [TESTING.md](https://github.com/elektrainitiative/libelektra/tree/master/doc/TESTING.md).
 - document guarantees of `elektraPluginGetData`,
   thanks to Marvin Mall
 - doc mentions that -1 should be returned
@@ -345,49 +578,50 @@ one can go back to previous behavior.
 - many more spelling mistakes were fixed and useless whitespace was removed,
   thanks to René Schwaiger
 - describe preferences when plugins are included/excluded
-- improvements in `ksCopy`, `ksPop`, `kdbGet` and `kdbSet` API description
-- added [WHY document](https://github.com/elektrainitiative/libelektra/tree/doc/WHY.md)
-- updated [plugin decision](https://github.com/elektrainitiative/libelektra/tree/cmake_plugins.md) to include 3rd phase
+- improvements in `ksCopy`, `ksPop`, `kdbGet` and `kdbSet`
+  [API description](http://doc.libelektra.org/api/0.8.17/html/)
+- added [WHY document](https://github.com/elektrainitiative/libelektra/tree/master/doc/WHY.md)
+- updated [plugin decision](https://github.com/elektrainitiative/libelektra/tree/master/doc/decisions/cmake_plugins.md) to include 3rd phase
 
 ## ELEKTRA_DEBUG build
 
 ENABLE_DEBUG now enables a debug build for Elektra.
-It has nothing to do with debug symbols, but with:
+It has nothing to do with debug symbols, but:
 
-- it enables the internal assertions
+- it enables assertions
 - it enables [undefinied behavior sanitizer](http://clang.llvm.org/docs/UndefinedBehaviorSanitizer.html)
+  for clang
 - plugins will not be closed so that stack traces are more useful
-  (using RTLD_NODELETE)
+  (using `RTLD_NODELETE`)
 
-ENABLE_DEBUG is recommended for every developer, even if you are not
+`ENABLE_DEBUG` is recommended for every developer, even if you are not
 modifying Elektra itself. The assertions will give you hints on API misusage.
 
-For example, `keyNew` was known to be error-prone. ENABLE_DEBUG now will report
+For example, `keyNew` was known to be error-prone. `ENABLE_DEBUG` now will report
 wrong parameters by an assertion.
 
-The old options ELEKTRA_DEBUG and ELEKTRA_VERBOSE are not available anymore.
+The old options `ELEKTRA_DEBUG` and `ELEKTRA_VERBOSE` are not available anymore.
 
 Thanks to:
-- Thomas Waser for pointing to RTLD_NODELETE
-- Gabriel Rauter for fixing qt-gui with -DENABLE_DEBUG=ON
+- Thomas Waser for pointing to `RTLD_NODELETE`
+- Gabriel Rauter for fixing qt-gui with `-DENABLE_DEBUG=ON`
 
 
-The constants plugin was updated to provide cmake/ENABLE_LOGGER cmake/ENABLE_DEBUG
-and will no longer provide cmake/ELEKTRA_DEBUG_BUILD cmake/ELEKTRA_VERBOSE_BUILD
+The constants plugin was updated to provide `cmake/ENABLE_LOGGER` `cmake/ENABLE_DEBUG`
+and will no longer provide `cmake/ELEKTRA_DEBUG_BUILD` `cmake/ELEKTRA_VERBOSE_BUILD`
 
 
 ## Other
 
 - Gabriel Rauter is now listed in
-  [AUTHORS](https://github.com/elektrainitiative/libelektra/tree/doc/AUTHORS)
-- libtool: remove not-implemented function resolveRecommends from header-file.
+  [AUTHORS](https://github.com/elektrainitiative/libelektra/tree/master/doc/AUTHORS)
 - constants plugin: configure_file now uses current binary directory, not cluttering
   the main build directory.
 - fix ssize_t for VS2015,
   thanks to Gabriel Rauter
 - gtest: fix linking when using arch systemd-nspawn,
   thanks to Marvin Mall
-- LD_LIBRARY_PATH is added to lua and python bindings needed for Mac OS X,
+- `LD_LIBRARY_PATH` is added to lua and python bindings needed for Mac OS X,
   thanks to Mihael Pranjić
 - Fix external unit test for Ubuntu 15.04 by putting files before
   the flags,
@@ -402,8 +636,8 @@ and will no longer provide cmake/ELEKTRA_DEBUG_BUILD cmake/ELEKTRA_VERBOSE_BUILD
   format specifier of time_t more portable,
   thanks to René Schwaiger
 - many preparations for global plugins and mmap
-- in the constants plugin cmake/BUILTIN_PLUGIN_FOLDER, BUILTIN_DATA_FOLDER
-  and BUILTIN_EXEC_FOLDER were added.
+- in the constants plugin `cmake/BUILTIN_PLUGIN_FOLDER`, `BUILTIN_DATA_FOLDER`
+  and `BUILTIN_EXEC_FOLDER` were added.
 - doxygen is only run once during build,
   thanks to René Schwaiger
 - add script configure-home to build Elektra
@@ -423,7 +657,7 @@ and will no longer provide cmake/ELEKTRA_DEBUG_BUILD cmake/ELEKTRA_VERBOSE_BUILD
 As always, the ABI and API is fully forward- and backward-compatible, i.e. programs
 compiled against an older 0.8 version of Elektra will continue to work
 (ABI) and you will be able to recompile every program without errors
-(API). You can even compile programs against 0.8.17 and run with 0.8.16.
+(API). This time you can even compile programs against 0.8.17 and run with 0.8.16.
 
 For the qt-gui the svg module is added as dependency.
 
@@ -443,11 +677,14 @@ Renamed files:
 - `applications/org.elektra.elektra-qt.desktop` got renamed to
   `applications/org.libelektra.elektra-qt-editor.desktop`.
 
-(Temporarily) removed files:
+Removed files:
 
 - Some of the installed "test data" actually was source code from
   Elektra. Test data from the following plugins is affected:
   `hosts`, `ini`, `lineendings`, 
+
+Temporarily removed files:
+
 - `testmod_lua`, `testmod_python` and `testmod_python2` do not work in a shared build
   and are temporarily disabled if `BUILD_SHARED` is enabled.
   Also their test data is affected.
@@ -457,9 +694,13 @@ Renamed files:
 
 You can download the release from
 [here](http://www.libelektra.org/ftp/elektra/releases/elektra-0.8.17.tar.gz)
-and now also [here on github](https://github.com/ElektraInitiative/ftp/tree/master/releases/elektra-0.8.17.tar.gz)
+and also [here on github](https://github.com/ElektraInitiative/ftp/tree/master/releases/elektra-0.8.17.tar.gz)
 
 - name: elektra-0.8.17.tar.gz
+- size: 2459542
+- md5sum: e53efdb9a5e0852c58b21280b1e6c07d
+- sha1: a1abcd4ac5aabfc60c34da98a02c4636e4634b5c
+- sha256: a6a41afb0160feef84f7d1e0d199da26022ff8cb52ed455a0d306b589838d8f5
 
 
 This release tarball now is also available
@@ -477,11 +718,18 @@ to always get the release notifications.
 For any questions and comments, please contact the
 [Mailing List](https://lists.sourceforge.net/lists/listinfo/registry-list)
 the issue tracker [on github](http://git.libelektra.org/issues)
-or by mail elektra@markus-raab.org.
+or by email elektra@markus-raab.org.
 
 [Permalink to this NEWS entry](http://doc.libelektra.org/news/e6153a39-c4bd-41c3-bc86-785d451eb6c5.html)
 
 For more information, see [http://libelektra.org](http://libelektra.org)
+
+Best regards,
+Markus
+
+
+
+
 
 
 
@@ -2005,7 +2253,7 @@ or by mail elektra@markus-raab.org.
 For more information, see [http://libelektra.org](http://libelektra.org)
 
 Btw. the whole release happened with
-[elektrify-getenv](http://libelektra.org/blob/master/src/libgetenv/README.md)
+[elektrify-getenv](http://libelektra.org/blob/master/src/libs/getenv/README.md)
 enabled.
 
 Best regards,
@@ -2109,7 +2357,7 @@ applications would decide differently, e.g.:
 - it uses mutex for multi-threading safety
 - the API getenv(3) only returns `char*` and has no support for other data types
 
-For more information see [src/libgetenv/README.md](http://git.libelektra.org/blob/master/src/libgetenv/README.md)
+For more information see [src/libgetenv/README.md](http://git.libelektra.org/blob/master/src/libs/getenv/README.md)
 
 
 
@@ -2130,7 +2378,7 @@ in all bindings:
  - [jna (java)](http://git.libelektra.org/blob/master/src/bindings/jna/HelloElektra.java)
  - [lua](http://git.libelektra.org/blob/master/src/bindings/swig/lua/tests/test_key.lua)
  - [python2](http://git.libelektra.org/blob/master/src/bindings/swig/python2/tests/testpy2_key.py)
- - [python3](http://git.libelektra.org/blob/master/src/bindings/swig/python3/tests/test_key.py)
+ - [python3](http://git.libelektra.org/blob/master/src/bindings/swig/python/tests/test_key.py)
 
 Other small changes/additions in bindings:
 

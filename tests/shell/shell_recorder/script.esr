@@ -1,0 +1,26 @@
+Storage: dump
+Mountpoint: system/testmount/test
+File: /tmp/test.dump
+MountArgs:
+DiffType: File
+
+< set $Mountpoint/test bla
+
+RET: 0
+< mount $File $Mountpoint $Storage
+
+RET: 0
+< set $Mountpoint teststring
+
+< set $Mountpoint/testkey testval
+
+< get $Mountpoint/testkey
+
+STDOUT: test.?ey
+< ls $Mountpoint
+
+< setmeta $Mountpoint/testkey metacomment "comment blaa"
+
+< get $Mountpoint/michgibtsgarnicht
+
+< umount $Mountpoint

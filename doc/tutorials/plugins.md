@@ -23,6 +23,7 @@ Additionally, there is one more function called
 [ELEKTRA_PLUGIN_EXPORT](http://doc.libelektra.org/api/current/html/group__plugin.html#gabe78724d2d477eef39997fd9b85bff16),
 where once again `Plugin` should be replaced with the name of the plug-in, this time in lower-case. So for my line plugin this function would be
 `ELEKTRA_PLUGIN_EXPORT(line)`.
+The developer may define elektraPluginCheckConf() if configuration validation at mount time is desired.
 
 The KDB relies on the first five functions for interacting with configuration files stored in the key database.
 Calls for kdbGet() and kdbClose() will call the functions elektraPluginGet() and elektraPluginClose() respectively for the
@@ -321,6 +322,38 @@ parentKey is available.
 The `elektraPluginOpen` and `elektraPluginClose` functions are not commonly used for storage plug-ins, but they can be useful and are worth
 reviewing. `elektraPluginOpen` function runs before `elektraPluginGet` and is useful to do initialization if necessary for the plug-in. On the other
 hand `elektraPluginClose` is run after other functions of the plug-in and can be useful for freeing up resources.
+
+### elektraPluginCheckConf ###
+
+The `elektraPluginCheckConf` function may be used for validation of the plugin configuration during mount time. The signature of the function is:
+
+	int elektraLineCheckConfig (Key * errorKey, KeySet * conf)
+
+The configuration of the plugin is provided as `conf`. The function may report an error or warnings using the `errorKey` and the return value.
+
+The following convention was established for the return value of `elektraPluginCheckConf`:
+
+- 0: The configuration was OK and has not been changed
+- 1: The configuration has been changed and now it is OK
+- -1: The configuration was not OK and could not be fixed. An error has to be set to errorKey.
+
+The following example demonstrates how to limit the length of the values within the plugin configuration to 3 charaters.
+
+	int elektraLineCheckConfig (Key * errorKey, KeySet * conf)
+	{
+		Key * cur;
+		ksRewind (conf);
+		while ((cur = ksNext (conf)) != 0)
+		{
+			const char * value = keyString (cur);
+			if (strlen (value) > 3)
+			{
+				ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_VALUE_LENGTH, errorKey, "value %s is more than 3 characters long", value);
+				return -1; // The configuration was not OK and could not be fixed
+			}
+		}
+		return 0; // The configuration was OK and has not been changed
+	}
 
 ### ELEKTRA_PLUGIN_EXPORT ###
 

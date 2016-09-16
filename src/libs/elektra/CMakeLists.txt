@@ -50,6 +50,12 @@ file (GLOB SRC_FILES *.c)
 file (GLOB RM_FILES exportsymbols.c kdbmainpage.c)
 list (REMOVE_ITEM SRC_FILES ${RM_FILES} ${WIN32_RM_FILES})
 
+#remove the opmphm files
+if (NOT ENABLE_OPTIMIZATIONS)
+	file (GLOB OPMPHM_FILES opmphm*.c)
+	list (REMOVE_ITEM SRC_FILES ${OPMPHM_FILES})
+endif (NOT ENABLE_OPTIMIZATIONS)
+
 #now add all source files of other folders
 get_property (elektra_SRCS GLOBAL PROPERTY elektra_SRCS)
 list (APPEND SRC_FILES ${elektra_SRCS})
@@ -70,6 +76,7 @@ if (BUILD_SHARED)
 
 	get_property (elektra-shared_SRCS GLOBAL PROPERTY elektra-shared_SRCS)
 	add_library (elektra-core SHARED ${CORE_FILES} ${elektra-shared_SRCS})
+	add_dependencies (elektra-core kdberrors_generated)
 
 	get_property (elektra-shared_LIBRARIES GLOBAL PROPERTY elektra-shared_LIBRARIES)
 	target_link_libraries (elektra-core ${elektra-shared_LIBRARIES})
@@ -81,6 +88,7 @@ if (BUILD_SHARED)
 
 
 	add_library (elektra-kdb SHARED ${KDB_FILES})
+	add_dependencies (elektra-kdb kdberrors_generated)
 	target_link_libraries (elektra-kdb elektra-core)
 
 
@@ -89,6 +97,7 @@ if (BUILD_SHARED)
 	#message(STATUS "ignore the following ADD_LIBRARY warning")
 	#add_library (elektra INTERFACE) # no SOVERSION?
 	add_library (elektra SHARED  ${KDB_FILES} ${CORE_FILES}  ${elektra-shared_SRCS})
+	add_dependencies (elektra kdberrors_generated)
 	get_property (elektra-extension_LIBRARIES GLOBAL PROPERTY elektra-extension_LIBRARIES)
 	target_link_libraries (elektra ${elektra-shared_LIBRARIES})
 	#target_link_libraries (elektra ${elektra-extension_LIBRARIES})
@@ -144,6 +153,7 @@ endif (BUILD_FULL OR BUILD_STATIC)
 
 if (BUILD_FULL)
 	add_library (elektra-full SHARED ${SOURCES})
+	add_dependencies (elektra-full kdberrors_generated)
 
 	target_link_libraries (elektra-full ${elektra-full_LIBRARIES})
 
@@ -167,6 +177,7 @@ endif (BUILD_FULL)
 
 if (BUILD_STATIC)
 	add_library (elektra-static STATIC ${SOURCES})
+	add_dependencies (elektra-static kdberrors_generated)
 
 	target_link_libraries (elektra-static ${elektra-full_LIBRARIES})
 

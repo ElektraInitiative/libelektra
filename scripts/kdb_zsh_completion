@@ -1,0 +1,304 @@
+#compdef kdb
+# This file needs to be renamed to _kdb to work and must be in the $fpath
+#
+# ZSH completion file for KDB
+#
+# Sebastian Bachmann <hello@reox.at>, 2016
+
+_kdb_paths () {
+    # It seems this is enough to get all keys into the compsystem
+
+    # TODO
+    # Some paths only have a single possible completion.
+    # like if there is no other path starting with s/foo/bar and 
+    # s/foo/bar/sdf/baz/bar/xxx is the only leaf, we can complete for this directly
+
+    typeset -a paths
+    # Count the number of slashes to know where we are
+    # TODO this seems to be not working in a zsh without configuratin
+    # e.g. my configuration does something weird.
+    # it should be ${#PREFIX//[^\/]/}
+    slashes=${#PREFIX//[^\\\/]/}
+    if [ $slashes -eq 0 ]; then
+        # If no slashes, we perfom search on /
+        paths=($(kdb ls / | cut -d "/" -f 1 | uniq))
+    else
+        # Check if key is a leaf
+        # TODO how we can get rid of the trailing / then?
+        kdb ls / | grep -q -e "^${PREFIX}$"
+        if [ $? -eq 0 ]; then
+            _message "$PREFIX is a leaf."
+            return
+        fi
+        kdb ls / | grep -q -e "^$PREFIX"
+        if [ $? -ne 0 ]; then
+            # TODO need to check here for the key w/o /. 
+            # probably move into a function
+            kdb ls / | grep -q -e "^${PREFIX:0:-1}$"
+            if [ $? -eq 0 ]; then
+                _message "${PREFIX:0:-1} is a leaf."
+                return
+            fi
+            _message -e "Could not find $PREFIX as a valid path"
+        fi
+
+        # We need to check if the last char is a /
+        # If not, we remove the garbled part at the end and search from there.
+        if [[ ${PREFIX[-1]} == "/" ]]; then
+            paths=($(kdb ls $PREFIX | cut -d "/" -f -$(( slashes + 1 )) ))
+        else
+            pre=$(cut -d "/" -f -$slashes <<< $PREFIX)
+            paths=($(kdb ls $pre | cut -d "/" -f -$(( slashes + 1 )) ))
+        fi
+
+    fi
+    # TODO an approximate form would be nice, so we can correct for user input
+    _values -s / 'kdb path' $paths
+}
+
+# These are the functions for each command
+_kdb-check () {
+    # TODO [plugin]
+}
+
+_kdb-convert () {
+    # TODO [import format] [export format] [import file] [export file]
+}
+
+_kdb-cp () {
+    # TODO src dst
+    _kdb_paths
+}
+
+_kdb-export () {
+    # TODO src [format]
+    _kdb_paths
+}
+
+_kdb-file () {
+    # TODO path
+    _kdb_path
+}
+
+_kdb-fstab () {
+    # TODO key-path fs_spec fs_file fs_vfstype fs_mntops
+    _kdb_path
+}
+
+_kdb-get () { 
+    # TODO disallow multiple kdb paths
+    _kdb_paths
+}
+
+_kdb-getmeta () { 
+    # TODO key-name meta-name
+    _kdb_paths
+}
+
+_kdb-import () {
+    # TODO dst [format]
+    _kdb_paths
+}
+
+_kdb-info () {
+    # TODO plugin [clause name]
+}
+
+_kdb-list () {
+    _message -e "No Arguments for list"
+    return
+}
+
+_kdb-ls () {
+    # TODO disallow multiple kdb paths
+    _kdb_paths
+}
+
+_kdb-lsmeta () { 
+    _kdb_paths
+}
+
+_kdb-merge () {
+    # TODO ourpath theirpath basepath resultpath
+}
+
+_kdb-mount () {
+    # TODO [path mountpoint] [plugin config] ...
+}
+
+_kdb-mv () {
+    # TODO src dst
+    _kdb_paths
+}
+
+_kdb-remount () { 
+    # TODO new-path new-mountpoint existing-mountpoint
+    _kdb_paths
+}
+
+_kdb-rm () {
+    # TODO single path
+    _kdb_paths
+}
+
+_kdb-set () {
+    # TODO after a path comes something else
+    _kdb_paths
+}
+
+_kdb-setmeta () { 
+    # TODO key-name meta-name meta-value
+    _kdb_paths
+}
+
+_kdb-sget () {
+    # TODO single path and default value
+    _kdb_paths 
+}
+
+_kdb-shell () { 
+    _message -e "No Arguments for shell"
+    return
+}
+
+_kdb-test () {
+    # TODO path [testname ...]
+    _kdb_paths
+}
+
+_kdb-umount () { 
+    # TODO name
+    _kdb_paths
+}
+
+_kdb-vset () {
+    # TODO path value regex [message]
+    _kdb_paths
+}
+
+_kdb-help () { 
+    # TODO can we get the command list all over again?
+}
+
+_kdb-list-tools () {
+    _message -e "No Arguments for list-tools"
+    return
+}
+
+
+# This function handles the commands of kdb and passes them
+# to the function which actually shows the options.
+
+_kdb_commands () {
+    # TODO Copy&Paste from git completion
+    # I have some clue what is going on here, but need to rewrite that someday
+
+    local -a cmdtypes
+    cmdtypes=(main_commands)
+
+    local -a $cmdtypes
+
+    main_commands=(
+        check:'Do some basic checks on a plugin.'
+        convert:'Convert configuration.'
+        cp:'Copy keys within the key database.'
+        export:'Export configuration from the key database.'
+        file:'Prints the file where a key is located.'
+        fstab:'Create a new fstab entry.'
+        get:'Get the value of an individual key.'
+        getmeta:'Get a meta value.'
+        import:'Import configuration to the key database.'
+        info:'Print information about a plugin.'
+        list:'List available plugins.'
+        ls:'List the names of keys below a given name.'
+        lsmeta:'Get all meta information of an individual key.'
+        merge:'Three-way merge of KeySets.'
+        mount:'Mount a new backend.'
+        mv:'Move configuration within the key database.'
+        remount:'Remount an existing backend with a different filename.'
+        rm:'Remove key(s) from key database.'
+        set:'Set the value of an individual key.'
+        setmeta:'Set a meta value.'
+        sget:'Get the value of an individual key within a shell script.'
+        shell:'Start a kdb shell.'
+        test:'Run key database test suite.'
+        umount:'Unmount backend from key database.'
+        vset:'Set a value together with a validation regex.'
+        help:'View the man page of a tool'
+        list-tools:'List all external tools')
+
+  zstyle -a :completion:$curcontext: user-commands user_commands
+
+  local -a aliases
+  aliases=()
+  local cmdtype len dup sep
+  local -a allcmds allmatching alts disp expl
+
+  zstyle -s ":completion:${curcontext}:" list-separator sep || sep=--
+  for cmdtype in $cmdtypes aliases; do
+    if [[ $cmdtype = aliases ]]; then
+      for dup in ${${aliases%:*}:*allcmds}; do
+	aliases=( ${aliases:#$dup:*} )
+      done
+    fi
+    local -a ${cmdtype}_m
+    set -A ${cmdtype}_m ${(P)cmdtype%%:*}
+    allcmds+=( ${(P)${:-${cmdtype}_m}} )
+  done
+  zstyle -T ":completion:${curcontext}:" verbose && disp=(-ld '${cmdtype}_d')
+  _description '' expl '' # get applicable matchers
+  compadd "$expl[@]" -O allmatching -a allcmds
+  len=${#${(O)allmatching//?/.}[1]} # length of longest match
+  for cmdtype in aliases $cmdtypes; do
+    local -a ${cmdtype}_d
+    (( $#disp )) && set -A ${cmdtype}_d \
+        ${${(r.COLUMNS-4.)${(P)cmdtype}/(#s)(#m)[^:]##:/${(r.len.)MATCH[1,-2]} $sep }%% #}
+    alts+=( "${cmdtype//_/-}:${${cmdtype//_/ }%%(e|)s}:compadd ${(e)disp} -a ${cmdtype}_m" )
+  done
+
+  _alternative $alts
+}
+
+
+# Main Function
+_kdb () {
+    local curcontext=$curcontext state line
+
+    integer ret=1
+
+    _arguments -C \
+                   '-H[show the man page]'\
+                   '--help[show the man page]'\
+                   '-V[Print version info]'\
+                   '--version[Print version info]'\
+                   '-v[Explain what is happening]'\
+                   '--verbose[Explain what is happening]'\
+                   '-C[Print never/auto(default)/always colored output]:when'\
+                   '--color=-[Print never/auto(default)/always colored output]: :'\
+                   '-p[Use a different kdb profile]:profile'\
+                   '--profile=-[Use a different kdb profile]: :'\
+                   '(-): :->command' \
+                   '(-)*:: :->option-or-argument' && return
+
+    case $state in
+        (command)
+            _kdb_commands
+        ;;
+        (option-or-argument)
+            curcontext=${curcontext%:*:*}:kdb-$words[1]:
+
+            if ! _call_function ret _kdb-$words[1]; then
+                if zstyle -T :completion:$curcontext: use-fallback; then
+                    _default && ret=0
+                else
+                    _message "unknown sub-command: $words[1]"
+                fi
+            fi
+        ;;
+
+    esac
+
+    return
+}
+
+_kdb

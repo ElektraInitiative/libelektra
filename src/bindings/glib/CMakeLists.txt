@@ -27,6 +27,7 @@ else()
 	set (SOURCES ${GELEKTRA_SRC_FILES} ${GELEKTRA_HDR_FILES} ${ELEKTRA_HEADERS})
 
 	add_library (${GELEKTRA_LIBRARY} SHARED ${SOURCES})
+	add_dependencies (${GELEKTRA_LIBRARY} kdberrors_generated)
 
 	target_include_directories (${GELEKTRA_LIBRARY} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 	target_include_directories (${GELEKTRA_LIBRARY} SYSTEM PUBLIC ${GOBJECT_INCLUDE_DIRS})

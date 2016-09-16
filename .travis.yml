@@ -28,7 +28,7 @@ before_install:
       brew install pygobject3 --with-python --with-python3;
       brew install lua;
       brew install yajl;
-      brew install augeas;
+      brew install augeas --HEAD;
       brew install dbus;
       brew install Caskroom/cask/java;
       brew outdated libffi || brew install libffi;

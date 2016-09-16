@@ -17,6 +17,7 @@ macro (do_test source)
 	add_headers(SOURCES)
 	add_testheaders(SOURCES)
 	add_executable (${source} ${SOURCES})
+	add_dependencies (${source} kdberrors_generated)
 
 	if (INSTALL_TESTING)
 		install (TARGETS ${source}
@@ -49,6 +50,7 @@ include_directories(data)
 
 add_subdirectory (cframework)
 add_subdirectory (shell)
+add_subdirectory (shell/shell_recorder)
 add_subdirectory (abi)
 add_subdirectory (ctest)
 if (ENABLE_KDB_TESTING)

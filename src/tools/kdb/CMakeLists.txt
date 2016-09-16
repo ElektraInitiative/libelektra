@@ -7,11 +7,15 @@ add_toolheaders (HDR_FILES)
 include_directories (${CMAKE_CURRENT_SOURCE_DIR})
 
 file (GLOB SRC_FILES *.cpp)
-
 set (SOURCES ${SRC_FILES} ${HDR_FILES})
 
+if (BUILD_SHARED OR BUILD_FULL)
+	add_library (kdb-objects OBJECT ${SRC_FILES})
+endif (BUILD_SHARED OR BUILD_FULL)
+
 if (BUILD_SHARED)
-	add_executable (kdb ${SOURCES})
+	add_executable (kdb $<TARGET_OBJECTS:kdb-objects>)
+	add_dependencies (kdb kdberrors_generated)
 
 	target_link_libraries (kdb elektra-core elektra-kdb elektratools)
 
@@ -19,7 +23,8 @@ if (BUILD_SHARED)
 endif (BUILD_SHARED)
 
 if (BUILD_FULL)
-	add_executable (kdb-full ${SOURCES})
+	add_executable (kdb-full $<TARGET_OBJECTS:kdb-objects>)
+	add_dependencies (kdb-full kdberrors_generated)
 
 	target_link_libraries (kdb-full elektra-full elektratools-full)
 
@@ -28,6 +33,7 @@ endif (BUILD_FULL)
 
 if (BUILD_STATIC)
 	add_executable (kdb-static ${SOURCES})
+	add_dependencies (kdb-static kdberrors_generated)
 
 	set_target_properties (kdb-static PROPERTIES LINKER_LANGUAGE CXX)
 	set_target_properties (kdb-static PROPERTIES

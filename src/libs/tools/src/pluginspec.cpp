@@ -196,6 +196,17 @@ void PluginSpec::appendConfig (KeySet c)
 }
 
 /**
+ * @brief Set plugin config
+ *
+ * @param c new config to be used as plugin config
+ */
+void PluginSpec::setConfig (KeySet c)
+{
+	config.clear ();
+	config.append (c);
+}
+
+/**
  * @brief Check if str starts with a-z and then only has chars a-z, 0-9 or underscore (_)
  *
  * @param n the string to check

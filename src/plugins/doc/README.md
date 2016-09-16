@@ -5,7 +5,7 @@
 - infos/needs =
 - infos/recommends = 
 - infos/placements =
-- infos/status = discouraged experimental -1000000
+- infos/status = discouraged experimental nodep libc -1000000
 - infos/metadata =
 - infos/description =
 

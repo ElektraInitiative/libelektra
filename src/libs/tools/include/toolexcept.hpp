@@ -157,6 +157,39 @@ struct PluginAlreadyInserted : public PluginCheckException
 	std::string m_str;
 };
 
+struct PluginConfigInvalid : public PluginCheckException
+{
+	explicit PluginConfigInvalid (Key key) : m_key (key), m_str ()
+	{
+	}
+
+	explicit PluginConfigInvalid (std::string const & message) : m_str (message)
+	{
+	}
+
+	virtual ~PluginConfigInvalid () throw ()
+	{
+	}
+
+	virtual const char * what () const throw () override
+	{
+		if (m_str.empty ())
+		{
+			std::stringstream ss;
+			ss << "The provided plugin configuration is not valid!\n";
+			ss << "Errors/Warnings during the check were:\n";
+			printError (ss, m_key);
+			printWarnings (ss, m_key);
+			m_str = ss.str ();
+		}
+		return m_str.c_str ();
+	}
+
+private:
+	Key m_key;
+	mutable std::string m_str;
+};
+
 struct BadPluginName : public PluginCheckException
 {
 	explicit BadPluginName (std::string name)
