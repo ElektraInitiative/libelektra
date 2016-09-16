@@ -110,10 +110,7 @@ get the API version
 API to allow instances to register themselves with `clusterd`
 
 + Request (application/json)
-
     + Attributes (Base Instance)
-        + host: 192.168.0.8
-        + name: autoregistered instance
 
 + Response 204
 
