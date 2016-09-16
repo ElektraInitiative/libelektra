@@ -133,6 +133,13 @@ Libtools got a new major version (SOVERSION 0 -> 1):
 The plugins conditionals and mathcheck are incompatible in some cases
 because of changes in syntax.
 
+### Proposal
+
+New API: `keyRel2` which differs from `keyRel` by allowing you to
+specify which relation should be checked.
+
+
+
 ## Development
 
 - github descriptions+workflow (displayed by github when creating
