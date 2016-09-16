@@ -113,10 +113,15 @@ in syntax.
 ## Packaging
 
 - bash-completion is installed to where pkg-config tells us, thanks to Gabriel Rauter
-  (fallback is now `/usr/share/bash-completion/completions`)
-- zsh `/usr/share/zsh/vendor-completions`
-- `elektraenv.sh` was removed (and is no longer installed)
-- added script install-sh-completion
+  (fallback is now `/usr/share/bash-completion/completions/kdb`) was `/etc/bash_completion.d/kdb` (removed)
+- zsh is now installed to `/usr/share/zsh/vendor-completions/_kdb` (except for Darwin)
+- removed /etc/profile.d/kdb.sh: the script `elektraenv.sh` was removed (and is no longer installed)
+- added scripts install-sh-completion configure-firefox elektrify-open
+- added plugins libelektra-blockresolver.so  libelektra-boolean.so  libelektra-crypto_botan.so
+  libelektra-crypto_openssl.so libelektra-desktop.so libelektra-mozprefs.so libelektra-passwd.so
+- added tests testmod_blockresolver testmod_boolean testmod_crypto_botan testmod_crypto
+  gcrypt testmod_crypto_openssl testmod_mozprefs testmod_passwd  test_opmphm_vheap test_opmphm_vstack
+- added test data blockresolver mozprefs passwd
 
 
 ## Issues
