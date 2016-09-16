@@ -8,6 +8,11 @@
 _kdb_paths () {
     # It seems this is enough to get all keys into the compsystem
 
+    # TODO
+    # Some paths only have a single possible completion.
+    # like if there is no other path starting with s/foo/bar and 
+    # s/foo/bar/sdf/baz/bar/xxx is the only leaf, we can complete for this directly
+
     typeset -a paths
     # Count the number of slashes to know where we are
     # TODO this seems to be not working in a zsh without configuratin
@@ -19,6 +24,7 @@ _kdb_paths () {
         paths=($(kdb ls / | cut -d "/" -f 1 | uniq))
     else
         # Check if key is a leaf
+        # TODO how we can get rid of the trailing / then?
         kdb ls / | grep -q -e "^${PREFIX}$"
         if [ $? -eq 0 ]; then
             _message "$PREFIX is a leaf."
@@ -46,6 +52,7 @@ _kdb_paths () {
         fi
 
     fi
+    # TODO an approximate form would be nice, so we can correct for user input
     _values -s / 'kdb path' $paths
 }
 
