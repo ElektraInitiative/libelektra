@@ -29,7 +29,7 @@ For a small demo see here:
 
 ### Crypto Plugin
 
-A new botan backend was implemented.
+A new [botan](https://botan.randombit.net) backend was implemented.
 
 Furthermore gpg is used to decrypt a master password, which is used
 by the individual backends.
