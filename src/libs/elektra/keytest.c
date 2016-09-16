@@ -211,6 +211,7 @@ int keyIsUser (const Key * key)
  * @param check the key to find the relative position of
  * @retval 1 if check is below key
  * @retval 0 if it is not below or if it is the same key
+ * @retval -1 if key or check is null
  * @see keySetName(), keyGetName(), keyIsDirectBelow()
  * @ingroup keytest
  *
