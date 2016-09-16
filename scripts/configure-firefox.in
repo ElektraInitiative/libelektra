@@ -167,35 +167,35 @@ testPreload()
     unset valTest
     unset errCount
     errCount=0
-    valTest=$(kdb sget "/preload/open/${escapedDecoy}" NA)
+    valTest=$(kdb sget "/elektra/intercept/open/${escapedDecoy}" NA)
     if [ "$valTest" == "NA" ];
     then
 	errCount=$((++errCount))
     fi
-    valTest=$(kdb sget "/preload/open/${escapedDecoy}/generate" NA)
+    valTest=$(kdb sget "/elektra/intercept/open/${escapedDecoy}/generate" NA)
     if [ "$valTest" != "$MountPoint" ];
     then
 	errCount=$((++errCount))
     fi
-    valTest=$(kdb sget "/preload/open/${escapedDecoy}/generate/plugin" NA)
+    valTest=$(kdb sget "/elektra/intercept/open/${escapedDecoy}/generate/plugin" NA)
     if [ "$valTest" != "mozprefs" ];
     then
 	errCount=$((++errCount))
     fi
     if [ $errCount -ne 0 ];
     then
-	echo "Error, failed to setup /preload/open configuration"
+	echo "Error, failed to setup /elektra/intercept/open configuration"
 	exit 1
     fi
 }
 
 setPreload()
 {
-    kdb set /preload/open 
+    kdb set /elektra/intercept/open 
     escapedDecoy=$(echo "$Decoy"|sed 's/\//\\\//g')
-    kdb set "/preload/open/${escapedDecoy}" ""
-    kdb set "/preload/open/${escapedDecoy}/generate" "$MountPoint"
-    kdb set "/preload/open/${escapedDecoy}/generate/plugin" mozprefs
+    kdb set "/elektra/intercept/open/${escapedDecoy}" ""
+    kdb set "/elektra/intercept/open/${escapedDecoy}/generate" "$MountPoint"
+    kdb set "/elektra/intercept/open/${escapedDecoy}/generate/plugin" mozprefs
 }
 
 setTestPrefs()
@@ -266,7 +266,7 @@ removePrefs()
     then
 	kdb rm "$FFInterceptKey" &>/dev/null
 	escapedDecoy=$(echo "$Decoy"|sed 's/\//\\\//g')
-	kdb rm -r "/preload/open/${espacedDecoy}" &>/dev/null
+	kdb rm -r "/elektra/intercept/open/${espacedDecoy}" &>/dev/null
 	kdb rm -r "$MountPoint" &>/dev/null
 	kdb umount "$MountPoint" &>/dev/null
 	tmpPrefsFile=$(kdb get "$FFInterceptConfig")

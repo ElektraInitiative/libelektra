@@ -10,12 +10,12 @@ Additionaly you can force files to be read-only, or even generated from elektra 
 
 ## CONFIGURATION
 
-The libraries configuration is stored under `/preload/open`.
+The libraries configuration is stored under `/elektra/intercept/open`.
 
 Syntax:
-`/preload/open/path\/to\/realfile = path/to/myfile`
-`/preload/open/path\/to\/realfile/readonly = 1`
-`/preload/open/path\/to\/realfile/generate = system/info`
+`/elektra/intercept/open/path\/to\/realfile = path/to/myfile`
+`/elektra/intercept/open/path\/to\/realfile/readonly = 1`
+`/elektra/intercept/open/path\/to\/realfile/generate = system/info`
 `/preload/opeh/path/\to\/realfile/generate/plugin = ini`
 
 ## INTERNALS
@@ -30,17 +30,17 @@ If the `/generate` and `/generate/plugin` keys are set, the library will generat
 % echo testfile > ~/testfile
 % echo testreplacement > ~/testreplacement
 
-% kdb set /preload/open
-% kdb set /preload/open/\~\\/testfile "~/testreplacement"
+% kdb set /elektra/intercept/open
+% kdb set /elektra/intercept/open/\~\\/testfile "~/testreplacement"
 
-% LD_PRELOAD=/path/to/libelektraintercept.so cat ~/testfile
+% kdb elektrify-open cat ~/testfile
 testreplacement
 
 % kdb mount-info
-% kdb set /preload/open/\~\\/testfile/generate "system/info/uname"
-% kdb set /preload/open/\~\\testfile/generate/plugin ini
+% kdb set /elektra/intercept/open/\~\\/testfile/generate "system/info/uname"
+% kdb set /elektra/intercept/open/\~\\testfile/generate/plugin ini
 
-% LD_PRELOAD=/path/to/libelektraintercept.so cat ~/testfile
+% kdb elektrify-open cat ~/testfile
 = none
 machine = x86_64
 nodename = Skipper
