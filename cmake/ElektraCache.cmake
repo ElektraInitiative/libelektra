@@ -273,7 +273,11 @@ set (COVERAGE_PREFIX
 		"Full path to common prefix of build+source directory"
     )
 
-option (INSTALL_SYSTEM_FILES "Install files to system directories" ON)
+if (APPLE)
+	option (INSTALL_SYSTEM_FILES "Install files to system directories" OFF)
+else ()
+	option (INSTALL_SYSTEM_FILES "Install files to system directories" ON)
+endif ()
 
 option (INSTALL_BUILD_TOOLS "Install build tools for cross-compilation" OFF)
 
