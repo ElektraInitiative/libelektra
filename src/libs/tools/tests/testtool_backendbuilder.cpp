@@ -143,7 +143,7 @@ TEST (MountBackendBuilder, allSort)
 		b.addPlugin (PluginSpec ("augeas"));
 		// b.addPlugin (PluginSpec ("type"));
 		// b.addPlugin (PluginSpec ("validation"));
-		// b.addPlugin (PluginSpec ("struct", KeySet(Key("user/module", KEY_END), KS_END);
+		// b.addPlugin (PluginSpec ("struct", KeySet(5, *Key("user/module", KEY_END), KS_END)));
 	}
 	catch (std::exception const & e)
 	{
