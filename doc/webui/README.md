@@ -43,11 +43,8 @@ HTTP API:
 get API and elektra version
 
 + Response 200 (application/json)
+    + Attributes (Version)
 
-        {
-            "api": 1,
-            "elektra": "0.8.17"
-        }
 
 #### /kdb/{path}
 
@@ -103,10 +100,7 @@ The cluster management server (`clusterd`) also provides a REST HTTP API:
 get the API version
 
 + Response 200 (application/json)
-
-        {
-            "api": 1
-        }
+    + Attributes (Base Version)
 
 
 
@@ -117,10 +111,9 @@ API to allow instances to register themselves with `clusterd`
 
 + Request (application/json)
 
-        {
-            "name": "auto-registered instance",
-            "host": "192.168.0.8"
-        }
+    + Attributes (Base Instance)
+        + host: 192.168.0.8
+        + name: autoregistered instance
 
 + Response 204
 
@@ -132,35 +125,23 @@ API to allow instances to register themselves with `clusterd`
 ##### list all instances [GET]
 
 + Response 200 (application/json)
-
-        [
-            {
-                "id": "507f191e810c19729de860ea",
-                "name": "test instance",
-                "host": "192.168.0.5"
-            },
-            {
-                "id": "507f191e810c19729de860eb",
-                "name": "test instance #2",
-                "host": "192.168.0.6"
-            }
-        ]
+    + Attributes (array[Instance])
 
 ##### create a new instance [POST]
 
++ Attributes (Base Instance)
+
 + Request (application/json)
 
-        {
-            "name": "new test instance",
-            "host": "192.168.0.7"
-        }
-
-+ Response 204
++ Response 200
+    + Attributes (Instance)
 
 
 
 
 #### /instances/{instance_id}
+
++ Attributes (Instance)
 
 + Parameters
     + instance_id: `507f191e810c19729de860ea` (string) - id of an instance
@@ -168,20 +149,13 @@ API to allow instances to register themselves with `clusterd`
 ##### get information about a single instance [GET]
 
 + Response 200 (application/json)
-
-        {
-            "id": "507f191e810c19729de860ea",
-            "name": "test instance",
-            "host": "192.168.0.5"
-        }
+    + Attributes (Instance)
 
 ##### edit a single instance [PUT]
 
 + Request update host of instance (application/json)
-
-        {
-            "host": "192.168.0.6"
-        }
+    + Attributes (object)
+        + host: 192.168.0.6
 
 + Response 204
 
@@ -192,11 +166,7 @@ API to allow instances to register themselves with `clusterd`
 ##### get version of a single instance [GET /instances/{instance_id}/version]
 
 + Response 200 (application/json)
-
-        {
-            "api": 1,
-            "elektra": "0.8.17"
-        }
+    + Attributes (Version)
 
 
 
@@ -256,3 +226,18 @@ The API is the same as above, but with `/clusters` instead of `/instances`.
 For cluster responses, the results of the operation are grouped together.
 If everything is a success, the status code of the combined document will be 200.
 Otherwise, it will show an error (400).
+
+# Data Structures
+
+## Base Version (object)
++ api: 1 (number, required) - version of the api
+
+## Version (Base Version)
++ elektra: 0.8.17 (string, required) - libelektra version
+
+## Base Instance (object)
++ host: 192.168.0.5 (string, required)
++ name: test instance (string)
+
+## Instance (Base Instance)
++ id: 507f191e810c19729de860ea (string, required)
