@@ -341,10 +341,13 @@ Currently the installed system files are as following:
 
 |   Module        |         Description             |      Install Path                      |
 |-----------------|---------------------------------|----------------------------------------|
-| bash-completion | bash tab auto completion file   | `completionsdir` from pkg-config       |
+| bash-completion | bash tab auto completion file   | `completionsdir` from pkg-config (*)   |
 | zsh-completion  | zsh tab auto completion file    | /usr/share/zsh/vendor-completions      |
 | GIR             | introspection file for bindings | `INTROSPECTION_GIRDIR` from pkg-config |
 | GSettings       | GSettings backend module        | `GIO_MODULE_DIR` from pkg-config       |
+
+
+(*) Or `/usr/share/bash-completion/completions` as fallback.
 
 #### ENABLE_OPTIMIZATIONS ####
 In order to keep the binaries as small as possible this flag allows to trade memory for speed.
