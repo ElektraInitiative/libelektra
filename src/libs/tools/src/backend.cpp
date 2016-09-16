@@ -395,7 +395,7 @@ void Backend::serialize (kdb::KeySet & ret)
 		Key k ("system" + mp, KEY_END);
 		Key restrictedPath ("system/elektra", KEY_END);
 		if (!k) throw MountpointInvalidException ();
-		if (restrictedPath.isBelow (k)) throw MountpointInvalidException ();
+		if (k.isBelow (restrictedPath)) throw MountpointInvalidException ();
 		ret.append (*Key (backendRootKey.getName () + "/mountpoint", KEY_VALUE, mp.c_str (), KEY_COMMENT,
 				  "The mountpoint says the location where the backend should be mounted.\n"
 				  "This is a cascading mountpoint.\n"
@@ -407,7 +407,7 @@ void Backend::serialize (kdb::KeySet & ret)
 		Key k (mp, KEY_END);
 		Key restrictedPath ("system/elektra", KEY_END);
 		if (!k) throw MountpointInvalidException ();
-		if (restrictedPath.isBelow (k)) throw MountpointInvalidException ();
+		if (k.isBelow (restrictedPath)) throw MountpointInvalidException ();
 		ret.append (*Key (backendRootKey.getName () + "/mountpoint", KEY_VALUE, mp.c_str (), KEY_COMMENT,
 				  "The mountpoint says the location where the backend should be mounted.\n"
 				  "This is a normal mountpoint.\n",
