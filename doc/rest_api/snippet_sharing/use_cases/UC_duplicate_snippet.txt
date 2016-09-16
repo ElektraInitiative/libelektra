@@ -1,12 +1,12 @@
-# Use Case: Create configuration snippet
+# Use Case: Create configuration snippet from existing snippet
 
 ## Summary
 
-Title: Create configuration snippet
+Title: Create configuration snippet from existing snippet
 Scope: Entry Management
 Level: User Goal
 Actors: Authenticated user
-Brief: User can create a new configuration snippet (database entry) based on a set of specified inputs, one of them being the snippet itself.
+Brief: User can create a new configuration snippet (database entry) based on an existing snippet. The existing snippet will be filled in the mask for the creation of a new snippet.
 
 ## Scenarios
 
