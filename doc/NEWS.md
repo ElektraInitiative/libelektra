@@ -27,14 +27,19 @@ For a small demo see here:
 - Survey completed successfully (and debts paid), we now
   prepare raw data
 
+
 ### Crypto Plugin
 
-A new [botan](https://botan.randombit.net) backend was implemented.
+Gpg is now used to decrypt a master password, which is used
+by the individual crypto backends.
 
-Furthermore gpg is used to decrypt a master password, which is used
-by the individual backends.
+Furthermore, a new [botan](https://botan.randombit.net) backend
+was implemented.
+
+[See here](http://git.libelektra.org/tree/master/src/plugins/crypto)
 
 Thanks to Peter Nirschl.
+
 
 ### Open Interception
 
@@ -50,13 +55,35 @@ Elektra provides.
 
 For easy setup, we implemented the script `configure-firefox`.
 
+[See here](http://git.libelektra.org/tree/master/src/bindings/intercept)
+
 Thanks to Thomas Waser.
 
+
+### Resolver
+
+Resolvers in Elektra are the code that are responsible to determine where
+content should be read from and stored to. They are independent of the
+actual configuration file syntax.
+
+The [gitresolver](http://git.libelektra.org/tree/master/src/plugins/gitresolver)
+allows you to get/store config data in git.
+
+The [blockresolver](http://git.libelektra.org/tree/master/src/plugins/blockresolver)
+allows Elektra to take control of parts of the configuration
+file. This is useful for config files such as vim or zsh, which contain
+program code. The plugin allows you to split config files with special markers
+into parts containing code and others controlled by Elektra.
 
 
 ### zsh completion
 
-Added zsh completion file, thanks to Sebastian Bachmann
+Added zsh completion file, and a script (`kdb install-sh-completion`)
+that installs bash+zsh completion when the default installation places
+do not work (e.g. for Mac OS X).
+
+Thanks to Sebastian Bachmann.
+
 
 ## Documentation
 
@@ -72,11 +99,20 @@ Added zsh completion file, thanks to Sebastian Bachmann
 
 ## Quality
 
+- shell recorder test cases now run during `make test`, thanks to Kurt
+  Micheli and René Schwaiger
 - find-tools now pep and pyflakes happy, thanks to Kurt Micheli
 - fix bashism, thanks to Thomas Waser and Kurt Micheli
 - better error message for conditionals plugin, thanks to Thomas Waser
 - better error message for augeas plugin, thanks to Felix Berlakovich
 - Many compilation warnings fixed, thanks to Gabriel Rauter, Thomas Waser
+- GSettings: fix double free, thanks to Gabriel Rauter
+- Fix external links and add an external link checker,
+  thanks to Kurt Micheli
+- Fix openwrt/musl warnings with wrong printf format, thanks to
+  Thomas Waser
+- Fix NODEP metadata, allows you to build all plugins that do not
+  have dependencies.
 
 
 ## Compatibility
@@ -101,43 +137,58 @@ in syntax.
 ## Development
 
 - github descriptions+workflow (showed when creating PRs and issues)
-- many new trigger phases for github, see [doc/GIT](http://git.libelektra.org/tree/master/doc/GIT.md)
+- new trigger phases for github, see
+  [doc/GIT](http://git.libelektra.org/tree/master/doc/GIT.md)
   thanks to Mihael Pranjić
 - valgrind suppressions are great again, thanks to Peter Nirschl
-- Plugins get a new namespace `internal` which can be used for meta-data that is not
-  relevant for other plugins.
-- kdberrors.h is only generated once, which allows us to use other build systems,
-  thanks to René Schwaiger
-- shell recorder test cases now run during `make test`, thanks to Kurt Micheli and René Schwaiger
+- Plugins get a new namespace `internal` which can be used for meta-data
+  that is not relevant for other plugins.
+- kdberrors.h is only generated once, which allows us to use other build
+  systems, thanks to René Schwaiger
+- `INCLUDE_SYSTEM_DIRECTORIES` in add_plugin allows you to add a include
+  path where warnings are suppressed (useful for boost).
+- `infos/provides` now allows multiple entries
 
 ## Packaging
 
-- bash-completion is installed to where pkg-config tells us, thanks to Gabriel Rauter
-  (fallback is now `/usr/share/bash-completion/completions/kdb`) was `/etc/bash_completion.d/kdb` (removed)
-- zsh is now installed to `/usr/share/zsh/vendor-completions/_kdb` (except for Darwin)
-- removed /etc/profile.d/kdb.sh: the script `elektraenv.sh` was removed (and is no longer installed)
+- Plugin-provider `CRYPTO` can be used to enable/disable all crypto
+  plugin variants.
+- Config option `ENABLE_OPTIMIZATIONS`, enable by default: trade more
+  memory for speed (can be turned off on embedded systems)
+- `INSTALL_SYSTEM_FILES` is now off by default on Mac OS X.
+- bash-completion is installed to where pkg-config tells us,
+  thanks to Gabriel Rauter
+  (fallback is now `/usr/share/bash-completion/completions/kdb`)
+  was `/etc/bash_completion.d/kdb` (removed)
+- zsh is now installed to `/usr/share/zsh/vendor-completions/_kdb`
+  (except for Darwin)
+- removed /etc/profile.d/kdb.sh: the script `elektraenv.sh` was
+  removed (and is no longer installed)
 - added scripts install-sh-completion configure-firefox elektrify-open
-- added plugins libelektra-blockresolver.so  libelektra-boolean.so  libelektra-crypto_botan.so
-  libelektra-crypto_openssl.so libelektra-desktop.so libelektra-mozprefs.so libelektra-passwd.so
-- added tests testmod_blockresolver testmod_boolean testmod_crypto_botan testmod_crypto
-  gcrypt testmod_crypto_openssl testmod_mozprefs testmod_passwd  test_opmphm_vheap test_opmphm_vstack
+- added plugins libelektra-blockresolver.so  libelektra-boolean.so
+  libelektra-crypto_botan.so libelektra-crypto_openssl.so
+  libelektra-desktop.so libelektra-mozprefs.so libelektra-passwd.so
+- added tests testmod_blockresolver testmod_boolean
+  testmod_crypto_botan testmod_crypto
+  gcrypt testmod_crypto_openssl testmod_mozprefs testmod_passwd
+  test_opmphm_vheap test_opmphm_vstack
 - added test data blockresolver mozprefs passwd
-
-
-## Issues
-
-- GSettings: fix double free, thanks to Gabriel Rauter
-
 
 ## Other
 
-- Conditionals and mathcheck plugins got support to specify relative keys, thanks to
-  Thomas Waser
+- Conditionals and mathcheck plugins got support to specify relative
+  keys, thanks to Thomas Waser
 - `kdb` command-list: commands are written in bold
 - GSettings backend can be build standalone, thanks to Gabriel Rauter
-- first data structures for order preserving minimal perfect hash map, thanks to Kurt Micheli
+- first data structures for order preserving minimal perfect hash map,
+  thanks to Kurt Micheli
 - added a new passwd plugin, thanks to Thomas Waser
-- boolean plugin to normalize boolean values, thanks to Thomas Waser
+- [boolean]((http://git.libelektra.org/tree/master/src/plugins/boolean)
+  plugin to normalize boolean values, thanks to Thomas Waser
+- [desktop](http://git.libelektra.org/tree/master/src/plugins/desktop)
+  plugin to detect which desktop currently is running (supports kde,
+  gnome, tde, unity or any other XDG conformant desktop)
+- `doc/paper` contains some info for [joss](https://github.com/openjournals/joss)
 
 
 ## Get It!
