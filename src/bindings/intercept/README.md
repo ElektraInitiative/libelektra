@@ -38,7 +38,7 @@ testreplacement
 
 % kdb mount-info
 % kdb set /elektra/intercept/open/\~\\/testfile/generate "system/info/uname"
-% kdb set /elektra/intercept/open/\~\\testfile/generate/plugin ini
+% kdb set /elektra/intercept/open/\~\\/testfile/generate/plugin ini
 
 % kdb elektrify-open cat ~/testfile
 = none
