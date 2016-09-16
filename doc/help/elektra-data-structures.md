@@ -409,7 +409,8 @@ The `Vheap` can also be cleared, reallocation works like the `Vstack` clear.
 The following [link](/src/libs/elektra/opmphm_vheap.c) leads to the code and
 [this](@ref Vheap) one to the docu.
 
-####Example
+Example:
+
 If the order function constructs a maximum heap it holds for all elements if they have any children:
 
 parent > child0 and parent > child1
