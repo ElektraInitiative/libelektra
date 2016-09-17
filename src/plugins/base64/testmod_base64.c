@@ -17,7 +17,13 @@
 
 #include "base64.h"
 
-static KeySet * newPluginConfiguration()
+// test vectors are defined in RFC4648
+// see https://www.ietf.org/rfc/rfc4648.txt
+static const char * decoded[] = { "", "f", "fo", "foo", "foob", "fooba", "foobar" };
+static const char * encoded[] = { "", "Zg==", "Zm8=", "Zm9v", "Zm9vYg==", "Zm9vYmE=", "Zm9vYmFy" };
+static const size_t testcaseCounter = sizeof (decoded) / sizeof (const char *);
+
+static KeySet * newPluginConfiguration ()
 {
 	return ksNew (0, KS_END);
 }
@@ -50,69 +56,68 @@ static void test_init ()
 	keyDel (parentKey);
 }
 
+static inline char testcase2char (size_t i)
+{
+	return '0' + i + 1;
+}
+
 static void test_base64_encoding ()
 {
-	// test vectors are defined in RFC4648
-	// see https://www.ietf.org/rfc/rfc4648.txt
-	char * t1 = ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME, base64Encode) ((kdb_octet_t*)"", 0);
-	succeed_if (t1, "can not allocate string for encoding result");
-	if (t1)
-	{
-		succeed_if (strcmp (t1, "") == 0, "encoding result from test vector 1 does not match");
-		elektraFree (t1);
-	}
+	char errorAlloc[] = "Encoding #.: Memory allocation failed";
+	char errorMismatch[] = "Encoding #.: returned unexpected result";
 
-	char * t2 = ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME, base64Encode) ((kdb_octet_t*)"f", 1);
-	succeed_if (t2, "can not allocate string for encoding result");
-	if (t2)
+	for (size_t i = 0; i < testcaseCounter; i++)
 	{
-		succeed_if (strcmp (t2, "Zg==") == 0, "encoding result from test vector 2 does not match");
-		elektraFree (t2);
-	}
+		errorAlloc[10] = testcase2char (i);
+		errorMismatch[10] = testcase2char (i);
 
-	char * t3 = ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME, base64Encode) ((kdb_octet_t*)"fo", 2);
-	succeed_if (t3, "can not allocate string for encoding result");
-	if (t3)
-	{
-		succeed_if (strcmp (t3, "Zm8=") == 0, "encoding result from test vector 3 does not match");
-		elektraFree (t3);
-	}
-
-	char * t4 = ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME, base64Encode) ((kdb_octet_t*)"foo", 3);
-	succeed_if (t4, "can not allocate string for encoding result");
-	if (t4)
-	{
-		succeed_if (strcmp (t4, "Zm9v") == 0, "encoding result from test vector 4 does not match");
-		elektraFree (t4);
-	}
-
-	char * t5 = ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME, base64Encode) ((kdb_octet_t*)"foob", 4);
-	succeed_if (t5, "can not allocate string for encoding result");
-	if (t1)
-	{
-		succeed_if (strcmp (t5, "Zm9vYg==") == 0, "encoding result from test vector 5 does not match");
-		elektraFree (t5);
-	}
-
-	char * t6 = ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME, base64Encode) ((kdb_octet_t*)"fooba", 5);
-	succeed_if (t6, "can not allocate string for encoding result");
-	if (t6)
-	{
-		succeed_if (strcmp (t6, "Zm9vYmE=") == 0, "encoding result from test vector 6 does not match");
-		elektraFree (t6);
-	}
-
-	char * t7 = ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME, base64Encode) ((kdb_octet_t*)"foobar", 6);
-	succeed_if (t7, "can not allocate string for encoding result");
-	if (t7)
-	{
-		succeed_if (strcmp (t7, "Zm9vYmFy") == 0, "encoding result from test vector 7 does not match");
-		elektraFree (t7);
+		char * e = ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME, base64Encode) ((kdb_octet_t *)decoded[i], strlen (decoded[i]));
+		succeed_if (e, errorAlloc);
+		if (e)
+		{
+			succeed_if (strcmp (e, encoded[i]) == 0, errorMismatch);
+			elektraFree (e);
+		}
 	}
 }
 
 static void test_base64_decoding ()
 {
+	char errorFail[] = "Decoding #.: operation failed";
+	char errorMismatch[] = "Decoding #.: returned unexpected result vector";
+	char errorLength[] = "Decoding #.: returned unexpected result length";
+
+	kdb_octet_t * buffer = NULL;
+	size_t bufferLen = 0;
+
+	// first test case is a little special because we expect NULL on success here
+	succeed_if (ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME, base64Decode) (encoded[0], &buffer, &bufferLen) == 1,
+		    "decoding of test vector 1 failed");
+	succeed_if (buffer == NULL, "decoding of test vector 1 returned unexpected result vector");
+	succeed_if (bufferLen == 0, "decoding of test vector 1 returned unexpected result length");
+	if (buffer)
+	{
+		elektraFree (buffer);
+	}
+
+	for (size_t i = 1; i < testcaseCounter; i++)
+	{
+		errorMismatch[10] = testcase2char (i);
+		errorFail[10] = testcase2char (i);
+		errorLength[10] = testcase2char (i);
+
+		succeed_if (ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME, base64Decode) (encoded[i], &buffer, &bufferLen) == 1, errorFail);
+		if (buffer)
+		{
+			succeed_if (bufferLen == strlen (decoded[i]), errorLength);
+			if (bufferLen == strlen (decoded[i]))
+			{
+				succeed_if (memcmp (buffer, decoded[i], bufferLen) == 0, errorMismatch);
+			}
+			elektraFree (buffer);
+			buffer = NULL;
+		}
+	}
 }
 
 /*
@@ -164,7 +169,7 @@ static void test_file_operations ()
 
 int main (int argc, char ** argv)
 {
-	printf ("FCRYPT       TESTS\n");
+	printf ("BASE64       TESTS\n");
 	printf ("==================\n\n");
 
 	init (argc, argv);

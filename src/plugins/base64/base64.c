@@ -17,6 +17,7 @@
 #include <string.h>
 
 static const char * alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+#define ALPHABET_LENGTH (64)
 static const char padding = '=';
 
 /**
@@ -69,16 +70,84 @@ char * ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME, base64Encode) (kdb_octet_t 
 }
 
 /**
+ * @brief lookup Base64 character in the alphabet and return the index.
+ * @param c the character to look up
+ * @param errorFlag set to 1 in case of error
+ * @returns the index in the Base64 alphabet or 0 if the padding character was detected.
+ */
+static kdb_octet_t getBase64Index (const char c, int * errorFlag)
+{
+	if (c == padding) return 0;
+
+	for (kdb_octet_t i = 0; i < ALPHABET_LENGTH; i++)
+	{
+		if (alphabet[i] == c) return i;
+	}
+	*errorFlag = 1;
+	return 0;
+}
+
+/**
  * @brief decodes Base64 encoded data.
  * @param input holds the Base64 encoded data string
- * @param output will be set to an allocated buffer holding the decoded data. Must be freed by the caller.
+ * @param output will be set to an allocated buffer holding the decoded data or NULL if the allocation failed. Must be freed by the caller on success.
  * @param outputLength will be set to the amount of decoded bytes.
  * @retval 1 on success
  * @retval -1 if the provided string has not been encoded with Base64
+ * @retval -2 if the output buffer allocation failed
  */
 int ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME, base64Decode) (const char * input, kdb_octet_t ** output, size_t * outputLength)
 {
-	// TODO implement decoding
+	const size_t inputLen = strlen (input);
+	if (inputLen == 0)
+	{
+		*output = NULL;
+		*outputLength = 0;
+		return 1;
+	}
+
+	if (inputLen % 4 != 0)
+	{
+		*output = NULL;
+		return -1;
+	}
+
+	*outputLength = inputLen / 4 * 3;
+	if (input[inputLen - 1] == padding) (*outputLength)--;
+	if (input[inputLen - 2] == padding) (*outputLength)--;
+
+	*output = elektraMalloc (*outputLength);
+	if (!(*output)) return -2;
+
+	size_t i = 0;
+	size_t outputIndex = 0;
+
+	for (i = 0; i < inputLen; i += 4)
+	{
+		int errorFlag = 0;
+		const kdb_octet_t b0 = getBase64Index (input[i], &errorFlag);
+		const kdb_octet_t b1 = getBase64Index (input[i + 1], &errorFlag);
+		const kdb_octet_t b2 = getBase64Index (input[i + 2], &errorFlag);
+		const kdb_octet_t b3 = getBase64Index (input[i + 3], &errorFlag);
+
+		if (errorFlag)
+		{
+			// invalid character detected in input string
+			elektraFree (*output);
+			*output = NULL;
+			return -1;
+		}
+
+		(*output)[outputIndex++] = (b0 << 2) + (b1 >> 4);
+		if (input[i + 2] != padding)
+		{
+			(*output)[outputIndex++] = ((b1 & 0x0f) << 4) + (b2 >> 2);
+		}
+		if (input[i + 3] != padding)
+		{
+			(*output)[outputIndex++] = ((b2 & 0x03) << 6) + b3;
+		}
+	}
 	return 1;
 }
 
