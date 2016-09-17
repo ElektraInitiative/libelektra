@@ -109,7 +109,7 @@ productive use:
 - [simpleini](simpleini/) is ini without sections
 - [csvstorage](csvstorage/) for csv files
 - [passwd](passwd/) for passwd files
-- [dpkg](dpkg/) reads /var/lib/dpkg/{available,status} 
+- [dpkg](dpkg/) reads /var/lib/dpkg/{available,status}
 - [mozprefs](mozprefs/) for Mozilla preference files
 - [c](c/) writes Elektra C-structures (`ksNew(.. keyNew(...`)
 
@@ -149,12 +149,13 @@ Rewrite unwanted characters with different techniques:
 - [ccode](ccode/) using the technique from arrays in the programming
   language C
 - [hexcode](hexcode/) using hex codes
+- [base64](base64/) using the Base64 encoding scheme (RFC4648)
 
 Transformations:
 
 - [keytometa](keytometa/) transforms keys to metadata
 - [rename](rename/) renames keys according to different rules
-- [boolean](boolean/) canonicalizes boolean keys 
+- [boolean](boolean/) canonicalizes boolean keys
 
 Doing other stuff:
 
