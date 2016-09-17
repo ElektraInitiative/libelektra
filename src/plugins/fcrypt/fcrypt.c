@@ -142,7 +142,7 @@ static int encrypt (KeySet * pluginConfig, Key * parentKey)
 	// gpg2 --batch --yes -o encryptedFile -r keyID -e configFile
 	// mv encryptedFile configFile
 
-	int result = elektraCryptoGpgCall (pluginConfig, parentKey, NULL, argv, argc);
+	int result = CRYPTO_PLUGIN_FUNCTION (gpgCall) (pluginConfig, parentKey, NULL, argv, argc);
 
 	if (result == 1)
 	{
@@ -185,7 +185,7 @@ static int decrypt (KeySet * pluginConfig, Key * parentKey)
 	// gpg2 --batch --yes -o tmpfile -d configFile
 	// mv tmpfile configFile
 
-	int result = elektraCryptoGpgCall (pluginConfig, parentKey, NULL, argv, argc);
+	int result = CRYPTO_PLUGIN_FUNCTION (gpgCall) (pluginConfig, parentKey, NULL, argv, argc);
 
 	if (result == 1)
 	{
