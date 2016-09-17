@@ -46,6 +46,22 @@ static char * getTemporaryFileName (const char * file)
 }
 
 /**
+ * @brief lookup if the test mode for unit testing is enabled.
+ * @param conf KeySet holding the plugin configuration.
+ * @retval 0 test mode is not enabled
+ * @retval 1 test mode is enabled
+ */
+static int inTestMode (KeySet * conf)
+{
+	Key * k = ksLookupByName (conf, ELEKTRA_CRYPTO_PARAM_GPG_UNIT_TEST, 0);
+	if (k && !strcmp (keyString (k), "1"))
+	{
+		return 1;
+	}
+	return 0;
+}
+
+/**
  * @brief Read number of total GPG recipient keys from the plugin configuration.
  * @param config holds the plugin configuration
  * @returns the number of GPG recipient keys.
@@ -92,6 +108,8 @@ static int encrypt (KeySet * pluginConfig, Key * parentKey)
 		return -1;
 	}
 
+	const size_t testMode = inTestMode (pluginConfig);
+
 	char * tmpFile = getTemporaryFileName (keyString (parentKey));
 	if (!tmpFile)
 	{
@@ -100,7 +118,7 @@ static int encrypt (KeySet * pluginConfig, Key * parentKey)
 	}
 
 	// prepare argument vector for gpg call
-	int argc = 8 + (2 * recipientCount);
+	int argc = 8 + (2 * recipientCount) + (2 * testMode);
 	kdb_unsigned_short_t i = 0;
 	char * argv[argc];
 	argv[i++] = NULL;
@@ -131,6 +149,13 @@ static int encrypt (KeySet * pluginConfig, Key * parentKey)
 			// NOTE argv[] values will not be modified, so const can be discarded safely
 			argv[i++] = (char *)keyString (k);
 		}
+	}
+
+	// if we are in test mode we add the trust model
+	if (testMode > 0)
+	{
+		argv[i++] = "--trust-model";
+		argv[i++] = "always";
 	}
 
 	// prepare rest of the argument vector
@@ -168,8 +193,6 @@ static int encrypt (KeySet * pluginConfig, Key * parentKey)
  */
 static int decrypt (KeySet * pluginConfig, Key * parentKey)
 {
-	static const int argc = 8;
-	char * argv[8] = { NULL, "--batch", "--yes", "-o", NULL, "-d", NULL, NULL };
 	char * tmpFile = getTemporaryFileName (keyString (parentKey));
 	if (!tmpFile)
 	{
@@ -177,9 +200,29 @@ static int decrypt (KeySet * pluginConfig, Key * parentKey)
 		return -1;
 	}
 
-	argv[4] = tmpFile;
+	const size_t testMode = inTestMode (pluginConfig);
+	int argc = 8 + (2 * testMode);
+	char * argv[argc];
+	int i = 0;
+
+	argv[i++] = NULL;
+	argv[i++] = "--batch";
+	argv[i++] = "--yes";
+
+	// if we are in test mode we add the trust model
+	if (inTestMode (pluginConfig))
+	{
+		argv[i++] = "--trust-model";
+		argv[i++] = "always";
+	}
+
+	argv[i++] = "-o";
+	argv[i++] = tmpFile;
+	argv[i++] = "-d";
 	// safely discarding const from keyString() return value
-	argv[6] = (char *)keyString (parentKey);
+	argv[i++] = (char *)keyString (parentKey);
+	argv[i++] = NULL;
+
 
 	// NOTE the decryption process works like this:
 	// gpg2 --batch --yes -o tmpfile -d configFile
