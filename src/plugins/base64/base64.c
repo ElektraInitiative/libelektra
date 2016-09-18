@@ -28,8 +28,18 @@ static const char padding = '=';
  */
 char * ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME, base64Encode) (kdb_octet_t * input, size_t inputLength)
 {
+	size_t encodedLength;
+	if (inputLength % 3 == 0)
+	{
+		encodedLength = (inputLength / 3 * 4) + 1;
+	}
+	else
+	{
+		encodedLength = ((inputLength + (3 - (inputLength % 3))) / 3 * 4) + 1;
+	}
+
 	size_t out = 0;
-	char * encoded = elektraMalloc (2 * inputLength + 1);
+	char * encoded = elektraMalloc (encodedLength);
 	if (!encoded) return NULL;
 
 	for (size_t i = 0; i < inputLength; i += 3)
