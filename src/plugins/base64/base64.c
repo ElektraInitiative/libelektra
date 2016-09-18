@@ -151,11 +151,11 @@ int ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME, base64Decode) (const char * in
 		(*output)[outputIndex++] = (b0 << 2) + (b1 >> 4);
 		if (input[i + 2] != padding)
 		{
-			(*output)[outputIndex++] = ((b1 & 0x0f) << 4) + (b2 >> 2);
+			(*output)[outputIndex++] = (b1 << 4) + (b2 >> 2);
 		}
 		if (input[i + 3] != padding)
 		{
-			(*output)[outputIndex++] = ((b2 & 0x03) << 6) + b3;
+			(*output)[outputIndex++] = (b2 << 6) + b3;
 		}
 	}
 	return 1;
