@@ -944,3 +944,10 @@ severity:error
 ingroup:plugin
 module:blockresolver
 macro:BLOCKRESOLVER_NO_EOB
+
+number:157
+description:Base64 decoding error. Provided string was not Base64 encoded. The value of the Key has not been modified.
+severity:warning
+ingroup:plugin
+module:base64
+macro:BASE64_DECODING

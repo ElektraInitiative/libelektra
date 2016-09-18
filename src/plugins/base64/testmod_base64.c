@@ -120,8 +120,7 @@ static void test_base64_decoding ()
 	}
 }
 
-/*
-static void test_file_operations ()
+static void test_base64_plugin_regular ()
 {
 	Plugin * plugin = NULL;
 	Key * parentKey = keyNew ("system", KEY_END);
@@ -133,28 +132,64 @@ static void test_file_operations ()
 	succeed_if (plugin, "failed to open plugin handle");
 	if (plugin)
 	{
-		KeySet * data = ksNew (0, KS_END);
-		char * tmpFile = getTemporaryFileName ();
-		if (tmpFile)
+		Key * k;
+		const kdb_octet_t sampleValue[] = { 0x31, 0x32, 0x33 };
+
+		KeySet * data = ksNew (3, keyNew ("/t/k1", KEY_VALUE, "Hello World", KEY_END),
+				       keyNew ("/t/k2", KEY_BINARY, KEY_SIZE, sizeof (sampleValue), KEY_VALUE, sampleValue, KEY_END),
+				       keyNew ("/t/k3", KEY_BINARY, KEY_SIZE, 0, KEY_END), KS_END);
+
+		// test encoding
+		succeed_if (plugin->kdbSet (plugin, data, parentKey) == 1, "kdb set failed");
+
+		k = ksLookupByName (data, "/t/k1", 0);
+		succeed_if (k, "lost key in data KeySet");
+		if (k)
 		{
-			// prepare test file to be encrypted
-			writeTestFile (tmpFile);
-			keySetString (parentKey, tmpFile);
+			succeed_if (strcmp (keyString (k), "Hello World") == 0, "changed string value that does not require encoding");
+		}
 
-			// try to encrypt the file
-			succeed_if (plugin->kdbSet (plugin, data, parentKey) == 1, "kdb set failed");
-			succeed_if (isTestFileCorrect (tmpFile) == -1, "file content did not change during encryption");
+		k = ksLookupByName (data, "/t/k2", 0);
+		succeed_if (k, "lost key in data KeySet");
+		if (k)
+		{
+			succeed_if (strcmp (keyString (k), "bin:MTIz") == 0, "encoding binary key failed during kdb set");
+		}
 
-			// try to decrypt the file again (simulating the pregetstorage call)
-			succeed_if (plugin->kdbGet (plugin, data, parentKey) == 1, "kdb get (pregetstorage) failed");
-			succeed_if (isTestFileCorrect (tmpFile) == 1, "file content could not be restored during decryption");
+		k = ksLookupByName (data, "/t/k3", 0);
+		succeed_if (k, "lost key in data KeySet");
+		if (k)
+		{
+			succeed_if (strcmp (keyString (k), "bin:") == 0, "encoding NULL-key failed during kdb set");
+		}
 
-			// a second call to kdb get (the postgetstorage call) should re-encrypt the file again
-			succeed_if (plugin->kdbGet (plugin, data, parentKey) == 1, "kdb get (postgetstorage) failed");
-			succeed_if (isTestFileCorrect (tmpFile) == -1, "postgetstorage did not encrypt the file again");
+		// test decoding
+		succeed_if (plugin->kdbGet (plugin, data, parentKey) == 1, "kdb get (pregetstorage) failed");
 
-			remove (tmpFile);
-			elektraFree (tmpFile);
+		k = ksLookupByName (data, "/t/k1", 0);
+		succeed_if (k, "lost key in data KeySet");
+		if (k)
+		{
+			succeed_if (strcmp (keyString (k), "Hello World") == 0, "changed string value that does not require decoding");
+		}
+
+		k = ksLookupByName (data, "/t/k2", 0);
+		succeed_if (k, "lost key in data KeySet");
+		if (k)
+		{
+			succeed_if (keyGetValueSize (k) == sizeof (sampleValue), "decoding binary key failed during kdb get");
+			if (keyGetValueSize (k) == sizeof (sampleValue))
+			{
+				succeed_if (memcmp (sampleValue, keyValue (k), sizeof (sampleValue)) == 0,
+					    "decoding binary key failed during kdb get");
+			}
+		}
+
+		k = ksLookupByName (data, "/t/k3", 0);
+		succeed_if (k, "lost key in data KeySet");
+		if (k)
+		{
+			succeed_if (keyGetValueSize (k) <= 0, "decoding NULL-key failed during kdb get");
 		}
 
 		ksDel (data);
@@ -165,7 +200,73 @@ static void test_file_operations ()
 	ksDel (modules);
 	keyDel (parentKey);
 }
-*/
+
+static void test_base64_plugin_decoding_error ()
+{
+	Plugin * plugin = NULL;
+	Key * parentKey = keyNew ("system", KEY_END);
+	KeySet * modules = ksNew (0, KS_END);
+	KeySet * config = newPluginConfiguration ();
+
+	elektraModulesInit (modules, 0);
+	plugin = elektraPluginOpen (ELEKTRA_PLUGIN_NAME, modules, config, 0);
+	succeed_if (plugin, "failed to open plugin handle");
+	if (plugin)
+	{
+		Key * k;
+		const kdb_octet_t sampleValue[] = { 0x31, 0x32, 0x33 };
+
+		KeySet * data =
+			ksNew (2, keyNew ("/t/k1", KEY_VALUE, "bin:_$..", KEY_END),
+			       keyNew ("/t/k2", KEY_BINARY, KEY_SIZE, sizeof (sampleValue), KEY_VALUE, sampleValue, KEY_END), KS_END);
+
+		// test encoding
+		succeed_if (plugin->kdbSet (plugin, data, parentKey) == 1, "kdb set failed");
+
+		k = ksLookupByName (data, "/t/k1", 0);
+		succeed_if (k, "lost key in data KeySet");
+		if (k)
+		{
+			succeed_if (strcmp (keyString (k), "bin:_$..") == 0, "changed string value that does not require encoding");
+		}
+
+		k = ksLookupByName (data, "/t/k2", 0);
+		succeed_if (k, "lost key in data KeySet");
+		if (k)
+		{
+			succeed_if (strcmp (keyString (k), "bin:MTIz") == 0, "encoding binary key failed during kdb set");
+		}
+
+		// test decoding
+		succeed_if (plugin->kdbGet (plugin, data, parentKey) == 1, "kdb get failed");
+
+		k = ksLookupByName (data, "/t/k1", 0);
+		succeed_if (k, "lost key in data KeySet");
+		if (k)
+		{
+			succeed_if (strcmp (keyString (k), "bin:_$..") == 0, "decoded string value that should have failed");
+		}
+
+		k = ksLookupByName (data, "/t/k2", 0);
+		succeed_if (k, "lost key in data KeySet");
+		if (k)
+		{
+			succeed_if (keyGetValueSize (k) == sizeof (sampleValue), "decoding binary key failed during kdb get");
+			if (keyGetValueSize (k) == sizeof (sampleValue))
+			{
+				succeed_if (memcmp (sampleValue, keyValue (k), sizeof (sampleValue)) == 0,
+					    "decoding binary key failed during kdb get");
+			}
+		}
+
+		ksDel (data);
+		elektraPluginClose (plugin, 0);
+	}
+
+	elektraModulesClose (modules, 0);
+	ksDel (modules);
+	keyDel (parentKey);
+}
 
 int main (int argc, char ** argv)
 {
@@ -180,6 +281,8 @@ int main (int argc, char ** argv)
 
 	// test the plugin functionality
 	test_init ();
+	test_base64_plugin_regular ();
+	test_base64_plugin_decoding_error ();
 
 	printf ("\n" ELEKTRA_PLUGIN_NAME " RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 	return nbError;

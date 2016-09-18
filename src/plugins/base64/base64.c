@@ -21,12 +21,27 @@ static const char * alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuv
 static const char padding = '=';
 
 /**
+ * @brief read prefix from plugin configuration.
+ * @param config holds the plugin configuration.
+ * @returns the prefix to be used by the plugin.
+ */
+static const char * getPrefix (KeySet * config)
+{
+	Key * k = ksLookupByName (config, ELEKTRA_PLUGIN_BASE64_PARAM_PREFIX, 0);
+	if (k)
+	{
+		return keyString (k);
+	}
+	return ELEKTRA_PLUGIN_BASE64_DEFAULT_PREFIX;
+}
+
+/**
  * @brief encodes arbitrary binary data using the Base64 encoding scheme (RFC4648)
  * @param input holds the data to be encoded
  * @param inputLength tells how many bytes the input buffer is holding.
  * @returns an allocated string holding the Base64 encoded input data or NULL if the string can not be allocated. Must be freed by the caller.
  */
-char * ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME, base64Encode) (kdb_octet_t * input, size_t inputLength)
+char * ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME, base64Encode) (const kdb_octet_t * input, const size_t inputLength)
 {
 	size_t encodedLength;
 	if (inputLength % 3 == 0)
@@ -109,7 +124,7 @@ static kdb_octet_t getBase64Index (const char c, int * errorFlag)
 int ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME, base64Decode) (const char * input, kdb_octet_t ** output, size_t * outputLength)
 {
 	const size_t inputLen = strlen (input);
-	if (inputLen == 0)
+	if (inputLen == 0 || (inputLen == 1 && input[0] == '\0'))
 	{
 		*output = NULL;
 		*outputLength = 0;
@@ -162,7 +177,7 @@ int ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME, base64Decode) (const char * in
 }
 
 /**
- * @brief establish the Elektra plugin contract and decrypt the file provded at parentKey using GPG.
+ * @brief establish the Elektra plugin contract and decode all Base64 encoded values back to their original binary form.
  * @retval 1 on success
  * @retval -1 on failure
  */
@@ -179,18 +194,93 @@ int ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME, get) (Plugin * handle, KeySet 
 		return 1;
 	}
 
-	// TODO base64 decoding
+	// base64 decoding
+	Key * k;
+	KeySet * pluginConfig = elektraPluginGetConfig (handle);
+
+	const char * prefix = getPrefix (pluginConfig);
+	const size_t prefixLen = strlen (prefix);
+
+	ksRewind (ks);
+	while ((k = ksNext (ks)))
+	{
+		if (keyIsString (k))
+		{
+			const char * strVal = keyString (k);
+			if (strlen (strVal) >= prefixLen && strncmp (strVal, prefix, prefixLen) == 0)
+			{
+				kdb_octet_t * buffer;
+				size_t bufferLen;
+
+				int result = ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME, base64Decode) (strVal + prefixLen, &buffer,
+													  &bufferLen);
+				if (result == 1)
+				{
+					// success
+					keySetBinary (k, buffer, bufferLen);
+				}
+				else if (result == -1)
+				{
+					// decoding error
+					ELEKTRA_ADD_WARNINGF (ELEKTRA_WARNING_BASE64_DECODING, parentKey,
+							      "Not Base64 encoded: %s. Maybe use a different prefix?", strVal);
+				}
+				else if (result == -2)
+				{
+					// memory error
+					ELEKTRA_SET_ERROR (87, parentKey, "Memory allocation failed");
+					return -1;
+				}
+
+				elektraFree (buffer);
+			}
+		}
+	}
 	return 1;
 }
 
 /**
- * @brief Encrypt the file provided at parentKey using GPG.
+ * @brief Encode all binary values using the Base64 encoding scheme.
  * @retval 1 on success
  * @retval -1 on failure
  */
-int ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME, set) (Plugin * handle, KeySet * ks ELEKTRA_UNUSED, Key * parentKey)
+int ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME, set) (Plugin * handle, KeySet * ks, Key * parentKey)
 {
-	// TODO base64 encoding
+	Key * k;
+	KeySet * pluginConfig = elektraPluginGetConfig (handle);
+
+	const char * prefix = getPrefix (pluginConfig);
+	const size_t prefixLen = strlen (prefix);
+
+	ksRewind (ks);
+	while ((k = ksNext (ks)))
+	{
+		if (keyIsBinary (k) == 1)
+		{
+			char * base64 =
+				ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME, base64Encode) (keyValue (k), (size_t)keyGetValueSize (k));
+			if (!base64)
+			{
+				ELEKTRA_SET_ERROR (87, parentKey, "Memory allocation failed");
+				return -1;
+			}
+
+			const size_t newValLen = strlen (base64) + prefixLen + 1;
+			char * newVal = elektraMalloc (newValLen);
+			if (!newVal)
+			{
+				ELEKTRA_SET_ERROR (87, parentKey, "Memory allocation failed");
+				elektraFree (base64);
+				return -1;
+			}
+			snprintf (newVal, newValLen, "%s%s", prefix, base64);
+
+			keySetString (k, newVal);
+
+			elektraFree (newVal);
+			elektraFree (base64);
+		}
+	}
 	return 1;
 }
 

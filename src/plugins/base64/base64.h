@@ -14,8 +14,11 @@
 #include <kdbtypes.h>
 #include <stdio.h>
 
+#define ELEKTRA_PLUGIN_BASE64_PARAM_PREFIX "/base64/prefix"
+#define ELEKTRA_PLUGIN_BASE64_DEFAULT_PREFIX "bin:"
+
 // encoding functions
-char * ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME, base64Encode) (kdb_octet_t * input, size_t inputLength);
+char * ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME, base64Encode) (const kdb_octet_t * input, const size_t inputLength);
 int ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME, base64Decode) (const char * input, kdb_octet_t ** output, size_t * outputLength);
 
 // kdb functions
