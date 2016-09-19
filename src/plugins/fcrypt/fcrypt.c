@@ -279,6 +279,7 @@ int ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME, close) (Plugin * handle, KeySe
 	if (s)
 	{
 		elektraFree (s);
+		elektraPluginSetData (handle, NULL);
 	}
 	return 1;
 }
@@ -348,7 +349,7 @@ int ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME, set) (Plugin * handle, KeySet 
 }
 
 /**
- * @brief Checks for the existense of the master password, that is used for encryption and decryption.
+ * @brief Checks for the existence of the master password, that is used for encryption and decryption.
  *
  * If the master password can not be found it will be generated randomly.
  * Then it will be encrypted and stored in conf.

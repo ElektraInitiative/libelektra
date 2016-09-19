@@ -11,7 +11,6 @@
 #define ELEKTRA_PLUGIN_FCRYPT_H
 
 #include <kdbplugin.h>
-#include <stdio.h>
 
 // kdb functions
 int ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME, get) (Plugin * handle, KeySet * ks, Key * parentKey);
