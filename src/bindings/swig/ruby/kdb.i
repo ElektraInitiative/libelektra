@@ -8,6 +8,8 @@
 
 %feature("autodoc", "3");
 
+%define CPPDOCURL "http://www.libelektra.org/TBD!!!" %enddef
+
 %define DOCSTRING
 "This module is a SWIG generated binding for KDB (http://www.libelektra.org),
 therefore the module provide wrapper classes to KDBs C++ interface and is 
@@ -24,8 +26,11 @@ this module differs to the C++ API in the following way:
 Please note, this documentaition will show C++ types also (e.g. std::string).
 "
 %enddef
-
+/* docstring for module wasn't implemented until now, however, there's 
+   a pull-request (https://github.com/swig/swig/pull/582), thus this feature
+   should be available soon */
 %module(docstring=DOCSTRING) kdb
+
 
 
 %include "attribute.i"
@@ -62,6 +67,7 @@ namespace std {
  * kdb.h
  *
  ****************************************************************************/
+
 %constant void *KS_END = KS_END;
 %constant const char *VERSION = KDB_VERSION;
 %constant const short VERSION_MAJOR = KDB_VERSION_MAJOR;
@@ -78,6 +84,21 @@ namespace std {
  * kdb::Key
  *
  ****************************************************************************/
+
+%feature("autodoc", "Wrapper class for C++ kdb::Key, thus for a full 
+documentation see " CPPDOCURL "Key.html.
+
+However, to allow a more Ruby way of programming this class differs from
+the original C++ class in the following aspects:
+- method names follow ruby naming conventions 
+- variable length argument list (`va_list`) is implemented using Rubys
+  parameter Hash method. 
+- getter methods to underlaying Elektra Key (C) are not included
+- C++ Iterators for iterating over meta data are not included. Instaed use
+  Key.next_meta, Key.current_meta, Key.rewind_meta and Key.meta.
+- Key.meta allows access to the meta data key set
+- string length methods are not included (e.g. key.getNameSize())
+") kdb::Key;
 
 /* 
  * Exceptions 
@@ -109,6 +130,22 @@ namespace std {
 
 
 /* ignore certain methods */
+%feature("autodoc", "Allocate a new Key
+
+The following variants are available:
+
+  call-seq:
+     Kdb::Key.new
+     Kdb::Key.new keyname
+     Kdb::Key.new keyname, options-Hash
+
+  k = Kdb::Key.new
+
+  k = Kdb::Key.new('user/myapp/config1',
+                   value: 'hello',
+                   owner: 'me',
+                   meta-data1: 'meta')
+") kdb::Key::Key; 
 //%ignore kdb::Key::Key ();
 //%ignore kdb::Key::Key (const std::string keyName, ...);
 //%ignore kdb::Key::Key (const char *keyName, va_list ap);
@@ -198,6 +235,10 @@ namespace kdb {
 
 /* expose Keys meta KeySet
  * this allows Ruby-style meta iterator, e.g. k.meta.each ... */
+%feature("autodoc", "allows access to the meta data keyset of the 
+underlaying key, which allows a Ruby-style iteration over metadata:
+  k.meta.each { |m| puts 'meta data: %s: %s' % [m.name, m.value] }
+") kdb::Key::meta;
 %extend kdb::Key {
   kdb::KeySet* meta() {
     return new kdb::KeySet($self->getKey()->meta);
@@ -376,7 +417,13 @@ namespace kdb {
 /*
  * spaceship operator, useful for sorting methods
  */
-%feature("autodoc", "<=>(Key comp) -> int") kdb::Key::spaceship;
+%feature("autodoc", "<=>(Key comp) -> int
+
+aliased to '<=>', implemented for sorting operations.
+  k1 < k2  : -1
+  k1 == k2 :  0
+  k1 > k2  :  1
+") kdb::Key::spaceship;
 //%rename("<=>") kdb::Key::spaceship;
 %alias kdb::Key::spaceship "<=>"
 %extend kdb::Key {
