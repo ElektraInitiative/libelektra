@@ -495,8 +495,8 @@ Can be used to create a new entry in the database. An entry consists of a unique
 
 + Response 200 (application/json)
     + Attributes (object)
-        + message (string) - Detailed error information, e.g. hint about malformed request
-        + i18n (string) - A unique token representing above error description message; can be used for internationalization in frontends
+        + message (string) - Detailed response information, normally success message
+        + i18n (string) - A unique token representing above message; can be used for internationalization in frontends
 
             A comprehensive list of possible messages:
             - `ENTRY_CREATED_SUCCESSFULLY` if the entry has been added successfully to the database
@@ -589,6 +589,14 @@ This operation can only be executed by the owner of an entry as well as moderato
         
             The new configuration snippet. It can be of any supported format, in this example **ini** is used.
 
++ Response 200 (application/json)
+    + Attributes (object)
+        + message (string) - Detailed response information, normally success message
+        + i18n (string) - A unique token representing above message; can be used for internationalization in frontends
+
+            A comprehensive list of possible messages:
+            - `ENTRY_UPDATED_SUCCESSFULLY` if the entry has been updated successfully
+
 + Response 400 (application/json)
     + Attributes (object)
         + status (string) - Textual description of the HTTP status
@@ -648,8 +656,8 @@ This operation can only be executed by the owner of an entry as well as moderato
 
 + Response 200 (application/json)
     + Attributes (object)
-        + message (string) - Detailed error information, e.g. hint about malformed request
-        + i18n (string) - A unique token representing above error description message; can be used for internationalization in frontends
+        + message (string) - Detailed response information, normally success message
+        + i18n (string) - A unique token representing above message; can be used for internationalization in frontends
 
             A comprehensive list of possible messages:
             - `ENTRY_DELETED_SUCCESSFULLY` if the entry has been deleted successfully from the database
@@ -672,6 +680,86 @@ This operation can only be executed by the owner of an entry as well as moderato
 
             A comprehensive list of possible errors:
             - `ENTRY_DOES_NOT_EXIST` if the entry specified by the URI does not exist in the database
+
+
+
+# Conversion endpoint [/conversion]
+
+## Convert configuration snippet [POST]
+
+Offers to convert a supplied configuration snippet from one format into another format.
+
++ Request (application/json)
+    + Attributes (object)
+        + input (object, required)
+            + format: `ini` (string, required)
+
+                The configuration format of the input snippet.
+
+                Regex: ^[a-zA-Z0-9\-\.\_]+$
+
+            + snippet: `some-variable = some special value` (string, required)
+
+                The configuration snippet itself.
+
+        + output (object, required)
+            + format: `json` (string, required)
+
+                The desired output format.
+
+                Regex: ^[a-zA-Z0-9\-\.\_]+$
+
++ Response 200 (application/json)
+    + Attributes (object)
+        + message (string) - Detailed response information, normally success message
+        + i18n (string) - A unique token representing above message; can be used for internationalization in frontends
+
+            A comprehensive list of possible messages:
+            - `CONVERT_SUCCESSFUL` if the conversion ran without errors
+
+        + output (object)
+            + format (string) - The requested output format.
+            + snippet (string) - The supplied snippet converted into the output format.
+
++ Response 400 (application/json)
+    + Attributes (object)
+        + status (string) - Textual description of the HTTP status
+        + message (string) - Detailed error information, e.g. hint about malformed request
+        + i18n (string) - A unique token representing above error description message; can be used for internationalization in frontends
+
+            A comprehensive list of possible errors:
+            - `CONVERT_MISSING_INPUT_FORMAT` if no input for `input.format` was submitted
+            - `CONVERT_MISSING_INPUT_SNIPPET` if no input for `input.snippet` was submitted
+            - `CONVERT_MISSING_OUTPUT_FORMAT` if no input for `output.format` was submitted
+            - `CONVERT_INVALID_INPUT_FORMAT` if the submitted `input.format` is malformed (regex: ^[a-zA-Z0-9\-\.\_]+$)
+            - `CONVERT_INVALID_OUTPUT_FORMAT` if the submitted `output.format` is malformed (regex: ^[a-zA-Z0-9\-\.\_]+$)
+            - `REQUEST_MALFORMED_DATA` if the submitted data in the request body does not match the Content-Type or is unparseable
+
++ Response 406 (application/json)
+    + Attributes (object)
+        + status (string) - Textual description of the HTTP status
+        + message (string) - Detailed error information, e.g. hint about malformed request
+        + i18n (string) - A unique token representing above error description message; can be used for internationalization in frontends
+
+            A comprehensive list of possible errors:
+            - `REQUEST_UNSUPPORTED_CONTENT_TYPE` if the submitted Content-Type is not `application/json`
+
++ Response 422 (application/json)
+    + Attributes (object)
+        + status (string) - Textual description of the HTTP status
+        + message (string) - Detailed error information, e.g. hint about malformed request
+        + i18n (string) - A unique token representing above error description message; can be used for internationalization in frontends
+
+            A comprehensive list of possible errors:
+            - `CONVERT_UNABLE_TO_PARSE_SNIPPET` if the submitted `input.snippet` could not be parsed properly
+            - `CONVERT_UNABLE_TO_CONVERT_SNIPPET` if the submitted `input.snippet` can not be represented using the submitted `output.format`
+
+## Supported conversion formats [GET /formats]
+
+Returns a list of supported configuration formats. In general this is a list of formats for which plugins are available and installed.
+
++ Response 200 (application/json)
+    + Attributes (array[string])
     
 
 
