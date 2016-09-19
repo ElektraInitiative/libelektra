@@ -400,7 +400,7 @@ Returns detailed information about the entry with the specified key (path). If t
     + application (string, required) - The `application` to which the configuration of the entry belongs to
     + scope (string, required) - The `application` specific `scope` to which the configuration of the entry belongs to
     + slug (string, required) - The identifier of the requested entry that is unique within the namespace created by `organization`, `application` and `scope`
-    + raw (string, optional) - If this parameter is supplied, the API will attempt to return the requested configuration snippet in the given `raw` format
+    + raw (string, optional) - If this parameter is supplied, the API will attempt to return the requested configuration snippet in the given `raw` format (regex: ^[a-zA-Z0-9\-\.\_]+$)
 
 + Response 200 (application/json)
     + Attributes (object)
