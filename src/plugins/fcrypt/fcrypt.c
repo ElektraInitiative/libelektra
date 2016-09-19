@@ -17,6 +17,11 @@
 #include <kdbtypes.h>
 #include <stdlib.h>
 #include <string.h>
+#include <errno.h>
+#include <fcntl.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <unistd.h>
 
 enum fcryptGetState
 {
@@ -322,7 +327,26 @@ int ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME, get) (Plugin * handle, KeySet 
 int ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME, set) (Plugin * handle, KeySet * ks ELEKTRA_UNUSED, Key * parentKey)
 {
 	KeySet * pluginConfig = elektraPluginGetConfig (handle);
-	return encrypt (pluginConfig, parentKey);
+	int encryptionResult = encrypt (pluginConfig, parentKey);
+	if(encryptionResult != 1) return encryptionResult;
+
+	/* set all keys */
+	const char * configFile = keyString (parentKey);
+	if (!strcmp (configFile, "")) return 0; // no underlying config file
+	int fd = open (configFile, O_RDWR);
+	if (fd == -1)
+	{
+		ELEKTRA_SET_ERRORF (89, parentKey, "Could not open config file %s because %s", configFile, strerror (errno));
+		return -1;
+	}
+	if (fsync (fd) == -1)
+	{
+		ELEKTRA_SET_ERRORF (89, parentKey, "Could not fsync config file %s because %s", configFile, strerror (errno));
+		close (fd);
+		return -1;
+	}
+	close (fd);
+	return 1;
 }
 
 /**
