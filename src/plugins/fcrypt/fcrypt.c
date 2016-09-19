@@ -11,14 +11,14 @@
 #include "kdbconfig.h"
 #endif
 #include "fcrypt.h"
+#include <errno.h>
+#include <fcntl.h>
 #include <gpg.h>
 #include <kdb.h>
 #include <kdberrors.h>
 #include <kdbtypes.h>
 #include <stdlib.h>
 #include <string.h>
-#include <errno.h>
-#include <fcntl.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
@@ -328,7 +328,7 @@ int ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME, set) (Plugin * handle, KeySet 
 {
 	KeySet * pluginConfig = elektraPluginGetConfig (handle);
 	int encryptionResult = encrypt (pluginConfig, parentKey);
-	if(encryptionResult != 1) return encryptionResult;
+	if (encryptionResult != 1) return encryptionResult;
 
 	/* set all keys */
 	const char * configFile = keyString (parentKey);
