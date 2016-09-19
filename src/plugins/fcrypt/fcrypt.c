@@ -179,8 +179,7 @@ static int encrypt (KeySet * pluginConfig, Key * parentKey)
 		// encryption successful, overwrite the original file with the encrypted data
 		if (rename (tmpFile, keyString (parentKey)) != 0)
 		{
-			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_FCRYPT_RENAME, parentKey, "Renaming file %s to %s failed.", tmpFile,
-					    keyString (parentKey));
+			ELEKTRA_SET_ERRORF (31, parentKey, "Renaming file %s to %s failed.", tmpFile, keyString (parentKey));
 			result = -1;
 		}
 	}
@@ -240,8 +239,7 @@ static int decrypt (KeySet * pluginConfig, Key * parentKey)
 		// encryption successful, overwrite the original file with the encrypted data
 		if (rename (tmpFile, keyString (parentKey)) != 0)
 		{
-			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_FCRYPT_RENAME, parentKey, "Renaming file %s to %s failed.", tmpFile,
-					    keyString (parentKey));
+			ELEKTRA_SET_ERRORF (31, parentKey, "Renaming file %s to %s failed.", tmpFile, keyString (parentKey));
 			result = -1;
 		}
 	}
