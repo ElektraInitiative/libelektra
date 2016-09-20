@@ -14,6 +14,7 @@
 #include <errno.h>
 
 #include <kdberrors.h>
+#include <kdblogger.h>
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -62,12 +63,15 @@ int elektraSimpleiniGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key 
 		return -1;
 	}
 
+	ELEKTRA_LOG ("Read from %s", keyString (parentKey));
+
 
 	int n;
 #pragma GCC diagnostic ignored "-Wformat"
 	// icc warning #269: invalid format string conversion
 	while ((n = fscanf (fp, "%ms = %ms\n", &key, &value)) >= 1)
 	{
+		ELEKTRA_LOG_DEBUG ("Read %d chars: %s with value %s", n, key, value);
 		Key * read = keyNew (0);
 		if (keySetName (read, key) == -1)
 		{
@@ -105,6 +109,8 @@ int elektraSimpleiniSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key 
 		ELEKTRA_SET_ERROR (74, parentKey, keyString (parentKey));
 		return -1;
 	}
+
+	ELEKTRA_LOG ("Write to %s", keyString (parentKey));
 
 	Key * cur;
 	ksRewind (returned);
