@@ -16,7 +16,7 @@
 #define USE_STDERR_SINK
 #define USE_SYSLOG_SINK
 #define USE_FILE_SINK
-#define NO_FILTER
+// #define NO_FILTER
 
 
 #define _GNU_SOURCE /* For asprintf */
@@ -82,8 +82,10 @@ int elektraLog (int level ELEKTRA_UNUSED, const char * function ELEKTRA_UNUSED, 
 		const int line ELEKTRA_UNUSED, const char * mmsg ELEKTRA_UNUSED, ...)
 {
 #ifndef NO_FILTER
-	// XXX Filter here for every sink
-	if (level <= ELEKTRA_LOG_LEVEL) return 0;
+	// XXX Filter level here globally (for every sink)
+	// if (level <= ELEKTRA_LOG_LEVEL) return 0;
+	// by default: discard everything except assertions, comment out to get logs
+	if (level <= ELEKTRA_LOG_LEVEL_WARNING) return 0;
 #endif
 
 	char * msg = strdupa (mmsg);
@@ -101,6 +103,14 @@ int elektraLog (int level ELEKTRA_UNUSED, const char * function ELEKTRA_UNUSED, 
 	char * str;
 	// XXX Change here default format for messages
 	asprintf (&str, "%s:%d:%s: %s\n", file, line, function, msg);
+
+#ifndef NO_FILTER
+	// XXX Filter here for files
+	// e.g. discard log statements from the log statement itself:
+	// if (!strcmp (file, "src/libs/elektra/log.c")) return 0;
+	// e.g. discard everything, but log statements from simpleini.c:
+	// if (strcmp (file, "src/plugins/simpleini/simpleini.c")) return 0;
+#endif
 
 	int ret = -1;
 #ifdef USE_STDERR_SINK
