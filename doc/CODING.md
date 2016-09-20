@@ -67,21 +67,11 @@ Up-to-date code comments are essential to make code understandable for others.
    ELEKTRA_ASSERT (condition, "text to be printed when assert fails", ...)
    ```
 
-2. If the "comment" might be useful to be printed during execution, use logging.
-   First introduce your module `modulename` in `kdblog.h`.
-   Then you can use it:
+2. If the "comment" might be useful to be printed during execution, use logging:
 
    ```c
-   #define ELEKTRA_LOG_MODULE modulename
-   #include <kdblog.h>
+   #include <kdblogger.h>
    ELEKTRA_LOG ("text to be printed according log filters", ...)
-   ```
-
-   Or if multiple modules are intermixed in the same file:
-
-   ```c
-   #include <kdblog.h>
-   ELEKTRA_LOG (modulename, "text to be printed according log filters", ...)
    ```
 
 3. Prefer to comment functions with Doxygen, see below.
