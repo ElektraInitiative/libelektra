@@ -319,8 +319,7 @@ KDB * kdbOpen (Key * errorKey)
 	handle->trie = 0;
 
 #ifdef HAVE_LOGGER
-	if (inFallback)
-		ELEKTRA_LOG_WARNING ("fallback for bootstrapping: you might want to run `kdb upgrade-bootstrap`");
+	if (inFallback) ELEKTRA_LOG_WARNING ("fallback for bootstrapping: you might want to run `kdb upgrade-bootstrap`");
 
 	Key * key;
 

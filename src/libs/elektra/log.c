@@ -36,9 +36,8 @@
 #include <string.h>
 
 #ifdef USE_STDERR_SINK
-static int elektraLogStdErr (int level ELEKTRA_UNUSED, const char * function ELEKTRA_UNUSED,
-		      const char * file ELEKTRA_UNUSED, const int line ELEKTRA_UNUSED, const char * msg ELEKTRA_UNUSED,
-		      const char * fmt ELEKTRA_UNUSED, va_list args)
+static int elektraLogStdErr (int level ELEKTRA_UNUSED, const char * function ELEKTRA_UNUSED, const char * file ELEKTRA_UNUSED,
+			     const int line ELEKTRA_UNUSED, const char * msg ELEKTRA_UNUSED, const char * fmt ELEKTRA_UNUSED, va_list args)
 {
 #ifndef NO_FILTER
 // XXX Filter here for specific sink
@@ -48,9 +47,8 @@ static int elektraLogStdErr (int level ELEKTRA_UNUSED, const char * function ELE
 #endif
 
 #ifdef USE_SYSLOG_SINK
-static int elektraLogSyslog (int level ELEKTRA_UNUSED, const char * function ELEKTRA_UNUSED,
-		      const char * file ELEKTRA_UNUSED, const int line ELEKTRA_UNUSED, const char * msg ELEKTRA_UNUSED,
-		      const char * fmt ELEKTRA_UNUSED, va_list args)
+static int elektraLogSyslog (int level ELEKTRA_UNUSED, const char * function ELEKTRA_UNUSED, const char * file ELEKTRA_UNUSED,
+			     const int line ELEKTRA_UNUSED, const char * msg ELEKTRA_UNUSED, const char * fmt ELEKTRA_UNUSED, va_list args)
 {
 #ifndef NO_FILTER
 // XXX Filter here for specific sink
@@ -63,9 +61,8 @@ static int elektraLogSyslog (int level ELEKTRA_UNUSED, const char * function ELE
 static FILE * elektraLoggerFileHandle;
 
 #ifdef USE_FILE_SINK
-static int elektraLogFile (int level ELEKTRA_UNUSED, const char * function ELEKTRA_UNUSED,
-		      const char * file ELEKTRA_UNUSED, const int line ELEKTRA_UNUSED, const char * msg ELEKTRA_UNUSED,
-		      const char * fmt ELEKTRA_UNUSED, va_list args)
+static int elektraLogFile (int level ELEKTRA_UNUSED, const char * function ELEKTRA_UNUSED, const char * file ELEKTRA_UNUSED,
+			   const int line ELEKTRA_UNUSED, const char * msg ELEKTRA_UNUSED, const char * fmt ELEKTRA_UNUSED, va_list args)
 {
 #ifndef NO_FILTER
 // XXX Filter here for specific sink
@@ -92,12 +89,11 @@ int elektraLog (int level ELEKTRA_UNUSED, const char * function ELEKTRA_UNUSED, 
 	size_t lenOfMsg = strlen (msg);
 	do
 	{
-		if (msg [lenOfMsg] == '\n') msg [lenOfMsg] = '_';
-	}
-	while (lenOfMsg--);
+		if (msg[lenOfMsg] == '\n') msg[lenOfMsg] = '_';
+	} while (lenOfMsg--);
 
-	size_t lenOfLogFileName = sizeof("src/libs/elektra/log.c")-1;
-	size_t lenOfLogPathName = strlen(__FILE__)-lenOfLogFileName;
+	size_t lenOfLogFileName = sizeof ("src/libs/elektra/log.c") - 1;
+	size_t lenOfLogPathName = strlen (__FILE__) - lenOfLogFileName;
 	const char * file = &absFile[lenOfLogPathName];
 
 	char * str;
@@ -106,10 +102,10 @@ int elektraLog (int level ELEKTRA_UNUSED, const char * function ELEKTRA_UNUSED, 
 
 #ifndef NO_FILTER
 	// XXX Filter here for files
-	// e.g. discard log statements from the log statement itself:
-	// if (!strcmp (file, "src/libs/elektra/log.c")) return 0;
 	// e.g. discard everything, but log statements from simpleini.c:
 	// if (strcmp (file, "src/plugins/simpleini/simpleini.c")) return 0;
+	// e.g. discard log statements from the log statement itself (does nothing):
+	if (!strcmp (file, "src/libs/elektra/log.c")) return 0;
 #endif
 
 	int ret = -1;
