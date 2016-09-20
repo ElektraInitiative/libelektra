@@ -7,30 +7,15 @@ A complete list of ideas what could be done can be found in the
 
 
 
-# 0.8.17
+# 0.8.19
 
 Also see [githubs issues](http://git.libelektra.org/issues)
 for other activities of the current release.
 
-## libs
-
-RPATH only where needed (+ where should elektraModulesLoad be?)
-
-
-## OpenBSD
-
-fix warnings
-
-fix tests
-
-
 ## tests
 
-use shell recorder
-
-introduce shell recorder for README.md
-
-automate shell recorder on build server
+use shell recorder for README.md
+	make examples more consistent
 
 array:
 	together with yajl
@@ -45,23 +30,15 @@ fix testkdb_conflict:
 	also with file/non-file
 	also with more than 2 KDB
 
-## fixes
-
-compiler warnings:
-	key hash warning
-
-check meta-data plugins with spec
-
-## kdb
-
-kdb setmeta with 2 args to remove meta data!
-kdb set --file -F (read from file) reuse import/export?
-
-
 ## lazy mountpoints
 
 using list plugin
 so that everything is lazy+arbitrary number of plugins
+
+## fixes
+
+compiler warnings:
+	key hash warning
 
 ## docu
 
@@ -86,26 +63,12 @@ docu specification mount
 minimal generic description of commandline-options in kdb
 	long specific description in man pages
 
-
-## INI
-
-meta as special syntax
-ordering
-comments
-
-
-## Lua plugin
-
-further value transformations
-
-
 ## cleanup
 
 core, kdb.. remove useless symbols
 
 elektraRemoveOneLevel
 keyGetParentName
-
 
 ## decisions
 
@@ -140,11 +103,6 @@ let json use same types (double, boolean, nothing for string)
 type checker plugin redesign: take care of simplicity + working together with others
 	set of types (min, max as 1-20, enums as user-defined types,...), space separated as now
 	look into haskell type classes
-
-
-## testing
-
-create new test cases with shell script recorder
 
 
 ## other stuff

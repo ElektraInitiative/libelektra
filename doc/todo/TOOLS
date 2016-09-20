@@ -55,11 +55,31 @@ more testing
 
 
 
+== NEW INTERFACES
+
+ncurses interface
+pstree like visualization
+
+
+
+
 
 
 
 
 == KDB ==
+
+generic fstab:
+	allow to specify templates that are filled out by the given arguments e.g.:
+	/sw/kdb/template/
+	/sw/kdb/template/fstab/ZZZNewFstabName
+	/sw/kdb/template/fstab/ZZZNewFstabName/device
+	/sw/kdb/template/fstab/ZZZNewFstabName/dumpfreq
+	/sw/kdb/template/fstab/ZZZNewFstabName/mpoint
+	/sw/kdb/template/fstab/ZZZNewFstabName/options
+	/sw/kdb/template/fstab/ZZZNewFstabName/passno
+	/sw/kdb/template/fstab/ZZZNewFstabName/type
+	allows kdb mset fstab <args> to be the same as kdb fstab
 
 kdb tool should work with arrays (add_entry, remove_entry)
 

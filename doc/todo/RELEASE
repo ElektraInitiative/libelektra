@@ -13,6 +13,10 @@ Following shell expansions are used in this document:
 = TODO =
 
 - make sure no TODO is in this file (resolve them first!)
+- Simplify release!
+- Scripts for strace, version, run tests!
+- Shell recorder in examples!
+- Check transitions in plugin status: especially from/to experimental
 
 
 
