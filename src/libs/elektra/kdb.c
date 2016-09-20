@@ -251,8 +251,11 @@ KDB * kdbOpen (Key * errorKey)
 {
 	if (!errorKey)
 	{
+		ELEKTRA_LOG ("no error key passed");
 		return 0;
 	}
+
+	ELEKTRA_LOG ("called with %s", keyName (errorKey));
 
 	int errnosave = errno;
 	KDB * handle = elektraCalloc (sizeof (struct _KDB));
@@ -291,6 +294,7 @@ KDB * kdbOpen (Key * errorKey)
 				     "Initial kdbGet() failed, you should either fix " KDB_DB_INIT " or the fallback " KDB_DB_FILE);
 		break;
 	case 2:
+		ELEKTRA_LOG ("entered fallback code for bootstrapping");
 		inFallback = 1;
 		break;
 	}
@@ -299,11 +303,11 @@ KDB * kdbOpen (Key * errorKey)
 
 	if (elektraMountGlobals (handle, ksDup (keys), handle->modules, errorKey) == -1)
 	{
-// elektraMountGlobals also sets a warning containing the name of the plugin that failed to load
-#if DEBUG && VERBOSE
-		printf ("Mounting global plugins failed\n");
-#endif
+		// elektraMountGlobals also sets a warning containing the name of the plugin that failed to load
 		ELEKTRA_ADD_WARNING (139, errorKey, "Mounting global plugins failed");
+
+		// TODO: avoid such double logging, maybe add general logging for every ELEKTRA_ADD_WARNING?
+		ELEKTRA_LOG_WARNING ("Mounting global plugins failed");
 	}
 
 	keySetName (errorKey, keyName (initialParent));
@@ -314,15 +318,15 @@ KDB * kdbOpen (Key * errorKey)
 	handle->defaultBackend = 0;
 	handle->trie = 0;
 
-#if DEBUG && VERBOSE
-	Key * key;
+#ifdef HAVE_LOGGER
+	if (inFallback) ELEKTRA_LOG_WARNING ("fallback for bootstrapping: you might want to run `kdb upgrade-bootstrap`");
 
-	if (inFallback) printf ("In fallback\n");
+	Key * key;
 
 	ksRewind (keys);
 	for (key = ksNext (keys); key; key = ksNext (keys))
 	{
-		printf ("config for createTrie name: %s value: %s\n", keyName (key), keyString (key));
+		ELEKTRA_LOG_DEBUG ("config for createTrie name: %s value: %s", keyName (key), keyString (key));
 	}
 #endif
 
@@ -728,9 +732,7 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 	int errnosave = errno;
 	Key * initialParent = keyDup (parentKey);
 
-#if DEBUG && VERBOSE
-	fprintf (stderr, "now in new kdbGet (%s)\n", keyName (parentKey));
-#endif
+	ELEKTRA_LOG ("now in new kdbGet (%s)", keyName (parentKey));
 
 	Split * split = elektraSplitNew ();
 

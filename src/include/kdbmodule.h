@@ -6,8 +6,8 @@
  * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
  */
 
-#ifndef KDBLIBLOADER_H
-#define KDBLIBLOADER_H
+#ifndef KDBMODULE_H
+#define KDBMODULE_H
 
 #include <kdb.h>
 #include <kdbplugin.h>
@@ -18,7 +18,6 @@ namespace ckdb
 extern "C" {
 #endif
 
-/* The pointer to a function which will create a plugin */
 typedef Plugin * (*elektraPluginFactory) (void);
 
 int elektraModulesInit (KeySet * modules, Key * error);
@@ -30,4 +29,4 @@ int elektraModulesClose (KeySet * modules, Key * error);
 }
 #endif
 
-#endif /* KDBLIBLOADER_H */
+#endif
