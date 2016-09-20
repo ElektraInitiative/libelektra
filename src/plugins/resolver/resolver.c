@@ -466,7 +466,7 @@ int ELEKTRA_PLUGIN_FUNCTION (resolver, get) (Plugin * handle, KeySet * returned,
 	int errnoSave = errno;
 	struct stat buf;
 
-	ELEKTRA_LOG (ELEKTRA_LOG_MODULE_RESOLVER, "stat file %s", pk->filename);
+	ELEKTRA_LOG ("stat file %s", pk->filename);
 	/* Start file IO with stat() */
 	if (stat (pk->filename, &buf) == -1)
 	{

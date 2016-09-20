@@ -36,7 +36,7 @@
 #include <string.h>
 
 #ifdef USE_STDERR_SINK
-static int elektraLogStdErr (int module ELEKTRA_UNUSED, int level ELEKTRA_UNUSED, const char * function ELEKTRA_UNUSED,
+static int elektraLogStdErr (int level ELEKTRA_UNUSED, const char * function ELEKTRA_UNUSED,
 		      const char * file ELEKTRA_UNUSED, const int line ELEKTRA_UNUSED, const char * msg ELEKTRA_UNUSED,
 		      const char * fmt ELEKTRA_UNUSED, va_list args)
 {
@@ -48,7 +48,7 @@ static int elektraLogStdErr (int module ELEKTRA_UNUSED, int level ELEKTRA_UNUSED
 #endif
 
 #ifdef USE_SYSLOG_SINK
-static int elektraLogSyslog (int module ELEKTRA_UNUSED, int level ELEKTRA_UNUSED, const char * function ELEKTRA_UNUSED,
+static int elektraLogSyslog (int level ELEKTRA_UNUSED, const char * function ELEKTRA_UNUSED,
 		      const char * file ELEKTRA_UNUSED, const int line ELEKTRA_UNUSED, const char * msg ELEKTRA_UNUSED,
 		      const char * fmt ELEKTRA_UNUSED, va_list args)
 {
@@ -63,7 +63,7 @@ static int elektraLogSyslog (int module ELEKTRA_UNUSED, int level ELEKTRA_UNUSED
 static FILE * elektraLoggerFileHandle;
 
 #ifdef USE_FILE_SINK
-static int elektraLogFile (int module ELEKTRA_UNUSED, int level ELEKTRA_UNUSED, const char * function ELEKTRA_UNUSED,
+static int elektraLogFile (int level ELEKTRA_UNUSED, const char * function ELEKTRA_UNUSED,
 		      const char * file ELEKTRA_UNUSED, const int line ELEKTRA_UNUSED, const char * msg ELEKTRA_UNUSED,
 		      const char * fmt ELEKTRA_UNUSED, va_list args)
 {
@@ -78,13 +78,12 @@ static int elektraLogFile (int module ELEKTRA_UNUSED, int level ELEKTRA_UNUSED, 
 }
 #endif
 
-int elektraLog (int module ELEKTRA_UNUSED, int level ELEKTRA_UNUSED, const char * function ELEKTRA_UNUSED, const char * absFile ELEKTRA_UNUSED,
+int elektraLog (int level ELEKTRA_UNUSED, const char * function ELEKTRA_UNUSED, const char * absFile ELEKTRA_UNUSED,
 		const int line ELEKTRA_UNUSED, const char * mmsg ELEKTRA_UNUSED, ...)
 {
 #ifndef NO_FILTER
 	// XXX Filter here for every sink
-	if (module != ELEKTRA_LOG_MODULE_NONE) return;
-	if (level <= ELEKTRA_LOG_LEVEL) return;
+	if (level <= ELEKTRA_LOG_LEVEL) return 0;
 #endif
 
 	char * msg = strdupa (mmsg);
@@ -107,24 +106,24 @@ int elektraLog (int module ELEKTRA_UNUSED, int level ELEKTRA_UNUSED, const char 
 #ifdef USE_STDERR_SINK
 	{
 		va_list args;
-		va_start (args, msg);
-		ret |= elektraLogStdErr (module, level, function, file, line, str, msg, args);
+		va_start (args, mmsg);
+		ret |= elektraLogStdErr (level, function, file, line, str, msg, args);
 		va_end (args);
 	}
 #endif
 #ifdef USE_SYSLOG_SINK
 	{
 		va_list args;
-		va_start (args, msg);
-		ret |= elektraLogSyslog (module, level, function, file, line, str, msg, args);
+		va_start (args, mmsg);
+		ret |= elektraLogSyslog (level, function, file, line, str, msg, args);
 		va_end (args);
 	}
 #endif
 #ifdef USE_FILE_SINK
 	{
 		va_list args;
-		va_start (args, msg);
-		ret |= elektraLogFile (module, level, function, file, line, str, msg, args);
+		va_start (args, mmsg);
+		ret |= elektraLogFile (level, function, file, line, str, msg, args);
 		va_end (args);
 	}
 #endif
