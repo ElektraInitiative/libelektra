@@ -21,8 +21,10 @@ void elektraAbort (const char * expression, const char * function, const char * 
 }
 #endif
 
+#ifndef STRINGIFY
 #define STRINGIFY(x) STRINGIFY2 (x)
 #define STRINGIFY2(x) #x
+#endif
 
 #ifdef ELEKTRA_BMC
 #undef NDEBUG

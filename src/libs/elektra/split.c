@@ -103,7 +103,7 @@ void elektraSplitDel (Split * keysets)
  */
 void elektraSplitRemove (Split * split, size_t where)
 {
-	ELEKTRA_ASSERT (where < split->size, "cannot remove behind size: %d smaller than %d", where, split->size);
+	ELEKTRA_ASSERT (where < split->size, "cannot remove behind size: %zu smaller than %zu", where, split->size);
 	ksDel (split->keysets[where]);
 	keyDel (split->parents[where]);
 	--split->size; // reduce size
@@ -816,7 +816,7 @@ int elektraSplitSync (Split * split)
 		case KEY_NS_META:
 		case KEY_NS_CASCADING:
 		case KEY_NS_NONE:
-			ELEKTRA_ASSERT (0, "Got keys in wrong namespace %d in split %d", keyGetNamespace (split->parents[i]), i);
+			ELEKTRA_ASSERT (0, "Got keys in wrong namespace %d in split %zu", keyGetNamespace (split->parents[i]), i);
 			return -1;
 		}
 	}
