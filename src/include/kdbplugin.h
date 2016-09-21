@@ -11,6 +11,8 @@
 
 #include <kdb.h>
 
+#include <errno.h>
+
 #define ELEKTRA_SET_ERROR_GET(parentKey)                                                                                                   \
 	do                                                                                                                                 \
 	{                                                                                                                                  \

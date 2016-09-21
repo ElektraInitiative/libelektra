@@ -10,6 +10,7 @@
 #include "kdbconfig.h"
 #endif
 
+#include <kdbassert.h>
 #include <kdbinternal.h>
 
 
@@ -84,9 +85,7 @@ Plugin * elektraPluginExport (const char * pluginName, ...)
 			returned->kdbError = va_arg (va, kdbErrorPtr);
 			break;
 		default:
-#if DEBUG
-			printf ("plugin passed something unexpected\n");
-#endif
+			ELEKTRA_ASSERT (0, "plugin passed something unexpected");
 		// fallthrough, will end here
 		case ELEKTRA_PLUGIN_END:
 			va_end (va);
