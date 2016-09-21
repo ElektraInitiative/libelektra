@@ -1,7 +1,7 @@
 /**
  * @file
  *
- * @brief Logger Implementation
+ * @brief Non-C99 Logger Implementation
  *
  * If you often change the file, you might want to set CMAKE_LINK_DEPENDS_NO_SHARED
  * to avoid relinking everything.
@@ -15,7 +15,7 @@
 // unless you want to change the defaults.
 #define USE_STDERR_SINK
 #define USE_SYSLOG_SINK
-#define USE_FILE_SINK
+// #define USE_FILE_SINK
 // #define NO_FILTER
 
 
@@ -42,7 +42,9 @@ static int elektraLogStdErr (int level ELEKTRA_UNUSED, const char * function ELE
 #ifndef NO_FILTER
 // XXX Filter here for specific sink
 #endif
-	return vfprintf (stderr, msg, args);
+	int ret = vfprintf (stderr, msg, args);
+	fflush (stderr);
+	return ret;
 }
 #endif
 
@@ -53,7 +55,21 @@ static int elektraLogSyslog (int level ELEKTRA_UNUSED, const char * function ELE
 #ifndef NO_FILTER
 // XXX Filter here for specific sink
 #endif
-	vsyslog (level, msg, args);
+	int vlevel = LOG_CRIT; // if incorrect level given
+	switch (level)
+	{
+	case ELEKTRA_LOG_LEVEL_ERROR:
+		vlevel = LOG_ERR;
+	case ELEKTRA_LOG_LEVEL_WARNING:
+		vlevel = LOG_WARNING;
+	case ELEKTRA_LOG_LEVEL_NOTICE:
+		vlevel = LOG_NOTICE;
+	case ELEKTRA_LOG_LEVEL_INFO:
+		vlevel = LOG_INFO;
+	case ELEKTRA_LOG_LEVEL_DEBUG:
+		vlevel = LOG_DEBUG;
+	}
+	vsyslog (vlevel, msg, args);
 	return 0;
 }
 #endif
@@ -71,18 +87,20 @@ static int elektraLogFile (int level ELEKTRA_UNUSED, const char * function ELEKT
 	{
 		elektraLoggerFileHandle = fopen ("elektra.log", "a");
 	}
-	return vfprintf (elektraLoggerFileHandle, msg, args);
+	int ret = vfprintf (elektraLoggerFileHandle, msg, args);
+	fflush (elektraLoggerFileHandle);
+	return ret;
 }
 #endif
 
-int elektraLog (int level ELEKTRA_UNUSED, const char * function ELEKTRA_UNUSED, const char * absFile ELEKTRA_UNUSED,
-		const int line ELEKTRA_UNUSED, const char * mmsg ELEKTRA_UNUSED, ...)
+int elektraLog (int level ELEKTRA_UNUSED, int flags ELEKTRA_UNUSED, const char * function ELEKTRA_UNUSED,
+		const char * absFile ELEKTRA_UNUSED, const int line ELEKTRA_UNUSED, const char * mmsg ELEKTRA_UNUSED, ...)
 {
 #ifndef NO_FILTER
 	// XXX Filter level here globally (for every sink)
 	// if (level <= ELEKTRA_LOG_LEVEL) return 0;
-	// by default: discard everything except assertions, comment out to get logs
-	if (level <= ELEKTRA_LOG_LEVEL_WARNING) return 0;
+	// by default: discard everything except warnings+assertions
+	if (level < ELEKTRA_LOG_LEVEL_WARNING) return 0;
 #endif
 
 	char * msg = strdupa (mmsg);
