@@ -18,6 +18,9 @@
 
 #include <kdbhelper.h>
 
+/**
+ * Structure for registered key variable pairs
+ */
 struct _KeyRegistration
 {
 	char * name;
@@ -26,6 +29,9 @@ struct _KeyRegistration
 };
 typedef struct _KeyRegistration KeyRegistration;
 
+/**
+ * Structure for internal plugin state
+ */
 struct _ListPointer
 {
 	KeyRegistration * head;
@@ -33,7 +39,14 @@ struct _ListPointer
 };
 typedef struct _ListPointer ListPointer;
 
-
+/**
+ * Creates a new KeyRegistration structure and appends it at the end of the registration list
+ * @internal
+ *
+ * @param listPointer internal plugin data structure
+ *
+ * @return pointer to created KeyRegistration structure or NULL if memory allocation failed
+ */
 static KeyRegistration * elektraInternalnotificationAddNewRegistration (ListPointer * listPointer)
 {
 	KeyRegistration * item = elektraMalloc (sizeof *item);
@@ -45,7 +58,7 @@ static KeyRegistration * elektraInternalnotificationAddNewRegistration (ListPoin
 
 	if (listPointer->head == NULL)
 	{
-		// Inizialize list
+		// Initialize list
 		listPointer->head = listPointer->tail = item;
 	}
 	else
@@ -58,6 +71,14 @@ static KeyRegistration * elektraInternalnotificationAddNewRegistration (ListPoin
 	return item;
 }
 
+/**
+ * Updates all KeyRegistrations according to data from the given KeySet
+ * @internal
+ *
+ * @param listPointer internal plugin data structure
+ * @param keySet key set retrieved from hooks (e.g. elektraInternalnotificationGet or elektraInternalnotificationSet)
+ *
+ */
 static void elektraInternalnotificationUpdateRegisteredKeys (ListPointer * listPointer, KeySet * keySet)
 {
 	KeyRegistration * registeredKey = listPointer->head;
@@ -100,6 +121,17 @@ static void elektraInternalnotificationUpdateRegisteredKeys (ListPointer * listP
 	}
 }
 
+/**
+ * Updates registrations with current data from storage.
+ * Part of elektra plugin contract.
+ *
+ * @param  handle    plugin handle
+ * @param  returned  key set containing current data from storage
+ * @param  parentKey key for errors
+ *
+ * @retval 1 on success
+ * @retval -1 on failure
+ */
 int elektraInternalnotificationGet (Plugin * handle, KeySet * returned, Key * parentKey)
 {
 	const char * parentKeyName = keyName (parentKey);
@@ -143,6 +175,17 @@ int elektraInternalnotificationGet (Plugin * handle, KeySet * returned, Key * pa
 	return 1;
 }
 
+/**
+ * Updates registrations with data written by the application.
+ * Part of elektra plugin contract.
+ *
+ * @param  handle    plugin handle
+ * @param  returned  key set containing current data from the application
+ * @param  parentKey key for errors
+
+ * @retval 1 on success
+ * @retval -1 on failure
+ */
 int elektraInternalnotificationSet (Plugin * handle, KeySet * returned, Key * parentKey)
 {
 
@@ -156,6 +199,16 @@ int elektraInternalnotificationSet (Plugin * handle, KeySet * returned, Key * pa
 	return 1;
 }
 
+/**
+ * Initialize data plugin data structures.
+ * Part of elektra plugin contract.
+ *
+ * @param  handle         plugin handle
+ * @param  parentKey      key for errors
+ *
+ * @retval 1 on success
+ * @retval -1 on failure
+ */
 int elektraInternalnotificationOpen (Plugin * handle, Key * parentKey ELEKTRA_UNUSED)
 {
 #if PLUGIN_INTERNALNOTIFICATION_VERBOSE
@@ -175,7 +228,7 @@ int elektraInternalnotificationOpen (Plugin * handle, Key * parentKey ELEKTRA_UN
 		}
 		elektraPluginSetData (handle, listPointer);
 
-		// Inizialize list pointers for registered keys
+		// Initialize list pointers for registered keys
 		listPointer->head = NULL;
 		listPointer->tail = NULL;
 	}
@@ -183,6 +236,16 @@ int elektraInternalnotificationOpen (Plugin * handle, Key * parentKey ELEKTRA_UN
 	return 1;
 }
 
+/**
+ * Free used memory.
+ * Part of elektra plugin contract.
+ *
+ * @param  handle         plugin handle
+ * @param  parentKey      key for errors
+ *
+ * @retval 1 on success
+ * @retval -1 on failure
+ */
 int elektraInternalnotificationClose (Plugin * handle, Key * parentKey ELEKTRA_UNUSED)
 {
 #if PLUGIN_INTERNALNOTIFICATION_VERBOSE
@@ -212,6 +275,17 @@ int elektraInternalnotificationClose (Plugin * handle, Key * parentKey ELEKTRA_U
 	return 1;
 }
 
+/**
+ * Subscribe for automatic updates to a given integer variable when the given
+ * key value has changed.
+ *
+ * @param  handle   plugin handle
+ * @param  variable integer variable
+ * @param  key      key to watch for changes
+ *
+ * @retval 1 on success
+ * @retval -1 on failure
+ */
 int elektraInternalnotificationRegisterInt (Plugin * handle, int * variable, Key * key)
 {
 	ListPointer * listPointer = elektraPluginGetData (handle);

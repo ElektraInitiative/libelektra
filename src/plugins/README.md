@@ -181,7 +181,7 @@ Log/Send out all changes to configuration to:
 
 Notification of key changes:
 
-- [internalnotification](internalnotification/) automatically update integer variables when a key is changed from inside an application
+- [internalnotification](internalnotification/) get updates automatically when registered keys were changed
 
 
 ### Debug
