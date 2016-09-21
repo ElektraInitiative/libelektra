@@ -211,7 +211,6 @@ class KdbKeySetTestCases < Test::Unit::TestCase
 
       # test get by cursor
       ks.rewind
-      puts "cursor at: %d" % ks.cursor
       assert_true ks.cursor < 0
 
       assert_nil ks.current
@@ -228,7 +227,6 @@ class KdbKeySetTestCases < Test::Unit::TestCase
       assert_nil ks.next
       assert_nil ks.current
 
-      puts "cursor at: %d" % ks.cursor
       assert_true ks.cursor < 0
 
       # test get by invalid index
