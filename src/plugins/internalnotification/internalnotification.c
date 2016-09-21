@@ -9,15 +9,12 @@
 
 #include "internalnotification.h"
 
-#if PLUGIN_INTERNALNOTIFICATION_VERBOSE
-#include <stdio.h>
-#endif
-
 #include <errno.h>
 #include <stdlib.h>
 
 #include <kdbassert.h>
 #include <kdbhelper.h>
+#include <kdblogger.h>
 
 /**
  * Structure for registered key variable pairs
@@ -88,19 +85,12 @@ static void elektraInternalnotificationUpdateRegisteredKeys (PluginState * plugi
 	KeyRegistration * registeredKey = pluginState->head;
 	while (registeredKey != NULL)
 	{
-#if PLUGIN_INTERNALNOTIFICATION_VERBOSE
-		fprintf (stderr, "elektraInternalnotificationUpdateRegisteredKeys looking up registeredKey=%s\n", registeredKey->name);
-#endif
-
 		Key * key = ksLookupByName (keySet, registeredKey->name, 0);
 		if (key != 0)
 		{
-#if PLUGIN_INTERNALNOTIFICATION_VERBOSE
-			fprintf (stderr,
-				 "elektraInternalnotificationUpdateRegisteredKeys found registeredKey=%s; updating variable=%p with string "
-				 "value %s\n",
-				 registeredKey->name, (void *)registeredKey->variable, keyString (key));
-#endif
+			ELEKTRA_LOG ("found registeredKey=%s; updating variable=%p with string value \"%s\"", registeredKey->name,
+				     (void *)registeredKey->variable, keyString (key));
+
 			// Convert string value to long
 			char * end;
 			errno = 0;
@@ -110,15 +100,11 @@ static void elektraInternalnotificationUpdateRegisteredKeys (PluginState * plugi
 			{
 				*(registeredKey->variable) = value;
 			}
-#if PLUGIN_INTERNALNOTIFICATION_VERBOSE
 			else
 			{
-				fprintf (stderr,
-					 "elektraInternalnotificationUpdateRegisteredKeys conversion failed! keyString=%s, *end=%c, "
-					 "errno=%d, value=%ld\n",
-					 keyString (key), *end, errno, value);
+				ELEKTRA_LOG ("conversion failed! keyString=\"%s\" *end=%c, errno=%d, value=%ld", keyString (key), *end,
+					     errno, value);
 			}
-#endif
 		}
 
 		registeredKey = registeredKey->next;
@@ -138,9 +124,9 @@ static void elektraInternalnotificationUpdateRegisteredKeys (PluginState * plugi
  */
 int elektraInternalnotificationGet (Plugin * handle, KeySet * returned, Key * parentKey)
 {
-	const char * parentKeyName = keyName (parentKey);
+	ELEKTRA_LOG_DEBUG ("keyName=%s", keyName (parentKey));
 
-	if (!elektraStrCmp (parentKeyName, "system/elektra/modules/internalnotification"))
+	if (!elektraStrCmp (keyName (parentKey), "system/elektra/modules/internalnotification"))
 	{
 		KeySet * contract = ksNew (
 			30, keyNew ("system/elektra/modules/internalnotification", KEY_VALUE,
@@ -169,9 +155,7 @@ int elektraInternalnotificationGet (Plugin * handle, KeySet * returned, Key * pa
 
 		return 1;
 	}
-#if PLUGIN_INTERNALNOTIFICATION_VERBOSE
-	fprintf (stderr, "elektraInternalnotificationGet keyName=%s\n", parentKeyName);
-#endif
+
 
 	PluginState * pluginState = elektraPluginGetData (handle);
 	ELEKTRA_ASSERT (pluginState != NULL, "plugin state was not initialized properly");
@@ -194,10 +178,7 @@ int elektraInternalnotificationGet (Plugin * handle, KeySet * returned, Key * pa
  */
 int elektraInternalnotificationSet (Plugin * handle, KeySet * returned, Key * parentKey)
 {
-
-#if PLUGIN_INTERNALNOTIFICATION_VERBOSE
-	fprintf (stderr, "elektraInternalnotificationSet keyName=%s\n", keyName (parentKey));
-#endif
+	ELEKTRA_LOG_DEBUG ("keyName=%s", keyName (parentKey));
 
 	PluginState * pluginState = elektraPluginGetData (handle);
 	ELEKTRA_ASSERT (pluginState != NULL, "plugin state was not initialized properly");
@@ -219,10 +200,6 @@ int elektraInternalnotificationSet (Plugin * handle, KeySet * returned, Key * pa
  */
 int elektraInternalnotificationOpen (Plugin * handle, Key * parentKey ELEKTRA_UNUSED)
 {
-#if PLUGIN_INTERNALNOTIFICATION_VERBOSE
-	fprintf (stderr, "elektraInternalnotificationOpen\n");
-#endif
-
 	PluginState * pluginState = elektraPluginGetData (handle);
 	if (pluginState == NULL)
 	{
@@ -256,10 +233,6 @@ int elektraInternalnotificationOpen (Plugin * handle, Key * parentKey ELEKTRA_UN
  */
 int elektraInternalnotificationClose (Plugin * handle, Key * parentKey ELEKTRA_UNUSED)
 {
-#if PLUGIN_INTERNALNOTIFICATION_VERBOSE
-	fprintf (stderr, "elektraInternalnotificationClose\n");
-#endif
-
 	PluginState * pluginState = elektraPluginGetData (handle);
 	if (pluginState != NULL)
 	{
@@ -296,12 +269,10 @@ int elektraInternalnotificationClose (Plugin * handle, Key * parentKey ELEKTRA_U
  */
 int elektraInternalnotificationRegisterInt (Plugin * handle, int * variable, Key * key)
 {
+	ELEKTRA_LOG_DEBUG ("variable=%p, keyName=%s", (void *)variable, keyName (key));
+
 	PluginState * pluginState = elektraPluginGetData (handle);
 	ELEKTRA_ASSERT (pluginState != NULL, "plugin state was not initialized properly");
-
-#if PLUGIN_INTERNALNOTIFICATION_VERBOSE
-	fprintf (stderr, "elektraInternalnotificationRegisterInt variable=%p, keyName=%s\n", (void *)variable, keyName (key));
-#endif
 
 	KeyRegistration * registeredKey = elektraInternalnotificationAddNewRegistration (pluginState);
 	if (registeredKey == NULL)
@@ -325,11 +296,6 @@ int elektraInternalnotificationRegisterInt (Plugin * handle, int * variable, Key
 	// Save key registration
 	registeredKey->name = nameBuffer;
 	registeredKey->variable = variable;
-
-#if PLUGIN_INTERNALNOTIFICATION_VERBOSE
-	fprintf (stderr, "elektraInternalnotificationRegisterInt registered key (name=%s, variable=%p)\n", registeredKey->name,
-		 (void *)registeredKey->variable);
-#endif
 
 	return 1;
 }
