@@ -70,7 +70,7 @@ Up-to-date code comments are essential to make code understandable for others.
 
    ```c
    #include <kdblogger.h>
-   ELEKTRA_LOG ("text to be printed according log filters", ...)
+   ELEKTRA_LOG ("formatted text to be printed according log filters", ...)
    ```
 
 3. Prefer to comment functions with Doxygen, see below.
