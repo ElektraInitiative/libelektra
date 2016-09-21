@@ -21,6 +21,7 @@
 
 /**
  * Structure for registered key variable pairs
+ * @internal
  */
 struct _KeyRegistration
 {
@@ -32,6 +33,7 @@ typedef struct _KeyRegistration KeyRegistration;
 
 /**
  * Structure for internal plugin state
+ * @internal
  */
 struct _PluginState
 {
