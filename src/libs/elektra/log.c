@@ -33,6 +33,7 @@
 #endif
 
 #include <stdarg.h>
+#include <stdlib.h>
 #include <string.h>
 
 #ifdef USE_STDERR_SINK
@@ -74,9 +75,9 @@ static int elektraLogSyslog (int level ELEKTRA_UNUSED, const char * function ELE
 }
 #endif
 
+#ifdef USE_FILE_SINK
 static FILE * elektraLoggerFileHandle;
 
-#ifdef USE_FILE_SINK
 static int elektraLogFile (int level ELEKTRA_UNUSED, const char * function ELEKTRA_UNUSED, const char * file ELEKTRA_UNUSED,
 			   const int line ELEKTRA_UNUSED, const char * msg ELEKTRA_UNUSED, const char * fmt ELEKTRA_UNUSED, va_list args)
 {
@@ -93,8 +94,8 @@ static int elektraLogFile (int level ELEKTRA_UNUSED, const char * function ELEKT
 }
 #endif
 
-int elektraLog (int level ELEKTRA_UNUSED, int flags ELEKTRA_UNUSED, const char * function ELEKTRA_UNUSED,
-		const char * absFile ELEKTRA_UNUSED, const int line ELEKTRA_UNUSED, const char * mmsg ELEKTRA_UNUSED, ...)
+int elektraVLog (int level ELEKTRA_UNUSED, const char * function ELEKTRA_UNUSED, const char * absFile ELEKTRA_UNUSED,
+		 const int line ELEKTRA_UNUSED, const char * mmsg ELEKTRA_UNUSED, va_list args)
 {
 #ifndef NO_FILTER
 	// XXX Filter level here globally (for every sink)
@@ -129,29 +130,36 @@ int elektraLog (int level ELEKTRA_UNUSED, int flags ELEKTRA_UNUSED, const char *
 	int ret = -1;
 #ifdef USE_STDERR_SINK
 	{
-		va_list args;
-		va_start (args, mmsg);
-		ret |= elektraLogStdErr (level, function, file, line, str, msg, args);
-		va_end (args);
+		va_list copy;
+		va_copy (copy, args);
+		ret |= elektraLogStdErr (level, function, file, line, str, msg, copy);
 	}
 #endif
 #ifdef USE_SYSLOG_SINK
 	{
-		va_list args;
-		va_start (args, mmsg);
-		ret |= elektraLogSyslog (level, function, file, line, str, msg, args);
-		va_end (args);
+		va_list copy;
+		va_copy (copy, args);
+		ret |= elektraLogSyslog (level, function, file, line, str, msg, copy);
 	}
 #endif
 #ifdef USE_FILE_SINK
 	{
-		va_list args;
-		va_start (args, mmsg);
-		ret |= elektraLogFile (level, function, file, line, str, msg, args);
-		va_end (args);
+		va_list copy;
+		va_copy (copy, args);
+		ret |= elektraLogFile (level, function, file, line, str, msg, copy);
 	}
 #endif
 
+	return ret;
+}
+
+int elektraLog (int level ELEKTRA_UNUSED, const char * function ELEKTRA_UNUSED, const char * absFile ELEKTRA_UNUSED,
+		const int line ELEKTRA_UNUSED, const char * mmsg ELEKTRA_UNUSED, ...)
+{
+	va_list args;
+	va_start (args, mmsg);
+	int ret = elektraVLog (level, function, absFile, line, mmsg, args);
+	va_end (args);
 	return ret;
 }
 
@@ -161,8 +169,8 @@ void elektraAbort (const char * expression, const char * function, const char * 
 		va_list args;
 		va_start (args, mmsg);
 		char * msg;
-		asprintf (msg, "Assertion `%s' failed: %s", expression, mmsg);
-		elektraLog (level, function, file, line, str, msg, args);
+		asprintf (&msg, "Assertion `%s' failed: %s", expression, mmsg);
+		elektraVLog (ELEKTRA_LOG_LEVEL_ERROR, function, file, line, msg, args);
 		va_end (args);
 	}
 	abort ();
