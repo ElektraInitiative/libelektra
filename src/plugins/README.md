@@ -104,13 +104,13 @@ Using semi-structured data for config files:
 Plugins that just show some functionality, (currently) not intended for
 productive use:
 
-- [fstab](fstab/) reads fstab files.
+- [fstab](fstab/) for fstab files.
 - [regexstore](regexstore/)
 - [simpleini](simpleini/) is ini without sections
 - [csvstorage](csvstorage/) for csv files
-- [passwd](passwd/) read/write passwd files
+- [passwd](passwd/) for passwd files
 - [dpkg](dpkg/) reads /var/lib/dpkg/{available,status} 
-- [mozprefs](mozprefs/) read/write mozilla preference files
+- [mozprefs](mozprefs/) for Mozilla preference files
 - [c](c/) writes Elektra C-structures (`ksNew(.. keyNew(...`)
 
 ## System Information ##
