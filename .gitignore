@@ -7,8 +7,8 @@
 *~
 
 #ignore debian patches
-.pc/
-debian/patches/
+/.pc/
+/debian/patches/
 
 #ignore all build directories of cmake
 build*
