@@ -1,7 +1,7 @@
 - infos = Information about the c plugin is in keys below
 - infos/author = Name <name@libelektra.org>
 - infos/licence = BSD
-- infos/needs =
+- infos/needs = ccode
 - infos/provides =
 - infos/recommends =
 - infos/placements =

@@ -38,11 +38,6 @@
  * - keyOutput()
  * - ksOutput()
  *
- * Generate prints keys and keysets as C-Structs, meant to be
- * read by a C-Compiler.
- * - keyGenerate()
- * - ksGenerate()
- *
  * toXML prints keys and keysets as XML, meant to be used
  * as exchange format.
  * - keyToStream()

@@ -50,30 +50,26 @@ int keyGenerate (const Key * key, FILE * stream, option_t options)
 		str = (char *)elektraMalloc (s);
 		if (str == NULL) return -1;
 		if (keyIsBinary (key))
+		{
 			keyGetBinary (key, str, s);
+			fprintf (stream, ", KEY_SIZE, \"%zu\"", keyGetValueSize (key));
+		}
 		else
+		{
 			keyGetString (key, str, s);
+		}
 		fprintf (stream, ", KEY_VALUE, \"%s\"", str);
 		elektraFree (str);
 	}
 
-	/* TODO: add meta
-	char * com;
-	size_t c = keyGetCommentSize (key);
-	if (c > 1)
+	const Key * meta;
+	Key * dup = keyDup (key);
+	keyRewindMeta (dup);
+	while ((meta = keyNextMeta (dup)))
 	{
-		com = (char *)elektraMalloc (c);
-		if (com == NULL) return -1;
-		keyGetComment (key, com, c);
-		fprintf (stream, ", KEY_COMMENT, \"%s\"", com);
-		elektraFree (com);
+		fprintf (stream, ", KEY_META, \"%s\", \"%s\"", keyName (meta), keyString (meta));
 	}
-
-	if (!(keyGetMode (key) == 0664 || (keyGetMode (key) == 0775)))
-	{
-		fprintf (stream, ", KEY_MODE, 0%3o", keyGetMode (key));
-	}
-	*/
+	keyDel (dup);
 
 	fprintf (stream, ", KEY_END)");
 
@@ -105,7 +101,7 @@ int ksGenerate (const KeySet * ks, FILE * stream, option_t options)
 
 	ksRewind (cks);
 
-	fprintf (stream, "ksNew( %d ,\n", (int)ksGetSize (cks));
+	fprintf (stream, "ksNew (%d,\n", (int)ksGetSize (cks));
 	while ((key = ksNext (cks)) != 0)
 	{
 		if (options & KDB_O_INACTIVE)
