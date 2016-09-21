@@ -71,7 +71,12 @@ enum ElektraLogLevel
 
 #ifdef HAVE_LOGGER
 
-int elektraLog (int level, const char * function, const char * file, const int line, const char * msg, ...);
+int elektraLog (int level, const char * function, const char * file, const int line, const char * msg, ...)
+#ifdef __GNUC__
+	__attribute__ ((format (printf, 5, 6)))
+#endif
+	;
+
 
 #define ELEKTRA_LOG_WARNING(...) elektraLog (ELEKTRA_LOG_LEVEL_WARNING, __func__, __FILE__, __LINE__, ##__VA_ARGS__)
 #define ELEKTRA_LOG_NOTICE(...) elektraLog (ELEKTRA_LOG_LEVEL_NOTICE, __func__, __FILE__, __LINE__, ##__VA_ARGS__)

@@ -577,8 +577,8 @@ char * elektraUnescapeKeyNamePart (const char * source, size_t size, char * dest
 		else if (*sp == '/')
 		{
 			// we escape a part, so there had to be a backslash
-			ELEKTRA_ASSERT (count > 0, "no backslash found, count is %d", count);
-			ELEKTRA_ASSERT ((count % 2) == 1, "counted uneven number of backslashes: %d", count);
+			ELEKTRA_ASSERT (count > 0, "no backslash found, count is %zu", count);
+			ELEKTRA_ASSERT ((count % 2) == 1, "counted uneven number of backslashes: %zu", count);
 
 			count /= 2;
 			while (count)
@@ -608,7 +608,7 @@ char * elektraUnescapeKeyNamePart (const char * source, size_t size, char * dest
 		--size;
 	}
 
-	ELEKTRA_ASSERT ((count % 2) == 0, "uneven number of backslashes: %d", count);
+	ELEKTRA_ASSERT ((count % 2) == 0, "uneven number of backslashes: %zu", count);
 	count /= 2;
 	while (count)
 	{
