@@ -19,6 +19,10 @@ else()
           COMMAND ${RUBY_EXECUTABLE} -r rbconfig -e "print RbConfig::CONFIG['vendorarchdir']" 
           OUTPUT_VARIABLE RUBY_VENDOR_ARCH_DIR
   )
+  execute_process (
+          COMMAND ${RUBY_EXECUTABLE} -r rbconfig -e "print RbConfig::CONFIG['sitearchdir']" 
+          OUTPUT_VARIABLE RUBY_SITE_ARCH_DIR
+  )
 
   include_directories(${RUBY_VENDOR_ARCH_DIR})
   include_directories(${RUBY_INCLUDE_DIRS})
@@ -26,10 +30,10 @@ else()
   # just for debugging
   message (STATUS "Ruby executable: ${RUBY_EXECUTABLE}")
   message (STATUS "Ruby vendor arch dir: ${RUBY_VENDOR_ARCH_DIR}")
+  message (STATUS "Ruby site arch dir: ${RUBY_SITE_ARCH_DIR}")
   message (STATUS "Ruby include path: ${RUBY_INCLUDE_PATH}")
 
 	set_source_files_properties (kdb.i PROPERTIES CPLUSPLUS ON)
-  #set_source_files_properties (kdb.i PROPERTIES SWIG_FLAGS "-py3;-extranative")
 	
   set (CMAKE_SWIG_OUTDIR "${CMAKE_CURRENT_BINARY_DIR}")
 	set (CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_SWIG_OUTDIR}")
@@ -44,25 +48,13 @@ else()
           COMPILE_FLAGS "${SWIG_COMPILE_FLAGS} -Wno-unused-parameter -Wno-unused-but-set-variable -DSWIG_TYPE_TABLE=kdb"
   )
 
-  #set (PYTHON_GET_MODULES_DIR_COMMAND "from distutils.sysconfig import get_python_lib; print(get_python_lib(True, prefix='${CMAKE_INSTALL_PREFIX}'))")
-	#execute_process (
-	#	COMMAND ${PYTHON_EXECUTABLE} -c "${PYTHON_GET_MODULES_DIR_COMMAND}"
-	#	OUTPUT_VARIABLE PYTHON_SITE_PACKAGES
-	#	OUTPUT_STRIP_TRAILING_WHITESPACE
-	#)
-
-	#install (
-	#	FILES ${CMAKE_CURRENT_BINARY_DIR}/kdb.py
-	#	DESTINATION ${PYTHON_SITE_PACKAGES}
-	#)
-
-	#install (
-	#	TARGETS _swig-python
-	#	LIBRARY DESTINATION ${PYTHON_SITE_PACKAGES}
-	#)
+  # for now just install in a fixed SITE_ARCH location (is under /usr/local)
+  install (
+          TARGETS swig-ruby
+          LIBRARY DESTINATION ${RUBY_SITE_ARCH_DIR}
+  )
 
 	include_directories (${CMAKE_CURRENT_SOURCE_DIR})
-  #include_directories (${CMAKE_SOURCE_DIR}/src/swig/)
 
   add_subdirectory (tests)
 endif()
