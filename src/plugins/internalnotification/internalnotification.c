@@ -16,6 +16,7 @@
 #include <errno.h>
 #include <stdlib.h>
 
+#include <kdbassert.h>
 #include <kdbhelper.h>
 
 /**
@@ -171,6 +172,8 @@ int elektraInternalnotificationGet (Plugin * handle, KeySet * returned, Key * pa
 #endif
 
 	PluginState * pluginState = elektraPluginGetData (handle);
+	ELEKTRA_ASSERT (pluginState != NULL, "plugin state was not initialized properly");
+
 	elektraInternalnotificationUpdateRegisteredKeys (pluginState, returned);
 
 	return 1;
@@ -195,6 +198,8 @@ int elektraInternalnotificationSet (Plugin * handle, KeySet * returned, Key * pa
 #endif
 
 	PluginState * pluginState = elektraPluginGetData (handle);
+	ELEKTRA_ASSERT (pluginState != NULL, "plugin state was not initialized properly");
+
 	elektraInternalnotificationUpdateRegisteredKeys (pluginState, returned);
 
 	return 1;
@@ -290,6 +295,7 @@ int elektraInternalnotificationClose (Plugin * handle, Key * parentKey ELEKTRA_U
 int elektraInternalnotificationRegisterInt (Plugin * handle, int * variable, Key * key)
 {
 	PluginState * pluginState = elektraPluginGetData (handle);
+	ELEKTRA_ASSERT (pluginState != NULL, "plugin state was not initialized properly");
 
 #if PLUGIN_INTERNALNOTIFICATION_VERBOSE
 	fprintf (stderr, "elektraInternalnotificationRegisterInt variable=%p, keyName=%s\n", (void *)variable, keyName (key));
