@@ -32,22 +32,22 @@ typedef struct _KeyRegistration KeyRegistration;
 /**
  * Structure for internal plugin state
  */
-struct _ListPointer
+struct _PluginState
 {
 	KeyRegistration * head;
-	KeyRegistration * tail;
+	KeyRegistration * last;
 };
-typedef struct _ListPointer ListPointer;
+typedef struct _PluginState PluginState;
 
 /**
  * Creates a new KeyRegistration structure and appends it at the end of the registration list
  * @internal
  *
- * @param listPointer internal plugin data structure
+ * @param pluginState		internal plugin data structure
  *
  * @return pointer to created KeyRegistration structure or NULL if memory allocation failed
  */
-static KeyRegistration * elektraInternalnotificationAddNewRegistration (ListPointer * listPointer)
+static KeyRegistration * elektraInternalnotificationAddNewRegistration (PluginState * pluginState)
 {
 	KeyRegistration * item = elektraMalloc (sizeof *item);
 	if (item == NULL)
@@ -56,16 +56,16 @@ static KeyRegistration * elektraInternalnotificationAddNewRegistration (ListPoin
 	}
 	item->next = NULL;
 
-	if (listPointer->head == NULL)
+	if (pluginState->head == NULL)
 	{
 		// Initialize list
-		listPointer->head = listPointer->tail = item;
+		pluginState->head = pluginState->last = item;
 	}
 	else
 	{
 		// Make new item end of list
-		listPointer->tail->next = item;
-		listPointer->tail = item;
+		pluginState->last->next = item;
+		pluginState->last = item;
 	}
 
 	return item;
@@ -75,13 +75,14 @@ static KeyRegistration * elektraInternalnotificationAddNewRegistration (ListPoin
  * Updates all KeyRegistrations according to data from the given KeySet
  * @internal
  *
- * @param listPointer internal plugin data structure
- * @param keySet key set retrieved from hooks (e.g. elektraInternalnotificationGet or elektraInternalnotificationSet)
+ * @param pluginState		internal plugin data structure
+ * @param keySet 				key set retrieved from hooks
+ *                   		(e.g. elektraInternalnotificationGet or elektraInternalnotificationSet)
  *
  */
-static void elektraInternalnotificationUpdateRegisteredKeys (ListPointer * listPointer, KeySet * keySet)
+static void elektraInternalnotificationUpdateRegisteredKeys (PluginState * pluginState, KeySet * keySet)
 {
-	KeyRegistration * registeredKey = listPointer->head;
+	KeyRegistration * registeredKey = pluginState->head;
 	while (registeredKey != NULL)
 	{
 #if PLUGIN_INTERNALNOTIFICATION_VERBOSE
@@ -169,8 +170,8 @@ int elektraInternalnotificationGet (Plugin * handle, KeySet * returned, Key * pa
 	fprintf (stderr, "elektraInternalnotificationGet keyName=%s\n", parentKeyName);
 #endif
 
-	ListPointer * listPointer = elektraPluginGetData (handle);
-	elektraInternalnotificationUpdateRegisteredKeys (listPointer, returned);
+	PluginState * pluginState = elektraPluginGetData (handle);
+	elektraInternalnotificationUpdateRegisteredKeys (pluginState, returned);
 
 	return 1;
 }
@@ -193,8 +194,8 @@ int elektraInternalnotificationSet (Plugin * handle, KeySet * returned, Key * pa
 	fprintf (stderr, "elektraInternalnotificationSet keyName=%s\n", keyName (parentKey));
 #endif
 
-	ListPointer * listPointer = elektraPluginGetData (handle);
-	elektraInternalnotificationUpdateRegisteredKeys (listPointer, returned);
+	PluginState * pluginState = elektraPluginGetData (handle);
+	elektraInternalnotificationUpdateRegisteredKeys (pluginState, returned);
 
 	return 1;
 }
@@ -215,22 +216,22 @@ int elektraInternalnotificationOpen (Plugin * handle, Key * parentKey ELEKTRA_UN
 	fprintf (stderr, "elektraInternalnotificationOpen\n");
 #endif
 
-	ListPointer * listPointer = elektraPluginGetData (handle);
-	if (listPointer == NULL)
+	PluginState * pluginState = elektraPluginGetData (handle);
+	if (pluginState == NULL)
 	{
-		listPointer = elektraMalloc (sizeof *listPointer);
-		if (listPointer == NULL)
+		pluginState = elektraMalloc (sizeof *pluginState);
+		if (pluginState == NULL)
 		{
 #if PLUGIN_INTERNALNOTIFICATION_VERBOSE
 			fprintf (stderr, "elektraInternalnotificationOpen elektraMalloc failed!\n");
 #endif
 			return -1;
 		}
-		elektraPluginSetData (handle, listPointer);
+		elektraPluginSetData (handle, pluginState);
 
 		// Initialize list pointers for registered keys
-		listPointer->head = NULL;
-		listPointer->tail = NULL;
+		pluginState->head = NULL;
+		pluginState->last = NULL;
 	}
 
 	return 1;
@@ -252,11 +253,11 @@ int elektraInternalnotificationClose (Plugin * handle, Key * parentKey ELEKTRA_U
 	fprintf (stderr, "elektraInternalnotificationClose\n");
 #endif
 
-	ListPointer * listPointer = elektraPluginGetData (handle);
-	if (listPointer != NULL)
+	PluginState * pluginState = elektraPluginGetData (handle);
+	if (pluginState != NULL)
 	{
 		// Free registrations
-		KeyRegistration * current = listPointer->head;
+		KeyRegistration * current = pluginState->head;
 		KeyRegistration * next;
 		while (current != NULL)
 		{
@@ -268,7 +269,7 @@ int elektraInternalnotificationClose (Plugin * handle, Key * parentKey ELEKTRA_U
 		}
 
 		// Free list pointer
-		elektraFree (listPointer);
+		elektraFree (pluginState);
 		elektraPluginSetData (handle, NULL);
 	}
 
@@ -288,13 +289,13 @@ int elektraInternalnotificationClose (Plugin * handle, Key * parentKey ELEKTRA_U
  */
 int elektraInternalnotificationRegisterInt (Plugin * handle, int * variable, Key * key)
 {
-	ListPointer * listPointer = elektraPluginGetData (handle);
+	PluginState * pluginState = elektraPluginGetData (handle);
 
 #if PLUGIN_INTERNALNOTIFICATION_VERBOSE
 	fprintf (stderr, "elektraInternalnotificationRegisterInt variable=%p, keyName=%s\n", (void *)variable, keyName (key));
 #endif
 
-	KeyRegistration * registeredKey = elektraInternalnotificationAddNewRegistration (listPointer);
+	KeyRegistration * registeredKey = elektraInternalnotificationAddNewRegistration (pluginState);
 	if (registeredKey == NULL)
 	{
 		return -1;
