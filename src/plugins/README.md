@@ -111,6 +111,7 @@ productive use:
 - [passwd](passwd/) read/write passwd files
 - [dpkg](dpkg/) reads /var/lib/dpkg/{available,status} 
 - [mozprefs](mozprefs/) read/write mozilla preference files
+- [c](c/) writes Elektra C-structures (`ksNew(.. keyNew(...`)
 
 ## System Information ##
 
