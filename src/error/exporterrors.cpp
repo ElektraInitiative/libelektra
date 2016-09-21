@@ -32,7 +32,13 @@ ostream & operator<< (ostream & os, parse_t & p)
 	   << endl
 	   << "#include <kdb.h>" << endl
 	   << "#include <kdbhelper.h>" << endl
+	   << "#include <kdblogger.h>" << endl
 	   << "#include <string.h>" << endl
+	   << endl
+	   << "#ifndef STRINGIFY" << endl
+	   << "#define STRINGIFY(x) STRINGIFY2 (x)" << endl
+	   << "#define STRINGIFY2(x) #x" << endl
+	   << "#endif" << endl
 	   << endl
 	   << "#define ELEKTRA_SET_ERROR(number, key, text) ELEKTRA_SET_ERROR_HELPER\\" << endl
 	   << "	(number, key, text, __FILE__, __LINE__)" << endl
@@ -40,8 +46,10 @@ ostream & operator<< (ostream & os, parse_t & p)
 	   << "#define ELEKTRA_SET_ERROR_HELPER(number, key, text, file, line) ELEKTRA_SET_ERROR_HELPER_HELPER\\" << endl
 	   << "	(number, key, text, file, line)" << endl
 	   << endl
-	   << "#define ELEKTRA_SET_ERROR_HELPER_HELPER(number, key, text, file, line) elektraSetError ## number\\" << endl
-	   << "	(key, text, file, #line)" << endl
+	   << "#define ELEKTRA_SET_ERROR_HELPER_HELPER(number, key, text, file, line) do {ELEKTRA_LOG (\"Add Error %d: %s\", "
+	      "number, text); elektraSetError ## number\\"
+	   << endl
+	   << "	(key, text, file, #line); } while (0)" << endl
 	   << endl
 	   << endl
 	   << "#define ELEKTRA_ADD_WARNING(number, key, text) ELEKTRA_ADD_WARNING_HELPER\\" << endl
@@ -50,8 +58,10 @@ ostream & operator<< (ostream & os, parse_t & p)
 	   << "#define ELEKTRA_ADD_WARNING_HELPER(number, key, text, file, line) ELEKTRA_ADD_WARNING_HELPER_HELPER\\" << endl
 	   << "	(number, key, text, file, line)" << endl
 	   << "" << endl
-	   << "#define ELEKTRA_ADD_WARNING_HELPER_HELPER(number, key, text, file, line) elektraAddWarning ## number\\" << endl
-	   << "	(key, text, file, #line)" << endl
+	   << "#define ELEKTRA_ADD_WARNING_HELPER_HELPER(number, key, text, file, line) do {ELEKTRA_LOG (\"Add Warning %d: %s\", "
+	      "number, text);  elektraAddWarning ## number\\"
+	   << endl
+	   << "	(key, text, file, #line);} while (0)" << endl
 	   << endl
 	   << endl
 	   << "#define ELEKTRA_SET_ERRORF(number, key, text, ...) ELEKTRA_SET_ERRORF_HELPER\\" << endl
@@ -60,8 +70,10 @@ ostream & operator<< (ostream & os, parse_t & p)
 	   << "#define ELEKTRA_SET_ERRORF_HELPER(number, key, text, file, line, ...) ELEKTRA_SET_ERRORF_HELPER_HELPER\\" << endl
 	   << "	(number, key, text, file, line, __VA_ARGS__)" << endl
 	   << endl
-	   << "#define ELEKTRA_SET_ERRORF_HELPER_HELPER(number, key, text, file, line, ...) elektraSetErrorf ## number\\" << endl
-	   << "	(key, text, file, #line,  __VA_ARGS__)" << endl
+	   << "#define ELEKTRA_SET_ERRORF_HELPER_HELPER(number, key, text, file, line, ...) do {ELEKTRA_LOG (\"Add Error \" "
+	      "STRINGIFY(number) \" : \" text, ##__VA_ARGS__); elektraSetErrorf ## number\\"
+	   << endl
+	   << "	(key, text, file, #line,  __VA_ARGS__); } while (0)" << endl
 	   << endl
 	   << endl
 	   << "#define ELEKTRA_ADD_WARNINGF(number, key, text, ...) ELEKTRA_ADD_WARNINGF_HELPER\\" << endl
@@ -70,8 +82,10 @@ ostream & operator<< (ostream & os, parse_t & p)
 	   << "#define ELEKTRA_ADD_WARNINGF_HELPER(number, key, text, file, line, ...) ELEKTRA_ADD_WARNINGF_HELPER_HELPER\\" << endl
 	   << "	(number, key, text, file, line, __VA_ARGS__)" << endl
 	   << "" << endl
-	   << "#define ELEKTRA_ADD_WARNINGF_HELPER_HELPER(number, key, text, file, line, ...) elektraAddWarningf ## number\\" << endl
-	   << "	(key, text, file, #line, __VA_ARGS__)" << endl
+	   << "#define ELEKTRA_ADD_WARNINGF_HELPER_HELPER(number, key, text, file, line, ...)  do {ELEKTRA_LOG (\"Add Warning \" "
+	      "STRINGIFY(number) \" : \" text, ##__VA_ARGS__); elektraAddWarningf ## number\\"
+	   << endl
+	   << "	(key, text, file, #line, __VA_ARGS__); } while (0)" << endl
 	   << endl
 	   << endl;
 
