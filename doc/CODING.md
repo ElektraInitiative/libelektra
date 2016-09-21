@@ -7,19 +7,17 @@ Make sure to read [DESIGN](/doc/DESIGN.md) together with this document.
 
 ## Folder structure ##
 
-After you downloaded and unpacked Elektra you see unusually many
-folders. The reason is that the Elektra project consists of many activities.
-
+After you downloaded and unpacked Elektra you should see some folders.
 The most important are:
 
- * **src:** This directory contains the source of the library and the tools.
+ * **src:** This directory contains the source of the libraries and the tools.
  * **doc:** Documentation for the library
- * **example:** Examples on how to use the library
- * **tests:** contains the testing framework for the source.
+ * **examples:** Examples on how to use the library
+ * **tests:** contains the testing framework for the source (**src**).
 
 ## Source Code ##
 
-libelektra is the ANSI/ISO C-Core which coordinates the interactions
+libelektra is the ANSI/ISO C99-Core which coordinates the interactions
 between the user and the plugins.
 
 The plugins have all kinds of dependencies. It is the responsibility of
@@ -35,51 +33,56 @@ kdb is the commandline-tool to access and initialize the Elektra database.
 ### General Guidelines ###
 
 You are only allowed to break a guideline if there is a good reason
-to do so. When you do, document the fact, either in the commit message,
-or as comment next to the code.
+to do so. When you do, document the fact as comment next to the code.
 
-Of course, all rules of good software engineering apply: Use meaningful names and keep the software both testable and reusable.
+Of course, all rules of good software engineering apply: Use meaningful
+names and keep the software both testable and reusable.
 
 The purpose of the guidelines is to have a consistent
 style, not to teach programming.
 
-If you see broken guidelines do not hesitate to fix them. At least put a
+If you see code that breaks guidelines do not hesitate to fix them. At least put a
 TODO marker to make the places visible.
 
-If you see inconsistency do not hesitate to talk about it with the
+If you see inconsistency within the rules do not hesitate to talk about it with the
 intent to add a new rule here.
 
 See [DESIGN](/doc/DESIGN.md) document too, they complement each other.
+
+
 
 
 ### Code Comments ###
 
 Code is not only for the computer, but it should be readable for humans, too.
 Up-to-date code comments are essential to make code understandable for others.
+Thus please use following techniques (in order of preference):
 
-1. Ideally you should use assertions to state what should be true at a specific
+1. Comment functions with `/**/` and Doxygen, see below.
+
+2. You should use also add assertions to state what should be true at a specific
    position in the code. Their syntax is checked and they are automatically
    verified at run-time. So they are not only useful for people reading the
-   code:
+   code but also for tools. Assertions in Elektra are used by:
 
-   ```c
-   #include <kdbassert.h>
-   ELEKTRA_ASSERT (condition, "formatted text to be printed when assert fails", ...)
-   ```
+   `#include <kdbassert.h>` 
 
-2. If the "comment" might be useful to be printed during execution, use logging:
+   `ELEKTRA_ASSERT (condition, "formatted text to be printed when assert fails", ...)` 
 
-   ```c
-   #include <kdblogger.h>
-   ELEKTRA_LOG ("formatted text to be printed according log filters", ...)
-   ```
+3. If the "comment" might be useful to be printed during execution, use logging:
 
-3. Prefer to comment functions with Doxygen, see below.
+   `#include <kdblogger.h>` 
 
-4. Prefer to introduce variables and functions with good names that make the
-   purpose clear.
+   `ELEKTRA_LOG ("formatted text to be printed according log filters", ...)` 
 
-5. Otherwise comment with `//`.
+   There are four log levels:
+   - ELEKTRA_LOG_WARNING, something critical that should be shown the user (e.g. API misuse), see #ELEKTRA_LOG_LEVEL_WARNING
+   - ELEKTRA_LOG_NOTICE, something important developers are likely interested in, see #ELEKTRA_LOG_LEVEL_NOTICE
+   - ELEKTRA_LOG, standard level gives information what the code is doing without flooding the log, see #ELEKTRA_LOG_LEVEL_INFO
+   - ELEKTRA_LOG_DEBUG, for less important logs, see #ELEKTRA_LOG_LEVEL_DEBUG
+
+4. Otherwise comment within source with `//` or with `/**/` for multi-line
+   comments.
 
 
 
@@ -114,13 +117,7 @@ Rationale: Readability with split windows.
  * Use camelCase for functions and variables.
  * Start types with upper-case, everything else with lower-case.
  * Prefix names with `elektra` for internal usage. External API either starts
-with `ks`, `key` or `kdb`.
-
-- Comments
-
- * Use C-comments `/**/` with doxygen style for functions.
- * Use C++-comments `//` for single line statements about the code in the
-next line.
+   with `ks`, `key` or `kdb`.
 
 - Whitespaces
 
@@ -148,7 +145,7 @@ next line.
  * C++-Files have extension `.cpp`, Header files `.hpp`.
  * Do not use `static`, but anonymous namespaces.
  * Write everything within namespaces and do not prefix names.
- * Even though we use C++11, we should be oriented towards [more safe and modern usage](https://github.com/isocpp/CppCoreGuidelines/blob/master/CppCoreGuidelines.md)
+ * Oriented towards [more safe and modern usage](https://github.com/isocpp/CppCoreGuidelines/blob/master/CppCoreGuidelines.md)
 
 **Example:** [src/bindings/cpp/include/kdb.hpp](http://libelektra.org/tree/master/src/bindings/cpp/include/kdb.hpp)
 
