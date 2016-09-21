@@ -52,19 +52,6 @@
  * to which mountpoint. */
 #define KDB_SYSTEM_ELEKTRA "system/elektra"
 
-#if DEBUG
-#include <stdio.h>
-#define ELEKTRA_PRINT_DEBUG(text) printf ("%s:%d: %s\n", __FILE__, __LINE__, text);
-#else
-#define ELEKTRA_PRINT_DEBUG(text)
-#endif
-
-#if DEBUG && VERBOSE
-#define ELEKTRA_PRINT_VERBOSE(text) printf ("%s:%d: %s\n", __FILE__, __LINE__, text);
-#else
-#define ELEKTRA_PRINT_VERBOSE(text)
-#endif
-
 #if DEBUG || defined(ELEKTRA_BMC)
 #undef NDEBUG
 #include <assert.h>
