@@ -28,6 +28,7 @@
 #include "kdb.h"
 #include "kdbprivate.h"
 #include "kdbtypes.h"
+#include <kdbassert.h>
 
 
 /**
@@ -426,11 +427,8 @@ void keyVInit (Key * key, const char * name, va_list va)
 				break;
 
 			default:
-#if DEBUG
-				fprintf (stderr, "Unknown option in keyVInit: " ELEKTRA_UNSIGNED_LONG_LONG_F "\n",
-					 (kdb_unsigned_long_long_t)action);
-#endif
-				ELEKTRA_ASSERT (0 && "Unknown option in keyVInit");
+				ELEKTRA_ASSERT (0, "Unknown option " ELEKTRA_UNSIGNED_LONG_LONG_F " in keyVInit",
+						(kdb_unsigned_long_long_t)action);
 				break;
 			}
 		}

@@ -52,14 +52,6 @@
  * to which mountpoint. */
 #define KDB_SYSTEM_ELEKTRA "system/elektra"
 
-#if DEBUG || defined(ELEKTRA_BMC)
-#undef NDEBUG
-#include <assert.h>
-#define ELEKTRA_ASSERT(NX) assert (NX)
-#else
-#define ELEKTRA_ASSERT(NX)
-#endif
-
 
 #ifdef __cplusplus
 namespace ckdb

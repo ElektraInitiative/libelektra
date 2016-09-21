@@ -151,5 +151,19 @@ int elektraLog (int level ELEKTRA_UNUSED, int flags ELEKTRA_UNUSED, const char *
 		va_end (args);
 	}
 #endif
+
 	return ret;
+}
+
+void elektraAbort (const char * expression, const char * function, const char * file, const int line, const char * mmsg, ...)
+{
+	{
+		va_list args;
+		va_start (args, mmsg);
+		char * msg;
+		asprintf (msg, "Assertion `%s' failed: %s", expression, mmsg);
+		elektraLog (level, function, file, line, str, msg, args);
+		va_end (args);
+	}
+	abort ();
 }

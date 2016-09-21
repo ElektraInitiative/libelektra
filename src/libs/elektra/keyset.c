@@ -26,11 +26,10 @@
 #include <string.h>
 #endif
 
-#include <stdio.h>
-
 #include <kdbtypes.h>
 
 #include "kdbinternal.h"
+#include <kdbassert.h>
 
 
 #define ELEKTRA_MAX_PREFIX_SIZE sizeof ("namespace/")
@@ -1128,7 +1127,7 @@ KeySet * ksCut (KeySet * ks, const Key * cutpoint)
 
 	if (ksCopyInternal (ks, found, it) == -1)
 	{
-		ELEKTRA_ASSERT (0 && "ksCopyInternal returned an error inside ksCut");
+		ELEKTRA_ASSERT (0, "ksCopyInternal returned an error inside ksCut");
 	}
 
 	if (set_cursor) ks->cursor = ks->array[ks->current];

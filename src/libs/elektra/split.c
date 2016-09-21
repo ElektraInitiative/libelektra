@@ -34,6 +34,7 @@
 #include <errno.h>
 #endif
 
+#include <kdbassert.h>
 #include <kdberrors.h>
 #include <kdbinternal.h>
 
@@ -102,7 +103,7 @@ void elektraSplitDel (Split * keysets)
  */
 void elektraSplitRemove (Split * split, size_t where)
 {
-	ELEKTRA_ASSERT (where < split->size && "cannot remove behind size");
+	ELEKTRA_ASSERT (where < split->size, "cannot remove behind size: %d smaller than %d", where, split->size);
 	ksDel (split->keysets[where]);
 	keyDel (split->parents[where]);
 	--split->size; // reduce size
@@ -577,7 +578,7 @@ static int elektraSplitPostprocess (Split * split, int i, Key * warningKey, KDB 
 				elektraDropCurrentKey (split->keysets[i], warningKey, curHandle, "it has a cascading name");
 				break;
 			case KEY_NS_NONE:
-				ELEKTRA_ASSERT (0 && "wrong key namespace, should not be none");
+				ELEKTRA_ASSERT (0, "wrong key namespace `none'");
 				return -1;
 			}
 	}
@@ -815,7 +816,7 @@ int elektraSplitSync (Split * split)
 		case KEY_NS_META:
 		case KEY_NS_CASCADING:
 		case KEY_NS_NONE:
-			ELEKTRA_ASSERT (0 && "Got keys that should not be here");
+			ELEKTRA_ASSERT (0, "Got keys in wrong namespace %d in split %d", keyGetNamespace (split->parents[i]), i);
 			return -1;
 		}
 	}

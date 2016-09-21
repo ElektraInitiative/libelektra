@@ -63,7 +63,8 @@ Up-to-date code comments are essential to make code understandable for others.
    code:
 
    ```c
-   ELEKTRA_ASSERT (condition && "text to be printed when assert fails")
+   #include <kdbassert.h>
+   ELEKTRA_ASSERT (condition, "formatted text to be printed when assert fails", ...)
    ```
 
 2. If the "comment" might be useful to be printed during execution, use logging:

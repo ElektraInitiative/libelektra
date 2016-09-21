@@ -15,6 +15,8 @@
 #include <stdio.h>
 #endif
 
+#include <kdbassert.h>
+
 #ifdef HAVE_LOCALE_H
 #include <locale.h>
 #endif
@@ -483,7 +485,7 @@ static int elektraGetCheckUpdateNeeded (Split * split, Key * parentKey)
 			// Nothing to do here
 			break;
 		default:
-			ELEKTRA_ASSERT (0 && "resolver did not return 1 0 -1");
+			ELEKTRA_ASSERT (0, "resolver did not return 1 0 -1, but %d", ret);
 		case -1:
 			// Ohh, an error occurred, lets stop the
 			// process.
@@ -1126,11 +1128,11 @@ int kdbSet (KDB * handle, KeySet * ks, Key * parentKey)
 		ELEKTRA_SET_ERROR (8, parentKey, keyName (ksCurrent (ks)));
 		goto error;
 	}
-	ELEKTRA_ASSERT (syncstate == 0 || syncstate == 1);
+	ELEKTRA_ASSERT (syncstate == 0 || syncstate == 1, "syncstate not 0 or 1, but %d", syncstate);
 
 	// 2.) Search for changed sizes
 	syncstate |= elektraSplitSync (split);
-	ELEKTRA_ASSERT (syncstate <= 1);
+	ELEKTRA_ASSERT (syncstate <= 1, "syncstate not equal or below 1, but %d", syncstate);
 	if (syncstate != 1)
 	{
 		/* No update is needed */
@@ -1148,7 +1150,7 @@ int kdbSet (KDB * handle, KeySet * ks, Key * parentKey)
 		errno = errnosave;
 		return syncstate == 0 ? 0 : -1;
 	}
-	ELEKTRA_ASSERT (syncstate == 1);
+	ELEKTRA_ASSERT (syncstate == 1, "syncstate not 1, but %d", syncstate);
 
 	elektraSplitPrepare (split);
 

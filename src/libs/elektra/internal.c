@@ -39,6 +39,7 @@
 #endif
 
 #include "kdbinternal.h"
+#include <kdbassert.h>
 
 /**
  * @brief Internal Methods for Elektra
@@ -575,11 +576,9 @@ char * elektraUnescapeKeyNamePart (const char * source, size_t size, char * dest
 		}
 		else if (*sp == '/')
 		{
-			// we escape a part, so there had to be a
-			// backslash
-			ELEKTRA_ASSERT (count > 0);
-			// we counted an uneven number of backslashes
-			ELEKTRA_ASSERT ((count % 2) == 1);
+			// we escape a part, so there had to be a backslash
+			ELEKTRA_ASSERT (count > 0, "no backslash found, count is %d", count);
+			ELEKTRA_ASSERT ((count % 2) == 1, "counted uneven number of backslashes: %d", count);
 
 			count /= 2;
 			while (count)
@@ -609,9 +608,7 @@ char * elektraUnescapeKeyNamePart (const char * source, size_t size, char * dest
 		--size;
 	}
 
-	// we counted an even number of backslashes
-	// otherwise we would not be at the end
-	ELEKTRA_ASSERT ((count % 2) == 0);
+	ELEKTRA_ASSERT ((count % 2) == 0, "uneven number of backslashes: %d", count);
 	count /= 2;
 	while (count)
 	{

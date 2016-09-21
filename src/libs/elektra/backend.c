@@ -10,6 +10,8 @@
 #include "kdbconfig.h"
 #endif
 
+#include <kdbassert.h>
+
 #if DEBUG && defined(HAVE_STDIO_H)
 #include <stdio.h>
 #endif
@@ -425,7 +427,7 @@ int elektraBackendUpdateSize (Backend * backend, Key * parent, int size)
 	case KEY_NS_META:
 	case KEY_NS_CASCADING:
 	case KEY_NS_NONE:
-		ELEKTRA_ASSERT (0 && "invalid namespace");
+		ELEKTRA_ASSERT (0, "invalid namespace %d", keyGetNamespace (parent));
 		return -1;
 	}
 
