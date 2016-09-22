@@ -15,7 +15,7 @@
 
 The Base64 Encoding (specified in [RFC4648](https://www.ietf.org/rfc/rfc4648.txt)) is used to encode arbitrary binary data to ASCII strings.
 
-This is useful for configuration files that must contain ASCII or Unicode strings only.
+This is useful for configuration files that must contain ASCII strings only.
 
 The `base64` plugin encodes all binary values before `kdb set` writes the configuration to the file.
 The values are decoded back to its original value after `kdb get` has read from the configuration file.

@@ -16,8 +16,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-static const char * alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
-#define ALPHABET_LENGTH (64)
+static const char alphabet[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+#define ALPHABET_LENGTH (sizeof (alphabet) - 1)
 static const char padding = '=';
 
 /**
@@ -43,7 +43,7 @@ static const char * getPrefix (KeySet * config)
  */
 char * ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME, base64Encode) (const kdb_octet_t * input, const size_t inputLength)
 {
-	size_t encodedLength;
+	size_t encodedLength = 0;
 	if (inputLength % 3 == 0)
 	{
 		encodedLength = (inputLength / 3 * 4) + 1;
