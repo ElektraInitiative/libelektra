@@ -71,6 +71,12 @@ this is the same as calling `kdb get {path}`
 
 this is the same as calling `kdb set {path}`
 
++ Request (text/plain)
+
+        hello world
+
++ Response 204
+
 + Request (application/json)
 
         "hello world"
@@ -141,7 +147,7 @@ API to allow instances to register themselves with `clusterd`
 + Attributes (Instance)
 
 + Parameters
-    + instance_id: `507f191e810c19729de860ea` (string) - id of an instance
+    + instance_id: `46a288ae-7475-4cdd-a04c-3826c9a4b5f5` (string) - id of an instance
 
 ##### get information about a single instance [GET]
 
@@ -173,7 +179,7 @@ API to allow instances to register themselves with `clusterd`
 you can access a single instances' configuration via `clusterd` the same way you would directly access it
 
 + Parameters
-    + instance_id: `507f191e810c19729de860ea` (string) - id of an instance
+    + instance_id: `46a288ae-7475-4cdd-a04c-3826c9a4b5f5` (string) - id of an instance
     + path: `user/hello` (string) - path to the elektra config
 
 ##### get configuration [GET]
@@ -183,7 +189,7 @@ this is the same as calling `kdb get {path}` on the instance
 + Response 200 (application/json)
 
         "hello world"
-
+        
 + Request nonexistant path
     + Parameters
         + path: `user/nonexistant`
@@ -193,6 +199,12 @@ this is the same as calling `kdb get {path}` on the instance
 ##### set configuration [PUT]
 
 this is the same as calling `kdb set {path}` on the instance
+
++ Request (text/plain)
+
+        hello world
+
++ Response 204
 
 + Request (application/json)
 
@@ -224,6 +236,101 @@ For cluster responses, the results of the operation are grouped together.
 If everything is a success, the status code of the combined document will be 200.
 Otherwise, it will show an error (400).
 
+
+##### list all clusters [GET]
+
++ Response 200 (application/json)
+    + Attributes (array[Cluster])
+
+##### create a new cluster [POST]
+
++ Attributes (Base Cluster)
+
++ Request (application/json)
+
++ Response 200
+    + Attributes (Cluster)
+
+
+
+
+#### /clusters/{cluster_id}
+
++ Attributes (Cluster)
+
++ Parameters
+    + cluster_id: `54a92a5f-2dd5-4f61-8761-6acfc7c49799` (string) - id of a cluster
+
+##### get information about a cluster [GET]
+
++ Response 200 (application/json)
+    + Attributes (Cluster)
+
+##### edit a cluster [PUT]
+
++ Request update name of cluster (application/json)
+    + Attributes (object)
+        + name: web cluster
+
++ Response 204
+
+##### delete a cluster [DELETE]
+
++ Response 204
+
+##### get versions of a cluster [GET /instances/{instance_id}/version]
+
++ Response 200 (application/json)
+    + Attributes (array[Version])
+
+
+
+
+#### /clusters/{cluster_id}/kdb/{path}
+
+clusters' configurations are stored on the `clusterd` server
+
++ Parameters
+    + cluster_id: `54a92a5f-2dd5-4f61-8761-6acfc7c49799` (string) - id of a cluster
+    + path: `user/hello` (string) - path to the elektra config
+
+##### get configuration [GET]
+
++ Response 200 (application/json)
+
+        "hello world"
+        
++ Request nonexistant path
+    + Parameters
+        + path: `user/nonexistant`
+
++ Response 404
+
+##### set configuration [PUT]
+
++ Request (text/plain)
+
+        hello world
+
++ Response 204
+
++ Request (application/json)
+
+        "hello world"
+
++ Response 204
+
+##### delete configuration [DELETE]
+
++ Response 204
+
++ Request nonexistant path
+    + Parameters
+        + path: `user/nonexistant`
+
++ Response 404
+
+
 # Data Structures
 
 ## Base Version (object)
@@ -233,8 +340,15 @@ Otherwise, it will show an error (400).
 + elektra: 0.8.17 (string, required) - libelektra version
 
 ## Base Instance (object)
-+ host: 192.168.0.5 (string, required)
 + name: test instance (string)
++ host: 192.168.0.5 (string, required)
 
 ## Instance (Base Instance)
-+ id: 507f191e810c19729de860ea (string, required)
++ id: `46a288ae-7475-4cdd-a04c-3826c9a4b5f5` (string, required)
+
+## Base Cluster (object)
++ name: test cluster (string)
++ instances (array[Instance], required)
+
+## Cluster (Base Cluster)
++ id: `54a92a5f-2dd5-4f61-8761-6acfc7c49799` (string, required)
