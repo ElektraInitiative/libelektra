@@ -275,8 +275,7 @@ Key * elektraMountGlobalsFindPlugin (KeySet * referencePlugins, Key * cur)
 	return refKey;
 }
 
-Plugin * elektraMountGlobalsLoadPlugin (KeySet * referencePlugins, Key * cur, KeySet * global,
-										KeySet * modules, Key * errorKey)
+Plugin * elektraMountGlobalsLoadPlugin (KeySet * referencePlugins, Key * cur, KeySet * global, KeySet * modules, Key * errorKey)
 {
 	Plugin * plugin;
 	Key * refKey = elektraMountGlobalsFindPlugin (referencePlugins, cur);
@@ -289,7 +288,7 @@ Plugin * elektraMountGlobalsLoadPlugin (KeySet * referencePlugins, Key * cur, Ke
 	}
 	else
 	{
-		KeySet * config = elektraMountGlobalsGetConfig(cur, global);
+		KeySet * config = elektraMountGlobalsGetConfig (cur, global);
 		const char * pluginName = keyString (cur);
 		// loading the new plugin
 		plugin = elektraPluginOpen (pluginName, modules, ksDup (config), errorKey);
@@ -354,8 +353,7 @@ int mountGlobals (KDB * kdb, KeySet * keys, KeySet * modules, Key * errorKey)
 	while ((cur = ksNext (global)) != NULL)
 	{
 		// the cutpoints for the plugin configs are always directly below the "root", ignore everything else
-		if (keyRel (root, cur) != 1)
-			continue;
+		if (keyRel (root, cur) != 1) continue;
 		const char * placement = keyBaseName (cur);
 
 		for (GlobalpluginPositions i = 0; i < NR_GLOBAL_POSITIONS; ++i)
@@ -379,33 +377,25 @@ int mountGlobals (KDB * kdb, KeySet * keys, KeySet * modules, Key * errorKey)
 				Key * curSubPosition;
 				while ((curSubPosition = ksNext (subPositions)) != NULL)
 				{
-					if (keyRel (placementKey, curSubPosition) != 1)
-						continue;
+					if (keyRel (placementKey, curSubPosition) != 1) continue;
 					const char * subPlacement = keyBaseName (curSubPosition);
 
 					for (GlobalpluginSubPositions j = 0; j < NR_GLOBAL_SUBPOSITIONS; ++j)
 					{
-<<<<<<< HEAD
-						ksDel (keys);
-						ELEKTRA_ADD_WARNING (64, errorKey, pluginName);
-						return -1;
-=======
-						if (j == MAXONCE)
-							continue;
+						if (j == MAXONCE) continue;
 
-						if (!strcasecmp(subPlacement, GlobalpluginSubPositionsStr[j]))
+						if (!strcasecmp (subPlacement, GlobalpluginSubPositionsStr[j]))
 						{
-							Plugin * subPlugin = elektraMountGlobalsLoadPlugin (referencePlugins, curSubPosition, subPositions,
-																				modules, errorKey);
-							if(!subPlugin)
+							Plugin * subPlugin = elektraMountGlobalsLoadPlugin (
+								referencePlugins, curSubPosition, subPositions, modules, errorKey);
+							if (!subPlugin)
 								retval = -1; // error loading plugin
 							else
 								kdb->globalPlugins[i][j] = subPlugin;
 						}
->>>>>>> global plugins: introduce positions and subpositions
 					}
 				}
-				ksDel(subPositions);
+				ksDel (subPositions);
 			}
 		}
 	}
