@@ -16,14 +16,16 @@ Returns an overview of available API methods with required parameters and a desc
 
 ## API Version [GET /version]
 
-Returns the current version of API and Elektra. For further information see [doc/VERSION.md](https://github.com/ElektraInitiative/libelektra/blob/master/doc/VERSION.md).
+Returns the current version of the API and Elektra. For further information and explanation see [doc/VERSION.md](https://github.com/ElektraInitiative/libelektra/blob/master/doc/VERSION.md).
 
 + Response 200 (application/json)
     + Attributes (object)
-        + version (string) - The currently used version in its complete format
-        + major (number) - The currently used major version
-        + minor (number) - The currently used minor version
-        + micro (number) - The currently used micro version
+        + elektra (object) - Detailed version information about the used Elektra library
+            + version (string) - The currently used version in its complete format
+            + major (number) - The currently used major version
+            + minor (number) - The currently used minor version
+            + micro (number) - The currently used micro version
+        + api (number) - The version of the API itself
 
 
 
