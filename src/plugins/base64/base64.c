@@ -21,21 +21,6 @@ static const char alphabet[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuv
 static const char padding = '=';
 
 /**
- * @brief read prefix from plugin configuration.
- * @param config holds the plugin configuration.
- * @returns the prefix to be used by the plugin.
- */
-static const char * getPrefix (KeySet * config)
-{
-	Key * k = ksLookupByName (config, ELEKTRA_PLUGIN_BASE64_PARAM_PREFIX, 0);
-	if (k)
-	{
-		return keyString (k);
-	}
-	return ELEKTRA_PLUGIN_BASE64_DEFAULT_PREFIX;
-}
-
-/**
  * @brief encodes arbitrary binary data using the Base64 encoding scheme (RFC4648)
  * @param input holds the data to be encoded
  * @param inputLength tells how many bytes the input buffer is holding.
@@ -181,7 +166,7 @@ int ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME, base64Decode) (const char * in
  * @retval 1 on success
  * @retval -1 on failure
  */
-int ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME, get) (Plugin * handle, KeySet * ks ELEKTRA_UNUSED, Key * parentKey)
+int ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME, get) (Plugin * handle ELEKTRA_UNUSED, KeySet * ks ELEKTRA_UNUSED, Key * parentKey)
 {
 	// Publish module configuration to Elektra (establish the contract)
 	if (!strcmp (keyName (parentKey), "system/elektra/modules/" ELEKTRA_PLUGIN_NAME))
@@ -196,19 +181,21 @@ int ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME, get) (Plugin * handle, KeySet 
 
 	// base64 decoding
 	Key * k;
-	KeySet * pluginConfig = elektraPluginGetConfig (handle);
 
-	const char * prefix = getPrefix (pluginConfig);
+	const char * prefix = ELEKTRA_PLUGIN_BASE64_PREFIX;
 	const size_t prefixLen = strlen (prefix);
+	const char escapedPrefix[] = ELEKTRA_PLUGIN_BASE64_ESCAPE ELEKTRA_PLUGIN_BASE64_ESCAPE;
 
 	ksRewind (ks);
 	while ((k = ksNext (ks)))
 	{
-		if (keyIsString (k))
+		if (keyIsString (k) == 1)
 		{
 			const char * strVal = keyString (k);
+
 			if (strlen (strVal) >= prefixLen && strncmp (strVal, prefix, prefixLen) == 0)
 			{
+				// Base64 encoding
 				kdb_octet_t * buffer;
 				size_t bufferLen;
 
@@ -234,6 +221,18 @@ int ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME, get) (Plugin * handle, KeySet 
 
 				elektraFree (buffer);
 			}
+			else if (strlen (strVal) >= 2 && strncmp (strVal, escapedPrefix, 2) == 0)
+			{
+				// discard the first escape character
+				char * unescaped = strdup (&strVal[1]);
+				if (!unescaped)
+				{
+					ELEKTRA_SET_ERROR (87, parentKey, "Memory allocation failed");
+					return -1;
+				}
+				keySetString (k, unescaped);
+				elektraFree (unescaped);
+			}
 		}
 	}
 	return 1;
@@ -244,17 +243,41 @@ int ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME, get) (Plugin * handle, KeySet 
  * @retval 1 on success
  * @retval -1 on failure
  */
-int ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME, set) (Plugin * handle, KeySet * ks, Key * parentKey)
+int ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME, set) (Plugin * handle ELEKTRA_UNUSED, KeySet * ks, Key * parentKey)
 {
 	Key * k;
-	KeySet * pluginConfig = elektraPluginGetConfig (handle);
 
-	const char * prefix = getPrefix (pluginConfig);
+	const char * prefix = ELEKTRA_PLUGIN_BASE64_PREFIX;
 	const size_t prefixLen = strlen (prefix);
 
 	ksRewind (ks);
 	while ((k = ksNext (ks)))
 	{
+		// escape the prefix character
+		if (keyIsString (k) == 1)
+		{
+			const char * strVal = keyString (k);
+			const size_t strValLen = strlen (strVal);
+			if (strValLen > 0 && strncmp (strVal, ELEKTRA_PLUGIN_BASE64_ESCAPE, 1) == 0)
+			{
+				// + 1 for the additional escape character
+				// + 1 for the NULL terminator
+				char * escapedVal = elektraMalloc (strValLen + 2);
+				if (!escapedVal)
+				{
+					ELEKTRA_SET_ERROR (87, parentKey, "Memory allocation failed");
+					return -1;
+				}
+
+				// add the escape character in front of the original value
+				escapedVal[0] = ELEKTRA_PLUGIN_BASE64_ESCAPE_CHAR;
+				strncpy (&escapedVal[1], strVal, strValLen + 1);
+				keySetString (k, escapedVal);
+				elektraFree (escapedVal);
+			}
+		}
+
+		// Base 64 encoding
 		if (keyIsBinary (k) == 1)
 		{
 			char * base64 =

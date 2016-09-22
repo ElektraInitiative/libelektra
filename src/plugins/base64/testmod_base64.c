@@ -23,7 +23,7 @@ static const char * decoded[] = { "", "f", "fo", "foo", "foob", "fooba", "foobar
 static const char * encoded[] = { "", "Zg==", "Zm8=", "Zm9v", "Zm9vYg==", "Zm9vYmE=", "Zm9vYmFy" };
 static const size_t testcaseCounter = sizeof (decoded) / sizeof (const char *);
 
-static KeySet * newPluginConfiguration ()
+static inline KeySet * newPluginConfiguration ()
 {
 	return ksNew (0, KS_END);
 }
@@ -135,9 +135,10 @@ static void test_base64_plugin_regular ()
 		Key * k;
 		const kdb_octet_t sampleValue[] = { 0x31, 0x32, 0x33 };
 
-		KeySet * data = ksNew (3, keyNew ("/t/k1", KEY_VALUE, "Hello World", KEY_END),
+		KeySet * data = ksNew (4, keyNew ("/t/k1", KEY_VALUE, "Hello World", KEY_END),
 				       keyNew ("/t/k2", KEY_BINARY, KEY_SIZE, sizeof (sampleValue), KEY_VALUE, sampleValue, KEY_END),
-				       keyNew ("/t/k3", KEY_BINARY, KEY_SIZE, 0, KEY_END), KS_END);
+				       keyNew ("/t/k3", KEY_BINARY, KEY_SIZE, 0, KEY_END),
+				       keyNew ("/t/k4", KEY_VALUE, ELEKTRA_PLUGIN_BASE64_PREFIX, KEY_END), KS_END);
 
 		// test encoding
 		succeed_if (plugin->kdbSet (plugin, data, parentKey) == 1, "kdb set failed");
@@ -153,14 +154,24 @@ static void test_base64_plugin_regular ()
 		succeed_if (k, "lost key in data KeySet");
 		if (k)
 		{
-			succeed_if (strcmp (keyString (k), "bin:MTIz") == 0, "encoding binary key failed during kdb set");
+			succeed_if (strcmp (keyString (k), ELEKTRA_PLUGIN_BASE64_PREFIX "MTIz") == 0,
+				    "encoding binary key failed during kdb set");
 		}
 
 		k = ksLookupByName (data, "/t/k3", 0);
 		succeed_if (k, "lost key in data KeySet");
 		if (k)
 		{
-			succeed_if (strcmp (keyString (k), "bin:") == 0, "encoding NULL-key failed during kdb set");
+			succeed_if (strcmp (keyString (k), ELEKTRA_PLUGIN_BASE64_PREFIX "") == 0,
+				    "encoding NULL-key failed during kdb set");
+		}
+
+		k = ksLookupByName (data, "/t/k4", 0);
+		succeed_if (k, "lost key in data KeySet");
+		if (k)
+		{
+			succeed_if (strcmp (keyString (k), ELEKTRA_PLUGIN_BASE64_ESCAPE ELEKTRA_PLUGIN_BASE64_PREFIX) == 0,
+				    "encoding string starting with prefix " ELEKTRA_PLUGIN_BASE64_ESCAPE " failed during kdb set");
 		}
 
 		// test decoding
@@ -192,6 +203,14 @@ static void test_base64_plugin_regular ()
 			succeed_if (keyGetValueSize (k) <= 0, "decoding NULL-key failed during kdb get");
 		}
 
+		k = ksLookupByName (data, "/t/k4", 0);
+		succeed_if (k, "lost key in data KeySet");
+		if (k)
+		{
+			succeed_if (strcmp (keyString (k), ELEKTRA_PLUGIN_BASE64_PREFIX) == 0,
+				    "decoding string starting with prefix " ELEKTRA_PLUGIN_BASE64_ESCAPE " failed during kdb get");
+		}
+
 		ksDel (data);
 		elektraPluginClose (plugin, 0);
 	}
@@ -214,49 +233,17 @@ static void test_base64_plugin_decoding_error ()
 	if (plugin)
 	{
 		Key * k;
-		const kdb_octet_t sampleValue[] = { 0x31, 0x32, 0x33 };
+		KeySet * data = ksNew (1, keyNew ("/t/k1", KEY_VALUE, ELEKTRA_PLUGIN_BASE64_PREFIX "_$..", KEY_END), KS_END);
 
-		KeySet * data =
-			ksNew (2, keyNew ("/t/k1", KEY_VALUE, "bin:_$..", KEY_END),
-			       keyNew ("/t/k2", KEY_BINARY, KEY_SIZE, sizeof (sampleValue), KEY_VALUE, sampleValue, KEY_END), KS_END);
-
-		// test encoding
-		succeed_if (plugin->kdbSet (plugin, data, parentKey) == 1, "kdb set failed");
-
-		k = ksLookupByName (data, "/t/k1", 0);
-		succeed_if (k, "lost key in data KeySet");
-		if (k)
-		{
-			succeed_if (strcmp (keyString (k), "bin:_$..") == 0, "changed string value that does not require encoding");
-		}
-
-		k = ksLookupByName (data, "/t/k2", 0);
-		succeed_if (k, "lost key in data KeySet");
-		if (k)
-		{
-			succeed_if (strcmp (keyString (k), "bin:MTIz") == 0, "encoding binary key failed during kdb set");
-		}
-
-		// test decoding
+		// test failing decoding
 		succeed_if (plugin->kdbGet (plugin, data, parentKey) == 1, "kdb get failed");
 
 		k = ksLookupByName (data, "/t/k1", 0);
 		succeed_if (k, "lost key in data KeySet");
 		if (k)
 		{
-			succeed_if (strcmp (keyString (k), "bin:_$..") == 0, "decoded string value that should have failed");
-		}
-
-		k = ksLookupByName (data, "/t/k2", 0);
-		succeed_if (k, "lost key in data KeySet");
-		if (k)
-		{
-			succeed_if (keyGetValueSize (k) == sizeof (sampleValue), "decoding binary key failed during kdb get");
-			if (keyGetValueSize (k) == sizeof (sampleValue))
-			{
-				succeed_if (memcmp (sampleValue, keyValue (k), sizeof (sampleValue)) == 0,
-					    "decoding binary key failed during kdb get");
-			}
+			succeed_if (strcmp (keyString (k), ELEKTRA_PLUGIN_BASE64_PREFIX "_$..") == 0,
+				    "decoded string value that should have failed");
 		}
 
 		ksDel (data);
