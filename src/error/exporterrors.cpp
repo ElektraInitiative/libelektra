@@ -71,7 +71,7 @@ ostream & operator<< (ostream & os, parse_t & p)
 	   << "	(number, key, text, file, line, __VA_ARGS__)" << endl
 	   << endl
 	   << "#define ELEKTRA_SET_ERRORF_HELPER_HELPER(number, key, text, file, line, ...) do {ELEKTRA_LOG (\"Add Error \" "
-	      "STRINGIFY(number) \" : \" text, ##__VA_ARGS__); elektraSetErrorf ## number\\"
+	      "STRINGIFY(number) \" : \" text, __VA_ARGS__); elektraSetErrorf ## number\\"
 	   << endl
 	   << "	(key, text, file, #line,  __VA_ARGS__); } while (0)" << endl
 	   << endl
@@ -83,7 +83,7 @@ ostream & operator<< (ostream & os, parse_t & p)
 	   << "	(number, key, text, file, line, __VA_ARGS__)" << endl
 	   << "" << endl
 	   << "#define ELEKTRA_ADD_WARNINGF_HELPER_HELPER(number, key, text, file, line, ...)  do {ELEKTRA_LOG (\"Add Warning \" "
-	      "STRINGIFY(number) \" : \" text, ##__VA_ARGS__); elektraAddWarningf ## number\\"
+	      "STRINGIFY(number) \" : \" text, __VA_ARGS__); elektraAddWarningf ## number\\"
 	   << endl
 	   << "	(key, text, file, #line, __VA_ARGS__); } while (0)" << endl
 	   << endl
