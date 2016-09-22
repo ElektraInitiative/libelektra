@@ -46,7 +46,7 @@ static char * getTemporaryFileName (const char * file)
 	char * newFile = elektraMalloc (newFileAllocated);
 	if (!newFile) return NULL;
 	snprintf (newFile, newFileAllocated, "%sXXXXXX", file);
-	mkstemp (newFile);
+	mktemp (newFile);
 	return newFile;
 }
 
