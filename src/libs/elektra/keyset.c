@@ -10,7 +10,7 @@
 #include "kdbconfig.h"
 #endif
 
-#if DEBUG && defined(HAVE_STDIO_H)
+#if defined(HAVE_STDIO_H)
 #include <stdio.h>
 #endif
 
