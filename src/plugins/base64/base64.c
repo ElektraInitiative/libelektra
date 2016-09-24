@@ -12,6 +12,7 @@
 #endif
 #include "base64.h"
 #include <kdb.h>
+#include <kdbassert.h>
 #include <kdberrors.h>
 #include <stdlib.h>
 #include <string.h>
@@ -37,6 +38,7 @@ char * ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME, base64Encode) (const kdb_oc
 	{
 		encodedLength = ((inputLength + (3 - (inputLength % 3))) / 3 * 4) + 1;
 	}
+	ELEKTRA_ASSERT (encodedLength > 0, "Base64 output array size smaller or equal to 0.");
 
 	size_t out = 0;
 	char * encoded = elektraMalloc (encodedLength);
