@@ -6,6 +6,7 @@ add_plugin (base64
 		base64.c
 	COMPILE_DEFINITIONS
 		ELEKTRA_PLUGIN_NAME=\"base64\"
+		ELEKTRA_PLUGIN_NAME_C=base64
 )
 
 if (ADDTESTING_PHASE)

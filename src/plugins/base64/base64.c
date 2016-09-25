@@ -27,7 +27,7 @@ static const char padding = '=';
  * @param inputLength tells how many bytes the input buffer is holding.
  * @returns an allocated string holding the Base64 encoded input data or NULL if the string can not be allocated. Must be freed by the caller.
  */
-char * ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME, base64Encode) (const kdb_octet_t * input, const size_t inputLength)
+char * ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME_C, base64Encode) (const kdb_octet_t * input, const size_t inputLength)
 {
 	size_t encodedLength = 0;
 	if (inputLength % 3 == 0)
@@ -108,7 +108,7 @@ static kdb_octet_t getBase64Index (const char c, int * errorFlag)
  * @retval -1 if the provided string has not been encoded with Base64
  * @retval -2 if the output buffer allocation failed
  */
-int ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME, base64Decode) (const char * input, kdb_octet_t ** output, size_t * outputLength)
+int ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME_C, base64Decode) (const char * input, kdb_octet_t ** output, size_t * outputLength)
 {
 	const size_t inputLen = strlen (input);
 	if (inputLen == 0 || (inputLen == 1 && input[0] == '\0'))
@@ -168,7 +168,7 @@ int ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME, base64Decode) (const char * in
  * @retval 1 on success
  * @retval -1 on failure
  */
-int ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME, get) (Plugin * handle ELEKTRA_UNUSED, KeySet * ks ELEKTRA_UNUSED, Key * parentKey)
+int ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME_C, get) (Plugin * handle ELEKTRA_UNUSED, KeySet * ks ELEKTRA_UNUSED, Key * parentKey)
 {
 	// Publish module configuration to Elektra (establish the contract)
 	if (!strcmp (keyName (parentKey), "system/elektra/modules/" ELEKTRA_PLUGIN_NAME))
@@ -201,8 +201,8 @@ int ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME, get) (Plugin * handle ELEKTRA_
 				kdb_octet_t * buffer;
 				size_t bufferLen;
 
-				int result = ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME, base64Decode) (strVal + prefixLen, &buffer,
-													  &bufferLen);
+				int result = ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME_C, base64Decode) (strVal + prefixLen, &buffer,
+													    &bufferLen);
 				if (result == 1)
 				{
 					// success
@@ -245,7 +245,7 @@ int ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME, get) (Plugin * handle ELEKTRA_
  * @retval 1 on success
  * @retval -1 on failure
  */
-int ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME, set) (Plugin * handle ELEKTRA_UNUSED, KeySet * ks, Key * parentKey)
+int ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME_C, set) (Plugin * handle ELEKTRA_UNUSED, KeySet * ks, Key * parentKey)
 {
 	Key * k;
 
@@ -283,7 +283,7 @@ int ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME, set) (Plugin * handle ELEKTRA_
 		if (keyIsBinary (k) == 1)
 		{
 			char * base64 =
-				ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME, base64Encode) (keyValue (k), (size_t)keyGetValueSize (k));
+				ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME_C, base64Encode) (keyValue (k), (size_t)keyGetValueSize (k));
 			if (!base64)
 			{
 				ELEKTRA_SET_ERROR (87, parentKey, "Memory allocation failed");
@@ -313,7 +313,7 @@ Plugin * ELEKTRA_PLUGIN_EXPORT (base64)
 {
 	// clang-format off
 	return elektraPluginExport(ELEKTRA_PLUGIN_NAME,
-			ELEKTRA_PLUGIN_GET,   &ELEKTRA_PLUGIN_FUNCTION(ELEKTRA_PLUGIN_NAME, get),
-			ELEKTRA_PLUGIN_SET,   &ELEKTRA_PLUGIN_FUNCTION(ELEKTRA_PLUGIN_NAME, set),
+			ELEKTRA_PLUGIN_GET,   &ELEKTRA_PLUGIN_FUNCTION(ELEKTRA_PLUGIN_NAME_C, get),
+			ELEKTRA_PLUGIN_SET,   &ELEKTRA_PLUGIN_FUNCTION(ELEKTRA_PLUGIN_NAME_C, set),
 			ELEKTRA_PLUGIN_END);
 }
