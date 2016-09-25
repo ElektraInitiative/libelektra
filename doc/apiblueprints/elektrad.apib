@@ -1,0 +1,75 @@
+FORMAT: 1A
+
+# elektrad API
+
+to access single instances, each elektra daemon (`elektrad`) provides a REST
+HTTP API
+
+
+## versions [GET /version]
+
+returns the current version of the API and elektra
+
+The API version is increased whenever breaking changes
+(i.e. changes that prevent backward compatibility) are made.
+The Elektra version is directly taken from the Elektra library,
+for further information and explanation see [doc/VERSION.md](https://github.com/ElektraInitiative/libelektra/blob/master/doc/VERSION.md).
+
++ Response 200 (application/json)
+    + Attributes (object)
+        + elektra (object) - Detailed version information about the used Elektra library
+            + version (string) - The currently used version in its complete format
+            + major (number) - The currently used major version
+            + minor (number) - The currently used minor version
+            + micro (number) - The currently used micro version
+        + api (number) - The version of the API itself
+
+
+## elektra key database [/kdb/{+path}]
+
+access the elektra key database by specifying a `path`
+
++ Parameters
+    + path: `user/hello` (string) - path to the elektra config
+
+### get configuration [GET]
+
+this is the same as calling `kdb get {path}`
+
++ Response 200 (application/json)
+
+        "hello world"
+
++ Request nonexistant path
+    + Parameters
+        + path: `user/nonexistant`
+
++ Response 404
+
+### set configuration [PUT]
+
+this is the same as calling `kdb set {path}`
+
++ Request (text/plain)
+
+        hello world
+
++ Response 204
+
++ Request (application/json)
+
+        "hello world"
+
++ Response 204
+
+### delete configuration [DELETE]
+
+this is the same as calling `kdb rm {path}`
+
++ Response 204
+
++ Request nonexistant path
+    + Parameters
+        + path: `user/nonexistant`
+
++ Response 404
