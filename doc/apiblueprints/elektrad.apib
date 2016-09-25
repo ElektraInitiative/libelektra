@@ -43,6 +43,12 @@ this is the same as calling `kdb get {path}`
         + value: hello world (string, required)
         + meta (object, required) - metadata of the requested path
 
++ Response 400 (application/json)
+    + Attributes (Error)
+        + i18n
+            A comprehensive list of possible errors:
+            - `APIKEY_MISSING` api key not specified
+
 + Response 401 (application/json)
     + Attributes (Error)
         + i18n
@@ -71,6 +77,12 @@ this is the same as calling `kdb set {path}`
 
 + Response 204
 
++ Response 400 (application/json)
+    + Attributes (Error)
+        + i18n
+            A comprehensive list of possible errors:
+            - `APIKEY_MISSING` api key not specified
+
 + Response 401 (application/json)
     + Attributes (Error)
         + i18n
@@ -94,6 +106,12 @@ this is the same as calling `kdb set {path}`
 this is the same as calling `kdb rm {path}`
 
 + Response 204
+
++ Response 400 (application/json)
+    + Attributes (Error)
+        + i18n
+            A comprehensive list of possible errors:
+            - `APIKEY_MISSING` api key not specified
 
 + Response 401 (application/json)
     + Attributes (Error)
