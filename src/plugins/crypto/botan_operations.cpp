@@ -66,7 +66,7 @@ static int getKeyIvForEncryption (KeySet * config, Key * errorKey, Key * k, uniq
 		if (!msg) return -1; // error set by CRYPTO_PLUGIN_FUNCTION(getMasterPassword)()
 
 		// generate/derive the cryptographic key and the IV
-		PBKDF * pbkdf = get_pbkdf ("PBKDF2(SHA-256)");
+		unique_ptr<PBKDF> pbkdf = unique_ptr<PBKDF> (get_pbkdf ("PBKDF2(SHA-256)"));
 		OctetString derived = pbkdf->derive_key (
 			requiredKeyBytes, std::string (reinterpret_cast<const char *> (keyValue (msg)), keyGetValueSize (msg)), salt,
 			sizeof (salt), iterations);
@@ -75,7 +75,6 @@ static int getKeyIvForEncryption (KeySet * config, Key * errorKey, Key * k, uniq
 		cIv = unique_ptr<InitializationVector> (
 			new InitializationVector (derived.begin () + ELEKTRA_CRYPTO_BOTAN_KEYSIZE, ELEKTRA_CRYPTO_BOTAN_BLOCKSIZE));
 
-		delete pbkdf;
 		keyDel (msg);
 		return 1;
 	}
@@ -125,7 +124,7 @@ static int getKeyIvForDecryption (KeySet * config, Key * errorKey, Key * k, uniq
 	try
 	{
 		// derive the cryptographic key and the IV
-		PBKDF * pbkdf = get_pbkdf ("PBKDF2(SHA-256)");
+		unique_ptr<PBKDF> pbkdf = unique_ptr<PBKDF> (get_pbkdf ("PBKDF2(SHA-256)"));
 		OctetString derived = pbkdf->derive_key (
 			requiredKeyBytes, std::string (reinterpret_cast<const char *> (keyValue (msg)), keyGetValueSize (msg)), saltBuffer,
 			saltBufferLen, iterations);
@@ -134,7 +133,6 @@ static int getKeyIvForDecryption (KeySet * config, Key * errorKey, Key * k, uniq
 		cIv = unique_ptr<InitializationVector> (
 			new InitializationVector (derived.begin () + ELEKTRA_CRYPTO_BOTAN_KEYSIZE, ELEKTRA_CRYPTO_BOTAN_BLOCKSIZE));
 
-		delete pbkdf;
 		keyDel (msg);
 		return 1;
 	}
