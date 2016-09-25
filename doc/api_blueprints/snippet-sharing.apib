@@ -515,9 +515,14 @@ Can be used to create a new entry in the database. An entry consists of a unique
 
             Regex: ^[a-z0-9\-\.]{3,20}$
 
-        + configuration: `sampleKey = sampleValue` (string, required)
-        
-            The configuration for which a new database entry should be created. It can be of any supported format, in this example **ini** is used.
+        + configuration (object)
+            + value: `sampleKey = sampleValue` (string, required)
+
+                The configuration for which a new database entry should be created. It can be of any supported format, in this example **ini** is used.
+
+            + format: `ini` (string, required)
+
+                The format of the supplied configuration snippet. It has to be in the list of supported formats, see `/conversion/formats`.
 
 + Response 200 (application/json)
     + Attributes (object)
@@ -540,7 +545,8 @@ Can be used to create a new entry in the database. An entry consists of a unique
             - `ENTRY_MISSING_SLUG` if no input for `slug` was submitted
             - `ENTRY_MISSING_TITLE` if no input for `title` was submitted
             - `ENTRY_MISSING_DESCRIPTION` if no input for `description` was submitted
-            - `ENTRY_MISSING_CONFIGURATION` if no input for `configuration` was submitted
+            - `ENTRY_MISSING_CONFIGURATION_VALUE` if no input for `configuration.value` was submitted
+            - `ENTRY_MISSING_CONFIGURATION_FORMAT` if no input for `configuration.format` was submitted
             - `ENTRY_INVALID_ORGANIZATION` if the submitted `organization` is malformed (regex: ^[a-zA-Z0-9\.\-]+$)
             - `ENTRY_INVALID_APPLICATION` if the submitted `application` is malformed (regex: ^[a-zA-Z0-9\.\-]+$)
             - `ENTRY_INVALID_SCOPE` if the submitted `scope` is malformed (regex: ^[a-zA-Z0-9\.\-]+$)
@@ -548,7 +554,8 @@ Can be used to create a new entry in the database. An entry consists of a unique
             - `ENTRY_INVALID_TITLE` if the submitted `title` is malformed (regex: ^[^\n\r]{3,}$)
             - `ENTRY_INVALID_DESCRIPTION` if the submitted `description` is malformed (regex: ^[\s\S]{3,}$)
             - `ENTRY_INVALID_TAG` if one of the submitted `tags` is malformed (regex: ^[a-z0-9\-\.]{3,20}$)
-            - `ENTRY_INVALID_CONFIGURATION` if the submitted configuration snippet has an unsupported format
+            - `ENTRY_INVALID_CONFIGURATION_VALUE` if the submitted configuration snippet could not be parsed in the submitted format
+            - `ENTRY_INVALID_CONFIGURATION_FORMAT` if the submitted configuration format is not supported
             - `REQUEST_MALFORMED_DATA` if the submitted data in the request body does not match the Content-Type or is unparseable
 
 + Response 401 (application/json)
@@ -615,9 +622,14 @@ This operation can only be executed by the owner of an entry as well as moderato
 
             Regex: ^[a-z0-9\-\.]{3,20}$
 
-        + configuration: `sampleKey = sampleValue` (string, required)
-        
-            The new configuration snippet. It can be of any supported format, in this example **ini** is used.
+        + configuration (object)
+            + value: `sampleKey = sampleValue` (string, required)
+
+                The new configuration snippet. It can be of any supported format, in this example **ini** is used.
+
+            + format: `ini` (string, required)
+
+                The format of the supplied configuration snippet. It has to be in the list of supported formats, see `/conversion/formats`.
 
 + Response 200 (application/json)
     + Attributes (object)
@@ -636,11 +648,13 @@ This operation can only be executed by the owner of an entry as well as moderato
             A comprehensive list of possible errors:
             - `ENTRY_MISSING_TITLE` if no input for `title` was submitted
             - `ENTRY_MISSING_DESCRIPTION` if no input for `description` was submitted
-            - `ENTRY_MISSING_CONFIGURATION` if no input for `configuration` was submitted
+            - `ENTRY_MISSING_CONFIGURATION_VALUE` if no input for `configuration.value` was submitted
+            - `ENTRY_MISSING_CONFIGURATION_FORMAT` if no input for `configuration.format` was submitted
             - `ENTRY_INVALID_TITLE` if the submitted `title` is malformed (regex: ^[^\n\r]{3,}$)
             - `ENTRY_INVALID_DESCRIPTION` if the submitted `description` is malformed (regex: ^[\s\S]{3,}$)
             - `ENTRY_INVALID_TAG` if one of the submitted `tags` is malformed (regex: ^[a-z0-9\-\.]{3,20}$)
-            - `ENTRY_INVALID_CONFIGURATION` if the submitted configuration snippet has an unsupported format
+            - `ENTRY_INVALID_CONFIGURATION_VALUE` if the submitted configuration snippet could not be parsed in the submitted format
+            - `ENTRY_INVALID_CONFIGURATION_FORMAT` if the submitted configuration format is not supported
             - `REQUEST_MALFORMED_DATA` if the submitted data in the request body does not match the Content-Type or is unparseable
 
 + Response 401 (application/json)
