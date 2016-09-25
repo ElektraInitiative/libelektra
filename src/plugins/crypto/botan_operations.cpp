@@ -219,18 +219,13 @@ int elektraCryptoBotanEncrypt (KeySet * pluginConfig, Key * k, Key * errorKey)
 		const size_t msgLength = encryptor.remaining ();
 		if (msgLength > 0)
 		{
-			byte * buffer = new byte[msgLength + sizeof (kdb_unsigned_long_t) + saltLen];
-			if (!buffer)
-			{
-				throw std::bad_alloc ();
-			}
+			auto buffer = unique_ptr<byte[]>{ new byte[msgLength + sizeof (kdb_unsigned_long_t) + saltLen] };
 
-			memcpy (buffer, &saltLen, sizeof (kdb_unsigned_long_t));
-			memcpy (buffer + sizeof (kdb_unsigned_long_t), salt, saltLen);
+			memcpy (&buffer[0], &saltLen, sizeof (kdb_unsigned_long_t));
+			memcpy (&buffer[sizeof (kdb_unsigned_long_t)], salt, saltLen);
 
-			const size_t buffered = encryptor.read (buffer + sizeof (kdb_unsigned_long_t) + saltLen, msgLength);
-			keySetBinary (k, buffer, buffered + sizeof (kdb_unsigned_long_t) + saltLen);
-			delete[] buffer;
+			const size_t buffered = encryptor.read (&buffer[sizeof (kdb_unsigned_long_t) + saltLen], msgLength);
+			keySetBinary (k, &buffer[0], buffered + sizeof (kdb_unsigned_long_t) + saltLen);
 		}
 	}
 	catch (std::exception & e)
@@ -291,14 +286,9 @@ int elektraCryptoBotanDecrypt (KeySet * pluginConfig, Key * k, Key * errorKey)
 			}
 			else
 			{
-				byte * buffer = new byte[msgLength];
-				if (!buffer)
-				{
-					throw std::bad_alloc ();
-				}
-				const size_t buffered = decryptor.read (buffer, msgLength);
-				keySetBinary (k, buffer, buffered);
-				delete[] buffer;
+				auto buffer = unique_ptr<byte[]>{ new byte[msgLength] };
+				const size_t buffered = decryptor.read (&buffer[0], msgLength);
+				keySetBinary (k, &buffer[0], buffered);
 			}
 		}
 		else
@@ -325,11 +315,10 @@ char * elektraCryptoBotanCreateRandomString (Key * errorKey, const kdb_unsigned_
 {
 	try
 	{
-		kdb_octet_t * buffer = new kdb_octet_t[length];
+		auto buffer = unique_ptr<kdb_octet_t[]>{ new kdb_octet_t[length] };
 		AutoSeeded_RNG rng;
-		rng.randomize (buffer, length);
-		char * hexString = CRYPTO_PLUGIN_FUNCTION (bin2hex) (errorKey, buffer, length);
-		delete[] buffer;
+		rng.randomize (&buffer[0], length);
+		char * hexString = CRYPTO_PLUGIN_FUNCTION (bin2hex) (errorKey, &buffer[0], length);
 		return hexString;
 	}
 	catch (std::exception & e)
