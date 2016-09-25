@@ -35,7 +35,7 @@ API to allow instances to register themselves with `clusterd`
 
 + Response 400 (application/json)
     + Attributes (Error)
-        + i18n
+        + i18n (string) - a unique token representing above error description message; can be used for internationalization in frontends
             A comprehensive list of possible errors:
             - `APIKEY_MISSING` api key not specified
             - `NAME_MISSING` name not specified
@@ -43,13 +43,13 @@ API to allow instances to register themselves with `clusterd`
 
 + Response 401 (application/json)
     + Attributes (Error)
-        + i18n
+        + i18n (string) - a unique token representing above error description message; can be used for internationalization in frontends
             A comprehensive list of possible errors:
             - `APIKEY_INVALID` api key invalid
 
 + Response 406 (application/json)
     + Attributes (Error)
-        + i18n
+        + i18n (string) - a unique token representing above error description message; can be used for internationalization in frontends
             A comprehensive list of possible errors:
             - `REQUEST_UNSUPPORTED_CONTENT_TYPE` if the submitted Content-Type is not `application/json`
 
@@ -63,7 +63,7 @@ API to allow instances to register themselves with `clusterd`
 
 + Response 401 (application/json)
     + Attributes (Error)
-        + i18n
+        + i18n (string) - a unique token representing above error description message; can be used for internationalization in frontends
             A comprehensive list of possible errors:
             - `NEED_AUTHENTICATION` if no valid session token has been supplied or the user for whom the token has been created does not exist (anymore)
 
@@ -78,26 +78,26 @@ API to allow instances to register themselves with `clusterd`
 
 + Response 400 (application/json)
     + Attributes (Error)
-        + i18n
+        + i18n (string) - a unique token representing above error description message; can be used for internationalization in frontends
             A comprehensive list of possible errors:
             - `NAME_MISSING` name not specified
             - `HOST_MISSING` host not specified
 
 + Response 401 (application/json)
     + Attributes (Error)
-        + i18n
+        + i18n (string) - a unique token representing above error description message; can be used for internationalization in frontends
             A comprehensive list of possible errors:
             - `NEED_AUTHENTICATION` if no valid session token has been supplied or the user for whom the token has been created does not exist (anymore)
 
 + Response 406 (application/json)
     + Attributes (Error)
-        + i18n
+        + i18n (string) - a unique token representing above error description message; can be used for internationalization in frontends
             A comprehensive list of possible errors:
             - `REQUEST_UNSUPPORTED_CONTENT_TYPE` if the submitted Content-Type is not `application/json`
 
 + Response 422 (application/json)
     + Attributes (Error)
-        + i18n
+        + i18n (string) - a unique token representing above error description message; can be used for internationalization in frontends
             A comprehensive list of possible errors:
             - `HOST_DOES_ALREADY_EXIST` if the supplied `host` is already used in another instance
 
@@ -116,13 +116,13 @@ API to allow instances to register themselves with `clusterd`
 
 + Response 401 (application/json)
     + Attributes (Error)
-        + i18n
+        + i18n (string) - a unique token representing above error description message; can be used for internationalization in frontends
             A comprehensive list of possible errors:
             - `NEED_AUTHENTICATION` if no valid session token has been supplied or the user for whom the token has been created does not exist (anymore)
 
 + Response 404 (application/json)
     + Attributes (Error)
-        + i18n
+        + i18n (string) - a unique token representing above error description message; can be used for internationalization in frontends
             A comprehensive list of possible errors:
             - `INSTANCE_NOT_FOUND` if the requested instance does not exist in the database
 
@@ -136,19 +136,19 @@ API to allow instances to register themselves with `clusterd`
 
 + Response 401 (application/json)
     + Attributes (Error)
-        + i18n
+        + i18n (string) - a unique token representing above error description message; can be used for internationalization in frontends
             A comprehensive list of possible errors:
             - `NEED_AUTHENTICATION` if no valid session token has been supplied or the user for whom the token has been created does not exist (anymore)
 
 + Response 404 (application/json)
     + Attributes (Error)
-        + i18n
+        + i18n (string) - a unique token representing above error description message; can be used for internationalization in frontends
             A comprehensive list of possible errors:
             - `INSTANCE_NOT_FOUND` if the requested instance does not exist in the database
 
 + Response 406 (application/json)
     + Attributes (Error)
-        + i18n
+        + i18n (string) - a unique token representing above error description message; can be used for internationalization in frontends
             A comprehensive list of possible errors:
             - `REQUEST_UNSUPPORTED_CONTENT_TYPE` if the submitted Content-Type is not `application/json`
 
@@ -158,13 +158,13 @@ API to allow instances to register themselves with `clusterd`
 
 + Response 401 (application/json)
     + Attributes (Error)
-        + i18n
+        + i18n (string) - a unique token representing above error description message; can be used for internationalization in frontends
             A comprehensive list of possible errors:
             - `NEED_AUTHENTICATION` if no valid session token has been supplied or the user for whom the token has been created does not exist (anymore)
 
 + Response 404 (application/json)
     + Attributes (Error)
-        + i18n
+        + i18n (string) - a unique token representing above error description message; can be used for internationalization in frontends
             A comprehensive list of possible errors:
             - `INSTANCE_NOT_FOUND` if the requested instance does not exist in the database
 
@@ -175,13 +175,13 @@ API to allow instances to register themselves with `clusterd`
 
 + Response 401 (application/json)
     + Attributes (Error)
-        + i18n
+        + i18n (string) - a unique token representing above error description message; can be used for internationalization in frontends
             A comprehensive list of possible errors:
             - `NEED_AUTHENTICATION` if no valid session token has been supplied or the user for whom the token has been created does not exist (anymore)
 
 + Response 404 (application/json)
     + Attributes (Error)
-        + i18n
+        + i18n (string) - a unique token representing above error description message; can be used for internationalization in frontends
             A comprehensive list of possible errors:
             - `INSTANCE_NOT_FOUND` if the requested instance does not exist in the database
 
@@ -203,13 +203,13 @@ this is the same as calling `kdb get {path}` on the instance
 
 + Response 401 (application/json)
     + Attributes (Error)
-        + i18n
+        + i18n (string) - a unique token representing above error description message; can be used for internationalization in frontends
             A comprehensive list of possible errors:
             - `NEED_AUTHENTICATION` if no valid session token has been supplied or the user for whom the token has been created does not exist (anymore)
 
 + Response 404 (application/json)
     + Attributes (Error)
-        + i18n
+        + i18n (string) - a unique token representing above error description message; can be used for internationalization in frontends
             A comprehensive list of possible errors:
             - `INSTANCE_NOT_FOUND` if the requested instance does not exist in the database
             - `PATH_NOT_FOUND` if the requested path does not exist in the key database
@@ -232,20 +232,20 @@ this is the same as calling `kdb set {path}` on the instance
 
 + Response 401 (application/json)
     + Attributes (Error)
-        + i18n
+        + i18n (string) - a unique token representing above error description message; can be used for internationalization in frontends
             A comprehensive list of possible errors:
             - `NEED_AUTHENTICATION` if no valid session token has been supplied or the user for whom the token has been created does not exist (anymore)
 
 + Response 404 (application/json)
     + Attributes (Error)
-        + i18n
+        + i18n (string) - a unique token representing above error description message; can be used for internationalization in frontends
             A comprehensive list of possible errors:
             - `INSTANCE_NOT_FOUND` if the requested instance does not exist in the database
             - `PATH_NOT_FOUND` if the requested path does not exist in the key database
 
 + Response 406 (application/json)
     + Attributes (Error)
-        + i18n
+        + i18n (string) - a unique token representing above error description message; can be used for internationalization in frontends
             A comprehensive list of possible errors:
             - `REQUEST_UNSUPPORTED_CONTENT_TYPE` if the submitted Content-Type is not `application/json` or `text/plain`
 
@@ -257,13 +257,13 @@ this is the same as calling `kdb rm {path}` on the instance
 
 + Response 401 (application/json)
     + Attributes (Error)
-        + i18n
+        + i18n (string) - a unique token representing above error description message; can be used for internationalization in frontends
             A comprehensive list of possible errors:
             - `NEED_AUTHENTICATION` if no valid session token has been supplied or the user for whom the token has been created does not exist (anymore)
 
 + Response 404 (application/json)
     + Attributes (Error)
-        + i18n
+        + i18n (string) - a unique token representing above error description message; can be used for internationalization in frontends
             A comprehensive list of possible errors:
             - `INSTANCE_NOT_FOUND` if the requested instance does not exist in the database
             - `PATH_NOT_FOUND` if the requested path does not exist in the key database
@@ -290,7 +290,7 @@ Otherwise, it will be 400.
 
 + Response 401 (application/json)
     + Attributes (Error)
-        + i18n
+        + i18n (string) - a unique token representing above error description message; can be used for internationalization in frontends
             A comprehensive list of possible errors:
             - `NEED_AUTHENTICATION` if no valid session token has been supplied or the user for whom the token has been created does not exist (anymore)
 
@@ -305,19 +305,19 @@ Otherwise, it will be 400.
 
 + Response 400 (application/json)
     + Attributes (Error)
-        + i18n
+        + i18n (string) - a unique token representing above error description message; can be used for internationalization in frontends
             A comprehensive list of possible errors:
             - `NAME_MISSING` name not specified
 
 + Response 401 (application/json)
     + Attributes (Error)
-        + i18n
+        + i18n (string) - a unique token representing above error description message; can be used for internationalization in frontends
             A comprehensive list of possible errors:
             - `NEED_AUTHENTICATION` if no valid session token has been supplied or the user for whom the token has been created does not exist (anymore)
 
 + Response 406 (application/json)
     + Attributes (Error)
-        + i18n
+        + i18n (string) - a unique token representing above error description message; can be used for internationalization in frontends
             A comprehensive list of possible errors:
             - `REQUEST_UNSUPPORTED_CONTENT_TYPE` if the submitted Content-Type is not `application/json`
 
@@ -336,13 +336,13 @@ Otherwise, it will be 400.
 
 + Response 401 (application/json)
     + Attributes (Error)
-        + i18n
+        + i18n (string) - a unique token representing above error description message; can be used for internationalization in frontends
             A comprehensive list of possible errors:
             - `NEED_AUTHENTICATION` if no valid session token has been supplied or the user for whom the token has been created does not exist (anymore)
 
 + Response 404 (application/json)
     + Attributes (Error)
-        + i18n
+        + i18n (string) - a unique token representing above error description message; can be used for internationalization in frontends
             A comprehensive list of possible errors:
             - `CLUSTER_NOT_FOUND` if the requested instance does not exist in the database
 
@@ -356,19 +356,19 @@ Otherwise, it will be 400.
 
 + Response 401 (application/json)
     + Attributes (Error)
-        + i18n
+        + i18n (string) - a unique token representing above error description message; can be used for internationalization in frontends
             A comprehensive list of possible errors:
             - `NEED_AUTHENTICATION` if no valid session token has been supplied or the user for whom the token has been created does not exist (anymore)
 
 + Response 404 (application/json)
     + Attributes (Error)
-        + i18n
+        + i18n (string) - a unique token representing above error description message; can be used for internationalization in frontends
             A comprehensive list of possible errors:
             - `CLUSTER_NOT_FOUND` if the requested instance does not exist in the database
 
 + Response 406 (application/json)
     + Attributes (Error)
-        + i18n
+        + i18n (string) - a unique token representing above error description message; can be used for internationalization in frontends
             A comprehensive list of possible errors:
             - `REQUEST_UNSUPPORTED_CONTENT_TYPE` if the submitted Content-Type is not `application/json` or `text/plain`
 
@@ -378,13 +378,13 @@ Otherwise, it will be 400.
 
 + Response 401 (application/json)
     + Attributes (Error)
-        + i18n
+        + i18n (string) - a unique token representing above error description message; can be used for internationalization in frontends
             A comprehensive list of possible errors:
             - `NEED_AUTHENTICATION` if no valid session token has been supplied or the user for whom the token has been created does not exist (anymore)
 
 + Response 404 (application/json)
     + Attributes (Error)
-        + i18n
+        + i18n (string) - a unique token representing above error description message; can be used for internationalization in frontends
             A comprehensive list of possible errors:
             - `CLUSTER_NOT_FOUND` if the requested instance does not exist in the database
 
@@ -395,13 +395,13 @@ Otherwise, it will be 400.
 
 + Response 401 (application/json)
     + Attributes (Error)
-        + i18n
+        + i18n (string) - a unique token representing above error description message; can be used for internationalization in frontends
             A comprehensive list of possible errors:
             - `NEED_AUTHENTICATION` if no valid session token has been supplied or the user for whom the token has been created does not exist (anymore)
 
 + Response 404 (application/json)
     + Attributes (Error)
-        + i18n
+        + i18n (string) - a unique token representing above error description message; can be used for internationalization in frontends
             A comprehensive list of possible errors:
             - `CLUSTER_NOT_FOUND` if the requested instance does not exist in the database
 
@@ -421,13 +421,13 @@ clusters' configurations are stored on the `clusterd` server
 
 + Response 401 (application/json)
     + Attributes (Error)
-        + i18n
+        + i18n (string) - a unique token representing above error description message; can be used for internationalization in frontends
             A comprehensive list of possible errors:
             - `NEED_AUTHENTICATION` if no valid session token has been supplied or the user for whom the token has been created does not exist (anymore)
 
 + Response 404 (application/json)
     + Attributes (Error)
-        + i18n
+        + i18n (string) - a unique token representing above error description message; can be used for internationalization in frontends
             A comprehensive list of possible errors:
             - `CLUSTER_NOT_FOUND` if the requested instance does not exist in the database
             - `PATH_NOT_FOUND` if the requested path does not exist in the key database
@@ -448,20 +448,20 @@ clusters' configurations are stored on the `clusterd` server
 
 + Response 401 (application/json)
     + Attributes (Error)
-        + i18n
+        + i18n (string) - a unique token representing above error description message; can be used for internationalization in frontends
             A comprehensive list of possible errors:
             - `NEED_AUTHENTICATION` if no valid session token has been supplied or the user for whom the token has been created does not exist (anymore)
 
 + Response 404 (application/json)
     + Attributes (Error)
-        + i18n
+        + i18n (string) - a unique token representing above error description message; can be used for internationalization in frontends
             A comprehensive list of possible errors:
             - `CLUSTER_NOT_FOUND` if the requested instance does not exist in the database
             - `PATH_NOT_FOUND` if the requested path does not exist in the key database
 
 + Response 406 (application/json)
     + Attributes (Error)
-        + i18n
+        + i18n (string) - a unique token representing above error description message; can be used for internationalization in frontends
             A comprehensive list of possible errors:
             - `REQUEST_UNSUPPORTED_CONTENT_TYPE` if the submitted Content-Type is not `application/json` or `text/plain`
 
@@ -472,13 +472,13 @@ clusters' configurations are stored on the `clusterd` server
 
 + Response 401 (application/json)
     + Attributes (Error)
-        + i18n
+        + i18n (string) - a unique token representing above error description message; can be used for internationalization in frontends
             A comprehensive list of possible errors:
             - `NEED_AUTHENTICATION` if no valid session token has been supplied or the user for whom the token has been created does not exist (anymore)
 
 + Response 404 (application/json)
     + Attributes (Error)
-        + i18n
+        + i18n (string) - a unique token representing above error description message; can be used for internationalization in frontends
             A comprehensive list of possible errors:
             - `CLUSTER_NOT_FOUND` if the requested instance does not exist in the database
             - `PATH_NOT_FOUND` if the requested path does not exist in the key database
