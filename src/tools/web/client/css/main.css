@@ -1,0 +1,11 @@
+body {
+  margin: 0;
+  height: 100%;
+  background-color: rgba(232, 232, 232, 0.1);
+}
+
+@media (max-width: 950px) {
+  .breadcrumb { /* hide breadcrumb on small screens */
+    display: none;
+  }
+}

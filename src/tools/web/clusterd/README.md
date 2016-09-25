@@ -1,0 +1,32 @@
+# clusterd
+
+
+## Installation
+
+```
+npm install
+```
+
+
+## Running
+
+```
+npm start
+```
+
+to run in verbose mode (full logs):
+
+```
+npm run start:verbose
+```
+
+to run in development mode (full logs & running from source):
+
+```
+npm run start:dev
+```
+
+
+## Accessing the API
+
+clusterd runs on http://localhost:1235
