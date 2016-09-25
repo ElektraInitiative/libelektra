@@ -114,6 +114,11 @@ Retrieves a list of users. The result can be adjusted by additional, but optiona
             + `username` - Only the username
             + `email` - Only the email
 
++ Request
+    + Headers
+
+            Authorization: Bearer <token>
+
 + Response 200 (application/json)
     + Attributes (User List)
 
@@ -136,6 +141,11 @@ Retrieves the details of the specified user. If the parameter `current` is speci
     + current (boolean, optional) - If the currently authenticated users details should be fetched
         + Default: `false`
     + name (string, required) - The `username` of the user whose details should be fetched
+
++ Request
+    + Headers
+
+            Authorization: Bearer <token>
         
 + Response 200 (application/json)
     + Attributes (User Preview)
@@ -242,6 +252,10 @@ This method can be used to edit a user. If no `name` is supplied, the currently 
     + name (string, optional) - The `username` of a user which is then taken as target for the operation
 
 + Request (application/json)
+    + Headers
+
+            Authorization: Bearer <token>
+
     + Attributes (object)
         + email: `some-new-chosen@email.com` (string, optional)
             
@@ -319,6 +333,11 @@ This method can be used to delete a user. If no `name` is supplied, the currentl
 
 + Parameters
     + name (string, optional) - The `username` of a user which is then taken as target for the operation
+
++ Request
+    + Headers
+
+            Authorization: Bearer <token>
 
 + Response 200 (application/json)
     + Attributes (object)
@@ -449,6 +468,10 @@ Returns detailed information about the entry with the specified key (path). If t
 Can be used to create a new entry in the database. An entry consists of a unique key (path) that is built from several individual inputs, a title, description and a configuration snippet in any supported format.
 
 + Request (application/json)
+    + Headers
+
+            Authorization: Bearer <token>
+
     + Attributes (object)
         + organization: `org.apache` (string, required)
 
@@ -569,6 +592,10 @@ This operation can only be executed by the owner of an entry as well as moderato
     + slug (string, required) - The identifier of the entry that is unique within the namespace created by `organization`, `application` and `scope`
 
 + Request (application/json)
+    + Headers
+
+            Authorization: Bearer <token>
+
     + Attributes (object)
         + title: `Sample snippet for developers` (string, required)
 
@@ -656,6 +683,11 @@ This operation can only be executed by the owner of an entry as well as moderato
     + application (string, required) - The `application` to which the configuration of the entry belongs to
     + scope (string, required) - The `application` specific `scope` to which the configuration of the entry belongs to
     + slug (string, required) - The identifier of the entry that is unique within the namespace created by `organization`, `application` and `scope`
+
++ Request
+    + Headers
+
+            Authorization: Bearer <token>
 
 + Response 200 (application/json)
     + Attributes (object)
