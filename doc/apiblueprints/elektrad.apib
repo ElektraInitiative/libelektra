@@ -6,7 +6,7 @@ to access single instances, each elektra daemon (`elektrad`) provides a REST
 HTTP API
 
 
-## versions [GET /version]
+## get versions [GET /version]
 
 returns the current version of the API and elektra
 
@@ -37,8 +37,10 @@ access the elektra key database by specifying a `path`
 this is the same as calling `kdb get {path}`
 
 + Response 200 (application/json)
-
-        "hello world"
+    + Attributes (object)
+        + ls: user/hello, user/hello/world (array[string], required) - subkeys of the requested path, similar to `kdb ls`
+        + value: hello world (string, required)
+        + meta (object, required) - metadata of the requested path
 
 + Request nonexistant path
     + Parameters
