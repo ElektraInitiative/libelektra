@@ -15,9 +15,11 @@
 #include <botan/pipe.h>
 #include <botan/symkey.h>
 #include <kdbplugin.h>
+#include <memory>
 
 using namespace ckdb;
 using namespace Botan;
+using std::unique_ptr;
 
 extern "C" {
 
@@ -33,12 +35,13 @@ extern "C" {
  * @param config KeySet holding the plugin/backend configuration
  * @param errorKey holds an error description in case of failure
  * @param k the (Elektra)-Key to be encrypted
- * @param cKey holds a pointer to an allocated SymmetricKey. Must be freed by the caller.
- * @param cIv holds a pointer to an allocated InitializationVector. Must be freed by the caller.
+ * @param cKey holds a unique pointer to an allocated SymmetricKey.
+ * @param cIv holds a unique pointer to an allocated InitializationVector.
  * @retval -1 on failure. errorKey holds the error description.
  * @retval 1 on success
  */
-static int getKeyIvForEncryption (KeySet * config, Key * errorKey, Key * k, SymmetricKey ** cKey, InitializationVector ** cIv)
+static int getKeyIvForEncryption (KeySet * config, Key * errorKey, Key * k, unique_ptr<SymmetricKey> & cKey,
+				  unique_ptr<InitializationVector> & cIv)
 {
 	byte salt[ELEKTRA_CRYPTO_DEFAULT_SALT_LEN];
 	char * saltHexString = NULL;
@@ -63,15 +66,15 @@ static int getKeyIvForEncryption (KeySet * config, Key * errorKey, Key * k, Symm
 		if (!msg) return -1; // error set by CRYPTO_PLUGIN_FUNCTION(getMasterPassword)()
 
 		// generate/derive the cryptographic key and the IV
-		PBKDF * pbkdf = get_pbkdf ("PBKDF2(SHA-256)");
+		unique_ptr<PBKDF> pbkdf = unique_ptr<PBKDF> (get_pbkdf ("PBKDF2(SHA-256)"));
 		OctetString derived = pbkdf->derive_key (
 			requiredKeyBytes, std::string (reinterpret_cast<const char *> (keyValue (msg)), keyGetValueSize (msg)), salt,
 			sizeof (salt), iterations);
 
-		*cKey = new SymmetricKey (derived.begin (), ELEKTRA_CRYPTO_BOTAN_KEYSIZE);
-		*cIv = new InitializationVector (derived.begin () + ELEKTRA_CRYPTO_BOTAN_KEYSIZE, ELEKTRA_CRYPTO_BOTAN_BLOCKSIZE);
+		cKey = unique_ptr<SymmetricKey> (new SymmetricKey (derived.begin (), ELEKTRA_CRYPTO_BOTAN_KEYSIZE));
+		cIv = unique_ptr<InitializationVector> (
+			new InitializationVector (derived.begin () + ELEKTRA_CRYPTO_BOTAN_KEYSIZE, ELEKTRA_CRYPTO_BOTAN_BLOCKSIZE));
 
-		delete pbkdf;
 		keyDel (msg);
 		return 1;
 	}
@@ -89,12 +92,13 @@ static int getKeyIvForEncryption (KeySet * config, Key * errorKey, Key * k, Symm
  * @param config KeySet holding the plugin/backend configuration
  * @param errorKey holds an error description in case of failure
  * @param k the (Elektra)-Key to be encrypted
- * @param cKey holds a pointer to an allocated SymmetricKey. Must be freed by the caller.
- * @param cIv holds a pointer to an allocated InitializationVector. Must be freed by the caller.
+ * @param cKey holds a unique pointer to an allocated SymmetricKey.
+ * @param cIv holds a unique pointer to an allocated InitializationVector.
  * @retval -1 on failure. errorKey holds the error description.
  * @retval 1 on success
  */
-static int getKeyIvForDecryption (KeySet * config, Key * errorKey, Key * k, SymmetricKey ** cKey, InitializationVector ** cIv)
+static int getKeyIvForDecryption (KeySet * config, Key * errorKey, Key * k, unique_ptr<SymmetricKey> & cKey,
+				  unique_ptr<InitializationVector> & cIv)
 {
 	const size_t requiredKeyBytes = ELEKTRA_CRYPTO_BOTAN_KEYSIZE + ELEKTRA_CRYPTO_BOTAN_BLOCKSIZE;
 	kdb_octet_t * saltBuffer;
@@ -120,15 +124,15 @@ static int getKeyIvForDecryption (KeySet * config, Key * errorKey, Key * k, Symm
 	try
 	{
 		// derive the cryptographic key and the IV
-		PBKDF * pbkdf = get_pbkdf ("PBKDF2(SHA-256)");
+		unique_ptr<PBKDF> pbkdf = unique_ptr<PBKDF> (get_pbkdf ("PBKDF2(SHA-256)"));
 		OctetString derived = pbkdf->derive_key (
 			requiredKeyBytes, std::string (reinterpret_cast<const char *> (keyValue (msg)), keyGetValueSize (msg)), saltBuffer,
 			saltBufferLen, iterations);
 
-		*cKey = new SymmetricKey (derived.begin (), ELEKTRA_CRYPTO_BOTAN_KEYSIZE);
-		*cIv = new InitializationVector (derived.begin () + ELEKTRA_CRYPTO_BOTAN_KEYSIZE, ELEKTRA_CRYPTO_BOTAN_BLOCKSIZE);
+		cKey = unique_ptr<SymmetricKey> (new SymmetricKey (derived.begin (), ELEKTRA_CRYPTO_BOTAN_KEYSIZE));
+		cIv = unique_ptr<InitializationVector> (
+			new InitializationVector (derived.begin () + ELEKTRA_CRYPTO_BOTAN_KEYSIZE, ELEKTRA_CRYPTO_BOTAN_BLOCKSIZE));
 
-		delete pbkdf;
 		keyDel (msg);
 		return 1;
 	}
@@ -158,12 +162,10 @@ int elektraCryptoBotanInit (Key * errorKey)
 int elektraCryptoBotanEncrypt (KeySet * pluginConfig, Key * k, Key * errorKey)
 {
 	// get cryptographic material
-	SymmetricKey * cryptoKey = NULL;
-	InitializationVector * cryptoIv = NULL;
-	if (getKeyIvForEncryption (pluginConfig, errorKey, k, &cryptoKey, &cryptoIv) != 1)
+	unique_ptr<SymmetricKey> cryptoKey;
+	unique_ptr<InitializationVector> cryptoIv;
+	if (getKeyIvForEncryption (pluginConfig, errorKey, k, cryptoKey, cryptoIv) != 1)
 	{
-		if (cryptoKey) delete cryptoKey;
-		if (cryptoIv) delete cryptoIv;
 		return -1;
 	}
 
@@ -217,31 +219,22 @@ int elektraCryptoBotanEncrypt (KeySet * pluginConfig, Key * k, Key * errorKey)
 		const size_t msgLength = encryptor.remaining ();
 		if (msgLength > 0)
 		{
-			byte * buffer = new byte[msgLength + sizeof (kdb_unsigned_long_t) + saltLen];
-			if (!buffer)
-			{
-				throw std::bad_alloc ();
-			}
+			auto buffer = unique_ptr<byte[]>{ new byte[msgLength + sizeof (kdb_unsigned_long_t) + saltLen] };
 
-			memcpy (buffer, &saltLen, sizeof (kdb_unsigned_long_t));
-			memcpy (buffer + sizeof (kdb_unsigned_long_t), salt, saltLen);
+			memcpy (&buffer[0], &saltLen, sizeof (kdb_unsigned_long_t));
+			memcpy (&buffer[sizeof (kdb_unsigned_long_t)], salt, saltLen);
 
-			const size_t buffered = encryptor.read (buffer + sizeof (kdb_unsigned_long_t) + saltLen, msgLength);
-			keySetBinary (k, buffer, buffered + sizeof (kdb_unsigned_long_t) + saltLen);
-			delete[] buffer;
+			const size_t buffered = encryptor.read (&buffer[sizeof (kdb_unsigned_long_t) + saltLen], msgLength);
+			keySetBinary (k, &buffer[0], buffered + sizeof (kdb_unsigned_long_t) + saltLen);
 		}
 	}
 	catch (std::exception & e)
 	{
 		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CRYPTO_ENCRYPT_FAIL, errorKey, "Encryption failed because: %s", e.what ());
-		delete cryptoIv;
-		delete cryptoKey;
 		elektraFree (salt);
 		return -1; // failure
 	}
 
-	delete cryptoIv;
-	delete cryptoKey;
 	elektraFree (salt);
 	return 1; // success
 }
@@ -249,12 +242,10 @@ int elektraCryptoBotanEncrypt (KeySet * pluginConfig, Key * k, Key * errorKey)
 int elektraCryptoBotanDecrypt (KeySet * pluginConfig, Key * k, Key * errorKey)
 {
 	// get cryptographic material
-	SymmetricKey * cryptoKey = NULL;
-	InitializationVector * cryptoIv = NULL;
-	if (getKeyIvForDecryption (pluginConfig, errorKey, k, &cryptoKey, &cryptoIv) != 1)
+	unique_ptr<SymmetricKey> cryptoKey;
+	unique_ptr<InitializationVector> cryptoIv;
+	if (getKeyIvForDecryption (pluginConfig, errorKey, k, cryptoKey, cryptoIv) != 1)
 	{
-		if (cryptoKey) delete cryptoKey;
-		if (cryptoIv) delete cryptoIv;
 		return -1;
 	}
 
@@ -262,8 +253,6 @@ int elektraCryptoBotanDecrypt (KeySet * pluginConfig, Key * k, Key * errorKey)
 	kdb_unsigned_long_t saltLen = 0;
 	if (CRYPTO_PLUGIN_FUNCTION (getSaltFromPayload) (errorKey, k, NULL, &saltLen) != 1)
 	{
-		if (cryptoKey) delete cryptoKey;
-		if (cryptoIv) delete cryptoIv;
 		return -1; // error set by CRYPTO_PLUGIN_FUNCTION(getSaltFromPayload)()
 	}
 	saltLen += sizeof (kdb_unsigned_long_t);
@@ -297,14 +286,9 @@ int elektraCryptoBotanDecrypt (KeySet * pluginConfig, Key * k, Key * errorKey)
 			}
 			else
 			{
-				byte * buffer = new byte[msgLength];
-				if (!buffer)
-				{
-					throw std::bad_alloc ();
-				}
-				const size_t buffered = decryptor.read (buffer, msgLength);
-				keySetBinary (k, buffer, buffered);
-				delete[] buffer;
+				auto buffer = unique_ptr<byte[]>{ new byte[msgLength] };
+				const size_t buffered = decryptor.read (&buffer[0], msgLength);
+				keySetBinary (k, &buffer[0], buffered);
 			}
 		}
 		else
@@ -315,13 +299,9 @@ int elektraCryptoBotanDecrypt (KeySet * pluginConfig, Key * k, Key * errorKey)
 	catch (std::exception & e)
 	{
 		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CRYPTO_DECRYPT_FAIL, errorKey, "Decryption failed because: %s", e.what ());
-		delete cryptoIv;
-		delete cryptoKey;
 		return -1; // failure
 	}
 
-	delete cryptoIv;
-	delete cryptoKey;
 	return 1; // success
 }
 
@@ -335,11 +315,10 @@ char * elektraCryptoBotanCreateRandomString (Key * errorKey, const kdb_unsigned_
 {
 	try
 	{
-		kdb_octet_t * buffer = new kdb_octet_t[length];
+		auto buffer = unique_ptr<kdb_octet_t[]>{ new kdb_octet_t[length] };
 		AutoSeeded_RNG rng;
-		rng.randomize (buffer, length);
-		char * hexString = CRYPTO_PLUGIN_FUNCTION (bin2hex) (errorKey, buffer, length);
-		delete[] buffer;
+		rng.randomize (&buffer[0], length);
+		char * hexString = CRYPTO_PLUGIN_FUNCTION (bin2hex) (errorKey, &buffer[0], length);
 		return hexString;
 	}
 	catch (std::exception & e)
