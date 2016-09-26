@@ -53,9 +53,7 @@ The API will try to authenticate the user by the submitted credentials. In case 
         + token (string) - The session token which can be used to authenticate against the server in further requests
 
 + Response 400 (application/json)
-    + Attributes (object)
-        + status (string) - Textual description of the HTTP status
-        + message (string) - Detailed error information, e.g. hint about malformed request
+    + Attributes (Error Response)
         + i18n (string) - A unique token representing above error description message; can be used for internationalization in frontends
 
             A comprehensive list of possible errors:
@@ -64,9 +62,7 @@ The API will try to authenticate the user by the submitted credentials. In case 
             - `REQUEST_MALFORMED_DATA` if the submitted data in the request body does not match the Content-Type or is unparseable
 
 + Response 401 (application/json)
-    + Attributes (object)
-        + status (string) - Textual description of the HTTP status
-        + message (string) - Detailed error information, e.g. hint about malformed request
+    + Attributes (Error Response)
         + i18n (string) - A unique token representing above error description message; can be used for internationalization in frontends
 
             A comprehensive list of possible errors:
@@ -74,9 +70,7 @@ The API will try to authenticate the user by the submitted credentials. In case 
             - `AUTH_INVALID_PASSWORD` if the given password does not match the password saved for the given account
 
 + Response 406 (application/json)
-    + Attributes (object)
-        + status (string) - Textual description of the HTTP status
-        + message (string) - Detailed error information, e.g. hint about malformed request
+    + Attributes (Error Response)
         + i18n (string) - A unique token representing above error description message; can be used for internationalization in frontends
 
             A comprehensive list of possible errors:
@@ -123,9 +117,7 @@ Retrieves a list of users. The result can be adjusted by additional, but optiona
     + Attributes (User List)
 
 + Response 401 (application/json)
-    + Attributes (object)
-        + status (string) - Textual description of the HTTP status
-        + message (string) - Detailed error information, e.g. hint about malformed request
+    + Attributes (Error Response)
         + i18n (string) - A unique token representing above error description message; can be used for internationalization in frontends
 
             A comprehensive list of possible errors:
@@ -151,18 +143,14 @@ Retrieves the details of the specified user. If the parameter `current` is speci
     + Attributes (User Preview)
 
 + Response 400 (application/json)
-    + Attributes (object)
-        + status (string) - Textual description of the HTTP status
-        + message (string) - Detailed error information, e.g. hint about malformed request
+    + Attributes (Error Response)
         + i18n (string) - A unique token representing above error description message; can be used for internationalization in frontends
 
             A comprehensive list of possible errors:
             - `NO_CURRENT_USER` if the user details of the currently authenticated user were requested, but no authentication is active
 
 + Response 401 (application/json)
-    + Attributes (object)
-        + status (string) - Textual description of the HTTP status
-        + message (string) - Detailed error information, e.g. hint about malformed request
+    + Attributes (Error Response)
         + i18n (string) - A unique token representing above error description message; can be used for internationalization in frontends
 
             A comprehensive list of possible errors:
@@ -170,9 +158,7 @@ Retrieves the details of the specified user. If the parameter `current` is speci
             - `USER_INSUFFICIENT_PERMISSIONS` if the currently authenticated user has insufficient permissions (due to his rank) to perform this action
 
 + Response 404 (application/json)
-    + Attributes (object)
-        + status (string) - Textual description of the HTTP status
-        + message (string) - Detailed error information, e.g. hint about malformed request
+    + Attributes (Error Response)
         + i18n (string) - A unique token representing above error description message; can be used for internationalization in frontends
 
             A comprehensive list of possible errors:
@@ -211,9 +197,7 @@ This method can be used to register for the service by creating a new user accou
             - `USER_CREATED_SUCCESSFULLY` if the account has been created successfully
         
 + Response 400 (application/json)
-    + Attributes (object)
-        + status (string) - Textual description of the HTTP status
-        + message (string) - Detailed error information, e.g. hint about malformed request
+    + Attributes (Error Response)
         + i18n (string) - A unique token representing above error description message; can be used for internationalization in frontends
 
             A comprehensive list of possible errors:
@@ -226,18 +210,14 @@ This method can be used to register for the service by creating a new user accou
             - `REQUEST_MALFORMED_DATA` if the submitted data in the request body does not match the Content-Type or is unparseable
 
 + Response 406 (application/json)
-    + Attributes (object)
-        + status (string) - Textual description of the HTTP status
-        + message (string) - Detailed error information, e.g. hint about malformed request
+    + Attributes (Error Response)
         + i18n (string) - A unique token representing above error description message; can be used for internationalization in frontends
 
             A comprehensive list of possible errors:
             - `REQUEST_UNSUPPORTED_CONTENT_TYPE` if the submitted Content-Type is not `application/json`
 
 + Response 422 (application/json)
-    + Attributes (object)
-        + status (string) - Textual description of the HTTP status
-        + message (string) - Detailed error information, e.g. hint about malformed request
+    + Attributes (Error Response)
         + i18n (string) - A unique token representing above error description message; can be used for internationalization in frontends
 
             A comprehensive list of possible errors:
@@ -287,9 +267,7 @@ This method can be used to edit a user. If no `name` is supplied, the currently 
             - `USER_UPDATED_SUCCESSFULLY` if the changes to the user have been stored successfully
 
 + Response 400 (application/json)
-    + Attributes (object)
-        + status (string) - Textual description of the HTTP status
-        + message (string) - Detailed error information, e.g. hint about malformed request
+    + Attributes (Error Response)
         + i18n (string) - A unique token representing above error description message; can be used for internationalization in frontends
 
             A comprehensive list of possible errors:
@@ -299,9 +277,7 @@ This method can be used to edit a user. If no `name` is supplied, the currently 
             - `REQUEST_MALFORMED_DATA` if the submitted data in the request body does not match the Content-Type or is unparseable
 
 + Response 401 (application/json)
-    + Attributes (object)
-        + status (string) - Textual description of the HTTP status
-        + message (string) - Detailed error information, e.g. hint about malformed request
+    + Attributes (Error Response)
         + i18n (string) - A unique token representing above error description message; can be used for internationalization in frontends
 
             A comprehensive list of possible errors:
@@ -309,18 +285,14 @@ This method can be used to edit a user. If no `name` is supplied, the currently 
             - `USER_INSUFFICIENT_PERMISSIONS` if the currently authenticated user has insufficient permissions (due to his rank) to perform this action
 
 + Response 404 (application/json)
-    + Attributes (object)
-        + status (string) - Textual description of the HTTP status
-        + message (string) - Detailed error information, e.g. hint about malformed request
+    + Attributes (Error Response)
         + i18n (string) - A unique token representing above error description message; can be used for internationalization in frontends
 
             A comprehensive list of possible errors:
             - `USER_NOT_FOUND` if the requested user does not exist in the database
 
 + Response 406 (application/json)
-    + Attributes (object)
-        + status (string) - Textual description of the HTTP status
-        + message (string) - Detailed error information, e.g. hint about malformed request
+    + Attributes (Error Response)
         + i18n (string) - A unique token representing above error description message; can be used for internationalization in frontends
 
             A comprehensive list of possible errors:
@@ -348,9 +320,7 @@ This method can be used to delete a user. If no `name` is supplied, the currentl
             - `USER_DELETED_SUCCESSFULLY` if the changes to the user have been stored successfully
 
 + Response 401 (application/json)
-    + Attributes (object)
-        + status (string) - Textual description of the HTTP status
-        + message (string) - Detailed error information, e.g. hint about malformed request
+    + Attributes (Error Response)
         + i18n (string) - A unique token representing above error description message; can be used for internationalization in frontends
 
             A comprehensive list of possible errors:
@@ -358,9 +328,7 @@ This method can be used to delete a user. If no `name` is supplied, the currentl
             - `USER_INSUFFICIENT_PERMISSIONS` if the currently authenticated user has insufficient permissions (due to his rank) to perform this action
 
 + Response 404 (application/json)
-    + Attributes (object)
-        + status (string) - Textual description of the HTTP status
-        + message (string) - Detailed error information, e.g. hint about malformed request
+    + Attributes (Error Response)
         + i18n (string) - A unique token representing above error description message; can be used for internationalization in frontends
 
             A comprehensive list of possible errors:
@@ -445,18 +413,14 @@ Returns detailed information about the entry with the specified key (path). If t
 + Response 200 (text/plain)
 
 + Response 400 (application/json)
-    + Attributes (object)
-        + status (string) - Textual description of the HTTP status
-        + message (string) - Detailed error information, e.g. hint about malformed request
+    + Attributes (Error Response)
         + i18n (string) - A unique token representing above error description message; can be used for internationalization in frontends
 
             A comprehensive list of possible errors:
             - `ENTRY_UNSUPPORTED_FORMAT` if an unsupported `raw` format has been supplied
 
 + Response 404 (application/json)
-    + Attributes (object)
-        + status (string) - Textual description of the HTTP status
-        + message (string) - Detailed error information, e.g. hint about malformed request
+    + Attributes (Error Response)
         + i18n (string) - A unique token representing above error description message; can be used for internationalization in frontends
 
             A comprehensive list of possible errors:
@@ -533,9 +497,7 @@ Can be used to create a new entry in the database. An entry consists of a unique
             - `ENTRY_CREATED_SUCCESSFULLY` if the entry has been added successfully to the database
 
 + Response 400 (application/json)
-    + Attributes (object)
-        + status (string) - Textual description of the HTTP status
-        + message (string) - Detailed error information, e.g. hint about malformed request
+    + Attributes (Error Response)
         + i18n (string) - A unique token representing above error description message; can be used for internationalization in frontends
 
             A comprehensive list of possible errors:
@@ -559,27 +521,21 @@ Can be used to create a new entry in the database. An entry consists of a unique
             - `REQUEST_MALFORMED_DATA` if the submitted data in the request body does not match the Content-Type or is unparseable
 
 + Response 401 (application/json)
-    + Attributes (object)
-        + status (string) - Textual description of the HTTP status
-        + message (string) - Detailed error information, e.g. hint about malformed request
+    + Attributes (Error Response)
         + i18n (string) - A unique token representing above error description message; can be used for internationalization in frontends
 
             A comprehensive list of possible errors:
             - `NEED_AUTHENTICATION` if no valid session token has been supplied or the user for whom the token has been created does not exist (anymore)
 
 + Response 406 (application/json)
-    + Attributes (object)
-        + status (string) - Textual description of the HTTP status
-        + message (string) - Detailed error information, e.g. hint about malformed request
+    + Attributes (Error Response)
         + i18n (string) - A unique token representing above error description message; can be used for internationalization in frontends
 
             A comprehensive list of possible errors:
             - `REQUEST_UNSUPPORTED_CONTENT_TYPE` if the submitted Content-Type is not `application/json`
 
 + Response 422 (application/json)
-    + Attributes (object)
-        + status (string) - Textual description of the HTTP status
-        + message (string) - Detailed error information, e.g. hint about malformed request
+    + Attributes (Error Response)
         + i18n (string) - A unique token representing above error description message; can be used for internationalization in frontends
 
             A comprehensive list of possible errors:
@@ -640,9 +596,7 @@ This operation can only be executed by the owner of an entry as well as moderato
             - `ENTRY_UPDATED_SUCCESSFULLY` if the entry has been updated successfully
 
 + Response 400 (application/json)
-    + Attributes (object)
-        + status (string) - Textual description of the HTTP status
-        + message (string) - Detailed error information, e.g. hint about malformed request
+    + Attributes (Error Response)
         + i18n (string) - A unique token representing above error description message; can be used for internationalization in frontends
 
             A comprehensive list of possible errors:
@@ -658,9 +612,7 @@ This operation can only be executed by the owner of an entry as well as moderato
             - `REQUEST_MALFORMED_DATA` if the submitted data in the request body does not match the Content-Type or is unparseable
 
 + Response 401 (application/json)
-    + Attributes (object)
-        + status (string) - Textual description of the HTTP status
-        + message (string) - Detailed error information, e.g. hint about malformed request
+    + Attributes (Error Response)
         + i18n (string) - A unique token representing above error description message; can be used for internationalization in frontends
 
             A comprehensive list of possible errors:
@@ -668,18 +620,14 @@ This operation can only be executed by the owner of an entry as well as moderato
             - `USER_INSUFFICIENT_PERMISSIONS` if the currently authenticated user has insufficient rights to update the entry (i.e. normal user, but not owner)
 
 + Response 404 (application/json)
-    + Attributes (object)
-        + status (string) - Textual description of the HTTP status
-        + message (string) - Detailed error information, e.g. hint about malformed request
+    + Attributes (Error Response)
         + i18n (string) - A unique token representing above error description message; can be used for internationalization in frontends
 
             A comprehensive list of possible errors:
             - `ENTRY_DOES_NOT_EXIST` if the entry specified by the URI does not exist in the database
 
 + Response 406 (application/json)
-    + Attributes (object)
-        + status (string) - Textual description of the HTTP status
-        + message (string) - Detailed error information, e.g. hint about malformed request
+    + Attributes (Error Response)
         + i18n (string) - A unique token representing above error description message; can be used for internationalization in frontends
 
             A comprehensive list of possible errors:
@@ -712,9 +660,7 @@ This operation can only be executed by the owner of an entry as well as moderato
             - `ENTRY_DELETED_SUCCESSFULLY` if the entry has been deleted successfully from the database
 
 + Response 401 (application/json)
-    + Attributes (object)
-        + status (string) - Textual description of the HTTP status
-        + message (string) - Detailed error information, e.g. hint about malformed request
+    + Attributes (Error Response)
         + i18n (string) - A unique token representing above error description message; can be used for internationalization in frontends
 
             A comprehensive list of possible errors:
@@ -722,9 +668,7 @@ This operation can only be executed by the owner of an entry as well as moderato
             - `USER_INSUFFICIENT_PERMISSIONS` if the currently authenticated user has insufficient permissions to delete the entry
 
 + Response 404 (application/json)
-    + Attributes (object)
-        + status (string) - Textual description of the HTTP status
-        + message (string) - Detailed error information, e.g. hint about malformed request
+    + Attributes (Error Response)
         + i18n (string) - A unique token representing above error description message; can be used for internationalization in frontends
 
             A comprehensive list of possible errors:
@@ -771,9 +715,7 @@ Offers to convert a supplied configuration snippet from one format into another 
             + snippet (string) - The supplied snippet converted into the output format.
 
 + Response 400 (application/json)
-    + Attributes (object)
-        + status (string) - Textual description of the HTTP status
-        + message (string) - Detailed error information, e.g. hint about malformed request
+    + Attributes (Error Response)
         + i18n (string) - A unique token representing above error description message; can be used for internationalization in frontends
 
             A comprehensive list of possible errors:
@@ -786,17 +728,13 @@ Offers to convert a supplied configuration snippet from one format into another 
 
 + Response 406 (application/json)
     + Attributes (object)
-        + status (string) - Textual description of the HTTP status
-        + message (string) - Detailed error information, e.g. hint about malformed request
         + i18n (string) - A unique token representing above error description message; can be used for internationalization in frontends
 
             A comprehensive list of possible errors:
             - `REQUEST_UNSUPPORTED_CONTENT_TYPE` if the submitted Content-Type is not `application/json`
 
 + Response 422 (application/json)
-    + Attributes (object)
-        + status (string) - Textual description of the HTTP status
-        + message (string) - Detailed error information, e.g. hint about malformed request
+    + Attributes (Error Response)
         + i18n (string) - A unique token representing above error description message; can be used for internationalization in frontends
 
             A comprehensive list of possible errors:
@@ -813,6 +751,11 @@ Returns a list of supported configuration formats. In general this is a list of 
 
 
 # Data Structures
+
+## Error Response (object)
+
++ status (string) - Textual description of the HTTP status
++ message (string) - Detailed error information, e.g. hint about malformed request
 
 ## User List (object)
 
