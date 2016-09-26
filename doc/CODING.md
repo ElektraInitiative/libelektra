@@ -69,6 +69,9 @@ Thus please use following techniques (in order of preference):
 
    `ELEKTRA_ASSERT (condition, "formatted text to be printed when assert fails", ...)` 
 
+   Note: Do not use assert for user-APIs, always handle arguments of user-APIs like
+   untrusted input.
+
 3. If the "comment" might be useful to be printed during execution, use logging:
 
    `#include <kdblogger.h>` 
