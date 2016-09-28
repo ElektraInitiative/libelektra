@@ -280,7 +280,7 @@ PluginSpec ModulesPluginDatabase::lookupMetadata (std::string const & which) con
 
 PluginSpec ModulesPluginDatabase::lookupProvides (std::string const & which) const
 {
-	// check if plugin itself exists:
+	// check if plugin with provider name exists:
 	if (status (PluginSpec (which)) == real)
 	{
 		return PluginSpec (which);
@@ -349,7 +349,6 @@ std::map<int, PluginSpec> ModulesPluginDatabase::lookupAllProvidesWithStatus (st
 			throw NoPlugin ("No plugin that provides " + which + " could be found");
 	}
 
-	// the largest element of the map contains the best-suited plugin:
 	return foundPlugins;
 }
 
@@ -368,7 +367,7 @@ std::vector<PluginSpec> ModulesPluginDatabase::lookupAllProvides (std::string co
 	}
 	catch (kdb::tools::NoPlugin & e)
 	{
-		// if no plugins were found, return an empty list
+		// if no plugins were found, return an empty vector
 		return std::vector<PluginSpec> ();
 	}
 }
