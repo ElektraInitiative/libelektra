@@ -33,5 +33,9 @@ void elektraAbort (const char * expression, const char * function, const char * 
 #include <assert.h>
 #define ELEKTRA_ASSERT(EXPR, ...) assert (EXPR)
 #else
+#if DEBUG
 #define ELEKTRA_ASSERT(EXPR, ...) ((EXPR)) ? (void)(0) : elektraAbort (STRINGIFY (EXPR), __func__, __FILE__, __LINE__, __VA_ARGS__)
+#else
+#define ELEKTRA_ASSERT(EXPR, ...)
+#endif
 #endif

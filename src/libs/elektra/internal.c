@@ -75,7 +75,7 @@ ssize_t elektraMemcpy (Key ** array1, Key ** array2, size_t size)
 	if (!array2) return -1;
 	if (size > SSIZE_MAX) return -1;
 	if (size == 0) return 0;
-#ifdef DEBUG
+#if DEBUG
 	char * a = (char *)array1;
 	char * b = (char *)array2;
 	for (size_t i = 0; i < size; i++)
