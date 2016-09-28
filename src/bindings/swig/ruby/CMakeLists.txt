@@ -48,10 +48,26 @@ else()
           COMPILE_FLAGS "${SWIG_COMPILE_FLAGS} -Wno-unused-parameter -Wno-unused-but-set-variable -DSWIG_TYPE_TABLE=kdb"
   )
 
-  # for now just install in a fixed SITE_ARCH location (is under /usr/local)
+
+  # CMAKE_INSTALL_PREFIX dependant install location
+  # if we hit one of the usual cases (/usr/local or /usr) install the lib
+  # in Ruby default include path
+  if (${CMAKE_INSTALL_PREFIX} MATCHES "^/usr/local/?$")
+          # should be under /usr/local/lib/...
+          set (RUBY_LIB_INSTALL_DIR "${RUBY_SITE_ARCH_DIR}")
+  elseif(${CMAKE_INSTALL_PREFIX} MATCHES "^/usr/?$")
+          # should be under /usr/lib/...
+          set (RUBY_LIB_INSTALL_DIR "${RUBY_VENDOR_ARCH_DIR}")
+  else()
+          # fallback, define a custom location
+          set (RUBY_LIB_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/lib${LIB_SUFFIX}/ruby/site_ruby")
+  endif()
+
+  message (STATUS "Ruby lib install path: ${RUBY_LIB_INSTALL_DIR}")
+
   install (
           TARGETS swig-ruby
-          LIBRARY DESTINATION ${RUBY_SITE_ARCH_DIR}
+          LIBRARY DESTINATION ${RUBY_LIB_INSTALL_DIR}
   )
 
 	include_directories (${CMAKE_CURRENT_SOURCE_DIR})
