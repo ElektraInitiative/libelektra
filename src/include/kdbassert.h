@@ -6,6 +6,8 @@
  * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
  */
 
+#include <kdbconfig.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
