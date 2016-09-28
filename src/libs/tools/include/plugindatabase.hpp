@@ -105,6 +105,33 @@ public:
 	virtual PluginSpec lookupProvides (std::string const & provides) const = 0;
 
 	/**
+	 * @brief looks up all plugins which are a suitable provider
+	 *
+	 * @note in case a plugin name is provided, the plugin with the name will also be
+	 *	 part of the result. But if there are other plugins providing the requirement,
+	 *	 then they will also be part of the result.
+	 *
+	 * @param provides is the provider to find
+	 *
+	 * @return a map of plugins with their status offering the requirement or are named after it
+	 */
+	virtual std::map<int, PluginSpec> lookupAllProvidesWithStatus (std::string const & provides) const = 0;
+
+	/**
+	 * @brief looks up all plugins which are a suitable provider
+	 *
+	 * @note in case a plugin name is provided, the plugin with the name will also be
+	 *	 part of the result. But if there are other plugins providing the requirement,
+	 *	 then they will also be part of the result.
+	 *       The ordering of the resulting vector has no special meaning.
+	 *
+	 * @param provides is the provider to find
+	 *
+	 * @return a vector of plugins offering the requirement or are named after it
+	 */
+	virtual std::vector<PluginSpec> lookupAllProvides (std::string const & provides) const = 0;
+
+	/**
 	 * @param statusString the string encoding the status
 	 *
 	 * @return The representing number for a given status.
@@ -134,6 +161,8 @@ public:
 	func_t getSymbol (PluginSpec const & whichplugin, std::string const & which) const;
 	PluginSpec lookupMetadata (std::string const & which) const;
 	PluginSpec lookupProvides (std::string const & provides) const;
+	std::map<int, PluginSpec> lookupAllProvidesWithStatus (std::string const & provides) const;
+	std::vector<PluginSpec> lookupAllProvides (std::string const & provides) const;
 };
 
 /**

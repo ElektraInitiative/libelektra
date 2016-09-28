@@ -280,12 +280,28 @@ PluginSpec ModulesPluginDatabase::lookupMetadata (std::string const & which) con
 
 PluginSpec ModulesPluginDatabase::lookupProvides (std::string const & which) const
 {
-	// check if plugin itself exists:
+	// check if plugin with provider name exists:
 	if (status (PluginSpec (which)) == real)
 	{
 		return PluginSpec (which);
 	}
 
+	std::map<int, PluginSpec> foundPlugins;
+	try
+	{
+		foundPlugins = lookupAllProvidesWithStatus (which);
+	}
+	catch (kdb::tools::NoPlugin & e)
+	{
+		throw e;
+	}
+
+	// the largest element of the map contains the best-suited plugin:
+	return foundPlugins.rbegin ()->second;
+}
+
+std::map<int, PluginSpec> ModulesPluginDatabase::lookupAllProvidesWithStatus (std::string const & which) const
+{
 	std::string errors;
 	std::vector<std::string> allPlugins = listAllPlugins ();
 	std::map<int, PluginSpec> foundPlugins;
@@ -294,22 +310,26 @@ PluginSpec ModulesPluginDatabase::lookupProvides (std::string const & which) con
 		// TODO: make sure (non)-equal plugins (i.e. with same/different contract) are handled correctly
 		try
 		{
+			PluginSpec spec = PluginSpec (
+				plugin,
+				KeySet (5, *Key ("system/module", KEY_VALUE, "this plugin was loaded without a config", KEY_END), KS_END));
+
+			// lets see if there is a plugin named after the required provider
+			if (plugin == which)
+			{
+				int s = calculateStatus (lookupInfo (spec, "status"));
+				foundPlugins.insert (std::make_pair (s, PluginSpec (plugin)));
+				continue; // we are done with this plugin
+			}
+
 			// TODO: support for generic plugins with config
-			std::istringstream ss (
-				lookupInfo (PluginSpec (plugin, KeySet (5, *Key ("system/module", KEY_VALUE,
-										 "this plugin was loaded without a config", KEY_END),
-									KS_END)),
-					    "provides"));
+			std::istringstream ss (lookupInfo (spec, "provides"));
 			std::string provide;
 			while (ss >> provide)
 			{
 				if (provide == which)
 				{
-					int s = calculateStatus (lookupInfo (
-						PluginSpec (plugin, KeySet (5, *Key ("system/module", KEY_VALUE,
-										     "this plugin was loaded without a config", KEY_END),
-									    KS_END)),
-						"status"));
+					int s = calculateStatus (lookupInfo (spec, "status"));
 					foundPlugins.insert (std::make_pair (s, PluginSpec (plugin)));
 				}
 			}
@@ -329,8 +349,27 @@ PluginSpec ModulesPluginDatabase::lookupProvides (std::string const & which) con
 			throw NoPlugin ("No plugin that provides " + which + " could be found");
 	}
 
-	// the largest element of the map contains the best-suited plugin:
-	return foundPlugins.rbegin ()->second;
+	return foundPlugins;
+}
+
+std::vector<PluginSpec> ModulesPluginDatabase::lookupAllProvides (std::string const & which) const
+{
+	try
+	{
+		const std::map<int, PluginSpec> foundPlugins = lookupAllProvidesWithStatus (which);
+
+		// we found some plugins, lets convert the map into a vector
+		std::vector<PluginSpec> plugins;
+		plugins.reserve (foundPlugins.size ());
+		std::for_each (foundPlugins.begin (), foundPlugins.end (),
+			       [&plugins](const std::map<int, PluginSpec>::value_type & elem) { plugins.push_back (elem.second); });
+		return plugins;
+	}
+	catch (kdb::tools::NoPlugin & e)
+	{
+		// if no plugins were found, return an empty vector
+		return std::vector<PluginSpec> ();
+	}
 }
 
 
