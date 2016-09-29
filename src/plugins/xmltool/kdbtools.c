@@ -297,7 +297,7 @@ static int consumeKeySetNode (KeySet * ks, const char * context, xmlTextReaderPt
 		privateContext = xmlTextReaderGetAttribute (reader, (const xmlChar *)"parent");
 		if (context && privateContext)
 		{
-			xmlStrPrintf (fullContext, sizeof (fullContext), (const xmlChar *)"%s/%s", context, privateContext);
+			xmlStrPrintf (fullContext, sizeof (fullContext), "%s/%s", context, privateContext);
 		}
 
 		/* Parse everything else */
