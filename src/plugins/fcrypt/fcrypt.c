@@ -38,16 +38,42 @@ typedef struct _fcryptState fcryptState;
 /**
  * @brief Allocates a new string holding the name of the temporary file.
  * @param file holds the path to the original file
+ * @param fd will hold the file descriptor to the temporary file in case of success
  * @returns an allocated string holding the name of the encrypted file. Must be freed by the caller.
  */
-static char * getTemporaryFileName (const char * file)
+static char * getTemporaryFileName (const char * file, int * fd)
 {
 	const size_t newFileAllocated = strlen (file) + 7;
 	char * newFile = elektraMalloc (newFileAllocated);
 	if (!newFile) return NULL;
 	snprintf (newFile, newFileAllocated, "%sXXXXXX", file);
-	mktemp (newFile);
+	*fd = mkstemp (newFile);
 	return newFile;
+}
+
+/**
+ * @brief Overwrites the content of the given file with zeroes.
+ * @param fd holds the file descriptor to the temporary file to be shredded
+ * @param errorKey holds an error description in case of failure
+ * @retval 1 on success
+ * @retval -1 on failure. In this case errorKey holds an error description.
+ */
+static int shredTemporaryFile (Key * errorKey, int fd)
+{
+	kdb_octet_t buffer = { 0 };
+	struct stat tmpStat;
+
+	if (fstat (fd, &stat))
+	{
+		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_FCRYPT_TMP_FILE, errorKey, "Failed to retrieve the file status of the temporary file.");
+		return -1;
+	}
+
+	for (off_t i = 0; i < tmpStat.st_size; i++)
+	{
+		write (fd, buffer, 1);
+	}
+	return 1;
 }
 
 /**
@@ -114,8 +140,9 @@ static int encrypt (KeySet * pluginConfig, Key * parentKey)
 	}
 
 	const size_t testMode = inTestMode (pluginConfig);
+	int tmpFileFd = -1;
 
-	char * tmpFile = getTemporaryFileName (keyString (parentKey));
+	char * tmpFile = getTemporaryFileName (keyString (parentKey), &tmpFileFd);
 	if (!tmpFile)
 	{
 		ELEKTRA_SET_ERROR (87, parentKey, "Memory allocation failed");
@@ -183,7 +210,15 @@ static int encrypt (KeySet * pluginConfig, Key * parentKey)
 			result = -1;
 		}
 	}
+	else
+	{
+		if (shredTemporaryFile (parentKey, tmpFileFd) == -1)
+		{
+			result = -1; // error has been set by shredTemporaryFile()
+		}
+	}
 
+	close (tmpFileFd);
 	elektraFree (tmpFile);
 	return result;
 }
@@ -197,7 +232,8 @@ static int encrypt (KeySet * pluginConfig, Key * parentKey)
  */
 static int decrypt (KeySet * pluginConfig, Key * parentKey)
 {
-	char * tmpFile = getTemporaryFileName (keyString (parentKey));
+	int tmpFileFd = -1;
+	char * tmpFile = getTemporaryFileName (keyString (parentKey), &tmpFileFd);
 	if (!tmpFile)
 	{
 		ELEKTRA_SET_ERROR (87, parentKey, "Memory allocation failed");
@@ -243,7 +279,15 @@ static int decrypt (KeySet * pluginConfig, Key * parentKey)
 			result = -1;
 		}
 	}
+	else
+	{
+		if (shredTemporaryFile (parentKey, tmpFileFd) == -1)
+		{
+			result = -1; // error has been set by shredTemporaryFile()
+		}
+	}
 
+	close (tmpFileFd);
 	elektraFree (tmpFile);
 	return result;
 }
