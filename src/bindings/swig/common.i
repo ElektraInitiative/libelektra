@@ -34,7 +34,6 @@
 %constant const char *DB_USER = KDB_DB_USER;
 %constant const char *DB_HOME = KDB_DB_HOME;
 %constant bool DEBUG = DEBUG;
-%constant bool VERBOSE = VERBOSE;
 
 
 /*

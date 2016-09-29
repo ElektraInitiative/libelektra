@@ -7,7 +7,6 @@ assert(type(kdb.DB_SYSTEM) == "string")
 assert(type(kdb.DB_USER)   == "string")
 assert(type(kdb.DB_HOME)   == "string")
 assert(type(kdb.DEBUG)     == "number")
-assert(type(kdb.VERBOSE)   == "number")
 
 -- kdb.h
 assert(type(kdb.VERSION) == "string")
