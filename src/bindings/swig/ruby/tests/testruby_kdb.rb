@@ -34,7 +34,7 @@ class KdbTestCases < Test::Unit::TestCase
 
       ret = h.get ks, RB_TEST_NS
 
-      assert_true ret >= 0
+      assert ret >= 0
 
       ks << Kdb::Key.new("#{RB_TEST_NS}/kdbgetset/c1", value: "v1")
       ks << Kdb::Key.new("#{RB_TEST_NS}/kdbgetset/c2", value: "v2", meta: "m2")

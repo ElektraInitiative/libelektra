@@ -211,7 +211,7 @@ class KdbKeySetTestCases < Test::Unit::TestCase
 
       # test get by cursor
       ks.rewind
-      assert_true ks.cursor < 0
+      assert ks.cursor < 0
 
       assert_nil ks.current
 
@@ -227,7 +227,7 @@ class KdbKeySetTestCases < Test::Unit::TestCase
       assert_nil ks.next
       assert_nil ks.current
 
-      assert_true ks.cursor < 0
+      assert ks.cursor < 0
 
       # test get by invalid index
       assert_nil ks[10]
@@ -345,7 +345,7 @@ class KdbKeySetTestCases < Test::Unit::TestCase
       # this will only work, if test keys have key names in desc order
       i = 0
       ks.each do |e| 
-        assert_true a[i] == e
+        assert a[i] == e
         i += 1
       end
 
@@ -353,19 +353,19 @@ class KdbKeySetTestCases < Test::Unit::TestCase
 
       
       # test Enumerable mixin
-      assert_true ks.all? { |e| e.namespace == "user" }
-      assert_true ks.all? { |e| e.has_meta? "owner" }
-      assert_true ks.all? { |e| e.is_string? }
+      assert ks.all? { |e| e.namespace == "user" }
+      assert ks.all? { |e| e.has_meta? "owner" }
+      assert ks.all? { |e| e.is_string? }
 
-      assert_false ks.all? { |e| e.value == "v0" }
-      assert_true ks.any? { |e| e.value == "v0" }
+      assert ! ks.all? { |e| e.value == "v0" }
+      assert ks.any? { |e| e.value == "v0" }
 
       k = ks.find { |e| e.name == "user/k5" }
       assert_instance_of Kdb::Key, k
-      assert_true k.is_valid?
-      assert_false k.is_null?
+      assert k.is_valid?
+      assert ! k.is_null?
       assert_equal "user/k5", k.name
-      assert_true a[5] == k
+      assert a[5] == k
 
       k = ks.find { |e| e.name == "does_not_exist" }
       assert_nil k
@@ -392,8 +392,8 @@ class KdbKeySetTestCases < Test::Unit::TestCase
       # our each impl makes inplace modifications
       ks.each { |e| e["new_meta"] = "persisted" }
 
-      assert_true ks.all? { |e| e.has_meta? "new_meta" }
-      assert_true ks.all? { |e| e["new_meta"] == "persisted" }
+      assert ks.all? { |e| e.has_meta? "new_meta" }
+      assert ks.all? { |e| e["new_meta"] == "persisted" }
 
       # ensure KeySet cursor is unmodified after 'each' call
       ks.rewind
@@ -430,19 +430,18 @@ class KdbKeySetTestCases < Test::Unit::TestCase
       assert_equal ks1[3], ks2[3]
       assert_equal ks1[4], ks2[4]
 
-      assert_true ks1 == ks2
-      assert_false ks1 != ks2
+      assert ks1 == ks2
+      assert ! ks1 != ks2
 
-      assert_true ks1.eql?(ks2)
-      assert_true ks2.eql?(ks1)
+      assert ks1.eql?(ks2)
+      assert ks2.eql?(ks1)
 
       ks2 << Kdb::Key.new("user/key100")
 
-      assert_false ks1 == ks2
-      assert_true ks1 != ks2
+      assert ks1 != ks2
 
-      assert_false ks1.eql?(ks2)
-      assert_false ks2.eql?(ks1)
+      assert ! ks1.eql?(ks2)
+      assert ! ks2.eql?(ks1)
     end
   end
 
@@ -466,7 +465,7 @@ class KdbKeySetTestCases < Test::Unit::TestCase
       # with options
       #lookupkey = Kdb::Key.new "user/key04"
       #assert_equal lookupkey, ks.lookup(lookupkey, Kdb::KDB_O_DEL)
-      #assert_true lookupkey.is_null? # TODO: should this really work this way
+      #assert lookupkey.is_null? # TODO: should this really work this way
 
       lookupkey = Kdb::Key.new "user/key05"
       assert_equal lookupkey, ks.lookup(lookupkey, Kdb::KDB_O_POP)
@@ -487,8 +486,8 @@ class KdbKeySetTestCases < Test::Unit::TestCase
       ks_dup = ks.dup
       
       assert_equal ks.size, ks_dup.size
-      assert_true ks == ks_dup
-      assert_true ks.__id__ != ks_dup.__id__
+      assert ks == ks_dup
+      assert ks.__id__ != ks_dup.__id__
 
       ks_dup << Kdb::Key.new("user/key5")
 
@@ -579,22 +578,22 @@ class KdbKeySetTestCases < Test::Unit::TestCase
     assert_nothing_raised do
       ks = Kdb::KeySet.new
 
-      assert_true ks.empty?
+      assert ks.empty?
 
       ks << Kdb::Key.new("user/k1")
 
-      assert_false ks.empty?
+      assert ! ks.empty?
 
       ks << Kdb::Key.new("user/k2")
 
-      assert_false ks.empty?
+      assert ! ks.empty?
 
       ks.pop
-      assert_false ks.empty?
+      assert ! ks.empty?
       ks.pop
-      assert_true ks.empty?
+      assert ks.empty?
       ks.pop
-      assert_true ks.empty?
+      assert ks.empty?
     end
   end
 
