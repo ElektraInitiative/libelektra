@@ -908,8 +908,7 @@ ssize_t ksAppend (KeySet * ks, const KeySet * toAppend)
  * @param ks the keyset where this should be done
  * @param to the position where it should be copied to
  * @param from the position where it should be copied from
- * @retval -1 if length is smaller then 0
- * @return the number of moved elements otherwise
+ * @return the number of moved elements
  */
 ssize_t ksCopyInternal (KeySet * ks, size_t to, size_t from)
 {
@@ -921,12 +920,18 @@ ssize_t ksCopyInternal (KeySet * ks, size_t to, size_t from)
 	ssize_t length = ssize - sfrom;
 	size_t ret = 0;
 
-	if (length < 0) return -1;
-	if (ks->size < to) return -1;
+	ELEKTRA_ASSERT (length >= 0, "length %zu too small", length);
+	ELEKTRA_ASSERT (ks->size >= to, "ks->size %zu smaller than %zu", ks->size, to);
 
 	ks->size += sizediff;
-	ret = elektraMemmove (ks->array + to, ks->array + from, length);
+
+	if (length != 0)
+	{
+		ret = elektraMemmove (ks->array + to, ks->array + from, length);
+	}
+
 	ks->array[ks->size] = 0;
+
 	return ret;
 }
 
@@ -1131,10 +1136,7 @@ KeySet * ksCut (KeySet * ks, const Key * cutpoint)
 	returned->size = newsize;
 	returned->array[returned->size] = 0;
 
-	if (ksCopyInternal (ks, found, it) == -1)
-	{
-		ELEKTRA_ASSERT (0, "ksCopyInternal returned an error inside ksCut");
-	}
+	ksCopyInternal (ks, found, it);
 
 	if (set_cursor) ks->cursor = ks->array[ks->current];
 
