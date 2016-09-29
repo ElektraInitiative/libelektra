@@ -1545,7 +1545,6 @@ static void test_keyDup ()
 	// Dup the key again
 	Key * ccopy;
 	succeed_if ((ccopy = keyDup (copy)) != 0, "keyDup failed");
-	compare_key (orig, ccopy);
 	compare_key (copy, ccopy);
 	keyDel (copy); // everything independent from original!
 
