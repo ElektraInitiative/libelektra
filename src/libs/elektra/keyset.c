@@ -227,7 +227,13 @@ KeySet * ksDup (const KeySet * source)
 {
 	if (!source) return 0;
 
-	KeySet * keyset = ksNew (source->alloc, KS_END);
+	size_t size = source->alloc;
+	if (size < KEYSET_SIZE)
+	{
+		size = KEYSET_SIZE;
+	}
+
+	KeySet * keyset = ksNew (size, KS_END);
 	ksAppend (keyset, source);
 	return keyset;
 }
