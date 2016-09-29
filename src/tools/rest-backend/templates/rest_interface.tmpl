@@ -1,0 +1,119 @@
+<% c++ #include <cppcms/view.h> %>
+<% skin %>
+<% view rest_interface uses cppcms::base_content %>
+<% template render() %>
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>Elektra REST service</title>
+</head>
+<body>
+    <h1>Welcome to the Elektra REST service!</h1>
+    <p>In the following a list of available endpoints will be given:</p>
+    <div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Method</th>
+                    <th>Path</th>
+                    <th>Parameter</th>
+                    <th>Note</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <th>GET</th>
+                    <td>/</td>
+                    <td></td>
+                    <td>This overview.</td>
+                </tr>
+                <tr>
+                    <th>POST</th>
+                    <td>/auth</td>
+                    <td>username, password</td>
+                    <td>Can be used to authenticate and retrieve an authorization token. The token has to be sent to the server with
+                    every request that requires authorization. It can either be sent by using the Authorization header or by adding a 
+                    <b>token</b> GET parameter holding the token.</td>
+                </tr>
+                <tr>
+                    <th>POST</th>
+                    <td>/auth/register</td>
+                    <td>username, password, email</td>
+                    <td>Can be used to register for the service.</td>
+                </tr>
+                <tr>
+                    <th>POST</th>
+                    <td>/auth/setrank</td>
+                    <td>username, rank</td>
+                    <td>Can be used to change the rank of a user. Authorization required.</td>
+                </tr>
+                <tr>
+                    <th>GET</th>
+                    <td>/auth/user</td>
+                    <td></td>
+                    <td>Can be used to retreive some information about the authenticated user. Authorization required.</td>
+                </tr>
+                <tr>
+                    <th>GET</th>
+                    <td>/database/</td>
+                    <td></td>
+                    <td>Can be used to retreive a list of database entries. Following optional parameters are possible:
+                        <br />
+                        <ul>
+                            <li><b>offset</b>: Ignore the first n elements for the result.</li>
+                            <li><b>rows</b>: How many results shall be returned at max.</li>
+                            <li><b>sort</b>: What direction should the entries be sorted (asc or desc).</li>
+                            <li><b>search</b>: A term that will be used to filter the entries.</li>
+                        </ul>
+                    </td>
+                </tr>
+                <tr>
+                    <th>POST</th>
+                    <td>/database/</td>
+                    <td>scope, organization, application, appscope, slug, title, description, tags, configuration</td>
+                    <td>Can be used to create a new database entry. Authorization required.</td>
+                </tr>
+                <tr>
+                    <th>GET</th>
+                    <td>/database/{scope}/{organization}/{application}/{appscope}/</td>
+                    <td></td>
+                    <td>Can be used to retreive a list of database entries matching the given pattern. Following optional parameters
+                    are possible:
+                        <br />
+                        <ul>
+                            <li><b>offset</b>: Ignore the first n elements for the result.</li>
+                            <li><b>rows</b>: How many results shall be returned at max.</li>
+                            <li><b>sort</b>: What direction should the entries be sorted (asc or desc).</li>
+                            <li><b>search</b>: A term that will be used to filter the entries.</li>
+                        </ul>
+                    </td>
+                </tr>
+                <tr>
+                    <th>GET</th>
+                    <td>/database/{scope}/{organization}/{application}/{appscope}/{slug}</td>
+                    <td></td>
+                    <td>Can be used to retreive detailed information about an entry. With the optional parameter 
+                    <b>raw</b> a raw conversion into a configuration format can be requested. Such a parameter could be 
+                    <i>ini</i> or <i>xml</i> for example.</td>
+                </tr>
+                <tr>
+                    <th>PUT</th>
+                    <td>/database/{scope}/{organization}/{application}/{appscope}/{slug}</td>
+                    <td>scope, organization, application, appscope, slug, title, description, tags, configuration</td>
+                    <td>Can be used to update a database entry. Authorization required.</td>
+                </tr>
+                <tr>
+                    <th>DELETE</th>
+                    <td>/database/{scope}/{organization}/{application}/{appscope}/{slug}</td>
+                    <td></td>
+                    <td>Can be used to delete a database entry. Authorization required.</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>
+<% end template %>
+<% end view %>
+<% end skin %>

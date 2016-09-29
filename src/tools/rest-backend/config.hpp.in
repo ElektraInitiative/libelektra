@@ -1,0 +1,104 @@
+#ifndef ELEKTRA_REST_CONFIG_HEADER_GUARD
+#define ELEKTRA_REST_CONFIG_HEADER_GUARD
+
+// Enables the test moe for the rest service.
+#define ELEKTRA_REST_TESTMODE @ENABLE_DEBUG@
+
+// Additional macros that are set for the test mode.
+// - Authentication is ignored
+#ifdef ELEKTRA_REST_TESTMODE
+#define ELEKTRA_REST_NO_AUTH
+#endif
+
+// The REST API version
+#define ELEKTRA_REST_API_VERSION 1
+
+// Base path for the repository used by the rest service to store its data.
+// Path may NOT end with a slash.
+#define ELEKTRA_REST_CONFIG_REPOSITORY_PATH "@REST_REPOSITORY_CONFIGS@"
+
+// Regex that is used to identify an entry in the repository.
+// Each entry has its configuration stored as subkeys, so this regex is
+// necessary to identify the keys that represent entries (and hold meta data).
+#define ELEKTRA_REST_CONFIG_REPOSITORY_ENTRY_SCHEMA "(([a-zA-Z0-9\\-\\.]+)(/([a-zA-Z0-9\\-\\.]+)){3})"
+
+// Base path for the repository used by the rest service to store user data.
+// The user data is used to authenticate users.
+// Path may NOT end with a sash.
+#define ELEKTRA_REST_USER_REPOSITORY_PATH "@REST_REPOSITORY_USERS@"
+
+// Regex that is used to identify an user entry in the repository.
+// Each user entry has its configuration stored as subkeys, so this regex is
+// necessary to identify the keys that represent users (and hold meta data).
+#define ELEKTRA_REST_USER_REPOSITORY_ENTRY_SCHEMA "([a-zA-Z0-9\\-\\.]+)"
+
+// This encryption key is used to encrypt the JWT tokens that are used
+// for authentiction of users
+#define ELEKTRA_REST_AUTHENTICATION_ENCRYPT_KEY "@REST_AUTH_ENCRYPT_KEY@"
+
+// The issuer of the JWT tokens. Can be something special, e.g. an
+// application secret.
+#define ELEKTRA_REST_AUTHENTICATION_JWT_ISSUER "@REST_JWT_ISSUER@"
+
+// The number of seconds after which a JWT token expires
+#define ELEKTRA_REST_AUTHENTICATION_JWT_EXPIRATION_TIME 7200
+
+// Defines a host that may access resources of the REST service
+// can be either a host like "http://frontend.page.com" or the wildcard *
+#define ELEKTRA_REST_HEADER_RESPONSE_CORS_ORIGIN "*"
+
+// Defines a list of allowed headers that may be used for the REST service
+// has to be a list of headers like "Authorization, Content-Type"
+#define ELEKTRA_REST_HEADER_RESPONSE_CORS_HEADERS "Authorization, Content-Type"
+
+// These are the key names to be used for the corresponding meta data of
+// entries. This data is stored as meta data for the entry key.
+#define ELEKTRA_REST_MODEL_ENTRY_META_AUTHOR "author"
+#define ELEKTRA_REST_MODEL_ENTRY_META_CREATEDAT "createdat"
+#define ELEKTRA_REST_MODEL_ENTRY_META_DESCRIPTION "description"
+#define ELEKTRA_REST_MODEL_ENTRY_META_TAGS "tags"
+#define ELEKTRA_REST_MODEL_ENTRY_META_TITLE "title"
+
+// These are the key names to be used for the corresponding meta data of
+// user entries. This data is stored as meta ata for the user entry key.
+#define ELEKTRA_REST_MODEL_USER_META_CREATEDAT "createdat"
+#define ELEKTRA_REST_MODEL_USER_META_EMAIL "email"
+#define ELEKTRA_REST_MODEL_USER_META_RANK "rank"
+
+// The max amount of entries the rest service will return for requests
+// that search or list the database. If the user specifies a higher number,
+// it will be overwritten by this one.
+#define ELEKTRA_REST_OUTPUT_MAX_ENTRIES 200
+
+// The default sorting for user lists of the rest service.
+// "asc" = ascending (A to Z), "desc" = descending (Z to A)
+#define ELEKTRA_REST_OUTPUT_SORT_USER_DEFAULT "asc"
+
+// The default sorting for entry lists of the rest service.
+// "asc" = ascending (A to Z), "desc" = descending (Z to A)
+#define ELEKTRA_REST_OUTPUT_SORT_ENTRY_DEFAULT "asc"
+
+// The default field to be used for sorting for the user endpoint.
+// For possible options have a look at the API specification.
+#define ELEKTRA_REST_OUTPUT_SORTBY_USER_DEFAULT "username"
+
+// The default field to be used for sorting for the snippets endpoint.
+// For possible options have a look at the API specification.
+#define ELEKTRA_REST_OUTPUT_SORTBY_ENTRY_DEFAULT "key"
+
+// The default to be used for filterby parameters for the user endpoint.
+// For possible options have a look at the API specification.
+#define ELEKTRA_REST_OUTPUT_FILTERBY_USER_DEFAULT "all"
+
+// The default to be used for filterby parameters for the snippets endpoint.
+// For possible options have a look at the API specification.
+#define ELEKTRA_REST_OUTPUT_FILTERBY_ENTRY_DEFAULT "all"
+
+// The user rank that is required to be able to perform certain actions.
+#define ELEKTRA_REST_PERMISSIONS_CREATE_ENTRY 10
+#define ELEKTRA_REST_PERMISSIONS_UPDATE_ENTRY 50
+#define ELEKTRA_REST_PERMISSIONS_DELETE_ENTRY 50
+#define ELEKTRA_REST_PERMISSIONS_UPDATE_USER 100
+#define ELEKTRA_REST_PERMISSIONS_DELETE_USER 100
+
+#endif
