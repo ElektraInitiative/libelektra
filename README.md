@@ -11,6 +11,12 @@ and tools regarding configuration tasks. Elektra abstracts from
 cross-platform-related issues and allows applications to be aware of other
 applications' configurations, leveraging easy application integration.
 
+## Often used links
+
+- [build server](http://build.libelektra.org:8080/)
+- [tutorials](http://git.libelektra.org/blob/master/doc/tutorials/)
+- [API docu](http://doc.libelektra.org/api/latest/html/)
+
 ## Overview
 
 Elektra consists of three parts:
