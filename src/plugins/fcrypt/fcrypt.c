@@ -60,10 +60,10 @@ static char * getTemporaryFileName (const char * file, int * fd)
  */
 static int shredTemporaryFile (Key * errorKey, int fd)
 {
-	kdb_octet_t buffer = { 0 };
+	kdb_octet_t buffer[] = { 0 };
 	struct stat tmpStat;
 
-	if (fstat (fd, &stat))
+	if (fstat (fd, &tmpStat))
 	{
 		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_FCRYPT_TMP_FILE, errorKey, "Failed to retrieve the file status of the temporary file.");
 		return -1;
