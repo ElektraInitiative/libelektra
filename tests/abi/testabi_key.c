@@ -1525,6 +1525,8 @@ static void test_keyDup ()
 
 	printf ("Test key duplication\n");
 
+	succeed_if (keyDup (0) == 0, "could not duplicate null");
+
 	// Create test key
 	orig = keyNew ("user:yl/foo/bar", KEY_BINARY, KEY_SIZE, 6, KEY_VALUE, "foobar", KEY_COMMENT, "mycomment", KEY_UID, 123, KEY_GID,
 		       456, KEY_MODE, 0644, KEY_END);
@@ -1540,7 +1542,18 @@ static void test_keyDup ()
 	succeed_if (strncmp (keyValue (copy), "foobar", 6) == 0, "keyDup: key value copy error");
 	succeed_if (keyIsBinary (copy), "keyDup: key type copy error");
 
-	keyDel (copy);
+	// Dup the key again
+	Key * ccopy;
+	succeed_if ((ccopy = keyDup (copy)) != 0, "keyDup failed");
+	compare_key (orig, ccopy);
+	compare_key (copy, ccopy);
+	keyDel (copy); // everything independent from original!
+
+	succeed_if_same_string (keyName (ccopy), "user/foo/bar");
+	succeed_if (strncmp (keyValue (ccopy), "foobar", 6) == 0, "keyDup: key value ccopy error");
+	succeed_if (keyIsBinary (ccopy), "keyDup: key type ccopy error");
+
+	keyDel (ccopy);
 
 	orig = keyNew (0);
 	keySetName (orig, "invalid");
