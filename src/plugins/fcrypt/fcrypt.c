@@ -23,7 +23,7 @@
 #include <sys/types.h>
 #include <unistd.h>
 
-enum fcryptGetState
+enum FcryptGetState
 {
 	PREGETSTORAGE = 0,
 	POSTGETSTORAGE = 1
@@ -31,7 +31,7 @@ enum fcryptGetState
 
 struct _fcryptState
 {
-	enum fcryptGetState getState;
+	enum FcryptGetState getState;
 };
 typedef struct _fcryptState fcryptState;
 
