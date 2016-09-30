@@ -103,7 +103,7 @@ int elektraLineGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 	}
 	else if (feof (fp) == 0)
 	{
-		ELEKTRA_SET_ERROR (60, parentKey, "not at the end of file");
+		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_NOEOF, parentKey, "not at the end of file");
 		ret = -1;
 	}
 
