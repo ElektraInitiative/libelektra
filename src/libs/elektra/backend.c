@@ -12,10 +12,6 @@
 
 #include <kdbassert.h>
 
-#if DEBUG && defined(HAVE_STDIO_H)
-#include <stdio.h>
-#endif
-
 #ifdef HAVE_LOCALE_H
 #include <locale.h>
 #endif
@@ -276,7 +272,7 @@ Backend * elektraBackendOpenDefault (KeySet * modules, const char * file, Key * 
 		return 0;
 	}
 
-#if DEBUG && VERBOSE
+#if VERBOSE
 	KeySet * tracerConfig = ksNew (5,
 				       // does not matter because it is mounted differently in system/elektra/modules:
 				       // keyNew("system/logmodule", KEY_VALUE, "1", KEY_END),

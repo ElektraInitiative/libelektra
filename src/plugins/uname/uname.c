@@ -9,6 +9,7 @@
 #include "uname.h"
 
 #include <errno.h>
+#include <kdblogger.h>
 #include <string.h>
 #include <sys/utsname.h>
 
@@ -17,10 +18,6 @@
 #endif
 
 #include <kdberrors.h>
-
-#if DEBUG && VERBOSE
-#include <stdio.h>
-#endif
 
 static void elektraAddUname (KeySet * returned, Key * parentKey)
 {
@@ -61,9 +58,7 @@ static void elektraAddUname (KeySet * returned, Key * parentKey)
 int elektraUnameGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
 {
 	int errnosave = errno;
-#if DEBUG && VERBOSE
-	printf ("get uname %s from %s\n", keyName (parentKey), keyString (parentKey));
-#endif
+	ELEKTRA_LOG ("get uname %s from %s\n", keyName (parentKey), keyString (parentKey));
 
 	if (!strcmp (keyName (parentKey), "system/elektra/modules/uname"))
 	{
@@ -87,9 +82,7 @@ int elektraUnameGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * pa
 
 int elektraUnameSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey)
 {
-#if DEBUG && VERBOSE
-	printf ("set uname %s from %s\n", keyName (parentKey), keyString (parentKey));
-#endif
+	ELEKTRA_LOG ("set uname %s from %s\n", keyName (parentKey), keyString (parentKey));
 
 	KeySet * info = ksNew (0, KS_END);
 	elektraAddUname (info, parentKey);

@@ -12,6 +12,7 @@
 #include <kdbease.h>
 #include <kdberrors.h>
 #include <kdbhelper.h>
+#include <kdblogger.h>
 #include <kdbprivate.h> //elektraArrayValidateName
 #include <stdio.h>
 #include <stdlib.h>
@@ -406,9 +407,8 @@ static int handleSubCountConflict (Key * parentKey, Key * key, Key * specKey, Ke
 
 static int handleConflictConflict (Key * parentKey, Key * key, Key * conflictMeta, OnConflict onConflict)
 {
-#if DEBUG && VERBOSE
-	fprintf (stderr, "handling conflict %s:%s\n", keyName (key), keyName (conflictMeta));
-#endif
+	ELEKTRA_LOG ("handling conflict %s:%s\n", keyName (key), keyName (conflictMeta));
+
 	int ret = 0;
 	const char * problemKeys = elektraMetaArrayToString (key, keyName (conflictMeta), ", ");
 	switch (onConflict)

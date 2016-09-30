@@ -578,7 +578,7 @@ int elektraIniClose (Plugin * handle, Key * parentKey ELEKTRA_UNUSED)
 	return 0;
 }
 
-#if DEBUG && VERBOSE
+#if VERBOSE
 static void outputDebug () __attribute__ ((unused));
 
 static void outputDebug (KeySet * ks)
