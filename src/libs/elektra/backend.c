@@ -272,7 +272,7 @@ Backend * elektraBackendOpenDefault (KeySet * modules, const char * file, Key * 
 		return 0;
 	}
 
-#if VERBOSE
+#ifdef ENABLE_TRACER
 	KeySet * tracerConfig = ksNew (5,
 				       // does not matter because it is mounted differently in system/elektra/modules:
 				       // keyNew("system/logmodule", KEY_VALUE, "1", KEY_END),
