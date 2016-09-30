@@ -306,9 +306,7 @@ Plugin * elektraPluginOpen (const char * name, KeySet * modules, KeySet * config
 	return handle;
 
 err_clup:
-#if DEBUG
-	printf ("Failed to load plugin %s\n", name);
-#endif
+	ELEKTRA_LOG ("Failed to load plugin %s\n", name);
 	ksDel (config);
 	return 0;
 }
