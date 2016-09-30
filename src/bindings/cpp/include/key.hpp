@@ -11,6 +11,7 @@
 
 #include <cstdarg>
 #include <cstring>
+#include <functional>
 #include <locale>
 #include <sstream>
 #include <string>
