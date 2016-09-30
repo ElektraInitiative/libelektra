@@ -1,0 +1,17 @@
+#!/bin/sh
+#
+# @author Markus Raab <elektra@markus-raab.org>
+# @brief Configure a debian build
+# @date 02.09.2014
+# @tags configure, debian
+
+. "$(dirname "$0")/configure-common"
+
+cd $BUILD
+cmake	-DSWIG_EXECUTABLE=/usr/bin/swig3.0 \
+	-DPLUGINS="ALL" \
+	-DTOOLS="ALL" \
+	-DBINDINGS="ALL" \
+	-DENABLE_DEBUG="OFF" \
+	-DENABLE_LOGGER="ON" \
+	$*
