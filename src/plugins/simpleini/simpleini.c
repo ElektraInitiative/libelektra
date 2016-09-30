@@ -13,6 +13,7 @@
 #include "simpleini.h"
 #include <errno.h>
 
+#include <kdbease.h>
 #include <kdberrors.h>
 #include <kdblogger.h>
 
@@ -52,8 +53,8 @@ int elektraSimpleiniGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key 
 		return 1;
 	}
 
-	char * key;
-	char * value;
+	char * key = 0;
+	char * value = 0;
 	int errnosave = errno;
 	FILE * fp = fopen (keyString (parentKey), "r");
 	if (!fp)
@@ -66,30 +67,48 @@ int elektraSimpleiniGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key 
 	ELEKTRA_LOG ("Read from %s", keyString (parentKey));
 
 
-	int n;
+	int n = 0;
+	size_t size = 0;
 #pragma GCC diagnostic ignored "-Wformat"
 	// icc warning #269: invalid format string conversion
-	while ((n = fscanf (fp, "%ms = %ms\n", &key, &value)) >= 1)
+	while ((n = fscanf (fp, "%%:%ms %m[^\n]\n", &key, &value)) >= 0)
 	{
-		ELEKTRA_LOG_DEBUG ("Read %d chars: %s with value %s", n, key, value);
-		Key * read = keyNew (0);
-		if (keySetName (read, key) == -1)
+		if (n == 0)
+		{
+			// discard line
+			getline (&key, &size, fp);
+			elektraFree (key);
+			key = 0;
+			continue;
+		}
+
+		Key * read = keyNew (keyName (parentKey), KEY_END);
+
+		ELEKTRA_LOG_DEBUG ("Read %d parts: %s with value %s", n, key, value);
+
+		if (keyAddName (read, key) == -1)
 		{
 			ELEKTRA_ADD_WARNING (ELEKTRA_WARNING_INVALID_KEY, parentKey, key);
 			keyDel (read);
 			continue;
 		}
-		keySetString (read, value);
+
+		if (n == 2)
+		{
+			keySetString (read, value);
+			elektraFree (value);
+			value = 0;
+		}
 
 		ksAppendKey (returned, read);
 		elektraFree (key);
-		elektraFree (value);
+		key = 0;
 	}
 
 	if (feof (fp) == 0)
 	{
 		fclose (fp);
-		ELEKTRA_SET_ERROR (60, parentKey, "not at the end of file");
+		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_NOEOF, parentKey, "not at the end of file");
 		return -1;
 	}
 
@@ -115,7 +134,8 @@ int elektraSimpleiniSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key 
 	ksRewind (returned);
 	while ((cur = ksNext (returned)) != 0)
 	{
-		fprintf (fp, "%s = %s\n", keyName (cur), keyString (cur));
+		const char * name = elektraKeyGetRelativeName (cur, parentKey);
+		fprintf (fp, "%s = %s\n", name, keyString (cur));
 	}
 
 	fclose (fp);
