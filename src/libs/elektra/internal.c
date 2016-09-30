@@ -82,7 +82,6 @@ ssize_t elektraMemcpy (Key ** array1, Key ** array2, size_t size)
 	{
 		ELEKTRA_ASSERT (a + i != b && b + i != a, "memcpy overlap: %p and %p with size %zu", a, b, size);
 	}
-	return 0;
 #endif
 	memcpy (array1, array2, size * sizeof (Key *));
 	return size;
