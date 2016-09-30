@@ -666,7 +666,7 @@ ingroup:plugin
 module:python
 
 number:113
-description:couldnt open file
+description:could not open file
 severity:error
 ingroup:plugin
 module:lineendings
