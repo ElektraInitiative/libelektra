@@ -43,7 +43,7 @@ static void test_BlockresolverWrite (char * fileName, char * compareName)
 {
 	FILE * fin = fopen (srcdir_file (fileName), "r");
 	char buffer[1024];
-	char * foutname = elektraFilename ();
+	const char * foutname = elektraFilename ();
 	FILE * fout = fopen (foutname, "w");
 	while (fgets (buffer, sizeof (buffer), fin))
 	{
