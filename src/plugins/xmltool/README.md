@@ -26,7 +26,7 @@ value or an empty value.
 
 ## Examples ##
 
-Mount an xml file using `xmltools`:
+Mount an xml file using `xmltool`:
 
 	kdb mount /etc/example.xml system/example xmltool
 
