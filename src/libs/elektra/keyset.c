@@ -696,16 +696,10 @@ ssize_t ksSearchInternal (const KeySet * ks, const Key * toAppend)
 	register int cmpresult = 1;
 	ssize_t middle = -1;
 	ssize_t insertpos = 0;
-#if DEBUG && VERBOSE
-	int c = 0;
-#endif
 
 
 	while (1)
 	{
-#if DEBUG && VERBOSE
-		++c;
-#endif
 		if (right < left)
 		{
 			/* Nothing was found */
@@ -727,12 +721,6 @@ ssize_t ksSearchInternal (const KeySet * ks, const Key * toAppend)
 			insertpos = middle;
 			right = middle - 1;
 		}
-#if DEBUG && VERBOSE
-/* This is even for verbose too verbose!
-printf ("bsearch -- c: %d res: %d left: %zd middle: %zd right: %zd insertpos: %zd\n",
-	c, cmpresult, left, middle, right, insertpos);
-*/
-#endif
 	}
 
 	if (!cmpresult)
@@ -2329,19 +2317,11 @@ int ksResize (KeySet * ks, size_t alloc)
 			return -1;
 		}
 	}
-	/* This is much too verbose
-	#if DEBUG && VERBOSE
-		printf ("Resize from %d to %d\n",(int) ks->alloc,(int) alloc);
-	#endif
-	*/
 	ks->alloc = alloc;
 
 
 	if (elektraRealloc ((void **)&ks->array, sizeof (struct _Key *) * ks->alloc) == -1)
 	{
-#if DEBUG
-		fprintf (stderr, "Reallocation error\n");
-#endif
 		elektraFree (ks->array);
 		ks->array = 0;
 		/*errno = KDB_ERR_NOMEM;*/
