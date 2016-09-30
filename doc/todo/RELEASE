@@ -61,6 +61,7 @@ Try to move as much as possible from this manual checks to build-server!
 
 Before release is done, following must be checked:
 - Everything blue on http://community.markus-raab.org:8080/
+- Not many warnings on community.markus-raab.org:8080/view/compiler%20warnings/
 
 If version numbers are correct in
 - CMakeLists.txt
