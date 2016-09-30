@@ -71,7 +71,7 @@ int elektraSimpleiniGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key 
 	size_t size = 0;
 #pragma GCC diagnostic ignored "-Wformat"
 	// icc warning #269: invalid format string conversion
-	while ((n = fscanf (fp, "%%:%ms %m[^\n]\n", &key, &value)) >= 0)
+	while ((n = fscanf (fp, "%ms = %m[^\n]\n", &key, &value)) >= 0)
 	{
 		if (n == 0)
 		{
