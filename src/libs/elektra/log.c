@@ -97,13 +97,6 @@ static int elektraLogFile (int level ELEKTRA_UNUSED, const char * function ELEKT
 int elektraVLog (int level ELEKTRA_UNUSED, const char * function ELEKTRA_UNUSED, const char * absFile ELEKTRA_UNUSED,
 		 const int line ELEKTRA_UNUSED, const char * mmsg ELEKTRA_UNUSED, va_list args)
 {
-#ifndef NO_FILTER
-	// XXX Filter level here globally (for every sink)
-	// if (level <= ELEKTRA_LOG_LEVEL) return 0;
-	// by default: discard everything except warnings+assertions
-	if (level < ELEKTRA_LOG_LEVEL_WARNING) return 0;
-#endif
-
 	char * msg = strdupa (mmsg);
 	size_t lenOfMsg = strlen (msg);
 	do
@@ -120,11 +113,14 @@ int elektraVLog (int level ELEKTRA_UNUSED, const char * function ELEKTRA_UNUSED,
 	asprintf (&str, "%s:%d:%s: %s\n", file, line, function, msg);
 
 #ifndef NO_FILTER
-	// XXX Filter here for files
-	// e.g. discard everything, but log statements from simpleini.c:
-	// if (strcmp (file, "src/plugins/simpleini/simpleini.c")) return 0;
-	// e.g. discard log statements from the log statement itself (does nothing):
-	if (!strcmp (file, "src/libs/elektra/log.c")) return 0;
+	// XXX Filter level here globally (for every sink)
+	// by default: discard everything except warnings+assertions
+	if (level <= ELEKTRA_LOG_LEVEL) goto end;
+
+	// and discard log statements from the log statement itself:
+	if (!strcmp (file, "src/libs/elektra/log.c")) goto end;
+	// or e.g. discard everything, but log statements from simpleini.c:
+	// if (strcmp (file, "src/plugins/simpleini/simpleini.c")) goto end;
 #endif
 
 	int ret = -1;
@@ -150,6 +146,8 @@ int elektraVLog (int level ELEKTRA_UNUSED, const char * function ELEKTRA_UNUSED,
 	}
 #endif
 
+end:
+	free (str);
 	return ret;
 }
 
