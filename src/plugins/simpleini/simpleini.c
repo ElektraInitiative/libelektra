@@ -75,10 +75,9 @@ int elektraSimpleiniGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key 
 		Key * read = keyNew (0);
 		if (keySetName (read, key) == -1)
 		{
-			fclose (fp);
+			ELEKTRA_ADD_WARNING (ELEKTRA_WARNING_INVALID_KEY, parentKey, key);
 			keyDel (read);
-			ELEKTRA_SET_ERROR (59, parentKey, key);
-			return -1;
+			continue;
 		}
 		keySetString (read, value);
 

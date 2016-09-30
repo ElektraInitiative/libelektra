@@ -350,10 +350,11 @@ ingroup:plugin
 module:struct
 
 number:59
-description:Key name is not valid
-severity:error
+description:Key name is not valid, discarding key
+severity:warning
 ingroup:plugin
 module:simpleini
+macro:INVALID_KEY
 
 number:60
 description:Invalid Line encountered
