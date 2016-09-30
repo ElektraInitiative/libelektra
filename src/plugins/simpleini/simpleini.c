@@ -6,6 +6,7 @@
  * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
  */
 
+#define _GNU_SOURCE
 #ifndef HAVE_KDBCONFIG
 #include "kdbconfig.h"
 #endif
@@ -20,8 +21,34 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+/**
+ * @brief Builds together a format string by the plugin's configuration
+ *
+ * @param handle to plugin
+ * @param first format string for key
+ * @param second format string for value
+ *
+ * @return newly allocated format (to be freed with elektraFree);
+ */
+static char * getFormat (Plugin * handle, const char * first, const char * second)
+{
+	const char * format;
+	Key * key = ksLookupByName (elektraPluginGetConfig (handle), "/format", 0);
+	if (!key)
+	{
+		format = "%s = %s\n";
+	}
+	else
+	{
+		format = keyString (key);
+	}
 
-int elektraSimpleiniGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
+	char * ret = 0;
+	asprintf (&ret, format, first, second);
+	return ret;
+}
+
+int elektraSimpleiniGet (Plugin * handle, KeySet * returned, Key * parentKey)
 {
 	/* get all keys */
 
@@ -64,14 +91,16 @@ int elektraSimpleiniGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key 
 		return -1;
 	}
 
-	ELEKTRA_LOG ("Read from %s", keyString (parentKey));
+	char * format = getFormat (handle, "%ms", "%m[^\n]");
 
+	ELEKTRA_LOG ("Test %s newline", "\n");
+	ELEKTRA_LOG ("Read from %s with format %s", keyString (parentKey), format);
 
 	int n = 0;
 	size_t size = 0;
 #pragma GCC diagnostic ignored "-Wformat"
 	// icc warning #269: invalid format string conversion
-	while ((n = fscanf (fp, "%ms = %m[^\n]\n", &key, &value)) >= 0)
+	while ((n = fscanf (fp, format, &key, &value)) >= 0)
 	{
 		if (n == 0)
 		{
@@ -107,11 +136,13 @@ int elektraSimpleiniGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key 
 
 	if (feof (fp) == 0)
 	{
+		elektraFree (format);
 		fclose (fp);
 		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_NOEOF, parentKey, "not at the end of file");
 		return -1;
 	}
 
+	elektraFree (format);
 	fclose (fp);
 
 	return 1; /* success */
@@ -128,18 +159,21 @@ int elektraSimpleiniSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key 
 		return -1;
 	}
 
-	ELEKTRA_LOG ("Write to %s", keyString (parentKey));
+	char * format = getFormat (handle, "%s", "%s");
+
+	ELEKTRA_LOG ("Write to %s with format %s", keyString (parentKey), format);
 
 	Key * cur;
 	ksRewind (returned);
 	while ((cur = ksNext (returned)) != 0)
 	{
 		const char * name = elektraKeyGetRelativeName (cur, parentKey);
-		fprintf (fp, "%s = %s\n", name, keyString (cur));
+		fprintf (fp, format, name, keyString (cur));
 	}
 
 	fclose (fp);
 
+	elektraFree (format);
 	return 1; /* success */
 }
 
