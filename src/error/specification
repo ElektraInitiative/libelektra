@@ -951,3 +951,10 @@ severity:warning
 ingroup:plugin
 module:base64
 macro:BASE64_DECODING
+
+number:158
+description:Could not increment to next entry
+severity:error
+ingroup:plugin
+module:line
+macro:NO_INC
