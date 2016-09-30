@@ -119,13 +119,13 @@ int elektraDocGet (Plugin * plugin ELEKTRA_UNUSED, KeySet * returned, Key * pare
 
 	//![get storage]
 	FILE * fp = fopen (keyString (parentKey), "r");
-	char * key;
-	char * value;
+	char * key = 0;
+	char * value = 0;
 
 	while (parseKey (fp, &key, &value) >= 1)
 	{
-		Key * read = keyNew (0);
-		if (keySetName (read, key) == -1)
+		Key * read = keyNew (keyName (parentKey), KEY_END);
+		if (keyAddName (read, key) == -1)
 		{
 			ELEKTRA_ADD_WARNING (ELEKTRA_WARNING_INVALID_KEY, parentKey, key);
 			keyDel (read);
@@ -134,8 +134,6 @@ int elektraDocGet (Plugin * plugin ELEKTRA_UNUSED, KeySet * returned, Key * pare
 		keySetString (read, value);
 
 		ksAppendKey (returned, read);
-		elektraFree (key);
-		elektraFree (value);
 	}
 
 	if (feof (fp) == 0)
