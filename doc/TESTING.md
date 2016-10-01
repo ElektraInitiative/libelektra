@@ -12,41 +12,42 @@ and on the target (installed) system:
 
     kdb run_all
 
-assures that all these promises hold.
-
-To run memcheck tests use:
+it is assured that no new regressions were added.
+To run memcheck tests run in the build directory:
 
     make run_memcheck
 
-In the build directory, internally ctest is used, so you can also call
+For tests in the build directory ctest is used, so you alternatively also can call
 ctest with its options. On the target (installed) system our own scripts
 drive the tests.
 
-The `testscr` and `testkdb` tests write in system pathes.
+Some tests write into system paths.
+If the access is denied, several tests will fail.
 You have some options to avoid running them as root:
 
-1. Avoid running these test cases, e.g. with, run ctest with:
-   `ctest --output-on-failure -E '(testscr|testkdb)_.*`
-2. Compile Elektra so that build-in pathes are not system pathes, use cmake options:
-   `-DINSTALL_SYSTEM_FILES=OFF -DCMAKE_INSTALL_PREFIX=$WORKSPACE/local -DKDB_DB_SYSTEM=$WORKSPACE/system`
-   (or via `scripts/configure-home`, currently pending #691)
-3. Compile Elektra so that default pathes are not system pathes, use cmake options:
-   `-DINSTALL_SYSTEM_FILES=OFF -DCMAKE_INSTALL_PREFIX=$WORKSPACE/local -DKDB_DB_SYSTEM=$WORKSPACE/system`
-4. Use the XDG resolver (see `scripts/configure-xdg`) and set
-   `XDG_CONFIG_DIRS`, currently lacks #734.
-5. Give your user the permissions to the relevant pathes, i.e. (once as root):
+1. To void running the problematic test cases alltogether (reduces the test coverage!)
+   run ctest with:
+   `ctest --output-on-failure -E 'testtool_mergingkdb|((testshell|testscr|testkdb)_.*)'`
+2. To give your user the permissions to the relevant paths, i.e. (once as root):
 
    ```
    kdb mount-info
    chown -R `whoami` `kdb get system/info/constants/cmake/CMAKE_INSTALL_PREFIX`/`kdb get system/info/constants/cmake/KDB_DB_SPEC`
    chown -R `whoami` `kdb get system/info/constants/cmake/KDB_DB_SYSTEM`
    ```
+   After that all test cases should run successfully as described above.
+3. Compile Elektra so that system paths are not actual system paths, e.g. to write everything into
+   the home directory (`~`) use cmake options:
+   `-DKDB_DB_SYSTEM="~/.config/kdb/system" -DKDB_DB_SPEC="~/.config/kdb/spec"`
+   (for another example with ini see `scripts/configure-home`)
+4. Use the XDG resolver (see `scripts/configure-xdg`) and set
+   the environment variable `XDG_CONFIG_DIRS`, currently lacks spec namespaces, see #734.
 
 
 
 ## Conventions ##
 
-- All names of the test must start with test
+- All names of the test must start with test (needed by test driver for installed tests)
 - No tests should run if ENABLE_TESTING is OFF.
 - All tests that access harddisc:
  - should be tagged with kdbtests
