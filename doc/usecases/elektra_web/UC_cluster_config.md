@@ -1,0 +1,19 @@
+# Use Case: Remote configuration of a cluster
+
+## Summary
+
+Title: Remote configuration of a cluster
+Scope: Configuration
+Level: User Goal
+Actors: User (usually a sysadmin)
+Brief: User configures a cluster (multiple instances at once) via the client.
+
+## Scenarios
+
+Precondition: Add cluster
+Main success scenario: User successfully changes configuration of the cluster.
+Alternative scenario: One of the instances is not online. The user is informed about the issue.
+Error scenario: Technical problems while persisting configuration to one of the instances. The user is informed about the issue.
+Postcondition: The updated configuration is persisted to all instances of the cluster. Configuration defined by the cluster can't be set in single instances anymore.
+Non-functional Constraints:
+	- Essential functionality
