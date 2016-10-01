@@ -43,9 +43,7 @@ static char * getFormat (Plugin * handle, const char * first, const char * secon
 		format = keyString (key);
 	}
 
-	char * ret = 0;
-	asprintf (&ret, format, first, second);
-	return ret;
+	return elektraFormat (format, first, second);
 }
 
 int elektraSimpleiniGet (Plugin * handle, KeySet * returned, Key * parentKey)

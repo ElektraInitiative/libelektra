@@ -123,8 +123,7 @@ int elektraVLog (int level ELEKTRA_UNUSED, const char * function ELEKTRA_UNUSED,
 	char * str;
 	// XXX Change here default format for messages
 	asprintf (&str, "%s:%d:%s: %s\n", file, line, function, mmsg);
-	char * msg;
-	vasprintf (&msg, str, args);
+	char * msg = elektraVFormat (str, args);
 	replaceChars (msg);
 
 #ifndef NO_FILTER
