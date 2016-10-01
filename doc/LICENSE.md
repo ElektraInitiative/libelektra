@@ -1,4 +1,4 @@
-## COPYING ##
+## Introduction ##
 
 This is the "New BSD license" as in
 http://opensource.org/licenses/BSD-3-Clause
@@ -8,8 +8,9 @@ For discussion of BSD licences, see:
 https://fsfe.org/freesoftware/transcripts/rms-fs-2006-03-09.en.html#q2
 
 
+## Licence ##
 
-Copyright (c) 2014, Elektra (contributors see in AUTHORS file)
+Copyright (c) 2016, Elektra (contributors see in AUTHORS file)
  Some rights reserved.
 
 
