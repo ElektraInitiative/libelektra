@@ -93,7 +93,6 @@ int elektraSimpleiniGet (Plugin * handle, KeySet * returned, Key * parentKey)
 
 	char * format = getFormat (handle, "%ms", "%m[^\n]");
 
-	ELEKTRA_LOG ("Test %s newline", "\n");
 	ELEKTRA_LOG ("Read from %s with format %s", keyString (parentKey), format);
 
 	int n = 0;

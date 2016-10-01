@@ -132,10 +132,10 @@ int elektraVLog (int level ELEKTRA_UNUSED, const char * function ELEKTRA_UNUSED,
 	// by default: discard everything except warnings+assertions
 	if (level <= ELEKTRA_LOG_LEVEL) goto end;
 
+	// or e.g. discard everything, but log statements from simpleini.c:
+	// if (strcmp (file, "src/plugins/simpleini/simpleini.c")) goto end;
 	// and discard log statements from the log statement itself:
 	if (!strcmp (file, "src/libs/elektra/log.c")) goto end;
-// or e.g. discard everything, but log statements from simpleini.c:
-// if (strcmp (file, "src/plugins/simpleini/simpleini.c")) goto end;
 #endif
 
 	int ret = -1;
