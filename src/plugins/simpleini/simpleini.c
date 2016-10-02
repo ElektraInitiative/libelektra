@@ -14,6 +14,7 @@
 #include "simpleini.h"
 #include <errno.h>
 
+#include <kdbassert.h>
 #include <kdbease.h>
 #include <kdberrors.h>
 #include <kdblogger.h>
@@ -32,18 +33,61 @@
  */
 static char * getFormat (Plugin * handle, const char * first, const char * second)
 {
-	const char * format;
+	char * format;
 	Key * key = ksLookupByName (elektraPluginGetConfig (handle), "/format", 0);
 	if (!key)
 	{
-		format = "%s = %s\n";
+		format = elektraStrDup ("%s = %s\n");
 	}
 	else
 	{
-		format = keyString (key);
+		const size_t maxFactor = 2; // at maximum every char is a %, %% -> %%%%
+		const size_t newLineAtEnd = 2;
+		const size_t userFormatSize = keyGetValueSize (key);
+		format = elektraMalloc (userFormatSize * maxFactor + newLineAtEnd);
+
+		const char * userFormat = keyString (key);
+		int gotPercent = 0;
+		size_t j = 0;
+		for (size_t i = 0; i < userFormatSize; ++i, ++j)
+		{
+			const char c = userFormat[i];
+			if (gotPercent)
+			{
+				if (c == '%')
+				{
+					// escaped %% -> %%%%
+					format[j++] = '%';
+					format[j++] = '%';
+					format[j] = '%';
+				}
+				else
+				{
+					// single % -> %s
+					format[j++] = 's';
+					format[j] = c;
+				}
+				gotPercent = 0;
+			}
+			else if (c == '%')
+			{
+				format[j] = c;
+				gotPercent = 1;
+			}
+			else
+			{
+				format[j] = c;
+			}
+		}
+		--j; // discard null byte that is already there
+		ELEKTRA_ASSERT (format[j] == '\0', "should be null byte at end of string but was %c", format[j]);
+		format[j++] = '\n';
+		format[j] = '\0';
 	}
 
-	return elektraFormat (format, first, second);
+	char * ret = elektraFormat (format, first, second);
+	elektraFree (format);
+	return ret;
 }
 
 int elektraSimpleiniGet (Plugin * handle, KeySet * returned, Key * parentKey)
@@ -91,7 +135,7 @@ int elektraSimpleiniGet (Plugin * handle, KeySet * returned, Key * parentKey)
 
 	char * format = getFormat (handle, "%ms", "%m[^\n]");
 
-	ELEKTRA_LOG ("Read from %s with format %s", keyString (parentKey), format);
+	ELEKTRA_LOG ("Read from '%s' with format '%s'", keyString (parentKey), format);
 
 	int n = 0;
 	size_t size = 0;
@@ -99,18 +143,18 @@ int elektraSimpleiniGet (Plugin * handle, KeySet * returned, Key * parentKey)
 	// icc warning #269: invalid format string conversion
 	while ((n = fscanf (fp, format, &key, &value)) >= 0)
 	{
+		ELEKTRA_LOG_DEBUG ("Read %d parts: '%s' with value '%s'", n, key, value);
 		if (n == 0)
 		{
 			// discard line
 			getline (&key, &size, fp);
+			ELEKTRA_LOG_DEBUG ("Discard '%s'", key);
 			elektraFree (key);
 			key = 0;
 			continue;
 		}
 
 		Key * read = keyNew (keyName (parentKey), KEY_END);
-
-		ELEKTRA_LOG_DEBUG ("Read %d parts: %s with value %s", n, key, value);
 
 		if (keyAddName (read, key) == -1)
 		{
@@ -158,7 +202,7 @@ int elektraSimpleiniSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key 
 
 	char * format = getFormat (handle, "%s", "%s");
 
-	ELEKTRA_LOG ("Write to %s with format %s", keyString (parentKey), format);
+	ELEKTRA_LOG ("Write to '%s' with format '%s'", keyString (parentKey), format);
 
 	Key * cur;
 	ksRewind (returned);
