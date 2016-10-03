@@ -177,6 +177,7 @@ inline void DatabaseApp::handleGetUnique (cppcms::http::request & req, cppcms::h
 		for (auto & elem : formats)
 		{
 			data["data"]["value"][j]["format"] = elem.getPluginformat ().getFileformat ();
+			data["data"]["value"][j]["plugin"] = elem.getPluginformat ().getPluginname ();
 			data["data"]["value"][j]["value"] = elem.getConfig ();
 			j++;
 		}
