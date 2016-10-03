@@ -406,6 +406,76 @@ Otherwise, it will be 400.
             - `CLUSTER_NOT_FOUND` if the requested instance does not exist in the database
 
 
+## cluster instances [/clusters/{cluster_id}/instances]
+
++ Parameters
+    + cluster_id: `54a92a5f-2dd5-4f61-8761-6acfc7c49799` (string) - id of a cluster
+
+### get list of instances assigned to the cluster [GET]
+
++ Response 200 (application/json)
+    + Attributes (array[Instance])
+
++ Response 401 (application/json)
+    + Attributes (Error)
+        + i18n (string) - a unique token representing above error description message; can be used for internationalization in frontends
+            A comprehensive list of possible errors:
+            - `NEED_AUTHENTICATION` if no valid session token has been supplied or the user for whom the token has been created does not exist (anymore)
+
++ Response 404 (application/json)
+    + Attributes (Error)
+        + i18n (string) - a unique token representing above error description message; can be used for internationalization in frontends
+            A comprehensive list of possible errors:
+            - `CLUSTER_NOT_FOUND` if the requested instance does not exist in the database
+
+### assign instance to cluster [POST]
+
++ Request (application/json)
+    + Attributes (object)
+        + instanceId: `46a288ae-7475-4cdd-a04c-3826c9a4b5f5` (string) - id of the instance to be assigned
+
++ Response 201
+    + Attributes (array[Instance])
+
++ Response 400 (application/json)
+    + Attributes (Error)
+        + i18n (string) - a unique token representing above error description message; can be used for internationalization in frontends
+            A comprehensive list of possible errors:
+            - `INSTANCE_ID_MISSING` instanceId not specified
+
++ Response 401 (application/json)
+    + Attributes (Error)
+        + i18n (string) - a unique token representing above error description message; can be used for internationalization in frontends
+            A comprehensive list of possible errors:
+            - `NEED_AUTHENTICATION` if no valid session token has been supplied or the user for whom the token has been created does not exist (anymore)
+
++ Response 406 (application/json)
+    + Attributes (Error)
+        + i18n (string) - a unique token representing above error description message; can be used for internationalization in frontends
+            A comprehensive list of possible errors:
+            - `REQUEST_UNSUPPORTED_CONTENT_TYPE` if the submitted Content-Type is not `application/json`
+
+### deassign instance from cluster [DELETE /clusters/{cluster_id}/instances/{instance_id}]
+
++ Parameters
+    + cluster_id: `54a92a5f-2dd5-4f61-8761-6acfc7c49799` (string) - id of a cluster
+    + instance_id: `46a288ae-7475-4cdd-a04c-3826c9a4b5f5` (string) - id of an instance
+
++ Response 204
+
++ Response 401 (application/json)
+    + Attributes (Error)
+        + i18n (string) - a unique token representing above error description message; can be used for internationalization in frontends
+            A comprehensive list of possible errors:
+            - `NEED_AUTHENTICATION` if no valid session token has been supplied or the user for whom the token has been created does not exist (anymore)
+
++ Response 404 (application/json)
+    + Attributes (Error)
+        + i18n (string) - a unique token representing above error description message; can be used for internationalization in frontends
+            A comprehensive list of possible errors:
+            - `CLUSTER_NOT_FOUND` if the requested instance does not exist in the database
+
+
 ## cluster key database [/clusters/{cluster_id}/kdb/{+path}]
 
 clusters' configurations are stored on the `clusterd` server
