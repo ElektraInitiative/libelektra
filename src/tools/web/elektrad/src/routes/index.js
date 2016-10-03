@@ -23,7 +23,7 @@ const kdbGet = (path, cb) =>
 
 export default function initRoutes (app) {
   app.get('/version', (req, res) =>
-    responseCallback(res)(VERSIONS)
+    responseCallback(res)(null, VERSIONS)
   )
 
   app.get('/kdb', (req, res) =>

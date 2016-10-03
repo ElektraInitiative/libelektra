@@ -4,6 +4,7 @@ import { version as packageVersion } from '../../package.json'
 const VERSIONS = { api: packageVersion.split('.').shift() }
 
 import initInstanceRoutes from './instances'
+import initClusterRoutes from './clusters'
 
 export default function initRoutes (app) {
   app.get('/version', (req, res) =>
@@ -11,4 +12,5 @@ export default function initRoutes (app) {
   )
 
   initInstanceRoutes(app)
+  initClusterRoutes(app)
 }

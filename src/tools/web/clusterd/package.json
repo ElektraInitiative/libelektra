@@ -23,6 +23,7 @@
   },
   "homepage": "https://github.com/omnidan/elektra-web#readme",
   "dependencies": {
+    "async": "^2.0.1",
     "body-parser": "^1.15.2",
     "cors": "^2.8.1",
     "debug-dude": "^1.0.3",

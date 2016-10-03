@@ -1,7 +1,7 @@
 import makeLog from '../log'
 const { error } = makeLog('routes:instances')
 
-import { responseCallback } from './utils'
+import { responseCallback, promiseResponseCallback } from './utils'
 
 import {
   getInstances, createInstance,
@@ -34,40 +34,40 @@ export default function initInstanceRoutes (app) {
     )
 
   app.get('/instances/:id/version', (req, res) =>
-    getInstance(req.params.id, (instance) =>
+    getInstance(req.params.id, (err, instance) =>
       kdb.version(instance.host)
-        .then(responseCallback(res))
+        .then(promiseResponseCallback(res))
         .catch(err => error('connection error: %o', err))
     )
   )
 
   app.get('/instances/:id/kdb', (req, res) =>
-    getInstance(req.params.id, (instance) =>
+    getInstance(req.params.id, (err, instance) =>
       kdb.ls(instance.host)
-        .then(responseCallback(res))
+        .then(promiseResponseCallback(res))
         .catch(err => error('connection error: %o', err))
     )
   )
 
   app.route('/instances/:id/kdb/*')
     .get((req, res) =>
-      getInstance(req.params.id, (instance) =>
+      getInstance(req.params.id, (err, instance) =>
         kdb.get(instance.host, req.params[0])
-          .then(responseCallback(res))
+          .then(promiseResponseCallback(res))
           .catch(err => error('connection error: %o', err))
       )
     )
     .put((req, res) =>
-      getInstance(req.params.id, (instance) =>
+      getInstance(req.params.id, (err, instance) =>
         kdb.set(instance.host, req.params[0], req.body)
-          .then(responseCallback(res))
+          .then(promiseResponseCallback(res))
           .catch(err => error('connection error: %o', err))
       )
     )
     .delete((req, res) =>
-      getInstance(req.params.id, (instance) =>
+      getInstance(req.params.id, (err, instance) =>
         kdb.rm(instance.host, req.params[0])
-          .then(responseCallback(res))
+          .then(promiseResponseCallback(res))
           .catch(err => error('connection error: %o', err))
       )
     )
