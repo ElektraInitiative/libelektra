@@ -120,7 +120,7 @@ public:
 	}
 
 	std::vector<kdbrest::model::PluginFormat> loadEnabledFormats ();
-	model::PluginFormat findSuitablePlugin (std::string & format);
+	model::PluginFormat findSuitablePlugin (const std::string & format);
 
 	kdbrest::model::ConfigFormat exportTo (const std::string format, model::Entry & entry);
 	kdbrest::model::ConfigFormat exportTo (model::PluginFormat & plugin, model::Entry & entry);

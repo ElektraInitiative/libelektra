@@ -18,7 +18,7 @@ namespace kdbrest
 namespace service
 {
 
-model::PluginFormat ConvertEngine::findSuitablePlugin (std::string & format)
+model::PluginFormat ConvertEngine::findSuitablePlugin (const std::string & format)
 {
 	using namespace kdb;
 	using namespace kdb::tools;
@@ -62,12 +62,18 @@ std::vector<model::PluginFormat> ConvertEngine::loadEnabledFormats ()
 
 model::ConfigFormat ConvertEngine::exportTo (const std::string format, model::Entry & entry)
 {
-	for (auto & elem : this->_enabledFormats)
+	try
 	{
-		if (elem.getFileformat () == format)
-		{
-			return this->exportTo (elem, entry);
-		}
+		model::PluginFormat pluginFormat = this->findSuitablePlugin (format);
+		return this->exportTo (pluginFormat, entry);
+	}
+	catch (kdbrest::exception::UnsupportedConfigurationFormatException & e)
+	{
+		throw e; // re-throw explicitely
+	}
+	catch (kdbrest::exception::ParseConfigurationException & e)
+	{
+		throw e; // re-throw explicitely
 	}
 
 	throw exception::UnsupportedConfigurationFormatException ();

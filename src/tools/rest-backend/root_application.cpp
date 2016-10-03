@@ -29,7 +29,7 @@ RootApp::RootApp (cppcms::service & srv) : cppcms::application (srv)
 		);
 
 	attach (new UserApp (srv), "user", "/user{1}", // mapping
-		"/user(/(.*))?", 1			 // dispatching
+		"/user(/(.*))?", 1		       // dispatching
 		);
 
 	attach (new DatabaseApp (srv), "database", "/database{1}", // mapping

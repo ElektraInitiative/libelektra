@@ -137,20 +137,25 @@ inline void DatabaseApp::handleGetUnique (cppcms::http::request & req, cppcms::h
 	{
 		model::Entry entry = service::StorageEngine::instance ().getEntry (key);
 
-		std::string raw = req.get (PARAM_RAW);
+		const std::string raw = req.get (PARAM_RAW);
 		if (!raw.empty ())
 		{
-			std::vector<model::ConfigFormat> convertedFormats = service::ConvertEngine::instance ().exportToAll (entry);
-			for (auto & elem : convertedFormats)
+			try
 			{
-				if (elem.getPluginformat ().getFileformat ().compare (raw) == 0)
-				{
-					RootApp::setOkRaw (resp, elem.getConfig (), "text/plain");
-					return; // quit here
-				}
+				model::ConfigFormat configFormat = service::ConvertEngine::instance ().exportTo (raw, entry);
+				RootApp::setOkRaw (resp, configFormat.getConfig (), "text/plain");
+				return; // quit here
 			}
-			RootApp::setBadRequest (resp, "Configuration format not supported", "ENTRY_UNSUPPORTED_FORMAT");
-			return; // quit early
+			catch (kdbrest::exception::UnsupportedConfigurationFormatException & e)
+			{
+				RootApp::setBadRequest (resp, "Configuration format not supported.", "ENTRY_UNSUPPORTED_FORMAT");
+				return; // quit early
+			}
+			catch (kdbrest::exception::ParseConfigurationException & e)
+			{
+				RootApp::setBadRequest (resp, "The snippet cannot be represented using the submitted format.",
+							"ENTRY_UNABLE_TO_EXPORT_SNIPPET");
+			}
 		}
 
 		cppcms::json::value data;
