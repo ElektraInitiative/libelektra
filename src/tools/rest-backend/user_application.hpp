@@ -45,11 +45,11 @@ public:
 
 private:
 	void handleGet (cppcms::http::request & request, cppcms::http::response & response);
-	void handleGetUnique (cppcms::http::request & request, cppcms::http::response & response, std::string username = std::string ());
+	void handleGetUnique (cppcms::http::response & response, std::string username = std::string ());
 	void handleInsert (cppcms::http::request & request, cppcms::http::response & response);
 	void handleUpdate (cppcms::http::request & request, cppcms::http::response & response, std::string username = std::string (),
 			   bool canSetRank = false);
-	void handleDelete (cppcms::http::request & request, cppcms::http::response & response, std::string username = std::string ());
+	void handleDelete (cppcms::http::response & response, std::string username = std::string ());
 
 	inline void produceOutput (cppcms::http::request & request, cppcms::http::response & response, std::vector<model::User> & users);
 	inline void processFiltering (cppcms::http::request & request, std::vector<model::User> & users);

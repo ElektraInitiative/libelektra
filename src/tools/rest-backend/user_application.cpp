@@ -35,7 +35,7 @@ void UserApp::handle (std::string username)
 			try
 			{
 				model::User user = AuthenticationApp::getCurrentUser (request ());
-				this->handleGetUnique (request (), response (), user.getUsername ());
+				this->handleGetUnique (response (), user.getUsername ());
 				return;
 			}
 			catch (exception::NoCurrentUserException & e)
@@ -71,7 +71,7 @@ void UserApp::handle (std::string username)
 				// or if we should return a single user
 				else
 				{
-					this->handleGetUnique (request (), response (), username);
+					this->handleGetUnique (response (), username);
 					return;
 				}
 			}
@@ -166,7 +166,7 @@ void UserApp::handle (std::string username)
 			}
 
 			// execute the delete request
-			this->handleDelete (request (), response (), username);
+			this->handleDelete (response (), username);
 		}
 		catch (exception::NoCurrentUserException & e)
 		{
@@ -204,7 +204,7 @@ void UserApp::handle (std::string username)
 	}
 }
 
-void UserApp::handleGetUnique (cppcms::http::request & req, cppcms::http::response & resp, std::string username)
+void UserApp::handleGetUnique (cppcms::http::response & resp, std::string username)
 {
 	try
 	{
@@ -457,7 +457,7 @@ void UserApp::handleUpdate (cppcms::http::request & req, cppcms::http::response 
 	}
 }
 
-void UserApp::handleDelete (cppcms::http::request & req, cppcms::http::response & resp, std::string username)
+void UserApp::handleDelete (cppcms::http::response & resp, std::string username)
 {
 	try
 	{
