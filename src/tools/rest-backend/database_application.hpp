@@ -21,22 +21,38 @@ namespace kdbrest
 {
 
 // STATIC CONSTANTS
+
+// parameter to retrieve a configuration snippet in a raw format
 static const std::string PARAM_RAW = "raw";
 
+// index for the organization in requests
 static const std::string INDEX_ORGANIZATION = "organization";
+// index for the application in requests
 static const std::string INDEX_APPLICATION = "application";
+// index for the scope in requests
 static const std::string INDEX_SCOPE = "scope";
+// index for the slug in requests
 static const std::string INDEX_SLUG = "slug";
+// index for the title in requests
 static const std::string INDEX_TITLE = "title";
+// index for the description in requests
 static const std::string INDEX_DESCRIPTION = "description";
+// index for the tags array in requests
 static const std::string INDEX_TAGS = "tags";
+// index for the configuration object in requests
 static const std::string INDEX_CONFIGURATION = "configuration";
+// index for the configuration value in requests
 static const std::string INDEX_CONFIGURATION_VALUE = "value";
+// index for the configuration format in requests
 static const std::string INDEX_CONFIGURATION_FORMAT = "format";
 
+// regex that is used for the parts of entries (i.e. organization, application, ...)
 static const std::string REGEX_ENTRY_PARTS = "([a-zA-Z0-9\\-\\.]+)";
+// regex that is used for the title of entries
 static const std::string REGEX_ENTRY_TITLE = "[^\\n\\r]{3,}";
+// regex that is used for the description of entries
 static const std::string REGEX_ENTRY_DESCRIPTION = "[\\s\\S]{3,}";
+// regex that is used for the tags of entries
 static const std::string REGEX_ENTRY_TAGS = "([a-z0-9\\-\\.]{3,20})";
 
 /**

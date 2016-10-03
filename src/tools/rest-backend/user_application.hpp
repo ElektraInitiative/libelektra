@@ -22,14 +22,22 @@ namespace kdbrest
 {
 
 // STATIC CONSTANTS
+
+// parameter that can be used to operate on the currently authenticated user
 static std::string PARAM_CURRENT = "current";
 
+// index to be used for username in requests
 static std::string INDEX_USERNAME = "username";
+// index to be used for password in requests
 static std::string INDEX_PASSWORD = "password";
+// index to be used for email in requests
 static std::string INDEX_EMAIL = "email";
+// index to be used for rank in requests
 static std::string INDEX_RANK = "rank";
 
+// regex to be used to validate usernames
 static std::string REGEX_USERNAME = "[a-zA-Z0-9\\-\\.]{3,20}";
+// regex to be used to validate passwords
 static std::string REGEX_PASSWORD = "(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9]).{8,}";
 
 /**

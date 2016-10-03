@@ -14,6 +14,10 @@
 namespace kdbrest
 {
 
+/**
+ * @brief the constructor fot the authentication endopint application.
+ * @param srv a service container
+ */
 AuthenticationApp::AuthenticationApp (cppcms::service & srv) : cppcms::application (srv)
 {
 
@@ -21,6 +25,11 @@ AuthenticationApp::AuthenticationApp (cppcms::service & srv) : cppcms::applicati
 	mapper ().assign ("");
 }
 
+/**
+ * @brief handler for the authentication resource.
+ *		  attempts an authentication with the submitted credentials. in case the
+ *		  attempt succeeds, a session token will be returned, otherwise an error.
+ */
 void AuthenticationApp::authenticate ()
 {
 	using namespace cryptlite;
@@ -143,6 +152,19 @@ void AuthenticationApp::authenticate ()
 	}
 }
 
+/**
+ * @brief helper method that allows to validate whether a request contains a valid
+ *		  session token or not. additionally the method can do checks on the authenticated
+ *		  users rank and username (i.e. check for owner of something).
+ * @note if a rank and a username are given, it is sufficient that one of both matches the
+ *       requirement in order for the validation to succeed.
+ * @param request a request
+ * @param response a response
+ * @param rank optionally the rank of a user can be checked
+ * @param orUser optionally the name of a user can be checked
+ * @return true if a authentication is present and the authenticated user matches all requirements,
+ *		   false otherwise
+ */
 bool AuthenticationApp::validateAuthentication (cppcms::http::request & request, cppcms::http::response & response, int rank,
 						std::string orUser)
 {
@@ -156,7 +178,7 @@ bool AuthenticationApp::validateAuthentication (cppcms::http::request & request,
 	if (headerAuthorization.empty ())
 	{
 		// find token in get_parameters
-		token = request.get (INDEX_TOKEN);
+		token = request.get (PARAM_TOKEN);
 		if (token.empty ())
 		{
 			RootApp::setUnauthorized (response, "Session token missing.", "NEED_AUTHENTICATION"); // send HTTP 401
@@ -191,6 +213,11 @@ bool AuthenticationApp::validateAuthentication (cppcms::http::request & request,
 	return true; // authentication successful
 }
 
+/**
+ * @brief helper method to retrieve a user model of the currently authenticated user
+ * @param request a request
+ * @return model of the currently authenticated user, taken from the storage
+ */
 model::User AuthenticationApp::getCurrentUser (cppcms::http::request & request)
 {
 	// authentication validation
@@ -199,7 +226,7 @@ model::User AuthenticationApp::getCurrentUser (cppcms::http::request & request)
 	if (headerAuthorization.empty ())
 	{
 		// find token in get_parameters
-		token = request.get (INDEX_TOKEN);
+		token = request.get (PARAM_TOKEN);
 		if (token.empty ())
 		{
 			throw exception::NoCurrentUserException ();

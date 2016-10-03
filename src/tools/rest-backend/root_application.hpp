@@ -23,11 +23,18 @@ namespace kdbrest
 {
 
 // STATIC CONSTANTS
+
+// parameter used for offsets of entry lists
 static const std::string PARAM_OFFSET = "offset";
+// parameter used for max number of rows for output of entry lists
 static const std::string PARAM_ROWS = "rows";
+// parameter used for the sorting of entry lists (asc, desc)
 static const std::string PARAM_SORT = "sort";
+// parameter used for the field to sort after of entry lists
 static const std::string PARAM_SORTBY = "sortby";
+// parameter used for the filtering of entry lists
 static const std::string PARAM_FILTER = "filter";
+// parameter used for the field of filtering of entry lists
 static const std::string PARAM_FILTERBY = "filterby";
 
 /**

@@ -9,6 +9,9 @@ namespace kdbrest
 namespace exception
 {
 
+/**
+ * @brief base exception to be used within the rest service.
+ */
 class ElektraRestException : public std::exception
 {
 public:
@@ -28,6 +31,9 @@ protected:
 	std::string errorMsg;
 };
 
+/**
+ * @brief exception to be used if a snippet entry was not found.
+ */
 class EntryNotFoundException : public ElektraRestException
 {
 public:
@@ -37,6 +43,9 @@ public:
 	}
 };
 
+/**
+ * @brief exception to be used if a snippet entry with a certain key does already exist.
+ */
 class EntryAlreadyExistsException : public ElektraRestException
 {
 public:
@@ -46,6 +55,9 @@ public:
 	}
 };
 
+/**
+ * @brief exception to be used if a user entry was not found.
+ */
 class UserNotFoundException : public ElektraRestException
 {
 public:
@@ -55,6 +67,9 @@ public:
 	}
 };
 
+/**
+ * @brief exception to be used if a user entry with a certain username does already exist.
+ */
 class UserAlreadyExistsException : public ElektraRestException
 {
 public:
@@ -64,6 +79,9 @@ public:
 	}
 };
 
+/**
+ * @brief exception to be used if a requested subkey was not found, i.e. email of user.
+ */
 class SubkeyNotFoundException : public ElektraRestException
 {
 public:
@@ -73,6 +91,9 @@ public:
 	}
 };
 
+/**
+ * @brief exception to be used if no authenticated user was found (i.e. no valid session token).
+ */
 class NoCurrentUserException : public ElektraRestException
 {
 public:
@@ -82,6 +103,10 @@ public:
 	}
 };
 
+/**
+ * @brief exception to be used for plugins.
+ * @param msg custom exception error message
+ */
 class FileformatPluginException : public ElektraRestException
 {
 public:
@@ -90,6 +115,9 @@ public:
 	}
 };
 
+/**
+ * @brief exception to be used if an unsupported configuration format was used within an import/export.
+ */
 class UnsupportedConfigurationFormatException : public ElektraRestException
 {
 public:
@@ -100,6 +128,9 @@ public:
 	}
 };
 
+/**
+ * @brief exception to be used if a snippet cannot be consumed or represented by a plugin.
+ */
 class ParseConfigurationException : public ElektraRestException
 {
 public:
@@ -109,6 +140,9 @@ public:
 	}
 };
 
+/**
+ * @brief exception to be used if the validation of a snippet entry failed.
+ */
 class EntryValidationException : public ElektraRestException
 {
 public:
@@ -118,6 +152,9 @@ public:
 	}
 };
 
+/**
+ * @brief exception to be used if the submitted post data does not match the requirement.
+ */
 class InvalidPostDataFormatException : public ElektraRestException
 {
 public:
@@ -127,6 +164,9 @@ public:
 	}
 };
 
+/**
+ * @brief exception to be used if the currently authenticated user has insufficient permissions.
+ */
 class InsufficientPermissionsException : public ElektraRestException
 {
 public:

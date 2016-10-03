@@ -20,8 +20,12 @@ namespace kdbrest
 {
 
 // STATIC CONSTANTS
+
+// index for the input format in requests
 static std::string INDEX_INPUT_FORMAT = "input.format";
+// index for the input value (snippet) in requests
 static std::string INDEX_INPUT_VALUE = "input.snippet";
+// index for the output format in requests
 static std::string INDEX_OUTPUT_FORMAT = "output.format";
 
 /**

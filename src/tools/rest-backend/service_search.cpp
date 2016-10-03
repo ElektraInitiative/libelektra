@@ -32,18 +32,25 @@ void SearchEngine::filterConfigurationsByName (std::vector<kdbrest::model::Entry
 }
 
 /**
-         * @brief Can be used to filter an entry vector based on a search string.
-         * All entries that contain the search string in one of the following
-         * fields will remain in the result set:
-         * - as part of the name
-         * - as part of the title
-         * - as part of the description
-         * - as part of the author name
-         * - as tag
-         * All the other entries will be removed.
-         * 
-         * @param entries The vector containing entries to be filtered
-         * @param searchString The string to be searched for
+         * @brief Can be used to filter an entry vector based on a `filter` (search string).
+		 *
+		 * Whether an entry remains in the list depends on the used `filter`. The searched
+		 * field(s) can be specified with the `filterby` parameter, the search value itself
+		 * in the `filter` value.
+		 *
+		 * Possible values for `filterby` are:
+		 * - all
+		 * - key
+		 * - title
+		 * - description
+		 * - author
+		 * - tags
+         *
+         * Entries that do not have the `filter` value in the `filterby` field(s) will be removed.
+         *
+         * @param entries The vector containing snippet entries to be filtered
+         * @param filter The string to be searched for
+		 * @param filterby The field(s) to search in
          */
 void SearchEngine::findConfigurationsByFilter (std::vector<kdbrest::model::Entry> & entries, const std::string & filter,
 					       const std::string filterby)
@@ -101,7 +108,24 @@ void SearchEngine::findConfigurationsByFilter (std::vector<kdbrest::model::Entry
 		       entries.end ());
 }
 
-
+/**
+         * @brief Can be used to filter a user vector based on a `filter` (search string).
+		 *
+		 * Whether an entry remains in the list depends on the used `filter`. The searched
+		 * field(s) can be specified with the `filterby` parameter, the search value itself
+		 * in the `filter` value.
+		 *
+		 * Possible values for `filterby` are:
+		 * - all
+		 * - username
+		 * - email
+         *
+         * Entries that do not have the `filter` value in the `filterby` field(s) will be removed.
+         *
+         * @param users The vector containing user entries to be filtered
+         * @param filter The string to be searched for
+		 * @param filterby The field(s) to search in
+         */
 void SearchEngine::findUsersByFilter (std::vector<kdbrest::model::User> & users, const std::string & filter, const std::string filterby)
 {
 	users.erase (std::remove_if (users.begin (), users.end (),

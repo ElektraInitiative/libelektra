@@ -22,6 +22,10 @@
 namespace kdbrest
 {
 
+/**
+ * @brief the constructor of the database endpoint application.
+ * @param srv a service container
+ */
 DatabaseApp::DatabaseApp (cppcms::service & srv) : cppcms::application (srv)
 {
 
@@ -35,6 +39,10 @@ DatabaseApp::DatabaseApp (cppcms::service & srv) : cppcms::application (srv)
 	mapper ().assign ("");
 }
 
+/**
+ * @brief handler for the root resource of the endpoint which serves a list of
+ *		  snippet entries.
+ */
 void DatabaseApp::getAllEntries ()
 {
 	if (request ().request_method () == "GET")
@@ -60,6 +68,10 @@ void DatabaseApp::getAllEntries ()
 	}
 }
 
+/**
+ * @brief handler for dynamic resources that limit search space of snippet entries.
+ * @param keyPart a part of a possible entry key to reduce search space
+ */
 void DatabaseApp::getEntriesByPrefix (std::string keyPart)
 {
 	if (request ().request_method () == "GET")
@@ -80,6 +92,10 @@ void DatabaseApp::getEntriesByPrefix (std::string keyPart)
 	}
 }
 
+/**
+ * @brief handler for the unique entry resource which serves methods for single entries.
+ * @param key the unique snippet key of an entry resource
+ */
 void DatabaseApp::getUniqueEntry (std::string key)
 {
 	if (request ().request_method () == "GET")
@@ -110,7 +126,12 @@ void DatabaseApp::getUniqueEntry (std::string key)
 	}
 }
 
-
+/**
+ * @brief handles the retrieval for a list of snippet entries
+ * @param req a request
+ * @param resp a response
+ * @param keyPart a part of a possible entry key to reduce search space
+ */
 inline void DatabaseApp::handleGet (cppcms::http::request & req, cppcms::http::response & resp, std::string keyPart)
 {
 	// first get the complete entry list
@@ -131,6 +152,12 @@ inline void DatabaseApp::handleGet (cppcms::http::request & req, cppcms::http::r
 	this->produceOutput (req, resp, entries);
 }
 
+/**
+ * @brief handles a request to retrieve details for a snippet entry
+ * @param req a request
+ * @param resp a response
+ * @param key the unique snippet key of the entry which shall be retrieved
+ */
 inline void DatabaseApp::handleGetUnique (cppcms::http::request & req, cppcms::http::response & resp, std::string key)
 {
 	try
@@ -196,6 +223,11 @@ inline void DatabaseApp::handleGetUnique (cppcms::http::request & req, cppcms::h
 	}
 }
 
+/**
+ * @brief handles a creation request for a new snippet entry.
+ * @param req a request
+ * @param resp a response
+ */
 inline void DatabaseApp::handleInsert (cppcms::http::request & req, cppcms::http::response & resp)
 {
 	// first check if the currently authenticated user may create new database entries
@@ -245,6 +277,12 @@ inline void DatabaseApp::handleInsert (cppcms::http::request & req, cppcms::http
 	RootApp::setOk (resp, "The entry has been created successfully.", "ENTRY_CREATED_SUCCESSFULLY");
 }
 
+/**
+ * @brief handles an update request for a snippet entry.
+ * @param req a request
+ * @param resp a response
+ * @param key the unique snippet key of the entry which shall be updated
+ */
 inline void DatabaseApp::handleUpdate (cppcms::http::request & req, cppcms::http::response & resp, std::string & key)
 {
 	// first lets find the entry
@@ -297,6 +335,12 @@ inline void DatabaseApp::handleUpdate (cppcms::http::request & req, cppcms::http
 	RootApp::setOk (resp, "The entry has been updated successfully.", "ENTRY_UPDATED_SUCCESSFULLY");
 }
 
+/**
+ * @brief handles a delete request of a snippet entry.
+ * @param req a request
+ * @param resp a response
+ * @param key the unique snippet key of the entry which shall be deleted
+ */
 inline void DatabaseApp::handleDelete (cppcms::http::request & req, cppcms::http::response & resp, std::string & key)
 {
 	// first find the entry to delete
@@ -330,6 +374,15 @@ inline void DatabaseApp::handleDelete (cppcms::http::request & req, cppcms::http
 	RootApp::setOk (resp, "The entry has been deleted successfully.", "ENTRY_DELETED_SUCCESSFULLY");
 }
 
+/**
+ * @brief a helper function that builds and validates a snippet entry from a request.
+ * @note the method sets response messages itself in case an error occurs. if that happens,
+ *		 an exception is thrown so that the calling method can quit too.
+ * @param req a request
+ * @param resp a response
+ * @param keyName in case an entry is built for an update, the keyname has to be provided
+ * @return the built and validated entry
+ */
 inline model::Entry DatabaseApp::buildAndValidateEntry (cppcms::http::request & req, cppcms::http::response & resp, std::string keyName)
 {
 	// check if request data is of type application/json
@@ -567,6 +620,11 @@ inline model::Entry DatabaseApp::buildAndValidateEntry (cppcms::http::request & 
 }
 
 
+/**
+ * @brief extracts the max number of rows to print from a request.
+ * @param req a request
+ * @return the max number of rows to print or the default value if not set
+ */
 inline int DatabaseApp::getMaxrows (cppcms::http::request & req)
 {
 	int maxrows = ELEKTRA_REST_OUTPUT_MAX_ENTRIES;
@@ -590,6 +648,11 @@ inline int DatabaseApp::getMaxrows (cppcms::http::request & req)
 	return maxrows;
 }
 
+/**
+ * @brief extracts the offset parameter from a request.
+ * @param req a request
+ * @return the offset extracted from the request parameter, if not set 0
+ */
 inline int DatabaseApp::getOffset (cppcms::http::request & req)
 {
 	int offset = 0;
@@ -609,6 +672,11 @@ inline int DatabaseApp::getOffset (cppcms::http::request & req)
 	return offset;
 }
 
+/**
+ * @brief filters a vector of snippet entries based on parameters of a request.
+ * @param req a request
+ * @param entries the entry vector to filter
+ */
 inline void DatabaseApp::processFiltering (cppcms::http::request & req, std::vector<model::Entry> & entries)
 {
 	// retrieve parameter values
@@ -629,6 +697,11 @@ inline void DatabaseApp::processFiltering (cppcms::http::request & req, std::vec
 	}
 }
 
+/**
+ * @brief sorts a vector of snippet entries based on parameters of a request.
+ * @param req a request
+ * @param entries the entry vector to sort
+ */
 inline void DatabaseApp::processSorting (cppcms::http::request & req, std::vector<model::Entry> & entries)
 {
 	// retrieve parameter values
@@ -721,6 +794,15 @@ inline void DatabaseApp::processSorting (cppcms::http::request & req, std::vecto
 	}
 }
 
+/**
+ * @brief creates the output for a list of snippets with all helping attributes
+ *	      like number of entries, offset, etc.
+ * @note not all snippets in the list may actually be printed to the output.
+ *       which snippets are used in the output depends on the offset and maxrows.
+ * @param req a request
+ * @param resp a response
+ * @param entries a list of snippets, of which some may be used for the output
+ */
 inline void DatabaseApp::produceOutput (cppcms::http::request & req, cppcms::http::response & resp, std::vector<model::Entry> & entries)
 {
 	int offset = this->getOffset (req);

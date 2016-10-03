@@ -16,12 +16,21 @@
 namespace kdbrest
 {
 
+/**
+ * @brief the constructor of the user endpoint application.
+ * @param srv a service container
+ */
 UserApp::UserApp (cppcms::service & srv) : cppcms::application (srv)
 {
 	dispatcher ().assign ("/?([a-zA-Z0-9\\-\\.]{3,20})?/{0,1}", &UserApp::handle, this, 1);
 	mapper ().assign ("handle", "/{1}");
 }
 
+/**
+ * @brief the main handle function for this endpoint. it checks permissions
+ *		  and mapps the endpoint resources to their corresponding handlers.
+ * @param username a username that may be provided as resource parameter
+ */
 void UserApp::handle (std::string username)
 {
 	using namespace cryptlite;
@@ -204,6 +213,11 @@ void UserApp::handle (std::string username)
 	}
 }
 
+/**
+ * @brief handles the retirval of a specific user entry
+ * @param resp a response
+ * @param username the username of the user whose information shall be retrieved
+ */
 void UserApp::handleGetUnique (cppcms::http::response & resp, std::string username)
 {
 	try
@@ -225,6 +239,11 @@ void UserApp::handleGetUnique (cppcms::http::response & resp, std::string userna
 	}
 }
 
+/**
+ * @brief handles the retrieval of a list of user entries
+ * @param req a request
+ * @param resp a response
+ */
 void UserApp::handleGet (cppcms::http::request & req, cppcms::http::response & resp)
 {
 	std::vector<kdbrest::model::User> users = service::StorageEngine::instance ().getAllUsers ();
@@ -235,6 +254,11 @@ void UserApp::handleGet (cppcms::http::request & req, cppcms::http::response & r
 	this->produceOutput (req, resp, users);
 }
 
+/**
+ * @brief handles the creation of a new user entry
+ * @param req a request
+ * @param resp a response
+ */
 void UserApp::handleInsert (cppcms::http::request & req, cppcms::http::response & resp)
 {
 	using namespace cryptlite;
@@ -366,6 +390,13 @@ void UserApp::handleInsert (cppcms::http::request & req, cppcms::http::response 
 	}
 }
 
+/**
+ * @brief handles the update of a user entry.
+ * @param req a request
+ * @param resp a response
+ * @param username the username of the user who shall be updated
+ * @param canSetRank whether the currently authenticated user can update the rank or not
+ */
 void UserApp::handleUpdate (cppcms::http::request & req, cppcms::http::response & resp, std::string username, bool canSetRank)
 {
 	using namespace cryptlite;
@@ -457,6 +488,11 @@ void UserApp::handleUpdate (cppcms::http::request & req, cppcms::http::response 
 	}
 }
 
+/**
+ * @brief handles a delete request for a user resource.
+ * @param resp a response
+ * @param username the username of the user who shall be deleted
+ */
 void UserApp::handleDelete (cppcms::http::response & resp, std::string username)
 {
 	try
@@ -474,7 +510,11 @@ void UserApp::handleDelete (cppcms::http::response & resp, std::string username)
 	}
 }
 
-
+/**
+ * @brief extracts the max number of rows to print from a request.
+ * @param req a request
+ * @return the max number of rows to print or the default value if not set
+ */
 inline int UserApp::getMaxrows (cppcms::http::request & req)
 {
 	int maxrows = ELEKTRA_REST_OUTPUT_MAX_ENTRIES;
@@ -498,6 +538,11 @@ inline int UserApp::getMaxrows (cppcms::http::request & req)
 	return maxrows;
 }
 
+/**
+ * @brief extracts the offset parameter from a request.
+ * @param req a request
+ * @return the offset extracted from the request parameter, if not set 0
+ */
 inline int UserApp::getOffset (cppcms::http::request & req)
 {
 	int offset = 0;
@@ -517,6 +562,11 @@ inline int UserApp::getOffset (cppcms::http::request & req)
 	return offset;
 }
 
+/**
+ * @brief filters a vector of user entries based on parameters of a request.
+ * @param req a request
+ * @param users the user vector to filter
+ */
 inline void UserApp::processFiltering (cppcms::http::request & req, std::vector<model::User> & users)
 {
 	// retrieve parameter values
@@ -536,6 +586,11 @@ inline void UserApp::processFiltering (cppcms::http::request & req, std::vector<
 	}
 }
 
+/**
+ * @brief sorts a vector of user entries based on parameters of a request.
+ * @param req a request
+ * @param users the user vector to sort
+ */
 inline void UserApp::processSorting (cppcms::http::request & req, std::vector<model::User> & users)
 {
 	// retrieve parameter values
@@ -588,6 +643,15 @@ inline void UserApp::processSorting (cppcms::http::request & req, std::vector<mo
 	}
 }
 
+/**
+ * @brief creates the output for a list of users with all helping attributes
+ *	      like number of entries, offset, etc.
+ * @note not all users in the list may actually be printed to the output.
+ *       which users are used in the output depends on the offset and maxrows.
+ * @param req a request
+ * @param resp a response
+ * @param users a list of users, of which some may be used for the output
+ */
 inline void UserApp::produceOutput (cppcms::http::request & req, cppcms::http::response & resp, std::vector<model::User> & users)
 {
 	int offset = this->getOffset (req);
@@ -633,6 +697,13 @@ inline void UserApp::produceOutput (cppcms::http::request & req, cppcms::http::r
 	RootApp::setOk (resp, data, "application/json");
 }
 
+/**
+ * @brief does basic checks on a string to validate whether it is an
+ *		  email or not. in order to do so, it first checks if the string
+ *		  is empty, then looks for a @ followed by a . for the TLD
+ * @param email a string containing the email to validate
+ * @return true in case the email is considered valid, false otherwise
+ */
 bool UserApp::isValidEmail (std::string & email)
 {
 	if (email.empty ()) return false;

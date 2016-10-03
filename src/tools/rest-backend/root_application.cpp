@@ -17,9 +17,9 @@ namespace kdbrest
 {
 
 /**
-     * @brief Constructor for main service class
+     * @brief constructor for main service class
      *
-     * @param srv Takes a CppCms service
+     * @param srv a service container
      */
 RootApp::RootApp (cppcms::service & srv) : cppcms::application (srv)
 {
@@ -49,7 +49,9 @@ RootApp::RootApp (cppcms::service & srv) : cppcms::application (srv)
 	mapper ().root ("");
 }
 
-
+/**
+ * @brief handler for the root of the whole rest service, returns an API description.
+ */
 void RootApp::welcome ()
 {
 	if (request ().request_method () == "GET")
@@ -64,6 +66,10 @@ void RootApp::welcome ()
 	}
 }
 
+/**
+ * @brief handler for the version resource of the endpoint, returns versions for the API
+ *		  and the used Elektra version.
+ */
 void RootApp::version ()
 {
 	if (request ().request_method () == "GET")
@@ -88,6 +94,12 @@ void RootApp::version ()
 
 /* STATIC */
 
+/**
+ * @brief helper method that allows to set custom data within the response.
+ * @param response a response
+ * @param data a plain string containing the response body data
+ * @param content_type the content type to be used for the response
+ */
 void RootApp::setOkRaw (cppcms::http::response & response, std::string & data, const std::string content_type)
 {
 	// send actual response
@@ -99,6 +111,12 @@ void RootApp::setOkRaw (cppcms::http::response & response, std::string & data, c
 	response.out () << data;
 }
 
+/**
+ * @brief helper method that allows to set json data within the response.
+ * @param response a response
+ * @param data json data to be used as body in response
+ * @param content_type the content type to be used for the response
+ */
 void RootApp::setOk (cppcms::http::response & response, cppcms::json::value & data, const std::string content_type)
 {
 	// send actual response
@@ -110,47 +128,99 @@ void RootApp::setOk (cppcms::http::response & response, cppcms::json::value & da
 	response.out () << data;
 }
 
+/**
+ * @brief helper method that allows to set a message and a localization string within the response.
+ * @param response a response
+ * @param message a message, i.e. success message because of http 200
+ * @param loca a localization string, may not contain spaces (e.g. USER_CREATED_SUCCESSFULLY)
+ */
 void RootApp::setOk (cppcms::http::response & response, const std::string message, const std::string loca)
 {
 	RootApp::setHttpStatus (response, cppcms::http::response::ok, message, loca);
 }
 
+/**
+ * @brief helper method that allows to set a method not allowed response
+ * @param response a response
+ * @param message a message, i.e. method not allowed message because of http 405
+ * @param loca a localization string, may not contain spaces (e.g. METHOD_NOT_ALLOWED)
+ */
 void RootApp::setMethodNotAllowed (cppcms::http::response & response, const std::string message, const std::string loca)
 {
 	RootApp::setHttpStatus (response, cppcms::http::response::method_not_allowed, message, loca);
 }
 
+/**
+ * @brief helper method that allows to set a not acceptable response
+ * @param response a response
+ * @param message a message, i.e. not acceptable message because of http 406
+ * @param loca a localization string, may not contain spaces (e.g. UNSUPPORTED_CONTENT_TYPE)
+ */
 void RootApp::setNotAcceptable (cppcms::http::response & response, const std::string message, const std::string loca)
 {
 	RootApp::setHttpStatus (response, cppcms::http::response::not_acceptable, message, loca);
 }
 
+/**
+ * @brief helper method that allows to set a unprocessable entity response
+ * @param response a response
+ * @param message a message, i.e. unprocessable entity message because of http 422
+ * @param loca a localization string, may not contain spaces (e.g. USER_ALREADY_EXISTS)
+ */
 void RootApp::setUnprocessableEntity (cppcms::http::response & response, const std::string message, const std::string loca)
 {
 	RootApp::setHttpStatus (response, 422, message, loca);
 }
 
+/**
+ * @brief helper method that allows to set an unauthorized response
+ * @param response a response
+ * @param message a message, i.e. unauthorized message because of http 401
+ * @param loca a localization string, may not contain spaces (e.g. NEED_AUTHENTICATION)
+ */
 void RootApp::setUnauthorized (cppcms::http::response & response, const std::string message, const std::string loca)
 {
 	RootApp::setHttpStatus (response, cppcms::http::response::unauthorized, message, loca);
 }
 
+/**
+ * @brief helper method that allows to set a bad request response
+ * @param response a response
+ * @param message a message, i.e. bad request message because of http 400
+ * @param loca a localization string, may not contain spaces (e.g. USER_MISSING_USERNAME)
+ */
 void RootApp::setBadRequest (cppcms::http::response & response, const std::string message, const std::string loca)
 {
 	RootApp::setHttpStatus (response, cppcms::http::response::bad_request, message, loca);
 }
 
+/**
+ * @brief helper method that allows to set a not found response
+ * @param response a response
+ * @param message a message, i.e. not found message because of http 404
+ * @param loca a localization string, may not contain spaces (e.g. USER_DOES_NOT_EXIST)
+ */
 void RootApp::setNotFound (cppcms::http::response & response, const std::string message, const std::string loca)
 {
 	RootApp::setHttpStatus (response, cppcms::http::response::not_found, message, loca);
 }
 
+/**
+ * @brief helper method that allows to set an internal server error response
+ * @param response a response
+ * @param message a message, i.e. internal server error message because of http 500
+ * @param loca a localization string, may not contain spaces (e.g. AUTH_CREATE_TOKEN_ERROR)
+ */
 void RootApp::setInternalServerError (cppcms::http::response & response, const std::string message, const std::string loca)
 {
 	RootApp::setHttpStatus (response, cppcms::http::response::internal_server_error, message, loca);
 }
 
-
+/**
+ * @brief helper method that attempts to parse post data as json
+ * @param request a request
+ * @return a json value containing the parsed post data
+ */
 cppcms::json::value RootApp::parsePostDataAsJson (cppcms::http::request & request)
 {
 	std::pair<void *, size_t> post_data = request.raw_post_data ();
@@ -166,6 +236,13 @@ cppcms::json::value RootApp::parsePostDataAsJson (cppcms::http::request & reques
 
 /* STATIC PRIVATE */
 
+/**
+ * @brief helper method that sets the http status of a response, as well as an error message and loca string
+ * @param response a response
+ * @param status the http status to set
+ * @param message a message to use in response body
+ * @param loca a localization string to use in response body
+ */
 void RootApp::setHttpStatus (cppcms::http::response & response, const int status, const std::string & message, const std::string & loca)
 {
 	// send actual response
@@ -184,6 +261,11 @@ void RootApp::setHttpStatus (cppcms::http::response & response, const int status
 	response.out () << data;
 }
 
+/**
+ * @brief helper method that sets CORS headers for a response, as well as allowed methods
+ * @param response a response
+ * @param allowedMethods a comma separated list of allowed methods, e.g. "GET,POST,PUT,OPTIONS"
+ */
 void RootApp::setCORSHeaders (cppcms::http::response & response, const std::string allowedMethods)
 {
 	response.set_header ("Allow", allowedMethods);

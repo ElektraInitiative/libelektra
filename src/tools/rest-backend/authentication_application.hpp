@@ -19,9 +19,13 @@
  */
 namespace kdbrest
 {
-static std::string INDEX_TOKEN = "token";
 
-static std::string AUTH_HEADER_PREFIX = "Bearer ";
+// STATIC CONSTANTS
+
+// parameter for a session token as alternative to the authorization header
+static const std::string PARAM_TOKEN = "token";
+// prefix for the value of the authorization header, e.g.: Authorization: Bearer <token>
+static const std::string AUTH_HEADER_PREFIX = "Bearer ";
 
 /**
      * @brief Authentication class, serves endpoint for authentication

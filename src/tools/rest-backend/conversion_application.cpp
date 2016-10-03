@@ -10,6 +10,10 @@
 namespace kdbrest
 {
 
+/**
+ * @brief the constructor of the conversion endpoint application.
+ * @param srv a service container
+ */
 ConversionApp::ConversionApp (cppcms::service & srv) : cppcms::application (srv)
 {
 	dispatcher ().assign ("/formats", &ConversionApp::formats, this);
@@ -19,6 +23,11 @@ ConversionApp::ConversionApp (cppcms::service & srv) : cppcms::application (srv)
 	mapper ().assign ("");
 }
 
+/**
+ * @brief handler for the conversion resource.
+ *        takes a snippet and configuration format as input and converts the
+ *		  snippet into a desired output format.
+ */
 void ConversionApp::convert ()
 {
 	if (request ().request_method () == "POST")
@@ -137,6 +146,9 @@ void ConversionApp::convert ()
 	}
 }
 
+/**
+ * @brief handler to retrieve a list of supported formats with their corresponding plugin
+ */
 void ConversionApp::formats ()
 {
 	if (request ().request_method () == "GET")
