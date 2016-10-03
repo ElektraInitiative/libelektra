@@ -147,7 +147,8 @@ void ConversionApp::formats ()
 		int index = 0;
 		for (auto & elem : service::ConvertEngine::instance ().getEnabledFormats ())
 		{
-			data[index] = elem.getFileformat ();
+			data[index]["format"] = elem.getFileformat ();
+			data[index]["plugin"] = elem.getPluginname ();
 			index++;
 		}
 
