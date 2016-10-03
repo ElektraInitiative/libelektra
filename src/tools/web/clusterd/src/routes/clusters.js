@@ -51,7 +51,7 @@ export default function initClusterRoutes (app) {
 
   app.route('/clusters/:id/instances')
     .get((req, res) =>
-      getClusterInstances(req.params.id, responseCallback(res))
+      applyToAllInstances(res, req.params.id, (instance) => Promise.resolve(instance))
     )
     .post((req, res) =>
       addInstanceToCluster(req.params.id, req.body && req.body.instanceId, responseCallback(res))
