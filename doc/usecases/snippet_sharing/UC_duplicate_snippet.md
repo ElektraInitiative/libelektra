@@ -15,5 +15,5 @@ Main success scenario: All inputs validate and the configuration snippet could b
 Alternative scenario: Wrong inputs lead to an error message and ask the user to correct them, then they can try again. It is also possible that the supplied configuration snippet is of an unsupported format. In either case the user retrieves a response containing error information.
 Error scenario: Technical problems prevent the storage process from completing. The user is informed about the issue.
 Postcondition: Configuration snippet is stored in the database successfully and can be found through search and direct link.
-Non-functional Constraints: 
-	- Essential functionality of the service
+Non-functional Constraints:
+	- Can be used to create snippet histories

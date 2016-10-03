@@ -17,3 +17,4 @@ Error scenario: Technical problems prevent the deletion process from completing.
 Postcondition: Configuration snippet has been deleted from the database and can neither be found through search, nor be viewed in detail anymore.
 Non-functional Constraints:
 	- Moderative feature
+	- Essential functionality of the service
