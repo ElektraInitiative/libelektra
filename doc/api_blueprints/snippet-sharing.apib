@@ -746,8 +746,8 @@ Offers to convert a supplied configuration snippet from one format into another 
 Returns a list of supported configuration formats. In general this is a list of formats for which plugins are available and installed.
 
 + Response 200 (application/json)
-    + Attributes (array[string])
-    
+    + Attributes (array[Conversion Format])
+
 
 
 # Data Structures
@@ -783,7 +783,6 @@ Returns a list of supported configuration formats. In general this is a list of 
 + remaining (number) - How many entries have not been displayed yet; when adding this value to the offset (and not exceeding the row limit), all entries should have been displayed once
 + formats (array[string]) - A list of available (enabled) configuration formats; formats in this list can be selected for export
 
-
 ## Entry Preview (object)
 
 + key (string) - Storage path of the entry and also the unique identifier
@@ -791,3 +790,8 @@ Returns a list of supported configuration formats. In general this is a list of 
 + description (string) - A description of the entry
 + author (string) - The username of the creator of the entry
 + created_at (number) - A timestamp of the moment when the entry has been created
+
+## Conversion Format (object)
+
++ format (string) - The configuration format/language (e.g. ini, xml, csv, ...)
++ plugin (string) - The name of the plugin that offers the format (e.g. simpleini, xmltool, csvstorage, ...)
