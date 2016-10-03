@@ -299,7 +299,6 @@ void UserApp::handleInsert (cppcms::http::request & req, cppcms::http::response 
 	// valiate inputs
 	std::regex regex_username (REGEX_USERNAME);
 	std::regex regex_password (REGEX_PASSWORD);
-	std::regex regex_email (REGEX_EMAIL);
 	if (!std::regex_match (username, regex_username))
 	{
 		RootApp::setBadRequest (resp,
@@ -319,7 +318,7 @@ void UserApp::handleInsert (cppcms::http::request & req, cppcms::http::response 
 					"USER_CREATE_INVALID_PASSWORD");
 		return; // quit early
 	}
-	if (!std::regex_match (email, regex_email))
+	if (!this->isValidEmail (email))
 	{
 		RootApp::setBadRequest (resp, "The given email is not a valid email.", "USER_CREATE_INVALID_EMAIL");
 		return; // quit early
@@ -404,7 +403,6 @@ void UserApp::handleUpdate (cppcms::http::request & req, cppcms::http::response 
 
 	// valiate inputs
 	std::regex regex_password (REGEX_PASSWORD);
-	std::regex regex_email (REGEX_EMAIL);
 	if (!password.empty () && !std::regex_match (password, regex_password))
 	{
 		RootApp::setBadRequest (resp,
@@ -414,7 +412,7 @@ void UserApp::handleUpdate (cppcms::http::request & req, cppcms::http::response 
 					"USER_UPDATE_INVALID_PASSWORD");
 		return; // quit early
 	}
-	if (!email.empty () && !std::regex_match (email, regex_email))
+	if (!email.empty () && !this->isValidEmail (email))
 	{
 		RootApp::setBadRequest (resp, "The given email is not a valid email.", "USER_UPDATE_INVALID_EMAIL");
 		return; // quit early
@@ -633,6 +631,13 @@ inline void UserApp::produceOutput (cppcms::http::request & req, cppcms::http::r
 	}
 
 	RootApp::setOk (resp, data, "application/json");
+}
+
+bool UserApp::isValidEmail (std::string & email)
+{
+	if (email.empty ()) return false;
+	size_t at_index = email.find_first_of ('@', 1); // there has to be one sign before @
+	return at_index != std::string::npos && email.find_first_of ('.', at_index) != std::string::npos; // . has to be after @
 }
 
 } // namespace kdbrest

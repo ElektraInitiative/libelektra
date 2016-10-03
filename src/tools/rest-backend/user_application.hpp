@@ -31,8 +31,6 @@ static std::string INDEX_RANK = "rank";
 
 static std::string REGEX_USERNAME = "[a-zA-Z0-9\\-\\.]{3,20}";
 static std::string REGEX_PASSWORD = "(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9]).{8,}";
-static std::string REGEX_EMAIL =
-	"([a-zA-Z0-9_\\-\\.]+)@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.)|(([a-zA-Z0-9\\-]+\\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\\]?)";
 
 /**
      * @brief User endpoint class, serves endpoint for user management
@@ -58,6 +56,8 @@ private:
 	inline void processSorting (cppcms::http::request & request, std::vector<model::User> & users);
 	inline int getMaxrows (cppcms::http::request & request);
 	inline int getOffset (cppcms::http::request & request);
+
+	bool isValidEmail (std::string & email);
 };
 
 } // namespace kdbrest
