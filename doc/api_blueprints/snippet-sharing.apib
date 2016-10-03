@@ -22,11 +22,11 @@ Returns the current version of the API and Elektra. The API version is increased
 + Response 200 (application/json)
     + Attributes (object)
         + elektra (object) - Detailed version information about the used Elektra library
-            + version (string) - The currently used version in its complete format
-            + major (number) - The currently used major version
-            + minor (number) - The currently used minor version
-            + micro (number) - The currently used micro version
-        + api (number) - The version of the API itself
+            + version: `0.8.18` (string) - The currently used version in its complete format
+            + major: `0` (number) - The currently used major version
+            + minor: `8` (number) - The currently used minor version
+            + micro: `18` (number) - The currently used micro version
+        + api: `1` (number) - The version of the API itself
 
 
 
@@ -38,7 +38,7 @@ The API will try to authenticate the user by the submitted credentials. In case 
 
 + Request (application/json)
     + Attributes (object)
-        + username: `the-username` (string, required)
+        + username: `Namoshek` (string, required)
         
             The name of the user account which should be tried to authenticate.
 
@@ -50,7 +50,7 @@ The API will try to authenticate the user by the submitted credentials. In case 
  
 + Response 200 (application/json)
     + Attributes (object)
-        + token (string) - The session token which can be used to authenticate against the server in further requests
+        + token: `eyJh...1hsbFFGo=` (string) - The session token which can be used to authenticate against the server in further requests
 
 + Response 400 (application/json)
     + Attributes (Error Response)
@@ -171,20 +171,20 @@ This method can be used to register for the service by creating a new user accou
 
 + Request (application/json)
     + Attributes (object)
-        + username: `the_username` (string, required)
+        + username: `Namoshek` (string, required)
         
             The username must be between 3 and 20 signs long and may contain only letters a-z (lower- and upper-case), the numbers 0-9 and dots (.) as well as dashes (-).
 
             Regex: ^[a-zA-Z0-9\-\.]{3,20}$
             
-        + password: `somePassword` (string, required)
+        + password: `eKDaksh382Kda` (string, required)
         
             The password must be at least 8 signs long and contain at least one lower-case letter, one upper-case letter and one digit. 
             To harden security, the user is encouraged to use special characters as well.
 
             Regex: ^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9]).{8,}$
         
-        + email: `an@email.com` (string, required)
+        + email: `some-email@example.com` (string, required)
         
             The user has to supply a valid email address.
         
@@ -229,7 +229,7 @@ This method can be used to register for the service by creating a new user accou
 This method can be used to edit a user. If no `name` is supplied, the currently authenticated user is chosen as target. By using this method it is also possible to change the rank of users. Changing the rank as well as other users in general can only be done by admins (rank 100) though.
 
 + Parameters
-    + name (string, optional) - The `username` of a user which is then taken as target for the operation
+    + name: `Namoshek` (string, optional) - The `username` of a user which is then taken as target for the operation
 
 + Request (application/json)
     + Headers
@@ -237,7 +237,7 @@ This method can be used to edit a user. If no `name` is supplied, the currently 
             Authorization: Bearer <token>
 
     + Attributes (object)
-        + email: `some-new-chosen@email.com` (string, optional)
+        + email: `some-new-email@example.com` (string, optional)
             
             The new email address which should be used for the user. It has to be a valid email.
 
@@ -304,7 +304,7 @@ This method can be used to edit a user. If no `name` is supplied, the currently 
 This method can be used to delete a user. If no `name` is supplied, the currently authenticated user is chosen as target. Deleting other users is only possible for admins (rank 100) though.
 
 + Parameters
-    + name (string, optional) - The `username` of a user which is then taken as target for the operation
+    + name: `Namoshek` (string, optional) - The `username` of a user which is then taken as target for the operation
 
 + Request
     + Headers
@@ -343,12 +343,12 @@ This method can be used to delete a user. If no `name` is supplied, the currentl
 Returns a list of database entries. The result can be adjusted by additional, but optional parameters.
 
 + Parameters
-    + organization (string, optional) - Only search within a given `organization` for entries
-    + application (string, optional) - Only search within a given `application` for entries
-    + scope (string, optional) - Only search within a given `scope` of an `application` for entries
-    + offset (number, optional) - How many entries to skip for the output, can be used for pagination.
+    + organization: `apache` (string, optional) - Only search within a given `organization` for entries
+    + application: `tomcat` (string, optional) - Only search within a given `application` for entries
+    + scope: `server.xml` (string, optional) - Only search within a given `scope` of an `application` for entries
+    + offset: `0` (number, optional) - How many entries to skip for the output, can be used for pagination.
         + Default: `0`
-    + rows (number, optional) - How many entries will be added to the output at max.
+    + rows: `1` (number, optional) - How many entries will be added to the output at max.
         + Default: `200`
     + sort (enum[string], optional) - How to sort the entries for the output.
         + Default: `asc`
@@ -366,8 +366,8 @@ Returns a list of database entries. The result can be adjusted by additional, bu
             + `application` - Application for which the configuration is meant
             + `scope` - Application internal scope
             + `slug` - Entry specific slug
-    + filter (string, optional) - Only entries containing the search string in either their path, title, description, author or tags will be added to the output.
-    + filterby (enum[string], optional) - On what fields the filter should be applied to (i.e. what fields to involve in search)
+    + filter: `tomcat9` (string, optional) - Only entries containing the search string in either their path, title, description, author or tags will be added to the output.
+    + filterby: `tags` (enum[string], optional) - On what fields the filter should be applied to (i.e. what fields to involve in search)
         + Default: `all`
         + Members
             + `all` - All fields: key, title, description, author and tags
@@ -386,31 +386,35 @@ Returns a list of database entries. The result can be adjusted by additional, bu
 Returns detailed information about the entry with the specified key (path). If the optional parameter `raw` is supplied, a raw configuration is returned instead of the normal response.
 
 + Parameters
-    + organization (string, required) - The `organization` who built the `application` for which the configuration of the entry is meant
-    + application (string, required) - The `application` to which the configuration of the entry belongs to
-    + scope (string, required) - The `application` specific `scope` to which the configuration of the entry belongs to
-    + slug (string, required) - The identifier of the requested entry that is unique within the namespace created by `organization`, `application` and `scope`
-    + raw (string, optional) - If this parameter is supplied, the API will attempt to return the requested configuration snippet in the given `raw` format (regex: ^[a-zA-Z0-9\-\.\_]+$)
+    + organization: `apache` (string, required) - The `organization` who built the `application` for which the configuration of the entry is meant
+    + application: `tomcat` (string, required) - The `application` to which the configuration of the entry belongs to
+    + scope: `server.xml` (string, required) - The `application` specific `scope` to which the configuration of the entry belongs to
+    + slug: `tomcat9-serverxml-example` (string, required) - The identifier of the requested entry that is unique within the namespace created by `organization`, `application` and `scope`
+    + raw: `xml` (string, optional) - If this parameter is supplied, the API will attempt to return the requested configuration snippet in the given `raw` format (regex: ^[a-zA-Z0-9\-\.\_]+$)
 
 + Response 200 (application/json)
     + Attributes (object)
         + data (object) - The actual details about the entry
             + key (object) - The key and its separate parts
-                + full (string) - The full key (path) of the entry
-                + organization (string) - The organization of the application to which the snippet belongs to
-                + application (string) - The application to which the snippet belongs to
-                + scope (string) - The application internal scope for the configuration snippet
-                + slug (string) - The identifying slug of the entry that is unique within the namespace created by `organization`, `application` and `scope`
+                + full: `apache/tomcat/server.xml/tomcat9-serverxml-example` (string) - The full key (path) of the entry
+                + organization: `apache` (string) - The organization of the application to which the snippet belongs to
+                + application: `tomcat` (string) - The application to which the snippet belongs to
+                + scope (string): `server.xml` - The application internal scope for the configuration snippet
+                + slug (string): `tomcat9-serverxml-example` - The identifying slug of the entry that is unique within the namespace created by `organization`, `application` and `scope`
             + meta (object) - Additional information about the entry
-                + title (string) - The descriptive title of the entry
-                + description (string) - The extended description of the entry
-                + author (string) - The name of the creator of the entry
-                + created_at (number) - A timestamp of the creation date of the entry
-            + value (array[object])
-                + format (string) - A configuration format, e.g. **ini**
-                + value (string) - The configuration snippet in above mentioned format
+                + title: `Tomcat 9 configuration for server.xml` (string) - The descriptive title of the entry
+                + description: `The server.xml is Tomcats main configuration file and therefore very important. ...` (string) - The extended description of the entry
+                + author: `Namoshek` (string) - The name of the creator of the entry
+                + created_at: `1475478234` (number) - A timestamp of the creation date of the entry
+            + value (array[Converted Snippet])
+                
 
 + Response 200 (text/plain)
+
+        <?xml version="1.0" encoding="UTF-8"?>
+        <Server>
+            ...
+        </Server>
 
 + Response 400 (application/json)
     + Attributes (Error Response)
@@ -437,54 +441,54 @@ Can be used to create a new entry in the database. An entry consists of a unique
             Authorization: Bearer <token>
 
     + Attributes (object)
-        + organization: `org.apache` (string, required)
+        + organization: `apache` (string, required)
 
             The organization which built the software for which the configuration is meant.
 
             Regex: ^[a-zA-Z0-9\.\-]+$
 
-        + application: `hive` (string, required)
+        + application: `tomcat` (string, required)
 
             The application for which the configuration is meant.
 
             Regex: ^[a-zA-Z0-9\.\-]+$
 
-        + scope: `database` (string, required)
+        + scope: `server.xml` (string, required)
 
             Often different parts of an application have different configurations. Here the application specific scope can be defined.
 
             Regex: ^[a-zA-Z0-9\.\-]+$
 
-        + slug: `sample-snippet-for-devs` (string, required)
+        + slug: `tomcat9-serverxml-example` (string, required)
 
             A unique slug that identifies the entry and configuration snippet further. It only needs to be unique within the namespace created by `organization`, `application` and `scope`.
 
             Regex: ^[a-zA-Z0-9\.\-]+$
 
-        + title: `Sample snippet for developers` (string, required)
+        + title: `Tomcat 9 configuration for server.xml` (string, required)
 
             A title for the entry that ideally explains already what the snippet is about.
 
             Regex: ^[^\n\r]{3,}$
 
-        + description: `This is a sample conf snippet for Apaches Hive database module.` (string, required)
+        + description: `The server.xml is Tomcats main configuration file and therefore very important. ...` (string, required)
 
             An extended description for the entry that explains in detail what the snippet is about. It can also contain instructions on how to use the snippet.
 
             Regex: ^[\S\s]{3,}$
 
-        + tags: `dev`, `developer`, `db-dev` (array[string], optional)
+        + tags: `tomcat9`, `tomcat` (array[string], optional)
 
             A list of tags that shall be added to the entry. Tags may be used for search, so they ideally add additional information that is not already available by the other inputs.
 
             Regex: ^[a-z0-9\-\.]{3,20}$
 
         + configuration (object)
-            + value: `sampleKey = sampleValue` (string, required)
+            + value: `<?xml version="1.0" encoding="UTF-8"?><Server>...</Server>` (string, required)
 
-                The configuration for which a new database entry should be created. It can be of any supported format, in this example **ini** is used.
+                The configuration snippet for which a new database entry should be created. It can be of any supported format.
 
-            + format: `ini` (string, required)
+            + format: `xml` (string, required)
 
                 The format of the supplied configuration snippet. It has to be in the list of supported formats, see `/conversion/formats`.
 
@@ -549,10 +553,10 @@ Updates the entry with the specified key (path). All fields will be overridden w
 This operation can only be executed by the owner of an entry as well as moderators (rank 50) or higher.
 
 + Parameters
-    + organization (string, required) - The `organization` who built the `application` for which the configuration of the entry is meant
-    + application (string, required) - The `application` to which the configuration of the entry belongs to
-    + scope (string, required) - The `application` specific `scope` to which the configuration of the entry belongs to
-    + slug (string, required) - The identifier of the entry that is unique within the namespace created by `organization`, `application` and `scope`
+    + organization: `apache` (string, required) - The `organization` who built the `application` for which the configuration of the entry is meant
+    + application: `tomcat` (string, required) - The `application` to which the configuration of the entry belongs to
+    + scope: `server.xml` (string, required) - The `application` specific `scope` to which the configuration of the entry belongs to
+    + slug: `tomcat9-serverxml-example` (string, required) - The identifier of the entry that is unique within the namespace created by `organization`, `application` and `scope`
 
 + Request (application/json)
     + Headers
@@ -560,30 +564,30 @@ This operation can only be executed by the owner of an entry as well as moderato
             Authorization: Bearer <token>
 
     + Attributes (object)
-        + title: `Sample snippet for developers` (string, required)
+        + title: `Tomcat 9 configuration for server.xml` (string, required)
 
             A title for the entry that ideally explains already what the snippet is about.
 
             Regex: ^[^\n\r]{3,}$
 
-        + description: `This is a sample conf snippet for Apaches Hive database module.` (string, required)
+        + description: `The server.xml is Tomcats main configuration file and therefore very important. ...` (string, required)
 
             An extended description for the entry that explains in detail what the snippet is about. It can also contain instructions on how to use the snippet.
 
             Regex: ^[\S\s]{3,}$
 
-        + tags: `dev`, `developer`, `db-dev` (array[string], optional)
+        + tags: `tomcat`, `tomcat9` (array[string], optional)
 
-            A list of tags that shall be added to the entry. Tags may be used for search, so they ideally add additional information that is not already available by the other inputs.
+            A list of tags that shall be added to the entry. Tags may be used for search, so they ideally add additional information that is not already available by the other inputs. The existing tag list will be overriden by the new list, i.e. previously used, but now missing tags will be removed.
 
             Regex: ^[a-z0-9\-\.]{3,20}$
 
         + configuration (object)
-            + value: `sampleKey = sampleValue` (string, required)
+            + value: `<?xml version="1.0" encoding="UTF-8"?><Server><Service>...</Service></Server>` (string, required)
 
-                The new configuration snippet. It can be of any supported format, in this example **ini** is used.
+                The new configuration snippet. It can be of any supported format.
 
-            + format: `ini` (string, required)
+            + format: `xml` (string, required)
 
                 The format of the supplied configuration snippet. It has to be in the list of supported formats, see `/conversion/formats`.
 
@@ -641,10 +645,10 @@ Deletes an entry from the database.
 This operation can only be executed by the owner of an entry as well as moderators (rank 50) or higher.
 
 + Parameters
-    + organization (string, required) - The `organization` who built the `application` for which the configuration of the entry is meant
-    + application (string, required) - The `application` to which the configuration of the entry belongs to
-    + scope (string, required) - The `application` specific `scope` to which the configuration of the entry belongs to
-    + slug (string, required) - The identifier of the entry that is unique within the namespace created by `organization`, `application` and `scope`
+    + organization: `apache` (string, required) - The `organization` who built the `application` for which the configuration of the entry is meant
+    + application: `tomcat` (string, required) - The `application` to which the configuration of the entry belongs to
+    + scope: `server.xml` (string, required) - The `application` specific `scope` to which the configuration of the entry belongs to
+    + slug: `tomcat9-serverxml-example` (string, required) - The identifier of the entry that is unique within the namespace created by `organization`, `application` and `scope`
 
 + Request
     + Headers
@@ -711,8 +715,8 @@ Offers to convert a supplied configuration snippet from one format into another 
             - `CONVERT_SUCCESSFUL` if the conversion ran without errors
 
         + output (object)
-            + format (string) - The requested output format.
-            + snippet (string) - The supplied snippet converted into the output format.
+            + format: `json` (string) - The requested output format.
+            + snippet: `{"some-variable": "some special value"}` (string) - The supplied snippet converted into the output format.
 
 + Response 400 (application/json)
     + Attributes (Error Response)
@@ -759,39 +763,44 @@ Returns a list of supported configuration formats. In general this is a list of 
 
 ## User List (object)
 
-+ elements (number) - How many users the response list contains
++ elements: `1` (number) - How many users the response list contains
 + users (array[User Preview]) - A list of previews for users
-+ offset (number) - How many entries have been skipped for the output; this information can be used for pagination
-+ remaining (number) - How many entries have not been displayed yet; when adding this value to the offset (and not exceeding the row limit), all entries should have been displayed once
++ offset: `0` (number) - How many entries have been skipped for the output; this information can be used for pagination
++ remaining: `0` (number) - How many entries have not been displayed yet; when adding this value to the offset (and not exceeding the row limit), all entries should have been displayed once
 
 ## User Preview (object)
 
-+ username (string) - The users name
-+ email (string) - The users email
-+ rank (enum[number]) - The users rank (higher means more permissions)
++ username: `Namoshek` (string) - The users name
++ email: `mail@example.com` (string) - The users email
++ rank: `10` (enum[number]) - The users rank (higher means more permissions)
     + Members
         + `10` - Normal user
         + `50` - Moderator
         + `100` - Admin
-+ created_at (number) - A timestamp of the moment when the user has been created
++ created_at: `1475477453` (number) - A timestamp of the moment when the user has been created
 
 ## Entry List (object)
 
-+ elements (number) - How many entries the response list contains
++ elements: `1` (number) - How many entries the response list contains
 + entries (array[Entry Preview]) - A list of previews for entries
-+ offset (number) - How many entries have been skipped for the output; this information can be used for pagination
-+ remaining (number) - How many entries have not been displayed yet; when adding this value to the offset (and not exceeding the row limit), all entries should have been displayed once
-+ formats (array[string]) - A list of available (enabled) configuration formats; formats in this list can be selected for export
++ offset: `0` (number) - How many entries have been skipped for the output; this information can be used for pagination
++ remaining: `0` (number) - How many entries have not been displayed yet; when adding this value to the offset (and not exceeding the row limit), all entries should have been displayed once
 
 ## Entry Preview (object)
 
-+ key (string) - Storage path of the entry and also the unique identifier
-+ title (string) - How the entry/snippet has been named by the creator
-+ description (string) - A description of the entry
-+ author (string) - The username of the creator of the entry
-+ created_at (number) - A timestamp of the moment when the entry has been created
++ key: `apache/tomcat/server.xml/tomcat9-serverxml-example` (string) - Storage path of the entry and also the unique identifier
++ title: `Tomcat 9 configuration for server.xml` (string) - How the entry/snippet has been named by the creator
++ description: `The server.xml is Tomcats main configuration file and therefore very important. ...` (string) - A description of the entry
++ author: `Namoshek` (string) - The username of the creator of the entry
++ created_at: `1475478234` (number) - A timestamp of the moment when the entry has been created
+
+## Converted Snippet (object)
+
++ format: `xml` (string) - A configuration format
++ plugin: `xmltool` (string) - The name of the plugin used for the conversion
++ value: `<?xml version="1.0" encoding="UTF-8"?><Server>...</Server>` (string) - The configuration snippet in above mentioned format
 
 ## Conversion Format (object)
 
-+ format (string) - The configuration format/language (e.g. ini, xml, csv, ...)
-+ plugin (string) - The name of the plugin that offers the format (e.g. simpleini, xmltool, csvstorage, ...)
++ format: `ini` (string) - The configuration format/language (e.g. ini, xml, csv, ...)
++ plugin: `simpleini` (string) - The name of the plugin that offers the format (e.g. simpleini, xmltool, csvstorage, ...)
