@@ -84,29 +84,34 @@ Read and write everything a KeySet might contain:
 
 - [dump](dump/) makes a dump of a KeySet in an Elektra-specific format
 
-Read (and write) standard config files of /etc:
+Read (and write) standard config files:
 
 - [augeas](augeas/) parses and generates many different configuration
   files using the augeas library
 - [hosts](hosts/) read/write hosts files
 - [line](line/) reads any file line by line
-
-Using semi-structured data for config files:
-
-- [tcl](tcl/)-like config files (including meta data).
-- [ni](ni/) parses INI files based on
-    [ni](https://github.com/chazomaticus/bohr/blob/master/include/bohr/ni.h).
 - [ini](ini/) parses INI files based on
     [inih](http://code.google.com/p/inih/).
-- [xmltool](xmltool/) uses XML.
 - [yajl](yajl/) uses JSON.
+
+Using semi-structured data for config files, mainly suitable for
+spec-namespace (put a focus on having nice syntax for meta-data):
+
+- [ni](ni/) parses INI files based on (including meta data)
+    [ni](https://github.com/chazomaticus/bohr/blob/master/include/bohr/ni.h).
+- [tcl](tcl/)-like config files (including meta data).
+
+Only suited for import/export:
+
+- [xmltool](xmltool/) uses XML (in Elektra's XML schema).
+- [simpleini](simpleini/) line-based key-value pairs with configurable
+  format (without sections)
 
 Plugins that just show some functionality, (currently) not intended for
 productive use:
 
 - [fstab](fstab/) for fstab files.
 - [regexstore](regexstore/)
-- [simpleini](simpleini/) is ini without sections
 - [csvstorage](csvstorage/) for csv files
 - [passwd](passwd/) for passwd files
 - [dpkg](dpkg/) reads /var/lib/dpkg/{available,status}
@@ -196,6 +201,8 @@ Copies meta data to keys:
 Plugins that check if values are valid based on meta data (typically
 copied by another plugin just before):
 
+### Value Validation ###
+
 - [validation](validation/) by using regex
 - [network](network/) by using network APIs
 - [path](path/) by checking files on filesystem
@@ -203,7 +210,11 @@ copied by another plugin just before):
 - [enum](enum/) compares the keyvalue against a list of valid values
 - [mathcheck](mathcheck/) by mathematical expressions using keysvalues as operands
 - [conditionals](conditionals/) by using if-then-else like statements
+
+### Other Validation ###
+
 - [filecheck](filecheck/) does sanity checks on a file
+- [lineendings](lineendings/) tests file for consistent line endings
 
 ## Interpreter ##
 
@@ -221,7 +232,6 @@ These plugins start an interpreter and allow you to use a bindings.
 - [doc](doc/) contains the documentation of the plugin interface
 - [error](error/) yields errors as described in metadata (handy for test purposes)
 - [template](template/) to be copied for new plugins
-- [lineendings](lineendings/) tests file for consistent line endings
 - [list](list/) loads other plugins
 - [iterate](iterate/) iterate over all keys and run exported functions on tagged keys
 - [semlock](semlock/) a semaphore based global locking logic
