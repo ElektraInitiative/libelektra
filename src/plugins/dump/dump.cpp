@@ -7,9 +7,14 @@
  */
 
 #include "dump.hpp"
-#include <errno.h>
 
 using namespace ckdb;
+
+#include <fstream>
+#include <iostream>
+#include <sstream>
+#include <string>
+#include <vector>
 
 #include <kdberrors.h>
 #include <kdblogger.h>

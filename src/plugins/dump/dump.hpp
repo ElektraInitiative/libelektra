@@ -8,24 +8,6 @@
 
 #include <kdbplugin.h>
 
-#include <fstream>
-#include <iostream>
-#include <sstream>
-#include <string>
-#include <vector>
-
-#include <cstring>
-
-#define DUMP_PATH "/tmp/dump.edf"
-
-// edf = elektra dump format
-
-namespace dump
-{
-int serialise (std::ostream & os, ckdb::Key *, ckdb::KeySet * ks);
-int unserialise (std::istream & is, ckdb::Key * errorKey, ckdb::KeySet * ks);
-}
-
 extern "C" {
 
 namespace ckdb

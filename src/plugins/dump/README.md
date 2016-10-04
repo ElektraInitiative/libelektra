@@ -17,7 +17,7 @@ featured backend. No other plugins are needed.
 
 ## Format ##
 
-The file format consists of a simple command language with
+The file format edf (Elektra dump format) consists of a simple command language with
 arguments. When an argument is binary or string data the length needs to be
 passed first. Because the size is known in advance, any binary dump is
 accepted. Terminating characters present no problem. The commands are
