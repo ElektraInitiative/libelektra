@@ -166,14 +166,14 @@ int elektraDocSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNU
 	/* set all keys below parentKey and count them with nr_keys */
 
 
-//![opening files]
+	//![opening files]
 	FILE * fp = fopen (keyString (parentKey), "w");
 	if (!fp)
 	{
-		ELEKTRA_SET_ERROR_SET(parentKey);
+		ELEKTRA_SET_ERROR_SET (parentKey);
 		return -1;
 	}
-//![opening files]
+	//![opening files]
 	fclose (fp);
 
 	return nr_keys;

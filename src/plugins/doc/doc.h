@@ -9,10 +9,6 @@
 #ifndef DOC_H
 #define DOC_H
 
-#include <kdbplugin.h>
-#undef ELEKTRA_SET_ERROR_SET
-#undef ELEKTRA_SET_ERROR_GET
-
 /**
  * @defgroup plugin Plugins
  *
@@ -174,7 +170,6 @@
 #define ELEKTRA_ADD_WARNING(number, key, text)
 
 
-
 /**
  * @brief Set error in kdbGet() when opening the file failed
  *
@@ -189,8 +184,7 @@
  *
  * @return 
  */
-#define ELEKTRA_SET_ERROR_GET(parentKey)                                                                                                   \
-
+#define ELEKTRA_SET_ERROR_GET(parentKey)
 
 
 /**
@@ -207,7 +201,7 @@
  *
  * @return 
  */
-#define ELEKTRA_SET_ERROR_SET(parentKey)                                                                                                   \
+#define ELEKTRA_SET_ERROR_SET(parentKey)
 
 
 // undef everything, is included later
@@ -218,6 +212,7 @@
 #undef ELEKTRA_SET_ERROR_GET
 #undef ELEKTRA_SET_ERROR_SET
 
+#include <kdbplugin.h>
 
 
 /**
