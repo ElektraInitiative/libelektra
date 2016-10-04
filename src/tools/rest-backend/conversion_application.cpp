@@ -30,6 +30,8 @@ ConversionApp::ConversionApp (cppcms::service & srv) : cppcms::application (srv)
  */
 void ConversionApp::convert ()
 {
+	RootApp::setCORSHeaders (response (), "POST,OPTIONS");
+
 	if (request ().request_method () == "POST")
 	{
 		// check if request data is of type application/json
@@ -139,6 +141,11 @@ void ConversionApp::convert ()
 
 		RootApp::setOk (response (), data, "application/json");
 	}
+	else if (request ().request_method () == "OPTIONS")
+	{
+		RootApp::setOk (response ());
+		return;
+	}
 	else
 	{
 		RootApp::setMethodNotAllowed (response ()); // send HTTP 405
@@ -151,6 +158,8 @@ void ConversionApp::convert ()
  */
 void ConversionApp::formats ()
 {
+	RootApp::setCORSHeaders (response (), "GET,OPTIONS");
+
 	if (request ().request_method () == "GET")
 	{
 		cppcms::json::value data;
@@ -165,6 +174,11 @@ void ConversionApp::formats ()
 		}
 
 		RootApp::setOk (response (), data, "application/json");
+	}
+	else if (request ().request_method () == "OPTIONS")
+	{
+		RootApp::setOk (response ());
+		return;
 	}
 	else
 	{

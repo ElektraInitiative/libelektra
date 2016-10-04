@@ -45,6 +45,8 @@ DatabaseApp::DatabaseApp (cppcms::service & srv) : cppcms::application (srv)
  */
 void DatabaseApp::getAllEntries ()
 {
+	RootApp::setCORSHeaders (response (), "GET,POST,OPTIONS");
+
 	if (request ().request_method () == "GET")
 	{
 		this->handleGet (request (), response ());
@@ -57,7 +59,6 @@ void DatabaseApp::getAllEntries ()
 	}
 	else if (request ().request_method () == "OPTIONS")
 	{
-		RootApp::setCORSHeaders (response (), "GET,POST,OPTIONS");
 		RootApp::setOk (response ());
 		return;
 	}
@@ -74,6 +75,8 @@ void DatabaseApp::getAllEntries ()
  */
 void DatabaseApp::getEntriesByPrefix (std::string keyPart)
 {
+	RootApp::setCORSHeaders (response (), "GET,OPTIONS");
+
 	if (request ().request_method () == "GET")
 	{
 		this->handleGet (request (), response (), keyPart);
@@ -81,7 +84,6 @@ void DatabaseApp::getEntriesByPrefix (std::string keyPart)
 	}
 	else if (request ().request_method () == "OPTIONS")
 	{
-		RootApp::setCORSHeaders (response (), "GET,OPTIONS");
 		RootApp::setOk (response ());
 		return;
 	}
@@ -98,6 +100,8 @@ void DatabaseApp::getEntriesByPrefix (std::string keyPart)
  */
 void DatabaseApp::getUniqueEntry (std::string key)
 {
+	RootApp::setCORSHeaders (response (), "GET,PUT,DELETE,OPTIONS");
+
 	if (request ().request_method () == "GET")
 	{
 		this->handleGetUnique (request (), response (), key);
@@ -115,7 +119,6 @@ void DatabaseApp::getUniqueEntry (std::string key)
 	}
 	else if (request ().request_method () == "OPTIONS")
 	{
-		RootApp::setCORSHeaders (response (), "GET,PUT,DELETE,OPTIONS");
 		RootApp::setOk (response ());
 		return;
 	}
@@ -844,14 +847,6 @@ inline void DatabaseApp::produceOutput (cppcms::http::request & req, cppcms::htt
 			data["entries"][index]["author"] = elem.getAuthor ();
 			index++;
 		}
-	}
-
-	// available config formats
-	int index = 0;
-	for (auto & elem : service::ConvertEngine::instance ().getEnabledFormats ())
-	{
-		data["formats"][index] = elem.getFileformat ();
-		index++;
 	}
 
 	RootApp::setOk (resp, data, "application/json");

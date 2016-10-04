@@ -54,10 +54,17 @@ RootApp::RootApp (cppcms::service & srv) : cppcms::application (srv)
  */
 void RootApp::welcome ()
 {
+	RootApp::setCORSHeaders (response (), "GET,OPTIONS");
+
 	if (request ().request_method () == "GET")
 	{
 		cppcms::base_content c;
 		render ("rest_interface", c);
+	}
+	else if (request ().request_method () == "OPTIONS")
+	{
+		RootApp::setOk (response ());
+		return;
 	}
 	else
 	{
@@ -72,6 +79,8 @@ void RootApp::welcome ()
  */
 void RootApp::version ()
 {
+	RootApp::setCORSHeaders (response (), "GET,OPTIONS");
+
 	if (request ().request_method () == "GET")
 	{
 		cppcms::json::value data;
@@ -83,6 +92,11 @@ void RootApp::version ()
 		data["api"] = std::to_string (ELEKTRA_REST_API_VERSION);
 
 		RootApp::setOk (response (), data, "application/json");
+	}
+	else if (request ().request_method () == "OPTIONS")
+	{
+		RootApp::setOk (response ());
+		return;
 	}
 	else
 	{

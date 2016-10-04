@@ -35,6 +35,8 @@ void UserApp::handle (std::string username)
 {
 	using namespace cryptlite;
 
+	RootApp::setCORSHeaders (response (), "GET,POST,PUT,DELETE,OPTIONS");
+
 	// retrieve user details
 	if (request ().request_method () == "GET")
 	{
@@ -200,7 +202,6 @@ void UserApp::handle (std::string username)
 	// ask for allowed operations
 	else if (request ().request_method () == "OPTIONS")
 	{
-		RootApp::setCORSHeaders (response (), "GET,POST,PUT,DELETE,OPTIONS");
 		RootApp::setOk (response ());
 		return;
 	}

@@ -34,6 +34,8 @@ void AuthenticationApp::authenticate ()
 {
 	using namespace cryptlite;
 
+	RootApp::setCORSHeaders (response (), "POST,OPTIONS");
+
 	if (request ().request_method () == "POST")
 	{
 		// check if request data is of type application/json
@@ -138,7 +140,7 @@ void AuthenticationApp::authenticate ()
 		// write response
 		cppcms::json::value data;
 		data["token"] = token;
-		RootApp::setOk (response (), data);
+		RootApp::setOk (response (), data, "application/json");
 	}
 	else if (request ().request_method () == "OPTIONS")
 	{
