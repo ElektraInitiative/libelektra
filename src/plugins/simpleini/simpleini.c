@@ -196,7 +196,7 @@ int elektraSimpleiniSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key 
 	FILE * fp = fopen (keyString (parentKey), "w");
 	if (!fp)
 	{
-		ELEKTRA_SET_ERROR (74, parentKey, keyString (parentKey));
+		ELEKTRA_SET_ERROR_SET (parentKey);
 		return -1;
 	}
 
