@@ -14,14 +14,13 @@ Globbing resembles regular expressions. They do not have the same expressive pow
 
 * _ matches any key name of just one hierarchy. This means it complies with any character except slash or null.
 * ? satisfies single characters with the same exclusion.
-* # matches elektra array elements.
+* # matches Elektra array elements.
 * Additionally, there are ranges and character classes. They can also be inverted.
 
 The plugin copies the metadata of the corresponding `spec` key to every matching key in the other namespaces.
 
-The spec plugin also provides basic validation and struct checking.
-
-It supports:
+The spec plugin also provides basic validation and structural checking.
+Specifically it supports:
 
 * detection of invalid array key names
 * detection of missing keys
@@ -32,8 +31,8 @@ It supports:
 
 ### ACTIONS ###
 
-* `ERROR` yields an error when a conflict occurres
-* `WARNING` adds a warning when a conflict occurres
+* `ERROR` yields an error when a conflict occurs
+* `WARNING` adds a warning when a conflict occurs
 * `INFO` adds a metakey `logs/spec/info` which can be used by logging plugins
 * `IGNORE` ignores the conflict, this is the default value
 
