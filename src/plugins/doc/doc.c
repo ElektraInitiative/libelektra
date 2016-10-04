@@ -13,6 +13,7 @@
 //! [plugin include]
 //
 //! [plugin errors include]
+// using namespace ckdb; // for C++
 #include <kdberrors.h>
 //! [plugin errors include]
 
@@ -159,10 +160,21 @@ int elektraDocGet (Plugin * plugin ELEKTRA_UNUSED, KeySet * returned, Key * pare
 }
 //![get filter]
 
-int elektraDocSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
+int elektraDocSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey)
 {
 	ssize_t nr_keys = 0;
 	/* set all keys below parentKey and count them with nr_keys */
+
+
+//![opening files]
+	FILE * fp = fopen (keyString (parentKey), "w");
+	if (!fp)
+	{
+		ELEKTRA_SET_ERROR_SET(parentKey);
+		return -1;
+	}
+//![opening files]
+	fclose (fp);
 
 	return nr_keys;
 }

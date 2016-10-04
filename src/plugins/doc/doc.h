@@ -10,6 +10,8 @@
 #define DOC_H
 
 #include <kdbplugin.h>
+#undef ELEKTRA_SET_ERROR_SET
+#undef ELEKTRA_SET_ERROR_GET
 
 /**
  * @defgroup plugin Plugins
@@ -123,7 +125,6 @@
  * @param text additional text for the user
  */
 #define ELEKTRA_SET_ERROR(number, key, text)
-#undef ELEKTRA_SET_ERROR
 
 /**
  * @brief Sets the error in the keys metadata.
@@ -140,7 +141,6 @@
  * @param ... further arguments as in printf
  */
 #define ELEKTRA_SET_ERRORF(number, key, formatstring, ...)
-#undef ELEKTRA_SET_ERRORF
 
 /**
  * @brief Adds a warning in the keys metadata.
@@ -157,7 +157,6 @@
  * @param ... further arguments as in printf
  */
 #define ELEKTRA_ADD_WARNINGF(number, key, formatstring, ...)
-#undef ELEKTRA_ADD_WARNINGF
 
 /**
  * @brief Adds a warning in the keys metadata.
@@ -173,7 +172,52 @@
  * @param text additional text for the user
  */
 #define ELEKTRA_ADD_WARNING(number, key, text)
+
+
+
+/**
+ * @brief Set error in kdbGet() when opening the file failed
+ *
+ * Assumes that error reason is in `errno`.
+ *
+ * @param parentKey key to append error to
+ *
+ * To use it include:
+ *
+ * @snippet doc.c plugin include
+ * @snippet doc.c plugin errors include
+ *
+ * @return 
+ */
+#define ELEKTRA_SET_ERROR_GET(parentKey)                                                                                                   \
+
+
+
+/**
+ * @brief Set error in kdbSet() when opening the file failed
+ *
+ * Assumes that error reason is in `errno`.
+ *
+ * @param parentKey key to append error to
+ *
+ * To use it include:
+ *
+ * @snippet doc.c plugin include
+ * @snippet doc.c plugin errors include
+ *
+ * @return 
+ */
+#define ELEKTRA_SET_ERROR_SET(parentKey)                                                                                                   \
+
+
+// undef everything, is included later
+#undef ELEKTRA_SET_ERROR
+#undef ELEKTRA_SET_ERRORF
+#undef ELEKTRA_ADD_WARNINGF
 #undef ELEKTRA_ADD_WARNING
+#undef ELEKTRA_SET_ERROR_GET
+#undef ELEKTRA_SET_ERROR_SET
+
 
 
 /**
@@ -329,6 +373,11 @@ int elektraDocClose (Plugin * handle, Key * warningsKey);
  * The typical loop for a storage plugin will be like:
  *
  * @snippet doc.c get storage
+ *
+ * When opening files, make sure to use the macros #ELEKTRA_SET_ERROR_SET
+ * and #ELEKTRA_SET_ERROR_GET for errors, as shown here:
+ *
+ * @snippet doc.c opening files
  *
  * @subsection filter Filter Plugins
  *
