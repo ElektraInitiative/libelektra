@@ -145,7 +145,7 @@ And in terms of quality, we want:
 
 ## Facts and Features ##
 
- * Elektra uses the [BSD licence](doc/COPYING).
+ * Elektra uses the [BSD licence](doc/LICENSE.md).
  * Elektra implements an [API](http://doc.libelektra.org/api/latest/html/) to fully access a global key database.
  * Elektra can be thought of a virtual file system for configuration.
  * Elektra supports mounting of existing configuration files into the global key database.
