@@ -115,6 +115,8 @@ export const selectInstance = (instanceId) => {
   return { type: SELECT_INSTANCE, instanceId }
 }
 
+//~~~
+
 export const CONFIGURE_INSTANCE_REQUEST = 'CONFIGURE_INSTANCE_REQUEST'
 export const CONFIGURE_INSTANCE_SUCCESS = 'CONFIGURE_INSTANCE_SUCCESS'
 export const CONFIGURE_INSTANCE_FAILURE = 'CONFIGURE_INSTANCE_FAILURE'
@@ -127,6 +129,23 @@ export const configureInstance = (id) => thunkCreator({
       return { ...result, id }
     }),
 })
+
+//~~~
+
+export const CONFIGURE_CLUSTER_REQUEST = 'CONFIGURE_CLUSTER_REQUEST'
+export const CONFIGURE_CLUSTER_SUCCESS = 'CONFIGURE_CLUSTER_SUCCESS'
+export const CONFIGURE_CLUSTER_FAILURE = 'CONFIGURE_CLUSTER_FAILURE'
+
+export const configureCluster = (id) => thunkCreator({
+  types: [CONFIGURE_CLUSTER_REQUEST, CONFIGURE_CLUSTER_SUCCESS, CONFIGURE_CLUSTER_FAILURE],
+  promise: fetch(`${HOST}/clusters/${id}/kdb`)
+    .then(response => response.json())
+    .then(result => {
+      return { ...result, id }
+    }),
+})
+
+//~~~
 
 export const GET_KEY_REQUEST = 'GET_KEY_REQUEST'
 export const GET_KEY_SUCCESS = 'GET_KEY_SUCCESS'

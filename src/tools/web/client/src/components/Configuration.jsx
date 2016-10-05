@@ -94,19 +94,38 @@ const createTreeView = ({ getKey, setKey, kdb }, tree, prefix = '') =>
     )
   })
 
-const Configuration = ({ instance, kdb, ls, returnToMain, getKey, setKey }) => {
-  const { id, name, host } = instance
+const getConfiguration = (instance, cluster) => {
+  if (instance) {
+    return {
+      id: instance.id,
+      name: instance.name,
+      subtitle: instance.host,
+    }
+  } else if (cluster) {
+    const instanceAmt = cluster.instances.length
+    return {
+      id: cluster.id,
+      name: cluster.name,
+      subtitle: `${instanceAmt} instance${instanceAmt != 1 ? 's' : ''}`,
+    }
+  }
+}
+
+const Configuration = ({ instance, cluster, configuring, kdb, ls, returnToMain, getKey, setKey }) => {
+  const { id, name, subtitle } = getConfiguration(instance, cluster)
+
   const tree = createTree(ls)
   const treeView = createTreeView({
     kdb,
     getKey: (path) => getKey(id, path),
     setKey: (path, value) => setKey(id, path, value),
   }, tree)
+
   return (
       <Card>
           <CardHeader
-            title={`configuring instance "${name}"`}
-            subtitle={host}
+            title={`configuring ${configuring} "${name}"`}
+            subtitle={subtitle}
           />
           <CardText>
             {treeView}

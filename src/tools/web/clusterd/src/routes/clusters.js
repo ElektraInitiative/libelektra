@@ -67,6 +67,12 @@ export default function initClusterRoutes (app) {
     )
   )
 
+  app.get('/clusters/:id/kdb', (req, res) =>
+    responseCallback(res)(null, {
+      ls: [ "user/test" ],
+    }) // TODO
+  )
+
   // TODO
   // app.get('/clusters/:id/kdb', (req, res) =>
   //   getCluster(req.params.id, (instance) =>

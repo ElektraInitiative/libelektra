@@ -12,6 +12,7 @@ import Paper from 'material-ui/Paper'
 import { PAGE_MAIN, PAGE_CONFIGURE } from '../router'
 
 const displayPage = ({ page, ...instance }) => {
+  console.log(page)
   switch (page) {
     case PAGE_CONFIGURE:
       return <ConnectedConfiguration {...instance} />
@@ -21,10 +22,10 @@ const displayPage = ({ page, ...instance }) => {
   }
 }
 
-const getSubpageName = ({ page, id }) => {
+const getSubpageName = ({ page, configuring, id }) => {
   switch (page) {
     case PAGE_CONFIGURE:
-      return `instance #${id}`
+      return `${configuring} #${id}`
     default:
     case PAGE_MAIN:
       return false

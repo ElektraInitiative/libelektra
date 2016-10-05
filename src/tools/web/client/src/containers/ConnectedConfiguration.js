@@ -7,7 +7,9 @@ import { returnToMain, getKey, setKey } from '../actions'
 const mapStateToProps = (state) => {
   return {
     instance: state.instances.filter(instance => instance.id === state.router.id)[0],
+    cluster: state.clusters.filter(cluster => cluster.id === state.router.id)[0],
     kdb: state.kdb && state.kdb[state.router.id],
+    configuring: state.router.configuring,
   }
 }
 
