@@ -236,3 +236,4 @@ These plugins start an interpreter and allow you to use a bindings.
 - [iterate](iterate/) iterate over all keys and run exported functions on tagged keys
 - [semlock](semlock/) a semaphore based global locking logic
 - [profile](profile/) links profile keys
+- [simplespeclang](simplespeclang/) simple configuration specification language

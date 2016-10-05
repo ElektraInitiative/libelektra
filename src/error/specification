@@ -77,6 +77,7 @@ number:10
 description:general parse error
 severity:normal
 ingroup:kdb
+macro:PARSE
 
 number:11
 description:open of plugin returned unsuccessfully (reason contains plugin, see other warnings for details)
