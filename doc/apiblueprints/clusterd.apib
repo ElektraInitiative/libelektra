@@ -7,15 +7,23 @@ multiple `elektrad` instances
 
 
 
-# get API version [GET /version]
+# get versions [GET /version]
 
-returns the current version of the API
+returns the current version of the API and elektra
 
 The API version is increased whenever breaking changes
 (i.e. changes that prevent backward compatibility) are made.
+The Elektra version is directly taken from the Elektra library,
+for further information and explanation see [doc/VERSION.md](https://github.com/ElektraInitiative/libelektra/blob/master/doc/VERSION.md).
 
 + Response 200 (application/json)
-    + Attributes (Base Version)
+    + Attributes (object)
+        + elektra (object) - Detailed version information about the used Elektra library
+            + version (string) - The currently used version in its complete format
+            + major (number) - The currently used major version
+            + minor (number) - The currently used minor version
+            + micro (number) - The currently used micro version
+        + api (number) - The version of the API itself
 
 
 
