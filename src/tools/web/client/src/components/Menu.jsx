@@ -2,6 +2,7 @@ import React from 'react'
 
 import { Toolbar, ToolbarGroup, ToolbarTitle } from 'material-ui/Toolbar'
 import RaisedButton from 'material-ui/RaisedButton'
+import TextField from 'material-ui/TextField'
 import CircularProgress from 'material-ui/CircularProgress'
 import ContentAddIcon from 'material-ui/svg-icons/content/add'
 import NavigationArrowBack from 'material-ui/svg-icons/navigation/arrow-back'
@@ -27,8 +28,24 @@ const Breadcrumb = ({ name }) =>
         <div style={breadcrumbStyle}>{name}</div>
     </div>
 
-const Menu = ({ loading, subpage, addInstance, addCluster, returnToMain }) =>
-    <Toolbar>
+export default class Menu extends React.Component {
+  constructor (props) {
+    super(props)
+    this.state = {
+      name: '',
+    }
+  }
+
+  resetValues () {
+    this.setState({
+      name: '',
+    })
+  }
+
+  render () {
+    const { loading, addingCluster, subpage, clusterInstances } = this.props
+    const { addInstance, addCluster, unaddCluster, returnToMain, createCluster } = this.props // action creators
+    const title = (
         <ToolbarGroup>
             {subpage &&
               <NavigationArrowBack style={navigationArrowStyle} onTouchTap={returnToMain} />}
@@ -42,20 +59,63 @@ const Menu = ({ loading, subpage, addInstance, addCluster, returnToMain }) =>
             {loading &&
               <CircularProgress style={{margin: '3px -15px'}} size={0.5} />}
         </ToolbarGroup>
-        <ToolbarGroup>
-            <RaisedButton
-              icon={<ContentAddIcon />}
-              label="instance"
-              primary={true}
-              onTouchTap={addInstance}
-            />
-            <RaisedButton
-              icon={<ContentAddIcon />}
-              label="cluster"
-              primary={true}
-              onTouchTap={addCluster}
-            />
-        </ToolbarGroup>
-    </Toolbar>
+    )
 
-export default Menu
+    const actions =
+      addingCluster
+      ? (
+          <ToolbarGroup>
+              <TextField
+                style={{marginTop: '5px', maxWidth: '150px'}}
+                ref="nameField"
+                hintText="cluster name"
+                onChange={(evt) => this.setState({ name: evt.target.value })}
+                value={this.state.name}
+              />
+              <RaisedButton
+                style={{marginRight: '12px'}}
+                label="create cluster"
+                primary={true}
+                onTouchTap={() => {
+                  createCluster({
+                    name: this.refs.nameField.getValue(),
+                    instances: clusterInstances,
+                  })
+                  this.resetValues()
+                }}
+              />
+              <RaisedButton
+                style={{marginLeft: '12px'}}
+                label="cancel"
+                onTouchTap={() => {
+                  unaddCluster()
+                  this.resetValues()
+                }}
+              />
+          </ToolbarGroup>
+      )
+      : (
+          <ToolbarGroup>
+              <RaisedButton
+                icon={<ContentAddIcon />}
+                label="instance"
+                primary={true}
+                onTouchTap={addInstance}
+              />
+              <RaisedButton
+                icon={<ContentAddIcon />}
+                label="cluster"
+                primary={true}
+                onTouchTap={addCluster}
+              />
+          </ToolbarGroup>
+      )
+
+    return (
+        <Toolbar>
+          {title}
+          {actions}
+        </Toolbar>
+    )
+  }
+}

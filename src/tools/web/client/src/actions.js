@@ -109,6 +109,12 @@ export const unaddCluster = () => {
   return { type: UNADD_CLUSTER }
 }
 
+export const SELECT_INSTANCE = 'SELECT_INSTANCE'
+
+export const selectInstance = (instanceId) => {
+  return { type: SELECT_INSTANCE, instanceId }
+}
+
 export const CONFIGURE_INSTANCE_REQUEST = 'CONFIGURE_INSTANCE_REQUEST'
 export const CONFIGURE_INSTANCE_SUCCESS = 'CONFIGURE_INSTANCE_SUCCESS'
 export const CONFIGURE_INSTANCE_FAILURE = 'CONFIGURE_INSTANCE_FAILURE'
@@ -166,6 +172,23 @@ export const CREATE_INSTANCE_FAILURE = 'CREATE_INSTANCE_FAILURE'
 export const createInstance = (data) => thunkCreator({
   types: [CREATE_INSTANCE_REQUEST, CREATE_INSTANCE_SUCCESS, CREATE_INSTANCE_FAILURE],
   promise: fetch(`${HOST}/instances`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(data),
+  }).then(response => response.json()),
+})
+
+//~~~
+
+export const CREATE_CLUSTER_REQUEST = 'CREATE_CLUSTER_REQUEST'
+export const CREATE_CLUSTER_SUCCESS = 'CREATE_CLUSTER_SUCCESS'
+export const CREATE_CLUSTER_FAILURE = 'CREATE_CLUSTER_FAILURE'
+
+export const createCluster = (data) => thunkCreator({
+  types: [CREATE_CLUSTER_REQUEST, CREATE_CLUSTER_SUCCESS, CREATE_CLUSTER_FAILURE],
+  promise: fetch(`${HOST}/clusters`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',

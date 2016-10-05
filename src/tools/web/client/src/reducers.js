@@ -9,6 +9,7 @@ import {
   CREATE_CLUSTER_SUCCESS,
   ADD_INSTANCE, UNADD_INSTANCE, ADD_CLUSTER, UNADD_CLUSTER,
   GET_KEY_SUCCESS, SET_KEY_REQUEST,
+  SELECT_INSTANCE,
 } from './actions'
 
 const instancesReducer = (state = [], action) => {
@@ -68,7 +69,7 @@ const clustersReducer = (state = [], action) => {
 }
 
 const containerReducer = (
-  state = { addingInstance: false, addingCluster: false },
+  state = { addingInstance: false, addingCluster: false, clusterInstances: [] },
   action) => {
     switch (action.type) {
       case ADD_INSTANCE:
@@ -76,10 +77,16 @@ const containerReducer = (
       case UNADD_INSTANCE:
       case CREATE_INSTANCE_SUCCESS:
         return { ...state, addingInstance: false }
+      case CREATE_CLUSTER_SUCCESS:
+        return { ...state, addingCluster: false, clusterInstances: [] }
       case ADD_CLUSTER:
-        return { ...state, addingCluster: true }
+        return { ...state, addingCluster: true, clusterInstances: [] }
       case UNADD_CLUSTER:
         return { ...state, addingCluster: false }
+      case SELECT_INSTANCE:
+        return { ...state,
+          clusterInstances: [ ...state.clusterInstances, action.instanceId ],
+        }
       default:
         return state
     }

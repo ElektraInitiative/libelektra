@@ -48,9 +48,9 @@ export const getClusters = (cb) => cb(null,
     .value()
 )
 
-export const createCluster = ({ name }, cb) => cb(null,
+export const createCluster = ({ name, instances = [] }, cb) => cb(null,
   db.get('clusters')
-    .insert({ name, instances: [] })
+    .insert({ name, instances })
     .value()
 )
 
