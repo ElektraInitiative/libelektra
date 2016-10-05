@@ -12,8 +12,9 @@ import configureStore from './store'
 const store = configureStore()
 
 // fetch instances when the app is loaded
-import { fetchInstances } from './actions'
+import { fetchInstances, fetchClusters } from './actions'
 store.dispatch(fetchInstances())
+store.dispatch(fetchClusters())
 
 // load and render the app
 import { Provider } from 'react-redux'
