@@ -12,16 +12,6 @@
     "start:dev": "cross-env NODE_ENV=development DEBUG=elektrad:* babel-watch src/",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/omnidan/elektra-web.git"
-  },
-  "author": "",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/omnidan/elektra-web/issues"
-  },
-  "homepage": "https://github.com/omnidan/elektra-web#readme",
   "dependencies": {
     "async": "^2.0.1",
     "body-parser": "^1.15.2",
