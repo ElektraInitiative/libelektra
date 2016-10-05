@@ -12,7 +12,6 @@ import Paper from 'material-ui/Paper'
 import { PAGE_MAIN, PAGE_CONFIGURE } from '../router'
 
 const displayPage = ({ page, ...instance }) => {
-  console.log(page)
   switch (page) {
     case PAGE_CONFIGURE:
       return <ConnectedConfiguration {...instance} />
