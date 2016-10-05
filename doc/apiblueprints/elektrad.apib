@@ -35,8 +35,6 @@ access the elektra key database by specifying a `path`
 
 ### get configuration [GET]
 
-this is the same as calling `kdb get {path}`
-
 + Response 200 (application/json)
     + Attributes (object)
         + ls: user/hello, user/hello/world (array[string], required) - subkeys of the requested path, similar to `kdb ls`
@@ -62,8 +60,6 @@ this is the same as calling `kdb get {path}`
             - `PATH_NOT_FOUND` if the requested path does not exist in the key database
 
 ### set configuration [PUT]
-
-this is the same as calling `kdb set {path}`
 
 + Request (text/plain)
 
@@ -102,8 +98,6 @@ this is the same as calling `kdb set {path}`
             - `REQUEST_UNSUPPORTED_CONTENT_TYPE` if the submitted Content-Type is not `application/json` or `text/plain`
 
 ### delete configuration [DELETE]
-
-this is the same as calling `kdb rm {path}`
 
 + Response 204
 
