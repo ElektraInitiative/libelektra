@@ -1,21 +1,22 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 
+// enable onTouchTap events
+//   this makes it possible to listen to events from mobile phone taps as well
+//   as clicks on machines that don't have a touch screen
 import injectTapEventPlugin from 'react-tap-event-plugin'
 injectTapEventPlugin()
 
-import { createStore, applyMiddleware } from 'redux'
-import { createMiddleware } from 'redux-promises'
-import { Provider } from 'react-redux'
+// initialize redux store
+import configureStore from './store'
+const store = configureStore()
 
-import reducer from './reducers'
+// fetch instances when the app is loaded
 import { fetchInstances } from './actions'
-
-const promisesMiddleware = createMiddleware()
-const store = applyMiddleware(promisesMiddleware)(createStore)(reducer)
-
 store.dispatch(fetchInstances())
 
+// load and render the app
+import { Provider } from 'react-redux'
 import ConnectedApp from './containers/ConnectedApp'
 
 ReactDOM.render(

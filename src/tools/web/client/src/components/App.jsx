@@ -6,6 +6,9 @@ import ConnectedMenu from '../containers/ConnectedMenu'
 import ConnectedContainer from '../containers/ConnectedContainer'
 import ConnectedConfiguration from '../containers/ConnectedConfiguration'
 
+import DevTools from '../containers/DevTools'
+import Paper from 'material-ui/Paper'
+
 import { PAGE_MAIN, PAGE_CONFIGURE } from '../router'
 
 const displayPage = ({ page, ...instance }) => {
@@ -28,14 +31,38 @@ const getSubpageName = ({ page, id }) => {
   }
 }
 
+const MainApp = (props) =>
+    <div>
+        <ConnectedMenu subpage={getSubpageName(props)} />
+        <div style={{padding: '50px'}}>
+            {displayPage(props)}
+        </div>
+    </div>
+
+const DevApp = (props) =>
+    <div>
+        <div style={{display: 'inline-block', width: '80%'}}>
+            <MainApp {...props} />
+        </div>
+        <Paper style={{
+          display: 'inline-block',
+          width: '20%',
+          height: '100vh',
+          position: 'absolute',
+          top: 0,
+        }}>
+            <DevTools />
+        </Paper>
+    </div>
+
+const AppContainer = (props) =>
+  process.env.NODE_ENV === 'production'
+  ? <MainApp {...props} />
+  : <DevApp {...props} />
+
 const App = (props) =>
     <MuiThemeProvider>
-        <div>
-            <ConnectedMenu subpage={getSubpageName(props)} />
-            <div style={{padding: '50px'}}>
-                {displayPage(props)}
-            </div>
-        </div>
+        <AppContainer {...props} />
     </MuiThemeProvider>
 
 export default App
