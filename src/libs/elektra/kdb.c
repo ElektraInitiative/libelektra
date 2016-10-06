@@ -1108,9 +1108,7 @@ int kdbSet (KDB * handle, KeySet * ks, Key * parentKey)
 	int errnosave = errno;
 	Key * initialParent = keyDup (parentKey);
 
-#if DEBUG && VERBOSE
-	fprintf (stderr, "now in new kdbSet (%s)\n", keyName (parentKey));
-#endif
+	ELEKTRA_LOG ("now in new kdbSet (%s)\n", keyName (parentKey));
 
 	Split * split = elektraSplitNew ();
 	Key * errorKey = 0;
