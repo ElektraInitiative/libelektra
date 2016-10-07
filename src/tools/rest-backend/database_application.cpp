@@ -840,7 +840,11 @@ inline void DatabaseApp::produceOutput (cppcms::http::request & req, cppcms::htt
 				continue;
 			}
 
-			data["entries"][index]["key"] = elem.getPublicName ();
+			data["entries"][index]["key"]["full"] = elem.getPublicName ();
+			data["entries"][index]["key"]["organization"] = elem.getOrganization ();
+			data["entries"][index]["key"]["application"] = elem.getApplication ();
+			data["entries"][index]["key"]["scope"] = elem.getScope ();
+			data["entries"][index]["key"]["slug"] = elem.getSlug ();
 			data["entries"][index]["title"] = elem.getTitle ();
 			data["entries"][index]["description"] = elem.getDescription ();
 			data["entries"][index]["created_at"] = elem.getCreatedAt ();
