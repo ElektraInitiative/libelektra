@@ -233,7 +233,7 @@ int PYTHON_PLUGIN_FUNCTION (Open) (ckdb::Plugin * handle, ckdb::Key * errorKey)
 		data->tstate = Py_NewInterpreter ();
 		if (data->tstate == nullptr)
 		{
-			ELEKTRA_SET_ERROR (111, errorKey, "Unable to create sub intepreter");
+			ELEKTRA_SET_ERROR (111, errorKey, "Unable to create sub interpreter");
 			goto error;
 		}
 		PyThreadState_Swap (data->tstate);
