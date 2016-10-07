@@ -117,6 +117,29 @@ TEST (kdbrestModelsEntryTest, SetAndGetDescription)
 	ASSERT_EQ (desc, entry.getDescription ());
 }
 
+TEST (kdbrestModelsEntryTest, SetAndGetUploadPlugin)
+{
+
+	kdb::Key key (ELEKTRA_REST_CONFIG_REPOSITORY_PATH + std::string ("/test/key1"));
+	kdbrest::model::Entry entry (key);
+	std::string plugin ("simpleini");
+	entry.setUploadPlugin (plugin);
+	ASSERT_EQ (plugin, entry.getUploadPlugin ());
+}
+
+TEST (kdbrestModelsEntryTest, SetAndGetViews)
+{
+
+	kdb::Key key (ELEKTRA_REST_CONFIG_REPOSITORY_PATH + std::string ("/test/key1"));
+	kdbrest::model::Entry entry (key);
+	long views = 823712903;
+	entry.setViews (views);
+	ASSERT_EQ (views, entry.getViews ());
+	views += 123;
+	entry.addViews (123);
+	ASSERT_EQ (views, entry.getViews ());
+}
+
 TEST (kdbrestModelsEntryTest, SetAndGetAndHasTags)
 {
 
