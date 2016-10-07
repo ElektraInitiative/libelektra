@@ -122,7 +122,9 @@ model::ConfigFormat ConvertEngine::exportTo (model::PluginFormat & plugin, model
 	PluginPtr export_plugin = modules.load (plugin.getPluginname ());
 	try
 	{
-		export_plugin->set (ks, pathKey);
+		if(export_plugin->set (ks, pathKey) <= 0) {
+			throw exception::ParseConfigurationException ();
+		}
 	}
 	catch (kdb::tools::MissingSymbol & e)
 	{
