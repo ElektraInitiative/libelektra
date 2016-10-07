@@ -284,7 +284,7 @@ public:
 		std::vector<std::string> tags = this->getTags ();
 		return std::find (tags.begin (), tags.end (), tag) != tags.end ();
 	}
-	
+
 	/**
 	 * Setter for the upload plugin of the entry.
 	 * @param format The plugin name as string
@@ -303,6 +303,34 @@ public:
 			return this->getMeta<std::string> (ELEKTRA_REST_MODEL_ENTRY_META_UPLOADPLUGIN);
 		else
 			return std::string ();
+	}
+
+	/**
+                 * Setter for the number of views of the entry.
+                 * @param views The number of views as long
+                 */
+	void setViews (const long views)
+	{
+		this->setMeta<long> (ELEKTRA_REST_MODEL_ENTRY_META_VIEWS, views);
+	}
+	/**
+	 * Adds an amount of views to the current number of views.
+	 * @param views The number of views to add
+	 */
+	void addViews (const long views)
+	{
+		this->setViews (this->getViews () + views);
+	}
+	/**
+                 * Getter for the number of views of the entry.
+                 * @return The number of views as long
+                 */
+	long getViews () const
+	{
+		if (this->hasMeta (ELEKTRA_REST_MODEL_ENTRY_META_VIEWS))
+			return this->getMeta<long> (ELEKTRA_REST_MODEL_ENTRY_META_VIEWS);
+		else
+			return 0;
 	}
 
 	/**

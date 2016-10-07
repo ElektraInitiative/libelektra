@@ -167,6 +167,17 @@ inline void DatabaseApp::handleGetUnique (cppcms::http::request & req, cppcms::h
 	{
 		model::Entry entry = service::StorageEngine::instance ().getEntry (key);
 
+		// increase number of views and store again
+		entry.addViews (1);
+		try
+		{
+			(void)service::StorageEngine::instance ().updateEntry (entry);
+		}
+		catch (kdbrest::exception::EntryNotFoundException & e)
+		{
+			// do not handle exception
+		}
+
 		const std::string raw = req.get (PARAM_RAW);
 		if (!raw.empty ())
 		{
@@ -209,11 +220,11 @@ inline void DatabaseApp::handleGetUnique (cppcms::http::request & req, cppcms::h
 
 		// get the configuration in all supported formats
 		std::vector<model::ConfigFormat> formats = service::ConvertEngine::instance ().exportToAll (entry);
-		
+
 		// first output the config of the plugin that was used during import
 		int j = 0;
 		auto it = formats.begin ();
-		while(it != formats.end ())
+		while (it != formats.end ())
 		{
 			if (it->getPluginformat ().getPluginname () == entry.getUploadPlugin ())
 			{
@@ -226,7 +237,7 @@ inline void DatabaseApp::handleGetUnique (cppcms::http::request & req, cppcms::h
 			}
 			it++;
 		}
-		
+
 		// then output the other formats
 		for (auto & elem : formats)
 		{
