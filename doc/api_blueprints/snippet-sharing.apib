@@ -788,9 +788,13 @@ Returns a list of supported configuration formats. In general this is a list of 
 
 ## Entry Preview (object)
 
-+ key: `apache/tomcat/server.xml/tomcat9-serverxml-example` (string) - Storage path of the entry and also the unique identifier
++ key (object) - Detailed information to the key of the entry
+    + full: `apache/tomcat/server.xml/tomcat9-serverxml-example` (string) - Storage path of the entry and also the unique identifier
+    + organization: `apache` (string) - The name of the organization which created the application of the snippet
+    + application: `tomcat` (string) - The name of the application for which the snippet is meant
+    + scope: `server.xml` (string) - The application scope of the configuration snippet
+    + slug: `tomcat9-serverxml-example` (string) - The slug of the configuration snippet
 + title: `Tomcat 9 configuration for server.xml` (string) - How the entry/snippet has been named by the creator
-+ description: `The server.xml is Tomcats main configuration file and therefore very important. ...` (string) - A description of the entry
 + author: `Namoshek` (string) - The username of the creator of the entry
 + created_at: `1475478234` (number) - A timestamp of the moment when the entry has been created
 
