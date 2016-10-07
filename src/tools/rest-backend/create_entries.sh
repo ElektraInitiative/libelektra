@@ -8,4 +8,5 @@ do
    kdb setmeta dir/configs/apache/hive/database/sample$i "description" "Random description $i"
    kdb setmeta dir/configs/apache/hive/database/sample$i "createdat" $i
    kdb setmeta dir/configs/apache/hive/database/sample$i "tags" "auto-generated"
+   kdb setmeta dir/configs/apache/hive/database/sample$i "plugin" "ini"
 done

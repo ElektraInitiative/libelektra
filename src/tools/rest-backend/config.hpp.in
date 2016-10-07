@@ -58,6 +58,7 @@
 #define ELEKTRA_REST_MODEL_ENTRY_META_DESCRIPTION "description"
 #define ELEKTRA_REST_MODEL_ENTRY_META_TAGS "tags"
 #define ELEKTRA_REST_MODEL_ENTRY_META_TITLE "title"
+#define ELEKTRA_REST_MODEL_ENTRY_META_UPLOADPLUGIN "plugin"
 
 // These are the key names to be used for the corresponding meta data of
 // user entries. This data is stored as meta ata for the user entry key.

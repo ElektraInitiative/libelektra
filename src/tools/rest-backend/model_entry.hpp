@@ -284,6 +284,26 @@ public:
 		std::vector<std::string> tags = this->getTags ();
 		return std::find (tags.begin (), tags.end (), tag) != tags.end ();
 	}
+	
+	/**
+	 * Setter for the upload plugin of the entry.
+	 * @param format The plugin name as string
+	 */
+	void setUploadPlugin (const std::string & plugin)
+	{
+		this->setMeta (ELEKTRA_REST_MODEL_ENTRY_META_UPLOADPLUGIN, plugin);
+	}
+	/**
+                 * Getter for the upload plugin of the entry.
+                 * @return The plugin name as string
+                 */
+	std::string getUploadPlugin () const
+	{
+		if (this->hasMeta (ELEKTRA_REST_MODEL_ENTRY_META_UPLOADPLUGIN))
+			return this->getMeta<std::string> (ELEKTRA_REST_MODEL_ENTRY_META_UPLOADPLUGIN);
+		else
+			return std::string ();
+	}
 
 	/**
                  * Setter for the value of the entry.

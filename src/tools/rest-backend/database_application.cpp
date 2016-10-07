@@ -207,8 +207,27 @@ inline void DatabaseApp::handleGetUnique (cppcms::http::request & req, cppcms::h
 		data["meta"]["author"] = entry.getAuthor ();
 		data["meta"]["created_at"] = entry.getCreatedAt ();
 
+		// get the configuration in all supported formats
 		std::vector<model::ConfigFormat> formats = service::ConvertEngine::instance ().exportToAll (entry);
+		
+		// first output the config of the plugin that was used during import
 		int j = 0;
+		auto it = formats.begin ();
+		while(it != formats.end ())
+		{
+			if (it->getPluginformat ().getPluginname () == entry.getUploadPlugin ())
+			{
+				data["value"][j]["format"] = it->getPluginformat ().getFileformat ();
+				data["value"][j]["plugin"] = it->getPluginformat ().getPluginname ();
+				data["value"][j]["value"] = it->getConfig ();
+				j++;
+				formats.erase (it);
+				break;
+			}
+			it++;
+		}
+		
+		// then output the other formats
 		for (auto & elem : formats)
 		{
 			data["value"][j]["format"] = elem.getPluginformat ().getFileformat ();
@@ -605,6 +624,7 @@ inline model::Entry DatabaseApp::buildAndValidateEntry (cppcms::http::request & 
 	{
 		model::ImportedConfig cfg = service::ConvertEngine::instance ().import (conf_value, conf_format, entry);
 		entry.addSubkeys (cfg.getKeySet ());
+		entry.setUploadPlugin (cfg.getPluginformat ().getPluginname ());
 	}
 	catch (exception::UnsupportedConfigurationFormatException & e)
 	{
