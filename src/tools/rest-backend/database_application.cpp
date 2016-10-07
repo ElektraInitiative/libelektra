@@ -190,30 +190,30 @@ inline void DatabaseApp::handleGetUnique (cppcms::http::request & req, cppcms::h
 
 		cppcms::json::value data;
 
-		data["data"]["key"]["full"] = entry.getPublicName ();
-		data["data"]["key"]["organization"] = entry.getOrganization ();
-		data["data"]["key"]["application"] = entry.getApplication ();
-		data["data"]["key"]["scope"] = entry.getScope ();
-		data["data"]["key"]["slug"] = entry.getSlug ();
+		data["key"]["full"] = entry.getPublicName ();
+		data["key"]["organization"] = entry.getOrganization ();
+		data["key"]["application"] = entry.getApplication ();
+		data["key"]["scope"] = entry.getScope ();
+		data["key"]["slug"] = entry.getSlug ();
 
 		int i = 0;
 		for (auto & elem : entry.getTags ())
 		{
-			data["data"]["meta"]["tags"][i] = elem;
+			data["meta"]["tags"][i] = elem;
 			i++;
 		}
-		data["data"]["meta"]["title"] = entry.getTitle ();
-		data["data"]["meta"]["description"] = entry.getDescription ();
-		data["data"]["meta"]["author"] = entry.getAuthor ();
-		data["data"]["meta"]["created_at"] = entry.getCreatedAt ();
+		data["meta"]["title"] = entry.getTitle ();
+		data["meta"]["description"] = entry.getDescription ();
+		data["meta"]["author"] = entry.getAuthor ();
+		data["meta"]["created_at"] = entry.getCreatedAt ();
 
 		std::vector<model::ConfigFormat> formats = service::ConvertEngine::instance ().exportToAll (entry);
 		int j = 0;
 		for (auto & elem : formats)
 		{
-			data["data"]["value"][j]["format"] = elem.getPluginformat ().getFileformat ();
-			data["data"]["value"][j]["plugin"] = elem.getPluginformat ().getPluginname ();
-			data["data"]["value"][j]["value"] = elem.getConfig ();
+			data["value"][j]["format"] = elem.getPluginformat ().getFileformat ();
+			data["value"][j]["plugin"] = elem.getPluginformat ().getPluginname ();
+			data["value"][j]["value"] = elem.getConfig ();
 			j++;
 		}
 
