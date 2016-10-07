@@ -5,6 +5,9 @@
 #include <string>
 #include <utility>
 
+#include <boost/algorithm/string/compare.hpp>
+#include <boost/algorithm/string/predicate.hpp>
+
 #include "config.hpp"
 #include "exceptions.hpp"
 #include "kdb_includes.hpp"
@@ -234,12 +237,12 @@ public:
 
 	static bool less_than_username (User & l, User & r)
 	{
-		return l.getUsername () < r.getUsername ();
+		return boost::lexicographical_compare (l.getUsername (), r.getUsername (), boost::is_iless ());
 	}
 
 	static bool less_than_email (User & l, User & r)
 	{
-		return l.getEmail () < r.getEmail ();
+		return boost::lexicographical_compare (l.getEmail (), r.getEmail (), boost::is_iless ());
 	}
 
 	static bool less_than_created_at (User & l, User & r)
@@ -249,17 +252,17 @@ public:
 
 	static bool greater_than_username (User & l, User & r)
 	{
-		return l.getUsername () > r.getUsername ();
+		return boost::lexicographical_compare (r.getUsername (), l.getUsername (), boost::is_iless ());
 	}
 
 	static bool greater_than_email (User & l, User & r)
 	{
-		return l.getEmail () > r.getEmail ();
+		return boost::lexicographical_compare (r.getEmail (), l.getEmail (), boost::is_iless ());
 	}
 
 	static bool greater_than_created_at (User & l, User & r)
 	{
-		return l.getCreatedAt () > r.getCreatedAt ();
+		return r.getCreatedAt () < l.getCreatedAt ();
 	}
 
 private:

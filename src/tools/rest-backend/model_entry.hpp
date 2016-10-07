@@ -7,7 +7,9 @@
 #include <string>
 #include <vector>
 
+#include <boost/algorithm/string/compare.hpp>
 #include <boost/algorithm/string/join.hpp>
+#include <boost/algorithm/string/predicate.hpp>
 #include <boost/tokenizer.hpp>
 
 #include "config.hpp"
@@ -303,12 +305,12 @@ public:
 
 	static bool less_than_key (Entry & l, Entry & r)
 	{
-		return l.getPublicName () < r.getPublicName ();
+		return boost::lexicographical_compare (l.getPublicName (), r.getPublicName (), boost::is_iless ());
 	}
 
 	static bool less_than_title (Entry & l, Entry & r)
 	{
-		return l.getTitle () < r.getTitle ();
+		return boost::lexicographical_compare (l.getTitle (), r.getTitle (), boost::is_iless ());
 	}
 
 	static bool less_than_created_at (Entry & l, Entry & r)
@@ -318,67 +320,67 @@ public:
 
 	static bool less_than_author (Entry & l, Entry & r)
 	{
-		return l.getAuthor () < r.getAuthor ();
+		return boost::lexicographical_compare (l.getAuthor (), r.getAuthor (), boost::is_iless ());
 	}
 
 	static bool less_than_organization (Entry & l, Entry & r)
 	{
-		return l.getOrganization () < r.getOrganization ();
+		return boost::lexicographical_compare (l.getOrganization (), r.getOrganization (), boost::is_iless ());
 	}
 
 	static bool less_than_application (Entry & l, Entry & r)
 	{
-		return l.getApplication () < r.getApplication ();
+		return boost::lexicographical_compare (l.getApplication (), r.getApplication (), boost::is_iless ());
 	}
 
 	static bool less_than_scope (Entry & l, Entry & r)
 	{
-		return l.getScope () < r.getScope ();
+		return boost::lexicographical_compare (l.getScope (), r.getScope (), boost::is_iless ());
 	}
 
 	static bool less_than_slug (Entry & l, Entry & r)
 	{
-		return l.getSlug () < r.getSlug ();
+		return boost::lexicographical_compare (l.getSlug (), r.getSlug (), boost::is_iless ());
 	}
 
 	static bool greater_than_key (Entry & l, Entry & r)
 	{
-		return l.getPublicName () > r.getPublicName ();
+		return boost::lexicographical_compare (r.getPublicName (), l.getPublicName (), boost::is_iless ());
 	}
 
 	static bool greater_than_title (Entry & l, Entry & r)
 	{
-		return l.getTitle () > r.getTitle ();
+		return boost::lexicographical_compare (r.getTitle (), l.getTitle (), boost::is_iless ());
 	}
 
 	static bool greater_than_created_at (Entry & l, Entry & r)
 	{
-		return l.getCreatedAt () > r.getCreatedAt ();
+		return r.getCreatedAt () < l.getCreatedAt ();
 	}
 
 	static bool greater_than_author (Entry & l, Entry & r)
 	{
-		return l.getAuthor () > r.getAuthor ();
+		return boost::lexicographical_compare (r.getAuthor (), l.getAuthor (), boost::is_iless ());
 	}
 
 	static bool greater_than_organization (Entry & l, Entry & r)
 	{
-		return l.getOrganization () > r.getOrganization ();
+		return boost::lexicographical_compare (r.getOrganization (), l.getOrganization (), boost::is_iless ());
 	}
 
 	static bool greater_than_application (Entry & l, Entry & r)
 	{
-		return l.getApplication () > r.getApplication ();
+		return boost::lexicographical_compare (r.getApplication (), l.getApplication (), boost::is_iless ());
 	}
 
 	static bool greater_than_scope (Entry & l, Entry & r)
 	{
-		return l.getScope () > r.getScope ();
+		return boost::lexicographical_compare (r.getScope (), l.getScope (), boost::is_iless ());
 	}
 
 	static bool greater_than_slug (Entry & l, Entry & r)
 	{
-		return l.getSlug () > r.getSlug ();
+		return boost::lexicographical_compare (r.getSlug (), l.getSlug (), boost::is_iless ());
 	}
 
 private:
