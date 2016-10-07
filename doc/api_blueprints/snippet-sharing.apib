@@ -394,19 +394,18 @@ Returns detailed information about the entry with the specified key (path). If t
 
 + Response 200 (application/json)
     + Attributes (object)
-        + data (object) - The actual details about the entry
-            + key (object) - The key and its separate parts
-                + full: `apache/tomcat/server.xml/tomcat9-serverxml-example` (string) - The full key (path) of the entry
-                + organization: `apache` (string) - The organization of the application to which the snippet belongs to
-                + application: `tomcat` (string) - The application to which the snippet belongs to
-                + scope (string): `server.xml` - The application internal scope for the configuration snippet
-                + slug (string): `tomcat9-serverxml-example` - The identifying slug of the entry that is unique within the namespace created by `organization`, `application` and `scope`
-            + meta (object) - Additional information about the entry
-                + title: `Tomcat 9 configuration for server.xml` (string) - The descriptive title of the entry
-                + description: `The server.xml is Tomcats main configuration file and therefore very important. ...` (string) - The extended description of the entry
-                + author: `Namoshek` (string) - The name of the creator of the entry
-                + created_at: `1475478234` (number) - A timestamp of the creation date of the entry
-            + value (array[Converted Snippet])
+        + key (object) - The key and its separate parts
+            + full: `apache/tomcat/server.xml/tomcat9-serverxml-example` (string) - The full key (path) of the entry
+            + organization: `apache` (string) - The organization of the application to which the snippet belongs to
+            + application: `tomcat` (string) - The application to which the snippet belongs to
+            + scope (string): `server.xml` - The application internal scope for the configuration snippet
+            + slug (string): `tomcat9-serverxml-example` - The identifying slug of the entry that is unique within the namespace created by `organization`, `application` and `scope`
+        + meta (object) - Additional information about the entry
+            + title: `Tomcat 9 configuration for server.xml` (string) - The descriptive title of the entry
+            + description: `The server.xml is Tomcats main configuration file and therefore very important. ...` (string) - The extended description of the entry
+            + author: `Namoshek` (string) - The name of the creator of the entry
+            + created_at: `1475478234` (number) - A timestamp of the creation date of the entry
+        + value (array[Converted Snippet])
                 
 
 + Response 200 (text/plain)
