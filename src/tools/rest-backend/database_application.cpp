@@ -231,6 +231,7 @@ inline void DatabaseApp::handleGetUnique (cppcms::http::request & req, cppcms::h
 				data["value"][j]["format"] = it->getPluginformat ().getFileformat ();
 				data["value"][j]["plugin"] = it->getPluginformat ().getPluginname ();
 				data["value"][j]["value"] = it->getConfig ();
+				data["value"][j]["validated"] = it->isValidated ();
 				j++;
 				formats.erase (it);
 				break;
@@ -244,6 +245,7 @@ inline void DatabaseApp::handleGetUnique (cppcms::http::request & req, cppcms::h
 			data["value"][j]["format"] = elem.getPluginformat ().getFileformat ();
 			data["value"][j]["plugin"] = elem.getPluginformat ().getPluginname ();
 			data["value"][j]["value"] = elem.getConfig ();
+			data["value"][j]["validated"] = elem.isValidated ();
 			j++;
 		}
 

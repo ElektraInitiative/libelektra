@@ -44,12 +44,12 @@ model::PluginFormat ConvertEngine::findSuitablePlugin (const std::string & forma
 }
 
 /**
-         * @brief Loads the configuration for the enabled formats from the
-         * key database, parses them and stores them as enabled formats.
-         *
-         * @return A vector containing the enabled convert formats with their
-         * corresponding plugins.
-         */
+ * @brief Loads the configuration for the enabled formats from the
+ * key database, parses them and stores them as enabled formats.
+ *
+ * @return A vector containing the enabled convert formats with their
+ * corresponding plugins.
+ */
 std::vector<model::PluginFormat> ConvertEngine::loadEnabledFormats ()
 {
 	using namespace kdb;
@@ -96,6 +96,10 @@ model::ConfigFormat ConvertEngine::exportTo (const std::string format, model::En
 
 /**
  * @brief can be used to export an entry with the specified plugin.
+ * 
+ * @note This function does a round-trip check to validated whether
+ *       the snippet was exported successfully (completely) without
+ *       losing any information.
  *
  * @param plugin the plugin to use for the export
  * @param entry a snippet entry
@@ -151,22 +155,50 @@ model::ConfigFormat ConvertEngine::exportTo (model::PluginFormat & plugin, model
 		throw exception::ParseConfigurationException ();
 	}
 
+	// do round-trip validation
+	try
+	{
+		model::Entry valEntry (entry.getPublicName ());
+		std::string format = result.getPluginformat ().getPluginname ();
+		model::ImportedConfig importCfg = this->import (result.getConfig (), format, valEntry);
+		// compare
+		if (importCfg.getKeySet ().size () != entry.getSubkeys ().size ())
+		{
+			throw exception::EntryValidationException ();
+		}
+		for (int i = 0; i < importCfg.getKeySet ().size (); i++)
+		{
+			kdb::Key key1 = importCfg.getKeySet ().at (i);
+			kdb::Key key2 = entry.getSubkeys ().at (i);
+			if (key1.getName () != key2.getName () || key1.getString () != key2.getString ())
+			{
+				throw exception::EntryValidationException ();
+			}
+		}
+		// if we reach this point, export is valid
+		result.setValidated (true);
+	}
+	catch (kdbrest::exception::ElektraRestException & e)
+	{
+		result.setValidated (false);
+	}
+
 	return result;
 }
 
 /**
-         * @brief Can be used to convert an entry into all enabled file formats.
-         * The sub keys of the entry will be taken and converted into the
-         * enabled formats. To do this, a temporary file will be used, because
-         * the storage plugins, which do the conversion, can operate on files
-         * only.
-         *
-         * @param entry The entry that should be converted into the enabled
-         * file formats.
-         *
-         * @return A vector containing all conversions with the information
-         * which plugin created them and which format they are.
-         */
+ * @brief Can be used to convert an entry into all enabled file formats.
+ * The sub keys of the entry will be taken and converted into the
+ * enabled formats. To do this, a temporary file will be used, because
+ * the storage plugins, which do the conversion, can operate on files
+ * only.
+ *
+ * @param entry The entry that should be converted into the enabled
+ * file formats.
+ *
+ * @return A vector containing all conversions with the information
+ * which plugin created them and which format they are.
+ */
 std::vector<model::ConfigFormat> ConvertEngine::exportToAll (model::Entry & entry)
 {
 	using namespace kdb;
@@ -193,17 +225,17 @@ std::vector<model::ConfigFormat> ConvertEngine::exportToAll (model::Entry & entr
 }
 
 /**
-         * @brief Can be used to convert a configuration given as string into
-         * a usable kdb::KeySet which is stored in an ImportedConfig model.
-         *
-         * @param config The configuration which should be converted
-         *
-         * @return An ImportedConfig object containing the imported config as
-         * kdb::KeySet if the import was successful.
-         *
-         * @throws kdbrest::exception::ImportFormatUnknownException in case there
-         * is no suitable storage plugin for the conversion available.
-         */
+ * @brief Can be used to convert a configuration given as string into
+ * a usable kdb::KeySet which is stored in an ImportedConfig model.
+ *
+ * @param config The configuration which should be converted
+ *
+ * @return An ImportedConfig object containing the imported config as
+ * kdb::KeySet if the import was successful.
+ *
+ * @throws kdbrest::exception::ImportFormatUnknownException in case there
+ * is no suitable storage plugin for the conversion available.
+ */
 model::ImportedConfig ConvertEngine::import (std::string & config, std::string & format, model::Entry & forEntry)
 {
 	using namespace kdb;

@@ -25,8 +25,11 @@ public:
                  * operations.
                  * @param pf The PluginFormat to be used
                  * @param cfg The configuration in the given format as string
+				 * @param validated If the configuration snippet has successfully
+				 *	      passed a validation round-trip
                  */
-	inline ConfigFormat (const PluginFormat & pf, const std::string & cfg) : m_pluginformat (pf), m_config (cfg)
+	inline ConfigFormat (const PluginFormat & pf, const std::string & cfg, const bool validated = false)
+	: m_pluginformat (pf), m_config (cfg), m_validated (validated)
 	{
 	}
 
@@ -48,9 +51,27 @@ public:
 		return m_config;
 	}
 
+	/**
+	 * Getter for the validation status.
+	 * @return True if conversion has passed validation
+	 */
+	bool isValidated ()
+	{
+		return m_validated;
+	}
+	/**
+	 * Setter for validation status.
+	 * @param val If the conversion has passed validation
+	 */
+	void setValidated (bool val)
+	{
+		this->m_validated = val;
+	}
+
 private:
 	PluginFormat m_pluginformat;
 	std::string m_config;
+	bool m_validated;
 };
 
 } // namespace model

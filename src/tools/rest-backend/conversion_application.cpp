@@ -138,6 +138,7 @@ void ConversionApp::convert ()
 
 		data["output"]["format"] = output_format;
 		data["output"]["snippet"] = cfg.getConfig ();
+		data["output"]["validated"] = cfg.isValidated ();
 
 		RootApp::setOk (response (), data, "application/json");
 	}
