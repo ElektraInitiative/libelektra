@@ -54,11 +54,23 @@ are:
 
 ## Decision
 
-Provide a function `int genconf (KeySet * ks, Key * errorKey)` where `ks`
-contains a list of all variants with the essential configuration
-and the changed parts of the contract as subkeys.
+1. Provide a function `int genconf (KeySet * ks, Key * errorKey)` where `ks`
+   is filled with a list of all variants with the essential configuration (subkeys `config`)
+   and the changed parts of the contract (subkeys `infos`).
+2. Keys defined in `system/elektra/plugins/variants` have the same content,
+   but take precedence. If a variant with the same name is defined, only `config` or `infos`
+   from `genconf` are considered if they are not mentioned in `system/elektra/plugins/variants`.
+   If the keys `config` or `infos` are present, it will be overwritten (deleted),
+   if only subkeys thereof are present, it will be enhanced.
+3. Empty `config` and `infos` mean:
+ - `config`: The "default variant" (without any parameter) should be also available
+   (has useful functionality)
+ - `infos`: It is not possible to determine the changes of the contract,
+   the user need to instantiate the plugin and enquiry the contract.
 
-E.g. for augeas:
+### Example
+
+`genconf` for augeas yields:
 ```
 access
 access/config
@@ -68,33 +80,31 @@ access/infos/format = access
 aliases
 aliases/config
 aliases/config/lens = Aliases.lns
+aliases/config/path = /etc/aliases
 aliases/infos
 aliases/infos/format = aliases
 ```
 
-Which would enlist `augeas#access`
-
-E.g. for python:
+`genconf` for python yields:
 ```
 configparser/config
 configparser/config/script = python_configparser.py
 ```
 
+the user specifies:
+```
+system/elektra/plugins/variants/access
+system/elektra/plugins/variants/aliases/infos/status = 10000
+system/elektra/plugins/variants/configparser
+system/elektra/plugins/variants/configparser/config
+system/elektra/plugins/variants/configparser/config/script = mybetter_configparser.py
+```
 
-The same keys can be enhanced or overwritten in
-`system/elektra/plugins/variants`.
+then the plugin variant:
 
-The keys defined in `system/elektra/plugins/variants` have precedence.
-
-
-The absence of parts mean:
-- `config`: The default variant (given no parameter), if it makes sense
-  (has useful functionality)
-- `infos`: It is not possible to determine the changes of the contract,
-  the user need to instantiate the plugin and enquiry the contract.
-- `config` and `infos`: To manually suppress a plugin variant to not
-  enlist it and do not try to instantiate it.
-
+1. `access` is not available (`system/elektra/plugins/variants/access` overrides `genconf`)
+2. `aliases` as defined from `genconf`, but with changes in contract (`infos/status`)
+3. `configparser` is completely redefined (result from `genconf` will not be considered)
 
 
 ## Argument
