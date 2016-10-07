@@ -717,6 +717,7 @@ Offers to convert a supplied configuration snippet from one format into another 
         + output (object)
             + format: `json` (string) - The requested output format.
             + snippet: `{"some-variable": "some special value"}` (string) - The supplied snippet converted into the output format.
+            + validated: `true` - Whether the `snippet` passed the round-trip validation or not (no loss of information during export)
 
 + Response 400 (application/json)
     + Attributes (Error Response)
@@ -803,6 +804,7 @@ Returns a list of supported configuration formats. In general this is a list of 
 + format: `xml` (string) - A configuration format
 + plugin: `xmltool` (string) - The name of the plugin used for the conversion
 + value: `<?xml version="1.0" encoding="UTF-8"?><Server>...</Server>` (string) - The configuration snippet in above mentioned format
++ validated: `true` - Whether the `value` passed the round-trip validation or not (no loss of information during export)
 
 ## Conversion Format (object)
 
