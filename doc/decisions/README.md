@@ -16,24 +16,25 @@ section here.
 - [Bootstrap](bootstrap.md)
 - [Empty Files](empty_files.md)
 - [CMake Plugins](cmake_plugins.md)
+- [Logging](logging.md)
+- [Internal Cache](internal_cache.md)
 
 ## Decided
 
 - [Relative Storages](relative.md)
-- [Internal Cache](internal_cache.md)
 - [API Documentation](api_documentation.md)
+- [Definition of Bool](bool.md)
+- [Plugin Variants](plugin_variants.md)
 
 ## In Discussion
 
 - [CMake spec](cmake_spec.md)
-- [Definition of Bool](bool.md)
 - [Global Plugins](global_plugins.md)
-- [Logging](logging.md)
+- [Script Testing](script_testing.md)
 
 ## Drafts
 
 - [Specification](specification.md)
-- [Script Testing](script_testing.md)
 - [Null Pointer Checks](null_pointer_checks.md)
 - [Publish Subscribe](pubsub.md)
 - [Global Validation](global_validation.md)
