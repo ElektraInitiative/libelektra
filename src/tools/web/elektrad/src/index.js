@@ -1,25 +1,20 @@
 import makeLog from './log'
 const { info, error } = makeLog()
 
-import VERSIONS from './versions'
-if (!VERSIONS.elektra) {
-  error(`couldn't detect elektra version`)
-  error(`are you sure you have libelektra and kdb installed?`)
-  process.exit(1)
-}
-
 import { name as packageName, version as packageVersion } from '../package.json'
-info(`%s v%s starting: %o`, packageName, packageVersion, VERSIONS)
+import getVersions from './versions'
+import initApp from './app'
 
-import express from 'express'
-const app = express()
-
-import bodyParser from 'body-parser'
-app.use(bodyParser.text())
-
-import initRoutes from './routes'
-initRoutes(app)
-
-app.listen(1234, () =>
-  info(`-> running on http://localhost:1234`)
-)
+info(`%s v%s starting`, packageName, packageVersion)
+getVersions()
+  .then(versions => {
+    if (!versions.elektra) {
+      error(`couldn't detect elektra version`)
+      error(`are you sure you have libelektra and kdb installed?`)
+      process.exit(1)
+    } else {
+      info(`|- versions: %o`, versions)
+      initApp(port => info(`\`-> running on http://localhost:${port}`))
+    }
+  })
+  .catch(err => error(`error while starting %s: %o`, packageName, err))

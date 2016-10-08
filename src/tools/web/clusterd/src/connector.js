@@ -7,14 +7,16 @@ const version = (host) =>
   fetch(`${host}/version`)
     .then(res => res.json())
 
-// TODO: make this accept a path
-const ls = (host) =>
+const getRoot = (host) =>
   fetch(`${host}/kdb`)
     .then(res => res.json())
 
-const get = (host, path) =>
+const getPath = (host, path) =>
   fetch(`${host}/kdb/${encodePath(path)}`)
     .then(res => res.json())
+
+const get = (host, path) =>
+  path ? getPath(host, path) : getRoot(host)
 
 const set = (host, path, value) =>
   fetch(`${host}/kdb/${encodePath(path)}`,
@@ -32,4 +34,4 @@ const rm = (host, path) =>
   fetch(`${host}/kdb/${encodePath(path)}`, { method: 'DELETE' })
     .then(res => res.json())
 
-export default { version, ls, get, set, rm }
+export default { version, get, set, rm }

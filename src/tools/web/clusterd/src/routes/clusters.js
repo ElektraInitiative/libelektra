@@ -1,6 +1,3 @@
-import makeLog from '../log'
-const { error } = makeLog('routes:clusters')
-
 import { successResponse, errorResponse } from './utils'
 
 import {
@@ -12,6 +9,7 @@ import {
 
 import remoteKdb from '../connector'
 
+// execute `fn` on all instances in the specified cluster
 const applyToAllInstances = (res, clusterId, fn) =>
   getClusterInstances(clusterId)
     .then(instanceIds => Promise.all(instanceIds, getInstance))

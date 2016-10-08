@@ -1,6 +1,3 @@
-import makeLog from '../log'
-const { error } = makeLog('routes:instances')
-
 import { successResponse, errorResponse } from './utils'
 
 import {
@@ -50,7 +47,7 @@ export default function initInstanceRoutes (app) {
 
   app.get('/instances/:id/kdb', (req, res) =>
     getInstance(req.params.id, (err, instance) =>
-      remoteKdb.ls(instance.host)
+      remoteKdb.get(instance.host)
         .then(output => successResponse(res, output))
         .catch(err => errorResponse(res, err))
     )

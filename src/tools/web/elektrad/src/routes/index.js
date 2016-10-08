@@ -1,20 +1,22 @@
 import { successResponse, errorResponse } from './utils'
 
 import kdb from '../../../kdb'
-import VERSIONS from '../versions'
-
-// TODO: handle errors
+import getVersions from '../versions'
 
 const kdbGet = (path) =>
   Promise.all(
     [ kdb.ls(path), kdb.get(path) ] // execute ls and get in parallel
   ).then(([ ls, value ]) => {
-    return { ls, value } // return results as object
+    if (ls) {
+      return { ls, value } // return results as object
+    }
   })
 
 export default function initRoutes (app) {
   app.get('/version', (req, res) =>
-    successResponse(res, VERSIONS)
+    getVersions()
+      .then(output => successResponse(res, output))
+      .catch(err => errorResponse(res, err))
   )
 
   app.get('/kdb', (req, res) =>

@@ -48,6 +48,29 @@ const escapeValues = (template, ...values) =>
     return acc + val + part
   })
 
+const ELEKTRA_VERSION_REGEX = /KDB_VERSION\:\ ([0-9]+\.[0-9]+\.[0-9]+)\n/
+
+// get Elektra version
+const version = () =>
+  safeExec(`kdb --version`)
+    .then(output => { // parse result
+      const matches = ELEKTRA_VERSION_REGEX.exec(output)
+      if (!matches) {
+        throw new Error('invalid version: ' + output)
+      }
+      return matches
+    })
+    .then(matches => matches.length > 1 && matches[1]) // select version from matches
+    .then(fullVersion => {
+      const splitVersions = fullVersion.split('.')
+      return {
+        version: fullVersion,
+        major: Number(splitVersions[0]),
+        minor: Number(splitVersions[1]),
+        micro: Number(splitVersions[2])
+      }
+    })
+
 // list available paths under a given `path`
 const ls = (path) =>
   safeExec(escapeValues`kdb ls ${path}`)
@@ -78,4 +101,4 @@ const _import = (path, value) =>
   ).then(result => _export(path))
 
 // export kdb functions as `kdb` object
-module.exports = { ls, get, set, rm, export: _export, import: _import }
+module.exports = { version, ls, get, set, rm, export: _export, import: _import }

@@ -1,14 +1,15 @@
-import { responseCallback } from './utils'
+import { successResponse, errorResponse } from './utils'
 
-import { version as packageVersion } from '../../package.json'
-const VERSIONS = { api: packageVersion.split('.').shift() }
+import getVersions from '../versions'
 
 import initInstanceRoutes from './instances'
 import initClusterRoutes from './clusters'
 
 export default function initRoutes (app) {
   app.get('/version', (req, res) =>
-    responseCallback(res)(VERSIONS)
+    getVersions()
+      .then(output => successResponse(res, output))
+      .catch(err => errorResponse(res, err))
   )
 
   initInstanceRoutes(app)

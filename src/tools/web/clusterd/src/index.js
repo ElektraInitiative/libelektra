@@ -2,22 +2,19 @@ import makeLog from './log'
 const { info, error } = makeLog()
 
 import { name as packageName, version as packageVersion } from '../package.json'
+import getVersions from './versions'
+import initApp from './app'
+
 info(`%s v%s starting`, packageName, packageVersion)
-
-import express from 'express'
-const app = express()
-
-import bodyParser from 'body-parser'
-app.use(bodyParser.json())
-app.use(bodyParser.urlencoded({ extended: true }))
-app.use(bodyParser.text()) // for kdb commands
-
-import cors from 'cors'
-app.use(cors()) // TODO: restrict cors access?
-
-import initRoutes from './routes'
-initRoutes(app)
-
-app.listen(1235, () =>
-  info(`-> running on http://localhost:1235`)
-)
+getVersions()
+  .then(versions => {
+    if (!versions.elektra) {
+      error(`couldn't detect elektra version`)
+      error(`are you sure you have libelektra and kdb installed?`)
+      process.exit(1)
+    } else {
+      info(`|- versions: %o`, versions)
+      initApp(port => info(`\`-> running on http://localhost:${port}`))
+    }
+  })
+  .catch(err => error(`error while starting %s: %o`, packageName, err))
