@@ -166,7 +166,6 @@ static int encrypt (KeySet * pluginConfig, Key * parentKey)
 	argv[i++] = "--yes"; // overwrite files if they exist
 
 	// add recipients
-	Key * k;
 	Key * root = ksLookupByName (pluginConfig, ELEKTRA_CRYPTO_PARAM_GPG_KEY, 0);
 
 	// append root (gpg/key) as gpg recipient
@@ -178,6 +177,7 @@ static int encrypt (KeySet * pluginConfig, Key * parentKey)
 	}
 
 	// append keys beneath root (crypto/key/#_) as gpg recipients
+	Key * k;
 	ksRewind (pluginConfig);
 	while ((k = ksNext (pluginConfig)) != 0)
 	{
