@@ -1,4 +1,3 @@
-import parallel from 'async/parallel'
 import { successResponse, errorResponse } from './utils'
 
 import kdb from '../../../kdb'

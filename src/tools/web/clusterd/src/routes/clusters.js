@@ -1,7 +1,6 @@
 import makeLog from '../log'
 const { error } = makeLog('routes:clusters')
 
-import async from 'async'
 import { successResponse, errorResponse } from './utils'
 
 import {
