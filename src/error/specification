@@ -969,15 +969,15 @@ module:required
 macro:REQUIRED
 
 number:160
-description:Can not replace the existing file with the temporary file.
-macro:FCRYPT_RENAME
-severity:error
-ingroup:plugin
-module:fcrypt
-
-number:159
 description:Failed to overwrite the temporary data. Unencrypted data may leak.
 severity:error
 ingroup:plugin
 module:fcrypt
 macro:FCRYPT_TMP_FILE
+
+number:161
+description:Can not replace the existing file with the temporary file.
+macro:FCRYPT_RENAME
+severity:error
+ingroup:plugin
+module:fcrypt
