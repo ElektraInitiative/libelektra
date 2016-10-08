@@ -3,6 +3,14 @@
 _an API and web user interface to remotely manage multiple Elektra instances_
 
 
+## dependencies
+
+Elektra web requires:
+
+ * Elektra with the `yajl` plugin installed
+ * A recent [node.js](https://nodejs.org/en/) installation (at least 4.x)
+
+
 ## Overview
 
 Elektra web consists of multiple components:
