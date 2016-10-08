@@ -13,15 +13,12 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
-    "async": "^2.0.1",
     "body-parser": "^1.15.2",
     "cors": "^2.8.1",
     "debug-dude": "^1.0.3",
     "express": "^4.14.0",
-    "lodash": "^4.16.1",
-    "lowdb": "^0.13.1",
     "node-fetch": "^1.6.1",
-    "underscore-db": "^0.11.0"
+    "node-uuid": "^1.4.7"
   },
   "devDependencies": {
     "babel-cli": "^6.11.4",
