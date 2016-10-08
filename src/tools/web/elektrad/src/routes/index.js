@@ -1,7 +1,7 @@
 import parallel from 'async/parallel'
 import { responseCallback } from './utils'
 
-import kdb from '../kdb'
+import kdb from '../../../kdb'
 import VERSIONS from '../versions'
 
 // TODO: handle errors
