@@ -38,14 +38,6 @@ std::string getConfigAssign (Plugin * handle)
 	return keyString (k);
 }
 
-std::string getConfigPath (Plugin * handle)
-{
-	Key * k = ksLookupByName (elektraPluginGetConfig (handle), "/path", 0);
-	if (!k) return "default.ssl";
-
-	return keyString (k);
-}
-
 int serialise (std::ostream & os, ckdb::Key * parentKey, ckdb::KeySet * ks, Plugin * handle)
 {
 	ckdb::Key * cur;
@@ -70,7 +62,7 @@ int unserialise (std::istream & is, ckdb::Key * errorKey, ckdb::KeySet * ks, Plu
 	Key * cur = nullptr;
 
 	Key * parent = keyNew (keyName (errorKey), KEY_END);
-	keySetMeta (parent, "mountpoint", getConfigPath (handle).c_str ());
+	keySetMeta (parent, "mountpoint", "default.ecf");
 
 	std::string line;
 	while (std::getline (is, line))
@@ -78,7 +70,23 @@ int unserialise (std::istream & is, ckdb::Key * errorKey, ckdb::KeySet * ks, Plu
 		std::string read;
 		std::stringstream ss (line);
 		ss >> read;
-		if (read != getConfigEnum (handle))
+		if (read == "mountpoint")
+		{
+			ss >> read;
+			keySetMeta (parent, "mountpoint", read.c_str ());
+			continue;
+		}
+		else if (read == "plugins")
+		{
+			std::string plugins;
+			while (ss >> read)
+			{
+				plugins += read + " ";
+			}
+			keySetMeta (parent, "infos/plugins", plugins.c_str ());
+			continue;
+		}
+		else if (read != getConfigEnum (handle))
 		{
 			ELEKTRA_LOG ("not an enum %s", read.c_str ());
 			continue;
@@ -108,10 +116,12 @@ int unserialise (std::istream & is, ckdb::Key * errorKey, ckdb::KeySet * ks, Plu
 			const std::string enumWithoutSpace = enums.substr (0, enums.size () - 1);
 			keySetMeta (cur, "check/enum", enumWithoutSpace.c_str ());
 		}
-		keySetMeta (cur, "require", "yes");
+		keySetMeta (cur, "required", "yes");
 
 		ckdb::ksAppendKey (ks, cur);
 	}
+
+	ckdb::ksAppendKey (ks, parent);
 
 	return 1;
 }

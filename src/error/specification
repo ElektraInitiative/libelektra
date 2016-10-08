@@ -960,3 +960,10 @@ severity:error
 ingroup:plugin
 module:line
 macro:NO_INC
+
+number:159
+description:Non-required key found
+severity:error
+ingroup:plugin
+module:required
+macro:REQUIRED

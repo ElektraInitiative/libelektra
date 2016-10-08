@@ -9,6 +9,13 @@
 - infos/metadata =
 - infos/description =
 
+## WARNING
+
+Does not work as long as the plugin enum
+[does not support multi-enums](https://github.com/ElektraInitiative/libelektra/issues/1005)
+
+
+
 ## Introduction ##
 
 See [the validation tutorial](/doc/tutorials/validation.md) for introduction.
@@ -46,7 +53,7 @@ Then you can write your specification (with default keywords):
     HERE
 
 And finally you need a specification mount, so that all necessary
-plugins are present (in this case
+plugins are present:
 
     kdb spec-mount /test
 
@@ -56,7 +63,7 @@ Also make sure that `spec` is mounted as global plugin:
 
 Then you are only able to write valid keys:
 
-    kdb set /test/key value1
+    kdb set /test/key value1  # accepted
     kdb set /test/key2 value3 # rejected, no value3 for key2
     kdb set /test/something else # rejected, no key something
 
