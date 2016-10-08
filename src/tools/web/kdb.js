@@ -73,9 +73,9 @@ const _export = (path) =>
 // import javascript object at given `path`
 const _import = (path, value) =>
   safeExec(
-    `echo "${encodeURIComponent(JSON.stringify(value))}" | ` + // pipe json into kdb
+    `echo "${JSON.stringify(value).replace(/\"/g, '\\"')}" | ` + // pipe json into kdb
     escapeValues`kdb import ${path} yajl`
-  )
+  ).then(result => _export(path))
 
 // export kdb functions as `kdb` object
 module.exports = { ls, get, set, rm, export: _export, import: _import }
