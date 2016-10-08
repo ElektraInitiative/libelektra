@@ -58,9 +58,9 @@ static char * getTemporaryFileName (const char * file, int * fd)
  * @retval 1 on success
  * @retval -1 on failure. In this case errorKey holds an error description.
  */
-static int shredTemporaryFile (Key * errorKey, int fd)
+static int shredTemporaryFile (int fd, Key * errorKey)
 {
-	kdb_octet_t buffer[] = { 0 };
+	kdb_octet_t buffer[512] = { 0 };
 	struct stat tmpStat;
 
 	if (fstat (fd, &tmpStat))
@@ -69,9 +69,15 @@ static int shredTemporaryFile (Key * errorKey, int fd)
 		return -1;
 	}
 
-	for (off_t i = 0; i < tmpStat.st_size; i++)
+	if (lseek (fd, 0, SEEK_SET))
 	{
-		write (fd, buffer, 1);
+		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_FCRYPT_TMP_FILE, errorKey, "Failed overwrite the temporary file.");
+		return -1;
+	}
+
+	for (off_t i = 0; i < tmpStat.st_size; i += sizeof (buffer))
+	{
+		write (fd, buffer, sizeof (buffer));
 	}
 	return 1;
 }
@@ -212,7 +218,7 @@ static int encrypt (KeySet * pluginConfig, Key * parentKey)
 	}
 	else
 	{
-		if (shredTemporaryFile (parentKey, tmpFileFd) == -1)
+		if (shredTemporaryFile (tmpFileFd, parentKey) == -1)
 		{
 			result = -1; // error has been set by shredTemporaryFile()
 		}
@@ -281,7 +287,7 @@ static int decrypt (KeySet * pluginConfig, Key * parentKey)
 	}
 	else
 	{
-		if (shredTemporaryFile (parentKey, tmpFileFd) == -1)
+		if (shredTemporaryFile (tmpFileFd, parentKey) == -1)
 		{
 			result = -1; // error has been set by shredTemporaryFile()
 		}
