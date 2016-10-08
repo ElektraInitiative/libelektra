@@ -162,7 +162,9 @@ API to allow instances to register themselves with `clusterd`
 
 ### delete a single instance [DELETE]
 
-+ Response 204
++ Response 204 (application/json)
+    + Attributes (object)
+        + id: `46a288ae-7475-4cdd-a04c-3826c9a4b5f5` (string) - id of the deleted instance
 
 + Response 401 (application/json)
     + Attributes (Error)
@@ -382,7 +384,9 @@ Otherwise, it will be 400.
 
 ### delete a cluster [DELETE]
 
-+ Response 204
++ Response 204 (application/json)
+    + Attributes (object)
+        + id: `54a92a5f-2dd5-4f61-8761-6acfc7c49799` (string) - id of the deleted cluster
 
 + Response 401 (application/json)
     + Attributes (Error)
