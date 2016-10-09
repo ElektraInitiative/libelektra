@@ -216,12 +216,11 @@ static int encrypt (KeySet * pluginConfig, Key * parentKey)
 			result = -1;
 		}
 	}
-	else
+
+	// if anything went wrong above the temporary file is shredded and removed
+	if (result != 1)
 	{
-		if (shredTemporaryFile (tmpFileFd, parentKey) == -1)
-		{
-			result = -1; // error has been set by shredTemporaryFile()
-		}
+		shredTemporaryFile (tmpFileFd, parentKey);
 		unlink (tmpFile);
 	}
 
@@ -286,12 +285,11 @@ static int decrypt (KeySet * pluginConfig, Key * parentKey)
 			result = -1;
 		}
 	}
-	else
+
+	// if anything went wrong above the temporary file is shredded and removed
+	if (result != 1)
 	{
-		if (shredTemporaryFile (tmpFileFd, parentKey) == -1)
-		{
-			result = -1; // error has been set by shredTemporaryFile()
-		}
+		shredTemporaryFile (tmpFileFd, parentKey);
 		unlink (tmpFile);
 	}
 
