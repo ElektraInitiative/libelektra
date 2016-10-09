@@ -222,6 +222,7 @@ static int encrypt (KeySet * pluginConfig, Key * parentKey)
 		{
 			result = -1; // error has been set by shredTemporaryFile()
 		}
+		unlink (tmpFile);
 	}
 
 	close (tmpFileFd);
@@ -291,6 +292,7 @@ static int decrypt (KeySet * pluginConfig, Key * parentKey)
 		{
 			result = -1; // error has been set by shredTemporaryFile()
 		}
+		unlink (tmpFile);
 	}
 
 	close (tmpFileFd);
