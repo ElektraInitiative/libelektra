@@ -210,6 +210,7 @@ copied by another plugin just before):
 - [enum](enum/) compares the keyvalue against a list of valid values
 - [mathcheck](mathcheck/) by mathematical expressions using keysvalues as operands
 - [conditionals](conditionals/) by using if-then-else like statements
+- [required](required/) rejects non-required keys
 
 ### Other Validation ###
 
