@@ -14,7 +14,7 @@
   "license": "BSD",
   "devDependencies": {
     "grunt": "~0.4.4",
-	"grunt-cli": "latest",
+    "grunt-cli": "latest",
     "grunt-contrib-concat": "^0.5.1",
     "grunt-contrib-cssmin": "latest",
     "grunt-contrib-jshint": "latest",
@@ -26,7 +26,7 @@
 	"bower": "latest"
   },
   "scripts": {
-	  "postinstall": "./node_modules/bower/bin/bower --allow-root install && grunt full"
+	  "postinstall": "./node_modules/bower/bin/bower --allow-root install && ./node_modules/grunt-cli/bin/grunt full"
   },
   "config": {
     "unsafe-perm": true
