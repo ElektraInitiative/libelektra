@@ -1,0 +1,88 @@
+<header>
+    <nav class="navbar navbar-default navbar-static-top">
+        <div class="container">
+            <div class="navbar-header col-md-3">
+                <img alt="{{ 'APP.GLOBAL.TITLE' | translate}}"
+                     src="assets/img/logo.svg"
+                     class="navbar-brand-logo"
+                     ui-sref="main.home"/>
+                <a class="navbar-brand" ui-sref="main.home">
+                    {{ 'APP.GLOBAL.TITLE' | translate }}
+                </a>
+            </div>
+			<div class="navbar-left col-md-6" style="text-align:center;margin-top:10px;">
+				<div class="input-group" ng-hide="$state.includes('main.entries.search')">
+					<input type="text" class="form-control"
+						   placeholder="{{ 'APP.ENTRIES.SEARCH.SEARCHBOX.PLACEHOLDER' | translate }}"
+						   ng-model="$rootScope.entriesSearchString" on-key-enter="ctrl.goSearch()">
+					<span class="input-group-btn">
+						<button class="btn btn-primary" type="button"
+								ng-click="ctrl.goSearch()"
+								title="{{ 'APP.ENTRIES.SEARCH.SEARCHBOX.BUTTON.SUBMIT' | translate }}">
+							<i class="fa fa-search"></i>
+						</button>
+					</span>
+				</div>
+			</div>
+            <ul class="nav navbar-nav navbar-right">
+				<li ng-if="authenticated">
+					<a ui-sref="main.account">{{ 'APP.NAV.BUTTON.ACCOUNT' | translate }}</a>
+				</li>
+                <li ng-if="authenticated">
+                    <a ui-sref="main.auth.logout">{{ 'APP.NAV.BUTTON.LOGOUT' | translate }}</a>
+                </li>
+                <li ng-if="!authenticated">
+                    <a ui-sref="main.auth.login">{{ 'APP.NAV.BUTTON.LOGIN' | translate }}</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+	<div class="container">
+		<nav class="navbar navbar-default navbar-second" style="margin-top:-5px;">
+			<div class="container-fluid">
+				<ul class="nav navbar-nav">
+					<li ng-class="{active: $state.includes('main.home')}">
+						<a ui-sref="main.home">{{ 'APP.NAV.BUTTON.MAIN.HOME' | translate }}</a>
+					</li>
+					<li ng-class="{active: $state.includes('main.documentation')}">
+						<a ui-sref="main.documentation">{{ 'APP.NAV.BUTTON.MAIN.DOCUMENTATION' | translate }}</a>
+					</li>
+					<li ng-class="{active: $state.includes('main.tutorials')}">
+						<a ui-sref="main.tutorials">{{ 'APP.NAV.BUTTON.MAIN.TUTORIALS' | translate }}</a>
+					</li>
+					<li ng-class="{active: $state.includes('main.conversion')}">
+						<a ui-sref="main.conversion">{{ 'APP.NAV.BUTTON.MAIN.CONVERSION' | translate }}</a>
+					</li>
+				</ul>
+				<ul class="nav navbar-nav navbar-right">
+					<li ng-if="authenticated" has-rank="10"
+						ng-class="{active: $state.includes('main.entries.create')}">
+						<a ui-sref="main.entries.create">{{ 'APP.NAV.BUTTON.NEWNETRY' | translate }}</a>
+					</li>
+					<li ng-if="authenticated" has-rank="100"
+						ng-class="{active: $state.includes('main.users.search')}">
+						<a ui-sref="main.users.search">{{ 'APP.NAV.BUTTON.MAIN.USERS' | translate }}</a>
+					</li>
+				</ul>
+			</div>
+		</nav>
+	</div>
+</header>
+
+<section id="main-section">
+    <div class="container">
+
+        <div ui-view></div>
+
+    </div>
+</section>
+
+<footer class="footer">
+    <div class="container">
+        <div ncy-breadcrumb></div>
+        <p class="text-right copyright">
+            <span date-now="yyyy"></span> &copy; <a href="http://libelektra.org">ElektraInitiative</a>
+        </p>
+    </div>
+</footer>

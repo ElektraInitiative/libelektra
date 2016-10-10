@@ -1,0 +1,34 @@
+{
+  "name": "kdb-rest-angular",
+  "version": "1.0.0",
+  "description": "rest frontend application",
+  "main": "Gruntfile.js",
+  "keywords": [
+    "elektra",
+    "kdb",
+    "frontend",
+    "rest",
+    "repository"
+  ],
+  "author": "Namoshek",
+  "license": "BSD",
+  "devDependencies": {
+    "grunt": "~0.4.4",
+	"grunt-cli": "latest",
+    "grunt-contrib-concat": "^0.5.1",
+    "grunt-contrib-cssmin": "latest",
+    "grunt-contrib-jshint": "latest",
+    "grunt-contrib-less": "latest",
+    "grunt-contrib-uglify": "latest",
+    "grunt-contrib-watch": "latest",
+    "grunt-serve": "^0.1.6",
+    "jshint-stylish": "latest",
+	"bower": "latest"
+  },
+  "scripts": {
+	  "postinstall": "./node_modules/bower/bin/bower --allow-root install && grunt full"
+  },
+  "config": {
+    "unsafe-perm": true
+  }
+}

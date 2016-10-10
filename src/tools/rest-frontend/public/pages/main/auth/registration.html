@@ -1,0 +1,112 @@
+<div class="row">
+    <div class="col-md-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4 class="panel-title">
+                    {{ 'APP.AUTH.REGISTRATION.PANEL.HEADING' | translate }}
+                </h4>
+            </div>
+            <div class="panel-body">
+                <form name="registerForm" class="form-horizontal">
+					<!-- Username -->
+                    <div class="form-group"
+						 ng-class="{'has-error': registerForm.username.$invalid && !registerForm.username.$pristine,
+								    'has-success': registerForm.username.$valid && registerForm.username.$dirty}">
+                        <label for="username" class="control-label col-md-2">
+                            {{ 'APP.AUTH.REGISTRATION.LABEL.USERNAME' | translate }}
+                        </label>
+                        <div class="col-md-9">
+                            <input type="text" id="username" name="username" class="form-control"
+                                   ng-model="user.username"
+								   ng-minlength="3" ng-maxlength="20" ng-pattern="'^[a-zA-Z0-9\\-\\.]+$'" required
+                                   placeholder="{{ 'APP.AUTH.REGISTRATION.PLACEHOLDER.USERNAME' | translate }}">
+							<div ng-show="registerForm.username.$invalid && registerForm.username.$dirty">
+								<span class="help-block mt5 ml10" ng-messages="registerForm.username.$error">
+									<i class="fa fa-times"></i>
+									<span ng-message="required">{{ 'APP.AUTH.REGISTRATION.LABEL.VALIDATION.USERNAME.REQUIRED' | translate }}</span>
+									<span ng-message="minlength">{{ 'APP.AUTH.REGISTRATION.LABEL.VALIDATION.USERNAME.MINLENGTH' | translate }}</span>
+									<span ng-message="maxlength">{{ 'APP.AUTH.REGISTRATION.LABEL.VALIDATION.USERNAME.MAXLENGTH' | translate }}</span>
+									<span ng-message="pattern">{{ 'APP.AUTH.REGISTRATION.LABEL.VALIDATION.USERNAME.PATTERN' | translate }}</span>
+								</span>
+							</div>
+                        </div>
+                    </div>
+					<!-- Email -->
+					<div class="form-group"
+						 ng-class="{'has-error': registerForm.email.$invalid && !registerForm.email.$pristine,
+								    'has-success': registerForm.email.$valid && registerForm.email.$dirty}">
+                        <label for="email" class="control-label col-md-2">
+                            {{ 'APP.AUTH.REGISTRATION.LABEL.EMAIL' | translate }}
+                        </label>
+                        <div class="col-md-9">
+                            <input type="email" id="email" name="email" class="form-control"
+                                   ng-model="user.email"
+								   required
+                                   placeholder="{{ 'APP.AUTH.REGISTRATION.PLACEHOLDER.EMAIL' | translate }}">
+							<div ng-show="registerForm.email.$invalid && registerForm.email.$dirty">
+								<span class="help-block mt5 ml10" ng-messages="registerForm.email.$error">
+									<i class="fa fa-times"></i>
+									<span ng-message="required">{{ 'APP.AUTH.REGISTRATION.LABEL.VALIDATION.EMAIL.REQUIRED' | translate }}</span>
+									<span ng-message="email">{{ 'APP.AUTH.REGISTRATION.LABEL.VALIDATION.EMAIL.EMAIL' | translate }}</span>
+								</span>
+							</div>
+                        </div>
+                    </div>
+					<!-- Password -->
+                    <div class="form-group"
+						 ng-class="{'has-error': registerForm.password.$invalid && !registerForm.password.$pristine,
+								    'has-success': registerForm.password.$valid && registerForm.password.$dirty}">
+                        <label for="password" class="control-label col-md-2">
+                            {{ 'APP.AUTH.REGISTRATION.LABEL.PASSWORD' | translate }}
+                        </label>
+                        <div class="col-md-9">
+                            <input type="password" id="password" name="password" class="form-control"
+                                   ng-model="user.password"
+								   ng-minlength="8" ng-pattern="'(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9]).{8,}'" required
+                                   placeholder="{{ 'APP.AUTH.REGISTRATION.PLACEHOLDER.PASSWORD' | translate }}">
+							<div ng-show="registerForm.password.$invalid && registerForm.password.$dirty">
+								<span class="help-block mt5 ml10" ng-messages="registerForm.password.$error">
+									<i class="fa fa-times"></i>
+									<span ng-message="required">{{ 'APP.AUTH.REGISTRATION.LABEL.VALIDATION.PASSWORD.REQUIRED' | translate }}</span>
+									<span ng-message="minlength">{{ 'APP.AUTH.REGISTRATION.LABEL.VALIDATION.PASSWORD.MINLENGTH' | translate }}</span>
+									<span ng-message="pattern">{{ 'APP.AUTH.REGISTRATION.LABEL.VALIDATION.PASSWORD.PATTERN' | translate }}</span>
+								</span>
+							</div>
+                        </div>
+                    </div>
+					<!-- Password Confirmation -->
+                    <div class="form-group"
+						 ng-class="{'has-error': registerForm.password_conf.$invalid && !registerForm.password_conf.$pristine,
+								    'has-success': registerForm.password_conf.$valid && registerForm.password_conf.$dirty}">
+                        <label for="password_conf" class="control-label col-md-2">
+                            {{ 'APP.AUTH.REGISTRATION.LABEL.PASSWORD_CONFIRMATION' | translate }}
+                        </label>
+                        <div class="col-md-9">
+                            <input type="password" id="password_conf" name="password_conf" class="form-control"
+                                   ng-model="user.password_confirmation"
+								   equal-input="user.password" required
+                                   placeholder="{{ 'APP.AUTH.REGISTRATION.PLACEHOLDER.PASSWORD_CONFIRMATION' | translate }}">
+							<div ng-show="registerForm.password_conf.$invalid && registerForm.password_conf.$dirty">
+								<span class="help-block mt5 ml10" ng-messages="registerForm.password_conf.$error">
+									<i class="fa fa-times"></i>
+									<span ng-message="required">{{ 'APP.AUTH.REGISTRATION.LABEL.VALIDATION.PASSWORD_CONFIRMATION.REQUIRED' | translate }}</span>
+									<span ng-message="equalInput">{{ 'APP.AUTH.REGISTRATION.LABEL.VALIDATION.PASSWORD_CONFIRMATION.EQUAL_INPUT' | translate }}</span>
+								</span>
+							</div>
+                        </div>
+                    </div>
+                    <div class="col-md-offset-2 col-md-9">
+                        <button type="submit" class="btn btn-primary"
+                                ng-click="ctrl.doRegistration()"
+								ng-disabled="registerForm.$pristine || registerForm.$invalid">
+                            {{ 'APP.AUTH.REGISTRATION.BUTTON.SUBMIT' | translate }}
+                        </button>
+                        <button class="btn btn-default" ui-sref="main.auth.login">
+                            {{ 'APP.AUTH.REGISTRATION.BUTTON.LOGIN' | translate }}
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,95 @@
+<aside id="sidebar_left" class="nano nano-light affix">
+
+	<!-- Start: Sidebar Left Content -->
+	<div class="sidebar-left-content nano-content">
+
+		<!-- Start: Sidebar Header -->
+		<header class="sidebar-header">
+
+			<!-- Sidebar Widget - Author -->
+			<div class="sidebar-widget author-widget">
+				<div class="media">
+					<div class="media-body">
+						<div class="media-author">{{ $rootScope.currentUser.name }}</div>
+						<div class="media-links">
+							<a class="sidebar-menu-toggle" ui-sref="main.profile({id:$rootScope.currentUser.id})">{{ 'APP.USER.PROFILE' | translate }}</a>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- Sidebar Widget - Search (hidden) -->
+			<div class="sidebar-widget search-widget">
+				<div class="input-group">
+					<span class="input-group-addon">
+						<i class="fa fa-search"></i>
+					</span>
+					<input type="text" id="sidebar-search" class="form-control" placeholder="{{ 'APP.GLOBAL.SEARCH.PLACEHOLDER' | translate }}"
+							ng-model="searchString" on-key-enter="ctrl.goSearch(searchString)">
+					<span class="input-group-addon" ng-click="search.extended = !search.extended">
+						<i class="fa" ng-class="{'fa-chevron-down': !search.extended, 'fa-chevron-up': search.extended}"></i>
+					</span>
+				</div>
+				<div class="extended-search" ng-show="search.extended">
+					<div class="input-group" title="{{ 'APP.GLOBAL.SEARCH.EXTENDED.DATE.START.HOVER' | translate }}">
+						<span class="input-group-addon">
+							<i class="fa fa-calendar"></i>
+						</span>
+						<input type="date" id="dateStart" class="form-control date">
+					</div>
+					<div class="input-group" title="{{ 'APP.GLOBAL.SEARCH.EXTENDED.DATE.END.HOVER' | translate }}">
+						<span class="input-group-addon">
+							<i class="fa fa-calendar"></i>
+						</span>
+						<input type="date" id="dateEnd" class="form-control date">
+					</div>
+				</div>
+			</div>
+
+		</header>
+		<!-- End: Sidebar Header -->
+
+		<!-- Start: Sidebar Menu -->
+		<ul class="nav sidebar-menu">
+			<li class="sidebar-label pt20">{{ 'APP.GLOBAL.MENU.SECTION.MAIN.HEADLINE' | translate }}</li>
+			<li ui-sref-active="active">
+				<a ui-sref="main.dashboard">
+					<span class="glyphicon glyphicon-home"></span>
+					<span class="sidebar-title">{{ 'APP.GLOBAL.MENU.DASHBOARD' | translate }}</span>
+				</a>
+			</li>
+			<li>
+				<a class="accordion-toggle" href="#">
+					<span class="fa fa-columns"></span>
+					<span class="sidebar-title">Expendable Menu</span>
+					<span class="caret"></span>
+				</a>
+				<ul class="nav sub-nav">
+					<li>
+						<a class="accordion-toggle" href="#">
+							<span class="fa fa-arrows-v"></span>
+							<span>Submenu</span>
+						</a>
+					</li>
+				</ul>
+			</li>
+			<li class="sidebar-label pt20" has-one-permission="['users.see','roles.see']">{{ 'APP.GLOBAL.MENU.SECTION.ADMIN.HEADLINE' | translate }}</li>
+			<li ui-sref-active="active" has-permission="'users.see'">
+				<a ui-sref="main.admin.users">
+					<span class="fa fa-users"></span>
+					<span class="sidebar-title">{{ 'APP.GLOBAL.MENU.USERS' | translate }}</span>
+				</a>
+			</li>
+			<li ui-sref-active="active" has-permission="'roles.see'">
+				<a ui-sref="main.admin.roles">
+					<span class="fa fa-lock"></span>
+					<span class="sidebar-title">{{ 'APP.GLOBAL.MENU.ROLES' | translate }}</span>
+				</a>
+			</li>
+		</ul>
+		<!-- End: Sidebar Menu -->
+
+	</div>
+	<!-- End: Sidebar Left Content -->
+
+</aside>

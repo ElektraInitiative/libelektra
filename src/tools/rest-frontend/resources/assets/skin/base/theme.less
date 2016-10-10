@@ -1,0 +1,106 @@
+// Imports
+// ----------------------------
+
+@import "colors.less";
+
+
+// Markup
+// ----------------------------
+
+html {
+    position: relative;
+    min-height: 100%;
+}
+body {
+    margin-bottom: 60px;
+	font-family: Helvetica;
+}
+
+nav.navbar img.navbar-brand-logo {
+    display: inline-block;
+    float: left;
+    margin: 10px 15px 10px 10px;
+    width: 35px;
+}
+
+nav.navbar-second {
+	height: 40px;
+	min-height: 40px;
+}
+
+nav.navbar-second > div.container-fluid > ul > li > a {
+	padding-top: 8px;
+	padding-bottom: 10px;
+}
+
+.breadcrumb li {
+    padding-left: 5px;
+}
+.breadcrumb li a, .breadcrumb li span {
+    margin-left: -4px;
+}
+
+span.entry.config.output {
+    white-space: pre-wrap;
+}
+
+span.entry.config.utils {
+	margin-top: 5px;
+}
+
+span.entry.config.utils > span.util {
+	cursor: pointer;
+	margin-right: 15px;
+}
+
+span.entry.config.utils > span.util:last-child {
+	margin-right: 0px;
+}
+
+div.ui-notification {
+    background: none;
+}
+
+div.ui-notification div.alert {
+    border-radius: 0px;
+}
+
+div.ui-notification div.alert.alert-success {
+    border: 1px solid #6bce6d;
+}
+
+div.ui-notification div.alert div.ui-notification-icon {
+    display: inline;
+    font-size: 1.4em;
+}
+div.ui-notification div.alert h4.ui-notification-title {
+    display: inline-block;
+}
+
+ul.pagination > li {
+	cursor: pointer;
+}
+
+.footer {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    height: 60px;
+    background-color: @background-footer;
+}
+.footer ol.breadcrumb {
+    margin-top: 14px;
+    margin-bottom: 0px;
+}
+.footer p.copyright {
+    color: @text-footer-copyright;
+    margin-top: 20px;
+}
+
+.btn-util.show-hover .show-hover-target {
+	display: none;
+}
+
+.btn-util.show-hover:hover .show-hover-target {
+	display: inline;
+}

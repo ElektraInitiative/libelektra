@@ -1,0 +1,60 @@
+<!-- Page title & Menu toggle switch -->
+<div class="navbar-branding">
+    <a class="navbar-brand" ui-sref="main.dashboard">
+        <b>Admin</b> CMS
+    </a>
+    <span id="toggle_sidemenu_l" class="ad ad-lines"></span>
+</div>
+
+<ul class="nav navbar-nav navbar-right">
+    <li class="menu-merge">
+        <div class="navbar-btn btn-group" dropdown>
+            <button class="btn btn-sm" dropdown-toggle>
+                <span class="flag-xs" ng-class="{'flag-de': ctrl.currentLanguage === 'de', 'flag-us': ctrl.currentLanguage === 'en'}"></span>
+                <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu pv5 animated animated-short flipInX" role="menu">
+                <li>
+                    <a style="cursor:pointer;" ng-click="ctrl.changeLanguage('de')">
+                        <span class="flag-xs flag-de mr10"></span>
+                        <span>{{ 'APP.GLOBAL.LANG.GERMAN' | translate }}</span>
+                    </a>
+                </li>
+                <li>
+                    <a style="cursor:pointer;" ng-click="ctrl.changeLanguage('en')">
+                        <span class="flag-xs flag-us mr10"></span>
+                        <span>{{ 'APP.GLOBAL.LANG.ENGLISH' | translate }}</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </li>
+    <li class="menu-merge" dropdown>
+        <a href="#" dropdown-toggle>
+            <span class="hidden-xs">{{ $rootScope.currentUser.name }}</span>
+            <span class="caret caret-tp hidden-xs"></span>
+        </a>
+        <ul class="dropdown-menu list-group w250" role="menu">
+            <!-- <li class="dropdown-header clearfix"></li> -->
+            <li class="list-group-item">
+                <a href="#" class="animated animated-short fadeInUp">
+                    <span class="fa fa-bell"></span>
+                    <span>{{ 'APP.USER.NOTIFICATIONS' | translate }}</span>
+                    <span class="label label-warning">2</span>
+                </a>
+            </li>
+            <li class="list-group-item">
+                <a href="#" class="animated animated-short fadeInUp">
+                    <span class="fa fa-gear"></span>
+                    <span>{{ 'APP.USER.SETTINGS' | translate }}</span>
+                </a>
+            </li>
+            <li class="dropdown-footer">
+                <a ng-click="ctrl.logout()" class="animated animated-long fadeIn" style="cursor:pointer;">
+                    <span class="fa fa-power-off pr5"></span>
+                    <span>{{ 'APP.AUTH.BUTTONS.LOGOUT' | translate }}</span>
+                </a>
+            </li>
+        </ul>
+    </li>
+</ul>

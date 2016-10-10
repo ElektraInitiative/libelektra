@@ -1,0 +1,96 @@
+<div class="row">
+	<div class="col-md-12">
+		<div class="pull-right md-mb-10">
+			<a class="btn btn-sm btn-danger"
+			   ng-show="authenticated" has-rank-or-is-owner="{rank: 50, owner: entry.meta.author}"
+			   ng-click="ctrl.deleteEntry()">
+				<i class="fa fa-trash-o"></i>
+				<span>{{ 'APP.ENTRIES.DETAILS.BUTTON.DELETE' | translate }}</span>
+			</a>
+			<a class="btn btn-sm btn-warning"
+			   ng-show="authenticated" has-rank-or-is-owner="{rank: 50, owner: entry.meta.author}"
+			   ui-sref="main.entries.edit({entry: entry.key.full})">
+				<i class="fa fa-pencil"></i>
+				<span>{{ 'APP.ENTRIES.DETAILS.BUTTON.EDIT' | translate }}</span>
+			</a>
+		</div>
+	</div>
+</div>
+<div class="row">
+    <div class="col-md-5">
+        <div class="panel panel-default snippet-description">
+            <div class="panel-heading clearfix">
+				<h4 class="panel-title pull-left">{{ entry.meta.title }}</h4>
+			</div>
+            <div class="panel-body">
+                <span>{{ entry.meta.description }}</span>
+            </div>
+
+            <!-- Table -->
+            <table class="table">
+                <tr>
+                    <th>{{ 'APP.ENTRIES.DETAILS.TABLE.HEADER.KEY' | translate }}</th>
+                    <td>{{ entry.key.full }}</td>
+                </tr>
+                <tr>
+                    <th>{{ 'APP.ENTRIES.DETAILS.TABLE.HEADER.ORGANIZATION' | translate }}</th>
+                    <td>{{ entry.key.organization }}</td>
+                </tr>
+                <tr>
+                    <th>{{ 'APP.ENTRIES.DETAILS.TABLE.HEADER.APPLICATION' | translate }}</th>
+                    <td>{{ entry.key.application }}</td>
+                </tr>
+                <tr>
+                    <th>{{ 'APP.ENTRIES.DETAILS.TABLE.HEADER.SCOPE' | translate }}</th>
+                    <td>{{ entry.key.scope }}</td>
+                </tr>
+                <tr>
+                    <th>{{ 'APP.ENTRIES.DETAILS.TABLE.HEADER.SLUG' | translate }}</th>
+                    <td>{{ entry.key.slug }}</td>
+                </tr>
+                <tr>
+                    <th>{{ 'APP.ENTRIES.DETAILS.TABLE.HEADER.TAGS' | translate }}</th>
+                    <td>{{ entry.meta.tags.join(', ') }}</td>
+                </tr>
+                <tr>
+                    <th>{{ 'APP.ENTRIES.DETAILS.TABLE.HEADER.AUTHOR' | translate }}</th>
+                    <td>{{ entry.meta.author }}</td>
+                </tr>
+                <tr>
+                    <th>{{ 'APP.ENTRIES.DETAILS.TABLE.HEADER.CREATEDAT' | translate }}</th>
+                    <td>{{ entry.meta.created_at * 1000 | date:'yyyy-MM-dd HH:mm' }}</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+    <div class="col-md-7">
+        <uib-accordion>
+			<div uib-accordion-group ng-repeat="config in entry.value" class="panel-default"
+				 heading="{{ 'APP.ENTRIES.DETAILS.FORMAT.HEADING' | translate:config }}"
+				 is-open="$first">
+				<span class="entry config output">{{ config.value }}</span>
+				<span class="entry config utils pull-right">
+					<span class="util" ng-show="config.validated"
+						  title="{{ 'APP.ENTRIES.DETAILS.ALTTEXT.CONFIGURATION.VALIDATED' | translate }}">
+						<span class="fa fa-check text-success"></span>
+						<span class="text-success">{{ 'APP.ENTRIES.DETAILS.LABEL.VALIDATED' | translate }}</span>
+					</span>
+					<span class="util" ng-show="clipboardSupported"
+						  clipboard text="config.value" supported="clipboardSupported"
+						  on-copied="ctrl.copyClipboardSuccess()" on-error="ctrl.copyClipboardFailed()"
+						  title="{{ 'APP.ENTRIES.DETAILS.ALTTEXT.CONFIGURATION.CLIPBOARD' | translate:config }}">
+						<i class="fa fa-copy"></i>
+						<span>{{ 'APP.ENTRIES.DETAILS.BUTTON.CLIPBOARD' | translate }}</span>
+					</span>
+					<span class="util"
+						  ng-click="ctrl.saveConvertedConfiguration(config)"
+						  title="{{ 'APP.ENTRIES.DETAILS.ALTTEXT.CONFIGURATION.DOWNLOAD' | translate:config }}">
+						<i class="fa fa-download"></i>
+						<span>{{ 'APP.ENTRIES.DETAILS.BUTTON.DOWNLOAD' | translate }}</span>
+					</span>
+				</span>
+			</div>
+		</uib-accordion>
+    </div>
+</div>

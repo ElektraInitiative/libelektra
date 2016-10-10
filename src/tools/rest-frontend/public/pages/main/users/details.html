@@ -1,0 +1,158 @@
+<div class="row">
+	<div class="col-md-6">
+		<div class="panel panel-default">
+			<div class="panel-heading">
+				<h4 class="panel-title">
+					{{ 'APP.USERS.DETAILS.PANEL.INFO.HEADING' | translate }}
+				</h4>
+			</div>
+			<div class="panel-body">
+				<div class="form-horizontal">
+					<div class="form-group">
+						<label for="username" class="control-label col-md-4">
+							{{ 'APP.USERS.DETAILS.LABEL.USERNAME' | translate }}
+						</label>
+						<p id="username" class="form-control-static col-md-8">{{ user.username }}</p>
+					</div>
+					<div class="form-group">
+						<label for="email" class="control-label col-md-4">
+							{{ 'APP.USERS.DETAILS.LABEL.EMAIL' | translate }}
+						</label>
+						<p id="email" class="form-control-static col-md-8">{{ user.email }}</p>
+					</div>
+					<div class="form-group">
+						<label for="rank" class="control-label col-md-4">
+							{{ 'APP.USERS.DETAILS.LABEL.RANK' | translate }}
+						</label>
+						<p id="rank" class="form-control-static col-md-8">{{ user.rank }}</p>
+					</div>
+					<div class="form-group">
+						<label for="created_at" class="control-label col-md-4">
+							{{ 'APP.USERS.DETAILS.LABEL.CREATEDAT' | translate }}
+						</label>
+						<p id="created_at" class="form-control-static col-md-8">{{ user.created_at * 1000 | date:'yyyy-MM-dd HH:mm' }}</p>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="col-md-6">
+		<div class="panel panel-default">
+			<div class="panel-heading">
+				<h4 class="panel-title">
+					{{ 'APP.USERS.DETAILS.PANEL.CHANGE_PASSWORD.HEADING' | translate }}
+				</h4>
+			</div>
+			<div class="panel-body">
+				<form name="passwordForm">
+					<div class="form-group"
+						 ng-class="{'has-error': passwordForm.password_new.$invalid && !passwordForm.password_new.$pristine,
+								    'has-success': passwordForm.password_new.$valid && passwordForm.password_new.$dirty}">
+						<label for="password_new" class="control-label">
+							{{ 'APP.USERS.DETAILS.LABEL.PASSWORDNEW' | translate }}
+						</label>
+						<input type="password" id="password_new" name="password_new" class="form-control"
+							   ng-model="changes.password.input1"
+							   ng-minlength="8" ng-pattern="'(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9]).{8,}'" required
+							   placeholder="{{ 'APP.USERS.DETAILS.PLACEHOLDER.PASSWORDNEW' | translate }}" />
+						<div ng-show="passwordForm.password_new.$invalid && passwordForm.password_new.$dirty">
+							<span class="help-block mt5 ml10" ng-messages="passwordForm.password_new.$error">
+								<i class="fa fa-times"></i>
+								<span ng-message="required">{{ 'APP.USERS.DETAILS.LABEL.VALIDATION.PASSWORDNEW.REQUIRED' | translate }}</span>
+								<span ng-message="minlength">{{ 'APP.USERS.DETAILS.LABEL.VALIDATION.PASSWORDNEW.MINLENGTH' | translate }}</span>
+								<span ng-message="pattern">{{ 'APP.USERS.DETAILS.LABEL.VALIDATION.PASSWORDNEW.PATTERN' | translate }}</span>
+							</span>
+						</div>
+					</div>
+					<div class="form-group"
+						 ng-class="{'has-error': passwordForm.password_new_confirm.$invalid && !passwordForm.password_new_confirm.$pristine,
+								    'has-success': passwordForm.password_new_confirm.$valid && passwordForm.password_new_confirm.$dirty}">
+						<label for="password_new_confirm" class="control-label">
+							{{ 'APP.USERS.DETAILS.LABEL.PASSWORDNEWCONFIRM' | translate }}
+						</label>
+						<input type="password" id="password_new_confirm" name="password_new_confirm" class="form-control"
+							   ng-model="changes.password.input2" equal-input="changes.password.input1" required
+							   placeholder="{{ 'APP.USERS.DETAILS.PLACEHOLDER.PASSWORDNEWCONFIRM' | translate }}" />
+						<div ng-show="passwordForm.password_new_confirm.$invalid && passwordForm.password_new_confirm.$dirty">
+							<span class="help-block mt5 ml10" ng-messages="passwordForm.password_new_confirm.$error">
+								<i class="fa fa-times"></i>
+								<span ng-message="required">{{ 'APP.USERS.DETAILS.LABEL.VALIDATION.PASSWORDNEWCONFIRM.REQUIRED' | translate }}</span>
+								<span ng-message="equalInput">{{ 'APP.USERS.DETAILS.LABEL.VALIDATION.PASSWORDNEWCONFIRM.EQUAL_INPUT' | translate }}</span>
+							</span>
+						</div>
+					</div>
+					<button class="btn btn-sm btn-success"
+							ng-click="ctrl.changePassword()"
+							ng-disabled="passwordForm.$pristine || passwordForm.$invalid">
+						{{ 'APP.USERS.DETAILS.BUTTON.CHANGE_PASSWORD' | translate }}
+					</button>
+				</form>
+			</div>
+		</div>
+		<div class="panel panel-default">
+			<div class="panel-heading">
+				<h4 class="panel-title">
+					{{ 'APP.USERS.DETAILS.PANEL.CHANGE_EMAIL.HEADING' | translate }}
+				</h4>
+			</div>
+			<div class="panel-body">
+				<form name="emailForm">
+					<div class="form-group"
+						 ng-class="{'has-error': emailForm.email_new.$invalid && !emailForm.email_new.$pristine,
+								    'has-success': emailForm.email_new.$valid && emailForm.email_new.$dirty}">
+						<label for="email_new" class="control-label">
+							{{ 'APP.USERS.DETAILS.LABEL.EMAILNEW' | translate }}
+						</label>
+						<input type="email" id="email_new" name="email_new" class="form-control"
+							   ng-model="changes.email" required
+							   placeholder="{{ 'APP.USERS.DETAILS.PLACEHOLDER.EMAILNEW' | translate }}" />
+						<div ng-show="emailForm.email_new.$invalid && emailForm.email_new.$dirty">
+							<span class="help-block mt5 ml10" ng-messages="emailForm.email_new.$error">
+								<i class="fa fa-times"></i>
+								<span ng-message="required">{{ 'APP.USERS.DETAILS.LABEL.VALIDATION.EMAILNEW.REQUIRED' | translate }}</span>
+								<span ng-message="email">{{ 'APP.USERS.DETAILS.LABEL.VALIDATION.EMAILNEW.EMAIL' | translate }}</span>
+							</span>
+						</div>
+					</div>
+					<button class="btn btn-sm btn-success"
+							ng-click="ctrl.changeEmail()"
+							ng-disabled="emailForm.$pristine || emailForm.$invalid">
+						{{ 'APP.USERS.DETAILS.BUTTON.CHANGE_EMAIL' | translate }}
+					</button>
+				</form>
+			</div>
+		</div>
+		<div class="panel panel-default" has-rank="100">
+			<div class="panel-heading">
+				<h4 class="panel-title">
+					{{ 'APP.USERS.DETAILS.PANEL.CHANGE_RANK.HEADING' | translate }}
+				</h4>
+			</div>
+			<div class="panel-body">
+				<form name="rankForm">
+					<div class="form-group"
+						 ng-class="{'has-error': rankForm.rank_new.$invalid && !rankForm.rank_new.$pristine,
+								    'has-success': rankForm.rank_new.$valid && rankForm.rank_new.$dirty}">
+						<label for="rank_new" class="control-label">
+							{{ 'APP.USERS.DETAILS.LABEL.RANKNEW' | translate }}
+						</label>
+						<select id="rank_new" name="rank_new" class="form-control"
+								ng-model="changes.rank" required
+								ng-options="row.name | translate for row in ranks"></select>
+						<div ng-show="rankForm.rank_new.$invalid && rankForm.rank_new.$dirty">
+							<span class="help-block mt5 ml10" ng-messages="rankForm.rank_new.$error">
+								<i class="fa fa-times"></i>
+								<span ng-message="required">{{ 'APP.USERS.DETAILS.LABEL.VALIDATION.RANKNEW.REQUIRED' | translate }}</span>
+							</span>
+						</div>
+					</div>
+					<button class="btn btn-sm btn-success"
+							ng-click="ctrl.changeRank()"
+							ng-disabled="rankForm.$pristine || rankForm.$invalid">
+						{{ 'APP.USERS.DETAILS.BUTTON.CHANGE_RANK' | translate }}
+					</button>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
