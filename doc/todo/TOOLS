@@ -82,6 +82,12 @@ generic fstab:
 	allows kdb mset fstab <args> to be the same as kdb fstab
 
 kdb tool should work with arrays (add_entry, remove_entry)
+	or also kdb setmeta user/abc check/enum -a "first enum" "second enum" "third enum"
+	or also kdb set user/abc -a "first array entry" "second" "third array entry"
+
+kdb tool should work with files (read in as value)
+	kdb set user/abc -F filename.txt
+
 
 cascading export, e.g. for nickel?
 	+ remember what was exported
