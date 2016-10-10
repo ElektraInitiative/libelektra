@@ -24,6 +24,7 @@ After the getstorage plugin has read the backend file, the plugin decrypts the b
 
 During decryption the plugin temporarily writes the decrypted plain text to the same directory as the original (encrypted) file.
 This is a vulnerability as an attacker might have access to the plain text for a short period of time (the time between pregetstorage and postgetstorage calls).
+The plugin shreds, i.e. overwrites, the temporary file with zeroes to reduce the risk of leakage.
 
 If the application crashes the decrypted data may not get overwritten and removed.
 
