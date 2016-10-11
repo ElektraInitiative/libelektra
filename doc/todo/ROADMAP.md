@@ -14,21 +14,12 @@ for other activities of the current release.
 
 ## tests
 
+helper function for searching symbol
+lazy kdb mount+new imp/exp
+kdb mount -1 -2 options?
+
 use shell recorder for README.md
 	make examples more consistent
-
-array:
-	together with yajl
-	check if its a valid array via metadata
-	spec/array metadaten: array=1-10
-	user/array/#0 -> valid
-	user/array -> invalid
-	system/array/x -> invalid
-
-fix testkdb_conflict:
-	longer get/set sequences
-	also with file/non-file
-	also with more than 2 KDB
 
 ## lazy mountpoints
 

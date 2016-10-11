@@ -1,9 +1,30 @@
 ## error
 
+test that error codes are set correctly
+	multiple plugins
+	multiple kdbGet/kdbSet calls
+
 test failing mount with error plugin
 
 test error plugin when mounted at open
 
+
+## yajl
+
+array:
+	together with yajl
+	check if its a valid array via metadata
+	spec/array metadaten: array=1-10
+	user/array/#0 -> valid
+	user/array -> invalid
+	system/array/x -> invalid
+
+## conflicts
+
+fix testkdb_conflict:
+	longer get/set sequences
+	also with file/non-file
+	also with more than 2 KDB
 
 ## afl
 
