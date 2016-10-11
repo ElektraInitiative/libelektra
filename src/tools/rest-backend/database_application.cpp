@@ -351,11 +351,12 @@ inline void DatabaseApp::handleUpdate (cppcms::http::request & req, cppcms::http
 
 	// can't change base key, so scope, app, etc. remain
 	// only change description, title, config
-	oldEntry.setDescription (newEntry.getDescription ()); // set new description
-	oldEntry.setTitle (newEntry.getTitle ());	     // set new title
-	oldEntry.setTags (newEntry.getTags ());		      // set new tags
-	oldEntry.getSubkeys ().clear ();		      // clear old config
-	oldEntry.addSubkeys (newEntry.getSubkeys ());	 // replace config
+	oldEntry.setDescription (newEntry.getDescription ());   // set new description
+	oldEntry.setTitle (newEntry.getTitle ());		// set new title
+	oldEntry.setTags (newEntry.getTags ());			// set new tags
+	oldEntry.getSubkeys ().clear ();			// clear old config
+	oldEntry.addSubkeys (newEntry.getSubkeys ());		// replace config
+	oldEntry.setUploadPlugin (newEntry.getUploadPlugin ()); // replace old upload format
 
 	try
 	{
