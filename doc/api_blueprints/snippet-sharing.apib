@@ -436,6 +436,8 @@ Returns detailed information about the entry with the specified key (path). If t
 
 Can be used to create a new entry in the database. An entry consists of a unique key (path) that is built from several individual inputs, a title, description and a configuration snippet in any supported format.
 
+This operation requires a user account with normal permissions (rank 10) or higher.
+
 + Request (application/json)
     + Headers
 
@@ -531,6 +533,7 @@ Can be used to create a new entry in the database. An entry consists of a unique
 
             A comprehensive list of possible errors:
             - `NEED_AUTHENTICATION` if no valid session token has been supplied or the user for whom the token has been created does not exist (anymore)
+            - `USER_INSUFFICIENT_PERMISSIONS` if the currently authenticated user has insufficient rights to create an entry (i.e. user with reduced rights)
 
 + Response 406 (application/json)
     + Attributes (Error Response)
