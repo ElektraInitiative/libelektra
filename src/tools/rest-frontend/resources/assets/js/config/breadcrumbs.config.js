@@ -8,7 +8,7 @@
 
             // configure breadcrumbs
             $breadcrumbProvider.setOptions({
-                templateUrl: 'includes/breadcrumbs.html',
+                templateUrl: 'templates/breadcrumbs.html',
                 prefixStateName: 'main'
             });
 

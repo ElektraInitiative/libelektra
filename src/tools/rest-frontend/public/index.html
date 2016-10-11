@@ -20,7 +20,7 @@
 				restartOnPushState: true,
 				restartOnRequestAfter: true,
 				ajax: {
-					trackMethods: [ 'POST','GET']
+					trackMethods: ['OPTIONS','POST','GET','PUT','DELETE']
 				}
 
 			};
@@ -35,22 +35,14 @@
         <link rel="stylesheet" type="text/css"
                 href="vendor/bower_components/bootstrap/dist/css/bootstrap-theme.min.css">
 
-        <link rel="stylesheet" type="text/css"
-                href="vendor/suitcss/suitcss-utils-space.css">
-
         <!-- Theme CSS -->
         <link rel="stylesheet" type="text/css"
                 href="assets/skin/default/css/theme.min.css">
-
-        <!-- DataTables -->
-        <link rel="stylesheet" type="text/css"
-              href="vendor/bower_components/datatables.net-bs/css/dataTables.bootstrap.min.css">
 
         <!-- Angular Modules -->
         <link rel="stylesheet" type="text/css" href="vendor/bower_components/angular-ui-notification/dist/angular-ui-notification.min.css">
         <link rel="stylesheet" type="text/css" href="vendor/bower_components/ng-tags-input/ng-tags-input.min.css">
         <link rel="stylesheet" type="text/css" href="vendor/bower_components/ng-tags-input/ng-tags-input.bootstrap.min.css">
-        <link rel="stylesheet" type="text/css" href="vendor/bower_components/angular-datatables/dist/css/angular-datatables.min.css">
 
         <!-- Favicon -->
         <link rel="shortcut icon" type="image/x-icon" href="assets/img/logo.ico">
@@ -72,7 +64,6 @@
 
         <!-- jQuery -->
         <script src="vendor/bower_components/jquery/dist/jquery.min.js"></script>
-        <script src="vendor/jquery_ui/jquery-ui.min.js"></script>
 
         <!-- Lodash -->
         <script src="vendor/bower_components/underscore/underscore-min.js"></script>
@@ -80,10 +71,6 @@
         <!-- FileSaver & Blob -->
         <script src="vendor/bower_components/blob-polyfill/Blob.js"></script>
         <script src="vendor/bower_components/file-saver.js/FileSaver.js"></script>
-
-        <!-- DataTables -->
-        <script src="vendor/bower_components/datatables.net/js/jquery.dataTables.min.js"></script>
-        <script src="vendor/bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
 
 		<!-- Marked for Markdown -->
 		<script src="vendor/bower_components/marked/marked.min.js"></script>
@@ -97,11 +84,9 @@
         <script src="vendor/bower_components/angular-translate-loader-static-files/angular-translate-loader-static-files.min.js"></script>
         <script src="vendor/bower_components/angular-logger-max/logger.service.js"></script>
         <script src="vendor/bower_components/angular-breadcrumb/release/angular-breadcrumb.min.js"></script>
-        <script src="vendor/bower_components/restangular/dist/restangular.min.js"></script>
         <script src="vendor/bower_components/angular-file-saver/dist/angular-file-saver.min.js"></script>
         <script src="vendor/bower_components/ng-tags-input/ng-tags-input.min.js"></script>
         <script src="vendor/bower_components/satellizer/dist/satellizer.min.js"></script>
-        <script src="vendor/bower_components/angular-datatables/dist/angular-datatables.min.js"></script>
         <script src="vendor/bower_components/angular-ui-notification/dist/angular-ui-notification.min.js"></script>
 		<script src="vendor/bower_components/angular-marked/dist/angular-marked.min.js"></script>
 		<script src="vendor/bower_components/angular-utf8-base64/angular-utf8-base64.min.js"></script>
