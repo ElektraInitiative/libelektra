@@ -80,6 +80,11 @@ void SpecMountCommand::buildBackend (Cmdline const & cl)
 		Backends::umount (backend.getMountpoint (), mountConf);
 		backend.serialize (mountConf);
 	}
+
+	if (backends.empty())
+	{
+		std::cout << "No metadata \"mountpoint\" found below spec" << mp << std::endl;
+	}
 }
 
 /**
