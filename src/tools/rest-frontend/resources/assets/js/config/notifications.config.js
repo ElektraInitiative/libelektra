@@ -7,7 +7,7 @@
         function(NotificationProvider) {
 
             NotificationProvider.setOptions({
-				delay: 5000,
+                delay: 5000,
                 startTop: 70,
                 startRight: 10,
                 verticalSpacing: 10,

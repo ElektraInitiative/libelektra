@@ -1,0 +1,70 @@
+# Elektra REST Frontend
+
+## Introduction
+
+This document aims to provide information about Elektras `rest-frontend`, which is the frontend of the `rest-backend` allowing for search and sharing of configuration snippets. Besides that functionality, the frontend also contains the Elektra website.
+
+## Design and Structure
+
+The frontend is developed as Single Page Application in [AngularJS (v1.5)](https://angularjs.org/). All dependencies are either already contained in the application project or (preferred) resolved through [npm](https://www.npmjs.com/) and [bower](https://bower.io/) during installation (requires active internet connection). Compiling (concatenation & minification), as well as other tasks like running a lightweight webserver are handled by the task runner `grunt`.
+
+### Directory Structure
+
+The application project itself is mainly splitted into two directories: `resources` and `public`, whereas only the latter can directly been accessed by clients if the built-in `grunt server` is used to deploy the project.
+
+The `resources` directory contains the JavaScript source files as well as the LESS files which are compiled into CSS files for the website.
+
+The `public` directory contains HTML template files, assets like fonts, compiled JS and CSS files, as well as translation files and all dependencies resolved by `bower`.
+
+## Compiling and Installing
+
+### Dependencies
+
+The project has quite a few dependencies, of which most can be resolved automatically by the used package managers. The only dependency that has to be installed beforehand is the package manager [npm](https://www.npmjs.com/), which comes bundled with [Node.js](https://nodejs.org/) (preferred installation).
+
+### Compiling
+
+The `rest-frontend` has full CMake integration, but does actually only two things:
+- Install (copy) the project files to a target directory.
+- Run `npm install` in this target directory, which does
+ - resolve all `npm` dependencies (into the directory `node_modules`).
+ - resolve all `bower` dependencies (into the directory `public/vendor/bower_components`).
+ - run `grunt full` to compile all application sources (`resources` dir) into working production files (`public` dir).
+
+### Installing
+
+It is not necessary to install anything by hand, CMake does this job already. If changes are made to the source files in `resources`, it is sufficient to run `grunt full` to build the application again. During development, it can be handy to use `grunt watch` to run a watcher daemon that re-compiles LESS or JS files whenever a change was made in the respective `resource` directory.
+
+## Run and Configure
+
+The application allows for some basic configuration. Configurable files can be found in `resources/assets/js/config`, although the only file that should require a change under normal circumstances is the `http.config.js`. It contains the URL to the backend, as well as some URLs for GitHub resources. Any change of this configuration does require to re-run `grunt full` in order to re-compile the project.
+
+To run the application, basically two options are available:
+- Use the built-in webserver of `grunt`, which can be configured in the `Gruntfile.js` and run by `grunt server` (in the installation target directory).
+- Use an own webserver to distribute the application. In order to do so, first `grunt full` should be run. After that, the content of the `public` directory can be copied to any location that suits the needs. `npm` dependencies in the `node_modules` directory and the `resource` directory are only necessary for development, but can be ignored for deployment.
+
+### APIs (Backend & GitHub)
+
+The configuration for API URLs can be found in `resources/assets/js/config/http.config.js`.
+
+### Translations
+
+The configuration for available translations can be found in `resources/assets/js/config/translations.config.js`. To add a translation, copy an existing translation file in `public/assets/translations`, translate it and add the name of the new language to the `translations.config.js` as explained above. After that run `grunt full` to re-compile the application.
+
+## Development
+
+When attempting to change the AngularJS application, it can be useful to first have a look at all used dependencies, which are listed in `resources/assets/js/application.js`. After that, the configuration files in `resources/assets/js/config` should be checked. Probably the most important configuration is the router in `resources/assets/js/config/routes.config.js`.
+
+### Life Cycle
+
+An AngularJS application is bootstrapped by first instantiating constants (can be used for configuration). After that, service providers are run, which allows for further configuration of services. When the bootstrap process is finished and all services are instantiated based on the settings made within the service providers, the router will load the default route (main page) and bind the appropriate controller to it. Controllers are destroyed as soon as a page is changed, but services are not. So caching across pages can be done using services. AngularJS also allows for dependency injection in basically every part of the application (services, controllers, etc) by type-hinting the dependency name.
+
+For detailed information, the website of [Angular](https://angularjs.org/) should be visited.
+
+### Task configuration
+
+All `grunt` tasks can be configured using the `Gruntfile.js` in the application root directory.
+
+### Code formatting
+
+The task `grunt jshint` can be used to check the code formatting of JS source files.

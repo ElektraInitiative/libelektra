@@ -38,22 +38,15 @@ module.exports = function(grunt) {
                 }
             }
         },
-        concat: {
-            options: {
-                banner: dstFileBanner
-            },
-            dist: {
-                files: {
-                    //'public/assets/js/theme/utility/utility.js': 'public/assets/js/theme/utility/**/*.js'
-                }
-            }
-        },
         watch: {
-            files: [
-                'resources/assets/js/**/*.js',
-                'resources/assets/skin/default/less/**/*.less'
-            ],
-            tasks: ['uglify','less','cssmin']
+            less: {
+                files: ['resources/assets/skin/**/*'],
+                tasks: ['less','cssmin']
+            },
+            js: {
+                files: ['resources/assets/js/**/*'],
+                tasks: ['uglify']
+            }
         },
         'http-server': {
 
@@ -115,11 +108,10 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-contrib-less');
     grunt.loadNpmTasks('grunt-contrib-cssmin');
     grunt.loadNpmTasks('grunt-contrib-watch');
-    grunt.loadNpmTasks('grunt-contrib-concat');
     grunt.loadNpmTasks('grunt-http-server');
 
     grunt.registerTask('default', ['uglify']);
-    grunt.registerTask('full', ['less', 'cssmin', 'concat', 'uglify']);
+    grunt.registerTask('full', ['less', 'cssmin', 'uglify']);
     grunt.registerTask('server', ['http-server']);
 
 };
