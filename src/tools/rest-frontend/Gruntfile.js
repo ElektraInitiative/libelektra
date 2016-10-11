@@ -28,6 +28,18 @@ module.exports = function(grunt) {
                 }
             }
         },
+        preprocess: {
+            options: {
+                context: {
+                    CONFIGURATION: grunt.file.read('application-config.json'),
+                },
+				type: 'js'
+            },
+            config: {
+                src: 'resources/assets/js/config/constants.config.js.in',
+                dest: 'resources/assets/js/config/constants.config.js'
+            }
+        },
         uglify: {
             options: {
                 banner: dstFileBanner
@@ -43,6 +55,10 @@ module.exports = function(grunt) {
                 files: ['resources/assets/skin/**/*'],
                 tasks: ['less','cssmin']
             },
+			preprocess: {
+				files: ['resources/assets/js/config/constants.config.js.in'],
+				tasks: ['preprocess']
+			},
             js: {
                 files: ['resources/assets/js/**/*'],
                 tasks: ['uglify']
@@ -108,10 +124,11 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-contrib-less');
     grunt.loadNpmTasks('grunt-contrib-cssmin');
     grunt.loadNpmTasks('grunt-contrib-watch');
+	grunt.loadNpmTasks('grunt-preprocess');
     grunt.loadNpmTasks('grunt-http-server');
 
     grunt.registerTask('default', ['uglify']);
-    grunt.registerTask('full', ['less', 'cssmin', 'uglify']);
+    grunt.registerTask('full', ['less', 'cssmin', 'preprocess', 'uglify']);
     grunt.registerTask('server', ['http-server']);
 
 };

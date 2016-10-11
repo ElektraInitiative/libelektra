@@ -3,12 +3,6 @@
     'use strict';
 
     angular.module('elektra.rest.angular')
-        .constant('config.rest.basepath', 'http://localhost:8080/')
-		.constant('config.github.apipath', 'https://api.github.com/')
-		.constant('config.github.issuepath', 'https://github.com/ElektraInitiative/libelektra/issues/new')
-		.constant('config.github.docpath', 'repos/ElektraInitiative/libelektra/contents/doc')
-		.constant('config.github.tutpath', 'repos/ElektraInitiative/libelektra/contents/doc/tutorials')
-
 		.config([
 			'$httpProvider',
 			'$provide',

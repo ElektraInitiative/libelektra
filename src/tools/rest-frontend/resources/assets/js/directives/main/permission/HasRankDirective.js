@@ -5,7 +5,9 @@
     angular.module('elektra.rest.angular')
         .directive('hasRank', HasRankDirective);
 
-    HasRankDirective.$inject = ['Logger', '$rootScope'];
+    HasRankDirective.$inject = [
+		'Logger', '$rootScope'
+	];
 
     function HasRankDirective(Logger, $rootScope) {
 

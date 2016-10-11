@@ -37,19 +37,27 @@ It is not necessary to install anything by hand, CMake does this job already. If
 
 ## Run and Configure
 
-The application allows for some basic configuration. Configurable files can be found in `resources/assets/js/config`, although the only file that should require a change under normal circumstances is the `http.config.js`. It contains the URL to the backend, as well as some URLs for GitHub resources. Any change of this configuration does require to re-run `grunt full` in order to re-compile the project.
+The application allows for some basic configuration. Configurable files can be found in `resources/assets/js/config`, although the only file that should require a change under normal circumstances is the `application-config.json` in the root directory. It contains the URL to the backend, some URLs for GitHub resources and translation, as well as logger settings. Any change of this configuration does require to re-run `grunt full` in order to re-compile the project.
 
 To run the application, basically two options are available:
 - Use the built-in webserver of `grunt`, which can be configured in the `Gruntfile.js` and run by `grunt server` (in the installation target directory).
 - Use an own webserver to distribute the application. In order to do so, first `grunt full` should be run. After that, the content of the `public` directory can be copied to any location that suits the needs. `npm` dependencies in the `node_modules` directory and the `resource` directory are only necessary for development, but can be ignored for deployment.
 
-### APIs (Backend & GitHub)
+### application-config.json
 
-The configuration for API URLs can be found in `resources/assets/js/config/http.config.js`.
+#### APIs (Backend & GitHub)
 
-### Translations
+The configuration file allows to set the URL to the backend in `backend.root`. GitHub settings may be done in `github`, whereas a small distinction between `api` and `website` is made.
 
-The configuration for available translations can be found in `resources/assets/js/config/translations.config.js`. To add a translation, copy an existing translation file in `public/assets/translations`, translate it and add the name of the new language to the `translations.config.js` as explained above. After that run `grunt full` to re-compile the application.
+#### Translations
+
+The configuration file also allows to specify available translations in `translations.enabled`. To add a translation, copy an existing translation file in `public/assets/translations`, translate it and add the name of the new language to the list in `translations.enabled` as explained above. After that run `grunt full` to re-compile the application.
+
+If necessary, mappings for dialects as well as a default language can be specified as well.
+
+#### Logger
+
+It is possible to enable the frontend logger by changing `logger.enabled` in the configuration file.
 
 ## Development
 

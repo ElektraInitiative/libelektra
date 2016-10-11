@@ -5,7 +5,9 @@
     angular.module('elektra.rest.angular')
         .directive('dateNow', DateNow);
 
-    DateNow.$inject = ['$filter'];
+    DateNow.$inject = [
+		'$filter'
+	];
 
     function DateNow($filter) {
 

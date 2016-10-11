@@ -6,11 +6,10 @@
         .controller('AuthRegistrationController', AuthRegistrationController);
 
     AuthRegistrationController.$inject = [
-        '$rootScope', '$scope', 'Logger', '$state', '$http', 'Notification', 'config.rest.basepath'
+        '$scope', 'Logger', '$state', '$http', 'Notification', 'config'
     ];
 
-    function AuthRegistrationController($rootScope, $scope, Logger, $state, $http, Notification,
-			configRestBasepath) {
+    function AuthRegistrationController($scope, Logger, $state, $http, Notification, config) {
 
         var vm = this;
 
@@ -18,7 +17,7 @@
 
 
         this.doRegistration = function() {
-            $http.post(configRestBasepath + 'user', $scope.user, {
+            $http.post(config.backend.root + 'user', $scope.user, {
 				// custom options
 			})
 			.then(function(response) {
@@ -35,7 +34,7 @@
 					message: 'APP.AUTH.REGISTRATION.NOTIFICATION.MESSAGE.' + response.data.i18n
 				});
 			});
-        }
+        };
 
         Logger.info("Registration controller ready");
 

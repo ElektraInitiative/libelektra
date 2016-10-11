@@ -5,7 +5,9 @@
     angular.module('elektra.rest.angular')
         .directive('hasRankOrIsOwner', HasRankOrIsOwnerDirective);
 
-    HasRankOrIsOwnerDirective.$inject = ['Logger', '$rootScope', '$parse'];
+    HasRankOrIsOwnerDirective.$inject = [
+		'Logger', '$rootScope', '$parse'
+	];
 
     function HasRankOrIsOwnerDirective(Logger, $rootScope, $parse) {
 
@@ -30,13 +32,13 @@
 				}, true); // deep watcher
 
 				var check = function() {
-					Logger.info('Checking for rank: ' + $scope.hasRankOrIsOwner.rank
-							+ ' or owner: ' + $scope.hasRankOrIsOwner.owner);
+					Logger.info('Checking for rank: ' + $scope.hasRankOrIsOwner.rank +
+							' or owner: ' + $scope.hasRankOrIsOwner.owner);
 					if($rootScope.currentUser && $rootScope.currentUser.rank >= $scope.hasRankOrIsOwner.rank) {
 						Logger.info('Rank sufficient: ' + $rootScope.currentUser.rank);
 						elem.show();
-					} else if($rootScope.currentUser
-							&& $rootScope.currentUser.username === $scope.hasRankOrIsOwner.owner) {
+					} else if($rootScope.currentUser &&
+							$rootScope.currentUser.username === $scope.hasRankOrIsOwner.owner) {
 						Logger.info('Owner found: ' + $rootScope.currentUser.username);
 						elem.show();
 					} else {

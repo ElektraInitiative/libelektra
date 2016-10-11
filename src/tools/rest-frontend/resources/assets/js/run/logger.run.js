@@ -4,10 +4,11 @@
 
     angular.module('elektra.rest.angular').run([
         'Logger',
-        function(Logger) {
+		'config',
+        function(Logger, config) {
 
             // configure logger
-            Logger.debug = true;
+            Logger.debug = config.logger.enabled;
 
         }
     ]);

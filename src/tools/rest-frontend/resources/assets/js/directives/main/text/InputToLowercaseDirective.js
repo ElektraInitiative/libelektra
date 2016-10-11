@@ -5,9 +5,9 @@
     angular.module('elektra.rest.angular')
         .directive('toLowercase', InputToLowercaseDirective);
 
-    InputToLowercaseDirective.$inject = ['Logger'];
+    InputToLowercaseDirective.$inject = [];
 
-    function InputToLowercaseDirective(Logger) {
+    function InputToLowercaseDirective() {
 
         return {
 

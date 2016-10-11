@@ -37,7 +37,7 @@
                 $state.go('main.entries.search');
             }
 
-        }
+        };
 
         Logger.info("Main template ready");
 

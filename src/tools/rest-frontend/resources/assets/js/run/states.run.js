@@ -10,9 +10,6 @@
         'UserService',
         function(Logger, $rootScope, $state, $auth, UserService) {
 
-//            // add state service to root scope
-//            $rootScope.$state = $state;
-
             $rootScope.$on("$stateChangeError", console.log.bind(console));
 
             $rootScope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
@@ -49,9 +46,9 @@
 
 							Logger.log("Check route permissions");
 
-							if (!$auth.isAuthenticated()
-									|| !$rootScope.currentUser
-									|| !$rootScope.currentUser.rank >= toState.data.rank) {
+							if (!$auth.isAuthenticated() ||
+									!$rootScope.currentUser ||
+									$rootScope.currentUser.rank < toState.data.rank) {
 
 								Logger.log("Insufficient permissions");
 

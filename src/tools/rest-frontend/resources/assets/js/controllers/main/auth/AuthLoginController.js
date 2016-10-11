@@ -6,10 +6,10 @@
         .controller('AuthLoginController', AuthLoginController);
 
     AuthLoginController.$inject = [
-        '$rootScope', '$scope', 'Logger', '$state', '$auth', 'Notification', '$timeout'
+        '$scope', 'Logger', '$state', '$auth', 'Notification'
     ];
 
-    function AuthLoginController($rootScope, $scope, Logger, $state, $auth, Notification, $timeout) {
+    function AuthLoginController($scope, Logger, $state, $auth, Notification) {
 
         var vm = this;
 
@@ -35,7 +35,7 @@
 					message: 'APP.AUTH.LOGIN.NOTIFICATION.MESSAGE.' + response.data.i18n
 				});
 			});
-        }
+        };
 
         Logger.info("Login controller ready");
 

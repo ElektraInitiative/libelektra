@@ -6,10 +6,10 @@
         .controller('DocumentationController', DocumentationController);
 
     DocumentationController.$inject = [
-		'$scope', 'Logger', '$state', '$http', 'DocumentationService', 'docs', 'doc'
+		'$scope', 'Logger', 'DocumentationService', 'docs', 'doc'
 	];
 
-    function DocumentationController($scope, Logger, $state, $http, DocumentationService, docs, doc) {
+    function DocumentationController($scope, Logger, DocumentationService, docs, doc) {
 
         var vm = this;
 

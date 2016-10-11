@@ -6,10 +6,10 @@
         '$authProvider',
         '$httpProvider',
         '$provide',
-        'config.rest.basepath',
-        function($authProvider, $httpProvider, $provide, configRestBasepath) {
+        'config',
+        function($authProvider, $httpProvider, $provide, config) {
 
-            $authProvider.baseUrl = configRestBasepath;
+            $authProvider.baseUrl = config.backend.root;
             $authProvider.loginUrl = '/auth';
 
             // Setup interceptor that logs user out if being idle too long
@@ -38,7 +38,7 @@
 
                             return $q.reject(rejection);
                         }
-                    }
+                    };
 
                 }
             ]);

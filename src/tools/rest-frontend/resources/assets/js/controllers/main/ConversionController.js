@@ -69,28 +69,28 @@
 		};
 
 		this.createGithubIssue = function() {
-			var title = 'Convert with plugin ' + $scope.parameters.input.format.plugin
-						+ ' to ' + $scope.parameters.output.format.plugin;
-			var message = 'I tried to convert a snippet on the website, but got the error: '
-						+ $scope.lastError + '\n\n'
-						+ '## Used plugins\n'
-						+ '```\n'
-						+ 'Input:\n'
-						+ '- Plugin: ' + $scope.parameters.input.format.plugin + '\n'
-						+ '- Format: ' + $scope.parameters.input.format.format + '\n'
-						+ 'Output:\n'
-						+ '- Plugin: ' + $scope.parameters.output.format.plugin + '\n'
-						+ '- Format: ' + $scope.parameters.output.format.format + '\n'
-						+ '```\n\n'
-						+ '## Input configuration\n'
-						+ '```\n'
-						+ $scope.parameters.input.snippet + '\n'
-						+ '```\n\n'
-						+ '## Last output configuration\n'
-						+ '```\n'
-						+ $scope.parameters.output.snippet + '\n'
-						+ '```\n\n'
-						+ '## Additional information\n';
+			var title = 'Convert with plugin ' + $scope.parameters.input.format.plugin +
+						' to ' + $scope.parameters.output.format.plugin;
+			var message = 'I tried to convert a snippet on the website, but got the error: ' +
+						$scope.lastError + '\n\n' +
+						'## Used plugins\n' +
+						'```\n' +
+						'Input:\n' +
+						'- Plugin: ' + $scope.parameters.input.format.plugin + '\n' +
+						'- Format: ' + $scope.parameters.input.format.format + '\n' +
+						'Output:\n' +
+						'- Plugin: ' + $scope.parameters.output.format.plugin + '\n' +
+						'- Format: ' + $scope.parameters.output.format.format + '\n' +
+						'```\n\n' +
+						'## Input configuration\n' +
+						'```\n' +
+						$scope.parameters.input.snippet + '\n' +
+						'```\n\n' +
+						'## Last output configuration\n' +
+						'```\n' +
+						$scope.parameters.output.snippet + '\n' +
+						'```\n\n' +
+						'## Additional information\n';
 			var labels = ['website'];
 
 			ReportService.reportIssue(title, message, labels);

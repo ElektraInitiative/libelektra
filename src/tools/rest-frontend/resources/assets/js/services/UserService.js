@@ -6,10 +6,10 @@
         .service('UserService', UserService);
 
     UserService.$inject = [
-        '$rootScope', 'Logger', '$http', '$q', 'config.rest.basepath'
+        'Logger', '$http', '$q', 'config'
     ];
 
-    function UserService($rootScope, Logger, $http, $q, configRestBasepath) {
+    function UserService(Logger, $http, $q, config) {
 
         var service = this;
 
@@ -48,7 +48,7 @@
 
 			if(currentUser === true) {
 				if(!service.cache.currentUser.hasUser || force) {
-					$http.get(configRestBasepath + 'user?current=true', {
+					$http.get(config.backend.root + 'user?current=true', {
 						// custom options
 					}).then(function (response) {
 						service.cache.currentUser.user = response.data;
@@ -61,7 +61,7 @@
 					deferred.resolve(service.cache.currentUser.user);
 				}
 			} else {
-				$http.get(configRestBasepath + 'user/' + username, {
+				$http.get(config.backend.root + 'user/' + username, {
 					// custom options
 				}).then(function(response) {
 					deferred.resolve(response.data);
@@ -80,11 +80,11 @@
 			currentUser = (typeof currentUser === 'undefined') ? false : currentUser;
 
 			if(currentUser === true) {
-				return $http.put(configRestBasepath + 'user?current=true', data, {
+				return $http.put(config.backend.root + 'user?current=true', data, {
 					// custom options
 				});
 			} else {
-				return $http.put(configRestBasepath + 'user/' + username, data, {
+				return $http.put(config.backend.root + 'user/' + username, data, {
 					// custom options
 				});
 			}
@@ -100,7 +100,7 @@
             if(!service.cache.search.cached || !angular.equals(service.cache.search.params, params) || force)
             {
                 Logger.info('Loading users');
-                $http.get(configRestBasepath + 'user', {
+                $http.get(config.backend.root + 'user', {
 					params: params
 				}).success(function(data) {
                     service.cache.search.users = data;
@@ -128,6 +128,8 @@
         this.getSearchFilter = function() {
             return this.cache.search.params.filter;
         };
+
+		Logger.info('User service ready!');
 
     }
 

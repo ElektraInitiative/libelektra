@@ -116,9 +116,9 @@
                     pages.push(curPage-i);
             }
             pages.push(curPage);
-            for(var i=1; i <= 2; i++) {
-                if(curPage+i <= numPages)
-                    pages.push(curPage+i);
+            for(var j=1; j <= 2; j++) {
+                if(curPage+j <= numPages)
+                    pages.push(curPage+j);
             }
             $scope.pagination.pages = pages;
             Logger.info('Pages: ' + pages);

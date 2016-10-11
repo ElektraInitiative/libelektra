@@ -5,9 +5,9 @@
     angular.module('elektra.rest.angular')
         .directive('onKeyEnter', OnKeyEnter);
 
-    OnKeyEnter.$inject = ['Logger'];
+    OnKeyEnter.$inject = [];
 
-    function OnKeyEnter(Logger) {
+    function OnKeyEnter() {
 
         return function ($scope, element, attrs) {
 

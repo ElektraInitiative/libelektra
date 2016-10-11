@@ -1,0 +1,31 @@
+{
+	"backend": {
+		"root": "http://localhost:8080/"
+	},
+	"github": {
+		"api": {
+			"root": "https://api.github.com/",
+			"paths": {
+				"documentation": "repos/ElektraInitiative/libelektra/contents/doc",
+				"tutorials": "repos/ElektraInitiative/libelektra/contents/doc/tutorials"
+			}
+		},
+		"website": {
+			"root": "https://github.com/",
+			"paths": {
+				"issues": "ElektraInitiative/libelektra/issues/new"
+			}
+		}
+	},
+	"translations": {
+		"enabled": ["en"],
+		"mappings": {
+			"en_US": "en",
+			"en_UK": "en"
+		},
+		"default": "en"
+	},
+	"logger": {
+		"enabled": true
+	}
+}

@@ -5,9 +5,11 @@
     angular.module('elektra.rest.angular')
         .directive('equalInput', EqualInputDirective);
 
-    EqualInputDirective.$inject = ['Logger', '$parse'];
+    EqualInputDirective.$inject = [
+		'$parse'
+	];
 
-    function EqualInputDirective(Logger, $parse) {
+    function EqualInputDirective($parse) {
 
         return {
 

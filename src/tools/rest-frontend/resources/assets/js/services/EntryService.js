@@ -6,10 +6,10 @@
         .service('EntryService', EntryService);
 
     EntryService.$inject = [
-        'Logger', '$http', '$q', 'config.rest.basepath'
+        'Logger', '$http', '$q', 'config'
     ];
 
-    function EntryService(Logger, $http, $q, configRestBasepath) {
+    function EntryService(Logger, $http, $q, config) {
 
         var service = this;
 
@@ -34,7 +34,7 @@
 
             Logger.info('Attempting to create entry.');
 
-            return $http.post(configRestBasepath + 'database', entry,{
+            return $http.post(config.backend.root + 'database', entry,{
 				// custom options
 			});
 
@@ -44,7 +44,7 @@
 
 			Logger.info('Attempting to update entry.');
 
-			return $http.put(configRestBasepath + 'database/' + key, entry, {
+			return $http.put(config.backend.root + 'database/' + key, entry, {
 				// custom options
 			});
 
@@ -54,7 +54,7 @@
 
 			Logger.info('Attempting to delete entry.');
 
-			return $http.delete(configRestBasepath + 'database/' + key, {
+			return $http.delete(config.backend.root + 'database/' + key, {
 				// custom options
 			});
 
@@ -69,8 +69,7 @@
 			if(key.length <= 1) {
 				deferred.reject('Invalid key');
 			} else {
-				var url = configRestBasepath;
-				url = url + 'database/' + key;
+				var url = config.backend.root + 'database/' + key;
 				$http.get(url).success(function(data) {
 					deferred.resolve(data);
 				}).error(function(data) {
@@ -80,7 +79,7 @@
 
             return deferred.promise;
 
-        }
+        };
 
 		this.search = function(params, force) {
 
@@ -91,7 +90,7 @@
             if(!service.cache.search.cached || !angular.equals(service.cache.search.params, params) || force)
             {
                 Logger.info('Loading entries');
-                $http.get(configRestBasepath + 'database', {
+                $http.get(config.backend.root + 'database', {
 					params: params
 				}).success(function(data) {
                     service.cache.search.entries = data;
@@ -130,7 +129,7 @@
 			if(service.cache.formats.length > 0) {
 				deferred.resolve(service.cache.formats);
 			} else {
-				$http.get(configRestBasepath + 'conversion/formats', {
+				$http.get(config.backend.root + 'conversion/formats', {
 					// custom options
 				}).success(function(data) {
 					service.cache.formats = data;

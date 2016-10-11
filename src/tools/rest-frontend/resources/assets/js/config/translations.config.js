@@ -4,7 +4,8 @@
 
     angular.module('elektra.rest.angular').config([
         '$translateProvider',
-        function($translateProvider) {
+		'config',
+        function($translateProvider, config) {
 
             // configure translations
             $translateProvider
@@ -13,12 +14,9 @@
                     prefix: 'assets/translations/',
                     suffix: '.json'
                 })
-                .registerAvailableLanguageKeys(['en'], {
-                    'en_US': 'en',
-                    'en_UK': 'en'
-                })
-                .fallbackLanguage('en')
-                .preferredLanguage('en');
+                .registerAvailableLanguageKeys(config.translations.enabled, config.translations.mappings)
+                .fallbackLanguage(config.translations.default)
+                .preferredLanguage(config.translations.default);
 
         }
     ]);

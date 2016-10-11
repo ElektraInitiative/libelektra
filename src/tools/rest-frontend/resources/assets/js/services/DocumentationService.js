@@ -6,12 +6,10 @@
         .service('DocumentationService', DocumentationService);
 
     DocumentationService.$inject = [
-        'Logger', '$http', '$q', 'base64', '$filter', 'config.github.apipath',
-		'config.github.docpath', 'config.github.tutpath'
+        'Logger', '$http', '$q', 'base64', '$filter', 'config'
     ];
 
-    function DocumentationService(Logger, $http, $q, base64, $filter, configGithubApipath,
-			configGithubDocpath, configGithubTutpath) {
+    function DocumentationService(Logger, $http, $q, base64, $filter, config) {
 
         var service = this;
 
@@ -32,7 +30,7 @@
 			if(cache.files.length > 0) {
 				deferred.resolve(cache.files);
 			} else {
-				$http.get(configGithubApipath + path, {
+				$http.get(config.github.api.root + path, {
 					skipAuthorization: true
 				}).success(function(data) {
 					data.forEach(function(elem) {
@@ -64,11 +62,11 @@
 		};
 
 		this.loadDocumentations = function() {
-			return service.loadFiles(configGithubDocpath, service.cache.documentation);
+			return service.loadFiles(config.github.api.paths.documentation, service.cache.documentation);
 		};
 
 		this.loadTutorials = function() {
-			return service.loadFiles(configGithubTutpath, service.cache.tutorials);
+			return service.loadFiles(config.github.api.paths.tutorials, service.cache.tutorials);
 		};
 
 		this.loadDocument = function(url) {
@@ -91,6 +89,8 @@
 			return deferred.promise;
 
 		};
+
+		Logger.info('Documentation service ready!');
 
     }
 

@@ -5,9 +5,11 @@
     angular.module('elektra.rest.angular')
         .controller('HomeController', HomeController);
 
-    HomeController.$inject = ['$scope', 'Logger', '$state'];
+    HomeController.$inject = [
+		'$scope', 'Logger'
+	];
 
-    function HomeController($scope, Logger, $state) {
+    function HomeController($scope, Logger) {
 
         var vm = this;
 
