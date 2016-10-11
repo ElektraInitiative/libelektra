@@ -21,6 +21,7 @@
     "grunt-contrib-uglify": "latest",
     "grunt-contrib-watch": "latest",
     "grunt-http-server": "latest",
+	"jshint-stylish": "latest",
 	"bower": "latest"
   },
   "scripts": {
