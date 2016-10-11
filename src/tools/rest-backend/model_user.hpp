@@ -247,7 +247,12 @@ public:
 
 	static bool less_than_created_at (User & l, User & r)
 	{
-		return l.getCreatedAt () < r.getCreatedAt ();
+		return l.getCreatedAt () <= r.getCreatedAt ();
+	}
+
+	static bool less_than_rank (User & l, User & r)
+	{
+		return l.getRank () <= r.getRank ();
 	}
 
 	static bool greater_than_username (User & l, User & r)
@@ -262,7 +267,12 @@ public:
 
 	static bool greater_than_created_at (User & l, User & r)
 	{
-		return r.getCreatedAt () < l.getCreatedAt ();
+		return r.getCreatedAt () <= l.getCreatedAt ();
+	}
+
+	static bool greater_than_rank (User & l, User & r)
+	{
+		return r.getRank () <= l.getRank ();
 	}
 
 private:

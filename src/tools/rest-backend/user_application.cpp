@@ -605,7 +605,7 @@ inline void UserApp::processSorting (cppcms::http::request & req, std::vector<mo
 	}
 
 	// validate the sortby input or set default
-	std::vector<std::string> sortOptions = { "username", "email", "created_at" };
+	std::vector<std::string> sortOptions = { "username", "email", "created_at", "rank" };
 	if (std::find (sortOptions.begin (), sortOptions.end (), sortby) == sortOptions.end ())
 	{
 		sortby = std::string (ELEKTRA_REST_OUTPUT_SORTBY_USER_DEFAULT);
@@ -622,6 +622,10 @@ inline void UserApp::processSorting (cppcms::http::request & req, std::vector<mo
 		{
 			std::sort (users.begin (), users.end (), model::User::less_than_created_at);
 		}
+		else if (boost::iequals (sortby, "rank"))
+		{
+			std::sort (users.begin (), users.end (), model::User::less_than_rank);
+		}
 		else // last option "username"
 		{
 			std::sort (users.begin (), users.end (), model::User::less_than_username);
@@ -636,6 +640,10 @@ inline void UserApp::processSorting (cppcms::http::request & req, std::vector<mo
 		else if (boost::iequals (sortby, "created_at"))
 		{
 			std::sort (users.begin (), users.end (), model::User::greater_than_created_at);
+		}
+		else if (boost::iequals (sortby, "rank"))
+		{
+			std::sort (users.begin (), users.end (), model::User::greater_than_rank);
 		}
 		else // last option "username"
 		{

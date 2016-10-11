@@ -363,7 +363,7 @@ public:
 
 	static bool less_than_created_at (Entry & l, Entry & r)
 	{
-		return l.getCreatedAt () < r.getCreatedAt ();
+		return l.getCreatedAt () <= r.getCreatedAt ();
 	}
 
 	static bool less_than_author (Entry & l, Entry & r)
@@ -403,7 +403,7 @@ public:
 
 	static bool greater_than_created_at (Entry & l, Entry & r)
 	{
-		return r.getCreatedAt () < l.getCreatedAt ();
+		return r.getCreatedAt () <= l.getCreatedAt ();
 	}
 
 	static bool greater_than_author (Entry & l, Entry & r)
