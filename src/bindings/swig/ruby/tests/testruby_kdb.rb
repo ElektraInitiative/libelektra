@@ -1,3 +1,11 @@
+#!/usr/bin/env ruby
+## 
+# @file 
+# 
+# @brief unit test cases for Kdb::KDB
+# 
+# @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+# 
 
 require 'kdb'
 require 'test/unit'

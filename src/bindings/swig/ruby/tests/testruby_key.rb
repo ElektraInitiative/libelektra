@@ -1,3 +1,11 @@
+#!/usr/bin/env ruby
+## 
+# @file 
+# 
+# @brief unit test cases for Kdb::Key
+# 
+# @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+# 
 
 require 'kdb'
 require 'test/unit'
@@ -40,7 +48,8 @@ class KdbKeyTestCases < Test::Unit::TestCase
       k = Kdb::Key.new name
       assert k.is_valid?
       assert_equal name, k.name
-      assert_equal "", k.get_string # TODO: should we return nil here
+      # it is better here to return "", instead of nil
+      assert_equal "", k.get_string
 
       v = "val"
       k = Kdb::Key.new name, value: v
@@ -172,24 +181,29 @@ class KdbKeyTestCases < Test::Unit::TestCase
       name = "user/tmp/k1"
       k.name = name
       assert_equal name, k.name
-      assert_equal name.split('/').reverse[0], k.base_name
+      assert_equal name.split('/').reverse[0], k.basename
       assert_equal "user", k.namespace
 
-      k.add_base_name "b1"
-      assert_equal "b1", k.base_name
-      assert_equal "#{name}/b1", k.full_name
+      k.add_basename "b1"
+      assert_equal "b1", k.basename
+      assert_equal "#{name}/b1", k.fullname
 
-      k.add_base_name "bb2"
-      assert_equal "bb2", k.base_name
-      assert_equal "#{name}/b1/bb2", k.full_name
+      k.add_basename "bb2"
+      assert_equal "bb2", k.basename
+      assert_equal "#{name}/b1/bb2", k.fullname
 
       k.add_name "n1/n2"
-      assert_equal "n2", k.base_name
-      assert_equal "#{name}/b1/bb2/n1/n2", k.full_name
+      assert_equal "n2", k.basename
+      assert_equal "#{name}/b1/bb2/n1/n2", k.fullname
 
       k.add_name "../../../../new1"
-      assert_equal "new1", k.base_name
-      assert_equal "#{name}/new1", k.full_name
+      assert_equal "new1", k.basename
+      assert_equal "#{name}/new1", k.fullname
+
+      k.add_name "..\\/escaped_name\\/k"
+      assert_equal "../escaped_name/k", k.basename
+      assert_equal "#{name}/new1/..\\/escaped_name\\/k", k.fullname
+      
     end
   end
 
@@ -205,11 +219,11 @@ class KdbKeyTestCases < Test::Unit::TestCase
     end
     
     assert_raise Kdb::KeyInvalidName do
-      k.base_name= "x"
+      k.basename= "x"
     end
     
     assert_raise Kdb::KeyInvalidName do
-      k.add_base_name "x"
+      k.add_basename "x"
     end
     
     assert_nothing_raised do

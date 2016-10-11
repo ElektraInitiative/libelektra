@@ -4,7 +4,7 @@ include(LibAddMacros)
 find_package(Ruby)
 
 if (NOT RUBY_FOUND)
-	remove_binding(swig_ruby "ruby interpreter not found")
+	remove_binding(swig_ruby "ruby interpreter or ruby header files not found (package ruby-dev/ruby-devel installed?)")
 else()
 
 	message(STATUS "Include Binding swig_ruby")

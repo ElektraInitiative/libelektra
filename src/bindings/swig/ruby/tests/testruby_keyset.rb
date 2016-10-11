@@ -1,3 +1,11 @@
+#!/usr/bin/env ruby
+## 
+# @file 
+# 
+# @brief unit test cases for Kdb::KeySet
+# 
+# @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+# 
 
 require 'kdb'
 require 'test/unit'
@@ -78,7 +86,7 @@ class KdbKeySetTestCases < Test::Unit::TestCase
       ]
 
       assert_equal 3, ks.size
-      assert_equal "key1", ks.head.base_name
+      assert_equal "key1", ks.head.basename
 
       # ensure also larger arrays, with more than 16 (preallocated) elements
       # work correctly
@@ -86,7 +94,7 @@ class KdbKeySetTestCases < Test::Unit::TestCase
       ks = Kdb::KeySet.new a
 
       assert_equal 40, ks.size
-      assert_equal "key40", ks.tail.base_name
+      assert_equal "key40", ks.tail.basename
     end
 
     assert_raise ArgumentError do
@@ -98,13 +106,6 @@ class KdbKeySetTestCases < Test::Unit::TestCase
     end
   end
 
-  #def test_keySet_new_alloc_size
-  #  ks = Kdb::KeySet.new 100
-
-  #  assert_not_nil ks
-  #  assert_instance_of Kdb::KeySet, ks
-
-  #end
 
   def test_keySet_append
     assert_nothing_raised do
@@ -134,15 +135,20 @@ class KdbKeySetTestCases < Test::Unit::TestCase
     assert_nothing_raised do
       ks1 = Kdb::KeySet.new
 
-      ks1 << Kdb::Key.new("user/ks1")
-      ks1 << Kdb::Key.new("user/ks2")
+      num = ks1 << Kdb::Key.new("user/ks1")
+      assert_equal 1, num
+      num = ks1 << Kdb::Key.new("user/ks2")
+      assert_equal 2, num
 
       ks2 = Kdb::KeySet.new
 
-      ks2 << Kdb::Key.new("user/ks3")
-      ks2 << Kdb::Key.new("user/ks4")
+      num = ks2 << Kdb::Key.new("user/ks3")
+      assert_equal 1, num
+      num = ks2 << Kdb::Key.new("user/ks4")
+      assert_equal 2, num
 
-      ks1 << ks2
+      num = ks1 << ks2
+      assert_equal 4, num
 
       assert_equal 4, ks1.size
       assert_equal 2, ks2.size
@@ -157,7 +163,8 @@ class KdbKeySetTestCases < Test::Unit::TestCase
 
       ks = Kdb::KeySet.new
 
-      ks.append a
+      num = ks.append a
+      assert_equal 2, num
 
       assert_equal 2, ks.size
       assert_equal a[0], ks[1]
@@ -167,23 +174,25 @@ class KdbKeySetTestCases < Test::Unit::TestCase
     assert_nothing_raised do
       ks = Kdb::KeySet.new
 
-      ks << [
+      num = ks << [
         Kdb::Key.new("user/ks1"),
         Kdb::Key.new("user/ks2"),
         Kdb::Key.new("user/ks3")
       ]
+      assert_equal 3, num
 
       assert_equal 3, ks.size
       assert_equal "user/ks1", ks.head.name
     end
 
+    
+    a = Array.new
+    a << "not a Key"
+    a << 1
+
+    ks = Kdb::KeySet.new
+
     assert_raise ArgumentError do
-      a = Array.new
-      a << "not a Key"
-      a << 1
-
-      ks = Kdb::KeySet.new
-
       ks.append a
     end
 
@@ -375,8 +384,6 @@ class KdbKeySetTestCases < Test::Unit::TestCase
       tmpa = ks.find_all { |e| e.has_meta? "m2" }
       assert_instance_of Array, tmpa
       assert_equal 2, tmpa.size
-      #puts "name: #{tmpa[0].name}, value: #{tmpa[0].value}"
-      #puts "name: #{tmpa[1].name}, value: #{tmpa[1].value}"
       assert_equal a[2], tmpa[0]
       assert_equal a[5], tmpa[1]
 
@@ -463,10 +470,6 @@ class KdbKeySetTestCases < Test::Unit::TestCase
       assert_nil ks.lookup(Kdb::Key.new "user/key_now_in_keyset")
 
       # with options
-      #lookupkey = Kdb::Key.new "user/key04"
-      #assert_equal lookupkey, ks.lookup(lookupkey, Kdb::KDB_O_DEL)
-      #assert lookupkey.is_null? # TODO: should this really work this way
-
       lookupkey = Kdb::Key.new "user/key05"
       assert_equal lookupkey, ks.lookup(lookupkey, Kdb::KDB_O_POP)
       assert_equal 9, ks.size
@@ -608,6 +611,26 @@ class KdbKeySetTestCases < Test::Unit::TestCase
 
       assert_equal 1, ks.size
       assert_equal 1, ks.length
+
+      (2..10).map do |i|
+          ks << Kdb::Key.new("user/sw/org/my_app/k#{i}")
+          assert_equal i, ks.size
+          assert_equal i, ks.length
+      end
+
+      (0..9).reverse_each do |i|
+          assert_not_nil ks.pop
+          assert_equal i, ks.size
+          assert_equal i, ks.length
+      end
+
+      # to be explicite
+      assert_equal 0, ks.size
+      assert_equal 0, ks.length
+
+      assert_nil ks.pop
+      assert_equal 0, ks.size
+      assert_equal 0, ks.length
     end
   end
 

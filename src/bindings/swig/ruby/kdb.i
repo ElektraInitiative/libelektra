@@ -8,7 +8,7 @@
 
 %feature("autodoc", "3");
 
-%define CPPDOCURL "http://www.libelektra.org/TBD!!!" %enddef
+%define CPPDOCURL "http://doc.libelektra.org/api/current/html" %enddef
 
 %define DOCSTRING
 "This module is a SWIG generated binding for KDB (http://www.libelektra.org),
@@ -21,14 +21,12 @@ this module differs to the C++ API in the following way:
  * Access to native C-level KDB structures (such as ckdb::Key) is not
    possible, as this does not make much sense within Ruby.
  * method names are renamed to follow Ruby naming conventions
- * Key and KeySet methods directly modify the underlaying Key/KeySet
+ * Key and KeySet methods directly modify the underlying Key/KeySet
 
-Please note, this documentaition will show C++ types also (e.g. std::string).
+Please note, this documentaition will show C++ types too (e.g. std::string).
 "
 %enddef
-/* docstring for module wasn't implemented until now, however, there's 
-   a pull-request (https://github.com/swig/swig/pull/582), thus this feature
-   should be available soon */
+/* docstring for module implemented for swig >= 3.0.18 */
 %module(docstring=DOCSTRING) kdb
 
 
@@ -49,6 +47,7 @@ namespace std {
   extern "C" {
     #include "kdbconfig.h"
     #include "kdbprivate.h" /* required for KEYSET_SIZE */
+    #include "kdblogger.h"
     #include "kdb.h"
   }
 
@@ -188,7 +187,7 @@ The following variants are available:
 %predicate kdb::Key::isBelowOrSame;
 %predicate kdb::Key::isDirectBelow;
 %predicate kdb::Key::hasMeta;
-%predicate kdb::Key::isNull; // TODO: do we need something special here??? 
+%predicate kdb::Key::isNull;
 %predicate kdb::Key::needSync;
 
 /* 
@@ -213,10 +212,12 @@ namespace kdb {
 %rename("name") kdb::Key::getName;
 %rename("name=") kdb::Key::setName;
 
-%rename("base_name") kdb::Key::getBaseName;
-%rename("base_name=") kdb::Key::setBaseName;
+%rename("basename") kdb::Key::getBaseName;
+%rename("basename=") kdb::Key::setBaseName;
 
-%rename("full_name") kdb::Key::getFullName;
+%rename("add_basename") kdb::Key::addBaseName;
+
+%rename("fullname") kdb::Key::getFullName;
 
 %rename("namespace") kdb::Key::getNamespace;
 
@@ -269,7 +270,7 @@ underlaying key, which allows a Ruby-style iteration over metadata:
 
 /* 'imitate' va_list as Ruby Hash
  * 
- * "missuse" the exception feature of SWIG to provide a custom
+ * "misuse" the exception feature of SWIG to provide a custom
  *  method invocation. This allows us to pass a Ruby argument hash
  *  as a va_list. This way, we can imitate the variable argument
  *  list (and keyword argument) features
@@ -292,7 +293,8 @@ underlaying key, which allows a Ruby-style iteration over metadata:
   int i;
   int flags = 0;
 
-  /* $input substitution does not here, so we have to reverence
+
+  /* $input substitution does not here, so we have to reference
      input variables directly */
 
   hash_size = NUM2INT(rb_funcall(argv[1], rb_intern("size"), 0, NULL));
@@ -336,7 +338,7 @@ underlaying key, which allows a Ruby-style iteration over metadata:
       val = rb_funcall(val, rb_intern("to_s"), 0, NULL);
       /* ignore certain keys */
       if (strcmp("flags", StringValueCStr(key)) == 0) continue;
-      /* 'value' has also a special meening */
+      /* 'value' has also a special meaning */
       if (strcmp("value", StringValueCStr(key)) == 0) {
         if (flags & KEY_BINARY) {
           result->setBinary(StringValuePtr(val), RSTRING_LEN(val));
@@ -386,7 +388,6 @@ underlaying key, which allows a Ruby-style iteration over metadata:
 /* 
  * Iterators
  */
-// exclude them for now
 #define ELEKTRA_WITHOUT_ITERATOR
 
 /* 
@@ -467,6 +468,7 @@ aliased to '<=>', implemented for sorting operations.
 %ignore kdb::KeySet::KeySet (ckdb::KeySet * k);
 %ignore kdb::KeySet::KeySet (size_t alloc, ...);
 %ignore kdb::KeySet::KeySet (VaAlloc alloc, va_list ap);
+%ignore kdb::KeySet::KeySet (Key, ...);
 
 %ignore kdb::VaAlloc;
 
@@ -486,15 +488,14 @@ aliased to '<=>', implemented for sorting operations.
 /*
  * Constructors
  */
-
-/* special mapping for KeySet::KeySet(Key, ...) constructor
+/* add a custom constructor for KeySet::KeySet(Key)
  * to enable passing a single Key, or an Array of Keys.
  * This allows KeySet creation in a more Ruby way */
 /* first check if we've got a Key or a Ruby-array */
-%typemap(in) (kdb::Key, ...) {
-  $2 = NULL;
+%typemap(in) (kdb::Key*) {
+  $1 = NULL;
   if (!RB_TYPE_P($input, T_ARRAY)){
-    if (SWIG_ConvertPtr($input, (void**)&$2, SWIGTYPE_p_kdb__Key, 0) == -1) {
+    if (SWIG_ConvertPtr($input, (void**)&$1, SWIGTYPE_p_kdb__Key, 0) == -1) {
       rb_raise(rb_eArgError, "Argument has to be of Type Kdb::Key or Array");
       SWIG_fail;
     }
@@ -502,16 +503,11 @@ aliased to '<=>', implemented for sorting operations.
 }
 /* define a custom KeySet creation to be able to append the given Key 
  * arguments to the newly created KeySet */
-%feature("except") kdb::KeySet::KeySet (Key, ...) {
-  /* original action
-  $action
-  */
-
-  if (arg2 != NULL) {
-    /* we got a kdb::Key argument (see corresponding typemap) */
-    kdb::Key *k = (kdb::Key *)arg2;
-    result = (kdb::KeySet *)new kdb::KeySet();
-    result->append(*k);
+%feature("except") kdb::KeySet::KeySet (Key*) {
+  if (arg1 != NULL) {
+    /* we got a kdb::Key argument (see corresponding typemap) 
+       so simply use our custom constructor*/
+    $action
   } else {
     /* Ruby-Array */
     if (RARRAY_LEN(argv[0]) > KEYSET_SIZE) {
@@ -528,19 +524,30 @@ aliased to '<=>', implemented for sorting operations.
       kdb::Key *ek = NULL;
       e = rb_ary_entry(argv[0], i);
       if (SWIG_ConvertPtr(e, (void**)&ek, SWIGTYPE_p_kdb__Key, 0) == -1) {
+        /* delete the new KeySet first, rb_raise will not return */
+        delete result;
         rb_raise(rb_eArgError, 
             "Array element at index %d is not of Type Kdb::Key", i);
-        delete result;
         SWIG_fail;
       }
       result->append(*ek);
     }
+    DATA_PTR(self) = result;
   }
-  DATA_PTR(self) = result;
+}
+/* the custom constructor */
+%extend kdb::KeySet {
+    KeySet(Key* key) {
+        KeySet* ks = new KeySet();
+        ks->append(*key);
+        return ks;
+    }
 }
 
 
-
+/* 
+ * Ruby-style iteration
+ */
 /* 
  * KeySet.each
  * Hint: this implementation of 'each' only works wich references to keys
@@ -557,8 +564,8 @@ aliased to '<=>', implemented for sorting operations.
         cur = SWIG_NewPointerObj(t, SWIGTYPE_p_kdb__Key, 1);
 
         rb_yield(cur);
-
-        /* TODO: do we have to free anything ? */
+        /* nothing to free here, Ruby is owner of the new Key obj, which
+           will be freed by the garbage collector */
       }
       /* restore current cursor position */
       $self->setCursor(cur_pos);
@@ -580,7 +587,7 @@ aliased to '<=>', implemented for sorting operations.
   /* in case we have an array, append each element and return */
   if (RB_TYPE_P($input, T_ARRAY)) {
     int size = RARRAY_LEN($input);
-    //fprintf(stderr,"append Array of Keys of len %d\n", size);
+    ELEKTRA_LOG_DEBUG("append Array of Keys of len %d", size);
     for ( int i = 0; i < size; ++i) {
       Key* k;
       int reskey = 0;
@@ -593,11 +600,13 @@ aliased to '<=>', implemented for sorting operations.
       }
       arg1->append(*k);
     }
-    return 0;
+    /* return within the typemap. not the best way, but can be considered
+       to be an optimization */
+    return SWIG_From_long(arg1->size());
     
   } else {
   /* standard case for KeySet, just convert and check for correct type */
-    //fprintf(stderr, "append KeySet\n");
+    ELEKTRA_LOG_DEBUG("append KeySet");
     if (!SWIG_IsOK(
           SWIG_ConvertPtr($input, (void**)&$1, SWIGTYPE_p_kdb__KeySet, 0))) {
       rb_raise(rb_eArgError,

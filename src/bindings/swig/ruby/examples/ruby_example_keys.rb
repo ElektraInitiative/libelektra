@@ -1,3 +1,20 @@
+#!/usr/bin/env ruby
+## 
+# @file 
+# 
+# @brief example Ruby application to illustrate usage of Elektras Ruby bindings
+# 
+# @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+# 
+# 
+# This example illustrates the Kdb::Key aspects of Elektras Ruby bindings. 
+#
+# To run this example you have to install Elektras Ruby bindings or add the 
+# path, under which the compiled Elektra Ruby library can be found to your 
+# 'RUBYLIB' environment variable.
+#
+#  $> RUBYLIB="<path to the kdb.so>" ruby ruby_example_keys.rb
+#
 
 # include libelektra 'kdb' module
 require 'kdb'
@@ -30,8 +47,8 @@ end
 
 # get name methods
 puts "k.name:      #{k.name}"
-puts "k.base_name: #{k.base_name}"
-puts "k.full_name: #{k.full_name}"
+puts "k.basename: #{k.basename}"
+puts "k.fullname: #{k.fullname}"
 puts "k.namespace: #{k.namespace}"
 
 # name manipulations
@@ -40,8 +57,8 @@ begin
         k.add_name "../config2"
         puts "k.name: #{k.name}"
 
-        puts "k.add_base_name"
-        k.add_base_name "width"
+        puts "k.add_basename"
+        k.add_basename "width"
         puts "k.name #{k.name}"
 rescue Kdb::KeyInvalidName
         puts "invalid key name given"

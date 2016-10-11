@@ -1,3 +1,20 @@
+#!/usr/bin/env ruby
+## 
+# @file 
+# 
+# @brief example Ruby application to illustrate usage of Elektras Ruby bindings
+# 
+# @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+# 
+# 
+# This example illustrates the Kdb::KeySet aspects of Elektras Ruby bindings. 
+#
+# To run this example you have to install Elektras Ruby bindings or add the 
+# path, under which the compiled Elektra Ruby library can be found to your 
+# 'RUBYLIB' environment variable.
+#
+#  $> RUBYLIB="<path to the kdb.so>" ruby ruby_example_keyset.rb
+#
 
 
 require 'kdb'
