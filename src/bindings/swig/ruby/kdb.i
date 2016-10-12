@@ -425,7 +425,8 @@ aliased to '<=>', implemented for sorting operations.
   k1 == k2 :  0
   k1 > k2  :  1
 ") kdb::Key::spaceship;
-//%rename("<=>") kdb::Key::spaceship;
+/* this doesn't work here. "Can't wrap unless renamed to a valid identifier"
+ * %rename("<=>") kdb::Key::spaceship; */
 %alias kdb::Key::spaceship "<=>"
 %extend kdb::Key {
   int spaceship(const kdb::Key &comp) {
@@ -646,6 +647,31 @@ aliased to '<=>', implemented for sorting operations.
  */
 %apply int { option_t }
 
+/*
+ * delete
+ *
+ * add 'delete' and 'delete_at' short cut methods
+ */
+/* 'delete' is a reserved C++ keyword */
+%rename("delete") kdb::KeySet::delete_;
+
+%extend kdb::KeySet {
+  Key delete_at(cursor_t pos) {
+    Key k = $self->at(pos);
+    if (!k.isNull()) {
+      $self->lookup(k, KDB_O_POP);
+    }
+    return k;
+  }
+
+  Key delete_(const Key & key) {
+    return $self->lookup(key, KDB_O_POP);
+  }
+
+  Key delete_(std::string const & name) {
+    return $self->lookup(name, KDB_O_POP);
+  }
+}
 
 
 /*

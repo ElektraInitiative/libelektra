@@ -16,7 +16,6 @@
 #  $> RUBYLIB="<path to the kdb.so>" ruby ruby_example_keyset.rb
 #
 
-
 require 'kdb'
 
 
@@ -89,11 +88,20 @@ key = ks.lookup Kdb::Key.new("user/myapp/#1/setting2")
 # removing keys from the keyset
 #
 
-# pop, get and removes the last key
+# pop: get and remove the last key
 key = ks.pop
 
-# lookup, get and remove key by name/key
+# lookup: get and remove key by name/key
 key = ks.lookup "user/myapp/#1/setting6", Kdb::KDB_O_POP
+
+# delete_at: delete key by index
+# returns key or nil if index is out of range
+key = ks.delete_at 1
+
+# delete by key/name:
+# returns key or nil if key was not found
+key = ks.delete "user/myapp/#1/setting5"
+key = ks.delete Kdb::Key.new "user/myapp/#1/setting4"
 
 
 #

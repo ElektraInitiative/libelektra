@@ -634,4 +634,76 @@ class KdbKeySetTestCases < Test::Unit::TestCase
     end
   end
 
+  def test_keySet_delete_by_index
+    assert_nothing_raised do
+      a = (0..9).map { |i|
+        Kdb::Key.new "user/sw/org/my_app/k#{i}"
+      }
+
+      ks = Kdb::KeySet.new a
+
+      assert_equal 10, ks.size
+
+      k = ks.delete_at 5
+      ak = a.delete_at 5
+      assert_equal 9, ks.size
+      assert_equal ak, k
+
+
+      k = ks.delete_at 0
+      ak = a.delete_at 0
+      assert_equal 8, ks.size
+      assert_equal ak, k
+      assert_equal a[0], ks.head
+
+      k = ks.delete_at(ks.size - 1)
+      ak = a.delete_at(a.size - 1)
+      assert_equal 7, ks.size
+      assert_equal ak, k
+      assert_equal a[a.size - 1], ks.tail
+
+      assert_nil ks.delete_at 10
+    end
+  end
+
+  def test_keySet_delete_by_lookup
+    assert_nothing_raised do
+      a = (0..9).map { |i|
+        Kdb::Key.new "user/sw/org/my_app/k#{i}"
+      }
+
+      ks = Kdb::KeySet.new a
+
+      assert_equal 10, ks.size
+
+      ak = a.delete_at 5
+      # delete by key
+      k = ks.delete ak
+      assert_equal ak, k
+      assert_equal 9, ks.size
+
+      ak = a.delete_at 0
+      k = ks.delete ak
+      assert_equal ak, k
+      assert_equal 8, ks.size
+
+
+      assert_nil ks.delete(Kdb::Key.new "user/doesn_t_exist")
+
+      # delete by name
+      ak = a.delete_at 0
+      k = ks.delete "user/sw/org/my_app/k1"
+      assert_equal ak, k
+      assert_equal 7, ks.size
+
+      ak = a.delete_at 6
+      k = ks.delete "user/sw/org/my_app/k9"
+      assert_equal ak, k
+      assert_equal 6, ks.size
+
+      assert_nil ks.delete("user/doesn_t_exist")
+
+    end
+  end
+
 end
