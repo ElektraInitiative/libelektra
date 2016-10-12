@@ -347,10 +347,10 @@ TEST (key, name)
 	succeed_if (test.getMeta<std::string> ("owner") == "markus", "Wrong owner");
 	succeed_if (test.getNameSize () == 10, "wrong name size");
 	succeed_if (test.getFullNameSize () == 17, "wrong full name size");
-	succeed_if (!test.isCascading(), "key is cascading");
-	succeed_if (!test.isSpec(), "key is spec");
-	succeed_if (!test.isProc(), "key is proc");
-	succeed_if (!test.isDir(), "key is dir");
+	succeed_if (!test.isCascading (), "key is cascading");
+	succeed_if (!test.isSpec (), "key is spec");
+	succeed_if (!test.isProc (), "key is proc");
+	succeed_if (!test.isDir (), "key is dir");
 	succeed_if (test.isUser (), "key is not user");
 	succeed_if (!test.isSystem (), "key is system");
 
@@ -360,10 +360,10 @@ TEST (key, name)
 	succeed_if (test.getMeta<std::string> ("owner") == "gerald", "Wrong owner");
 	succeed_if (test.getNameSize () == 10, "wrong name size");
 	succeed_if (test.getFullNameSize () == 17, "wrong full name size");
-	succeed_if (!test.isCascading(), "key is cascading");
-	succeed_if (!test.isSpec(), "key is spec");
-	succeed_if (!test.isProc(), "key is proc");
-	succeed_if (!test.isDir(), "key is dir");
+	succeed_if (!test.isCascading (), "key is cascading");
+	succeed_if (!test.isSpec (), "key is spec");
+	succeed_if (!test.isProc (), "key is proc");
+	succeed_if (!test.isDir (), "key is dir");
 	succeed_if (test.isUser (), "key is not user");
 	succeed_if (!test.isSystem (), "key is system");
 
@@ -375,10 +375,10 @@ TEST (key, name)
 	succeed_if (test.getMeta<std::string> ("owner") == "markus", "Wrong owner");
 	succeed_if (test.getNameSize () == 12, "wrong name size");
 	succeed_if (test.getFullNameSize () == 12, "wrong full name size");
-	succeed_if (!test.isCascading(), "key is cascading");
-	succeed_if (!test.isSpec(), "key is spec");
-	succeed_if (!test.isProc(), "key is proc");
-	succeed_if (!test.isDir(), "key is dir");
+	succeed_if (!test.isCascading (), "key is cascading");
+	succeed_if (!test.isSpec (), "key is spec");
+	succeed_if (!test.isProc (), "key is proc");
+	succeed_if (!test.isDir (), "key is dir");
 	succeed_if (!test.isUser (), "key is not user");
 	succeed_if (test.isSystem (), "key is system");
 
@@ -387,10 +387,10 @@ TEST (key, name)
 	succeed_if (test.getFullName () == "dir/test", "Wrong full name");
 	succeed_if (test.getNameSize () == 9, "wrong name size");
 	succeed_if (test.getFullNameSize () == 9, "wrong full name size");
-	succeed_if (!test.isCascading(), "key is cascading");
-	succeed_if (!test.isSpec(), "key is spec");
-	succeed_if (!test.isProc(), "key is proc");
-	succeed_if (test.isDir(), "key is not dir");
+	succeed_if (!test.isCascading (), "key is cascading");
+	succeed_if (!test.isSpec (), "key is spec");
+	succeed_if (!test.isProc (), "key is proc");
+	succeed_if (test.isDir (), "key is not dir");
 	succeed_if (!test.isUser (), "key is user");
 	succeed_if (!test.isSystem (), "key is system");
 
@@ -399,10 +399,10 @@ TEST (key, name)
 	succeed_if (test.getFullName () == "proc/test", "Wrong full name");
 	succeed_if (test.getNameSize () == 10, "wrong name size");
 	succeed_if (test.getFullNameSize () == 10, "wrong full name size");
-	succeed_if (!test.isCascading(), "key is cascading");
-	succeed_if (!test.isSpec(), "key is spec");
-	succeed_if (test.isProc(), "key is not proc");
-	succeed_if (!test.isDir(), "key is dir");
+	succeed_if (!test.isCascading (), "key is cascading");
+	succeed_if (!test.isSpec (), "key is spec");
+	succeed_if (test.isProc (), "key is not proc");
+	succeed_if (!test.isDir (), "key is dir");
 	succeed_if (!test.isUser (), "key is user");
 	succeed_if (!test.isSystem (), "key is system");
 
@@ -411,10 +411,10 @@ TEST (key, name)
 	succeed_if (test.getFullName () == "spec/test", "Wrong full name");
 	succeed_if (test.getNameSize () == 10, "wrong name size");
 	succeed_if (test.getFullNameSize () == 10, "wrong full name size");
-	succeed_if (!test.isCascading(), "key is cascading");
-	succeed_if (test.isSpec(), "key is not spec");
-	succeed_if (!test.isProc(), "key is proc");
-	succeed_if (!test.isDir(), "key is dir");
+	succeed_if (!test.isCascading (), "key is cascading");
+	succeed_if (test.isSpec (), "key is not spec");
+	succeed_if (!test.isProc (), "key is proc");
+	succeed_if (!test.isDir (), "key is dir");
 	succeed_if (!test.isUser (), "key is user");
 	succeed_if (!test.isSystem (), "key is system");
 
@@ -423,13 +423,12 @@ TEST (key, name)
 	succeed_if (test.getFullName () == "/test", "Wrong full name");
 	succeed_if (test.getNameSize () == 6, "wrong name size");
 	succeed_if (test.getFullNameSize () == 6, "wrong full name size");
-	succeed_if (test.isCascading(), "key is not cascading");
-	succeed_if (!test.isSpec(), "key is not spec");
-	succeed_if (!test.isProc(), "key is proc");
-	succeed_if (!test.isDir(), "key is dir");
+	succeed_if (test.isCascading (), "key is not cascading");
+	succeed_if (!test.isSpec (), "key is not spec");
+	succeed_if (!test.isProc (), "key is proc");
+	succeed_if (!test.isDir (), "key is dir");
 	succeed_if (!test.isUser (), "key is user");
 	succeed_if (!test.isSystem (), "key is system");
-
 
 
 	test.setName ("user/dir/test");
