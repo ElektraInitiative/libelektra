@@ -55,7 +55,7 @@ int SetCommand::execute (Cmdline const & cl)
 	{
 		// fix name for lookup
 		name = cl.ns + name;
-		std::cout << "Using name " << name << std::endl;
+		if (!cl.quiet) std::cout << "Using name " << name << std::endl;
 
 		// fix k for kdb.set later
 		k.setName (name);
@@ -65,7 +65,7 @@ int SetCommand::execute (Cmdline const & cl)
 
 	if (!key)
 	{
-		cout << "Create a new key " << name;
+		if (!cl.quiet) cout << "Create a new key " << name;
 		key = Key (name, KEY_END);
 		if (!nullValue)
 		{
@@ -88,12 +88,12 @@ int SetCommand::execute (Cmdline const & cl)
 	{
 		if (!nullValue)
 		{
-			cout << "Set string to " << value << endl;
+			if (!cl.quiet) cout << "Set string to " << value << endl;
 			key.setString (value);
 		}
 		else
 		{
-			cout << "Set null value" << endl;
+			if (!cl.quiet) cout << "Set null value" << endl;
 			key.setBinary (nullptr, 0);
 		}
 	}

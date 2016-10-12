@@ -42,6 +42,10 @@ Use `kdb file system/elektra/mountpoints` to find out where exactly it will writ
   Show the man page.
 - `-V`, `--version`:
   Print version info.
+- `-v`, `--verbose`:
+  Explain what is happening.
+- `-q`, `--quiet`:
+  Suppress non-error messages.
 - `-p`, `--profile`=<profile>:
   Use a different kdb profile.
 - `-R`, `--resolver`=<name>:
@@ -58,6 +62,12 @@ Use `kdb file system/elektra/mountpoints` to find out where exactly it will writ
 
 
 ## KDB
+
+- `/sw/elektra/kdb/#0/current/verbose`:
+  Same as `-v`: Explain what is happening.
+
+- `/sw/elektra/kdb/#0/current/quiet`:
+  Same as `-q`: Suppress default messages.
 
 - `/sw/elektra/kdb/#0/current/resolver`:
   The resolver that will be added automatically, if `-R` is not given.

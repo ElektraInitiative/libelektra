@@ -35,7 +35,7 @@ int MetaSetCommand::execute (Cmdline const & cl)
 	{
 		// fix name for lookup
 		keyname = "spec" + keyname;
-		std::cout << "Using keyname " << keyname << std::endl;
+		if (!cl.quiet) std::cout << "Using keyname " << keyname << std::endl;
 
 		// fix k for kdb.set later
 		parentKey.setName (keyname);
@@ -54,7 +54,7 @@ int MetaSetCommand::execute (Cmdline const & cl)
 	}
 	if (!k.isValid ())
 	{
-		cout << "Could not create key" << endl;
+		cerr << "Could not create key " << keyname << endl;
 		return 1;
 	}
 

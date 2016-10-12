@@ -28,8 +28,23 @@ that is the place where you usually want to set meta data.
   Use a different kdb profile.
 - `-v`, `--verbose`:
   Explain what is happening.
+- `-q`, `--quiet`:
+  Suppress non-error messages.
 - `-C`, `--color`=[when]:
   Print never/auto(default)/always colored output.
+
+## KDB
+
+- `/sw/elektra/kdb/#0/current/verbose`:
+  Same as `-v`: Explain what is happening.
+
+- `/sw/elektra/kdb/#0/current/quiet`:
+  Same as `-q`: Suppress default messages.
+
+- `/sw/elektra/kdb/#0/current/namespace`:
+  Specifies which default namespace should be used when setting a cascading name.
+  By default the namespace is user, except `kdb` is used as root, then `system`
+  is the default.
 
 
 ## EXAMPLES

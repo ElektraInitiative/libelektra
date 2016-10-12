@@ -37,7 +37,7 @@ Cmdline::Cmdline (int argc, char ** argv, Command * command)
 
   /*XXX: Step 2: initialise your option here.*/
   debug (), force (), load (), humanReadable (), help (), interactive (), noNewline (), test (), recursive (), resolver (KDB_RESOLVER),
-  strategy ("preserve"), verbose (), version (), withoutElektra (), null (), first (true), second (true), third (true),
+  strategy ("preserve"), verbose (), quiet (), version (), withoutElektra (), null (), first (true), second (true), third (true),
   withRecommends (false), all (), format (KDB_STORAGE), plugins ("sync"), globalPlugins ("spec"), pluginsConfig (""), color ("auto"),
   ns (""), editor (), bookmarks (), profile ("current"),
 
@@ -154,6 +154,12 @@ Cmdline::Cmdline (int argc, char ** argv, Command * command)
 		option o = { "verbose", no_argument, nullptr, 'v' };
 		long_options.push_back (o);
 		helpText += "-v --verbose             Explain what is happening.\n";
+	}
+	if (acceptedOptions.find ('q') != string::npos)
+	{
+		option o = { "quiet", no_argument, nullptr, 'q' };
+		long_options.push_back (o);
+		helpText += "-q --quiet               Only print error messages.\n";
 	}
 	if (acceptedOptions.find ('V') != string::npos)
 	{
@@ -292,6 +298,12 @@ Cmdline::Cmdline (int argc, char ** argv, Command * command)
 			k = conf.lookup (dirname + "namespace");
 			if (k) ns = k.get<string> ();
 
+			k = conf.lookup (dirname + "verbose");
+			if (k) verbose = k.get<bool> ();
+
+			k = conf.lookup (dirname + "quiet");
+			if (k) quiet = k.get<bool> ();
+
 			k = conf.lookup (dirname + "editor");
 			if (k) editor = k.get<string> ();
 
@@ -380,6 +392,9 @@ Cmdline::Cmdline (int argc, char ** argv, Command * command)
 		case 'v':
 			verbose = true;
 			break;
+		case 'q':
+			quiet = true;
+			break;
 		case 'V':
 			version = true;
 			break;
@@ -412,6 +427,11 @@ Cmdline::Cmdline (int argc, char ** argv, Command * command)
 			invalidOpt = true;
 			break;
 		}
+	}
+
+	if (quiet && verbose)
+	{
+		std::cout << "Both quiet and verbose is active: will suppress default messages, but print verbose messages" << std::endl;
 	}
 
 	if (ns.empty ())

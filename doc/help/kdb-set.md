@@ -26,6 +26,8 @@ To set a key to an empty value, `""` should be passed for the `value` argument.
   Use a different kdb profile.
 - `-v`, `--verbose`:
   Explain what is happening.
+- `-q`, `--quiet`:
+  Suppress non-error messages.
 - `-N`, `--namespace`=<ns>:
   Specify the namespace to use when writing cascading keys.
   See [below in KDB](#KDB).
@@ -33,6 +35,12 @@ To set a key to an empty value, `""` should be passed for the `value` argument.
   Print never/auto(default)/always colored output.
 
 ## KDB
+
+- `/sw/elektra/kdb/#0/current/verbose`:
+  Same as `-v`: Explain what is happening.
+
+- `/sw/elektra/kdb/#0/current/quiet`:
+  Same as `-q`: Suppress default messages.
 
 - `/sw/elektra/kdb/#0/current/namespace`:
   Specifies which default namespace should be used when setting a cascading name.

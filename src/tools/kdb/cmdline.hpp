@@ -67,7 +67,8 @@ public:
 	bool recursive;     /*!< Recursive mode. */
 	std::string resolver;
 	std::string strategy; /*!< A comma separated list of the used merging strategies. Their order is relevant. */
-	bool verbose;	 /*!< Be more verbose. */
+	bool verbose;	 /*!< Be more verbose: explain what is happening */
+	bool quiet;	   /*!< Be quiet: suppress non-error messages */
 	bool version;	 /*!< Return version info instead of the normal action.. */
 	bool withoutElektra;
 	bool null;
