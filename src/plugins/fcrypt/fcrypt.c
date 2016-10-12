@@ -213,14 +213,30 @@ static int encrypt (KeySet * pluginConfig, Key * parentKey)
 		if (rename (tmpFile, keyString (parentKey)) != 0)
 		{
 			ELEKTRA_SET_ERRORF (31, parentKey, "Renaming file %s to %s failed.", tmpFile, keyString (parentKey));
+			fprintf (stderr, "%s - rename %s -> %s failed\n", __FUNCTION__, tmpFile, keyString (parentKey));
 			result = -1;
+		}
+		else
+		{
+			fprintf (stderr, "%s - rename %s -> %s succeeded\n", __FUNCTION__, tmpFile, keyString (parentKey));
 		}
 	}
 
-	// if anything went wrong above the temporary file is shredded and removed
+	// always shred the temporary file
+	if (shredTemporaryFile (tmpFileFd, parentKey) != 1)
+	{
+		fprintf (stderr, "%s - shredding file %s failed\n", __FUNCTION__, tmpFile);
+		result = -1; // error has been set by shredTemporaryFile ()
+	}
+	else
+	{
+		fprintf (stderr, "%s - shredding file %s succeeded\n", __FUNCTION__, tmpFile);
+	}
+
+	// if anything went wrong above the temporary file is removed from the file system
 	if (result != 1)
 	{
-		shredTemporaryFile (tmpFileFd, parentKey);
+		fprintf (stderr, "%s - unlinking tmp file %s\n", __FUNCTION__, tmpFile);
 		unlink (tmpFile);
 	}
 
@@ -282,14 +298,34 @@ static int decrypt (KeySet * pluginConfig, Key * parentKey)
 		if (rename (tmpFile, keyString (parentKey)) != 0)
 		{
 			ELEKTRA_SET_ERRORF (31, parentKey, "Renaming file %s to %s failed.", tmpFile, keyString (parentKey));
+			fprintf (stderr, "%s - rename %s -> %s failed\n", __FUNCTION__, tmpFile, keyString (parentKey));
 			result = -1;
 		}
+		else
+		{
+			fprintf (stderr, "%s - rename %s -> %s succeeded\n", __FUNCTION__, tmpFile, keyString (parentKey));
+		}
+	}
+	else
+	{
+		fprintf (stderr, "%s - gpg call failed: %s\n", __FUNCTION__, keyString (keyGetMeta (parentKey, "error/reason")));
 	}
 
-	// if anything went wrong above the temporary file is shredded and removed
+	// always shred the temporary file
+	if (shredTemporaryFile (tmpFileFd, parentKey) != 1)
+	{
+		fprintf (stderr, "%s - shredding file %s failed\n", __FUNCTION__, tmpFile);
+		result = -1; // error has been set by shredTemporaryFile ()
+	}
+	else
+	{
+		fprintf (stderr, "%s - shredding file %s succeeded\n", __FUNCTION__, tmpFile);
+	}
+
+	// if anything went wrong above the temporary file is removed
 	if (result != 1)
 	{
-		shredTemporaryFile (tmpFileFd, parentKey);
+		fprintf (stderr, "%s - unlinking tmp file %s\n", __FUNCTION__, tmpFile);
 		unlink (tmpFile);
 	}
 
