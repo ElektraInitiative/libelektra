@@ -3,24 +3,29 @@ elektra-namespaces(7) -- namespaces
 
 ## INTRODUCTION
 
-Every key in Elektra has a unique name. Sometimes, multiple keys denote
+Every key in Elektra needs a unique name so that administrators can
+refer to them unambiguously. Sometimes, multiple keys denote
 the same configuration item from different sources, e.g.:
 
 - by a commandline argument
-- by a configuration file found below the home directory
+- by a configuration file found relative to the current directory
+- by a configuration file found relative to the home directory
 - by a configuration file found below /etc
 
 To allow such keys to exist in parallel, Elektra uses namespaces.
 
 A namespace has following properties:
 
-- in-memory Keys can start with this name
-- these keys stem from a specific configuration source
-- ksLookup() uses namespaces in a specific default order unless
-    specified otherwise
+- in-memory Keys start with one of the namespaces
+- keys within a namespace are known to stem from a specific
+  configuration source. For example files from the `user` namespace
+  are from the users home directory, **even if** an absolute configuration
+  file name was used.
+- ksLookup() uses multiple namespaces in a specific default order unless
+    specified otherwise (cascading lookup)
 
 
-Following parts of Elektra are affected by namespaces:
+Following parts of Elektra source code are affected by namespaces:
 
 - the key name validation in keySetName()
 - keyGetNamespace() which enumerates all namespaces
@@ -40,10 +45,10 @@ Unlike the other namespaces, the specification namespace does not
 contain values of the keys, but instead meta data as described in
 [METADATA.ini](/doc/METADATA.ini).
 
-When a key is looked up, keys from the spec-namespace are the first to
-be searched. When a spec-key is found, the rest of the lookup will be
-done as specified, probably in a different order than the namespaces
-enlisted here.
+When a cascading key is looked up, keys from the spec-namespace are
+the first to be searched. When a spec-key is found, the rest of the
+lookup will be done as specified, probably in a different order than
+the namespaces enlisted here.
 
 Usually, the spec-keys do not directly contribute to the value, with one
 notable exception: the default value (meta data `default`, see in
@@ -53,7 +58,7 @@ spec-key failed.
 Spec-keys typically include a explanation and description for the key
 itself (but not comments which are specific for individual keys).
 
-The spec configuration files are below CMAKE_INSTALL_PREFIX/KDB_DB_SPEC.
+The spec configuration files are below `CMAKE_INSTALL_PREFIX/KDB_DB_SPEC`.
 
 spec is not part of cascading mounts, because the specifications often
 are written in different syntax than the configuration files.
@@ -68,7 +73,8 @@ from the main method):
 - arguments
 - environment
 
-Keys in the namespace proc can not be stored by their nature. They might
+Keys in the namespace proc can not be stored by their nature. Thus they are
+ignored by `kdbGet` and `kdbSet`. They might
 be different for every invocation of an application.
 
 
@@ -77,14 +83,14 @@ be different for every invocation of an application.
 Keys from the namespace `dir` are derived from a directory special to
 the user starting/using the application, e.g.:
 
-- the current working directory for project specific settings, e.g. .git
-- the directory a server wants to present to the user, e.g. .htaccess
+- the current working directory for project specific settings, e.g. `.git`
+- the directory a server wants to present to the user, e.g. `.htaccess`
 
 Note that Elektra only supports a single special directory per KDB
 instance. Start a new KDB instance if you need different special
 directories for different parts of your application.
 How to change the directory may be different dependent on the resolver,
-e.g. by using chdir or by setting the environment variable PWD
+e.g. by using chdir or by setting the environment variable PWD.
 
 
 ## user
