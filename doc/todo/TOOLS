@@ -172,6 +172,8 @@ with constraint checking+solving and so on.
 
 == GUI ==
 
+support for binary keys, see #234
+
 generic commandline arguments:
 	for self configuring
 	for proc namespace

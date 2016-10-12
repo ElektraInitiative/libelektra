@@ -19,6 +19,11 @@ array:
 	user/array -> invalid
 	system/array/x -> invalid
 
+## mingw
+
+test cases do not build
+	see (#131)
+
 ## conflicts
 
 fix testkdb_conflict:
@@ -28,7 +33,9 @@ fix testkdb_conflict:
 
 ## afl
 
+also test http://blog.llvm.org/2015/04/fuzz-all-clangs.html v(#185)
 test all plugins with it
+integrate in build server (#160)
 
 ## errno
 
