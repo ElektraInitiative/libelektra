@@ -215,8 +215,12 @@ public:
 
 	inline bool isValid () const;
 	inline std::string getNamespace () const;
-	inline bool isSystem () const;
+	inline bool isCascading () const;
+	inline bool isSpec () const;
+	inline bool isProc () const;
+	inline bool isDir () const;
 	inline bool isUser () const;
+	inline bool isSystem () const;
 
 	inline bool isString () const;
 	inline bool isBinary () const;
@@ -1587,25 +1591,69 @@ inline std::string Key::getNamespace () const
 
 
 /**
- * Name starts with "system".
+ * Determines if the key is in cascading namespace.
  *
- * @retval true if it is a system key
+ * @retval true if it is a cascading key
  * @retval false otherwise
  */
-inline bool Key::isSystem () const
+inline bool Key::isCascading () const
 {
-	return !strncmp (ckdb::keyName (key), "system", 6);
+	return ckdb::keyGetNamespace (getKey ()) == KEY_NS_CASCADING;
 }
 
 /**
- * Name starts with "user".
+ * Determines if the key is in spec namespace.
+ *
+ * @retval true if it is a spec key
+ * @retval false otherwise
+ */
+inline bool Key::isSpec () const
+{
+	return ckdb::keyGetNamespace (getKey ()) == KEY_NS_SPEC;
+}
+
+/**
+ * Determines if the key is in proc namespace.
+ *
+ * @retval true if it is a proc key
+ * @retval false otherwise
+ */
+inline bool Key::isProc () const
+{
+	return ckdb::keyGetNamespace (getKey ()) == KEY_NS_PROC;
+}
+
+/**
+ * Determines if the key is in dir namespace.
+ *
+ * @retval true if it is a dir key
+ * @retval false otherwise
+ */
+inline bool Key::isDir () const
+{
+	return ckdb::keyGetNamespace (getKey ()) == KEY_NS_DIR;
+}
+
+/**
+ * Determines if the key is in user namespace.
  *
  * @retval true if it is a user key
  * @retval false otherwise
  */
 inline bool Key::isUser () const
 {
-	return !strncmp (ckdb::keyName (key), "user", 4);
+	return ckdb::keyGetNamespace (getKey ()) == KEY_NS_USER;
+}
+
+/**
+ * Determines if the key is in system namespace.
+ *
+ * @retval true if it is a system key
+ * @retval false otherwise
+ */
+inline bool Key::isSystem () const
+{
+	return ckdb::keyGetNamespace (getKey ()) == KEY_NS_SYSTEM;
 }
 
 /**
