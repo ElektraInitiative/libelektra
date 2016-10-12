@@ -31,6 +31,7 @@ section here.
 - [CMake spec](cmake_spec.md)
 - [Global Plugins](global_plugins.md)
 - [Script Testing](script_testing.md)
+- [Array](array.md)
 
 ## Drafts
 
