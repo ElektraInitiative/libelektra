@@ -199,7 +199,7 @@ int init (int argc, char ** argv);
 				{                                                                                                          \
 					nbError++;                                                                                         \
 					printf ("%s:%d: error in %s: Compare key \"%s\" with \"%s\" failed, did not find corresponding "   \
-						"metakey %s (k1 > k2)\n",                                                                 \
+						"metakey %s (k1 > k2)\n",                                                                  \
 						__FILE__, __LINE__, __func__, quote_string (mmk1), quote_string (mmk2), keyName (meta));   \
 					break;                                                                                             \
 				}                                                                                                          \
@@ -209,7 +209,7 @@ int init (int argc, char ** argv);
 			if (metaCmp != 0)                                                                                                  \
 			{                                                                                                                  \
 				nbError++;                                                                                                 \
-				printf ("%s:%d: error in %s: Compare key \"%s\" with \"%s\" failed, too many metakeys found (k1 < k2)\n", \
+				printf ("%s:%d: error in %s: Compare key \"%s\" with \"%s\" failed, too many metakeys found (k1 < k2)\n",  \
 					__FILE__, __LINE__, __func__, quote_string (mmk1), quote_string (mmk2));                           \
 			}                                                                                                                  \
 		}                                                                                                                          \
