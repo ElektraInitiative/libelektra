@@ -1,5 +1,5 @@
 - infos = Information about the required plugin is in keys below
-- infos/author = Name <name@libelektra.org>
+- infos/author = Markus Raab <markus@libelektra.org>
 - infos/licence = BSD
 - infos/needs =
 - infos/provides =
