@@ -33,7 +33,7 @@ public:
 
 	virtual std::string getShortHelpText () override
 	{
-		return "Get a meta value.";
+		return "Get a metavalue.";
 	}
 
 	virtual std::string getLongHelpText () override

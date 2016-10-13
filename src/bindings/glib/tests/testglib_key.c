@@ -211,7 +211,7 @@ static void test_meta_data ()
 
 	meta = gelektra_key_getmeta (g_key, "by");
 	succeed_if (gelektra_key_getref (meta) == 2, "refcount should be 2");
-	succeed_if (!memcmp (gelektra_key_getvalue (meta), "manuel", sizeof ("manuel")), "invalid meta value");
+	succeed_if (!memcmp (gelektra_key_getvalue (meta), "manuel", sizeof ("manuel")), "invalid metavalue");
 	g_object_unref (meta);
 
 	guint metacnt = 0;
@@ -229,7 +229,7 @@ static void test_meta_data ()
 
 	gelektra_key_setmeta (g_key, "by", "gelektra");
 	meta = gelektra_key_getmeta (g_key, "by");
-	succeed_if (!memcmp (gelektra_key_getvalue (meta), "gelektra", sizeof ("gelektra")), "invalid meta value");
+	succeed_if (!memcmp (gelektra_key_getvalue (meta), "gelektra", sizeof ("gelektra")), "invalid metavalue");
 	g_object_unref (meta);
 
 	/* set tests */
@@ -237,12 +237,12 @@ static void test_meta_data ()
 
 	gelektra_key_copymeta (g_key, key, "by");
 	meta = gelektra_key_getmeta (g_key, "by");
-	succeed_if (!memcmp (gelektra_key_getvalue (meta), "gelektra", sizeof ("gelektra")), "invalid meta value");
+	succeed_if (!memcmp (gelektra_key_getvalue (meta), "gelektra", sizeof ("gelektra")), "invalid metavalue");
 	g_object_unref (meta);
 
 	gelektra_key_copyallmeta (g_key, key);
 	meta = gelektra_key_getmeta (g_key, "owner");
-	succeed_if (!memcmp (gelektra_key_getvalue (meta), "myowner", sizeof ("myowner")), "invalid meta value");
+	succeed_if (!memcmp (gelektra_key_getvalue (meta), "myowner", sizeof ("myowner")), "invalid metavalue");
 	g_object_unref (meta);
 
 	g_object_unref (key);

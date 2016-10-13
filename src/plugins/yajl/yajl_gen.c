@@ -130,7 +130,7 @@ static int elektraGenOpenValue (yajl_gen g, const Key * next)
  *
  * No auto-guessing takes place, because that can be terrible wrong and
  * is not reversible. So make sure that all your boolean and numbers
- * have the proper type in meta value "type".
+ * have the proper type in metavalue "type".
  *
  * In case of type problems it will be rendered as string but a warning
  * will be added. Use a type checker to avoid such problems.

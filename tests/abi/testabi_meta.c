@@ -67,7 +67,7 @@ static void test_iterate ()
 	exit_if_fail (key, "could not create new key");
 	succeed_if (keyRewindMeta (key) == 0, "Could not rewind empty key");
 	succeed_if (keyNextMeta (key) == 0, "Could get next metaname, even if it is empty");
-	succeed_if (keyCurrentMeta (key) == 0, "Could get next meta value, even if it is empty");
+	succeed_if (keyCurrentMeta (key) == 0, "Could get next metavalue, even if it is empty");
 
 	keySetMeta (key, "meta1", "meta_value");
 	succeed_if (keyRewindMeta (key) == 0, "Could not rewind key");
@@ -75,13 +75,13 @@ static void test_iterate ()
 	succeed_if_same_string (keyValue (keyCurrentMeta (key)), "meta_value");
 
 	succeed_if (keyNextMeta (key) == 0, "Could get next metaname, even if it is empty at 2. iteration");
-	succeed_if (keyCurrentMeta (key) == 0, "Could get next meta value, even if it is empty at 2. iteration");
+	succeed_if (keyCurrentMeta (key) == 0, "Could get next metavalue, even if it is empty at 2. iteration");
 
 	succeed_if (keyNextMeta (key) == 0, "Could get next metaname, even if it is empty at 3. iteration");
-	succeed_if (keyCurrentMeta (key) == 0, "Could get next meta value, even if it is empty at 3. iteration");
+	succeed_if (keyCurrentMeta (key) == 0, "Could get next metavalue, even if it is empty at 3. iteration");
 
 	succeed_if (keyNextMeta (key) == 0, "Could get next metaname, even if it is empty at 4. iteration");
-	succeed_if (keyCurrentMeta (key) == 0, "Could get next meta value, even if it is empty at 4. iteration");
+	succeed_if (keyCurrentMeta (key) == 0, "Could get next metavalue, even if it is empty at 4. iteration");
 
 	keyDel (key);
 }
@@ -94,7 +94,7 @@ static void test_size ()
 	key = keyNew ("user/test", KEY_END);
 	exit_if_fail (key, "could not create new key");
 	succeed_if (keyValue (keyGetMeta (key, "hello")) == 0, "hello was not set up to now");
-	succeed_if (keyGetValueSize (keyGetMeta (key, "hello")) == -1, "got wrong size for empty meta value");
+	succeed_if (keyGetValueSize (keyGetMeta (key, "hello")) == -1, "got wrong size for empty metavalue");
 
 	keySetMeta (key, "hello", "hello_world");
 	succeed_if (!strcmp (keyValue (keyGetMeta (key, "hello")), "hello_world"), "could not receive previously set meta information");
@@ -279,15 +279,15 @@ static void test_copy ()
 	succeed_if (key1 = keyNew (0), "could not create key");
 	succeed_if (key2 = keyNew (0), "could not create key");
 
-	succeed_if (keySetMeta (key1, "mymeta", "a longer meta value") == sizeof ("a longer meta value"), "could not set meta value");
-	succeed_if (keyCopyMeta (key2, key1, "mymeta") == 1, "could not copy meta value");
-	succeed_if_same_string (keyValue (keyGetMeta (key1, "mymeta")), "a longer meta value");
-	succeed_if_same_string (keyValue (keyGetMeta (key2, "mymeta")), "a longer meta value");
+	succeed_if (keySetMeta (key1, "mymeta", "a longer metavalue") == sizeof ("a longer metavalue"), "could not set metavalue");
+	succeed_if (keyCopyMeta (key2, key1, "mymeta") == 1, "could not copy metavalue");
+	succeed_if_same_string (keyValue (keyGetMeta (key1, "mymeta")), "a longer metavalue");
+	succeed_if_same_string (keyValue (keyGetMeta (key2, "mymeta")), "a longer metavalue");
 	succeed_if (keyGetMeta (key1, "mymeta") == keyGetMeta (key2, "mymeta"), "reference to the same key");
 
 	succeed_if (keyCopyMeta (key1, key2, "mymeta") == 1, "did nothing in the end");
-	succeed_if_same_string (keyValue (keyGetMeta (key1, "mymeta")), "a longer meta value");
-	succeed_if_same_string (keyValue (keyGetMeta (key2, "mymeta")), "a longer meta value");
+	succeed_if_same_string (keyValue (keyGetMeta (key1, "mymeta")), "a longer metavalue");
+	succeed_if_same_string (keyValue (keyGetMeta (key2, "mymeta")), "a longer metavalue");
 	succeed_if (keyGetMeta (key1, "mymeta") == keyGetMeta (key2, "mymeta"), "reference to the same key");
 
 	keyDel (key1);
@@ -297,20 +297,20 @@ static void test_copy ()
 	succeed_if (key1 = keyNew (0), "could not create key");
 	succeed_if (key2 = keyNew (0), "could not create key");
 
-	succeed_if (keySetMeta (key1, "mymeta", "a longer meta value") == sizeof ("a longer meta value"), "could not set meta value");
-	succeed_if (keyCopyMeta (key2, key1, "mymeta") == 1, "could not copy meta value");
-	succeed_if_same_string (keyValue (keyGetMeta (key1, "mymeta")), "a longer meta value");
-	succeed_if_same_string (keyValue (keyGetMeta (key2, "mymeta")), "a longer meta value");
+	succeed_if (keySetMeta (key1, "mymeta", "a longer metavalue") == sizeof ("a longer metavalue"), "could not set metavalue");
+	succeed_if (keyCopyMeta (key2, key1, "mymeta") == 1, "could not copy metavalue");
+	succeed_if_same_string (keyValue (keyGetMeta (key1, "mymeta")), "a longer metavalue");
+	succeed_if_same_string (keyValue (keyGetMeta (key2, "mymeta")), "a longer metavalue");
 	succeed_if (keyGetMeta (key1, "mymeta") == keyGetMeta (key2, "mymeta"), "reference to the same key");
 
-	succeed_if (keySetMeta (key1, "mymeta", "a longer meta value") == sizeof ("a longer meta value"), "could not set meta value");
-	succeed_if_same_string (keyValue (keyGetMeta (key1, "mymeta")), "a longer meta value");
-	succeed_if_same_string (keyValue (keyGetMeta (key2, "mymeta")), "a longer meta value");
+	succeed_if (keySetMeta (key1, "mymeta", "a longer metavalue") == sizeof ("a longer metavalue"), "could not set metavalue");
+	succeed_if_same_string (keyValue (keyGetMeta (key1, "mymeta")), "a longer metavalue");
+	succeed_if_same_string (keyValue (keyGetMeta (key2, "mymeta")), "a longer metavalue");
 	succeed_if (keyGetMeta (key1, "mymeta") != keyGetMeta (key2, "mymeta"), "reference to another key");
 
-	succeed_if (keySetMeta (key1, "mymeta", "a longer meta value2") == sizeof ("a longer meta value2"), "could not set meta value2");
-	succeed_if_same_string (keyValue (keyGetMeta (key1, "mymeta")), "a longer meta value2");
-	succeed_if_same_string (keyValue (keyGetMeta (key2, "mymeta")), "a longer meta value");
+	succeed_if (keySetMeta (key1, "mymeta", "a longer metavalue2") == sizeof ("a longer metavalue2"), "could not set metavalue2");
+	succeed_if_same_string (keyValue (keyGetMeta (key1, "mymeta")), "a longer metavalue2");
+	succeed_if_same_string (keyValue (keyGetMeta (key2, "mymeta")), "a longer metavalue");
 	succeed_if (keyGetMeta (key1, "mymeta") != keyGetMeta (key2, "mymeta"), "reference to another key (with another value)");
 
 	keyDel (key1);
@@ -454,15 +454,15 @@ static void test_copyall ()
 	succeed_if (key1 = keyNew (0), "could not create key");
 	succeed_if (key2 = keyNew (0), "could not create key");
 
-	succeed_if (keySetMeta (key1, "mymeta", "a longer meta value") == sizeof ("a longer meta value"), "could not set meta value");
-	succeed_if (keyCopyAllMeta (key2, key1) == 1, "could not copy meta value");
-	succeed_if_same_string (keyValue (keyGetMeta (key1, "mymeta")), "a longer meta value");
-	succeed_if_same_string (keyValue (keyGetMeta (key2, "mymeta")), "a longer meta value");
+	succeed_if (keySetMeta (key1, "mymeta", "a longer metavalue") == sizeof ("a longer metavalue"), "could not set metavalue");
+	succeed_if (keyCopyAllMeta (key2, key1) == 1, "could not copy metavalue");
+	succeed_if_same_string (keyValue (keyGetMeta (key1, "mymeta")), "a longer metavalue");
+	succeed_if_same_string (keyValue (keyGetMeta (key2, "mymeta")), "a longer metavalue");
 	succeed_if (keyGetMeta (key1, "mymeta") == keyGetMeta (key2, "mymeta"), "reference to the same key");
 
 	succeed_if (keyCopyAllMeta (key1, key2) == 1, "did nothing in the end");
-	succeed_if_same_string (keyValue (keyGetMeta (key1, "mymeta")), "a longer meta value");
-	succeed_if_same_string (keyValue (keyGetMeta (key2, "mymeta")), "a longer meta value");
+	succeed_if_same_string (keyValue (keyGetMeta (key1, "mymeta")), "a longer metavalue");
+	succeed_if_same_string (keyValue (keyGetMeta (key2, "mymeta")), "a longer metavalue");
 	succeed_if (keyGetMeta (key1, "mymeta") == keyGetMeta (key2, "mymeta"), "reference to the same key");
 
 	keyDel (key1);
@@ -472,20 +472,20 @@ static void test_copyall ()
 	succeed_if (key1 = keyNew (0), "could not create key");
 	succeed_if (key2 = keyNew (0), "could not create key");
 
-	succeed_if (keySetMeta (key1, "mymeta", "a longer meta value") == sizeof ("a longer meta value"), "could not set meta value");
-	succeed_if (keyCopyAllMeta (key2, key1) == 1, "could not copy meta value");
-	succeed_if_same_string (keyValue (keyGetMeta (key1, "mymeta")), "a longer meta value");
-	succeed_if_same_string (keyValue (keyGetMeta (key2, "mymeta")), "a longer meta value");
+	succeed_if (keySetMeta (key1, "mymeta", "a longer metavalue") == sizeof ("a longer metavalue"), "could not set metavalue");
+	succeed_if (keyCopyAllMeta (key2, key1) == 1, "could not copy metavalue");
+	succeed_if_same_string (keyValue (keyGetMeta (key1, "mymeta")), "a longer metavalue");
+	succeed_if_same_string (keyValue (keyGetMeta (key2, "mymeta")), "a longer metavalue");
 	succeed_if (keyGetMeta (key1, "mymeta") == keyGetMeta (key2, "mymeta"), "reference to the same key");
 
-	succeed_if (keySetMeta (key1, "mymeta", "a longer meta value") == sizeof ("a longer meta value"), "could not set meta value");
-	succeed_if_same_string (keyValue (keyGetMeta (key1, "mymeta")), "a longer meta value");
-	succeed_if_same_string (keyValue (keyGetMeta (key2, "mymeta")), "a longer meta value");
+	succeed_if (keySetMeta (key1, "mymeta", "a longer metavalue") == sizeof ("a longer metavalue"), "could not set metavalue");
+	succeed_if_same_string (keyValue (keyGetMeta (key1, "mymeta")), "a longer metavalue");
+	succeed_if_same_string (keyValue (keyGetMeta (key2, "mymeta")), "a longer metavalue");
 	succeed_if (keyGetMeta (key1, "mymeta") != keyGetMeta (key2, "mymeta"), "reference to another key");
 
-	succeed_if (keySetMeta (key1, "mymeta", "a longer meta value2") == sizeof ("a longer meta value2"), "could not set meta value2");
-	succeed_if_same_string (keyValue (keyGetMeta (key1, "mymeta")), "a longer meta value2");
-	succeed_if_same_string (keyValue (keyGetMeta (key2, "mymeta")), "a longer meta value");
+	succeed_if (keySetMeta (key1, "mymeta", "a longer metavalue2") == sizeof ("a longer metavalue2"), "could not set metavalue2");
+	succeed_if_same_string (keyValue (keyGetMeta (key1, "mymeta")), "a longer metavalue2");
+	succeed_if_same_string (keyValue (keyGetMeta (key2, "mymeta")), "a longer metavalue");
 	succeed_if (keyGetMeta (key1, "mymeta") != keyGetMeta (key2, "mymeta"), "reference to another key (with another value)");
 
 	keyDel (key1);

@@ -32,7 +32,7 @@ The value of the config key is as follows:
 According to this number the value of the key will be set.
 
 The key also might contain metadata.
-- the only characters allowed in meta values are '#[0-9]'.
+- the only characters allowed in metavalues are '#[0-9]'.
 the metadata will be replaced by the regex match then.
 
 
