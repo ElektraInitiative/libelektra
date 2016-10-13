@@ -31,7 +31,7 @@ either in specifications or contracts.
 
 ## Example
 
-If you used [simplespeclanguage](/src/plugins/simplespeclanguage) and want to
+If you used [simplespeclang](/src/plugins/simplespeclang) and want to
 only allow keys that are present in the specification, you can add `required`
 to the `spec-mount` command:
 
