@@ -368,7 +368,7 @@ class ParameterizedTestFactory : public TestFactoryBase {
 
 // INTERNAL IMPLEMENTATION - DO NOT USE IN USER CODE.
 //
-// TestMetaFactoryBase is a base class for meta-factories that create
+// TestMetaFactoryBase is a base class for metafactories that create
 // test factories for passing into MakeAndRegisterTestInfo function.
 template <class ParamType>
 class TestMetaFactoryBase {

@@ -86,7 +86,7 @@ logging API:
 
 lock plugin
 
-inherit/copy meta-data/bind mounts:
+inherit/copy metadata/bind mounts:
 	kdb setmeta spec/something inherit/override/# '"/elsewhere/key/" + basename'
 	und ein inherit-Plugin kopiert dann automatisch ein override /elsewhere/key/ (mit dem richtigen basename dran) in alle Subkeys (die nicht ein anderes inherit/override haben).
 
@@ -179,7 +179,7 @@ on the file (in the value of the parentKey), including:
 
 ## rename ##
 
-based on meta-data
+based on metadata
 	with fnmatch/regex
 
 further renaming features

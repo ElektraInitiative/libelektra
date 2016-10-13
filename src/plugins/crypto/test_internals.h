@@ -221,7 +221,7 @@ static void test_crypto_operations (const char * pluginName)
 			if (isMarkedForEncryption (k))
 			{
 				succeed_if (keyIsBinary (k), "Key value is not binary although it should have been encrypted");
-				succeed_if (keyGetValueSize (k) > 0, "NULL Key must have encrypted meta-data and can not have length 0");
+				succeed_if (keyGetValueSize (k) > 0, "NULL Key must have encrypted metadata and can not have length 0");
 				succeed_if (memcmp (keyValue (k), binVal, MIN (keyGetValueSize (k), (ssize_t)sizeof (binVal))),
 					    "encryption failed");
 				succeed_if (memcmp (keyValue (k), strVal, MIN (keyGetValueSize (k), (ssize_t)sizeof (strVal))),

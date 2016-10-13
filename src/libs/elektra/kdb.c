@@ -1069,7 +1069,7 @@ static void elektraSetRollback (Split * split, Key * parentKey)
  *         should be committed (it is possible that more are changed).
  *           - cascading keys (starting with /) will set the path in all namespaces
  *           - / will commit all keys
- *           - meta-names will be rejected (error 104)
+ *           - metanames will be rejected (error 104)
  *           - empty/invalid (error 105)
  * @retval 1 on success
  * @retval 0 if nothing had to be done, no changes in KDB

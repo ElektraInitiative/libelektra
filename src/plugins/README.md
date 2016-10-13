@@ -95,7 +95,7 @@ Read (and write) standard config files:
 - [yajl](yajl/) uses JSON.
 
 Using semi-structured data for config files, mainly suitable for
-spec-namespace (put a focus on having nice syntax for meta-data):
+spec-namespace (put a focus on having nice syntax for metadata):
 
 - [ni](ni/) parses INI files based on (including metadata)
     [ni](https://github.com/chazomaticus/bohr/blob/master/include/bohr/ni.h).

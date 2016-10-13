@@ -3,11 +3,11 @@ kdb-setmeta(1) -- Set the value of a metakey
 
 ## SYNOPSIS
 
-`kdb setmeta <key-name> <meta-name> <meta-value>`
+`kdb setmeta <key-name> <metaname> <metavalue>`
 
 Where `key-name` is the path to the key that the metakey is associated with,
-`meta-name` is the name of the metakey the user would like to set the value of (or create),
-and `meta-value` is the value the user wishes to set the metakey to.
+`metaname` is the name of the metakey the user would like to set the value of (or create),
+and `metavalue` is the value the user wishes to set the metakey to.
 
 ## DESCRIPTION
 
@@ -64,4 +64,4 @@ To create an override link for a `/test` key:
 ## SEE ALSO
 
 - How to get metadata: [kdb-getmeta(1)](kdb-getmeta.md)
-- [elektra-meta-data(7)](elektra-meta-data.md)
+- [elektra-metadata(7)](elektra-metadata.md)

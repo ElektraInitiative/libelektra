@@ -24,7 +24,7 @@
  * options here.
  *
  * For full influence of value, comment and metadata shown, use these
- * options together with #keyswitch_t. All bits of meta-information ORed
+ * options together with #keyswitch_t. All bits of metainformation ORed
  * together are KDB_O_SHOWMETA.
  *
  * For more information about the flags, consult the documentation of

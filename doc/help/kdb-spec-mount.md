@@ -20,7 +20,7 @@ To mount a specification file first use [kdb-mount(7)](kdb-mount.md).
 
 The idea of mounting is explained [in elektra-mounting(7)](elektra-mounting.md) and.
 
-The `spec` [namespace](elektra-namespaces.md) contains meta-configuration that describes the configuration in all other namespaces.
+The `spec` [namespace](elektra-namespaces.md) contains metaconfiguration that describes the configuration in all other namespaces.
 The metadata used for the specification is described in [METADATA.ini](/doc/METADATA.ini).
 
 During `spec-mount` the `spec` keys are searched for relevant metadata:

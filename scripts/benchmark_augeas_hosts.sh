@@ -16,7 +16,7 @@ measure_time () {
 
 HOSTSFILE=$(echo "$(cd "$(dirname "$1")" && pwd)/$(basename "$1")")
 AUGEASPATH="system/benchmarks/$$/augeasplugin-hostsfile"
-KEYTOMETAPATH="system/benchmarks/$$/augeaskeytometa-hostsfile"
+KEYTOMETAPATH="system/benchmarks/$$/augeaskeytometahostsfile"
 HOSTSPATH="system/benchmarks/$$/hostsplugin-hostsfile"
 
 $KDB mount $HOSTSFILE $AUGEASPATH augeas lens=Hosts.lns

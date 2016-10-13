@@ -148,7 +148,7 @@ specify which relation should be checked.
   [doc/GIT](http://git.libelektra.org/tree/master/doc/GIT.md)
   thanks to Mihael Pranjić
 - valgrind suppressions are great again, thanks to Peter Nirschl
-- Plugins get a new namespace `internal` which can be used for meta-data
+- Plugins get a new namespace `internal` which can be used for metadata
   that is not relevant for other plugins.
 - kdberrors.h is only generated once, which allows us to use other build
   systems, thanks to René Schwaiger
@@ -396,7 +396,7 @@ Thanks to Mihael Pranjić for the setup!
   and Manuel Mausz  for fixing
 - fix INI for Mac OS X (did require some non-portable sorting
   properties of `qsort`.)
-- INI makes INI-specific meta-data private by prefixing `ini`.
+- INI makes INI-specific metadata private by prefixing `ini`.
 - `kdb export` also works under MinGW,
   thanks to Gabriel Rauter
 
@@ -1378,7 +1378,7 @@ value 10:
 	kdb setmeta spec/example/longkey check/type long
 
 Then we can create a key in a different namespace and see if the `spec`
-plugin applies the meta-data correctly:
+plugin applies the metadata correctly:
 
 	kdb set /example/longkey 25
 	kdb lsmeta /example/longkey
@@ -1412,7 +1412,7 @@ Now, when we try to modify `/example/longkey` it will be validated:
 	kdb set /example/longkey a
 	> Error (#52) [...] long [not] matched [...] a
 
-Based on the present meta-data, the correct plugins (in this case `type`
+Based on the present metadata, the correct plugins (in this case `type`
 because of the metadata `check/type`) will be loaded.
 
 We can also create a whole specification file, first mount the
@@ -1446,7 +1446,7 @@ Now lets verify if it worked:
 	# fails, not one of the allowed values!
 
 The main idea of the spec-mount is: search a plugin for every
-specification (meta-data) found in the spec-namespace.
+specification (metadata) found in the spec-namespace.
 
 
 
@@ -1492,7 +1492,7 @@ script-based plugins, e.g. you now might add:
 
 Furthermore, `kdb mount` now supports recommendations, which can be
 enabled with `--with-recommends`. E.g. supplied to the mount command
-using augeas above, comments will automatically transformed to meta-data
+using augeas above, comments will automatically transformed to metadata
 to avoid cluttering of the real configuration.
 
 
@@ -1570,7 +1570,7 @@ a new namespace is added, thus then the compiler can warn you about
 every part where the new namespace is not yet considered. We currently
 do not plan to add a new namespace, but better be safe than sorry.
 
-The internal function `keyCompare` now also detects any meta-data
+The internal function `keyCompare` now also detects any metadata
 change.
 
 libtools was nearly rewritten. Even though it is mostly API compatible
@@ -2098,7 +2098,7 @@ The INI plugin got a near rewrite. Now it handles many situations better,
 has many more options and features, including:
 
 - preserving the order
-- using keys as meta-data
+- using keys as metadata
 - many new testcases
 - fix escaping
 
@@ -2976,7 +2976,7 @@ For a tutorial how to actually elektrify an application and for more
 background to Elektra,
 [read this document](https://github.com/ElektraInitiative/libelektra/blob/master/doc/tutorials/application-integration.md).
 
-For a full list of proposed and implemented meta-data,
+For a full list of proposed and implemented metadata,
 [read this document](https://github.com/ElektraInitiative/libelektra/blob/master/doc/help/elektra-namespaces.md).
 
 
@@ -3504,7 +3504,7 @@ For other meta information, see:
 
     kdb lsmeta system/hosts/ipv4/localhost
 
-Additionally, a small API for specific meta-data operations emerges.
+Additionally, a small API for specific metadata operations emerges.
 These operations will be moved to a separate library and will not stay
 in Elektra's core library.
 

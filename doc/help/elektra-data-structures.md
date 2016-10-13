@@ -65,7 +65,7 @@ Using the C++ binding deallocation is done automatically.
 
 ## Meta Data
 
-Read [here](elektra-meta-data.md).
+Read [here](elektra-metadata.md).
 
 
 ## KeySet

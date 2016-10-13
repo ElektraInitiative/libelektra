@@ -28,7 +28,7 @@ public:
 
 	virtual std::string getSynopsis () override
 	{
-		return "<key-name> <meta-name> <meta-value>";
+		return "<key-name> <metaname> <metavalue>";
 	}
 
 	virtual std::string getShortHelpText () override

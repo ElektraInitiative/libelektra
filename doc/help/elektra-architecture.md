@@ -42,7 +42,7 @@ that `KeySet` is now always sorted by name.  The function `ksSort()`
 is now depreciated and was removed.  The handling of removed keys was
 modified.  Additionally, the API for metadata has fundamentally changed,
 but the old interface still works.  These changes will be described in
-[implementation of metadata](elektra-meta-data.md). However, the implementation of
+[implementation of metadata](elektra-metadata.md). However, the implementation of
 Elektra changed radically as discussed in [algorithm](elektra-algorithm.md).
 
 ### API Design

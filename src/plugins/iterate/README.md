@@ -14,4 +14,4 @@ Then you can mount:
 
     kdb mount file.dump /example/iterate dump iterate when=bar foo Key
 
-Which will execute `foo(k)` for every key that has the meta-data `when`.
+Which will execute `foo(k)` for every key that has the metadata `when`.

@@ -91,7 +91,7 @@ _kdb-get () {
 }
 
 _kdb-getmeta () { 
-    # TODO key-name meta-name
+    # TODO key-name metaname
     _kdb_paths
 }
 
@@ -147,7 +147,7 @@ _kdb-set () {
 }
 
 _kdb-setmeta () { 
-    # TODO key-name meta-name meta-value
+    # TODO key-name metaname metavalue
     _kdb_paths
 }
 

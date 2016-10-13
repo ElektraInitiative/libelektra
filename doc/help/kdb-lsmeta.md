@@ -33,4 +33,4 @@ To see which metakeys are associated with a key:
 
 ## SEE ALSO
 
-- [elektra-meta-data(7)](elektra-meta-data.md)
+- [elektra-metadata(7)](elektra-metadata.md)

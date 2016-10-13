@@ -10,7 +10,7 @@
 ## Introduction ##
 
 This plugin uses the nickel library in order to read/write
- [metakeys](/doc/help/elektra-meta-data.md) in the nickel ini format. It's purpose is to be
+ [metakeys](/doc/help/elektra-metadata.md) in the nickel ini format. It's purpose is to be
 used in the `spec`-namespace or when any metadata should be
 stored.
 
