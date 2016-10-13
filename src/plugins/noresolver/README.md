@@ -4,7 +4,7 @@
 - infos/provides = resolver
 - infos/needs =
 - infos/placements = rollback getresolver setresolver
-- infos/status = maintained nodep libc unfinished nodoc concept
+- infos/status = maintained configurable nodep libc unfinished nodoc concept
 - infos/description = Returns success on every call and can be used as resolver.
 
 It also exports a function checks if a filename is valid. It returns 1

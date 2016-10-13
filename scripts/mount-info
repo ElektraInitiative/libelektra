@@ -10,7 +10,7 @@ else
 	MOUNTPOINT="$1"
 fi
 
-$KDB mount --resolver noresolver none $MOUNTPOINT/constants constants
+$KDB mount -c assume/unchanged=1 --resolver noresolver none $MOUNTPOINT/constants constants
 $KDB mount --resolver noresolver none $MOUNTPOINT/uname uname
 $KDB mount --resolver noresolver none $MOUNTPOINT/desktop desktop
 

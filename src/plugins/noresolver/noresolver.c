@@ -11,6 +11,8 @@
 #endif
 
 #include "noresolver.h"
+#include <kdblogger.h>
+#include <string.h>
 
 /**
  * @retval 1 on success (Relative path)
@@ -56,15 +58,24 @@ int elektraNoresolverGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEK
 	Key * pathKey = ksLookupByName (config, "/path", KDB_O_NONE);
 	if (pathKey) keySetString (parentKey, keyString (pathKey));
 
-	/* get all keys */
+	if (!strcmp (keyString (ksLookupByName (config, "/assume/unchanged", 0)), "1"))
+	{
+		// always return 0, except the first time
+		uintptr_t nr = (uintptr_t)elektraPluginGetData (handle);
+		if (nr == 1)
+		{
+			ELEKTRA_LOG ("assume config is unchanged");
+			return 0;
+		}
+		elektraPluginSetData (handle, (void *)1);
+	}
 
+	ELEKTRA_LOG ("assume config is changed");
 	return 1; /* success */
 }
 
 int elektraNoresolverSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
 {
-	/* set all keys */
-
 	return 1; /* success */
 }
 
