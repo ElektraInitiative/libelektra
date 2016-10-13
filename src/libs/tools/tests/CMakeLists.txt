@@ -11,3 +11,6 @@ foreach (file ${TESTS})
 	get_filename_component (name ${file} NAME_WE)
 	add_gtest (${name} LINK_TOOLS)
 endforeach (file ${TESTS})
+
+
+set_property(TEST testtool_mergingkdb PROPERTY LABELS kdbtests)

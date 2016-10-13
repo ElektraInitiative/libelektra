@@ -25,9 +25,9 @@ Some tests write into system paths.
 If the access is denied, several tests will fail.
 You have some options to avoid running them as root:
 
-1. To void running the problematic test cases alltogether (reduces the test coverage!)
-   run ctest with:
-   `ctest --output-on-failure -E 'testtool_mergingkdb|((testshell|testscr|testkdb)_.*)'`
+1. To void running the problematic test cases (reduces the test coverage!)
+   run ctest without tests that have the label `kdbtests`:
+   `ctest --output-on-failure -LE kdbtests`
 2. To give your user the permissions to the relevant paths, i.e. (once as root):
 
    ```
