@@ -20,7 +20,7 @@ not necessarily an error, because the device file may appear later when
 a device is plugged in and the mountpoint may be there when another
 subsequent mount was executed. So only warnings are yielded in that
 case. One situation, however, presents an error: Only an absolute path
-is allowed to occur for both device and mount point. When checking for
+is allowed to occur for both device and mountpoint. When checking for
 relative files, it is not enough to look at the first character if it is
 a `/`, because remote file systems and some special names are valid, too.
 

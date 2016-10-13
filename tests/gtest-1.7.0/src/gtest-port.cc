@@ -545,7 +545,7 @@ class CapturedStream {
     //
     // The location /sdcard is directly accessible from native code
     // and is the only location (unofficially) supported by the Android
-    // team. It's generally a symlink to the real SD Card mount point
+    // team. It's generally a symlink to the real SD Card mountpoint
     // which can be /mnt/sdcard, /mnt/sdcard0, /system/media/sdcard, or
     // other OEM-customized locations. Never rely on these, and always
     // use /sdcard.

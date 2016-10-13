@@ -178,11 +178,11 @@ internally.
 
 ## Mount Point Configuration
 
-`kdb mount` creates a **mount point configuration** as shown
+`kdb mount` creates a **mountpoint configuration** as shown
 in the example below.  `fstab` is a unique name
-within the mount point configuration provided by the administrator.
+within the mountpoint configuration provided by the administrator.
 
-Example for a mount point configuration:
+Example for a mountpoint configuration:
 
 	system/elektra/mountpoints system/elektra/mountpoints/fstab
 	system/elektra/mountpoints/fstab/config
@@ -244,13 +244,13 @@ systems, the resolver would determine the name `/etc/fstab`
 for system configuration.
 
 - **mountpoint**:
-is a key that represents the mount point. Its value is
-the location where the backend is mounted.  If a mount point has an entry
+is a key that represents the mountpoint. Its value is
+the location where the backend is mounted.  If a mountpoint has an entry
 for both the user and the system hierarchy, it is called
-**cascading mount point**.  A cascading mount point differs from two separate mount
+**cascading mountpoint**.  A cascading mountpoint differs from two separate mount
 points because internally only one backend is created.	In the example,
-the mount point `/fstab` means that the backend handles both
-`user/fstab` and `system/fstab`.  If the mount point
+the mountpoint `/fstab` means that the backend handles both
+`user/fstab` and `system/fstab`.  If the mountpoint
 is `/`, the backend will be mounted to all namespaces except `spec`,
 including both `user` and `system`.
 
@@ -312,12 +312,12 @@ above.
 
 ### Changing Mount Point Configuration
 
-When the user changes the mount point configuration, without
+When the user changes the mountpoint configuration, without
 countermeasures, applications already started will continue to run with
 the old configuration.	This could lead to a problem if backends in use
 are changed or removed.  It is necessary to restart all such programs.
 Notification is the best way to deal with the situation.  Changes of
-the mount point configuration, however, do not occur often.  For some
+the mountpoint configuration, however, do not occur often.  For some
 systems, the manual restart may also be appropriate.
 
 In this situation, applications can receive warning or error information
@@ -326,15 +326,15 @@ situation occurs if the sequence of locking multiple files produces a
 *dead lock*.  Under normal circumstances, the sequence of locking
 the files is deterministic, so either all locks can be requested or
 another program will be served first. But several programs with different
-mount point configurations running at the same time can cause a disaster.
+mountpoint configurations running at the same time can cause a disaster.
 The problem gets even worse, because `kdb mount` is unable to detect
-such situations.  Every specific mount point configuration for itself
+such situations.  Every specific mountpoint configuration for itself
 is trouble-free.
 
 But still a dead lock can arise when multiple programs run with different
-mount point configurations.  Suppose we have a program `A` which uses the
+mountpoint configurations.  Suppose we have a program `A` which uses the
 backends `B1` and `B2` that requests locks for the files `F1` and `F2`.
-Then the mount point configuration is changed.	The user removes `B1`
+Then the mountpoint configuration is changed.	The user removes `B1`
 and introduces `B3`.  `B3` is in a different path mounted after `B2`, but
 also accesses the same file `F1`.  The program `B` starts after the mount
 point configuration is changed.  So it uses the backends `B2` and `B3`.
@@ -343,9 +343,9 @@ lock the files `F1` and `F2`, a dead lock situation happens because in
 the afterwards the applications `A` and `B` try to lock `F2` and `F1`.
 
 A manual solution for this problem is to enable `kdb` to output a
-list of processes that still use old mount point configuration. The
+list of processes that still use old mountpoint configuration. The
 administrator can restart these processes.  The preferred solution is
-to use notification for mount point configuration changes or simply to
+to use notification for mountpoint configuration changes or simply to
 use a lock-free resolver.
 
 

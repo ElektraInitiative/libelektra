@@ -94,7 +94,7 @@ So when following line is added
 Implementation hint: use keyAddBaseName() to get escaping of /, then
 add array items below it
 
-If a mount point exists more than once (that could be proc, swap or
+If a mountpoint exists more than once (that could be proc, swap or
 overlay mountpoints) the array below gets incremented (otherwise #0 is
 used for every unique entry).
 

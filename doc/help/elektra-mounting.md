@@ -32,7 +32,7 @@ same time. Each of them is responsible for its own subtree of the global
 key database.
 
 Mounting works for file systems only if the file system below is
-accessible and a directory exists at the mount point.  Elektra does not
+accessible and a directory exists at the mountpoint.  Elektra does not
 enforce such restrictions.
 
 Note, that you cannot mount the same configuration file multiple times.

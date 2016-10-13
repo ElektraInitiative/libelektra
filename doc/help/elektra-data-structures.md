@@ -320,7 +320,7 @@ The initial approach was to iterate over the `Trie`
 to get a list of all backends.
 But the transformation of a `Trie` to a list of backends, contained
 many bugs caused by corner cases in connection with the default backend
-and cascading mount points.
+and cascading mountpoints.
 
 ### Split
 
@@ -358,7 +358,7 @@ backend.
 Each `parentKey` contains the
 root key of a backend. No key of the respective key set is above the
 `parentKey`.
-The key name of `parentKey` contains the mount point of a backend.
+The key name of `parentKey` contains the mountpoint of a backend.
 The resolver writes the file name into the value of the `parentKey`.
 
 - **syncbits**: are some bits that can be set for every backend.

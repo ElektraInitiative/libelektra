@@ -48,12 +48,12 @@ void GUIBackend::createBackend (const QString & mountpoint)
 	}
 	catch (MountpointInvalidException const & ex)
 	{
-		emit showMessage (tr ("Error"), tr ("The provided mount point is invalid."), ex.what ());
+		emit showMessage (tr ("Error"), tr ("The provided mountpoint is invalid."), ex.what ());
 		return;
 	}
 	catch (MountpointAlreadyInUseException const & ex)
 	{
-		emit showMessage (tr ("Error"), tr ("The provided mount point is one of the already used cascading names."), ex.what ());
+		emit showMessage (tr ("Error"), tr ("The provided mountpoint is one of the already used cascading names."), ex.what ());
 		return;
 	}
 }

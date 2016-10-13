@@ -222,7 +222,7 @@ can be up to one thousand individual files.
 
 == User Mount Point Configuration ==
 
-The mount point configuration resides only below
+The mountpoint configuration resides only below
 system/elektra/mountpoints. We decided against
 providing \keyname{user/elektra/mountpoints} because of security concerns.
 This issue, however, is solved because of the specification.
