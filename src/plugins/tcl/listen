@@ -14,8 +14,8 @@ natural and distinguish-able style.
 
 user/key = {
  a-multi line
- value {meta-key1 meta-value}
- {meta-key2 meta-value}
+ value {metakey1 meta-value}
+ {metakey2 meta-value}
 }
 
 

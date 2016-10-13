@@ -27,7 +27,7 @@ operations, thus:
 
 ## Considered Alternatives
 
-We considered passing the key and IV in form of plugin configuration and meta-keys, but this approach possibly exposes the key to other modules.
+We considered passing the key and IV in form of plugin configuration and metakeys, but this approach possibly exposes the key to other modules.
 Thus our constraints are violated.
 
 Also we considered using the gpg-agent (or pcscd, which uses a similar protocol) for providing asymmetric cryptographic operations.

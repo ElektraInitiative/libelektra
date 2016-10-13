@@ -1680,7 +1680,7 @@ that notification plugins work properly afterwards.
 
 The crypto plugin is a facility for securing sensitive Keys by symmetric
 encryption of the value. It acts as a filter plugin and it will only
-operate on Keys, which have the meta-key „crypto/encrypt“ set.
+operate on Keys, which have the metakey „crypto/encrypt“ set.
 
 The key derivation is still work-in-progress, so the plugin does not
 work with kdb yet. A planned method for key derivation is to utilize
