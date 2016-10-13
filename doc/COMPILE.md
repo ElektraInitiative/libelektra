@@ -268,7 +268,7 @@ To include them, use:
 Some bindings provide different APIs (and not a different language), e.g:
 
 - `gsettings`
-- `INTERCEPT` with `intercept_open` and `intercept_getenv`
+- `INTERCEPT` with `intercept_fs` and `intercept_env`
 
 To not add such APIs, but only swig bindings and cpp, you can use:
 

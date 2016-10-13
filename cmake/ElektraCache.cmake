@@ -86,8 +86,8 @@ endif ()
 list (FIND BINDINGS "INTERCEPT" FINDEX)
 if (FINDEX GREATER -1 OR BINDINGS MATCHES "ALL")
 	set(BINDINGS_LIST_INTERCEPT
-		intercept_open
-		intercept_getenv
+		intercept_fs
+		intercept_env
 		)
 endif()
 
