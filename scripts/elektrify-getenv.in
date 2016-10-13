@@ -1,6 +1,6 @@
 #!/bin/sh
 
-GETENV="@CMAKE_INSTALL_PREFIX@/lib@LIB_SUFFIX@/libelektragetenv.so"
+GETENV="@CMAKE_INSTALL_PREFIX@/lib@LIB_SUFFIX@/libelektraintercept-env.so"
 
 if [ ! -f "$GETENV" ]
 then
