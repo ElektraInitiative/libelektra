@@ -95,3 +95,8 @@ development of the crypto plugin, minor bug fixes, BSD/OS X support
 Github User: @petermax2
 Devel on: Fedora
 Test on: Fedora, Debian, Mac OS X
+
+René Schwaiger <sanssecours@f-m.fm>
+Documentation, Bug Fixes
+Github User: @sanssecours
+Devel/Test on: macOS
