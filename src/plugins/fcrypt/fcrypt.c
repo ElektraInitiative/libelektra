@@ -147,6 +147,7 @@ static int encrypt (KeySet * pluginConfig, Key * parentKey)
 
 	const size_t testMode = inTestMode (pluginConfig);
 	int tmpFileFd = -1;
+	int parentKeyFd = -1;
 
 	char * tmpFile = getTemporaryFileName (keyString (parentKey), &tmpFileFd);
 	if (!tmpFile)
@@ -209,6 +210,8 @@ static int encrypt (KeySet * pluginConfig, Key * parentKey)
 
 	if (result == 1)
 	{
+		parentKeyFd = open (keyString (parentKey), O_WRONLY);
+
 		// encryption successful, overwrite the original file with the encrypted data
 		if (rename (tmpFile, keyString (parentKey)) != 0)
 		{
@@ -217,13 +220,24 @@ static int encrypt (KeySet * pluginConfig, Key * parentKey)
 		}
 	}
 
-	// if anything went wrong above the temporary file is shredded and removed
-	if (result != 1)
+	if (result == 1)
 	{
+		if (parentKeyFd >= 0)
+		{
+			shredTemporaryFile (parentKeyFd, parentKey);
+		}
+	}
+	else
+	{
+		// if anything went wrong above the temporary file is shredded and removed
 		shredTemporaryFile (tmpFileFd, parentKey);
 		unlink (tmpFile);
 	}
 
+	if (parentKeyFd >= 0)
+	{
+		close (parentKeyFd);
+	}
 	close (tmpFileFd);
 	elektraFree (tmpFile);
 	return result;
@@ -239,6 +253,7 @@ static int encrypt (KeySet * pluginConfig, Key * parentKey)
 static int decrypt (KeySet * pluginConfig, Key * parentKey)
 {
 	int tmpFileFd = -1;
+	int parentKeyFd = -1;
 	char * tmpFile = getTemporaryFileName (keyString (parentKey), &tmpFileFd);
 	if (!tmpFile)
 	{
@@ -278,6 +293,8 @@ static int decrypt (KeySet * pluginConfig, Key * parentKey)
 
 	if (result == 1)
 	{
+		parentKeyFd = open (keyString (parentKey), O_WRONLY);
+
 		// encryption successful, overwrite the original file with the encrypted data
 		if (rename (tmpFile, keyString (parentKey)) != 0)
 		{
@@ -286,13 +303,24 @@ static int decrypt (KeySet * pluginConfig, Key * parentKey)
 		}
 	}
 
-	// if anything went wrong above the temporary file is shredded and removed
-	if (result != 1)
+	if (result == 1)
 	{
+		if (parentKeyFd >= 0)
+		{
+			shredTemporaryFile (parentKeyFd, parentKey);
+		}
+	}
+	else
+	{
+		// if anything went wrong above the temporary file is shredded and removed
 		shredTemporaryFile (tmpFileFd, parentKey);
 		unlink (tmpFile);
 	}
 
+	if (parentKeyFd >= 0)
+	{
+		close (parentKeyFd);
+	}
 	close (tmpFileFd);
 	elektraFree (tmpFile);
 	return result;
