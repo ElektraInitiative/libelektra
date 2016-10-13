@@ -21,7 +21,7 @@ The kdb shell offers a number of commands to interact with the key database.
 - `keySetName <name>`:
   Set the name of the current key.
 - `keySetMeta <name> <string>`:
-  Set a meta key associated with the current key.
+  Set a metakey associated with the current key.
 - `keySetString <string>`:
   Set a string value for the current key.
 - `ksAppendKey`:

@@ -26,7 +26,7 @@ a `/`, because remote file systems and some special names are valid, too.
 
 ## Usage ##
 
-If the meta key `check/path` is present, it is checked if the value is a
+If the metakey `check/path` is present, it is checked if the value is a
 valid absolute filesystem path. If a metavalue is present, an additional
 check will be done if it is a directory or device file.
 

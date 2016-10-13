@@ -106,20 +106,20 @@ typedef enum {
 			 Key name is read only and not allowed
 			 to be changed. All attempts to change the name
 			 will lead to an error.
-			 Needed for meta keys and keys that are in a data
+			 Needed for metakeys and keys that are in a data
 			 structure that depends on name ordering.*/
 	KEY_FLAG_RO_VALUE = 1 << 2, /*!<
 			 Read only flag for value.
 			 Key value is read only and not allowed
 			 to be changed. All attempts to change the value
 			 will lead to an error.
-			 Needed for meta keys*/
+			 Needed for metakeys*/
 	KEY_FLAG_RO_META = 1 << 3	/*!<
 			 Read only flag for meta.
 			 Key meta is read only and not allowed
 			 to be changed. All attempts to change the value
 			 will lead to an error.
-			 Needed for meta keys.*/
+			 Needed for metakeys.*/
 } keyflag_t;
 
 

@@ -94,7 +94,7 @@ check/validation/message = def does not start with abc
 ## Mounting
 
 In the spec namespace you can also specify mountpoints.
-First you need the meta key `mountpoint` and a configuration file name.
+First you need the metakey `mountpoint` and a configuration file name.
 Otherwise, it basically works in the same way as the contracts
 in plugins using `infos` and `config`:
 

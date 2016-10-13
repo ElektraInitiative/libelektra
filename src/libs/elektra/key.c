@@ -149,7 +149,7 @@ static Key * elektraKeyMalloc ()
  * - ::KEY_CASCADING_NAME allow the name to start with /
  *   useful for ksLookup() and kdbGet() parent/lookup keys
  * - ::KEY_META_NAME allow the name to start with arbitrary namespaces
- *   useful to compare with meta keys
+ *   useful to compare with metakeys
  *
  *
  *

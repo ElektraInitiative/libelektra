@@ -34,7 +34,7 @@ by their trailing line break.
 
 ## Restrictions##
 
-The ordering of the hosts is stored in meta keys of type "order".
+The ordering of the hosts is stored in metakeys of type "order".
 The value is an ascending number. Ordering of aliases is NOT preserved.
 
 ##Examples##

@@ -1,7 +1,7 @@
 /**
  * @file
  *
- * @brief Applies a MergeConflictStrategy on the meta keys
+ * @brief Applies a MergeConflictStrategy on the metakeys
  *
  * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
  *
@@ -25,7 +25,7 @@ namespace merging
 // it does not resolve conflicts by itself. Instead it uses the supplied ThreeWayMerger
 // instance and applies it to the MetaKeys of conflicting Keys.
 // Only if both conflict operations are META (i.e. if both sides modified only the MetaKeys of a key) and
-// the supplied ThreeWayMerger is able to successfully merge the meta keys, the
+// the supplied ThreeWayMerger is able to successfully merge the metakeys, the
 // MetaMergeStrategy will mark the conflict as resolved.
 // If the supplied merger is not able to resolve all conflicts
 // in the MetaKeys this strategy won't resolve even a META <--> META conflict.

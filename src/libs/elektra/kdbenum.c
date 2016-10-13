@@ -47,7 +47,7 @@ enum elektraNamespace
 {
 	KEY_NS_NONE=0,          ///< no key given as parameter to keyGetNamespace()
 	KEY_NS_EMPTY=1,         ///< key name was empty, e.g. invalid key name
-	KEY_NS_META=2,          ///< meta key, i.e. any key name not under other categories
+	KEY_NS_META=2,          ///< metakey, i.e. any key name not under other categories
 	KEY_NS_CASCADING=3,     ///< cascading key, starts with /, abstract name for any of the namespaces below
 	KEY_NS_FIRST=4,         ///< For iteration over namespaces (first element, inclusive)
 	KEY_NS_SPEC=4,          ///< spec contains the specification of the other namespaces

@@ -1,4 +1,4 @@
-kdb-getmeta(1) -- Get the value of a meta key stored in the key database
+kdb-getmeta(1) -- Get the value of a metakey stored in the key database
 ========================================================================
 
 ## SYNOPSIS
@@ -6,12 +6,12 @@ kdb-getmeta(1) -- Get the value of a meta key stored in the key database
 `kdb getmeta <key-name> <meta-name>`  
 
 Where `key-name` is the full path to the key and
-`meta-name` is the name of the meta key the user would like to access.
+`meta-name` is the name of the metakey the user would like to access.
 
 ## DESCRIPTION
 
-This command is used to print the value of a meta key.
-A meta key is information stored in a key which describes that key.
+This command is used to print the value of a metakey.
+A metakey is information stored in a key which describes that key.
 
 The handling of cascading `key-name` does not differ to `kdb get`.
 Make sure to use the namespace `spec`, if you want meta-data from there.
@@ -42,10 +42,10 @@ This command will return the following values as an exit status:
 
 ## EXAMPLES
 
-To get the value of a meta key called `description` stored in the key `spec/example/key`:  
+To get the value of a metakey called `description` stored in the key `spec/example/key`:  
 `kdb getmeta spec/example/key description`
 
-To get the value of meta key called `override/#0` stored in the key `spec/example/dir/key`:  
+To get the value of metakey called `override/#0` stored in the key `spec/example/dir/key`:  
 `kdb getmeta spec/example/dir/key "override/#0"`
 
 ## SEE ALSO

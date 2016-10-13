@@ -150,8 +150,8 @@
       return self._setString(str(value))
 
     def getMeta(self, name = None):
-      """returns a meta key given by name. Name can be either string or Key.
-      If no meta key is found None is returned.
+      """returns a metakey given by name. Name can be either string or Key.
+      If no metakey is found None is returned.
       If name is omitted an iterator object is returned.
       """
       if name is not None:
@@ -160,7 +160,7 @@
       return self.__metaIter()
 
     def setMeta(self, name, value):
-      """set a new meta key consisting of name and value"""
+      """set a new metakey consisting of name and value"""
       if isinstance(value, str):
         return self._setMeta(name, value)
       raise TypeError("Unsupported value type")

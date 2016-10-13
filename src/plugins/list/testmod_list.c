@@ -54,7 +54,7 @@ static void doTest ()
 	const Key * key = ksLookupByName (ks, "user/tests/list/meta1", 0);
 	succeed_if (key, "key not found");
 	const Key * meta = keyGetMeta (key, "amimetanow?");
-	succeed_if (meta, "meta key not found");
+	succeed_if (meta, "metakey not found");
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) >= 0, "kdbset failed");
 	key = ksLookupByName (ks, "user/tests/list/to/be/cut/meta1", 0);
 	succeed_if (key, "key not found");

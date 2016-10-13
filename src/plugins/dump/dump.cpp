@@ -55,7 +55,7 @@ int serialise (std::ostream & os, ckdb::Key *, ckdb::KeySet * ks)
 
 			if (!ret)
 			{
-				/* This meta key was not serialised up to now */
+				/* This metakey was not serialised up to now */
 				size_t metanamesize = ckdb::keyGetNameSize (meta);
 				size_t metavaluesize = ckdb::keyGetValueSize (meta);
 

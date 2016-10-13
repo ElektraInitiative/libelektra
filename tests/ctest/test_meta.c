@@ -232,25 +232,25 @@ static void test_metaKeySet ()
 
 	KeySet * metaKeys = elektraKeyGetMetaKeySet (key);
 
-	/* test whether the meta keyset contains all keys */
+	/* test whether the metakeyset contains all keys */
 	Key * metaKey = ksLookupByName (metaKeys, "meta/test1", KDB_O_NONE);
-	exit_if_fail (metaKey, "the first meta key was not found in the meta keyset");
-	succeed_if (!strcmp (keyString (metaKey), "value1"), "the first meta key in the meta keyset has a wrong value");
+	exit_if_fail (metaKey, "the first metakey was not found in the metakeyset");
+	succeed_if (!strcmp (keyString (metaKey), "value1"), "the first metakey in the metakeyset has a wrong value");
 
 	metaKey = ksLookupByName (metaKeys, "meta/test2", KDB_O_NONE);
-	exit_if_fail (metaKey, "the second meta key was not found in the meta keyset");
-	succeed_if (!strcmp (keyString (metaKey), "value2"), "the second meta key in the meta keyset has a wrong value");
+	exit_if_fail (metaKey, "the second metakey was not found in the metakeyset");
+	succeed_if (!strcmp (keyString (metaKey), "value2"), "the second metakey in the metakeyset has a wrong value");
 
 	metaKey = ksLookupByName (metaKeys, "meta/test3", KDB_O_NONE);
-	exit_if_fail (metaKey, "the third meta key was not found in the meta keyset");
-	succeed_if (!strcmp (keyString (metaKey), "value3"), "the third meta key in the meta keyset has a wrong value");
+	exit_if_fail (metaKey, "the third metakey was not found in the metakeyset");
+	succeed_if (!strcmp (keyString (metaKey), "value3"), "the third metakey in the metakeyset has a wrong value");
 
-	/* test whether the meta keyset is affected by deletions */
+	/* test whether the metakeyset is affected by deletions */
 	ksPop (metaKeys);
 
 	const Key * deletedKey = keyGetMeta (key, "meta/test3");
-	exit_if_fail (deletedKey, "key deleted from the meta keyset is not present on the original key anymore");
-	succeed_if (!strcmp (keyString (deletedKey), "value3"), "key deleted from the meta keyset has a wrong value afterwards");
+	exit_if_fail (deletedKey, "key deleted from the metakeyset is not present on the original key anymore");
+	succeed_if (!strcmp (keyString (deletedKey), "value3"), "key deleted from the metakeyset has a wrong value afterwards");
 
 	ksDel (metaKeys);
 	metaKeys = elektraKeyGetMetaKeySet (key);
@@ -260,7 +260,7 @@ static void test_metaKeySet ()
 
 	const Key * modifiedKey = keyGetMeta (key, "meta/test1");
 	succeed_if (!strcmp (keyString (modifiedKey), "value1"),
-		    "meta key has incorrect value after a key from the meta keyset was modified");
+		    "metakey has incorrect value after a key from the metakeyset was modified");
 
 	ksDel (metaKeys);
 	keyDel (key);

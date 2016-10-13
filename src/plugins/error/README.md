@@ -26,12 +26,12 @@ e.g.:
 
 	kdb mount error.dump /error error dump
 
-When following meta key is present during storing (kdbSet()) the keyset:
+When following metakey is present during storing (kdbSet()) the keyset:
 
 	trigger/warnings
 
 a warning will be added. The plugin will still return success, but when
-the following meta key is present:
+the following metakey is present:
 
 	trigger/error
 

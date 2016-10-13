@@ -317,7 +317,7 @@ public class Key implements java.lang.Iterable<String> {
 	/**
 	 * Tries to rewind the meta information for this key
 	 * @return 0 in case of no errors; 1 if key is not found;
-	 * 		2 if meta key is not found
+	 * 		2 if metakey is not found
 	 */
 	public int rewindMeta() {
 		return Elektra.INSTANCE.keyRewindMeta(get());

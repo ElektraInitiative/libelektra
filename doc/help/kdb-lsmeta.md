@@ -1,4 +1,4 @@
-kdb-lsmeta(1) - Print meta keys associated with a key
+kdb-lsmeta(1) - Print metakeys associated with a key
 =====================================================
 
 ## SYNOPSIS
@@ -7,8 +7,8 @@ kdb-lsmeta(1) - Print meta keys associated with a key
 
 ## DESCRIPTION
 
-This command prints the names of all meta keys associated with a given key.  
-If no meta keys are associated with the given key, nothing will be printed.  
+This command prints the names of all metakeys associated with a given key.  
+If no metakeys are associated with the given key, nothing will be printed.  
 
 ## OPTIONS
 
@@ -28,7 +28,7 @@ If no meta keys are associated with the given key, nothing will be printed.
 
 ## EXAMPLE
 
-To see which meta keys are associated with a key:  
+To see which metakeys are associated with a key:  
 `kdb lsmeta /example/key`
 
 ## SEE ALSO

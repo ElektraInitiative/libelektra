@@ -84,11 +84,11 @@
  * The order inside a persistent storage can be described
  * with the tag "order" which contains a positive number.
  *
- * The meta key "app" describes to which application a
+ * The metakey "app" describes to which application a
  * key belongs. It can be used to remove keys from an
  * application no longer installed.
  *
- * The meta key "path" describes where the key is physically
+ * The metakey "path" describes where the key is physically
  * stored.
  *
  * The "owner" is the user that owns the key. It only

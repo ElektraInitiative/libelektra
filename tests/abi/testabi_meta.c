@@ -329,11 +329,11 @@ static void test_copy ()
 	// clang-format on
 	c = keyNew ("user/metacopy", KEY_END);
 
-	succeed_if (keyGetMeta (k, "t") != 0, "could not get meta key");
-	succeed_if (keyGetMeta (k, "a") != 0, "could not get meta key");
+	succeed_if (keyGetMeta (k, "t") != 0, "could not get metakey");
+	succeed_if (keyGetMeta (k, "a") != 0, "could not get metakey");
 
-	succeed_if (keyGetMeta (c, "t") == 0, "could get meta key not there");
-	succeed_if (keyGetMeta (c, "a") == 0, "could get meta key not there");
+	succeed_if (keyGetMeta (c, "t") == 0, "could get metakey not there");
+	succeed_if (keyGetMeta (c, "a") == 0, "could get metakey not there");
 
 	succeed_if (keyCopyMeta (c, k, "t") == 1, "could not copy meta data");
 	succeed_if (keyGetMeta (k, "t") == keyGetMeta (c, "t"), "not the same meta data after copy");
@@ -359,8 +359,8 @@ static void test_copy ()
 		KEY_END);
 	// clang-format on
 
-	succeed_if (keyGetMeta (k, "t") != 0, "could not get meta key");
-	succeed_if (keyGetMeta (k, "a") != 0, "could not get meta key");
+	succeed_if (keyGetMeta (k, "t") != 0, "could not get metakey");
+	succeed_if (keyGetMeta (k, "a") != 0, "could not get metakey");
 
 	succeed_if (keyCopyMeta (c, k, "t") == 1, "could not copy meta data");
 	succeed_if (keyGetMeta (k, "t") == keyGetMeta (c, "t"), "not the same meta data after copy");
@@ -373,8 +373,8 @@ static void test_copy ()
 	succeed_if_same_string (keyValue (keyGetMeta (c, "a")), "another");
 
 	succeed_if_same_string (keyValue (keyGetMeta (c, "old")), "will stay");
-	succeed_if (keyGetMeta (c, "cya") == 0, "meta key should not be there");
-	succeed_if (keyGetMeta (c, "mode") == 0, "meta key should not be there");
+	succeed_if (keyGetMeta (c, "cya") == 0, "metakey should not be there");
+	succeed_if (keyGetMeta (c, "mode") == 0, "metakey should not be there");
 
 	keyDel (k);
 	keyDel (c);
@@ -504,11 +504,11 @@ static void test_copyall ()
 	// clang-format on
 	c = keyNew ("user/metacopy", KEY_END);
 
-	succeed_if (keyGetMeta (k, "t") != 0, "could not get meta key");
-	succeed_if (keyGetMeta (k, "a") != 0, "could not get meta key");
+	succeed_if (keyGetMeta (k, "t") != 0, "could not get metakey");
+	succeed_if (keyGetMeta (k, "a") != 0, "could not get metakey");
 
-	succeed_if (keyGetMeta (c, "t") == 0, "could get meta key not there");
-	succeed_if (keyGetMeta (c, "a") == 0, "could get meta key not there");
+	succeed_if (keyGetMeta (c, "t") == 0, "could get metakey not there");
+	succeed_if (keyGetMeta (c, "a") == 0, "could get metakey not there");
 
 	succeed_if (keyCopyAllMeta (c, k) == 1, "could not copy meta data");
 	succeed_if (keyGetMeta (k, "t") == keyGetMeta (c, "t"), "not the same meta data after copy");

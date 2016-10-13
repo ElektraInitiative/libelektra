@@ -166,11 +166,11 @@ TEST (meta, string)
 	succeed_if (k.getMeta<string> ("a") == "a meta value", "could not get meta value");
 
 	Key m = k.getMeta<const Key> ("a");
-	succeed_if (m, "could not get meta key");
+	succeed_if (m, "could not get metakey");
 	succeed_if (m.getString () == "a meta value", "could not get meta string");
 
 	Key m1 = k.getMeta<const Key> ("x");
-	succeed_if (!m1, "got not existing meta key");
+	succeed_if (!m1, "got not existing metakey");
 }
 
 TEST (meta, copyAll)

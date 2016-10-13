@@ -81,7 +81,7 @@ The operation simply fails with an undescriptive error.
 ### Leaky abstraction of order ###
 Most Augeas lenses require subtrees to be in a specific order. For example the hosts lens requires the ipaddr node
 of an entry to precede the canonical node. Unfortunately the Augeas storage plugin has no knowledge about this required
-order. Therefore the correct order must be ensured via order meta keys. Otherwise saving the KeySet may fail. As an example
+order. Therefore the correct order must be ensured via order metakeys. Otherwise saving the KeySet may fail. As an example
 consider the following kdb shell script:
 
 	kdbGet system/hosts
