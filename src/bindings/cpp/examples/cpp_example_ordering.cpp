@@ -6,7 +6,7 @@
  * - * They might even have complete other properties than KeySet, e.g. in
  * this case:
  * - duplicates are allowed
- * - after sorting order is given by meta data "order"
+ * - after sorting order is given by metadata "order"
  *
  * It is easy to create any other data structure, with any properties
  *

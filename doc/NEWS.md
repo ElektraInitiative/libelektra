@@ -331,7 +331,7 @@ For details about `ELEKTRA_DEBUG` and cmake, see individual points below.
 
 There is now a fine collection of external scripts which can
 executed by `kdb + <script>`. The new script `kdb find-tools`
-provides full text search over the meta data as provided by
+provides full text search over the metadata as provided by
 the scripts.
 
    * `kdb find-tools -b BRIEF` to search for a short text.
@@ -2882,9 +2882,9 @@ paths used by an application, using:
 
 Keys in `spec` allow us to specify which keys are read by the application,
 which fallback it might have and which is the default value using
-meta data. The implementation of these features happened in `ksLookup`.
+metadata. The implementation of these features happened in `ksLookup`.
 When cascading keys (those starting with `/`) are used following features
-are now available (in the meta data of respective `spec`-keys):
+are now available (in the metadata of respective `spec`-keys):
 
 - `override/#`: use these keys *in favour* of the key itself (note that
     `#` is the syntax for arrays, e.g. `#0` for the first element,
@@ -3483,7 +3483,7 @@ rewritten completely. Now multiple different comment styles can be
 intermixed without losing information. E.g. some INI formats support
 both ; and # for comments. With the new comments it is possible to
 preserve that information and even better: applications can iterate
-over that information (meta data).
+over that information (metadata).
 
 To mount the new hosts plugin use (if you already have mounted it, you
 have nothing to do):
@@ -3515,7 +3515,7 @@ in Elektra's core library.
 - lookup options:
  - KDB_O_SPEC uses the lookup key as specification
  - KDB_O_CREATE creates a key if it could not be found
-- elektraKeyGetMetaKeySet creates a KeySet from meta data
+- elektraKeyGetMetaKeySet creates a KeySet from metadata
 - elektraKsFilter allows us to filter a KeySet arbitrarily (not only
     keyIsBelow in case of ksCut). It reintroduces more functional
     programming.

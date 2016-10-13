@@ -50,6 +50,6 @@ To get the value of metakey called `override/#0` stored in the key `spec/example
 
 ## SEE ALSO
 
-- How to set meta data: [kdb-setmeta(1)](kdb-setmeta.md)
+- How to set metadata: [kdb-setmeta(1)](kdb-setmeta.md)
 - For more about cascading keys see [elektra-cascading(7)](elektra-cascading.md)
-- For general information about meta data see [elektra-meta-data(7)](elektra-meta-data.md)
+- For general information about metadata see [elektra-meta-data(7)](elektra-meta-data.md)

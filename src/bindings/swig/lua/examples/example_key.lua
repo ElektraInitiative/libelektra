@@ -37,7 +37,7 @@ print("")
 key1:setMeta("foo",     "bar")
 key1:setMeta("owner",   "manuel")
 key1:setMeta("comment", "this is my example key")
-print("Keys can have meta data. We can iterate over or fetch them by name.")
+print("Keys can have metadata. We can iterate over or fetch them by name.")
 print("Meta data of Key1 with their value:")
 for meta in key1:getMeta() do
 	print("  key1.%s = \"%s\"", meta.name, meta.value)

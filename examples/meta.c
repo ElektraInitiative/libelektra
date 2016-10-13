@@ -31,12 +31,12 @@ int main ()
 	printf ("Metadata time has the value %s\n", (const char *)keyValue (keyGetMeta (k, "time")));
 	printf ("Metadata empty has the value %s\n", (const char *)keyValue (keyGetMeta (k, "empty")));
 
-	if (!keyGetMeta (k, "nonexist")) printf ("Check if a meta data exist\n");
+	if (!keyGetMeta (k, "nonexist")) printf ("Check if a metadata exist\n");
 
 	keySetMeta (k, "hello", "between");
 	keyCopyMeta (c, k, "hello");
 
-	if (keyGetMeta (k, "hello") == keyGetMeta (c, "hello")) printf ("Check if they point to the same meta data after a copy\n");
+	if (keyGetMeta (k, "hello") == keyGetMeta (c, "hello")) printf ("Check if they point to the same metadata after a copy\n");
 
 	printf ("Metadata hello now has the value %s\n", (const char *)keyValue (keyGetMeta (k, "hello")));
 
@@ -48,7 +48,7 @@ int main ()
 
 	printf ("Metadata hello now has the value %s\n", (const char *)keyValue (keyGetMeta (k, "hello")));
 
-	printf ("Now we will output all meta data of the key:\n");
+	printf ("Now we will output all metadata of the key:\n");
 	keyRewindMeta (k);
 	while ((meta = keyNextMeta (k)) != 0)
 	{

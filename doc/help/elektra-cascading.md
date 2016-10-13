@@ -19,9 +19,9 @@ performed.
 
 Keys in `spec` allow us to specify which keys are read by the application,
 which fallback it might have and which is the default value using
-meta data. The implementation of these features happened in `ksLookup`.
+metadata. The implementation of these features happened in `ksLookup`.
 When cascading keys (those starting with `/`) are used following features
-are available (in the meta data of respective `spec`-keys):
+are available (in the metadata of respective `spec`-keys):
 
 - `override/#`: use these keys *in favour* of the key itself (note that
     `#` is the syntax for arrays, e.g. `#0` for the first element,

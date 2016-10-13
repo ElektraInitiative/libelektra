@@ -80,7 +80,7 @@ int keyClearSync (Key * key)
  * if you changed something in a key after a kdbGet() or kdbSet().
  *
  * @note Note that the sync status will be updated on any change,
- * including meta data.
+ * including metadata.
  *
  * @deprecated The handling of synchronization is done internally and
  * does not need to be checked by neither application nor plugins.
@@ -750,7 +750,7 @@ keyswitch_t keyCompare (const Key * key1, const Key * key2)
 	else if (memcmp (value1, value2, size1))
 		ret |= KEY_VALUE;
 
-	// TODO: rewind meta data to previous position
+	// TODO: rewind metadata to previous position
 	return ret;
 }
 
@@ -758,7 +758,7 @@ keyswitch_t keyCompare (const Key * key1, const Key * key2)
  * @brief Compares metadata of two keys
  *
  * @retval KEY_META if there is a difference
- * @retval 0 if meta data is identical
+ * @retval 0 if metadata is identical
  */
 int keyCompareMeta (const Key * k1, const Key * k2)
 {
@@ -782,6 +782,6 @@ int keyCompareMeta (const Key * k1, const Key * k2)
 		if (strcmp (keyString (meta1), keyString (meta2))) return KEY_META;
 	}
 
-	// TODO: rewind meta data to previous position
+	// TODO: rewind metadata to previous position
 	return 0;
 }

@@ -69,7 +69,7 @@ metastorage:
 
 spec:
 	black/whitelist
-	removal of meta data
+	removal of metadata
 	fix hooks for validation
 	abort on errors?
 

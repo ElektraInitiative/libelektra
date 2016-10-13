@@ -19,7 +19,7 @@ This plugin tackles this issue by yielding error/warnings on request.
 
 ## Usage ##
 
-### by meta data ###
+### by metadata ###
 
 Mount this plugin additionally with a working resolver and a storage
 e.g.:
@@ -37,7 +37,7 @@ the following metakey is present:
 
 the plugin will return with an error.
 
-The value of the meta data needs to contain the number of the requested
+The value of the metadata needs to contain the number of the requested
 error or warning.
 
 
@@ -55,7 +55,7 @@ fail for the error plugin then):
 
 ### by config ###
 
-To yield an error in kdbOpen() the meta data approach does not work. So
+To yield an error in kdbOpen() the metadata approach does not work. So
 the plugin also can yield warning/errors using configuration.
 
 To do that, configure the plugin using:

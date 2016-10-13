@@ -1,4 +1,4 @@
-elektra-meta-data(7) -- meta data
+elektra-meta-data(7) -- metadata
 =================================
 
 

@@ -31,12 +31,12 @@ E.g.
     [key]
     meta=foo
 
-creates the key with meta data key `meta` and meta data value `foo`:
+creates the key with metadata key `meta` and metadata value `foo`:
 
     $ kdb getmeta user/ni/key meta
     foo
 
-the meta data for the parent key has following syntax:
+the metadata for the parent key has following syntax:
 
     []
     meta=foo

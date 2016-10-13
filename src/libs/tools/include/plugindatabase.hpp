@@ -82,9 +82,9 @@ public:
 	virtual func_t getSymbol (PluginSpec const & whichplugin, std::string const & which) const = 0;
 
 	/**
-	 * @brief lookup which plugin handles meta data
+	 * @brief lookup which plugin handles metadata
 	 *
-	 * @param which the meta data of interest
+	 * @param which the metadata of interest
 	 *
 	 * @return the best suited plugin specification which provides it
 	 */

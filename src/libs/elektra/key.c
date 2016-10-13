@@ -45,7 +45,7 @@
  * Key properties are:
  * - @link keyname Key name @endlink
  * - @link keyvalue Key value @endlink
- * - @link keymeta Key meta data @endlink, including but not limited to:
+ * - @link keymeta Key metadata @endlink, including but not limited to:
  *   - @link keyGetComment() Key comment @endlink
  *   - @link keyGetOwner() Key owner @endlink
  *   - @link keymeta UID, GID and filesystem-like mode permissions @endlink
@@ -310,7 +310,7 @@ Key * keyDup (const Key * source)
  * both keys. Affiliation to keysets
  * are also not affected.
  *
- * The meta data will be duplicated for the destination
+ * The metadata will be duplicated for the destination
  * key. So it will not take much additional space, even
  * with lots of metadata.
  *

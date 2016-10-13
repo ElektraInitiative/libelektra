@@ -1032,7 +1032,7 @@ static void elektraSetRollback (Split * split, Key * parentKey)
  * @par Errors
  * If some error occurs:
  * - kdbSet() will leave the KeySet's * internal cursor on the key that generated the error.
- * - Error information will be written into the meta data of
+ * - Error information will be written into the metadata of
  *   the parent key.
  * - None of the keys are actually committed in this situation, i.e. no
  *   configuration file will be modified.

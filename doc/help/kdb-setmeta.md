@@ -13,10 +13,10 @@ and `meta-value` is the value the user wishes to set the metakey to.
 
 This command allows the user to set the value of an individual metakey.
 If a key does not already exist and the user tries setting a metakey associated with it, the key will be created with a null value.
-There is some special handling for the meta data atime, mtime and ctime. They will be converted to time_t.
+There is some special handling for the metadata atime, mtime and ctime. They will be converted to time_t.
 
 For cascading keys, the namespace will default to `spec`, because
-that is the place where you usually want to set meta data.
+that is the place where you usually want to set metadata.
 
 ## OPTIONS
 
@@ -63,5 +63,5 @@ To create an override link for a `/test` key:
 
 ## SEE ALSO
 
-- How to get meta data: [kdb-getmeta(1)](kdb-getmeta.md)
+- How to get metadata: [kdb-getmeta(1)](kdb-getmeta.md)
 - [elektra-meta-data(7)](elektra-meta-data.md)

@@ -23,8 +23,8 @@ warning/error iterators
 comment iterators
 
 documentation:
-	comment -> meta data
-	split real meta data functions + kdbhelpers
+	comment -> metadata
+	split real metadata functions + kdbhelpers
 
 library for metadata access functions
 	array access

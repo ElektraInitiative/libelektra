@@ -22,7 +22,7 @@ then
 	succeed_if "cannot set valueable data"
 
 	"$KDB" setmeta $ROOT/valueable_data trigger/error 10
-	succeed_if "cannot set meta data"
+	succeed_if "cannot set metadata"
 fi
 
 TMPFILE="$(mktempfile_elektra)"

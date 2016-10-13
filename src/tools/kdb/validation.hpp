@@ -38,7 +38,7 @@ public:
 
 	virtual std::string getLongHelpText () override
 	{
-		return "This is a convenience function to set validation meta data for a key.\n"
+		return "This is a convenience function to set validation metadata for a key.\n"
 		       "It supports regular expressions as defined in extended regular expressions.\n"
 		       "\n"
 		       "The message is shown whenever someone tries to set a value which does\n"

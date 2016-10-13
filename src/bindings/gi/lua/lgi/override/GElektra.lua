@@ -187,7 +187,7 @@ GElektra.Key._attribute.value = {
 }
 GElektra.Key.get = GElektra.Key._attribute.value.get
 
--- meta data functions
+-- metadata functions
 __func_hide(GElektra.Key, 'rewindmeta',  '_rewindmeta')
 __func_hide(GElektra.Key, 'nextmeta',    '_nextmeta')
 __func_hide(GElektra.Key, 'currentmeta', '_currentmeta')

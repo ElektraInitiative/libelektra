@@ -38,7 +38,7 @@ such must always fit to the exact same version.
 
     libelektra-meta.so
 
-[libmeta](/src/libs/meta/meta.c) contains meta data operations as described in [METADATA.ini](/doc/METADATA.ini).
+[libmeta](/src/libs/meta/meta.c) contains metadata operations as described in [METADATA.ini](/doc/METADATA.ini).
 Will be code-generated in the future, so methods should be mechanical reflections
 of the contents in [METADATA.ini](/doc/METADATA.ini).
 

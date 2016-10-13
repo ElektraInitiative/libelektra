@@ -61,11 +61,11 @@ of `system/test` will do a cascading lookup.
 The `spec` namespace is special as it can completely change how the cascading
 lookup works.
 
-For example, in the meta data of the respective `spec`-keys, *override links*
+For example, in the metadata of the respective `spec`-keys, *override links*
 can be specified to use other keys in favor of the key itself. This way, even
 config from current folders (`dir`) can be overwritten.
 
-In the cascading lookup, meta data of `spec`-keys comes in as follows:
+In the cascading lookup, metadata of `spec`-keys comes in as follows:
 
  1. `override/#` keys will be considered
  2. namespaces specified in the `namespaces/#` keys are considered

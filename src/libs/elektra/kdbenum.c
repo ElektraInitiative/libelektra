@@ -32,7 +32,7 @@ enum keyswitch_t
 	KEY_CTIME=1<<10,	/*!< Flag for the key status change time @deprecated do not use  */
 	KEY_SIZE=1<<11,		/*!< Flag for maximum size to limit value */
 	KEY_DIR=1<<14,		/*!< Flag for the key directories @deprecated do not use */
-	KEY_META=1<<15,		/*!< Flag for meta data*/
+	KEY_META=1<<15,		/*!< Flag for metadata*/
 	KEY_END=0		/*!< Used as a parameter terminator to keyNew() */
 };
 

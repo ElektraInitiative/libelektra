@@ -55,7 +55,7 @@ inline std::ostream & printError (std::ostream & os, kdb::Key const & error)
 	catch (kdb::KeyTypeConversion const & e)
 	{
 		os << getErrorColor (ANSI_COLOR::BOLD) << getErrorColor (ANSI_COLOR::RED)
-		   << "Error meta data is not set correctly by a plugin: " << getErrorColor (ANSI_COLOR::RESET) << e.what () << std::endl;
+		   << "Error metadata is not set correctly by a plugin: " << getErrorColor (ANSI_COLOR::RESET) << e.what () << std::endl;
 	}
 
 	return os;
@@ -103,7 +103,7 @@ inline std::ostream & printWarnings (std::ostream & os, kdb::Key const & error)
 	catch (kdb::KeyTypeConversion const & e)
 	{
 		os << getErrorColor (ANSI_COLOR::BOLD) << getErrorColor (ANSI_COLOR::MAGENTA)
-		   << "Warnings meta data not set correctly by a plugin: " << getErrorColor (ANSI_COLOR::RESET) << e.what () << std::endl;
+		   << "Warnings metadata not set correctly by a plugin: " << getErrorColor (ANSI_COLOR::RESET) << e.what () << std::endl;
 	}
 
 	return os;

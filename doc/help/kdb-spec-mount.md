@@ -21,13 +21,13 @@ To mount a specification file first use [kdb-mount(7)](kdb-mount.md).
 The idea of mounting is explained [in elektra-mounting(7)](elektra-mounting.md) and.
 
 The `spec` [namespace](elektra-namespaces.md) contains meta-configuration that describes the configuration in all other namespaces.
-The meta data used for the specification is described in [METADATA.ini](/doc/METADATA.ini).
+The metadata used for the specification is described in [METADATA.ini](/doc/METADATA.ini).
 
-During `spec-mount` the `spec` keys are searched for relevant meta data:
+During `spec-mount` the `spec` keys are searched for relevant metadata:
 
-- For every meta data `mountpoint` an additional cascading mountpoint will be mounted.
+- For every metadata `mountpoint` an additional cascading mountpoint will be mounted.
 - The `infos/*` and `config/needs` from [CONTRACT.ini](/doc/CONTRACT.ini), that are tagged by `usedby = spec`, will work as described there.
-- For other meta data suitable plugins are searched and mounted additionally.
+- For other metadata suitable plugins are searched and mounted additionally.
 
 
 ## IMPORTANT

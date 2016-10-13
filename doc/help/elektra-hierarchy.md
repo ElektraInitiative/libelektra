@@ -20,7 +20,7 @@ Version information.
 
 `doc/METADATA.ini` needs to be mounted there
 
-Avoids a duplication of documentation efforts of the meta data across plugins.
+Avoids a duplication of documentation efforts of the metadata across plugins.
 
 Currently it is documentation only, this might change if dependencies or similar
 between metadata is supported.

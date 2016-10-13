@@ -134,7 +134,7 @@ KeySet * ksRenameKeys (KeySet * config, const Key * name)
  * This can be:
  * - KEY_FLAG_LOCK_NAME to lock the name
  * - KEY_FLAG_LOCK_VALUE to lock the value
- * - KEY_FLAG_LOCK_META to lock the meta data
+ * - KEY_FLAG_LOCK_META to lock the metadata
  *
  * To unlock the key, duplicate it.
  *
@@ -158,11 +158,11 @@ int keyLock (Key * key, option_t what)
 
 
 /**
- * @brief Return meta data as keyset
+ * @brief Return metadata as keyset
  *
  * @param key the key object to work with
  *
- * @return a duplication of the keyset representing the meta data
+ * @return a duplication of the keyset representing the metadata
  */
 KeySet * elektraKeyGetMetaKeySet (const Key * key)
 {

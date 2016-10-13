@@ -97,9 +97,9 @@ Read (and write) standard config files:
 Using semi-structured data for config files, mainly suitable for
 spec-namespace (put a focus on having nice syntax for meta-data):
 
-- [ni](ni/) parses INI files based on (including meta data)
+- [ni](ni/) parses INI files based on (including metadata)
     [ni](https://github.com/chazomaticus/bohr/blob/master/include/bohr/ni.h).
-- [tcl](tcl/)-like config files (including meta data).
+- [tcl](tcl/)-like config files (including metadata).
 
 Only suited for import/export:
 
@@ -192,13 +192,13 @@ Trace everything that happens within KDB:
 
 ## Checker ##
 
-Copies meta data to keys:
+Copies metadata to keys:
 
 - [glob](glob/) using globbing techniques
 - [struct](struct/) using a defined structure (may also reject
   configuration not conforming to that structure)
 - [spec](spec/) copies metadata from spec namespace
-Plugins that check if values are valid based on meta data (typically
+Plugins that check if values are valid based on metadata (typically
 copied by another plugin just before):
 
 ### Value Validation ###

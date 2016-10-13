@@ -29,12 +29,12 @@ TEST (meta, basic)
 	succeed_if (test.getMeta<int> ("myint") == 333, "could not set other meta");
 
 	test.setMeta<double> ("mydouble", 333.3);
-	succeed_if (test.hasMeta ("mydouble"), "no meta data even though it was just set");
+	succeed_if (test.hasMeta ("mydouble"), "no metadata even though it was just set");
 	succeed_if (test.getMeta<double> ("mydouble") >= 333.2, "could not set other meta");
 	succeed_if (test.getMeta<double> ("mydouble") <= 333.4, "could not set other meta");
 
 	test.delMeta ("mydouble");
-	succeed_if (!test.hasMeta ("mydouble"), "meta data there even though it was just deleted");
+	succeed_if (!test.hasMeta ("mydouble"), "metadata there even though it was just deleted");
 
 	test.setMeta<std::string> ("mystr", "str");
 	succeed_if (test.getMeta<std::string> ("mystr") == "str", "could not set other meta");
@@ -43,7 +43,7 @@ TEST (meta, basic)
 	succeed_if (!strcmp (static_cast<const char *> (ckdb::keyValue (cmeta)), "str"), "could not set other meta");
 
 	const ckdb::Key * nmeta = test.getMeta<const ckdb::Key *> ("not available");
-	succeed_if (nmeta == nullptr, "not available meta data did not give a null pointer");
+	succeed_if (nmeta == nullptr, "not available metadata did not give a null pointer");
 
 	const Key meta = test.getMeta<const Key> ("mystr");
 	succeed_if (meta, "null key");
@@ -56,7 +56,7 @@ TEST (meta, basic)
 	succeed_if (!strcmp (str, "str"), "could not get meta as c-string");
 
 	const char * nstr = test.getMeta<const char *> ("not available");
-	succeed_if (nstr == nullptr, "did not get null pointer on not available meta data");
+	succeed_if (nstr == nullptr, "did not get null pointer on not available metadata");
 
 	succeed_if (test.getMeta<int> ("not available") == 0, "not default constructed");
 	succeed_if (test.getMeta<std::string> ("not available") == "", "not default constructed");
@@ -71,7 +71,7 @@ TEST (meta, basic)
 	}
 	catch (KeyTypeConversion const & e)
 	{
-		succeed_if (1, "no such meta data");
+		succeed_if (1, "no such metadata");
 	}
 }
 
@@ -96,7 +96,7 @@ TEST (meta, iter)
 	k.rewindMeta ();
 	while ((meta = k.nextMeta ()))
 		count++;
-	succeed_if (count == 3, "Not the correct number of meta data");
+	succeed_if (count == 3, "Not the correct number of metadata");
 
 	k.setMeta ("d", "more");
 	k.setMeta ("e", "even more");
@@ -105,7 +105,7 @@ TEST (meta, iter)
 	k.rewindMeta ();
 	while ((meta = k.nextMeta ()))
 		count++;
-	succeed_if (count == 5, "Not the correct number of meta data");
+	succeed_if (count == 5, "Not the correct number of metadata");
 }
 
 TEST (test, copy)

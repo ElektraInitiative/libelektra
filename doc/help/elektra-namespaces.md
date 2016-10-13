@@ -42,7 +42,7 @@ are described.
 ## spec
 
 Unlike the other namespaces, the specification namespace does not
-contain values of the keys, but instead meta data as described in
+contain values of the keys, but instead metadata as described in
 [METADATA.ini](/doc/METADATA.ini).
 
 When a cascading key is looked up, keys from the spec-namespace are
@@ -51,7 +51,7 @@ lookup will be done as specified, probably in a different order than
 the namespaces enlisted here.
 
 Usually, the spec-keys do not directly contribute to the value, with one
-notable exception: the default value (meta data `default`, see in
+notable exception: the default value (metadata `default`, see in
 cascading below) might be used if every other way as specified in the
 spec-key failed.
 

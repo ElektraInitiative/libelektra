@@ -1,7 +1,7 @@
 /**
  * @file
  *
- * @brief Methods for meta data manipulation.
+ * @brief Methods for metadata manipulation.
  *
  * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
  */
@@ -39,9 +39,9 @@
  * @brief Meta data proposal+compatibility methods.
  * @ingroup proposal
  *
- * In versions before Elektra 0.8 only limited meta data was
- * available. Now any meta data can be added. These API methods are
- * implementations of the 0.7 API using 0.8 meta data.
+ * In versions before Elektra 0.8 only limited metadata was
+ * available. Now any metadata can be added. These API methods are
+ * implementations of the 0.7 API using 0.8 metadata.
  *
  * Additionally, new suggestions can be made here.
  *

@@ -75,7 +75,7 @@ Elektra's atomic unit and consists of:
 
 - a unique name
 - a value
-- meta data
+- metadata
 
 `Key`s are either associated with entries in configuration files or used
 as arguments in the API to transport some information.
@@ -179,9 +179,9 @@ application's configuration. It is located below its own [namespace](/doc/help/e
 
 Keys in `spec` allow us to specify which keys are read by the application,
 which fallback they might have and which is the default value using
-meta data. The implementation of these features happened in `ksLookup`.
+metadata. The implementation of these features happened in `ksLookup`.
 When cascading keys (those starting with `/`) are used following features
-are now available (in the meta data of respective `spec`-keys):
+are now available (in the metadata of respective `spec`-keys):
 
 - `override/#`: use these keys *in favour* of the key itself (note that
     `#` is the syntax for arrays, e.g. `#0` for the first element,

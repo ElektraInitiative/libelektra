@@ -189,7 +189,7 @@ public:
 	inline ssize_t setBinary (const void * newBinary, size_t dataSize);
 
 
-	// meta data
+	// metadata
 	//
 	//
 	inline bool hasMeta (const std::string & metaName) const;
@@ -1391,7 +1391,7 @@ inline yourtype Key::getMeta(const std::string &name) const
 }
  * @endcode
  *
- * @throw KeyTypeConversion if meta data could not be parsed
+ * @throw KeyTypeConversion if metadata could not be parsed
  *
  * @note No exception will be thrown if a const Key or char* is requested,
  * but don't forget the const: getMeta<const Key>,
@@ -1540,7 +1540,7 @@ inline const Key Key::nextMeta ()
 /**
  * @copydoc keyCurrentMeta
  *
- * @note that the key will be null if last meta data is found.
+ * @note that the key will be null if last metadata is found.
  *
  * @code
  * k.rewindMeta();

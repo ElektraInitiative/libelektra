@@ -62,10 +62,10 @@ calculate default values
 
 ## REWRITE plugin ##
 
-meta data rewriter into value
+metadata rewriter into value
 replaces NULL plugin
 
-binary, type and any other meta data
+binary, type and any other metadata
 encoded into string value
 also encode null value (only possible in binary)
 and binary (including encoding of null bytes and terminating null?)
@@ -665,7 +665,7 @@ default plugin handling: resolver/storage
 policy how default storage & resolver plugin are named
 resolve the symlink and load the module with correct name
 
-is meta data in default plugin needed?
+is metadata in default plugin needed?
 	add rewrite plugins?
 
 default storage plugin:

@@ -225,7 +225,7 @@ static void test_meta_data ()
 		++metacnt;
 		g_object_unref (meta);
 	}
-	succeed_if (metacnt == 9, "incorrect number of meta data");
+	succeed_if (metacnt == 9, "incorrect number of metadata");
 
 	gelektra_key_setmeta (g_key, "by", "gelektra");
 	meta = gelektra_key_getmeta (g_key, "by");

@@ -30,9 +30,9 @@ void o (KeySet * ks)
 {
 	Key * current;
 	Key * shared = keyNew (0);
-	keySetMeta (shared, "shared1", "this meta data should be shared among many keys");
-	keySetMeta (shared, "shared2", "this meta data should be shared among many keys also");
-	keySetMeta (shared, "shared3", "this meta data should be shared among many keys too");
+	keySetMeta (shared, "shared1", "this metadata should be shared among many keys");
+	keySetMeta (shared, "shared2", "this metadata should be shared among many keys also");
+	keySetMeta (shared, "shared3", "this metadata should be shared among many keys too");
 
 	ksRewind (ks);
 	while ((current = ksNext (ks)) != 0)

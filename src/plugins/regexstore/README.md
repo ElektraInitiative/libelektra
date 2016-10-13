@@ -31,9 +31,9 @@ The value of the config key is as follows:
 - the first three letters need to be '#[0-9 '.
 According to this number the value of the key will be set.
 
-The key also might contain meta data.
+The key also might contain metadata.
 - the only characters allowed in meta values are '#[0-9]'.
-the meta data will be replaced by the regex match then.
+the metadata will be replaced by the regex match then.
 
 
 ## Limitations ##

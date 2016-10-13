@@ -200,7 +200,7 @@
 
 %include "key.hpp"
 
-// meta data
+// metadata
 %template(_getMeta) kdb::Key::getMeta<const kdb::Key>;
 %template(_setMeta) kdb::Key::setMeta<std::string>;
 

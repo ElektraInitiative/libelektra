@@ -15,7 +15,7 @@ the Tcl programming language.
 ## Format
 
 The format does not have significant spaces.  The advantage of TCL style
-lists is that also arbitrary meta data can be embedded in a natural and
+lists is that also arbitrary metadata can be embedded in a natural and
 distinguish-able style. It looks like:
 
 ```

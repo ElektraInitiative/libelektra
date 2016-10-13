@@ -113,7 +113,7 @@ gssize gelektra_key_getvaluesize (const GElektraKey * key);
 typedef void (*gelektra_func_t) ();
 gelektra_func_t gelektra_key_getfunc (const GElektraKey * key);
 
-/* meta data */
+/* metadata */
 gssize gelektra_key_setmeta (GElektraKey * key, const gchar * name, const gchar * value);
 gboolean gelektra_key_hasmeta (const GElektraKey * key, const gchar * name);
 GElektraKey * gelektra_key_getmeta (const GElektraKey * key, const gchar * name);

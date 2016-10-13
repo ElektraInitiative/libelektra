@@ -27,6 +27,6 @@ and also [here](/src/plugins/jni) for more information.
 - no full names
 - error/warning fixed to a special number, no generator for any
   error/warning
-- no java iterator for meta data
+- no java iterator for metadata
 - no simple way to print warning/errors
 - no junit tests, so its likely that there are some bugs
