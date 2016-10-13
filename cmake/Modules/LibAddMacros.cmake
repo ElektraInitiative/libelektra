@@ -528,6 +528,17 @@ endif (BUILD_DOCUMENTATION AND RONN_LOC)
 endfunction ()
 
 
+macro (split_plugin_providers PROVIDES)
+	foreach (PROVIDER "${${PROVIDES}}")
+		STRING(REGEX MATCH "([a-zA-Z0-9]+)/([a-zA-Z0-9]+)" PROVIDER_PARTS "${PROVIDER}")
+		STRING(LENGTH "${PROVIDER_PARTS}" PROVIDER_PARTS_LENGTH)
+		if (PROVIDER_PARTS_LENGTH GREATER 0)
+			STRING(REGEX REPLACE "([a-zA-Z0-9]+)/([a-zA-Z0-9]+)" "\\1;\\2" PROVIDER_PARTS "${PROVIDER_PARTS}")
+			list(APPEND ${PROVIDES} "${PROVIDER_PARTS}")
+		endif ()
+	endforeach ()
+endmacro ()
+
 #
 # Parameter: the pluginname
 #
@@ -558,14 +569,7 @@ function (generate_readme p)
 	STRING(REGEX MATCH "\"- +infos/provides *= *([a-zA-Z0-9/ ]*)\\\\n\"" PROVIDES "${contents}")
 	STRING(REGEX REPLACE "\"- +infos/provides *= *([a-zA-Z0-9/ ]*)\\\\n\"" "\\1" PROVIDES "${PROVIDES}")
 	STRING(REGEX REPLACE " " ";" PROVIDES "${PROVIDES}")
-	foreach (PROVIDER ${PROVIDES})
-		STRING(REGEX MATCH "([a-zA-Z0-9]+)/([a-zA-Z0-9]+)" PROVIDER_PARTS "${PROVIDER}")
-		STRING(LENGTH "${PROVIDER_PARTS}" PROVIDER_PARTS_LENGTH)
-		if (PROVIDER_PARTS_LENGTH GREATER 0)
-			STRING(REGEX REPLACE "([a-zA-Z0-9]+)/([a-zA-Z0-9]+)" "\\1;\\2" PROVIDER_PARTS "${PROVIDER_PARTS}")
-			list(APPEND PROVIDES "${PROVIDER_PARTS}")
-		endif ()
-	endforeach ()
+	split_plugin_providers (PROVIDES)
 	STRING(REGEX REPLACE ";" " " PROVIDES "${PROVIDES}")
 	STRING(REGEX REPLACE "\"- +infos/provides *= *([a-zA-Z0-9/ ]*)\\\\n\"" "keyNew(\"system/elektra/modules/${p}/infos/provides\",\nKEY_VALUE, \"${PROVIDES}\", KEY_END)," contents "${contents}")
 
