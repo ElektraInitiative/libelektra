@@ -254,17 +254,26 @@ For example you can use:
 
 Note that the same languages are sometimes available over GI and SWIG.
 In this case, the SWIG bindings are preferred.
-Per default GI bindings are not included.
-To add all swig bindings (and also cpp), you can use:
-
-	-DBINDINGS=SWIG;cpp
-
 The SWIG executable my be specified with:
 
 	-DSWIG_EXECUTABLE=...
 
 If this option is not used, cmake will find the first occurrence of
 ``swig`` in your environment's path.
+Per default GI bindings are not included.
+To include them, use:
+
+	-DBINDINGS="ALL;GI"
+
+Some bindings provide different APIs (and not a different language), e.g:
+
+- `gsettings`
+- `INTERCEPT` with `intercept_open` and `intercept_getenv`
+
+To not add such APIs, but only swig bindings and cpp, you can use:
+
+	-DBINDINGS=SWIG;cpp
+
 
 #### CMAKE_BUILD_TYPE  ####
 Debug, Release or RelWithDebInfo
