@@ -1,9 +1,11 @@
 list (FIND BINDINGS "intercept_open" FINDEX)
 if (FINDEX GREATER -1)
+	message (STATUS "Include Binding intercept_open")
 	add_subdirectory (open)
 endif ()
 
 list (FIND BINDINGS "intercept_getenv" FINDEX)
 if (FINDEX GREATER -1)
+	message (STATUS "Include Binding intercept_getenv")
 	add_subdirectory (getenv)
 endif ()

@@ -1,7 +1,7 @@
 include (LibAddMacros)
 
-add_headers(HDR_FILES)
-add_cppheaders(HDR_FILES)
+add_headers (HDR_FILES)
+add_cppheaders (HDR_FILES)
 
 file (GLOB_RECURSE SRC_FILES *.cpp)
 
@@ -19,5 +19,6 @@ set_target_properties (elektragetenv PROPERTIES
 	CLEAN_DIRECT_OUTPUT 1
 	LINKER_LANGUAGE CXX
 )
+
 
 install (TARGETS elektragetenv DESTINATION lib${LIB_SUFFIX})

@@ -40,8 +40,9 @@ if (FINDEX GREATER -1)
 	endif ()
 endif ()
 
-list (FIND BINDINGS "intercept_.*" FINDEX)
-if (FINDEX GREATER -1)
+set (regex "intercept_.*")
+list_find (BINDINGS regex found)
+if (found)
 	add_subdirectory (intercept)
 endif()
 

@@ -1,7 +1,11 @@
 include (CheckSymbolExists)
 check_symbol_exists (__GNU_LIBRARY__ "features.h"    HAVE_GLIBC)
 
-if (BUILD_SHARED AND HAVE_GLIBC)
+if (NOT BUILD_SHARED)
+	remove_binding (intercept_getenv "intercept_getenv only works with BUILD_SHARED")
+elseif (NOT HAVE_GLIBC)
+	remove_binding (intercept_getenv "intercept_getenv currently needs glibc")
+else ()
 	add_subdirectory (include)
 	include_directories (include)
 
