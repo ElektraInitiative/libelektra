@@ -3428,7 +3428,7 @@ The constants allow us to create following kinds of keys:
 
 - empty names: this was always possible, because invalid names
   (including empty names) did not cause keyNew to abort
-- meta names: this is a new feature that allows us to compare key names
+- metanames: this is a new feature that allows us to compare key names
   with metakeys
 - cascading names: names starting with / have the special meaning that
   they do not specify which namespace they have. When such names are

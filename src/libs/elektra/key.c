@@ -130,7 +130,7 @@ static Key * elektraKeyMalloc ()
  *   a binary key.
  *   @snippet keyNew.c With Size
  * - ::KEY_META \n
- *   Next two parameter is a meta name and a meta value. See keySetMeta().
+ *   Next two parameter is a metaname and a meta value. See keySetMeta().
  *   @snippet keyNew.c With Meta
  * - ::KEY_END \n
  *   Must be the last parameter passed to keyNew(). It is always

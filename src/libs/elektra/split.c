@@ -572,7 +572,7 @@ static int elektraSplitPostprocess (Split * split, int i, Key * warningKey, KDB 
 				elektraDropCurrentKey (split->keysets[i], warningKey, curHandle, "it has an empty name");
 				break;
 			case KEY_NS_META:
-				elektraDropCurrentKey (split->keysets[i], warningKey, curHandle, "it has a meta name");
+				elektraDropCurrentKey (split->keysets[i], warningKey, curHandle, "it has a metaname");
 				break;
 			case KEY_NS_CASCADING:
 				elektraDropCurrentKey (split->keysets[i], warningKey, curHandle, "it has a cascading name");
