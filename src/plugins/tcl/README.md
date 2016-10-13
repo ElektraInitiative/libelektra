@@ -9,10 +9,25 @@
 
 ## Introduction ##
 
-This plugin is a storage plugin which write keys to lists in the style of
+This plugin is a storage plugin which write keys to lists *in the style of*
 the Tcl programming language.
 
-Supports arbitrary KeySets with metadata.
+## Format
+
+The format does not have significant spaces.  The advantage of TCL style
+lists is that also arbitrary meta data can be embedded in a natural and
+distinguish-able style. It looks like:
+
+```
+{     {key=val {metakey=b} {comment  =  huhu  }   }  }
+```
+
+## Limitations
+
+- empty and null keys not supported
+- whitespaces are discarded
+- no comments
+
 
 ## Dependencies ##
 
