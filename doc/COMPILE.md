@@ -254,6 +254,7 @@ For example you can use:
 
 Note that the same languages are sometimes available over GI and SWIG.
 In this case, the SWIG bindings are preferred.
+Per default GI bindings are not included.
 To add all swig bindings (and also cpp), you can use:
 
 	-DBINDINGS=SWIG;cpp
