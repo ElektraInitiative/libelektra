@@ -8,7 +8,12 @@ elseif (NOT HAVE_GLIBC)
 else ()
 	include (LibAddMacros)
 	add_headers (HDR_FILES)
-	add_library (elektraintercept SHARED "intercept.c")
-	target_link_libraries (elektraintercept elektra-kdb elektra-meta)
-	install (TARGETS elektraintercept DESTINATION lib${LIB_SUFFIX})
+	add_library (elektraintercept-fs SHARED "intercept.c")
+	target_link_libraries (elektraintercept-fs elektra-kdb elektra-meta)
+	install (TARGETS elektraintercept-fs DESTINATION lib${LIB_SUFFIX})
+
+	create_lib_symlink (
+			libelektraintercept-fs.so
+			libelektraintercept.so
+			)
 endif ()
