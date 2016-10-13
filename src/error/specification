@@ -125,7 +125,7 @@ severity:warning
 ingroup:kdb
 
 number:20
-description:Tried to set more plugins then definied in NR_OF_PLUGINS
+description:Tried to set more plugins than definied in NR_OF_PLUGINS
 severity:warning
 ingroup:kdb
 
