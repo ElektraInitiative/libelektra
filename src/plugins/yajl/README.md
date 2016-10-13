@@ -1,7 +1,7 @@
 - infos = Information about YAIL plugin is in keys below
 - infos/author = Markus Raab <elektra@libelektra.org>
 - infos/licence = BSD
-- infos/provides = storage json
+- infos/provides = storage/json
 - infos/needs =
 - infos/recommends = rebase directoryvalue comment type
 - infos/placements = getstorage setstorage

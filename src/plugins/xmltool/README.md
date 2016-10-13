@@ -1,7 +1,7 @@
 - infos = Information about xmltool plugin is in keys below
 - infos/author = Markus Raab <elektra@libelektra.org>
 - infos/licence = BSD
-- infos/provides = storage xml
+- infos/provides = storage/xml
 - infos/needs = 
 - infos/placements = getstorage setstorage
 - infos/status = maintained unittest final unfinished old

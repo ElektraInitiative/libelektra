@@ -2,9 +2,9 @@
 - infos/author = Thomas Waser <thomas.waser@libelektra.org>
 - infos/licence = BSD
 - infos/needs =
-- infos/provides = storage
+- infos/provides = storage/dpkg
 - infos/placements = getstorage setstorage
-- infos/status = nodoc unfinished nodep
+- infos/status = nodoc unfinished nodep limited
 - infos/description =
 
 ## Example ##

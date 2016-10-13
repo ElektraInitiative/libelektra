@@ -1,7 +1,7 @@
 - infos = Information about SIMPLEINI plugin is in keys below
 - infos/author = Markus Raab <elektra@libelektra.org>
 - infos/licence = BSD
-- infos/provides = storage ini
+- infos/provides = storage/ini
 - infos/needs = code null
 - infos/placements = getstorage setstorage
 - infos/status = maintained concept configurable obsolete 3000

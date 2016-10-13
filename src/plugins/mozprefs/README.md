@@ -5,7 +5,7 @@
 - infos/provides = storage
 - infos/recommends =
 - infos/placements = getstorage setstorage
-- infos/status = maintained reviewed conformant compatible coverage specific tested nodep libc preview experimental difficult unfinished nodoc concept 
+- infos/status = maintained reviewed conformant compatible coverage specific tested nodep libc preview experimental difficult unfinished nodoc concept limited
 - infos/metadata =
 - infos/description =
 

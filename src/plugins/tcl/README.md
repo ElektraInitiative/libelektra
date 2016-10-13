@@ -1,7 +1,7 @@
 - infos = Information about the tcl plugin is in keys below
 - infos/author = Markus Raab <elektra@libelektra.org>
 - infos/licence = BSD
-- infos/provides = storage
+- infos/provides = storage/tcl
 - infos/needs = code
 - infos/placements = setstorage getstorage
 - infos/status = unfinished nodoc concept

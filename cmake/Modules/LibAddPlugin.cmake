@@ -147,10 +147,20 @@ function (plugin_check_if_included PLUGIN_SHORT_NAME)
 	STRING (REGEX REPLACE "- +infos/status *= *([-a-zA-Z0-9 ]*)" "\\1" CATEGORIES "${CATEGORIES}")
 	STRING (REGEX REPLACE " " ";" CATEGORIES "${CATEGORIES}")
 
-	STRING (REGEX MATCH "- +infos/provides *= *([a-zA-Z0-9 ]*)" PROVIDES "${contents}")
-	STRING (REGEX REPLACE "- +infos/provides *= *([a-zA-Z0-9 ]*)" "\\1" PROVIDES "${PROVIDES}")
+	STRING (REGEX MATCH "- +infos/provides *= *([a-zA-Z0-9/ ]*)" PROVIDES "${contents}")
+	STRING (REGEX REPLACE "- +infos/provides *= *([a-zA-Z0-9/ ]*)" "\\1" PROVIDES "${PROVIDES}")
 	STRING (REGEX REPLACE " " ";" PROVIDES "${PROVIDES}")
 	list (APPEND CATEGORIES "ALL" "${PROVIDES}")
+
+	foreach (CAT ${CATEGORIES})
+		STRING (REGEX MATCH "([a-zA-Z0-9]+)/([a-zA-Z0-9]+)" PROVIDER_PARTS "${CAT}")
+		STRING (LENGTH "${PROVIDER_PARTS}" PROVIDER_PARTS_LENGTH)
+		if (PROVIDER_PARTS_LENGTH GREATER 0)
+			STRING (REGEX REPLACE "([a-zA-Z0-9]+)/([a-zA-Z0-9]+)" "\\1;\\2" PROVIDER_PARTS "${PROVIDER_PARTS}")
+			list (APPEND CATEGORIES "${PROVIDER_PARTS}")
+		endif ()
+	endforeach ()
+
 	STRING (TOUPPER "${CATEGORIES}" CATEGORIES)
 	#message (STATUS "CATEGORIES ${CATEGORIES}")
 

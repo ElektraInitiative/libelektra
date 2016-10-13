@@ -1,10 +1,10 @@
 - infos = Information about LINE plugin is in keys below
 - infos/author = Ian Donnelly <ian.s.donnelly@gmail.com>
-- infos/provides = storage
+- infos/provides = storage/line
 - infos/licence = BSD
 - infos/needs = null
 - infos/placements = getstorage setstorage
-- infos/status = maintained unittest nodep libc final
+- infos/status = maintained unittest nodep libc final limited
 - infos/description = storage plugin which stores each line from a file
 
 ## Introduction ##
