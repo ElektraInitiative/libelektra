@@ -60,9 +60,9 @@ To stop the service, run `sh stop-rest-backend.sh` in the same path.
 
 To configure the rest-backend as service, it is possible to use `systemd` on most systems.
 
-1) Create a new service file under `/etc/systemd/system`, e.g. `touch /etc/systemd/system/rest-backend.service`.
-2) Put the following content into the file (and make sure the paths of `ExecStart` match your installation of Elektra):
+1) Create a new service file with the following command (and make sure the paths of `ExecStart` match your installation of Elektra):
 ```
+cat > /etc/systemd/system/rest-backend.service << EOF
 [Unit]
 Description=Start the REST-backend for sharing of configuration snippets
 Requires=network.target
@@ -75,11 +75,12 @@ ExecStart=/usr/local/lib/elektra/tool_exec/rest-backend -c /usr/local/lib/elektr
 
 [Install]
 WantedBy=multi-user.target
+EOF
 ```
-3) Reload the configuration of `systemctl` with `systemctl daemon-reload`.
-4) Enable the rest-backend service with `systemctl enable rest-backend.service`, a symlink should be created.
-5) Make sure the service is enabled with `systemctl is-enabled rest-backend.service`.
-6) Restart the rest-backen service with `systemctl restart rest-backend.service`. If everything went fine, the service should be reachable and `systemctl status rest-backend.service` should print information about the running service (PID, etc).
+2) Reload the configuration of `systemctl` with `systemctl daemon-reload`.
+3) Enable the rest-backend service with `systemctl enable rest-backend.service`, a symlink should be created.
+4) Make sure the service is enabled with `systemctl is-enabled rest-backend.service`.
+5) Restart the rest-backend service with `systemctl restart rest-backend.service`. If everything went fine, the service should be reachable and `systemctl status rest-backend.service` should print information about the running service (PID, etc).
 
 ## Implementation notes and hints for Front-Ends
 
