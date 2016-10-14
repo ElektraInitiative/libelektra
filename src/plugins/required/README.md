@@ -6,7 +6,7 @@
 - infos/recommends =
 - infos/placements = presetstorage
 - infos/status = productive maintained nodep libc final
-- infos/metadata = required
+- infos/metadata = required mandatory
 - infos/description =
 
 ## Introduction

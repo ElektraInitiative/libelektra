@@ -42,8 +42,19 @@ int elektraRequiredSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTR
 		const Key * meta = keyGetMeta (cur, "required");
 		if (!meta)
 		{
-			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_REQUIRED, parentKey, "key '%s' is not required", keyName (cur));
-			return -1; // error
+			meta = keyGetMeta (cur, "mandatory");
+			if (!meta)
+			{
+				keyRewindMeta (cur);
+				size_t c = 0;
+				while (keyNextMeta (cur))
+				{
+					++c;
+				}
+				ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_REQUIRED, parentKey, "key '%s' with %d metadata is not required",
+						    keyName (cur), c);
+				return -1; // error
+			}
 		}
 	}
 
