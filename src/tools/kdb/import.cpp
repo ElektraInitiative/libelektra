@@ -63,6 +63,11 @@ int ImportCommand::execute (Cmdline const & cl)
 	KeySet importedKeys;
 	plugin->get (importedKeys, errorKey);
 	importedKeys = importedKeys.cut (root);
+	if (cl.verbose)
+	{
+		cout << "Try to import " << importedKeys.size () << ":" << endl;
+		cout << importedKeys;
+	}
 
 	printWarnings (cerr, errorKey);
 	printError (cerr, errorKey);
@@ -89,6 +94,9 @@ int ImportCommand::execute (Cmdline const & cl)
 		originalKeys.append (resultKeys);
 		kdb.set (originalKeys, root);
 		ret = 0;
+
+		printWarnings (cerr, root);
+		printError (cerr, root);
 	}
 
 	return ret;
