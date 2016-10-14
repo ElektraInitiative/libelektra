@@ -17,6 +17,7 @@ for other activities of the current release.
 helper function for searching symbol
 lazy kdb mount+new imp/exp
 kdb mount -1 -2 options?
+kdb mount: reject same files!
 
 use shell recorder for README.md
 	make examples more consistent
