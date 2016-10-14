@@ -87,10 +87,11 @@ int init (int argc, char ** argv);
 		{                                                                                                                          \
 			char errorMsg[BUFFER_LENGTH];                                                                                      \
                                                                                                                                            \
-			strcpy (errorMsg, "key name ");                                                                                    \
+			strcpy (errorMsg, "key name \"");                                                                                  \
 			strcat (errorMsg, keyName (nmmk1));                                                                                \
-			strcat (errorMsg, " is not equal ");                                                                               \
+			strcat (errorMsg, "\" is not equal \"");                                                                           \
 			strcat (errorMsg, keyName (nmmk2));                                                                                \
+			strcat (errorMsg, "\"");                                                                                           \
                                                                                                                                            \
 			yield_error (errorMsg);                                                                                            \
 		}                                                                                                                          \
@@ -105,10 +106,11 @@ int init (int argc, char ** argv);
 		{                                                                                                                          \
 			char errorMsg[BUFFER_LENGTH];                                                                                      \
                                                                                                                                            \
-			strcpy (errorMsg, "key value ");                                                                                   \
-			strcat (errorMsg, keyName (smmk1));                                                                                \
-			strcat (errorMsg, " is not equal ");                                                                               \
-			strcat (errorMsg, keyName (smmk2));                                                                                \
+			strcpy (errorMsg, "key value \"");                                                                                 \
+			strcat (errorMsg, keyString (smmk1));                                                                              \
+			strcat (errorMsg, "\" is not equal \"");                                                                           \
+			strcat (errorMsg, keyString (smmk2));                                                                              \
+			strcat (errorMsg, "\"");                                                                                           \
                                                                                                                                            \
 			yield_error (errorMsg);                                                                                            \
 		}                                                                                                                          \
