@@ -182,7 +182,28 @@ void BackendBuilder::needMetadata (std::string addMetadata)
 	std::string md;
 	while (is >> md)
 	{
-		metadata.insert (md);
+		std::string nd;
+		Key k (md.c_str (), KEY_META_NAME, KEY_END);
+		for (auto && elem : k)
+		{
+			if (!elem.empty () && elem[0] == '#')
+			{
+				// reduce array entries to #
+				nd += '#';
+			}
+			else
+			{
+				nd += elem;
+			}
+			nd += "/";
+		}
+
+		if (!nd.empty ())
+		{
+			// remove last "/"
+			nd = nd.substr (0, nd.size () - 1);
+			metadata.insert (nd);
+		}
 		// ignore if it does not work! (i.e. metadata already present)
 	}
 }
