@@ -19,6 +19,28 @@ The plugin checks every Key in the Keyset for the Metakey `check/enum` containin
 with the syntax `'string1', 'string2', 'string3', ..., 'stringN'` and compares each 
 value with the string value of the Key. If no match is found an error is returned.
 
+Alternatively, if `check/enum` starts with `#`, a meta array `check/enum` is used.
+For example:
+
+```
+check/enum = #3
+check/enum/#0 = small
+check/enum/#1 = middle
+check/enum/#2 = large
+check/enum/#3 = huge
+```
+
+Furthermore (only in the alternative syntax) `check/enum/multi` may contain a separator
+character, that separates multiple allowed occurrences.
+For example:
+
+```
+check/enum/multi = _
+```
+
+Then the value `middle_small_small` would validate.
+
+
 ## Example ##
 
 	kdb mount enum.ecf /example/enum enum
@@ -26,3 +48,18 @@ value with the string value of the Key. If no match is found an error is returne
 	kdb setmeta user/example/enum/value check/enum "'low', 'middle', 'high'"
 	kdb set user/example/enum/value low # success
 	kdb set user/example/enum/value no  # fail
+	kdb rm user/example/enum/value
+
+
+Or with multi-enums:
+
+	kdb set user/example/enum/value middle_small_small  # valid init
+	kdb setmeta user/example/enum/value check/enum/#0 small
+	kdb setmeta user/example/enum/value check/enum/#1 middle
+	kdb setmeta user/example/enum/value check/enum/#2 large
+	kdb setmeta user/example/enum/value check/enum/#3 huge
+	kdb setmeta user/example/enum/value check/enum/multi _
+	kdb setmeta user/example/enum/value check/enum "#3"
+	kdb set user/example/enum/value ___small_small__ # success
+	kdb set user/example/enum/value ___all_small__   # fail: "all" invalid
+
