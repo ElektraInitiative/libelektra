@@ -21,6 +21,14 @@ KeySet * simple_config (void)
 		      keyNew ("system/elektra/mountpoints/simple/mountpoint", KEY_VALUE, "user/tests/simple", KEY_END), KS_END);
 }
 
+KeySet * simple_cascading (void)
+{
+	return ksNew (5, keyNew ("system/elektra/mountpoints", KEY_END), keyNew ("system/elektra/mountpoints/root", KEY_END),
+		      keyNew ("system/elektra/mountpoints/root/mountpoint", KEY_VALUE, "/", KEY_END),
+		      keyNew ("system/elektra/mountpoints/simple", KEY_END),
+		      keyNew ("system/elektra/mountpoints/simple/mountpoint", KEY_VALUE, "/cascading/simple", KEY_END), KS_END);
+}
+
 
 KeySet * set_realworld ()
 {
@@ -98,6 +106,83 @@ static void test_simple ()
 	succeed_if (ksGetSize (split->keysets[0]) == 2, "wrong size");
 	succeed_if (ksGetSize (split->keysets[1]) == 3, "wrong size");
 	succeed_if (split->handles[0] == backend, "should be user backend");
+	succeed_if (split->handles[1] == 0, "should be default backend");
+
+	elektraSplitDel (split);
+	keyDel (parentKey);
+
+	ksDel (ks);
+	elektraSplitDel (handle->split);
+	elektraTrieClose (handle->trie, 0);
+	elektraFree (handle->defaultBackend);
+	elektraFree (handle);
+	ksDel (modules);
+}
+
+
+static void test_cascading ()
+{
+	// TODO: test not fully done
+	printf ("Test simple cascading\n");
+
+	KDB * handle = elektraCalloc (sizeof (struct _KDB));
+	KeySet * modules = modules_config ();
+	Backend * backend;
+
+	handle->split = elektraSplitNew ();
+	handle->defaultBackend = elektraCalloc (sizeof (struct _Backend));
+	elektraMountOpen (handle, simple_cascading (), modules, 0);
+
+	KeySet * ks = ksNew (15, keyNew ("user/testkey1/below/here", KEY_END), keyNew ("user/testkey/below1/here", KEY_END),
+			     keyNew ("user/testkey/below2/here", KEY_END), keyNew ("user/tests/simple/testkey/b1/b2/down", KEY_END),
+			     keyNew ("user/tests/simple/testkey/b1/b2/up", KEY_END), KS_END);
+
+	Split * split;
+	Key * parentKey;
+	Key * mp;
+
+	split = elektraSplitNew ();
+
+	parentKey = keyNew ("user/tests/simple/below", KEY_END);
+	succeed_if (elektraSplitBuildup (split, handle, parentKey) == 1, "we add the default backend for user");
+	succeed_if (split->size == 1, "user root + simple");
+
+	succeed_if (split->handles[0]->specsize == -1, "spec size wrong");
+	succeed_if (split->handles[0]->usersize == -1, "user size wrong");
+	succeed_if (split->handles[0]->systemsize == -1, "system size wrong");
+	succeed_if (split->handles[0]->dirsize == -1, "dir size wrong");
+
+	// elektraGetCheckUpdateNeeded(split, parentKey)
+
+	succeed_if (ksGetSize (split->keysets[0]) == 0, "wrong size");
+
+	mp = keyNew ("user", KEY_VALUE, "root", KEY_END);
+	compare_key (split->parents[0], mp);
+	succeed_if (split->handles[0] != handle->defaultBackend, "should be not the default backend");
+	keyDel (mp);
+
+	backend = elektraTrieLookup (handle->trie, parentKey);
+	succeed_if (split->handles[0] == backend, "should be user backend");
+
+	keySetName (parentKey, "user/cascading/simple/below");
+	backend = elektraTrieLookup (handle->trie, parentKey);
+	// succeed_if (split->handles[1] == backend, "should be cascading backend");
+
+	succeed_if (elektraSplitAppoint (split, handle, ks) == 1, "could not appoint keys");
+	succeed_if (split->size == 2, "not correct size after appointing");
+
+	succeed_if (split->handles[0] != -0, "no backend");
+	succeed_if (split->handles[0]->specsize == -1, "spec size wrong");
+	succeed_if (split->handles[0]->usersize == -1, "user size wrong");
+	succeed_if (split->handles[0]->systemsize == -1, "system size wrong");
+	succeed_if (split->handles[0]->dirsize == -1, "dir size wrong");
+
+	succeed_if (split->handles[1] == -0, "backend at bypass?");
+
+	// output_split (split);
+	succeed_if (ksGetSize (split->keysets[0]) == 5, "wrong size");
+	succeed_if (ksGetSize (split->keysets[1]) == 0, "wrong size");
+	// succeed_if (split->handles[0] == backend, "should be user backend");
 	succeed_if (split->handles[1] == 0, "should be default backend");
 
 	elektraSplitDel (split);
@@ -747,6 +832,7 @@ int main (int argc, char ** argv)
 	init (argc, argv);
 
 	test_simple ();
+	test_cascading ();
 	test_get ();
 	test_limit ();
 	test_nobackend ();
