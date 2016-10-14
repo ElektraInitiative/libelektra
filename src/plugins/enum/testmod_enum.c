@@ -61,12 +61,14 @@ static void testArray ()
 	Key * parentKey = keyNew ("user/tests/enum", KEY_VALUE, "", KEY_END);
 	Key * k1 = keyNew ("user/tests/enum/valid1", KEY_VALUE, "LOW", KEY_META, "check/enum", "#1", KEY_META, "check/enum/#0", "LOW",
 			   KEY_META, "check/enum/#1", "MIDDLE", KEY_END);
-	Key * k2 = keyNew ("user/tests/enum/valid2", KEY_VALUE, "LOW MIDDLE", KEY_META, "check/enum/multi", " ", KEY_META, "check/enum", "#2", KEY_META, "check/enum/#0",
-			   "LOW", KEY_META, "check/enum/#1", "MIDDLE", KEY_META, "check/enum/#2", "HIGH", KEY_END);
+	Key * k2 =
+		keyNew ("user/tests/enum/valid2", KEY_VALUE, "LOW MIDDLE", KEY_META, "check/enum/multi", " ", KEY_META, "check/enum", "#2",
+			KEY_META, "check/enum/#0", "LOW", KEY_META, "check/enum/#1", "MIDDLE", KEY_META, "check/enum/#2", "HIGH", KEY_END);
 	Key * k3 = keyNew ("user/tests/enum/invalid1", KEY_VALUE, "HIGH", KEY_META, "check/enum", "#1", KEY_META, "check/enum/#0", "LOW",
 			   KEY_META, "check/enum/#1", "MIDDLE", KEY_END);
-	Key * k4 = keyNew ("user/tests/enum/invalid2", KEY_VALUE, "LOW FAIL",  KEY_META, "check/enum/multi", " ", KEY_META, "check/enum", "#2", KEY_META, "check/enum/#0",
-			   "LOW", KEY_META, "check/enum/#1", "MIDDLE", KEY_META, "check/enum/#2", "HIGH", KEY_END);
+	Key * k4 =
+		keyNew ("user/tests/enum/invalid2", KEY_VALUE, "LOW FAIL", KEY_META, "check/enum/multi", " ", KEY_META, "check/enum", "#2",
+			KEY_META, "check/enum/#0", "LOW", KEY_META, "check/enum/#1", "MIDDLE", KEY_META, "check/enum/#2", "HIGH", KEY_END);
 
 	KeySet * conf = ksNew (0, KS_END);
 	KeySet * ks;

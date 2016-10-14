@@ -85,17 +85,20 @@ static int validateWithList (Key * key)
 static int validateWithArray (Key * key)
 {
 	const Key * multiEnum = keyGetMeta (key, "check/enum/multi");
-	char *delim = "\0";
-	if(multiEnum)
-	    delim = (char *)keyString(multiEnum);
+	char * delim = "\0";
+	if (multiEnum)
+	{
+		delim = (char *)keyString (multiEnum);
+	}
 	char * localString = elektraStrDup (keyString (key));
 	KeySet * validValues = elektraMetaArrayToKS (key, "check/enum");
 	char * value = strtok (localString, delim);
-	short isValid;
+	short isValid = 0;
 	while (value)
 	{
 		Key * cur;
 		isValid = 0;
+		ksRewind (validValues);
 		while ((cur = ksNext (validValues)) != NULL)
 		{
 			if (!strcmp (value, keyString (cur)))
