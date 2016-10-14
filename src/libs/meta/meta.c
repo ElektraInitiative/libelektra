@@ -905,10 +905,10 @@ int elektraKeyCmpOrder (const Key * ka, const Key * kb)
  * creates an metadata array or appends another element to an existing metadata array
  * e.g.
  * Key *key = keyNew("user/test", KEY_END);
- * elektraMetaArrayAdd(key, "array", "test0");
- * key now has "test/#0" with value "test0" as metadata
- * elektraMetaArrayAdd(key, "array", "test1");
- * appends "test/#1" with value "test1" to key
+ * elektraMetaArrayAdd(key, "test", "val0");
+ * key now has "test/#0" with value "val0" as metadata
+ * elektraMetaArrayAdd(key, "test", "val1");
+ * appends "test/#1" with value "val1" to key
  *
  * @param key the key the metadata should be added to
  * @param metaName the name of the metakey array parent
