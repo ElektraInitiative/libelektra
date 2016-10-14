@@ -6,7 +6,7 @@
 - infos/recommends = 
 - infos/placements = presetstorage
 - infos/status = productive maintained tested nodep libc nodoc
-- infos/metadata = check/enum
+- infos/metadata = check/enum check/enum/# check/enum/multi
 - infos/description =
 
 ## Introduction ##

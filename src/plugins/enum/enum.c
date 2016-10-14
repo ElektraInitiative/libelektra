@@ -137,7 +137,8 @@ int elektraEnumSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UN
 	{
 		if (!validateKey (cur))
 		{
-			ELEKTRA_SET_ERRORF (121, parentKey, "Validation of %s failed.", keyName (cur));
+			ELEKTRA_SET_ERRORF (121, parentKey, "Validation of key \"%s\" with string \"%s\" failed.", keyName (cur),
+					    keyString (cur));
 			return -1;
 		}
 	}
