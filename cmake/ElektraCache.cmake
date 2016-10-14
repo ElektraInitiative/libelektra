@@ -83,6 +83,15 @@ if (FINDEX GREATER -1)
 	set (BINDINGS_FORCE FORCE)
 endif ()
 
+#compatibility for 0.8.18
+list (FIND BINDINGS "intercept" FINDEX)
+if (FINDEX GREATER -1 OR BINDINGS MATCHES "ALL")
+	set(BINDINGS_LIST_INTERCEPT
+		intercept_fs
+		intercept_env
+		)
+endif()
+
 list (FIND BINDINGS "INTERCEPT" FINDEX)
 if (FINDEX GREATER -1 OR BINDINGS MATCHES "ALL")
 	set(BINDINGS_LIST_INTERCEPT
