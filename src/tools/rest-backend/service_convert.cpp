@@ -58,10 +58,27 @@ std::vector<model::PluginFormat> ConvertEngine::loadEnabledFormats ()
 	ModulesPluginDatabase db;
 	std::vector<PluginSpec> plugins = db.lookupAllProvides ("storage");
 
+	// sort the plugins by status before processing
+	std::sort (plugins.begin (), plugins.end (), [&db](const PluginSpec & l, const PluginSpec & r) -> bool {
+		return db.calculateStatus (db.lookupInfo (l, "status")) > db.calculateStatus (db.lookupInfo (r, "status"));
+	});
+
 	std::vector<model::PluginFormat> result;
 	for (auto & plugin : plugins)
 	{
-		result.push_back (model::PluginFormat ("TODO", plugin.getName ()));
+		std::string provides = db.lookupInfo (plugin, "provides");
+		std::stringstream ss (provides);
+		std::string provider;
+		std::string format = "none";
+		while (ss >> provider)
+		{
+			if (boost::starts_with (provider, "storage/"))
+			{
+				format = provider.substr (8);
+				break;
+			}
+		}
+		result.push_back (model::PluginFormat (format, plugin.getName ()));
 	}
 
 	return result;

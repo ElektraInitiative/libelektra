@@ -107,7 +107,7 @@ class ConvertEngine : public singleton<ConvertEngine>
 public:
 	inline ConvertEngine ()
 	{
-		_enabledFormats = loadEnabledFormats ();
+		this->_enabledFormats = loadEnabledFormats ();
 	}
 
 	std::vector<kdbrest::model::PluginFormat> & getEnabledFormats ()
