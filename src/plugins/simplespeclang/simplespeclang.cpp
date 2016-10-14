@@ -14,6 +14,9 @@ using namespace ckdb;
 #include <kdbease.h>
 #include <kdberrors.h>
 
+#include <kdbmeta.h>
+
+#include <algorithm>
 #include <fstream>
 #include <iostream>
 #include <sstream>
@@ -50,8 +53,12 @@ int serialise (std::ostream & os, ckdb::Key * parentKey, ckdb::KeySet * ks, Plug
 
 		os << getConfigEnum (handle) << " ";
 		os << elektraKeyGetRelativeName (cur, parentKey) << " ";
-		os << getConfigAssign (handle) << " ";
-		os << ckdb::keyString (meta) << "\n";
+		os << getConfigAssign (handle);
+		while ((meta = keyNextMeta (cur)))
+		{
+			os << " " << ckdb::keyString (meta);
+		}
+		os << "\n";
 	}
 
 	return 1;
@@ -62,7 +69,6 @@ int unserialise (std::istream & is, ckdb::Key * errorKey, ckdb::KeySet * ks, Plu
 	Key * cur = nullptr;
 
 	Key * parent = keyNew (keyName (errorKey), KEY_END);
-	keySetMeta (parent, "mountpoint", "default.ecf");
 
 	std::string line;
 	while (std::getline (is, line))
@@ -81,6 +87,7 @@ int unserialise (std::istream & is, ckdb::Key * errorKey, ckdb::KeySet * ks, Plu
 			std::string plugins;
 			while (ss >> read)
 			{
+				// replace (read.begin(), read.end(), '_', ' ');
 				plugins += read + " ";
 			}
 			keySetMeta (parent, "infos/plugins", plugins.c_str ());
@@ -108,15 +115,16 @@ int unserialise (std::istream & is, ckdb::Key * errorKey, ckdb::KeySet * ks, Plu
 		std::string enums;
 		while (ss >> read)
 		{
-			enums += read + " ";
+			elektraMetaArrayAdd (cur, "check/enum", read.c_str ());
 		}
 
 		if (!enums.empty ())
 		{
-			const std::string enumWithoutSpace = enums.substr (0, enums.size () - 1);
-			keySetMeta (cur, "check/enum", enumWithoutSpace.c_str ());
+			keySetMeta (cur, "check/enum", "#");
 		}
-		keySetMeta (cur, "required", "yes");
+
+		keySetMeta (cur, "required", "yes"); // TODO bug: required key removed by spec?
+		keySetMeta (cur, "mandatory", "yes");
 
 		ckdb::ksAppendKey (ks, cur);
 	}
