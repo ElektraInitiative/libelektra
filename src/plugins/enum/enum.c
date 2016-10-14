@@ -14,6 +14,7 @@
 
 #include "enum.h"
 #include <kdberrors.h>
+#include <kdbmeta.h>
 #include <regex.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -42,11 +43,9 @@ int elektraEnumGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UN
 	return 1; /* success */
 }
 
-static int validateKey (Key * key)
+static int validateWithList (Key * key)
 {
-	const Key * meta = keyGetMeta (key, "check/enum");
-	if (!meta) return 1;
-	const char * validValues = keyString (meta);
+	const char * validValues = keyString (keyGetMeta (key, "check/enum"));
 	const char * regexString = "'([^']*)'\\s*(,|$|([)]}])?)";
 	regex_t regex;
 	if (regcomp (&regex, regexString, REG_EXTENDED | REG_NEWLINE))
@@ -81,6 +80,50 @@ static int validateKey (Key * key)
 	if (value) elektraFree (value);
 	regfree (&regex);
 	return 0;
+}
+
+static int validateWithArray (Key * key)
+{
+	const Key * multiEnum = keyGetMeta (key, "check/enum/multi");
+	char *delim = "\0";
+	if(multiEnum)
+	    delim = (char *)keyString(multiEnum);
+	char * localString = elektraStrDup (keyString (key));
+	KeySet * validValues = elektraMetaArrayToKS (key, "check/enum");
+	char * value = strtok (localString, delim);
+	short isValid;
+	while (value)
+	{
+		Key * cur;
+		isValid = 0;
+		while ((cur = ksNext (validValues)) != NULL)
+		{
+			if (!strcmp (value, keyString (cur)))
+			{
+				isValid = 1;
+				break;
+			}
+		}
+		if (!isValid)
+		{
+			break;
+		}
+		value = strtok (NULL, delim);
+	}
+	elektraFree (localString);
+	ksDel (validValues);
+	if (!isValid) return 0;
+	return 1;
+}
+
+static int validateKey (Key * key)
+{
+	const Key * meta = keyGetMeta (key, "check/enum");
+	if (!meta) return 1;
+	if (keyString (meta)[0] != '#')
+		return validateWithList (key);
+	else
+		return validateWithArray (key);
 }
 
 int elektraEnumSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
