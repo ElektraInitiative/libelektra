@@ -487,13 +487,18 @@ int elektraSplitAppoint (Split * split, KDB * handle, KeySet * ks)
 	return 1;
 }
 
-static void elektraDropCurrentKey (KeySet * ks, Key * warningKey, const Backend * curHandle, const char * msg)
+static void elektraDropCurrentKey (KeySet * ks, Key * warningKey, const Backend * curHandle, const Backend * otherHandle, const char * msg)
 {
 	const Key * k = ksCurrent (ks);
 
-	const size_t sizeOfStaticText = 100;
-	char * warningMsg = elektraMalloc (keyGetNameSize (curHandle->mountpoint) + keyGetValueSize (curHandle->mountpoint) +
-					   keyGetNameSize (k) + strlen (msg) + sizeOfStaticText);
+	const size_t sizeOfStaticText = 300;
+	size_t size = keyGetNameSize (curHandle->mountpoint) + keyGetValueSize (curHandle->mountpoint) + keyGetNameSize (k) + strlen (msg) +
+		      sizeOfStaticText;
+	if (otherHandle)
+	{
+		size += keyGetNameSize (otherHandle->mountpoint) + keyGetValueSize (otherHandle->mountpoint);
+	}
+	char * warningMsg = elektraMalloc (size);
 	strcpy (warningMsg, "drop key ");
 	const char * name = keyName (k);
 	if (name)
@@ -504,11 +509,18 @@ static void elektraDropCurrentKey (KeySet * ks, Key * warningKey, const Backend 
 	{
 		strcat (warningMsg, "(no name)");
 	}
-	strcat (warningMsg, " not belonging to ");
+	strcat (warningMsg, " not belonging to \"");
 	strcat (warningMsg, keyName (curHandle->mountpoint));
-	strcat (warningMsg, " with name ");
+	strcat (warningMsg, "\" with name \"");
 	strcat (warningMsg, keyString (curHandle->mountpoint));
-	strcat (warningMsg, " because ");
+	if (otherHandle)
+	{
+		strcat (warningMsg, "\" but instead to \"");
+		strcat (warningMsg, keyName (otherHandle->mountpoint));
+		strcat (warningMsg, "\" with name \"");
+		strcat (warningMsg, keyString (otherHandle->mountpoint));
+	}
+	strcat (warningMsg, "\" because ");
 	strcat (warningMsg, msg);
 	ELEKTRA_ADD_WARNING (79, warningKey, warningMsg);
 	elektraFree (warningMsg);
@@ -544,38 +556,39 @@ static int elektraSplitPostprocess (Split * split, int i, Key * warningKey, KDB 
 
 		if (curHandle != split->handles[i])
 		{
-			elektraDropCurrentKey (split->keysets[i], warningKey, curHandle, "it is hidden by other mountpoint");
+			elektraDropCurrentKey (split->keysets[i], warningKey, curHandle, split->handles[i],
+					       "it is hidden by other mountpoint");
 		}
 		else
 			switch (keyGetNamespace (cur))
 			{
 			case KEY_NS_SPEC:
 				if (!keyIsSpec (split->parents[i]))
-					elektraDropCurrentKey (split->keysets[i], warningKey, curHandle, "it is not spec");
+					elektraDropCurrentKey (split->keysets[i], warningKey, curHandle, 0, "it is not spec");
 				break;
 			case KEY_NS_DIR:
 				if (!keyIsDir (split->parents[i]))
-					elektraDropCurrentKey (split->keysets[i], warningKey, curHandle, "it is not dir");
+					elektraDropCurrentKey (split->keysets[i], warningKey, curHandle, 0, "it is not dir");
 				break;
 			case KEY_NS_USER:
 				if (!keyIsUser (split->parents[i]))
-					elektraDropCurrentKey (split->keysets[i], warningKey, curHandle, "it is not user");
+					elektraDropCurrentKey (split->keysets[i], warningKey, curHandle, 0, "it is not user");
 				break;
 			case KEY_NS_SYSTEM:
 				if (!keyIsSystem (split->parents[i]))
-					elektraDropCurrentKey (split->keysets[i], warningKey, curHandle, "it is not system");
+					elektraDropCurrentKey (split->keysets[i], warningKey, curHandle, 0, "it is not system");
 				break;
 			case KEY_NS_PROC:
-				elektraDropCurrentKey (split->keysets[i], warningKey, curHandle, "it has a proc key name");
+				elektraDropCurrentKey (split->keysets[i], warningKey, curHandle, 0, "it has a proc key name");
 				break;
 			case KEY_NS_EMPTY:
-				elektraDropCurrentKey (split->keysets[i], warningKey, curHandle, "it has an empty name");
+				elektraDropCurrentKey (split->keysets[i], warningKey, curHandle, 0, "it has an empty name");
 				break;
 			case KEY_NS_META:
-				elektraDropCurrentKey (split->keysets[i], warningKey, curHandle, "it has a metaname");
+				elektraDropCurrentKey (split->keysets[i], warningKey, curHandle, 0, "it has a metaname");
 				break;
 			case KEY_NS_CASCADING:
-				elektraDropCurrentKey (split->keysets[i], warningKey, curHandle, "it has a cascading name");
+				elektraDropCurrentKey (split->keysets[i], warningKey, curHandle, 0, "it has a cascading name");
 				break;
 			case KEY_NS_NONE:
 				ELEKTRA_ASSERT (0, "wrong key namespace `none'");
