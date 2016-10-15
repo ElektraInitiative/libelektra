@@ -2,7 +2,7 @@
 
 ## Introduction
 
-Configuration today in FLOSS unfortunately often is stored
+Configuration in FLOSS unfortunately is often stored
 completely without validation. Notable exceptions are sudo
 (`sudoedit`), or user accounts (`adduser`) but in most cases
 you only get feedback of non-validating configuration when
@@ -179,6 +179,9 @@ Error (#10) occurred!
 Did not find key
 ```
 
+If we want to reject every optional key (and only want to allow required keys)
+we can use the plugin `required` as further discussed below.
+
 
 ## Customized schemas
 
@@ -187,12 +190,14 @@ which is more compact and more directed to the needs of an individual applicatio
 We can write a plugin that parses that format and transform the content to key/value
 *and* metadata (describing how to validate).
 
-For example, let us assume we have enum validations in the format:
+For example, let us assume we have enum validations in the file `schema.txt`:
 
 ```
-%:notation TBD ? graph text semi
-%:tool-support* TBD ? none compiler ide
-%:applied-to TBD ? none small real-world
+%: notation TBD ? graph text semi
+%: tool-support* TBD ? none compiler ide
+%: applied-to TBD ? none small real-world
+mountpoint file.txt
+plugins required
 ```
 
 And by convention for keys ending with `*`, multiple values are allowed.
@@ -200,3 +205,37 @@ So we want to transform above syntax to:
 %:notation TBD ? graph text semi
 %:tool-support* TBD ? none compiler ide
 %:applied-to TBD ? none small real-world
+
+Lucky, we already have a plugin which allows us to so:
+
+```
+kdb mount /path/to/schema.txt spec/tutorial/schema simplespeclang keyword/enum=%:,keyword/assign=TBD
+kdb spec-mount /tutorial/schema
+```
+
+We configure the plugin `simplespeclang` so that it conforms to our "weird" syntax.
+Because in `schema.txt` we have the line `mountpoint file.txt` we can also mount the
+schema using `spec-mount`.
+
+Now we have enforced that the 3 configuration options `notation tool-support* applied-to`
+need to be present (and no other). For example we can import:
+
+```
+kdb import -s append -c "format=% : %" /tutorial/schema simpleini << HERE
+notation : graph
+tool-support : ? none
+applied-to : small
+HERE
+```
+
+Or (afterwards) setting individual values:
+
+```
+kdb set /tutorial/schema/applied-to smal # fails, not a valid enum
+```
+
+Or (in `sudoedit` fashion):
+
+```
+kdb editor /tutorial/schema ni
+```
