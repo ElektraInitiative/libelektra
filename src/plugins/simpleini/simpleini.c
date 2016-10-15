@@ -143,6 +143,7 @@ int elektraSimpleiniGet (Plugin * handle, KeySet * returned, Key * parentKey)
 
 	int n = 0;
 	size_t size = 0;
+	ssize_t ksize = 0;
 #pragma GCC diagnostic ignored "-Wformat"
 	// icc warning #269: invalid format string conversion
 	while ((n = fscanf (fp, format, &key, &value)) >= 0)
@@ -174,7 +175,12 @@ int elektraSimpleiniGet (Plugin * handle, KeySet * returned, Key * parentKey)
 			value = 0;
 		}
 
-		ksAppendKey (returned, read);
+		if (ksAppendKey (returned, read) != ksize + 1)
+		{
+			ELEKTRA_SET_ERROR (ELEKTRA_ERROR_NOEOF, parentKey, "duplicated key");
+			return -1;
+		}
+		++ ksize;
 		elektraFree (key);
 		key = 0;
 	}
