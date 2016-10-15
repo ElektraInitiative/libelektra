@@ -17,16 +17,6 @@ To learn about any plugin, the user can simply use the kdb-info(1) command.
 This command allows a user to edit configuration of the key database using a text editor.
 The user should specify the format that the current configuration or keys are in, otherwise the default format will be used.
 
-## KDB
-
-- `/sw/elektra/kdb/#0/current/format`:
-  The default format if none given. Defaults to `storage` if the key does not exist.
-
-- `/sw/elektra/kdb/#0/current/editor`:
-  The default editor, if no `-e` option is given.
-  Defaults to `/usr/bin/sensible-editor`, `/usr/bin/editor` or `/usr/bin/vi` if the key does not exist.
-
-
 ## RETURN VALUES
 
 - 0:
@@ -60,7 +50,33 @@ The user should specify the format that the current configuration or keys are in
   Which editor to use.
 - `-C`, `--color`=[when]:
   Print never/auto(default)/always colored output.
+- `-N`, `--namespace`=<ns>:
+  Specify the namespace to use when writing cascading keys (`validation` strategy only).
+  See [below in KDB](#KDB).
 
+## Strategies
+
+- `validate`: 
+  apply meta data as received from base, and then cut+append all keys as imported.
+  If the appended keys do not have a namespace, the namespace given by `-N`
+  is added.
+
+The other strategies are implemented by the merge framework and are documented in
+[elektra-merge-strategy(7)](elektra-merge-strategy.md).
+
+## KDB
+
+- `/sw/elektra/kdb/#0/current/format`:
+  The default format if none given. Defaults to `storage` if the key does not exist.
+
+- `/sw/elektra/kdb/#0/current/editor`:
+  The default editor, if no `-e` option is given.
+  Defaults to `/usr/bin/sensible-editor`, `/usr/bin/editor` or `/usr/bin/vi` if the key does not exist.
+
+- `/sw/elektra/kdb/#0/current/namespace`:
+  Specifies which default namespace should be used when setting a cascading name.
+  By default the namespace is user, except `kdb` is used as root, then `system`
+  is the default (`validate` strategy only).
 
 ## EXAMPLES
 

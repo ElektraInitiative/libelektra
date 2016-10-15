@@ -18,6 +18,9 @@
 using namespace std;
 using namespace kdb::tools::merging;
 
+kdb::KeySet appendNamespace (kdb::KeySet const & resultKeys, kdb::Key & root, std::string ns);
+void applyMeta (kdb::KeySet & imported, kdb::KeySet const & base);
+
 class MergeHelper
 {
 public:

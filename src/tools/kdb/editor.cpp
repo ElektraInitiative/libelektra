@@ -85,6 +85,13 @@ int EditorCommand::execute (Cmdline const & cl)
 	KDB kdb;
 	kdb.get (ours, root);
 	KeySet oursToEdit = ours.cut (root);
+	KeySet original = oursToEdit.dup ();
+
+	if (cl.strategy == "validate")
+	{
+		appendNamespace (oursToEdit, root, cl.ns);
+		oursToEdit.cut (root);
+	}
 
 	// export it to file
 	string format = cl.format;
@@ -134,6 +141,14 @@ int EditorCommand::execute (Cmdline const & cl)
 
 	printWarnings (cerr, errorKey);
 	printError (cerr, errorKey);
+
+	if (cl.strategy == "validate")
+	{
+		applyMeta (importedKeys, original);
+		kdb.set (importedKeys, root);
+		printWarnings (cerr, root);
+		return 0;
+	}
 
 	ThreeWayMerge merger;
 	MergeHelper helper;

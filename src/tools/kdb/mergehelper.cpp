@@ -72,8 +72,6 @@ string MergeHelper::getConfigurationList ()
 
 void MergeHelper::configureMerger (Cmdline const & cl, ThreeWayMerge & merger)
 {
-
-
 	if (cl.interactive)
 	{
 		merger.addConflictStrategy (new InteractiveMergeStrategy (cin, cout));
@@ -94,7 +92,6 @@ void MergeHelper::configureMerger (Cmdline const & cl, ThreeWayMerge & merger)
 
 void MergeHelper::reportResult (Cmdline const & cl, MergeResult & result, ostream & out, ostream & err)
 {
-
 	if (!result.hasConflicts ())
 	{
 		if (cl.verbose)
@@ -122,5 +119,39 @@ void MergeHelper::reportResult (Cmdline const & cl, MergeResult & result, ostrea
 		}
 
 		err << "Merge unsuccessful." << endl;
+	}
+}
+
+
+KeySet appendNamespace (KeySet const & resultKeys, Key & root, std::string ns)
+{
+	if (root.isCascading ())
+	{
+		root.setName (ns + root.getName ());
+	}
+
+	KeySet ret;
+	for (auto const & k : resultKeys)
+	{
+		Key n = k.dup ();
+		if (k.isCascading ())
+		{
+			std::string name = k.getName ();
+			n.setName (ns + name);
+		}
+		ret.append (n);
+	}
+	return ret;
+}
+
+void applyMeta (KeySet & imported, KeySet const & base)
+{
+	for (auto k : imported)
+	{
+		Key b = base.lookup (k, 0);
+		if (b)
+		{
+			k.copyAllMeta (b);
+		}
 	}
 }

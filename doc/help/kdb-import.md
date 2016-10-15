@@ -26,14 +26,13 @@ Conflicts when importing can be resolved using a strategy with the `-s` argument
 
 Specific to `kdb import` the following strategy exists:
 
-- append: 
-  apply meta data as received from base, and then append all keys as imported.
+- `validate`: 
+  apply meta data as received from base, and then cut+append all keys as imported.
   If the appended keys do not have a namespace, the namespace given by `-N`
   is added.
 
 The other strategies are implemented by the merge framework and are documented in
 [elektra-merge-strategy(7)](elektra-merge-strategy.md).
-
 
 ## OPTIONS
 
@@ -52,7 +51,7 @@ The other strategies are implemented by the merge framework and are documented i
 - `-C`, `--color`=[when]:
   Print never/auto(default)/always colored output.
 - `-N`, `--namespace`=<ns>:
-  Specify the namespace to use when writing cascading keys (`append` strategy only).
+  Specify the namespace to use when writing cascading keys (`validate` strategy only).
   See [below in KDB](#KDB).
 
 ## KDB
@@ -63,11 +62,10 @@ The other strategies are implemented by the merge framework and are documented i
 - `/sw/elektra/kdb/#0/current/format`
   Change default format (if none is given at commandline) and built-in default is not your preferred format.
 
-
 - `/sw/elektra/kdb/#0/current/namespace`:
   Specifies which default namespace should be used when setting a cascading name.
   By default the namespace is user, except `kdb` is used as root, then `system`
-  is the default (`append` strategy only).
+  is the default (`validate` strategy only).
 
 
 ## EXAMPLES

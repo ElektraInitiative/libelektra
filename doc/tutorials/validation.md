@@ -221,7 +221,7 @@ Now we have enforced that the 3 configuration options `notation tool-support* ap
 need to be present (and no other). For example we can import:
 
 ```
-kdb import -s append -c "format=% : %" /tutorial/schema simpleini << HERE
+kdb import -s validate -c "format=% : %" /tutorial/schema simpleini << HERE
 notation : graph
 tool-support : ? none
 applied-to : small
@@ -237,5 +237,6 @@ kdb set /tutorial/schema/applied-to smal # fails, not a valid enum
 Or (in `sudoedit` fashion):
 
 ```
-kdb editor /tutorial/schema ni
+kdb editor -s validate /tutorial/schema simpleini
 ```
+
