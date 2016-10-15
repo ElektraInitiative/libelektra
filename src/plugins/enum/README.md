@@ -38,7 +38,8 @@ For example:
 check/enum/multi = _
 ```
 
-Then the value `middle_small_small` would validate.
+Then the value `middle_small` would validate.
+But `middle_small_small` would fail because every entry might only occur once.
 
 
 ## Example ##
@@ -53,13 +54,13 @@ Then the value `middle_small_small` would validate.
 
 Or with multi-enums:
 
-	kdb set user/example/enum/value middle_small_small  # valid init
+	kdb set user/example/enum/value middle_small  # valid init
 	kdb setmeta user/example/enum/value check/enum/#0 small
 	kdb setmeta user/example/enum/value check/enum/#1 middle
 	kdb setmeta user/example/enum/value check/enum/#2 large
 	kdb setmeta user/example/enum/value check/enum/#3 huge
 	kdb setmeta user/example/enum/value check/enum/multi _
 	kdb setmeta user/example/enum/value check/enum "#3"
-	kdb set user/example/enum/value ___small_small__ # success
+	kdb set user/example/enum/value ___small_middle__ # success
 	kdb set user/example/enum/value ___all_small__   # fail: "all" invalid
 
