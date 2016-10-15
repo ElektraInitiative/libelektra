@@ -104,7 +104,12 @@ int ImportCommand::execute (Cmdline const & cl)
 		applyMeta (importedKeys, base);
 		originalKeys.append (importedKeys);
 		KeySet toset = appendNamespace (originalKeys, cl.ns);
+		if (root.isCascading())
+		{
+			root.setName (cl.ns + root.getName ());
+		}
 		kdb.set (toset, root);
+		printWarnings (cerr, root);
 		return 0;
 	}
 
