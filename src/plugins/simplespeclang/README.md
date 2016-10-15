@@ -9,13 +9,6 @@
 - infos/metadata =
 - infos/description =
 
-## WARNING
-
-Does not work as long as the plugin enum
-[does not support multi-enums](https://github.com/ElektraInitiative/libelektra/issues/1005)
-
-
-
 ## Introduction ##
 
 See [the validation tutorial](/doc/tutorials/validation.md) for introduction.
@@ -25,6 +18,7 @@ It currently supports to specify:
 
 - structure (which keys are allowed)
 - enums (which values are allowed)
+- multi-enums (by name convention: if name ends with `*`)
 
 ## Purpose
 
@@ -36,7 +30,11 @@ You can base your plugins
 
 - /keyword/enum, default "enum": used as keywords for enum definitions.
 - /keyword/assign, default "=": used as keywords for assignment.
-- /path, default "default.ssl": used as path for `kdb mount-spec`
+
+Configuration within the specification language:
+
+- `mountpoint <filename>`: defines a file-name for `kdb spec-mount`
+- `plugins <pluginspec>`: defines list of plugins for `kdb spec-mount`
 
 
 ## Usage ##
@@ -48,6 +46,7 @@ First you need to mount the plugin to spec, e.g.:
 Then you can write your specification (with default keywords):
 
     cat << HERE > `kdb file spec/test`
+    mountpoint filename.txt
     enum key = value1 value2 value3
     enum key2 = value1 value2
     HERE

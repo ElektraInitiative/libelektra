@@ -99,10 +99,11 @@ int unserialise (std::istream & is, ckdb::Key * errorKey, ckdb::KeySet * ks, Plu
 			continue;
 		}
 
-		ss >> read;
-		ELEKTRA_LOG ("key for enum is %s", read.c_str ());
+		std::string name;
+		ss >> name;
+		ELEKTRA_LOG ("key name for enum is %s", name.c_str ());
 		cur = keyNew (keyName (errorKey), KEY_END);
-		keyAddName (cur, read.c_str ());
+		keyAddName (cur, name.c_str ());
 
 		ss >> read;
 		if (read != getConfigAssign (handle))
@@ -112,15 +113,21 @@ int unserialise (std::istream & is, ckdb::Key * errorKey, ckdb::KeySet * ks, Plu
 			continue;
 		}
 
-		std::string enums;
+		int added = 0;
 		while (ss >> read)
 		{
+			++ added;
 			elektraMetaArrayAdd (cur, "check/enum", read.c_str ());
 		}
 
-		if (!enums.empty ())
+		if (added)
 		{
+			ELEKTRA_LOG ("%s is enum with %d entries (last char is %c)", name.c_str (), added, name.back ());
 			keySetMeta (cur, "check/enum", "#");
+			if (name.back () == '*')
+			{
+				keySetMeta (cur, "check/enum/multi", " ");
+			}
 		}
 
 		keySetMeta (cur, "required", "yes"); // TODO bug: required key removed by spec?
