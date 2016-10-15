@@ -11,19 +11,32 @@ macro (copy_file src dest)
 		)
 endmacro (copy_file)
 
-
-# Create a symlink for a lib/plugin both in lib and at installation
+# Create a symlink for a plugin both in lib and at installation
 #
-# create_symlink src dest - create a symbolic link from src -> dest
+# Parameter: PLUGIN: install symlink in TARGET_PLUGIN_FOLDER subdirectory
+#
+# create_lib_symlink src dest - create a symbolic link from src -> dest
 #
 macro (create_lib_symlink src dest)
+
+	cmake_parse_arguments (ARG
+		"PLUGIN" # optional keywords
+		"" # one value keywords
+		"" # multi value keywords
+		${ARGN}
+	)
+
 	execute_process (COMMAND ${CMAKE_COMMAND} -E create_symlink
 		"${src}"
 		"${dest}"
 		WORKING_DIRECTORY "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}"
 		)
 
-	set (LIB_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/lib${LIB_SUFFIX}/${TARGET_PLUGIN_FOLDER}")
+	if (ARG_PLUGIN)
+		set (LIB_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/lib${LIB_SUFFIX}/${TARGET_PLUGIN_FOLDER}")
+	else ()
+		set (LIB_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/lib${LIB_SUFFIX}")
+	endif ()
 
 	install(CODE "
 		message (STATUS \"Installing symlink: \$ENV{DESTDIR}${LIB_INSTALL_DIR}/${dest} -> ${src}\")
