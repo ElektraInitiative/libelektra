@@ -106,6 +106,9 @@ int elektraSimpleiniGet (Plugin * handle, KeySet * returned, Key * parentKey)
 			keyNew ("system/elektra/modules/simpleini/config/needs", KEY_VALUE, "the needed configuration to work in a backend",
 				KEY_END),
 			keyNew ("system/elektra/modules/simpleini/config/needs/chars", KEY_VALUE, "Characters needed", KEY_END),
+			// space in value now works:
+			// TODO: characters present in format should be escaped
+			/*
 			keyNew ("system/elektra/modules/simpleini/config/needs/chars/20", KEY_VALUE, "61", KEY_END), // space -> a
 			keyNew ("system/elektra/modules/simpleini/config/needs/chars/23", KEY_VALUE, "62", KEY_END), // # -> b
 			keyNew ("system/elektra/modules/simpleini/config/needs/chars/25", KEY_VALUE, "63",
@@ -113,6 +116,7 @@ int elektraSimpleiniGet (Plugin * handle, KeySet * returned, Key * parentKey)
 			keyNew ("system/elektra/modules/simpleini/config/needs/chars/3B", KEY_VALUE, "64", KEY_END), // ; -> d
 			keyNew ("system/elektra/modules/simpleini/config/needs/chars/3D", KEY_VALUE, "65", KEY_END), // = -> e
 			keyNew ("system/elektra/modules/simpleini/config/needs/chars/5C", KEY_VALUE, "66", KEY_END), // \\ -> f
+			*/
 			keyNew ("system/elektra/modules/simpleini/config/needs/chars/0A", KEY_VALUE, "67", KEY_END), // enter (NL) -> g
 			keyNew ("system/elektra/modules/simpleini/config/needs/chars/0D", KEY_VALUE, "68", KEY_END), // CR -> h
 			keyNew ("system/elektra/modules/simpleini/config/needs/escape", KEY_VALUE, "25", KEY_END),
