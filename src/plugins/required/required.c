@@ -46,7 +46,7 @@ int elektraRequiredSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTR
 			if (!meta)
 			{
 				keyRewindMeta (cur);
-				size_t c = 0;
+				int c = 0;
 				while (keyNextMeta (cur))
 				{
 					++c;
