@@ -103,7 +103,7 @@ static int validateWithArray (Key * key)
 		{
 			if (!strcmp (value, keyString (cur)))
 			{
-				ksLookup (validValues, cur, KDB_O_POP);
+				keyDel (ksLookup (validValues, cur, KDB_O_POP));
 				isValid = 1;
 				break;
 			}
