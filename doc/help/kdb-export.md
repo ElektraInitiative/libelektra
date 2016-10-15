@@ -37,7 +37,7 @@ The `storage` plugin can be configured at compile-time or changed by the link `l
 ## KDB
 
 - `/sw/elektra/kdb/#0/current/format`
-  Change default format (if none is given at commandline) and built-in default is not your preferred format.
+  Change default format (if none is given at commandline) and built-in default `storage` is not your preferred format.
 
 ## EXAMPLES
 

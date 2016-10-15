@@ -44,4 +44,3 @@ Currently the following strategies exist:
    Preserves existing keys in the resultpath if they do not exist in the merged keyset.
    If the key does exist in the merged keyset, it will be overwritten.
    (avoid using it)
-

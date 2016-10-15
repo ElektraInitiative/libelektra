@@ -29,6 +29,38 @@ ImportCommand::ImportCommand ()
 {
 }
 
+namespace
+{
+	KeySet appendNamespace (KeySet const & resultKeys, std::string ns)
+	{
+		KeySet ret;
+		for (auto const & k : resultKeys)
+		{
+			Key n = k.dup ();
+			if (k.isCascading ())
+			{
+				std::string name = k.getName ();
+				std::cout << ns + name << std::endl;
+				n.setName (ns + name);
+			}
+			ret.append (n);
+		}
+		return ret;
+	}
+
+	void applyMeta (KeySet & imported, KeySet const & base)
+	{
+		for (auto k : imported)
+		{
+			Key b = base.lookup (k, 0);
+			if (b)
+			{
+				k.copyAllMeta (b);
+			}
+		}
+	}
+}
+
 int ImportCommand::execute (Cmdline const & cl)
 {
 	size_t argc = cl.arguments.size ();
@@ -63,14 +95,18 @@ int ImportCommand::execute (Cmdline const & cl)
 	KeySet importedKeys;
 	plugin->get (importedKeys, errorKey);
 	importedKeys = importedKeys.cut (root);
-	if (cl.verbose)
-	{
-		cout << "Try to import " << importedKeys.size () << ":" << endl;
-		cout << importedKeys;
-	}
 
 	printWarnings (cerr, errorKey);
 	printError (cerr, errorKey);
+
+	if (cl.strategy == "append")
+	{
+		applyMeta (importedKeys, base);
+		originalKeys.append (importedKeys);
+		KeySet toset = appendNamespace (originalKeys, cl.ns);
+		kdb.set (toset, root);
+		return 0;
+	}
 
 	ThreeWayMerge merger;
 	MergeHelper helper;
