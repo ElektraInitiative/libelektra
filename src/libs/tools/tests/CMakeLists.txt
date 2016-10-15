@@ -12,6 +12,6 @@ foreach (file ${TESTS})
 	add_gtest (${name} LINK_TOOLS)
 endforeach (file ${TESTS})
 
-if (ENABLE_TESTING)
+if (BUILD_TESTING AND ENABLE_TESTING)
 	set_property(TEST testtool_mergingkdb PROPERTY LABELS kdbtests)
 endif ()
