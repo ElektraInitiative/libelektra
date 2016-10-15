@@ -119,8 +119,7 @@ int elektraSimpleiniGet (Plugin * handle, KeySet * returned, Key * parentKey)
 			*/
 			keyNew ("system/elektra/modules/simpleini/config/needs/chars/0A", KEY_VALUE, "67", KEY_END), // enter (NL) -> g
 			keyNew ("system/elektra/modules/simpleini/config/needs/chars/0D", KEY_VALUE, "68", KEY_END), // CR -> h
-			keyNew ("system/elektra/modules/simpleini/config/needs/escape", KEY_VALUE, "25", KEY_END),
-			KS_END);
+			keyNew ("system/elektra/modules/simpleini/config/needs/escape", KEY_VALUE, "25", KEY_END), KS_END);
 		ksAppend (returned, moduleConfig);
 		ksDel (moduleConfig);
 		return 1;
@@ -180,7 +179,7 @@ int elektraSimpleiniGet (Plugin * handle, KeySet * returned, Key * parentKey)
 			ELEKTRA_SET_ERROR (ELEKTRA_ERROR_NOEOF, parentKey, "duplicated key");
 			return -1;
 		}
-		++ ksize;
+		++ksize;
 		elektraFree (key);
 		key = 0;
 	}

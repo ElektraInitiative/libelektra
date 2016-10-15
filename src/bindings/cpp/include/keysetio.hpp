@@ -52,7 +52,7 @@ inline std::ostream & operator<< (std::ostream & os, kdb::KeySet const & cks)
 			k.rewindMeta ();
 			while ((meta = k.nextMeta ()))
 			{
-				os << " " << meta.getName();
+				os << " " << meta.getName ();
 			}
 		}
 		if (os.flags () & std::ios_base::skipws)

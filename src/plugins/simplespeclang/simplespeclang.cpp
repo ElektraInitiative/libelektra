@@ -116,7 +116,7 @@ int unserialise (std::istream & is, ckdb::Key * errorKey, ckdb::KeySet * ks, Plu
 		int added = 0;
 		while (ss >> read)
 		{
-			++ added;
+			++added;
 			elektraMetaArrayAdd (cur, "check/enum", read.c_str ());
 		}
 

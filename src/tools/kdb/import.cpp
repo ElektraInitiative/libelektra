@@ -31,34 +31,34 @@ ImportCommand::ImportCommand ()
 
 namespace
 {
-	KeySet appendNamespace (KeySet const & resultKeys, std::string ns)
+KeySet appendNamespace (KeySet const & resultKeys, std::string ns)
+{
+	KeySet ret;
+	for (auto const & k : resultKeys)
 	{
-		KeySet ret;
-		for (auto const & k : resultKeys)
+		Key n = k.dup ();
+		if (k.isCascading ())
 		{
-			Key n = k.dup ();
-			if (k.isCascading ())
-			{
-				std::string name = k.getName ();
-				std::cout << ns + name << std::endl;
-				n.setName (ns + name);
-			}
-			ret.append (n);
+			std::string name = k.getName ();
+			std::cout << ns + name << std::endl;
+			n.setName (ns + name);
 		}
-		return ret;
+		ret.append (n);
 	}
+	return ret;
+}
 
-	void applyMeta (KeySet & imported, KeySet const & base)
+void applyMeta (KeySet & imported, KeySet const & base)
+{
+	for (auto k : imported)
 	{
-		for (auto k : imported)
+		Key b = base.lookup (k, 0);
+		if (b)
 		{
-			Key b = base.lookup (k, 0);
-			if (b)
-			{
-				k.copyAllMeta (b);
-			}
+			k.copyAllMeta (b);
 		}
 	}
+}
 }
 
 int ImportCommand::execute (Cmdline const & cl)
@@ -104,7 +104,7 @@ int ImportCommand::execute (Cmdline const & cl)
 		applyMeta (importedKeys, base);
 		originalKeys.append (importedKeys);
 		KeySet toset = appendNamespace (originalKeys, cl.ns);
-		if (root.isCascading())
+		if (root.isCascading ())
 		{
 			root.setName (cl.ns + root.getName ());
 		}
