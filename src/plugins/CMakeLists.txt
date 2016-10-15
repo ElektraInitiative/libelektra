@@ -72,15 +72,15 @@ endif()
 if (BUILD_SHARED)
 	mkdir (${CMAKE_LIBRARY_OUTPUT_DIRECTORY})
 	create_lib_symlink (
-			PLUGIN
 			libelektra-${KDB_DEFAULT_STORAGE}.so
 			libelektra-storage.so
+			PLUGIN
 			)
 
 	create_lib_symlink (
-			PLUGIN
 			libelektra-${KDB_DEFAULT_RESOLVER}.so
 			libelektra-resolver.so
+			PLUGIN
 			)
 endif (BUILD_SHARED)
 
