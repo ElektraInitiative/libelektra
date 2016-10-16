@@ -85,11 +85,12 @@ endif ()
 
 #compatibility for 0.8.18
 list (FIND BINDINGS "intercept" FINDEX)
-if (FINDEX GREATER -1 OR BINDINGS MATCHES "ALL")
+if (FINDEX GREATER -1)
 	set(BINDINGS_LIST_INTERCEPT
 		intercept_fs
 		intercept_env
 		)
+	set (BINDINGS_FORCE FORCE)
 endif()
 
 list (FIND BINDINGS "INTERCEPT" FINDEX)
@@ -98,12 +99,14 @@ if (FINDEX GREATER -1 OR BINDINGS MATCHES "ALL")
 		intercept_fs
 		intercept_env
 		)
+	set (BINDINGS_FORCE FORCE)
 endif()
 
 if (BINDINGS MATCHES "ALL")
 	set(BINDINGS_LIST_ALL
 		jna
 		)
+	set (BINDINGS_FORCE FORCE)
 endif()
 
 set (BINDINGS_DOC "Which bindings should be added? ALL for all available, SWIG, GI for plugins based on respective technology, DEFAULT for minimal set.")
