@@ -90,6 +90,7 @@
 	"APP.CONVERSION.NOTIFICATION.MESSAGE.CONVERT_UNABLE_TO_PARSE_SNIPPET": "The submitted configuration snippet could not be parsed within the specified input format. If you are sure the format is correct, please try one of the other plugins.",
 	"APP.CONVERSION.NOTIFICATION.MESSAGE.REQUEST_MALFORMED_DATA": "An error occured. If the error stays, please contact the administrator.",
 	"APP.CONVERSION.NOTIFICATION.MESSAGE.REQUEST_UNSUPPORTED_CONTENT_TYPE": "An error occured. If the error stays, please contact the administrator.",
+	"APP.CONVERSION.FORM.OPTIONS.FORMATS": "{{ format }} (plugin: {{ plugin }})",
 	"APP.CONVERSION.PANEL.HEADING": "Configuration snippet converter",
 
 	"APP.ENTRIES.CREATE.NOTIFICATION.HEADER": "Create new snippet",
@@ -204,6 +205,7 @@
 	"APP.ENTRIES.FORM.LABEL.VALIDATION.TITLE.MINLENGTH": "The title has to be at least three character long.",
 	"APP.ENTRIES.FORM.LABEL.VALIDATION.TITLE.PATTERN": "The title may not contain line breakings.",
 	"APP.ENTRIES.FORM.LABEL.VALIDATION.TITLE.REQUIRED": "You have to enter a title.",
+	"APP.ENTRIES.FORM.OPTIONS.FORMATS": "{{ format }} (plugin: {{ plugin }})",
 	"APP.ENTRIES.FORM.PLACEHOLDER.APPLICATION": "Enter the application name",
 	"APP.ENTRIES.FORM.PLACEHOLDER.CONFIGURATION.FORMAT": "Select format",
 	"APP.ENTRIES.FORM.PLACEHOLDER.CONFIGURATION.VALUE": "You can also paste a configuration snippet here...",

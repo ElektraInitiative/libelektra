@@ -171,7 +171,7 @@
 					<select id="config_format" name="config_format" class="form-control"
 						   ng-model="entry.configuration.format"
 						   required
-						   ng-options="row.format + ' (' + row.plugin + ')' for row in formats"></select>
+						   ng-options="'APP.ENTRIES.FORM.OPTIONS.FORMATS' | translate:row for row in formats"></select>
 					<div ng-show="entryForm.config_format.$invalid && entryForm.config_format.$dirty">
 						<span class="help-block mt5 ml10" ng-messages="entryForm.config_format.$error">
 							<i class="fa fa-times"></i>
