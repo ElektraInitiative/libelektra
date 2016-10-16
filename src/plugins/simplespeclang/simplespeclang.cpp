@@ -41,6 +41,11 @@ std::string getConfigAssign (Plugin * handle)
 	return keyString (k);
 }
 
+bool startsWith (std::string const & str, std::string const & start)
+{
+	return std::equal (start.begin (), start.end (), str.begin ());
+}
+
 int serialise (std::ostream & os, ckdb::Key * parentKey, ckdb::KeySet * ks, Plugin * handle)
 {
 	ckdb::Key * cur;
@@ -56,7 +61,10 @@ int serialise (std::ostream & os, ckdb::Key * parentKey, ckdb::KeySet * ks, Plug
 		os << getConfigAssign (handle);
 		while ((meta = keyNextMeta (cur)))
 		{
-			os << " " << ckdb::keyString (meta);
+			if (startsWith (keyName (meta), "check/enum/#"))
+			{
+				os << " " << ckdb::keyString (meta);
+			}
 		}
 		os << "\n";
 	}
@@ -130,11 +138,9 @@ int unserialise (std::istream & is, ckdb::Key * errorKey, ckdb::KeySet * ks, Plu
 			}
 		}
 
-		keySetMeta (cur, "require", "yes");
-		// keySetMeta (cur, "required", "yes"); // seems to have wrong semantics
-		keySetMeta (cur, "conflict/get/missing", "ERROR");
+		keySetMeta (cur, "require", "1");
 		keySetMeta (cur, "conflict/set/missing", "ERROR");
-		keySetMeta (cur, "mandatory", "yes"); // TODO bug: required key removed by spec?
+		keySetMeta (cur, "mandatory", "1");
 
 		ckdb::ksAppendKey (ks, cur);
 	}
@@ -179,7 +185,7 @@ int elektraSimplespeclangGet (Plugin * handle, KeySet * returned ELEKTRA_UNUSED,
 
 int elektraSimplespeclangSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
 {
-	// ELEKTRA_LOG (ELEKTRA_LOG_MODULE_DUMP, "opening file %s", keyString (parentKey));
+	ELEKTRA_LOG ("opening file %s", keyString (parentKey));
 	std::ofstream ofs (keyString (parentKey), std::ios::binary);
 	if (!ofs.is_open ())
 	{
