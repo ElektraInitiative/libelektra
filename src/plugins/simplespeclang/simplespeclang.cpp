@@ -131,6 +131,7 @@ int unserialise (std::istream & is, ckdb::Key * errorKey, ckdb::KeySet * ks, Plu
 		}
 
 		keySetMeta (cur, "required", "yes"); // TODO bug: required key removed by spec?
+		keySetMeta (cur, "require", "yes");
 		keySetMeta (cur, "mandatory", "yes");
 
 		ckdb::ksAppendKey (ks, cur);
