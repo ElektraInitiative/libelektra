@@ -23,9 +23,9 @@ MetaSetCommand::MetaSetCommand ()
 
 int MetaSetCommand::execute (Cmdline const & cl)
 {
-	if (cl.arguments.size () != 3)
+	if (cl.arguments.size () < 2 || cl.arguments.size () > 3)
 	{
-		throw invalid_argument ("Need 3 arguments");
+		throw invalid_argument ("Need 2 or 3 arguments");
 	}
 	string metaname = cl.arguments[1];
 
@@ -58,18 +58,25 @@ int MetaSetCommand::execute (Cmdline const & cl)
 		return 1;
 	}
 
-	std::string metavalue = cl.arguments[2];
-	if (metaname == "atime" || metaname == "mtime" || metaname == "ctime")
+	if (cl.arguments.size () == 2)
 	{
-		stringstream str (metavalue);
-		time_t t;
-		str >> t;
-		if (!str.good ()) throw "conversion failure";
-		k.setMeta<time_t> (metaname, t);
+		k.delMeta (metaname);
 	}
 	else
 	{
-		k.setMeta<string> (metaname, metavalue);
+		std::string metavalue = cl.arguments[2];
+		if (metaname == "atime" || metaname == "mtime" || metaname == "ctime")
+		{
+			stringstream str (metavalue);
+			time_t t;
+			str >> t;
+			if (!str.good ()) throw "conversion failure";
+			k.setMeta<time_t> (metaname, t);
+		}
+		else
+		{
+			k.setMeta<string> (metaname, metavalue);
+		}
 	}
 
 	kdb.set (conf, parentKey);
