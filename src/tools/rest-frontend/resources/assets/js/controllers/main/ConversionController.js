@@ -25,6 +25,12 @@
 			}
 		};
 		$scope.formats = formats;
+		$scope.formatsInput = formats.filter(function(elem) {
+			return (elem.plugin.statuses.indexOf("writeonly") !== -1) ? false : true;
+		});
+		$scope.formatsOutput = formats.filter(function(elem) {
+			return (elem.plugin.statuses.indexOf("readonly") !== -1) ? false : true;
+		});
 		$scope.lastError = '';
 
 		this.doConversion = function() {
@@ -33,8 +39,8 @@
 
 			var request = {};
 			angular.copy($scope.parameters, request);
-			request.input.format = $scope.parameters.input.format.plugin;
-			request.output.format = $scope.parameters.output.format.plugin;
+			request.input.format = $scope.parameters.input.format.plugin.name;
+			request.output.format = $scope.parameters.output.format.plugin.name;
 			delete request.output.snippet;
 			delete request.output.validated;
 
@@ -61,8 +67,8 @@
 		};
 
 		this.clearFields = function() {
-			$scope.parameters.input.format = $scope.formats[0];
-			$scope.parameters.output.format = $scope.formats[0];
+			$scope.parameters.input.format = $scope.formatsInput[0];
+			$scope.parameters.output.format = $scope.formatsOutput[0];
 			$scope.parameters.input.snippet = '';
 			$scope.parameters.output.snippet = '';
 			$scope.parameters.output.validated = false;
@@ -76,10 +82,10 @@
 						'## Used plugins\n' +
 						'```\n' +
 						'Input:\n' +
-						'- Plugin: ' + $scope.parameters.input.format.plugin + '\n' +
+						'- Plugin: ' + $scope.parameters.input.format.plugin.name + '\n' +
 						'- Format: ' + $scope.parameters.input.format.format + '\n' +
 						'Output:\n' +
-						'- Plugin: ' + $scope.parameters.output.format.plugin + '\n' +
+						'- Plugin: ' + $scope.parameters.output.format.plugin.name + '\n' +
 						'- Format: ' + $scope.parameters.output.format.format + '\n' +
 						'```\n\n' +
 						'## Input configuration\n' +

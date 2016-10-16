@@ -37,7 +37,7 @@
             tmp.tags = $scope.entry.tags.map(function(elem){
                 return elem.text;
             });
-			tmp.configuration.format = $scope.entry.configuration.format.plugin;
+			tmp.configuration.format = $scope.entry.configuration.format.plugin.name;
 
             EntryService.update(entry.key.full, tmp).then(function(response) {
                 Logger.info('Update entry result: ' + JSON.stringify(response.data));

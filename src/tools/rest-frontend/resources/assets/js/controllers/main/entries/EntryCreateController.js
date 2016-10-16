@@ -32,7 +32,7 @@
             tmp.tags = $scope.entry.tags.map(function(elem){
                 return elem.text;
             });
-			tmp.configuration.format = $scope.entry.configuration.format.plugin;
+			tmp.configuration.format = $scope.entry.configuration.format.plugin.name;
 
             EntryService.create(tmp).then(function(response) {
                 Logger.info('Create entry result: ' + JSON.stringify(response.data));

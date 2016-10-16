@@ -18,7 +18,8 @@
 							<select id="input_format" name="input_format" class="form-control"
 									ng-model="parameters.input.format"
 									required
-									ng-options="'APP.CONVERSION.FORM.OPTIONS.FORMATS' | translate:row for row in formats"></select>
+								ng-options="'APP.CONVERSION.FORM.OPTIONS.FORMATS' | translate:row for row in formatsInput">
+							</select>
 							<div ng-show="convertForm.input_format.$invalid && convertForm.input_format.$dirty">
 								<span class="help-block mt5 ml10" ng-messages="convertForm.input_format.$error">
 									<i class="fa fa-times"></i>
@@ -34,7 +35,8 @@
 							</label>
 							<textarea id="input_snippet" name="input_snippet" class="form-control"
 									  ng-model="parameters.input.snippet"
-									  rows="13" required></textarea>
+									  ng-disabled="parameters.input.format.format === 'info'"
+									  rows="13" ng-required="parameters.input.format.format !== 'info'"></textarea>
 							<div ng-show="convertForm.input_snippet.$invalid && convertForm.input_snippet.$dirty">
 								<span class="help-block mt5 ml10" ng-messages="convertForm.input_snippet.$error">
 									<i class="fa fa-times"></i>
@@ -53,7 +55,7 @@
 							<select id="output_format" name="output_format" class="form-control"
 									ng-model="parameters.output.format"
 									required
-									ng-options="'APP.CONVERSION.FORM.OPTIONS.FORMATS' | translate:row for row in formats">
+									ng-options="'APP.CONVERSION.FORM.OPTIONS.FORMATS' | translate:row for row in formatsOutput">
 							</select>
 							<div ng-show="convertForm.output_format.$invalid && convertForm.output_format.$dirty">
 								<span class="help-block mt5 ml10" ng-messages="convertForm.output_format.$error">
