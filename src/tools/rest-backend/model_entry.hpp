@@ -7,9 +7,11 @@
 #include <string>
 #include <vector>
 
+#include <boost/algorithm/string/classification.hpp>
 #include <boost/algorithm/string/compare.hpp>
 #include <boost/algorithm/string/join.hpp>
 #include <boost/algorithm/string/predicate.hpp>
+#include <boost/algorithm/string/split.hpp>
 #include <boost/tokenizer.hpp>
 
 #include "config.hpp"
@@ -121,10 +123,8 @@ public:
 	std::vector<std::string> getPublicNameParts () const
 	{
 		std::vector<std::string> result;
-		boost::char_separator<char> sep{ "/" };
-		boost::tokenizer<boost::char_separator<char>> tokens{ this->getPublicName (), sep };
-		for (const auto & t : tokens)
-			result.push_back (t);
+		std::string publicName = this->getPublicName ();
+		boost::split (result, publicName, boost::is_any_of("/"));
 		return result;
 	}
 	/**

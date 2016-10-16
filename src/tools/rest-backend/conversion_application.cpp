@@ -170,7 +170,13 @@ void ConversionApp::formats ()
 		for (auto & elem : service::ConvertEngine::instance ().getEnabledFormats ())
 		{
 			data[index]["format"] = elem.getFileformat ();
-			data[index]["plugin"] = elem.getPluginname ();
+			data[index]["plugin"]["name"] = elem.getPluginname ();
+			int indexStatus = 0;
+			for (auto & stat : elem.getPluginstatuses ())
+			{
+				data[index]["plugin"]["statuses"][indexStatus] = stat;
+				indexStatus++;
+			}
 			index++;
 		}
 

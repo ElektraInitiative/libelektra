@@ -2,6 +2,7 @@
 #define ELEKTRA_REST_MODEL_PLUGINFORMAT_HEADER_GUARD
 
 #include <string>
+#include <vector>
 
 #include "exceptions.hpp"
 #include "kdb_includes.hpp"
@@ -28,6 +29,7 @@ public:
 	{
 		m_fileformat = pf.m_fileformat;
 		m_pluginname = pf.m_pluginname;
+		m_pluginstatuses = std::vector<std::string> (pf.m_pluginstatuses);
 	}
 	/**
                  * Constructor based on a string containing both relevant
@@ -35,8 +37,9 @@ public:
                  * of the format "fileformat:pluginname".
                  * @param both The string containing both fileformat and
                  *      pluginname
+				 * @param statuses A vector containing plugin statuses
                  */
-	inline PluginFormat (const std::string & both)
+	inline PluginFormat (const std::string & both, const std::vector<std::string> statuses = std::vector<std::string> ())
 	{
 		std::size_t splitIndex = both.find (":");
 		if (splitIndex == std::string::npos)
@@ -51,13 +54,16 @@ public:
 		{
 			throw kdbrest::exception::FileformatPluginException ("Neither format, nor plugin may be empty.");
 		}
+		m_pluginstatuses = statuses;
 	}
 	/**
                  * Constructor based on the format and the pluginname.
                  * @param format The fileformat as string (e.g. ini, xml)
                  * @param plugin The pluginname as string (e.g. ni, xmltool)
+				 * @param statuses The plugin statuses as vector (e.g. maintained, limited)
                  */
-	inline PluginFormat (const std::string & format, const std::string & plugin)
+	inline PluginFormat (const std::string & format, const std::string & plugin,
+			const std::vector<std::string> statuses = std::vector<std::string> ())
 	{
 		if (format.empty () || plugin.empty ())
 		{
@@ -65,6 +71,7 @@ public:
 		}
 		m_fileformat = std::string (format);
 		m_pluginname = std::string (plugin);
+		m_pluginstatuses = statuses;
 	}
 
 	/**
@@ -85,9 +92,19 @@ public:
 		return m_pluginname;
 	}
 
+	/**
+	 * Getter for the plugin statuses as vector.
+	 * @return All plugin statuses in a vector
+	 */
+	std::vector<std::string> getPluginstatuses ()
+	{
+		return m_pluginstatuses;
+	}
+
 private:
 	std::string m_fileformat;
 	std::string m_pluginname;
+	std::vector<std::string> m_pluginstatuses;
 };
 
 } // namespace model

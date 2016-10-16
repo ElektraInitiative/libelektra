@@ -3,7 +3,9 @@
 #include <iostream>
 #include <sstream>
 
+#include <boost/algorithm/string/classification.hpp>
 #include <boost/algorithm/string/predicate.hpp>
+#include <boost/algorithm/string/split.hpp>
 #include <boost/filesystem.hpp>
 
 #include "modules.hpp"
@@ -35,7 +37,10 @@ model::PluginFormat ConvertEngine::findSuitablePlugin (const std::string & forma
 	try
 	{
 		PluginSpec plugin = db.lookupProvides (format);
-		return model::PluginFormat (format, plugin.getName ());
+		std::string statusString = db.lookupInfo (plugin, "status");
+		std::vector<std::string> statuses;
+		boost::split (statuses, statusString, boost::is_any_of(" "));
+		return model::PluginFormat (format, plugin.getName (), statuses);
 	}
 	catch (kdb::tools::NoPlugin & e)
 	{
@@ -66,6 +71,7 @@ std::vector<model::PluginFormat> ConvertEngine::loadEnabledFormats ()
 	std::vector<model::PluginFormat> result;
 	for (auto & plugin : plugins)
 	{
+		// find format
 		std::string provides = db.lookupInfo (plugin, "provides");
 		std::stringstream ss (provides);
 		std::string provider;
@@ -78,7 +84,12 @@ std::vector<model::PluginFormat> ConvertEngine::loadEnabledFormats ()
 				break;
 			}
 		}
-		result.push_back (model::PluginFormat (format, plugin.getName ()));
+		// find statuses
+		std::string statusString = db.lookupInfo (plugin, "status");
+		std::vector<std::string> statuses;
+		boost::split (statuses, statusString, boost::is_any_of(" "));
+		// push plugin to result list
+		result.push_back (model::PluginFormat (format, plugin.getName (), statuses));
 	}
 
 	return result;
