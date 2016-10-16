@@ -53,12 +53,28 @@ int serialise (std::ostream & os, ckdb::Key * parentKey, ckdb::KeySet * ks, Plug
 	ksRewind (ks);
 	while ((cur = ksNext (ks)) != nullptr)
 	{
-		const ckdb::Key * meta = ckdb::keyGetMeta (cur, "check/enum");
+		const ckdb::Key * meta = 0;
+		if (!keyCmp (cur, parentKey))
+		{
+			meta = keyGetMeta (cur, "mountpoint");
+			if (meta)
+			{
+				os << "mountpoint " << keyString (meta) << "\n";
+			}
+			meta = keyGetMeta (cur, "infos/plugins");
+			if (meta)
+			{
+				os << "plugins " << keyString (meta) << "\n";
+			}
+			continue;
+		}
+		meta = ckdb::keyGetMeta (cur, "check/enum");
 		if (!meta) continue;
 
 		os << getConfigEnum (handle) << " ";
 		os << elektraKeyGetRelativeName (cur, parentKey) << " ";
 		os << getConfigAssign (handle);
+		keyRewindMeta (cur);
 		while ((meta = keyNextMeta (cur)))
 		{
 			if (startsWith (keyName (meta), "check/enum/#"))
