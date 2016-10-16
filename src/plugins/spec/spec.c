@@ -609,8 +609,7 @@ static void copyMeta (Key * key, Key * specKey, Key * parentKey ELEKTRA_UNUSED)
 	{
 		const Key * meta = keyCurrentMeta (specKey);
 		const char * name = keyName (meta);
-		if (!(!strcmp (name, "array") || !strcmp (name, "required") || !strncmp (name, "conflict/", 9) ||
-		      !strcmp (name, "require")))
+		if (!(!strncmp (name, "internal/", 9) || !strncmp (name, "conflict/", 9)))
 		{
 			const Key * oldMeta;
 			if ((oldMeta = keyGetMeta (key, name)) != NULL)
