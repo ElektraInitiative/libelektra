@@ -3,24 +3,27 @@
   overflow-y: hidden;
 }
 
-.tree-view_item {
+.tree-view-item {
   /* immediate child of .tree-view, for styling convenience */
 }
 
 /* style for the children nodes container */
-.tree-view_children {
+.tree-view-children {
   margin-left: 16px;
 }
 
-.tree-view_children-collapsed {
+/* style for collapsed children nodes */
+.tree-view-children-collapsed {
   height: 0px;
 }
 
-.tree-view_arrow, .tree-view_haschildren {
+/* show pointer mouse cursor when hovering over item that has children (or the arrow next to it) */
+.tree-view-arrow, .tree-view-haschildren {
   cursor: pointer;
 }
 
-.tree-view_arrow {
+/* style of the arrow next to a node with children */
+.tree-view-arrow {
   margin-right: 6px;
   display: inline-block;
   -webkit-user-select: none;
@@ -29,12 +32,13 @@
   user-select: none;
 }
 
-.tree-view_arrow:after {
+/* display triangle (opened node) */
+.tree-view-arrow:after {
   content: '▾';
 }
 
 /* rotate the triangle to close it */
-.tree-view_arrow-collapsed {
+.tree-view-arrow-collapsed {
   -webkit-transform: rotate(-90deg);
   -moz-transform: rotate(-90deg);
   -ms-transform: rotate(-90deg);
