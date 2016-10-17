@@ -32,6 +32,8 @@ const set = (host, path, value) =>
 
 const rm = (host, path) =>
   fetch(`${host}/kdb/${encodePath(path)}`, { method: 'DELETE' })
-    .then(res => res.json())
+    .then(res => {
+      return { status: res.status }
+    })
 
 export default { version, get, set, rm }

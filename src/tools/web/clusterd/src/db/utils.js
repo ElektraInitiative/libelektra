@@ -5,6 +5,9 @@ const ROOT_PATH = 'user/sw/elektra/web/#0/current'
 export const path = (path) =>
   ROOT_PATH + '/' + path
 
+export const virtualKdb = (clusterId, kdbPath) =>
+  path(`vkdb/${clusterId}${kdbPath ? '/' + kdbPath : ''}`)
+
 export const findById = (id) =>
   elements => elements.find(
     element => element.id === id

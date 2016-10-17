@@ -6,3 +6,5 @@ export {
   getClusters, createCluster, getCluster, updateCluster, deleteCluster,
   getClusterInstances, addInstanceToCluster, removeInstanceFromCluster
 } from './clusters'
+
+export { virtualKdb } from './utils'

@@ -100,5 +100,17 @@ const _import = (path, value) =>
     escapeValues`kdb import ${path} yajl`
   ).then(result => _export(path))
 
+
+const getAndLs = (path) =>
+  Promise.all(
+    [ ls(path), get(path) ] // execute ls and get in parallel
+  ).then(([ lsRes, value ]) => {
+    if (lsRes) {
+      return { ls: lsRes, value } // return results as object
+    }
+  })
+
 // export kdb functions as `kdb` object
-module.exports = { version, ls, get, set, rm, export: _export, import: _import }
+module.exports = {
+  version, ls, get, getAndLs, set, rm, export: _export, import: _import
+}
