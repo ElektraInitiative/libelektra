@@ -107,6 +107,7 @@ if (BINDINGS MATCHES "ALL")
 		jna
 		)
 	set (BINDINGS_FORCE FORCE)
+	list (REMOVE_ITEM BINDINGS ALL)
 endif()
 
 set (BINDINGS_DOC "Which bindings should be added? ALL for all available, SWIG, GI for plugins based on respective technology, DEFAULT for minimal set.")
@@ -160,6 +161,7 @@ if (TOOLS MATCHES "ALL")
 		qt-gui
 		)
 	set (TOOLS_FORCE FORCE)
+	list (REMOVE_ITEM TOOLS ALL)
 endif ()
 
 set (TOOLS_DOC "Which TOOLS should be added? ALL for all available, NODEP for TOOLS without additional dependencies, DEFAULT for minimal set.")
