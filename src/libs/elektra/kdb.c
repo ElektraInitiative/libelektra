@@ -307,9 +307,6 @@ KDB * kdbOpen (Key * errorKey)
 	{
 		// elektraMountGlobals also sets a warning containing the name of the plugin that failed to load
 		ELEKTRA_ADD_WARNING (139, errorKey, "Mounting global plugins failed");
-
-		// TODO: avoid such double logging, maybe add general logging for every ELEKTRA_ADD_WARNING?
-		ELEKTRA_LOG_WARNING ("Mounting global plugins failed");
 	}
 
 	keySetName (errorKey, keyName (initialParent));
@@ -520,7 +517,6 @@ static int elektraGetDoUpdate (Split * split, Key * parentKey)
 		for (size_t p = 1; p < NR_OF_PLUGINS; ++p)
 		{
 			int ret = 0;
-			// TODO backend->getplugins[p]->kdbGet should be assert
 			if (backend->getplugins[p] && backend->getplugins[p]->kdbGet)
 			{
 				ret = backend->getplugins[p]->kdbGet (backend->getplugins[p], split->keysets[i], parentKey);
@@ -613,7 +609,6 @@ static int elektraGetDoUpdateWithGlobalHooks (KDB * handle, Split * split, KeySe
 				keySetName (parentKey, keyName (split->parents[i]));
 			}
 
-			// TODO backend->getplugins[p]->kdbGet should be assert
 			if (backend->getplugins[p] && backend->getplugins[p]->kdbGet)
 			{
 				if (p <= STORAGE_PLUGIN)
