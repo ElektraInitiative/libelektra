@@ -100,7 +100,7 @@ const _import = (path, value) =>
     escapeValues`kdb import ${path} yajl`
   ).then(result => _export(path))
 
-
+// get value and available paths under a given `path`
 const getAndLs = (path) =>
   Promise.all(
     [ ls(path), get(path) ] // execute ls and get in parallel

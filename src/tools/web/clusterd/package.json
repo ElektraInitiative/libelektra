@@ -6,13 +6,14 @@
   "scripts": {
     "start": "npm run build && npm run start:prod",
     "start:verbose": "npm run build && npm run start:prod:verbose",
-    "build": "babel -d build/ src/",
-    "start:prod": "cross-env DEBUG=clusterd:*,-*debug,-*log node build/",
-    "start:prod:verbose": "cross-env DEBUG=clusterd:* node build/",
+    "build": "babel -d build/ src/ && cd ../client && npm run build",
+    "start:prod": "cross-env NODE_ENV=production DEBUG=clusterd:*,-*debug,-*log node build/",
+    "start:prod:verbose": "cross-env NODE_ENV=production DEBUG=clusterd:* node build/",
     "start:dev": "cross-env NODE_ENV=development DEBUG=clusterd:* babel-watch src/",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
+    "babel-loader": "^6.2.5",
     "body-parser": "^1.15.2",
     "cors": "^2.8.1",
     "debug-dude": "^1.0.3",

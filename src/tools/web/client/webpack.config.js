@@ -1,15 +1,14 @@
 var webpack = require('webpack')
-var DashboardPlugin = require('webpack-dashboard/plugin')
+var path = require('path')
 
 module.exports = {
+  context: __dirname,
   entry: [
-    'webpack-dev-server/client?http://0.0.0.0:8080', // WebpackDevServer host and port
     'webpack/hot/only-dev-server', // "only" prevents reload on syntax errors
-    './src/index.js',
+    path.join(__dirname, '/src/index.js'),
   ],
-  output: { path: __dirname, filename: 'elektra-web.js' },
+  output: { path: path.join(__dirname, '/dist'), filename: 'elektra-web.js' },
   plugins: [
-    new DashboardPlugin(),
     new webpack.HotModuleReplacementPlugin(),
   ],
   module: {

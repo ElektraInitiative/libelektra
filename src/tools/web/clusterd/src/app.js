@@ -1,19 +1,21 @@
 import express from 'express'
 import bodyParser from 'body-parser'
-import cors from 'cors'
+import serveClient from './serveClient'
+import path from 'path'
 
 import initRoutes from './routes'
-
-const PORT = 1235
+import { PORT } from './constants'
 
 export default function initApp (cb) {
   const app = express()
+
   app.use(bodyParser.json())
   app.use(bodyParser.urlencoded({ extended: true }))
   app.use(bodyParser.text()) // for kdb commands
-  app.use(cors()) // TODO: don't use cors, serve client from clusterd
 
   initRoutes(app)
+
+  app.use(serveClient({ path: path.join(__dirname, '/../../client') }))
 
   app.listen(PORT, () => cb(PORT))
 }

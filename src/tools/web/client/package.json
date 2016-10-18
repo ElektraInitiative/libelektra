@@ -4,8 +4,8 @@
   "description": "",
   "main": "src/index.js",
   "scripts": {
-    "start": "npm run web",
-    "web": "webpack-dashboard -c green -- webpack-dev-server",
+    "build": "webpack && npm run build:assets",
+    "build:assets": "cp index.html dist/ && cp -r css dist/",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
@@ -28,7 +28,7 @@
     "redux-devtools": "^3.3.1",
     "redux-devtools-inspector": "^0.8.0",
     "webpack": "^1.13.2",
-    "webpack-dashboard": "^0.1.8",
-    "webpack-dev-server": "^1.15.1"
+    "webpack-dev-middleware": "^1.8.4",
+    "webpack-hot-middleware": "^2.13.0"
   }
 }
