@@ -1,0 +1,577 @@
+[{
+		"name": "Documentation",
+		"type": "submenu",
+		"children": [{
+				"name": "Getting started",
+				"type": "listfiles",
+				"children": [{
+						"name": "Compiling",
+						"type": "file",
+						"options": {
+							"path": "doc/COMPILE.md"
+						}
+					}, {
+						"name": "Installation",
+						"type": "file",
+						"options": {
+							"path": "doc/INSTALL.md"
+						}
+					}]
+			}, {
+				"name": "Tutorials",
+				"type": "listfiles",
+				"children": [{
+						"name": "application integration",
+						"type": "file",
+						"options": {
+							"path": "doc/tutorials/application-integration.md"
+						}
+					}, {
+						"name": "cascading",
+						"type": "file",
+						"options": {
+							"path": "doc/tutorials/cascading.md"
+						}
+					}, {
+						"name": "compilation variants",
+						"type": "file",
+						"options": {
+							"path": "doc/tutorials/compilation-variants.md"
+						}
+					}, {
+						"name": "elektra merge-integration",
+						"type": "file",
+						"options": {
+							"path": "doc/tutorials/elektra-merge-integration.md"
+						}
+					}, {
+						"name": "export dump",
+						"type": "file",
+						"options": {
+							"path": "doc/tutorials/export-dump.md"
+						}
+					}, {
+						"name": "export",
+						"type": "file",
+						"options": {
+							"path": "doc/tutorials/export.md"
+						}
+					}, {
+						"name": "import",
+						"type": "file",
+						"options": {
+							"path": "doc/tutorials/import.md"
+						}
+					}, {
+						"name": "merge",
+						"type": "file",
+						"options": {
+							"path": "doc/tutorials/merge.md"
+						}
+					}, {
+						"name": "namespaces",
+						"type": "file",
+						"options": {
+							"path": "doc/tutorials/namespaces.md"
+						}
+					}, {
+						"name": "plugins",
+						"type": "file",
+						"options": {
+							"path": "doc/tutorials/plugins.md"
+						}
+					}, {
+						"name": "python kdb",
+						"type": "file",
+						"options": {
+							"path": "doc/tutorials/python-kdb.md"
+						}
+					}]
+			}, {
+				"name": "Plugins",
+				"type": "listfiles",
+				"children": [{
+						"name": "Resolver",
+						"type": "section"
+					}, {
+						"name": "resolver",
+						"type": "file",
+						"options": {
+							"path": "src/plugins/resolver/README.md"
+						}
+					}, {
+						"name": "wresolver",
+						"type": "file",
+						"options": {
+							"path": "src/plugins/wresolver/README.md"
+						}
+					}, {
+						"name": "noresolver",
+						"type": "file",
+						"options": {
+							"path": "src/plugins/noresolver/README.md"
+						}
+					}, {
+						"name": "gitresolver",
+						"type": "file",
+						"options": {
+							"path": "src/plugins/gitresolver/README.md"
+						}
+					}, {
+						"name": "curlget",
+						"type": "file",
+						"options": {
+							"path": "src/plugins/curlget/README.md"
+						}
+					}, {
+						"name": "blockresolver",
+						"type": "file",
+						"options": {
+							"path": "src/plugins/blockresolver/README.md"
+						}
+					}, {
+						"name": "sync",
+						"type": "file",
+						"options": {
+							"path": "src/plugins/sync/README.md"
+						}
+					}, {
+						"name": "Storage",
+						"type": "section"
+					}, {
+						"name": "dump",
+						"type": "file",
+						"options": {
+							"path": "src/plugins/dump/README.md"
+						}
+					}, {
+						"name": "augeas",
+						"type": "file",
+						"options": {
+							"path": "src/plugins/augeas/README.md"
+						}
+					}, {
+						"name": "hosts",
+						"type": "file",
+						"options": {
+							"path": "src/plugins/hosts/README.md"
+						}
+					}, {
+						"name": "line",
+						"type": "file",
+						"options": {
+							"path": "src/plugins/line/README.md"
+						}
+					}, {
+						"name": "tcl",
+						"type": "file",
+						"options": {
+							"path": "src/plugins/tcl/README.md"
+						}
+					}, {
+						"name": "ni",
+						"type": "file",
+						"options": {
+							"path": "src/plugins/ni/README.md"
+						}
+					}, {
+						"name": "ini",
+						"type": "file",
+						"options": {
+							"path": "src/plugins/ini/README.md"
+						}
+					}, {
+						"name": "xmltool",
+						"type": "file",
+						"options": {
+							"path": "src/plugins/xmltool/README.md"
+						}
+					}, {
+						"name": "yajl",
+						"type": "file",
+						"options": {
+							"path": "src/plugins/yajl/README.md"
+						}
+					}, {
+						"name": "fstab",
+						"type": "file",
+						"options": {
+							"path": "src/plugins/fstab/README.md"
+						}
+					}, {
+						"name": "regexstore",
+						"type": "file",
+						"options": {
+							"path": "src/plugins/regexstore/README.md"
+						}
+					}, {
+						"name": "simpleini",
+						"type": "file",
+						"options": {
+							"path": "src/plugins/simpleini/README.md"
+						}
+					}, {
+						"name": "csvstorage",
+						"type": "file",
+						"options": {
+							"path": "src/plugins/csvstorage/README.md"
+						}
+					}, {
+						"name": "passwd",
+						"type": "file",
+						"options": {
+							"path": "src/plugins/passwd/README.md"
+						}
+					}, {
+						"name": "dpkg",
+						"type": "file",
+						"options": {
+							"path": "src/plugins/dpkg/README.md"
+						}
+					}, {
+						"name": "mozprefs",
+						"type": "file",
+						"options": {
+							"path": "src/plugins/mozprefs/README.md"
+						}
+					}, {
+						"name": "c",
+						"type": "file",
+						"options": {
+							"path": "src/plugins/c/README.md"
+						}
+					}, {
+						"name": "System Information",
+						"type": "section"
+					}, {
+						"name": "constants",
+						"type": "file",
+						"options": {
+							"path": "src/plugins/constants/README.md"
+						}
+					}, {
+						"name": "desktop",
+						"type": "file",
+						"options": {
+							"path": "src/plugins/desktop/README.md"
+						}
+					}, {
+						"name": "uname",
+						"type": "file",
+						"options": {
+							"path": "src/plugins/uname/README.md"
+						}
+					}, {
+						"name": "Filter",
+						"type": "section"
+					}, {
+						"name": "cachefilter",
+						"type": "file",
+						"options": {
+							"path": "src/plugins/cachefilter/README.md"
+						}
+					}, {
+						"name": "Encoding",
+						"type": "section"
+					}, {
+						"name": "ccode",
+						"type": "file",
+						"options": {
+							"path": "src/plugins/ccode/README.md"
+						}
+					}, {
+						"name": "hexcode",
+						"type": "file",
+						"options": {
+							"path": "src/plugins/hexcode/README.md"
+						}
+					}, {
+						"name": "base64",
+						"type": "file",
+						"options": {
+							"path": "src/plugins/base64/README.md"
+						}
+					}, {
+						"name": "keytometa",
+						"type": "file",
+						"options": {
+							"path": "src/plugins/keytometa/README.md"
+						}
+					}, {
+						"name": "rename",
+						"type": "file",
+						"options": {
+							"path": "src/plugins/rename/README.md"
+						}
+					}, {
+						"name": "boolean",
+						"type": "file",
+						"options": {
+							"path": "src/plugins/boolean/README.md"
+						}
+					}, {
+						"name": "crypto",
+						"type": "file",
+						"options": {
+							"path": "src/plugins/crypto/README.md"
+						}
+					}, {
+						"name": "iconv",
+						"type": "file",
+						"options": {
+							"path": "src/plugins/iconv/README.md"
+						}
+					}, {
+						"name": "hidden",
+						"type": "file",
+						"options": {
+							"path": "src/plugins/hidden/README.md"
+						}
+					}, {
+						"name": "null",
+						"type": "file",
+						"options": {
+							"path": "src/plugins/null/README.md"
+						}
+					}, {
+						"name": "Notification and Logging",
+						"type": "section"
+					}, {
+						"name": "dbus",
+						"type": "file",
+						"options": {
+							"path": "src/plugins/dbus/README.md"
+						}
+					}, {
+						"name": "journald",
+						"type": "file",
+						"options": {
+							"path": "src/plugins/journald/README.md"
+						}
+					}, {
+						"name": "syslog",
+						"type": "file",
+						"options": {
+							"path": "src/plugins/syslog/README.md"
+						}
+					}, {
+						"name": "logchange",
+						"type": "file",
+						"options": {
+							"path": "src/plugins/logchange/README.md"
+						}
+					}, {
+						"name": "Debug",
+						"type": "section"
+					}, {
+						"name": "timeofday",
+						"type": "file",
+						"options": {
+							"path": "src/plugins/timeofday/README.md"
+						}
+					}, {
+						"name": "tracer",
+						"type": "file",
+						"options": {
+							"path": "src/plugins/tracer/README.md"
+						}
+					}, {
+						"name": "counter",
+						"type": "file",
+						"options": {
+							"path": "src/plugins/counter/README.md"
+						}
+					}, {
+						"name": "Checker",
+						"type": "section"
+					}, {
+						"name": "glob",
+						"type": "file",
+						"options": {
+							"path": "src/plugins/glob/README.md"
+						}
+					}, {
+						"name": "struct",
+						"type": "file",
+						"options": {
+							"path": "src/plugins/struct/README.md"
+						}
+					}, {
+						"name": "spec",
+						"type": "file",
+						"options": {
+							"path": "src/plugins/spec/README.md"
+						}
+					}, {
+						"name": "validation",
+						"type": "file",
+						"options": {
+							"path": "src/plugins/validation/README.md"
+						}
+					}, {
+						"name": "network",
+						"type": "file",
+						"options": {
+							"path": "src/plugins/network/README.md"
+						}
+					}, {
+						"name": "path",
+						"type": "file",
+						"options": {
+							"path": "src/plugins/path/README.md"
+						}
+					}, {
+						"name": "type",
+						"type": "file",
+						"options": {
+							"path": "src/plugins/type/README.md"
+						}
+					}, {
+						"name": "enum",
+						"type": "file",
+						"options": {
+							"path": "src/plugins/enum/README.md"
+						}
+					}, {
+						"name": "mathcheck",
+						"type": "file",
+						"options": {
+							"path": "src/plugins/mathcheck/README.md"
+						}
+					}, {
+						"name": "conditionals",
+						"type": "file",
+						"options": {
+							"path": "src/plugins/conditionals/README.md"
+						}
+					}, {
+						"name": "filecheck",
+						"type": "file",
+						"options": {
+							"path": "src/plugins/filecheck/README.md"
+						}
+					}, {
+						"name": "Interpreter",
+						"type": "section"
+					}, {
+						"name": "jni",
+						"type": "file",
+						"options": {
+							"path": "src/plugins/jni/README.md"
+						}
+					}, {
+						"name": "python",
+						"type": "file",
+						"options": {
+							"path": "src/plugins/python/README.md"
+						}
+					}, {
+						"name": "python2",
+						"type": "file",
+						"options": {
+							"path": "src/plugins/python2/README.md"
+						}
+					}, {
+						"name": "lua",
+						"type": "file",
+						"options": {
+							"path": "src/plugins/lua/README.md"
+						}
+					}, {
+						"name": "shell",
+						"type": "file",
+						"options": {
+							"path": "src/plugins/shell/README.md"
+						}
+					}, {
+						"name": "Others",
+						"type": "section"
+					}, {
+						"name": "doc",
+						"type": "file",
+						"options": {
+							"path": "src/plugins/doc/README.md"
+						}
+					}, {
+						"name": "error",
+						"type": "file",
+						"options": {
+							"path": "src/plugins/error/README.md"
+						}
+					}, {
+						"name": "template",
+						"type": "file",
+						"options": {
+							"path": "src/plugins/template/README.md"
+						}
+					}, {
+						"name": "lineendings",
+						"type": "file",
+						"options": {
+							"path": "src/plugins/lineendings/README.md"
+						}
+					}, {
+						"name": "list",
+						"type": "file",
+						"options": {
+							"path": "src/plugins/list/README.md"
+						}
+					}, {
+						"name": "iterate",
+						"type": "file",
+						"options": {
+							"path": "src/plugins/iterate/README.md"
+						}
+					}, {
+						"name": "semlock",
+						"type": "file",
+						"options": {
+							"path": "src/plugins/semlock/README.md"
+						}
+					}, {
+						"name": "profile",
+						"type": "file",
+						"options": {
+							"path": "src/plugins/profile/README.md"
+						}
+					}]
+			}, {
+				"name": "Tools",
+				"type": "listfiles",
+				"children": [{
+						"name": "gen",
+						"type": "file",
+						"options": {
+							"path": "src/tools/gen/README.md"
+						}
+					}, {
+						"name": "qt gui",
+						"type": "file",
+						"options": {
+							"path": "src/tools/qt-gui/README.md"
+						}
+					}, {
+						"name": "rest frontend",
+						"type": "file",
+						"options": {
+							"path": "src/tools/rest-frontend/README.md"
+						}
+					}]
+			}]
+	}, {
+		"name": "Development",
+		"type": "submenu",
+		"children": [{
+				"name": "Build Server",
+				"type": "link",
+				"options": {
+					"path": "http://build.libelektra.org:8080"
+				}
+			}]
+	}, {
+		"name": "GitHub",
+		"type": "link",
+		"options": {
+			"path": "http://git.libelektra.org"
+		}
+	}]

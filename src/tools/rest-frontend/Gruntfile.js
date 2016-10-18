@@ -5,9 +5,18 @@ module.exports = function(grunt) {
     // Project configuration.
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
+        'create-website-structure': {
+            options: {
+
+            },
+            build: {
+				input: 'resources/structure.json.in',
+                output: 'resources/structure.json'
+            }
+		},
         jshint: {
             options: {
-                    reporter: require('jshint-stylish')
+                reporter: require('jshint-stylish')
             },
             build: ['Gruntfile.js', 'resources/assets/js/**/*.js']
         },
@@ -127,8 +136,10 @@ module.exports = function(grunt) {
 	grunt.loadNpmTasks('grunt-preprocess');
     grunt.loadNpmTasks('grunt-http-server');
 
+    grunt.loadTasks('./resources/grunt-tasks');
+
     grunt.registerTask('default', ['uglify']);
-    grunt.registerTask('full', ['less', 'cssmin', 'preprocess', 'uglify']);
+    grunt.registerTask('full', ['less', 'cssmin', 'preprocess', 'uglify', 'create-website-structure']);
     grunt.registerTask('server', ['http-server']);
 
 };

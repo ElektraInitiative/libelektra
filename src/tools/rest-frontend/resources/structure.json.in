@@ -1,0 +1,79 @@
+[
+	{
+		"name": "Documentation",
+		"type": "submenu",
+		"children": [
+			{
+				"name": "Getting started",
+				"type": "staticlist",
+				"children": [
+					{
+						"name": "Compiling",
+						"type": "staticfile",
+						"options": {
+							"path": "doc/COMPILE.md"
+						}
+					},
+					{
+						"name": "Installation",
+						"type": "staticfile",
+						"options": {
+							"path": "doc/INSTALL.md"
+						}
+					}
+				]
+			},
+			{
+				"name": "Tutorials",
+				"type": "listfiles",
+				"options": {
+					"path": "doc/tutorials",
+					"whitelist": [],
+					"blacklist": ["CMakeLists.txt"]
+				}
+			},
+			{
+				"name": "Plugins",
+				"type": "parsereadme",
+				"options": {
+					"path": "src/plugins/README.md",
+					"target_file": ["README.md", "README", "readme.md", "readme"],
+					"parsing": {
+						"start_regex": "# Plugins #",
+						"stop_regex": "####### UNUSED ######",
+						"section_regex": "## ([^#]+) ##",
+						"entry_regex": "\\- \\[(.+)\\]\\(([^\\)]+)\\)(.*)"
+					}
+				}
+			},
+			{
+				"name": "Tools",
+				"type": "listdirs",
+				"options": {
+					"path": "src/tools",
+					"target_file": ["README.md", "README", "readme.md", "readme"]
+				}
+			}
+		]
+	},
+	{
+		"name": "Development",
+		"type": "submenu",
+		"children": [
+			{
+				"name": "Build Server",
+				"type": "link",
+				"options": {
+					"path": "http://build.libelektra.org:8080"
+				}
+			}
+		]
+	},
+	{
+		"name": "GitHub",
+		"type": "link",
+		"options": {
+			"path": "http://git.libelektra.org"
+		}
+	}
+]
