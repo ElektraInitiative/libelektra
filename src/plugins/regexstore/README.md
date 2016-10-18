@@ -4,7 +4,7 @@
 - infos/needs =
 - infos/provides = storage
 - infos/placements = getstorage setstorage
-- infos/status = difficult preview unfinished
+- infos/status = difficult preview unfinished limited readonly
 - infos/description =
 
 ## Introduction ##

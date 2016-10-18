@@ -1,11 +1,11 @@
 - infos = Information about HOSTS plugin is in keys below
 - infos/author = Markus Raab <elektra@libelektra.org>
 - infos/licence = BSD
-- infos/provides = storage
+- infos/provides = storage/hosts
 - infos/needs =
 - infos/recommends = glob network
 - infos/placements = getstorage setstorage
-- infos/status = maintained unittest nodep libc
+- infos/status = maintained unittest nodep libc limited
 - infos/description = This plugin reads and writes /etc/hosts files.
 
 

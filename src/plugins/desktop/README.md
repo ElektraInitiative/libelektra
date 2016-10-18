@@ -2,10 +2,10 @@
 - infos/author = Name <name@libelektra.org>
 - infos/licence = BSD
 - infos/needs =
-- infos/provides = storage info
+- infos/provides = storage/info
 - infos/recommends =
 - infos/placements = getstorage setstorage
-- infos/status = recommended maintained specific nodep libc unfinished nodoc concept
+- infos/status = recommended maintained specific nodep libc unfinished nodoc concept limited readonly
 - infos/metadata =
 - infos/description =
 

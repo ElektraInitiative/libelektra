@@ -2,7 +2,7 @@
 - infos/author = Markus Raab <elektra@libelektra.org>
 - infos/licence = BSD
 - infos/needs =
-- infos/provides = storage
+- infos/provides = storage/dump
 - infos/recommends =
 - infos/placements = getstorage setstorage
 - infos/status = productive maintained conformant unittest tested nodep -1000

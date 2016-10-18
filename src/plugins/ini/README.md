@@ -1,7 +1,7 @@
 - infos = Information about ini plugin is in keys below
 - infos/author = Thomas Waser <thomas.waser@libelektra.org> Felix Berlakovich <elektra@berlakovich.net> 
 - infos/licence = BSD
-- infos/provides = storage
+- infos/provides = storage/ini
 - infos/needs =
 - infos/placements = getstorage setstorage
 - infos/status = maintained unittest nodep libc 1000 configurable

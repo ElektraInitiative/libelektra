@@ -147,10 +147,13 @@ function (plugin_check_if_included PLUGIN_SHORT_NAME)
 	STRING (REGEX REPLACE "- +infos/status *= *([-a-zA-Z0-9 ]*)" "\\1" CATEGORIES "${CATEGORIES}")
 	STRING (REGEX REPLACE " " ";" CATEGORIES "${CATEGORIES}")
 
-	STRING (REGEX MATCH "- +infos/provides *= *([a-zA-Z0-9 ]*)" PROVIDES "${contents}")
-	STRING (REGEX REPLACE "- +infos/provides *= *([a-zA-Z0-9 ]*)" "\\1" PROVIDES "${PROVIDES}")
+	STRING (REGEX MATCH "- +infos/provides *= *([a-zA-Z0-9/ ]*)" PROVIDES "${contents}")
+	STRING (REGEX REPLACE "- +infos/provides *= *([a-zA-Z0-9/ ]*)" "\\1" PROVIDES "${PROVIDES}")
 	STRING (REGEX REPLACE " " ";" PROVIDES "${PROVIDES}")
 	list (APPEND CATEGORIES "ALL" "${PROVIDES}")
+
+	split_plugin_providers (CATEGORIES)
+
 	STRING (TOUPPER "${CATEGORIES}" CATEGORIES)
 	#message (STATUS "CATEGORIES ${CATEGORIES}")
 
