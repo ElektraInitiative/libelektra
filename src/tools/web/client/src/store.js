@@ -14,6 +14,7 @@ const enhancer = process.env.NODE_ENV === 'production'
   ? middleware
   : compose(middleware, DevTools.instrument()) // enable devtools store enhancer
 
+// configure redux store
 export default function configureStore (initialState) {
   const store = createStore(reducer, initialState, enhancer)
 
