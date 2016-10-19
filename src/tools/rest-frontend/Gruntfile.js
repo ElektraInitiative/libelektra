@@ -10,9 +10,20 @@ module.exports = function(grunt) {
 
             },
             build: {
+				repo_root: '../../../..',
 				input: 'resources/structure.json.in',
                 output: 'resources/structure.json'
             }
+		},
+		'copy-website-content': {
+			options: {
+
+			},
+			build: {
+				repo_root: '../../../..',
+				input: 'resources/structure.json',
+				target_dir: '../public/website'
+			}
 		},
         jshint: {
             options: {
@@ -41,6 +52,7 @@ module.exports = function(grunt) {
             options: {
                 context: {
                     CONFIGURATION: grunt.file.read('application-config.json'),
+					WEBSTRUCTURE: grunt.file.read('resources/structure.json')
                 },
 				type: 'js'
             },
@@ -65,8 +77,12 @@ module.exports = function(grunt) {
                 tasks: ['less','cssmin']
             },
 			preprocess: {
-				files: ['resources/assets/js/config/constants.config.js.in'],
-				tasks: ['preprocess']
+				files: [
+					'resources/assets/js/config/constants.config.js.in',
+					'application-config.json',
+					'resources/structure.json'
+				],
+				tasks: ['preprocess', 'uglify']
 			},
             js: {
                 files: ['resources/assets/js/**/*'],
@@ -139,7 +155,7 @@ module.exports = function(grunt) {
     grunt.loadTasks('./resources/grunt-tasks');
 
     grunt.registerTask('default', ['uglify']);
-    grunt.registerTask('full', ['less', 'cssmin', 'preprocess', 'uglify', 'create-website-structure']);
+    grunt.registerTask('full', ['less', 'cssmin', 'create-website-structure', 'copy-website-content', 'preprocess', 'uglify']);
     grunt.registerTask('server', ['http-server']);
 
 };

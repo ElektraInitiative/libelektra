@@ -6,13 +6,16 @@
         .controller('MainController', MainController);
 
     MainController.$inject = [
-        '$rootScope', '$scope', 'Logger', '$state'
+        '$rootScope', '$scope', 'Logger', '$state', 'webStructure'
     ];
 
-    function MainController($rootScope, $scope, Logger, $state) {
+    function MainController($rootScope, $scope, Logger, $state, webStructure) {
 
         var vm = this;
         $scope.$rootScope = $rootScope;
+
+		// build the dynamic menu
+		$scope.menu = webStructure;
 
 //        vm.currentLanguage = 'de';
 

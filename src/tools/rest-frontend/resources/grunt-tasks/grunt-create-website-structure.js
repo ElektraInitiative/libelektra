@@ -3,13 +3,13 @@
 var fs = require('fs');
 var path = require('path');
 
-var root_dir = path.normalize(path.join(path.dirname(__dirname), '../../../..'));
-
 module.exports = function(grunt) {
 
 	grunt.registerMultiTask('create-website-structure', 'Builds a comprehensive website structure file.', function() {
 
 		var self = this;
+
+		var root_dir = path.normalize(path.join(path.dirname(__dirname), this.data.repo_root));
 
 
 		/* MAIN FUNCTION */
@@ -73,6 +73,7 @@ module.exports = function(grunt) {
 			var result = {
 				name: entry.name,
 				type: 'submenu',
+				ref: entry.ref,
 				children: []
 			};
 			entry.children.forEach(function(child) {
@@ -85,6 +86,7 @@ module.exports = function(grunt) {
 			var result = {
 				name: entry.name,
 				type: 'link',
+				ref: entry.ref,
 				options: {
 					path: entry.options.path
 				}
@@ -96,6 +98,7 @@ module.exports = function(grunt) {
 			var result = {
 				name: entry.name,
 				type: 'listfiles',
+				ref: entry.ref,
 				children: []
 			};
 			var readme = fs.readFileSync(path.join(root_dir, entry.options.path)).toString().split('\n');
@@ -153,6 +156,7 @@ module.exports = function(grunt) {
 			var result = {
 				name: entry.name,
 				type: 'listfiles',
+				ref: entry.ref,
 				children: []
 			};
 			var directories = self.listDirectory(entry.options.path).filter(function(elem) {
@@ -163,7 +167,6 @@ module.exports = function(grunt) {
 				for(var i = 0; i < entry.options.target_file.length; i++) {
 					try {
 						var rel = path.join(entry.options.path, dir.name, entry.options.target_file[i]);
-						grunt.log.writeln(rel);
 						fs.accessSync(path.join(root_dir, rel), fs.constants.F_OK);
 						file = rel;
 						break;
@@ -188,19 +191,22 @@ module.exports = function(grunt) {
 			var result = {
 				name: entry.name,
 				type: 'listfiles',
+				ref: entry.ref,
 				children: []
 			};
 			var files = self.listDirectory(entry.options.path).filter(function(elem) {
 				return elem.stats.isFile() === true;
 			});
 			files.forEach(function(file) {
-				result.children.push({
-					name: self.makePrettyName(file.name),
-					type: 'file',
-					options: {
-						path: path.join(entry.options.path, file.name)
-					}
-				});
+				if(entry.options.blacklist.indexOf(file.name) === -1) {
+					result.children.push({
+						name: self.makePrettyName(file.name),
+						type: 'file',
+						options: {
+							path: path.join(entry.options.path, file.name)
+						}
+					});
+				}
 			});
 			return result;
 		};
@@ -209,6 +215,7 @@ module.exports = function(grunt) {
 			var result = {
 				name: entry.name,
 				type: 'listfiles',
+				ref: entry.ref,
 				children: []
 			};
 			entry.children.forEach(function(child) {

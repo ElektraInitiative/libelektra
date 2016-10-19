@@ -2,10 +2,12 @@
 	{
 		"name": "Documentation",
 		"type": "submenu",
+		"ref": "documentation",
 		"children": [
 			{
 				"name": "Getting started",
 				"type": "staticlist",
+				"ref": "docgettingstarted",
 				"children": [
 					{
 						"name": "Compiling",
@@ -26,15 +28,16 @@
 			{
 				"name": "Tutorials",
 				"type": "listfiles",
+				"ref": "tutorials",
 				"options": {
 					"path": "doc/tutorials",
-					"whitelist": [],
 					"blacklist": ["CMakeLists.txt"]
 				}
 			},
 			{
 				"name": "Plugins",
 				"type": "parsereadme",
+				"ref": "plugins",
 				"options": {
 					"path": "src/plugins/README.md",
 					"target_file": ["README.md", "README", "readme.md", "readme"],
@@ -49,9 +52,19 @@
 			{
 				"name": "Tools",
 				"type": "listdirs",
+				"ref": "tools",
 				"options": {
 					"path": "src/tools",
 					"target_file": ["README.md", "README", "readme.md", "readme"]
+				}
+			},
+			{
+				"name": "Manpages",
+				"type": "listfiles",
+				"ref": "manpages",
+				"options": {
+					"path": "doc/help",
+					"blacklist": ["CMakeLists.txt"]
 				}
 			}
 		]
@@ -59,21 +72,85 @@
 	{
 		"name": "Development",
 		"type": "submenu",
+		"ref": "development",
 		"children": [
+			{
+				"name": "Getting started",
+				"type": "staticlist",
+				"ref": "devgettingstarted",
+				"children": [
+					{
+						"name": "Coding",
+						"type": "staticfile",
+						"options": {
+							"path": "doc/CODING.md"
+						}
+					}
+				]
+			},
+			{
+				"name": "Examples",
+				"type": "listfiles",
+				"ref": "examples",
+				"options": {
+					"path": "examples",
+					"blacklist": ["CMakeLists.txt"]
+				}
+			},
+			{
+				"name": "Bindings",
+				"type": "listdirs",
+				"ref": "bindings",
+				"options": {
+					"path": "src/bindings",
+					"target_file": ["README.md", "README", "readme.md", "readme"]
+				}
+			},
+			{
+				"name": "Libraries",
+				"type": "parsereadme",
+				"ref": "libraries",
+				"options": {
+					"path": "src/libs/README.md",
+					"target_file": ["README.md", "README", "readme.md", "readme"],
+					"parsing": {
+						"entry_regex": "^\\[(.+)\\]\\(([^\\)]+)\\)(.*)"
+					}
+				}
+			},
+			{
+				"name": "Decisions",
+				"type": "listfiles",
+				"ref": "decisions",
+				"options": {
+					"path": "doc/decisions",
+					"blacklist": []
+				}
+			},
 			{
 				"name": "Build Server",
 				"type": "link",
+				"ref": "buildserver",
 				"options": {
-					"path": "http://build.libelektra.org:8080"
+					"path": "http://build.libelektra.org:8080/"
+				}
+			},
+			{
+				"name": "API Documentation",
+				"type": "link",
+				"ref": "apidocumentation",
+				"options": {
+					"path": "http://doc.libelektra.org/api/latest/html/"
+				}
+			},
+			{
+				"name": "GitHub",
+				"type": "link",
+				"ref": "github",
+				"options": {
+					"path": "http://git.libelektra.org"
 				}
 			}
 		]
-	},
-	{
-		"name": "GitHub",
-		"type": "link",
-		"options": {
-			"path": "http://git.libelektra.org"
-		}
 	}
 ]

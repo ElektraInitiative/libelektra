@@ -1,15 +1,11 @@
 {
 	"backend": {
-		"root": "http://localhost:8080/"
+		"root": "http://localhost:8080/",
+		"website": {
+			"content_root": "website/"
+		}
 	},
 	"github": {
-		"api": {
-			"root": "https://api.github.com/",
-			"paths": {
-				"documentation": "repos/ElektraInitiative/libelektra/contents/doc",
-				"tutorials": "repos/ElektraInitiative/libelektra/contents/doc/tutorials"
-			}
-		},
 		"website": {
 			"root": "https://github.com/",
 			"paths": {

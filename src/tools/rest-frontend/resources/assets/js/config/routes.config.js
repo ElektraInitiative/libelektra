@@ -6,7 +6,10 @@
         '$stateProvider',
         '$urlRouterProvider',
         '$locationProvider',
-        function($stateProvider, $urlRouterProvider, $locationProvider) {
+		'webStructure',
+        function($stateProvider, $urlRouterProvider, $locationProvider, webStructure) {
+
+			var self = this;
 
             // configure html5mode for URLs (no #)
             $locationProvider.html5Mode({
@@ -77,6 +80,13 @@
                         label: 'APP.BREADCRUMBS.MAIN.HOME'
                     }
                 })
+				.state('main.dyn', {
+					abstract: true,
+					template: '<div ui-view></div>',
+					ncyBreadcrumb: {
+						parent: 'main.home'
+					}
+				})
 				.state('main.account', {
 					url: '/account',
 					templateUrl: 'pages/main/users/details.html',
@@ -95,40 +105,40 @@
 						parent: 'main.home'
 					}
 				})
-				.state('main.documentation', {
-					url: '/documentation',
-					templateUrl: 'pages/main/documentation/template.html',
-					controller: 'DocumentationController as ctrl',
-					resolve: {
-						docs: ['DocumentationService', function(DocService) {
-							return DocService.loadDocumentations();
-						}],
-						doc: ['DocumentationService', 'docs', function(DocService, docs) {
-							return DocService.loadDocument(docs[0].url);
-						}]
-					},
-					ncyBreadcrumb: {
-						label: 'APP.BREADCRUMBS.MAIN.DOCUMENTATION.TEMPLATE',
-						parent: 'main.home'
-					}
-				})
-				.state('main.tutorials', {
-					url: '/tutorials',
-					templateUrl: 'pages/main/documentation/template.html',
-					controller: 'DocumentationController as ctrl',
-					resolve: {
-						docs: ['DocumentationService', function(DocService) {
-							return DocService.loadTutorials();
-						}],
-						doc: ['DocumentationService', 'docs', function(DocService, docs) {
-							return DocService.loadDocument(docs[0].url);
-						}]
-					},
-					ncyBreadcrumb: {
-						label: 'APP.BREADCRUMBS.MAIN.TUTORIALS.TEMPLATE',
-						parent: 'main.home'
-					}
-				})
+//				.state('main.documentation', {
+//					url: '/documentation',
+//					templateUrl: 'pages/main/documentation/template.html',
+//					controller: 'DocumentationController as ctrl',
+//					resolve: {
+//						docs: ['DocumentationService', function(DocService) {
+//							return DocService.loadDocumentations();
+//						}],
+//						doc: ['DocumentationService', 'docs', function(DocService, docs) {
+//							return DocService.loadDocument(docs[0].url);
+//						}]
+//					},
+//					ncyBreadcrumb: {
+//						label: 'APP.BREADCRUMBS.MAIN.DOCUMENTATION.TEMPLATE',
+//						parent: 'main.home'
+//					}
+//				})
+//				.state('main.tutorials', {
+//					url: '/tutorials',
+//					templateUrl: 'pages/main/documentation/template.html',
+//					controller: 'DocumentationController as ctrl',
+//					resolve: {
+//						docs: ['DocumentationService', function(DocService) {
+//							return DocService.loadTutorials();
+//						}],
+//						doc: ['DocumentationService', 'docs', function(DocService, docs) {
+//							return DocService.loadDocument(docs[0].url);
+//						}]
+//					},
+//					ncyBreadcrumb: {
+//						label: 'APP.BREADCRUMBS.MAIN.TUTORIALS.TEMPLATE',
+//						parent: 'main.home'
+//					}
+//				})
 				.state('main.conversion', {
 					url: '/conversion',
 					templateUrl: 'pages/main/conversion.html',
@@ -272,6 +282,47 @@
 						parent: 'main.users'
 					}
 				});
+
+
+			/* CONFIGURE DYNAMIC PAGES */
+
+			// read the structure file and handle entries
+			webStructure.forEach(function(entry) {
+				consumeEntry(entry);
+			});
+
+			// main parse function
+			function consumeEntry(entry) {
+				switch(entry.type) {
+					case 'submenu':
+						entry.children.forEach(function(child) {
+							consumeEntry(child);
+						});
+						break;
+					case 'listfiles':
+						$stateProvider.state('main.dyn.' + entry.ref, {
+							url: '/' + entry.ref,
+							templateUrl: 'pages/main/website/listfiles.html',
+							controller: 'WebsiteListfilesController as ctrl',
+							data: {
+								name: entry.name,
+								ref: entry.ref
+							},
+							resolve: {
+								files: [function() {
+									return entry.children;
+								}]
+							},
+							ncyBreadcrumb: {
+								label: 'APP.BREADCRUMBS.MAIN.DYN.' + entry.ref.toUpperCase(),
+								parent: 'main.dyn'
+							}
+						});
+						break;
+					default:
+						break;
+				}
+			};
 
         }
     ]);

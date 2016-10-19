@@ -45,11 +45,20 @@
 					<li ng-class="{active: $state.includes('main.home')}">
 						<a ui-sref="main.home">{{ 'APP.NAV.BUTTON.MAIN.HOME' | translate }}</a>
 					</li>
-					<li ng-class="{active: $state.includes('main.documentation')}">
-						<a ui-sref="main.documentation">{{ 'APP.NAV.BUTTON.MAIN.DOCUMENTATION' | translate }}</a>
-					</li>
-					<li ng-class="{active: $state.includes('main.tutorials')}">
-						<a ui-sref="main.tutorials">{{ 'APP.NAV.BUTTON.MAIN.TUTORIALS' | translate }}</a>
+					<li ng-repeat="entry in menu"
+						ng-class="{active: $state.includes('main.dyn.' + entry.ref), dropdown: entry.type === 'submenu'}"
+						ng-attr-uib-dropdown="{{ entry.type === 'submenu' && '' || undefined }}">
+						<a ng-if="entry.type === 'listfiles'" ui-sref="{{ 'main.dyn.' + entry.ref }}">{{ entry.name }}</a>
+						<a ng-if="entry.type === 'link'" href="{{ entry.options.path }}">{{ entry.name }}</a>
+						<a ng-if="entry.type === 'submenu'" href="#" uib-dropdown-toggle>
+							{{ entry.name }} <span class="caret"></span>
+						</a>
+						<ul ng-if="entry.type === 'submenu'" uib-dropdown-menu>
+							<li ng-repeat="subentry in entry.children">
+								<a ng-if="subentry.type === 'listfiles'" ui-sref="{{ 'main.dyn.' + subentry.ref }}">{{ subentry.name }}</a>
+								<a ng-if="subentry.type === 'link'" href="{{ subentry.options.path }}">{{ subentry.name }}</a>
+							</li>
+						</ul>
 					</li>
 					<li ng-class="{active: $state.includes('main.conversion')}">
 						<a ui-sref="main.conversion">{{ 'APP.NAV.BUTTON.MAIN.CONVERSION' | translate }}</a>
