@@ -35,6 +35,8 @@ struct _fcryptState
 };
 typedef struct _fcryptState fcryptState;
 
+#define ELEKTRA_FCRYPT_TMP_FILE_SUFFIX "XXXXXX"
+
 /**
  * @brief Allocates a new string holding the name of the temporary file.
  * @param file holds the path to the original file
@@ -43,10 +45,11 @@ typedef struct _fcryptState fcryptState;
  */
 static char * getTemporaryFileName (const char * file, int * fd)
 {
-	const size_t newFileAllocated = strlen (file) + 7;
+	// + 1 to reserve space for the NULL terminator
+	const size_t newFileAllocated = strlen (file) + strlen (ELEKTRA_FCRYPT_TMP_FILE_SUFFIX) + 1;
 	char * newFile = elektraMalloc (newFileAllocated);
 	if (!newFile) return NULL;
-	snprintf (newFile, newFileAllocated, "%sXXXXXX", file);
+	snprintf (newFile, newFileAllocated, "%s" ELEKTRA_FCRYPT_TMP_FILE_SUFFIX, file);
 	*fd = mkstemp (newFile);
 	return newFile;
 }
