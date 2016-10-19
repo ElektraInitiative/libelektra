@@ -74,7 +74,7 @@ static int shredTemporaryFile (int fd, Key * errorKey)
 
 	if (lseek (fd, 0, SEEK_SET))
 	{
-		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_FCRYPT_TMP_FILE, errorKey, "Failed overwrite the temporary file.");
+		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_FCRYPT_TMP_FILE, errorKey, "Failed to overwrite the temporary file.");
 		return -1;
 	}
 
@@ -132,9 +132,9 @@ static size_t getRecipientCount (KeySet * config)
 }
 
 /**
- * @brief encrypt the file speicied at parentKey
+ * @brief encrypt the file specified at parentKey
  * @param pluginConfig holds the plugin configuration
- * @pararm parentKey holds the path to the file to be encrpted. Will hold an error description in case of failure.
+ * @pararm parentKey holds the path to the file to be encrypted. Will hold an error description in case of failure.
  * @retval 1 on success
  * @retval -1 on error, errorKey holds an error description
  */
@@ -247,9 +247,9 @@ static int encrypt (KeySet * pluginConfig, Key * parentKey)
 }
 
 /**
- * @brief decrypt the file speicied at parentKey
+ * @brief decrypt the file specified at parentKey
  * @param pluginConfig holds the plugin configuration
- * @pararm parentKey holds the path to the file to be encrpted. Will hold an error description in case of failure.
+ * @pararm parentKey holds the path to the file to be encrypted. Will hold an error description in case of failure.
  * @retval 1 on success
  * @retval -1 on error, errorKey holds an error description
  */
@@ -366,7 +366,7 @@ int ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME, close) (Plugin * handle, KeySe
 }
 
 /**
- * @brief establish the Elektra plugin contract and decrypt the file provded at parentKey using GPG.
+ * @brief establish the Elektra plugin contract and decrypt the file provided at parentKey using GPG.
  * @retval 1 on success
  * @retval -1 on failure
  */
@@ -443,7 +443,7 @@ int ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME, set) (Plugin * handle, KeySet 
  *
  * @retval 0 no changes were made to the configuration
  * @retval 1 the master password has been appended to the configuration
- * @retval -1 an error occured. Check errorKey
+ * @retval -1 an error occurred. Check errorKey
  */
 int ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME, checkconf) (Key * errorKey, KeySet * conf)
 {

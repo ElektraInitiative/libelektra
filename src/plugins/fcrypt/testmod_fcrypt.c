@@ -56,7 +56,7 @@ static void writeTestFile (const char * file)
 /**
  * @brief read in the content stored in file and compare it to the test vector.
  * @retval 1 if the file content is equal to the test vector.
- * @retval -1 if the file content is not equal to the test vector or an error occured.
+ * @retval -1 if the file content is not equal to the test vector or an error occurred.
  */
 static int isTestFileCorrect (const char * file)
 {
