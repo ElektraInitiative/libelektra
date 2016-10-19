@@ -123,23 +123,22 @@ void MergeHelper::reportResult (Cmdline const & cl, MergeResult & result, ostrea
 }
 
 
-KeySet appendNamespace (KeySet const & resultKeys, Key & root, std::string ns)
+KeySet prependNamespace (KeySet const & resultKeys, std::string ns)
 {
-	if (root.isCascading ())
-	{
-		root.setName (ns + root.getName ());
-	}
-
 	KeySet ret;
 	for (auto const & k : resultKeys)
 	{
-		Key n = k.dup ();
-		if (k.isCascading ())
-		{
-			std::string name = k.getName ();
-			n.setName (ns + name);
-		}
-		ret.append (n);
+		ret.append (prependNamespace (k, ns));
+	}
+	return ret;
+}
+
+Key prependNamespace (Key const & root, std::string ns)
+{
+	Key ret = root.dup ();
+	if (ret.isCascading ())
+	{
+		ret.setName (ns + root.getName ());
 	}
 	return ret;
 }

@@ -89,8 +89,8 @@ int EditorCommand::execute (Cmdline const & cl)
 
 	if (cl.strategy == "validate")
 	{
-		appendNamespace (oursToEdit, root, cl.ns);
-		oursToEdit.cut (root);
+		prependNamespace (oursToEdit, cl.ns);
+		oursToEdit.cut (prependNamespace (root, cl.ns));
 	}
 
 	// export it to file

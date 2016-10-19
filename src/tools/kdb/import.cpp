@@ -69,9 +69,9 @@ int ImportCommand::execute (Cmdline const & cl)
 
 	if (cl.strategy == "validate")
 	{
-		KeySet toset = appendNamespace (importedKeys, root, cl.ns);
+		KeySet toset = prependNamespace (importedKeys, cl.ns);
 		applyMeta (toset, base);
-		originalKeys.cut (root);
+		originalKeys.cut (prependNamespace (root, cl.ns));
 		originalKeys.append (toset);
 		kdb.set (originalKeys, root);
 		printWarnings (cerr, root);
