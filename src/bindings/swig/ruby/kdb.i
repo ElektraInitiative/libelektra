@@ -240,9 +240,12 @@ namespace kdb {
 underlaying key, which allows a Ruby-style iteration over metadata:
   k.meta.each { |m| puts 'meta data: %s: %s' % [m.name, m.value] }
 ") kdb::Key::meta;
+/* key.meta will return a newly created object Ruby should garbage collect */
+%newobject kdb::Key::meta;
 %extend kdb::Key {
   kdb::KeySet* meta() {
-    return new kdb::KeySet($self->getKey()->meta);
+    /* Key is the owner of the meta keyset, so we have to dup it */
+    return new kdb::KeySet(ckdb::ksDup($self->getKey()->meta));
   }
 }
 
@@ -397,6 +400,9 @@ underlaying key, which allows a Ruby-style iteration over metadata:
 %ignore kdb::Key::copy;
 
 %alias kdb::Key::clone() "dup"
+
+/* clone definitely creates a new object, Ruby shall take ownership */
+%newobject kdb::Key::clone;
 
 %extend kdb::Key {
   kdb::Key *clone() {
