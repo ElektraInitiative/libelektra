@@ -10,7 +10,7 @@ export default class ClusterCard extends React.Component {
     const { id, name, instances } = this.props
     const instanceAmt = instances.length
     const { updateCluster, deleteCluster, configureCluster } = this.props // action creators
-    const title = (
+    const title = ( // show small cluster icon next to title
       <span>
         <HardwareDeviceHub style={{width: '12px', height: '12px'}} />{' '}{name}
       </span>

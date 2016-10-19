@@ -10,7 +10,7 @@ export default class InstanceCard extends React.Component {
     const { id, name, host, checked, addingCluster } = this.props
     const { updateInstance, deleteInstance, configureInstance, selectInstance } = this.props // action creators
     const title =
-      addingCluster
+      addingCluster // show checkbox next to title during cluster creation
       ? <Checkbox label={name} checked={checked} onCheck={() => selectInstance(id)} />
       : name
 

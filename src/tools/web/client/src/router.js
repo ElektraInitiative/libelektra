@@ -5,6 +5,7 @@ import {
 export const PAGE_MAIN = 'PAGE_MAIN'
 export const PAGE_CONFIGURE = 'PAGE_CONFIGURE'
 
+// simple router that switches pages on certain actions
 export default function routerReducer (
   state = { page: PAGE_MAIN },
   action

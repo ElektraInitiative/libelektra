@@ -5,14 +5,12 @@ import {
 
 export default function clustersReducer (state = [], action) {
   switch (action.type) {
-    // TODO: handle _REQUESTED and _FAILURE
-
-    case CLUSTER_DELETE_SUCCESS:
+    case CLUSTER_DELETE_SUCCESS: // cluster deleted, remove from state
       return state.filter(
         (cluster) => cluster.id !== action.result.id
       )
 
-    case CLUSTER_UPDATE_SUCCESS:
+    case CLUSTER_UPDATE_SUCCESS: // cluster updated, update in state
       return state.map(
         (cluster) =>
           cluster.id === action.result.id
@@ -20,10 +18,10 @@ export default function clustersReducer (state = [], action) {
           : instance
       )
 
-    case CLUSTERS_SUCCESS:
+    case CLUSTERS_SUCCESS: // cluster list pulled from clusterd, update state
       return action.result
 
-    case CREATE_CLUSTER_SUCCESS:
+    case CREATE_CLUSTER_SUCCESS: // cluster created, add to state
       return [ ...state, action.result ]
 
     default:

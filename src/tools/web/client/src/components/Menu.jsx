@@ -22,12 +22,14 @@ const breadcrumbStyle = {
   fontFamily: 'Roboto',
 }
 
+// breadcrumb for menu title
 const Breadcrumb = ({ name }) =>
     <div className="breadcrumb">
         <NavigationChevronRight style={{color: 'rgba(0, 0, 0, 0.4)', margin: HEADER_MARGIN}} />
         <div style={breadcrumbStyle}>{name}</div>
     </div>
 
+// menu component
 export default class Menu extends React.Component {
   constructor (props) {
     super(props)
@@ -47,23 +49,23 @@ export default class Menu extends React.Component {
     const { addInstance, addCluster, unaddCluster, returnToMain, createCluster } = this.props // action creators
     const title = (
         <ToolbarGroup>
-            {subpage &&
+            {subpage && // show back button on subpages
               <NavigationArrowBack style={navigationArrowStyle} onTouchTap={returnToMain} />}
             <ToolbarTitle
               style={{fontFamily: 'Roboto'}}
               text="elektra-web"
               onTouchTap={returnToMain}
             />
-            {subpage &&
+            {subpage && // show breadcrumb on subpages
               <Breadcrumb name={subpage} />}
-            {loading &&
+            {loading && // show spinner while waiting for responses
               <CircularProgress style={{margin: '3px -15px'}} size={0.5} />}
         </ToolbarGroup>
     )
 
     const actions =
       addingCluster
-      ? (
+      ? ( // modify toolbar in cluster creation mode (name field + create button)
           <ToolbarGroup>
               <TextField
                 style={{marginTop: '5px', maxWidth: '150px'}}
@@ -94,7 +96,7 @@ export default class Menu extends React.Component {
               />
           </ToolbarGroup>
       )
-      : (
+      : ( // otherwise, show the default toolbar (add instance/cluster buttons)
           <ToolbarGroup>
               <RaisedButton
                 icon={<ContentAddIcon />}

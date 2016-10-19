@@ -12,6 +12,7 @@ import Paper from 'material-ui/Paper'
 
 import { PAGE_MAIN, PAGE_CONFIGURE } from '../router'
 
+// mini router that displays the confiugration/main page
 const displayPage = ({ page, ...instance }) => {
   switch (page) {
     case PAGE_CONFIGURE:
@@ -22,6 +23,7 @@ const displayPage = ({ page, ...instance }) => {
   }
 }
 
+// get name of the current page for the breadcrumb
 const getSubpageName = ({ page, configuring, id }) => {
   switch (page) {
     case PAGE_CONFIGURE:
@@ -32,6 +34,7 @@ const getSubpageName = ({ page, configuring, id }) => {
   }
 }
 
+// this is the main application
 const MainApp = (props) =>
     <div>
         <ConnectedMenu subpage={getSubpageName(props)} />
@@ -41,6 +44,7 @@ const MainApp = (props) =>
         <ConnectedErrorSnackbar />
     </div>
 
+// this is the main application wrapped inside devtools (for development mode)
 const DevApp = (props) =>
     <div>
         <div style={{display: 'inline-block', width: '80%'}}>
@@ -57,11 +61,14 @@ const DevApp = (props) =>
         </Paper>
     </div>
 
+// show only MainApp in production mode,
+// and DevApp (MainApp with devtools) in development mode
 const AppContainer = (props) =>
   process.env.NODE_ENV === 'production'
-  ? <MainApp {...props} />
-  : <DevApp {...props} />
+    ? <MainApp {...props} />
+    : <DevApp {...props} />
 
+// wrap app container with the MuiThemeProvider (required for material-ui)
 const App = (props) =>
     <MuiThemeProvider>
         <AppContainer {...props} />

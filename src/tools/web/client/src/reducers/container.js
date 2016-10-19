@@ -4,6 +4,7 @@ import {
   SELECT_INSTANCE,
 } from '../actions'
 
+// controls the state of the card container (for adding instances and clusters)
 export default function containerReducer (
   state = { addingInstance: false, addingCluster: false, clusterInstances: [] },
   action
