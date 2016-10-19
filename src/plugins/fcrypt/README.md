@@ -26,7 +26,7 @@ During decryption the plugin temporarily writes the decrypted plain text to the 
 This is a vulnerability as an attacker might have access to the plain text for a short period of time (the time between pregetstorage and postgetstorage calls).
 The plugin shreds, i.e. overwrites, the temporary file with zeroes to reduce the risk of leakage.
 
-If the application crashes the decrypted data may not get overwritten and removed.
+If the application crashes parts of the decrypted data may leak.
 
 ## Dependencies ##
 
