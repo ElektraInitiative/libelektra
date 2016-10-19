@@ -62,6 +62,9 @@ module.exports = function(grunt) {
 				case 'staticfile':
 					result = self.handleStaticfileEntry(entry);
 					break;
+				case 'section':
+					result = self.handleSectionEntry(entry);
+					break;
 				default:
 					grunt.log.error('The menu type "' + entry.type + '" is not supported.');
 					break;
@@ -101,13 +104,15 @@ module.exports = function(grunt) {
 				ref: entry.ref,
 				children: []
 			};
-			result.children.push({
+			var fileEntry = {
 				name: self.makePrettyName(path.basename(entry.options.path)),
 				type: 'file',
 				options: {
 					path: entry.options.path
 				}
-			});
+			};
+			fileEntry.slug = self.createSlugFromName(fileEntry.name);
+			result.children.push(fileEntry);
 			var readme = fs.readFileSync(path.join(root_dir, entry.options.path)).toString().split('\n');
 			var hasToParse = false;
 			readme.forEach(function(line) {
@@ -144,13 +149,15 @@ module.exports = function(grunt) {
 								}
 							}
 							if(file !== null) {
-								result.children.push({
+								var fileEntry = {
 									name: self.makePrettyName(elem[1]),
 									type: 'file',
 									options: {
 										path: file
 									}
-								});
+								};
+								fileEntry.slug = self.createSlugFromName(fileEntry.name);
+								result.children.push(fileEntry);
 							}
 						}
 					}
@@ -182,13 +189,15 @@ module.exports = function(grunt) {
 					}
 				}
 				if(file !== null) {
-					result.children.push({
+					var fileEntry = {
 						name: self.makePrettyName(dir.name),
 						type: 'file',
 						options: {
 							path: file
 						}
-					});
+					};
+					fileEntry.slug = self.createSlugFromName(fileEntry.name);
+					result.children.push(fileEntry);
 				}
 			});
 			return result;
@@ -206,13 +215,15 @@ module.exports = function(grunt) {
 			});
 			files.forEach(function(file) {
 				if(entry.options.blacklist.indexOf(file.name) === -1) {
-					result.children.push({
+					var fileEntry = {
 						name: self.makePrettyName(file.name),
 						type: 'file',
 						options: {
 							path: path.join(entry.options.path, file.name)
 						}
-					});
+					};
+					fileEntry.slug = self.createSlugFromName(fileEntry.name);
+					result.children.push(fileEntry);
 				}
 			});
 			return result;
@@ -239,6 +250,15 @@ module.exports = function(grunt) {
 					path: path.join(entry.options.path)
 				}
 			};
+			result.slug = self.createSlugFromName(result.name);
+			return result;
+		};
+
+		this.handleSectionEntry = function(entry) {
+			var result = {
+				name: entry.name,
+				type: 'section'
+			};
 			return result;
 		};
 
@@ -261,6 +281,13 @@ module.exports = function(grunt) {
 			}
 			name_pretty = name_pretty.replace('-', ' ');
 			return name_pretty;
+		};
+
+		this.createSlugFromName = function(name) {
+			return name.toLowerCase()
+					   .replace(/ /g, '-')
+					   .replace(/[-]+/g, '-')
+					   .replace(/[^\w-]+/g, '');
 		};
 
 

@@ -6,7 +6,9 @@
 					<li ng-repeat="file in files"
 						ng-class="{active: file.name === currentFile.name, 'section-title': file.type === 'section'}">
 						<a ng-if="file.type === 'file'" class="listfiles file-link"
-						   ng-click="ctrl.setCurrentFile(file)">{{ file.name }}</a>
+						   ui-sref="{{ $state.current.name + '({file:\'' + file.slug + '\'})' }}">
+							{{ file.name }}
+						</a>
 						<span ng-if="file.type === 'section'">{{ file.name }}</a>
 					</li>
 				</ul>

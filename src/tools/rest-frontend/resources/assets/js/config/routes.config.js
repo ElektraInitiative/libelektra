@@ -105,40 +105,6 @@
 						parent: 'main.home'
 					}
 				})
-//				.state('main.documentation', {
-//					url: '/documentation',
-//					templateUrl: 'pages/main/documentation/template.html',
-//					controller: 'DocumentationController as ctrl',
-//					resolve: {
-//						docs: ['DocumentationService', function(DocService) {
-//							return DocService.loadDocumentations();
-//						}],
-//						doc: ['DocumentationService', 'docs', function(DocService, docs) {
-//							return DocService.loadDocument(docs[0].url);
-//						}]
-//					},
-//					ncyBreadcrumb: {
-//						label: 'APP.BREADCRUMBS.MAIN.DOCUMENTATION.TEMPLATE',
-//						parent: 'main.home'
-//					}
-//				})
-//				.state('main.tutorials', {
-//					url: '/tutorials',
-//					templateUrl: 'pages/main/documentation/template.html',
-//					controller: 'DocumentationController as ctrl',
-//					resolve: {
-//						docs: ['DocumentationService', function(DocService) {
-//							return DocService.loadTutorials();
-//						}],
-//						doc: ['DocumentationService', 'docs', function(DocService, docs) {
-//							return DocService.loadDocument(docs[0].url);
-//						}]
-//					},
-//					ncyBreadcrumb: {
-//						label: 'APP.BREADCRUMBS.MAIN.TUTORIALS.TEMPLATE',
-//						parent: 'main.home'
-//					}
-//				})
 				.state('main.conversion', {
 					url: '/conversion',
 					templateUrl: 'pages/main/conversion.html',
@@ -301,9 +267,12 @@
 						break;
 					case 'listfiles':
 						$stateProvider.state('main.dyn.' + entry.ref, {
-							url: '/' + entry.ref,
+							url: '/' + entry.ref + '/:file',
 							templateUrl: 'pages/main/website/listfiles.html',
 							controller: 'WebsiteListfilesController as ctrl',
+							params: {
+								file: null
+							},
 							data: {
 								name: entry.name,
 								ref: entry.ref

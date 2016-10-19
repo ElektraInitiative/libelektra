@@ -6,17 +6,36 @@
         .controller('WebsiteListfilesController', WebsiteListfilesController);
 
     WebsiteListfilesController.$inject = [
-		'$scope', 'Logger', 'WebsiteService', 'files'
+		'$scope', 'Logger', '$state', '$stateParams', 'WebsiteService', 'files'
 	];
 
-    function WebsiteListfilesController($scope, Logger, WebsiteService, files) {
+    function WebsiteListfilesController($scope, Logger, $state, $stateParams, WebsiteService, files) {
 
         var vm = this;
 
+		$scope.$state = $state;
 		$scope.files = files;
-		$scope.currentFile = files.filter(function(elem) {
-			return elem.type === 'file';
-		})[0];
+
+		function goToDefaultFile() {
+			$state.go($state.current.name, {
+				file: files.filter(function(elem) {
+					return elem.type === 'file';
+				})[0].slug
+			});
+		}
+
+		if($stateParams.file === null) {
+			goToDefaultFile();
+		} else {
+			var filtered = files.filter(function(elem) {
+				return elem.slug === $stateParams.file;
+			});
+			if(filtered.length === 0) {
+				goToDefaultFile();
+			} else {
+				$scope.currentFile = filtered[0];
+			}
+		}
 
 		this.setCurrentFile = function(file) {
 			$scope.currentFile = file;
