@@ -1,6 +1,10 @@
 include (${SWIG_USE_FILE})
 include(LibAddMacros)
 
+# try user environment first, then search for system libs
+# required on OSX under rvm
+set (CMAKE_FIND_FRAMEWORK "LAST")
+
 find_package(Ruby)
 
 if (NOT RUBY_FOUND)
@@ -29,6 +33,8 @@ else()
 	
 	# just for debugging
 	message (STATUS "Ruby executable: ${RUBY_EXECUTABLE}")
+	message (STATUS "Ruby library: ${RUBY_LIBRARY}")
+	message (STATUS "Ruby version: ${RUBY_VERSION}")
 	message (STATUS "Ruby vendor arch dir: ${RUBY_VENDOR_ARCH_DIR}")
 	message (STATUS "Ruby site arch dir: ${RUBY_SITE_ARCH_DIR}")
 	message (STATUS "Ruby include path: ${RUBY_INCLUDE_PATH}")
@@ -40,10 +46,11 @@ else()
 	set (CMAKE_SWIG_FLAGS "-O;-autorename;-DSWIG_NO_EXPORT_ITERATOR_METHODS;-v")
 	
 	swig_add_module (swig-ruby ruby kdb.i)
-	swig_link_libraries (swig-ruby elektra-core elektra-kdb)
-	set_target_properties (swig-ruby PROPERTIES 
+	swig_link_libraries (swig-ruby ${RUBY_LIBRARY} elektra-core elektra-kdb)
+	set_target_properties (swig-ruby PROPERTIES
 		OUTPUT_NAME kdb
-		PREFIX "")
+		PREFIX ""
+	)
 	
 	set_source_files_properties (
 		${swig_generated_file_fullname} PROPERTIES 
@@ -73,6 +80,7 @@ else()
 	)
 	
 	include_directories (${CMAKE_CURRENT_SOURCE_DIR})
-	
-	add_subdirectory (tests)
+	if (BUILD_TESTING)
+		add_subdirectory (tests)
+	endif (BUILD_TESTING)
 endif()

@@ -10,7 +10,19 @@ foreach (file ${TESTS})
 	set_property (
 		TEST ${name}
 		PROPERTY ENVIRONMENT
-		"RUBYLIB=${CMAKE_CURRENT_BINARY_DIR}/.."
+			"RUBYLIB=${CMAKE_CURRENT_BINARY_DIR}/.."
+			"LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib"
+	)
+
+	set_property (
+		TEST ${name}
+		PROPERTY LABELS bindings memleak
 	)
 
 endforeach (file ${TESTS})
+
+# special label for kdb
+set_property (
+  TEST "testruby_kdb"
+  APPEND PROPERTY LABELS kdbtests
+)
