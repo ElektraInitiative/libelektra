@@ -88,11 +88,37 @@ module.exports = function(grunt) {
 					content = '```\n' + content + '\n```';
 					break;
 			}
+			switch(filename) {
+				case 'README.md':
+					content = self.reformatReadmeInfoBlock(content);
+					break;
+				default:
+					break;
+			}
 			return content;
 		};
 
 		this.replaceTabBySpaces = function(text) {
 			return text.replace(new RegExp('\t', 'g'), '    ');
+		};
+
+		this.reformatReadmeInfoBlock = function(text) {
+			var lines = text.split('\n');
+			// iterate to last infos line
+			var hasInfos = false;
+			for(var i = 0; i < lines.length; i++) {
+				if(lines[i].indexOf('- infos') > -1) {
+					hasInfos = true;
+					continue;
+				} else {
+					break;
+				}
+			}
+			if(hasInfos === true) {
+				lines.splice(i, 0, '```');
+				lines.splice(0, 0, '```');
+			}
+			return lines.join('\n');
 		};
 
 

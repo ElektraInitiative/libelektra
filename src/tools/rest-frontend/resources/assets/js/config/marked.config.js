@@ -18,6 +18,15 @@
 				}
 			});
 
+			markedProvider.setRenderer({
+				table: function(head, body) {
+					return '<table class="table table-striped table-bordered">' +
+								'<thead>' + head + '</thead>' +
+								'<tbody>' + body + '</tbody>' +
+							'</table>';
+				}
+			});
+
         }
     ]);
 

@@ -104,8 +104,12 @@ module.exports = function(grunt) {
 				ref: entry.ref,
 				children: []
 			};
+
+			// pretty name option
+			var pretty = (typeof entry.options.name.make_pretty === 'undefined') ? true : entry.options.name.make_pretty;
+
 			var fileEntry = {
-				name: self.makePrettyName(path.basename(entry.options.path)),
+				name: (pretty) ? self.makePrettyName(path.basename(entry.options.path)) : path.basename(entry.options.path),
 				type: 'file',
 				options: {
 					path: entry.options.path
@@ -150,7 +154,7 @@ module.exports = function(grunt) {
 							}
 							if(file !== null) {
 								var fileEntry = {
-									name: self.makePrettyName(elem[1]),
+									name: (pretty) ? self.makePrettyName(elem[1]) : elem[1],
 									type: 'file',
 									options: {
 										path: file
@@ -280,7 +284,11 @@ module.exports = function(grunt) {
 				name_pretty = name_pretty.substr(0, name_pretty.indexOf('.'));
 			}
 			name_pretty = name_pretty.replace('-', ' ');
-			return name_pretty;
+			var words = name_pretty.split(' ');
+			words = words.map(function(word) {
+				return self.firstCapitalize(word);
+			});
+			return words.join(' ');
 		};
 
 		this.createSlugFromName = function(name) {
@@ -288,6 +296,10 @@ module.exports = function(grunt) {
 					   .replace(/ /g, '-')
 					   .replace(/[-]+/g, '-')
 					   .replace(/[^\w-]+/g, '');
+		};
+
+		this.firstCapitalize = function(text) {
+			return text.charAt(0).toUpperCase() + text.substr(1);
 		};
 
 

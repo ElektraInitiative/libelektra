@@ -46,6 +46,9 @@
 						"stop_regex": "####### UNUSED ######",
 						"section_regex": "## ([^#]+) ##",
 						"entry_regex": "\\- \\[(.+)\\]\\(([^\\)]+)\\)(.*)"
+					},
+					"name": {
+						"make_pretty": false
 					}
 				}
 			},
@@ -115,6 +118,9 @@
 					"target_file": ["README.md", "README", "readme.md", "readme"],
 					"parsing": {
 						"entry_regex": "^\\[(.+)\\]\\(([^\\)]+)\\)(.*)"
+					},
+					"name": {
+						"make_pretty": true
 					}
 				}
 			},
