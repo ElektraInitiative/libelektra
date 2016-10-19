@@ -23,7 +23,7 @@
 			}) : [],
 			configuration: {
 				format: $scope.formats.filter(function(elem) {
-					return elem.plugin === entry.value[0].plugin;
+					return elem.plugin.name === entry.value[0].plugin;
 				})[0],
 				value: entry.value[0].value
 			}
