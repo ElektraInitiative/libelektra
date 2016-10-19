@@ -78,7 +78,6 @@ module.exports = function(grunt) {
 		};
 
 		this.ensureProperFileContentFormat = function(filename, content) {
-			grunt.log.writeln(content);
 			switch(path.extname(filename)) {
 				case '':
 				case '.md':
