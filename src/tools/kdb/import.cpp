@@ -45,7 +45,6 @@ int ImportCommand::execute (Cmdline const & cl)
 
 	KeySet originalKeys;
 	kdb.get (originalKeys, root);
-	KeySet base = originalKeys.cut (root);
 	printWarnings (cerr, root);
 
 	string format = cl.format;
@@ -62,7 +61,6 @@ int ImportCommand::execute (Cmdline const & cl)
 
 	KeySet importedKeys;
 	plugin->get (importedKeys, errorKey);
-	importedKeys = importedKeys.cut (root);
 
 	printWarnings (cerr, errorKey);
 	printError (cerr, errorKey);
@@ -70,13 +68,30 @@ int ImportCommand::execute (Cmdline const & cl)
 	if (cl.strategy == "validate")
 	{
 		KeySet toset = prependNamespace (importedKeys, cl.ns);
-		applyMeta (toset, base);
 		originalKeys.cut (prependNamespace (root, cl.ns));
 		originalKeys.append (toset);
+
+		PluginPtr specPlugin = modules.load ("spec", cl.getPluginsConfig ());
+		if (specPlugin->get (originalKeys, root) == -1)
+		{
+			printWarnings (cerr, root);
+			printError (cerr, errorKey);
+			return -1;
+		}
+
+		if (cl.verbose)
+		{
+			cout.setf (std::ios_base::showbase);
+			std::cout << originalKeys << std::endl;
+		}
+
 		kdb.set (originalKeys, root);
 		printWarnings (cerr, root);
 		return 0;
 	}
+
+	KeySet base = originalKeys.cut (root);
+	importedKeys = importedKeys.cut (root);
 
 	ThreeWayMerge merger;
 	MergeHelper helper;
