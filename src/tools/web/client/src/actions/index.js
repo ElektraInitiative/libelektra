@@ -13,7 +13,9 @@ export {
 } from './clusters'
 
 export {
-  ADD_INSTANCE, UNADD_INSTANCE, ADD_CLUSTER, UNADD_CLUSTER, SELECT_INSTANCE,
+  addInstance, unaddInstance, ADD_INSTANCE, UNADD_INSTANCE,
+  addCluster, unaddCluster, ADD_CLUSTER, UNADD_CLUSTER,
+  selectInstance, SELECT_INSTANCE,
 } from './container'
 
 export {
