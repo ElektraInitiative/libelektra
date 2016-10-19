@@ -7,6 +7,7 @@ import clustersReducer from './clusters'
 import instancesReducer from './instances'
 import containerReducer from './container'
 import keyReducer from './kdb'
+import errorReducer from './error'
 
 export default combineReducers({
   idle: idleReducer,
@@ -15,4 +16,5 @@ export default combineReducers({
   instances: instancesReducer,
   container: containerReducer,
   kdb: keyReducer,
+  error: errorReducer,
 })

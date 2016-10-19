@@ -5,6 +5,7 @@ import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
 import ConnectedMenu from '../containers/ConnectedMenu'
 import ConnectedContainer from '../containers/ConnectedContainer'
 import ConnectedConfiguration from '../containers/ConnectedConfiguration'
+import ConnectedErrorSnackbar from '../containers/ConnectedErrorSnackbar'
 
 import DevTools from '../containers/DevTools'
 import Paper from 'material-ui/Paper'
@@ -37,6 +38,7 @@ const MainApp = (props) =>
         <div style={{padding: '50px'}}>
             {displayPage(props)}
         </div>
+        <ConnectedErrorSnackbar />
     </div>
 
 const DevApp = (props) =>
