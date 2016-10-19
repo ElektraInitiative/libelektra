@@ -19,6 +19,9 @@ namespace kdb
 /**
  * @brief Stream the name of a key
  *
+ * Use setf(std::ios_base::showbase) on the stream if you want to
+ * also output all metakeys (warning, cannot be parsed back!)
+ *
  * If you also want to stream the value, use the plugin framework.
  *
  * @param os the stream to write to
@@ -29,6 +32,16 @@ namespace kdb
 inline std::ostream & operator<< (std::ostream & os, kdb::Key const & k)
 {
 	os << k.getName ();
+	if (os.flags () & std::ios_base::showbase)
+	{
+		kdb::Key d = k.dup ();
+		d.rewindMeta ();
+		kdb::Key meta;
+		while ((meta = d.nextMeta ()))
+		{
+			os << " " << meta.getName ();
+		}
+	}
 
 	return os;
 }
@@ -53,6 +66,16 @@ inline std::istream & operator>> (std::istream & is, kdb::Key & k)
 		delim = '\n';
 	}
 	getline (is, name, delim);
+	if (is.flags () & std::ios_base::showbase)
+	{
+		std::stringstream iis (name);
+		iis >> name;
+		std::string n;
+		while ((iis >> n))
+		{
+			k.setMeta (n, "");
+		}
+	}
 	k.setName (name);
 
 	return is;

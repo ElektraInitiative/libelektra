@@ -32,9 +32,6 @@ namespace kdb
  * Use setf(std::ios_base::unitbuf) on the stream if you want to
  * flush the buffer after each key.
  *
- * Use setf(std::ios_base::showbase) on the stream if you want to
- * also output all metakeys (warning, cannot be parsed back!)
- *
  * @return the stream
  */
 inline std::ostream & operator<< (std::ostream & os, kdb::KeySet const & cks)
@@ -46,15 +43,6 @@ inline std::ostream & operator<< (std::ostream & os, kdb::KeySet const & cks)
 	while ((k = ks.next ()))
 	{
 		os << k;
-		if (os.flags () & std::ios_base::showbase)
-		{
-			kdb::Key meta;
-			k.rewindMeta ();
-			while ((meta = k.nextMeta ()))
-			{
-				os << " " << meta.getName ();
-			}
-		}
 		if (os.flags () & std::ios_base::skipws)
 		{
 			os << '\n';
