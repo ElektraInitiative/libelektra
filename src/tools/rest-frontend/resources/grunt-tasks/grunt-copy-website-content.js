@@ -70,7 +70,30 @@ module.exports = function(grunt) {
 				fs.ensureDirSync(dir);
 			}
 			// now read and copy
-			fs.writeFileSync(file, fs.readFileSync(path.join(root_dir, entry.options.path)));
+			var content = fs.readFileSync(path.join(root_dir, entry.options.path), {
+				encoding: 'utf8'
+			});
+			content = self.ensureProperFileContentFormat(path.basename(file), content);
+			fs.writeFileSync(file, content);
+		};
+
+		this.ensureProperFileContentFormat = function(filename, content) {
+			grunt.log.writeln(content);
+			switch(path.extname(filename)) {
+				case '':
+				case '.md':
+					content = self.replaceTabBySpaces(content);
+					break;
+				default: // code files
+					content = self.replaceTabBySpaces(content);
+					content = '```\n' + content + '\n```';
+					break;
+			}
+			return content;
+		};
+
+		this.replaceTabBySpaces = function(text) {
+			return text.replace(new RegExp('\t', 'g'), '    ');
 		};
 
 

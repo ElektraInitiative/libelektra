@@ -101,6 +101,13 @@ module.exports = function(grunt) {
 				ref: entry.ref,
 				children: []
 			};
+			result.children.push({
+				name: self.makePrettyName(path.basename(entry.options.path)),
+				type: 'file',
+				options: {
+					path: entry.options.path
+				}
+			});
 			var readme = fs.readFileSync(path.join(root_dir, entry.options.path)).toString().split('\n');
 			var hasToParse = false;
 			readme.forEach(function(line) {

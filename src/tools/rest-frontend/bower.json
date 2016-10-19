@@ -42,6 +42,7 @@
     "angular-animate": "^1.5.8",
     "angular-messages": "^1.5.8",
     "angular-clipboard": "^1.5.0",
-    "angular-sanitize": "^1.5.8"
+    "angular-sanitize": "^1.5.8",
+    "highlightjs": "^9.7.0"
   }
 }

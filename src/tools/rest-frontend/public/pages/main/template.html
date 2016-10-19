@@ -49,14 +49,18 @@
 						ng-class="{active: $state.includes('main.dyn.' + entry.ref), dropdown: entry.type === 'submenu'}"
 						ng-attr-uib-dropdown="{{ entry.type === 'submenu' && '' || undefined }}">
 						<a ng-if="entry.type === 'listfiles'" ui-sref="{{ 'main.dyn.' + entry.ref }}">{{ entry.name }}</a>
-						<a ng-if="entry.type === 'link'" href="{{ entry.options.path }}">{{ entry.name }}</a>
+						<a ng-if="entry.type === 'link'" href="{{ entry.options.path }}">
+							<i class="fa fa-external-link"></i> {{ entry.name }}
+						</a>
 						<a ng-if="entry.type === 'submenu'" href="#" uib-dropdown-toggle>
 							{{ entry.name }} <span class="caret"></span>
 						</a>
 						<ul ng-if="entry.type === 'submenu'" uib-dropdown-menu>
 							<li ng-repeat="subentry in entry.children">
 								<a ng-if="subentry.type === 'listfiles'" ui-sref="{{ 'main.dyn.' + subentry.ref }}">{{ subentry.name }}</a>
-								<a ng-if="subentry.type === 'link'" href="{{ subentry.options.path }}">{{ subentry.name }}</a>
+								<a ng-if="subentry.type === 'link'" href="{{ subentry.options.path }}">
+									<i class="fa fa-external-link"></i> {{ subentry.name }}
+								</a>
 							</li>
 						</ul>
 					</li>
