@@ -205,7 +205,7 @@ public:
 	inline void copyMeta (const Key & other, const std::string & metaName);
 	inline void copyAllMeta (const Key & other);
 
-	inline void rewindMeta () const;
+	inline void rewindMeta ();
 	inline const Key nextMeta ();
 	inline const Key currentMeta () const;
 
@@ -1520,7 +1520,7 @@ inline void Key::copyAllMeta (const Key & other)
  *
  * @see nextMeta(), currentMeta()
  */
-inline void Key::rewindMeta () const
+inline void Key::rewindMeta ()
 {
 	ckdb::keyRewindMeta (key);
 }
