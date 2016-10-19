@@ -4,6 +4,7 @@
   "description": "",
   "main": "src/index.js",
   "scripts": {
+    "postinstall": "cd ../client && npm install",
     "start": "npm run build && npm run start:prod",
     "start:verbose": "npm run build && npm run start:prod:verbose",
     "build": "babel -d build/ src/ && cd ../client && npm run build",
