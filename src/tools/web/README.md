@@ -3,12 +3,27 @@
 _an API and web user interface to remotely manage multiple Elektra instances_
 
 
-## dependencies
+## Dependencies
 
 Elektra web requires:
 
  * Elektra with the `yajl` plugin installed
  * A recent [node.js](https://nodejs.org/en/) installation (at least 4.x)
+
+
+## Getting Started
+
+ * Install dependencies (see above)
+ * Clone libelektra repo and `cd libelektra/src/tools/web`
+ * Install and start elektrad:
+   * `cd elektrad`
+   * `npm install`
+   * `npm start`
+ * Install and start clusterd:
+   * `cd clusterd`
+   * `npm install`
+   * `npm start`
+ * You can now access the client on: [http://localhost:1235](http://localhost:1235)
 
 
 ## Overview
