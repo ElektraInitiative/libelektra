@@ -111,14 +111,23 @@ const getConfiguration = (instance, cluster) => {
   }
 }
 
-const Configuration = ({ instance, cluster, configuring, kdb, ls, returnToMain, getKey, setKey }) => {
+const Configuration = ({
+  instance, cluster, configuring, kdb, ls,
+  returnToMain, getKey, setKey, getClusterKey, setClusterKey,
+}) => {
   const { id, name, subtitle } = getConfiguration(instance, cluster)
 
   const tree = createTree(ls)
   const treeView = createTreeView({
     kdb,
-    getKey: (path) => getKey(id, path),
-    setKey: (path, value) => setKey(id, path, value),
+    getKey: (path) =>
+      configuring === 'cluster'
+        ? getClusterKey(id, path)
+        : getKey(id, path),
+    setKey: (path, value) =>
+      configuring === 'cluster'
+        ? setClusterKey(id, path, value)
+        : setKey(id, path, value),
   }, tree)
 
   return (

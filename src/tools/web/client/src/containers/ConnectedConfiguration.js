@@ -2,7 +2,9 @@ import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 
 import Configuration from '../components/Configuration.jsx'
-import { returnToMain, getKey, setKey } from '../actions'
+import {
+  returnToMain, getKey, setKey, getClusterKey, setClusterKey,
+} from '../actions'
 
 const mapStateToProps = (state) => {
   return {
@@ -14,6 +16,8 @@ const mapStateToProps = (state) => {
 }
 
 const mapDispatchToProps = (dispatch) =>
-  bindActionCreators({ returnToMain, getKey, setKey }, dispatch)
+  bindActionCreators({
+    returnToMain, getKey, setKey, getClusterKey, setClusterKey,
+  }, dispatch)
 
 export default connect(mapStateToProps, mapDispatchToProps)(Configuration)

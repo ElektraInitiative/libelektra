@@ -19,8 +19,8 @@ export {
 } from './container'
 
 export {
-  getKey, GET_KEY_REQUEST, GET_KEY_SUCCESS, GET_KEY_FAILURE,
-  setKey, SET_KEY_REQUEST, SET_KEY_SUCCESS, SET_KEY_FAILURE,
+  getKey, getClusterKey, GET_KEY_REQUEST, GET_KEY_SUCCESS, GET_KEY_FAILURE,
+  setKey, setClusterKey, SET_KEY_REQUEST, SET_KEY_SUCCESS, SET_KEY_FAILURE,
 } from './kdb'
 
 export {
