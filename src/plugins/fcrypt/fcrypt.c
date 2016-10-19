@@ -131,6 +131,46 @@ static size_t getRecipientCount (KeySet * config)
 	return recipientCount;
 }
 
+static int fcryptGpgCallAndCleanup (Key * parentKey, KeySet * pluginConfig, char ** argv, int argc, int tmpFileFd, char * tmpFile)
+{
+	int parentKeyFd = -1;
+	int result = CRYPTO_PLUGIN_FUNCTION (gpgCall) (pluginConfig, parentKey, NULL, argv, argc);
+
+	if (result == 1)
+	{
+		parentKeyFd = open (keyString (parentKey), O_WRONLY);
+
+		// encryption successful, overwrite the original file with the encrypted data
+		if (rename (tmpFile, keyString (parentKey)) != 0)
+		{
+			ELEKTRA_SET_ERRORF (31, parentKey, "Renaming file %s to %s failed.", tmpFile, keyString (parentKey));
+			result = -1;
+		}
+	}
+
+	if (result == 1)
+	{
+		if (parentKeyFd >= 0)
+		{
+			shredTemporaryFile (parentKeyFd, parentKey);
+		}
+	}
+	else
+	{
+		// if anything went wrong above the temporary file is shredded and removed
+		shredTemporaryFile (tmpFileFd, parentKey);
+		unlink (tmpFile);
+	}
+
+	if (parentKeyFd >= 0)
+	{
+		close (parentKeyFd);
+	}
+	close (tmpFileFd);
+	elektraFree (tmpFile);
+	return result;
+}
+
 /**
  * @brief encrypt the file specified at parentKey
  * @param pluginConfig holds the plugin configuration
@@ -150,7 +190,6 @@ static int encrypt (KeySet * pluginConfig, Key * parentKey)
 
 	const size_t testMode = inTestMode (pluginConfig);
 	int tmpFileFd = -1;
-	int parentKeyFd = -1;
 
 	char * tmpFile = getTemporaryFileName (keyString (parentKey), &tmpFileFd);
 	if (!tmpFile)
@@ -209,41 +248,7 @@ static int encrypt (KeySet * pluginConfig, Key * parentKey)
 	// gpg2 --batch --yes -o encryptedFile -r keyID -e configFile
 	// mv encryptedFile configFile
 
-	int result = CRYPTO_PLUGIN_FUNCTION (gpgCall) (pluginConfig, parentKey, NULL, argv, argc);
-
-	if (result == 1)
-	{
-		parentKeyFd = open (keyString (parentKey), O_WRONLY);
-
-		// encryption successful, overwrite the original file with the encrypted data
-		if (rename (tmpFile, keyString (parentKey)) != 0)
-		{
-			ELEKTRA_SET_ERRORF (31, parentKey, "Renaming file %s to %s failed.", tmpFile, keyString (parentKey));
-			result = -1;
-		}
-	}
-
-	if (result == 1)
-	{
-		if (parentKeyFd >= 0)
-		{
-			shredTemporaryFile (parentKeyFd, parentKey);
-		}
-	}
-	else
-	{
-		// if anything went wrong above the temporary file is shredded and removed
-		shredTemporaryFile (tmpFileFd, parentKey);
-		unlink (tmpFile);
-	}
-
-	if (parentKeyFd >= 0)
-	{
-		close (parentKeyFd);
-	}
-	close (tmpFileFd);
-	elektraFree (tmpFile);
-	return result;
+	return fcryptGpgCallAndCleanup (parentKey, pluginConfig, argv, argc, tmpFileFd, tmpFile);
 }
 
 /**
@@ -256,7 +261,6 @@ static int encrypt (KeySet * pluginConfig, Key * parentKey)
 static int decrypt (KeySet * pluginConfig, Key * parentKey)
 {
 	int tmpFileFd = -1;
-	int parentKeyFd = -1;
 	char * tmpFile = getTemporaryFileName (keyString (parentKey), &tmpFileFd);
 	if (!tmpFile)
 	{
@@ -292,41 +296,7 @@ static int decrypt (KeySet * pluginConfig, Key * parentKey)
 	// gpg2 --batch --yes -o tmpfile -d configFile
 	// mv tmpfile configFile
 
-	int result = CRYPTO_PLUGIN_FUNCTION (gpgCall) (pluginConfig, parentKey, NULL, argv, argc);
-
-	if (result == 1)
-	{
-		parentKeyFd = open (keyString (parentKey), O_WRONLY);
-
-		// encryption successful, overwrite the original file with the encrypted data
-		if (rename (tmpFile, keyString (parentKey)) != 0)
-		{
-			ELEKTRA_SET_ERRORF (31, parentKey, "Renaming file %s to %s failed.", tmpFile, keyString (parentKey));
-			result = -1;
-		}
-	}
-
-	if (result == 1)
-	{
-		if (parentKeyFd >= 0)
-		{
-			shredTemporaryFile (parentKeyFd, parentKey);
-		}
-	}
-	else
-	{
-		// if anything went wrong above the temporary file is shredded and removed
-		shredTemporaryFile (tmpFileFd, parentKey);
-		unlink (tmpFile);
-	}
-
-	if (parentKeyFd >= 0)
-	{
-		close (parentKeyFd);
-	}
-	close (tmpFileFd);
-	elektraFree (tmpFile);
-	return result;
+	return fcryptGpgCallAndCleanup (parentKey, pluginConfig, argv, argc, tmpFileFd, tmpFile);
 }
 
 /**
