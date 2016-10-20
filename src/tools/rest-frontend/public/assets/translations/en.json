@@ -257,6 +257,7 @@
 	"APP.ENTRIES.SEARCH.TABLE.HEADER.SLUG": "Slug",
 	"APP.ENTRIES.SEARCH.TABLE.HEADER.TITLE": "Title",
 
+	"APP.GLOBAL.FOOTER.LINK.TITLE.SCROLLTOTOP": "Scroll to Top",
 	"APP.GLOBAL.NOTIFICATION.HEADER.CONNECTION_ISSUE": "Connection issues",
 	"APP.GLOBAL.NOTIFICATION.MESSAGE.SERVER_NOT_REACHABLE": "It seems as if the service is not reachable. This may be either due to a downtime of the service or because of your internet connection.",
 	"APP.GLOBAL.TITLE": "ElektraInitiative",

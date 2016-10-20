@@ -6,10 +6,10 @@
         .controller('MainController', MainController);
 
     MainController.$inject = [
-        '$rootScope', '$scope', 'Logger', '$state', 'webStructure'
+        '$rootScope', '$scope', 'Logger', '$state', '$anchorScroll', 'webStructure'
     ];
 
-    function MainController($rootScope, $scope, Logger, $state, webStructure) {
+    function MainController($rootScope, $scope, Logger, $state, $anchorScroll, webStructure) {
 
         var vm = this;
         $scope.$rootScope = $rootScope;
@@ -41,6 +41,10 @@
             }
 
         };
+
+		this.scrollToTop = function() {
+			$anchorScroll();
+		};
 
         Logger.info("Main template ready");
 
