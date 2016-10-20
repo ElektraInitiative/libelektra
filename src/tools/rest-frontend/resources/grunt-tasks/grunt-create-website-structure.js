@@ -28,7 +28,7 @@ module.exports = function(grunt) {
 			});
 
 			// write result into output file
-			grunt.file.write(self.data.output, JSON.stringify(output));
+			grunt.file.write(self.data.output, JSON.stringify(output, null, 4));
 
 			// print success message
 			grunt.log.ok('Website structure file generated successfully!');
