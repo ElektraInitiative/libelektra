@@ -5,7 +5,7 @@
 - infos/provides =
 - infos/placements = presetstorage pregetstorage postgetstorage precommit postcommit prerollback postrollback
 - infos/status = maintained unittest nodep libc global
-- infos/description = loads a list of plugins
+- infos/description = delegates work to a list of plugins
 
 ## Introduction ##
 
