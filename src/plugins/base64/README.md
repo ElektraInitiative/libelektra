@@ -9,8 +9,6 @@
 - infos/metadata =
 - infos/description = Base64 Encoding
 
-# base64 Plugin #
-
 ## Introduction ##
 
 The Base64 Encoding (specified in [RFC4648](https://www.ietf.org/rfc/rfc4648.txt)) is used to encode arbitrary binary data to ASCII strings.

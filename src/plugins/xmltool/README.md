@@ -10,7 +10,7 @@
 ## Introduction ##
 
 This plugin is a storage plugin allowing Elektra to read and write xml
-formatted files. It uses the libelektratools 0.7 xml format.
+formatted files. It uses the `libelektratools` 0.7 xml format.
 
 This plugin can be used for migration of Key Databases
 from 0.7 -> 0.8. It should not be used otherwise.
@@ -30,9 +30,9 @@ from 0.7 -> 0.8. It should not be used otherwise.
 
 After you have upgraded Elektra, you can import xml files from Elektra 0.7:
 
-	kdb import system xmltool < system.xml
-	kdb import user xmltool < user.xml
+    kdb import system xmltool < system.xml
+    kdb import user xmltool < user.xml
 
 Or you can also mount an xml file using `xmltool` (not recommended!):
 
-	kdb mount /etc/example.xml system/example xmltool
+    kdb mount /etc/example.xml system/example xmltool

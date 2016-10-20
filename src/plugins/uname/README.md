@@ -12,16 +12,15 @@
 This plugin is a storage plugin that will use the syscall `uname (2)`.
 No resolver is needed for that plugin to work.
 
-
 ## Special Values ##
 
 This plugin defines following keynames below its mountpoint:
 
-	sysname
-	nodename
-	release
-	version
-	machine
+- sysname
+- nodename
+- release
+- version
+- machine
 
 ## Restrictions ##
 

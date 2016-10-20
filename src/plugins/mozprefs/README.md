@@ -7,7 +7,7 @@
 - infos/placements = getstorage setstorage
 - infos/status = maintained reviewed conformant compatible coverage specific tested nodep libc preview experimental difficult unfinished nodoc concept limited
 - infos/metadata =
-- infos/description =
+- infos/description = storage plugin for mozilla preferences
 
 ## Basics ##
 
@@ -33,40 +33,35 @@ Only Keys below one of these points are valid, everything else will be dropped
 
 In Mozilla preference files `.` is used to separate sections, while elektra uses `/`. For simplification, and because `/` isn't allowed in preference keys, the plugin treats `.` and `/` equally. 
 
-```
-kdb set system/prefs/lock/a/lock/key lock
-kdb set system/prefs/lock/a/lock.key lock
-kdb set system/prefs/lock/a.lock.key lock
-```
+    kdb set system/prefs/lock/a/lock/key lock
+    kdb set system/prefs/lock/a/lock.key lock
+    kdb set system/prefs/lock/a.lock.key lock
 
 will all result in `lockPref("a.lock.key", "lock");`
 
-
 ## Example ##
 
-```
-% kdb mount prefs.js user/prefs mozprefs
-% kdb setmeta user/prefs/lock/a/lock/key type boolean
-% kdb set user/prefs/lock/a/lock/key true
-% kdb setmeta user/prefs/pref/a/default/key type string
-% kdb set user/prefs/pref/a/default/key "i'm a default key"
-% kdb setmeta user/prefs/user/a/user/key type integer
-% kdb set user/prefs/user/a/user/key 123
+    % kdb mount prefs.js user/prefs mozprefs
+    % kdb setmeta user/prefs/lock/a/lock/key type boolean
+    % kdb set user/prefs/lock/a/lock/key true
+    % kdb setmeta user/prefs/pref/a/default/key type string
+    % kdb set user/prefs/pref/a/default/key "i'm a default key"
+    % kdb setmeta user/prefs/user/a/user/key type integer
+    % kdb set user/prefs/user/a/user/key 123
 
-% kdb export user/prefs
+    % kdb export user/prefs
 
-[lock/a/lock]
-key = true
-[pref/a/default]
-key = i'm a default key
-[user/a/user]
-key = 123
+    [lock/a/lock]
+    key = true
+    [pref/a/default]
+    key = i'm a default key
+    [user/a/user]
+    key = 123
 
 
-% cat `kdb file user/prefs`
+    % cat `kdb file user/prefs`
 
-lockPref("a.lock.key", true);
-pref("a.default.key", "i'm a default key");
-user_pref("a.user.key", 123);
+    lockPref("a.lock.key", true);
+    pref("a.default.key", "i'm a default key");
+    user_pref("a.user.key", 123);
 
-```

@@ -5,7 +5,7 @@
 - infos/needs =
 - infos/placements = presetstorage postgetstorage
 - infos/status = unfinished nodoc concept nodep libc experimental
-- infos/description =
+- infos/description = conditionally calls exported functions
 
 ## Usage ##
 

@@ -7,23 +7,21 @@
 - infos/status = maintained concept configurable obsolete 3000
 - infos/description = Very simple storage which writes out in a basic ini format.
 
-
 ## Introduction ##
 
 This plugin reads and writes files written in a basic line-oriented ini-like format.
 It is very simplistic without sections, the [ini](../ini/) plugin and for specifications
 the [ni](../ni/) plugin should be preferred in most cases.
 
-## Usage
+## Usage ##
 
 It is quite suitable to export configuration if you want line-by-line key, value pairs
 without sections or metadata.
 (Thus +3000 in status)
 
-	$ kdb export system/samba simpleini
+    $ kdb export system/samba simpleini
 
-
-## Configuration
+## Configuration ##
 
 The only parameter simpleini supports is `format` which allows you to change the syntax
 of individual lines.
@@ -37,10 +35,9 @@ The default is `% = %`.
 
 For example, if you want every key to be marked `%:key value` you would use:
 
-	$ kdb export -c "format=%%:% %" system/samba simpleini
-	%:key value
-	%:key2 value2
-
+    $ kdb export -c "format=%%:% %" system/samba simpleini
+    %:key value
+    %:key2 value2
 
 ## Restrictions ##
 
@@ -54,9 +51,9 @@ For example, if you want every key to be marked `%:key value` you would use:
   A code plugin is used for the escape character for some symbols (but does not respect user-defined `format`)
   and the null plugin is used to handle null values.
 
-
-##Examples##
+## Examples ##
 
 Mount the plugin:
 
     $ kdb mount -d /etc/samba/smb.conf system/samba ccode null simpleini
+

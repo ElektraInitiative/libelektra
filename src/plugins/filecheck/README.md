@@ -7,7 +7,7 @@
 - infos/placements = pregetstorage precommit
 - infos/status = maintained tested nodep libc configurable
 - infos/metadata =
-- infos/description =
+- infos/description = validates files (e.g. encoding)
 
 ## Introduction ##
 

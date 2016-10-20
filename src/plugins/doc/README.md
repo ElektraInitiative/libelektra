@@ -7,8 +7,7 @@
 - infos/placements =
 - infos/status = discouraged experimental nodep libc -1000000
 - infos/metadata =
-- infos/description =
-
+- infos/description = documentation plugin without functionality
 
 ## Introduction ##
 

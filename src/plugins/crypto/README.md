@@ -13,8 +13,6 @@
 - infos/metadata = crypto/encrypt
 - infos/description = Cryptographic operations
 
-# Crypto Plugin #
-
 ## Introduction ##
 
 This plugin is a filter plugin allowing Elektra to encrypt values before they are
@@ -30,7 +28,7 @@ Also the cryptographic keys must never be exposed to the outside of the crypto m
 The crypto plugin supports different libraries as provider for the cryptographic operations.
 At the moment the following crypto APIs are supported:
 
-- OpenSSL (libcrypto)
+- OpenSSL (`libcrypto`)
 - libgcrypt
 - Botan
 
@@ -105,7 +103,7 @@ Use one of those tools to download and install `libgcrypt`. If you choose MacPor
 
 The CMake command might look something like:
 
-	cmake -DLIBGCRYPT_INCLUDE_DIR="/opt/local/include/" -DLIBGCRYPT_LIBRARIES="/opt/local/lib/libgcrypt.dylib" -DPLUGINS="crypto;crypto_gcrypt;" /path_to_elektra_src
+    cmake -DLIBGCRYPT_INCLUDE_DIR="/opt/local/include/" -DLIBGCRYPT_LIBRARIES="/opt/local/lib/libgcrypt.dylib" -DPLUGINS="crypto;crypto_gcrypt;" /path_to_elektra_src
 
 For the `crypto_openssl` variant a custom-built OpenSSL library is neccessary as the MacPorts or Homebrew variants do not seem to work.
 Download the latest version of the OpenSSL library from the [project homepage](https://www.openssl.org/source/) and compile it.
@@ -121,18 +119,18 @@ At the moment the plugin will only run on UNIX/Linux-like systems, that provide 
 
 To mount a backend with the gcrypt plugin variant that uses the GPG key 9CCC3B514E196C6308CCD230666260C14A525406, use:
 
-	kdb mount test.ecf user/t crypto_gcrypt "crypto/key=9CCC3B514E196C6308CCD230666260C14A525406"
+    kdb mount test.ecf user/t crypto_gcrypt "crypto/key=9CCC3B514E196C6308CCD230666260C14A525406"
 
 Now you can specify a key `user/t/a` and protect its content by using:
 
-	kdb set user/t/a
-	kdb setmeta user/t/a crypto/encrypt 1
-	kdb set user/t/a "secret"
+    kdb set user/t/a
+    kdb setmeta user/t/a crypto/encrypt 1
+    kdb set user/t/a "secret"
 
 The value of `user/t/a` will be stored encrypted.
 But you can still access the original value using `kdb get`:
 
-	kdb get user/t/a
+    kdb get user/t/a
 
 ## Configuration ##
 
@@ -140,13 +138,13 @@ But you can still access the original value using `kdb get`:
 
 The path to the gpg binary can be specified in
 
-	/gpg/bin
+    /gpg/bin
 
 The GPG recipient keys can be specified as `/gpg/key` directly.
 If you want to use more than one key, just enumerate like:
 
-	/gpg/key/#0
-	/gpg/key/#1
+    /gpg/key/#0
+    /gpg/key/#1
 
 If more than one key is defined, every owner of the corresponding private key can decrypt the values of the backend.
 This might be useful if applications run with their own user but the administrator has to update the configuration.
@@ -156,18 +154,18 @@ The administrator then only needs the public key of the application user in her 
 
 The length of the master password that protects all the other keys can be set in:
 
-	/crypto/masterpasswordlength
+    /crypto/masterpasswordlength
 
 The number of iterations that are to be performed in the PBKDF2 call can be set in:
 
-	/crypto/iterations
+    /crypto/iterations
 
 ### Library Shutdown ###
 
 The following key must be set to `"1"` within the plugin configuration,
 if the plugin should shut down the crypto library:
 
-	/shutdown
+    /shutdown
 
 Per default shutdown is disabled to prevent applications like the qt-gui from crashing.
 Shutdown is enabled in the unit tests to prevent memory leaks.

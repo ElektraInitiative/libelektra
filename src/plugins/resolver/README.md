@@ -5,12 +5,12 @@
 - infos/needs =
 - infos/placements = rollback getresolver setresolver commit
 - infos/status = productive maintained specific unittest tested libc configurable nodep
-- infos/description =
-## Scope ##
+- infos/description = system independent resolver
+
+## Introduction ##
 
 The @PLUGIN_SHORT_NAME@ handles operating system dependent tasks.
-One task is the resolving of the filenames for user and system (hence its name)
-
+One task is the resolving of the filenames for user and system (hence its name).
 
 We have an optimistic approach. Locking is only used to detect
 concurrent cooperative processes in the short moment between prepare and commit.
@@ -48,7 +48,6 @@ The build-in resolving works like (with ~ and `pwd` resolved from system):
 - for system with absolute path: path
 - for system with relative path: KDB_DB_SYSTEM + path
 
-
 ## Example
 
 For an absolute path /example.ini, you might get following values:
@@ -66,7 +65,6 @@ For an relative path example.ini, you might get following values:
 - for user: ~/.config/example.ini
 - for system: /etc/kdb/example.ini
 
-
 ## Variants ##
 
 Many variants exist that additionally influence the lookup
@@ -82,7 +80,6 @@ non-root to modify keys in system.
 
 See [COMPILE.md](/doc/COMPILE.md) for a documentation of possible
 variants.
-
 
 ### XDG Compatibility ###
 
@@ -104,12 +101,10 @@ way:
  - if no file was found, the least important element will be used for
    potential write attempts.
 
-
 ## Reading Configuration ##
 
  1.) If no update needed (unchanged modification time): ABORT
  2.) remember the last stat time (last update)
-
 
 ## Writing Configuration ##
 
@@ -124,3 +119,4 @@ way:
 #endif
  2.) Check the update time -> conflict
  3.) Update the update time (in order to not self-conflict)
+

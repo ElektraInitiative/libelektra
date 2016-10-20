@@ -7,7 +7,7 @@
 - infos/placements = rollback getresolver setresolver commit
 - infos/status = recommended productive maintained reviewed conformant compatible coverage specific unittest shelltest tested libc configurable final preview 
 - infos/metadata =
-- infos/description =
+- infos/description = resolver for git repositories
 
 ## Description ##
 
@@ -23,9 +23,6 @@ It operates on a temporary copy of the latest version of your file fetched from 
 
 Currently it only works on already existing files inside existing git repositories. 
 
-
 ## Examples ##
 
-```
-kdb mount -R gitresolver /path/to/my/gitrepo/file.ini system/gittest ini shell execute/set='cd /path/to/my/gitrepo/ && git commit --amend'
-```
+    kdb mount -R gitresolver /path/to/my/gitrepo/file.ini system/gittest ini shell execute/set='cd /path/to/my/gitrepo/ && git commit --amend'

@@ -10,7 +10,7 @@
 - infos/status = nodep libc configurable difficult
 - infos/description = copies metadata to keys with the help of globbing
 
-## INTRODUCTION ##
+## Introduction ##
 
 The glob plugin provides coping metadata given by the plugin's configuration
 to keys identified using *glob expressions*.
@@ -18,25 +18,23 @@ Globbing resembles regular expressions.
 They do not have the same expressive power, but are easier to use.
 The semantics are more suitable to match path names:
 
--  `*` matches any key name of just one hierarchy. This means it
+- `*` matches any key name of just one hierarchy. This means it
 complies with any character except slash or null.
--  `?` satisfies single characters with the same exclusions.
--  Additionally, there are ranges and character classes. They can also be inverted.
+- `?` satisfies single characters with the same exclusions.
+- Additionally, there are ranges and character classes. They can also be inverted.
 
 So this plugin adds metadata to keys identified by globbing expressions.
 The plugin copies the metadata of the corresponding globbing keys in its configuration.
 Globbing can be applied in get and set direction or both.
 
-
-
-## GLOBBING KEYS ##
+## Globbing Keys ##
 
 The plugin is configured with globbing keys in its configuration. Each key below the configuration is
 interpreted as a globbing key. The value of the key contains the globbing expression. When a key matching
 the glob expression contained in one of the globbing keys is found, the metakeys of the corresponding
 globbing key are copied.
 
-### GLOBBING DIRECTION ###
+### Globbing Direction ###
 
 Globbing keys located directly below the configuration (e.g `config/glob/#1`) are applied in both directions
 (get and set). Keys below "get" (e.g. `config/glob/get/#1`) are applied only in the get direction and keys below set
@@ -46,12 +44,11 @@ So the glob plugin iterates over a list of glob expressions for every key.
 Metadata is applied only for the first expression that matches.
 So later expressions can be used as default values.
 
-### GLOBBING FLAGS ###
+### Globbing Flags ###
 
 Globbing keys may contain a subkey named "flags". This optional key contains the flags to be passed to the
-globbing function (currently fnmatch). If the key does not exist or if the value of the key cannot be
-converted into a number, FNM_PATHNAME is used as a default (see fnmatch(3) for more details).
-
+globbing function (`currently fnmatch`). If the key does not exist or if the value of the key cannot be
+converted into a number, `FNM_PATHNAME` is used as a default (see `fnmatch(3)` for more details).
 
 ## Contracts ##
 
@@ -65,21 +62,23 @@ with a slash, the contract checker will automatically prepend the mountpoint.
 
 For example, the hosts plugin contract contains:
 
-	keyNew ("system/elektra/modules/hosts/config/needs/glob/#1",
-		KEY_VALUE, "/*",
-		KEY_META, "check/ipaddr", "", /* Preferred way to check */
-			/* Can be checked additionally */
-		KEY_META, "check/validation", "^[0-9.:]+$",
-		KEY_META, "check/validation/message",
-			"Character present not suitable for ip address",
-		KEY_END),
-	keyNew ("system/elektra/modules/hosts/config/needs/glob/#2",
-		KEY_VALUE, "/*/*",
-			/* Strict character validation */
-		KEY_META, "check/validation", "^[0-9a-zA-Z.:]+$",
-		KEY_META, "check/validation/message",
-			"Character present not suitable for host address",
-		KEY_END),
+```C
+keyNew ("system/elektra/modules/hosts/config/needs/glob/#1",
+    KEY_VALUE, "/*",
+    KEY_META, "check/ipaddr", "", /* Preferred way to check */
+        /* Can be checked additionally */
+    KEY_META, "check/validation", "^[0-9.:]+$",
+    KEY_META, "check/validation/message",
+        "Character present not suitable for ip address",
+    KEY_END),
+keyNew ("system/elektra/modules/hosts/config/needs/glob/#2",
+    KEY_VALUE, "/*/*",
+        /* Strict character validation */
+    KEY_META, "check/validation", "^[0-9a-zA-Z.:]+$",
+    KEY_META, "check/validation/message",
+        "Character present not suitable for host address",
+    KEY_END),
+```
 
 We see that the `hosts` plugin adds two glob statements with the clause
 `config/needs`.

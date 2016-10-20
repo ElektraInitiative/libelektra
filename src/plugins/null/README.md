@@ -18,7 +18,6 @@ Some plugins that work on values are not aware of null values.
 They would crash when they try
 to access a value that is believed to be a string.
 
-
 ## Special Values ##
 
 The plugin transcodes all null values to `@NULL`, all empty strings to

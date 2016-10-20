@@ -7,9 +7,9 @@
 - infos/placements = presetstorage
 - infos/status = productive maintained nodep libc final
 - infos/metadata = required mandatory
-- infos/description =
+- infos/description = validates configuration against set of required & accepted keys
 
-## Introduction
+## Introduction ##
 
 Rarely you want a very strict validation where only required
 keys should be accepted.
@@ -23,24 +23,24 @@ introduced in later versions, hindering upgradability.
 Nevertheless, if you need such a feature, this is the
 correct plugin to do so.
 
-## Usage
+## Usage ##
 
 The plugin is *not* mounted by default.
 So you must explicitly add it with `infos/needs`
 either in specifications or contracts.
 
-## Example
+## Example ##
 
 If you used [simplespeclang](/src/plugins/simplespeclang) and want to
 only allow keys that are present in the specification, you can add `required`
 to the `spec-mount` command:
 
-	% kdb mount test.spec spec/test simplespeclang
-	% cat << HERE > `kdb file spec/test`
-	plugins required
-	enum allowed = something
-	HERE
-	% kdb spec-mount /test
-	% kdb set /test/allowed something    # is specified, works!
-	% kdb set /test/rejected  something  # fails because rejected not required
+    % kdb mount test.spec spec/test simplespeclang
+    % cat << HERE > `kdb file spec/test`
+    plugins required
+    enum allowed = something
+    HERE
+    % kdb spec-mount /test
+    % kdb set /test/allowed something    # is specified, works!
+    % kdb set /test/rejected  something  # fails because rejected not required
 
