@@ -109,7 +109,7 @@ module.exports = function(grunt) {
 			var pretty = (typeof entry.options.name.make_pretty === 'undefined') ? true : entry.options.name.make_pretty;
 
 			var fileEntry = {
-				name: (pretty) ? self.makePrettyName(path.basename(entry.options.path)) : path.basename(entry.options.path),
+				name: self.makePrettyName(path.basename(entry.options.path)),
 				type: 'file',
 				options: {
 					path: entry.options.path
