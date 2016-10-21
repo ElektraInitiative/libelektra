@@ -120,9 +120,22 @@ if (DEPENDENCY_PHASE)
 	unset (LIBGCRYPT_MANUAL_OSX_HACK)
 	unset (BOTAN_MANUAL_OSX_HACK)
 	unset (plugin)
+
+	# add base64 directory to include path
+	if(NOT "${OPENSSL_INCLUDE_DIR}" MATCHES "${CMAKE_SOURCE_DIR}/src/plugins/base64/")
+		set (OPENSSL_INCLUDE_DIR ${OPENSSL_INCLUDE_DIR} "${CMAKE_SOURCE_DIR}/src/plugins/base64/" CACHE STRING "OpenSSL include path" FORCE)
+	endif ()
+
+	if(NOT "${LIBGCRYPT_INCLUDE_DIR}" MATCHES "${CMAKE_SOURCE_DIR}/src/plugins/base64/")
+		set (LIBGCRYPT_INCLUDE_DIR ${LIBGCRYPT_INCLUDE_DIR} "${CMAKE_SOURCE_DIR}/src/plugins/base64/" CACHE STRING "libgcrypt include path" FORCE)
+	endif ()
+
+	if(NOT "${BOTAN_INCLUDE_DIRS}" MATCHES "${CMAKE_SOURCE_DIR}/src/plugins/base64/")
+		set (BOTAN_INCLUDE_DIRS ${BOTAN_INCLUDE_DIRS} "${CMAKE_SOURCE_DIR}/src/plugins/base64/" CACHE STRING "Botan include path" FORCE)
+	endif ()
 endif ()
 
-set (CRYPTO_COMMON_FILES helper.h helper.c gpg.h gpg.c crypto.h crypto.c)
+set (CRYPTO_COMMON_FILES ../base64/base64_functions.h ../base64/base64_functions.c helper.h helper.c gpg.h gpg.c crypto.h crypto.c)
 
 #
 # Compile Variant: OpenSSL

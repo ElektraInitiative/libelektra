@@ -27,6 +27,7 @@ extern "C" {
 #include "crypto.h"
 #include "gpg.h"
 #include "helper.h"
+#include <base64_functions.h>
 #include <kdberrors.h>
 #include <string.h>
 
@@ -53,8 +54,12 @@ static int getKeyIvForEncryption (KeySet * config, Key * errorKey, Key * k, uniq
 		// generate the salt
 		AutoSeeded_RNG rng;
 		rng.randomize (salt, sizeof (salt));
-		saltHexString = CRYPTO_PLUGIN_FUNCTION (bin2hex) (errorKey, salt, sizeof (salt));
-		if (!saltHexString) return -1; // error set by CRYPTO_PLUGIN_FUNCTION(bin2hex)()
+		saltHexString = ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME_C, base64Encode) (salt, sizeof (salt));
+		if (!saltHexString)
+		{
+			ELEKTRA_SET_ERROR (87, errorKey, "Memory allocation failed");
+			return -1;
+		}
 		keySetMeta (k, ELEKTRA_CRYPTO_META_SALT, saltHexString);
 		elektraFree (saltHexString);
 
@@ -318,7 +323,7 @@ char * elektraCryptoBotanCreateRandomString (Key * errorKey, const kdb_unsigned_
 		auto buffer = unique_ptr<kdb_octet_t[]>{ new kdb_octet_t[length] };
 		AutoSeeded_RNG rng;
 		rng.randomize (&buffer[0], length);
-		char * hexString = CRYPTO_PLUGIN_FUNCTION (bin2hex) (errorKey, &buffer[0], length);
+		char * hexString = ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME_C, base64Encode) (&buffer[0], length);
 		return hexString;
 	}
 	catch (std::exception & e)
