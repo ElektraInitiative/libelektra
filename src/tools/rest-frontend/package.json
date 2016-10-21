@@ -33,6 +33,7 @@
     "grunt-browserify": "^5.0.0",
     "grunt-cli": "latest",
     "grunt-concat": "^0.1.6",
+    "grunt-contrib-concat": "^1.0.1",
     "grunt-contrib-cssmin": "latest",
     "grunt-contrib-jshint": "latest",
     "grunt-contrib-less": "latest",
