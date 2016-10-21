@@ -273,6 +273,43 @@ module.exports = function($stateProvider, $urlRouterProvider, $locationProvider,
 					resolve: {
 						files: [function() {
 							return entry.children;
+						}],
+						currentFile: ['$q', '$timeout', '$state', '$stateParams', 'WebsiteService', 'files',
+								function($q, $timeout, $state, $stateParams, WebsiteService, files) {
+
+							var deferred = $q.defer();
+
+							$timeout(function() {
+								if($stateParams.file === null) {
+									$state.go('main.dyn.' + entry.ref, {
+										file: files.filter(function(elem) {
+											return elem.type === 'file';
+										})[0].slug
+									});
+									deferred.reject();
+								} else {
+									var filtered = files.filter(function(elem) {
+										return elem.type === 'file' && elem.slug === $stateParams.file;
+									});
+									if(filtered.length === 0) {
+										$state.go('main.dyn.' + entry.ref, {
+											file: files.filter(function(elem) {
+												return elem.type === 'file';
+											})[0].slug
+										});
+										deferred.reject();
+									} else {
+										WebsiteService.loadFile(filtered[0].options.path).then(function(data) {
+											var file = filtered[0];
+											file.content = data;
+											deferred.resolve(file);
+										});
+									}
+								}
+							});
+
+							return deferred.promise;
+
 						}]
 					},
 					ncyBreadcrumb: {
