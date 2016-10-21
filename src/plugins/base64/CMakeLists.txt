@@ -2,6 +2,8 @@ include (LibAddPlugin)
 
 add_plugin (base64
 	SOURCES
+		base64_functions.h
+		base64_functions.c
 		base64.h
 		base64.c
 	COMPILE_DEFINITIONS
