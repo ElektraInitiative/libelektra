@@ -120,8 +120,9 @@ module.exports = function(grunt) {
 			var readme = fs.readFileSync(path.join(root_dir, entry.options.path)).toString().split('\n');
 			var hasToParse = false;
 			readme.forEach(function(line) {
-				if(typeof entry.options.parsing.start_regex !== 'undefined' &&
-						line.match(new RegExp(entry.options.parsing.start_regex, 'i'))) {
+				if(typeof entry.options.parsing.start_regex === 'undefined' ||
+					(typeof entry.options.parsing.start_regex !== 'undefined' &&
+						line.match(new RegExp(entry.options.parsing.start_regex, 'i')))) {
 					hasToParse = true;
 				}
 				if(typeof entry.options.parsing.stop_regex !== 'undefined' &&

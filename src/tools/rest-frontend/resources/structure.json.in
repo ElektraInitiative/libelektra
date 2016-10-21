@@ -45,7 +45,7 @@
 						"start_regex": "# Plugins #",
 						"stop_regex": "####### UNUSED ######",
 						"section_regex": "## ([^#]+) ##",
-						"entry_regex": "\\- \\[(.+)\\]\\(([^\\)]+)\\)(.*)"
+						"entry_regex": "^\\- \\[(.+)\\]\\(([^\\)]+)\\)(.*)"
 					},
 					"name": {
 						"make_pretty": false
@@ -102,11 +102,17 @@
 			},
 			{
 				"name": "Bindings",
-				"type": "listdirs",
+				"type": "parsereadme",
 				"ref": "bindings",
 				"options": {
-					"path": "src/bindings",
-					"target_file": ["README.md", "README", "readme.md", "readme"]
+					"path": "src/bindings/README.md",
+					"target_file": ["README.md", "README", "readme.md", "readme"],
+					"parsing": {
+						"entry_regex": "^\\- \\[(.+)\\]\\(([^\\)]+)\\)(.*)"
+					},
+					"name": {
+						"make_pretty": false
+					}
 				}
 			},
 			{

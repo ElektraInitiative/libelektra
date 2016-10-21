@@ -1466,7 +1466,15 @@
                 "ref": "bindings",
                 "children": [
                     {
-                        "name": "Cpp",
+                        "name": "README",
+                        "type": "file",
+                        "options": {
+                            "path": "src/bindings/README.md"
+                        },
+                        "slug": "readme"
+                    },
+                    {
+                        "name": "cpp",
                         "type": "file",
                         "options": {
                             "path": "src/bindings/cpp/README.md"
@@ -1474,44 +1482,12 @@
                         "slug": "cpp"
                     },
                     {
-                        "name": "Gi",
-                        "type": "file",
-                        "options": {
-                            "path": "src/bindings/gi/README.md"
-                        },
-                        "slug": "gi"
-                    },
-                    {
-                        "name": "Gsettings",
-                        "type": "file",
-                        "options": {
-                            "path": "src/bindings/gsettings/README.md"
-                        },
-                        "slug": "gsettings"
-                    },
-                    {
-                        "name": "Intercept",
-                        "type": "file",
-                        "options": {
-                            "path": "src/bindings/intercept/README.md"
-                        },
-                        "slug": "intercept"
-                    },
-                    {
-                        "name": "Jna",
+                        "name": "jna",
                         "type": "file",
                         "options": {
                             "path": "src/bindings/jna/README.md"
                         },
                         "slug": "jna"
-                    },
-                    {
-                        "name": "Swig",
-                        "type": "file",
-                        "options": {
-                            "path": "src/bindings/swig/README.md"
-                        },
-                        "slug": "swig"
                     }
                 ]
             },
