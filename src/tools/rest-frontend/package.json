@@ -13,9 +13,11 @@
   "author": "Namoshek",
   "license": "BSD",
   "devDependencies": {
+    "angular": "^1.5.8",
     "bower": "latest",
     "fs-extra": "^0.30.0",
     "grunt": "latest",
+    "grunt-browserify": "^5.0.0",
     "grunt-cli": "latest",
     "grunt-contrib-cssmin": "latest",
     "grunt-contrib-jshint": "latest",

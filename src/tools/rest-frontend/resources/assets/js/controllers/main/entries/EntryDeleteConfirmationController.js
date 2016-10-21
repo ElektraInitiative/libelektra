@@ -1,30 +1,19 @@
-(function() {
+'use strict';
 
-    'use strict';
+module.exports = function($uibModalInstance, $scope, Logger, entry) {
 
-    angular.module('elektra.rest.angular')
-        .controller('EntryDeleteConfirmationController', EntryDeleteConfirmationController);
+	var vm = this;
 
-    EntryDeleteConfirmationController.$inject = [
-        '$uibModalInstance', '$scope', 'Logger', 'entry'
-	];
+	$scope.entry = entry;
 
-    function EntryDeleteConfirmationController($uibModalInstance, $scope, Logger, entry) {
+	this.ok = function() {
+		$uibModalInstance.close(true);
+	};
 
-        var vm = this;
+	this.abort = function() {
+		$uibModalInstance.dismiss(false);
+	};
 
-		$scope.entry = entry;
+	Logger.info('Entry delete confirmation controller ready');
 
-		this.ok = function() {
-			$uibModalInstance.close(true);
-		};
-
-		this.abort = function() {
-			$uibModalInstance.dismiss(false);
-		};
-
-        Logger.info('Entry delete confirmation controller ready');
-
-    }
-
-})();
+};

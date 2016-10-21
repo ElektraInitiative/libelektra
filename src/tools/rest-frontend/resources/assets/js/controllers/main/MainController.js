@@ -1,21 +1,12 @@
-(function() {
+'use strict';
 
-    'use strict';
+module.exports = function($rootScope, $scope, Logger, $state, $anchorScroll, webStructure) {
 
-    angular.module('elektra.rest.angular')
-        .controller('MainController', MainController);
+	var vm = this;
+	$scope.$rootScope = $rootScope;
 
-    MainController.$inject = [
-        '$rootScope', '$scope', 'Logger', '$state', '$anchorScroll', 'webStructure'
-    ];
-
-    function MainController($rootScope, $scope, Logger, $state, $anchorScroll, webStructure) {
-
-        var vm = this;
-        $scope.$rootScope = $rootScope;
-
-		// build the dynamic menu
-		$scope.menu = webStructure;
+	// build the dynamic menu
+	$scope.menu = webStructure;
 
 //        vm.currentLanguage = 'de';
 
@@ -33,21 +24,19 @@
 //
 //        }
 
-        this.goSearch = function() {
+	this.goSearch = function() {
 
-            if($rootScope.entriesSearchString) {
-                Logger.log('Go to search');
-                $state.go('main.entries.search');
-            }
+		if($rootScope.entriesSearchString) {
+			Logger.log('Go to search');
+			$state.go('main.entries.search');
+		}
 
-        };
+	};
 
-		this.scrollToTop = function() {
-			$anchorScroll();
-		};
+	this.scrollToTop = function() {
+		$anchorScroll();
+	};
 
-        Logger.info("Main template ready");
+	Logger.info("Main template ready");
 
-    }
-
-})();
+};

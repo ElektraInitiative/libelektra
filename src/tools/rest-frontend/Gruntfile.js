@@ -27,7 +27,8 @@ module.exports = function(grunt) {
 		},
         jshint: {
             options: {
-                reporter: require('jshint-stylish')
+                reporter: require('jshint-stylish'),
+				node: true
             },
             build: ['Gruntfile.js', 'resources/assets/js/**/*.js']
         },
@@ -57,18 +58,8 @@ module.exports = function(grunt) {
 				type: 'js'
             },
             config: {
-                src: 'resources/assets/js/config/constants.config.js.in',
-                dest: 'resources/assets/js/config/constants.config.js'
-            }
-        },
-        uglify: {
-            options: {
-                banner: dstFileBanner
-            },
-            build: {
-                files: {
-                    'public/assets/js/application.js': 'resources/assets/js/**/*.js'
-                }
+                src: 'resources/assets/js/config/index.js.in',
+                dest: 'resources/assets/js/config/index.js'
             }
         },
         watch: {
@@ -89,6 +80,13 @@ module.exports = function(grunt) {
                 tasks: ['uglify']
             }
         },
+		browserify: {
+			application: {
+				src: ['resources/assets/js/**/*.js'],
+				dest: 'public/assets/js/application.js',
+				options: { }
+			}
+		},
         'http-server': {
 
             dev: {
@@ -145,17 +143,19 @@ module.exports = function(grunt) {
     });
 
     grunt.loadNpmTasks('grunt-contrib-jshint');
-    grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-contrib-less');
     grunt.loadNpmTasks('grunt-contrib-cssmin');
     grunt.loadNpmTasks('grunt-contrib-watch');
 	grunt.loadNpmTasks('grunt-preprocess');
     grunt.loadNpmTasks('grunt-http-server');
+	grunt.loadNpmTasks('grunt-browserify');
 
     grunt.loadTasks('./resources/grunt-tasks');
 
-    grunt.registerTask('default', ['uglify']);
-    grunt.registerTask('full', ['less', 'cssmin', 'create-website-structure', 'copy-website-content', 'preprocess', 'uglify']);
+    grunt.registerTask('default', ['full']);
+    grunt.registerTask('full', [
+		'less', 'cssmin', 'create-website-structure', 'copy-website-content', 'preprocess', 'browserify'
+	]);
     grunt.registerTask('server', ['http-server']);
 
 };

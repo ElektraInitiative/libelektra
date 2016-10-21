@@ -1,20 +1,9 @@
-(function() {
+'use strict';
 
-    'use strict';
+module.exports = function($scope, Logger) {
 
-    angular.module('elektra.rest.angular')
-        .controller('HomeController', HomeController);
+	var vm = this;
 
-    HomeController.$inject = [
-		'$scope', 'Logger'
-	];
+	Logger.info("Home controller ready");
 
-    function HomeController($scope, Logger) {
-
-        var vm = this;
-
-        Logger.info("Home controller ready");
-
-    }
-
-})();
+};

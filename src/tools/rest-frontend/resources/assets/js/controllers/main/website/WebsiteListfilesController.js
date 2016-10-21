@@ -1,58 +1,47 @@
-(function() {
+'use strict';
 
-    'use strict';
+module.exports = function($scope, Logger, $state, $stateParams, WebsiteService, files) {
 
-    angular.module('elektra.rest.angular')
-        .controller('WebsiteListfilesController', WebsiteListfilesController);
+	var vm = this;
 
-    WebsiteListfilesController.$inject = [
-		'$scope', 'Logger', '$state', '$stateParams', 'WebsiteService', 'files'
-	];
+	$scope.$state = $state;
+	$scope.files = files;
 
-    function WebsiteListfilesController($scope, Logger, $state, $stateParams, WebsiteService, files) {
+	function goToDefaultFile() {
+		$state.go($state.current.name, {
+			file: files.filter(function(elem) {
+				return elem.type === 'file';
+			})[0].slug
+		});
+	}
 
-        var vm = this;
-
-		$scope.$state = $state;
-		$scope.files = files;
-
-		function goToDefaultFile() {
-			$state.go($state.current.name, {
-				file: files.filter(function(elem) {
-					return elem.type === 'file';
-				})[0].slug
-			});
-		}
-
-		if($stateParams.file === null) {
+	if($stateParams.file === null) {
+		goToDefaultFile();
+	} else {
+		var filtered = files.filter(function(elem) {
+			return elem.slug === $stateParams.file;
+		});
+		if(filtered.length === 0) {
 			goToDefaultFile();
 		} else {
-			var filtered = files.filter(function(elem) {
-				return elem.slug === $stateParams.file;
-			});
-			if(filtered.length === 0) {
-				goToDefaultFile();
-			} else {
-				$scope.currentFile = filtered[0];
-			}
+			$scope.currentFile = filtered[0];
 		}
+	}
 
-		this.setCurrentFile = function(file) {
-			$scope.currentFile = file;
-			vm.loadFile();
-		};
+	this.setCurrentFile = function(file) {
+		$scope.currentFile = file;
+		vm.loadFile();
+	};
 
-		this.loadFile = function() {
-			WebsiteService.loadFile($scope.currentFile.options.path).then(function(data) {
-				$scope.currentFile.content = data;
-			}, function(error) {
-				Logger.error('Could not load specific file');
-			});
-		};
+	this.loadFile = function() {
+		WebsiteService.loadFile($scope.currentFile.options.path).then(function(data) {
+			$scope.currentFile.content = data;
+		}, function(error) {
+			Logger.error('Could not load specific file');
+		});
+	};
 
-		this.loadFile();
-		Logger.info("Website listfiles controller ready");
+	this.loadFile();
+	Logger.info("Website listfiles controller ready");
 
-    }
-
-})();
+};

@@ -1,33 +1,22 @@
-(function() {
+'use strict';
 
-    'use strict';
+module.exports = function(Logger, $window, config) {
 
-    angular.module('elektra.rest.angular')
-        .service('ReportService', ReportService);
+	var service = this;
 
-    ReportService.$inject = [
-        'Logger', '$window', 'config'
-    ];
+	this.reportIssue = function(title, message, labels) {
 
-    function ReportService(Logger, $window, config) {
+		var url = config.github.website.root + config.github.website.paths.issues +
+				'?title=' + encodeURIComponent(title) +
+				'&body=' + encodeURIComponent(message);
+		labels.forEach(function(elem) {
+			url += '&labels[]=' + encodeURIComponent(elem);
+		});
 
-        var service = this;
+		$window.open(url , '_blank');
 
-		this.reportIssue = function(title, message, labels) {
+	};
 
-			var url = config.github.website.root + config.github.website.paths.issues +
-					'?title=' + encodeURIComponent(title) +
-					'&body=' + encodeURIComponent(message);
-			labels.forEach(function(elem) {
-				url += '&labels[]=' + encodeURIComponent(elem);
-			});
+	Logger.info('Report service ready!');
 
-			$window.open(url , '_blank');
-
-		};
-
-		Logger.info('Report service ready!');
-
-    }
-
-})();
+};

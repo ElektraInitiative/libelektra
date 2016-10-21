@@ -1,136 +1,127 @@
-(function() {
+'use strict';
 
-    'use strict';
+var angular = require('angular');
 
-    angular.module('elektra.rest.angular')
-        .service('UserService', UserService);
+module.exports = function(Logger, $http, $q, config) {
 
-    UserService.$inject = [
-        'Logger', '$http', '$q', 'config'
-    ];
+	var service = this;
 
-    function UserService(Logger, $http, $q, config) {
-
-        var service = this;
-
-		this.cache = {
-			search: {
-				cached: false,
-				users: {},
-				params: {
-					filter: "",
-					filterby: "",
-					sort: "",
-					sortby: "",
-					rows: 0,
-					offset: 0
-				}
-			},
-			currentUser: {
-				hasUser: false,
-				user: {}
+	this.cache = {
+		search: {
+			cached: false,
+			users: {},
+			params: {
+				filter: "",
+				filterby: "",
+				sort: "",
+				sortby: "",
+				rows: 0,
+				offset: 0
 			}
-		};
+		},
+		currentUser: {
+			hasUser: false,
+			user: {}
+		}
+	};
 
 
-        this.clear = function() {
-			service.cache.currentUser.hasCache = false;
-            service.cache.currentUser.user = {};
-        };
+	this.clear = function() {
+		service.cache.currentUser.hasCache = false;
+		service.cache.currentUser.user = {};
+	};
 
-        this.get = function(username, currentUser, force) {
-            Logger.info('Attempting to load user details');
+	this.get = function(username, currentUser, force) {
+		Logger.info('Attempting to load user details');
 
-			currentUser = (typeof currentUser === 'undefined') ? false : currentUser;
-			force = (typeof force === 'undefined') ? false : force;
+		currentUser = (typeof currentUser === 'undefined') ? false : currentUser;
+		force = (typeof force === 'undefined') ? false : force;
 
-			var deferred = $q.defer();
+		var deferred = $q.defer();
 
-			if(currentUser === true) {
-				if(!service.cache.currentUser.hasUser || force) {
-					$http.get(config.backend.root + 'user?current=true', {
-						// custom options
-					}).then(function (response) {
-						service.cache.currentUser.user = response.data;
-						service.cache.currentUser.hasUser = true;
-						deferred.resolve(service.cache.currentUser.user);
-					}, function (response) {
-						deferred.reject(response);
-					});
-				} else {
-					deferred.resolve(service.cache.currentUser.user);
-				}
-			} else {
-				$http.get(config.backend.root + 'user/' + username, {
+		if(currentUser === true) {
+			if(!service.cache.currentUser.hasUser || force) {
+				$http.get(config.backend.root + 'user?current=true', {
 					// custom options
-				}).then(function(response) {
-					deferred.resolve(response.data);
-				}, function(response) {
+				}).then(function (response) {
+					service.cache.currentUser.user = response.data;
+					service.cache.currentUser.hasUser = true;
+					deferred.resolve(service.cache.currentUser.user);
+				}, function (response) {
 					deferred.reject(response);
 				});
-			}
-
-			return deferred.promise;
-		};
-
-		this.update = function(username, data, currentUser) {
-
-			Logger.info('Attempting to update user');
-
-			currentUser = (typeof currentUser === 'undefined') ? false : currentUser;
-
-			if(currentUser === true) {
-				return $http.put(config.backend.root + 'user?current=true', data, {
-					// custom options
-				});
 			} else {
-				return $http.put(config.backend.root + 'user/' + username, data, {
-					// custom options
-				});
+				deferred.resolve(service.cache.currentUser.user);
 			}
+		} else {
+			$http.get(config.backend.root + 'user/' + username, {
+				// custom options
+			}).then(function(response) {
+				deferred.resolve(response.data);
+			}, function(response) {
+				deferred.reject(response);
+			});
+		}
 
-		};
+		return deferred.promise;
+	};
 
-		this.search = function(params, force) {
+	this.update = function(username, data, currentUser) {
 
-            Logger.info('Load users');
+		Logger.info('Attempting to update user');
 
-            var deferred = $q.defer();
+		currentUser = (typeof currentUser === 'undefined') ? false : currentUser;
 
-            if(!service.cache.search.cached || !angular.equals(service.cache.search.params, params) || force)
-            {
-                Logger.info('Loading users');
-                $http.get(config.backend.root + 'user', {
-					params: params
-				}).success(function(data) {
-                    service.cache.search.users = data;
-                    service.cache.search.params = params;
-                    deferred.resolve(service.cache.search.users);
-                }).error(function(data) {
-                    deferred.reject('Error loading data');
-                });
-            } else {
-                deferred.resolve(service.cache.search.users);
-            }
+		if(currentUser === true) {
+			return $http.put(config.backend.root + 'user?current=true', data, {
+				// custom options
+			});
+		} else {
+			return $http.put(config.backend.root + 'user/' + username, data, {
+				// custom options
+			});
+		}
 
-            return deferred.promise;
+	};
 
-        };
+	this.search = function(params, force) {
 
-		this.hasSearchCache = function() {
-			return this.cache.search.cached;
-		};
+		Logger.info('Load users');
 
-        this.getSearchCache = function() {
-            return this.cache.search.users;
-        };
+		var deferred = $q.defer();
 
-        this.getSearchFilter = function() {
-            return this.cache.search.params.filter;
-        };
+		if(!service.cache.search.cached || !angular.equals(service.cache.search.params, params) || force)
+		{
+			Logger.info('Loading users');
+			$http.get(config.backend.root + 'user', {
+				params: params
+			}).success(function(data) {
+				service.cache.search.users = data;
+				service.cache.search.params = params;
+				deferred.resolve(service.cache.search.users);
+			}).error(function(data) {
+				deferred.reject('Error loading data');
+			});
+		} else {
+			deferred.resolve(service.cache.search.users);
+		}
 
-		Logger.info('User service ready!');
+		return deferred.promise;
 
-    }
+	};
 
-})();
+	this.hasSearchCache = function() {
+		return this.cache.search.cached;
+	};
+
+	this.getSearchCache = function() {
+		return this.cache.search.users;
+	};
+
+	this.getSearchFilter = function() {
+		return this.cache.search.params.filter;
+	};
+
+	Logger.info('User service ready!');
+
+};

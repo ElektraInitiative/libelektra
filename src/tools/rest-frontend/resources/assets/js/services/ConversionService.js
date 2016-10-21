@@ -1,28 +1,17 @@
-(function() {
+'use strict';
 
-    'use strict';
+module.exports = function(Logger, $http, $q, config) {
 
-    angular.module('elektra.rest.angular')
-        .service('ConversionService', ConversionService);
+	var service = this;
 
-    ConversionService.$inject = [
-        'Logger', '$http', '$q', 'config'
-    ];
+	this.convert = function(parameters) {
 
-    function ConversionService(Logger, $http, $q, config) {
+		return $http.post(config.backend.root + 'conversion', parameters, {
+			// custom options
+		});
 
-        var service = this;
+	};
 
-		this.convert = function(parameters) {
+	Logger.info('Conversion service ready!');
 
-			return $http.post(config.backend.root + 'conversion', parameters, {
-				// custom options
-			});
-
-		};
-
-		Logger.info('Conversion service ready!');
-
-    }
-
-})();
+};

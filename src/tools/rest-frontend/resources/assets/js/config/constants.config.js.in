@@ -1,9 +1,0 @@
-(function() {
-
-    'use strict';
-
-    angular.module('elektra.rest.angular')
-        .constant('config', /* @echo CONFIGURATION */)
-		.constant('webStructure', /* @echo WEBSTRUCTURE */);
-
-})();
