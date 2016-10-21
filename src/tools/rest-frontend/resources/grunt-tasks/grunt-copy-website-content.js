@@ -105,17 +105,15 @@ module.exports = function(grunt) {
 		this.reformatReadmeInfoBlock = function(text) {
 			var lines = text.split('\n');
 			// iterate to last infos line
-			var hasInfos = false;
+			var lastInfoLine = 0;
 			for(var i = 0; i < lines.length; i++) {
 				if(lines[i].indexOf('- infos') > -1) {
-					hasInfos = true;
+					lastInfoLine = i;
 					continue;
-				} else {
-					break;
 				}
 			}
-			if(hasInfos === true) {
-				lines.splice(i, 0, '```');
+			if(lastInfoLine > 0) {
+				lines.splice(lastInfoLine + 1, 0, '```');
 				lines.splice(0, 0, '```');
 			}
 			return lines.join('\n');
