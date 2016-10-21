@@ -96,6 +96,10 @@ module.exports = function(grunt) {
 					'resources/structure.json'
 				],
 				tasks: ['preprocess', 'browserify:build']
+			},
+			js: {
+				files: ['public/assets/js/application.js'],
+				tasks: [] // do nothing, the watcher only triggers browserify implicitely
 			}
         },
 		browserify: {
@@ -105,10 +109,7 @@ module.exports = function(grunt) {
 				dest: 'public/assets/js/application.js',
 				options: {
 					banner: dstFileBanner,
-					require: [],
-					external: [],
-					watch: true,
-					keepAlive: true
+					watch: true
 				}
 			}
 		},
