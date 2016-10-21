@@ -75,8 +75,8 @@
 		};
 
 		this.createGithubIssue = function() {
-			var title = 'Convert with plugin ' + $scope.parameters.input.format.plugin +
-						' to ' + $scope.parameters.output.format.plugin;
+			var title = 'Convert with plugin ' + $scope.parameters.input.format.plugin.name +
+						' to ' + $scope.parameters.output.format.plugin.name;
 			var message = 'I tried to convert a snippet on the website, but got the error: ' +
 						$scope.lastError + '\n\n' +
 						'## Used plugins\n' +
