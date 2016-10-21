@@ -73,12 +73,13 @@ module.exports = function(grunt) {
 			var content = fs.readFileSync(path.join(root_dir, entry.options.path), {
 				encoding: 'utf8'
 			});
-			content = self.ensureProperFileContentFormat(path.basename(file), content);
+			content = self.ensureProperFileContentFormat(entry.options.path, content);
+			content = self.ensureAbsoluteLinkPaths(entry.options.path, content);
 			fs.writeFileSync(file, content);
 		};
 
-		this.ensureProperFileContentFormat = function(filename, content) {
-			switch(path.extname(filename)) {
+		this.ensureProperFileContentFormat = function(filepath, content) {
+			switch(path.extname(filepath)) {
 				case '':
 				case '.md':
 					content = self.replaceTabBySpaces(content);
@@ -88,7 +89,7 @@ module.exports = function(grunt) {
 					content = '```\n' + content + '\n```';
 					break;
 			}
-			switch(filename) {
+			switch(path.basename(filepath)) {
 				case 'README.md':
 					content = self.reformatReadmeInfoBlock(content);
 					break;
@@ -117,6 +118,20 @@ module.exports = function(grunt) {
 				lines.splice(0, 0, '```');
 			}
 			return lines.join('\n');
+		};
+
+		this.ensureAbsoluteLinkPaths = function(filepath, text) {
+			return text.replace(/\[(.+)\]\(([^\)]+)\)/gi, function(match, text, url) {
+				if(url.indexOf('://') > -1) {
+					return match;
+				} else {
+					if(url.charAt(0) === '/') {
+						return '[' + text + '](' + url.substr(1) + ')';
+					} else {
+						return '[' + text + '](' + path.join(path.dirname(filepath), url) + ')';
+					}
+				}
+			});
 		};
 
 

@@ -2,7 +2,7 @@
 
 var hljs = require('highlight.js');
 
-module.exports = function(markedProvider) {
+module.exports = function(markedProvider, config, webStructure) {
 
 	markedProvider.setOptions({
 		gfm: true,
@@ -22,7 +22,46 @@ module.exports = function(markedProvider) {
 						'<thead>' + head + '</thead>' +
 						'<tbody>' + body + '</tbody>' +
 					'</table>';
+		},
+		link: function(href, title, text) {
+			// external link
+			if(href.indexOf('://') > -1) {
+				return '<a href="' + href + '"' + (title ? ' title="' + title + '"' : '') +
+					   ' target="_blank">' + text + ' <i class="fa fa-external-link"></i></a>';
+			}
+			// internal link
+			var file = findFileInWebstructure(webStructure, href);
+			// we don't have the file on the website, make external link
+			if(file === null) {
+				return '<a href="' + config.github.website.root + config.github.website.paths.doc_root + href +
+						'"' + (title ? ' title="' + title + '"' : '') + ' target="_blank">' + text +
+						' <i class="fa fa-external-link"></i></a>';
+			}
+			// we have this file on the website, make internal link
+			else {
+				return '<a ui-sref="main.dyn.' + file.ref + '({file:\'' + file.slug + '\'})"' +
+					   (title ? ' title="' + title + '"' : '') + '>' + text + '</a>';
+			}
 		}
 	});
+
+	function findFileInWebstructure(list, path) {
+		var result = null;
+		for(var i = 0; i < list.length; i++) {
+			if(list[i].type === 'submenu' || list[i].type === 'listfiles') {
+				result = findFileInWebstructure(list[i].children, path);
+				if(result !== null && result.type === 'file') {
+					if(typeof result.ref === 'undefined') {
+						result.ref = list[i].ref;
+					}
+					return result;
+				}
+			}
+			else if(list[i].type === 'file' && list[i].options.path === path) {
+				return list[i];
+			}
+		}
+		return null; // did not find path
+	}
 
 };
