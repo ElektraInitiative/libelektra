@@ -1,6 +1,6 @@
 'use strict';
 
-module.exports = function(Logger, $rootScope, $parse) {
+module.exports = function(Logger, $rootScope) {
 
 	return {
 		restrict: 'A',

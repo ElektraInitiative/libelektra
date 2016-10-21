@@ -12,7 +12,7 @@
         <meta name="author" content="Namoshek">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-		<!-- Pace JS -->
+		<!-- Pace JS - Load animations -->
 		<script type="text/javascript">
 			window.paceOptions = {
 				document: true, // disabled
@@ -26,27 +26,16 @@
 			};
 		</script>
 		<link rel="stylesheet" type="text/css"
-			    href="vendor/bower_components/PACE/themes/blue/pace-theme-minimal.css">
-		<script src="vendor/bower_components/PACE/pace.min.js"></script>
-
-        <!-- Bootstrap CSS -->
-        <link rel="stylesheet" type="text/css"
-                href="vendor/bower_components/bootstrap/dist/css/bootstrap.min.css">
-        <link rel="stylesheet" type="text/css"
-                href="vendor/bower_components/bootstrap/dist/css/bootstrap-theme.min.css">
-
-		<!-- HighlightJS -->
-		<link rel="stylesheet" type="text/css"
-			    href="vendor/bower_components/highlightjs/styles/github.css">
+			    href="vendor/pace.min.css">
+		<script src="vendor/pace.min.js"></script>
 
         <!-- Theme CSS -->
         <link rel="stylesheet" type="text/css"
                 href="assets/skin/default/css/theme.min.css">
 
-        <!-- Angular Modules -->
-        <link rel="stylesheet" type="text/css" href="vendor/bower_components/angular-ui-notification/dist/angular-ui-notification.min.css">
-        <link rel="stylesheet" type="text/css" href="vendor/bower_components/ng-tags-input/ng-tags-input.min.css">
-        <link rel="stylesheet" type="text/css" href="vendor/bower_components/ng-tags-input/ng-tags-input.bootstrap.min.css">
+		<!-- Vendor CSS -->
+		<link rel="stylesheet" type="text/css"
+			  href="assets/skin/vendor.css">
 
         <!-- Favicon -->
         <link rel="shortcut icon" type="image/x-icon" href="assets/img/logo.ico">
@@ -65,41 +54,6 @@
         <div ui-view></div>
 
         <!-- BEGIN: PAGE SCRIPTS -->
-
-        <!-- jQuery -->
-        <script src="vendor/bower_components/jquery/dist/jquery.min.js"></script>
-
-        <!-- Lodash -->
-        <script src="vendor/bower_components/underscore/underscore-min.js"></script>
-
-        <!-- FileSaver & Blob -->
-        <script src="vendor/bower_components/blob-polyfill/Blob.js"></script>
-        <script src="vendor/bower_components/file-saver.js/FileSaver.js"></script>
-
-		<!-- Marked for Markdown & HighlightJS for syntax -->
-		<script src="vendor/bower_components/marked/marked.min.js"></script>
-		<script src="vendor/bower_components/highlightjs/highlight.pack.min.js"></script>
-
-        <!-- AngularJS -->
-        <script src="vendor/bower_components/angular/angular.min.js"></script>
-
-        <!-- Angular Modules -->
-        <script src="vendor/bower_components/angular-ui-router/release/angular-ui-router.min.js"></script>
-        <script src="vendor/bower_components/angular-translate/angular-translate.min.js"></script>
-        <script src="vendor/bower_components/angular-translate-loader-static-files/angular-translate-loader-static-files.min.js"></script>
-        <script src="vendor/bower_components/angular-logger-max/logger.service.js"></script>
-        <script src="vendor/bower_components/angular-breadcrumb/release/angular-breadcrumb.min.js"></script>
-        <script src="vendor/bower_components/angular-file-saver/dist/angular-file-saver.min.js"></script>
-        <script src="vendor/bower_components/ng-tags-input/ng-tags-input.min.js"></script>
-        <script src="vendor/bower_components/satellizer/dist/satellizer.min.js"></script>
-        <script src="vendor/bower_components/angular-ui-notification/dist/angular-ui-notification.min.js"></script>
-		<script src="vendor/bower_components/angular-marked/dist/angular-marked.min.js"></script>
-		<script src="vendor/bower_components/angular-utf8-base64/angular-utf8-base64.min.js"></script>
-		<script src="vendor/bower_components/angular-clipboard/angular-clipboard.js"></script>
-		<script src="vendor/bower_components/angular-animate/angular-animate.min.js"></script>
-		<script src="vendor/bower_components/angular-sanitize/angular-sanitize.min.js"></script>
-		<script src="vendor/bower_components/angular-messages/angular-messages.min.js"></script>
-		<script src="vendor/bower_components/angular-bootstrap/ui-bootstrap-tpls.min.js"></script>
 
         <!-- Application JavaScript -->
         <script src="assets/js/application.js"></script>

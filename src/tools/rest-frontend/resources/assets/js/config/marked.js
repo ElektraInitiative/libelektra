@@ -1,5 +1,7 @@
 'use strict';
 
+var hljs = require('highlight.js');
+
 module.exports = function(markedProvider) {
 
 	markedProvider.setOptions({

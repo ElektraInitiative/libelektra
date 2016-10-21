@@ -1,9 +1,32 @@
 'use strict';
 
+// external dependencies
+require('jquery');
+global.jQuery = require('jquery');
+global.$ = jQuery;
+
+// angular itself
 var angular = require('angular');
 
+// angular dependencies
+require('@iamadamjowett/angular-logger-max/logger.service');
+require('angular-animate');
+require('angular-breadcrumb');
+require('angular-clipboard');
+require('angular-file-saver');
+require('angular-marked');
+require('angular-messages');
+require('angular-sanitize');
+require('angular-translate');
+require('angular-translate-loader-static-files');
+require('angular-ui-bootstrap');
+require('angular-ui-notification');
+require('angular-ui-router');
+require('ng-tags-input');
+require('satellizer');
+
+// the angular module
 angular.module('elektra.rest.angular', [
-	'ab-base64',
 	'angular-clipboard',
 	'angular-logger-max',
 	'hc.marked',
@@ -20,7 +43,7 @@ angular.module('elektra.rest.angular', [
 	'ui-notification'
 ]);
 
-// one require per directory
+// application includes
 require('./config');
 require('./controllers');
 require('./directives');

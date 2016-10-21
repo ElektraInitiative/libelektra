@@ -6,9 +6,7 @@ module.exports = function(grunt) {
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
         'create-website-structure': {
-            options: {
-
-            },
+            options: { },
             build: {
 				repo_root: '../../../..',
 				input: 'resources/structure.json.in',
@@ -16,9 +14,7 @@ module.exports = function(grunt) {
             }
 		},
 		'copy-website-content': {
-			options: {
-
-			},
+			options: { },
 			build: {
 				repo_root: '../../../..',
 				input: 'resources/structure.json',
@@ -33,6 +29,7 @@ module.exports = function(grunt) {
             build: ['Gruntfile.js', 'resources/assets/js/**/*.js']
         },
         less: {
+			options: { },
             build: {
                 files: {
                     'public/assets/skin/default/css/theme.css': 'resources/assets/skin/default/less/theme.less'
@@ -49,6 +46,30 @@ module.exports = function(grunt) {
                 }
             }
         },
+		concat: {
+			options: {
+				banner: dstFileBanner
+			},
+			vendor: {
+				src: [
+					'node_modules/bootstrap/dist/css/bootstrap.min.css',
+					'node_modules/bootstrap/dist/css/bootstrap-theme.min.css',
+					'node_modules/highlight.js/styles/github.css',
+					'node_modules/angular-ui-notification/dist/angular-ui-notification.min.css',
+					'node_modules/ng-tags-input/build/ng-tags-input.min.css',
+					'node_modules/ng-tags-input/build/ng-tags-input.bootstrap.min.css'
+				],
+				dest: 'public/assets/skin/vendor.css',
+			},
+			pacejs: {
+				src: ['node_modules/pace-progress/pace.min.js'],
+				dest: 'public/vendor/pace.min.js'
+			},
+			pacecss: {
+				src: ['node_modules/pace-progress/themes/blue/pace-theme-minimal.css'],
+				dest: 'public/vendor/pace.min.css'
+			}
+		},
         preprocess: {
             options: {
                 context: {
@@ -63,6 +84,7 @@ module.exports = function(grunt) {
             }
         },
         watch: {
+			options: { },
             less: {
                 files: ['resources/assets/skin/**/*'],
                 tasks: ['less','cssmin']
@@ -73,18 +95,21 @@ module.exports = function(grunt) {
 					'application-config.json',
 					'resources/structure.json'
 				],
-				tasks: ['preprocess', 'uglify']
-			},
-            js: {
-                files: ['resources/assets/js/**/*'],
-                tasks: ['uglify']
-            }
+				tasks: ['preprocess', 'browserify:build']
+			}
         },
 		browserify: {
-			application: {
-				src: ['resources/assets/js/**/*.js'],
+			options: { },
+			build: {
+				src: 'resources/assets/js/application.js',
 				dest: 'public/assets/js/application.js',
-				options: { }
+				options: {
+					banner: dstFileBanner,
+					require: [],
+					external: [],
+					watch: true,
+					keepAlive: true
+				}
 			}
 		},
         'http-server': {
@@ -133,8 +158,7 @@ module.exports = function(grunt) {
 
                 // customize url to serve specific pages
                 //customPages: {
-                //    "/readme": "README.md",
-                //    "/readme.html": "README.html"
+                //    "/node_modules": "node_modules"
                 //}
 
             }
@@ -146,6 +170,7 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-contrib-less');
     grunt.loadNpmTasks('grunt-contrib-cssmin');
     grunt.loadNpmTasks('grunt-contrib-watch');
+	grunt.loadNpmTasks('grunt-contrib-concat');
 	grunt.loadNpmTasks('grunt-preprocess');
     grunt.loadNpmTasks('grunt-http-server');
 	grunt.loadNpmTasks('grunt-browserify');
@@ -154,7 +179,7 @@ module.exports = function(grunt) {
 
     grunt.registerTask('default', ['full']);
     grunt.registerTask('full', [
-		'less', 'cssmin', 'create-website-structure', 'copy-website-content', 'preprocess', 'browserify'
+		'less', 'cssmin', 'concat', 'create-website-structure', 'copy-website-content', 'preprocess', 'browserify:build'
 	]);
     grunt.registerTask('server', ['http-server']);
 

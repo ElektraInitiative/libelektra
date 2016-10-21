@@ -6,7 +6,7 @@ This document aims to provide information about Elektras `rest-frontend`, which 
 
 ## Design and Structure
 
-The frontend is developed as Single Page Application in [AngularJS (v1.5)](https://angularjs.org/). All dependencies are either already contained in the application project or (preferred) resolved through [npm](https://www.npmjs.com/) and [bower](https://bower.io/) during installation (requires active internet connection). Compiling (concatenation & minification), as well as other tasks like running a lightweight webserver are handled by the task runner `grunt`.
+The frontend is developed as Single Page Application in [AngularJS (v1.5)](https://angularjs.org/). All dependencies are either already contained in the application project or (preferred) resolved through [npm](https://www.npmjs.com/) during installation (requires active internet connection). Compiling (concatenation & minification), as well as other tasks like running a lightweight webserver are handled by the task runner `grunt`.
 
 ### Directory Structure
 
@@ -14,7 +14,7 @@ The application project itself is mainly splitted into two directories: `resourc
 
 The [resources](resources) directory contains the JavaScript source files as well as the LESS files which are compiled into CSS files for the website.
 
-The [public](public) directory contains HTML template files, assets like fonts, compiled JS and CSS files, as well as translation files and all dependencies resolved by `bower`.
+The [public](public) directory contains HTML template files, assets like fonts, compiled JS and CSS files, as well as translation files and all dependencies resolved by `npm`, which are copied by `grunt`.
 
 ## Compiling and Installing
 
@@ -28,8 +28,7 @@ The `rest-frontend` has full CMake integration, but does actually only two thing
 - Install (copy) the project files to a target directory.
 - Run `npm install` in this target directory, which does
  - resolve all `npm` dependencies (into the directory [node_modules](node_modules)).
- - resolve all `bower` dependencies (into the directory [public/vendor/bower_components](public/vendor/bower_components)).
- - run `grunt full` to compile all application sources ([resources](resources) dir) into working production files ([public](public) dir).
+ - run `grunt full` to compile all application sources ([resources](resources) dir) into working production files ([public](public) dir) and copy required `npm` dependencies in the `public` folder.
 
 ### Installing
 
