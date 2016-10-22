@@ -2,7 +2,7 @@
 
 var angular = require('angular');
 
-module.exports = function($scope, Logger, $state, $compile, $timeout, marked, files, currentFile) {
+module.exports = function($scope, Logger, $state, $compile, marked, files, currentFile) {
 
 	var vm = this;
 
@@ -11,7 +11,6 @@ module.exports = function($scope, Logger, $state, $compile, $timeout, marked, fi
 	$scope.currentFile = currentFile;
 
 	var doc = marked($scope.currentFile.content);
-	Logger.log(doc);
 	doc = $compile(doc)($scope);
 	angular.element(document.getElementById('markdown-document')).html(doc);
 

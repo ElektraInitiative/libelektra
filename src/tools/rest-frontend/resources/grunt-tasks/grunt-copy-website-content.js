@@ -74,7 +74,6 @@ module.exports = function(grunt) {
 				encoding: 'utf8'
 			});
 			content = self.ensureProperFileContentFormat(entry.options.path, content);
-			content = self.ensureAbsoluteLinkPaths(entry.options.path, content);
 			fs.writeFileSync(file, content);
 		};
 
@@ -83,6 +82,7 @@ module.exports = function(grunt) {
 				case '':
 				case '.md':
 					content = self.replaceTabBySpaces(content);
+					content = self.ensureAbsoluteLinkPaths(filepath, content);
 					break;
 				default: // code files
 					content = self.replaceTabBySpaces(content);

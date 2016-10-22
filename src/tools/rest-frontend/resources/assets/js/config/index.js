@@ -15,7 +15,8 @@ angular.module('elektra.rest.angular')
 			"root": "https://github.com/",
 			"paths": {
 				"issues": "ElektraInitiative/libelektra/issues/new",
-				"doc_root": "ElektraInitiative/libelektra/tree/master/"
+				"doc_root": "ElektraInitiative/libelektra/tree/master/",
+				"img_root": "ElektraInitiative/libelektra/raw/master/"
 			}
 		}
 	},
