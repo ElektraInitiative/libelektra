@@ -12,6 +12,9 @@ A complete list of ideas what could be done can be found in the
 Also see [githubs issues](http://git.libelektra.org/issues)
 for other activities of the current release.
 
+import/editor validate strategy
+improvements in tutorials!
+
 ## tests
 
 helper function for searching symbol
