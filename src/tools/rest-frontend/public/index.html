@@ -2,17 +2,23 @@
 <html ng-app="elektra.rest.angular">
 
     <head>
+
+		<!-- Application base path (i.e. subfolder of URL where application is reachable, mostly /) -->
         <base href="/" />
+
+		<!-- Meta information -->
+        <title>ElektraInitiative</title>
         <meta charset="utf-8">
-        <title>{{ 'APP.GLOBAL.TITLE' | translate }}</title>
-        <meta name="keywords"
-                content="elektra, rest, repository, kdb, configuration, config" />
-        <meta name="description"
-                content="A repository for sharing configuration snippets">
+        <meta name="keywords" content="elektra, rest, repository, kdb, configuration, config">
+        <meta name="description" content="A repository for sharing configuration snippets">
         <meta name="author" content="Namoshek">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta name="referrer" content="no-referrer">
 
-		<!-- Pace JS - Load animations -->
+        <!-- Favicon -->
+        <link rel="shortcut icon" type="image/x-icon" href="assets/img/logo.ico">
+
+		<!-- Pace (load animation for requests) -->
 		<script type="text/javascript">
 			window.paceOptions = {
 				document: true, // disabled
@@ -20,25 +26,19 @@
 				restartOnPushState: true,
 				restartOnRequestAfter: true,
 				ajax: {
-					trackMethods: ['OPTIONS','POST','GET','PUT','DELETE']
+					trackMethods: ['OPTIONS', 'POST', 'GET', 'PUT', 'DELETE']
 				}
 
 			};
 		</script>
-		<link rel="stylesheet" type="text/css"
-			    href="vendor/pace.min.css">
+		<link rel="stylesheet" type="text/css" href="vendor/pace.min.css">
 		<script src="vendor/pace.min.js"></script>
 
         <!-- Theme CSS -->
-        <link rel="stylesheet" type="text/css"
-                href="assets/skin/default/css/theme.min.css">
+        <link rel="stylesheet" type="text/css" href="assets/skin/default/css/theme.min.css">
 
 		<!-- Vendor CSS -->
-		<link rel="stylesheet" type="text/css"
-			  href="assets/skin/vendor.css">
-
-        <!-- Favicon -->
-        <link rel="shortcut icon" type="image/x-icon" href="assets/img/logo.ico">
+		<link rel="stylesheet" type="text/css" href="assets/skin/vendor.css">
 
         <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
         <!--[if lt IE 9]>
@@ -53,12 +53,8 @@
         <!-- Space for Sub-Templates -->
         <div ui-view></div>
 
-        <!-- BEGIN: PAGE SCRIPTS -->
-
         <!-- Application JavaScript -->
         <script src="assets/js/application.js"></script>
-
-        <!-- END: PAGE SCRIPTS -->
 
     </body>
 

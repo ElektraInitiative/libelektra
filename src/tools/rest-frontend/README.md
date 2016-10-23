@@ -6,13 +6,13 @@ This document aims to provide information about Elektras `rest-frontend`, which 
 
 ## Design and Structure
 
-The frontend is developed as Single Page Application in [AngularJS (v1.5)](https://angularjs.org/). All dependencies are either already contained in the application project or (preferred) resolved through [npm](https://www.npmjs.com/) during installation (requires active internet connection). Compiling (concatenation & minification), as well as other tasks like running a lightweight webserver are handled by the task runner `grunt`.
+The frontend is developed as single-page application (SPA) in [AngularJS (v1.5)](https://angularjs.org/). All dependencies are either already contained in the application project or (preferred) resolved through [npm](https://www.npmjs.com/) during installation (requires active internet connection). Compiling (browserification, concatenation & minification), as well as other tasks like running a lightweight webserver are handled by the task runner `grunt`.
 
 ### Directory Structure
 
 The application project itself is mainly splitted into two directories: `resources` and `public`, whereas only the latter can directly been accessed by clients if the built-in `grunt server` is used to deploy the project.
 
-The [resources](resources) directory contains the JavaScript source files as well as the LESS files which are compiled into CSS files for the website.
+The [resources](resources) directory contains the JavaScript source files, custom grunt tasks as well as the LESS files which are compiled into CSS files for the website.
 
 The [public](public) directory contains HTML template files, assets like fonts, compiled JS and CSS files, as well as translation files and all dependencies resolved by `npm`, which are copied by `grunt`.
 
@@ -20,7 +20,7 @@ The [public](public) directory contains HTML template files, assets like fonts, 
 
 ### Dependencies
 
-The project has quite a few dependencies, of which most can be resolved automatically by the used package managers. The only dependency that has to be installed beforehand is the package manager [npm](https://www.npmjs.com/), which comes bundled with [Node.js](https://nodejs.org/) (preferred installation).
+The project has quite a few dependencies, of which most can be resolved automatically by the used package manager. The only dependency that has to be installed beforehand is the package manager [npm](https://www.npmjs.com/) itself, which comes bundled with [Node.js](https://nodejs.org/) (preferred installation).
 
 ### Compiling
 
@@ -36,17 +36,18 @@ It is not necessary to install anything by hand, CMake does this job already. If
 
 ## Run and Configure
 
-The application allows for some basic configuration. Configurable files can be found in [resources/assets/js/config](resources/assets/js/config), although the only file that should require a change under normal circumstances is the [application-config.json](application-config.json) in the root directory. It contains the URL to the backend, some URLs for GitHub resources and translation, as well as logger settings. Any change of this configuration does require to re-run `grunt full` in order to re-compile the project.
+The application allows for some basic configuration. Under normal circumstances it is sufficient to change the [application-config.json](application-config.json) in the root directory. It contains the URL to the backend, some URLs for GitHub resources and translation, as well as logger settings. Any change of this configuration does require to re-run `grunt full` in order to re-compile the project.
 
 To run the application, basically two options are available:
 - Use the built-in webserver of `grunt`, which can be configured in the [Gruntfile.js](Gruntfile.js) and run by `grunt server` (in the installation target directory).
 - Use an own webserver to distribute the application. In order to do so, first `grunt full` should be run. After that, the content of the [public](public) directory can be copied to any location that suits the needs. `npm` dependencies in the [node_modules](node_modules) directory and the [resources](resources) directory are only necessary for development, but can be ignored for deployment.
+  In order to not recieve any 404 errors by the webserver, it should redirect all requests that do not have a static file as target to the `index.html`.
 
 ### application-config.json
 
 #### APIs (Backend & GitHub)
 
-The configuration file allows to set the URL to the backend in `backend.root`. GitHub settings may be done in `github`, whereas a small distinction between `api` and `website` is made.
+The configuration file allows to set the URL to the backend in `backend.root`. GitHub settings may be done in `github`.
 
 #### Translations
 

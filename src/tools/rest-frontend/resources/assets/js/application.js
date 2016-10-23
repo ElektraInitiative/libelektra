@@ -3,7 +3,7 @@
 // external dependencies
 require('jquery');
 global.jQuery = require('jquery');
-global.$ = jQuery;
+global.$ = global.jQuery;
 
 // angular itself
 var angular = require('angular');
