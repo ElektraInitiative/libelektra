@@ -1,3 +1,6 @@
+var modRewrite = require('connect-modrewrite');
+var serveStatic = require('serve-static');
+
 module.exports = function(grunt) {
 
     var dstFileBanner = '/**\n * @application <%= pkg.name %>\n * @version <%= pkg.version %>\n * @updated <%= grunt.template.today("yyyy-mm-dd") %>\n * @author <%= pkg.author %>\n * @license <%= pkg.license %>\n */\n';
@@ -114,68 +117,53 @@ module.exports = function(grunt) {
 				}
 			}
 		},
-        'http-server': {
-
-            dev: {
-
-                // the server root directory
-                root: 'public',
-
-                // the server port
-                port: 9000,
-
-                // the host ip address
-                // If specified to, for example, "127.0.0.1" the server will
-                // only be available on that ip.
-                // Specify "0.0.0.0" to be available everywhere
-                host: "0.0.0.0",
-
-                cache: 0,
-                showDir : false,
-                autoIndex: true,
-
-                // server default file extension
-                ext: "html",
-
-                // run in parallel with other tasks
-                runInBackground: false,
-
-                // specify a logger function. By default the requests are
-                // sent to stdout.
-                logFn: function(req, res, error) { },
-
-                // Proxies all requests which can't be resolved locally to the given url
-                // Note this this will disable 'showDir'
-                //proxy: "http://someurl.com",
-
-                /// Use 'https: true' for default module SSL configuration
-                /// (default state is disabled)
-                //https: {
-                //    cert: "cert.pem",
-                //    key : "key.pem"
-                //},
-
-                // Tell grunt task to open the browser
-                //openBrowser : false,
-
-                // customize url to serve specific pages
-                //customPages: {
-                //    "/node_modules": "node_modules"
-                //}
-
-            }
-
-        }
+        connect: {
+			server: {
+				options: {
+					hostname: '*', // * for any
+					port: 9000,
+					protocol: 'http',
+					base: {
+						path: 'public',
+						options: {
+							index: 'index.html',
+							maxAge: 3600
+						}
+					},
+					keepalive: true,
+					middleware: function (connect, options, middlewares) {
+//						middlewares.unshift(function(req, res, next) {
+//							grunt.log.writeln('URL: ' + req.url);
+//							if(!grunt.file.exists('public', req.url)) {
+//								req.redirect('index.html');
+//							}
+//							next();
+//						});
+//						return middlewares;
+						var staticExtensions = [
+							'html', 'js', 'css', 'json', 'svg', 'md', 'png', 'jpg', 'gif', 'otf', 'eot', 'ttf',
+							'woff', 'woff2'
+						];
+						return [
+							modRewrite(['!' + staticExtensions.map(function(elem) {
+								return '\\.' + elem;
+							}).join('|') + '$ /index.html [L]']),
+							serveStatic('public'),
+						];
+					}
+				}
+			}
+		}
     });
 
+    grunt.loadNpmTasks('grunt-browserify');
+    grunt.loadNpmTasks('grunt-contrib-concat');
+    grunt.loadNpmTasks('grunt-contrib-connect');
+    grunt.loadNpmTasks('grunt-contrib-cssmin');
     grunt.loadNpmTasks('grunt-contrib-jshint');
     grunt.loadNpmTasks('grunt-contrib-less');
-    grunt.loadNpmTasks('grunt-contrib-cssmin');
     grunt.loadNpmTasks('grunt-contrib-watch');
-	grunt.loadNpmTasks('grunt-contrib-concat');
-	grunt.loadNpmTasks('grunt-preprocess');
-    grunt.loadNpmTasks('grunt-http-server');
-	grunt.loadNpmTasks('grunt-browserify');
+    grunt.loadNpmTasks('grunt-preprocess');
 
     grunt.loadTasks('./resources/grunt-tasks');
 
@@ -183,6 +171,6 @@ module.exports = function(grunt) {
     grunt.registerTask('full', [
 		'less', 'cssmin', 'concat', 'create-website-structure', 'copy-website-content', 'preprocess', 'browserify:build'
 	]);
-    grunt.registerTask('server', ['http-server']);
+    grunt.registerTask('server', ['connect']);
 
 };

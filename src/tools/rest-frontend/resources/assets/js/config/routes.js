@@ -6,7 +6,7 @@ module.exports = function($stateProvider, $urlRouterProvider, $locationProvider,
 
 	// configure html5mode for URLs (no #)
 	$locationProvider.html5Mode({
-		enabled: false
+		enabled: true
 	});
 
 	// configure default route
