@@ -1,9 +1,10 @@
 {
 	"backend": {
-		"root": "http://localhost:8080/",
-		"website": {
-			"content_root": "website/"
-		}
+		"root": "http://localhost:8080/"
+	},
+	"website": {
+		"url": "http://localhost:9000/",
+		"content_root": "website/"
 	},
 	"github": {
 		"website": {

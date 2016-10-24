@@ -9,7 +9,7 @@ module.exports = function(Logger, $http, $q, config) {
 
 		var deferred = $q.defer();
 
-		$http.get(config.backend.website.content_root + url, {
+		$http.get(config.website.content_root + url, {
 			skipAuthorization: true
 		}).success(function(data) {
 			deferred.resolve(data);
