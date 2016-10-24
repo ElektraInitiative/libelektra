@@ -1,10 +1,13 @@
 find_package (CppCMS)
 find_package (Boost 1.45 COMPONENTS system filesystem thread)
+find_package (LibJWT)
 
 if (NOT CPPCMS_FOUND)
 	remove_tool (${tool} "CppCMS package not found")
 elseif (NOT Boost_FOUND)
 	remove_tool (${tool} "Boost package not found")
+elseif (NOT LIBJWT_FOUND)
+	remove_tool (${tool} "LibJWT package not found")
 else ()
 
     set (REST_AUTH_ENCRYPT_KEY "please_change_to_secret_key" CACHE STRING "Encryption key to be used for auth tokens")
@@ -26,6 +29,7 @@ else ()
     include_directories (${CMAKE_CURRENT_BINARY_DIR})
     include_directories (${CPPCMS_INCLUDE_DIR})
     include_directories (${Boost_INCLUDE_DIRS})
+    include_directories (${LIBJWT_INCLUDE_DIR})
 
     file (GLOB rest-backend_TMPLS templates/*.tmpl)
     add_custom_command (
@@ -44,7 +48,7 @@ else ()
 
     add_library (tmp_${tool} OBJECT ${rest-backend_SRCS})
     add_executable (${tool} $<TARGET_OBJECTS:tmp_${tool}>)
-    target_link_libraries (${tool} ${CPPCMS_LIBRARY} ${Boost_LIBRARIES})
+    target_link_libraries (${tool} ${CPPCMS_LIBRARY} ${Boost_LIBRARIES} ${LIBJWT_LIBRARY})
     target_link_libraries (${tool} elektra-full elektratools)
 
     install (TARGETS ${tool} DESTINATION ${TARGET_TOOL_EXEC_FOLDER})

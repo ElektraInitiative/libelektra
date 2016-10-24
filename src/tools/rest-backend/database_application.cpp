@@ -10,7 +10,6 @@
 
 #include "authentication_application.hpp"
 #include "database_application.hpp"
-#include "jwt.hpp"
 #include "model_configformat.hpp"
 #include "model_entry.hpp"
 #include "model_importedconfig.hpp"

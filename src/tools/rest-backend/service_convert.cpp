@@ -39,7 +39,7 @@ model::PluginFormat ConvertEngine::findSuitablePlugin (const std::string & forma
 		PluginSpec plugin = db.lookupProvides (format);
 		std::string statusString = db.lookupInfo (plugin, "status");
 		std::vector<std::string> statuses;
-		boost::split (statuses, statusString, boost::is_any_of(" "));
+		boost::split (statuses, statusString, boost::is_any_of (" "));
 		return model::PluginFormat (format, plugin.getName (), statuses);
 	}
 	catch (kdb::tools::NoPlugin & e)
@@ -87,7 +87,7 @@ std::vector<model::PluginFormat> ConvertEngine::loadEnabledFormats ()
 		// find statuses
 		std::string statusString = db.lookupInfo (plugin, "status");
 		std::vector<std::string> statuses;
-		boost::split (statuses, statusString, boost::is_any_of(" "));
+		boost::split (statuses, statusString, boost::is_any_of (" "));
 		// push plugin to result list
 		result.push_back (model::PluginFormat (format, plugin.getName (), statuses));
 	}

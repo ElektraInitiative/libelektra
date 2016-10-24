@@ -8,7 +8,6 @@
 
 #include "authentication_application.hpp"
 #include "cryptlite/sha256.h"
-#include "jwt.hpp"
 #include "root_application.hpp"
 #include "service.hpp"
 #include "user_application.hpp"

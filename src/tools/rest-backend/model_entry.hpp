@@ -124,7 +124,7 @@ public:
 	{
 		std::vector<std::string> result;
 		std::string publicName = this->getPublicName ();
-		boost::split (result, publicName, boost::is_any_of("/"));
+		boost::split (result, publicName, boost::is_any_of ("/"));
 		return result;
 	}
 	/**

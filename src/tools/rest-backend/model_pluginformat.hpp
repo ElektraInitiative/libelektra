@@ -63,7 +63,7 @@ public:
 				 * @param statuses The plugin statuses as vector (e.g. maintained, limited)
                  */
 	inline PluginFormat (const std::string & format, const std::string & plugin,
-			const std::vector<std::string> statuses = std::vector<std::string> ())
+			     const std::vector<std::string> statuses = std::vector<std::string> ())
 	{
 		if (format.empty () || plugin.empty ())
 		{
