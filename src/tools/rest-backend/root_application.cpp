@@ -57,8 +57,15 @@ void RootApp::welcome ()
 
 	if (request ().request_method () == "GET")
 	{
-		cppcms::base_content c;
-		render ("rest_interface", c);
+		const std::string raw = request ().get (PARAM_RAW);
+		if (!raw.empty () && raw == "true")
+		{
+			RootApp::setSeeOther (response (), cppcms::application::settings ().get ("api_specification.raw", ""));
+			return;
+		}
+
+		RootApp::setSeeOther (response (), cppcms::application::settings ().get ("api_specification.html", ""));
+		return;
 	}
 	else if (request ().request_method () == "OPTIONS")
 	{
@@ -227,6 +234,17 @@ void RootApp::setNotFound (cppcms::http::response & response, const std::string 
 void RootApp::setInternalServerError (cppcms::http::response & response, const std::string message, const std::string loca)
 {
 	RootApp::setHttpStatus (response, cppcms::http::response::internal_server_error, message, loca);
+}
+
+/**
+ * @brief helper method that allows to send a redirect response containing a location header
+ * @param response a response
+ * @param location the location the browser is sent to, should be an URL
+ */
+void RootApp::setSeeOther (cppcms::http::response & response, const std::string location)
+{
+	response.status (cppcms::http::response::see_other);
+	response.set_header ("Location", location);
 }
 
 /**

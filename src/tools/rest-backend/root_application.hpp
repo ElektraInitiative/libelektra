@@ -66,6 +66,7 @@ public:
 	static void setNotFound (cppcms::http::response & response, const std::string message, const std::string loca);
 	static void setInternalServerError (cppcms::http::response & response, const std::string message = std::string (),
 					    const std::string loca = std::string ());
+	static void setSeeOther (cppcms::http::response & response, const std::string location);
 
 	static void setCORSHeaders (cppcms::http::response & response, const std::string allowedMethods);
 

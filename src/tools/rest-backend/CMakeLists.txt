@@ -35,19 +35,6 @@ else ()
     include_directories (${LIBJWT_INCLUDE_DIR})
     include_directories (${OPENSSL_INCLUDE_DIR})
 
-    file (GLOB rest-backend_TMPLS templates/*.tmpl)
-    add_custom_command (
-        OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/template_plain.cpp
-        COMMAND cppcms_tmpl_cc
-            ${rest-backend_TMPLS}
-            -s plain
-            -o ${CMAKE_CURRENT_BINARY_DIR}/template_plain.cpp
-        DEPENDS ${rest-backend_TMPLS}
-    )
-
-    add_library (plain SHARED ${CMAKE_CURRENT_BINARY_DIR}/template_plain.cpp)
-    target_link_libraries (plain ${Boost_LIBRARIES} ${CPPCMS_LIBRARY})
-
     file (GLOB rest-backend_SRCS *.cpp)
 
     add_library (tmp_${tool} OBJECT ${rest-backend_SRCS})
@@ -56,8 +43,7 @@ else ()
     target_link_libraries (${tool} elektra-full elektratools)
 
     install (TARGETS ${tool} DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
-    install (TARGETS plain LIBRARY DESTINATION lib/elektra)
-    install (FILES rest-backend-config.js DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
+    install (FILES rest-backend-config.json DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
     install (FILES run.sh DESTINATION ${TARGET_TOOL_EXEC_FOLDER} RENAME run-${tool}.sh)
     install (FILES stop.sh DESTINATION ${TARGET_TOOL_EXEC_FOLDER} RENAME stop-${tool}.sh)
 
