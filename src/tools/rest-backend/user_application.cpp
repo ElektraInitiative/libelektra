@@ -5,9 +5,10 @@
 #include <stdlib.h>
 
 #include <boost/algorithm/string.hpp>
+#include <openssl/sha.h>
 
 #include "authentication_application.hpp"
-#include "cryptlite/sha256.h"
+#include "crypto.hpp"
 #include "root_application.hpp"
 #include "service.hpp"
 #include "user_application.hpp"
@@ -32,8 +33,6 @@ UserApp::UserApp (cppcms::service & srv) : cppcms::application (srv)
  */
 void UserApp::handle (std::string username)
 {
-	using namespace cryptlite;
-
 	RootApp::setCORSHeaders (response (), "GET,POST,PUT,DELETE,OPTIONS");
 
 	// retrieve user details
@@ -261,8 +260,6 @@ void UserApp::handleGet (cppcms::http::request & req, cppcms::http::response & r
  */
 void UserApp::handleInsert (cppcms::http::request & req, cppcms::http::response & resp)
 {
-	using namespace cryptlite;
-
 	// check if request data is of type application/json
 	if (req.content_type_parsed ().media_type () != "application/json")
 	{
@@ -358,7 +355,18 @@ void UserApp::handleInsert (cppcms::http::request & req, cppcms::http::response 
 
 	// create user model
 	model::User u (username);
-	u.setPasswordHash (sha256::hash_hex (password));
+
+	// password
+	unsigned char sha_out[SHA256_DIGEST_LENGTH];
+	if (!crypto::sha256_encrypt (const_cast<unsigned char *> (reinterpret_cast<unsigned const char *> (password.c_str ())),
+				     strlen (password.c_str ()), sha_out))
+	{
+		RootApp::setInternalServerError (resp, "Could not hash password. Please try again.", "USER_CREATE_UNKNOWN_ERROR");
+		return;
+	}
+	u.setPasswordHash (std::string (reinterpret_cast<const char *> (sha_out)));
+
+	// other properties
 	u.setEmail (email);
 	u.setRank (10);
 	u.setCreatedAt (static_cast<long> (time (0)));
@@ -399,8 +407,6 @@ void UserApp::handleInsert (cppcms::http::request & req, cppcms::http::response 
  */
 void UserApp::handleUpdate (cppcms::http::request & req, cppcms::http::response & resp, std::string username, bool canSetRank)
 {
-	using namespace cryptlite;
-
 	// check if the users exists
 	if (!service::StorageEngine::instance ().userExists (username))
 	{
@@ -463,7 +469,16 @@ void UserApp::handleUpdate (cppcms::http::request & req, cppcms::http::response 
 		}
 		if (!password.empty ())
 		{
-			user.setPasswordHash (sha256::hash_hex (password));
+			unsigned char sha_out[SHA256_DIGEST_LENGTH];
+			if (!crypto::sha256_encrypt (
+				    const_cast<unsigned char *> (reinterpret_cast<unsigned const char *> (password.c_str ())),
+				    strlen (password.c_str ()), sha_out))
+			{
+				RootApp::setInternalServerError (resp, "Could not hash password. Please try again.",
+								 "USER_UPDATE_UNKNOWN_ERROR");
+				return;
+			}
+			user.setPasswordHash (std::string (reinterpret_cast<const char *> (sha_out)));
 		}
 		if (canSetRank && rank != -1)
 		{

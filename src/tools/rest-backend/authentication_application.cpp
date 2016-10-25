@@ -5,10 +5,10 @@
 #include <string.h>
 
 #include <jwt/jwt.h>
-
-#include "cryptlite/sha256.h"
+#include <openssl/sha.h>
 
 #include "authentication_application.hpp"
+#include "crypto.hpp"
 #include "root_application.hpp"
 #include "service.hpp"
 #include "user_application.hpp"
@@ -34,8 +34,6 @@ AuthenticationApp::AuthenticationApp (cppcms::service & srv) : cppcms::applicati
  */
 void AuthenticationApp::authenticate ()
 {
-	using namespace cryptlite;
-
 	RootApp::setCORSHeaders (response (), "POST,OPTIONS");
 
 	if (request ().request_method () == "POST")
@@ -112,7 +110,14 @@ void AuthenticationApp::authenticate ()
 			return;
 		}
 		// then compare the password
-		if (u.getPasswordHash ().compare (sha256::hash_hex (password)) != 0)
+		unsigned char sha_out[SHA256_DIGEST_LENGTH];
+		if (!crypto::sha256_encrypt (const_cast<unsigned char *> (reinterpret_cast<unsigned const char *> (password.c_str ())),
+					     strlen (password.c_str ()), sha_out))
+		{
+			RootApp::setInternalServerError (response (), "Could not hash password. Please try again.", "AUTH_UNKNOWN_ERROR");
+			return;
+		}
+		if (u.getPasswordHash ().compare (std::string (reinterpret_cast<const char *> (sha_out))) != 0)
 		{
 			RootApp::setUnauthorized (response (), "The entered password is wrong.", "AUTH_INVALID_PASSWORD");
 			return;
