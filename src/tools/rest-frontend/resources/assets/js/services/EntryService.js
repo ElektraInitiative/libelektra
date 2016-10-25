@@ -8,6 +8,15 @@ module.exports = function(Logger, $http, $q, config) {
 
 	this.cache = {
 		formats: [],
+		typeaheads: {
+			cached: false,
+			data: {
+				organizations: [],
+				applications: [],
+				scopes: [],
+				tags: []
+			}
+		},
 		search: {
 			cached: false,
 			entries: {},
@@ -127,6 +136,45 @@ module.exports = function(Logger, $http, $q, config) {
 			}).success(function(data) {
 				service.cache.formats = data;
 				deferred.resolve(service.cache.formats);
+			}).error(function(data) {
+				deferred.reject(data);
+			});
+		}
+
+		return deferred.promise;
+
+	};
+
+	this.loadAvailableTypeaheads = function() {
+
+		Logger.info('Attempting to load available typeaheads.');
+
+		var deferred = $q.defer();
+
+		if(service.cache.typeaheads.cache === true) {
+			deferred.resolve(service.cache.typeaheads.data);
+		} else {
+			$http.get(config.backend.root + 'database', {
+				// custom options
+			}).success(function(data) {
+				data.entries.forEach(function(entry) {
+					if(service.cache.typeaheads.data.organizations.indexOf(entry.key.organization) === -1) {
+						service.cache.typeaheads.data.organizations.push(entry.key.organization);
+					}
+					if(service.cache.typeaheads.data.applications.indexOf(entry.key.application) === -1) {
+						service.cache.typeaheads.data.applications.push(entry.key.application);
+					}
+					if(service.cache.typeaheads.data.scopes.indexOf(entry.key.scope) === -1) {
+						service.cache.typeaheads.data.scopes.push(entry.key.scope);
+					}
+					entry.tags.forEach(function(tag) {
+						if(service.cache.typeaheads.data.tags.indexOf(tag) === -1) {
+							service.cache.typeaheads.data.tags.push(tag);
+						}
+					});
+				});
+				service.cache.typeaheads.cache = true;
+				deferred.resolve(service.cache.typeaheads.data);
 			}).error(function(data) {
 				deferred.reject(data);
 			});

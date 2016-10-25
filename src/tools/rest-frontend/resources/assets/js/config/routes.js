@@ -157,6 +157,9 @@ module.exports = function($stateProvider, $urlRouterProvider, $locationProvider,
 				formats: ['EntryService', function(EntryService) {
 					return EntryService.loadAvailableFormats();
 				}],
+				typeaheads: ['EntryService', function(EntryService) {
+					return EntryService.loadAvailableTypeaheads();
+				}],
 				entry: ['$stateParams', 'EntryService', function($stateParams, EntryService) {
 					return EntryService.get($stateParams.entry);
 				}],
@@ -190,6 +193,9 @@ module.exports = function($stateProvider, $urlRouterProvider, $locationProvider,
 			resolve: {
 				formats: ['EntryService', function(EntryService) {
 					return EntryService.loadAvailableFormats();
+				}],
+				typeaheads: ['EntryService', function(EntryService) {
+					return EntryService.loadAvailableTypeaheads();
 				}]
 			},
 			data: {

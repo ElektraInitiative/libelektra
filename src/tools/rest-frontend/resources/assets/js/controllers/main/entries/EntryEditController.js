@@ -2,7 +2,7 @@
 
 var angular = require('angular');
 
-module.exports = function($scope, Logger, $state, EntryService, Notification, Slug, formats, entry) {
+module.exports = function($scope, Logger, $state, EntryService, Notification, Slug, formats, entry, typeaheads) {
 
 	var vm = this;
 
@@ -21,6 +21,7 @@ module.exports = function($scope, Logger, $state, EntryService, Notification, Sl
 			value: entry.value[0].value
 		}
 	};
+	$scope.typeaheads = typeaheads;
 
 	this.submit = function() {
 		Logger.info('Attempting to update entry.');

@@ -65,6 +65,8 @@
 							<input type="text" id="organization" name="organization" class="form-control"
 								   ng-model="entry.organization"
 								   ng-minlength="1" ng-maxlength="255" ng-pattern="'^([a-zA-Z0-9\-\.]+)$'" required
+								   uib-typeahead="organization for organization in typeaheads.organizations"
+								   autocomplete="off"
 								   placeholder="{{ 'APP.ENTRIES.FORM.PLACEHOLDER.ORGANIZATION' | translate }}">
 							<span class="input-group-addon">
 								<i class="fa fa-question form-hint"
@@ -95,6 +97,8 @@
 							<input type="text" id="application" name="application" class="form-control"
 								   ng-model="entry.application"
 								   ng-minlength="1" ng-maxlength="255" ng-pattern="'^([a-zA-Z0-9\-\.]+)$'" required
+								   uib-typeahead="application for application in typeaheads.applications"
+								   autocomplete="off"
 								   placeholder="{{ 'APP.ENTRIES.FORM.PLACEHOLDER.APPLICATION' | translate }}">
 							<span class="input-group-addon">
 								<i class="fa fa-question form-hint"
@@ -125,6 +129,7 @@
 							<input type="text" id="scope" name="scope" class="form-control"
 								   ng-model="entry.scope"
 								   ng-minlength="1" ng-maxlength="255" ng-pattern="'^([a-zA-Z0-9\-\.]+)$'" required
+								   uib-typeahead="scope for scope in typeaheads.scopes" autocomplete="off"
 								   placeholder="{{ 'APP.ENTRIES.FORM.PLACEHOLDER.SCOPE' | translate }}">
 							<span class="input-group-addon">
 								<i class="fa fa-question form-hint"
@@ -190,7 +195,9 @@
 					<tags-input ng-model="entry.tags"
 								min-length="3"
 								max-length="20"
-								allowed-tags-pattern="^[a-z0-9\-\.]{3,20}$"></tags-input>
+								allowed-tags-pattern="^[a-z0-9\-\.]{3,20}$">
+						<auto-complete source="typeaheads.tags"></auto-complete>
+					</tags-input>
 				</div>
 			</div>
 		</div>

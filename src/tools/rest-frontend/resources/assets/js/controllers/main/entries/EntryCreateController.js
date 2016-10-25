@@ -2,7 +2,7 @@
 
 var angular = require('angular');
 
-module.exports = function($scope, Logger, $state, EntryService, Notification, Slug, formats) {
+module.exports = function($scope, Logger, $state, EntryService, Notification, Slug, formats, typeaheads) {
 
 	var vm = this;
 
@@ -19,6 +19,7 @@ module.exports = function($scope, Logger, $state, EntryService, Notification, Sl
 	};
 	$scope.formats = formats;
 	$scope.entry.configuration.format = $scope.formats[0];
+	$scope.typeaheads = typeaheads;
 
 	$scope.$watch('entry.title', function() {
 		if($scope.cb.createScopeManually === true) {
