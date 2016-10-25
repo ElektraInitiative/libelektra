@@ -6,11 +6,17 @@ HOST: api.libelektra.org
 This is a description of the API provided by the REST service that can be used to share, search and download configuration snippets.
 
 
-# API Description [/]
+# API Description [/{?raw}]
 
 ## List API methods [GET]
 
-Returns an overview of available API methods with required parameters and a description.
+Returns an overview of available API methods with required parameters and a description. By default a nicely formatted HTML version of the API specification will be returned.
+
++ Parameters
+    + raw (boolean, optional) - Whether a plain-text, machine-readable blueprint should be returned.
+        + Default: `false`
+
++ Response 200 (text/plain; charset=utf-8)
 
 + Response 200 (text/html; charset=utf-8)
 
