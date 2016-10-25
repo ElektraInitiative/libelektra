@@ -37,8 +37,7 @@
 								  ng-model="entry.description"
 								  ng-minlength="3" ng-pattern="'^[\\s\\S]+$'" required
 								  placeholder="{{ 'APP.ENTRIES.FORM.PLACEHOLDER.DESCRIPTION' | translate }}"
-								  style="resize:vertical;min-height:135px;">
-						</textarea>
+								  style="resize:vertical;min-height:135px;"></textarea>
 						<span class="fa form-control-feedback"
 							  ng-class="{'fa-times': entryForm.description.$invalid && entryForm.description.$dirty,
 										 'fa-check': !entryForm.description.$invalid && entryForm.description.$dirty}"></span>
@@ -229,8 +228,7 @@
 							ng-model="entry.configuration.value"
 							required
 							placeholder="{{ 'APP.ENTRIES.FORM.PLACEHOLDER.CONFIGURATION.VALUE' | translate }}"
-							style="resize:vertical;min-height:250px;">
-					</textarea>
+							style="resize:vertical;min-height:250px;"></textarea>
 					<span class="fa form-control-feedback"
 						  ng-class="{'fa-times': entryForm.config_value.$invalid && entryForm.config_value.$dirty,
 									 'fa-check': !entryForm.config_value.$invalid && entryForm.config_value.$dirty}"></span>

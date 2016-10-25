@@ -9,7 +9,7 @@
 			<div class="panel-body">
 				<form name="convertForm">
 					<div class="col-md-6">
-						<div class="form-group"
+						<div class="form-group has-feedback"
 					 ng-class="{'has-error': convertForm.input_format.$invalid && !convertForm.input_format.$pristine,
 								'has-success': convertForm.input_format.$valid && convertForm.input_format.$dirty}">
 							<label for="input_format" class="control-label">
@@ -22,12 +22,11 @@
 							</select>
 							<div ng-show="convertForm.input_format.$invalid && convertForm.input_format.$dirty">
 								<span class="help-block mt5 ml10" ng-messages="convertForm.input_format.$error">
-									<i class="fa fa-times"></i>
 									<span ng-message="required">{{ 'APP.CONVERSION.LABEL.VALIDATION.INPUT.FORMAT.REQUIRED' | translate }}</span>
 								</span>
 							</div>
 						</div>
-						<div class="form-group"
+						<div class="form-group has-feedback"
 					 ng-class="{'has-error': convertForm.input_snippet.$invalid && !convertForm.input_snippet.$pristine,
 								'has-success': convertForm.input_snippet.$valid && convertForm.input_snippet.$dirty}">
 							<label for="input_snippet" class="control-label">
@@ -37,16 +36,18 @@
 									  ng-model="parameters.input.snippet"
 									  ng-disabled="parameters.input.format.format === 'info'"
 									  rows="13" ng-required="parameters.input.format.format !== 'info'"></textarea>
+							<span class="fa form-control-feedback"
+								  ng-class="{'fa-times': convertForm.input_snippet.$invalid && convertForm.input_snippet.$dirty,
+											 'fa-check': !convertForm.input_snippet.$invalid && convertForm.input_snippet.$dirty}"></span>
 							<div ng-show="convertForm.input_snippet.$invalid && convertForm.input_snippet.$dirty">
 								<span class="help-block mt5 ml10" ng-messages="convertForm.input_snippet.$error">
-									<i class="fa fa-times"></i>
 									<span ng-message="required">{{ 'APP.CONVERSION.LABEL.VALIDATION.INPUT.SNIPPET.REQUIRED' | translate }}</span>
 								</span>
 							</div>
 						</div>
 					</div>
 					<div class="col-md-6">
-						<div class="form-group"
+						<div class="form-group has-feedback"
 					 ng-class="{'has-error': convertForm.output_format.$invalid && !convertForm.output_format.$pristine,
 								'has-success': convertForm.output_format.$valid && convertForm.output_format.$dirty}">
 							<label for="output_format" class="control-label">
@@ -59,7 +60,6 @@
 							</select>
 							<div ng-show="convertForm.output_format.$invalid && convertForm.output_format.$dirty">
 								<span class="help-block mt5 ml10" ng-messages="convertForm.output_format.$error">
-									<i class="fa fa-times"></i>
 									<span ng-message="required">{{ 'APP.CONVERSION.LABEL.VALIDATION.OUTPUT.FORMAT.REQUIRED' | translate }}</span>
 								</span>
 							</div>
@@ -82,7 +82,7 @@
 					</div>
 					<div class="col-md-12">
 						<span class="pull-left">
-							<button class="btn btn-default" ng-click="ctrl.clearFields()">
+							<button class="btn btn-default" ng-click="ctrl.clearFields(true)">
 								<i class="fa fa-close"></i>
 								<span>{{ 'APP.CONVERSION.BUTTON.CLEAR' | translate }}</span>
 							</button>

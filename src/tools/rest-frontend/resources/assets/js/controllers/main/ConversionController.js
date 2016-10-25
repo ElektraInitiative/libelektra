@@ -59,12 +59,18 @@ module.exports = function($scope, Logger, formats, ConversionService, ReportServ
 		$scope.convertForm.$setPristine();
 	};
 
-	this.clearFields = function() {
+	this.clearFields = function(pristine) {
+		pristine = (typeof pristine === 'undefined') ? false : pristine;
+
 		$scope.parameters.input.format = $scope.formatsInput[0];
 		$scope.parameters.output.format = $scope.formatsOutput[0];
 		$scope.parameters.input.snippet = '';
 		$scope.parameters.output.snippet = '';
 		$scope.parameters.output.validated = false;
+
+		if(pristine === true) {
+			$scope.convertForm.$setPristine();
+		}
 	};
 
 	this.createGithubIssue = function() {

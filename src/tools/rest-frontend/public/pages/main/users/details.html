@@ -45,7 +45,7 @@
 			</div>
 			<div class="panel-body">
 				<form name="passwordForm">
-					<div class="form-group"
+					<div class="form-group has-feedback"
 						 ng-class="{'has-error': passwordForm.password_new.$invalid && !passwordForm.password_new.$pristine,
 								    'has-success': passwordForm.password_new.$valid && passwordForm.password_new.$dirty}">
 						<label for="password_new" class="control-label">
@@ -55,16 +55,18 @@
 							   ng-model="changes.password.input1"
 							   ng-minlength="8" ng-pattern="'(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9]).{8,}'" required
 							   placeholder="{{ 'APP.USERS.DETAILS.PLACEHOLDER.PASSWORDNEW' | translate }}" />
+						<span class="fa form-control-feedback"
+							  ng-class="{'fa-times': passwordForm.password_new.$invalid && passwordForm.password_new.$dirty,
+										 'fa-check': !passwordForm.password_new.$invalid && passwordForm.password_new.$dirty}"></span>
 						<div ng-show="passwordForm.password_new.$invalid && passwordForm.password_new.$dirty">
 							<span class="help-block mt5 ml10" ng-messages="passwordForm.password_new.$error">
-								<i class="fa fa-times"></i>
 								<span ng-message="required">{{ 'APP.USERS.DETAILS.LABEL.VALIDATION.PASSWORDNEW.REQUIRED' | translate }}</span>
 								<span ng-message="minlength">{{ 'APP.USERS.DETAILS.LABEL.VALIDATION.PASSWORDNEW.MINLENGTH' | translate }}</span>
 								<span ng-message="pattern">{{ 'APP.USERS.DETAILS.LABEL.VALIDATION.PASSWORDNEW.PATTERN' | translate }}</span>
 							</span>
 						</div>
 					</div>
-					<div class="form-group"
+					<div class="form-group has-feedback"
 						 ng-class="{'has-error': passwordForm.password_new_confirm.$invalid && !passwordForm.password_new_confirm.$pristine,
 								    'has-success': passwordForm.password_new_confirm.$valid && passwordForm.password_new_confirm.$dirty}">
 						<label for="password_new_confirm" class="control-label">
@@ -73,9 +75,11 @@
 						<input type="password" id="password_new_confirm" name="password_new_confirm" class="form-control"
 							   ng-model="changes.password.input2" equal-input="changes.password.input1" required
 							   placeholder="{{ 'APP.USERS.DETAILS.PLACEHOLDER.PASSWORDNEWCONFIRM' | translate }}" />
+						<span class="fa form-control-feedback"
+							  ng-class="{'fa-times': passwordForm.password_new_confirm.$invalid && passwordForm.password_new_confirm.$dirty,
+										 'fa-check': !passwordForm.password_new_confirm.$invalid && passwordForm.password_new_confirm.$dirty}"></span>
 						<div ng-show="passwordForm.password_new_confirm.$invalid && passwordForm.password_new_confirm.$dirty">
 							<span class="help-block mt5 ml10" ng-messages="passwordForm.password_new_confirm.$error">
-								<i class="fa fa-times"></i>
 								<span ng-message="required">{{ 'APP.USERS.DETAILS.LABEL.VALIDATION.PASSWORDNEWCONFIRM.REQUIRED' | translate }}</span>
 								<span ng-message="equalInput">{{ 'APP.USERS.DETAILS.LABEL.VALIDATION.PASSWORDNEWCONFIRM.EQUAL_INPUT' | translate }}</span>
 							</span>
@@ -97,7 +101,7 @@
 			</div>
 			<div class="panel-body">
 				<form name="emailForm">
-					<div class="form-group"
+					<div class="form-group has-feedback"
 						 ng-class="{'has-error': emailForm.email_new.$invalid && !emailForm.email_new.$pristine,
 								    'has-success': emailForm.email_new.$valid && emailForm.email_new.$dirty}">
 						<label for="email_new" class="control-label">
@@ -106,9 +110,11 @@
 						<input type="email" id="email_new" name="email_new" class="form-control"
 							   ng-model="changes.email" required
 							   placeholder="{{ 'APP.USERS.DETAILS.PLACEHOLDER.EMAILNEW' | translate }}" />
+						<span class="fa form-control-feedback"
+							  ng-class="{'fa-times': emailForm.email_new.$invalid && emailForm.email_new.$dirty,
+										 'fa-check': !emailForm.email_new.$invalid && emailForm.email_new.$dirty}"></span>
 						<div ng-show="emailForm.email_new.$invalid && emailForm.email_new.$dirty">
 							<span class="help-block mt5 ml10" ng-messages="emailForm.email_new.$error">
-								<i class="fa fa-times"></i>
 								<span ng-message="required">{{ 'APP.USERS.DETAILS.LABEL.VALIDATION.EMAILNEW.REQUIRED' | translate }}</span>
 								<span ng-message="email">{{ 'APP.USERS.DETAILS.LABEL.VALIDATION.EMAILNEW.EMAIL' | translate }}</span>
 							</span>
@@ -130,7 +136,7 @@
 			</div>
 			<div class="panel-body">
 				<form name="rankForm">
-					<div class="form-group"
+					<div class="form-group has-feedback"
 						 ng-class="{'has-error': rankForm.rank_new.$invalid && !rankForm.rank_new.$pristine,
 								    'has-success': rankForm.rank_new.$valid && rankForm.rank_new.$dirty}">
 						<label for="rank_new" class="control-label">
@@ -141,7 +147,6 @@
 								ng-options="row.name | translate for row in ranks"></select>
 						<div ng-show="rankForm.rank_new.$invalid && rankForm.rank_new.$dirty">
 							<span class="help-block mt5 ml10" ng-messages="rankForm.rank_new.$error">
-								<i class="fa fa-times"></i>
 								<span ng-message="required">{{ 'APP.USERS.DETAILS.LABEL.VALIDATION.RANKNEW.REQUIRED' | translate }}</span>
 							</span>
 						</div>

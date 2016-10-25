@@ -8,7 +8,7 @@
             </div>
             <div class="panel-body">
                 <form name="loginForm" class="form-horizontal">
-                    <div class="form-group"
+                    <div class="form-group has-feedback"
 					 ng-class="{'has-error': loginForm.username.$invalid && !loginForm.username.$pristine,
 								'has-success': loginForm.username.$valid && loginForm.username.$dirty}">
                         <label for="username" class="control-label col-md-2">
@@ -20,9 +20,11 @@
 								   ng-maxlength="20" ng-pattern="'^[a-zA-Z0-9\\-\\.]+$'" required
 								   maxlength="20"
                                    placeholder="{{ 'APP.AUTH.LOGIN.PLACEHOLDER.USERNAME' | translate }}">
+							<span class="fa form-control-feedback"
+								  ng-class="{'fa-times': loginForm.username.$invalid && loginForm.username.$dirty,
+											 'fa-check': !loginForm.username.$invalid && loginForm.username.$dirty}"></span>
 							<div ng-show="loginForm.username.$invalid && loginForm.username.$dirty">
 								<span class="help-block mt5 ml10" ng-messages="loginForm.username.$error">
-									<i class="fa fa-times"></i>
 									<span ng-message="required">{{ 'APP.AUTH.LOGIN.LABEL.VALIDATION.USERNAME.REQUIRED' | translate }}</span>
 									<span ng-message="maxlength">{{ 'APP.AUTH.LOGIN.LABEL.VALIDATION.USERNAME.MAXLENGTH' | translate }}</span>
 									<span ng-message="pattern">{{ 'APP.AUTH.LOGIN.LABEL.VALIDATION.USERNAME.PATTERN' | translate }}</span>
@@ -30,7 +32,7 @@
 							</div>
                         </div>
                     </div>
-                    <div class="form-group"
+                    <div class="form-group has-feedback"
 						 ng-class="{'has-error': loginForm.password.$invalid && !loginForm.password.$pristine,
 								    'has-success': loginForm.password.$valid && loginForm.password.$dirty}">
                         <label for="password" class="control-label col-md-2">
@@ -41,9 +43,11 @@
                                    ng-model="user.password"
 								   required
                                    placeholder="{{ 'APP.AUTH.LOGIN.PLACEHOLDER.PASSWORD' | translate }}">
+							<span class="fa form-control-feedback"
+								  ng-class="{'fa-times': loginForm.password.$invalid && loginForm.password.$dirty,
+											 'fa-check': !loginForm.password.$invalid && loginForm.password.$dirty}"></span>
 							<div ng-show="loginForm.password.$invalid && loginForm.password.$dirty">
 								<span class="help-block mt5 ml10" ng-messages="loginForm.password.$error">
-									<i class="fa fa-times"></i>
 									<span ng-message="required">{{ 'APP.AUTH.LOGIN.LABEL.VALIDATION.PASSWORD.REQUIRED' | translate }}</span>
 								</span>
 							</div>
