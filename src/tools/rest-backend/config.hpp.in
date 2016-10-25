@@ -70,7 +70,7 @@
 // The max amount of entries the rest service will return for requests
 // that search or list the database. If the user specifies a higher number,
 // it will be overwritten by this one.
-#define ELEKTRA_REST_OUTPUT_MAX_ENTRIES 200
+#define ELEKTRA_REST_OUTPUT_MAX_ENTRIES 1000000
 
 // The default sorting for user lists of the rest service.
 // "asc" = ascending (A to Z), "desc" = descending (Z to A)
