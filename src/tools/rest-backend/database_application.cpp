@@ -882,6 +882,14 @@ inline void DatabaseApp::produceOutput (cppcms::http::request & req, cppcms::htt
 			data["entries"][index]["description"] = elem.getDescription ();
 			data["entries"][index]["created_at"] = elem.getCreatedAt ();
 			data["entries"][index]["author"] = elem.getAuthor ();
+
+			int i = 0;
+			for (auto & tag : elem.getTags ())
+			{
+				data["entries"][index]["tags"][i] = tag;
+				i++;
+			}
+
 			index++;
 		}
 	}
