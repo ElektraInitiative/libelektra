@@ -22,6 +22,7 @@
     "angular-marked": "^1.2.2",
     "angular-messages": "^1.5.8",
     "angular-sanitize": "^1.5.8",
+    "angular-slugify": "^1.0.3",
     "angular-translate": "^2.12.1",
     "angular-translate-loader-static-files": "^2.12.1",
     "angular-ui-bootstrap": "^2.2.0",

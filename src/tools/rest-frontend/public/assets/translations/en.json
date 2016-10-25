@@ -179,6 +179,11 @@
 	"APP.ENTRIES.EDIT.NOTIFICATION.MESSAGE.USER_INSUFFICIENT_PERMISSIONS": "Your have insufficient permissions to perform this action. Only moderators and the owner of a snippet can change it.",
 	"APP.ENTRIES.EDIT.PANEL.HEADING": "Edit configuration snippet",
 
+	"APP.ENTRIES.FORM.ALTTEXT.APPLICATION.HINT": "What is the name of the application you want to share a configuration snippet for? Common web applications would be the Tomcat webserver, a MySQL database server and the nginx webserver.",
+	"APP.ENTRIES.FORM.ALTTEXT.ORGANIZATION.HINT": "Which organization built the application you want to paste a snippet for? For example, Windows has been built by Microsoft and the Tomcat webserver by Apache.",
+	"APP.ENTRIES.FORM.ALTTEXT.SCOPE.HINT": "The scope of a configuration can vary from application to application. Sometimes applications have multiple configuration files, which would make the filename of the configuration file a good scope. Also the version of the application can be used as scope.",
+	"APP.ENTRIES.FORM.ALTTEXT.SLUG.HINT": "The slug is the last part of the unique identifier of a snippet. Normally it is automatically generated from the snippet title, but in case it is already used or you simply want to define your own slug, you can do so by enabling the input field.",
+	"APP.ENTRIES.FORM.ALTTEXT.SLUG.MANUALLY": "By enabling this input field, you can define the slug yourself.",
 	"APP.ENTRIES.FORM.BUTTON.ABORT": "Abort",
 	"APP.ENTRIES.FORM.BUTTON.SUBMIT": "Submit",
 	"APP.ENTRIES.FORM.LABEL.APPLICATION": "Application:",

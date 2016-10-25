@@ -2,12 +2,15 @@
 
 var angular = require('angular');
 
-module.exports = function($scope, Logger, EntryService, $state, Notification, formats) {
+module.exports = function($scope, Logger, $state, EntryService, Notification, Slug, formats) {
 
 	var vm = this;
 
 	$scope.isCreate = true;
 
+	$scope.cb = {
+		createScopeManually: false
+	};
 	$scope.entry = {
 		tags: [],
 		configuration: {
@@ -16,6 +19,19 @@ module.exports = function($scope, Logger, EntryService, $state, Notification, fo
 	};
 	$scope.formats = formats;
 	$scope.entry.configuration.format = $scope.formats[0];
+
+	$scope.$watch('entry.title', function() {
+		if($scope.cb.createScopeManually === true) {
+			return;
+		}
+		$scope.entry.slug = Slug.slugify($scope.entry.title);
+	}, true);
+
+	$scope.$watch('cb.createScopeManually', function() {
+		if($scope.cb.createScopeManually === false) {
+			$scope.entry.slug = Slug.slugify($scope.entry.title);
+		}
+	}, true);
 
 	this.submit = function() {
 		Logger.info('Attempting to create new entry.');

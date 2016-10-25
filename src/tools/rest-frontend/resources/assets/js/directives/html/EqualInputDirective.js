@@ -15,7 +15,7 @@ module.exports = function($parse) {
 			});
 
 			// observe the other value and re-validate on change
-			$scope.$watch(attrs.equalInput, function (val) {
+			$scope.$watch(attrs.equalInput, function () {
 				validate();
 			});
 

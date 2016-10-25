@@ -17,6 +17,7 @@ require('angular-file-saver');
 require('angular-marked');
 require('angular-messages');
 require('angular-sanitize');
+require('angular-slugify');
 require('angular-translate');
 require('angular-translate-loader-static-files');
 require('angular-ui-bootstrap');
@@ -38,6 +39,7 @@ angular.module('elektra.rest.angular', [
 	'ngTagsInput',
 	'pascalprecht.translate',
 	'satellizer',
+	'slugifier',
 	'ui.bootstrap',
 	'ui.router',
 	'ui-notification'

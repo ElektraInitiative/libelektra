@@ -2,7 +2,7 @@
 
 var angular = require('angular');
 
-module.exports = function($scope, Logger, EntryService, $state, Notification, formats, entry) {
+module.exports = function($scope, Logger, $state, EntryService, Notification, Slug, formats, entry) {
 
 	var vm = this;
 
