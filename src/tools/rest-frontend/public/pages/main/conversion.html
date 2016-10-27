@@ -32,7 +32,7 @@
 							<label for="input_snippet" class="control-label">
 								{{ 'APP.CONVERSION.LABEL.INPUT.SNIPPET' | translate }}
 							</label>
-							<textarea id="input_snippet" name="input_snippet" class="form-control"
+							<textarea id="input_snippet" name="input_snippet" class="form-control" style="resize:vertical;"
 									  ng-model="parameters.input.snippet"
 									  ng-disabled="parameters.input.format.format === 'info'"
 									  rows="13" ng-required="parameters.input.format.format !== 'info'"></textarea>
@@ -68,7 +68,7 @@
 							<label for="output_snippet" class="control-label">
 								{{ 'APP.CONVERSION.LABEL.OUTPUT.SNIPPET' | translate }}
 							</label>
-							<textarea id="output_snippet" name="output_snippet" class="form-control"
+							<textarea id="output_snippet" name="output_snippet" class="form-control" style="resize:vertical;"
 									  ng-model="parameters.output.snippet"
 									  rows="13" readonly></textarea>
 							<div ng-show="parameters.output.validated">
