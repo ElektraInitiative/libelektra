@@ -9,8 +9,18 @@ module.exports = function(grunt) {
 
 		var self = this;
 
-		var root_dir = path.normalize(path.join(path.dirname(__dirname), this.data.repo_root));
-		var target_dir = path.normalize(path.join(path.dirname(__dirname), this.data.target_dir));
+		// read input output path, use relative path if necessary
+		var root_dir, target_dir;
+		if(path.isAbsolute(this.data.repo_root)) {
+			root_dir = path.normalize(this.data.repo_root);
+		} else {
+			root_dir = path.normalize(path.join(path.dirname(__dirname), this.data.repo_root));
+		}
+		if(path.isAbsolute(this.data.target_dir)) {
+			target_dir = path.normalize(this.data.target_dir);
+		} else {
+			target_dir = path.normalize(path.join(path.dirname(__dirname), this.data.target_dir));
+		}
 
 
 		/* MAIN FUNCTION */
@@ -83,6 +93,7 @@ module.exports = function(grunt) {
 				case '.md':
 					content = self.replaceTabBySpaces(content);
 					content = self.ensureAbsoluteLinkPaths(filepath, content);
+					content = self.ensureLinkToFile(content);
 					break;
 				default: // code files
 					content = self.replaceTabBySpaces(content);
@@ -122,13 +133,32 @@ module.exports = function(grunt) {
 
 		this.ensureAbsoluteLinkPaths = function(filepath, text) {
 			return text.replace(/\[(.+)\]\(([^\)]+)\)/gi, function(match, text, url) {
-				if(url.indexOf('://') > -1) {
+				if(url.indexOf('://') > -1 || url.charAt(0) === '#') {
 					return match;
 				} else {
 					if(url.charAt(0) === '/') {
 						return '[' + text + '](' + url.substr(1) + ')';
 					} else {
 						return '[' + text + '](' + path.join(path.dirname(filepath), url) + ')';
+					}
+				}
+			});
+		};
+
+		this.ensureLinkToFile = function(text) {
+			return text.replace(/\[(.+)\]\(([^\)]+)\)/gi, function(match, text, url) {
+				if(url.indexOf('://') > -1 || url.charAt(0) === '#') {
+					return match;
+				} else {
+					var file = path.normalize(path.join(root_dir, url));
+					try {
+						if(fs.statSync(file).isDirectory()) {
+							return '[' + text + '](' + url + 'README.md' + ')';
+						} else {
+							return match;
+						}
+					} catch (error) {
+						return match;
 					}
 				}
 			});

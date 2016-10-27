@@ -9,8 +9,12 @@ module.exports = function(grunt) {
 
 		var self = this;
 
-		var root_dir = path.normalize(path.join(path.dirname(__dirname), this.data.repo_root));
-
+		var root_dir;
+		if(path.isAbsolute(this.data.repo_root)) {
+			root_dir = path.normalize(this.data.repo_root);
+		} else {
+			root_dir = path.normalize(path.join(path.dirname(__dirname), this.data.repo_root));
+		}
 
 		/* MAIN FUNCTION */
 
