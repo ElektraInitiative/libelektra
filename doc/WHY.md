@@ -34,6 +34,20 @@ Features that rarely can be found elsewhere (at least in this combination):
 - Provides 3-way merging for configuration upgrades.
 
 
+
+## Who should use Elektra? ##
+
+Elektra directly targets three different kinds of users:
+
+1. Developers to develop a better integrated free software ecosystem and
+   plugins for better validation/notification.
+2. System administrators to have a higher-level view of their configuration
+   and enable them to better consider context.
+3. Researchers to develop plugins that can be used with a large pool of
+   applications.
+
+
+
 ### Further reasons ###
 
 - Links and automatic calculation of values:
