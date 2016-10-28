@@ -180,6 +180,10 @@ The following variants are available:
 %predicate kdb::Key::isValid;
 %predicate kdb::Key::isSystem;
 %predicate kdb::Key::isUser;
+%predicate kdb::Key::isCascading;
+%predicate kdb::Key::isSpec;
+%predicate kdb::Key::isProc;
+%predicate kdb::Key::isDir;
 %predicate kdb::Key::isString;
 %predicate kdb::Key::isBinary;
 %predicate kdb::Key::isInactive;
