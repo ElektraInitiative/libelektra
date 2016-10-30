@@ -981,3 +981,9 @@ macro:FCRYPT_RENAME
 severity:error
 ingroup:plugin
 module:fcrypt
+
+number:162
+description:Hosts validation error. The hosts keyset contains unknown keys. Only keys below ipv4 and ipv6 are allowed.
+severity:error
+ingroup:plugin
+module:storage
