@@ -1,4 +1,4 @@
-## Why should I use Elektra? ##
+# Why should I use Elektra? #
 
 The three main points relevant for most people are:
 
@@ -16,25 +16,6 @@ The three main points relevant for most people are:
    - [generate code based on it](/src/tools/gen)
    - [and much more](/src/plugins/README.md)
 
-
-
-### Unique Features ###
-
-Features that rarely can be found elsewhere (at least in this combination):
-
-- Bootstrap code and proper abstraction is included:
-  - you do not need to worry about the file names of configuration files
-    in the application
-  - cascading between `/etc`, `$HOME`, `cwd` and so on
-  - you can change which Elektra path is connected to which configuration
-    file with [mounting](/doc/help/elektra-mounting.md)
-  - Portable across OS (Linux, BSD, w64, mac os x,.. ) and desktop systems (GNOME, KDE,...)
-- No daemon, so no single point of failure but still having guarantees of consistent,
-  validated files with good performance.
-- Provides 3-way merging for configuration upgrades.
-
-
-
 ## Who should use Elektra? ##
 
 Elektra directly targets three different kinds of users:
@@ -46,9 +27,22 @@ Elektra directly targets three different kinds of users:
 3. Researchers to develop plugins that can be used with a large pool of
    applications.
 
+## Unique Features ##
 
+Features that rarely can be found elsewhere (at least in this combination):
 
-### Further reasons ###
+- Bootstrap code and proper abstraction is included:
+  - You do not need to worry about the file names of configuration files
+    in the application.
+  - Cascading between `/etc`, `$HOME`, `cwd` and so on.
+  - You can change which Elektra path is connected to which configuration
+    file with [mounting](/doc/help/elektra-mounting.md).
+  - Portable across OS (Linux, BSD, w64, mac os x,.. ) and desktop systems (GNOME, KDE,...).
+- No daemon, so no single point of failure but still having guarantees of consistent,
+  validated files with good performance.
+- Provides 3-way merging for configuration upgrades.
+
+## Further Reasons ##
 
 - Links and automatic calculation of values:
    unlike with other solutions you do not need to duplicate
