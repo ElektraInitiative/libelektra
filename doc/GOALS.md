@@ -1,18 +1,16 @@
-## Goals ##
+# Goals #
 
-- improve robustness of configuration systems
-  - reject invalid configuration
-  - avoid common programming errors by using better bindings
-- allow software to be better integrated on configuration level
-- postpone some decisions from programmers to
-  maintainers/administrators:
-  - syntax of the configuration files
-  - side effects (e.g. logging, vcs commit, notifications)
-  - flexible adoption to specific needs
-  - adoption of standards (xdg, xml, json)
-- reduce duplication of code (a single parser/generator used by
-  everyone accessing a specific part of configuration)
-
+- Improve robustness of configuration systems by
+  - rejecting invalid configuration.
+  - avoiding common programming errors through the usage of better bindings.
+- Allow software to be better integrated on configuration level.
+- Postpone some decisions from programmers to maintainers/administrators:
+  - Syntax of the configuration file(s)
+  - Side effects (e.g. logging, vcs commit, notifications)
+  - Flexible adoption to specific needs
+  - Adoption of standards (xdg, xml, json)
+- Reduce duplication of code (a single parser/generator used by
+  everyone accessing a specific part of the configuration).
 
 ## Target ##
 
@@ -44,21 +42,20 @@ Special care for simplicity is taken for the users:
   Elektra so that it flawlessly integrate with their system.
 - Plugin Programmers: it should be simple to extend Elektra
   in any desired way.
-- Application's Maintainers to correctly setup+upgrade KDB
-- Administrators that want to change the maintainers setup
+- Application's Maintainers to correctly setup and upgrade KDB
+- Administrators that want to change the maintainers' setup
   according to their needs
-
 
 2.) Robustness
 
-Configuration Systems today suffer badly from:
+Configuration systems today suffer badly from:
 
-- different behaviour on different systems
-- weak input validation
-- faulty transformations from strings to other types
-- no error messages
-- undefined behaviour
-- migration from one version to another
+- Different behaviour on different systems
+- Weak input validation
+- Faulty transformations from strings to other types
+- No error messages
+- Undefined behaviour
+- Migration from one version to another
 
 We want to tackle this problem by introducing an abstraction layer where
 all these problems can be dealt with. The goal is that code changes
@@ -66,14 +63,13 @@ are necessary only within Elektra and not in the applications using
 Elektra! This makes your code not only portable towards more systems,
 but also enables global improvements in the configuration systems.
 
-
 3.) Extensibility
 
 There are so many variants of
 
-- storage formats
-- frontend integrations
-- bindings
+- Storage formats
+- Frontend integrations
+- Bindings
 
 Nearly every aspect of Elektra must be extremely extensible.
 On the other side semantics must be very clear and well defined
@@ -81,7 +77,6 @@ so that this extensible system works reproducible and predictable.
 
 Only key/value pairs are the common factor and a way to get and set
 them, everything else is an extension.
-
 
 4.) Performance
 
@@ -92,9 +87,8 @@ endeavours where everyone using Elektra can benefit from.
 
 Only pay for what you need.
 
-
 ## Non-Goals ##
 
-- Support semantics that do not fit into the KeySet (key/value pairs) with an kdbGet()/kdbSet() interface.
+- Support semantics that do not fit into the KeySet (key/value pairs) with an `kdbGet()`/`kdbSet()` interface.
 - Support for non-configuration issues, e.g. storing any key/value data.
 - Elektra is not a distributed CM, use Puppet, CFEngine on top or a distributed filesystem below Elektra.
