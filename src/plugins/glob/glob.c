@@ -47,6 +47,7 @@ int elektraGlobMatch (Key * key, const Key * match, const char * globFlags)
 	if (!fnmatch (keyString (match), keyName (key), flags))
 	{
 		keyCopyAllMeta (key, match);
+		return 1;
 	}
 
 	return 0;
@@ -145,15 +146,17 @@ static void applyGlob (KeySet * returned, KeySet * glob)
 		while ((match = ksNext (glob)) != 0)
 		{
 			const Key * flagKey = keyGetMeta (match, "glob/flags");
+			int matchApplied;
 
 			if (flagKey)
 			{
-				elektraGlobMatch (cur, match, keyString (flagKey));
-				continue;
+				matchApplied = elektraGlobMatch (cur, match, keyString (flagKey));
+			} else {
+				/* if no flags were provided, default to FNM_PATHNAME behaviour */
+				matchApplied = elektraGlobMatch (cur, match, "pathname");
 			}
 
-			/* if no flags were provided, default to FNM_PATHNAME behaviour */
-			elektraGlobMatch (cur, match, "pathname");
+			if (matchApplied) break;
 		}
 	}
 }

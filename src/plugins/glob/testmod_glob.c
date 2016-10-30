@@ -240,6 +240,56 @@ void test_namedMatchFlags ()
 	PLUGIN_CLOSE ();
 }
 
+void test_onlyFirstMatchIsApplied ()
+{
+	Key * parentKey = keyNew ("user/tests/glob", KEY_END);
+	// clang-format off
+	KeySet * conf = ksNew (20,
+				keyNew ("user/glob/#1",
+						KEY_VALUE, "user/tests/glob/test1*",
+						KEY_META, "testmetakey1", "testvalue1",
+						KEY_END),
+				keyNew ("user/glob/#2",
+						KEY_VALUE, "user/tests/glob/*",
+						KEY_META, "testmetakey2", "testvalue2",
+						KEY_END),
+			       /* disable all flags */
+			    keyNew ("user/glob/#1/flags",
+			    		KEY_VALUE, "",
+						KEY_END),
+				keyNew ("user/glob/#2/flags",
+				   		KEY_VALUE, "",
+						KEY_END),
+				KS_END);
+	// clang-format on
+	PLUGIN_OPEN ("glob");
+
+	KeySet * ks = createKeys ();
+
+	succeed_if (plugin->kdbGet (plugin, ks, parentKey) >= 1, "call to kdbSet was not successful");
+	succeed_if (output_error (parentKey), "error in kdbSet");
+	succeed_if (output_warnings (parentKey), "warnings in kdbSet");
+
+	Key * key = ksLookupByName (ks, "user/tests/glob/test1", 0);
+	exit_if_fail (key, "key user/tests/glob/test1 not found");
+	const Key * firstMatchKey = keyGetMeta (key, "testmetakey1");
+	exit_if_fail (firstMatchKey, "testmetakey1 not found");
+	const Key * secondMatchKey = keyGetMeta (key, "testmetakey2");
+	exit_if_fail (!secondMatchKey, "testmetakey2 was applied to testmetakey1 although another match was already applied")
+
+	key = ksLookupByName (ks, "user/tests/glob/test2/subtest1", 0);
+	exit_if_fail (key, "user/tests/glob/test2/subtest1 not found");
+	exit_if_fail (keyGetMeta (key, "testmetakey2"), "testmetakey2 not found");
+
+	key = ksLookupByName (ks, "user/tests/glob/test3", 0);
+	exit_if_fail (key, "user/tests/glob/test3 not found");
+	exit_if_fail (keyGetMeta (key, "testmetakey2"), "testmetakey2 not found");
+
+	ksDel (ks);
+	keyDel (parentKey);
+	PLUGIN_CLOSE ();
+}
+
 int main (int argc, char ** argv)
 {
 	printf ("GLOB      TESTS\n");
@@ -254,6 +304,7 @@ int main (int argc, char ** argv)
 	test_getGlobalMatch ();
 	test_getDirectionMatch ();
 	test_namedMatchFlags ();
+	test_onlyFirstMatchIsApplied();
 
 	printf ("\ntestmod_glob RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 
