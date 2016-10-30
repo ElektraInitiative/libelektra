@@ -1,11 +1,13 @@
-# INTRODUCTION #
+# GIT #
 
-## BASIC GIT COMMANDS ##
+## Basic GIT Commands##
 
-	git add .
-	git commit -a
+	git add readme.md   // adds the changes of the file `readme.md` to the staging area
+	git add .           // adds all changes of files in the current directory (recursively) to the staging area
+	git add --all       // adds all changes of files in the repository to the staging area
+	git commit -a       // executes a commit that automatically stages all changed and deleted files before
 
-## BASIC Configuration ##
+## Basic Configuration ##
 
 make sure to do:
 
@@ -53,7 +55,6 @@ master should always compile and all test
 cases should pass successfully.
 (see config option above)
 
-
 	debian
 
 Is the branch to be used to build debian
@@ -61,9 +62,9 @@ packages. It additionally contains the
 debian folder. Only debian related commits
 should be on the debian branch - otherwise
 it should only contain --no-ff merges from
-master.  (see config option above)
+master. (see config option above)
 
-## Local branches ##
+## Local Branches ##
 
 You should always make your own feature branch with:
 
