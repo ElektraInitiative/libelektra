@@ -47,9 +47,14 @@ So later expressions can be used as default values.
 ### Globbing Flags ###
 
 Globbing keys may contain a subkey named "flags". This optional key contains the flags to be passed to the
-globbing function (`currently fnmatch`). If the key does not exist or if the value of the key cannot be
-converted into a number, `FNM_PATHNAME` is used as a default (see `fnmatch(3)` for more details).
+globbing function (currently fnmatch) as a comma separated list. Unknown flag names will be ignored. The allowed flag names are
 
+- "noescape" which enables the FNM_NOESCAPE flag
+- "pathname" which enables the FNM_PATHNAME flag
+- "period" which enables the FNM_PERIOD flag  
+
+If the flag key does not exist, FNM_PATHNAME is used as a default (see fnmatch(3) for more details).
+An empty string disables all flags (i.e. also the default flag). 
 ## Contracts ##
 
 Glob statements are very useful together with contracts.

@@ -11,7 +11,6 @@
 
 #include <kdbplugin.h>
 
-#include <fnmatch.h>
 #include <stdlib.h>
 #include <string.h>
 

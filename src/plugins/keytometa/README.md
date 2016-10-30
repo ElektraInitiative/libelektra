@@ -130,7 +130,7 @@ by adding the following to the Augeas plugin contract.
         KEY_META, "convert/append", "next",
         KEY_END),
     keyNew ("system/elektra/modules/augeas/config/needs/glob/get/#1/flags",
-        KEY_VALUE, "0", /* disable the path matching mode */
+        KEY_VALUE, "", /* disable the path matching mode */
         KEY_END)
 
 Tagging the keys to be converted to comment metakeys happens via the glob plugin. The metadata set on the key `glob/get/#1` is copied to each key that matches the
