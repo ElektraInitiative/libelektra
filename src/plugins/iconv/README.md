@@ -39,13 +39,15 @@ key database that requires a specific encoding can make use of it. To
 sum up, every user can select a different encoding, but the key databases
 are still properly encoded for anyone.
 
-
 ## Example ##
 
-For example ~/.config/iconv.ini should be latin1, but all users
-have UTF-8 settings:
+For example `~/.config/iconv.ini` should be `latin1`, but all users
+have `UTF-8` settings:
 
-	kdb mount iconv.ini /example/iconv ini iconv from=UTF-8,to=ISO-8859-1
-	file ~/.config/iconv.ini             # iconv.ini: ISO-8859 text
-	kdb get user/example/iconv/a     # converts ISO-8859 to UTF-8
-	kdb set user/example/iconv/a öäß # converts UTF-8 to ISO-8859
+```bash
+kdb mount iconv.ini /example/iconv ini iconv from=UTF-8,to=ISO-8859-1
+file ~/.config/iconv.ini             # iconv.ini: ISO-8859 text
+kdb get user/example/iconv/a         # converts ISO-8859 to UTF-8
+kdb set user/example/iconv/a öäß     # converts UTF-8 to ISO-8859
+```
+

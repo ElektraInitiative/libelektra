@@ -10,10 +10,10 @@ Make sure to read [DESIGN](/doc/DESIGN.md) together with this document.
 After you downloaded and unpacked Elektra you should see some folders.
 The most important are:
 
- * **src:** This directory contains the source of the libraries and the tools.
- * **doc:** Documentation for the library
- * **examples:** Examples on how to use the library
- * **tests:** contains the testing framework for the source (**src**).
+ * **src:** This directory contains the source of the libraries, tools and plugins.
+ * **doc:** General documentation for the project and the core library.
+ * **examples:** Examples on how to use the core library.
+ * **tests:** Contains the testing framework for the source (**src**).
 
 ## Source Code ##
 
@@ -49,9 +49,6 @@ intent to add a new rule here.
 
 See [DESIGN](/doc/DESIGN.md) document too, they complement each other.
 
-
-
-
 ### Code Comments ###
 
 Code is not only for the computer, but it should be readable for humans, too.
@@ -86,11 +83,6 @@ Thus please use following techniques (in order of preference):
 
 4. Otherwise comment within source with `//` or with `/**/` for multi-line
    comments.
-
-
-
-
-
 
 ### Coding Style ###
 
@@ -129,6 +121,10 @@ Rationale: Readability with split windows.
  * Use space before and after `*` from Pointers.
  * Use space after `,` of every function argument.
 
+The [reformat script](/scripts/reformat-source) can ensure most code style rules,
+but it is obviouly not capable of ensuring everything (e.g. naming conventions).
+So do not give this responsibility out of hands entirely.
+
 ### C Guidelines ###
 
  * The compiler shall not emit any warning (or error).
@@ -139,7 +135,6 @@ Rationale: Readability with split windows.
 
 **Example:** [src/libs/elektra/kdb.c](/src/libs/elektra/kdb.c)
 
-
 ### C++ Guidelines ###
 
  * Everything as in C if not noted otherwise.
@@ -148,10 +143,9 @@ Rationale: Readability with split windows.
  * C++-Files have extension `.cpp`, Header files `.hpp`.
  * Do not use `static`, but anonymous namespaces.
  * Write everything within namespaces and do not prefix names.
- * Oriented towards [more safe and modern usage](https://github.com/isocpp/CppCoreGuidelines/blob/master/CppCoreGuidelines.md)
+ * Oriented towards [more safe and modern usage](https://github.com/isocpp/CppCoreGuidelines/blob/master/CppCoreGuidelines.md).
 
-**Example:** [src/bindings/cpp/include/kdb.hpp](http://libelektra.org/tree/master/src/bindings/cpp/include/kdb.hpp)
-
+**Example:** [src/bindings/cpp/include/kdb.hpp](/src/bindings/cpp/include/kdb.hpp)
 
 ### Doxygen Guidelines ###
 
@@ -181,7 +175,6 @@ Files should start with:
 	 *
 	 * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
 	 */
-
 
 \endverbatim
 

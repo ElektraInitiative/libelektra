@@ -5,7 +5,7 @@
 - infos/provides = storage
 - infos/placements = getstorage setstorage
 - infos/status = difficult preview unfinished limited readonly
-- infos/description =
+- infos/description = regular expressions as storage plugin
 
 ## Introduction ##
 
@@ -34,7 +34,6 @@ According to this number the value of the key will be set.
 The key also might contain metadata.
 - the only characters allowed in metavalues are '#[0-9]'.
 the metadata will be replaced by the regex match then.
-
 
 ## Limitations ##
 
@@ -76,4 +75,3 @@ Suppose we want to match:
 
     (global-set-key (kbd "<escape>")      'keyboard-escape-quit)
 
-TODO.. not finished

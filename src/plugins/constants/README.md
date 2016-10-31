@@ -6,7 +6,11 @@
 - infos/recommends =
 - infos/placements = setstorage getstorage
 - infos/status = maintained nodep libc concept limited readonly
-- infos/description = Includes constants information into the key database.
+- infos/description = includes constants information into kdb
+
+## Introduction ##
+
+Includes constants information into the key database. The constants are defined during CMake build.
 
 The plugin is readonly.
 
@@ -14,9 +18,9 @@ The plugin is readonly.
 
 To mount it, use
 
-	kdb mount -R noresolver none system/constants constants
+    kdb mount -R noresolver none system/constants constants
 
 To list all constants, use:
 
-	kdb ls system/constants
+    kdb ls system/constants
 

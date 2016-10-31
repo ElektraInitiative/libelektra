@@ -7,7 +7,7 @@
 - infos/placements = presetstorage
 - infos/status = productive maintained tested nodep libc nodoc
 - infos/metadata = check/enum check/enum/# check/enum/multi
-- infos/description =
+- infos/description = validates values against enum
 
 ## Introduction ##
 
@@ -22,45 +22,39 @@ value with the string value of the Key. If no match is found an error is returne
 Alternatively, if `check/enum` starts with `#`, a meta array `check/enum` is used.
 For example:
 
-```
-check/enum = #3
-check/enum/#0 = small
-check/enum/#1 = middle
-check/enum/#2 = large
-check/enum/#3 = huge
-```
+    check/enum = #3
+    check/enum/#0 = small
+    check/enum/#1 = middle
+    check/enum/#2 = large
+    check/enum/#3 = huge
 
 Furthermore (only in the alternative syntax) `check/enum/multi` may contain a separator
 character, that separates multiple allowed occurrences.
 For example:
 
-```
-check/enum/multi = _
-```
+    check/enum/multi = _
 
 Then the value `middle_small` would validate.
 But `middle_small_small` would fail because every entry might only occur once.
 
-
 ## Example ##
 
-	kdb mount enum.ecf /example/enum enum
-	kdb set user/example/enum/value middle # init to something valid
-	kdb setmeta user/example/enum/value check/enum "'low', 'middle', 'high'"
-	kdb set user/example/enum/value low # success
-	kdb set user/example/enum/value no  # fail
-	kdb rm user/example/enum/value
-
+    kdb mount enum.ecf /example/enum enum
+    kdb set user/example/enum/value middle # init to something valid
+    kdb setmeta user/example/enum/value check/enum "'low', 'middle', 'high'"
+    kdb set user/example/enum/value low # success
+    kdb set user/example/enum/value no  # fail
+    kdb rm user/example/enum/value
 
 Or with multi-enums:
 
-	kdb set user/example/enum/value middle_small  # valid init
-	kdb setmeta user/example/enum/value check/enum/#0 small
-	kdb setmeta user/example/enum/value check/enum/#1 middle
-	kdb setmeta user/example/enum/value check/enum/#2 large
-	kdb setmeta user/example/enum/value check/enum/#3 huge
-	kdb setmeta user/example/enum/value check/enum/multi _
-	kdb setmeta user/example/enum/value check/enum "#3"
-	kdb set user/example/enum/value ___small_middle__ # success
-	kdb set user/example/enum/value ___all_small__   # fail: "all" invalid
+    kdb set user/example/enum/value middle_small  # valid init
+    kdb setmeta user/example/enum/value check/enum/#0 small
+    kdb setmeta user/example/enum/value check/enum/#1 middle
+    kdb setmeta user/example/enum/value check/enum/#2 large
+    kdb setmeta user/example/enum/value check/enum/#3 huge
+    kdb setmeta user/example/enum/value check/enum/multi _
+    kdb setmeta user/example/enum/value check/enum "#3"
+    kdb set user/example/enum/value ___small_middle__ # success
+    kdb set user/example/enum/value ___all_small__   # fail: "all" invalid
 

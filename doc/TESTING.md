@@ -1,4 +1,4 @@
-# TESTING #
+# Testing #
 
 ## Introduction ##
 
@@ -29,7 +29,6 @@ You have some options to avoid running them as root:
    run ctest without tests that have the label `kdbtests`:
    `ctest --output-on-failure -LE kdbtests`
 2. To give your user the permissions to the relevant paths, i.e. (once as root):
-
    ```
    kdb mount-info
    chown -R `whoami` `kdb get system/info/constants/cmake/CMAKE_INSTALL_PREFIX`/`kdb get system/info/constants/cmake/KDB_DB_SPEC`
@@ -43,24 +42,19 @@ You have some options to avoid running them as root:
 4. Use the XDG resolver (see `scripts/configure-xdg`) and set
    the environment variable `XDG_CONFIG_DIRS`, currently lacks spec namespaces, see #734.
 
-
-
 ## Conventions ##
 
-- All names of the test must start with test (needed by test driver for installed tests)
+- All names of the test must start with test (needed by test driver for installed tests).
 - No tests should run if ENABLE_TESTING is OFF.
 - All tests that access harddisc:
- - should be tagged with kdbtests
- - should not shall run, if ENABLE_KDB_TESTING is OFF.
- - should only write below /tests ans system/mountpoints
+ - should be tagged with kdbtests.
+ - should not shall run, if `ENABLE_KDB_TESTING` is OFF.
+ - should only write below `/tests` and `system/mountpoints`.
 - If your test has memleaks, e.g. because the library used leaks and
   that cannot be fixed, give them the label memleak with following
   command:
 
     set_property(TEST testname PROPERTY LABELS memleak)
-
-
-
 
 ## Strategy ##
 
@@ -83,13 +77,12 @@ The main purpose of these tests are, that the binaries of old versions
 can be used against new versions as ABI tests.
 
 So lets say we compile Elektra 0.8.8 (at this version dedicated ABI
-tests were introduced) in the -full variant. But when we run the
-tests, we use libelektra-full.so.0.8.9 (either by installing it or
-by setting LD_LIBRARY_PATH). You can check with ldd which version is
+tests were introduced) in the `-full` variant. But when we run the
+tests, we use `libelektra-full.so.0.8.9` (either by installing it or
+by setting `LD_LIBRARY_PATH`). You can check with ldd which version is
 used.
 
 The tests are located [here](/tests/abi).
-
 
 ### C Unit Tests ###
 
@@ -103,22 +96,19 @@ time these tests will fail.
 
 They are located [here](/tests/ctest).
 
-
 ### Module Tests ###
 
 The modules, which are typically used as plugins in Elektra (but can
-also be available statically or in the -full variant), should have their
+also be available statically or in the `-full` variant), should have their
 own tests.
 
-Use the Cmake macro add_plugintest for adding these tests.
-
+Use the Cmake macro `add_plugintest` for adding these tests.
 
 ### C++ Unit Tests ###
 
 C++ Unit tests are done using the gtest framework. See [architectural decision](/doc/decisions/unit_testing.md).
 
-Use the CMake macro add_gtest for adding these tests.
-
+Use the CMake macro `add_gtest` for adding these tests.
 
 ### Script Tests ###
 
@@ -130,13 +120,12 @@ The script tests have different purposes:
 - Conventions tests (do internal checks that check for common problems)
 - Meta Test Suites (run other test suites)
 
-
 ### Other kind of Tests ###
 
 Bindings, other than C++ typically have their own way of testing.
 
-## Fuzz Testing
+#### Fuzz Testing ####
 
- copy some import files to testcase_dir and run:
+Copy some import files to testcase_dir and run:
 
- /usr/src/afl/afl-1.46b/./afl-fuzz -i testcase_dir -o findings_dir bin/kdb import user/tests
+    /usr/src/afl/afl-1.46b/./afl-fuzz -i testcase_dir -o findings_dir bin/kdb import user/tests

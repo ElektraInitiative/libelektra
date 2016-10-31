@@ -7,17 +7,19 @@
 - infos/status = maintained unittest nodoc global
 - infos/description = magic things require magic plugins
 
+## Introduction ##
+
 The plugin uses Lua to do magic things.
 
-## USAGE
+## Usage ##
 
     kdb mount file.ini /lua ini lua script=/path/to/lua/lua_filter.lua
 
-## Plugin Config ##
+## Plugin Configuration ##
 
-No optional configuration values/flags yet
+No optional configuration values/flags available yet.
 
-## DISCLAIMER
+## Disclaimer ##
 
 Note, this is a technical preview. It might have severe bugs
 and the API might change in the future.

@@ -7,7 +7,7 @@
 - infos/placements = pregetstorage
 - infos/status = maintained configurable final global nodep
 - infos/metadata =
-- infos/description =
+- infos/description = counts and prints usage statistics
 
 ## Introduction ##
 

@@ -7,7 +7,7 @@
 - infos/placements =
 - infos/status = maintained nodep libc preview experimental
 - infos/metadata =
-- infos/description =
+- infos/description = C-struct exports for Elektra
 
 ## Usage ##
 

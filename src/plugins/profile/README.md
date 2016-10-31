@@ -7,7 +7,7 @@
 - infos/placements = postgetstorage presetstorage
 - infos/status = maintained libc preview unfinished nodoc global nodep
 - infos/metadata =
-- infos/description =
+- infos/description = helps switching between configuration profiles
 
 ## Usage ##
 
@@ -26,70 +26,60 @@ preferences (next to the namespace preferences):
 3. Usage of key in the `%` fallback profile
 
 
-### EXAMPLE ###
+## Example ##
 
-Suppose we have the configuration file profile.ini in ~/.config:
+Suppose we have the configuration file `profile.ini` in `~/.config`:
 
-% cat profile.ini
-```
-[]
-profile = myprofile
+    % cat profile.ini
+    []
+    profile = myprofile
 
-[current]
-key2 = will win
+    [current]
+    key2 = will win
 
-[myprofile]
-key1 = test1
-key2 = test2
+    [myprofile]
+    key1 = test1
+    key2 = test2
 
-[%]
-key2 = failed?
-key3 = test3
-```
+    [%]
+    key2 = failed?
+    key3 = test3
 
 Then we simply mount it *without* the profile plugin:
 
-% kdb mount profile.ini /sw/org/myapp/#0 ini
-
+    % kdb mount profile.ini /sw/org/myapp/#0 ini
 
 But we have to make sure that the profile plugin is mounted globally:
 
-% kdb global-mount profile
+    % kdb global-mount profile
 
+Then we can access `/sw/org/myapp/#0` in a profile-aware way:
 
-Then we can access /sw/org/myapp/#0 in a profile-aware way:
-
-% kdb ls /sw
-```
-spec/sw/org/myapp/#0/current/key1
-spec/sw/org/myapp/#0/current/key3
-user/sw/org/myapp/#0
-user/sw/org/myapp/#0/%
-user/sw/org/myapp/#0/%/key2
-user/sw/org/myapp/#0/%/key3
-user/sw/org/myapp/#0/current
-user/sw/org/myapp/#0/current/key2
-user/sw/org/myapp/#0/profile
-user/sw/org/myapp/#0/myprofile
-user/sw/org/myapp/#0/myprofile/key1
-user/sw/org/myapp/#0/myprofile/key2
-```
+    % kdb ls /sw
+    spec/sw/org/myapp/#0/current/key1
+    spec/sw/org/myapp/#0/current/key3
+    user/sw/org/myapp/#0
+    user/sw/org/myapp/#0/%
+    user/sw/org/myapp/#0/%/key2
+    user/sw/org/myapp/#0/%/key3
+    user/sw/org/myapp/#0/current
+    user/sw/org/myapp/#0/current/key2
+    user/sw/org/myapp/#0/profile
+    user/sw/org/myapp/#0/myprofile
+    user/sw/org/myapp/#0/myprofile/key1
+    user/sw/org/myapp/#0/myprofile/key2
 
 As we can see with the `-v` option, we will fetch keys from our `myprofile` even though we request `current`:
 
-% kdb get -v /sw/org/myapp/#0/current/key1
-```
-got 25 keys
-searching spec/sw/org/myapp/#0/current/key1, found: spec/sw/org/myapp/#0/current/key1, options: KDB_O_CALLBACK
-The resulting keyname is user/sw/org/myapp/#0/myprofile/key1
-test1
-```
+    % kdb get -v /sw/org/myapp/#0/current/key1
+    got 25 keys
+    searching spec/sw/org/myapp/#0/current/key1, found: spec/sw/org/myapp/#0/current/key1, options: KDB_O_CALLBACK
+    The resulting keyname is user/sw/org/myapp/#0/myprofile/key1
+    test1
 
 To switch profile we simply have to set one key:
-```
-kdb set user/sw/org/myapp/#0/profile newprofile 
-```
 
-Usually, this will be done via commandline by setting
-`proc/sw/org/myapp/#0/profile`.
+    kdb set user/sw/org/myapp/#0/profile newprofile 
+
+Usually, this will be done via commandline by setting `proc/sw/org/myapp/#0/profile`.
 

@@ -55,14 +55,13 @@ data loss.
 In json it is possible to have empty arrays and objects.
 In Elektra this is mapped using the special names
 
-        ###empty_array
+    ###empty_array
 
 and
 
-        ___empty_map
+    ___empty_map
 
 Arrays are mapped to Elektra's array convention #0, #1,..
-
 
 ## Restrictions ##
 
@@ -76,10 +75,7 @@ Arrays are mapped to Elektra's array convention #0, #1,..
 Because of these potential problems a type checker,
 comments filter and directory value filter are highly recommended.
 
-
-
 ## OpenICC Device Config ##
-
 
 This plugin was specifically designed and tested for the
 `OpenICC_device_config_DB` although it is of course not limited
@@ -87,30 +83,31 @@ to it.
 
 Mount the plugin:
 
-        kdb mount --resolver=resolver_fm_xhp_x color/settings/openicc-devices.json /org/freedesktop/openicc yajl rename cut=org/freedesktop/openicc
+    kdb mount --resolver=resolver_fm_xhp_x color/settings/openicc-devices.json /org/freedesktop/openicc yajl rename cut=org/freedesktop/openicc
 
 or:
 
-        kdb mount-openicc
+    kdb mount-openicc
 
 Then you can copy the OpenICC_device_config_DB.json
 to systemwide or user config, e.g.
 
-        cp src/plugins/yajl/examples/OpenICC_device_config_DB.json /etc/xdg
-        cp src/plugins/yajl/examples/OpenICC_device_config_DB.json ~/.config
+    cp src/plugins/yajl/examples/OpenICC_device_config_DB.json /etc/xdg
+    cp src/plugins/yajl/examples/OpenICC_device_config_DB.json ~/.config
 
-        kdb ls system/org/freedesktop/openicc
+    kdb ls system/org/freedesktop/openicc
 
 prints out then all device entries available in the config
 
-        kdb get system/org/freedesktop/openicc/device/camera/0/EXIF_manufacturer
+    kdb get system/org/freedesktop/openicc/device/camera/0/EXIF_manufacturer
 
 prints out "Glasshuette" with the example config in souce
 
 You can export the whole system openicc config to ini with:
 
-        kdb export system/org/freedesktop/openicc simpleini > dump.ini
+    kdb export system/org/freedesktop/openicc simpleini > dump.ini
 
 or import it:
 
-        kdb import system/org/freedesktop/openicc ini < dump.ini
+    kdb import system/org/freedesktop/openicc ini < dump.ini
+

@@ -7,7 +7,7 @@
 - infos/placements = getstorage setstorage
 - infos/status = maintained specific nodep preview experimental difficult unfinished old concept
 - infos/metadata =
-- infos/description =
+- infos/description = provides conceptual specification language
 
 ## Introduction ##
 
@@ -20,22 +20,21 @@ It currently supports to specify:
 - enums (which values are allowed)
 - multi-enums (by name convention: if name ends with `*`)
 
-## Purpose
+## Purpose ##
 
 The plugin demonstrates how simple a configuration specification can be within the Elektra framework.
 It is conceptual and mainly for educational usage.
 You can base your plugins 
 
-## Configuration
+## Configuration ##
 
-- /keyword/enum, default "enum": used as keywords for enum definitions.
-- /keyword/assign, default "=": used as keywords for assignment.
+- `/keyword/enum`, default `enum`: used as keywords for enum definitions.
+- `/keyword/assign`, default `=`: used as keywords for assignment.
 
 Configuration within the specification language:
 
 - `mountpoint <filename>`: defines a file-name for `kdb spec-mount`
 - `plugins <pluginspec>`: defines list of plugins for `kdb spec-mount`
-
 
 ## Usage ##
 

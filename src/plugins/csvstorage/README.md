@@ -34,7 +34,7 @@ Conflicts with usage of `header`.
 
 First line should determine the headers:
 
-	kdb mount test.csv /csv csvstorage "delimiter=;,header=colname,columns=2,columns/names,columns/names/#0=col0Name,columns/names/#1=col1Name"
+    kdb mount test.csv /csv csvstorage "delimiter=;,header=colname,columns=2,columns/names,columns/names/#0=col0Name,columns/names/#1=col1Name"
 
 
 ## Limitations ##

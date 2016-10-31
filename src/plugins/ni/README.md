@@ -19,7 +19,6 @@ For ini files for applications, e.g. smb.conf you should prefer the
 
 ## Usage
 
-
 To mount a ni plugin you can simply use:
 
     kdb mount file.ini spec/ni ni
@@ -47,11 +46,9 @@ Exporting a KeySet to the nickel format:
 
     kdb export spec/ni ni > example.ni
 
-
 For in-detail explanation of the syntax
 (nested keys are not supported by the plugin, however)
 [see /src/plugins/ni/nickel-1.1.0/include/bohr/ni.h](/src/plugins/ni/nickel-1.1.0/include/bohr/ni.h)
-
 
 ## Limitations ##
 
@@ -60,7 +57,6 @@ For in-detail explanation of the syntax
 - Keys have a random order when written out.
 - No comments are preserved, they are simply removed.
 - Parse errors simply result to ignoring (and removing) these parts.
-
 
 ## Nickel ##
 

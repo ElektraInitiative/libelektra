@@ -5,11 +5,10 @@
 - infos/provides = storage/dpkg
 - infos/placements = getstorage setstorage
 - infos/status = nodoc unfinished nodep limited
-- infos/description =
+- infos/description = can be used to mount dpkg files
 
 ## Example ##
 
-```
-kdb mount /var/lib/dpkg/available system/dpkg/available dpkg
-kdb mount /var/lib/dpkg/status system/dpkg/available dpkg
-```
+    kdb mount /var/lib/dpkg/available system/dpkg/available dpkg
+    kdb mount /var/lib/dpkg/status system/dpkg/available dpkg
+
