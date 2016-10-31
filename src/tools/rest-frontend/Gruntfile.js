@@ -18,7 +18,7 @@ module.exports = function(grunt) {
             }
         },
         'create-website-news': {
-            ptions: { },
+            options: { },
             build: {
                 repo_root: '../../../..',
                 news_root: 'doc/news',
