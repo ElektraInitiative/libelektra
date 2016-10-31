@@ -30,13 +30,21 @@ module.exports = function(grunt) {
 			// remove old website content entirely and/or create dir
 			fs.emptyDirSync(target_dir);
 
-			// read the input file
+			// read the structure input file
 			// root structure is array holding objects
-			var input = grunt.file.readJSON(self.data.input);
+			var structure = grunt.file.readJSON(self.data.input.structure);
+
+			// read the news input file
+			// root structure is array holding objects
+			var news = grunt.file.readJSON(self.data.input.news);
 
 			// iterate through menu points and handle them
-			input.forEach(function(entry) {
+			structure.forEach(function(entry) {
 				self.handleMenuEntry(entry);
+			});
+
+			news.forEach(function(post) {
+				self.handleNewsPost(post);
 			});
 
 			// print success message
@@ -46,6 +54,21 @@ module.exports = function(grunt) {
 
 
 		/* HELPING FUNCTIONS */
+
+		this.handleNewsPost = function(post) {
+			var file = path.join(target_dir, post.file);
+			var dir = path.dirname(file);
+			// first create dir
+			if(!fs.existsSync(dir)) {
+				fs.ensureDirSync(dir);
+			}
+			// now read and copy
+			var content = fs.readFileSync(path.join(root_dir, post.file), {
+				encoding: 'utf8'
+			});
+			content = self.ensureProperFileContentFormat(post.file, content);
+			fs.writeFileSync(file, content);
+		};
 
 		this.handleMenuEntry = function(entry) {
 			switch(entry.type) {

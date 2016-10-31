@@ -5,6 +5,7 @@ var angular = require('angular');
 angular.module('elektra.rest.angular')
 	   .constant('config', /* @echo CONFIGURATION */)
 	   .constant('webStructure', /* @echo WEBSTRUCTURE */)
+	   .constant('news', /* @echo NEWS */)
 	   .config(require('./auth'))
 	   .config(require('./breadcrumbs'))
 	   .config(require('./http'))

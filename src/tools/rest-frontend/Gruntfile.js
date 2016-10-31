@@ -17,11 +17,24 @@ module.exports = function(grunt) {
                 output: 'resources/structure.json'
             }
         },
+        'create-website-news': {
+            ptions: { },
+            build: {
+                repo_root: '../../../..',
+                news_root: 'doc/news',
+                output: 'resources/news.json',
+                filename_regex: '([0-9]{4}\\-[0-9]{2}\\-[0-9]{2})_(.*)',
+                title_regex: '# ([^#]*) #'
+            }
+        },
         'copy-website-content': {
             options: { },
             build: {
                 repo_root: '../../../..',
-                input: 'resources/structure.json',
+                input: {
+                    structure: 'resources/structure.json',
+                    news: 'resources/news.json'
+                },
                 target_dir: '../public/website'
             }
         },
@@ -100,7 +113,8 @@ module.exports = function(grunt) {
             options: {
                 context: {
                     CONFIGURATION: grunt.file.read('application-config.json'),
-                    WEBSTRUCTURE: grunt.file.read('resources/structure.json')
+                    WEBSTRUCTURE: grunt.file.read('resources/structure.json'),
+                    NEWS: grunt.file.read('resources/news.json')
                 },
                 type: 'js'
             },
@@ -192,7 +206,7 @@ module.exports = function(grunt) {
     grunt.registerTask('default', ['full']);
     grunt.registerTask('full', [
         'less', 'cssmin', 'concat',
-        'create-website-structure', 'copy-website-content', 'create-website-sitemap',
+        'create-website-news', 'create-website-structure', 'copy-website-content', 'create-website-sitemap',
         'preprocess', 'browserify:build'
     ]);
     grunt.registerTask('server', ['connect']);

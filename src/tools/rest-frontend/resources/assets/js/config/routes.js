@@ -67,10 +67,59 @@ module.exports = function($stateProvider, $urlRouterProvider, $locationProvider,
 		})
 		.state('main.home', {
 			url: '/home',
-			templateUrl: 'pages/main/home.html',
-			controller: 'HomeController as ctrl',
+			templateUrl: 'pages/main/website/home.html',
+			controller: 'WebsiteHomeController as ctrl',
 			ncyBreadcrumb: {
 				label: 'APP.BREADCRUMBS.MAIN.HOME'
+			}
+		})
+		.state('main.news', {
+			url: '/news/:file',
+			templateUrl: 'pages/main/website/news.html',
+			controller: 'WebsiteListfilesController as ctrl',
+			params: {
+				file: null
+			},
+			resolve: {
+				files: ['news', function(news) {
+					return news;
+				}],
+				currentFile: ['$q', '$timeout', '$state', '$stateParams', 'WebsiteService', 'files',
+						function($q, $timeout, $state, $stateParams, WebsiteService, files) {
+
+					var deferred = $q.defer();
+
+					$timeout(function() {
+						if($stateParams.file === null) {
+							$state.go('main.news', {
+								file: files[0].slug
+							});
+							deferred.reject();
+						} else {
+							var filtered = files.filter(function(elem) {
+								return elem.slug === $stateParams.file;
+							});
+							if(filtered.length === 0) {
+								$state.go('main.news', {
+									file: files[0].slug
+								});
+								deferred.reject();
+							} else {
+								WebsiteService.loadFile(filtered[0].file).then(function(data) {
+									var file = filtered[0];
+									file.content = data;
+									deferred.resolve(file);
+								});
+							}
+						}
+					});
+
+					return deferred.promise;
+
+				}]
+			},
+			ncyBreadcrumb: {
+				label: 'APP.BREADCRUMBS.MAIN.NEWS'
 			}
 		})
 		.state('main.dyn', {
@@ -100,8 +149,8 @@ module.exports = function($stateProvider, $urlRouterProvider, $locationProvider,
 		})
 		.state('main.conversion', {
 			url: '/conversion',
-			templateUrl: 'pages/main/conversion.html',
-			controller: 'ConversionController as ctrl',
+			templateUrl: 'pages/main/website/conversion.html',
+			controller: 'WebsiteConversionController as ctrl',
 			resolve: {
 				formats: ['EntryService', function(EntryService) {
 					return EntryService.loadAvailableFormats();

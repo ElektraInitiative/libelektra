@@ -24,16 +24,16 @@
 					</span>
 				</div>
 			</div>
-            <ul class="nav navbar-nav navbar-right">
-				<li ng-if="authenticated">
-					<a ui-sref="main.account">{{ 'APP.NAV.BUTTON.ACCOUNT' | translate }}</a>
-				</li>
-                <li ng-if="authenticated">
+            <ul class="nav navbar-nav navbar-right col-md-3">
+                <li ng-if="authenticated" class="pull-right">
                     <a ui-sref="main.auth.logout">{{ 'APP.NAV.BUTTON.LOGOUT' | translate }}</a>
                 </li>
-                <li ng-if="!authenticated">
+                <li ng-if="!authenticated" class="pull-right">
                     <a ui-sref="main.auth.login">{{ 'APP.NAV.BUTTON.LOGIN' | translate }}</a>
                 </li>
+				<li ng-if="authenticated" class="pull-right">
+					<a ui-sref="main.account">{{ 'APP.NAV.BUTTON.ACCOUNT' | translate }}</a>
+				</li>
             </ul>
         </div>
     </nav>
@@ -44,6 +44,9 @@
 				<ul class="nav navbar-nav">
 					<li ng-class="{active: $state.includes('main.home')}">
 						<a ui-sref="main.home">{{ 'APP.NAV.BUTTON.MAIN.HOME' | translate }}</a>
+					</li>
+					<li ng-class="{active: $state.includes('main.news')}">
+						<a ui-sref="main.news">{{ 'APP.NAV.BUTTON.MAIN.NEWS' | translate }}</a>
 					</li>
 					<li ng-repeat="entry in menu"
 						ng-class="{active: $state.includes('main.dyn.' + entry.ref), dropdown: entry.type === 'submenu'}"
