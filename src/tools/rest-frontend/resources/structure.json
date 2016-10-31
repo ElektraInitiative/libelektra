@@ -119,6 +119,14 @@
                             "path": "doc/tutorials/python-kdb.md"
                         },
                         "slug": "python-kdb"
+                    },
+                    {
+                        "name": "Validation",
+                        "type": "file",
+                        "options": {
+                            "path": "doc/tutorials/validation.md"
+                        },
+                        "slug": "validation"
                     }
                 ]
             },
@@ -134,6 +142,10 @@
                             "path": "src/plugins/README.md"
                         },
                         "slug": "readme"
+                    },
+                    {
+                        "name": "Plugins",
+                        "type": "section"
                     },
                     {
                         "name": "Resolver",
@@ -232,12 +244,20 @@
                         "slug": "line"
                     },
                     {
-                        "name": "tcl",
+                        "name": "ini",
                         "type": "file",
                         "options": {
-                            "path": "src/plugins/tcl/README.md"
+                            "path": "src/plugins/ini/README.md"
                         },
-                        "slug": "tcl"
+                        "slug": "ini"
+                    },
+                    {
+                        "name": "yajl",
+                        "type": "file",
+                        "options": {
+                            "path": "src/plugins/yajl/README.md"
+                        },
+                        "slug": "yajl"
                     },
                     {
                         "name": "ni",
@@ -248,12 +268,12 @@
                         "slug": "ni"
                     },
                     {
-                        "name": "ini",
+                        "name": "tcl",
                         "type": "file",
                         "options": {
-                            "path": "src/plugins/ini/README.md"
+                            "path": "src/plugins/tcl/README.md"
                         },
-                        "slug": "ini"
+                        "slug": "tcl"
                     },
                     {
                         "name": "xmltool",
@@ -264,12 +284,12 @@
                         "slug": "xmltool"
                     },
                     {
-                        "name": "yajl",
+                        "name": "simpleini",
                         "type": "file",
                         "options": {
-                            "path": "src/plugins/yajl/README.md"
+                            "path": "src/plugins/simpleini/README.md"
                         },
-                        "slug": "yajl"
+                        "slug": "simpleini"
                     },
                     {
                         "name": "fstab",
@@ -286,14 +306,6 @@
                             "path": "src/plugins/regexstore/README.md"
                         },
                         "slug": "regexstore"
-                    },
-                    {
-                        "name": "simpleini",
-                        "type": "file",
-                        "options": {
-                            "path": "src/plugins/simpleini/README.md"
-                        },
-                        "slug": "simpleini"
                     },
                     {
                         "name": "csvstorage",
@@ -376,10 +388,6 @@
                         "slug": "cachefilter"
                     },
                     {
-                        "name": "Encoding",
-                        "type": "section"
-                    },
-                    {
                         "name": "ccode",
                         "type": "file",
                         "options": {
@@ -434,6 +442,14 @@
                             "path": "src/plugins/crypto/README.md"
                         },
                         "slug": "crypto"
+                    },
+                    {
+                        "name": "fcrypt",
+                        "type": "file",
+                        "options": {
+                            "path": "src/plugins/fcrypt/README.md"
+                        },
+                        "slug": "fcrypt"
                     },
                     {
                         "name": "iconv",
@@ -608,12 +624,28 @@
                         "slug": "conditionals"
                     },
                     {
+                        "name": "required",
+                        "type": "file",
+                        "options": {
+                            "path": "src/plugins/required/README.md"
+                        },
+                        "slug": "required"
+                    },
+                    {
                         "name": "filecheck",
                         "type": "file",
                         "options": {
                             "path": "src/plugins/filecheck/README.md"
                         },
                         "slug": "filecheck"
+                    },
+                    {
+                        "name": "lineendings",
+                        "type": "file",
+                        "options": {
+                            "path": "src/plugins/lineendings/README.md"
+                        },
+                        "slug": "lineendings"
                     },
                     {
                         "name": "Interpreter",
@@ -688,14 +720,6 @@
                         "slug": "template"
                     },
                     {
-                        "name": "lineendings",
-                        "type": "file",
-                        "options": {
-                            "path": "src/plugins/lineendings/README.md"
-                        },
-                        "slug": "lineendings"
-                    },
-                    {
                         "name": "list",
                         "type": "file",
                         "options": {
@@ -726,6 +750,14 @@
                             "path": "src/plugins/profile/README.md"
                         },
                         "slug": "profile"
+                    },
+                    {
+                        "name": "simplespeclang",
+                        "type": "file",
+                        "options": {
+                            "path": "src/plugins/simplespeclang/README.md"
+                        },
+                        "slug": "simplespeclang"
                     }
                 ]
             },
@@ -886,12 +918,12 @@
                         "slug": "elektra-merge-strategy"
                     },
                     {
-                        "name": "Elektra Meta-data",
+                        "name": "Elektra Metadata",
                         "type": "file",
                         "options": {
-                            "path": "doc/help/elektra-meta-data.md"
+                            "path": "doc/help/elektra-metadata.md"
                         },
-                        "slug": "elektra-meta-data"
+                        "slug": "elektra-metadata"
                     },
                     {
                         "name": "Elektra Mounting",
@@ -1528,6 +1560,14 @@
                         "slug": "api_documentation"
                     },
                     {
+                        "name": "Array",
+                        "type": "file",
+                        "options": {
+                            "path": "doc/decisions/array.md"
+                        },
+                        "slug": "array"
+                    },
+                    {
                         "name": "Bool",
                         "type": "file",
                         "options": {
@@ -1638,6 +1678,14 @@
                             "path": "doc/decisions/null_pointer_checks.md"
                         },
                         "slug": "null_pointer_checks"
+                    },
+                    {
+                        "name": "Plugin_variants",
+                        "type": "file",
+                        "options": {
+                            "path": "doc/decisions/plugin_variants.md"
+                        },
+                        "slug": "plugin_variants"
                     },
                     {
                         "name": "Pubsub",
