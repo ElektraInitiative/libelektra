@@ -1,0 +1,126 @@
+#!/usr/bin/env python
+#
+# @author Kurt Micheli <kurt.micheli@libelektra.org>
+# @brief Alter Plugins Tags
+# @date 30.10.2016
+# @tags validation, reformat, generator
+
+import configparser
+import re
+import os
+import argparse
+
+def exitError (mess):
+	print ("Error: " + mess)
+	exit (1)
+
+# parse CONTRACT.ini and return as dict tag:order
+def parseContract ():
+	contract = open (os.path.join('doc', 'CONTRACT.ini'), 'r')
+	config = configparser.ConfigParser()
+	config.read_string("[dummy]"+contract.read())
+
+	if 'infos/status' in config:
+		data = config['infos/status']['type']
+		enum = dict ()
+		for tag in re.findall("\{\s*\".*\"\s*,\s*-?[0-9]+\s*\}",data):
+			t = re.search("\".*\"", tag).group(0)[1:-1]
+			v = re.search("-?[0-9]+", tag).group(0)
+			enum[t] = int(v)
+	contract.close()
+	return enum
+
+def checkTags (tags, enum):
+	if not tags: 
+		return
+	for k in tags:
+		if not k in enum:
+			exitError ("'"+ k +"' not in doc/CONTRACT.ini")
+
+def main():
+	if not os.path.isfile (os.path.join('doc', 'CONTRACT.ini')) or not os.path.isdir (os.path.join('src', 'plugins')):
+		exitError ("You are not in an electra src dir!")
+
+	parser = argparse.ArgumentParser (description="Plugins Update info status")
+
+	command = parser.add_mutually_exclusive_group()
+	command.add_argument ("--add", dest="add", nargs="+", help="Adds Tags to the Plugins")
+	command.add_argument ("--del", dest="delete", nargs="+", help="Deletes Tags from the Plugins")
+	command.add_argument ("--set", dest="set", nargs="+", help="Sets all Tags at the Plugins")
+	parser.add_argument ("--plugins", dest="plugins", nargs='+', help="List of plugins")
+
+	args = parser.parse_args ()
+	tags = parseContract ()
+
+	checkTags (args.add,tags)
+	checkTags (args.delete,tags)
+	checkTags (args.set,tags)
+
+	pluginsBase = os.path.join('src', 'plugins')
+
+	if (args.plugins):	
+		plugins = args.plugins
+	else:
+		plugins = os.listdir(pluginsBase)
+
+	p_infostatus = re.compile ("infos/status")
+	p_digit = re.compile ("-?[0-9]+")
+
+	for plugin in plugins:
+		pluginPath = os.path.join (pluginsBase, plugin)
+		if (args.plugins) and not os.path.isdir (pluginPath):
+			exitError (pluginPath + " is not a Plugin dir")
+		elif not os.path.isdir (pluginPath):
+			continue
+		pluginReadmePath = os.path.join (pluginPath, 'README.md')
+		if not os.path.isfile (pluginReadmePath):
+			exitError ( "Plugin '" + pluginPath + "' has no README.md")
+
+		#~ get tags from pugin
+		pluginReadmeFile = open (pluginReadmePath, 'r')
+		pluginTags = []
+		for line in pluginReadmeFile:
+			if p_infostatus.search (line):
+				pluginTags = line.split("=")[1].strip().split()
+				break
+
+		pluginReadmeFile.close()
+		pluginTagsNumbers = [x for x in pluginTags if p_digit.match(x)]
+		pluginTags = [x for x in pluginTags if not p_digit.match(x)]
+
+		#~ modify tags from plugin
+		if args.add:
+			for r in args.add:
+				if r not in pluginTags:
+					pluginTags.append (r)
+		elif args.delete:
+			for r in args.delete:
+				try:
+					pluginTags.remove (r)
+				except ValueError:
+					print ("Warning: '"+ r +"' not in "+ plugin +"s Tags")
+		elif args.set:
+			pluginTags = args.set
+			pluginTagsNumbers = []
+
+		#~ sort tags from plugin
+		try:
+			pluginTags = sorted (pluginTags, key=lambda k : tags[k], reverse=True)
+		except KeyError:
+			exitError (str(pluginTags) + "not in doc/CONTRACT.ini")
+
+		#~ write out tags from plugin
+		pluginReadmeFile = open (pluginReadmePath, 'r')
+		content = pluginReadmeFile.readlines()
+		pluginReadmeFile.close()
+		newPluginReadmeFile = open (pluginReadmePath, 'w')
+		for line in content:
+			if p_infostatus.search (line):
+				pluginTags.extend(pluginTagsNumbers)
+				newPluginReadmeFile.write ("- infos/status = "+" ".join (pluginTags)+"\n")
+			else:
+				newPluginReadmeFile.write (line)
+		newPluginReadmeFile.close()
+
+if __name__ == "__main__":
+	main()
