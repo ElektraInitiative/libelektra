@@ -6,6 +6,7 @@
  * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
  */
 
+#include <../../src/libs/elektra/backend.c>
 #include <../../src/libs/elektra/mount.c>
 #include <../../src/libs/elektra/trie.c>
 #include <tests_internal.h>
@@ -30,7 +31,7 @@ Backend * b_new (const char * name, const char * value)
 
 static void kdb_del (KDB * kdb)
 {
-	elektraBackendClose (kdb->defaultBackend, 0);
+	backendClose (kdb->defaultBackend, 0);
 	trieClose (kdb->trie, 0);
 	elektraSplitDel (kdb->split);
 

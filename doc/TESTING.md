@@ -96,6 +96,18 @@ time these tests will fail.
 
 They are located [here](/tests/ctest).
 
+#### Internal Functions ####
+
+According to `src/libs/elektra/libelektra-symbols.map`, all functions starting with:
+
+* libelektra
+* elektra
+* kdb
+* key
+* ks
+
+do not get exported. To test in internal functionality include the corresponding c file.
+
 ### Module Tests ###
 
 The modules, which are typically used as plugins in Elektra (but can

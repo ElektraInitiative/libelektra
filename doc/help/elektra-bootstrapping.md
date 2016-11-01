@@ -53,7 +53,7 @@ system keys always stay separated.
 ## TRACEABILITY ##
 
 - elektraOpenBootstrap() implements above algorithm
-- elektraBackendOpenDefault() opens the default backend
+- backendOpenDefault() opens the default backend
 - /src/include/kdbconfig.h.in contains above KDB_* variables
 - src/plugins/CMakeLists.txt creates the symlinks
 - cmake/Modules/LibAddMacros.cmake create_lib_symlink function

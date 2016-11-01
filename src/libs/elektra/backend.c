@@ -135,7 +135,7 @@ system/elektra/mountpoints/<name>
  * @retval 0 if out of memory
  * @ingroup backend
  */
-Backend * elektraBackendOpen (KeySet * elektraConfig, KeySet * modules, Key * errorKey)
+Backend * backendOpen (KeySet * elektraConfig, KeySet * modules, Key * errorKey)
 {
 	Key * cur;
 	KeySet * referencePlugins = 0;
@@ -207,8 +207,8 @@ Backend * elektraBackendOpen (KeySet * elektraConfig, KeySet * modules, Key * er
 
 	if (failure)
 	{
-		Backend * tmpBackend = elektraBackendOpenMissing (backend->mountpoint);
-		elektraBackendClose (backend, errorKey);
+		Backend * tmpBackend = backendOpenMissing (backend->mountpoint);
+		backendClose (backend, errorKey);
 		backend = tmpBackend;
 	}
 
@@ -225,7 +225,7 @@ Backend * elektraBackendOpen (KeySet * elektraConfig, KeySet * modules, Key * er
  *
  * @return the fresh allocated backend or 0 if no memory
  */
-Backend * elektraBackendOpenMissing (Key * mp)
+Backend * backendOpenMissing (Key * mp)
 {
 	Backend * backend = elektraBackendAllocate ();
 
@@ -256,7 +256,7 @@ Backend * elektraBackendOpenMissing (Key * mp)
  * @param errorKey the key to issue warnings and errors to
  * @return the fresh allocated default backend or 0 if it failed
  */
-Backend * elektraBackendOpenDefault (KeySet * modules, const char * file, Key * errorKey)
+Backend * backendOpenDefault (KeySet * modules, const char * file, Key * errorKey)
 {
 	Backend * backend = elektraBackendAllocate ();
 
@@ -321,7 +321,7 @@ Backend * elektraBackendOpenDefault (KeySet * modules, const char * file, Key * 
  * @param modules the modules to work with
  * @param errorKey the key to issue warnings and errors to
  */
-Backend * elektraBackendOpenModules (KeySet * modules, Key * errorKey)
+Backend * backendOpenModules (KeySet * modules, Key * errorKey)
 {
 	Backend * backend = elektraBackendAllocate ();
 
@@ -365,7 +365,7 @@ Backend * elektraBackendOpenModules (KeySet * modules, Key * errorKey)
  * @param errorKey the key to issue warnings and errors to
  * @return the fresh allocated default backend or 0 if it failed
  */
-Backend * elektraBackendOpenVersion (Key * errorKey ELEKTRA_UNUSED)
+Backend * backendOpenVersion (Key * errorKey ELEKTRA_UNUSED)
 {
 	Backend * backend = elektraBackendAllocate ();
 
@@ -402,7 +402,7 @@ Backend * elektraBackendOpenVersion (Key * errorKey ELEKTRA_UNUSED)
  * @retval -1 if invalid parent (assert)
  * @retval 0 on success
  */
-int elektraBackendUpdateSize (Backend * backend, Key * parent, int size)
+int backendUpdateSize (Backend * backend, Key * parent, int size)
 {
 	switch (keyGetNamespace (parent))
 	{
@@ -435,7 +435,7 @@ int elektraBackendUpdateSize (Backend * backend, Key * parent, int size)
 	return 0;
 }
 
-int elektraBackendClose (Backend * backend, Key * errorKey)
+int backendClose (Backend * backend, Key * errorKey)
 {
 	int ret = 0;
 	int errorOccurred = 0;
