@@ -112,9 +112,9 @@ module.exports = function(grunt) {
         preprocess: {
             options: {
                 context: {
-                    CONFIGURATION: grunt.file.read('application-config.json'),
-                    WEBSTRUCTURE: grunt.file.read('resources/structure.json'),
-                    NEWS: grunt.file.read('resources/news.json')
+                    CONFIGURATION: '<%= grunt.file.read(\'application-config.json\') %>',
+                    WEBSTRUCTURE: '<%= grunt.file.read(\'resources/structure.json\') %>',
+                    NEWS: '<%= grunt.file.read(\'resources/news.json\') %>'
                 },
                 type: 'js'
             },
