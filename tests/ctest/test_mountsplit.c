@@ -7,6 +7,7 @@
  */
 
 #include <tests_internal.h>
+#include <../../src/libs/elektra/mount.c>
 
 KDB * kdb_new ()
 {
@@ -40,7 +41,7 @@ static void test_mount ()
 	printf ("test mount backend\n");
 
 	KDB * kdb = kdb_new ();
-	elektraMountBackend (kdb, b_new ("user", "user"), 0);
+	mountBackend (kdb, b_new ("user", "user"), 0);
 	succeed_if (kdb->trie, "there should be a trie");
 
 	Key * mp = keyNew ("user", KEY_VALUE, "user", KEY_END);
@@ -49,21 +50,21 @@ static void test_mount ()
 	succeed_if (kdb->split->size == 1, "size of split not correct");
 	compare_key (mp, kdb->split->parents[0]);
 
-	compare_key (elektraMountGetBackend (kdb, sk)->mountpoint, mp);
-	compare_key (elektraMountGetMountpoint (kdb, sk), mp);
+	compare_key (mountGetBackend (kdb, sk)->mountpoint, mp);
+	compare_key (mountGetMountpoint (kdb, sk), mp);
 
 	keySetName (sk, "user/below");
-	compare_key (elektraMountGetBackend (kdb, sk)->mountpoint, mp);
-	compare_key (elektraMountGetMountpoint (kdb, sk), mp);
+	compare_key (mountGetBackend (kdb, sk)->mountpoint, mp);
+	compare_key (mountGetMountpoint (kdb, sk), mp);
 
 	keySetName (sk, "system");
 	kdb->defaultBackend = b_new ("", "default");
-	succeed_if (elektraMountGetBackend (kdb, sk) == kdb->defaultBackend, "did not return default backend");
+	succeed_if (mountGetBackend (kdb, sk) == kdb->defaultBackend, "did not return default backend");
 
 	keySetName (mp, "");
 	keySetString (mp, "default");
-	compare_key (elektraMountGetBackend (kdb, sk)->mountpoint, mp);
-	compare_key (elektraMountGetMountpoint (kdb, sk), mp);
+	compare_key (mountGetBackend (kdb, sk)->mountpoint, mp);
+	compare_key (mountGetMountpoint (kdb, sk), mp);
 
 	keyDel (sk);
 	keyDel (mp);
@@ -89,7 +90,7 @@ static void test_minimaltrie ()
 	KDB * kdb = kdb_new ();
 	Key * errorKey = keyNew (0);
 	KeySet * modules = modules_config ();
-	succeed_if (elektraMountOpen (kdb, minimal_config (), modules, errorKey) == 0, "could not open minimal config");
+	succeed_if (mountOpen (kdb, minimal_config (), modules, errorKey) == 0, "could not open minimal config");
 
 	succeed_if (output_warnings (errorKey), "warnings found");
 	succeed_if (output_error (errorKey), "error found");
@@ -117,7 +118,7 @@ static void test_simple ()
 	KeySet * modules = modules_config ();
 	Key * mp = keyNew ("user/tests/simple", KEY_VALUE, "simple", KEY_END);
 
-	succeed_if (elektraMountOpen (kdb, simple_config (), modules, errorKey) == 0, "could not open trie");
+	succeed_if (mountOpen (kdb, simple_config (), modules, errorKey) == 0, "could not open trie");
 
 	succeed_if (kdb->split->size == 1, "size of split not correct");
 	compare_key (mp, kdb->split->parents[0]);
@@ -177,8 +178,8 @@ static void test_us ()
 
 	KeySet * config = set_us ();
 	ksAppendKey (config, keyNew ("system/elektra/mountpoints", KEY_END));
-	succeed_if (elektraMountOpen (kdb, config, modules, 0) == 0, "could not open mount");
-	succeed_if (elektraMountDefault (kdb, modules, 1, 0) == 0, "could not mount default backend");
+	succeed_if (mountOpen (kdb, config, modules, 0) == 0, "could not open mount");
+	succeed_if (mountDefault (kdb, modules, 1, 0) == 0, "could not mount default backend");
 
 	succeed_if (kdb->split->size == 5, "size of split not correct");
 	mp = keyNew ("system", KEY_VALUE, "system", KEY_END);
@@ -233,8 +234,8 @@ static void test_cascading ()
 	KDB * kdb = kdb_new ();
 	Key * errorKey = keyNew (0);
 	KeySet * modules = modules_config ();
-	succeed_if (elektraMountOpen (kdb, cascading_config (), modules, errorKey) == 0, "could not open trie");
-	succeed_if (elektraMountDefault (kdb, modules, 1, errorKey) == 0, "could not mount default backend");
+	succeed_if (mountOpen (kdb, cascading_config (), modules, errorKey) == 0, "could not open trie");
+	succeed_if (mountDefault (kdb, modules, 1, errorKey) == 0, "could not mount default backend");
 
 	succeed_if (output_warnings (errorKey), "warnings found");
 	succeed_if (output_error (errorKey), "error found");
@@ -329,7 +330,7 @@ static void test_root ()
 	KDB * kdb = kdb_new ();
 	Key * errorKey = keyNew (0);
 	KeySet * modules = modules_config ();
-	succeed_if (elektraMountOpen (kdb, root_config (), modules, errorKey) == 0, "could not buildup mount");
+	succeed_if (mountOpen (kdb, root_config (), modules, errorKey) == 0, "could not buildup mount");
 
 	succeed_if (output_warnings (errorKey), "warnings found");
 	succeed_if (output_error (errorKey), "error found");
@@ -400,8 +401,8 @@ static void test_default ()
 	KDB * kdb = kdb_new ();
 	Key * errorKey = keyNew (0);
 	KeySet * modules = modules_config ();
-	succeed_if (elektraMountOpen (kdb, root_config (), modules, errorKey) == 0, "could not buildup mount");
-	succeed_if (elektraMountDefault (kdb, modules, 1, errorKey) == 0, "could not mount default backend");
+	succeed_if (mountOpen (kdb, root_config (), modules, errorKey) == 0, "could not buildup mount");
+	succeed_if (mountDefault (kdb, modules, 1, errorKey) == 0, "could not mount default backend");
 
 	succeed_if (kdb->split->size == 6, "size of split not correct");
 	Key * mp = keyNew ("spec", KEY_VALUE, "root", KEY_END);
@@ -493,9 +494,9 @@ static void test_modules ()
 	KDB * kdb = kdb_new ();
 	Key * errorKey = keyNew (0);
 	KeySet * modules = modules_config ();
-	succeed_if (elektraMountOpen (kdb, root_config (), modules, errorKey) == 0, "could not buildup mount");
-	succeed_if (elektraMountDefault (kdb, modules, 1, errorKey) == 0, "could not mount default backend");
-	succeed_if (elektraMountModules (kdb, modules, errorKey) == 0, "could not mount modules");
+	succeed_if (mountOpen (kdb, root_config (), modules, errorKey) == 0, "could not buildup mount");
+	succeed_if (mountDefault (kdb, modules, 1, errorKey) == 0, "could not mount default backend");
+	succeed_if (mountModules (kdb, modules, errorKey) == 0, "could not mount modules");
 
 	succeed_if (output_warnings (errorKey), "warnings found");
 	succeed_if (output_error (errorKey), "error found");
@@ -605,8 +606,8 @@ static void test_defaultonly ()
 	KDB * kdb = kdb_new ();
 	Key * errorKey = keyNew (0);
 	KeySet * modules = modules_config ();
-	succeed_if (elektraMountOpen (kdb, minimal_config (), modules, errorKey) == 0, "could not buildup mount");
-	succeed_if (elektraMountDefault (kdb, modules, 1, errorKey) == 0, "could not mount default backend");
+	succeed_if (mountOpen (kdb, minimal_config (), modules, errorKey) == 0, "could not buildup mount");
+	succeed_if (mountDefault (kdb, modules, 1, errorKey) == 0, "could not mount default backend");
 
 
 	// output_split (kdb->split);

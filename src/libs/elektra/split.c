@@ -335,7 +335,7 @@ int elektraSplitBuildup (Split * split, KDB * kdb, Key * parentKey)
 
 	/* Returns the backend the key is in or the default backend
 	   otherwise */
-	Backend * backend = elektraMountGetBackend (kdb, parentKey);
+	Backend * backend = mountGetBackend (kdb, parentKey);
 
 #if DEBUG && VERBOSE
 	printf (" with parent %s\n", keyName (parentKey));
@@ -406,7 +406,7 @@ int elektraSplitDivide (Split * split, KDB * handle, KeySet * ks)
 	while ((curKey = ksNext (ks)) != 0)
 	{
 		// TODO: handle keys in wrong namespaces
-		curHandle = elektraMountGetBackend (handle, curKey);
+		curHandle = mountGetBackend (handle, curKey);
 		if (!curHandle) return -1;
 
 		curFound = elektraSplitSearchBackend (split, curHandle, curKey);
@@ -434,7 +434,7 @@ int elektraSplitDivide (Split * split, KDB * handle, KeySet * ks)
  */
 void elektraSplitUpdateFileName (Split * split, KDB * handle, Key * key)
 {
-	Backend * curHandle = elektraMountGetBackend (handle, key);
+	Backend * curHandle = mountGetBackend (handle, key);
 	if (!curHandle) return;
 	ssize_t curFound = elektraSplitSearchBackend (split, curHandle, key);
 	if (curFound == -1) return;
@@ -469,7 +469,7 @@ int elektraSplitAppoint (Split * split, KDB * handle, KeySet * ks)
 	ksRewind (ks);
 	while ((curKey = ksNext (ks)) != 0)
 	{
-		curHandle = elektraMountGetBackend (handle, curKey);
+		curHandle = mountGetBackend (handle, curKey);
 		if (!curHandle) return -1;
 
 		curFound = elektraSplitSearchBackend (split, curHandle, curKey);
@@ -549,7 +549,7 @@ static int elektraSplitPostprocess (Split * split, int i, Key * warningKey, KDB 
 	ksRewind (split->keysets[i]);
 	while ((cur = ksNext (split->keysets[i])) != 0)
 	{
-		curHandle = elektraMountGetBackend (handle, cur);
+		curHandle = mountGetBackend (handle, cur);
 		if (!curHandle) return -1;
 
 		keyClearSync (cur);
