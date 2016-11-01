@@ -106,7 +106,7 @@ According to `src/libs/elektra/libelektra-symbols.map`, all functions starting w
 * key
 * ks
 
-do not get exported. To test in internal functionality include the corresponding c file.
+do not get exported. Test internal functionality by including the corresponding c file.
 
 ### Module Tests ###
 
