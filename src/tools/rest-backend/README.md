@@ -2,11 +2,13 @@
 
 ## Introduction ##
 
-This document aims to provide information about Elektra's `rest-backend` feature. `rest-backend` offers a RESTful server to search, store and convert configuration snippets. It also offers authentication methods to restrict access to manipulative methods.
+This document aims to provide information about Elektra's `rest-backend` feature. `rest-backend` offers a RESTful server to search, store and convert configuration snippets. It also offers authentication methods to restrict access to manipulative methods. A detailed description of the implemented API can be found in the [API description](/doc/api_blueprints/snippet-sharing.apib).
 
 The REST service operates on a at compile time defined repository (path). This path is not meant to be used in other tools or applications, as the service caches all data in-memory as well. Changes to the repository can therefore result in unexpected and undefined behavior.
 
 The reason why a special repository is used to store and retrieve entries is that opening the system to everyone by providing a public interface to the whole key database would result in a security leak. For a REST API with such an interface, another tool will be published.
+
+ The REST service will leave some space for configuration, as not every deployment will look the same.
 
 ## Compiling and Installation ##
 
