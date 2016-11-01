@@ -6,8 +6,8 @@
  * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
  */
 
-#include <tests_internal.h>
 #include <../../src/libs/elektra/mount.c>
+#include <tests_internal.h>
 
 KDB * kdb_new ()
 {
