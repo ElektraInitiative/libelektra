@@ -303,9 +303,9 @@ KDB * kdbOpen (Key * errorKey)
 
 	keySetString (errorKey, "kdbOpen(): mountGlobals");
 
-	if (elektraMountGlobals (handle, ksDup (keys), handle->modules, errorKey) == -1)
+	if (mountGlobals (handle, ksDup (keys), handle->modules, errorKey) == -1)
 	{
-		// elektraMountGlobals also sets a warning containing the name of the plugin that failed to load
+		// mountGlobals also sets a warning containing the name of the plugin that failed to load
 		ELEKTRA_ADD_WARNING (139, errorKey, "Mounting global plugins failed");
 	}
 
@@ -332,14 +332,14 @@ KDB * kdbOpen (Key * errorKey)
 	handle->split = elektraSplitNew ();
 
 	keySetString (errorKey, "kdbOpen(): mountOpen");
-	// Open the trie, keys will be deleted within elektraMountOpen
-	if (elektraMountOpen (handle, keys, handle->modules, errorKey) == -1)
+	// Open the trie, keys will be deleted within mountOpen
+	if (mountOpen (handle, keys, handle->modules, errorKey) == -1)
 	{
 		ELEKTRA_ADD_WARNING (93, errorKey, "Initial loading of trie did not work");
 	}
 
 	keySetString (errorKey, "kdbOpen(): mountDefault");
-	if (elektraMountDefault (handle, handle->modules, inFallback, errorKey) == -1)
+	if (mountDefault (handle, handle->modules, inFallback, errorKey) == -1)
 	{
 		ELEKTRA_SET_ERROR (40, errorKey, "could not reopen and mount default backend");
 		keySetString (errorKey, "kdbOpen(): close");
@@ -353,10 +353,10 @@ KDB * kdbOpen (Key * errorKey)
 	}
 
 	keySetString (errorKey, "kdbOpen(): mountVersion");
-	elektraMountVersion (handle, errorKey);
+	mountVersion (handle, errorKey);
 
 	keySetString (errorKey, "kdbOpen(): mountModules");
-	if (elektraMountModules (handle, handle->modules, errorKey) == -1)
+	if (mountModules (handle, handle->modules, errorKey) == -1)
 	{
 		ELEKTRA_ADD_WARNING (92, errorKey, "Mounting modules did not work");
 	}

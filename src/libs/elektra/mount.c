@@ -38,7 +38,7 @@
  *
  * The config will be deleted within this function.
  *
- * @note elektraMountDefault is not allowed to be executed before
+ * @notemountDefault is not allowed to be executed before
  *
  * @param kdb the handle to work with
  * @param modules the current list of loaded modules
@@ -48,7 +48,7 @@
  * @retval 0 on success
  * @ingroup mount
  */
-int elektraMountOpen (KDB * kdb, KeySet * config, KeySet * modules, Key * errorKey)
+int mountOpen (KDB * kdb, KeySet * config, KeySet * modules, Key * errorKey)
 {
 	Key * root;
 	Key * cur;
@@ -79,11 +79,11 @@ int elektraMountOpen (KDB * kdb, KeySet * config, KeySet * modules, Key * errorK
 				continue;
 			}
 
-			if (elektraMountBackend (kdb, backend, errorKey) == -1)
+			if (mountBackend (kdb, backend, errorKey) == -1)
 			{
 				ELEKTRA_ADD_WARNING (24, errorKey, "mounting of backend failed");
 				ret = -1;
-				/* elektraMountBackend modified the refcounter. */
+				/* mountBackend modified the refcounter. */
 				backend->refcounter = 1;
 				elektraBackendClose (backend, errorKey);
 				continue;
@@ -98,7 +98,7 @@ int elektraMountOpen (KDB * kdb, KeySet * config, KeySet * modules, Key * errorK
 
 /** Reopens the default backend and mounts the default backend if needed.
  *
- * @pre Default Backend is closed. elektraMountOpen was executed before.
+ * @pre Default Backend is closed. mountOpen was executed before.
  *
  * @param kdb the handle to work with
  * @param modules the current list of loaded modules
@@ -107,7 +107,7 @@ int elektraMountOpen (KDB * kdb, KeySet * config, KeySet * modules, Key * errorK
  * @retval 0 on success
  * @ingroup mount
  */
-int elektraMountDefault (KDB * kdb, KeySet * modules, int inFallback, Key * errorKey)
+int mountDefault (KDB * kdb, KeySet * modules, int inFallback, Key * errorKey)
 {
 	// open the defaultBackend the first time
 	kdb->defaultBackend = elektraBackendOpenDefault (modules, KDB_DB_FILE, errorKey);
@@ -140,7 +140,7 @@ int elektraMountDefault (KDB * kdb, KeySet * modules, int inFallback, Key * erro
 		{
 		case KEY_NS_SPEC:
 			key = keyNew ("spec", KEY_VALUE, "default", KEY_END);
-			backend = elektraMountGetBackend (kdb, key);
+			backend = mountGetBackend (kdb, key);
 			if (backend != kdb->defaultBackend)
 			{
 				/* It does not matter that spec is not reachable anymore */
@@ -154,7 +154,7 @@ int elektraMountDefault (KDB * kdb, KeySet * modules, int inFallback, Key * erro
 			break;
 		case KEY_NS_DIR:
 			key = keyNew ("dir", KEY_VALUE, "default", KEY_END);
-			backend = elektraMountGetBackend (kdb, key);
+			backend = mountGetBackend (kdb, key);
 			if (backend != kdb->defaultBackend)
 			{
 				/* It does not matter that dir is not reachable anymore */
@@ -174,13 +174,13 @@ int elektraMountDefault (KDB * kdb, KeySet * modules, int inFallback, Key * erro
 			if (inFallback)
 			{
 				key = keyNew (KDB_SYSTEM_ELEKTRA, KEY_END);
-				backend = elektraMountGetBackend (kdb, key);
+				backend = mountGetBackend (kdb, key);
 				keyDel (key);
 				if (backend != kdb->defaultBackend)
 				{
 					/* It is not reachable, mount it */
-					elektraMountBackend (kdb, kdb->defaultBackend, errorKey);
-					/*elektraMountBackend will set refcounter*/
+					mountBackend (kdb, kdb->defaultBackend, errorKey);
+					/*mountBackend will set refcounter*/
 					++kdb->defaultBackend->refcounter;
 					kdb->split->syncbits[kdb->split->size - 1] = 2;
 				}
@@ -196,13 +196,13 @@ int elektraMountDefault (KDB * kdb, KeySet * modules, int inFallback, Key * erro
 			{
 				/* We want system/elektra still reachable
 				 * through bootstrap backend. */
-				elektraMountBackend (kdb, kdb->initBackend, errorKey);
-				/*elektraMountBackend will set refcounter*/
+				mountBackend (kdb, kdb->initBackend, errorKey);
+				/*mountBackend will set refcounter*/
 				++kdb->initBackend->refcounter;
 				kdb->split->syncbits[kdb->split->size - 1] = 2;
 
 				key = keyNew ("system", KEY_VALUE, "default", KEY_END);
-				backend = elektraMountGetBackend (kdb, key);
+				backend = mountGetBackend (kdb, key);
 				if (backend != kdb->defaultBackend)
 				{
 					/* It does not matter that system is not reachable anymore */
@@ -217,7 +217,7 @@ int elektraMountDefault (KDB * kdb, KeySet * modules, int inFallback, Key * erro
 			break;
 		case KEY_NS_USER:
 			key = keyNew ("user", KEY_VALUE, "default", KEY_END);
-			backend = elektraMountGetBackend (kdb, key);
+			backend = mountGetBackend (kdb, key);
 			if (backend != kdb->defaultBackend)
 			{
 				/* It does not matter that user is not reachable anymore */
@@ -241,7 +241,7 @@ int elektraMountDefault (KDB * kdb, KeySet * modules, int inFallback, Key * erro
 	return 0;
 }
 
-int elektraMountGlobals (KDB * kdb, KeySet * keys, KeySet * modules, Key * errorKey)
+int mountGlobals (KDB * kdb, KeySet * keys, KeySet * modules, Key * errorKey)
 {
 	Key * root = ksLookupByName (keys, "system/elektra/globalplugins", 0);
 	if (!root)
@@ -349,7 +349,7 @@ int elektraMountGlobals (KDB * kdb, KeySet * keys, KeySet * modules, Key * error
  * @retval -1 if not rootkey was found
  * @retval 0 otherwise
  */
-int elektraMountModules (KDB * kdb, KeySet * modules, Key * errorKey)
+int mountModules (KDB * kdb, KeySet * modules, Key * errorKey)
 {
 	Key * root;
 	Key * cur;
@@ -376,7 +376,7 @@ int elektraMountModules (KDB * kdb, KeySet * modules, Key * errorKey)
 			continue;
 		}
 		++oldSize;
-		elektraMountBackend (kdb, backend, errorKey);
+		mountBackend (kdb, backend, errorKey);
 	}
 
 	ksDel (alreadyMounted);
@@ -391,10 +391,10 @@ int elektraMountModules (KDB * kdb, KeySet * modules, Key * errorKey)
  * @ingroup mount
  * @retval 0 on success
  */
-int elektraMountVersion (KDB * kdb, Key * errorKey)
+int mountVersion (KDB * kdb, Key * errorKey)
 {
 	Backend * backend = elektraBackendOpenVersion (errorKey);
-	elektraMountBackend (kdb, backend, errorKey);
+	mountBackend (kdb, backend, errorKey);
 
 	return 0;
 }
@@ -406,7 +406,7 @@ int elektraMountVersion (KDB * kdb, Key * errorKey)
  * @post sets reference counter of backend
  *
  * @warning in case of init and default backends, the reference counter needs to
- * be modified *after* calling elektraMountBackend.
+ * be modified *after* calling mountBackend.
  *
  * @param kdb the handle to work with
  * @param backend the backend to mount
@@ -415,7 +415,7 @@ int elektraMountVersion (KDB * kdb, Key * errorKey)
  * @retval 1 on success
  * @ingroup mount
  */
-int elektraMountBackend (KDB * kdb, Backend * backend, Key * errorKey ELEKTRA_UNUSED)
+int mountBackend (KDB * kdb, Backend * backend, Key * errorKey ELEKTRA_UNUSED)
 {
 
 	char * mountpoint;
@@ -557,11 +557,11 @@ keyDel (key);
  * @return the mountpoint associated with the key
  * @ingroup mount
  */
-Key * elektraMountGetMountpoint (KDB * handle, const Key * where)
+Key * mountGetMountpoint (KDB * handle, const Key * where)
 {
 	Backend * backend_handle;
 
-	backend_handle = elektraMountGetBackend (handle, where);
+	backend_handle = mountGetBackend (handle, where);
 	if (!backend_handle)
 	{
 		return 0;
@@ -587,7 +587,7 @@ Key * elektraMountGetMountpoint (KDB * handle, const Key * where)
  * @return the backend handle associated with the key
  * @ingroup mount
  */
-Backend * elektraMountGetBackend (KDB * handle, const Key * key)
+Backend * mountGetBackend (KDB * handle, const Key * key)
 {
 	if (!key || !strcmp (keyName (key), "")) return handle->defaultBackend;
 

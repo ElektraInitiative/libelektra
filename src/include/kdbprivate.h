@@ -501,15 +501,15 @@ Backend * elektraTrieLookup (Trie * trie, const Key * key);
 Trie * elektraTrieInsert (Trie * trie, const char * name, Backend * value);
 
 /*Mounting handling */
-int elektraMountOpen (KDB * kdb, KeySet * config, KeySet * modules, Key * errorKey);
-int elektraMountDefault (KDB * kdb, KeySet * modules, int inFallback, Key * errorKey);
-int elektraMountModules (KDB * kdb, KeySet * modules, Key * errorKey);
-int elektraMountVersion (KDB * kdb, Key * errorKey);
-int elektraMountGlobals (KDB * kdb, KeySet * keys, KeySet * modules, Key * errorKey);
-int elektraMountBackend (KDB * kdb, Backend * backend, Key * errorKey);
+int mountOpen (KDB * kdb, KeySet * config, KeySet * modules, Key * errorKey);
+int mountDefault (KDB * kdb, KeySet * modules, int inFallback, Key * errorKey);
+int mountModules (KDB * kdb, KeySet * modules, Key * errorKey);
+int mountVersion (KDB * kdb, Key * errorKey);
+int mountGlobals (KDB * kdb, KeySet * keys, KeySet * modules, Key * errorKey);
+int mountBackend (KDB * kdb, Backend * backend, Key * errorKey);
 
-Key * elektraMountGetMountpoint (KDB * handle, const Key * where);
-Backend * elektraMountGetBackend (KDB * handle, const Key * key);
+Key * mountGetMountpoint (KDB * handle, const Key * where);
+Backend * mountGetBackend (KDB * handle, const Key * key);
 
 int keyInit (Key * key);
 void keyVInit (Key * key, const char * keyname, va_list ap);
