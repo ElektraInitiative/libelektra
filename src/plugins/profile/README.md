@@ -5,7 +5,7 @@
 - infos/provides =
 - infos/recommends =
 - infos/placements = postgetstorage presetstorage
-- infos/status = maintained libc preview unfinished nodoc global nodep
+- infos/status = maintained libc nodep global preview unfinished nodoc
 - infos/metadata =
 - infos/description = helps switching between configuration profiles
 

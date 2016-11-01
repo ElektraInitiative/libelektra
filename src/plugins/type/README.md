@@ -4,7 +4,7 @@
 - infos/provides = check
 - infos/needs =
 - infos/placements = presetstorage
-- infos/status = maintained unittest unfinished old nodep
+- infos/status = maintained unittest nodep unfinished old
 - infos/metadata = check/type check/type/min check/type/max
 - infos/description = type checker using COBRA data types
 

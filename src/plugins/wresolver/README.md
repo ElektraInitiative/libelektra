@@ -7,7 +7,7 @@
 #ifdef _WIN32
 - infos/status = recommended maintained unfinished nodoc
 #else
-- infos/status = maintained unfinished nodep nodoc
+- infos/status = recommended maintained unfinished nodoc
 #endif
 - infos/description = Returns success on every call and can be used as resolver.
 

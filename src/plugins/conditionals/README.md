@@ -5,7 +5,7 @@
 - infos/needs =
 - infos/recommends =
 - infos/placements = postgetstorage presetstorage
-- infos/status = maintained unittest nodep libc preview global
+- infos/status = maintained unittest nodep libc global preview
 - infos/metadata = check/condition assign/condition condition/validsuffix
 - infos/description = ensures key values through conditions
 

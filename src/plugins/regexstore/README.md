@@ -4,7 +4,7 @@
 - infos/needs =
 - infos/provides = storage
 - infos/placements = getstorage setstorage
-- infos/status = difficult preview unfinished limited readonly
+- infos/status = readonly preview difficult limited unfinished
 - infos/description = regular expressions as storage plugin
 
 ## Introduction ##

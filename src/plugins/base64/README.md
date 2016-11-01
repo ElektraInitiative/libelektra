@@ -5,7 +5,7 @@
 - infos/needs =
 - infos/recommends =
 - infos/placements = postgetstorage presetstorage
-- infos/status = experimental maintained unittest nodep libc final
+- infos/status = maintained unittest nodep libc final experimental
 - infos/metadata =
 - infos/description = Base64 Encoding
 

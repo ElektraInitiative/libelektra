@@ -4,7 +4,7 @@
 - infos/provides = resolver
 - infos/needs =
 - infos/placements = rollback getresolver setresolver
-- infos/status = maintained configurable nodep libc unfinished nodoc concept
+- infos/status = maintained nodep libc configurable unfinished nodoc concept
 - infos/description = resolver dummy that always succeeds
 
 ## Explanation ##

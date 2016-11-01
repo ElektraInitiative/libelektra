@@ -4,7 +4,7 @@
 - infos/provides =
 - infos/needs =
 - infos/placements =
-- infos/status = maintained unittest nodoc global
+- infos/status = maintained unittest global nodoc
 - infos/description = magic things require magic plugins
 
 ## Introduction ##

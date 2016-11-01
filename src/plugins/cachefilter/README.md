@@ -5,7 +5,7 @@
 - infos/provides = filter
 - infos/recommends =
 - infos/placements = postgetstorage presetstorage
-- infos/status = experimental global unittest maintained libc nodep nodoc
+- infos/status = maintained unittest libc nodep global experimental nodoc
 - infos/metadata =
 - infos/description = ensures result keyset only contains requested keys
 

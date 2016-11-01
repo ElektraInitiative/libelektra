@@ -5,7 +5,7 @@
 - infos/provides = resolver
 - infos/recommends =
 - infos/placements = rollback getresolver setresolver commit
-- infos/status = maintained conformant compatible coverage specific unittest tested nodep libc configurable preview experimental difficult unfinished concept 
+- infos/status = maintained conformant compatible coverage specific unittest tested nodep libc configurable preview experimental difficult unfinished concept
 - infos/metadata =
 - infos/description = resolver for parts in a file configuration file
 

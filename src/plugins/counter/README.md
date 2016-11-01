@@ -5,7 +5,7 @@
 - infos/needs =
 - infos/recommends =
 - infos/placements = pregetstorage
-- infos/status = maintained configurable final global nodep
+- infos/status = maintained nodep configurable final global
 - infos/metadata =
 - infos/description = counts and prints usage statistics
 

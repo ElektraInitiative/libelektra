@@ -4,7 +4,7 @@
 - infos/provides = storage/ini
 - infos/needs =
 - infos/placements = getstorage setstorage
-- infos/status = maintained unittest nodep libc 1000 configurable
+- infos/status = maintained unittest nodep libc configurable 1000
 - infos/description = storage plugin for ini files
 
 ## Introduction ##
