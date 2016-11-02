@@ -27,32 +27,15 @@ changes to the Keys would not be reflected in the hosts file and vise versa.
 
 #### Dump Format ####
 
-If no format is specified, the format `dump` will be used instead. The dump format is the standard way
-of expressing Keys and all their relevant information. This format is intended to be used only within Elektra.
-The dump format is a good means of backing up Keys from the Key Database for use with Elektra later
-such as reimporting them later. As of this writing, dump is the only way to fully preserve all parts of the
-KeySet.
-
-It is very important to note that the dump does not rename keys by design. If a user exports a KeySet using dump
+The dump does not rename keys by design. If a user exports a KeySet using dump
 using a command such as `kdb export system/backup > backup.ecf`, they can only import that keyset back into
-system/backup using a command like `cat backup.ecf | kdb import system/backup`.
+`system/backup` using a command like `cat backup.ecf | kdb import system/backup`.
 
 ## Options ##
 
 The kdb import command only takes one special option:
 
 	-s --strategy <name>		which is used to specify a strategy
-
-### Strategies ###
-
-For kdb import, you can specify a strategy to use if Keys already exist in the specified destination
-
-The current list of strategies are:
-
-- `preserve`: any keys already in the destination will not be overwritten
-- `overwrite`: any keys already in the destination will be overwritten if a new key has the same name
-- `cut`: all keys already in the destination will be removed, then new keys will be imported
-If no strategy is specified, the command defaults to the preserve strategy as to not be destructive to any previous keys.
 
 ## Example ##
 

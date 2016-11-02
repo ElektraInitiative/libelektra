@@ -21,6 +21,7 @@ provides.
 - [Plugins Introduction](plugins.md)
 - [Compilation Variants of plugins](compilation-variants.md) (advanced topic)
 - [python-kdb](python-kdb.md)
+- [code generation](/src/tools/gen/README.md)
 
 ## System Administrator
 
@@ -28,9 +29,17 @@ For these tutorials we assume that you want to
 work with the configuration of applications
 already somehow integrated with Elektra.
 
-- [export-dump](export-dump.md)
+- [mount](mount.md)
 - [import](import.md)
 - [export](export.md)
+- [intercept env](/src/bindings/intercept/env/README.md)
+- [intercept fs](/src/bindings/intercept/fs/README.md)
 - [merge](merge.md)
-- [elektra-merge-integration](elektra-merge-integration.md)
 - [validation](validation.md)
+
+## Package Maintainers
+
+For these tutorials we assume that you maintain
+upstream packages.
+
+- [elektra-merge-integration](elektra-merge-integration.md)
