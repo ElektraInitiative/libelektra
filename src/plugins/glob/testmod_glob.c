@@ -277,7 +277,7 @@ void test_onlyFirstMatchIsApplied ()
 	const Key * secondMatchKey = keyGetMeta (key, "testmetakey2");
 	exit_if_fail (!secondMatchKey, "testmetakey2 was applied to testmetakey1 although another match was already applied")
 
-	key = ksLookupByName (ks, "user/tests/glob/test2/subtest1", 0);
+		key = ksLookupByName (ks, "user/tests/glob/test2/subtest1", 0);
 	exit_if_fail (key, "user/tests/glob/test2/subtest1 not found");
 	exit_if_fail (keyGetMeta (key, "testmetakey2"), "testmetakey2 not found");
 
@@ -304,7 +304,7 @@ int main (int argc, char ** argv)
 	test_getGlobalMatch ();
 	test_getDirectionMatch ();
 	test_namedMatchFlags ();
-	test_onlyFirstMatchIsApplied();
+	test_onlyFirstMatchIsApplied ();
 
 	printf ("\ntestmod_glob RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 
