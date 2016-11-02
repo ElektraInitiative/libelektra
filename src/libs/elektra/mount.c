@@ -149,7 +149,7 @@ int mountDefault (KDB * kdb, KeySet * modules, int inFallback, Key * errorKey)
 			else
 			{
 				/* User is reachable, so append that to split */
-				elektraSplitAppend (kdb->split, backend, key, 2);
+				splitAppend (kdb->split, backend, key, 2);
 			}
 			break;
 		case KEY_NS_DIR:
@@ -163,7 +163,7 @@ int mountDefault (KDB * kdb, KeySet * modules, int inFallback, Key * errorKey)
 			else
 			{
 				/* Dir is reachable, so append that to split */
-				elektraSplitAppend (kdb->split, backend, key, 2);
+				splitAppend (kdb->split, backend, key, 2);
 			}
 			break;
 		case KEY_NS_SYSTEM:
@@ -189,7 +189,7 @@ int mountDefault (KDB * kdb, KeySet * modules, int inFallback, Key * errorKey)
 					/* Lets add the reachable default backend to split.
 					   Note that it is not possible that system/elektra has the default
 					   backend, but system has not. */
-					elektraSplitAppend (kdb->split, backend, keyNew ("system", KEY_VALUE, "default", KEY_END), 2);
+					splitAppend (kdb->split, backend, keyNew ("system", KEY_VALUE, "default", KEY_END), 2);
 				}
 			}
 			else
@@ -211,7 +211,7 @@ int mountDefault (KDB * kdb, KeySet * modules, int inFallback, Key * errorKey)
 				else
 				{
 					/* System is reachable, so append that to split */
-					elektraSplitAppend (kdb->split, backend, key, 2);
+					splitAppend (kdb->split, backend, key, 2);
 				}
 			}
 			break;
@@ -226,7 +226,7 @@ int mountDefault (KDB * kdb, KeySet * modules, int inFallback, Key * errorKey)
 			else
 			{
 				/* User is reachable, so append that to split */
-				elektraSplitAppend (kdb->split, backend, key, 2);
+				splitAppend (kdb->split, backend, key, 2);
 			}
 			break;
 		case KEY_NS_EMPTY:
@@ -430,7 +430,7 @@ int mountBackend (KDB * kdb, Backend * backend, Key * errorKey ELEKTRA_UNUSED)
 		/* Default backend */
 		sprintf (mountpoint, "system/elektra/");
 		kdb->trie = trieInsert (kdb->trie, mountpoint, backend);
-		elektraSplitAppend (kdb->split, backend, keyNew ("system/elektra/", KEY_VALUE, "default", KEY_END), 0);
+		splitAppend (kdb->split, backend, keyNew ("system/elektra/", KEY_VALUE, "default", KEY_END), 0);
 		backend->refcounter = 1;
 	}
 	else if (!strcmp (keyName (backend->mountpoint), "/"))
@@ -444,25 +444,25 @@ int mountBackend (KDB * kdb, Backend * backend, Key * errorKey ELEKTRA_UNUSED)
 			case KEY_NS_SPEC:
 				sprintf (mountpoint, "spec%s", keyName (backend->mountpoint));
 				kdb->trie = trieInsert (kdb->trie, mountpoint, backend);
-				elektraSplitAppend (kdb->split, backend, keyNew ("spec", KEY_VALUE, "root", KEY_END), 2);
+				splitAppend (kdb->split, backend, keyNew ("spec", KEY_VALUE, "root", KEY_END), 2);
 				++backend->refcounter;
 				break;
 			case KEY_NS_DIR:
 				sprintf (mountpoint, "dir%s", keyName (backend->mountpoint));
 				kdb->trie = trieInsert (kdb->trie, mountpoint, backend);
-				elektraSplitAppend (kdb->split, backend, keyNew ("dir", KEY_VALUE, "root", KEY_END), 2);
+				splitAppend (kdb->split, backend, keyNew ("dir", KEY_VALUE, "root", KEY_END), 2);
 				++backend->refcounter;
 				break;
 			case KEY_NS_USER:
 				sprintf (mountpoint, "user%s", keyName (backend->mountpoint));
 				kdb->trie = trieInsert (kdb->trie, mountpoint, backend);
-				elektraSplitAppend (kdb->split, backend, keyNew ("user", KEY_VALUE, "root", KEY_END), 2);
+				splitAppend (kdb->split, backend, keyNew ("user", KEY_VALUE, "root", KEY_END), 2);
 				++backend->refcounter;
 				break;
 			case KEY_NS_SYSTEM:
 				sprintf (mountpoint, "system%s", keyName (backend->mountpoint));
 				kdb->trie = trieInsert (kdb->trie, mountpoint, backend);
-				elektraSplitAppend (kdb->split, backend, keyNew ("system", KEY_VALUE, "root", KEY_END), 2);
+				splitAppend (kdb->split, backend, keyNew ("system", KEY_VALUE, "root", KEY_END), 2);
 				++backend->refcounter;
 				break;
 			case KEY_NS_PROC:
@@ -485,21 +485,21 @@ int mountBackend (KDB * kdb, Backend * backend, Key * errorKey ELEKTRA_UNUSED)
 			case KEY_NS_DIR:
 				sprintf (mountpoint, "dir%s/", keyName (backend->mountpoint));
 				kdb->trie = trieInsert (kdb->trie, mountpoint, backend);
-				elektraSplitAppend (kdb->split, backend,
+				splitAppend (kdb->split, backend,
 						    keyNew (mountpoint, KEY_VALUE, keyString (backend->mountpoint), KEY_END), 2);
 				++backend->refcounter;
 				break;
 			case KEY_NS_USER:
 				sprintf (mountpoint, "user%s/", keyName (backend->mountpoint));
 				kdb->trie = trieInsert (kdb->trie, mountpoint, backend);
-				elektraSplitAppend (kdb->split, backend,
+				splitAppend (kdb->split, backend,
 						    keyNew (mountpoint, KEY_VALUE, keyString (backend->mountpoint), KEY_END), 2);
 				++backend->refcounter;
 				break;
 			case KEY_NS_SYSTEM:
 				sprintf (mountpoint, "system%s/", keyName (backend->mountpoint));
 				kdb->trie = trieInsert (kdb->trie, mountpoint, backend);
-				elektraSplitAppend (kdb->split, backend,
+				splitAppend (kdb->split, backend,
 						    keyNew (mountpoint, KEY_VALUE, keyString (backend->mountpoint), KEY_END), 2);
 				++backend->refcounter;
 				break;
@@ -520,7 +520,7 @@ int mountBackend (KDB * kdb, Backend * backend, Key * errorKey ELEKTRA_UNUSED)
 		/* Common single mounted backend */
 		sprintf (mountpoint, "%s/", keyName (backend->mountpoint));
 		kdb->trie = trieInsert (kdb->trie, mountpoint, backend);
-		elektraSplitAppend (kdb->split, backend, keyDup (backend->mountpoint), 0);
+		splitAppend (kdb->split, backend, keyDup (backend->mountpoint), 0);
 		backend->refcounter = 1;
 	}
 
