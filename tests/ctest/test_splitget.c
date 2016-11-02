@@ -7,6 +7,7 @@
  */
 
 #include <../../src/libs/elektra/mount.c>
+#include <../../src/libs/elektra/trie.c>
 #include <tests_internal.h>
 
 KeySet * modules_config (void)
@@ -90,7 +91,7 @@ static void test_simple ()
 	succeed_if (split->handles[0] != handle->defaultBackend, "should be not the default backend");
 	keyDel (mp);
 
-	backend = elektraTrieLookup (handle->trie, parentKey);
+	backend = trieLookup (handle->trie, parentKey);
 	succeed_if (split->handles[0] == backend, "should be user backend");
 
 	succeed_if (elektraSplitAppoint (split, handle, ks) == 1, "could not appoint keys");
@@ -114,7 +115,7 @@ static void test_simple ()
 
 	ksDel (ks);
 	elektraSplitDel (handle->split);
-	elektraTrieClose (handle->trie, 0);
+	trieClose (handle->trie, 0);
 	elektraFree (handle->defaultBackend);
 	elektraFree (handle);
 	ksDel (modules);
@@ -162,11 +163,11 @@ static void test_cascading ()
 	succeed_if (split->handles[0] != handle->defaultBackend, "should be not the default backend");
 	keyDel (mp);
 
-	backend = elektraTrieLookup (handle->trie, parentKey);
+	backend = trieLookup (handle->trie, parentKey);
 	succeed_if (split->handles[0] == backend, "should be user backend");
 
 	keySetName (parentKey, "user/cascading/simple/below");
-	backend = elektraTrieLookup (handle->trie, parentKey);
+	backend = trieLookup (handle->trie, parentKey);
 	// succeed_if (split->handles[1] == backend, "should be cascading backend");
 
 	succeed_if (elektraSplitAppoint (split, handle, ks) == 1, "could not appoint keys");
@@ -191,7 +192,7 @@ static void test_cascading ()
 
 	ksDel (ks);
 	elektraSplitDel (handle->split);
-	elektraTrieClose (handle->trie, 0);
+	trieClose (handle->trie, 0);
 	elektraFree (handle->defaultBackend);
 	elektraFree (handle);
 	ksDel (modules);
@@ -407,7 +408,7 @@ static void test_nobackend ()
 	succeed_if (ksGetSize (split->keysets[0]) == 2, "wrong size");
 	succeed_if (ksGetSize (split->keysets[1]) == 3, "wrong size");
 	compare_key (split->parents[0], mp);
-	backend = elektraTrieLookup (handle->trie, parentKey);
+	backend = trieLookup (handle->trie, parentKey);
 	succeed_if (split->handles[0] == backend, "should be user backend");
 	succeed_if (split->handles[1] == 0, "should be default backend");
 
@@ -544,9 +545,9 @@ static void test_triesizes ()
 
 	parentKey = keyNew ("user", KEY_END);
 
-	rootBackend = elektraTrieLookup (handle->trie, parentKey);
+	rootBackend = trieLookup (handle->trie, parentKey);
 	keySetName (parentKey, "user/tests/simple/below");
-	backend = elektraTrieLookup (handle->trie, parentKey);
+	backend = trieLookup (handle->trie, parentKey);
 
 	// now clear name so that we process all backends
 	succeed_if (keySetName (parentKey, 0) == 0, "could not delete name of parentKey");
@@ -641,9 +642,9 @@ static void test_merge ()
 
 	parentKey = keyNew ("user", KEY_END);
 
-	rootBackend = elektraTrieLookup (handle->trie, parentKey);
+	rootBackend = trieLookup (handle->trie, parentKey);
 	keySetName (parentKey, "user/tests/simple/below");
-	backend = elektraTrieLookup (handle->trie, parentKey);
+	backend = trieLookup (handle->trie, parentKey);
 	succeed_if (keySetName (parentKey, 0) == 0, "could not delete name of parentKey");
 	succeed_if (backend->specsize == -1, "specsize not initialized correct");
 	succeed_if (backend->dirsize == -1, "dirsize not initialized correct");

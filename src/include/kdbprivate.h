@@ -495,10 +495,10 @@ Plugin * elektraPluginMissing (void);
 Plugin * elektraPluginVersion (void);
 
 /*Trie handling*/
-Trie * elektraTrieOpen (KeySet * config, KeySet * modules, Key * errorKey);
-int elektraTrieClose (Trie * trie, Key * errorKey);
-Backend * elektraTrieLookup (Trie * trie, const Key * key);
-Trie * elektraTrieInsert (Trie * trie, const char * name, Backend * value);
+Trie * trieOpen (KeySet * config, KeySet * modules, Key * errorKey);
+int trieClose (Trie * trie, Key * errorKey);
+Backend * trieLookup (Trie * trie, const Key * key);
+Trie * trieInsert (Trie * trie, const char * name, Backend * value);
 
 /*Mounting handling */
 int mountOpen (KDB * kdb, KeySet * config, KeySet * modules, Key * errorKey);
