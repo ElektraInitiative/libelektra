@@ -106,7 +106,8 @@ According to `src/libs/elektra/libelektra-symbols.map`, all functions starting w
 * key
 * ks
 
-get exported. Test internal functionality by including the corresponding c file.
+get exported. Functions not starting with this prefix are internal only and therefore
+not visible in the test cases. Test internal functionality by including the corresponding c file.
 
 ### Module Tests ###
 
