@@ -34,6 +34,19 @@ module.exports = function(grunt) {
 				}
             }
         },
+		'create-website-news-rss': {
+			options: { },
+			build: {
+				repo_root: '<%= global.repository.root %>',
+				input: {
+					news: '<%= grunt.config(\'create-website-news.build.output\') %>'
+				},
+				regex: {
+					guid: '^\\- guid: ([a-fA-F0-9-]+)$'
+				},
+				output: 'public/rss'
+			}
+		},
         'copy-website-content': {
             options: { },
             build: {
@@ -216,7 +229,8 @@ module.exports = function(grunt) {
     grunt.registerTask('default', ['full']);
     grunt.registerTask('full', [
         'less', 'cssmin', 'concat',
-        'create-website-news', 'create-website-structure', 'copy-website-content', 'create-website-sitemap',
+        'create-website-news', 'create-website-news-rss',
+		'create-website-structure', 'copy-website-content', 'create-website-sitemap',
         'preprocess', 'browserify:build'
     ]);
     grunt.registerTask('server', ['connect']);
