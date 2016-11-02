@@ -403,7 +403,7 @@ int kdbClose (KDB * handle, Key * errorKey)
 	int errnosave = errno;
 	elektraSplitDel (handle->split);
 
-	elektraTrieClose (handle->trie, errorKey);
+	trieClose (handle->trie, errorKey);
 
 	elektraBackendClose (handle->defaultBackend, errorKey);
 	handle->defaultBackend = 0;

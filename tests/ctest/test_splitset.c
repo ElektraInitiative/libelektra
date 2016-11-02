@@ -7,6 +7,7 @@
  */
 
 #include <../../src/libs/elektra/mount.c>
+#include <../../src/libs/elektra/trie.c>
 #include <tests_internal.h>
 
 KeySet * set_us ()
