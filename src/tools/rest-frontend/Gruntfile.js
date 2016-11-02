@@ -9,10 +9,15 @@ module.exports = function(grunt) {
     grunt.initConfig({
         app: grunt.file.readJSON('application-config.json'),
         pkg: grunt.file.readJSON('package.json'),
+		global: {
+			repository: {
+				root: '../../../..'
+			}
+		},
         'create-website-structure': {
             options: { },
             build: {
-                repo_root: '../../../..',
+                repo_root: '<%= global.repository.root %>',
                 input: 'resources/structure.json.in',
                 output: 'resources/structure.json'
             }
@@ -20,20 +25,22 @@ module.exports = function(grunt) {
         'create-website-news': {
             options: { },
             build: {
-                repo_root: '../../../..',
+                repo_root: '<%= global.repository.root %>',
                 news_root: 'doc/news',
                 output: 'resources/news.json',
-                filename_regex: '([0-9]{4}\\-[0-9]{2}\\-[0-9]{2})_(.*)',
-                title_regex: '# ([^#]*) #'
+				regex: {
+					filename: '([0-9]{4}\\-[0-9]{2}\\-[0-9]{2})_(.*)',
+					title: '# ([^#]*) #'
+				}
             }
         },
         'copy-website-content': {
             options: { },
             build: {
-                repo_root: '../../../..',
+                repo_root: '<%= global.repository.root %>',
                 input: {
-                    structure: 'resources/structure.json',
-                    news: 'resources/news.json'
+                    structure: '<%= grunt.config(\'create-website-structure.build.output\') %>',
+                    news: '<%= grunt.config(\'create-website-news.build.output\') %>'
                 },
                 target_dir: '../public/website'
             }
@@ -54,7 +61,10 @@ module.exports = function(grunt) {
                     ]
                 },
                 dynamic: {
-                    input: 'resources/structure.json',
+                    input: {
+						structure: '<%= grunt.config(\'create-website-structure.build.output\') %>',
+						news: '<%= grunt.config(\'create-website-news.build.output\') %>'
+					},
                     backend: '<%= app.backend.root %>'
                 },
             }
@@ -131,9 +141,9 @@ module.exports = function(grunt) {
             },
             preprocess: {
                 files: [
-                    'resources/assets/js/config/constants.config.js.in',
                     'application-config.json',
-                    'resources/structure.json'
+                    '<%= grunt.config(\'create-website-structure.build.output\') %>',
+					'<%= grunt.config(\'create-website-news.build.output\') %>'
                 ],
                 tasks: ['preprocess', 'browserify:build']
             },

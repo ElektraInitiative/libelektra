@@ -27,31 +27,16 @@ module.exports = function(grunt) {
 					'http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd');
 
 			// go through static paths
-			var url;
-			self.data.static.paths.forEach(function(path) {
-			  url = urlset.ele('url');
-			  url.ele('loc').txt(self.data.root_url + path);
-	//		  url.ele('lastmod').txt((new Date()).toUTCString());
-	//		  url.ele('changefreq').txt(self.data.static.change_frequency);
-			});
+			self.handleStaticPaths(urlset);
 
 			// go through structure file
-			var structure = grunt.file.readJSON(self.data.dynamic.input);
-			structure.forEach(function(elem) {
-				self.handleMenuEntry(elem, urlset);
-			});
+			self.handleDynamicStructure(urlset);
+
+			// go through news file
+			self.handleDynamicNews(urlset);
 
 			// go through entries in backend
-			var response = request('GET', self.data.dynamic.backend + 'database');
-			if(response.statusCode !== 200) {
-				grunt.log.error('Could not reach Backend and could therefore not create sitemap.xml!');
-			}
-			var respObj = JSON.parse(response.getBody());
-			respObj.entries.forEach(function(entry) {
-				url = urlset.ele('url');
-				url.ele('loc').txt(self.data.root_url + 'entries/details/' +
-						encodeURIComponent(entry.key.full).replace(/%/g, '~'));
-			});
+			self.handleDynamicSnippets(urlset);
 
 			// format XML string
 			var sitemap = urlset.end({
@@ -63,6 +48,47 @@ module.exports = function(grunt) {
 			grunt.file.write(self.data.output, sitemap);
 
 		};
+
+		this.handleStaticPaths = function(urlset) {
+			var url;
+			self.data.static.paths.forEach(function(path) {
+			  url = urlset.ele('url');
+			  url.ele('loc').txt(self.data.root_url + path);
+	//		  url.ele('lastmod').txt((new Date()).toUTCString());
+	//		  url.ele('changefreq').txt(self.data.static.change_frequency);
+			});
+		};
+
+		this.handleDynamicStructure = function(urlset) {
+			var structure = grunt.file.readJSON(self.data.dynamic.input.structure);
+			structure.forEach(function(elem) {
+				self.handleMenuEntry(elem, urlset);
+			});
+		};
+
+		this.handleDynamicNews = function(urlset) {
+			var news = grunt.file.readJSON(self.data.dynamic.input.news);
+			news.forEach(function(elem) {
+				self.handleNewsEntry(elem, urlset);
+			});
+		};
+
+		this.handleDynamicSnippets = function(urlset) {
+			var response = request('GET', self.data.dynamic.backend + 'database');
+			if(response.statusCode !== 200) {
+				grunt.log.error('Could not reach Backend and could therefore not create sitemap.xml!');
+			}
+			var respObj = JSON.parse(response.getBody());
+			var url;
+			respObj.entries.forEach(function(entry) {
+				url = urlset.ele('url');
+				url.ele('loc').txt(self.data.root_url + 'entries/details/' +
+						encodeURIComponent(entry.key.full).replace(/%/g, '~'));
+			});
+		};
+
+
+		/* HELPING FUNCTIONS */
 
 		this.handleMenuEntry = function(entry, urlset, parent) {
 			switch(entry.type) {
@@ -107,6 +133,11 @@ module.exports = function(grunt) {
 		this.handleFileEntry = function(entry, urlset, parent) {
 			var url = urlset.ele('url');
 			url.ele('loc').txt(self.data.root_url + parent.ref + '/' + entry.slug);
+		};
+
+		this.handleNewsEntry = function(entry, urlset) {
+			var url = urlset.ele('url');
+			url.ele('loc').txt(self.data.root_url + 'news/' + entry.slug);
 		};
 
 
