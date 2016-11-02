@@ -43,6 +43,7 @@ int elektraGlobMatch (Key * key, const Key * match, const char * globFlags)
 		flagName = strtok (NULL, delimiter);
 	}
 
+	free (tokenList);
 
 	if (!fnmatch (keyString (match), keyName (key), flags))
 	{
@@ -151,7 +152,9 @@ static void applyGlob (KeySet * returned, KeySet * glob)
 			if (flagKey)
 			{
 				matchApplied = elektraGlobMatch (cur, match, keyString (flagKey));
-			} else {
+			}
+			else
+			{
 				/* if no flags were provided, default to FNM_PATHNAME behaviour */
 				matchApplied = elektraGlobMatch (cur, match, "pathname");
 			}
