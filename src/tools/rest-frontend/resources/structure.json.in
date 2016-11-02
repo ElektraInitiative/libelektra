@@ -44,7 +44,7 @@
 					"parsing": {
 						"start_regex": "# Plugins #",
 						"stop_regex": "####### UNUSED ######",
-						"section_regex": "## ([^#]+) ##",
+						"section_regex": "### ([^#]+) ###",
 						"entry_regex": "^\\- \\[(.+)\\]\\(([^\\)]+)\\)(.*)"
 					},
 					"name": {

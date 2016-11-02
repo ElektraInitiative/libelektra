@@ -144,10 +144,6 @@
                         "slug": "readme"
                     },
                     {
-                        "name": "Plugins",
-                        "type": "section"
-                    },
-                    {
                         "name": "Resolver",
                         "type": "section"
                     },
