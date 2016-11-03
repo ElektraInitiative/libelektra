@@ -11,7 +11,7 @@ module.exports = function(grunt) {
         pkg: grunt.file.readJSON('package.json'),
 		global: {
 			repository: {
-				root: '../../../..'
+				root: '../../..'
 			}
 		},
         'create-website-structure': {
@@ -55,7 +55,7 @@ module.exports = function(grunt) {
                     structure: '<%= grunt.config(\'create-website-structure.build.output\') %>',
                     news: '<%= grunt.config(\'create-website-news.build.output\') %>'
                 },
-                target_dir: '../public/website'
+                target_dir: 'public/website'
             }
         },
         'create-website-sitemap': {

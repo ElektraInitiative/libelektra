@@ -4,18 +4,16 @@ var fs = require('fs');
 var path = require('path');
 var slugify = require('slugify');
 
+var resolve_path = require('./resolve-path');
+
 module.exports = function(grunt) {
 
 	grunt.registerMultiTask('create-website-news', 'Builds a json file containing news information.', function() {
 
 		var self = this;
 
-		var root_dir;
-		if(path.isAbsolute(this.data.repo_root)) {
-			root_dir = path.normalize(this.data.repo_root);
-		} else {
-			root_dir = path.normalize(path.join(path.dirname(__dirname), this.data.repo_root));
-		}
+		var root_dir	= resolve_path(this.data.repo_root);
+		var output_file = resolve_path(this.data.output);
 
 
 		/* MAIN FUNCTION */
@@ -54,7 +52,9 @@ module.exports = function(grunt) {
 				});
 			});
 
-			grunt.file.write(self.data.output, JSON.stringify(result, null, 4));
+			grunt.file.write(output_file, JSON.stringify(result, null, 4));
+
+			grunt.log.ok('Website news file generated successfully!');
 
 		};
 

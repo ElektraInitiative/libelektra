@@ -1,13 +1,20 @@
 'use strict';
 
+var path = require('path');
 var builder = require('xmlbuilder');
 var request = require('sync-request');
+
+var resolve_path = require('./resolve-path');
 
 module.exports = function(grunt) {
 
 	grunt.registerMultiTask('create-website-sitemap', 'Builds a sitemal.xml for the website.', function() {
 
 		var self = this;
+
+		var output_file				= resolve_path(this.data.output);
+		var input_structure_file	= resolve_path(this.data.dynamic.input.structure);
+		var input_news_file			= resolve_path(this.data.dynamic.input.news);
 
 
 		/* MAIN FUNCTION */
@@ -45,7 +52,7 @@ module.exports = function(grunt) {
 			  newline: '\n'
 			});
 
-			grunt.file.write(self.data.output, sitemap);
+			grunt.file.write(output_file, sitemap);
 
 		};
 
@@ -60,14 +67,14 @@ module.exports = function(grunt) {
 		};
 
 		this.handleDynamicStructure = function(urlset) {
-			var structure = grunt.file.readJSON(self.data.dynamic.input.structure);
+			var structure = grunt.file.readJSON(input_structure_file);
 			structure.forEach(function(elem) {
 				self.handleMenuEntry(elem, urlset);
 			});
 		};
 
 		this.handleDynamicNews = function(urlset) {
-			var news = grunt.file.readJSON(self.data.dynamic.input.news);
+			var news = grunt.file.readJSON(input_news_file);
 			news.forEach(function(elem) {
 				self.handleNewsEntry(elem, urlset);
 			});

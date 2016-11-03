@@ -4,18 +4,17 @@ var fs = require('fs');
 var path = require('path');
 var marked = require('marked');
 
+var resolve_path = require('./resolve-path');
+
 module.exports = function(grunt) {
 
 	grunt.registerMultiTask('create-website-news-rss', 'Creates RSS html files for the news.', function() {
 
 		var self = this;
 
-		var root_dir;
-		if(path.isAbsolute(this.data.repo_root)) {
-			root_dir = path.normalize(this.data.repo_root);
-		} else {
-			root_dir = path.normalize(path.join(path.dirname(__dirname), this.data.repo_root));
-		}
+		var root_dir		= resolve_path(this.data.repo_root);
+		var input_news_file	= resolve_path(this.data.input.news);
+		var output_dir		= resolve_path(this.data.output);
 
 
 		/* MAIN FUNCTION */
@@ -23,12 +22,14 @@ module.exports = function(grunt) {
 		this.build = function() {
 
 			// load earlier create array of news posts
-			var news = grunt.file.readJSON(self.data.input.news);
+			var news = grunt.file.readJSON(input_news_file);
 
 			// iterate through news posts and handle them
 			news.forEach(function(post) {
 				self.handleNewsPost(post);
 			});
+
+			grunt.log.ok('Website RSS news generated successfully!');
 
 		};
 
@@ -56,7 +57,7 @@ module.exports = function(grunt) {
 					  '</body></html>';
 
 			// write rss news html to disk
-			grunt.file.write(path.join(self.data.output, guid + '.html'), content);
+			grunt.file.write(path.join(output_dir, guid + '.html'), content);
 		};
 
 

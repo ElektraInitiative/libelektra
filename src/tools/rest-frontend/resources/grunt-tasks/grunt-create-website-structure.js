@@ -3,18 +3,18 @@
 var fs = require('fs');
 var path = require('path');
 
+var resolve_path = require('./resolve-path');
+
 module.exports = function(grunt) {
 
 	grunt.registerMultiTask('create-website-structure', 'Builds a comprehensive website structure file.', function() {
 
 		var self = this;
 
-		var root_dir;
-		if(path.isAbsolute(this.data.repo_root)) {
-			root_dir = path.normalize(this.data.repo_root);
-		} else {
-			root_dir = path.normalize(path.join(path.dirname(__dirname), this.data.repo_root));
-		}
+		var root_dir	= resolve_path(this.data.repo_root);
+		var input_file	= resolve_path(this.data.input);
+		var output_file = resolve_path(this.data.output);
+
 
 		/* MAIN FUNCTION */
 
@@ -22,7 +22,7 @@ module.exports = function(grunt) {
 
 			// read the input file
 			// root structure is array holding objects
-			var input = grunt.file.readJSON(self.data.input);
+			var input = grunt.file.readJSON(input_file);
 			// create the output array
 			var output = [];
 
@@ -32,7 +32,7 @@ module.exports = function(grunt) {
 			});
 
 			// write result into output file
-			grunt.file.write(self.data.output, JSON.stringify(output, null, 4));
+			grunt.file.write(output_file, JSON.stringify(output, null, 4));
 
 			// print success message
 			grunt.log.ok('Website structure file generated successfully!');

@@ -3,24 +3,18 @@
 var fs = require('fs-extra');
 var path = require('path');
 
+var resolve_path = require('./resolve-path');
+
 module.exports = function(grunt) {
 
 	grunt.registerMultiTask('copy-website-content', 'Copies website content to a specific target directory.', function() {
 
 		var self = this;
 
-		// read input output path, use relative path if necessary
-		var root_dir, target_dir;
-		if(path.isAbsolute(this.data.repo_root)) {
-			root_dir = path.normalize(this.data.repo_root);
-		} else {
-			root_dir = path.normalize(path.join(path.dirname(__dirname), this.data.repo_root));
-		}
-		if(path.isAbsolute(this.data.target_dir)) {
-			target_dir = path.normalize(this.data.target_dir);
-		} else {
-			target_dir = path.normalize(path.join(path.dirname(__dirname), this.data.target_dir));
-		}
+		var root_dir				= resolve_path(this.data.repo_root);
+		var target_dir				= resolve_path(this.data.target_dir);
+		var input_structure_file	= resolve_path(this.data.input.structure);
+		var input_news_file			= resolve_path(this.data.input.news);
 
 
 		/* MAIN FUNCTION */
@@ -32,11 +26,11 @@ module.exports = function(grunt) {
 
 			// read the structure input file
 			// root structure is array holding objects
-			var structure = grunt.file.readJSON(self.data.input.structure);
+			var structure = grunt.file.readJSON(input_structure_file);
 
 			// read the news input file
 			// root structure is array holding objects
-			var news = grunt.file.readJSON(self.data.input.news);
+			var news = grunt.file.readJSON(input_news_file);
 
 			// iterate through menu points and handle them
 			structure.forEach(function(entry) {
