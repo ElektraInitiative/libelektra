@@ -450,16 +450,10 @@ ssize_t keySetRaw (Key * key, const void * newBinary, size_t dataSize);
 /*Methods for split keysets */
 Split * splitNew (void);
 void splitDel (Split * keysets);
-void splitResize (Split * ret);
 void splitRemove (Split * split, size_t where);
 ssize_t splitAppend (Split * split, Backend * backend, Key * parentKey, int syncbits);
-ssize_t splitSearchBackend (Split * split, Backend * backend, Key * key);
-int splitSearchRoot (Split * split, Key * parentKey);
 int splitBuildup (Split * split, KDB * handle, Key * parentKey);
 void splitUpdateFileName (Split * split, KDB * handle, Key * key);
-
-/* for kdbOpen() algorithm */
-void splitOpen (Split * split);
 
 /* for kdbGet() algorithm */
 int splitAppoint (Split * split, KDB * handle, KeySet * ks);
@@ -467,7 +461,6 @@ int splitGet (Split * split, Key * warningKey, KDB * handle);
 int splitMerge (Split * split, KeySet * dest);
 
 /* for kdbSet() algorithm */
-int splitCheckSize (Split * split);
 int splitDivide (Split * split, KDB * handle, KeySet * ks);
 int splitSync (Split * split);
 void splitPrepare (Split * split);
@@ -476,7 +469,6 @@ int splitUpdateSize (Split * split);
 
 /*Backend handling*/
 Backend * backendOpen (KeySet * elektra_config, KeySet * modules, Key * errorKey);
-Backend * backendOpenMissing (Key * mountpoint);
 Backend * backendOpenDefault (KeySet * modules, const char * file, Key * errorKey);
 Backend * backendOpenModules (KeySet * modules, Key * errorKey);
 Backend * backendOpenVersion (Key * errorKey);
@@ -495,7 +487,6 @@ Plugin * elektraPluginMissing (void);
 Plugin * elektraPluginVersion (void);
 
 /*Trie handling*/
-Trie * trieOpen (KeySet * config, KeySet * modules, Key * errorKey);
 int trieClose (Trie * trie, Key * errorKey);
 Backend * trieLookup (Trie * trie, const Key * key);
 Trie * trieInsert (Trie * trie, const char * name, Backend * value);
