@@ -66,6 +66,9 @@ module.exports = function(grunt) {
 				case 'staticfile':
 					result = self.handleStaticfileEntry(entry);
 					break;
+				case 'staticref':
+					result = self.handleStaticrefEntry(entry);
+					break;
 				case 'section':
 					result = self.handleSectionEntry(entry);
 					break;
@@ -274,6 +277,17 @@ module.exports = function(grunt) {
 				}
 			};
 			result.slug = self.createSlugFromName(result.name);
+			return result;
+		};
+
+		this.handleStaticrefEntry = function(entry) {
+			var result = {
+				name: entry.name,
+				type: 'ref',
+				options: {
+					path: entry.options.path
+				}
+			};
 			return result;
 		};
 

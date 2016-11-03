@@ -29,6 +29,13 @@
 						"options": {
 							"path": "doc/INSTALL.md"
 						}
+					},
+					{
+						"name": "Tutorials",
+						"type": "staticref",
+						"options": {
+							"path": "tutorials"
+						}
 					}
 				]
 			},
@@ -137,6 +144,13 @@
 						"type": "staticfile",
 						"options": {
 							"path": "doc/VERSION.md"
+						}
+					},
+					{
+						"name": "Tutorials",
+						"type": "staticref",
+						"options": {
+							"path": "tutorials"
 						}
 					}
 				]

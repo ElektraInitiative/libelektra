@@ -9,6 +9,10 @@
 						   ui-sref="{{ $state.current.name + '({file:\'' + file.slug + '\'})' }}">
 							{{ file.name }}
 						</a>
+						<a ng-if="file.type === 'ref'" ui-sref="main.dyn.{{ file.options.path }}"
+						   class="listfiles file-link">
+							   {{ file.name }}
+						</a>
 						<span ng-if="file.type === 'section'">{{ file.name }}</span>
 					</li>
 				</ul>

@@ -73,6 +73,7 @@ module.exports = function(grunt) {
 				case 'file':
 					self.handleFileEntry(entry);
 					break;
+				case 'ref':
 				case 'link':
 				case 'section':
 					// nothing to do

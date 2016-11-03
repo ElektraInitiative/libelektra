@@ -32,6 +32,13 @@
                             "path": "doc/INSTALL.md"
                         },
                         "slug": "installation"
+                    },
+                    {
+                        "name": "Tutorials",
+                        "type": "ref",
+                        "options": {
+                            "path": "tutorials"
+                        }
                     }
                 ]
             },
@@ -1342,6 +1349,13 @@
                             "path": "doc/VERSION.md"
                         },
                         "slug": "version"
+                    },
+                    {
+                        "name": "Tutorials",
+                        "type": "ref",
+                        "options": {
+                            "path": "tutorials"
+                        }
                     }
                 ]
             },
