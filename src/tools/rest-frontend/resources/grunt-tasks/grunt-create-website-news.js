@@ -34,7 +34,7 @@ module.exports = function(grunt) {
 			});
 
 			posts.forEach(function(post) {
-				var regex = new RegExp(self.data.regex.title, 'i');
+				var regex = new RegExp(self.data.regex.title.pattern, self.data.regex.title.flags);
 				var title, content;
 				content = fs.readFileSync(path.join(root_dir, self.data.news_root, post.name)).toString().split('\n');
 				for(var i = 0; i < content.length; i++) {
@@ -60,7 +60,7 @@ module.exports = function(grunt) {
 
 		this.listNewsDirectory = function(relPath) {
 			var result = [];
-			var regex = new RegExp(self.data.regex.filename, 'i');
+			var regex = new RegExp(self.data.regex.filename.pattern, self.data.regex.filename.flags);
 			var entries = fs.readdirSync(path.join(root_dir, relPath));
 			var date;
 			entries.forEach(function(entry) {

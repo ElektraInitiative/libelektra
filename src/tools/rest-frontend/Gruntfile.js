@@ -29,8 +29,14 @@ module.exports = function(grunt) {
                 news_root: 'doc/news',
                 output: 'resources/news.json',
 				regex: {
-					filename: '([0-9]{4}\\-[0-9]{2}\\-[0-9]{2})_(.*)',
-					title: '# ([^#]*) #'
+					filename: {
+						pattern: '([0-9]{4}\\-[0-9]{2}\\-[0-9]{2})_(.*)',
+						flags: 'i'
+					},
+					title: {
+						pattern: '# ([^#]*) #',
+						flags: 'i'
+					}
 				}
             }
         },
@@ -42,7 +48,10 @@ module.exports = function(grunt) {
 					news: '<%= grunt.config(\'create-website-news.build.output\') %>'
 				},
 				regex: {
-					guid: '^\\- guid: ([a-fA-F0-9-]+)$'
+					guid: {
+						pattern: '^\\- guid: ([a-fA-F0-9-]+)$',
+						flags: 'm'
+					}
 				},
 				output: 'public/rss'
 			}

@@ -41,7 +41,7 @@ module.exports = function(grunt) {
 			var content = fs.readFileSync(path.join(root_dir, post.file)).toString();
 
 			// filter guid from news post
-			var guid = (new RegExp(self.data.regex.guid, 'm')).exec(content);
+			var guid = (new RegExp(self.data.regex.guid.pattern, self.data.regex.guid.flags)).exec(content);
 			if(guid === null || guid.length < 2) {
 				grunt.log.error('Could not find `guid` in news, cannot create RSS file.');
 			}
