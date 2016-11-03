@@ -448,30 +448,30 @@ struct _Split
 ssize_t keySetRaw (Key * key, const void * newBinary, size_t dataSize);
 
 /*Methods for split keysets */
-Split * elektraSplitNew (void);
-void elektraSplitDel (Split * keysets);
-void elektraSplitResize (Split * ret);
-void elektraSplitRemove (Split * split, size_t where);
-ssize_t elektraSplitAppend (Split * split, Backend * backend, Key * parentKey, int syncbits);
-ssize_t elektraSplitSearchBackend (Split * split, Backend * backend, Key * key);
-int elektraSplitSearchRoot (Split * split, Key * parentKey);
-int elektraSplitBuildup (Split * split, KDB * handle, Key * parentKey);
-void elektraSplitUpdateFileName (Split * split, KDB * handle, Key * key);
+Split * splitNew (void);
+void splitDel (Split * keysets);
+void splitResize (Split * ret);
+void splitRemove (Split * split, size_t where);
+ssize_t splitAppend (Split * split, Backend * backend, Key * parentKey, int syncbits);
+ssize_t splitSearchBackend (Split * split, Backend * backend, Key * key);
+int splitSearchRoot (Split * split, Key * parentKey);
+int splitBuildup (Split * split, KDB * handle, Key * parentKey);
+void splitUpdateFileName (Split * split, KDB * handle, Key * key);
 
 /* for kdbOpen() algorithm */
-void elektraSplitOpen (Split * split);
+void splitOpen (Split * split);
 
 /* for kdbGet() algorithm */
-int elektraSplitAppoint (Split * split, KDB * handle, KeySet * ks);
-int elektraSplitGet (Split * split, Key * warningKey, KDB * handle);
-int elektraSplitMerge (Split * split, KeySet * dest);
+int splitAppoint (Split * split, KDB * handle, KeySet * ks);
+int splitGet (Split * split, Key * warningKey, KDB * handle);
+int splitMerge (Split * split, KeySet * dest);
 
 /* for kdbSet() algorithm */
-int elektraSplitCheckSize (Split * split);
-int elektraSplitDivide (Split * split, KDB * handle, KeySet * ks);
-int elektraSplitSync (Split * split);
-void elektraSplitPrepare (Split * split);
-int elektraSplitUpdateSize (Split * split);
+int splitCheckSize (Split * split);
+int splitDivide (Split * split, KDB * handle, KeySet * ks);
+int splitSync (Split * split);
+void splitPrepare (Split * split);
+int splitUpdateSize (Split * split);
 
 
 /*Backend handling*/

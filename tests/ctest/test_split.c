@@ -6,6 +6,10 @@
  * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
  */
 
+#include <../../src/libs/elektra/backend.c>
+#include <../../src/libs/elektra/mount.c>
+#include <../../src/libs/elektra/split.c>
+#include <../../src/libs/elektra/trie.c>
 #include <tests_internal.h>
 
 KeySet * modules_config (void)
@@ -43,7 +47,7 @@ static void test_create ()
 {
 	printf ("Test create split\n");
 
-	Split * split = elektraSplitNew ();
+	Split * split = splitNew ();
 	succeed_if (split->size == 0, "size should be zero");
 	succeed_if (split->alloc == APPROXIMATE_NR_OF_BACKENDS, "alloc not correct");
 
@@ -52,42 +56,42 @@ static void test_create ()
 
 	for (size_t i = 1; i <= APPROXIMATE_NR_OF_BACKENDS; ++i)
 	{
-		elektraSplitAppend (split, 0, 0, 0);
+		splitAppend (split, 0, 0, 0);
 		succeed_if (split->size == i, "size should be growing");
 		succeed_if (split->alloc == APPROXIMATE_NR_OF_BACKENDS, "should not realloc");
 	}
 
-	elektraSplitDel (split);
+	splitDel (split);
 }
 
 static void test_resize ()
 {
 	printf ("Test resize split\n");
 
-	Split * split = elektraSplitNew ();
+	Split * split = splitNew ();
 
 	exit_if_fail (split, "there must be a split");
 
 	succeed_if (split->size == 0, "size should be zero");
 	succeed_if (split->alloc == APPROXIMATE_NR_OF_BACKENDS, "initial size not correct");
 
-	elektraSplitResize (split);
+	splitResize (split);
 	succeed_if (split->alloc == APPROXIMATE_NR_OF_BACKENDS * 2, "resize not correct");
 
-	elektraSplitResize (split);
+	splitResize (split);
 	succeed_if (split->alloc == APPROXIMATE_NR_OF_BACKENDS * 4, "resize not correct");
 
-	elektraSplitResize (split);
+	splitResize (split);
 	succeed_if (split->alloc == APPROXIMATE_NR_OF_BACKENDS * 8, "resize not correct");
 
-	elektraSplitDel (split);
+	splitDel (split);
 }
 
 static void test_append ()
 {
 	printf ("Test append split\n");
 
-	Split * split = elektraSplitNew ();
+	Split * split = splitNew ();
 	exit_if_fail (split, "there must be a split");
 
 	succeed_if (split->size == 0, "size should be zero");
@@ -95,61 +99,61 @@ static void test_append ()
 
 	for (size_t i = 1; i <= APPROXIMATE_NR_OF_BACKENDS; ++i)
 	{
-		elektraSplitAppend (split, 0, 0, 0);
+		splitAppend (split, 0, 0, 0);
 		succeed_if (split->size == i, "size should be growing");
 		succeed_if (split->alloc == APPROXIMATE_NR_OF_BACKENDS, "should not realloc");
 	}
 
 	for (size_t i = APPROXIMATE_NR_OF_BACKENDS + 1; i <= APPROXIMATE_NR_OF_BACKENDS * 2; ++i)
 	{
-		elektraSplitAppend (split, 0, 0, 0);
+		splitAppend (split, 0, 0, 0);
 		succeed_if (split->size == i, "size should be growing");
 		succeed_if (split->alloc == APPROXIMATE_NR_OF_BACKENDS * 2, "should realloc");
 	}
 
-	elektraSplitDel (split);
+	splitDel (split);
 }
 
 static void test_searchroot ()
 {
 	printf ("Test search root\n");
 
-	Split * split = elektraSplitNew ();
+	Split * split = splitNew ();
 	/* This here is in the trie */
-	elektraSplitAppend (split, 0, keyNew ("user/bla/bla", KEY_END), 0);
-	elektraSplitAppend (split, 0, keyNew ("user/bla/bla/something", KEY_END), 0);
-	elektraSplitAppend (split, 0, keyNew ("user/bla/bla/deep/below", KEY_END), 0);
+	splitAppend (split, 0, keyNew ("user/bla/bla", KEY_END), 0);
+	splitAppend (split, 0, keyNew ("user/bla/bla/something", KEY_END), 0);
+	splitAppend (split, 0, keyNew ("user/bla/bla/deep/below", KEY_END), 0);
 
 	Key * searchKey = keyNew ("user/bla/bla/deep/below", KEY_END);
-	succeed_if (elektraSplitSearchRoot (split, searchKey) == 1, "is full in it");
+	succeed_if (splitSearchRoot (split, searchKey) == 1, "is full in it");
 	keySetName (searchKey, "user/bla/bla/something");
-	succeed_if (elektraSplitSearchRoot (split, searchKey) == 1, "is full in it");
+	succeed_if (splitSearchRoot (split, searchKey) == 1, "is full in it");
 	keySetName (searchKey, "user/bla/bla");
-	succeed_if (elektraSplitSearchRoot (split, searchKey) == 1, "is full in it");
+	succeed_if (splitSearchRoot (split, searchKey) == 1, "is full in it");
 	keySetName (searchKey, "user/bla/bla/somewhere");
-	succeed_if (elektraSplitSearchRoot (split, searchKey) == 1, "is full in it");
+	succeed_if (splitSearchRoot (split, searchKey) == 1, "is full in it");
 	keySetName (searchKey, "user/bla/bla/somewhere/else");
-	succeed_if (elektraSplitSearchRoot (split, searchKey) == 1, "is full in it");
+	succeed_if (splitSearchRoot (split, searchKey) == 1, "is full in it");
 	keySetName (searchKey, "user/bla");
-	succeed_if (elektraSplitSearchRoot (split, searchKey) == 0, "is NOT full in it, need root");
+	succeed_if (splitSearchRoot (split, searchKey) == 0, "is NOT full in it, need root");
 	keySetName (searchKey, "user/somewhere/else");
-	succeed_if (elektraSplitSearchRoot (split, searchKey) == 0, "is NOT full in it, need root");
+	succeed_if (splitSearchRoot (split, searchKey) == 0, "is NOT full in it, need root");
 	keySetName (searchKey, "system");
-	succeed_if (elektraSplitSearchRoot (split, searchKey) == 0, "is NOT full in it, need root (mmh, cant be)");
+	succeed_if (splitSearchRoot (split, searchKey) == 0, "is NOT full in it, need root (mmh, cant be)");
 	keySetName (searchKey, "user/bla/somewhere");
-	succeed_if (elektraSplitSearchRoot (split, searchKey) == 0, "is NOT full in it, need root");
+	succeed_if (splitSearchRoot (split, searchKey) == 0, "is NOT full in it, need root");
 	keySetName (searchKey, "user/bla/somewhere/else");
-	succeed_if (elektraSplitSearchRoot (split, searchKey) == 0, "is NOT full in it, need root");
+	succeed_if (splitSearchRoot (split, searchKey) == 0, "is NOT full in it, need root");
 
 	keyDel (searchKey);
-	elektraSplitDel (split);
+	splitDel (split);
 }
 
 static void test_remove ()
 {
 	printf ("Test remove from split\n");
 
-	Split * split = elektraSplitNew ();
+	Split * split = splitNew ();
 	exit_if_fail (split, "there must be a split");
 
 	succeed_if (split->size == 0, "size should be zero");
@@ -157,38 +161,38 @@ static void test_remove ()
 
 	for (size_t i = 0; i < APPROXIMATE_NR_OF_BACKENDS; ++i)
 	{
-		elektraSplitAppend (split, 0, 0, i);
+		splitAppend (split, 0, 0, i);
 		succeed_if (split->size == i + 1, "size should be growing");
 		succeed_if (split->alloc == APPROXIMATE_NR_OF_BACKENDS, "should not realloc");
 	}
 
-	elektraSplitRemove (split, 3);
+	splitRemove (split, 3);
 	succeed_if ((int)split->syncbits[0] == 0, "syncbits not correct");
 	succeed_if ((int)split->syncbits[1] == 1, "syncbits not correct");
 	succeed_if ((int)split->syncbits[2] == 2, "syncbits not correct");
 	succeed_if ((int)split->syncbits[3] == 4, "did not remove third?");
 	succeed_if ((int)split->syncbits[4] == 5, "did not remove third?");
 
-	elektraSplitAppend (split, 0, 0, 100);
+	splitAppend (split, 0, 0, 100);
 	succeed_if (split->alloc == APPROXIMATE_NR_OF_BACKENDS, "should not realloc");
-	elektraSplitAppend (split, 0, 0, 200);
+	splitAppend (split, 0, 0, 200);
 	succeed_if (split->alloc == APPROXIMATE_NR_OF_BACKENDS * 2, "should realloc");
 
-	elektraSplitRemove (split, 3);
+	splitRemove (split, 3);
 	succeed_if ((int)split->syncbits[0] == 0, "syncbits not correct");
 	succeed_if ((int)split->syncbits[1] == 1, "syncbits not correct");
 	succeed_if ((int)split->syncbits[2] == 2, "syncbits not correct");
 	succeed_if ((int)split->syncbits[3] == 5, "did not remove third (again)?");
 	succeed_if ((int)split->syncbits[4] == 6, "did not remove third (again)?");
 
-	elektraSplitRemove (split, 0);
+	splitRemove (split, 0);
 	succeed_if ((int)split->syncbits[0] == 1, "did not remove zeroth?");
 	succeed_if ((int)split->syncbits[1] == 2, "did not remove zeroth?");
 	succeed_if ((int)split->syncbits[2] == 5, "did not remove zeroth?");
 	succeed_if ((int)split->syncbits[3] == 6, "did not remove zeroth?");
 	succeed_if ((int)split->syncbits[4] == 7, "did not remove zeroth?");
 
-	elektraSplitDel (split);
+	splitDel (split);
 }
 
 

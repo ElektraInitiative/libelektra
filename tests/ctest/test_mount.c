@@ -8,13 +8,14 @@
 
 #include <../../src/libs/elektra/backend.c>
 #include <../../src/libs/elektra/mount.c>
+#include <../../src/libs/elektra/split.c>
 #include <../../src/libs/elektra/trie.c>
 #include <tests_internal.h>
 
 KDB * kdb_new ()
 {
 	KDB * kdb = elektraCalloc (sizeof (KDB));
-	kdb->split = elektraSplitNew ();
+	kdb->split = splitNew ();
 	return kdb;
 }
 
@@ -37,7 +38,7 @@ static void kdb_del (KDB * kdb)
 		backendClose (kdb->initBackend, 0);
 	}
 	trieClose (kdb->trie, 0);
-	elektraSplitDel (kdb->split);
+	splitDel (kdb->split);
 
 	elektraFree (kdb);
 }
