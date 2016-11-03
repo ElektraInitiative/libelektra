@@ -114,41 +114,6 @@ static void test_append ()
 	splitDel (split);
 }
 
-static void test_searchroot ()
-{
-	printf ("Test search root\n");
-
-	Split * split = splitNew ();
-	/* This here is in the trie */
-	splitAppend (split, 0, keyNew ("user/bla/bla", KEY_END), 0);
-	splitAppend (split, 0, keyNew ("user/bla/bla/something", KEY_END), 0);
-	splitAppend (split, 0, keyNew ("user/bla/bla/deep/below", KEY_END), 0);
-
-	Key * searchKey = keyNew ("user/bla/bla/deep/below", KEY_END);
-	succeed_if (splitSearchRoot (split, searchKey) == 1, "is full in it");
-	keySetName (searchKey, "user/bla/bla/something");
-	succeed_if (splitSearchRoot (split, searchKey) == 1, "is full in it");
-	keySetName (searchKey, "user/bla/bla");
-	succeed_if (splitSearchRoot (split, searchKey) == 1, "is full in it");
-	keySetName (searchKey, "user/bla/bla/somewhere");
-	succeed_if (splitSearchRoot (split, searchKey) == 1, "is full in it");
-	keySetName (searchKey, "user/bla/bla/somewhere/else");
-	succeed_if (splitSearchRoot (split, searchKey) == 1, "is full in it");
-	keySetName (searchKey, "user/bla");
-	succeed_if (splitSearchRoot (split, searchKey) == 0, "is NOT full in it, need root");
-	keySetName (searchKey, "user/somewhere/else");
-	succeed_if (splitSearchRoot (split, searchKey) == 0, "is NOT full in it, need root");
-	keySetName (searchKey, "system");
-	succeed_if (splitSearchRoot (split, searchKey) == 0, "is NOT full in it, need root (mmh, cant be)");
-	keySetName (searchKey, "user/bla/somewhere");
-	succeed_if (splitSearchRoot (split, searchKey) == 0, "is NOT full in it, need root");
-	keySetName (searchKey, "user/bla/somewhere/else");
-	succeed_if (splitSearchRoot (split, searchKey) == 0, "is NOT full in it, need root");
-
-	keyDel (searchKey);
-	splitDel (split);
-}
-
 static void test_remove ()
 {
 	printf ("Test remove from split\n");
@@ -206,7 +171,6 @@ int main (int argc, char ** argv)
 	test_create ();
 	test_resize ();
 	test_append ();
-	test_searchroot ();
 	test_remove ();
 
 	printf ("\ntest_split RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);

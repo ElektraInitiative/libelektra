@@ -122,7 +122,7 @@ void splitRemove (Split * split, size_t where)
  * @param split the split object to work with
  * @ingroup split
  */
-void splitResize (Split * split)
+static void splitResize (Split * split)
 {
 	split->alloc *= 2;
 
@@ -184,7 +184,7 @@ ssize_t splitAppend (Split * split, Backend * backend, Key * parentKey, int sync
  * @retval -1 if it does not exist
  * @ingroup split
  */
-ssize_t splitSearchBackend (Split * split, Backend * backend, Key * parent)
+static ssize_t splitSearchBackend (Split * split, Backend * backend, Key * parent)
 {
 	for (size_t i = 0; i < split->size; ++i)
 	{
@@ -225,30 +225,6 @@ ssize_t splitSearchBackend (Split * split, Backend * backend, Key * parent)
 	}
 	return -1;
 }
-
-
-/**
- * @retval 1 if one of the backends in split has all
- *          keys below parentKey
- * @retval 0 if parentKey == 0 or there are keys below
- *          or same than parentKey which do not fit
- *          in any of split keysets
- * @param split the split object to work with
- * @param parentKey the key which relation is searched for
- * @ingroup split
- */
-int splitSearchRoot (Split * split, Key * parentKey)
-{
-	if (!parentKey) return 0;
-
-	for (size_t i = 0; i < split->size; ++i)
-	{
-		if (keyRel (split->parents[i], parentKey) >= 0) return 1;
-	}
-
-	return 0;
-}
-
 
 /**
  * @brief Map namespace to string and decide if it should be used for kdbGet()
@@ -647,45 +623,6 @@ int splitGet (Split * split, Key * warningKey, KDB * handle)
 
 	return ret;
 }
-
-/**
- * @brief Check if any of the split is uninitialized
- *
- * @param split
- *
- * @retval -1 if size is wrong
- * @retval 1 if everything is ok
- */
-int splitCheckSize (Split * split)
-{
-	/* Iterate everything */
-	for (size_t i = 0; i < split->size; ++i)
-	{
-		switch (keyGetNamespace (split->parents[i]))
-		{
-		case KEY_NS_SPEC:
-			if (split->handles[i]->specsize == -1) return -1;
-			break;
-		case KEY_NS_DIR:
-			if (split->handles[i]->dirsize == -1) return -1;
-			break;
-		case KEY_NS_USER:
-			if (split->handles[i]->usersize == -1) return -1;
-			break;
-		case KEY_NS_SYSTEM:
-			if (split->handles[i]->systemsize == -1) return -1;
-			break;
-		case KEY_NS_PROC:
-		case KEY_NS_EMPTY:
-		case KEY_NS_NONE:
-		case KEY_NS_META:
-		case KEY_NS_CASCADING:
-			return -1;
-		}
-	}
-	return 1;
-}
-
 
 /**
  * Also update sizes after kdbSet() to recognize multiple kdbSet() attempts.

@@ -100,6 +100,34 @@ int elektraBackendSetMountpoint (Backend * backend, KeySet * elektraConfig, Key 
 	return 0;
 }
 
+/**
+ * Opens the internal backend that indicates that a backend
+ * is missing at that place.
+ *
+ * @return the fresh allocated backend or 0 if no memory
+ */
+static Backend * backendOpenMissing (Key * mp)
+{
+	Backend * backend = elektraBackendAllocate ();
+
+	Plugin * plugin = elektraPluginMissing ();
+	if (!plugin)
+	{
+		/* Could not allocate plugin */
+		elektraFree (backend);
+		return 0;
+	}
+
+	backend->getplugins[0] = plugin;
+	backend->setplugins[0] = plugin;
+	plugin->refcounter = 2;
+
+	keySetString (mp, "missing");
+	backend->mountpoint = mp;
+	keyIncRef (backend->mountpoint);
+
+	return backend;
+}
 
 /**Builds a backend out of the configuration supplied
  * from:
@@ -215,35 +243,6 @@ Backend * backendOpen (KeySet * elektraConfig, KeySet * modules, Key * errorKey)
 	ksDel (systemConfig);
 	ksDel (elektraConfig);
 	ksDel (referencePlugins);
-
-	return backend;
-}
-
-/**
- * Opens the internal backend that indicates that a backend
- * is missing at that place.
- *
- * @return the fresh allocated backend or 0 if no memory
- */
-Backend * backendOpenMissing (Key * mp)
-{
-	Backend * backend = elektraBackendAllocate ();
-
-	Plugin * plugin = elektraPluginMissing ();
-	if (!plugin)
-	{
-		/* Could not allocate plugin */
-		elektraFree (backend);
-		return 0;
-	}
-
-	backend->getplugins[0] = plugin;
-	backend->setplugins[0] = plugin;
-	plugin->refcounter = 2;
-
-	keySetString (mp, "missing");
-	backend->mountpoint = mp;
-	keyIncRef (backend->mountpoint);
 
 	return backend;
 }
