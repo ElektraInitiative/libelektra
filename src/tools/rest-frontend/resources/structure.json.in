@@ -10,6 +10,13 @@
 				"ref": "docgettingstarted",
 				"children": [
 					{
+						"name": "Why Elektra?",
+						"type": "staticfile",
+						"options": {
+							"path": "doc/WHY.md"
+						}
+					},
+					{
 						"name": "Compiling",
 						"type": "staticfile",
 						"options": {
@@ -27,11 +34,19 @@
 			},
 			{
 				"name": "Tutorials",
-				"type": "listfiles",
+				"type": "parsereadme",
 				"ref": "tutorials",
 				"options": {
-					"path": "doc/tutorials",
-					"blacklist": ["CMakeLists.txt"]
+					"path": "doc/tutorials/README.md",
+					"target_file": [],
+					"parsing": {
+						"stop_regex": "####### UNUSED ######",
+						"section_regex": "## ([^#]+)",
+						"entry_regex": "^\\- \\[(.+)\\]\\(([^\\)]+)\\)(.*)"
+					},
+					"name": {
+						"make_pretty": false
+					}
 				}
 			},
 			{
@@ -88,6 +103,41 @@
 						"options": {
 							"path": "doc/CODING.md"
 						}
+					},
+					{
+						"name": "Design",
+						"type": "staticfile",
+						"options": {
+							"path": "doc/DESIGN.md"
+						}
+					},
+					{
+						"name": "API",
+						"type": "staticfile",
+						"options": {
+							"path": "doc/API.md"
+						}
+					},
+					{
+						"name": "Security",
+						"type": "staticfile",
+						"options": {
+							"path": "doc/SECURITY.md"
+						}
+					},
+					{
+						"name": "Testing",
+						"type": "staticfile",
+						"options": {
+							"path": "doc/TESTING.md"
+						}
+					},
+					{
+						"name": "Version",
+						"type": "staticfile",
+						"options": {
+							"path": "doc/VERSION.md"
+						}
 					}
 				]
 			},
@@ -132,11 +182,19 @@
 			},
 			{
 				"name": "Decisions",
-				"type": "listfiles",
+				"type": "parsereadme",
 				"ref": "decisions",
 				"options": {
-					"path": "doc/decisions",
-					"blacklist": []
+					"path": "doc/decisions/README.md",
+					"target_file": [],
+					"parsing": {
+						"stop_regex": "####### UNUSED ######",
+						"section_regex": "## ([^#]+)",
+						"entry_regex": "^\\- \\[(.+)\\]\\(([^\\)]+)\\)(.*)"
+					},
+					"name": {
+						"make_pretty": false
+					}
 				}
 			},
 			{

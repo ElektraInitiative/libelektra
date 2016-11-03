@@ -10,6 +10,14 @@
                 "ref": "docgettingstarted",
                 "children": [
                     {
+                        "name": "Why Elektra?",
+                        "type": "file",
+                        "options": {
+                            "path": "doc/WHY.md"
+                        },
+                        "slug": "why-elektra"
+                    },
+                    {
                         "name": "Compiling",
                         "type": "file",
                         "options": {
@@ -33,68 +41,16 @@
                 "ref": "tutorials",
                 "children": [
                     {
-                        "name": "Application Integration",
+                        "name": "README",
                         "type": "file",
                         "options": {
-                            "path": "doc/tutorials/application-integration.md"
+                            "path": "doc/tutorials/README.md"
                         },
-                        "slug": "application-integration"
+                        "slug": "readme"
                     },
                     {
-                        "name": "Cascading",
-                        "type": "file",
-                        "options": {
-                            "path": "doc/tutorials/cascading.md"
-                        },
-                        "slug": "cascading"
-                    },
-                    {
-                        "name": "Compilation Variants",
-                        "type": "file",
-                        "options": {
-                            "path": "doc/tutorials/compilation-variants.md"
-                        },
-                        "slug": "compilation-variants"
-                    },
-                    {
-                        "name": "Elektra Merge-integration",
-                        "type": "file",
-                        "options": {
-                            "path": "doc/tutorials/elektra-merge-integration.md"
-                        },
-                        "slug": "elektra-merge-integration"
-                    },
-                    {
-                        "name": "Export Dump",
-                        "type": "file",
-                        "options": {
-                            "path": "doc/tutorials/export-dump.md"
-                        },
-                        "slug": "export-dump"
-                    },
-                    {
-                        "name": "Export",
-                        "type": "file",
-                        "options": {
-                            "path": "doc/tutorials/export.md"
-                        },
-                        "slug": "export"
-                    },
-                    {
-                        "name": "Import",
-                        "type": "file",
-                        "options": {
-                            "path": "doc/tutorials/import.md"
-                        },
-                        "slug": "import"
-                    },
-                    {
-                        "name": "Merge",
-                        "type": "file",
-                        "options": {
-                            "path": "doc/tutorials/merge.md"
-                        },
-                        "slug": "merge"
+                        "name": "General Information",
+                        "type": "section"
                     },
                     {
                         "name": "Namespaces",
@@ -105,15 +61,43 @@
                         "slug": "namespaces"
                     },
                     {
-                        "name": "Plugins",
+                        "name": "Cascading",
+                        "type": "file",
+                        "options": {
+                            "path": "doc/tutorials/cascading.md"
+                        },
+                        "slug": "cascading"
+                    },
+                    {
+                        "name": "Developers",
+                        "type": "section"
+                    },
+                    {
+                        "name": "Integration of your Application",
+                        "type": "file",
+                        "options": {
+                            "path": "doc/tutorials/application-integration.md"
+                        },
+                        "slug": "integration-of-your-application"
+                    },
+                    {
+                        "name": "Plugins Introduction",
                         "type": "file",
                         "options": {
                             "path": "doc/tutorials/plugins.md"
                         },
-                        "slug": "plugins"
+                        "slug": "plugins-introduction"
                     },
                     {
-                        "name": "Python Kdb",
+                        "name": "Compilation Variants of plugins",
+                        "type": "file",
+                        "options": {
+                            "path": "doc/tutorials/compilation-variants.md"
+                        },
+                        "slug": "compilation-variants-of-plugins"
+                    },
+                    {
+                        "name": "python-kdb",
                         "type": "file",
                         "options": {
                             "path": "doc/tutorials/python-kdb.md"
@@ -121,12 +105,60 @@
                         "slug": "python-kdb"
                     },
                     {
-                        "name": "Validation",
+                        "name": "System Administrator",
+                        "type": "section"
+                    },
+                    {
+                        "name": "mount",
+                        "type": "file",
+                        "options": {
+                            "path": "doc/tutorials/mount.md"
+                        },
+                        "slug": "mount"
+                    },
+                    {
+                        "name": "import",
+                        "type": "file",
+                        "options": {
+                            "path": "doc/tutorials/import.md"
+                        },
+                        "slug": "import"
+                    },
+                    {
+                        "name": "export",
+                        "type": "file",
+                        "options": {
+                            "path": "doc/tutorials/export.md"
+                        },
+                        "slug": "export"
+                    },
+                    {
+                        "name": "merge",
+                        "type": "file",
+                        "options": {
+                            "path": "doc/tutorials/merge.md"
+                        },
+                        "slug": "merge"
+                    },
+                    {
+                        "name": "validation",
                         "type": "file",
                         "options": {
                             "path": "doc/tutorials/validation.md"
                         },
                         "slug": "validation"
+                    },
+                    {
+                        "name": "Package Maintainers",
+                        "type": "section"
+                    },
+                    {
+                        "name": "elektra-merge-integration",
+                        "type": "file",
+                        "options": {
+                            "path": "doc/tutorials/elektra-merge-integration.md"
+                        },
+                        "slug": "elektra-merge-integration"
                     }
                 ]
             },
@@ -1270,6 +1302,46 @@
                             "path": "doc/CODING.md"
                         },
                         "slug": "coding"
+                    },
+                    {
+                        "name": "Design",
+                        "type": "file",
+                        "options": {
+                            "path": "doc/DESIGN.md"
+                        },
+                        "slug": "design"
+                    },
+                    {
+                        "name": "API",
+                        "type": "file",
+                        "options": {
+                            "path": "doc/API.md"
+                        },
+                        "slug": "api"
+                    },
+                    {
+                        "name": "Security",
+                        "type": "file",
+                        "options": {
+                            "path": "doc/SECURITY.md"
+                        },
+                        "slug": "security"
+                    },
+                    {
+                        "name": "Testing",
+                        "type": "file",
+                        "options": {
+                            "path": "doc/TESTING.md"
+                        },
+                        "slug": "testing"
+                    },
+                    {
+                        "name": "Version",
+                        "type": "file",
+                        "options": {
+                            "path": "doc/VERSION.md"
+                        },
+                        "slug": "version"
                     }
                 ]
             },
@@ -1548,92 +1620,8 @@
                         "slug": "readme"
                     },
                     {
-                        "name": "Api_documentation",
-                        "type": "file",
-                        "options": {
-                            "path": "doc/decisions/api_documentation.md"
-                        },
-                        "slug": "api_documentation"
-                    },
-                    {
-                        "name": "Array",
-                        "type": "file",
-                        "options": {
-                            "path": "doc/decisions/array.md"
-                        },
-                        "slug": "array"
-                    },
-                    {
-                        "name": "Bool",
-                        "type": "file",
-                        "options": {
-                            "path": "doc/decisions/bool.md"
-                        },
-                        "slug": "bool"
-                    },
-                    {
-                        "name": "Bootstrap",
-                        "type": "file",
-                        "options": {
-                            "path": "doc/decisions/bootstrap.md"
-                        },
-                        "slug": "bootstrap"
-                    },
-                    {
-                        "name": "Capabilities",
-                        "type": "file",
-                        "options": {
-                            "path": "doc/decisions/capabilities.md"
-                        },
-                        "slug": "capabilities"
-                    },
-                    {
-                        "name": "Cmake_plugins",
-                        "type": "file",
-                        "options": {
-                            "path": "doc/decisions/cmake_plugins.md"
-                        },
-                        "slug": "cmake_plugins"
-                    },
-                    {
-                        "name": "Cmake_spec",
-                        "type": "file",
-                        "options": {
-                            "path": "doc/decisions/cmake_spec.md"
-                        },
-                        "slug": "cmake_spec"
-                    },
-                    {
-                        "name": "Cryptograhic_key_handling",
-                        "type": "file",
-                        "options": {
-                            "path": "doc/decisions/cryptograhic_key_handling.md"
-                        },
-                        "slug": "cryptograhic_key_handling"
-                    },
-                    {
-                        "name": "Empty_files",
-                        "type": "file",
-                        "options": {
-                            "path": "doc/decisions/empty_files.md"
-                        },
-                        "slug": "empty_files"
-                    },
-                    {
-                        "name": "Global_plugins",
-                        "type": "file",
-                        "options": {
-                            "path": "doc/decisions/global_plugins.md"
-                        },
-                        "slug": "global_plugins"
-                    },
-                    {
-                        "name": "Global_validation",
-                        "type": "file",
-                        "options": {
-                            "path": "doc/decisions/global_validation.md"
-                        },
-                        "slug": "global_validation"
+                        "name": "Implemented",
+                        "type": "section"
                     },
                     {
                         "name": "Holes",
@@ -1644,20 +1632,52 @@
                         "slug": "holes"
                     },
                     {
-                        "name": "Internal_cache",
+                        "name": "Unit Testing",
                         "type": "file",
                         "options": {
-                            "path": "doc/decisions/internal_cache.md"
+                            "path": "doc/decisions/unit_testing.md"
                         },
-                        "slug": "internal_cache"
+                        "slug": "unit-testing"
                     },
                     {
-                        "name": "Library_split",
+                        "name": "Capabilities",
+                        "type": "file",
+                        "options": {
+                            "path": "doc/decisions/capabilities.md"
+                        },
+                        "slug": "capabilities"
+                    },
+                    {
+                        "name": "Library Split",
                         "type": "file",
                         "options": {
                             "path": "doc/decisions/library_split.md"
                         },
-                        "slug": "library_split"
+                        "slug": "library-split"
+                    },
+                    {
+                        "name": "Bootstrap",
+                        "type": "file",
+                        "options": {
+                            "path": "doc/decisions/bootstrap.md"
+                        },
+                        "slug": "bootstrap"
+                    },
+                    {
+                        "name": "Empty Files",
+                        "type": "file",
+                        "options": {
+                            "path": "doc/decisions/empty_files.md"
+                        },
+                        "slug": "empty-files"
+                    },
+                    {
+                        "name": "CMake Plugins",
+                        "type": "file",
+                        "options": {
+                            "path": "doc/decisions/cmake_plugins.md"
+                        },
+                        "slug": "cmake-plugins"
                     },
                     {
                         "name": "Logging",
@@ -1668,44 +1688,88 @@
                         "slug": "logging"
                     },
                     {
-                        "name": "Null_pointer_checks",
+                        "name": "Internal Cache",
                         "type": "file",
                         "options": {
-                            "path": "doc/decisions/null_pointer_checks.md"
+                            "path": "doc/decisions/internal_cache.md"
                         },
-                        "slug": "null_pointer_checks"
+                        "slug": "internal-cache"
                     },
                     {
-                        "name": "Plugin_variants",
-                        "type": "file",
-                        "options": {
-                            "path": "doc/decisions/plugin_variants.md"
-                        },
-                        "slug": "plugin_variants"
+                        "name": "Decided",
+                        "type": "section"
                     },
                     {
-                        "name": "Pubsub",
-                        "type": "file",
-                        "options": {
-                            "path": "doc/decisions/pubsub.md"
-                        },
-                        "slug": "pubsub"
-                    },
-                    {
-                        "name": "Relative",
+                        "name": "Relative Storages",
                         "type": "file",
                         "options": {
                             "path": "doc/decisions/relative.md"
                         },
-                        "slug": "relative"
+                        "slug": "relative-storages"
                     },
                     {
-                        "name": "Script_testing",
+                        "name": "API Documentation",
+                        "type": "file",
+                        "options": {
+                            "path": "doc/decisions/api_documentation.md"
+                        },
+                        "slug": "api-documentation"
+                    },
+                    {
+                        "name": "Definition of Bool",
+                        "type": "file",
+                        "options": {
+                            "path": "doc/decisions/bool.md"
+                        },
+                        "slug": "definition-of-bool"
+                    },
+                    {
+                        "name": "Plugin Variants",
+                        "type": "file",
+                        "options": {
+                            "path": "doc/decisions/plugin_variants.md"
+                        },
+                        "slug": "plugin-variants"
+                    },
+                    {
+                        "name": "In Discussion",
+                        "type": "section"
+                    },
+                    {
+                        "name": "CMake spec",
+                        "type": "file",
+                        "options": {
+                            "path": "doc/decisions/cmake_spec.md"
+                        },
+                        "slug": "cmake-spec"
+                    },
+                    {
+                        "name": "Global Plugins",
+                        "type": "file",
+                        "options": {
+                            "path": "doc/decisions/global_plugins.md"
+                        },
+                        "slug": "global-plugins"
+                    },
+                    {
+                        "name": "Script Testing",
                         "type": "file",
                         "options": {
                             "path": "doc/decisions/script_testing.md"
                         },
-                        "slug": "script_testing"
+                        "slug": "script-testing"
+                    },
+                    {
+                        "name": "Array",
+                        "type": "file",
+                        "options": {
+                            "path": "doc/decisions/array.md"
+                        },
+                        "slug": "array"
+                    },
+                    {
+                        "name": "Drafts",
+                        "type": "section"
                     },
                     {
                         "name": "Specification",
@@ -1716,28 +1780,28 @@
                         "slug": "specification"
                     },
                     {
-                        "name": "Template",
+                        "name": "Null Pointer Checks",
                         "type": "file",
                         "options": {
-                            "path": "doc/decisions/template.md"
+                            "path": "doc/decisions/null_pointer_checks.md"
                         },
-                        "slug": "template"
+                        "slug": "null-pointer-checks"
                     },
                     {
-                        "name": "Unit_testing",
+                        "name": "Publish Subscribe",
                         "type": "file",
                         "options": {
-                            "path": "doc/decisions/unit_testing.md"
+                            "path": "doc/decisions/pubsub.md"
                         },
-                        "slug": "unit_testing"
+                        "slug": "publish-subscribe"
                     },
                     {
-                        "name": "Vendor_spec",
+                        "name": "Global Validation",
                         "type": "file",
                         "options": {
-                            "path": "doc/decisions/vendor_spec.md"
+                            "path": "doc/decisions/global_validation.md"
                         },
-                        "slug": "vendor_spec"
+                        "slug": "global-validation"
                     }
                 ]
             },

@@ -147,16 +147,30 @@ module.exports = function(grunt) {
 						var elem = new RegExp(entry.options.parsing.entry_regex, 'i').exec(line);
 						if(elem !== null && elem.length >= 4) {
 							var file = null;
-							for(var i = 0; i < entry.options.target_file.length; i++) {
-								try {
-									var rel = path.join(path.dirname(entry.options.path), elem[2], entry.options.target_file[i]);
-									fs.accessSync(path.join(root_dir, rel), fs.constants.F_OK);
+							var rel;
+							// first see if path is already a file
+							try {
+								rel = path.join(path.dirname(entry.options.path), elem[2]);
+								if(fs.statSync(path.join(root_dir, rel)).isFile() === true) {
 									file = rel;
-									break;
-								} catch(err) {
+								}
+							} catch(err) {
 
+							}
+							// then try to find target file
+							if(file === null) {
+								for(var i = 0; i < entry.options.target_file.length; i++) {
+									try {
+										rel = path.join(path.dirname(entry.options.path), elem[2], entry.options.target_file[i]);
+										fs.accessSync(path.join(root_dir, rel), fs.constants.F_OK);
+										file = rel;
+										break;
+									} catch(err) {
+
+									}
 								}
 							}
+							// only write output if we found a target
 							if(file !== null) {
 								var fileEntry = {
 									name: (pretty) ? self.makePrettyName(elem[1]) : elem[1],
