@@ -485,22 +485,22 @@ int mountBackend (KDB * kdb, Backend * backend, Key * errorKey ELEKTRA_UNUSED)
 			case KEY_NS_DIR:
 				sprintf (mountpoint, "dir%s/", keyName (backend->mountpoint));
 				kdb->trie = trieInsert (kdb->trie, mountpoint, backend);
-				splitAppend (kdb->split, backend,
-						    keyNew (mountpoint, KEY_VALUE, keyString (backend->mountpoint), KEY_END), 2);
+				splitAppend (kdb->split, backend, keyNew (mountpoint, KEY_VALUE, keyString (backend->mountpoint), KEY_END),
+					     2);
 				++backend->refcounter;
 				break;
 			case KEY_NS_USER:
 				sprintf (mountpoint, "user%s/", keyName (backend->mountpoint));
 				kdb->trie = trieInsert (kdb->trie, mountpoint, backend);
-				splitAppend (kdb->split, backend,
-						    keyNew (mountpoint, KEY_VALUE, keyString (backend->mountpoint), KEY_END), 2);
+				splitAppend (kdb->split, backend, keyNew (mountpoint, KEY_VALUE, keyString (backend->mountpoint), KEY_END),
+					     2);
 				++backend->refcounter;
 				break;
 			case KEY_NS_SYSTEM:
 				sprintf (mountpoint, "system%s/", keyName (backend->mountpoint));
 				kdb->trie = trieInsert (kdb->trie, mountpoint, backend);
-				splitAppend (kdb->split, backend,
-						    keyNew (mountpoint, KEY_VALUE, keyString (backend->mountpoint), KEY_END), 2);
+				splitAppend (kdb->split, backend, keyNew (mountpoint, KEY_VALUE, keyString (backend->mountpoint), KEY_END),
+					     2);
 				++backend->refcounter;
 				break;
 			case KEY_NS_SPEC:
