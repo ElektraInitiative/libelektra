@@ -161,8 +161,9 @@ void MountBaseCommand::doIt ()
 	{
 		throw KDBMountException (std::string (e.what ()) +
 					 "\n\n"
-					 "IMPORTANT: Make sure you can write to system namespace\n"
-					 "           Usually you need to be root for that!");
+					 "IMPORTANT: Mounting tries to write to system/elektra/mountpoints.\n"
+					 "           Make sure that you can write to `Configfile:` as mentioned above.\n"
+					 "           Usually you need to be root for that (use `sudo !!`).");
 	}
 
 	printWarnings (cerr, parentKey);
