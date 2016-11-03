@@ -1,3 +1,103 @@
-<div class="jumbotron">
-    <h1>Welcome to Elektra!</h1>
+<div class="row home">
+	<div class="col-md-12">
+		<!-- Slogan & Headline -->
+		<h1 class="slogan-master text-center">{{ 'APP.HOME.HEADLINE.SLOGAN.FIRST' | translate }}</h1>
+		<h2 class="slogan-slave text-center">
+			<small>{{ 'APP.HOME.HEADLINE.SLOGAN.SECOND' | translate }}</small>
+		</h2>
+		<hr />
+		<!-- Selling points -->
+		<div class="row">
+			<div class="col-md-4">
+				<div class="media">
+					<div class="media-left">
+						<i class="media-icon fa fa-sitemap"></i>
+					</div>
+					<div class="media-right media-middle">
+						<h4 class="media-heading">{{ 'APP.HOME.LABEL.KEYFACT.1.HEADLINE' | translate }}</h4>
+					</div>
+				</div>
+				<span class="key-fact-details">{{ 'APP.HOME.LABEL.KEYFACT.1.DETAILS' | translate }}</span>
+			</div>
+			<div class="col-md-4">
+				<div class="media">
+					<div class="media-left">
+						<i class="media-icon fa fa-book"></i>
+					</div>
+					<div class="media-right media-middle">
+						<h4 class="media-heading">{{ 'APP.HOME.LABEL.KEYFACT.2.HEADLINE' | translate }}</h4>
+					</div>
+				</div>
+				<span class="key-fact-details">{{ 'APP.HOME.LABEL.KEYFACT.2.DETAILS' | translate }}</span>
+			</div>
+			<div class="col-md-4">
+				<div class="media">
+					<div class="media-left">
+						<i class="media-icon fa fa-puzzle-piece"></i>
+					</div>
+					<div class="media-right media-middle">
+						<h4 class="media-heading">{{ 'APP.HOME.LABEL.KEYFACT.3.HEADLINE' | translate }}</h4>
+					</div>
+				</div>
+				<span class="key-fact-details">{{ 'APP.HOME.LABEL.KEYFACT.3.DETAILS' | translate }}</span>
+			</div>
+		</div>
+		<div class="row md-mt-30">
+			<div class="col-md-4">
+				<div class="media">
+					<div class="media-left">
+						<i class="media-icon fa fa-link"></i>
+					</div>
+					<div class="media-right media-middle">
+						<h4 class="media-heading">{{ 'APP.HOME.LABEL.KEYFACT.4.HEADLINE' | translate }}</h4>
+					</div>
+				</div>
+				<span class="key-fact-details">{{ 'APP.HOME.LABEL.KEYFACT.4.DETAILS' | translate }}</span>
+			</div>
+			<div class="col-md-4">
+				<div class="media">
+					<div class="media-left">
+						<i class="media-icon fa fa-check"></i>
+					</div>
+					<div class="media-right media-middle">
+						<h4 class="media-heading">{{ 'APP.HOME.LABEL.KEYFACT.5.HEADLINE' | translate }}</h4>
+					</div>
+				</div>
+				<span class="key-fact-details">{{ 'APP.HOME.LABEL.KEYFACT.5.DETAILS' | translate }}</span>
+			</div>
+			<div class="col-md-4">
+				<div class="media">
+					<div class="media-left">
+						<i class="media-icon fa fa-cogs"></i>
+					</div>
+					<div class="media-right media-middle">
+						<h4 class="media-heading">{{ 'APP.HOME.LABEL.KEYFACT.6.HEADLINE' | translate }}</h4>
+					</div>
+				</div>
+				<span class="key-fact-details">{{ 'APP.HOME.LABEL.KEYFACT.6.DETAILS' | translate }}</span>
+			</div>
+		</div>
+		<hr />
+		<div class="row">
+			<div class="col-md-8">
+				<!-- Introduction video -->
+				<h3 class="text-center">{{ 'APP.HOME.HEADLINE.HOWITWORKS' | translate }}</h3>
+				<div class="text-center">
+					<script type="text/javascript" src="https://asciinema.org/a/cantr04assr4jkv8v34uz9b8r.js"
+							id="asciicast-cantr04assr4jkv8v34uz9b8r" async>
+					</script>
+				</div>
+			</div>
+			<div class="col-md-4">
+				<h3 class="text-center">{{ 'APP.HOME.HEADLINE.WHATSNEW' | translate }}</h3>
+				<div class="list-group md-mt-20">
+					<a ng-repeat="post in news" ui-sref="main.news({file: post.slug})" class="list-group-item"
+					   ng-class="{active: $first}">
+						<h4 class="list-group-item-heading">{{ post.title }}</h4>
+						<p class="list-group-item-text">{{ post.date }}</p>
+					</a>
+				</div>
+			</div>
+		</div>
+	</div>
 </div>

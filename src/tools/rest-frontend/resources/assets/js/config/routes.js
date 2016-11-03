@@ -119,7 +119,8 @@ module.exports = function($stateProvider, $urlRouterProvider, $locationProvider,
 				}]
 			},
 			ncyBreadcrumb: {
-				label: 'APP.BREADCRUMBS.MAIN.NEWS'
+				label: 'APP.BREADCRUMBS.MAIN.NEWS',
+				parent: 'main.home'
 			}
 		})
 		.state('main.dyn', {
