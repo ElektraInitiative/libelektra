@@ -2,6 +2,10 @@
 
 ## Configuration ##
 
+### Plugins: ###
+
+List all plugins you need in the test case. Separated by semicolon.
+
 ### Mountpoint: ###
 
 This is the only configuration Variable that has to be set. It is used to determine where the shell_recorder should look for changes.
