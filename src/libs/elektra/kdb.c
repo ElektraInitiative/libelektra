@@ -159,7 +159,7 @@ void elektraRemoveMetaData (Key * key, const char * searchfor)
  */
 int elektraOpenBootstrap (KDB * handle, KeySet * keys, Key * errorKey)
 {
-	handle->defaultBackend = elektraBackendOpenDefault (handle->modules, KDB_DB_INIT, errorKey);
+	handle->defaultBackend = backendOpenDefault (handle->modules, KDB_DB_INIT, errorKey);
 	if (!handle->defaultBackend) return -1;
 
 	handle->split = elektraSplitNew ();
@@ -176,11 +176,11 @@ int elektraOpenBootstrap (KDB * handle, KeySet * keys, Key * errorKey)
 		// could not get KDB_DB_INIT, try KDB_DB_FILE
 		// first cleanup:
 		ksClear (keys);
-		elektraBackendClose (handle->defaultBackend, errorKey);
+		backendClose (handle->defaultBackend, errorKey);
 		elektraSplitDel (handle->split);
 
 		// then create new setup:
-		handle->defaultBackend = elektraBackendOpenDefault (handle->modules, KDB_DB_FILE, errorKey);
+		handle->defaultBackend = backendOpenDefault (handle->modules, KDB_DB_FILE, errorKey);
 		if (!handle->defaultBackend)
 		{
 			elektraRemoveMetaData (errorKey, "error"); // fix errors from kdbGet()
@@ -312,7 +312,7 @@ KDB * kdbOpen (Key * errorKey)
 	keySetName (errorKey, keyName (initialParent));
 	keySetString (errorKey, "kdbOpen(): backendClose");
 
-	elektraBackendClose (handle->defaultBackend, errorKey);
+	backendClose (handle->defaultBackend, errorKey);
 	elektraSplitDel (handle->split);
 	handle->defaultBackend = 0;
 	handle->trie = 0;
@@ -405,13 +405,13 @@ int kdbClose (KDB * handle, Key * errorKey)
 
 	trieClose (handle->trie, errorKey);
 
-	elektraBackendClose (handle->defaultBackend, errorKey);
+	backendClose (handle->defaultBackend, errorKey);
 	handle->defaultBackend = 0;
 
 	// not set in fallback mode, so lets check:
 	if (handle->initBackend)
 	{
-		elektraBackendClose (handle->initBackend, errorKey);
+		backendClose (handle->initBackend, errorKey);
 		handle->initBackend = 0;
 	}
 
@@ -467,7 +467,7 @@ static int elektraGetCheckUpdateNeeded (Split * split, Key * parentKey)
 			// store resolved filename
 			keySetString (split->parents[i], keyString (parentKey));
 			// no keys in that backend
-			elektraBackendUpdateSize (backend, split->parents[i], 0);
+			backendUpdateSize (backend, split->parents[i], 0);
 		}
 		// TODO: set error in else case!
 

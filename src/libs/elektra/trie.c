@@ -88,13 +88,13 @@ int trieClose (Trie * trie, Key * errorKey)
 		if (trie->text[i] != NULL)
 		{
 			trieClose (trie->children[i], errorKey);
-			if (trie->value[i]) elektraBackendClose (trie->value[i], errorKey);
+			if (trie->value[i]) backendClose (trie->value[i], errorKey);
 			elektraFree (trie->text[i]);
 		}
 	}
 	if (trie->empty_value)
 	{
-		elektraBackendClose (trie->empty_value, errorKey);
+		backendClose (trie->empty_value, errorKey);
 	}
 	elektraFree (trie);
 	return 0;

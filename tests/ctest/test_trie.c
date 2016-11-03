@@ -6,6 +6,7 @@
  * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
  */
 
+#include <../../src/libs/elektra/backend.c>
 #include <../../src/libs/elektra/trie.c>
 #include <tests_internal.h>
 

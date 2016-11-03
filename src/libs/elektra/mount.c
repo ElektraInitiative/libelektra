@@ -62,7 +62,7 @@ int mountOpen (KDB * kdb, KeySet * config, KeySet * modules, Key * errorKey)
 		if (keyRel (root, cur) == 1)
 		{
 			KeySet * cut = ksCut (config, cur);
-			Backend * backend = elektraBackendOpen (cut, modules, errorKey);
+			Backend * backend = backendOpen (cut, modules, errorKey);
 
 			if (!backend)
 			{
@@ -75,7 +75,7 @@ int mountOpen (KDB * kdb, KeySet * config, KeySet * modules, Key * errorKey)
 			{
 				ELEKTRA_ADD_WARNING (25, errorKey, "no mountpoint");
 				ret = -1;
-				elektraBackendClose (backend, errorKey);
+				backendClose (backend, errorKey);
 				continue;
 			}
 
@@ -85,7 +85,7 @@ int mountOpen (KDB * kdb, KeySet * config, KeySet * modules, Key * errorKey)
 				ret = -1;
 				/* mountBackend modified the refcounter. */
 				backend->refcounter = 1;
-				elektraBackendClose (backend, errorKey);
+				backendClose (backend, errorKey);
 				continue;
 			}
 		}
@@ -110,7 +110,7 @@ int mountOpen (KDB * kdb, KeySet * config, KeySet * modules, Key * errorKey)
 int mountDefault (KDB * kdb, KeySet * modules, int inFallback, Key * errorKey)
 {
 	// open the defaultBackend the first time
-	kdb->defaultBackend = elektraBackendOpenDefault (modules, KDB_DB_FILE, errorKey);
+	kdb->defaultBackend = backendOpenDefault (modules, KDB_DB_FILE, errorKey);
 	kdb->initBackend = 0;
 
 	if (!kdb->defaultBackend)
@@ -122,7 +122,7 @@ int mountDefault (KDB * kdb, KeySet * modules, int inFallback, Key * errorKey)
 	if (!inFallback)
 	{
 		/* Reopen the init Backend for fresh user experience (update issue) */
-		kdb->initBackend = elektraBackendOpenDefault (modules, KDB_DB_INIT, errorKey);
+		kdb->initBackend = backendOpenDefault (modules, KDB_DB_INIT, errorKey);
 
 		if (!kdb->initBackend)
 		{
@@ -367,12 +367,12 @@ int mountModules (KDB * kdb, KeySet * modules, Key * errorKey)
 
 	while ((cur = ksNext (modules)) != 0)
 	{
-		Backend * backend = elektraBackendOpenModules (modules, errorKey);
+		Backend * backend = backendOpenModules (modules, errorKey);
 		ksAppendKey (alreadyMounted, backend->mountpoint);
 		if (ksGetSize (alreadyMounted) == oldSize)
 		{
 			// we already mounted that before
-			elektraBackendClose (backend, errorKey);
+			backendClose (backend, errorKey);
 			continue;
 		}
 		++oldSize;
@@ -393,7 +393,7 @@ int mountModules (KDB * kdb, KeySet * modules, Key * errorKey)
  */
 int mountVersion (KDB * kdb, Key * errorKey)
 {
-	Backend * backend = elektraBackendOpenVersion (errorKey);
+	Backend * backend = backendOpenVersion (errorKey);
 	mountBackend (kdb, backend, errorKey);
 
 	return 0;

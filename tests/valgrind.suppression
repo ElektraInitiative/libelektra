@@ -102,7 +102,7 @@
    fun:dlopen@@GLIBC_2.2.5
    fun:elektraModulesLoad
    fun:elektraPluginOpen
-   fun:elektraBackendOpenDefault
+   fun:backendOpenDefault
 }
 {
    <insert_a_suppression_name_here>
