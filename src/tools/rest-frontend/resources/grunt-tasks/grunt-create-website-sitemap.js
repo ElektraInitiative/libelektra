@@ -4,7 +4,7 @@ var path = require('path');
 var builder = require('xmlbuilder');
 var request = require('sync-request');
 
-var resolve_path = require('./resolve-path');
+var resolve_path = require('./helper/resolve-path');
 
 module.exports = function(grunt) {
 

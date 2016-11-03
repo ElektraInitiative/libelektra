@@ -4,7 +4,7 @@ var fs = require('fs');
 var path = require('path');
 var slugify = require('slugify');
 
-var resolve_path = require('./resolve-path');
+var resolve_path = require('./helper/resolve-path');
 
 module.exports = function(grunt) {
 

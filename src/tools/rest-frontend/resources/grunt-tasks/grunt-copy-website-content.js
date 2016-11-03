@@ -3,7 +3,7 @@
 var fs = require('fs-extra');
 var path = require('path');
 
-var resolve_path = require('./resolve-path');
+var resolve_path = require('./helper/resolve-path');
 
 module.exports = function(grunt) {
 
