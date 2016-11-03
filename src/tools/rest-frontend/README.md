@@ -6,7 +6,7 @@ This document aims to provide information about Elektras `rest-frontend`, which 
 
 ## Design and Structure ##
 
-The frontend is developed as single-page application (SPA) in [AngularJS (v1.5)](https://angularjs.org/). All dependencies are either already contained in the application project or (preferred) resolved through [npm](https://www.npmjs.com/) during installation (requires active internet connection). Compiling (browserification, concatenation & minification), as well as other tasks like running a lightweight webserver are handled by the task runner [grunt](http://gruntjs.com/).
+The frontend is developed as single-page application (SPA) in [AngularJS (v1.5)](https://angularjs.org/). All dependencies are either already contained in the application project or (preferred) resolved through [npm](https://www.npmjs.com/) during installation (requires active internet connection). Compiling (browserification, concatenation & minification), as well as other tasks like running a lightweight webserver are handled by the nodeJS based task runner [grunt](http://gruntjs.com/).
 
 ### Directory Structure ###
 
@@ -24,7 +24,7 @@ Besides the snippet sharing functionality, the whole frontend implements a basic
 
 ### Part 2: Elektra Website ###
 
-One part of the frontend is the new Elektra website containing documentation, tutorials and other important artifacts like news. Almost all necessary resources are generated and copied from a local repository clone to the website deployment during build (to refresh the website, a new build is necessary).
+The second part of the frontend is the new Elektra website containing documentation, tutorials and other important artifacts like news. Almost all necessary resources are generated and copied from a local repository clone to the website deployment during build (to refresh the website, a new build is necessary).
 
 #### Important facts ####
 
@@ -83,6 +83,197 @@ If necessary, mappings for dialects as well as a default language can be specifi
 #### Logger ####
 
 It is possible to enable the frontend logger by changing `logger.enabled` in the configuration file.
+
+### resources/structure.json.in ###
+
+This configuration file can be used to define the website structure. The file consists at its root of an array, which will be transformed into the main menu of the website (the dynamic part of the menu). The array houses objects, of which every object represents an element on the website (e.g. a link).
+
+In the following, the different element types will be explained in detail. The headline always refers to the `type` field of the element. The element type `link` for example would be an object like the following with some extra attributes explained below:
+
+    {
+        "type": "link",
+        ... other attributes ...
+    }
+
+#### submenu ####
+
+The `submenu` type can be used to create a menu point that has a (hoverable) submenu, but does itself not link to any page. It can only be used in the top hierarchy of the structure file.
+
+This field type supports following attributes:
+- `name` (string) for the visible name of the menu point (i.e. button text)
+- `ref` (string) for the dynamic URL part (i.e. a resource of the URL, e.g. `http://example.com/docs` for the subsequent example)
+- `children` (array) holding other structure elements, but none of type `submenu`
+
+Example:
+
+    {
+        "name": "Documentation",
+        "type": "submenu",
+        "ref": "docs",
+        "children": [ ]
+    }
+
+#### parsereadme ####
+
+The `parsereadme` element type is the most powerful of all types. It takes a text file as input (often README.md) and creates with the help of some regex patterns a section of the website which contains parsed links of the input file.
+
+This field type support following attributes:
+- `name` (string) for the visible name of the menu point (i.e. button text)
+- `ref` (string) for the dynamic URL part (i.e. a resource of the URL, e.g. `http://example.com/plugins` for the subsequent example)
+- `options` (object) with further options:
+    - `path` (string) containing the path from the repository root to the text file to parse
+    - `target_file` (array[string]) containing some filenames that should be targeted for parsed links that are no files (i.e. links to directories)
+    - `parsing` (object) with further options:
+        - `start_regex` (string, optional) defines the start point from where on the following regex types should be parsed
+        - `entry_regex` (string) defines a regex that will create links to files within a website section
+        - `section_regex` (string, optional) can additionally be used to parse group names which will make the section links look nicer
+        - `stop_regex` (string, optional) defines the end point up to which the text file will be parsed
+    - `name` (object) with further options:
+        - `make_pretty` (boolean) whether the link names within the text file which will also be used on the website should be made pretty (e.g. first-capitalize, etc.); this option is discouraged for this structure element type
+
+Example:
+
+    {
+        "name": "Plugins",
+        "type": "parsereadme",
+        "ref": "plugins",
+        "options": {
+            "path": "src/plugins/README.md",
+            "target_file": ["README.md", "README", "readme.md", "readme"],
+            "parsing": {
+                "start_regex": "# Plugins #",
+                "stop_regex": "####### UNUSED ######",
+                "section_regex": "### ([^#]+) ###",
+                "entry_regex": "^\\- \\[(.+)\\]\\(([^\\)]+)\\)(.*)"
+            },
+            "name": {
+                "make_pretty": false
+            }
+        }
+    }
+
+#### listdirs ####
+
+The `listdirs` element type can be used to enumerate all sub-directories of a specific directory. It will try to find one of the target files (i.e. readme) within the sub-directories and create a link to them. All this is done in a newly created website section.
+
+This field type supports following attributes:
+- `name` (string) for the visible name of the menu point (i.e. button text)
+- `ref` (string) for the dynamic URL part (i.e. a resource of the URL, e.g. `http://example.com/tools` for the subsequent example)
+- `options` (object) with further options:
+    - `path` (string) containing the path from the repository root to the directory to enumerate
+    - `target_file` (array[string]) containing some filenames that should be targeted within the sub-directories
+
+Example:
+
+    {
+        "name": "Tools",
+        "type": "listdirs",
+        "ref": "tools",
+        "options": {
+            "path": "src/tools",
+            "target_file": ["README.md", "README", "readme.md", "readme"]
+        }
+    }
+
+#### listfiles ####
+
+The `listfiles` element type is quite similar to the `listdirs` type, but instead of sub-directories it enumerates files within a directory. It does also create a new website section.
+
+This field type supports following attributes:
+- `name` (string) for the visible name of the menu point (i.e. button text)
+- `ref` (string) for the dynamic URL part (i.e. a resource of the URL, e.g. `http://example.com/manpages` for the subsequent example)
+- `options` (object) with further options:
+    - `path` (string) containing the path from the repository root to the directory to enumerate
+    - `blacklist` (array[string]) containing some filenames that should be excluded from the result (e.g. CMakeLists.txt)
+
+Example:
+
+    {
+        "name": "Manpages",
+        "type": "listfiles",
+        "ref": "manpages",
+        "options": {
+            "path": "doc/help",
+            "blacklist": ["CMakeLists.txt"]
+        }
+    }
+
+#### staticlist ####
+
+The `staticlist` element type creates a new website section that is entirely customizable within the structure configuration file. This type can be used instead of the `parsereadme` type if a mix of many types is required.
+
+This field type supports following attributes:
+- `name` (string) for the visible name of the menu point (i.e. button text)
+- `ref` (string) for the dynamic URL part (i.e. a resource of the URL, e.g. `http://example.com/getstarted` for the subsequent example)
+- `children` (array) holding static structure elements like `staticref`, `staticfile` and `link`
+
+Example:
+
+    {
+        "name": "Getting started",
+        "type": "staticlist",
+        "ref": "getstarted",
+        "children": [ ]
+    }
+
+#### staticref ####
+
+The `staticref` element type can be used in a `staticlist` to create a reference to another website part.
+
+This field type support following attributes:
+- `name` (string) for the visible name of the menu point (i.e. button text)
+- `options` (object) with further options:
+    - `path` (string) containing a reference, which can either be the `ref` attribute of another element or an even more specific reference
+
+Example:
+
+    {
+        "name": "Tutorials",
+        "type": "staticref",
+        "options": {
+            "path": "tutorials"
+        }
+    }
+
+#### staticfile ####
+
+The `staticfile` element type can be used in a `staticlist` to create a menu point for a file. The file is then a page in the section created by the `staticlist`.
+
+This field type support following attributes:
+- `name` (string) for the visible name of the menu point (i.e. button text)
+- `options` (object) with further options:
+    - `path` (string) containing the path to a file
+
+Example:
+
+    {
+        "name": "Installation",
+        "type": "staticfile",
+        "options": {
+            "path": "doc/INSTALL.md"
+        }
+    }
+
+#### link ####
+
+The `link` element type can be used to create a simple link to whatever is desired. It is recommended to use it only for external links.
+
+This field type support following attributes:
+- `name` (string) for the visible name of the menu point (i.e. button text)
+- `ref` (string) for the dynamic URL part (_currently unused_)
+- `options` (object) with further options:
+    - `path` (string) containing the path of the link
+
+Example:
+
+    {
+        "name": "Build Server",
+        "type": "link",
+        "ref": "buildserver",
+        "options": {
+            "path": "http://build.libelektra.org:8080/"
+        }
+    }
 
 ## Development ##
 
