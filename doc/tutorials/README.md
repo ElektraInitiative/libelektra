@@ -29,17 +29,17 @@ For these tutorials we assume that you want to
 work with the configuration of applications
 already somehow integrated with Elektra.
 
-- [mount](mount.md)
-- [import](import.md)
-- [export](export.md)
-- [intercept env](/src/bindings/intercept/env/README.md)
-- [intercept fs](/src/bindings/intercept/fs/README.md)
-- [merge](merge.md)
-- [validation](validation.md)
+- [Mount Configuration Files](mount.md)
+- [Import Configuration](import.md)
+- [Export Configuration](export.md)
+- [Intercept Environment](/src/bindings/intercept/env/README.md)
+- [Intercept File System](/src/bindings/intercept/fs/README.md)
+- [Merge Configuration](merge.md)
+- [Validate Configuration](validation.md)
 
 ## Package Maintainers
 
 For these tutorials we assume that you maintain
 upstream packages.
 
-- [elektra-merge-integration](elektra-merge-integration.md)
+- [Merge Configuration Files](elektra-merge-integration.md)
