@@ -153,7 +153,11 @@ module.exports = function(grunt) {
 							var rel;
 							// first see if path is already a file
 							try {
-								rel = path.join(path.dirname(entry.options.path), elem[2]);
+								if(elem[2].charAt(0) === '/') { // absolute repo path
+									rel = elem[2].substr(1);
+								} else {
+									rel = path.join(path.dirname(entry.options.path), elem[2]);
+								}
 								if(fs.statSync(path.join(root_dir, rel)).isFile() === true) {
 									file = rel;
 								}

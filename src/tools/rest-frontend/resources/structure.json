@@ -112,6 +112,14 @@
                         "slug": "python-kdb"
                     },
                     {
+                        "name": "code generation",
+                        "type": "file",
+                        "options": {
+                            "path": "src/tools/gen/README.md"
+                        },
+                        "slug": "code-generation"
+                    },
+                    {
                         "name": "System Administrator",
                         "type": "section"
                     },
@@ -138,6 +146,22 @@
                             "path": "doc/tutorials/export.md"
                         },
                         "slug": "export"
+                    },
+                    {
+                        "name": "intercept env",
+                        "type": "file",
+                        "options": {
+                            "path": "src/bindings/intercept/env/README.md"
+                        },
+                        "slug": "intercept-env"
+                    },
+                    {
+                        "name": "intercept fs",
+                        "type": "file",
+                        "options": {
+                            "path": "src/bindings/intercept/fs/README.md"
+                        },
+                        "slug": "intercept-fs"
                     },
                     {
                         "name": "merge",
