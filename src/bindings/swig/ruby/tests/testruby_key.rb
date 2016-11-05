@@ -1,4 +1,5 @@
 #!/usr/bin/env ruby
+#encoding: UTF-8
 ## 
 # @file 
 # 
@@ -25,8 +26,6 @@ class KdbKeyTestCases < Test::Unit::TestCase
       assert_not_nil k
       assert_equal kname, k.name
       assert k.is_valid?
-
-      #puts "hello world - " + k.name
     end
   end
 
@@ -161,7 +160,6 @@ class KdbKeyTestCases < Test::Unit::TestCase
       k["owner"] = "me"
       assert_equal "me", k.get_meta("owner")
       assert_equal "me", k["owner"]
-
     end
   end
 
@@ -398,6 +396,84 @@ class KdbKeyTestCases < Test::Unit::TestCase
         assert_equal a[i], m.name
         i += 1
       }
+    end
+  end
+
+  def test_to_s
+    assert_nothing_raised do
+      k = Kdb::Key.new
+
+      assert_equal ": ", k.to_s
+
+      k = Kdb::Key.new "user/key1", value: "somevalue"
+
+      assert_equal "user/key1: somevalue", k.to_s
+
+      v = "\000\001\002"
+      k = Kdb::Key.new("user/binkey1",
+                        value: v,
+                        flags: Kdb::KEY_BINARY)
+
+      assert k.is_binary?
+      assert_equal "user/binkey1: (binary) length: #{v.length}", k.to_s
+    end
+  end
+
+  def test_pretty_print
+    assert_nothing_raised do
+      k = Kdb::Key.new
+
+      out, err = capture_output do
+        k.pretty_print
+      end
+
+      expected = <<EOF
+key ''
+  string value: 
+  key has no meta data
+EOF
+      assert_equal expected, out
+      assert_equal '', err
+
+
+      k = Kdb::Key.new "user/key1", value: "somevalue", meta1: "metavalue"
+
+      out, err = capture_output { k.pretty_print }
+
+      expected = <<EOF
+key 'user/key1'
+  string value: somevalue
+  meta data keys: 1
+    meta1: metavalue
+EOF
+      assert_equal expected, out
+      assert_equal '', err
+
+
+      k = Kdb::Key.new("user/key2",
+                       value: "\xff\xaa\x55\x01",
+                       flags: Kdb::KEY_BINARY,
+                       meta_1: "m1 value",
+                       meta_2: "m2 value",
+                       meta_3: "m3 value")
+
+      assert k.is_binary?
+
+      out, err = capture_output { k.pretty_print }
+
+      expected = <<EOF
+key 'user/key2'
+  binary key, length: 4
+    value: ffaa5501
+  meta data keys: 4
+    binary: 
+    meta_1: m1 value
+    meta_2: m2 value
+    meta_3: m3 value
+EOF
+
+      assert_equal expected, out
+      assert_equal '', err
     end
   end
 end

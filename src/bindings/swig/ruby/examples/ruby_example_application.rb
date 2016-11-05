@@ -27,29 +27,14 @@
 require 'kdb'
 
 # define a global app config namespace
-APP_NS = "user/tests/ruby/exampleapp/#1/current"
+APP_NS = "/tests/ruby/exampleapp/#1/current"
+
+# this is the basename of our key we want to manipulate
+KEY_BASENAME = "setting1"
 
 #
 # helper methods
 #
-
-def pretty_print_key( key )
-    puts "key '%s'" % key.name
-    if key.is_binary?
-        puts "  binary key, lenght: %d" % key.value.length
-        puts "     value: %x" % key.value
-    else
-        puts "  string value: %s" % key.value
-    end
-    if key.meta.empty?
-        puts "  key has no meta data"
-    else
-        puts "  key meta data:"
-        key.meta.each do |k|
-            puts "      %s => %s" % [k.name, k.value]
-        end
-    end
-end
 
 def user_wants( question, default = "Y" )
     puts question
@@ -92,27 +77,49 @@ end
 # ret will be >= 0, if we successfully retrieved some keys
 
 # now we can work with this keyset to get/set keys and their values
-puts "looking for 'setting1'"
+puts "looking for '#{KEY_BASENAME}'"
 
-setting1 = ks.lookup "#{APP_NS}/setting1"
+# first we check if there exists a key with that name already
+# Note:
+#   APP_NS starts with a '/', so we will perform a CASCADING lookup. This means
+#   that Elektra will try to find our key in several places (namespaces). We
+#   will get the first found key.
+#   For details see https://github.com/ElektraInitiative/libelektra/blob/master/doc/tutorials/cascading.md
+#
+setting1 = ks.lookup "#{APP_NS}/#{KEY_BASENAME}"
 if setting1.nil?
-    if not user_wants "config setting 'setting1' does not exist, create it?"
+    if not user_wants \
+            "config setting '#{KEY_BASENAME}' does not exist, create it?"
         puts "then there's nothing to do for me..."
         exit 0
     end
     # our requested setting does not exist
     # so create it
-    setting1 = Kdb::Key.new "#{APP_NS}/setting1", value: "(empty)"
+    setting1 = Kdb::Key.new "#{APP_NS}/#{KEY_BASENAME}", value: "(empty)"
     # and add it to the keyset 
     ks << setting1
 end
 
-pretty_print_key setting1
+setting1.pretty_print
 
-if user_wants "update setting1?"
+
+if user_wants "update #{KEY_BASENAME}?"
+    # we did a cascading lookup, so we might got a system key
+    if setting1.is_system? and user_wants \
+        "This key is a system key. You might have insufficient permissions."\
+        "Create a user key instead?"
+
+        # clone the key
+        setting1 = setting1.clone
+        # update its name
+        setting1.name = "user/#{APP_NS}/#{KEY_BASENAME}"
+        # and finally add it to our keyset
+        ks << setting1
+    end
+
     print "new value: "
     new_value = gets.chomp
-    # now we can change the settins properties as we like
+    # now we can change the settings properties as we like
     setting1.value = new_value
 end
 
@@ -122,25 +129,25 @@ if user_wants "add meta data?"
     print "meta data value: "
     value = gets.chomp
 
-
     # add/modify some meta data
     setting1[name] = value
 end
+
+puts "we now have:"
+setting1.pretty_print
 
 puts "Ok, now its time to set the changes and exit"
 
 begin
     # now we are ready to save the updated settings
     ret = db.set ks, APP_NS
-rescue KDBException
-    puts "clould now update KDB database: %s" % $!
-ensure
-    db.close
+rescue Kdb::KDBException
+    puts "could not update KDB database: %s" % $!
 end
 
 # finally we close the our KDB handle
 db.close
 
-puts "done. Have a nice day"
+puts "\ndone. Have a nice day"
 
 # vi: sw=4 ts=4 sts=4 ai et

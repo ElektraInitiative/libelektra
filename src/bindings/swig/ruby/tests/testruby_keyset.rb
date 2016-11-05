@@ -706,4 +706,50 @@ class KdbKeySetTestCases < Test::Unit::TestCase
     end
   end
 
+  def test_keySet_to_s
+    assert_nothing_raised do
+      ks = Kdb::KeySet.new
+
+      assert_equal '', ks.to_s
+
+      ks << Kdb::Key.new("user/k1", value: "v1")
+
+      assert_equal "user/k1: v1", ks.to_s
+
+      ks << Kdb::Key.new("user/k2", value: "v2")
+
+      assert_equal "user/k1: v1, user/k2: v2", ks.to_s
+
+      ks << Kdb::Key.new("user/k3", flags: Kdb::KEY_BINARY, value: "\x00\x00")
+
+      expected = "user/k1: v1, user/k2: v2, user/k3: (binary) length: 2"
+      assert_equal expected, ks.to_s
+    end
+  end
+
+  def test_keySet_pretty_print
+    assert_nothing_raised do
+      ks = Kdb::KeySet.new
+
+      out, err = capture_output { ks.pretty_print }
+
+      assert_equal '', out
+      assert_equal '', err
+
+      ks << Kdb::Key.new("user/k1", value: "v1")
+      ks << Kdb::Key.new("user/k2", value: "v2")
+      ks << Kdb::Key.new("user/k3", value: "v3")
+
+      out, err = capture_output { ks.pretty_print }
+
+      expected = <<EOF
+user/k1: v1
+user/k2: v2
+user/k3: v3
+EOF
+      assert_equal expected, out
+      assert_equal '', err
+    end
+  end
+
 end
