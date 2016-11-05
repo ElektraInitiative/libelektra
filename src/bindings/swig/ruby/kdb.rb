@@ -12,6 +12,35 @@
 require '_kdb'
 
 module Kdb
+  # static open method to easily create a new KDB handle
+  # can be used in two ways:
+  # without a block:
+  #   a new KDB handle will be created and returned
+  # with a block given
+  #   a new KDB handle will be created and is passed to the block. Once the
+  #   block has finished, the KDB handle will be closed again and nil is
+  #   returned.
+  #
+  def self.open(error_key=nil)
+    if error_key.nil?
+      db = KDB.new
+    else
+      db = KDB.new error_key
+    end
+
+    if ! block_given?
+      return db
+    end
+
+    begin
+      yield db
+    rescue KDBException => e
+      raise e
+    ensure
+      db.close
+    end
+    return nil
+  end
 
   # open and extend libelektra class Key
   #

@@ -43,7 +43,7 @@ def user_wants( question, default = "Y" )
         answer = gets.chomp.upcase
         answer = default unless not answer.empty?
     end while not ["Y", "N"].include? answer
-    
+
     answer == "Y"
 end
 
@@ -58,7 +58,7 @@ puts "Welcome to the Ruby-kdb example application\n\n"
 
 # create a Kdb handle
 begin
-    db = Kdb::KDB.new
+    db = Kdb.open
 rescue Kdb::KDBException
     puts "could not open KDB database: %s" % $!
     exit 1
@@ -106,8 +106,8 @@ setting1.pretty_print
 if user_wants "update #{KEY_BASENAME}?"
     # we did a cascading lookup, so we might got a system key
     if setting1.is_system? and user_wants \
-        "This key is a system key. You might have insufficient permissions."\
-        "Create a user key instead?"
+            "This is a system key. You might have insufficient permissions."\
+            "Create a user key instead?"
 
         # clone the key
         setting1 = setting1.clone

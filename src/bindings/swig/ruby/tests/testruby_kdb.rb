@@ -91,4 +91,84 @@ class KdbTestCases < Test::Unit::TestCase
       h.set ks, RB_TEST_NS
     end
   end
+
+  def test_kdb_module_open_without_error_key_and_block
+    assert_nothing_raised do
+      db = Kdb.open
+
+      assert_instance_of Kdb::KDB, db
+      assert_not_nil db
+
+      # test if we really have a valid handle
+      ks = Kdb::KeySet.new
+      ret = db.get ks, "/"
+      assert_equal 1, ret
+      assert ks.size > 0
+
+      # close has to be called explicitely
+      db.close
+    end
+  end
+
+  def test_kdb_module_open_without_block
+    assert_nothing_raised do
+      error_key = Kdb::Key.new
+
+      db = Kdb.open error_key
+
+      assert_instance_of Kdb::KDB, db
+      assert_instance_of Kdb::Key, error_key
+    end
+  end
+
+  def test_kdb_module_open_with_block
+    assert_nothing_raised do
+      # define local variable to have access to the block var
+      db_access = nil
+
+      block_ret = Kdb.open do |db|
+        assert_instance_of Kdb::KDB, db
+        assert_not_nil db
+
+        db_access = db
+
+        ks = Kdb::KeySet.new
+
+        ret = db.get ks, "/"
+        assert_equal 1, ret
+        assert ks.size > 0
+      end
+
+      # if called with block, nil is returned
+      assert_nil block_ret
+
+      # test implicite close, we must not be able to get a keyset again
+      assert_not_nil db_access
+      assert_raise Kdb::KDBException do
+        db_access.get Kdb::KeySet.new, "/"
+      end
+    end
+  end
+
+  def test_kdb_module_open_with_exception_in_block
+    assert_nothing_raised do
+      db_access = nil
+
+      # block should pass the exception
+      assert_raise Kdb::KDBException do
+        Kdb.open do |db|
+          db_access = db
+          ks = Kdb::KeySet.new Kdb::Key.new("#{RB_TEST_NS}/key1", value: "v1")
+          # raises an exception
+          db.set ks, RB_TEST_NS
+        end
+      end
+
+      # however, the KDB handle shall be closed
+      assert_not_nil db_access
+      assert_raise Kdb::KDBException do
+        db_access.get Kdb::KeySet.new, "/"
+      end
+    end
+  end
 end
