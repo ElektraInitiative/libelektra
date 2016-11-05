@@ -1,27 +1,93 @@
-# Namespaces #
+# Understanding Namespaces #
 
-## Definition ##
+## Structure of the key database ##
 
-In Elektra multiple keys may refer to the same part of the configuration.
-A _namespace_ is the part of the key that refers to the key's origin (like a unique path).
+The _key database_ of Elektra is _hierarchically structured_. This means that keys are organized similar to directories in a file system.
 
-Possible sources are: 
+Lets add some keys to the database. To add a key we can use this command:
 
-- **spec/something** for specification of other keys
-- **proc/something** for in-memory keys (e.g. command-line)
-- **dir/something** for dir keys in current working directory
-- **system/something** for system keys in /etc or /
-- **user/something** for user keys in home directory
-- **/something** for cascading keys (actually refers to one of the above)
+	kdb set <key> <value>
 
-Having namespaces enables both admins and users to set specific parts of the application's configuration.
+Now add the the key **/a** with the Value **Value 1** and the key **/b/c** with the Value **Value 2**:
+
+	kdb set /a 'Value 1'
+	kdb set /b/c 'Value 2'
+
+![alt text](img/elektra_hierarchy.svg "Hierarchical structure of key database")
+
+Here you see the internal structure of the database after adding the keys **/a** and **/b/c**.
+For instance the key **/b/c** has the path **/** -> **b** -> **c**.
+
+Note how the name of the key determines the path to its value.
+
+You can use the file system analogy as a mnemonic to remember these commands (like the file system commands in your favorite operating system):
+- `kdb ls <path>`
+	lists keys below _path_
+- `kdb rm <key>`
+	removes a _key_
+- `kdb cp <source> <dest>`
+	copies a key to another path
+- `kdb get <key>`
+	gets the value of _key_
+
+For example `kdb get /b/c` should return `Value 2` now, if you set the values before.
+
+## Namespaces ##
+
+Now we abandon the file system analogy and introduce the concept of _namespaces_.
+
+Every key in Elektra belongs to one of these namespaces:
+- **spec** for specification of other keys
+- **proc** for in-memory keys (e.g. command-line)
+- **dir** for dir keys in current working directory
+- **user** for user keys in home directory
+- **system** for system keys in /etc or /
+
+All namespaces save their keys in a _separate hierarchical structure_ from the other namespaces.
+
+But when we set the keys **/a** and **/b/c** before we didn't provide a namespace.
+So I hear you asking, if every key has to belong to a namespace, where are the keys?
+They are in the _user_ namespace, as you can verify with:
+
+	kdb ls user
+	# user/a
+	# user/b/c
+
+When we don't provide a namespace Elektra assumes a default namespace, which should be **user** for non-root users.
+So if you are a normal user the command `kdb set /b/c 'Value 2'` was synonymous to `kdb set user/b/c 'Value 2'`.
+
+At this point the key database should have this structure:
+![alt text](img/elektra_namespaces.svg "Elektras namespaces")
+
+#### Cascading keys ####
+Another question you may ask yourself now is, what happens if we lookup a key without providing a namespace. So let us retrieve the key **/b/c** with the -v flag in order to make _kdb_ more talkative.
+
+	kdb get -v /b/c
+	# got 3 keys
+	#  searching spec/b/c, found: <nothing>, options: KDB_O_CALLBACK
+	#  searching proc/b/c, found: <nothing>, options:
+	#  searching dir/b/c, found: <nothing>, options:
+	#  searching user/b/c, found: user/b/c, options:
+	# The resulting keyname is user/b/c
+	# Value 2
+
+Here you see how Elektra searches all namespaces for matching keys in this order:
+**spec**, **proc**, **dir**, **user** and finally **system**
+
+If a key is found in a namespace, it masks the key in all subsequent namespaces, which is the reason why the system namespace isn't searched. Finally the virtual key **/b/c** gets resolved to the real key **user/b/c**.
+Because of the way a key without a namespace is retrieved, we call keys, that start with '**/**' **cascading keys**.
+You can find out more about cascading lookups [here](cascading.md).
+
+
+
+Having namespaces enables both admins and users to set specific parts of the application's configuration, as you will see in the following example.
 
 ## How it works on the command line (kdb) ##
 
 Let's say your app requires the following configuration data:
 
-- **sw/org/myapp/policy** - a security policy to be applied
-- **sw/org/myapp/default_dir** - a place where the application stores its data per default
+- **/sw/org/myapp/policy** - a security policy to be applied
+- **/sw/org/myapp/default_dir** - a place where the application stores its data per default
 
 We now want to enter this configuration by using the **kdb** tool.
 
@@ -70,4 +136,3 @@ you use the **ksLookup()** or **ksLookupByName()** function
 		errorHandler ("Could not get Keys", parentKey);
 	if ((myKey = ksLookupByName (myConfig, "/sw/org/myapp/mykey", 0)) == NULL)
 		errorHandler ("Could not Lookup Key");
-
