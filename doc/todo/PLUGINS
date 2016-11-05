@@ -1,44 +1,6 @@
 Ideas for new PLUGINS in elektra.
 Prefer using great frameworks to do that in short time with high quality.
 
-
-## Resolver
-
-git-plugin
-	commit files on set()
-	using libgit
-
-see more RESOLVER tasks below
-
-
-
-
-## Profile
-
-According to the convention the current profile
-should be used by default:
-
-    /sw/apache/httpd/#0/current
-
-A plugin should create (and remove in set direction) link
-keys to non-present keys. The default profile is given
-via /sw/apache/httpd/#0/profile, i.e.:
-
-    /sw/apache/httpd/#0/profile = someprofile
-
-So if /sw/apache/httpd/#0/someprofile/key is present it
-would create a link:
-
-    /sw/apache/httpd/#0/current/key
-       override/#0 = /sw/apache/httpd/#0/someprofile/key
-
-Or if /sw/apache/httpd/#0/someprofile/key
-is not present, but /sw/apache/httpd/#0/%/key is:
-
-    /sw/apache/httpd/#0/current/key
-       override = /sw/apache/httpd/#0/%/key
-
-
 ## TYPE ##
 
 range: check/range 5-20,23-45 (for number types)
@@ -132,19 +94,10 @@ checking for broken links:
 
 ## OS abstraction ##
 
-chdir/getcwd
-chroot
-hostname
 uname also to set
-ulimit
 
-getenv plugin: for /env/current
-
-Shell expansion
-Environment expansion
-
-single file plugins for /proc:
-	one file <-> one key/value
+other syscalls
+/proc and /sys files
 
 
 ## logging
@@ -170,8 +123,7 @@ forensic logging: add in-depth context information when a parameter was changed
 Most plugins work on the KeySet. Other plugins might just work
 on the file (in the value of the parentKey), including:
 - gzip the file
-- encrypt the file
-- git add/git commit
+- base64 encode the file
 
 
 
