@@ -12,18 +12,18 @@
 
 %define DOCSTRING
 "This module is a SWIG generated binding for KDB (http://www.libelektra.org),
-therefore the module provide wrapper classes to KDBs C++ interface and is
+therefore the module provides wrapper classes to KDBs C++ interface and is
 mainly a 1 to 1 relation. However, to provide a more Ruby-style API to KDB,
 this module differs to the C++ API in the following way:
  * C++ iterators for Key/KeySet are excluded. Instead KeySet implements
-   a 'each' method and includes 'Enumerable' and should be very similar to
+   a 'each' method and includes 'Enumerable'. Therefore it is very similar to
    a Ruby-Array. However, the KeySet cursor methods are still available.
  * Access to native C-level KDB structures (such as ckdb::Key) is not
    possible, as this does not make much sense within Ruby.
- * method names are renamed to follow Ruby naming conventions
+ * Method names are renamed to follow Ruby naming conventions
  * Key and KeySet methods directly modify the underlying Key/KeySet
 
-Please note, this documentaition will show C++ types too (e.g. std::string).
+Please note, this documentation will show C++ types too (e.g. std::string).
 "
 %enddef
 /* docstring for module implemented for swig >= 3.0.18 */
