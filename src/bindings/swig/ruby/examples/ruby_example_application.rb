@@ -1,13 +1,13 @@
 #!/usr/bin/env ruby
-## 
-# @file 
-# 
+##
+# @file
+#
 # @brief example Ruby application to illustrate usage of Elektras Ruby bindings
-# 
+#
 # @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
-# 
-# 
-# This example is a simple command line application, which illustrates the most 
+#
+#
+# This example is a simple command line application, which illustrates the most
 # basic usage scenarios of the Elektras Ruby bindings. The application performs
 # the following steps:
 #  * open kdb database
@@ -17,8 +17,8 @@
 #  * modify an existing key
 #  * query and modify a keys metadata
 #
-# To run this example you have to install Elektras Ruby bindings or add the 
-# path, under which the compiled Elektra Ruby library can be found to your 
+# To run this example you have to install Elektras Ruby bindings or add the
+# path, under which the compiled Elektra Ruby library can be found to your
 # 'RUBYLIB' environment variable.
 #
 #  $> RUBYLIB="<path to the kdb.so>" ruby ruby_example_application.rb
@@ -96,7 +96,7 @@ if setting1.nil?
     # our requested setting does not exist
     # so create it
     setting1 = Kdb::Key.new "#{APP_NS}/#{KEY_BASENAME}", value: "(empty)"
-    # and add it to the keyset 
+    # and add it to the keyset
     ks << setting1
 end
 

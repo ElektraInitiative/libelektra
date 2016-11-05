@@ -3,7 +3,7 @@ foreach (file ${TESTS})
 	get_filename_component (name ${file} NAME_WE)
 	add_test (
 		NAME ${name}
-		COMMAND ${RUBY_EXECUTABLE} ${file} --verbose 
+		COMMAND ${RUBY_EXECUTABLE} ${file} --verbose
 	)
 
 	# set RUBYLIB to find newly built binding lib
@@ -23,6 +23,6 @@ endforeach (file ${TESTS})
 
 # special label for kdb
 set_property (
-  TEST "testruby_kdb"
-  APPEND PROPERTY LABELS kdbtests
+	TEST "testruby_kdb"
+	APPEND PROPERTY LABELS kdbtests
 )

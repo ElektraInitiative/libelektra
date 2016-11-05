@@ -1,16 +1,16 @@
 #!/usr/bin/env ruby
-## 
-# @file 
-# 
-# @brief example Ruby application to illustrate usage of Elektras Ruby bindings
-# 
-# @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
-# 
-# 
-# This example illustrates the Kdb::KeySet aspects of Elektras Ruby bindings. 
+##
+# @file
 #
-# To run this example you have to install Elektras Ruby bindings or add the 
-# path, under which the compiled Elektra Ruby library can be found to your 
+# @brief example Ruby application to illustrate usage of Elektras Ruby bindings
+#
+# @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+#
+#
+# This example illustrates the Kdb::KeySet aspects of Elektras Ruby bindings.
+#
+# To run this example you have to install Elektras Ruby bindings or add the
+# path, under which the compiled Elektra Ruby library can be found to your
 # 'RUBYLIB' environment variable.
 #
 #  $> RUBYLIB="<path to the kdb.so>" ruby ruby_example_keyset.rb
@@ -107,7 +107,7 @@ key = ks.delete Kdb::Key.new "user/myapp/#1/setting4"
 #
 # checking the size of the keyset
 #
-count = ks.size 
+count = ks.size
 count = ks.length
 
 empty = ks.empty?
@@ -120,12 +120,12 @@ empty = ks.empty?
 # classic kdb iteration
 ks.rewind
 while ks.next do
-        key = ks.current
+  key = ks.current
 end
 
 # Ruby style iteration
 ks.each do |k|
-        puts "key #{k.name}"
+  puts "key #{k.name}"
 end
 
 # Kdb::KeySet includes Enumerable, thus all Enumerable methods are working too
@@ -134,7 +134,7 @@ ks.any? { |k| k.is_binary? }
 
 # key in the keySet can be modified during iteration
 ks.each { |k|
-        k.value= "all keys get the same value"
+  k.value= "all keys get the same value"
 }
 
 
@@ -161,8 +161,3 @@ ks_clone == ks  # => true
 ks_clone << Kdb::Key.new("user/newkey")
 
 ks_clone == ks  # => false
-
-
-
-
-

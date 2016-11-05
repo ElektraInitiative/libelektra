@@ -1,19 +1,19 @@
 #!/usr/bin/env ruby
 #encoding: UTF-8
-## 
-# @file 
-# 
+##
+# @file
+#
 # @brief unit test cases for Kdb::Key
-# 
+#
 # @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
-# 
+#
 
 require 'kdb'
 require 'test/unit'
 
 
 class KdbKeyTestCases < Test::Unit::TestCase
-  
+
   def test_key_new_simple
     assert_nothing_raised do
       k = Kdb::Key.new
@@ -66,8 +66,8 @@ class KdbKeyTestCases < Test::Unit::TestCase
       assert_equal "ccc", k.get_meta("comment")
       assert_equal "ccc", k.get_meta(:comment)
 
-      k = Kdb::Key.new(name, 
-                       owner: "me", 
+      k = Kdb::Key.new(name,
+                       owner: "me",
                        comment: "ccc",
                        flags: Kdb::KEY_BINARY)
       assert k.is_valid?
@@ -89,7 +89,7 @@ class KdbKeyTestCases < Test::Unit::TestCase
       name = "user/tmp/k1"
       v1 = "\000\000\001"
       v2 = "\002\003\004"
-            
+
       k = Kdb::Key.new(name,
                        value: v1,
                        flags: Kdb::KEY_BINARY)
@@ -171,7 +171,7 @@ class KdbKeyTestCases < Test::Unit::TestCase
   end
 
 
-  def test_key_get_name 
+  def test_key_get_name
     assert_nothing_raised do
       k = Kdb::Key.new
       assert_equal "", k.name
@@ -201,29 +201,29 @@ class KdbKeyTestCases < Test::Unit::TestCase
       k.add_name "..\\/escaped_name\\/k"
       assert_equal "../escaped_name/k", k.basename
       assert_equal "#{name}/new1/..\\/escaped_name\\/k", k.fullname
-      
+
     end
   end
 
-  def test_throw_KeyInvalidName_exception_invalid_name 
+  def test_throw_KeyInvalidName_exception_invalid_name
     k = Kdb::Key.new
 
     assert_raise Kdb::KeyInvalidName do
       k.name = "invalidname"
     end
-    
+
     assert_raise Kdb::KeyInvalidName do
       k.add_name "x"
     end
-    
+
     assert_raise Kdb::KeyInvalidName do
       k.basename= "x"
     end
-    
+
     assert_raise Kdb::KeyInvalidName do
       k.add_basename "x"
     end
-    
+
     assert_nothing_raised do
       k.name = "user/keyname"
       assert_equal "user/keyname", k.name
@@ -235,9 +235,9 @@ class KdbKeyTestCases < Test::Unit::TestCase
   def test_throw_KeyTypeMismatch_on_wrong_get_method
     k = Kdb::Key.new "user/mykey"
     k.set_binary "\000\001\002"
-    
+
     assert k.is_binary?
-   
+
     assert_raise Kdb::KeyTypeMismatch do
       k.get_string
     end
@@ -273,7 +273,7 @@ class KdbKeyTestCases < Test::Unit::TestCase
       assert k1 > k2
       assert k2 < k1
 
-      assert_equal -1, k2 <=> k1
+      assert_equal (-1), k2 <=> k1
       assert_equal 1, k1 <=> k2
 
     end
@@ -284,7 +284,7 @@ class KdbKeyTestCases < Test::Unit::TestCase
       k1 = Kdb::Key.new "user/app"
       k2 = Kdb::Key.new "user/app/v1"
       k3 = Kdb::Key.new "user/app/v1/conf1"
-      
+
       assert k1.is_valid?
       assert k2.is_valid?
       assert k3.is_valid?
@@ -297,7 +297,7 @@ class KdbKeyTestCases < Test::Unit::TestCase
 
   def test_Key_cloning
     k = Kdb::Key.new "user/key1", value: "hello", meta1: "mv"
-    
+
     assert k.is_valid?
     assert_equal "user/key1", k.name
     assert_equal "hello", k.value
@@ -354,7 +354,7 @@ class KdbKeyTestCases < Test::Unit::TestCase
       assert_equal "hello", k[:comment]
       assert_equal "meta1 value", k["meta1"]
       assert_equal "othermeta value", k["othermeta"]
-     
+
       k.rewind_meta
       mk = k.current_meta
       assert_nil k.current_meta

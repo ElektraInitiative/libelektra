@@ -1,11 +1,11 @@
 #!/usr/bin/env ruby
-## 
-# @file 
-# 
+##
+# @file
+#
 # @brief unit test cases for Kdb::KeySet
-# 
+#
 # @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
-# 
+#
 
 require 'kdb'
 require 'test/unit'
@@ -37,7 +37,7 @@ class KdbKeySetTestCases < Test::Unit::TestCase
 
   def test_keySet_new_with_invalid_argument
     assert_raise ArgumentError do
-      ks = Kdb::KeySet.new "not a key"
+      Kdb::KeySet.new "not a key"
     end
   end
 
@@ -55,7 +55,7 @@ class KdbKeySetTestCases < Test::Unit::TestCase
 
       assert_equal 3, ks2.size
       assert_equal "user/ks3", ks2.tail.name
-      
+
       # ensure old KeySet holds only the first 2 Keys
       assert_equal 2, ks1.size
       assert_equal "user/ks2", ks1.tail.name
@@ -90,7 +90,7 @@ class KdbKeySetTestCases < Test::Unit::TestCase
 
       # ensure also larger arrays, with more than 16 (preallocated) elements
       # work correctly
-      a = (1..40).map { |i| Kdb::Key.new("user/key%02d" % i) }
+      a = (1..40).map { |n| Kdb::Key.new("user/key%02d" % n) }
       ks = Kdb::KeySet.new a
 
       assert_equal 40, ks.size
@@ -98,7 +98,7 @@ class KdbKeySetTestCases < Test::Unit::TestCase
     end
 
     assert_raise ArgumentError do
-      ks = Kdb::KeySet.new [
+      Kdb::KeySet.new [
         Kdb::Key.new("user/key"),
         "not a key",
         1
@@ -117,7 +117,7 @@ class KdbKeySetTestCases < Test::Unit::TestCase
 
       assert_equal 1, ks.size
       assert_equal 1, num
-      
+
       assert_equal k, ks.head
       assert_equal k, ks.tail
 
@@ -128,7 +128,7 @@ class KdbKeySetTestCases < Test::Unit::TestCase
       assert_equal k, ks.head
       assert_equal "user/ks2", ks.tail.name
 
-    end  
+    end
   end
 
   def test_keySet_append_KeySet
@@ -185,7 +185,7 @@ class KdbKeySetTestCases < Test::Unit::TestCase
       assert_equal "user/ks1", ks.head.name
     end
 
-    
+
     a = Array.new
     a << "not a Key"
     a << 1
@@ -229,7 +229,7 @@ class KdbKeySetTestCases < Test::Unit::TestCase
         cur = ks.current
         assert_equal ("user/key%02d" % i), nxt.name
         assert_equal cur, nxt
-        
+
         assert_equal i, ks.cursor
       end
 
@@ -353,14 +353,14 @@ class KdbKeySetTestCases < Test::Unit::TestCase
 
       # this will only work, if test keys have key names in desc order
       i = 0
-      ks.each do |e| 
+      ks.each do |e|
         assert a[i] == e
         i += 1
       end
 
       assert_equal 10, i
 
-      
+
       # test Enumerable mixin
       assert ks.all? { |e| e.namespace == "user" }
       assert ks.all? { |e| e.has_meta? "owner" }
@@ -404,9 +404,9 @@ class KdbKeySetTestCases < Test::Unit::TestCase
 
       # ensure KeySet cursor is unmodified after 'each' call
       ks.rewind
-      assert_equal -1, ks.cursor
+      assert_equal (-1), ks.cursor
       ks.each { |e| e }
-      assert_equal -1, ks.cursor
+      assert_equal (-1), ks.cursor
 
       ks.next
       assert_equal 0, ks.cursor
@@ -487,7 +487,7 @@ class KdbKeySetTestCases < Test::Unit::TestCase
       assert_equal 5, ks.size
 
       ks_dup = ks.dup
-      
+
       assert_equal ks.size, ks_dup.size
       assert ks == ks_dup
       assert ks.__id__ != ks_dup.__id__
@@ -506,7 +506,7 @@ class KdbKeySetTestCases < Test::Unit::TestCase
       assert_equal "user/key3", ks.tail.name
       assert_equal "user/key5", ks_dup.tail.name
 
-      # however, its just a shallow copy, thus modifying keys has effect 
+      # however, its just a shallow copy, thus modifying keys has effect
       # to both key sets
 
       assert_equal "", ks[1].value

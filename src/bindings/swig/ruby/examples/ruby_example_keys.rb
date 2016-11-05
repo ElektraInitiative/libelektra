@@ -1,16 +1,16 @@
 #!/usr/bin/env ruby
-## 
-# @file 
-# 
-# @brief example Ruby application to illustrate usage of Elektras Ruby bindings
-# 
-# @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
-# 
-# 
-# This example illustrates the Kdb::Key aspects of Elektras Ruby bindings. 
+##
+# @file
 #
-# To run this example you have to install Elektras Ruby bindings or add the 
-# path, under which the compiled Elektra Ruby library can be found to your 
+# @brief example Ruby application to illustrate usage of Elektras Ruby bindings
+#
+# @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+#
+#
+# This example illustrates the Kdb::Key aspects of Elektras Ruby bindings.
+#
+# To run this example you have to install Elektras Ruby bindings or add the
+# path, under which the compiled Elektra Ruby library can be found to your
 # 'RUBYLIB' environment variable.
 #
 #  $> RUBYLIB="<path to the kdb.so>" ruby ruby_example_keys.rb
@@ -24,25 +24,25 @@ require 'kdb'
 k = Kdb::Key.new
 
 # create a new key with initail name
-k2 = Kdb::Key.new "user/myapp/#1/config1"
+k = Kdb::Key.new "user/myapp/#1/config1"
 
 # create a new fully initialized key
-k3 = Kdb::Key.new("user/myapp/#1/config1",
+k = Kdb::Key.new("user/myapp/#1/config1",
                   value: "some value",
                   meta_data: "important info",
                   owner: "me")
 
 # create a new Key with special flags
-k4 = Kdb::Key.new("user/myapp/#1/bconfig",
+k = Kdb::Key.new("user/myapp/#1/bconfig",
                   flags: Kdb::KEY_BINARY)
 
 
 
 # set a name
 begin
-        k.name= "user/myapp/#1/config1"
+  k.name= "user/myapp/#1/config1"
 rescue Kdb::KeyInvalidName
-        puts "invalid key name given"
+  puts "invalid key name given"
 end
 
 # get name methods
@@ -53,17 +53,17 @@ puts "k.namespace: #{k.namespace}"
 
 # name manipulations
 begin
-        puts "k.add_name"
-        k.add_name "../config2"
-        puts "k.name: #{k.name}"
+  puts "k.add_name"
+  k.add_name "../config2"
+  puts "k.name: #{k.name}"
 
-        puts "k.add_basename"
-        k.add_basename "width"
-        puts "k.name #{k.name}"
+  puts "k.add_basename"
+  k.add_basename "width"
+  puts "k.name #{k.name}"
 rescue Kdb::KeyInvalidName
-        puts "invalid key name given"
+  puts "invalid key name given"
 end
-     
+
 # set a value
 k.value= "120 px"
 
@@ -77,11 +77,11 @@ puts "k.value: #{k.value}"
 
 # create an initially binary key
 kbin = Kdb::Key.new("user/myapp/#1/binkey", flags: Kdb::KEY_BINARY)
-# can be tested 
+# can be tested
 puts "kbin.is_binary?: #{kbin.is_binary?}"
 
 # use the same value methods
-kbin.value = "\000\001\002\003" 
+kbin.value = "\000\001\002\003"
 v = kbin.value
 puts "kbin value: #{v.unpack("H*").first}"
 
@@ -136,26 +136,26 @@ kmeta.has_meta? "jet another"  # => true
 kmeta.rewind_meta  # reset internal meta data cursor
 
 while not kmeta.next_meta.nil? do
-        # kmeat.next_meta advances the internal cursor and returns
-        # the next meta data key
+  # kmeat.next_meta advances the internal cursor and returns
+  # the next meta data key
 
-        mk = kmeta.current_meta
+  mk = kmeta.current_meta
 
-        # we get a Kdb::Key which holds the metadata values
-        mk.name
-        mk.value
+  # we get a Kdb::Key which holds the metadata values
+  mk.name
+  mk.value
 end
 
 # ruby style iteration
-kmeta.meta.each do |mk|
-        puts "kmeta metadata: #{mk.name} => #{mk.value}"
+kmeta.meta.each do |e|
+  puts "kmeta metadata: #{e.name} => #{e.value}"
 end
 
-long_names_metadata = kmeta.meta.find_all { |mk| mk.name.size >= 8 }
+long_names_metadata = kmeta.meta.find_all { |e| e.name.size >= 8 }
 # here we get a Ruby Array containing meta data keys, which meet the above
 # criteria
-long_names_metadata.each do |mk|
-        puts "kmeta long name metadata: #{mk.name} => #{mk.value}"
+long_names_metadata.each do |e|
+  puts "kmeta long name metadata: #{e.name} => #{e.value}"
 end
 
 

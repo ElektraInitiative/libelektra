@@ -12,7 +12,7 @@
 
 %define DOCSTRING
 "This module is a SWIG generated binding for KDB (http://www.libelektra.org),
-therefore the module provide wrapper classes to KDBs C++ interface and is 
+therefore the module provide wrapper classes to KDBs C++ interface and is
 mainly a 1 to 1 relation. However, to provide a more Ruby-style API to KDB,
 this module differs to the C++ API in the following way:
  * C++ iterators for Key/KeySet are excluded. Instead KeySet implements
@@ -84,14 +84,14 @@ namespace std {
  *
  ****************************************************************************/
 
-%feature("autodoc", "Wrapper class for C++ kdb::Key, thus for a full 
+%feature("autodoc", "Wrapper class for C++ kdb::Key, thus for a full
 documentation see " CPPDOCURL "Key.html.
 
 However, to allow a more Ruby way of programming this class differs from
 the original C++ class in the following aspects:
-- method names follow ruby naming conventions 
+- method names follow ruby naming conventions
 - variable length argument list (`va_list`) is implemented using Rubys
-  parameter Hash method. 
+  parameter Hash method.
 - getter methods to underlaying Elektra Key (C) are not included
 - C++ Iterators for iterating over meta data are not included. Instaed use
   Key.next_meta, Key.current_meta, Key.rewind_meta and Key.meta.
@@ -99,8 +99,8 @@ the original C++ class in the following aspects:
 - string length methods are not included (e.g. key.getNameSize())
 ") kdb::Key;
 
-/* 
- * Exceptions 
+/*
+ * Exceptions
  */
 %exceptionclass kdb::Exception;
 %rename("to_s") kdb::Exception::what;
@@ -144,7 +144,7 @@ The following variants are available:
                    value: 'hello',
                    owner: 'me',
                    meta-data1: 'meta')
-") kdb::Key::Key; 
+") kdb::Key::Key;
 //%ignore kdb::Key::Key ();
 //%ignore kdb::Key::Key (const std::string keyName, ...);
 //%ignore kdb::Key::Key (const char *keyName, va_list ap);
@@ -194,8 +194,8 @@ The following variants are available:
 %predicate kdb::Key::isNull;
 %predicate kdb::Key::needSync;
 
-/* 
- * be more Ruby native: 
+/*
+ * be more Ruby native:
  * for all methods, which return a Key, for which Key.is_null? returns true
  * (null-key), return NIL instead */
 namespace kdb {
@@ -204,8 +204,8 @@ namespace kdb {
     if ($1.isNull()) {
       $result = Qnil;
     } else {
-      $result = SWIG_NewPointerObj(new kdb::Key($1), 
-                                    SWIGTYPE_p_kdb__Key, 
+      $result = SWIG_NewPointerObj(new kdb::Key($1),
+                                    SWIGTYPE_p_kdb__Key,
                                     SWIG_POINTER_OWN | 0);
     }
   }
@@ -240,7 +240,7 @@ namespace kdb {
 
 /* expose Keys meta KeySet
  * this allows Ruby-style meta iterator, e.g. k.meta.each ... */
-%feature("autodoc", "allows access to the meta data keyset of the 
+%feature("autodoc", "allows access to the meta data keyset of the
 underlaying key, which allows a Ruby-style iteration over metadata:
   k.meta.each { |m| puts 'meta data: %s: %s' % [m.name, m.value] }
 ") kdb::Key::meta;
@@ -276,7 +276,7 @@ underlaying key, which allows a Ruby-style iteration over metadata:
 
 
 /* 'imitate' va_list as Ruby Hash
- * 
+ *
  * "misuse" the exception feature of SWIG to provide a custom
  *  method invocation. This allows us to pass a Ruby argument hash
  *  as a va_list. This way, we can imitate the variable argument
@@ -288,7 +288,7 @@ underlaying key, which allows a Ruby-style iteration over metadata:
 }
 
 %feature("except") kdb::Key::Key (const char *keyName, va_list ap) {
-  /* standard method invocation would be: 
+  /* standard method invocation would be:
   $action
   */
   /* exception features do not have local variables,
@@ -327,14 +327,14 @@ underlaying key, which allows a Ruby-style iteration over metadata:
      we have to do it ourself (not very portable)
   */
   try {
-    result = (kdb::Key *)new kdb::Key((char const *)arg1, 
+    result = (kdb::Key *)new kdb::Key((char const *)arg1,
       KEY_FLAGS, flags,
       KEY_END);
   } catch (std::bad_alloc &_e) {
     SWIG_exception_fail(SWIG_MemoryError, (&_e)->what());
   }
   DATA_PTR(self) = result;
-  
+
   if (hash_size > 0) {
     /* now treat (nearly) all key-value pairs as meta data, thus
        assign it to the newly created kdb::Key object */
@@ -357,7 +357,7 @@ underlaying key, which allows a Ruby-style iteration over metadata:
       }
     }
   }
-  
+
 }
 
 
@@ -367,7 +367,7 @@ underlaying key, which allows a Ruby-style iteration over metadata:
  * calling get|setBinary|String depending on the current Key
  * type */
 %feature("except") kdb::Key::get<std::string> {
-  // redefine our Key::get 
+  // redefine our Key::get
   /*
   $action
   */
@@ -379,7 +379,7 @@ underlaying key, which allows a Ruby-style iteration over metadata:
 }
 
 %feature("except") kdb::Key::set<std::string> {
-  // redefine our Key::set 
+  // redefine our Key::set
   /*
   $action
   */
@@ -392,12 +392,12 @@ underlaying key, which allows a Ruby-style iteration over metadata:
 }
 
 
-/* 
+/*
  * Iterators
  */
 #define ELEKTRA_WITHOUT_ITERATOR
 
-/* 
+/*
  * Key clonging
  */
 %ignore kdb::Key::dup;
@@ -420,7 +420,7 @@ underlaying key, which allows a Ruby-style iteration over metadata:
 
 /*
  * Key callback methods
- * (ignore them for now, TODO: implement this stuff
+ * (ignore them for now)
  */
 %ignore kdb::Key::setCallback;
 %ignore kdb::Key::getFunc;
@@ -446,7 +446,7 @@ aliased to '<=>', implemented for sorting operations.
     return 0;
   }
 }
- 
+
 
 /*
  * parse key.hpp
@@ -454,7 +454,7 @@ aliased to '<=>', implemented for sorting operations.
 %include "key.hpp"
 
 
-/* 
+/*
  * used Templates
  */
 /* value methods */
@@ -512,18 +512,18 @@ aliased to '<=>', implemented for sorting operations.
     }
   }
 }
-/* define a custom KeySet creation to be able to append the given Key 
+/* define a custom KeySet creation to be able to append the given Key
  * arguments to the newly created KeySet */
 %feature("except") kdb::KeySet::KeySet (Key*) {
   if (arg1 != NULL) {
-    /* we got a kdb::Key argument (see corresponding typemap) 
+    /* we got a kdb::Key argument (see corresponding typemap)
        so simply use our custom constructor*/
     $action
   } else {
     /* Ruby-Array */
     if (RARRAY_LEN(argv[0]) > KEYSET_SIZE) {
       /* if we know that the Array is bigger than the default KeySet size
-         create a KeySet which is able to hold all elements without 
+         create a KeySet which is able to hold all elements without
          reallocation */
       result = (kdb::KeySet *)new kdb::KeySet(RARRAY_LEN(argv[0]), KS_END);
     } else {
@@ -537,7 +537,7 @@ aliased to '<=>', implemented for sorting operations.
       if (SWIG_ConvertPtr(e, (void**)&ek, SWIGTYPE_p_kdb__Key, 0) == -1) {
         /* delete the new KeySet first, rb_raise will not return */
         delete result;
-        rb_raise(rb_eArgError, 
+        rb_raise(rb_eArgError,
             "Array element at index %d is not of Type Kdb::Key", i);
         SWIG_fail;
       }
@@ -556,10 +556,10 @@ aliased to '<=>', implemented for sorting operations.
 }
 
 
-/* 
+/*
  * Ruby-style iteration
  */
-/* 
+/*
  * KeySet.each
  * Hint: this implementation of 'each' only works wich references to keys
  * so any modifications of the keys are persisted
@@ -587,8 +587,8 @@ aliased to '<=>', implemented for sorting operations.
 %mixin kdb::KeySet "Enumerable";
 
 
-/* 
- * append methods 
+/*
+ * append methods
  */
 %alias kdb::KeySet::append "<<"
 
@@ -605,7 +605,7 @@ aliased to '<=>', implemented for sorting operations.
       reskey = SWIG_ConvertPtr(
           rb_ary_entry($input, i), (void**)&k, SWIGTYPE_p_kdb__Key, 0);
       if (!SWIG_IsOK(reskey)) {
-        rb_raise(rb_eArgError, 
+        rb_raise(rb_eArgError,
             "Array element at index %d is not of Type Kdb::Key", i);
         SWIG_fail;
       }
@@ -614,7 +614,7 @@ aliased to '<=>', implemented for sorting operations.
     /* return within the typemap. not the best way, but can be considered
        to be an optimization */
     return SWIG_From_long(arg1->size());
-    
+
   } else {
   /* standard case for KeySet, just convert and check for correct type */
     ELEKTRA_LOG_DEBUG("append KeySet");
@@ -628,8 +628,8 @@ aliased to '<=>', implemented for sorting operations.
 }
 
 
-/* 
- * cursor operations 
+/*
+ * cursor operations
  */
 %apply long { cursor_t }
 %rename("cursor") kdb::KeySet::getCursor;
@@ -691,7 +691,7 @@ aliased to '<=>', implemented for sorting operations.
 
 /* return a kdb::KeySet instead of a ckdb::KeySet */
 %typemap(out) ckdb::KeySet* kdb::KeySet::dup {
-  $result = SWIG_NewPointerObj(new KeySet($1), 
+  $result = SWIG_NewPointerObj(new KeySet($1),
                                 SWIGTYPE_p_kdb__KeySet,
                                 SWIG_POINTER_OWN | 0);
 }
@@ -711,7 +711,7 @@ aliased to '<=>', implemented for sorting operations.
 
 %alias kdb::KeySet::size "length"
 
-/* 
+/*
  * parse keyset.hpp
  */
 %include "keyset.hpp"

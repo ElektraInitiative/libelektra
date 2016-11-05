@@ -1,11 +1,11 @@
 #!/usr/bin/env ruby
-## 
-# @file 
-# 
+##
+# @file
+#
 # @brief unit test cases for Kdb::KDB
-# 
+#
 # @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
-# 
+#
 
 require 'kdb'
 require 'test/unit'
@@ -13,7 +13,7 @@ require 'test/unit'
 RB_TEST_NS = "user/tests/swig_ruby"
 
 class KdbTestCases < Test::Unit::TestCase
-  
+
   def test_kdb_new_simple
     assert_nothing_raised do
       h = Kdb::KDB.new
@@ -46,7 +46,7 @@ class KdbTestCases < Test::Unit::TestCase
 
       ks << Kdb::Key.new("#{RB_TEST_NS}/kdbgetset/c1", value: "v1")
       ks << Kdb::Key.new("#{RB_TEST_NS}/kdbgetset/c2", value: "v2", meta: "m2")
-      
+
       ret = h.set ks, RB_TEST_NS
 
       assert_equal 1, ret
@@ -60,10 +60,10 @@ class KdbTestCases < Test::Unit::TestCase
       ks = Kdb::KeySet.new
 
       ret = h.get ks, RB_TEST_NS
-      assert_equal 1, ret 
+      assert_equal 1, ret
 
       # use KDB_O_POP to remove the keys from the KeySet
-      k = ks.lookup "#{RB_TEST_NS}/kdbgetset/c1", Kdb::KDB_O_POP 
+      k = ks.lookup "#{RB_TEST_NS}/kdbgetset/c1", Kdb::KDB_O_POP
       assert_not_nil k
       assert_equal "#{RB_TEST_NS}/kdbgetset/c1", k.name
       assert_equal "v1", k.value
