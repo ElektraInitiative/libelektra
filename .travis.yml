@@ -17,6 +17,10 @@ matrix:
 
 before_install:
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
+      rvm list;
+      rvm install 2.3.1;
+      rvm use 2.3.1;
+      gem install test-unit --no-document;
       export PATH=/usr/local/bin:/usr/local/sbin:$PATH;
       brew update;
       brew tap caskroom/cask;

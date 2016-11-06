@@ -22,3 +22,6 @@ build*
 
 #ignore Makefile in project root
 /Makefile
+
+#ignore vim swp files
+*.swp
