@@ -56,7 +56,8 @@ public:
          * @param scope The scope for the Entry
          * @param slug The unique slug for the Entry
          */
-	inline Entry (std::string & organization, std::string & application, std::string & scope, std::string & slug)
+	inline Entry (const std::string & organization, const std::string & application, const std::string & scope,
+		      const std::string & slug)
 	: kdb::Key (ELEKTRA_REST_CONFIG_REPOSITORY_PATH + std::string ("/") + organization + std::string ("/") + application +
 			    std::string ("/") + scope + std::string ("/") + slug,
 		    KEY_END)
@@ -78,15 +79,27 @@ public:
 	/**
                  * Adds several keys as sub key. Relies on addSubkey(), so the
                  * conditional checks are done also for the mass add function.
-                 * @param ks The kdb::KeySet which keys should be added as
-                 *      sub keys.
+                 * @param iter_start A KeySet iterator from where on sub keys should be added
+				 * @param iter_end The end of the KeySet until we can read
+				 * @return The iterator of the first non-child element
                  */
-	void addSubkeys (kdb::KeySet ks)
+	kdb::KeySet::iterator addSubkeys (kdb::KeySet::iterator iter_start, kdb::KeySet::iterator iter_end)
 	{
-		for (auto elem : ks)
+		kdb::Key & k = static_cast<kdb::Key &> (*this);
+		auto elem = iter_start;
+		while (elem != iter_end)
 		{
-			this->addSubkey (elem);
+			if (elem.get ().isBelow (k))
+			{
+				m_subkeys.append (elem.get ());
+			}
+			else
+			{
+				break; // because keyset is sorted, following keys can't be children
+			}
+			elem++;
 		}
+		return elem;
 	}
 	/**
                  * Getter for the kdb::KeySet containing all added sub keys.

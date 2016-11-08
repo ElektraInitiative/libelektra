@@ -87,6 +87,8 @@ private:
 	void loadAllEntries ();
 	void loadAllUsers ();
 
+	kdb::KDB _kdb;
+
 	std::vector<model::Entry> _entryCache;
 	boost::shared_mutex _mutex_entry_cache;
 
@@ -126,7 +128,7 @@ public:
 	kdbrest::model::ConfigFormat exportTo (model::PluginFormat & plugin, model::Entry & entry);
 	std::vector<kdbrest::model::ConfigFormat> exportToAll (model::Entry & entry);
 
-	model::ImportedConfig import (std::string & config, std::string & format, model::Entry & forEntry);
+	model::ImportedConfig import (const std::string & config, const std::string & format, model::Entry & forEntry);
 
 private:
 	std::vector<kdbrest::model::PluginFormat> _enabledFormats;

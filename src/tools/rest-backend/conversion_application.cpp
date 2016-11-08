@@ -95,7 +95,8 @@ void ConversionApp::convert ()
 		try
 		{
 			model::ImportedConfig cfg = service::ConvertEngine::instance ().import (input_value, input_format, entry);
-			entry.addSubkeys (cfg.getKeySet ());
+			auto subkeys = cfg.getKeySet ();
+			entry.addSubkeys (subkeys.begin (), subkeys.end ());
 		}
 		catch (kdbrest::exception::UnsupportedConfigurationFormatException & e)
 		{

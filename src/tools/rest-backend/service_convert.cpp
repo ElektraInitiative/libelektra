@@ -264,7 +264,7 @@ std::vector<model::ConfigFormat> ConvertEngine::exportToAll (model::Entry & entr
  * @throws kdbrest::exception::ImportFormatUnknownException in case there
  * is no suitable storage plugin for the conversion available.
  */
-model::ImportedConfig ConvertEngine::import (std::string & config, std::string & format, model::Entry & forEntry)
+model::ImportedConfig ConvertEngine::import (const std::string & config, const std::string & format, model::Entry & forEntry)
 {
 	using namespace kdb;
 	using namespace kdb::tools;

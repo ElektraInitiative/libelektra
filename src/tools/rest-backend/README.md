@@ -58,7 +58,7 @@ The REST service can also be configured. The file `rest-backend-config.js` in th
 
 To stop the service, run `sh stop-rest-backend.sh` in the same path.
 
-### Configure as service
+### Configure as service ###
 
 To configure the rest-backend as service, it is possible to use `systemd` on most systems.
 
@@ -84,15 +84,16 @@ EOF
 4) Make sure the service is enabled with `systemctl is-enabled rest-backend.service`.
 5) Restart the rest-backend service with `systemctl restart rest-backend.service`. If everything went fine, the service should be reachable and `systemctl status rest-backend.service` should print information about the running service (PID, etc).
 
-## Implementation notes and hints for Front-Ends
+## Implementation notes and hints for Front-Ends ##
 
 The here described tool offers an API which can be consumed by either a command line tool like cURL or a custom front-end. In the following some hints for front-end implementations will be given.
 
-### Usability
+### Usability ###
 
 The API validates all inputs, but does not respond always with exact error messages. Normally error messages contain a general hint on what input was wrong (e.g. 'the `username` has to be 3-20 signs long, contain only letters, digits and dashes'), but not what particular constraint was wrong for the last input (e.g. that the input was only 2 instead of 3 signs long). This limitation comes from the usage of regex patterns instead of atomic comparisons during validation.
 
 In terms of usability this is sufficient, but not the best possible. Therefore it would be advisable to implement live-validation for front-ends with more granularity. Information about allowed input formats can be found in the [API description](http://libelektra.org/tree/master/doc/rest_api/snippet_sharing/api-description.apib).
 
+## Benchmarks ##
 
-
+The service has been benchmarked against a MySQL solution, for further details see [benchmarks readme](benchmarks/README.md).

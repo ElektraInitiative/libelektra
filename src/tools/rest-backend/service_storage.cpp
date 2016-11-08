@@ -56,8 +56,7 @@ bool StorageEngine::createEntry (model::Entry & entry)
 	entries.push_back (entry);
 
 	KeySet ks;
-	KDB kdb;
-	kdb.get (ks, entry.getName ());
+	this->_kdb.get (ks, entry.getName ());
 
 	Key k = ks.lookup (entry.getName ());
 	if (k)
@@ -68,7 +67,7 @@ bool StorageEngine::createEntry (model::Entry & entry)
 	ks.append (entry);
 	ks.append (entry.getSubkeys ());
 
-	if (kdb.set (ks, entry.getName ()) >= 1)
+	if (this->_kdb.set (ks, entry.getName ()) >= 1)
 		return true;
 	else
 		return false;
@@ -111,8 +110,7 @@ bool StorageEngine::updateEntry (model::Entry & entry)
 	}
 
 	KeySet ks;
-	KDB kdb;
-	kdb.get (ks, entry.getName ());
+	this->_kdb.get (ks, entry.getName ());
 
 	Key k = ks.lookup (entry.getName ());
 	if (!k)
@@ -124,7 +122,7 @@ bool StorageEngine::updateEntry (model::Entry & entry)
 	ks.append (entry);
 	ks.append (entry.getSubkeys ());
 
-	if (kdb.set (ks, entry.getName ()) >= 1)
+	if (this->_kdb.set (ks, entry.getName ()) >= 1)
 		return true;
 	else
 		return false;
@@ -166,8 +164,7 @@ bool StorageEngine::deleteEntry (model::Entry & entry)
 	}
 
 	KeySet ks;
-	KDB kdb;
-	kdb.get (ks, entry.getName ());
+	this->_kdb.get (ks, entry.getName ());
 
 	Key k = ks.lookup (entry.getName ());
 	if (!k)
@@ -177,7 +174,7 @@ bool StorageEngine::deleteEntry (model::Entry & entry)
 
 	ks.cut (entry);
 
-	if (kdb.set (ks, entry.getName ()) >= 1)
+	if (this->_kdb.set (ks, entry.getName ()) >= 1)
 		return true;
 	else
 		return false;
@@ -294,17 +291,21 @@ void StorageEngine::loadAllEntries ()
 	std::regex regex (ELEKTRA_REST_CONFIG_REPOSITORY_ENTRY_SCHEMA);
 
 	KeySet ks;
-	KDB kdb;
-	kdb.get (ks, parentKeyStr);
+	this->_kdb.get (ks, parentKeyStr);
 
-	for (auto elem : ks)
+	auto elem = ks.begin ();
+	while (elem != ks.end ())
 	{
-		if (std::regex_match (elem.getName ().erase (0, parentKeyStr.length () + 1), regex))
+		kdb::Key k = elem.get ();
+		if (std::regex_match (k.getName ().erase (0, parentKeyStr.length () + 1), regex))
 		{
-			kdbrest::model::Entry entry = static_cast<kdbrest::model::Entry> (elem);
-			entry.addSubkeys (ks);
+			kdbrest::model::Entry entry = static_cast<kdbrest::model::Entry> (k);
+			elem++;						   // the next element must be a sub-key of this element
+			elem += entry.addSubkeys (elem, ks.end ()) - elem; // try to add the sub keys and calculate new iterator
 			this->_entryCache.push_back (entry);
+			continue; // we don't have to increase manually anymore
 		}
+		elem++;
 	}
 }
 
@@ -337,8 +338,7 @@ bool StorageEngine::createUser (model::User & user)
 	users.push_back (user);
 
 	KeySet ks;
-	KDB kdb;
-	kdb.get (ks, user.getName ());
+	this->_kdb.get (ks, user.getName ());
 
 	Key k = ks.lookup (user.getName ());
 	if (k)
@@ -349,7 +349,7 @@ bool StorageEngine::createUser (model::User & user)
 	ks.append (user);
 	ks.append (user.getSubkeys ());
 
-	if (kdb.set (ks, user.getName ()) >= 1)
+	if (this->_kdb.set (ks, user.getName ()) >= 1)
 		return true;
 	else
 		return false;
@@ -392,8 +392,7 @@ bool StorageEngine::updateUser (model::User & user)
 	}
 
 	KeySet ks;
-	KDB kdb;
-	kdb.get (ks, user.getName ());
+	this->_kdb.get (ks, user.getName ());
 
 	Key k = ks.lookup (user.getName ());
 	if (!k)
@@ -405,7 +404,7 @@ bool StorageEngine::updateUser (model::User & user)
 	ks.append (user);
 	ks.append (user.getSubkeys ());
 
-	if (kdb.set (ks, user.getName ()) >= 1)
+	if (this->_kdb.set (ks, user.getName ()) >= 1)
 		return true;
 	else
 		return false;
@@ -447,8 +446,7 @@ bool StorageEngine::deleteUser (model::User & user)
 	}
 
 	KeySet ks;
-	KDB kdb;
-	kdb.get (ks, user.getName ());
+	this->_kdb.get (ks, user.getName ());
 
 	Key k = ks.lookup (user.getName ());
 	if (!k)
@@ -458,7 +456,7 @@ bool StorageEngine::deleteUser (model::User & user)
 
 	ks.cut (user);
 
-	if (kdb.set (ks, user.getName ()) >= 1)
+	if (this->_kdb.set (ks, user.getName ()) >= 1)
 		return true;
 	else
 		return false;
@@ -553,17 +551,21 @@ void StorageEngine::loadAllUsers ()
 	std::regex regex (ELEKTRA_REST_USER_REPOSITORY_ENTRY_SCHEMA);
 
 	KeySet ks;
-	KDB kdb;
-	kdb.get (ks, parentKeyStr);
+	this->_kdb.get (ks, parentKeyStr);
 
-	for (auto elem : ks)
+	auto elem = ks.begin ();
+	while (elem != ks.end ())
 	{
-		if (std::regex_match (elem.getName ().erase (0, parentKeyStr.length () + 1), regex))
+		kdb::Key k = elem.get ();
+		if (std::regex_match (k.getName ().erase (0, parentKeyStr.length () + 1), regex))
 		{
-			kdbrest::model::User user = static_cast<kdbrest::model::User> (elem);
-			user.addSubkeys (ks);
+			kdbrest::model::User user = static_cast<kdbrest::model::User> (k);
+			elem++;						  // the next element must be a sub-key of this element
+			elem += user.addSubkeys (elem, ks.end ()) - elem; // try to add the sub keys and calculate new iterator
 			this->_userCache.push_back (user);
+			continue; // we don't have to increase manually anymore
 		}
+		elem++;
 	}
 }
 

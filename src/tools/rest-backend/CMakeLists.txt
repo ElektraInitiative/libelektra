@@ -50,7 +50,9 @@ else ()
     generate_manpage (kdb-${tool} FILENAME ${CMAKE_CURRENT_SOURCE_DIR}/README.md)
     
     if (ENABLE_TESTING)
-	    add_subdirectory (tests)
+        add_subdirectory (tests)
     endif (ENABLE_TESTING)
+
+    add_subdirectory (benchmarks)
 
 endif ()

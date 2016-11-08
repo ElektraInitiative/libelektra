@@ -4,11 +4,18 @@
 #include <iostream>
 
 #include "root_application.hpp"
+#include "service.hpp"
 
 
 int main (int argc, char ** argv)
 {
 
+	// force caching of database
+	std::cout << "Pre-caching data..." << std::endl;
+	(void)kdbrest::service::StorageEngine::instance ();
+
+	// launch rest API
+	std::cout << "Starting REST API server..." << std::endl;
 	try
 	{
 		cppcms::service srv (argc, argv);
