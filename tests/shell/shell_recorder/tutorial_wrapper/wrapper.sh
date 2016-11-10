@@ -13,7 +13,7 @@ STDOUT=
 STDERR=
 DIFF=
 OUTBUF=
-
+MOUNTPOINT=
 
 writeBlock()
 {
@@ -61,7 +61,8 @@ writeBlock()
 translate()
 {
     TMPFILE=$(mktemp)
-    echo "Mountpoint: /test" >> "$TMPFILE"
+    MOUNTPOINT=$(echo "$BUF" | head -n 2|tail|cut -d ':' -f2)
+    echo "Mountpoint: $MOUNTPOINT" >> "$TMPFILE"
     COMMAND=
     RET=
     ERRORS=
@@ -70,6 +71,7 @@ translate()
     STDERR=
     DIFF=
     OUTBUF=
+    MOUNTPOINT=
     while read line;
     do
 	grep -Eq "^(\s*)\\$" <<< "$line"

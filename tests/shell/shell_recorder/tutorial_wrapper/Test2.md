@@ -3,6 +3,7 @@
 this ins an example
 
 ```sh
+# Mountpoint:/test
 # content of our ini file
 $ cat /tmp/test.ini
 # [section]

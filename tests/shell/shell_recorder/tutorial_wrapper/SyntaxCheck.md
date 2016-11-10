@@ -1,5 +1,6 @@
 Test1
 ```sh
+# Mountpoint:/test
  # testcomment
 	kdb set /test/a a
 # RET:0
@@ -20,6 +21,7 @@ kdb get /test/d
 ```
 Test 2
 ```sh
+# Mountpoint:/test
 kdb set /test/x x
 kdb set /test/y y
 kdb get /test/x 
