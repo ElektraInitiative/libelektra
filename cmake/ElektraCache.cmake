@@ -53,6 +53,7 @@ if (BINDINGS MATCHES "ALL" OR FINDEX GREATER -1)
 		swig_lua
 		swig_python2
 		swig_python
+		swig_ruby
 		)
 	set (BINDINGS_FORCE FORCE)
 endif ()

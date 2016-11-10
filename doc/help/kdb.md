@@ -81,7 +81,7 @@ It will read its format configuration from `/sw/elektra/kdb/#0/admin/format`.
 
 If you want different configuration per user or directories, you should prefer
 to use the `user` and `dir` namespaces. Then the correct configuration will
-be chosen automatically and you do not have to specify the correct `-p`.
+be chosen automatically according to the current user or current working directory.
 
 Sometimes it is useful to start with default options, for example it is not
 possible to invert the `-q` option.

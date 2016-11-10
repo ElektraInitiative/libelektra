@@ -10,6 +10,13 @@ configuration files via the key database.  Thus the applications will
 read the configuration file, changes in the key database will be picked
 up by applications.
 
+Goals of this Tutorial:
+
+- [ ] Understanding Backends
+- [ ] Understanding Mounting
+- [ ] Understanding Plugins
+- [ ] Understanding get/set
+
 ## Limitations
 
 The approach is not ideal when the application itself also changes the

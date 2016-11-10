@@ -9,6 +9,7 @@ Read this first to get the basic concepts of Elektra.
 
 - [Namespaces](namespaces.md)
 - [Cascading](cascading.md)
+- [Mount Configuration Files](mount.md)
 
 ## Developers
 
@@ -29,7 +30,6 @@ For these tutorials we assume that you want to
 work with the configuration of applications
 already somehow integrated with Elektra.
 
-- [Mount Configuration Files](mount.md)
 - [Import Configuration](import.md)
 - [Export Configuration](export.md)
 - [Intercept Environment](/src/bindings/intercept/env/README.md)

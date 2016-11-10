@@ -10,6 +10,7 @@ List of currently supported bindings:
 - [swig_lua](swig/lua/) Lua SWIG bindings
 - [swig_python](swig/python/) Python 3 SWIG bindings
 - [swig_python2](swig/python2/) Python 2 SWIG bindings (deprecated)
+- [swig_ruby](swig/ruby/) Ruby bindings
 
 See [COMPILE](/doc/COMPILE.md#bindings) how to specify the bindings to build.
 
