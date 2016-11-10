@@ -157,22 +157,24 @@ module.exports = function(Logger, $http, $q, config) {
 			$http.get(config.backend.root + 'database', {
 				// custom options
 			}).success(function(data) {
-				data.entries.forEach(function(entry) {
-					if(service.cache.typeaheads.data.organizations.indexOf(entry.key.organization) === -1) {
-						service.cache.typeaheads.data.organizations.push(entry.key.organization);
-					}
-					if(service.cache.typeaheads.data.applications.indexOf(entry.key.application) === -1) {
-						service.cache.typeaheads.data.applications.push(entry.key.application);
-					}
-					if(service.cache.typeaheads.data.scopes.indexOf(entry.key.scope) === -1) {
-						service.cache.typeaheads.data.scopes.push(entry.key.scope);
-					}
-					entry.tags.forEach(function(tag) {
-						if(service.cache.typeaheads.data.tags.indexOf(tag) === -1) {
-							service.cache.typeaheads.data.tags.push(tag);
+				if(data.elements > 0 && typeof data.entries !== 'undefined') {
+					data.entries.forEach(function(entry) {
+						if(service.cache.typeaheads.data.organizations.indexOf(entry.key.organization) === -1) {
+							service.cache.typeaheads.data.organizations.push(entry.key.organization);
 						}
+						if(service.cache.typeaheads.data.applications.indexOf(entry.key.application) === -1) {
+							service.cache.typeaheads.data.applications.push(entry.key.application);
+						}
+						if(service.cache.typeaheads.data.scopes.indexOf(entry.key.scope) === -1) {
+							service.cache.typeaheads.data.scopes.push(entry.key.scope);
+						}
+						entry.tags.forEach(function(tag) {
+							if(service.cache.typeaheads.data.tags.indexOf(tag) === -1) {
+								service.cache.typeaheads.data.tags.push(tag);
+							}
+						});
 					});
-				});
+				}
 				service.cache.typeaheads.cache = true;
 				deferred.resolve(service.cache.typeaheads.data);
 			}).error(function(data) {

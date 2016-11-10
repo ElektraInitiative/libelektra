@@ -87,11 +87,13 @@ module.exports = function(grunt) {
 			}
 			var respObj = JSON.parse(response.getBody());
 			var url;
-			respObj.entries.forEach(function(entry) {
-				url = urlset.ele('url');
-				url.ele('loc').txt(self.data.root_url + 'entries/details/' +
-						encodeURIComponent(entry.key.full).replace(/%/g, '~'));
-			});
+			if(respObj.elements > 0 && typeof respObj.entries !== 'undefined') {
+				respObj.entries.forEach(function(entry) {
+					url = urlset.ele('url');
+					url.ele('loc').txt(self.data.root_url + 'entries/details/' +
+							encodeURIComponent(entry.key.full).replace(/%/g, '~'));
+				});
+			}
 		};
 
 
