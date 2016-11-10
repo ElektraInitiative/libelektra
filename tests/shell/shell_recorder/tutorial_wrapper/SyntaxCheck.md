@@ -3,23 +3,24 @@ Test1
 # Mountpoint:/test
  # testcomment
 	kdb set /test/a a
-# RET:0
     kdb set /test/b b
+# RET:0
 # should yield 'a'
+kdb get /test/a
 # STDOUT:a
 kdb get /test/a
-kdb get /test/a
 a
+kdb get /test/c
 # Expected:
 # RET:1
 # STDERR:Did not find key
-kdb get /test/c
+kdb get /test/d
 # should fail
 # STDOUT:fail-
 # RET:0
-kdb get /test/d
 ```
 Test 2
+
 ```sh
 # Mountpoint:/test
 kdb set /test/x x
@@ -33,7 +34,9 @@ x = x
 y = y
 kdb ls /test
 ```
+
+
 Test 3
-       ```sh
+```sh
 kdb set /test/z z
 ```

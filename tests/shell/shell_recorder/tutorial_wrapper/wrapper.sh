@@ -2,7 +2,7 @@
 INFILE="$1"
 
 
-BLOCKS=$(grep -oPz '(?s)```sh.*?```' "$1")
+BLOCKS=$(grep -oPz '(?s)```sh.*?```\n' "$1")
 BUF=
 
 COMMAND=
@@ -74,22 +74,19 @@ translate()
     MOUNTPOINT=
     while read line;
     do
-	grep -Eq "^(\s*)\\$" <<< "$line"
+	grep -Eq "^(\s)*kdb" <<< "$line"
 	if [ "$?" -eq 0 ];
 	then
+	    if [ ! -z "$COMMAND" ];
+	    then
+		writeBlock "$TMPFILE"
+	    fi
+	    COMMAND=$(grep -Po "(?<=kdb ).*" <<<"$line")
 	    continue
 	fi
 	grep -Eq "^(\s*)#" <<< "$line"
 	if [ "$?" -eq 0 ];
 	then
-	    if [ ! -z "$OUTBUF" ];
-	    then
-		writeBlock "$TMPFILE"
-	    fi
-	    if [ ! -z "$COMMAND" ];
-	    then
-		writeBlock "$TMPFILE"
-	    fi
 	    tmp=$(grep -Po "(?<=\# )(.*)" <<< "$line")
 	    cmd=$(cut -d ':' -f1 <<< "$tmp")
 	    arg=$(cut -d ':' -f2- <<< "$tmp")
@@ -118,37 +115,28 @@ translate()
 	    esac
 	    continue
 	fi
-	grep -Eq "^(\s)*kdb" <<< "$line"
+	grep -Eq "^(\s)*\\$" <<< "$line"
 	if [ "$?" -eq 0 ];
 	then
-	    if [ ! -z "$OUTBUF" ];
-	    then
-		writeBlock "$TMPFILE"
-	    fi
-	    if [ ! -z "$COMMAND" ];
-	    then
-		writeBlock "$TMPFILE"
-	    fi
-	    COMMAND=$(grep -Po "(?<=kdb ).*" <<<"$line")
+	    echo "got shell cmd"
 	    continue
+	fi
+	if [ -z "$OUTBUF" ];
+	then
+	    OUTBUF="$line"
 	else
-	    if [ -z "$OUTBUF" ];
-	    then
-		OUTBUF="$line"
-	    else
-		OUTBUF=$(echo -en "${OUTBUF}\n${line}")
-	    fi
+	    OUTBUF=$(echo -en "${OUTBUF}\n${line}")
 	fi
     done <<<"$BUF"
     writeBlock "$TMPFILE"
     ../shell_recorder.sh "$TMPFILE"
-    rm "$TMPFILE"
+#    rm "$TMPFILE"
 }
 
 
 while read line;
 do
-    grep -Eq '(\s)*```sh' <<<"$line"
+    grep -Eq '(\s)*```sh$' <<<"$line"
     if [ "$?" -eq 0 ];
     then
 	BUF=""

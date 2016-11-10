@@ -43,13 +43,13 @@ But `middle_small_small` would fail because every entry might only occur once.
 kdb mount enum.ecf /example/enum dump enum
 kdb set user/example/enum/value middle # init to something valid
 kdb setmeta user/example/enum/value check/enum "'low', 'middle', 'high'"
-# should succeed
-# RET:0
 kdb set user/example/enum/value low
-# should fail
+# Expected:
+# RET:0
+kdb set user/example/enum/value no
+# Expected:
 # RET:5
 # ERRORS:121
-kdb set user/example/enum/value no
 # The command set failed while accessing the key database with the info:
 # Error (#121) occurred!
 # Description: Validation failed
@@ -73,13 +73,13 @@ kdb setmeta user/example/enum/value check/enum/#2 large
 kdb setmeta user/example/enum/value check/enum/#3 huge
 kdb setmeta user/example/enum/value check/enum/multi _
 kdb setmeta user/example/enum/value check/enum "#3"
-# SUCCESS
-# RET:0
 kdb set user/example/enum/value ___small_middle__
-# FAIL
+# Expected: 
+# RET:0
+kdb set user/example/enum/value ___all_small__
+# Expected:
 # RET:5
 # ERRORS:121
-kdb set user/example/enum/value ___all_small__
 # The command set failed while accessing the key database with the info:
 # Error (#121) occurred!
 # Description: Validation failed
