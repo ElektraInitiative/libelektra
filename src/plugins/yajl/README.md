@@ -65,6 +65,10 @@ Arrays are mapped to Elektra's array convention #0, #1,..
 
 ## Restrictions ##
 
+- Only UTF-8 is supported. Use the `iconv` plugin if your locale are
+  not UTF-8. When using non-UTF-8 the plugin will be able to write
+  the file, but cannot parse it back again. You will error #77,
+  invalid bytes in UTF8 string.
 - Everything is string if not tagged by metakey "type"
   Only valid json types can be used in type, otherwise there are some
   fall backs to string but warnings are produced.
