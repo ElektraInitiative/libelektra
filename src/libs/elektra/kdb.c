@@ -753,6 +753,10 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 	{
 	case 0: // We don't need an update so let's do nothing
 		keySetName (parentKey, keyName (initialParent));
+		if (handle && handle->globalPlugins[POSTGETSTORAGE])
+		{
+			handle->globalPlugins[POSTGETSTORAGE]->kdbGet (handle->globalPlugins[POSTGETSTORAGE], ks, parentKey);
+		}
 		splitUpdateFileName (split, handle, parentKey);
 		keyDel (initialParent);
 		splitDel (split);

@@ -34,44 +34,54 @@ int elektraCachefilterGet (Plugin * handle, KeySet * returned, Key * parentKey)
 
 	// initialize working KeySets
 	KeySet * toBeCached = 0;
-	KeySet * temp = 0;
 
 	// get old cache data
-	void * cachedData = elektraPluginGetData (handle);
-	if (cachedData != NULL)
-	{
-		toBeCached = (KeySet *)cachedData;
-	}
-	else
+	void * cache = elektraPluginGetData (handle);
+	if (cache == NULL)
 	{
 		toBeCached = ksNew (ksGetSize (returned), KS_END);
 	}
+	else
+	{
+		toBeCached = (KeySet *)cache;
+	}
 
-	// filter keys that need to be cached
-	temp = ksCut (returned, parentKey);
+	// first ensure the cache is up to date with the
+	// freshly requested keys
 	ksAppend (toBeCached, returned);
-	ksClear (returned);
-	ksAppend (returned, temp);
-	ksDel (temp);
 
-	// cache the filtered keys
+	// then ensure to return only the requested keys
+	// (matching parentKey)
+	ksClear (returned);
+	ksAppend (returned, ksCut (toBeCached, parentKey));
+
+	// and also keep the returned keys in cache as well
+	// this is necessary for successive kdbGet() calls
+	ksAppend (toBeCached, returned);
+
+	// point the plugin data to the cached keyset
 	elektraPluginSetData (handle, toBeCached);
 
 	return 1; // success
 }
 
-int elektraCachefilterSet (Plugin * handle, KeySet * returned, Key * parentKey ELEKTRA_UNUSED)
+int elektraCachefilterSet (Plugin * handle, KeySet * returned, Key * parentKey)
 {
 	// get cached keys
-	KeySet * cachedKeys = (KeySet *)elektraPluginGetData (handle);
-	if (cachedKeys == NULL)
+	void * cache = elektraPluginGetData (handle);
+	if (cache == NULL)
 	{
-		ELEKTRA_SET_ERROR_SET (parentKey);
+		ELEKTRA_SET_ERROR (107, parentKey, "Cache was not initialized.");
 		return -1; // did not call kdbGet() before and therefore
 			   // also no elektraCachefilterGet()
 	}
 
-	// mix all keys that need to be stored together
+	KeySet * cachedKeys = (KeySet *)cache;
+
+	// first remove all keys from the cache that match the parentKey
+	// but are not in the returned keyset anymore (deleted keys)
+	(void*) ksCut (cachedKeys, parentKey);
+	ksAppend (cachedKeys, returned);
 	ksAppend (returned, cachedKeys);
 
 	return 1; // success
