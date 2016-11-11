@@ -32,7 +32,9 @@ Globbing can be applied in get and set direction or both.
 The plugin is configured with globbing keys in its configuration. Each key below the configuration is
 interpreted as a globbing key. The value of the key contains the globbing expression. When a key matching
 the glob expression contained in one of the globbing keys is found, the metakeys of the corresponding
-globbing key are copied.
+globbing key are copied. Once a match is found, no further keys will be considered for globbing. The reason
+for this are catch all globbing keys that can be used to match all keys that have not been matched by a
+preceeding globbing key.
 
 ### Globbing Direction ###
 
@@ -47,9 +49,14 @@ So later expressions can be used as default values.
 ### Globbing Flags ###
 
 Globbing keys may contain a subkey named "flags". This optional key contains the flags to be passed to the
-globbing function (`currently fnmatch`). If the key does not exist or if the value of the key cannot be
-converted into a number, `FNM_PATHNAME` is used as a default (see `fnmatch(3)` for more details).
+globbing function (currently fnmatch) as a comma separated list. Unknown flag names will be ignored. The allowed flag names are
 
+- "noescape" which enables the FNM_NOESCAPE flag
+- "pathname" which enables the FNM_PATHNAME flag
+- "period" which enables the FNM_PERIOD flag  
+
+If the flag key does not exist, FNM_PATHNAME is used as a default (see fnmatch(3) for more details).
+An empty string disables all flags (i.e. also the default flag). 
 ## Contracts ##
 
 Glob statements are very useful together with contracts.
