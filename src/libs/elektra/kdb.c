@@ -638,10 +638,10 @@ static int elektraGetDoUpdateWithGlobalHooks (KDB * handle, Split * split, KeySe
 static int copyError (Key * dest, Key * src)
 {
 	keyRewindMeta (src);
-	Key * metaKey = (Key *)keyGetMeta (src, "error");
+	const Key * metaKey = keyGetMeta (src, "error");
 	if (!metaKey) return 0;
 	keySetMeta (dest, keyName (metaKey), keyString (metaKey));
-	while ((metaKey = (Key *)keyNextMeta (src)) != NULL)
+	while ((metaKey = keyNextMeta (src)) != NULL)
 	{
 		if (strncmp (keyName (metaKey), "error/", 6)) break;
 		keySetMeta (dest, keyName (metaKey), keyString (metaKey));
