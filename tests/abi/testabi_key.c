@@ -47,14 +47,14 @@ struct test tstKeyName[] = {
 	{
 		"Depth user key with owner", "user:owner/folder/long/base/dir/key", "user/folder/long/base/dir/key", /* keyName 	*/
 		"key",												     /* keyBaseName 	*/
-		"user:owner",		    /* keyGetFullRootName 	*/
+		"user:owner", /* keyGetFullRootName 	*/
 	},
 
 #ifdef COMPAT
 	{
 		"Key containing escaped separator", "user:yl///foo\\///bar\\/foo_bar\\", "user/foo\\//bar\\/foo_bar\\", /* keyName 	*/
 		"bar/foo_bar\\",											/* keyBaseName 	*/
-		"user:yl",    /* keyGetFullRootName 	*/
+		"user:yl", /* keyGetFullRootName 	*/
 	},
 #endif
 

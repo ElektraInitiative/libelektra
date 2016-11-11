@@ -57,9 +57,9 @@ TEST_F (Error, Simple)
 	struct stat buf;
 	ASSERT_EQ (stat (mpRoot->systemConfigFile.c_str (), &buf), -1) << "found wrong file";
 
-	EXPECT_TRUE (parentKey.getMeta<const kdb::Key>("error"));
-	EXPECT_TRUE (parentKey.getMeta<const kdb::Key>("error/number"));
-	EXPECT_EQ (parentKey.getMeta<int>("error/number"), 10);
+	EXPECT_TRUE (parentKey.getMeta<const kdb::Key> ("error"));
+	EXPECT_TRUE (parentKey.getMeta<const kdb::Key> ("error/number"));
+	EXPECT_EQ (parentKey.getMeta<int> ("error/number"), 10);
 
 	ASSERT_EQ (ks.size (), 1) << "did not keep key at set" << ks;
 }
@@ -77,17 +77,17 @@ TEST_F (Error, Again)
 	Key parentKey (testRoot, KEY_END);
 	EXPECT_THROW (kdb.set (ks, parentKey), kdb::KDBException) << "could not trigger error";
 
-	EXPECT_TRUE (parentKey.getMeta<const kdb::Key>("error"));
-	EXPECT_TRUE (parentKey.getMeta<const kdb::Key>("error/number"));
-	EXPECT_EQ (parentKey.getMeta<int>("error/number"), 10);
+	EXPECT_TRUE (parentKey.getMeta<const kdb::Key> ("error"));
+	EXPECT_TRUE (parentKey.getMeta<const kdb::Key> ("error/number"));
+	EXPECT_EQ (parentKey.getMeta<int> ("error/number"), 10);
 
 	ks.append (Key ("system" + testRoot + "key", KEY_META, "trigger/error", "110", KEY_END));
 
 	EXPECT_THROW (kdb.set (ks, parentKey), kdb::KDBException) << "could not trigger error (again)";
 
-	EXPECT_TRUE (parentKey.getMeta<const kdb::Key>("error"));
-	EXPECT_TRUE (parentKey.getMeta<const kdb::Key>("error/number"));
-	EXPECT_EQ (parentKey.getMeta<int>("error/number"), 110);
+	EXPECT_TRUE (parentKey.getMeta<const kdb::Key> ("error"));
+	EXPECT_TRUE (parentKey.getMeta<const kdb::Key> ("error/number"));
+	EXPECT_EQ (parentKey.getMeta<int> ("error/number"), 110);
 
 	ASSERT_EQ (ks.size (), 1) << "did not keep key at set (again)" << ks;
 }
@@ -96,9 +96,9 @@ TEST_F (Error, Again)
 TEST_F (Error, CSimple)
 {
 	using namespace ckdb;
-	Key *parentKey = keyNew (testRoot.c_str (), KEY_END);
-	KDB *kdb = kdbOpen (parentKey);
-	KeySet *ks = ksNew (20, KS_END);
+	Key * parentKey = keyNew (testRoot.c_str (), KEY_END);
+	KDB * kdb = kdbOpen (parentKey);
+	KeySet * ks = ksNew (20, KS_END);
 
 	ksAppendKey (ks, keyNew (("system" + testRoot + "key").c_str (), KEY_META, "trigger/error", "10", KEY_END));
 
