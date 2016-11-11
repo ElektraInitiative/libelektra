@@ -37,8 +37,6 @@ static void test_keyHelpers ()
 	char buffer[20];
 
 	Key * key = keyNew ("system/parent/base", KEY_END);
-	char * parentName;
-	size_t parentSize;
 	Key *k1, *k2;
 
 	printf ("Test key helpers\n");
