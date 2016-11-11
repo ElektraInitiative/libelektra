@@ -1,10 +1,12 @@
 # Mounting #
 
-Elektra provides a global key database where configuration of all applications can be integrated.
+Elektra provides a global key database, that can integrate configuration in various formats.
 
-There are different forms of integration. In this tutorial we will discuss a light form of integration that can be achieved without [elektrifying](/doc/help/elektra-glossary.md) applications.
+Conversely configuration managed by Elektra can be integrated into applications.
+The best way of integrating Elektra into applications is to [elektrify](/doc/help/elektra-glossary.md) them.
 
-The idea is to synchronize Elektras configuration with configuration files. Thus applications can read the configuration files and changes in the key database will be picked up by applications.
+A simpler form of integration is to synchronize Elektras configuration with configuration files.
+Thus applications can read the configuration files and changes in the key database will be picked up by applications.
 
 The heart of the approach is the so called _mounting_ of configuration files into the key database.
 
@@ -20,12 +22,10 @@ We mount the lookup table with the following command:
 2. `system/hosts` is the path it should have in the key database, also known as **mountpoint**
 3. `hosts` is the _storage plugin_ that can read and write this configuration format.
 
-Without arguments `kdb mount` lists the currently mounted backends.
+Now we use `kdb file`, to verify that all configuration below `system/hosts` is stored in /etc/hosts:
 
-    $ kdb mount
-    /etc/hosts on system/hosts with name system/hosts
-
-Which verifies, that all configuration below `system/hosts` is stored in /etc/hosts.
+    $ kdb file system/hosts
+    /etc/hosts
 
 After mounting a file, we can modify keys below `system/hosts`.
 We need to be root, because we modify `/etc/hosts`.
@@ -45,29 +45,18 @@ Applications will now pick up these changes:
 
 ###### Why you need superuser privileges to mount files ######
 Elektra manages its mountpoints in configuration below **system/elektra/mountpoints**.
-The file that holds this configuration is per default only writable by administrators:
+The file that holds this configuration is, in the same way as `/etc/hosts` before, only writable by administrators:
 
     $ kdb file system/elektra/mountpoints
     /etc/kdb/elektra.ecf
 
 Because of that only root users can mount files.
 
-> At the moment a workaround for this is to add your user
-> to a group that can modify Elektras configuration file.
->
->     $ sudo groupadd elektra
->     $ KDB_SYSTEM=$(dirname $(kdb file system))
->     $ sudo chown -R :elektra $(dirname $(kdb file system))
->     $ sudo chmod -R g+w $(dirname $(kdb file system))
->
-> Bear in mind that users in this group con modify all configuration of Elektra
-> that is stored in files the user is permitted to write.
-
 ## Resolver ##
 
 The configuration file path you supply to `kdb mount` is actually not an
 absolute or relative path in your filesystem, but gets resolved to one by Elektra.
-The plugin that is responsible for this is the _Resolver_.
+The plugin that is responsible for this is the [_Resolver_](src/plugins/resolver).
 
 When you mount a configuration file the resolver first looks at the namespace of
 your mountpoint. Based on that namespace and if the supplied path was relative or
@@ -91,7 +80,15 @@ If you supplied a relative path (e.g. `example.ini`) it gets resolved to this:
 | user             | ${HOME}/.config/example.ini |
 | system           | /etc/kdb/example.ini        |
 (If this differs on your system, the resolver has a different configuration. You
-can then check the default paths under `system/elektra/modules/resolver/constants`)
+can then check the default paths below `system/elektra/modules/resolver/constants`)
+
+When you display the mounted configuration files with `kdb mount` you also see the unresolved paths.
+
+There are different resolvers. For instance on non-POSIX systems paths must be resolved differently.
+In this case one might want to use the [wresolver](src/plugins/wresolver) plugin.
+Another useful resolver is the [blockresolver](src/plugins/blockresolver), which integrates only a block of a configuration file into Elektra.
+
+But resolvers are not the only plugins Elektra uses:
 
 ## Plugins ##
 
@@ -102,7 +99,7 @@ Elektra accomplishes this task with _storage plugins_.
 When you mount a file you can tell Elektra which plugins it should use for reading and
 writing to configuration files.
 
-Lets mount a projects git configuration into the dir namespace:
+Let us mount a projects git configuration into the dir namespace:
 
     # create a directory for our demonstration
     mkdir example && cd $_
@@ -125,22 +122,10 @@ Alternatively we could have mounted another file format:
     $ sudo kdb mount /package.json dir/example yajl iconv from=UTF-8,to=ISO-8859-1
 
 // TODO
-
+#### Backends ####
 
 ## Limitations ##
 
 One drawback of this approach is, that an application can bypass Elektra and change configuration files directly. If for example Elektra is configured to [validate](/doc/tutorial/validation.md) new configuration values before updating them, this is something you do not want to happen.
 
 Furthermore one cannot simply change the configuration file format, because it must be one the application understands. Thus one loses quite some flexibility.
-
-    ```
-    mkdir exampleapp && cd $_
-    git init
-    sudo kdb mount /.git/config dir/git ini multiline=0
-
-
-    kdb mount /etc/fstab
-
-    kdb ls -0 system/filesystems | xargs -0 -I% sh -c "echo '%'; kdb get '%'"
-    kdb mount /etc/fstab system/filesystems fstab struct type path
-    ```
