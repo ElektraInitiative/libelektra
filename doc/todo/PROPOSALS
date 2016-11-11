@@ -1,0 +1,31 @@
+This is a list of TODO items where it is unclear
+if it is desirable to have them.
+Please create an issue if you favor these ideas.
+
+
+people that belong to the group can write to system/spec
+	@krit0n proposed:
+		$ sudo groupadd elektra
+		$ KDB_SYSTEM=$(dirname $(kdb file system))
+		$ sudo chown -R :elektra  ${KDB_SYSTEM}
+		# sudo chmod g+s ${KDB_SYSTEM} # does not work in ubuntu
+		$ sudo chmod -R g+w ${KDB_SYSTEM}
+		$ sudo usermod -aG elektra ${USER}
+	Problems:
+		- is kind of a subset of what sudo currently does
+		- a quite different approach to current UNIX ideas
+		  (currently you need to be root to modify /etc)
+
+chroot
+	-c option which allows you to chroot before doing operation
+	-u options which allows you to switch user (by setting env internally)
+	Problems:
+		- already possible by chaining commands
+
+
+ksLookup (      ADD_IF_MISSING|NEW_KEY):
+	add a key and return it, if it was not found
+	very common operation
+	Problems:
+		does not play nicely with hashmap
+

@@ -3,14 +3,6 @@
 
 == MOUNT ==
 
-user/dir-mountpoints:
-	for mounting as non-root
-	make mountpoints specific for a namespace, e.g.
-	kdb mount --as-user file.x user/x
-	stored in user/elektra/mountpoints
-	make flag, e.g. system/elektra/security/mountpoints/user/enable
-	or add list of plugins?
-
 lazy-mount
 
 allow --no-env --no-arg --no-default arguments?
@@ -87,7 +79,6 @@ kdb tool should work with arrays (add_entry, remove_entry)
 
 kdb tool should work with files (read in as value)
 	kdb set user/abc -F filename.txt
-
 
 cascading export, e.g. for nickel?
 	+ remember what was exported
