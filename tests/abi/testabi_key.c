@@ -24,37 +24,30 @@ struct test
 };
 
 struct test tstKeyName[] = {
-	{ "Normal key", "system/foo/bar", "system/foo/bar", "bar", "system", "system/foo" },
+	{ "Normal key", "system/foo/bar", "system/foo/bar", "bar", "system" },
 
 	{
 		"Key containing redundant & trailing separator", "system//foo//bar//", "system/foo/bar", /* keyName 	*/
 		"bar",											 /* keyBaseName	*/
 		"system",										 /* keyGetFullRootName	*/
-		"system/foo"										 /* keyGetParentName	*/
 	},
 
 	{
 		"Normal user key", "user/key", "user/key", /* keyName 	*/
 		"key",					   /* keyBaseName 	*/
 		"user",					   /* keyGetFullRootName 	*/
-		"user"					   /* keyGetParentName	*/
-
 	},
 
 	{
 		"Normal user key with owner", "user:owner/key", "user/key", /* keyName 	*/
 		"key",							    /* keyBaseName 	*/
 		"user:owner",						    /* keyGetFullRootName 	*/
-		"user"							    /* keyGetParentName	*/
-
 	},
 
 	{
 		"Depth user key with owner", "user:owner/folder/long/base/dir/key", "user/folder/long/base/dir/key", /* keyName 	*/
 		"key",												     /* keyBaseName 	*/
 		"user:owner",		    /* keyGetFullRootName 	*/
-		"user/folder/long/base/dir" /* keyGetParentName	*/
-
 	},
 
 #ifdef COMPAT
@@ -62,8 +55,6 @@ struct test tstKeyName[] = {
 		"Key containing escaped separator", "user:yl///foo\\///bar\\/foo_bar\\", "user/foo\\//bar\\/foo_bar\\", /* keyName 	*/
 		"bar/foo_bar\\",											/* keyBaseName 	*/
 		"user:yl",    /* keyGetFullRootName 	*/
-		"user/foo\\/" /* keyGetParentName	*/
-
 	},
 #endif
 
@@ -72,15 +63,12 @@ struct test tstKeyName[] = {
 		"user/foo\\//bar\\/foo_bar\\/", /* keyName 	*/
 		"bar/foo_bar/",			/* keyBaseName 	*/
 		"user:yl",			/* keyGetFullRootName 	*/
-		"user/foo\\/"			/* keyGetParentName	*/
-
 	},
 
 	{
 		"Key with empty part", "user///%", "user/%", /* keyName 	*/
 		"",					     /* keyBaseName 	*/
 		"",					     /* keyGetFullRootName 	*/
-		""					     /* keyGetParentName	*/
 
 	},
 
@@ -88,7 +76,6 @@ struct test tstKeyName[] = {
 		"Key with escaped %", "user///\\%", "user/\\%", /* keyName 	*/
 		"%",						/* keyBaseName 	*/
 		"",						/* keyGetFullRootName 	*/
-		""						/* keyGetParentName	*/
 
 	},
 
@@ -96,7 +83,6 @@ struct test tstKeyName[] = {
 		"Key with multi escaped %", "user///\\\\%", "user/\\\\%", /* keyName 	*/
 		"\\%",							  /* keyBaseName 	*/
 		"",							  /* keyGetFullRootName 	*/
-		""							  /* keyGetParentName	*/
 
 	},
 
@@ -104,7 +90,6 @@ struct test tstKeyName[] = {
 		NULL, NULL, NULL, /* keyName 	*/
 		NULL,		  /* keyBaseName 	*/
 		NULL,		  /* keyGetFullRootName 	*/
-		NULL		  /* keyGetParentName	*/
 	}
 };
 

@@ -342,11 +342,6 @@ static void test_keyHelpers ()
 		}
 	}
 
-	parentSize = keyGetParentNameSize (key);
-	parentName = elektraMalloc (parentSize);
-	keyGetParentName (key, parentName, parentSize);
-	succeed_if_same_string (parentName, "system/parent");
-	elektraFree (parentName);
 	keyDel (key);
 
 	succeed_if (keyAddBaseName (0, "s") == -1, "null pointer saftey");

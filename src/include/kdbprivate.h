@@ -544,10 +544,6 @@ int elektraReadArrayNumber (const char * baseName, kdb_long_long_t * oldIndex);
 
 KeySet * elektraRenameKeys (KeySet * config, const char * name);
 
-/* Name Manipulation Methods */
-ssize_t keyGetParentName (const Key * key, char * returned, size_t maxSize);
-ssize_t keyGetParentNameSize (const Key * key);
-
 
 /* Conveniences Methods for Making Tests */
 
