@@ -5,35 +5,23 @@ those which are necessary to fulfil the initial tasks).
 A complete list of ideas what could be done can be found in the
 [todo folder](.).
 
+Also see [githubs issues](http://git.libelektra.org/issues)
+for other activities of the current release.
+
+
 
 
 # 0.8.19
 
-Also see [githubs issues](http://git.libelektra.org/issues)
-for other activities of the current release.
-
 import/editor validate strategy
+
 improvements in tutorials!
-
-## tests
-
-helper function for searching symbol
-lazy kdb mount+new imp/exp
-kdb mount -1 -2 options?
-kdb mount: reject same files!
 
 use shell recorder for README.md
 	make examples more consistent
 
-## lazy mountpoints
+fix ENABLE_DEBUG
 
-using list plugin
-so that everything is lazy+arbitrary number of plugins
-
-## fixes
-
-compiler warnings:
-	key hash warning
 
 ## docu
 
@@ -58,35 +46,28 @@ docu specification mount
 minimal generic description of commandline-options in kdb
 	long specific description in man pages
 
-## cleanup
-
-core, kdb.. remove useless symbols
-
-elektraRemoveOneLevel
-keyGetParentName
-
-## decisions
-
-metastorage:
-	keytometa?
-	different plugins?
-
-spec:
-	black/whitelist
-	removal of metadata
-	fix hooks for validation
-	abort on errors?
 
 
-## cmake
 
-to one cmake variable:
-	verbose/debug -> logging
-	pdf/on/off -> docu
 
-build all tests also with shared
+# 0.8.20
 
-remove ENABLE_TESTING or BUILD_TESTING
+## tests
+
+helper function for searching symbol
+
+kdb mount:
+	-1 -2 options?
+	reject same files!
+	lazy mount (with list plugin)
+	arbitrary number of plugins (list plugin)
+	new import/export
+
+
+## fixes
+
+compiler warnings:
+	key hash warning
 
 
 ## types
@@ -98,21 +79,6 @@ let json use same types (double, boolean, nothing for string)
 type checker plugin redesign: take care of simplicity + working together with others
 	set of types (min, max as 1-20, enums as user-defined types,...), space separated as now
 	look into haskell type classes
-
-
-## other stuff
-
-specification checker+application
-	type inference with type classes
-	stacking: apply links for whole hierarchy
-	+ vendor overrides (apply additional data to specification)
-	(beware of featuritis, only if adapts nicely in rest)
-	conflict plugin
-
-tooling:
-	remove config without specification
-
-
 
 
 
