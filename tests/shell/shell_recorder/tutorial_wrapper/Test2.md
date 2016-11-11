@@ -3,7 +3,7 @@
 this ins an example
 
 ```sh
-# Mountpoint:/test
+# Backup-and-Restore:/test
 # content of our ini file
 $ echo "[section]" > /tmp/test.ini
 $ echo "key = value" >> /tmp/test.ini

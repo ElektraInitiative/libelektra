@@ -27,7 +27,7 @@ Keynames are all either relative to to-be-tested key (starting with `./` or `../
 
 Full example:
 ```sh
-# Mountpoint:/example/mathcheck
+# Backup-and-Restore:/example/mathcheck
 kdb mount mathcheck.dump /example/mathcheck dump mathcheck
 kdb set user/example/mathcheck/a 3.1
 kdb set user/example/mathcheck/b 4.5
@@ -51,7 +51,7 @@ kdb umount user/example/mathcheck
 ```
 To calculate values on-demand you can use:
 ```sh
-# Mountpoint:/example/mathcheck
+# Backup-and-Restore:/example/mathcheck
 kdb mount mathcheck.dump /example/mathcheck dump mathcheck
 kdb setmeta user/example/mathcheck/k check/math ":= + @/a @/b"
 kdb set user/example/mathcheck/a 8.0
@@ -65,7 +65,7 @@ kdb umount user/example/mathcheck
 ```
 It also works with constants:
 ```sh
-# Mountpoint:/example/mathcheck
+# Backup-and-Restore:/example/mathcheck
 kdb mount mathcheck.dump /example/mathcheck dump mathcheck
 kdb setmeta user/example/mathcheck/k check/math ":= + ../a '5'"
 kdb set user/example/mathcheck/a 5.5

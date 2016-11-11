@@ -1,6 +1,6 @@
 Test1
 ```sh
-# Mountpoint:/test
+# Backup-and-Restore:/test
  # testcomment
 	kdb set /test/a a
     kdb set /test/b b
@@ -22,7 +22,7 @@ kdb get /test/d
 Test 2
 
 ```sh
-# Mountpoint:/test
+# Backup-and-Restore:/test
 kdb set /test/x x
 kdb set /test/y y
 kdb get /test/x 

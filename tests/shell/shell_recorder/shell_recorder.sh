@@ -49,7 +49,11 @@ execute()
 
     if [ "$BACKUP" -eq "1" ];
     then
-        "$KDBCOMMAND" export $Mountpoint > "$TMPFILE" 2>/dev/null
+        "$KDBCOMMAND" export $Mountpoint $Storage > "$TMPFILE" 2>/dev/null
+	if [ "$?" -ne 0 ];
+	then
+	    exit 1
+	fi
         BACKUP=0
         "$KDBCOMMAND" rm -r $Mountpoint 2>/dev/null
     fi
@@ -296,7 +300,7 @@ echo "protocol file: $OutFile"
 run_script
 
 "$KDBCOMMAND" rm -r "$Mountpoint" 2>/dev/null
-"$KDBCOMMAND" import "$Mountpoint" 2>/dev/null < "$TMPFILE" 
+"$KDBCOMMAND" import "$Mountpoint" "$Storage" 2>/dev/null < "$TMPFILE" 
 rm "${DBFile}.1" 2>/dev/null
 
 EVAL=0

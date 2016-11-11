@@ -61,8 +61,16 @@ writeBlock()
 translate()
 {
     TMPFILE=$(mktemp)
-    MOUNTPOINT=$(echo "$BUF" | head -n 2|tail|cut -d ':' -f2)
-    echo "Mountpoint: $MOUNTPOINT" >> "$TMPFILE"
+    MOUNTPOINT=$(echo "$BUF" | head -n 2|tail)
+    grep -Eq "Backup-and-Restore:" <<< "$MOUNTPOINT"
+    if [ "$?" -eq 0 ];
+    then
+	MOUNTPOINT=$(echo "$MOUNTPOINT" | cut -d ':' -f2)
+	echo "Mountpoint: $MOUNTPOINT" >> "$TMPFILE"
+    else
+	echo "Mountpoint: /" >> "$TMPFILE"
+    fi
+    echo "Storage: dump" >> "$TMPFILE"
     COMMAND=
     RET=
     ERRORS=
