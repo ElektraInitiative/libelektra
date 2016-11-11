@@ -5,9 +5,11 @@ this ins an example
 ```sh
 # Mountpoint:/test
 # content of our ini file
-#$ cat /tmp/test.ini
-# [section]
-# key = value
+$ echo "[section]" > /tmp/test.ini
+$ echo "key = value" >> /tmp/test.ini
+$ cat /tmp/test.ini
+[section]
+key = value
 #
 # mount our ini file to /test
 kdb mount /tmp/test.ini /test ini

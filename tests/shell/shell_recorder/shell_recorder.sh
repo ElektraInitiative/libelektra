@@ -79,7 +79,15 @@ execute()
 
     printf "%s\0\n" "CMD: $command" >> "$OutFile"
 
-    sh -c -f "\"$KDBCOMMAND\" $command 2>stderr 1>stdout"
+    echo "$command" | grep -Eq "^(\s)*\\$" 2>/dev/null
+    if [ "$?" -eq 0 ];
+    then
+	cmd=$(echo "$command" | grep -Eo "([^ \\t$].*)")
+	shOut=$(sh -c -f "$cmd 2>stderr")
+	echo "$shOut" > stdout
+    else
+    	sh -c -f "\"$KDBCOMMAND\" $command 2>stderr 1>stdout"
+    fi
 
     RETVAL="$?"
 

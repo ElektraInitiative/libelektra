@@ -118,7 +118,11 @@ translate()
 	grep -Eq "^(\s)*\\$" <<< "$line"
 	if [ "$?" -eq 0 ];
 	then
-	    echo "got shell cmd"
+	    if [ ! -z "$COMMAND" ];
+	    then
+		writeBlock "$TMPFILE"
+	    fi
+	    COMMAND=$(grep -Eo "[^ \\t].*" <<< "$line")
 	    continue
 	fi
 	if [ -z "$OUTBUF" ];

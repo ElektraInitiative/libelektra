@@ -34,9 +34,9 @@ kdb set user/example/mathcheck/b 4.5
 kdb set user/example/mathcheck/k 7.6
 kdb setmeta user/example/mathcheck/k check/math "== + ../a ../b"
 # should fail
+kdb set user/example/mathcheck/k 7.7
 # RET:5
 # ERRORS:123
-kdb set user/example/mathcheck/k 7.7
 # Set string to 7.7
 # The command set failed while accessing the key database with the info:
 # Error (#123) occurred!
