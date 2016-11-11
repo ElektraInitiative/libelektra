@@ -44,18 +44,19 @@ execute()
     fi
     if [ -z "$DBFile" ];
     then
-        DBFile=$("$KDBCOMMAND" file $Mountpoint 2>/dev/null)
+        DBFile=$("$KDBCOMMAND" file "$Mountpoint" 2>/dev/null)
     fi
 
     if [ "$BACKUP" -eq "1" ];
     then
-        "$KDBCOMMAND" export $Mountpoint $Storage > "$TMPFILE" 2>/dev/null
+        "$KDBCOMMAND" export "$Mountpoint" "$Storage" > "$TMPFILE" 2>/dev/null
 	if [ "$?" -ne 0 ];
 	then
+	    echo -e "ERROR: Failed to backup $Mountpoint\nStopping testcase."
 	    exit 1
 	fi
         BACKUP=0
-        "$KDBCOMMAND" rm -r $Mountpoint 2>/dev/null
+        "$KDBCOMMAND" rm -r "$Mountpoint" 2>/dev/null
     fi
 
     [ -z "$Storage" ] && Storage="dump"
@@ -71,11 +72,11 @@ execute()
             ;;
         Ini)
             rm ./previousState 2>/dev/null
-            "$KDBCOMMAND" export $Mountpoint simpleini > ./previousState 2>/dev/null
+            "$KDBCOMMAND" export "$Mountpoint" simpleini > ./previousState 2>/dev/null
             ;;
         Dump)
             rm ./previousState 2>/dev/null
-            "$KDBCOMMAND" export $Mountpoint dump > ./previousState 2>/dev/null
+            "$KDBCOMMAND" export "$Mountpoint" dump > ./previousState 2>/dev/null
             ;;
     esac
 

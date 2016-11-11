@@ -39,7 +39,7 @@ But `middle_small_small` would fail because every entry might only occur once.
 
 ## Example ##
 ```sh
-# Backup-and-Restor:/example/enum
+# Backup-and-Restore:/example/enum
 kdb mount enum.ecf /example/enum dump enum
 kdb set user/example/enum/value middle # init to something valid
 kdb setmeta user/example/enum/value check/enum "'low', 'middle', 'high'"
