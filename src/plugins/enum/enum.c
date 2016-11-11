@@ -46,6 +46,12 @@ int elektraEnumGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UN
 static int validateWithList (Key * key)
 {
 	const char * validValues = keyString (keyGetMeta (key, "check/enum"));
+	const Key * multiEnum = keyGetMeta (key, "check/enum/multi");
+	char * delim = "\0";
+	if (multiEnum)
+	{
+		delim = (char *)keyString (multiEnum);
+	}
 	const char * regexString = "'([^']*)'\\s*(,|$|([)]}])?)";
 	regex_t regex;
 	if (regcomp (&regex, regexString, REG_EXTENDED | REG_NEWLINE))
@@ -53,29 +59,84 @@ static int validateWithList (Key * key)
 		ELEKTRA_SET_ERROR (120, key, "regcomp failed");
 		return -1;
 	}
-	const char * ptr = validValues;
+	char * ptr = (char *)validValues;
 	regmatch_t match[VALIDATE_KEY_SUBMATCHES];
 	char * value = NULL;
 	int nomatch;
 	int start;
 	int end;
-	while (1)
+	if (!multiEnum)
 	{
-		nomatch = regexec (&regex, ptr, VALIDATE_KEY_SUBMATCHES, match, 0);
-		if (nomatch) break;
-
-		start = match[1].rm_so + (ptr - validValues);
-		end = match[1].rm_eo + (ptr - validValues);
-		elektraRealloc ((void **)&value, (end - start) + 1);
-		strncpy (value, validValues + start, end - start);
-		value[(end - start)] = '\0';
-		if (strcmp (keyString (key), value) == 0)
+		while (1)
 		{
-			regfree (&regex);
-			elektraFree (value);
-			return 1;
+			nomatch = regexec (&regex, ptr, VALIDATE_KEY_SUBMATCHES, match, 0);
+			if (nomatch) break;
+
+			start = match[1].rm_so + (ptr - validValues);
+			end = match[1].rm_eo + (ptr - validValues);
+			elektraRealloc ((void **)&value, (end - start) + 1);
+			strncpy (value, validValues + start, end - start);
+			value[(end - start)] = '\0';
+
+			if (strcmp (keyString (key), value) == 0)
+			{
+				regfree (&regex);
+				elektraFree (value);
+				return 1;
+			}
+			ptr += match[0].rm_eo;
 		}
-		ptr += match[0].rm_eo;
+	}
+	else
+	{
+		char * localString = strdup (keyString (key));
+		ptr = localString;
+		int elements = 1;
+		while (*ptr)
+		{
+			if (*ptr == *delim) ++elements;
+			++ptr;
+		}
+		char * toCheck[elements];
+		int elem = 0;
+		memset (toCheck, 0, elements * sizeof (char *));
+		ptr = localString;
+		elem = 0;
+		toCheck[elem] = localString;
+		while (*ptr)
+		{
+			if (*ptr == *delim)
+			{
+				*ptr = '\0';
+				toCheck[++elem] = ptr + 1;
+			}
+			++ptr;
+		}
+		for (elem = 0; elem < elements; ++elem)
+		{
+			ptr = (char *)validValues;
+			if (toCheck[elem][0] == '\0' || toCheck[elem][0] == *delim) continue;
+			while (1)
+			{
+				nomatch = regexec (&regex, ptr, VALIDATE_KEY_SUBMATCHES, match, 0);
+				if (nomatch) break;
+
+				start = match[1].rm_so + (ptr - validValues);
+				end = match[1].rm_eo + (ptr - validValues);
+				elektraRealloc ((void **)&value, (end - start) + 1);
+				strncpy (value, validValues + start, end - start);
+				value[(end - start)] = '\0';
+				if (strcmp (toCheck[elem], value) == 0)
+				{
+					regfree (&regex);
+					elektraFree (value);
+					elektraFree (localString);
+					return 1;
+				}
+				ptr += match[0].rm_eo;
+			}
+		}
+		elektraFree (localString);
 	}
 	if (value) elektraFree (value);
 	regfree (&regex);
