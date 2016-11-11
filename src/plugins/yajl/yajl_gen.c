@@ -277,7 +277,6 @@ int elektraYajlSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 #else
 	yajl_gen g = yajl_gen_alloc (NULL);
 	yajl_gen_config (g, yajl_gen_beautify, 1);
-	yajl_gen_config (g, yajl_gen_validate_utf8, 1);
 #endif
 
 	if (elektraGenEmpty (g, returned, parentKey))
