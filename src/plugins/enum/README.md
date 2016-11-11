@@ -28,8 +28,8 @@ For example:
     check/enum/#2 = large
     check/enum/#3 = huge
 
-Furthermore (only in the alternative syntax) `check/enum/multi` may contain a separator
-character, that separates multiple allowed occurrences.
+Furthermore `check/enum/multi` may contain a separator character, that separates 
+multiple allowed occurrences.
 For example:
 
     check/enum/multi = _
