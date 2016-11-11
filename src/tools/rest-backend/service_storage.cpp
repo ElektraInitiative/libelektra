@@ -37,23 +37,14 @@ bool StorageEngine::createEntry (model::Entry & entry)
 	// register exclusive access
 	boost::unique_lock<boost::shared_mutex> lock (_mutex_entry_cache);
 
-	bool found = false;
 	std::vector<model::Entry> & entries = this->_entryCache;
 	for (auto & elem : entries)
 	{
 		if (elem.getPublicName ().compare (entry.getPublicName ()) == 0)
 		{
-			found = true;
-			break;
+			throw exception::EntryAlreadyExistsException ();
 		}
 	}
-
-	if (found)
-	{
-		throw exception::EntryAlreadyExistsException ();
-	}
-
-	entries.push_back (entry);
 
 	KeySet ks;
 	this->_kdb.get (ks, entry.getName ());
@@ -68,9 +59,14 @@ bool StorageEngine::createEntry (model::Entry & entry)
 	ks.append (entry.getSubkeys ());
 
 	if (this->_kdb.set (ks, entry.getName ()) >= 1)
+	{
+		entries.push_back (entry);
 		return true;
+	}
 	else
+	{
 		return false;
+	}
 }
 
 /**
@@ -93,15 +89,15 @@ bool StorageEngine::updateEntry (model::Entry & entry)
 
 	bool found = false;
 	std::vector<model::Entry> & entries = this->_entryCache;
-	for (unsigned int i = 0; i < entries.size (); i++)
+	unsigned int i = 0;
+	while (i < entries.size ())
 	{
 		if (entries[i].getPublicName ().compare (entry.getPublicName ()) == 0)
 		{
 			found = true;
-			entries.erase (entries.begin () + i);
-			entries.push_back (entry);
 			break;
 		}
+		i++;
 	}
 
 	if (!found)
@@ -123,9 +119,15 @@ bool StorageEngine::updateEntry (model::Entry & entry)
 	ks.append (entry.getSubkeys ());
 
 	if (this->_kdb.set (ks, entry.getName ()) >= 1)
+	{
+		entries.erase (entries.begin () + i);
+		entries.push_back (entry);
 		return true;
+	}
 	else
+	{
 		return false;
+	}
 }
 
 /**
@@ -148,14 +150,15 @@ bool StorageEngine::deleteEntry (model::Entry & entry)
 
 	bool found = false;
 	std::vector<model::Entry> & entries = this->_entryCache;
-	for (unsigned int i = 0; i < entries.size (); i++)
+	unsigned int i = 0;
+	while (i < entries.size ())
 	{
 		if (entries[i].getPublicName ().compare (entry.getPublicName ()) == 0)
 		{
 			found = true;
-			entries.erase (entries.begin () + i);
 			break;
 		}
+		i++;
 	}
 
 	if (!found)
@@ -175,9 +178,14 @@ bool StorageEngine::deleteEntry (model::Entry & entry)
 	ks.cut (entry);
 
 	if (this->_kdb.set (ks, entry.getName ()) >= 1)
+	{
+		entries.erase (entries.begin () + i);
 		return true;
+	}
 	else
+	{
 		return false;
+	}
 }
 
 /**
@@ -335,7 +343,6 @@ bool StorageEngine::createUser (model::User & user)
 			throw exception::UserAlreadyExistsException ();
 		}
 	}
-	users.push_back (user);
 
 	KeySet ks;
 	this->_kdb.get (ks, user.getName ());
@@ -350,9 +357,14 @@ bool StorageEngine::createUser (model::User & user)
 	ks.append (user.getSubkeys ());
 
 	if (this->_kdb.set (ks, user.getName ()) >= 1)
+	{
+		users.push_back (user);
 		return true;
+	}
 	else
+	{
 		return false;
+	}
 }
 
 /**
@@ -375,15 +387,15 @@ bool StorageEngine::updateUser (model::User & user)
 
 	bool found = false;
 	std::vector<model::User> & users = this->_userCache;
-	for (unsigned int i = 0; i < users.size (); i++)
+	unsigned int i = 0;
+	while (i < users.size ())
 	{
 		if (users[i].getUsername ().compare (user.getUsername ()) == 0)
 		{
 			found = true;
-			users.erase (users.begin () + i);
-			users.push_back (user);
 			break;
 		}
+		i++;
 	}
 
 	if (!found)
@@ -393,7 +405,7 @@ bool StorageEngine::updateUser (model::User & user)
 
 	KeySet ks;
 	this->_kdb.get (ks, user.getName ());
-
+	
 	Key k = ks.lookup (user.getName ());
 	if (!k)
 	{
@@ -405,9 +417,15 @@ bool StorageEngine::updateUser (model::User & user)
 	ks.append (user.getSubkeys ());
 
 	if (this->_kdb.set (ks, user.getName ()) >= 1)
+	{
+		users.erase (users.begin () + i);
+		users.push_back (user);
 		return true;
+	}
 	else
+	{
 		return false;
+	}
 }
 
 /**
@@ -430,14 +448,15 @@ bool StorageEngine::deleteUser (model::User & user)
 
 	bool found = false;
 	std::vector<model::User> & users = this->_userCache;
-	for (unsigned int i = 0; i < users.size (); i++)
+	unsigned int i = 0;
+	while (i < users.size ())
 	{
 		if (users[i].getUsername ().compare (user.getUsername ()) == 0)
 		{
 			found = true;
-			users.erase (users.begin () + i);
 			break;
 		}
+		i++;
 	}
 
 	if (!found)
@@ -457,9 +476,14 @@ bool StorageEngine::deleteUser (model::User & user)
 	ks.cut (user);
 
 	if (this->_kdb.set (ks, user.getName ()) >= 1)
+	{
+		users.erase (users.begin () + i);
 		return true;
+	}
 	else
+	{
 		return false;
+	}
 }
 
 /**
