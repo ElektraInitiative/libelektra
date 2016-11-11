@@ -1,4 +1,4 @@
-Mountpoint: user/test
+Mountpoint: user/tmount/mathcheck
 DiffType: File
 File:
 Storage: mathcheck
