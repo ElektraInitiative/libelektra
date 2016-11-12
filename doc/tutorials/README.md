@@ -21,7 +21,8 @@ provides.
 - [Integration of your Application](application-integration.md)
 - [Plugins Introduction](plugins.md)
 - [Compilation Variants of plugins](compilation-variants.md) (advanced topic)
-- [python-kdb](python-kdb.md)
+- [Python Bindings](python-kdb.md)
+- [Ruby Bindings](/src/bindings/swig/ruby/README.md)
 - [code generation](/src/tools/gen/README.md)
 
 ## System Administrator
