@@ -1120,6 +1120,8 @@ static int iniWriteKeySet (FILE * fh, Key * parentKey, KeySet * returned, IniPlu
 	ksRewind (returned);
 	Key ** keyArray;
 	ssize_t arraySize = ksGetSize (returned);
+	if(arraySize == 0)
+	    return 0;
 	keyArray = elektraCalloc (arraySize * sizeof (Key *));
 	elektraKsToMemArray (returned, keyArray);
 	qsort (keyArray, arraySize, sizeof (Key *), iniCmpOrder);
