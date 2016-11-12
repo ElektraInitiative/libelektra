@@ -106,10 +106,13 @@ For information about elektrified environment variables, see
 To get an idea of Elektra, you can take a look at the
 [presentation](http://www.libelektra.org/ftp/elektra/presentations/2016/FOSDEM/fosdem.odp).
 
-The full documentation, including
-[tutorials](http://libelektra.org/blob/master/doc/tutorials/),
-[glossary](/doc/help/elektra-glossary.md), and
-[concepts and man pages](/doc/help/elektra-introduction.md)
+The full documentation, including:
+
+- [tutorials](http://libelektra.org/blob/master/doc/tutorials/),
+- [faq](/doc/help/elektra-faq.md),
+- [glossary](/doc/help/elektra-glossary.md), and
+- [concepts and man pages](/doc/help/elektra-introduction.md)
+
 is available in the GitHub repository.
 
 You can read the documentation for the kdb tool, either
