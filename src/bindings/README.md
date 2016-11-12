@@ -1,5 +1,14 @@
 # Bindings #
 
+[Elektra's API](http://doc.libelektra.org/api/latest/html/) is written in C,
+but many different bindings allow *applications* in different programming languages
+to use Elektra.
+
+Note that a binding does not automatically allow you to implement *plugins*
+in the respective programming languages, but you additionally need an
+[Interpreter Plugins](/src/plugins/README.md). Nevertheless, bindings
+can be immediately used in applications without plugins.
+
 List of currently supported bindings:
 
 - [cpp](cpp/) C++11 bindings

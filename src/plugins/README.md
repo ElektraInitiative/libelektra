@@ -210,7 +210,10 @@ copied by another plugin just before):
 
 ### Interpreter ###
 
-These plugins start an interpreter and allow you to use a bindings.
+These plugins start an interpreter and allow you to execute a script
+in an interpreted language whenever Elektra's key database gets
+accessed. Note that they depend on the presence of the respective
+binding during runtime.
 
 - [jni](jni/) java plugins started by jni, works with jna plugins
 - [python](python/) Python 3 plugins
