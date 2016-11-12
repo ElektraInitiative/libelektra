@@ -18,14 +18,16 @@ The three main points relevant for most people are:
 
 ## Who should use Elektra? ##
 
-Elektra directly targets three different kinds of users:
+Elektra targets different kinds of users:
 
 1. Developers to develop a better integrated free software ecosystem and
    plugins for better validation/notification.
+   If you have an application that reads or writes configuration files,
+   you are in the target group.
 2. System administrators to have a higher-level view of their configuration
    and enable them to better consider context.
-3. Researchers to develop plugins that can be used with a large pool of
-   applications.
+   If you want to specify or automate configuration tasks, you are in the
+   target group.
 
 ## Unique Features ##
 
