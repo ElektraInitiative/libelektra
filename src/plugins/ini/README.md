@@ -88,11 +88,37 @@ will be interpreted as
 
 ## Sections ##
 
-The ini plugin supports 3 different sectioning modes:
+The ini plugin supports 3 different sectioning modes (via `section=`):
 
 - `NONE` sections wont be printed as `[Section]` but as part of the key name `section/key`
 - `NULL` only binary keys will be printed as `[Section]`
-- `ALWAYS` sections will be created automatically. This is the default setting.
+- `ALWAYS` sections will be created automatically. This is the default setting:
+
+```
+$ kdb mount /empty.ini dir/empty ini
+$ kdb set dir/empty/a/b ab
+$ kdb get dir/empty/a       # <-- key is suddenly here
+$ cat empty.ini
+[a]
+b = ab
+```
+
+By changing the option `section` you can suppress the automatic creation of keys.
+E.g., if you use `NULL` instead you only get a section if you explicitly create it:
+
+```
+$ kdb mount /empty.ini dir/empty ini section=NULL
+$ kdb set dir/empty/a/b ab
+$ kdb get dir/empty/a       # no key here
+$ cat empty.ini
+a/b = ab
+$ kdb rm dir/empty/a/b
+$ kdb set dir/empty/a    # create section first
+$ kdb set dir/empty/a/b ab
+$ cat empty.ini
+[a]
+b = ab
+```
 
 ### Merge Sections ###
 
