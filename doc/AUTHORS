@@ -1,4 +1,4 @@
-The list of authors that contributed to Elektra.
+The list of authors that contributed to Elektra:
 
 
 Markus Raab <elektra@markus-raab.org>
@@ -38,8 +38,10 @@ Devel/Test on: Debian Stable
 Charles Lindsay
 ni library
 
+
 Gabriel Rauter <rauter.gabriel@gmail.com>
 desktop environment integration & usability
+
 
 Avi Alkalay <avi@unix.sh>
 Initial concept, previous website
@@ -96,15 +98,18 @@ Github User: @petermax2
 Devel on: Fedora
 Test on: Fedora, Debian, Mac OS X
 
+
 René Schwaiger <sanssecours@f-m.fm>
 Documentation, Bug Fixes
 Github User: @sanssecours
 Devel/Test on: macOS
 
+
 Marvin Mall <marvin-mall@msn.com>
 development of the REST service & frontend for sharing of conf. snippets, cachefilter plugin
 GitHub User: @Namoshek
 Devel/Test on: Debian Jessie
+
 
 Thomas Waser <thomas.waser@libelektra.org>
 GitHub User: @tom-wa
