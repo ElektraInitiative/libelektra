@@ -111,7 +111,7 @@ To mount the /etc/file system file with two plugins and setting both to be verbo
 `kdb mount -c verbose=1 /etc/file system/file plugin1 plugin2`
 
 To recode and rename a configuration file using Elektra:  
-`kdb mount s.ini recode.txt ni rename cut=path iconv recode=utf8..latin1`
+`kdb mount recode.txt dir/recode ni rename cut=path iconv to=utf8,from=latin1`
 
 ## SEE ALSO
 
