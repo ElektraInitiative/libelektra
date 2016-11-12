@@ -47,9 +47,9 @@ and run:
 
     sudo ldconfig
 
-Then enable the plugin using:
+Then enable the plugin using (`ALL;-EXPERIMENTAL` is default):
 
-    cmake -DPLUGINS="...;jni" /path/to/libelektra
+    cmake -DPLUGINS="ALL;-EXPERIMENTAL;jni" /path/to/libelektra
 
 Running
 

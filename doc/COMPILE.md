@@ -249,7 +249,7 @@ Note that the same languages are sometimes available over GI and SWIG.
 In this case, the SWIG bindings are preferred.
 The SWIG executable my be specified with:
 
-    -DSWIG_EXECUTABLE=...
+    -DSWIG_EXECUTABLE=/usr/bin/swig3.0
 
 If this option is not used, cmake will find the first occurrence of
 `swig` in your environment's path.
