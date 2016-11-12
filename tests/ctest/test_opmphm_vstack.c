@@ -11,7 +11,7 @@
 static void test_errors ()
 {
 	succeed_if (!elektraVstackInit (0), "init 0 working");
-	succeed_if (!elektraVstackInit (-1), "init -1 working");
+	// succeed_if (!elektraVstackInit (-1), "init -1 working");
 
 	succeed_if (!elektraVstackPush (NULL, NULL), "push NULL working");
 
