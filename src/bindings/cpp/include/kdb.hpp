@@ -34,7 +34,7 @@ namespace kdb
  *
  * @brief Access to the key database.
  *
- * @invariant the object holds an valid connection to the key database
+ * @invariant the object holds a valid connection to the key database
  * or is empty
  */
 class KDB

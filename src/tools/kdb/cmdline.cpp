@@ -478,7 +478,7 @@ kdb::Key Cmdline::createKey (int pos) const
 	// for (auto const & n : bookmarks) std::cout << "nks: " << n.second << std::endl;
 	if (name.empty ())
 	{
-		throw invalid_argument ("<empty string> is not an valid keyname");
+		throw invalid_argument ("<empty string> is not a valid keyname");
 	}
 
 	if (name[0] == '+')
@@ -513,7 +513,7 @@ kdb::Key Cmdline::createKey (int pos) const
 
 	if (!root.isValid ())
 	{
-		throw invalid_argument (name + " is not an valid keyname");
+		throw invalid_argument (name + " is not a valid keyname");
 	}
 
 	return root;

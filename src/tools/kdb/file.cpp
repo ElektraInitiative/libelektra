@@ -33,7 +33,7 @@ int FileCommand::execute (Cmdline const & cl)
 	}
 	if (!x.isValid ())
 	{
-		throw invalid_argument (cl.arguments[0] + " is not an valid keyname");
+		throw invalid_argument (cl.arguments[0] + " is not a valid keyname");
 	}
 
 	kdb.get (conf, x);
