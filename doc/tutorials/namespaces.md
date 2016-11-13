@@ -13,7 +13,7 @@ Now add the the key **/a** with the Value **Value 1** and the key **/b/c** with 
 	kdb set /a 'Value 1'
 	kdb set /b/c 'Value 2'
 
-<img src="/doc/images/tutorial_namespaces_hierarchy.svg" alt="Hierarchical structure of key database"</img>
+![Hierarchical structure of key database](/doc/images/tutorial_namespaces_hierarchy.svg)
 
 Here you see the internal structure of the database after adding the keys **/a** and **/b/c**.
 For instance the key **/b/c** has the path **/** -> **b** -> **c**.
@@ -57,7 +57,7 @@ When we don't provide a namespace Elektra assumes a default namespace, which sho
 So if you are a normal user the command `kdb set /b/c 'Value 2'` was synonymous to `kdb set user/b/c 'Value 2'`.
 
 At this point the key database should have this structure:
-<img src="/doc/images/tutorial_namespaces_namespaces.svg" alt="Elektras namespaces"</img>
+![Elektras namespaces](/doc/images/tutorial_namespaces_namespaces.svg)
 
 #### Cascading keys ####
 Another question you may ask yourself now is, what happens if we lookup a key without providing a namespace. So let us retrieve the key **/b/c** with the -v flag in order to make _kdb_ more talkative.
