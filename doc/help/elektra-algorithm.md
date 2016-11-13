@@ -28,8 +28,9 @@ finally returns a `KDB` object that contains all this information.
 
 The reading of the mountpoint configuration and the consequential self
 configuring of the system is called *bootstrapping*.  Elektra builds
-itself up from the simple variant with a default backend only to the
-sophisticated configuration system presented in this thesis.
+itself up with a default backend (consisting of `libelektra-resolver`
+and `libelektra-storage`).
+[Read more about bootstrapping here](elektra-bootstrapping.md)
 
 `kdbOpen()` creates a `Split` object.  It adds all backend handles and
 `parentKeys` during bootstrapping.  So the buildup of the `Split` object
@@ -294,7 +295,7 @@ configuration was changed.
 changes as described in **exception safety**.
 - If every plugin does this correctly, the whole `KeySet` is
 propagated to permanent storage.  Otherwise nothing is changed in the
-key database.  Plugins developed during the thesis meet this requirement.
+key database.  Plugins delivered with Elektra meet this requirement.
 
 The synopsis of the function is:
 
@@ -352,36 +353,26 @@ plugins are affected.
 
 ### Atomic Replacement
 
-For this thesis only file-based storage with atomic properties were
+Up to now only file-based storages with atomic properties were
 developed.  The replacement of a file with another file that has not
 yet been written is not trivial.  The straightforward way is to lock a
 file and start writing to it.  But this approach can result in broken or
 partially finished files in events like ''out of disc space'', signals
 or other asynchronous aborts of the program.
 
-A temporary file solves this problem, because in problematic events
+A temporary file solves most of this problem, because in problematic events
 the original file stays untouched.  When the temporary file is written
 out properly, it is renamed and the original configuration file is
 overwritten.  But another concurrent invocation of `kdbSet()` can try to
 do the same with the result that one of the newly written files is lost.
 
-To avoid this problem, locks are needed again.	It is not possible to
-lock the configuration file itself because it will be unlinked when
-the temporary file is renamed.	So a third file for locking is needed.
-The resolver currently implements this approach.
+To avoid this problem, locks are needed and protect cooperating processes
+(such as other processes using Elektra).
 
-An alternative to this approach without locks is to completely rely
-on the modification time.  The modification time typically has only
+Additionally modification time is used to detect if a file was modified.
+Unfortunately the modification time on some file systems has
 a resolution of one second.  So any changes within that time slot
-will not be recognised.  For this approach, however, the name of every
-temporary file must be unique because concurrent `kdbSet()` invocations
-each try to create one.  The temporary file must also be unlinked in
-case of a rollback.  The opened temporary file can be passed to the
-storage plugins using a file name in the directory */dev/fd*.
-This approach may be more practical than the currently implemented way
-because it does not need the additional lock file (Nevertheless,
-the other way was chosen to test if the algorithm is exception safe as
-described in *exception safety*).
+might not be recognised.
 
 
 ### Errors

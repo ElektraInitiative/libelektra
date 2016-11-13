@@ -51,7 +51,8 @@ In case you're worried about linking to such a powerful library. The core is a s
 implemented in C, works cross-platform, and does not need any external dependencies. There are
 [bindings](src/bindings) for other languages in case C is too low-level for you.
 
-[Why should I use Elektra?](doc/WHY.md)
+- [Why should I use Elektra?](doc/WHY.md)
+- [Big Picture of Elektra](doc/BIGPICTURE.md)
 
 
 ## Contact ##
@@ -150,7 +151,7 @@ And in terms of quality, we want:
 
  * Elektra uses the [BSD licence](doc/LICENSE.md).
  * Elektra implements an [API](http://doc.libelektra.org/api/latest/html/) to fully access a global key database.
- * Elektra can be thought of a virtual file system for configuration.
+ * Elektra can be thought of a [virtual file system for configuration](/doc/BIGPICTURE.md).
  * Elektra supports mounting of existing configuration files into the global key database.
  * Elektra has dozens of [Plugins](src/plugins/) that make it possible
    to have a tiny core, but still support many features, including:
