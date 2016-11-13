@@ -5,30 +5,36 @@ cases there is nearly no point of danger in using Elektra.
 But some a very security related, especially when you use
 a daemon or some kind of distributed configuration.
 
-## Files and Environment Variables ##
 
-`system/` paths are never affected by environment variables.
-They always use the build-in `KDB_DB_SYSTEM` path.
+## Access Permissions
 
-`user/` paths, on the other hand, are resolved by:
+We only use access permissions from the kernel, we do
+not add an additional layer (or daemon). So configuration
+file access is as secure as with direct access to
+configuration files.
 
- 1. metadata "owner", only to be modified by the program
- 2. the environment variable USER
-     So in crontab scripts you should have
-     `export USER=<your name here>`
-     so that kdb works (if getlogin does not get the information from
-     somewhere else - which is typically the case on linux systems)
- 3. Falls back to user "test".
-     So if Elektra tries to access e.g. `/home/test/.kdb` that typically
-     means that USER is not set correctly, use
-     `export USER=<name here>`
-     in that script.
 
-This owner is appended to `KDB_DB_HOME`.
+## Namespaces
 
-All files below those paths might be modified by Elektra programs.
-By making `KDB_DB_SYSTEM` world-writeable, the users might overwrite
-the configuration of others.
+Elektra by default guarantees that configuration from
+specific namespaces come from respective paths in the
+file system:
+
+- `dir`-namespace: from current working directory
+- `user`-namespace: from users home directory
+- `system` or `spec`-namespace: no restrictions
+
+
+## Environment Variables ##
+
+Environment variables are usually avoided, but instead
+Elektra itself is used to configure Elektra.
+The core is not allowed to use any environment variables.
+
+For some plugins, however, Environment variables are
+used for better integration in systems. This might
+be a security risk.
+
 
 ## Compiler Options ##
 
@@ -36,6 +42,7 @@ Can be changed using standard CMake ways.
 Some hints:
 
 http://wiki.debian.org/Hardening
+
 
 ## Memory Leaks ##
 
