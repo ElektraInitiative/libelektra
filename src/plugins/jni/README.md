@@ -55,7 +55,7 @@ Running
 
     kdb-full
 
-should work then, if you get one of these:
+should work then (needs BUILD_FULL cmake option), if you get one of these:
 
     kdb-full: error while loading shared libraries: libmawt.so: cannot open shared object file: No such file or directory
     kdb-full: error while loading shared libraries: libjawt.so: cannot open shared object file: No such file or directory
