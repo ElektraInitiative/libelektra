@@ -94,6 +94,8 @@ one of them would be useless.  Main differences are:
 
 ## Further pointers ##
 
-- Read the [tutorials](/doc/tutorials/README.md)
+- Continue reading the [tutorials](/doc/tutorials)
+- Read about [bindings](/src/bindings/)
+- Read about [tools](/src/tools/README.md)
 - Look into [the glossary](elektra-glossary.md).
 - Start reading about [command-line tools](/doc/help/kdb-introduction.md)
