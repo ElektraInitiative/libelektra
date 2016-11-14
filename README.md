@@ -225,7 +225,7 @@ Releases can be downloaded from [http](http://www.libelektra.org/ftp/elektra/rel
 After downloading or cloning Elektra, `cd` to the directory and run the
 following commands to compile it:
 
- * `mkdir -p build`
+ * `mkdir build`
  * `cd build`
  * `cmake ..` or `ccmake ..`
  * `make`
