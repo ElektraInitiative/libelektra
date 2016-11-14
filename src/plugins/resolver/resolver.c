@@ -28,24 +28,13 @@
 #include <unistd.h>
 
 #include <dirent.h>
-#include <sys/types.h>
 
 #include <kdberrors.h>
 #include <kdblogger.h>
+#include <kdbstat.h>
 
 #ifdef ELEKTRA_LOCK_MUTEX
 #include <pthread.h>
-#endif
-
-#if defined(__APPLE__)
-#define statSeconds(status) status.st_mtime
-#define statNanoSeconds(status) status.st_mtimespec.tv_nsec
-#elif defined(_WIN32)
-#define statSeconds(status) status.st_mtime
-#define statNanoSeconds(status) 0
-#else
-#define statSeconds(status) status.st_mtim.tv_sec
-#define statNanoSeconds(status) status.st_mtim.tv_nsec
 #endif
 
 #ifdef ELEKTRA_LOCK_MUTEX
@@ -487,15 +476,15 @@ int ELEKTRA_PLUGIN_FUNCTION (resolver, get) (Plugin * handle, KeySet * returned,
 	}
 
 	/* Check if update needed */
-	if (pk->mtime.tv_sec == statSeconds (buf) && pk->mtime.tv_nsec == statNanoSeconds (buf))
+	if (pk->mtime.tv_sec == elektraStatSeconds (buf) && pk->mtime.tv_nsec == elektraStatNanoSeconds (buf))
 	{
 		// no update, so storage has no job
 		errno = errnoSave;
 		return 0;
 	}
 
-	pk->mtime.tv_sec = statSeconds (buf);
-	pk->mtime.tv_nsec = statNanoSeconds (buf);
+	pk->mtime.tv_sec = elektraStatSeconds (buf);
+	pk->mtime.tv_nsec = elektraStatNanoSeconds (buf);
 
 	errno = errnoSave;
 	return 1;
@@ -732,14 +721,14 @@ static int elektraCheckConflict (resolverHandle * pk, Key * parentKey)
 		return -1;
 	}
 
-	if (statSeconds (buf) != pk->mtime.tv_sec || statNanoSeconds (buf) != pk->mtime.tv_nsec)
+	if (elektraStatSeconds (buf) != pk->mtime.tv_sec || elektraStatNanoSeconds (buf) != pk->mtime.tv_nsec)
 	{
 		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CONFLICT, parentKey,
 				    "conflict, file modification time stamp %ld.%ld is different than our time stamp %ld.%ld, config file "
 				    "name is \"%s\", "
 				    "our identity is uid: %u, euid: %u, gid: %u, egid: %u",
-				    statSeconds (buf), statNanoSeconds (buf), pk->mtime.tv_sec, pk->mtime.tv_nsec, pk->filename, getuid (),
-				    geteuid (), getgid (), getegid ());
+				    elektraStatSeconds (buf), elektraStatNanoSeconds (buf), pk->mtime.tv_sec, pk->mtime.tv_nsec,
+				    pk->filename, getuid (), geteuid (), getgid (), getegid ());
 		return -1;
 	}
 
@@ -933,11 +922,11 @@ static int elektraSetCommit (resolverHandle * pk, Key * parentKey)
 	}
 	else
 	{
-		if (!(pk->mtime.tv_sec == statSeconds (buf) && pk->mtime.tv_nsec == statNanoSeconds (buf)))
+		if (!(pk->mtime.tv_sec == elektraStatSeconds (buf) && pk->mtime.tv_nsec == elektraStatNanoSeconds (buf)))
 		{
 			/* Update timestamp */
-			pk->mtime.tv_sec = statSeconds (buf);
-			pk->mtime.tv_nsec = statNanoSeconds (buf);
+			pk->mtime.tv_sec = elektraStatSeconds (buf);
+			pk->mtime.tv_nsec = elektraStatNanoSeconds (buf);
 		}
 		else
 		{

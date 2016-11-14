@@ -6,6 +6,7 @@
 #include <keysetio.hpp>
 #include <modules.hpp>
 
+#include <kdbstat.h>
 #include <unistd.h>
 
 #include <export.hpp>
@@ -104,6 +105,8 @@ int EditorCommand::execute (Cmdline const & cl)
 	if (cl.verbose) std::cout << "filename set to " << filename << std::endl;
 	Key errorKey (root);
 	errorKey.setString (filename);
+	struct stat orig;
+	stat (filename.c_str (), &orig);
 
 	if (plugin->set (oursToEdit, errorKey) == -1)
 	{
@@ -132,6 +135,15 @@ int EditorCommand::execute (Cmdline const & cl)
 			std::cerr << "Could not run any editor, please change /sw/elektra/kdb/#0/current/editor" << std::endl;
 			return 12;
 		}
+	}
+
+	struct stat modif;
+	stat (filename.c_str (), &modif);
+
+	if (elektraStatSeconds (orig) == elektraStatSeconds (modif) && elektraStatNanoSeconds (orig) == elektraStatNanoSeconds (modif))
+	{
+		if (!cl.quiet) std::cout << "File was unchanged, will exit successfully";
+		return 0;
 	}
 
 	// import from the file
