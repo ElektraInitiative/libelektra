@@ -84,11 +84,7 @@ void printEntryVector (std::vector<model::Entry> entries, int indent = 0)
 	{
 		spaces += " ";
 	}
-	std::cout << spaces << "-> Result:" << std::endl;
-	for (auto & entry : entries)
-	{
-		std::cout << spaces << spaces << "-> " << entry.getPublicName () << std::endl;
-	}
+	std::cout << spaces << "-> Result: " << entries.size () << " matching entries found" << std::endl;
 }
 
 void benchmarkLookupSingleByKey (int numUsers, int numEntriesPerUser, int numTagsPerEntry, int cached)
@@ -102,8 +98,7 @@ void benchmarkLookupSingleByKey (int numUsers, int numEntriesPerUser, int numTag
 
 	clearDatabase ();
 
-	std::cout << "-> Creating test data (" << (numUsers + numUsers * numEntriesPerUser + numUsers * numEntriesPerUser * numTagsPerEntry)
-		  << " models)" << std::endl;
+	std::cout << "-> Creating test data (" << (numUsers * 4 + numUsers * numEntriesPerUser * 18) << " keys)" << std::endl;
 
 	prepareTestData (numUsers, numEntriesPerUser, numTagsPerEntry);
 
@@ -156,8 +151,7 @@ void benchmarkLookupMultipleByOrganization (int numUsers, int numEntriesPerUser,
 
 	clearDatabase ();
 
-	std::cout << "-> Creating test data (" << (numUsers + numUsers * numEntriesPerUser + numUsers * numEntriesPerUser * numTagsPerEntry)
-		  << " models)" << std::endl;
+	std::cout << "-> Creating test data (" << (numUsers * 4 + numUsers * numEntriesPerUser * 18) << " keys)" << std::endl;
 
 	prepareTestData (numUsers, numEntriesPerUser, numTagsPerEntry);
 
@@ -205,8 +199,7 @@ void benchmarkLookupMultipleByTag (int numUsers, int numEntriesPerUser, int numT
 
 	clearDatabase ();
 
-	std::cout << "-> Creating test data (" << (numUsers + numUsers * numEntriesPerUser + numUsers * numEntriesPerUser * numTagsPerEntry)
-		  << " models)" << std::endl;
+	std::cout << "-> Creating test data (" << (numUsers * 4 + numUsers * numEntriesPerUser * 18) << " keys)" << std::endl;
 
 	prepareTestData (numUsers, numEntriesPerUser, numTagsPerEntry);
 
@@ -254,8 +247,7 @@ void benchmarkLookupMultipleByAuthor (int numUsers, int numEntriesPerUser, int n
 
 	clearDatabase ();
 
-	std::cout << "-> Creating test data (" << (numUsers + numUsers * numEntriesPerUser + numUsers * numEntriesPerUser * numTagsPerEntry)
-		  << " models)" << std::endl;
+	std::cout << "-> Creating test data (" << (numUsers * 4 + numUsers * numEntriesPerUser * 18) << " keys)" << std::endl;
 
 	prepareTestData (numUsers, numEntriesPerUser, numTagsPerEntry);
 
@@ -303,8 +295,7 @@ void benchmarkLookupMultipleByDescription (int numUsers, int numEntriesPerUser, 
 
 	clearDatabase ();
 
-	std::cout << "-> Creating test data (" << (numUsers + numUsers * numEntriesPerUser + numUsers * numEntriesPerUser * numTagsPerEntry)
-		  << " models)" << std::endl;
+	std::cout << "-> Creating test data (" << (numUsers * 4 + numUsers * numEntriesPerUser * 18) << " keys)" << std::endl;
 
 	prepareTestData (numUsers, numEntriesPerUser, numTagsPerEntry);
 
@@ -354,8 +345,8 @@ void benchmarkInsertData (int numUsers, int numEntriesPerUser, int numTagsPerEnt
 
 	std::cout << "-> Executing benchmark:" << std::endl;
 
-	std::cout << "   -> Creating test data ("
-		  << (numUsers + numUsers * numEntriesPerUser + numUsers * numEntriesPerUser * numTagsPerEntry) << " models)" << std::endl;
+	std::cout << "   -> Creating test data (" << (numUsers * 4 + numUsers * numEntriesPerUser * 18) << " keys)"
+			<< std::endl;
 
 	// timer start
 	Timer timer;

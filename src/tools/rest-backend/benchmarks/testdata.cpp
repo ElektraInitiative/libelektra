@@ -28,7 +28,7 @@ std::vector<model::Entry> createTestEntries (model::User user, int num, int numT
 		entry.setTitle (std::string ("Entry title for entry ") + index);
 		entry.setDescription (
 			std::string ("A sophisticated test requires a long description. Therefore we decided "
-				     "to write a description that is longer than the other attributes. This doesn't mean that the "
+				     "to write a description that is longer than the other attributes. This doesnt mean that the "
 				     "description makes sense, it only has to be long enough. For a unique identification, take the "
 				     "value: description-") +
 			index);

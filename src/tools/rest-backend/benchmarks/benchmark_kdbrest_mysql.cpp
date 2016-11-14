@@ -42,12 +42,13 @@ namespace kdbrest
 namespace benchmark
 {
 
-void clearDatabase (sql::Connection * con, int indexes)
+void clearDatabase (sql::Connection * con)
 {
 	sql::Statement * stmt;
 	stmt = con->createStatement ();
 
 	// drop tables
+	stmt->execute ("SET GLOBAL max_allowed_packet=1073741824"); // 1gb of data can be inserted at once
 	stmt->execute ("SET foreign_key_checks = 0");
 	stmt->execute ("DROP TABLE IF EXISTS `tags`");
 	stmt->execute ("DROP TABLE IF EXISTS `snippets`");
@@ -64,23 +65,13 @@ void clearDatabase (sql::Connection * con, int indexes)
 		"`author_id` INT NOT NULL, `organization` VARCHAR(255) NOT NULL, `application` VARCHAR(255) NOT NULL, "
 		"`scope` VARCHAR(255) NOT NULL, `slug` VARCHAR(255) NOT NULL, `title` VARCHAR(255) NOT NULL, "
 		"`description` TEXT NOT NULL, `configuration` TEXT NOT NULL, `plugin` VARCHAR(100) NOT NULL, "
-		"`views` INT NOT NULL DEFAULT '0', `createdat` INT NOT NULL, PRIMARY KEY (`id`), ";
-	if (indexes == 1)
-	{
-		tbl_snippets +=
-			"FULLTEXT (`organization`), FULLTEXT (`application`), FULLTEXT (`scope`), "
-			"FULLTEXT (`slug`), FULLTEXT (`organization`, `application`, `scope`, `slug`), "
-			"FULLTEXT (`title`), FULLTEXT (`description`), INDEX (`createdat`), ";
-	}
-	tbl_snippets += "FOREIGN KEY (`author_id`) REFERENCES `users`(`id`)) ENGINE=InnoDB";
+		"`views` INT NOT NULL DEFAULT '0', `createdat` INT NOT NULL, PRIMARY KEY (`id`), "
+		"FOREIGN KEY (`author_id`) REFERENCES `users`(`id`)) ENGINE=InnoDB";
 	std::string tbl_tags =
 		"CREATE TABLE `tags` (`id` INT NOT NULL AUTO_INCREMENT, `snippet_id` INT NOT NULL, "
-		"`tag` VARCHAR(20) NOT NULL, PRIMARY KEY (`id`), ";
-	if (indexes == 1)
-	{
-		tbl_tags += "INDEX (`tag`), ";
-	}
-	tbl_tags += "FOREIGN KEY (`snippet_id`) REFERENCES `snippets`(`id`)) ENGINE=InnoDB";
+		"`tag` VARCHAR(20) NOT NULL, PRIMARY KEY (`id`), "
+		"FOREIGN KEY (`snippet_id`) REFERENCES `snippets`(`id`)) ENGINE=InnoDB";
+
 	stmt->execute (tbl_users);
 	stmt->execute (tbl_snippets);
 	stmt->execute (tbl_tags);
@@ -92,81 +83,84 @@ void prepareTestData (sql::Connection * con, int numUsers, int numEntriesPerUser
 {
 	// prepare all statements
 	sql::Statement * stmt;
-	sql::PreparedStatement * pstmt_user;
-	sql::PreparedStatement * pstmt_entry;
-	sql::PreparedStatement * pstmt_tag;
-	sql::PreparedStatement * pstmt_last_insert_id;
-	sql::ResultSet * res;
 	stmt = con->createStatement ();
-	pstmt_user = con->prepareStatement (
-		"INSERT INTO `users` (`name`, `password`, `email`, `rank`, `createdat`) "
-		"VALUES (?,?,?,?,?)");
-	pstmt_entry = con->prepareStatement (
-		"INSERT INTO `snippets` (`author_id`, `organization`, `application`, "
-		"`scope`, `slug`, `title`, `description`, `configuration`, `plugin`, `views`, `createdat`) "
-		"VALUES (?,?,?,?,?,?,?,?,?,?,?)");
-	pstmt_tag = con->prepareStatement ("INSERT INTO `tags` (`snippet_id`, `tag`) VALUES (?,?)");
-	pstmt_last_insert_id = con->prepareStatement ("SELECT LAST_INSERT_ID()");
 
 	// start transaction
 	stmt->execute ("START TRANSACTION");
 
 	// create users
+	std::string sql = "INSERT INTO `users` (`name`,`password`,`email`,`rank`,`createdat`) VALUES ";
 	std::vector<model::User> users = createTestUsers (numUsers);
 	for (auto & user : users)
 	{
-		pstmt_user->setString (1, user.getUsername ());
-		pstmt_user->setString (2, user.getPasswordHash ());
-		pstmt_user->setString (3, user.getEmail ());
-		pstmt_user->setInt (4, user.getRank ());
-		pstmt_user->setInt (5, user.getCreatedAt ());
-		pstmt_user->executeUpdate ();
-		res = pstmt_last_insert_id->executeQuery ();
-		res->next ();
-		int author_id = res->getInt (1);
-		delete res;
+		sql += "('" + user.getUsername () + "','" + user.getPasswordHash () + "','" + user.getEmail () + "'," +
+				std::to_string (user.getRank ()) + "," + std::to_string (user.getCreatedAt ()) + "),";
+	}
+	stmt->execute (sql.substr (0, sql.size () - 1));
 
-		// create entries for user
-		std::vector<model::Entry> entries = createTestEntries (user, numEntriesPerUser, numTagsPerEntry);
+	// create entries
+	sql = "INSERT INTO `snippets` (`author_id`,`organization`,`application`,`scope`,`slug`,`title`,`description`,"
+			"`configuration`,`plugin`,`views`,`createdat`) VALUES ";
+	int fk_id = 1;
+	std::vector<model::Entry> entries = createTestEntries (users[0], 1, 1);
+	model::ConfigFormat configFormat = service::ConvertEngine::instance ().exportTo (entries[0].getUploadPlugin (),
+			entries[0]);
+	for (auto & user : users)
+	{
+		entries = createTestEntries (user, numEntriesPerUser, numTagsPerEntry);
 		for (auto & entry : entries)
 		{
-			pstmt_entry->setInt (1, author_id);
-			pstmt_entry->setString (2, entry.getOrganization ());
-			pstmt_entry->setString (3, entry.getApplication ());
-			pstmt_entry->setString (4, entry.getScope ());
-			pstmt_entry->setString (5, entry.getSlug ());
-			pstmt_entry->setString (6, entry.getTitle ());
-			pstmt_entry->setString (7, entry.getDescription ());
-			model::ConfigFormat configFormat = service::ConvertEngine::instance ().exportTo (entry.getUploadPlugin (), entry);
-			pstmt_entry->setString (8, configFormat.getConfig ());
-			pstmt_entry->setString (9, entry.getUploadPlugin ());
-			pstmt_entry->setInt (10, entry.getViews ());
-			pstmt_entry->setInt (11, entry.getCreatedAt ());
-			pstmt_entry->executeUpdate ();
-			res = pstmt_last_insert_id->executeQuery ();
-			res->next ();
-			int snippet_id = res->getInt (1);
-			delete res;
+			sql += "(" + std::to_string(fk_id) + ",'" + entry.getOrganization () + "','" + entry.getApplication () +
+					"','" + entry.getScope () + "','" + entry.getSlug () + "','" + entry.getTitle () + "','" +
+					entry.getDescription () + "','" + configFormat.getConfig () + "','" + entry.getUploadPlugin () +
+					"'," + std::to_string (entry.getViews ()) + "," + std::to_string (entry.getCreatedAt ()) + "),";
+		}
+		fk_id++;
+	}
+	stmt->execute (sql.substr (0, sql.size () - 1));
 
-			// create tags for entry
+	// create tags for entry
+	sql = "INSERT INTO `tags` (`snippet_id`, `tag`) VALUES ";
+	fk_id = 1;
+	for (auto & user : users)
+	{
+		for (auto & entry : entries)
+		{
 			for (auto & tag : entry.getTags ())
 			{
-				pstmt_tag->setInt (1, snippet_id);
-				pstmt_tag->setString (2, tag);
-				pstmt_tag->executeUpdate ();
+				sql += "(" + std::to_string(fk_id) + ", '" + tag + "'),";
 			}
+			fk_id++;
 		}
 	}
+	stmt->execute (sql.substr (0, sql.size () - 1));
 
 	// commit transaction
 	stmt->execute ("COMMIT");
 
 	// free all resources
 	delete stmt;
-	delete pstmt_user;
-	delete pstmt_entry;
-	delete pstmt_tag;
-	delete pstmt_last_insert_id;
+}
+
+void addIndexes (sql::Connection * con)
+{
+	sql::Statement * stmt;
+
+	stmt = con->createStatement ();
+
+	stmt->execute("ALTER TABLE `snippets` ADD FULLTEXT INDEX `organization` (`organization`)");
+	stmt->execute("ALTER TABLE `snippets` ADD FULLTEXT INDEX `application` (`application`)");
+	stmt->execute("ALTER TABLE `snippets` ADD FULLTEXT INDEX `scope` (`scope`)");
+	stmt->execute("ALTER TABLE `snippets` ADD FULLTEXT INDEX `slug` (`slug`)");
+	stmt->execute("ALTER TABLE `snippets` ADD FULLTEXT INDEX `full_key` (`organization`, `application`,"
+			"`scope`, `slug`)");
+	stmt->execute("ALTER TABLE `snippets` ADD FULLTEXT INDEX `title` (`title`)");
+	stmt->execute("ALTER TABLE `snippets` ADD FULLTEXT INDEX `description` (`description`)");
+	stmt->execute("ALTER TABLE `snippets` ADD INDEX `createdat` (`createdat`)");
+
+	stmt->execute("ALTER TABLE `tags` ADD INDEX `tag` (`tag`)");
+
+	delete stmt;
 }
 
 std::vector<model::Entry> rsToEntryVector (sql::ResultSet * rs)
@@ -201,11 +195,7 @@ void printEntryVector (std::vector<model::Entry> entries, int indent = 0)
 	{
 		spaces += " ";
 	}
-	std::cout << spaces << "-> Result:" << std::endl;
-	for (auto & entry : entries)
-	{
-		std::cout << spaces << spaces << "-> " << entry.getPublicName () << std::endl;
-	}
+	std::cout << spaces << "-> Result: " << entries.size () << " matching entries found" << std::endl;
 }
 
 void benchmarkLookupSingleByKey (sql::Connection * con, int numUsers, int numEntriesPerUser, int numTagsPerEntry, int indexes)
@@ -217,12 +207,19 @@ void benchmarkLookupSingleByKey (sql::Connection * con, int numUsers, int numEnt
 
 	std::cout << "-> Refreshing database (clear & create tables)" << std::endl;
 
-	clearDatabase (con, indexes);
+	clearDatabase (con);
 
 	std::cout << "-> Creating test data (" << (numUsers + numUsers * numEntriesPerUser + numUsers * numEntriesPerUser * numTagsPerEntry)
 		  << " rows)" << std::endl;
 
 	prepareTestData (con, numUsers, numEntriesPerUser, numTagsPerEntry);
+
+	if(indexes == 1)
+	{
+		std::cout << "-> Creating indexes" << std::endl;
+
+		addIndexes (con);
+	}
 
 	std::cout << "-> Executing benchmark:" << std::endl;
 
@@ -279,12 +276,19 @@ void benchmarkLookupMultipleByOrganization (sql::Connection * con, int numUsers,
 
 	std::cout << "-> Refreshing database (clear & create tables)" << std::endl;
 
-	clearDatabase (con, indexes);
+	clearDatabase (con);
 
 	std::cout << "-> Creating test data (" << (numUsers + numUsers * numEntriesPerUser + numUsers * numEntriesPerUser * numTagsPerEntry)
 		  << " rows)" << std::endl;
 
 	prepareTestData (con, numUsers, numEntriesPerUser, numTagsPerEntry);
+
+	if(indexes == 1)
+	{
+		std::cout << "-> Creating indexes" << std::endl;
+
+		addIndexes (con);
+	}
 
 	std::cout << "-> Executing benchmark:" << std::endl;
 
@@ -304,7 +308,7 @@ void benchmarkLookupMultipleByOrganization (sql::Connection * con, int numUsers,
 		"FROM `snippets` AS s "
 		"INNER JOIN `users` AS u "
 		"ON s.`author_id` = u.`id` "
-		"WHERE `organization` = ?"
+		"WHERE `organization` = ? "
 		"ORDER BY s.`organization`, s.`application`, s.`scope`, s.`slug` ASC");
 	pstmt->setString (1, organization);
 	rs = pstmt->executeQuery ();
@@ -335,12 +339,19 @@ void benchmarkLookupMultipleByTag (sql::Connection * con, int numUsers, int numE
 
 	std::cout << "-> Refreshing database (clear & create tables)" << std::endl;
 
-	clearDatabase (con, indexes);
+	clearDatabase (con);
 
 	std::cout << "-> Creating test data (" << (numUsers + numUsers * numEntriesPerUser + numUsers * numEntriesPerUser * numTagsPerEntry)
 		  << " rows)" << std::endl;
 
 	prepareTestData (con, numUsers, numEntriesPerUser, numTagsPerEntry);
+
+	if(indexes == 1)
+	{
+		std::cout << "-> Creating indexes" << std::endl;
+
+		addIndexes (con);
+	}
 
 	std::cout << "-> Executing benchmark:" << std::endl;
 
@@ -362,7 +373,7 @@ void benchmarkLookupMultipleByTag (sql::Connection * con, int numUsers, int numE
 		"ON s.`author_id` = u.`id` "
 		"INNER JOIN `tags` AS t "
 		"ON t.`snippet_id` = s.`id` "
-		"WHERE t.`tag` = ?"
+		"WHERE t.`tag` = ? "
 		"ORDER BY s.`organization`, s.`application`, s.`scope`, s.`slug` ASC");
 	pstmt->setString (1, tag);
 	rs = pstmt->executeQuery ();
@@ -393,12 +404,19 @@ void benchmarkLookupMultipleByAuthor (sql::Connection * con, int numUsers, int n
 
 	std::cout << "-> Refreshing database (clear & create tables)" << std::endl;
 
-	clearDatabase (con, indexes);
+	clearDatabase (con);
 
 	std::cout << "-> Creating test data (" << (numUsers + numUsers * numEntriesPerUser + numUsers * numEntriesPerUser * numTagsPerEntry)
 		  << " rows)" << std::endl;
 
 	prepareTestData (con, numUsers, numEntriesPerUser, numTagsPerEntry);
+
+	if(indexes == 1)
+	{
+		std::cout << "-> Creating indexes" << std::endl;
+
+		addIndexes (con);
+	}
 
 	std::cout << "-> Executing benchmark:" << std::endl;
 
@@ -449,12 +467,19 @@ void benchmarkLookupMultipleByDescription (sql::Connection * con, int numUsers, 
 
 	std::cout << "-> Refreshing database (clear & create tables)" << std::endl;
 
-	clearDatabase (con, indexes);
+	clearDatabase (con);
 
 	std::cout << "-> Creating test data (" << (numUsers + numUsers * numEntriesPerUser + numUsers * numEntriesPerUser * numTagsPerEntry)
 		  << " rows)" << std::endl;
 
 	prepareTestData (con, numUsers, numEntriesPerUser, numTagsPerEntry);
+
+	if(indexes == 1)
+	{
+		std::cout << "-> Creating indexes" << std::endl;
+
+		addIndexes (con);
+	}
 
 	std::cout << "-> Executing benchmark:" << std::endl;
 
@@ -505,8 +530,15 @@ void benchmarkInsertData (sql::Connection * con, int numUsers, int numEntriesPer
 
 	std::cout << "-> Refreshing database (clear & create tables)" << std::endl;
 
-	clearDatabase (con, indexes);
-
+	clearDatabase (con);
+	
+	if(indexes == 1)
+	{
+		std::cout << "-> Creating indexes" << std::endl;
+		
+		addIndexes (con);
+	}
+	
 	std::cout << "-> Executing benchmark:" << std::endl;
 
 	std::cout << "   -> Creating test data ("
