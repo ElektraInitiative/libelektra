@@ -171,10 +171,18 @@ module.exports = function(grunt) {
 					var file = path.normalize(path.join(root_dir, url));
 					try {
 						if(fs.statSync(file).isDirectory()) {
-							return '[' + text + '](' + url + 'README.md' + ')';
-						} else {
-							return match;
+							var target_files = grunt.config().app.website.target_file_dir_links;
+							for(var i = 0; i < target_files.length; i++) {
+								try {
+									if(fs.statSync(path.join(file, target_files[i])).isFile()) {
+										return '[' + text + '](' + url + target_files[i] + ')';
+									}
+								} catch (error) {
+									// do nothing
+								}
+							}
 						}
+						return match;
 					} catch (error) {
 						return match;
 					}
