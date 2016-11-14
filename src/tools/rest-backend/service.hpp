@@ -87,8 +87,6 @@ private:
 	void loadAllEntries ();
 	void loadAllUsers ();
 
-	kdb::KDB _kdb;
-
 	std::vector<model::Entry> _entryCache;
 	boost::shared_mutex _mutex_entry_cache;
 

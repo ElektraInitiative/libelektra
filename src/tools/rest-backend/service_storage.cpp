@@ -46,8 +46,9 @@ bool StorageEngine::createEntry (model::Entry & entry)
 		}
 	}
 
+	KDB kdb;
 	KeySet ks;
-	this->_kdb.get (ks, entry.getName ());
+	kdb.get (ks, entry.getName ());
 
 	Key k = ks.lookup (entry.getName ());
 	if (k)
@@ -58,7 +59,7 @@ bool StorageEngine::createEntry (model::Entry & entry)
 	ks.append (entry);
 	ks.append (entry.getSubkeys ());
 
-	if (this->_kdb.set (ks, entry.getName ()) >= 1)
+	if (kdb.set (ks, entry.getName ()) >= 1)
 	{
 		entries.push_back (entry);
 		return true;
@@ -105,8 +106,9 @@ bool StorageEngine::updateEntry (model::Entry & entry)
 		throw exception::EntryNotFoundException ();
 	}
 
+	KDB kdb;
 	KeySet ks;
-	this->_kdb.get (ks, entry.getName ());
+	kdb.get (ks, entry.getName ());
 
 	Key k = ks.lookup (entry.getName ());
 	if (!k)
@@ -118,7 +120,7 @@ bool StorageEngine::updateEntry (model::Entry & entry)
 	ks.append (entry);
 	ks.append (entry.getSubkeys ());
 
-	if (this->_kdb.set (ks, entry.getName ()) >= 1)
+	if (kdb.set (ks, entry.getName ()) >= 1)
 	{
 		entries.erase (entries.begin () + i);
 		entries.push_back (entry);
@@ -166,8 +168,9 @@ bool StorageEngine::deleteEntry (model::Entry & entry)
 		throw exception::EntryNotFoundException ();
 	}
 
+	KDB kdb;
 	KeySet ks;
-	this->_kdb.get (ks, entry.getName ());
+	kdb.get (ks, entry.getName ());
 
 	Key k = ks.lookup (entry.getName ());
 	if (!k)
@@ -177,7 +180,7 @@ bool StorageEngine::deleteEntry (model::Entry & entry)
 
 	ks.cut (entry);
 
-	if (this->_kdb.set (ks, entry.getName ()) >= 1)
+	if (kdb.set (ks, entry.getName ()) >= 1)
 	{
 		entries.erase (entries.begin () + i);
 		return true;
@@ -298,8 +301,9 @@ void StorageEngine::loadAllEntries ()
 	std::string parentKeyStr = ELEKTRA_REST_CONFIG_REPOSITORY_PATH;
 	std::regex regex (ELEKTRA_REST_CONFIG_REPOSITORY_ENTRY_SCHEMA);
 
+	KDB kdb;
 	KeySet ks;
-	this->_kdb.get (ks, parentKeyStr);
+	kdb.get (ks, parentKeyStr);
 
 	auto elem = ks.begin ();
 	while (elem != ks.end ())
@@ -344,8 +348,9 @@ bool StorageEngine::createUser (model::User & user)
 		}
 	}
 
+	KDB kdb;
 	KeySet ks;
-	this->_kdb.get (ks, user.getName ());
+	kdb.get (ks, user.getName ());
 
 	Key k = ks.lookup (user.getName ());
 	if (k)
@@ -356,7 +361,7 @@ bool StorageEngine::createUser (model::User & user)
 	ks.append (user);
 	ks.append (user.getSubkeys ());
 
-	if (this->_kdb.set (ks, user.getName ()) >= 1)
+	if (kdb.set (ks, user.getName ()) >= 1)
 	{
 		users.push_back (user);
 		return true;
@@ -403,8 +408,9 @@ bool StorageEngine::updateUser (model::User & user)
 		throw exception::UserNotFoundException ();
 	}
 
+	KDB kdb;
 	KeySet ks;
-	this->_kdb.get (ks, user.getName ());
+	kdb.get (ks, user.getName ());
 	
 	Key k = ks.lookup (user.getName ());
 	if (!k)
@@ -416,7 +422,7 @@ bool StorageEngine::updateUser (model::User & user)
 	ks.append (user);
 	ks.append (user.getSubkeys ());
 
-	if (this->_kdb.set (ks, user.getName ()) >= 1)
+	if (kdb.set (ks, user.getName ()) >= 1)
 	{
 		users.erase (users.begin () + i);
 		users.push_back (user);
@@ -464,8 +470,9 @@ bool StorageEngine::deleteUser (model::User & user)
 		throw exception::UserNotFoundException ();
 	}
 
+	KDB kdb;
 	KeySet ks;
-	this->_kdb.get (ks, user.getName ());
+	kdb.get (ks, user.getName ());
 
 	Key k = ks.lookup (user.getName ());
 	if (!k)
@@ -475,7 +482,7 @@ bool StorageEngine::deleteUser (model::User & user)
 
 	ks.cut (user);
 
-	if (this->_kdb.set (ks, user.getName ()) >= 1)
+	if (kdb.set (ks, user.getName ()) >= 1)
 	{
 		users.erase (users.begin () + i);
 		return true;
@@ -574,8 +581,9 @@ void StorageEngine::loadAllUsers ()
 	std::string parentKeyStr = ELEKTRA_REST_USER_REPOSITORY_PATH;
 	std::regex regex (ELEKTRA_REST_USER_REPOSITORY_ENTRY_SCHEMA);
 
+	KDB kdb;
 	KeySet ks;
-	this->_kdb.get (ks, parentKeyStr);
+	kdb.get (ks, parentKeyStr);
 
 	auto elem = ks.begin ();
 	while (elem != ks.end ())
