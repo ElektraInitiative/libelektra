@@ -697,7 +697,6 @@ static int elektraCheckConflict (resolverHandle * pk, Key * parentKey)
 {
 	if (pk->isMissing)
 	{
-		pk->isMissing = 0;
 		// conflict already handled at file creation time, so just return successfully
 		return 0;
 	}
@@ -948,6 +947,9 @@ static int elektraSetCommit (resolverHandle * pk, Key * parentKey)
 	}
 
 	elektraUpdateFileTime (pk, parentKey);
+
+	// file is present now!
+	pk->isMissing = 0;
 
 	if (buf.st_mode != pk->filemode)
 	{
