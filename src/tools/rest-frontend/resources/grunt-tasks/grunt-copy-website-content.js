@@ -175,7 +175,7 @@ module.exports = function(grunt) {
 							for(var i = 0; i < target_files.length; i++) {
 								try {
 									if(fs.statSync(path.join(file, target_files[i])).isFile()) {
-										return '[' + text + '](' + url + target_files[i] + ')';
+										return '[' + text + '](' + path.join(url, target_files[i]) + ')';
 									}
 								} catch (error) {
 									// do nothing
