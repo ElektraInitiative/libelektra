@@ -20,7 +20,6 @@ struct test
 	char * expectedKeyName;
 	char * expectedBaseName;
 	char * expectedFRootName;
-	char * expectedParentName;
 };
 
 struct test tstKeyName[] = {
