@@ -219,7 +219,7 @@ static int elektraResolvePasswdHome (resolverHandle * p, Key * warningsKey)
 	size_t filenameSize = elektraStrLen (home) + elektraStrLen (p->path) - 1;
 
 	p->filename = elektraMalloc (filenameSize);
-	snprintf (p->filename, filenameSize, "%s/%s", home, (p->path) + 1);
+	snprintf (p->filename, filenameSize, "%s/%s", home, (p->path) + 2);
 
 	elektraFree (buf);
 	return 0;
