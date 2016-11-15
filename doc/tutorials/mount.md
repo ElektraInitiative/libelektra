@@ -200,7 +200,7 @@ This was a simple validation. For our demonstration of _mathcheck_ change this c
      check/math = := * ../pi * ../radius ../radius
 
 Now `user/example/mathtest/circle/area` and `user/example/mathtest/circle/circumference` contains empty values.
-But the mathtest plugin knows because of our metakeys how to compute the area (π\*radius^2) and the circumference (2\*radius\*π). So if we set the radius, the area and circumference of the circle will be set automatically:
+But the mathtest plugin knows because of our metakeys how to compute the area (pi\*radius^2) and the circumference (2\*radius\*pi). So if we set the radius, the area and circumference of the circle will be set automatically:
 
     $ kdb set user/example/circle/radius 10
 
