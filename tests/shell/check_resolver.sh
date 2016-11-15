@@ -170,6 +170,18 @@ check_resolver system b x/a @KDB_DB_SYSTEM@/x/a
 check_resolver system b /a /a
 check_resolver system b /a/b/c /a/b/c
 
+check_resolver system b '~/x' ~/x
+check_resolver system b '~/x/y' ~/x/y
+check_resolver system b '~//x' ~//x
+check_resolver system b '~/' ~/
+check_resolver system b '~' ~/
+
+check_resolver spec b '~/x' ~/x
+check_resolver spec b '~/x/y' ~/x/y
+check_resolver spec b '~//x' ~//x
+check_resolver spec b '~/' ~/
+check_resolver spec b '~' ~/
+
 check_resolver spec b x @CMAKE_INSTALL_PREFIX@/@KDB_DB_SPEC@/x
 check_resolver spec b x/a @CMAKE_INSTALL_PREFIX@/@KDB_DB_SPEC@/x/a
 check_resolver spec b /x /x
