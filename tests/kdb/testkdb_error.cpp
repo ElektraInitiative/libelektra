@@ -92,6 +92,41 @@ TEST_F (Error, Again)
 	ASSERT_EQ (ks.size (), 1) << "did not keep key at set (again)" << ks;
 }
 
+TEST_F (Error, AgainRepeat)
+{
+	using namespace kdb;
+	KDB kdb;
+	KeySet ks;
+
+	ks.append (Key ("system" + testRoot + "key", KEY_META, "trigger/error", "10", KEY_END));
+
+	ASSERT_EQ (kdb.get (ks, testRoot), 0) << "should be nothing to update";
+
+	Key parentKey (testRoot, KEY_END);
+	EXPECT_THROW (kdb.set (ks, parentKey), kdb::KDBException) << "could not trigger error";
+
+	EXPECT_TRUE (parentKey.getMeta<const kdb::Key> ("error"));
+	EXPECT_TRUE (parentKey.getMeta<const kdb::Key> ("error/number"));
+	EXPECT_EQ (parentKey.getMeta<int> ("error/number"), 10);
+
+	for (int i = 0; i < 10; ++i)
+	{
+		ks.append (Key ("system" + testRoot + "key", KEY_END));
+
+		EXPECT_NO_THROW (kdb.set (ks, parentKey)) << "no error trigger?";
+
+		ks.append (Key ("system" + testRoot + "key", KEY_META, "trigger/error", std::to_string (119 + i).c_str (), KEY_END));
+
+		EXPECT_THROW (kdb.set (ks, parentKey), kdb::KDBException) << "could not trigger error (again)";
+
+		EXPECT_TRUE (parentKey.getMeta<const kdb::Key> ("error"));
+		EXPECT_TRUE (parentKey.getMeta<const kdb::Key> ("error/number"));
+		EXPECT_EQ (parentKey.getMeta<int> ("error/number"), 119 + i);
+
+		ASSERT_EQ (ks.size (), 1) << "did not keep key at set (again)" << ks;
+	}
+}
+
 
 TEST_F (Error, CSimple)
 {
