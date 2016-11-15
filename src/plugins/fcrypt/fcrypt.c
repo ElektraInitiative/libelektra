@@ -178,7 +178,7 @@ static int fcryptGpgCallAndCleanup (Key * parentKey, KeySet * pluginConfig, char
  * @retval 1 on success
  * @retval -1 on error, errorKey holds an error description
  */
-static int encrypt (KeySet * pluginConfig, Key * parentKey)
+static int fcryptEncrypt (KeySet * pluginConfig, Key * parentKey)
 {
 	const size_t recipientCount = getRecipientCount (pluginConfig);
 	if (recipientCount == 0)
@@ -258,7 +258,7 @@ static int encrypt (KeySet * pluginConfig, Key * parentKey)
  * @retval 1 on success
  * @retval -1 on error, errorKey holds an error description
  */
-static int decrypt (KeySet * pluginConfig, Key * parentKey)
+static int fcryptDecrypt (KeySet * pluginConfig, Key * parentKey)
 {
 	int tmpFileFd = -1;
 	char * tmpFile = getTemporaryFileName (keyString (parentKey), &tmpFileFd);
@@ -360,13 +360,13 @@ int ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME, get) (Plugin * handle, KeySet 
 	if (s && s->getState == POSTGETSTORAGE)
 	{
 		// encrypt if this is a postgetstorage call
-		return encrypt (pluginConfig, parentKey);
+		return fcryptEncrypt (pluginConfig, parentKey);
 	}
 
 	// now this is a pregetstorage call
 	// next time treat the kdb get call as postgetstorage call to trigger encryption after the file has been read
 	s->getState = POSTGETSTORAGE;
-	return decrypt (pluginConfig, parentKey);
+	return fcryptDecrypt (pluginConfig, parentKey);
 }
 
 /**
@@ -377,7 +377,7 @@ int ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME, get) (Plugin * handle, KeySet 
 int ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME, set) (Plugin * handle, KeySet * ks ELEKTRA_UNUSED, Key * parentKey)
 {
 	KeySet * pluginConfig = elektraPluginGetConfig (handle);
-	int encryptionResult = encrypt (pluginConfig, parentKey);
+	int encryptionResult = fcryptEncrypt (pluginConfig, parentKey);
 	if (encryptionResult != 1) return encryptionResult;
 
 	/* set all keys */
