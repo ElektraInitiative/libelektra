@@ -112,6 +112,7 @@ module.exports = function(grunt) {
 					content = self.replaceTabBySpaces(content);
 					content = self.ensureAbsoluteLinkPaths(filepath, content);
 					content = self.ensureLinkToFile(content);
+					content = self.copyImages(filepath, content);
 					break;
 				default: // code files
 					content = self.replaceTabBySpaces(content);
@@ -182,6 +183,7 @@ module.exports = function(grunt) {
 								}
 							}
 						}
+						// otherwise keep the current link
 						return match;
 					} catch (error) {
 						return match;
@@ -190,6 +192,29 @@ module.exports = function(grunt) {
 			});
 		};
 
+		this.copyImages = function(filepath, text) {
+			return text.replace(/!\[(.+)\]\(([^\)]+)\)/gi, function(match, text, url) {
+				if(url.indexOf('://') > -1 || url.charAt(0) === '#') {
+					// do nothing for external images and refs
+					return match;
+				} else {
+					var file = path.normalize(path.join(root_dir, url));
+					try {
+						if(fs.statSync(file).isFile()) {
+							fs.copySync(file, path.normalize(path.join(target_dir, url)));
+							return match;
+						} else {
+							// the linked target is no file and therefore no image
+							throw false;
+						}
+					} catch (error) {
+						// could not copy file, image not available
+						grunt.log.warn('Warning: File ' + filepath + ' contains not available image ' + url);
+						return '';
+					}
+				}
+			});
+		};
 
 		// finally, run the build!
 		this.build();

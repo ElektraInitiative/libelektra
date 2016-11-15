@@ -50,7 +50,7 @@ module.exports = function(markedProvider, config, webStructure) {
 					   (title ? ' title="' + title + '"' : '') + '/>';
 			}
 			// internal link, load from github
-			return '<img src="' + config.github.website.root + config.github.website.paths.img_root + href + '"' +
+			return '<img src="' + config.website.content_root + href + '"' +
 				   (text ? ' alt="' + text + '"' : '') + (title ? ' title="' + title + '"' : '') + '/>';
 		}
 	});
