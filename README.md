@@ -206,7 +206,7 @@ For [OpenSUSE, CentOS, Fedora, RHEL and SLE](https://build.opensuse.org/package/
 Kai-Uwe Behrmann kindly provides packages [for download](http://software.opensuse.org/download.html?project=home%3Abekun%3Adevel&package=libelektra4).
 For Debian wheezy and jessie amd64 we provide latest builds. See build server below.
 
-If there are no packages available for your distribution, see the
+If there are no packages available for your distribution, or if you are using a different operating system like macOS, see the
 [installation document](doc/INSTALL.md).
 
 ### Download ###
@@ -227,7 +227,8 @@ following commands to compile it:
 
  * `mkdir build`
  * `cd build`
- * `cmake ..` or `ccmake ..`
+ * `cmake ..`
+ * `ccmake ..` (optional, provides a console based GUI to give an overview of the available compilation options and settings)
  * `make`
 
 Then you can use `sudo make install` to install it.

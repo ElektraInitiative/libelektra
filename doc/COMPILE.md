@@ -3,7 +3,7 @@
 ## Dependencies ##
 
 For the base system you only need cmake and build-essential (make, gcc,
-some unix tools).
+some unix tools). On Linux distributions these can usually be installed via the distribution's package management.
 
 To build documentation you need doxygen, graphviz and [ronn](https://github.com/rtomayko/ronn/blob/master/INSTALLING#files).
 
@@ -18,6 +18,10 @@ branch).
 
 For the plugins, please refer to the README.md of the respective plugin.
 
+### MacOS ###
+
+On macOS you have to install XCode (from the App Store) to get most of the build tools. cmake can be installed using [brew](http://brew.sh/). First install brew as described on their website. Then you can use the command `brew install cmake` to get the last missing dependency. For building the doxygen documentation, doxygen can be also installed via brew `brew install doxygen`.
+
 ## Preparation ##
 
 Elektra uses cmake.
@@ -25,9 +29,9 @@ Tested are cmake version 2.8.9 and version 3.0.2.
 
 To configure Elektra graphically (with curses) run (`..` belongs to command):
 
-    mkdir build && cd build && ccmake ..
+    mkdir build && cd build && cmake .. && ccmake ..
 
-and press 'c' to configure the cache. After applying the desired settings, 
+and press 'c' to configure the cache. After applying the desired settings,
 press 'g' to generate the make file.
 
 
@@ -380,7 +384,7 @@ You can pass:
 You can build Elektra using Code::Blocks under Gentoo:
 
 Precondition:
-Make sure you have a compiler, xml2 (for kdb tool) and xsl (see later) installed. 
+Make sure you have a compiler, xml2 (for kdb tool) and xsl (see later) installed.
 cmake configure will help you with that, it will make sure you don't forget something
 essential.
 
