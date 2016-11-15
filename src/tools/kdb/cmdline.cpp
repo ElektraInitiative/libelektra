@@ -478,7 +478,7 @@ kdb::Key Cmdline::createKey (int pos) const
 	// for (auto const & n : bookmarks) std::cout << "nks: " << n.second << std::endl;
 	if (name.empty ())
 	{
-		throw invalid_argument ("<empty string> is not a valid keyname");
+		throw invalid_argument ("<empty string> is not a valid keyname. Please enter one.");
 	}
 
 	if (name[0] == '+')
@@ -513,7 +513,11 @@ kdb::Key Cmdline::createKey (int pos) const
 
 	if (!root.isValid ())
 	{
-		throw invalid_argument (name + " is not a valid keyname");
+		throw invalid_argument (name + " is not a valid keyname" +
+								"\n\n"
+								"Please make sure that the key's namespace is valid and not missing (see 'man elektra-namespaces').\n"
+								"Please also ensure that the path is separated by a '/'."
+			);
 	}
 
 	return root;
