@@ -43,7 +43,7 @@ We list all available keys arranged below a key by:
 
 ## SEE ALSO
 
-- Get a [big picture](BIGPICTURE.md)
+- Get a [big picture](/doc/BIGPICTURE.md)
 - For more about tools go on reading [here](/doc/help/kdb.md).
 - To read more about the API (that explains what `kdbGet()`, `kdbSet()` and `KDB` is),
   please continue to read [here](http://doc.libelektra.org/api/current/html)

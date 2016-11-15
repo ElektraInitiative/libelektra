@@ -24,7 +24,7 @@ While the documentation covers how developers and administrators can use Elektra
 its research value.
 
 The research value of Elektra is two-fold:
-First Elektra allows us to intercept unmodified applications [@raab2016unanticipated] (by ''hijacking'' calls to their configuration system)  and extend their configuration access with the features Elektra has [@raab2015kps].
+First Elektra allows us to intercept unmodified applications (by ''hijacking'' calls to their configuration system)  [@raab2016unanticipated] and extend their configuration access with the features Elektra has [@raab2015kps].
 Second Elektra provides a plugin framework [@raab2016improving] where researchers can experiment with new configuration features.
 Elektra allows us to directly apply novel ideas on many existing applications for case studies.
 Furthermore a code generator [@raab2015safe] simplifies writing new applications [@raab2014program].

@@ -122,7 +122,7 @@ Features that rarely can be found elsewhere (at least in this combination):
 
 
 - Get a [big picture](BIGPICTURE.md)
-- Look into [the glossary](elektra-glossary.md).
+- Look into [the glossary](/doc/help/elektra-glossary.md).
 - For more about tools go on reading [here](/doc/help/kdb.md).
 - Another viewpoint [why to use Elektra is described here](/doc/help/elektra-introduction.md)
 

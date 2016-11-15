@@ -97,5 +97,5 @@ one of them would be useless.  Main differences are:
 - Continue reading the [tutorials](/doc/tutorials)
 - Read about [bindings](/src/bindings/)
 - Read about [tools](/src/tools/README.md)
-- Look into [the glossary](elektra-glossary.md).
+- Look into [the glossary](/doc/help/elektra-glossary.md).
 - Start reading about [command-line tools](/doc/help/kdb-introduction.md)
