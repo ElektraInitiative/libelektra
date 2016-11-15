@@ -73,15 +73,31 @@ same way Elektra has metadata that describe individual key/value pairs.
 In Elektra metadata is [defined globally](/doc/METADATA.ini) but implemented
 in many [plugins](/src/plugins/README.md).
 
+Implementations of file systems is not an easy task. The idea of
+FUSE (Filesystem in Userspace) is to make filesystem development
+easier by having the conveniences of userspace together with a
+helper library `libfuse`.  In particular this allowed developers to
+use any programming language and easier abstractions. Elektra also
+tries hard to make plugin development simple.  For example, special
+[interpreter plugins](/src/plugins/README.md) enable developers
+to also write plugins in different languages. Furthermore, [other
+libraries](/src/libs/README.md) also assist in creating plugins.
+
 Of course not every feature of virtual file systems or Elektra has
 its analogy in the other system. If they would solve the same problem,
 one of them would be useless.  Main differences are:
 
 - API (get/set vs. read/write)
+- commit semantics: one `kdbSet` can change many configuration files atomically.
+  This is important if you want, e.g., a new host in `/etc/hosts` and use this
+  host in some other configuration files.
 - [namespaces](/doc/help/elektra-namespaces.md) there are many places
   where the same configuration is stored.  All of these configuration
   files have the same semantics and they override each other (think of
   command-line arguments, `/etc`, `$HOME/.config`, ...)
+- Elektra interacts closely with the program execution environment
+  such as command-line parsing. The namespace `proc` is specifically
+  reserved for this purpose.
 - in Elektra it is possible to create holes (files without directories
   above them) which are needed because of these override semantics:
   we want to be able to override a single value without duplicating the
