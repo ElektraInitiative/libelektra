@@ -17,6 +17,13 @@
 						}
 					},
 					{
+						"name": "Big Picture",
+						"type": "staticfile",
+						"options": {
+							"path": "doc/BIGPICTURE.md"
+						}
+					},
+					{
 						"name": "Compiling",
 						"type": "staticfile",
 						"options": {

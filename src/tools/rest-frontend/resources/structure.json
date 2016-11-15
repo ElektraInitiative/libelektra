@@ -18,6 +18,14 @@
                         "slug": "why-elektra"
                     },
                     {
+                        "name": "Big Picture",
+                        "type": "file",
+                        "options": {
+                            "path": "doc/BIGPICTURE.md"
+                        },
+                        "slug": "big-picture"
+                    },
+                    {
                         "name": "Compiling",
                         "type": "file",
                         "options": {
@@ -76,6 +84,14 @@
                         "slug": "cascading"
                     },
                     {
+                        "name": "Mount Configuration Files",
+                        "type": "file",
+                        "options": {
+                            "path": "doc/tutorials/mount.md"
+                        },
+                        "slug": "mount-configuration-files"
+                    },
+                    {
                         "name": "Developers",
                         "type": "section"
                     },
@@ -104,12 +120,20 @@
                         "slug": "compilation-variants-of-plugins"
                     },
                     {
-                        "name": "python-kdb",
+                        "name": "Python Bindings",
                         "type": "file",
                         "options": {
                             "path": "doc/tutorials/python-kdb.md"
                         },
-                        "slug": "python-kdb"
+                        "slug": "python-bindings"
+                    },
+                    {
+                        "name": "Ruby Bindings",
+                        "type": "file",
+                        "options": {
+                            "path": "src/bindings/swig/ruby/README.md"
+                        },
+                        "slug": "ruby-bindings"
                     },
                     {
                         "name": "code generation",
@@ -124,72 +148,64 @@
                         "type": "section"
                     },
                     {
-                        "name": "mount",
-                        "type": "file",
-                        "options": {
-                            "path": "doc/tutorials/mount.md"
-                        },
-                        "slug": "mount"
-                    },
-                    {
-                        "name": "import",
+                        "name": "Import Configuration",
                         "type": "file",
                         "options": {
                             "path": "doc/tutorials/import.md"
                         },
-                        "slug": "import"
+                        "slug": "import-configuration"
                     },
                     {
-                        "name": "export",
+                        "name": "Export Configuration",
                         "type": "file",
                         "options": {
                             "path": "doc/tutorials/export.md"
                         },
-                        "slug": "export"
+                        "slug": "export-configuration"
                     },
                     {
-                        "name": "intercept env",
+                        "name": "Intercept Environment",
                         "type": "file",
                         "options": {
                             "path": "src/bindings/intercept/env/README.md"
                         },
-                        "slug": "intercept-env"
+                        "slug": "intercept-environment"
                     },
                     {
-                        "name": "intercept fs",
+                        "name": "Intercept File System",
                         "type": "file",
                         "options": {
                             "path": "src/bindings/intercept/fs/README.md"
                         },
-                        "slug": "intercept-fs"
+                        "slug": "intercept-file-system"
                     },
                     {
-                        "name": "merge",
+                        "name": "Merge Configuration",
                         "type": "file",
                         "options": {
                             "path": "doc/tutorials/merge.md"
                         },
-                        "slug": "merge"
+                        "slug": "merge-configuration"
                     },
                     {
-                        "name": "validation",
+                        "name": "Validate Configuration",
                         "type": "file",
                         "options": {
                             "path": "doc/tutorials/validation.md"
                         },
-                        "slug": "validation"
+                        "slug": "validate-configuration"
                     },
                     {
                         "name": "Package Maintainers",
                         "type": "section"
                     },
                     {
-                        "name": "elektra-merge-integration",
+                        "name": "Merge Configuration Files",
                         "type": "file",
                         "options": {
                             "path": "doc/tutorials/elektra-merge-integration.md"
                         },
-                        "slug": "elektra-merge-integration"
+                        "slug": "merge-configuration-files"
                     }
                 ]
             },
@@ -929,6 +945,14 @@
                         "slug": "elektra-error-handling"
                     },
                     {
+                        "name": "Elektra Faq",
+                        "type": "file",
+                        "options": {
+                            "path": "doc/help/elektra-faq.md"
+                        },
+                        "slug": "elektra-faq"
+                    },
+                    {
                         "name": "Elektra Glossary",
                         "type": "file",
                         "options": {
@@ -1626,6 +1650,14 @@
                             "path": "src/bindings/jna/README.md"
                         },
                         "slug": "jna"
+                    },
+                    {
+                        "name": "swig_ruby",
+                        "type": "file",
+                        "options": {
+                            "path": "src/bindings/swig/ruby/README.md"
+                        },
+                        "slug": "swig_ruby"
                     }
                 ]
             },
