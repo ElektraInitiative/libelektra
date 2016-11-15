@@ -121,12 +121,16 @@ or if specific jobs should be started:
 * jenkins build [fast](http://build.libelektra.org:8080/job/elektra-mergerequests-fast/) please
 * jenkins build [gcc](http://build.libelektra.org:8080/job/elektra-gcc/) please
 * jenkins build [gcc-configure-debian](http://build.libelektra.org:8080/job/elektra-gcc-configure-debian/) please
+* jenkins build [gcc-configure-debian-debug](http://build.libelektra.org:8080/job/elektra-gcc-configure-debian-debug) please
 * jenkins build [gcc-configure-debian-intree](http://build.libelektra.org:8080/job/elektra-gcc-configure-debian-intree/) please
+* jenkins build [gcc-configure-debian-log](http://build.libelektra.org:8080/job/elektra-gcc-configure-debian-log) please
 * jenkins build [gcc-configure-debian-musl](http://build.libelektra.org:8080/job/elektra-gcc-configure-debian-musl/) please
+* jenkins build [gcc-configure-debian-nokdbtest](http://build.libelektra.org:8080/job/elektra-gcc-configure-debian-nokdbtest/) please
 * jenkins build [gcc-configure-debian-notest](http://build.libelektra.org:8080/job/elektra-gcc-configure-debian-notest/) please
 * jenkins build [gcc-configure-debian-shared](http://build.libelektra.org:8080/job/elektra-gcc-configure-debian-shared/) please
 * jenkins build [gcc-configure-debian-stretch](http://build.libelektra.org:8080/job/elektra-gcc-configure-debian-stretch/) please
 * jenkins build [gcc-configure-debian-wheezy](http://build.libelektra.org:8080/job/elektra-gcc-configure-debian-wheezy/) please
+* jenkins build [gcc-configure-debian-withspace](http://build.libelektra.org:8080/job/elektra-gcc-configure-debian-withspace/) please
 * jenkins build [gcc-configure-xdg](http://build.libelektra.org:8080/job/elektra-gcc-configure-xdg/) please
 * jenkins build [gcc-i386](http://build.libelektra.org:8080/job/elektra-gcc-i386/) please
 * jenkins build [gcc47-all](http://build.libelektra.org:8080/job/elektra-gcc47-all/) please
