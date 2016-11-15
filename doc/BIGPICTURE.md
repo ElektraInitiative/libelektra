@@ -53,7 +53,7 @@ many other configuration files are semi-structured.
 To have multiple file systems present at the same time a virtual
 file system is able to mount (2) concrete file systems and thus give
 applications a way to uniformly access them.  Similarly, Elektra also
-implements a [mount](doc/help/elektra-mounting.md) functionality in
+implements a [mount](/doc/help/elektra-mounting.md) functionality in
 its core.  In Elektra a [contract](/doc/CONTRACT.ini) specifies the
 obligations between plugins.
 
@@ -63,8 +63,8 @@ you to combine features of different file systems. For example,
 [eCryptfs](https://wiki.archlinux.org/index.php/ECryptfs) allows you
 to encrypt directories or files. In Elektra, stacking plugins is a core
 feature and heavily used to avoid feature-bloated plugins.  For example,
-the [crypto plugin](src/plugins/crypto/README.md) allows you to encrypt
-individual keys or the [iconv plugin](src/plugins/iconv/README.md)
+the [crypto plugin](/src/plugins/crypto/README.md) allows you to encrypt
+individual keys or the [iconv plugin](/src/plugins/iconv/README.md)
 to change the character encoding.
 
 In file systems metadata describes information about files, e.g.
