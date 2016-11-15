@@ -79,7 +79,7 @@ even for the most basic system programs.
 The API follows an object-oriented design, and there are 3 main classes
 as shown by the figure:
 
-![Elektra Classes](classes.png)
+![Elektra Classes](/doc/images/classes.png)
 
 Some general things you can do with each class are:
 
