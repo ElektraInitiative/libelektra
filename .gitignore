@@ -103,7 +103,7 @@ Temporary Items
 
 # Linker output
 *.ilk
-*.map
+# *.map
 *.exp
 
 # Precompiled Headers
@@ -169,7 +169,6 @@ dkms.conf
 CMakeCache.txt
 CMakeFiles
 CMakeScripts
-Makefile
 cmake_install.cmake
 install_manifest.txt
 CTestTestfile.cmake
