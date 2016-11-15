@@ -3,9 +3,9 @@ kdb-file(1) -- Displays which file a key is stored in
 
 ## SYNOPSIS
 
-`kdb file <path>`  
+`kdb file <key-name>`  
 
-Where `path` is the path of a key.  
+Where `key-name` is the path of a key.  
 
 ## DESCRIPTION
 
@@ -45,3 +45,4 @@ To find which file a key is stored in:
 
 - [elektra-mounting(7)](elektra-mounting.md)
 - [elektra-namespaces(7)](elektra-namespaces.md)
+- [elektra-key-names(7)](elektra-key-names.md) for an explanation of key names.

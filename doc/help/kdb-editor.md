@@ -89,3 +89,4 @@ Or set a new editor as default using:
 ## SEE ALSO
 
 - [elektra-merge-strategy(7)](elektra-merge-strategy.md)
+- [elektra-key-names(7)](elektra-key-names.md) for an explanation of key names.

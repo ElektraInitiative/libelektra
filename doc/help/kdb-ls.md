@@ -34,6 +34,6 @@ To list all keys below `user/example`:
 
 ## SEE ALSO
 
-If the user would also like to see the values of the keys below `path` then you should
+- If the user would also like to see the values of the keys below `path` then you should
 consider the [kdb-export(1)](kdb-export.md) command.
-
+- [elektra-key-names(7)](elektra-key-names.md) for an explanation of key names.

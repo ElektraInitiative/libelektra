@@ -70,3 +70,4 @@ To remove it:
 
 - How to get metadata: [kdb-getmeta(1)](kdb-getmeta.md)
 - [elektra-metadata(7)](elektra-metadata.md)
+- [elektra-key-names(7)](elektra-key-names.md) for an explanation of key names.

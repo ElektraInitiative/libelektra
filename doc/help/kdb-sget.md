@@ -3,9 +3,9 @@ kdb-sget(1) -- Get the value of a key stored in the key database from a script
 
 ## SYNOPSIS
 
-`kdb sget <path> <default-value>`
+`kdb sget <key-name> <default-value>`
 
-Where `path` is the full path to the key and `default-value` is the value that should be printed if no value can be retrieved.
+Where `key-name` is the full path to the key and `default-value` is the value that should be printed if no value can be retrieved.
 
 ## DESCRIPTION
 
@@ -38,3 +38,4 @@ To get the value of a key using a cascading lookup or return the value `notfound
 ## SEE ALSO
 
 - [kdb-get(1)](kdb-get.md)
+- [elektra-key-names(7)](elektra-key-names.md) for an explanation of key names.
