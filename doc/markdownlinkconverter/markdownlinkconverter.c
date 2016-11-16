@@ -11,6 +11,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/stat.h>
 
 #define UNUSED __attribute__ ((unused))
 
@@ -432,8 +433,8 @@ int main (int argc, char * argv[])
 static void printTarget (FILE * output, char * target, char * inputFilename, int indexofElektraRoot, bool isMarkdown, int lineCount)
 {
 	char * backupTarget = target;
-	char pathToLink[strlen (inputFilename) + strlen (target) + 10 + 1];
-	// pathToLink cannot be longer than both stings + "README.md" + terminating \0
+	char pathToLink[strlen (inputFilename) + strlen (target) + 11 + 1];
+	// pathToLink cannot be longer than both stings + "_README.md" + terminating \0
 	strcpy (pathToLink, inputFilename);
 	// distinguish between relative and absolute targets
 	if (target[0] != '/')
@@ -468,20 +469,24 @@ static void printTarget (FILE * output, char * target, char * inputFilename, int
 		++target; // remove starting /
 		strcpy (&pathToLink[indexofElektraRoot], target);
 	}
-	// if target ends with /, link it to README.md
-	if (target[strlen (target) - 1] == '/')
-	{
-		strcpy (&pathToLink[strlen (pathToLink)], "README.md");
-	}
-	// validate link
-	FILE * test = fopen (pathToLink, "r");
-	if (!test)
+
+	// check if dir and validate link
+	struct stat st;
+	if (stat (pathToLink, &st) < 0)
 	{
 		fprintf (stderr, INVALIDLINK_MESS, inputFilename, lineCount, backupTarget);
+		return;
 	}
-	else
+	if (S_ISDIR (st.st_mode))
 	{
-		fclose (test);
+		if (target[strlen (target) - 1] == FOLDER_DELIMITER)
+		{
+			strcpy (&pathToLink[strlen (pathToLink)], "README.md");
+		}
+		else
+		{
+			strcpy (&pathToLink[strlen (pathToLink)], "_README.md");
+		}
 	}
 	if (isMarkdown)
 	{
