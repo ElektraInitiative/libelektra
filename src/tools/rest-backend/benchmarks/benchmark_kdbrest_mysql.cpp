@@ -148,11 +148,13 @@ void addIndexes (sql::Connection * con)
 
 	stmt = con->createStatement ();
 
-	stmt->execute("ALTER TABLE `snippets` ADD FULLTEXT INDEX `organization` (`organization`)");
-	stmt->execute("ALTER TABLE `snippets` ADD FULLTEXT INDEX `application` (`application`)");
-	stmt->execute("ALTER TABLE `snippets` ADD FULLTEXT INDEX `scope` (`scope`)");
-	stmt->execute("ALTER TABLE `snippets` ADD FULLTEXT INDEX `slug` (`slug`)");
-	stmt->execute("ALTER TABLE `snippets` ADD FULLTEXT INDEX `full_key` (`organization`, `application`,"
+	stmt->execute("ALTER TABLE `users` ADD UNIQUE INDEX `name` (`name`)");
+
+	stmt->execute("ALTER TABLE `snippets` ADD INDEX `organization` (`organization`)");
+	stmt->execute("ALTER TABLE `snippets` ADD INDEX `application` (`application`)");
+	stmt->execute("ALTER TABLE `snippets` ADD INDEX `scope` (`scope`)");
+	stmt->execute("ALTER TABLE `snippets` ADD INDEX `slug` (`slug`)");
+	stmt->execute("ALTER TABLE `snippets` ADD UNIQUE INDEX `full_key` (`organization`, `application`,"
 			"`scope`, `slug`)");
 	stmt->execute("ALTER TABLE `snippets` ADD FULLTEXT INDEX `title` (`title`)");
 	stmt->execute("ALTER TABLE `snippets` ADD FULLTEXT INDEX `description` (`description`)");
