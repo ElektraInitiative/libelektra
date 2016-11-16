@@ -206,7 +206,7 @@ you can access a single instances' configuration via `clusterd` the same way you
 
 ### get configuration [GET]
 
-this is the same as calling `kdb get {path}` on the instance
+get the content and subkeys of the specified `path` in the elektra key database
 
 + Response 200 (application/json)
     + Attributes (KDBResponse)
@@ -226,7 +226,7 @@ this is the same as calling `kdb get {path}` on the instance
 
 ### set configuration [PUT]
 
-this is the same as calling `kdb set {path}` on the instance
+set the content of the specified `path` in the elektra key database
 
 + Request (text/plain)
 
@@ -261,7 +261,7 @@ this is the same as calling `kdb set {path}` on the instance
 
 ### delete configuration [DELETE]
 
-this is the same as calling `kdb rm {path}` on the instance
+delete the key on the specified `path` from the elektra key database
 
 + Response 204
 
