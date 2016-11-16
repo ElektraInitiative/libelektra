@@ -40,7 +40,7 @@ writeBlock()
 	fi
 	if [ ! -z "$OUTBUF" ];
 	then
-		tmp=$(echo "$OUTBUF" | awk -v RS="" '{gsub (/\n/,"⏎")}1')
+		tmp=$(printf "%q" "$OUTBUF" | awk -v RS="" '{gsub (/\n/,"⏎")}1')
 		echo "STDOUT: $tmp" >> "$TMPFILE"
 	else
 		if [ ! -z "$STDOUT" ]
