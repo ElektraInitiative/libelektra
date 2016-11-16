@@ -9,7 +9,6 @@ add_headers (HDR_FILES)
 add_cppheaders (HDR_FILES)
 add_toolheaders (HDR_FILES)
 
-file (GLOB rest-backend_SRCS ../*.cpp)
 file (GLOB TESTS test_*.cpp)
 foreach (file ${TESTS})
     get_filename_component (name ${file} NAME_WE)

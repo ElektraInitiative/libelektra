@@ -95,7 +95,7 @@ void RootApp::version ()
 		data["elektra"]["major"] = KDB_VERSION_MAJOR;
 		data["elektra"]["minor"] = KDB_VERSION_MINOR;
 		data["elektra"]["micro"] = KDB_VERSION_MICRO;
-		data["api"] = std::to_string (ELEKTRA_REST_API_VERSION);
+		data["api"] = ELEKTRA_REST_API_VERSION;
 
 		RootApp::setOk (response (), data, "application/json");
 	}
