@@ -25,22 +25,15 @@ def getSources (pluginDir):
 def hookNodoc (pluginName, pluginDir, tags):
 	tag = "nodoc"
 	md = open (os.path.join(pluginDir, "README.md"), "r")
-	p = re.compile (".*?(E|e)xample.*?")
-	ex = False
-	count = 0;
-	for md_line in md:
-		++count
-		if p.match (md_line):
-			ex = True
-	md.close ()
-	if count > 40 and ex:
-		if (tag in tags):
-				print ("AUTO: remove "+ tag +" to "+ pluginName)
-				tags.remove (tag)
-	else:
+	if (len (md.readlines ()) < 40):
 		if tag not in tags:
 			print ("AUTO: add "+ tag +" to "+ pluginName)
 			tags.append (tag)
+	else:
+		if (tag in tags):
+			print ("AUTO: remove "+ tag +" to "+ pluginName)
+			tags.remove (tag)
+	md.close ()
 
 def hookNodep (pluginName, pluginDir, tags):
 	tag = "nodep"
