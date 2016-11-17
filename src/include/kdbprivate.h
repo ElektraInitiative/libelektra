@@ -20,6 +20,7 @@
 #ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
 #include <kdbopmphm.h>
 #endif
+#include <kdbglobal.h>
 
 #include <limits.h>
 
@@ -239,54 +240,6 @@ struct _KeySet
 	ksflag_t flags;
 };
 
-
-/**
- * Helper for identifying global plugin positions
- */
-
-#define FOREACH_POSITION(POSITION) \
-	POSITION(PREROLLBACK) \
-	POSITION(ROLLBACK) \
-	POSITION(POSTROLLBACK) \
-	POSITION(GETRESOLVER) \
-	POSITION(PREGETSTORAGE) \
-	POSITION(GETSTORAGE) \
-	POSITION(POSTGETSTORAGE) \
-	POSITION(SETRESOLVER) \
-	POSITION(POSTGETCLEANUP) \
-	POSITION(PRESETSTORAGE) \
-	POSITION(SETSTORAGE) \
-	POSITION(PRESETCLEANUP) \
-	POSITION(PRECOMMIT) \
-	POSITION(COMMIT) \
-	POSITION(POSTCOMMIT) \
-	POSITION(NR_GLOBAL_POSITIONS)
-
-#define FOREACH_SUBPOSITION(SUBPOSITION) \
-	SUBPOSITION(INIT) \
-	SUBPOSITION(MAXONCE) \
-	SUBPOSITION(FOREACH) \
-	SUBPOSITION(DEINIT) \
-	SUBPOSITION(NR_GLOBAL_SUBPOSITIONS)
-
-#define GENERATE_ENUM(ENUM) ENUM,
-#define GENERATE_STRING(STRING) #STRING,
-
-typedef enum {
-	FOREACH_POSITION(GENERATE_ENUM)
-} GlobalpluginPositions;
-
-typedef enum {
-	FOREACH_SUBPOSITION(GENERATE_ENUM)
-} GlobalpluginSubPositions;
-
-static const char *GlobalpluginPositionsStr[] = {
-	FOREACH_POSITION(GENERATE_STRING)
-};
-
-static const char *GlobalpluginSubPositionsStr[] = {
-	FOREACH_SUBPOSITION(GENERATE_STRING)
-};
 
 /**
  * The access point to the key database.
@@ -582,6 +535,11 @@ int keyNameIsProc (const char * keyname);
 int keyNameIsDir (const char * keyname);
 int keyNameIsSystem (const char * keyname);
 int keyNameIsUser (const char * keyname);
+
+/* global plugin calls */
+void elektraGlobalGet (KDB * handle, KeySet * ks, Key * parentKey, int position, int subPosition);
+void elektraGlobalSet (KDB * handle, KeySet * ks, Key * parentKey, int position, int subPosition);
+void elektraGlobalError (KDB * handle, KeySet * ks, Key * parentKey, int position, int subPosition);
 
 /** Test a bit. @see set_bit(), clear_bit() */
 #define test_bit(var, bit) ((var) & (bit))
