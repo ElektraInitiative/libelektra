@@ -91,7 +91,7 @@ until either a key with the same strategy is found (which is simply merged as de
 or the target key is found. The keys are always processed in the order of an ordered keyset.
 For example consider the following keyset:
 
-    user/conifg/key0
+    user/config/key0
     user/config/key1 = value1
     user/config/key2 = value2
     user/config/key3 = value3
