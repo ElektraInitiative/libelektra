@@ -48,6 +48,35 @@ Access to **kdb** can be retrieved using the Lua import
 
     require("kdb")
 
+## Example ##
+
+An example script that prints some information for each method call would be:
+
+    function elektraOpen(config, errorKey)
+	    print("Lua script method 'elektraOpen' called")
+	    return 0
+    end
+
+    function elektraGet(returned, parentKey)
+	    print("Lua script method 'elektraGet' called")
+	    return 1
+    end
+
+    function elektraSet(returned, parentKey)
+	    print("Lua script method 'elektraSet' called")
+	    return 1
+    end
+
+    function elektraError(returned, parentKey)
+	    print("Lua script method 'elektraError' called")
+	    return 1
+    end
+
+    function elektraClose(errorKey)
+	    print("Lua script method 'elektraClose' called")
+	    return 0
+    end
+
 ## Disclaimer ##
 
 Note, this is a technical preview. It might have severe bugs
