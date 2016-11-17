@@ -6,7 +6,7 @@ Title: Remove instance
 Scope: Setup
 Level: User Goal
 Actors: User (usually a sysadmin)
-Brief: User removes an instance via the client.
+Brief: User removes an instance from elektra-web.
 
 ## Scenarios
 

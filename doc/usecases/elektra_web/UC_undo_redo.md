@@ -16,4 +16,4 @@ Alternative scenario: Instance not online. The user is informed about the issue.
 Error scenario: Technical problems while configuring the instance. The user is informed about the issue. If a cluster, changes will be written when the affected instance comes back online.
 Postcondition: The updated configuration is persisted to the instance/s.
 Non-functional Constraints:
-	- Essential functionality
+	- Ideally every operation should be undoable
