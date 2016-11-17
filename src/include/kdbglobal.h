@@ -15,7 +15,7 @@
 /**
  * Helper for identifying global plugin positions
  */
-
+// clang-format off
 #define FOREACH_POSITION(POSITION) \
 	POSITION(PREROLLBACK) \
 	POSITION(ROLLBACK) \
@@ -43,6 +43,7 @@
 
 #define GENERATE_ENUM(ENUM) ENUM,
 #define GENERATE_STRING(STRING) #STRING,
+// clang-format on
 
 typedef enum {
 	FOREACH_POSITION(GENERATE_ENUM)
