@@ -93,7 +93,7 @@ TEST_F (Error, Again)
 	ASSERT_EQ (ks.size (), 1) << "did not keep key at set (again)" << ks;
 }
 
-TEST_F (Error, AgainRepeat)
+TEST_F (Error, DISABLED_AgainRepeat)
 {
 	using namespace kdb;
 	KDB kdb;
