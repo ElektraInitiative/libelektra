@@ -45,20 +45,12 @@
 #define GENERATE_STRING(STRING) #STRING,
 // clang-format on
 
-typedef enum {
-	FOREACH_POSITION(GENERATE_ENUM)
-} GlobalpluginPositions;
+typedef enum { FOREACH_POSITION (GENERATE_ENUM) } GlobalpluginPositions;
 
-typedef enum {
-	FOREACH_SUBPOSITION(GENERATE_ENUM)
-} GlobalpluginSubPositions;
+typedef enum { FOREACH_SUBPOSITION (GENERATE_ENUM) } GlobalpluginSubPositions;
 
-static const char *GlobalpluginPositionsStr[] = {
-		FOREACH_POSITION(GENERATE_STRING)
-};
+static const char * GlobalpluginPositionsStr[] = { FOREACH_POSITION (GENERATE_STRING) };
 
-static const char *GlobalpluginSubPositionsStr[] = {
-		FOREACH_SUBPOSITION(GENERATE_STRING)
-};
+static const char * GlobalpluginSubPositionsStr[] = { FOREACH_SUBPOSITION (GENERATE_STRING) };
 
-#endif //ELEKTRA_KDBGLOBAL_H
+#endif // ELEKTRA_KDBGLOBAL_H
