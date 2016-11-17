@@ -15,7 +15,7 @@ export default function clustersReducer (state = [], action) {
         (cluster) =>
           cluster.id === action.result.id
           ? action.result
-          : instance
+          : cluster
       )
 
     case CLUSTERS_SUCCESS: // cluster list pulled from clusterd, update state
