@@ -640,8 +640,8 @@ static int elektraGetDoUpdateWithGlobalHooks (KDB * handle, Split * split, KeySe
 			{
 				// Ohh, an error occurred,
 				// lets stop the process.
-				elektraGlobalGet (handle, ks, parentKey, GETSTORAGE, DEINIT);
-				elektraGlobalGet (handle, ks, parentKey, POSTGETSTORAGE, DEINIT);
+				elektraGlobalError (handle, ks, parentKey, GETSTORAGE, DEINIT);
+				elektraGlobalError (handle, ks, parentKey, POSTGETSTORAGE, DEINIT);
 				return -1;
 			}
 		}
@@ -899,7 +899,7 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 
 error:
 	keySetName (parentKey, keyName (initialParent));
-	elektraGlobalGet (handle, ks, parentKey, POSTGETSTORAGE, MAXONCE);
+	elektraGlobalError (handle, ks, parentKey, POSTGETSTORAGE, MAXONCE);
 
 	keySetName (parentKey, keyName (initialParent));
 	if (handle) splitUpdateFileName (split, handle, parentKey);
@@ -924,7 +924,6 @@ error:
 static int elektraSetPrepare (Split * split, Key * parentKey, Key ** errorKey, Plugin * hooks[][NR_GLOBAL_SUBPOSITIONS])
 {
 	int any_error = 0;
-
 	for (size_t i = 0; i < split->size; i++)
 	{
 		for (size_t p = 0; p < COMMIT_PLUGIN; ++p)
