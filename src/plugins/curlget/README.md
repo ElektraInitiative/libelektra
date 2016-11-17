@@ -5,7 +5,7 @@
 - infos/provides =
 - infos/recommends =
 - infos/placements = pregetstorage
-- infos/status = readonly preview unfinished nodoc
+- infos/status = unittest configurable readonly preview unfinished nodoc
 - infos/metadata =
 - infos/description = mount remote config files via curl
 

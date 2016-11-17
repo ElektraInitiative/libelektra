@@ -4,7 +4,7 @@
 - infos/provides = storage/tcl
 - infos/needs = code
 - infos/placements = setstorage getstorage
-- infos/status = unfinished nodoc concept
+- infos/status = unfinished concept
 - infos/description = Serialize tcl lists
 
 ## Introduction ##

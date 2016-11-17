@@ -4,7 +4,7 @@
 - infos/provides = conv
 - infos/needs =
 - infos/placements = postgetstorage presetstorage
-- infos/status = maintained unittest libc configurable
+- infos/status = maintained unittest libc
 - infos/description = Converts values of keys between charsets
 
 ## Introduction ##

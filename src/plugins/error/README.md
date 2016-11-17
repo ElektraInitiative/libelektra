@@ -5,7 +5,7 @@
 - infos/needs =
 - infos/recommends =
 - infos/placements = presetstorage
-- infos/status = productive maintained conformant shelltest unittest tested nodep libc discouraged
+- infos/status = productive maintained conformant shelltest tested nodep libc configurable discouraged
 - infos/metadata = trigger/warnings trigger/error
 - infos/description = Provokes errors for testing the plugin framework
 
