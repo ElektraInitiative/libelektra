@@ -196,7 +196,7 @@ TEST_F (Error, Persists)
 	EXPECT_STREQ (keyString (ckdb::keyGetMeta (parentKey, "error/number")), "10");
 
 
-	keyDel (ksLookup (ks, keyNew (("system" + testRoot + "key").c_str (), KEY_END), KDB_O_POP));
+	keyDel (ksLookup (ks, keyNew (("system" + testRoot + "key").c_str (), KEY_END), KDB_O_POP | KDB_O_DEL));
 
 	EXPECT_EQ (kdbSet (kdb, ks, parentKey), 0) << "kdbSet failed";
 	EXPECT_TRUE (ckdb::keyGetMeta (parentKey, "error"));

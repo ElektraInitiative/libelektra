@@ -792,6 +792,7 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 		keyDel (initialParent);
 		splitDel (split);
 		errno = errnosave;
+		keyDel (oldError);
 		return 0;
 	case -1:
 		goto error;
@@ -1203,10 +1204,7 @@ int kdbSet (KDB * handle, KeySet * ks, Key * parentKey)
 		keyDel (initialParent);
 		splitDel (split);
 		errno = errnosave;
-		if (!syncstate)
-		{
-			keyDel (oldError);
-		}
+		keyDel (oldError);
 		return syncstate == 0 ? 0 : -1;
 	}
 	ELEKTRA_ASSERT (syncstate == 1, "syncstate not 1, but %d", syncstate);
