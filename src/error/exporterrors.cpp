@@ -230,7 +230,8 @@ ostream & operator<< (ostream & os, parse_t & p)
 				   << "			}" << endl
 				   << "			keySetMeta(errorKey, \"warnings\", &buffer[10]);" << endl
 				   << "		} else	keySetMeta(errorKey, \"warnings\", \"00\");" << endl
-				   << "		keySetMeta(errorKey, buffer, \"number description ingroup module file line function reason\");"
+				   << "		keySetMeta(errorKey, buffer, \"number description ingroup module file line function "
+				      "reason\");"
 				   << endl
 				   << "		strcat(buffer, \"/number\" );" << endl
 				   << "		keySetMeta(errorKey, buffer, \"" << i << "\");" << endl
@@ -277,7 +278,7 @@ ostream & operator<< (ostream & os, parse_t & p)
 					os << "	va_list arg;" << endl
 					   << "	va_start(arg, line);" << endl
 					   << "	char * r = elektraVFormat(reason, arg);" << endl
-					   << " 	if(meta)"<< endl
+					   << " 	if(meta)" << endl
 					   << "			keySetMeta(errorKey, buffer, r);" << endl
 					   << " 	else" << endl
 					   << "			keySetMeta(errorKey, \"error/reason\", "
@@ -288,7 +289,7 @@ ostream & operator<< (ostream & os, parse_t & p)
 				}
 				else
 				{
-					os << " 	if(meta)"<< endl
+					os << " 	if(meta)" << endl
 					   << "			keySetMeta(errorKey, buffer, reason);" << endl
 					   << " 	else" << endl
 					   << "			keySetMeta(errorKey, \"error/reason\", reason);" << endl;
