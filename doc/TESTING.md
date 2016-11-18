@@ -61,6 +61,7 @@ You have some options to avoid running them as root:
 
     set_property(TEST testname PROPERTY LABELS memleak)
 
+
 ## Strategy ##
 
 The testing must happen on every level of the software to achieve a
@@ -138,12 +139,28 @@ The script tests have different purposes:
 - Conventions tests (do internal checks that check for common problems)
 - Meta Test Suites (run other test suites)
 
-### Other kind of Tests ###
-
-Bindings, other than C++ typically have their own way of testing.
-
-#### Fuzz Testing ####
+### Fuzz Testing ###
 
 Copy some import files to testcase_dir and run:
 
     /usr/src/afl/afl-1.46b/./afl-fuzz -i testcase_dir -o findings_dir bin/kdb import user/tests
+
+### ASAN ###
+
+To enable sanitize checks use `ENABLE_ASAN` via cmake.
+
+Then, to use ASAN, run `run_asan` in the build directory, which simply does:
+
+	ASAN_OPTIONS=symbolize=1 ASAN_SYMBOLIZER_PATH=$(shell which llvm-symbolizer) make run_all
+
+It could also happen that you need to preload ASAN library, e.g.:
+
+	LD_PRELOAD=/usr/lib/clang/3.8.0/lib/linux/libclang_rt.asan-x86_64.so run_asan
+
+or on Debian:
+
+	LD_PRELOAD=/usr/lib/llvm-3.8/lib/clang/3.8.1/lib/linux/libclang_rt.asan-x86_64.so run_asan
+
+### cbmc ###
+
+For bounded model checking tests, see `scripts/cbmc`.

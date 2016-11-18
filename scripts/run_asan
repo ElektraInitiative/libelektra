@@ -1,0 +1,3 @@
+#!/bin/sh
+
+ASAN_OPTIONS=symbolize=1 ASAN_SYMBOLIZER_PATH=$(shell which llvm-symbolizer) make run_all

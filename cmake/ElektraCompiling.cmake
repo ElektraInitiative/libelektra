@@ -96,22 +96,22 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "Intel")
 endif ()
 
 if (ENABLE_ASAN)
-	set (EXTRA_FLAGS "${EXTRA_FLAGS} -fsanitize=undefined -fsanitize=integer")
-	set (EXTRA_FLAGS "${EXTRA_FLAGS} -fsanitize=address -fno-omit-frame-pointer")
+	set (EXTRA_FLAGS "${EXTRA_FLAGS} -fsanitize=undefined -fsanitize=address -fno-omit-frame-pointer")
 	set (CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -lubsan")
 	set (ASAN_LIBRARY "-lasan") #this is needed for GIR to put asan in front
+
+	if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+		set (EXTRA_FLAGS "${EXTRA_FLAGS} -fsanitize=integer")
+	endif ()
+
 	if (CMAKE_COMPILER_IS_GNUCXX)
 		set (CMAKE_SHARED_LINKER_FLAGS "-fsanitize=address ${CMAKE_SHARED_LINKER_FLAGS}")
 		# this is needed because of wrong pthread detection https://gcc.gnu.org/bugzilla/show_bug.cgi?id=69443
 		find_package(Threads)
 		set (THREAD_LIBS_AS_NEEDED "${COMMON_FLAGS} -Wl,--as-needed ${CMAKE_THREAD_LIBS_INIT}")
 	endif ()
+
 	set (DISABLE_LSAN "LSAN_OPTIONS=detect_leaks=0") #this is needed so ASAN is not used during GIR compilation
-	message (STATUS "To use ASAN:\n"
-		 "   ASAN_OPTIONS=symbolize=1 ASAN_SYMBOLIZER_PATH=$(shell which llvm-symbolizer) ./bin \n"
-		 "   It could also happen that you need to preload ASAN library: \n"
-		 "   e.g. LD_PRELOAD=/usr/lib/clang/3.8.0/lib/linux/libclang_rt.asan-x86_64.so ./bin \n"
-	)
 endif ()
 
 #
