@@ -33,7 +33,7 @@ inline std::ostream & printError (std::ostream & os, kdb::Key const & error)
 			return os;
 		}
 
-		os << "Error (#" << error.getMeta<std::string> ("error/number") << ") occurred!" << std::endl;
+		os << "Sorry, the error (#" << error.getMeta<std::string> ("error/number") << ") occurred!" << std::endl;
 		os << "Description: " << error.getMeta<std::string> ("error/description") << std::endl;
 		os << "Ingroup: " << error.getMeta<std::string> ("error/ingroup") << std::endl;
 		os << "Module: " << error.getMeta<std::string> ("error/module") << std::endl;
