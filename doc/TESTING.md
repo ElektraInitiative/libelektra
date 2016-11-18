@@ -161,6 +161,27 @@ or on Debian:
 
 	LD_PRELOAD=/usr/lib/llvm-3.8/lib/clang/3.8.1/lib/linux/libclang_rt.asan-x86_64.so run_asan
 
+See also build server jobs:
+
+* [clang-asan](http://build.libelektra.org:8080/job/elektra-clang-asan/)
+* [gcc-asan](http://build.libelektra.org:8080/job/elektra-gcc-asan/)
+
 ### cbmc ###
 
 For bounded model checking tests, see `scripts/cbmc`.
+
+### Code Coverage ###
+
+Run:
+
+	make coverage-start
+	# now run all tests! E.g.:
+	make run_all
+	make coverage-stop
+	make coverage-genhtml
+
+The htmls can be found in the build directory in the folder `coverage`.
+
+See also the build server job:
+
+* [gcc-asan](http://build.libelektra.org:8080/job/elektra-incremental/)
