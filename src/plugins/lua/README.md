@@ -77,10 +77,13 @@ An example script that prints some information for each method call would be:
 	    return 0
     end
 
+Further examples can be found in the [lua](lua/) directory.
+
 ## Disclaimer ##
 
 Note, this is a technical preview. It might have severe bugs
 and the API might change in the future.
 
 Be also aware that a Lua script will never be as performant as a native C/C++ plugin.
+Spinning up the interpreter takes additional time and resources.
 
