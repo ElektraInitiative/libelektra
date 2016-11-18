@@ -51,7 +51,7 @@ then
 	[ $? -ne 0 ]
 	succeed_if "Was able to move to error plugin"
 
-	grep "Error (#10) occurred!" $TMPFILE > /dev/null
+	grep "rror (#10) occurred!" $TMPFILE > /dev/null
 	succeed_if "Triggered error did not occur"
 
 	grep "Reason: from error plugin" $TMPFILE > /dev/null
@@ -68,7 +68,7 @@ then
 	[ $? -ne 0 ]
 	succeed_if "Was able to copy to error plugin"
 
-	grep "Error (#10) occurred!" $TMPFILE > /dev/null
+	grep "rror (#10) occurred!" $TMPFILE > /dev/null
 	succeed_if "Triggered error did not occur"
 
 	grep "Reason: from error plugin" $TMPFILE > /dev/null
