@@ -20,10 +20,9 @@ happens in 2 passes, which is needed because there can be files with no title.
 * Links starting with `@ref`, `#` for anchors and `http`, `https` or `ftp` for extern links
   wont be touched.
 * All other links to markdown or arbitrary source files will be converted.
-* To refer to a folder use `/` at the end of a link. This feature was introduced
-  to be compatible with github, where you can show the content of a folder in
-  combination with the README.md of the containing folder. Links ending with
-  `/` will be changed to `/README.md`.
+* All links to folders will be altered to the README.md in the Folder.
+  This feature was introduced to be compatible with github, where you can show the content of a folder in
+  combination with the README.md of the containing folder.
 * Anchors wont work in imported markdown pages.
 
 ## Link Validation
@@ -50,4 +49,3 @@ Broken links will be printed. False positive not excluded (very rare).
 
 * optimize pdf output (also UTF-8 encoding)
 * if title contains --, this should be @brief
-* investigate false positive external links
