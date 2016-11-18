@@ -46,10 +46,15 @@ You have some options to avoid running them as root:
 
 - All names of the test must start with test (needed by test driver for installed tests).
 - No tests should run if ENABLE_TESTING is OFF.
-- All tests that access harddisc:
- - should be tagged with kdbtests.
- - should not shall run, if `ENABLE_KDB_TESTING` is OFF.
- - should only write below `/tests` and `system/mountpoints`.
+- All tests that access system/spec namespaces (e.g. mount something):
+ - should be tagged with kdbtests:
+
+        set_property(TEST testname PROPERTY LABELS kdbtests)
+
+ - should not run, if `ENABLE_KDB_TESTING` is OFF.
+ - should only write below
+   - `/tests/<testname>` (e.g. `/tests/ruby`) and
+   - `system/elektra` (e.g. for mounts or globalplugins).
 - If your test has memleaks, e.g. because the library used leaks and
   that cannot be fixed, give them the label memleak with following
   command:
