@@ -282,8 +282,14 @@ It is not recommended to use these options.
 
 #### BUILD_DOCUMENTATION ####
 
-Build documentation with doxygen.
-The [kdb](/src/tools/kdb) tool does only have the integrated docu at the moment.
+Build documentation with doxygen (API) and ronn (man pages).
+
+#### Developer Options ####
+
+As developer you should enable `ENABLE_DEBUG` and `ENABLE_LOGGER`.
+(By default they should be invisible!)
+
+Then continue reading [testing](doc/TESTING.md) for further options.
 
 #### CMAKE_INSTALL_PREFIX ####
 
