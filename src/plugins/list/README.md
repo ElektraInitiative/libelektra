@@ -57,6 +57,6 @@ would have the callstack:
 
 1. `list->kdbGet`
   1. `rename->kdbGet`
-  2. `keytometa>kdbGet`
+  2. `keytometa->kdbGet`
   3. `enum->kdbGet`
 
