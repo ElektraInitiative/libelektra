@@ -14,7 +14,7 @@ The same information can be retrieved at runtime using
 	system/elektra/version/constants/KDB_VERSION_MINOR
 
 This is the API to programs using Elektra. Its interface
-is defined in [src/include/kdb.h](/src/include/kdb.h).
+is defined in [src/include/kdb.h](/src/include/kdb.h.in).
 Both applications and plugins use this API.
 
 Additionally there is also a very small API
