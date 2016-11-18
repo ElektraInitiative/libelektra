@@ -213,7 +213,7 @@ But the mathtest plugin knows because of our metakeys how to compute the area (p
     62.8318
 
 I hope with this examples it became clear how useful plugins can be.
-If you want to find out more about validation I recommend reading [this](/doc/tutorial/validation) tutorial next.
+If you want to find out more about validation I recommend reading [this](/doc/tutorials/validation.md) tutorial next.
 
 #### Backends ####
 The plugins together with the configuration file form a _backend_. The backend determines how Elektra stores data below a mountpoint.
@@ -221,13 +221,13 @@ You can examine every mountpoints backend by looking at the configuration below 
 
 ## Limitations ##
 
-One drawback of this approach is, that an application can bypass Elektra and change configuration files directly. If for example Elektra is configured to [validate](/doc/tutorial/validation.md) new configuration values before updating them, this is something you do not want to happen.
+One drawback of this approach is, that an application can bypass Elektra and change configuration files directly. If for example Elektra is configured to [validate](/doc/tutorials/validation.md) new configuration values before updating them, this is something you do not want to happen.
 
 Another drawback is that mounting is static. In a previous example we mounted the `/.git/config` file into `dir/git`. Now the `dir` namespace of every directory stores the configuration below `dir/git` in this directories `/.git/config` file. And this mountpoint is the same for all users and all directories.
 So you can't have different configuration files for the same mountpoints in other directories.
 Because of the same reason you cannot have different configuration file names or syntax for the same mountpoint in the `user` namespace.
 
-This is one of the reasons why Elektra promotes this [naming convention](/doc/help/elektra-names.md) for keys:
+This is one of the reasons why Elektra promotes this [naming convention](/doc/help/elektra-key-names.md) for keys:
 > Key names of software-applications should always start with:
 > `/<type>/<org>/<name>/<version>/<profile>`
 > - **type** can be `sw` (software), `hw` (hardware) or `elektra` (for internal configuration)
