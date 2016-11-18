@@ -58,11 +58,6 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 	set (CXX_EXTRA_FLAGS "${CXX_EXTRA_FLAGS} -Wold-style-cast")
 
 	message (STATUS "Clang detected")
-
-	if (ENABLE_DEBUG)
-		set (EXTRA_FLAGS "${EXTRA_FLAGS} -fsanitize=undefined -fsanitize=integer")
-		set (CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -lubsan")
-	endif()
 endif()
 
 if (CMAKE_COMPILER_IS_GNUCXX)
@@ -101,7 +96,9 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "Intel")
 endif ()
 
 if (ENABLE_ASAN)
-	set (EXTRA_FLAGS "-fsanitize=address -fno-omit-frame-pointer ${EXTRA_FLAGS}")
+	set (EXTRA_FLAGS "${EXTRA_FLAGS} -fsanitize=undefined -fsanitize=integer")
+	set (EXTRA_FLAGS "${EXTRA_FLAGS} -fsanitize=address -fno-omit-frame-pointer")
+	set (CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -lubsan")
 	set (ASAN_LIBRARY "-lasan") #this is needed for GIR to put asan in front
 	if (CMAKE_COMPILER_IS_GNUCXX)
 		set (CMAKE_SHARED_LINKER_FLAGS "-fsanitize=address ${CMAKE_SHARED_LINKER_FLAGS}")
