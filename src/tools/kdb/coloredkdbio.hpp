@@ -55,7 +55,8 @@ inline std::ostream & printError (std::ostream & os, kdb::Key const & error)
 	catch (kdb::KeyTypeConversion const & e)
 	{
 		os << getErrorColor (ANSI_COLOR::BOLD) << getErrorColor (ANSI_COLOR::RED)
-		   << "Sorry, error metadata is not set correctly by a plugin: " << getErrorColor (ANSI_COLOR::RESET) << e.what () << std::endl;
+		   << "Sorry, error metadata is not set correctly by a plugin: " << getErrorColor (ANSI_COLOR::RESET) << e.what ()
+		   << std::endl;
 	}
 
 	return os;
@@ -72,17 +73,17 @@ inline std::ostream & printWarnings (std::ostream & os, kdb::Key const & error)
 		}
 
 		int nr = error.getMeta<int> ("warnings");
-		os << getErrorColor (ANSI_COLOR::BOLD) << getErrorColor (ANSI_COLOR::MAGENTA) << " Sorry, " << nr + 1 << " warning" << (!nr ? " was" : "s were")
-		   << " issued:" << getErrorColor (ANSI_COLOR::RESET) << " ;(" << std::endl;
+		os << getErrorColor (ANSI_COLOR::BOLD) << getErrorColor (ANSI_COLOR::MAGENTA) << " Sorry, " << nr + 1 << " warning"
+		   << (!nr ? " was" : "s were") << " issued:" << getErrorColor (ANSI_COLOR::RESET) << " ;(" << std::endl;
 
 		for (int i = 0; i <= nr; i++)
 		{
 			std::ostringstream name;
 			name << "warnings/#" << std::setfill ('0') << std::setw (2) << i;
 			// os << "\t" << name.str() << ": " << error.getMeta<std::string>(name.str()) << std::endl;
-			os << getErrorColor (ANSI_COLOR::BOLD) << getErrorColor (ANSI_COLOR::MAGENTA)
-			   << " Warning " << i << getErrorColor (ANSI_COLOR::RESET) << " (#"
-			   << error.getMeta<std::string> (name.str () + "/number") << ")" << std::endl;
+			os << getErrorColor (ANSI_COLOR::BOLD) << getErrorColor (ANSI_COLOR::MAGENTA) << " Warning " << i
+			   << getErrorColor (ANSI_COLOR::RESET) << " (#" << error.getMeta<std::string> (name.str () + "/number") << ")"
+			   << std::endl;
 			os << getErrorColor (ANSI_COLOR::BOLD) << "\tDescription: " << getErrorColor (ANSI_COLOR::RESET)
 			   << error.getMeta<std::string> (name.str () + "/description") << std::endl;
 			os << getErrorColor (ANSI_COLOR::BOLD) << "\tIngroup: " << getErrorColor (ANSI_COLOR::RESET)
@@ -103,7 +104,8 @@ inline std::ostream & printWarnings (std::ostream & os, kdb::Key const & error)
 	catch (kdb::KeyTypeConversion const & e)
 	{
 		os << getErrorColor (ANSI_COLOR::BOLD) << getErrorColor (ANSI_COLOR::MAGENTA)
-		   << "Sorry, warnings metadata not set correctly by a plugin: " << getErrorColor (ANSI_COLOR::RESET) << e.what () << std::endl;
+		   << "Sorry, warnings metadata not set correctly by a plugin: " << getErrorColor (ANSI_COLOR::RESET) << e.what ()
+		   << std::endl;
 	}
 
 	return os;
