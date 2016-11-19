@@ -140,6 +140,12 @@ static size_t getRecipientCount (KeySet * config)
  */
 static int fcryptSaveMtime (Key * parentKey, struct stat * fileStat)
 {
+	if (access (keyString (parentKey), F_OK))
+	{
+		// return failure, so no timestamp is restored later on
+		return 0;
+	}
+
 	if (stat (keyString (parentKey), fileStat) == -1)
 	{
 		ELEKTRA_ADD_WARNINGF (29, parentKey, "Failed to read file stats of %s", keyString (parentKey));
