@@ -1,8 +1,20 @@
-cmake_minimum_required (VERSION 3.0)
+#cmake_minimum_required (VERSION 3.0)
+
+if (CMAKE_MAJOR_VERSION LESS 3)
+	remove_binding (gsettings "Need at least CMake 3.0 for gsettings backend")
+	return ()
+endif ()
 
 project (elektrasettings VERSION 0.1.1 LANGUAGES C)
 
-find_package (PkgConfig REQUIRED)
+find_package (PkgConfig)
+
+if (NOT PkgConfig_FOUND)
+	remove_binding (gsettings "Need PkgConfig needed to find dependencies for gsettings backend")
+	return ()
+endif ()
+
+
 pkg_check_modules (GLIB glib-2.0>=2.42 QUIET)
 pkg_check_modules (GMODULE gmodule-2.0>=2.42 QUIET)
 pkg_check_modules (GIO gio-2.0>=2.42 QUIET)
