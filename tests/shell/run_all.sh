@@ -8,7 +8,7 @@ check_version
 
 cd "@CMAKE_INSTALL_PREFIX@/@TARGET_TOOL_EXEC_FOLDER@"
 
-nbTest="0"
+nbTests="0"
 nbFailed=""
 
 EXPORTS="$(mktempdir_elektra)"
@@ -80,7 +80,7 @@ do
 		nbFailed="$nbFailed\n$t"
 		echo error: $t
 	fi
-	nbTest=$(( $nbTest + 1 ))
+	nbTests=$(( $nbTests + 1 ))
 
 	"$KDB" export spec dump > "$SPECCHECK"
 	exit_if_fail "Could not export spec config"
@@ -134,5 +134,8 @@ if [ $nbError != "0" ]
 then
 	echo "Following test cases failed: $nbFailed"
 fi
+
+# fake the number of tests:
+nbTest=nbTests
 
 end_script all
