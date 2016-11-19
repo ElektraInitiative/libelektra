@@ -13,17 +13,23 @@ check_remaining_files $FILE_SUFFIX
 ROOT=user/test/script
 ROOT_FILE=${FILE_SUFFIX}_root.ecf
 ROOT_MOUNTPOINT=/test/script
-if is_plugin_available dump
+if ! is_plugin_available dump
 then
-	"$KDB" mount $ROOT_FILE $ROOT_MOUNTPOINT dump > /dev/null 2>&1
-	succeed_if "could not mount root: $ROOT_FILE at $ROOT_MOUNTPOINT"
-
-	"$KDB" set $ROOT/valueable_data important_unrecoverable_data > /dev/null
-	succeed_if "cannot set valueable data"
-
-	"$KDB" setmeta $ROOT/valueable_data trigger/error 10
-	succeed_if "cannot set metadata"
+	echo "Need dump to run test, will abort"
+	exit 0
 fi
+
+
+"$KDB" mount $ROOT_FILE $ROOT_MOUNTPOINT dump > /dev/null 2>&1
+succeed_if "could not mount root: $ROOT_FILE at $ROOT_MOUNTPOINT"
+
+"$KDB" set $ROOT/valueable_data important_unrecoverable_data > /dev/null
+succeed_if "cannot set valueable data"
+
+"$KDB" setmeta $ROOT/valueable_data trigger/error 10
+succeed_if "cannot set metadata"
+
+
 
 TMPFILE="$(mktempfile_elektra)"
 cleanup()
@@ -51,8 +57,10 @@ then
 	[ $? -ne 0 ]
 	succeed_if "Was able to move to error plugin"
 
-	grep "rror (#10) occurred!" $TMPFILE > /dev/null
-	succeed_if "Triggered error did not occur"
+	CONTENT=`cat $TMPFILE`
+
+	grep "[Ee]rror (#10) occurred" $TMPFILE > /dev/null
+	succeed_if "Triggered error did not occur, got $CONTENT"
 
 	grep "Reason: from error plugin" $TMPFILE > /dev/null
 	succeed_if "Error does not stem from error plugin"
@@ -68,11 +76,11 @@ then
 	[ $? -ne 0 ]
 	succeed_if "Was able to copy to error plugin"
 
-	grep "rror (#10) occurred!" $TMPFILE > /dev/null
-	succeed_if "Triggered error did not occur"
+	grep "[Ee]rror (#10) occurred" $TMPFILE > /dev/null
+	succeed_if "Triggered error did not occur, got $CONTENT"
 
 	grep "Reason: from error plugin" $TMPFILE > /dev/null
-	succeed_if "Error does not stem from error plugin"
+	succeed_if "Error does not stem from error plugin, got $CONTENT"
 
 	[ "x`"$KDB" ls $ROOT 2> /dev/null`" = "x$ROOT/valueable_data" ]
 	succeed_if "cant ls $ROOT (may mean that $ROOT folder is not clean)"
@@ -84,53 +92,41 @@ then
 	succeed_if "could not umount $ERROR_MOUNTPOINT"
 
 
-
+	#Excluded: a bit unclear which behavior is wanted
 	#echo "Test error plugin when open"
-
-	#$KDB mount $ERROR_FILE $ERROR_MOUNTPOINT dump error on_open/error=10 > /dev/null 2>&1
-	#succeed_if "could not mount error at $ERROR_MOUNTPOINT"
-
-	#$KDB get system > /dev/null 2>&1
+	#
+	#$KDB mount $ERROR_FILE $ERROR_MOUNTPOINT dump error on_open/error=10 > $TMPFILE 2>&1
+	#[ $? -ne 0 ]
+	#succeed_if "could mount error at $ERROR_MOUNTPOINT"
+	#
+	#CONTENT=`cat $TMPFILE`
+	#
+	#grep "[eE]rror (#10) occurred!" $TMPFILE > /dev/null
+	#succeed_if "Error not found in output, got $CONTENT"
+	#
+	#$KDB get $ERROR_MOUNTPOINT > /dev/null 2>&1
 	#[ $? -ne 0 ]
 	#succeed_if "Was able to get from missing backend"
-
-	#$KDB get user > /dev/null 2>&1
-	#[ $? -ne 0 ]
-	#succeed_if "Was able to get from missing backend"
-
-	#$KDB get system$ROOT_MOUNTPOINT > /dev/null 2>&1
-	#[ $? -ne 0 ]
-	#succeed_if "Was able to get from missing backend"
-
+	#
 	#$KDB get system$ERROR_MOUNTPOINT > $TMPFILE 2>&1
 	#[ $? -ne 0 ]
 	#succeed_if "Was able to get from missing backend"
-
-	#echo "----------- tmpfile -----------"
-	#cat $TMPFILE
-	#echo "----------- tmpfile -----------"
-
-	#grep "Error (#62) occurred!" $TMPFILE > /dev/null
-	#succeed_if "Error not found in output"
-
-	#grep "Description: Tried to get a key from a missing backend" $TMPFILE > /dev/null
-	#succeed_if "Wrong description in output"
-
-
+	#
+	#CONTENT=`cat $TMPFILE`
+	#
+	#grep "[eE]rror (#10) occurred!" $TMPFILE > /dev/null
+	#succeed_if "Error not found in output, got $CONTENT"
+	#
+	#
 	#$KDB umount $ERROR_MOUNTPOINT >/dev/null
 	#succeed_if "could not umount $ERROR_MOUNTPOINT"
 fi
-rm $TMPFILE
+
+"$KDB" umount $ROOT_MOUNTPOINT >/dev/null
+succeed_if "could not umount $ROOT_MOUNTPOINT"
 
 
-
-
-if is_plugin_available dump
-then
-	"$KDB" umount $ROOT_MOUNTPOINT >/dev/null
-	succeed_if "could not umount $ROOT_MOUNTPOINT"
-fi
-
+rm -f "$TMPFILE"
 rm -f $USER_FOLDER/$FILE_SUFFIX*
 rm -f $SYSTEM_FOLDER/$FILE_SUFFIX*
 #rmdir $USER_ERROR_FOLDER
