@@ -55,7 +55,7 @@ KDB_DEFAULT_RESOLVER="@KDB_DEFAULT_RESOLVER@"
 
 KDB_GETENV=`kdb elektrify-getenv getenv KDB 2> /dev/null`
 
-if [ -x "${KDB_GETENV}" ]
+if [ "${KDB_GETENV}" ]
 then
 	KDB=${KDB_GETENV};
 fi
