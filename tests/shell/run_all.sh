@@ -8,6 +8,7 @@ check_version
 
 cd "@CMAKE_INSTALL_PREFIX@/@TARGET_TOOL_EXEC_FOLDER@"
 
+nbTest="0"
 nbFailed=""
 
 EXPORTS="$(mktempdir_elektra)"
