@@ -6,7 +6,7 @@ usr/lib/libelektra-kdb.so*
 usr/lib/libelektra-meta.so*
 usr/lib/libelektra-plugin.so*
 usr/lib/libelektra-proposal.so*
-usr/lib/libelektragetenv.so
+usr/lib/libelektragetenv.so*
 usr/lib/libelektraintercept.so
 usr/lib/libelektraintercept-fs.so*
 usr/lib/libelektraintercept-env.so*
