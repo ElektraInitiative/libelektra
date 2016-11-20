@@ -4,7 +4,7 @@ module.exports = function($translateProvider, config) {
 
 	// configure translations
 	$translateProvider
-		.useSanitizeValueStrategy('sanitize')
+		.useSanitizeValueStrategy('sanitizeParameters')
 		.useStaticFilesLoader({
 			prefix: 'assets/translations/',
 			suffix: '.json'
