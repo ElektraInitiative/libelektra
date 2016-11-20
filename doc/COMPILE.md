@@ -253,10 +253,10 @@ The SWIG executable may be specified with:
 
 If this option is not used, cmake will find the first occurrence of
 `swig` in your environment's path.
-Per default GI bindings are not included.
+Even with `ALL` GI bindings (deprecated) and gsettings (experimental) are not included.
 To include them, use:
 
-    -DBINDINGS="ALL;GI"
+    -DBINDINGS="ALL;GI;gsettings"
 
 Some bindings provide different APIs (and not a different language), e.g:
 
@@ -265,7 +265,7 @@ Some bindings provide different APIs (and not a different language), e.g:
 
 To not add such APIs, but only `swig` bindings and `cpp`, you can use:
 
-    -DBINDINGS=SWIG;cpp
+    -DBINDINGS="SWIG;cpp"
 
 
 #### CMAKE_BUILD_TYPE  ####
@@ -289,7 +289,7 @@ Build documentation with doxygen (API) and ronn (man pages).
 As developer you should enable `ENABLE_DEBUG` and `ENABLE_LOGGER`.
 (By default they should be invisible!)
 
-Then continue reading [testing](doc/TESTING.md) for further options.
+Then continue reading [testing](/doc/TESTING.md) for further options.
 
 #### CMAKE_INSTALL_PREFIX ####
 

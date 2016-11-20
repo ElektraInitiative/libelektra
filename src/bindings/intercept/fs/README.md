@@ -5,7 +5,7 @@
 ## DESCRIPTION
 
 When this library is loaded (either in LD_PRELOAD or ld.so) calls to `open` and `open64` will be intercepted and redirected.
-Additionaly you can force files to be read-only, or even generated from elektra backends.
+Additionally, you can force files to be read-only, or even generated from Elektra backends.
 
 
 ## CONFIGURATION
@@ -20,8 +20,8 @@ Syntax:
 
 ## INTERNALS
 
-After the library is loaded it parses it's configuration into its internal datastructur, canonicalizes the both the real path and the new path and looks for the `open/mode` metakey.
-When the an application tries to call `open` or `open64` it canonicalizes the pathname with which the function is called and looks for it in it's datastructure. If found, the pathname will be set to configured replacement path. If the read-only key is set to `1`, the WR_ONLY flag will be removed from oflags. Afterwards the real open function will be called with our values.
+After the library is loaded it parses its configuration into its internal data structure, canonicalizes the both the real path and the new path and looks for the `open/mode` metakey.
+When an application tries to call `open` or `open64` it canonicalizes the pathname with which the function is called and looks for it in it's data structure. If found, the pathname will be set to configured replacement path. If the read-only key is set to `1`, the WR_ONLY flag will be removed from oflags. Afterwards the real open function will be called with our values.
 If the `/generate` and `/generate/plugin` keys are set, the library will generate a configuration from the backend pointed to by `/generate` using the storage plugin specified in `/generate/plugin`
 
 ## EXAMPLE

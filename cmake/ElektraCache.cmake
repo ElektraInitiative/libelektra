@@ -111,7 +111,7 @@ if (BINDINGS MATCHES "ALL")
 	list (REMOVE_ITEM BINDINGS ALL)
 endif()
 
-set (BINDINGS_DOC "Which bindings should be added? ALL for all available, SWIG, GI for plugins based on respective technology, DEFAULT for minimal set.")
+set (BINDINGS_DOC "Which bindings should be added? ALL for all available, DEFAULT for minimal set, see doc/COMPILE.md.")
 
 
 set (BINDINGS

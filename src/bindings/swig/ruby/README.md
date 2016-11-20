@@ -139,3 +139,10 @@ This is very similar to the `KeySet` iteration and can be accessed with `meta`:
 	k.meta.each do |m|
 		puts "#{m.name}: #{m.value}"
 	end
+
+## Building ##
+
+Note that cmake does *not* automatically rebuild SWIG bindings
+when header files are changed. Remove the build directory
+in that case.
+
