@@ -1367,14 +1367,6 @@
                         "slug": "design"
                     },
                     {
-                        "name": "API",
-                        "type": "file",
-                        "options": {
-                            "path": "doc/API.md"
-                        },
-                        "slug": "api"
-                    },
-                    {
                         "name": "Security",
                         "type": "file",
                         "options": {
@@ -1888,7 +1880,7 @@
                 "type": "link",
                 "ref": "apidocumentation",
                 "options": {
-                    "path": "http://doc.libelektra.org/api/latest/html/"
+                    "path": "http://doc.libelektra.org/api/current/html/"
                 }
             },
             {

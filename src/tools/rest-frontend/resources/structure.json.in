@@ -126,13 +126,6 @@
 						}
 					},
 					{
-						"name": "API",
-						"type": "staticfile",
-						"options": {
-							"path": "doc/API.md"
-						}
-					},
-					{
 						"name": "Security",
 						"type": "staticfile",
 						"options": {
@@ -231,7 +224,7 @@
 				"type": "link",
 				"ref": "apidocumentation",
 				"options": {
-					"path": "http://doc.libelektra.org/api/latest/html/"
+					"path": "http://doc.libelektra.org/api/current/html/"
 				}
 			},
 			{
