@@ -62,3 +62,39 @@ Try to change the host "localhost", should fail because it is not an ipv4 adress
 
     $ kdb set system/hosts/ipv4/localhost ::1
 
+```sh
+# Backup-and-Restore:/examples/hosts
+sudo kdb mount --with-recommends hosts /examples/hosts hosts
+#
+# Create hosts file for testing
+#
+$ echo "127.0.0.1	localhost" > `kdb file /examples/hosts`
+$ echo "::1 	localhost" >> `kdb file /examples/hosts`
+#
+# Check the file
+#
+$ cat `kdb file /examples/hosts`
+127.0.0.1	localhost
+::1	localhost
+#
+# Check if the values are read correctly
+#
+kdb get /examples/hosts/ipv4/localhost
+127.0.0.1
+kdb get /examples/hosts/ipv6/localhost
+::1
+#
+# Should both fail with error 51 and return 5 
+#
+kdb set /examples/hosts/ipv4/localhost ::1
+# RET:5
+# ERRORS:51
+kdb set /examples/hosts/ipv6/localhost 127.0.0.1
+# RET:5
+# ERRORS:51
+#
+# cleanup
+#
+kdb rm -r /examples/hosts
+sudo kdb umount /examples/hosts
+```
