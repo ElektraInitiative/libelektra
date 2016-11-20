@@ -38,23 +38,57 @@ Then the value `middle_small` would validate.
 But `middle_small_small` would fail because every entry might only occur once.
 
 ## Example ##
-
-    kdb mount enum.ecf /example/enum enum
-    kdb set user/example/enum/value middle # init to something valid
-    kdb setmeta user/example/enum/value check/enum "'low', 'middle', 'high'"
-    kdb set user/example/enum/value low # success
-    kdb set user/example/enum/value no  # fail
-    kdb rm user/example/enum/value
-
+```sh
+# Backup-and-Restore:/tmount/enum
+sudo kdb mount enum.ecf /tmount/enum enum dump
+#
+# valid initial value + setup valid enum list
+#
+kdb set /tmount/enum/value middle
+kdb setmeta user/tmount/enum/value check/enum "'low', 'middle', 'high'"
+#
+# should succeed
+#
+kdb set /tmount/enum/value low
+#
+# should fail with error 121
+#
+kdb set /tmount/enum/value no
+# RET:5
+# ERRORS:121
+#
+# cleanup
+#
+kdb rm -r /tmount/enum
+sudo kdb umount /tmount/enum
+```
 Or with multi-enums:
-
-    kdb set user/example/enum/value middle_small  # valid init
-    kdb setmeta user/example/enum/value check/enum/#0 small
-    kdb setmeta user/example/enum/value check/enum/#1 middle
-    kdb setmeta user/example/enum/value check/enum/#2 large
-    kdb setmeta user/example/enum/value check/enum/#3 huge
-    kdb setmeta user/example/enum/value check/enum/multi _
-    kdb setmeta user/example/enum/value check/enum "#3"
-    kdb set user/example/enum/value ___small_middle__ # success
-    kdb set user/example/enum/value ___all_small__   # fail: "all" invalid
-
+```sh
+# Backup-and-Restore:/tmount/enum
+sudo kdb mount enum.ecf /tmount/enum enum dump
+#
+# valid initial value + setup array with valid enums
+#
+kdb set /tmount/enum/value middle_small
+kdb setmeta user/tmount/enum/value check/enum/#0 small
+kdb setmeta user/tmount/enum/value check/enum/#1 middle
+kdb setmeta user/tmount/enum/value check/enum/#2 large
+kdb setmeta user/tmount/enum/value check/enum/#3 huge
+kdb setmeta user/tmount/enum/value check/enum/multi _
+kdb setmeta user/tmount/enum/value check/enum "#3"
+#
+# should succeed
+#
+kdb set /tmount/enum/value ___small_middle__
+#
+# should fail with error 121
+#
+kdb set /tmount/enum/value ___all_small__
+# RET:5
+# ERRORS:121
+#
+# cleanup
+#
+kdb rm -r /tmount/enum
+sudo kdb umount /tmount/enum
+```
