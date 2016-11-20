@@ -30,10 +30,16 @@ static const kdb_octet_t testContent[] = { 0x01, 0x02, 0xCA, 0xFE, 0xBA, 0xBE, 0
  */
 static char * getTemporaryFileName ()
 {
-	const size_t newFileAllocated = strlen (TEST_FILE) + 7;
+	const char * tmpvar = getenv ("TMPDIR");
+	if (!tmpvar)
+	{
+		tmpvar = "/tmp";
+	}
+
+	const size_t newFileAllocated = strlen (tmpvar) + 1 + strlen (TEST_FILE) + 7;
 	char * newFile = elektraMalloc (newFileAllocated);
 	if (!newFile) return NULL;
-	snprintf (newFile, newFileAllocated, "%sXXXXXX", TEST_FILE);
+	snprintf (newFile, newFileAllocated, "%s/%sXXXXXX", tmpvar, TEST_FILE);
 	mkstemp (newFile);
 	return newFile;
 }
