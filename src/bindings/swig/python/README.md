@@ -1,5 +1,7 @@
 # Python #
 
+Python bindings for Elektra.
+
 ## Dependencies ##
 
 For Python3 on debian jessie you need:
