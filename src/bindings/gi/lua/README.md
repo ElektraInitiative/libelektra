@@ -1,4 +1,4 @@
-# GI LUA #
+# GI Lua #
 
 This binding is deprecated, please use `swig_lua` instead.
 

@@ -98,7 +98,7 @@ Passing a KeySet of initial keys:
 	ks2 = Kdb::KeySet.new ks
 
 
-## appending keys ##
+## Appending keys ##
 
 `KeySet` supports Ruby's "append" operator `<<`
 	
@@ -111,7 +111,7 @@ Passing a KeySet of initial keys:
 	ks.each { |k| puts k.to_s }
 	ks.any? { |k| k.has_meta? "owner" }
 
-## deleting Keys ##
+## Deleting Keys ##
 
 Similar to the Ruby `Array`, `KeySet` also implements `delete` and `delete_at`
 methods, which can be used to delete a key by name or by index:
