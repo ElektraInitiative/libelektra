@@ -34,20 +34,37 @@ module.exports = function(grunt) {
 			});
 
 			posts.forEach(function(post) {
-				var regex = new RegExp(self.data.regex.title.pattern, self.data.regex.title.flags);
-				var title, content;
-				content = fs.readFileSync(path.join(root_dir, self.data.news_root, post.name)).toString().split('\n');
-				for(var i = 0; i < content.length; i++) {
-					title = regex.exec(content[i]);
-					if(title !== null && title.length >= 2) {
-						title = title[1];
-						break;
-					}
+				var regex_title = new RegExp(self.data.regex.title.pattern, self.data.regex.title.flags);
+				var regex_shortdesc = new RegExp(self.data.regex.shortdesc.pattern, self.data.regex.shortdesc.flags);
+				var title, content, shortDesc;
+
+				// read content
+				content = fs.readFileSync(path.join(root_dir, self.data.news_root, post.name)).toString();
+
+				// filter title
+				title = regex_title.exec(content);
+				if(title !== null && title.length >= 2) {
+					title = title[1];
+				} else {
+					// no title, warn
+					title = '';
+					grunt.log.error('News post ' + post.name + ' has no title matching the configured regex!');
 				}
+
+				// filter short description
+				shortDesc = regex_shortdesc.exec(content);
+				if(shortDesc !== null && shortDesc.length >= 2) {
+					shortDesc = shortDesc[1];
+				} else {
+					shortDesc = '';
+					grunt.log.warn('News post ' + post.name + ' has no description matching the configured regex');
+				}
+
 				result.push({
 					file: path.join(self.data.news_root, post.name),
 					date: post.date,
 					title: title,
+					shortDesc: shortDesc,
 					slug: slugify(title.toLowerCase())
 				});
 			});

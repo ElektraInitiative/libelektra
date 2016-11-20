@@ -34,8 +34,12 @@ module.exports = function(grunt) {
 						flags: 'i'
 					},
 					title: {
-						pattern: '# ([^#]*) #',
-						flags: 'i'
+						pattern: '^# ([^#]*) #$',
+						flags: 'im'
+					},
+					shortdesc: {
+						pattern: '^- shortDesc: (.*)$',
+						flags: 'im'
 					}
 				}
             }

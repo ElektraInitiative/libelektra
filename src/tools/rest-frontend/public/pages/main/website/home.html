@@ -101,8 +101,11 @@
 				<div class="list-group md-mt-20">
 					<a ng-repeat="post in news" ui-sref="main.news({file: post.slug})" class="list-group-item"
 					   ng-class="{active: $first}">
-						<h4 class="list-group-item-heading">{{ post.title }}</h4>
-						<p class="list-group-item-text">{{ post.date }}</p>
+						<div class="clearfix">
+							<h4 class="list-group-item-heading pull-left">{{ post.title }}</h4>
+							<p class="list-group-item-text pull-right">{{ post.date }}</p>
+						</div>
+						<p class="list-group-item-text">{{ post.shortDesc }}</p>
 					</a>
 				</div>
 			</div>
