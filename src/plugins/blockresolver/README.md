@@ -97,5 +97,5 @@ text
 # cleanup
 #
 kdb rm -r /tmount/blockresolver
-kdb umount /tmount/blockresolver
+sudo kdb umount /tmount/blockresolver
 ```
