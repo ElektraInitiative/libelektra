@@ -20,8 +20,6 @@ improvements in tutorials!
 use shell recorder for README.md
 	make examples more consistent
 
-fix ENABLE_DEBUG
-
 
 ## docu
 
