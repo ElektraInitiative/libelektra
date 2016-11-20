@@ -18,6 +18,7 @@ kdb get /test/d
 # should fail
 # STDOUT:fail-
 # RET:0
+kdb rm -r /test
 ```
 Test 2
 
@@ -33,10 +34,13 @@ kdb export /test ini
 x = x
 y = y
 kdb ls /test
+kdb rm -r /test
 ```
 
 
 Test 3
 ```sh
-kdb set /test/z z
+#Backup-and-Restore:/test
+sudo kdb set /test/z z
+kdb rm -r /test
 ```

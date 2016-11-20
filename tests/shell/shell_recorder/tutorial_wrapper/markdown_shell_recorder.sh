@@ -86,7 +86,7 @@ translate()
 	MOUNTPOINT=
 	while read line;
 	do
-		grep -Eq "^(\s)*kdb" <<< "$line"
+	    grep -Eq "((^(\s)*kdb)|(^(\s)*sudo kdb))" <<< "$line"
 		if [ "$?" -eq 0 ];
 		then
 			if [ ! -z "$COMMAND" ];
