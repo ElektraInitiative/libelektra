@@ -26,7 +26,9 @@ module.exports = function(grunt) {
 
 			// iterate through news posts and handle them
 			news.forEach(function(post) {
-				self.handleNewsPost(post);
+				if(post.type === 'file') {
+					self.handleNewsPost(post);
+				}
 			});
 
 			grunt.log.ok('Website RSS news generated successfully!');

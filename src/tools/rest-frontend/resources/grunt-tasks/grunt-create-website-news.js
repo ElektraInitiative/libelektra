@@ -65,9 +65,13 @@ module.exports = function(grunt) {
 					date: post.date,
 					title: title,
 					shortDesc: shortDesc,
-					slug: slugify(title.toLowerCase())
+					slug: slugify(title.toLowerCase()),
+					type: 'file'
 				});
 			});
+
+			// add sections for years
+			result = self.addYearSections(result);
 
 			grunt.file.write(output_file, JSON.stringify(result, null, 4));
 
@@ -96,6 +100,25 @@ module.exports = function(grunt) {
 					});
 				}
 			});
+			return result;
+		};
+
+		this.addYearSections = function(posts) {
+			var result = [];
+
+			var currDate, currYear = -1;
+			posts.forEach(function(post) {
+				currDate = new Date(Date.parse(post.date));
+				if(currDate.getFullYear() !== currYear) {
+					result.push({
+						name: currDate.getFullYear(),
+						type: 'section'
+					});
+					currYear = currDate.getFullYear();
+				}
+				result.push(post);
+			});
+
 			return result;
 		};
 

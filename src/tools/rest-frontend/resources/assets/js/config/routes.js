@@ -92,12 +92,14 @@ module.exports = function($stateProvider, $urlRouterProvider, $locationProvider,
 					$timeout(function() {
 						if($stateParams.file === null) {
 							$state.go('main.news', {
-								file: files[0].slug
+								file: files.filter(function(elem) {
+									return elem.type === 'file';
+								})[0].slug
 							});
 							deferred.reject();
 						} else {
 							var filtered = files.filter(function(elem) {
-								return elem.slug === $stateParams.file;
+								return elem.type === 'file' && elem.slug === $stateParams.file;
 							});
 							if(filtered.length === 0) {
 								$state.go('main.news', {

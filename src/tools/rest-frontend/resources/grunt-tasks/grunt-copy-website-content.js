@@ -38,7 +38,9 @@ module.exports = function(grunt) {
 			});
 
 			news.forEach(function(post) {
-				self.handleNewsPost(post);
+				if(post.type === 'file') {
+					self.handleNewsPost(post);
+				}
 			});
 
 			// print success message

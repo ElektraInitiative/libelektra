@@ -3,15 +3,13 @@
 		<div class="panel panel-default">
 			<div class="panel-body">
 				<ul class="nav nav-pills nav-stacked">
-					<li class="section-title">
-						<span>{{ 'APP.NEWS.NAV.SECTION.VERSIONS' | translate }}</span>
-					</li>
 					<li ng-repeat="file in files"
-						ng-class="{active: file.slug === currentFile.slug}">
-						<a class="listfiles file-link"
+						ng-class="{active: file.slug === currentFile.slug, 'section-title': file.type === 'section'}">
+						<a ng-if="file.type === 'file'" class="listfiles file-link"
 						   ui-sref="{{ $state.current.name + '({file:\'' + file.slug + '\'})' }}">
 							{{ file.title }}
 						</a>
+						<span ng-if="file.type === 'section'">{{ file.name }}</span>
 					</li>
 				</ul>
 			</div>
