@@ -1,3 +1,7 @@
+# Lua #
+
+Lua bindings for Elektra.
+
 ## Version ##
 
 Should work with Lua 5.1 or later. Iterators need Lua 5.2.
