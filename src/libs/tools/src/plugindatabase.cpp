@@ -63,8 +63,8 @@ std::vector<std::string> ModulesPluginDatabase::listAllPlugins () const
 			size_t start = fn.find_last_of ('-');
 			if (start == std::string::npos) continue; // ignore wrong file
 			std::string name = fn.substr (start + 1);
-			size_t end = fn.find_first_of ('.');
-			name = name.substr (0, end - start - 1);
+			size_t end = name.find_first_of ('.');
+			name = name.substr (0, end);
 			if (end == std::string::npos) continue;		       // ignore wrong file
 			if (toIgnore.find (name) != toIgnore.end ()) continue; // ignore
 			ret.push_back (name);
