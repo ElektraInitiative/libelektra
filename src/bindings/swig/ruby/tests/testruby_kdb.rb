@@ -9,6 +9,7 @@
 
 require 'kdb'
 require 'test/unit'
+require_relative 'test_helper.rb'
 
 RB_TEST_NS = "user/tests/swig_ruby"
 
