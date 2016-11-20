@@ -57,50 +57,81 @@ Meaning: IF `this/key` NOT EQUAL TO `'value'` THEN `then/key` MUST EQUAL `some/o
 
 
 Another full example:
-
-    kdb mount conditionals.dump /tmount/conditionals conditionals dump
-    kdb set user/tmount/conditionals/fkey 3.0
-    kdb set user/tmount/conditionals/hkey hello
-    kdb setmeta user/tmount/conditionals/key check/condition "(../hkey == 'hello') ? (../fkey == '3.0')" # success
-    kdb setmeta user/tmount/conditionals/key check/condition "(../hkey == 'hello') ? (../fkey == '5.0')" # fail
-
+```sh
+#Backup-and-Restore:/tmount/conditionals
+sudo kdb mount conditionals.dump /tmount/conditionals conditionals dump
+kdb set user/tmount/conditionals/fkey 3.0
+kdb set user/tmount/conditionals/hkey hello
+# will succeed
+kdb setmeta user/tmount/conditionals/key check/condition "(../hkey == 'hello') ? (../fkey == '3.0')"
+# will fail 
+kdb setmeta user/tmount/conditionals/key check/condition "(../hkey == 'hello') ? (../fkey == '5.0')"
+# RET:5
+# ERRORS:135
+#
+# cleanup
+#
+kdb rm -r /tmount/conditionals
+sudo kdb umount /tmount/conditionals
+```
 Assignment example:
-
-    kdb mount conditionals.dump /tmount/conditionals conditionals dump
-    kdb set user/tmount/conditionals/hkey Hello
-    kdb setmeta user/tmount/conditionals/hkey assign/condition "(./ == 'Hello') ? ('World')" # alternative: "(../hkey == 'Hello') ? ('World')
-    kdb get user/tmount/conditionals/hkey # output: World
-
+```sh
+#Backup-and-Restore:/tmount/conditionals
+sudo kdb mount conditionals.dump /tmount/conditionals conditionals dump
+kdb set user/tmount/conditionals/hkey Hello
+kdb setmeta user/tmount/conditionals/hkey assign/condition "(./ == 'Hello') ? ('World')"
+# alternative syntax: "(../hkey == 'Hello') ? ('World')
+kdb get user/tmount/conditionals/hkey
+World
+#
+# cleanup
+#
+kdb rm -r /tmount/conditionals
+sudo kdb umount /tmount/conditionals
+```
 Global plugin example:
-
-    % cat /tmp/main.ini
-    key1 = val1
-    [key1]
-    check/condition = (./ == 'val1') ? (../sub/key == 'true')
-
-    % cat /tmp/sub.ini
-    key = false
-
-    % kdb mount /tmp/main.ini system/test ni
-
-    % kdb mount /tmp/sub.ini system/test/sub ini
-
-    % kdb export system/test
-    key1 = val1
-    sub/key = false
-    Error (#135) occurred!
-    Description: Validation failed
-    Ingroup: plugin
-    Module: conditionals
-    At: /home/thomas/Dev/Elektra/libelektra/src/plugins/conditionals/conditionals.c:696
-    Reason: Validation of Key key1: (./ == 'val1') ? (../sub/key == 'true') failed. ((../sub/key == 'true') failed)
-    Mountpoint: system/test
-    Configfile: /tmp/main.ini
-
-    % kdb set system/test/sub/key true
-    Set string to true
-
-    % kdb export system/test
-    key1 = val1
-    sub/key = true
-
+```sh
+#Backup-and-Restore:/tmount/conditionals
+sudo kdb mount main.ini /tmount/conditionals conditionals ni
+sudo kdb mount sub.ini /tmount/conditionals/sub conditionals ini
+#
+# mount conditionals as global plugin
+#
+sudo kdb global-mount conditionals
+#
+# create testfiles
+#
+$ echo "key1 = val1" > `kdb file /tmount/conditionals`
+$ echo "[key1]" >> `kdb file /tmount/conditionals`
+$ echo "check/condition = (./ == 'val1') ? (../sub/key == 'true')" >> `kdb file /tmount/conditionals`
+$ echo "key = false" > `kdb file /tmount/conditionals/sub`
+#
+# should fail and yield an error
+#
+kdb export /tmount/conditionals ini
+key1 = val1
+sub/key = false
+# RET:5
+# ERRORS:135
+# Error (#135) occurred!
+# Description: Validation failed
+# Ingroup: plugin
+# Module: conditionals
+# At: /home/thomas/Dev/Elektra/libelektra/src/plugins/conditionals/conditionals.c:696
+# Reason: Validation of Key key1: (./ == 'val1') ? (../sub/key == 'true') failed. ((../sub/key == 'true') failed)
+# Mountpoint: system/test
+# Configfile: /home/thomas/.config/main.ini
+kdb set /tmount/conditionals/sub/key true
+#
+# should succeed 
+#
+kdb export /tmount/conditionals ini
+key1 = val1
+sub/key = true
+#
+# cleanup
+#
+kdb rm -r /tmount/conditionals
+sudo kdb umount /tmount/conditionals/sub
+sudo kdb umount /tmount/conditionals
+```
