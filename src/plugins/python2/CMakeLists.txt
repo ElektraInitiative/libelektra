@@ -37,8 +37,6 @@ add_plugin (python2
 )
 
 if (DEPENDENCY_PHASE)
-	message(DEPRECATION "Python 2.7 plugin has been deprecated")
-
 	# generate readme from pythons3 README.md
 	# it will overwrite previously generated file of add_plugin directly above
 	set (CMAKE_CURRENT_SOURCE_DIR_SAFE ${CMAKE_CURRENT_SOURCE_DIR})
