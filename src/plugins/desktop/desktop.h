@@ -14,6 +14,7 @@
 
 
 int elektraDesktopGet (Plugin * handle, KeySet * ks, Key * parentKey);
+int elektraDesktopSet (Plugin * handle, KeySet * ks, Key * parentKey);
 
 Plugin * ELEKTRA_PLUGIN_EXPORT (desktop);
 
