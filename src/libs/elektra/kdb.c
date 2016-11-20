@@ -3,7 +3,7 @@
  *
  * @brief Low level functions for access the Key Database.
  *
- * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
  */
 
 

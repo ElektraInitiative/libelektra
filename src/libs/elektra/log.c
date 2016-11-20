@@ -6,7 +6,7 @@
  * If you often change the file, you might want to set CMAKE_LINK_DEPENDS_NO_SHARED
  * to avoid relinking everything.
  *
- * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
  */
 
 // XXX (marks places for configuration)

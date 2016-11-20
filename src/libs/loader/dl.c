@@ -3,7 +3,7 @@
  *
  * @brief Loading modules under linux.
  *
- * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
 
   The name of the module will be libname.
   A .so will be appended.

@@ -4,7 +4,7 @@
  * @brief test if librt functionality is provided by the system.
  * Must only be invoked by CMake's try_compile function.
  *
- * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
  */
 
 #include <fcntl.h> /* For O_* constants */

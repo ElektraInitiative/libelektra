@@ -10,7 +10,7 @@
  *
  * It is easy to create any other data structure, with any properties
  *
- * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
  */
 
 #include <keyset.hpp>

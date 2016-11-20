@@ -6,7 +6,7 @@
  * They are duplicated here to document them.
  *
  *
- * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
  */
 
 // clang-format off

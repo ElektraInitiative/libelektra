@@ -4,7 +4,7 @@
 #
 # @brief unit test cases for Kdb::KDB
 #
-# @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+# @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
 #
 
 require 'kdb'

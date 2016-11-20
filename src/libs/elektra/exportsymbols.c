@@ -3,7 +3,7 @@
  *
  * @brief Export symbols tool.
  *
- * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
  */
 
 #include <stdio.h>

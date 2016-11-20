@@ -3,7 +3,7 @@
  *
  * @brief test suite for the crypto plugin (Botan compile variant)
  *
- * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
  *
  */
 

@@ -16,7 +16,7 @@
  *
  * This files defines mappings to C89, C++03 and C++11.
  *
- * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
  */
 
 #ifndef KDBTYPES_H

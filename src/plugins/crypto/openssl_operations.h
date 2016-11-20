@@ -3,7 +3,7 @@
  *
  * @brief cryptographic interface using the libcrypto library (part of the OpenSSL project)
  *
- * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
  *
  */
 

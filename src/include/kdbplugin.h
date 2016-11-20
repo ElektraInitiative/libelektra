@@ -3,7 +3,7 @@
  *
  * @brief Methods for plugin programing.
  *
- * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
  */
 
 #ifndef KDBPLUGIN_H

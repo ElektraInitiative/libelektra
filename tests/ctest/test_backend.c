@@ -3,7 +3,7 @@
  *
  * @brief Test cases for how to build a backend out of system/elektra/mountpoints/<name>
  *
- * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
  */
 
 #include <../../src/libs/elektra/backend.c>
