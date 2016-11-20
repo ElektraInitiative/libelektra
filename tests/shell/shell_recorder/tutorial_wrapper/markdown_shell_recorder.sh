@@ -22,7 +22,10 @@ writeBlock()
 	then
 		echo "RET: $RET" >> "$TMPFILE"
 	else
-	    	echo "RET: 0" >> "$TMPFILE"
+	    if [ -z "$ERRORS" ];
+	    then
+		echo "RET: 0" >> "$TMPFILE"
+	    fi
 	fi
 	if [ ! -z "$ERRORS" ];
 	then

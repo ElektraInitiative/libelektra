@@ -184,7 +184,7 @@ execute()
 
 
 
-	ERRORS=$(echo "$STDERR" | sed -nE  "s/Error \(\#(\d*)/\1/p" | tr '\n' ',')
+	ERRORS=$(echo "$STDERR" | sed -nE  "s/error \(\#(\d*)/\1/p" | tr '\n' ',')
 
 
 	printf "%s\0\n" "ERRORS: $ERRORS" >> "$OutFile"
