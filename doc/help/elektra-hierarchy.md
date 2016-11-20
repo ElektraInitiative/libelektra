@@ -1,6 +1,11 @@
 elektra-hierarchy(7) -- standard hierarchy
 ==========================================
 
+# Integrated Mountpoints
+
+These mountpoints are always available.
+
+
 ## system/elektra/modules
 
 Information about currently loaded modules.
@@ -16,24 +21,41 @@ The mountpoints present in the system.
 Version information.
 
 
-## spec/elektra/metadata
 
-`doc/METADATA.ini` needs to be mounted there
+# Info mountpoints
 
-Avoids a duplication of documentation efforts of the metadata across plugins.
+Use `kdb mount-info` to mount these mountpoints.
 
-Currently it is documentation only, this might change if dependencies or similar
-between metadata is supported.
+## system/info/constants
 
-
-## spec/elektra/modules
-
-`doc/CONTRACT.ini` needs to be mounted there
+Gives information about how Elektra was build.
 
 
-## spec/elektra/error
+## system/info/uname
 
-`src/error/specification` needs to be mounted there
+System Information given with `uname`.
+
+
+## system/info/desktop
+
+System Information about currently running desktop.
+
+
+## system/info/metadata
+
+Gives information about which metadata is currently
+understood by Elektra.
+
+`METADATA.ini` needs to be mounted there.
+
+
+## system/info/contract
+
+Gives information about clauses in plugin's contract
+that is currently understood.
+
+`CONTRACT.ini` needs to be mounted there.
+
 
 ## SEE ALSO
 

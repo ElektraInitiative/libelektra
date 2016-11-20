@@ -17,33 +17,10 @@ import/editor validate strategy
 
 improvements in tutorials!
 
-use shell recorder for README.md
-	make examples more consistent
-
-
-## docu
-
 add traceability
 
-make elektra-hierarchy reality:
-	generate errors for spec/elektra/error
-	install and mount-script for ini files in spec/elektra/metadata spec/elektra/modules
-
-install METADATA.ini and CONTRACT.ini
-
-provide information in:
-	spec/elektra/metadata (METADATA.ini)
-	spec/elektra/errors (libs/error/specification)
-	spec/elektra/modules (CONTRACT.ini)
-
-
-docu provide option in contract
-
-docu specification mount
-
-minimal generic description of commandline-options in kdb
-	long specific description in man pages
-
+use shell recorder for README.md
+	make examples more consistent
 
 
 

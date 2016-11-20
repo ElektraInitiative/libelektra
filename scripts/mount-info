@@ -11,6 +11,11 @@ else
 fi
 
 $KDB mount -c assume/unchanged=1 --resolver noresolver none $MOUNTPOINT/constants constants
+
+FOLDER="`kdb get $MOUNTPOINT/constants/cmake/TARGET_DOCUMENTATION_TEXT_FOLDER`"
+$KDB mount $FOLDER/METADATA.ini $MOUNTPOINT/metadata ini meta=
+$KDB mount $FOLDER/CONTRACT.ini $MOUNTPOINT/contract ini meta=
+
 $KDB mount --resolver noresolver none $MOUNTPOINT/uname uname
 $KDB mount --resolver noresolver none $MOUNTPOINT/desktop desktop
 

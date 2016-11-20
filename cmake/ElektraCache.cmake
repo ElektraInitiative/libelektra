@@ -359,6 +359,12 @@ set (TARGET_PKGCONFIG_FOLDER
 		"The folder (below prefix/lib) folder where to install pkgconfig files. LIB_SUFFIX is honored."
     )
 
+set (TARGET_DOCUMENTATION_TEXT_FOLDER
+		"share/doc/elektra"
+		CACHE STRING
+		"The folder (below prefix) where to install textual documentation files."
+    )
+
 set (TARGET_DOCUMENTATION_HTML_FOLDER
 		"share/doc/elektra-api/html"
 		CACHE STRING
