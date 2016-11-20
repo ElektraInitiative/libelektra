@@ -1,3 +1,4 @@
+usr/share/doc/elektra/*
 usr/lib/libelektra.so*
 usr/lib/libelektra-core.so*
 usr/lib/libelektra-ease.so*
