@@ -36,15 +36,16 @@ The modifications within applications are problematic because it is not transpar
 
 We propose to move the logic that is responsible for determining configuration values into Elektra's specification language [@raab2015kps] [@raab2016improving] [@raab2016unanticipated].
 This way, the user can query the up-to-date configuration values and get identical results to what the application will see.
+But even better, users can change the way context is taken into account easily.
 
-Elektra even allows us to intercept unmodified applications (by ''hijacking'' calls to their configuration system)  [@raab2016unanticipated].
-For example, a C application calls getenv() but actually retrieves a value from Elektra and not from an environment variable.
+Elektra allows us to intercept unmodified applications (by ''hijacking'' calls to their configuration system)  [@raab2016unanticipated].
+For example, an application calls the C-function getenv() but actually retrieves a value from Elektra and not from an environment variable.
 This way we can make applications context aware that previously were not.
 
 
 ## Validation
 
-Developers often do provide a way to validate configuration files [@raab2015safe].
+Developers often do not provide a way to validate configuration files [@raab2015safe].
 So administrators are forced to start applications to see if the configuration file is rejected.
 
 We propose to move the validation from the applications to Elektra's specification language [@raab2016improving].
@@ -52,7 +53,7 @@ Then every modification of the configuration files via Elektra gets automaticall
 This can be via an editor, a graphical user interface, or a web interface.
 
 Furthermore, based on the specification language, we can generate valid and invalid configuration files.
-Such configuration files can be used to test the behavior of applications, e.g., crash tests by injecting faulty configuration files.
+Such configuration files can be used to test the behavior of applications, e.g., injecting faulty configuration files to see if applications crash.
 
 
 ## Code Generator
