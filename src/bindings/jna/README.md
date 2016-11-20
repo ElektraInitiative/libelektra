@@ -42,9 +42,7 @@ It should also be possible to run the tests by command line:
 ## Limitations ##
 
 - no binary keys
-- no full names
 - error/warning fixed to a special number, no generator for any
   error/warning
 - no java iterator for metadata
 - no simple way to print warning/errors
-- no junit tests, so its likely that there are some bugs
