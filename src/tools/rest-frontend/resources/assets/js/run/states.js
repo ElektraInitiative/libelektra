@@ -1,6 +1,6 @@
 'use strict';
 
-module.exports = function(Logger, $rootScope, $state, $auth, UserService) {
+module.exports = function(Logger, $rootScope, $state, $auth, $anchorScroll, UserService) {
 
 	$rootScope.$on("$stateChangeError", console.log.bind(console));
 
@@ -78,6 +78,8 @@ module.exports = function(Logger, $rootScope, $state, $auth, UserService) {
 		Logger.info("State change success!");
 
 		$rootScope.currentState = toState.name;
+
+		$anchorScroll();
 
 	});
 
