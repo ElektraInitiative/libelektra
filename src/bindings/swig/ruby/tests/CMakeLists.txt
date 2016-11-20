@@ -1,4 +1,4 @@
-file (GLOB TESTS *.rb)
+file (GLOB TESTS testruby_*.rb)
 foreach (file ${TESTS})
 	get_filename_component (name ${file} NAME_WE)
 	add_test (

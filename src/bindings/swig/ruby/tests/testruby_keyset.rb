@@ -9,6 +9,7 @@
 
 require 'kdb'
 require 'test/unit'
+require_relative 'test_helper'
 
 
 class KdbKeySetTestCases < Test::Unit::TestCase
