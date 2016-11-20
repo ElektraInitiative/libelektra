@@ -33,27 +33,27 @@ Currently the identifier must be unique.
  
 ## Example ##
 ```sh
-# Backup-and-Restore:/tmount/blockresolver
-sudo kdb mount test.block /tmount/blockresolver -c identifier="### block config" ini
+# Backup-and-Restore:/examples/blockresolver
+sudo kdb mount test.block /examples/blockresolver -c identifier="### block config" ini
 #
 # create testfile
 #
-$ echo "text" > `kdb file /tmount/blockresolver`
-$ echo "more text" >> `kdb file /tmount/blockresolver`
-$ echo "some more text" >> `kdb file /tmount/blockresolver`
-$ echo "### block config start" >> `kdb file /tmount/blockresolver`
-$ echo "[section1]" >> `kdb file /tmount/blockresolver`
-$ echo "key1 = val1" >> `kdb file /tmount/blockresolver`
-$ echo "[section2]" >> `kdb file /tmount/blockresolver`
-$ echo "key2 = val2" >> `kdb file /tmount/blockresolver`
-$ echo "### block config stop" >> `kdb file /tmount/blockresolver`
-$ echo "text again" >> `kdb file /tmount/blockresolver`
-$ echo "and more text" >> `kdb file /tmount/blockresolver`
-$ echo "text" >> `kdb file /tmount/blockresolver`
+$ echo "text" > `kdb file /examples/blockresolver`
+$ echo "more text" >> `kdb file /examples/blockresolver`
+$ echo "some more text" >> `kdb file /examples/blockresolver`
+$ echo "### block config start" >> `kdb file /examples/blockresolver`
+$ echo "[section1]" >> `kdb file /examples/blockresolver`
+$ echo "key1 = val1" >> `kdb file /examples/blockresolver`
+$ echo "[section2]" >> `kdb file /examples/blockresolver`
+$ echo "key2 = val2" >> `kdb file /examples/blockresolver`
+$ echo "### block config stop" >> `kdb file /examples/blockresolver`
+$ echo "text again" >> `kdb file /examples/blockresolver`
+$ echo "and more text" >> `kdb file /examples/blockresolver`
+$ echo "text" >> `kdb file /examples/blockresolver`
 #
 # check testfile
 #
-$ cat `kdb file /tmount/blockresolver`
+$ cat `kdb file /examples/blockresolver`
 text
 more text
 some more text
@@ -69,7 +69,7 @@ text
 #
 # only the block between the tags is read!
 #
-kdb export /tmount/blockresolver
+kdb export /examples/blockresolver
 [section1]
 key1 = val1
 [section2]
@@ -79,7 +79,7 @@ key2 = val2
 #
 kdb set system/blocktest/section1/key12 val12
 #
-$ cat `kdb file /tmount/blockresolver`
+$ cat `kdb file /examples/blockresolver`
 text
 more text
 some more text
@@ -96,6 +96,6 @@ text
 #
 # cleanup
 #
-kdb rm -r /tmount/blockresolver
-sudo kdb umount /tmount/blockresolver
+kdb rm -r /examples/blockresolver
+sudo kdb umount /examples/blockresolver
 ```
