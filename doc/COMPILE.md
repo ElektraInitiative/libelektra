@@ -247,7 +247,7 @@ For example you can use:
 
 Note that the same languages are sometimes available over GI and SWIG.
 In this case, the SWIG bindings are preferred.
-The SWIG executable my be specified with:
+The SWIG executable may be specified with:
 
     -DSWIG_EXECUTABLE=/usr/bin/swig3.0
 
