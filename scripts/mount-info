@@ -1,21 +1,36 @@
 #!/bin/sh
+#
+# @author Markus Raab <elektra@markus-raab.org>
+# @brief Mount basic information
+# @date 20.11.2016
+# @tags mount, info
+#
+# If you want to mount METADATA.ini and CONTRACT.ini from some other folder, pass the
+# folder as argument.
+#
+# E.g.: kdb mount-info ~e/doc
+
+set -x
 
 if [ -z "$KDB" ]; then
 	KDB=kdb
 fi
 
-if [ -z "$1" ]; then
-	MOUNTPOINT=system/info
-else
-	MOUNTPOINT="$1"
+if [ -z "$MOUNTPOINT" ]; then
+	MOUNTPOINT=system/info/elektra
 fi
 
 $KDB mount -c assume/unchanged=1 --resolver noresolver none $MOUNTPOINT/constants constants
 
-FOLDER="`kdb get $MOUNTPOINT/constants/cmake/TARGET_DOCUMENTATION_TEXT_FOLDER`"
-$KDB mount $FOLDER/METADATA.ini $MOUNTPOINT/metadata ini meta=
-$KDB mount $FOLDER/CONTRACT.ini $MOUNTPOINT/contract ini meta=
+if [ -z "$1" ]; then
+	FOLDER="`kdb get $MOUNTPOINT/constants/cmake/CMAKE_INSTALL_PREFIX`/`kdb get $MOUNTPOINT/constants/cmake/TARGET_DOCUMENTATION_TEXT_FOLDER`"
+else
+	FOLDER="$1"
+fi
 
-$KDB mount --resolver noresolver none $MOUNTPOINT/uname uname
-$KDB mount --resolver noresolver none $MOUNTPOINT/desktop desktop
+$KDB mount $FOLDER/METADATA.ini "$MOUNTPOINT/metadata/#0" ini
+$KDB mount $FOLDER/CONTRACT.ini "$MOUNTPOINT/contract/#0" ini
+
+$KDB mount --resolver noresolver none "$MOUNTPOINT/uname" uname
+$KDB mount --resolver noresolver none "$MOUNTPOINT/desktop" desktop
 
