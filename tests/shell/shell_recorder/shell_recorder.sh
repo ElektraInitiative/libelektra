@@ -49,7 +49,7 @@ execute()
 
 	if [ "$BACKUP" -eq "1" ];
 	then
-	"$KDBCOMMAND" export "$Mountpoint" "$Storage" > "$TMPFILE" 2>/dev/null
+	"$KDBCOMMAND" export "$Mountpoint" dump > "$TMPFILE" 2>/dev/null
 	if [ "$?" -ne 0 ];
 	then
 		echo -e "ERROR: Failed to backup $Mountpoint\nStopping testcase."
@@ -301,7 +301,7 @@ echo "protocol file: $OutFile"
 run_script
 
 "$KDBCOMMAND" rm -r "$Mountpoint" 2>/dev/null
-"$KDBCOMMAND" import "$Mountpoint" "$Storage" 2>/dev/null < "$TMPFILE" 
+"$KDBCOMMAND" import "$Mountpoint" dump 2>/dev/null < "$TMPFILE" 
 rm "${DBFile}.1" 2>/dev/null
 
 EVAL=0

@@ -21,6 +21,8 @@ writeBlock()
 	if [ ! -z "$RET" ];
 	then
 		echo "RET: $RET" >> "$TMPFILE"
+	else
+	    	echo "RET: 0" >> "$TMPFILE"
 	fi
 	if [ ! -z "$ERRORS" ];
 	then
@@ -70,7 +72,6 @@ translate()
 	else
 		echo "Mountpoint: /" >> "$TMPFILE"
 	fi
-	echo "Storage: dump" >> "$TMPFILE"
 	COMMAND=
 	RET=
 	ERRORS=
