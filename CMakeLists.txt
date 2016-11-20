@@ -75,7 +75,7 @@ set (KDB_VERSION "${KDB_VERSION_MAJOR}.${KDB_VERSION_MINOR}.${KDB_VERSION_MICRO}
 message (STATUS "You are building Elektra ${KDB_VERSION}")
 
 set (SO_VERSION 4)
-set (SO_VERSION_TOOLS 1)
+set (SO_VERSION_TOOLS 2)
 set (SO_VERSION_GETENV 0)
 
 #needs version above
