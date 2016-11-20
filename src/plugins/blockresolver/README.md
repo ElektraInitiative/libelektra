@@ -32,43 +32,70 @@ A block consists of 2 parts:
 Currently the identifier must be unique.
  
 ## Example ##
-
-    % cat /tmp/test.block
-    bla
-    bla
-    bla
-    ### block config start
-    [section1]
-    key1 = val1
-    [section2]
-    key2 = val2
-    ### block config stop
-    asdf
-    asdf
-    asdf
-
-    % kdb mount -R blockresolver /tmp/test.block system/blocktest -c identifier="### block config"
-    % kdb export system/blocktest
-    [section1]
-    key1 = val1
-    [section2]
-    key2 = val2
-
-    % kdb set system/blocktest/section1/key12 val12
-    Create a new key system/blocktest/section1/key12 with string val12
-
-    % cat /tmp/test.block
-    bla
-    bla
-    bla
-    ### block config start
-    [section1]
-    key1 = val1
-    key12 = val12
-    [section2]
-    key2 = val2
-    ### block config stop
-    asdf
-    asdf
-    asdf
-
+```sh
+# Backup-and-Restore:/tmount/blockresolver
+sudo kdb mount test.block /tmount/blockresolver -c identifier="### block config" ini
+#
+# create testfile
+#
+$ echo "text" > `kdb file /tmount/blockresolver`
+$ echo "more text" >> `kdb file /tmount/blockresolver`
+$ echo "some more text" >> `kdb file /tmount/blockresolver`
+$ echo "### block config start" >> `kdb file /tmount/blockresolver`
+$ echo "[section1]" >> `kdb file /tmount/blockresolver`
+$ echo "key1 = val1" >> `kdb file /tmount/blockresolver`
+$ echo "[section2]" >> `kdb file /tmount/blockresolver`
+$ echo "key2 = val2" >> `kdb file /tmount/blockresolver`
+$ echo "### block config stop" >> `kdb file /tmount/blockresolver`
+$ echo "text again" >> `kdb file /tmount/blockresolver`
+$ echo "and more text" >> `kdb file /tmount/blockresolver`
+$ echo "text" >> `kdb file /tmount/blockresolver`
+#
+# check testfile
+#
+$ cat `kdb file /tmount/blockresolver`
+text
+more text
+some more text
+### block config start
+[section1]
+key1 = val1
+[section2]
+key2 = val2
+### block config stop
+text again
+and more text
+text
+#
+# only the block between the tags is read!
+#
+kdb export /tmount/blockresolver
+[section1]
+key1 = val1
+[section2]
+key2 = val2
+#
+# add a new key to the resolved block 
+#
+kdb set system/blocktest/section1/key12 val12
+#
+$ cat `kdb file /tmount/blockresolver`
+text
+more text
+some more text
+### block config start
+[section1]
+key1 = val1
+key12 = val12
+[section2]
+key2 = val2
+### block config stop
+text again
+and more text
+text
+#
+# cleanup
+#
+kdb rm -r /tmount/blockresolver
+kdb umount /tmount/blockresolver
+```
