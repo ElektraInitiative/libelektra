@@ -545,6 +545,9 @@ int elektraReadArrayNumber (const char * baseName, kdb_long_long_t * oldIndex);
 
 KeySet * elektraRenameKeys (KeySet * config, const char * name);
 
+/* Random */
+
+uint32_t elektraRandom (unsigned int * seedp);
 
 /* Conveniences Methods for Making Tests */
 

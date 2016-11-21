@@ -818,3 +818,31 @@ char * elektraEscapeKeyNamePart (const char * source, char * dest)
 	*dp = 0;
 	return dest;
 }
+
+
+/**
+ * @internal
+ *
+ * @brief Non secure Random Function
+ *
+ * This Random function comes from:
+ * S. Park & K. Miller
+ * Random Number Generator: Good ones are Hard to find
+ * http://www.firstpr.com.au/dsp/rand31/p1192-park.pdf
+ * 1988
+ *
+ * Used in the OPMPHM and KeySet generation.
+ *
+ * @param seedp the seed pointer
+ *
+ * @return random 32 bit sequence
+ */
+uint32_t elektraRandom (unsigned int * seedp)
+{
+	if (seedp == NULL)
+	{
+		return 0;
+	}
+	*seedp = (16807 * *seedp) % 2147483647;
+	return rand_r (seedp);
+}
