@@ -17,6 +17,7 @@ Following shell expansions are used in this document:
 - Scripts for strace, version, run tests!
 - Shell recorder in examples!
 - Check transitions in plugin status: especially from/to experimental
+- Check if Elektra builds, installs and works on freshly installed OS
 
 
 
