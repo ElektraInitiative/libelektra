@@ -52,7 +52,7 @@ execute()
 	"$KDBCOMMAND" export "$Mountpoint" dump > "$TMPFILE" 2>/dev/null
 	if [ "$?" -ne 0 ];
 	then
-		echo -e "ERROR: Failed to backup $Mountpoint\nStopping testcase."
+		echo "ERROR: Failed to backup $Mountpoint\nStopping testcase."
 		exit 1
 	fi
 	BACKUP=0
@@ -150,7 +150,7 @@ execute()
 
 
 	STDOUT=$(cat ./stdout)
-
+	
 	printf "%s\0\n" "STDOUT: $STDOUT" >> "$OutFile"
 	if [ ! -z "$STDOUTCMP" ];
 	then

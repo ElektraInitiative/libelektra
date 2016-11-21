@@ -45,7 +45,7 @@ writeBlock()
 	fi
 	if [ ! -z "$OUTBUF" ];
 	then
-		tmp=$(printf "%q" "$OUTBUF" | awk -v RS="" '{gsub (/\n/,"⏎")}1')
+		tmp=$(awk -v RS="" '{gsub (/\n/,"⏎")}1' <<< "$OUTBUF")
 		echo "STDOUT: $tmp" >> "$TMPFILE"
 	else
 		if [ ! -z "$STDOUT" ]
@@ -66,7 +66,7 @@ writeBlock()
 translate()
 {
 	TMPFILE=$(mktemp)
-	MOUNTPOINT=$(echo "$BUF" | head -n 2|tail)
+	MOUNTPOINT=$(echo "$BUF" | head -n 1)
 	grep -Eq "Backup-and-Restore:" <<< "$MOUNTPOINT"
 	if [ "$?" -eq 0 ];
 	then
