@@ -3,6 +3,8 @@
  *
  * @brief Macros by Elektra.
  *
+ * Macros start with ELEKTRA_ and are uppercase.
+ *
  * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
  */
 
