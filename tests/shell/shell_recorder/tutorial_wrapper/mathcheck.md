@@ -27,14 +27,14 @@ Keynames are all either relative to to-be-tested key (starting with `./` or `../
 
 Full example:
 ```sh
-# Backup-and-Restore:/examples/mathcheck
-kdb mount mathcheck.dump /examples/mathcheck dump mathcheck
-kdb set /examples/mathcheck/a 3.1
-kdb set /examples/mathcheck/b 4.5
-kdb set /examples/mathcheck/k 7.6
-kdb setmeta user/examples/mathcheck/k check/math "== + ../a ../b"
+# Backup-and-Restore:/example/mathcheck
+kdb mount mathcheck.dump /example/mathcheck dump mathcheck
+kdb set user/example/mathcheck/a 3.1
+kdb set user/example/mathcheck/b 4.5
+kdb set user/example/mathcheck/k 7.6
+kdb setmeta user/example/mathcheck/k check/math "== + ../a ../b"
 # should fail
-kdb set /examples/mathcheck/k 7.7
+kdb set user/example/mathcheck/k 7.7
 # RET:5
 # ERRORS:123
 # Set string to 7.7
@@ -45,37 +45,40 @@ kdb set /examples/mathcheck/k 7.7
 # Module: mathcheck
 # At: /home/thomas/Dev/Elektra/libelektra/src/plugins/mathcheck/mathcheck.c:399
 # Reason: 7.7 != 7.6
-# Mountpoint: /examples/mathcheck
+# Mountpoint: user/example/mathcheck
 # Configfile: /home/thomas/.config/mathcheck.dump.25680:1478749409.938013.tmp
-kdb rm -r /examples/mathcheck
-kdb umount /examples/mathcheck
+kdb umount user/example/mathcheck
 ```
 To calculate values on-demand you can use:
 ```sh
-# Backup-and-Restore:/examples/mathcheck
-kdb mount mathcheck.dump /examples/mathcheck dump mathcheck
-kdb setmeta user/examples/mathcheck/k check/math ":= + @/a @/b"
-kdb set /examples/mathcheck/a 8.0
-kdb set /examples/mathcheck/b 4.5
-kdb get /examples/mathcheck/k
+# Backup-and-Restore:/example/mathcheck
+kdb mount mathcheck.dump /example/mathcheck dump mathcheck
+kdb setmeta user/example/mathcheck/k check/math ":= + @/a @/b"
+kdb set user/example/mathcheck/a 8.0
+kdb set user/example/mathcheck/b 4.5
+kdb get user/example/mathcheck/k
 12.5
-kdb set /examples/mathcheck/a 5.5
-kdb get /examples/mathcheck/k
-10
-kdb rm -r /examples/mathcheck
-kdb umount /examples/mathcheck
+kdb set user/example/mathcheck/a 5.5
+kdb get user/example/mathcheck/k
+10  
+kdb umount user/example/mathcheck
 ```
 It also works with constants:
 ```sh
-# Backup-and-Restore:/examples/mathcheck
-kdb mount mathcheck.dump /examples/mathcheck dump mathcheck
-kdb setmeta user/examples/mathcheck/k check/math ":= + ../a '5'"
-kdb set /examples/mathcheck/a 5.5
-kdb get /examples/mathcheck/k
+# Backup-and-Restore:/example/mathcheck
+kdb mount mathcheck.dump /example/mathcheck dump mathcheck
+kdb setmeta user/example/mathcheck/k check/math ":= + ../a '5'"
+kdb set user/example/mathcheck/a 5.5
+kdb get user/example/mathcheck/k
 10.5
-kdb set /examples/mathcheck/a 8.0
-kdb get /examples/mathcheck/k
+kdb set user/example/mathcheck/a 8.0
+kdb get user/example/mathcheck/k
 13
-kdb rm -r /examples/mathcheck
-kdb umount /examples/mathcheck
+kdb umount user/example/mathcheck
 ```
+## Status ##
+
+`mathcheck` does not work with icc 14.0.2 20140120, and some gcc versions when using debug.
+Additionally, it fails to run on OpenBSD.
+Until these problems are fixed it is discouraged to use.
+
