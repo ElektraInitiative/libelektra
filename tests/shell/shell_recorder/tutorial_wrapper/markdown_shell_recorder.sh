@@ -46,7 +46,8 @@ writeBlock()
 	if [ ! -z "$OUTBUF" ];
 	then
 		tmp=$(awk -v RS="" '{gsub (/\n/,"⏎")}1' <<< "$OUTBUF")
-		echo "STDOUT: $tmp" >> "$TMPFILE"
+		tmp=$(echo "$tmp" | sed 's/\[/\\\[/g' | sed 's/\]/\\\]/g' | sed 's/\./\\\./g' | sed 's/\*/\\\*/g' | sed 's/\?/\\\?/g')
+		echo "SSTDOUT: $tmp" >> "$TMPFILE"
 	else
 		if [ ! -z "$STDOUT" ]
 		then

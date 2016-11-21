@@ -14,6 +14,7 @@ RETCMP=
 ERRORSCMP=
 WARNINGSCMP=
 STDOUTCMP=
+SSTDOUTCMP=
 STDERRCMP=
 DIFFCMP=
 
@@ -163,7 +164,17 @@ execute()
 		nbError=$(( nbError + 1 ))
 	fi
 	fi
-
+	if [ ! -z "$SSTDOUTCMP" ];
+	then
+	nbTest=$(( nbTest + 1 ))
+	echo "$STDOUT" | replace_newline_return | grep -q --text "$SSTDOUTCMP"
+	if [ "$?" -ne "0" ];
+	then
+		printf "\nERROR - STDOUT:\n%s\ndoesn't match %s\n\n" "$STDOUT" "$SSTDOUTCMP"
+		printf "%s\0\n" "=== FAILED stdout doesn't match expected pattern $SSTDOUTCMP" >> "$OutFile"
+		nbError=$(( nbError + 1 ))
+	fi
+	fi
 
 
 	WARNINGS=$(echo "$STDERR" | sed -nE  "s/Warning number: (\d*)/\1/p" | tr '\n' ',')
@@ -260,7 +271,10 @@ run_script()
 		STDOUT:)
 		STDOUTCMP=$(echo "$line"|cut -d ' ' -f2-)
 		;;
-		STDERR:)
+		SSTDOUT:)
+		SSTDOUTCMP=$(echo "$line"|cut -d ' ' -f2-)
+		;;
+	    	STDERR:)
 		STDERRCMP=$(echo "$line"|cut -d ' ' -f2-)
 		;;
 		DIFF:)
@@ -278,6 +292,7 @@ run_script()
 		ERRORSCMP=
 		WARNINGSCMP=
 		STDOUTCMP=
+		SSTDOUTCMP=
 		STDERRCMP=
 		DIFFCMP=
 	fi
