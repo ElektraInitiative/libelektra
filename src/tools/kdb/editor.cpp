@@ -143,7 +143,8 @@ int EditorCommand::execute (Cmdline const & cl)
 	struct stat modif;
 	stat (filename.c_str (), &modif);
 
-	if (elektraStatSeconds (orig) == elektraStatSeconds (modif) && elektraStatNanoSeconds (orig) == elektraStatNanoSeconds (modif))
+	if (ELEKTRA_STAT_SECONDS (orig) == ELEKTRA_STAT_SECONDS (modif) &&
+	    ELEKTRA_STAT_NANO_SECONDS (orig) == ELEKTRA_STAT_NANO_SECONDS (modif))
 	{
 		if (!cl.quiet) std::cout << "File was unchanged, will exit successfully";
 		return 0;

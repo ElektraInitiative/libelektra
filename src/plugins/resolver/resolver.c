@@ -476,15 +476,15 @@ int ELEKTRA_PLUGIN_FUNCTION (resolver, get) (Plugin * handle, KeySet * returned,
 	}
 
 	/* Check if update needed */
-	if (pk->mtime.tv_sec == elektraStatSeconds (buf) && pk->mtime.tv_nsec == elektraStatNanoSeconds (buf))
+	if (pk->mtime.tv_sec == ELEKTRA_STAT_SECONDS (buf) && pk->mtime.tv_nsec == ELEKTRA_STAT_NANO_SECONDS (buf))
 	{
 		// no update, so storage has no job
 		errno = errnoSave;
 		return 0;
 	}
 
-	pk->mtime.tv_sec = elektraStatSeconds (buf);
-	pk->mtime.tv_nsec = elektraStatNanoSeconds (buf);
+	pk->mtime.tv_sec = ELEKTRA_STAT_SECONDS (buf);
+	pk->mtime.tv_nsec = ELEKTRA_STAT_NANO_SECONDS (buf);
 
 	errno = errnoSave;
 	return 1;
@@ -720,13 +720,13 @@ static int elektraCheckConflict (resolverHandle * pk, Key * parentKey)
 		return -1;
 	}
 
-	if (elektraStatSeconds (buf) != pk->mtime.tv_sec || elektraStatNanoSeconds (buf) != pk->mtime.tv_nsec)
+	if (ELEKTRA_STAT_SECONDS (buf) != pk->mtime.tv_sec || ELEKTRA_STAT_NANO_SECONDS (buf) != pk->mtime.tv_nsec)
 	{
 		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CONFLICT, parentKey,
 				    "conflict, file modification time stamp %ld.%ld is different than our time stamp %ld.%ld, config file "
 				    "name is \"%s\", "
 				    "our identity is uid: %u, euid: %u, gid: %u, egid: %u",
-				    elektraStatSeconds (buf), elektraStatNanoSeconds (buf), pk->mtime.tv_sec, pk->mtime.tv_nsec,
+				    ELEKTRA_STAT_SECONDS (buf), ELEKTRA_STAT_NANO_SECONDS (buf), pk->mtime.tv_sec, pk->mtime.tv_nsec,
 				    pk->filename, getuid (), geteuid (), getgid (), getegid ());
 		return -1;
 	}
@@ -921,11 +921,11 @@ static int elektraSetCommit (resolverHandle * pk, Key * parentKey)
 	}
 	else
 	{
-		if (!(pk->mtime.tv_sec == elektraStatSeconds (buf) && pk->mtime.tv_nsec == elektraStatNanoSeconds (buf)))
+		if (!(pk->mtime.tv_sec == ELEKTRA_STAT_SECONDS (buf) && pk->mtime.tv_nsec == ELEKTRA_STAT_NANO_SECONDS (buf)))
 		{
 			/* Update timestamp */
-			pk->mtime.tv_sec = elektraStatSeconds (buf);
-			pk->mtime.tv_nsec = elektraStatNanoSeconds (buf);
+			pk->mtime.tv_sec = ELEKTRA_STAT_SECONDS (buf);
+			pk->mtime.tv_nsec = ELEKTRA_STAT_NANO_SECONDS (buf);
 		}
 		else
 		{

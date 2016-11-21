@@ -13,14 +13,14 @@
 #define ELEKTRA_QUOTE(x) #x
 
 #if defined(__APPLE__)
-#define elektraStatSeconds(status) status.st_mtime
-#define elektraStatNanoSeconds(status) status.st_mtimespec.tv_nsec
+#define ELEKTRA_STAT_SECONDS(status) status.st_mtime
+#define ELEKTRA_STAT_NANO_SECONDS(status) status.st_mtimespec.tv_nsec
 #elif defined(_WIN32)
-#define elektraStatSeconds(status) status.st_mtime
-#define elektraStatNanoSeconds(status) 0
+#define ELEKTRA_STAT_SECONDS(status) status.st_mtime
+#define ELEKTRA_STAT_NANO_SECONDS(status) 0
 #else
-#define elektraStatSeconds(status) status.st_mtim.tv_sec
-#define elektraStatNanoSeconds(status) status.st_mtim.tv_nsec
+#define ELEKTRA_STAT_SECONDS(status) status.st_mtim.tv_sec
+#define ELEKTRA_STAT_NANO_SECONDS(status) status.st_mtim.tv_nsec
 #endif
 
 #define ELEKTRA_SET_ERROR_GET(parentKey)                                                                                                   \

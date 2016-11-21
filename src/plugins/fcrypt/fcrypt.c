@@ -175,8 +175,8 @@ static void fcryptRestoreMtime (Key * parentKey, struct stat * fileStat)
 	times[0].tv_nsec = UTIME_OMIT;
 
 	// mtime
-	times[1].tv_sec = elektraStatSeconds ((*fileStat));
-	times[1].tv_nsec = elektraStatNanoSeconds ((*fileStat));
+	times[1].tv_sec = ELEKTRA_STAT_SECONDS ((*fileStat));
+	times[1].tv_nsec = ELEKTRA_STAT_NANO_SECONDS ((*fileStat));
 
 	// restore mtime on parentKeyFd
 	// if (futimens (fileDescriptor, times))
