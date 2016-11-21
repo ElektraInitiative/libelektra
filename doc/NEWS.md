@@ -202,6 +202,9 @@ GI Bindings were removed from `BINDINGS=ALL`.
 
 Elektra should work on every system that has `cmake` and a `C/C++` compiler.
 
+For this release we increased portability to better work with Mac OS X,
+CentOS 7, and OpenSuse 42.
+
 - Mac OS X:
  - Travis build server now also build qt-gui
  - Support for xcode8 added (xcode6 still supported)
@@ -210,8 +213,10 @@ Elektra should work on every system that has `cmake` and a `C/C++` compiler.
 - remove hard dependency to `cmake3`
 - make search for swig 2 visible
 - remove `libfind`
+- fix plugin names and mounting on OpenSuse 42.1
 
-A big thanks to Mihael Pranjić and Sebastian Bachmann.
+A big thanks to Kai-Uwe Behrmann, Mihael Pranjić and
+Sebastian Bachmann.
 
 
 
@@ -237,10 +242,10 @@ A big thanks to Mihael Pranjić and Sebastian Bachmann.
   mountable
 - fix quoting in ini plugin
   (Thanks to Thomas Waser)
+- fix plugin names and mounting with plugin pre/postfixes
+  (Thanks to Kai-Uwe Behrmann)
 - mount-openicc: rename to openicc.json
   (Thanks to Kai-Uwe Behrmann)
-- fix plugin names and mounting on OpenSuse 42.1
-  (A big thanks to Kai-Uwe Behrmann)
 
 
 
