@@ -176,6 +176,12 @@ static void elektraAddConstants (KeySet * ks, Key * parentKey)
 
 
 	key = keyDup (parentKey);
+	keyAddName (key, "cmake/TARGET_TOOL_DATA_FOLDER");
+	keySetString (key, "@TARGET_TOOL_DATA_FOLDER@");
+	ksAppendKey (ks, key);
+
+
+	key = keyDup (parentKey);
 	keyAddName (key, "cmake/TARGET_TEST_DATA_FOLDER");
 	keySetString (key, "@TARGET_TEST_DATA_FOLDER@");
 	ksAppendKey (ks, key);
