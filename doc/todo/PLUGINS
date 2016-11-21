@@ -427,7 +427,7 @@ better error messages:
 make explicit state variable (for both user+system) or return fd!=-1
 
 resolver:
-	configureable fsync
+	configurable fsync
 
 
 

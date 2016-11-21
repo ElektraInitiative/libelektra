@@ -173,7 +173,7 @@ Obviously, you can pass the exact list of plugins you want, e.g.:
 
     -DPLUGINS="resolver;sync;dump"
 
-Some plugins are compile-time configureable. Then you can choose which
+Some plugins are compile-time configurable. Then you can choose which
 features are compiled in or out. This is especially important in the
 bootstrapping phase, because then only the compiled in configuration
 applies. To compile-time-configure a plugin, you just pass a underscore
