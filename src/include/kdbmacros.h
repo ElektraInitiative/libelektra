@@ -10,10 +10,6 @@
 #ifndef KDBMACROS_H
 #define KDBMACROS_H
 
-#include <sys/stat.h>
-#include <sys/types.h>
-#include <unistd.h>
-
 #define ELEKTRA_QUOTE(x) #x
 
 #if defined(__APPLE__)

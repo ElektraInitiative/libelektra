@@ -1,5 +1,9 @@
 #include <editor.hpp>
 
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <unistd.h>
+
 #include <cmdline.hpp>
 #include <external.hpp>
 #include <kdb.hpp>
@@ -7,7 +11,6 @@
 #include <modules.hpp>
 
 #include <kdbmacros.h>
-#include <unistd.h>
 
 #include <export.hpp>
 #include <import.hpp>
