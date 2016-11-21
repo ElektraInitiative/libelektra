@@ -84,6 +84,7 @@ translate()
 	DIFF=
 	OUTBUF=
 	MOUNTPOINT=
+	IFS=''
 	while read line;
 	do
 	    grep -Eq "((^(\s)*kdb)|(^(\s)*sudo kdb))" <<< "$line"
@@ -140,7 +141,7 @@ translate()
 		if [ -z "$OUTBUF" ];
 		then
 			OUTBUF="$line"
-		else
+		    else
 			OUTBUF=$(echo -en "${OUTBUF}\n${line}")
 		fi
 	done <<<"$BUF"
@@ -149,7 +150,7 @@ translate()
 	#	 rm "$TMPFILE"
 }
 
-
+IFS=''
 while read line;
 do
 	grep -Eq '(\s)*```sh$' <<<"$line"
