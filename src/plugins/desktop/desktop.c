@@ -16,6 +16,7 @@
 #include <kdberrors.h>
 #include <kdbhelper.h>
 #include <kdblogger.h>
+#include <kdbmacros.h>
 
 
 int elektraDesktopGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
@@ -75,22 +76,7 @@ int elektraDesktopSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA
 
 	KeySet * info = ksNew (0, KS_END);
 	elektraDesktopGet (handle, info, parentKey);
-
-	Key * k;
-	ksRewind (info);
-	ksRewind (returned);
-	while ((k = ksNext (returned)))
-	{
-		Key * c = ksNext (info);
-		if (strcmp (keyName (k), keyName (c)) || strcmp (keyString (k), keyString (c)))
-		{
-			ELEKTRA_SET_ERRORF (84, parentKey, "the key %s (expected %s) was modified to %s (expected %s)", keyName (k),
-					    keyName (c), keyString (k), keyString (c));
-			return -1;
-		}
-	}
-
-	ksDel (info);
+	ELEKTRA_SET_ERROR_READ_ONLY (info, returned, parentKey);
 	return 0;
 }
 

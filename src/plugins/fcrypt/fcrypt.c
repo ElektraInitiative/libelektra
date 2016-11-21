@@ -16,7 +16,7 @@
 #include <gpg.h>
 #include <kdb.h>
 #include <kdberrors.h>
-#include <kdbstat.h>
+#include <kdbmacros.h>
 #include <kdbtypes.h>
 #include <stdlib.h>
 #include <string.h>

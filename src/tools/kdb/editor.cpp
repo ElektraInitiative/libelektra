@@ -6,7 +6,7 @@
 #include <keysetio.hpp>
 #include <modules.hpp>
 
-#include <kdbstat.h>
+#include <kdbmacros.h>
 #include <unistd.h>
 
 #include <export.hpp>

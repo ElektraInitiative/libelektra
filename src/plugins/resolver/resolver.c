@@ -31,7 +31,7 @@
 
 #include <kdberrors.h>
 #include <kdblogger.h>
-#include <kdbstat.h>
+#include <kdbmacros.h>
 
 #ifdef ELEKTRA_LOCK_MUTEX
 #include <pthread.h>

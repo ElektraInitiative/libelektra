@@ -13,6 +13,7 @@
 #include <kdbconfig.h>
 #include <kdbextension.h>
 #include <kdbhelper.h>
+#include <kdbmacros.h>
 #include <kdbplugin.h>
 #include <kdbproposal.h>
 #include <kdbtypes.h>
