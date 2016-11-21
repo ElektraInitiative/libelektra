@@ -68,8 +68,8 @@ sudo kdb mount --with-recommends hosts /examples/hosts hosts
 #
 # Create hosts file for testing
 #
-$ echo "127.0.0.1	localhost" > `kdb file /examples/hosts`
-$ echo "::1 	localhost" >> `kdb file /examples/hosts`
+$ echo "127.0.0.1\\tlocalhost" > `kdb file /examples/hosts`
+$ echo "::1\\tlocalhost" >> `kdb file /examples/hosts`
 #
 # Check the file
 #
