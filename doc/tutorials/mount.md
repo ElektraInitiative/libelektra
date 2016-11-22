@@ -16,7 +16,9 @@ Let us start with a motivating example first:
 
 We mount the lookup table with the following command:
 
-    sudo kdb mount /etc/hosts system/hosts hosts
+```sh
+sudo kdb mount /etc/hosts system/hosts hosts
+```
 
 1. `/etc/hosts` is the configuration file we want to mount
 2. `system/hosts` is the path it should have in the key database, also known as **mountpoint**
@@ -27,8 +29,10 @@ We mount the lookup table with the following command:
 
 Now we use `kdb file`, to verify that all configuration below `system/hosts` is stored in /etc/hosts:
 
-    $ kdb file system/hosts
-    /etc/hosts
+```sh
+$ kdb file system/hosts
+/etc/hosts
+```
 
 After mounting a file, we can modify keys below `system/hosts`.
 We need to be root, because we modify `/etc/hosts`.
@@ -48,11 +52,13 @@ Applications will now pick up these changes:
 
 We can undo these changes with:
 
-    # remove the key ...
-    $ sudo kdb rm system/hosts/ipv4/mylocalhost
+```sh
+# remove the key ...
+$ sudo kdb rm system/hosts/ipv4/mylocalhost
 
-    # ... and unmount
-    $ sudo kdb umount system/hosts
+# ... and unmount
+$ sudo kdb umount system/hosts
+```
 
 > ###### Why you need superuser privileges to mount files ######
 > Elektra manages its mountpoints in configuration below **system/elektra/mountpoints**.
