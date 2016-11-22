@@ -63,7 +63,7 @@ bool isToBeIgnored (std::string const & name)
 	       startsWith (name, "fallback") || startsWith (name, "override") || startsWith (name, "namespace") || name == "default" ||
 	       name == "context" ||
 
-	       startsWith (name, "callback") ||
+	       startsWith (name, "callback") || startsWith (name, "required") ||
 
 	       startsWith (name, "binary") ||
 

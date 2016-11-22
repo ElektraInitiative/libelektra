@@ -2,18 +2,6 @@ This is a list of TODO items which do not fit in
 the other TODO categories which should be resolved in 0.8.
 
 
-== CONTRACT
-
-status:
-	add needsprivate (for abi)
-	relative keys?
-
-
-## ERRORS
-
-also rotate errors into warnings when they are overwritten
-
-
 == META DATA LIBRARY ==
 
 (maybe generate similar to gen/liberror)
@@ -23,8 +11,8 @@ warning/error iterators
 comment iterators
 
 documentation:
-	comment -> meta data
-	split real meta data functions + kdbhelpers
+	comment -> metadata
+	split real metadata functions + kdbhelpers
 
 library for metadata access functions
 	array access
@@ -37,7 +25,7 @@ for python plugin
  - avoid full/static for symbol clashes
 
 
-== unsorted ==
+== errno ==
 
 better errnostore solution?
 	reset errno in user functions and avoid code in every plugin
@@ -45,26 +33,6 @@ better errnostore solution?
 	use safe implementation see
 	https://github.com/fish-shell/fish-shell/commit/c70e92e98d34e14b1e1310a10677b7c0f6e2b54c
 	(even strerrno_r seems to deadlock from time to time because of translations?)
-
-chroot
-	-c option which allows you to chroot before doing operation
-	-u options which allows you to switch user (by setting env internally)
-	kdbOpen/kdbGet/kdbSet
-
-script testing:
-	make scripts safe by chroot (only modify files below /tmp)
-	should be executed by make test
-	should be able to run tests for all plugins +
-	different combination of plugins
-	should support partly installations and/or builds (not all plugins)
-
-	line number (maybe not important)
-	should be available at target (be installed) why?
-	modularity (testing where the code is) (maybe not important)
-		-> plugin specifica might be tested at other level/only C
-		-> how to do without need of capabilities again? backends at serialization level?? (like with mount)
-
-use error value as exit (does it start with 0?)
 
 
 == inotify ==
@@ -94,13 +62,6 @@ kdbSet
 
 == DATA STRUCTURES ==
 
-ksLookup (      ADD_IF_MISSING|NEW_KEY):
-	add a key and return it, if it was not found
-	very common operation
-
-
-keyAdd (.. until rootKey)
-
 Only implement what is really needed.
 (can take some time to do it well!)
 See also OPTIMISE
@@ -108,8 +69,6 @@ See also OPTIMISE
 ksForEach (ks, func, handle)
 	void func (Key*, void* handle);
 	also with lambdas in c++ (check if external loop is faster?)
-
-relations
 
 ksLookup: value keys only
 	with relations
@@ -122,7 +81,6 @@ http://en.wikipedia.org/wiki/Set_(mathematics)
 allow to change behaviour of keyset using callbacks:
 	collect statistics which keys were used and modified how often
 	allow tracing of individual (non-removed) keys
-
 
 KeySet* ksUnion
 ksIntersection

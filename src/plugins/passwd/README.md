@@ -2,12 +2,12 @@
 - infos/author = Name <name@libelektra.org>
 - infos/licence = BSD
 - infos/needs =
-- infos/provides = storage
+- infos/provides = storage/passwd
 - infos/recommends =
 - infos/placements = getstorage setstorage
-- infos/status = maintained reviewed conformant compatible coverage specific unittest tested nodep libc configurable experimental
+- infos/status = maintained reviewed conformant compatible coverage specific unittest tested nodep libc configurable experimental limited
 - infos/metadata =
-- infos/description =
+- infos/description = storage plugin for passwd files
 
 ## Introduction ##
 
@@ -32,14 +32,13 @@ If the config key `index` is set to `name` passwd entrys will be sorted by name,
 
 ## Usage ##
 
-```
-kdb mount /etc/passwd system/passwd passwd index=name
-kdb export system/passwd/root
+    kdb mount /etc/passwd system/passwd passwd index=name
+    kdb export system/passwd/root
 
-gecos = root
-gid = 0
-home = /root
-passwd = x
-shell = /bin/zsh
-uid = 0
-```
+    gecos = root
+    gid = 0
+    home = /root
+    passwd = x
+    shell = /bin/zsh
+    uid = 0
+

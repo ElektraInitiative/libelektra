@@ -17,35 +17,31 @@ For introduction in the terminology, make sure to read
 
 ## Why Elektra?
 
-Configurations, settings and preferences are hierarchical data structures of
-keys, each consisting of a name and a value. They can be used to
-configure software for the user's needs. Because these settings stay
-the same across restarts of the program, they need to be stored
-permanently. In the beginning
-this was done with primitive text files.
+Configurations, settings and preferences are hierarchical data
+structures of keys, each consisting of a name and a value. They can be
+used to configure software for the user's needs. Because these settings
+stay the same across restarts of the program, they need to be stored
+permanently. In the beginning this was done with primitive text files.
 Possibilities to structure the text were added later.
 
-Nearly every system developed its own way to read preferences,
-but some systems can also change them.
-Because the graphical user interface
-can be tweaked in many ways,
-the most encompassing systems emerged from this area.
-Some got a de facto standard for a desktop environment (kconfig,
+Nearly every system developed its own way to read preferences, but some
+systems can also change them.  Because the graphical user interface can
+be tweaked in many ways, the most encompassing systems emerged from this
+area.  Some got a de facto standard for a desktop environment (kconfig,
 gconfig) or even an operating system (Windows Registry, Open Directory).
-But they have a common problem: they are bound to the platform for
-which they were developed. On the other hand, there are many libraries
-that do a good job in parsing and writing configuration files.
-These tools are, however,
-not powerful enough to keep the configuration
-independent from the operating system's details, for example, how to resolve the
-file name of the configuration file.
+But they have a common problem: they are bound to the platform for which
+they were developed. On the other hand, there are many libraries that do
+a good job in parsing and writing configuration files.  These tools are,
+however, not powerful enough to keep the configuration independent from
+the operating system's details, for example, how to resolve the file
+name of the configuration file.
 
-That is where Elektra comes in to fill the gap.
-On the one hand, Elektra is
-not tied to any platform or operating system.
-On the other hand, Elektra is
-powerful enough to be useful immediately for what it is written for: to
-access configuration.
+That is where Elektra comes in to fill the gap.  On the one hand,
+Elektra is not tied to any platform or operating system.  On the other
+hand, Elektra is powerful enough to be useful immediately for what it
+is written for: to access configuration.
+
+For further views see [why Elektra](/doc/WHY.md)
 
 
 ## Why is it important?
@@ -66,7 +62,6 @@ identity and separating them from each other.  Elektra has introduced
 [backend](elektra-backends.md) to support the storage of key databases in different
 formats.
 
-
 Elektra abstracts configuration so that applications can receive and
 store settings without carrying information about how and where these
 are actually stored.  It is the purpose of the backends to implement
@@ -82,3 +77,8 @@ needed.  Elektra provides this common layer with its data structures.
 Each elektrified application lies on top of this abstraction layer and
 it can talk to each part of the global key database using the classes
 presented next.
+
+## SEE ALSO
+
+- Get a [big picture](/doc/BIGPICTURE.md)
+- Start reading about [command-line tools](/doc/help/kdb-introduction.md)

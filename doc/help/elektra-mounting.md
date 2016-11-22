@@ -13,7 +13,8 @@ to/from the global key database. For example, you need to mount if you want to:
 - change the representation (e.g. the date-format or booleans), and
 - everything else [plugins](/src/plugins/README.md) can do.
 
-**Mounting** allegorises a common technique for file systems.
+**Mounting** allegorises a common technique for
+[virtual file systems](/doc/BIGPICTURE.md).
 File systems on different partitions or devices can be added to the
 currently accessible file system.  Mounting is typically used to access
 data from external media.  A more advanced use case presents mounting
@@ -32,13 +33,13 @@ same time. Each of them is responsible for its own subtree of the global
 key database.
 
 Mounting works for file systems only if the file system below is
-accessible and a directory exists at the mount point.  Elektra does not
+accessible and a directory exists at the mountpoint.  Elektra does not
 enforce such restrictions.
 
 Note, that you cannot mount the same configuration file multiple times.
 You can, however, use the specification to link between configuration
 items which gives an impression of an *bind mount*, i.e. having the
-same configuration values on multiple places..
+same configuration values on multiple places.
 
 ## SEE ALSO
 

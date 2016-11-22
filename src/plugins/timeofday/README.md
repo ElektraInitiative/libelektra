@@ -4,7 +4,7 @@
 - infos/provides = tracing
 - infos/needs =
 - infos/placements = pregetstorage postgetstorage presetstorage precommit postcommit prerollback postrollback
-- infos/status = maintained tested nodep
+- infos/status = maintained tested nodep configurable
 - infos/description = Prints timestamps during execution of backend
 
 ## Introduction ##
@@ -44,3 +44,4 @@ shows the time from invocation to invocation.
 Will not log when loaded as module (config `/module` present), unless `/logmodule` is set:
 
     kdb check -c "logmodule=" timeofday
+

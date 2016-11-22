@@ -4,8 +4,8 @@
 - infos/needs =
 - infos/provides = storage
 - infos/placements = getstorage setstorage
-- infos/status = difficult preview unfinished
-- infos/description =
+- infos/status = nodep configurable readonly preview difficult limited unfinished
+- infos/description = regular expressions as storage plugin
 
 ## Introduction ##
 
@@ -31,10 +31,9 @@ The value of the config key is as follows:
 - the first three letters need to be '#[0-9 '.
 According to this number the value of the key will be set.
 
-The key also might contain meta data.
-- the only characters allowed in meta values are '#[0-9]'.
-the meta data will be replaced by the regex match then.
-
+The key also might contain metadata.
+- the only characters allowed in metavalues are '#[0-9]'.
+the metadata will be replaced by the regex match then.
 
 ## Limitations ##
 
@@ -76,4 +75,3 @@ Suppose we want to match:
 
     (global-set-key (kbd "<escape>")      'keyboard-escape-quit)
 
-TODO.. not finished

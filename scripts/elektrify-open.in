@@ -1,11 +1,11 @@
 #!/bin/sh
 
-interceptOpen="@CMAKE_INSTALL_PREFIX@/lib@LIB_SUFFIX@/libelektraintercept.so"
+interceptOpen="@CMAKE_INSTALL_PREFIX@/lib@LIB_SUFFIX@/libelektraintercept-fs.so"
 
 if [ ! -f "$interceptOpen" ]
 then
-	echo "You do not have $interceptOpen installed"
-	echo "Maybe your system is not supported (currently needs to be glibc-based)"
+	echo "You do not have $interceptOpen installed" 1>&2
+	echo "Maybe your system is not supported (currently needs to be glibc-based)"  1>&2
 	exit 1
 fi
 

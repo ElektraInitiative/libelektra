@@ -3,7 +3,7 @@
  *
  * @brief
  *
- * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
  */
 
 #include <file.hpp>
@@ -33,7 +33,7 @@ int FileCommand::execute (Cmdline const & cl)
 	}
 	if (!x.isValid ())
 	{
-		throw invalid_argument (cl.arguments[0] + " is not an valid keyname");
+		throw invalid_argument (cl.arguments[0] + " is not a valid keyname");
 	}
 
 	kdb.get (conf, x);

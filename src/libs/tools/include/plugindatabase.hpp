@@ -3,7 +3,7 @@
  *
  * @brief Interface to all plugins
  *
- * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
  *
  */
 
@@ -82,9 +82,9 @@ public:
 	virtual func_t getSymbol (PluginSpec const & whichplugin, std::string const & which) const = 0;
 
 	/**
-	 * @brief lookup which plugin handles meta data
+	 * @brief lookup which plugin handles metadata
 	 *
-	 * @param which the meta data of interest
+	 * @param which the metadata of interest
 	 *
 	 * @return the best suited plugin specification which provides it
 	 */
@@ -103,6 +103,33 @@ public:
 	 * @return the plugin itself or the best suited plugin specification which provides it
 	 */
 	virtual PluginSpec lookupProvides (std::string const & provides) const = 0;
+
+	/**
+	 * @brief looks up all plugins which are a suitable provider
+	 *
+	 * @note in case a plugin name is provided, the plugin with the name will also be
+	 *	 part of the result. But if there are other plugins providing the requirement,
+	 *	 then they will also be part of the result.
+	 *
+	 * @param provides is the provider to find
+	 *
+	 * @return a map of plugins with their status offering the requirement or are named after it
+	 */
+	virtual std::map<int, PluginSpec> lookupAllProvidesWithStatus (std::string const & provides) const = 0;
+
+	/**
+	 * @brief looks up all plugins which are a suitable provider
+	 *
+	 * @note in case a plugin name is provided, the plugin with the name will also be
+	 *	 part of the result. But if there are other plugins providing the requirement,
+	 *	 then they will also be part of the result.
+	 *       The ordering of the resulting vector has no special meaning.
+	 *
+	 * @param provides is the provider to find
+	 *
+	 * @return a vector of plugins offering the requirement or are named after it
+	 */
+	virtual std::vector<PluginSpec> lookupAllProvides (std::string const & provides) const = 0;
 
 	/**
 	 * @param statusString the string encoding the status
@@ -134,6 +161,8 @@ public:
 	func_t getSymbol (PluginSpec const & whichplugin, std::string const & which) const;
 	PluginSpec lookupMetadata (std::string const & which) const;
 	PluginSpec lookupProvides (std::string const & provides) const;
+	std::map<int, PluginSpec> lookupAllProvidesWithStatus (std::string const & provides) const;
+	std::vector<PluginSpec> lookupAllProvides (std::string const & provides) const;
 };
 
 /**

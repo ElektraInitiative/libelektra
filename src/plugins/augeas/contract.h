@@ -3,7 +3,7 @@
  *
  * @brief
  *
- * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
  */
 
 #ifndef CONTRACT_H_
@@ -40,7 +40,7 @@ ksNew (30,
 			KEY_META, "convert/append/samelevel", "1", /* if the configuration has nested structures, comments should stay in the same hierarchy */
 			KEY_END),
 		keyNew ("system/elektra/modules/augeas/config/needs/glob/get/#1/flags",
-			KEY_VALUE, "0", /* disable the path matching mode */
+			KEY_VALUE, "", /* disable the path matching mode */
 			KEY_END),
 		KS_END);
 

@@ -3,14 +3,14 @@
  *
  * @brief Methods for key sets.
  *
- * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
  */
 
 #ifdef HAVE_KDBCONFIG_H
 #include "kdbconfig.h"
 #endif
 
-#if DEBUG && defined(HAVE_STDIO_H)
+#if defined(HAVE_STDIO_H)
 #include <stdio.h>
 #endif
 
@@ -26,11 +26,10 @@
 #include <string.h>
 #endif
 
-#include <stdio.h>
-
 #include <kdbtypes.h>
 
 #include "kdbinternal.h"
+#include <kdbassert.h>
 
 
 #define ELEKTRA_MAX_PREFIX_SIZE sizeof ("namespace/")
@@ -228,7 +227,13 @@ KeySet * ksDup (const KeySet * source)
 {
 	if (!source) return 0;
 
-	KeySet * keyset = ksNew (source->alloc, KS_END);
+	size_t size = source->alloc;
+	if (size < KEYSET_SIZE)
+	{
+		size = KEYSET_SIZE;
+	}
+
+	KeySet * keyset = ksNew (size, KS_END);
 	ksAppend (keyset, source);
 	return keyset;
 }
@@ -691,16 +696,10 @@ ssize_t ksSearchInternal (const KeySet * ks, const Key * toAppend)
 	register int cmpresult = 1;
 	ssize_t middle = -1;
 	ssize_t insertpos = 0;
-#if DEBUG && VERBOSE
-	int c = 0;
-#endif
 
 
 	while (1)
 	{
-#if DEBUG && VERBOSE
-		++c;
-#endif
 		if (right < left)
 		{
 			/* Nothing was found */
@@ -722,12 +721,6 @@ ssize_t ksSearchInternal (const KeySet * ks, const Key * toAppend)
 			insertpos = middle;
 			right = middle - 1;
 		}
-#if DEBUG && VERBOSE
-/* This is even for verbose too verbose!
-printf ("bsearch -- c: %d res: %d left: %zd middle: %zd right: %zd insertpos: %zd\n",
-	c, cmpresult, left, middle, right, insertpos);
-*/
-#endif
 	}
 
 	if (!cmpresult)
@@ -903,8 +896,7 @@ ssize_t ksAppend (KeySet * ks, const KeySet * toAppend)
  * @param ks the keyset where this should be done
  * @param to the position where it should be copied to
  * @param from the position where it should be copied from
- * @retval -1 if length is smaller then 0
- * @return the number of moved elements otherwise
+ * @return the number of moved elements
  */
 ssize_t ksCopyInternal (KeySet * ks, size_t to, size_t from)
 {
@@ -916,12 +908,18 @@ ssize_t ksCopyInternal (KeySet * ks, size_t to, size_t from)
 	ssize_t length = ssize - sfrom;
 	size_t ret = 0;
 
-	if (length < 0) return -1;
-	if (ks->size < to) return -1;
+	ELEKTRA_ASSERT (length >= 0, "length %zu too small", length);
+	ELEKTRA_ASSERT (ks->size >= to, "ks->size %zu smaller than %zu", ks->size, to);
 
 	ks->size += sizediff;
-	ret = elektraMemmove (ks->array + to, ks->array + from, length);
+
+	if (length != 0)
+	{
+		ret = elektraMemmove (ks->array + to, ks->array + from, length);
+	}
+
 	ks->array[ks->size] = 0;
+
 	return ret;
 }
 
@@ -1126,10 +1124,7 @@ KeySet * ksCut (KeySet * ks, const Key * cutpoint)
 	returned->size = newsize;
 	returned->array[returned->size] = 0;
 
-	if (ksCopyInternal (ks, found, it) == -1)
-	{
-		ELEKTRA_ASSERT (0 && "ksCopyInternal returned an error inside ksCut");
-	}
+	ksCopyInternal (ks, found, it);
 
 	if (set_cursor) ks->cursor = ks->array[ks->current];
 
@@ -2322,19 +2317,11 @@ int ksResize (KeySet * ks, size_t alloc)
 			return -1;
 		}
 	}
-	/* This is much too verbose
-	#if DEBUG && VERBOSE
-		printf ("Resize from %d to %d\n",(int) ks->alloc,(int) alloc);
-	#endif
-	*/
 	ks->alloc = alloc;
 
 
 	if (elektraRealloc ((void **)&ks->array, sizeof (struct _Key *) * ks->alloc) == -1)
 	{
-#if DEBUG
-		fprintf (stderr, "Reallocation error\n");
-#endif
 		elektraFree (ks->array);
 		ks->array = 0;
 		/*errno = KDB_ERR_NOMEM;*/

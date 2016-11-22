@@ -7,8 +7,8 @@
 *~
 
 #ignore debian patches
-.pc/
-debian/patches/
+/.pc/
+/debian/patches/
 
 #ignore all build directories of cmake
 build*
@@ -22,3 +22,6 @@ build*
 
 #ignore Makefile in project root
 /Makefile
+
+#ignore vim swp files
+*.swp

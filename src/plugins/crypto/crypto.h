@@ -3,7 +3,7 @@
  *
  * @brief filter plugin providing cryptographic operations
  *
- * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
  *
  */
 
@@ -41,13 +41,13 @@ enum ElektraCryptoOperation
 #define ELEKTRA_CRYPTO_META_ENCRYPT "crypto/encrypt"
 #define ELEKTRA_CRYPTO_META_SALT "crypto/salt"
 
+#define CRYPTO_PLUGIN_FUNCTION(name) ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME_C, name)
+
 #if defined(ELEKTRA_CRYPTO_API_GCRYPT)
 
 // gcrypt specific declarations
 #include <gcrypt.h>
 typedef gcry_cipher_hd_t elektraCryptoHandle;
-
-#define CRYPTO_PLUGIN_FUNCTION(name) ELEKTRA_PLUGIN_FUNCTION (cryptogcrypt, name)
 
 #elif defined(ELEKTRA_CRYPTO_API_OPENSSL)
 
@@ -59,18 +59,14 @@ typedef struct
 	EVP_CIPHER_CTX decrypt;
 } elektraCryptoHandle;
 
-#define CRYPTO_PLUGIN_FUNCTION(name) ELEKTRA_PLUGIN_FUNCTION (cryptoopenssl, name)
-
 #elif defined(ELEKTRA_CRYPTO_API_BOTAN)
 
 // Botan specific declarations
 typedef void elektraCryptoHandle;
-#define CRYPTO_PLUGIN_FUNCTION(name) ELEKTRA_PLUGIN_FUNCTION (cryptobotan, name)
 
 #else
 
 typedef void elektraCryptoHandle;
-#define CRYPTO_PLUGIN_FUNCTION(name) ELEKTRA_PLUGIN_FUNCTION (crypto, name)
 
 #endif
 

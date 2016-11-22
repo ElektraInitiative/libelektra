@@ -3,7 +3,7 @@
  *
  * @brief Interna of plugin functionality.
  *
- * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
  */
 
 #ifdef HAVE_KDBCONFIG_H
@@ -306,9 +306,7 @@ Plugin * elektraPluginOpen (const char * name, KeySet * modules, KeySet * config
 	return handle;
 
 err_clup:
-#if DEBUG
-	printf ("Failed to load plugin %s\n", name);
-#endif
+	ELEKTRA_LOG ("Failed to load plugin %s\n", name);
 	ksDel (config);
 	return 0;
 }
@@ -373,30 +371,7 @@ static int elektraVersionGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned,
 static int elektraVersionSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * error)
 {
 	KeySet * info = elektraVersionKeySet ();
-	Key * k;
-	ksRewind (info);
-	ksRewind (returned);
-	while ((k = ksNext (returned)))
-	{
-		Key * c = ksNext (info);
-		if (!c)
-		{
-			ELEKTRA_SET_ERRORF (84, error, "the key %s (value %s) was added", keyName (k), keyString (k));
-			return -1;
-		}
-		if (strcmp (keyName (k), keyName (c)) || strcmp (keyString (k), keyString (c)))
-		{
-			ELEKTRA_SET_ERRORF (84, error, "the key %s (expected %s) was modified to %s (expected %s)", keyName (k),
-					    keyName (c), keyString (k), keyString (c));
-			return -1;
-		}
-	}
-	if ((k = ksNext (info)) != 0)
-	{
-		ELEKTRA_SET_ERRORF (84, error, "the key %s (value %s) was removed", keyName (k), keyString (k));
-		return -1;
-	}
-	ksDel (info);
+	ELEKTRA_SET_ERROR_READ_ONLY (info, returned, error);
 	return 0;
 }
 

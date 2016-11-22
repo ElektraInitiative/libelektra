@@ -3,7 +3,7 @@
  *
  * @brief
  *
- * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
  */
 
 #include <errno.h>
@@ -297,7 +297,12 @@ static int consumeKeySetNode (KeySet * ks, const char * context, xmlTextReaderPt
 		privateContext = xmlTextReaderGetAttribute (reader, (const xmlChar *)"parent");
 		if (context && privateContext)
 		{
-			xmlStrPrintf (fullContext, sizeof (fullContext), (const xmlChar *)"%s/%s", context, privateContext);
+/*In libxml earlier than 2.9.4 const char * was used as argument, leading to a warning.
+https://git.gnome.org/browse/libxml2/diff/include/libxml/xmlstring.h?id=4472c3a5a5b516aaf59b89be602fbce52756c3e9
+*/
+#pragma GCC diagnostic ignored "-Wpointer-sign"
+			xmlStrPrintf (fullContext, sizeof (fullContext), "%s/%s", context, privateContext);
+#pragma GCC diagnostic warning "-Wpointer-sign"
 		}
 
 		/* Parse everything else */

@@ -18,7 +18,7 @@ frees all previously allocated data structures.
 
 ### kdbOpen
 
-`kdbOpen()` retrieves the *mount point configuration* with
+`kdbOpen()` retrieves the *mountpoint configuration* with
 `kdbGet()` using the *default backend*.  During this process,
 the function sets up the data structures which are needed for later
 invocations of `kdbGet()` or `kdbSet()`.  All backends are opened and
@@ -26,28 +26,29 @@ mounted in the appropriate parts of the key hierarchy.  The resulting
 backends are added both to the `Split` and the `Trie` object.  `kdbOpen()`
 finally returns a `KDB` object that contains all this information.
 
-The reading of the mount point configuration and the consequential self
+The reading of the mountpoint configuration and the consequential self
 configuring of the system is called *bootstrapping*.  Elektra builds
-itself up from the simple variant with a default backend only to the
-sophisticated configuration system presented in this thesis.
+itself up with a default backend (consisting of `libelektra-resolver`
+and `libelektra-storage`).
+[Read more about bootstrapping here](elektra-bootstrapping.md)
 
 `kdbOpen()` creates a `Split` object.  It adds all backend handles and
 `parentKeys` during bootstrapping.  So the buildup of the `Split` object
 takes place once.  The resulting object is then used for both `kdbGet()`
 and `kdbSet()`.  This approach is much better testable because the
-`Split` object is first initialised using the mount point configuration --
+`Split` object is first initialised using the mountpoint configuration --
 separated from the filtering of the backends for every specific `kdbGet()`
 and `kdbSet()` request.
 
 Afterwards the key hierarchy is static.  Every application using Elektra
-will build up the same key database.  Application specific mount points
-are prohibited because changes of mount points would destroy the global
+will build up the same key database.  Application specific mountpoints
+are prohibited because changes of mountpoints would destroy the global
 key database.  Elektra could not guarantee that every application
 retrieves the same configuration with the same key names any longer.
 
 In `kdbOpen()`, nearly no checks are done regarding the expected
 behaviour of the backend.  The contract checker guarantees that only
-appropriate mount points are written into the mount point configuration.
+appropriate mountpoints are written into the mountpoint configuration.
 `kdbOpen()` checks only if the opening of plugin was successful.  If not,
 the backend enclosing the plugin is not mounted at all.
 
@@ -173,7 +174,7 @@ resulting key set:
 	user/sw/generator/dir/new (B)
 	user/sw/generator/dir/outside1 (B)
 
-Note that the key exactly at the mount point comes from the backend mounted
+Note that the key exactly at the mountpoint comes from the backend mounted
 at `user/sw/generator/dir`.
 
 
@@ -294,7 +295,7 @@ configuration was changed.
 changes as described in **exception safety**.
 - If every plugin does this correctly, the whole `KeySet` is
 propagated to permanent storage.  Otherwise nothing is changed in the
-key database.  Plugins developed during the thesis meet this requirement.
+key database.  Plugins delivered with Elektra meet this requirement.
 
 The synopsis of the function is:
 
@@ -352,36 +353,26 @@ plugins are affected.
 
 ### Atomic Replacement
 
-For this thesis only file-based storage with atomic properties were
+Up to now only file-based storages with atomic properties were
 developed.  The replacement of a file with another file that has not
 yet been written is not trivial.  The straightforward way is to lock a
 file and start writing to it.  But this approach can result in broken or
 partially finished files in events like ''out of disc space'', signals
 or other asynchronous aborts of the program.
 
-A temporary file solves this problem, because in problematic events
+A temporary file solves most of this problem, because in problematic events
 the original file stays untouched.  When the temporary file is written
 out properly, it is renamed and the original configuration file is
 overwritten.  But another concurrent invocation of `kdbSet()` can try to
 do the same with the result that one of the newly written files is lost.
 
-To avoid this problem, locks are needed again.	It is not possible to
-lock the configuration file itself because it will be unlinked when
-the temporary file is renamed.	So a third file for locking is needed.
-The resolver currently implements this approach.
+To avoid this problem, locks are needed and protect cooperating processes
+(such as other processes using Elektra).
 
-An alternative to this approach without locks is to completely rely
-on the modification time.  The modification time typically has only
+Additionally modification time is used to detect if a file was modified.
+Unfortunately the modification time on some file systems has
 a resolution of one second.  So any changes within that time slot
-will not be recognised.  For this approach, however, the name of every
-temporary file must be unique because concurrent `kdbSet()` invocations
-each try to create one.  The temporary file must also be unlinked in
-case of a rollback.  The opened temporary file can be passed to the
-storage plugins using a file name in the directory */dev/fd*.
-This approach may be more practical than the currently implemented way
-because it does not need the additional lock file (Nevertheless,
-the other way was chosen to test if the algorithm is exception safe as
-described in *exception safety*).
+might not be recognised.
 
 
 ### Errors

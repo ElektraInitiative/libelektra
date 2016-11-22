@@ -1,9 +1,9 @@
 /**
  * @file
  *
- * @brief Methods to do various operations on Key meta data.
+ * @brief Methods to do various operations on Key metadata.
  *
- * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
  */
 
 /***************************************************************************
@@ -25,7 +25,7 @@
 /**
  * @defgroup keymeta Meta Info Manipulation Methods
  * @ingroup key
- * @brief Methods to do various operations on Key meta data.
+ * @brief Methods to do various operations on Key metadata.
  *
  * To use them:
  * @code
@@ -84,11 +84,11 @@
  * The order inside a persistent storage can be described
  * with the tag "order" which contains a positive number.
  *
- * The meta key "app" describes to which application a
+ * The metakey "app" describes to which application a
  * key belongs. It can be used to remove keys from an
  * application no longer installed.
  *
- * The meta key "path" describes where the key is physically
+ * The metakey "path" describes where the key is physically
  * stored.
  *
  * The "owner" is the user that owns the key. It only
@@ -124,7 +124,7 @@
 #endif
 
 
-/**Rewind the internal iterator to first meta data.
+/**Rewind the internal iterator to first metadata.
  *
  * Use it to set the cursor to the beginning of the Key Meta Infos.
  * keyCurrentMeta() will then always return NULL afterwards. So
@@ -221,12 +221,12 @@ const Key * keyCurrentMeta (const Key * key)
 	return ret;
 }
 
-/**Do a shallow copy of meta data from source to dest.
+/**Do a shallow copy of metadata from source to dest.
  *
- * The key dest will have the same meta data referred with
+ * The key dest will have the same metadata referred with
  * metaName afterwards then source.
  *
- * For example the meta data type is copied into the
+ * For example the metadata type is copied into the
  * Key k.
  *
  * @code
@@ -240,11 +240,11 @@ void l(Key *k)
  * @endcode
  *
  * The main purpose of this function is for plugins or
- * applications which want to add the same meta data to
+ * applications which want to add the same metadata to
  * n keys. When you do that with keySetMeta() it will
  * take n times the memory for the key. This can be
  * considerable amount of memory for many keys with
- * some meta data for each.
+ * some metadata for each.
  *
  * To avoid that problem you can use keyCopyAllMeta()
  * or keyCopyMeta().
@@ -254,7 +254,7 @@ void o(KeySet *ks)
 {
 	Key *current;
 	Key *shared = keyNew (0);
-	keySetMeta(shared, "shared", "this meta data should be shared among many keys");
+	keySetMeta(shared, "shared", "this metadata should be shared among many keys");
 
 	ksRewind(ks);
 	while ((current = ksNext(ks)) != 0)
@@ -267,12 +267,12 @@ void o(KeySet *ks)
  * @post keyGetMeta(source, metaName) == keyGetMeta(dest, metaName)
  *
  * @retval 1 if was successfully copied
- * @retval 0 if the meta data in dest was removed too
+ * @retval 0 if the metadata in dest was removed too
  * @retval -1 on null pointers (source or dest)
  * @retval -1 on memory problems
- * @param dest the destination where the meta data should be copied too
- * @param source the key where the meta data should be copied from
- * @param metaName the name of the meta data which should be copied
+ * @param dest the destination where the metadata should be copied too
+ * @param source the key where the metadata should be copied from
+ * @param metaName the name of the metadata which should be copied
  * @ingroup keymeta
  */
 int keyCopyMeta (Key * dest, const Key * source, const char * metaName)
@@ -328,25 +328,25 @@ int keyCopyMeta (Key * dest, const Key * source, const char * metaName)
 	return 1;
 }
 
-/**Do a shallow copy of all meta data from source to dest.
+/**Do a shallow copy of all metadata from source to dest.
  *
- * The key dest will additionally have all meta data
+ * The key dest will additionally have all metadata
  * the source had.
  * Meta data not present in source will not be changed.
  * Meta data which was present in source and dest will
  * be overwritten.
  *
- * For example the meta data type is copied into the
+ * For example the metadata type is copied into the
  * Key k:
  *
  * @snippet keyMeta.c Basic Copy All
  *
  * The main purpose of this function is for plugins or
- * applications which want to add the same meta data to
+ * applications which want to add the same metadata to
  * n keys. When you do that with keySetMeta() it will
  * take n times the memory for the key. This can be
  * considerable amount of memory for many keys with
- * some meta data for each.
+ * some metadata for each.
  *
  * To avoid that problem you can use keyCopyAllMeta()
  * or keyCopyMeta():
@@ -356,11 +356,11 @@ int keyCopyMeta (Key * dest, const Key * source, const char * metaName)
  * @post for every metaName present in source: keyGetMeta(source, metaName) == keyGetMeta(dest, metaName)
  *
  * @retval 1 if was successfully copied
- * @retval 0 if source did not have any meta data
+ * @retval 0 if source did not have any metadata
  * @retval -1 on null pointer of dest or source
  * @retval -1 on memory problems
- * @param dest the destination where the meta data should be copied too
- * @param source the key where the meta data should be copied from
+ * @param dest the destination where the metadata should be copied too
+ * @param source the key where the metadata should be copied from
  * @ingroup keymeta
  */
 int keyCopyAllMeta (Key * dest, const Key * source)

@@ -1,29 +1,5 @@
-Lacking documentation for current releases.
+This document describes what is missing in the documentation:
 
-currently following resources are available:
-	github showing READMEs
-	thesis (running out of date!, lacking some parts already)
-	API (overview and big picture missing, not linked with thesis)
-
-Thesis should be:
-	brought up to date
-	build as official part
-	integrated with rest of documentation
-
-Alternative:
-	Make homepage with all information
-	Using doxygen?
-
-This document describes what is missing in the documentation
-
-
-
-
-
-
-== ISSUES ==
-
-tutorials missing
 
 document return value of resolver + other plugins
 
@@ -40,28 +16,10 @@ not clearly defined how config file is opened
 relative key names not explained
 
 
-== DOCUMENTATION ==
-
-all exported methods of elektra need to be:
-	useful in current state
-	well documented in behavior
-	having test cases for behavior
-	behavior not overlapping with another function
-	well documented error cases, return and errno values
-	having test cases for error cases
-	otherwise fix or mark it obsolete
-
-add projects using elektra
 
 
-== OVERVIEW ==
+== pictures ==
 
-draw a big picture
+BIGPICTURE.md should actually have a picture!
 
-generate graphic for overview of plugins
-
-dissertation with full API docu and tutorials
-+ with homepage in mind
-
-architecture for elektra eco system
-arc42 docu
+generate up-to-date graphic for overview of plugins

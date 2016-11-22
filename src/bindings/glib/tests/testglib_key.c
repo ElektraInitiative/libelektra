@@ -3,7 +3,7 @@
  *
  * @brief
  *
- * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
  */
 
 #include "gelektra-key.h"
@@ -85,7 +85,7 @@ static void create_global_keys ()
 	g_key = gelektra_key_new ("user/key", GELEKTRA_KEY_VALUE, "value", GELEKTRA_KEY_OWNER, "myowner", GELEKTRA_KEY_COMMENT, "mycomment",
 				  GELEKTRA_KEY_UID, "123", GELEKTRA_KEY_GID, 456, GELEKTRA_KEY_MODE, 0644, GELEKTRA_KEY_ATIME, 123,
 				  GELEKTRA_KEY_MTIME, "456", GELEKTRA_KEY_CTIME, 789, GELEKTRA_KEY_DIR, GELEKTRA_KEY_META, "by", "manuel",
-				  GELEKTRA_KEY_NULL, GELEKTRA_KEY_END);
+				  GELEKTRA_KEY_END);
 	succeed_if (g_key != NULL, "unable to create key");
 	succeed_if (gelektra_key_isvalid (g_key), "key should be valid");
 	succeed_if (gelektra_key_getref (g_key) == 1, "refcount should be 1");
@@ -211,7 +211,7 @@ static void test_meta_data ()
 
 	meta = gelektra_key_getmeta (g_key, "by");
 	succeed_if (gelektra_key_getref (meta) == 2, "refcount should be 2");
-	succeed_if (!memcmp (gelektra_key_getvalue (meta), "manuel", sizeof ("manuel")), "invalid meta value");
+	succeed_if (!memcmp (gelektra_key_getvalue (meta), "manuel", sizeof ("manuel")), "invalid metavalue");
 	g_object_unref (meta);
 
 	guint metacnt = 0;
@@ -225,11 +225,11 @@ static void test_meta_data ()
 		++metacnt;
 		g_object_unref (meta);
 	}
-	succeed_if (metacnt == 9, "incorrect number of meta data");
+	succeed_if (metacnt == 9, "incorrect number of metadata");
 
 	gelektra_key_setmeta (g_key, "by", "gelektra");
 	meta = gelektra_key_getmeta (g_key, "by");
-	succeed_if (!memcmp (gelektra_key_getvalue (meta), "gelektra", sizeof ("gelektra")), "invalid meta value");
+	succeed_if (!memcmp (gelektra_key_getvalue (meta), "gelektra", sizeof ("gelektra")), "invalid metavalue");
 	g_object_unref (meta);
 
 	/* set tests */
@@ -237,12 +237,12 @@ static void test_meta_data ()
 
 	gelektra_key_copymeta (g_key, key, "by");
 	meta = gelektra_key_getmeta (g_key, "by");
-	succeed_if (!memcmp (gelektra_key_getvalue (meta), "gelektra", sizeof ("gelektra")), "invalid meta value");
+	succeed_if (!memcmp (gelektra_key_getvalue (meta), "gelektra", sizeof ("gelektra")), "invalid metavalue");
 	g_object_unref (meta);
 
 	gelektra_key_copyallmeta (g_key, key);
 	meta = gelektra_key_getmeta (g_key, "owner");
-	succeed_if (!memcmp (gelektra_key_getvalue (meta), "myowner", sizeof ("myowner")), "invalid meta value");
+	succeed_if (!memcmp (gelektra_key_getvalue (meta), "myowner", sizeof ("myowner")), "invalid metavalue");
 	g_object_unref (meta);
 
 	g_object_unref (key);

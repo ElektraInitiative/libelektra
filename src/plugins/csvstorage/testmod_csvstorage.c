@@ -3,7 +3,7 @@
  *
  * @brief Tests for csvstorage plugin
  *
- * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
  *
  */
 
@@ -59,6 +59,7 @@ static void testreadwriteinvalid (const char * file)
 	PLUGIN_OPEN ("csvstorage");
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) > 0, "call to kdbGet was not successful");
 	succeed_if (!output_warnings (parentKey), "no warnings in kdbGet");
+	keySetString (parentKey, elektraFilename ());
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == (-1), "error: wrote invalid data");
 	ksDel (ks);
 	keyDel (parentKey);
@@ -77,22 +78,24 @@ static void testwriteinvalidheader (const char * file)
 	PLUGIN_OPEN ("csvstorage");
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) > 0, "call to kdbGet was not successful");
 	succeed_if (!output_warnings (parentKey), "no warnings in kdbGet");
+	keySetString (parentKey, elektraFilename ());
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == (-1), "error: wrote invalid data");
 	ksDel (ks);
 	keyDel (parentKey);
 	PLUGIN_CLOSE ();
 }
 
-static void testwritevalidemptycol (const char * file ELEKTRA_UNUSED)
+static void testwritevalidemptycol (const char * file)
 {
 
-	Key * parentKey = keyNew ("user/tests/csvstorage", KEY_VALUE, elektraFilename (), KEY_END);
+	Key * parentKey = keyNew ("user/tests/csvstorage", KEY_VALUE, srcdir_file (file), KEY_END);
 	KeySet * conf = ksNew (20, keyNew ("system/delimiter", KEY_VALUE, ";", KEY_END),
 			       keyNew ("system/header", KEY_VALUE, "colname", KEY_END), KS_END);
 
 	KeySet * ks = ksNew (0, KS_END);
 	PLUGIN_OPEN ("csvstorage");
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) > 0, "call to kdbGet was not successful");
+	keySetString (parentKey, elektraFilename ());
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) >= 0, "error: couldn't write data");
 	ksDel (ks);
 	keyDel (parentKey);

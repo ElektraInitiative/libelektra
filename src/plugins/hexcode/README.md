@@ -27,11 +27,11 @@ hexcode plugin makes the value three times larger.
 
 Consider the following _value_ of an key:
 
-	value=abc xyz
+    value=abc xyz
 
 Assuming the escape character is % the input would be encoded to:
 
-	value%3Dabc%20xyz
+    value%3Dabc%20xyz
 
 The disadvantage is that the length of the resulting string increases.
 In the worst case

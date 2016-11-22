@@ -42,7 +42,7 @@ guaranteed by data structures do not need to be stated in the contract.
 
 Plugins should not be burdened to check too many postconditions.  Instead,
 plugins focus on their task.  The plugin does not need to check the sync
-flag of keys or if the keys are below the mount point. The core already
+flag of keys or if the keys are below the mountpoint. The core already
 guarantees correct behaviour as described
 in [algorithm](/doc/help/elektra-algorithm.md).
 
@@ -132,7 +132,7 @@ it provides more and obligates less.  But the problem is that it will
 not be checked if this is the case because a recheck of the contracts
 of a backend is very expensive. The contract checker doing this, only
 runs once during mount time.  Changing contracts in an incompatible way
-forces the user to remove all mount points where the plugin is and mount
+forces the user to remove all mountpoints where the plugin is and mount
 it again.  Such actions are only sustainable in a development phase and
 not in a productive environment.
 

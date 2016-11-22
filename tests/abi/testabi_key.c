@@ -3,7 +3,7 @@
  *
  * @brief
  *
- * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
  */
 
 #include <tests.h>
@@ -20,50 +20,40 @@ struct test
 	char * expectedKeyName;
 	char * expectedBaseName;
 	char * expectedFRootName;
-	char * expectedParentName;
 };
 
 struct test tstKeyName[] = {
-	{ "Normal key", "system/foo/bar", "system/foo/bar", "bar", "system", "system/foo" },
+	{ "Normal key", "system/foo/bar", "system/foo/bar", "bar", "system" },
 
 	{
 		"Key containing redundant & trailing separator", "system//foo//bar//", "system/foo/bar", /* keyName 	*/
 		"bar",											 /* keyBaseName	*/
 		"system",										 /* keyGetFullRootName	*/
-		"system/foo"										 /* keyGetParentName	*/
 	},
 
 	{
 		"Normal user key", "user/key", "user/key", /* keyName 	*/
 		"key",					   /* keyBaseName 	*/
 		"user",					   /* keyGetFullRootName 	*/
-		"user"					   /* keyGetParentName	*/
-
 	},
 
 	{
 		"Normal user key with owner", "user:owner/key", "user/key", /* keyName 	*/
 		"key",							    /* keyBaseName 	*/
 		"user:owner",						    /* keyGetFullRootName 	*/
-		"user"							    /* keyGetParentName	*/
-
 	},
 
 	{
 		"Depth user key with owner", "user:owner/folder/long/base/dir/key", "user/folder/long/base/dir/key", /* keyName 	*/
 		"key",												     /* keyBaseName 	*/
-		"user:owner",		    /* keyGetFullRootName 	*/
-		"user/folder/long/base/dir" /* keyGetParentName	*/
-
+		"user:owner", /* keyGetFullRootName 	*/
 	},
 
 #ifdef COMPAT
 	{
 		"Key containing escaped separator", "user:yl///foo\\///bar\\/foo_bar\\", "user/foo\\//bar\\/foo_bar\\", /* keyName 	*/
 		"bar/foo_bar\\",											/* keyBaseName 	*/
-		"user:yl",    /* keyGetFullRootName 	*/
-		"user/foo\\/" /* keyGetParentName	*/
-
+		"user:yl", /* keyGetFullRootName 	*/
 	},
 #endif
 
@@ -72,15 +62,12 @@ struct test tstKeyName[] = {
 		"user/foo\\//bar\\/foo_bar\\/", /* keyName 	*/
 		"bar/foo_bar/",			/* keyBaseName 	*/
 		"user:yl",			/* keyGetFullRootName 	*/
-		"user/foo\\/"			/* keyGetParentName	*/
-
 	},
 
 	{
 		"Key with empty part", "user///%", "user/%", /* keyName 	*/
 		"",					     /* keyBaseName 	*/
 		"",					     /* keyGetFullRootName 	*/
-		""					     /* keyGetParentName	*/
 
 	},
 
@@ -88,7 +75,6 @@ struct test tstKeyName[] = {
 		"Key with escaped %", "user///\\%", "user/\\%", /* keyName 	*/
 		"%",						/* keyBaseName 	*/
 		"",						/* keyGetFullRootName 	*/
-		""						/* keyGetParentName	*/
 
 	},
 
@@ -96,7 +82,6 @@ struct test tstKeyName[] = {
 		"Key with multi escaped %", "user///\\\\%", "user/\\\\%", /* keyName 	*/
 		"\\%",							  /* keyBaseName 	*/
 		"",							  /* keyGetFullRootName 	*/
-		""							  /* keyGetParentName	*/
 
 	},
 
@@ -104,7 +89,6 @@ struct test tstKeyName[] = {
 		NULL, NULL, NULL, /* keyName 	*/
 		NULL,		  /* keyBaseName 	*/
 		NULL,		  /* keyGetFullRootName 	*/
-		NULL		  /* keyGetParentName	*/
 	}
 };
 
@@ -1525,6 +1509,8 @@ static void test_keyDup ()
 
 	printf ("Test key duplication\n");
 
+	succeed_if (keyDup (0) == 0, "could not duplicate null");
+
 	// Create test key
 	orig = keyNew ("user:yl/foo/bar", KEY_BINARY, KEY_SIZE, 6, KEY_VALUE, "foobar", KEY_COMMENT, "mycomment", KEY_UID, 123, KEY_GID,
 		       456, KEY_MODE, 0644, KEY_END);
@@ -1540,7 +1526,17 @@ static void test_keyDup ()
 	succeed_if (strncmp (keyValue (copy), "foobar", 6) == 0, "keyDup: key value copy error");
 	succeed_if (keyIsBinary (copy), "keyDup: key type copy error");
 
-	keyDel (copy);
+	// Dup the key again
+	Key * ccopy;
+	succeed_if ((ccopy = keyDup (copy)) != 0, "keyDup failed");
+	compare_key (copy, ccopy);
+	keyDel (copy); // everything independent from original!
+
+	succeed_if_same_string (keyName (ccopy), "user/foo/bar");
+	succeed_if (strncmp (keyValue (ccopy), "foobar", 6) == 0, "keyDup: key value ccopy error");
+	succeed_if (keyIsBinary (ccopy), "keyDup: key type ccopy error");
+
+	keyDel (ccopy);
 
 	orig = keyNew (0);
 	keySetName (orig, "invalid");

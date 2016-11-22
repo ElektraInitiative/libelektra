@@ -2,7 +2,7 @@
 
 Elektra serves as a universal and secure framework to access configuration
 parameters in a global, hierarchical key database and provides a mature,
-consistent and easily comprehensible API.  Its modularity effectively
+consistent and easily comprehensible API. Its modularity effectively
 avoids code duplication across applications and tools regarding
 configuration tasks. Elektra abstracts from cross-platform-related issues
 and allows applications to be aware of other applications' configurations,
@@ -14,18 +14,18 @@ terminology.
 
 ## API Docu ##
 
-This document main goal is to describe the API.
+This document's main goal is to describe the API.
 It covers:
 
-- external C-API (See Modules above), which are the essential core parts
-- C++-API (See Data Structures above) from a direct binding to high-level
+- external C-API (see Modules above), which are the essential core parts
+- C++-API (see Data Structures above) from a direct binding to high-level 
   functionality, such as mounting functionality
-- plugins API, see @ref plugin
-- all other documentation of Elektra (See Related Pages next to Main Page)
+- plugins API, see @ref Plugins
+- all other documentation of Elektra (see Related Pages next to Main Page)
 
 On the one hand it gives an overview and an introduction for
 developers using Elektra, on the
-other hand it gives an informal descriptions what methods must and may provide
+other hand it gives an informal description what methods must and may provide
 to allow an alternative implementation of the API.
 
 The current version (for stable releases) of this document can be found at
@@ -33,6 +33,10 @@ http://doc.libelektra.org/api/current/html
 
 The latest version (from git master) of this document can be found at
 http://doc.libelektra.org/api/latest/html
+
+
+**Important:** On github links to API functions are broken, so it is recommended that you continue
+reading in one of these links above.
 
 ##  Using the Elektra Library ##
 
@@ -75,7 +79,7 @@ even for the most basic system programs.
 The API follows an object-oriented design, and there are 3 main classes
 as shown by the figure:
 
-![Elektra Classes](classes.png)
+![Elektra Classes](/doc/images/classes.png)
 
 Some general things you can do with each class are:
 
@@ -189,4 +193,3 @@ Read more about [mounting](/doc/help/elektra-mounting.md)
 - See [elektra-glossary(7)](/doc/help/elektra-glossary.md)
 - More information about [elektra-backends(7)](/doc/help/elektra-backends.md)
 - More information about [elektra-plugins-framework(7)](/doc/help/elektra-plugins-framework.md)
-

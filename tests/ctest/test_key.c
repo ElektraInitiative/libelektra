@@ -3,7 +3,7 @@
  *
  * @brief
  *
- * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
  */
 
 #include <tests_internal.h>
@@ -37,8 +37,6 @@ static void test_keyHelpers ()
 	char buffer[20];
 
 	Key * key = keyNew ("system/parent/base", KEY_END);
-	char * parentName;
-	size_t parentSize;
 	Key *k1, *k2;
 
 	printf ("Test key helpers\n");
@@ -342,11 +340,6 @@ static void test_keyHelpers ()
 		}
 	}
 
-	parentSize = keyGetParentNameSize (key);
-	parentName = elektraMalloc (parentSize);
-	keyGetParentName (key, parentName, parentSize);
-	succeed_if_same_string (parentName, "system/parent");
-	elektraFree (parentName);
 	keyDel (key);
 
 	succeed_if (keyAddBaseName (0, "s") == -1, "null pointer saftey");

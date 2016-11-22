@@ -3,7 +3,7 @@
  *
  * @brief
  *
- * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
  */
 
 #include <cmdline.hpp>
@@ -37,7 +37,7 @@ Cmdline::Cmdline (int argc, char ** argv, Command * command)
 
   /*XXX: Step 2: initialise your option here.*/
   debug (), force (), load (), humanReadable (), help (), interactive (), noNewline (), test (), recursive (), resolver (KDB_RESOLVER),
-  strategy ("preserve"), verbose (), version (), withoutElektra (), null (), first (true), second (true), third (true),
+  strategy ("preserve"), verbose (), quiet (), version (), withoutElektra (), null (), first (true), second (true), third (true),
   withRecommends (false), all (), format (KDB_STORAGE), plugins ("sync"), globalPlugins ("spec"), pluginsConfig (""), color ("auto"),
   ns (""), editor (), bookmarks (), profile ("current"),
 
@@ -154,6 +154,12 @@ Cmdline::Cmdline (int argc, char ** argv, Command * command)
 		option o = { "verbose", no_argument, nullptr, 'v' };
 		long_options.push_back (o);
 		helpText += "-v --verbose             Explain what is happening.\n";
+	}
+	if (acceptedOptions.find ('q') != string::npos)
+	{
+		option o = { "quiet", no_argument, nullptr, 'q' };
+		long_options.push_back (o);
+		helpText += "-q --quiet               Only print error messages.\n";
 	}
 	if (acceptedOptions.find ('V') != string::npos)
 	{
@@ -292,6 +298,12 @@ Cmdline::Cmdline (int argc, char ** argv, Command * command)
 			k = conf.lookup (dirname + "namespace");
 			if (k) ns = k.get<string> ();
 
+			k = conf.lookup (dirname + "verbose");
+			if (k) verbose = k.get<bool> ();
+
+			k = conf.lookup (dirname + "quiet");
+			if (k) quiet = k.get<bool> ();
+
 			k = conf.lookup (dirname + "editor");
 			if (k) editor = k.get<string> ();
 
@@ -302,12 +314,12 @@ Cmdline::Cmdline (int argc, char ** argv, Command * command)
 			bookmarks.insert (nks.begin (), nks.end ());
 
 			k = conf.lookup (dirname + "color");
-			if (k) colors () = color = k.get<std::string> ();
+			if (k) color = k.get<std::string> ();
 		}
 	}
 	catch (kdb::KDBException const & ce)
 	{
-		std::cerr << "Could not fetch kdb's configuration: " << ce.what () << std::endl;
+		std::cerr << "Sorry, I could not fetch my own configuration:\n" << ce.what () << std::endl;
 	}
 
 	// reinit
@@ -334,10 +346,10 @@ Cmdline::Cmdline (int argc, char ** argv, Command * command)
 		case 'C':
 			if (!optarg)
 			{
-				colors () = "auto";
+				color = "auto";
 				break;
 			}
-			colors () = color = optarg;
+			color = optarg;
 			break;
 		case 'd':
 			debug = true;
@@ -380,6 +392,9 @@ Cmdline::Cmdline (int argc, char ** argv, Command * command)
 		case 'v':
 			verbose = true;
 			break;
+		case 'q':
+			quiet = true;
+			break;
 		case 'V':
 			version = true;
 			break;
@@ -414,6 +429,11 @@ Cmdline::Cmdline (int argc, char ** argv, Command * command)
 		}
 	}
 
+	if (quiet && verbose)
+	{
+		std::cout << "Both quiet and verbose is active: will suppress default messages, but print verbose messages" << std::endl;
+	}
+
 	if (ns.empty ())
 	{
 #ifndef _WIN32
@@ -435,6 +455,10 @@ Cmdline::Cmdline (int argc, char ** argv, Command * command)
 	{
 		arguments.push_back (argv[optind++]);
 	}
+
+	// init colors
+	hasStdColor (color);
+	hasErrorColor (color);
 }
 
 kdb::KeySet Cmdline::getPluginsConfig (string basepath) const
@@ -458,7 +482,7 @@ kdb::Key Cmdline::createKey (int pos) const
 	// for (auto const & n : bookmarks) std::cout << "nks: " << n.second << std::endl;
 	if (name.empty ())
 	{
-		throw invalid_argument ("<empty string> is not an valid keyname");
+		throw invalid_argument ("<empty string> is not a valid keyname");
 	}
 
 	if (name[0] == '+')
@@ -493,7 +517,7 @@ kdb::Key Cmdline::createKey (int pos) const
 
 	if (!root.isValid ())
 	{
-		throw invalid_argument (name + " is not an valid keyname");
+		throw invalid_argument (name + " is not a valid keyname");
 	}
 
 	return root;

@@ -3,28 +3,10 @@
  *
  * @brief
  *
- * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
  */
 
 #include <kdbplugin.h>
-
-#include <fstream>
-#include <iostream>
-#include <sstream>
-#include <string>
-#include <vector>
-
-#include <cstring>
-
-#define DUMP_PATH "/tmp/dump.edf"
-
-// edf = elektra dump format
-
-namespace dump
-{
-int serialise (std::ostream & os, ckdb::Key *, ckdb::KeySet * ks);
-int unserialise (std::istream & is, ckdb::Key * errorKey, ckdb::KeySet * ks);
-}
 
 extern "C" {
 

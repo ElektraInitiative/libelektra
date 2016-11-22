@@ -2,14 +2,13 @@
 - infos/author = Thomas Waser <thomas.waser@libelektra.org>
 - infos/licence = BSD
 - infos/needs =
-- infos/provides = storage
+- infos/provides = storage/dpkg
 - infos/placements = getstorage setstorage
-- infos/status = nodoc unfinished nodep
-- infos/description =
+- infos/status = unittest nodep limited nodoc unfinished
+- infos/description = can be used to mount dpkg files
 
 ## Example ##
 
-```
-kdb mount /var/lib/dpkg/available system/dpkg/available dpkg
-kdb mount /var/lib/dpkg/status system/dpkg/available dpkg
-```
+    kdb mount /var/lib/dpkg/available system/dpkg/available dpkg
+    kdb mount /var/lib/dpkg/status system/dpkg/available dpkg
+

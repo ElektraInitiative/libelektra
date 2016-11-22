@@ -3,7 +3,7 @@
  *
  * @brief
  *
- * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
  */
 
 #include "fstab.h"
@@ -11,6 +11,8 @@
 #ifndef HAVE_KDBCONFIG
 #include "kdbconfig.h"
 #endif
+
+#include <kdblogger.h>
 
 #define MAX_NUMBER_SIZE 10
 
@@ -54,9 +56,7 @@ int elektraFstabGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * pa
 	Key * dir;
 	FILE * fstab = 0;
 
-#if DEBUG && VERBOSE
-	printf ("get fstab %s from %s\n", keyName (parentKey), keyString (parentKey));
-#endif
+	ELEKTRA_LOG ("get fstab %s from %s\n", keyName (parentKey), keyString (parentKey));
 
 	if (!strcmp (keyName (parentKey), "system/elektra/modules/fstab"))
 	{
@@ -193,9 +193,7 @@ int elektraFstabSet (Plugin * handle ELEKTRA_UNUSED, KeySet * ks, Key * parentKe
 	const void * rootname = 0;
 	struct mntent fstabEntry;
 
-#if DEBUG && VERBOSE
-	printf ("set fstab %s to file %s\n", keyName (parentKey), keyString (parentKey));
-#endif
+	ELEKTRA_LOG ("set fstab %s to file %s\n", keyName (parentKey), keyString (parentKey));
 
 	ksRewind (ks);
 	if ((key = ksNext (ks)) != 0)
@@ -217,9 +215,7 @@ int elektraFstabSet (Plugin * handle ELEKTRA_UNUSED, KeySet * ks, Key * parentKe
 	while ((key = ksNext (ks)) != 0)
 	{
 		const char * basename = keyBaseName (key);
-#if DEBUG && VERBOSE
-		printf ("key: %s %s\n", keyName (key), basename);
-#endif
+		ELEKTRA_LOG ("key: %s %s\n", keyName (key), basename);
 		if (!strcmp (basename, "device"))
 		{
 			fstabEntry.mnt_fsname = (char *)keyValue (key);
@@ -253,10 +249,8 @@ int elektraFstabSet (Plugin * handle ELEKTRA_UNUSED, KeySet * ks, Key * parentKe
 			else
 			{
 				rootname = keyValue (key);
-#if DEBUG && VERBOSE
-				fprintf (stdout, "first: %s   %s   %s   %s   %d %d\n", fstabEntry.mnt_fsname, fstabEntry.mnt_dir,
-					 fstabEntry.mnt_type, fstabEntry.mnt_opts, fstabEntry.mnt_freq, fstabEntry.mnt_passno);
-#endif
+				ELEKTRA_LOG ("first: %s   %s   %s   %s   %d %d\n", fstabEntry.mnt_fsname, fstabEntry.mnt_dir,
+					     fstabEntry.mnt_type, fstabEntry.mnt_opts, fstabEntry.mnt_freq, fstabEntry.mnt_passno);
 				addmntent (fstab, &fstabEntry);
 				memset (&fstabEntry, 0, sizeof (struct mntent));
 			}
@@ -265,10 +259,8 @@ int elektraFstabSet (Plugin * handle ELEKTRA_UNUSED, KeySet * ks, Key * parentKe
 
 	if (rootname)
 	{
-#if DEBUG && VERBOSE
-		fprintf (stdout, "last: %s   %s   %s   %s   %d %d\n", fstabEntry.mnt_fsname, fstabEntry.mnt_dir, fstabEntry.mnt_type,
-			 fstabEntry.mnt_opts, fstabEntry.mnt_freq, fstabEntry.mnt_passno);
-#endif
+		ELEKTRA_LOG ("last: %s   %s   %s   %s   %d %d\n", fstabEntry.mnt_fsname, fstabEntry.mnt_dir, fstabEntry.mnt_type,
+			     fstabEntry.mnt_opts, fstabEntry.mnt_freq, fstabEntry.mnt_passno);
 		addmntent (fstab, &fstabEntry);
 	}
 

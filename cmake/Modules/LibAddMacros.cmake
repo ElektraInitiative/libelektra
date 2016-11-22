@@ -11,19 +11,32 @@ macro (copy_file src dest)
 		)
 endmacro (copy_file)
 
-
-# Create a symlink for a lib/plugin both in lib and at installation
+# Create a symlink for a plugin both in lib and at installation
 #
-# create_symlink src dest - create a symbolic link from src -> dest
+# Parameter: PLUGIN: install symlink in TARGET_PLUGIN_FOLDER subdirectory
+#
+# create_lib_symlink src dest - create a symbolic link from src -> dest
 #
 macro (create_lib_symlink src dest)
+
+	cmake_parse_arguments (ARG
+		"PLUGIN" # optional keywords
+		"" # one value keywords
+		"" # multi value keywords
+		${ARGN}
+	)
+
 	execute_process (COMMAND ${CMAKE_COMMAND} -E create_symlink
 		"${src}"
 		"${dest}"
 		WORKING_DIRECTORY "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}"
 		)
 
-	set (LIB_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/lib${LIB_SUFFIX}/${TARGET_PLUGIN_FOLDER}")
+	if (ARG_PLUGIN)
+		set (LIB_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/lib${LIB_SUFFIX}/${TARGET_PLUGIN_FOLDER}")
+	else ()
+		set (LIB_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/lib${LIB_SUFFIX}")
+	endif ()
 
 	install(CODE "
 		message (STATUS \"Installing symlink: \$ENV{DESTDIR}${LIB_INSTALL_DIR}/${dest} -> ${src}\")
@@ -123,7 +136,7 @@ macro(find_swig)
 		find_package(SWIG 3)
 		if (NOT SWIG_FOUND)
 			message(STATUS "Search for swig2 instead")
-			find_package(SWIG 2 QUIET)
+			find_package(SWIG 2)
 		endif()
 	endif (NOT SWIG_FOUND)
 endmacro(find_swig)
@@ -528,6 +541,17 @@ endif (BUILD_DOCUMENTATION AND RONN_LOC)
 endfunction ()
 
 
+macro (split_plugin_providers PROVIDES)
+	foreach (PROVIDER "${${PROVIDES}}")
+		STRING(REGEX MATCH "([a-zA-Z0-9]+)/([a-zA-Z0-9]+)" PROVIDER_PARTS "${PROVIDER}")
+		STRING(LENGTH "${PROVIDER_PARTS}" PROVIDER_PARTS_LENGTH)
+		if (PROVIDER_PARTS_LENGTH GREATER 0)
+			STRING(REGEX REPLACE "([a-zA-Z0-9]+)/([a-zA-Z0-9]+)" "\\1;\\2" PROVIDER_PARTS "${PROVIDER_PARTS}")
+			list(APPEND ${PROVIDES} "${PROVIDER_PARTS}")
+		endif ()
+	endforeach ()
+endmacro ()
+
 #
 # Parameter: the pluginname
 #
@@ -554,7 +578,14 @@ function (generate_readme p)
 	STRING(REGEX REPLACE "- infos = ([a-zA-Z0-9 ]*)\\\\n\"" "keyNew(\"system/elektra/modules/${p}/infos\",\nKEY_VALUE, \"\\1\", KEY_END)," contents "${contents}")
 	STRING(REGEX REPLACE "\"- +infos/licence *= *([a-zA-Z0-9 ]*)\\\\n\"" "keyNew(\"system/elektra/modules/${p}/infos/licence\",\nKEY_VALUE, \"\\1\", KEY_END)," contents "${contents}")
 	STRING(REGEX REPLACE "\"- +infos/author *= *([.@<>a-zA-Z0-9 %_-]*)\\\\n\"" "keyNew(\"system/elektra/modules/${p}/infos/author\",\nKEY_VALUE, \"\\1\", KEY_END)," contents "${contents}")
-	STRING(REGEX REPLACE "\"- +infos/provides *= *([a-zA-Z0-9 ]*)\\\\n\"" "keyNew(\"system/elektra/modules/${p}/infos/provides\",\nKEY_VALUE, \"\\1\", KEY_END)," contents "${contents}")
+
+	STRING(REGEX MATCH "\"- +infos/provides *= *([a-zA-Z0-9/ ]*)\\\\n\"" PROVIDES "${contents}")
+	STRING(REGEX REPLACE "\"- +infos/provides *= *([a-zA-Z0-9/ ]*)\\\\n\"" "\\1" PROVIDES "${PROVIDES}")
+	STRING(REGEX REPLACE " " ";" PROVIDES "${PROVIDES}")
+	split_plugin_providers (PROVIDES)
+	STRING(REGEX REPLACE ";" " " PROVIDES "${PROVIDES}")
+	STRING(REGEX REPLACE "\"- +infos/provides *= *([a-zA-Z0-9/ ]*)\\\\n\"" "keyNew(\"system/elektra/modules/${p}/infos/provides\",\nKEY_VALUE, \"${PROVIDES}\", KEY_END)," contents "${contents}")
+
 	STRING(REGEX REPLACE "\"- +infos/placements *= *([a-zA-Z0-9 ]*)\\\\n\"" "keyNew(\"system/elektra/modules/${p}/infos/placements\",\nKEY_VALUE, \"\\1\", KEY_END)," contents "${contents}")
 	STRING(REGEX REPLACE "\"- +infos/recommends *= *([a-zA-Z0-9 ]*)\\\\n\"" "keyNew(\"system/elektra/modules/${p}/infos/recommends\",\nKEY_VALUE, \"\\1\", KEY_END)," contents "${contents}")
 	STRING(REGEX REPLACE "\"- +infos/ordering *= *([a-zA-Z0-9 ]*)\\\\n\"" "keyNew(\"system/elektra/modules/${p}/infos/ordering\",\nKEY_VALUE, \"\\1\", KEY_END)," contents "${contents}")
@@ -565,7 +596,7 @@ function (generate_readme p)
 	else ()
 	STRING(REGEX REPLACE "\"- +infos/status *= *([-a-zA-Z0-9 ]*)\\\\n\"" "keyNew(\"system/elektra/modules/${p}/infos/status\",\nKEY_VALUE, \"\\1\", KEY_END)," contents "${contents}")
 	endif ()
-	STRING(REGEX REPLACE "\"- +infos/metadata *= *([/a-zA-Z0-9 ]*)\\\\n\"" "keyNew(\"system/elektra/modules/${p}/infos/metadata\",\nKEY_VALUE, \"\\1\", KEY_END)," contents "${contents}")
+	STRING(REGEX REPLACE "\"- +infos/metadata *= *([/#a-zA-Z0-9 ]*)\\\\n\"" "keyNew(\"system/elektra/modules/${p}/infos/metadata\",\nKEY_VALUE, \"\\1\", KEY_END)," contents "${contents}")
 	STRING(REGEX REPLACE "\"- +infos/plugins *= *([a-zA-Z0-9 ]*)\\\\n\"" "keyNew(\"system/elektra/modules/${p}/infos/plugins\",\nKEY_VALUE, \"\\1\", KEY_END)," contents "${contents}")
 	STRING(REGEX REPLACE "\"- +infos/description *= *(.*)\\\\n\"\n\"" "keyNew(\"system/elektra/modules/${p}/infos/description\",\nKEY_VALUE, \"\\1\", KEY_END)," contents "${contents}")
 	# allow macros:

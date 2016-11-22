@@ -3,7 +3,7 @@
  *
  * @brief
  *
- * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
  */
 
 #include "xmltool.h"
@@ -37,11 +37,6 @@
  * Output prints keys line per line, meant to be read by humans.
  * - keyOutput()
  * - ksOutput()
- *
- * Generate prints keys and keysets as C-Structs, meant to be
- * read by a C-Compiler.
- * - keyGenerate()
- * - ksGenerate()
  *
  * toXML prints keys and keysets as XML, meant to be used
  * as exchange format.
@@ -601,114 +596,6 @@ int ksOutput (const KeySet * ks, FILE * stream, option_t options)
 		keyOutput (key, stream, options);
 		size++;
 	}
-
-	ksDel (cks);
-	return 1;
-}
-
-/**
- * Generate a C-Style key and stream it.
- *
- * This keyset can be used to include as c-code for
- * applikations using elektra.
- *
- * @param key the key object to work with
- * @param stream the file pointer where to send the stream
- * @param options KDB_O_SHOWINDICES, KDB_O_IGNORE_COMMENT, KDB_O_SHOWINFO
- * @retval 1 on success
- * @ingroup stream
- */
-int keyGenerate (const Key * key, FILE * stream, option_t options)
-{
-	size_t s;
-	char * str;
-
-	size_t c;
-	char * com;
-
-	size_t n;
-	char * nam;
-
-	n = keyGetNameSize (key);
-	if (n > 1)
-	{
-		nam = (char *)elektraMalloc (n);
-		if (nam == NULL) return -1;
-		keyGetName (key, nam, n);
-		fprintf (stream, "\tkeyNew (\"%s\"", nam);
-		elektraFree (nam);
-	}
-
-	s = keyGetValueSize (key);
-	if (s > 1)
-	{
-		str = (char *)elektraMalloc (s);
-		if (str == NULL) return -1;
-		if (keyIsBinary (key))
-			keyGetBinary (key, str, s);
-		else
-			keyGetString (key, str, s);
-		fprintf (stream, ", KEY_VALUE, \"%s\"", str);
-		elektraFree (str);
-	}
-
-	c = keyGetCommentSize (key);
-	if (c > 1)
-	{
-		com = (char *)elektraMalloc (c);
-		if (com == NULL) return -1;
-		keyGetComment (key, com, c);
-		fprintf (stream, ", KEY_COMMENT, \"%s\"", com);
-		elektraFree (com);
-	}
-
-	if (!(keyGetMode (key) == 0664 || (keyGetMode (key) == 0775)))
-	{
-		fprintf (stream, ", KEY_MODE, 0%3o", keyGetMode (key));
-	}
-
-	fprintf (stream, ", KEY_END)");
-
-	if (options == 0) return 1; /* dummy to make icc happy */
-	return 1;
-}
-
-
-/**
- * Generate a C-Style keyset and stream it.
- *
- * This keyset can be used to include as c-code for
- * applikations using elektra.
- *
- * The options takes the same options as kdbGet()
- * and kdbSet().
- *
- * @param ks the keyset to work with
- * @param stream the file pointer where to send the stream
- * @param options which keys not to output
- * @retval 1 on success
- * @ingroup stream
- */
-int ksGenerate (const KeySet * ks, FILE * stream, option_t options)
-{
-	Key * key;
-	size_t s = 0;
-	KeySet * cks = ksDup (ks);
-
-	ksRewind (cks);
-
-	fprintf (stream, "ksNew( %d ,\n", (int)ksGetSize (cks));
-	while ((key = ksNext (cks)) != 0)
-	{
-		if (options & KDB_O_INACTIVE)
-			if (key && keyIsInactive (key)) continue;
-
-		s++;
-
-		keyGenerate (key, stream, options);
-		fprintf (stream, ",\n");
-	}
-	fprintf (stream, "\tKS_END);\n");
 
 	ksDel (cks);
 	return 1;

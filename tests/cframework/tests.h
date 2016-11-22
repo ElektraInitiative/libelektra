@@ -3,7 +3,7 @@
  *
  * @brief Some common functions in use for testing framework.
  *
- * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
  */
 
 #ifndef TESTS_H
@@ -87,10 +87,11 @@ int init (int argc, char ** argv);
 		{                                                                                                                          \
 			char errorMsg[BUFFER_LENGTH];                                                                                      \
                                                                                                                                            \
-			strcpy (errorMsg, "key name ");                                                                                    \
+			strcpy (errorMsg, "key name \"");                                                                                  \
 			strcat (errorMsg, keyName (nmmk1));                                                                                \
-			strcat (errorMsg, " is not equal ");                                                                               \
+			strcat (errorMsg, "\" is not equal \"");                                                                           \
 			strcat (errorMsg, keyName (nmmk2));                                                                                \
+			strcat (errorMsg, "\"");                                                                                           \
                                                                                                                                            \
 			yield_error (errorMsg);                                                                                            \
 		}                                                                                                                          \
@@ -105,10 +106,11 @@ int init (int argc, char ** argv);
 		{                                                                                                                          \
 			char errorMsg[BUFFER_LENGTH];                                                                                      \
                                                                                                                                            \
-			strcpy (errorMsg, "key value ");                                                                                   \
-			strcat (errorMsg, keyName (smmk1));                                                                                \
-			strcat (errorMsg, " is not equal ");                                                                               \
-			strcat (errorMsg, keyName (smmk2));                                                                                \
+			strcpy (errorMsg, "key value \"");                                                                                 \
+			strcat (errorMsg, keyString (smmk1));                                                                              \
+			strcat (errorMsg, "\" is not equal \"");                                                                           \
+			strcat (errorMsg, keyString (smmk2));                                                                              \
+			strcat (errorMsg, "\"");                                                                                           \
                                                                                                                                            \
 			yield_error (errorMsg);                                                                                            \
 		}                                                                                                                          \
@@ -199,7 +201,7 @@ int init (int argc, char ** argv);
 				{                                                                                                          \
 					nbError++;                                                                                         \
 					printf ("%s:%d: error in %s: Compare key \"%s\" with \"%s\" failed, did not find corresponding "   \
-						"meta key %s (k1 > k2)\n",                                                                 \
+						"metakey %s (k1 > k2)\n",                                                                  \
 						__FILE__, __LINE__, __func__, quote_string (mmk1), quote_string (mmk2), keyName (meta));   \
 					break;                                                                                             \
 				}                                                                                                          \
@@ -209,7 +211,7 @@ int init (int argc, char ** argv);
 			if (metaCmp != 0)                                                                                                  \
 			{                                                                                                                  \
 				nbError++;                                                                                                 \
-				printf ("%s:%d: error in %s: Compare key \"%s\" with \"%s\" failed, too many meta keys found (k1 < k2)\n", \
+				printf ("%s:%d: error in %s: Compare key \"%s\" with \"%s\" failed, too many metakeys found (k1 < k2)\n",  \
 					__FILE__, __LINE__, __func__, quote_string (mmk1), quote_string (mmk2));                           \
 			}                                                                                                                  \
 		}                                                                                                                          \

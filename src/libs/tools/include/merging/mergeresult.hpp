@@ -3,7 +3,7 @@
  *
  * @brief Class modelling the result of a three way merge
  *
- * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
  *
  */
 

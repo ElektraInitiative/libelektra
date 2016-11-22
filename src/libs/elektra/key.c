@@ -3,7 +3,7 @@
  *
  * @brief Methods for Key manipulation.
  *
- * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
  */
 
 
@@ -45,7 +45,7 @@
  * Key properties are:
  * - @link keyname Key name @endlink
  * - @link keyvalue Key value @endlink
- * - @link keymeta Key meta data @endlink, including but not limited to:
+ * - @link keymeta Key metadata @endlink, including but not limited to:
  *   - @link keyGetComment() Key comment @endlink
  *   - @link keyGetOwner() Key owner @endlink
  *   - @link keymeta UID, GID and filesystem-like mode permissions @endlink
@@ -130,7 +130,7 @@ static Key * elektraKeyMalloc ()
  *   a binary key.
  *   @snippet keyNew.c With Size
  * - ::KEY_META \n
- *   Next two parameter is a meta name and a meta value. See keySetMeta().
+ *   Next two parameter is a metaname and a metavalue. See keySetMeta().
  *   @snippet keyNew.c With Meta
  * - ::KEY_END \n
  *   Must be the last parameter passed to keyNew(). It is always
@@ -149,7 +149,7 @@ static Key * elektraKeyMalloc ()
  * - ::KEY_CASCADING_NAME allow the name to start with /
  *   useful for ksLookup() and kdbGet() parent/lookup keys
  * - ::KEY_META_NAME allow the name to start with arbitrary namespaces
- *   useful to compare with meta keys
+ *   useful to compare with metakeys
  *
  *
  *
@@ -310,7 +310,7 @@ Key * keyDup (const Key * source)
  * both keys. Affiliation to keysets
  * are also not affected.
  *
- * The meta data will be duplicated for the destination
+ * The metadata will be duplicated for the destination
  * key. So it will not take much additional space, even
  * with lots of metadata.
  *

@@ -3,7 +3,7 @@
  *
  * @brief Helpers for key manipulation.
  *
- * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
  */
 
 #ifdef HAVE_KDBCONFIG_H
@@ -28,6 +28,7 @@
 #include "kdb.h"
 #include "kdbprivate.h"
 #include "kdbtypes.h"
+#include <kdbassert.h>
 
 
 /**
@@ -129,99 +130,6 @@ char * keyNameGetOneLevel (const char * name, size_t * size)
 	*size = cursor;
 	return real;
 }
-
-
-/**
- * @internal
- *
- * Get the number of bytes needed to store this key's parent name without
- * user domain, and with the ending NULL.
- *
- * @param key the key object to work with
- * @see keyGetParentName() for example
- * @ingroup keyname
- */
-ssize_t keyGetParentNameSize (const Key * key)
-{
-	char * parentNameEnd = 0;
-	char * p;
-	size_t size;
-
-	if (!key->key)
-	{
-		/*errno=KDB_ERR_NOKEY;*/
-		return 0;
-	}
-
-	/*
-		user   (size=0)
-		user/parent/base       (size=sizeof("user/parent"))
-		user/parent/base/      (size=sizeof("user/parent"))
-		user/parent/base\/name (size=sizeof("user/parent"))
-	*/
-
-	/* initialize */
-	p = key->key;
-	size = 0;
-
-	/* iterate over level names */
-	while (*(p = keyNameGetOneLevel (p + size, &size)))
-		parentNameEnd = p;
-
-	/* handle NULL or root key ("user" or "system") */
-	if (!parentNameEnd || parentNameEnd == key->key) return 0;
-
-	/* at this point, parentNameEnd points to the first char of the basename */
-	/* example: it points to the 'b' of "user/key/basename" */
-
-	/* the delta is the size we want */
-	return parentNameEnd - key->key;
-}
-
-
-/**
- * @internal
- *
- * Copy this key's parent name (without owner) into a pre-allocated buffer.
- *
- * @par Example:
- * @code
-Key *key=keyNew("system/parent/base",KEY_SWITCH_END);
-char *parentName;
-size_t parentSize;
-
-parentSize=keyGetParentNameSize(key);
-parentName=elektraMalloc(parentSize);
-keyGetParentName(key,parentName,parentSize);
-// work with parentName
-elektraFree (parentName);
- * @endcode
- * @see keyGetParentNameSize()
- * @param key the key object to work with
- * @param returnedParent pre-allocated buffer to copy parent name to
- * @param maxSize number of bytes pre-allocated
- * @return number of bytes copied including ending NULL
- * @ingroup keyname
- */
-ssize_t keyGetParentName (const Key * key, char * returnedParent, size_t maxSize)
-{
-	size_t parentSize;
-
-	parentSize = keyGetParentNameSize (key);
-
-	if (parentSize > maxSize)
-	{
-		/*errno=KDB_ERR_TRUNC;*/
-		return 0;
-	}
-	else
-		strncpy (returnedParent, key->key, parentSize);
-
-	returnedParent[parentSize - 1] = 0; /* ending NULL */
-
-	return parentSize;
-}
-
 
 int keyNameIsSpec (const char * name)
 {
@@ -426,11 +334,8 @@ void keyVInit (Key * key, const char * name, va_list va)
 				break;
 
 			default:
-#if DEBUG
-				fprintf (stderr, "Unknown option in keyVInit: " ELEKTRA_UNSIGNED_LONG_LONG_F "\n",
-					 (kdb_unsigned_long_long_t)action);
-#endif
-				ELEKTRA_ASSERT (0 && "Unknown option in keyVInit");
+				ELEKTRA_ASSERT (0, "Unknown option " ELEKTRA_UNSIGNED_LONG_LONG_F " in keyVInit",
+						(kdb_unsigned_long_long_t)action);
 				break;
 			}
 		}

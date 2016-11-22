@@ -3,7 +3,7 @@
  *
  * @brief
  *
- * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
  */
 
 #include <tests.hpp>
@@ -29,12 +29,12 @@ TEST (meta, basic)
 	succeed_if (test.getMeta<int> ("myint") == 333, "could not set other meta");
 
 	test.setMeta<double> ("mydouble", 333.3);
-	succeed_if (test.hasMeta ("mydouble"), "no meta data even though it was just set");
+	succeed_if (test.hasMeta ("mydouble"), "no metadata even though it was just set");
 	succeed_if (test.getMeta<double> ("mydouble") >= 333.2, "could not set other meta");
 	succeed_if (test.getMeta<double> ("mydouble") <= 333.4, "could not set other meta");
 
 	test.delMeta ("mydouble");
-	succeed_if (!test.hasMeta ("mydouble"), "meta data there even though it was just deleted");
+	succeed_if (!test.hasMeta ("mydouble"), "metadata there even though it was just deleted");
 
 	test.setMeta<std::string> ("mystr", "str");
 	succeed_if (test.getMeta<std::string> ("mystr") == "str", "could not set other meta");
@@ -43,7 +43,7 @@ TEST (meta, basic)
 	succeed_if (!strcmp (static_cast<const char *> (ckdb::keyValue (cmeta)), "str"), "could not set other meta");
 
 	const ckdb::Key * nmeta = test.getMeta<const ckdb::Key *> ("not available");
-	succeed_if (nmeta == nullptr, "not available meta data did not give a null pointer");
+	succeed_if (nmeta == nullptr, "not available metadata did not give a null pointer");
 
 	const Key meta = test.getMeta<const Key> ("mystr");
 	succeed_if (meta, "null key");
@@ -56,7 +56,7 @@ TEST (meta, basic)
 	succeed_if (!strcmp (str, "str"), "could not get meta as c-string");
 
 	const char * nstr = test.getMeta<const char *> ("not available");
-	succeed_if (nstr == nullptr, "did not get null pointer on not available meta data");
+	succeed_if (nstr == nullptr, "did not get null pointer on not available metadata");
 
 	succeed_if (test.getMeta<int> ("not available") == 0, "not default constructed");
 	succeed_if (test.getMeta<std::string> ("not available") == "", "not default constructed");
@@ -71,7 +71,7 @@ TEST (meta, basic)
 	}
 	catch (KeyTypeConversion const & e)
 	{
-		succeed_if (1, "no such meta data");
+		succeed_if (1, "no such metadata");
 	}
 }
 
@@ -96,7 +96,7 @@ TEST (meta, iter)
 	k.rewindMeta ();
 	while ((meta = k.nextMeta ()))
 		count++;
-	succeed_if (count == 3, "Not the correct number of meta data");
+	succeed_if (count == 3, "Not the correct number of metadata");
 
 	k.setMeta ("d", "more");
 	k.setMeta ("e", "even more");
@@ -105,15 +105,15 @@ TEST (meta, iter)
 	k.rewindMeta ();
 	while ((meta = k.nextMeta ()))
 		count++;
-	succeed_if (count == 5, "Not the correct number of meta data");
+	succeed_if (count == 5, "Not the correct number of metadata");
 }
 
 TEST (test, copy)
 {
 	// cout << "testing copy meta" << std::endl;
 
-	Key k ("user/metakey", KEY_META, "", "meta value", KEY_META, "a", "a meta value", KEY_META, "b", "b meta value", KEY_META, "c",
-	       "c meta value", KEY_END);
+	Key k ("user/metakey", KEY_META, "", "metavalue", KEY_META, "a", "a metavalue", KEY_META, "b", "b metavalue", KEY_META, "c",
+	       "c metavalue", KEY_END);
 	Key c;
 
 	c.copyMeta (k, "a");
@@ -145,38 +145,38 @@ TEST (test, copy)
 		d.copyMeta (k, meta.getName ());
 	}
 
-	succeed_if (d.getMeta<std::string> ("a") == "420", "did not copy meta value in the loop");
+	succeed_if (d.getMeta<std::string> ("a") == "420", "did not copy metavalue in the loop");
 	succeed_if (d.getMeta<const ckdb::Key *> ("a") == d.getMeta<const ckdb::Key *> ("a"), "copy meta did not work in the loop");
 
-	succeed_if (d.getMeta<std::string> ("") == "meta value", "did not copy meta value in the loop");
+	succeed_if (d.getMeta<std::string> ("") == "metavalue", "did not copy metavalue in the loop");
 	succeed_if (d.getMeta<const ckdb::Key *> ("") == d.getMeta<const ckdb::Key *> (""), "copy meta did not work in the loop");
 
-	succeed_if (d.getMeta<std::string> ("b") == "b meta value", "did not copy meta value in the loop");
+	succeed_if (d.getMeta<std::string> ("b") == "b metavalue", "did not copy metavalue in the loop");
 	succeed_if (d.getMeta<const ckdb::Key *> ("b") == d.getMeta<const ckdb::Key *> ("b"), "copy meta did not work in the loop");
 
-	succeed_if (d.getMeta<std::string> ("c") == "c meta value", "did not copy meta value in the loop");
+	succeed_if (d.getMeta<std::string> ("c") == "c metavalue", "did not copy metavalue in the loop");
 	succeed_if (d.getMeta<const ckdb::Key *> ("c") == d.getMeta<const ckdb::Key *> ("c"), "copy meta did not work in the loop");
 }
 
 TEST (meta, string)
 {
-	Key k ("user/anything", KEY_META, "", "meta value", KEY_META, "a", "a meta value", KEY_META, "b", "b meta value", KEY_META, "c",
-	       "c meta value", KEY_END);
+	Key k ("user/anything", KEY_META, "", "metavalue", KEY_META, "a", "a metavalue", KEY_META, "b", "b metavalue", KEY_META, "c",
+	       "c metavalue", KEY_END);
 
-	succeed_if (k.getMeta<string> ("a") == "a meta value", "could not get meta value");
+	succeed_if (k.getMeta<string> ("a") == "a metavalue", "could not get metavalue");
 
 	Key m = k.getMeta<const Key> ("a");
-	succeed_if (m, "could not get meta key");
-	succeed_if (m.getString () == "a meta value", "could not get meta string");
+	succeed_if (m, "could not get metakey");
+	succeed_if (m.getString () == "a metavalue", "could not get meta string");
 
 	Key m1 = k.getMeta<const Key> ("x");
-	succeed_if (!m1, "got not existing meta key");
+	succeed_if (!m1, "got not existing metakey");
 }
 
 TEST (meta, copyAll)
 {
-	Key k ("user/metakey", KEY_META, "", "meta value", KEY_META, "a", "a meta value", KEY_META, "b", "b meta value", KEY_META, "c",
-	       "c meta value", KEY_META, "i", "420", KEY_END);
+	Key k ("user/metakey", KEY_META, "", "metavalue", KEY_META, "a", "a metavalue", KEY_META, "b", "b metavalue", KEY_META, "c",
+	       "c metavalue", KEY_META, "i", "420", KEY_END);
 	Key c;
 
 	c.copyAllMeta (k);
@@ -184,22 +184,22 @@ TEST (meta, copyAll)
 	succeed_if (c.getMeta<const ckdb::Key *> ("a") == c.getMeta<const ckdb::Key *> ("a"), "copy meta did not work");
 	succeed_if (c.getMeta<const ckdb::Key *> ("") == c.getMeta<const ckdb::Key *> (""), "copy meta did not work");
 	succeed_if (c.getMeta<int> ("i") == 420, "could not get value copied before");
-	succeed_if (c.getMeta<std::string> ("i") == "420", "did not copy meta value in the loop");
+	succeed_if (c.getMeta<std::string> ("i") == "420", "did not copy metavalue in the loop");
 	succeed_if (c.getMeta<const ckdb::Key *> ("a") == c.getMeta<const ckdb::Key *> ("a"), "copy meta did not work");
 
 	Key d;
 
 	d.copyAllMeta (k);
-	succeed_if (d.getMeta<std::string> ("i") == "420", "did not copy meta value in the loop");
+	succeed_if (d.getMeta<std::string> ("i") == "420", "did not copy metavalue in the loop");
 	succeed_if (d.getMeta<int> ("i") == 420, "could not get value copied before");
 	succeed_if (k.getMeta<const ckdb::Key *> ("a") == d.getMeta<const ckdb::Key *> ("a"), "copy meta did not work in the loop");
 
-	succeed_if (d.getMeta<std::string> ("") == "meta value", "did not copy meta value in the loop");
+	succeed_if (d.getMeta<std::string> ("") == "metavalue", "did not copy metavalue in the loop");
 	succeed_if (k.getMeta<const ckdb::Key *> ("") == d.getMeta<const ckdb::Key *> (""), "copy meta did not work in the loop");
 
-	succeed_if (d.getMeta<std::string> ("b") == "b meta value", "did not copy meta value in the loop");
+	succeed_if (d.getMeta<std::string> ("b") == "b metavalue", "did not copy metavalue in the loop");
 	succeed_if (k.getMeta<const ckdb::Key *> ("b") == d.getMeta<const ckdb::Key *> ("b"), "copy meta did not work in the loop");
 
-	succeed_if (d.getMeta<std::string> ("c") == "c meta value", "did not copy meta value in the loop");
+	succeed_if (d.getMeta<std::string> ("c") == "c metavalue", "did not copy metavalue in the loop");
 	succeed_if (k.getMeta<const ckdb::Key *> ("c") == d.getMeta<const ckdb::Key *> ("c"), "copy meta did not work in the loop");
 }

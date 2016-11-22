@@ -83,6 +83,24 @@ check_resolver()
 	succeed_if "could not umount $MOUNTPOINT"
 }
 
+
+# need HOME to work
+unset USER
+
+# HOME on buildserver wrong...
+#check_resolver system b '~/FOO' ~/FOO
+#check_resolver system b '~/x' ~/x
+#check_resolver system b '~/x/y' ~/x/y
+#check_resolver system b '~//x' ~//x
+#check_resolver system b '~/' ~/
+#check_resolver system b '~' ~/
+#
+#check_resolver spec b '~/x' ~/x
+#check_resolver spec b '~/x/y' ~/x/y
+#check_resolver spec b '~//x' ~//x
+#check_resolver spec b '~/' ~/
+#check_resolver spec b '~' ~/
+
 unset HOME
 unset USER
 

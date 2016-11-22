@@ -36,7 +36,7 @@ if (DOXYGEN_FOUND)
 			set (WITH_LATEX YES)
 		else (LATEX_COMPILER)
 			set (WITH_LATEX NO)
-			message (WARNING "Latex not found, PDF Manual can't be created.")
+			message (WARNING "Sorry, I cannot create the PDF Manual: I did not find Latex.")
 		endif (LATEX_COMPILER)
 	else (BUILD_PDF)
 		set (WITH_LATEX NO)
@@ -94,6 +94,8 @@ if (DOXYGEN_FOUND)
 
 	endif (WITH_LATEX)
 
+	list(APPEND outputs "${CMAKE_BINARY_DIR}/external-links.txt")
+
 	add_custom_command (
 		OUTPUT ${outputs}
 		COMMAND ${DOXYGEN_EXECUTABLE}
@@ -102,7 +104,29 @@ if (DOXYGEN_FOUND)
 		WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
 	)
 else (DOXYGEN_FOUND)
-	message (WARNING "Doxygen not found, Reference Manual can't be created even though requested with BUILD_DOCUMENTATION.")
+	message (WARNING "Sorry, I cannot create the reference manual: I could not find Doxygen")
 endif (DOXYGEN_FOUND)
+
+if (INSTALL_DOCUMENTATION)
+	#API.md
+	install (FILES BIGPICTURE.md DESTINATION ${TARGET_DOCUMENTATION_TEXT_FOLDER})
+	#code_of_conduct.md
+	#COMPILE.md
+	install (FILES GOALS.md DESTINATION ${TARGET_DOCUMENTATION_TEXT_FOLDER})
+	install (FILES LICENSE.md DESTINATION ${TARGET_DOCUMENTATION_TEXT_FOLDER})
+	install (FILES METADATA.ini DESTINATION ${TARGET_DOCUMENTATION_TEXT_FOLDER})
+	install (FILES SECURITY.md DESTINATION ${TARGET_DOCUMENTATION_TEXT_FOLDER})
+	#TESTING.md
+	#VERSION.md
+	install (FILES AUTHORS DESTINATION ${TARGET_DOCUMENTATION_TEXT_FOLDER})
+	#CODING.md
+	install (FILES CONTRACT.ini DESTINATION ${TARGET_DOCUMENTATION_TEXT_FOLDER})
+	#DESIGN.md
+	#GIT.md
+	#INSTALL.md
+	install (FILES NEWS.md DESTINATION ${TARGET_DOCUMENTATION_TEXT_FOLDER})
+	install (FILES WHY.md DESTINATION ${TARGET_DOCUMENTATION_TEXT_FOLDER})
+
+endif ()
 
 add_subdirectory(help)

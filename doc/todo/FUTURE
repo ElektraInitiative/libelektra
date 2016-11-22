@@ -85,6 +85,18 @@ Remove/Refactor/Rename obsolete/not needed methods:
 - remove legacy bootstrapping: always use KDB_FILE_INIT (elektra.ecf)
 
 
+== Methods ==
+
+all exported methods of elektra need to be:
+	useful in current state
+	well documented in behavior
+	having test cases for behavior
+	behavior not overlapping with another function
+	well documented error cases, return and errno values
+	having test cases for error cases
+	otherwise fix or mark it obsolete
+
+
 == Conventions ==
 
 conventions should be used everywhere
@@ -222,7 +234,7 @@ can be up to one thousand individual files.
 
 == User Mount Point Configuration ==
 
-The mount point configuration resides only below
+The mountpoint configuration resides only below
 system/elektra/mountpoints. We decided against
 providing \keyname{user/elektra/mountpoints} because of security concerns.
 This issue, however, is solved because of the specification.

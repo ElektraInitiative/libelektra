@@ -3,14 +3,6 @@
 
 == MOUNT ==
 
-user/dir-mountpoints:
-	for mounting as non-root
-	make mountpoints specific for a namespace, e.g.
-	kdb mount --as-user file.x user/x
-	stored in user/elektra/mountpoints
-	make flag, e.g. system/elektra/security/mountpoints/user/enable
-	or add list of plugins?
-
 lazy-mount
 
 allow --no-env --no-arg --no-default arguments?
@@ -55,13 +47,38 @@ more testing
 
 
 
+== NEW INTERFACES
+
+ncurses interface
+pstree like visualization
+
+
+
+
 
 
 
 
 == KDB ==
 
+generic fstab:
+	allow to specify templates that are filled out by the given arguments e.g.:
+	/sw/kdb/template/
+	/sw/kdb/template/fstab/ZZZNewFstabName
+	/sw/kdb/template/fstab/ZZZNewFstabName/device
+	/sw/kdb/template/fstab/ZZZNewFstabName/dumpfreq
+	/sw/kdb/template/fstab/ZZZNewFstabName/mpoint
+	/sw/kdb/template/fstab/ZZZNewFstabName/options
+	/sw/kdb/template/fstab/ZZZNewFstabName/passno
+	/sw/kdb/template/fstab/ZZZNewFstabName/type
+	allows kdb mset fstab <args> to be the same as kdb fstab
+
 kdb tool should work with arrays (add_entry, remove_entry)
+	or also kdb setmeta user/abc check/enum -a "first enum" "second enum" "third enum"
+	or also kdb set user/abc -a "first array entry" "second" "third array entry"
+
+kdb tool should work with files (read in as value)
+	kdb set user/abc -F filename.txt
 
 cascading export, e.g. for nickel?
 	+ remember what was exported
@@ -145,6 +162,8 @@ with constraint checking+solving and so on.
 
 
 == GUI ==
+
+support for binary keys, see #234
 
 generic commandline arguments:
 	for self configuring

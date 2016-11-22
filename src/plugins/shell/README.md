@@ -4,14 +4,12 @@
 - infos/needs =
 - infos/provides =
 - infos/placements = postgetstorage postcommit postrollback
-- infos/status = preview unfinished nodoc nodep
-- infos/description =
+- infos/status = unittest nodep configurable preview unfinished
+- infos/description = executes shell commands
 
 ## Usage ##
 
 The shell plugin executes shell commandos after set, get or error.
-
-
 
 The configuration keys
 
@@ -21,8 +19,6 @@ The configuration keys
 
 are used to store the shell commands.
 
-
-
 The configuration keys
 
 * `execute/set/return`
@@ -31,20 +27,17 @@ The configuration keys
 
 can be compared against the return values of the shell commandos.
 
-
-
 ## Example ##
 
-```
- % cat /tmp/log
-cat: /tmp/log: No such file or directory
+    % cat /tmp/log
+    cat: /tmp/log: No such file or directory
 
- % kdb mount /tmp/test.ini system/shelltest ini array= shell 'execute/set=echo set >> /tmp/log,execute/get=echo get >> /tmp/log,execute/get/return=0'
+    % kdb mount /tmp/test.ini system/shelltest ini array= shell 'execute/set=echo set >> /tmp/log,execute/get=echo get >> /tmp/log,execute/get/return=0'
 
- % kdb set system/shelltest
-Create a new key system/shelltest with null value
+    % kdb set system/shelltest
+    Create a new key system/shelltest with null value
 
- % cat /tmp/log
-get
-set
-```
+    % cat /tmp/log
+    get
+    set
+

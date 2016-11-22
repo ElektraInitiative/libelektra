@@ -3,7 +3,7 @@
  *
  * @brief Models a merge conflict
  *
- * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
  *
  */
 
@@ -66,7 +66,7 @@ public:
 		if (name == "CONFLICT_MODIFY") return CONFLICT_MODIFY;
 		if (name == "CONFLICT_META") return CONFLICT_META;
 		if (name == "CONFLICT_SAME") return CONFLICT_SAME;
-		throw InvalidConflictOperation ("The conflict operation " + name + " is unknown");
+		throw InvalidConflictOperation ("The conflict operation \"" + name + "\" is unknown");
 	}
 };
 }

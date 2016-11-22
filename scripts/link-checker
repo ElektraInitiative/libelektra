@@ -25,7 +25,11 @@ check ()
 	wget --spider --quiet "$link"
 	if [ "$?" -ne "0" ];
 	then
-		echo "$1"
+		wget -O - --quiet "$link" > /dev/null
+		if [ "$?" -ne "0" ];
+		then
+			echo "$1"
+		fi
 	fi
 }
 

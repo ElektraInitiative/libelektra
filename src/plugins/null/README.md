@@ -4,7 +4,7 @@
 - infos/provides = code
 - infos/needs =
 - infos/placements = postgetstorage presetstorage
-- infos/status = maintained nodep libc
+- infos/status = maintained nodep libc nodoc
 - infos/description = Transforms null and empty values to text and back
 
 ## Introduction ##
@@ -17,7 +17,6 @@ They differ from an empty string substantially in how they are handled.
 Some plugins that work on values are not aware of null values.
 They would crash when they try
 to access a value that is believed to be a string.
-
 
 ## Special Values ##
 

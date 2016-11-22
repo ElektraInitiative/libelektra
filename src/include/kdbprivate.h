@@ -3,7 +3,7 @@
  *
  * @brief Private declarations.
  *
- * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
  */
 
 #ifndef KDBPRIVATE_H
@@ -13,6 +13,7 @@
 #include <kdbconfig.h>
 #include <kdbextension.h>
 #include <kdbhelper.h>
+#include <kdbmacros.h>
 #include <kdbplugin.h>
 #include <kdbproposal.h>
 #include <kdbtypes.h>
@@ -51,27 +52,6 @@
  * This key directory tells you where each backend is mounted
  * to which mountpoint. */
 #define KDB_SYSTEM_ELEKTRA "system/elektra"
-
-#if DEBUG
-#include <stdio.h>
-#define ELEKTRA_PRINT_DEBUG(text) printf ("%s:%d: %s\n", __FILE__, __LINE__, text);
-#else
-#define ELEKTRA_PRINT_DEBUG(text)
-#endif
-
-#if DEBUG && VERBOSE
-#define ELEKTRA_PRINT_VERBOSE(text) printf ("%s:%d: %s\n", __FILE__, __LINE__, text);
-#else
-#define ELEKTRA_PRINT_VERBOSE(text)
-#endif
-
-#if DEBUG || defined(ELEKTRA_BMC)
-#undef NDEBUG
-#include <assert.h>
-#define ELEKTRA_ASSERT(NX) assert (NX)
-#else
-#define ELEKTRA_ASSERT(NX)
-#endif
 
 
 #ifdef __cplusplus
@@ -127,20 +107,20 @@ typedef enum {
 			 Key name is read only and not allowed
 			 to be changed. All attempts to change the name
 			 will lead to an error.
-			 Needed for meta keys and keys that are in a data
+			 Needed for metakeys and keys that are in a data
 			 structure that depends on name ordering.*/
 	KEY_FLAG_RO_VALUE = 1 << 2, /*!<
 			 Read only flag for value.
 			 Key value is read only and not allowed
 			 to be changed. All attempts to change the value
 			 will lead to an error.
-			 Needed for meta keys*/
+			 Needed for metakeys*/
 	KEY_FLAG_RO_META = 1 << 3	/*!<
 			 Read only flag for meta.
 			 Key meta is read only and not allowed
 			 to be changed. All attempts to change the value
 			 will lead to an error.
-			 Needed for meta keys.*/
+			 Needed for metakeys.*/
 } keyflag_t;
 
 
@@ -469,41 +449,33 @@ struct _Split
 ssize_t keySetRaw (Key * key, const void * newBinary, size_t dataSize);
 
 /*Methods for split keysets */
-Split * elektraSplitNew (void);
-void elektraSplitDel (Split * keysets);
-void elektraSplitResize (Split * ret);
-void elektraSplitRemove (Split * split, size_t where);
-ssize_t elektraSplitAppend (Split * split, Backend * backend, Key * parentKey, int syncbits);
-ssize_t elektraSplitSearchBackend (Split * split, Backend * backend, Key * key);
-int elektraSplitSearchRoot (Split * split, Key * parentKey);
-int elektraSplitBuildup (Split * split, KDB * handle, Key * parentKey);
-void elektraSplitUpdateFileName (Split * split, KDB * handle, Key * key);
-
-/* for kdbOpen() algorithm */
-void elektraSplitOpen (Split * split);
+Split * splitNew (void);
+void splitDel (Split * keysets);
+void splitRemove (Split * split, size_t where);
+ssize_t splitAppend (Split * split, Backend * backend, Key * parentKey, int syncbits);
+int splitBuildup (Split * split, KDB * handle, Key * parentKey);
+void splitUpdateFileName (Split * split, KDB * handle, Key * key);
 
 /* for kdbGet() algorithm */
-int elektraSplitAppoint (Split * split, KDB * handle, KeySet * ks);
-int elektraSplitGet (Split * split, Key * warningKey, KDB * handle);
-int elektraSplitMerge (Split * split, KeySet * dest);
+int splitAppoint (Split * split, KDB * handle, KeySet * ks);
+int splitGet (Split * split, Key * warningKey, KDB * handle);
+int splitMerge (Split * split, KeySet * dest);
 
 /* for kdbSet() algorithm */
-int elektraSplitCheckSize (Split * split);
-int elektraSplitDivide (Split * split, KDB * handle, KeySet * ks);
-int elektraSplitSync (Split * split);
-void elektraSplitPrepare (Split * split);
-int elektraSplitUpdateSize (Split * split);
+int splitDivide (Split * split, KDB * handle, KeySet * ks);
+int splitSync (Split * split);
+void splitPrepare (Split * split);
+int splitUpdateSize (Split * split);
 
 
 /*Backend handling*/
-Backend * elektraBackendOpen (KeySet * elektra_config, KeySet * modules, Key * errorKey);
-Backend * elektraBackendOpenMissing (Key * mountpoint);
-Backend * elektraBackendOpenDefault (KeySet * modules, const char * file, Key * errorKey);
-Backend * elektraBackendOpenModules (KeySet * modules, Key * errorKey);
-Backend * elektraBackendOpenVersion (Key * errorKey);
-int elektraBackendClose (Backend * backend, Key * errorKey);
+Backend * backendOpen (KeySet * elektra_config, KeySet * modules, Key * errorKey);
+Backend * backendOpenDefault (KeySet * modules, const char * file, Key * errorKey);
+Backend * backendOpenModules (KeySet * modules, Key * errorKey);
+Backend * backendOpenVersion (Key * errorKey);
+int backendClose (Backend * backend, Key * errorKey);
 
-int elektraBackendUpdateSize (Backend * backend, Key * parent, int size);
+int backendUpdateSize (Backend * backend, Key * parent, int size);
 
 /*Plugin handling*/
 int elektraProcessPlugin (Key * cur, int * pluginNumber, char ** pluginName, char ** referenceName, Key * errorKey);
@@ -516,21 +488,20 @@ Plugin * elektraPluginMissing (void);
 Plugin * elektraPluginVersion (void);
 
 /*Trie handling*/
-Trie * elektraTrieOpen (KeySet * config, KeySet * modules, Key * errorKey);
-int elektraTrieClose (Trie * trie, Key * errorKey);
-Backend * elektraTrieLookup (Trie * trie, const Key * key);
-Trie * elektraTrieInsert (Trie * trie, const char * name, Backend * value);
+int trieClose (Trie * trie, Key * errorKey);
+Backend * trieLookup (Trie * trie, const Key * key);
+Trie * trieInsert (Trie * trie, const char * name, Backend * value);
 
 /*Mounting handling */
-int elektraMountOpen (KDB * kdb, KeySet * config, KeySet * modules, Key * errorKey);
-int elektraMountDefault (KDB * kdb, KeySet * modules, int inFallback, Key * errorKey);
-int elektraMountModules (KDB * kdb, KeySet * modules, Key * errorKey);
-int elektraMountVersion (KDB * kdb, Key * errorKey);
-int elektraMountGlobals (KDB * kdb, KeySet * keys, KeySet * modules, Key * errorKey);
-int elektraMountBackend (KDB * kdb, Backend * backend, Key * errorKey);
+int mountOpen (KDB * kdb, KeySet * config, KeySet * modules, Key * errorKey);
+int mountDefault (KDB * kdb, KeySet * modules, int inFallback, Key * errorKey);
+int mountModules (KDB * kdb, KeySet * modules, Key * errorKey);
+int mountVersion (KDB * kdb, Key * errorKey);
+int mountGlobals (KDB * kdb, KeySet * keys, KeySet * modules, Key * errorKey);
+int mountBackend (KDB * kdb, Backend * backend, Key * errorKey);
 
-Key * elektraMountGetMountpoint (KDB * handle, const Key * where);
-Backend * elektraMountGetBackend (KDB * handle, const Key * key);
+Key * mountGetMountpoint (KDB * handle, const Key * where);
+Backend * mountGetBackend (KDB * handle, const Key * key);
 
 int keyInit (Key * key);
 void keyVInit (Key * key, const char * keyname, va_list ap);
@@ -573,10 +544,6 @@ int elektraArrayValidateName (const Key * key);
 int elektraReadArrayNumber (const char * baseName, kdb_long_long_t * oldIndex);
 
 KeySet * elektraRenameKeys (KeySet * config, const char * name);
-
-/* Name Manipulation Methods */
-ssize_t keyGetParentName (const Key * key, char * returned, size_t maxSize);
-ssize_t keyGetParentNameSize (const Key * key);
 
 
 /* Conveniences Methods for Making Tests */

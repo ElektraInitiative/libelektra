@@ -13,6 +13,11 @@ Following shell expansions are used in this document:
 = TODO =
 
 - make sure no TODO is in this file (resolve them first!)
+- Simplify release!
+- Scripts for strace, version, run tests!
+- Shell recorder in examples!
+- Check transitions in plugin status: especially from/to experimental
+- Check if Elektra builds, installs and works on freshly installed OS
 
 
 
@@ -57,24 +62,36 @@ Try to move as much as possible from this manual checks to build-server!
 
 Before release is done, following must be checked:
 - Everything blue on http://community.markus-raab.org:8080/
+- Not many warnings on community.markus-raab.org:8080/view/compiler%20warnings/
 
 If version numbers are correct in
 - CMakeLists.txt
+
+  mkdir ~elektra/$VERSION && kdb --version > ~elektra/$VERSION/version
 
 Rebuild cleanly, run all tests and also check for memleaks:
   cd ~build && ~e/scripts/configure-debian ~e && make -j5 && make run_all && make run_memcheck
 
 Check if there are really >=135 or >=95 tests
 
+- Log tests:
+  kdb run_all > ~elektra/$VERSION/run_all 2>&1
+
 - Check binary compatibility
   Install libelektra-test of the previous version and run again:
 
-  CHECK_VERSION=NO kdb run_all > ~elektra/$VERSION/run_all
+  CHECK_VERSION=NO kdb run_all > ~elektra/$VERSION/run_all_version  2>&1
 
 - Check which files changed
 
-  DESTDIR=D make install && cd D
-  find . | sort > ~elektra/$VERSION/installed_files
+  DESTDIR=D make install -j5
+  cd ~build/D && find . | sort > ~elektra/$VERSION/installed_files
+
+- Check library
+
+  ls -l /usr/lib/libelektra.so.$VERSION > ~elektra/$VERSION/size
+  readelf -a /usr/lib/libelektra.so.$VERSION > ~elektra/$VERSION/version
+
 
 Check if [doc/todo/API] is fulfilled
 

@@ -3,7 +3,7 @@
  *
  * @brief
  *
- * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
  */
 
 #include <kdbproposal.h>
@@ -38,7 +38,7 @@ case KEY_NS_NONE:
 	printf ("no key\n");
 	break;
 case KEY_NS_META:
-	printf ("meta key\n");
+	printf ("metakey\n");
 	break;
 case KEY_NS_CASCADING:
 	printf ("cascading key\n");

@@ -3,7 +3,7 @@
  *
  * @brief module for calling the GPG binary
  *
- * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
  *
  */
 
@@ -347,7 +347,7 @@ int CRYPTO_PLUGIN_FUNCTION (gpgDecryptMasterPassword) (KeySet * conf, Key * erro
  *
  * @param conf holds the backend/plugin configuration
  * @param errorKey holds the error description in case of failure
- * @param msgKey holds the message to be transformed
+ * @param msgKey holds the message to be transformed. Ignored if set to NULL, i.e. you do not want to send a stdin message to gpg.
  * @param argv array holds the arguments passed on to the gpg process
  * @param argc contains the number of elements in argv, i.e. the size of argv
  *
@@ -409,9 +409,9 @@ int CRYPTO_PLUGIN_FUNCTION (gpgCall) (KeySet * conf, Key * errorKey, Key * msgKe
 
 	// allocate buffer for gpg output
 	// estimated maximum output size = 2 * input (including headers, etc.)
-	if (!(buffer = elektraMalloc (bufferSize)))
+	if (msgKey && !(buffer = elektraMalloc (bufferSize)))
 	{
-		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_CRYPTO_GPG, errorKey, "Memory allocation failed");
+		ELEKTRA_SET_ERROR (87, errorKey, "Memory allocation failed");
 		closePipe (pipe_stdin);
 		closePipe (pipe_stdout);
 		closePipe (pipe_stderr);
@@ -439,8 +439,11 @@ int CRYPTO_PLUGIN_FUNCTION (gpgCall) (KeySet * conf, Key * errorKey, Key * msgKe
 		close (pipe_stderr[0]);
 
 		// redirect stdin to pipe
-		close (STDIN_FILENO);
-		dup (pipe_stdin[0]);
+		if (msgKey)
+		{
+			close (STDIN_FILENO);
+			dup (pipe_stdin[0]);
+		}
 		close (pipe_stdin[0]);
 
 		// redirect stdout to pipe
@@ -468,7 +471,10 @@ int CRYPTO_PLUGIN_FUNCTION (gpgCall) (KeySet * conf, Key * errorKey, Key * msgKe
 	close (pipe_stderr[1]);
 
 	// pass the message to the gpg process
-	write (pipe_stdin[1], keyValue (msgKey), keyGetValueSize (msgKey));
+	if (msgKey)
+	{
+		write (pipe_stdin[1], keyValue (msgKey), keyGetValueSize (msgKey));
+	}
 	close (pipe_stdin[1]);
 
 	// wait for the gpg process to finish
@@ -480,8 +486,11 @@ int CRYPTO_PLUGIN_FUNCTION (gpgCall) (KeySet * conf, Key * errorKey, Key * msgKe
 	{
 	case 0:
 		// everything ok - receive the output of the gpg process
-		outputLen = read (pipe_stdout[0], buffer, bufferSize);
-		keySetBinary (msgKey, buffer, outputLen);
+		if (msgKey)
+		{
+			outputLen = read (pipe_stdout[0], buffer, bufferSize);
+			keySetBinary (msgKey, buffer, outputLen);
+		}
 		retval = 1;
 		break;
 

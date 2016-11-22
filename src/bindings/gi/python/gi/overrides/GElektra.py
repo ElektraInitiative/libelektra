@@ -150,8 +150,8 @@ class Key(GElektra.Key):
 		return self._setstring(str(value))
 
 	def getmeta(self, name = None):
-		"""returns a meta key given by name. Name can be either string or Key.
-		If no meta key is found None is returned.
+		"""returns a metakey given by name. Name can be either string or Key.
+		If no metakey is found None is returned.
 		If name is omitted an iterator object is returned.
 		"""
 		if name is not None:
@@ -160,7 +160,7 @@ class Key(GElektra.Key):
 		return self.__metaIter()
 
 	def setmeta(self, name, value):
-		"""set a new meta key consisting of name and value"""
+		"""set a new metakey consisting of name and value"""
 		if isinstance(value, str):
 			return super().setmeta(name, value)
 		raise TypeError("Unsupported value type")

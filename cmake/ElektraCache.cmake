@@ -53,6 +53,7 @@ if (BINDINGS MATCHES "ALL" OR FINDEX GREATER -1)
 		swig_lua
 		swig_python2
 		swig_python
+		swig_ruby
 		)
 	set (BINDINGS_FORCE FORCE)
 endif ()
@@ -65,7 +66,7 @@ if (FINDEX GREATER -1)
 endif ()
 
 list (FIND BINDINGS "GI" FINDEX)
-if (BINDINGS MATCHES "ALL" OR FINDEX GREATER -1)
+if (FINDEX GREATER -1)
 	set (BINDINGS_LIST_GI
 		glib
 		gi_lua
@@ -83,13 +84,34 @@ if (FINDEX GREATER -1)
 	set (BINDINGS_FORCE FORCE)
 endif ()
 
+#compatibility for 0.8.18
+list (FIND BINDINGS "intercept" FINDEX)
+if (FINDEX GREATER -1)
+	set(BINDINGS_LIST_INTERCEPT
+		intercept_fs
+		intercept_env
+		)
+	set (BINDINGS_FORCE FORCE)
+endif()
+
+list (FIND BINDINGS "INTERCEPT" FINDEX)
+if (FINDEX GREATER -1 OR BINDINGS MATCHES "ALL")
+	set(BINDINGS_LIST_INTERCEPT
+		intercept_fs
+		intercept_env
+		)
+	set (BINDINGS_FORCE FORCE)
+endif()
+
 if (BINDINGS MATCHES "ALL")
 	set(BINDINGS_LIST_ALL
 		jna
 		)
+	set (BINDINGS_FORCE FORCE)
+	list (REMOVE_ITEM BINDINGS ALL)
 endif()
 
-set (BINDINGS_DOC "Which bindings should be added? ALL for all available, SWIG, GI for plugins based on respective technology, DEFAULT for minimal set.")
+set (BINDINGS_DOC "Which bindings should be added? ALL for all available, DEFAULT for minimal set, see doc/COMPILE.md.")
 
 
 set (BINDINGS
@@ -97,7 +119,9 @@ set (BINDINGS
 	${BINDINGS_LIST_SWIG}
 	${BINDINGS_LIST_GI}
 	${BINDINGS_LIST_GSETTINGS}
+	${BINDINGS_LIST_INTERCEPT}
 	${BINDINGS_LIST_ALL}
+	${BINDINGS}
 	CACHE STRING ${BINDINGS_DOC}
 	${BINDINGS_FORCE}
 	)
@@ -138,6 +162,7 @@ if (TOOLS MATCHES "ALL")
 		qt-gui
 		)
 	set (TOOLS_FORCE FORCE)
+	list (REMOVE_ITEM TOOLS ALL)
 endif ()
 
 set (TOOLS_DOC "Which TOOLS should be added? ALL for all available, NODEP for TOOLS without additional dependencies, DEFAULT for minimal set.")
@@ -145,6 +170,7 @@ set (TOOLS_DOC "Which TOOLS should be added? ALL for all available, NODEP for TO
 set (TOOLS
 	${TOOLS_LIST_DEFAULT}
 	${TOOLS_LIST}
+	${TOOLS}
 	CACHE STRING ${TOOLS_DOC}
 	${TOOLS_FORCE}
 	)
@@ -266,13 +292,6 @@ else (BUILD_TESTING)
 	set (INSTALL_TESTING OFF CACHE BOOL "Install testcases" FORCE)
 endif (BUILD_TESTING)
 
-set (ENABLE_COVERAGE OFF CACHE BOOL "enable coverage analysis (using gcov)")
-set (COVERAGE_PREFIX
-		"${PROJECT_SOURCE_DIR}/.."
-		CACHE FILEPATH
-		"Full path to common prefix of build+source directory"
-    )
-
 if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
 	option (INSTALL_SYSTEM_FILES "Install files to system directories" OFF)
 else ()
@@ -285,8 +304,17 @@ option (ENABLE_OPTIMIZATIONS "Turn on optimizations that trade memory for speed"
 
 
 #
-# Developer builds (debug or verbose build)
+# Developer builds
 #
+
+option (ENABLE_ASAN "Activate sanitizers, see doc/TESTING.md.")
+
+set (ENABLE_COVERAGE OFF CACHE BOOL "Enable coverage analysis (using gcov), see doc/TESTING.md.")
+set (COVERAGE_PREFIX
+		"${PROJECT_SOURCE_DIR}/.."
+		CACHE FILEPATH
+		"Full path to common prefix of build+source directory"
+    )
 
 option (ENABLE_DEBUG "Build with assertions and optimize for developing with Elektra.")
 if (ENABLE_DEBUG)
@@ -295,13 +323,12 @@ else (ENABLE_DEBUG)
 	set (DEBUG "0")
 endif (ENABLE_DEBUG)
 
-option (ENABLE_LOGGER "Allows Elektra to write logs (DO NOT USE, currently writes to stdout).")
+option (ENABLE_LOGGER "Allows Elektra to write logs.")
 if (ENABLE_LOGGER)
-	set (VERBOSE "1")
+	set (HAVE_LOGGER "1")
 else (ENABLE_LOGGER)
-	set (VERBOSE "0")
+	set (HAVE_LOGGER "0")
 endif (ENABLE_LOGGER)
-MARK_AS_ADVANCED(ENABLE_LOGGER)
 
 
 #
@@ -330,6 +357,12 @@ set (TARGET_PKGCONFIG_FOLDER
 		"pkgconfig"
 		CACHE STRING
 		"The folder (below prefix/lib) folder where to install pkgconfig files. LIB_SUFFIX is honored."
+    )
+
+set (TARGET_DOCUMENTATION_TEXT_FOLDER
+		"share/doc/elektra"
+		CACHE STRING
+		"The folder (below prefix) where to install textual documentation files."
     )
 
 set (TARGET_DOCUMENTATION_HTML_FOLDER

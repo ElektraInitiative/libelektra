@@ -16,7 +16,7 @@ easily and fast.
 The idea is, that the KDB API is not only implemented by Elektra.
 Elektra provides a full blown architecture to really support modern
 Linux Systems, but comes with some overhead. This document describes
-the `KDB` API. It also contains some hints about Elektra specific
+the `KDB` API. It also contains some hints about Elektra-specific
 conventions.
 
 ## Data Structures ##
@@ -56,34 +56,32 @@ program.
 	KeySet *ksNew(int alloc, ...);
 	int ksDel(KeySet *ks);
 
-In the above pairs, the first function uses elektraMalloc to reserve
+In the above pairs, the first function uses `elektraMalloc` to reserve
 the necessary amount of memory. The second function frees the allocated
 data segment. There are more occurrences of `elektraMalloc`, but they
 are invisible to the user of the API and happen implicitly within any
 of these 3 classes: `KDB`, `Key` and `KeySet`.
 
-Names, values, and comments can't be handled as easy, because Elektra
+Names, values, and comments cannot be handled as easy, because Elektra
 does not provide a string library. There are 2 ways to access the
 mentioned attributes. We show these methods here, using the comment
 attribute as an example. The function
 
-	char *keyComment(const Key *key);
+	char *keyString(const Key *key);
 
-just returns a comment. Your are not allowed to change the size of
-the returned string. The function
+just returns a string. Your are not allowed to change the returned string.
+The function
 
-	ssize_t keyGetCommentSize(const Key *key);
+	ssize_t keyGetValueSize(const Key *key);
 
-shows how long the comment is for the specified key. The returned value
-also specifies the minimum buffer size that `keyGetComment` will
+shows how long the string is for the specified key. The returned value
+also specifies the minimum buffer size that `keyGetString` will
 reserve for the copy of the key. The return value can be directly
 passed to `elektraMalloc`.
 
-	ssize_t keyGetComment(const Key *key, char *returnedDesc, size_t maxSize);
+	ssize_t keyGetString(const Key *key, char *returnedValue, size_t maxSize);
 
-writes the comment in a buffer maintained by you. The minimum size of
-this buffer is the value returned by the call to the function
-`keyGetCommentSize`.
+writes the comment in a buffer maintained by you.
 
 ## Variable Arguments ##
 
@@ -91,7 +89,7 @@ The constructors for `Key` and `KeySet` take a variable sized list of
 arguments. They can be used as an alternatives to the various `keySet*`
 methods and `ksAppendKey`. With them you are able to generate any `Key`
 or `KeySet` with a single C-statement. This can be done
-programmatically by `keyGenerate` or `ksGenerate` in `xmltool`.
+programmatically by the plugin `c`.
 
 To just retrieve a key, use
 
@@ -106,20 +104,19 @@ pass a list as described in the documentation.
 
 ## Off-by-one ##
 
-We avoid Off-by-one errors (OBOE) by starting all indizes with 0, as
+We avoid Off-by-one errors by starting all indizes with 0, as
 usual in C. The size returned by the `*GetSize` functions
 (`keyGetValueSize`, `keyGetCommentSize` and `keyGetOwnerSize`) is
 exactly the size you need to allocate. So if you add 1 to it, too much
 space is allocated, but no error will occur.
 
+The same is true for `elektraStrLen` which also already has the
+null byte included.
+
 ## Minimal Set ##
 
 `kdb.h` contains a minimal set of functions to fully work with a key
 database. The functions are implemented in `src/libs/elektra` in ANSI C.
-
-Functions used by backends are implemented in `src/backends/helpers`.
-They need the POSIX interface and can optionally use `iconv` to handle
-utf8 conversions.
 
 ## Value, String or Binary ##
 
@@ -133,8 +130,11 @@ Sometimes people confuse the terms “value”, “string” and “binary”:
 - Binary data is stored in a array of type void, and not terminated by
   `'\0'`.
 
-Only strings may be converted to other charsets. Use the appropriate
-Get functions, to not be dependent on this internal fact.
+See also [the glossary](/doc/help/elektra-glossary.md) for further
+terminology.
+
+In Elektra `char*` are used as null-terminated strings, while `void*`
+might contain `0`-bytes:
 
 	const void *keyValue(const Key *key);
 
@@ -227,7 +227,7 @@ names by other means.
 *Get* and *Set* are used for getters/and setters. We use *Is* to ask
 about a flag or state and *Needs* to ask about state related to
 databases. For allocation/deallocation we use C++ styled names (e.g
-*New, *Del).
+`*New`, `*Del`).
 
 Macros and Enums are written in capital letters. Options start with
 `KDB_O`, errors with `KDB_ERR`, namespaces with `KEY_NS` and key types
@@ -238,9 +238,6 @@ Data structures start with a capital letter for every part of the word:
 	KDB ... Key Data Base Handle
 	KeySet ... Key Set
 	Key ... Key
-
-`keyGetUID` and `keyGetGID` use capital letters, because the term ID is
-commonly written using upper case letters.
 
 We use singular for all names.
 

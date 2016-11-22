@@ -3,7 +3,7 @@
  *
  * @brief
  *
- * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
  */
 
 #include <import.hpp>
@@ -45,7 +45,6 @@ int ImportCommand::execute (Cmdline const & cl)
 
 	KeySet originalKeys;
 	kdb.get (originalKeys, root);
-	KeySet base = originalKeys.cut (root);
 	printWarnings (cerr, root);
 
 	string format = cl.format;
@@ -62,10 +61,37 @@ int ImportCommand::execute (Cmdline const & cl)
 
 	KeySet importedKeys;
 	plugin->get (importedKeys, errorKey);
-	importedKeys = importedKeys.cut (root);
 
 	printWarnings (cerr, errorKey);
 	printError (cerr, errorKey);
+
+	if (cl.strategy == "validate")
+	{
+		KeySet toset = prependNamespace (importedKeys, cl.ns);
+		originalKeys.cut (prependNamespace (root, cl.ns));
+		originalKeys.append (toset);
+
+		PluginPtr specPlugin = modules.load ("spec", cl.getPluginsConfig ());
+		if (specPlugin->get (originalKeys, root) == -1)
+		{
+			printWarnings (cerr, root);
+			printError (cerr, errorKey);
+			return -1;
+		}
+
+		if (cl.verbose)
+		{
+			cout.setf (std::ios_base::showbase);
+			std::cout << originalKeys << std::endl;
+		}
+
+		kdb.set (originalKeys, root);
+		printWarnings (cerr, root);
+		return 0;
+	}
+
+	KeySet base = originalKeys.cut (root);
+	importedKeys = importedKeys.cut (root);
 
 	ThreeWayMerge merger;
 	MergeHelper helper;
@@ -89,6 +115,9 @@ int ImportCommand::execute (Cmdline const & cl)
 		originalKeys.append (resultKeys);
 		kdb.set (originalKeys, root);
 		ret = 0;
+
+		printWarnings (cerr, root);
+		printError (cerr, root);
 	}
 
 	return ret;

@@ -3,7 +3,7 @@
  *
  * @brief
  *
- * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
  */
 
 #ifndef METAGET_HPP
@@ -28,12 +28,12 @@ public:
 
 	virtual std::string getSynopsis () override
 	{
-		return "<key-name> <meta-name>";
+		return "<key-name> <metaname>";
 	}
 
 	virtual std::string getShortHelpText () override
 	{
-		return "Get a meta value.";
+		return "Get a metavalue.";
 	}
 
 	virtual std::string getLongHelpText () override

@@ -4,7 +4,7 @@
 - infos/provides = tracing
 - infos/needs =
 - infos/placements = pregetstorage postgetstorage presetstorage precommit postcommit prerollback postrollback
-- infos/status = maintained tested global nodep
+- infos/status = maintained tested nodep configurable global
 - infos/description = Traces the execution path of a backend
 
 ## Introduction ##
@@ -50,3 +50,4 @@ Now the 2 placements in get are called.
 Will not log when loaded as module (config `/module` present), unless `/logmodule` is set:
 
     kdb check -c "logmodule=" tracer
+

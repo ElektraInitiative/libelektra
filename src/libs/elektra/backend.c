@@ -3,16 +3,14 @@
  *
  * @brief Everything related to a backend.
  *
- * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
  */
 
 #ifdef HAVE_KDBCONFIG_H
 #include "kdbconfig.h"
 #endif
 
-#if DEBUG && defined(HAVE_STDIO_H)
-#include <stdio.h>
-#endif
+#include <kdbassert.h>
 
 #ifdef HAVE_LOCALE_H
 #include <locale.h>
@@ -102,6 +100,34 @@ int elektraBackendSetMountpoint (Backend * backend, KeySet * elektraConfig, Key 
 	return 0;
 }
 
+/**
+ * Opens the internal backend that indicates that a backend
+ * is missing at that place.
+ *
+ * @return the fresh allocated backend or 0 if no memory
+ */
+static Backend * backendOpenMissing (Key * mp)
+{
+	Backend * backend = elektraBackendAllocate ();
+
+	Plugin * plugin = elektraPluginMissing ();
+	if (!plugin)
+	{
+		/* Could not allocate plugin */
+		elektraFree (backend);
+		return 0;
+	}
+
+	backend->getplugins[0] = plugin;
+	backend->setplugins[0] = plugin;
+	plugin->refcounter = 2;
+
+	keySetString (mp, "missing");
+	backend->mountpoint = mp;
+	keyIncRef (backend->mountpoint);
+
+	return backend;
+}
 
 /**Builds a backend out of the configuration supplied
  * from:
@@ -137,7 +163,7 @@ system/elektra/mountpoints/<name>
  * @retval 0 if out of memory
  * @ingroup backend
  */
-Backend * elektraBackendOpen (KeySet * elektraConfig, KeySet * modules, Key * errorKey)
+Backend * backendOpen (KeySet * elektraConfig, KeySet * modules, Key * errorKey)
 {
 	Key * cur;
 	KeySet * referencePlugins = 0;
@@ -209,43 +235,14 @@ Backend * elektraBackendOpen (KeySet * elektraConfig, KeySet * modules, Key * er
 
 	if (failure)
 	{
-		Backend * tmpBackend = elektraBackendOpenMissing (backend->mountpoint);
-		elektraBackendClose (backend, errorKey);
+		Backend * tmpBackend = backendOpenMissing (backend->mountpoint);
+		backendClose (backend, errorKey);
 		backend = tmpBackend;
 	}
 
 	ksDel (systemConfig);
 	ksDel (elektraConfig);
 	ksDel (referencePlugins);
-
-	return backend;
-}
-
-/**
- * Opens the internal backend that indicates that a backend
- * is missing at that place.
- *
- * @return the fresh allocated backend or 0 if no memory
- */
-Backend * elektraBackendOpenMissing (Key * mp)
-{
-	Backend * backend = elektraBackendAllocate ();
-
-	Plugin * plugin = elektraPluginMissing ();
-	if (!plugin)
-	{
-		/* Could not allocate plugin */
-		elektraFree (backend);
-		return 0;
-	}
-
-	backend->getplugins[0] = plugin;
-	backend->setplugins[0] = plugin;
-	plugin->refcounter = 2;
-
-	keySetString (mp, "missing");
-	backend->mountpoint = mp;
-	keyIncRef (backend->mountpoint);
 
 	return backend;
 }
@@ -258,7 +255,7 @@ Backend * elektraBackendOpenMissing (Key * mp)
  * @param errorKey the key to issue warnings and errors to
  * @return the fresh allocated default backend or 0 if it failed
  */
-Backend * elektraBackendOpenDefault (KeySet * modules, const char * file, Key * errorKey)
+Backend * backendOpenDefault (KeySet * modules, const char * file, Key * errorKey)
 {
 	Backend * backend = elektraBackendAllocate ();
 
@@ -274,7 +271,7 @@ Backend * elektraBackendOpenDefault (KeySet * modules, const char * file, Key * 
 		return 0;
 	}
 
-#if DEBUG && VERBOSE
+#ifdef ENABLE_TRACER
 	KeySet * tracerConfig = ksNew (5,
 				       // does not matter because it is mounted differently in system/elektra/modules:
 				       // keyNew("system/logmodule", KEY_VALUE, "1", KEY_END),
@@ -323,7 +320,7 @@ Backend * elektraBackendOpenDefault (KeySet * modules, const char * file, Key * 
  * @param modules the modules to work with
  * @param errorKey the key to issue warnings and errors to
  */
-Backend * elektraBackendOpenModules (KeySet * modules, Key * errorKey)
+Backend * backendOpenModules (KeySet * modules, Key * errorKey)
 {
 	Backend * backend = elektraBackendAllocate ();
 
@@ -367,7 +364,7 @@ Backend * elektraBackendOpenModules (KeySet * modules, Key * errorKey)
  * @param errorKey the key to issue warnings and errors to
  * @return the fresh allocated default backend or 0 if it failed
  */
-Backend * elektraBackendOpenVersion (Key * errorKey ELEKTRA_UNUSED)
+Backend * backendOpenVersion (Key * errorKey ELEKTRA_UNUSED)
 {
 	Backend * backend = elektraBackendAllocate ();
 
@@ -404,7 +401,7 @@ Backend * elektraBackendOpenVersion (Key * errorKey ELEKTRA_UNUSED)
  * @retval -1 if invalid parent (assert)
  * @retval 0 on success
  */
-int elektraBackendUpdateSize (Backend * backend, Key * parent, int size)
+int backendUpdateSize (Backend * backend, Key * parent, int size)
 {
 	switch (keyGetNamespace (parent))
 	{
@@ -425,7 +422,7 @@ int elektraBackendUpdateSize (Backend * backend, Key * parent, int size)
 	case KEY_NS_META:
 	case KEY_NS_CASCADING:
 	case KEY_NS_NONE:
-		ELEKTRA_ASSERT (0 && "invalid namespace");
+		ELEKTRA_ASSERT (0, "invalid namespace %d", keyGetNamespace (parent));
 		return -1;
 	}
 
@@ -437,7 +434,7 @@ int elektraBackendUpdateSize (Backend * backend, Key * parent, int size)
 	return 0;
 }
 
-int elektraBackendClose (Backend * backend, Key * errorKey)
+int backendClose (Backend * backend, Key * errorKey)
 {
 	int ret = 0;
 	int errorOccurred = 0;

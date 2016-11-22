@@ -4,10 +4,10 @@
 - infos/needs =
 - infos/provides =
 - infos/placements = pregetstorage postgetstorage presetstorage postcommit postrollback
-- infos/status = maintained global reviewed experimental unfinished nodep -10000
-- infos/description =
+- infos/status = maintained reviewed unittest global experimental unfinished nodoc -10000
+- infos/description = locks files during usage
 
-## SEMLOCK ##
+## Semlock ##
 
 This global semlock plugin introduces a read lock while `GET` and a read/write lock
 while `SET`.

@@ -4,10 +4,8 @@
 - infos/provides =
 - infos/needs =
 - infos/placements =
-- infos/status = maintained configurable experimental -500 memleak
-- infos/description =
-
-# Generic Java plugin #
+- infos/status = maintained unittest configurable memleak experimental -500
+- infos/description = generic java plugin
 
 ## Introduction ##
 
@@ -17,20 +15,18 @@ Needs Java 8 or later. While the plugin internally uses JNI, the Java
 binding for your java-plugin may use something different, e.g. JNA.
 The requirements for the java bindings are:
 
-- needs to have the classes elektra/Key and elektra/KeySet with
+- needs to have the classes `elektra/Key` and `elektra/KeySet` with
  - a constructor that takes a C-Pointer as long (J)
  - a method "release" that gives up ownership (set internal pointer to NULL)
 
 The java plugin itself needs to have the following methods:
 
 - constructor without arguments (i.e. default constructor)
-- open with argument elektra/KeySet (the plugin's conf) and elektra/Key
-- close with argument elektra/Key
-- get with arguments elektra/KeySet and elektra/Key
-- set with arguments elektra/KeySet and elektra/Key
-- error with arguments elektra/KeySet and elektra/Key
-
-
+- open with argument `elektra/KeySet` (the plugin's conf) and `elektra/Key`
+- close with argument `elektra/Key`
+- get with arguments `elektra/KeySet` and `elektra/Key`
+- set with arguments `elektra/KeySet` and `elektra/Key`
+- error with arguments `elektra/KeySet` and `elektra/Key`
 
 ## Installation ##
 
@@ -51,15 +47,15 @@ and run:
 
     sudo ldconfig
 
-Then enable the plugin using:
+Then enable the plugin using (`ALL;-EXPERIMENTAL` is default):
 
-    cmake -DPLUGINS="...;jni" /path/to/libelektra
+    cmake -DPLUGINS="ALL;-EXPERIMENTAL;jni" /path/to/libelektra
 
 Running
 
     kdb-full
 
-should work then, if you get one of these:
+should work then (needs BUILD_FULL cmake option), if you get one of these:
 
     kdb-full: error while loading shared libraries: libmawt.so: cannot open shared object file: No such file or directory
     kdb-full: error while loading shared libraries: libjawt.so: cannot open shared object file: No such file or directory
@@ -69,14 +65,14 @@ You missed one of the ldconfig steps.
 ## Plugin Config ##
 
 You need to pass :
-- classname the classname to use as plugin, e.g. elektra/plugin/Echo
+- classname the classname to use as plugin, e.g. `elektra/plugin/Echo`
 - classpath the classpath where to find JNA, the package elektra and
   other classes needed
 
 Additionally, you can set:
 
-- option allows you to pass a option to the jvm, default: -verbose:gc,class,jni
-- ignore allows you to ignore broken options, default: false
+- option allows you to pass a option to the jvm, default: `-verbose:gc,class,jni`
+- ignore allows you to ignore broken options, default: `false`
 - print allows you to print java exceptions for debugging purposes
 
 E.g.
@@ -85,7 +81,7 @@ E.g.
     kdb check -c classname=elektra/plugin/PropertiesStorage,classpath=.:/usr/share/java/jna.jar:/usr/lib/java:/path/to/libelektra/src/bindings/jna,print= jni
     kdb mount -c classname=elektra/plugin/PropertiesStorage,classpath=.:/usr/share/java/jna.jar:/usr/lib/java:/path/to/src/bindings/jna,print= file.properties /jni jni classname=elektra/plugin/PropertiesStorage,classpath=.:/usr/share/java/jna.jar:/usr/lib/java:/path/to/libelektra/src/bindings/jna,print=
 
-Or if .jar is already installed:
+Or if `.jar` is already installed:
 
     bin/kdb mount -c classname=elektra/plugin/PropertiesStorage,classpath=.:/usr/share/java/jna.jar:/usr/share/java/elektra.jar,print= file.properties /jni jni classname=elektra/plugin/PropertiesStorage,classpath=.:/usr/share/java/jna.jar:/usr/share/java/elektra.jar,print=
 
@@ -105,7 +101,6 @@ Also explained
 
 [JNI Functions](https://docs.oracle.com/javase/7/docs/technotes/guides/jni/spec/functions.html)
 [Invocation](https://docs.oracle.com/javase/7/docs/technotes/guides/jni/spec/invocation.html)
-
 
 ## Issues ##
 

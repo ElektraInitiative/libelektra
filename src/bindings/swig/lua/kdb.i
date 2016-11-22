@@ -3,7 +3,7 @@
  *
  * @brief
  *
- * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
  */
 
 %module kdb
@@ -344,7 +344,7 @@
 
 %include "key.hpp"
 
-// meta data
+// metadata
 %template(_getMeta) kdb::Key::getMeta<const kdb::Key>;
 %template(setMeta) kdb::Key::setMeta<std::string>;
 

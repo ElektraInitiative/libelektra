@@ -3,7 +3,7 @@
  *
  * @brief
  *
- * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
  */
 
 #ifndef TREEVIEWMODEL_H
@@ -167,7 +167,7 @@ public:
 	Q_INVOKABLE QVariant find (const QString & term);
 
 	/**
-	 * @brief Inserts a new ConfigNode at a specified index into this TreeViewModel. This method is used if this TreeViewModel is holding meta keys.
+	 * @brief Inserts a new ConfigNode at a specified index into this TreeViewModel. This method is used if this TreeViewModel is holding metakeys.
 	 * @param row The index the new ConfigNode is supposed to be inserted at.
 	 * @param key The key that holds the metadata.
 	 * @param name The name of the parent ConfigNode that holds the metadata.

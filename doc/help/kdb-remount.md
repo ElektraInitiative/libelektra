@@ -11,7 +11,7 @@ and `existing mountpoint` is the mountpoint where the existing backend is mounte
 
 ## DESCRIPTION
 
-This command allows a user to use an existing backend (such as one from a previous mount) to mount a new configuration file to a new mount point in the key database.  
+This command allows a user to use an existing backend (such as one from a previous mount) to mount a new configuration file to a new mountpoint in the key database.  
 
 ## OPTIONS
 

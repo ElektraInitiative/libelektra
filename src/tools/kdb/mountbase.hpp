@@ -3,13 +3,13 @@
  *
  * @brief
  *
- * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
  */
 
 #ifndef MOUNTBASE_HPP_
 #define MOUNTBASE_HPP_
 
-#include "ansicolors.hpp"
+#include "coloredkdbio.hpp"
 #include <command.hpp>
 #include <kdb.hpp>
 

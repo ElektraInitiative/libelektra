@@ -55,7 +55,7 @@ KDB_DEFAULT_RESOLVER="@KDB_DEFAULT_RESOLVER@"
 
 KDB_GETENV=`kdb elektrify-getenv getenv KDB 2> /dev/null`
 
-if [ -x "${KDB_GETENV}" ]
+if [ "${KDB_GETENV}" ]
 then
 	KDB=${KDB_GETENV};
 fi
@@ -85,7 +85,7 @@ exit_if_fail ()
 			echo "fatal: $*"
 			cleanup
 		else
-			echo "fatal (no cleanup): $*"
+			echo "fatal (no cleanup necessary): $*"
 		fi
 		exit 1
 	fi
@@ -210,6 +210,7 @@ is_not_rw_storage()
 	-o "x$PLUGIN" = "xdpkg" \
 	-o "x$PLUGIN" = "xregexstore" \
 	-o "x$PLUGIN" = "xpasswd" \
+	-o "x$PLUGIN" = "xsimplespeclang" \
 	-o "x$PLUGIN" = "xmozprefs"
 }
 
@@ -234,11 +235,6 @@ mktempfile_elektra()
 {
 	mktemp -t elektraenv.XXXXXXXXX 2>/dev/null || mktemp -t 'elektraenv'
 }
-
-
-
-
-
 
 
 

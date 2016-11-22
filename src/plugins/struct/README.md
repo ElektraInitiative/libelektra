@@ -5,8 +5,8 @@
 - infos/needs =
 - infos/ordering = check
 - infos/placements = presetstorage
-- infos/status = unfinished concept nodep
-- infos/description = Copies meta data to keys using struct
+- infos/status = nodep unfinished concept
+- infos/description = Copies metadata to keys using struct
 
 ## Introduction ##
 
@@ -45,31 +45,31 @@ clause.
 The `fstab` plugin uses the `struct` plugin to verify the correct
 structure. Here is a snippet from it's contract:
 
-	keyNew ("system/elektra/modules/fstab/config/needs/struct",
-	KEY_VALUE, "list FStab",
-	KEY_END),
-	keyNew ("system/elektra/modules/fstab/config/needs/struct/FStab",
-	KEY_META, "check/type", "null empty",
-	KEY_END),
-	keyNew ("system/elektra/modules/fstab/config/needs/struct/FStab/device",
-	KEY_META, "check/type", "string",
-	KEY_META, "check/path", "device",
-	KEY_END),
-	keyNew ("system/elektra/modules/fstab/config/needs/struct/FStab/mpoint",
-	KEY_META, "check/type", "string",
-	KEY_META, "check/path", "directory",
-	KEY_END),
-	keyNew ("system/elektra/modules/fstab/config/needs/struct/FStab/type",
-	KEY_META, "check/type", "FSType",
-	KEY_END),
-	keyNew ("system/elektra/modules/fstab/config/needs/struct/FStab/options",
-	KEY_META, "check/type", "string",
-	KEY_END),
-	keyNew ("system/elektra/modules/fstab/config/needs/struct/FStab/dumpfreq",
-	KEY_META, "check/type", "unsigned_short",
-	KEY_END), keyNew ("system/elektra/modules/fstab/config/needs/struct/FStab/passno",
-	KEY_META, "check/type", "unsigned_short",
-	KEY_END),
+    keyNew ("system/elektra/modules/fstab/config/needs/struct",
+        KEY_VALUE, "list FStab",
+        KEY_END),
+    keyNew ("system/elektra/modules/fstab/config/needs/struct/FStab",
+        KEY_META, "check/type", "null empty",
+        KEY_END),
+    keyNew ("system/elektra/modules/fstab/config/needs/struct/FStab/device",
+        KEY_META, "check/type", "string",
+        KEY_META, "check/path", "device",
+        KEY_END),
+    keyNew ("system/elektra/modules/fstab/config/needs/struct/FStab/mpoint",
+        KEY_META, "check/type", "string",
+        KEY_META, "check/path", "directory",
+        KEY_END),
+    keyNew ("system/elektra/modules/fstab/config/needs/struct/FStab/type",
+        KEY_META, "check/type", "FSType",
+        KEY_END),
+    keyNew ("system/elektra/modules/fstab/config/needs/struct/FStab/options",
+        KEY_META, "check/type", "string",
+        KEY_END),
+    keyNew ("system/elektra/modules/fstab/config/needs/struct/FStab/dumpfreq",
+        KEY_META, "check/type", "unsigned_short",
+        KEY_END), keyNew ("system/elektra/modules/fstab/config/needs/struct/FStab/passno",
+        KEY_META, "check/type", "unsigned_short",
+        KEY_END),
 
 The key value of `needs/struct` within the plugin configuration marks the
 starting point. `list` describes the first structure to be generated. It

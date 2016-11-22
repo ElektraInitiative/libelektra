@@ -3,7 +3,7 @@
  *
  * @brief Source for spec plugin
  *
- * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
  *
  */
 
@@ -12,6 +12,7 @@
 #include <kdbease.h>
 #include <kdberrors.h>
 #include <kdbhelper.h>
+#include <kdblogger.h>
 #include <kdbprivate.h> //elektraArrayValidateName
 #include <stdio.h>
 #include <stdlib.h>
@@ -406,9 +407,8 @@ static int handleSubCountConflict (Key * parentKey, Key * key, Key * specKey, Ke
 
 static int handleConflictConflict (Key * parentKey, Key * key, Key * conflictMeta, OnConflict onConflict)
 {
-#if DEBUG && VERBOSE
-	fprintf (stderr, "handling conflict %s:%s\n", keyName (key), keyName (conflictMeta));
-#endif
+	ELEKTRA_LOG ("handling conflict %s:%s\n", keyName (key), keyName (conflictMeta));
+
 	int ret = 0;
 	const char * problemKeys = elektraMetaArrayToString (key, keyName (conflictMeta), ", ");
 	switch (onConflict)
@@ -609,8 +609,7 @@ static void copyMeta (Key * key, Key * specKey, Key * parentKey ELEKTRA_UNUSED)
 	{
 		const Key * meta = keyCurrentMeta (specKey);
 		const char * name = keyName (meta);
-		if (!(!strcmp (name, "array") || !strcmp (name, "required") || !strncmp (name, "conflict/", 9) ||
-		      !strcmp (name, "require")))
+		if (!(!strncmp (name, "internal/", 9) || !strncmp (name, "conflict/", 9)))
 		{
 			const Key * oldMeta;
 			if ((oldMeta = keyGetMeta (key, name)) != NULL)

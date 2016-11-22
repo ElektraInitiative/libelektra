@@ -3,7 +3,7 @@
  *
  * @brief source file of spec mount command
  *
- * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
  *
  */
 
@@ -79,6 +79,11 @@ void SpecMountCommand::buildBackend (Cmdline const & cl)
 		outputMissingRecommends (backend.resolveNeeds (cl.withRecommends));
 		Backends::umount (backend.getMountpoint (), mountConf);
 		backend.serialize (mountConf);
+	}
+
+	if (!cl.quiet && backends.empty ())
+	{
+		std::cout << "No metadata \"mountpoint\" found below spec" << mp << std::endl;
 	}
 }
 

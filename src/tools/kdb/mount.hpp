@@ -3,7 +3,7 @@
  *
  * @brief header file of mount command
  *
- * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
  *
  */
 
@@ -35,7 +35,7 @@ public:
 
 	virtual std::string getShortOptions () override
 	{
-		return "idR0123cWC";
+		return "idR0123cqWC";
 	}
 
 	virtual std::string getSynopsis () override
@@ -60,19 +60,7 @@ public:
 		       "\n"
 		       "With no arguments and not in interactive mode, the current mountpoints will be listed\n"
 		       "Then the options -0123 take effect (otherwise these options can be used to suppress warnings).\n"
-		       "1,2 and 3 will suppress the output of the respective column\n"
-		       "\n"
-		       "\n"
-		       "Examples:\n"
-		       "\n"
-		       "Null terminated output of path and backend name:\n"
-		       "kdb mount -02 | xargs -0n 2 echo\n"
-		       "\n"
-		       "Mount /etc/file to system file with two plugins and a respective configuration option each:\n"
-		       "kdb mount /etc/file system/file plugin1 plugin1config=config1 plugin2 plugin2config=config2\n"
-		       "\n"
-		       "recode and rename\n"
-		       "kdb mount s.ini recode.txt ni rename cut=path iconv recode=utf8..latin1\n";
+		       "1,2 and 3 will suppress the output of the respective column\n";
 	}
 
 	virtual int execute (Cmdline const & cmdline) override;

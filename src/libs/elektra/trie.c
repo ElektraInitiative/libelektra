@@ -3,14 +3,14 @@
  *
  * @brief Interna of trie functionality.
  *
- * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
  */
 
 #ifdef HAVE_KDBCONFIG_H
 #include "kdbconfig.h"
 #endif
 
-#if DEBUG && defined(HAVE_STDIO_H)
+#if VERBOSE && defined(HAVE_STDIO_H)
 #include <stdio.h>
 #endif
 
@@ -50,7 +50,7 @@ static Backend * elektraTriePrefixLookup (Trie * trie, const char * name);
  * @param key the name of this key will be looked up
  * @ingroup trie
  */
-Backend * elektraTrieLookup (Trie * trie, const Key * key)
+Backend * trieLookup (Trie * trie, const Key * key)
 {
 	char * where = 0;
 	Backend * ret = 0;
@@ -79,7 +79,7 @@ Backend * elektraTrieLookup (Trie * trie, const Key * key)
  * @ingroup trie
  * @retval 0 on success
  */
-int elektraTrieClose (Trie * trie, Key * errorKey)
+int trieClose (Trie * trie, Key * errorKey)
 {
 	size_t i;
 	if (trie == NULL) return 0;
@@ -87,19 +87,19 @@ int elektraTrieClose (Trie * trie, Key * errorKey)
 	{
 		if (trie->text[i] != NULL)
 		{
-			elektraTrieClose (trie->children[i], errorKey);
-			if (trie->value[i]) elektraBackendClose (trie->value[i], errorKey);
+			trieClose (trie->children[i], errorKey);
+			if (trie->value[i]) backendClose (trie->value[i], errorKey);
 			elektraFree (trie->text[i]);
 		}
 	}
 	if (trie->empty_value)
 	{
-		elektraBackendClose (trie->empty_value, errorKey);
+		backendClose (trie->empty_value, errorKey);
 	}
 	elektraFree (trie);
 	return 0;
 }
-Trie * elektraTrieInsert (Trie * trie, const char * name, Backend * value)
+Trie * trieInsert (Trie * trie, const char * name, Backend * value)
 {
 	char * p;
 	unsigned char idx;
@@ -140,7 +140,7 @@ Trie * elektraTrieInsert (Trie * trie, const char * name, Backend * value)
 		if ((p = elektraTrieStartsWith (name, trie->text[idx])) == 0)
 		{
 			/* the name in the trie is part of the searched name --> continue search */
-			trie->children[idx] = elektraTrieInsert (trie->children[idx], name + trie->textlen[idx], value);
+			trie->children[idx] = trieInsert (trie->children[idx], name + trie->textlen[idx], value);
 		}
 		else
 		{
@@ -156,7 +156,7 @@ Trie * elektraTrieInsert (Trie * trie, const char * name, Backend * value)
 			child = trie->children[idx];
 
 			/* insert the name given as a parameter into the new trie entry */
-			trie->children[idx] = elektraTrieInsert (NULL, name + (p - trie->text[idx]), value);
+			trie->children[idx] = trieInsert (NULL, name + (p - trie->text[idx]), value);
 
 			/* insert the split try into the new trie entry */
 

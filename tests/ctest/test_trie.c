@@ -3,9 +3,11 @@
  *
  * @brief
  *
- * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
  */
 
+#include <../../src/libs/elektra/backend.c>
+#include <../../src/libs/elektra/trie.c>
 #include <tests_internal.h>
 
 
@@ -15,7 +17,7 @@ Trie * test_insert (Trie * trie, char * name, char * value)
 	backend->mountpoint = keyNew (name, KEY_VALUE, value, KEY_END);
 	backend->refcounter = 1;
 	keyIncRef (backend->mountpoint);
-	return elektraTrieInsert (trie, name, backend);
+	return trieInsert (trie, name, backend);
 }
 
 
@@ -27,22 +29,22 @@ static void test_minimaltrie ()
 	Key * s = keyNew ("", KEY_END);
 	Key * mp = keyNew ("", KEY_VALUE, "", KEY_END);
 
-	succeed_if (elektraTrieLookup (trie, s), "trie should not be null");
-	compare_key (elektraTrieLookup (trie, s)->mountpoint, mp);
+	succeed_if (trieLookup (trie, s), "trie should not be null");
+	compare_key (trieLookup (trie, s)->mountpoint, mp);
 
 	keySetName (s, "user");
-	compare_key (elektraTrieLookup (trie, s)->mountpoint, mp);
+	compare_key (trieLookup (trie, s)->mountpoint, mp);
 
 	keySetName (s, "system");
-	compare_key (elektraTrieLookup (trie, s)->mountpoint, mp);
+	compare_key (trieLookup (trie, s)->mountpoint, mp);
 
 	keySetName (s, "user/below");
-	compare_key (elektraTrieLookup (trie, s)->mountpoint, mp);
+	compare_key (trieLookup (trie, s)->mountpoint, mp);
 
 	keySetName (s, "system/below");
-	compare_key (elektraTrieLookup (trie, s)->mountpoint, mp);
+	compare_key (trieLookup (trie, s)->mountpoint, mp);
 
-	elektraTrieClose (trie, 0);
+	trieClose (trie, 0);
 	keyDel (s);
 	keyDel (mp);
 }
@@ -62,31 +64,31 @@ static void test_simple ()
 	exit_if_fail (trie, "trie was not build up successfully");
 
 	Key * searchKey = keyNew ("user", KEY_END);
-	Backend * backend = elektraTrieLookup (trie, searchKey);
+	Backend * backend = trieLookup (trie, searchKey);
 	succeed_if (!backend, "there should be no backend");
 
 
 	Key * mp = keyNew ("user/tests/simple", KEY_VALUE, "simple", KEY_END);
 	keySetName (searchKey, "user/tests/simple");
-	backend = elektraTrieLookup (trie, searchKey);
+	backend = trieLookup (trie, searchKey);
 	succeed_if (backend, "there should be a backend");
 	compare_key (backend->mountpoint, mp);
 
 
 	keySetName (searchKey, "user/tests/simple/below");
-	Backend * b2 = elektraTrieLookup (trie, searchKey);
+	Backend * b2 = trieLookup (trie, searchKey);
 	succeed_if (b2, "there should be a backend");
 	succeed_if (backend == b2, "should be same backend");
 	compare_key (b2->mountpoint, mp);
 
 
 	keySetName (searchKey, "user/tests/simple/deep/below");
-	b2 = elektraTrieLookup (trie, searchKey);
+	b2 = trieLookup (trie, searchKey);
 	succeed_if (b2, "there should be a backend");
 	succeed_if (backend == b2, "should be same backend");
 	compare_key (b2->mountpoint, mp);
 
-	elektraTrieClose (trie, 0);
+	trieClose (trie, 0);
 	keyDel (mp);
 	keyDel (searchKey);
 }
@@ -115,20 +117,20 @@ static void test_iterate ()
 	exit_if_fail (trie, "trie was not build up successfully");
 
 	Key * searchKey = keyNew ("user", KEY_END);
-	Backend * backend = elektraTrieLookup (trie, searchKey);
+	Backend * backend = trieLookup (trie, searchKey);
 	succeed_if (!backend, "there should be no backend");
 
 
 	Key * mp = keyNew ("user/tests/hosts", KEY_VALUE, "hosts", KEY_END);
 	keySetName (searchKey, "user/tests/hosts");
-	backend = elektraTrieLookup (trie, searchKey);
+	backend = trieLookup (trie, searchKey);
 	succeed_if (backend, "there should be a backend");
 	compare_key (backend->mountpoint, mp);
 	// printf ("backend: %p\n", (void*)backend);
 
 
 	keySetName (searchKey, "user/tests/hosts/other/below");
-	Backend * b2 = elektraTrieLookup (trie, searchKey);
+	Backend * b2 = trieLookup (trie, searchKey);
 	succeed_if (b2, "there should be a backend");
 	succeed_if (backend == b2, "should be same backend");
 	compare_key (b2->mountpoint, mp);
@@ -136,7 +138,7 @@ static void test_iterate ()
 
 
 	keySetName (searchKey, "user/tests/hosts/other/deep/below");
-	b2 = elektraTrieLookup (trie, searchKey);
+	b2 = trieLookup (trie, searchKey);
 	succeed_if (b2, "there should be a backend");
 	succeed_if (backend == b2, "should be same backend");
 	compare_key (b2->mountpoint, mp);
@@ -144,7 +146,7 @@ static void test_iterate ()
 
 	Key * mp2 = keyNew ("user/tests/hosts/below", KEY_VALUE, "below", KEY_END);
 	keySetName (searchKey, "user/tests/hosts/below");
-	Backend * b3 = elektraTrieLookup (trie, searchKey);
+	Backend * b3 = trieLookup (trie, searchKey);
 	succeed_if (b3, "there should be a backend");
 	succeed_if (backend != b3, "should be different backend");
 	compare_key (b3->mountpoint, mp2);
@@ -153,7 +155,7 @@ static void test_iterate ()
 
 
 	keySetName (searchKey, "user/tests/hosts/below/other/deep/below");
-	b2 = elektraTrieLookup (trie, searchKey);
+	b2 = trieLookup (trie, searchKey);
 	succeed_if (b3, "there should be a backend");
 	succeed_if (backend == b3, "should be same backend");
 	compare_key (b3->mountpoint, mp2);
@@ -167,7 +169,7 @@ static void test_iterate ()
 	compare_key (ksTail (mps), mp2);
 	ksDel (mps);
 
-	elektraTrieClose (trie, 0);
+	trieClose (trie, 0);
 
 	keyDel (mp);
 	keyDel (mp2);
@@ -184,20 +186,20 @@ static void test_reviterate ()
 	exit_if_fail (trie, "trie was not build up successfully");
 
 	Key * searchKey = keyNew ("user", KEY_END);
-	Backend * backend = elektraTrieLookup (trie, searchKey);
+	Backend * backend = trieLookup (trie, searchKey);
 	succeed_if (!backend, "there should be no backend");
 
 
 	Key * mp = keyNew ("user/tests/hosts", KEY_VALUE, "hosts", KEY_END);
 	keySetName (searchKey, "user/tests/hosts");
-	backend = elektraTrieLookup (trie, searchKey);
+	backend = trieLookup (trie, searchKey);
 	succeed_if (backend, "there should be a backend");
 	compare_key (backend->mountpoint, mp);
 	// printf ("backend: %p\n", (void*)backend);
 
 
 	keySetName (searchKey, "user/tests/hosts/other/below");
-	Backend * b2 = elektraTrieLookup (trie, searchKey);
+	Backend * b2 = trieLookup (trie, searchKey);
 	succeed_if (b2, "there should be a backend");
 	succeed_if (backend == b2, "should be same backend");
 	compare_key (b2->mountpoint, mp);
@@ -205,7 +207,7 @@ static void test_reviterate ()
 
 
 	keySetName (searchKey, "user/tests/hosts/other/deep/below");
-	b2 = elektraTrieLookup (trie, searchKey);
+	b2 = trieLookup (trie, searchKey);
 	succeed_if (b2, "there should be a backend");
 	succeed_if (backend == b2, "should be same backend");
 	compare_key (b2->mountpoint, mp);
@@ -213,7 +215,7 @@ static void test_reviterate ()
 
 	Key * mp2 = keyNew ("user/tests/hosts/below", KEY_VALUE, "below", KEY_END);
 	keySetName (searchKey, "user/tests/hosts/below");
-	Backend * b3 = elektraTrieLookup (trie, searchKey);
+	Backend * b3 = trieLookup (trie, searchKey);
 	succeed_if (b3, "there should be a backend");
 	succeed_if (backend != b3, "should be different backend");
 	compare_key (b3->mountpoint, mp2);
@@ -222,7 +224,7 @@ static void test_reviterate ()
 
 
 	keySetName (searchKey, "user/tests/hosts/below/other/deep/below");
-	b2 = elektraTrieLookup (trie, searchKey);
+	b2 = trieLookup (trie, searchKey);
 	succeed_if (b3, "there should be a backend");
 	succeed_if (backend == b3, "should be same backend");
 	compare_key (b3->mountpoint, mp2);
@@ -234,7 +236,7 @@ static void test_reviterate ()
 	compare_key (ksTail (mps), mp2);
 	ksDel (mps);
 
-	elektraTrieClose (trie, 0);
+	trieClose (trie, 0);
 
 	keyDel (mp);
 	keyDel (mp2);
@@ -291,27 +293,27 @@ static void test_moreiterate ()
 	Key * searchKey = keyNew (0);
 
 	keySetName (searchKey, "user");
-	Backend * backend = elektraTrieLookup (trie, searchKey);
+	Backend * backend = trieLookup (trie, searchKey);
 	succeed_if (backend, "there should be a backend");
 	compare_key (backend->mountpoint, ksLookupByName (mps, "user", 0));
 	// printf ("backend: %p\n", (void*)backend);
 
 
 	keySetName (searchKey, "user/tests/hosts/other/below");
-	Backend * b2 = elektraTrieLookup (trie, searchKey);
+	Backend * b2 = trieLookup (trie, searchKey);
 	succeed_if (b2, "there should be a backend");
 	compare_key (b2->mountpoint, ksLookupByName (mps, "user/tests/hosts", 0));
 	// printf ("b2: %p\n", (void*)b2);
 
 
 	keySetName (searchKey, "user/tests/hosts/other/deep/below");
-	b2 = elektraTrieLookup (trie, searchKey);
+	b2 = trieLookup (trie, searchKey);
 	succeed_if (b2, "there should be a backend");
 	compare_key (b2->mountpoint, ksLookupByName (mps, "user/tests/hosts", 0));
 
 
 	keySetName (searchKey, "user/tests/hosts/below");
-	Backend * b3 = elektraTrieLookup (trie, searchKey);
+	Backend * b3 = trieLookup (trie, searchKey);
 	succeed_if (b3, "there should be a backend");
 	compare_key (b3->mountpoint, ksLookupByName (mps, "user/tests/hosts/below", 0));
 	backend = b3;
@@ -319,32 +321,32 @@ static void test_moreiterate ()
 
 
 	keySetName (searchKey, "user/tests/hosts/below/other/deep/below");
-	b2 = elektraTrieLookup (trie, searchKey);
+	b2 = trieLookup (trie, searchKey);
 	succeed_if (b3, "there should be a backend");
 	compare_key (b3->mountpoint, ksLookupByName (mps, "user/tests/hosts/below", 0));
 
 	keySetName (searchKey, "system");
-	backend = elektraTrieLookup (trie, searchKey);
+	backend = trieLookup (trie, searchKey);
 	succeed_if (backend, "there should be a backend");
 	compare_key (backend->mountpoint, ksLookupByName (mps, "system", 0));
 	// printf ("backend: %p\n", (void*)backend);
 
 
 	keySetName (searchKey, "system/tests/hosts/other/below");
-	b2 = elektraTrieLookup (trie, searchKey);
+	b2 = trieLookup (trie, searchKey);
 	succeed_if (b2, "there should be a backend");
 	compare_key (b2->mountpoint, ksLookupByName (mps, "system/tests/hosts", 0));
 	// printf ("b2: %p\n", (void*)b2);
 
 
 	keySetName (searchKey, "system/tests/hosts/other/deep/below");
-	b2 = elektraTrieLookup (trie, searchKey);
+	b2 = trieLookup (trie, searchKey);
 	succeed_if (b2, "there should be a backend");
 	compare_key (b2->mountpoint, ksLookupByName (mps, "system/tests/hosts", 0));
 
 
 	keySetName (searchKey, "system/tests/hosts/below");
-	b3 = elektraTrieLookup (trie, searchKey);
+	b3 = trieLookup (trie, searchKey);
 	succeed_if (b3, "there should be a backend");
 	compare_key (b3->mountpoint, ksLookupByName (mps, "system/tests/hosts/below", 0));
 	backend = b3;
@@ -352,7 +354,7 @@ static void test_moreiterate ()
 
 
 	keySetName (searchKey, "system/tests/hosts/below/other/deep/below");
-	b2 = elektraTrieLookup (trie, searchKey);
+	b2 = trieLookup (trie, searchKey);
 	succeed_if (b3, "there should be a backend");
 	compare_key (b3->mountpoint, ksLookupByName (mps, "system/tests/hosts/below", 0));
 
@@ -364,7 +366,7 @@ static void test_moreiterate ()
 	ksDel (mps_cmp);
 	ksDel (mps);
 
-	elektraTrieClose (trie, 0);
+	trieClose (trie, 0);
 	keyDel (searchKey);
 }
 
@@ -437,27 +439,27 @@ static void test_revmoreiterate ()
 		Key * searchKey = keyNew (0);
 
 		keySetName (searchKey, "user");
-		Backend * backend = elektraTrieLookup (trie, searchKey);
+		Backend * backend = trieLookup (trie, searchKey);
 		succeed_if (backend, "there should be a backend");
 		compare_key (backend->mountpoint, ksLookupByName (mps, "user", 0));
 		// printf ("backend: %p\n", (void*)backend);
 
 
 		keySetName (searchKey, "user/tests/hosts/other/below");
-		Backend * b2 = elektraTrieLookup (trie, searchKey);
+		Backend * b2 = trieLookup (trie, searchKey);
 		succeed_if (b2, "there should be a backend");
 		compare_key (b2->mountpoint, ksLookupByName (mps, "user/tests/hosts", 0));
 		// printf ("b2: %p\n", (void*)b2);
 
 
 		keySetName (searchKey, "user/tests/hosts/other/deep/below");
-		b2 = elektraTrieLookup (trie, searchKey);
+		b2 = trieLookup (trie, searchKey);
 		succeed_if (b2, "there should be a backend");
 		compare_key (b2->mountpoint, ksLookupByName (mps, "user/tests/hosts", 0));
 
 
 		keySetName (searchKey, "user/tests/hosts/below");
-		Backend * b3 = elektraTrieLookup (trie, searchKey);
+		Backend * b3 = trieLookup (trie, searchKey);
 		succeed_if (b3, "there should be a backend");
 		compare_key (b3->mountpoint, ksLookupByName (mps, "user/tests/hosts/below", 0));
 		backend = b3;
@@ -465,32 +467,32 @@ static void test_revmoreiterate ()
 
 
 		keySetName (searchKey, "user/tests/hosts/below/other/deep/below");
-		b2 = elektraTrieLookup (trie, searchKey);
+		b2 = trieLookup (trie, searchKey);
 		succeed_if (b3, "there should be a backend");
 		compare_key (b3->mountpoint, ksLookupByName (mps, "user/tests/hosts/below", 0));
 
 		keySetName (searchKey, "system");
-		backend = elektraTrieLookup (trie, searchKey);
+		backend = trieLookup (trie, searchKey);
 		succeed_if (backend, "there should be a backend");
 		compare_key (backend->mountpoint, ksLookupByName (mps, "system", 0));
 		// printf ("backend: %p\n", (void*)backend);
 
 
 		keySetName (searchKey, "system/tests/hosts/other/below");
-		b2 = elektraTrieLookup (trie, searchKey);
+		b2 = trieLookup (trie, searchKey);
 		succeed_if (b2, "there should be a backend");
 		compare_key (b2->mountpoint, ksLookupByName (mps, "system/tests/hosts", 0));
 		// printf ("b2: %p\n", (void*)b2);
 
 
 		keySetName (searchKey, "system/tests/hosts/other/deep/below");
-		b2 = elektraTrieLookup (trie, searchKey);
+		b2 = trieLookup (trie, searchKey);
 		succeed_if (b2, "there should be a backend");
 		compare_key (b2->mountpoint, ksLookupByName (mps, "system/tests/hosts", 0));
 
 
 		keySetName (searchKey, "system/tests/hosts/below");
-		b3 = elektraTrieLookup (trie, searchKey);
+		b3 = trieLookup (trie, searchKey);
 		succeed_if (b3, "there should be a backend");
 		compare_key (b3->mountpoint, ksLookupByName (mps, "system/tests/hosts/below", 0));
 		backend = b3;
@@ -498,7 +500,7 @@ static void test_revmoreiterate ()
 
 
 		keySetName (searchKey, "system/tests/hosts/below/other/deep/below");
-		b2 = elektraTrieLookup (trie, searchKey);
+		b2 = trieLookup (trie, searchKey);
 		succeed_if (b3, "there should be a backend");
 		compare_key (b3->mountpoint, ksLookupByName (mps, "system/tests/hosts/below", 0));
 
@@ -515,7 +517,7 @@ static void test_revmoreiterate ()
 		ksDel (mps_cmp);
 		ksDel (mps);
 
-		elektraTrieClose (trie, 0);
+		trieClose (trie, 0);
 		keyDel (searchKey);
 
 	} // end for
@@ -534,13 +536,13 @@ static void test_umlauts ()
 	exit_if_fail (trie, "trie was not build up successfully");
 
 	Key * searchKey = keyNew ("user", KEY_END);
-	Backend * backend = elektraTrieLookup (trie, searchKey);
+	Backend * backend = trieLookup (trie, searchKey);
 	succeed_if (!backend, "there should be no backend");
 
 
 	Key * mp = keyNew ("user/umlauts/test", KEY_VALUE, "slash", KEY_END);
 	keySetName (searchKey, "user/umlauts/test");
-	backend = elektraTrieLookup (trie, searchKey);
+	backend = trieLookup (trie, searchKey);
 	succeed_if (backend, "there should be a backend");
 	compare_key (backend->mountpoint, mp);
 
@@ -548,7 +550,7 @@ static void test_umlauts ()
 	keySetName (searchKey, "user/umlauts#test");
 	keySetName (mp, "user/umlauts#test");
 	keySetString (mp, "hash");
-	Backend * b2 = elektraTrieLookup (trie, searchKey);
+	Backend * b2 = trieLookup (trie, searchKey);
 	succeed_if (b2, "there should be a backend");
 	succeed_if (backend != b2, "should be other backend");
 	compare_key (b2->mountpoint, mp);
@@ -557,7 +559,7 @@ static void test_umlauts ()
 	keySetName (searchKey, "user/umlauts test");
 	keySetName (mp, "user/umlauts test");
 	keySetString (mp, "space");
-	b2 = elektraTrieLookup (trie, searchKey);
+	b2 = trieLookup (trie, searchKey);
 	succeed_if (b2, "there should be a backend");
 	succeed_if (backend != b2, "should be other backend");
 	compare_key (b2->mountpoint, mp);
@@ -565,14 +567,14 @@ static void test_umlauts ()
 	keySetName (searchKey, "user/umlauts\200test");
 	keySetName (mp, "user/umlauts\200test");
 	keySetString (mp, "umlauts");
-	b2 = elektraTrieLookup (trie, searchKey);
+	b2 = trieLookup (trie, searchKey);
 	succeed_if (b2, "there should be a backend");
 	succeed_if (backend != b2, "should be other backend");
 	compare_key (b2->mountpoint, mp);
 
 	// output_trie(trie);
 
-	elektraTrieClose (trie, 0);
+	trieClose (trie, 0);
 	keyDel (mp);
 	keyDel (searchKey);
 }
@@ -616,13 +618,13 @@ static void test_endings ()
 		exit_if_fail (trie, "trie was not build up successfully");
 
 		Key * searchKey = keyNew ("user", KEY_END);
-		Backend * backend = elektraTrieLookup (trie, searchKey);
+		Backend * backend = trieLookup (trie, searchKey);
 		succeed_if (!backend, "there should be no backend");
 
 
 		Key * mp = keyNew ("user/endings", KEY_VALUE, "slash", KEY_END);
 		keySetName (searchKey, "user/endings");
-		backend = elektraTrieLookup (trie, searchKey);
+		backend = trieLookup (trie, searchKey);
 		succeed_if (backend, "there should be a backend");
 		compare_key (backend->mountpoint, mp);
 
@@ -630,7 +632,7 @@ static void test_endings ()
 		keySetName (searchKey, "user/endings#");
 		keySetName (mp, "user/endings#");
 		keySetString (mp, "hash");
-		Backend * b2 = elektraTrieLookup (trie, searchKey);
+		Backend * b2 = trieLookup (trie, searchKey);
 		succeed_if (b2, "there should be a backend");
 		succeed_if (backend != b2, "should be other backend");
 		compare_key (b2->mountpoint, mp);
@@ -639,7 +641,7 @@ static void test_endings ()
 		keySetName (searchKey, "user/endings/_");
 		keySetName (mp, "user/endings");
 		keySetString (mp, "slash");
-		b2 = elektraTrieLookup (trie, searchKey);
+		b2 = trieLookup (trie, searchKey);
 		succeed_if (b2, "there should be a backend");
 		succeed_if (backend == b2, "should be the same backend");
 		compare_key (b2->mountpoint, mp);
@@ -648,31 +650,31 @@ static void test_endings ()
 		keySetName (searchKey, "user/endings/X");
 		keySetName (mp, "user/endings");
 		keySetString (mp, "slash");
-		b2 = elektraTrieLookup (trie, searchKey);
+		b2 = trieLookup (trie, searchKey);
 		succeed_if (b2, "there should be a backend");
 		succeed_if (backend == b2, "should be the same backend");
 		compare_key (b2->mountpoint, mp);
 
 
 		keySetName (searchKey, "user/endings_");
-		b2 = elektraTrieLookup (trie, searchKey);
+		b2 = trieLookup (trie, searchKey);
 		succeed_if (!b2, "there should be no backend");
 
 
 		keySetName (searchKey, "user/endingsX");
-		b2 = elektraTrieLookup (trie, searchKey);
+		b2 = trieLookup (trie, searchKey);
 		succeed_if (!b2, "there should be no backend");
 
 
 		keySetName (searchKey, "user/endings!");
-		b2 = elektraTrieLookup (trie, searchKey);
+		b2 = trieLookup (trie, searchKey);
 		succeed_if (!b2, "there should be no backend");
 
 
 		keySetName (searchKey, "user/endings ");
 		keySetName (mp, "user/endings ");
 		keySetString (mp, "space");
-		b2 = elektraTrieLookup (trie, searchKey);
+		b2 = trieLookup (trie, searchKey);
 		succeed_if (b2, "there should be a backend");
 		succeed_if (backend != b2, "should be other backend");
 		compare_key (b2->mountpoint, mp);
@@ -680,14 +682,14 @@ static void test_endings ()
 		keySetName (searchKey, "user/endings\200");
 		keySetName (mp, "user/endings\200");
 		keySetString (mp, "endings");
-		b2 = elektraTrieLookup (trie, searchKey);
+		b2 = trieLookup (trie, searchKey);
 		succeed_if (b2, "there should be a backend");
 		succeed_if (backend != b2, "should be other backend");
 		compare_key (b2->mountpoint, mp);
 
 		// output_trie(trie);
 
-		elektraTrieClose (trie, 0);
+		trieClose (trie, 0);
 		keyDel (mp);
 		keyDel (searchKey);
 	}
@@ -705,34 +707,34 @@ static void test_root ()
 
 	Key * searchKey = keyNew ("user", KEY_END);
 	Key * rmp = keyNew ("", KEY_VALUE, "root", KEY_END);
-	Backend * backend = elektraTrieLookup (trie, searchKey);
+	Backend * backend = trieLookup (trie, searchKey);
 	succeed_if (backend, "there should be the root backend");
 	compare_key (backend->mountpoint, rmp);
 
 
 	Key * mp = keyNew ("user/tests/simple", KEY_VALUE, "simple", KEY_END);
 	keySetName (searchKey, "user/tests/simple");
-	backend = elektraTrieLookup (trie, searchKey);
+	backend = trieLookup (trie, searchKey);
 	succeed_if (backend, "there should be a backend");
 	compare_key (backend->mountpoint, mp);
 
 
 	keySetName (searchKey, "user/tests/simple/below");
-	Backend * b2 = elektraTrieLookup (trie, searchKey);
+	Backend * b2 = trieLookup (trie, searchKey);
 	succeed_if (b2, "there should be a backend");
 	succeed_if (backend == b2, "should be same backend");
 	compare_key (b2->mountpoint, mp);
 
 
 	keySetName (searchKey, "user/tests/simple/deep/below");
-	b2 = elektraTrieLookup (trie, searchKey);
+	b2 = trieLookup (trie, searchKey);
 	succeed_if (b2, "there should be a backend");
 	succeed_if (backend == b2, "should be same backend");
 	compare_key (b2->mountpoint, mp);
 
 	// output_trie(trie);
 
-	elektraTrieClose (trie, 0);
+	trieClose (trie, 0);
 	keyDel (mp);
 	keyDel (rmp);
 	keyDel (searchKey);
@@ -767,7 +769,7 @@ static void test_double ()
 
 	*/
 
-	elektraTrieClose (trie, 0);
+	trieClose (trie, 0);
 }
 
 static void test_emptyvalues ()
@@ -785,7 +787,7 @@ static void test_emptyvalues ()
 
 	// output_trie(trie);
 
-	elektraTrieClose (trie, 0);
+	trieClose (trie, 0);
 }
 
 

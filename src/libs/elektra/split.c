@@ -3,14 +3,14 @@
  *
  * @brief Interna of splitting functionality.
  *
- * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
  */
 
 #ifdef HAVE_KDBCONFIG_H
 #include "kdbconfig.h"
 #endif
 
-#if DEBUG && defined(HAVE_STDIO_H)
+#if VERBOSE && defined(HAVE_STDIO_H)
 #include <stdio.h>
 #endif
 
@@ -34,6 +34,7 @@
 #include <errno.h>
 #endif
 
+#include <kdbassert.h>
 #include <kdberrors.h>
 #include <kdbinternal.h>
 
@@ -48,9 +49,9 @@
  *
  * @return a fresh allocated split object
  * @ingroup split
- * @see elektraSplitDel()
+ * @see splitDel()
 **/
-Split * elektraSplitNew (void)
+Split * splitNew (void)
 {
 	Split * ret = elektraCalloc (sizeof (Split));
 
@@ -74,7 +75,7 @@ Split * elektraSplitNew (void)
  * @param keysets the split object to work with
  * @ingroup split
  */
-void elektraSplitDel (Split * keysets)
+void splitDel (Split * keysets)
 {
 	for (size_t i = 0; i < keysets->size; ++i)
 	{
@@ -100,9 +101,9 @@ void elektraSplitDel (Split * keysets)
  *
  * @ingroup split
  */
-void elektraSplitRemove (Split * split, size_t where)
+void splitRemove (Split * split, size_t where)
 {
-	ELEKTRA_ASSERT (where < split->size && "cannot remove behind size");
+	ELEKTRA_ASSERT (where < split->size, "cannot remove behind size: %zu smaller than %zu", where, split->size);
 	ksDel (split->keysets[where]);
 	keyDel (split->parents[where]);
 	--split->size; // reduce size
@@ -121,7 +122,7 @@ void elektraSplitRemove (Split * split, size_t where)
  * @param split the split object to work with
  * @ingroup split
  */
-void elektraSplitResize (Split * split)
+static void splitResize (Split * split)
 {
 	split->alloc *= 2;
 
@@ -147,7 +148,7 @@ void elektraSplitResize (Split * split)
  * @retval -1 if no split is found
  * @return the position of the new element: size-1
  */
-ssize_t elektraSplitAppend (Split * split, Backend * backend, Key * parentKey, int syncbits)
+ssize_t splitAppend (Split * split, Backend * backend, Key * parentKey, int syncbits)
 {
 	if (!split)
 	{
@@ -157,7 +158,7 @@ ssize_t elektraSplitAppend (Split * split, Backend * backend, Key * parentKey, i
 	}
 
 	++split->size;
-	if (split->size > split->alloc) elektraSplitResize (split);
+	if (split->size > split->alloc) splitResize (split);
 
 	// index of the new element
 	const int n = split->size - 1;
@@ -183,7 +184,7 @@ ssize_t elektraSplitAppend (Split * split, Backend * backend, Key * parentKey, i
  * @retval -1 if it does not exist
  * @ingroup split
  */
-ssize_t elektraSplitSearchBackend (Split * split, Backend * backend, Key * parent)
+static ssize_t splitSearchBackend (Split * split, Backend * backend, Key * parent)
 {
 	for (size_t i = 0; i < split->size; ++i)
 	{
@@ -224,30 +225,6 @@ ssize_t elektraSplitSearchBackend (Split * split, Backend * backend, Key * paren
 	}
 	return -1;
 }
-
-
-/**
- * @retval 1 if one of the backends in split has all
- *          keys below parentKey
- * @retval 0 if parentKey == 0 or there are keys below
- *          or same than parentKey which do not fit
- *          in any of split keysets
- * @param split the split object to work with
- * @param parentKey the key which relation is searched for
- * @ingroup split
- */
-int elektraSplitSearchRoot (Split * split, Key * parentKey)
-{
-	if (!parentKey) return 0;
-
-	for (size_t i = 0; i < split->size; ++i)
-	{
-		if (keyRel (split->parents[i], parentKey) >= 0) return 1;
-	}
-
-	return 0;
-}
-
 
 /**
  * @brief Map namespace to string and decide if it should be used for kdbGet()
@@ -293,7 +270,7 @@ static int elektraKeySetNameByNamespace (Key * parentKey, elektraNamespace ns)
  * Sets syncbits to 2 if it is a default or root backend (which needs splitting).
  * The information is copied from kdb->split.
  *
- * @pre split needs to be empty, directly after creation with elektraSplitNew().
+ * @pre split needs to be empty, directly after creation with splitNew().
  *
  * @pre there needs to be a valid defaultBackend
  *      but its ok not to have a trie inside KDB.
@@ -307,7 +284,7 @@ static int elektraKeySetNameByNamespace (Key * parentKey, elektraNamespace ns)
  * @ingroup split
  * @retval 1 always
  */
-int elektraSplitBuildup (Split * split, KDB * kdb, Key * parentKey)
+int splitBuildup (Split * split, KDB * kdb, Key * parentKey)
 {
 	/* For compatibility reasons invalid names are accepted, too.
 	 * This solution is faster than checking the name of parentKey
@@ -326,7 +303,7 @@ int elektraSplitBuildup (Split * split, KDB * kdb, Key * parentKey)
 		{
 			if (!elektraKeySetNameByNamespace (key, ins)) continue;
 			keyAddName (key, keyName (parentKey));
-			elektraSplitBuildup (split, kdb, key);
+			splitBuildup (split, kdb, key);
 		}
 		keyDel (key);
 		return 1;
@@ -334,7 +311,7 @@ int elektraSplitBuildup (Split * split, KDB * kdb, Key * parentKey)
 
 	/* Returns the backend the key is in or the default backend
 	   otherwise */
-	Backend * backend = elektraMountGetBackend (kdb, parentKey);
+	Backend * backend = mountGetBackend (kdb, parentKey);
 
 #if DEBUG && VERBOSE
 	printf (" with parent %s\n", keyName (parentKey));
@@ -350,7 +327,7 @@ int elektraSplitBuildup (Split * split, KDB * kdb, Key * parentKey)
 			printf ("   def add %s\n", keyName (kdb->split->parents[i]));
 #endif
 			/* Catch all: add all mountpoints */
-			elektraSplitAppend (split, kdb->split->handles[i], keyDup (kdb->split->parents[i]), kdb->split->syncbits[i]);
+			splitAppend (split, kdb->split->handles[i], keyDup (kdb->split->parents[i]), kdb->split->syncbits[i]);
 		}
 		else if (backend == kdb->split->handles[i] && keyRel (kdb->split->parents[i], parentKey) >= 0)
 		{
@@ -358,7 +335,7 @@ int elektraSplitBuildup (Split * split, KDB * kdb, Key * parentKey)
 			printf ("   exa add %s\n", keyName (kdb->split->parents[i]));
 #endif
 			/* parentKey is exactly in this backend, so add it! */
-			elektraSplitAppend (split, kdb->split->handles[i], keyDup (kdb->split->parents[i]), kdb->split->syncbits[i]);
+			splitAppend (split, kdb->split->handles[i], keyDup (kdb->split->parents[i]), kdb->split->syncbits[i]);
 		}
 		else if (keyRel (parentKey, kdb->split->parents[i]) >= 0)
 		{
@@ -366,7 +343,7 @@ int elektraSplitBuildup (Split * split, KDB * kdb, Key * parentKey)
 			printf ("   rel add %s\n", keyName (kdb->split->parents[i]));
 #endif
 			/* this backend is completely below the parentKey, so lets add it. */
-			elektraSplitAppend (split, kdb->split->handles[i], keyDup (kdb->split->parents[i]), kdb->split->syncbits[i]);
+			splitAppend (split, kdb->split->handles[i], keyDup (kdb->split->parents[i]), kdb->split->syncbits[i]);
 		}
 	}
 
@@ -378,12 +355,12 @@ int elektraSplitBuildup (Split * split, KDB * kdb, Key * parentKey)
  * Splits up the keysets and search for a sync bit in every key.
  *
  * It does not check if there were removed keys,
- * see elektraSplitSync() for the next step.
+ * see splitSync() for the next step.
  *
  * It does not create new backends, this has to be
  * done by buildup before.
  *
- * @pre elektraSplitBuildup() need to be executed before.
+ * @pre splitBuildup() need to be executed before.
  *
  * @param split the split object to work with
  * @param handle to get information where the individual keys belong
@@ -394,7 +371,7 @@ int elektraSplitBuildup (Split * split, KDB * kdb, Key * parentKey)
  * @retval -1 if no backend was found for any key
  * @ingroup split
  */
-int elektraSplitDivide (Split * split, KDB * handle, KeySet * ks)
+int splitDivide (Split * split, KDB * handle, KeySet * ks)
 {
 	ssize_t curFound = 0; /* If key could be appended to any of the existing split keysets */
 	int needsSync = 0;
@@ -405,10 +382,10 @@ int elektraSplitDivide (Split * split, KDB * handle, KeySet * ks)
 	while ((curKey = ksNext (ks)) != 0)
 	{
 		// TODO: handle keys in wrong namespaces
-		curHandle = elektraMountGetBackend (handle, curKey);
+		curHandle = mountGetBackend (handle, curKey);
 		if (!curHandle) return -1;
 
-		curFound = elektraSplitSearchBackend (split, curHandle, curKey);
+		curFound = splitSearchBackend (split, curHandle, curKey);
 
 		if (curFound == -1) continue; // key not relevant in this kdbSet
 
@@ -431,11 +408,11 @@ int elektraSplitDivide (Split * split, KDB * handle, KeySet * ks)
  * @param key the parentKey that should be updated (name must be
  * correct)
  */
-void elektraSplitUpdateFileName (Split * split, KDB * handle, Key * key)
+void splitUpdateFileName (Split * split, KDB * handle, Key * key)
 {
-	Backend * curHandle = elektraMountGetBackend (handle, key);
+	Backend * curHandle = mountGetBackend (handle, key);
 	if (!curHandle) return;
-	ssize_t curFound = elektraSplitSearchBackend (split, curHandle, key);
+	ssize_t curFound = splitSearchBackend (split, curHandle, key);
 	if (curFound == -1) return;
 #if DEBUG && VERBOSE
 	printf ("Update string from %s to %s\n", keyString (key), keyString (split->parents[curFound]));
@@ -448,7 +425,7 @@ void elektraSplitUpdateFileName (Split * split, KDB * handle, Key * key)
 /**
  * Appoints all keys from ks to yet unsynced splits.
  *
- * @pre elektraSplitBuildup() need to be executed before.
+ * @pre splitBuildup() need to be executed before.
  *
  * @param split the split object to work with
  * @param handle to determine to which backend a key belongs
@@ -458,20 +435,20 @@ void elektraSplitUpdateFileName (Split * split, KDB * handle, Key * key)
  * @retval -1 if no backend was found for a key
  * @ingroup split
  */
-int elektraSplitAppoint (Split * split, KDB * handle, KeySet * ks)
+int splitAppoint (Split * split, KDB * handle, KeySet * ks)
 {
 	ssize_t curFound = 0; /* If key could be appended to any of the existing split keysets */
 	Key * curKey = 0;
 	Backend * curHandle = 0;
-	ssize_t defFound = elektraSplitAppend (split, 0, 0, 0);
+	ssize_t defFound = splitAppend (split, 0, 0, 0);
 
 	ksRewind (ks);
 	while ((curKey = ksNext (ks)) != 0)
 	{
-		curHandle = elektraMountGetBackend (handle, curKey);
+		curHandle = mountGetBackend (handle, curKey);
 		if (!curHandle) return -1;
 
-		curFound = elektraSplitSearchBackend (split, curHandle, curKey);
+		curFound = splitSearchBackend (split, curHandle, curKey);
 
 		if (curFound == -1) curFound = defFound;
 
@@ -486,13 +463,18 @@ int elektraSplitAppoint (Split * split, KDB * handle, KeySet * ks)
 	return 1;
 }
 
-static void elektraDropCurrentKey (KeySet * ks, Key * warningKey, const Backend * curHandle, const char * msg)
+static void elektraDropCurrentKey (KeySet * ks, Key * warningKey, const Backend * curHandle, const Backend * otherHandle, const char * msg)
 {
 	const Key * k = ksCurrent (ks);
 
-	const size_t sizeOfStaticText = 100;
-	char * warningMsg = elektraMalloc (keyGetNameSize (curHandle->mountpoint) + keyGetValueSize (curHandle->mountpoint) +
-					   keyGetNameSize (k) + strlen (msg) + sizeOfStaticText);
+	const size_t sizeOfStaticText = 300;
+	size_t size = keyGetNameSize (curHandle->mountpoint) + keyGetValueSize (curHandle->mountpoint) + keyGetNameSize (k) + strlen (msg) +
+		      sizeOfStaticText;
+	if (otherHandle)
+	{
+		size += keyGetNameSize (otherHandle->mountpoint) + keyGetValueSize (otherHandle->mountpoint);
+	}
+	char * warningMsg = elektraMalloc (size);
 	strcpy (warningMsg, "drop key ");
 	const char * name = keyName (k);
 	if (name)
@@ -503,11 +485,18 @@ static void elektraDropCurrentKey (KeySet * ks, Key * warningKey, const Backend 
 	{
 		strcat (warningMsg, "(no name)");
 	}
-	strcat (warningMsg, " not belonging to ");
+	strcat (warningMsg, " not belonging to \"");
 	strcat (warningMsg, keyName (curHandle->mountpoint));
-	strcat (warningMsg, " with name ");
+	strcat (warningMsg, "\" with name \"");
 	strcat (warningMsg, keyString (curHandle->mountpoint));
-	strcat (warningMsg, " because ");
+	if (otherHandle)
+	{
+		strcat (warningMsg, "\" but instead to \"");
+		strcat (warningMsg, keyName (otherHandle->mountpoint));
+		strcat (warningMsg, "\" with name \"");
+		strcat (warningMsg, keyString (otherHandle->mountpoint));
+	}
+	strcat (warningMsg, "\" because ");
 	strcat (warningMsg, msg);
 	ELEKTRA_ADD_WARNING (79, warningKey, warningMsg);
 	elektraFree (warningMsg);
@@ -536,48 +525,49 @@ static int elektraSplitPostprocess (Split * split, int i, Key * warningKey, KDB 
 	ksRewind (split->keysets[i]);
 	while ((cur = ksNext (split->keysets[i])) != 0)
 	{
-		curHandle = elektraMountGetBackend (handle, cur);
+		curHandle = mountGetBackend (handle, cur);
 		if (!curHandle) return -1;
 
 		keyClearSync (cur);
 
 		if (curHandle != split->handles[i])
 		{
-			elektraDropCurrentKey (split->keysets[i], warningKey, curHandle, "it is hidden by other mountpoint");
+			elektraDropCurrentKey (split->keysets[i], warningKey, curHandle, split->handles[i],
+					       "it is hidden by other mountpoint");
 		}
 		else
 			switch (keyGetNamespace (cur))
 			{
 			case KEY_NS_SPEC:
 				if (!keyIsSpec (split->parents[i]))
-					elektraDropCurrentKey (split->keysets[i], warningKey, curHandle, "it is not spec");
+					elektraDropCurrentKey (split->keysets[i], warningKey, curHandle, 0, "it is not spec");
 				break;
 			case KEY_NS_DIR:
 				if (!keyIsDir (split->parents[i]))
-					elektraDropCurrentKey (split->keysets[i], warningKey, curHandle, "it is not dir");
+					elektraDropCurrentKey (split->keysets[i], warningKey, curHandle, 0, "it is not dir");
 				break;
 			case KEY_NS_USER:
 				if (!keyIsUser (split->parents[i]))
-					elektraDropCurrentKey (split->keysets[i], warningKey, curHandle, "it is not user");
+					elektraDropCurrentKey (split->keysets[i], warningKey, curHandle, 0, "it is not user");
 				break;
 			case KEY_NS_SYSTEM:
 				if (!keyIsSystem (split->parents[i]))
-					elektraDropCurrentKey (split->keysets[i], warningKey, curHandle, "it is not system");
+					elektraDropCurrentKey (split->keysets[i], warningKey, curHandle, 0, "it is not system");
 				break;
 			case KEY_NS_PROC:
-				elektraDropCurrentKey (split->keysets[i], warningKey, curHandle, "it has a proc key name");
+				elektraDropCurrentKey (split->keysets[i], warningKey, curHandle, 0, "it has a proc key name");
 				break;
 			case KEY_NS_EMPTY:
-				elektraDropCurrentKey (split->keysets[i], warningKey, curHandle, "it has an empty name");
+				elektraDropCurrentKey (split->keysets[i], warningKey, curHandle, 0, "it has an empty name");
 				break;
 			case KEY_NS_META:
-				elektraDropCurrentKey (split->keysets[i], warningKey, curHandle, "it has a meta name");
+				elektraDropCurrentKey (split->keysets[i], warningKey, curHandle, 0, "it has a metaname");
 				break;
 			case KEY_NS_CASCADING:
-				elektraDropCurrentKey (split->keysets[i], warningKey, curHandle, "it has a cascading name");
+				elektraDropCurrentKey (split->keysets[i], warningKey, curHandle, 0, "it has a cascading name");
 				break;
 			case KEY_NS_NONE:
-				ELEKTRA_ASSERT (0 && "wrong key namespace, should not be none");
+				ELEKTRA_ASSERT (0, "wrong key namespace `none'");
 				return -1;
 			}
 	}
@@ -591,7 +581,7 @@ static int elektraSplitPostprocess (Split * split, int i, Key * warningKey, KDB 
  * - Update sizes
  * - Removal of wrong keys
  *
- * @pre elektraSplitAppoint() needs to be executed before.
+ * @pre splitAppoint() needs to be executed before.
  *
  * - check if keys are in correct backend
  * - remove syncbits
@@ -605,7 +595,7 @@ static int elektraSplitPostprocess (Split * split, int i, Key * warningKey, KDB 
  *         has invalid namespace
  * @ingroup split
  */
-int elektraSplitGet (Split * split, Key * warningKey, KDB * handle)
+int splitGet (Split * split, Key * warningKey, KDB * handle)
 {
 	int ret = 1;
 	/* Dont iterate the default split part */
@@ -628,58 +618,19 @@ int elektraSplitGet (Split * split, Key * warningKey, KDB * handle)
 		// reduce sizes
 		if (elektraSplitPostprocess (split, i, warningKey, handle) == -1) ret = -1;
 		// then we can set the size
-		if (elektraBackendUpdateSize (split->handles[i], split->parents[i], ksGetSize (split->keysets[i])) == -1) ret = -1;
+		if (backendUpdateSize (split->handles[i], split->parents[i], ksGetSize (split->keysets[i])) == -1) ret = -1;
 	}
 
 	return ret;
 }
 
 /**
- * @brief Check if any of the split is uninitialized
- *
- * @param split
- *
- * @retval -1 if size is wrong
- * @retval 1 if everything is ok
- */
-int elektraSplitCheckSize (Split * split)
-{
-	/* Iterate everything */
-	for (size_t i = 0; i < split->size; ++i)
-	{
-		switch (keyGetNamespace (split->parents[i]))
-		{
-		case KEY_NS_SPEC:
-			if (split->handles[i]->specsize == -1) return -1;
-			break;
-		case KEY_NS_DIR:
-			if (split->handles[i]->dirsize == -1) return -1;
-			break;
-		case KEY_NS_USER:
-			if (split->handles[i]->usersize == -1) return -1;
-			break;
-		case KEY_NS_SYSTEM:
-			if (split->handles[i]->systemsize == -1) return -1;
-			break;
-		case KEY_NS_PROC:
-		case KEY_NS_EMPTY:
-		case KEY_NS_NONE:
-		case KEY_NS_META:
-		case KEY_NS_CASCADING:
-			return -1;
-		}
-	}
-	return 1;
-}
-
-
-/**
  * Also update sizes after kdbSet() to recognize multiple kdbSet() attempts.
  *
- * @warning cant use the same code with elektraSplitGet because there is
+ * @warning cant use the same code with splitGet because there is
  * no default split part for kdbSet().
  */
-int elektraSplitUpdateSize (Split * split)
+int splitUpdateSize (Split * split)
 {
 	/* Iterate everything */
 	for (size_t i = 0; i < split->size; ++i)
@@ -717,7 +668,7 @@ int elektraSplitUpdateSize (Split * split)
  * @retval 1 on success
  * @ingroup split
  */
-int elektraSplitMerge (Split * split, KeySet * dest)
+int splitMerge (Split * split, KeySet * dest)
 {
 	/* Iterate everything */
 	for (size_t i = 0; i < split->size; ++i)
@@ -732,10 +683,10 @@ int elektraSplitMerge (Split * split, KeySet * dest)
  * - checks if the size of a previous kdbGet() is unchanged.
  * - checks if in correct state (kdbGet() needs to be executed before)
  *
- * Only elektraSplitDivide() together with this function can really decide
+ * Only splitDivide() together with this function can really decide
  * if sync is needed or not.
  *
- * @pre split needs to be processed with elektraSplitDivide() before.
+ * @pre split needs to be processed with splitDivide() before.
  *
  * @retval 0 if kdbSet() is not needed
  * @retval 1 if kdbSet() is needed
@@ -749,7 +700,7 @@ int elektraSplitMerge (Split * split, KeySet * dest)
  * @ingroup split
  *
 **/
-int elektraSplitSync (Split * split)
+int splitSync (Split * split)
 {
 	int needsSync = 0;
 
@@ -815,7 +766,7 @@ int elektraSplitSync (Split * split)
 		case KEY_NS_META:
 		case KEY_NS_CASCADING:
 		case KEY_NS_NONE:
-			ELEKTRA_ASSERT (0 && "Got keys that should not be here");
+			ELEKTRA_ASSERT (0, "Got keys in wrong namespace %d in split %zu", keyGetNamespace (split->parents[i]), i);
 			return -1;
 		}
 	}
@@ -831,7 +782,7 @@ int elektraSplitSync (Split * split)
  * @param split the split object to work with
  * @ingroup split
  */
-void elektraSplitPrepare (Split * split)
+void splitPrepare (Split * split)
 {
 	for (size_t i = 0; i < split->size;)
 	{
@@ -845,7 +796,7 @@ void elektraSplitPrepare (Split * split)
 		else
 		{
 			/* We don't need i anymore */
-			elektraSplitRemove (split, i);
+			splitRemove (split, i);
 			inc = 0;
 		}
 		i += inc;

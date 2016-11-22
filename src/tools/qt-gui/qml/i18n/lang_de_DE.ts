@@ -404,12 +404,12 @@
     </message>
     <message>
         <location filename="../../src/guibackend.cpp" line="52"/>
-        <source>The provided mount point is invalid.</source>
+        <source>The provided mountpoint is invalid.</source>
         <translation>Der angegebene Einhängepunkt ist ungültig.</translation>
     </message>
     <message>
         <location filename="../../src/guibackend.cpp" line="57"/>
-        <source>The provided mount point is one of the already used cascading names.</source>
+        <source>The provided mountpoint is one of the already used cascading names.</source>
         <translation>Der angegebene Einhängepunkt ist einer der bereits benutzten kaskadierenden Namen.</translation>
     </message>
     <message>
@@ -770,7 +770,7 @@ matching keys, values, or metadata.</source>
 
 The name must be a valid keyname or start with / for cascading mountpoints.
 
-Please provide a mount point for the backend.
+Please provide a mountpoint for the backend.
 
 Already used are:  %1</source>
         <translation type="vanished">Willkommen beim Backend Installationsassistenten! Hier können sie Backends erstellen und einhängen. Sie können nur Backends erstellen, wenn sie über Administratorrechte verfügen.\n\nDer Name muss ein gültiger Schlüsselname sein oder mit &quot;/&quot; für kaskadierende Einhängepunkte beginnen.\n\nBitte geben sie einen Einhängepunkt für das Backend an.\n\nBereits verwendet werden: %1</translation>
@@ -781,7 +781,7 @@ Already used are:  %1</source>
 
 The name must be a valid keyname or start with / for cascading mountpoints.
 
-Please provide a mount point for the backend.
+Please provide a mountpoint for the backend.
 
 Already used are: %1</source>
         <translation>Willkommen beim Backend Installationsassistenten! Hier können sie Backends erstellen und einhängen. Sie können nur Backends erstellen, wenn sie über Administratorrechte verfügen.\n\nDer Name muss ein gültiger Schlüsselname sein oder mit &quot;/&quot; für kaskadierende Einhängepunkte beginnen.\n\nBitte geben sie einen Einhängepunkt für das Backend an.\n\nBereits verwendet werden: %1</translation>

@@ -1,9 +1,9 @@
 /**
  * @file
  *
- * @brief Utility functions for comment meta keys
+ * @brief Utility functions for comment metakeys
  *
- * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
  *
  */
 

@@ -3,7 +3,7 @@
  *
  * @brief Methods for Key value manipulation.
  *
- * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
  */
 
 
@@ -452,8 +452,8 @@ ssize_t keyGetBinary (const Key * key, void * returnedBinary, size_t maxSize)
  * When newBinary is a NULL pointer the binary will be freed and 0 will
  * be returned.
  *
- * @note The meta data "binary" will be set to mark that the key is
- * binary from now on. When the key is already binary the meta data
+ * @note The metadata "binary" will be set to mark that the key is
+ * binary from now on. When the key is already binary the metadata
  * won't be changed. This will only happen in the successful case,
  * but not when -1 is returned.
  *

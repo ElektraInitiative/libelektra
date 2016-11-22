@@ -1,27 +1,19 @@
 {
    <insert_a_suppression_name_here>
    Memcheck:Leak
-   match-leak-kinds: all
-   ...
-   obj:*libbotan*
-   ...
-}
-{
-   <insert_a_suppression_name_here>
-   Memcheck:Leak
-   match-leak-kinds: all
-   ...
-   fun:_ZN5Botan18LibraryInitializer10initializeERKSs
-   ...
-}
-{
-   <insert_a_suppression_name_here>
-   Memcheck:Leak
-   match-leak-kinds: all
-   ...
+   match-leak-kinds: possible
+   fun:_Znwm
    fun:_ZNSs4_Rep9_S_createEmmRKSaIcE
    fun:_ZNSs12_S_constructIPKcEEPcT_S3_RKSaIcESt20forward_iterator_tag
    fun:_ZNSsC1EPKcRKSaIcE
+   ...
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: all
+   ...
+   obj:*libbotan*
    ...
 }
 {
@@ -110,7 +102,7 @@
    fun:dlopen@@GLIBC_2.2.5
    fun:elektraModulesLoad
    fun:elektraPluginOpen
-   fun:elektraBackendOpenDefault
+   fun:backendOpenDefault
 }
 {
    <insert_a_suppression_name_here>

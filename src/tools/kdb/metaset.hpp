@@ -3,13 +3,14 @@
  *
  * @brief
  *
- * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
  */
 
 #ifndef METASET_HPP
 #define METASET_HPP
 
 #include "coloredkdbio.hpp"
+
 #include <command.hpp>
 #include <kdb.hpp>
 
@@ -23,17 +24,17 @@ public:
 
 	virtual std::string getShortOptions () override
 	{
-		return "vC";
+		return "qvC";
 	}
 
 	virtual std::string getSynopsis () override
 	{
-		return "<key-name> <meta-name> <meta-value>";
+		return "<key-name> <metaname> <metavalue>";
 	}
 
 	virtual std::string getShortHelpText () override
 	{
-		return "Set a meta value.";
+		return "Set a metavalue.";
 	}
 
 	virtual std::string getLongHelpText () override

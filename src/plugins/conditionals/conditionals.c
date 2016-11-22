@@ -3,7 +3,7 @@
  *
  * @brief Source for conditionals plugin
  *
- * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
  *
  */
 
@@ -609,7 +609,7 @@ static CondResult parseConditionString (const Key * meta, const Key * suffixList
 	const char * conditionString = keyString (meta);
 	const char * regexString1 = "(\\(((.*)?)\\))[[:space:]]*\\?";
 	const char * regexString2 = "\\?[[:space:]]*(\\(((.*)?)\\))";
-	const char * regexString3 = ":[[:space:]]*(\\(((.*)?)\\))";
+	const char * regexString3 = "[[:space:]]*:[[:space:]]*(\\(((.*)?)\\))";
 	regex_t regex1, regex2, regex3;
 	CondResult ret;
 	if ((ret = regcomp (&regex1, regexString1, REGEX_FLAGS_CONDITION)))

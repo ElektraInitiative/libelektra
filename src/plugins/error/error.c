@@ -3,7 +3,7 @@
  *
  * @brief
  *
- * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
  */
 
 #include "error.h"
@@ -91,6 +91,11 @@ int elektraErrorSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * pa
 		{
 			elektraTriggerError (atoi (keyString (meta)), parentKey, "from error plugin in kdbSet");
 			return -1; /* error */
+		}
+		meta = keyGetMeta (cur, "trigger/error/nofail");
+		if (meta)
+		{
+			elektraTriggerError (atoi (keyString (meta)), parentKey, "from error plugin in kdbSet");
 		}
 	}
 

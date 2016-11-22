@@ -4,8 +4,8 @@
 - infos/provides =
 - infos/needs =
 - infos/placements = presetstorage postgetstorage
-- infos/status = unfinished nodoc concept nodep libc experimental
-- infos/description =
+- infos/status = unittest nodep libc experimental unfinished nodoc concept
+- infos/description = conditionally calls exported functions
 
 ## Usage ##
 
@@ -14,4 +14,4 @@ Then you can mount:
 
     kdb mount file.dump /example/iterate dump iterate when=bar foo Key
 
-Which will execute `foo(k)` for every key that has the meta-data `when`.
+Which will execute `foo(k)` for every key that has the metadata `when`.

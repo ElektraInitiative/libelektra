@@ -3,7 +3,7 @@
  *
  * @brief A plugin that converts keys to metakeys and vice versa
  *
- * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
  *
  */
 
@@ -13,14 +13,44 @@
 #include "kdbconfig.h"
 #endif
 
+#include <fnmatch.h>
 #include <kdbhelper.h>
 
-int elektraGlobMatch (Key * key, const Key * match, int globFlags)
+struct GlobFlagMap
 {
-	if (!fnmatch (keyString (match), keyName (key), globFlags))
+	char * name;
+	short flag;
+};
+
+struct GlobFlagMap flagMaps[] = { { "noescape", FNM_NOESCAPE }, { "pathname", FNM_PATHNAME }, { "period", FNM_PERIOD } };
+
+int elektraGlobMatch (Key * key, const Key * match, const char * globFlags)
+{
+	char * tokenList = strdup (globFlags);
+	char delimiter[] = ",";
+	char * flagName = strtok (tokenList, delimiter);
+
+	int flags = 0;
+	while (flagName != NULL)
+	{
+		for (size_t i = 0; i < sizeof (flagMaps) / sizeof (struct GlobFlagMap); i++)
+		{
+			if (!strcmp (flagName, flagMaps[i].name))
+			{
+				flags |= flagMaps[i].flag;
+			}
+		}
+		flagName = strtok (NULL, delimiter);
+	}
+
+	free (tokenList);
+
+	if (!fnmatch (keyString (match), keyName (key), flags))
 	{
 		keyCopyAllMeta (key, match);
+		return 1;
 	}
+
 	return 0;
 }
 
@@ -76,7 +106,7 @@ static KeySet * getGlobKeys (Key * parentKey, KeySet * keys, enum GlobDirection 
 		if (keyIsDirectBelow (userGlobConfig, k) || keyIsDirectBelow (systemGlobConfig, k) ||
 		    keyIsDirectBelow (userDirGlobConfig, k) || keyIsDirectBelow (systemDirGlobConfig, k))
 		{
-			keySetMeta (k, "flags", getGlobFlags (keys, k));
+			keySetMeta (k, "glob/flags", getGlobFlags (keys, k));
 
 			/* Look if we have a string */
 			size_t valsize = keyGetValueSize (k);
@@ -116,21 +146,20 @@ static void applyGlob (KeySet * returned, KeySet * glob)
 		ksRewind (glob);
 		while ((match = ksNext (glob)) != 0)
 		{
-			const Key * flagKey = keyGetMeta (match, "flags");
+			const Key * flagKey = keyGetMeta (match, "glob/flags");
+			int matchApplied;
 
 			if (flagKey)
 			{
-				char * end;
-				int flags = strtol (keyString (flagKey), &end, 10);
-				if (!*end)
-				{
-					elektraGlobMatch (cur, match, flags);
-					continue;
-				}
+				matchApplied = elektraGlobMatch (cur, match, keyString (flagKey));
+			}
+			else
+			{
+				/* if no flags were provided, default to FNM_PATHNAME behaviour */
+				matchApplied = elektraGlobMatch (cur, match, "pathname");
 			}
 
-			/* if no flags were provided, default to FNM_PATHNAME behaviour */
-			elektraGlobMatch (cur, match, FNM_PATHNAME);
+			if (matchApplied) break;
 		}
 	}
 }

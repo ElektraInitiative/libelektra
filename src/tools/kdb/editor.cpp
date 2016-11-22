@@ -1,12 +1,16 @@
 #include <editor.hpp>
 
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <unistd.h>
+
 #include <cmdline.hpp>
 #include <external.hpp>
 #include <kdb.hpp>
 #include <keysetio.hpp>
 #include <modules.hpp>
 
-#include <unistd.h>
+#include <kdbmacros.h>
 
 #include <export.hpp>
 #include <import.hpp>
@@ -85,6 +89,13 @@ int EditorCommand::execute (Cmdline const & cl)
 	KDB kdb;
 	kdb.get (ours, root);
 	KeySet oursToEdit = ours.cut (root);
+	KeySet original = oursToEdit.dup ();
+
+	if (cl.strategy == "validate")
+	{
+		prependNamespace (oursToEdit, cl.ns);
+		oursToEdit.cut (prependNamespace (root, cl.ns));
+	}
 
 	// export it to file
 	string format = cl.format;
@@ -97,6 +108,8 @@ int EditorCommand::execute (Cmdline const & cl)
 	if (cl.verbose) std::cout << "filename set to " << filename << std::endl;
 	Key errorKey (root);
 	errorKey.setString (filename);
+	struct stat orig;
+	stat (filename.c_str (), &orig);
 
 	if (plugin->set (oursToEdit, errorKey) == -1)
 	{
@@ -127,6 +140,16 @@ int EditorCommand::execute (Cmdline const & cl)
 		}
 	}
 
+	struct stat modif;
+	stat (filename.c_str (), &modif);
+
+	if (ELEKTRA_STAT_SECONDS (orig) == ELEKTRA_STAT_SECONDS (modif) &&
+	    ELEKTRA_STAT_NANO_SECONDS (orig) == ELEKTRA_STAT_NANO_SECONDS (modif))
+	{
+		if (!cl.quiet) std::cout << "File was unchanged, will exit successfully";
+		return 0;
+	}
+
 	// import from the file
 	KeySet importedKeys;
 	plugin->get (importedKeys, errorKey);
@@ -134,6 +157,15 @@ int EditorCommand::execute (Cmdline const & cl)
 
 	printWarnings (cerr, errorKey);
 	printError (cerr, errorKey);
+
+	if (cl.strategy == "validate")
+	{
+		applyMeta (importedKeys, original);
+		kdb.set (importedKeys, root);
+		printWarnings (cerr, root);
+		printError (cerr, root);
+		return 0;
+	}
 
 	ThreeWayMerge merger;
 	MergeHelper helper;

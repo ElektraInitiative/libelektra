@@ -3,7 +3,7 @@
  *
  * @brief
  *
- * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
  */
 
 #ifndef HAVE_KDBCONFIG
@@ -12,6 +12,7 @@
 
 #include <kdbproposal.h>
 
+#include <kdbassert.h>
 #include <kdberrors.h>
 
 #include <string.h>
@@ -83,7 +84,7 @@ static resolverHandle * elektraGetResolverHandle (Plugin * handle, Key * parentK
 	case KEY_NS_CASCADING:
 		break;
 	}
-	// ELEKTRA_ASSERT(0 && "namespace not valid for resolving");
+	ELEKTRA_ASSERT (0, "namespace %d not valid for resolving", keyGetNamespace (parentKey));
 	return 0;
 }
 

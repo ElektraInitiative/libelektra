@@ -1,5 +1,5 @@
 Storage: dump
-Mountpoint: system/testmount/test
+Mountpoint: system/tmount/script
 File: /tmp/test.dump
 MountArgs:
 DiffType: File

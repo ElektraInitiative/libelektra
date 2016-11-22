@@ -4,8 +4,8 @@
 - infos/needs =
 - infos/provides = 
 - infos/placements = pregetstorage precommit
-- infos/status = maintained configurable nodep
-- infos/description =
+- infos/status = maintained unittest nodep configurable nodoc
+- infos/description = verifies lineendings of files
 
 ## Introduction ##
 

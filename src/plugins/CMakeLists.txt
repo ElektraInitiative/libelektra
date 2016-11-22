@@ -74,11 +74,13 @@ if (BUILD_SHARED)
 	create_lib_symlink (
 			libelektra-${KDB_DEFAULT_STORAGE}.so
 			libelektra-storage.so
+			PLUGIN
 			)
 
 	create_lib_symlink (
 			libelektra-${KDB_DEFAULT_RESOLVER}.so
 			libelektra-resolver.so
+			PLUGIN
 			)
 endif (BUILD_SHARED)
 

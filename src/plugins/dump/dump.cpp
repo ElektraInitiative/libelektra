@@ -3,15 +3,21 @@
  *
  * @brief
  *
- * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
  */
 
 #include "dump.hpp"
-#include <errno.h>
 
 using namespace ckdb;
 
+#include <fstream>
+#include <iostream>
+#include <sstream>
+#include <string>
+#include <vector>
+
 #include <kdberrors.h>
+#include <kdblogger.h>
 
 
 namespace dump
@@ -49,7 +55,7 @@ int serialise (std::ostream & os, ckdb::Key *, ckdb::KeySet * ks)
 
 			if (!ret)
 			{
-				/* This meta key was not serialised up to now */
+				/* This metakey was not serialised up to now */
 				size_t metanamesize = ckdb::keyGetNameSize (meta);
 				size_t metavaluesize = ckdb::keyGetValueSize (meta);
 
@@ -213,6 +219,8 @@ int elektraDumpGet (ckdb::Plugin *, ckdb::KeySet * returned, ckdb::Key * parentK
 	}
 	keyDel (root);
 	int errnosave = errno;
+
+	// ELEKTRA_LOG (ELEKTRA_LOG_MODULE_DUMP, "opening file %s", keyString (parentKey));
 	std::ifstream ofs (keyString (parentKey), std::ios::binary);
 	if (!ofs.is_open ())
 	{
@@ -227,6 +235,7 @@ int elektraDumpGet (ckdb::Plugin *, ckdb::KeySet * returned, ckdb::Key * parentK
 int elektraDumpSet (ckdb::Plugin *, ckdb::KeySet * returned, ckdb::Key * parentKey)
 {
 	int errnosave = errno;
+	// ELEKTRA_LOG (ELEKTRA_LOG_MODULE_DUMP, "opening file %s", keyString (parentKey));
 	std::ofstream ofs (keyString (parentKey), std::ios::binary);
 	if (!ofs.is_open ())
 	{

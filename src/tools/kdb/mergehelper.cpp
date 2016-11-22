@@ -3,7 +3,7 @@
  *
  * @brief
  *
- * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
  */
 
 #include <iostream>
@@ -72,8 +72,6 @@ string MergeHelper::getConfigurationList ()
 
 void MergeHelper::configureMerger (Cmdline const & cl, ThreeWayMerge & merger)
 {
-
-
 	if (cl.interactive)
 	{
 		merger.addConflictStrategy (new InteractiveMergeStrategy (cin, cout));
@@ -94,7 +92,6 @@ void MergeHelper::configureMerger (Cmdline const & cl, ThreeWayMerge & merger)
 
 void MergeHelper::reportResult (Cmdline const & cl, MergeResult & result, ostream & out, ostream & err)
 {
-
 	if (!result.hasConflicts ())
 	{
 		if (cl.verbose)
@@ -122,5 +119,38 @@ void MergeHelper::reportResult (Cmdline const & cl, MergeResult & result, ostrea
 		}
 
 		err << "Merge unsuccessful." << endl;
+	}
+}
+
+
+KeySet prependNamespace (KeySet const & resultKeys, std::string ns)
+{
+	KeySet ret;
+	for (auto const & k : resultKeys)
+	{
+		ret.append (prependNamespace (k, ns));
+	}
+	return ret;
+}
+
+Key prependNamespace (Key const & root, std::string ns)
+{
+	Key ret = root.dup ();
+	if (ret.isCascading ())
+	{
+		ret.setName (ns + root.getName ());
+	}
+	return ret;
+}
+
+void applyMeta (KeySet & imported, KeySet const & base)
+{
+	for (auto k : imported)
+	{
+		Key b = base.lookup (k, 0);
+		if (b)
+		{
+			k.copyAllMeta (b);
+		}
 	}
 }

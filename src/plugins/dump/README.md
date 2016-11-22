@@ -2,7 +2,7 @@
 - infos/author = Markus Raab <elektra@libelektra.org>
 - infos/licence = BSD
 - infos/needs =
-- infos/provides = storage
+- infos/provides = storage/dump
 - infos/recommends =
 - infos/placements = getstorage setstorage
 - infos/status = productive maintained conformant unittest tested nodep -1000
@@ -17,7 +17,7 @@ featured backend. No other plugins are needed.
 
 ## Format ##
 
-The file format consists of a simple command language with
+The file format edf (Elektra dump format) consists of a simple command language with
 arguments. When an argument is binary or string data the length needs to be
 passed first. Because the size is known in advance, any binary dump is
 accepted. Terminating characters present no problem. The commands are
@@ -43,28 +43,27 @@ an easy task.
 The serialised configuration can look like (0 bytes at end of strings are
 omitted):
 
-	kdbOpen 1 		
-	ksNew 207 		
-	keyNew 27 1 		
-	system/elektra/mountpoints		 
-	keyMeta 8 27		
-	commentBelow are the mountpoints.		 
-	keyEnd 		
-	keyNew 32 19		 
-	system/elektra/mountpoints/dbusserialised Backend 		
-	keyEnd keyNew 39 1 		
-	system/elektra/mountpoints/dbus/config 		
-	keyMeta 8 72 		
-	commentThis is a configuration for a backend, see subkeys for more information 		
-	keyEnd 		
-	keyNew 53 1 		
-	system/elektra/mountpoints/fstab/config/struct/FStab 		
-	keyCopyMeta 59 11 		
-	system/elektra/mountpoints/file 		
-	systems/config/struct/FStabcheck/type 		
-	keyEnd		
-	ksEnd		
-
+    kdbOpen 1
+    ksNew 207
+    keyNew 27 1
+    system/elektra/mountpoints
+    keyMeta 8 27
+    commentBelow are the mountpoints.
+    keyEnd
+    keyNew 32 19
+    system/elektra/mountpoints/dbusserialised Backend
+    keyEnd keyNew 39 1
+    system/elektra/mountpoints/dbus/config
+    keyMeta 8 72
+    commentThis is a configuration for a backend, see subkeys for more information
+    keyEnd
+    keyNew 53 1
+    system/elektra/mountpoints/fstab/config/struct/FStab
+    keyCopyMeta 59 11
+    system/elektra/mountpoints/file
+    systems/config/struct/FStabcheck/type
+    keyEnd
+    ksEnd
 
 ## Limitations ##
 
@@ -77,14 +76,14 @@ omitted):
 
 Export a KeySet using `dump`:
 
-	kdb export system/example dump > example.ecf
+    kdb export system/example dump > example.ecf
 
 Import a KeySet using `dump`:
 
-	cat example.ecf | kdb import system/example dump
+    cat example.ecf | kdb import system/example dump
 
 Using grep/diff or other unix tools on the dump file. Make sure that you
 treat it as text file, e.g.:
 
-	grep --text mountpoints example.ecf
+    grep --text mountpoints example.ecf
 

@@ -3,7 +3,7 @@
  *
  * @brief
  *
- * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
  */
 
 #include "doc.h"
@@ -13,6 +13,7 @@
 //! [plugin include]
 //
 //! [plugin errors include]
+// using namespace ckdb; // for C++
 #include <kdberrors.h>
 //! [plugin errors include]
 
@@ -119,24 +120,21 @@ int elektraDocGet (Plugin * plugin ELEKTRA_UNUSED, KeySet * returned, Key * pare
 
 	//![get storage]
 	FILE * fp = fopen (keyString (parentKey), "r");
-	char * key;
-	char * value;
+	char * key = 0;
+	char * value = 0;
 
 	while (parseKey (fp, &key, &value) >= 1)
 	{
-		Key * read = keyNew (0);
-		if (keySetName (read, key) == -1)
+		Key * read = keyNew (keyName (parentKey), KEY_END);
+		if (keyAddName (read, key) == -1)
 		{
-			fclose (fp);
+			ELEKTRA_ADD_WARNING (ELEKTRA_WARNING_INVALID_KEY, parentKey, key);
 			keyDel (read);
-			ELEKTRA_SET_ERROR (59, parentKey, key);
-			return -1;
+			continue;
 		}
 		keySetString (read, value);
 
 		ksAppendKey (returned, read);
-		elektraFree (key);
-		elektraFree (value);
 	}
 
 	if (feof (fp) == 0)
@@ -162,10 +160,21 @@ int elektraDocGet (Plugin * plugin ELEKTRA_UNUSED, KeySet * returned, Key * pare
 }
 //![get filter]
 
-int elektraDocSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
+int elektraDocSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey)
 {
 	ssize_t nr_keys = 0;
 	/* set all keys below parentKey and count them with nr_keys */
+
+
+	//![opening files]
+	FILE * fp = fopen (keyString (parentKey), "w");
+	if (!fp)
+	{
+		ELEKTRA_SET_ERROR_SET (parentKey);
+		return -1;
+	}
+	//![opening files]
+	fclose (fp);
 
 	return nr_keys;
 }

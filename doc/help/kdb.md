@@ -29,7 +29,7 @@ Documentation of plugins is available using the
 [kdb-info(1)](kdb-info.md) tool.
 Run `kdb list` for a list of plugins.
 
-## COMMON OPTIONS
+## BASIC OPTIONS
 
 Every core-tool has the following options:
 
@@ -39,6 +39,15 @@ Every core-tool has the following options:
   Print version info.
 - `-p`, `--profile`=<profile>:
   Use a different kdb profile, see below.
+
+## COMMON OPTIONS
+
+Most tools have the following options:
+
+- `-v`, `--verbose`:
+  Explain what is happening.
+- `-q`, `--quiet`:
+  Suppress non-error messages.
 - `-C`, `--color`=[when]:
   Print never/auto(default)/always colored output.
 
@@ -53,18 +62,32 @@ within the KDB (key database):
 
 The last source where a configuration value is found, wins.
 
+For example, to permanently change verbosity one can use:
+
+- `kdb set /sw/elektra/kdb/#0/current/verbose 1`:
+  Be verbose for every tool.
+
+- `kdb set /sw/elektra/kdb/#0/current/quiet 1`:
+  Be quiet for every tool.
+
 ## PROFILES
 
 Profiles allow users to change many/all configuration options of a tool
 at once. It influences from where the KDB entries are read.
-For example if you use:
+For example if you use: 
 	`kdb export -p admin system`
 
 It will read its format configuration from `/sw/elektra/kdb/#0/admin/format`.
 
 If you want different configuration per user or directories, you should prefer
 to use the `user` and `dir` namespaces. Then the correct configuration will
-be chosen automatically and you do not have to specify the correct `-p`.
+be chosen automatically according to the current user or current working directory.
+
+Sometimes it is useful to start with default options, for example it is not
+possible to invert the `-q` option.
+In such situations one can simply select a non-existing profile, then `-q`
+works as usual: 
+	`kdb mount -p nonexist -q /abc dir/abc`
 
 ## BOOKMARKS
 
@@ -78,7 +101,7 @@ They are only recognized by the `kdb` tool or tools that explicit have
 support for it. Your applications should not depend on the presence of a
 bookmark.
 
-Bookmarks are stored below:
+Bookmarks are stored below: 
 	`/sw/elektra/kdb/#0/current/bookmarks`
 
 For every key found there, a new bookmark will be introduced.

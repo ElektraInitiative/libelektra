@@ -32,11 +32,11 @@ initialize()
 	exit 1
     fi
 
-    interceptFile="@CMAKE_INSTALL_PREFIX@/lib@LIB_SUFFIX@/libelektraintercept.so"
+    interceptFile="@CMAKE_INSTALL_PREFIX@/lib@LIB_SUFFIX@/libelektraintercept-fs.so"
 
     if [ ! -e "$interceptFile" ];
     then
-	echo "Warning, libelektraintercept.so not found"
+	echo "Warning, libelektraintercept-fs.so not found"
     fi
 
     FFLibDir=$(find /usr/lib /usr/lib32 /usr/lib64 /usr/local/lib -name "firefox*" -type f | xargs dirname 2>/dev/null|sort|uniq)

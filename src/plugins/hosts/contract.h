@@ -3,7 +3,7 @@
  *
  * @brief
  *
- * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
  */
 
 #ifndef CONTRACT_HOSTS_H_
@@ -41,6 +41,19 @@ ksNew (30,
 			KEY_META, "check/validation", "^[0-9A-Fa-f.:]+$", /* Can be checked additionally */
 			KEY_META, "check/validation/match", "LINE",
 			KEY_META, "check/validation/message", "Character present not suitable for ipv6 address",
+			KEY_END),
+		keyNew ("system/elektra/modules/hosts/config/needs/glob/set/#2",
+				KEY_VALUE, "/ipv4/*/*",
+				KEY_END),
+		keyNew ("system/elektra/modules/hosts/config/needs/glob/set/#3",
+				KEY_VALUE, "/ipv6/*/*",
+				KEY_END),
+		keyNew ("system/elektra/modules/hosts/config/needs/glob/set/#4",
+			KEY_VALUE, "/*",
+			KEY_META, "trigger/error", "162",
+			KEY_END),
+		keyNew ("system/elektra/modules/hosts/config/needs/glob/set/#4/flags",
+			KEY_VALUE, "", /* disable the path matching mode */
 			KEY_END),
 		KS_END);
 

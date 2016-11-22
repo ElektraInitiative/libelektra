@@ -3,7 +3,7 @@
  *
  * @brief Test suite for Libease functions accessing key name data.
  *
- * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
  */
 
 #include <kdbease.h>
@@ -42,7 +42,7 @@ static void test_relative_root ()
 
 static void test_relative_cascading ()
 {
-	printf ("Get relative name of key with cascading mount point\n");
+	printf ("Get relative name of key with cascading mountpoint\n");
 
 	Key * parent = keyNew ("/cascading", KEY_END);
 	Key * child = keyNew ("/cascading/k", KEY_END);
@@ -65,7 +65,7 @@ static void test_relative_cascading ()
 
 static void test_relative_generic ()
 {
-	printf ("Get relative name of key with generic mount point\n");
+	printf ("Get relative name of key with generic mountpoint\n");
 
 	Key * parent = keyNew ("system/", KEY_END);
 	Key * child = keyNew ("system/key/🔑/🗝", KEY_END);

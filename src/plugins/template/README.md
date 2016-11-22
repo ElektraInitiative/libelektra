@@ -7,17 +7,40 @@
 - infos/placements =
 - infos/status = recommended productive maintained reviewed conformant compatible coverage specific unittest shelltest tested nodep libc configurable final preview memleak experimental difficult unfinished old nodoc concept orphan obsolete discouraged -1000000
 - infos/metadata =
-- infos/description =
+- infos/description = one-line description of template
 
-## Usage ##
+## Introduction ##
 
 Copy this template if you want to start a new
 plugin written in C.
 
-You can use scripts/copy-template
+## Usage ##
+
+You can use `scripts/copy-template`
 to automatically rename everything to your
 plugin name:
 
 	cd src/plugins
 	../../scripts/copy-template yourplugin
 
+Then update the README.md of your newly created plugin:
+
+- enter your name+email in `infos/author`
+- make sure `status` and other clauses conform to
+  descriptions in `doc/CONTRACT.ini`
+- update the one-line description above
+- add your plugin in `src/plugins/README.md`
+- and rewrite the rest of this `README.md` to give a great
+  explanation of what your plugin does
+
+## Dependencies ##
+
+None.
+
+## Examples ##
+
+TBD
+
+## Limitations ##
+
+None.

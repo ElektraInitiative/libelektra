@@ -12,7 +12,6 @@ class Constants(unittest.TestCase):
 		self.assertIsInstance(kdb.DB_USER,   str)
 		self.assertIsInstance(kdb.DB_HOME,   str)
 		self.assertIsInstance(kdb.DEBUG,     ( int, long ))
-		self.assertIsInstance(kdb.VERBOSE,   ( int, long ))
 
 	def test_kdb_h(self):
 		self.assertIsInstance(kdb.VERSION,       str)

@@ -7,7 +7,7 @@
  * and your test might not be ABI compatible with the next release.
  *
  *
- * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
  */
 
 #ifndef TESTS_INTERNAL_H

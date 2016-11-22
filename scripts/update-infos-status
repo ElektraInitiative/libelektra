@@ -1,0 +1,240 @@
+#!/usr/bin/env python
+#
+# @author Kurt Micheli <kurt.micheli@libelektra.org>
+# @brief Alter Plugins Tags
+# @date 30.10.2016
+# @tags validation, reformat, generator
+
+import re
+import os
+import argparse
+
+def exitError (mess):
+	print ("Error: " + mess)
+	exit (1)
+
+def getSources (pluginDir):
+	sources = []
+	p = re.compile (".*\.(c|h|cpp|hpp)")
+	for root ,_ ,files in os.walk (pluginDir):
+		for f in files:
+			if (p.match(f)):
+				sources.append (os.path.join(root,f))
+	return sources
+
+def hookNodoc (pluginName, pluginDir, tags):
+	tag = "nodoc"
+	md = open (os.path.join(pluginDir, "README.md"), "r")
+	if (len (md.readlines ()) < 40):
+		if tag not in tags:
+			print ("AUTO: add "+ tag +" to "+ pluginName)
+			tags.append (tag)
+	else:
+		if (tag in tags):
+			print ("AUTO: remove "+ tag +" to "+ pluginName)
+			tags.remove (tag)
+	md.close ()
+
+def hookNodep (pluginName, pluginDir, tags):
+	tag = "nodep"
+	txt = open (os.path.join(pluginDir, "CMakeLists.txt"), "r")
+	p = re.compile (".*?(LINK_LIBRARIES|find_package|find_library. ).*?")
+	here = False
+	for txt_line in txt:
+		if (p.match(txt_line)):
+			here = True
+			if (tag in tags):
+				print ("AUTO: remove "+ tag +" to "+ pluginName)
+				tags.remove (tag)
+				break
+	txt.close ()
+	if not here and tag not in tags:
+		tags.append (tag)
+		print ("AUTO: add "+ tag +" to "+ pluginName)
+
+def hookUnittest (pluginName, pluginDir, tags):
+	tag = "unittest"
+	txt = open (os.path.join(pluginDir, "CMakeLists.txt"), "r")
+	p = re.compile (".*?(ADD_TEST|add_plugintest).*?")
+	here = False
+	for txt_line in txt:
+		if (p.match(txt_line)):
+			here = True
+			if (tag not in tags):
+				print ("AUTO: add "+ tag +" to "+ pluginName)
+				tags.append (tag)
+				break
+	txt.close ()
+	if not here and tag in tags:
+		tags.remove (tag)
+		print ("AUTO: remove "+ tag +" to "+ pluginName)
+
+def hookMemleak (pluginName, pluginDir, tags):
+	tag = "memleak"
+	txt = open (os.path.join(pluginDir, "CMakeLists.txt"), "r")
+	p = re.compile (".*?MEMLEAK.*?")
+	here = False
+	for txt_line in txt:
+		if (p.match(txt_line)):
+			here = True
+			if (tag not in tags):
+				print ("AUTO: add "+ tag +" to "+ pluginName)
+				tags.append (tag)
+				break
+	txt.close ()
+	if not here and tag in tags:
+		tags.remove (tag)
+		print ("AUTO: remove "+ tag +" to "+ pluginName)
+
+def hookConfigurable (pluginName, pluginDir, tags):
+	sources = getSources (pluginDir)
+	p = re.compile (".*?\=\s*?elektraPluginGetConfig\s*?\(.*?")
+	tag = "configurable"
+	here = False
+	for s in sources:
+		sf = open (s, "r")
+		for sf_line in sf:
+			if (p.match(sf_line)):
+				here = True
+				if (tag not in tags):
+					print ("AUTO: add "+ tag +" to "+ pluginName)
+					tags.append (tag)
+					break
+		sf.close ()
+	if not here and tag in tags:
+		tags.remove (tag)
+		print ("AUTO: remove "+ tag +" to "+ pluginName)
+
+# parse CONTRACT.ini and return as dict tag:order
+def parseContract ():
+	contract = open (os.path.join('doc', 'CONTRACT.ini'), 'r')
+	start = re.compile ("\s*\[infos/status\]\s*")
+	end = re.compile ("\s*\[\S*\]\s*")
+	info = []
+	inInfo = False
+	for line in contract:
+		if end.search(line):
+			inInfo = False
+		if start.search(line):
+			inInfo = True
+		if inInfo:
+			info.append (line)
+	enum = dict ()
+	p1 = re.compile ("\".*\"")
+	p2 = re.compile ("-?[0-9]+")
+	for tag in re.findall("\{\s*\".*\"\s*,\s*-?[0-9]+\s*\}", "".join (info)):
+		t = p1.search(tag).group(0)[1:-1]
+		v = p2.search(tag).group(0)
+		enum[t] = int(v)
+	contract.close()
+	return enum
+
+def checkTags (tags, enum):
+	if not tags: 
+		return
+	for k in tags:
+		if not k in enum:
+			exitError ("'"+ k +"' not in doc/CONTRACT.ini")
+
+def main():
+	hooks = [ hookConfigurable, hookMemleak, hookUnittest, hookNodep, hookNodoc ]
+	if not os.path.isfile (os.path.join('doc', 'CONTRACT.ini')) or not os.path.isdir (os.path.join('src', 'plugins')):
+		exitError ("You are not in an electra src dir!")
+
+	parser = argparse.ArgumentParser (description="Plugins Update info status: Use this little script to add, delete or set \
+							Tag of Plugins. It also sorts the Tags by there priority defined in doc/CONTRACT.ini.\
+							If no PLUGINS are specified it will do the action for all. If no action is given it\
+							will sort the Tags, for the specified plugins or all if no PLUGINS are specified")
+
+	command = parser.add_mutually_exclusive_group()
+	command.add_argument ("--add", dest="add", nargs="+", help="Adds Tags to the Plugins")
+	command.add_argument ("--del", dest="delete", nargs="+", help="Deletes Tags from the Plugins")
+	command.add_argument ("--set", dest="set", nargs="+", help="Sets all Tags at the Plugins")
+	parser.add_argument ("--plugins", dest="plugins", nargs='+', help="List of plugins")
+	parser.add_argument ("--auto", dest="auto",action='store_true', help="Enable the auto heuristic")
+
+	args = parser.parse_args ()
+	tags = parseContract ()
+
+	checkTags (args.add,tags)
+	checkTags (args.delete,tags)
+	checkTags (args.set,tags)
+
+	pluginsBase = os.path.join('src', 'plugins')
+
+	if (args.plugins):	
+		plugins = args.plugins
+	else:
+		plugins = os.listdir(pluginsBase)
+
+	p_infostatus = re.compile ("infos/status")
+	p_digit = re.compile ("-?[0-9]+")
+
+	for plugin in plugins:
+		pluginPath = os.path.join (pluginsBase, plugin)
+		if (args.plugins) and not os.path.isdir (pluginPath):
+			exitError (pluginPath + " is not a Plugin dir")
+		elif not os.path.isdir (pluginPath):
+			continue
+		pluginReadmePath = os.path.join (pluginPath, 'README.md')
+		if not os.path.isfile (pluginReadmePath):
+			exitError ( "Plugin '" + pluginPath + "' has no README.md")
+
+		#~ get tags from pugin
+		pluginReadmeFile = open (pluginReadmePath, 'r')
+		pluginTags = []
+		infoFound = False
+		for line in pluginReadmeFile:
+			if p_infostatus.search (line):
+				infoFound = True
+				pluginTags = line.split("=")[1].strip().split()
+				break
+
+		pluginReadmeFile.close()
+		if not infoFound:
+			continue
+
+		pluginTagsNumbers = [x for x in pluginTags if p_digit.match(x)]
+		pluginTags = [x for x in pluginTags if not p_digit.match(x)]
+
+		#~ run hooks
+		if args.auto:
+			for h in hooks:
+				h (plugin, pluginPath, pluginTags)
+
+		#~ modify tags from plugin
+		if args.add:
+			for r in args.add:
+				if r not in pluginTags:
+					pluginTags.append (r)
+		elif args.delete:
+			for r in args.delete:
+				try:
+					pluginTags.remove (r)
+				except ValueError:
+					print ("Warning: '"+ r +"' not in "+ plugin +"s Tags")
+		elif args.set:
+			pluginTags = args.set
+			pluginTagsNumbers = []
+
+		#~ sort tags from plugin
+		try:
+			pluginTags = sorted (pluginTags, key=lambda k : tags[k], reverse=True)
+		except KeyError:
+			exitError (str(pluginTags) + "not in doc/CONTRACT.ini")
+
+		#~ write out tags from plugin
+		pluginReadmeFile = open (pluginReadmePath, 'r')
+		content = pluginReadmeFile.readlines()
+		pluginReadmeFile.close()
+		newPluginReadmeFile = open (pluginReadmePath, 'w')
+		for line in content:
+			if p_infostatus.search (line):
+				pluginTags.extend(pluginTagsNumbers)
+				newPluginReadmeFile.write ("- infos/status = "+" ".join (pluginTags)+"\n")
+			else:
+				newPluginReadmeFile.write (line)
+		newPluginReadmeFile.close()
+
+if __name__ == "__main__":
+	main()

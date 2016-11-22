@@ -1,23 +1,30 @@
 - infos = Information about LINE plugin is in keys below
 - infos/author = Ian Donnelly <ian.s.donnelly@gmail.com>
-- infos/provides = storage
+- infos/provides = storage/line
 - infos/licence = BSD
 - infos/needs = null
 - infos/placements = getstorage setstorage
-- infos/status = maintained unittest nodep libc final
-- infos/description = Very simple storage plug-in which stores each line from a file as a key
+- infos/status = maintained unittest nodep libc final limited
+- infos/description = storage plugin which stores each line from a file
 
 ## Introduction ##
 
-This plugin is designed to save each line from input as a key. The
-keys are stored in an array. The key names are determined by the 
-line number such as `#3` or `#_12` and the value of each key 
-is the information stored in that line of the file. The plugin considers
-`#0` to be the first line and will automatically add `_` to the beginning
-of key names in order to keep them in numerical order.  
+This plugin is useful if you have a file in a format not supported
+by any other plugin and want to use the Elektra tools to edit
+individual lines.
 
-For instance, consider the following file name `.config` where the 
-numbers on the left just represent the line numbers:
+This plugin is designed to save each line from a file as a key.
+The keys form an array. The key names are determined by the 
+line number such as `#3` or `#_12` for lines 4 and 13.
+The plugin considers `#0` to be the first line.
+The plugin will automatically add `_` to the beginning
+of key names in order to keep them in numerical order (like specified
+for Elektra arrays).
+
+The value of each key hold the content of the actual file line-by-line.
+
+For example, consider the following content of the file `~/.config/line` where the
+numbers on the left represent the line numbers:
 
     1  setting1 true
     2  setting2 false
@@ -28,10 +35,15 @@ numbers on the left just represent the line numbers:
     7  //some other comment
     8
     9  setting4 -1
-    10 
 
-This file would result in the following keyset which is being diplayed as
-`name: value`:
+We mount that file by:
+
+    > kdb mount line user/line line
+
+This file would result in the following keyset which is being displayed as
+`key: value`, e.g. with:
+
+    > kdb export -c "format=%s: %s" user/line simpleini
 
     #0: setting1 true
     #1: setting2 false
@@ -42,5 +54,52 @@ This file would result in the following keyset which is being diplayed as
     #6: //some other comment
     #7:
     #8: setting4 -l
-    #9:
-    #_10:
+```sh
+# Backup-and-Restore:/examples/line
+sudo kdb mount line /examples/line line
+#
+# create and initialize testfile
+#
+$ echo "setting1 true" > `kdb file /examples/line`
+$ echo "setting2 false" >> `kdb file /examples/line`
+$ echo "setting3 1000" >> `kdb file /examples/line`
+$ echo "#comment" >> `kdb file /examples/line`
+$ echo  >> `kdb file /examples/line`
+$ echo  >> `kdb file /examples/line`
+$ echo "//some other comment" >> `kdb file /examples/line`
+$ echo  >> `kdb file /examples/line`
+$ echo "setting4 -1" >> `kdb file /examples/line`
+#
+# output filecontent and display line numbers
+#
+$ awk '{print NR-1 "-" $0}' < `kdb file /examples/line`
+#
+0-setting1 true
+1-setting2 false
+2-setting3 1000
+3-#comment
+4-
+5-
+6-//some other comment
+7-
+8-setting4 -1
+#
+# export keyset with syntax 'key: value'
+#
+kdb export -c "format=_%: %" /examples/line simpleini
+_user: 
+_#0: setting1 true
+_#1: setting2 false
+_#2: setting3 1000
+_#3: #comment
+_#4: 
+_#5: 
+_#6: //some other comment
+_#7: 
+_#8: setting4 -1
+#
+# cleanup
+#
+kdb rm -r /examples/line
+sudo kdb umount /examples/line
+```

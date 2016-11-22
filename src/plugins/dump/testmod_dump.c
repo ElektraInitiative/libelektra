@@ -3,7 +3,7 @@
  *
  * @brief
  *
- * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
  */
 
 #ifdef HAVE_KDBCONFIG_H
@@ -92,8 +92,8 @@ void test_readdump(const char *file)
 	k2 = ksLookupByName(ks, "user/tests/dump/a", 0);
 	succeed_if (k2 != 0, "did not find key");
 
-	succeed_if (!strcmp(keyValue(keyGetMeta(k1, "ab")), "cd"), "meta value not correct");
-	succeed_if (!strcmp(keyValue(keyGetMeta(k2, "ab")), "cd"), "meta value not correct");
+	succeed_if (!strcmp(keyValue(keyGetMeta(k1, "ab")), "cd"), "metavalue not correct");
+	succeed_if (!strcmp(keyValue(keyGetMeta(k2, "ab")), "cd"), "metavalue not correct");
 	succeed_if (keyGetMeta(k1, "ab") == keyGetMeta(k2, "ab"), "does not point to the same storage");
 
 	// ksOutput (read, stdout, KEY_VALUE);

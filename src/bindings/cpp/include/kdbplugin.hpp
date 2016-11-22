@@ -16,7 +16,7 @@ typedef Delegator<elektra::YourPluginClass> YPC;
 // then e.g. YPC::open(handle, errorKey);
  * @endcode
  *
- * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
  *
  */
 

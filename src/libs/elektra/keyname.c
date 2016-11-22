@@ -3,7 +3,7 @@
  *
  * @brief Methods for Key name manipulation.
  *
- * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
  */
 
 /** @class doxygenNamespaces
@@ -146,9 +146,7 @@
 #include "kdbconfig.h"
 #endif
 
-#if DEBUG && defined(HAVE_STDIO_H)
-#include <stdio.h>
-#endif
+#include <kdbassert.h>
 
 #ifdef HAVE_STDARG_H
 #include <stdarg.h>
@@ -406,7 +404,7 @@ static void elektraHandleUserName (Key * key, const char * newName)
 	const char delim = newName[userLength - 1];
 	// no owner, we are finished
 	if (delim == '/' || delim == '\0') return;
-	ELEKTRA_ASSERT (delim == ':');
+	ELEKTRA_ASSERT (delim == ':', "delimiter in user-name not `:' but `%c'", delim);
 
 	// handle owner (compatibility, to be removed)
 	keyNameGetOneLevel (newName, &key->keyUSize);
@@ -523,7 +521,7 @@ ssize_t elektraKeySetName (Key * key, const char * newName, option_t options)
 	switch (keyGetNameNamespace (newName))
 	{
 	case KEY_NS_NONE:
-		ELEKTRA_ASSERT (0);
+		ELEKTRA_ASSERT (0, "non empty key has no namespace?");
 	case KEY_NS_EMPTY:
 		elektraFinalizeEmptyName (key);
 		return 0; // as documented

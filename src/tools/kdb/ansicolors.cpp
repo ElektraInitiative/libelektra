@@ -3,10 +3,11 @@
  *
  * @brief
  *
- * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
  */
 
 #include "ansicolors.hpp"
+
 #ifdef _WIN32
 #include <io.h>
 #include <stdio.h>
@@ -18,11 +19,6 @@
 #else
 #include <unistd.h>
 #endif
-std::string & colors ()
-{
-	static std::string nocolors = "auto";
-	return nocolors;
-}
 
 std::string getColorEscape (ANSI_COLOR color, ANSI_COLOR_LAYER layer)
 {
@@ -95,14 +91,32 @@ std::string getColorEscape (ANSI_COLOR color, ANSI_COLOR_LAYER layer)
 	}
 }
 
+static bool hasColor (int no, std::string c)
+{
+	return !(c.compare ("never") == 0 || (c.compare ("auto") == 0 && !isatty (no)));
+}
+
+bool hasErrorColor (std::string c)
+{
+	static bool has = hasColor (STDERR_FILENO, c);
+	return has;
+}
+
+bool hasStdColor (std::string c)
+{
+	static bool has = hasColor (STDOUT_FILENO, c);
+	return has;
+}
+
 std::string getErrorColor (ANSI_COLOR color, ANSI_COLOR_LAYER layer)
 {
-	if (colors ().compare ("never") == 0 || (colors ().compare ("auto") == 0 && !isatty (STDERR_FILENO))) return "";
+	if (!hasErrorColor ()) return "";
 	return getColorEscape (color, layer);
 }
+
 std::string getStdColor (ANSI_COLOR color, ANSI_COLOR_LAYER layer)
 {
-	if (colors ().compare ("never") == 0 || (colors ().compare ("auto") == 0 && !isatty (STDOUT_FILENO))) return "";
+	if (!hasStdColor ()) return "";
 	return getColorEscape (color, layer);
 }
 

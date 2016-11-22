@@ -48,7 +48,7 @@ interface for all programs (this feature is unavoidable with any such
 approach). The projects mainly differs that Elektra is supposed to be used
 by the programs themselves (and not only by GUIs and validation tools)
 and that Elektra uses self-describing data: the specification itself
-is also in Elektra's key database, stored in meta data and e.g. below
+is also in Elektra's key database, stored in metadata and e.g. below
 system/elektra/mountpoints. In Elektra validators can be
 written in any language (because the specification is just data)
 and can enforce constraints on any access (because plugins define
@@ -135,7 +135,7 @@ the change.
 
 ## Documentation ##
 
-[Specification of meta data](doc/specification.ini) and
+[Specification of metadata](doc/specification.ini) and
 [contracts](doc/contracts.ini) written/greatly improved.
 
 [Decisions](decisions) are introduced again.
@@ -317,7 +317,7 @@ The C++ API changed, including:
 - KeySet::at directly allows one to use ksAtCursor()
 - KeyTypeConversion (or former KeyBadMeta) is not thrown anymore if key
   is not available
-- Key::hasMeta allows one to directly check if meta data is available
+- Key::hasMeta allows one to directly check if metadata is available
 
 CMake: ENABLE_CXX11 is now default OFF (because gcc 4.6 and older won't
        work with it). It disables some tests, though.

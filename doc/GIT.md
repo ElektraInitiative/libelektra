@@ -1,11 +1,13 @@
-# INTRODUCTION #
+# GIT #
 
-## BASIC GIT COMMANDS ##
+## Basic GIT Commands##
 
-	git add .
-	git commit -a
+	git add readme.md   // adds the changes of the file `readme.md` to the staging area
+	git add .           // adds all changes of files in the current directory (recursively) to the staging area
+	git add --all       // adds all changes of files in the repository to the staging area
+	git commit -a       // executes a commit that automatically stages all changed and deleted files before
 
-## BASIC Configuration ##
+## Basic Configuration ##
 
 make sure to do:
 
@@ -53,7 +55,6 @@ master should always compile and all test
 cases should pass successfully.
 (see config option above)
 
-
 	debian
 
 Is the branch to be used to build debian
@@ -61,9 +62,9 @@ packages. It additionally contains the
 debian folder. Only debian related commits
 should be on the debian branch - otherwise
 it should only contain --no-ff merges from
-master.  (see config option above)
+master. (see config option above)
 
-## Local branches ##
+## Local Branches ##
 
 You should always make your own feature branch with:
 
@@ -117,15 +118,20 @@ or if specific jobs should be started:
 * jenkins build [bindings](http://build.libelektra.org:8080/job/elektra-test-bindings/) please
 * jenkins build [clang](http://build.libelektra.org:8080/job/elektra-clang/) please
 * jenkins build [clang-asan](http://build.libelektra.org:8080/job/elektra-clang-asan/) please
+* jenkins build [gcc-asan](http://build.libelektra.org:8080/job/elektra-gcc-asan/) please
 * jenkins build [fast](http://build.libelektra.org:8080/job/elektra-mergerequests-fast/) please
 * jenkins build [gcc](http://build.libelektra.org:8080/job/elektra-gcc/) please
 * jenkins build [gcc-configure-debian](http://build.libelektra.org:8080/job/elektra-gcc-configure-debian/) please
+* jenkins build [gcc-configure-debian-debug](http://build.libelektra.org:8080/job/elektra-gcc-configure-debian-debug) please
 * jenkins build [gcc-configure-debian-intree](http://build.libelektra.org:8080/job/elektra-gcc-configure-debian-intree/) please
+* jenkins build [gcc-configure-debian-log](http://build.libelektra.org:8080/job/elektra-gcc-configure-debian-log) please
 * jenkins build [gcc-configure-debian-musl](http://build.libelektra.org:8080/job/elektra-gcc-configure-debian-musl/) please
+* jenkins build [gcc-configure-debian-nokdbtest](http://build.libelektra.org:8080/job/elektra-gcc-configure-debian-nokdbtest/) please
 * jenkins build [gcc-configure-debian-notest](http://build.libelektra.org:8080/job/elektra-gcc-configure-debian-notest/) please
 * jenkins build [gcc-configure-debian-shared](http://build.libelektra.org:8080/job/elektra-gcc-configure-debian-shared/) please
 * jenkins build [gcc-configure-debian-stretch](http://build.libelektra.org:8080/job/elektra-gcc-configure-debian-stretch/) please
 * jenkins build [gcc-configure-debian-wheezy](http://build.libelektra.org:8080/job/elektra-gcc-configure-debian-wheezy/) please
+* jenkins build [gcc-configure-debian-withspace](http://build.libelektra.org:8080/job/elektra-gcc-configure-debian-withspace/) please
 * jenkins build [gcc-configure-xdg](http://build.libelektra.org:8080/job/elektra-gcc-configure-xdg/) please
 * jenkins build [gcc-i386](http://build.libelektra.org:8080/job/elektra-gcc-i386/) please
 * jenkins build [gcc47-all](http://build.libelektra.org:8080/job/elektra-gcc47-all/) please
@@ -136,7 +142,6 @@ or if specific jobs should be started:
 * jenkins build [local-installation](http://build.libelektra.org:8080/job/elektra-local-installation/) please
 * jenkins build [mingw64](http://build.libelektra.org:8080/job/elektra-gcc-configure-mingw-w64/) please
 * jenkins build [multiconfig-gcc-stable](http://build.libelektra.org:8080/job/elektra-multiconfig-gcc-stable/) please
-* jenkins build [multiconfig-gcc-unstable](http://build.libelektra.org:8080/job/elektra-multiconfig-gcc-unstable/) please
 * jenkins build [multiconfig-gcc47-cmake-options](http://build.libelektra.org:8080/job/elektra-multiconfig-gcc47-cmake-options/) please
 * jenkins build [source-package-test](http://build.libelektra.org:8080/job/elektra-source-package-test/) please
 * jenkins build [stable](http://build.libelektra.org:8080/job/elektra-mergerequests-stable/) please

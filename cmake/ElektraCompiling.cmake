@@ -58,11 +58,6 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 	set (CXX_EXTRA_FLAGS "${CXX_EXTRA_FLAGS} -Wold-style-cast")
 
 	message (STATUS "Clang detected")
-
-	if (ENABLE_DEBUG)
-		set (EXTRA_FLAGS "${EXTRA_FLAGS} -fsanitize=undefined -fsanitize=integer")
-		set (CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -fsanitize=undefined -fsanitize=integer")
-	endif()
 endif()
 
 if (CMAKE_COMPILER_IS_GNUCXX)
@@ -100,6 +95,26 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "Intel")
 	set(CMAKE_INCLUDE_SYSTEM_FLAG_CXX "-isystem ")
 endif ()
 
+if (ENABLE_ASAN)
+	set (EXTRA_FLAGS "${EXTRA_FLAGS} -fsanitize=undefined -fsanitize=address -fno-omit-frame-pointer")
+	set (CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -lubsan")
+	set (ASAN_LIBRARY "-lasan") #this is needed for GIR to put asan in front
+
+	if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+		set (EXTRA_FLAGS "${EXTRA_FLAGS} -fsanitize=integer")
+	endif ()
+
+	if (CMAKE_COMPILER_IS_GNUCXX)
+		set (CMAKE_SHARED_LINKER_FLAGS "-fsanitize=address ${CMAKE_SHARED_LINKER_FLAGS}")
+		# this is needed because of wrong pthread detection https://gcc.gnu.org/bugzilla/show_bug.cgi?id=69443
+		find_package(Threads)
+		set (THREAD_LIBS_AS_NEEDED "-Wl,--as-needed ${CMAKE_THREAD_LIBS_INIT}")
+		set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${THREAD_LIBS_AS_NEEDED}")
+		set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${THREAD_LIBS_AS_NEEDED}")
+	endif ()
+
+	set (DISABLE_LSAN "LSAN_OPTIONS=detect_leaks=0") #this is needed so ASAN is not used during GIR compilation
+endif ()
 
 #
 # Common flags can be used by both C and C++

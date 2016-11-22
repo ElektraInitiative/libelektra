@@ -3,7 +3,7 @@
  *
  * @brief tests if compilation works (include and build paths set correct, etc...)
  *
- * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
  *
  */
 

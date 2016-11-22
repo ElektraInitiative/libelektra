@@ -3,13 +3,13 @@ elektra-spec(7) -- spec namespace
 
 ## INTRODUCTION
 
-spec is a special namespace that describes via meta data the
+spec is a special namespace that describes via metadata the
 semantics of individual keys.
 
 Most importantly it:
 
 0. describes which keys are of interest to the application
-1. describes the meta data to be copied to every key
+1. describes the metadata to be copied to every key
 2. describes how the cascading lookup works
 3. describes the mountpoints including the plugins needed for them
 
@@ -38,7 +38,7 @@ any namespace, so that it can easily be accessed.
 
 Other features are directly implemented in `ksLookup`.
 When cascading keys (those starting with `/`) are used following features
-are now available (in the meta data of respective `spec`-keys):
+are now available (in the metadata of respective `spec`-keys):
 
 - `override/#`: use these keys *in favour* of the key itself (note that
     `#` is the syntax for arrays, e.g. `#0` for the first element,
@@ -79,7 +79,7 @@ configuration *file level*.
 
 ## Validation
 
-You can tag any key using the `check` meta data so that it will be validated.
+You can tag any key using the `check` metadata so that it will be validated.
 
 For example:
 
@@ -94,7 +94,7 @@ check/validation/message = def does not start with abc
 ## Mounting
 
 In the spec namespace you can also specify mountpoints.
-First you need the meta key `mountpoint` and a configuration file name.
+First you need the metakey `mountpoint` and a configuration file name.
 Otherwise, it basically works in the same way as the contracts
 in plugins using `infos` and `config`:
 

@@ -3,7 +3,7 @@
  *
  * @brief A plugin that converts keys to metakeys and vice versa
  *
- * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
  *
  */
 
@@ -24,7 +24,7 @@ static const char * CONVERT_APPEND_SAMELEVEL = "convert/append/samelevel";
 static const char * CONVERT_APPENDMODE = "convert/append";
 
 /*
- * Wrapper for the function comparing by order meta data. As
+ * Wrapper for the function comparing by order metadata. As
  * qsort is not stable returning 0 on missing order may
  * mess up the original order.
  */
@@ -321,7 +321,7 @@ int elektraKeyToMetaSet (Plugin * handle, KeySet * returned, Key * parentKey ELE
 				}
 				else
 				{
-					/* just continue splitting the meta data */
+					/* just continue splitting the metadata */
 					result = strtok_r (NULL, "\n", &saveptr);
 				}
 

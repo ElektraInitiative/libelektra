@@ -5,9 +5,9 @@
 - infos/needs =
 - infos/recommends =
 - infos/placements = pregetstorage precommit
-- infos/status = maintained tested nodep libc configurable
+- infos/status = maintained unittest tested libc configurable nodoc
 - infos/metadata =
-- infos/description =
+- infos/description = validates files (e.g. encoding)
 
 ## Introduction ##
 

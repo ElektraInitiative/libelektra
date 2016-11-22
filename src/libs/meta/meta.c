@@ -1,9 +1,9 @@
 /**
  * @file
  *
- * @brief Methods for meta data manipulation.
+ * @brief Methods for metadata manipulation.
  *
- * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
  */
 
 #include <kdb.h>
@@ -39,9 +39,9 @@
  * @brief Meta data proposal+compatibility methods.
  * @ingroup proposal
  *
- * In versions before Elektra 0.8 only limited meta data was
- * available. Now any meta data can be added. These API methods are
- * implementations of the 0.7 API using 0.8 meta data.
+ * In versions before Elektra 0.8 only limited metadata was
+ * available. Now any metadata can be added. These API methods are
+ * implementations of the 0.7 API using 0.8 metadata.
  *
  * Additionally, new suggestions can be made here.
  *
@@ -905,10 +905,10 @@ int elektraKeyCmpOrder (const Key * ka, const Key * kb)
  * creates an metadata array or appends another element to an existing metadata array
  * e.g.
  * Key *key = keyNew("user/test", KEY_END);
- * elektraMetaArrayAdd(key, "array", "test0");
- * key now has "test/#0" with value "test0" as metadata
- * elektraMetaArrayAdd(key, "array", "test1");
- * appends "test/#1" with value "test1" to key
+ * elektraMetaArrayAdd(key, "test", "val0");
+ * key now has "test/#0" with value "val0" as metadata
+ * elektraMetaArrayAdd(key, "test", "val1");
+ * appends "test/#1" with value "val1" to key
  *
  * @param key the key the metadata should be added to
  * @param metaName the name of the metakey array parent

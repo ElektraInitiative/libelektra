@@ -4,9 +4,9 @@
 - infos/provides = check
 - infos/needs =
 - infos/placements = presetstorage
-- infos/status = maintained unittest unfinished old nodep
+- infos/status = maintained nodep memleak unfinished old
 - infos/metadata = check/type check/type/min check/type/max
-- infos/description =
+- infos/description = type checker using COBRA data types
 
 ## Introduction ##
 
@@ -51,3 +51,4 @@ The `CORBA` type system also has its limits. The types `string` and
 and makes no limit on how the sequence of characters is structured,
 the enumeration is too finite. For example, it is not possible to say
 that a string is not allowed to have a specific symbol in it.
+

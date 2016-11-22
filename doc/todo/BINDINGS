@@ -8,6 +8,6 @@ iomanip using iword, pword, and xalloc
 	allow to define delimiters of key/value
 
 KeyMeta(Reverse)Iterator:
-	allow iterations over meta keys
+	allow iterations over metakeys
 
 type safe get/set from/to collections

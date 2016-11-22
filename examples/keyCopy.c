@@ -3,7 +3,7 @@
  *
  * @brief
  *
- * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
  */
 
 #include <kdb.h>
@@ -57,7 +57,7 @@ void i (Key * k)
 	keySetString (k, keyString (c));
 	keyCopyAllMeta (k, c);
 	// k is not a copy of c even if everything was successfully,
-	// because it still contains meta data from k
+	// because it still contains metadata from k
 }
 //! [Individual Copy]
 

@@ -402,7 +402,7 @@ gelektra_func_t gelektra_key_getfunc (const GElektraKey * key)
 	return NULL;
 }
 
-/* meta data */
+/* metadata */
 gssize gelektra_key_setmeta (GElektraKey * key, const gchar * name, const gchar * value)
 {
 	return keySetMeta (key->key, name, value);

@@ -3,7 +3,7 @@
  *
  * @brief A plugin that makes use of libaugeas to read and write configuration files
  *
- * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
  *
  */
 
@@ -282,10 +282,10 @@ void test_parentAppendMode ()
 	succeed_if (metaKey3, "parentkey3 contained no metakey");
 	succeed_if (!strcmp (keyString (metaKey3), "testvalue3"), "metakey of parentkey3 contained incorrect data");
 
-	/* normalkey1 must not contain meta data */
+	/* normalkey1 must not contain metadata */
 	key = ksLookupByName (ks, "user/normalkey1", 0);
 	succeed_if (key, "normalkey1 was removed");
-	succeed_if (!keyGetMeta (key, "testmeta"), "normalkey1 should not contain any meta data");
+	succeed_if (!keyGetMeta (key, "testmeta"), "normalkey1 should not contain any metadata");
 
 	/* parentkey4 must contain meta information generated from convertkeynext
 	 * (via next append samelevel which falls back to parent) */
@@ -296,10 +296,10 @@ void test_parentAppendMode ()
 	succeed_if (metaKey4, "parentkey4 contained no metakey");
 	succeed_if (!strcmp (keyString (metaKey4), "testvalue4"), "metakey of parentkey4 contained incorrect data");
 
-	/* normalkey2 must not contain meta data */
+	/* normalkey2 must not contain metadata */
 	key = ksLookupByName (ks, "user/normalkey2", 0);
 	succeed_if (key, "normalkey2 was removed");
-	succeed_if (!keyGetMeta (key, "testmeta"), "normalkey2 should not contain any meta data");
+	succeed_if (!keyGetMeta (key, "testmeta"), "normalkey2 should not contain any metadata");
 
 
 	keyDel (parentKey);

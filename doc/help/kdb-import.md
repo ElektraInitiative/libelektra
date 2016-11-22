@@ -16,26 +16,23 @@ The `format` attribute relies on Elektra's plugin system to properly import the 
 This command allows a user to import an existing configuration into the key database.
 The configuration that the user wants to import is read from `stdin`.
 The user should specify the format that the current configuration or keys are in, otherwise the default format will be used.
-The default format is `storage` but can be changed by editing the value of the `sw/kdb/current/format` key.
+The default format is `storage` but can be changed by editing the value of the `/sw/elektra/kdb/#0/current/format` key.
 The `storage` plugin can be configured at compile-time or changed by the link `libelektra-storage.so`.
 
 ## CONFLICTS
 
 Conflicts can occur when importing a configuration to a part of the database where keys already exist.
-Conflicts when importing can be resolved using a [strategy](#STRATEGIES) with the `-s` argument.
+Conflicts when importing can be resolved using a strategy with the `-s` argument.
 
-## STRATEGIES
+Specific to `kdb import` the following strategy exists:
 
-Currently the following strategies exist for importing configurations:
+- `validate`: 
+  apply meta data as received from base, and then cut+append all keys as imported.
+  If the appended keys do not have a namespace, the namespace given by `-N`
+  is added.
 
-- `cut`:
-  Removes existing keys below `destination` and replaces them with the keys resulting from the import.
-  This is the default strategy.
-
-- `import`:
-  Preserves existing keys below `destination` only if they do not exist in the keys being imported.
-  If the key does exist in the imported keys, the current version will be overwritten.
-
+The other strategies are implemented by the merge framework and are documented in
+[elektra-merge-strategy(7)](elektra-merge-strategy.md).
 
 ## OPTIONS
 
@@ -53,6 +50,22 @@ Currently the following strategies exist for importing configurations:
   Add a configuration to the format plugin.
 - `-C`, `--color`=[when]:
   Print never/auto(default)/always colored output.
+- `-N`, `--namespace`=<ns>:
+  Specify the namespace to use when writing cascading keys (`validate` strategy only).
+  See [below in KDB](#KDB).
+
+## KDB
+
+- `/sw/elektra/kdb/#0/current/verbose`:
+  Same as `-v`: Explain what is happening (output merged keys).
+
+- `/sw/elektra/kdb/#0/current/format`
+  Change default format (if none is given at commandline) and built-in default is not your preferred format.
+
+- `/sw/elektra/kdb/#0/current/namespace`:
+  Specifies which default namespace should be used when setting a cascading name.
+  By default the namespace is user, except `kdb` is used as root, then `system`
+  is the default (`validate` strategy only).
 
 
 ## EXAMPLES

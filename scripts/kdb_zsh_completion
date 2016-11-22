@@ -91,7 +91,7 @@ _kdb-get () {
 }
 
 _kdb-getmeta () { 
-    # TODO key-name meta-name
+    # TODO key-name metaname
     _kdb_paths
 }
 
@@ -147,7 +147,7 @@ _kdb-set () {
 }
 
 _kdb-setmeta () { 
-    # TODO key-name meta-name meta-value
+    # TODO key-name metaname metavalue
     _kdb_paths
 }
 
@@ -206,7 +206,7 @@ _kdb_commands () {
         file:'Prints the file where a key is located.'
         fstab:'Create a new fstab entry.'
         get:'Get the value of an individual key.'
-        getmeta:'Get a meta value.'
+        getmeta:'Get a metavalue.'
         import:'Import configuration to the key database.'
         info:'Print information about a plugin.'
         list:'List available plugins.'
@@ -218,7 +218,7 @@ _kdb_commands () {
         remount:'Remount an existing backend with a different filename.'
         rm:'Remove key(s) from key database.'
         set:'Set the value of an individual key.'
-        setmeta:'Set a meta value.'
+        setmeta:'Set a metavalue.'
         sget:'Get the value of an individual key within a shell script.'
         shell:'Start a kdb shell.'
         test:'Run key database test suite.'

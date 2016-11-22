@@ -3,7 +3,7 @@
  *
  * @brief Build system configuration
  *
- * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
  */
 
 // clang-format off
@@ -98,15 +98,19 @@
 /* ENABLE_OPTIMIZATIONS */
 #define ELEKTRA_ENABLE_OPTIMIZATIONS @ELEKTRA_ENABLE_OPTIMIZATIONS@
 
-/* disable debug output messages */
+/* debug mode */
 #define DEBUG @DEBUG@
 
 #ifndef DEBUG
 # define NDEBUG
 #endif
 
-/* disable verbose output messages */
-#define VERBOSE @VERBOSE@
+/* disable output messages to stdout (to be migrated to logger) */
+#define VERBOSE 0
+
+#ifndef HAVE_LOGGER
+#cmakedefine HAVE_LOGGER
+#endif
 
 /* define if your system has the `clearenv' function. */
 #ifndef HAVE_CLEARENV

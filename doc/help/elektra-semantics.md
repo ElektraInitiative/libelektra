@@ -14,7 +14,7 @@ everywhere.  Keys always can have a value.  The only constraint is
 that key names are unique and occur in one of the
 [namespaces](elektra-namespaces.md).
 Every Key has an absolute name. There is no concept of relative names in
-Elektra's Keys except for meta keys belonging to a key.  Every other Key is independent
+Elektra's Keys except for metakeys belonging to a key.  Every other Key is independent
 of each other.  We just do not care if there is another key below or
 above the accessed one in the storage or not.
 

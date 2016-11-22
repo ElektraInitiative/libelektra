@@ -9,5 +9,7 @@ if (HAVE_GLIBC)
 		SOURCES
 			simpleini.h
 			simpleini.c
+		LINK_ELEKTRA
+			elektra-ease
 		)
 endif()

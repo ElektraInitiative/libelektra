@@ -3,7 +3,7 @@
  *
  * @brief Tests for the ini plugin
  *
- * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
  *
  */
 
@@ -496,6 +496,26 @@ static void test_arrayInsert (char * source, char * compare)
 	ksDel (ks);
 	PLUGIN_CLOSE ();
 }
+static void test_dontquotebracketvalues (char * fileName)
+{
+	Key * parentKey = keyNew ("user/tests/ini-write", KEY_VALUE, elektraFilename (), KEY_END);
+	KeySet * conf = ksNew (0, KS_END);
+	PLUGIN_OPEN ("ini");
+
+	KeySet * ks = ksNew (30, keyNew ("user/tests/ini-write/key", KEY_VALUE, "[1, 2, 3, 4, 5, 6]", KEY_END), KS_END);
+
+	succeed_if (plugin->kdbSet (plugin, ks, parentKey) >= 1, "call to kdbSet was not successful");
+	succeed_if (output_error (parentKey), "error in kdbSet");
+	succeed_if (output_warnings (parentKey), "warnings in kdbSet");
+
+	succeed_if (compare_line_files (srcdir_file (fileName), keyString (parentKey)), "files do not match as expected");
+
+	keyDel (parentKey);
+	ksDel (ks);
+
+	PLUGIN_CLOSE ();
+}
+
 int main (int argc, char ** argv)
 {
 	printf ("INI         TESTS\n");
@@ -521,6 +541,7 @@ int main (int argc, char ** argv)
 	test_insertOrder ("ini/insertTest.input.ini", "ini/insertTest.output.ini");
 	test_complexInsert ("ini/complexIn.ini", "ini/complexOut.ini");
 	test_arrayInsert ("ini/arrayInsertIn.ini", "ini/arrayInsertOut.ini");
+	test_dontquotebracketvalues ("ini/bracketQuoteOut.ini");
 	printf ("\ntest_ini RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 
 	return nbError;

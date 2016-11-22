@@ -14,7 +14,7 @@ and structure of all keys cannot work with a partial key set.
 
 It is problematic to have too many keys in one backend.  The applications
 would need memory for unnecessary configuration data.  Instead we
-recommend introducing several mount points to split up the keys into
+recommend introducing several mountpoints to split up the keys into
 different backends.  Splitting up key sets makes sense if any application
 requests only a part of the configuration.  No benefits arise if every
 application requests all keys anyway.
@@ -30,7 +30,7 @@ granularity.  It is possible to mount a backend on every single key, so
 that every key can be requested for itself.  If no backends are mounted,
 all keys reside in the default backend.
 
-To sum up, Elektra's core searches for the nearest mount point and gets
+To sum up, Elektra's core searches for the nearest mountpoint and gets
 the configuration from there.  It is possible that the user gets more
 configuration than requested.  The user can decide by means of mounting
 how much configuration on specific requests are returned.

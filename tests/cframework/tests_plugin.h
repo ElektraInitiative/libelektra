@@ -6,7 +6,7 @@
  * If you include this file you have full access to elektra's internals
  * and your test might not be ABI compatible with the next release.
  *
- * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
  */
 
 #include <tests_internal.h>

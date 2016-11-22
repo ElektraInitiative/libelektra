@@ -1,16 +1,16 @@
 - infos = Information about ni plugin is in keys below
 - infos/author = Markus Raab <elektra@libelektra.org>
 - infos/licence = BSD
-- infos/provides = storage ini
+- infos/provides = storage/ini
 - infos/needs =
 - infos/placements = getstorage setstorage
-- infos/status = maintained libc nodep
+- infos/status = maintained unittest libc nodep
 - infos/description = Reads and writes the nickel ini format
 
 ## Introduction ##
 
 This plugin uses the nickel library in order to read/write
- [metakeys](/doc/help/elektra-meta-data.md) in the nickel ini format. It's purpose is to be
+ [metakeys](/doc/help/elektra-metadata.md) in the nickel ini format. It's purpose is to be
 used in the `spec`-namespace or when any metadata should be
 stored.
 
@@ -18,7 +18,6 @@ For ini files for applications, e.g. smb.conf you should prefer the
 [ini plugin](/src/plugins/ini).
 
 ## Usage
-
 
 To mount a ni plugin you can simply use:
 
@@ -31,12 +30,12 @@ E.g.
     [key]
     meta=foo
 
-creates the key with meta data key `meta` and meta data value `foo`:
+creates the key with metadata key `meta` and metadata value `foo`:
 
     $ kdb getmeta user/ni/key meta
     foo
 
-the meta data for the parent key has following syntax:
+the metadata for the parent key has following syntax:
 
     []
     meta=foo
@@ -47,11 +46,9 @@ Exporting a KeySet to the nickel format:
 
     kdb export spec/ni ni > example.ni
 
-
 For in-detail explanation of the syntax
 (nested keys are not supported by the plugin, however)
 [see /src/plugins/ni/nickel-1.1.0/include/bohr/ni.h](/src/plugins/ni/nickel-1.1.0/include/bohr/ni.h)
-
 
 ## Limitations ##
 
@@ -60,7 +57,6 @@ For in-detail explanation of the syntax
 - Keys have a random order when written out.
 - No comments are preserved, they are simply removed.
 - Parse errors simply result to ignoring (and removing) these parts.
-
 
 ## Nickel ##
 

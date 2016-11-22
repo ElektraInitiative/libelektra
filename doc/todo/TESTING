@@ -1,13 +1,41 @@
 ## error
 
+test that error codes are set correctly
+	multiple plugins
+	multiple kdbGet/kdbSet calls
+
 test failing mount with error plugin
 
 test error plugin when mounted at open
 
 
+## yajl
+
+array:
+	together with yajl
+	check if its a valid array via metadata
+	spec/array metadaten: array=1-10
+	user/array/#0 -> valid
+	user/array -> invalid
+	system/array/x -> invalid
+
+## mingw
+
+test cases do not build
+	see (#131)
+
+## conflicts
+
+fix testkdb_conflict:
+	longer get/set sequences
+	also with file/non-file
+	also with more than 2 KDB
+
 ## afl
 
+also test http://blog.llvm.org/2015/04/fuzz-all-clangs.html v(#185)
 test all plugins with it
+integrate in build server (#160)
 
 ## errno
 

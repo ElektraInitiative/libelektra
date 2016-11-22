@@ -3,7 +3,7 @@
  *
  * @brief
  *
- * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
  */
 
 #include <string.h>
@@ -114,7 +114,7 @@ int init (int argc, char ** argv)
 Key * create_root_key (const char * backendName)
 {
 	Key * root = keyNew ("user/tests", KEY_END);
-	/*Make mount point beneath root, and do all tests here*/
+	/*Make mountpoint beneath root, and do all tests here*/
 	/* Not needed anymore:
 	keySetDir(root);
 	keySetUID(root, nbUid);

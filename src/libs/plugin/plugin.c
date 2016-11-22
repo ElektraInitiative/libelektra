@@ -3,13 +3,14 @@
  *
  * @brief Access plugin handle.
  *
- * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
  */
 
 #ifdef HAVE_KDBCONFIG_H
 #include "kdbconfig.h"
 #endif
 
+#include <kdbassert.h>
 #include <kdbinternal.h>
 
 
@@ -84,9 +85,7 @@ Plugin * elektraPluginExport (const char * pluginName, ...)
 			returned->kdbError = va_arg (va, kdbErrorPtr);
 			break;
 		default:
-#if DEBUG
-			printf ("plugin passed something unexpected\n");
-#endif
+			ELEKTRA_ASSERT (0, "plugin passed something unexpected");
 		// fallthrough, will end here
 		case ELEKTRA_PLUGIN_END:
 			va_end (va);

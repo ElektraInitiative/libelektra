@@ -3,13 +3,15 @@
  *
  * @brief
  *
- * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
  */
 
 #include <iostream>
 #include <memory>
 #include <string>
 #include <vector>
+
+#include <coloredkdbio.hpp>
 
 #include <cmdline.hpp>
 #include <command.hpp>
@@ -27,7 +29,7 @@ int displayHelp (std::string app, Factory const & f)
 {
 	std::cout << "Usage: " << app << " <command> [args]\n" << std::endl;
 	std::cout << app << " is a program to manage elektra's key database.\n"
-		  << "Run a command with -H or --help as args to show a help text for\n"
+		  << "Please run a command with -H or --help as args to show a help text for\n"
 		  << "a specific command.\n"
 		  << std::endl;
 	std::cout << "Known commands are:" << std::endl;
@@ -38,10 +40,10 @@ int displayHelp (std::string app, Factory const & f)
 	}
 	catch (kdb::KDBException const & ce)
 	{
-		std::cerr << "There is a severe problem with your installation!\n"
+		std::cerr << "Sorry, I have a severe problem, it seems like I am not installed correctly!\n"
 			  << "kdbOpen() failed with the info:" << std::endl
-			  << ce.what () << std::endl;
-		std::cout << "Listing of internal commands failed" << std::endl;
+			  << ce.what () << std::endl
+			  << "Please report an issue on http://git.libelektra.org/issues";
 		return 8;
 	}
 	for (auto & command : commands)

@@ -2,7 +2,7 @@
  * @file
  *
  * @brief A plugin that reads configuration files and saves keys on a line by line basis *
- * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
  *
  */
 
@@ -98,12 +98,12 @@ int elektraLineGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 
 	if (ret == -1)
 	{
-		ELEKTRA_SET_ERROR (59, parentKey, "could not increment array");
+		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_NO_INC, parentKey, "could not increment array from %s", keyName (ksTail (returned)));
 		ret = -1;
 	}
 	else if (feof (fp) == 0)
 	{
-		ELEKTRA_SET_ERROR (60, parentKey, "not at the end of file");
+		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_NOEOF, parentKey, "not at the end of file");
 		ret = -1;
 	}
 

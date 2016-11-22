@@ -1,8 +1,8 @@
-## Order of namespaces
+## Order of namespaces ##
 
 This tutorial assumes that you know what [namespaces](/doc/tutorials/namespaces.md) are. We will only be talking about [cascading lookup](/doc/help/elektra-cascading.md) here.
 
-In Elektra, the default order of namespaces is as follows:
+When Elektra looks up a key, the namespaces are searched in this order:
 
  * [spec](https://github.com/ElektraInitiative/libelektra/blob/master/doc/help/elektra-namespaces.md#spec) (contains metadata, e.g. to modify elektra lookup behaviour)
  * [proc](https://github.com/ElektraInitiative/libelektra/blob/master/doc/help/elektra-namespaces.md#proc) (process-related information)
@@ -10,44 +10,72 @@ In Elektra, the default order of namespaces is as follows:
  * [user](https://github.com/ElektraInitiative/libelektra/blob/master/doc/help/elektra-namespaces.md#user) (user configuration)
  * [system](https://github.com/ElektraInitiative/libelektra/blob/master/doc/help/elektra-namespaces.md#system) (system configuration)
 
-Looking at this order, we can see that if a configuration option isn't specified
-by the user (then it would be in the `user` namespace), it will be loaded from
-the `system` namespace. In this case, the option in the `system` namespace will
-be used if the key hasn't been defined by the user.
+Looking at this order, we can see that if a configuration option is specified by the user (in the **user** namespace) as well as in the **system** namespace, then the key in the **user** namespace takes precedence over the one in the **system** namespace. If there is no such key in the **user** namespace the key in the **system** namespace acts as a fallback.
 
+But lets demonstrate this with an example:
+
+###### Add a key to the system namespace ######
+Configuration in the **system** namespace is readable for all users and the same for all users. Therefore this namespace provides a default or fallback configuration.
+
+In the default Elektra installation only an administrator can update configuration here:
 ```
+$ kdb get /sw/tutorial/cascading/#0/current/test
+Did not find key
+
+# Now add the key ...
 $ sudo kdb set system/sw/tutorial/cascading/#0/current/test "hello world"
 create a new key system/sw/tutorial/cascading/#0/current/test with string hello world
 
+# ... and verify that it exists
 $ kdb get /sw/tutorial/cascading/#0/current/test
 hello world
+```
 
-$ kdb set user/sw/tutorial/cascading/#0/current/test "hello universe"
-Create a new key user/sw/tutorial/cascading/#0/current/test with string hello universe
+###### Add a key to the user namespace ######
+A user may now want to override the configuration in **system**, so he sets a key in the **user** namespace:
 
+```
+$ kdb set user/sw/tutorial/cascading/#0/current/test "hello galaxy"
+Create a new key user/sw/tutorial/cascading/#0/current/test with string hello galaxy
+
+# This key masks the key in the system namespace
+$ kdb get /sw/tutorial/cascading/#0/current/test
+hello galaxy
+```
+Note that configuration in the **user** namespace only affects _this_ user. Other users would still get the key from the **system** namespace.
+
+###### Add a key to the dir namespace ######
+The **dir** namespace is associated with a directory. The configuration in the **dir** namespace applies to the associated directory and all its subdirectories.
+This is useful if you have project specific settings (e.g. your git configuration or a .htaccess file).
+
+As **dir** precedes the **user** namespace, configuration in **dir** can overwrite user configuration:
+
+```
+# create and change to a new directory ...
+$ mkdir kdbtutorial && cd $_
+
+# ... and create a key in this directories dir-namespace
+$ kdb set dir/sw/tutorial/cascading/#0/current/test "hello universe"
+Create a new key dir/sw/tutorial/cascading/#0/current/test with string hello universe
+
+# This key masks the key in the system namespace
 $ kdb get /sw/tutorial/cascading/#0/current/test
 hello universe
-```
 
-Furthermore, in the order `dir` is even higher than `user`, which means that
-configuration in the current folder can overwrite user configuration.
-
-`.configuration` in your current directory:
-
-```
-test = hello dir
-```
-
-Then run:
-
-```
-$ sudo kdb mount /.configuration dir/sw/tutorial/cascading/#0/current ini
+# But is only present in the associated directory
+$ cd ..
 $ kdb get /sw/tutorial/cascading/#0/current/test
-hello dir
+hello galaxy
 ```
 
+###### Add a key to the proc namespace ######
+The **proc** namespace is not accessible from the commandline, but only from within applications. So we have to omit an example for that at this point.
+[Elektrified](/doc/help/elektra-glossary.md) applications can use this namespace to override configuration from other namespaces internally.
 
-## Cascading
+###### Add a key to the spec namespcae ######
+Because the **spec** namespace does not contain values of keys but their metadata, Elektra handles the **spec** namespace differently to other namespaces. The followin part of the tutorial is dedicated to the impact of the **spec** namespace on cascading lookups.
+
+## Cascading ##
 
 Cascading triggers actions when, for example, the key isn't found.
 This concept is used for our previous example of using `system` configuration
@@ -56,16 +84,16 @@ when the `user` configuration is not defined. When a key starts with `/`,
 of `system/test` will do a cascading lookup.
 
 
-## Override links
+## Override links ##
 
 The `spec` namespace is special as it can completely change how the cascading
 lookup works.
 
-For example, in the meta data of the respective `spec`-keys, *override links*
+For example, in the metadata of the respective `spec`-keys, *override links*
 can be specified to use other keys in favor of the key itself. This way, even
 config from current folders (`dir`) can be overwritten.
 
-In the cascading lookup, meta data of `spec`-keys comes in as follows:
+In the cascading lookup, metadata of `spec`-keys comes in as follows:
 
  1. `override/#` keys will be considered
  2. namespaces specified in the `namespaces/#` keys are considered
@@ -92,14 +120,14 @@ Override links can be defined by adding them to the `override/#` array:
 ```
 $ sudo kdb setmeta spec/sw/tutorial/cascading/#0/current/test override/#0 /overrides/test
 $ kdb get /sw/tutorial/cascading/#0/current/test
-hello system override
+hello override
 ```
 
 Furthermore, you can specify a custom order for the namespaces, set fallback
 keys and more. For more information, read the [`elektra-spec` help page](/doc/help/elektra-spec.md).
 
 
-## User defaults
+## User defaults ##
 
 Override links can also be used to define default values. It's similar to
 defining default values via the `system` namespace, but uses overrides, which

@@ -3,7 +3,7 @@
  *
  * @brief
  *
- * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
  */
 
 #ifndef FACTORY_HPP
@@ -15,7 +15,7 @@
 #include <string>
 #include <vector>
 
-#include <ansicolors.hpp>
+#include "coloredkdbio.hpp"
 #include <command.hpp>
 #include <external.hpp>
 

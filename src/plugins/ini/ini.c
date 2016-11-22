@@ -3,7 +3,7 @@
  *
  * @brief A plugin for reading and writing ini files
  *
- * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
  *
  */
 
@@ -578,7 +578,7 @@ int elektraIniClose (Plugin * handle, Key * parentKey ELEKTRA_UNUSED)
 	return 0;
 }
 
-#if DEBUG && VERBOSE
+#if VERBOSE
 static void outputDebug () __attribute__ ((unused));
 
 static void outputDebug (KeySet * ks)
@@ -743,7 +743,7 @@ int elektraIniGet (Plugin * handle, KeySet * returned, Key * parentKey)
 }
 
 // TODO: # and ; comments get mixed up, patch inih to differentiate and
-// create comment keys instead of writing meta data. Wiriting the meta
+// create comment keys instead of writing metadata. Wiriting the meta
 // data can be done by keytometa then
 void writeComments (Key * current, FILE * fh)
 {
@@ -752,7 +752,8 @@ void writeComments (Key * current, FILE * fh)
 	fprintf (fh, "%s\n", toWrite);
 	elektraFree (toWrite);
 }
-static int containsSpecialCharacter (const char *);
+static int keyContainsSpecialCharacter (const char *);
+static int valueContainsSpecialCharacter (const char *);
 
 void writeMultilineKey (Key * key, const char * iniName, FILE * fh, IniPluginConfig * config)
 {
@@ -762,7 +763,7 @@ void writeMultilineKey (Key * key, const char * iniName, FILE * fh, IniPluginCon
 	char * value = elektraMalloc (valueSize);
 	keyGetString (key, value, valueSize);
 	result = strtok_r (value, "\n", &saveptr);
-	if (containsSpecialCharacter (iniName))
+	if (keyContainsSpecialCharacter (iniName))
 	{
 		fprintf (fh, "\"%s\" %c ", iniName, config->delim);
 	}
@@ -774,14 +775,14 @@ void writeMultilineKey (Key * key, const char * iniName, FILE * fh, IniPluginCon
 		fprintf (fh, "\"\n%s\"", config->continuationString);
 	else
 	{
-		if (containsSpecialCharacter (result))
+		if (valueContainsSpecialCharacter (result))
 			fprintf (fh, "\"%s\"\n", result);
 		else
 			fprintf (fh, "%s\n", result);
 	}
 	while ((result = strtok_r (0, "\n", &saveptr)) != 0)
 	{
-		if (containsSpecialCharacter (result))
+		if (valueContainsSpecialCharacter (result))
 			fprintf (fh, "%s\"%s\"\n", config->continuationString, result);
 		else
 			fprintf (fh, "%s%s\n", config->continuationString, result);
@@ -1060,12 +1061,27 @@ static int iniCmpOrder (const void * a, const void * b)
 	return ret;
 }
 
-static int containsSpecialCharacter (const char * str)
+static int keyContainsSpecialCharacter (const char * str)
 {
 	char * ptr = (char *)str;
 	if (isspace (*ptr) || (isspace (*(ptr + strlen (str) - 1)))) return 1;
 	if (*ptr == '#' || *ptr == ';') return 1;
 	if (*ptr == '[') return 1;
+	while (*ptr)
+	{
+		if (*ptr == '"' || *ptr == '=')
+		{
+			return 1;
+		}
+		++ptr;
+	}
+	return 0;
+}
+static int valueContainsSpecialCharacter (const char * str)
+{
+	char * ptr = (char *)str;
+	if (isspace (*ptr) || (isspace (*(ptr + strlen (str) - 1)))) return 1;
+	if (*ptr == '#' || *ptr == ';') return 1;
 	while (*ptr)
 	{
 		if (*ptr == '"' || *ptr == '=')
@@ -1097,11 +1113,11 @@ static void iniWriteMeta (FILE * fh, Key * parentKey, Key * key, IniPluginConfig
 			const char * string = keyString (meta);
 			if (strstr (string, "\n") == 0)
 			{
-				if (containsSpecialCharacter (name))
+				if (keyContainsSpecialCharacter (name))
 					fprintf (fh, "\"%s\" = ", name);
 				else
 					fprintf (fh, "%s %c ", name, config->delim);
-				if (strlen (string) && (containsSpecialCharacter (string)))
+				if (strlen (string) && (valueContainsSpecialCharacter (string)))
 					fprintf (fh, "\"%s\"\n", string);
 				else if (strlen (string))
 					fprintf (fh, "%s\n", string);
@@ -1120,6 +1136,7 @@ static int iniWriteKeySet (FILE * fh, Key * parentKey, KeySet * returned, IniPlu
 	ksRewind (returned);
 	Key ** keyArray;
 	ssize_t arraySize = ksGetSize (returned);
+	if (arraySize == 0) return 0;
 	keyArray = elektraCalloc (arraySize * sizeof (Key *));
 	elektraKsToMemArray (returned, keyArray);
 	qsort (keyArray, arraySize, sizeof (Key *), iniCmpOrder);
@@ -1138,11 +1155,11 @@ static int iniWriteKeySet (FILE * fh, Key * parentKey, KeySet * returned, IniPlu
 			const char * string = keyString (cur);
 			if (strstr (string, "\n") == 0)
 			{
-				if (containsSpecialCharacter (name))
+				if (keyContainsSpecialCharacter (name))
 					fprintf (fh, "\"%s\" %c ", name, delim);
 				else
 					fprintf (fh, "%s %c ", name, delim);
-				if (strlen (string) && (containsSpecialCharacter (string)))
+				if (strlen (string) && (valueContainsSpecialCharacter (string)))
 					fprintf (fh, "\"%s\"\n", string);
 				else if (strlen (string))
 					fprintf (fh, "%s\n", string);
@@ -1194,11 +1211,11 @@ static int iniWriteKeySet (FILE * fh, Key * parentKey, KeySet * returned, IniPlu
 			if (!keyIsBinary (cur))
 			{
 				const char * string = keyString (cur);
-				if (containsSpecialCharacter (name))
+				if (keyContainsSpecialCharacter (name))
 					fprintf (fh, "\"%s\" %c ", name, delim);
 				else
 					fprintf (fh, "%s %c ", name, delim);
-				if (strlen (string) && (containsSpecialCharacter (string)))
+				if (strlen (string) && (valueContainsSpecialCharacter (string)))
 					fprintf (fh, "\"%s\"\n", string);
 				else
 					fprintf (fh, "%s\n", string);
@@ -1283,11 +1300,11 @@ static int iniWriteKeySet (FILE * fh, Key * parentKey, KeySet * returned, IniPlu
 					{
 						cur = keyArray[j];
 						const char * string = keyString (cur);
-						if (containsSpecialCharacter (name))
+						if (keyContainsSpecialCharacter (name))
 							fprintf (fh, "\"%s\" %c ", name, delim);
 						else
 							fprintf (fh, "%s %c ", name, delim);
-						if (strlen (string) && (containsSpecialCharacter (string)))
+						if (strlen (string) && (valueContainsSpecialCharacter (string)))
 							fprintf (fh, "\"%s\"\n", string);
 						else
 							fprintf (fh, "%s\n", string);
@@ -1325,7 +1342,7 @@ static int iniWriteKeySet (FILE * fh, Key * parentKey, KeySet * returned, IniPlu
 
 					if (keyGetMeta (cur, "ini/empty"))
 					{
-						if (containsSpecialCharacter (name))
+						if (keyContainsSpecialCharacter (name))
 							fprintf (fh, "\"%s\"\n", name);
 						else
 							fprintf (fh, "%s\n", name);
@@ -1333,11 +1350,11 @@ static int iniWriteKeySet (FILE * fh, Key * parentKey, KeySet * returned, IniPlu
 					else if (strstr (keyString (cur), "\n") == 0)
 					{
 						const char * string = keyString (cur);
-						if (containsSpecialCharacter (name))
+						if (keyContainsSpecialCharacter (name))
 							fprintf (fh, "\"%s\" %c ", name, delim);
 						else
 							fprintf (fh, "%s %c ", name, delim);
-						if (strlen (string) && (containsSpecialCharacter (string)))
+						if (strlen (string) && (valueContainsSpecialCharacter (string)))
 							fprintf (fh, "\"%s\"\n", string);
 						else if (strlen (string))
 							fprintf (fh, "%s\n", string);

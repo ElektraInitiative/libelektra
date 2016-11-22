@@ -3,7 +3,7 @@
  *
  * @brief
  *
- * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
  */
 
 #include <benchmarks.h>
@@ -11,6 +11,19 @@
 void benchmarkDel ()
 {
 	ksDel (large);
+}
+
+int benchmarkIterate ()
+{
+	ksRewind (large);
+	Key * cur;
+	int c = 0;
+	while ((cur = ksNext (large)))
+	{
+		// count to make sure the loop is executed
+		++c;
+	}
+	return c;
 }
 
 int main (int argc, char ** argv)
@@ -34,6 +47,9 @@ int main (int argc, char ** argv)
 
 	benchmarkFillup ();
 	timePrint ("New large keyset");
+
+	benchmarkIterate ();
+	timePrint ("Iterated over keyset");
 
 	benchmarkDel ();
 	timePrint ("Del large keyset");

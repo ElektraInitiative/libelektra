@@ -5,32 +5,32 @@
 - infos/provides =
 - infos/recommends =
 - infos/placements = pregetstorage
-- infos/status = preview unfinished nodoc
+- infos/status = unittest configurable readonly preview unfinished nodoc
 - infos/metadata =
-- infos/description =
+- infos/description = mount remote config files via curl
 
 ## Example ##
-```
-cat /tmp/curltest.ini
-cat: /tmp/curltest.ini: No such file or directory
 
-kdb mount -R noresolver /tmp/curltest.ini system/curltest ini curlget url="https://raw.githubusercontent.com/ElektraInitiative/libelektra/master/src/plugins/ini/ini/plainini"
+    cat /tmp/curltest.ini
+    cat: /tmp/curltest.ini: No such file or directory
 
-kdb ls system/curltest
-system/curltest/nosectionkey
-system/curltest/section1
-system/curltest/section1/key1
-system/curltest/section1/key2
-system/curltest/section2
-system/curltest/section2/emptykey
-system/curltest/section2/key3
+    kdb mount -R noresolver /tmp/curltest.ini system/curltest ini curlget url="https://raw.githubusercontent.com/ElektraInitiative/libelektra/master/src/plugins/ini/ini/plainini"
 
-cat /tmp/curltest.ini
-nosectionkey = nosectionvalue
-[section1]
-key1 = value1
-key2 = value2
-[section2]
-emptykey =
-key3 = value3
-```
+    kdb ls system/curltest
+    system/curltest/nosectionkey
+    system/curltest/section1
+    system/curltest/section1/key1
+    system/curltest/section1/key2
+    system/curltest/section2
+    system/curltest/section2/emptykey
+    system/curltest/section2/key3
+
+    cat /tmp/curltest.ini
+    nosectionkey = nosectionvalue
+    [section1]
+    key1 = value1
+    key2 = value2
+    [section2]
+    emptykey =
+    key3 = value3
+

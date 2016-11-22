@@ -3,7 +3,7 @@
  *
  * @brief Internal methods for Elektra.
  *
- * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
  */
 
 #ifdef HAVE_KDBCONFIG_H
@@ -39,6 +39,7 @@
 #endif
 
 #include "kdbinternal.h"
+#include <kdbassert.h>
 
 /**
  * @brief Internal Methods for Elektra
@@ -74,6 +75,14 @@ ssize_t elektraMemcpy (Key ** array1, Key ** array2, size_t size)
 	if (!array2) return -1;
 	if (size > SSIZE_MAX) return -1;
 	if (size == 0) return 0;
+#if DEBUG
+	char * a = (char *)array1;
+	char * b = (char *)array2;
+	for (size_t i = 0; i < size; i++)
+	{
+		ELEKTRA_ASSERT (a + i != b && b + i != a, "memcpy overlap: %p and %p with size %zu", (void *)a, (void *)b, size);
+	}
+#endif
 	memcpy (array1, array2, size * sizeof (Key *));
 	return size;
 }
@@ -114,6 +123,8 @@ ssize_t elektraMemmove (Key ** array1, Key ** array2, size_t size)
  **/
 int elektraStrCmp (const char * s1, const char * s2)
 {
+	ELEKTRA_ASSERT (s1 != NULL && s2 != NULL, "Got null pointer s1: %p s2: %p", (void *)s1, (void *)s2);
+
 	return strcmp (s1, s2);
 }
 
@@ -130,6 +141,7 @@ int elektraStrCmp (const char * s1, const char * s2)
  **/
 int elektraStrCaseCmp (const char * s1, const char * s2)
 {
+	ELEKTRA_ASSERT (s1 != NULL && s2 != NULL, "Got null pointer s1: %p s2: %p", (void *)s1, (void *)s2);
 	return strcasecmp (s1, s2);
 }
 
@@ -149,6 +161,7 @@ int elektraStrCaseCmp (const char * s1, const char * s2)
 int elektraMemCaseCmp (const char * s1, const char * s2, size_t size)
 {
 	size_t i;
+	ELEKTRA_ASSERT (s1 != NULL && s2 != NULL, "Got null pointer s1: %p s2: %p", (void *)s1, (void *)s2);
 	for (i = 0; i < size; i++)
 	{
 		const unsigned char cmp1 = s1[i];
@@ -184,9 +197,12 @@ if (elektraRealloc ((void **) & buffer, new_length) < 0) {
  */
 int elektraRealloc (void ** buffer, size_t size)
 {
+	ELEKTRA_ASSERT (size, "Size to allocate is zero (implementation defined behavior)");
 	void * ptr;
 	void * svr = *buffer;
+
 	ptr = realloc (*buffer, size);
+	ELEKTRA_ASSERT (ptr, "Memory (re)allocation failed with size %zu", size);
 	if (ptr == NULL)
 	{
 		*buffer = svr; /* restore old buffer*/
@@ -221,7 +237,10 @@ if ((buffer = elektraMalloc (length)) == 0) {
  */
 void * elektraMalloc (size_t size)
 {
-	return malloc (size);
+	ELEKTRA_ASSERT (size, "Size to allocate is zero (implementation defined behavior)");
+	void * ret = malloc (size);
+	ELEKTRA_ASSERT (ret, "Memory allocation failed with size %zu", size);
+	return ret;
 }
 
 /**Allocate memory for Elektra.
@@ -233,7 +252,10 @@ void * elektraMalloc (size_t size)
  */
 void * elektraCalloc (size_t size)
 {
-	return calloc (1, size);
+	ELEKTRA_ASSERT (size, "Size to allocate is zero (implementation defined behavior)");
+	void * ret = calloc (1, size);
+	ELEKTRA_ASSERT (ret, "Memory allocation failed with size %zu", size);
+	return ret;
 }
 
 /**Free memory of elektra or its backends.
@@ -270,8 +292,10 @@ char * elektraStrDup (const char * s)
 {
 	void * tmp = 0;
 	size_t l = 0;
+	ELEKTRA_ASSERT (s, "Tried to duplicate null pointer");
 
 	l = elektraStrLen (s);
+	ELEKTRA_ASSERT (l, "Size of string to duplicate is zero");
 	tmp = elektraMalloc (l);
 	if (tmp) memcpy (tmp, s, l);
 
@@ -294,6 +318,7 @@ char * elektraStrDup (const char * s)
 char * elektraStrNDup (const char * s, size_t l)
 {
 	void * tmp = 0;
+	ELEKTRA_ASSERT (l, "Size for string duplicate is zero");
 
 	tmp = elektraMalloc (l);
 	if (tmp) memcpy (tmp, s, l);
@@ -321,6 +346,8 @@ char * elektraStrNDup (const char * s, size_t l)
  */
 size_t elektraStrLen (const char * s)
 {
+	ELEKTRA_ASSERT (s, "Got null pointer");
+
 	char * found = strchr (s, 0);
 	if (found) return found - s + 1;
 	return 0;
@@ -336,6 +363,8 @@ size_t elektraStrLen (const char * s)
  */
 char * elektraFormat (const char * format, ...)
 {
+	ELEKTRA_ASSERT (format, "Got null pointer");
+
 	va_list va;
 	va_start (va, format);
 	char * ret = elektraVFormat (format, va);
@@ -353,6 +382,8 @@ char * elektraFormat (const char * format, ...)
  */
 char * elektraVFormat (const char * format, va_list arg_list)
 {
+	ELEKTRA_ASSERT (format, "Got null pointer");
+
 	static int const default_size = 512;
 	char * buffer = elektraMalloc (default_size);
 	if (!buffer) return 0;
@@ -419,6 +450,9 @@ char * elektraVFormat (const char * format, va_list arg_list)
  */
 int elektraValidateKeyName (const char * name, size_t size)
 {
+	ELEKTRA_ASSERT (name, "Got null pointer");
+	ELEKTRA_ASSERT (size >= 2, "size too small %zu", size);
+
 	size_t escapeCount = 0;
 
 	size -= 2; // forward null character to last character
@@ -444,6 +478,9 @@ int elektraValidateKeyName (const char * name, size_t size)
  */
 static void elektraWriteBackslashes (char ** dest, size_t number)
 {
+	ELEKTRA_ASSERT (dest, "Got null pointer");
+	ELEKTRA_ASSERT (*dest, "Got null pointer (*dest)");
+
 	char * dp = *dest;
 	while (number)
 	{
@@ -479,6 +516,9 @@ int elektraUnescapeKeyNamePartBegin (const char * source, size_t size, char ** d
 {
 	const char * sp = source;
 	char * dp = *dest;
+
+	ELEKTRA_ASSERT (sp != NULL && dp != NULL, "Got null pointer sp: %p dp: %p", (void *)sp, (void *)dp);
+
 	if (!strncmp ("%", sp, size))
 	{
 		// nothing to do, but part is finished
@@ -567,6 +607,8 @@ char * elektraUnescapeKeyNamePart (const char * source, size_t size, char * dest
 	char * dp = dest;
 	size_t count = 0;
 
+	ELEKTRA_ASSERT (sp != NULL && dp != NULL, "Got null pointer sp: %p dp: %p", (void *)sp, (void *)dp);
+
 	while (size)
 	{
 		if (*sp == '\\')
@@ -575,11 +617,9 @@ char * elektraUnescapeKeyNamePart (const char * source, size_t size, char * dest
 		}
 		else if (*sp == '/')
 		{
-			// we escape a part, so there had to be a
-			// backslash
-			ELEKTRA_ASSERT (count > 0);
-			// we counted an uneven number of backslashes
-			ELEKTRA_ASSERT ((count % 2) == 1);
+			// we escape a part, so there had to be a backslash
+			ELEKTRA_ASSERT (count > 0, "no backslash found, count is %zu", count);
+			ELEKTRA_ASSERT ((count % 2) == 1, "counted uneven number of backslashes: %zu", count);
 
 			count /= 2;
 			while (count)
@@ -609,9 +649,7 @@ char * elektraUnescapeKeyNamePart (const char * source, size_t size, char * dest
 		--size;
 	}
 
-	// we counted an even number of backslashes
-	// otherwise we would not be at the end
-	ELEKTRA_ASSERT ((count % 2) == 0);
+	ELEKTRA_ASSERT ((count % 2) == 0, "uneven number of backslashes: %zu", count);
 	count /= 2;
 	while (count)
 	{
@@ -637,6 +675,9 @@ size_t elektraUnescapeKeyName (const char * source, char * dest)
 	const char * sp = source;
 	char * dp = dest;
 	size_t size = 0;
+
+	ELEKTRA_ASSERT (sp != NULL && dp != NULL, "Got null pointer sp: %p dp: %p", (void *)sp, (void *)dp);
+
 	if (*source == '/')
 	{
 		// handling for cascading names
@@ -664,6 +705,8 @@ int elektraEscapeKeyNamePartBegin (const char * source, char * dest)
 {
 	const char * sp = source;
 	char * dp = dest;
+
+	ELEKTRA_ASSERT (sp != NULL && dp != NULL, "Got null pointer sp: %p dp: %p", (void *)sp, (void *)dp);
 
 	if (!strcmp ("", sp))
 	{
@@ -735,6 +778,9 @@ char * elektraEscapeKeyNamePart (const char * source, char * dest)
 
 	const char * sp = source;
 	char * dp = dest;
+
+	ELEKTRA_ASSERT (sp != NULL && dp != NULL, "Got null pointer sp: %p dp: %p", (void *)sp, (void *)dp);
+
 	while (*sp)
 	{
 		if (*sp == '\\')

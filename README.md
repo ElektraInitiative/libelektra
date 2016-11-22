@@ -11,6 +11,12 @@ and tools regarding configuration tasks. Elektra abstracts from
 cross-platform-related issues and allows applications to be aware of other
 applications' configurations, leveraging easy application integration.
 
+## Often used links
+
+- [build server](http://build.libelektra.org:8080/)
+- [tutorials](http://git.libelektra.org/blob/master/doc/tutorials/)
+- [API docu](http://doc.libelektra.org/api/latest/html/)
+
 ## Overview
 
 Elektra consists of three parts:
@@ -45,7 +51,8 @@ In case you're worried about linking to such a powerful library. The core is a s
 implemented in C, works cross-platform, and does not need any external dependencies. There are
 [bindings](src/bindings) for other languages in case C is too low-level for you.
 
-[Why should I use Elektra?](doc/WHY.md)
+- [Why should I use Elektra?](doc/WHY.md)
+- [Big Picture of Elektra](doc/BIGPICTURE.md)
 
 
 ## Contact ##
@@ -100,10 +107,13 @@ For information about elektrified environment variables, see
 To get an idea of Elektra, you can take a look at the
 [presentation](http://www.libelektra.org/ftp/elektra/presentations/2016/FOSDEM/fosdem.odp).
 
-The full documentation, including
-[tutorials](http://libelektra.org/blob/master/doc/tutorials/),
-[glossary](/doc/help/elektra-glossary.md), and
-[concepts and man pages](/doc/help/elektra-introduction.md)
+The full documentation, including:
+
+- [tutorials](http://libelektra.org/blob/master/doc/tutorials/),
+- [faq](/doc/help/elektra-faq.md),
+- [glossary](/doc/help/elektra-glossary.md), and
+- [concepts and man pages](/doc/help/elektra-introduction.md)
+
 is available in the GitHub repository.
 
 You can read the documentation for the kdb tool, either
@@ -139,9 +149,9 @@ And in terms of quality, we want:
 
 ## Facts and Features ##
 
- * Elektra uses the [BSD licence](doc/COPYING).
+ * Elektra uses the [BSD licence](doc/LICENSE.md).
  * Elektra implements an [API](http://doc.libelektra.org/api/latest/html/) to fully access a global key database.
- * Elektra can be thought of a virtual file system for configuration.
+ * Elektra can be thought of a [virtual file system for configuration](/doc/BIGPICTURE.md).
  * Elektra supports mounting of existing configuration files into the global key database.
  * Elektra has dozens of [Plugins](src/plugins/) that make it possible
    to have a tiny core, but still support many features, including:
@@ -215,15 +225,12 @@ Releases can be downloaded from [http](http://www.libelektra.org/ftp/elektra/rel
 After downloading or cloning Elektra, `cd` to the directory and run the
 following commands to compile it:
 
- * `mkdir -p build`
+ * `mkdir build`
  * `cd build`
- * `cmake ..`
+ * `cmake ..` or `ccmake ..`
  * `make`
 
 Then you can use `sudo make install` to install it.
-
-You can also use the [`./configure`](configure) command to generate a `cmake`
-command with special options.
 
 For more information, especially how to set CMake Cache, see [here](doc/COMPILE.md).
 Make sure to read how to add plugins, tools and bindings.

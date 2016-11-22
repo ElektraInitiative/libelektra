@@ -3,7 +3,7 @@
  *
  * @brief
  *
- * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
  */
 
 #ifndef ELEKTRA_KEY_HPP
@@ -11,6 +11,7 @@
 
 #include <cstdarg>
 #include <cstring>
+#include <functional>
 #include <locale>
 #include <sstream>
 #include <string>
@@ -188,7 +189,7 @@ public:
 	inline ssize_t setBinary (const void * newBinary, size_t dataSize);
 
 
-	// meta data
+	// metadata
 	//
 	//
 	inline bool hasMeta (const std::string & metaName) const;
@@ -204,7 +205,7 @@ public:
 	inline void copyMeta (const Key & other, const std::string & metaName);
 	inline void copyAllMeta (const Key & other);
 
-	inline void rewindMeta () const;
+	inline void rewindMeta ();
 	inline const Key nextMeta ();
 	inline const Key currentMeta () const;
 
@@ -214,8 +215,12 @@ public:
 
 	inline bool isValid () const;
 	inline std::string getNamespace () const;
-	inline bool isSystem () const;
+	inline bool isCascading () const;
+	inline bool isSpec () const;
+	inline bool isProc () const;
+	inline bool isDir () const;
 	inline bool isUser () const;
+	inline bool isSystem () const;
 
 	inline bool isString () const;
 	inline bool isBinary () const;
@@ -1386,7 +1391,7 @@ inline yourtype Key::getMeta(const std::string &name) const
 }
  * @endcode
  *
- * @throw KeyTypeConversion if meta data could not be parsed
+ * @throw KeyTypeConversion if metadata could not be parsed
  *
  * @note No exception will be thrown if a const Key or char* is requested,
  * but don't forget the const: getMeta<const Key>,
@@ -1515,7 +1520,7 @@ inline void Key::copyAllMeta (const Key & other)
  *
  * @see nextMeta(), currentMeta()
  */
-inline void Key::rewindMeta () const
+inline void Key::rewindMeta ()
 {
 	ckdb::keyRewindMeta (key);
 }
@@ -1535,7 +1540,7 @@ inline const Key Key::nextMeta ()
 /**
  * @copydoc keyCurrentMeta
  *
- * @note that the key will be null if last meta data is found.
+ * @note that the key will be null if last metadata is found.
  *
  * @code
  * k.rewindMeta();
@@ -1586,25 +1591,69 @@ inline std::string Key::getNamespace () const
 
 
 /**
- * Name starts with "system".
+ * Determines if the key is in cascading namespace.
  *
- * @retval true if it is a system key
+ * @retval true if it is a cascading key
  * @retval false otherwise
  */
-inline bool Key::isSystem () const
+inline bool Key::isCascading () const
 {
-	return !strncmp (ckdb::keyName (key), "system", 6);
+	return ckdb::keyGetNamespace (getKey ()) == KEY_NS_CASCADING;
 }
 
 /**
- * Name starts with "user".
+ * Determines if the key is in spec namespace.
+ *
+ * @retval true if it is a spec key
+ * @retval false otherwise
+ */
+inline bool Key::isSpec () const
+{
+	return ckdb::keyGetNamespace (getKey ()) == KEY_NS_SPEC;
+}
+
+/**
+ * Determines if the key is in proc namespace.
+ *
+ * @retval true if it is a proc key
+ * @retval false otherwise
+ */
+inline bool Key::isProc () const
+{
+	return ckdb::keyGetNamespace (getKey ()) == KEY_NS_PROC;
+}
+
+/**
+ * Determines if the key is in dir namespace.
+ *
+ * @retval true if it is a dir key
+ * @retval false otherwise
+ */
+inline bool Key::isDir () const
+{
+	return ckdb::keyGetNamespace (getKey ()) == KEY_NS_DIR;
+}
+
+/**
+ * Determines if the key is in user namespace.
  *
  * @retval true if it is a user key
  * @retval false otherwise
  */
 inline bool Key::isUser () const
 {
-	return !strncmp (ckdb::keyName (key), "user", 4);
+	return ckdb::keyGetNamespace (getKey ()) == KEY_NS_USER;
+}
+
+/**
+ * Determines if the key is in system namespace.
+ *
+ * @retval true if it is a system key
+ * @retval false otherwise
+ */
+inline bool Key::isSystem () const
+{
+	return ckdb::keyGetNamespace (getKey ()) == KEY_NS_SYSTEM;
 }
 
 /**

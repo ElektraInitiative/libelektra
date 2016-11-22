@@ -2,12 +2,17 @@
 - infos/author = Name <name@libelektra.org>
 - infos/licence = BSD
 - infos/needs =
-- infos/provides = storage info
+- infos/provides = storage/info
 - infos/recommends =
 - infos/placements = getstorage setstorage
-- infos/status = recommended maintained specific nodep libc unfinished nodoc concept
+- infos/status = recommended maintained specific nodep libc readonly limited unfinished concept
 - infos/metadata =
-- infos/description =
+- infos/description = reads desktop information
+
+## Introduction ##
+
+The plugin is informational and mainly be used to provide context for
+other configuration. See [elektrify-getenv](/src/libs/getenv/README.md).
 
 ## Usage ##
 
@@ -25,13 +30,6 @@ Then you can get desktop information via:
 
 You either get a *lower-case* string (supported desktops see below)
 or no key if no desktop was detected.
-
-
-## Purpose ##
-
-The plugin is informational and mainly be used to provide context for
-other other configuration. See [elektrify-getenv](/src/libs/getenv/README.md).
-
 
 ## Supported Desktop ##
 

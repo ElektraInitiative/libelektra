@@ -20,7 +20,7 @@ with Elektra.
 
 - `libdbus-1-dev`
 
-## Dbus
+## Dbus ##
 
 A preferred way to interconnect desktop applications and even
 embedded system applications on mobile devices running Linux is
@@ -66,7 +66,8 @@ then we can receive the notification events using:
 
 	dbus-monitor type='signal',interface='org.libelektra',path='/org/libelektra/configuration'
 
-### Python
+### Python ###
+
 In Python the DBus notifications can be used as follows
 
 ```python
@@ -95,7 +96,7 @@ except KeyboardInterrupt:
     loop.quit()
 ```
 
-## Background
+## Background ##
 
 Today, programs are often interconnected in a dense way.  Such
 applications should always be informed when something in their

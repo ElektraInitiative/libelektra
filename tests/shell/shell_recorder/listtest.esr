@@ -1,5 +1,5 @@
 Storage: dump
-Mountpoint: system/testmount/list
+Mountpoint: system/tmount/list
 File: /tmp/listtest.dump
 MountArgs: list placements=,placements/set="presetstorage precommit postcommit",plugins=,plugins/#0=tracer,plugins/#0/placements=,plugins/#0/placements/set="presetstorage precommit postcommit",plugins/#1=timeofday,plugins/#1/placements=,plugins/#1/placements/set="presetstorage precommit postcommit"
 DiffType: File

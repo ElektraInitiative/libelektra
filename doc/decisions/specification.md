@@ -42,7 +42,7 @@
 3. kdbSet() for cascading
 4. modify ksLookup() for cascading
 5. KDB_O_DEFAULT in ksLookup()
-6. define necessary meta data
+6. define necessary metadata
 7. mounting spec files
 
 ## Related decisions

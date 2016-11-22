@@ -4,7 +4,7 @@
  * @brief test suite for the crypto plugin.
  * Contains shared functions for all compile variants.
  *
- * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
  *
  */
 
@@ -24,7 +24,6 @@
 #define TEST_KEY_ID "DDEBEF9EE2DC931701338212DAF635B17F230E8D"
 
 #define TEST_SUITE(PLUGIN_NAME)                                                                                                            \
-	test_hex ();                                                                                                                       \
 	test_gpg ();                                                                                                                       \
 	test_init (PLUGIN_NAME);                                                                                                           \
 	test_incomplete_config (PLUGIN_NAME);                                                                                              \
@@ -221,7 +220,7 @@ static void test_crypto_operations (const char * pluginName)
 			if (isMarkedForEncryption (k))
 			{
 				succeed_if (keyIsBinary (k), "Key value is not binary although it should have been encrypted");
-				succeed_if (keyGetValueSize (k) > 0, "NULL Key must have encrypted meta-data and can not have length 0");
+				succeed_if (keyGetValueSize (k) > 0, "NULL Key must have encrypted metadata and can not have length 0");
 				succeed_if (memcmp (keyValue (k), binVal, MIN (keyGetValueSize (k), (ssize_t)sizeof (binVal))),
 					    "encryption failed");
 				succeed_if (memcmp (keyValue (k), strVal, MIN (keyGetValueSize (k), (ssize_t)sizeof (strVal))),
@@ -266,45 +265,4 @@ static void test_gpg (void)
 	keyDel (msg);
 	keyDel (errorKey);
 	ksDel (conf);
-}
-
-static void test_hex (void)
-{
-	Key * errorKey = keyNew (0);
-
-	// test bin2hex
-	static const kdb_octet_t example[] = { 0xca, 0xfe, 0xdb, 0x01, 0x23, 0x45, 0x67, 0x89 };
-	static const char hex[] = "CAFEDB0123456789";
-
-	char * c = CRYPTO_PLUGIN_FUNCTION (bin2hex) (errorKey, example, sizeof (example));
-	succeed_if (c, "bin2hex conversion failed");
-	if (c)
-	{
-		succeed_if (!strcmp (c, hex), "bin2hex conversion failed, result does not match expected output");
-		elektraFree (c);
-	}
-
-	// test hex2bin
-	kdb_octet_t * buffer;
-	kdb_unsigned_long_t bufferLen;
-
-	CRYPTO_PLUGIN_FUNCTION (hex2bin) (errorKey, hex, &buffer, &bufferLen);
-	succeed_if (buffer, "hex2bin conversion failed with valid hex-string");
-	if (buffer)
-	{
-		succeed_if (!memcmp (buffer, example, MIN ((ssize_t)bufferLen, (ssize_t)sizeof (example))),
-			    "hex2bin conversion failed, result is not valid");
-		elektraFree (buffer);
-	}
-
-	// test hex2bin with faulty string
-	CRYPTO_PLUGIN_FUNCTION (hex2bin) (errorKey, "01GA", &buffer, NULL);
-	succeed_if (!buffer, "invalid hex-string was converted without error");
-	if (buffer) elektraFree (buffer);
-
-	CRYPTO_PLUGIN_FUNCTION (hex2bin) (errorKey, "010", &buffer, NULL);
-	succeed_if (!buffer, "hex-string with invalid length was converted without error");
-	if (buffer) elektraFree (buffer);
-
-	keyDel (errorKey);
 }

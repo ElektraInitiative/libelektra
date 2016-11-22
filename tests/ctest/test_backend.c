@@ -3,9 +3,10 @@
  *
  * @brief Test cases for how to build a backend out of system/elektra/mountpoints/<name>
  *
- * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
  */
 
+#include <../../src/libs/elektra/backend.c>
 #include <tests_internal.h>
 
 
@@ -59,7 +60,7 @@ static void test_simple ()
 	elektraModulesInit (modules, 0);
 
 	Key * errorKey = 0;
-	Backend * backend = elektraBackendOpen (set_simple (), modules, errorKey);
+	Backend * backend = backendOpen (set_simple (), modules, errorKey);
 	succeed_if (backend->errorplugins[0] == 0, "there should be no plugin");
 	succeed_if (backend->errorplugins[2] == 0, "there should be no plugin");
 	succeed_if (backend->errorplugins[3] == 0, "there should be no plugin");
@@ -109,7 +110,7 @@ static void test_simple ()
 	succeed_if (plugin->kdbGet != 0, "no get pointer");
 	succeed_if (plugin->kdbSet != 0, "no set pointer");
 
-	elektraBackendClose (backend, errorKey);
+	backendClose (backend, errorKey);
 	elektraModulesClose (modules, 0);
 	ksDel (modules);
 }
@@ -136,14 +137,14 @@ static void test_default ()
 
 	elektraPluginClose (plugin, 0);
 
-	Backend * backend = elektraBackendOpenDefault (modules, KDB_DB_FILE, 0);
+	Backend * backend = backendOpenDefault (modules, KDB_DB_FILE, 0);
 
 	Key * mp;
 	succeed_if ((mp = backend->mountpoint) != 0, "no mountpoint found");
 	succeed_if_same_string (keyName (mp), "");
 	succeed_if_same_string (keyString (mp), "default");
 
-	elektraBackendClose (backend, 0);
+	backendClose (backend, 0);
 	elektraModulesClose (modules, 0);
 	ksDel (modules);
 }
@@ -198,7 +199,7 @@ static void test_backref ()
 	KeySet * modules = ksNew (0, KS_END);
 	elektraModulesInit (modules, 0);
 
-	Backend * backend = elektraBackendOpen (set_backref (), modules, 0);
+	Backend * backend = backendOpen (set_backref (), modules, 0);
 	succeed_if (backend != 0, "there should be a backend");
 	succeed_if (backend->getplugins[0] == 0, "there should be no plugin");
 	exit_if_fail (backend->getplugins[1] != 0, "there should be a plugin");
@@ -238,7 +239,7 @@ static void test_backref ()
 	succeed_if (plugin2->kdbGet != 0, "no get pointer");
 	succeed_if (plugin2->kdbSet != 0, "no set pointer");
 
-	elektraBackendClose (backend, 0);
+	backendClose (backend, 0);
 	elektraModulesClose (modules, 0);
 	ksDel (modules);
 }
