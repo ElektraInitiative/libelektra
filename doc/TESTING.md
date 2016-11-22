@@ -185,3 +185,9 @@ The htmls can be found in the build directory in the folder `coverage`.
 See also the build server job:
 
 * [gcc-asan](http://build.libelektra.org:8080/job/elektra-incremental/)
+
+
+## See also
+
+- [COMPILE](COMPILE.md).
+- [INSTALL](INSTALL.md).

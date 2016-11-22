@@ -381,6 +381,8 @@ You can pass:
 - `-j` for parallel builds
 - `VERBOSE=1` to see the invocations of the compiler
 
+Continue by reading [INSTALL](INSTALL.md).
+
 ### With CodeBlocks ###
 
 You can build Elektra using Code::Blocks under Gentoo:
@@ -410,7 +412,7 @@ Note 3:
     for Gentoo is recommend to emerge sys-apps/lsb-release to name the package
     right even thou not required.
 
-## Issues ##
+## Troubleshooting ##
 
 ### missing links/libraries ###
 
@@ -424,3 +426,8 @@ This issue was reported for:
 - OpenSuse 42 (when running `make run_all`)
 - CLion IDE (does not allow to build)
 
+
+## See also
+
+- [INSTALL](INSTALL.md).
+- [TESTING](TESTING.md).
