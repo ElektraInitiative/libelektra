@@ -15,8 +15,6 @@
 
 #include <iostream>
 
-#include "ansicolors.hpp"
-
 using namespace std;
 using namespace kdb;
 using namespace kdb::tools;

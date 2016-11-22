@@ -37,11 +37,23 @@ enum class ANSI_COLOR_LAYER
 };
 
 /**
- *  colormode handle
- *  set to "always" to always print colors, "auto" to print colors if the coresponding output channel is a tty
- *  and to "never" to never print colors.
+ * @brief Query if stderr has colors
+ *
+ * @param c to init with a string (never|auto), done by Cmdline, can only be done once
+ *
+ * @return if stderr has colors
  */
-std::string & colors ();
+bool hasErrorColor (std::string c = "");
+
+
+/**
+ * @brief Query if stdout has colors
+ *
+ * @param c to init with a string (never|auto), done by Cmdline, can only be done once
+ *
+ * @return if stdout has colors
+ */
+bool hasStdColor (std::string c = "");
 
 /**
  *  getColorEscape returns the ansi escape sequence for the requested color and

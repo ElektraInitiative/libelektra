@@ -314,7 +314,7 @@ Cmdline::Cmdline (int argc, char ** argv, Command * command)
 			bookmarks.insert (nks.begin (), nks.end ());
 
 			k = conf.lookup (dirname + "color");
-			if (k) colors () = color = k.get<std::string> ();
+			if (k) color = k.get<std::string> ();
 		}
 	}
 	catch (kdb::KDBException const & ce)
@@ -346,10 +346,10 @@ Cmdline::Cmdline (int argc, char ** argv, Command * command)
 		case 'C':
 			if (!optarg)
 			{
-				colors () = "auto";
+				color = "auto";
 				break;
 			}
-			colors () = color = optarg;
+			color = optarg;
 			break;
 		case 'd':
 			debug = true;
@@ -455,6 +455,10 @@ Cmdline::Cmdline (int argc, char ** argv, Command * command)
 	{
 		arguments.push_back (argv[optind++]);
 	}
+
+	// init colors
+	hasStdColor (color);
+	hasErrorColor (color);
 }
 
 kdb::KeySet Cmdline::getPluginsConfig (string basepath) const

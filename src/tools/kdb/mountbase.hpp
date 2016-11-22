@@ -9,7 +9,7 @@
 #ifndef MOUNTBASE_HPP_
 #define MOUNTBASE_HPP_
 
-#include "ansicolors.hpp"
+#include "coloredkdbio.hpp"
 #include <command.hpp>
 #include <kdb.hpp>
 

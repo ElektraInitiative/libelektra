@@ -11,6 +11,8 @@
 #include <string>
 #include <vector>
 
+#include <coloredkdbio.hpp>
+
 #include <cmdline.hpp>
 #include <command.hpp>
 #include <external.hpp>
