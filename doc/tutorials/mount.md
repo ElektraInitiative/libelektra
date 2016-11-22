@@ -44,8 +44,7 @@ We need to be root, because we modify `/etc/hosts`.
 These changes are reflected in `/etc/hosts` instantly:
 
     $ cat /etc/hosts
-    ...
-    mylocalhost 127.0.0.33       localhost
+    127.0.0.33	mylocalhost
     ...
 
 Applications will now pick up these changes:
@@ -55,10 +54,10 @@ Applications will now pick up these changes:
 We are also safe against wrong changes:
 
 ```sh
-kdb set system/hosts/ipv4/mylocalhost ::1
+sudo kdb set system/hosts/ipv4/mylocalhost ::1
 # RET:5
 # ERROR:26
-kdb set system/hosts/ipv4/mylocalhost 300.0.0.1
+sudo kdb set system/hosts/ipv4/mylocalhost 300.0.0.1
 # RET:5
 # ERROR:26
 ```
