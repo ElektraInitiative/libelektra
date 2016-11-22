@@ -25,6 +25,13 @@ happens in 2 passes, which is needed because there can be files with no title.
   combination with the README.md of the containing folder.
 * Anchors wont work in imported markdown pages.
 
+## github specialities
+
+* github supports source code fences with syntax highlighting which are not recognised by Doxygen.
+  Thus `sh` after the fence is removed for Doxygen.
+
+
+
 ## Link Validation
 
 ### internal links
@@ -49,3 +56,4 @@ Broken links will be printed. False positive not excluded (very rare).
 
 * optimize pdf output (also UTF-8 encoding)
 * if title contains --, this should be @brief
+* also remove other fences doxygen does not understand

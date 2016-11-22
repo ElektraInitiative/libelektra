@@ -226,6 +226,7 @@ static void convertLinks (FILE * input, FILE * output, char * inputFilename, int
 	fpos_t pos;
 	int state = linkStart;
 	int newstate;
+	int sCount = 0;
 	int index = 0;
 	unsigned int len = 0;
 	/* index and len help to convert a link if found.
@@ -318,10 +319,40 @@ static void convertLinks (FILE * input, FILE * output, char * inputFilename, int
 			state = linkStart;
 			continue;
 		}
+		else if (c == '`')
+		{
+			sCount ++;
+			fprintf (output, "%c", c);
+		}
+		else if (sCount == 3)
+		{
+			sCount ++;
+			if (c != 's')
+			{
+				fprintf (output, "%c", c);
+				sCount = 0;
+			}
+		}
+		else if (sCount == 4)
+		{
+			sCount ++;
+			if (c != 'h')
+			{
+				sCount = 0;
+				fprintf (output, "s%c", c);
+			}
+		}
+		else if (sCount == 5)
+		{
+			sCount = 0;
+			if (c != '\n') fprintf (output, "sh%c", c);
+			else fprintf (output, "\n"); // swallow sh (from ```sh)
+		}
 		else if (linkNolink (state, newstate))
 		{
 			// print all other content
 			fprintf (output, "%c", c);
+			sCount = 0;
 		}
 		state = newstate;
 	}
