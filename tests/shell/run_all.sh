@@ -136,6 +136,6 @@ then
 fi
 
 # fake the number of tests:
-nbTest=nbTests
+nbTest=$nbTests
 
 end_script all
