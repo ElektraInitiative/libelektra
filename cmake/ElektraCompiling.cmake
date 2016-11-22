@@ -108,7 +108,9 @@ if (ENABLE_ASAN)
 		set (CMAKE_SHARED_LINKER_FLAGS "-fsanitize=address ${CMAKE_SHARED_LINKER_FLAGS}")
 		# this is needed because of wrong pthread detection https://gcc.gnu.org/bugzilla/show_bug.cgi?id=69443
 		find_package(Threads)
-		set (THREAD_LIBS_AS_NEEDED "${COMMON_FLAGS} -Wl,--as-needed ${CMAKE_THREAD_LIBS_INIT}")
+		set (THREAD_LIBS_AS_NEEDED "-Wl,--as-needed ${CMAKE_THREAD_LIBS_INIT}")
+		set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${THREAD_LIBS_AS_NEEDED}")
+		set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${THREAD_LIBS_AS_NEEDED}")
 	endif ()
 
 	set (DISABLE_LSAN "LSAN_OPTIONS=detect_leaks=0") #this is needed so ASAN is not used during GIR compilation
@@ -148,8 +150,8 @@ set (CXX_EXTRA_FLAGS "${CXX_EXTRA_FLAGS} -Woverloaded-virtual  -Wsign-promo")
 #
 # Merge all flags
 #
-set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${C_STD} ${EXTRA_FLAGS} ${COMMON_FLAGS} -Wsign-compare -Wfloat-equal -Wformat-security ${THREAD_LIBS_AS_NEEDED}")
-set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CXX_STD} ${EXTRA_FLAGS} ${CXX_EXTRA_FLAGS} ${COMMON_FLAGS} ${THREAD_LIBS_AS_NEEDED}")
+set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${C_STD} ${EXTRA_FLAGS} ${COMMON_FLAGS} -Wsign-compare -Wfloat-equal -Wformat-security")
+set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CXX_STD} ${EXTRA_FLAGS} ${CXX_EXTRA_FLAGS} ${COMMON_FLAGS}")
 
 message (STATUS "C flags are ${CMAKE_C_FLAGS}")
 message (STATUS "CXX flags are ${CMAKE_CXX_FLAGS}")
