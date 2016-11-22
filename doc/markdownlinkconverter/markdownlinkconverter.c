@@ -335,7 +335,8 @@ int main (int argc, char * argv[])
 {
 	if (argc < 2 || argc > 3)
 	{
-		fprintf (stderr, "Argument Error: expected format <filter> [<cmake-cache-file>] <input-file>\n");
+		fprintf (stderr, "Invalid number of arguments.\n");
+		fprintf (stderr, "Usage: %s [<cmake-cache-file>] <input-file>\n", argv[0]);
 		return EXIT_FAILURE;
 	}
 
