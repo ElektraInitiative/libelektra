@@ -27,8 +27,8 @@ To configure Elektra graphically (with curses) run (`..` belongs to command):
 
     mkdir build && cd build && ccmake ..
 
-and press 'c' to configure the cache. After applying the desired settings, 
-press 'g' to generate the make file.
+and press 'c' to configure the cache (might be necessary multiple times).
+After applying the desired settings, press 'g' to generate the make file.
 
 
 All options described here, can also be used with cmake rather than
@@ -409,4 +409,15 @@ Note 2:
 Note 3:
     for Gentoo is recommend to emerge sys-apps/lsb-release to name the package
     right even thou not required.
+
+## Issues ##
+
+### missing links/libraries ###
+
+If you get errors that `libelektra-resolver.so` or `libelektra-storage.so` are missing,
+or the links do not work, you can use as workaround:
+
+	cmake -DBUILD_SHARED=OFF -DBUILD_FULL=ON ..
+
+
 
