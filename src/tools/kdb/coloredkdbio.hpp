@@ -74,15 +74,15 @@ inline std::ostream & printWarnings (std::ostream & os, kdb::Key const & error)
 
 		int nr = error.getMeta<int> ("warnings");
 		os << getErrorColor (ANSI_COLOR::BOLD) << getErrorColor (ANSI_COLOR::MAGENTA) << " Sorry, " << nr + 1 << " warning"
-		   << (!nr ? " was" : "s were") << " issued:" << getErrorColor (ANSI_COLOR::RESET) << " ;(" << std::endl;
+		   << (!nr ? " was" : "s were") << " issued ;(" << getErrorColor (ANSI_COLOR::RESET) << std::endl;
 
 		for (int i = 0; i <= nr; i++)
 		{
 			std::ostringstream name;
 			name << "warnings/#" << std::setfill ('0') << std::setw (2) << i;
 			// os << "\t" << name.str() << ": " << error.getMeta<std::string>(name.str()) << std::endl;
-			os << getErrorColor (ANSI_COLOR::BOLD) << getErrorColor (ANSI_COLOR::MAGENTA) << " Warning " << i
-			   << getErrorColor (ANSI_COLOR::RESET) << " (#" << error.getMeta<std::string> (name.str () + "/number") << ")"
+			os << getErrorColor (ANSI_COLOR::BOLD) << getErrorColor (ANSI_COLOR::MAGENTA) << " Warning "
+			   << "(#" << error.getMeta<std::string> (name.str () + "/number") << "):" << getErrorColor (ANSI_COLOR::RESET)
 			   << std::endl;
 			os << getErrorColor (ANSI_COLOR::BOLD) << "\tDescription: " << getErrorColor (ANSI_COLOR::RESET)
 			   << error.getMeta<std::string> (name.str () + "/description") << std::endl;
