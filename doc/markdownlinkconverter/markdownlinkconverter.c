@@ -321,12 +321,12 @@ static void convertLinks (FILE * input, FILE * output, char * inputFilename, int
 		}
 		else if (c == '`')
 		{
-			sCount ++;
+			sCount++;
 			fprintf (output, "%c", c);
 		}
 		else if (sCount == 3)
 		{
-			sCount ++;
+			sCount++;
 			if (c != 's')
 			{
 				fprintf (output, "%c", c);
@@ -335,7 +335,7 @@ static void convertLinks (FILE * input, FILE * output, char * inputFilename, int
 		}
 		else if (sCount == 4)
 		{
-			sCount ++;
+			sCount++;
 			if (c != 'h')
 			{
 				sCount = 0;
@@ -345,8 +345,10 @@ static void convertLinks (FILE * input, FILE * output, char * inputFilename, int
 		else if (sCount == 5)
 		{
 			sCount = 0;
-			if (c != '\n') fprintf (output, "sh%c", c);
-			else fprintf (output, "\n"); // swallow sh (from ```sh)
+			if (c != '\n')
+				fprintf (output, "sh%c", c);
+			else
+				fprintf (output, "\n"); // swallow sh (from ```sh)
 		}
 		else if (linkNolink (state, newstate))
 		{
