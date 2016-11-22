@@ -53,8 +53,8 @@ void test_resolve ()
 
 	resolverHandles * h = elektraPluginGetData (plugin);
 	exit_if_fail (h != 0, "no plugin handle");
-	succeed_if (!strcmp (h->system.path, "elektra.ecf"), "path not set correctly");
-	succeed_if (!strcmp (h->system.filename, KDB_DB_SYSTEM "/elektra.ecf"), "resulting filename not correct");
+	succeed_if_same_string (h->system.path, "elektra.ecf");
+	succeed_if_same_string (h->system.filename, KDB_DB_SYSTEM "/elektra.ecf");
 	succeed_if_same_string (h->user.path, "elektra.ecf");
 	succeed_if_same_string (h->user.filename, path);
 	plugin->kdbClose (plugin, parentKey);
@@ -63,8 +63,8 @@ void test_resolve ()
 	plugin->kdbOpen (plugin, parentKey);
 	h = elektraPluginGetData (plugin);
 	exit_if_fail (h != 0, "no plugin handle");
-	succeed_if (!strcmp (h->system.path, "elektra.ecf"), "path not set correctly");
-	succeed_if (!strcmp (h->system.filename, KDB_DB_SYSTEM "/elektra.ecf"), "resulting filename not correct");
+	succeed_if_same_string (h->system.path, "elektra.ecf");
+	succeed_if_same_string (h->system.filename, KDB_DB_SYSTEM "/elektra.ecf");
 	succeed_if (h->user.filename == NULL, "user was initialized, but is not needed");
 	plugin->kdbClose (plugin, parentKey);
 
@@ -104,7 +104,7 @@ void test_name ()
 
 	Key * parentKey = keyNew ("system", KEY_END);
 	plugin->kdbGet (plugin, 0, parentKey);
-	succeed_if (!strcmp (keyString (parentKey), KDB_DB_SYSTEM "/elektra.ecf"), "resulting filename not correct");
+	succeed_if_same_string (keyString (parentKey), KDB_DB_SYSTEM "/elektra.ecf");
 
 	keyDel (parentKey);
 	elektraPluginClose (plugin, 0);
