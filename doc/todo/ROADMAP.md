@@ -11,21 +11,20 @@ for other activities of the current release.
 
 
 
-# 0.8.19
-
-import/editor validate strategy
-
-improvements in tutorials!
-
-add traceability
-
-use shell recorder for README.md
-	make examples more consistent
-
-
 
 
 # 0.8.20
+
+## leftovers
+
+import/editor validate strategy
+
+further improvements in tutorials!
+
+add more traceability
+
+use shell recorder for further README.md
+
 
 ## tests
 
