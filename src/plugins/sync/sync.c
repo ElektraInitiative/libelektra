@@ -57,7 +57,7 @@ int elektraSyncSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UN
 	}
 	if (fsync (fd) == -1)
 	{
-		ELEKTRA_SET_ERRORF (89, parentKey, "Could not fsync config file %s because %s", configFile, strerror (errno));
+		ELEKTRA_SET_ERRORF (89, parentKey, "Could not fsync config file %s because \"%s\"", configFile, strerror (errno));
 		close (fd);
 		return -1;
 	}
