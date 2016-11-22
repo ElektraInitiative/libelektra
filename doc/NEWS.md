@@ -104,7 +104,7 @@ In the perpetual effort to improve software quality, we made several improvement
   work correctly.
 - Improved Coding Style in crypto_botan (thanks to Peter Nirschl)
 - Fixed compiler warning caused by libxml2 (different behavior since 2.9.4),
-  thanks to René Schwaiger
+  thanks to René Schwaiger
 - added often used links in [main README](http://tree.libelektra.org/README.md)
 - Improve documentation about failing test cases and what to do about it.
 - added [decisions]((http://tree.libelektra.org/doc/decisions/) about `plugin_variants`
