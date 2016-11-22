@@ -41,7 +41,7 @@ will all result in `lockPref("a.lock.key", "lock");`
 
 ## Example ##
 ```sh
-# Backup-and-Restor:/examples/examples/prefs
+# Backup-and-Restore:/examples/prefs
 sudo kdb mount prefs.js /examples/prefs mozprefs
 kdb setmeta user/examples/prefs/lock/a/lock/key type boolean
 kdb set /examples/prefs/lock/a/lock/key true
