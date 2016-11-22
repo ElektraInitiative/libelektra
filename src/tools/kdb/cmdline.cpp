@@ -319,7 +319,7 @@ Cmdline::Cmdline (int argc, char ** argv, Command * command)
 	}
 	catch (kdb::KDBException const & ce)
 	{
-		std::cerr << "Could not fetch kdb's configuration: " << ce.what () << std::endl;
+		std::cerr << "Sorry, I could not fetch my own configuration:\n" << ce.what () << std::endl;
 	}
 
 	// reinit
