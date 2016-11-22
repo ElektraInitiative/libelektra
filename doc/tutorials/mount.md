@@ -207,8 +207,7 @@ You can have a look or even edit the configuration file with `kdb editor user/ex
     [enumtest/fruit]
     check/enum = 'apple', 'banana', 'grape'
 
-I hope with this examples it became clear how useful plugins can be.
-But in the example there is one issue: the configuration file is now changed in ways that might not be acceptable for applications.
+In the example there is an important one issue: the configuration file is now changed in ways that might not be acceptable for applications.
 We have at least two ways to avoid that:
 
 1. Encode metadata as comments
