@@ -102,6 +102,7 @@ A big thanks to Kurt Micheli!
 
 ## Development ##
 
+This information is mainly intended for Elektra's developers.
 In the perpetual effort to improve software quality, we made several improvements:
 
 - A new logger encourages developers to write more comments (`ELEKTRA_LOG`)
@@ -199,6 +200,9 @@ is specified.
 Another breaking change in `libtools` is that `appendNamespace` was renamed
 to `prependNamespace`.
 
+Error messages changed a bit, so if you tried to parse them, make sure
+to make the `e` of error case-insensitive (`[eE]`).
+
 In the C++ binding, `rewindMeta` is now `const` and some methods
 to check if a key is in a namespace were added.
 
@@ -215,7 +219,9 @@ but symlinks allow you to link against their old names
 (`lib/libelektraintercept.so` and `lib/libelektragetenv.so.0`).
 
 
-## Maintainers
+## Package Maintainers
+
+This information is intended for package maintainers.
 
 - GI Bindings were removed from `BINDINGS=ALL`.
   It is recommended to use `SWIG` bindings instead, which
@@ -226,6 +232,22 @@ but symlinks allow you to link against their old names
   `TARGET_DOCUMENTATION_TEXT_FOLDER` was added for that purpose.
   The files are:
   - `BIGPICTURE.md`, `GOALS.md`, `LICENSE.md`, `METADATA.ini`, `SECURITY.md`, `AUTHORS`, `CONTRACT.ini`, `NEWS.md`, and `WHY.md`
+
+Other new files are:
+
+- Plugins: `libelektra-base64.so`, `libelektra-c.so`, `libelektra-fcrypt.so` 
+           `libelektra-required.so`, `libelektra-simplespeclang.so`
+  (only in `EXPERIMENTAL`, not added by default, but with `ALL`)
+- `site_ruby/_kdb.so` (ruby binding, only in `ALL`)
+- `testcpp_keyio`, `testkdb_error`, `testmod_base64`,
+  `testmod_fcrypt` (test binaries in `TARGET_TOOL_EXEC_FOLDER`)
+
+Changed files are:
+
+- `libelektraintercept-env.so` (renamed from ``)
+- `libelektraintercept-fs.so` (renamed from ``)
+- version upgrade: `libelektratools.so.2`
+
 
 ## Portability
 
