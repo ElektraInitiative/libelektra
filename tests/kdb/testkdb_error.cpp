@@ -93,7 +93,7 @@ TEST_F (Error, Again)
 	ASSERT_EQ (ks.size (), 1) << "did not keep key at set (again)" << ks;
 }
 
-TEST_F (Error, DISABLED_AgainRepeat)
+TEST_F (Error, AgainRepeat)
 {
 	using namespace kdb;
 	KDB kdb;
@@ -122,7 +122,8 @@ TEST_F (Error, DISABLED_AgainRepeat)
 
 		EXPECT_TRUE (parentKey.getMeta<const kdb::Key> ("error"));
 		EXPECT_TRUE (parentKey.getMeta<const kdb::Key> ("error/number"));
-		EXPECT_EQ (parentKey.getMeta<int> ("error/number"), 119 + i);
+		EXPECT_EQ (parentKey.getMeta<int> ("error/number"), 118 + i) << " with reason: "
+									     << parentKey.getMeta<std::string> ("error/reason");
 
 		ASSERT_EQ (ks.size (), 1) << "did not keep key at set (again)" << ks;
 	}
