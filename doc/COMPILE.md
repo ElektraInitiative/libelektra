@@ -419,5 +419,8 @@ or the links do not work, you can use as workaround:
 
 	cmake -DBUILD_SHARED=OFF -DBUILD_FULL=ON ..
 
+This issue was reported for:
 
+- OpenSuse 42 (when running `make run_all`)
+- CLion IDE (does not allow to build)
 
