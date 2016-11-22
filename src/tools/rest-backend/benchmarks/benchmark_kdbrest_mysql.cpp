@@ -251,12 +251,12 @@ void benchmarkLookupSingleByKey (sql::Connection * con, int numUsers, int numEnt
 	pstmt->setString (3, scope);
 	pstmt->setString (4, slug);
 	rs = pstmt->executeQuery ();
+	std::vector<model::Entry> entries = rsToEntryVector (rs);
 
 	// stop timer here
 	timer.stop ();
 
 	// print found entries
-	std::vector<model::Entry> entries = rsToEntryVector (rs);
 	printEntryVector (entries, 3);
 
 	// free resources
@@ -314,12 +314,12 @@ void benchmarkLookupMultipleByOrganization (sql::Connection * con, int numUsers,
 		"ORDER BY s.`organization`, s.`application`, s.`scope`, s.`slug` ASC");
 	pstmt->setString (1, organization);
 	rs = pstmt->executeQuery ();
+	std::vector<model::Entry> entries = rsToEntryVector (rs);
 
 	// stop timer here
 	timer.stop ();
 
 	// print found entries
-	std::vector<model::Entry> entries = rsToEntryVector (rs);
 	printEntryVector (entries, 3);
 
 	// free resources
@@ -379,12 +379,12 @@ void benchmarkLookupMultipleByTag (sql::Connection * con, int numUsers, int numE
 		"ORDER BY s.`organization`, s.`application`, s.`scope`, s.`slug` ASC");
 	pstmt->setString (1, tag);
 	rs = pstmt->executeQuery ();
+	std::vector<model::Entry> entries = rsToEntryVector (rs);
 
 	// stop timer here
 	timer.stop ();
 
 	// print found entries
-	std::vector<model::Entry> entries = rsToEntryVector (rs);
 	printEntryVector (entries, 3);
 
 	// free resources
@@ -442,12 +442,12 @@ void benchmarkLookupMultipleByAuthor (sql::Connection * con, int numUsers, int n
 		"ORDER BY s.`organization`, s.`application`, s.`scope`, s.`slug` ASC");
 	pstmt->setString (1, author);
 	rs = pstmt->executeQuery ();
+	std::vector<model::Entry> entries = rsToEntryVector (rs);
 
 	// stop timer here
 	timer.stop ();
 
 	// print found entries
-	std::vector<model::Entry> entries = rsToEntryVector (rs);
 	printEntryVector (entries, 3);
 
 	// free resources
@@ -505,12 +505,12 @@ void benchmarkLookupMultipleByDescription (sql::Connection * con, int numUsers, 
 		"ORDER BY s.`organization`, s.`application`, s.`scope`, s.`slug` ASC");
 	pstmt->setString (1, description_search);
 	rs = pstmt->executeQuery ();
+	std::vector<model::Entry> entries = rsToEntryVector (rs);
 
 	// stop timer here
 	timer.stop ();
 
 	// print found entries
-	std::vector<model::Entry> entries = rsToEntryVector (rs);
 	printEntryVector (entries, 3);
 
 	// free resources
