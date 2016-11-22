@@ -67,17 +67,20 @@ Before release is done, following must be checked:
 If version numbers are correct in
 - CMakeLists.txt
 
-  kdb --version > ~elektra/$VERSION/version
+  mkdir ~elektra/$VERSION && kdb --version > ~elektra/$VERSION/version
 
 Rebuild cleanly, run all tests and also check for memleaks:
   cd ~build && ~e/scripts/configure-debian ~e && make -j5 && make run_all && make run_memcheck
 
 Check if there are really >=135 or >=95 tests
 
+- Log tests:
+  kdb run_all > ~elektra/$VERSION/run_all 2>&1
+
 - Check binary compatibility
   Install libelektra-test of the previous version and run again:
 
-  CHECK_VERSION=NO kdb run_all > ~elektra/$VERSION/run_all
+  CHECK_VERSION=NO kdb run_all > ~elektra/$VERSION/run_all_version  2>&1
 
 - Check which files changed
 
