@@ -163,6 +163,7 @@ int EditorCommand::execute (Cmdline const & cl)
 		applyMeta (importedKeys, original);
 		kdb.set (importedKeys, root);
 		printWarnings (cerr, root);
+		printError (cerr, root);
 		return 0;
 	}
 
