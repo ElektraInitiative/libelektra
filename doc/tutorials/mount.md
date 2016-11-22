@@ -5,7 +5,7 @@ Elektra provides a global key database, that can integrate configuration in vari
 Conversely configuration managed by Elektra can be integrated into applications.
 The best way of integrating Elektra into applications is to [elektrify](/doc/help/elektra-glossary.md) them.
 
-A simpler form of integration is to synchronize Elektras configuration with configuration files.
+A simpler form of integration is to let Elektra directly use configuration files as they are present on the system.
 Thus applications can read the configuration files and changes in the key database will be picked up by applications.
 
 The heart of the approach is the so called _mounting_ of configuration files into the key database.
@@ -17,7 +17,7 @@ Let us start with a motivating example first:
 We mount the lookup table with the following command:
 
 ```sh
-sudo kdb mount /etc/hosts system/hosts hosts
+sudo kdb mount --with-recommends /etc/hosts system/hosts hosts
 ```
 
 1. `/etc/hosts` is the configuration file we want to mount
@@ -25,9 +25,11 @@ sudo kdb mount /etc/hosts system/hosts hosts
 3. `hosts` is the _storage plugin_ that can read and write this configuration format.
 
 > Consider using mount with the option `--with-recommends`, which loads all plugins recommended by the _hosts_ plugin.
-> You can see the recommendet plugins of _hosts_ if you look at the output of `kdb info hosts`. Hosts recommends the _glob_, _network_ and _error_ plugins.
+> You can see the recommended plugins of _hosts_ if you look at the output of `kdb info hosts`.
+> Hosts recommends the _glob_, _network_ and _error_ plugins.
+> Using `--with-recommends`, more validation is done when modifying keys in `system/hosts`.
 
-Now we use `kdb file`, to verify that all configuration below `system/hosts` is stored in /etc/hosts:
+Now we use `kdb file`, to verify that all configuration below `system/hosts` is stored in `/etc/hosts`:
 
 ```sh
 $ kdb file system/hosts
@@ -50,6 +52,17 @@ Applications will now pick up these changes:
 
     $ ping mylocalhost
 
+We are also safe against wrong changes:
+
+```sh
+kdb set system/hosts/ipv4/mylocalhost ::1
+# RET:5
+# ERROR:26
+kdb set system/hosts/ipv4/mylocalhost 300.0.0.1
+# RET:5
+# ERROR:26
+```
+
 We can undo these changes with:
 
 ```sh
@@ -60,28 +73,33 @@ sudo kdb rm system/hosts/ipv4/mylocalhost
 sudo kdb umount system/hosts
 ```
 
-> ###### Why you need superuser privileges to mount files ######
+> ###### Why do you need superuser privileges to mount files? ######
+>
 > Elektra manages its mountpoints in configuration below **system/elektra/mountpoints**.
 > The file that holds this configuration is, in the same way as `/etc/hosts` before, only writable by administrators:
 >
 >     $ kdb file system/elektra/mountpoints
 >     /etc/kdb/elektra.ecf
 >
-> Because of that only root users can mount files.
+> Because of that only root can mount files.
 
 ## Resolver ##
 
-The configuration file path you supply to `kdb mount` is actually not an
+The configuration file path you supplied to `kdb mount` above is actually not an
 absolute or relative path in your filesystem, but gets resolved to one by Elektra.
 The plugin that is responsible for this is the [_Resolver_](/src/plugins/resolver/README.md).
 
 When you mount a configuration file the resolver first looks at the namespace of
 your mountpoint. Based on that namespace and if the supplied path was relative or
-absolute the resolver than resolves the supplied path to a path in the file system.
+absolute the resolver then resolves the supplied path to a path in the file system.
+The resolving happens dynamically for every `kdb` invocation.
+
+You can display the mounted configuration files with `kdb mount`.
+Also here you only see the unresolved paths.
 
 If you supplied an absolute path (e.g. `/example.ini`) it gets resolved to this:
 
-| Namespace        | resolved Path       |
+| namespace        | resolved path       |
 | ---------------- |-------------------- |
 | spec             | /example.ini        |
 | dir              | ${PWD}/example.ini  |
@@ -90,16 +108,15 @@ If you supplied an absolute path (e.g. `/example.ini`) it gets resolved to this:
 
 If you supplied a relative path (e.g. `example.ini`) it gets resolved to this:
 
-| Namespace        | resolved Path               |
+| namespace        | resolved path               |
 | ---------------- |---------------------------- |
 | spec             | /usr/share/elektra/specification/example.ini |
 | dir              | ${PWD}/.dir/example.ini     |
 | user             | ${HOME}/.config/example.ini |
 | system           | /etc/kdb/example.ini        |
-(If this differs on your system, the resolver has a different configuration. You
-can then check the default paths below `system/elektra/modules/resolver/constants`)
 
-When you display the mounted configuration files with `kdb mount` you also see the unresolved paths.
+If this differs on your system, the resolver has a different configuration.
+Type `kdb info resolver` for more information about the resolvers.
 
 There are different resolvers. For instance on non-POSIX systems paths must be resolved differently.
 In this case one might want to use the [wresolver](/src/plugins/wresolver/README.md) plugin.
@@ -128,7 +145,7 @@ Let us mount a projects git configuration into the dir namespace:
     # create a directory for our demonstration
     mkdir example && cd $_
 
-    # this creates thie .git/config file
+    # this creates the .git/config file
     git init
 
     # mount gits configuration into Elektra
@@ -171,11 +188,10 @@ I chose the ni plugin for this demonstration, because it supports metadata and i
 So let us have a look at the [enum](/src/plugins/enum/README.md) and [mathcheck](/src/plugins/mathcheck/README.md) plugins.
 
     # mount the backend with the plugins ...
-    $ sudo kdb mount example.ni user/example ni enum mathcheck
+    $ sudo kdb mount example.ni user/example ni enum
 
     # ... and set a value for the demonstration
     $ kdb set user/example/enumtest/fruit apple
-    Using name user/example/enumtest/fruit
     Create a new key user/example/enumtest/fruit with string apple
 
 By entering `kdb info enum` in the commandline, we can find out how to use this plugin.
@@ -192,36 +208,17 @@ You can have a look or even edit the configuration file with `kdb editor user/ex
     [enumtest/fruit]
     check/enum = 'apple', 'banana', 'grape'
 
-This was a simple validation. For our demonstration of _mathcheck_ change this configuration file, again with `kdb editor user/example ni` to this:
-
-    mathtest/circle/pi = 3.14159
-    mathtest/circle/radius =
-    mathtest/circle/circumference =
-    mathtest/circle/area =
-
-    [mathtest/circle/circumference]
-     check/math = := * '2' * ../radius ../pi
-
-    [mathtest/circle/area]
-     check/math = := * ../pi * ../radius ../radius
-
-Now `user/example/mathtest/circle/area` and `user/example/mathtest/circle/circumference` contains empty values.
-But the mathtest plugin knows because of our metakeys how to compute the area (pi\*radius^2) and the circumference (2\*radius\*pi). So if we set the radius, the area and circumference of the circle will be set automatically:
-
-    $ kdb set user/example/circle/radius 10
-
-    # the area is set to the correct value
-    $ kdb get user/example/mathtest/circle/area
-    314.159
-
-    # and so is the circumference
-    $ kdb get user/example/mathtest/circle/circumference
-    62.8318
-
 I hope with this examples it became clear how useful plugins can be.
+But in the example there is one issue: the configuration file is now changed in ways that might not be acceptable for applications.
+We have at least two ways to avoid that:
+
+1. Encode metadata as comments
+2. Encode metadata in its own `spec` namespace, completely separate to the configuration files the application will see
+
 If you want to find out more about validation I recommend reading [this](/doc/tutorials/validation.md) tutorial next.
 
 #### Backends ####
+
 The plugins together with the configuration file form a _backend_. The backend determines how Elektra stores data below a mountpoint.
 You can examine every mountpoints backend by looking at the configuration below `system/elektra/mountpoints/<mountpoint>/`.
 
@@ -242,4 +239,7 @@ This is one of the reasons why Elektra promotes this [naming convention](/doc/he
 > - **version** is the major version number. E.g. If you version is 6.3.8 than this would be `#6`
 > - **profile** is the name of the profile to be used. E.g.: `production`, `development`, `testing`, ...
 
-Furthermore one cannot simply change the configuration file format, because it must be one the application understands. Thus one loses quite some flexibility (for instance if this file format doesn't support meta keys).
+Furthermore, one cannot simply change the configuration file format, because it must be one the application understands. Thus one loses quite some flexibility (for instance if this file format doesn't support meta keys, as already mentioned).
+
+These limitations are the reasons why [elektrifing](/doc/help/elektra-glossary.md) applications provides even better integration.
+Go on reading [how to elektrify your application](application-integration.md).

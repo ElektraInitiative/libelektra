@@ -20,7 +20,7 @@ for configuration files.
 - cleanup of core (only 124K for main library on Debian/amd64)
 
 
-### Improved Tutorials ###
+### More Tutorials ###
 
 Elektra already has an open and welcoming environment, with many
 interesting discussions.  It is our interest that we keep it
