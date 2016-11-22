@@ -44,7 +44,7 @@ are still properly encoded for anyone.
 For example `~/.config/iconv.ini` should be `latin1`, but all users
 have `UTF-8` settings:
 
-```bash
+```sh
 kdb mount iconv.ini /example/iconv ini iconv from=UTF-8,to=ISO-8859-1
 file ~/.config/iconv.ini             # iconv.ini: ISO-8859 text
 kdb get user/example/iconv/a         # converts ISO-8859 to UTF-8

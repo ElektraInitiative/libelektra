@@ -40,13 +40,13 @@
 
 ## Build ##
 ### As part of Elektra Build ###
-```shell
+```sh
 mkdir build && cd build
 cmake -GSETTINGS_MODULE_PRIORITY=200 -DBINDINGS=gsettings ..
 make
 ```
 ### Standalone Build ###
-```shell
+```sh
 cd GSETTINGS_SOURCE
 mkdir build && cd build
 cmake -GSETTINGS_MODULE_PRIORITY=200 ..
@@ -57,7 +57,7 @@ make
   * the dconf GSettingsBackend is known to have a value of `100`
 
 # Installation #
-```shell
+```sh
 (sudo) make install
 ```
 
@@ -66,26 +66,26 @@ If you do a system installation consider doing a migration, so you can immediate
 # Migration #
 ## Import dconf user settings ##
 For now you can export your existing dconf database trough:
-```shell
+```sh
 dconf dump > dconf.ini
 ```
 and import it in elektra
-```shell
+```sh
 cat dconf.ini | kdb import /sw ini
 ```
 
 ## Mount dbus plugin ##
 export current settings and delete them so they will not be hidden
-```shell
+```sh
 kdb export /sw dump > tmp
 kdb rm -r /sw
 ```
 mount sw at you prefered location
-```shell
+```sh
 (sudo) kdb mount sw /sw dbus $restofplugins
 ```
 import settings again
-```shell
+```sh
 (sudo) cat tmp | kdb import /sw dump
 rm tmp
 ```
@@ -101,7 +101,7 @@ set `GSETTINGS_BACKEND=elektra` to be able to test elektra as default backend.
 ##Examples##
 
 ### Get/Set and Reset a Gsettings Value ###
-```shell
+```sh
 export G_MESSAGES_DEBUG=ElektraSettings
 export GSETTINGS_BACKEND=elektra
 gsettings get org.gnome.gedit.preferences.editor auto-indent
@@ -112,7 +112,7 @@ gsettings get org.gnome.gedit.preferences.editor auto-indent
 gsettings list-recursively org.gnome.gedit.preferences.editor auto-indent
 ```
 ### Force elektra as default backend when starting an application: ###
-```shell
+```sh
 G_MESSAGES_DEBUG=ElektraSettings GSETTINGS_BACKEND=elektra gedit
 ```
 

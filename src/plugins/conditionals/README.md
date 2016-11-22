@@ -57,6 +57,7 @@ Meaning: IF `this/key` NOT EQUAL TO `'value'` THEN `then/key` MUST EQUAL `some/o
 
 
 Another full example:
+
 ```sh
 #Backup-and-Restore:/examples/conditionals
 sudo kdb mount conditionals.dump /examples/conditionals conditionals dump
@@ -74,7 +75,9 @@ kdb setmeta user/examples/conditionals/key check/condition "(../hkey == 'hello')
 kdb rm -r /examples/conditionals
 sudo kdb umount /examples/conditionals
 ```
+
 Assignment example:
+
 ```sh
 #Backup-and-Restore:/examples/conditionals
 sudo kdb mount conditionals.dump /examples/conditionals conditionals dump
@@ -89,7 +92,9 @@ World
 kdb rm -r /examples/conditionals
 sudo kdb umount /examples/conditionals
 ```
+
 Global plugin example:
+
 ```sh
 #Backup-and-Restore:/examples/conditionals
 sudo kdb mount main.ini /examples/conditionals ni
