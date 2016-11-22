@@ -17,7 +17,7 @@ for configuration files.
 
 - improved tutorials and getting started guides
 - new Ruby bindings
-- cleanup of core (only 124K for main library)
+- cleanup of core (only 124K for main library on Debian/amd64)
 
 
 ### Improved Tutorials ###
@@ -38,6 +38,10 @@ great tutorials for this release!
 - We wrote a readme to shell recorder transpiler
   which allows us to execute tutorials and verify that the examples in
   them work. (thanks to Thomas Waser)
+- [Lua](http://tree.libelektra.org/src/plugins/lua) and
+  [Python](http://tree.libelektra.org/src/plugins/python)
+  plugins got tutorials and better explanations!
+  (Thanks to Marvin Mall)
 - The [doxygen](http://doc.libelektra.org/api/0.8.19/html/) docu now also
   uses links to directories, thanks to Kurt Micheli!
 
@@ -46,7 +50,10 @@ A big thanks to Kurt Micheli, Christoph Weber and Thomas Waser!
 If you like the tutorials, we would love to read from you.
 Please feel free to [start a discussion or ask a
 question](http://git.libelektra.org/issues/new).
-We also added a [FAQ](http://tree.libelektra.org/doc/help/elektra-faq.md).
+We also added a
+[FAQ](http://tree.libelektra.org/doc/help/elektra-faq.md)
+and updated
+[CONTRIBUTING](http://tree.libelektra.org/.github/CONTRIBUTING.md)
 
 
 ### Ruby Bindings ###
@@ -83,6 +90,10 @@ A big thanks to Kurt Micheli!
  - spelling
  - be more friendly
  - capitalization
+ - more colors
+ - mention `sudo !!`
+- `kdb set`: do not print what was not done
+- `kdb editor` handles non-modified files (will not do anything)
 - Be more chatty about what `kdb` does, can be disabled with `-q` or
   `/sw/elektra/kdb/#0/current/quiet`.
 - Furthermore, `-v` now tells even more details (e.g. `kdb-import` outputs
@@ -103,6 +114,11 @@ In the perpetual effort to improve software quality, we made several improvement
 - The build server now checks if builds with active logger and debugging
   work correctly.
 - Improved Coding Style in crypto_botan (thanks to Peter Nirschl)
+- add `external-links.txt` to `outputs`
+  (The file is generated in the build directory and contains
+   all external-links. To validate them, use `./scripts/link-checker`)
+  (Thanks to Kurt Micheli)
+- `markdownlinkconverter` handles directories correctly (using `stat`).
 - Fixed compiler warning caused by libxml2 (different behavior since 2.9.4),
   thanks to René Schwaiger
 - added often used links in [main README](http://tree.libelektra.org/README.md)
@@ -117,6 +133,8 @@ In the perpetual effort to improve software quality, we made several improvement
   entries.  (Thanks to Kurt Micheli)
 - Automatic setting of `infos/status`: `nodoc`, `nodep`, `unittest`, `memleak`, `configurable`
   (Thanks to Kurt Micheli)
+- Improve `create_lib_symlink`, add `PLUGIN` argument
+  and make it useful also for other library symlinks.
 - New markdown style applied to most markdown files.
   (Thanks to Marvin Mall)
 - Tracer is now disabled, even for `ENABLE_DEBUG`.
@@ -181,7 +199,8 @@ is specified.
 Another breaking change in `libtools` is that `appendNamespace` was renamed
 to `prependNamespace`.
 
-In the C++ binding, `rewindMeta` is now `const`.
+In the C++ binding, `rewindMeta` is now `const` and some methods
+to check if a key is in a namespace were added.
 
 That means that `kdb mount file.json /examples/json json` still will find
 `json` plugins even if they are not called `json` but
@@ -195,8 +214,18 @@ For consistency reasons the libraries were also renamed
 but symlinks allow you to link against their old names
 (`lib/libelektraintercept.so` and `lib/libelektragetenv.so.0`).
 
-GI Bindings were removed from `BINDINGS=ALL`.
 
+## Maintainers
+
+- GI Bindings were removed from `BINDINGS=ALL`.
+  It is recommended to use `SWIG` bindings instead, which
+  will be added with `ALL`.
+- Intercept libraries are part of `BINDINGS`.
+  They will be added on glibc systems where `BINDINGS=ALL`.
+- Documentation in Textfile is now installed,
+  `TARGET_DOCUMENTATION_TEXT_FOLDER` was added for that purpose.
+  The files are:
+  - `BIGPICTURE.md`, `GOALS.md`, `LICENSE.md`, `METADATA.ini`, `SECURITY.md`, `AUTHORS`, `CONTRACT.ini`, `NEWS.md`, and `WHY.md`
 
 ## Portability
 
@@ -227,8 +256,13 @@ Sebastian Bachmann.
   (Thanks to Christoph Weber)
 - drop multiple `/` from `~` paths
   (Thanks to Thomas Waser)
+- fix failing testcases with `ENABLE_DEBUG` #988
+  (Thanks to Thomas Waser)
+- csvstorage: files in source are rewritten  #987
+  (Thanks to Thomas Waser)
 - fix RTLD_NODELETE for OpenBSD
   (Thanks to Thomas Waser)
+- better handle adding/deleting of read-only (info) plugins.
 - fix behavior of multiple plugins setting errors (first error wins,
   later errors are transformed to warnings)
   (Thanks to Thomas Waser)
@@ -240,6 +274,7 @@ Sebastian Bachmann.
 - output to `stderr` for `elektrify-*` scripts
 - make [desktop plugin](http://tree.libelektra.org/src/plugins/desktop)
   mountable
+- avoid cmake warnings in `make uninstall` (avoid `@`)
 - fix quoting in ini plugin
   (Thanks to Thomas Waser)
 - fix plugin names and mounting with plugin pre/postfixes
