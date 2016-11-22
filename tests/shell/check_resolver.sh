@@ -83,6 +83,23 @@ check_resolver()
 	succeed_if "could not umount $MOUNTPOINT"
 }
 
+
+# need HOME to work
+unset USER
+
+check_resolver system b '~/FOO' ~/FOO
+check_resolver system b '~/x' ~/x
+check_resolver system b '~/x/y' ~/x/y
+check_resolver system b '~//x' ~//x
+check_resolver system b '~/' ~/
+check_resolver system b '~' ~/
+
+check_resolver spec b '~/x' ~/x
+check_resolver spec b '~/x/y' ~/x/y
+check_resolver spec b '~//x' ~//x
+check_resolver spec b '~/' ~/
+check_resolver spec b '~' ~/
+
 unset HOME
 unset USER
 
@@ -169,20 +186,6 @@ check_resolver system b x @KDB_DB_SYSTEM@/x
 check_resolver system b x/a @KDB_DB_SYSTEM@/x/a
 check_resolver system b /a /a
 check_resolver system b /a/b/c /a/b/c
-
-#TODO: shell seem to have different opinions about
-#  how to resolve ~
-#check_resolver system b '~/x' ~/x
-#check_resolver system b '~/x/y' ~/x/y
-#check_resolver system b '~//x' ~//x
-#check_resolver system b '~/' ~/
-#check_resolver system b '~' ~/
-#
-#check_resolver spec b '~/x' ~/x
-#check_resolver spec b '~/x/y' ~/x/y
-#check_resolver spec b '~//x' ~//x
-#check_resolver spec b '~/' ~/
-#check_resolver spec b '~' ~/
 
 check_resolver spec b x @CMAKE_INSTALL_PREFIX@/@KDB_DB_SPEC@/x
 check_resolver spec b x/a @CMAKE_INSTALL_PREFIX@/@KDB_DB_SPEC@/x/a
