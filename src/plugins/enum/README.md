@@ -56,6 +56,11 @@ kdb set /examples/enum/value low
 kdb set /examples/enum/value no
 # RET:5
 # ERRORS:121
+# The command set failed while accessing the key database with the info:
+# Error (#121) occurred!
+# Description: Validation failed
+# Ingroup: plugin
+# Module: enum
 #
 # cleanup
 #
@@ -86,6 +91,11 @@ kdb set /examples/enum/value ___small_middle__
 kdb set /examples/enum/value ___all_small__
 # RET:5
 # ERRORS:121
+# The command set failed while accessing the key database with the info:
+# Error (#121) occurred!
+# Description: Validation failed
+# Ingroup: plugin
+# Module: enum
 #
 # cleanup
 #

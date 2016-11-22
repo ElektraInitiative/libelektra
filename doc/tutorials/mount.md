@@ -54,10 +54,10 @@ We can undo these changes with:
 
 ```sh
 # remove the key ...
-$ sudo kdb rm system/hosts/ipv4/mylocalhost
+sudo kdb rm system/hosts/ipv4/mylocalhost
 
 # ... and unmount
-$ sudo kdb umount system/hosts
+sudo kdb umount system/hosts
 ```
 
 > ###### Why you need superuser privileges to mount files ######
