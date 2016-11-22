@@ -142,7 +142,6 @@ or if specific jobs should be started:
 * jenkins build [local-installation](http://build.libelektra.org:8080/job/elektra-local-installation/) please
 * jenkins build [mingw64](http://build.libelektra.org:8080/job/elektra-gcc-configure-mingw-w64/) please
 * jenkins build [multiconfig-gcc-stable](http://build.libelektra.org:8080/job/elektra-multiconfig-gcc-stable/) please
-* jenkins build [multiconfig-gcc-unstable](http://build.libelektra.org:8080/job/elektra-multiconfig-gcc-unstable/) please
 * jenkins build [multiconfig-gcc47-cmake-options](http://build.libelektra.org:8080/job/elektra-multiconfig-gcc47-cmake-options/) please
 * jenkins build [source-package-test](http://build.libelektra.org:8080/job/elektra-source-package-test/) please
 * jenkins build [stable](http://build.libelektra.org:8080/job/elektra-mergerequests-stable/) please
