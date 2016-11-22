@@ -150,7 +150,7 @@ execute()
 	if [ ! -z "$STDOUTCMP" ];
 	then
 	nbTest=$(( nbTest + 1 ))
-	echo "$STDOUT" | replace_newline_return | grep -q --text "$STDOUTCMP"
+	echo "$STDOUT" | replace_newline_return | grep -q --text "^${STDOUTCMP}$"
 	if [ "$?" -ne "0" ];
 	then
 		printf "\nERROR - STDOUT:\n%s\ndoesn't match %s\n\n" "$STDOUT" "$STDOUTCMP"
