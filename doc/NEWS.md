@@ -107,7 +107,7 @@ In the perpetual effort to improve software quality, we made several improvement
   thanks to René Schwaiger
 - added often used links in [main README](http://tree.libelektra.org/README.md)
 - Improve documentation about failing test cases and what to do about it.
-- added [decisions]((http://tree.libelektra.org/doc/decisions/) about `plugin_variants`
+- added [decisions](http://tree.libelektra.org/doc/decisions/) about `plugin_variants`
   and `array`.
 - Rename to metadata, metakey, mountpoint
 - std::ios_base::showbase can be used to output metadata when streaming keys (C++)
@@ -144,7 +144,7 @@ In the perpetual effort to improve software quality, we made several improvement
   access them. (Thanks to Peter Nirschl)
 - [required plugin](http://tree.libelektra.org/src/plugins/required) rejects
   every key that is not required by an application.
-- [simple spec lang](tree.libelektra.org/src/plugins/simplespeclang) allows you
+- [simple spec lang](http://tree.libelektra.org/src/plugins/simplespeclang) allows you
   to define metadata for [enum](http://tree.libelektra.org/src/plugins/enum)
   and required in a more compact way.
 
@@ -2629,14 +2629,14 @@ values from Elektra, and not only the environment.
 
 You simply can do:
 
-```bash
+```sh
 kdb set user/env/override/HTTP_PROXY "http://my.proxy:8080"
 ```
 
 This will set the `HTTP_PROXY` environment variable to `http://my.proxy:8080`.
 Configuration can be retrieved with `kdb get`:
 
-```bash
+```sh
 kdb get user/env/override/HTTP_PROXY
 lynx   # or start another www-browser with the newly set HTTP_PROXY
 ```
