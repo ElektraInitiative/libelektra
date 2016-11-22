@@ -42,10 +42,14 @@ Test 3
 ```sh
 #Backup-and-Restore:/test
 ls
+
 echo test
+
 #> test
-echo "test\\\\nbla"
+
+echo "test\nbla"
 #> test
+
 #> bla
 cat `kdb file user`
 ```
@@ -59,4 +63,20 @@ EOF
 cat /tmp/hereout
 #> line 1
 #> line 2
+```
+
+multi
+```sh
+cat /tmp/test \
+ls \
+echo test
+```
+
+sudo test
+```sh
+sudo cat `sudo kdb file system`
+    sudo ls
+cat `    sudo kdb file system`
+ls \
+sudo ls
 ```

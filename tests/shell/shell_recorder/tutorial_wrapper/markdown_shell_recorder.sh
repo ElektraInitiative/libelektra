@@ -60,7 +60,7 @@ writeBlock()
 			fi
 		fi
 	fi
-	
+	COMMAND=$(sed s/sudo\ //g <<<"$COMMAND")
 	echo "< $COMMAND" >> "$TMPFILE"
 
 	COMMAND=
@@ -150,6 +150,8 @@ translate()
 				writeBlock "$TMPFILE"
 			fi
 			COMMAND=$(grep -Eo "[^ \\t].*" <<< "$line")
+			COMMAND=$(sed "s/^sudo\ //" <<< "$COMMAND")
+			COMMAND=$(sed "s/\`[[:blank:]]*sudo\ /\`/" <<< "$COMMAND")
 			if [ "${line: -1}" == "\\" ];
 			then
 			    COMMAND="${COMMAND::-1}"
@@ -157,6 +159,8 @@ translate()
 			while [ "${line: -1}" == "\\" ];
 			do
 			    read -r line
+			    line=$(sed "s/^sudo\ //" <<< "$line")
+			    line=$(sed "s/\`[[:blank:]]*sudo\ /\`/" <<< "$line")
 			    if [ "${line: -1}" == "\\" ];
 			    then
 				COMMAND=$(printf "%s\\\n%s" "$COMMAND" "${line::-1}")
