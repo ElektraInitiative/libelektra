@@ -150,6 +150,20 @@ translate()
 				writeBlock "$TMPFILE"
 			fi
 			COMMAND=$(grep -Eo "[^ \\t].*" <<< "$line")
+			if [ "${line: -1}" == "\\" ];
+			then
+			    COMMAND="${COMMAND::-1}"
+			fi
+			while [ "${line: -1}" == "\\" ];
+			do
+			    read -r line
+			    if [ "${line: -1}" == "\\" ];
+			    then
+				COMMAND=$(printf "%s\\\n%s" "$COMMAND" "${line::-1}")
+			    else
+				COMMAND=$(printf "%s\\\n%s\\\n" "$COMMAND" "$line")
+			    fi
+			done
 			continue
 		fi
 	done <<<"$BUF"
@@ -159,7 +173,7 @@ translate()
 }
 
 IFS=''
-while read line;
+while read -r line;
 do
 	grep -Eq '(\s)*```sh$' <<<"$line"
 	if [ "$?" -eq 0 ];

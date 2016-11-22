@@ -87,7 +87,7 @@ execute()
 
 	printf "%s\0\n" "CMD: $command" >> "$OutFile"
 
-	sh -c -f "$command 2>stderr 1>stdout"
+	sh -c -f "$command" 2>stderr 1>stdout
 
 	RETVAL="$?"
 
@@ -229,7 +229,7 @@ run_script()
 	do
 	OP=
 	ARG=
-	cmd=$(echo "$line"|cut -d ' ' -f1)
+	cmd=$(printf "%s" "$line"|cut -d ' ' -f1)
 	case "$cmd" in
 		Mountpoint:)
 		Mountpoint=$(echo "$line"|cut -d ' ' -f2)
@@ -278,7 +278,7 @@ run_script()
 		;;
 		\<)
 		OP="$cmd"
-		ARG=$(echo "$line"|cut -d ' ' -f2-)
+		ARG=$(printf "%s" "$line"|cut -d ' ' -f2-)
 		;;
 	esac
 	if [ "$OP" = "<" ];
