@@ -171,6 +171,7 @@ And in terms of quality, we want:
 
 ## News ##
 
+ - [22 Nov 2016 0.8.19](http://doc.libelektra.org/news/8e05231a-4f3d-488b-8dc2-5f0d5c474c39.html) tutorials, ruby, cleanup
  - [16 Sep 2016 0.8.18](http://doc.libelektra.org/news/190576e0-9fef-486e-b8da-c4e75be08329.html) adds intercept open
  - [14 Jun 2016 0.8.17](http://doc.libelektra.org/news/e6153a39-c4bd-41c3-bc86-785d451eb6c5.html) with survey, usability improvements
  - [29 Apr 2016 0.8.16](http://doc.libelektra.org/news/9c9247ee-ee9c-4f4a-a68e-76959def9b82.html) with stability improvements
