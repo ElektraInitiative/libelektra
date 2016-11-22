@@ -547,7 +547,7 @@ static int elektraOpenFile (resolverHandle * pk, Key * parentKey)
 		else if (pk->fd == -1)
 		{
 			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_COULD_NOT_OPEN, parentKey,
-					    "Could not reopen configuration file \"%s\" for writing because %s", pk->filename,
+					    "Could not reopen configuration file \"%s\" for writing because \"%s\"", pk->filename,
 					    strerror (errno));
 			return -1;
 		}

@@ -52,7 +52,7 @@ int elektraSyncSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UN
 	int fd = open (configFile, O_RDWR);
 	if (fd == -1)
 	{
-		ELEKTRA_SET_ERRORF (89, parentKey, "Could not open config file %s because %s", configFile, strerror (errno));
+		ELEKTRA_SET_ERRORF (89, parentKey, "Could not open config file %s because \"%s\"", configFile, strerror (errno));
 		return -1;
 	}
 	if (fsync (fd) == -1)

@@ -156,7 +156,7 @@ severity:warning
 ingroup:trie
 
 number:26
-description:could not open configuration file
+description:could not open configuration file. You might want to try as root (use sudo !!).
 severity:error
 ingroup:plugin
 module:resolver
