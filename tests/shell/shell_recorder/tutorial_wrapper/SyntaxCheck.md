@@ -23,7 +23,6 @@ kdb rm -r /test
 Test 2
 
 ```sh
-# Backup-and-Restore:/test
 kdb set /test/x x
 kdb set /test/y y
 kdb get /test/x 
@@ -40,7 +39,6 @@ kdb rm -r /test
 
 Test 3
 ```sh
-#Backup-and-Restore:/test
 ls
 
 echo test

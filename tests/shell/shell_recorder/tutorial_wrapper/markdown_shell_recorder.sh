@@ -9,6 +9,7 @@ COMMAND=
 RET=
 ERRORS=
 WARNINGS=
+STDOUT=
 STDOUTRE=
 STDOUTGLOB=
 STDERR=
@@ -49,7 +50,12 @@ writeBlock()
 		tmp=$(awk -v RS="" '{gsub (/\n/,"⏎")}1' <<< "$OUTBUF")
 		tmp=$(echo "$tmp" | sed 's/\[/\\\[/g' | sed 's/\]/\\\]/g' | sed 's/\./\\\./g' | sed 's/\*/\\\*/g' | sed 's/\?/\\\?/g')
 		echo "STDOUT: $tmp" >> "$TMPFILE"
-	else
+	    elif [ ! -z "$STDOUT" ];
+	    then
+		tmp=$(awk -v RS="" '{gsub (/\n/,"⏎")}1' <<< "$STDOUT")
+		tmp=$(echo "$tmp" | sed 's/\[/\\\[/g' | sed 's/\]/\\\]/g' | sed 's/\./\\\./g' | sed 's/\*/\\\*/g' | sed 's/\?/\\\?/g')
+		echo "STDOUT: $tmp" >> "$TMPFILE"
+	    else
 		if [ ! -z "$STDOUTRE" ]
 		then
 			echo "STDOUT-REGEX: $STDOUT" >> "$TMPFILE"
@@ -67,6 +73,7 @@ writeBlock()
 	RET=
 	ERRORS=
 	WARNINGS=
+	STDOUT=
 	STDOUTRE=
 	STDOUTGLOB=
 	STDERR=
@@ -90,6 +97,7 @@ translate()
 	RET=
 	ERRORS=
 	WARNINGS=
+	STDOUT=
 	STDOUTRE=
 	STDOUTGLOB=
 	STDERR=
@@ -119,6 +127,9 @@ translate()
 			case "$cmd" in
 				RET)
 					RET="$arg"
+					;;
+				STDOUT)
+				    	STDOUT="$arg"
 					;;
 				STDOUT-REGEX)
 					STDOUTRE="$arg"
@@ -182,21 +193,20 @@ do
 	grep -Eq '(\s)*```sh$' <<<"$line"
 	if [ "$?" -eq 0 ];
 	then
-		BUF=""
+		continue;	
+	fi
+	grep -Eq '(\s)*```$' <<<"$line"
+	if [ "$?" -eq 0 ];
+	then
+	    continue
+	fi
+	if [ -z "$BUF" ];
+	then
+		BUF="$line"
 	else
-		grep -Eq '(\s)*```$' <<<"$line"
-		if [ "$?" -eq 0 ];
-		then
-			BUF=$(echo "$BUF")
-			translate
-			BUF=""
-		else
-			if [ -z "$BUF" ];
-			then
-				BUF="$line"
-			else
-				BUF=$(printf "%s\n%s" "${BUF}" "${line}")
-			fi
-		fi
+		BUF=$(printf "%s\n%s" "${BUF}" "${line}")
 	fi
 done <<<"$BLOCKS"
+
+translate
+
