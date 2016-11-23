@@ -42,30 +42,30 @@ will all result in `lockPref("a.lock.key", "lock");`
 ## Example ##
 ```sh
 # Backup-and-Restore:/examples/prefs
+
 sudo kdb mount prefs.js /examples/prefs mozprefs
+
 kdb setmeta user/examples/prefs/lock/a/lock/key type boolean
 kdb set /examples/prefs/lock/a/lock/key true
 kdb setmeta user/examples/prefs/pref/a/default/key type string
 kdb set /examples/prefs/pref/a/default/key "i'm a default key"
 kdb setmeta user/examples/prefs/user/a/user/key type integer
 kdb set /examples/prefs/user/a/user/key 123
-#
+
 kdb export user/examples/prefs ini
-[lock/a/lock]
-key = true
-[pref/a/default]
-key = i'm a default key
-[user/a/user]
-key = 123
-#
-#
-$ cat `kdb file user/examples/prefs`
-lockPref("a.lock.key", true);
-pref("a.default.key", "i'm a default key");
-user_pref("a.user.key", 123);
-#
+#> [lock/a/lock]
+#> key = true
+#> [pref/a/default]
+#> key = i'm a default key
+#> [user/a/user]
+#> key = 123
+
+cat `kdb file user/examples/prefs`
+#> lockPref("a.lock.key", true);
+#> pref("a.default.key", "i'm a default key");
+#> user_pref("a.user.key", 123);
+
 # cleanup
-#
 kdb rm -r /examples/prefs
 sudo kdb umount /examples/prefs
 ```

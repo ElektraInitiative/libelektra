@@ -40,40 +40,32 @@ But `middle_small_small` would fail because every entry might only occur once.
 ## Example ##
 ```sh
 # Backup-and-Restore:/examples/enum
+
 sudo kdb mount enum.ecf /examples/enum enum dump
-#
+
 # valid initial value + setup valid enum list
-#
 kdb set /examples/enum/value middle
 kdb setmeta user/examples/enum/value check/enum "'low', 'middle', 'high'"
-#
+
 # should succeed
-#
 kdb set /examples/enum/value low
-#
+
 # should fail with error 121
-#
 kdb set /examples/enum/value no
 # RET:5
 # ERRORS:121
-# The command set failed while accessing the key database with the info:
-# Error (#121) occurred!
-# Description: Validation failed
-# Ingroup: plugin
-# Module: enum
-#
+
 # cleanup
-#
 kdb rm -r /examples/enum
 sudo kdb umount /examples/enum
 ```
 Or with multi-enums:
 ```sh
 # Backup-and-Restore:/examples/enum
+
 sudo kdb mount enum.ecf /examples/enum enum dump
-#
+
 # valid initial value + setup array with valid enums
-#
 kdb set /examples/enum/value middle_small
 kdb setmeta user/examples/enum/value check/enum/#0 small
 kdb setmeta user/examples/enum/value check/enum/#1 middle
@@ -81,24 +73,16 @@ kdb setmeta user/examples/enum/value check/enum/#2 large
 kdb setmeta user/examples/enum/value check/enum/#3 huge
 kdb setmeta user/examples/enum/value check/enum/multi _
 kdb setmeta user/examples/enum/value check/enum "#3"
-#
+
 # should succeed
-#
 kdb set /examples/enum/value ___small_middle__
-#
+
 # should fail with error 121
-#
 kdb set /examples/enum/value ___all_small__
 # RET:5
 # ERRORS:121
-# The command set failed while accessing the key database with the info:
-# Error (#121) occurred!
-# Description: Validation failed
-# Ingroup: plugin
-# Module: enum
-#
+
 # cleanup
-#
 kdb rm -r /examples/enum
 sudo kdb umount /examples/enum
 ```
