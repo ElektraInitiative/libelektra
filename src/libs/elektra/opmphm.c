@@ -8,7 +8,6 @@
 
 
 #include "kdbprivate.h"
-#include <stdlib.h>
 
 /* Hash function
  * By Bob Jenkins, May 2006
