@@ -1,10 +1,26 @@
 # Markdown to Shell Recorder #
 
+The purpose of this tool is to extract executeable code snippets from markdown files and translate them into a suitable format for the shell_recorder. 
+
+Snippets are shell commands inside a syntax block with additional checks (such as exit code, output, errors, etc) encoded as comments. These blocks start with ```` ```sh ````  and end with ```` ``` ````.
+
+
+
 ## Syntax ##
+
+* Commands
+
+  lines not starting with a `#` are treated as (shell-)commands and executed by the shell_recorder.
+  `sudo` commands will be executed without `sudo`
+  for multiline commands each line except the last one must end with a `\`
 
 * Checks
 
-  `# CHECK-OPTION:VALUE`
+  * `#> STRING`
+
+     `STRING` is matched 1:1 against the command output. multiple `#> ` will be concatenated automatically using `⏎`
+  
+   `# CHECK-OPTION:VALUE`   note that there is no spaces in front of or behind the `:`. Spaces after the `:` are treated as part of the value.
 
   * `# RET:N`
 
@@ -22,10 +38,6 @@
 
      `STRING` is matched 1:1 against the command output. newlines must be encoded as `⏎` 
 
-  * `#> STRING`
-
-     `STRING` is matched 1:1 against the command output. multiple `#> ` will be concatenated automatically using `⏎`
-
   * `# STDOUT-REGEX:REGEX-STRING`
 
      `REGEX-STRING` is matched agains the output of the command using posix-extended regex. newlines must be encoded as `⏎`
@@ -38,8 +50,4 @@
 
   will be ignored
 
-* Commands
 
-  lines not starting with a `#` are treated as (shell-)commands and executed by the shell recorder.
-  `sudo` commands will be executed without `sudo`
-  for multiline commands each line except the last one must end with a `\`
