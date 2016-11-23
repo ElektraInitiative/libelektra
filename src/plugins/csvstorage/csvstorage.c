@@ -122,7 +122,7 @@ static char * parseLine (char * origLine, char delim, unsigned long offset, Key 
 	}
 	if (hasUnescapedDQuote)
 	{
-		ELEKTRA_ADD_WARNINGF (136, parentKey, "Quoted field in line(%lu) has an unescaped double-quote: %s", lineNr, line);
+		ELEKTRA_ADD_WARNINGF (136, parentKey, "Quoted field in line(%lu) has an unescaped double-quote: (%s)", lineNr, line);
 	}
 
 	return line;
@@ -209,13 +209,15 @@ static unsigned long getColumnCount (char * lineBuffer, char delim)
 	return counter;
 }
 
-static char * readNextLine (FILE * fp, char delim, int * lastLine)
+static char * readNextLine (FILE * fp, char delim, int * lastLine, int * linesRead)
 {
 	int done = 0;
 	unsigned long len = 0;
 	unsigned long bufLen = 0;
 	unsigned long offset = 0;
+	*linesRead = 0;
 	char * lineBuffer = NULL;
+	*linesRead = 0;
 	while (!done)
 	{
 		int isQuoted = 0;
@@ -223,14 +225,17 @@ static char * readNextLine (FILE * fp, char delim, int * lastLine)
 		len = getLineLength (fp);
 		if (!len)
 		{
-			*lastLine = 1;
-			if (lineBuffer)
+			if (!lineBuffer)
 			{
-				elektraFree (lineBuffer);
+				*lastLine = 0;
 				return NULL;
 			}
 			else
 				return lineBuffer;
+		}
+		else
+		{
+			++(*linesRead);
 		}
 		char buffer[len];
 		fgets (buffer, len, fp);
@@ -309,10 +314,10 @@ static int csvRead (KeySet * returned, Key * parentKey, char delim, short useHea
 		return -1;
 	}
 	int lastLine = 0;
-
+	int linesRead = 0;
 	char * lineBuffer = NULL;
 	;
-	lineBuffer = readNextLine (fp, delim, &lastLine);
+	lineBuffer = readNextLine (fp, delim, &lastLine, &linesRead);
 	if (!lineBuffer)
 	{
 		fclose (fp);
@@ -369,6 +374,7 @@ static int csvRead (KeySet * returned, Key * parentKey, char delim, short useHea
 		}
 		keyDel (orderKey);
 		fseek (fp, 0, SEEK_SET);
+		lineCounter += linesRead;
 	}
 	else
 	{
@@ -400,6 +406,7 @@ static int csvRead (KeySet * returned, Key * parentKey, char delim, short useHea
 		{
 			fseek (fp, 0, SEEK_SET);
 		}
+		lineCounter += 1;
 	}
 	Key * dirKey;
 	Key * cur;
@@ -409,7 +416,7 @@ static int csvRead (KeySet * returned, Key * parentKey, char delim, short useHea
 	while (1)
 	{
 		lineBuffer = NULL;
-		lineBuffer = readNextLine (fp, delim, &lastLine);
+		lineBuffer = readNextLine (fp, delim, &lastLine, &linesRead);
 		if (!lineBuffer)
 		{
 			fclose (fp);
@@ -469,7 +476,7 @@ static int csvRead (KeySet * returned, Key * parentKey, char delim, short useHea
 			}
 			ELEKTRA_ADD_WARNINGF (118, parentKey, "illegal number of columns in line %lu", lineCounter);
 		}
-		++lineCounter;
+		lineCounter += linesRead;
 		elektraFree (lineBuffer);
 	}
 	key = keyDup (parentKey);
