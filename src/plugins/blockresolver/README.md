@@ -35,9 +35,8 @@ Currently the identifier must be unique.
 ```sh
 # Backup-and-Restore:system/examples/blockresolver
 sudo kdb mount -R blockresolver /tmp/test.block system/examples/blockresolver -c identifier=">>> block config" ini
-#
+
 # create testfile
-#
 cat > /tmp/test.block << EOF \
 text\
 more text\
@@ -52,9 +51,8 @@ text again\
 and more text\
 text\
 EOF
-#
+
 # check testfile
-#
 cat /tmp/test.block
 #> text
 #> more text
@@ -68,19 +66,17 @@ cat /tmp/test.block
 #> text again
 #> and more text
 #> text
-#
+
 # only the block between the tags is read!
-#
 kdb export system/examples/blockresolver ini
 #> [section1]
 #> key1 = val1
 #> [section2]
 #> key2 = val2
-#
+
 # add a new key to the resolved block 
-#
 kdb set system/examples/blockresolver/section1/key12 val12
-#
+
 cat /tmp/test.block
 #> text
 #> more text
@@ -95,9 +91,8 @@ cat /tmp/test.block
 #> text again
 #> and more text
 #> text
-#
+
 # cleanup
-#
 kdb rm -r system/examples/blockresolver
 sudo kdb umount system/examples/blockresolver
 ```

@@ -63,8 +63,8 @@ Another full example:
 
 sudo kdb mount conditionals.dump /examples/conditionals conditionals dump
 
-kdb set user/examples/conditionals/fkey 3.0
-kdb set user/examples/conditionals/hkey hello
+kdb set /examples/conditionals/fkey 3.0
+kdb set /examples/conditionals/hkey hello
 
 # will succeed
 kdb setmeta user/examples/conditionals/key check/condition "(../hkey == 'hello') ? (../fkey == '3.0')"
@@ -73,19 +73,11 @@ kdb setmeta user/examples/conditionals/key check/condition "(../hkey == 'hello')
 kdb setmeta user/examples/conditionals/key check/condition "(../hkey == 'hello') ? (../fkey == '5.0')"
 # RET:5
 # ERRORS:135
-
-# cleanup
-kdb rm -r /examples/conditionals
-sudo kdb umount /examples/conditionals
 ```
 
 Assignment example:
 
 ```sh
-#Backup-and-Restore:/examples/conditionals
-
-sudo kdb mount conditionals.dump /examples/conditionals conditionals dump
-
 kdb set user/examples/conditionals/hkey Hello
 kdb setmeta user/examples/conditionals/hkey assign/condition "(./ == 'Hello') ? ('World')"
 # alternative syntax: "(../hkey == 'Hello') ? ('World')
@@ -101,8 +93,6 @@ sudo kdb umount /examples/conditionals
 Global plugin example:
 
 ```sh
-#Backup-and-Restore:/examples/conditionals
-
 sudo kdb mount main.ini /examples/conditionals ni
 sudo kdb mount sub.ini /examples/conditionals/sub ini
 

@@ -50,17 +50,9 @@ kdb set /examples/mathcheck/k 7.7
 # Reason: 7.7 != 7.6
 # Mountpoint: /examples/mathcheck
 # Configfile: /home/thomas/.config/mathcheck.dump.25680:1478749409.938013.tmp
-
-#cleanup
-kdb rm -r /examples/mathcheck
-sudo kdb umount /examples/mathcheck
 ```
 To calculate values on-demand you can use:
 ```sh
-# Backup-and-Restore:/examples/mathcheck
-
-sudo kdb mount mathcheck.dump /examples/mathcheck dump mathcheck
-
 kdb setmeta user/examples/mathcheck/k check/math ":= + @/a @/b"
 kdb set /examples/mathcheck/a 8.0
 kdb set /examples/mathcheck/b 4.5
@@ -72,17 +64,9 @@ kdb set /examples/mathcheck/a 5.5
 
 kdb get /examples/mathcheck/k
 #> 10
-
-#cleanup
-kdb rm -r /examples/mathcheck
-sudo kdb umount /examples/mathcheck
 ```
 It also works with constants:
 ```sh
-# Backup-and-Restore:/examples/mathcheck
-
-sudo kdb mount mathcheck.dump /examples/mathcheck dump mathcheck
-
 kdb setmeta user/examples/mathcheck/k check/math ":= + ../a '5'"
 kdb set /examples/mathcheck/a 5.5
 
