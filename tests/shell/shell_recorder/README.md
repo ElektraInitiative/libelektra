@@ -41,7 +41,7 @@ STDOUT: user/test/key1⏎user/test/key2
 If you only want to check that `key1` and `key2` are part of the output you can use the regex `key1.*key2` instead:
 
 ```
-STDOUT: key1.*key2
+STDOUT-REGEX: key1.*key2
 < ls user/test
 ```
 
@@ -49,7 +49,8 @@ As you can see the line ending is considered  a normal character (`.`) in the ou
 
 Options:
 
-* STDOUT:
+* STDOUT:  		matched 1:1 against the command output
+* STDOUT-REGEX:		uses posix extended regex
 * STDERR:
 * RET:
 * WARNINGS:

@@ -10,6 +10,8 @@ RET=
 ERRORS=
 WARNINGS=
 STDOUT=
+STDOUTRE=
+STDOUTGLOB=
 STDERR=
 DIFF=
 OUTBUF=
@@ -47,23 +49,38 @@ writeBlock()
 	then
 		tmp=$(awk -v RS="" '{gsub (/\n/,"⏎")}1' <<< "$OUTBUF")
 		tmp=$(echo "$tmp" | sed 's/\[/\\\[/g' | sed 's/\]/\\\]/g' | sed 's/\./\\\./g' | sed 's/\*/\\\*/g' | sed 's/\?/\\\?/g')
-		echo "SSTDOUT: $tmp" >> "$TMPFILE"
-	else
-		if [ ! -z "$STDOUT" ]
+		echo "STDOUT: $tmp" >> "$TMPFILE"
+	    elif [ ! -z "$STDOUT" ];
+	    then
+		tmp=$(awk -v RS="" '{gsub (/\n/,"⏎")}1' <<< "$STDOUT")
+		tmp=$(echo "$tmp" | sed 's/\[/\\\[/g' | sed 's/\]/\\\]/g' | sed 's/\./\\\./g' | sed 's/\*/\\\*/g' | sed 's/\?/\\\?/g')
+		echo "STDOUT: $tmp" >> "$TMPFILE"
+	    else
+		if [ ! -z "$STDOUTRE" ]
 		then
-			echo "STDOUT: $STDOUT" >> "$TMPFILE"
+			echo "STDOUT-REGEX: $STDOUT" >> "$TMPFILE"
+		    else
+			if [ ! -z "$STDOUTGLOB" ];
+			then
+			    echo "STDOUT-GLOB: $STDOUT"
+			fi
 		fi
 	fi
+	COMMAND=$(sed s/sudo\ //g <<<"$COMMAND")
 	echo "< $COMMAND" >> "$TMPFILE"
+
 	COMMAND=
 	RET=
 	ERRORS=
 	WARNINGS=
 	STDOUT=
+	STDOUTRE=
+	STDOUTGLOB=
 	STDERR=
 	DIFF=
 	OUTBUF=
-}	
+}
+
 translate()
 {
 	TMPFILE=$(mktemp)
@@ -74,30 +91,32 @@ translate()
 		MOUNTPOINT=$(echo "$MOUNTPOINT" | cut -d ':' -f2)
 		echo "Mountpoint: $MOUNTPOINT" >> "$TMPFILE"
 	else
-		echo "Mountpoint: /" >> "$TMPFILE"
+		echo "Mountpoint: /examples" >> "$TMPFILE"
 	fi
 	COMMAND=
 	RET=
 	ERRORS=
 	WARNINGS=
 	STDOUT=
+	STDOUTRE=
+	STDOUTGLOB=
 	STDERR=
 	DIFF=
 	OUTBUF=
 	MOUNTPOINT=
 	IFS=''
-	while read line;
+	while read -r line;
 	do
-	    grep -Eq "((^(\s)*kdb)|(^(\s)*sudo kdb))" <<< "$line"
-		if [ "$?" -eq 0 ];
+		grep -Eq "^(\s)*#>" <<< "$line"
+		if [ -z "$OUTBUF" ];
 		then
-			if [ ! -z "$COMMAND" ];
-			then
-				writeBlock "$TMPFILE"
-			fi
-			COMMAND=$(grep -Po "(?<=kdb ).*" <<<"$line")
-			continue
+			tmp=$(grep -Po "(?<=#\> ).*" <<<"$line")
+			OUTBUF="$tmp"
+		    else
+			tmp=$(grep -Po "(?<=#\> ).*" <<< "$line")
+			OUTBUF=$(echo -en "${OUTBUF}\n${tmp}")
 		fi
+
 		grep -Eq "^(\s*)#" <<< "$line"
 		if [ "$?" -eq 0 ];
 		then
@@ -110,7 +129,13 @@ translate()
 					RET="$arg"
 					;;
 				STDOUT)
-					STDOUT="$arg"
+				    	STDOUT="$arg"
+					;;
+				STDOUT-REGEX)
+					STDOUTRE="$arg"
+					;;
+				STDOUT-GLOB)
+					STDOUTGLOB="$arg"
 					;;
 				STDERR)
 					STDERR="$arg"
@@ -129,21 +154,32 @@ translate()
 			esac
 			continue
 		fi
-		grep -Eq "^(\s)*\\$" <<< "$line"
-		if [ "$?" -eq 0 ];
+		if [ ! -z "$line" ];
 		then
 			if [ ! -z "$COMMAND" ];
 			then
 				writeBlock "$TMPFILE"
 			fi
 			COMMAND=$(grep -Eo "[^ \\t].*" <<< "$line")
+			COMMAND=$(sed "s/^sudo\ //" <<< "$COMMAND")
+			COMMAND=$(sed "s/\`[[:blank:]]*sudo\ /\`/" <<< "$COMMAND")
+			if [ "${line: -1}" == "\\" ];
+			then
+			    COMMAND="${COMMAND::-1}"
+			fi
+			while [ "${line: -1}" == "\\" ];
+			do
+			    read -r line
+			    line=$(sed "s/^sudo\ //" <<< "$line")
+			    line=$(sed "s/\`[[:blank:]]*sudo\ /\`/" <<< "$line")
+			    if [ "${line: -1}" == "\\" ];
+			    then
+				COMMAND=$(printf "%s\\\n%s" "$COMMAND" "${line::-1}")
+			    else
+				COMMAND=$(printf "%s\\\n%s\\\n" "$COMMAND" "$line")
+			    fi
+			done
 			continue
-		fi
-		if [ -z "$OUTBUF" ];
-		then
-			OUTBUF="$line"
-		    else
-			OUTBUF=$(echo -en "${OUTBUF}\n${line}")
 		fi
 	done <<<"$BUF"
 	writeBlock "$TMPFILE"
@@ -152,26 +188,25 @@ translate()
 }
 
 IFS=''
-while read line;
+while read -r line;
 do
 	grep -Eq '(\s)*```sh$' <<<"$line"
 	if [ "$?" -eq 0 ];
 	then
-		BUF=""
+		continue;	
+	fi
+	grep -Eq '(\s)*```$' <<<"$line"
+	if [ "$?" -eq 0 ];
+	then
+	    continue
+	fi
+	if [ -z "$BUF" ];
+	then
+		BUF="$line"
 	else
-		grep -Eq '(\s)*```$' <<<"$line"
-		if [ "$?" -eq 0 ];
-		then
-			BUF=$(echo "$BUF")
-			translate
-			BUF=""
-		else
-			if [ -z "$BUF" ];
-			then
-				BUF="$line"
-			else
-				BUF=$(echo -en "${BUF}\n${line}")
-			fi
-		fi
+		BUF=$(printf "%s\n%s" "${BUF}" "${line}")
 	fi
 done <<<"$BLOCKS"
+
+translate
+

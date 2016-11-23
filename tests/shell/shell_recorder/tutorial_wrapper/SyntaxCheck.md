@@ -1,15 +1,15 @@
 Test1
 ```sh
 # Backup-and-Restore:/test
- # testcomment
-	kdb set /test/a a
-    kdb set /test/b b
+# testcomment
+kdb set /test/a a
+kdb set /test/b b
 # RET:0
 # should yield 'a'
 kdb get /test/a
 # STDOUT:a
 kdb get /test/a
-a
+#> a
 kdb get /test/c
 # Expected:
 # RET:1
@@ -23,16 +23,15 @@ kdb rm -r /test
 Test 2
 
 ```sh
-# Backup-and-Restore:/test
 kdb set /test/x x
 kdb set /test/y y
 kdb get /test/x 
-x
+#> x
 kdb get /test/y
-y
+#> y
 kdb export /test ini
-x = x
-y = y
+#> x = x
+#> y = y
 kdb ls /test
 kdb rm -r /test
 ```
@@ -40,7 +39,42 @@ kdb rm -r /test
 
 Test 3
 ```sh
-#Backup-and-Restore:/test
-sudo kdb set /test/z z
-kdb rm -r /test
+ls
+
+echo test
+
+#> test
+
+echo "test\nbla"
+#> test
+
+#> bla
+cat `kdb file user`
+```
+
+heredoc
+```sh
+cat > /tmp/hereout << EOF \
+line 1\
+line 2\
+EOF
+cat /tmp/hereout
+#> line 1
+#> line 2
+```
+
+multi
+```sh
+cat /tmp/test \
+ls \
+echo test
+```
+
+sudo test
+```sh
+sudo cat `sudo kdb file system`
+    sudo ls
+cat `    sudo kdb file system`
+ls \
+sudo ls
 ```

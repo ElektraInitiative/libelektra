@@ -14,7 +14,8 @@ RETCMP=
 ERRORSCMP=
 WARNINGSCMP=
 STDOUTCMP=
-SSTDOUTCMP=
+STDOUTRECMP=
+STDOUTGLOBCMP=
 STDERRCMP=
 DIFFCMP=
 
@@ -27,6 +28,7 @@ nbTest=0
 
 if [ -z "@USE_CMAKE_KDB_COMMAND@" ]; then
 	KDBCOMMAND="@KDB_COMMAND@"
+	export PATH="`dirname $KDBCOMMAND`:/$PATH"
 else
 	KDBCOMMAND="kdb"
 fi
@@ -85,15 +87,7 @@ execute()
 
 	printf "%s\0\n" "CMD: $command" >> "$OutFile"
 
-	echo "$command" | grep -Eq "^(\s)*\\$" 2>/dev/null
-	if [ "$?" -eq 0 ];
-	then
-	cmd=$(echo "$command" | grep -Eo "([^ \\t$].*)")
-	shOut=$(sh -c -f "$cmd 2>stderr")
-	echo "$shOut" > stdout
-	else
-	sh -c -f "\"$KDBCOMMAND\" $command 2>stderr 1>stdout"
-	fi
+	sh -c -f "$command" 2>stderr 1>stdout
 
 	RETVAL="$?"
 
@@ -156,7 +150,7 @@ execute()
 	if [ ! -z "$STDOUTCMP" ];
 	then
 	nbTest=$(( nbTest + 1 ))
-	echo "$STDOUT" | replace_newline_return | grep -Eq --text "$STDOUTCMP"
+	echo "$STDOUT" | replace_newline_return | grep -q --text "^${STDOUTCMP}$"
 	if [ "$?" -ne "0" ];
 	then
 		printf "\nERROR - STDOUT:\n%s\ndoesn't match %s\n\n" "$STDOUT" "$STDOUTCMP"
@@ -164,18 +158,17 @@ execute()
 		nbError=$(( nbError + 1 ))
 	fi
 	fi
-	if [ ! -z "$SSTDOUTCMP" ];
+	if [ ! -z "$STDOUTRECMP" ];
 	then
 	nbTest=$(( nbTest + 1 ))
-	echo "$STDOUT" | replace_newline_return | grep -q --text "$SSTDOUTCMP"
+	echo "$STDOUT" | replace_newline_return | grep -Eq --text "$STDOUTRECMP"
 	if [ "$?" -ne "0" ];
 	then
-		printf "\nERROR - STDOUT:\n%s\ndoesn't match %s\n\n" "$STDOUT" "$SSTDOUTCMP"
-		printf "%s\0\n" "=== FAILED stdout doesn't match expected pattern $SSTDOUTCMP" >> "$OutFile"
+		printf "\nERROR - STDOUT:\n%s\ndoesn't match %s\n\n" "$STDOUT" "$STDOUTRECMP"
+		printf "%s\0\n" "=== FAILED stdout doesn't match expected pattern $STDOUTRECMP" >> "$OutFile"
 		nbError=$(( nbError + 1 ))
 	fi
 	fi
-
 
 	WARNINGS=$(echo "$STDERR" | sed -nE  "s/Warning number: (\d*)/\1/p" | tr '\n' ',')
 
@@ -236,7 +229,7 @@ run_script()
 	do
 	OP=
 	ARG=
-	cmd=$(echo "$line"|cut -d ' ' -f1)
+	cmd=$(printf "%s" "$line"|cut -d ' ' -f1)
 	case "$cmd" in
 		Mountpoint:)
 		Mountpoint=$(echo "$line"|cut -d ' ' -f2)
@@ -271,8 +264,11 @@ run_script()
 		STDOUT:)
 		STDOUTCMP=$(echo "$line"|cut -d ' ' -f2-)
 		;;
-		SSTDOUT:)
-		SSTDOUTCMP=$(echo "$line"|cut -d ' ' -f2-)
+		STDOUT-REGEX:)
+		STDOUTRECMP=$(echo "$line"|cut -d ' ' -f2-)
+		;;
+		STDOUT-GLOB:)
+		STDOUTGLOBCMP=$(echo "$line"|cut -d ' ' -f2-)
 		;;
 	    	STDERR:)
 		STDERRCMP=$(echo "$line"|cut -d ' ' -f2-)
@@ -282,7 +278,7 @@ run_script()
 		;;
 		\<)
 		OP="$cmd"
-		ARG=$(echo "$line"|cut -d ' ' -f2-)
+		ARG=$(printf "%s" "$line"|cut -d ' ' -f2-)
 		;;
 	esac
 	if [ "$OP" = "<" ];
@@ -292,7 +288,8 @@ run_script()
 		ERRORSCMP=
 		WARNINGSCMP=
 		STDOUTCMP=
-		SSTDOUTCMP=
+		STDOUTRECMP=
+		STDOUTGLOBCMP=
 		STDERRCMP=
 		DIFFCMP=
 	fi
