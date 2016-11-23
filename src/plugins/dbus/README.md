@@ -62,9 +62,29 @@ Mount the plugin additionally to a storage plugin, e.g.
 
 	kdb mount file.dump / dump dbus
 
-then we can receive the notification events using:
+Then we can receive the notification events using:
 
 	dbus-monitor type='signal',interface='org.libelektra',path='/org/libelektra/configuration'
+
+Or via the supplied test program:
+
+	kdb testmod_dbus receive_session
+
+We can trigger a message with:
+
+	kdb set user/dbus/x b
+
+Note that changes in `user` fire on the dbus `session`,
+and changes in namespace `system` in the dbus `system` bus.
+To receive `system` changes we will use:
+
+	kdb testmod_dbus receive_system
+	dbus-monitor --system type='signal',interface='org.libelektra',path='/org/libelektra/configuration'
+
+And then fire it with:
+
+	kdb set system/dbus/y a
+
 
 ### Python ###
 
