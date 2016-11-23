@@ -46,33 +46,60 @@ static KeySet * create_ks (const char * res, const char * meta)
 		      keyNew ("user/tests/mathcheck/bla/val3", KEY_VALUE, "3", KEY_END), KS_END);
 }
 
+static void test_multiUp ()
+{
+	Key * parentKey = keyNew ("user/tests/mathcheck", KEY_VALUE, "", KEY_END);
+	KeySet * conf = ksNew (0, KS_END);
+	KeySet * ks = ksNew (5, keyNew ("user/tests/mathcheck/up/sum", KEY_VALUE, "0", KEY_META, "check/math",
+					":= + ../val1 + ../../val2 ../val3", KEY_END),
+			     keyNew ("user/tests/mathcheck/up/val1", KEY_VALUE, "1", KEY_END),
+			     keyNew ("user/tests/mathcheck/val2", KEY_VALUE, "2", KEY_END),
+			     keyNew ("user/tests/mathcheck/up/val3", KEY_VALUE, "10", KEY_END), KS_END);
+
+	PLUGIN_OPEN ("mathcheck");
+	ksRewind (ks);
+	plugin->kdbSet (plugin, ks, parentKey);
+	succeed_if (!strcmp (keyString (ksLookupByName (ks, "user/tests/mathcheck/up/sum", 0)), "13"), "error");
+	keyDel (parentKey);
+	PLUGIN_CLOSE ();
+	ksDel (ks);
+}
+
 int main (int argc, char ** argv)
 {
 	printf ("MATHCHECK	   TESTS\n");
 	printf ("==================\n\n");
 
 	init (argc, argv);
+
 	KeySet * ks = create_ks ("153", "== + ../bla/val1 + ../bla/val2 ../bla/val3");
 	test (ks, 1);
 	ksDel (ks);
+
 	ks = create_ks ("250", "< + ../bla/val1 + ../bla/val2 ../bla/val3");
 	test (ks, (-1));
 	ksDel (ks);
+
 	ks = create_ks ("250", ">= + @/bla/val1 + @/bla/val2 @/bla/val3");
 	test (ks, 1);
 	ksDel (ks);
+
 	ks = create_ks ("2", "== / @/bla/val1 @/bla/val2");
 	test (ks, 1);
 	ksDel (ks);
+
 	ks = create_ks ("", ":= / @/bla/val1 @/bla/val2");
 	testSet (ks, "2");
 	ksDel (ks);
+
 	ks = create_ks ("1", "== / ../bla/val1 ../bla/val3");
 	test (ks, (-1));
 	ksDel (ks);
+
 	ks = create_ks ("3", "== + '1.5' '1.5'");
 	test (ks, 1);
 	ksDel (ks);
+
 	ks = create_ks ("4.5", "== + '1.5' + '1.5' '1.5'");
 	test (ks, 1);
 	ksDel (ks);
@@ -116,6 +143,8 @@ int main (int argc, char ** argv)
 	ks = create_ks ("3", "== + @/bla/nonExisting / ../bla/val3 ../bla/nonExistingToo");
 	test (ks, 1);
 	ksDel (ks);
+
+	test_multiUp ();
 
 	printf ("\ntestmod_mathcheck RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 
