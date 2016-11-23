@@ -516,6 +516,33 @@ static void test_dontquotebracketvalues (char * fileName)
 	PLUGIN_CLOSE ();
 }
 
+static void test_commentDefaultChar (char * fileName)
+{
+	Key * parentKey = keyNew ("user/tests/ini-write", KEY_VALUE, elektraFilename (), KEY_END);
+	KeySet * conf = ksNew (10, keyNew ("system/comment", KEY_VALUE, ";", KEY_END), KS_END);
+	PLUGIN_OPEN ("ini");
+
+	KeySet * ks =
+		ksNew (30, keyNew ("user/tests/ini-write/nosectionkey", KEY_VALUE, "nosectionvalue", KEY_META, "comments", "#1", KEY_META,
+				   "comments/#0", "nosection comment1", KEY_META, "comments/#1", "nosection comment2", KEY_END),
+		       keyNew ("user/tests/ini-write/section1", KEY_BINARY, KEY_META, "comments", "#1", KEY_META, "comments/#0",
+			       "section comment1", KEY_META, "comments/#1", "section comment2", KEY_END),
+		       keyNew ("user/tests/ini-write/section1/key1", KEY_VALUE, "value1", KEY_META, "comments", "#1", KEY_META,
+			       "comments/#0", "key comment1", KEY_META, "comments/#1", "key comment2", KEY_END),
+		       KS_END);
+
+	succeed_if (plugin->kdbSet (plugin, ks, parentKey) >= 1, "call to kdbSet was not successful");
+	succeed_if (output_error (parentKey), "error in kdbSet");
+	succeed_if (output_warnings (parentKey), "warnings in kdbSet");
+
+	succeed_if (compare_line_files (srcdir_file (fileName), keyString (parentKey)), "files do not match as expected");
+
+	ksDel (ks);
+	keyDel (parentKey);
+
+	PLUGIN_CLOSE ();
+}
+
 int main (int argc, char ** argv)
 {
 	printf ("INI         TESTS\n");
@@ -542,6 +569,7 @@ int main (int argc, char ** argv)
 	test_complexInsert ("ini/complexIn.ini", "ini/complexOut.ini");
 	test_arrayInsert ("ini/arrayInsertIn.ini", "ini/arrayInsertOut.ini");
 	test_dontquotebracketvalues ("ini/bracketQuoteOut.ini");
+	test_commentDefaultChar ("ini/commentini");
 	printf ("\ntest_ini RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 
 	return nbError;

@@ -36,6 +36,7 @@ static int iniCmpOrder (const void * a, const void * b);
 
 #define INTERNAL_ROOT_SECTION "GLOBALROOT"
 #define DEFAULT_DELIMITER '='
+#define DEFAULT_COMMENT_CHAR '#'
 
 typedef enum { NONE, BINARY, ALWAYS } SectionHandling;
 
@@ -51,6 +52,7 @@ typedef struct
 	char * continuationString;
 	char delim;
 	char * lastOrder;
+	char commentChar;
 	KeySet * oldKS;
 } IniPluginConfig;
 
@@ -506,6 +508,16 @@ int elektraIniOpen (Plugin * handle, Key * parentKey ELEKTRA_UNUSED)
 	Key * toMetaKey = ksLookupByName (config, "/meta", KDB_O_NONE);
 	Key * contStringKey = ksLookupByName (config, "/linecont", KDB_O_NONE);
 	Key * delimiterKey = ksLookupByName (config, "/delimiter", KDB_O_NONE);
+	Key * commentKey = ksLookupByName (config, "/comment", KDB_O_NONE);
+
+	if (!commentKey)
+	{
+		pluginConfig->commentChar = DEFAULT_COMMENT_CHAR;
+	}
+	else
+	{
+		pluginConfig->commentChar = keyString (commentKey)[0];
+	}
 
 	if (!contStringKey)
 	{
@@ -745,12 +757,39 @@ int elektraIniGet (Plugin * handle, KeySet * returned, Key * parentKey)
 // TODO: # and ; comments get mixed up, patch inih to differentiate and
 // create comment keys instead of writing metadata. Wiriting the meta
 // data can be done by keytometa then
-void writeComments (Key * current, FILE * fh)
+void writeComments (Key * current, FILE * fh, const char commentChar)
 {
-	char * toWrite = elektraMetaArrayToString (current, "comments", "\n");
-	if (toWrite == NULL) return;
-	fprintf (fh, "%s\n", toWrite);
-	elektraFree (toWrite);
+	const Key * meta = keyGetMeta (current, "comments");
+	if (meta == NULL) return;
+	Key * lookupKey = keyDup (meta);
+	keyAddBaseName (lookupKey, "#0");
+	const Key * comment = keyGetMeta (current, keyName (lookupKey));
+	while (comment != NULL)
+	{
+		if (strlen (keyString (comment)) == 0)
+		{
+			fprintf (fh, "\n");
+		}
+		else
+		{
+			const char * ptr = keyString (comment);
+			while (*ptr)
+			{
+				if (!isblank (*ptr))
+				{
+					if (*ptr == ';' || *ptr == '#')
+						fprintf (fh, "%s\n", keyString (comment));
+					else
+						fprintf (fh, "%c%s\n", commentChar, keyString (comment));
+					break;
+				}
+				++ptr;
+			}
+		}
+		elektraArrayIncName (lookupKey);
+		comment = keyGetMeta (current, keyName (lookupKey));
+	}
+	keyDel (lookupKey);
 }
 static int keyContainsSpecialCharacter (const char *);
 static int valueContainsSpecialCharacter (const char *);
@@ -1199,7 +1238,7 @@ static int iniWriteKeySet (FILE * fh, Key * parentKey, KeySet * returned, IniPlu
 			}
 			sectionKey = cur;
 		}
-		writeComments (cur, fh);
+		writeComments (cur, fh, config->commentChar);
 		if (config->toMeta)
 		{
 			iniWriteMeta (fh, parentKey, cur, config);
