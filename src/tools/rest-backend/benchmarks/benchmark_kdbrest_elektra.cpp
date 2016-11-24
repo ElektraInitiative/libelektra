@@ -345,8 +345,7 @@ void benchmarkInsertData (int numUsers, int numEntriesPerUser, int numTagsPerEnt
 
 	std::cout << "-> Executing benchmark:" << std::endl;
 
-	std::cout << "   -> Creating test data (" << (numUsers * 4 + numUsers * numEntriesPerUser * 18) << " keys)"
-			<< std::endl;
+	std::cout << "   -> Creating test data (" << (numUsers * 4 + numUsers * numEntriesPerUser * 18) << " keys)" << std::endl;
 
 	// timer start
 	Timer timer;

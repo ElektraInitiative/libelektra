@@ -1,6 +1,8 @@
 #include <algorithm>
 #include <iostream>
 
+#include <boost/algorithm/string/predicate.hpp>
+
 #include "service.hpp"
 
 namespace kdbrest
@@ -22,11 +24,7 @@ void SearchEngine::filterConfigurationsByName (std::vector<kdbrest::model::Entry
 
 	entries.erase (std::remove_if (entries.begin (), entries.end (),
 				       [startsWith](kdbrest::model::Entry & elem) -> bool {
-					       if (elem.getPublicName ().compare (0, startsWith.size (), startsWith))
-					       {
-						       return true;
-					       }
-					       return false;
+					       return boost::starts_with (elem.getPublicName (), startsWith);
 				       }),
 		       entries.end ());
 }

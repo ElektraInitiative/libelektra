@@ -411,7 +411,7 @@ bool StorageEngine::updateUser (model::User & user)
 	KDB kdb;
 	KeySet ks;
 	kdb.get (ks, user.getName ());
-	
+
 	Key k = ks.lookup (user.getName ());
 	if (!k)
 	{

@@ -94,26 +94,25 @@ void prepareTestData (sql::Connection * con, int numUsers, int numEntriesPerUser
 	for (auto & user : users)
 	{
 		sql += "('" + user.getUsername () + "','" + user.getPasswordHash () + "','" + user.getEmail () + "'," +
-				std::to_string (user.getRank ()) + "," + std::to_string (user.getCreatedAt ()) + "),";
+		       std::to_string (user.getRank ()) + "," + std::to_string (user.getCreatedAt ()) + "),";
 	}
 	stmt->execute (sql.substr (0, sql.size () - 1));
 
 	// create entries
 	sql = "INSERT INTO `snippets` (`author_id`,`organization`,`application`,`scope`,`slug`,`title`,`description`,"
-			"`configuration`,`plugin`,`views`,`createdat`) VALUES ";
+	      "`configuration`,`plugin`,`views`,`createdat`) VALUES ";
 	int fk_id = 1;
 	std::vector<model::Entry> entries = createTestEntries (users[0], 1, 1);
-	model::ConfigFormat configFormat = service::ConvertEngine::instance ().exportTo (entries[0].getUploadPlugin (),
-			entries[0]);
+	model::ConfigFormat configFormat = service::ConvertEngine::instance ().exportTo (entries[0].getUploadPlugin (), entries[0]);
 	for (auto & user : users)
 	{
 		entries = createTestEntries (user, numEntriesPerUser, numTagsPerEntry);
 		for (auto & entry : entries)
 		{
-			sql += "(" + std::to_string(fk_id) + ",'" + entry.getOrganization () + "','" + entry.getApplication () +
-					"','" + entry.getScope () + "','" + entry.getSlug () + "','" + entry.getTitle () + "','" +
-					entry.getDescription () + "','" + configFormat.getConfig () + "','" + entry.getUploadPlugin () +
-					"'," + std::to_string (entry.getViews ()) + "," + std::to_string (entry.getCreatedAt ()) + "),";
+			sql += "(" + std::to_string (fk_id) + ",'" + entry.getOrganization () + "','" + entry.getApplication () + "','" +
+			       entry.getScope () + "','" + entry.getSlug () + "','" + entry.getTitle () + "','" + entry.getDescription () +
+			       "','" + configFormat.getConfig () + "','" + entry.getUploadPlugin () + "'," +
+			       std::to_string (entry.getViews ()) + "," + std::to_string (entry.getCreatedAt ()) + "),";
 		}
 		fk_id++;
 	}
@@ -128,7 +127,7 @@ void prepareTestData (sql::Connection * con, int numUsers, int numEntriesPerUser
 		{
 			for (auto & tag : entry.getTags ())
 			{
-				sql += "(" + std::to_string(fk_id) + ", '" + tag + "'),";
+				sql += "(" + std::to_string (fk_id) + ", '" + tag + "'),";
 			}
 			fk_id++;
 		}
@@ -148,19 +147,20 @@ void addIndexes (sql::Connection * con)
 
 	stmt = con->createStatement ();
 
-	stmt->execute("ALTER TABLE `users` ADD UNIQUE INDEX `name` (`name`)");
+	stmt->execute ("ALTER TABLE `users` ADD UNIQUE INDEX `name` (`name`)");
 
-	stmt->execute("ALTER TABLE `snippets` ADD INDEX `organization` (`organization`)");
-	stmt->execute("ALTER TABLE `snippets` ADD INDEX `application` (`application`)");
-	stmt->execute("ALTER TABLE `snippets` ADD INDEX `scope` (`scope`)");
-	stmt->execute("ALTER TABLE `snippets` ADD INDEX `slug` (`slug`)");
-	stmt->execute("ALTER TABLE `snippets` ADD UNIQUE INDEX `full_key` (`organization`, `application`,"
-			"`scope`, `slug`)");
-	stmt->execute("ALTER TABLE `snippets` ADD FULLTEXT INDEX `title` (`title`)");
-	stmt->execute("ALTER TABLE `snippets` ADD FULLTEXT INDEX `description` (`description`)");
-	stmt->execute("ALTER TABLE `snippets` ADD INDEX `createdat` (`createdat`)");
+	stmt->execute ("ALTER TABLE `snippets` ADD INDEX `organization` (`organization`)");
+	stmt->execute ("ALTER TABLE `snippets` ADD INDEX `application` (`application`)");
+	stmt->execute ("ALTER TABLE `snippets` ADD INDEX `scope` (`scope`)");
+	stmt->execute ("ALTER TABLE `snippets` ADD INDEX `slug` (`slug`)");
+	stmt->execute (
+		"ALTER TABLE `snippets` ADD UNIQUE INDEX `full_key` (`organization`, `application`,"
+		"`scope`, `slug`)");
+	stmt->execute ("ALTER TABLE `snippets` ADD FULLTEXT INDEX `title` (`title`)");
+	stmt->execute ("ALTER TABLE `snippets` ADD FULLTEXT INDEX `description` (`description`)");
+	stmt->execute ("ALTER TABLE `snippets` ADD INDEX `createdat` (`createdat`)");
 
-	stmt->execute("ALTER TABLE `tags` ADD INDEX `tag` (`tag`)");
+	stmt->execute ("ALTER TABLE `tags` ADD INDEX `tag` (`tag`)");
 
 	delete stmt;
 }
@@ -216,7 +216,7 @@ void benchmarkLookupSingleByKey (sql::Connection * con, int numUsers, int numEnt
 
 	prepareTestData (con, numUsers, numEntriesPerUser, numTagsPerEntry);
 
-	if(indexes == 1)
+	if (indexes == 1)
 	{
 		std::cout << "-> Creating indexes" << std::endl;
 
@@ -285,7 +285,7 @@ void benchmarkLookupMultipleByOrganization (sql::Connection * con, int numUsers,
 
 	prepareTestData (con, numUsers, numEntriesPerUser, numTagsPerEntry);
 
-	if(indexes == 1)
+	if (indexes == 1)
 	{
 		std::cout << "-> Creating indexes" << std::endl;
 
@@ -348,7 +348,7 @@ void benchmarkLookupMultipleByTag (sql::Connection * con, int numUsers, int numE
 
 	prepareTestData (con, numUsers, numEntriesPerUser, numTagsPerEntry);
 
-	if(indexes == 1)
+	if (indexes == 1)
 	{
 		std::cout << "-> Creating indexes" << std::endl;
 
@@ -413,7 +413,7 @@ void benchmarkLookupMultipleByAuthor (sql::Connection * con, int numUsers, int n
 
 	prepareTestData (con, numUsers, numEntriesPerUser, numTagsPerEntry);
 
-	if(indexes == 1)
+	if (indexes == 1)
 	{
 		std::cout << "-> Creating indexes" << std::endl;
 
@@ -476,7 +476,7 @@ void benchmarkLookupMultipleByDescription (sql::Connection * con, int numUsers, 
 
 	prepareTestData (con, numUsers, numEntriesPerUser, numTagsPerEntry);
 
-	if(indexes == 1)
+	if (indexes == 1)
 	{
 		std::cout << "-> Creating indexes" << std::endl;
 
@@ -533,14 +533,14 @@ void benchmarkInsertData (sql::Connection * con, int numUsers, int numEntriesPer
 	std::cout << "-> Refreshing database (clear & create tables)" << std::endl;
 
 	clearDatabase (con);
-	
-	if(indexes == 1)
+
+	if (indexes == 1)
 	{
 		std::cout << "-> Creating indexes" << std::endl;
-		
+
 		addIndexes (con);
 	}
-	
+
 	std::cout << "-> Executing benchmark:" << std::endl;
 
 	std::cout << "   -> Creating test data ("

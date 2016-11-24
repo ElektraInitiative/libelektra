@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include <boost/algorithm/string/predicate.hpp>
 #include <jwt/jwt.h>
 #include <openssl/sha.h>
 
@@ -204,7 +205,7 @@ bool AuthenticationApp::validateAuthentication (cppcms::http::request & request,
 	}
 	else
 	{
-		if (!(headerAuthorization.compare (0, AUTH_HEADER_PREFIX.size (), AUTH_HEADER_PREFIX)) == 0)
+		if (!boost::starts_with (headerAuthorization, AUTH_HEADER_PREFIX))
 		{
 			RootApp::setUnauthorized (response, "Authentication header has wrong format.", "NEED_AUTHENTICATION");
 			return false; // not successful
@@ -266,7 +267,7 @@ model::User AuthenticationApp::getCurrentUser (cppcms::http::request & request)
 	}
 	else
 	{
-		if (!(headerAuthorization.compare (0, AUTH_HEADER_PREFIX.size (), AUTH_HEADER_PREFIX)) == 0)
+		if (!boost::starts_with (headerAuthorization, AUTH_HEADER_PREFIX))
 		{
 			throw exception::NoCurrentUserException ();
 		}
