@@ -1,7 +1,6 @@
-#include "../model_user.hpp"
-
 #include <gtest/gtest.h>
 
+#include <model_user.hpp>
 
 /**
  * TESTS for kdbrest::models::User

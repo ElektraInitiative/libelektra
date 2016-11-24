@@ -1,9 +1,8 @@
 #include <gtest/gtest.h>
 
-#include "../kdb_includes.hpp"
-#include "../model_entry.hpp"
-#include "../service.hpp"
-
+#include <kdb_includes.hpp>
+#include <model_entry.hpp>
+#include <service.hpp>
 
 /**
  * TESTS for kdbrest::service::SearchEngine

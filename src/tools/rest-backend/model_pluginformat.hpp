@@ -4,8 +4,8 @@
 #include <string>
 #include <vector>
 
-#include "exceptions.hpp"
-#include "kdb_includes.hpp"
+#include <exceptions.hpp>
+#include <kdb_includes.hpp>
 
 namespace kdbrest
 {

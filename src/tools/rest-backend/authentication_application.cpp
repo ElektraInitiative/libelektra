@@ -8,17 +8,17 @@
 #include <jwt/jwt.h>
 #include <openssl/sha.h>
 
-#include "authentication_application.hpp"
-#include "crypto.hpp"
-#include "root_application.hpp"
-#include "service.hpp"
-#include "user_application.hpp"
+#include <authentication_application.hpp>
+#include <crypto.hpp>
+#include <root_application.hpp>
+#include <service.hpp>
+#include <user_application.hpp>
 
 namespace kdbrest
 {
 
 /**
- * @brief the constructor fot the authentication endopint application.
+ * @brief the constructor for the authentication endopint application.
  * @param srv a service container
  */
 AuthenticationApp::AuthenticationApp (cppcms::service & srv) : cppcms::application (srv)

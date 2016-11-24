@@ -16,14 +16,13 @@
 #include <kdbthread.hpp>
 #include <kdbtimer.hpp>
 
-#include "../config.hpp"
-#include "../kdb_includes.hpp"
-#include "../model_entry.hpp"
-#include "../model_user.hpp"
-#include "../service.hpp"
-#include "testdata.hpp"
-#include "timer.hpp"
-
+#include <config.hpp>
+#include <kdb_includes.hpp>
+#include <model_entry.hpp>
+#include <model_user.hpp>
+#include <service.hpp>
+#include <testdata.hpp>
+#include <timer.hpp>
 
 namespace kdbrest
 {

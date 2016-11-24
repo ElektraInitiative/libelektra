@@ -3,7 +3,7 @@
 
 #include <boost/algorithm/string/predicate.hpp>
 
-#include "service.hpp"
+#include <service.hpp>
 
 namespace kdbrest
 {

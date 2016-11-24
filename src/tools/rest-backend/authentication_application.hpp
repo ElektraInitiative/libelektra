@@ -10,8 +10,7 @@
 #include <cppcms/url_mapper.h>
 #include <string>
 
-#include "model_user.hpp"
-
+#include <model_user.hpp>
 
 /**
  * @brief This is the main namespace for all classes belonging

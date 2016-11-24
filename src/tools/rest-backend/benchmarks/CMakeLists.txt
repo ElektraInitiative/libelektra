@@ -6,7 +6,7 @@ if (NOT MYSQLCPPCONN_FOUND)
     message (STATUS "MySQL Connector library for C++ not found, cannot build benchmark")
 else ()
 
-    include_directories (${CMAKE_CURRENT_BINARY_DIR})
+    include_directories (${CMAKE_CURRENT_SOURCE_DIR})
     include_directories (${MYSQLCPPCONN_INCLUDE_DIR})
 
     add_headers (HDR_FILES)

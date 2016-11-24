@@ -7,11 +7,11 @@
 #include <boost/algorithm/string.hpp>
 #include <openssl/sha.h>
 
-#include "authentication_application.hpp"
-#include "crypto.hpp"
-#include "root_application.hpp"
-#include "service.hpp"
-#include "user_application.hpp"
+#include <authentication_application.hpp>
+#include <crypto.hpp>
+#include <root_application.hpp>
+#include <service.hpp>
+#include <user_application.hpp>
 
 namespace kdbrest
 {

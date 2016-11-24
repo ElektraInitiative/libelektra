@@ -1,10 +1,9 @@
-#include "../kdb_includes.hpp"
-#include "../model_entry.hpp"
-#include "../model_user.hpp"
-#include "../service.hpp"
-
 #include <gtest/gtest.h>
 
+#include <kdb_includes.hpp>
+#include <model_entry.hpp>
+#include <model_user.hpp>
+#include <service.hpp>
 
 /**
  * TESTS for kdbrest::service::StorageEngine

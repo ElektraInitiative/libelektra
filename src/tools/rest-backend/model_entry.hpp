@@ -14,9 +14,9 @@
 #include <boost/algorithm/string/split.hpp>
 #include <boost/tokenizer.hpp>
 
-#include "config.hpp"
-#include "exceptions.hpp"
-#include "kdb_includes.hpp"
+#include <config.hpp>
+#include <exceptions.hpp>
+#include <kdb_includes.hpp>
 
 namespace kdbrest
 {

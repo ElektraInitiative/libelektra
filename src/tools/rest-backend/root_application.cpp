@@ -2,15 +2,14 @@
 #include <cppcms/view.h>
 #include <sstream>
 
-#include "authentication_application.hpp"
-#include "conversion_application.hpp"
-#include "database_application.hpp"
-#include "exceptions.hpp"
-#include "kdb.h"
-#include "root_application.hpp"
-#include "service.hpp"
-#include "user_application.hpp"
-
+#include <authentication_application.hpp>
+#include <conversion_application.hpp>
+#include <database_application.hpp>
+#include <exceptions.hpp>
+#include <kdb.h>
+#include <root_application.hpp>
+#include <service.hpp>
+#include <user_application.hpp>
 
 namespace kdbrest
 {

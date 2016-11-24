@@ -8,11 +8,11 @@
 #include <boost/algorithm/string/split.hpp>
 #include <boost/filesystem.hpp>
 
-#include "modules.hpp"
-#include "plugin.hpp"
-#include "plugindatabase.hpp"
-#include "pluginspec.hpp"
-#include "service.hpp"
+#include <modules.hpp>
+#include <plugin.hpp>
+#include <plugindatabase.hpp>
+#include <pluginspec.hpp>
+#include <service.hpp>
 
 namespace kdbrest
 {

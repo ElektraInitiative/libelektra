@@ -3,8 +3,8 @@
 
 #include <vector>
 
-#include "../model_entry.hpp"
-#include "../model_user.hpp"
+#include <model_entry.hpp>
+#include <model_user.hpp>
 
 namespace kdbrest
 {

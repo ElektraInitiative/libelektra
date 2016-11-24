@@ -1,7 +1,6 @@
-#include "../model_entry.hpp"
-
 #include <gtest/gtest.h>
 
+#include <model_entry.hpp>
 
 /**
  *  TESTS for kdbrest::models::Entry

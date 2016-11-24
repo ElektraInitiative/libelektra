@@ -8,15 +8,15 @@
 #include <boost/thread/locks.hpp>
 #include <boost/thread/shared_mutex.hpp>
 
-#include "config.hpp"
-#include "exceptions.hpp"
-#include "kdb_includes.hpp"
-#include "model_configformat.hpp"
-#include "model_entry.hpp"
-#include "model_importedconfig.hpp"
-#include "model_pluginformat.hpp"
-#include "model_user.hpp"
-#include "singleton.hpp"
+#include <config.hpp>
+#include <exceptions.hpp>
+#include <kdb_includes.hpp>
+#include <model_configformat.hpp>
+#include <model_entry.hpp>
+#include <model_importedconfig.hpp>
+#include <model_pluginformat.hpp>
+#include <model_user.hpp>
+#include <singleton.hpp>
 
 namespace kdbrest
 {

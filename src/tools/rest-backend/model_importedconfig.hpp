@@ -1,8 +1,8 @@
 #ifndef ELEKTRA_REST_MODEL_IMPORTEDCONFIG_HEADER_GUARD
 #define ELEKTRA_REST_MODEL_IMPORTEDCONFIG_HEADER_GUARD
 
-#include "kdb_includes.hpp"
-#include "model_pluginformat.hpp"
+#include <kdb_includes.hpp>
+#include <model_pluginformat.hpp>
 
 namespace kdbrest
 {

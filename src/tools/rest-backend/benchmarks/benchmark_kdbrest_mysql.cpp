@@ -21,20 +21,18 @@
 #include <cppconn/resultset.h>
 #include <cppconn/statement.h>
 
-#include "../model_configformat.hpp"
-#include "../model_entry.hpp"
-#include "../model_importedconfig.hpp"
-#include "../model_user.hpp"
-#include "../service.hpp"
-#include "testdata.hpp"
-#include "timer.hpp"
-
+#include <model_configformat.hpp>
+#include <model_entry.hpp>
+#include <model_importedconfig.hpp>
+#include <model_user.hpp>
+#include <service.hpp>
+#include <testdata.hpp>
+#include <timer.hpp>
 
 #define SQL_HOST "tcp://127.0.0.1:3306"
 #define SQL_USER "root"
 #define SQL_PASS "root"
 #define SQL_DB "test_rest_backend"
-
 
 namespace kdbrest
 {

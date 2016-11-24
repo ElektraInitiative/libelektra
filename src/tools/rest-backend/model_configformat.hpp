@@ -3,7 +3,7 @@
 
 #include <string>
 
-#include "model_pluginformat.hpp"
+#include <model_pluginformat.hpp>
 
 namespace kdbrest
 {

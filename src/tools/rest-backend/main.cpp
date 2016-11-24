@@ -3,9 +3,8 @@
 #include <cppcms/service.h>
 #include <iostream>
 
-#include "root_application.hpp"
-#include "service.hpp"
-
+#include <root_application.hpp>
+#include <service.hpp>
 
 int main (int argc, char ** argv)
 {

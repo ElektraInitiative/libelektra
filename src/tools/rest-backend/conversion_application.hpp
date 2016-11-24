@@ -11,7 +11,6 @@
 #include <string>
 #include <vector>
 
-
 /**
  * @brief This is the main namespace for all classes belonging
  * to the kdb rest service

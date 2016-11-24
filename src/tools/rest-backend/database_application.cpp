@@ -8,15 +8,15 @@
 #include <boost/algorithm/string.hpp>
 #include <boost/tokenizer.hpp>
 
-#include "authentication_application.hpp"
-#include "database_application.hpp"
-#include "model_configformat.hpp"
-#include "model_entry.hpp"
-#include "model_importedconfig.hpp"
-#include "model_pluginformat.hpp"
-#include "model_user.hpp"
-#include "root_application.hpp"
-#include "service.hpp"
+#include <authentication_application.hpp>
+#include <database_application.hpp>
+#include <model_configformat.hpp>
+#include <model_entry.hpp>
+#include <model_importedconfig.hpp>
+#include <model_pluginformat.hpp>
+#include <model_user.hpp>
+#include <root_application.hpp>
+#include <service.hpp>
 
 namespace kdbrest
 {

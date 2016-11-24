@@ -11,8 +11,7 @@
 #include <string>
 #include <vector>
 
-#include "model_user.hpp"
-
+#include <model_user.hpp>
 
 /**
  * @brief This is the main namespace for all classes belonging

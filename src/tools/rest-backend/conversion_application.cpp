@@ -1,11 +1,11 @@
 #include <iostream>
 
-#include "conversion_application.hpp"
-#include "model_configformat.hpp"
-#include "model_entry.hpp"
-#include "model_importedconfig.hpp"
-#include "root_application.hpp"
-#include "service.hpp"
+#include <conversion_application.hpp>
+#include <model_configformat.hpp>
+#include <model_entry.hpp>
+#include <model_importedconfig.hpp>
+#include <root_application.hpp>
+#include <service.hpp>
 
 namespace kdbrest
 {

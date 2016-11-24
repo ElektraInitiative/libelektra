@@ -1,8 +1,7 @@
-#include "../model_configformat.hpp"
-#include "../model_pluginformat.hpp"
-
 #include <gtest/gtest.h>
 
+#include <model_configformat.hpp>
+#include <model_pluginformat.hpp>
 
 /**
  * TESTS for kdbrest::models::ConfigFormat
