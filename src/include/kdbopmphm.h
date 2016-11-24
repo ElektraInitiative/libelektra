@@ -1,8 +1,6 @@
 #ifndef OPMPHM_H
 #define OPMPHM_H
 
-#include <stdlib.h>
-
 /* Hash function
  * By Bob Jenkins, May 2006
  * http://burtleburtle.net/bob/c/lookup3.c
