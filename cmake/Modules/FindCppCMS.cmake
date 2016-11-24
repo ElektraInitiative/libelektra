@@ -1,3 +1,6 @@
+# Script created on basis of
+# https://theogit.fmi.uni-stuttgart.de/bahrdtdl/oscar/blob/8c6d602d044d726aa3d56138100a14f3d6f4c22a/cmake/FindCPPCMS.cmake
+#
 # Find the cppcms includes and library and the booster include and library
 #
 #  CPPCMS_INCLUDE_DIR  - Where to find cppcms include sub-directory.
@@ -15,8 +18,8 @@ endif (CPPCMS_INCLUDE_DIR)
 find_path (CPPCMS_INCLUDE_DIR cppcms/application.h PATHS /usr/include /usr/local/include)
 find_path (BOOSTER_INCLUDE_DIR booster/assert.h PATHS /usr/include /usr/local/include)
 
-find_library (CPPCMS_LIBRARY NAMES cppcms PATHS /usr/lib /usr/lib64 /usr/local/lib)
-find_library (BOOSTER_LIBRARY NAMES booster PATHS /usr/lib /usr/lib64 /usr/local/lib)
+find_library (CPPCMS_LIBRARY NAMES cppcms PATHS /usr/lib /usr/lib64 /usr/local/lib DOC "version 1.0 or greater is required")
+find_library (BOOSTER_LIBRARY NAMES booster PATHS /usr/lib /usr/lib64 /usr/local/lib DOC "version 1.45 or greater is required")
 
 
 # Handle the QUIETLY and REQUIRED arguments and set CPPCMS_FOUND to
