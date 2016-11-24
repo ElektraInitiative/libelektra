@@ -1,3 +1,6 @@
+#ignore unwanted cmake files
 CMakeCache.txt
-nbproject/
 CMakeFiles/
+
+#ignore netbeans project files
+nbproject/
