@@ -18,7 +18,8 @@ namespace kdbrest
 {
 
 /**
- * @brief the constructor for the authentication endopint application.
+ * @brief the constructor for the authentication endopint application
+ *
  * @param srv a service container
  */
 AuthenticationApp::AuthenticationApp (cppcms::service & srv) : cppcms::application (srv)
@@ -29,9 +30,12 @@ AuthenticationApp::AuthenticationApp (cppcms::service & srv) : cppcms::applicati
 }
 
 /**
- * @brief handler for the authentication resource.
- *		  attempts an authentication with the submitted credentials. in case the
- *		  attempt succeeds, a session token will be returned, otherwise an error.
+ * @brief handler for the authentication resource
+ *
+ * the function will attempt an authentication with submitted credentials
+ * found in the request() object. in case the attempt succeeds, a session
+ * token will be returned in the response(), otherwise an appropriate
+ * error message stating the issue.
  */
 void AuthenticationApp::authenticate ()
 {
@@ -171,25 +175,27 @@ void AuthenticationApp::authenticate ()
 }
 
 /**
- * @brief helper method that allows to validate whether a request contains a valid
- *		  session token or not. additionally the method can do checks on the authenticated
- *		  users rank and username (i.e. check for owner of something).
+ * @brief validates the authorization header of a request()
+ *
+ * helper method that allows to validate whether a request contains a valid
+ * session token or not. it checks for the authorization header, format and
+ * validity of the token.
+ * additionally the method can do checks on the authenticated users rank and
+ * username (i.e. check for permissions or if is owner of something).
+ *
  * @note if a rank and a username are given, it is sufficient that one of both matches the
  *       requirement in order for the validation to succeed.
+ *
  * @param request a request
  * @param response a response
  * @param rank optionally the rank of a user can be checked
  * @param orUser optionally the name of a user can be checked
- * @return true if a authentication is present and the authenticated user matches all requirements,
- *		   false otherwise
+ * @return true if an authentication is present and the authenticated user
+ *		   matches all requirements, false otherwise
  */
 bool AuthenticationApp::validateAuthentication (cppcms::http::request & request, cppcms::http::response & response, int rank,
 						std::string orUser)
 {
-#ifdef ELEKTRA_REST_NO_AUTH
-	return true;
-#endif
-
 	// authentication validation
 	std::string headerAuthorization = request.http_authorization ();
 	std::string token;
@@ -248,8 +254,15 @@ bool AuthenticationApp::validateAuthentication (cppcms::http::request & request,
 
 /**
  * @brief helper method to retrieve a user model of the currently authenticated user
+ *
+ * the function parses the authorization header of a request,
+ * validates its format and ensures a proper session token is set.
+ * it then takes the token and finds the user it belongs to.
+ *
  * @param request a request
  * @return model of the currently authenticated user, taken from the storage
+ * @throw kdbrest::exception::NoCurrentUserException
+ * @throw kdbrest::exception::UserNotFoundException
  */
 model::User AuthenticationApp::getCurrentUser (cppcms::http::request & request)
 {

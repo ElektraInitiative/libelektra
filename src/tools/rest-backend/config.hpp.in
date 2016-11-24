@@ -1,15 +1,6 @@
 #ifndef ELEKTRA_REST_CONFIG_HEADER_GUARD
 #define ELEKTRA_REST_CONFIG_HEADER_GUARD
 
-// Enables the test moe for the rest service.
-#define ELEKTRA_REST_TESTMODE @ENABLE_DEBUG@
-
-// Additional macros that are set for the test mode.
-// - Authentication is ignored
-#ifdef ELEKTRA_REST_TESTMODE
-#define ELEKTRA_REST_NO_AUTH
-#endif
-
 // The REST API version
 #define ELEKTRA_REST_API_VERSION 1
 
