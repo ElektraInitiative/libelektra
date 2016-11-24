@@ -58,9 +58,15 @@ Following signal names are used to notify about changes in the elektra KeySet:
 
 ## Usage ##
 
-Mount the plugin additionally to a storage plugin, e.g.
+The recommended way is to globally mount the plugin:
+
+	kdb global-mount dbus
+
+Alternatively one can mount the plugin additionally to a storage plugin, e.g.
 
 	kdb mount file.dump / dump dbus
+
+### Shell ###
 
 Then we can receive the notification events using:
 
@@ -84,6 +90,37 @@ To receive `system` changes we will use:
 And then fire it with:
 
 	kdb set system/dbus/y a
+
+### C ###
+
+```c
+dbus_bus_add_match (connection, "type='signal',interface='org.libelektra',path='/org/libelektra/configuration'", &error);
+```
+
+See the full example [here](/src/plugins/dbus/receivemessage.c).
+
+
+### Qt ###
+
+Here a small example for QDBusConnection:
+
+Place this in your Qt class header:
+
+    public slots:
+      void configChanged( QString msg );
+
+Put this in your Qt class, e.g. the constructor:
+
+    if( QDBusConnection::sessionBus().connect( QString(), "/org/libelektra/configuration", "org.libelektra", QString(),
+                                           this, SLOT( configChanged( QString ) )) )
+        fprintf(stderr, "=================== Done connect\n" );
+
+Here comes the org.libelektra signals:
+
+    void SynnefoApp::configChanged( QString msg )
+    {
+      fprintf( stdout, "config changed: %s\n", msg.toLocal8Bit().data() );
+    };
 
 
 ### Python ###
