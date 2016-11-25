@@ -232,6 +232,9 @@ public:
 	/**
      * @brief getter for the rank
 	 * 
+	 * If no rank is set yet, the default rank for users
+	 * will be returned.
+	 *
      * @return Rank as integer
      */
 	int getRank () const
@@ -243,7 +246,7 @@ public:
 		}
 		catch (kdbrest::exception::SubkeyNotFoundException & e)
 		{
-			return 1; // default is user rank
+			return ELEKTRA_REST_USER_DEFAULT_RANK; // default is user rank
 		}
 	}
 
