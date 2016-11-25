@@ -357,14 +357,13 @@ void UserApp::handleInsert (cppcms::http::request & req, cppcms::http::response 
 	model::User u (username);
 
 	// password
-	unsigned char sha_out[SHA256_DIGEST_LENGTH];
-	if (!crypto::sha256_encrypt (const_cast<unsigned char *> (reinterpret_cast<unsigned const char *> (password.c_str ())),
-				     strlen (password.c_str ()), sha_out))
+	std::string passwordEncrypted;
+	if (!crypto::sha256_encrypt (password, passwordEncrypted))
 	{
 		RootApp::setInternalServerError (resp, "Could not hash password. Please try again.", "USER_CREATE_UNKNOWN_ERROR");
 		return;
 	}
-	u.setPasswordHash (std::string (reinterpret_cast<const char *> (sha_out)));
+	u.setPasswordHash (passwordEncrypted);
 
 	// other properties
 	u.setEmail (email);
@@ -469,16 +468,14 @@ void UserApp::handleUpdate (cppcms::http::request & req, cppcms::http::response 
 		}
 		if (!password.empty ())
 		{
-			unsigned char sha_out[SHA256_DIGEST_LENGTH];
-			if (!crypto::sha256_encrypt (
-				    const_cast<unsigned char *> (reinterpret_cast<unsigned const char *> (password.c_str ())),
-				    strlen (password.c_str ()), sha_out))
+			std::string passwordEncrypted;
+			if (!crypto::sha256_encrypt (password, passwordEncrypted))
 			{
 				RootApp::setInternalServerError (resp, "Could not hash password. Please try again.",
 								 "USER_UPDATE_UNKNOWN_ERROR");
 				return;
 			}
-			user.setPasswordHash (std::string (reinterpret_cast<const char *> (sha_out)));
+			user.setPasswordHash (passwordEncrypted);
 		}
 		if (canSetRank && rank != -1)
 		{

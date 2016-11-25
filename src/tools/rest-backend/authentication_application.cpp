@@ -115,14 +115,13 @@ void AuthenticationApp::authenticate ()
 			return;
 		}
 		// then compare the password
-		unsigned char sha_out[SHA256_DIGEST_LENGTH];
-		if (!crypto::sha256_encrypt (const_cast<unsigned char *> (reinterpret_cast<unsigned const char *> (password.c_str ())),
-					     strlen (password.c_str ()), sha_out))
+		std::string passwordEncrypted;
+		if (!crypto::sha256_encrypt (password, passwordEncrypted))
 		{
 			RootApp::setInternalServerError (response (), "Could not hash password. Please try again.", "AUTH_UNKNOWN_ERROR");
 			return;
 		}
-		if (u.getPasswordHash ().compare (std::string (reinterpret_cast<const char *> (sha_out))) != 0)
+		if (u.getPasswordHash ().compare (passwordEncrypted) != 0)
 		{
 			RootApp::setUnauthorized (response (), "The entered password is wrong.", "AUTH_INVALID_PASSWORD");
 			return;
