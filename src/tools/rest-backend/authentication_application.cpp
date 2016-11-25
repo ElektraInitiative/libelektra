@@ -112,10 +112,10 @@ void AuthenticationApp::authenticate ()
 
 		// attempt the actual authentication
 		// first load the user
-		model::User u (std::string (""));
+		model::User user (std::string (""));
 		try
 		{
-			u = service::StorageEngine::instance ().getUser (username);
+			user = service::StorageEngine::instance ().getUser (username);
 		}
 		catch (exception::UserNotFoundException & e)
 		{
@@ -130,47 +130,23 @@ void AuthenticationApp::authenticate ()
 			RootApp::setInternalServerError (response (), "Could not hash password. Please try again.", "AUTH_UNKNOWN_ERROR");
 			return;
 		}
-		if (u.getPasswordHash ().compare (passwordEncrypted) != 0)
+		if (user.getPasswordHash ().compare (passwordEncrypted) != 0)
 		{
 			RootApp::setUnauthorized (response (), "The entered password is wrong.", "AUTH_INVALID_PASSWORD");
 			return;
 		}
 
 		/* authentication was successful, so lets build the token */
-		jwt_t * jwt;
-
-		// reserve token memory and set algorithm
-		if (jwt_new (&jwt) != 0 || !jwt)
+		std::string token;
+		try
 		{
-			RootApp::setInternalServerError (response (), "Something went wrong while creating the session token.",
-							 "AUTH_CREATE_TOKEN_ERROR");
-			return; // quit early due to error
+			token = this->buildJWT (response (), user);
 		}
-
-		std::unique_ptr<jwt_t, void (*) (jwt_t *)> jwt_ptr (jwt, jwt_free);
-
-		if (jwt_set_alg (jwt_ptr.get (), JWT_ALG_HS256,
-				 reinterpret_cast<const unsigned char *> (ELEKTRA_REST_AUTHENTICATION_ENCRYPT_KEY),
-				 strlen (ELEKTRA_REST_AUTHENTICATION_ENCRYPT_KEY)) != 0)
+		catch (kdbrest::exception::JwtCreationException & e)
 		{
-			RootApp::setInternalServerError (response (), "Something went wrong while creating the session token.",
-							 "AUTH_CREATE_TOKEN_ERROR");
-			return; // quit early due to error
+			// error is already set to response
+			return;
 		}
-
-		// add claims
-		if (jwt_add_grant (jwt_ptr.get (), "issuer", ELEKTRA_REST_AUTHENTICATION_JWT_ISSUER) != 0 ||
-		    jwt_add_grant (jwt_ptr.get (), "username", username.c_str ()) != 0 ||
-		    jwt_add_grant_int (jwt_ptr.get (), "rank", u.getRank ()) != 0 ||
-		    jwt_add_grant_int (jwt_ptr.get (), "expires", std::time (NULL) + ELEKTRA_REST_AUTHENTICATION_JWT_EXPIRATION_TIME) != 0)
-		{
-			RootApp::setInternalServerError (response (), "Something went wrong while creating the session token.",
-							 "AUTH_CREATE_TOKEN_ERROR");
-			return; // quit early due to error
-		}
-
-		// generate token
-		std::string token (jwt_encode_str (jwt_ptr.get ()));
 
 		// write response
 		cppcms::json::value data;
@@ -326,6 +302,48 @@ model::User AuthenticationApp::getCurrentUser (cppcms::http::request & request)
 	{
 		throw exception::UserNotFoundException ();
 	}
+}
+
+/**
+ * @brief can be used to build a jwt for a user
+ *
+ * @param user a user model
+ * @return a jwt token as string
+ */
+std::string AuthenticationApp::buildJWT (cppcms::http::response & resp, const model::User & user) const
+{
+	jwt_t * jwt;
+
+	// reserve token memory
+	if (jwt_new (&jwt) != 0 || !jwt)
+	{
+		RootApp::setInternalServerError (resp, "Something went wrong while creating the session token.", "AUTH_CREATE_TOKEN_ERROR");
+		throw exception::JwtCreationException ();
+	}
+
+	// create smart pointer that ensures freeing the jwt
+	std::unique_ptr<jwt_t, void (*) (jwt_t *)> jwt_ptr (jwt, jwt_free);
+
+	// specify jwt algorithm and encryption key
+	if (jwt_set_alg (jwt_ptr.get (), JWT_ALG_HS256, reinterpret_cast<const unsigned char *> (ELEKTRA_REST_AUTHENTICATION_ENCRYPT_KEY),
+			 strlen (ELEKTRA_REST_AUTHENTICATION_ENCRYPT_KEY)) != 0)
+	{
+		RootApp::setInternalServerError (resp, "Something went wrong while creating the session token.", "AUTH_CREATE_TOKEN_ERROR");
+		throw exception::JwtCreationException ();
+	}
+
+	// add claims
+	if (jwt_add_grant (jwt_ptr.get (), "issuer", ELEKTRA_REST_AUTHENTICATION_JWT_ISSUER) != 0 ||
+	    jwt_add_grant (jwt_ptr.get (), "username", user.getUsername ().c_str ()) != 0 ||
+	    jwt_add_grant_int (jwt_ptr.get (), "rank", user.getRank ()) != 0 ||
+	    jwt_add_grant_int (jwt_ptr.get (), "expires", std::time (NULL) + ELEKTRA_REST_AUTHENTICATION_JWT_EXPIRATION_TIME) != 0)
+	{
+		RootApp::setInternalServerError (resp, "Something went wrong while creating the session token.", "AUTH_CREATE_TOKEN_ERROR");
+		throw exception::JwtCreationException ();
+	}
+
+	// generate and return token
+	return std::string (jwt_encode_str (jwt_ptr.get ()));
 }
 
 } // namespace kdbrest

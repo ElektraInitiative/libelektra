@@ -50,6 +50,9 @@ public:
 	static model::User getCurrentUser (cppcms::http::request & request);
 
 private:
+	std::string buildJWT (cppcms::http::response & response, const model::User & user) const;
+
+private:
 };
 
 } // namespace kdbrest

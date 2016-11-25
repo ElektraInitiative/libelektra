@@ -191,6 +191,15 @@ public:
 	}
 };
 
+class JwtCreationException : public ElektraRestException
+{
+public:
+	virtual const char * what () const throw ()
+	{
+		return "The JWT could not be created.";
+	}
+};
+
 } // namespace exception
 
 } // namespace kdbrest
