@@ -16,6 +16,7 @@
 #include <backend.hpp>
 #include <kdb.hpp>
 #include <keyio.hpp>
+#include <QtDBus/QtDBus>
 
 #include <merging/automergeconfiguration.hpp>
 #include <merging/mergingkdb.hpp>
@@ -298,6 +299,11 @@ private:
 	 */
 	kdb::tools::merging::MergeConflictStrategy * getMergeStrategy (const QString & mergeStrategy);
 
+        /**
+         * @brief
+         */
+        void connectDBus();
+
 protected:
 	QHash<int, QByteArray> roleNames () const override;
 
@@ -319,13 +325,21 @@ signals: // Use "Error", "Warning" and "Information" as title to display the acc
 	void updateIndicator () const;
 
 public slots:
+
 	/**
- * @brief showConfigNodeMessage
- * @param title
- * @param text
- * @param detailedText
- */
+         * @brief showConfigNodeMessage
+         * @param title
+         * @param text
+         * @param detailedText
+         */
 	void showConfigNodeMessage (QString title, QString text, QString detailedText);
+
+        /**
+         * @brief
+         *
+         * @param msg
+         */
+        void configChanged( QString msg );
 };
 
 Q_DECLARE_METATYPE (TreeViewModel)
