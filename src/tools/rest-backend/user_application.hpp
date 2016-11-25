@@ -8,6 +8,7 @@
 #include <cppcms/service.h>
 #include <cppcms/url_dispatcher.h>
 #include <cppcms/url_mapper.h>
+#include <map>
 #include <string>
 #include <vector>
 
@@ -38,6 +39,13 @@ static std::string INDEX_RANK = "rank";
 static std::string REGEX_USERNAME = "[a-zA-Z0-9\\-\\.]{3,20}";
 // regex to be used to validate passwords
 static std::string REGEX_PASSWORD = "(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9]).{8,}";
+
+// map from sort type to function
+static std::map<std::string, bool (*) (model::User &, model::User &)> SORT_USER_MAP = { { "username", &model::User::less_than_username },
+											{ "email", &model::User::less_than_email },
+											{ "rank", &model::User::less_than_rank },
+											{ "created_at",
+											  &model::User::less_than_created_at } };
 
 /**
      * @brief User endpoint class, serves endpoint for user management

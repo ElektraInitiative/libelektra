@@ -267,26 +267,6 @@ public:
 		return l.getRank () <= r.getRank ();
 	}
 
-	static bool greater_than_username (User & l, User & r)
-	{
-		return boost::lexicographical_compare (r.getUsername (), l.getUsername (), boost::is_iless ());
-	}
-
-	static bool greater_than_email (User & l, User & r)
-	{
-		return boost::lexicographical_compare (r.getEmail (), l.getEmail (), boost::is_iless ());
-	}
-
-	static bool greater_than_created_at (User & l, User & r)
-	{
-		return r.getCreatedAt () <= l.getCreatedAt ();
-	}
-
-	static bool greater_than_rank (User & l, User & r)
-	{
-		return r.getRank () <= l.getRank ();
-	}
-
 private:
 	kdb::KeySet m_subkeys;
 };

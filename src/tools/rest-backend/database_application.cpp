@@ -747,88 +747,27 @@ inline void DatabaseApp::processSorting (cppcms::http::request & req, std::vecto
 	std::string sortby = req.get (PARAM_SORTBY);
 
 	// validate the sort direction input or set default
-	if (!boost::iequals (sort, "asc") && !boost::iequals (sort, "desc"))
+	if (!boost::iequals (sort, PARAM_VAL_SORT_ASC) && !boost::iequals (sort, PARAM_VAL_SORT_DESC))
 	{
 		sort = std::string (ELEKTRA_REST_OUTPUT_SORT_ENTRY_DEFAULT);
 	}
 
 	// validate the sortby input or set default
-	std::vector<std::string> sortOptions = { "key", "title", "created_at", "author", "organization", "application", "scope", "slug" };
-	if (std::find (sortOptions.begin (), sortOptions.end (), sortby) == sortOptions.end ())
+	if (SORT_ENTRY_MAP.find (sortby) == SORT_ENTRY_MAP.end ())
 	{
 		sortby = std::string (ELEKTRA_REST_OUTPUT_SORTBY_ENTRY_DEFAULT);
 	}
 
 	// do the sorting
-	if (boost::iequals (sort, "asc"))
+	if (boost::iequals (sort, PARAM_VAL_SORT_ASC))
 	{
-		if (boost::iequals (sortby, "title"))
-		{
-			std::sort (entries.begin (), entries.end (), model::Entry::less_than_title);
-		}
-		else if (boost::iequals (sortby, "created_at"))
-		{
-			std::sort (entries.begin (), entries.end (), model::Entry::less_than_created_at);
-		}
-		else if (boost::iequals (sortby, "author"))
-		{
-			std::sort (entries.begin (), entries.end (), model::Entry::less_than_author);
-		}
-		else if (boost::iequals (sortby, "organization"))
-		{
-			std::sort (entries.begin (), entries.end (), model::Entry::less_than_organization);
-		}
-		else if (boost::iequals (sortby, "application"))
-		{
-			std::sort (entries.begin (), entries.end (), model::Entry::less_than_application);
-		}
-		else if (boost::iequals (sortby, "scope"))
-		{
-			std::sort (entries.begin (), entries.end (), model::Entry::less_than_scope);
-		}
-		else if (boost::iequals (sortby, "slug"))
-		{
-			std::sort (entries.begin (), entries.end (), model::Entry::less_than_slug);
-		}
-		else // last option "key"
-		{
-			std::sort (entries.begin (), entries.end (), model::Entry::less_than_key);
-		}
+		// sort from left to right
+		std::sort (entries.begin (), entries.end (), SORT_ENTRY_MAP.at (sortby));
 	}
 	else
 	{
-		if (boost::iequals (sortby, "title"))
-		{
-			std::sort (entries.begin (), entries.end (), model::Entry::greater_than_title);
-		}
-		else if (boost::iequals (sortby, "created_at"))
-		{
-			std::sort (entries.begin (), entries.end (), model::Entry::greater_than_created_at);
-		}
-		else if (boost::iequals (sortby, "author"))
-		{
-			std::sort (entries.begin (), entries.end (), model::Entry::greater_than_author);
-		}
-		else if (boost::iequals (sortby, "organization"))
-		{
-			std::sort (entries.begin (), entries.end (), model::Entry::greater_than_organization);
-		}
-		else if (boost::iequals (sortby, "application"))
-		{
-			std::sort (entries.begin (), entries.end (), model::Entry::greater_than_application);
-		}
-		else if (boost::iequals (sortby, "scope"))
-		{
-			std::sort (entries.begin (), entries.end (), model::Entry::greater_than_scope);
-		}
-		else if (boost::iequals (sortby, "slug"))
-		{
-			std::sort (entries.begin (), entries.end (), model::Entry::greater_than_slug);
-		}
-		else // last option "key"
-		{
-			std::sort (entries.begin (), entries.end (), model::Entry::greater_than_key);
-		}
+		// sort from right to left
+		std::sort (entries.rbegin (), entries.rend (), SORT_ENTRY_MAP.at (sortby));
 	}
 }
 

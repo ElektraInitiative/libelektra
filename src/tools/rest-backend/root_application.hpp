@@ -42,6 +42,11 @@ static const std::string MIME_APPLICATION_JSON = "application/json";
 // mime type for text/plain
 static const std::string MIME_TEXT_PLAIN = "text/plain";
 
+// parameter value used to sort ascending
+static const std::string PARAM_VAL_SORT_ASC = "asc";
+// parameter value used to sort descending
+static const std::string PARAM_VAL_SORT_DESC = "desc";
+
 /**
      * @brief Main class for the kdb rest service, serves as
      * coordinator and manager

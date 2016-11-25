@@ -610,56 +610,27 @@ inline void UserApp::processSorting (cppcms::http::request & req, std::vector<mo
 	std::string sortby = req.get (PARAM_SORTBY);
 
 	// validate the sort direction input or set default
-	if (!boost::iequals (sort, "asc") && !boost::iequals (sort, "desc"))
+	if (!boost::iequals (sort, PARAM_VAL_SORT_ASC) && !boost::iequals (sort, PARAM_VAL_SORT_DESC))
 	{
 		sort = std::string (ELEKTRA_REST_OUTPUT_SORT_USER_DEFAULT);
 	}
 
 	// validate the sortby input or set default
-	std::vector<std::string> sortOptions = { "username", "email", "created_at", "rank" };
-	if (std::find (sortOptions.begin (), sortOptions.end (), sortby) == sortOptions.end ())
+	if (SORT_USER_MAP.find (sortby) == SORT_USER_MAP.end ())
 	{
 		sortby = std::string (ELEKTRA_REST_OUTPUT_SORTBY_USER_DEFAULT);
 	}
 
 	// do the sorting
-	if (boost::iequals (sort, "asc"))
+	if (boost::iequals (sort, PARAM_VAL_SORT_ASC))
 	{
-		if (boost::iequals (sortby, "email"))
-		{
-			std::sort (users.begin (), users.end (), model::User::less_than_email);
-		}
-		else if (boost::iequals (sortby, "created_at"))
-		{
-			std::sort (users.begin (), users.end (), model::User::less_than_created_at);
-		}
-		else if (boost::iequals (sortby, "rank"))
-		{
-			std::sort (users.begin (), users.end (), model::User::less_than_rank);
-		}
-		else // last option "username"
-		{
-			std::sort (users.begin (), users.end (), model::User::less_than_username);
-		}
+		// sort from left to right
+		std::sort (users.begin (), users.end (), SORT_USER_MAP.at (sortby));
 	}
 	else
 	{
-		if (boost::iequals (sortby, "email"))
-		{
-			std::sort (users.begin (), users.end (), model::User::greater_than_email);
-		}
-		else if (boost::iequals (sortby, "created_at"))
-		{
-			std::sort (users.begin (), users.end (), model::User::greater_than_created_at);
-		}
-		else if (boost::iequals (sortby, "rank"))
-		{
-			std::sort (users.begin (), users.end (), model::User::greater_than_rank);
-		}
-		else // last option "username"
-		{
-			std::sort (users.begin (), users.end (), model::User::greater_than_username);
-		}
+		// sort from right to left
+		std::sort (users.rbegin (), users.rend (), SORT_USER_MAP.at (sortby));
 	}
 }
 

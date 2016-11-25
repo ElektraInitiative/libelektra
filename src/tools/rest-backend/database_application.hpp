@@ -8,6 +8,7 @@
 #include <cppcms/service.h>
 #include <cppcms/url_dispatcher.h>
 #include <cppcms/url_mapper.h>
+#include <map>
 #include <string>
 
 #include <model_entry.hpp>
@@ -53,6 +54,18 @@ static const std::string REGEX_ENTRY_TITLE = "[^\\n\\r]{3,}";
 static const std::string REGEX_ENTRY_DESCRIPTION = "[\\s\\S]{3,}";
 // regex that is used for the tags of entries
 static const std::string REGEX_ENTRY_TAGS = "([a-z0-9\\-\\.]{3,20})";
+
+// map from sort type to function
+static std::map<std::string, bool (*) (model::Entry &, model::Entry &)> SORT_ENTRY_MAP = {
+	{ "key", &model::Entry::less_than_key },
+	{ "organization", &model::Entry::less_than_organization },
+	{ "application", &model::Entry::less_than_application },
+	{ "scope", &model::Entry::less_than_scope },
+	{ "slug", &model::Entry::less_than_slug },
+	{ "title", &model::Entry::less_than_title },
+	{ "author", &model::Entry::less_than_author },
+	{ "created_at", &model::Entry::less_than_created_at }
+};
 
 /**
      * @brief Database Application, serves as endpoint for operations
