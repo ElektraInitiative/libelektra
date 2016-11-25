@@ -22,7 +22,8 @@ namespace kdbrest
 {
 
 /**
- * @brief the constructor of the database endpoint application.
+ * @brief the constructor of the database endpoint application
+ * 
  * @param srv a service container
  */
 DatabaseApp::DatabaseApp (cppcms::service & srv) : cppcms::application (srv)
@@ -39,8 +40,13 @@ DatabaseApp::DatabaseApp (cppcms::service & srv) : cppcms::application (srv)
 }
 
 /**
- * @brief handler for the root resource of the endpoint which serves a list of
- *		  snippet entries.
+ * @brief root resource handler
+ * 
+ * the function delegates work to different helper methods
+ * based on the HTTP method in the current request.
+ * 
+ * for a GET request, it serves a list of entries.
+ * for a POST request, it attempts an insert.
  */
 void DatabaseApp::getAllEntries ()
 {
@@ -69,7 +75,15 @@ void DatabaseApp::getAllEntries ()
 }
 
 /**
- * @brief handler for dynamic resources that limit search space of snippet entries.
+ * @brief search resource handler
+ * 
+ * the function delegates work to different helper methods
+ * based on the HTTP method in the current request.
+ * 
+ * for a GET request, it serves a list of entries, while
+ * taking an additional GET parameter into account to limit
+ * the resulting entry list.
+ * 
  * @param keyPart a part of a possible entry key to reduce search space
  */
 void DatabaseApp::getEntriesByPrefix (std::string keyPart)
@@ -94,7 +108,16 @@ void DatabaseApp::getEntriesByPrefix (std::string keyPart)
 }
 
 /**
- * @brief handler for the unique entry resource which serves methods for single entries.
+ * @brief unique entry resource handler
+ * 
+ * the function delegates work to different helper methods
+ * based on the HTTP method in the current request.
+ * it operates on a well-specified unique resource.
+ * 
+ * for a GET request, it serves detailed information of an entry.
+ * for a PUT request, it attempts an update on an entry.
+ * for a DELETE request, it attempts the deletion of an entry.
+ * 
  * @param key the unique snippet key of an entry resource
  */
 void DatabaseApp::getUniqueEntry (std::string key)
@@ -129,7 +152,8 @@ void DatabaseApp::getUniqueEntry (std::string key)
 }
 
 /**
- * @brief handles the retrieval for a list of snippet entries
+ * @brief handles the retrieval of a list of snippet entries
+ * 
  * @param req a request
  * @param resp a response
  * @param keyPart a part of a possible entry key to reduce search space
@@ -155,7 +179,8 @@ void DatabaseApp::handleGet (cppcms::http::request & req, cppcms::http::response
 }
 
 /**
- * @brief handles a request to retrieve details for a snippet entry
+ * @brief handles a request to retrieve details for a single snippet entry
+ * 
  * @param req a request
  * @param resp a response
  * @param key the unique snippet key of the entry which shall be retrieved
@@ -258,7 +283,8 @@ void DatabaseApp::handleGetUnique (cppcms::http::request & req, cppcms::http::re
 }
 
 /**
- * @brief handles a creation request for a new snippet entry.
+ * @brief handles a creation request for a new snippet entry
+ * 
  * @param req a request
  * @param resp a response
  */
@@ -312,7 +338,8 @@ void DatabaseApp::handleInsert (cppcms::http::request & req, cppcms::http::respo
 }
 
 /**
- * @brief handles an update request for a snippet entry.
+ * @brief handles an update request for a snippet entry
+ * 
  * @param req a request
  * @param resp a response
  * @param key the unique snippet key of the entry which shall be updated
@@ -372,7 +399,8 @@ void DatabaseApp::handleUpdate (cppcms::http::request & req, cppcms::http::respo
 }
 
 /**
- * @brief handles a delete request of a snippet entry.
+ * @brief handles a delete request of a snippet entry
+ * 
  * @param req a request
  * @param resp a response
  * @param key the unique snippet key of the entry which shall be deleted
@@ -411,9 +439,12 @@ void DatabaseApp::handleDelete (cppcms::http::request & req, cppcms::http::respo
 }
 
 /**
- * @brief a helper function that builds and validates a snippet entry from a request.
- * @note the method sets response messages itself in case an error occurs. if that happens,
- *		 an exception is thrown so that the calling method can quit too.
+ * @brief builds and validates a snippet entry from a request
+ * 
+ * @note the method sets response messages itself in case an error occurs.
+ *		 if that happens, an exception is thrown so that the calling method
+ *		 has a chance to quit early too.
+ * 
  * @param req a request
  * @param resp a response
  * @param keyName in case an entry is built for an update, the keyname has to be provided
@@ -660,7 +691,8 @@ model::Entry DatabaseApp::buildAndValidateEntry (cppcms::http::request & req, cp
 
 
 /**
- * @brief extracts the max number of rows to print from a request.
+ * @brief extracts the max number of rows to print from a request
+ * 
  * @param req a request
  * @return the max number of rows to print or the default value if not set
  */
@@ -688,7 +720,8 @@ inline int DatabaseApp::getMaxrows (cppcms::http::request & req) const
 }
 
 /**
- * @brief extracts the offset parameter from a request.
+ * @brief extracts the offset parameter from a request
+ * 
  * @param req a request
  * @return the offset extracted from the request parameter, if not set 0
  */
@@ -712,7 +745,8 @@ inline int DatabaseApp::getOffset (cppcms::http::request & req) const
 }
 
 /**
- * @brief filters a vector of snippet entries based on parameters of a request.
+ * @brief filters a vector of snippet entries based on parameters of a request
+ * 
  * @param req a request
  * @param entries the entry vector to filter
  */
@@ -737,7 +771,8 @@ inline void DatabaseApp::processFiltering (cppcms::http::request & req, std::vec
 }
 
 /**
- * @brief sorts a vector of snippet entries based on parameters of a request.
+ * @brief sorts a vector of snippet entries based on parameters of a request
+ * 
  * @param req a request
  * @param entries the entry vector to sort
  */
@@ -773,10 +808,11 @@ inline void DatabaseApp::processSorting (cppcms::http::request & req, std::vecto
 }
 
 /**
- * @brief creates the output for a list of snippets with all helping attributes
- *	      like number of entries, offset, etc.
+ * @brief creates the output for a list of snippet entries
+ * 
  * @note not all snippets in the list may actually be printed to the output.
- *       which snippets are used in the output depends on the offset and maxrows.
+ *       which snippets are used in the output depends on additional parameters.
+ * 
  * @param req a request
  * @param resp a response
  * @param entries a list of snippets, of which some may be used for the output

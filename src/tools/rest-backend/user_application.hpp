@@ -15,8 +15,7 @@
 #include <model_user.hpp>
 
 /**
- * @brief This is the main namespace for all classes belonging
- * to the kdb rest service
+ * @brief main namespace for the REST service
  */
 namespace kdbrest
 {
@@ -48,8 +47,8 @@ static std::map<std::string, bool (*) (model::User &, model::User &)> SORT_USER_
 											  &model::User::less_than_created_at } };
 
 /**
-     * @brief User endpoint class, serves endpoint for user management
-     */
+ * @brief User endpoint class, serves endpoint for user management
+ */
 class UserApp : public cppcms::application
 {
 

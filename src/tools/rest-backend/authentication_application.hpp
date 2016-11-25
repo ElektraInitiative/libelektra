@@ -13,8 +13,7 @@
 #include <model_user.hpp>
 
 /**
- * @brief This is the main namespace for all classes belonging
- * to the kdb rest service
+ * @brief main namespace for the REST service
  */
 namespace kdbrest
 {
@@ -27,9 +26,8 @@ static const std::string PARAM_TOKEN = "token";
 static const std::string AUTH_HEADER_PREFIX = "Bearer ";
 
 /**
-     * @brief Authentication class, serves endpoint for authentication
-     * management
-     */
+ * @brief serves endpoint for authentication management
+ */
 class AuthenticationApp : public cppcms::application
 {
 

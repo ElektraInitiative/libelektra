@@ -7,61 +7,54 @@
 #include <exceptions.hpp>
 #include <kdb_includes.hpp>
 
+/**
+ * @brief main namespace for the REST service
+ */
 namespace kdbrest
 {
 
+/**
+ * @brief namespace for models
+ */
 namespace model
 {
 
+/**
+ * @brief model class for a plugin name along with its format
+ * 
+ * this class encapsulates all information that is necessary to
+ * find a plugin and configuration snippets supported by it.
+ */
 class PluginFormat
 {
 
 public:
+	/**
+	 * @brief standard constructor
+	 */
 	inline PluginFormat ()
 	{
 	}
+
 	/**
-                 * Constructor based on a foreign PluginFormat, basically
-                 * copy constructor.
-                 * @param pf The foreign PluginFormat
-                 */
+     * @brief copy constructor
+	 * 
+     * @param pf The foreign PluginFormat
+     */
 	inline PluginFormat (const PluginFormat & pf)
 	{
 		m_fileformat = pf.m_fileformat;
 		m_pluginname = pf.m_pluginname;
 		m_pluginstatuses = std::vector<std::string> (pf.m_pluginstatuses);
 	}
+
 	/**
-                 * Constructor based on a string containing both relevant
-                 * informations (fileformat + pluginname). The string has to be
-                 * of the format "fileformat:pluginname".
-                 * @param both The string containing both fileformat and
-                 *      pluginname
-				 * @param statuses A vector containing plugin statuses
-                 */
-	inline PluginFormat (const std::string & both, const std::vector<std::string> statuses = std::vector<std::string> ())
-	{
-		std::size_t splitIndex = both.find (":");
-		if (splitIndex == std::string::npos)
-		{
-			throw kdbrest::exception::FileformatPluginException (
-				"The given fileformat plugin combination is invalid.\nSynopsis: <fileformat>:<pluginname>\nExample: "
-				"xml:xmltool");
-		}
-		m_fileformat = both.substr (0, splitIndex);
-		m_pluginname = both.substr (splitIndex + 1);
-		if (m_fileformat.empty () || m_pluginname.empty ())
-		{
-			throw kdbrest::exception::FileformatPluginException ("Neither format, nor plugin may be empty.");
-		}
-		m_pluginstatuses = statuses;
-	}
-	/**
-                 * Constructor based on the format and the pluginname.
-                 * @param format The fileformat as string (e.g. ini, xml)
-                 * @param plugin The pluginname as string (e.g. ni, xmltool)
-				 * @param statuses The plugin statuses as vector (e.g. maintained, limited)
-                 */
+	 * @brief constructor based on the format and the pluginname
+	 * 
+     * @param format The fileformat as string (e.g. ini, xml)
+     * @param plugin The pluginname as string (e.g. ni, xmltool)
+	 * @param statuses The plugin statuses as vector (e.g. maintained, limited)
+     */
 	inline PluginFormat (const std::string & format, const std::string & plugin,
 			     const std::vector<std::string> statuses = std::vector<std::string> ())
 	{
@@ -75,25 +68,28 @@ public:
 	}
 
 	/**
-                 * Getter for the file format as string.
-                 * @return File format as string
-                 */
+     * @brief getter for the file format as string
+	 * 
+     * @return File format as string
+     */
 	std::string getFileformat ()
 	{
 		return m_fileformat;
 	}
 
 	/**
-                 * Getter for the plugin name as string.
-                 * @return Plugin name as string
-                 */
+     * @brief getter for the plugin name as string
+	 * 
+     * @return Plugin name as string
+     */
 	std::string getPluginname ()
 	{
 		return m_pluginname;
 	}
 
 	/**
-	 * Getter for the plugin statuses as vector.
+	 * @brief getter for the plugin statuses as vector
+	 * 
 	 * @return All plugin statuses in a vector
 	 */
 	std::vector<std::string> getPluginstatuses ()

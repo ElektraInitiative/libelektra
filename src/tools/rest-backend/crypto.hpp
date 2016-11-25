@@ -3,9 +3,15 @@
 
 #include <string>
 
+/**
+ * @brief main namespace for the REST service
+ */
 namespace kdbrest
 {
 
+/**
+ * @brief namespace for cryptographic functions
+ */
 namespace crypto
 {
 

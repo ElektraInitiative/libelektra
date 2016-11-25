@@ -49,7 +49,9 @@ model::PluginFormat ConvertEngine::findSuitablePlugin (const std::string & forma
 }
 
 /**
- * @brief Loads the configuration for the enabled formats from the
+ * @brief loads a list of enabled formats and plugins
+ * 
+ * Loads the configuration for the enabled formats from the
  * key database, parses them and stores them as enabled formats.
  *
  * @return A vector containing the enabled convert formats with their
@@ -96,11 +98,12 @@ std::vector<model::PluginFormat> ConvertEngine::loadEnabledFormats ()
 }
 
 /**
- * @brief can be used to export an entry to the specified format, if it is supported.
+ * @brief export entry to specific configuration format
+ * 
+ * If the format is not supported, an exception is thrown.
  *
  * @param format a format that shall be used for the export
  * @param entry a snippet entry
- *
  * @return an object containing the converted snippet as well as the used format & plugin
  */
 model::ConfigFormat ConvertEngine::exportTo (const std::string format, model::Entry & entry)
@@ -216,6 +219,7 @@ model::ConfigFormat ConvertEngine::exportTo (model::PluginFormat & plugin, model
 
 /**
  * @brief Can be used to convert an entry into all enabled file formats.
+ * 
  * The sub keys of the entry will be taken and converted into the
  * enabled formats. To do this, a temporary file will be used, because
  * the storage plugins, which do the conversion, can operate on files
@@ -223,7 +227,6 @@ model::ConfigFormat ConvertEngine::exportTo (model::PluginFormat & plugin, model
  *
  * @param entry The entry that should be converted into the enabled
  * file formats.
- *
  * @return A vector containing all conversions with the information
  * which plugin created them and which format they are.
  */
@@ -253,14 +256,14 @@ std::vector<model::ConfigFormat> ConvertEngine::exportToAll (model::Entry & entr
 }
 
 /**
- * @brief Can be used to convert a configuration given as string into
+ * @brief converts a config string with format into an entry object
+ * 
+ * Can be used to convert a configuration given as string into
  * a usable kdb::KeySet which is stored in an ImportedConfig model.
  *
  * @param config The configuration which should be converted
- *
  * @return An ImportedConfig object containing the imported config as
  * kdb::KeySet if the import was successful.
- *
  * @throws kdbrest::exception::ImportFormatUnknownException in case there
  * is no suitable storage plugin for the conversion available.
  */

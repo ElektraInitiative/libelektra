@@ -16,8 +16,7 @@
 #include <vector>
 
 /**
- * @brief This is the main namespace for all classes belonging
- * to the kdb rest service
+ * @brief main namespace for the REST service
  */
 namespace kdbrest
 {
@@ -48,9 +47,8 @@ static const std::string PARAM_VAL_SORT_ASC = "asc";
 static const std::string PARAM_VAL_SORT_DESC = "desc";
 
 /**
-     * @brief Main class for the kdb rest service, serves as
-     * coordinator and manager
-     */
+ * @brief main controller for the kdb rest service
+ */
 class RootApp : public cppcms::application
 {
 public:

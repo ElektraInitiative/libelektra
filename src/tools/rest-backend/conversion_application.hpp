@@ -12,8 +12,7 @@
 #include <vector>
 
 /**
- * @brief This is the main namespace for all classes belonging
- * to the kdb rest service
+ * @brief main namespace for the REST service
  */
 namespace kdbrest
 {
@@ -28,8 +27,8 @@ static std::string INDEX_INPUT_VALUE = "input.snippet";
 static std::string INDEX_OUTPUT_FORMAT = "output.format";
 
 /**
-     * @brief Conversion endpoint class, serves endpoint for snippet conversion
-     */
+ * @brief serves endpoint for snippet conversion
+ */
 class ConversionApp : public cppcms::application
 {
 

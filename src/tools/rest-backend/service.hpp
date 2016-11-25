@@ -18,19 +18,27 @@
 #include <model_user.hpp>
 #include <singleton.hpp>
 
+/**
+ * @brief main namespace for the REST service
+ */
 namespace kdbrest
 {
 
+/**
+ * @brief namespace for service classes
+ */
 namespace service
 {
 
 /**
-         * Service that is responsible for doing search specific tasks such as
-         * filtering a result set based on search parameters.
-         * 
-         * It is designed as singleton, so all applications using it will share
-         * the same instance, which allows for further logic if necessary.
-         */
+ * @brief service offering search and filter functionality
+ * 
+ * Service that is responsible for doing search specific tasks such as
+ * filtering a result set based on search parameters.
+ * 
+ * It is designed as singleton, so all applications using it will share
+ * the same instance, which allows for further logic if necessary.
+ */
 class SearchEngine : public singleton<SearchEngine>
 {
 
@@ -48,14 +56,16 @@ private:
 };
 
 /**
-         * Service that is responsible for storing configuration and user
-         * entries in the kdb database. Besides storing it is also capable of
-         * updating and deleting of single entries, as well as looking up
-         * single and multiple entries at the same time.
-         * 
-         * It is designed as singleton, so all applications using it will share
-         * the same instance, which allows for further logic if necessary.
-         */
+ * @brief service offering storage functionality
+ * 
+ * Service that is responsible for storing configuration and user
+ * entries in the kdb database. Besides storing it is also capable of
+ * updating and deleting of single entries, as well as looking up
+ * single and multiple entries at the same time.
+ * 
+ * It is designed as singleton, so all applications using it will share
+ * the same instance, which allows for further logic if necessary.
+ */
 class StorageEngine : public singleton<StorageEngine>
 {
 
@@ -95,12 +105,14 @@ private:
 };
 
 /**
-         * Service that is responsible for converting configuration entries
-         * into the various configuration formats with help of enabled plugins.
-         * 
-         * It is designed as singleton, so all applications using it will share
-         * the same instance, which allows for further logic if necessary.
-         */
+ * @brief service offering conversion functionality
+ * 
+ * Service that is responsible for converting configuration entries
+ * into the various configuration formats with help of enabled plugins.
+ * 
+ * It is designed as singleton, so all applications using it will share
+ * the same instance, which allows for further logic if necessary.
+ */
 class ConvertEngine : public singleton<ConvertEngine>
 {
 

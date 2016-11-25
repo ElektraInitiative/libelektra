@@ -12,13 +12,14 @@ namespace service
 {
 
 /**
-         * @brief Can be used to filter an entry vector based on a name prefix.
-         * All entries that do not start with the given name prefix will be
-         * removed from the result.
-         *
-         * @param entries A vector containing entries to be filtered
-         * @param startsWith The string containing the required entry name prefix
-         */
+ * @brief Can be used to filter an entry vector based on a name prefix.
+ * 
+ * All entries that do not start with the given name prefix will be
+ * removed from the result.
+ *
+ * @param entries A vector containing entries to be filtered
+ * @param startsWith The string containing the required entry name prefix
+ */
 void SearchEngine::filterConfigurationsByName (std::vector<kdbrest::model::Entry> & entries, const std::string & startsWith)
 {
 
@@ -30,26 +31,26 @@ void SearchEngine::filterConfigurationsByName (std::vector<kdbrest::model::Entry
 }
 
 /**
-         * @brief Can be used to filter an entry vector based on a `filter` (search string).
-		 *
-		 * Whether an entry remains in the list depends on the used `filter`. The searched
-		 * field(s) can be specified with the `filterby` parameter, the search value itself
-		 * in the `filter` value.
-		 *
-		 * Possible values for `filterby` are:
-		 * - all
-		 * - key
-		 * - title
-		 * - description
-		 * - author
-		 * - tags
-         *
-         * Entries that do not have the `filter` value in the `filterby` field(s) will be removed.
-         *
-         * @param entries The vector containing snippet entries to be filtered
-         * @param filter The string to be searched for
-		 * @param filterby The field(s) to search in
-         */
+ * @brief Can be used to filter an entry vector based on a `filter` (search string).
+ *
+ * Whether an entry remains in the list depends on the used `filter`. The searched
+ * field(s) can be specified with the `filterby` parameter, the search value itself
+ * in the `filter` value.
+ *
+ * Possible values for `filterby` are:
+ * - all
+ * - key
+ * - title
+ * - description
+ * - author
+ * - tags
+ *
+ * Entries that do not have the `filter` value in the `filterby` field(s) will be removed.
+ *
+ * @param entries The vector containing snippet entries to be filtered
+ * @param filter The string to be searched for
+ * @param filterby The field(s) to search in
+ */
 void SearchEngine::findConfigurationsByFilter (std::vector<kdbrest::model::Entry> & entries, const std::string & filter,
 					       const std::string filterby)
 {
@@ -107,23 +108,23 @@ void SearchEngine::findConfigurationsByFilter (std::vector<kdbrest::model::Entry
 }
 
 /**
-         * @brief Can be used to filter a user vector based on a `filter` (search string).
-		 *
-		 * Whether an entry remains in the list depends on the used `filter`. The searched
-		 * field(s) can be specified with the `filterby` parameter, the search value itself
-		 * in the `filter` value.
-		 *
-		 * Possible values for `filterby` are:
-		 * - all
-		 * - username
-		 * - email
-         *
-         * Entries that do not have the `filter` value in the `filterby` field(s) will be removed.
-         *
-         * @param users The vector containing user entries to be filtered
-         * @param filter The string to be searched for
-		 * @param filterby The field(s) to search in
-         */
+ * @brief Can be used to filter a user vector based on a `filter` (search string).
+ *
+ * Whether an entry remains in the list depends on the used `filter`. The searched
+ * field(s) can be specified with the `filterby` parameter, the search value itself
+ * in the `filter` value.
+ *
+ * Possible values for `filterby` are:
+ * - all
+ * - username
+ * - email
+ *
+ * Entries that do not have the `filter` value in the `filterby` field(s) will be removed.
+ *
+ * @param users The vector containing user entries to be filtered
+ * @param filter The string to be searched for
+ * @param filterby The field(s) to search in
+ */
 void SearchEngine::findUsersByFilter (std::vector<kdbrest::model::User> & users, const std::string & filter, const std::string filterby)
 {
 	users.erase (std::remove_if (users.begin (), users.end (),

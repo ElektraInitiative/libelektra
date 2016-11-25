@@ -6,9 +6,16 @@
 #include <root_application.hpp>
 #include <service.hpp>
 
+/**
+ * @brief main function that bootstraps the application
+ * 
+ * @param argc command line argument count
+ * @param argv command line argument list
+ * @return 0 in case the service terminated gracefullly,
+ *		   >0 otherwise
+ */
 int main (int argc, char ** argv)
 {
-
 	// force caching of database
 	std::cout << "Pre-caching data..." << std::endl;
 	(void)kdbrest::service::StorageEngine::instance ();
@@ -25,4 +32,6 @@ int main (int argc, char ** argv)
 	{
 		std::cerr << e.what () << std::endl;
 	}
+
+	return 0;
 }

@@ -3,9 +3,15 @@
 
 #include <exception>
 
+/**
+ * @brief main namespace for the REST service
+ */
 namespace kdbrest
 {
 
+/**
+ * @brief namespace for exceptions
+ */
 namespace exception
 {
 
@@ -105,6 +111,7 @@ public:
 
 /**
  * @brief exception to be used for plugins.
+ * 
  * @param msg custom exception error message
  */
 class FileformatPluginException : public ElektraRestException

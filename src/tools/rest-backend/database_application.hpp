@@ -14,8 +14,7 @@
 #include <model_entry.hpp>
 
 /**
- * @brief This is the main namespace for all classes belonging
- * to the kdb rest service
+ * @brief main namespace for the REST service
  */
 namespace kdbrest
 {
@@ -68,9 +67,8 @@ static std::map<std::string, bool (*) (model::Entry &, model::Entry &)> SORT_ENT
 };
 
 /**
-     * @brief Database Application, serves as endpoint for operations
-     * that query or alter the entry database.
-     */
+ * @brief serves endpoint for snippet database
+ */
 class DatabaseApp : public cppcms::application
 {
 
