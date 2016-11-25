@@ -34,6 +34,14 @@ static std::string INDEX_INPUT_VALUE = "input.snippet";
 // index for the output format in requests
 static std::string INDEX_OUTPUT_FORMAT = "output.format";
 
+// conversion request input data
+struct conversion_input_data
+{
+	std::string input_format;
+	std::string input_value;
+	std::string output_format;
+};
+
 /**
  * @brief serves endpoint for snippet conversion
  */
@@ -47,6 +55,8 @@ public:
 	virtual void formats ();
 
 private:
+	void retrieveConversionInputData (cppcms::http::response & response, cppcms::json::value & requestData,
+					  conversion_input_data & input_data) const;
 };
 
 } // namespace kdbrest

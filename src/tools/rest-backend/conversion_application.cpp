@@ -66,46 +66,23 @@ void ConversionApp::convert ()
 			return; // quit early
 		}
 
-		// required request fields
-		std::string input_format;
-		std::string input_value;
-		std::string output_format;
-
 		// retrieve submitted data
+		conversion_input_data input_data;
 		try
 		{
-			input_format = requestData.get<std::string> (INDEX_INPUT_FORMAT);
+			this->retrieveConversionInputData (response (), requestData, input_data);
 		}
-		catch (cppcms::json::bad_value_cast & e)
+		catch (kdbrest::exception::InvalidPostDataFormatException & e)
 		{
-			RootApp::setBadRequest (response (), "You have to supply an input format.", "CONVERT_MISSING_INPUT_FORMAT");
-			return; // quit early
-		}
-		try
-		{
-			input_value = requestData.get<std::string> (INDEX_INPUT_VALUE);
-		}
-		catch (cppcms::json::bad_value_cast & e)
-		{
-			RootApp::setBadRequest (response (), "You have to supply an input value (configuration snippet).",
-						"CONVERT_MISSING_INPUT_SNIPPET");
-			return; // quit early
-		}
-		try
-		{
-			output_format = requestData.get<std::string> (INDEX_OUTPUT_FORMAT);
-		}
-		catch (cppcms::json::bad_value_cast & e)
-		{
-			RootApp::setBadRequest (response (), "You have to supply an output format.", "CONVERT_MISSING_OUTPUT_FORMAT");
-			return; // quit early
+			return; // error message already set
 		}
 
 		// attempt to convert the snippet into internal format
 		model::Entry entry ("");
 		try
 		{
-			model::ImportedConfig cfg = service::ConvertEngine::instance ().import (input_value, input_format, entry);
+			model::ImportedConfig cfg =
+				service::ConvertEngine::instance ().import (input_data.input_value, input_data.input_format, entry);
 			auto subkeys = cfg.getKeySet ();
 			entry.addSubkeys (subkeys.begin (), subkeys.end ());
 		}
@@ -124,7 +101,8 @@ void ConversionApp::convert ()
 		model::ConfigFormat cfg;
 		try
 		{
-			model::PluginFormat pluginFormat = service::ConvertEngine::instance ().findSuitablePlugin (output_format);
+			model::PluginFormat pluginFormat =
+				service::ConvertEngine::instance ().findSuitablePlugin (input_data.output_format);
 			cfg = service::ConvertEngine::instance ().exportTo (pluginFormat, entry);
 		}
 		catch (kdbrest::exception::UnsupportedConfigurationFormatException & e)
@@ -148,7 +126,7 @@ void ConversionApp::convert ()
 		data["message"] = "The configuration snippet has been converted successfully.";
 		data["i18n"] = "CONVERT_SUCCESSFUL";
 
-		data["output"]["format"] = output_format;
+		data["output"]["format"] = input_data.output_format;
 		data["output"]["snippet"] = cfg.getConfig ();
 		data["output"]["validated"] = cfg.isValidated ();
 
@@ -203,6 +181,39 @@ void ConversionApp::formats ()
 	{
 		RootApp::setMethodNotAllowed (response ()); // send HTTP 405
 		return;
+	}
+}
+
+void ConversionApp::retrieveConversionInputData (cppcms::http::response & resp, cppcms::json::value & requestData,
+						 conversion_input_data & data) const
+{
+	try
+	{
+		data.input_format = requestData.get<std::string> (INDEX_INPUT_FORMAT);
+	}
+	catch (cppcms::json::bad_value_cast & e)
+	{
+		RootApp::setBadRequest (resp, "You have to supply an input format.", "CONVERT_MISSING_INPUT_FORMAT");
+		throw exception::InvalidPostDataFormatException (); // quit early
+	}
+	try
+	{
+		data.input_value = requestData.get<std::string> (INDEX_INPUT_VALUE);
+	}
+	catch (cppcms::json::bad_value_cast & e)
+	{
+		RootApp::setBadRequest (resp, "You have to supply an input value (configuration snippet).",
+					"CONVERT_MISSING_INPUT_SNIPPET");
+		throw exception::InvalidPostDataFormatException (); // quit early
+	}
+	try
+	{
+		data.output_format = requestData.get<std::string> (INDEX_OUTPUT_FORMAT);
+	}
+	catch (cppcms::json::bad_value_cast & e)
+	{
+		RootApp::setBadRequest (resp, "You have to supply an output format.", "CONVERT_MISSING_OUTPUT_FORMAT");
+		throw exception::InvalidPostDataFormatException (); // quit early
 	}
 }
 
