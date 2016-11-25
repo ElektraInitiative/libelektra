@@ -8,6 +8,7 @@
 
 #include <ctime>
 #include <iostream>
+#include <memory>
 #include <regex>
 #include <stdlib.h>
 #include <string.h>
@@ -136,33 +137,40 @@ void AuthenticationApp::authenticate ()
 		}
 
 		/* authentication was successful, so lets build the token */
-		::jwt_t * jwt;
+		jwt_t * jwt;
 
 		// reserve token memory and set algorithm
-		if (::jwt_new (&jwt) != 0 ||
-		    ::jwt_set_alg (jwt, JWT_ALG_HS256, reinterpret_cast<const unsigned char *> (ELEKTRA_REST_AUTHENTICATION_ENCRYPT_KEY),
-				   strlen (ELEKTRA_REST_AUTHENTICATION_ENCRYPT_KEY)) != 0)
+		if (jwt_new (&jwt) != 0 || !jwt)
 		{
 			RootApp::setInternalServerError (response (), "Something went wrong while creating the session token.",
 							 "AUTH_CREATE_TOKEN_ERROR");
-			::jwt_free (jwt); // free memory
-			return;		  // quit early due to error
+			return; // quit early due to error
+		}
+
+		std::unique_ptr<jwt_t, void (*) (jwt_t *)> jwt_ptr (jwt, jwt_free);
+
+		if (jwt_set_alg (jwt_ptr.get (), JWT_ALG_HS256,
+				 reinterpret_cast<const unsigned char *> (ELEKTRA_REST_AUTHENTICATION_ENCRYPT_KEY),
+				 strlen (ELEKTRA_REST_AUTHENTICATION_ENCRYPT_KEY)) != 0)
+		{
+			RootApp::setInternalServerError (response (), "Something went wrong while creating the session token.",
+							 "AUTH_CREATE_TOKEN_ERROR");
+			return; // quit early due to error
 		}
 
 		// add claims
-		if (::jwt_add_grant (jwt, "issuer", ELEKTRA_REST_AUTHENTICATION_JWT_ISSUER) != 0 ||
-		    ::jwt_add_grant (jwt, "username", username.c_str ()) != 0 || ::jwt_add_grant_int (jwt, "rank", u.getRank ()) != 0 ||
-		    ::jwt_add_grant_int (jwt, "expires", std::time (NULL) + ELEKTRA_REST_AUTHENTICATION_JWT_EXPIRATION_TIME) != 0)
+		if (jwt_add_grant (jwt_ptr.get (), "issuer", ELEKTRA_REST_AUTHENTICATION_JWT_ISSUER) != 0 ||
+		    jwt_add_grant (jwt_ptr.get (), "username", username.c_str ()) != 0 ||
+		    jwt_add_grant_int (jwt_ptr.get (), "rank", u.getRank ()) != 0 ||
+		    jwt_add_grant_int (jwt_ptr.get (), "expires", std::time (NULL) + ELEKTRA_REST_AUTHENTICATION_JWT_EXPIRATION_TIME) != 0)
 		{
 			RootApp::setInternalServerError (response (), "Something went wrong while creating the session token.",
 							 "AUTH_CREATE_TOKEN_ERROR");
-			::jwt_free (jwt); // free memory
-			return;		  // quit early due to error
+			return; // quit early due to error
 		}
 
 		// generate token
-		std::string token (jwt_encode_str (jwt));
-		::jwt_free (jwt); // free memory
+		std::string token (jwt_encode_str (jwt_ptr.get ()));
 
 		// write response
 		cppcms::json::value data;
@@ -227,27 +235,25 @@ bool AuthenticationApp::validateAuthentication (cppcms::http::request & request,
 	}
 
 	/* request seems fine, so lets parse the token */
-	::jwt_t * jwt;
+	jwt_t * jwt;
 
 	// decode it
-	if (::jwt_decode (&jwt, token.c_str (), reinterpret_cast<const unsigned char *> (ELEKTRA_REST_AUTHENTICATION_ENCRYPT_KEY),
-			  strlen (ELEKTRA_REST_AUTHENTICATION_ENCRYPT_KEY)) != 0)
+	if (jwt_decode (&jwt, token.c_str (), reinterpret_cast<const unsigned char *> (ELEKTRA_REST_AUTHENTICATION_ENCRYPT_KEY),
+			strlen (ELEKTRA_REST_AUTHENTICATION_ENCRYPT_KEY)) != 0)
 	{
 		RootApp::setUnauthorized (response, "Session token is invalid", "NEED_AUTHENTICATION"); // send HTTP 401
-		::jwt_free (jwt);
 		return false;
 	}
 
+	std::unique_ptr<jwt_t, void (*) (jwt_t *)> jwt_ptr (jwt, jwt_free);
+
 	// check issuer and other grants
-	if (std::string (::jwt_get_grant (jwt, "issuer")) != std::string (ELEKTRA_REST_AUTHENTICATION_JWT_ISSUER) ||
-	    ::jwt_get_grant_int (jwt, "expires") < std::time (NULL))
+	if (std::string (jwt_get_grant (jwt_ptr.get (), "issuer")) != std::string (ELEKTRA_REST_AUTHENTICATION_JWT_ISSUER) ||
+	    jwt_get_grant_int (jwt_ptr.get (), "expires") < std::time (NULL))
 	{
 		RootApp::setUnauthorized (response, "Session token is invalid", "NEED_AUTHENTICATION"); // send HTTP 401
-		::jwt_free (jwt);
 		return false;
 	}
-	// success until here
-	::jwt_free (jwt); // free memory
 
 	model::User currentUser = AuthenticationApp::getCurrentUser (request);
 	if (currentUser.getRank () < rank && (orUser.empty () || orUser != currentUser.getUsername ()))
@@ -295,23 +301,21 @@ model::User AuthenticationApp::getCurrentUser (cppcms::http::request & request)
 	}
 
 	/* request seems fine, lets build the jwt */
-	::jwt_t * jwt;
+	jwt_t * jwt;
 
-	if (::jwt_decode (&jwt, token.c_str (), reinterpret_cast<const unsigned char *> (ELEKTRA_REST_AUTHENTICATION_ENCRYPT_KEY),
-			  strlen (ELEKTRA_REST_AUTHENTICATION_ENCRYPT_KEY)) != 0)
+	if (jwt_decode (&jwt, token.c_str (), reinterpret_cast<const unsigned char *> (ELEKTRA_REST_AUTHENTICATION_ENCRYPT_KEY),
+			strlen (ELEKTRA_REST_AUTHENTICATION_ENCRYPT_KEY)) != 0)
 	{
-		::jwt_free (jwt);
 		throw exception::NoCurrentUserException ();
 	}
 
-	std::string username = std::string (::jwt_get_grant (jwt, "username"));
+	std::unique_ptr<jwt_t, void (*) (jwt_t *)> jwt_ptr (jwt, jwt_free);
+
+	std::string username = std::string (jwt_get_grant (jwt_ptr.get (), "username"));
 	if (username.empty ())
 	{
 		throw exception::NoCurrentUserException ();
 	}
-
-	// success until here
-	::jwt_free (jwt); // free memory
 
 	try
 	{
