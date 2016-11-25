@@ -1,5 +1,13 @@
-#ifndef ELEKTRA_REST_MODEL_CONFIGFORMAT_HEADER_GUARD
-#define ELEKTRA_REST_MODEL_CONFIGFORMAT_HEADER_GUARD
+/**
+ * @file
+ *
+ * @brief model for configuration + format
+ *
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ */
+
+#ifndef ELEKTRA_REST_MODEL_CONFIGFORMAT_HPP
+#define ELEKTRA_REST_MODEL_CONFIGFORMAT_HPP
 
 #include <string>
 

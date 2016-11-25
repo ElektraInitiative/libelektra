@@ -1,3 +1,11 @@
+/**
+ * @file
+ *
+ * @brief implementation of test data generator functions
+ *
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ */
+
 #include <ctime>
 #include <random>
 #include <string>

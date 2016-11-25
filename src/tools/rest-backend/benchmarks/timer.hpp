@@ -1,5 +1,13 @@
-#ifndef ELEKTRA_REST_BENCHMARK_TIMER_HEADER_GUARD
-#define ELEKTRA_REST_BENCHMARK_TIMER_HEADER_GUARD
+/**
+ * @file
+ *
+ * @brief timer class that can be utilized to measure timings in benchmarks
+ *
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ */
+
+#ifndef ELEKTRA_REST_BENCHMARK_TIMER_HPP
+#define ELEKTRA_REST_BENCHMARK_TIMER_HPP
 
 #include <chrono>
 #include <iostream>

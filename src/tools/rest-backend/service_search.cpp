@@ -1,3 +1,11 @@
+/**
+ * @file
+ *
+ * @brief implementation of the search service class
+ *
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ */
+
 #include <algorithm>
 #include <iostream>
 

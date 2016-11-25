@@ -1,5 +1,13 @@
-#ifndef ELEKTRA_REST_MODEL_IMPORTEDCONFIG_HEADER_GUARD
-#define ELEKTRA_REST_MODEL_IMPORTEDCONFIG_HEADER_GUARD
+/**
+ * @file
+ *
+ * @brief model for internal (elektra based) representation of snippet
+ *
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ */
+
+#ifndef ELEKTRA_REST_MODEL_IMPORTEDCONFIG_HPP
+#define ELEKTRA_REST_MODEL_IMPORTEDCONFIG_HPP
 
 #include <kdb_includes.hpp>
 #include <model_pluginformat.hpp>

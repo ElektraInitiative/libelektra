@@ -1,5 +1,13 @@
-#ifndef ELEKTRA_REST_MODEL_USER_HEADER_GUARD
-#define ELEKTRA_REST_MODEL_USER_HEADER_GUARD
+/**
+ * @file
+ *
+ * @brief model for user
+ *
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ */
+
+#ifndef ELEKTRA_REST_MODEL_USER_HPP
+#define ELEKTRA_REST_MODEL_USER_HPP
 
 #include <map>
 #include <string>

@@ -1,5 +1,13 @@
-#ifndef ELEKTRA_REST_BENCHMARK_TESTDATA_HEADER_GUARD
-#define ELEKTRA_REST_BENCHMARK_TESTDATA_HEADER_GUARD
+/**
+ * @file
+ *
+ * @brief test data generator functions
+ *
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ */
+
+#ifndef ELEKTRA_REST_BENCHMARK_TESTDATA_HPP
+#define ELEKTRA_REST_BENCHMARK_TESTDATA_HPP
 
 #include <vector>
 

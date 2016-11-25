@@ -1,7 +1,7 @@
 /**
  * @file
  *
- * @brief
+ * @brief benchmark for an equivalent solution based on mysql
  *
  * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
  */

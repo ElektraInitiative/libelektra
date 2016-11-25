@@ -1,3 +1,11 @@
+/**
+ * @file
+ *
+ * @brief cppcms controller implementation managing snippet conversion resources
+ *
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ */
+
 #include <iostream>
 
 #include <conversion_application.hpp>

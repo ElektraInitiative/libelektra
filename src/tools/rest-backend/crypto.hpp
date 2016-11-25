@@ -1,5 +1,13 @@
-#ifndef ELEKTRA_REST_CRYPTO_HEADER_GUARD
-#define ELEKTRA_REST_CRYPTO_HEADER_GUARD
+/**
+ * @file
+ *
+ * @brief header for cryptographic helper functions
+ *
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ */
+
+#ifndef ELEKTRA_REST_CRYPTO_HPP
+#define ELEKTRA_REST_CRYPTO_HPP
 
 #include <string>
 

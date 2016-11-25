@@ -1,5 +1,13 @@
-#ifndef ELEKTRA_REST_SERVICE_HEADER_GUARD
-#define ELEKTRA_REST_SERVICE_HEADER_GUARD
+/**
+ * @file
+ *
+ * @brief header for the service classes
+ *
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ */
+
+#ifndef ELEKTRA_REST_SERVICE_HPP
+#define ELEKTRA_REST_SERVICE_HPP
 
 #include <iostream>
 #include <string>

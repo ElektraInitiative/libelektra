@@ -1,5 +1,13 @@
-#ifndef ELEKTRA_REST_USERAPP_HEADER_GUARD
-#define ELEKTRA_REST_USERAPP_HEADER_GUARD
+/**
+ * @file
+ *
+ * @brief header for cppcms controller managing user resources
+ *
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ */
+
+#ifndef ELEKTRA_REST_USERAPP_HPP
+#define ELEKTRA_REST_USERAPP_HPP
 
 #include <cppcms/application.h>
 #include <cppcms/applications_pool.h>

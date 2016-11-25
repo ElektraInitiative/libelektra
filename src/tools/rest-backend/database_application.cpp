@@ -1,3 +1,11 @@
+/**
+ * @file
+ *
+ * @brief cppcms controller implementation managing snippet entry resources
+ *
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ */
+
 #include <algorithm>
 #include <iostream>
 #include <regex>

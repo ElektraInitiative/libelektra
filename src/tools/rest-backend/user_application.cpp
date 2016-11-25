@@ -1,3 +1,11 @@
+/**
+ * @file
+ *
+ * @brief cppcms controller implementation managing user resources
+ *
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ */
+
 #include <algorithm>
 #include <ctime>
 #include <iostream>

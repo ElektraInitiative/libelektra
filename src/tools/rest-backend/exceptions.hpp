@@ -1,5 +1,13 @@
-#ifndef ELEKTRA_REST_EXCEPTIONS_HEADER_GUARD
-#define ELEKTRA_REST_EXCEPTIONS_HEADER_GUARD
+/**
+ * @file
+ *
+ * @brief exceptions used in the REST backend
+ *
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ */
+
+#ifndef ELEKTRA_REST_EXCEPTIONS_HPP
+#define ELEKTRA_REST_EXCEPTIONS_HPP
 
 #include <exception>
 

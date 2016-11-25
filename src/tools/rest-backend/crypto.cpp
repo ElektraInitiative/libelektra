@@ -1,3 +1,11 @@
+/**
+ * @file
+ *
+ * @brief cryptographic helper functions
+ *
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ */
+
 #include <openssl/sha.h>
 
 #include <crypto.hpp>

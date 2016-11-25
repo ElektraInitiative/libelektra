@@ -1,3 +1,11 @@
+/**
+ * @file
+ *
+ * @brief cppcms controller implementation managing authentication resources
+ *
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ */
+
 #include <ctime>
 #include <iostream>
 #include <regex>

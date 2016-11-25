@@ -1,5 +1,13 @@
-#ifndef ELEKTRA_REST_MODEL_ENTRY_HEADER_GUARD
-#define ELEKTRA_REST_MODEL_ENTRY_HEADER_GUARD
+/**
+ * @file
+ *
+ * @brief model for snippet entry
+ *
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ */
+
+#ifndef ELEKTRA_REST_MODEL_ENTRY_HPP
+#define ELEKTRA_REST_MODEL_ENTRY_HPP
 
 #include <algorithm>
 #include <iterator>

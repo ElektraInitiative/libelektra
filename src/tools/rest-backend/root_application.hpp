@@ -1,5 +1,13 @@
-#ifndef ELEKTRA_REST_ROOTAPP_HEADER_GUARD
-#define ELEKTRA_REST_ROOTAPP_HEADER_GUARD
+/**
+ * @file
+ *
+ * @brief header for cppcms controller implementation managing global resources
+ *
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ */
+
+#ifndef ELEKTRA_REST_ROOTAPP_HPP
+#define ELEKTRA_REST_ROOTAPP_HPP
 
 #include <chrono>
 #include <cppcms/application.h>

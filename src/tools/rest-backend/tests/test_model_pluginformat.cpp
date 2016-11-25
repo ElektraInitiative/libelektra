@@ -1,3 +1,11 @@
+/**
+ * @file
+ *
+ * @brief tests for the pluginformat model
+ *
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ */
+
 #include <gtest/gtest.h>
 
 #include <model_pluginformat.hpp>

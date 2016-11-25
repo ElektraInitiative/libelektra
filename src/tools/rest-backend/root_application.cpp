@@ -1,3 +1,11 @@
+/**
+ * @file
+ *
+ * @brief cppcms controller managing global resources
+ *
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ */
+
 #include <boost/algorithm/string/replace.hpp>
 #include <cppcms/view.h>
 #include <sstream>
@@ -99,48 +107,59 @@ void RootApp::version ()
 		data["api"] = ELEKTRA_REST_API_VERSION;
 
 		// elektra version
-		try {
+		try
+		{
 			kdb::KDB kdb;
 			kdb::KeySet ks;
 			kdb::Key k;
 			kdb.get (ks, "system/elektra/version/constants");
 
 			k = ks.lookup ("system/elektra/version/constants/KDB_VERSION");
-			if(!k)
+			if (!k)
 			{
 				error = true;
-			} else {
+			}
+			else
+			{
 				data["elektra"]["version"] = k.getString ();
 			}
 
 			k = ks.lookup ("system/elektra/version/constants/KDB_VERSION_MAJOR");
-			if(!k)
+			if (!k)
 			{
 				error = true;
-			} else {
+			}
+			else
+			{
 				data["elektra"]["major"] = k.getString ();
 			}
 
 			k = ks.lookup ("system/elektra/version/constants/KDB_VERSION_MINOR");
-			if(!k)
+			if (!k)
 			{
 				error = true;
-			} else {
+			}
+			else
+			{
 				data["elektra"]["minor"] = k.getString ();
 			}
 
 			k = ks.lookup ("system/elektra/version/constants/KDB_VERSION_MICRO");
-			if(!k)
+			if (!k)
 			{
 				error = true;
-			} else {
+			}
+			else
+			{
 				data["elektra"]["micro"] = k.getString ();
 			}
-		} catch (kdb::KDBException & e) {
+		}
+		catch (kdb::KDBException & e)
+		{
 			error = true;
 		}
 
-		if(error)
+		if (error)
 		{
 			// in case we could not retrieve the run-time version,
 			// use compile-time version

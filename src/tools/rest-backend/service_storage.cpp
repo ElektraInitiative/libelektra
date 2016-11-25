@@ -1,7 +1,14 @@
+/**
+ * @file
+ *
+ * @brief implementation of the storage service class
+ *
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ */
+
 #include <regex>
 
 #include <service.hpp>
-
 
 namespace kdbrest
 {

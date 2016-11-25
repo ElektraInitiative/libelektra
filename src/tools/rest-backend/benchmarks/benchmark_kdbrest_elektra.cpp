@@ -1,7 +1,7 @@
 /**
  * @file
  *
- * @brief
+ * @brief benchmark for the rest service utilizing elektra
  *
  * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
  */

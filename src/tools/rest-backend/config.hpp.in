@@ -1,5 +1,13 @@
-#ifndef ELEKTRA_REST_CONFIG_HEADER_GUARD
-#define ELEKTRA_REST_CONFIG_HEADER_GUARD
+/**
+ * @file
+ *
+ * @brief configuration header containing compile-time constants
+ *
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ */
+
+#ifndef ELEKTRA_REST_CONFIG_HPP
+#define ELEKTRA_REST_CONFIG_HPP
 
 // The REST API version
 #define ELEKTRA_REST_API_VERSION 1

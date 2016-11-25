@@ -1,3 +1,11 @@
+/**
+ * @file
+ *
+ * @brief tests for the search service
+ *
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ */
+
 #include <gtest/gtest.h>
 
 #include <kdb_includes.hpp>
