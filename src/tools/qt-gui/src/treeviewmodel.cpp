@@ -32,18 +32,22 @@ using namespace kdb::tools::merging;
 TreeViewModel::TreeViewModel (QObject * parentModel) : m_root ("/", KEY_END), m_kdb ()
 {
 	Q_UNUSED (parentModel);
+        connectDBus();
 }
 
 TreeViewModel::TreeViewModel (MergingKDB * kdb, QObject * parentModel) : m_root ("/", KEY_END), m_kdb (kdb)
 {
 	Q_UNUSED (parentModel);
+        connectDBus();
 }
 
 TreeViewModel::TreeViewModel (const TreeViewModel & other)
 : QAbstractListModel (), m_model (other.m_model), m_root (other.m_root), m_kdb (other.m_kdb)
 
 {
+        connectDBus();
 }
+
 
 int TreeViewModel::rowCount (const QModelIndex & parentIndex) const
 {
@@ -790,6 +794,17 @@ void TreeViewModel::showConfigNodeMessage (QString title, QString text, QString 
 {
 	emit showMessage (title, text, detailedText);
 }
+
+void TreeViewModel::connectDBus()
+{
+    if ( QDBusConnection::sessionBus().connect( QString(), "/org/libelektra/configuration", "org.libelektra", QString(), this, SLOT( configChanged( QString ) ) ) ) fprintf(stderr, "=================== Done connect\n" );
+}
+
+void TreeViewModel::configChanged( QString msg )
+{
+
+}
+
 
 QHash<int, QByteArray> TreeViewModel::roleNames () const
 {
