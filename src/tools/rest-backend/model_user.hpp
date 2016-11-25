@@ -89,7 +89,7 @@ public:
                  */
 	kdb::KeySet & getSubkeys ()
 	{
-		return m_subkeys;
+		return this->m_subkeys;
 	}
 	/**
                  * Getter for a sub key by name. If no sub key with the
@@ -98,9 +98,9 @@ public:
                  * @return The requested sub key
                  * @throws kdbrest::exception::SubkeyNotFoundException
                  */
-	kdb::Key getSubkey (const std::string name)
+	kdb::Key getSubkey (const std::string name) const
 	{
-		for (auto elem : this->getSubkeys ())
+		for (auto elem : this->m_subkeys)
 		{
 			if (elem.getName ().compare (this->getName () + std::string ("/") + name) == 0)
 			{
@@ -158,7 +158,7 @@ public:
                  * Getter for the email.
                  * @return Email as string
                  */
-	std::string getEmail ()
+	std::string getEmail () const
 	{
 		try
 		{
@@ -199,7 +199,7 @@ public:
                  * 1 = User
                  * @return Rank as integer
                  */
-	int getRank ()
+	int getRank () const
 	{
 		try
 		{
@@ -234,7 +234,7 @@ public:
                  * Getter for the creation date.
                  * @return Timestamp when the user has been created
                  */
-	long getCreatedAt ()
+	long getCreatedAt () const
 	{
 		try
 		{

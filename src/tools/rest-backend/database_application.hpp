@@ -82,20 +82,24 @@ public:
 	virtual void getUniqueEntry (std::string key);
 
 private:
-	inline void handleGet (cppcms::http::request & request, cppcms::http::response & response, std::string keyPart = std::string ());
-	inline void handleGetUnique (cppcms::http::request & request, cppcms::http::response & response, std::string key = std::string ());
-	inline void handleInsert (cppcms::http::request & request, cppcms::http::response & response);
-	inline void handleUpdate (cppcms::http::request & request, cppcms::http::response & response, std::string & key);
-	inline void handleDelete (cppcms::http::request & request, cppcms::http::response & response, std::string & key);
+	void handleGet (cppcms::http::request & request, cppcms::http::response & response,
+			const std::string keyPart = std::string ()) const;
+	void handleGetUnique (cppcms::http::request & request, cppcms::http::response & response,
+			      const std::string key = std::string ()) const;
+	void handleInsert (cppcms::http::request & request, cppcms::http::response & response) const;
+	void handleUpdate (cppcms::http::request & request, cppcms::http::response & response, const std::string & key) const;
+	void handleDelete (cppcms::http::request & request, cppcms::http::response & response, const std::string & key) const;
 
-	inline model::Entry buildAndValidateEntry (cppcms::http::request & request, cppcms::http::response & response,
-						   std::string keyName = std::string ());
+	model::Entry buildAndValidateEntry (cppcms::http::request & request, cppcms::http::response & response,
+					    const std::string keyName = std::string ()) const;
 
-	inline void produceOutput (cppcms::http::request & request, cppcms::http::response & response, std::vector<model::Entry> & entries);
-	inline void processFiltering (cppcms::http::request & request, std::vector<model::Entry> & entries);
-	inline void processSorting (cppcms::http::request & request, std::vector<model::Entry> & entries);
-	inline int getMaxrows (cppcms::http::request & request);
-	inline int getOffset (cppcms::http::request & request);
+	inline void processFiltering (cppcms::http::request & request, std::vector<model::Entry> & entries) const;
+	inline void processSorting (cppcms::http::request & request, std::vector<model::Entry> & entries) const;
+	inline int getMaxrows (cppcms::http::request & request) const;
+	inline int getOffset (cppcms::http::request & request) const;
+
+	void generateAndSendEntryList (cppcms::http::request & request, cppcms::http::response & response,
+				       const std::vector<model::Entry> & entries) const;
 };
 
 } // namespace kdbrest

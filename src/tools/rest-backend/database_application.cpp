@@ -134,7 +134,7 @@ void DatabaseApp::getUniqueEntry (std::string key)
  * @param resp a response
  * @param keyPart a part of a possible entry key to reduce search space
  */
-inline void DatabaseApp::handleGet (cppcms::http::request & req, cppcms::http::response & resp, std::string keyPart)
+void DatabaseApp::handleGet (cppcms::http::request & req, cppcms::http::response & resp, const std::string keyPart) const
 {
 	// first get the complete entry list
 	std::vector<kdbrest::model::Entry> entries = service::StorageEngine::instance ().getAllEntries ();
@@ -151,7 +151,7 @@ inline void DatabaseApp::handleGet (cppcms::http::request & req, cppcms::http::r
 	this->processSorting (req, entries);
 
 	// finally create the output
-	this->produceOutput (req, resp, entries);
+	this->generateAndSendEntryList (req, resp, entries);
 }
 
 /**
@@ -160,7 +160,7 @@ inline void DatabaseApp::handleGet (cppcms::http::request & req, cppcms::http::r
  * @param resp a response
  * @param key the unique snippet key of the entry which shall be retrieved
  */
-inline void DatabaseApp::handleGetUnique (cppcms::http::request & req, cppcms::http::response & resp, std::string key)
+void DatabaseApp::handleGetUnique (cppcms::http::request & req, cppcms::http::response & resp, const std::string key) const
 {
 	try
 	{
@@ -262,7 +262,7 @@ inline void DatabaseApp::handleGetUnique (cppcms::http::request & req, cppcms::h
  * @param req a request
  * @param resp a response
  */
-inline void DatabaseApp::handleInsert (cppcms::http::request & req, cppcms::http::response & resp)
+void DatabaseApp::handleInsert (cppcms::http::request & req, cppcms::http::response & resp) const
 {
 	// first check if the currently authenticated user may create new database entries
 	if (!AuthenticationApp::validateAuthentication (req, resp, ELEKTRA_REST_PERMISSIONS_CREATE_ENTRY))
@@ -317,7 +317,7 @@ inline void DatabaseApp::handleInsert (cppcms::http::request & req, cppcms::http
  * @param resp a response
  * @param key the unique snippet key of the entry which shall be updated
  */
-inline void DatabaseApp::handleUpdate (cppcms::http::request & req, cppcms::http::response & resp, std::string & key)
+void DatabaseApp::handleUpdate (cppcms::http::request & req, cppcms::http::response & resp, const std::string & key) const
 {
 	// first lets find the entry
 	model::Entry oldEntry ("");
@@ -377,7 +377,7 @@ inline void DatabaseApp::handleUpdate (cppcms::http::request & req, cppcms::http
  * @param resp a response
  * @param key the unique snippet key of the entry which shall be deleted
  */
-inline void DatabaseApp::handleDelete (cppcms::http::request & req, cppcms::http::response & resp, std::string & key)
+void DatabaseApp::handleDelete (cppcms::http::request & req, cppcms::http::response & resp, const std::string & key) const
 {
 	// first find the entry to delete
 	model::Entry entry ("");
@@ -419,7 +419,8 @@ inline void DatabaseApp::handleDelete (cppcms::http::request & req, cppcms::http
  * @param keyName in case an entry is built for an update, the keyname has to be provided
  * @return the built and validated entry
  */
-inline model::Entry DatabaseApp::buildAndValidateEntry (cppcms::http::request & req, cppcms::http::response & resp, std::string keyName)
+model::Entry DatabaseApp::buildAndValidateEntry (cppcms::http::request & req, cppcms::http::response & resp,
+						 const std::string keyName) const
 {
 	// check if request data is of type application/json
 	if (req.content_type_parsed ().media_type () != MIME_APPLICATION_JSON)
@@ -663,7 +664,7 @@ inline model::Entry DatabaseApp::buildAndValidateEntry (cppcms::http::request & 
  * @param req a request
  * @return the max number of rows to print or the default value if not set
  */
-inline int DatabaseApp::getMaxrows (cppcms::http::request & req)
+inline int DatabaseApp::getMaxrows (cppcms::http::request & req) const
 {
 	int maxrows = ELEKTRA_REST_OUTPUT_MAX_ENTRIES;
 
@@ -691,7 +692,7 @@ inline int DatabaseApp::getMaxrows (cppcms::http::request & req)
  * @param req a request
  * @return the offset extracted from the request parameter, if not set 0
  */
-inline int DatabaseApp::getOffset (cppcms::http::request & req)
+inline int DatabaseApp::getOffset (cppcms::http::request & req) const
 {
 	int offset = 0;
 
@@ -715,7 +716,7 @@ inline int DatabaseApp::getOffset (cppcms::http::request & req)
  * @param req a request
  * @param entries the entry vector to filter
  */
-inline void DatabaseApp::processFiltering (cppcms::http::request & req, std::vector<model::Entry> & entries)
+inline void DatabaseApp::processFiltering (cppcms::http::request & req, std::vector<model::Entry> & entries) const
 {
 	// retrieve parameter values
 	std::string filter = req.get (PARAM_FILTER);
@@ -740,7 +741,7 @@ inline void DatabaseApp::processFiltering (cppcms::http::request & req, std::vec
  * @param req a request
  * @param entries the entry vector to sort
  */
-inline void DatabaseApp::processSorting (cppcms::http::request & req, std::vector<model::Entry> & entries)
+inline void DatabaseApp::processSorting (cppcms::http::request & req, std::vector<model::Entry> & entries) const
 {
 	// retrieve parameter values
 	std::string sort = req.get (PARAM_SORT);
@@ -780,7 +781,8 @@ inline void DatabaseApp::processSorting (cppcms::http::request & req, std::vecto
  * @param resp a response
  * @param entries a list of snippets, of which some may be used for the output
  */
-inline void DatabaseApp::produceOutput (cppcms::http::request & req, cppcms::http::response & resp, std::vector<model::Entry> & entries)
+void DatabaseApp::generateAndSendEntryList (cppcms::http::request & req, cppcms::http::response & resp,
+					    const std::vector<model::Entry> & entries) const
 {
 	int offset = this->getOffset (req);
 	int maxrows = this->getMaxrows (req);

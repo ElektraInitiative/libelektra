@@ -217,7 +217,7 @@ void UserApp::handle (std::string username)
  * @param resp a response
  * @param username the username of the user whose information shall be retrieved
  */
-void UserApp::handleGetUnique (cppcms::http::response & resp, std::string username)
+void UserApp::handleGetUnique (cppcms::http::response & resp, std::string username) const
 {
 	try
 	{
@@ -243,14 +243,14 @@ void UserApp::handleGetUnique (cppcms::http::response & resp, std::string userna
  * @param req a request
  * @param resp a response
  */
-void UserApp::handleGet (cppcms::http::request & req, cppcms::http::response & resp)
+void UserApp::handleGet (cppcms::http::request & req, cppcms::http::response & resp) const
 {
 	std::vector<kdbrest::model::User> users = service::StorageEngine::instance ().getAllUsers ();
 
 	this->processFiltering (req, users);
 	this->processSorting (req, users);
 
-	this->produceOutput (req, resp, users);
+	this->generateAndSendUserList (req, resp, users);
 }
 
 /**
@@ -258,7 +258,7 @@ void UserApp::handleGet (cppcms::http::request & req, cppcms::http::response & r
  * @param req a request
  * @param resp a response
  */
-void UserApp::handleInsert (cppcms::http::request & req, cppcms::http::response & resp)
+void UserApp::handleInsert (cppcms::http::request & req, cppcms::http::response & resp) const
 {
 	// check if request data is of type application/json
 	if (req.content_type_parsed ().media_type () != MIME_APPLICATION_JSON)
@@ -404,7 +404,7 @@ void UserApp::handleInsert (cppcms::http::request & req, cppcms::http::response 
  * @param username the username of the user who shall be updated
  * @param canSetRank whether the currently authenticated user can update the rank or not
  */
-void UserApp::handleUpdate (cppcms::http::request & req, cppcms::http::response & resp, std::string username, bool canSetRank)
+void UserApp::handleUpdate (cppcms::http::request & req, cppcms::http::response & resp, std::string username, bool canSetRank) const
 {
 	// check if the users exists
 	if (!service::StorageEngine::instance ().userExists (username))
@@ -505,7 +505,7 @@ void UserApp::handleUpdate (cppcms::http::request & req, cppcms::http::response 
  * @param resp a response
  * @param username the username of the user who shall be deleted
  */
-void UserApp::handleDelete (cppcms::http::response & resp, std::string username)
+void UserApp::handleDelete (cppcms::http::response & resp, std::string username) const
 {
 	try
 	{
@@ -527,7 +527,7 @@ void UserApp::handleDelete (cppcms::http::response & resp, std::string username)
  * @param req a request
  * @return the max number of rows to print or the default value if not set
  */
-inline int UserApp::getMaxrows (cppcms::http::request & req)
+inline int UserApp::getMaxrows (cppcms::http::request & req) const
 {
 	int maxrows = ELEKTRA_REST_OUTPUT_MAX_ENTRIES;
 
@@ -555,7 +555,7 @@ inline int UserApp::getMaxrows (cppcms::http::request & req)
  * @param req a request
  * @return the offset extracted from the request parameter, if not set 0
  */
-inline int UserApp::getOffset (cppcms::http::request & req)
+inline int UserApp::getOffset (cppcms::http::request & req) const
 {
 	int offset = 0;
 
@@ -579,7 +579,7 @@ inline int UserApp::getOffset (cppcms::http::request & req)
  * @param req a request
  * @param users the user vector to filter
  */
-inline void UserApp::processFiltering (cppcms::http::request & req, std::vector<model::User> & users)
+inline void UserApp::processFiltering (cppcms::http::request & req, std::vector<model::User> & users) const
 {
 	// retrieve parameter values
 	std::string filter = req.get (PARAM_FILTER);
@@ -603,7 +603,7 @@ inline void UserApp::processFiltering (cppcms::http::request & req, std::vector<
  * @param req a request
  * @param users the user vector to sort
  */
-inline void UserApp::processSorting (cppcms::http::request & req, std::vector<model::User> & users)
+inline void UserApp::processSorting (cppcms::http::request & req, std::vector<model::User> & users) const
 {
 	// retrieve parameter values
 	std::string sort = req.get (PARAM_SORT);
@@ -643,7 +643,8 @@ inline void UserApp::processSorting (cppcms::http::request & req, std::vector<mo
  * @param resp a response
  * @param users a list of users, of which some may be used for the output
  */
-inline void UserApp::produceOutput (cppcms::http::request & req, cppcms::http::response & resp, std::vector<model::User> & users)
+void UserApp::generateAndSendUserList (cppcms::http::request & req, cppcms::http::response & resp,
+				       const std::vector<model::User> & users) const
 {
 	int offset = this->getOffset (req);
 	int maxrows = this->getMaxrows (req);
@@ -695,7 +696,7 @@ inline void UserApp::produceOutput (cppcms::http::request & req, cppcms::http::r
  * @param email a string containing the email to validate
  * @return true in case the email is considered valid, false otherwise
  */
-bool UserApp::isValidEmail (std::string & email)
+bool UserApp::isValidEmail (const std::string & email) const
 {
 	if (email.empty ()) return false;
 	size_t at_index = email.find_first_of ('@', 1); // there has to be one sign before @

@@ -192,8 +192,8 @@ void AuthenticationApp::authenticate ()
  * @return true if an authentication is present and the authenticated user
  *		   matches all requirements, false otherwise
  */
-bool AuthenticationApp::validateAuthentication (cppcms::http::request & request, cppcms::http::response & response, int rank,
-						std::string orUser)
+bool AuthenticationApp::validateAuthentication (cppcms::http::request & request, cppcms::http::response & response, const int rank,
+						const std::string orUser)
 {
 	// authentication validation
 	std::string headerAuthorization = request.http_authorization ();

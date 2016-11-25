@@ -404,46 +404,6 @@ public:
 		return boost::lexicographical_compare (l.getSlug (), r.getSlug (), boost::is_iless ());
 	}
 
-	static bool greater_than_key (Entry & l, Entry & r)
-	{
-		return boost::lexicographical_compare (r.getPublicName (), l.getPublicName (), boost::is_iless ());
-	}
-
-	static bool greater_than_title (Entry & l, Entry & r)
-	{
-		return boost::lexicographical_compare (r.getTitle (), l.getTitle (), boost::is_iless ());
-	}
-
-	static bool greater_than_created_at (Entry & l, Entry & r)
-	{
-		return r.getCreatedAt () <= l.getCreatedAt ();
-	}
-
-	static bool greater_than_author (Entry & l, Entry & r)
-	{
-		return boost::lexicographical_compare (r.getAuthor (), l.getAuthor (), boost::is_iless ());
-	}
-
-	static bool greater_than_organization (Entry & l, Entry & r)
-	{
-		return boost::lexicographical_compare (r.getOrganization (), l.getOrganization (), boost::is_iless ());
-	}
-
-	static bool greater_than_application (Entry & l, Entry & r)
-	{
-		return boost::lexicographical_compare (r.getApplication (), l.getApplication (), boost::is_iless ());
-	}
-
-	static bool greater_than_scope (Entry & l, Entry & r)
-	{
-		return boost::lexicographical_compare (r.getScope (), l.getScope (), boost::is_iless ());
-	}
-
-	static bool greater_than_slug (Entry & l, Entry & r)
-	{
-		return boost::lexicographical_compare (r.getSlug (), l.getSlug (), boost::is_iless ());
-	}
-
 private:
 	kdb::KeySet m_subkeys;
 };

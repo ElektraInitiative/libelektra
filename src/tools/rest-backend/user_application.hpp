@@ -59,20 +59,22 @@ public:
 	virtual void handle (std::string username);
 
 private:
-	void handleGet (cppcms::http::request & request, cppcms::http::response & response);
-	void handleGetUnique (cppcms::http::response & response, std::string username = std::string ());
-	void handleInsert (cppcms::http::request & request, cppcms::http::response & response);
+	void handleGet (cppcms::http::request & request, cppcms::http::response & response) const;
+	void handleGetUnique (cppcms::http::response & response, std::string username = std::string ()) const;
+	void handleInsert (cppcms::http::request & request, cppcms::http::response & response) const;
 	void handleUpdate (cppcms::http::request & request, cppcms::http::response & response, std::string username = std::string (),
-			   bool canSetRank = false);
-	void handleDelete (cppcms::http::response & response, std::string username = std::string ());
+			   bool canSetRank = false) const;
+	void handleDelete (cppcms::http::response & response, std::string username = std::string ()) const;
 
-	inline void produceOutput (cppcms::http::request & request, cppcms::http::response & response, std::vector<model::User> & users);
-	inline void processFiltering (cppcms::http::request & request, std::vector<model::User> & users);
-	inline void processSorting (cppcms::http::request & request, std::vector<model::User> & users);
-	inline int getMaxrows (cppcms::http::request & request);
-	inline int getOffset (cppcms::http::request & request);
+	inline void processFiltering (cppcms::http::request & request, std::vector<model::User> & users) const;
+	inline void processSorting (cppcms::http::request & request, std::vector<model::User> & users) const;
+	inline int getMaxrows (cppcms::http::request & request) const;
+	inline int getOffset (cppcms::http::request & request) const;
 
-	bool isValidEmail (std::string & email);
+	void generateAndSendUserList (cppcms::http::request & request, cppcms::http::response & response,
+				      const std::vector<model::User> & users) const;
+
+	bool isValidEmail (const std::string & email) const;
 };
 
 } // namespace kdbrest
