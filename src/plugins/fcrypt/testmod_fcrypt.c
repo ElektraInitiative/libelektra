@@ -24,26 +24,6 @@
 
 static const kdb_octet_t testContent[] = { 0x01, 0x02, 0xCA, 0xFE, 0xBA, 0xBE, 0x03, 0x04 };
 
-/*
- * @brief create temporary file name
- * @returns allocated string holding the path to the temporary file. Must be freed by the caller.
- */
-static char * getTemporaryFileName ()
-{
-	const char * tmpvar = getenv ("TMPDIR");
-	if (!tmpvar)
-	{
-		tmpvar = "/tmp";
-	}
-
-	const size_t newFileAllocated = strlen (tmpvar) + 1 + strlen (TEST_FILE) + 7;
-	char * newFile = elektraMalloc (newFileAllocated);
-	if (!newFile) return NULL;
-	snprintf (newFile, newFileAllocated, "%s/%sXXXXXX", tmpvar, TEST_FILE);
-	mkstemp (newFile);
-	return newFile;
-}
-
 static KeySet * newPluginConfiguration ()
 {
 	return ksNew (2, keyNew (ELEKTRA_CRYPTO_PARAM_GPG_KEY, KEY_VALUE, TEST_KEY_ID, KEY_END),
@@ -151,7 +131,7 @@ static void test_file_operations ()
 	if (plugin)
 	{
 		KeySet * data = ksNew (0, KS_END);
-		char * tmpFile = getTemporaryFileName ();
+		char * tmpFile = elektraFilename ();
 		if (tmpFile)
 		{
 			// prepare test file to be encrypted
