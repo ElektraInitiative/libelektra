@@ -123,11 +123,11 @@ model::ConfigFormat ConvertEngine::exportTo (const std::string format, model::En
 	}
 	catch (kdbrest::exception::UnsupportedConfigurationFormatException & e)
 	{
-		throw e; // re-throw explicitely
+		throw; // re-throw explicitely
 	}
 	catch (kdbrest::exception::ParseConfigurationException & e)
 	{
-		throw e; // re-throw explicitely
+		throw; // re-throw explicitely
 	}
 
 	throw exception::UnsupportedConfigurationFormatException ();
@@ -314,7 +314,7 @@ model::ImportedConfig ConvertEngine::import (const std::string & config, const s
 	}
 	catch (kdbrest::exception::UnsupportedConfigurationFormatException & e)
 	{
-		throw e;
+		throw; // re-throw explicitely
 	}
 
 	// in case we accidentally reach this point somehow
