@@ -44,7 +44,7 @@ void AuthenticationApp::authenticate ()
 	if (request ().request_method () == "POST")
 	{
 		// check if request data is of type application/json
-		if (request ().content_type_parsed ().media_type () != "application/json")
+		if (request ().content_type_parsed ().media_type () != MIME_APPLICATION_JSON)
 		{
 			RootApp::setNotAcceptable (response (), "You have supplied an unsupported Content-Type.",
 						   "REQUEST_UNSUPPORTED_CONTENT_TYPE");
@@ -160,7 +160,7 @@ void AuthenticationApp::authenticate ()
 		// write response
 		cppcms::json::value data;
 		data["token"] = token;
-		RootApp::setOk (response (), data, "application/json");
+		RootApp::setOk (response (), data, MIME_APPLICATION_JSON);
 	}
 	else if (request ().request_method () == "OPTIONS")
 	{

@@ -96,7 +96,7 @@ void RootApp::version ()
 		data["elektra"]["micro"] = KDB_VERSION_MICRO;
 		data["api"] = ELEKTRA_REST_API_VERSION;
 
-		RootApp::setOk (response (), data, "application/json");
+		RootApp::setOk (response (), data, MIME_APPLICATION_JSON);
 	}
 	else if (request ().request_method () == "OPTIONS")
 	{
@@ -276,7 +276,7 @@ cppcms::json::value RootApp::parsePostDataAsJson (cppcms::http::request & reques
 void RootApp::setHttpStatus (cppcms::http::response & response, const int status, const std::string & message, const std::string & loca)
 {
 	// send actual response
-	response.content_type ("application/json");
+	response.content_type (MIME_APPLICATION_JSON);
 	response.status (status);
 	cppcms::json::value data;
 	data["status"] = cppcms::http::response::status_to_string (status);

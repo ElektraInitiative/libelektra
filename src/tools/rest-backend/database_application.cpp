@@ -183,7 +183,7 @@ inline void DatabaseApp::handleGetUnique (cppcms::http::request & req, cppcms::h
 			try
 			{
 				model::ConfigFormat configFormat = service::ConvertEngine::instance ().exportTo (raw, entry);
-				RootApp::setOkRaw (resp, configFormat.getConfig (), "text/plain");
+				RootApp::setOkRaw (resp, configFormat.getConfig (), MIME_TEXT_PLAIN);
 				return; // quit here
 			}
 			catch (kdbrest::exception::UnsupportedConfigurationFormatException & e)
@@ -248,7 +248,7 @@ inline void DatabaseApp::handleGetUnique (cppcms::http::request & req, cppcms::h
 			j++;
 		}
 
-		RootApp::setOk (resp, data, "application/json");
+		RootApp::setOk (resp, data, MIME_APPLICATION_JSON);
 	}
 	catch (exception::EntryNotFoundException & e)
 	{
@@ -422,7 +422,7 @@ inline void DatabaseApp::handleDelete (cppcms::http::request & req, cppcms::http
 inline model::Entry DatabaseApp::buildAndValidateEntry (cppcms::http::request & req, cppcms::http::response & resp, std::string keyName)
 {
 	// check if request data is of type application/json
-	if (req.content_type_parsed ().media_type () != "application/json")
+	if (req.content_type_parsed ().media_type () != MIME_APPLICATION_JSON)
 	{
 		RootApp::setNotAcceptable (resp, "You have supplied an unsupported Content-Type.", "REQUEST_UNSUPPORTED_CONTENT_TYPE");
 		throw exception::EntryValidationException (); // quit early
@@ -896,7 +896,7 @@ inline void DatabaseApp::produceOutput (cppcms::http::request & req, cppcms::htt
 		}
 	}
 
-	RootApp::setOk (resp, data, "application/json");
+	RootApp::setOk (resp, data, MIME_APPLICATION_JSON);
 }
 
 } // namespace kdbrest

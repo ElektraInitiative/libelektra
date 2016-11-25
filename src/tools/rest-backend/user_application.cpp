@@ -261,7 +261,7 @@ void UserApp::handleGet (cppcms::http::request & req, cppcms::http::response & r
 void UserApp::handleInsert (cppcms::http::request & req, cppcms::http::response & resp)
 {
 	// check if request data is of type application/json
-	if (req.content_type_parsed ().media_type () != "application/json")
+	if (req.content_type_parsed ().media_type () != MIME_APPLICATION_JSON)
 	{
 		RootApp::setNotAcceptable (resp, "You have supplied an unsupported Content-Type.", "REQUEST_UNSUPPORTED_CONTENT_TYPE");
 		return;
@@ -415,7 +415,7 @@ void UserApp::handleUpdate (cppcms::http::request & req, cppcms::http::response 
 	}
 
 	// check if request data is of type application/json
-	if (req.content_type_parsed ().media_type () != "application/json")
+	if (req.content_type_parsed ().media_type () != MIME_APPLICATION_JSON)
 	{
 		RootApp::setNotAcceptable (resp, "You have supplied an unsupported Content-Type.", "REQUEST_UNSUPPORTED_CONTENT_TYPE");
 		return;
@@ -717,7 +717,7 @@ inline void UserApp::produceOutput (cppcms::http::request & req, cppcms::http::r
 		}
 	}
 
-	RootApp::setOk (resp, data, "application/json");
+	RootApp::setOk (resp, data, MIME_APPLICATION_JSON);
 }
 
 /**

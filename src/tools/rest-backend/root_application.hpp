@@ -37,6 +37,11 @@ static const std::string PARAM_FILTER = "filter";
 // parameter used for the field of filtering of entry lists
 static const std::string PARAM_FILTERBY = "filterby";
 
+// mime type for application/json
+static const std::string MIME_APPLICATION_JSON = "application/json";
+// mime type for text/plain
+static const std::string MIME_TEXT_PLAIN = "text/plain";
+
 /**
      * @brief Main class for the kdb rest service, serves as
      * coordinator and manager
@@ -50,9 +55,9 @@ public:
 	virtual void version ();
 
 	static void setOkRaw (cppcms::http::response & response, std::string & data,
-			      const std::string content_type = std::string ("text/plain"));
+			      const std::string content_type = std::string (MIME_TEXT_PLAIN));
 	static void setOk (cppcms::http::response & response, cppcms::json::value & data,
-			   const std::string content_type = std::string ("application/json"));
+			   const std::string content_type = std::string (MIME_APPLICATION_JSON));
 	static void setOk (cppcms::http::response & response, const std::string message = std::string (),
 			   const std::string loca = std::string ());
 	static void setMethodNotAllowed (cppcms::http::response & response, const std::string message = std::string (),
