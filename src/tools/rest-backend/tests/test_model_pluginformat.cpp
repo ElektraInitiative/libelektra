@@ -11,15 +11,6 @@ TEST (kdbrestModelsPluginformatTest, ConstructorCheck)
 
 	try
 	{
-		kdbrest::model::PluginFormat pf ("xml:xmltool");
-	}
-	catch (kdbrest::exception::FileformatPluginException & e)
-	{
-		ASSERT_TRUE (false);
-	}
-
-	try
-	{
 		kdbrest::model::PluginFormat pf ("xml", "xmltool");
 	}
 	catch (kdbrest::exception::FileformatPluginException & e)
@@ -40,10 +31,6 @@ TEST (kdbrestModelsPluginformatTest, ConstructorCheck)
 
 TEST (kdbrestModelsPluginformatTest, ValueCheck)
 {
-
-	kdbrest::model::PluginFormat pf ("xml:xmltool");
-	ASSERT_EQ (pf.getFileformat (), "xml");
-	ASSERT_EQ (pf.getPluginname (), "xmltool");
 
 	kdbrest::model::PluginFormat pf2 ("xml", "xmltool");
 	ASSERT_EQ (pf2.getFileformat (), "xml");

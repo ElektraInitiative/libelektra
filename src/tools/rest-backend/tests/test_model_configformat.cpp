@@ -10,7 +10,7 @@
 TEST (kdbrestModelsConfigformatTest, ConstructorValueCheck)
 {
 
-	kdbrest::model::PluginFormat pf ("xml:xmltool");
+	kdbrest::model::PluginFormat pf ("xml", "xmltool");
 	kdbrest::model::ConfigFormat cf (pf, "<test-string>", true);
 
 	ASSERT_EQ (cf.getPluginformat ().getFileformat (), pf.getFileformat ());

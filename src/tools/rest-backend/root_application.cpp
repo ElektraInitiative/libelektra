@@ -92,13 +92,63 @@ void RootApp::version ()
 
 	if (request ().request_method () == "GET")
 	{
+		bool error = false;
 		cppcms::json::value data;
 
-		data["elektra"]["version"] = KDB_VERSION;
-		data["elektra"]["major"] = KDB_VERSION_MAJOR;
-		data["elektra"]["minor"] = KDB_VERSION_MINOR;
-		data["elektra"]["micro"] = KDB_VERSION_MICRO;
+		// api version
 		data["api"] = ELEKTRA_REST_API_VERSION;
+
+		// elektra version
+		try {
+			kdb::KDB kdb;
+			kdb::KeySet ks;
+			kdb::Key k;
+			kdb.get (ks, "system/elektra/version/constants");
+
+			k = ks.lookup ("system/elektra/version/constants/KDB_VERSION");
+			if(!k)
+			{
+				error = true;
+			} else {
+				data["elektra"]["version"] = k.getString ();
+			}
+
+			k = ks.lookup ("system/elektra/version/constants/KDB_VERSION_MAJOR");
+			if(!k)
+			{
+				error = true;
+			} else {
+				data["elektra"]["major"] = k.getString ();
+			}
+
+			k = ks.lookup ("system/elektra/version/constants/KDB_VERSION_MINOR");
+			if(!k)
+			{
+				error = true;
+			} else {
+				data["elektra"]["minor"] = k.getString ();
+			}
+
+			k = ks.lookup ("system/elektra/version/constants/KDB_VERSION_MICRO");
+			if(!k)
+			{
+				error = true;
+			} else {
+				data["elektra"]["micro"] = k.getString ();
+			}
+		} catch (kdb::KDBException & e) {
+			error = true;
+		}
+
+		if(error)
+		{
+			// in case we could not retrieve the run-time version,
+			// use compile-time version
+			data["elektra"]["version"] = KDB_VERSION;
+			data["elektra"]["major"] = KDB_VERSION_MAJOR;
+			data["elektra"]["minor"] = KDB_VERSION_MINOR;
+			data["elektra"]["micro"] = KDB_VERSION_MICRO;
+		}
 
 		RootApp::setOk (response (), data, MIME_APPLICATION_JSON);
 	}
