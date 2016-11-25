@@ -251,15 +251,15 @@ void benchmarkLookupSingleByKey (sql::Connection * con, int numUsers, int numEnt
 	rs = pstmt->executeQuery ();
 	std::vector<model::Entry> entries = rsToEntryVector (rs);
 
+	// free resources
+	delete rs;
+	delete pstmt;
+
 	// stop timer here
 	timer.stop ();
 
 	// print found entries
 	printEntryVector (entries, 3);
-
-	// free resources
-	delete rs;
-	delete pstmt;
 
 	// print timer result
 	timer.printStatistic (3);
@@ -314,15 +314,15 @@ void benchmarkLookupMultipleByOrganization (sql::Connection * con, int numUsers,
 	rs = pstmt->executeQuery ();
 	std::vector<model::Entry> entries = rsToEntryVector (rs);
 
+	// free resources
+	delete rs;
+	delete pstmt;
+
 	// stop timer here
 	timer.stop ();
 
 	// print found entries
 	printEntryVector (entries, 3);
-
-	// free resources
-	delete rs;
-	delete pstmt;
 
 	// print timer result
 	timer.printStatistic (3);
@@ -379,15 +379,15 @@ void benchmarkLookupMultipleByTag (sql::Connection * con, int numUsers, int numE
 	rs = pstmt->executeQuery ();
 	std::vector<model::Entry> entries = rsToEntryVector (rs);
 
+	// free resources
+	delete rs;
+	delete pstmt;
+
 	// stop timer here
 	timer.stop ();
 
 	// print found entries
 	printEntryVector (entries, 3);
-
-	// free resources
-	delete rs;
-	delete pstmt;
 
 	// print timer result
 	timer.printStatistic (3);
@@ -442,15 +442,15 @@ void benchmarkLookupMultipleByAuthor (sql::Connection * con, int numUsers, int n
 	rs = pstmt->executeQuery ();
 	std::vector<model::Entry> entries = rsToEntryVector (rs);
 
+	// free resources
+	delete rs;
+	delete pstmt;
+
 	// stop timer here
 	timer.stop ();
 
 	// print found entries
 	printEntryVector (entries, 3);
-
-	// free resources
-	delete rs;
-	delete pstmt;
 
 	// print timer result
 	timer.printStatistic (3);
@@ -505,15 +505,15 @@ void benchmarkLookupMultipleByDescription (sql::Connection * con, int numUsers, 
 	rs = pstmt->executeQuery ();
 	std::vector<model::Entry> entries = rsToEntryVector (rs);
 
+	// free resources
+	delete rs;
+	delete pstmt;
+
 	// stop timer here
 	timer.stop ();
 
 	// print found entries
 	printEntryVector (entries, 3);
-
-	// free resources
-	delete rs;
-	delete pstmt;
 
 	// print timer result
 	timer.printStatistic (3);
