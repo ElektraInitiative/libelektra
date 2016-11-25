@@ -105,11 +105,11 @@ private:
 	void loadAllEntries ();
 	void loadAllUsers ();
 
-	std::vector<model::Entry> _entryCache;
-	boost::shared_mutex _mutex_entry_cache;
+	std::vector<model::Entry> m_entryCache;
+	boost::shared_mutex m_mutex_entryCache;
 
-	std::vector<model::User> _userCache;
-	boost::shared_mutex _mutex_user_cache;
+	std::vector<model::User> m_userCache;
+	boost::shared_mutex m_mutex_userCache;
 };
 
 /**
@@ -127,16 +127,16 @@ class ConvertEngine : public singleton<ConvertEngine>
 public:
 	inline ConvertEngine ()
 	{
-		this->_enabledFormats = loadEnabledFormats ();
+		this->m_enabledFormats = loadEnabledFormats ();
 	}
 
 	std::vector<kdbrest::model::PluginFormat> & getEnabledFormats ()
 	{
-		return _enabledFormats;
+		return m_enabledFormats;
 	}
 	void setEnabledFormats (std::vector<model::PluginFormat> & formats)
 	{
-		this->_enabledFormats = formats;
+		this->m_enabledFormats = formats;
 	}
 
 	std::vector<kdbrest::model::PluginFormat> loadEnabledFormats ();
@@ -149,7 +149,7 @@ public:
 	model::ImportedConfig import (const std::string & config, const std::string & format, model::Entry & forEntry);
 
 private:
-	std::vector<kdbrest::model::PluginFormat> _enabledFormats;
+	std::vector<kdbrest::model::PluginFormat> m_enabledFormats;
 };
 
 } // namespace service

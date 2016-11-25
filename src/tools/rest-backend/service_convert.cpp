@@ -243,7 +243,7 @@ std::vector<model::ConfigFormat> ConvertEngine::exportToAll (model::Entry & entr
 	using namespace kdb::tools;
 
 	std::vector<model::ConfigFormat> result;
-	for (auto & elem : this->_enabledFormats)
+	for (auto & elem : this->m_enabledFormats)
 	{
 		try
 		{

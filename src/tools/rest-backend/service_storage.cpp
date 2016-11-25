@@ -42,9 +42,9 @@ bool StorageEngine::createEntry (model::Entry & entry)
 	using namespace kdb;
 
 	// register exclusive access
-	boost::unique_lock<boost::shared_mutex> lock (_mutex_entry_cache);
+	boost::unique_lock<boost::shared_mutex> lock (m_mutex_entryCache);
 
-	std::vector<model::Entry> & entries = this->_entryCache;
+	std::vector<model::Entry> & entries = this->m_entryCache;
 	for (auto & elem : entries)
 	{
 		if (elem.getPublicName ().compare (entry.getPublicName ()) == 0)
@@ -92,10 +92,10 @@ bool StorageEngine::updateEntry (model::Entry & entry)
 	using namespace kdb;
 
 	// register exclusive access
-	boost::unique_lock<boost::shared_mutex> lock (_mutex_entry_cache);
+	boost::unique_lock<boost::shared_mutex> lock (m_mutex_entryCache);
 
 	bool found = false;
-	std::vector<model::Entry> & entries = this->_entryCache;
+	std::vector<model::Entry> & entries = this->m_entryCache;
 	unsigned int i = 0;
 	while (i < entries.size ())
 	{
@@ -153,10 +153,10 @@ bool StorageEngine::deleteEntry (model::Entry & entry)
 	using namespace kdb;
 
 	// register exclusive access
-	boost::unique_lock<boost::shared_mutex> lock (_mutex_entry_cache);
+	boost::unique_lock<boost::shared_mutex> lock (m_mutex_entryCache);
 
 	bool found = false;
-	std::vector<model::Entry> & entries = this->_entryCache;
+	std::vector<model::Entry> & entries = this->m_entryCache;
 	unsigned int i = 0;
 	while (i < entries.size ())
 	{
@@ -208,7 +208,7 @@ bool StorageEngine::deleteEntry (model::Entry & entry)
 bool StorageEngine::entryExists (const std::string & key)
 {
 	// register read access
-	boost::shared_lock<boost::shared_mutex> lock (_mutex_entry_cache);
+	boost::shared_lock<boost::shared_mutex> lock (m_mutex_entryCache);
 
 	for (auto & elem : this->getAllEntriesRef ())
 	{
@@ -232,7 +232,7 @@ bool StorageEngine::entryExists (const std::string & key)
 model::Entry StorageEngine::getEntry (const std::string & key)
 {
 	// register read access
-	boost::shared_lock<boost::shared_mutex> lock (_mutex_entry_cache);
+	boost::shared_lock<boost::shared_mutex> lock (m_mutex_entryCache);
 
 	for (auto & elem : this->getAllEntriesRef ())
 	{
@@ -263,9 +263,9 @@ std::vector<model::Entry> StorageEngine::getAllEntries (bool force)
 	}
 
 	// register read access
-	boost::shared_lock<boost::shared_mutex> lock (_mutex_entry_cache);
+	boost::shared_lock<boost::shared_mutex> lock (m_mutex_entryCache);
 
-	return std::vector<model::Entry> (this->_entryCache);
+	return std::vector<model::Entry> (this->m_entryCache);
 }
 
 /**
@@ -290,7 +290,7 @@ std::vector<model::Entry> & StorageEngine::getAllEntriesRef (bool force)
 		this->loadAllEntries ();
 	}
 
-	return this->_entryCache;
+	return this->m_entryCache;
 }
 
 /**
@@ -301,10 +301,10 @@ void StorageEngine::loadAllEntries ()
 	using namespace kdb;
 
 	// register exclusive access
-	boost::unique_lock<boost::shared_mutex> lock (_mutex_entry_cache);
+	boost::unique_lock<boost::shared_mutex> lock (m_mutex_entryCache);
 
 	// flush cache
-	this->_entryCache.clear ();
+	this->m_entryCache.clear ();
 
 	std::string parentKeyStr = ELEKTRA_REST_CONFIG_REPOSITORY_PATH;
 	std::regex regex (ELEKTRA_REST_CONFIG_REPOSITORY_ENTRY_SCHEMA);
@@ -322,7 +322,7 @@ void StorageEngine::loadAllEntries ()
 			kdbrest::model::Entry entry = static_cast<kdbrest::model::Entry> (k);
 			elem++;						   // the next element must be a sub-key of this element
 			elem += entry.addSubkeys (elem, ks.end ()) - elem; // try to add the sub keys and calculate new iterator
-			this->_entryCache.push_back (entry);
+			this->m_entryCache.push_back (entry);
 			continue; // we don't have to increase manually anymore
 		}
 		elem++;
@@ -344,9 +344,9 @@ bool StorageEngine::createUser (model::User & user)
 	using namespace kdb;
 
 	// register exclusive access
-	boost::unique_lock<boost::shared_mutex> lock (_mutex_user_cache);
+	boost::unique_lock<boost::shared_mutex> lock (m_mutex_userCache);
 
-	std::vector<model::User> & users = this->_userCache;
+	std::vector<model::User> & users = this->m_userCache;
 	for (auto & elem : users)
 	{
 		if (elem.getUsername ().compare (user.getUsername ()) == 0)
@@ -394,10 +394,10 @@ bool StorageEngine::updateUser (model::User & user)
 	using namespace kdb;
 
 	// register exclusive access
-	boost::unique_lock<boost::shared_mutex> lock (_mutex_user_cache);
+	boost::unique_lock<boost::shared_mutex> lock (m_mutex_userCache);
 
 	bool found = false;
-	std::vector<model::User> & users = this->_userCache;
+	std::vector<model::User> & users = this->m_userCache;
 	unsigned int i = 0;
 	while (i < users.size ())
 	{
@@ -455,10 +455,10 @@ bool StorageEngine::deleteUser (model::User & user)
 	using namespace kdb;
 
 	// register exclusive access
-	boost::unique_lock<boost::shared_mutex> lock (_mutex_user_cache);
+	boost::unique_lock<boost::shared_mutex> lock (m_mutex_userCache);
 
 	bool found = false;
-	std::vector<model::User> & users = this->_userCache;
+	std::vector<model::User> & users = this->m_userCache;
 	unsigned int i = 0;
 	while (i < users.size ())
 	{
@@ -510,7 +510,7 @@ bool StorageEngine::deleteUser (model::User & user)
 bool StorageEngine::userExists (const std::string & username)
 {
 	// register read access
-	boost::shared_lock<boost::shared_mutex> lock (_mutex_user_cache);
+	boost::shared_lock<boost::shared_mutex> lock (m_mutex_userCache);
 
 	for (auto & elem : this->getAllUsersRef ())
 	{
@@ -534,7 +534,7 @@ bool StorageEngine::userExists (const std::string & username)
 model::User StorageEngine::getUser (const std::string & username)
 {
 	// register read access
-	boost::shared_lock<boost::shared_mutex> lock (_mutex_user_cache);
+	boost::shared_lock<boost::shared_mutex> lock (m_mutex_userCache);
 
 	for (auto & elem : this->getAllUsersRef ())
 	{
@@ -562,9 +562,9 @@ std::vector<model::User> StorageEngine::getAllUsers (bool force)
 	}
 
 	// register read access
-	boost::shared_lock<boost::shared_mutex> lock (_mutex_user_cache);
+	boost::shared_lock<boost::shared_mutex> lock (m_mutex_userCache);
 
-	return std::vector<model::User> (this->_userCache);
+	return std::vector<model::User> (this->m_userCache);
 }
 
 /**
@@ -587,7 +587,7 @@ std::vector<model::User> & StorageEngine::getAllUsersRef (bool force)
 		this->loadAllUsers ();
 	}
 
-	return this->_userCache;
+	return this->m_userCache;
 }
 
 /**
@@ -598,10 +598,10 @@ void StorageEngine::loadAllUsers ()
 	using namespace kdb;
 
 	// register exclusive access
-	boost::unique_lock<boost::shared_mutex> lock (_mutex_user_cache);
+	boost::unique_lock<boost::shared_mutex> lock (m_mutex_userCache);
 
 	// flush cache
-	this->_userCache.clear ();
+	this->m_userCache.clear ();
 
 	std::string parentKeyStr = ELEKTRA_REST_USER_REPOSITORY_PATH;
 	std::regex regex (ELEKTRA_REST_USER_REPOSITORY_ENTRY_SCHEMA);
@@ -619,7 +619,7 @@ void StorageEngine::loadAllUsers ()
 			kdbrest::model::User user = static_cast<kdbrest::model::User> (k);
 			elem++;						  // the next element must be a sub-key of this element
 			elem += user.addSubkeys (elem, ks.end ()) - elem; // try to add the sub keys and calculate new iterator
-			this->_userCache.push_back (user);
+			this->m_userCache.push_back (user);
 			continue; // we don't have to increase manually anymore
 		}
 		elem++;
