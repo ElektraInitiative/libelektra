@@ -74,6 +74,20 @@ static std::map<std::string, bool (*) (model::Entry &, model::Entry &)> SORT_ENT
 	{ "created_at", &model::Entry::less_than_created_at }
 };
 
+// insert & update entry request input data
+struct entry_input_data
+{
+	std::string organization;
+	std::string application;
+	std::string scope;
+	std::string slug;
+	std::string title;
+	std::string description;
+	cppcms::json::array tags;
+	std::string conf_format;
+	std::string conf_value;
+};
+
 /**
  * @brief serves endpoint for snippet database
  */
@@ -96,6 +110,9 @@ private:
 	void handleUpdate (cppcms::http::request & request, cppcms::http::response & response, const std::string & key) const;
 	void handleDelete (cppcms::http::request & request, cppcms::http::response & response, const std::string & key) const;
 
+	void retrieveEntryInputData (cppcms::http::response & response, cppcms::json::value & requestData, entry_input_data & input_data,
+				     bool withKeyParts = false) const;
+	void validateEntryInputData (cppcms::http::response & response, entry_input_data & input_data, bool withKeyParts = false) const;
 	model::Entry buildAndValidateEntry (cppcms::http::request & request, cppcms::http::response & response,
 					    const std::string keyName = std::string ()) const;
 
@@ -106,6 +123,9 @@ private:
 
 	void generateAndSendEntryList (cppcms::http::request & request, cppcms::http::response & response,
 				       const std::vector<model::Entry> & entries) const;
+
+	void addViewToEntry (model::Entry & entry) const;
+	void copyEntryData (model::Entry & from, model::Entry & to) const;
 };
 
 } // namespace kdbrest

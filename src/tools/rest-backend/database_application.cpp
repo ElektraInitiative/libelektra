@@ -198,17 +198,7 @@ void DatabaseApp::handleGetUnique (cppcms::http::request & req, cppcms::http::re
 	try
 	{
 		model::Entry entry = service::StorageEngine::instance ().getEntry (key);
-
-		// increase number of views and store again
-		entry.addViews (1);
-		try
-		{
-			(void)service::StorageEngine::instance ().updateEntry (entry);
-		}
-		catch (kdbrest::exception::EntryNotFoundException & e)
-		{
-			// do not handle exception
-		}
+		this->addViewToEntry (entry);
 
 		const std::string raw = req.get (PARAM_RAW);
 		if (!raw.empty ())
@@ -231,19 +221,17 @@ void DatabaseApp::handleGetUnique (cppcms::http::request & req, cppcms::http::re
 			}
 		}
 
+		// create output data & add meta information
 		cppcms::json::value data;
-
 		data["key"]["full"] = entry.getPublicName ();
 		data["key"]["organization"] = entry.getOrganization ();
 		data["key"]["application"] = entry.getApplication ();
 		data["key"]["scope"] = entry.getScope ();
 		data["key"]["slug"] = entry.getSlug ();
-
 		int i = 0;
-		for (auto & elem : entry.getTags ())
+		for (auto elem : entry.getTags ())
 		{
-			data["meta"]["tags"][i] = elem;
-			i++;
+			data["meta"]["tags"][i++] = elem;
 		}
 		data["meta"]["title"] = entry.getTitle ();
 		data["meta"]["description"] = entry.getDescription ();
@@ -270,7 +258,6 @@ void DatabaseApp::handleGetUnique (cppcms::http::request & req, cppcms::http::re
 			}
 			it++;
 		}
-
 		// then output the other formats
 		for (auto & elem : formats)
 		{
@@ -347,7 +334,7 @@ void DatabaseApp::handleInsert (cppcms::http::request & req, cppcms::http::respo
 
 /**
  * @brief handles an update request for a snippet entry
- * 
+ *
  * @param req a request
  * @param resp a response
  * @param key the unique snippet key of the entry which shall be updated
@@ -372,6 +359,7 @@ void DatabaseApp::handleUpdate (cppcms::http::request & req, cppcms::http::respo
 		return; // quit early, error response already set
 	}
 
+	// build a new entry from the input
 	model::Entry newEntry ("");
 	try
 	{
@@ -383,16 +371,10 @@ void DatabaseApp::handleUpdate (cppcms::http::request & req, cppcms::http::respo
 		return; // so quit early
 	}
 
-	// can't change base key, so scope, app, etc. remain
-	// only change description, title, config
-	oldEntry.setDescription (newEntry.getDescription ()); // set new description
-	oldEntry.setTitle (newEntry.getTitle ());	     // set new title
-	oldEntry.setTags (newEntry.getTags ());		      // set new tags
-	oldEntry.getSubkeys ().clear ();		      // clear old config
-	auto subkeys = newEntry.getSubkeys ();
-	oldEntry.addSubkeys (subkeys.begin (), subkeys.end ()); // replace config
-	oldEntry.setUploadPlugin (newEntry.getUploadPlugin ()); // replace old upload format
+	// update the entry data with the new input
+	this->copyEntryData (newEntry, oldEntry);
 
+	// store updated entry
 	try
 	{
 		service::StorageEngine::instance ().updateEntry (oldEntry);
@@ -408,7 +390,7 @@ void DatabaseApp::handleUpdate (cppcms::http::request & req, cppcms::http::respo
 
 /**
  * @brief handles a delete request of a snippet entry
- * 
+ *
  * @param req a request
  * @param resp a response
  * @param key the unique snippet key of the entry which shall be deleted
@@ -447,12 +429,188 @@ void DatabaseApp::handleDelete (cppcms::http::request & req, cppcms::http::respo
 }
 
 /**
- * @brief builds and validates a snippet entry from a request
+ * @brief attempts to parse input data from a request data pack
  * 
+ * @param response a response for error output
+ * @param requestData a json value containing all request post data
+ * @param input_data the target struct to place input data in
+ * @param withKeyParts if key part fields should be fetches as well
+ */
+void DatabaseApp::retrieveEntryInputData (cppcms::http::response & resp, cppcms::json::value & requestData, entry_input_data & data,
+					  bool withKeyParts) const
+{
+	// check some special fields before retrieving them
+	if (requestData.type ("configuration") != cppcms::json::is_object ||
+	    (requestData.type ("tags") != cppcms::json::is_undefined && requestData.type ("tags") != cppcms::json::is_array))
+	{
+		RootApp::setBadRequest (resp, "The submitted data could not be parsed.", "REQUEST_MALFORMED_DATA");
+		throw exception::InvalidPostDataFormatException (); // quit early
+	}
+
+	// retrieve submitted data
+	if (withKeyParts)
+	{
+		try
+		{
+			data.organization = requestData.get<std::string> ("organization");
+		}
+		catch (cppcms::json::bad_value_cast & e)
+		{
+			RootApp::setBadRequest (resp, "You have to supply an organization.", "ENTRY_MISSING_ORGANIZATION");
+			throw exception::EntryValidationException (); // quit early
+		}
+
+		try
+		{
+			data.application = requestData.get<std::string> ("application");
+		}
+		catch (cppcms::json::bad_value_cast & e)
+		{
+			RootApp::setBadRequest (resp, "You have to supply an application.", "ENTRY_MISSING_APPLICATION");
+			throw exception::EntryValidationException (); // quit early
+		}
+
+		try
+		{
+			data.scope = requestData.get<std::string> ("scope");
+		}
+		catch (cppcms::json::bad_value_cast & e)
+		{
+			RootApp::setBadRequest (resp, "You have to supply a scope.", "ENTRY_MISSING_SCOPE");
+			throw exception::EntryValidationException (); // quit early
+		}
+
+		try
+		{
+			data.slug = requestData.get<std::string> ("slug");
+		}
+		catch (cppcms::json::bad_value_cast & e)
+		{
+			RootApp::setBadRequest (resp, "You have to supply a slug.", "ENTRY_MISSING_SLUG");
+			throw exception::EntryValidationException (); // quit early
+		}
+	}
+
+	try
+	{
+		data.title = requestData.get<std::string> ("title");
+	}
+	catch (cppcms::json::bad_value_cast & e)
+	{
+		RootApp::setBadRequest (resp, "You have to supply a title.", "ENTRY_MISSING_TITLE");
+		throw exception::EntryValidationException (); // quit early
+	}
+
+	try
+	{
+		data.description = requestData.get<std::string> ("description");
+	}
+	catch (cppcms::json::bad_value_cast & e)
+	{
+		RootApp::setBadRequest (resp, "You have to supply a description.", "ENTRY_MISSING_DESCRIPTION");
+		throw exception::EntryValidationException (); // quit early
+	}
+
+	try
+	{
+		data.conf_format = requestData.get<std::string> ("configuration.format");
+	}
+	catch (cppcms::json::bad_value_cast & e)
+	{
+		RootApp::setBadRequest (resp, "You have to supply a configuration format.", "ENTRY_MISSING_CONFIGURATION_FORMAT");
+		throw exception::EntryValidationException (); // quit early
+	}
+
+	try
+	{
+		data.conf_value = requestData.get<std::string> ("configuration.value");
+	}
+	catch (cppcms::json::bad_value_cast & e)
+	{
+		RootApp::setBadRequest (resp, "You have to supply a configuration snippet.", "ENTRY_MISSING_CONFIGURATION_VALUE");
+		throw exception::EntryValidationException (); // quit early
+	}
+
+	if (requestData.type ("tags") != cppcms::json::is_undefined)
+	{
+		data.tags = requestData["tags"].array ();
+	}
+}
+
+/**
+ * @brief validates input data for a snippet entry
+ *
+ * @param response a response to use for error output
+ * @param input_data the input data to validate
+ * @param withKeyParts whether to validate also key parts
+ */
+void DatabaseApp::validateEntryInputData (cppcms::http::response & resp, entry_input_data & data, bool withKeyParts) const
+{
+	// regex for formats
+	std::regex regex_parts (REGEX_ENTRY_PARTS);
+	std::regex regex_title (REGEX_ENTRY_TITLE);
+	std::regex regex_description (REGEX_ENTRY_DESCRIPTION);
+	std::regex regex_tags (REGEX_ENTRY_TAGS);
+
+	// validate inputs
+	if (withKeyParts)
+	{
+		if (!std::regex_match (data.organization, regex_parts))
+		{
+			RootApp::setBadRequest (resp, "The submitted organization has an invalid format.", "ENTRY_INVALID_ORGANIZATION");
+			throw exception::EntryValidationException (); // quit early
+		}
+		if (!std::regex_match (data.application, regex_parts))
+		{
+			RootApp::setBadRequest (resp, "The submitted application has an invalid format.", "ENTRY_INVALID_APPLICATION");
+			throw exception::EntryValidationException (); // quit early
+		}
+		if (!std::regex_match (data.scope, regex_parts))
+		{
+			RootApp::setBadRequest (resp, "The submitted scope has an invalid format.", "ENTRY_INVALID_SCOPE");
+			throw exception::EntryValidationException (); // quit early
+		}
+		if (!std::regex_match (data.slug, regex_parts))
+		{
+			RootApp::setBadRequest (resp, "The submitted slug has an invalid format.", "ENTRY_INVALID_SLUG");
+			throw exception::EntryValidationException (); // quit early
+		}
+	}
+
+	if (!std::regex_match (data.title, regex_title))
+	{
+		RootApp::setBadRequest (resp,
+					"The submitted title has an invalid format. It has to be at least 3 signs long and may not contain "
+					"line breakings.",
+					"ENTRY_INVALID_TITLE");
+		throw exception::EntryValidationException (); // quit early
+	}
+	if (!std::regex_match (data.description, regex_description))
+	{
+		RootApp::setBadRequest (resp, "The submitted description has an invalid format. It has to be at least 3 signs long.",
+					"ENTRY_INVALID_DESCRIPTION");
+		throw exception::EntryValidationException (); // quit early
+	}
+	for (auto & tag : data.tags)
+	{
+		if (tag.type () != cppcms::json::is_string || !std::regex_match (tag.str (), regex_tags))
+		{
+			RootApp::setBadRequest (resp,
+						"You have supplied a malformed tag. Tags may only consist of lower case "
+						"letters, numbers, dots (.) and dashes (-).",
+						"ENTRY_INVALID_TAG");
+			throw exception::EntryValidationException (); // quit early
+		}
+	}
+}
+
+/**
+ * @brief builds and validates a snippet entry from a request
+ *
  * @note the method sets response messages itself in case an error occurs.
  *		 if that happens, an exception is thrown so that the calling method
  *		 has a chance to quit early too.
- * 
+ *
  * @param req a request
  * @param resp a response
  * @param keyName in case an entry is built for an update, the keyname has to be provided
@@ -480,177 +638,39 @@ model::Entry DatabaseApp::buildAndValidateEntry (cppcms::http::request & req, cp
 		throw exception::EntryValidationException (); // quit early
 	}
 
-	// check some special fields before retrieving them
-	if (requestData.type ("configuration") != cppcms::json::is_object ||
-	    (requestData.type ("tags") != cppcms::json::is_undefined && requestData.type ("tags") != cppcms::json::is_array))
-	{
-		RootApp::setBadRequest (resp, "The submitted data could not be parsed.", "REQUEST_MALFORMED_DATA");
-		throw exception::EntryValidationException (); // quit early
-	}
-
 	// required request fields
-	std::string organization;
-	std::string app;
-	std::string scope;
-	std::string slug;
-	std::string title;
-	std::string description;
-	cppcms::json::array tags;
-	std::string conf_format;
-	std::string conf_value;
-
-	// regex for formats
-	std::regex regex_parts (REGEX_ENTRY_PARTS);
-	std::regex regex_title (REGEX_ENTRY_TITLE);
-	std::regex regex_description (REGEX_ENTRY_DESCRIPTION);
-	std::regex regex_tags (REGEX_ENTRY_TAGS);
-
-	// retrieve submitted data
-	if (keyName.empty ())
-	{
-		try
-		{
-			organization = requestData.get<std::string> ("organization");
-		}
-		catch (cppcms::json::bad_value_cast & e)
-		{
-			RootApp::setBadRequest (resp, "You have to supply an organization.", "ENTRY_MISSING_ORGANIZATION");
-			throw exception::EntryValidationException (); // quit early
-		}
-
-		try
-		{
-			app = requestData.get<std::string> ("application");
-		}
-		catch (cppcms::json::bad_value_cast & e)
-		{
-			RootApp::setBadRequest (resp, "You have to supply an application.", "ENTRY_MISSING_APPLICATION");
-			throw exception::EntryValidationException (); // quit early
-		}
-
-		try
-		{
-			scope = requestData.get<std::string> ("scope");
-		}
-		catch (cppcms::json::bad_value_cast & e)
-		{
-			RootApp::setBadRequest (resp, "You have to supply a scope.", "ENTRY_MISSING_SCOPE");
-			throw exception::EntryValidationException (); // quit early
-		}
-
-		try
-		{
-			slug = requestData.get<std::string> ("slug");
-		}
-		catch (cppcms::json::bad_value_cast & e)
-		{
-			RootApp::setBadRequest (resp, "You have to supply a slug.", "ENTRY_MISSING_SLUG");
-			throw exception::EntryValidationException (); // quit early
-		}
-	}
-
+	entry_input_data input_data;
 	try
 	{
-		title = requestData.get<std::string> ("title");
+		this->retrieveEntryInputData (resp, requestData, input_data, keyName.empty ());
 	}
-	catch (cppcms::json::bad_value_cast & e)
+	catch (kdbrest::exception::InvalidPostDataFormatException & e)
 	{
-		RootApp::setBadRequest (resp, "You have to supply a title.", "ENTRY_MISSING_TITLE");
-		throw exception::EntryValidationException (); // quit early
+		throw exception::EntryValidationException (); // error is set already
+	}
+	catch (kdbrest::exception::EntryValidationException & e)
+	{
+		throw; // error is set already
 	}
 
+	// validate the input data
 	try
 	{
-		description = requestData.get<std::string> ("description");
+		this->validateEntryInputData (resp, input_data, keyName.empty ());
 	}
-	catch (cppcms::json::bad_value_cast & e)
+	catch (kdbrest::exception::EntryValidationException & e)
 	{
-		RootApp::setBadRequest (resp, "You have to supply a description.", "ENTRY_MISSING_DESCRIPTION");
-		throw exception::EntryValidationException (); // quit early
+		throw; // error is set already
 	}
 
-	try
-	{
-		conf_format = requestData.get<std::string> ("configuration.format");
-	}
-	catch (cppcms::json::bad_value_cast & e)
-	{
-		RootApp::setBadRequest (resp, "You have to supply a configuration format.", "ENTRY_MISSING_CONFIGURATION_FORMAT");
-		throw exception::EntryValidationException (); // quit early
-	}
-
-	try
-	{
-		conf_value = requestData.get<std::string> ("configuration.value");
-	}
-	catch (cppcms::json::bad_value_cast & e)
-	{
-		RootApp::setBadRequest (resp, "You have to supply a configuration snippet.", "ENTRY_MISSING_CONFIGURATION_VALUE");
-		throw exception::EntryValidationException (); // quit early
-	}
-
-	if (requestData.type ("tags") != cppcms::json::is_undefined)
-	{
-		tags = requestData["tags"].array ();
-	}
-
-	// validate inputs
-	if (keyName.empty ())
-	{
-		if (!std::regex_match (organization, regex_parts))
-		{
-			RootApp::setBadRequest (resp, "The submitted organization has an invalid format.", "ENTRY_INVALID_ORGANIZATION");
-			throw exception::EntryValidationException (); // quit early
-		}
-		if (!std::regex_match (app, regex_parts))
-		{
-			RootApp::setBadRequest (resp, "The submitted application has an invalid format.", "ENTRY_INVALID_APPLICATION");
-			throw exception::EntryValidationException (); // quit early
-		}
-		if (!std::regex_match (scope, regex_parts))
-		{
-			RootApp::setBadRequest (resp, "The submitted scope has an invalid format.", "ENTRY_INVALID_SCOPE");
-			throw exception::EntryValidationException (); // quit early
-		}
-		if (!std::regex_match (slug, regex_parts))
-		{
-			RootApp::setBadRequest (resp, "The submitted slug has an invalid format.", "ENTRY_INVALID_SLUG");
-			throw exception::EntryValidationException (); // quit early
-		}
-	}
-
-	if (!std::regex_match (title, regex_title))
-	{
-		RootApp::setBadRequest (resp,
-					"The submitted title has an invalid format. It has to be at least 3 signs long and may not contain "
-					"line breakings.",
-					"ENTRY_INVALID_TITLE");
-		throw exception::EntryValidationException (); // quit early
-	}
-	if (!std::regex_match (description, regex_description))
-	{
-		RootApp::setBadRequest (resp, "The submitted description has an invalid format. It has to be at least 3 signs long.",
-					"ENTRY_INVALID_DESCRIPTION");
-		throw exception::EntryValidationException (); // quit early
-	}
-	for (auto & tag : tags)
-	{
-		if (tag.type () != cppcms::json::is_string || !std::regex_match (tag.str (), regex_tags))
-		{
-			RootApp::setBadRequest (resp,
-						"You have supplied a malformed tag. Tags may only consist of lower case "
-						"letters, numbers, dots (.) and dashes (-).",
-						"ENTRY_INVALID_TAG");
-			throw exception::EntryValidationException (); // quit early
-		}
-	}
-
+	// convert tags to vector<string>
 	std::vector<std::string> taglist;
-	for (auto & tag : tags)
+	for (auto & tag : input_data.tags)
 	{
-		taglist.push_back (tag.str ());
+		taglist.push_back (tag.str ()); // at this point we know that tag is a string
 	}
 
+	// retrieve current user for author information
 	model::User currentUser ("");
 	try
 	{
@@ -662,21 +682,24 @@ model::Entry DatabaseApp::buildAndValidateEntry (cppcms::http::request & req, cp
 		throw exception::EntryValidationException (); // quit early
 	}
 
-	std::string entryKey = organization + "/" + app + "/" + scope + "/" + slug;
+	// build the entry
+	std::string entryKey = input_data.organization + "/" + input_data.application + "/" + input_data.scope + "/" + input_data.slug;
 	if (!keyName.empty ())
 	{
 		entryKey = keyName;
 	}
 	model::Entry entry (entryKey);
-	entry.setTitle (title);
-	entry.setDescription (description);
+	entry.setTitle (input_data.title);
+	entry.setDescription (input_data.description);
 	entry.setCreatedAt (static_cast<long> (time (0)));
 	entry.setAuthor (currentUser.getUsername ());
 	entry.setTags (taglist);
 
+	// try to import the submitted snippet into the internal format
 	try
 	{
-		model::ImportedConfig cfg = service::ConvertEngine::instance ().import (conf_value, conf_format, entry);
+		model::ImportedConfig cfg =
+			service::ConvertEngine::instance ().import (input_data.conf_value, input_data.conf_format, entry);
 		auto subkeys = cfg.getKeySet ();
 		entry.addSubkeys (subkeys.begin (), subkeys.end ());
 		entry.setUploadPlugin (cfg.getPluginformat ().getPluginname ());
@@ -694,6 +717,7 @@ model::Entry DatabaseApp::buildAndValidateEntry (cppcms::http::request & req, cp
 		throw exception::EntryValidationException ();
 	}
 
+	// and finally return the built entry object
 	return entry;
 }
 
@@ -882,6 +906,46 @@ void DatabaseApp::generateAndSendEntryList (cppcms::http::request & req, cppcms:
 	}
 
 	RootApp::setOk (resp, data, MIME_APPLICATION_JSON);
+}
+
+/**
+ * @brief increases the view count of an entry by 1
+ *
+ * @param entry the entry to change
+ */
+void DatabaseApp::addViewToEntry (model::Entry & entry) const
+{
+	entry.addViews (1);
+	try
+	{
+		(void)service::StorageEngine::instance ().updateEntry (entry);
+	}
+	catch (kdbrest::exception::EntryNotFoundException & e)
+	{
+		// do not handle exception
+	}
+}
+
+/**
+ * @brief copies meta data from one entry to another
+ *
+ * does not copy the key of the entry itself, only meta data
+ * and the configuration snippet. does also not copy data
+ * that can only be changed by the system (creation date,
+ * author and view count).
+ *
+ * @param from source entry
+ * @param to target entry
+ */
+void DatabaseApp::copyEntryData (model::Entry & from, model::Entry & to) const
+{
+	to.setDescription (from.getDescription ()); // set new description
+	to.setTitle (from.getTitle ());		    // set new title
+	to.setTags (from.getTags ());		    // set new tags
+	to.getSubkeys ().clear ();		    // clear old config
+	auto subkeys = from.getSubkeys ();
+	to.addSubkeys (subkeys.begin (), subkeys.end ()); // replace config
+	to.setUploadPlugin (from.getUploadPlugin ());     // replace old upload format
 }
 
 } // namespace kdbrest
