@@ -153,10 +153,9 @@ model::ConfigFormat ConvertEngine::exportTo (model::PluginFormat & plugin, model
 	model::ConfigFormat result;
 
 	// create temporary file used in communication with plugin
-	boost::filesystem::path tmpPath = boost::filesystem::unique_path ();
-	std::string tmpPathStr = "/tmp/" + tmpPath.string ();
+	boost::filesystem::path tmpPath = boost::filesystem::temp_directory_path () / boost::filesystem::unique_path ();
 	Key pathKey (entry.getName (), KEY_END);
-	pathKey.setString (tmpPathStr);
+	pathKey.setString (tmpPath.string ());
 
 	Modules modules;
 
@@ -175,7 +174,7 @@ model::ConfigFormat ConvertEngine::exportTo (model::PluginFormat & plugin, model
 		throw exception::UnsupportedConfigurationFormatException ();
 	}
 
-	std::ifstream tmpFile (tmpPathStr);
+	std::ifstream tmpFile (tmpPath.string ());
 	if (tmpFile.is_open ())
 	{
 		std::stringstream strStream;
@@ -186,7 +185,7 @@ model::ConfigFormat ConvertEngine::exportTo (model::PluginFormat & plugin, model
 		tmpFile.close ();
 	}
 
-	std::remove (tmpPathStr.c_str ());
+	std::remove (tmpPath.c_str ());
 
 	if (result.getConfig ().empty ())
 	{
@@ -286,12 +285,11 @@ model::ImportedConfig ConvertEngine::import (const std::string & config, const s
 		model::PluginFormat pluginFormat = this->findSuitablePlugin (format);
 
 		// create temporary file used in communication with plugin
-		boost::filesystem::path tmpPath = boost::filesystem::unique_path ();
-		std::string tmpPathStr = "/tmp/" + tmpPath.string ();
+		boost::filesystem::path tmpPath = boost::filesystem::temp_directory_path () / boost::filesystem::unique_path ();
 		Key pathKey (forEntry.getName (), KEY_END);
-		pathKey.setString (tmpPathStr);
+		pathKey.setString (tmpPath.string ());
 
-		std::ofstream tmpFile (tmpPathStr);
+		std::ofstream tmpFile (tmpPath.string ());
 		if (tmpFile.is_open ())
 		{
 			tmpFile << config;
@@ -302,7 +300,7 @@ model::ImportedConfig ConvertEngine::import (const std::string & config, const s
 			PluginPtr export_plugin = modules.load (pluginFormat.getPluginname ());
 			export_plugin->get (ks, pathKey);
 
-			std::remove (tmpPathStr.c_str ());
+			std::remove (tmpPath.c_str ());
 
 			if (ks.size () > 0)
 			{
