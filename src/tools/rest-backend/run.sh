@@ -1,3 +1,3 @@
-#!/bin/bash
-./rest-backend -c rest-backend-config.json &
-echo $! > rest-backend-running.pid
+#!/bin/sh
+@CMAKE_INSTALL_PREFIX@/@install_directory@/@tool@ -c @CMAKE_INSTALL_PREFIX@/@install_directory@/@tool@-config.json &
+echo $! > /run/elektra-@tool@.pid

@@ -389,6 +389,12 @@ set (TARGET_TOOL_EXEC_FOLDER
 		"This folder (below prefix) will be used to install additional kdb-tools"
     )
 
+set (TARGET_TOOL_DATA_FOLDER
+		"share/elektra/tool_data"
+		CACHE STRING
+		"The folder (below prefix) where to install tool data files."
+    )
+
 set (TARGET_TEST_DATA_FOLDER
 		"share/elektra/test_data"
 		CACHE STRING

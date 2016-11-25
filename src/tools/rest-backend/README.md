@@ -25,19 +25,20 @@ For a REST API with such an interface, another tool will be published.
 
 ## Run and Configure ##
 
-To run the `rest-backend` we need to find out where it has been installed to.
+To run the `@tool@` we need to find out where it has been installed to.
 This can be done by running the command `kdb list-tools` which will output a list of
 installed tools and something like `External tools are located in /usr/local/lib/elektra/tool_exec`.
-With this path we can run the service like `cd /usr/local/lib/elektra/tool_exec/ && sh run-rest-backend.sh`.
-An alternative is to make use of the `kdb` tool and run `kdb run-rest-backend.sh`.
+With this path we can run the service like `cd /usr/local/lib/elektra/tool_exec/ && sh run-@tool@`.
+An alternative is to make use of the `kdb` tool and run `kdb run-@tool@`.
 
-The REST service can also be configured. The file `rest-backend-config.js` in the
-same path contains the CppCMS configuration (e.g. where the server listens to).
+The REST service can also be configured. The file `@tool@-config.js` in the
+path `@CMAKE_INSTALL_PREFIX@/@install_directory@`
+contains the CppCMS configuration (e.g. where the server listens to).
 Detailed information about how to configure the REST service can be found on the
 [CppCMS website](http://cppcms.com/wikipp/en/page/cppcms_1x_config).
 
-To stop the service, run `sh stop-rest-backend.sh` in the same path
-or `kdb stop-rest-backend.sh` from anywhere.
+To stop the service, run `sh stop-@tool@` in the directory where the start script is located
+or `kdb stop-@tool@` from anywhere.
 
 ### Configure as service ###
 
@@ -46,33 +47,34 @@ To configure the rest-backend as service, it is possible to use `systemd` on mos
 1) Create a new service file with the following command
 (and make sure the paths of `ExecStart` match your installation of Elektra):
 ```
-cat > /etc/systemd/system/rest-backend.service << EOF
+cat > /etc/systemd/system/@tool@.service << EOF
 [Unit]
-Description=Start the REST-backend for sharing of configuration snippets
+Description=Start the REST backend for sharing of configuration snippets
 Requires=network.target
 After=network.target
 
 [Service]
 Type=simple
 Restart=always
-ExecStart=/usr/local/lib/elektra/tool_exec/rest-backend -c /usr/local/lib/elektra/tool_exec/rest-backend-config.js
+ExecStart=kdb run-@tool@
+ExecStop=kdb stop-@tool@
 
 [Install]
 WantedBy=multi-user.target
 EOF
 ```
 2) Reload the configuration of `systemctl` with `systemctl daemon-reload`.
-3) Enable the rest-backend service with `systemctl enable rest-backend.service`, a symlink should be created.
-4) Make sure the service is enabled with `systemctl is-enabled rest-backend.service`.
-5) Restart the rest-backend service with `systemctl restart rest-backend.service`. 
-If everything went fine, the service should be reachable and `systemctl status rest-backend.service`
+3) Enable the rest-backend service with `systemctl enable @tool@.service`, a symlink should be created.
+4) Make sure the service is enabled with `systemctl is-enabled @tool@.service`.
+5) Restart the rest-backend service with `systemctl restart @tool@.service`.
+If everything went fine, the service should be reachable and `systemctl status @tool@.service`
 should print information about the running service (PID, etc).
 
 ## Compiling and Installation ##
 
 ### Dependencies ###
 
-In order to compile and use the new `rest-backend` there are a few dependencies which must be installed. 
+In order to compile and use the new `@tool@` there are a few dependencies which must be installed. 
 
 - CppCMS version 1.0.0 or higher
 - Boost version 1.45 or higher
@@ -98,7 +100,7 @@ Compile Elektra as normal as per the [COMPILE document](http://libelektra.org/tr
 but make sure to include the `rest-backend` tool using the `-DTOOLS` flag.
 
 For instance:
-`-DTOOLS=ALL` or `-DTOOLS=rest-backend`
+`-DTOOLS=ALL` or `-DTOOLS=@tool@`
 
 Following options are available at compile time:
 - `REST_REPOSITORY_CONFIGS` representing a path to the location where configuration snippets should be stored.

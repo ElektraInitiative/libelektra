@@ -18,9 +18,23 @@ else ()
     set (REST_REPOSITORY_CONFIGS "dir/configs" CACHE STRING "Path to be used to store configuration snippets")
     set (REST_REPOSITORY_USERS "dir/users" CACHE STRING "Path to be used to store user information")
 
+    set (install_directory ${TARGET_TOOL_DATA_FOLDER}/${tool})
+
     configure_file (
         "${CMAKE_CURRENT_SOURCE_DIR}/config.hpp.in"
         "${CMAKE_CURRENT_BINARY_DIR}/config.hpp"
+    )
+    configure_file (
+        "${CMAKE_CURRENT_SOURCE_DIR}/run.sh"
+        "${CMAKE_CURRENT_BINARY_DIR}/run-${tool}"
+    )
+    configure_file (
+        "${CMAKE_CURRENT_SOURCE_DIR}/stop.sh"
+        "${CMAKE_CURRENT_BINARY_DIR}/stop-${tool}"
+    )
+    configure_file (
+        "${CMAKE_CURRENT_SOURCE_DIR}/README.md"
+        "${CMAKE_CURRENT_BINARY_DIR}/README.md"
     )
 
     file (GLOB rest-backend_HDRS *.hpp)
@@ -42,12 +56,12 @@ else ()
     target_link_libraries (${tool} ${CPPCMS_LIBRARY} ${Boost_LIBRARIES} ${LIBJWT_LIBRARY} ${OPENSSL_LIBRARIES})
     target_link_libraries (${tool} elektra-full elektratools)
 
-    install (TARGETS ${tool} DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
-    install (FILES rest-backend-config.json DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
-    install (FILES run.sh DESTINATION ${TARGET_TOOL_EXEC_FOLDER} RENAME run-${tool}.sh)
-    install (FILES stop.sh DESTINATION ${TARGET_TOOL_EXEC_FOLDER} RENAME stop-${tool}.sh)
+    install (TARGETS ${tool} DESTINATION ${install_directory})
+    install (FILES ${tool}-config.json DESTINATION ${install_directory})
+    install (PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/run-${tool} ${CMAKE_CURRENT_BINARY_DIR}/stop-${tool}
+             DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
 
-    generate_manpage (kdb-${tool} FILENAME ${CMAKE_CURRENT_SOURCE_DIR}/README.md)
+    generate_manpage (elektra-${tool} FILENAME ${CMAKE_CURRENT_BINARY_DIR}/README.md)
     
     if (ENABLE_TESTING)
         add_subdirectory (tests)
