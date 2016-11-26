@@ -1,5 +1,23 @@
+/*
+Visualization of concepts as explained in documentation.
+
+To compile it run:
+	dot -Tpdf doc.dot -o doc.pdf
+
+clusters represent a markdown file (or could also be another document artefact)
+
+Naming conventions:
+	i<name>: abstraction of concept (rough idea of it)
+	e<name>: end of document (needed for "See also" section)
+	l<name>: link to document
+	<name>:  all other nodes represent a concept
+
+Dot syntax:
+	Dependencies are conceptA -> conceptB
+	See also comments in cluster0
+*/
 digraph G {
-	start [shape=Mdiamond];
+	start [shape=Mdiamond]; // readers start here
 	start -> compile;
 	start -> why;
 	install -> bigpicture;
@@ -10,11 +28,12 @@ digraph G {
 	install -> application_integration -> api;
 	iapi -> api;
 	subgraph cluster0 {
-		node [style=filled,color=white];
-		style=filled;
+		node [style=filled,color=white]; // only for style, can be removed
+		style=filled;                    // only for style, can be removed
+		color=lightgrey;                 // only for style, can be removed
+		// dependencies within document (obviously has to be linear):
 		why -> KDB -> global -> iplugins -> ispecify -> syntax -> semantics -> imount -> ikdb -> ewhy;
-		color=lightgrey;
-		label = "WHY.md";
+		label = "WHY.md";                // name of document
 	}
 	ewhy -> bigpicture;
 	ewhy -> compile;
