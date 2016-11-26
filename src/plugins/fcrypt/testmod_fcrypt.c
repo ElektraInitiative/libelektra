@@ -131,7 +131,7 @@ static void test_file_operations ()
 	if (plugin)
 	{
 		KeySet * data = ksNew (0, KS_END);
-		char * tmpFile = elektraFilename ();
+		const char * tmpFile = elektraFilename ();
 		if (tmpFile)
 		{
 			// prepare test file to be encrypted
@@ -151,7 +151,6 @@ static void test_file_operations ()
 			succeed_if (isTestFileCorrect (tmpFile) == -1, "postgetstorage did not encrypt the file again");
 
 			remove (tmpFile);
-			elektraFree (tmpFile);
 		}
 
 		ksDel (data);
