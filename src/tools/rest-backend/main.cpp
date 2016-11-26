@@ -6,10 +6,11 @@
  * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
  */
 
+#include <iostream>
+
 #include <cppcms/application.h>
 #include <cppcms/applications_pool.h>
 #include <cppcms/service.h>
-#include <iostream>
 
 #include <root_application.hpp>
 #include <service.hpp>
@@ -22,7 +23,7 @@
  * @return 0 in case the service terminated gracefullly,
  *		   >0 otherwise
  */
-int main (int argc, char ** argv)
+int main ()
 {
 	// force caching of database
 	std::cout << "Pre-caching data..." << std::endl;
@@ -32,7 +33,7 @@ int main (int argc, char ** argv)
 	std::cout << "Starting REST API server..." << std::endl;
 	try
 	{
-		cppcms::service srv (argc, argv);
+		cppcms::service srv (kdbrest::service::ConfigEngine::instance ().loadApplicationConfiguration ());
 		srv.applications_pool ().mount (cppcms::applications_factory<kdbrest::RootApp> ());
 		srv.run ();
 	}

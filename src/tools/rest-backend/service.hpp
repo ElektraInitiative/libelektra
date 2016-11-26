@@ -15,6 +15,7 @@
 
 #include <boost/thread/locks.hpp>
 #include <boost/thread/shared_mutex.hpp>
+#include <cppcms/json.h>
 
 #include <config.hpp>
 #include <exceptions.hpp>
@@ -150,6 +151,22 @@ public:
 
 private:
 	std::vector<kdbrest::model::PluginFormat> m_enabledFormats;
+};
+
+/**
+ * @brief service offering application configuration retrieval
+ * 
+ * this service can be used to load the application configuration
+ * on start up. it is based on elektra.
+ */
+class ConfigEngine : public singleton<ConfigEngine>
+{
+
+public:
+	cppcms::json::value loadApplicationConfiguration () const;
+
+private:
+	void setValue (cppcms::json::value & config, std::string path, kdb::Key & key) const;
 };
 
 } // namespace service

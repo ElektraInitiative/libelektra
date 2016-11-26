@@ -9,6 +9,9 @@
 #ifndef ELEKTRA_REST_CONFIG_HPP
 #define ELEKTRA_REST_CONFIG_HPP
 
+// The KDB key where the application configuration is stored at.
+#define ELEKTRA_REST_CONFIG_ROOT "/sw/elektra/@tool@"
+
 // The REST API version
 #define ELEKTRA_REST_API_VERSION 1
 
