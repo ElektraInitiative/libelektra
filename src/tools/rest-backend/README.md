@@ -80,25 +80,112 @@ Simply set the desired settings as keys in the key database and you are done!
 The service itself offers quite some configuration options as well.
 In detail, the options (without the base key `/sw/elektra/@tool@/backend`) are:
 
-- `api_specification/raw` (string): A link to the blueprint describing the API.
-- `api_specification/html` (string): A link to the compiled blueprint describing the API.
-- `jwt/encryption_key` (string): A secret string used to encrypt session tokens (JWT).
-- `jwt/expiration_time` (int): The number of seconds a JWT is valid from its creation.
-- `kdb/path/configs` (string): The root path being used to store configuration snippet entries, must start with a namespace.
-- `kdb/path/users` (string): The root path being used to store user entries, must start with a namespace.
-- `output/default/entry/sort` (enum["asc","desc"]): The default sort direction being used for requests against configuration snippet entry resources.
-- `output/default/entry/sortby` (enum["key", "organization", "application", "scope", "slug", "title", "author", "created_at"]): The default sort criteria being used for requests against configuration snippet entry resources.
-- `output/default/entry/filterby` (enum["all", "key", "title", "description", "author", "tags"]): The default filter criteria being used for requests against configuration snippet entry resources.
-- `output/default/user/sort` (enum["asc","desc"]): The default sort direction being used for requests against user entry resources.
-- `output/default/user/sortby` (enum["username", "email", "created_at"]): The default sort criteria being used for requests against user entry resources.
-- `output/default/user/filterby` (enum["all", "username", "email"]): The default filter criteria being used for requests against user entry resources.
-- `permissions/entry/create` (int): The required rank a user needs to be able to create new configuration snippet entries.
-- `permissions/entry/edit` (int): The required rank a user needs to be able to edit any configuration snippet entry (also from other users).
-- `permissions/entry/delete` (int): The required rank a user needs to be able to delete any configuration snippet entry (also from other users).
-- `permissions/user/view` (int): The required rank a user needs to be able to view account details of other users.
-- `permissions/user/edit` (int): The required rank a user needs to be able to edit account details of other users.
-- `permissions/user/delete` (int): The required rank a user needs to be able to delete user accounts of other users.
+```
+[api_specification/raw]
+check/type = string
+description = A link to the blueprint describing the API.
+example = https://doc.libelektra.org/api/snippet-sharing.md
 
+[api_specification/html]
+check/type = string
+description = A link to the compiled blueprint describing the API.
+example = https://doc.libelektra.org/api/snippet-sharing.html
+
+[jwt/encryption_key]
+check/type = string
+description = A secret string used to encrypt session tokens (JWT).
+example = al3h120d8a_19s
+
+[jwt/expiration_time]
+check/type = int
+description = The number of seconds a JWT is valid from its creation.
+example = 3600
+default = 7200
+
+[kdb/path/configs]
+check/type = string
+description = The root path being used to store configuration snippet entries, must start with a namespace.
+example = user/@tool@/configs
+default = dir/configs
+
+[kdb/path/users]
+check/type = string
+description = The root path being used to store user entries, must start with a namespace.
+example = user/@tool@/users
+default = dir/users
+
+[output/default/entry/sort]
+check/enum = 'asc', 'desc'
+description = The default sort direction being used for requests against configuration snippet entry resources.
+default = 'asc'
+
+[output/default/entry/sortby]
+check/enum = 'key', 'organization', 'application', 'scope', 'slug', 'title', 'author', 'created_at'
+description = The default sort criteria being used for requests against configuration snippet entry resources.
+default = 'key'
+
+[output/default/entry/filterby]
+check/enum = 'all', 'key', 'title', 'description', 'author', 'tags'
+description = The default filter criteria being used for requests against configuration snippet entry resources.
+default = 'all'
+
+[output/default/user/sort]
+check/enum  = 'asc', 'desc'
+description = The default sort direction being used for requests against user entry resources.
+default = 'asc'
+
+[output/default/user/sortby]
+check/enum = 'username', 'email', 'created_at'
+description = The default sort criteria being used for requests against user entry resources.
+default = 'username'
+
+[output/default/user/filterby]
+check/enum = 'all', 'username', 'email'
+description = The default filter criteria being used for requests against user entry resources.
+default = 'all'
+
+[permissions/entry/create]
+check/type = int
+check/type/min = 0
+check/type/max = 100
+description = The required rank a user needs to be able to create new configuration snippet entries.
+default = 10
+
+[permissions/entry/edit]
+check/type = int
+check/type/min = 0
+check/type/max = 100
+description = The required rank a user needs to be able to edit any configuration snippet entry (also from other users).
+default = 50
+
+[permissions/entry/delete]
+check/type = int
+check/type/min = 0
+check/type/max = 100
+description = The required rank a user needs to be able to delete any configuration snippet entry (also from other users).
+default = 50
+
+[permissions/user/view
+check/type = int
+check/type/min = 0
+check/type/max = 100
+description = The required rank a user needs to be able to view account details of other users.
+default = 100
+
+[permissions/user/edit]
+check/type = int
+check/type/min = 0
+check/type/max = 100
+description = The required rank a user needs to be able to edit account details of other users.
+default = 100
+
+[permissions/user/delete]
+check/type = int
+check/type/min = 0
+check/type/max = 100
+description = The required rank a user needs to be able to delete user accounts of other users.
+default = 100
+```
 
 ### Configure as service ###
 
@@ -141,18 +228,33 @@ In order to compile and use the new `@tool@` there are a few dependencies which 
 - LibJWT version 1.5 or higher
 - OpenSSL
 
-`CppCMS` itself requires following dependencies:
+#### CppCMS ####
 
+The CppCMS requires following dependencies:
+
+- Boost library
 - Zlib library
 - PCRE library
 - Python 2.4 or higher, but not python 3
 
-To install CppCMS, run the following steps:
-- Install base dependencies: `sudo apt-get install libboost-all-dev libpcre3-dev zlib1g-dev libgcrypt11-dev libicu-dev python`
+To install them via `apt` use:
+`sudo apt-get install libboost-all-dev libpcre3-dev zlib1g-dev libgcrypt11-dev libicu-dev python`
+
+To install CppCMS, there are two options:
+
+- Download and build from source
+- Install via dependency manager
+
+To install CppCMS manually without dependency manager:
 - Download (latest) CppCMS from  [SourceForge](https://sourceforge.net/projects/cppcms/files/cppcms/)
 - Extract CppCMS: `tar -xjf cppcms-1.x.x.tar.bz2 && cd cppcms-1.x.x` (replace 1.x.x with your version)
 - Configure the build: `mkdir build && cd build && cmake ..`
 - Execute the build and run tests: `make && make test && make install`
+
+Further build and installation information can be found on their
+[website](http://cppcms.com/wikipp/en/page/cppcms_1x_build).
+It contains also a [guide](http://cppcms.com/wikipp/en/page/apt)
+explaining the installation through a dependency manager.
 
 ### Compiling ###
 
