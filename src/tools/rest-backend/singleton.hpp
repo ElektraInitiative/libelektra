@@ -23,6 +23,12 @@ protected:
 	singleton ()
 	{
 	}
+	singleton (T &&)
+	{
+	}
+	singleton (const T &)
+	{
+	}
 };
 
 #endif

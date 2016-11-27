@@ -35,7 +35,7 @@ namespace service
  *
  * @return an object containing the format and the name of the suitable plugin
  */
-model::PluginFormat ConvertEngine::findSuitablePlugin (const std::string & format)
+model::PluginFormat ConvertEngine::findSuitablePlugin (const std::string & format) const
 {
 	using namespace kdb;
 	using namespace kdb::tools;
@@ -114,7 +114,7 @@ std::vector<model::PluginFormat> ConvertEngine::loadEnabledFormats ()
  * @param entry a snippet entry
  * @return an object containing the converted snippet as well as the used format & plugin
  */
-model::ConfigFormat ConvertEngine::exportTo (const std::string format, model::Entry & entry)
+model::ConfigFormat ConvertEngine::exportTo (const std::string format, model::Entry & entry) const
 {
 	try
 	{
@@ -145,7 +145,7 @@ model::ConfigFormat ConvertEngine::exportTo (const std::string format, model::En
  *
  * @return an object containing the converted snippet as well as the used format & plugin
  */
-model::ConfigFormat ConvertEngine::exportTo (model::PluginFormat & plugin, model::Entry & entry)
+model::ConfigFormat ConvertEngine::exportTo (const model::PluginFormat & plugin, model::Entry & entry) const
 {
 	using namespace kdb;
 	using namespace kdb::tools;
@@ -237,7 +237,7 @@ model::ConfigFormat ConvertEngine::exportTo (model::PluginFormat & plugin, model
  * @return A vector containing all conversions with the information
  * which plugin created them and which format they are.
  */
-std::vector<model::ConfigFormat> ConvertEngine::exportToAll (model::Entry & entry)
+std::vector<model::ConfigFormat> ConvertEngine::exportToAll (model::Entry & entry) const
 {
 	using namespace kdb;
 	using namespace kdb::tools;
@@ -274,7 +274,7 @@ std::vector<model::ConfigFormat> ConvertEngine::exportToAll (model::Entry & entr
  * @throws kdbrest::exception::ImportFormatUnknownException in case there
  * is no suitable storage plugin for the conversion available.
  */
-model::ImportedConfig ConvertEngine::import (const std::string & config, const std::string & format, model::Entry & forEntry)
+model::ImportedConfig ConvertEngine::import (const std::string & config, const std::string & format, const model::Entry & forEntry) const
 {
 	using namespace kdb;
 	using namespace kdb::tools;

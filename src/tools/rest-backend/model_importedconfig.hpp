@@ -44,7 +44,7 @@ public:
      * @param pf The PluginFormat to be used
      * @param ks The configuration as kdb::Keys in a kdb::KeySet
      */
-	inline ImportedConfig (const PluginFormat & pf, kdb::KeySet & ks) : m_pluginformat (pf), m_ks (ks)
+	ImportedConfig (const PluginFormat & pf, const kdb::KeySet & ks) : m_pluginformat (pf), m_ks (ks)
 	{
 	}
 
@@ -53,7 +53,7 @@ public:
 	 * 
      * @return PluginFormat that is used
      */
-	PluginFormat & getPluginformat ()
+	PluginFormat getPluginformat () const
 	{
 		return m_pluginformat;
 	}
@@ -63,7 +63,7 @@ public:
 	 * 
      * @return kdb::KeySet that contains the configuration keys
      */
-	kdb::KeySet & getKeySet ()
+	kdb::KeySet getKeySet () const
 	{
 		return m_ks;
 	}

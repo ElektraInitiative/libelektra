@@ -58,7 +58,7 @@ cppcms::json::value ConfigEngine::loadApplicationConfiguration () const
  * @param path remaining path to set
  * @param key the elektra key containing the value to set
  */
-void ConfigEngine::setValue (cppcms::json::value & config, std::string path, kdb::Key & key) const
+void ConfigEngine::setValue (cppcms::json::value & config, const std::string path, const kdb::Key & key) const
 {
 	// check if the key contains an array
 	std::regex array_regex (REGEX_CONF_KEY);

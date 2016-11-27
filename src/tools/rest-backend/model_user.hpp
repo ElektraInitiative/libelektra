@@ -46,7 +46,7 @@ public:
 	 * 
      * @param key A kdb::Key object
      */
-	inline User (kdb::Key & k) : kdb::Key (k)
+	User (const kdb::Key & k) : kdb::Key (k)
 	{
 	}
 
@@ -59,7 +59,7 @@ public:
 	 * 
      * @param username The username to be used for the key
      */
-	inline User (std::string username) : kdb::Key (Config::kdb_path_users + std::string ("/") + username, KEY_END)
+	User (const std::string username) : kdb::Key (Config::kdb_path_users + std::string ("/") + username, KEY_END)
 	{
 	}
 

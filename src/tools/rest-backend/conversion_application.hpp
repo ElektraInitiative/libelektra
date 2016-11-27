@@ -55,7 +55,7 @@ public:
 	virtual void formats ();
 
 private:
-	void retrieveConversionInputData (cppcms::http::response & response, cppcms::json::value & requestData,
+	void retrieveConversionInputData (cppcms::http::response & response, const cppcms::json::value & requestData,
 					  conversion_input_data & input_data) const;
 };
 

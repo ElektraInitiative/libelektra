@@ -32,7 +32,7 @@ public:
 	/**
 	 * @brief standard constructor
 	 */
-	inline PluginFormat ()
+	PluginFormat ()
 	{
 	}
 
@@ -41,7 +41,7 @@ public:
 	 * 
      * @param pf The foreign PluginFormat
      */
-	inline PluginFormat (const PluginFormat & pf)
+	PluginFormat (const PluginFormat & pf)
 	{
 		m_fileformat = pf.m_fileformat;
 		m_pluginname = pf.m_pluginname;
@@ -55,8 +55,8 @@ public:
      * @param plugin The pluginname as string (e.g. ni, xmltool)
 	 * @param statuses The plugin statuses as vector (e.g. maintained, limited)
      */
-	inline PluginFormat (const std::string & format, const std::string & plugin,
-			     const std::vector<std::string> statuses = std::vector<std::string> ())
+	PluginFormat (const std::string & format, const std::string & plugin,
+		      const std::vector<std::string> statuses = std::vector<std::string> ())
 	{
 		if (format.empty () || plugin.empty ())
 		{
@@ -72,7 +72,7 @@ public:
 	 * 
      * @return File format as string
      */
-	std::string getFileformat ()
+	std::string getFileformat () const
 	{
 		return m_fileformat;
 	}
@@ -82,7 +82,7 @@ public:
 	 * 
      * @return Plugin name as string
      */
-	std::string getPluginname ()
+	std::string getPluginname () const
 	{
 		return m_pluginname;
 	}
@@ -92,7 +92,7 @@ public:
 	 * 
 	 * @return All plugin statuses in a vector
 	 */
-	std::vector<std::string> getPluginstatuses ()
+	std::vector<std::string> getPluginstatuses () const
 	{
 		return m_pluginstatuses;
 	}

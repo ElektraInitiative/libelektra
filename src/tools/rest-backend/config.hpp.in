@@ -125,6 +125,11 @@ public:
 	static std::string api_specification_raw;
 	static std::string api_specification_html;
 
+private:
+	Config()
+	{
+	}
+
 };
 
 }

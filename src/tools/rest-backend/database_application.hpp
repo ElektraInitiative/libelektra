@@ -111,9 +111,10 @@ private:
 	void handleUpdate (cppcms::http::request & request, cppcms::http::response & response, const std::string & key) const;
 	void handleDelete (cppcms::http::request & request, cppcms::http::response & response, const std::string & key) const;
 
-	void retrieveEntryInputData (cppcms::http::response & response, cppcms::json::value & requestData, entry_input_data & input_data,
-				     bool withKeyParts = false) const;
-	void validateEntryInputData (cppcms::http::response & response, entry_input_data & input_data, bool withKeyParts = false) const;
+	void retrieveEntryInputData (cppcms::http::response & response, const cppcms::json::value & requestData,
+				     entry_input_data & input_data, const bool withKeyParts = false) const;
+	void validateEntryInputData (cppcms::http::response & response, const entry_input_data & input_data,
+				     const bool withKeyParts = false) const;
 	model::Entry buildAndValidateEntry (cppcms::http::request & request, cppcms::http::response & response,
 					    const std::string keyName = std::string ()) const;
 

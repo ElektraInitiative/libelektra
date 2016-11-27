@@ -46,7 +46,6 @@ public:
 
 	static bool validateAuthentication (cppcms::http::request & request, cppcms::http::response & response, const int rank = 0,
 					    const std::string orUser = std::string ());
-
 	static model::User getCurrentUser (cppcms::http::request & request);
 
 private:

@@ -230,7 +230,7 @@ void UserApp::handle (std::string username)
  * @param resp a response
  * @param username the username of the user whose information shall be retrieved
  */
-void UserApp::handleGetUnique (cppcms::http::response & resp, std::string username) const
+void UserApp::handleGetUnique (cppcms::http::response & resp, const std::string username) const
 {
 	try
 	{
@@ -420,7 +420,8 @@ void UserApp::handleInsert (cppcms::http::request & req, cppcms::http::response 
  * @param username the username of the user who shall be updated
  * @param canSetRank whether the currently authenticated user can update the rank or not
  */
-void UserApp::handleUpdate (cppcms::http::request & req, cppcms::http::response & resp, std::string username, bool canSetRank) const
+void UserApp::handleUpdate (cppcms::http::request & req, cppcms::http::response & resp, const std::string username,
+			    const bool canSetRank) const
 {
 	// check if the users exists
 	if (!service::StorageEngine::instance ().userExists (username))
@@ -522,7 +523,7 @@ void UserApp::handleUpdate (cppcms::http::request & req, cppcms::http::response 
  * @param resp a response
  * @param username the username of the user who shall be deleted
  */
-void UserApp::handleDelete (cppcms::http::response & resp, std::string username) const
+void UserApp::handleDelete (cppcms::http::response & resp, const std::string username) const
 {
 	try
 	{

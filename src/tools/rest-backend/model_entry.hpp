@@ -53,7 +53,7 @@ public:
 	 * 
      * @param key An object of type kdb::Key
      */
-	inline Entry (kdb::Key & k) : kdb::Key (k)
+	Entry (kdb::Key & k) : kdb::Key (k)
 	{
 	}
 
@@ -67,7 +67,7 @@ public:
 	 * 
      * @param keyName A string to be used as key name
      */
-	inline Entry (std::string entryName) : kdb::Key (Config::kdb_path_configs + std::string ("/") + entryName, KEY_END)
+	Entry (std::string entryName) : kdb::Key (Config::kdb_path_configs + std::string ("/") + entryName, KEY_END)
 	{
 	}
 
@@ -84,8 +84,7 @@ public:
      * @param scope The scope for the Entry
      * @param slug The unique slug for the Entry
      */
-	inline Entry (const std::string & organization, const std::string & application, const std::string & scope,
-		      const std::string & slug)
+	Entry (const std::string & organization, const std::string & application, const std::string & scope, const std::string & slug)
 	: kdb::Key (Config::kdb_path_configs + std::string ("/") + organization + std::string ("/") + application + std::string ("/") +
 			    scope + std::string ("/") + slug,
 		    KEY_END)

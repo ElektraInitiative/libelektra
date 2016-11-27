@@ -28,7 +28,7 @@ namespace service
  * @param entries A vector containing entries to be filtered
  * @param startsWith The string containing the required entry name prefix
  */
-void SearchEngine::filterConfigurationsByName (std::vector<kdbrest::model::Entry> & entries, const std::string & startsWith)
+void SearchEngine::filterConfigurationsByName (std::vector<kdbrest::model::Entry> & entries, const std::string & startsWith) const
 {
 
 	entries.erase (std::remove_if (entries.begin (), entries.end (),
@@ -60,7 +60,7 @@ void SearchEngine::filterConfigurationsByName (std::vector<kdbrest::model::Entry
  * @param filterby The field(s) to search in
  */
 void SearchEngine::findConfigurationsByFilter (std::vector<kdbrest::model::Entry> & entries, const std::string & filter,
-					       const std::string filterby)
+					       const std::string filterby) const
 {
 	entries.erase (std::remove_if (entries.begin (), entries.end (),
 				       [filter, filterby](kdbrest::model::Entry & elem) -> bool {
@@ -133,7 +133,8 @@ void SearchEngine::findConfigurationsByFilter (std::vector<kdbrest::model::Entry
  * @param filter The string to be searched for
  * @param filterby The field(s) to search in
  */
-void SearchEngine::findUsersByFilter (std::vector<kdbrest::model::User> & users, const std::string & filter, const std::string filterby)
+void SearchEngine::findUsersByFilter (std::vector<kdbrest::model::User> & users, const std::string & filter,
+				      const std::string filterby) const
 {
 	users.erase (std::remove_if (users.begin (), users.end (),
 				     [filter, filterby](kdbrest::model::User & elem) -> bool {

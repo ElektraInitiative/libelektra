@@ -40,7 +40,7 @@ public:
 	/**
 	 * @brief standard constructor
 	 */
-	inline ConfigFormat ()
+	ConfigFormat ()
 	{
 	}
 
@@ -56,7 +56,7 @@ public:
 	 * @param validated If the configuration snippet has successfully
 	 *	      passed a validation round-trip
      */
-	inline ConfigFormat (const PluginFormat & pf, const std::string & cfg, const bool validated = false)
+	ConfigFormat (const PluginFormat & pf, const std::string & cfg, const bool validated = false)
 	: m_pluginformat (pf), m_config (cfg), m_validated (validated)
 	{
 	}
@@ -66,7 +66,7 @@ public:
 	 * 
      * @return PluginFormat that is used
      */
-	PluginFormat & getPluginformat ()
+	PluginFormat getPluginformat () const
 	{
 		return m_pluginformat;
 	}
@@ -76,7 +76,7 @@ public:
 	 * 
      * @return Configuration as string
      */
-	std::string & getConfig ()
+	std::string getConfig () const
 	{
 		return m_config;
 	}
@@ -86,7 +86,7 @@ public:
 	 * 
 	 * @return True if conversion has passed validation
 	 */
-	bool isValidated ()
+	bool isValidated () const
 	{
 		return m_validated;
 	}

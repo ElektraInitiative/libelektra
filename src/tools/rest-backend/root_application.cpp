@@ -195,7 +195,7 @@ void RootApp::version ()
  * @param data a plain string containing the response body data
  * @param content_type the content type to be used for the response
  */
-void RootApp::setOkRaw (cppcms::http::response & response, std::string & data, const std::string content_type)
+void RootApp::setOkRaw (cppcms::http::response & response, const std::string data, const std::string content_type)
 {
 	// send actual response
 	if (!content_type.empty ())

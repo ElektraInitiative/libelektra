@@ -436,8 +436,8 @@ void DatabaseApp::handleDelete (cppcms::http::request & req, cppcms::http::respo
  * @param input_data the target struct to place input data in
  * @param withKeyParts if key part fields should be fetches as well
  */
-void DatabaseApp::retrieveEntryInputData (cppcms::http::response & resp, cppcms::json::value & requestData, entry_input_data & data,
-					  bool withKeyParts) const
+void DatabaseApp::retrieveEntryInputData (cppcms::http::response & resp, const cppcms::json::value & requestData, entry_input_data & data,
+					  const bool withKeyParts) const
 {
 	// check some special fields before retrieving them
 	if (requestData.type ("configuration") != cppcms::json::is_object ||
@@ -544,7 +544,7 @@ void DatabaseApp::retrieveEntryInputData (cppcms::http::response & resp, cppcms:
  * @param input_data the input data to validate
  * @param withKeyParts whether to validate also key parts
  */
-void DatabaseApp::validateEntryInputData (cppcms::http::response & resp, entry_input_data & data, bool withKeyParts) const
+void DatabaseApp::validateEntryInputData (cppcms::http::response & resp, const entry_input_data & data, const bool withKeyParts) const
 {
 	// regex for formats
 	std::regex regex_parts (REGEX_ENTRY_PARTS);

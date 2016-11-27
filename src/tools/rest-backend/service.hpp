@@ -53,13 +53,13 @@ class SearchEngine : public singleton<SearchEngine>
 
 public:
 	// configuration entries
-	void filterConfigurationsByName (std::vector<kdbrest::model::Entry> & entries, const std::string & startsWith);
+	void filterConfigurationsByName (std::vector<kdbrest::model::Entry> & entries, const std::string & startsWith) const;
 	void findConfigurationsByFilter (std::vector<kdbrest::model::Entry> & entries, const std::string & filter,
-					 const std::string filterby = Config::output_default_entry_filterby);
+					 const std::string filterby = Config::output_default_entry_filterby) const;
 
 	// user entries
 	void findUsersByFilter (std::vector<kdbrest::model::User> & users, const std::string & filter,
-				const std::string filterby = Config::output_default_user_filterby);
+				const std::string filterby = Config::output_default_user_filterby) const;
 
 private:
 };
@@ -126,12 +126,12 @@ class ConvertEngine : public singleton<ConvertEngine>
 {
 
 public:
-	inline ConvertEngine ()
+	ConvertEngine ()
 	{
 		this->m_enabledFormats = loadEnabledFormats ();
 	}
 
-	std::vector<kdbrest::model::PluginFormat> & getEnabledFormats ()
+	std::vector<kdbrest::model::PluginFormat> getEnabledFormats () const
 	{
 		return m_enabledFormats;
 	}
@@ -141,13 +141,13 @@ public:
 	}
 
 	std::vector<kdbrest::model::PluginFormat> loadEnabledFormats ();
-	model::PluginFormat findSuitablePlugin (const std::string & format);
+	model::PluginFormat findSuitablePlugin (const std::string & format) const;
 
-	kdbrest::model::ConfigFormat exportTo (const std::string format, model::Entry & entry);
-	kdbrest::model::ConfigFormat exportTo (model::PluginFormat & plugin, model::Entry & entry);
-	std::vector<kdbrest::model::ConfigFormat> exportToAll (model::Entry & entry);
+	kdbrest::model::ConfigFormat exportTo (const std::string format, model::Entry & entry) const;
+	kdbrest::model::ConfigFormat exportTo (const model::PluginFormat & plugin, model::Entry & entry) const;
+	std::vector<kdbrest::model::ConfigFormat> exportToAll (model::Entry & entry) const;
 
-	model::ImportedConfig import (const std::string & config, const std::string & format, model::Entry & forEntry);
+	model::ImportedConfig import (const std::string & config, const std::string & format, const model::Entry & forEntry) const;
 
 private:
 	std::vector<kdbrest::model::PluginFormat> m_enabledFormats;
@@ -166,7 +166,7 @@ public:
 	cppcms::json::value loadApplicationConfiguration () const;
 
 private:
-	void setValue (cppcms::json::value & config, std::string path, kdb::Key & key) const;
+	void setValue (cppcms::json::value & config, const std::string path, const kdb::Key & key) const;
 };
 
 } // namespace service

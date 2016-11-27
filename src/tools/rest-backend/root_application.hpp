@@ -66,7 +66,7 @@ public:
 	virtual void welcome ();
 	virtual void version ();
 
-	static void setOkRaw (cppcms::http::response & response, std::string & data,
+	static void setOkRaw (cppcms::http::response & response, const std::string data,
 			      const std::string content_type = std::string (MIME_TEXT_PLAIN));
 	static void setOk (cppcms::http::response & response, cppcms::json::value & data,
 			   const std::string content_type = std::string (MIME_APPLICATION_JSON));

@@ -184,7 +184,7 @@ void ConversionApp::formats ()
 	}
 }
 
-void ConversionApp::retrieveConversionInputData (cppcms::http::response & resp, cppcms::json::value & requestData,
+void ConversionApp::retrieveConversionInputData (cppcms::http::response & resp, const cppcms::json::value & requestData,
 						 conversion_input_data & data) const
 {
 	try
