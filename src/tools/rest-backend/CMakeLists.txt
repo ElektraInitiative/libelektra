@@ -47,7 +47,6 @@ else ()
     file (GLOB rest-backend_SRCS *.cpp)
     file (GLOB main_SRC *main.cpp)
     list (REMOVE_ITEM rest-backend_SRCS ${main_SRC})
-    message (STATUS "rest-backend sources: ${rest-backend_SRCS}")
 
     add_library (tmp_${tool} OBJECT ${rest-backend_SRCS})
     add_library (tmp_${tool}_main OBJECT main.cpp)
