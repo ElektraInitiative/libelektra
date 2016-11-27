@@ -1,6 +1,6 @@
 'use strict';
 
-module.exports = function($scope, Logger, news) {
+module.exports = function($scope, Logger, $interval, news) {
 
 	var vm = this;
 
@@ -12,6 +12,34 @@ module.exports = function($scope, Logger, news) {
 	} else {
 		$scope.news = news;
 	}
+
+	$scope.slogan = {
+		adjectives: [
+			'finally',
+			'easily',
+			'simply',
+			'globally',
+			'validated',
+			'correctly',
+			'fast',
+			'specified',
+			'sharable',
+			'now'
+		]
+	};
+	$scope.slogan.index = 0;
+
+	function changeSlogan() {
+		if ($scope.slogan.index >= $scope.slogan.adjectives.length - 1) {
+			$scope.slogan.index = 0;
+		} else {
+			$scope.slogan.index++;
+		}
+	}
+
+	$interval(function() {
+		changeSlogan();
+	}, 1500);
 
 	Logger.info("Home controller ready");
 

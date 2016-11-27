@@ -271,7 +271,7 @@
 	"APP.HOME.BUTTON.EXAMPLES": "Examples",
 	"APP.HOME.BUTTON.GETSTARTED": "Get started",
 	"APP.HOME.HEADLINE.HOWITWORKS": "Want to see how it works?",
-	"APP.HOME.HEADLINE.SLOGAN.FIRST": "Configure everything.",
+	"APP.HOME.HEADLINE.SLOGAN.FIRST": "Configure everything, {{ adjectives[index] }}.",
 	"APP.HOME.HEADLINE.SLOGAN.SECOND": "Elektra - the configuration framework for everyone",
 	"APP.HOME.HEADLINE.WHATSNEW": "What's new?",
 	"APP.HOME.LABEL.KEYFACT.1.DETAILS": "Elektra stores configuration in a global, hierarchical key database. Mount configuration files into the hierarchy, override single configuration parameters or use profiles.",
