@@ -1,6 +1,6 @@
 'use strict';
 
-module.exports = function($scope, Logger, $interval, news) {
+module.exports = function($scope, Logger, $interval, config, news) {
 
 	var vm = this;
 
@@ -15,15 +15,15 @@ module.exports = function($scope, Logger, $interval, news) {
 
 	$scope.slogan = {
 		adjectives: [
-			'finally',
-			'easily',
-			'simply',
-			'globally',
-			'validated',
-			'correctly',
 			'fast',
-			'specified',
+			'finally',
+			'globally',
 			'sharable',
+			'validated',
+			'specified',
+			'correctly',
+			'simply',
+			'easily',
 			'now'
 		]
 	};
@@ -39,7 +39,7 @@ module.exports = function($scope, Logger, $interval, news) {
 
 	$interval(function() {
 		changeSlogan();
-	}, 1500);
+	}, config.website.slogan.rotation_interval);
 
 	Logger.info("Home controller ready");
 
