@@ -151,6 +151,11 @@ public:
 
 private:
 	std::vector<kdbrest::model::PluginFormat> m_enabledFormats;
+
+	const std::string m_pluginStatus = "status";
+	const std::string m_pluginProvides = "provides";
+	const std::string m_pluginProviderStorage = "storage";
+	const char m_pluginProviderDelim = '/';
 };
 
 /**

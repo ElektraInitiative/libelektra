@@ -94,7 +94,7 @@ class Config
 
 public:
 	// configuration initializer
-	static int initializeConfiguration (cppcms::json::value & config);
+	static bool initializeConfiguration (const cppcms::json::value & config);
 
 	// JWT settings
 	static std::string jwt_encryption_key;

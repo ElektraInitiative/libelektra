@@ -17,6 +17,7 @@
 #include <database_application.hpp>
 #include <exceptions.hpp>
 #include <kdb.h>
+#include <kdblogger.h>
 #include <root_application.hpp>
 #include <service.hpp>
 #include <user_application.hpp>
@@ -113,48 +114,31 @@ void RootApp::version ()
 		{
 			kdb::KDB kdb;
 			kdb::KeySet ks;
-			kdb::Key k;
 			kdb.get (ks, "system/elektra/version/constants");
 
-			k = ks.lookup ("system/elektra/version/constants/KDB_VERSION");
-			if (!k)
-			{
-				error = true;
-			}
-			else
-			{
-				data["elektra"]["version"] = k.getString ();
-			}
+			auto ksLookup = [&ks, &error](const std::string key, cppcms::json::value & out, const bool isInt) {
+				kdb::Key k = ks.lookup (key);
+				if (!k)
+				{
+					error = true;
+				}
+				else
+				{
+					if (isInt)
+					{
+						out = k.get<int> ();
+					}
+					else
+					{
+						out = k.getString ();
+					}
+				}
+			};
 
-			k = ks.lookup ("system/elektra/version/constants/KDB_VERSION_MAJOR");
-			if (!k)
-			{
-				error = true;
-			}
-			else
-			{
-				data["elektra"]["major"] = k.getString ();
-			}
-
-			k = ks.lookup ("system/elektra/version/constants/KDB_VERSION_MINOR");
-			if (!k)
-			{
-				error = true;
-			}
-			else
-			{
-				data["elektra"]["minor"] = k.getString ();
-			}
-
-			k = ks.lookup ("system/elektra/version/constants/KDB_VERSION_MICRO");
-			if (!k)
-			{
-				error = true;
-			}
-			else
-			{
-				data["elektra"]["micro"] = k.getString ();
-			}
+			ksLookup ("system/elektra/version/constants/KDB_VERSION", data["elektra"]["version"], false);
+			ksLookup ("system/elektra/version/constants/KDB_VERSION_MAJOR", data["elektra"]["major"], true);
+			ksLookup ("system/elektra/version/constants/KDB_VERSION_MINOR", data["elektra"]["minor"], true);
+			ksLookup ("system/elektra/version/constants/KDB_VERSION_MICRO", data["elektra"]["micro"], true);
 		}
 		catch (kdb::KDBException & e)
 		{
@@ -165,6 +149,8 @@ void RootApp::version ()
 		{
 			// in case we could not retrieve the run-time version,
 			// use compile-time version
+			ELEKTRA_LOG_WARNING (
+				"Could not find run-time version of Elektra installation, using compile-time version as fallback.");
 			data["elektra"]["version"] = KDB_VERSION;
 			data["elektra"]["major"] = KDB_VERSION_MAJOR;
 			data["elektra"]["minor"] = KDB_VERSION_MINOR;

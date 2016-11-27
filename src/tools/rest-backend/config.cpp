@@ -53,9 +53,9 @@ std::string Config::api_specification_html = std::string ();
  * is available. can also force the application to stop.
  * 
  * @param config the configuration to use
- * @return 0 in case of success, 1 otherwise
+ * @return true in case of success, false otherwise
  */
-int Config::initializeConfiguration (cppcms::json::value & cfg)
+bool Config::initializeConfiguration (const cppcms::json::value & cfg)
 {
 	bool error = false;
 
@@ -142,11 +142,6 @@ int Config::initializeConfiguration (cppcms::json::value & cfg)
 
 	// clang-format on
 
-	if (error)
-	{
-		return 1;
-	}
-
-	return 0;
+	return !error;
 }
 }

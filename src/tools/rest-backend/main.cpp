@@ -28,7 +28,7 @@ int main ()
 {
 	// loading application configuration
 	cppcms::json::value config = kdbrest::service::ConfigEngine::instance ().loadApplicationConfiguration ();
-	if (kdbrest::Config::initializeConfiguration (config))
+	if (!kdbrest::Config::initializeConfiguration (config))
 	{
 		std::cerr << "Please fix the applications configuration first!" << std::endl;
 		return 1;

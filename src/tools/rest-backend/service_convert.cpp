@@ -45,7 +45,7 @@ model::PluginFormat ConvertEngine::findSuitablePlugin (const std::string & forma
 	try
 	{
 		PluginSpec plugin = db.lookupProvides (format);
-		std::string statusString = db.lookupInfo (plugin, "status");
+		std::string statusString = db.lookupInfo (plugin, m_pluginStatus);
 		std::vector<std::string> statuses;
 		boost::split (statuses, statusString, boost::is_any_of (" "));
 		return model::PluginFormat (format, plugin.getName (), statuses);
@@ -71,31 +71,31 @@ std::vector<model::PluginFormat> ConvertEngine::loadEnabledFormats ()
 	using namespace kdb::tools;
 
 	ModulesPluginDatabase db;
-	std::vector<PluginSpec> plugins = db.lookupAllProvides ("storage");
+	std::vector<PluginSpec> plugins = db.lookupAllProvides (m_pluginProviderStorage);
 
 	// sort the plugins by status before processing
-	std::sort (plugins.begin (), plugins.end (), [&db](const PluginSpec & l, const PluginSpec & r) -> bool {
-		return db.calculateStatus (db.lookupInfo (l, "status")) > db.calculateStatus (db.lookupInfo (r, "status"));
+	std::sort (plugins.begin (), plugins.end (), [this, &db](const PluginSpec & l, const PluginSpec & r) -> bool {
+		return db.calculateStatus (db.lookupInfo (l, m_pluginStatus)) > db.calculateStatus (db.lookupInfo (r, m_pluginStatus));
 	});
 
 	std::vector<model::PluginFormat> result;
 	for (auto & plugin : plugins)
 	{
 		// find format
-		std::string provides = db.lookupInfo (plugin, "provides");
+		std::string provides = db.lookupInfo (plugin, m_pluginProvides);
 		std::stringstream ss (provides);
 		std::string provider;
 		std::string format = "none";
 		while (ss >> provider)
 		{
-			if (boost::starts_with (provider, "storage/"))
+			if (boost::starts_with (provider, m_pluginProviderStorage + m_pluginProviderDelim))
 			{
-				format = provider.substr (8);
+				format = provider.substr (sizeof (m_pluginProviderStorage));
 				break;
 			}
 		}
 		// find statuses
-		std::string statusString = db.lookupInfo (plugin, "status");
+		std::string statusString = db.lookupInfo (plugin, m_pluginStatus);
 		std::vector<std::string> statuses;
 		boost::split (statuses, statusString, boost::is_any_of (" "));
 		// push plugin to result list
