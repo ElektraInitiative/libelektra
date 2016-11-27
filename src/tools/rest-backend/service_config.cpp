@@ -110,8 +110,11 @@ void ConfigEngine::setValue (cppcms::json::value & config, std::string path, kdb
 		// otherwise we can set directly
 		try
 		{
-			config[array_index] = key.get<int> ();
-			return;
+			if (std::to_string (key.get<int> ()).length () == key.get<std::string> ().length ())
+			{
+				config[array_index] = key.get<int> ();
+				return;
+			}
 		}
 		catch (kdb::KeyTypeConversion & e)
 		{
@@ -144,8 +147,11 @@ void ConfigEngine::setValue (cppcms::json::value & config, std::string path, kdb
 	{
 		try
 		{
-			config.set (path, key.get<int> ());
-			return;
+			if (std::to_string (key.get<int> ()).length () == key.get<std::string> ().length ())
+			{
+				config.set (path, key.get<int> ());
+				return;
+			}
 		}
 		catch (kdb::KeyTypeConversion & e)
 		{
