@@ -67,7 +67,7 @@ public:
 	 * 
      * @param keyName A string to be used as key name
      */
-	inline Entry (std::string entryName) : kdb::Key (ELEKTRA_REST_CONFIG_REPOSITORY_PATH + std::string ("/") + entryName, KEY_END)
+	inline Entry (std::string entryName) : kdb::Key (Config::kdb_path_configs + std::string ("/") + entryName, KEY_END)
 	{
 	}
 
@@ -86,8 +86,8 @@ public:
      */
 	inline Entry (const std::string & organization, const std::string & application, const std::string & scope,
 		      const std::string & slug)
-	: kdb::Key (ELEKTRA_REST_CONFIG_REPOSITORY_PATH + std::string ("/") + organization + std::string ("/") + application +
-			    std::string ("/") + scope + std::string ("/") + slug,
+	: kdb::Key (Config::kdb_path_configs + std::string ("/") + organization + std::string ("/") + application + std::string ("/") +
+			    scope + std::string ("/") + slug,
 		    KEY_END)
 	{
 	}
@@ -164,7 +164,7 @@ public:
      */
 	std::string getPublicName () const
 	{
-		return this->getName ().erase (0, sizeof (ELEKTRA_REST_CONFIG_REPOSITORY_PATH));
+		return this->getName ().erase (0, Config::kdb_path_configs.length () + 1);
 	}
 
 	/**

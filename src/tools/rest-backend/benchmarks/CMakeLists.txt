@@ -19,19 +19,15 @@ else ()
         add_executable (${source} ${SOURCES})
         add_dependencies (${source} kdberrors_generated)
 		target_link_libraries (${source} ${libraries})
-
-#        set_target_properties (${source} PROPERTIES
-#                COMPILE_DEFINITIONS HAVE_KDBCONFIG_H)
     endmacro (do_benchmark)
 
-    set (mysql_other_sources testdata.cpp testdata.hpp timer.hpp ../service_convert.cpp)
-    set (mysql_libraries ${MYSQLCPPCONN_LIBRARY} ${Boost_LIBRARIES} elektra-full elektratools)
+    set (kdbrest_libs ${Boost_LIBRARIES} ${CPPCMS_LIBRARY} ${LIBJWT_LIBRARY} ${OPENSSL_LIBRARIES})
+    set (mysql_other_sources testdata.cpp testdata.hpp timer.hpp $<TARGET_OBJECTS:tmp_${tool}>)
+    set (mysql_libraries ${MYSQLCPPCONN_LIBRARY} ${kdbrest_libs} elektra-full elektratools)
     do_benchmark (benchmark_kdbrest_mysql "${mysql_other_sources}" "${mysql_libraries}")
 
-    file (GLOB kdbrest_HDRS ../*.hpp)
-    set (kdbrest_SRCS ../service_storage.cpp ../service_search.cpp)
-    set (elektra_other_sources testdata.cpp testdata.hpp timer.hpp ${kdbrest_HDRS} ${kdbrest_SRCS})
-    set (elektra_libraries ${Boost_LIBRARIES} elektra-full elektratools)
+    set (elektra_other_sources testdata.cpp testdata.hpp timer.hpp $<TARGET_OBJECTS:tmp_${tool}>)
+    set (elektra_libraries ${kdbrest_libs} elektra-full elektratools)
     do_benchmark (benchmark_kdbrest_elektra "${elektra_other_sources}" "${elektra_libraries}")
 
 endif ()

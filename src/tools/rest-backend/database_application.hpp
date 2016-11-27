@@ -19,6 +19,7 @@
 #include <map>
 #include <string>
 
+#include <config.hpp>
 #include <model_entry.hpp>
 
 /**

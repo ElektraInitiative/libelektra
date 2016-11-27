@@ -8,6 +8,7 @@
 
 #include <gtest/gtest.h>
 
+#include <config.hpp>
 #include <kdb_includes.hpp>
 #include <model_entry.hpp>
 #include <service.hpp>
@@ -28,9 +29,9 @@ TEST (kdbrestServicesSearchengineTest, FilterConfigurationsByNameCheck)
 	std::string testKey2 = "test/test/test2/test/test2";
 	std::string testKey3 = "test/test/test3/test/test3";
 
-	Key testKeyAbs = Key (ELEKTRA_REST_CONFIG_REPOSITORY_PATH + std::string ("/") + testKey, KEY_VALUE, "testvalue", KEY_END);
-	Key testKeyAbs2 = Key (ELEKTRA_REST_CONFIG_REPOSITORY_PATH + std::string ("/") + testKey2, KEY_VALUE, "testvalue", KEY_END);
-	Key testKeyAbs3 = Key (ELEKTRA_REST_CONFIG_REPOSITORY_PATH + std::string ("/") + testKey3, KEY_VALUE, "testvalue", KEY_END);
+	Key testKeyAbs = Key (kdbrest::Config::kdb_path_configs + std::string ("/") + testKey, KEY_VALUE, "testvalue", KEY_END);
+	Key testKeyAbs2 = Key (kdbrest::Config::kdb_path_configs + std::string ("/") + testKey2, KEY_VALUE, "testvalue", KEY_END);
+	Key testKeyAbs3 = Key (kdbrest::Config::kdb_path_configs + std::string ("/") + testKey3, KEY_VALUE, "testvalue", KEY_END);
 
 	std::vector<kdbrest::model::Entry> entries;
 	entries.push_back (static_cast<kdbrest::model::Entry> (testKeyAbs));
@@ -144,7 +145,7 @@ TEST (kdbrestServicesSearchengineTest, FindConfigurationsByFilterCheck)
 		entries.push_back (testEntry_dummy5);
 
 		SearchEngine::instance ().findConfigurationsByFilter (entries, search_title, "title");
-		ASSERT_EQ (1, entries.size ());
+		ASSERT_EQ (5, entries.size ());
 		ASSERT_EQ (entries.at (0).getName (), testEntry_findTitle.getName ());
 	}
 
@@ -162,7 +163,7 @@ TEST (kdbrestServicesSearchengineTest, FindConfigurationsByFilterCheck)
 		entries.push_back (testEntry_dummy5);
 
 		SearchEngine::instance ().findConfigurationsByFilter (entries, search_description);
-		ASSERT_EQ (1, entries.size ());
+		ASSERT_EQ (5, entries.size ());
 		ASSERT_EQ (entries.at (0).getName (), testEntry_findDescription.getName ());
 	}
 
@@ -208,7 +209,7 @@ TEST (kdbrestServicesSearchengineTest, FindConfigurationsByFilterCheck)
 		entries.push_back (testEntry_dummy5);
 
 		SearchEngine::instance ().findConfigurationsByFilter (entries, search_author, "author");
-		ASSERT_EQ (1, entries.size ());
+		ASSERT_EQ (5, entries.size ());
 		ASSERT_EQ (entries.at (0).getName (), testEntry_findAuthor.getName ());
 	}
 
@@ -240,7 +241,7 @@ TEST (kdbrestServicesSearchengineTest, FindConfigurationsByFilterCheck)
 		entries.push_back (testEntry_dummy5);
 
 		SearchEngine::instance ().findConfigurationsByFilter (entries, search_tag, "tags");
-		ASSERT_EQ (1, entries.size ());
+		ASSERT_EQ (5, entries.size ());
 		ASSERT_EQ (entries.at (0).getName (), testEntry_findTag.getName ());
 	}
 
@@ -347,4 +348,12 @@ TEST (kdbrestServicesSearchengineTest, FindUsersByFilterCheck)
 		ASSERT_EQ (1, users.size ());
 		ASSERT_EQ (users.at (0).getName (), testUser_findEmail.getName ());
 	}
+}
+
+int main (int argc, char * argv[])
+{
+	testing::InitGoogleTest (&argc, argv);
+	cppcms::json::value config = kdbrest::service::ConfigEngine::instance ().loadApplicationConfiguration ();
+	(void)kdbrest::Config::initializeConfiguration (config);
+	return RUN_ALL_TESTS ();
 }

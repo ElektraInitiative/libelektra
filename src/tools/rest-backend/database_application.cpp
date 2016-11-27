@@ -286,7 +286,7 @@ void DatabaseApp::handleGetUnique (cppcms::http::request & req, cppcms::http::re
 void DatabaseApp::handleInsert (cppcms::http::request & req, cppcms::http::response & resp) const
 {
 	// first check if the currently authenticated user may create new database entries
-	if (!AuthenticationApp::validateAuthentication (req, resp, ELEKTRA_REST_PERMISSIONS_CREATE_ENTRY))
+	if (!AuthenticationApp::validateAuthentication (req, resp, Config::permissions_entry_create))
 	{
 		return; // quit early, error message set already
 	}
@@ -354,7 +354,7 @@ void DatabaseApp::handleUpdate (cppcms::http::request & req, cppcms::http::respo
 	}
 
 	// now check if the currently authenticated user may even update it
-	if (!AuthenticationApp::validateAuthentication (req, resp, ELEKTRA_REST_PERMISSIONS_UPDATE_ENTRY, oldEntry.getAuthor ()))
+	if (!AuthenticationApp::validateAuthentication (req, resp, Config::permissions_entry_edit, oldEntry.getAuthor ()))
 	{
 		return; // quit early, error response already set
 	}
@@ -410,7 +410,7 @@ void DatabaseApp::handleDelete (cppcms::http::request & req, cppcms::http::respo
 	}
 
 	// now check if the currently authenticated user may even update it
-	if (!AuthenticationApp::validateAuthentication (req, resp, ELEKTRA_REST_PERMISSIONS_DELETE_ENTRY, entry.getAuthor ()))
+	if (!AuthenticationApp::validateAuthentication (req, resp, Config::permissions_entry_delete, entry.getAuthor ()))
 	{
 		return; // quit early, error response already set
 	}
@@ -795,7 +795,7 @@ inline void DatabaseApp::processFiltering (cppcms::http::request & req, std::vec
 		if (filterby != "all" && filterby != "key" && filterby != "title" && filterby != "description" && filterby != "author" &&
 		    filterby != "tags")
 		{
-			filterby = std::string (ELEKTRA_REST_OUTPUT_FILTERBY_ENTRY_DEFAULT);
+			filterby = Config::output_default_entry_filterby;
 		}
 
 		service::SearchEngine::instance ().findConfigurationsByFilter (entries, filter, filterby);
@@ -817,13 +817,13 @@ inline void DatabaseApp::processSorting (cppcms::http::request & req, std::vecto
 	// validate the sort direction input or set default
 	if (!boost::iequals (sort, PARAM_VAL_SORT_ASC) && !boost::iequals (sort, PARAM_VAL_SORT_DESC))
 	{
-		sort = std::string (ELEKTRA_REST_OUTPUT_SORT_ENTRY_DEFAULT);
+		sort = Config::output_default_entry_sort;
 	}
 
 	// validate the sortby input or set default
 	if (SORT_ENTRY_MAP.find (sortby) == SORT_ENTRY_MAP.end ())
 	{
-		sortby = std::string (ELEKTRA_REST_OUTPUT_SORTBY_ENTRY_DEFAULT);
+		sortby = Config::output_default_entry_sortby;
 	}
 
 	// do the sorting

@@ -9,6 +9,10 @@
 #ifndef ELEKTRA_REST_USERAPP_HPP
 #define ELEKTRA_REST_USERAPP_HPP
 
+#include <map>
+#include <string>
+#include <vector>
+
 #include <cppcms/application.h>
 #include <cppcms/applications_pool.h>
 #include <cppcms/http_request.h>
@@ -16,9 +20,6 @@
 #include <cppcms/service.h>
 #include <cppcms/url_dispatcher.h>
 #include <cppcms/url_mapper.h>
-#include <map>
-#include <string>
-#include <vector>
 
 #include <model_user.hpp>
 

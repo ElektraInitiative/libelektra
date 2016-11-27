@@ -8,8 +8,10 @@
 
 #include <gtest/gtest.h>
 
+#include <config.hpp>
 #include <model_configformat.hpp>
 #include <model_pluginformat.hpp>
+#include <service.hpp>
 
 /**
  * TESTS for kdbrest::models::ConfigFormat
@@ -28,4 +30,12 @@ TEST (kdbrestModelsConfigformatTest, ConstructorValueCheck)
 
 	cf.setValidated (false);
 	ASSERT_EQ (cf.isValidated (), false);
+}
+
+int main (int argc, char * argv[])
+{
+	testing::InitGoogleTest (&argc, argv);
+	cppcms::json::value config = kdbrest::service::ConfigEngine::instance ().loadApplicationConfiguration ();
+	(void)kdbrest::Config::initializeConfiguration (config);
+	return RUN_ALL_TESTS ();
 }

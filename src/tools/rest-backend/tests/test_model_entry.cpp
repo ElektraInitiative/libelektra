@@ -8,7 +8,9 @@
 
 #include <gtest/gtest.h>
 
+#include <config.hpp>
 #include <model_entry.hpp>
+#include <service.hpp>
 
 /**
  *  TESTS for kdbrest::models::Entry
@@ -16,14 +18,14 @@
 
 TEST (kdbrestModelsEntryTest, ConstructorByKeyReference)
 {
-	kdb::Key key ("proc/test/newkey1");
+	kdb::Key key ("proc/test/newkey1", KEY_END);
 	kdbrest::model::Entry entry (key);
 	ASSERT_EQ (entry.getName (), key.getName ());
 }
 
 TEST (kdbrestModelsEntryTest, GetPublicNameErasing)
 {
-	kdb::Key key (ELEKTRA_REST_CONFIG_REPOSITORY_PATH + std::string ("/test/key1"));
+	kdb::Key key (kdbrest::Config::kdb_path_configs + std::string ("/test/key1"), KEY_END);
 	kdbrest::model::Entry entry (key);
 	ASSERT_NE (entry.getPublicName (), entry.getName ());
 	ASSERT_NE (entry.getPublicName (), key.getName ());
@@ -35,7 +37,7 @@ TEST (kdbrestModelsEntryTest, GetPublicNameErasing)
 
 TEST (kdbrestModelsEntryTest, GetPublicNamePartsCheck)
 {
-	kdb::Key key (ELEKTRA_REST_CONFIG_REPOSITORY_PATH + std::string ("/test/test2/test3/test4"));
+	kdb::Key key (kdbrest::Config::kdb_path_configs + std::string ("/test/test2/test3/test4"), KEY_END);
 	kdbrest::model::Entry entry (key);
 
 	ASSERT_EQ ("test", entry.getOrganization ());
@@ -55,7 +57,7 @@ TEST (kdbrestModelsEntryTest, ConstructorByString)
 {
 	std::string keyStr ("test/key1");
 	kdbrest::model::Entry entry (keyStr);
-	ASSERT_EQ (entry.getName (), ELEKTRA_REST_CONFIG_REPOSITORY_PATH + std::string ("/") + keyStr);
+	ASSERT_EQ (entry.getName (), kdbrest::Config::kdb_path_configs + std::string ("/") + keyStr);
 	ASSERT_NE (entry.getName (), keyStr);
 	ASSERT_EQ (entry.getPublicName (), keyStr);
 }
@@ -69,7 +71,7 @@ TEST (kdbrestModelsEntryTest, ConstructorByParts)
 
 	kdbrest::model::Entry entry (organization, application, scope, slug);
 
-	ASSERT_EQ (entry.getName (), ELEKTRA_REST_CONFIG_REPOSITORY_PATH + std::string ("/") + organization + std::string ("/") +
+	ASSERT_EQ (entry.getName (), kdbrest::Config::kdb_path_configs + std::string ("/") + organization + std::string ("/") +
 					     application + std::string ("/") + scope + std::string ("/") + slug);
 	ASSERT_NE (entry.getName (), organization + std::string ("/") + application + std::string ("/") + scope + std::string ("/") + slug);
 	ASSERT_EQ (entry.getPublicName (),
@@ -79,7 +81,7 @@ TEST (kdbrestModelsEntryTest, ConstructorByParts)
 TEST (kdbrestModelsEntryTest, GetNameCorrectPrefix)
 {
 
-	kdb::Key key (ELEKTRA_REST_CONFIG_REPOSITORY_PATH + std::string ("/test/key1"));
+	kdb::Key key (kdbrest::Config::kdb_path_configs + std::string ("/test/key1"), KEY_END);
 	kdbrest::model::Entry entry (key);
 	ASSERT_EQ (entry.getPublicName (), "test/key1");
 }
@@ -87,7 +89,7 @@ TEST (kdbrestModelsEntryTest, GetNameCorrectPrefix)
 TEST (kdbrestModelsEntryTest, SetAndGetAuthor)
 {
 
-	kdb::Key key (ELEKTRA_REST_CONFIG_REPOSITORY_PATH + std::string ("/test/key1"));
+	kdb::Key key (kdbrest::Config::kdb_path_configs + std::string ("/test/key1"), KEY_END);
 	kdbrest::model::Entry entry (key);
 	std::string author ("the author");
 	entry.setAuthor (author);
@@ -97,7 +99,7 @@ TEST (kdbrestModelsEntryTest, SetAndGetAuthor)
 TEST (kdbrestModelsEntryTest, SetAndGetCreatedAt)
 {
 
-	kdb::Key key (ELEKTRA_REST_CONFIG_REPOSITORY_PATH + std::string ("/test/key1"));
+	kdb::Key key (kdbrest::Config::kdb_path_configs + std::string ("/test/key1"), KEY_END);
 	kdbrest::model::Entry entry (key);
 	long created_at = 128372904;
 	entry.setCreatedAt (created_at);
@@ -107,7 +109,7 @@ TEST (kdbrestModelsEntryTest, SetAndGetCreatedAt)
 TEST (kdbrestModelsEntryTest, SetAndGetTitle)
 {
 
-	kdb::Key key (ELEKTRA_REST_CONFIG_REPOSITORY_PATH + std::string ("/test/key1"));
+	kdb::Key key (kdbrest::Config::kdb_path_configs + std::string ("/test/key1"), KEY_END);
 	kdbrest::model::Entry entry (key);
 	std::string title ("the title of this entry");
 	entry.setTitle (title);
@@ -117,7 +119,7 @@ TEST (kdbrestModelsEntryTest, SetAndGetTitle)
 TEST (kdbrestModelsEntryTest, SetAndGetDescription)
 {
 
-	kdb::Key key (ELEKTRA_REST_CONFIG_REPOSITORY_PATH + std::string ("/test/key1"));
+	kdb::Key key (kdbrest::Config::kdb_path_configs + std::string ("/test/key1"), KEY_END);
 	kdbrest::model::Entry entry (key);
 	std::string desc ("a beautiful, but still somewhat random description of this entry");
 	entry.setDescription (desc);
@@ -127,7 +129,7 @@ TEST (kdbrestModelsEntryTest, SetAndGetDescription)
 TEST (kdbrestModelsEntryTest, SetAndGetUploadPlugin)
 {
 
-	kdb::Key key (ELEKTRA_REST_CONFIG_REPOSITORY_PATH + std::string ("/test/key1"));
+	kdb::Key key (kdbrest::Config::kdb_path_configs + std::string ("/test/key1"), KEY_END);
 	kdbrest::model::Entry entry (key);
 	std::string plugin ("simpleini");
 	entry.setUploadPlugin (plugin);
@@ -137,7 +139,7 @@ TEST (kdbrestModelsEntryTest, SetAndGetUploadPlugin)
 TEST (kdbrestModelsEntryTest, SetAndGetViews)
 {
 
-	kdb::Key key (ELEKTRA_REST_CONFIG_REPOSITORY_PATH + std::string ("/test/key1"));
+	kdb::Key key (kdbrest::Config::kdb_path_configs + std::string ("/test/key1"), KEY_END);
 	kdbrest::model::Entry entry (key);
 	long views = 823712903;
 	entry.setViews (views);
@@ -150,7 +152,7 @@ TEST (kdbrestModelsEntryTest, SetAndGetViews)
 TEST (kdbrestModelsEntryTest, SetAndGetAndHasTags)
 {
 
-	kdb::Key key (ELEKTRA_REST_CONFIG_REPOSITORY_PATH + std::string ("/test/key1"));
+	kdb::Key key (kdbrest::Config::kdb_path_configs + std::string ("/test/key1"), KEY_END);
 	kdbrest::model::Entry entry (key);
 	const char * taglist[] = { "one", "two", "three", "four", "five" };
 	std::vector<std::string> tags (taglist, std::end (taglist));
@@ -179,10 +181,10 @@ TEST (kdbrestModelsEntryTest, SetAndGetAndHasTags)
 TEST (kdbrestModelsEntryTest, SetAndGetAndAddSubkeys)
 {
 
-	kdb::Key key (ELEKTRA_REST_CONFIG_REPOSITORY_PATH + std::string ("/test/key1"));
-	kdb::Key key2 (ELEKTRA_REST_CONFIG_REPOSITORY_PATH + std::string ("/test/key1/subkey1"));
-	kdb::Key key3 (ELEKTRA_REST_CONFIG_REPOSITORY_PATH + std::string ("/test/key1/subkey1/subkey2"));
-	kdb::Key key4 (ELEKTRA_REST_CONFIG_REPOSITORY_PATH + std::string ("/test/key2/subkey1"));
+	kdb::Key key (kdbrest::Config::kdb_path_configs + std::string ("/test/key1"), KEY_END);
+	kdb::Key key2 (kdbrest::Config::kdb_path_configs + std::string ("/test/key1/subkey1"), KEY_END);
+	kdb::Key key3 (kdbrest::Config::kdb_path_configs + std::string ("/test/key1/subkey1/subkey2"), KEY_END);
+	kdb::Key key4 (kdbrest::Config::kdb_path_configs + std::string ("/test/key2/subkey1"), KEY_END);
 
 	kdbrest::model::Entry entry (key);
 
@@ -207,4 +209,12 @@ TEST (kdbrestModelsEntryTest, SetAndGetAndAddSubkeys)
 
 	ASSERT_TRUE (entry2.getSubkeys ().lookup (key2));
 	ASSERT_TRUE (entry2.getSubkeys ().lookup (key3));
+}
+
+int main (int argc, char * argv[])
+{
+	testing::InitGoogleTest (&argc, argv);
+	cppcms::json::value config = kdbrest::service::ConfigEngine::instance ().loadApplicationConfiguration ();
+	(void)kdbrest::Config::initializeConfiguration (config);
+	return RUN_ALL_TESTS ();
 }

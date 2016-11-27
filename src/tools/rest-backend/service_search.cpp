@@ -33,7 +33,7 @@ void SearchEngine::filterConfigurationsByName (std::vector<kdbrest::model::Entry
 
 	entries.erase (std::remove_if (entries.begin (), entries.end (),
 				       [startsWith](kdbrest::model::Entry & elem) -> bool {
-					       return boost::starts_with (elem.getPublicName (), startsWith);
+					       return !boost::starts_with (elem.getPublicName (), startsWith);
 				       }),
 		       entries.end ());
 }

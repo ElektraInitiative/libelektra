@@ -12,7 +12,7 @@ Stored are snippet and user entries, both below different paths.
 Each entry consists of multiple keys (+ meta keys) belonging together,
 while the root key matching a certain schema (regex) is used to identify an entry.
 
-The REST service operates on at compile time defined repositories (paths).
+The REST service operates on user-defined repositories (paths).
 This paths are not meant to be used in other tools or applications,
 as the service caches all data in-memory as well.
 Changes to the repositories can therefore result in unexpected and undefined behavior,
@@ -39,6 +39,68 @@ Detailed information about how to configure the REST service can be found on the
 
 To stop the service, run `sh stop-@tool@` in the directory where the start script is located
 or `kdb stop-@tool@` from anywhere.
+
+### Configuration ###
+
+The service stores all its configuration below `/sw/elektra/@tool@`,
+which is split into two parts:
+
+- one for CppCMS below `/sw/elektra/@tool@/cppcms` and
+- one for the service itself below `/sw/elektra/@tool@/backend`
+
+#### CppCMS ####
+
+All configuration options for CppCMS are listed on their [Website](http://cppcms.com/wikipp/en/page/cppcms_1x_config).
+The JSON configuration explained on the website can be translated into Elektra keys easily.
+For the values `true` and `false`, the strings `"true"` and `"false"` can be used.
+
+The following example configuration in CppCMS style
+```
+{
+    "service": {
+        "api": "http"
+        "port": 8080,
+        "ip": "0.0.0.0"
+    },
+    "security": {
+        "display_error_messages": true
+    }
+}
+```
+can be realized within Elektra like
+```
+kdb set /sw/elektra/@tool@/cppcms/service/api "http"
+kdb set /sw/elektra/@tool@/cppcms/service/port 8080
+kdb set /sw/elektra/@tool@/cppcms/service/ip "0.0.0.0"
+kdb set /sw/elektra/@tool@/cppcms/security/display_error_messages "true"
+```
+
+Simply set the desired settings as keys in the key database and you are done!
+
+#### Backend ####
+
+The service itself offers quite some configuration options as well.
+In detail, the options (without the base key `/sw/elektra/@tool@/backend`) are:
+
+- `api_specification/raw` (string): A link to the blueprint describing the API.
+- `api_specification/html` (string): A link to the compiled blueprint describing the API.
+- `jwt/encryption_key` (string): A secret string used to encrypt session tokens (JWT).
+- `jwt/expiration_time` (int): The number of seconds a JWT is valid from its creation.
+- `kdb/path/configs` (string): The root path being used to store configuration snippet entries, must start with a namespace.
+- `kdb/path/users` (string): The root path being used to store user entries, must start with a namespace.
+- `output/default/entry/sort` (enum["asc","desc"]): The default sort direction being used for requests against configuration snippet entry resources.
+- `output/default/entry/sortby` (enum["key", "organization", "application", "scope", "slug", "title", "author", "created_at"]): The default sort criteria being used for requests against configuration snippet entry resources.
+- `output/default/entry/filterby` (enum["all", "key", "title", "description", "author", "tags"]): The default filter criteria being used for requests against configuration snippet entry resources.
+- `output/default/user/sort` (enum["asc","desc"]): The default sort direction being used for requests against user entry resources.
+- `output/default/user/sortby` (enum["username", "email", "created_at"]): The default sort criteria being used for requests against user entry resources.
+- `output/default/user/filterby` (enum["all", "username", "email"]): The default filter criteria being used for requests against user entry resources.
+- `permissions/entry/create` (int): The required rank a user needs to be able to create new configuration snippet entries.
+- `permissions/entry/edit` (int): The required rank a user needs to be able to edit any configuration snippet entry (also from other users).
+- `permissions/entry/delete` (int): The required rank a user needs to be able to delete any configuration snippet entry (also from other users).
+- `permissions/user/view` (int): The required rank a user needs to be able to view account details of other users.
+- `permissions/user/edit` (int): The required rank a user needs to be able to edit account details of other users.
+- `permissions/user/delete` (int): The required rank a user needs to be able to delete user accounts of other users.
+
 
 ### Configure as service ###
 
@@ -101,18 +163,6 @@ but make sure to include the `rest-backend` tool using the `-DTOOLS` flag.
 
 For instance:
 `-DTOOLS=ALL` or `-DTOOLS=@tool@`
-
-Following options are available at compile time:
-- `REST_REPOSITORY_CONFIGS` representing a path to the location where configuration snippets should be stored.
-An example would be `-DREST_REPOSITORY_CONFIGS=dir/configs`. The default value is `dir/configs`.
-- `REST_REPOSITORY_USERS` representing a path to the location where user information should be stored.
-An example would be `-DREST_REPOSITORY_USERS=user/rest/service/users`. The default value is `dir/users`.
-- `REST_AUTH_ENCRYPT_KEY` holding an encryption key to be used to encrypt authentication tokens.
-This option is mandatory because the default value is not secure.
-It can be a simple non-empty string like `a_5ecure-encrypt1on_key`.
-- `REST_JWT_ISSUER` holding the name of the token issuer.
-This value should also be kept secret as it serves as verification detail.
-It can be a simple non-empty string like `my_issuer531`.
 
 ### Installing ###
 

@@ -47,7 +47,7 @@ bool StorageEngine::createEntry (model::Entry & entry)
 	std::vector<model::Entry> & entries = this->m_entryCache;
 	for (auto & elem : entries)
 	{
-		if (elem.getPublicName ().compare (entry.getPublicName ()) == 0)
+		if (elem.getName ().compare (entry.getName ()) == 0)
 		{
 			throw exception::EntryAlreadyExistsException ();
 		}
@@ -99,7 +99,7 @@ bool StorageEngine::updateEntry (model::Entry & entry)
 	unsigned int i = 0;
 	while (i < entries.size ())
 	{
-		if (entries[i].getPublicName ().compare (entry.getPublicName ()) == 0)
+		if (entries[i].getName ().compare (entry.getName ()) == 0)
 		{
 			found = true;
 			break;
@@ -160,7 +160,7 @@ bool StorageEngine::deleteEntry (model::Entry & entry)
 	unsigned int i = 0;
 	while (i < entries.size ())
 	{
-		if (entries[i].getPublicName ().compare (entry.getPublicName ()) == 0)
+		if (entries[i].getName ().compare (entry.getName ()) == 0)
 		{
 			found = true;
 			break;
@@ -234,7 +234,7 @@ model::Entry StorageEngine::getEntry (const std::string & key)
 	// register read access
 	boost::shared_lock<boost::shared_mutex> lock (m_mutex_entryCache);
 
-	for (auto & elem : this->getAllEntriesRef ())
+	for (auto & elem : this->m_entryCache)
 	{
 		if (elem.getPublicName ().compare (key) == 0) return elem;
 	}
@@ -306,8 +306,8 @@ void StorageEngine::loadAllEntries ()
 	// flush cache
 	this->m_entryCache.clear ();
 
-	std::string parentKeyStr = ELEKTRA_REST_CONFIG_REPOSITORY_PATH;
-	std::regex regex (ELEKTRA_REST_CONFIG_REPOSITORY_ENTRY_SCHEMA);
+	std::string parentKeyStr = Config::kdb_path_configs;
+	std::regex regex (ELEKTRA_REST_ENTRY_SCHEMA_CONFIGS);
 
 	KDB kdb;
 	KeySet ks;
@@ -349,7 +349,7 @@ bool StorageEngine::createUser (model::User & user)
 	std::vector<model::User> & users = this->m_userCache;
 	for (auto & elem : users)
 	{
-		if (elem.getUsername ().compare (user.getUsername ()) == 0)
+		if (elem.getName ().compare (user.getName ()) == 0)
 		{
 			throw exception::UserAlreadyExistsException ();
 		}
@@ -401,7 +401,7 @@ bool StorageEngine::updateUser (model::User & user)
 	unsigned int i = 0;
 	while (i < users.size ())
 	{
-		if (users[i].getUsername ().compare (user.getUsername ()) == 0)
+		if (users[i].getName ().compare (user.getName ()) == 0)
 		{
 			found = true;
 			break;
@@ -462,7 +462,7 @@ bool StorageEngine::deleteUser (model::User & user)
 	unsigned int i = 0;
 	while (i < users.size ())
 	{
-		if (users[i].getUsername ().compare (user.getUsername ()) == 0)
+		if (users[i].getName ().compare (user.getName ()) == 0)
 		{
 			found = true;
 			break;
@@ -536,7 +536,7 @@ model::User StorageEngine::getUser (const std::string & username)
 	// register read access
 	boost::shared_lock<boost::shared_mutex> lock (m_mutex_userCache);
 
-	for (auto & elem : this->getAllUsersRef ())
+	for (auto & elem : this->m_userCache)
 	{
 		if (elem.getUsername ().compare (username) == 0) return elem;
 	}
@@ -603,8 +603,8 @@ void StorageEngine::loadAllUsers ()
 	// flush cache
 	this->m_userCache.clear ();
 
-	std::string parentKeyStr = ELEKTRA_REST_USER_REPOSITORY_PATH;
-	std::regex regex (ELEKTRA_REST_USER_REPOSITORY_ENTRY_SCHEMA);
+	std::string parentKeyStr = Config::kdb_path_users;
+	std::regex regex (ELEKTRA_REST_ENTRY_SCHEMA_USERS);
 
 	KDB kdb;
 	KeySet ks;

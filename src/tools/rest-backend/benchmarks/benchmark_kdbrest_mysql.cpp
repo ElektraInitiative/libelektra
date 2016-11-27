@@ -601,6 +601,10 @@ int main (int argc, char * argv[])
 		}
 	}
 
+	// load configuration
+	cppcms::json::value config = kdbrest::service::ConfigEngine::instance ().loadApplicationConfiguration ();
+	(void)kdbrest::Config::initializeConfiguration (config);
+
 	// create mysql connection
 	sql::Driver * driver;
 	sql::Connection * con;

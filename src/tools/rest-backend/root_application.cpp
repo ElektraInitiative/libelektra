@@ -6,11 +6,13 @@
  * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
  */
 
-#include <boost/algorithm/string/replace.hpp>
-#include <cppcms/view.h>
 #include <sstream>
 
+#include <boost/algorithm/string/replace.hpp>
+#include <cppcms/view.h>
+
 #include <authentication_application.hpp>
+#include <config.hpp>
 #include <conversion_application.hpp>
 #include <database_application.hpp>
 #include <exceptions.hpp>
@@ -70,11 +72,11 @@ void RootApp::welcome ()
 		const std::string raw = request ().get (PARAM_RAW);
 		if (!raw.empty () && raw == "true")
 		{
-			RootApp::setSeeOther (response (), cppcms::application::settings ().get ("api_specification.raw", ""));
+			RootApp::setSeeOther (response (), Config::api_specification_raw);
 			return;
 		}
 
-		RootApp::setSeeOther (response (), cppcms::application::settings ().get ("api_specification.html", ""));
+		RootApp::setSeeOther (response (), Config::api_specification_html);
 		return;
 	}
 	else if (request ().request_method () == "OPTIONS")

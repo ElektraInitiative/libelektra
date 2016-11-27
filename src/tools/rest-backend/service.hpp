@@ -55,11 +55,11 @@ public:
 	// configuration entries
 	void filterConfigurationsByName (std::vector<kdbrest::model::Entry> & entries, const std::string & startsWith);
 	void findConfigurationsByFilter (std::vector<kdbrest::model::Entry> & entries, const std::string & filter,
-					 const std::string filterby = std::string (ELEKTRA_REST_OUTPUT_FILTERBY_ENTRY_DEFAULT));
+					 const std::string filterby = Config::output_default_entry_filterby);
 
 	// user entries
 	void findUsersByFilter (std::vector<kdbrest::model::User> & users, const std::string & filter,
-				const std::string filterby = std::string (ELEKTRA_REST_OUTPUT_FILTERBY_USER_DEFAULT));
+				const std::string filterby = Config::output_default_user_filterby);
 
 private:
 };

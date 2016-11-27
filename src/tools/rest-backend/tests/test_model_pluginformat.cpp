@@ -8,7 +8,9 @@
 
 #include <gtest/gtest.h>
 
+#include <config.hpp>
 #include <model_pluginformat.hpp>
+#include <service.hpp>
 
 /**
  * TESTS for kdbrest::models::PluginFormat
@@ -49,4 +51,12 @@ TEST (kdbrestModelsPluginformatTest, ValueCheck)
 	ASSERT_EQ (pf3.getPluginname (), "xmltool");
 	ASSERT_EQ (pf2.getFileformat (), pf3.getFileformat ());
 	ASSERT_EQ (pf2.getPluginname (), pf3.getPluginname ());
+}
+
+int main (int argc, char * argv[])
+{
+	testing::InitGoogleTest (&argc, argv);
+	cppcms::json::value config = kdbrest::service::ConfigEngine::instance ().loadApplicationConfiguration ();
+	(void)kdbrest::Config::initializeConfiguration (config);
+	return RUN_ALL_TESTS ();
 }

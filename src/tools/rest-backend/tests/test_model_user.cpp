@@ -8,7 +8,9 @@
 
 #include <gtest/gtest.h>
 
+#include <config.hpp>
 #include <model_user.hpp>
+#include <service.hpp>
 
 /**
  * TESTS for kdbrest::models::User
@@ -17,7 +19,7 @@
 TEST (kdbrestModelsUserTest, ConstructorKeyReferenceCheck)
 {
 
-	std::string username = ELEKTRA_REST_USER_REPOSITORY_PATH + std::string ("/") + "user-name";
+	std::string username = kdbrest::Config::kdb_path_users + std::string ("/") + "user-name";
 	kdb::Key userKey (username, KEY_END);
 	kdbrest::model::User user (userKey);
 	ASSERT_EQ (user.getUsername (), "user-name");
@@ -103,4 +105,12 @@ TEST (kdbrestModelsUserTest, SetAndGetCreatedat)
 	user.setCreatedAt (created_at);
 	ASSERT_EQ (user.getCreatedAt (), created_at);
 	ASSERT_TRUE (user.getSubkey (ELEKTRA_REST_MODEL_USER_META_CREATEDAT));
+}
+
+int main (int argc, char * argv[])
+{
+	testing::InitGoogleTest (&argc, argv);
+	cppcms::json::value config = kdbrest::service::ConfigEngine::instance ().loadApplicationConfiguration ();
+	(void)kdbrest::Config::initializeConfiguration (config);
+	return RUN_ALL_TESTS ();
 }

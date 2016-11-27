@@ -8,6 +8,7 @@
 
 #include <gtest/gtest.h>
 
+#include <config.hpp>
 #include <kdb_includes.hpp>
 #include <model_entry.hpp>
 #include <model_user.hpp>
@@ -24,13 +25,12 @@ TEST (kdbrestServicesStorageengineTest, CreateEntryCheck)
 	using namespace kdbrest::model;
 	using namespace kdbrest::service;
 
-	std::string testKey = "test/test/test/test/entry1";
-	std::string testSubKey1 = ELEKTRA_REST_CONFIG_REPOSITORY_PATH + std::string ("/") + "test/test/test/test/entry1/confkey1";
-	std::string testSubKey2 =
-		ELEKTRA_REST_CONFIG_REPOSITORY_PATH + std::string ("/") + "test/test/test/test/entry1/conf/iguration/key1";
+	std::string testKey = "test/test/test/entry1";
+	std::string testSubKey1 = kdbrest::Config::kdb_path_configs + std::string ("/") + "test/test/test/entry1/confkey1";
+	std::string testSubKey2 = kdbrest::Config::kdb_path_configs + std::string ("/") + "test/test/test/entry1/conf/iguration/key1";
 
-	Key subKey1 (testSubKey1);
-	Key subKey2 (testSubKey2);
+	Key subKey1 (testSubKey1, KEY_END);
+	Key subKey2 (testSubKey2, KEY_END);
 
 	Entry testEntry (testKey);
 	testEntry.addSubkey (subKey1);
@@ -47,9 +47,9 @@ TEST (kdbrestServicesStorageengineTest, CreateEntryCheck)
 	{
 		KDB kdb;
 		KeySet ks;
-		kdb.get (ks, ELEKTRA_REST_CONFIG_REPOSITORY_PATH);
+		kdb.get (ks, kdbrest::Config::kdb_path_configs);
 		ks.cut (testEntry);
-		kdb.set (ks, ELEKTRA_REST_CONFIG_REPOSITORY_PATH);
+		kdb.set (ks, kdbrest::Config::kdb_path_configs);
 	}
 
 	// do storage
@@ -59,7 +59,7 @@ TEST (kdbrestServicesStorageengineTest, CreateEntryCheck)
 	{
 		KDB kdb;
 		KeySet ks;
-		kdb.get (ks, ELEKTRA_REST_CONFIG_REPOSITORY_PATH);
+		kdb.get (ks, kdbrest::Config::kdb_path_configs);
 		Key k = ks.lookup (testEntry);
 		if (k)
 		{
@@ -86,9 +86,9 @@ TEST (kdbrestServicesStorageengineTest, CreateEntryCheck)
 	{
 		KDB kdb;
 		KeySet ks;
-		kdb.get (ks, ELEKTRA_REST_CONFIG_REPOSITORY_PATH);
+		kdb.get (ks, kdbrest::Config::kdb_path_configs);
 		ks.cut (testEntry);
-		kdb.set (ks, ELEKTRA_REST_CONFIG_REPOSITORY_PATH);
+		kdb.set (ks, kdbrest::Config::kdb_path_configs);
 	}
 }
 
@@ -100,21 +100,19 @@ TEST (kdbrestServicesStorageengineTest, UpdateEntryCheck)
 	using namespace kdbrest::model;
 	using namespace kdbrest::service;
 
-	std::string testKey = "test/test/test/test/entry1";
-	std::string testSubKey1 = ELEKTRA_REST_CONFIG_REPOSITORY_PATH + std::string ("/") + "test/test/test/test/entry1/confkey1";
-	std::string testSubKey2 =
-		ELEKTRA_REST_CONFIG_REPOSITORY_PATH + std::string ("/") + "test/test/test/test/entry1/conf/iguration/key1";
+	std::string testKey = "test/test/test/entry1";
+	std::string testSubKey1 = kdbrest::Config::kdb_path_configs + std::string ("/") + "test/test/test/entry1/confkey1";
+	std::string testSubKey2 = kdbrest::Config::kdb_path_configs + std::string ("/") + "test/test/test/entry1/conf/iguration/key1";
 
-	std::string testSubKeyNew1 =
-		ELEKTRA_REST_CONFIG_REPOSITORY_PATH + std::string ("/") + "test/test/test/test/entry1/configuration/k1";
+	std::string testSubKeyNew1 = kdbrest::Config::kdb_path_configs + std::string ("/") + "test/test/test/entry1/configuration/k1";
 	std::string testSubKeyNew2 =
-		ELEKTRA_REST_CONFIG_REPOSITORY_PATH + std::string ("/") + "test/test/test/test/entry1/co/nf/ig/u/ra/ti/on/key1";
+		kdbrest::Config::kdb_path_configs + std::string ("/") + "test/test/test/entry1/co/nf/ig/u/ra/ti/on/key1";
 
-	Key subKey1 (testSubKey1);
-	Key subKey2 (testSubKey2);
+	Key subKey1 (testSubKey1, KEY_END);
+	Key subKey2 (testSubKey2, KEY_END);
 
-	Key newSubKey1 (testSubKeyNew1);
-	Key newSubKey2 (testSubKeyNew2);
+	Key newSubKey1 (testSubKeyNew1, KEY_END);
+	Key newSubKey2 (testSubKeyNew2, KEY_END);
 
 	Entry testEntry (testKey);
 	testEntry.addSubkey (subKey1);
@@ -126,26 +124,26 @@ TEST (kdbrestServicesStorageengineTest, UpdateEntryCheck)
 	{
 		KDB kdb;
 		KeySet ks;
-		kdb.get (ks, ELEKTRA_REST_CONFIG_REPOSITORY_PATH);
+		kdb.get (ks, kdbrest::Config::kdb_path_configs);
 		ks.cut (testEntry);
-		kdb.set (ks, ELEKTRA_REST_CONFIG_REPOSITORY_PATH);
+		kdb.set (ks, kdbrest::Config::kdb_path_configs);
 	}
 
 	// create entry
 	{
 		KDB kdb;
 		KeySet ks;
-		kdb.get (ks, ELEKTRA_REST_CONFIG_REPOSITORY_PATH);
+		kdb.get (ks, kdbrest::Config::kdb_path_configs);
 		ks.append (testEntry);
 		ks.append (testEntry.getSubkeys ());
-		kdb.set (ks, ELEKTRA_REST_CONFIG_REPOSITORY_PATH);
+		kdb.set (ks, kdbrest::Config::kdb_path_configs);
 	}
 
 	// ensure that entry has been saved
 	{
 		KDB kdb;
 		KeySet ks;
-		kdb.get (ks, ELEKTRA_REST_CONFIG_REPOSITORY_PATH);
+		kdb.get (ks, kdbrest::Config::kdb_path_configs);
 		Key k = ks.lookup (testEntry);
 		if (!k)
 		{
@@ -177,7 +175,7 @@ TEST (kdbrestServicesStorageengineTest, UpdateEntryCheck)
 	{
 		KDB kdb;
 		KeySet ks;
-		kdb.get (ks, ELEKTRA_REST_CONFIG_REPOSITORY_PATH);
+		kdb.get (ks, kdbrest::Config::kdb_path_configs);
 		Key k = ks.lookup (testEntry);
 		if (k)
 		{
@@ -199,9 +197,9 @@ TEST (kdbrestServicesStorageengineTest, UpdateEntryCheck)
 	{
 		KDB kdb;
 		KeySet ks;
-		kdb.get (ks, ELEKTRA_REST_CONFIG_REPOSITORY_PATH);
+		kdb.get (ks, kdbrest::Config::kdb_path_configs);
 		ks.cut (testEntry);
-		kdb.set (ks, ELEKTRA_REST_CONFIG_REPOSITORY_PATH);
+		kdb.set (ks, kdbrest::Config::kdb_path_configs);
 	}
 }
 
@@ -212,13 +210,12 @@ TEST (kdbrestServicesStorageengineTest, DeleteEntryCheck)
 	using namespace kdbrest::model;
 	using namespace kdbrest::service;
 
-	std::string testKey = "test/test/test/test/entry1";
-	std::string testSubKey1 = ELEKTRA_REST_CONFIG_REPOSITORY_PATH + std::string ("/") + "test/test/test/test/entry1/confkey1";
-	std::string testSubKey2 =
-		ELEKTRA_REST_CONFIG_REPOSITORY_PATH + std::string ("/") + "test/test/test/test/entry1/conf/iguration/key1";
+	std::string testKey = "test/test/test/entry1";
+	std::string testSubKey1 = kdbrest::Config::kdb_path_configs + std::string ("/") + "test/test/test/entry1/confkey1";
+	std::string testSubKey2 = kdbrest::Config::kdb_path_configs + std::string ("/") + "test/test/test/entry1/conf/iguration/key1";
 
-	Key subKey1 (testSubKey1);
-	Key subKey2 (testSubKey2);
+	Key subKey1 (testSubKey1, KEY_END);
+	Key subKey2 (testSubKey2, KEY_END);
 
 	Entry testEntry (testKey);
 	testEntry.addSubkey (subKey1);
@@ -229,9 +226,9 @@ TEST (kdbrestServicesStorageengineTest, DeleteEntryCheck)
 	{
 		KDB kdb;
 		KeySet ks;
-		kdb.get (ks, ELEKTRA_REST_CONFIG_REPOSITORY_PATH);
+		kdb.get (ks, kdbrest::Config::kdb_path_configs);
 		ks.cut (testEntry);
-		kdb.set (ks, ELEKTRA_REST_CONFIG_REPOSITORY_PATH);
+		kdb.set (ks, kdbrest::Config::kdb_path_configs);
 	}
 
 	// force re-fetching of entry cache
@@ -244,7 +241,7 @@ TEST (kdbrestServicesStorageengineTest, DeleteEntryCheck)
 	{
 		KDB kdb;
 		KeySet ks;
-		kdb.get (ks, ELEKTRA_REST_CONFIG_REPOSITORY_PATH);
+		kdb.get (ks, kdbrest::Config::kdb_path_configs);
 		Key k = ks.lookup (testEntry);
 		if (k)
 		{
@@ -268,9 +265,9 @@ TEST (kdbrestServicesStorageengineTest, DeleteEntryCheck)
 	{
 		KDB kdb;
 		KeySet ks;
-		kdb.get (ks, ELEKTRA_REST_CONFIG_REPOSITORY_PATH);
+		kdb.get (ks, kdbrest::Config::kdb_path_configs);
 		ks.cut (testEntry);
-		kdb.set (ks, ELEKTRA_REST_CONFIG_REPOSITORY_PATH);
+		kdb.set (ks, kdbrest::Config::kdb_path_configs);
 	}
 }
 
@@ -280,25 +277,25 @@ TEST (kdbrestServicesStorageengineTest, EntryExistsCheck)
 	using namespace kdb;
 	using namespace kdbrest::service;
 
-	std::string testKey = "test/test/test/test/entry1";
-	Key testKeyAbs = Key (ELEKTRA_REST_CONFIG_REPOSITORY_PATH + std::string ("/") + testKey, KEY_VALUE, "testvalue", KEY_END);
+	std::string testKey = "test/test/test/entry1";
+	Key testKeyAbs = Key (kdbrest::Config::kdb_path_configs + std::string ("/") + testKey, KEY_VALUE, "testvalue", KEY_END);
 
 	// ensure entry is not in database
 	{
 		KDB kdb;
 		KeySet ks;
-		kdb.get (ks, ELEKTRA_REST_CONFIG_REPOSITORY_PATH);
+		kdb.get (ks, kdbrest::Config::kdb_path_configs);
 		ks.cut (testKeyAbs);
-		kdb.set (ks, ELEKTRA_REST_CONFIG_REPOSITORY_PATH);
+		kdb.set (ks, kdbrest::Config::kdb_path_configs);
 	}
 
 	// create key
 	{
 		KDB kdb;
 		KeySet ks;
-		kdb.get (ks, ELEKTRA_REST_CONFIG_REPOSITORY_PATH);
+		kdb.get (ks, kdbrest::Config::kdb_path_configs);
 		ks.append (testKeyAbs);
-		kdb.set (ks, ELEKTRA_REST_CONFIG_REPOSITORY_PATH);
+		kdb.set (ks, kdbrest::Config::kdb_path_configs);
 	}
 
 	// make sure that entry cache is re-fetched
@@ -311,9 +308,9 @@ TEST (kdbrestServicesStorageengineTest, EntryExistsCheck)
 	{
 		KDB kdb;
 		KeySet ks;
-		kdb.get (ks, ELEKTRA_REST_CONFIG_REPOSITORY_PATH);
+		kdb.get (ks, kdbrest::Config::kdb_path_configs);
 		ks.lookup (testKeyAbs, KDB_O_POP);
-		kdb.set (ks, ELEKTRA_REST_CONFIG_REPOSITORY_PATH);
+		kdb.set (ks, kdbrest::Config::kdb_path_configs);
 	}
 }
 
@@ -323,16 +320,16 @@ TEST (kdbrestServicesStorageengineTest, GetEntryCheck)
 	using namespace kdb;
 	using namespace kdbrest::service;
 
-	std::string testKey = "test/test/test/test/entry1";
-	Key testKeyAbs = Key (ELEKTRA_REST_CONFIG_REPOSITORY_PATH + std::string ("/") + testKey, KEY_VALUE, "testvalue", KEY_END);
+	std::string testKey = "test/test/test/entry1";
+	Key testKeyAbs = Key (kdbrest::Config::kdb_path_configs + std::string ("/") + testKey, KEY_VALUE, "testvalue", KEY_END);
 
 	// create key
 	{
 		KDB kdb;
 		KeySet ks;
-		kdb.get (ks, ELEKTRA_REST_CONFIG_REPOSITORY_PATH);
+		kdb.get (ks, kdbrest::Config::kdb_path_configs);
 		ks.append (testKeyAbs);
-		kdb.set (ks, ELEKTRA_REST_CONFIG_REPOSITORY_PATH);
+		kdb.set (ks, kdbrest::Config::kdb_path_configs);
 	}
 
 	// make sure that entry cache is re-fetched
@@ -355,9 +352,9 @@ TEST (kdbrestServicesStorageengineTest, GetEntryCheck)
 	{
 		KDB kdb;
 		KeySet ks;
-		kdb.get (ks, ELEKTRA_REST_CONFIG_REPOSITORY_PATH);
+		kdb.get (ks, kdbrest::Config::kdb_path_configs);
 		ks.lookup (testKeyAbs, KDB_O_POP);
-		kdb.set (ks, ELEKTRA_REST_CONFIG_REPOSITORY_PATH);
+		kdb.set (ks, kdbrest::Config::kdb_path_configs);
 	}
 }
 
@@ -384,9 +381,9 @@ TEST (kdbrestServicesStorageengineTest, CreateUserCheck)
 	{
 		KDB kdb;
 		KeySet ks;
-		kdb.get (ks, ELEKTRA_REST_USER_REPOSITORY_PATH);
+		kdb.get (ks, kdbrest::Config::kdb_path_users);
 		ks.cut (testUser);
-		kdb.set (ks, ELEKTRA_REST_USER_REPOSITORY_PATH);
+		kdb.set (ks, kdbrest::Config::kdb_path_users);
 	}
 
 	// do storage
@@ -396,7 +393,7 @@ TEST (kdbrestServicesStorageengineTest, CreateUserCheck)
 	{
 		KDB kdb;
 		KeySet ks;
-		kdb.get (ks, ELEKTRA_REST_USER_REPOSITORY_PATH);
+		kdb.get (ks, kdbrest::Config::kdb_path_users);
 		Key k = ks.lookup (testUser);
 		if (k)
 		{
@@ -424,9 +421,9 @@ TEST (kdbrestServicesStorageengineTest, CreateUserCheck)
 	{
 		KDB kdb;
 		KeySet ks;
-		kdb.get (ks, ELEKTRA_REST_USER_REPOSITORY_PATH);
+		kdb.get (ks, kdbrest::Config::kdb_path_users);
 		ks.cut (testUser);
-		kdb.set (ks, ELEKTRA_REST_USER_REPOSITORY_PATH);
+		kdb.set (ks, kdbrest::Config::kdb_path_users);
 	}
 }
 
@@ -453,9 +450,9 @@ TEST (kdbrestServicesStorageengineTest, UpdateUserCheck)
 	{
 		KDB kdb;
 		KeySet ks;
-		kdb.get (ks, ELEKTRA_REST_USER_REPOSITORY_PATH);
+		kdb.get (ks, kdbrest::Config::kdb_path_users);
 		ks.cut (testUser);
-		kdb.set (ks, ELEKTRA_REST_USER_REPOSITORY_PATH);
+		kdb.set (ks, kdbrest::Config::kdb_path_users);
 	}
 
 	// force re-fetching of user cache
@@ -468,7 +465,7 @@ TEST (kdbrestServicesStorageengineTest, UpdateUserCheck)
 	{
 		KDB kdb;
 		KeySet ks;
-		kdb.get (ks, ELEKTRA_REST_USER_REPOSITORY_PATH);
+		kdb.get (ks, kdbrest::Config::kdb_path_users);
 		Key k = ks.lookup (testUser);
 		if (!k)
 		{
@@ -493,7 +490,7 @@ TEST (kdbrestServicesStorageengineTest, UpdateUserCheck)
 	{
 		KDB kdb;
 		KeySet ks;
-		kdb.get (ks, ELEKTRA_REST_USER_REPOSITORY_PATH);
+		kdb.get (ks, kdbrest::Config::kdb_path_users);
 		Key k = ks.lookup (testUser);
 		if (k)
 		{
@@ -521,9 +518,9 @@ TEST (kdbrestServicesStorageengineTest, UpdateUserCheck)
 	{
 		KDB kdb;
 		KeySet ks;
-		kdb.get (ks, ELEKTRA_REST_USER_REPOSITORY_PATH);
+		kdb.get (ks, kdbrest::Config::kdb_path_users);
 		ks.cut (testUser);
-		kdb.set (ks, ELEKTRA_REST_USER_REPOSITORY_PATH);
+		kdb.set (ks, kdbrest::Config::kdb_path_users);
 	}
 }
 
@@ -550,9 +547,9 @@ TEST (kdbrestServicesStorageengineTest, DeleteUserCheck)
 	{
 		KDB kdb;
 		KeySet ks;
-		kdb.get (ks, ELEKTRA_REST_USER_REPOSITORY_PATH);
+		kdb.get (ks, kdbrest::Config::kdb_path_users);
 		ks.cut (testUser);
-		kdb.set (ks, ELEKTRA_REST_USER_REPOSITORY_PATH);
+		kdb.set (ks, kdbrest::Config::kdb_path_users);
 	}
 
 	// force re-fetching of user cache
@@ -565,7 +562,7 @@ TEST (kdbrestServicesStorageengineTest, DeleteUserCheck)
 	{
 		KDB kdb;
 		KeySet ks;
-		kdb.get (ks, ELEKTRA_REST_USER_REPOSITORY_PATH);
+		kdb.get (ks, kdbrest::Config::kdb_path_users);
 		Key k = ks.lookup (testUser);
 		if (k)
 		{
@@ -597,9 +594,9 @@ TEST (kdbrestServicesStorageengineTest, DeleteUserCheck)
 	{
 		KDB kdb;
 		KeySet ks;
-		kdb.get (ks, ELEKTRA_REST_USER_REPOSITORY_PATH);
+		kdb.get (ks, kdbrest::Config::kdb_path_users);
 		ks.cut (testUser);
-		kdb.set (ks, ELEKTRA_REST_USER_REPOSITORY_PATH);
+		kdb.set (ks, kdbrest::Config::kdb_path_users);
 	}
 }
 
@@ -616,9 +613,9 @@ TEST (kdbrestServicesStorageengineTest, UserExistsCheck)
 	{
 		KDB kdb;
 		KeySet ks;
-		kdb.get (ks, ELEKTRA_REST_USER_REPOSITORY_PATH);
+		kdb.get (ks, kdbrest::Config::kdb_path_users);
 		ks.cut (user);
-		kdb.set (ks, ELEKTRA_REST_USER_REPOSITORY_PATH);
+		kdb.set (ks, kdbrest::Config::kdb_path_users);
 	}
 
 	// force re-fetching of user cache
@@ -631,9 +628,9 @@ TEST (kdbrestServicesStorageengineTest, UserExistsCheck)
 	{
 		KDB kdb;
 		KeySet ks;
-		kdb.get (ks, ELEKTRA_REST_USER_REPOSITORY_PATH);
+		kdb.get (ks, kdbrest::Config::kdb_path_users);
 		ks.append (user);
-		kdb.set (ks, ELEKTRA_REST_USER_REPOSITORY_PATH);
+		kdb.set (ks, kdbrest::Config::kdb_path_users);
 	}
 
 	// force re-fetching of user cache
@@ -646,9 +643,9 @@ TEST (kdbrestServicesStorageengineTest, UserExistsCheck)
 	{
 		KDB kdb;
 		KeySet ks;
-		kdb.get (ks, ELEKTRA_REST_USER_REPOSITORY_PATH);
+		kdb.get (ks, kdbrest::Config::kdb_path_users);
 		ks.cut (user);
-		kdb.set (ks, ELEKTRA_REST_USER_REPOSITORY_PATH);
+		kdb.set (ks, kdbrest::Config::kdb_path_users);
 	}
 }
 
@@ -674,9 +671,9 @@ TEST (kdbrestServicesStorageengineTest, GetUserCheck)
 	{
 		KDB kdb;
 		KeySet ks;
-		kdb.get (ks, ELEKTRA_REST_USER_REPOSITORY_PATH);
+		kdb.get (ks, kdbrest::Config::kdb_path_users);
 		ks.cut (user);
-		kdb.set (ks, ELEKTRA_REST_USER_REPOSITORY_PATH);
+		kdb.set (ks, kdbrest::Config::kdb_path_users);
 	}
 
 	// force re-fetching of user cache
@@ -689,10 +686,10 @@ TEST (kdbrestServicesStorageengineTest, GetUserCheck)
 	{
 		KDB kdb;
 		KeySet ks;
-		kdb.get (ks, ELEKTRA_REST_USER_REPOSITORY_PATH);
+		kdb.get (ks, kdbrest::Config::kdb_path_users);
 		ks.append (user);
 		ks.append (user.getSubkeys ());
-		kdb.set (ks, ELEKTRA_REST_USER_REPOSITORY_PATH);
+		kdb.set (ks, kdbrest::Config::kdb_path_users);
 	}
 
 	// force re-fetching of user cache
@@ -714,8 +711,22 @@ TEST (kdbrestServicesStorageengineTest, GetUserCheck)
 	{
 		KDB kdb;
 		KeySet ks;
-		kdb.get (ks, ELEKTRA_REST_USER_REPOSITORY_PATH);
+		kdb.get (ks, kdbrest::Config::kdb_path_users);
 		ks.cut (user);
-		kdb.set (ks, ELEKTRA_REST_USER_REPOSITORY_PATH);
+		kdb.set (ks, kdbrest::Config::kdb_path_users);
 	}
+}
+
+int main (int argc, char * argv[])
+{
+	testing::InitGoogleTest (&argc, argv);
+
+	// initialize test config
+	cppcms::json::value config = kdbrest::service::ConfigEngine::instance ().loadApplicationConfiguration ();
+	(void)kdbrest::Config::initializeConfiguration (config);
+	// force default config
+	kdbrest::Config::kdb_path_configs = std::string (ELEKTRA_REST_DEFAULT_PATH_CONFIGS);
+	kdbrest::Config::kdb_path_users = std::string (ELEKTRA_REST_DEFAULT_PATH_USERS);
+
+	return RUN_ALL_TESTS ();
 }

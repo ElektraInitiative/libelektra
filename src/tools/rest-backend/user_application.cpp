@@ -16,6 +16,7 @@
 #include <openssl/sha.h>
 
 #include <authentication_application.hpp>
+#include <config.hpp>
 #include <crypto.hpp>
 #include <root_application.hpp>
 #include <service.hpp>
@@ -77,7 +78,7 @@ void UserApp::handle (std::string username)
 			try
 			{
 				model::User user = AuthenticationApp::getCurrentUser (request ());
-				if (user.getRank () < ELEKTRA_REST_PERMISSIONS_RETRIEVE_USER)
+				if (user.getRank () < Config::permissions_user_view)
 				{
 					throw exception::InsufficientPermissionsException ();
 				}
@@ -137,13 +138,13 @@ void UserApp::handle (std::string username)
 			}
 
 			// check permissions
-			if (user.getUsername () != username && user.getRank () < ELEKTRA_REST_PERMISSIONS_UPDATE_USER)
+			if (user.getUsername () != username && user.getRank () < Config::permissions_user_edit)
 			{
 				throw exception::InsufficientPermissionsException ();
 			}
 
 			// execute the update request
-			this->handleUpdate (request (), response (), username, user.getRank () >= ELEKTRA_REST_PERMISSIONS_UPDATE_USER);
+			this->handleUpdate (request (), response (), username, user.getRank () >= Config::permissions_user_edit);
 		}
 		catch (exception::NoCurrentUserException & e)
 		{
@@ -180,7 +181,7 @@ void UserApp::handle (std::string username)
 			}
 
 			// check permissions
-			if (user.getUsername () != username && user.getRank () < ELEKTRA_REST_PERMISSIONS_DELETE_USER)
+			if (user.getUsername () != username && user.getRank () < Config::permissions_user_delete)
 			{
 				throw exception::InsufficientPermissionsException ();
 			}
@@ -381,7 +382,7 @@ void UserApp::handleInsert (cppcms::http::request & req, cppcms::http::response 
 
 	// other properties
 	u.setEmail (email);
-	u.setRank (ELEKTRA_REST_USER_DEFAULT_RANK);
+	u.setRank (Config::permissions_default_rank);
 	u.setCreatedAt (static_cast<long> (time (0)));
 
 	// store user
@@ -610,7 +611,7 @@ inline void UserApp::processFiltering (cppcms::http::request & req, std::vector<
 		// if the filter is unknown, take default
 		if (filterby != "all" && filterby != "username" && filterby != "email")
 		{
-			filterby = std::string (ELEKTRA_REST_OUTPUT_FILTERBY_USER_DEFAULT);
+			filterby = Config::output_default_user_filterby;
 		}
 
 		service::SearchEngine::instance ().findUsersByFilter (users, filter, filterby);
@@ -632,13 +633,13 @@ inline void UserApp::processSorting (cppcms::http::request & req, std::vector<mo
 	// validate the sort direction input or set default
 	if (!boost::iequals (sort, PARAM_VAL_SORT_ASC) && !boost::iequals (sort, PARAM_VAL_SORT_DESC))
 	{
-		sort = std::string (ELEKTRA_REST_OUTPUT_SORT_USER_DEFAULT);
+		sort = Config::output_default_user_sort;
 	}
 
 	// validate the sortby input or set default
 	if (SORT_USER_MAP.find (sortby) == SORT_USER_MAP.end ())
 	{
-		sortby = std::string (ELEKTRA_REST_OUTPUT_SORTBY_USER_DEFAULT);
+		sortby = Config::output_default_user_sortby;
 	}
 
 	// do the sorting

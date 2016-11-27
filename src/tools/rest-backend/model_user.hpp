@@ -59,7 +59,7 @@ public:
 	 * 
      * @param username The username to be used for the key
      */
-	inline User (std::string username) : kdb::Key (ELEKTRA_REST_USER_REPOSITORY_PATH + std::string ("/") + username, KEY_END)
+	inline User (std::string username) : kdb::Key (Config::kdb_path_users + std::string ("/") + username, KEY_END)
 	{
 	}
 
@@ -152,7 +152,7 @@ public:
      */
 	std::string getUsername () const
 	{
-		return this->getName ().erase (0, sizeof (ELEKTRA_REST_USER_REPOSITORY_PATH));
+		return this->getName ().erase (0, Config::kdb_path_users.length () + 1);
 	}
 
 	/**
@@ -254,7 +254,7 @@ public:
 		}
 		catch (kdbrest::exception::SubkeyNotFoundException & e)
 		{
-			return ELEKTRA_REST_USER_DEFAULT_RANK; // default is user rank
+			return Config::permissions_default_rank; // default is user rank
 		}
 	}
 

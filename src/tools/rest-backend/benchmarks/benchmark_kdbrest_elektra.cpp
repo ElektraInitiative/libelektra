@@ -36,13 +36,13 @@ void clearDatabase ()
 	kdb::KeySet ks;
 
 	// snippets
-	kdb.get (ks, ELEKTRA_REST_CONFIG_REPOSITORY_PATH);
+	kdb.get (ks, ELEKTRA_REST_DEFAULT_PATH_CONFIGS);
 	ks.clear ();
-	kdb.set (ks, ELEKTRA_REST_CONFIG_REPOSITORY_PATH);
+	kdb.set (ks, ELEKTRA_REST_DEFAULT_PATH_CONFIGS);
 	// users
-	kdb.get (ks, ELEKTRA_REST_USER_REPOSITORY_PATH);
+	kdb.get (ks, ELEKTRA_REST_DEFAULT_PATH_USERS);
 	ks.clear ();
-	kdb.set (ks, ELEKTRA_REST_USER_REPOSITORY_PATH);
+	kdb.set (ks, ELEKTRA_REST_DEFAULT_PATH_USERS);
 }
 
 void prepareTestData (int numUsers, int numEntriesPerUser, int numTagsPerEntry)
@@ -51,8 +51,8 @@ void prepareTestData (int numUsers, int numEntriesPerUser, int numTagsPerEntry)
 	kdb::KeySet ks_users (numUsers, KS_END);
 	kdb::KeySet ks_entries (numUsers * numEntriesPerUser, KS_END);
 
-	kdb.get (ks_users, ELEKTRA_REST_USER_REPOSITORY_PATH);
-	kdb.get (ks_entries, ELEKTRA_REST_CONFIG_REPOSITORY_PATH);
+	kdb.get (ks_users, ELEKTRA_REST_DEFAULT_PATH_USERS);
+	kdb.get (ks_entries, ELEKTRA_REST_DEFAULT_PATH_CONFIGS);
 
 	// create users
 	std::vector<model::User> users = createTestUsers (numUsers);
@@ -72,8 +72,8 @@ void prepareTestData (int numUsers, int numEntriesPerUser, int numTagsPerEntry)
 		}
 	}
 
-	kdb.set (ks_users, ELEKTRA_REST_USER_REPOSITORY_PATH);
-	kdb.set (ks_entries, ELEKTRA_REST_CONFIG_REPOSITORY_PATH);
+	kdb.set (ks_users, ELEKTRA_REST_DEFAULT_PATH_USERS);
+	kdb.set (ks_entries, ELEKTRA_REST_DEFAULT_PATH_CONFIGS);
 }
 
 void printEntryVector (std::vector<model::Entry> entries, int indent = 0)
@@ -415,6 +415,10 @@ int main (int argc, char * argv[])
 			return 1;
 		}
 	}
+
+	// load configuration
+	cppcms::json::value config = kdbrest::service::ConfigEngine::instance ().loadApplicationConfiguration ();
+	(void)kdbrest::Config::initializeConfiguration (config);
 
 	// run benchmarks
 	if (std::string (argv[1]).compare (0, sizeof ("key"), "key") == 0)

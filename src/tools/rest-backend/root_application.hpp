@@ -10,6 +10,12 @@
 #define ELEKTRA_REST_ROOTAPP_HPP
 
 #include <chrono>
+#include <iostream>
+#include <random>
+#include <stdlib.h>
+#include <string>
+#include <vector>
+
 #include <cppcms/application.h>
 #include <cppcms/applications_pool.h>
 #include <cppcms/http_request.h>
@@ -17,11 +23,6 @@
 #include <cppcms/service.h>
 #include <cppcms/url_dispatcher.h>
 #include <cppcms/url_mapper.h>
-#include <iostream>
-#include <random>
-#include <stdlib.h>
-#include <string>
-#include <vector>
 
 /**
  * @brief main namespace for the REST service
