@@ -55,7 +55,6 @@ else ()
     target_link_libraries (${tool} elektra-full elektratools)
 
     install (TARGETS ${tool} DESTINATION ${install_directory})
-    install (FILES ${tool}-config.json DESTINATION ${install_directory})
     install (PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/run-${tool} ${CMAKE_CURRENT_BINARY_DIR}/stop-${tool}
              DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
 

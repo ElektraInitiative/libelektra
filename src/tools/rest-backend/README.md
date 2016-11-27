@@ -31,11 +31,9 @@ installed tools and something like `External tools are located in /usr/local/lib
 With this path we can run the service like `cd /usr/local/lib/elektra/tool_exec/ && sh run-@tool@`.
 An alternative is to make use of the `kdb` tool and run `kdb run-@tool@`.
 
-The REST service can also be configured. The file `@tool@-config.js` in the
-path `@CMAKE_INSTALL_PREFIX@/@install_directory@`
-contains the CppCMS configuration (e.g. where the server listens to).
-Detailed information about how to configure the REST service can be found on the
-[CppCMS website](http://cppcms.com/wikipp/en/page/cppcms_1x_config).
+The REST service can also be configured. All configuration is read from Elektras
+key database at start-time of the service. Further details and configuration options
+are listed below.
 
 To stop the service, run `sh stop-@tool@` in the directory where the start script is located
 or `kdb stop-@tool@` from anywhere.
