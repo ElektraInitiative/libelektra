@@ -19,8 +19,6 @@ namespace kdbrest
 namespace service
 {
 
-const std::string REGEX_CONF_KEY = "((?:[a-zA-Z_]+(?:\\.?[a-zA-Z_])+)?)\\.?#_?([0-9]+)\\.?((?:[a-zA-Z0-9_#]+(?:\\.?[a-zA-Z0-9_#])+)?)";
-
 /**
  * @brief can be used to load the configuration of the whole application
  * 
@@ -61,7 +59,7 @@ cppcms::json::value ConfigEngine::loadApplicationConfiguration () const
 void ConfigEngine::setValue (cppcms::json::value & config, const std::string path, const kdb::Key & key) const
 {
 	// check if the key contains an array
-	std::regex array_regex (REGEX_CONF_KEY);
+	std::regex array_regex (REGEX_CHECK_KEY_IS_ARRAY);
 	std::smatch matches;
 
 	// there is an array in the path
