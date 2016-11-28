@@ -60,6 +60,12 @@ interface that makes auto-completion happy
 
 
 
+== REST-BACKEND ==
+
+make nice interface for JWT library
+make use of cachefilter plugin
+
+
 
 
 

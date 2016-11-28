@@ -25,3 +25,7 @@ build*
 
 #ignore vim swp files
 *.swp
+
+#ignore netbeans project files
+nbproject/
+
