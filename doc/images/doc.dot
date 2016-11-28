@@ -1,0 +1,95 @@
+/*
+Visualization of concepts as explained in documentation.
+
+To compile it run:
+	dot -Tpdf doc.dot -o doc.pdf
+
+clusters represent a markdown file (or could also be another document artefact)
+
+Naming conventions:
+	i<name>: abstraction of concept (rough idea of it)
+	e<name>: end of document (needed for "See also" section)
+	l<name>: link to document
+	<name>:  all other nodes represent a concept
+
+Dot syntax:
+	Dependencies are conceptA -> conceptB
+	See also comments in cluster0
+*/
+digraph G {
+	start [shape=Mdiamond]; // readers start here
+	start -> compile;
+	start -> why;
+	install -> bigpicture;
+	start -> install;
+	compile -> install;
+	install -> why;
+	install -> mount;
+	install -> application_integration -> api;
+	iapi -> api;
+	subgraph cluster0 {
+		node [style=filled,color=white]; // only for style, can be removed
+		style=filled;                    // only for style, can be removed
+		color=lightgrey;                 // only for style, can be removed
+		// dependencies within document (obviously has to be linear):
+		why -> KDB -> global -> iplugins -> ispecify -> syntax -> semantics -> imount -> ikdb -> ewhy;
+		label = "WHY.md";                // name of document
+	}
+	ewhy -> bigpicture;
+	ewhy -> compile;
+	ewhy -> install;
+	ewhy -> tutorials;
+	ewhy -> tools;
+	ewhy -> kdb;
+	ewhy -> glossary;
+	ewhy -> introduction;
+	subgraph cluster1 {
+		node [style=filled,color=white];
+		style=filled;
+		color=lightgrey;
+		bigpicture -> why -> iplugins -> iapi -> ibindings -> imount -> ikdb -> imount -> istacking -> imeta -> iinterpreter -> inamespace -> ebigpicture;
+		label = "BIGPICTURE.md";
+	}
+	ebigpicture -> mount;
+	ebigpicture -> compile;
+	ebigpicture -> install;
+	ebigpicture -> tutorials;
+	ebigpicture -> tools;
+	ebigpicture -> kdb;
+	subgraph cluster2 {
+		node [style=filled,color=white];
+		style=filled;
+		color=lightgrey;
+		tutorials -> lnamespaces -> lcascading -> lmount -> etut;
+		label = "tutorials/README";
+	}
+	etut -> tutmount;
+	lnamespaces -> tutnamespaces;
+	lcascading -> tutnamespaces;
+	lmount -> tutmount;
+	subgraph cluster3 {
+		node [style=filled,color=white];
+		style=filled;
+		color=lightgrey;
+		tutmount -> ielektrify -> lresolver -> plugins -> metadata -> backends -> emount;
+		label = "tutorials/mount.md";
+	}
+	lresolver -> resolver;
+	namespaces -> resolver;
+	subgraph cluster4 {
+		node [style=filled,color=white];
+		style=filled;
+		color=lightgrey;
+		tutnamespaces -> iKDB -> ikdb -> ispec -> iproc -> idir -> iuser -> isystem -> namespaces -> cascading -> kdb -> iapi -> etutnamespaces;
+		label = "tutorials/namespaces.md";
+	}
+	// etutnamespaces -> ecascading; // does not exist
+	namespaces -> tutcascading;
+	subgraph cluster5 {
+		node [style=filled,color=white];
+		style=filled;
+		color=lightgrey;
+		tutcascading  -> ispec -> iproc -> idir -> iuser -> isystem-> system -> user -> dir -> proc -> override -> defaults -> etutcascading;
+		label = "tutorials/cascading.md";
+	}
+}

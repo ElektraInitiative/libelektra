@@ -31,6 +31,39 @@ TEST (key, null)
 	succeed_if (key0.needSync (), "key should need sync");
 }
 
+
+TEST (key, typebool)
+{
+	Key k ("user/key", KEY_VALUE, "testkey", KEY_END);
+	EXPECT_THROW (k.get<bool> (), KeyTypeConversion);
+	k.setString ("O");
+	EXPECT_THROW (k.get<bool> (), KeyTypeConversion);
+	k.setString ("0a");
+	EXPECT_THROW (k.get<bool> (), KeyTypeConversion);
+	k.setString ("true");
+	EXPECT_THROW (k.get<bool> (), KeyTypeConversion);
+	k.setString ("false");
+	EXPECT_THROW (k.get<bool> (), KeyTypeConversion);
+	k.setString ("f");
+	EXPECT_THROW (k.get<bool> (), KeyTypeConversion);
+	k.setString ("t");
+	EXPECT_THROW (k.get<bool> (), KeyTypeConversion);
+	k.setString ("ON");
+	EXPECT_THROW (k.get<bool> (), KeyTypeConversion);
+	k.setString ("OFF");
+	EXPECT_THROW (k.get<bool> (), KeyTypeConversion);
+	k.setString ("on");
+	EXPECT_THROW (k.get<bool> (), KeyTypeConversion);
+	k.setString ("off");
+	EXPECT_THROW (k.get<bool> (), KeyTypeConversion);
+
+	k.setString ("0");
+	ASSERT_TRUE (!k.get<bool> ());
+	k.setString ("1");
+	ASSERT_TRUE (k.get<bool> ());
+}
+
+
 TEST (key, keynew)
 {
 	char array[] = "here is some data stored";
@@ -132,6 +165,17 @@ TEST (key, keynew)
 	catch (KeyTypeConversion const & ktm)
 	{
 		succeed_if (true, "string key did not throw after getting binary");
+	}
+
+	key4.setString ("1.1");
+	try
+	{
+		key4.get<int> ();
+		succeed_if (false, "string key did not throw after ip");
+	}
+	catch (KeyTypeConversion const & ktm)
+	{
+		succeed_if (true, "string key did not throw after getting ip");
 	}
 
 	key4.setString ("");

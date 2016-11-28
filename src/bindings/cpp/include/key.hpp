@@ -1074,7 +1074,7 @@ inline T Key::get () const
 	ist.imbue (std::locale ("C"));
 	T x;
 	ist >> x; // convert string to type
-	if (ist.fail ())
+	if (ist.fail () || !ist.eof ())
 	{
 		throw KeyTypeConversion ();
 	}

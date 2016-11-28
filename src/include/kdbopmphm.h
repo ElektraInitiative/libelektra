@@ -1,6 +1,58 @@
 #ifndef OPMPHM_H
 #define OPMPHM_H
 
+/* Hash function
+ * By Bob Jenkins, May 2006
+ * http://burtleburtle.net/bob/c/lookup3.c
+ */
+
+#define OPMPHM_HASHFUNCTION_ROT(x, k) (((x) << (k)) | ((x) >> (32 - (k))))
+
+#define OPMPHM_HASHFUNCTION_FINAL(a, b, c)                                                                                                 \
+	{                                                                                                                                  \
+		c ^= b;                                                                                                                    \
+		c -= OPMPHM_HASHFUNCTION_ROT (b, 14);                                                                                      \
+		a ^= c;                                                                                                                    \
+		a -= OPMPHM_HASHFUNCTION_ROT (c, 11);                                                                                      \
+		b ^= a;                                                                                                                    \
+		b -= OPMPHM_HASHFUNCTION_ROT (a, 25);                                                                                      \
+		c ^= b;                                                                                                                    \
+		c -= OPMPHM_HASHFUNCTION_ROT (b, 16);                                                                                      \
+		a ^= c;                                                                                                                    \
+		a -= OPMPHM_HASHFUNCTION_ROT (c, 4);                                                                                       \
+		b ^= a;                                                                                                                    \
+		b -= OPMPHM_HASHFUNCTION_ROT (a, 14);                                                                                      \
+		c ^= b;                                                                                                                    \
+		c -= OPMPHM_HASHFUNCTION_ROT (b, 24);                                                                                      \
+	}
+
+#define OPMPHM_HASHFUNCTION_MIX(a, b, c)                                                                                                   \
+	{                                                                                                                                  \
+		a -= c;                                                                                                                    \
+		a ^= OPMPHM_HASHFUNCTION_ROT (c, 4);                                                                                       \
+		c += b;                                                                                                                    \
+		b -= a;                                                                                                                    \
+		b ^= OPMPHM_HASHFUNCTION_ROT (a, 6);                                                                                       \
+		a += c;                                                                                                                    \
+		c -= b;                                                                                                                    \
+		c ^= OPMPHM_HASHFUNCTION_ROT (b, 8);                                                                                       \
+		b += a;                                                                                                                    \
+		a -= c;                                                                                                                    \
+		a ^= OPMPHM_HASHFUNCTION_ROT (c, 16);                                                                                      \
+		c += b;                                                                                                                    \
+		b -= a;                                                                                                                    \
+		b ^= OPMPHM_HASHFUNCTION_ROT (a, 19);                                                                                      \
+		a += c;                                                                                                                    \
+		c -= b;                                                                                                                    \
+		c ^= OPMPHM_HASHFUNCTION_ROT (b, 4);                                                                                       \
+		b += a;                                                                                                                    \
+	}
+uint32_t opmphmHashfunction (const void * key, size_t length, uint32_t initval);
+
+/* Random */
+
+uint32_t opmphmRandom (unsigned int * seedp);
+
 /**
  * The requirements are described in doc/help/elektra-data-structures.md.
  */
