@@ -14,6 +14,7 @@ elseif (NOT OPENSSL_FOUND)
 else ()
 
     set (install_directory ${TARGET_TOOL_DATA_FOLDER}/${tool})
+    file (READ config-specification.ini configuration-specification)
 
     configure_file (
         "${CMAKE_CURRENT_SOURCE_DIR}/config.hpp.in"
@@ -58,7 +59,7 @@ else ()
     install (PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/run-${tool} ${CMAKE_CURRENT_BINARY_DIR}/stop-${tool}
              DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
 
-    generate_manpage (elektra-${tool} FILENAME ${CMAKE_CURRENT_BINARY_DIR}/README.md)
+    generate_manpage (kdb-run-${tool} FILENAME ${CMAKE_CURRENT_BINARY_DIR}/README.md)
     
     if (ENABLE_TESTING)
         add_subdirectory (tests)
