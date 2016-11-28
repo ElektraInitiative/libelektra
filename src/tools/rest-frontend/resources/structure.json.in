@@ -3,11 +3,13 @@
         "name": "Documentation",
         "type": "submenu",
         "ref": "documentation",
+        "dev-comment": "Top-level menu button, children are buttons of dropdown.",
         "children": [
             {
                 "name": "Getting started",
                 "type": "staticlist",
                 "ref": "docgettingstarted",
+                "dev-comment": "A list of documentation files thar are important for new users. Could be replaced by 'parsereadme' type in future.",
                 "children": [
                     {
                         "name": "Why Elektra?",
@@ -54,14 +56,14 @@
                     "path": "doc/tutorials/README.md",
                     "target_file": [],
                     "parsing": {
-                        "stop_regex": "####### UNUSED ######",
                         "section_regex": "## ([^#]+)",
                         "entry_regex": "^\\- \\[(.+)\\]\\(([^\\)]+)\\)(.*)"
                     },
                     "name": {
                         "make_pretty": false
                     }
-                }
+                },
+                "dev-comment": "Names are already pretty in the linked readme, we do not have to change them."
             },
             {
                 "name": "Plugins",
@@ -79,7 +81,8 @@
                     "name": {
                         "make_pretty": false
                     }
-                }
+                },
+                "dev-comment": "Plugin names should be kept naturally, so the users can match them with what is used in the system."
             },
             {
                 "name": "Tools",
@@ -88,7 +91,8 @@
                 "options": {
                     "path": "src/tools",
                     "target_file": ["README.md", "README", "readme.md", "readme"]
-                }
+                },
+                "dev-comment": "This could be changed to the more powerful 'parsereadme' type in future."
             },
             {
                 "name": "Manpages",
@@ -97,7 +101,8 @@
                 "options": {
                     "path": "doc/help",
                     "blacklist": ["CMakeLists.txt"]
-                }
+                },
+                "dev-comment": "We don't want the CMakeLists.txt to be in the output."
             }
         ]
     },
@@ -105,11 +110,13 @@
         "name": "Development",
         "type": "submenu",
         "ref": "development",
+        "dev-comment": "This is another top-level menu point.",
         "children": [
             {
                 "name": "Getting started",
                 "type": "staticlist",
                 "ref": "devgettingstarted",
+                "dev-comment": "Here we have some important documentation files for users that want start to develop with Elektra.",
                 "children": [
                     {
                         "name": "Coding",
@@ -162,7 +169,8 @@
                 "options": {
                     "path": "examples",
                     "blacklist": ["CMakeLists.txt"]
-                }
+                },
+                "dev-comment": "We don't want the CMakeLists.txt to be part of the output."
             },
             {
                 "name": "Bindings",
@@ -177,7 +185,8 @@
                     "name": {
                         "make_pretty": false
                     }
-                }
+                },
+                "dev-comment": "The names of the bindings should be kept naturally, so the users can match them with what is used in the system."
             },
             {
                 "name": "Libraries",
@@ -190,9 +199,10 @@
                         "entry_regex": "^\\[(.+)\\]\\(([^\\)]+)\\)(.*)"
                     },
                     "name": {
-                        "make_pretty": true
+                        "make_pretty": false
                     }
-                }
+                },
+                "dev-comment": "Library names should be kept naturally, so the users can match them with what is used in the system."
             },
             {
                 "name": "Decisions",
@@ -209,7 +219,8 @@
                     "name": {
                         "make_pretty": false
                     }
-                }
+                },
+                "dev-comment": "The readme does already contain nicely formatted decision titles."
             },
             {
                 "name": "Build Server",

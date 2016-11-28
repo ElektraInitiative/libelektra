@@ -66,7 +66,7 @@ The application allows for some basic configuration. Under normal circumstances 
 To run the application, basically two options are available:
 - Use the built-in webserver of `grunt`, which can be configured in the [Gruntfile.js](Gruntfile.js) and run by `grunt server` (in the installation target directory).
 - Use an own webserver to distribute the application. In order to do so, first `grunt full` should be run. After that, the content of the [public](public) directory can be copied to any location that suits the needs. `npm` dependencies in the [node_modules](node_modules) directory and the [resources](resources) directory are only necessary for development, but can be ignored for deployment.
-  In order to not recieve any 404 errors by the webserver, it should redirect all requests that do not have a static file as target to the `index.html`.
+In order to not receive any 404 errors by the webserver, it should serve the `index.html` for all requests that do not have a static file as target. The `index.html` will then try to serve the URL itself.
 
 ### application-config.json ###
 
@@ -94,6 +94,8 @@ In the following, the different element types will be explained in detail. The h
         "type": "link",
         ... other attributes ...
     }
+
+It is possible to add additional attributes not used by the system without breaking anything. For example use `dev-comment` to leave some development notes, e.g. decision information.
 
 #### submenu ####
 
@@ -161,7 +163,8 @@ This field type supports following attributes:
 - `ref` (string) for the dynamic URL part (i.e. a resource of the URL, e.g. `http://example.com/tools` for the subsequent example)
 - `options` (object) with further options:
     - `path` (string) containing the path from the repository root to the directory to enumerate
-    - `target_file` (array[string]) containing some filenames that should be targeted within the sub-directories
+    - `target_file` (array[string]) containing some filenames that should be targeted within the sub-directories 
+      (e.g. find file `README.md` in directory `mydir` to use it as information file for the directory)
 
 Example:
 
