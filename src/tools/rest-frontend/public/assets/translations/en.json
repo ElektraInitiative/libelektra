@@ -263,6 +263,7 @@
     "APP.ENTRIES.SEARCH.TABLE.HEADER.SLUG": "Slug",
     "APP.ENTRIES.SEARCH.TABLE.HEADER.TITLE": "Title",
     
+    "APP.GLOBAL.FOOTER.LINK.TITLE.FEEDBACK": "Feedback",
     "APP.GLOBAL.FOOTER.LINK.TITLE.SCROLLTOTOP": "Scroll to Top",
     "APP.GLOBAL.NOTIFICATION.HEADER.CONNECTION_ISSUE": "Connection issues",
     "APP.GLOBAL.NOTIFICATION.MESSAGE.SERVER_NOT_REACHABLE": "It seems as if the service is not reachable. This may be either due to a downtime of the service or because of your internet connection.",
@@ -276,7 +277,7 @@
     "APP.HOME.HEADLINE.WHATSNEW": "What's new?",
     "APP.HOME.LABEL.KEYFACT.1.DETAILS": "Elektra stores configuration in a global, hierarchical key database. Mount configuration files into the hierarchy, override single configuration parameters or use profiles.",
     "APP.HOME.LABEL.KEYFACT.1.HEADLINE": "Global configuration database",
-    "APP.HOME.LABEL.KEYFACT.2.DETAILS": "All common and important configuration formats are supported through various storage plugins - even special configurations like hosts files.",
+    "APP.HOME.LABEL.KEYFACT.2.DETAILS": "All common and important configuration formats are supported through various storage plugins - even special configuration files like /etc/hosts.",
     "APP.HOME.LABEL.KEYFACT.2.HEADLINE": "Human readable configuration files",
     "APP.HOME.LABEL.KEYFACT.3.DETAILS": "Elektra has a very powerful plugin system that allows for different kinds of plugins, with placements throughout the entire lifecycle of an application.",
     "APP.HOME.LABEL.KEYFACT.3.HEADLINE": "Extendable through plugins and tools",
