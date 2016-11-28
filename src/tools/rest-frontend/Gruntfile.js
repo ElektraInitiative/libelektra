@@ -241,11 +241,15 @@ module.exports = function (grunt) {
 
     grunt.registerTask('default', ['full']);
     grunt.registerTask('full', [
-        'less', 'cssmin', 'concat',
-        'create-website-news', 'create-website-news-rss',
-        'create-website-structure', 'copy-website-content', 'create-website-sitemap',
+        'stylesheets', 'website-news', 'create-website-structure', 'copy-website-content', 'create-website-sitemap',
         'preprocess', 'browserify:build'
     ]);
+    grunt.registerTask('install', [
+        'stylesheets', 'website-news', 'create-website-structure', 'copy-website-content', 'preprocess',
+        'browserify:build'
+    ]);
+    grunt.registerTask('stylesheets', ['less', 'cssmin', 'concat']);
+    grunt.registerTask('website-news', ['create-website-news', 'create-website-news-rss']);
     grunt.registerTask('server', ['connect']);
 
 };

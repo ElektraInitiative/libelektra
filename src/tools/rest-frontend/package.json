@@ -55,7 +55,7 @@
         "xmlbuilder": "^8.2.2"
     },
     "scripts": {
-        "postinstall": "./node_modules/grunt-cli/bin/grunt full"
+        "postinstall": "./node_modules/grunt-cli/bin/grunt install"
     },
     "config": {
         "unsafe-perm": true
