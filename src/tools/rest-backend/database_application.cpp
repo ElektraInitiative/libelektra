@@ -286,7 +286,7 @@ void DatabaseApp::handleGetUnique (cppcms::http::request & req, cppcms::http::re
 void DatabaseApp::handleInsert (cppcms::http::request & req, cppcms::http::response & resp) const
 {
 	// first check if the currently authenticated user may create new database entries
-	if (!AuthenticationApp::validateAuthentication (req, resp, Config::permissions_entry_create))
+	if (!AuthenticationApp::validateAuthentication (req, resp, Config::instance ().getConfig ().get<int> ("permissions.entry.create")))
 	{
 		return; // quit early, error message set already
 	}
@@ -354,7 +354,8 @@ void DatabaseApp::handleUpdate (cppcms::http::request & req, cppcms::http::respo
 	}
 
 	// now check if the currently authenticated user may even update it
-	if (!AuthenticationApp::validateAuthentication (req, resp, Config::permissions_entry_edit, oldEntry.getAuthor ()))
+	if (!AuthenticationApp::validateAuthentication (req, resp, Config::instance ().getConfig ().get<int> ("permissions.entry.edit"),
+							oldEntry.getAuthor ()))
 	{
 		return; // quit early, error response already set
 	}
@@ -410,7 +411,8 @@ void DatabaseApp::handleDelete (cppcms::http::request & req, cppcms::http::respo
 	}
 
 	// now check if the currently authenticated user may even update it
-	if (!AuthenticationApp::validateAuthentication (req, resp, Config::permissions_entry_delete, entry.getAuthor ()))
+	if (!AuthenticationApp::validateAuthentication (req, resp, Config::instance ().getConfig ().get<int> ("permissions.entry.delete"),
+							entry.getAuthor ()))
 	{
 		return; // quit early, error response already set
 	}
@@ -795,7 +797,7 @@ inline void DatabaseApp::processFiltering (cppcms::http::request & req, std::vec
 		if (filterby != "all" && filterby != "key" && filterby != "title" && filterby != "description" && filterby != "author" &&
 		    filterby != "tags")
 		{
-			filterby = Config::output_default_entry_filterby;
+			filterby = Config::instance ().getConfig ().get<std::string> ("output.default.entry.filterby");
 		}
 
 		service::SearchEngine::instance ().findConfigurationsByFilter (entries, filter, filterby);
@@ -817,13 +819,15 @@ inline void DatabaseApp::processSorting (cppcms::http::request & req, std::vecto
 	// validate the sort direction input or set default
 	if (!boost::iequals (sort, PARAM_VAL_SORT_ASC) && !boost::iequals (sort, PARAM_VAL_SORT_DESC))
 	{
-		sort = Config::output_default_entry_sort;
+		sort = Config::instance ().getConfig ().get<std::string> ("output.default.entry.sort");
+		;
 	}
 
 	// validate the sortby input or set default
 	if (SORT_ENTRY_MAP.find (sortby) == SORT_ENTRY_MAP.end ())
 	{
-		sortby = Config::output_default_entry_sortby;
+		sortby = Config::instance ().getConfig ().get<std::string> ("output.default.entry.sortby");
+		;
 	}
 
 	// do the sorting

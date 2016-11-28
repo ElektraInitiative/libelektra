@@ -306,7 +306,7 @@ void StorageEngine::loadAllEntries ()
 	// flush cache
 	this->m_entryCache.clear ();
 
-	std::string parentKeyStr = Config::kdb_path_configs;
+	std::string parentKeyStr = Config::instance ().getConfig ().get<std::string> ("kdb.path.configs");
 	std::regex regex (ELEKTRA_REST_ENTRY_SCHEMA_CONFIGS);
 
 	KDB kdb;
@@ -603,7 +603,7 @@ void StorageEngine::loadAllUsers ()
 	// flush cache
 	this->m_userCache.clear ();
 
-	std::string parentKeyStr = Config::kdb_path_users;
+	std::string parentKeyStr = Config::instance ().getConfig ().get<std::string> ("kdb.path.users");
 	std::regex regex (ELEKTRA_REST_ENTRY_SCHEMA_USERS);
 
 	KDB kdb;

@@ -73,11 +73,11 @@ void RootApp::welcome ()
 		const std::string raw = request ().get (PARAM_RAW);
 		if (!raw.empty () && raw == "true")
 		{
-			RootApp::setSeeOther (response (), Config::api_specification_raw);
+			RootApp::setSeeOther (response (), Config::instance ().getConfig ().get<std::string> ("api_specification.raw"));
 			return;
 		}
 
-		RootApp::setSeeOther (response (), Config::api_specification_html);
+		RootApp::setSeeOther (response (), Config::instance ().getConfig ().get<std::string> ("api_specification.html"));
 		return;
 	}
 	else if (request ().request_method () == "OPTIONS")

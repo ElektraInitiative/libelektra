@@ -57,6 +57,6 @@ int main (int argc, char * argv[])
 {
 	testing::InitGoogleTest (&argc, argv);
 	cppcms::json::value config = kdbrest::service::ConfigEngine::instance ().loadApplicationConfiguration ();
-	(void)kdbrest::Config::initializeConfiguration (config);
+	(void)kdbrest::Config::instance ().initializeConfiguration (config);
 	return RUN_ALL_TESTS ();
 }

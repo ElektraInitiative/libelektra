@@ -128,7 +128,7 @@ void UserApp::handleDispatchGet (cppcms::http::request & req, cppcms::http::resp
 		try
 		{
 			model::User user = AuthenticationApp::getCurrentUser (req);
-			if (user.getRank () < Config::permissions_user_view)
+			if (user.getRank () < Config::instance ().getConfig ().get<int> ("permissions.user.view"))
 			{
 				throw exception::InsufficientPermissionsException ();
 			}
@@ -188,13 +188,15 @@ void UserApp::handleDispatchPut (cppcms::http::request & req, cppcms::http::resp
 		}
 
 		// check permissions
-		if (user.getUsername () != username && user.getRank () < Config::permissions_user_edit)
+		if (user.getUsername () != username &&
+		    user.getRank () < Config::instance ().getConfig ().get<int> ("permissions.user.edit"))
 		{
 			throw exception::InsufficientPermissionsException ();
 		}
 
 		// execute the update request
-		this->handleUpdate (req, resp, username, user.getRank () >= Config::permissions_user_edit);
+		this->handleUpdate (req, resp, username,
+				    user.getRank () >= Config::instance ().getConfig ().get<int> ("permissions.user.edit"));
 	}
 	catch (exception::NoCurrentUserException & e)
 	{
@@ -237,7 +239,8 @@ void UserApp::handleDispatchDelete (cppcms::http::request & req, cppcms::http::r
 		}
 
 		// check permissions
-		if (user.getUsername () != username && user.getRank () < Config::permissions_user_delete)
+		if (user.getUsername () != username &&
+		    user.getRank () < Config::instance ().getConfig ().get<int> ("permissions.user.delete"))
 		{
 			throw exception::InsufficientPermissionsException ();
 		}
@@ -421,7 +424,7 @@ void UserApp::handleInsert (cppcms::http::request & req, cppcms::http::response 
 
 	// other properties
 	u.setEmail (email);
-	u.setRank (Config::permissions_default_rank);
+	u.setRank (Config::instance ().getConfig ().get<int> ("permissions.default_rank"));
 	u.setCreatedAt (static_cast<long> (time (0)));
 
 	// store user
@@ -651,7 +654,7 @@ inline void UserApp::processFiltering (cppcms::http::request & req, std::vector<
 		// if the filter is unknown, take default
 		if (filterby != "all" && filterby != "username" && filterby != "email")
 		{
-			filterby = Config::output_default_user_filterby;
+			filterby = Config::instance ().getConfig ().get<std::string> ("output.default.user.filterby");
 		}
 
 		service::SearchEngine::instance ().findUsersByFilter (users, filter, filterby);
@@ -673,13 +676,13 @@ inline void UserApp::processSorting (cppcms::http::request & req, std::vector<mo
 	// validate the sort direction input or set default
 	if (!boost::iequals (sort, PARAM_VAL_SORT_ASC) && !boost::iequals (sort, PARAM_VAL_SORT_DESC))
 	{
-		sort = Config::output_default_user_sort;
+		sort = Config::instance ().getConfig ().get<std::string> ("output.default.user.sort");
 	}
 
 	// validate the sortby input or set default
 	if (SORT_USER_MAP.find (sortby) == SORT_USER_MAP.end ())
 	{
-		sortby = Config::output_default_user_sortby;
+		sortby = Config::instance ().getConfig ().get<std::string> ("output.default.user.sortby");
 	}
 
 	// do the sorting

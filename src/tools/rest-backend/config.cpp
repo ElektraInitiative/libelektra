@@ -9,42 +9,13 @@
 #include <iostream>
 #include <string>
 
+#include <boost/algorithm/string/replace.hpp>
+#include <cppcms/json.h>
+
 #include <config.hpp>
 
 namespace kdbrest
 {
-
-/* set dummy variables for statics */
-
-// JWT settings
-std::string Config::jwt_encryption_key = std::string ();
-int Config::jwt_expiration_time = 0;
-
-// output settings
-std::string Config::output_default_entry_sort = std::string ();
-std::string Config::output_default_entry_sortby = std::string ();
-std::string Config::output_default_entry_filterby = std::string ();
-std::string Config::output_default_user_sort = std::string ();
-std::string Config::output_default_user_sortby = std::string ();
-std::string Config::output_default_user_filterby = std::string ();
-
-// permissions settings
-int Config::permissions_entry_create = 0;
-int Config::permissions_entry_edit = 0;
-int Config::permissions_entry_delete = 0;
-int Config::permissions_user_view = 0;
-int Config::permissions_user_edit = 0;
-int Config::permissions_user_delete = 0;
-int Config::permissions_default_rank = 0;
-
-// kdb settings
-std::string Config::kdb_path_configs = std::string ();
-std::string Config::kdb_path_users = std::string ();
-
-// api_specification settings
-std::string Config::api_specification_raw = std::string ();
-std::string Config::api_specification_html = std::string ();
-
 
 /**
  * @brief initializes application configuration variables
@@ -57,56 +28,62 @@ std::string Config::api_specification_html = std::string ();
  */
 bool Config::initializeConfiguration (const cppcms::json::value & cfg, const std::string profile)
 {
-	bool error = false;
-	std::string conf_root = std::string (ELEKTRA_REST_CONFIG_ROOT) + profile;
+	// store config
+	try
+	{
+		this->m_config = cfg.at ("backend");
+	}
+	catch (cppcms::json::bad_value_cast & e)
+	{
+		std::cerr << "Missing configuration for the entire backend.\nPlease have a look at the manual and configure the backend "
+			     "properly."
+			  << std::endl;
+		return false;
+	}
 
-	// clang-format off
-	
+	std::string conf_root = std::string (ELEKTRA_REST_CONFIG_ROOT) + profile;
+	bool error = false;
+
+	auto checkType = [this, &error, &conf_root](std::string key, cppcms::json::json_type type, std::string setToMsg) {
+		if (this->m_config.type (key) != type)
+		{
+			error = true;
+			std::cerr << "Missing configuration for " << key << ".\nPlease set the key " << conf_root << "/backend/"
+				  << boost::replace_all_copy (key, ".", "/") << " " << setToMsg << "." << std::endl;
+		}
+	};
+
 	// api_specification settings
-	try {
-		Config::api_specification_raw = cfg.get<std::string> ("backend.api_specification.raw");
-	} catch (cppcms::json::bad_value_cast & e) {
-		std::cerr << "Missing configuration for api_specification.raw.\nPlease set the key " << conf_root << "/backend/api_specification/raw to a link targeting the API blueprint." << std::endl;
-		error = true;
-	}
-	try {
-		Config::api_specification_html = cfg.get<std::string> ("backend.api_specification.html");
-	} catch (cppcms::json::bad_value_cast & e) {
-		std::cerr << "Missing configuration for api_specification.html.\nPlease set the key " << conf_root << "/backend/api_specification/html to a link targeting the compiled API description." << std::endl;
-		error = true;
-	}
+	checkType ("api_specification.raw", cppcms::json::is_string, "to a link targeting the API blueprint");
+	checkType ("api_specification.html", cppcms::json::is_string, "to a link targeting the compiled API description");
 
 	// JWT settings
-	try {
-		Config::jwt_encryption_key = cfg.get<std::string> ("backend.jwt.encryption_key");
-	} catch (cppcms::json::bad_value_cast & e) {
-		std::cerr << "Missing configuration for jwt.encryption_key.\nPlease set the key " << conf_root << "/backend/jwt/encryption_key to a random secret." << std::endl;
-		error = true;
-	}
-	Config::jwt_expiration_time = cfg.get<int> ("backend.jwt.expiration_time", ELEKTRA_REST_DEFAULT_JWT_EXPIRATION_TIME);
-	
-	// output settings
-	Config::output_default_entry_sort = cfg.get ("backend.output.default.entry.sort", ELEKTRA_REST_DEFAULT_OUTPUT_ENTRY_SORT);
-	Config::output_default_entry_sortby = cfg.get ("backend.output.default.entry.sortby", ELEKTRA_REST_DEFAULT_OUTPUT_ENTRY_SORTBY);
-	Config::output_default_entry_filterby = cfg.get ("backend.output.default.entry.filterby", ELEKTRA_REST_DEFAULT_OUTPUT_ENTRY_FILTERBY);
-	Config::output_default_user_sort = cfg.get ("backend.output.default.user.sort", ELEKTRA_REST_DEFAULT_OUTPUT_USER_SORT);
-	Config::output_default_user_sortby = cfg.get ("backend.output.default.user.sortby", ELEKTRA_REST_DEFAULT_OUTPUT_USER_SORTBY);
-	Config::output_default_user_filterby = cfg.get ("backend.output.default.user.filterby", ELEKTRA_REST_DEFAULT_OUTPUT_USER_FILTERBY);
-	
-	// permissions settings
-	Config::permissions_entry_create = cfg.get<int> ("backend.permissions.entry.create");
-	Config::permissions_entry_edit = cfg.get<int> ("backend.permissions.entry.edit");
-	Config::permissions_entry_delete = cfg.get<int> ("backend.permissions.entry.delete");
-	Config::permissions_user_view = cfg.get<int> ("backend.permissions.user.view");
-	Config::permissions_user_edit = cfg.get<int> ("backend.permissions.user.edit");
-	Config::permissions_user_delete = cfg.get<int> ("backend.permissions.user.delete");
-	Config::permissions_default_rank = cfg.get<int> ("backend.permissions.default_rank");
-	
-	// kdb settings
-	Config::kdb_path_configs = cfg.get<std::string> ("backend.kdb.path.configs", ELEKTRA_REST_DEFAULT_PATH_CONFIGS);
-	Config::kdb_path_users = cfg.get<std::string> ("backend.kdb.path.users", ELEKTRA_REST_DEFAULT_PATH_USERS);
+	checkType ("jwt.encryption_key", cppcms::json::is_string, "to a random secret");
+	checkType ("jwt.expiration_time", cppcms::json::is_number, "to the number of seconds a session token should be valid");
 
-	// clang-format on
+	// output settings
+	checkType ("output.default.entry.sort", cppcms::json::is_string, "to the default sort direction of entries");
+	checkType ("output.default.entry.sortby", cppcms::json::is_string, "to the default sort criteria of entries");
+	checkType ("output.default.entry.filterby", cppcms::json::is_string, "to the default filter criteria of entries");
+	checkType ("output.default.user.sort", cppcms::json::is_string, "to the default sort direction of users");
+	checkType ("output.default.user.sortby", cppcms::json::is_string, "to the default sort criteria of users");
+	checkType ("output.default.user.filterby", cppcms::json::is_string, "to the default filter criteria of users");
+
+	// permissions settings
+	checkType ("permissions.entry.create", cppcms::json::is_number,
+		   "to the rank that is required to be able to create new snippet entries");
+	checkType ("permissions.entry.edit", cppcms::json::is_number,
+		   "to the rank that is required to be able to edit snippet entries of other users");
+	checkType ("permissions.entry.delete", cppcms::json::is_number,
+		   "to the rank that is required to be able to delete snippet entries of other users");
+	checkType ("permissions.user.view", cppcms::json::is_number, "to the rank that is required to view account details of other users");
+	checkType ("permissions.user.edit", cppcms::json::is_number, "to the rank that is required to edit account details of other users");
+	checkType ("permissions.user.delete", cppcms::json::is_number, "to the rank that is required to delete accounts of other users");
+	checkType ("permissions.default_rank", cppcms::json::is_number, "to the rank that new accounts will be assigned by default");
+
+	// kdb settings
+	checkType ("kdb.path.configs", cppcms::json::is_string, "to the elektra key where configuration snippets should be stored");
+	checkType ("kdb.path.users", cppcms::json::is_string, "to the elektra key where user details should be stored");
 
 	return !error;
 }

@@ -215,8 +215,9 @@ bool AuthenticationApp::validateAuthentication (cppcms::http::request & request,
 	jwt_t * jwt;
 
 	// decode it
-	if (jwt_decode (&jwt, token.c_str (), reinterpret_cast<const unsigned char *> (Config::jwt_encryption_key.c_str ()),
-			Config::jwt_encryption_key.size ()) != 0)
+	if (jwt_decode (&jwt, token.c_str (), reinterpret_cast<const unsigned char *> (
+						      Config::instance ().getConfig ().get<std::string> ("jwt.encryption_key").c_str ()),
+			Config::instance ().getConfig ().get<std::string> ("jwt.encryption_key").size ()) != 0)
 	{
 		RootApp::setUnauthorized (response, "Session token is invalid", "NEED_AUTHENTICATION"); // send HTTP 401
 		return false;
@@ -280,8 +281,9 @@ model::User AuthenticationApp::getCurrentUser (cppcms::http::request & request)
 	/* request seems fine, lets build the jwt */
 	jwt_t * jwt;
 
-	if (jwt_decode (&jwt, token.c_str (), reinterpret_cast<const unsigned char *> (Config::jwt_encryption_key.c_str ()),
-			Config::jwt_encryption_key.size ()) != 0)
+	if (jwt_decode (&jwt, token.c_str (), reinterpret_cast<const unsigned char *> (
+						      Config::instance ().getConfig ().get<std::string> ("jwt.encryption_key").c_str ()),
+			Config::instance ().getConfig ().get<std::string> ("jwt.encryption_key").size ()) != 0)
 	{
 		throw exception::NoCurrentUserException ();
 	}
@@ -326,8 +328,10 @@ std::string AuthenticationApp::buildJWT (cppcms::http::response & resp, const mo
 	std::unique_ptr<jwt_t, void (*) (jwt_t *)> jwt_ptr (jwt, jwt_free);
 
 	// specify jwt algorithm and encryption key
-	if (jwt_set_alg (jwt_ptr.get (), JWT_ALG_HS256, reinterpret_cast<const unsigned char *> (Config::jwt_encryption_key.c_str ()),
-			 Config::jwt_encryption_key.size ()) != 0)
+	if (jwt_set_alg (jwt_ptr.get (), JWT_ALG_HS256,
+			 reinterpret_cast<const unsigned char *> (
+				 Config::instance ().getConfig ().get<std::string> ("jwt.encryption_key").c_str ()),
+			 Config::instance ().getConfig ().get<std::string> ("jwt.encryption_key").size ()) != 0)
 	{
 		RootApp::setInternalServerError (resp, "Something went wrong while creating the session token.", "AUTH_CREATE_TOKEN_ERROR");
 		throw exception::JwtCreationException ();
@@ -337,7 +341,8 @@ std::string AuthenticationApp::buildJWT (cppcms::http::response & resp, const mo
 	if (jwt_add_grant (jwt_ptr.get (), "issuer", ELEKTRA_REST_AUTHENTICATION_JWT_ISSUER) != 0 ||
 	    jwt_add_grant (jwt_ptr.get (), "username", user.getUsername ().c_str ()) != 0 ||
 	    jwt_add_grant_int (jwt_ptr.get (), "rank", user.getRank ()) != 0 ||
-	    jwt_add_grant_int (jwt_ptr.get (), "expires", std::time (NULL) + Config::jwt_expiration_time) != 0)
+	    jwt_add_grant_int (jwt_ptr.get (), "expires",
+			       std::time (NULL) + Config::instance ().getConfig ().get<int> ("jwt.expiration_time")) != 0)
 	{
 		RootApp::setInternalServerError (resp, "Something went wrong while creating the session token.", "AUTH_CREATE_TOKEN_ERROR");
 		throw exception::JwtCreationException ();

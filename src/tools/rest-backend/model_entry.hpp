@@ -67,7 +67,8 @@ public:
 	 * 
      * @param keyName A string to be used as key name
      */
-	Entry (std::string entryName) : kdb::Key (Config::kdb_path_configs + std::string ("/") + entryName, KEY_END)
+	Entry (std::string entryName)
+	: kdb::Key (Config::instance ().getConfig ().get<std::string> ("kdb.path.configs") + std::string ("/") + entryName, KEY_END)
 	{
 	}
 
@@ -85,8 +86,8 @@ public:
      * @param slug The unique slug for the Entry
      */
 	Entry (const std::string & organization, const std::string & application, const std::string & scope, const std::string & slug)
-	: kdb::Key (Config::kdb_path_configs + std::string ("/") + organization + std::string ("/") + application + std::string ("/") +
-			    scope + std::string ("/") + slug,
+	: kdb::Key (Config::instance ().getConfig ().get<std::string> ("kdb.path.configs") + std::string ("/") + organization +
+			    std::string ("/") + application + std::string ("/") + scope + std::string ("/") + slug,
 		    KEY_END)
 	{
 	}
@@ -163,7 +164,7 @@ public:
      */
 	std::string getPublicName () const
 	{
-		return this->getName ().erase (0, Config::kdb_path_configs.length () + 1);
+		return this->getName ().erase (0, Config::instance ().getConfig ().get<std::string> ("kdb.path.configs").length () + 1);
 	}
 
 	/**

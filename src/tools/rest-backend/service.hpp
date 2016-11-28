@@ -54,12 +54,14 @@ class SearchEngine : public singleton<SearchEngine>
 public:
 	// configuration entries
 	void filterConfigurationsByName (std::vector<kdbrest::model::Entry> & entries, const std::string & startsWith) const;
-	void findConfigurationsByFilter (std::vector<kdbrest::model::Entry> & entries, const std::string & filter,
-					 const std::string filterby = Config::output_default_entry_filterby) const;
+	void findConfigurationsByFilter (
+		std::vector<kdbrest::model::Entry> & entries, const std::string & filter,
+		const std::string filterby = Config::instance ().getConfig ().get<std::string> ("output.default.entry.filterby")) const;
 
 	// user entries
-	void findUsersByFilter (std::vector<kdbrest::model::User> & users, const std::string & filter,
-				const std::string filterby = Config::output_default_user_filterby) const;
+	void findUsersByFilter (
+		std::vector<kdbrest::model::User> & users, const std::string & filter,
+		const std::string filterby = Config::instance ().getConfig ().get<std::string> ("output.default.user.filterby")) const;
 
 private:
 };

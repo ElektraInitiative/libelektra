@@ -26,8 +26,10 @@ TEST (kdbrestServicesStorageengineTest, CreateEntryCheck)
 	using namespace kdbrest::service;
 
 	std::string testKey = "test/test/test/entry1";
-	std::string testSubKey1 = kdbrest::Config::kdb_path_configs + std::string ("/") + "test/test/test/entry1/confkey1";
-	std::string testSubKey2 = kdbrest::Config::kdb_path_configs + std::string ("/") + "test/test/test/entry1/conf/iguration/key1";
+	std::string testSubKey1 = kdbrest::Config::instance ().getConfig ().get<std::string> ("kdb.path.configs") + std::string ("/") +
+				  "test/test/test/entry1/confkey1";
+	std::string testSubKey2 = kdbrest::Config::instance ().getConfig ().get<std::string> ("kdb.path.configs") + std::string ("/") +
+				  "test/test/test/entry1/conf/iguration/key1";
 
 	Key subKey1 (testSubKey1, KEY_END);
 	Key subKey2 (testSubKey2, KEY_END);
@@ -47,9 +49,9 @@ TEST (kdbrestServicesStorageengineTest, CreateEntryCheck)
 	{
 		KDB kdb;
 		KeySet ks;
-		kdb.get (ks, kdbrest::Config::kdb_path_configs);
+		kdb.get (ks, kdbrest::Config::instance ().getConfig ().get<std::string> ("kdb.path.configs"));
 		ks.cut (testEntry);
-		kdb.set (ks, kdbrest::Config::kdb_path_configs);
+		kdb.set (ks, kdbrest::Config::instance ().getConfig ().get<std::string> ("kdb.path.configs"));
 	}
 
 	// do storage
@@ -59,7 +61,7 @@ TEST (kdbrestServicesStorageengineTest, CreateEntryCheck)
 	{
 		KDB kdb;
 		KeySet ks;
-		kdb.get (ks, kdbrest::Config::kdb_path_configs);
+		kdb.get (ks, kdbrest::Config::instance ().getConfig ().get<std::string> ("kdb.path.configs"));
 		Key k = ks.lookup (testEntry);
 		if (k)
 		{
@@ -86,9 +88,9 @@ TEST (kdbrestServicesStorageengineTest, CreateEntryCheck)
 	{
 		KDB kdb;
 		KeySet ks;
-		kdb.get (ks, kdbrest::Config::kdb_path_configs);
+		kdb.get (ks, kdbrest::Config::instance ().getConfig ().get<std::string> ("kdb.path.configs"));
 		ks.cut (testEntry);
-		kdb.set (ks, kdbrest::Config::kdb_path_configs);
+		kdb.set (ks, kdbrest::Config::instance ().getConfig ().get<std::string> ("kdb.path.configs"));
 	}
 }
 
@@ -101,12 +103,15 @@ TEST (kdbrestServicesStorageengineTest, UpdateEntryCheck)
 	using namespace kdbrest::service;
 
 	std::string testKey = "test/test/test/entry1";
-	std::string testSubKey1 = kdbrest::Config::kdb_path_configs + std::string ("/") + "test/test/test/entry1/confkey1";
-	std::string testSubKey2 = kdbrest::Config::kdb_path_configs + std::string ("/") + "test/test/test/entry1/conf/iguration/key1";
+	std::string testSubKey1 = kdbrest::Config::instance ().getConfig ().get<std::string> ("kdb.path.configs") + std::string ("/") +
+				  "test/test/test/entry1/confkey1";
+	std::string testSubKey2 = kdbrest::Config::instance ().getConfig ().get<std::string> ("kdb.path.configs") + std::string ("/") +
+				  "test/test/test/entry1/conf/iguration/key1";
 
-	std::string testSubKeyNew1 = kdbrest::Config::kdb_path_configs + std::string ("/") + "test/test/test/entry1/configuration/k1";
-	std::string testSubKeyNew2 =
-		kdbrest::Config::kdb_path_configs + std::string ("/") + "test/test/test/entry1/co/nf/ig/u/ra/ti/on/key1";
+	std::string testSubKeyNew1 = kdbrest::Config::instance ().getConfig ().get<std::string> ("kdb.path.configs") + std::string ("/") +
+				     "test/test/test/entry1/configuration/k1";
+	std::string testSubKeyNew2 = kdbrest::Config::instance ().getConfig ().get<std::string> ("kdb.path.configs") + std::string ("/") +
+				     "test/test/test/entry1/co/nf/ig/u/ra/ti/on/key1";
 
 	Key subKey1 (testSubKey1, KEY_END);
 	Key subKey2 (testSubKey2, KEY_END);
@@ -124,26 +129,26 @@ TEST (kdbrestServicesStorageengineTest, UpdateEntryCheck)
 	{
 		KDB kdb;
 		KeySet ks;
-		kdb.get (ks, kdbrest::Config::kdb_path_configs);
+		kdb.get (ks, kdbrest::Config::instance ().getConfig ().get<std::string> ("kdb.path.configs"));
 		ks.cut (testEntry);
-		kdb.set (ks, kdbrest::Config::kdb_path_configs);
+		kdb.set (ks, kdbrest::Config::instance ().getConfig ().get<std::string> ("kdb.path.configs"));
 	}
 
 	// create entry
 	{
 		KDB kdb;
 		KeySet ks;
-		kdb.get (ks, kdbrest::Config::kdb_path_configs);
+		kdb.get (ks, kdbrest::Config::instance ().getConfig ().get<std::string> ("kdb.path.configs"));
 		ks.append (testEntry);
 		ks.append (testEntry.getSubkeys ());
-		kdb.set (ks, kdbrest::Config::kdb_path_configs);
+		kdb.set (ks, kdbrest::Config::instance ().getConfig ().get<std::string> ("kdb.path.configs"));
 	}
 
 	// ensure that entry has been saved
 	{
 		KDB kdb;
 		KeySet ks;
-		kdb.get (ks, kdbrest::Config::kdb_path_configs);
+		kdb.get (ks, kdbrest::Config::instance ().getConfig ().get<std::string> ("kdb.path.configs"));
 		Key k = ks.lookup (testEntry);
 		if (!k)
 		{
@@ -175,7 +180,7 @@ TEST (kdbrestServicesStorageengineTest, UpdateEntryCheck)
 	{
 		KDB kdb;
 		KeySet ks;
-		kdb.get (ks, kdbrest::Config::kdb_path_configs);
+		kdb.get (ks, kdbrest::Config::instance ().getConfig ().get<std::string> ("kdb.path.configs"));
 		Key k = ks.lookup (testEntry);
 		if (k)
 		{
@@ -197,9 +202,9 @@ TEST (kdbrestServicesStorageengineTest, UpdateEntryCheck)
 	{
 		KDB kdb;
 		KeySet ks;
-		kdb.get (ks, kdbrest::Config::kdb_path_configs);
+		kdb.get (ks, kdbrest::Config::instance ().getConfig ().get<std::string> ("kdb.path.configs"));
 		ks.cut (testEntry);
-		kdb.set (ks, kdbrest::Config::kdb_path_configs);
+		kdb.set (ks, kdbrest::Config::instance ().getConfig ().get<std::string> ("kdb.path.configs"));
 	}
 }
 
@@ -211,8 +216,10 @@ TEST (kdbrestServicesStorageengineTest, DeleteEntryCheck)
 	using namespace kdbrest::service;
 
 	std::string testKey = "test/test/test/entry1";
-	std::string testSubKey1 = kdbrest::Config::kdb_path_configs + std::string ("/") + "test/test/test/entry1/confkey1";
-	std::string testSubKey2 = kdbrest::Config::kdb_path_configs + std::string ("/") + "test/test/test/entry1/conf/iguration/key1";
+	std::string testSubKey1 = kdbrest::Config::instance ().getConfig ().get<std::string> ("kdb.path.configs") + std::string ("/") +
+				  "test/test/test/entry1/confkey1";
+	std::string testSubKey2 = kdbrest::Config::instance ().getConfig ().get<std::string> ("kdb.path.configs") + std::string ("/") +
+				  "test/test/test/entry1/conf/iguration/key1";
 
 	Key subKey1 (testSubKey1, KEY_END);
 	Key subKey2 (testSubKey2, KEY_END);
@@ -226,9 +233,9 @@ TEST (kdbrestServicesStorageengineTest, DeleteEntryCheck)
 	{
 		KDB kdb;
 		KeySet ks;
-		kdb.get (ks, kdbrest::Config::kdb_path_configs);
+		kdb.get (ks, kdbrest::Config::instance ().getConfig ().get<std::string> ("kdb.path.configs"));
 		ks.cut (testEntry);
-		kdb.set (ks, kdbrest::Config::kdb_path_configs);
+		kdb.set (ks, kdbrest::Config::instance ().getConfig ().get<std::string> ("kdb.path.configs"));
 	}
 
 	// force re-fetching of entry cache
@@ -241,7 +248,7 @@ TEST (kdbrestServicesStorageengineTest, DeleteEntryCheck)
 	{
 		KDB kdb;
 		KeySet ks;
-		kdb.get (ks, kdbrest::Config::kdb_path_configs);
+		kdb.get (ks, kdbrest::Config::instance ().getConfig ().get<std::string> ("kdb.path.configs"));
 		Key k = ks.lookup (testEntry);
 		if (k)
 		{
@@ -265,9 +272,9 @@ TEST (kdbrestServicesStorageengineTest, DeleteEntryCheck)
 	{
 		KDB kdb;
 		KeySet ks;
-		kdb.get (ks, kdbrest::Config::kdb_path_configs);
+		kdb.get (ks, kdbrest::Config::instance ().getConfig ().get<std::string> ("kdb.path.configs"));
 		ks.cut (testEntry);
-		kdb.set (ks, kdbrest::Config::kdb_path_configs);
+		kdb.set (ks, kdbrest::Config::instance ().getConfig ().get<std::string> ("kdb.path.configs"));
 	}
 }
 
@@ -278,24 +285,25 @@ TEST (kdbrestServicesStorageengineTest, EntryExistsCheck)
 	using namespace kdbrest::service;
 
 	std::string testKey = "test/test/test/entry1";
-	Key testKeyAbs = Key (kdbrest::Config::kdb_path_configs + std::string ("/") + testKey, KEY_VALUE, "testvalue", KEY_END);
+	Key testKeyAbs = Key (kdbrest::Config::instance ().getConfig ().get<std::string> ("kdb.path.configs") + std::string ("/") + testKey,
+			      KEY_VALUE, "testvalue", KEY_END);
 
 	// ensure entry is not in database
 	{
 		KDB kdb;
 		KeySet ks;
-		kdb.get (ks, kdbrest::Config::kdb_path_configs);
+		kdb.get (ks, kdbrest::Config::instance ().getConfig ().get<std::string> ("kdb.path.configs"));
 		ks.cut (testKeyAbs);
-		kdb.set (ks, kdbrest::Config::kdb_path_configs);
+		kdb.set (ks, kdbrest::Config::instance ().getConfig ().get<std::string> ("kdb.path.configs"));
 	}
 
 	// create key
 	{
 		KDB kdb;
 		KeySet ks;
-		kdb.get (ks, kdbrest::Config::kdb_path_configs);
+		kdb.get (ks, kdbrest::Config::instance ().getConfig ().get<std::string> ("kdb.path.configs"));
 		ks.append (testKeyAbs);
-		kdb.set (ks, kdbrest::Config::kdb_path_configs);
+		kdb.set (ks, kdbrest::Config::instance ().getConfig ().get<std::string> ("kdb.path.configs"));
 	}
 
 	// make sure that entry cache is re-fetched
@@ -308,9 +316,9 @@ TEST (kdbrestServicesStorageengineTest, EntryExistsCheck)
 	{
 		KDB kdb;
 		KeySet ks;
-		kdb.get (ks, kdbrest::Config::kdb_path_configs);
+		kdb.get (ks, kdbrest::Config::instance ().getConfig ().get<std::string> ("kdb.path.configs"));
 		ks.lookup (testKeyAbs, KDB_O_POP);
-		kdb.set (ks, kdbrest::Config::kdb_path_configs);
+		kdb.set (ks, kdbrest::Config::instance ().getConfig ().get<std::string> ("kdb.path.configs"));
 	}
 }
 
@@ -321,15 +329,16 @@ TEST (kdbrestServicesStorageengineTest, GetEntryCheck)
 	using namespace kdbrest::service;
 
 	std::string testKey = "test/test/test/entry1";
-	Key testKeyAbs = Key (kdbrest::Config::kdb_path_configs + std::string ("/") + testKey, KEY_VALUE, "testvalue", KEY_END);
+	Key testKeyAbs = Key (kdbrest::Config::instance ().getConfig ().get<std::string> ("kdb.path.configs") + std::string ("/") + testKey,
+			      KEY_VALUE, "testvalue", KEY_END);
 
 	// create key
 	{
 		KDB kdb;
 		KeySet ks;
-		kdb.get (ks, kdbrest::Config::kdb_path_configs);
+		kdb.get (ks, kdbrest::Config::instance ().getConfig ().get<std::string> ("kdb.path.configs"));
 		ks.append (testKeyAbs);
-		kdb.set (ks, kdbrest::Config::kdb_path_configs);
+		kdb.set (ks, kdbrest::Config::instance ().getConfig ().get<std::string> ("kdb.path.configs"));
 	}
 
 	// make sure that entry cache is re-fetched
@@ -352,9 +361,9 @@ TEST (kdbrestServicesStorageengineTest, GetEntryCheck)
 	{
 		KDB kdb;
 		KeySet ks;
-		kdb.get (ks, kdbrest::Config::kdb_path_configs);
+		kdb.get (ks, kdbrest::Config::instance ().getConfig ().get<std::string> ("kdb.path.configs"));
 		ks.lookup (testKeyAbs, KDB_O_POP);
-		kdb.set (ks, kdbrest::Config::kdb_path_configs);
+		kdb.set (ks, kdbrest::Config::instance ().getConfig ().get<std::string> ("kdb.path.configs"));
 	}
 }
 
@@ -381,9 +390,9 @@ TEST (kdbrestServicesStorageengineTest, CreateUserCheck)
 	{
 		KDB kdb;
 		KeySet ks;
-		kdb.get (ks, kdbrest::Config::kdb_path_users);
+		kdb.get (ks, kdbrest::Config::instance ().getConfig ().get<std::string> ("kdb.path.users"));
 		ks.cut (testUser);
-		kdb.set (ks, kdbrest::Config::kdb_path_users);
+		kdb.set (ks, kdbrest::Config::instance ().getConfig ().get<std::string> ("kdb.path.users"));
 	}
 
 	// do storage
@@ -393,7 +402,7 @@ TEST (kdbrestServicesStorageengineTest, CreateUserCheck)
 	{
 		KDB kdb;
 		KeySet ks;
-		kdb.get (ks, kdbrest::Config::kdb_path_users);
+		kdb.get (ks, kdbrest::Config::instance ().getConfig ().get<std::string> ("kdb.path.users"));
 		Key k = ks.lookup (testUser);
 		if (k)
 		{
@@ -421,9 +430,9 @@ TEST (kdbrestServicesStorageengineTest, CreateUserCheck)
 	{
 		KDB kdb;
 		KeySet ks;
-		kdb.get (ks, kdbrest::Config::kdb_path_users);
+		kdb.get (ks, kdbrest::Config::instance ().getConfig ().get<std::string> ("kdb.path.users"));
 		ks.cut (testUser);
-		kdb.set (ks, kdbrest::Config::kdb_path_users);
+		kdb.set (ks, kdbrest::Config::instance ().getConfig ().get<std::string> ("kdb.path.users"));
 	}
 }
 
@@ -450,9 +459,9 @@ TEST (kdbrestServicesStorageengineTest, UpdateUserCheck)
 	{
 		KDB kdb;
 		KeySet ks;
-		kdb.get (ks, kdbrest::Config::kdb_path_users);
+		kdb.get (ks, kdbrest::Config::instance ().getConfig ().get<std::string> ("kdb.path.users"));
 		ks.cut (testUser);
-		kdb.set (ks, kdbrest::Config::kdb_path_users);
+		kdb.set (ks, kdbrest::Config::instance ().getConfig ().get<std::string> ("kdb.path.users"));
 	}
 
 	// force re-fetching of user cache
@@ -465,7 +474,7 @@ TEST (kdbrestServicesStorageengineTest, UpdateUserCheck)
 	{
 		KDB kdb;
 		KeySet ks;
-		kdb.get (ks, kdbrest::Config::kdb_path_users);
+		kdb.get (ks, kdbrest::Config::instance ().getConfig ().get<std::string> ("kdb.path.users"));
 		Key k = ks.lookup (testUser);
 		if (!k)
 		{
@@ -490,7 +499,7 @@ TEST (kdbrestServicesStorageengineTest, UpdateUserCheck)
 	{
 		KDB kdb;
 		KeySet ks;
-		kdb.get (ks, kdbrest::Config::kdb_path_users);
+		kdb.get (ks, kdbrest::Config::instance ().getConfig ().get<std::string> ("kdb.path.users"));
 		Key k = ks.lookup (testUser);
 		if (k)
 		{
@@ -518,9 +527,9 @@ TEST (kdbrestServicesStorageengineTest, UpdateUserCheck)
 	{
 		KDB kdb;
 		KeySet ks;
-		kdb.get (ks, kdbrest::Config::kdb_path_users);
+		kdb.get (ks, kdbrest::Config::instance ().getConfig ().get<std::string> ("kdb.path.users"));
 		ks.cut (testUser);
-		kdb.set (ks, kdbrest::Config::kdb_path_users);
+		kdb.set (ks, kdbrest::Config::instance ().getConfig ().get<std::string> ("kdb.path.users"));
 	}
 }
 
@@ -547,9 +556,9 @@ TEST (kdbrestServicesStorageengineTest, DeleteUserCheck)
 	{
 		KDB kdb;
 		KeySet ks;
-		kdb.get (ks, kdbrest::Config::kdb_path_users);
+		kdb.get (ks, kdbrest::Config::instance ().getConfig ().get<std::string> ("kdb.path.users"));
 		ks.cut (testUser);
-		kdb.set (ks, kdbrest::Config::kdb_path_users);
+		kdb.set (ks, kdbrest::Config::instance ().getConfig ().get<std::string> ("kdb.path.users"));
 	}
 
 	// force re-fetching of user cache
@@ -562,7 +571,7 @@ TEST (kdbrestServicesStorageengineTest, DeleteUserCheck)
 	{
 		KDB kdb;
 		KeySet ks;
-		kdb.get (ks, kdbrest::Config::kdb_path_users);
+		kdb.get (ks, kdbrest::Config::instance ().getConfig ().get<std::string> ("kdb.path.users"));
 		Key k = ks.lookup (testUser);
 		if (k)
 		{
@@ -594,9 +603,9 @@ TEST (kdbrestServicesStorageengineTest, DeleteUserCheck)
 	{
 		KDB kdb;
 		KeySet ks;
-		kdb.get (ks, kdbrest::Config::kdb_path_users);
+		kdb.get (ks, kdbrest::Config::instance ().getConfig ().get<std::string> ("kdb.path.users"));
 		ks.cut (testUser);
-		kdb.set (ks, kdbrest::Config::kdb_path_users);
+		kdb.set (ks, kdbrest::Config::instance ().getConfig ().get<std::string> ("kdb.path.users"));
 	}
 }
 
@@ -613,9 +622,9 @@ TEST (kdbrestServicesStorageengineTest, UserExistsCheck)
 	{
 		KDB kdb;
 		KeySet ks;
-		kdb.get (ks, kdbrest::Config::kdb_path_users);
+		kdb.get (ks, kdbrest::Config::instance ().getConfig ().get<std::string> ("kdb.path.users"));
 		ks.cut (user);
-		kdb.set (ks, kdbrest::Config::kdb_path_users);
+		kdb.set (ks, kdbrest::Config::instance ().getConfig ().get<std::string> ("kdb.path.users"));
 	}
 
 	// force re-fetching of user cache
@@ -628,9 +637,9 @@ TEST (kdbrestServicesStorageengineTest, UserExistsCheck)
 	{
 		KDB kdb;
 		KeySet ks;
-		kdb.get (ks, kdbrest::Config::kdb_path_users);
+		kdb.get (ks, kdbrest::Config::instance ().getConfig ().get<std::string> ("kdb.path.users"));
 		ks.append (user);
-		kdb.set (ks, kdbrest::Config::kdb_path_users);
+		kdb.set (ks, kdbrest::Config::instance ().getConfig ().get<std::string> ("kdb.path.users"));
 	}
 
 	// force re-fetching of user cache
@@ -643,9 +652,9 @@ TEST (kdbrestServicesStorageengineTest, UserExistsCheck)
 	{
 		KDB kdb;
 		KeySet ks;
-		kdb.get (ks, kdbrest::Config::kdb_path_users);
+		kdb.get (ks, kdbrest::Config::instance ().getConfig ().get<std::string> ("kdb.path.users"));
 		ks.cut (user);
-		kdb.set (ks, kdbrest::Config::kdb_path_users);
+		kdb.set (ks, kdbrest::Config::instance ().getConfig ().get<std::string> ("kdb.path.users"));
 	}
 }
 
@@ -671,9 +680,9 @@ TEST (kdbrestServicesStorageengineTest, GetUserCheck)
 	{
 		KDB kdb;
 		KeySet ks;
-		kdb.get (ks, kdbrest::Config::kdb_path_users);
+		kdb.get (ks, kdbrest::Config::instance ().getConfig ().get<std::string> ("kdb.path.users"));
 		ks.cut (user);
-		kdb.set (ks, kdbrest::Config::kdb_path_users);
+		kdb.set (ks, kdbrest::Config::instance ().getConfig ().get<std::string> ("kdb.path.users"));
 	}
 
 	// force re-fetching of user cache
@@ -686,10 +695,10 @@ TEST (kdbrestServicesStorageengineTest, GetUserCheck)
 	{
 		KDB kdb;
 		KeySet ks;
-		kdb.get (ks, kdbrest::Config::kdb_path_users);
+		kdb.get (ks, kdbrest::Config::instance ().getConfig ().get<std::string> ("kdb.path.users"));
 		ks.append (user);
 		ks.append (user.getSubkeys ());
-		kdb.set (ks, kdbrest::Config::kdb_path_users);
+		kdb.set (ks, kdbrest::Config::instance ().getConfig ().get<std::string> ("kdb.path.users"));
 	}
 
 	// force re-fetching of user cache
@@ -711,9 +720,9 @@ TEST (kdbrestServicesStorageengineTest, GetUserCheck)
 	{
 		KDB kdb;
 		KeySet ks;
-		kdb.get (ks, kdbrest::Config::kdb_path_users);
+		kdb.get (ks, kdbrest::Config::instance ().getConfig ().get<std::string> ("kdb.path.users"));
 		ks.cut (user);
-		kdb.set (ks, kdbrest::Config::kdb_path_users);
+		kdb.set (ks, kdbrest::Config::instance ().getConfig ().get<std::string> ("kdb.path.users"));
 	}
 }
 
@@ -723,10 +732,10 @@ int main (int argc, char * argv[])
 
 	// initialize test config
 	cppcms::json::value config = kdbrest::service::ConfigEngine::instance ().loadApplicationConfiguration ();
-	(void)kdbrest::Config::initializeConfiguration (config);
+	(void)kdbrest::Config::instance ().initializeConfiguration (config);
 	// force default config
-	kdbrest::Config::kdb_path_configs = std::string (ELEKTRA_REST_DEFAULT_PATH_CONFIGS);
-	kdbrest::Config::kdb_path_users = std::string (ELEKTRA_REST_DEFAULT_PATH_USERS);
+	kdbrest::Config::instance ().setValue<std::string> ("kdb.path.configs", std::string (ELEKTRA_REST_DEFAULT_PATH_CONFIGS));
+	kdbrest::Config::instance ().setValue<std::string> ("kdb.path.users", std::string (ELEKTRA_REST_DEFAULT_PATH_USERS));
 
 	return RUN_ALL_TESTS ();
 }

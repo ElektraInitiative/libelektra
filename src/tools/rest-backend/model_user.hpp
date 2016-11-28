@@ -59,7 +59,8 @@ public:
 	 * 
      * @param username The username to be used for the key
      */
-	User (const std::string username) : kdb::Key (Config::kdb_path_users + std::string ("/") + username, KEY_END)
+	User (const std::string username)
+	: kdb::Key (Config::instance ().getConfig ().get<std::string> ("kdb.path.users") + std::string ("/") + username, KEY_END)
 	{
 	}
 
@@ -152,7 +153,7 @@ public:
      */
 	std::string getUsername () const
 	{
-		return this->getName ().erase (0, Config::kdb_path_users.length () + 1);
+		return this->getName ().erase (0, Config::instance ().getConfig ().get<std::string> ("kdb.path.users").length () + 1);
 	}
 
 	/**
@@ -254,7 +255,7 @@ public:
 		}
 		catch (kdbrest::exception::SubkeyNotFoundException & e)
 		{
-			return Config::permissions_default_rank; // default is user rank
+			return Config::instance ().getConfig ().get<int> ("permissions.default_rank"); // default is user rank
 		}
 	}
 

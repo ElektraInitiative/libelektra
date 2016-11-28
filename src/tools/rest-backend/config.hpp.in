@@ -89,51 +89,32 @@
 
 #include <cppcms/json.h>
 
+#include <singleton.hpp>
+
 namespace kdbrest
 {
 
-class Config
+class Config : public singleton<Config>
 {
 
 public:
 	// configuration initializer
-	static bool initializeConfiguration (const cppcms::json::value & config,
+	bool initializeConfiguration (const cppcms::json::value & config,
 				const std::string profile = std::string (ELEKTRA_REST_CONFIG_DEFAULT_PROFILE));
 
-	// JWT settings
-	static std::string jwt_encryption_key;
-	static int jwt_expiration_time;
-
-	// output settings
-	static std::string output_default_entry_sort;
-	static std::string output_default_entry_sortby;
-	static std::string output_default_entry_filterby;
-	static std::string output_default_user_sort;
-	static std::string output_default_user_sortby;
-	static std::string output_default_user_filterby;
-
-	// permissions settings
-	static int permissions_entry_create;
-	static int permissions_entry_edit;
-	static int permissions_entry_delete;
-	static int permissions_user_view;
-	static int permissions_user_edit;
-	static int permissions_user_delete;
-	static int permissions_default_rank;
-
-	// kdb settings
-	static std::string kdb_path_configs;
-	static std::string kdb_path_users;
-
-	// api_specification settings
-	static std::string api_specification_raw;
-	static std::string api_specification_html;
-
-private:
-	Config()
+	const cppcms::json::value & getConfig ()
 	{
+		return this->m_config;
 	}
 
+	template<typename T>
+	void setValue (std::string path, T val)
+	{
+		this->m_config.set(path, val);
+	}
+
+private:
+	cppcms::json::value m_config;
 };
 
 }
