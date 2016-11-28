@@ -25,15 +25,24 @@ module.exports = function ($scope, Logger, $interval, config, news) {
             'simply',
             'easily',
             'now'
-        ]
+        ].sort(function (l, r) {
+            return l.length > r.length;
+        })
     };
     $scope.slogan.index = 0;
+    $scope.slogan.directionUp = true;
 
     function changeSlogan() {
-        if ($scope.slogan.index >= $scope.slogan.adjectives.length - 1) {
-            $scope.slogan.index = 0;
-        } else {
+        if ($scope.slogan.directionUp === true) {
             $scope.slogan.index++;
+        } else {
+            $scope.slogan.index--;
+        }
+
+        // swap rotation direction
+        if ($scope.slogan.index >= $scope.slogan.adjectives.length - 1 ||
+                $scope.slogan.index <= 0) {
+            $scope.slogan.directionUp = !$scope.slogan.directionUp;
         }
     }
 
