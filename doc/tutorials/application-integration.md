@@ -96,7 +96,8 @@ We always can create one:
      configuration
  - `#0` is the major version number of the configuration (to be incremented
    if you need to introduce incompatible changes).
- - `current` is the profile to be used. This is needed by administrators
+ - `current` is the [profile](/src/plugins/profile/README.md)
+     to be used. This is needed by administrators
      if they want to start up multiple applications with different
      configurations.
 - `KEY_CACADING_NAME` is needed to accept a name starting with `/`. Such a
