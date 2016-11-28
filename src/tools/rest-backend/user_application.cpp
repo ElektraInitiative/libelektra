@@ -39,7 +39,7 @@ UserApp::UserApp (cppcms::service & srv) : cppcms::application (srv)
 /**
  * @brief the main handle function for this endpoint.
  * 
- * it checks permissions and mapps the endpoint resources to their corresponding handlers.
+ * it maps requests based on their HTTP method to the corresponding handlers.
  * 
  * @param username a username that may be provided as resource parameter
  */
@@ -50,163 +50,29 @@ void UserApp::handle (std::string username)
 	// retrieve user details
 	if (request ().request_method () == "GET")
 	{
-		// check if details of the currently authenticated user should be returned
-		if (request ().get (PARAM_CURRENT) == "true")
-		{
-			try
-			{
-				model::User user = AuthenticationApp::getCurrentUser (request ());
-				this->handleGetUnique (response (), user.getUsername ());
-				return;
-			}
-			catch (exception::NoCurrentUserException & e)
-			{
-				RootApp::setBadRequest (response (), "You need to be authenticated to perform this action.",
-							"NO_CURRENT_USER");
-				return;
-			}
-			catch (exception::UserNotFoundException & e)
-			{
-				RootApp::setNotFound (response (), "The requested user does not exist.", "USER_NOT_FOUND");
-				return;
-			}
-		}
-		// or if we should return details for another user
-		else
-		{
-			// first check permissions
-			try
-			{
-				model::User user = AuthenticationApp::getCurrentUser (request ());
-				if (user.getRank () < Config::permissions_user_view)
-				{
-					throw exception::InsufficientPermissionsException ();
-				}
-
-				// check if we should only return the user list
-				if (username.empty ())
-				{
-					this->handleGet (request (), response ());
-					return;
-				}
-				// or if we should return a single user
-				else
-				{
-					this->handleGetUnique (response (), username);
-					return;
-				}
-			}
-			catch (exception::NoCurrentUserException & e)
-			{
-				RootApp::setUnauthorized (response (), "You need to be authenticated to perform this action.",
-							  "NEED_AUTHENTICATION");
-				return;
-			}
-			catch (exception::UserNotFoundException & e)
-			{
-				RootApp::setUnauthorized (response (), "You need to be authenticated to perform this action.",
-							  "NEED_AUTHENTICATION");
-				return;
-			}
-			catch (exception::InsufficientPermissionsException & e)
-			{
-				RootApp::setUnauthorized (response (), "You have insufficient permissions to perform this action.",
-							  "USER_INSUFFICIENT_PERMISSIONS");
-				return;
-			}
-		}
+		this->handleDispatchGet (request (), response (), username);
+		return;
 	}
 
 	// register new user
 	else if (request ().request_method () == "POST")
 	{
 		this->handleInsert (request (), response ());
+		return;
 	}
 
 	// edit existing user
 	else if (request ().request_method () == "PUT")
 	{
-		try
-		{
-			// retrieve currently authenticated user
-			model::User user = AuthenticationApp::getCurrentUser (request ());
-
-			// in case no target specified, update current user
-			if (username.empty ())
-			{
-				username = user.getUsername ();
-			}
-
-			// check permissions
-			if (user.getUsername () != username && user.getRank () < Config::permissions_user_edit)
-			{
-				throw exception::InsufficientPermissionsException ();
-			}
-
-			// execute the update request
-			this->handleUpdate (request (), response (), username, user.getRank () >= Config::permissions_user_edit);
-		}
-		catch (exception::NoCurrentUserException & e)
-		{
-			RootApp::setUnauthorized (response (), "You need to be authenticated to perform this action.",
-						  "NEED_AUTHENTICATION");
-			return;
-		}
-		catch (exception::UserNotFoundException & e)
-		{
-			RootApp::setUnauthorized (response (), "You need to be authenticated to perform this action.",
-						  "NEED_AUTHENTICATION");
-			return;
-		}
-		catch (exception::InsufficientPermissionsException & e)
-		{
-			RootApp::setUnauthorized (response (), "You have insufficient permissions to perform this action.",
-						  "USER_INSUFFICIENT_PERMISSIONS");
-			return;
-		}
+		this->handleDispatchPut (request (), response (), username);
+		return;
 	}
 
 	// delete user
 	else if (request ().request_method () == "DELETE")
 	{
-		try
-		{
-			// retrieve currently authenticated user
-			model::User user = AuthenticationApp::getCurrentUser (request ());
-
-			// in case no target specified, delete current user
-			if (username.empty ())
-			{
-				username = user.getUsername ();
-			}
-
-			// check permissions
-			if (user.getUsername () != username && user.getRank () < Config::permissions_user_delete)
-			{
-				throw exception::InsufficientPermissionsException ();
-			}
-
-			// execute the delete request
-			this->handleDelete (response (), username);
-		}
-		catch (exception::NoCurrentUserException & e)
-		{
-			RootApp::setUnauthorized (response (), "You need to be authenticated to perform this action.",
-						  "NEED_AUTHENTICATION");
-			return;
-		}
-		catch (exception::UserNotFoundException & e)
-		{
-			RootApp::setUnauthorized (response (), "You need to be authenticated to perform this action.",
-						  "NEED_AUTHENTICATION");
-			return;
-		}
-		catch (exception::InsufficientPermissionsException & e)
-		{
-			RootApp::setUnauthorized (response (), "You have insufficient permissions to perform this action.",
-						  "USER_INSUFFICIENT_PERMISSIONS");
-			return;
-		}
+		this->handleDispatchDelete (request (), response (), username);
+		return;
 	}
 
 	// ask for allowed operations
@@ -220,6 +86,179 @@ void UserApp::handle (std::string username)
 	else
 	{
 		RootApp::setMethodNotAllowed (response ()); // send HTTP 405
+		return;
+	}
+}
+
+/**
+ * @brief helper method for dispatching of GET requests
+ * 
+ * performs authentication and permission checks if necessary
+ * 
+ * @param req a request
+ * @param resp a response
+ * @param username an optional username that should be used as target resource
+ */
+void UserApp::handleDispatchGet (cppcms::http::request & req, cppcms::http::response & resp, const std::string & username) const
+{
+	// check if details of the currently authenticated user should be returned
+	if (req.get (PARAM_CURRENT) == "true")
+	{
+		try
+		{
+			model::User user = AuthenticationApp::getCurrentUser (req);
+			this->handleGetUnique (resp, user.getUsername ());
+			return;
+		}
+		catch (exception::NoCurrentUserException & e)
+		{
+			RootApp::setBadRequest (resp, "You need to be authenticated to perform this action.", "NO_CURRENT_USER");
+			return;
+		}
+		catch (exception::UserNotFoundException & e)
+		{
+			RootApp::setNotFound (resp, "The requested user does not exist.", "USER_NOT_FOUND");
+			return;
+		}
+	}
+	// or if we should return details for another user
+	else
+	{
+		// first check permissions
+		try
+		{
+			model::User user = AuthenticationApp::getCurrentUser (req);
+			if (user.getRank () < Config::permissions_user_view)
+			{
+				throw exception::InsufficientPermissionsException ();
+			}
+
+			// check if we should only return the user list
+			if (username.empty ())
+			{
+				this->handleGet (req, resp);
+				return;
+			}
+			// or if we should return a single user
+			else
+			{
+				this->handleGetUnique (resp, username);
+				return;
+			}
+		}
+		catch (exception::NoCurrentUserException & e)
+		{
+			RootApp::setUnauthorized (resp, "You need to be authenticated to perform this action.", "NEED_AUTHENTICATION");
+			return;
+		}
+		catch (exception::UserNotFoundException & e)
+		{
+			RootApp::setUnauthorized (resp, "You need to be authenticated to perform this action.", "NEED_AUTHENTICATION");
+			return;
+		}
+		catch (exception::InsufficientPermissionsException & e)
+		{
+			RootApp::setUnauthorized (resp, "You have insufficient permissions to perform this action.",
+						  "USER_INSUFFICIENT_PERMISSIONS");
+			return;
+		}
+	}
+}
+
+/**
+ * @brief helper method for dispatching of PUT requests
+ * 
+ * performs authentication and permission checks if necessary
+ * 
+ * @param req a request
+ * @param resp a response
+ * @param username an optional username that should be used as target resource
+ */
+void UserApp::handleDispatchPut (cppcms::http::request & req, cppcms::http::response & resp, std::string & username) const
+{
+	try
+	{
+		// retrieve currently authenticated user
+		model::User user = AuthenticationApp::getCurrentUser (req);
+
+		// in case no target specified, update current user
+		if (username.empty ())
+		{
+			username = user.getUsername ();
+		}
+
+		// check permissions
+		if (user.getUsername () != username && user.getRank () < Config::permissions_user_edit)
+		{
+			throw exception::InsufficientPermissionsException ();
+		}
+
+		// execute the update request
+		this->handleUpdate (req, resp, username, user.getRank () >= Config::permissions_user_edit);
+	}
+	catch (exception::NoCurrentUserException & e)
+	{
+		RootApp::setUnauthorized (resp, "You need to be authenticated to perform this action.", "NEED_AUTHENTICATION");
+		return;
+	}
+	catch (exception::UserNotFoundException & e)
+	{
+		RootApp::setUnauthorized (resp, "You need to be authenticated to perform this action.", "NEED_AUTHENTICATION");
+		return;
+	}
+	catch (exception::InsufficientPermissionsException & e)
+	{
+		RootApp::setUnauthorized (resp, "You have insufficient permissions to perform this action.",
+					  "USER_INSUFFICIENT_PERMISSIONS");
+		return;
+	}
+}
+
+/**
+ * @brief helper method for dispatching of DELETE requests
+ * 
+ * performs authentication and permission checks if necessary
+ * 
+ * @param req a request
+ * @param resp a response
+ * @param username an optional username that should be used as target resource
+ */
+void UserApp::handleDispatchDelete (cppcms::http::request & req, cppcms::http::response & resp, std::string & username) const
+{
+	try
+	{
+		// retrieve currently authenticated user
+		model::User user = AuthenticationApp::getCurrentUser (req);
+
+		// in case no target specified, delete current user
+		if (username.empty ())
+		{
+			username = user.getUsername ();
+		}
+
+		// check permissions
+		if (user.getUsername () != username && user.getRank () < Config::permissions_user_delete)
+		{
+			throw exception::InsufficientPermissionsException ();
+		}
+
+		// execute the delete request
+		this->handleDelete (resp, username);
+	}
+	catch (exception::NoCurrentUserException & e)
+	{
+		RootApp::setUnauthorized (resp, "You need to be authenticated to perform this action.", "NEED_AUTHENTICATION");
+		return;
+	}
+	catch (exception::UserNotFoundException & e)
+	{
+		RootApp::setUnauthorized (resp, "You need to be authenticated to perform this action.", "NEED_AUTHENTICATION");
+		return;
+	}
+	catch (exception::InsufficientPermissionsException & e)
+	{
+		RootApp::setUnauthorized (resp, "You have insufficient permissions to perform this action.",
+					  "USER_INSUFFICIENT_PERMISSIONS");
 		return;
 	}
 }

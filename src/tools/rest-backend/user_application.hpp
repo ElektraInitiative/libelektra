@@ -67,6 +67,10 @@ public:
 	virtual void handle (std::string username);
 
 private:
+	void handleDispatchGet (cppcms::http::request & request, cppcms::http::response & response, const std::string & username) const;
+	void handleDispatchPut (cppcms::http::request & request, cppcms::http::response & response, std::string & username) const;
+	void handleDispatchDelete (cppcms::http::request & request, cppcms::http::response & response, std::string & username) const;
+
 	void handleGet (cppcms::http::request & request, cppcms::http::response & response) const;
 	void handleGetUnique (cppcms::http::response & response, const std::string username = std::string ()) const;
 	void handleInsert (cppcms::http::request & request, cppcms::http::response & response) const;
