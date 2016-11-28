@@ -1,26 +1,26 @@
 'use strict';
 
-module.exports = function(Logger, $http, $q, config) {
+module.exports = function (Logger, $http, $q, config) {
 
-	var service = this;
+    var service = this;
 
 
-	this.loadFile = function(url) {
+    this.loadFile = function (url) {
 
-		var deferred = $q.defer();
+        var deferred = $q.defer();
 
-		$http.get(config.website.content_root + url, {
-			skipAuthorization: true
-		}).success(function(data) {
-			deferred.resolve(data);
-		}).error(function(data) {
-			deferred.reject(data);
-		});
+        $http.get(config.website.content_root + url, {
+            skipAuthorization: true
+        }).success(function (data) {
+            deferred.resolve(data);
+        }).error(function (data) {
+            deferred.reject(data);
+        });
 
-		return deferred.promise;
+        return deferred.promise;
 
-	};
+    };
 
-	Logger.info('Website service ready!');
+    Logger.info('Website service ready!');
 
 };

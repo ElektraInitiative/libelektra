@@ -1,17 +1,17 @@
 'use strict';
 
-module.exports = function(Logger, $http, $q, config) {
+module.exports = function (Logger, $http, $q, config) {
 
-	var service = this;
+    var service = this;
 
-	this.convert = function(parameters) {
+    this.convert = function (parameters) {
 
-		return $http.post(config.backend.root + 'conversion', parameters, {
-			// custom options
-		});
+        return $http.post(config.backend.root + 'conversion', parameters, {
+            // custom options
+        });
 
-	};
+    };
 
-	Logger.info('Conversion service ready!');
+    Logger.info('Conversion service ready!');
 
 };

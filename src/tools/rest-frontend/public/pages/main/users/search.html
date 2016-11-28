@@ -20,7 +20,7 @@
     <div class="col-md-3">
         <div class="form-group">
             <label class="control-label">{{ 'APP.USERS.SEARCH.ADVANCED.LABEL.FILTERBY' | translate }}</label>
-            <select class="form-control" ng-model="options.filterby.value" ng-options="row.name | translate for row in options.filterby.options">
+            <select class="form-control" ng-model="options.filterby.value" ng-options="row.name |  translate for row in options.filterby.options">
             </select>
         </div>
     </div>
@@ -38,37 +38,37 @@
         <thead>
             <tr>
                 <th ng-click="ctrl.toggleSorting('username')">
-					{{ 'APP.USERS.SEARCH.TABLE.HEADER.USERNAME' | translate }}
-					<i class="fa pull-right" ng-class="{'fa-caret-up': options.sort.value.id === 'asc',
+                    {{ 'APP.USERS.SEARCH.TABLE.HEADER.USERNAME' | translate }}
+                    <i class="fa pull-right" ng-class="{'fa-caret-up': options.sort.value.id === 'asc',
 														'fa-caret-down': options.sort.value.id === 'desc'}"
-											 ng-show="options.sortby.value.id === 'username'"></i>
-				</th>
+                       ng-show="options.sortby.value.id === 'username'"></i>
+                </th>
                 <th ng-click="ctrl.toggleSorting('email')">
-					{{ 'APP.USERS.SEARCH.TABLE.HEADER.EMAIL' | translate }}
-					<i class="fa pull-right" ng-class="{'fa-caret-up': options.sort.value.id === 'asc',
+                    {{ 'APP.USERS.SEARCH.TABLE.HEADER.EMAIL' | translate }}
+                    <i class="fa pull-right" ng-class="{'fa-caret-up': options.sort.value.id === 'asc',
 														'fa-caret-down': options.sort.value.id === 'desc'}"
-											 ng-show="options.sortby.value.id === 'email'"></i>
-				</th>
+                       ng-show="options.sortby.value.id === 'email'"></i>
+                </th>
                 <th ng-click="ctrl.toggleSorting('rank')">
-					{{ 'APP.USERS.SEARCH.TABLE.HEADER.RANK' | translate }}
-					<i class="fa pull-right" ng-class="{'fa-caret-up': options.sort.value.id === 'asc',
+                    {{ 'APP.USERS.SEARCH.TABLE.HEADER.RANK' | translate }}
+                    <i class="fa pull-right" ng-class="{'fa-caret-up': options.sort.value.id === 'asc',
 														'fa-caret-down': options.sort.value.id === 'desc'}"
-											 ng-show="options.sortby.value.id === 'rank'"></i>
-				</th>
+                       ng-show="options.sortby.value.id === 'rank'"></i>
+                </th>
                 <th ng-click="ctrl.toggleSorting('created_at')">
-					{{ 'APP.USERS.SEARCH.TABLE.HEADER.CREATEDAT' | translate }}
-					<i class="fa pull-right" ng-class="{'fa-caret-up': options.sort.value.id === 'asc',
+                    {{ 'APP.USERS.SEARCH.TABLE.HEADER.CREATEDAT' | translate }}
+                    <i class="fa pull-right" ng-class="{'fa-caret-up': options.sort.value.id === 'asc',
 														'fa-caret-down': options.sort.value.id === 'desc'}"
-											 ng-show="options.sortby.value.id === 'created_at'"></i>
-				</th>
+                       ng-show="options.sortby.value.id === 'created_at'"></i>
+                </th>
                 <th>{{ 'APP.USERS.SEARCH.TABLE.HEADER.ACTIONS' | translate }}</th>
             </tr>
         </thead>
         <tbody>
             <tr ng-repeat="result in searchResult.users">
-                <td>{{ result.username }}</td>
-                <td>{{ result.email }}</td>
-                <td>{{ result.rank }}</td>
+                <td>{{ result.username}}</td>
+                <td>{{ result.email}}</td>
+                <td>{{ result.rank}}</td>
                 <td>{{ result.created_at * 1000 | date:'yyyy-MM-dd HH:mm' }}</td>
                 <td>
                     <button class="btn btn-xs btn-primary"
@@ -92,7 +92,7 @@
                     <a ng-click="ctrl.goToPage(pagination.currentPage - 1)">Prev</a>
                 </li>
                 <li ng-class="{'active': i == pagination.currentPage }" ng-repeat="i in pagination.pages">
-                    <a ng-click="ctrl.goToPage(i)">{{ i }}</a>
+                    <a ng-click="ctrl.goToPage(i)">{{ i}}</a>
                 </li>
                 <li ng-show="pagination.currentPage">
                     <a ng-click="ctrl.goToPage(pagination.currentPage + 1)">Next</a>

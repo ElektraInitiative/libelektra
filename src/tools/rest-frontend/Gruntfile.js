@@ -1,7 +1,7 @@
 var modRewrite = require('connect-modrewrite');
 var serveStatic = require('serve-static');
 
-module.exports = function(grunt) {
+module.exports = function (grunt) {
 
     var dstFileBanner = '/**\n * @application <%= pkg.name %>\n * @version <%= pkg.version %>\n * @updated <%= grunt.template.today("yyyy-mm-dd") %>\n * @author <%= pkg.author %>\n * @license <%= pkg.license %>\n */\n';
 
@@ -9,13 +9,13 @@ module.exports = function(grunt) {
     grunt.initConfig({
         app: grunt.file.readJSON('application-config.json'),
         pkg: grunt.file.readJSON('package.json'),
-		global: {
-			repository: {
-				root: '@REST_FRONTEND_SOURCE_INSTALL_REPOSITORY@'
-			}
-		},
+        global: {
+            repository: {
+                root: '@REST_FRONTEND_SOURCE_INSTALL_REPOSITORY@'
+            }
+        },
         'create-website-structure': {
-            options: { },
+            options: {},
             build: {
                 repo_root: '<%= global.repository.root %>',
                 input: 'resources/structure.json.in',
@@ -23,45 +23,45 @@ module.exports = function(grunt) {
             }
         },
         'create-website-news': {
-            options: { },
+            options: {},
             build: {
                 repo_root: '<%= global.repository.root %>',
                 news_root: 'doc/news',
                 output: 'resources/news.json',
-				regex: {
-					filename: {
-						pattern: '([0-9]{4}\\-[0-9]{2}\\-[0-9]{2})_(.*)',
-						flags: 'i'
-					},
-					title: {
-						pattern: '^# ([^#]*) #$',
-						flags: 'im'
-					},
-					shortdesc: {
-						pattern: '^- shortDesc: (.*)$',
-						flags: 'im'
-					}
-				}
+                regex: {
+                    filename: {
+                        pattern: '([0-9]{4}\\-[0-9]{2}\\-[0-9]{2})_(.*)',
+                        flags: 'i'
+                    },
+                    title: {
+                        pattern: '^# ([^#]*) #$',
+                        flags: 'im'
+                    },
+                    shortdesc: {
+                        pattern: '^- shortDesc: (.*)$',
+                        flags: 'im'
+                    }
+                }
             }
         },
-		'create-website-news-rss': {
-			options: { },
-			build: {
-				repo_root: '<%= global.repository.root %>',
-				input: {
-					news: '<%= grunt.config(\'create-website-news.build.output\') %>'
-				},
-				regex: {
-					guid: {
-						pattern: '^\\- guid: ([a-fA-F0-9-]+)$',
-						flags: 'm'
-					}
-				},
-				output: 'public/rss'
-			}
-		},
+        'create-website-news-rss': {
+            options: {},
+            build: {
+                repo_root: '<%= global.repository.root %>',
+                input: {
+                    news: '<%= grunt.config(\'create-website-news.build.output\') %>'
+                },
+                regex: {
+                    guid: {
+                        pattern: '^\\- guid: ([a-fA-F0-9-]+)$',
+                        flags: 'm'
+                    }
+                },
+                output: 'public/rss'
+            }
+        },
         'copy-website-content': {
-            options: { },
+            options: {},
             build: {
                 repo_root: '<%= global.repository.root %>',
                 input: {
@@ -72,7 +72,7 @@ module.exports = function(grunt) {
             }
         },
         'create-website-sitemap': {
-            options: { },
+            options: {},
             build: {
                 root_url: '<%= app.website.url %>',
                 output: 'public/sitemap.xml',
@@ -88,9 +88,9 @@ module.exports = function(grunt) {
                 },
                 dynamic: {
                     input: {
-						structure: '<%= grunt.config(\'create-website-structure.build.output\') %>',
-						news: '<%= grunt.config(\'create-website-news.build.output\') %>'
-					},
+                        structure: '<%= grunt.config(\'create-website-structure.build.output\') %>',
+                        news: '<%= grunt.config(\'create-website-news.build.output\') %>'
+                    },
                     backend: '<%= app.backend.root %>'
                 },
             }
@@ -104,7 +104,7 @@ module.exports = function(grunt) {
             build: ['Gruntfile.js', 'resources/assets/js/**/*.js']
         },
         less: {
-            options: { },
+            options: {},
             build: {
                 files: {
                     'public/assets/skin/default/css/theme.css': 'resources/assets/skin/default/less/theme.less'
@@ -160,16 +160,16 @@ module.exports = function(grunt) {
             }
         },
         watch: {
-            options: { },
+            options: {},
             less: {
                 files: ['resources/assets/skin/**/*'],
-                tasks: ['less','cssmin']
+                tasks: ['less', 'cssmin']
             },
             preprocess: {
                 files: [
                     'application-config.json',
                     '<%= grunt.config(\'create-website-structure.build.output\') %>',
-					'<%= grunt.config(\'create-website-news.build.output\') %>'
+                    '<%= grunt.config(\'create-website-news.build.output\') %>'
                 ],
                 tasks: ['preprocess', 'browserify:build']
             },
@@ -179,7 +179,7 @@ module.exports = function(grunt) {
             }
         },
         browserify: {
-            options: { },
+            options: {},
             build: {
                 src: 'resources/assets/js/application.js',
                 dest: 'public/assets/js/application.js',
@@ -217,9 +217,9 @@ module.exports = function(grunt) {
                             'woff', 'woff2', 'xml', 'c', 'h', 'cpp', 'hpp', 'java', 'py'
                         ];
                         return [
-                            modRewrite(['!' + staticExtensions.map(function(elem) {
-                                return '\\.' + elem;
-                            }).join('|') + '$ /index.html [L]']),
+                            modRewrite(['!' + staticExtensions.map(function (elem) {
+                                    return '\\.' + elem;
+                                }).join('|') + '$ /index.html [L]']),
                             serveStatic('public'),
                         ];
                     }
@@ -243,7 +243,7 @@ module.exports = function(grunt) {
     grunt.registerTask('full', [
         'less', 'cssmin', 'concat',
         'create-website-news', 'create-website-news-rss',
-		'create-website-structure', 'copy-website-content', 'create-website-sitemap',
+        'create-website-structure', 'copy-website-content', 'create-website-sitemap',
         'preprocess', 'browserify:build'
     ]);
     grunt.registerTask('server', ['connect']);

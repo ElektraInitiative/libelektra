@@ -1,12 +1,12 @@
 'use strict';
 
-module.exports = function($rootScope, $scope, Logger, $state, $anchorScroll, webStructure) {
+module.exports = function ($rootScope, $scope, Logger, $state, $anchorScroll, webStructure) {
 
-	var vm = this;
-	$scope.$rootScope = $rootScope;
+    var vm = this;
+    $scope.$rootScope = $rootScope;
 
-	// build the dynamic menu
-	$scope.menu = webStructure;
+    // build the dynamic menu
+    $scope.menu = webStructure;
 
 //        vm.currentLanguage = 'de';
 
@@ -24,19 +24,19 @@ module.exports = function($rootScope, $scope, Logger, $state, $anchorScroll, web
 //
 //        }
 
-	this.goSearch = function() {
+    this.goSearch = function () {
 
-		if($rootScope.entriesSearchString) {
-			Logger.log('Go to search');
-			$state.go('main.entries.search');
-		}
+        if ($rootScope.entriesSearchString) {
+            Logger.log('Go to search');
+            $state.go('main.entries.search');
+        }
 
-	};
+    };
 
-	this.scrollToTop = function() {
-		$anchorScroll();
-	};
+    this.scrollToTop = function () {
+        $anchorScroll();
+    };
 
-	Logger.info("Main template ready");
+    Logger.info("Main template ready");
 
 };

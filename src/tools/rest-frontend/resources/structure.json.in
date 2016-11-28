@@ -1,240 +1,240 @@
 [
-	{
-		"name": "Documentation",
-		"type": "submenu",
-		"ref": "documentation",
-		"children": [
-			{
-				"name": "Getting started",
-				"type": "staticlist",
-				"ref": "docgettingstarted",
-				"children": [
-					{
-						"name": "Why Elektra?",
-						"type": "staticfile",
-						"options": {
-							"path": "doc/WHY.md"
-						}
-					},
-					{
-						"name": "Big Picture",
-						"type": "staticfile",
-						"options": {
-							"path": "doc/BIGPICTURE.md"
-						}
-					},
-					{
-						"name": "Compiling",
-						"type": "staticfile",
-						"options": {
-							"path": "doc/COMPILE.md"
-						}
-					},
-					{
-						"name": "Installation",
-						"type": "staticfile",
-						"options": {
-							"path": "doc/INSTALL.md"
-						}
-					},
-					{
-						"name": "Tutorials",
-						"type": "staticref",
-						"options": {
-							"path": "tutorials"
-						}
-					}
-				]
-			},
-			{
-				"name": "Tutorials",
-				"type": "parsereadme",
-				"ref": "tutorials",
-				"options": {
-					"path": "doc/tutorials/README.md",
-					"target_file": [],
-					"parsing": {
-						"stop_regex": "####### UNUSED ######",
-						"section_regex": "## ([^#]+)",
-						"entry_regex": "^\\- \\[(.+)\\]\\(([^\\)]+)\\)(.*)"
-					},
-					"name": {
-						"make_pretty": false
-					}
-				}
-			},
-			{
-				"name": "Plugins",
-				"type": "parsereadme",
-				"ref": "plugins",
-				"options": {
-					"path": "src/plugins/README.md",
-					"target_file": ["README.md", "README", "readme.md", "readme"],
-					"parsing": {
-						"start_regex": "# Plugins #",
-						"stop_regex": "####### UNUSED ######",
-						"section_regex": "### ([^#]+) ###",
-						"entry_regex": "^\\- \\[(.+)\\]\\(([^\\)]+)\\)(.*)"
-					},
-					"name": {
-						"make_pretty": false
-					}
-				}
-			},
-			{
-				"name": "Tools",
-				"type": "listdirs",
-				"ref": "tools",
-				"options": {
-					"path": "src/tools",
-					"target_file": ["README.md", "README", "readme.md", "readme"]
-				}
-			},
-			{
-				"name": "Manpages",
-				"type": "listfiles",
-				"ref": "manpages",
-				"options": {
-					"path": "doc/help",
-					"blacklist": ["CMakeLists.txt"]
-				}
-			}
-		]
-	},
-	{
-		"name": "Development",
-		"type": "submenu",
-		"ref": "development",
-		"children": [
-			{
-				"name": "Getting started",
-				"type": "staticlist",
-				"ref": "devgettingstarted",
-				"children": [
-					{
-						"name": "Coding",
-						"type": "staticfile",
-						"options": {
-							"path": "doc/CODING.md"
-						}
-					},
-					{
-						"name": "Design",
-						"type": "staticfile",
-						"options": {
-							"path": "doc/DESIGN.md"
-						}
-					},
-					{
-						"name": "Security",
-						"type": "staticfile",
-						"options": {
-							"path": "doc/SECURITY.md"
-						}
-					},
-					{
-						"name": "Testing",
-						"type": "staticfile",
-						"options": {
-							"path": "doc/TESTING.md"
-						}
-					},
-					{
-						"name": "Version",
-						"type": "staticfile",
-						"options": {
-							"path": "doc/VERSION.md"
-						}
-					},
-					{
-						"name": "Tutorials",
-						"type": "staticref",
-						"options": {
-							"path": "tutorials"
-						}
-					}
-				]
-			},
-			{
-				"name": "Examples",
-				"type": "listfiles",
-				"ref": "examples",
-				"options": {
-					"path": "examples",
-					"blacklist": ["CMakeLists.txt"]
-				}
-			},
-			{
-				"name": "Bindings",
-				"type": "parsereadme",
-				"ref": "bindings",
-				"options": {
-					"path": "src/bindings/README.md",
-					"target_file": ["README.md", "README", "readme.md", "readme"],
-					"parsing": {
-						"entry_regex": "^\\- \\[(.+)\\]\\(([^\\)]+)\\)(.*)"
-					},
-					"name": {
-						"make_pretty": false
-					}
-				}
-			},
-			{
-				"name": "Libraries",
-				"type": "parsereadme",
-				"ref": "libraries",
-				"options": {
-					"path": "src/libs/README.md",
-					"target_file": ["README.md", "README", "readme.md", "readme"],
-					"parsing": {
-						"entry_regex": "^\\[(.+)\\]\\(([^\\)]+)\\)(.*)"
-					},
-					"name": {
-						"make_pretty": true
-					}
-				}
-			},
-			{
-				"name": "Decisions",
-				"type": "parsereadme",
-				"ref": "decisions",
-				"options": {
-					"path": "doc/decisions/README.md",
-					"target_file": [],
-					"parsing": {
-						"stop_regex": "####### UNUSED ######",
-						"section_regex": "## ([^#]+)",
-						"entry_regex": "^\\- \\[(.+)\\]\\(([^\\)]+)\\)(.*)"
-					},
-					"name": {
-						"make_pretty": false
-					}
-				}
-			},
-			{
-				"name": "Build Server",
-				"type": "link",
-				"ref": "buildserver",
-				"options": {
-					"path": "http://build.libelektra.org:8080/"
-				}
-			},
-			{
-				"name": "API Documentation",
-				"type": "link",
-				"ref": "apidocumentation",
-				"options": {
-					"path": "http://doc.libelektra.org/api/current/html/"
-				}
-			},
-			{
-				"name": "GitHub",
-				"type": "link",
-				"ref": "github",
-				"options": {
-					"path": "http://git.libelektra.org"
-				}
-			}
-		]
-	}
+    {
+        "name": "Documentation",
+        "type": "submenu",
+        "ref": "documentation",
+        "children": [
+            {
+                "name": "Getting started",
+                "type": "staticlist",
+                "ref": "docgettingstarted",
+                "children": [
+                    {
+                        "name": "Why Elektra?",
+                        "type": "staticfile",
+                        "options": {
+                            "path": "doc/WHY.md"
+                        }
+                    },
+                    {
+                        "name": "Big Picture",
+                        "type": "staticfile",
+                        "options": {
+                            "path": "doc/BIGPICTURE.md"
+                        }
+                    },
+                    {
+                        "name": "Compiling",
+                        "type": "staticfile",
+                        "options": {
+                            "path": "doc/COMPILE.md"
+                        }
+                    },
+                    {
+                        "name": "Installation",
+                        "type": "staticfile",
+                        "options": {
+                            "path": "doc/INSTALL.md"
+                        }
+                    },
+                    {
+                        "name": "Tutorials",
+                        "type": "staticref",
+                        "options": {
+                            "path": "tutorials"
+                        }
+                    }
+                ]
+            },
+            {
+                "name": "Tutorials",
+                "type": "parsereadme",
+                "ref": "tutorials",
+                "options": {
+                    "path": "doc/tutorials/README.md",
+                    "target_file": [],
+                    "parsing": {
+                        "stop_regex": "####### UNUSED ######",
+                        "section_regex": "## ([^#]+)",
+                        "entry_regex": "^\\- \\[(.+)\\]\\(([^\\)]+)\\)(.*)"
+                    },
+                    "name": {
+                        "make_pretty": false
+                    }
+                }
+            },
+            {
+                "name": "Plugins",
+                "type": "parsereadme",
+                "ref": "plugins",
+                "options": {
+                    "path": "src/plugins/README.md",
+                    "target_file": ["README.md", "README", "readme.md", "readme"],
+                    "parsing": {
+                        "start_regex": "# Plugins #",
+                        "stop_regex": "####### UNUSED ######",
+                        "section_regex": "### ([^#]+) ###",
+                        "entry_regex": "^\\- \\[(.+)\\]\\(([^\\)]+)\\)(.*)"
+                    },
+                    "name": {
+                        "make_pretty": false
+                    }
+                }
+            },
+            {
+                "name": "Tools",
+                "type": "listdirs",
+                "ref": "tools",
+                "options": {
+                    "path": "src/tools",
+                    "target_file": ["README.md", "README", "readme.md", "readme"]
+                }
+            },
+            {
+                "name": "Manpages",
+                "type": "listfiles",
+                "ref": "manpages",
+                "options": {
+                    "path": "doc/help",
+                    "blacklist": ["CMakeLists.txt"]
+                }
+            }
+        ]
+    },
+    {
+        "name": "Development",
+        "type": "submenu",
+        "ref": "development",
+        "children": [
+            {
+                "name": "Getting started",
+                "type": "staticlist",
+                "ref": "devgettingstarted",
+                "children": [
+                    {
+                        "name": "Coding",
+                        "type": "staticfile",
+                        "options": {
+                            "path": "doc/CODING.md"
+                        }
+                    },
+                    {
+                        "name": "Design",
+                        "type": "staticfile",
+                        "options": {
+                            "path": "doc/DESIGN.md"
+                        }
+                    },
+                    {
+                        "name": "Security",
+                        "type": "staticfile",
+                        "options": {
+                            "path": "doc/SECURITY.md"
+                        }
+                    },
+                    {
+                        "name": "Testing",
+                        "type": "staticfile",
+                        "options": {
+                            "path": "doc/TESTING.md"
+                        }
+                    },
+                    {
+                        "name": "Version",
+                        "type": "staticfile",
+                        "options": {
+                            "path": "doc/VERSION.md"
+                        }
+                    },
+                    {
+                        "name": "Tutorials",
+                        "type": "staticref",
+                        "options": {
+                            "path": "tutorials"
+                        }
+                    }
+                ]
+            },
+            {
+                "name": "Examples",
+                "type": "listfiles",
+                "ref": "examples",
+                "options": {
+                    "path": "examples",
+                    "blacklist": ["CMakeLists.txt"]
+                }
+            },
+            {
+                "name": "Bindings",
+                "type": "parsereadme",
+                "ref": "bindings",
+                "options": {
+                    "path": "src/bindings/README.md",
+                    "target_file": ["README.md", "README", "readme.md", "readme"],
+                    "parsing": {
+                        "entry_regex": "^\\- \\[(.+)\\]\\(([^\\)]+)\\)(.*)"
+                    },
+                    "name": {
+                        "make_pretty": false
+                    }
+                }
+            },
+            {
+                "name": "Libraries",
+                "type": "parsereadme",
+                "ref": "libraries",
+                "options": {
+                    "path": "src/libs/README.md",
+                    "target_file": ["README.md", "README", "readme.md", "readme"],
+                    "parsing": {
+                        "entry_regex": "^\\[(.+)\\]\\(([^\\)]+)\\)(.*)"
+                    },
+                    "name": {
+                        "make_pretty": true
+                    }
+                }
+            },
+            {
+                "name": "Decisions",
+                "type": "parsereadme",
+                "ref": "decisions",
+                "options": {
+                    "path": "doc/decisions/README.md",
+                    "target_file": [],
+                    "parsing": {
+                        "stop_regex": "####### UNUSED ######",
+                        "section_regex": "## ([^#]+)",
+                        "entry_regex": "^\\- \\[(.+)\\]\\(([^\\)]+)\\)(.*)"
+                    },
+                    "name": {
+                        "make_pretty": false
+                    }
+                }
+            },
+            {
+                "name": "Build Server",
+                "type": "link",
+                "ref": "buildserver",
+                "options": {
+                    "path": "http://build.libelektra.org:8080/"
+                }
+            },
+            {
+                "name": "API Documentation",
+                "type": "link",
+                "ref": "apidocumentation",
+                "options": {
+                    "path": "http://doc.libelektra.org/api/current/html/"
+                }
+            },
+            {
+                "name": "GitHub",
+                "type": "link",
+                "ref": "github",
+                "options": {
+                    "path": "http://git.libelektra.org"
+                }
+            }
+        ]
+    }
 ]

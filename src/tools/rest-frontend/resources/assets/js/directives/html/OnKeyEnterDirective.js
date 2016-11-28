@@ -1,19 +1,19 @@
 'use strict';
 
-module.exports = function() {
+module.exports = function () {
 
-	return function ($scope, element, attrs) {
+    return function ($scope, element, attrs) {
 
-		element.bind("keydown keypress", function (event) {
-			if(event.which === 13) {
-				$scope.$apply(function (){
-					$scope.$eval(attrs.onKeyEnter);
-				});
+        element.bind("keydown keypress", function (event) {
+            if (event.which === 13) {
+                $scope.$apply(function () {
+                    $scope.$eval(attrs.onKeyEnter);
+                });
 
-				event.preventDefault();
-			}
-		});
+                event.preventDefault();
+            }
+        });
 
-	};
+    };
 
 };

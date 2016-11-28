@@ -28,21 +28,21 @@ require('satellizer');
 
 // the angular module
 angular.module('elektra.rest.angular', [
-	'angular-clipboard',
-	'angular-logger-max',
-	'hc.marked',
-	'ncy-angular-breadcrumb',
-	'ngAnimate',
-	'ngFileSaver',
-	'ngMessages',
-	'ngSanitize',
-	'ngTagsInput',
-	'pascalprecht.translate',
-	'satellizer',
-	'slugifier',
-	'ui.bootstrap',
-	'ui.router',
-	'ui-notification'
+    'angular-clipboard',
+    'angular-logger-max',
+    'hc.marked',
+    'ncy-angular-breadcrumb',
+    'ngAnimate',
+    'ngFileSaver',
+    'ngMessages',
+    'ngSanitize',
+    'ngTagsInput',
+    'pascalprecht.translate',
+    'satellizer',
+    'slugifier',
+    'ui.bootstrap',
+    'ui.router',
+    'ui-notification'
 ]);
 
 // application includes

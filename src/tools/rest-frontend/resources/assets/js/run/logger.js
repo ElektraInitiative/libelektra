@@ -1,8 +1,8 @@
 'use strict';
 
-module.exports = function(Logger, config) {
+module.exports = function (Logger, config) {
 
-	// configure logger
-	Logger.debug = config.logger.enabled;
+    // configure logger
+    Logger.debug = config.logger.enabled;
 
 };

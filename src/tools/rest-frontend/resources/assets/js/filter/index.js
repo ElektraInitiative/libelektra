@@ -3,4 +3,4 @@
 var angular = require('angular');
 
 angular.module('elektra.rest.angular')
-	   .filter('firstCapitalize', require('./FirstCapitalizeFilter'));
+        .filter('firstCapitalize', require('./FirstCapitalizeFilter'));
