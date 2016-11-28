@@ -149,8 +149,8 @@ void RootApp::version ()
 		{
 			// in case we could not retrieve the run-time version,
 			// use compile-time version
-			ELEKTRA_LOG_WARNING (
-				"Could not find run-time version of Elektra installation, using compile-time version as fallback.");
+			elektraLog (ELEKTRA_LOG_LEVEL_ERROR, __FUNCTION__, __FILE__, __LINE__,
+				    "Could not find run-time version of Elektra installation, using compile-time version as fallback.");
 			data["elektra"]["version"] = KDB_VERSION;
 			data["elektra"]["major"] = KDB_VERSION_MAJOR;
 			data["elektra"]["minor"] = KDB_VERSION_MINOR;
