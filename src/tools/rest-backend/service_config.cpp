@@ -95,11 +95,7 @@ void ConfigEngine::setValue (cppcms::json::value & config, const std::string pat
 		// with remaining part like ".var" we need to call recursively
 		if (!matches.str (3).empty ())
 		{
-			try
-			{
-				config[array_index];
-			}
-			catch (cppcms::json::bad_value_cast & e)
+			if (static_cast<int> (config.array ().size ()) <= array_index)
 			{
 				config[array_index] = cppcms::json::object ();
 			}
@@ -110,11 +106,8 @@ void ConfigEngine::setValue (cppcms::json::value & config, const std::string pat
 		// otherwise we can set directly
 		try
 		{
-			if (std::to_string (key.get<int> ()).length () == key.get<std::string> ().length ())
-			{
-				config[array_index] = key.get<int> ();
-				return;
-			}
+			config[array_index] = key.get<bool> ();
+			return;
 		}
 		catch (kdb::KeyTypeConversion & e)
 		{
@@ -122,36 +115,24 @@ void ConfigEngine::setValue (cppcms::json::value & config, const std::string pat
 		}
 		try
 		{
-			std::string val = key.getString ();
-			if (val == "true")
-			{
-				config[array_index] = true;
-			}
-			else if (val == "false")
-			{
-				config[array_index] = false;
-			}
-			else
-			{
-				config[array_index] = val;
-			}
+			config[array_index] = key.get<int> ();
 			return;
 		}
 		catch (kdb::KeyTypeConversion & e)
 		{
 			// do nothing, it's fine
 		}
+
+		config[array_index] = key.getString ();
+		return;
 	}
 	// there is no array in the path, set as object(s)
 	else
 	{
 		try
 		{
-			if (std::to_string (key.get<int> ()).length () == key.get<std::string> ().length ())
-			{
-				config.set (path, key.get<int> ());
-				return;
-			}
+			config.set (path, key.get<bool> ());
+			return;
 		}
 		catch (kdb::KeyTypeConversion & e)
 		{
@@ -159,25 +140,16 @@ void ConfigEngine::setValue (cppcms::json::value & config, const std::string pat
 		}
 		try
 		{
-			std::string val = key.getString ();
-			if (val == "true")
-			{
-				config.set (path, true);
-			}
-			else if (val == "false")
-			{
-				config.set (path, false);
-			}
-			else
-			{
-				config.set (path, val);
-			}
+			config.set (path, key.get<int> ());
 			return;
 		}
 		catch (kdb::KeyTypeConversion & e)
 		{
 			// do nothing, it's fine
 		}
+
+		config.set (path, key.getString ());
+		return;
 	}
 }
 
