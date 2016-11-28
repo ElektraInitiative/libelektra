@@ -1,0 +1,106 @@
+<div class="row">
+    <div class="input-group">
+        <input type="text" class="form-control input-lg"
+               placeholder="{{ 'APP.USERS.SEARCH.SEARCHBOX.PLACEHOLDER' | translate }}"
+               ng-model="$rootScope.usersSearchString" on-key-enter="ctrl.loadEntries()">
+        <span class="input-group-btn">
+            <button class="btn btn-default btn-lg"
+                    type="button" ng-click="ctrl.toggleAdvancedOptions()"
+                    >{{ 'APP.USERS.SEARCH.SEARCHBOX.BUTTON.ADVANCEDOPTIONS' | translate }}</button>
+            <button class="btn btn-primary btn-lg"
+                    type="button" ng-click="ctrl.loadEntries()"
+                    title="{{ 'APP.USERS.SEARCH.SEARCHBOX.BUTTON.SUBMIT' | translate }}">
+                <i class="fa fa-search"></i>
+            </button>
+        </span>
+    </div>
+</div>
+
+<div class="row u-marginTl" ng-show="options.is_advanced">
+    <div class="col-md-3">
+        <div class="form-group">
+            <label class="control-label">{{ 'APP.USERS.SEARCH.ADVANCED.LABEL.FILTERBY' | translate }}</label>
+            <select class="form-control" ng-model="options.filterby.value" ng-options="row.name |  translate for row in options.filterby.options">
+            </select>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="form-group">
+            <label class="control-label">{{ 'APP.USERS.SEARCH.ADVANCED.LABEL.ENTRIESPERPAGE' | translate }}</label>
+            <select class="form-control" ng-model="options.rows.value" ng-options="row for row in options.rows.options">
+            </select>
+        </div>
+    </div>
+</div>
+
+<div class="row u-marginTl">
+    <table class="table table-striped table-hover">
+        <thead>
+            <tr>
+                <th ng-click="ctrl.toggleSorting('username')">
+                    {{ 'APP.USERS.SEARCH.TABLE.HEADER.USERNAME' | translate }}
+                    <i class="fa pull-right" ng-class="{'fa-caret-up': options.sort.value.id === 'asc',
+														'fa-caret-down': options.sort.value.id === 'desc'}"
+                       ng-show="options.sortby.value.id === 'username'"></i>
+                </th>
+                <th ng-click="ctrl.toggleSorting('email')">
+                    {{ 'APP.USERS.SEARCH.TABLE.HEADER.EMAIL' | translate }}
+                    <i class="fa pull-right" ng-class="{'fa-caret-up': options.sort.value.id === 'asc',
+														'fa-caret-down': options.sort.value.id === 'desc'}"
+                       ng-show="options.sortby.value.id === 'email'"></i>
+                </th>
+                <th ng-click="ctrl.toggleSorting('rank')">
+                    {{ 'APP.USERS.SEARCH.TABLE.HEADER.RANK' | translate }}
+                    <i class="fa pull-right" ng-class="{'fa-caret-up': options.sort.value.id === 'asc',
+														'fa-caret-down': options.sort.value.id === 'desc'}"
+                       ng-show="options.sortby.value.id === 'rank'"></i>
+                </th>
+                <th ng-click="ctrl.toggleSorting('created_at')">
+                    {{ 'APP.USERS.SEARCH.TABLE.HEADER.CREATEDAT' | translate }}
+                    <i class="fa pull-right" ng-class="{'fa-caret-up': options.sort.value.id === 'asc',
+														'fa-caret-down': options.sort.value.id === 'desc'}"
+                       ng-show="options.sortby.value.id === 'created_at'"></i>
+                </th>
+                <th>{{ 'APP.USERS.SEARCH.TABLE.HEADER.ACTIONS' | translate }}</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr ng-repeat="result in searchResult.users">
+                <td>{{ result.username}}</td>
+                <td>{{ result.email}}</td>
+                <td>{{ result.rank}}</td>
+                <td>{{ result.created_at * 1000 | date:'yyyy-MM-dd HH:mm' }}</td>
+                <td>
+                    <button class="btn btn-xs btn-primary"
+                            ng-click="ctrl.goToUser(result.username)">
+                        {{ 'APP.USERS.SEARCH.TABLE.ACTION.BUTTON.DETAILS' | translate }}
+                    </button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<div class="row u-marginTl">
+    <div class="col-md-12">
+        <nav class="text-center">
+            <ul class="pagination">
+                <li ng-show="pagination.currentPage">
+                    <a ng-click="ctrl.goToPage(1)">First</a>
+                </li>
+                <li ng-show="pagination.currentPage">
+                    <a ng-click="ctrl.goToPage(pagination.currentPage - 1)">Prev</a>
+                </li>
+                <li ng-class="{'active': i == pagination.currentPage }" ng-repeat="i in pagination.pages">
+                    <a ng-click="ctrl.goToPage(i)">{{ i}}</a>
+                </li>
+                <li ng-show="pagination.currentPage">
+                    <a ng-click="ctrl.goToPage(pagination.currentPage + 1)">Next</a>
+                </li>
+                <li ng-show="pagination.currentPage">
+                    <a ng-click="ctrl.goToPage(pagination.pageCount)">Last</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+</div>
