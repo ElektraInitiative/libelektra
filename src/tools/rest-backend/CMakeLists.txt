@@ -13,6 +13,10 @@ elseif (NOT OPENSSL_FOUND)
     remove_tool (${tool} "OpenSSL package not found")
 else ()
 
+    string (REGEX REPLACE "[^a-zA-Z]" "" tool_name_simplified ${tool})
+    set (config_root "/sw/elektra/${tool_name_simplified}/#0/")
+    set (config_default_profile "current")
+
     set (install_directory ${TARGET_TOOL_DATA_FOLDER}/${tool})
     file (READ config-specification.ini configuration-specification)
 

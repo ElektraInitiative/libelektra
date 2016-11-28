@@ -10,7 +10,10 @@
 #define ELEKTRA_REST_CONFIG_HPP
 
 // The KDB key where the application configuration is stored at.
-#define ELEKTRA_REST_CONFIG_ROOT "/sw/elektra/@tool@"
+#define ELEKTRA_REST_CONFIG_ROOT "@config_root@"
+
+// The default configuration profile.
+#define ELEKTRA_REST_CONFIG_DEFAULT_PROFILE "@config_default_profile@"
 
 // The REST API version
 #define ELEKTRA_REST_API_VERSION 1
@@ -94,7 +97,8 @@ class Config
 
 public:
 	// configuration initializer
-	static bool initializeConfiguration (const cppcms::json::value & config);
+	static bool initializeConfiguration (const cppcms::json::value & config,
+				const std::string profile = std::string (ELEKTRA_REST_CONFIG_DEFAULT_PROFILE));
 
 	// JWT settings
 	static std::string jwt_encryption_key;

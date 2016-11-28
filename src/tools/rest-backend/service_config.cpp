@@ -25,19 +25,20 @@ namespace service
  * the configuration is loaded from the key database provided by elektra.
  * the result can be used to bootstrap the application (cppcms service).
  */
-cppcms::json::value ConfigEngine::loadApplicationConfiguration () const
+cppcms::json::value ConfigEngine::loadApplicationConfiguration (const std::string profile) const
 {
 	cppcms::json::value result;
 	kdb::KDB kdb;
 	kdb::KeySet ks;
 
-	kdb.get (ks, ELEKTRA_REST_CONFIG_ROOT);
-	ks = ks.cut (kdb::Key (ELEKTRA_REST_CONFIG_ROOT, KEY_END));
+	std::string conf_root = std::string (ELEKTRA_REST_CONFIG_ROOT) + profile;
+
+	kdb.get (ks, conf_root);
+	ks = ks.cut (kdb::Key (conf_root, KEY_END));
 
 	for (auto elem : ks)
 	{
-		std::string key =
-			elem.getName ().substr (elem.getName ().find (ELEKTRA_REST_CONFIG_ROOT) + strlen (ELEKTRA_REST_CONFIG_ROOT) + 1);
+		std::string key = elem.getName ().substr (elem.getName ().find (conf_root) + conf_root.length () + 1);
 		std::replace (key.begin (), key.end (), '/', '.');
 
 		this->setValue (result, key, elem);

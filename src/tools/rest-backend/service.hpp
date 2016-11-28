@@ -172,7 +172,8 @@ class ConfigEngine : public singleton<ConfigEngine>
 {
 
 public:
-	cppcms::json::value loadApplicationConfiguration () const;
+	cppcms::json::value
+	loadApplicationConfiguration (const std::string profile = std::string (ELEKTRA_REST_CONFIG_DEFAULT_PROFILE)) const;
 
 private:
 	void setValue (cppcms::json::value & config, const std::string path, const kdb::Key & key) const;

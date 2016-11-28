@@ -40,11 +40,11 @@ or `kdb stop-@tool@` from anywhere.
 
 ### Configuration ###
 
-The service stores all its configuration below `/sw/elektra/@tool@`,
+The service stores all its configuration below `@config_root@@config_default_profile@`,
 which is split into two parts:
 
-- one for CppCMS below `/sw/elektra/@tool@/cppcms` and
-- one for the service itself below `/sw/elektra/@tool@/backend`
+- one for CppCMS below `@config_root@@config_default_profile@/cppcms` and
+- one for the service itself below `@config_root@@config_default_profile@/backend`
 
 #### CppCMS ####
 
@@ -67,10 +67,10 @@ The following example configuration in CppCMS style
 ```
 can be realized within Elektra like
 ```
-kdb set /sw/elektra/@tool@/cppcms/service/api "http"
-kdb set /sw/elektra/@tool@/cppcms/service/port 8080
-kdb set /sw/elektra/@tool@/cppcms/service/ip "0.0.0.0"
-kdb set /sw/elektra/@tool@/cppcms/security/display_error_messages "true"
+kdb set @config_root@@config_default_profile@/cppcms/service/api "http"
+kdb set @config_root@@config_default_profile@/cppcms/service/port 8080
+kdb set @config_root@@config_default_profile@/cppcms/service/ip "0.0.0.0"
+kdb set @config_root@@config_default_profile@/cppcms/security/display_error_messages "true"
 ```
 
 Simply set the desired settings as keys in the key database and you are done!
@@ -78,7 +78,7 @@ Simply set the desired settings as keys in the key database and you are done!
 #### Backend ####
 
 The service itself offers quite some configuration options as well.
-In detail, the options (without the base key `/sw/elektra/@tool@/backend`) are:
+In detail, the options (without the base key `@config_root@@config_default_profile@/backend`) are:
 
 ```
 @configuration-specification@
