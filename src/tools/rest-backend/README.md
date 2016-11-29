@@ -78,7 +78,7 @@ Simply set the desired settings as keys in the key database and you are done!
 #### Backend ####
 
 The service itself offers quite some configuration options as well.
-In detail, the options (without the base key `@config_root@@config_default_profile@/backend`) are:
+In detail, the options (without the base key `@config_root@`) are:
 
 ```
 @configuration-specification@
