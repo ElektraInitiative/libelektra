@@ -382,14 +382,6 @@ struct _Plugin
 
 
 /**
- * @defgroup internaldatastructs Internal Datastructures
- * @brief Internal used Datastructures
- */
-
-
-/**
- * @defgroup trie Trie
- * @ingroup internaldatastructs
  *
  * The private trie structure.
  *
