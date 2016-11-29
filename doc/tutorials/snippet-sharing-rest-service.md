@@ -99,7 +99,7 @@ To install npm via APT, use: `apt-get install npm`
 After installing the dependencies, we are ready to build the applications.
 To do so, we can follow the steps explained in the [build guide](/doc/COMPILE.md).
 Make sure to include the two tools `rest-backend` and `rest-frontend`, e.g. by
-using the arguments `-DTOOLS=rest-backend;rest-frontend`.
+using the arguments `-DTOOLS="ALL;rest-backend;rest-frontend"`.
 
 After building Elektra and the applications, we can use `make install` to install
 them. Further information and troubleshooting can be found in the
@@ -114,14 +114,14 @@ but some settings have to be set manually afterwards.
 
 To make sure that the configuration specification was set properly during installation,
 use the command `kdb mount`. You should see a list of mountpoints, of which one should
-be something like `/sw/elektra/restbackend/#0`. If you do not see this mountpoint,
-use `kdb mount rest-backend-spec.ini /sw/elektra/restbackend/#0 ni` to mount it manually.
+be something like `spec/sw/elektra/restbackend/#0`. If you do not see this mountpoint,
+use `kdb mount rest-backend-spec.ini spec/sw/elektra/restbackend/#0 ni` to mount it manually.
 
 After that you need to set additional configuration parameters that have no defaults.
 It is recommended to set them for the system namespace if you will use a tool like
 `systemctl` to manage the services. (For the `api/description` keys, see below!)
 ```
-> kdb set system/sw/elektra/restbackend/#0/current/backend/jwt/encryptionkey "use_a_secret_key_here!"
+> kdb set system/sw/elektra/restbackend/#0/current/backend/jwt/encryptionkey "use a secret key here"
 > kdb set system/sw/elektra/restbackend/#0/current/backend/api/description/html "http://link.to/the/html/version/of/api/description"
 > kdb set system/sw/elektra/restbackend/#0/current/backend/api/description/raw "https://raw.githubusercontent.com/ElektraInitiative/libelektra/master/doc/api_blueprints/snippet-sharing.apib"
 ```
