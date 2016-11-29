@@ -44,3 +44,11 @@ For these tutorials we assume that you maintain
 upstream packages.
 
 - [Merge Configuration Files](elektra-merge-integration.md)
+
+## Other
+
+These tutorials have no specific target group
+but can be still helpful.
+
+- [Snippet Sharing REST-Service](snippet-sharing-rest-service.md)
+

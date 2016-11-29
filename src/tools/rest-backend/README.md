@@ -118,40 +118,14 @@ should print information about the running service (PID, etc).
 
 ### Dependencies ###
 
-In order to compile and use the new `@tool@` there are a few dependencies which must be installed. 
+In order to compile and use the new `@tool@` there are a few dependencies which must be installed.
 
 - CppCMS version 1.0.0 or higher
 - Boost version 1.45 or higher
 - LibJWT version 1.5 or higher
 - OpenSSL
 
-#### CppCMS ####
-
-The CppCMS requires following dependencies:
-
-- Boost library
-- Zlib library
-- PCRE library
-- Python 2.4 or higher, but not python 3
-
-To install them via `apt` use:
-`sudo apt-get install libboost-all-dev libpcre3-dev zlib1g-dev libgcrypt11-dev libicu-dev python`
-
-To install CppCMS, there are two options:
-
-- Download and build from source
-- Install via dependency manager
-
-To install CppCMS manually without dependency manager:
-- Download (latest) CppCMS from  [SourceForge](https://sourceforge.net/projects/cppcms/files/cppcms/)
-- Extract CppCMS: `tar -xjf cppcms-1.x.x.tar.bz2 && cd cppcms-1.x.x` (replace 1.x.x with your version)
-- Configure the build: `mkdir build && cd build && cmake ..`
-- Execute the build and run tests: `make && make test && make install`
-
-Further build and installation information can be found on their
-[website](http://cppcms.com/wikipp/en/page/cppcms_1x_build).
-It contains also a [guide](http://cppcms.com/wikipp/en/page/apt)
-explaining the installation through a dependency manager.
+An extensive [tutorial](/doc/tutorials/snippet-sharing-rest-service.md) is available for that.
 
 ### Compiling ###
 

@@ -66,7 +66,6 @@ Add the path where the library has been installed
 
 and run `ldconfig` as root.
 
-
 ## See also
 
 - [COMPILE](COMPILE.md).
