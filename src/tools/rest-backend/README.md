@@ -125,7 +125,8 @@ In order to compile and use the new `@tool@` there are a few dependencies which 
 - LibJWT version 1.5 or higher
 - OpenSSL
 
-An extensive [tutorial](/doc/tutorials/snippet-sharing-rest-service.md) is available for that.
+An extensive tutorial describing the installation and configuration can be found
+[here](/doc/tutorials/snippet-sharing-rest-service.md).
 
 ### Compiling ###
 

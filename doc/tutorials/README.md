@@ -45,10 +45,10 @@ upstream packages.
 
 - [Merge Configuration Files](elektra-merge-integration.md)
 
-## Other
+## Installation Manuals
 
-These tutorials have no specific target group
-but can be still helpful.
+These tutorials provide additional information on how to
+install and set up specific plugins and tools.
 
 - [Snippet Sharing REST-Service](snippet-sharing-rest-service.md)
 
