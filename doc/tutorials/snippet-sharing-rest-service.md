@@ -121,7 +121,7 @@ After that you need to set additional configuration parameters that have no defa
 It is recommended to set them for the system namespace if you will use a tool like
 `systemctl` to manage the services. (For the `api/description` keys, see below!)
 ```
-> kdb set system/sw/elektra/restbackend/#0/current/backend/jwt/encryption_key "use_a_secret_key_here!"
+> kdb set system/sw/elektra/restbackend/#0/current/backend/jwt/encryptionkey "use_a_secret_key_here!"
 > kdb set system/sw/elektra/restbackend/#0/current/backend/api/description/html "http://link.to/the/html/version/of/api/description"
 > kdb set system/sw/elektra/restbackend/#0/current/backend/api/description/raw "https://raw.githubusercontent.com/ElektraInitiative/libelektra/master/doc/api_blueprints/snippet-sharing.apib"
 ```
@@ -136,7 +136,7 @@ published though. Information on how to generate the API description can be foun
 If you want to know the default values, you can get a list of used keys with
 `kdb ls /sw/elektra/restbackend/#0`. You can then retrieve the configuration value
 for each key with `kdb get <key>`, e.g.,
-`kdb get /sw/elektra/restbackend/#0/current/backend/jwt/encryption_key`
+`kdb get /sw/elektra/restbackend/#0/current/backend/jwt/encryptionkey`
 
 Additionally to the settings above, CppCMS needs some configuration. All configuration
 options are listed on [their website](http://cppcms.com/wikipp/en/page/cppcms_1x_config).
