@@ -360,9 +360,9 @@ int main (int argc, char * argv[])
 	testing::InitGoogleTest (&argc, argv);
 	cppcms::json::value config = kdbrest::service::ConfigEngine::instance ().loadApplicationConfiguration ();
 	(void)kdbrest::Config::instance ().initializeConfiguration (config);
-	kdbrest::Config::instance() .setValue<std::string> ("kdb.path.users", "dir/users");
-	kdbrest::Config::instance() .setValue<std::string> ("kdb.path.configs", "dir/configs");
-	kdbrest::Config::instance() .setValue<std::string> ("output.default.entry.filterby", "all");
-	kdbrest::Config::instance() .setValue<std::string> ("output.default.user.filterby", "all");
+	kdbrest::Config::instance ().setValue<std::string> ("kdb.path.users", "dir/users");
+	kdbrest::Config::instance ().setValue<std::string> ("kdb.path.configs", "dir/configs");
+	kdbrest::Config::instance ().setValue<std::string> ("output.default.entry.filterby", "all");
+	kdbrest::Config::instance ().setValue<std::string> ("output.default.user.filterby", "all");
 	return RUN_ALL_TESTS ();
 }

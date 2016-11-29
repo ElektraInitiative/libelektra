@@ -58,7 +58,7 @@ bool Config::initializeConfiguration (const cppcms::json::value & cfg, const std
 	checkType ("api.description.html", cppcms::json::is_string, "to a link targeting the compiled API description");
 
 	// JWT settings
-	checkType ("jwt.encryptionkey", cppcms::json::is_string, "to a random secret");
+	checkType ("jwt.encryption.secret", cppcms::json::is_string, "to a random secret");
 	checkType ("jwt.validity", cppcms::json::is_number, "to the number of seconds a session token should be valid");
 
 	// output settings

@@ -216,8 +216,8 @@ bool AuthenticationApp::validateAuthentication (cppcms::http::request & request,
 
 	// decode it
 	if (jwt_decode (&jwt, token.c_str (), reinterpret_cast<const unsigned char *> (
-						      Config::instance ().getConfig ().get<std::string> ("jwt.encryptionkey").c_str ()),
-			Config::instance ().getConfig ().get<std::string> ("jwt.encryptionkey").size ()) != 0)
+						      Config::instance ().getConfig ().get<std::string> ("jwt.encryption.secret").c_str ()),
+			Config::instance ().getConfig ().get<std::string> ("jwt.encryption.secret").size ()) != 0)
 	{
 		RootApp::setUnauthorized (response, "Session token is invalid", "NEED_AUTHENTICATION"); // send HTTP 401
 		return false;
@@ -282,8 +282,8 @@ model::User AuthenticationApp::getCurrentUser (cppcms::http::request & request)
 	jwt_t * jwt;
 
 	if (jwt_decode (&jwt, token.c_str (), reinterpret_cast<const unsigned char *> (
-						      Config::instance ().getConfig ().get<std::string> ("jwt.encryptionkey").c_str ()),
-			Config::instance ().getConfig ().get<std::string> ("jwt.encryptionkey").size ()) != 0)
+						      Config::instance ().getConfig ().get<std::string> ("jwt.encryption.secret").c_str ()),
+			Config::instance ().getConfig ().get<std::string> ("jwt.encryption.secret").size ()) != 0)
 	{
 		throw exception::NoCurrentUserException ();
 	}
@@ -330,8 +330,8 @@ std::string AuthenticationApp::buildJWT (cppcms::http::response & resp, const mo
 	// specify jwt algorithm and encryption key
 	if (jwt_set_alg (jwt_ptr.get (), JWT_ALG_HS256,
 			 reinterpret_cast<const unsigned char *> (
-				 Config::instance ().getConfig ().get<std::string> ("jwt.encryptionkey").c_str ()),
-			 Config::instance ().getConfig ().get<std::string> ("jwt.encryptionkey").size ()) != 0)
+				 Config::instance ().getConfig ().get<std::string> ("jwt.encryption.secret").c_str ()),
+			 Config::instance ().getConfig ().get<std::string> ("jwt.encryption.secret").size ()) != 0)
 	{
 		RootApp::setInternalServerError (resp, "Something went wrong while creating the session token.", "AUTH_CREATE_TOKEN_ERROR");
 		throw exception::JwtCreationException ();
