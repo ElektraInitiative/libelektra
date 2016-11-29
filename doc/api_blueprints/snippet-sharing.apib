@@ -1,0 +1,827 @@
+FORMAT: 1A
+HOST: restapi.libelektra.org
+
+# REST service API for sharing configuration snippets
+
+This is a description of the API provided by the REST service that can be used to share, search and download configuration snippets.
+
+
+# API Description [/{?raw}]
+
+## List API methods [GET]
+
+Returns an overview of available API methods with required parameters and a description. By default a nicely formatted HTML version of the API specification will be returned.
+
++ Parameters
+    + raw (boolean, optional) - Whether a plain-text, machine-readable blueprint should be returned.
+        + Default: `false`
+
++ Response 303
+    + Headers
+
+            Location: *
+
+
+## API Version [GET /version]
+
+Returns the current version of the API and Elektra. The API version is increased whenever breaking changes (i.e. changes that prevent backward compatibility) are made. The Elektra version is directly taken from the Elektra library, for further information and explanation see [doc/VERSION.md](https://github.com/ElektraInitiative/libelektra/blob/master/doc/VERSION.md).
+
++ Response 200 (application/json)
+    + Attributes (object)
+        + elektra (object) - Detailed version information about the used Elektra library
+            + version: `0.8.18` (string) - The currently used version in its complete format
+            + major: `0` (number) - The currently used major version
+            + minor: `8` (number) - The currently used minor version
+            + micro: `18` (number) - The currently used micro version
+        + api: `1` (number) - The version of the API itself
+
+
+
+# Authentication endpoint [/auth]
+
+## Authenticate [POST]
+
+The API will try to authenticate the user by the submitted credentials. In case of success a session token, which can be used for further requests to the API, will be returned.
+
++ Request (application/json)
+    + Attributes (object)
+        + username: `Namoshek` (string, required)
+        
+            The name of the user account which should be tried to authenticate.
+
+            Regex: ^[a-zA-Z0-9\-\.]{3,20}$
+        
+        + password: `ks_4m3kk4JDal.` (string, required)
+        
+            The corresponding password for the supplied user account.
+ 
++ Response 200 (application/json)
+    + Attributes (object)
+        + token: `eyJh...1hsbFFGo=` (string) - The session token which can be used to authenticate against the server in further requests
+
++ Response 400 (application/json)
+    + Attributes (Error Response)
+        + i18n (string) - A unique token representing above error description message; can be used for internationalization in frontends
+
+            A comprehensive list of possible errors:
+            - `AUTH_MISSING_USERNAME` if no input for `username` was submitted
+            - `AUTH_MISSING_PASSWORD` if no input for `password` was submitted
+            - `REQUEST_MALFORMED_DATA` if the submitted data in the request body does not match the Content-Type or is unparseable
+
++ Response 401 (application/json)
+    + Attributes (Error Response)
+        + i18n (string) - A unique token representing above error description message; can be used for internationalization in frontends
+
+            A comprehensive list of possible errors:
+            - `AUTH_UNKNOWN_USERNAME` if there is no user registered with the given name
+            - `AUTH_INVALID_PASSWORD` if the given password does not match the password saved for the given account
+
++ Response 406 (application/json)
+    + Attributes (Error Response)
+        + i18n (string) - A unique token representing above error description message; can be used for internationalization in frontends
+
+            A comprehensive list of possible errors:
+            - `REQUEST_UNSUPPORTED_CONTENT_TYPE` if the submitted Content-Type is not `application/json`
+
+
+
+# User endpoint [/user{?offset}{?rows}{?sort}{?sortby}{?filter}{?filterby}{?current}]
+
+## User list [GET]
+
+Retrieves a list of users. The result can be adjusted by additional, but optional parameters. This operation requires moderator permissions (rank 50) or higher.
+
++ Parameters
+    + offset (number, optional) - How many entries to skip for the output, can be used for pagination.
+        + Default: `0`
+    + rows (number, optional) - How many entries will be added to the output at max.
+        + Default: `1000000`
+    + sort (enum[string], optional) - How to sort the entries for the output.
+        + Default: `asc`
+        + Members
+            + `asc`
+            + `desc`
+    + sortby (enum[string], optional) - What criteria should be used for sorting
+        + Default: `username`
+        + Members
+            + `username` - The users name
+            + `email` - The users email address
+            + `created_at` - Creation date
+            + `rank` - The users rank
+    + filter (string, optional) - Only users containing the search string in either their name or their email will be added to the output.
+    + filterby (enum[string], optional) - On what fields the filter should be applied to (i.e. what fields to involve in search)
+        + Default: `all`
+        + Members
+            + `all` - All fields: username and email
+            + `username` - Only the username
+            + `email` - Only the email
+
++ Request
+    + Headers
+
+            Authorization: Bearer <token>
+
++ Response 200 (application/json)
+    + Attributes (User List)
+
++ Response 401 (application/json)
+    + Attributes (Error Response)
+        + i18n (string) - A unique token representing above error description message; can be used for internationalization in frontends
+
+            A comprehensive list of possible errors:
+            - `NEED_AUTHENTICATION` if no valid session token has been supplied or the user for whom the token has been created does not exist (anymore)
+            - `USER_INSUFFICIENT_PERMISSIONS` if the currently authenticated user has insufficient permissions (due to his rank) to perform this action
+    
+
+## Retrieve user details [GET /{name}{?current}]
+
+Retrieves the details of the specified user. If the parameter `current` is specified, the currently authenticated user will be chosen as target. Retrieving details of other users requires moderator permissions (rank 50) or higher.
+
++ Parameters
+    + current (boolean, optional) - If the currently authenticated users details should be fetched
+        + Default: `false`
+    + name (string, required) - The `username` of the user whose details should be fetched
+
++ Request
+    + Headers
+
+            Authorization: Bearer <token>
+        
++ Response 200 (application/json)
+    + Attributes (User Preview)
+
++ Response 400 (application/json)
+    + Attributes (Error Response)
+        + i18n (string) - A unique token representing above error description message; can be used for internationalization in frontends
+
+            A comprehensive list of possible errors:
+            - `NO_CURRENT_USER` if the user details of the currently authenticated user were requested, but no authentication is active
+
++ Response 401 (application/json)
+    + Attributes (Error Response)
+        + i18n (string) - A unique token representing above error description message; can be used for internationalization in frontends
+
+            A comprehensive list of possible errors:
+            - `NEED_AUTHENTICATION` if no valid session token has been supplied or the user for whom the token has been created does not exist (anymore)
+            - `USER_INSUFFICIENT_PERMISSIONS` if the currently authenticated user has insufficient permissions (due to his rank) to perform this action
+
++ Response 404 (application/json)
+    + Attributes (Error Response)
+        + i18n (string) - A unique token representing above error description message; can be used for internationalization in frontends
+
+            A comprehensive list of possible errors:
+            - `USER_NOT_FOUND` if the requested user does not exist in the database
+        
+
+## Create user [POST]
+
+This method can be used to register for the service by creating a new user account. A user account will grant access to more functions.
+
++ Request (application/json)
+    + Attributes (object)
+        + username: `Namoshek` (string, required)
+        
+            The username must be between 3 and 20 signs long and may contain only letters a-z (lower- and upper-case), the numbers 0-9 and dots (.) as well as dashes (-).
+
+            Regex: ^[a-zA-Z0-9\-\.]{3,20}$
+            
+        + password: `eKDaksh382Kda` (string, required)
+        
+            The password must be at least 8 signs long and contain at least one lower-case letter, one upper-case letter and one digit. 
+            To harden security, the user is encouraged to use special characters as well.
+
+            Regex: ^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9]).{8,}$
+        
+        + email: `some-email@example.com` (string, required)
+        
+            The user has to supply a valid email address.
+        
++ Response 200 (application/json)
+    + Attributes (object)
+        + message (string) - Detailed response information, normally success message
+        + i18n (string) - A unique token representing above message; can be used for internationalization in frontends
+
+            A comprehensive list of possible messages:
+            - `USER_CREATED_SUCCESSFULLY` if the account has been created successfully
+        
++ Response 400 (application/json)
+    + Attributes (Error Response)
+        + i18n (string) - A unique token representing above error description message; can be used for internationalization in frontends
+
+            A comprehensive list of possible errors:
+            - `USER_CREATE_MISSING_USERNAME` if no input for `username` was submitted
+            - `USER_CREATE_MISSING_PASSWORD` if no input for `password` was submitted
+            - `USER_CREATE_MISSING_EMAIL` if no input for `email` was submitted
+            - `USER_CREATE_INVALID_USERNAME` if the supplied `username` does not match the given criteria (regex: ^[a-zA-Z0-9\-\.]{3,20}$)
+            - `USER_CREATE_INVALID_PASSWORD` if the supplied `password` does not satisfy the given criteria (regex: ^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9]).{8,}$)
+            - `USER_CREATE_INVALID_EMAIL` if the supplied `email` is not a valid email
+            - `REQUEST_MALFORMED_DATA` if the submitted data in the request body does not match the Content-Type or is unparseable
+
++ Response 406 (application/json)
+    + Attributes (Error Response)
+        + i18n (string) - A unique token representing above error description message; can be used for internationalization in frontends
+
+            A comprehensive list of possible errors:
+            - `REQUEST_UNSUPPORTED_CONTENT_TYPE` if the submitted Content-Type is not `application/json`
+
++ Response 422 (application/json)
+    + Attributes (Error Response)
+        + i18n (string) - A unique token representing above error description message; can be used for internationalization in frontends
+
+            A comprehensive list of possible errors:
+            - `USER_CREATE_USER_DOES_ALREADY_EXIST` if the supplied `username` is already taken
+        
+        
+## Update user [PUT /{name}]
+
+This method can be used to edit a user. If no `name` is supplied, the currently authenticated user is chosen as target. By using this method it is also possible to change the rank of users. Changing the rank as well as other users in general can only be done by admins (rank 100) though.
+
++ Parameters
+    + name: `Namoshek` (string, optional) - The `username` of a user which is then taken as target for the operation
+
++ Request (application/json)
+    + Headers
+
+            Authorization: Bearer <token>
+
+    + Attributes (object)
+        + email: `some-new-email@example.com` (string, optional)
+            
+            The new email address which should be used for the user. It has to be a valid email.
+
+        + password: `ask23hsDja_231l` (string, optional)
+
+            The new password for the user.
+
+            Regex: ^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9]).{8,}$
+        
+        + rank: `50` (enum[number], optional)
+        
+            The new rank which should be set for the user. Setting this parameter does only result in a change if the currently authenticated user has the permission to change ranks.
+
+            Regex: ^(10|50|100)$
+        
+            + Members
+                + `10` - Normal user
+                + `50` - Moderator
+                + `100` - Admin
+            
++ Response 200 (application/json)
+    + Attributes (object)
+        + message (string) - Detailed response information, normally success message
+        + i18n (string) - A unique token representing above message; can be used for internationalization in frontends
+
+            A comprehensive list of possible messages:
+            - `USER_UPDATED_SUCCESSFULLY` if the changes to the user have been stored successfully
+
++ Response 400 (application/json)
+    + Attributes (Error Response)
+        + i18n (string) - A unique token representing above error description message; can be used for internationalization in frontends
+
+            A comprehensive list of possible errors:
+            - `USER_UPDATE_INVALID_PASSWORD` if the supplied `password` does not satisfy the given criteria (regex: ^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9]).{8,}$)
+            - `USER_UPDATE_INVALID_EMAIL` if the supplied `email` is not a valid email
+            - `USER_UPDATE_INVALID_RANK` if the supplied `rank` is not a valid rank (regex: ^(10|50|100)$)
+            - `REQUEST_MALFORMED_DATA` if the submitted data in the request body does not match the Content-Type or is unparseable
+
++ Response 401 (application/json)
+    + Attributes (Error Response)
+        + i18n (string) - A unique token representing above error description message; can be used for internationalization in frontends
+
+            A comprehensive list of possible errors:
+            - `NEED_AUTHENTICATION` if no valid session token has been supplied or the user for whom the token has been created does not exist (anymore)
+            - `USER_INSUFFICIENT_PERMISSIONS` if the currently authenticated user has insufficient permissions (due to his rank) to perform this action
+
++ Response 404 (application/json)
+    + Attributes (Error Response)
+        + i18n (string) - A unique token representing above error description message; can be used for internationalization in frontends
+
+            A comprehensive list of possible errors:
+            - `USER_NOT_FOUND` if the requested user does not exist in the database
+
++ Response 406 (application/json)
+    + Attributes (Error Response)
+        + i18n (string) - A unique token representing above error description message; can be used for internationalization in frontends
+
+            A comprehensive list of possible errors:
+            - `REQUEST_UNSUPPORTED_CONTENT_TYPE` if the submitted Content-Type is not `application/json`
+
+
+## Delete user [DELETE /{name}]
+
+This method can be used to delete a user. If no `name` is supplied, the currently authenticated user is chosen as target. Deleting other users is only possible for admins (rank 100) though.
+
++ Parameters
+    + name: `Namoshek` (string, optional) - The `username` of a user which is then taken as target for the operation
+
++ Request
+    + Headers
+
+            Authorization: Bearer <token>
+
++ Response 200 (application/json)
+    + Attributes (object)
+        + message (string) - Detailed response information, normally success message
+        + i18n (string) - A unique token representing above message; can be used for internationalization in frontends
+
+            A comprehensive list of possible messages:
+            - `USER_DELETED_SUCCESSFULLY` if the changes to the user have been stored successfully
+
++ Response 401 (application/json)
+    + Attributes (Error Response)
+        + i18n (string) - A unique token representing above error description message; can be used for internationalization in frontends
+
+            A comprehensive list of possible errors:
+            - `NEED_AUTHENTICATION` if no valid session token has been supplied or the user for whom the token has been created does not exist (anymore)
+            - `USER_INSUFFICIENT_PERMISSIONS` if the currently authenticated user has insufficient permissions (due to his rank) to perform this action
+
++ Response 404 (application/json)
+    + Attributes (Error Response)
+        + i18n (string) - A unique token representing above error description message; can be used for internationalization in frontends
+
+            A comprehensive list of possible errors:
+            - `USER_NOT_FOUND` if the requested user does not exist in the database
+
+
+
+# Database endpoint [/database{?offset}{?rows}{?sort}{?sortby}{?filter}{?filterby}{?raw}]
+
+## List database entries [GET /database/{organization}/{application}/{scope}{?offset}{?rows}{?sort}{?sortby}{?filter}{?filterby}]
+
+Returns a list of database entries. The result can be adjusted by additional, but optional parameters.
+
++ Parameters
+    + organization: `apache` (string, optional) - Only search within a given `organization` for entries
+    + application: `tomcat` (string, optional) - Only search within a given `application` for entries
+    + scope: `server.xml` (string, optional) - Only search within a given `scope` of an `application` for entries
+    + offset: `0` (number, optional) - How many entries to skip for the output, can be used for pagination.
+        + Default: `0`
+    + rows: `1` (number, optional) - How many entries will be added to the output at max.
+        + Default: `1000000`
+    + sort (enum[string], optional) - How to sort the entries for the output.
+        + Default: `asc`
+        + Members
+            + `asc`
+            + `desc`
+    + sortby (enum[string], optional) - What criteria should be used for sorting
+        + Default: `key`
+        + Members
+            + `key` - Absolute entry path
+            + `title` - Entry title
+            + `created_at` - Creation date
+            + `author` - Authors name
+            + `organization` - Organization to which the application of the configuration belongs to
+            + `application` - Application for which the configuration is meant
+            + `scope` - Application internal scope
+            + `slug` - Entry specific slug
+    + filter: `tomcat9` (string, optional) - Only entries containing the search string in either their path, title, description, author or tags will be added to the output.
+    + filterby: `tags` (enum[string], optional) - On what fields the filter should be applied to (i.e. what fields to involve in search)
+        + Default: `all`
+        + Members
+            + `all` - All fields: key, title, description, author and tags
+            + `key` - Only the key
+            + `title` - Only the title
+            + `description` - Only the description
+            + `author` - Only the authors name
+            + `tags` - Only tags
+
++ Response 200 (application/json)
+    + Attributes (Entry List)
+
+
+## Get details for entry [GET /database/{organization}/{application}/{scope}/{slug}{?raw}]
+
+Returns detailed information about the entry with the specified key (path). If the optional parameter `raw` is supplied, a raw configuration is returned instead of the normal response.
+
++ Parameters
+    + organization: `apache` (string, required) - The `organization` who built the `application` for which the configuration of the entry is meant
+    + application: `tomcat` (string, required) - The `application` to which the configuration of the entry belongs to
+    + scope: `server.xml` (string, required) - The `application` specific `scope` to which the configuration of the entry belongs to
+    + slug: `tomcat9-serverxml-example` (string, required) - The identifier of the requested entry that is unique within the namespace created by `organization`, `application` and `scope`
+    + raw: `xml` (string, optional) - If this parameter is supplied, the API will attempt to return the requested configuration snippet in the given `raw` format (regex: ^[a-zA-Z0-9\-\.\_]+$)
+
++ Response 200 (application/json)
+    + Attributes (object)
+        + key (object) - The key and its separate parts
+            + full: `apache/tomcat/server.xml/tomcat9-serverxml-example` (string) - The full key (path) of the entry
+            + organization: `apache` (string) - The organization of the application to which the snippet belongs to
+            + application: `tomcat` (string) - The application to which the snippet belongs to
+            + scope (string): `server.xml` - The application internal scope for the configuration snippet
+            + slug (string): `tomcat9-serverxml-example` - The identifying slug of the entry that is unique within the namespace created by `organization`, `application` and `scope`
+        + meta (object) - Additional information about the entry
+            + title: `Tomcat 9 configuration for server.xml` (string) - The descriptive title of the entry
+            + description: `The server.xml is Tomcats main configuration file and therefore very important. ...` (string) - The extended description of the entry
+            + author: `Namoshek` (string) - The name of the creator of the entry
+            + tags: `tomcat9`, `webserver` (array[string]) - A list of tags assigned to the entry
+            + created_at: `1475478234` (number) - A timestamp of the creation date of the entry
+        + value (array[Converted Snippet])
+                
+
++ Response 200 (text/plain)
+
+        <?xml version="1.0" encoding="UTF-8"?>
+        <Server>
+            ...
+        </Server>
+
++ Response 400 (application/json)
+    + Attributes (Error Response)
+        + i18n (string) - A unique token representing above error description message; can be used for internationalization in frontends
+
+            A comprehensive list of possible errors:
+            - `ENTRY_UNSUPPORTED_FORMAT` if an unsupported `raw` format has been supplied
+            - `ENTRY_UNABLE_TO_EXPORT_SNIPPET` if the snippet can not be represented using the submitted `raw` format
+
++ Response 404 (application/json)
+    + Attributes (Error Response)
+        + i18n (string) - A unique token representing above error description message; can be used for internationalization in frontends
+
+            A comprehensive list of possible errors:
+            - `ENTRY_DOES_NOT_EXIST` if an entry with the given key (path) does not exist in the database
+
+
+## Create database entry [POST]
+
+Can be used to create a new entry in the database. An entry consists of a unique key (path) that is built from several individual inputs, a title, description and a configuration snippet in any supported format.
+
+This operation requires a user account with normal permissions (rank 10) or higher.
+
++ Request (application/json)
+    + Headers
+
+            Authorization: Bearer <token>
+
+    + Attributes (object)
+        + organization: `apache` (string, required)
+
+            The organization which built the software for which the configuration is meant.
+
+            Regex: ^[a-zA-Z0-9\.\-]+$
+
+        + application: `tomcat` (string, required)
+
+            The application for which the configuration is meant.
+
+            Regex: ^[a-zA-Z0-9\.\-]+$
+
+        + scope: `server.xml` (string, required)
+
+            Often different parts of an application have different configurations. Here the application specific scope can be defined.
+
+            Regex: ^[a-zA-Z0-9\.\-]+$
+
+        + slug: `tomcat9-serverxml-example` (string, required)
+
+            A unique slug that identifies the entry and configuration snippet further. It only needs to be unique within the namespace created by `organization`, `application` and `scope`.
+
+            Regex: ^[a-zA-Z0-9\.\-]+$
+
+        + title: `Tomcat 9 configuration for server.xml` (string, required)
+
+            A title for the entry that ideally explains already what the snippet is about.
+
+            Regex: ^[^\n\r]{3,}$
+
+        + description: `The server.xml is Tomcats main configuration file and therefore very important. ...` (string, required)
+
+            An extended description for the entry that explains in detail what the snippet is about. It can also contain instructions on how to use the snippet.
+
+            Regex: ^[\S\s]{3,}$
+
+        + tags: `tomcat9`, `tomcat` (array[string], optional)
+
+            A list of tags that shall be added to the entry. Tags may be used for search, so they ideally add additional information that is not already available by the other inputs.
+
+            Regex: ^[a-z0-9\-\.]{3,20}$
+
+        + configuration (object)
+            + value: `<?xml version="1.0" encoding="UTF-8"?><Server>...</Server>` (string, required)
+
+                The configuration snippet for which a new database entry should be created. It can be of any supported format.
+
+            + format: `xml` (string, required)
+
+                The format of the supplied configuration snippet. It has to be in the list of supported formats, see `/conversion/formats`.
+
++ Response 200 (application/json)
+    + Attributes (object)
+        + message (string) - Detailed response information, normally success message
+        + i18n (string) - A unique token representing above message; can be used for internationalization in frontends
+
+            A comprehensive list of possible messages:
+            - `ENTRY_CREATED_SUCCESSFULLY` if the entry has been added successfully to the database
+
++ Response 400 (application/json)
+    + Attributes (Error Response)
+        + i18n (string) - A unique token representing above error description message; can be used for internationalization in frontends
+
+            A comprehensive list of possible errors:
+            - `ENTRY_MISSING_ORGANIZATION` if no input for `organization` was submitted
+            - `ENTRY_MISSING_APPLICATION` if no input for `application` was submitted
+            - `ENTRY_MISSING_SCOPE` if no input for `scope` was submitted
+            - `ENTRY_MISSING_SLUG` if no input for `slug` was submitted
+            - `ENTRY_MISSING_TITLE` if no input for `title` was submitted
+            - `ENTRY_MISSING_DESCRIPTION` if no input for `description` was submitted
+            - `ENTRY_MISSING_CONFIGURATION_VALUE` if no input for `configuration.value` was submitted
+            - `ENTRY_MISSING_CONFIGURATION_FORMAT` if no input for `configuration.format` was submitted
+            - `ENTRY_INVALID_ORGANIZATION` if the submitted `organization` is malformed (regex: ^[a-zA-Z0-9\.\-]+$)
+            - `ENTRY_INVALID_APPLICATION` if the submitted `application` is malformed (regex: ^[a-zA-Z0-9\.\-]+$)
+            - `ENTRY_INVALID_SCOPE` if the submitted `scope` is malformed (regex: ^[a-zA-Z0-9\.\-]+$)
+            - `ENTRY_INVALID_SLUG` if the submitted `slug` is malformed (regex: ^[a-zA-Z0-9\.\-]+$)
+            - `ENTRY_INVALID_TITLE` if the submitted `title` is malformed (regex: ^[^\n\r]{3,}$)
+            - `ENTRY_INVALID_DESCRIPTION` if the submitted `description` is malformed (regex: ^[\s\S]{3,}$)
+            - `ENTRY_INVALID_TAG` if one of the submitted `tags` is malformed (regex: ^[a-z0-9\-\.]{3,20}$)
+            - `ENTRY_INVALID_CONFIGURATION_VALUE` if the submitted configuration snippet could not be parsed in the submitted format
+            - `ENTRY_INVALID_CONFIGURATION_FORMAT` if the submitted configuration format is not supported
+            - `REQUEST_MALFORMED_DATA` if the submitted data in the request body does not match the Content-Type or is unparseable
+
++ Response 401 (application/json)
+    + Attributes (Error Response)
+        + i18n (string) - A unique token representing above error description message; can be used for internationalization in frontends
+
+            A comprehensive list of possible errors:
+            - `NEED_AUTHENTICATION` if no valid session token has been supplied or the user for whom the token has been created does not exist (anymore)
+            - `USER_INSUFFICIENT_PERMISSIONS` if the currently authenticated user has insufficient rights to create an entry (i.e. user with reduced rights)
+
++ Response 406 (application/json)
+    + Attributes (Error Response)
+        + i18n (string) - A unique token representing above error description message; can be used for internationalization in frontends
+
+            A comprehensive list of possible errors:
+            - `REQUEST_UNSUPPORTED_CONTENT_TYPE` if the submitted Content-Type is not `application/json`
+
++ Response 422 (application/json)
+    + Attributes (Error Response)
+        + i18n (string) - A unique token representing above error description message; can be used for internationalization in frontends
+
+            A comprehensive list of possible errors:
+            - `ENTRY_DOES_ALREADY_EXIST` if an entry with the supplied four key parts (`organization`, `application`, `scope` and `slug`) does already exist
+
+
+## Update an existing entry [PUT /database/{organization}/{application}/{scope}/{slug}]
+
+Updates the entry with the specified key (path). All fields will be overridden with the supplied data. If no or empty data is supplied, it will also override the old one (especially important for `tags`).
+
+This operation can only be executed by the owner of an entry as well as moderators (rank 50) or higher.
+
++ Parameters
+    + organization: `apache` (string, required) - The `organization` who built the `application` for which the configuration of the entry is meant
+    + application: `tomcat` (string, required) - The `application` to which the configuration of the entry belongs to
+    + scope: `server.xml` (string, required) - The `application` specific `scope` to which the configuration of the entry belongs to
+    + slug: `tomcat9-serverxml-example` (string, required) - The identifier of the entry that is unique within the namespace created by `organization`, `application` and `scope`
+
++ Request (application/json)
+    + Headers
+
+            Authorization: Bearer <token>
+
+    + Attributes (object)
+        + title: `Tomcat 9 configuration for server.xml` (string, required)
+
+            A title for the entry that ideally explains already what the snippet is about.
+
+            Regex: ^[^\n\r]{3,}$
+
+        + description: `The server.xml is Tomcats main configuration file and therefore very important. ...` (string, required)
+
+            An extended description for the entry that explains in detail what the snippet is about. It can also contain instructions on how to use the snippet.
+
+            Regex: ^[\S\s]{3,}$
+
+        + tags: `tomcat`, `tomcat9` (array[string], optional)
+
+            A list of tags that shall be added to the entry. Tags may be used for search, so they ideally add additional information that is not already available by the other inputs. The existing tag list will be overriden by the new list, i.e. previously used, but now missing tags will be removed.
+
+            Regex: ^[a-z0-9\-\.]{3,20}$
+
+        + configuration (object)
+            + value: `<?xml version="1.0" encoding="UTF-8"?><Server><Service>...</Service></Server>` (string, required)
+
+                The new configuration snippet. It can be of any supported format.
+
+            + format: `xml` (string, required)
+
+                The format of the supplied configuration snippet. It has to be in the list of supported formats, see `/conversion/formats`.
+
++ Response 200 (application/json)
+    + Attributes (object)
+        + message (string) - Detailed response information, normally success message
+        + i18n (string) - A unique token representing above message; can be used for internationalization in frontends
+
+            A comprehensive list of possible messages:
+            - `ENTRY_UPDATED_SUCCESSFULLY` if the entry has been updated successfully
+
++ Response 400 (application/json)
+    + Attributes (Error Response)
+        + i18n (string) - A unique token representing above error description message; can be used for internationalization in frontends
+
+            A comprehensive list of possible errors:
+            - `ENTRY_MISSING_TITLE` if no input for `title` was submitted
+            - `ENTRY_MISSING_DESCRIPTION` if no input for `description` was submitted
+            - `ENTRY_MISSING_CONFIGURATION_VALUE` if no input for `configuration.value` was submitted
+            - `ENTRY_MISSING_CONFIGURATION_FORMAT` if no input for `configuration.format` was submitted
+            - `ENTRY_INVALID_TITLE` if the submitted `title` is malformed (regex: ^[^\n\r]{3,}$)
+            - `ENTRY_INVALID_DESCRIPTION` if the submitted `description` is malformed (regex: ^[\s\S]{3,}$)
+            - `ENTRY_INVALID_TAG` if one of the submitted `tags` is malformed (regex: ^[a-z0-9\-\.]{3,20}$)
+            - `ENTRY_INVALID_CONFIGURATION_VALUE` if the submitted configuration snippet could not be parsed in the submitted format
+            - `ENTRY_INVALID_CONFIGURATION_FORMAT` if the submitted configuration format is not supported
+            - `REQUEST_MALFORMED_DATA` if the submitted data in the request body does not match the Content-Type or is unparseable
+
++ Response 401 (application/json)
+    + Attributes (Error Response)
+        + i18n (string) - A unique token representing above error description message; can be used for internationalization in frontends
+
+            A comprehensive list of possible errors:
+            - `NEED_AUTHENTICATION` if no valid session token has been supplied or the user for whom the token has been created does not exist (anymore)
+            - `USER_INSUFFICIENT_PERMISSIONS` if the currently authenticated user has insufficient rights to update the entry (i.e. normal user, but not owner)
+
++ Response 404 (application/json)
+    + Attributes (Error Response)
+        + i18n (string) - A unique token representing above error description message; can be used for internationalization in frontends
+
+            A comprehensive list of possible errors:
+            - `ENTRY_DOES_NOT_EXIST` if the entry specified by the URI does not exist in the database
+
++ Response 406 (application/json)
+    + Attributes (Error Response)
+        + i18n (string) - A unique token representing above error description message; can be used for internationalization in frontends
+
+            A comprehensive list of possible errors:
+            - `REQUEST_UNSUPPORTED_CONTENT_TYPE` if the submitted Content-Type is not `application/json`
+
+
+## Delete an entry [DELETE /database/{organization}/{application}/{scope}/{slug}]
+
+Deletes an entry from the database. 
+
+This operation can only be executed by the owner of an entry as well as moderators (rank 50) or higher.
+
++ Parameters
+    + organization: `apache` (string, required) - The `organization` who built the `application` for which the configuration of the entry is meant
+    + application: `tomcat` (string, required) - The `application` to which the configuration of the entry belongs to
+    + scope: `server.xml` (string, required) - The `application` specific `scope` to which the configuration of the entry belongs to
+    + slug: `tomcat9-serverxml-example` (string, required) - The identifier of the entry that is unique within the namespace created by `organization`, `application` and `scope`
+
++ Request
+    + Headers
+
+            Authorization: Bearer <token>
+
++ Response 200 (application/json)
+    + Attributes (object)
+        + message (string) - Detailed response information, normally success message
+        + i18n (string) - A unique token representing above message; can be used for internationalization in frontends
+
+            A comprehensive list of possible messages:
+            - `ENTRY_DELETED_SUCCESSFULLY` if the entry has been deleted successfully from the database
+
++ Response 401 (application/json)
+    + Attributes (Error Response)
+        + i18n (string) - A unique token representing above error description message; can be used for internationalization in frontends
+
+            A comprehensive list of possible errors:
+            - `NEED_AUTHENTICATION` if no valid session token has been supplied or the user for whom the token has been created does not exist (anymore)
+            - `USER_INSUFFICIENT_PERMISSIONS` if the currently authenticated user has insufficient permissions to delete the entry
+
++ Response 404 (application/json)
+    + Attributes (Error Response)
+        + i18n (string) - A unique token representing above error description message; can be used for internationalization in frontends
+
+            A comprehensive list of possible errors:
+            - `ENTRY_DOES_NOT_EXIST` if the entry specified by the URI does not exist in the database
+
+
+
+# Conversion endpoint [/conversion]
+
+## Convert configuration snippet [POST]
+
+Offers to convert a supplied configuration snippet from one format into another format.
+
++ Request (application/json)
+    + Attributes (object)
+        + input (object, required)
+            + format: `ini` (string, required)
+
+                The configuration format of the input snippet.
+
+                Regex: ^[a-zA-Z0-9\-\.\_]+$
+
+            + snippet: `some-variable = some special value` (string, required)
+
+                The configuration snippet itself.
+
+        + output (object, required)
+            + format: `json` (string, required)
+
+                The desired output format.
+
+                Regex: ^[a-zA-Z0-9\-\.\_]+$
+
++ Response 200 (application/json)
+    + Attributes (object)
+        + message (string) - Detailed response information, normally success message
+        + i18n (string) - A unique token representing above message; can be used for internationalization in frontends
+
+            A comprehensive list of possible messages:
+            - `CONVERT_SUCCESSFUL` if the conversion ran without errors
+
+        + output (object)
+            + format: `json` (string) - The requested output format.
+            + snippet: `{"some-variable": "some special value"}` (string) - The supplied snippet converted into the output format.
+            + validated: `true` - Whether the `snippet` passed the round-trip validation or not (no loss of information during export)
+
++ Response 400 (application/json)
+    + Attributes (Error Response)
+        + i18n (string) - A unique token representing above error description message; can be used for internationalization in frontends
+
+            A comprehensive list of possible errors:
+            - `CONVERT_MISSING_INPUT_FORMAT` if no input for `input.format` was submitted
+            - `CONVERT_MISSING_INPUT_SNIPPET` if no input for `input.snippet` was submitted
+            - `CONVERT_MISSING_OUTPUT_FORMAT` if no input for `output.format` was submitted
+            - `CONVERT_INVALID_INPUT_FORMAT` if the submitted `input.format` is malformed (regex: ^[a-zA-Z0-9\-\.\_]+$)
+            - `CONVERT_INVALID_OUTPUT_FORMAT` if the submitted `output.format` is malformed (regex: ^[a-zA-Z0-9\-\.\_]+$)
+            - `REQUEST_MALFORMED_DATA` if the submitted data in the request body does not match the Content-Type or is unparseable
+
++ Response 406 (application/json)
+    + Attributes (object)
+        + i18n (string) - A unique token representing above error description message; can be used for internationalization in frontends
+
+            A comprehensive list of possible errors:
+            - `REQUEST_UNSUPPORTED_CONTENT_TYPE` if the submitted Content-Type is not `application/json`
+
++ Response 422 (application/json)
+    + Attributes (Error Response)
+        + i18n (string) - A unique token representing above error description message; can be used for internationalization in frontends
+
+            A comprehensive list of possible errors:
+            - `CONVERT_UNABLE_TO_PARSE_SNIPPET` if the submitted `input.snippet` could not be parsed properly
+            - `CONVERT_UNABLE_TO_CONVERT_SNIPPET` if the submitted `input.snippet` can not be represented using the submitted `output.format`
+
+## Supported conversion formats [GET /conversion/formats]
+
+Returns a list of supported configuration formats. In general this is a list of formats for which plugins are available and installed.
+
++ Response 200 (application/json)
+    + Attributes (array[Conversion Format])
+
+
+
+# Data Structures
+
+## Error Response (object)
+
++ status (string) - Textual description of the HTTP status
++ message (string) - Detailed error information, e.g. hint about malformed request
+
+## User List (object)
+
++ elements: `1` (number) - How many users the response list contains
++ users (array[User Preview]) - A list of previews for users
++ offset: `0` (number) - How many entries have been skipped for the output; this information can be used for pagination
++ remaining: `0` (number) - How many entries have not been displayed yet; when adding this value to the offset (and not exceeding the row limit), all entries should have been displayed once
+
+## User Preview (object)
+
++ username: `Namoshek` (string) - The users name
++ email: `mail@example.com` (string) - The users email
++ rank: `10` (enum[number]) - The users rank (higher means more permissions)
+    + Members
+        + `10` - Normal user
+        + `50` - Moderator
+        + `100` - Admin
++ created_at: `1475477453` (number) - A timestamp of the moment when the user has been created
+
+## Entry List (object)
+
++ elements: `1` (number) - How many entries the response list contains
++ entries (array[Entry Preview]) - A list of previews for entries
++ offset: `0` (number) - How many entries have been skipped for the output; this information can be used for pagination
++ remaining: `0` (number) - How many entries have not been displayed yet; when adding this value to the offset (and not exceeding the row limit), all entries should have been displayed once
+
+## Entry Preview (object)
+
++ key (object) - Detailed information to the key of the entry
+    + full: `apache/tomcat/server.xml/tomcat9-serverxml-example` (string) - Storage path of the entry and also the unique identifier
+    + organization: `apache` (string) - The name of the organization which created the application of the snippet
+    + application: `tomcat` (string) - The name of the application for which the snippet is meant
+    + scope: `server.xml` (string) - The application scope of the configuration snippet
+    + slug: `tomcat9-serverxml-example` (string) - The slug of the configuration snippet
++ title: `Tomcat 9 configuration for server.xml` (string) - How the entry/snippet has been named by the creator
++ author: `Namoshek` (string) - The username of the creator of the entry
++ tags: `tomcat9`, `webserver` (array[string]) - A list of tags assigned to the entry
++ created_at: `1475478234` (number) - A timestamp of the moment when the entry has been created
+
+## Converted Snippet (object)
+
++ format: `xml` (string) - A configuration format
++ plugin: `xmltool` (string) - The name of the plugin used for the conversion
++ value: `<?xml version="1.0" encoding="UTF-8"?><Server>...</Server>` (string) - The configuration snippet in above mentioned format
++ validated: `true` - Whether the `value` passed the round-trip validation or not (no loss of information during export)
+
+## Conversion Format (object)
+
++ format: `ini` (string) - The configuration format/language (e.g. ini, xml, csv, ...)
++ plugin (object) - Informations about the plugin that this format represents
+    + name: `simpleini` (string) - The name of the plugin that offers the format (e.g. simpleini, xmltool, csvstorage, ...)
+    + statuses (array[string]) - A list of statuses that this plugin has
