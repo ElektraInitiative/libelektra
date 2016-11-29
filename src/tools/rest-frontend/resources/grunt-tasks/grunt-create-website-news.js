@@ -57,7 +57,7 @@ module.exports = function (grunt) {
                     shortDesc = shortDesc[1];
                 } else {
                     shortDesc = '';
-                    grunt.log.warn('News post ' + post.name + ' has no description matching the configured regex');
+					grunt.log.warn('News post ' + post.name + ' has no short description matching the configured regex!');
                 }
 
                 result.push({

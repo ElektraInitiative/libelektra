@@ -53,13 +53,13 @@ bool Config::initializeConfiguration (const cppcms::json::value & cfg, const std
 		}
 	};
 
-	// api_specification settings
-	checkType ("api_specification.raw", cppcms::json::is_string, "to a link targeting the API blueprint");
-	checkType ("api_specification.html", cppcms::json::is_string, "to a link targeting the compiled API description");
+	// api/description settings
+	checkType ("api.description.raw", cppcms::json::is_string, "to a link targeting the API blueprint");
+	checkType ("api.description.html", cppcms::json::is_string, "to a link targeting the compiled API description");
 
 	// JWT settings
-	checkType ("jwt.encryption_key", cppcms::json::is_string, "to a random secret");
-	checkType ("jwt.expiration_time", cppcms::json::is_number, "to the number of seconds a session token should be valid");
+	checkType ("jwt.encryption.secret", cppcms::json::is_string, "to a random secret");
+	checkType ("jwt.validity", cppcms::json::is_number, "to the number of seconds a session token should be valid");
 
 	// output settings
 	checkType ("output.default.entry.sort", cppcms::json::is_string, "to the default sort direction of entries");

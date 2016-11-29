@@ -45,7 +45,8 @@ module.exports = function (grunt) {
             // filter guid from news post
             var guid = (new RegExp(self.data.regex.guid.pattern, self.data.regex.guid.flags)).exec(content);
             if (guid === null || guid.length < 2) {
-                grunt.log.error('Could not find `guid` in news, cannot create RSS file.');
+				grunt.log.warn('News post ' + post.name + ' has no guid that can be used to generate an RSS post!');
+                return; // no guid, no RSS!
             }
             guid = guid[1]; // first capture group
 

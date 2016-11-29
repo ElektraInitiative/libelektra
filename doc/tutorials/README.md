@@ -44,3 +44,11 @@ For these tutorials we assume that you maintain
 upstream packages.
 
 - [Merge Configuration Files](elektra-merge-integration.md)
+
+## Installation Manuals
+
+These tutorials provide additional information on how to
+install and set up specific plugins and tools.
+
+- [Snippet Sharing REST-Service](snippet-sharing-rest-service.md)
+

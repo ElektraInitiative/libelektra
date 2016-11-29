@@ -66,8 +66,13 @@ Add the path where the library has been installed
 
 and run `ldconfig` as root.
 
+## Installation Manuals ##
 
-## See also
+For some of the plugins and tools that ship with Elektra,
+additional installation manuals have been written.
+You can find them in the [tutorial overview](tutorials/README.md).
+
+## See also ##
 
 - [COMPILE](COMPILE.md).
 - [TESTING](TESTING.md).
