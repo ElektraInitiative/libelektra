@@ -9,7 +9,7 @@ if (LIBJWT_INCLUDE_DIR)
   set (LIBJWT_FIND_QUIETLY TRUE)
 endif (LIBJWT_INCLUDE_DIR)
 
-find_path (LIBJWT_INCLUDE_DIR jwt/jwt.h PATHS /usr/include /usr/local/include)
+find_path (LIBJWT_INCLUDE_DIR jwt.h PATHS /usr/include /usr/local/include PATH_SUFFIXES jwt)
 find_library (LIBJWT_LIBRARY NAMES jwt PATHS /usr/lib /usr/lib64 /usr/local/lib)
 
 # Handle the QUIETLY and REQUIRED arguments and set LIBJWT_FOUND to

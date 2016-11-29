@@ -14,7 +14,7 @@
 #include <string.h>
 
 #include <boost/algorithm/string/predicate.hpp>
-#include <jwt/jwt.h>
+#include <jwt.h>
 #include <openssl/sha.h>
 
 #include <authentication_application.hpp>
