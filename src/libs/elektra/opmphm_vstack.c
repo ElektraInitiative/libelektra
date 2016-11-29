@@ -1,6 +1,6 @@
-#include <kdbopmphm.h>
 #include <kdbhelper.h>
 #include <kdblogger.h>
+#include <kdbopmphm.h>
 
 /**
  * Allocates vstack with size specified by parameter minSize and sets the stack pointer.

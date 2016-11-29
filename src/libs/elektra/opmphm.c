@@ -7,8 +7,8 @@
  */
 
 
-#include <kdbopmphm.h>
 #include <kdbassert.h>
+#include <kdbopmphm.h>
 
 /* Hash function
  * By Bob Jenkins, May 2006
