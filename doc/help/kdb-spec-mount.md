@@ -42,6 +42,10 @@ For example:
 This command writes into the `/etc` directory and as such it requires root permissions.
 Use `kdb file system/elektra/mountpoints` to find out where exactly it will write to.
 
+Note that many specifications have globs like `_` and `#`. They will only work if
+the `spec` plugin is present:
+
+	kdb global-mount
 
 ## OPTIONS
 
