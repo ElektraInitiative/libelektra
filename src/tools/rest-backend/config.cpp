@@ -53,9 +53,9 @@ bool Config::initializeConfiguration (const cppcms::json::value & cfg, const std
 		}
 	};
 
-	// api_specification settings
-	checkType ("api_specification.raw", cppcms::json::is_string, "to a link targeting the API blueprint");
-	checkType ("api_specification.html", cppcms::json::is_string, "to a link targeting the compiled API description");
+	// api/description settings
+	checkType ("api.description.raw", cppcms::json::is_string, "to a link targeting the API blueprint");
+	checkType ("api.description.html", cppcms::json::is_string, "to a link targeting the compiled API description");
 
 	// JWT settings
 	checkType ("jwt.encryption_key", cppcms::json::is_string, "to a random secret");

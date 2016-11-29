@@ -115,11 +115,11 @@ use `kdb mount rest-backend-spec.ini /sw/elektra/restbackend/#0 ni` to mount it 
 
 After that you need to set three additional configuration parameters that have no defaults.
 It is recommended to set them for the system namespace if you will use a tool like
-`systemctl` to manage the services. (For the api_specification key, see below!)
+`systemctl` to manage the services. (For the `api/description` keys, see below!)
 ```
 kdb set system/sw/elektra/restbackend/#0/current/backend/jwt/encryption_key "use_a_secret_key_here!"
-kdb set system/sw/elektra/restbackend/#0/current/backend/api_specification/html "http://link.to/the/html/version/of/api/description"
-kdb set system/sw/elektra/restbackend/#0/current/backend/api_specification/raw "http://link.to/the/blueprint/of/api/description"
+kdb set system/sw/elektra/restbackend/#0/current/backend/api/description/html "http://link.to/the/html/version/of/api/description"
+kdb set system/sw/elektra/restbackend/#0/current/backend/api/description/raw "http://link.to/the/blueprint/of/api/description"
 ```
 
 In case you don't want to publish the API description, you can also set the keys
