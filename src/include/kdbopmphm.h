@@ -1,6 +1,9 @@
 #ifndef OPMPHM_H
 #define OPMPHM_H
 
+#include <stdint.h>
+#include <stdlib.h>
+
 /* Hash function
  * By Bob Jenkins, May 2006
  * http://burtleburtle.net/bob/c/lookup3.c
@@ -58,8 +61,15 @@ uint32_t opmphmRandom (unsigned int * seedp);
  */
 
 /**
+* @defgroup datastructs Datastructures
+* @brief Datastructures
+*/
+
+
+/**
+ *
  * @defgroup vstack Vstack
- * @ingroup internaldatastructs
+ * @ingroup datastructs
  *
  * The Vstack structure.
  *
@@ -86,8 +96,9 @@ int elektraVstackClear (Vstack * stack);
 
 typedef int (*VheapComp) (void *, void *);
 /**
+ *
  * @defgroup vheap Vheap
- * @ingroup internaldatastructs
+ * @ingroup datastructs
  *
  * The Vheap structure.
  *

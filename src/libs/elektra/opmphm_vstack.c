@@ -1,4 +1,6 @@
-#include "kdbprivate.h"
+#include <kdbopmphm.h>
+#include <kdbhelper.h>
+#include <kdblogger.h>
 
 /**
  * Allocates vstack with size specified by parameter minSize and sets the stack pointer.
@@ -15,6 +17,7 @@ Vstack * elektraVstackInit (size_t minSize)
 	if (!newStack) return NULL;
 	newStack->size = minSize;
 	newStack->minSize = minSize;
+	ELEKTRA_LOG_DEBUG ("VSTACK MALLOC TO = %zu", newStack->size);
 	newStack->data = elektraMalloc (newStack->size * sizeof (void *));
 	if (!newStack->data)
 	{
@@ -30,29 +33,30 @@ Vstack * elektraVstackInit (size_t minSize)
  *
  * @ingroup vstack
  * @param data the element
- * @retval 0 on error
- * @retval 1 otherwise
+ * @retval 1 on error
+ * @retval 0 otherwise
  */
 int elektraVstackPush (Vstack * stack, void * data)
 {
-	if (!stack) return 0;
+	if (!stack) return 1;
 	// grow
 	if ((size_t) (stack->head - stack->data) >= stack->size)
 	{
 		stack->size <<= 1;
+		ELEKTRA_LOG_DEBUG ("VSTACK REALLOC TO = %zu", stack->size);
 		// save head
 		int diff = stack->head - stack->data;
 		if (elektraRealloc ((void **)&stack->data, stack->size * sizeof (void *)) == -1)
 		{
 			stack->size >>= 1;
-			return 0;
+			return 1;
 		}
 		// restore head
 		stack->head = stack->data + diff;
 	}
 	*stack->head = data;
 	++stack->head;
-	return 1;
+	return 0;
 }
 
 /**
@@ -60,7 +64,7 @@ int elektraVstackPush (Vstack * stack, void * data)
  *
  * @ingroup vstack
  * @retval the element
- * @retval NULL on empty
+ * @retval NULL on empty or error
  */
 void * elektraVstackPop (Vstack * stack)
 {
@@ -71,6 +75,7 @@ void * elektraVstackPop (Vstack * stack)
 	if (stack->size > stack->minSize && (size_t) (stack->head - stack->data) <= stack->size >> 2)
 	{
 		stack->size >>= 1;
+		ELEKTRA_LOG_DEBUG ("VSTACK REALLOC TO = %zu", stack->size);
 		int diff = stack->head - stack->data;
 		if (elektraRealloc ((void **)&stack->data, stack->size * sizeof (void *)) == -1)
 		{
@@ -115,12 +120,12 @@ void elektraVstackDel (Vstack * stack)
  * The next reallocation happens at Pop.
  *
  * @ingroup vstack
- * @retval 1 on success
- * @retval 0 on error
+ * @retval 0 on success
+ * @retval 1 on error
  */
 int elektraVstackClear (Vstack * stack)
 {
-	if (!stack) return 0;
+	if (!stack) return 1;
 	stack->head = stack->data;
-	return 1;
+	return 0;
 }

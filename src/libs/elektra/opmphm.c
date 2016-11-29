@@ -7,11 +7,8 @@
  */
 
 
-#include "kdbprivate.h"
+#include <kdbopmphm.h>
 #include <kdbassert.h>
-#ifdef HAVE_STDLIB_H
-#include <stdlib.h>
-#endif
 
 /* Hash function
  * By Bob Jenkins, May 2006
