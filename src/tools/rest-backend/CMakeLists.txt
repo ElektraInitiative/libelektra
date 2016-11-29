@@ -63,6 +63,9 @@ else ()
     install (PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/run-${tool} ${CMAKE_CURRENT_BINARY_DIR}/stop-${tool}
              DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
 
+    install (FILES config-specification.ini DESTINATION ${KDB_DB_SPEC} RENAME ${tool}-spec.ini)
+    install (CODE "execute_process (COMMAND kdb mount ${tool}-spec.ini \"spec${config_root}\" ni)")
+
     generate_manpage (kdb-run-${tool} FILENAME ${CMAKE_CURRENT_BINARY_DIR}/README.md)
     
     if (ENABLE_TESTING)
