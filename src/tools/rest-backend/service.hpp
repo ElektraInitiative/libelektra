@@ -177,6 +177,8 @@ public:
 	cppcms::json::value
 	loadApplicationConfiguration (const std::string profile = std::string (ELEKTRA_REST_CONFIG_DEFAULT_PROFILE)) const;
 
+	cppcms::json::value transformKeysetToJsonValue (const kdb::KeySet & ks, const std::string & conf_root) const;
+
 private:
 	void setValue (cppcms::json::value & config, const std::string path, const kdb::Key & key) const;
 };
