@@ -20,7 +20,7 @@ else ()
     set (install_directory ${TARGET_TOOL_DATA_FOLDER}/${tool})
 
     configure_file (
-        "${CMAKE_CURRENT_SOURCE_DIR}/config-specification.ini"
+        "${CMAKE_CURRENT_SOURCE_DIR}/config-specification.ini.in"
         "${CMAKE_CURRENT_BINARY_DIR}/config-specification.ini"
     )
     file (READ ${CMAKE_CURRENT_BINARY_DIR}/config-specification.ini configuration-specification)
