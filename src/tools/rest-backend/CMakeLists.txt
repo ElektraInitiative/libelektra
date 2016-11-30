@@ -62,7 +62,7 @@ else ()
     add_library (tmp_${tool}_main OBJECT main.cpp)
     add_executable (${tool} $<TARGET_OBJECTS:tmp_${tool}> $<TARGET_OBJECTS:tmp_${tool}_main>)
     target_link_libraries (${tool} ${CPPCMS_LIBRARY} ${Boost_LIBRARIES} ${LIBJWT_LIBRARY} ${OPENSSL_LIBRARIES})
-    target_link_libraries (${tool} elektra-full elektratools)
+    target_link_libraries (${tool} elektra-core elektratools)
 
     install (TARGETS ${tool} DESTINATION ${install_directory})
     install (PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/run-${tool} ${CMAKE_CURRENT_BINARY_DIR}/stop-${tool}
