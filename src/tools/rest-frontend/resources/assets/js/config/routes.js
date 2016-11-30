@@ -10,7 +10,7 @@ module.exports = function ($stateProvider, $urlRouterProvider, $locationProvider
     });
 
     // configure default route
-    $urlRouterProvider.otherwise("/home");
+    $urlRouterProvider.otherwise("/error/404");
 
     // configure application states
     $stateProvider
@@ -18,6 +18,23 @@ module.exports = function ($stateProvider, $urlRouterProvider, $locationProvider
                 abstract: true,
                 templateUrl: 'pages/main/template.html',
                 controller: 'MainController as ctrl'
+            })
+            .state('main.error', {
+                abstract: true,
+                url: '/error',
+                templateUrl: 'pages/main/error/template.html',
+                ncyBreadcrumb: {
+                    label: 'APP.BREADCRUMBS.MAIN.ERROR',
+                    parent: 'main.home'
+                }
+            })
+            .state('main.error.404', {
+                url: '/404',
+                templateUrl: 'pages/main/error/404.html',
+                ncyBreadcrumb: {
+                    label: 'APP.BREADCRUMBS.MAIN.ERROR.404',
+                    parent: 'main.error'
+                }
             })
             .state('main.auth', {
                 abstract: true,
