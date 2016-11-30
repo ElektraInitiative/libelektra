@@ -124,8 +124,11 @@ It is recommended to set it for the system namespace if you will use a tool like
 > kdb set system/sw/elektra/restbackend/#0/current/backend/jwt/encryption/secret "use a secret key here"
 ```
 
-To generate a secure key, you can also use `pwgen` (install via `apt-get install pwgen`).
-Simply swap the key value (`use a secret key here`) with `$(pwgen -1sy 20)` to generate a secret.
+To generate a secure key, you can also use `pwgen` (install via `apt-get install pwgen`). Use
+```
+> kdb set system/sw/elektra/restbackend/#0/current/backend/jwt/encryption/secret "$(pwgen -1cns 30)"
+```
+to generate and set a strong random encryption secret.
 
 If you want to know the default values, you can get a list of used keys with
 `kdb ls /sw/elektra/restbackend/#0`. You can then retrieve the configuration value
