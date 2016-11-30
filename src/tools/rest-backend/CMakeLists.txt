@@ -11,6 +11,8 @@ elseif (NOT LIBJWT_FOUND)
     remove_tool (${tool} "LibJWT package not found")
 elseif (NOT OPENSSL_FOUND)
     remove_tool (${tool} "OpenSSL package not found")
+elseif (NOT BUILD_SHARED)
+    remove_tool (${tool} "Shared build disabled")
 else ()
 
     string (REGEX REPLACE "[^a-zA-Z]" "" tool_name_simplified ${tool})
@@ -18,7 +20,12 @@ else ()
     set (config_default_profile "current")
 
     set (install_directory ${TARGET_TOOL_DATA_FOLDER}/${tool})
-    file (READ config-specification.ini configuration-specification)
+
+    configure_file (
+        "${CMAKE_CURRENT_SOURCE_DIR}/config-specification.ini.in"
+        "${CMAKE_CURRENT_BINARY_DIR}/config-specification.ini"
+    )
+    file (READ ${CMAKE_CURRENT_BINARY_DIR}/config-specification.ini configuration-specification)
 
     configure_file (
         "${CMAKE_CURRENT_SOURCE_DIR}/config.hpp.in"
@@ -57,13 +64,13 @@ else ()
     add_library (tmp_${tool}_main OBJECT main.cpp)
     add_executable (${tool} $<TARGET_OBJECTS:tmp_${tool}> $<TARGET_OBJECTS:tmp_${tool}_main>)
     target_link_libraries (${tool} ${CPPCMS_LIBRARY} ${Boost_LIBRARIES} ${LIBJWT_LIBRARY} ${OPENSSL_LIBRARIES})
-    target_link_libraries (${tool} elektra-full elektratools)
+    target_link_libraries (${tool} elektra-core elektratools)
 
     install (TARGETS ${tool} DESTINATION ${install_directory})
     install (PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/run-${tool} ${CMAKE_CURRENT_BINARY_DIR}/stop-${tool}
              DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
 
-    install (FILES config-specification.ini DESTINATION ${KDB_DB_SPEC} RENAME ${tool}-spec.ini)
+    install (FILES ${CMAKE_CURRENT_BINARY_DIR}/config-specification.ini DESTINATION ${KDB_DB_SPEC} RENAME ${tool}-spec.ini)
     install (CODE "execute_process (COMMAND kdb mount ${tool}-spec.ini \"spec${config_root}\" ni)")
 
     generate_manpage (kdb-run-${tool} FILENAME ${CMAKE_CURRENT_BINARY_DIR}/README.md)

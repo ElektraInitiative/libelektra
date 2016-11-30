@@ -23,11 +23,11 @@ else ()
 
     set (kdbrest_libs ${Boost_LIBRARIES} ${CPPCMS_LIBRARY} ${LIBJWT_LIBRARY} ${OPENSSL_LIBRARIES})
     set (mysql_other_sources testdata.cpp testdata.hpp timer.hpp $<TARGET_OBJECTS:tmp_${tool}>)
-    set (mysql_libraries ${MYSQLCPPCONN_LIBRARY} ${kdbrest_libs} elektra-full elektratools)
+    set (mysql_libraries ${MYSQLCPPCONN_LIBRARY} ${kdbrest_libs} elektra-core elektratools)
     do_benchmark (benchmark_kdbrest_mysql "${mysql_other_sources}" "${mysql_libraries}")
 
     set (elektra_other_sources testdata.cpp testdata.hpp timer.hpp $<TARGET_OBJECTS:tmp_${tool}>)
-    set (elektra_libraries ${kdbrest_libs} elektra-full elektratools)
+    set (elektra_libraries ${kdbrest_libs} elektra-core elektratools)
     do_benchmark (benchmark_kdbrest_elektra "${elektra_other_sources}" "${elektra_libraries}")
 
 endif ()

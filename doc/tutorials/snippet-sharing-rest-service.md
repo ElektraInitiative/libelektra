@@ -117,21 +117,18 @@ use the command `kdb mount`. You should see a list of mountpoints, of which one 
 be something like `spec/sw/elektra/restbackend/#0`. If you do not see this mountpoint,
 use `kdb mount rest-backend-spec.ini spec/sw/elektra/restbackend/#0 ni` to mount it manually.
 
-After that you need to set additional configuration parameters that have no defaults.
-It is recommended to set them for the system namespace if you will use a tool like
-`systemctl` to manage the services. (For the `api/description` keys, see below!)
+After that you need to set an additional configuration parameter that has no default value.
+It is recommended to set it for the system namespace if you will use a tool like
+`systemctl` to manage the services.
 ```
-> kdb set system/sw/elektra/restbackend/#0/current/backend/jwt/encryptionkey "use a secret key here"
-> kdb set system/sw/elektra/restbackend/#0/current/backend/api/description/html "http://link.to/the/html/version/of/api/description"
-> kdb set system/sw/elektra/restbackend/#0/current/backend/api/description/raw "https://raw.githubusercontent.com/ElektraInitiative/libelektra/master/doc/api_blueprints/snippet-sharing.apib"
+> kdb set system/sw/elektra/restbackend/#0/current/backend/jwt/encryption/secret "use a secret key here"
 ```
 
-To generate a secure key, you can also use `pwgen` (install via `apt-get install pwgen`).
-Simply swap the `use_a_secret_key_here!` with `$(pwgen -1sy 20)` to generate a secret.
-
-In case you don't want to publish the API description, you can also set the keys
-to other links, e.g., your main page. It is good practice to have the description
-published though. Information on how to generate the API description can be found below.
+To generate a secure key, you can also use `pwgen` (install via `apt-get install pwgen`). Use
+```
+> kdb set system/sw/elektra/restbackend/#0/current/backend/jwt/encryption/secret "$(pwgen -1cns 30)"
+```
+to generate and set a strong random encryption secret.
 
 If you want to know the default values, you can get a list of used keys with
 `kdb ls /sw/elektra/restbackend/#0`. You can then retrieve the configuration value

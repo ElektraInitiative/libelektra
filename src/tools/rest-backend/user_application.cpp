@@ -424,7 +424,7 @@ void UserApp::handleInsert (cppcms::http::request & req, cppcms::http::response 
 
 	// other properties
 	u.setEmail (email);
-	u.setRank (Config::instance ().getConfig ().get<int> ("permissions.default_rank"));
+	u.setRank (Config::instance ().getConfig ().get<int> ("permissions.rank.default"));
 	u.setCreatedAt (static_cast<long> (time (0)));
 
 	// store user
