@@ -11,6 +11,8 @@ elseif (NOT LIBJWT_FOUND)
     remove_tool (${tool} "LibJWT package not found")
 elseif (NOT OPENSSL_FOUND)
     remove_tool (${tool} "OpenSSL package not found")
+elseif (NOT BUILD_SHARED)
+    remove_tool (${tool} "Shared build disabled")
 else ()
 
     string (REGEX REPLACE "[^a-zA-Z]" "" tool_name_simplified ${tool})
