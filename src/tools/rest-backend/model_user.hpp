@@ -255,7 +255,7 @@ public:
 		}
 		catch (kdbrest::exception::SubkeyNotFoundException & e)
 		{
-			return Config::instance ().getConfig ().get<int> ("permissions.default_rank"); // default is user rank
+			return Config::instance ().getConfig ().get<int> ("permissions.rank.default"); // default is user rank
 		}
 	}
 

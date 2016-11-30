@@ -61,6 +61,10 @@ bool Config::initializeConfiguration (const cppcms::json::value & cfg, const std
 	checkType ("jwt.encryption.secret", cppcms::json::is_string, "to a random secret");
 	checkType ("jwt.validity", cppcms::json::is_number, "to the number of seconds a session token should be valid");
 
+	// kdb settings
+	checkType ("kdb.path.configs", cppcms::json::is_string, "to the elektra key where configuration snippets should be stored");
+	checkType ("kdb.path.users", cppcms::json::is_string, "to the elektra key where user details should be stored");
+
 	// output settings
 	checkType ("output.default.entry.sort", cppcms::json::is_string, "to the default sort direction of entries");
 	checkType ("output.default.entry.sortby", cppcms::json::is_string, "to the default sort criteria of entries");
@@ -79,11 +83,7 @@ bool Config::initializeConfiguration (const cppcms::json::value & cfg, const std
 	checkType ("permissions.user.view", cppcms::json::is_number, "to the rank that is required to view account details of other users");
 	checkType ("permissions.user.edit", cppcms::json::is_number, "to the rank that is required to edit account details of other users");
 	checkType ("permissions.user.delete", cppcms::json::is_number, "to the rank that is required to delete accounts of other users");
-	checkType ("permissions.default_rank", cppcms::json::is_number, "to the rank that new accounts will be assigned by default");
-
-	// kdb settings
-	checkType ("kdb.path.configs", cppcms::json::is_string, "to the elektra key where configuration snippets should be stored");
-	checkType ("kdb.path.users", cppcms::json::is_string, "to the elektra key where user details should be stored");
+	checkType ("permissions.rank.default", cppcms::json::is_number, "to the rank that new accounts will be assigned by default");
 
 	return !error;
 }
