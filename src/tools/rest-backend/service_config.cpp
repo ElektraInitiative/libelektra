@@ -10,6 +10,7 @@
 #include <regex>
 
 #include <boost/algorithm/string/predicate.hpp>
+#include <helper/keyhelper.hpp>
 
 #include <service.hpp>
 
@@ -24,10 +25,12 @@ namespace service
  * 
  * the configuration is loaded from the key database provided by elektra.
  * the result can be used to bootstrap the application (cppcms service).
+ * 
+ * @param profile the profile for which the configuration should be loaded
+ * @return the loaded configuration as cppcms::json::value
  */
 cppcms::json::value ConfigEngine::loadApplicationConfiguration (const std::string profile) const
 {
-	cppcms::json::value result;
 	kdb::KDB kdb;
 	kdb::KeySet ks;
 
@@ -36,12 +39,44 @@ cppcms::json::value ConfigEngine::loadApplicationConfiguration (const std::strin
 	kdb.get (ks, conf_root);
 	ks = ks.cut (kdb::Key (conf_root, KEY_END));
 
+	cppcms::json::value result = this->transformKeysetToJsonValue (ks, conf_root);
+
+	return result;
+}
+
+/**
+ * @brief can be used to transform a kdb::KeySet into cppcms::json::value
+ * 
+ * will iterate through the keyset and use a helper method to add the key
+ * values to the json::value
+ * 
+ * @param ks the keyset that needs to be transformed
+ * @return a cppcms::json::value containing the configuration from the keyset
+ */
+cppcms::json::value ConfigEngine::transformKeysetToJsonValue (const kdb::KeySet & ks, const std::string & conf_root) const
+{
+	cppcms::json::value result;
+
 	for (auto elem : ks)
 	{
-		std::string key = elem.getName ().substr (elem.getName ().find (conf_root) + conf_root.length () + 1);
-		std::replace (key.begin (), key.end (), '/', '.');
+		// and find the best configuration through ksLookup and the cascading key
+		kdb::Key elemCascading = elem.dup ();
+		kdb::tools::helper::removeNamespace (elemCascading);
+		kdb::Key key = ks.lookup (elemCascading.getName ());
 
-		this->setValue (result, key, elem);
+		// although we can safely assume here that we have found a valid key,
+		// we better check and skip if necessary
+		if (!key)
+		{
+			continue;
+		}
+
+		// transform the keyname into cppcms::json input representation
+		std::string keyName = key.getName ().substr (key.getName ().find (conf_root) + conf_root.length () + 1);
+		std::replace (keyName.begin (), keyName.end (), '/', '.');
+
+		// finally set the value
+		this->setValue (result, keyName, key);
 	}
 
 	return result;
