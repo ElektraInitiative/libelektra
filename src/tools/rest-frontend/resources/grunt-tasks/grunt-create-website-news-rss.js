@@ -3,6 +3,7 @@
 var fs = require('fs');
 var path = require('path');
 var marked = require('marked');
+var RSS = require('rss');
 
 var resolve_path = require('./helper/resolve-path');
 
@@ -14,7 +15,7 @@ module.exports = function (grunt) {
 
         var root_dir = resolve_path(this.data.repo_root);
         var input_news_file = resolve_path(this.data.input.news);
-        var output_dir = resolve_path(this.data.output);
+        var output_dir = resolve_path(this.data.output.dir);
 
 
         /* MAIN FUNCTION */
@@ -24,12 +25,19 @@ module.exports = function (grunt) {
             // load earlier create array of news posts
             var news = grunt.file.readJSON(input_news_file);
 
+            // prepare RSS feed
+            var feed = new RSS(self.data.feed);
+
             // iterate through news posts and handle them
             news.forEach(function (post) {
                 if (post.type === 'file') {
-                    self.handleNewsPost(post);
+                    self.handleNewsPost(post, feed);
                 }
             });
+
+            // save feed
+            var xml = feed.xml({indent: true});
+            grunt.file.write(path.join(output_dir, self.data.output.feed), xml);
 
             grunt.log.ok('Website RSS news generated successfully!');
 
@@ -38,7 +46,7 @@ module.exports = function (grunt) {
 
         /* HELPING FUNCTIONS */
 
-        this.handleNewsPost = function (post) {
+        this.handleNewsPost = function (post, feed) {
             // read content
             var content = fs.readFileSync(path.join(root_dir, post.file)).toString();
 
@@ -61,6 +69,15 @@ module.exports = function (grunt) {
 
             // write rss news html to disk
             grunt.file.write(path.join(output_dir, guid + '.html'), content);
+
+            // add post to rss feed
+            feed.item({
+               title: post.title,
+               description: content,
+               url: self.data.post_url + guid + '.html',
+               guid: guid,
+               date: new Date(Date.parse(post.date)).toUTCString()
+            });
         };
 
 

@@ -48,6 +48,7 @@
         "jshint-stylish": "latest",
         "ng-tags-input": "^3.1.1",
         "pace-progress": "^1.0.2",
+        "rss": "^1.2.1",
         "satellizer": "^0.15.5",
         "slugify": "^1.0.2",
         "sync-request": "^3.0.1",

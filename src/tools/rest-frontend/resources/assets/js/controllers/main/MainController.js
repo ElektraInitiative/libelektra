@@ -1,12 +1,13 @@
 'use strict';
 
-module.exports = function ($rootScope, $scope, Logger, $state, $anchorScroll, webStructure) {
+module.exports = function ($rootScope, $scope, Logger, $state, $anchorScroll, webStructure, config) {
 
     var vm = this;
     $scope.$rootScope = $rootScope;
 
     // build the dynamic menu
     $scope.menu = webStructure;
+    $scope.config = config;
 
 //        vm.currentLanguage = 'de';
 
