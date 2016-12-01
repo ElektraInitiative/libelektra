@@ -57,7 +57,20 @@ module.exports = function (grunt) {
                         flags: 'm'
                     }
                 },
-                output: 'public/rss'
+                feed: {
+                    title: 'Elektra\'s Blog',
+                    description: 'News around Elektra',
+                    feed_url: '<%= app.website.url %>rss/<%= grunt.config(\'create-website-news-rss.build.output.feed\') %>',
+                    post_url: '<%= app.website.url &>rss/',
+                    site_url: '<%= app.website.url %>',
+                    language: 'en',
+                    pubDate: new Date().toUTCString(),
+                    ttl: 1800
+                },
+                output: {
+                    dir: 'public/rss',
+                    feed: 'feed.rss'
+                }
             }
         },
         'copy-website-content': {
@@ -214,7 +227,7 @@ module.exports = function (grunt) {
 //                        return middlewares;
                         var staticExtensions = [
                             'html', 'js', 'css', 'json', 'svg', 'md', 'png', 'jpg', 'gif', 'otf', 'eot', 'ttf',
-                            'woff', 'woff2', 'xml', 'c', 'h', 'cpp', 'hpp', 'java', 'py'
+                            'woff', 'woff2', 'xml', 'c', 'h', 'cpp', 'hpp', 'java', 'py', 'rss'
                         ];
                         return [
                             modRewrite(['!' + staticExtensions.map(function (elem) {

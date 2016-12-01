@@ -134,7 +134,21 @@ module.exports = function (Logger, $http, $q, config) {
             $http.get(config.backend.root + 'conversion/formats', {
                 // custom options
             }).success(function (data) {
-                service.cache.formats = data;
+                var plugins = [];
+                var foundPlugin;
+                config.website.formats.preferred.forEach(function (plugin) {
+                    foundPlugin = data.find(function (elem) {
+                        return elem.plugin.name === plugin;
+                    });
+                    if (typeof foundPlugin !== 'undefined') {
+                        plugins.push(foundPlugin);
+                    }
+                });
+                data = data.filter(function (elem) {
+                    return plugins.indexOf(elem) < 0;
+                });
+                plugins.push.apply(plugins, data);
+                service.cache.formats = plugins;
                 deferred.resolve(service.cache.formats);
             }).error(function (data) {
                 deferred.reject(data);
