@@ -10,7 +10,9 @@ module.exports = function ($stateProvider, $urlRouterProvider, $locationProvider
     });
 
     // configure default route
-    $urlRouterProvider.otherwise("/error/404");
+    $urlRouterProvider.when('', '/home');
+    $urlRouterProvider.when('/', '/home');
+    $urlRouterProvider.otherwise('/error/404');
 
     // configure application states
     $stateProvider
