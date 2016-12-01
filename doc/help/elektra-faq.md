@@ -1,5 +1,24 @@
 # Frequently Asked Questions #
 
+
+## Isn't it easier to implement a new parser than to use Elektra? ##
+
+No, it is not. And even if it were, the story does not end with implementing
+a configuration file parser but, at least, you also need:
+
+- operating-system-specific code to locate configuration files
+- tools to change the configuration files
+- validation to make such changes user friendly
+
+Every successful project has implemented most features Elektra has.
+But Elektra has the distinctive advantage that you can pick the features
+as you need them. Not used plugins do not cause any overhead or dependency.
+If you need new plugins or bindings, there is a community which can help you.
+Furthermore, Elektra has a defined API and you can swap implementations as needed.
+
+So it pays off to use Elektra -- in the short and in the long term.
+
+
 ## I am stuck. Where can I get help? ##
 
 If this FAQ does not contain your question, [please open an issue](http://git.libelektra.org/issues).
@@ -12,7 +31,7 @@ stuck is valuable to improve Elektra and its documentation. Even if you find out
 you posted the question: the pointer can be helpful for other people having the same problem.
 
 
-## Is this an actual problem or is it just me? ##
+## Is this an actual problem of Elektra or is it just me? ##
 
 In case of doubt [please open an issue](http://git.libelektra.org/issues).
 If the question was already answered or is already in the documentation, we will
@@ -51,4 +70,9 @@ result is GPL.
 [List of authors](/doc/AUTHORS).
 
 
+## How can I advertise Elektra? ##
 
+If questions about configuration come up, point users to http://www.libelektra.org
+Display the logos found at http://tree.libelektra.org/doc/images (see logo.png or the circle*.svg).
+Distribute the flyer found at http://tree.libelektra.org/doc/images/flyer.odt
+And of course: talk about it!
