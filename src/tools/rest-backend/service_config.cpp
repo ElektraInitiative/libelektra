@@ -56,56 +56,27 @@ cppcms::json::value ConfigEngine::loadApplicationConfiguration (const std::strin
 cppcms::json::value ConfigEngine::transformKeysetToJsonValue (const kdb::KeySet & ks, const std::string & conf_root) const
 {
 	cppcms::json::value result;
-	kdb::KeySet ksDup = ks.dup ();
-	kdb::KeySet ksToVisit = ksDup.cut (kdb::Key ("spec/", KEY_END));
 
-	// all spec keys
-	for (auto elem : ksToVisit)
+	for (auto elem : ks)
 	{
+		// and find the best configuration through ksLookup and the cascading key
 		kdb::Key elemCascading = elem.dup ();
 		kdb::tools::helper::removeNamespace (elemCascading);
-		kdb::Key key = ksDup.lookup (elemCascading.getName ());
+		kdb::Key key = ks.lookup (elemCascading.getName ());
+
+		// although we can safely assume here that we have found a valid key,
+		// we better check and skip if necessary
 		if (!key)
 		{
-			key = elem;
+			continue;
 		}
 
+		// transform the keyname into cppcms::json input representation
 		std::string keyName = key.getName ().substr (key.getName ().find (conf_root) + conf_root.length () + 1);
 		std::replace (keyName.begin (), keyName.end (), '/', '.');
 
-		// set default value in case elem has no value
-		if ((key.getBinarySize () == 0 || key.getString () == "") && key.hasMeta ("default"))
-		{
-			std::string defaultVal = key.getMeta<std::string> ("default");
-			if (defaultVal.find ('\'') == 0 && defaultVal.length () > 1)
-			{
-				defaultVal = defaultVal.substr (1);
-			}
-			if (defaultVal.rfind ('\'') == defaultVal.length () - 1 && defaultVal.length () > 1)
-			{
-				defaultVal = defaultVal.substr (0, defaultVal.length () - 1);
-			}
-			key.setString (defaultVal);
-		}
-
+		// finally set the value
 		this->setValue (result, keyName, key);
-	}
-
-	// all other keys
-	for (auto elem : ksDup)
-	{
-		kdb::Key elemCascading = elem.dup ();
-		kdb::tools::helper::removeNamespace (elemCascading);
-		if (!ksToVisit.lookup ("spec" + elemCascading.getName ()))
-		{
-			kdb::Key key = ks.lookup (elemCascading.getName ());
-			if (key)
-			{
-				std::string keyName = key.getName ().substr (key.getName ().find (conf_root) + conf_root.length () + 1);
-				std::replace (keyName.begin (), keyName.end (), '/', '.');
-				this->setValue (result, keyName, key);
-			}
-		}
 	}
 
 	return result;
