@@ -1236,11 +1236,15 @@ int ksRewind (KeySet * ks)
  *
  * @note You must not delete or change the key, use ksPop() if you want to delete it.
  *
+ * @note That applications must do ksLookup() with an cascading key for every single
+ * key before using it, because specifications allow to hide or override keys.
+ *
  * @param ks the keyset object to work with
  * @return the new current Key
  * @retval 0 when the end is reached
  * @retval 0 on NULL pointer
  * @see ksRewind(), ksCurrent()
+ * @see ksLookup() to honor specifications
  */
 Key * ksNext (KeySet * ks)
 {
