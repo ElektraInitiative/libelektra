@@ -407,3 +407,24 @@ All `grunt` tasks can be configured using the [Gruntfile.js](Gruntfile.js) in th
 
 The task `grunt jshint` can be used to check the code formatting of JS source files.
 
+### Noteworthy Information ###
+
+#### HTML in i18n Keys ####
+
+It is possible to use HTML in translation files (loca keys) if the place where
+the loca key is used adds the directive `translate-compile`. The loca key itself
+does also need to be placed in the `translate` directive instead of a dynamic
+Angular binding (i.e. use `<span translate="LOCA_KEY"></span>` in favor of
+`<span>{{ 'LOCA_KEY' | translate }}</span>`).
+
+#### Links ####
+
+For external links, the normal HTML `a`-tag has to be used (`<a href="..."></a>`).
+For internal links (that are links that lead to another sub-page of the website)
+the special router directive `ui-sref` should be used, as a normal link would
+trigger a page reload. The `ui-sref` directive works on state names and not on links,
+so if a sub-page like `<website-url>/docs/tutorials` exists, one cannot use
+`<a ui-sref="/docs/tutorials"></a>`. The state name for the tutorials page has to
+be used, which is most likely `main.dyn.tutorials` if the tutorials section is based
+on the `structure.json.in`. The link (with a simple loca key) would look like
+`<a ui-sref="main.dyn.tutorials" translate="MENU.LINK.TUTORIALS"></a>` therefore.
