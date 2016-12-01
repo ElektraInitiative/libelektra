@@ -162,7 +162,7 @@ private:
 
 // regex being used to check if a key contains an array
 const std::string REGEX_CHECK_KEY_IS_ARRAY =
-	"((?:[a-zA-Z_]+(?:\\.?[a-zA-Z_])+)?)\\.?#_?([0-9]+)\\.?((?:[a-zA-Z0-9_#]+(?:\\.?[a-zA-Z0-9_#])+)?)";
+	"((?:[a-zA-Z0-9_]+(?:\\.?[a-zA-Z0-9_])+)?)\\.?#_?([0-9]+)\\.?((?:[a-zA-Z0-9_#]+(?:\\.?[a-zA-Z0-9_#])+)?)";
 
 /**
  * @brief service offering application configuration retrieval

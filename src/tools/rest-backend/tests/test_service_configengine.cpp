@@ -79,7 +79,7 @@ TEST (kdbrestServiceConfigengineTest, TransformKeysetToJsonValue)
 	expected["object"]["array2"][2]["var2"] = 54321;
 	expected["object"]["array3"][0]["var"][0] = "arr0-in-arr0";
 	expected["object"]["array3"][0]["var"][1] = "arr1-in-arr0";
-	expected["object"]["array3"][0]["var"][0] = "arr0-in-arr1";
+	expected["object"]["array3"][1]["var"][0] = "arr0-in-arr1";
 
 	cppcms::json::value result = kdbrest::service::ConfigEngine::instance ().transformKeysetToJsonValue (testKeySet, conf_root);
 
