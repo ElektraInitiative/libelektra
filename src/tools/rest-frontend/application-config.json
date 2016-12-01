@@ -16,6 +16,9 @@
                     "scope": "v1"
                 }
             }
+        },
+        "formats": {
+            "preferred": ["line", "ni", "xmltool"]
         }
     },
     "github": {
