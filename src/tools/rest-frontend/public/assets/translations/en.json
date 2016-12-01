@@ -275,8 +275,8 @@
     "APP.GLOBAL.NOTIFICATION.MESSAGE.SERVER_NOT_REACHABLE": "It seems as if the service is not reachable. This may be either due to a downtime of the service or because of your internet connection.",
     "APP.GLOBAL.TITLE": "ElektraInitiative",
     
-    "APP.HOME.BUTTON.EXAMPLES": "Examples",
     "APP.HOME.BUTTON.GETSTARTED": "Get started",
+    "APP.HOME.BUTTON.TUTORIALS": "Tutorials",
     "APP.HOME.HEADLINE.HOWITWORKS": "Want to see how it works?",
     "APP.HOME.HEADLINE.SLOGAN.FIRST": "Configure everything, {{ adjectives[index] }}.",
     "APP.HOME.HEADLINE.SLOGAN.SECOND": "Elektra - the configuration framework for everyone",
