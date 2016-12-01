@@ -1907,6 +1907,13 @@ static Key * elektraLookupCreateKey (KeySet * ks, Key * key, ELEKTRA_UNUSED opti
 /**
  * Look for a Key contained in @p ks that matches the name of the @p key.
  *
+ * @note that applications should only use ksLookup() with cascading
+ * keys. Furthermore, a lookup should be done for every key, in particular
+ * during iterations so that the specifications are honored correctly.
+ * Keys of all namespaces need to be present so that ksLookup()
+ * can work correctly, so make sure to also use kdbGet() with a cascading
+ * key.
+ *
  * @p ksLookup() is designed to let you work with
  * entirely pre-loaded KeySets. The
  * idea is to fully kdbGet() for your application root key and
