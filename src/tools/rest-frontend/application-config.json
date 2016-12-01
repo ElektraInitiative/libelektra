@@ -8,6 +8,14 @@
         "target_file_dir_links": ["README.md", "README", "readme.md", "readme"],
         "slogan": {
             "rotation_interval": 2500
+        },
+        "defaults": {
+            "entry": {
+                "form": {
+                    "organization": "none",
+                    "scope": "v1"
+                }
+            }
         }
     },
     "github": {

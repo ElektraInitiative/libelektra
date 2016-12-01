@@ -2,7 +2,7 @@
 
 var angular = require('angular');
 
-module.exports = function ($scope, Logger, $state, EntryService, Notification, Slug, formats, typeaheads) {
+module.exports = function ($scope, Logger, $state, EntryService, Notification, Slug, config, formats, typeaheads) {
 
     var vm = this;
 
@@ -12,6 +12,8 @@ module.exports = function ($scope, Logger, $state, EntryService, Notification, S
         createScopeManually: false
     };
     $scope.entry = {
+        organization: config.website.defaults.entry.form.organization,
+        scope: config.website.defaults.entry.form.scope,
         tags: [],
         configuration: {
             format: {}
