@@ -152,6 +152,8 @@ public:
 	model::ImportedConfig import (const std::string & config, const std::string & format, const model::Entry & forEntry) const;
 
 private:
+	std::string extractFormatFromProviderList (const std::string & providers) const;
+
 	std::vector<kdbrest::model::PluginFormat> m_enabledFormats;
 
 	const std::string m_pluginStatus = "status";

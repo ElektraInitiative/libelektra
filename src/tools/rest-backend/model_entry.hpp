@@ -109,6 +109,23 @@ public:
 	}
 
 	/**
+	 * @brief attempts to add all keys of the keyset as subkey
+	 * 
+	 * @note other than the overloaded @ref addSubkeys function that takes
+	 * iterators as arguments, this function will not stop trying to add keys
+	 * if a mismatch is found.
+	 * 
+	 * @param ks a keyset that should be added to the entry subkeys
+	 */
+	void addSubkeys (kdb::KeySet & ks)
+	{
+		for (auto elem : ks)
+		{
+			this->addSubkey (elem);
+		}
+	}
+
+	/**
 	 * @brief attempts to add many keys as subkeys
 	 * 
      * Adds several keys as sub key. Checks if the given keys
