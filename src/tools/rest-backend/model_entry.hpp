@@ -95,14 +95,15 @@ public:
 	/**
 	 * @brief attempts to add a subkey to the entry key
 	 * 
-     * Adds a key as sub key. Does check if the given key is really
-     * a sub key. If not, nothing is changed.
+	 * If the secure flag is set, does check if the given
+	 * key is really a sub key. If not, nothing is added.
 	 * 
-	 * @param key The key do be added as sub key, if it is one.
+	 * @param key The key do be added as sub key
+	 * @param secure Whether to check if @p k is real subkey
      */
-	void addSubkey (kdb::Key k)
+	void addSubkey (kdb::Key k, bool secure = false)
 	{
-		if (k.isBelow (static_cast<kdb::Key &> (*this)))
+		if (!secure || k.isBelow (static_cast<kdb::Key &> (*this)))
 		{
 			m_subkeys.append (k);
 		}
@@ -111,17 +112,17 @@ public:
 	/**
 	 * @brief attempts to add all keys of the keyset as subkey
 	 * 
-	 * @note other than the overloaded @ref addSubkeys function that takes
-	 * iterators as arguments, this function will not stop trying to add keys
-	 * if a mismatch is found.
+	 * If the secure flag is set, it is checked whether the keys
+	 * in the keyset are really subkeys. otherwise, nothing is added.
 	 * 
 	 * @param ks a keyset that should be added to the entry subkeys
+	 * @param secure whether to check if @p ks keys are really subkeys
 	 */
-	void addSubkeys (kdb::KeySet & ks)
+	void addSubkeys (kdb::KeySet & ks, bool secure = false)
 	{
 		for (auto elem : ks)
 		{
-			this->addSubkey (elem);
+			this->addSubkey (elem, secure);
 		}
 	}
 

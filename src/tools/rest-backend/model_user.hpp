@@ -67,14 +67,15 @@ public:
 	/**
      * @brief attempts to add a key as subkey of the entry
 	 * 
-	 * Does check if the given key is really a sub key.
-	 * If not, nothing is changed.
+	 * If the secure flag is set, does check if the given
+	 * key is really a sub key. If not, nothing is added.
 	 * 
-     * @param key The key do be added as sub key, if it is one.
+	 * @param key The key do be added as sub key
+	 * @param secure Whether to check if @p k is real subkey
      */
-	void addSubkey (kdb::Key k)
+	void addSubkey (kdb::Key k, bool secure = false)
 	{
-		if (k.isBelow (static_cast<kdb::Key &> (*this)))
+		if (!secure || k.isBelow (static_cast<kdb::Key &> (*this)))
 		{
 			m_subkeys.append (k);
 		}

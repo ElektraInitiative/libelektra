@@ -206,11 +206,11 @@ TEST (kdbrestModelsEntryTest, SetAndGetAndAddSubkeys)
 
 	kdbrest::model::Entry entry (key);
 
-	entry.addSubkey (key2);
+	entry.addSubkey (key2, true);
 	ASSERT_EQ (entry.getSubkeys ().size (), 1);
-	entry.addSubkey (key3);
+	entry.addSubkey (key3, true);
 	ASSERT_EQ (entry.getSubkeys ().size (), 2);
-	entry.addSubkey (key4);
+	entry.addSubkey (key4, true);
 	ASSERT_EQ (entry.getSubkeys ().size (), 2);
 
 	ASSERT_TRUE (entry.getSubkeys ().lookup (key2));
@@ -222,7 +222,7 @@ TEST (kdbrestModelsEntryTest, SetAndGetAndAddSubkeys)
 	ks.append (key4);
 	kdbrest::model::Entry entry2 (key);
 
-	entry2.addSubkeys (ks);
+	entry2.addSubkeys (ks, true);
 	ASSERT_EQ (entry2.getSubkeys ().size (), 2);
 
 	ASSERT_TRUE (entry2.getSubkeys ().lookup (key2));
