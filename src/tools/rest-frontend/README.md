@@ -424,18 +424,21 @@ If the external link has the same base URL as the frontend (e.g. frontend is at
 `http://localhost/` and the link points to `http://localhost/rss/feed.rss`),
 the html tag `target` has to be added to the link with the desired value, e.g.
 `_self` to open the link in the same window/tab or `_blank` to use a new one.
-An example would be `<a href="http://localhost/rss/feed.rss" target="_self"></a>`.
+An example would be `<a href="http://localhost/rss/feed.rss" target="_self">...</a>`.
 
 For internal links (that are links that lead to another sub-page of the website)
 two options are available. It is possible to use the normal `href` HTML attribute
 or to use the special `ui-sref` attribute defined by the frontend router.
 The `ui-sref` directive works on state names and not on links,
 so if a sub-page like `<website-url>/docs/tutorials` exists, one cannot use
-`<a ui-sref="/docs/tutorials"></a>`; the state name for the tutorials page has to
+`<a ui-sref="/docs/tutorials">...</a>`; the state name for the tutorials page has to
 be used, which is most likely `main.dyn.tutorials` if the tutorials section is based
 on the `structure.json.in`. The link (with a simple loca key) would look like
-`<a ui-sref="main.dyn.tutorials" translate="MENU.LINK.TUTORIALS"></a>` therefore.
+`<a ui-sref="main.dyn.tutorials">...</a>` therefore.
 The `ui-sref` variant requires the HTML to be specially compiled though, what makes
 the usage of a normal `href` attribute easier in most scenarios.
 The following link does exactly the same as the last example with `ui-sref`:
-`<a href="/docs/tutorials" translate="MENU.LINK.TUTORIALS"></a>`.
+`<a href="/docs/tutorials">...</a>`.
+An advantage of `ui-sref` over `href` is that it does also work with hidden parameters,
+i.e. state parameters not visible in the URL. Such parameters are rarely used in
+practice, though, as they are not SEO friendly at all.
