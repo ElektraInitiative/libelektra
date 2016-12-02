@@ -320,8 +320,12 @@ void StorageEngine::loadAllEntries ()
 		if (std::regex_match (k.getName ().erase (0, parentKeyStr.length () + 1), regex))
 		{
 			kdbrest::model::Entry entry = static_cast<kdbrest::model::Entry> (k);
-			elem++;						   // the next element must be a sub-key of this element
-			elem += entry.addSubkeys (elem, ks.end ()) - elem; // try to add the sub keys and calculate new iterator
+			elem++; // the next element must be a sub-key of this element
+			while (elem != ks.end () && elem.get ().isBelow (entry))
+			{
+				entry.addSubkey (elem.get ());
+				elem++;
+			}
 			this->m_entryCache.push_back (entry);
 			continue; // we don't have to increase manually anymore
 		}
@@ -617,8 +621,12 @@ void StorageEngine::loadAllUsers ()
 		if (std::regex_match (k.getName ().erase (0, parentKeyStr.length () + 1), regex))
 		{
 			kdbrest::model::User user = static_cast<kdbrest::model::User> (k);
-			elem++;						  // the next element must be a sub-key of this element
-			elem += user.addSubkeys (elem, ks.end ()) - elem; // try to add the sub keys and calculate new iterator
+			elem++; // the next element must be a sub-key of this element
+			while (elem != ks.end () && elem.get ().isBelow (user))
+			{
+				user.addSubkey (elem.get ());
+				elem++;
+			}
 			this->m_userCache.push_back (user);
 			continue; // we don't have to increase manually anymore
 		}

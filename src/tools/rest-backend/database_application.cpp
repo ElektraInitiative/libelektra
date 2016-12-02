@@ -947,9 +947,9 @@ void DatabaseApp::copyEntryData (model::Entry & from, model::Entry & to) const
 	to.setTitle (from.getTitle ());		    // set new title
 	to.setTags (from.getTags ());		    // set new tags
 	to.getSubkeys ().clear ();		    // clear old config
-	auto subkeys = from.getSubkeys ();
-	to.addSubkeys (subkeys.begin (), subkeys.end ()); // replace config
-	to.setUploadPlugin (from.getUploadPlugin ());     // replace old upload format
+	auto ks = from.getSubkeys ();
+	to.addSubkeys (ks);			      // replace config
+	to.setUploadPlugin (from.getUploadPlugin ()); // replace old upload format
 }
 
 } // namespace kdbrest

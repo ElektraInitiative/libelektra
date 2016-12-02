@@ -126,36 +126,6 @@ public:
 	}
 
 	/**
-	 * @brief attempts to add many keys as subkeys
-	 * 
-     * Adds several keys as sub key. Checks if the given keys
-	 * are subkeys before they are added. Returns on the first
-	 * non-subkey the iterator.
-	 * 
-     * @param iter_start A KeySet iterator from where on sub keys should be added
-	 * @param iter_end The end of the KeySet until we can read
-	 * @return The iterator of the first non-child element
-     */
-	kdb::KeySet::iterator addSubkeys (kdb::KeySet::iterator iter_start, kdb::KeySet::iterator iter_end)
-	{
-		kdb::Key & k = static_cast<kdb::Key &> (*this);
-		auto elem = iter_start;
-		while (elem != iter_end)
-		{
-			if (elem.get ().isBelow (k))
-			{
-				m_subkeys.append (elem.get ());
-			}
-			else
-			{
-				break; // because keyset is sorted, following keys can't be children
-			}
-			elem++;
-		}
-		return elem;
-	}
-
-	/**
 	 * @brief getter for the subkeys keyset
 	 * 
      * Getter for the kdb::KeySet containing all added sub keys.
