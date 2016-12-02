@@ -1,7 +1,7 @@
 /**
  * @file
  *
- * @brief tests for the configformat model
+ * @brief tests for the config service
  *
  * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
  */
@@ -13,7 +13,7 @@
 #include <service.hpp>
 
 /**
- * TESTS for kdbrest::models::ConfigFormat
+ * TESTS for kdbrest::service::ConfigEngine
  */
 
 TEST (kdbrestServiceConfigengineTest, ArrayKeyRegexCheck)

@@ -63,7 +63,7 @@ std::vector<model::Entry> createTestEntries (model::User user, int num, int numT
 				*kdb::Key (entry.getName () + "/array1/#1", KEY_VALUE, "value 3-1", KEY_END),
 				*kdb::Key (entry.getName () + "/array1/#2", KEY_VALUE, "value 3-2", KEY_END),
 				*kdb::Key (entry.getName () + "/array1/#3", KEY_VALUE, "value 3-3", KEY_END), KS_END);
-		entry.addSubkeys (ks.begin (), ks.end ());
+		entry.addSubkeys (ks);
 
 		result.push_back (entry);
 	}

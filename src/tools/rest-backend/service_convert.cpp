@@ -45,10 +45,17 @@ model::PluginFormat ConvertEngine::findSuitablePlugin (const std::string & forma
 	try
 	{
 		PluginSpec plugin = db.lookupProvides (format);
+
+		// find status
 		std::string statusString = db.lookupInfo (plugin, m_pluginStatus);
 		std::vector<std::string> statuses;
 		boost::split (statuses, statusString, boost::is_any_of (" "));
-		return model::PluginFormat (format, plugin.getName (), statuses);
+
+		// find format
+		std::string providers = db.lookupInfo (plugin, m_pluginProvides);
+		std::string actualFormat = this->extractFormatFromProviderList (providers);
+
+		return model::PluginFormat (actualFormat, plugin.getName (), statuses);
 	}
 	catch (kdb::tools::NoPlugin & e)
 	{
@@ -82,18 +89,8 @@ std::vector<model::PluginFormat> ConvertEngine::loadEnabledFormats ()
 	for (auto & plugin : plugins)
 	{
 		// find format
-		std::string provides = db.lookupInfo (plugin, m_pluginProvides);
-		std::stringstream ss (provides);
-		std::string provider;
-		std::string format = "none";
-		while (ss >> provider)
-		{
-			if (boost::starts_with (provider, m_pluginProviderStorage + m_pluginProviderDelim))
-			{
-				format = provider.substr (sizeof (m_pluginProviderStorage));
-				break;
-			}
-		}
+		std::string providers = db.lookupInfo (plugin, m_pluginProvides);
+		std::string format = this->extractFormatFromProviderList (providers);
 		// find statuses
 		std::string statusString = db.lookupInfo (plugin, m_pluginStatus);
 		std::vector<std::string> statuses;
@@ -319,6 +316,28 @@ model::ImportedConfig ConvertEngine::import (const std::string & config, const s
 
 	// in case we accidentally reach this point somehow
 	throw exception::ParseConfigurationException ();
+}
+
+/**
+ * @brief takes a provider list and extracts the storage format
+ * 
+ * @param providers a string containing provided functionality of a plugin
+ * @return the storage format or "none" in case none was found
+ */
+std::string ConvertEngine::extractFormatFromProviderList (const std::string & providers) const
+{
+	std::stringstream ss (providers);
+	std::string provider;
+	std::string format = "none";
+	while (ss >> provider)
+	{
+		if (boost::starts_with (provider, m_pluginProviderStorage + m_pluginProviderDelim))
+		{
+			format = provider.substr (sizeof (m_pluginProviderStorage));
+			break;
+		}
+	}
+	return format;
 }
 
 } // namespace service

@@ -176,8 +176,8 @@ std::vector<model::Entry> rsToEntryVector (sql::ResultSet * rs)
 		entry.setUploadPlugin (rs->getString ("plugin").asStdString ());
 		model::ImportedConfig cfg = service::ConvertEngine::instance ().import (rs->getString ("configuration").asStdString (),
 											entry.getUploadPlugin (), entry);
-		auto subkeys = cfg.getKeySet ();
-		entry.addSubkeys (subkeys.begin (), subkeys.end ());
+		auto ks = cfg.getKeySet ();
+		entry.addSubkeys (ks);
 		entry.setAuthor (rs->getString ("author").asStdString ());
 		entry.setViews (rs->getInt ("views"));
 		entry.setCreatedAt (rs->getInt ("createdat"));
