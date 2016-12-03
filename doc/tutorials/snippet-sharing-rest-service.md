@@ -89,10 +89,12 @@ If you are using Ubuntu, LibJWT can also be installed through a pre-built APT pa
 
 #### Frontend ####
 
-The frontend does only require the package manager [npm](https://www.npmjs.com/).
-It is preferred to install it along with [nodeJS](https://nodejs.org/).
+The frontend does only require the package manager [npm](https://www.npmjs.com/) (>= v3).
+It is preferred to install it along with [nodeJS](https://nodejs.org/), as the version
+that comes via APT is insufficient (only v1.4). The installation was tested with npm version
+3.10.8, but it should also work with other versions of 3+.
 
-To install npm via APT, use: `apt-get install npm`
+It does also not work to install nodejs via APT, as it will not install npm at all.
 
 ### Build & Install the Applications ###
 
