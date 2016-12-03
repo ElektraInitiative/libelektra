@@ -40,6 +40,10 @@ else ()
         "${CMAKE_CURRENT_BINARY_DIR}/stop-${tool}"
     )
     configure_file (
+        "${CMAKE_CURRENT_SOURCE_DIR}/mount-config.sh"
+        "${CMAKE_CURRENT_BINARY_DIR}/mount-${tool}-config"
+    )
+    configure_file (
         "${CMAKE_CURRENT_SOURCE_DIR}/README.md"
         "${CMAKE_CURRENT_BINARY_DIR}/README.md"
     )
@@ -68,10 +72,9 @@ else ()
 
     install (TARGETS ${tool} DESTINATION ${install_directory})
     install (PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/run-${tool} ${CMAKE_CURRENT_BINARY_DIR}/stop-${tool}
-             DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
+             ${CMAKE_CURRENT_BINARY_DIR}/mount-${tool}-config DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
 
     install (FILES ${CMAKE_CURRENT_BINARY_DIR}/config-specification.ini DESTINATION ${KDB_DB_SPEC} RENAME ${tool}-spec.ini)
-    install (CODE "execute_process (COMMAND kdb mount ${tool}-spec.ini \"spec${config_root}\" ni)")
 
     generate_manpage (kdb-run-${tool} FILENAME ${CMAKE_CURRENT_BINARY_DIR}/README.md)
     

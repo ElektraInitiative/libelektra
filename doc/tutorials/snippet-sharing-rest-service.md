@@ -114,10 +114,18 @@ but some settings have to be set manually afterwards.
 
 ### Backend ###
 
-To make sure that the configuration specification was set properly during installation,
-use the command `kdb mount`. You should see a list of mountpoints, of which one should
-be something like `spec/sw/elektra/restbackend/#0`. If you do not see this mountpoint,
-use `kdb mount rest-backend-spec.ini spec/sw/elektra/restbackend/#0 ni` to mount it manually.
+After the installation, the configuration specification of the backend has to be mounted
+with the command `kdb mount-rest-backend-config`. You can check if the mounting was successful
+by issuing `kdb mount`. There should be an entry in the list with a path like
+`spec/sw/elektra/restbackend/#0` and a similar one without the leading `spec`.
+If you do not see this mountpoints, have a look at the mount script in the tool_exec
+(which is defined during installation of Elektra). You can also run the commands manually.
+
+To complete the mounting, you also need to ensure that the `spec` plugin is used as
+global plugin. If you have not changed anything about the global plugins yet, you can simply
+use `kdb global-mount` to ensure that the `spec` plugin is added as global plugin. If not,
+you need to add all currently mounted global plugins to the command as they will be deleted
+otherwise.
 
 After that you need to set an additional configuration parameter that has no default value.
 It is recommended to set it for the system namespace if you will use a tool like
@@ -135,7 +143,7 @@ to generate and set a strong random encryption secret.
 If you want to know the default values, you can get a list of used keys with
 `kdb ls /sw/elektra/restbackend/#0`. You can then retrieve the configuration value
 for each key with `kdb get <key>`, e.g.,
-`kdb get /sw/elektra/restbackend/#0/current/backend/jwt/encryptionkey`
+`kdb get /sw/elektra/restbackend/#0/current/backend/jwt/encryption/secret`
 
 Additionally to the settings above, CppCMS needs some configuration. All configuration
 options are listed on [their website](http://cppcms.com/wikipp/en/page/cppcms_1x_config).
