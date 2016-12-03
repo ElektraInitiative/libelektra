@@ -158,12 +158,16 @@ configuration:
 
 ### Frontend ###
 
-The frontend does only require small mandatory changes, which have to be made in the
-`application-config.json` in the `/usr/local/share/elektra/tool_data/rest-frontend`
-directory:
+The frontend does only require small mandatory changes in its configuration.
+Before they can be made, the configuration file has to be mounted though. This can be
+achieved by issuing `kdb mount-rest-frontend-config`. The configuration should then
+be available at `system/sw/elektra/restfrontend/#0/current`. To get a list of possible
+configuration parameters, use `kdb ls system/sw/elektra/restfrontend/#0/current`.
 
-- Change `backend.root` to the URL where the backend will be reachable, e.g. `http://restapi.libelektra.org/` (with trailing slash!)
-- Change `website.url` to the URL where the frontend will be reachable, e.g. `http://libelektra.org/` (with trailing slash!)
+The parameters that need to be changed in order for the frontend to work correctly, are:
+
+- `system/sw/elektra/restfrontend/#0/current/backend/root`: set it to the URL where the backend will be reachable, e.g. `http://restapi.libelektra.org/` (with trailing slash!)
+- `system/sw/elektra/restfrontend/#0/current/website/url`: set it to the URL where the frontend will be reachable, e.g. `http://libelektra.org/` (with trailing slash!)
 
 ## Running the Applications ##
 
