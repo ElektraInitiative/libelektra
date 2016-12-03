@@ -89,10 +89,12 @@ If you are using Ubuntu, LibJWT can also be installed through a pre-built APT pa
 
 #### Frontend ####
 
-The frontend does only require the package manager [npm](https://www.npmjs.com/).
-It is preferred to install it along with [nodeJS](https://nodejs.org/).
+The frontend does only require the package manager [npm](https://www.npmjs.com/) (>= v3).
+It is preferred to install it along with [nodeJS](https://nodejs.org/), as the version
+that comes via APT is insufficient (only v1.4). The installation was tested with npm version
+3.10.8, but it should also work with other versions of 3+.
 
-To install npm via APT, use: `apt-get install npm`
+It does also not work to install nodejs via APT, as it will not install npm at all.
 
 ### Build & Install the Applications ###
 
@@ -112,28 +114,41 @@ but some settings have to be set manually afterwards.
 
 ### Backend ###
 
-To make sure that the configuration specification was set properly during installation,
-use the command `kdb mount`. You should see a list of mountpoints, of which one should
-be something like `spec/sw/elektra/restbackend/#0`. If you do not see this mountpoint,
-use `kdb mount rest-backend-spec.ini spec/sw/elektra/restbackend/#0 ni` to mount it manually.
+After the installation, the configuration specification of the backend has to be mounted
+with the command `kdb mount-rest-backend-config`. You can check if the mounting was successful
+by issuing `kdb mount`. There should be an entry in the list with a path like
+`spec/sw/elektra/restbackend/#0` and a similar one without the leading `spec`.
+If you do not see this mountpoints, have a look at the mount script in the tool_exec
+(which is defined during installation of Elektra). You can also run the commands manually.
+
+To complete the mounting, you also need to ensure that the `spec` plugin is used as
+global plugin. If you have not changed anything about the global plugins yet, you can simply
+use `kdb global-mount` to ensure that the `spec` plugin is added as global plugin. If not,
+you need to add all currently mounted global plugins to the command as they will be deleted
+otherwise.
 
 After that you need to set an additional configuration parameter that has no default value.
 It is recommended to set it for the system namespace if you will use a tool like
 `systemctl` to manage the services.
 ```
-> kdb set system/sw/elektra/restbackend/#0/current/backend/jwt/encryption/secret "use a secret key here"
+> kdb set -N system /sw/elektra/restbackend/#0/current/backend/jwt/encryption/secret "use a secret key here"
 ```
 
 To generate a secure key, you can also use `pwgen` (install via `apt-get install pwgen`). Use
 ```
-> kdb set system/sw/elektra/restbackend/#0/current/backend/jwt/encryption/secret "$(pwgen -1cns 30)"
+> kdb set -N system /sw/elektra/restbackend/#0/current/backend/jwt/encryption/secret "$(pwgen -1cns 30)"
 ```
 to generate and set a strong random encryption secret.
+
+The option `-N system` for `kdb set` defines the used namespace (in this case it is `system`).
+In order for the configuration specification to work (e.g. validation), we have to use
+cascading key names. This is why we have to define the namespace by using this option instead
+of passing it as part of the key name.
 
 If you want to know the default values, you can get a list of used keys with
 `kdb ls /sw/elektra/restbackend/#0`. You can then retrieve the configuration value
 for each key with `kdb get <key>`, e.g.,
-`kdb get /sw/elektra/restbackend/#0/current/backend/jwt/encryptionkey`
+`kdb get /sw/elektra/restbackend/#0/current/backend/jwt/encryption/secret`
 
 Additionally to the settings above, CppCMS needs some configuration. All configuration
 options are listed on [their website](http://cppcms.com/wikipp/en/page/cppcms_1x_config).
@@ -146,14 +161,21 @@ configuration:
 > kdb set system/sw/elektra/restbackend/#0/current/cppcms/http/script_names/#0 "/"
 ```
 
+Note: here we have not used the option `-N system` because the CppCMS configuration is
+not part of the specification. That means it does not get validated.
+
 ### Frontend ###
 
-The frontend does only require small mandatory changes, which have to be made in the
-`application-config.json` in the `/usr/local/share/elektra/tool_data/rest-frontend`
-directory:
+The frontend does only require small mandatory changes in its configuration.
+Before they can be made, the configuration file has to be mounted though. This can be
+achieved by issuing `kdb mount-rest-frontend-config`. The configuration should then
+be available at `system/sw/elektra/restfrontend/#0/current`. To get a list of possible
+configuration parameters, use `kdb ls system/sw/elektra/restfrontend/#0/current`.
 
-- Change `backend.root` to the URL where the backend will be reachable, e.g. `http://restapi.libelektra.org/` (with trailing slash!)
-- Change `website.url` to the URL where the frontend will be reachable, e.g. `http://libelektra.org/` (with trailing slash!)
+The parameters that need to be changed in order for the frontend to work correctly, are:
+
+- `system/sw/elektra/restfrontend/#0/current/backend/root`: set it to the URL where the backend will be reachable, e.g. `http://restapi.libelektra.org/` (with trailing slash!)
+- `system/sw/elektra/restfrontend/#0/current/website/url`: set it to the URL where the frontend will be reachable, e.g. `http://libelektra.org/` (with trailing slash!)
 
 ## Running the Applications ##
 

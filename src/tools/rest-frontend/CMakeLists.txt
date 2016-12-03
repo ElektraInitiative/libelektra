@@ -35,6 +35,10 @@ else ()
         "${CMAKE_CURRENT_BINARY_DIR}/configure-${tool}"
     )
     configure_file (
+        "${CMAKE_CURRENT_SOURCE_DIR}/mount-config.sh"
+        "${CMAKE_CURRENT_BINARY_DIR}/mount-${tool}-config"
+    )
+    configure_file (
         "${CMAKE_CURRENT_SOURCE_DIR}/README.md"
         "${CMAKE_CURRENT_BINARY_DIR}/README.md"
     )
@@ -45,9 +49,9 @@ else ()
     if (NOT EXISTS ${install_directory}/application-config.json)
         install (FILES application-config.json DESTINATION ${install_directory})
     endif ()
-    install (CODE "execute_process (COMMAND kdb mount ${CMAKE_INSTALL_PREFIX}/${install_directory}/application-config.json \"system${config_root}${config_default_profile}\" yajl)")
     install (PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/run-${tool} ${CMAKE_CURRENT_BINARY_DIR}/stop-${tool}
-             ${CMAKE_CURRENT_BINARY_DIR}/configure-${tool} DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
+             ${CMAKE_CURRENT_BINARY_DIR}/configure-${tool} ${CMAKE_CURRENT_BINARY_DIR}/mount-${tool}-config
+             DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
 
     # attempt to install npm dependencies
     install (CODE "execute_process (COMMAND npm install --unsafe-perm WORKING_DIRECTORY ${CMAKE_INSTALL_PREFIX}/${install_directory})")

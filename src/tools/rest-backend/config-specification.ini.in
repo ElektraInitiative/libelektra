@@ -1,109 +1,112 @@
-[current/backend/api/description/raw]
+[@config_default_profile@]
+mountpoint = rest-backend.ini
+
+[@config_default_profile@/backend/api/description/raw]
 check/type = string
 description = A link to the blueprint describing the API.
 default = https://git.libelektra.org/tree/master/doc/api_blueprints/snippet-sharing.apib
 
-[current/backend/api/description/html]
+[@config_default_profile@/backend/api/description/html]
 check/type = string
 description = A link to the compiled blueprint describing the API.
 default = https://doc.libelektra.org/restapi/@KDB_VERSION_MAJOR@.@KDB_VERSION_MINOR@.@KDB_VERSION_MICRO@/snippet-sharing.html
 
-[current/backend/jwt/encryption/secret]
+[@config_default_profile@/backend/jwt/encryption/secret]
 check/type = string
 description = A secret string used to encrypt session tokens (JWT).
 example = al3h120d8a_19s
 
-[current/backend/jwt/validity]
+[@config_default_profile@/backend/jwt/validity]
 check/type = int
 description = The number of seconds a JWT is valid from its creation.
 example = 3600
 default = 7200
 
-[current/backend/kdb/path/configs]
+[@config_default_profile@/backend/kdb/path/configs]
 check/type = string
 description = The root path being used to store configuration snippet entries, must start with a namespace.
 example = user/@tool@/configs
 default = dir/configs
 
-[current/backend/kdb/path/users]
+[@config_default_profile@/backend/kdb/path/users]
 check/type = string
 description = The root path being used to store user entries, must start with a namespace.
 example = user/@tool@/users
 default = dir/users
 
-[current/backend/output/default/entry/sort]
+[@config_default_profile@/backend/output/default/entry/sort]
 check/enum = 'asc', 'desc'
 description = The default sort direction being used for requests against configuration snippet entry resources.
 default = 'asc'
 
-[current/backend/output/default/entry/sortby]
+[@config_default_profile@/backend/output/default/entry/sortby]
 check/enum = 'key', 'organization', 'application', 'scope', 'slug', 'title', 'author', 'created_at'
 description = The default sort criteria being used for requests against configuration snippet entry resources.
 default = 'key'
 
-[current/backend/output/default/entry/filterby]
+[@config_default_profile@/backend/output/default/entry/filterby]
 check/enum = 'all', 'key', 'title', 'description', 'author', 'tags'
 description = The default filter criteria being used for requests against configuration snippet entry resources.
 default = 'all'
 
-[current/backend/output/default/user/sort]
+[@config_default_profile@/backend/output/default/user/sort]
 check/enum  = 'asc', 'desc'
 description = The default sort direction being used for requests against user entry resources.
 default = 'asc'
 
-[current/backend/output/default/user/sortby]
+[@config_default_profile@/backend/output/default/user/sortby]
 check/enum = 'username', 'email', 'created_at'
 description = The default sort criteria being used for requests against user entry resources.
 default = 'username'
 
-[current/backend/output/default/user/filterby]
+[@config_default_profile@/backend/output/default/user/filterby]
 check/enum = 'all', 'username', 'email'
 description = The default filter criteria being used for requests against user entry resources.
 default = 'all'
 
-[current/backend/permissions/entry/create]
+[@config_default_profile@/backend/permissions/entry/create]
 check/type = int
 check/type/min = 0
 check/type/max = 100
 description = The required rank a user needs to be able to create new configuration snippet entries.
 default = 10
 
-[current/backend/permissions/entry/edit]
+[@config_default_profile@/backend/permissions/entry/edit]
 check/type = int
 check/type/min = 0
 check/type/max = 100
 description = The required rank a user needs to be able to edit any configuration snippet entry (also from other users).
 default = 50
 
-[current/backend/permissions/entry/delete]
+[@config_default_profile@/backend/permissions/entry/delete]
 check/type = int
 check/type/min = 0
 check/type/max = 100
 description = The required rank a user needs to be able to delete any configuration snippet entry (also from other users).
 default = 50
 
-[current/backend/permissions/user/view]
+[@config_default_profile@/backend/permissions/user/view]
 check/type = int
 check/type/min = 0
 check/type/max = 100
 description = The required rank a user needs to be able to view account details of other users.
 default = 100
 
-[current/backend/permissions/user/edit]
+[@config_default_profile@/backend/permissions/user/edit]
 check/type = int
 check/type/min = 0
 check/type/max = 100
 description = The required rank a user needs to be able to edit account details of other users.
 default = 100
 
-[current/backend/permissions/user/delete]
+[@config_default_profile@/backend/permissions/user/delete]
 check/type = int
 check/type/min = 0
 check/type/max = 100
 description = The required rank a user needs to be able to delete user accounts of other users.
 default = 100
 
-[current/backend/permissions/rank/default]
+[@config_default_profile@/backend/permissions/rank/default]
 check/type = int
 check/type/min = 0
 check/type/max = 100
