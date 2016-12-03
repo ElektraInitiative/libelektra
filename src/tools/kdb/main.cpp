@@ -155,30 +155,41 @@ int main (int argc, char ** argv)
 	}
 	catch (CommandException const & ce)
 	{
-		std::cerr << "The command " << command << " terminated unsuccessfully with the info: " << ce.what () << std::endl;
+		std::cerr << "The command " << getErrorColor (ANSI_COLOR::BOLD) << argv[0] << " " << command
+			  << getErrorColor (ANSI_COLOR::RESET) << " terminated " << getErrorColor (ANSI_COLOR::RED) << "unsuccessfully"
+			  << getErrorColor (ANSI_COLOR::RESET) << " with the info:\n"
+			  << ce.what () << std::endl;
 		return 3;
 	}
 	catch (UnknownCommand const & uc)
 	{
-		std::cerr << "The command " << command << " is not known" << std::endl;
+		std::cerr << "The command " << getErrorColor (ANSI_COLOR::BOLD) << argv[0] << " " << command
+			  << getErrorColor (ANSI_COLOR::RESET) << " is " << getErrorColor (ANSI_COLOR::RED) << "not known"
+			  << getErrorColor (ANSI_COLOR::RESET) << std::endl;
 		displayHelp (argv[0], f);
 		return 4;
 	}
 	catch (kdb::KDBException const & ce)
 	{
-		std::cerr << "The command " << command << " failed while accessing the key database with the info:" << std::endl
+		std::cerr << "The command " << getErrorColor (ANSI_COLOR::BOLD) << argv[0] << " " << command
+			  << getErrorColor (ANSI_COLOR::RESET) << getErrorColor (ANSI_COLOR::RED) << " failed"
+			  << getErrorColor (ANSI_COLOR::RESET) << " while accessing the key database with the info:\n"
 			  << ce.what () << std::endl;
 		return 5;
 	}
 	catch (std::exception const & ce)
 	{
-		std::cerr << "The command " << command << " terminated unsuccessfully with the info:" << std::endl
+		std::cerr << "The command " << getErrorColor (ANSI_COLOR::BOLD) << argv[0] << " " << command
+			  << getErrorColor (ANSI_COLOR::RESET) << " terminated " << getErrorColor (ANSI_COLOR::RED) << "unsuccessfully"
+			  << getErrorColor (ANSI_COLOR::RESET) << " with the info:\n"
 			  << ce.what () << std::endl;
 		return 6;
 	}
 	catch (...)
 	{
-		std::cerr << "Unknown error" << std::endl;
+		std::cerr << "The command " << getErrorColor (ANSI_COLOR::BOLD) << argv[0] << " " << command
+			  << getErrorColor (ANSI_COLOR::RESET) << " terminated with an " << getErrorColor (ANSI_COLOR::RED)
+			  << "unknown error" << getErrorColor (ANSI_COLOR::RESET) << std::endl;
 		displayHelp (argv[0], f);
 		return 7;
 	}
