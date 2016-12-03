@@ -131,14 +131,19 @@ After that you need to set an additional configuration parameter that has no def
 It is recommended to set it for the system namespace if you will use a tool like
 `systemctl` to manage the services.
 ```
-> kdb set system/sw/elektra/restbackend/#0/current/backend/jwt/encryption/secret "use a secret key here"
+> kdb set -N system /sw/elektra/restbackend/#0/current/backend/jwt/encryption/secret "use a secret key here"
 ```
 
 To generate a secure key, you can also use `pwgen` (install via `apt-get install pwgen`). Use
 ```
-> kdb set system/sw/elektra/restbackend/#0/current/backend/jwt/encryption/secret "$(pwgen -1cns 30)"
+> kdb set -N system /sw/elektra/restbackend/#0/current/backend/jwt/encryption/secret "$(pwgen -1cns 30)"
 ```
 to generate and set a strong random encryption secret.
+
+The option `-N system` for `kdb set` defines the used namespace (in this case it is `system`).
+In order for the configuration specification to work (e.g. validation), we have to use
+cascading key names. This is why we have to define the namespace by using this option instead
+of passing it as part of the key name.
 
 If you want to know the default values, you can get a list of used keys with
 `kdb ls /sw/elektra/restbackend/#0`. You can then retrieve the configuration value
@@ -155,6 +160,9 @@ configuration:
 > kdb set system/sw/elektra/restbackend/#0/current/cppcms/service/port 8080
 > kdb set system/sw/elektra/restbackend/#0/current/cppcms/http/script_names/#0 "/"
 ```
+
+Note: here we have not used the option `-N system` because the CppCMS configuration is
+not part of the specification. That means it does not get validated.
 
 ### Frontend ###
 
