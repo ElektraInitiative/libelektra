@@ -44,7 +44,7 @@ public:
 
 	virtual std::string getShortHelpText () override
 	{
-		return "Globally mount given plugins, overwriting previous ones.";
+		return "Globally mount given plugins.";
 	}
 
 	virtual std::string getLongHelpText () override

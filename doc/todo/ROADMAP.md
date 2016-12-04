@@ -19,6 +19,9 @@ for other activities of the current release.
 
 global-umount
 
+kdb set should always validate
+	(no matter how namespace is given)
+
 mount:
 	-1 -2 options?
 	reject same files!
@@ -32,6 +35,8 @@ import/editor validate strategy
 ## tuts
 
 further improvements in tutorials!
+
+update global-mount (not needed at most parts anymore)
 
 add more traceability
 
