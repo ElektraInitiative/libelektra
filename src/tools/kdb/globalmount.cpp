@@ -26,6 +26,50 @@ GlobalMountCommand::GlobalMountCommand ()
 {
 }
 
+std::vector<std::string> GlobalMountCommand::getMtab ()
+{
+	std::vector<std::string> ret;
+	Key globalPluginsKey ("system/elektra/globalplugins/postcommit/user/plugins", KEY_END);
+
+	mountConf.rewind ();
+	Key currentPluginConfig ("proc/notbelow", KEY_END);
+	for (auto const & key : mountConf)
+	{
+		if (key.isDirectBelow (globalPluginsKey))
+		{
+			ret.push_back (key.getString ());
+			currentPluginConfig = key.dup ();
+			currentPluginConfig.addBaseName ("config");
+		}
+		else if (key.isBelow (currentPluginConfig))
+		{
+			ret.push_back (key.getName ().substr (currentPluginConfig.getName ().size () + 1) + "=" + key.getString ());
+		}
+	}
+	return ret;
+}
+
+
+void GlobalMountCommand::outputMtab (Cmdline const &)
+{
+	bool first = true;
+	auto const & mtab = getMtab ();
+	for (auto const & mtabEntry : mtab)
+	{
+		if (mtabEntry.find ('=') != std::string::npos)
+		{
+			std::cout << " ";
+		}
+		else if (!first)
+		{
+			std::cout << "\n";
+		}
+		std::cout << mtabEntry;
+		first = false;
+	}
+	if (!first) std::cout << endl;
+}
+
 void GlobalMountCommand::buildBackend (Cmdline const & cl)
 {
 	GlobalPluginsBuilder backend;
@@ -52,6 +96,14 @@ int GlobalMountCommand::execute (Cmdline const & cl)
 {
 	mountpointsPath = GlobalPluginsBuilder::globalPluginsPath;
 	readMountConf (cl);
+
+	if (!cl.interactive && cl.arguments.empty ())
+	{
+		// no interactive mode, so lets output the mtab
+		outputMtab (cl);
+		return 0;
+	}
+
 
 	buildBackend (cl);
 	doIt ();

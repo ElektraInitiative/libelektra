@@ -24,6 +24,7 @@ class MountBackendInterface;
 class GlobalMountCommand : public MountBaseCommand
 {
 	void outputMtab (Cmdline const & cl);
+	std::vector<std::string> getMtab ();
 	void setMountpoint (Cmdline const & cl);
 	void buildBackend (Cmdline const & cl);
 
