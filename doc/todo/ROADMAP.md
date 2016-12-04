@@ -15,9 +15,21 @@ for other activities of the current release.
 
 # 0.8.20
 
-## leftovers
+## kdb tool
+
+global-umount
+
+mount:
+	-1 -2 options?
+	reject same files!
+	lazy mount (with list plugin) -> later?
+	arbitrary number of plugins (list plugin) -> later?
+	new import/export -> later?
 
 import/editor validate strategy
+
+
+## tuts
 
 further improvements in tutorials!
 
@@ -29,13 +41,6 @@ use shell recorder for further README.md
 ## tests
 
 helper function for searching symbol
-
-kdb mount:
-	-1 -2 options?
-	reject same files!
-	lazy mount (with list plugin)
-	arbitrary number of plugins (list plugin)
-	new import/export
 
 
 ## fixes
