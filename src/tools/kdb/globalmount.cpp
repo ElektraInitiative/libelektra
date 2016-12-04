@@ -70,6 +70,29 @@ void GlobalMountCommand::outputMtab (Cmdline const &)
 	if (!first) std::cout << endl;
 }
 
+namespace
+{
+void removePlugins (std::vector<std::string> & plugins, std::string globalPlugins)
+{
+	std::istringstream iss (globalPlugins);
+	std::string plugin;
+	while (iss >> plugin)
+	{
+		auto const & it = std::find (plugins.begin (), plugins.end (), plugin);
+		if (it != plugins.end ())
+		{
+			plugins.erase (it); // remove plugin
+			// and remove its config:
+			while (it != plugins.end () && it->find ("=") != std::string::npos)
+			{
+				std::cout << "configs " << *it << std::endl;
+				plugins.erase (it);
+			}
+		}
+	}
+}
+}
+
 void GlobalMountCommand::buildBackend (Cmdline const & cl)
 {
 	GlobalPluginsBuilder backend;
@@ -78,6 +101,10 @@ void GlobalMountCommand::buildBackend (Cmdline const & cl)
 	// backend.setBackendConfig(cl.getPluginsConfig("system/"));
 	backend.addPlugins (parseArguments (cl.globalPlugins));
 	backend.addPlugins (parseArguments (cl.arguments.begin (), cl.arguments.end ()));
+
+	auto mtab = getMtab ();
+	removePlugins (mtab, cl.globalPlugins); // do not readd again
+	backend.addPlugins (parseArguments (mtab.begin (), mtab.end ()));
 
 	// Call it a day
 	outputMissingRecommends (backend.resolveNeeds (cl.withRecommends));
