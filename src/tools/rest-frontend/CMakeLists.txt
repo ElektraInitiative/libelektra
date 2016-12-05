@@ -42,7 +42,7 @@ else ()
     # install files to destination
     install (DIRECTORY public resources DESTINATION ${install_directory})
     install (FILES package.json README.md ${CMAKE_CURRENT_BINARY_DIR}/Gruntfile.js DESTINATION ${install_directory})
-    if (NOT EXISTS ${install_directory}/application-config.json)
+    if (NOT EXISTS ${CMAKE_INSTALL_PREFIX}/${install_directory}/application-config.json)
         install (FILES application-config.json DESTINATION ${install_directory})
     endif ()
     install (CODE "execute_process (COMMAND kdb mount ${CMAKE_INSTALL_PREFIX}/${install_directory}/application-config.json \"system${config_root}${config_default_profile}\" yajl)")
