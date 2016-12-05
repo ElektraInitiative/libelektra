@@ -50,7 +50,7 @@ else ()
              ${CMAKE_CURRENT_BINARY_DIR}/configure-${tool} DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
 
     # attempt to install npm dependencies
-    install (CODE "execute_process (COMMAND npm install --unsafe-perm WORKING_DIRECTORY ${CMAKE_INSTALL_PREFIX}/${install_directory})")
+    install (CODE "execute_process (COMMAND npm install --unsafe-perm WORKING_DIRECTORY ${CMAKE_INSTALL_PREFIX}/${install_directory} OUTPUT_QUIET)")
 
     generate_manpage (kdb-run-${tool} FILENAME ${CMAKE_CURRENT_BINARY_DIR}/README.md)
 
