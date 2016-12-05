@@ -79,6 +79,9 @@ void clearDatabase (sql::Connection * con)
 
 void prepareTestData (sql::Connection * con, int numUsers, int numEntriesPerUser, int numTagsPerEntry)
 {
+	// we can exit immediately if nothing has to be created
+	if (numUsers <= 0) return;
+
 	// prepare all statements
 	sql::Statement * stmt;
 	stmt = con->createStatement ();
@@ -97,40 +100,43 @@ void prepareTestData (sql::Connection * con, int numUsers, int numEntriesPerUser
 	stmt->execute (sql.substr (0, sql.size () - 1));
 
 	// create entries
-	sql = "INSERT INTO `snippets` (`author_id`,`organization`,`application`,`scope`,`slug`,`title`,`description`,"
-	      "`configuration`,`plugin`,`views`,`createdat`) VALUES ";
-	int fk_id = 1;
-	std::vector<model::Entry> entries = createTestEntries (users[0], 1, 1);
-	model::ConfigFormat configFormat = service::ConvertEngine::instance ().exportTo (entries[0].getUploadPlugin (), entries[0]);
-	for (auto & user : users)
+	if (numEntriesPerUser > 0)
 	{
-		entries = createTestEntries (user, numEntriesPerUser, numTagsPerEntry);
-		for (auto & entry : entries)
+		sql = "INSERT INTO `snippets` (`author_id`,`organization`,`application`,`scope`,`slug`,`title`,`description`,"
+		      "`configuration`,`plugin`,`views`,`createdat`) VALUES ";
+		int fk_id = 1;
+		std::vector<model::Entry> entries = createTestEntries (users[0], 1, 1);
+		model::ConfigFormat configFormat = service::ConvertEngine::instance ().exportTo (entries[0].getUploadPlugin (), entries[0]);
+		for (auto & user : users)
 		{
-			sql += "(" + std::to_string (fk_id) + ",'" + entry.getOrganization () + "','" + entry.getApplication () + "','" +
-			       entry.getScope () + "','" + entry.getSlug () + "','" + entry.getTitle () + "','" + entry.getDescription () +
-			       "','" + configFormat.getConfig () + "','" + entry.getUploadPlugin () + "'," +
-			       std::to_string (entry.getViews ()) + "," + std::to_string (entry.getCreatedAt ()) + "),";
-		}
-		fk_id++;
-	}
-	stmt->execute (sql.substr (0, sql.size () - 1));
-
-	// create tags for entry
-	sql = "INSERT INTO `tags` (`snippet_id`, `tag`) VALUES ";
-	fk_id = 1;
-	for (auto & user : users)
-	{
-		for (auto & entry : entries)
-		{
-			for (auto & tag : entry.getTags ())
+			entries = createTestEntries (user, numEntriesPerUser, numTagsPerEntry);
+			for (auto & entry : entries)
 			{
-				sql += "(" + std::to_string (fk_id) + ", '" + tag + "'),";
+				sql += "(" + std::to_string (fk_id) + ",'" + entry.getOrganization () + "','" + entry.getApplication () +
+				       "','" + entry.getScope () + "','" + entry.getSlug () + "','" + entry.getTitle () + "','" +
+				       entry.getDescription () + "','" + configFormat.getConfig () + "','" + entry.getUploadPlugin () +
+				       "'," + std::to_string (entry.getViews ()) + "," + std::to_string (entry.getCreatedAt ()) + "),";
 			}
 			fk_id++;
 		}
+		stmt->execute (sql.substr (0, sql.size () - 1));
+
+		// create tags for entry
+		sql = "INSERT INTO `tags` (`snippet_id`, `tag`) VALUES ";
+		fk_id = 1;
+		for (auto & user : users)
+		{
+			for (auto & entry : entries)
+			{
+				for (auto & tag : entry.getTags ())
+				{
+					sql += "(" + std::to_string (fk_id) + ", '" + tag + "'),";
+				}
+				fk_id++;
+			}
+		}
+		stmt->execute (sql.substr (0, sql.size () - 1));
 	}
-	stmt->execute (sql.substr (0, sql.size () - 1));
 
 	// commit transaction
 	stmt->execute ("COMMIT");
