@@ -127,6 +127,9 @@ mv = kmeta["jet another"]
 # check if meta data exists
 kmeta.has_meta? "jet another"  # => true
 
+# delete meta data
+kmeta.del_meta "jet another"
+
 
 #
 # metadata iterator
