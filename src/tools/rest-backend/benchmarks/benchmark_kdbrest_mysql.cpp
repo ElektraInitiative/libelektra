@@ -79,6 +79,9 @@ void clearDatabase (sql::Connection * con)
 
 void prepareTestData (sql::Connection * con, int numUsers, int numEntriesPerUser, int numTagsPerEntry)
 {
+	// we can exit immediately if nothing has to be created
+	if (numUsers <= 0) return;
+
 	// prepare all statements
 	sql::Statement * stmt;
 	stmt = con->createStatement ();
@@ -87,50 +90,49 @@ void prepareTestData (sql::Connection * con, int numUsers, int numEntriesPerUser
 	stmt->execute ("START TRANSACTION");
 
 	// create users
-	std::string sql = "INSERT INTO `users` (`name`,`password`,`email`,`rank`,`createdat`) VALUES ";
+	std::string sql_users = "INSERT INTO `users` (`name`,`password`,`email`,`rank`,`createdat`) VALUES ";
 	std::vector<model::User> users = createTestUsers (numUsers);
 	for (auto & user : users)
 	{
-		sql += "('" + user.getUsername () + "','" + user.getPasswordHash () + "','" + user.getEmail () + "'," +
-		       std::to_string (user.getRank ()) + "," + std::to_string (user.getCreatedAt ()) + "),";
+		sql_users += "('" + user.getUsername () + "','" + user.getPasswordHash () + "','" + user.getEmail () + "'," +
+			     std::to_string (user.getRank ()) + "," + std::to_string (user.getCreatedAt ()) + "),";
 	}
-	stmt->execute (sql.substr (0, sql.size () - 1));
+	stmt->execute (sql_users.substr (0, sql_users.size () - 1));
 
 	// create entries
-	sql = "INSERT INTO `snippets` (`author_id`,`organization`,`application`,`scope`,`slug`,`title`,`description`,"
-	      "`configuration`,`plugin`,`views`,`createdat`) VALUES ";
-	int fk_id = 1;
-	std::vector<model::Entry> entries = createTestEntries (users[0], 1, 1);
-	model::ConfigFormat configFormat = service::ConvertEngine::instance ().exportTo (entries[0].getUploadPlugin (), entries[0]);
-	for (auto & user : users)
+	if (numEntriesPerUser > 0)
 	{
-		entries = createTestEntries (user, numEntriesPerUser, numTagsPerEntry);
-		for (auto & entry : entries)
+		std::string sql_snippets;
+		std::string sql_tags;
+		sql_snippets =
+			"INSERT INTO `snippets` (`author_id`,`organization`,`application`,`scope`,`slug`,`title`,`description`,"
+			"`configuration`,`plugin`,`views`,`createdat`) VALUES ";
+		sql_tags = "INSERT INTO `tags` (`snippet_id`, `tag`) VALUES ";
+		int fk_id_snippets = 1;
+		int fk_id_tags = 1;
+		std::vector<model::Entry> entries = createTestEntries (users[0], 1, 1);
+		model::ConfigFormat configFormat = service::ConvertEngine::instance ().exportTo (entries[0].getUploadPlugin (), entries[0]);
+		for (auto & user : users)
 		{
-			sql += "(" + std::to_string (fk_id) + ",'" + entry.getOrganization () + "','" + entry.getApplication () + "','" +
-			       entry.getScope () + "','" + entry.getSlug () + "','" + entry.getTitle () + "','" + entry.getDescription () +
-			       "','" + configFormat.getConfig () + "','" + entry.getUploadPlugin () + "'," +
-			       std::to_string (entry.getViews ()) + "," + std::to_string (entry.getCreatedAt ()) + "),";
-		}
-		fk_id++;
-	}
-	stmt->execute (sql.substr (0, sql.size () - 1));
-
-	// create tags for entry
-	sql = "INSERT INTO `tags` (`snippet_id`, `tag`) VALUES ";
-	fk_id = 1;
-	for (auto & user : users)
-	{
-		for (auto & entry : entries)
-		{
-			for (auto & tag : entry.getTags ())
+			entries = createTestEntries (user, numEntriesPerUser, numTagsPerEntry);
+			for (auto & entry : entries)
 			{
-				sql += "(" + std::to_string (fk_id) + ", '" + tag + "'),";
+				sql_snippets += "(" + std::to_string (fk_id_snippets) + ",'" + entry.getOrganization () + "','" +
+						entry.getApplication () + "','" + entry.getScope () + "','" + entry.getSlug () + "','" +
+						entry.getTitle () + "','" + entry.getDescription () + "','" + configFormat.getConfig () +
+						"','" + entry.getUploadPlugin () + "'," + std::to_string (entry.getViews ()) + "," +
+						std::to_string (entry.getCreatedAt ()) + "),";
+				for (auto & tag : entry.getTags ())
+				{
+					sql_tags += "(" + std::to_string (fk_id_tags) + ", '" + tag + "'),";
+				}
+				fk_id_tags++;
 			}
-			fk_id++;
+			fk_id_snippets++;
 		}
+		stmt->execute (sql_snippets.substr (0, sql_snippets.size () - 1));
+		stmt->execute (sql_tags.substr (0, sql_tags.size () - 1));
 	}
-	stmt->execute (sql.substr (0, sql.size () - 1));
 
 	// commit transaction
 	stmt->execute ("COMMIT");
@@ -356,8 +358,9 @@ void benchmarkLookupMultipleByTag (sql::Connection * con, int numUsers, int numE
 	std::cout << "-> Executing benchmark:" << std::endl;
 
 	// decide what key to look for
+	int user_index = numUsers / 2;
 	int tag_index = numTagsPerEntry / 2;
-	std::string tag = "tagged-" + std::to_string (tag_index);
+	std::string tag = "user-" + std::to_string (user_index) + "-" + std::to_string (tag_index);
 
 	// timer start
 	Timer timer;
