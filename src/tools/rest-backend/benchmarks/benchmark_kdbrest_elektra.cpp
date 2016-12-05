@@ -36,13 +36,13 @@ void clearDatabase ()
 	kdb::KeySet ks;
 
 	// snippets
-	kdb.get (ks, ELEKTRA_REST_DEFAULT_PATH_CONFIGS);
+	kdb.get (ks, kdbrest::Config::instance ().getConfig ().get<std::string> ("kdb.path.configs"));
 	ks.clear ();
-	kdb.set (ks, ELEKTRA_REST_DEFAULT_PATH_CONFIGS);
+	kdb.set (ks, kdbrest::Config::instance ().getConfig ().get<std::string> ("kdb.path.configs"));
 	// users
-	kdb.get (ks, ELEKTRA_REST_DEFAULT_PATH_USERS);
+	kdb.get (ks, kdbrest::Config::instance ().getConfig ().get<std::string> ("kdb.path.users"));
 	ks.clear ();
-	kdb.set (ks, ELEKTRA_REST_DEFAULT_PATH_USERS);
+	kdb.set (ks, kdbrest::Config::instance ().getConfig ().get<std::string> ("kdb.path.users"));
 }
 
 void prepareTestData (int numUsers, int numEntriesPerUser, int numTagsPerEntry)
@@ -51,8 +51,8 @@ void prepareTestData (int numUsers, int numEntriesPerUser, int numTagsPerEntry)
 	kdb::KeySet ks_users (numUsers, KS_END);
 	kdb::KeySet ks_entries (numUsers * numEntriesPerUser, KS_END);
 
-	kdb.get (ks_users, ELEKTRA_REST_DEFAULT_PATH_USERS);
-	kdb.get (ks_entries, ELEKTRA_REST_DEFAULT_PATH_CONFIGS);
+	kdb.get (ks_users, kdbrest::Config::instance ().getConfig ().get<std::string> ("kdb.path.users"));
+	kdb.get (ks_entries, kdbrest::Config::instance ().getConfig ().get<std::string> ("kdb.path.configs"));
 
 	// create users
 	std::vector<model::User> users = createTestUsers (numUsers);
@@ -72,8 +72,8 @@ void prepareTestData (int numUsers, int numEntriesPerUser, int numTagsPerEntry)
 		}
 	}
 
-	kdb.set (ks_users, ELEKTRA_REST_DEFAULT_PATH_USERS);
-	kdb.set (ks_entries, ELEKTRA_REST_DEFAULT_PATH_CONFIGS);
+	kdb.set (ks_users, kdbrest::Config::instance ().getConfig ().get<std::string> ("kdb.path.users"));
+	kdb.set (ks_entries, kdbrest::Config::instance ().getConfig ().get<std::string> ("kdb.path.configs"));
 }
 
 void printEntryVector (std::vector<model::Entry> entries, int indent = 0)
@@ -419,6 +419,8 @@ int main (int argc, char * argv[])
 	// load configuration
 	cppcms::json::value config = kdbrest::service::ConfigEngine::instance ().loadApplicationConfiguration ();
 	(void)kdbrest::Config::instance ().initializeConfiguration (config);
+	kdbrest::Config::instance ().setValue<std::string> ("kdb.path.configs", "dir/configs");
+	kdbrest::Config::instance ().setValue<std::string> ("kdb.path.users", "dir/users");
 
 	// run benchmarks
 	if (std::string (argv[1]).compare (0, sizeof ("key"), "key") == 0)
