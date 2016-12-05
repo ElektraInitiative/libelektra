@@ -45,9 +45,10 @@ std::vector<model::Entry> createTestEntries (model::User user, int num, int numT
 		entry.setCreatedAt (static_cast<long> (std::rand () % (max - min + 1) + min));
 
 		std::vector<std::string> tags;
+		std::string username = user.getUsername ();
 		for (int j = 0; j < numTags; j++)
 		{
-			tags.push_back ("tagged-" + std::to_string (j));
+			tags.push_back (username + "-" + std::to_string (j));
 		}
 		entry.setTags (tags);
 

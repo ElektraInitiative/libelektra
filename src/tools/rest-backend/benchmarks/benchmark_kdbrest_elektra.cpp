@@ -211,8 +211,9 @@ void benchmarkLookupMultipleByTag (int numUsers, int numEntriesPerUser, int numT
 	std::cout << "-> Executing benchmark:" << std::endl;
 
 	// decide what key to look for
+	int user_index = numUsers / 2;
 	int tag_index = numTagsPerEntry / 2;
-	std::string tag = "tagged-" + std::to_string (tag_index);
+	std::string tag = "user-" + std::to_string (user_index) + "-" + std::to_string (tag_index);
 
 	// timer start
 	Timer timer;
