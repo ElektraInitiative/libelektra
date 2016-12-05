@@ -49,7 +49,7 @@ RootApp::RootApp (cppcms::service & srv) : cppcms::application (srv)
 		"/conversion(/(.*))?", 1				 // dispatching
 		);
 
-	dispatcher ().assign ("", &RootApp::welcome, this);
+	dispatcher ().assign ("/?", &RootApp::welcome, this);
 	mapper ().assign ("");
 
 	dispatcher ().assign ("/version", &RootApp::version, this);
