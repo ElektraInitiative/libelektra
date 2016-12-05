@@ -125,7 +125,14 @@ void benchmarkLookupSingleByKey (int numUsers, int numEntriesPerUser, int numTag
 	timer.start ();
 
 	// the stuff to benchmark
-	entries.push_back (service::StorageEngine::instance ().getEntry (key));
+	try
+	{
+		entries.push_back (service::StorageEngine::instance ().getEntry (key));
+	}
+	catch (kdbrest::exception::EntryNotFoundException & e)
+	{
+		// we do nothing here, just prevent abort of benchmark
+	}
 
 	// stop timer here
 	timer.stop ();
