@@ -48,8 +48,8 @@ TEST (kdbrestServiceConfigengineTest, TransformKeysetToJsonValue)
 
 	kdb::KeySet testKeySet (15, *kdb::Key (conf_root + "/nested/object/var", KEY_VALUE, "simple string", KEY_END),
 				*kdb::Key (conf_root + "/nested/object/var2", KEY_VALUE, "12345", KEY_END),
-				*kdb::Key (conf_root + "/nested/object/var3", KEY_VALUE, "1", KEY_END),
-				*kdb::Key (conf_root + "/nested/object/var4", KEY_VALUE, "0", KEY_END),
+				*kdb::Key (conf_root + "/nested/object/var3", KEY_VALUE, "1", KEY_META, "check/type", "boolean", KEY_END),
+				*kdb::Key (conf_root + "/nested/object/var4", KEY_VALUE, "0", KEY_META, "check/type", "boolean", KEY_END),
 				*kdb::Key (conf_root + "/object/array/#0", KEY_VALUE, "first element", KEY_END),
 				*kdb::Key (conf_root + "/object/array/#1", KEY_VALUE, "second element", KEY_END),
 				*kdb::Key (conf_root + "/object/array2/#0/var", KEY_VALUE, "first var", KEY_END),
