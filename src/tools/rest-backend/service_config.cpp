@@ -76,7 +76,7 @@ cppcms::json::value ConfigEngine::transformKeysetToJsonValue (const kdb::KeySet 
 		std::replace (keyName.begin (), keyName.end (), '/', '.');
 
 		// finally set the value
-		this->setValue (result, keyName, key);
+		this->handleValueInsertion (result, keyName, key);
 	}
 
 	return result;
@@ -92,7 +92,7 @@ cppcms::json::value ConfigEngine::transformKeysetToJsonValue (const kdb::KeySet 
  * @param path remaining path to set
  * @param key the elektra key containing the value to set
  */
-void ConfigEngine::setValue (cppcms::json::value & config, const std::string path, const kdb::Key & key) const
+void ConfigEngine::handleValueInsertion (cppcms::json::value & config, const std::string path, const kdb::Key & key) const
 {
 	// check if the key contains an array
 	std::regex array_regex (REGEX_CHECK_KEY_IS_ARRAY);
@@ -114,7 +114,8 @@ void ConfigEngine::setValue (cppcms::json::value & config, const std::string pat
 			{
 				config.set (matches.str (1), cppcms::json::array ());
 			}
-			this->setValue (config.at (matches.str (1)), matches.str (0).erase (0, matches.str (1).length () + 1), key);
+			this->handleValueInsertion (config.at (matches.str (1)), matches.str (0).erase (0, matches.str (1).length () + 1),
+						    key);
 			return;
 		}
 
@@ -133,58 +134,67 @@ void ConfigEngine::setValue (cppcms::json::value & config, const std::string pat
 			{
 				config[array_index] = cppcms::json::object ();
 			}
-			this->setValue (config[array_index], matches.str (3), key);
+			this->handleValueInsertion (config[array_index], matches.str (3), key);
 			return;
 		}
 
 		// otherwise we can set directly
-		try
-		{
-			config[array_index] = key.get<bool> ();
-			return;
-		}
-		catch (kdb::KeyTypeConversion & e)
-		{
-			// do nothing, it's fine
-		}
-		try
-		{
-			config[array_index] = key.get<int> ();
-			return;
-		}
-		catch (kdb::KeyTypeConversion & e)
-		{
-			// do nothing, it's fine
-		}
-
-		config[array_index] = key.getString ();
+		this->setValue (config[array_index], key);
 		return;
 	}
 	// there is no array in the path, set as object(s)
 	else
 	{
-		try
-		{
-			config.set (path, key.get<bool> ());
-			return;
-		}
-		catch (kdb::KeyTypeConversion & e)
-		{
-			// do nothing, it's fine
-		}
-		try
-		{
-			config.set (path, key.get<int> ());
-			return;
-		}
-		catch (kdb::KeyTypeConversion & e)
-		{
-			// do nothing, it's fine
-		}
-
-		config.set (path, key.getString ());
+		config.set (path, NULL);
+		this->setValue (config.at (path), key);
 		return;
 	}
+}
+
+/**
+ * @brief tries to retrieve the correct key value (correct format/type) and stores it
+ * 
+ * if the key does not have meta data specifying the type, it will first be
+ * tried to convert the value as number, then as string
+ * 
+ * @param config a json value
+ * @param key the key which holds the value to store
+ */
+void ConfigEngine::setValue (cppcms::json::value & config, const kdb::Key & key) const
+{
+	if (key.hasMeta ("check/type"))
+	{
+		std::string type = key.getMeta<std::string> ("check/type");
+		if (type == "short" || type == "unsigned_short" || type == "long" || type == "unsigned_long" || type == "long_long" ||
+		    type == "unsigned_long_long" || type == "float" || type == "double")
+		{
+			config.set_value (key.get<long> ());
+		}
+		else if (type == "boolean")
+		{
+			config.set_value (key.get<bool> ());
+		}
+		else if (type == "char")
+		{
+			config.set_value (key.get<char> ());
+		}
+		else // (type == "string")
+		{
+			config.set_value (key.get<std::string> ());
+		}
+		return;
+	}
+
+	try
+	{
+		config.set_value (key.get<long> ());
+		return;
+	}
+	catch (kdb::KeyTypeConversion & e)
+	{
+		// this was only an attempt, use fallback below
+	}
+	config.set_value (key.get<std::string> ());
 }
 
 } // namespace service
