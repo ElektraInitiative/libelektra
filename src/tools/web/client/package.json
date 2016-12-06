@@ -1,7 +1,10 @@
 {
-  "name": "elektra-web-client",
+  "name": "@elektra-web/client",
   "version": "1.0.0",
-  "description": "",
+  "description": "a web interface for clusterd (elektra cluster management server)",
+  "keywords": ["elektra", "elektra-web", "client"],
+  "homepage": "http://git.libelektra.org/blob/master/src/tools/web/",
+  "license": "MIT",
   "main": "src/index.js",
   "scripts": {
     "build": "cross-env NODE_ENV=production webpack && npm run build:assets",

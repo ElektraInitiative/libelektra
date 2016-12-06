@@ -1,7 +1,10 @@
 {
-  "name": "clusterd",
+  "name": "@elektra-web/clusterd",
   "version": "1.0.0",
-  "description": "",
+  "description": "server to control (multiple) elektrad instances",
+  "keywords": ["elektra", "elektra-web", "clusterd"],
+  "homepage": "http://git.libelektra.org/blob/master/src/tools/web/",
+  "license": "MIT",
   "main": "src/index.js",
   "scripts": {
     "postinstall": "cd ../client && npm install",

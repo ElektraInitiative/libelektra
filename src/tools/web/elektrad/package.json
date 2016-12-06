@@ -1,7 +1,10 @@
 {
-  "name": "elektrad",
+  "name": "@elektra-web/elektrad",
   "version": "1.0.0",
-  "description": "",
+  "description": "server to remotely control elektra",
+  "keywords": ["elektra", "elektra-web", "elektrad"],
+  "homepage": "http://git.libelektra.org/blob/master/src/tools/web/",
+  "license": "MIT",
   "main": "src/index.js",
   "scripts": {
     "start": "npm run build && npm run start:prod",
