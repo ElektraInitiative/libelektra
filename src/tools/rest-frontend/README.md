@@ -44,6 +44,11 @@ To stop the `@tool@`, simply run `kdb stop-@tool@` from anywhere.
 
 ### application-config.json ###
 
+This file does not exist by default. It needs to be copied from the template `application-config.json.tpl`.
+To copy the configuration template and mount it into the key database, execute
+the command `kdb mount-rest-frontend-config`. The configuration will then be available below
+`@config_root@/@config_default_profile@`.
+
 #### APIs (Backend & GitHub) ####
 
 The configuration file allows to set the URL to the backend in `backend.root`.
