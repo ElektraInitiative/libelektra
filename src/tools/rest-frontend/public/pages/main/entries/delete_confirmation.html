@@ -1,0 +1,14 @@
+<div class="modal-header">
+    <h3 class="modal-title" id="modal-title">{{ 'APP.ENTRIES.DELETE.LABEL.TITLE' | translate }}</h3>
+</div>
+<div class="modal-body" id="modal-body">
+    <p ng-bind-html="'APP.ENTRIES.DELETE.LABEL.BODY' | translate:entry"></p>
+</div>
+<div class="modal-footer">
+    <button class="btn btn-danger" type="button" ng-click="ctrl.ok()">
+        {{ 'APP.ENTRIES.DELETE.BUTTON.DELETE' | translate }}
+    </button>
+    <button class="btn btn-default" type="button" ng-click="ctrl.abort()">
+        {{ 'APP.ENTRIES.DELETE.BUTTON.ABORT' | translate }}
+    </button>
+</div>

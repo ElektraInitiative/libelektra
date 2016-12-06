@@ -1236,11 +1236,15 @@ int ksRewind (KeySet * ks)
  *
  * @note You must not delete or change the key, use ksPop() if you want to delete it.
  *
+ * @note That applications must do ksLookup() with an cascading key for every single
+ * key before using it, because specifications allow to hide or override keys.
+ *
  * @param ks the keyset object to work with
  * @return the new current Key
  * @retval 0 when the end is reached
  * @retval 0 on NULL pointer
  * @see ksRewind(), ksCurrent()
+ * @see ksLookup() to honor specifications
  */
 Key * ksNext (KeySet * ks)
 {
@@ -1906,6 +1910,13 @@ static Key * elektraLookupCreateKey (KeySet * ks, Key * key, ELEKTRA_UNUSED opti
 
 /**
  * Look for a Key contained in @p ks that matches the name of the @p key.
+ *
+ * @note that applications should only use ksLookup() with cascading
+ * keys. Furthermore, a lookup should be done for every key, in particular
+ * during iterations so that the specifications are honored correctly.
+ * Keys of all namespaces need to be present so that ksLookup()
+ * can work correctly, so make sure to also use kdbGet() with a cascading
+ * key.
  *
  * @p ksLookup() is designed to let you work with
  * entirely pre-loaded KeySets. The

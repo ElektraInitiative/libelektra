@@ -32,6 +32,10 @@ macro (create_lib_symlink src dest)
 		WORKING_DIRECTORY "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}"
 		)
 
+	if (NOT EXISTS "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/${dest}")
+		file(WRITE "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/${dest}" "to be overwritten, file needs to exists for some IDEs." )
+	endif ()
+
 	if (ARG_PLUGIN)
 		set (LIB_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/lib${LIB_SUFFIX}/${TARGET_PLUGIN_FOLDER}")
 	else ()

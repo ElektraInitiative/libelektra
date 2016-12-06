@@ -1,0 +1,270 @@
+<form name="entryForm">
+    <div class="row">
+        <div ng-class="{'col-md-6': isCreate, 'col-md-12': !isCreate}">
+            <div ng-class="{'form-horizontal': isCreate}">
+                <div class="form-group has-feedback"
+                     ng-class="{'has-error': entryForm.title.$invalid && !entryForm.title.$pristine,
+								'has-success': entryForm.title.$valid && entryForm.title.$dirty}">
+                    <label for="title" class="control-label" ng-class="{'col-md-3': isCreate}">
+                        {{ 'APP.ENTRIES.FORM.LABEL.TITLE' | translate }}
+                    </label>
+                    <div ng-class="{'col-md-9': isCreate}">
+                        <input type="text" id="title" name="title" class="form-control"
+                               ng-model="entry.title"
+                               ng-minlength="3" ng-maxlength="255" ng-pattern="'^[^\\n\\r]+$'" required
+                               placeholder="{{ 'APP.ENTRIES.FORM.PLACEHOLDER.TITLE' | translate }}">
+                        <span class="fa form-control-feedback"
+                              ng-class="{'fa-times': entryForm.title.$invalid && entryForm.title.$dirty,
+										 'fa-check': !entryForm.title.$invalid && entryForm.title.$dirty}"></span>
+                        <div ng-show="entryForm.title.$invalid && entryForm.title.$dirty">
+                            <span class="help-block mt5 ml10" ng-messages="entryForm.title.$error">
+                                <span ng-message="required">{{ 'APP.ENTRIES.FORM.LABEL.VALIDATION.TITLE.REQUIRED' | translate }}</span>
+                                <span ng-message="minlength">{{ 'APP.ENTRIES.FORM.LABEL.VALIDATION.TITLE.MINLENGTH' | translate }}</span>
+                                <span ng-message="maxlength">{{ 'APP.ENTRIES.FORM.LABEL.VALIDATION.TITLE.MAXLENGTH' | translate }}</span>
+                                <span ng-message="pattern">{{ 'APP.ENTRIES.FORM.LABEL.VALIDATION.TITLE.PATTERN' | translate }}</span>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group has-feedback"
+                     ng-class="{'has-error': entryForm.description.$invalid && !entryForm.description.$pristine,
+								'has-success': entryForm.description.$valid && entryForm.description.$dirty}">
+                    <label for="description" class="control-label" ng-class="{'col-md-3': isCreate}">
+                        {{ 'APP.ENTRIES.FORM.LABEL.DESCRIPTION' | translate }}
+                    </label>
+                    <div ng-class="{'col-md-9': isCreate}">
+                        <textarea id="description" name="description" class="form-control"
+                                  ng-model="entry.description"
+                                  ng-minlength="3" ng-pattern="'^[\\s\\S]+$'" required
+                                  placeholder="{{ 'APP.ENTRIES.FORM.PLACEHOLDER.DESCRIPTION' | translate }}"
+                                  style="resize:vertical;min-height:135px;"></textarea>
+                        <span class="fa form-control-feedback"
+                              ng-class="{'fa-times': entryForm.description.$invalid && entryForm.description.$dirty,
+										 'fa-check': !entryForm.description.$invalid && entryForm.description.$dirty}"></span>
+                        <div ng-show="entryForm.description.$invalid && entryForm.description.$dirty">
+                            <span class="help-block mt5 ml10" ng-messages="entryForm.description.$error">
+                                <span ng-message="required">{{ 'APP.ENTRIES.FORM.LABEL.VALIDATION.DESCRIPTION.REQUIRED' | translate }}</span>
+                                <span ng-message="minlength">{{ 'APP.ENTRIES.FORM.LABEL.VALIDATION.DESCRIPTION.MINLENGTH' | translate }}</span>
+                                <span ng-message="pattern">{{ 'APP.ENTRIES.FORM.LABEL.VALIDATION.DESCRIPTION.PATTERN' | translate }}</span>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6" ng-if="isCreate">
+            <div class="form-horizontal">
+                <div class="form-group has-feedback"
+                     ng-class="{'has-error': entryForm.organization.$invalid && !entryForm.organization.$pristine,
+								'has-success': entryForm.organization.$valid && entryForm.organization.$dirty}">
+                    <label for="organization" class="control-label col-md-3">
+                        {{ 'APP.ENTRIES.FORM.LABEL.ORGANIZATION' | translate }}
+                    </label>
+                    <div class="col-md-9">
+                        <div class="input-group">
+                            <input type="text" id="organization" name="organization" class="form-control"
+                                   ng-model="entry.organization"
+                                   ng-minlength="1" ng-maxlength="255" ng-pattern="'^([a-zA-Z0-9\-\.]+)$'" required
+                                   uib-typeahead="organization for organization in typeaheads.organizations"
+                                   autocomplete="off"
+                                   placeholder="{{ 'APP.ENTRIES.FORM.PLACEHOLDER.ORGANIZATION' | translate }}">
+                            <span class="input-group-addon">
+                                <i class="fa fa-question form-hint"
+                                   title="{{ 'APP.ENTRIES.FORM.ALTTEXT.ORGANIZATION.HINT' | translate }}"></i>
+                            </span>
+                        </div>
+                        <span class="fa form-control-feedback" style="right:48px;"
+                              ng-class="{'fa-times': entryForm.organization.$invalid && entryForm.organization.$dirty,
+										 'fa-check': !entryForm.organization.$invalid && entryForm.organization.$dirty}"></span>
+                        <div ng-show="entryForm.organization.$invalid && entryForm.organization.$dirty">
+                            <span class="help-block mt5 ml10" ng-messages="entryForm.organization.$error">
+                                <span ng-message="required">{{ 'APP.ENTRIES.FORM.LABEL.VALIDATION.ORGANIZATION.REQUIRED' | translate }}</span>
+                                <span ng-message="minlength">{{ 'APP.ENTRIES.FORM.LABEL.VALIDATION.ORGANIZATION.MINLENGTH' | translate }}</span>
+                                <span ng-message="maxlength">{{ 'APP.ENTRIES.FORM.LABEL.VALIDATION.ORGANIZATION.MAXLENGTH' | translate }}</span>
+                                <span ng-message="pattern">{{ 'APP.ENTRIES.FORM.LABEL.VALIDATION.ORGANIZATION.PATTERN' | translate }}</span>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group has-feedback"
+                     ng-class="{'has-error': entryForm.application.$invalid && !entryForm.application.$pristine,
+								'has-success': entryForm.application.$valid && entryForm.application.$dirty}">
+                    <label for="application" class="control-label col-md-3">
+                        {{ 'APP.ENTRIES.FORM.LABEL.APPLICATION' | translate }}
+                    </label>
+                    <div class="col-md-9">
+                        <div class="input-group">
+                            <input type="text" id="application" name="application" class="form-control"
+                                   ng-model="entry.application"
+                                   ng-minlength="1" ng-maxlength="255" ng-pattern="'^([a-zA-Z0-9\-\.]+)$'" required
+                                   uib-typeahead="application for application in typeaheads.applications"
+                                   autocomplete="off"
+                                   placeholder="{{ 'APP.ENTRIES.FORM.PLACEHOLDER.APPLICATION' | translate }}">
+                            <span class="input-group-addon">
+                                <i class="fa fa-question form-hint"
+                                   title="{{ 'APP.ENTRIES.FORM.ALTTEXT.APPLICATION.HINT' | translate }}"></i>
+                            </span>
+                        </div>
+                        <span class="fa form-control-feedback" style="right:48px;"
+                              ng-class="{'fa-times': entryForm.application.$invalid && entryForm.application.$dirty,
+										 'fa-check': !entryForm.application.$invalid && entryForm.application.$dirty}"></span>
+                        <div ng-show="entryForm.application.$invalid && entryForm.application.$dirty">
+                            <span class="help-block mt5 ml10" ng-messages="entryForm.application.$error">
+                                <span ng-message="required">{{ 'APP.ENTRIES.FORM.LABEL.VALIDATION.APPLICATION.REQUIRED' | translate }}</span>
+                                <span ng-message="minlength">{{ 'APP.ENTRIES.FORM.LABEL.VALIDATION.APPLICATION.MINLENGTH' | translate }}</span>
+                                <span ng-message="maxlength">{{ 'APP.ENTRIES.FORM.LABEL.VALIDATION.APPLICATION.MAXLENGTH' | translate }}</span>
+                                <span ng-message="pattern">{{ 'APP.ENTRIES.FORM.LABEL.VALIDATION.APPLICATION.PATTERN' | translate }}</span>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group has-feedback"
+                     ng-class="{'has-error': entryForm.scope.$invalid && !entryForm.scope.$pristine,
+								'has-success': entryForm.scope.$valid && entryForm.scope.$dirty}">
+                    <label for="scope" class="control-label col-md-3">
+                        {{ 'APP.ENTRIES.FORM.LABEL.SCOPE' | translate }}
+                    </label>
+                    <div class="col-md-9">
+                        <div class="input-group">
+                            <input type="text" id="scope" name="scope" class="form-control"
+                                   ng-model="entry.scope"
+                                   ng-minlength="1" ng-maxlength="255" ng-pattern="'^([a-zA-Z0-9\-\.]+)$'" required
+                                   uib-typeahead="scope for scope in typeaheads.scopes" autocomplete="off"
+                                   placeholder="{{ 'APP.ENTRIES.FORM.PLACEHOLDER.SCOPE' | translate }}">
+                            <span class="input-group-addon">
+                                <i class="fa fa-question form-hint"
+                                   title="{{ 'APP.ENTRIES.FORM.ALTTEXT.SCOPE.HINT' | translate }}"></i>
+                            </span>
+                        </div>
+                        <span class="fa form-control-feedback" style="right:48px;"
+                              ng-class="{'fa-times': entryForm.scope.$invalid && entryForm.scope.$dirty,
+										 'fa-check': !entryForm.scope.$invalid && entryForm.scope.$dirty}"></span>
+                        <div ng-show="entryForm.scope.$invalid && entryForm.scope.$dirty">
+                            <span class="help-block mt5 ml10" ng-messages="entryForm.scope.$error">
+                                <span ng-message="required">{{ 'APP.ENTRIES.FORM.LABEL.VALIDATION.SCOPE.REQUIRED' | translate }}</span>
+                                <span ng-message="minlength">{{ 'APP.ENTRIES.FORM.LABEL.VALIDATION.SCOPE.MINLENGTH' | translate }}</span>
+                                <span ng-message="maxlength">{{ 'APP.ENTRIES.FORM.LABEL.VALIDATION.SCOPE.MAXLENGTH' | translate }}</span>
+                                <span ng-message="pattern">{{ 'APP.ENTRIES.FORM.LABEL.VALIDATION.SCOPE.PATTERN' | translate }}</span>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group has-feedback"
+                     ng-class="{'has-error': entryForm.slug.$invalid && !entryForm.slug.$pristine,
+								'has-success': entryForm.slug.$valid && entryForm.slug.$dirty}">
+                    <label for="slug" class="control-label col-md-3">
+                        {{ 'APP.ENTRIES.FORM.LABEL.SLUG' | translate }}
+                    </label>
+                    <div class="col-md-9">
+                        <div class="input-group">
+                            <span class="input-group-addon">
+                                <input type="checkbox" ng-model="cb.createScopeManually"
+                                       ng-true-value="true" ng-false-value="false"
+                                       title="{{ 'APP.ENTRIES.FORM.ALTTEXT.SLUG.MANUALLY' | translate }}">
+                            </span>
+                            <input type="text" id="slug" name="slug" class="form-control"
+                                   ng-model="entry.slug" ng-disabled="!cb.createScopeManually"
+                                   ng-minlength="1" ng-maxlength="255" ng-pattern="'^([a-zA-Z0-9\-\.]+)$'" required
+                                   placeholder="{{ 'APP.ENTRIES.FORM.PLACEHOLDER.SLUG' | translate }}">
+                            <span class="input-group-addon">
+                                <i class="fa fa-question form-hint"
+                                   title="{{ 'APP.ENTRIES.FORM.ALTTEXT.SLUG.HINT' | translate }}"></i>
+                            </span>
+                        </div>
+                        <span class="fa form-control-feedback" style="right:48px;"
+                              ng-class="{'fa-times': entryForm.slug.$invalid && entryForm.slug.$dirty,
+										 'fa-check': !entryForm.slug.$invalid && entryForm.slug.$dirty}"></span>
+                        <div ng-show="entryForm.slug.$invalid && entryForm.slug.$dirty">
+                            <span class="help-block mt5 ml10" ng-messages="entryForm.slug.$error">
+                                <span ng-message="required">{{ 'APP.ENTRIES.FORM.LABEL.VALIDATION.SLUG.REQUIRED' | translate }}</span>
+                                <span ng-message="minlength">{{ 'APP.ENTRIES.FORM.LABEL.VALIDATION.SLUG.MINLENGTH' | translate }}</span>
+                                <span ng-message="maxlength">{{ 'APP.ENTRIES.FORM.LABEL.VALIDATION.SLUG.MAXLENGTH' | translate }}</span>
+                                <span ng-message="pattern">{{ 'APP.ENTRIES.FORM.LABEL.VALIDATION.SLUG.PATTERN' | translate }}</span>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-12">
+            <div>
+                <div class="form-group">
+                    <label for="tags" class="control-label">
+                        {{ 'APP.ENTRIES.FORM.LABEL.TAGS' | translate }}
+                    </label>
+                    <tags-input ng-model="entry.tags"
+                                min-length="3"
+                                max-length="20"
+                                add-on-blur="true"
+                                add-on-enter="true"
+                                add-on-space="true"
+                                replace-spaces-with-dashes="true"
+                                allowed-tags-pattern="^[a-z0-9\-\.]{3,20}$">
+                        <auto-complete source="typeaheads.tags"></auto-complete>
+                    </tags-input>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <hr>
+
+    <div class="row">
+        <div class="col-md-12">
+            <div>
+                <div class="form-group"
+                     ng-class="{'has-error': entryForm.config_format.$invalid && !entryForm.config_format.$pristine,
+								'has-success': entryForm.config_format.$valid && entryForm.config_format.$dirty}">
+                    <label for="config_format" class="control-label">
+                        {{ 'APP.ENTRIES.FORM.LABEL.CONFIGURATION.FORMAT' | translate }}
+                    </label>
+                    <select id="config_format" name="config_format" class="form-control"
+                            ng-model="entry.configuration.format"
+                            required
+                            ng-options="'APP.ENTRIES.FORM.OPTIONS.FORMATS' |  translate:row for row in formats"></select>
+                    <div ng-show="entryForm.config_format.$invalid && entryForm.config_format.$dirty">
+                        <span class="help-block mt5 ml10" ng-messages="entryForm.config_format.$error">
+                            <i class="fa fa-times"></i>
+                            <span ng-message="required">{{ 'APP.ENTRIES.FORM.LABEL.VALIDATION.CONFIG_FORMAT.REQUIRED' | translate }}</span>
+                        </span>
+                    </div>
+                </div>
+                <div class="form-group has-feedback"
+                     ng-class="{'has-error': entryForm.config_value.$invalid && !entryForm.config_value.$pristine,
+								'has-success': entryForm.config_value.$valid && entryForm.config_value.$dirty}">
+                    <label for="config_value" class="control-label">
+                        {{ 'APP.ENTRIES.FORM.LABEL.CONFIGURATION.VALUE' | translate }}
+                    </label>
+                    <textarea id="config_value" name="config_value" class="form-control"
+                              ng-model="entry.configuration.value"
+                              required
+                              placeholder="{{ 'APP.ENTRIES.FORM.PLACEHOLDER.CONFIGURATION.VALUE' | translate }}"
+                              style="resize:vertical;min-height:250px;"></textarea>
+                    <span class="fa form-control-feedback"
+                          ng-class="{'fa-times': entryForm.config_value.$invalid && entryForm.config_value.$dirty,
+									 'fa-check': !entryForm.config_value.$invalid && entryForm.config_value.$dirty}"></span>
+                    <div ng-show="entryForm.config_value.$invalid && entryForm.config_value.$dirty">
+                        <span class="help-block mt5 ml10" ng-messages="entryForm.config_value.$error">
+                            <span ng-message="required">{{ 'APP.ENTRIES.FORM.LABEL.VALIDATION.CONFIG_VALUE.REQUIRED' | translate }}</span>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <button type="submit" class="btn btn-primary"
+                    ng-click="ctrl.submit()"
+                    ng-disabled="entryForm.$pristine || entryForm.$invalid">
+                {{ 'APP.ENTRIES.FORM.BUTTON.SUBMIT' | translate }}
+            </button>
+            <button class="btn btn-default"
+                    ng-if="!isCreate"
+                    ng-click="ctrl.abort()">
+                {{ 'APP.ENTRIES.FORM.BUTTON.ABORT' | translate }}
+            </button>
+        </div>
+    </div>
+</form>

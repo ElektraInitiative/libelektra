@@ -70,6 +70,7 @@ std::vector<std::string> ModulesPluginDatabase::listAllPlugins () const
 			ret.push_back (name);
 		}
 	}
+	globfree (&pglob);
 #endif
 	if (!ret.empty ())
 	{

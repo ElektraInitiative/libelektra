@@ -1,0 +1,122 @@
+/**
+ * @file
+ *
+ * @brief configuration header containing compile-time constants
+ *
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ */
+
+#ifndef ELEKTRA_REST_CONFIG_HPP
+#define ELEKTRA_REST_CONFIG_HPP
+
+// The KDB key where the application configuration is stored at.
+#define ELEKTRA_REST_CONFIG_ROOT "@config_root@"
+
+// The default configuration profile.
+#define ELEKTRA_REST_CONFIG_DEFAULT_PROFILE "@config_default_profile@"
+
+// The REST API version
+#define ELEKTRA_REST_API_VERSION 1
+
+// Base path for the repository used by the rest service to store its data.
+// Path may NOT end with a slash.
+#define ELEKTRA_REST_DEFAULT_PATH_CONFIGS "dir/configs"
+
+// Regex that is used to identify an entry in the repository.
+// Each entry has its configuration stored as subkeys, so this regex is
+// necessary to identify the keys that represent entries (and hold meta data).
+#define ELEKTRA_REST_ENTRY_SCHEMA_CONFIGS "(([a-zA-Z0-9\\-\\.]+)(/([a-zA-Z0-9\\-\\.]+)){3})"
+
+// Base path for the repository used by the rest service to store user data.
+// The user data is used to authenticate users.
+// Path may NOT end with a sash.
+#define ELEKTRA_REST_DEFAULT_PATH_USERS "dir/users"
+
+// Regex that is used to identify an user entry in the repository.
+// Each user entry has its configuration stored as subkeys, so this regex is
+// necessary to identify the keys that represent users (and hold meta data).
+#define ELEKTRA_REST_ENTRY_SCHEMA_USERS "([a-zA-Z0-9\\-\\.]+)"
+
+// The issuer of the JWT tokens. Can be something special, e.g. an
+// application secret.
+#define ELEKTRA_REST_AUTHENTICATION_JWT_ISSUER "@tool@"
+
+// The default expiration time to use in case no dynamic setting is available.
+#define ELEKTRA_REST_DEFAULT_JWT_EXPIRATION_TIME 7200
+
+// Defines a host that may access resources of the REST service
+// can be either a host like "http://frontend.page.com" or the wildcard *
+#define ELEKTRA_REST_HEADER_RESPONSE_CORS_ORIGIN "*"
+
+// Defines a list of allowed headers that may be used for the REST service
+// has to be a list of headers like "Authorization, Content-Type"
+#define ELEKTRA_REST_HEADER_RESPONSE_CORS_HEADERS "Authorization, Content-Type"
+
+// These are the key names to be used for the corresponding meta data of
+// entries. This data is stored as meta data for the entry key.
+#define ELEKTRA_REST_MODEL_ENTRY_META_AUTHOR "author"
+#define ELEKTRA_REST_MODEL_ENTRY_META_CREATEDAT "createdat"
+#define ELEKTRA_REST_MODEL_ENTRY_META_DESCRIPTION "description"
+#define ELEKTRA_REST_MODEL_ENTRY_META_TAGS "tags"
+#define ELEKTRA_REST_MODEL_ENTRY_META_TITLE "title"
+#define ELEKTRA_REST_MODEL_ENTRY_META_UPLOADPLUGIN "plugin"
+#define ELEKTRA_REST_MODEL_ENTRY_META_VIEWS "views"
+
+// These are the key names to be used for the corresponding meta data of
+// user entries. This data is stored as meta ata for the user entry key.
+#define ELEKTRA_REST_MODEL_USER_META_CREATEDAT "createdat"
+#define ELEKTRA_REST_MODEL_USER_META_EMAIL "email"
+#define ELEKTRA_REST_MODEL_USER_META_RANK "rank"
+
+// Default values for outputs
+#define ELEKTRA_REST_DEFAULT_OUTPUT_ENTRY_SORT "asc"
+#define ELEKTRA_REST_DEFAULT_OUTPUT_ENTRY_SORTBY "key"
+#define ELEKTRA_REST_DEFAULT_OUTPUT_ENTRY_FILTERBY "all"
+#define ELEKTRA_REST_DEFAULT_OUTPUT_USER_SORT "asc"
+#define ELEKTRA_REST_DEFAULT_OUTPUT_USER_SORTBY "username"
+#define ELEKTRA_REST_DEFAULT_OUTPUT_USER_FILTERBY "all"
+
+// The max amount of entries the rest service will return for requests
+// that search or list the database. If the user specifies a higher number,
+// it will be overwritten by this one.
+#define ELEKTRA_REST_OUTPUT_MAX_ENTRIES 1000000
+
+// Settings for user ranks, very self-explanatory
+#define ELEKTRA_REST_USER_MIN_RANK 0
+#define ELEKTRA_REST_USER_MAX_RANK 100
+
+
+
+#include <cppcms/json.h>
+
+#include <singleton.hpp>
+
+namespace kdbrest
+{
+
+class Config : public singleton<Config>
+{
+
+public:
+	// configuration initializer
+	bool initializeConfiguration (const cppcms::json::value & config,
+				const std::string profile = std::string (ELEKTRA_REST_CONFIG_DEFAULT_PROFILE));
+
+	const cppcms::json::value & getConfig ()
+	{
+		return this->m_config;
+	}
+
+	template<typename T>
+	void setValue (std::string path, T val)
+	{
+		this->m_config.set(path, val);
+	}
+
+private:
+	cppcms::json::value m_config;
+};
+
+}
+
+#endif

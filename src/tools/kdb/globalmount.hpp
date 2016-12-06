@@ -24,6 +24,7 @@ class MountBackendInterface;
 class GlobalMountCommand : public MountBaseCommand
 {
 	void outputMtab (Cmdline const & cl);
+	std::vector<std::string> getMtab ();
 	void setMountpoint (Cmdline const & cl);
 	void buildBackend (Cmdline const & cl);
 
@@ -43,7 +44,7 @@ public:
 
 	virtual std::string getShortHelpText () override
 	{
-		return "Globally mount given plugins, overwriting previous ones.";
+		return "Globally mount given plugins.";
 	}
 
 	virtual std::string getLongHelpText () override

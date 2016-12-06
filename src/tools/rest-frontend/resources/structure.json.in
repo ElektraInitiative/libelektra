@@ -1,0 +1,251 @@
+[
+    {
+        "name": "Documentation",
+        "type": "submenu",
+        "ref": "documentation",
+        "dev-comment": "Top-level menu button, children are buttons of dropdown.",
+        "children": [
+            {
+                "name": "Getting started",
+                "type": "staticlist",
+                "ref": "docgettingstarted",
+                "dev-comment": "A list of documentation files thar are important for new users. Could be replaced by 'parsereadme' type in future.",
+                "children": [
+                    {
+                        "name": "Why Elektra?",
+                        "type": "staticfile",
+                        "options": {
+                            "path": "doc/WHY.md"
+                        }
+                    },
+                    {
+                        "name": "Big Picture",
+                        "type": "staticfile",
+                        "options": {
+                            "path": "doc/BIGPICTURE.md"
+                        }
+                    },
+                    {
+                        "name": "Compiling",
+                        "type": "staticfile",
+                        "options": {
+                            "path": "doc/COMPILE.md"
+                        }
+                    },
+                    {
+                        "name": "Installation",
+                        "type": "staticfile",
+                        "options": {
+                            "path": "doc/INSTALL.md"
+                        }
+                    },
+                    {
+                        "name": "Tutorials",
+                        "type": "staticref",
+                        "options": {
+                            "path": "tutorials"
+                        }
+                    }
+                ]
+            },
+            {
+                "name": "Tutorials",
+                "type": "parsereadme",
+                "ref": "tutorials",
+                "options": {
+                    "path": "doc/tutorials/README.md",
+                    "target_file": [],
+                    "parsing": {
+                        "section_regex": "## ([^#]+)",
+                        "entry_regex": "^\\- \\[(.+)\\]\\(([^\\)]+)\\)(.*)"
+                    },
+                    "name": {
+                        "make_pretty": false
+                    }
+                },
+                "dev-comment": "Names are already pretty in the linked readme, we do not have to change them."
+            },
+            {
+                "name": "Plugins",
+                "type": "parsereadme",
+                "ref": "plugins",
+                "options": {
+                    "path": "src/plugins/README.md",
+                    "target_file": ["README.md", "README", "readme.md", "readme"],
+                    "parsing": {
+                        "start_regex": "# Plugins #",
+                        "stop_regex": "####### UNUSED ######",
+                        "section_regex": "### ([^#]+) ###",
+                        "entry_regex": "^\\- \\[(.+)\\]\\(([^\\)]+)\\)(.*)"
+                    },
+                    "name": {
+                        "make_pretty": false
+                    }
+                },
+                "dev-comment": "Plugin names should be kept naturally, so the users can match them with what is used in the system."
+            },
+            {
+                "name": "Tools",
+                "type": "listdirs",
+                "ref": "tools",
+                "options": {
+                    "path": "src/tools",
+                    "target_file": ["README.md", "README", "readme.md", "readme"]
+                },
+                "dev-comment": "This could be changed to the more powerful 'parsereadme' type in future."
+            },
+            {
+                "name": "Manpages",
+                "type": "listfiles",
+                "ref": "manpages",
+                "options": {
+                    "path": "doc/help",
+                    "blacklist": ["CMakeLists.txt"]
+                },
+                "dev-comment": "We don't want the CMakeLists.txt to be in the output."
+            }
+        ]
+    },
+    {
+        "name": "Development",
+        "type": "submenu",
+        "ref": "development",
+        "dev-comment": "This is another top-level menu point.",
+        "children": [
+            {
+                "name": "Getting started",
+                "type": "staticlist",
+                "ref": "devgettingstarted",
+                "dev-comment": "Here we have some important documentation files for users that want start to develop with Elektra.",
+                "children": [
+                    {
+                        "name": "Coding",
+                        "type": "staticfile",
+                        "options": {
+                            "path": "doc/CODING.md"
+                        }
+                    },
+                    {
+                        "name": "Design",
+                        "type": "staticfile",
+                        "options": {
+                            "path": "doc/DESIGN.md"
+                        }
+                    },
+                    {
+                        "name": "Security",
+                        "type": "staticfile",
+                        "options": {
+                            "path": "doc/SECURITY.md"
+                        }
+                    },
+                    {
+                        "name": "Testing",
+                        "type": "staticfile",
+                        "options": {
+                            "path": "doc/TESTING.md"
+                        }
+                    },
+                    {
+                        "name": "Version",
+                        "type": "staticfile",
+                        "options": {
+                            "path": "doc/VERSION.md"
+                        }
+                    },
+                    {
+                        "name": "Tutorials",
+                        "type": "staticref",
+                        "options": {
+                            "path": "tutorials"
+                        }
+                    }
+                ]
+            },
+            {
+                "name": "Examples",
+                "type": "listfiles",
+                "ref": "examples",
+                "options": {
+                    "path": "examples",
+                    "blacklist": ["CMakeLists.txt"]
+                },
+                "dev-comment": "We don't want the CMakeLists.txt to be part of the output."
+            },
+            {
+                "name": "Bindings",
+                "type": "parsereadme",
+                "ref": "bindings",
+                "options": {
+                    "path": "src/bindings/README.md",
+                    "target_file": ["README.md", "README", "readme.md", "readme"],
+                    "parsing": {
+                        "entry_regex": "^\\- \\[(.+)\\]\\(([^\\)]+)\\)(.*)"
+                    },
+                    "name": {
+                        "make_pretty": false
+                    }
+                },
+                "dev-comment": "The names of the bindings should be kept naturally, so the users can match them with what is used in the system."
+            },
+            {
+                "name": "Libraries",
+                "type": "parsereadme",
+                "ref": "libraries",
+                "options": {
+                    "path": "src/libs/README.md",
+                    "target_file": ["README.md", "README", "readme.md", "readme"],
+                    "parsing": {
+                        "entry_regex": "^\\[(.+)\\]\\(([^\\)]+)\\)(.*)"
+                    },
+                    "name": {
+                        "make_pretty": false
+                    }
+                },
+                "dev-comment": "Library names should be kept naturally, so the users can match them with what is used in the system."
+            },
+            {
+                "name": "Decisions",
+                "type": "parsereadme",
+                "ref": "decisions",
+                "options": {
+                    "path": "doc/decisions/README.md",
+                    "target_file": [],
+                    "parsing": {
+                        "stop_regex": "####### UNUSED ######",
+                        "section_regex": "## ([^#]+)",
+                        "entry_regex": "^\\- \\[(.+)\\]\\(([^\\)]+)\\)(.*)"
+                    },
+                    "name": {
+                        "make_pretty": false
+                    }
+                },
+                "dev-comment": "The readme does already contain nicely formatted decision titles."
+            },
+            {
+                "name": "Build Server",
+                "type": "link",
+                "ref": "buildserver",
+                "options": {
+                    "path": "http://build.libelektra.org:8080/"
+                }
+            },
+            {
+                "name": "API Documentation",
+                "type": "link",
+                "ref": "apidocumentation",
+                "options": {
+                    "path": "http://doc.libelektra.org/api/current/html/"
+                }
+            },
+            {
+                "name": "GitHub",
+                "type": "link",
+                "ref": "github",
+                "options": {
+                    "path": "http://git.libelektra.org"
+                }
+            }
+        ]
+    }
+]

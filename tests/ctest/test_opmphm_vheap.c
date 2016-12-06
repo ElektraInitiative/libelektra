@@ -34,7 +34,7 @@ static void test_errors ()
 
 	succeed_if (elektraVheapIsEmpty (NULL) == -1, "isEmpty NULL working");
 
-	succeed_if (!elektraVheapClear (NULL), "clear NULL working");
+	succeed_if (elektraVheapClear (NULL), "clear NULL working");
 
 	succeed_if (!elektraVheapRemove (NULL), "remove NULL working");
 	Vheap * h = elektraVheapInit (mincomp, 4);
@@ -42,7 +42,7 @@ static void test_errors ()
 	succeed_if (!elektraVheapRemove (NULL), "remove empty working");
 	elektraVheapDel (h);
 
-	succeed_if (!elektraVheapInsert (NULL, NULL), "insert NULL working");
+	succeed_if (elektraVheapInsert (NULL, NULL), "insert NULL working");
 }
 
 
@@ -66,7 +66,7 @@ static void test_data_max_ordered ()
 	for (int i = 0; i < 99; ++i)
 	{
 		data[i] = i;
-		succeed_if (elektraVheapInsert (h, &data[i]), "insert error");
+		succeed_if (!elektraVheapInsert (h, &data[i]), "insert error");
 	}
 	int max = 100;
 	for (int i = 0; i < 99; ++i)
@@ -85,7 +85,7 @@ static void test_data_max_ordered ()
 	for (int i = 99; i >= 0; --i)
 	{
 		data[i] = i;
-		succeed_if (elektraVheapInsert (h, &data[i]), "insert error");
+		succeed_if (!elektraVheapInsert (h, &data[i]), "insert error");
 	}
 	max = 100;
 	for (int i = 0; i < 99; ++i)
@@ -107,7 +107,7 @@ static void test_data_min_ordered ()
 	for (int i = 0; i < 99; ++i)
 	{
 		data[i] = i;
-		succeed_if (elektraVheapInsert (h, &data[i]), "insert error");
+		succeed_if (!elektraVheapInsert (h, &data[i]), "insert error");
 	}
 	int min = -1;
 	for (int i = 0; i < 99; ++i)
@@ -125,7 +125,7 @@ static void test_data_min_ordered ()
 	for (int i = 99; i >= 0; --i)
 	{
 		data[i] = i;
-		succeed_if (elektraVheapInsert (h, &data[i]), "insert error");
+		succeed_if (!elektraVheapInsert (h, &data[i]), "insert error");
 	}
 	min = -1;
 	for (int i = 0; i < 99; ++i)
@@ -150,7 +150,7 @@ static void test_grow_shrink ()
 		exit_if_fail (h, "vheap init error");
 		for (int i = 1; i <= maxElem; ++i)
 		{
-			succeed_if (elektraVheapInsert (h, &data), " insert error");
+			succeed_if (!elektraVheapInsert (h, &data), " insert error");
 			if (i > actualSize)
 			{
 				// grow
@@ -180,7 +180,7 @@ static void test_data_max_mixed ()
 	for (int i = 0; i < 99; ++i)
 	{
 		data[i] = i % 10;
-		succeed_if (elektraVheapInsert (h, &data[i]), "insert error");
+		succeed_if (!elektraVheapInsert (h, &data[i]), "insert error");
 	}
 	int max = 100;
 	for (int i = 0; i < 99; ++i)
@@ -199,7 +199,7 @@ static void test_data_max_mixed ()
 	for (int i = 99; i >= 0; --i)
 	{
 		data[i] = i % 10;
-		succeed_if (elektraVheapInsert (h, &data[i]), "insert error");
+		succeed_if (!elektraVheapInsert (h, &data[i]), "insert error");
 	}
 	max = 100;
 	for (int i = 0; i < 99; ++i)
@@ -221,7 +221,7 @@ static void test_data_min_mixed ()
 	for (int i = 0; i < 99; ++i)
 	{
 		data[i] = i % 10;
-		succeed_if (elektraVheapInsert (h, &data[i]), "insert error");
+		succeed_if (!elektraVheapInsert (h, &data[i]), "insert error");
 	}
 	int min = -1;
 	for (int i = 0; i < 99; ++i)
@@ -239,7 +239,7 @@ static void test_data_min_mixed ()
 	for (int i = 99; i >= 0; --i)
 	{
 		data[i] = i % 10;
-		succeed_if (elektraVheapInsert (h, &data[i]), "insert error");
+		succeed_if (!elektraVheapInsert (h, &data[i]), "insert error");
 	}
 	min = -1;
 	for (int i = 0; i < 99; ++i)
@@ -257,23 +257,23 @@ static void test_clear ()
 {
 	Vheap * h = elektraVheapInit (mincomp, 5);
 	exit_if_fail (h, "vheap init error");
-	succeed_if (elektraVheapClear (h), "clear fresh error");
+	succeed_if (!elektraVheapClear (h), "clear fresh error");
 	succeed_if (h->size == h->minSize, "minsize error");
 	int data = 42;
 	for (int i = 0; i < 11; ++i)
 	{
-		succeed_if (elektraVheapInsert (h, &data), "insert error");
+		succeed_if (!elektraVheapInsert (h, &data), "insert error");
 	}
 	size_t size = h->size;
-	succeed_if (elektraVheapClear (h), "clear error");
+	succeed_if (!elektraVheapClear (h), "clear error");
 	succeed_if (elektraVheapIsEmpty (h), "empty error");
 
 	succeed_if (h->count == 0, "count error");
 	succeed_if (h->size == size, "size error");
 
 	// insert again
-	succeed_if (elektraVheapInsert (h, &data), "insert error");
-	succeed_if (elektraVheapInsert (h, &data), "insert error");
+	succeed_if (!elektraVheapInsert (h, &data), "insert error");
+	succeed_if (!elektraVheapInsert (h, &data), "insert error");
 
 	succeed_if (h->size == size, "size error");
 
