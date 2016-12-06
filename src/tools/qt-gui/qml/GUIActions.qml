@@ -25,6 +25,7 @@ Item {
 	property alias pluginInfoAction: pluginInfoAction
 	property alias quitAction: quitAction
 	property alias chooseAppearanceAction: chooseAppearanceAction
+	property alias toggleViewerAction: toggleViewerAction
 
 	Action {
 		id: newKeyAction
@@ -33,7 +34,8 @@ Item {
 		iconSource: "icons/document-new.png"
 		iconName: Helper.useIcon("document-new")
 		tooltip: qsTr("New Key")
-		enabled: treeView.currentItem !== null
+		enabled: treeView.currentItem !== null && !toggleViewerAction.checked
+
 		onTriggered: {
 
 			if(source.src === "keyBelow"){
@@ -54,7 +56,8 @@ Item {
 		iconSource: "icons/new-array.png"
 		iconName: Helper.useIcon("view-grid")
 		tooltip: qsTr("New Array Entry")
-		enabled: treeView.currentItem !== null
+		enabled: treeView.currentItem !== null && !toggleViewerAction.checked
+
 		onTriggered: {
 
 			if(source.src === "arrBelow"){
@@ -76,7 +79,7 @@ Item {
 		iconName: Helper.useIcon("user-trash")
 		tooltip: qsTr("Delete")
 		shortcut: StandardKey.Delete
-		enabled: !(searchResultsSelectedItem === null && treeView.currentNode === null && keyAreaSelectedItem === null)
+		enabled: !(searchResultsSelectedItem === null && treeView.currentNode === null && keyAreaSelectedItem === null) && !toggleViewerAction.checked
 		onTriggered: {
 			if(searchResultsSelectedItem !== null)
 				MFunctions.deleteSearchResult()
@@ -94,7 +97,7 @@ Item {
 		iconSource: "icons/import.png"
 		iconName: Helper.useIcon("document-import")
 		tooltip: qsTr("Import Configuration")
-		enabled: treeView.currentItem !== null
+		enabled: treeView.currentItem !== null && !toggleViewerAction.checked
 		onTriggered: importDialog.show()
 	}
 
@@ -105,7 +108,7 @@ Item {
 		iconSource: "icons/export.png"
 		iconName: Helper.useIcon("document-export")
 		tooltip: qsTr("Export Configuration")
-		enabled: treeView.currentItem !== null
+		enabled: treeView.currentItem !== null && !toggleViewerAction.checked
 		onTriggered: {
 			exportDialog.nameFilters = guiBackend.nameFilters()
 			exportDialog.open()
@@ -120,7 +123,7 @@ Item {
 		iconName: Helper.useIcon("edit-undo")
 		tooltip: qsTr("Undo")
 		shortcut: StandardKey.Undo
-		enabled: undoManager.canUndo
+		enabled: undoManager.canUndo && !toggleViewerAction.checked
 		onTriggered: {
 			if(undoManager.undoText === "deleteBranch"){
 				undoManager.undo()
@@ -172,7 +175,7 @@ Item {
 
 		text: qsTr("Undo All")
 		tooltip: qsTr("Undo All")
-		enabled: undoManager.canUndo
+		enabled: undoManager.canUndo && !toggleViewerAction.checked
 		onTriggered: {
 			//cannot use UndoStack::setIndex() because View-Updates would get lost
 			for(var i = undoManager.index(); i > undoManager.cleanIndex(); i--)
@@ -190,7 +193,7 @@ Item {
 		iconName: Helper.useIcon("edit-redo")
 		tooltip: qsTr("Redo")
 		shortcut: StandardKey.Redo
-		enabled: undoManager.canRedo
+		enabled: undoManager.canRedo && !toggleViewerAction.checked
 		onTriggered: {
 			if(undoManager.redoText === "deleteBranch"){
 				undoManager.redo()
@@ -235,7 +238,7 @@ Item {
 
 		text: qsTr("Redo All")
 		tooltip: qsTr("Redo All")
-		enabled: undoManager.canRedo
+		enabled: undoManager.canRedo && !toggleViewerAction.checked
 		onTriggered: {
 			//cannot use UndoStack::setIndex() because View-Updates would get lost
 			for(var i = undoManager.index(); i < undoManager.count(); i++)
@@ -253,6 +256,7 @@ Item {
 		iconName: Helper.useIcon("view-refresh")
 		tooltip: qsTr("Synchronize")
 		shortcut: StandardKey.Refresh
+		enabled: !toggleViewerAction.checked
 		onTriggered: {
 			treeView.treeModel.synchronize()
 			undoManager.setClean()
@@ -267,6 +271,7 @@ Item {
 		iconSource: "icons/mount.png"
 		iconName: Helper.useIcon("list-add")
 		tooltip: qsTr("Mount Backend")
+		enabled: !toggleViewerAction.checked
 		onTriggered: {
 			wizardLoader.usedNames = guiBackend.mountPoints()
 			wizardLoader.show()
@@ -280,6 +285,7 @@ Item {
 		iconSource: "icons/unmount.png"
 		iconName: Helper.useIcon("list-remove")
 		tooltip: qsTr("Unmount Backend")
+		enabled: !toggleViewerAction.checked
 		onTriggered: {
 			unmountBackendWindow.mountedBackendsView.model = treeView.treeModel.mountedBackends()
 			unmountBackendWindow.mountedBackendsView.currentIndex = -1
@@ -294,7 +300,7 @@ Item {
 		iconName: Helper.useIcon("edit-rename")
 		text: qsTr("Edit ...")
 		tooltip: qsTr("Edit")
-		enabled: !(treeView.currentNode === null && keyAreaSelectedItem === null && searchResultsSelectedItem === null)
+		enabled: !(treeView.currentNode === null && keyAreaSelectedItem === null && searchResultsSelectedItem === null) && !toggleViewerAction.checked
 
 		onTriggered: {
 			if(editKeyWindow.accessFromSearchResults){
@@ -313,7 +319,7 @@ Item {
 		text: qsTr("Cut")
 		tooltip: qsTr("Cut")
 		shortcut: StandardKey.Cut
-		enabled: !(treeView.currentNode === null && keyAreaSelectedItem === null)
+		enabled: !(treeView.currentNode === null && keyAreaSelectedItem === null) && !toggleViewerAction.checked
 
 		onTriggered: {
 			if(treeView.currentNode !== null && keyAreaSelectedItem === null)
@@ -331,7 +337,7 @@ Item {
 		text: qsTr("Copy")
 		tooltip: qsTr("Copy")
 		shortcut: StandardKey.Copy
-		enabled: !(treeView.currentNode === null && keyAreaSelectedItem === null)
+		enabled: !(treeView.currentNode === null && keyAreaSelectedItem === null) && !toggleViewerAction.checked
 
 		onTriggered: {
 			if(treeView.currentNode !== null && keyAreaSelectedItem === null)
@@ -349,7 +355,7 @@ Item {
 		text: qsTr("Paste")
 		tooltip: qsTr("Paste")
 		shortcut: StandardKey.Paste
-		enabled: undoManager.canPaste
+		enabled: undoManager.canPaste && !toggleViewerAction.checked
 
 		onTriggered: MFunctions.paste()
 	}
@@ -401,6 +407,17 @@ Item {
 		iconSource: "icons/color.png"
 		iconName: Helper.useIcon("configure")
 		onTriggered: appearanceSettingsWindow.show()
+	}
+
+	Action {
+		id: toggleViewerAction
+		checkable: true
+		checked: guiSettings.viewermode
+		onCheckedChanged: {
+			guiSettings.viewermode = checked
+			guiSettings.setKDB()
+		}
+		text: qsTr("Viewermode")
 	}
 }
 

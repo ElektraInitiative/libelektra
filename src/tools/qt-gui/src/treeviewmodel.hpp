@@ -327,19 +327,19 @@ signals: // Use "Error", "Warning" and "Information" as title to display the acc
 public slots:
 
 	/**
-         * @brief showConfigNodeMessage
-         * @param title
-         * @param text
-         * @param detailedText
-         */
+	 * @brief showConfigNodeMessage
+	 * @param title
+	 * @param text
+	 * @param detailedText
+	 */
 	void showConfigNodeMessage (QString title, QString text, QString detailedText);
 
-        /**
-         * @brief
-         *
-         * @param msg
-         */
-        void configChanged( QString msg );
+	/**
+	 * @brief
+	 *
+	 * @param msg
+	 */
+	void configChanged ( QString msg );
 };
 
 Q_DECLARE_METATYPE (TreeViewModel)

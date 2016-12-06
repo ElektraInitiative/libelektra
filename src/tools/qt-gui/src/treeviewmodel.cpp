@@ -32,7 +32,6 @@ using namespace kdb::tools::merging;
 TreeViewModel::TreeViewModel (QObject * parentModel) : m_root ("/", KEY_END), m_kdb ()
 {
 	Q_UNUSED (parentModel);
-        connectDBus();
 }
 
 TreeViewModel::TreeViewModel (MergingKDB * kdb, QObject * parentModel) : m_root ("/", KEY_END), m_kdb (kdb)
@@ -45,9 +44,7 @@ TreeViewModel::TreeViewModel (const TreeViewModel & other)
 : QAbstractListModel (), m_model (other.m_model), m_root (other.m_root), m_kdb (other.m_kdb)
 
 {
-        connectDBus();
 }
-
 
 int TreeViewModel::rowCount (const QModelIndex & parentIndex) const
 {
@@ -797,14 +794,31 @@ void TreeViewModel::showConfigNodeMessage (QString title, QString text, QString 
 
 void TreeViewModel::connectDBus()
 {
-    if ( QDBusConnection::sessionBus().connect( QString(), "/org/libelektra/configuration", "org.libelektra", QString(), this, SLOT( configChanged( QString ) ) ) ) fprintf(stderr, "=================== Done connect\n" );
+    if ( QDBusConnection::sessionBus().connect( QString(), "/org/libelektra/configuration", "org.libelektra", QString(), this, SLOT( configChanged( QString ) ) ) )
+    {
+        #if DEBUG && VERBOSE
+            fprintf(stderr, "=================== Successfully connected to DBus\n" );
+        #endif
+    }
+    else
+    {
+        #if DEBUG && VERBOSE
+            fprintf(stderr, "=================== Failed to connect to DBus\n" );
+        #endif
+    }
 }
 
 void TreeViewModel::configChanged( QString msg )
 {
+    #if DEBUG && VERBOSE
+        fprintf( stdout, "config changed: %s\n", msg.toLocal8Bit().data() );
+    #else
+        Q_UNUSED(msg)
+    #endif
 
+    synchronize();
+    refresh();
 }
-
 
 QHash<int, QByteArray> TreeViewModel::roleNames () const
 {
