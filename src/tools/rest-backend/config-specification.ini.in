@@ -17,7 +17,7 @@ description = A secret string used to encrypt session tokens (JWT).
 example = al3h120d8a_19s
 
 [@config_default_profile@/backend/jwt/validity]
-check/type = int
+check/type = long
 description = The number of seconds a JWT is valid from its creation.
 example = 3600
 default = 7200
@@ -65,49 +65,49 @@ description = The default filter criteria being used for requests against user e
 default = 'all'
 
 [@config_default_profile@/backend/permissions/entry/create]
-check/type = int
+check/type = long
 check/type/min = 0
 check/type/max = 100
 description = The required rank a user needs to be able to create new configuration snippet entries.
 default = 10
 
 [@config_default_profile@/backend/permissions/entry/edit]
-check/type = int
+check/type = long
 check/type/min = 0
 check/type/max = 100
 description = The required rank a user needs to be able to edit any configuration snippet entry (also from other users).
 default = 50
 
 [@config_default_profile@/backend/permissions/entry/delete]
-check/type = int
+check/type = long
 check/type/min = 0
 check/type/max = 100
 description = The required rank a user needs to be able to delete any configuration snippet entry (also from other users).
 default = 50
 
 [@config_default_profile@/backend/permissions/user/view]
-check/type = int
+check/type = long
 check/type/min = 0
 check/type/max = 100
 description = The required rank a user needs to be able to view account details of other users.
 default = 100
 
 [@config_default_profile@/backend/permissions/user/edit]
-check/type = int
+check/type = long
 check/type/min = 0
 check/type/max = 100
 description = The required rank a user needs to be able to edit account details of other users.
 default = 100
 
 [@config_default_profile@/backend/permissions/user/delete]
-check/type = int
+check/type = long
 check/type/min = 0
 check/type/max = 100
 description = The required rank a user needs to be able to delete user accounts of other users.
 default = 100
 
 [@config_default_profile@/backend/permissions/rank/default]
-check/type = int
+check/type = long
 check/type/min = 0
 check/type/max = 100
 description = The default rank new users will receive on registration.

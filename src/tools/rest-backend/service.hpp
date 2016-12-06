@@ -182,7 +182,8 @@ public:
 	cppcms::json::value transformKeysetToJsonValue (const kdb::KeySet & ks, const std::string & conf_root) const;
 
 private:
-	void setValue (cppcms::json::value & config, const std::string path, const kdb::Key & key) const;
+	void handleValueInsertion (cppcms::json::value & config, const std::string path, const kdb::Key & key) const;
+	void setValue (cppcms::json::value & config, const kdb::Key & key) const;
 };
 
 } // namespace service
