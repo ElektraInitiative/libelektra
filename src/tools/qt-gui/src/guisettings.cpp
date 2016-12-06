@@ -41,14 +41,23 @@ void GUISettings::setDefaults ()
 	palette.setCurrentColorGroup (QPalette::Disabled);
 
 	m_useSystemIconTheme = true;
+	m_viewermode = false;
 }
 
-GUISettings::GUISettings (QObject * parentGUISettings)
-: QObject (parentGUISettings), m_profile ("/current/"), m_base ("/sw/elektra/qtgui/#0/"), m_highlightColorString ("color/highlight"),
-  m_frameColorString ("color/frame"), m_nodeWKeyColorString ("color/node/with"), m_nodeWOKeyColorString ("color/node/without"),
-  m_useSystemIconThemeString ("icon/system"), m_legacyBase ("/sw/libelektra.org/qt-gui/#0/"),
-  m_legacyHighlightColorString ("highlight_color"), m_legacyFrameColorString ("frame_color"),
-  m_legacyNodeWKeyColorString ("node_with_key_color"), m_legacyNodeWOKeyColorString ("node_without_key_color")
+GUISettings::GUISettings (QObject * parentGUISettings): QObject (parentGUISettings)
+,m_profile ("/current/")
+,m_base ("/sw/elektra/qtgui/#0/")
+,m_highlightColorString ("color/highlight")
+,m_frameColorString ("color/frame")
+,m_nodeWKeyColorString ("color/node/with")
+,m_nodeWOKeyColorString ("color/node/without")
+,m_useSystemIconThemeString ("icon/system")
+,m_legacyBase ("/sw/libelektra.org/qt-gui/#0/")
+,m_legacyHighlightColorString ("highlight_color")
+,m_legacyFrameColorString ("frame_color")
+,m_legacyNodeWKeyColorString ("node_with_key_color")
+,m_legacyNodeWOKeyColorString ("node_without_key_color")
+,m_viewermodeString ("mode/viewer")
 {
 	// initialize with hardcoded default colors
 	setDefaults ();
@@ -81,6 +90,11 @@ QColor GUISettings::nodeWithoutKeyColor () const
 bool GUISettings::useSystemIconTheme () const
 {
 	return m_useSystemIconTheme;
+}
+
+bool GUISettings::viewermode() const
+{
+	return m_viewermode;
 }
 
 void GUISettings::setHighlightColor (const QColor & color)
@@ -134,6 +148,16 @@ void GUISettings::useSystemIconTheme (const bool & use)
 		m_useSystemIconTheme = use;
 		appendBool (m_useSystemIconThemeString, use);
 		emit useSystemIconThemeChanged ();
+	}
+}
+
+void GUISettings::setViewermode(bool viewermode)
+{
+	if (viewermode != m_viewermode)
+	{
+		m_viewermode = viewermode;
+		appendBool (m_viewermodeString, viewermode);
+		emit viewermodeChanged ();
 	}
 }
 
@@ -191,6 +215,8 @@ void GUISettings::lookupBool (const std::string & keyName, bool & value) const
 		qDebug () << ex.what ();
 	}
 }
+
+
 
 void GUISettings::setKDB ()
 {
@@ -255,6 +281,7 @@ void GUISettings::getKDB ()
 		lookupColor (m_base + profile + m_nodeWKeyColorString, m_nodeWithKeyColor);
 		lookupColor (m_base + profile + m_nodeWOKeyColorString, m_nodeWithoutKeyColor);
 		lookupBool (m_base + profile + m_useSystemIconThemeString, m_useSystemIconTheme);
+		lookupBool (m_base + profile + m_viewermodeString, m_viewermode);
 	}
 }
 
