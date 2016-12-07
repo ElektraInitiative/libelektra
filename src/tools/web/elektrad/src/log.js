@@ -1,6 +1,7 @@
 import dude from 'debug-dude'
 
-import { name as namespace } from '../package.json'
+import { name } from '../package.json'
+export const namespace = name.split('/').pop()
 
 export default function makeLog (name) {
   const appendName = name ? (':' + name) : ''
