@@ -18,7 +18,7 @@ module.exports = function ($scope, Logger, $interval, config, news) {
             'fast',
             'finally',
             'globally',
-            'sharable',
+            'shareable',
             'validated',
             'specified',
             'correctly',
