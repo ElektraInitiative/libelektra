@@ -1,6 +1,6 @@
 import { thunkCreator } from './utils'
 
-//~~~
+// ~~~
 
 export const CLUSTERS_REQUEST = 'CLUSTERS_REQUEST'
 export const CLUSTERS_SUCCESS = 'CLUSTERS_SUCCESS'
@@ -12,7 +12,7 @@ export const fetchClusters = () => thunkCreator({
     .then(response => response.json()),
 })
 
-//~~~
+// ~~~
 
 export const CLUSTER_UPDATE_REQUEST = 'CLUSTER_UPDATE_REQUEST'
 export const CLUSTER_UPDATE_SUCCESS = 'CLUSTER_UPDATE_SUCCESS'
@@ -29,7 +29,7 @@ export const updateCluster = (id, data) => thunkCreator({
   }).then(response => response.json()),
 })
 
-//~~~
+// ~~~
 
 export const CLUSTER_DELETE_REQUEST = 'CLUSTER_DELETE_REQUEST'
 export const CLUSTER_DELETE_SUCCESS = 'CLUSTER_DELETE_SUCCESS'
@@ -41,7 +41,7 @@ export const deleteCluster = (id, data) => thunkCreator({
     .then(response => response.json()),
 })
 
-//~~~
+// ~~~
 
 export const CREATE_CLUSTER_REQUEST = 'CREATE_CLUSTER_REQUEST'
 export const CREATE_CLUSTER_SUCCESS = 'CREATE_CLUSTER_SUCCESS'

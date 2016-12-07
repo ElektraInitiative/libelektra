@@ -8,7 +8,7 @@ import {
   getCluster, updateCluster, deleteCluster,
   getClusterInstances, addInstanceToCluster, removeInstanceFromCluster,
   getInstance,
-  virtualKdb
+  virtualKdb,
 } from '../db'
 
 import remoteKdb from '../connector'

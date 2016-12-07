@@ -2,14 +2,19 @@
   "name": "@elektra-web/client",
   "version": "1.0.0",
   "description": "a web interface for clusterd (elektra cluster management server)",
-  "keywords": ["elektra", "elektra-web", "client"],
+  "keywords": [
+    "elektra",
+    "elektra-web",
+    "client"
+  ],
   "homepage": "http://git.libelektra.org/blob/master/src/tools/web/",
   "license": "MIT",
   "main": "src/index.js",
   "scripts": {
     "build": "cross-env NODE_ENV=production webpack && npm run build:assets",
     "build:assets": "cp index.html dist/ && cp -r css dist/",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "npm run lint",
+    "lint": "eslint src"
   },
   "dependencies": {
     "material-ui": "^0.15.4",
@@ -24,13 +29,18 @@
   },
   "devDependencies": {
     "babel-core": "^6.14.0",
+    "babel-eslint": "^7.1.1",
     "babel-loader": "^6.2.5",
     "babel-preset-es2015": "^6.14.0",
     "babel-preset-react": "^6.11.1",
     "babel-preset-stage-0": "^6.5.0",
+    "eslint": "^3.11.1",
+    "eslint-config-standard": "^6.2.1",
+    "eslint-plugin-react": "^6.8.0",
     "react-hot-loader": "^3.0.0-beta.5",
     "redux-devtools": "^3.3.1",
     "redux-devtools-inspector": "^0.8.0",
+    "standard": "^8.6.0",
     "webpack": "^1.13.2",
     "webpack-dev-middleware": "^1.8.4",
     "webpack-hot-middleware": "^2.13.0"

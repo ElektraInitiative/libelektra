@@ -1,6 +1,6 @@
 import { thunkCreator } from './utils'
 
-//~~~
+// ~~~
 
 export const CONFIGURE_INSTANCE_REQUEST = 'CONFIGURE_INSTANCE_REQUEST'
 export const CONFIGURE_INSTANCE_SUCCESS = 'CONFIGURE_INSTANCE_SUCCESS'
@@ -15,7 +15,7 @@ export const configureInstance = (id) => thunkCreator({
     }),
 })
 
-//~~~
+// ~~~
 
 export const CONFIGURE_CLUSTER_REQUEST = 'CONFIGURE_CLUSTER_REQUEST'
 export const CONFIGURE_CLUSTER_SUCCESS = 'CONFIGURE_CLUSTER_SUCCESS'
@@ -30,7 +30,7 @@ export const configureCluster = (id) => thunkCreator({
     }),
 })
 
-//~~~
+// ~~~
 
 export const RETURN_TO_MAIN = 'RETURN_TO_MAIN'
 

@@ -4,5 +4,5 @@ import { createDevTools } from 'redux-devtools'
 import Inspector from 'redux-devtools-inspector'
 
 export default createDevTools(
-  <Inspector />
+  React.createElement(Inspector)
 )

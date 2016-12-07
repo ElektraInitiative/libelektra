@@ -2,7 +2,11 @@
   "name": "@elektra-web/clusterd",
   "version": "1.0.0",
   "description": "server to control (multiple) elektrad instances",
-  "keywords": ["elektra", "elektra-web", "clusterd"],
+  "keywords": [
+    "elektra",
+    "elektra-web",
+    "clusterd"
+  ],
   "homepage": "http://git.libelektra.org/blob/master/src/tools/web/",
   "license": "MIT",
   "main": "src/index.js",
@@ -14,7 +18,8 @@
     "start:prod": "cross-env NODE_ENV=production DEBUG=clusterd:*,-*debug,-*log node build/",
     "start:prod:verbose": "cross-env NODE_ENV=production DEBUG=clusterd:* node build/",
     "start:dev": "cross-env NODE_ENV=development DEBUG=clusterd:* babel-watch src/",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "npm run lint",
+    "lint": "eslint src"
   },
   "dependencies": {
     "babel-loader": "^6.2.5",
@@ -29,10 +34,13 @@
   "devDependencies": {
     "babel-cli": "^6.11.4",
     "babel-core": "^6.11.4",
+    "babel-eslint": "^7.1.1",
     "babel-plugin-transform-object-rest-spread": "^6.8.0",
     "babel-preset-es2015": "^6.9.0",
     "babel-register": "^6.11.6",
     "babel-runtime": "^6.11.6",
-    "babel-watch": "^2.0.2"
+    "babel-watch": "^2.0.2",
+    "eslint": "^3.11.1",
+    "eslint-config-standard": "^6.2.1"
   }
 }

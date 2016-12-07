@@ -7,7 +7,7 @@ import { existsSync, readFileSync } from 'fs'
 
 // adapted from https://github.com/rangle/serve-webpack-client
 export default function createRouter ({
-  path, index = 'index.html', config = 'webpack.config.js', dist = 'dist'
+  path, index = 'index.html', config = 'webpack.config.js', dist = 'dist',
 }) {
   const router = new express.Router()
 

@@ -21,8 +21,8 @@ import { Provider } from 'react-redux'
 import ConnectedApp from './containers/ConnectedApp'
 
 ReactDOM.render(
-  <Provider store={store}>
-    <ConnectedApp />
-  </Provider>,
+  React.createElement(Provider, { store },
+    React.createElement(ConnectedApp)
+  ),
   document.getElementById('main')
 )

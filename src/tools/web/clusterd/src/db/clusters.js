@@ -53,7 +53,9 @@ export const removeInstanceFromCluster = (id, instanceId) =>
     .then(updateById(id, (cluster) => {
       return {
         ...cluster,
-        instances: cluster.instances.filter(instance => instance !== instanceId)
+        instances: cluster.instances.filter(
+          instance => instance !== instanceId
+        ),
       }
     }))
     .then(persistClusters)

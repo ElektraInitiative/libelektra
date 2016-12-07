@@ -1,6 +1,6 @@
 import { thunkCreator, encodePath } from './utils'
 
-//~~~
+// ~~~
 
 export const GET_KEY_REQUEST = 'GET_KEY_REQUEST'
 export const GET_KEY_SUCCESS = 'GET_KEY_SUCCESS'
@@ -17,7 +17,7 @@ export const getKey = (id, path, cluster = false) => thunkCreator({
 
 export const getClusterKey = (id, path, value) => getKey(id, path, true)
 
-//~~~
+// ~~~
 
 export const SET_KEY_REQUEST = 'SET_KEY_REQUEST'
 export const SET_KEY_SUCCESS = 'SET_KEY_SUCCESS'

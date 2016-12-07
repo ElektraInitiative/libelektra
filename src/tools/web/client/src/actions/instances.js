@@ -1,6 +1,6 @@
 import { thunkCreator } from './utils'
 
-//~~~
+// ~~~
 
 export const INSTANCES_REQUEST = 'INSTANCES_REQUEST'
 export const INSTANCES_SUCCESS = 'INSTANCES_SUCCESS'
@@ -12,7 +12,7 @@ export const fetchInstances = () => thunkCreator({
     .then(response => response.json()),
 })
 
-//~~~
+// ~~~
 
 export const INSTANCE_UPDATE_REQUEST = 'INSTANCE_UPDATE_REQUEST'
 export const INSTANCE_UPDATE_SUCCESS = 'INSTANCE_UPDATE_SUCCESS'
@@ -29,7 +29,7 @@ export const updateInstance = (id, data) => thunkCreator({
   }).then(response => response.json()),
 })
 
-//~~~
+// ~~~
 
 export const INSTANCE_DELETE_REQUEST = 'INSTANCE_DELETE_REQUEST'
 export const INSTANCE_DELETE_SUCCESS = 'INSTANCE_DELETE_SUCCESS'
@@ -41,7 +41,7 @@ export const deleteInstance = (id, data) => thunkCreator({
     .then(response => response.json()),
 })
 
-//~~~
+// ~~~
 
 export const CREATE_INSTANCE_REQUEST = 'CREATE_INSTANCE_REQUEST'
 export const CREATE_INSTANCE_SUCCESS = 'CREATE_INSTANCE_SUCCESS'
