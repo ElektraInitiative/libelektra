@@ -1,4 +1,6 @@
 {
+	"APP.AUTH.LOGIN.ALERT.ADVANTAGE_INFO.MSG": "A user account on our page enables you to share your own configuration snippets. It also allows us to give additional permissions to users (moderative abilities). To be an active member of our community, you should definitely have an account and share your own snippets!",
+	"APP.AUTH.LOGIN.ALERT.ADVANTAGE_INFO.TITLE": "What is this login for?",
     "APP.AUTH.LOGIN.BUTTON.REGISTER": "Go to registration",
     "APP.AUTH.LOGIN.BUTTON.SUBMIT": "Sign in",
     "APP.AUTH.LOGIN.LABEL.USERNAME": "Username:",

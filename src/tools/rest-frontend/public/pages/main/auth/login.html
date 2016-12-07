@@ -7,6 +7,14 @@
                 </h4>
             </div>
             <div class="panel-body">
+				<div class="alert alert-info col-md-10 col-md-offset-1" role="alert">
+					<h4>
+						<i class="fa fa-info-circle md-pr-10"></i>
+						<span>{{ 'APP.AUTH.LOGIN.ALERT.ADVANTAGE_INFO.TITLE' | translate }}</span>
+					</h4>
+					<p>{{ 'APP.AUTH.LOGIN.ALERT.ADVANTAGE_INFO.MSG' | translate }}</p>
+				</div>
+
                 <form name="loginForm" class="form-horizontal">
                     <div class="form-group has-feedback"
                          ng-class="{'has-error': loginForm.username.$invalid && !loginForm.username.$pristine,
