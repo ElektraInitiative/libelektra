@@ -297,7 +297,7 @@
     "APP.HOME.LABEL.ORIENTATION.1.HEADLINE": "Develop custom plugin",
     "APP.HOME.LABEL.ORIENTATION.2.DETAILS": "Of course you can use Elektra also outside a C or C++ environment. Have a look at our <a ui-sref=\"main.dyn.bindings\">language bindings</a>!",
     "APP.HOME.LABEL.ORIENTATION.2.HEADLINE": "Use Elektra outside C/C++",
-    "APP.HOME.LABEL.ORIENTATION.3.DETAILS": "Of course we can! A project like Elektra asks periodically for <a ui-sref=\"main.dyn.decisions\">decisions</a>!",
+    "APP.HOME.LABEL.ORIENTATION.3.DETAILS": "Of course we can! An initiative like Elektra asks periodically for <a ui-sref=\"main.dyn.decisions\">decisions</a>! We welcome everyone to join the discussions!",
     "APP.HOME.LABEL.ORIENTATION.3.HEADLINE": "Can you elaborate on the Why?",
     
     "APP.NAV.BUTTON.LOGIN": "Login",
