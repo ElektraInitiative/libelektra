@@ -47,17 +47,13 @@ module.exports = function ($rootScope, $scope, Logger, $state, UserService) {
 
     $scope.searchResult = {};
 
-    // update search string
-    $rootScope.$watch('usersSearchString', function () {
-        $scope.options.filter = $rootScope.usersSearchString;
-    });
-
     $scope.$watch('options', function () {
         vm.loadEntries();
     }, true); // true for object deep-watching
 
 
     this.loadEntries = function () {
+		$scope.options.filter = $rootScope.usersSearchString;
         if ($scope.options.filter && $scope.options.filter.length !== 0) {
             var params = {
                 filter: $scope.options.filter,
