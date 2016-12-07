@@ -56,5 +56,5 @@ The configuration view of elektra web is similar to the tree view of the
 
 [API blueprints](https://apiblueprint.org/) are available for both APIs:
 
- * [elektrad](https://github.com/omnidan/libelektra/elektra-web/doc/apiblueprints/elektrad.apib), documentation: http://docs.elektrad.apiary.io/
- * [clusterd](https://github.com/omnidan/libelektra/elektra-web/doc/apiblueprints/clusterd.apib), documentation: http://docs.clusterd.apiary.io/
+ * [elektrad](https://github.com/omnidan/libelektra/blob/http-api-proposal/doc/apiblueprints/elektrad.apib), documentation: http://docs.elektrad.apiary.io/
+ * [clusterd](https://github.com/omnidan/libelektra/blob/http-api-proposal/doc/apiblueprints/clusterd.apib), documentation: http://docs.clusterd.apiary.io/
