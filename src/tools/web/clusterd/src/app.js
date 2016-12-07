@@ -4,7 +4,7 @@ import serveClient from './serveClient'
 import path from 'path'
 
 import initRoutes from './routes'
-import { PORT } from './constants'
+import { PORT } from './config'
 
 export default function initApp (cb) {
   const app = express()

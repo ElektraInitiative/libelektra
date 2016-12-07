@@ -1,6 +1,6 @@
 export { v4 as generateId } from 'node-uuid'
 
-const ROOT_PATH = 'user/sw/elektra/web/#0/current'
+import { ROOT_PATH } from '../config'
 
 export const path = (path) =>
   ROOT_PATH + '/' + path
