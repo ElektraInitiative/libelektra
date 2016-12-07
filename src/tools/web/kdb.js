@@ -43,7 +43,19 @@ const safeExec = (script) => new Promise((resolve, reject) =>
 // escape strings by surrounding them with ""
 const escapeValues = (template, ...values) =>
   template.reduce((acc, part, i) => {
-    let val = values[i - 1]
+    /*
+    Explanation of regular expression:
+    - $1 `(\\\\)*` Matches an even number of _backslashes_
+    - $4 Matches one _quote_ when there was an odd number of backslashes
+    - $5 Matches one _quote_ when there was an even number of backslashes
+
+    For instance in `\\\\\"`, $1 is `\\\\`, $4 is `"` and $5 is an empty string.
+    So `\\\\\"` gets replaced to itself.
+    In case of an even number of backslashes one backslash is added.
+
+    (source: @krit0n - https://github.com/ElektraInitiative/libelektra/pull/983#discussion_r83965059)
+    */
+    let val = values[i - 1].replace(/((\\\\)*)(\\(")|("))/g, '$1\\$4$5'))
     if (typeof val === 'string') val = `"${val}"`
     return acc + val + part
   })
