@@ -147,6 +147,16 @@ So do not give this responsibility out of hands entirely.
 
 **Example:** [src/bindings/cpp/include/kdb.hpp](/src/bindings/cpp/include/kdb.hpp)
 
+### Markdown Guidelines ###
+
+ * File Ending is `.md` or integrated within Doxygen
+ * Headers with same number of `#` left and right
+ * Use tabs or fences for code/examples
+ * Fences with sh are for the [shell recorder syntax](tests/shell/shell_recorder/tutorial_wrapper)
+ * `README.md` and tutorials should be written exclusively with shell recorder syntax
+   so that we know that the code in the tutorial produces output as expected
+
+
 ### Doxygen Guidelines ###
 
 `doxygen` is used to document the API and to build the html and pdf output.
