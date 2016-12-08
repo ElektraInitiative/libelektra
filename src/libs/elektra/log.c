@@ -128,8 +128,8 @@ int elektraVLog (int level ELEKTRA_UNUSED, const char * function ELEKTRA_UNUSED,
 
 #ifndef NO_FILTER
 	// XXX Filter level here globally (for every sink)
-	// by default: discard everything except warnings+assertions
-	if (level <= ELEKTRA_LOG_LEVEL) goto end;
+	// by default: discard everything except warnings+assertions for libs
+	if (strncmp (file, "src/tools/", sizeof ("src/tools")) && level <= ELEKTRA_LOG_LEVEL) goto end;
 
 	// or e.g. discard everything, but log statements from simpleini.c:
 	// if (strcmp (file, "src/plugins/simpleini/simpleini.c")) goto end;
