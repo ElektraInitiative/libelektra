@@ -12,11 +12,11 @@
 #include <QAbstractListModel>
 #include <QDebug>
 #include <QList>
+#include <QtDBus/QtDBus>
 #include <QtQml>
 #include <backend.hpp>
 #include <kdb.hpp>
 #include <keyio.hpp>
-#include <QtDBus/QtDBus>
 
 #include <merging/automergeconfiguration.hpp>
 #include <merging/mergingkdb.hpp>
@@ -299,10 +299,10 @@ private:
 	 */
 	kdb::tools::merging::MergeConflictStrategy * getMergeStrategy (const QString & mergeStrategy);
 
-        /**
+	/**
          * @brief Connect to system D-Bus
          */
-        void connectDBus();
+	void connectDBus ();
 
 protected:
 	QHash<int, QByteArray> roleNames () const override;
@@ -339,7 +339,7 @@ public slots:
 	 *
 	 * @param msg
 	 */
-	void configChanged ( QString msg );
+	void configChanged (QString msg);
 };
 
 Q_DECLARE_METATYPE (TreeViewModel)

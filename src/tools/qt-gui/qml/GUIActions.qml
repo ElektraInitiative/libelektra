@@ -415,7 +415,9 @@ Item {
 		checked: guiSettings.viewermode
 		onCheckedChanged: {
 			guiSettings.viewermode = checked
-			guiSettings.setKDB()
+
+			if(undoManager.isClean())
+				guiSettings.setKDB()
 		}
 		text: qsTr("Viewermode")
 	}

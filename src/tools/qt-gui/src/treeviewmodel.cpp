@@ -17,6 +17,7 @@
 #include <plugins.hpp>
 #include <toolexcept.hpp>
 
+#include "kdblogger.h"
 #include <merging/automergeconfiguration.hpp>
 #include <merging/automergestrategy.hpp>
 #include <merging/mergeconflictstrategy.hpp>
@@ -37,7 +38,7 @@ TreeViewModel::TreeViewModel (QObject * parentModel) : m_root ("/", KEY_END), m_
 TreeViewModel::TreeViewModel (MergingKDB * kdb, QObject * parentModel) : m_root ("/", KEY_END), m_kdb (kdb)
 {
 	Q_UNUSED (parentModel);
-        connectDBus();
+	connectDBus ();
 }
 
 TreeViewModel::TreeViewModel (const TreeViewModel & other)
@@ -792,32 +793,33 @@ void TreeViewModel::showConfigNodeMessage (QString title, QString text, QString 
 	emit showMessage (title, text, detailedText);
 }
 
-void TreeViewModel::connectDBus()
+void TreeViewModel::connectDBus ()
 {
-    if ( QDBusConnection::sessionBus().connect( QString(), "/org/libelektra/configuration", "org.libelektra", QString(), this, SLOT( configChanged( QString ) ) ) )
-    {
-        #if DEBUG && VERBOSE
-            fprintf(stderr, "=================== Successfully connected to DBus\n" );
-        #endif
-    }
-    else
-    {
-        #if DEBUG && VERBOSE
-            fprintf(stderr, "=================== Failed to connect to DBus\n" );
-        #endif
-    }
+	if (QDBusConnection::sessionBus ().connect (QString (), "/org/libelektra/configuration", "org.libelektra", QString (), this,
+						    SLOT (configChanged (QString))))
+	{
+#if DEBUG && VERBOSE
+		ELEKTRA_LOG ("Successfully connected to DBus");
+#endif
+	}
+	else
+	{
+#if DEBUG && VERBOSE
+		ELEKTRA_LOG ("Failed to connect to DBus");
+#endif
+	}
 }
 
-void TreeViewModel::configChanged( QString msg )
+void TreeViewModel::configChanged (QString msg)
 {
-    #if DEBUG && VERBOSE
-        fprintf( stdout, "config changed: %s\n", msg.toLocal8Bit().data() );
-    #else
-        Q_UNUSED(msg)
-    #endif
+#if DEBUG && VERBOSE
+	fprintf (stdout, "config changed: %s\n", msg.toLocal8Bit ().data ());
+#else
+	Q_UNUSED (msg)
+#endif
 
-    synchronize();
-    refresh();
+	synchronize ();
+	refresh ();
 }
 
 QHash<int, QByteArray> TreeViewModel::roleNames () const

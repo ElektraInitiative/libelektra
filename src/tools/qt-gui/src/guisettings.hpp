@@ -23,7 +23,8 @@ class GUISettings : public QObject
 	Q_PROPERTY (QColor highlightColor READ highlightColor () WRITE setHighlightColor (QColor) NOTIFY highlightColorChanged ())
 	Q_PROPERTY (QColor frameColor READ frameColor () WRITE setFrameColor (QColor) NOTIFY frameColorChanged ())
 	Q_PROPERTY (QColor nodeWithKeyColor READ nodeWithKeyColor () WRITE setNodeWithKeyColor (QColor) NOTIFY nodeWithKeyColorChanged ())
-	Q_PROPERTY (QColor nodeWithoutKeyColor READ nodeWithoutKeyColor () WRITE setNodeWithoutKeyColor (QColor) NOTIFY nodeWithoutKeyColorChanged ())
+	Q_PROPERTY (QColor nodeWithoutKeyColor READ nodeWithoutKeyColor () WRITE setNodeWithoutKeyColor (QColor)
+			    NOTIFY nodeWithoutKeyColorChanged ())
 	Q_PROPERTY (bool useSystemIconTheme READ useSystemIconTheme () WRITE useSystemIconTheme (bool) NOTIFY useSystemIconThemeChanged ())
 	Q_PROPERTY (bool viewermode READ viewermode () WRITE setViewermode (bool) NOTIFY viewermodeChanged ())
 
@@ -83,7 +84,7 @@ public:
 	 */
 	Q_INVOKABLE void reset ();
 
-	bool viewermode() const;
+	bool viewermode () const;
 
 public slots:
 	/**
@@ -116,7 +117,7 @@ public slots:
 	 */
 	void useSystemIconTheme (const bool & use);
 
-	void setViewermode(bool viewermode);
+	void setViewermode (bool vmode);
 
 signals:
 	/**
@@ -146,9 +147,9 @@ signals:
 	 */
 	void useSystemIconThemeChanged ();
 
-        /**
-         * @brief This signal is emitted if the viewermode setting has changed.
-         */
+	/**
+		 * @brief This signal is emitted if the viewermode setting has changed.
+		 */
 	void viewermodeChanged ();
 
 private:
