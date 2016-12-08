@@ -146,6 +146,9 @@ signals:
 	 */
 	void useSystemIconThemeChanged ();
 
+        /**
+         * @brief This signal is emitted if the viewermode setting has changed.
+         */
 	void viewermodeChanged ();
 
 private:
