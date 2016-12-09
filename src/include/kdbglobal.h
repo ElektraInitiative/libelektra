@@ -10,8 +10,8 @@
 #define ELEKTRA_KDBGLOBAL_H
 
 #include <kdb.h>
-#include <kdbplugin.h>
 #include <kdbconfig.h>
+#include <kdbplugin.h>
 
 /**
  * Helper for identifying global plugin positions
