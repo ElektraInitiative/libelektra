@@ -13,6 +13,8 @@
 #include <kdberrors.h>
 #include <kdbhelper.h>
 
+#include <kdblogger.h>
+
 
 int elektraCachefilterGet (Plugin * handle, KeySet * returned, Key * parentKey)
 {
@@ -32,6 +34,7 @@ int elektraCachefilterGet (Plugin * handle, KeySet * returned, Key * parentKey)
 		return 1; // success
 	}
 
+	ELEKTRA_LOG ("cachefilter get %s start %zd", keyName (parentKey), ksGetSize (returned));
 	// initialize working KeySets
 	KeySet * toBeCached = 0;
 
@@ -61,12 +64,14 @@ int elektraCachefilterGet (Plugin * handle, KeySet * returned, Key * parentKey)
 
 	// point the plugin data to the cached keyset
 	elektraPluginSetData (handle, toBeCached);
+	ELEKTRA_LOG ("cachefilter get %s end %zd", keyName (parentKey), ksGetSize (returned));
 
 	return 1; // success
 }
 
 int elektraCachefilterSet (Plugin * handle, KeySet * returned, Key * parentKey)
 {
+	ELEKTRA_LOG ("cachefilter set %s begin %zd", keyName (parentKey), ksGetSize (returned));
 	// get cached keys
 	void * cache = elektraPluginGetData (handle);
 	if (cache == NULL)
@@ -80,9 +85,10 @@ int elektraCachefilterSet (Plugin * handle, KeySet * returned, Key * parentKey)
 
 	// first remove all keys from the cache that match the parentKey
 	// but are not in the returned keyset anymore (deleted keys)
-	(void*) ksCut (cachedKeys, parentKey);
+	(void *)ksCut (cachedKeys, parentKey);
 	ksAppend (cachedKeys, returned);
 	ksAppend (returned, cachedKeys);
+	ELEKTRA_LOG ("cachefilter set %s end %zd", keyName (parentKey), ksGetSize (returned));
 
 	return 1; // success
 }
