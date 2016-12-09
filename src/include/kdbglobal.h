@@ -11,6 +11,7 @@
 
 #include <kdb.h>
 #include <kdbplugin.h>
+#include <kdbconfig.h>
 
 /**
  * Helper for identifying global plugin positions
@@ -49,8 +50,8 @@ typedef enum { FOREACH_POSITION (GENERATE_ENUM) } GlobalpluginPositions;
 
 typedef enum { FOREACH_SUBPOSITION (GENERATE_ENUM) } GlobalpluginSubPositions;
 
-static const char * GlobalpluginPositionsStr[] = { FOREACH_POSITION (GENERATE_STRING) };
+static const char * GlobalpluginPositionsStr[] ELEKTRA_UNUSED = { FOREACH_POSITION (GENERATE_STRING) };
 
-static const char * GlobalpluginSubPositionsStr[] = { FOREACH_SUBPOSITION (GENERATE_STRING) };
+static const char * GlobalpluginSubPositionsStr[] ELEKTRA_UNUSED = { FOREACH_SUBPOSITION (GENERATE_STRING) };
 
 #endif // ELEKTRA_KDBGLOBAL_H
