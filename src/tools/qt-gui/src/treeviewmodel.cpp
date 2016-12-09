@@ -798,25 +798,18 @@ void TreeViewModel::connectDBus ()
 	if (QDBusConnection::sessionBus ().connect (QString (), "/org/libelektra/configuration", "org.libelektra", QString (), this,
 						    SLOT (configChanged (QString))))
 	{
-#if DEBUG && VERBOSE
 		ELEKTRA_LOG ("Successfully connected to DBus");
-#endif
 	}
 	else
 	{
-#if DEBUG && VERBOSE
 		ELEKTRA_LOG ("Failed to connect to DBus");
-#endif
 	}
 }
 
 void TreeViewModel::configChanged (QString msg)
 {
-#if DEBUG && VERBOSE
-	fprintf (stdout, "config changed: %s\n", msg.toLocal8Bit ().data ());
-#else
 	Q_UNUSED (msg)
-#endif
+	ELEKTRA_LOG ("config changed: %s", msg.toLocal8Bit ().data ());
 
 	synchronize ();
 	refresh ();
