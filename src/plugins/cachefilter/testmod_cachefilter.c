@@ -47,18 +47,16 @@ static KeySet * createTestKeysToNotCache ()
 
 static KeySet * createTestKeysToNotCacheCascading ()
 {
-	return ksNew (3, 
-			keyNew ("user/tests/cachefilter/will/not/be/cached/with/directory/key1", KEY_END),
-			keyNew ("user/tests/cachefilter/will/not/be/cached/with/directory/key2", KEY_END),
-			keyNew ("user/tests/cachefilter/will/not/be/cached/with/directory/key3", KEY_END));
+	return ksNew (3, keyNew ("user/tests/cachefilter/will/not/be/cached/with/directory/key1", KEY_END),
+		      keyNew ("user/tests/cachefilter/will/not/be/cached/with/directory/key2", KEY_END),
+		      keyNew ("user/tests/cachefilter/will/not/be/cached/with/directory/key3", KEY_END));
 }
 
 static KeySet * createTestKeysToNotCacheSiblings ()
 {
-	return ksNew (3,
-			keyNew ("user/tests/cachefilter/will/not/be/cached/for/whatever/key1", KEY_END),
-			keyNew ("user/tests/cachefilter/will/not/be/cached/for/whatever/key2", KEY_END),
-			keyNew ("user/tests/cachefilter/will/not/be/cached/for/whatever/key3", KEY_END));
+	return ksNew (3, keyNew ("user/tests/cachefilter/will/not/be/cached/for/whatever/key1", KEY_END),
+		      keyNew ("user/tests/cachefilter/will/not/be/cached/for/whatever/key2", KEY_END),
+		      keyNew ("user/tests/cachefilter/will/not/be/cached/for/whatever/key3", KEY_END));
 }
 
 static void test_successfulCache ()
@@ -262,7 +260,7 @@ static void test_successfulGetGetGet ()
 	KeySet * testKeysCache = createTestKeysToCache ();
 	KeySet * testKeysNoCache = createTestKeysToNotCache ();
 	KeySet * testKeysNoCacheCascading = createTestKeysToNotCacheCascading ();
-	
+
 	// first kdbGet()
 	ks = ksNew (0, KS_END);
 	ksAppend (ks, testKeysCache);
@@ -280,7 +278,7 @@ static void test_successfulGetGetGet ()
 	compare_keyset (ks, expected);
 	ksDel (expected);
 	ksDel (ks);
-	
+
 	// second kdbGet(), this keys do now all come from cache
 	ks = ksNew (0, KS_END);
 
@@ -294,7 +292,7 @@ static void test_successfulGetGetGet ()
 	compare_keyset (ks, expected);
 	ksDel (expected);
 	ksDel (ks);
-	
+
 	// third kdbGet(), this keys do also all come from cache
 	ks = ksNew (0, KS_END);
 
@@ -315,7 +313,7 @@ static void test_successfulGetGetGet ()
 	ksDel (testKeysCache);
 	ksDel (testKeysNoCache);
 	ksDel (testKeysNoCacheCascading);
-	
+
 	PLUGIN_CLOSE ();
 }
 
@@ -330,7 +328,7 @@ static void test_successfulSiblingGets ()
 	KeySet * expected;
 	KeySet * testKeysNoCacheCascading = createTestKeysToNotCacheCascading ();
 	KeySet * testKeysNoCacheSiblings = createTestKeysToNotCacheSiblings ();
-	
+
 	// first kdbGet()
 	ks = ksNew (0, KS_END);
 	ksAppend (ks, testKeysNoCacheCascading);
@@ -345,11 +343,11 @@ static void test_successfulSiblingGets ()
 	compare_keyset (ks, expected);
 	ksDel (expected);
 	ksDel (ks);
-	
+
 	// second kdbGet()
 	ks = ksNew (0, KS_END);
 	ksAppend (ks, testKeysNoCacheSiblings);
-	
+
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey2) >= 1, "call to kdbGet was not successful");
 	succeed_if (output_error (parentKey2), "error in kdbGet");
 	succeed_if (output_warnings (parentKey2), "warnings in kdbGet");
@@ -360,10 +358,10 @@ static void test_successfulSiblingGets ()
 	compare_keyset (ks, expected);
 	ksDel (expected);
 	ksDel (ks);
-	
+
 	// third kdbGet()
 	ks = ksNew (0, KS_END);
-	
+
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) >= 1, "call to kdbGet was not successful");
 	succeed_if (output_error (parentKey), "error in kdbGet");
 	succeed_if (output_warnings (parentKey), "warnings in kdbGet");
@@ -374,10 +372,10 @@ static void test_successfulSiblingGets ()
 	compare_keyset (ks, expected);
 	ksDel (expected);
 	ksDel (ks);
-	
+
 	// fourth kdbGet()
 	ks = ksNew (0, KS_END);
-	
+
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey2) >= 1, "call to kdbGet was not successful");
 	succeed_if (output_error (parentKey2), "error in kdbGet");
 	succeed_if (output_warnings (parentKey2), "warnings in kdbGet");
@@ -393,7 +391,7 @@ static void test_successfulSiblingGets ()
 	keyDel (parentKey2);
 	ksDel (testKeysNoCacheCascading);
 	ksDel (testKeysNoCacheSiblings);
-	
+
 	PLUGIN_CLOSE ();
 }
 
