@@ -163,7 +163,10 @@ module.exports = function (grunt) {
             build: {
                 files: [
                     {
-                        src: [],
+                        cwd: '<%= global.repository.root %>/doc/images',
+                        src: [
+                            'qtgui.png'
+                        ],
                         dest: '<%= grunt.config(\'copy-website-content.build.target_dir\') %>/img',
                         expand: true
                     }
