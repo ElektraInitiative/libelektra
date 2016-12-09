@@ -1,5 +1,5 @@
 <div class="row">
-    <div class="col-md-3">
+    <div class="col-md-3" ng-if="files.length > 1">
         <div class="panel panel-default">
             <div class="panel-body">
                 <ul class="nav nav-pills nav-stacked">
@@ -19,7 +19,7 @@
             </div>
         </div>
     </div>
-    <div class="col-md-9">
+    <div ng-class="{'col-md-9': files.length > 1, 'col-md-12': files.length <= 1}">
         <div class="panel panel-default">
             <div class="panel-body">
                 <div class="docu markdown" id="markdown-document">

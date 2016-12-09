@@ -4,6 +4,7 @@ module.exports = function ($rootScope, $scope, Logger, $state, $anchorScroll, we
 
     var vm = this;
     $scope.$rootScope = $rootScope;
+	$scope.$state = $state;
 
     // build the dynamic menu
     $scope.menu = webStructure;
