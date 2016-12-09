@@ -165,7 +165,8 @@ module.exports = function (grunt) {
                     {
                         cwd: '<%= global.repository.root %>/doc/images',
                         src: [
-                            'qtgui.png'
+                            'qtgui.png',
+                            'web-gui-kdb.png'
                         ],
                         dest: '<%= grunt.config(\'copy-website-content.build.target_dir\') %>/img',
                         expand: true
