@@ -46,7 +46,6 @@ int main (int argc, char * argv[])
 	app.setOrganizationName ("ElektraInitiative");
 	app.setOrganizationDomain ("libelektra.org");
 	app.setApplicationName ("org.libelektra.elektra-qt-editor");
-	app.setApplicationDisplayName ("Elektra Qt Editor");
 
 	QQmlApplicationEngine engine;
 	QQmlContext * ctxt = engine.rootContext ();
