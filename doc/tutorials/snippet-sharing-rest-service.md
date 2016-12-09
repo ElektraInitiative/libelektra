@@ -225,3 +225,129 @@ request that does not access a static file (js, css, png, md, etc.). If you omit
 this step, it will not be possible to use direct links to access resources of the
 frontend; accessing the frontend from the `index.html` will still work though.
 
+## Example Structure ##
+
+The following is a description of the setup we used for the Elektra website
+reachable at https://www.libelektra.org.
+
+### Web Server ###
+
+As web server we are using an Apache2 with the version coming with Debian Jessie.
+Several domains are used for different tasks, whereas only two are relevant for
+the here described service:
+
+- `restapi.libelektra.org` for the API provided by the `rest-backend`
+- `www.libelektra.org` for the website and frontend provided by the `rest-frontend`
+
+The server redirects requests on port 80 (non-SSL) to 443 using a very simple
+configuration like
+```
+# file: /etc/apache2/sites-available/www.libelektra.org.conf
+<VirtualHost *:80>
+    ServerName www.libelektra.org
+    Redirect permanent / https://www.libelektra.org/
+</VirtualHost>
+```
+for the `www.libelektra.org` domain (similar for `restapi.libelektra.org`).
+
+The secured variant of the configuration looks like
+```
+# file: /etc/apache2/sites-available/www.libelektra.org-le-ssl.conf
+<IfModule mod_ssl.c>
+<VirtualHost *:443>
+    ServerName www.libelektra.org
+
+    DocumentRoot "/usr/local/share/elektra/tool_data/rest-frontend/public"
+    <Directory />
+        FallbackResource /index.html
+        Options Indexes MultiViews
+        AllowOverride None
+        Require all granted
+        Allow from all
+    </Directory>
+
+    LogLevel info
+	ErrorLog ${APACHE_LOG_DIR}/error.log
+	CustomLog ${APACHE_LOG_DIR}/access.log combined
+
+    SSLCertificateFile /etc/letsencrypt/live/www.libelektra.org/fullchain.pem
+    SSLCertificateKeyFile /etc/letsencrypt/live/www.libelektra.org/privkey.pem
+    Include /etc/letsencrypt/options-ssl-apache.conf
+</VirtualHost>
+</IfModule>
+```
+Important is the `Directory` configuration because the `rest-frontend` requires the
+`FallbackResource` option to function correctly.
+
+For the `restapi.libelektra.org` domain we use an SCGI setup:
+```
+# file: /etc/apache2/sites-available/restapi.libelektra.org-le-ssl.conf
+<IfModule mod_ssl.c>
+<VirtualHost *:443>
+    ServerName restapi.libelektra.org
+    SCGIMount / 127.0.0.1:8081
+    ... other options (similar to above) ...
+</VirtualHost>
+</IfModule>
+```
+
+### rest-backend ###
+
+The `rest-backend` is configured normally, but with CppCMS using SCGI instead
+of HTTP as API variant. This requires setting the keys
+```
+> kdb set system/sw/elektra/restbackend/#0/current/cppcms/service/api "scgi"
+> kdb set system/sw/elektra/restbackend/#0/current/cppcms/service/ip "127.0.0.1"
+> kdb set system/sw/elektra/restbackend/#0/current/cppcms/service/port 8081
+```
+
+Additionally we are using a worker process, which ensures that in case of a crash
+the backend restarts automatically (= basically supervisor + worker). Config:
+```
+> kdb set system/sw/elektra/restbackend/#0/current/cppcms/service/worker_processes 1
+```
+
+### rest-frontend ###
+
+Because of the apache server using the rest-frontend installation directory as
+document root, there is no further configuration necessary other than already
+explained in the configuration section above.
+
+### Jenkins Build Script ###
+
+The build script basically builds the applications, runs tests, installs everything
+and restarts the backend. Finally, it can run the configuration script for the frontend,
+which updates the website content.
+
+Current script:
+```
+# build the applications
+export HOME=$WORKSPACE/user
+mkdir -p build
+cd build
+cmake -DPLUGINS='ALL;-fstab;-semlock' -DBUILD_FULL=OFF -DBUILD_SHARED=ON -DBUILD_STATIC=OFF -DBUILD_DOCUMENTATION=OFF -DTOOLS='kdb;rest-backend;rest-frontend' ..
+make -j 3
+
+# test the applications
+make test
+
+# if tests were ok, we can install
+make install
+
+# now lets first output some version information
+kdb --version
+
+# then restart the backend (start is done by another script)
+kdb stop-rest-backend
+kdb run-rest-backend
+
+# we have to make sure the backend had time to start before we can go on
+sleep 60
+
+# and finally re-compile the frontend
+kdb configure-rest-frontend
+```
+
+The sleep between the start of the backend and the frontend configuration ensures
+that the backend is really started (necessary because the command `kdb run-rest-backend`
+runs in the background).
