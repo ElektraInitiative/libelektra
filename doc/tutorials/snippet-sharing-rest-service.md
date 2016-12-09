@@ -225,3 +225,120 @@ request that does not access a static file (js, css, png, md, etc.). If you omit
 this step, it will not be possible to use direct links to access resources of the
 frontend; accessing the frontend from the `index.html` will still work though.
 
+## Example Structure ##
+
+The following is a description of the setup we used for the Elektra website
+reachable at https://www.libelektra.org.
+
+We assume that Elektra is now installed to the default path on Debian Jessie,
+which is `/usr/local`.
+
+### Web Server ###
+
+As web server we are using an Apache2 with the version coming with Debian Jessie.
+Several domains are used for different tasks, whereas only two are relevant for
+the here described service:
+
+- `restapi.libelektra.org` for the API provided by the `rest-backend`
+- `www.libelektra.org` for the website and frontend provided by the `rest-frontend`
+
+The server redirects requests on port 80 (non-SSL) to 443 using a very simple
+configuration like
+```
+# file: /etc/apache2/sites-available/www.libelektra.org.conf
+<VirtualHost *:80>
+    ServerName www.libelektra.org
+    Redirect permanent / https://www.libelektra.org/
+</VirtualHost>
+```
+for the `www.libelektra.org` domain (similar for `restapi.libelektra.org`).
+
+The secured variant of the configuration looks like
+```
+# file: /etc/apache2/sites-available/www.libelektra.org-le-ssl.conf
+<IfModule mod_ssl.c>
+<VirtualHost *:443>
+    ServerName www.libelektra.org
+
+    DocumentRoot "/usr/local/share/elektra/tool_data/rest-frontend/public"
+    <Directory />
+        FallbackResource /index.html
+        Options Indexes MultiViews
+        AllowOverride None
+        Require all granted
+        Allow from all
+    </Directory>
+
+    LogLevel info
+	ErrorLog ${APACHE_LOG_DIR}/error.log
+	CustomLog ${APACHE_LOG_DIR}/access.log combined
+
+    SSLCertificateFile /etc/letsencrypt/live/www.libelektra.org/fullchain.pem
+    SSLCertificateKeyFile /etc/letsencrypt/live/www.libelektra.org/privkey.pem
+    Include /etc/letsencrypt/options-ssl-apache.conf
+</VirtualHost>
+</IfModule>
+```
+Important is the `Directory` configuration because the `rest-frontend` requires the
+`FallbackResource` option to function correctly.
+
+For the `restapi.libelektra.org` domain we use an SCGI setup:
+```
+# file: /etc/apache2/sites-available/restapi.libelektra.org-le-ssl.conf
+<IfModule mod_ssl.c>
+<VirtualHost *:443>
+    ServerName restapi.libelektra.org
+
+    SCGIMount / 127.0.0.1:8081
+
+    LogLevel info
+	ErrorLog ${APACHE_LOG_DIR}/error.log
+	CustomLog ${APACHE_LOG_DIR}/access.log combined
+
+    SSLCertificateFile /etc/letsencrypt/live/restapi.libelektra.org/fullchain.pem
+    SSLCertificateKeyFile /etc/letsencrypt/live/restapi.libelektra.org/privkey.pem
+    Include /etc/letsencrypt/options-ssl-apache.conf
+</VirtualHost>
+</IfModule>
+```
+
+### rest-backend ###
+
+The `rest-backend` itself is configured normally as described in the configuration
+section above, but with CppCMS using SCGI instead of HTTP as API variant.
+This requires setting the keys
+```
+> kdb set system/sw/elektra/restbackend/#0/current/cppcms/service/api "scgi"
+> kdb set system/sw/elektra/restbackend/#0/current/cppcms/service/ip "127.0.0.1"
+> kdb set system/sw/elektra/restbackend/#0/current/cppcms/service/port 8081
+```
+
+Additionally we are using a worker process, which ensures that in case of a crash
+the backend restarts automatically (= basically supervisor + worker). Config:
+```
+> kdb set system/sw/elektra/restbackend/#0/current/cppcms/service/worker_processes 1
+```
+
+Configuration snippets and users are stored at `system/configs` and `system/users`:
+```
+> kdb set system/sw/elektra/restbackend/#0/current/backend/kdb/path/configs = system/configs
+> kdb set system/sw/elektra/restbackend/#0/current/backend/kdb/path/users = system/users
+```
+
+### rest-frontend ###
+
+Because of the apache server using the rest-frontend installation directory as
+document root, there is no further configuration necessary other than already
+explained in the configuration section above.
+
+During the build, the frontend will be recompiled. It is not taken offline for this
+though and everything that is necessary to accomplish a clean deployment is taken
+care of by the compile script as well.
+
+### Jenkins Build Script ###
+
+The build script basically builds the applications, runs tests, installs everything
+and restarts the backend. Finally, it can run the configuration script for the frontend,
+which updates the website content.
+
+The current build script can be found [here](/scripts/build-homepage).

@@ -1,0 +1,33 @@
+#!/bin/sh
+
+# build the applications
+export HOME=$WORKSPACE/user
+mkdir -p build
+cd build
+cmake -DPLUGINS='ALL;-fstab;-semlock' -DBUILD_FULL=OFF -DBUILD_SHARED=ON -DBUILD_STATIC=OFF -DBUILD_DOCUMENTATION=OFF -DTOOLS='kdb;rest-backend;rest-frontend' ..
+make -j 3
+
+# test the applications
+make test
+
+# if tests were ok, we can install
+make install
+
+# now lets first output some version information for the build log
+kdb --version
+
+# then restart the backend
+kdb stop-rest-backend
+kdb run-rest-backend
+
+# we have to make sure the backend had time to start before we can go on
+# (necessary because the command `kdb run-rest-backend` runs in the background)
+sleep 60
+
+# and finally re-compile the frontend
+# - the old frontend is still alive and does not get taken offline (not necessary)
+# - the configuration script does also take care of deleting old files,
+#   every configuration run will first clean the deployment directory and copy
+#   required files afterwards, ensuring an always up-to-date deployment
+kdb configure-rest-frontend
+
