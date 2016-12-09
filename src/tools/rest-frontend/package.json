@@ -37,6 +37,7 @@
         "grunt-concat": "^0.1.6",
         "grunt-contrib-concat": "^1.0.1",
         "grunt-contrib-connect": "^1.0.2",
+        "grunt-contrib-copy": "^1.0.0",
         "grunt-contrib-cssmin": "latest",
         "grunt-contrib-jshint": "latest",
         "grunt-contrib-less": "latest",
