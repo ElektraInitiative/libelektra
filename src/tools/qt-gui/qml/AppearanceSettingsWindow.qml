@@ -15,7 +15,8 @@ BasicWindow {
 		anchors.margins: defaultMargins
 		spacing: defaultSpacing
 		GroupBox {
-			id: "colorSettings"
+			id: colorSettings
+
 			anchors.top: parent.top
 			anchors.left: parent.left
 			anchors.leftMargin: (parent.parent.width - width) / 2 - width / 16

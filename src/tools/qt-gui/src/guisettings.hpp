@@ -26,6 +26,7 @@ class GUISettings : public QObject
 	Q_PROPERTY (QColor nodeWithoutKeyColor READ nodeWithoutKeyColor () WRITE setNodeWithoutKeyColor (QColor)
 			    NOTIFY nodeWithoutKeyColorChanged ())
 	Q_PROPERTY (bool useSystemIconTheme READ useSystemIconTheme () WRITE useSystemIconTheme (bool) NOTIFY useSystemIconThemeChanged ())
+	Q_PROPERTY (bool viewermode READ viewermode () WRITE setViewermode (bool) NOTIFY viewermodeChanged ())
 
 public:
 	/**
@@ -83,6 +84,8 @@ public:
 	 */
 	Q_INVOKABLE void reset ();
 
+	bool viewermode () const;
+
 public slots:
 	/**
 	 * @brief setHighlightColor Sets the new highlight color.
@@ -114,6 +117,8 @@ public slots:
 	 */
 	void useSystemIconTheme (const bool & use);
 
+	void setViewermode (bool vmode);
+
 signals:
 	/**
 	 * @brief highlightColorChanged This signal is emitted if the highlight color is changed. The view will update accordingly.
@@ -142,6 +147,11 @@ signals:
 	 */
 	void useSystemIconThemeChanged ();
 
+	/**
+		 * @brief This signal is emitted if the viewermode setting has changed.
+		 */
+	void viewermodeChanged ();
+
 private:
 	void setDefaults ();
 	void getKDB ();
@@ -154,6 +164,7 @@ private:
 	QColor m_nodeWithoutKeyColor;
 
 	bool m_useSystemIconTheme;
+	bool m_viewermode;
 
 	std::string m_profile;
 
@@ -169,6 +180,8 @@ private:
 	std::string m_legacyFrameColorString;
 	std::string m_legacyNodeWKeyColorString;
 	std::string m_legacyNodeWOKeyColorString;
+
+	std::string m_viewermodeString;
 
 	/**
 	 * @brief appendColor Updates a color. On the next @link setKDB() action this color will be permanent.
