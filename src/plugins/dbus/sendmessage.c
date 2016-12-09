@@ -29,7 +29,7 @@ int elektraDbusSendMessage (DBusBusType type, const char * keyName, const char *
 	if (connection == NULL)
 	{
 		ELEKTRA_LOG_WARNING ("Failed to open connection to %s message bus: %s", (type == DBUS_BUS_SYSTEM) ? "system" : "session",
-				  error.message);
+				     error.message);
 		dbus_connection_unref (connection);
 		dbus_error_free (&error);
 		return -1;
