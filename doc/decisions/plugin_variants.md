@@ -72,23 +72,23 @@ are:
 
 `genconf` for augeas yields:
 ```
-access
-access/config
-access/config/lens = Access.lns
-access/infos
-access/infos/format = access
-aliases
-aliases/config
-aliases/config/lens = Aliases.lns
-aliases/config/path = /etc/aliases
-aliases/infos
-aliases/infos/format = aliases
+system/access
+system/access/config
+system/access/config/lens = Access.lns
+system/access/infos
+system/access/infos/format = access
+system/aliases
+system/aliases/config
+system/aliases/config/lens = Aliases.lns
+system/aliases/config/path = /etc/aliases
+system/aliases/infos
+system/aliases/infos/format = aliases
 ```
 
-`genconf` for python yields:
+`genconf` for python might yield:
 ```
-configparser/config
-configparser/config/script = python_configparser.py
+user/configparser/config
+user/configparser/config/script = python_configparser.py
 ```
 
 the user specifies:
@@ -105,6 +105,14 @@ then the plugin variant:
 1. `access` is not available (`system/elektra/plugins/variants/access` overrides `genconf`)
 2. `aliases` as defined from `genconf`, but with changes in contract (`infos/status`)
 3. `configparser` is completely redefined (result from `genconf` will not be considered)
+
+
+To have a space-separated simpleini one would use:
+```
+system/elektra/plugins/variants/simpleinis
+system/elektra/plugins/variants/simpleinis/config
+system/elektra/plugins/variants/simpleinis/config/format = "% %"
+```
 
 
 ## Argument

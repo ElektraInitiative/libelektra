@@ -14,6 +14,10 @@
 /* used for asprintf */
 #define _GNU_SOURCE
 
+#include <libgen.h>
+#include <glob.h>
+#include <ctype.h>
+
 #include "aug.h"
 
 #define ELEKTRA_SET_GENERAL_ERROR(id, parentKey, message)                                                                                  \
@@ -66,6 +70,45 @@ static const char * getLensPath (Plugin * handle)
 	KeySet * config = elektraPluginGetConfig (handle);
 	Key * lensPathKey = ksLookupByName (config, "/lens", 0);
 	return keyString (lensPathKey);
+}
+
+int elektraAugeasGenConf (KeySet * ks, Key * errorKey ELEKTRA_UNUSED)
+{
+	glob_t pglob;
+	const char * f = "/usr/share/augeas/lenses/dist/*.aug";
+	if (glob (f, GLOB_NOSORT, NULL, &pglob) == 0)
+	{
+		printf ("has glob %zd\n",  pglob.gl_pathc);
+		for (size_t i = 0; i < pglob.gl_pathc; ++i)
+		{
+			char * p = elektraStrDup (basename(pglob.gl_pathv[i]));
+			size_t l = strlen (p);
+			if (l > 4)
+			{
+				p[l-4] = '\0';
+				Key * k = keyNew ("system/", KEY_END);
+				keyAddBaseName(k, p);
+				ksAppendKey(ks, keyDup(k));
+				keyAddBaseName(k, "config");
+				ksAppendKey(ks, keyDup(k));
+				keyAddBaseName(k, "lens");
+				p[0] = toupper (p[0]);
+				p[l-1] = 's';
+				p[l-2] = 'n';
+				p[l-3] = 'l';
+				p[l-4] = '.';
+				keySetString(k, p);
+				ksAppendKey(ks, k);
+				printf ("%s\n", p);
+			}
+		}
+		globfree (&pglob);
+	}
+	else
+	{
+		ELEKTRA_SET_ERRORF (142, errorKey, "Could not glob %s", f);
+	}
+	return 1;
 }
 
 static const char * getAugeasError (augeas * augeasHandle)

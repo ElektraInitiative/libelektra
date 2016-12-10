@@ -1,0 +1,36 @@
+## asciinema.org
+
+sudo kdb mount hello.js /hello json
+kdb set user/hello/hello/world "Hello World"
+kdb get user/hello/hello/world
+kdb file user/hello/hello/world
+vi /home/markus/.config/hello.ini
+   "Hello World From File!"
+kdb get user/hello/hello/world
+kdb editor user/hello ini
+kdb export user/hello tcl
+kdb export user/hello xmltool
+kdb rm user/hello/hello/world
+cat /home/markus/.config/hello.ini
+sudo kdb umount /hello
+
+echo "Now let us change something.. With validation"
+sudo kdb mount --with-recommends /etc/hosts system/hosts hosts
+sudo kdb get system/hosts/ipv4/localhost
+sudo kdb set system/hosts/ipv4/my 88.198.134.1777
+sudo kdb set system/hosts/ipv4/my 88.198.134.177
+ping my
+sudo kdb umount system/hosts
+
+curl --elektra-version
+curl http://my
+kdb set user/env/override/http_proxy "http://wontwork"
+curl http://my
+kdb rm user/env/override/http_proxy
+curl http://my
+
+echo "What to do next"
+kdb
+kdb --help
+kdb find-tools
+kdb info resolver

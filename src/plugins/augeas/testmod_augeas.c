@@ -305,6 +305,13 @@ int main (int argc, char ** argv)
 
 	init (argc, argv);
 
+	/* output all lenses:
+	KeySet * ks = ksNew (5, KS_END);
+	elektraAugeasGenConf (ks, 0);
+	output_keyset (ks);
+	ksDel (ks);
+	*/
+
 	test_hostLensRead ("augeas/hosts-read");
 	test_hostLensWrite ("augeas/hosts-write");
 	test_hostLensModify ("augeas/hosts-modify-in", "augeas/hosts-modify");
