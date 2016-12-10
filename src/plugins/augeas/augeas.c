@@ -14,9 +14,9 @@
 /* used for asprintf */
 #define _GNU_SOURCE
 
-#include <libgen.h>
-#include <glob.h>
 #include <ctype.h>
+#include <glob.h>
+#include <libgen.h>
 
 #include "aug.h"
 
@@ -78,27 +78,27 @@ int elektraAugeasGenConf (KeySet * ks, Key * errorKey ELEKTRA_UNUSED)
 	const char * f = "/usr/share/augeas/lenses/dist/*.aug";
 	if (glob (f, GLOB_NOSORT, NULL, &pglob) == 0)
 	{
-		printf ("has glob %zd\n",  pglob.gl_pathc);
+		printf ("has glob %zd\n", pglob.gl_pathc);
 		for (size_t i = 0; i < pglob.gl_pathc; ++i)
 		{
-			char * p = elektraStrDup (basename(pglob.gl_pathv[i]));
+			char * p = elektraStrDup (basename (pglob.gl_pathv[i]));
 			size_t l = strlen (p);
 			if (l > 4)
 			{
-				p[l-4] = '\0';
+				p[l - 4] = '\0';
 				Key * k = keyNew ("system/", KEY_END);
-				keyAddBaseName(k, p);
-				ksAppendKey(ks, keyDup(k));
-				keyAddBaseName(k, "config");
-				ksAppendKey(ks, keyDup(k));
-				keyAddBaseName(k, "lens");
+				keyAddBaseName (k, p);
+				ksAppendKey (ks, keyDup (k));
+				keyAddBaseName (k, "config");
+				ksAppendKey (ks, keyDup (k));
+				keyAddBaseName (k, "lens");
 				p[0] = toupper (p[0]);
-				p[l-1] = 's';
-				p[l-2] = 'n';
-				p[l-3] = 'l';
-				p[l-4] = '.';
-				keySetString(k, p);
-				ksAppendKey(ks, k);
+				p[l - 1] = 's';
+				p[l - 2] = 'n';
+				p[l - 3] = 'l';
+				p[l - 4] = '.';
+				keySetString (k, p);
+				ksAppendKey (ks, k);
 				printf ("%s\n", p);
 			}
 		}
