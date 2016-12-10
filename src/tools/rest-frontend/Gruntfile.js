@@ -180,13 +180,18 @@ module.exports = function (grunt) {
                 context: {
                     CONFIGURATION: '<%= grunt.file.read(\'application-config.json\') %>',
                     WEBSTRUCTURE: '<%= grunt.file.read(\'resources/structure.json\') %>',
-                    NEWS: '<%= grunt.file.read(\'resources/news.json\') %>'
+                    NEWS: '<%= grunt.file.read(\'resources/news.json\') %>',
+                    BUILDDATE: (new Date()).toUTCString()
                 },
                 type: 'js'
             },
             config: {
                 src: 'resources/assets/js/config/index.js.in',
                 dest: 'resources/assets/js/config/index.js'
+            },
+            index: {
+                src: 'resources/assets/html/index.html.in',
+                dest: 'public/index.html'
             }
         },
         watch: {
