@@ -40,7 +40,8 @@ if (DEPENDENCY_PHASE)
 	# generate readme from pythons3 README.md
 	# it will overwrite previously generated file of add_plugin directly above
 	set (CMAKE_CURRENT_SOURCE_DIR_SAFE ${CMAKE_CURRENT_SOURCE_DIR})
-	set (CMAKE_CURRENT_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../python")
+	get_filename_component(CMAKE_CURRENT_SOURCE_PARENT_DIR ${CMAKE_CURRENT_SOURCE_DIR} DIRECTORY)
+	set (CMAKE_CURRENT_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_PARENT_DIR}/python")
 	generate_readme (python2)
 	set (CMAKE_CURRENT_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR_SAFE})
 endif ()
