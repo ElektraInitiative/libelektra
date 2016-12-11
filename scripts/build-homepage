@@ -1,20 +1,20 @@
 #!/bin/sh
 
 # build the applications
-export HOME=$WORKSPACE/user
 mkdir -p build
 cd build
 cmake -DPLUGINS='ALL;-fstab;-semlock' -DBUILD_FULL=OFF -DBUILD_SHARED=ON -DBUILD_STATIC=OFF -DBUILD_DOCUMENTATION=OFF -DTOOLS='kdb;rest-backend;rest-frontend' ..
 make -j 3
 
 # test the applications
-make test
+make run_all
 
 # if tests were ok, we can install
 make install
 
 # now lets first output some version information for the build log
 kdb --version
+kdb export / simpleini
 
 # then restart the backend
 kdb stop-rest-backend
