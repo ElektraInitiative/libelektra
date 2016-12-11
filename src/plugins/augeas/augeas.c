@@ -91,7 +91,7 @@ int elektraAugeasGenConf (KeySet * ks, Key * errorKey ELEKTRA_UNUSED)
 				keyAddBaseName (k, p);
 				ksAppendKey (ks, keyDup (k));
 
-				Key * b = keyDup(k);
+				Key * b = keyDup (k);
 				keyAddBaseName (b, "infos");
 				ksAppendKey (ks, keyDup (b));
 				keyAddBaseName (b, "provides");
