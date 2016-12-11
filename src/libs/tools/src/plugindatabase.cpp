@@ -57,6 +57,7 @@ std::vector<std::string> ModulesPluginDatabase::listAllPlugins () const
 	glob_t pglob;
 	if (glob (BUILTIN_PLUGIN_FOLDER "/libelektra-*", GLOB_NOSORT, NULL, &pglob) == 0)
 	{
+		ELEKTRA_LOG ("has glob %zd", pglob.gl_pathc);
 		for (size_t i = 0; i < pglob.gl_pathc; ++i)
 		{
 			std::string fn (pglob.gl_pathv[i]);
@@ -69,8 +70,8 @@ std::vector<std::string> ModulesPluginDatabase::listAllPlugins () const
 			if (toIgnore.find (name) != toIgnore.end ()) continue; // ignore
 			ret.push_back (name);
 		}
+		globfree (&pglob);
 	}
-	globfree (&pglob);
 #endif
 	if (!ret.empty ())
 	{

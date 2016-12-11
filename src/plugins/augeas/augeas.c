@@ -75,10 +75,11 @@ static const char * getLensPath (Plugin * handle)
 int elektraAugeasGenConf (KeySet * ks, Key * errorKey ELEKTRA_UNUSED)
 {
 	glob_t pglob;
+	int retval = 1;
 	const char * f = "/usr/share/augeas/lenses/dist/*.aug";
 	if (glob (f, GLOB_NOSORT, NULL, &pglob) == 0)
 	{
-		printf ("has glob %zd\n", pglob.gl_pathc);
+		ELEKTRA_LOG ("has glob %zd", pglob.gl_pathc);
 		for (size_t i = 0; i < pglob.gl_pathc; ++i)
 		{
 			char * p = elektraStrDup (basename (pglob.gl_pathv[i]));
@@ -99,16 +100,17 @@ int elektraAugeasGenConf (KeySet * ks, Key * errorKey ELEKTRA_UNUSED)
 				p[l - 4] = '.';
 				keySetString (k, p);
 				ksAppendKey (ks, k);
-				printf ("%s\n", p);
 			}
+			elektraFree (p);
 		}
 		globfree (&pglob);
 	}
 	else
 	{
 		ELEKTRA_SET_ERRORF (142, errorKey, "Could not glob %s", f);
+		retval = -1;
 	}
-	return 1;
+	return retval;
 }
 
 static const char * getAugeasError (augeas * augeasHandle)
