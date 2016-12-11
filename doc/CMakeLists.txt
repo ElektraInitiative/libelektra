@@ -94,8 +94,6 @@ if (DOXYGEN_FOUND)
 
 	endif (WITH_LATEX)
 
-	list(APPEND outputs "${CMAKE_BINARY_DIR}/external-links.txt")
-
 	add_custom_command (
 		OUTPUT ${outputs}
 		COMMAND ${DOXYGEN_EXECUTABLE}
