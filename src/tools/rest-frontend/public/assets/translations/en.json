@@ -302,7 +302,7 @@
     "APP.HOME.LABEL.ORIENTATION.2.HEADLINE": "Use Elektra outside C/C++",
     "APP.HOME.LABEL.ORIENTATION.3.DETAILS": "Of course we can! An initiative like Elektra asks periodically for <a ui-sref=\"main.dyn.decisions\">decisions</a>! We welcome everyone to join the discussions!",
     "APP.HOME.LABEL.ORIENTATION.3.HEADLINE": "Can you elaborate on the Why?",
-    "APP.HOME.LABEL.ORIENTATION.4.DETAILS": "This website does not only contain the news and documentation around Elektra, but does also comprise a service that allows for sharing, searching, converting and downloading of configuration snippets in various formats. To search for a snippet, use the search bar at the <a href=\"#top\">top of the page</a>. Uploading new snippets requires an account, which you can register <a href=\"/auth/login\">here</a>.",
+    "APP.HOME.LABEL.ORIENTATION.4.DETAILS": "This website does not only contain the news and documentation around Elektra. It does also comprise a service that allows for sharing, searching, converting and downloading of configuration snippets in various formats. To search for a snippet, use the search bar at the <a href=\"#top\">top of the page</a>. Uploading new snippets requires an account, which you can register <a href=\"/auth/login\">here</a>.",
     "APP.HOME.LABEL.ORIENTATION.4.HEADLINE": "Sharing of Configuration Snippets",
     "APP.HOME.LABEL.ORIENTATION.5.DETAILS": "An important step in utilizing all of Elektras features is the elektrification of your application. We have written a <a href=\"/tutorials/integration-of-your-application\">tutorial</a> for you that explains how to do that!",
     "APP.HOME.LABEL.ORIENTATION.5.HEADLINE": "Elektrify your Application",
