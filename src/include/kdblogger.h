@@ -86,10 +86,10 @@ int elektraLog (int level, const char * function, const char * file, const int l
 
 #ifdef HAVE_LOGGER
 
-#define ELEKTRA_LOG_WARNING(...) elektraLog (ELEKTRA_LOG_LEVEL_WARNING, __func__, __FILE__, __LINE__, ##__VA_ARGS__)
-#define ELEKTRA_LOG_NOTICE(...) elektraLog (ELEKTRA_LOG_LEVEL_NOTICE, __func__, __FILE__, __LINE__, ##__VA_ARGS__)
-#define ELEKTRA_LOG(...) elektraLog (ELEKTRA_LOG_LEVEL, __func__, __FILE__, __LINE__, ##__VA_ARGS__)
-#define ELEKTRA_LOG_DEBUG(...) elektraLog (ELEKTRA_LOG_LEVEL_DEBUG, __func__, __FILE__, __LINE__, ##__VA_ARGS__)
+#define ELEKTRA_LOG_WARNING(...) elektraLog (ELEKTRA_LOG_LEVEL_WARNING, __func__, __FILE__, __LINE__, __VA_ARGS__)
+#define ELEKTRA_LOG_NOTICE(...) elektraLog (ELEKTRA_LOG_LEVEL_NOTICE, __func__, __FILE__, __LINE__, __VA_ARGS__)
+#define ELEKTRA_LOG(...) elektraLog (ELEKTRA_LOG_LEVEL, __func__, __FILE__, __LINE__, __VA_ARGS__)
+#define ELEKTRA_LOG_DEBUG(...) elektraLog (ELEKTRA_LOG_LEVEL_DEBUG, __func__, __FILE__, __LINE__, __VA_ARGS__)
 
 #else
 
