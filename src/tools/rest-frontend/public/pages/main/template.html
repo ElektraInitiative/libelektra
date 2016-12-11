@@ -73,6 +73,9 @@
                     </li>
                 </ul>
                 <ul class="nav navbar-nav navbar-right" style="margin-right:0px">
+                    <li ng-if="!authenticated">
+                        <a ui-sref="main.auth.login">{{ 'APP.NAV.BUTTON.SHARESNIPPET' | translate }}</a>
+                    </li>
                     <li ng-if="authenticated" has-rank="10"
                         ng-class="{active: $state.includes('main.entries.create')}">
                         <a ui-sref="main.entries.create">{{ 'APP.NAV.BUTTON.NEWNETRY' | translate }}</a>
