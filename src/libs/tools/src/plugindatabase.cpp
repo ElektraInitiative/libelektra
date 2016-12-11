@@ -15,6 +15,7 @@
 
 #include <algorithm>
 #include <kdbconfig.h>
+#include <kdblogger.h>
 
 #ifdef HAVE_GLOB
 #include <glob.h>
