@@ -198,6 +198,10 @@ your distribution:
  - [Arch Linux](https://aur.archlinux.org/packages/elektra/)
  - [Debian](https://packages.debian.org/de/jessie/libelektra4)
  - [Ubuntu](https://launchpad.net/ubuntu/+source/elektra)
+ - [Openwrt](https://github.com/openwrt/packages/tree/master/libs/elektra)
+ - [OpenSuse](https://software.opensuse.org/package/elektra)
+ - [PLDLinux](http://sophie.zarb.org/rpms/763d9e52beefaa15b1363d11d836b65c)
+ - [LEDE](https://lede-project.org/packages/pkgdata/libelektra-core?s[]=elektra)
 
 Available, but not up-to-date (Version 0.7):
  - [Mageia](http://svnweb.mageia.org/packages/updates/1/elektra/)
