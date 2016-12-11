@@ -76,13 +76,12 @@ system/access
 system/access/config
 system/access/config/lens = Access.lns
 system/access/infos
-system/access/infos/format = access
+system/access/infos/provides = storage/access
 system/aliases
 system/aliases/config
 system/aliases/config/lens = Aliases.lns
-system/aliases/config/path = /etc/aliases
 system/aliases/infos
-system/aliases/infos/format = aliases
+system/aliases/infos/provides = storage/aliases
 ```
 
 `genconf` for python might yield:
@@ -134,7 +133,6 @@ system/elektra/plugins/variants/simpleinis/config/format = "% %"
 - `PluginDatabase` needs an extension to list all plugin variants
 - `kdb list` should be able to list all variants, e.g. like:
   `augeas lens=Access.lns`
-  `augeas format=access`
   so that a user can copy and paste this for the `kdb mount` command.
 
 

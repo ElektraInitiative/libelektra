@@ -90,6 +90,16 @@ int elektraAugeasGenConf (KeySet * ks, Key * errorKey ELEKTRA_UNUSED)
 				Key * k = keyNew ("system/", KEY_END);
 				keyAddBaseName (k, p);
 				ksAppendKey (ks, keyDup (k));
+
+				Key * b = keyDup(k);
+				keyAddBaseName (b, "infos");
+				ksAppendKey (ks, keyDup (b));
+				keyAddBaseName (b, "provides");
+				char * s = elektraFormat ("storage/%s", p);
+				keySetString (b, s);
+				elektraFree (s);
+				ksAppendKey (ks, b);
+
 				keyAddBaseName (k, "config");
 				ksAppendKey (ks, keyDup (k));
 				keyAddBaseName (k, "lens");
