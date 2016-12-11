@@ -31,3 +31,4 @@ sleep 60
 #   required files afterwards, ensuring an always up-to-date deployment
 kdb configure-rest-frontend
 
+pstree
