@@ -90,16 +90,17 @@ user/configparser/config
 user/configparser/config/script = python_configparser.py
 ```
 
-the user specifies:
+The user specifies:
 ```
 system/elektra/plugins/variants/access
 system/elektra/plugins/variants/aliases/infos/status = 10000
 system/elektra/plugins/variants/configparser
+system/elektra/plugins/variants/configparser/plugin = python
 system/elektra/plugins/variants/configparser/config
 system/elektra/plugins/variants/configparser/config/script = mybetter_configparser.py
 ```
 
-then the plugin variant:
+Then the plugin variant:
 
 1. `access` is not available (`system/elektra/plugins/variants/access` overrides `genconf`)
 2. `aliases` as defined from `genconf`, but with changes in contract (`infos/status`)
@@ -108,9 +109,10 @@ then the plugin variant:
 
 To have a space-separated simpleini one would use:
 ```
-system/elektra/plugins/variants/simpleinis
-system/elektra/plugins/variants/simpleinis/config
-system/elektra/plugins/variants/simpleinis/config/format = "% %"
+system/elektra/plugins/variants/simpleini(space)
+system/elektra/plugins/variants/simpleini(space)/plugin = simpleini
+system/elektra/plugins/variants/simpleini(space)/config
+system/elektra/plugins/variants/simpleini(space)/config/format = "% %"
 ```
 
 
