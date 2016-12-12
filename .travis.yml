@@ -33,7 +33,7 @@ before_install:
       brew install yajl;
       brew install augeas --HEAD;
       brew install dbus;
-      brew install qt5;
+      brew install qt5 --with-dbus -verbose;
       brew install discount;
       brew install libgit2;
       export Qt5_DIR=/usr/local/opt/qt5;

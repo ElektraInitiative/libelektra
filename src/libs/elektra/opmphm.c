@@ -52,8 +52,10 @@ int opmphmMapping (OPMPHM * opmphm, Vertex * vertices, Edge * edges, OPMPHMinit 
 	ELEKTRA_LOG_DEBUG ("OPMPHM: Mapping: Keys:\n");
 	for (size_t i = 0; i < n; ++i)
 	{
+#if defined(HAVE_LOGGER) || !defined(OPMPHM_TEST)
 		// set the resulting hash values for each key
 		const char * name = init->getString (init->data[i]);
+#endif
 		ELEKTRA_LOG_DEBUG ("%s\n", name);
 #ifndef OPMPHM_TEST
 		edges[i].h[0] = opmphmHashfunction ((const uint32_t *)name, strlen (name), opmphm->opmphmHashFunctionSeeds[0]) % n;

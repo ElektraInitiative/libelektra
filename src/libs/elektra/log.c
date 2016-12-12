@@ -126,6 +126,7 @@ int elektraVLog (int level ELEKTRA_UNUSED, const char * function ELEKTRA_UNUSED,
 	char * msg = elektraVFormat (str, args);
 	replaceChars (msg);
 
+	int ret = -1;
 #ifndef NO_FILTER
 	// XXX Filter level here globally (for every sink)
 	// by default: discard everything except warnings+assertions for libs
@@ -137,7 +138,6 @@ int elektraVLog (int level ELEKTRA_UNUSED, const char * function ELEKTRA_UNUSED,
 	if (!strcmp (file, "src/libs/elektra/log.c")) goto end;
 #endif
 
-	int ret = -1;
 #ifdef USE_STDERR_SINK
 	ret |= elektraLogStdErr (level, function, file, line, msg);
 #endif
