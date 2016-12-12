@@ -379,7 +379,43 @@ std::vector<PluginSpec> ModulesPluginDatabase::lookupAllProvides (std::string co
 	}
 }
 
-std::vector<PluginSpec> ModulesPluginDatabase::getPluginVariants (PluginSpec const & whichplugin) const
+
+class PluginVariantsDatabase::Impl
+{
+public:
+	Impl ()
+	{
+	}
+	~Impl ()
+	{
+	}
+	Modules modules;
+};
+
+PluginVariantsDatabase::PluginVariantsDatabase (const KeySet & conf) : impl (new PluginVariantsDatabase::Impl ()), pluginconf (conf)
+{
+}
+
+PluginVariantsDatabase::~PluginVariantsDatabase ()
+{
+}
+
+std::vector<std::string> PluginVariantsDatabase::listAllPlugins () const
+{
+	std::vector<std::string> plugins (ModulesPluginDatabase::listAllPlugins ());
+	plugins.erase (std::remove_if (plugins.begin (), plugins.end (),
+				       [this](const std::string & elem) {
+					       Key k ("system/elektra/plugins", KEY_END);
+					       k.addBaseName (elem);
+					       k.addBaseName ("disable");
+					       Key res = this->pluginconf.lookup (k);
+					       return res && res.getString () == "1";
+				       }),
+		       plugins.end ());
+	return plugins;
+}
+
+std::vector<PluginSpec> PluginVariantsDatabase::getPluginVariants (PluginSpec const & whichplugin) const
 {
 	PluginPtr plugin = impl->modules.load (whichplugin);
 
@@ -399,13 +435,13 @@ std::vector<PluginSpec> ModulesPluginDatabase::getPluginVariants (PluginSpec con
 			if (k == elem)
 			{
 				PluginSpec variant (whichplugin);
-				KeySet confToAdd;
 
 				// plugin config
 				Key kConf (k);
 				kConf.addBaseName ("config");
 				Key newConf ("system/", KEY_END);
 				KeySet variantConf (conf.cut (kConf));
+				KeySet confToAdd;
 				for (auto variantElem : variantConf)
 				{
 					if (!variantElem.isBelow (kConf)) continue;
@@ -414,11 +450,25 @@ std::vector<PluginSpec> ModulesPluginDatabase::getPluginVariants (PluginSpec con
 					curr.setString (variantElem.getString ());
 					confToAdd.append (curr);
 				}
-
-				// plugin infos
-				// TODO infos
-
 				variant.appendConfig (confToAdd);
+
+				// TODO plugin infos
+
+				// clang-format off
+				// check if the variant was disabled
+				Key disabled ("system/elektra/plugins", KEY_END);	// system/elektra/plugins
+				disabled.addBaseName (whichplugin.getName ());		// system/elektra/plugins/simpleini
+				disabled.addBaseName ("variants");					// system/elektra/plugins/simpleini/variants
+				disabled.addBaseName (elem.getBaseName ());			// system/elektra/plugins/simpleini/variants/space
+				disabled.addBaseName ("disable");					// system/elektra/plugins/simpleini/variants/space/disable
+				// clang-format on
+
+				Key disabledCheck = this->pluginconf.lookup (disabled);
+				if (disabledCheck && disabledCheck.getString () == "1")
+				{
+					continue; // skip this variant
+				}
+
 				result.push_back (variant);
 			}
 		}

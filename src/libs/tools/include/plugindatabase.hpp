@@ -132,17 +132,6 @@ public:
 	virtual std::vector<PluginSpec> lookupAllProvides (std::string const & provides) const = 0;
 
 	/**
-	 * @brief returns a list of plugin variants for the plugin
-	 *
-	 * @note if no plugin variant could be found, an empty vector will be returned.
-	 *
-	 * @param whichplugin is the plugin for which we want all variants
-	 *
-	 * @return a vector of plugin variants for the given plugin
-	 */
-	virtual std::vector<PluginSpec> getPluginVariants (PluginSpec const & whichplugin) const = 0;
-
-	/**
 	 * @param statusString the string encoding the status
 	 *
 	 * @return The representing number for a given status.
@@ -174,7 +163,60 @@ public:
 	PluginSpec lookupProvides (std::string const & provides) const;
 	std::map<int, PluginSpec> lookupAllProvidesWithStatus (std::string const & provides) const;
 	std::vector<PluginSpec> lookupAllProvides (std::string const & provides) const;
+};
+
+class PluginVariantsDatabase : public ModulesPluginDatabase
+{
+	class Impl;
+	std::unique_ptr<Impl> impl;
+
+public:
+	/**
+	 * @brief constructor that takes a configuration keyset for plugins
+	 * 
+	 * takes the list of plugins provided by the ModulesPluginDatabase and
+	 * removes all plugins that are disabled in the system config which was
+	 * given to the constructor.
+	 * 
+	 * example: removes the `simpleini` plugin if an entry like
+	 * 
+	 *   system/elektra/plugins/simpleini/disable = 1
+	 * 
+	 * exists in the keyset handed to the constructor
+	 *  
+	 * @note the constructor should be called with a keyset containing
+	 * the keys for system/elektra/plugins
+	 * 
+	 * @param conf keyset containing keys from system/elektra/plugins
+	 */
+	PluginVariantsDatabase (const KeySet & conf);
+	~PluginVariantsDatabase ();
+
+	std::vector<std::string> listAllPlugins () const;
+
+	/**
+	 * @brief returns a list of plugin variants for the plugin
+	 * 
+	 * takes the genconf function provided by plugins to generate variants.
+	 * variants can be disabled through the system configuration handed to
+	 * the constructor of the class.
+	 * 
+	 * example: ignores a variant `spacesep` delivered by genconf if an entry like
+	 * 
+	 *   system/elektra/plugins/simpleini/variants/spacesep/disable = 1
+	 * 
+	 * exists in the keyset handed to the constructor
+	 *
+	 * @note if no plugin variant could be found, an empty vector will be returned.
+	 *
+	 * @param whichplugin is the plugin for which we want all variants
+	 *
+	 * @return a vector of plugin variants for the given plugin
+	 */
 	std::vector<PluginSpec> getPluginVariants (PluginSpec const & whichplugin) const;
+
+private:
+	KeySet pluginconf;
 };
 
 /**
