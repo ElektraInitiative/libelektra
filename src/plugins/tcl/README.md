@@ -9,7 +9,7 @@
 
 ## Introduction ##
 
-This plugin is a storage plugin which write keys to lists *in the style of*
+This plugin is a storage plugin which writes keys to lists *in the style of*
 the Tcl programming language.
 
 ## Format ##
