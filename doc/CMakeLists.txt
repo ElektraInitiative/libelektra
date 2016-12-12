@@ -80,9 +80,9 @@ if (DOXYGEN_FOUND)
 
 		add_custom_command (
 			OUTPUT ${OUTPUT_DIRECTORY}/latex/refman.pdf
-			COMMAND ${PDFLATEX_COMPILER} ARGS ${OUTPUT_DIRECTORY}/latex/refman.tex
-			COMMAND ${PDFLATEX_COMPILER} ARGS ${OUTPUT_DIRECTORY}/latex/refman.tex
-			COMMAND ${PDFLATEX_COMPILER} ARGS ${OUTPUT_DIRECTORY}/latex/refman.tex
+			COMMAND ${PDFLATEX_COMPILER} ARGS ${PDFLATEX_COMPILER_OPTIONS} ${OUTPUT_DIRECTORY}/latex/refman.tex
+			COMMAND ${PDFLATEX_COMPILER} ARGS ${PDFLATEX_COMPILER_OPTIONS} ${OUTPUT_DIRECTORY}/latex/refman.tex
+			COMMAND ${PDFLATEX_COMPILER} ARGS ${PDFLATEX_COMPILER_OPTIONS} ${OUTPUT_DIRECTORY}/latex/refman.tex
 			DEPENDS ${OUTPUT_DIRECTORY}/latex/refman.tex markdownlinkconverter
 			WORKING_DIRECTORY ${OUTPUT_DIRECTORY}/latex/
 		)
@@ -93,8 +93,6 @@ if (DOXYGEN_FOUND)
 		add_dependencies(pdf latex)
 
 	endif (WITH_LATEX)
-
-	list(APPEND outputs "${CMAKE_BINARY_DIR}/external-links.txt")
 
 	add_custom_command (
 		OUTPUT ${outputs}
