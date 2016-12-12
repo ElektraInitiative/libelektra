@@ -9,7 +9,7 @@
                 "name": "Getting started",
                 "type": "staticlist",
                 "ref": "docgettingstarted",
-                "dev-comment": "A list of documentation files thar are important for new users. Could be replaced by 'parsereadme' type in future.",
+                "dev-comment": "A list of documentation files that are important for new users. Could be replaced by 'parsereadme' type in future.",
                 "children": [
                     {
                         "name": "Why Elektra?",
@@ -137,6 +137,13 @@
                         "type": "staticfile",
                         "options": {
                             "path": "doc/SECURITY.md"
+                        }
+                    },
+                    {
+                        "name": "License",
+                        "type": "staticfile",
+                        "options": {
+                            "path": "doc/LICENSE.md"
                         }
                     },
                     {

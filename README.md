@@ -118,10 +118,11 @@ is available in the GitHub repository.
 
 You can read the documentation for the kdb tool, either
 
-- [on GitHub](http://libelektra.org/blob/master/doc/help/kdb.md)
+- [on the Website](https://web.libelektra.org)
 - [in the API docu](http://doc.libelektra.org/api/latest/html/md_doc_help_kdb.html)
-- by using `kdb --help` or `kdb help <command>`
 - by using `man kdb`
+- by using `kdb --help` or `kdb help <command>`
+- [on GitHub](http://libelektra.org/blob/master/doc/help/kdb.md)
 
 
 
