@@ -20,6 +20,7 @@ require('angular-sanitize');
 require('angular-slugify');
 require('angular-translate');
 require('angular-translate-loader-static-files');
+require('angular-typewriter');
 require('angular-ui-bootstrap');
 require('angular-ui-notification');
 require('angular-ui-router');
@@ -30,6 +31,7 @@ require('satellizer');
 angular.module('elektra.rest.angular', [
     'angular-clipboard',
     'angular-logger-max',
+    require('angular-typewriter'),
     'hc.marked',
     'ncy-angular-breadcrumb',
     'ngAnimate',

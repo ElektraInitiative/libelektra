@@ -25,6 +25,7 @@
         "angular-slugify": "^1.0.3",
         "angular-translate": "^2.12.1",
         "angular-translate-loader-static-files": "^2.12.1",
+        "angular-typewriter": "0.0.15",
         "angular-ui-bootstrap": "^2.2.0",
         "angular-ui-notification": "^0.2.0",
         "angular-ui-router": "^0.3.1",

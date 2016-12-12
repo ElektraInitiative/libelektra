@@ -145,7 +145,8 @@ module.exports = function (grunt) {
                     'node_modules/highlight.js/styles/github.css',
                     'node_modules/angular-ui-notification/dist/angular-ui-notification.min.css',
                     'node_modules/ng-tags-input/build/ng-tags-input.min.css',
-                    'node_modules/ng-tags-input/build/ng-tags-input.bootstrap.min.css'
+                    'node_modules/ng-tags-input/build/ng-tags-input.bootstrap.min.css',
+                    'node_modules/angular-typewriter/npm-dist/angular-typewrite.css'
                 ],
                 dest: 'public/assets/skin/vendor.css',
             },

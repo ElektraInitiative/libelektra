@@ -1,7 +1,12 @@
 <div class="row home">
     <div class="col-md-12">
         <!-- Slogan & Headline -->
-        <h1 class="slogan-master text-center">{{ 'APP.HOME.HEADLINE.SLOGAN.FIRST' | translate:slogan }}</h1>
+        <h1 class="slogan-master text-center">
+            <span>{{ 'APP.HOME.HEADLINE.SLOGAN.FIRST' | translate }}</span>
+            <span typewrite text="slogan.adjectives" initial-delay="1500" type-delay="175"
+                  erase-delay="160" blink-cursor="true" blink-delay="200"></span>
+            <span style="margin-left:-10px">.</span>
+        </h1>
         <h2 class="slogan-slave text-center">
             <small>{{ 'APP.HOME.HEADLINE.SLOGAN.SECOND' | translate }}</small>
         </h2>
@@ -160,57 +165,57 @@
                 </div>
             </div>
         </div>
-		<div class="row lg-mt-30 sm-mt-10">
-			<div class="col-md-8">
-				<div class="md-pl-15 md-pr-15">
-					<h4>
-						<i class="fa fa-share-alt"></i>
-						<span class="md-pl-10">{{ 'APP.HOME.LABEL.ORIENTATION.4.HEADLINE' | translate }}</span>
-					</h4>
-					<p translate="APP.HOME.LABEL.ORIENTATION.4.DETAILS" translate-compile></p>
-				</div>
-			</div>
-			<div class="col-md-4 lg-mt-0 sm-mt-20">
-				<div class="md-pl-15 md-pr-15">
-					<h4>
-						<i class="fa fa-bolt"></i>
-						<span class="md-pl-10">{{ 'APP.HOME.LABEL.ORIENTATION.5.HEADLINE' | translate }}</span>
-					</h4>
-					<p translate="APP.HOME.LABEL.ORIENTATION.5.DETAILS" translate-compile></p>
-				</div>
-			</div>
-		</div>
-		<hr class="sm-mt-30 sm-mb-30" />
-		<div class="row">
-			<div class="col-md-8">
-				<img src="website/img/qtgui.png" style="width:100%" />
-			</div>
-			<div class="col-md-4 lg-mt-0 sm-mt-20">
-				<h4>{{ 'APP.HOME.LABEL.TOOL.QTGUI.HEADLINE' | translate }}</h4>
-				<p translate="APP.HOME.LABEL.TOOL.QTGUI.DETAILS" translate-compile></p>
-			</div>
-		</div>
-		<hr class="sm-mt-20 lg-mt-30 sm-mb-20 lg-mb-30">
-		<div class="row">
-			<div class="col-md-4 sm-mb-30 lg-mb-0">
-				<h4>{{ 'APP.HOME.LABEL.TOOL.OTHERS.HEADLINE' | translate }}</h4>
-				<p translate="APP.HOME.LABEL.TOOL.OTHERS.DETAILS" translate-compile></p>
-			</div>
-			<div class="col-md-8">
-				<img src="website/img/oyranos-kolor-manager.png" style="width:100%;margin:-15px 0px;" />
-			</div>
-		</div>
-		<hr class="sm-mt-30 lg-mt-30 sm-mb-30">
-		<div class="row sm-mb-20">
-			<div class="col-md-8 sm-mb-30 lg-mb-0">
-				<img src="website/img/web-gui-kdb.png" style="width:100%" />
-			</div>
-			<div class="col-md-4">
-				<h4>{{ 'APP.HOME.LABEL.TOOL.WEBGUI.HEADLINE' | translate }}</h4>
-				<p translate="APP.HOME.LABEL.TOOL.WEBGUI.DETAILS" translate-compile></p>
-			</div>
-		</div>
-<!--		<hr class="sm-mt-30 sm-mb-30">
+        <div class="row lg-mt-30 sm-mt-10">
+            <div class="col-md-8">
+                <div class="md-pl-15 md-pr-15">
+                    <h4>
+                        <i class="fa fa-share-alt"></i>
+                        <span class="md-pl-10">{{ 'APP.HOME.LABEL.ORIENTATION.4.HEADLINE' | translate }}</span>
+                    </h4>
+                    <p translate="APP.HOME.LABEL.ORIENTATION.4.DETAILS" translate-compile></p>
+                </div>
+            </div>
+            <div class="col-md-4 lg-mt-0 sm-mt-20">
+                <div class="md-pl-15 md-pr-15">
+                    <h4>
+                        <i class="fa fa-bolt"></i>
+                        <span class="md-pl-10">{{ 'APP.HOME.LABEL.ORIENTATION.5.HEADLINE' | translate }}</span>
+                    </h4>
+                    <p translate="APP.HOME.LABEL.ORIENTATION.5.DETAILS" translate-compile></p>
+                </div>
+            </div>
+        </div>
+        <hr class="sm-mt-30 sm-mb-30" />
+        <div class="row">
+            <div class="col-md-8">
+                <img src="website/img/qtgui.png" style="width:100%" />
+            </div>
+            <div class="col-md-4 lg-mt-0 sm-mt-20">
+                <h4>{{ 'APP.HOME.LABEL.TOOL.QTGUI.HEADLINE' | translate }}</h4>
+                <p translate="APP.HOME.LABEL.TOOL.QTGUI.DETAILS" translate-compile></p>
+            </div>
+        </div>
+        <hr class="sm-mt-20 lg-mt-30 sm-mb-20 lg-mb-30">
+        <div class="row">
+            <div class="col-md-4 sm-mb-30 lg-mb-0">
+                <h4>{{ 'APP.HOME.LABEL.TOOL.OTHERS.HEADLINE' | translate }}</h4>
+                <p translate="APP.HOME.LABEL.TOOL.OTHERS.DETAILS" translate-compile></p>
+            </div>
+            <div class="col-md-8">
+                <img src="website/img/oyranos-kolor-manager.png" style="width:100%;margin:-15px 0px;" />
+            </div>
+        </div>
+        <hr class="sm-mt-30 lg-mt-30 sm-mb-30">
+        <div class="row sm-mb-20">
+            <div class="col-md-8 sm-mb-30 lg-mb-0">
+                <img src="website/img/web-gui-kdb.png" style="width:100%" />
+            </div>
+            <div class="col-md-4">
+                <h4>{{ 'APP.HOME.LABEL.TOOL.WEBGUI.HEADLINE' | translate }}</h4>
+                <p translate="APP.HOME.LABEL.TOOL.WEBGUI.DETAILS" translate-compile></p>
+            </div>
+        </div>
+<!--        <hr class="sm-mt-30 sm-mb-30">
         <div class="row lg-mt-30 sm-mt-20">
             <div class="col-md-4">
                 <div class="md-pl-15 md-pr-15">
