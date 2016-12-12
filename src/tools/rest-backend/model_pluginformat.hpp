@@ -46,6 +46,7 @@ public:
 		m_fileformat = pf.m_fileformat;
 		m_pluginname = pf.m_pluginname;
 		m_pluginstatuses = std::vector<std::string> (pf.m_pluginstatuses);
+		m_config = kdb::KeySet (pf.m_config);
 	}
 
 	/**
@@ -56,7 +57,7 @@ public:
 	 * @param statuses The plugin statuses as vector (e.g. maintained, limited)
      */
 	PluginFormat (const std::string & format, const std::string & plugin,
-		      const std::vector<std::string> statuses = std::vector<std::string> ())
+		      const std::vector<std::string> statuses = std::vector<std::string> (), const kdb::KeySet config = kdb::KeySet ())
 	{
 		if (format.empty () || plugin.empty ())
 		{
@@ -65,6 +66,7 @@ public:
 		m_fileformat = std::string (format);
 		m_pluginname = std::string (plugin);
 		m_pluginstatuses = statuses;
+		m_config = config;
 	}
 
 	/**
@@ -97,10 +99,21 @@ public:
 		return m_pluginstatuses;
 	}
 
+	/**
+	 * @brief getter for the plugin configuration
+	 * 
+	 * @returen A keyset containing the plugin config
+	 */
+	kdb::KeySet getConfig () const
+	{
+		return m_config;
+	}
+
 private:
 	std::string m_fileformat;
 	std::string m_pluginname;
 	std::vector<std::string> m_pluginstatuses;
+	kdb::KeySet m_config;
 };
 
 } // namespace model

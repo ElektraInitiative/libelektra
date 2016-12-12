@@ -90,6 +90,43 @@ TEST (kdbrestServicesConvertengineTest, ExportToFormatCheck)
 	}
 }
 
+TEST (kdbrestServicesConvertengineTest, ExportToFormatWithConfigCheck)
+{
+
+	using namespace kdb::tools;
+	using namespace kdbrest;
+
+	ModulesPluginDatabase db;
+	std::vector<std::string> allPlugins = db.listAllPlugins ();
+
+	if (std::find (allPlugins.begin (), allPlugins.end (), "simpleini") != allPlugins.end ())
+	{
+		std::string conf_root = kdbrest::Config::instance ().getConfig ().get<std::string> ("kdb.path.configs");
+		std::string entryName = "org/app/scope/slug";
+		model::Entry entry (entryName);
+		entry.addSubkey (kdb::Key (conf_root + "/" + entryName + "/obj/var1", KEY_VALUE, "value1", KEY_END));
+		entry.addSubkey (kdb::Key (conf_root + "/" + entryName + "/obj/var2", KEY_VALUE, "value2", KEY_END));
+		entry.addSubkey (kdb::Key (conf_root + "/" + entryName + "/var", KEY_VALUE, "value", KEY_END));
+
+		ASSERT_EQ (3, entry.getSubkeys ().size ());
+
+		model::ConfigFormat cf = service::ConvertEngine::instance ().exportTo ("simpleini format=%|||%", entry);
+
+		ASSERT_EQ (cf.getPluginformat ().getFileformat (), "ini");
+		ASSERT_EQ (cf.getPluginformat ().getPluginname (), "simpleini");
+		ASSERT_EQ (cf.getPluginformat ().getConfig ().size (), 1);
+
+		std::string expected_output = "obj/var1|||value1\nobj/var2|||value2\nvar|||value";
+		std::string retrieved_output = cf.getConfig ();
+		boost::replace_all (retrieved_output, " ", "");
+		if (retrieved_output.at (retrieved_output.length () - 1) == '\n')
+		{
+			retrieved_output = retrieved_output.substr (0, retrieved_output.length () - 1);
+		}
+		ASSERT_EQ (expected_output, retrieved_output);
+	}
+}
+
 TEST (kdbrestServicesConvertengineTest, ExportToFormatCheck2)
 {
 
@@ -328,6 +365,39 @@ TEST (kdbrestServicesConvertengineTest, ImportCheck4)
 	}
 }
 
+TEST (kdbrestServicesConvertengineTest, ImportWithConfigCheck)
+{
+
+	using namespace kdb::tools;
+	using namespace kdbrest;
+
+	ModulesPluginDatabase db;
+	std::vector<std::string> allPlugins = db.listAllPlugins ();
+
+	if (std::find (allPlugins.begin (), allPlugins.end (), "simpleini") != allPlugins.end ())
+	{
+		std::string conf_root = kdbrest::Config::instance ().getConfig ().get<std::string> ("kdb.path.configs");
+		std::string entryName = "";
+		model::Entry entry (entryName);
+		std::string input_config = "obj/var1 value1\nobj/var2 value2\nvar value";
+
+		model::ImportedConfig icfg = service::ConvertEngine::instance ().import (input_config, "simpleini format=% %", entry);
+
+		ASSERT_EQ ("ini", icfg.getPluginformat ().getFileformat ());
+		ASSERT_EQ ("simpleini", icfg.getPluginformat ().getPluginname ());
+		ASSERT_EQ (1, icfg.getPluginformat ().getConfig ().size ());
+		ASSERT_EQ (3, icfg.getKeySet ().size ());
+
+		ASSERT_TRUE (icfg.getKeySet ().lookup (kdb::Key (conf_root + "/obj/var1", KEY_END)));
+		ASSERT_TRUE (icfg.getKeySet ().lookup (kdb::Key (conf_root + "/obj/var2", KEY_END)));
+		ASSERT_TRUE (icfg.getKeySet ().lookup (kdb::Key (conf_root + "/var", KEY_END)));
+
+		ASSERT_FALSE (icfg.getKeySet ().lookup (kdb::Key (entryName + "/something", KEY_END)));
+		ASSERT_FALSE (icfg.getKeySet ().lookup (kdb::Key (conf_root + "/" + entryName + "/something", KEY_END)));
+		ASSERT_FALSE (icfg.getKeySet ().lookup (kdb::Key (conf_root + "/something/else", KEY_END)));
+	}
+}
+
 TEST (kdbrestServicesConvertengineTest, FullConversionCheck)
 {
 
@@ -343,12 +413,13 @@ TEST (kdbrestServicesConvertengineTest, FullConversionCheck)
 		std::string conf_root = kdbrest::Config::instance ().getConfig ().get<std::string> ("kdb.path.configs");
 		std::string entryName = "";
 		model::Entry entry (entryName);
-		std::string input_config = "obj/var1 = value1\nobj/var2 = value2\nvar = value";
+		std::string input_config = "obj/var1 value1\nobj/var2 value2\nvar value";
 
 		// import
-		model::ImportedConfig icfg = service::ConvertEngine::instance ().import (input_config, "simpleini", entry);
+		model::ImportedConfig icfg = service::ConvertEngine::instance ().import (input_config, "simpleini format=% %", entry);
 		ASSERT_EQ ("ini", icfg.getPluginformat ().getFileformat ());
 		ASSERT_EQ ("simpleini", icfg.getPluginformat ().getPluginname ());
+		ASSERT_EQ (1, icfg.getPluginformat ().getConfig ().size ());
 		ASSERT_EQ (3, icfg.getKeySet ().size ());
 		kdb::KeySet ks = icfg.getKeySet ();
 		entry.addSubkeys (ks);
