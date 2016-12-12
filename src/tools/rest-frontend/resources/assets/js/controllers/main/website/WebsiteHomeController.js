@@ -16,39 +16,17 @@ module.exports = function ($scope, Logger, $interval, config, news) {
     $scope.slogan = {
         adjectives: [
             'fast',
-            'finally',
+            'specified',
             'globally',
             'shareable',
+            'now',
             'validated',
-            'specified',
-            'correctly',
             'simply',
+            'correctly',
             'easily',
-            'now'
-        ].sort(function (l, r) {
-            return l.length > r.length;
-        })
+            'finally'
+        ]
     };
-    $scope.slogan.index = 0;
-    $scope.slogan.directionUp = true;
-
-    function changeSlogan() {
-        if ($scope.slogan.directionUp === true) {
-            $scope.slogan.index++;
-        } else {
-            $scope.slogan.index--;
-        }
-
-        // swap rotation direction
-        if ($scope.slogan.index >= $scope.slogan.adjectives.length - 1 ||
-                $scope.slogan.index <= 0) {
-            $scope.slogan.directionUp = !$scope.slogan.directionUp;
-        }
-    }
-
-    $interval(function () {
-        changeSlogan();
-    }, config.website.slogan.rotation_interval);
 
     Logger.info("Home controller ready");
 

@@ -29,6 +29,6 @@ sleep 60
 # - the configuration script does also take care of deleting old files,
 #   every configuration run will first clean the deployment directory and copy
 #   required files afterwards, ensuring an always up-to-date deployment
-kdb configure-rest-frontend
+kdb build-rest-frontend
 
 pstree

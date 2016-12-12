@@ -182,7 +182,7 @@ The parameters that need to be changed in order for the frontend to work correct
 As last step we need to run the applications:
 
 - First we start the backend server with `kdb run-rest-backend`. To ensure the backend is accessible, you can use `curl http://localhost:8080/version` (change port to your setting), which should show you some version information in JSON format.
-- Although the frontend was compiled during installation already, we want to have a freshly built homepage and use `kdb configure-rest-frontend` to do so.
+- Although the frontend was compiled during installation already, we want to have a freshly built homepage and use `kdb build-rest-frontend` to do so.
 - Then we run the frontend analogously with `kdb run-rest-frontend`. It should now be reachable at the configured port.
 
 If everything went smooth, both applications should now be online and reachable.
@@ -216,7 +216,7 @@ that your API blueprint is still syntax conform. To do so, you can use the tool
 ### Use other Webserver than the built-in Grunt Webserver ###
 
 Of course it is possible to use another webserver instead of the built-in one.
-To do so, simply run `kdb configure-rest-frontend` and copy the content of the
+To do so, simply run `kdb build-rest-frontend` and copy the content of the
 `/usr/local/share/elektra/tool_data/rest-frontend/public` directory to
 your desired target location.
 
