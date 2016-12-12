@@ -31,8 +31,8 @@ else ()
         "${CMAKE_CURRENT_BINARY_DIR}/stop-${tool}"
     )
     configure_file (
-        "${CMAKE_CURRENT_SOURCE_DIR}/configure.sh"
-        "${CMAKE_CURRENT_BINARY_DIR}/configure-${tool}"
+        "${CMAKE_CURRENT_SOURCE_DIR}/build.sh"
+        "${CMAKE_CURRENT_BINARY_DIR}/build-${tool}"
     )
     configure_file (
         "${CMAKE_CURRENT_SOURCE_DIR}/mount-config.sh"
@@ -48,7 +48,7 @@ else ()
     install (FILES package.json README.md ${CMAKE_CURRENT_BINARY_DIR}/Gruntfile.js application-config.json.tpl
              DESTINATION ${install_directory})
     install (PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/run-${tool} ${CMAKE_CURRENT_BINARY_DIR}/stop-${tool}
-             ${CMAKE_CURRENT_BINARY_DIR}/configure-${tool} ${CMAKE_CURRENT_BINARY_DIR}/mount-${tool}-config
+             ${CMAKE_CURRENT_BINARY_DIR}/build-${tool} ${CMAKE_CURRENT_BINARY_DIR}/mount-${tool}-config
              DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
 
     # attempt to install npm dependencies

@@ -21,7 +21,7 @@ Under normal circumstances it is sufficient to change the
 [application-config.json](application-config.json) in the root directory.
 It contains the URL to the backend, some URLs for GitHub resources and translation,
 as well as logger settings.
-Any change of this configuration does require to re-run `grunt full` (or `kdb configure-@tool@`)
+Any change of this configuration does require to re-run `grunt full` (or `kdb build-@tool@`)
 in order to re-compile the project.
 
 To run the application, basically two options are available:
@@ -29,7 +29,7 @@ To run the application, basically two options are available:
   [Gruntfile.js](Gruntfile.js) and run by `grunt server` (in the installation target directory)
   or `kdb run-@tool@` from anywhere.
 - Use an own webserver to distribute the application.
-  In order to do so, first `grunt full` (or `kdb configure-@tool@`) should be run.
+  In order to do so, first `grunt full` (or `kdb build-@tool@`) should be run.
   After that, the content of the [public](public/) directory can be copied to any location
   that suits the needs. `npm` dependencies in the [node_modules](node_modules/) directory
   and the [resources](resources/) directory are only necessary for development,
@@ -60,7 +60,7 @@ The configuration file also allows to specify available translations in `transla
 To add a translation, copy an existing translation file in
 [public/assets/translations](public/assets/translations), translate it and add the name of
 the new language to the list in `translations.enabled`.
-After that run `grunt full` (or `kdb configure-@tool@`) to re-compile the application.
+After that run `grunt full` (or `kdb build-@tool@`) to re-compile the application.
 
 If necessary, mappings for dialects as well as a default language can be specified as well.
 
@@ -149,7 +149,7 @@ The `@tool@` has full CMake integration, which does actually only two things:
 
 It is not necessary to install anything by hand, CMake does this job already.
 If changes are made to the source files in [resources](resources/),
-it is sufficient to run `grunt full` (or `kdb configure-@tool@`) to build the application again.
+it is sufficient to run `grunt full` (or `kdb build-@tool@`) to build the application again.
 During development, it can be handy to use `grunt watch` to run a watcher daemon that re-compiles
 LESS or JS files whenever a change was made in the respective [resources](resources/) directory.
 
