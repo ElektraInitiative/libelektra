@@ -2,9 +2,10 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(DISCOUNT_FIND_QUIETLY ON)
 
-set(QCOMPONENTS Core Quick Gui Qml Widgets Test DBus)
+set(QCOMPONENTS Core Quick Gui Qml Widgets Test)
 find_package(Qt5 COMPONENTS ${QCOMPONENTS})
 find_package(Qt5 OPTIONAL_COMPONENTS Svg QUIET)
+find_package(Qt5 OPTIONAL_COMPONENTS DBus QUIET)
 find_package(Discount)
 
 if (NOT Qt5_FOUND)
@@ -15,6 +16,10 @@ else()
 
 if (NOT Qt5Svg_FOUND)
 	message(WARNING "No Qt5 svg module found. Svg icons themes will not be supported.")
+endif ()
+
+if (NOT Qt5DBus_FOUND)
+	message(WARNING "No Qt5 DBus module found. Listening to DBus will not be supported.")
 endif ()
 
 include_directories (
