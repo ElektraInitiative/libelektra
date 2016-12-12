@@ -1,7 +1,7 @@
 ## asciinema.org
 
 setup:
-resize 100x25
+resize 100x23
 LC_ALL=C
 zsh config: no right prompt, sudo,..
 

@@ -23,9 +23,9 @@ provides.
 - [Compilation Variants of plugins](compilation-variants.md) (advanced topic)
 - [Python Bindings](python-kdb.md)
 - [Ruby Bindings](/src/bindings/swig/ruby/README.md)
-- [code generation](/src/tools/gen/README.md)
+- [Code Generation](/src/tools/gen/README.md)
 
-## System Administrator
+## System Administrators
 
 For these tutorials we assume that you want to
 work with the configuration of applications
