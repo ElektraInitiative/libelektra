@@ -409,16 +409,16 @@ std::vector<PluginSpec> PluginVariantDatabase::getPluginVariants (PluginSpec con
 {
 	PluginPtr plugin = impl->modules.load (whichplugin);
 
-	// TODO variant overrides from kdb
+	KeySet sysconf (impl->pluginconf);
 
 	try
 	{
-		auto genconf = reinterpret_cast<void (*) (ckdb::KeySet *, ckdb::Key *)> (plugin->getSymbol ("genconf"));
-		KeySet conf;
-		genconf (conf.getKeySet (), 0);
+		auto funcGenconf = reinterpret_cast<void (*) (ckdb::KeySet *, ckdb::Key *)> (plugin->getSymbol ("genconf"));
+		KeySet genconf;
+		funcGenconf (genconf.getKeySet (), 0);
 		std::vector<PluginSpec> result;
-		KeySet confIt (conf);
-		for (auto elem : confIt)
+		KeySet genconfToIterate (genconf);
+		for (auto elem : genconfToIterate)
 		{
 			Key k (elem.getNamespace () + "/", KEY_END);
 			k.addBaseName (elem.getBaseName ());
@@ -427,38 +427,64 @@ std::vector<PluginSpec> PluginVariantDatabase::getPluginVariants (PluginSpec con
 				PluginSpec variant (whichplugin);
 
 				// plugin config
-				Key kConf (k);
-				kConf.addBaseName ("config");
-				Key newConf ("system/", KEY_END);
-				KeySet variantConf (conf.cut (kConf));
-				KeySet confToAdd;
-				for (auto variantElem : variantConf)
+				Key kVariantGenConf (k);
+				kVariantGenConf.addBaseName ("config");
+				Key kVariantPluginConf ("system/", KEY_END);
+				KeySet ksVariantGenConf (genconf.cut (kVariantGenConf));
+				KeySet ksVariantConfToAdd;
+				for (auto variantElem : ksVariantGenConf)
 				{
-					if (!variantElem.isBelow (kConf)) continue;
+					if (!variantElem.isBelow (kVariantGenConf)) continue;
 
-					Key curr (helper::rebaseKey (variantElem, kConf, newConf));
-					curr.setString (variantElem.getString ());
-					confToAdd.append (curr);
+					ksVariantConfToAdd.append (helper::rebaseKey (variantElem, kVariantGenConf, kVariantPluginConf));
 				}
-				variant.appendConfig (confToAdd);
 
 				// TODO plugin infos
 
-				// clang-format off
 				// check if the variant was disabled
-				Key disabled ("system/elektra/plugins", KEY_END);	// system/elektra/plugins
-				disabled.addBaseName (whichplugin.getName ());		// system/elektra/plugins/simpleini
-				disabled.addBaseName ("variants");					// system/elektra/plugins/simpleini/variants
-				disabled.addBaseName (elem.getBaseName ());			// system/elektra/plugins/simpleini/variants/space
-				disabled.addBaseName ("disable");					// system/elektra/plugins/simpleini/variants/space/disable
+				// clang-format off
+				Key kDisable ("system/elektra/plugins", KEY_END);	// system/elektra/plugins
+				kDisable.addBaseName (whichplugin.getName ());		// system/elektra/plugins/simpleini
+				kDisable.addBaseName ("variants");					// system/elektra/plugins/simpleini/variants
+				kDisable.addBaseName (elem.getBaseName ());			// system/elektra/plugins/simpleini/variants/space
+				kDisable.addBaseName ("disable");					// system/elektra/plugins/simpleini/variants/space/disable
 				// clang-format on
-
-				Key disabledCheck = impl->pluginconf.lookup (disabled);
-				if (disabledCheck && disabledCheck.getString () == "1")
+				Key kDisableCheck = sysconf.lookup (kDisable);
+				if (kDisableCheck && kDisableCheck.getString () == "1")
 				{
 					continue; // skip this variant
 				}
 
+				// check if an override is available
+				// clang-format off
+				Key kOverride ("system/elektra/plugins", KEY_END);	// system/elektra/plugins
+				kOverride.addBaseName (whichplugin.getName ());	// system/elektra/plugins/simpleini
+				kOverride.addBaseName ("variants");				// system/elektra/plugins/simpleini/variants
+				kOverride.addBaseName (elem.getBaseName ());		// system/elektra/plugins/simpleini/variants/space
+				kOverride.addBaseName ("override");				// system/elektra/plugins/simpleini/variants/space/disable
+				// clang-format on
+				Key kOverrideCheck = sysconf.lookup (kOverride);
+				if (kOverrideCheck && kOverrideCheck.getString () == "1")
+				{
+					// replace config of this variant by config of system
+					ksVariantConfToAdd.clear ();
+
+					Key kVariantSysConf ("system/elektra/plugins", KEY_END);
+					kVariantSysConf.addBaseName (whichplugin.getName ());
+					kVariantSysConf.addBaseName ("variants");
+					kVariantSysConf.addBaseName (elem.getBaseName ());
+					kVariantSysConf.addBaseName ("config");
+					KeySet ksVariantSysConf = sysconf.cut (kVariantSysConf);
+					for (auto variantElem : ksVariantSysConf)
+					{
+						if (!variantElem.isBelow (kVariantSysConf)) continue;
+
+						ksVariantConfToAdd.append (
+							helper::rebaseKey (variantElem, kVariantSysConf, kVariantPluginConf));
+					}
+				}
+
+				variant.appendConfig (ksVariantConfToAdd);
 				result.push_back (variant);
 			}
 		}
