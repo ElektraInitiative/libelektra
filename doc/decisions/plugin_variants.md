@@ -57,12 +57,14 @@ are:
 1. Provide a function `int genconf (KeySet * ks, Key * errorKey)` where `ks`
    is filled with a list of all variants with the essential configuration (subkeys `config`)
    and the changed parts of the contract (subkeys `infos`).
-2. Keys defined in `system/elektra/plugins/variants` have the same content,
+2. Keys defined in `system/elektra/plugins/<plugin>/variants/<variantname>` have the same content,
    but take precedence. If a variant with the same name is defined, only `config` or `infos`
    from `genconf` are considered if they are not mentioned in `system/elektra/plugins/variants`.
-   If the keys `config` or `infos` are present, it will be overwritten (deleted),
-   if only subkeys thereof are present, it will be enhanced.
-3. Empty `config` and `infos` mean:
+3. If the bool key `override` (for a plugin or a variant) is true, it will be overwritten (content
+   of `genconf` ignored, but instead a plugin or variant as given is created).
+4. If the bool key `disable` (for a plugin or a variant) is true the plugin or a variant of the
+   plugin will not be available.
+5. Empty `config` and `infos` mean:
  - `config`: The "default variant" (without any parameter) should be also available
    (has useful functionality)
  - `infos`: It is not possible to determine the changes of the contract,
@@ -90,29 +92,28 @@ user/configparser/config
 user/configparser/config/script = python_configparser.py
 ```
 
-The user specifies:
+The user/admin specifies:
 ```
-system/elektra/plugins/variants/access
-system/elektra/plugins/variants/aliases/infos/status = 10000
-system/elektra/plugins/variants/configparser
-system/elektra/plugins/variants/configparser/plugin = python
-system/elektra/plugins/variants/configparser/config
-system/elektra/plugins/variants/configparser/config/script = mybetter_configparser.py
+system/elektra/plugins/augeas/variants/access/disable = 1
+system/elektra/plugins/jni/disable = 1
+system/elektra/plugins/python/variants/configparser/override = 1
+system/elektra/plugins/python/variants/configparser/config/script = my_better_configparser.py
 ```
 
-Then the plugin variant:
+As result we get:
 
-1. `access` is not available (`system/elektra/plugins/variants/access` overrides `genconf`)
-2. `aliases` as defined from `genconf`, but with changes in contract (`infos/status`)
+1. `access` variant of augeas is not available
+2. `aliases` as defined from `genconf` (provides storage `aliases`)
 3. `configparser` is completely redefined (result from `genconf` will not be considered)
+   but it will be considered as specified.
+4. the plugin `jni` will not be available
 
 
 To have a space-separated simpleini one would use:
 ```
-system/elektra/plugins/variants/simpleini(space)
-system/elektra/plugins/variants/simpleini(space)/plugin = simpleini
-system/elektra/plugins/variants/simpleini(space)/config
-system/elektra/plugins/variants/simpleini(space)/config/format = "% %"
+system/elektra/plugins/simpleini/variants/space
+system/elektra/plugins/simpleini/variants/space/config
+system/elektra/plugins/simpleini/variants/space/config/format = "% %"
 ```
 
 
