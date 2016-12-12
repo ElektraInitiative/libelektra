@@ -38,6 +38,7 @@ public:
 	{
 	}
 	Modules modules;
+	KeySet pluginconf;
 };
 
 ModulesPluginDatabase::ModulesPluginDatabase () : impl (new ModulesPluginDatabase::Impl ())
@@ -380,27 +381,16 @@ std::vector<PluginSpec> ModulesPluginDatabase::lookupAllProvides (std::string co
 }
 
 
-class PluginVariantsDatabase::Impl
+PluginVariantDatabase::PluginVariantDatabase (const KeySet & conf) : ModulesPluginDatabase ()
 {
-public:
-	Impl ()
-	{
-	}
-	~Impl ()
-	{
-	}
-	Modules modules;
-};
+	impl->pluginconf = conf;
+}
 
-PluginVariantsDatabase::PluginVariantsDatabase (const KeySet & conf) : impl (new PluginVariantsDatabase::Impl ()), pluginconf (conf)
+PluginVariantDatabase::~PluginVariantDatabase ()
 {
 }
 
-PluginVariantsDatabase::~PluginVariantsDatabase ()
-{
-}
-
-std::vector<std::string> PluginVariantsDatabase::listAllPlugins () const
+std::vector<std::string> PluginVariantDatabase::listAllPlugins () const
 {
 	std::vector<std::string> plugins (ModulesPluginDatabase::listAllPlugins ());
 	plugins.erase (std::remove_if (plugins.begin (), plugins.end (),
@@ -408,14 +398,14 @@ std::vector<std::string> PluginVariantsDatabase::listAllPlugins () const
 					       Key k ("system/elektra/plugins", KEY_END);
 					       k.addBaseName (elem);
 					       k.addBaseName ("disable");
-					       Key res = this->pluginconf.lookup (k);
+					       Key res = impl->pluginconf.lookup (k);
 					       return res && res.getString () == "1";
 				       }),
 		       plugins.end ());
 	return plugins;
 }
 
-std::vector<PluginSpec> PluginVariantsDatabase::getPluginVariants (PluginSpec const & whichplugin) const
+std::vector<PluginSpec> PluginVariantDatabase::getPluginVariants (PluginSpec const & whichplugin) const
 {
 	PluginPtr plugin = impl->modules.load (whichplugin);
 
@@ -463,7 +453,7 @@ std::vector<PluginSpec> PluginVariantsDatabase::getPluginVariants (PluginSpec co
 				disabled.addBaseName ("disable");					// system/elektra/plugins/simpleini/variants/space/disable
 				// clang-format on
 
-				Key disabledCheck = this->pluginconf.lookup (disabled);
+				Key disabledCheck = impl->pluginconf.lookup (disabled);
 				if (disabledCheck && disabledCheck.getString () == "1")
 				{
 					continue; // skip this variant

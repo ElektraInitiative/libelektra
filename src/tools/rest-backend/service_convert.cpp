@@ -44,7 +44,7 @@ model::PluginFormat ConvertEngine::findSuitablePlugin (const std::string & forma
 	KDB kdb;
 	KeySet dbconf;
 	kdb.get (dbconf, "system/elektra/plugins");
-	PluginVariantsDatabase db (dbconf);
+	PluginVariantDatabase db (dbconf);
 
 	try
 	{
@@ -99,7 +99,7 @@ std::vector<model::PluginFormat> ConvertEngine::loadEnabledFormats ()
 	KDB kdb;
 	KeySet conf;
 	kdb.get (conf, "system/elektra/plugins");
-	PluginVariantsDatabase db (conf);
+	PluginVariantDatabase db (conf);
 	std::vector<PluginSpec> plugins = db.lookupAllProvides (m_pluginProviderStorage);
 
 	// sort the plugins by status before processing

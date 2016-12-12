@@ -102,9 +102,9 @@ public:
 	/**
 	 * @brief getter for the plugin configuration
 	 * 
-	 * @returen A keyset containing the plugin config
+	 * @return A keyset containing the plugin config
 	 */
-	kdb::KeySet getConfig () const
+	const kdb::KeySet getConfig () const
 	{
 		return m_config;
 	}

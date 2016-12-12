@@ -148,6 +148,7 @@ typedef std::shared_ptr<PluginDatabase> PluginDatabasePtr;
  */
 class ModulesPluginDatabase : public PluginDatabase
 {
+protected:
 	class Impl;
 	std::unique_ptr<Impl> impl;
 
@@ -165,11 +166,8 @@ public:
 	std::vector<PluginSpec> lookupAllProvides (std::string const & provides) const;
 };
 
-class PluginVariantsDatabase : public ModulesPluginDatabase
+class PluginVariantDatabase : public ModulesPluginDatabase
 {
-	class Impl;
-	std::unique_ptr<Impl> impl;
-
 public:
 	/**
 	 * @brief constructor that takes a configuration keyset for plugins
@@ -189,8 +187,8 @@ public:
 	 * 
 	 * @param conf keyset containing keys from system/elektra/plugins
 	 */
-	PluginVariantsDatabase (const KeySet & conf);
-	~PluginVariantsDatabase ();
+	PluginVariantDatabase (const KeySet & conf);
+	~PluginVariantDatabase ();
 
 	std::vector<std::string> listAllPlugins () const;
 
@@ -214,9 +212,6 @@ public:
 	 * @return a vector of plugin variants for the given plugin
 	 */
 	std::vector<PluginSpec> getPluginVariants (PluginSpec const & whichplugin) const;
-
-private:
-	KeySet pluginconf;
 };
 
 /**

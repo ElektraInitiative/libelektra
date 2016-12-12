@@ -1,7 +1,7 @@
 /**
  * @file
  *
- * @brief Tests for the pluginspec class
+ * @brief Tests for the plugindatabase class and implementations of it
  *
  * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
  *
@@ -21,7 +21,7 @@ TEST (PluginVariantsDatabase, listAllPlugins)
 	using namespace kdb::tools;
 
 	KeySet conf (0, KS_END);
-	PluginVariantsDatabase db (conf);
+	PluginVariantDatabase db (conf);
 	std::vector<std::string> plugins (db.listAllPlugins ());
 
 	ModulesPluginDatabase refDb;
@@ -47,7 +47,7 @@ TEST (PluginVariantsDatabase, listAllPluginsWithDisabled)
 
 	KeySet conf (2, *Key ("system/elektra/plugins/dump/disable", KEY_VALUE, "1", KEY_END),
 		     *Key ("system/elektra/plugins/simpleini/disable", KEY_VALUE, "1", KEY_END), KS_END);
-	PluginVariantsDatabase db (conf);
+	PluginVariantDatabase db (conf);
 	std::vector<std::string> plugins (db.listAllPlugins ());
 
 	ModulesPluginDatabase refDb;
@@ -69,7 +69,7 @@ TEST (PluginVariantsDatabase, getPluginVariants)
 	using namespace kdb::tools;
 
 	KeySet conf (0, KS_END);
-	PluginVariantsDatabase db (conf);
+	PluginVariantDatabase db (conf);
 	std::vector<std::string> allPlugins (db.listAllPlugins ());
 
 	if (std::find (allPlugins.begin (), allPlugins.end (), "dump") != allPlugins.end ())
