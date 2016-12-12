@@ -4,7 +4,7 @@ This is the "New BSD license" as in
 http://opensource.org/licenses/BSD-3-Clause
 The license below does not contain the advertising clause.
 
-For discussion of BSD licences, see:
+For discussion of BSD licenses, see:
 https://fsfe.org/freesoftware/transcripts/rms-fs-2006-03-09.en.html#q2
 
 

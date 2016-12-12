@@ -1,5 +1,11 @@
 ## asciinema.org
 
+setup:
+resize 100x25
+LC_ALL=C
+zsh config: no right prompt, sudo,..
+
+
 sudo kdb mount hello.js /hello json
 kdb set user/hello/hello/world "Hello World"
 kdb get user/hello/hello/world
