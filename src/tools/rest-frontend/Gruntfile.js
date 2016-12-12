@@ -168,7 +168,8 @@ module.exports = function (grunt) {
                         src: [
                             'qtgui.png',
                             'web-gui-kdb.png',
-                            'oyranos-kolor-manager.png'
+                            'oyranos-kolor-manager.png',
+                            'oyranos-km-logo.svg'
                         ],
                         dest: '<%= grunt.config(\'copy-website-content.build.target_dir\') %>/img',
                         expand: true
