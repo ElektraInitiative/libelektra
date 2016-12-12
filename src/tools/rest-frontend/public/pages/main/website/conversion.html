@@ -26,6 +26,13 @@
                                 </span>
                             </div>
                         </div>
+                        <div class="form-group">
+                            <label for="input_format_conf" class="control-label">
+                                {{ 'APP.CONVERSION.LABEL.INPUT.FORMAT.CONF' | translate }}
+                            </label>
+                            <input type="text" id="input_format_conf" name="input_format_conf" class="form-control"
+                                   ng-model="parameters.input.formatconf" />
+                        </div>
                         <div class="form-group has-feedback"
                              ng-class="{'has-error': convertForm.input_snippet.$invalid && !convertForm.input_snippet.$pristine,
 								'has-success': convertForm.input_snippet.$valid && convertForm.input_snippet.$dirty}">
@@ -64,6 +71,13 @@
                                 </span>
                             </div>
                         </div>
+						<div class="form-group">
+							<label for="output_format_conf" class="control-label">
+								{{ 'APP.CONVERSION.LABEL.OUTPUT.FORMAT.CONF' | translate }}
+							</label>
+							<input type="text" id="output_format_conf" name="output_format_conf" class="form-control"
+								   ng-model="parameters.output.formatconf" />
+						</div>
                         <div class="form-group">
                             <label for="output_snippet" class="control-label">
                                 {{ 'APP.CONVERSION.LABEL.OUTPUT.SNIPPET' | translate }}
