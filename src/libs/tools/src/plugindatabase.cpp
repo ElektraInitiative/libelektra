@@ -38,7 +38,6 @@ public:
 	{
 	}
 	Modules modules;
-	KeySet pluginconf;
 };
 
 ModulesPluginDatabase::ModulesPluginDatabase () : impl (new ModulesPluginDatabase::Impl ())
@@ -381,9 +380,21 @@ std::vector<PluginSpec> ModulesPluginDatabase::lookupAllProvides (std::string co
 }
 
 
-PluginVariantDatabase::PluginVariantDatabase (const KeySet & conf) : ModulesPluginDatabase ()
+class PluginVariantDatabase::VariantImpl
 {
-	impl->pluginconf = conf;
+public:
+	VariantImpl (const KeySet & conf) : pluginconf (conf)
+	{
+	}
+	~VariantImpl ()
+	{
+	}
+	KeySet pluginconf;
+};
+
+PluginVariantDatabase::PluginVariantDatabase (const KeySet & conf)
+: ModulesPluginDatabase (), variantImpl (new PluginVariantDatabase::VariantImpl (conf))
+{
 }
 
 PluginVariantDatabase::~PluginVariantDatabase ()
@@ -398,7 +409,7 @@ std::vector<std::string> PluginVariantDatabase::listAllPlugins () const
 					       Key k ("system/elektra/plugins", KEY_END);
 					       k.addBaseName (elem);
 					       k.addBaseName ("disable");
-					       Key res = impl->pluginconf.lookup (k);
+					       Key res = variantImpl->pluginconf.lookup (k);
 					       return res && res.getString () == "1";
 				       }),
 		       plugins.end ());
@@ -409,7 +420,7 @@ std::vector<PluginSpec> PluginVariantDatabase::getPluginVariants (PluginSpec con
 {
 	PluginPtr plugin = impl->modules.load (whichplugin);
 
-	KeySet sysconf (impl->pluginconf);
+	KeySet sysconf (variantImpl->pluginconf);
 
 	try
 	{

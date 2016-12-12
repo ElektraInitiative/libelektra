@@ -168,6 +168,9 @@ public:
 
 class PluginVariantDatabase : public ModulesPluginDatabase
 {
+	class VariantImpl;
+	std::unique_ptr<VariantImpl> variantImpl;
+
 public:
 	/**
 	 * @brief constructor that takes a configuration keyset for plugins
