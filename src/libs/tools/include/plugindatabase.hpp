@@ -132,6 +132,17 @@ public:
 	virtual std::vector<PluginSpec> lookupAllProvides (std::string const & provides) const = 0;
 
 	/**
+	 * @brief returns a list of plugin variants for the plugin
+	 *
+	 * @note if no plugin variant could be found, an empty vector will be returned.
+	 *
+	 * @param whichplugin is the plugin for which we want all variants
+	 *
+	 * @return a vector of plugin variants for the given plugin
+	 */
+	virtual std::vector<PluginSpec> getPluginVariants (PluginSpec const & whichplugin) const = 0;
+
+	/**
 	 * @param statusString the string encoding the status
 	 *
 	 * @return The representing number for a given status.
@@ -163,6 +174,7 @@ public:
 	PluginSpec lookupProvides (std::string const & provides) const;
 	std::map<int, PluginSpec> lookupAllProvidesWithStatus (std::string const & provides) const;
 	std::vector<PluginSpec> lookupAllProvides (std::string const & provides) const;
+	std::vector<PluginSpec> getPluginVariants (PluginSpec const & whichplugin) const;
 };
 
 /**

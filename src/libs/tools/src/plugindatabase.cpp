@@ -14,6 +14,7 @@
 #include <set>
 
 #include <algorithm>
+#include <helper/keyhelper.hpp>
 #include <kdbconfig.h>
 #include <kdblogger.h>
 
@@ -374,6 +375,58 @@ std::vector<PluginSpec> ModulesPluginDatabase::lookupAllProvides (std::string co
 	catch (kdb::tools::NoPlugin & e)
 	{
 		// if no plugins were found, return an empty vector
+		return std::vector<PluginSpec> ();
+	}
+}
+
+std::vector<PluginSpec> ModulesPluginDatabase::getPluginVariants (PluginSpec const & whichplugin) const
+{
+	PluginPtr plugin = impl->modules.load (whichplugin);
+
+	// TODO variant overrides from kdb
+
+	try
+	{
+		auto genconf = reinterpret_cast<void (*) (ckdb::KeySet *, ckdb::Key *)> (plugin->getSymbol ("genconf"));
+		KeySet conf;
+		genconf (conf.getKeySet (), 0);
+		std::vector<PluginSpec> result;
+		KeySet confIt (conf);
+		for (auto elem : confIt)
+		{
+			Key k (elem.getNamespace () + "/", KEY_END);
+			k.addBaseName (elem.getBaseName ());
+			if (k == elem)
+			{
+				PluginSpec variant (whichplugin);
+				KeySet confToAdd;
+
+				// plugin config
+				Key kConf (k);
+				kConf.addBaseName ("config");
+				Key newConf ("system/", KEY_END);
+				KeySet variantConf (conf.cut (kConf));
+				for (auto variantElem : variantConf)
+				{
+					if (!variantElem.isBelow (kConf)) continue;
+
+					Key curr (helper::rebaseKey (variantElem, kConf, newConf));
+					curr.setString (variantElem.getString ());
+					confToAdd.append (curr);
+				}
+
+				// plugin infos
+				// TODO infos
+
+				variant.appendConfig (confToAdd);
+				result.push_back (variant);
+			}
+		}
+		return result;
+	}
+	catch (kdb::tools::MissingSymbol & e)
+	{
+		// no genconf, no variants
 		return std::vector<PluginSpec> ();
 	}
 }
