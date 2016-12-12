@@ -12,7 +12,6 @@
 #include <QAbstractListModel>
 #include <QDebug>
 #include <QList>
-#include <QtDBus/QtDBus>
 #include <QtQml>
 #include <backend.hpp>
 #include <kdb.hpp>

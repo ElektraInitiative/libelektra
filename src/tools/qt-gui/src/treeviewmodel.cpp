@@ -17,6 +17,10 @@
 #include <plugins.hpp>
 #include <toolexcept.hpp>
 
+#if HAVE_DBUS
+#include <QtDBus/QtDBus>
+#endif
+
 #include "kdblogger.h"
 #include <merging/automergeconfiguration.hpp>
 #include <merging/automergestrategy.hpp>
@@ -795,6 +799,7 @@ void TreeViewModel::showConfigNodeMessage (QString title, QString text, QString 
 
 void TreeViewModel::connectDBus ()
 {
+#if HAVE_DBUS
 	if (QDBusConnection::sessionBus ().connect (QString (), "/org/libelektra/configuration", "org.libelektra", QString (), this,
 						    SLOT (configChanged (QString))))
 	{
@@ -804,6 +809,9 @@ void TreeViewModel::connectDBus ()
 	{
 		ELEKTRA_LOG ("Failed to connect to DBus");
 	}
+#else
+	ELEKTRA_LOG ("No DBus support");
+#endif
 }
 
 void TreeViewModel::configChanged (QString msg)

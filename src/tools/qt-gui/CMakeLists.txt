@@ -20,6 +20,9 @@ endif ()
 
 if (NOT Qt5DBus_FOUND)
 	message(WARNING "No Qt5 DBus module found. Listening to DBus will not be supported.")
+	add_definitions(-DHAVE_DBUS=0)
+else ()
+	add_definitions(-DHAVE_DBUS=1)
 endif ()
 
 include_directories (
