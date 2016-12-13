@@ -90,11 +90,11 @@ If you are using Ubuntu, LibJWT can also be installed through a pre-built APT pa
 #### Frontend ####
 
 The frontend does only require the package manager [npm](https://www.npmjs.com/) (>= v3).
-It is preferred to install it along with [nodeJS](https://nodejs.org/), as the version
-that comes via APT is insufficient (only v1.4). The installation was tested with npm version
-3.10.8, but it should also work with other versions of 3+.
-
-It does also not work to install nodejs via APT, as it will not install npm at all.
+It is preferred to install it along with [nodeJS](https://nodejs.org/),
+for example via [provided packages](https://nodejs.org/en/download/package-manager/).
+The version that comes via Debian Jessie (v1.4) is insufficient.
+The installation was tested with npm version 3.10.8-9, but it should also work with
+other versions of 3+.
 
 ### Build & Install the Applications ###
 
@@ -155,10 +155,10 @@ options are listed on [their website](http://cppcms.com/wikipp/en/page/cppcms_1x
 A stand-alone installation of the service (without proxy server) requires following
 configuration:
 ```
-> kdb set system/sw/elektra/restbackend/#0/current/cppcms/service/api "http"
-> kdb set system/sw/elektra/restbackend/#0/current/cppcms/service/ip "0.0.0.0"
-> kdb set system/sw/elektra/restbackend/#0/current/cppcms/service/port 8080
-> kdb set system/sw/elektra/restbackend/#0/current/cppcms/http/script_names/#0 "/"
+> kdb set -N system /sw/elektra/restbackend/#0/current/cppcms/service/api "http"
+> kdb set -N system /sw/elektra/restbackend/#0/current/cppcms/service/ip "0.0.0.0"
+> kdb set -N system /sw/elektra/restbackend/#0/current/cppcms/service/port 8080
+> kdb set -N system /sw/elektra/restbackend/#0/current/cppcms/http/script_names/#0 "/"
 ```
 
 Note: here we have not used the option `-N system` because the CppCMS configuration is
@@ -171,6 +171,9 @@ Before they can be made, the configuration file has to be mounted though. This c
 achieved by issuing `kdb mount-rest-frontend-config`. The configuration should then
 be available at `system/sw/elektra/restfrontend/#0/current`. To get a list of possible
 configuration parameters, use `kdb ls system/sw/elektra/restfrontend/#0/current`.
+
+Note that the frontend is not elektrified, only changes within
+`system/sw/elektra/restfrontend/#0/current` will work.
 
 The parameters that need to be changed in order for the frontend to work correctly, are:
 
