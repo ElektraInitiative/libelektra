@@ -110,6 +110,9 @@
 						</button>
 					</td>
 				</tr>
+				<tr ng-show="!searchResult.entries">
+					<th colspan="8" class="text-center">{{ 'APP.ENTRIES.SEARCH.TABLE.LABEL.NORESULTS' | translate }}</th>
+				</tr>
 			</tbody>
 		</table>
 	</div>

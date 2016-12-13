@@ -4,11 +4,16 @@ module.exports = function ($rootScope, $scope, Logger, $state, $anchorScroll, we
 
     var vm = this;
     $scope.$rootScope = $rootScope;
-	$scope.$state = $state;
+    $scope.$state = $state;
 
     // build the dynamic menu
     $scope.menu = webStructure;
     $scope.config = config;
+
+    // build date
+    $scope.builddate = {
+        pretty: (new Date(document.querySelector('meta[name="build-date"]').getAttribute('content'))).toLocaleString()
+    };
 
 //        vm.currentLanguage = 'de';
 
