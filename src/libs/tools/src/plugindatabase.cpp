@@ -480,9 +480,14 @@ std::vector<PluginSpec> PluginVariantDatabase::getPluginVariantsFromSysconf (Plu
 			Key kGenconfVariant (kVariantPluginConf);
 			kGenconfVariant.addBaseName (kCurrent.getBaseName ());
 			Key kIgnore = genconfToIgnore.lookup (kGenconfVariant);
-			if (kIgnore || ksVariantConfToAdd.size () == 0)
+			if (kIgnore)
 			{
 				continue; // this variant was added by genconf already
+			}
+
+			if (ksVariantConfToAdd.size () == 0)
+			{
+				continue; // no config means no variant
 			}
 
 			variant.appendConfig (ksVariantConfToAdd);
@@ -534,6 +539,11 @@ std::vector<PluginSpec> PluginVariantDatabase::getPluginVariantsFromGenconf (Plu
 				ksVariantConfToAdd.clear ();
 				Key kVariantSysconf (this->buildVariantSysconfKey (whichplugin, kCurrent.getBaseName (), "config"));
 				this->addKeysBelowKeyToConf (kVariantSysconf, sysconf, kVariantPluginConf, ksVariantConfToAdd);
+			}
+
+			if (ksVariantConfToAdd.size () == 0)
+			{
+				continue; // no config means no variant
 			}
 
 			variant.appendConfig (ksVariantConfToAdd);
