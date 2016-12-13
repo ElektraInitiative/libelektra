@@ -267,6 +267,7 @@
     "APP.ENTRIES.SEARCH.TABLE.HEADER.SCOPE": "Scope",
     "APP.ENTRIES.SEARCH.TABLE.HEADER.SLUG": "Slug",
     "APP.ENTRIES.SEARCH.TABLE.HEADER.TITLE": "Title",
+    "APP.ENTRIES.SEARCH.TABLE.LABEL.NORESULTS": "No snippets found matching the given search criteria.",
 
     "APP.ERROR.404.HELP": "Are you sure you entered the right URL? You can also use the menu above to look around.<br />If the site seems broken, please contact us using the feedback button on the bottom.",
     "APP.ERROR.404.MESSAGE": "Sorry, we couldn't find the page you were looking for!",
@@ -396,6 +397,7 @@
     "APP.USERS.SEARCH.TABLE.HEADER.EMAIL": "Email",
     "APP.USERS.SEARCH.TABLE.HEADER.RANK": "Rank",
     "APP.USERS.SEARCH.TABLE.HEADER.USERNAME": "Username",
+    "APP.USERS.SEARCH.TABLE.LABEL.NORESULTS": "No users found matching the given search criteria.",
 
     "APP.WEBSITE.LISTFILES.BUTTON.SHOWONGITHUB": "Show on GitHub"
 }
