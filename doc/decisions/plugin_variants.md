@@ -149,6 +149,23 @@ system/elektra/plugins/simpleini/variants/spacesep/config/format = "% %"
 Currently only overrides of plugin configuration (`config/...`) is possible,
 overrides of other plugin information (contract information) does not work yet.
 
+It is also not possible to add additional information to a variant,
+only overrides work. E.g.
+```
+system/elektra/plugins/augeas/variants/aliases
+system/elektra/plugins/augeas/variants/aliases/override = 1
+system/elektra/plugins/augeas/variants/aliases/config
+system/elektra/plugins/augeas/variants/aliases/config/lens = Aliases.lns
+system/elektra/plugins/augeas/variants/aliases/config/otherparam = 0
+```
+works, while
+```
+system/elektra/plugins/augeas/variants/aliases
+system/elektra/plugins/augeas/variants/aliases/config
+system/elektra/plugins/augeas/variants/aliases/config/otherparam = 0
+```
+gets ignored.
+
 
 ## Related decisions
 
