@@ -272,6 +272,7 @@
     "APP.ERROR.404.MESSAGE": "Sorry, we couldn't find the page you were looking for!",
     "APP.ERROR.404.TITLE": "Not Found",
 
+    "APP.GLOBAL.FOOTER.LABEL.LASTUPDATE": "Last update: {{ pretty }}",
     "APP.GLOBAL.FOOTER.LINK.TITLE.FEEDBACK": "Feedback",
     "APP.GLOBAL.FOOTER.LINK.TITLE.SCROLLTOTOP": "Scroll to Top",
     "APP.GLOBAL.NOTIFICATION.HEADER.CONNECTION_ISSUE": "Connection issues",
