@@ -5,6 +5,8 @@ resize 100x23
 LC_ALL=C
 zsh config: no right prompt, sudo,..
 
+missing: bookmarks, dir config?
+
 
 sudo kdb mount hello.js /hello json
 kdb set user/hello/hello/world "Hello World"
