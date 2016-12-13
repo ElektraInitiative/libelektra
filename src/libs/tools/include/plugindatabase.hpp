@@ -215,6 +215,92 @@ public:
 	 * @return a vector of plugin variants for the given plugin
 	 */
 	std::vector<PluginSpec> getPluginVariants (PluginSpec const & whichplugin) const;
+
+private:
+	/**
+	 * @brief returns a list of plugin variants created from the system config
+	 * 
+	 * considered are keys below system/elektra/plugins/<plugin>/variants
+	 * 
+	 * @note variants listed in @p genconfToIgnore are not added to the result.
+	 * it is expected that they were added at another point already
+	 * (e.g. explicit override check).
+	 * 
+	 * @param whichplugin is the plugin for which we want all variants
+	 * @param sysconf is a keyset containing the system config for system/elektra/plugins
+	 * @param genconfToIgnore is a keyset containing variants to ignore from the sysconf
+	 * 
+	 * @return a vector of pluginspecs with variant configurations
+	 */
+	std::vector<PluginSpec> getPluginVariantsFromSysconf (PluginSpec const & whichplugin, KeySet const & sysconf,
+							      KeySet const & genconfToIgnore) const;
+
+	/**
+	 * @brief returns a list of plugin variants created from the genconf config
+	 * 
+	 * does take a keyset with config from the `genconf` plugin function, but also
+	 * an additional @p sysconf keyset with config from system/elektra/plugins to
+	 * ensure overrides and disabled variants.
+	 * 
+	 * the function does also add all variants from @p sysconf that were not mentioned
+	 * in @p genconf yet.
+	 * 
+	 * @param whichplugin is the plugin for which we want all variants
+	 * @param genconf is a keyset containing the genconf config from the plugin
+	 * @param sysconf is a keyset containing the system config for system/elektra/plugins
+	 * 
+	 * @return a vector of pluginspecs with variant configurations
+	 */
+	std::vector<PluginSpec> getPluginVariantsFromGenconf (PluginSpec const & whichplugin, KeySet const & genconf,
+							      KeySet const & sysconf) const;
+
+	/**
+	 * @brief builds a sysconf key from several inputs
+	 * 
+	 * builds a key like:
+	 * 
+	 *   system/elektra/plugin/<whichplugin>/variants/<variant>/<attr>
+	 * 
+	 * @note the function does not add a value and it does not lookup the key in any
+	 * keyset, it just creates the key by adding every part as basename.
+	 * 
+	 * @param whichplugin is the plugin for which we want a key
+	 * @param variant is the plugin variant for which we want a key
+	 * @param attr is the attribute of a variant for which we want a key, e.g. info or config
+	 * 
+	 * @return a newly created key matching the inputs which can be used for lookups for example
+	 */
+	Key buildVariantSysconfKey (PluginSpec const & whichplugin, std::string const & variant, const std::string attr) const;
+
+	/**
+	 * @brief adds all keys of a keyset below a certain key to another keyset, rebased
+	 * 
+	 * lets take the input keyset (@p conf):
+	 * 
+	 *   system/elektra/plugins/simpleini/variants/spacesep
+	 *   system/elektra/plugins/simpleini/variants/spacesep/config
+	 *   system/elektra/plugins/simpleini/variants/spacesep/config/format = % %
+	 *   system/elektra/plugins/simpleini/variants/spacesep/config/ignorewhitespace = 1
+	 * 
+	 * and the input key (@p below):
+	 * 
+	 *   system/elektra/plugins/simpleini/variants/spacesep/config
+	 * 
+	 * and the new base key (@p newbase):
+	 * 
+	 *   system/
+	 * 
+	 * then we get the following keys in the output keyset (@p targetconf):
+	 * 
+	 *   system/format = % %
+	 *   system/ignorewhitespace = 1
+	 * 
+	 * @param below the parent key for everything we want to add to the target keyset
+	 * @param conf the keyset of which we want to add the keys to the target keyset
+	 * @param newbase the new base key used in the rebasing process
+	 * @param targetconf the target keyset to use for the transformation
+	 */
+	void addKeysBelowKeyToConf (Key const & below, KeySet const & conf, Key const & newbase, KeySet & targetconf) const;
 };
 
 /**
