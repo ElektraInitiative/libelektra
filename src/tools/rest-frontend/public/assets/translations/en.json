@@ -315,7 +315,7 @@
     "APP.HOME.LABEL.ORIENTATION.4.HEADLINE": "Sharing of Configuration Snippets",
     "APP.HOME.LABEL.ORIENTATION.5.DETAILS": "An important step in utilizing all of Elektras features is the elektrification of your application. We have written a <a href=\"/tutorials/integration-of-your-application\">tutorial</a> for you that explains how to do that!",
     "APP.HOME.LABEL.ORIENTATION.5.HEADLINE": "Elektrify your Application",
-    "APP.HOME.LABEL.TOOL.OTHERS.DETAILS": "Also other applications like the <a href=\"http://www.oyranos.org/kolormanager/\" target=\"_blank\">KDE KolorManager</a> already use Elektra and its awesome features!",
+    "APP.HOME.LABEL.TOOL.OTHERS.DETAILS": "Also other applications like the <a href=\"http://www.oyranos.org/kolormanager/\" target=\"_blank\">KDE KolorManager</a> already use Elektra! Elektra is available in most distributions like Fedora, Gentoo, Arch Linux, Debian, Ubuntu, Openwrt, OpenSuse, PLDLinux, and LEDE!",
     "APP.HOME.LABEL.TOOL.OTHERS.HEADLINE": "Other Applications",
     "APP.HOME.LABEL.TOOL.QTGUI.DETAILS": "Elektra offers a GUI based on Qt Quick. It simplifies common tasks and offers easy access to the key database itself. A description for the GUI tool can be found <a href=\"/tools/qt-gui\">here</a>.",
     "APP.HOME.LABEL.TOOL.QTGUI.HEADLINE": "Graphical User Interface",
