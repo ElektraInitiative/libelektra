@@ -12,6 +12,13 @@
                 "dev-comment": "A list of documentation files that are important for new users. Could be replaced by 'parsereadme' type in future.",
                 "children": [
                     {
+                        "name": "Readme",
+                        "type": "staticfile",
+                        "options": {
+                            "path": "README.md"
+                        }
+                    },
+                    {
                         "name": "Why Elektra?",
                         "type": "staticfile",
                         "options": {
