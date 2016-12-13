@@ -148,10 +148,12 @@ static const char * getAugeasError (augeas * augeasHandle)
 			aug_get (augeasHandle, "/augeas/text" AUGEAS_TREE_ROOT "/error/message", &message);
 
 			const char * format = "%s\n\tposition: %s:%s\n\tmessage: %s\n\tlens: %s";
-			size_t messageSize = strlen (augeasError) + strlen (line) + strlen (character) + strlen (message) + strlen (lens) +
-					     strlen (format);
+			size_t messageSize = (augeasError ? strlen (augeasError) : 0) + (line ? strlen (line) : 0) +
+					     (character ? strlen (character) : 0) + (message ? strlen (message) : 0) +
+					     (lens ? strlen (lens) : 0) + strlen (format);
 			char * buffer = elektraMalloc (messageSize);
-			sprintf (buffer, format, augeasError, line, character, message, lens);
+			snprintf (buffer, messageSize, format, augeasError ? augeasError : "", line ? line : "", character ? character : "",
+				  message ? message : "", lens ? lens : "");
 			reason = buffer;
 		}
 		else
