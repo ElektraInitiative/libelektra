@@ -3,25 +3,45 @@
 ## Dependencies ##
 
 For the base system you only need cmake and build-essential (make, gcc,
-some unix tools).
+some unix tools):
 
-To build documentation you need doxygen, graphviz and [ronn](https://github.com/rtomayko/ronn/blob/master/INSTALLING#files).
+	sudo apt-get install cmake build-essential
 
-To build pdf documentation you need pdflatex with
+Or on RPM based systems (CentOS):
 
-    texlive-fonts-recommended
-    texlive-latex-recommended
-    texlive-latex-extra
+	sudo yum install -y cmake3 gcc-c++
 
-For the debian package, please refer to debian/control (in the debian
-branch).
+
+## Optional Dependencies ##
+
+Note: You do not need to install the dependencies listed here.
+But then some of the functionality gets disabled automatically.
+
+To build documentation you need doxygen, graphviz and [ronn](https://github.com/rtomayko/ronn/blob/master/INSTALLING#files):
+
+	apt-get install doxygen graphviz ronn
+
+Or on RPM based systems:
+
+	sudo yum install -y doxygen docbook-style-xsl graphviz ruby
+	gem install ronn
+
+To build PDF documentation you need `pdflatex` with
+
+	apt-get install pdflatex texlive-fonts-recommended texlive-latex-recommended texlive-latex-extra
 
 For the plugins, please refer to the README.md of the respective plugin.
+For example, for CentOS:
+
+	sudo yum install -y boost-devel libdb-devel GConf2-devel libxml2-devel yajl-devel libcurl-devel augeas-devel libgit2-devel lua-devel swig python34-devel python-devel java-1.8.0-openjdk-devel jna ruby-devel byacc
+
+For the Debian package, please refer to debian/control (in the debian
+branch).
 
 ## Preparation ##
 
 Elektra uses cmake.
-Tested are cmake version 2.8.9 and version 3.0.2.
+Tested are cmake version 2.8.9 (minimum) and version 3.0.2 (recommended) among others.
 
 To configure Elektra graphically (with curses) run (`..` belongs to command):
 
