@@ -191,12 +191,12 @@ default = false
 [@config_default_profile@/cppcms/daemon/enable]
 check/type = boolean
 description = Create daemon process - fork off and become session leader.
-default = false
+default = true
 
 [@config_default_profile@/cppcms/daemon/lock]
 check/type = string
 description = File name for lock file for this daemon. This file contains the process ID of the daemon that allows you to kill it.
-default = @tool@.lock
+default = /run/elektra-@tool@.pid
 
 [@config_default_profile@/cppcms/daemon/user]
 check/type = string
