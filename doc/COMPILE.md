@@ -447,17 +447,29 @@ This issue was reported for:
 - CLion IDE (does not allow to build)
 
 
-### swig3 not available for Cent OS ###
+### Dependencies not available for Cent OS ###
+
+Please enable EPEL https://fedoraproject.org/wiki/EPEL
+
+	# Install EPEL for RHEL 7
+	curl -o epel-release-7-8.noarch.rpm http://dl.fedoraproject.org/pub/epel/7/x86_64/e/epel-release-7-8.noarch.rpm
+	sudo rpm -ivh epel-release-7-8.noarch.rpm
+	sudo yum update    
 
 For Bindings swig3 is recommended. swig2 only works on some distributions.
 E.g., for Debian Jessie the bindings will crash.
 
-You need to install swig3 by hand:
+At time of writing, no swig 3 was available, not even in EPEL.
+Thus you need to install swig3 manually:
 
 	curl https://codeload.github.com/swig/swig/tar.gz/rel-3.0.10 | tar xz
 	cd swig-rel-3.0.10 && ./autogen.sh && ./configure && make
 	sudo make install
 	cd ..
+
+Also, no ronn was available, thus you need to do:
+
+	gem install ronn
 
 
 ## See also
