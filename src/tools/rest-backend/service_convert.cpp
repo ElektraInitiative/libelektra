@@ -322,6 +322,10 @@ model::ImportedConfig ConvertEngine::import (const std::string & config, const s
 		if (tmpFile.is_open ())
 		{
 			tmpFile << config;
+			if (config.at (config.length () - 1) != '\n')
+			{
+				tmpFile << '\n';
+			}
 			tmpFile.close ();
 
 			KeySet ks;
