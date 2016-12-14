@@ -447,6 +447,19 @@ This issue was reported for:
 - CLion IDE (does not allow to build)
 
 
+### swig3 not available for Cent OS ###
+
+For Bindings swig3 is recommended. swig2 only works on some distributions.
+E.g., for Debian Jessie the bindings will crash.
+
+You need to install swig3 by hand:
+
+	curl https://codeload.github.com/swig/swig/tar.gz/rel-3.0.10 | tar xz
+	cd swig-rel-3.0.10 && ./autogen.sh && ./configure && make
+	sudo make install
+	cd ..
+
+
 ## See also
 
 - [INSTALL](INSTALL.md).
