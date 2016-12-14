@@ -14,7 +14,11 @@ make install
 
 # now lets first output some version information for the build log
 kdb --version
-kdb export / simpleini
+# print key database for debugging
+#kdb export / simpleini
+
+# prevent jenkins from killing daemons
+BUILD_ID=dontKillMe
 
 # then restart the backend
 kdb stop-rest-backend
