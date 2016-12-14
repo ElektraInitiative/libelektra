@@ -9,7 +9,10 @@ tags:
 authors:
  - name: Markus Raab
    orcid: 0000-0002-1493-9065
-   affiliation: TU Wien (TUW)
+   affiliation: 1
+affiliations:
+ - name: TU Wien (TUW)
+   index: 1
 date: 23 July 2016
 bibliography: paper.bib
 ---
