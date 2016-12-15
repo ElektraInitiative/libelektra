@@ -7,6 +7,7 @@ cmake -DPLUGINS='ALL;-fstab;-semlock' -DBUILD_FULL=OFF -DBUILD_SHARED=ON -DBUILD
 make -j 3
 
 # test the applications
+make run_memcheck
 make run_all
 
 # if tests were ok, we can install
