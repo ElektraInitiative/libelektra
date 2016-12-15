@@ -76,7 +76,7 @@ int elektraAugeasGenConf (KeySet * ks, Key * errorKey ELEKTRA_UNUSED)
 {
 	glob_t pglob;
 	int retval = 1;
-	const char * f = "/usr/share/augeas/lenses/dist/*.aug";
+	const char * f = LIBAUGEAS_PREFIX "/share/augeas/lenses/dist/*.aug";
 	if (glob (f, GLOB_NOSORT, NULL, &pglob) == 0)
 	{
 		ELEKTRA_LOG ("has glob %zd", pglob.gl_pathc);
