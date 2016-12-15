@@ -87,7 +87,7 @@ module.exports = function (grunt) {
             entries.forEach(function (entry) {
                 date = regex.exec(entry);
                 if (date === null || date.length < 2) {
-                    grunt.log.error('Found news file with inappropriate filename.');
+                    grunt.log.warn('Found file `' + entry + '`, which has an inappropriate filename, in the news folder.');
                 } else {
                     date = date[1]; // first capture group is date
                 }
