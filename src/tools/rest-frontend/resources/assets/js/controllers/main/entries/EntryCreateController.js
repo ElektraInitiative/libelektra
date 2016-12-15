@@ -16,7 +16,9 @@ module.exports = function ($scope, Logger, $state, EntryService, Notification, S
         scope: config.website.defaults.entry.form.scope,
         tags: [],
         configuration: {
-            format: {}
+            format: {},
+            formatconf: '',
+            value: ''
         }
     };
     $scope.formats = formats;
@@ -45,6 +47,11 @@ module.exports = function ($scope, Logger, $state, EntryService, Notification, S
             return elem.text;
         });
         tmp.configuration.format = $scope.entry.configuration.format.plugin.name;
+        
+        if (tmp.configuration.formatconf !== '') {
+            tmp.configuration.format += ' ' + tmp.configuration.formatconf;
+        }
+        delete tmp.configuration.formatconf;
 
         EntryService.create(tmp).then(function (response) {
             Logger.info('Create entry result: ' + JSON.stringify(response.data));

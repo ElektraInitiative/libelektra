@@ -18,6 +18,7 @@ module.exports = function ($scope, Logger, $state, EntryService, Notification, S
             format: $scope.formats.filter(function (elem) {
                 return elem.plugin.name === entry.value[0].plugin;
             })[0],
+			formatconf: '',
             value: entry.value[0].value
         }
     };
@@ -32,6 +33,11 @@ module.exports = function ($scope, Logger, $state, EntryService, Notification, S
             return elem.text;
         });
         tmp.configuration.format = $scope.entry.configuration.format.plugin.name;
+		
+		if (tmp.configuration.formatconf !== '') {
+			tmp.configuration.format += ' ' + tmp.configuration.formatconf;
+		}
+		delete tmp.configuration.formatconf;
 
         EntryService.update(entry.key.full, tmp).then(function (response) {
             Logger.info('Update entry result: ' + JSON.stringify(response.data));

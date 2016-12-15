@@ -94,26 +94,32 @@ user/configparser/config/script = python_configparser.py
 
 The user/admin specifies:
 ```
-system/elektra/plugins/augeas/variants/access/disable = 1
 system/elektra/plugins/jni/disable = 1
+system/elektra/plugins/augeas/variants/access
+system/elektra/plugins/augeas/variants/access/disable = 1
+system/elektra/plugins/augeas/variants/aliases
+system/elektra/plugins/augeas/variants/aliases/infos
+system/elektra/plugins/augeas/variants/aliases/infos/status = 10000
+system/elektra/plugins/python/variants/configparser
 system/elektra/plugins/python/variants/configparser/override = 1
-system/elektra/plugins/python/variants/configparser/config/script = my_better_configparser.py
+system/elektra/plugins/python/variants/configparser/config
+system/elektra/plugins/python/variants/configparser/config/script = mybetter_configparser.py
 ```
 
 As result we get:
 
-1. `access` variant of augeas is not available
-2. `aliases` as defined from `genconf` (provides storage `aliases`)
-3. `configparser` is completely redefined (result from `genconf` will not be considered)
+1. `access` of plugin `augeas` is not available
+2. `aliases` of plugin `augeas` as defined from `genconf`, but with changes in contract (`infos/status`)
+3. `configparser` of plugin `python` is completely redefined (result from `genconf` will not be considered)
    but it will be considered as specified.
 4. the plugin `jni` will not be available
 
 
 To have a space-separated simpleini one would use:
 ```
-system/elektra/plugins/simpleini/variants/space
-system/elektra/plugins/simpleini/variants/space/config
-system/elektra/plugins/simpleini/variants/space/config/format = "% %"
+system/elektra/plugins/simpleini/variants/spacesep
+system/elektra/plugins/simpleini/variants/spacesep/config
+system/elektra/plugins/simpleini/variants/spacesep/config/format = "% %"
 ```
 
 
@@ -137,6 +143,28 @@ system/elektra/plugins/simpleini/variants/space/config/format = "% %"
 - `kdb list` should be able to list all variants, e.g. like:
   `augeas lens=Access.lns`
   so that a user can copy and paste this for the `kdb mount` command.
+
+## Current state
+
+Currently only overrides of plugin configuration (`config/...`) is possible,
+overrides of other plugin information (contract information) does not work yet.
+
+It is also not possible to add additional information to a variant,
+only overrides work. E.g.
+```
+system/elektra/plugins/augeas/variants/aliases
+system/elektra/plugins/augeas/variants/aliases/override = 1
+system/elektra/plugins/augeas/variants/aliases/config
+system/elektra/plugins/augeas/variants/aliases/config/lens = Aliases.lns
+system/elektra/plugins/augeas/variants/aliases/config/otherparam = 0
+```
+works, while
+```
+system/elektra/plugins/augeas/variants/aliases
+system/elektra/plugins/augeas/variants/aliases/config
+system/elektra/plugins/augeas/variants/aliases/config/otherparam = 0
+```
+gets ignored.
 
 
 ## Related decisions

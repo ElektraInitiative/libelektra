@@ -9,10 +9,12 @@ module.exports = function ($scope, Logger, formats, ConversionService, ReportSer
     $scope.parameters = {
         input: {
             format: {},
+            formatconf: '',
             snippet: ''
         },
         output: {
             format: {},
+            formatconf: '',
             snippet: '',
             validated: false
         }
@@ -32,8 +34,18 @@ module.exports = function ($scope, Logger, formats, ConversionService, ReportSer
 
         var request = {};
         angular.copy($scope.parameters, request);
+
         request.input.format = $scope.parameters.input.format.plugin.name;
+        if ($scope.parameters.input.formatconf !== '') {
+            request.input.format += ' ' + $scope.parameters.input.formatconf;
+        }
         request.output.format = $scope.parameters.output.format.plugin.name;
+        if ($scope.parameters.output.formatconf !== '') {
+            request.output.format += ' ' + $scope.parameters.output.formatconf;
+        }
+
+        delete request.input.formatconf;
+        delete request.output.formatconf;
         delete request.output.snippet;
         delete request.output.validated;
 

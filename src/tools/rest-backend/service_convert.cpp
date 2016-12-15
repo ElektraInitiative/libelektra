@@ -16,6 +16,7 @@
 #include <boost/algorithm/string/split.hpp>
 #include <boost/filesystem.hpp>
 
+#include <backendparser.hpp>
 #include <modules.hpp>
 #include <plugin.hpp>
 #include <plugindatabase.hpp>
@@ -40,11 +41,26 @@ model::PluginFormat ConvertEngine::findSuitablePlugin (const std::string & forma
 	using namespace kdb;
 	using namespace kdb::tools;
 
-	ModulesPluginDatabase db;
+	KDB kdb;
+	KeySet dbconf;
+	kdb.get (dbconf, "system/elektra/plugins");
+	PluginVariantDatabase db (dbconf);
 
 	try
 	{
-		PluginSpec plugin = db.lookupProvides (format);
+		std::string pluginname;
+		std::string conf;
+		if (format.find_first_of (' ') != std::string::npos)
+		{
+			pluginname = format.substr (0, format.find_first_of (' '));
+			conf = format.substr (format.find_first_of (' ') + 1);
+		}
+		else
+		{
+			pluginname = format;
+		}
+
+		PluginSpec plugin (pluginname);
 
 		// find status
 		std::string statusString = db.lookupInfo (plugin, m_pluginStatus);
@@ -55,7 +71,10 @@ model::PluginFormat ConvertEngine::findSuitablePlugin (const std::string & forma
 		std::string providers = db.lookupInfo (plugin, m_pluginProvides);
 		std::string actualFormat = this->extractFormatFromProviderList (providers);
 
-		return model::PluginFormat (actualFormat, plugin.getName (), statuses);
+		// parse config
+		kdb::KeySet config (parsePluginArguments (conf, "system"));
+
+		return model::PluginFormat (actualFormat, plugin.getName (), statuses, config);
 	}
 	catch (kdb::tools::NoPlugin & e)
 	{
@@ -77,7 +96,10 @@ std::vector<model::PluginFormat> ConvertEngine::loadEnabledFormats ()
 	using namespace kdb;
 	using namespace kdb::tools;
 
-	ModulesPluginDatabase db;
+	KDB kdb;
+	KeySet conf;
+	kdb.get (conf, "system/elektra/plugins");
+	PluginVariantDatabase db (conf);
 	std::vector<PluginSpec> plugins = db.lookupAllProvides (m_pluginProviderStorage);
 
 	// sort the plugins by status before processing
@@ -97,6 +119,12 @@ std::vector<model::PluginFormat> ConvertEngine::loadEnabledFormats ()
 		boost::split (statuses, statusString, boost::is_any_of (" "));
 		// push plugin to result list
 		result.push_back (model::PluginFormat (format, plugin.getName (), statuses));
+
+		for (auto & elem : db.getPluginVariants (plugin))
+		{
+			std::string pluginName = elem.getName ();
+			result.push_back (model::PluginFormat (format, pluginName, statuses, elem.getConfig ()));
+		}
 	}
 
 	return result;
@@ -158,7 +186,7 @@ model::ConfigFormat ConvertEngine::exportTo (const model::PluginFormat & plugin,
 
 	KeySet ks = entry.getSubkeys ();
 
-	PluginPtr export_plugin = modules.load (plugin.getPluginname ());
+	PluginPtr export_plugin = modules.load (plugin.getPluginname (), plugin.getConfig ());
 	try
 	{
 		if (export_plugin->set (ks, pathKey) <= 0)
@@ -195,6 +223,10 @@ model::ConfigFormat ConvertEngine::exportTo (const model::PluginFormat & plugin,
 	{
 		model::Entry valEntry (entry.getPublicName ());
 		std::string format = result.getPluginformat ().getPluginname ();
+		for (auto elem : result.getPluginformat ().getConfig ())
+		{
+			format.append (" " + elem.getBaseName () + "=" + elem.getString ());
+		}
 		model::ImportedConfig importCfg = this->import (result.getConfig (), format, valEntry);
 		// compare
 		if (importCfg.getKeySet ().size () != entry.getSubkeys ().size ())
@@ -290,11 +322,15 @@ model::ImportedConfig ConvertEngine::import (const std::string & config, const s
 		if (tmpFile.is_open ())
 		{
 			tmpFile << config;
+			if (config.at (config.length () - 1) != '\n')
+			{
+				tmpFile << '\n';
+			}
 			tmpFile.close ();
 
 			KeySet ks;
 
-			PluginPtr export_plugin = modules.load (pluginFormat.getPluginname ());
+			PluginPtr export_plugin = modules.load (pluginFormat.getPluginname (), pluginFormat.getConfig ());
 			export_plugin->get (ks, pathKey);
 
 			std::remove (tmpPath.c_str ());

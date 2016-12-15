@@ -14,6 +14,7 @@
 #include <set>
 
 #include <algorithm>
+#include <helper/keyhelper.hpp>
 #include <kdbconfig.h>
 #include <kdblogger.h>
 
@@ -375,6 +376,206 @@ std::vector<PluginSpec> ModulesPluginDatabase::lookupAllProvides (std::string co
 	{
 		// if no plugins were found, return an empty vector
 		return std::vector<PluginSpec> ();
+	}
+}
+
+
+class PluginVariantDatabase::VariantImpl
+{
+public:
+	VariantImpl (const KeySet & conf) : pluginconf (conf)
+	{
+	}
+	~VariantImpl ()
+	{
+	}
+	KeySet pluginconf;
+};
+
+PluginVariantDatabase::PluginVariantDatabase (const KeySet & conf)
+: ModulesPluginDatabase (), variantImpl (new PluginVariantDatabase::VariantImpl (conf))
+{
+}
+
+PluginVariantDatabase::~PluginVariantDatabase ()
+{
+}
+
+std::vector<std::string> PluginVariantDatabase::listAllPlugins () const
+{
+	std::vector<std::string> plugins (ModulesPluginDatabase::listAllPlugins ());
+	plugins.erase (std::remove_if (plugins.begin (), plugins.end (),
+				       [this](const std::string & elem) {
+					       Key k ("system/elektra/plugins", KEY_END);
+					       k.addBaseName (elem);
+					       k.addBaseName ("disable");
+					       Key res = this->variantImpl->pluginconf.lookup (k);
+					       return res && res.getString () == "1";
+				       }),
+		       plugins.end ());
+	return plugins;
+}
+
+std::vector<PluginSpec> PluginVariantDatabase::getPluginVariants (PluginSpec const & whichplugin) const
+{
+	PluginPtr plugin = this->impl->modules.load (whichplugin);
+	KeySet ksSysconf (this->variantImpl->pluginconf);
+	KeySet ksGenconf;
+
+	// read plugin variants via genconf
+	try
+	{
+		auto funcGenconf = reinterpret_cast<void (*) (ckdb::KeySet *, ckdb::Key *)> (plugin->getSymbol ("genconf"));
+		funcGenconf (ksGenconf.getKeySet (), 0);
+	}
+	catch (kdb::tools::MissingSymbol & e)
+	{
+		// no genconf, but maybe sysconf variants
+		KeySet placeholder;
+		return this->getPluginVariantsFromSysconf (whichplugin, ksSysconf, placeholder);
+	}
+
+	// get plugin variants from genconf, but also consider sysconf for disable/override
+	return this->getPluginVariantsFromGenconf (whichplugin, ksGenconf, ksSysconf);
+}
+
+std::vector<PluginSpec> PluginVariantDatabase::getPluginVariantsFromSysconf (PluginSpec const & whichplugin, KeySet const & sysconf,
+									     KeySet const & genconfToIgnore) const
+{
+	std::vector<PluginSpec> result;
+
+	KeySet ksSysconf (sysconf);
+
+	// first find possible variants
+	Key kVariantBase ("system/elektra/plugins", KEY_END);
+	kVariantBase.addBaseName (whichplugin.getName ());
+	kVariantBase.addBaseName ("variants");
+
+	KeySet ksPluginVariantSysconf (ksSysconf.cut (kVariantBase));
+	KeySet ksToIterate (ksPluginVariantSysconf);
+	for (auto kCurrent : ksToIterate)
+	{
+		Key kCurrentTest (kVariantBase);
+		kCurrentTest.addBaseName (kCurrent.getBaseName ());
+		if (kCurrentTest == kCurrent)
+		{
+			PluginSpec variant (whichplugin);
+			KeySet ksVariantConfToAdd;
+
+			// new base for plugin conf
+			Key kVariantPluginConf ("system/", KEY_END);
+
+			// add system conf for plugin variant
+			Key kVariantSysconf (this->buildVariantSysconfKey (whichplugin, kCurrent.getBaseName (), "config"));
+			this->addKeysBelowKeyToConf (kVariantSysconf, ksPluginVariantSysconf, kVariantPluginConf, ksVariantConfToAdd);
+
+			// check if the variant was disabled : system/elektra/plugins/simpleini/variants/space/disable
+			Key kDisable = sysconf.lookup (this->buildVariantSysconfKey (whichplugin, kCurrent.getBaseName (), "disable"));
+			if (kDisable && kDisable.getString () == "1")
+			{
+				continue; // skip this variant
+			}
+
+			// check if the variant is in the genconfToIgnore list
+			Key kGenconfVariant (kVariantPluginConf);
+			kGenconfVariant.addBaseName (kCurrent.getBaseName ());
+			Key kIgnore = genconfToIgnore.lookup (kGenconfVariant);
+			if (kIgnore)
+			{
+				continue; // this variant was added by genconf already
+			}
+
+			if (ksVariantConfToAdd.size () == 0)
+			{
+				continue; // no config means no variant
+			}
+
+			variant.appendConfig (ksVariantConfToAdd);
+			result.push_back (variant);
+		}
+	}
+
+	return result;
+}
+
+std::vector<PluginSpec> PluginVariantDatabase::getPluginVariantsFromGenconf (PluginSpec const & whichplugin, KeySet const & genconf,
+									     KeySet const & sysconf) const
+{
+	std::vector<PluginSpec> result;
+
+	KeySet ksToIterate (genconf);
+	for (auto kCurrent : ksToIterate)
+	{
+		Key kCurrentTest (kCurrent.getNamespace () + "/", KEY_END);
+		kCurrentTest.addBaseName (kCurrent.getBaseName ()); // e.g. system/space
+		if (kCurrentTest == kCurrent)
+		{
+			PluginSpec variant (whichplugin);
+			KeySet ksVariantConfToAdd;
+
+			// new base for plugin conf
+			Key kVariantPluginConf ("system/", KEY_END);
+
+			// take variant config from genconf and transform it to proper plugin conf,
+			// e.g. system/space/config/format -> system/format
+			Key kVariantConf (kCurrentTest);
+			kVariantConf.addBaseName ("config"); // e.g. system/space/config
+			this->addKeysBelowKeyToConf (kVariantConf, genconf, kVariantPluginConf, ksVariantConfToAdd);
+
+			// TODO plugin infos
+
+			// check if the variant was disabled : system/elektra/plugins/simpleini/variants/space/disable
+			Key kDisable = sysconf.lookup (this->buildVariantSysconfKey (whichplugin, kCurrent.getBaseName (), "disable"));
+			if (kDisable && kDisable.getString () == "1")
+			{
+				continue; // skip this variant
+			}
+
+			// check if an override is available : system/elektra/plugins/simpleini/variants/space/override
+			Key kOverride = sysconf.lookup (this->buildVariantSysconfKey (whichplugin, kCurrent.getBaseName (), "override"));
+			if (kOverride && kOverride.getString () == "1")
+			{
+				// first delete config from genconf entirely
+				ksVariantConfToAdd.clear ();
+				Key kVariantSysconf (this->buildVariantSysconfKey (whichplugin, kCurrent.getBaseName (), "config"));
+				this->addKeysBelowKeyToConf (kVariantSysconf, sysconf, kVariantPluginConf, ksVariantConfToAdd);
+			}
+
+			if (ksVariantConfToAdd.size () == 0)
+			{
+				continue; // no config means no variant
+			}
+
+			variant.appendConfig (ksVariantConfToAdd);
+			result.push_back (variant);
+		}
+	}
+
+	std::vector<PluginSpec> resFromSysconf (this->getPluginVariantsFromSysconf (whichplugin, sysconf, genconf));
+	result.insert (result.end (), resFromSysconf.begin (), resFromSysconf.end ());
+
+	return result;
+}
+
+Key PluginVariantDatabase::buildVariantSysconfKey (PluginSpec const & whichplugin, std::string const & variant,
+						   const std::string attr) const
+{
+	Key result ("system/elektra/plugins", KEY_END);
+	result.addBaseName (whichplugin.getName ());
+	result.addBaseName ("variants");
+	result.addBaseName (variant);
+	result.addBaseName (attr);
+	return result;
+}
+
+void PluginVariantDatabase::addKeysBelowKeyToConf (Key const & below, KeySet const & conf, Key const & newbase, KeySet & targetconf) const
+{
+	KeySet confCp (conf);
+	KeySet ksVariantSysConf = confCp.cut (below);
+	for (auto kVariantCurrent : ksVariantSysConf)
+	{
+		if (!kVariantCurrent.isBelow (below)) continue;
+		targetconf.append (helper::rebaseKey (kVariantCurrent, below, newbase));
 	}
 }
 
