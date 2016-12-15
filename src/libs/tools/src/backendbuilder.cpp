@@ -144,7 +144,8 @@ void BackendBuilder::sort ()
 				}
 				*/
 
-				if (std::equal (order.begin (), order.end (), name.begin ()) || hasProvides)
+				if ((name.length () >= order.length () && std::equal (order.begin (), order.end (), name.begin ())) ||
+				    hasProvides)
 				{
 					// is relevant, add this instance of dep to every other key
 					// add reverse dep of every key to self
