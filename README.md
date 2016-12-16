@@ -203,10 +203,10 @@ your distribution:
  - [OpenSuse](https://software.opensuse.org/package/elektra)
  - [PLDLinux](http://sophie.zarb.org/rpms/763d9e52beefaa15b1363d11d836b65c)
  - [LEDE](https://lede-project.org/packages/pkgdata/libelektra-core?s[]=elektra)
+ - [Linux Mint](https://community.linuxmint.com/software/view/elektra-bin)
 
 Available, but not up-to-date (Version 0.7):
  - [Mageia](http://svnweb.mageia.org/packages/updates/1/elektra/)
- - [Linux Mint](http://community.linuxmint.com/software/view/elektra)
 
 For [OpenSUSE, CentOS, Fedora, RHEL and SLE](https://build.opensuse.org/package/show/home:bekun:devel/elektra)
 Kai-Uwe Behrmann kindly provides packages [for download](http://software.opensuse.org/download.html?project=home%3Abekun%3Adevel&package=libelektra4).
