@@ -3,7 +3,7 @@
 # build the applications
 mkdir -p build
 cd build
-cmake -DPLUGINS='ALL;-fstab;-semlock' -DBUILD_FULL=OFF -DBUILD_SHARED=ON -DBUILD_STATIC=OFF -DBUILD_DOCUMENTATION=OFF -DTOOLS='kdb;rest-backend;rest-frontend' -DCMAKE_COMPILE_FLAGS='-D_FORTIFY_SOURCE=2 -Wformat-security -fstack-protector-strong -Wstack-protector' -DCMAKE_EXE_LINK_FLAGS='-Wl,-z,now' ..
+cmake -DENABLE_ASAN=ON -DBUILD_FULL=OFF -DBUILD_SHARED=ON -DBUILD_STATIC=OFF -DBUILD_DOCUMENTATION=OFF -DPLUGINS='ALL;-fstab;-semlock' -DTOOLS='kdb;rest-backend;rest-frontend' -DCMAKE_COMPILE_FLAGS='-D_FORTIFY_SOURCE=2 -Werror=format-security -fstack-protector-strong -Wstack-protector' -DCMAKE_EXE_LINK_FLAGS='-Wl,-z,now' ..
 make -j 3
 
 # test the applications
