@@ -7,7 +7,6 @@ cmake -DENABLE_ASAN=ON -DBUILD_FULL=OFF -DBUILD_SHARED=ON -DBUILD_STATIC=OFF -DB
 make -j 3
 
 # test the applications
-make run_memcheck
 make run_all
 
 # if tests were ok, we can install
