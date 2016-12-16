@@ -12,7 +12,7 @@ module.exports = function ($rootScope, $scope, Logger, $state, $anchorScroll, we
 
     // build date
     $scope.builddate = {
-        pretty: (new Date(document.querySelector('meta[name="build-date"]').getAttribute('content'))).toLocaleString()
+        pretty: (new Date(document.querySelector('meta[name="build-date"]').getAttribute('content'))).toUTCString()
     };
 
 //        vm.currentLanguage = 'de';
