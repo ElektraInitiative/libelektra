@@ -95,9 +95,11 @@ module.exports = function ($scope, Logger, formats, ConversionService, ReportSer
                 'Input:\n' +
                 '- Plugin: ' + $scope.parameters.input.format.plugin.name + '\n' +
                 '- Format: ' + $scope.parameters.input.format.format + '\n' +
+                '- Additional config: ' + $scope.parameters.input.formatconf + '\n' +
                 'Output:\n' +
                 '- Plugin: ' + $scope.parameters.output.format.plugin.name + '\n' +
                 '- Format: ' + $scope.parameters.output.format.format + '\n' +
+                '- Additional config: ' + $scope.parameters.output.formatconf + '\n' +
                 '```\n\n' +
                 '## Input configuration\n' +
                 '```\n' +
