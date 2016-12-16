@@ -237,6 +237,21 @@
                 "dev-comment": "The readme does already contain nicely formatted decision titles."
             },
             {
+                "name": "Authors",
+                "type": "staticlist",
+                "ref": "development",
+                "dev-comment": "We need to use an own section to be able to display the authors file.",
+                "children": [
+                    {
+                        "name": "Authors",
+                        "type": "staticfile",
+                        "options": {
+                            "path": "doc/AUTHORS.md"
+                        }
+                    }
+                ]
+            },
+            {
                 "name": "Build Server",
                 "type": "link",
                 "ref": "buildserver",
