@@ -193,7 +193,7 @@ assert (len >= 0);
 TEST_COND (len == 6);
 
 char sval[7];
-len = elektraNi_ValueScan (child, "%7s", sval);
+len = elektraNi_ValueScan (child, "%6s", sval);
 TEST_COND (len == 1);
 TEST_COND (!strcmp (sval, "WHOAH!"));
 
@@ -449,16 +449,12 @@ int main (int argc, char ** argv)
 
 	TEST (ver);
 	TEST (new);
-#ifndef __SANITIZE_ADDRESS__
 	TEST (tree);
 	TEST (test_values);
-#endif
 	TEST (parse_spaces_quotes);
-#ifndef __SANITIZE_ADDRESS__
 	TEST (output);
 	TEST (output_modified);
 	TEST (parse_output);
-#endif
 
 	printf ("%s: %s\n", argv0, (any_fail ? "ONE OR MORE TESTS FAILED" : "all tests passed"));
 	return any_fail;

@@ -335,7 +335,7 @@ static uint32_t hashlittle (const void * restrict key, size_t length, uint32_t i
 	if (HASH_LITTLE_ENDIAN && ((u.i & 0x3) == 0))
 	{
 		const uint32_t * k = (const uint32_t *)key; /* read 32-bit chunks */
-#ifdef VALGRIND
+#if defined(VALGRIND) || defined(__SANITIZE_ADDRESS__)
 		const uint8_t * k8;
 #endif
 
@@ -360,7 +360,7 @@ static uint32_t hashlittle (const void * restrict key, size_t length, uint32_t i
  * still catch it and complain.  The masking trick does make the hash
  * noticably faster for short strings (like English words).
  */
-#ifndef VALGRIND
+#if !defined(VALGRIND) && !defined(__SANITIZE_ADDRESS__)
 
 		switch (length)
 		{
@@ -612,7 +612,7 @@ static void hashlittle2 (const void * restrict key, /* the key to hash */
 	if (HASH_LITTLE_ENDIAN && ((u.i & 0x3) == 0))
 	{
 		const uint32_t * k = (const uint32_t *)key; /* read 32-bit chunks */
-#ifdef VALGRIND
+#if defined(VALGRIND) || defined(__SANITIZE_ADDRESS__)
 		const uint8_t * k8;
 #endif
 
@@ -637,7 +637,7 @@ static void hashlittle2 (const void * restrict key, /* the key to hash */
  * still catch it and complain.  The masking trick does make the hash
  * noticably faster for short strings (like English words).
  */
-#ifndef VALGRIND
+#if !defined(VALGRIND) && !defined(__SANITIZE_ADDRESS__)
 
 		switch (length)
 		{
@@ -890,7 +890,7 @@ static uint32_t hashbig (const void * restrict key, size_t length, uint32_t init
 	if (HASH_BIG_ENDIAN && ((u.i & 0x3) == 0))
 	{
 		const uint32_t * k = (const uint32_t *)key; /* read 32-bit chunks */
-#ifdef VALGRIND
+#if defined(VALGRIND) || defined(__SANITIZE_ADDRESS__)
 		const uint8_t * k8;
 #endif
 
@@ -915,7 +915,7 @@ static uint32_t hashbig (const void * restrict key, size_t length, uint32_t init
  * still catch it and complain.  The masking trick does make the hash
  * noticably faster for short strings (like English words).
  */
-#ifndef VALGRIND
+#if !defined(VALGRIND) && !defined(__SANITIZE_ADDRESS__)
 
 		switch (length)
 		{
