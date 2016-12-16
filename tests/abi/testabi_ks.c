@@ -1147,9 +1147,9 @@ static void test_ksLookupName ()
 	ksAppendKey (ks, keyNew ("user/named/key", KEY_VALUE, "myvalue", KEY_END));
 	ksAppendKey (ks, keyNew ("system/named/syskey", KEY_VALUE, "syskey", KEY_END));
 	ksAppendKey (ks, keyNew ("system/sysonly/key", KEY_VALUE, "sysonlykey", KEY_END));
-	ksAppendKey (ks, keyNew ("user/named/bin", KEY_BINARY, KEY_SIZE, sizeof ("binary\1\2data"), KEY_VALUE, "binary\1\2data", KEY_END));
-	ksAppendKey (ks, keyNew ("system/named/bin", KEY_BINARY, KEY_SIZE, sizeof ("sys\1bin\2"), KEY_VALUE, "sys\1bin\2", KEY_END));
-	ksAppendKey (ks, keyNew ("system/named/key", KEY_BINARY, KEY_SIZE, sizeof ("syskey"), KEY_VALUE, "syskey", KEY_END));
+	ksAppendKey (ks, keyNew ("user/named/bin", KEY_BINARY, KEY_SIZE, 10, KEY_VALUE, "binary\1\2data", KEY_END));
+	ksAppendKey (ks, keyNew ("system/named/bin", KEY_BINARY, KEY_SIZE, 8, KEY_VALUE, "sys\1bin\2", KEY_END));
+	ksAppendKey (ks, keyNew ("system/named/key", KEY_BINARY, KEY_SIZE, 6, KEY_VALUE, "syskey", KEY_END));
 	succeed_if (ksGetSize (ks) == 8, "could not append all keys");
 
 	// a positive testcase
@@ -2048,10 +2048,15 @@ static void test_ksLookupPop ()
 	ksAppendKey (ks, keyNew ("user/named/key", KEY_VALUE, "myvalue", KEY_END));
 	ksAppendKey (ks, keyNew ("system/named/skey", KEY_VALUE, "syskey", KEY_END));
 	ksAppendKey (ks, keyNew ("system/sysonly/key", KEY_VALUE, "sysonlykey", KEY_END));
-	ksAppendKey (ks, keyNew ("user/named/bin", KEY_BINARY, KEY_SIZE, sizeof ("binary\1\2data"), KEY_VALUE, "binary\1\2data", KEY_END));
-	ksAppendKey (ks, keyNew ("system/named/bin", KEY_BINARY, KEY_SIZE, sizeof ("sys\1bin\2"), KEY_VALUE, "sys\1bin\2", KEY_END));
-	ksAppendKey (ks, keyNew ("system/named/key", KEY_BINARY, KEY_SIZE, sizeof ("syskey"), KEY_VALUE, "syskey", KEY_END));
+	ksAppendKey (ks, keyNew ("user/named/bin", KEY_BINARY, KEY_SIZE, 10, KEY_VALUE, "binary\1\2data", KEY_END));
+	ksAppendKey (ks, keyNew ("system/named/bin", KEY_BINARY, KEY_SIZE, 8, KEY_VALUE, "sys\1bin\2", KEY_END));
+	ksAppendKey (ks, keyNew ("system/named/key", KEY_BINARY, KEY_SIZE, 6, KEY_VALUE, "syskey", KEY_END));
+#ifndef __SANITIZE_ADDRESS__
+	ksAppendKey (ks, keyNew ("system/too/large/size", KEY_BINARY, KEY_SIZE, 10, KEY_VALUE, "tooshort", KEY_END));
+	succeed_if (ksGetSize (ks) == 9, "could not append all keys");
+#else
 	succeed_if (ksGetSize (ks) == 8, "could not append all keys");
+#endif
 
 	// a positive testcase
 	found = ksLookupByName (ks, "user/named/key", KDB_O_POP);
