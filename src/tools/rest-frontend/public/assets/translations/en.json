@@ -82,7 +82,7 @@
     "APP.BREADCRUMBS.MAIN.USERS.DETAILS": "User details",
     "APP.BREADCRUMBS.MAIN.USERS.SEARCH": "User search",
     
-    "APP.CONVERSION.ALTTEXT.FORMATCONF": "You can enter additional configuration parameters for the plugin of the selected format here, they will be appended to the existing plugin configuration. If you enter unrelated configuration parameters, they will be ignored.",
+    "APP.CONVERSION.ALTTEXT.FORMATCONF": "You can enter additional configuration settings for the plugin of the selected format here, they will be appended to the existing plugin configuration. If you enter unrelated configuration settings, they will be ignored.",
     "APP.CONVERSION.ALTTEXT.VALIDATED": "The configuration snippet has been re-imported to verify that no data gets lost when using this format.",
     "APP.CONVERSION.BUTTON.CLEAR": "Clear fields",
     "APP.CONVERSION.BUTTON.CONVERT": "Convert snippet",
