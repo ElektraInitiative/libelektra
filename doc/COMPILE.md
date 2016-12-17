@@ -17,7 +17,7 @@ Or on RPM based systems (CentOS):
 Note: You do not need to install the dependencies listed here.
 But then some of the functionality gets disabled automatically.
 
-To build documentation you need doxygen, graphviz and [ronn](https://github.com/rtomayko/ronn/blob/master/INSTALLING#files):
+To build documentation you need doxygen (we recommend 1.8.8+), graphviz and [ronn](https://github.com/rtomayko/ronn/blob/master/INSTALLING#files):
 
 	apt-get install doxygen graphviz ronn
 
