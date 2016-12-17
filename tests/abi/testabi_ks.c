@@ -1148,20 +1148,8 @@ static void test_ksLookupName ()
 	ksAppendKey (ks, keyNew ("system/named/syskey", KEY_VALUE, "syskey", KEY_END));
 	ksAppendKey (ks, keyNew ("system/sysonly/key", KEY_VALUE, "sysonlykey", KEY_END));
 	ksAppendKey (ks, keyNew ("user/named/bin", KEY_BINARY, KEY_SIZE, 10, KEY_VALUE, "binary\1\2data", KEY_END));
-	ksAppendKey (ks, keyNew ("system/named/bin", KEY_BINARY, KEY_SIZE,
-#ifndef __SANITIZE_ADDRESS__
-				 10,
-#else
-				 8,
-#endif
-				 KEY_VALUE, "sys\1bin\2", KEY_END));
-	ksAppendKey (ks, keyNew ("system/named/key", KEY_BINARY, KEY_SIZE,
-#ifndef __SANITIZE_ADDRESS__
-				 10,
-#else
-				 6,
-#endif
-				 KEY_VALUE, "syskey", KEY_END));
+	ksAppendKey (ks, keyNew ("system/named/bin", KEY_BINARY, KEY_SIZE, 10, KEY_VALUE, "sys\1bin\2", KEY_END));
+	ksAppendKey (ks, keyNew ("system/named/key", KEY_BINARY, KEY_SIZE, 10, KEY_VALUE, "syskey", KEY_END));
 	succeed_if (ksGetSize (ks) == 8, "could not append all keys");
 
 	// a positive testcase
@@ -2061,20 +2049,8 @@ static void test_ksLookupPop ()
 	ksAppendKey (ks, keyNew ("system/named/skey", KEY_VALUE, "syskey", KEY_END));
 	ksAppendKey (ks, keyNew ("system/sysonly/key", KEY_VALUE, "sysonlykey", KEY_END));
 	ksAppendKey (ks, keyNew ("user/named/bin", KEY_BINARY, KEY_SIZE, 10, KEY_VALUE, "binary\1\2data", KEY_END));
-	ksAppendKey (ks, keyNew ("system/named/bin", KEY_BINARY, KEY_SIZE,
-#ifndef __SANITIZE_ADDRESS__
-				 10,
-#else
-				 8,
-#endif
-				 KEY_VALUE, "sys\1bin\2", KEY_END));
-	ksAppendKey (ks, keyNew ("system/named/key", KEY_BINARY, KEY_SIZE,
-#ifndef __SANITIZE_ADDRESS__
-				 10,
-#else
-				 6,
-#endif
-				 KEY_VALUE, "syskey", KEY_END));
+	ksAppendKey (ks, keyNew ("system/named/bin", KEY_BINARY, KEY_SIZE, 10, KEY_VALUE, "sys\1bin\2", KEY_END));
+	ksAppendKey (ks, keyNew ("system/named/key", KEY_BINARY, KEY_SIZE, 10, KEY_VALUE, "syskey", KEY_END));
 	succeed_if (ksGetSize (ks) == 8, "could not append all keys");
 
 	// a positive testcase
@@ -3217,14 +3193,18 @@ int main (int argc, char ** argv)
 	test_ksSort ();
 	test_ksLookup ();
 	test_ksLookupByName ();
+#ifndef __SANITIZE_ADDRESS__
 	test_ksLookupName ();
+#endif
 	test_ksLookupNameDomain ();
 	test_ksLookupNameAll ();
 	test_ksLookupNameCascading ();
 	test_ksExample ();
 	test_ksAppend ();
 	test_ksFunctional ();
+#ifndef __SANITIZE_ADDRESS__
 	test_ksLookupPop ();
+#endif
 	test_ksSync ();
 	test_ksDoubleFree ();
 	test_ksDoubleAppend ();
