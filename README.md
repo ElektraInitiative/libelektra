@@ -60,7 +60,7 @@ implemented in C, works cross-platform, and does not need any external dependenc
 Do not hesitate to ask any question on
 [GitHub issue tracker](https://github.com/ElektraInitiative/libelektra/issues),
 [Mailing List](https://lists.sourceforge.net/lists/listinfo/registry-list)
-or directly to one of the [authors](doc/AUTHORS).
+or directly to one of the [authors](doc/AUTHORS.md).
 
 
 ## Quickstart ##

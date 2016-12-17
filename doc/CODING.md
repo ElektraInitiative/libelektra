@@ -195,4 +195,4 @@ Note:
   so that your file gets listed at http://doc.libelektra.org/api/latest/html/files.html
 
 The duplication of the filename, author and date is not needed, because
-this information is tracked using git and doc/AUTHORS already.
+this information is tracked using git and [doc/AUTHORS.md](AUTHORS.md) already.

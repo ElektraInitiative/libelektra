@@ -67,7 +67,7 @@ result is GPL.
 
 ## Who are the authors? ##
 
-[List of authors](/doc/AUTHORS).
+[List of authors](/doc/AUTHORS.md).
 
 
 ## How can I advertise Elektra? ##
