@@ -16,6 +16,7 @@
 #include <errno.h>
 #include <kdbease.h>
 #include <kdberrors.h>
+#include <kdbmeta.h>
 #include <math.h>
 #include <regex.h>
 #include <stdio.h>
@@ -868,14 +869,36 @@ int elektraConditionalsGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned EL
 		if (conditionMeta)
 		{
 			CondResult result;
-			result = evaluateKey (conditionMeta, suffixList, parentKey, cur, returned, CONDITION);
-			if (result == NOEXPR)
+			if (keyString (conditionMeta)[0] == '#')
 			{
-				ret |= TRUE;
+				KeySet * condKS = elektraMetaArrayToKS (cur, "check/condition");
+				Key * c;
+				while ((c = ksNext (condKS)) != NULL)
+				{
+					if (keyCmp (c, conditionMeta) == 0) continue;
+					result = evaluateKey (c, suffixList, parentKey, cur, returned, CONDITION);
+					if (result == NOEXPR)
+					{
+						ret |= TRUE;
+					}
+					else
+					{
+						ret |= result;
+					}
+				}
+				ksDel (condKS);
 			}
 			else
 			{
-				ret |= result;
+				result = evaluateKey (conditionMeta, suffixList, parentKey, cur, returned, CONDITION);
+				if (result == NOEXPR)
+				{
+					ret |= TRUE;
+				}
+				else
+				{
+					ret |= result;
+				}
 			}
 		}
 		if (assignMeta)
@@ -901,14 +924,36 @@ int elektraConditionalsSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned EL
 		if (conditionMeta)
 		{
 			CondResult result;
-			result = evaluateKey (conditionMeta, suffixList, parentKey, cur, returned, CONDITION);
-			if (result == NOEXPR)
+			if (keyString (conditionMeta)[0] == '#')
 			{
-				ret |= TRUE;
+				KeySet * condKS = elektraMetaArrayToKS (cur, "check/condition");
+				Key * c;
+				while ((c = ksNext (condKS)) != NULL)
+				{
+					if (keyCmp (c, conditionMeta) == 0) continue;
+					result = evaluateKey (c, suffixList, parentKey, cur, returned, CONDITION);
+					if (result == NOEXPR)
+					{
+						ret |= TRUE;
+					}
+					else
+					{
+						ret |= result;
+					}
+				}
+				ksDel (condKS);
 			}
 			else
 			{
-				ret |= result;
+				result = evaluateKey (conditionMeta, suffixList, parentKey, cur, returned, CONDITION);
+				if (result == NOEXPR)
+				{
+					ret |= TRUE;
+				}
+				else
+				{
+					ret |= result;
+				}
 			}
 		}
 		if (assignMeta)
