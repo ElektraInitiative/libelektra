@@ -903,7 +903,21 @@ int elektraConditionalsGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned EL
 		}
 		if (assignMeta)
 		{
-			ret |= evaluateKey (assignMeta, suffixList, parentKey, cur, returned, ASSIGN);
+			if (keyString (assignMeta)[0] == '#')
+			{
+				KeySet * assignKS = elektraMetaArrayToKS (cur, "assign/condition");
+				Key * a;
+				while ((a = ksNext (assignKS)) != NULL)
+				{
+					if (keyCmp (a, assignMeta) == 0) continue;
+					ret |= evaluateKey (a, suffixList, parentKey, cur, returned, ASSIGN);
+				}
+				ksDel (assignKS);
+			}
+			else
+			{
+				ret |= evaluateKey (assignMeta, suffixList, parentKey, cur, returned, ASSIGN);
+			}
 		}
 	}
 	if (ret == TRUE) keySetMeta (parentKey, "error", 0);
@@ -958,7 +972,21 @@ int elektraConditionalsSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned EL
 		}
 		if (assignMeta)
 		{
-			ret |= evaluateKey (assignMeta, suffixList, parentKey, cur, returned, ASSIGN);
+			if (keyString (assignMeta)[0] == '#')
+			{
+				KeySet * assignKS = elektraMetaArrayToKS (cur, "assign/condition");
+				Key * a;
+				while ((a = ksNext (assignKS)) != NULL)
+				{
+					if (keyCmp (a, assignMeta) == 0) continue;
+					ret |= evaluateKey (a, suffixList, parentKey, cur, returned, ASSIGN);
+				}
+				ksDel (assignKS);
+			}
+			else
+			{
+				ret |= evaluateKey (assignMeta, suffixList, parentKey, cur, returned, ASSIGN);
+			}
 		}
 	}
 	if (ret == TRUE) keySetMeta (parentKey, "error", 0);

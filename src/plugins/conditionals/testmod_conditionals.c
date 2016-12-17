@@ -481,6 +481,24 @@ static void test_multiCond ()
 	PLUGIN_CLOSE ();
 }
 
+static void test_multiAssign ()
+{
+	Key * parentKey = keyNew ("user/tests/conditionals", KEY_VALUE, "", KEY_END);
+	KeySet * ks = ksNew (5, keyNew ("user/tests/conditionals/totest", KEY_VALUE, "Hello", KEY_META, "assign/condition", "#1", KEY_META,
+					"assign/condition/#0", "(../totest=='Bye') ? ('Moon')", KEY_META, "assign/condition/#1",
+					"(../totest=='Hello') ? ('Sun') ", KEY_END),
+			     KS_END);
+
+	KeySet * conf = ksNew (0, KS_END);
+	PLUGIN_OPEN ("conditionals");
+	ksRewind (ks);
+	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "error");
+	Key * key = ksLookupByName (ks, "user/tests/conditionals/totest", 0);
+	succeed_if (strcmp (keyString (key), "Sun") == 0, "error setting then value");
+	ksDel (ks);
+	keyDel (parentKey);
+	PLUGIN_CLOSE ();
+}
 
 int main (int argc, char ** argv)
 {
@@ -515,6 +533,7 @@ int main (int argc, char ** argv)
 	test_elseWhitespace3 ();
 	test_doubleUp ();
 	test_multiCond ();
+	test_multiAssign ();
 	printf ("\ntestmod_conditionals RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 
 	return nbError;
