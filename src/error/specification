@@ -1026,3 +1026,10 @@ severity:error
 ingroup:plugin
 module:curlget
 macro:CURL_CONFIG_INVALID
+
+number:168
+description:validation of date/time string failed.
+severity:error
+ingroup:plugin
+module:date
+macro:D_T_FMT
