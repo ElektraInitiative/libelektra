@@ -231,7 +231,10 @@
                 </div>
                 <div class="form-group">
                     <label for="config_format_conf" class="control-label">
-                        {{ 'APP.ENTRIES.FORM.LABEL.CONFIGURATION.FORMAT.CONF' | translate }}
+                        <span>{{ 'APP.ENTRIES.FORM.LABEL.CONFIGURATION.FORMAT.CONF' | translate }}</span>
+                        <span>
+                            <i class="fa fa-question-circle-o" title="{{ 'APP.CONVERSION.ALTTEXT.FORMATCONF' | translate }}"></i>
+                        </span>
                     </label>
                     <input type="text" id="config_format_conf" name="config_format_conf" class="form-control"
                            ng-model="entry.configuration.formatconf" />

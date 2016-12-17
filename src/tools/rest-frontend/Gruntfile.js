@@ -30,7 +30,7 @@ module.exports = function (grunt) {
                 output: 'resources/news.json',
                 regex: {
                     filename: {
-                        pattern: '([0-9]{4}\\-[0-9]{2}\\-[0-9]{2})_(.*)',
+                        pattern: '^([0-9]{4}\\-[0-9]{2}\\-[0-9]{2})_(.*)$',
                         flags: 'i'
                     },
                     title: {

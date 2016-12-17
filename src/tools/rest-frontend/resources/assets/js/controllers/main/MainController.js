@@ -12,8 +12,11 @@ module.exports = function ($rootScope, $scope, Logger, $state, $anchorScroll, we
 
     // build date
     $scope.builddate = {
-        pretty: (new Date(document.querySelector('meta[name="build-date"]').getAttribute('content'))).toLocaleString()
+        date: new Date(document.querySelector('meta[name="build-date"]').getAttribute('content'))
     };
+    $scope.builddate.timezoneOffset = $scope.builddate.date.getTimezoneOffset() / -60;
+    $scope.builddate.pretty = $scope.builddate.date.toLocaleString() + ' (' +
+            (($scope.builddate.timezoneOffset >= 0) ? '+' : '') + $scope.builddate.timezoneOffset + 'h UTC)';
 
 //        vm.currentLanguage = 'de';
 

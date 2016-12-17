@@ -57,7 +57,7 @@ module.exports = function (grunt) {
                     shortDesc = shortDesc[1];
                 } else {
                     shortDesc = '';
-					grunt.log.warn('News post ' + post.name + ' has no short description matching the configured regex!');
+                    grunt.log.warn('News post ' + post.name + ' has no short description matching the configured regex!');
                 }
 
                 result.push({
@@ -87,17 +87,17 @@ module.exports = function (grunt) {
             entries.forEach(function (entry) {
                 date = regex.exec(entry);
                 if (date === null || date.length < 2) {
-                    grunt.log.error('Found news file with inappropriate filename.');
+                    grunt.log.warn('Found file `' + entry + '`, which has an inappropriate filename, in the news folder.');
                 } else {
                     date = date[1]; // first capture group is date
-                }
-                var stat = fs.statSync(path.join(root_dir, relPath, entry));
-                if (stat.isFile()) {
-                    result.push({
-                        name: entry,
-                        date: date,
-                        stats: stat
-                    });
+                    var stat = fs.statSync(path.join(root_dir, relPath, entry));
+                    if (stat.isFile()) {
+                        result.push({
+                            name: entry,
+                            date: date,
+                            stats: stat
+                        });
+                    }
                 }
             });
             return result;

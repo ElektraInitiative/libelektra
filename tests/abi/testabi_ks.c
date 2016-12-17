@@ -3193,14 +3193,18 @@ int main (int argc, char ** argv)
 	test_ksSort ();
 	test_ksLookup ();
 	test_ksLookupByName ();
+#ifndef __SANITIZE_ADDRESS__
 	test_ksLookupName ();
+#endif
 	test_ksLookupNameDomain ();
 	test_ksLookupNameAll ();
 	test_ksLookupNameCascading ();
 	test_ksExample ();
 	test_ksAppend ();
 	test_ksFunctional ();
+#ifndef __SANITIZE_ADDRESS__
 	test_ksLookupPop ();
+#endif
 	test_ksSync ();
 	test_ksDoubleFree ();
 	test_ksDoubleAppend ();

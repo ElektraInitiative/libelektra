@@ -193,7 +193,7 @@ assert (len >= 0);
 TEST_COND (len == 6);
 
 char sval[7];
-len = elektraNi_ValueScan (child, "%7s", sval);
+len = elektraNi_ValueScan (child, "%6s", sval);
 TEST_COND (len == 1);
 TEST_COND (!strcmp (sval, "WHOAH!"));
 
