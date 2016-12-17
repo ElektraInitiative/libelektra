@@ -3,14 +3,22 @@
 - guid: 102b84a3-c41e-485c-8fe2-f12a24b3fbfd
 - author: Marvin Mall
 - pubDate: <TODO>
-- shortDesc: introduces new Elektra website & snippet sharing
+- shortDesc: introduces new Elektra website with snippet sharing
+
+## Highlight ##
+
+Release of new Elektra website with an integrated service for sharing
+of configuration snippets. Also snippet conversion without sharing
+is supported. Proper documentation and news sections were introduced
+as well.
 
 ## Introduction ##
 
 With Elektra developing into a more and more reliable as well as
 popular system to manage system configurations, the demand for a
 better public appearance increases as well. For this reason, we
-are happy to be able to announce the release of our new website!
+are happy to be able to announce the release of our new
+[website](https://www.libelektra.org)!
 
 The new website does not only give us a chance to better present
 ourselves to the open world, it also enables us to structure our
@@ -25,9 +33,15 @@ and administrators, but also normal users to simplify their
 configuration processes when they have to look for a specific
 configuration snippet.
 
+But sharing of snippets does not only help other users, it can help
+yourself as well because you can search for them easier. You also
+have access to the snippets in various formats at any time, allowing
+you to use them across multiple system by mounting them with the
+[curlget](https://tree.libelektra.org/src/plugins/curlget) resolver!
+
 ## The Website ##
 
-The website was written by Marvin Mall besides his bachelor thesis
+The website was written by Marvin Mall in the course of his bachelor thesis
 as part of the front-end he developed for his snippet sharing service.
 His main goals were to create a proper appearance for Elektra, but
 also to create a platform that promotes his service. We think that
@@ -44,7 +58,7 @@ website from the structure used within the Elektra repository.
 
 The tutorials section was partially reworked to make the first steps
 together with Elektra easier for our users. Clearly the effort put into
-the tutorials is worth it. Thanks to <insert name of krit0n> for that!
+the tutorials is worth it. Thanks to Christoph Weber for that!
 
 We should note though that the structure on the website is not really
 final yet and will definitely develop over time, especially the bindings
@@ -72,7 +86,7 @@ the help of [CppCMS](http://http://cppcms.com/) on basis of Elektra as
 data store. All data concerning snippets and user accounts is stored
 in Elektras key database (of course with password being properly hashed).
 
-The service allows to paste configuration snippets in various (supported)
+The service allows you to paste configuration snippets in various (supported)
 formats and to tag, describe and name them. This in return allows for easy
 search of snippets by keywords and to download them in other formats than
 the upload format as well.
@@ -101,14 +115,16 @@ for suggestions and we also like to help with technical issues, simply
 
 ## Stay tuned! ##
 
-Subscribe to the
+Subscribe to the reimplemented
 [RSS feed](http://www.libelektra.org/rss/feed.rss)
 to always get the release notifications.
 
 For any questions and comments, please contact the
-[Mailing List](https://lists.sourceforge.net/lists/listinfo/registry-list)
-the issue tracker [on github](http://bugs.libelektra.org)
-or by email elektra@markus-raab.org.
+[mailing list](https://lists.sourceforge.net/lists/listinfo/registry-list),
+use the issue tracker [on github](http://bugs.libelektra.org)
+or write an email to elektra@markus-raab.org.
+For issues or feedback concerning the website, you can also
+contact us at website@libelektra.org.
 
 [Permalink to this NEWS entry](http://www.libelektra.org/rss/102b84a3-c41e-485c-8fe2-f12a24b3fbfd.html)
 
