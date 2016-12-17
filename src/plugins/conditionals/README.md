@@ -49,6 +49,10 @@ The `condition/validsuffix` can be used to define a list of valid suffixes to nu
 
 Keynames are all either relative to to-be-tested key (starting with `./` or `../`), relative to the parentkey (starting with `@/`) or absolute (e.g. `system/key`).
 
+### Multiple Statements ###
+
+It's also possible to test multiple conditions using `check/condition` as a meta array and multiple assign statements using `assign/condition` as a meta array.
+
 ## Example ##
 
     (this/key  != 'value') ? (then/key == some/other/key) : (or/key <= '125')
