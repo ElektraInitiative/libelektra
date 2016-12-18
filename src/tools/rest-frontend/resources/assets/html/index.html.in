@@ -20,7 +20,7 @@
         <link rel="shortcut icon" type="image/x-icon" href="assets/img/logo.ico">
 
         <!-- RSS Info -->
-        <link rel="alternate" type="application/atom+xml" href="rss/feed.rss" title="Elektra RSS Feed">
+        <link rel="alternate" type="application/atom+xml" href="news/feed.rss" title="Elektra RSS Feed">
 
         <!-- Pace (load animation for requests) -->
         <script type="text/javascript">
