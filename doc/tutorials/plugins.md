@@ -337,7 +337,7 @@ The following convention was established for the return value of `elektraPluginC
 - 1: The configuration has been changed and now it is OK
 - -1: The configuration was not OK and could not be fixed. An error has to be set to errorKey.
 
-The following example demonstrates how to limit the length of the values within the plugin configuration to 3 charaters.
+The following example demonstrates how to limit the length of the values within the plugin configuration to 3 characters.
 
 	int elektraLineCheckConfig (Key * errorKey, KeySet * conf)
 	{

@@ -210,7 +210,7 @@ void test_namedMatchFlags ()
 {
 	Key * parentKey = keyNew ("user/tests/glob", KEY_END);
 	KeySet * conf = ksNew (20, keyNew ("user/glob/#1", KEY_VALUE, "user/tests/glob/*", KEY_META, "testmetakey1", "testvalue1", KEY_END),
-			       /* explicitely request pathname matching */
+			       /* explicitly request pathname matching */
 			       keyNew ("user/glob/#1/flags", KEY_VALUE, "pathname", KEY_END), KS_END);
 	PLUGIN_OPEN ("glob");
 

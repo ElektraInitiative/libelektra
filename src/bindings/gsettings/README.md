@@ -1,6 +1,6 @@
 # elektrasettings #
 
- **__Warning__ !!! This lib is unstable and could destroy your Elektra Configuration. Only use in testing evironments.**
+ **__Warning__ !!! This lib is unstable and could destroy your Elektra Configuration. Only use in testing environments.**
 
  Implementation of Elektra as GSettingsBackend
 
@@ -80,7 +80,7 @@ export current settings and delete them so they will not be hidden
 kdb export /sw dump > tmp
 kdb rm -r /sw
 ```
-mount sw at you prefered location
+mount sw at you preferred location
 ```sh
 (sudo) kdb mount sw /sw dbus $restofplugins
 ```

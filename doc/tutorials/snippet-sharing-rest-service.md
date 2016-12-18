@@ -190,7 +190,7 @@ As last step we need to run the applications:
 
 If everything went smooth, both applications should now be online and reachable.
 
-## Stopping the Appplications ##
+## Stopping the Applications ##
 
 Both applications can be stopped with a simple command:
 

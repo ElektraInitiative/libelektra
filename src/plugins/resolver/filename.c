@@ -79,7 +79,7 @@ static void elektraGenTempFilename (char * where, const char * filename)
 	snprintf (where + len, POSTFIX_SIZE - 1, ".%d:%ld." ELEKTRA_TIME_USEC_F ".tmp", getpid (), tv.tv_sec, tv.tv_usec);
 }
 /**
- * @brief Given filename, calcualtes dirname+tempfile
+ * @brief Given filename, calculates dirname+tempfile
  *
  * @param p resolverHandle with filename set
  */

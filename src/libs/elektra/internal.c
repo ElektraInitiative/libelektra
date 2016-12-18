@@ -147,7 +147,7 @@ int elektraStrCaseCmp (const char * s1, const char * s2)
 
 /**
  * @brief Compare two memory regions but make cmp chars uppercase before
- * comparision.
+ * comparison.
  *
  * @param s1 The first string to be compared
  * @param s2 The second string to be compared
@@ -354,7 +354,7 @@ size_t elektraStrLen (const char * s)
 }
 
 /**
- * @brief Does string formating in fresh allocated memory
+ * @brief Does string formatting in fresh allocated memory
  *
  * @param format as in printf()
  * @param ... as in printf()
@@ -373,7 +373,7 @@ char * elektraFormat (const char * format, ...)
 }
 
 /**
- * @brief Does string formating in fresh allocated memory
+ * @brief Does string formatting in fresh allocated memory
  *
  * @param format as in vprintf()
  * @param arg_list as in vprintf()

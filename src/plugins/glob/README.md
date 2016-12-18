@@ -34,7 +34,7 @@ interpreted as a globbing key. The value of the key contains the globbing expres
 the glob expression contained in one of the globbing keys is found, the metakeys of the corresponding
 globbing key are copied. Once a match is found, no further keys will be considered for globbing. The reason
 for this are catch all globbing keys that can be used to match all keys that have not been matched by a
-preceeding globbing key.
+preceding globbing key.
 
 ### Globbing Direction ###
 

@@ -48,7 +48,7 @@ At the moment the following crypto APIs are supported:
 
 GPG is a runtime dependency for all crypto plugin variants.
 Either the `gpg` or the `gpg2` binary should be installed when using the plugin.
-Note that `gpg2` will be prefered if both versions are available.
+Note that `gpg2` will be preferred if both versions are available.
 The GPG binary can be configured in the plugin configuration as `/gpg/bin` (see _GPG Configuration_ below).
 If no such configuration is provided, the plugin will look at the PATH environment variable to find the GPG binaries.
 
@@ -105,7 +105,7 @@ The CMake command might look something like:
 
     cmake -DLIBGCRYPT_INCLUDE_DIR="/opt/local/include/" -DLIBGCRYPT_LIBRARIES="/opt/local/lib/libgcrypt.dylib" -DPLUGINS="crypto;crypto_gcrypt;" /path_to_elektra_src
 
-For the `crypto_openssl` variant a custom-built OpenSSL library is neccessary as the MacPorts or Homebrew variants do not seem to work.
+For the `crypto_openssl` variant a custom-built OpenSSL library is necessary as the MacPorts or Homebrew variants do not seem to work.
 Download the latest version of the OpenSSL library from the [project homepage](https://www.openssl.org/source/) and compile it.
 Copy the header files and the binary files to a location where all users can access them.
 

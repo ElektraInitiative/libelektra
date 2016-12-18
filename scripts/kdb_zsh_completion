@@ -20,7 +20,7 @@ _kdb_paths () {
     # it should be ${#PREFIX//[^\/]/}
     slashes=${#PREFIX//[^\\\/]/}
     if [ $slashes -eq 0 ]; then
-        # If no slashes, we perfom search on /
+        # If no slashes, we perform search on /
         paths=($(kdb ls / | cut -d "/" -f 1 | uniq))
     else
         # Check if key is a leaf

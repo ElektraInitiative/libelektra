@@ -110,7 +110,7 @@ warnings should have array conventions #0, #_10...
 
 == Libraries ==
 
-- remove libelektra.so (only have new splitted libraries)
+- remove libelektra.so (only have new split libraries)
 
 
 === Plugin API Changes ===

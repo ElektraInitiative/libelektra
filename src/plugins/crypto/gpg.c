@@ -96,7 +96,7 @@ static char * genGpgCandidate (Key * errorKey, char * dir, const char * file)
  * @param errorKey holds an error description in case of failure.
  * @param bin the binary file to look for
  * @param result holds an allocated string containing the full path to the binary file or NULL in case of error. Must be freed by the caller.
- * @retval -1 if an error occured. See errorKey for a description.
+ * @retval -1 if an error occurred. See errorKey for a description.
  * @retval 0 if the binary could not be found within PATH.
  * @retval 1 if the binary was found and the full path was stored in result.
  */

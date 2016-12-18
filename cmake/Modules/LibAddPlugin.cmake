@@ -128,7 +128,7 @@ endfunction (add_plugintest)
 function (plugin_check_if_included PLUGIN_SHORT_NAME)
 	list (FIND PLUGINS "-${PLUGIN_SHORT_NAME}" FOUND_EXCLUDE_NAME)
 	if (FOUND_EXCLUDE_NAME GREATER -1)
-		set (NOT_INCLUDED "explicitely excluded" PARENT_SCOPE)
+		set (NOT_INCLUDED "explicitly excluded" PARENT_SCOPE)
 		# let explicit exclusion win
 		return ()
 	endif ()

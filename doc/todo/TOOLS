@@ -120,7 +120,7 @@ kdb tool:
 == GEN ==
 
 install kdb gen properly
-	search by default in installed pathes
+	search by default in installed paths
 
 using python kdb for gen
 
