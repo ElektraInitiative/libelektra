@@ -1005,3 +1005,17 @@ severity:error
 ingroup:plugin
 module:curlget
 macro:CURL_UPLOAD_FAILED
+
+number:165
+description:Couldn't fetch file from remote host, try falling back to local copy.
+severity:warning
+ingroup:plugin
+module:curlget
+macro:CURL_LOCAL_FALLBACK
+
+number:166
+description:Failed to fetch configuration file.
+severity:error
+ingroup:plugin
+module:curlget
+macro:CURL_FETCH_FAILED

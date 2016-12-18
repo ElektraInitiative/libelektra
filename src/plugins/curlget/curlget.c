@@ -14,6 +14,7 @@
 #include <fcntl.h>
 #include <kdberrors.h>
 #include <kdbhelper.h>
+#include <libgen.h>
 #include <openssl/md5.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -61,11 +62,6 @@ int elektraCurlgetClose (Plugin * handle ELEKTRA_UNUSED, Key * errorKey ELEKTRA_
 	{
 		unlink (data->tmpFile);
 		data->tmpFile = NULL;
-	}
-	if (data->path)
-	{
-		unlink (data->path);
-		data->path = NULL;
 	}
 	elektraFree (data);
 	data = NULL;
@@ -190,8 +186,11 @@ static FILE * fetchFile (Data * data, int fd)
 	curl_easy_setopt (curl, CURLOPT_WRITEDATA, fp);
 	CURLcode res;
 	res = curl_easy_perform (curl);
+	long respCode = 0;
+	curl_easy_getinfo (curl, CURLINFO_RESPONSE_CODE, &respCode);
+	fprintf (stderr, "respCode: %ld\n", respCode);
 	curl_easy_cleanup (curl);
-	if (res != CURLE_OK)
+	if (res != CURLE_OK || respCode != 200)
 	{
 		fclose (fp);
 		return NULL;
@@ -226,16 +225,16 @@ int elektraCurlgetGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA
 		return -1;
 	}
 	int fd = 0;
-	if (!*(data->lastHash))
-	{
-		fd = open (data->path, O_CREAT | O_RDWR, 00755);
-	}
-	else
-	{
-		char name[] = "/tmp/elektraCurlTempXXXXXX";
-		fd = mkstemp (name);
-		data->tmpFile = name;
-	}
+	/*	if (!*(data->lastHash))
+		{
+			fd = open (data->path, O_CREAT | O_RDWR, 00755);
+		}
+		else
+		{ */
+	char name[] = "/tmp/elektraCurlTempXXXXXX";
+	fd = mkstemp (name);
+	data->tmpFile = name;
+	//	}
 
 	if (fd == -1)
 	{
@@ -244,6 +243,24 @@ int elektraCurlgetGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA
 	}
 
 	FILE * fp = fetchFile (data, fd);
+	if (!fp)
+	{
+		close (fd);
+		unlink (data->tmpFile);
+		data->tmpFile = NULL;
+		fp = fopen (data->path, "rb");
+		if (fp)
+		{
+			ELEKTRA_ADD_WARNINGF (ELEKTRA_WARNING_CURL_LOCAL_FALLBACK, parentKey,
+					      "Failed to fetch configuration from %s, falling back to local copy %s\n", data->getUrl,
+					      data->path);
+		}
+		else
+		{
+			ELEKTRA_SET_ERROR (26, parentKey, "Failed to read both remote and local configuration\n");
+			return -1;
+		}
+	}
 	fseek (fp, 0L, SEEK_END);
 	size_t size = ftell (fp);
 	rewind (fp);
@@ -255,8 +272,10 @@ int elektraCurlgetGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA
 	{
 		memcpy (data->lastHash, hash, MD5_DIGEST_LENGTH);
 		keySetString (parentKey, data->path);
+		rename (data->tmpFile, data->path);
+		data->tmpFile = NULL;
 	}
-	else
+	else if (data->tmpFile)
 	{
 		if (strncmp ((char *)data->lastHash, (char *)hash, MD5_DIGEST_LENGTH))
 		{
@@ -302,30 +321,51 @@ int elektraCurlgetSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA
 		int fd = mkstemp (name);
 		data->tmpFile = name;
 		FILE * fp = fetchFile (data, fd);
-		fseek (fp, 0L, SEEK_END);
-		size_t size = ftell (fp);
-		rewind (fp);
-		unsigned char buffer[size];
-		int bytes = fread (&buffer, sizeof (char), size, fp);
-		fclose (fp);
-		unsigned char * hash = hashBuffer (buffer, size);
-		++(data->setPhase);
-		if (strncmp ((char *)data->lastHash, (char *)hash, MD5_DIGEST_LENGTH))
+		if (fp)
 		{
-			ELEKTRA_SET_ERROR (ELEKTRA_ERROR_CONFLICT, parentKey, "remote file has changed");
+			fseek (fp, 0L, SEEK_END);
+			size_t size = ftell (fp);
+			rewind (fp);
+			unsigned char buffer[size];
+			int bytes = fread (&buffer, sizeof (char), size, fp);
+			fclose (fp);
+			unsigned char * hash = hashBuffer (buffer, size);
+			++(data->setPhase);
+			if (strncmp ((char *)data->lastHash, (char *)hash, MD5_DIGEST_LENGTH))
+			{
+				ELEKTRA_SET_ERROR (ELEKTRA_ERROR_CONFLICT, parentKey, "remote file has changed");
+				retval = -1;
+			}
+			unlink (data->tmpFile);
+			keySetString (parentKey, name);
+		}
+		else
+		{
+			close (fd);
+			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CURL_FETCH_FAILED, parentKey,
+					    "Failed to fetch configuration from %s. Aborting because consistency can't be ensured",
+					    data->getUrl);
+			unlink (data->tmpFile);
+			data->tmpFile = NULL;
+			keySetString (parentKey, data->path);
 			retval = -1;
 		}
-		unlink (data->tmpFile);
-		data->tmpFile = NULL;
-		keySetString (parentKey, data->path);
+		close (fd);
+		if (retval != -1)
+		{
+			data->tmpFile = name;
+			keySetString (parentKey, name);
+			retval = 1;
+		}
 	}
 	else if (data->setPhase == 1)
 	{
 		FILE * fp;
-		fp = fopen (data->path, "rb");
+		const char * tmpFile = keyString (parentKey);
+		fp = fopen (tmpFile, "rb");
 		if (!fp)
 		{
-			ELEKTRA_SET_ERRORF (26, parentKey, "Failed to open %s for reading", data->path);
+			ELEKTRA_SET_ERRORF (26, parentKey, "Failed to open %s for reading", tmpFile);
 			return -1;
 		}
 		fseek (fp, 0L, SEEK_END);
@@ -352,8 +392,9 @@ int elektraCurlgetSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA
 				struct curl_httppost * lastptr = NULL;
 				struct curl_slist * headerlist = NULL;
 				static const char buf[] = "Expect:";
-				curl_formadd (&formpost, &lastptr, CURLFORM_COPYNAME, data->postFieldName, CURLFORM_FILE, data->path,
-					      CURLFORM_END);
+				char * fileName = strdup (data->path);
+				curl_formadd (&formpost, &lastptr, CURLFORM_COPYNAME, data->postFieldName, CURLFORM_FILE, tmpFile,
+					      CURLFORM_FILENAME, basename (fileName), CURLFORM_END);
 				headerlist = curl_slist_append (headerlist, buf);
 				curl_easy_setopt (curl, CURLOPT_HTTPHEADER, headerlist);
 				curl_easy_setopt (curl, CURLOPT_HTTPPOST, formpost);
@@ -368,6 +409,7 @@ int elektraCurlgetSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA
 				}
 				curl_formfree (formpost);
 				curl_slist_free_all (headerlist);
+				elektraFree (fileName);
 			}
 			else if (data->uploadMethod == PUT)
 			{
@@ -412,6 +454,7 @@ int elektraCurlgetSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA
 			curl_easy_cleanup (curl);
 			fclose (fp);
 		}
+		if (retval != -1) rename (data->tmpFile, data->path);
 	}
 
 	return retval; // success
