@@ -16,6 +16,7 @@
 #include <errno.h>
 #include <kdbease.h>
 #include <kdberrors.h>
+#include <kdbmeta.h>
 #include <math.h>
 #include <regex.h>
 #include <stdio.h>
@@ -868,19 +869,55 @@ int elektraConditionalsGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned EL
 		if (conditionMeta)
 		{
 			CondResult result;
-			result = evaluateKey (conditionMeta, suffixList, parentKey, cur, returned, CONDITION);
-			if (result == NOEXPR)
+			if (keyString (conditionMeta)[0] == '#')
 			{
-				ret |= TRUE;
+				KeySet * condKS = elektraMetaArrayToKS (cur, "check/condition");
+				Key * c;
+				while ((c = ksNext (condKS)) != NULL)
+				{
+					if (keyCmp (c, conditionMeta) == 0) continue;
+					result = evaluateKey (c, suffixList, parentKey, cur, returned, CONDITION);
+					if (result == NOEXPR)
+					{
+						ret |= TRUE;
+					}
+					else
+					{
+						ret |= result;
+					}
+				}
+				ksDel (condKS);
 			}
 			else
 			{
-				ret |= result;
+				result = evaluateKey (conditionMeta, suffixList, parentKey, cur, returned, CONDITION);
+				if (result == NOEXPR)
+				{
+					ret |= TRUE;
+				}
+				else
+				{
+					ret |= result;
+				}
 			}
 		}
 		if (assignMeta)
 		{
-			ret |= evaluateKey (assignMeta, suffixList, parentKey, cur, returned, ASSIGN);
+			if (keyString (assignMeta)[0] == '#')
+			{
+				KeySet * assignKS = elektraMetaArrayToKS (cur, "assign/condition");
+				Key * a;
+				while ((a = ksNext (assignKS)) != NULL)
+				{
+					if (keyCmp (a, assignMeta) == 0) continue;
+					ret |= evaluateKey (a, suffixList, parentKey, cur, returned, ASSIGN);
+				}
+				ksDel (assignKS);
+			}
+			else
+			{
+				ret |= evaluateKey (assignMeta, suffixList, parentKey, cur, returned, ASSIGN);
+			}
 		}
 	}
 	if (ret == TRUE) keySetMeta (parentKey, "error", 0);
@@ -901,19 +938,55 @@ int elektraConditionalsSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned EL
 		if (conditionMeta)
 		{
 			CondResult result;
-			result = evaluateKey (conditionMeta, suffixList, parentKey, cur, returned, CONDITION);
-			if (result == NOEXPR)
+			if (keyString (conditionMeta)[0] == '#')
 			{
-				ret |= TRUE;
+				KeySet * condKS = elektraMetaArrayToKS (cur, "check/condition");
+				Key * c;
+				while ((c = ksNext (condKS)) != NULL)
+				{
+					if (keyCmp (c, conditionMeta) == 0) continue;
+					result = evaluateKey (c, suffixList, parentKey, cur, returned, CONDITION);
+					if (result == NOEXPR)
+					{
+						ret |= TRUE;
+					}
+					else
+					{
+						ret |= result;
+					}
+				}
+				ksDel (condKS);
 			}
 			else
 			{
-				ret |= result;
+				result = evaluateKey (conditionMeta, suffixList, parentKey, cur, returned, CONDITION);
+				if (result == NOEXPR)
+				{
+					ret |= TRUE;
+				}
+				else
+				{
+					ret |= result;
+				}
 			}
 		}
 		if (assignMeta)
 		{
-			ret |= evaluateKey (assignMeta, suffixList, parentKey, cur, returned, ASSIGN);
+			if (keyString (assignMeta)[0] == '#')
+			{
+				KeySet * assignKS = elektraMetaArrayToKS (cur, "assign/condition");
+				Key * a;
+				while ((a = ksNext (assignKS)) != NULL)
+				{
+					if (keyCmp (a, assignMeta) == 0) continue;
+					ret |= evaluateKey (a, suffixList, parentKey, cur, returned, ASSIGN);
+				}
+				ksDel (assignKS);
+			}
+			else
+			{
+				ret |= evaluateKey (assignMeta, suffixList, parentKey, cur, returned, ASSIGN);
+			}
 		}
 	}
 	if (ret == TRUE) keySetMeta (parentKey, "error", 0);
