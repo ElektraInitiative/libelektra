@@ -22,6 +22,10 @@
 #include <stdlib.h>
 #include <string.h>
 
+
+// returns next field in record
+// ignore record and field separators in quoted fiels according to RFC 4180
+
 static char * parseLine (char * origLine, char delim, unsigned long offset, Key * parentKey, unsigned long lineNr, int lastLine)
 {
 	char * line = (origLine + offset);
@@ -144,6 +148,9 @@ static unsigned long getLineLength (FILE * fp)
 		return (endPos - startPos) + 1;
 }
 
+// count columns in lineBuffer
+// ignore record and field separators in quoted fields
+
 static unsigned long getColumnCount (char * lineBuffer, char delim)
 {
 	char * ptr = lineBuffer;
@@ -208,6 +215,10 @@ static unsigned long getColumnCount (char * lineBuffer, char delim)
 	}
 	return counter;
 }
+
+// reads next record from file according to RFC 4180
+// if EOL is reached with unbalanced quotes, assume record continues at the next
+// line. append succeeding lines until quotes are balanced or EOF is reached
 
 static char * readNextLine (FILE * fp, char delim, int * lastLine, int * linesRead)
 {
