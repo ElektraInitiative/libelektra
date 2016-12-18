@@ -48,7 +48,6 @@ typedef struct
 	short array;
 	short mergeSections;
 	short BOM;
-	short toMeta;
 	char * continuationString;
 	char delim;
 	char * lastOrder;
@@ -63,7 +62,6 @@ typedef struct
 	Key * collectedComment; /* buffer for collecting comments until a non comment key is reached */
 	short array;
 	short mergeSections;
-	short toMeta;
 	IniPluginConfig * pluginConfig;
 } CallbackHandle;
 
@@ -79,6 +77,11 @@ static void flushCollectedComment (CallbackHandle * handle, Key * key)
 			keySetMeta (key, keyName (cur), keyString (cur));
 		}
 		ksDel (comments);
+		keyRewindMeta (handle->collectedComment);
+		while ((cur = (Key *)keyNextMeta (handle->collectedComment)) != NULL)
+		{
+			if (!strncmp (keyName (cur), "meta/", 5)) keySetMeta (key, keyName (cur) + 5, keyString (cur));
+		}
 		keyDel (handle->collectedComment);
 		handle->collectedComment = NULL;
 	}
@@ -148,7 +151,7 @@ static Key * createUnescapedKey (Key * key, const char * name)
 static void setOrderNumber (Key * parentKey, Key * key)
 {
 	kdb_long_long_t order = 1;
-	const Key * orderKey = keyGetMeta (parentKey, "order");
+	const Key * orderKey = keyGetMeta (parentKey, "internal/ini/order");
 	if (orderKey != NULL)
 	{
 		char * ptr = (char *)keyString (orderKey);
@@ -162,8 +165,8 @@ static void setOrderNumber (Key * parentKey, Key * key)
 	++order;
 	char buffer[ELEKTRA_MAX_ARRAY_SIZE];
 	elektraWriteArrayNumber (buffer, order);
-	keySetMeta (key, "order", buffer);
-	keySetMeta (parentKey, "order", buffer);
+	keySetMeta (key, "internal/ini/order", buffer);
+	keySetMeta (parentKey, "internal/ini/order", buffer);
 }
 static void setSubOrderNumber (Key * key, const char * oldOrder)
 {
@@ -190,7 +193,7 @@ static void setSubOrderNumber (Key * key, const char * oldOrder)
 	{
 		sprintf (newOrder, "%s/#1", oldOrder);
 	}
-	keySetMeta (key, "order", newOrder);
+	keySetMeta (key, "internal/ini/order", newOrder);
 	elektraFree (newOrder);
 }
 
@@ -211,36 +214,36 @@ static void iniBomHandler (void * vhandle, short BOM)
 
 static void setKeyOrderNumber (Key * sectionKey, Key * key)
 {
-	const Key * childMeta = keyGetMeta (sectionKey, "ini/key/last");
-	keySetMeta (key, "ini/key/number", keyString (childMeta));
+	const Key * childMeta = keyGetMeta (sectionKey, "internal/ini/key/last");
+	keySetMeta (key, "internal/ini/key/number", keyString (childMeta));
 	Key * newChild = keyDup (childMeta);
 	keyAddName (newChild, keyString (newChild));
 	elektraArrayIncName (newChild);
-	keySetMeta (sectionKey, "ini/key/last", keyBaseName (newChild));
+	keySetMeta (sectionKey, "internal/ini/key/last", keyBaseName (newChild));
 	keyDel (newChild);
-	keySetMeta (key, "order", keyString (keyGetMeta (sectionKey, "order")));
+	keySetMeta (key, "internal/ini/order", keyString (keyGetMeta (sectionKey, "internal/ini/order")));
 }
 
 static int iniKeyToElektraArray (CallbackHandle * handle, Key * existingKey, Key * appendKey, const char * value)
 {
 
-	if (keyGetMeta (existingKey, "ini/array"))
+	if (keyGetMeta (existingKey, "internal/ini/array"))
 	{
 		// array already exists, appending new key
-		const char * lastIndex = keyString (keyGetMeta (existingKey, "ini/array"));
+		const char * lastIndex = keyString (keyGetMeta (existingKey, "internal/ini/array"));
 		keyAddBaseName (appendKey, lastIndex);
-		keySetMeta (appendKey, "ini/array", 0);
-		keySetMeta (appendKey, "order", 0);
-		keySetMeta (appendKey, "parent", 0);
+		keySetMeta (appendKey, "internal/ini/array", 0);
+		keySetMeta (appendKey, "internal/ini/order", 0);
+		keySetMeta (appendKey, "internal/ini/parent", 0);
 		if (elektraArrayIncName (appendKey) == 1)
 		{
 			return -1;
 		}
 		keySetString (appendKey, value);
-		keySetMeta (appendKey, "ini/arrayMember", "");
-		keySetMeta (appendKey, "order", keyString (keyGetMeta (existingKey, "order")));
+		keySetMeta (appendKey, "internal/ini/arrayMember", "");
+		keySetMeta (appendKey, "internal/ini/order", keyString (keyGetMeta (existingKey, "internal/ini/order")));
 		ksAppendKey (handle->result, appendKey);
-		keySetMeta (existingKey, "ini/array", keyBaseName (appendKey));
+		keySetMeta (existingKey, "internal/ini/array", keyBaseName (appendKey));
 		ksAppendKey (handle->result, existingKey);
 	}
 	else
@@ -250,13 +253,13 @@ static int iniKeyToElektraArray (CallbackHandle * handle, Key * existingKey, Key
 		keyAddName (sectionKey, "..");
 		char * origVal = strdup (keyString (existingKey));
 		keySetString (appendKey, "");
-		keySetMeta (appendKey, "ini/array", "#1");
+		keySetMeta (appendKey, "internal/ini/array", "#1");
 		setOrderNumber (handle->parentKey, appendKey);
-		keySetMeta (appendKey, "parent", 0);
+		keySetMeta (appendKey, "internal/ini/parent", 0);
 		ksAppendKey (handle->result, keyDup (appendKey));
-		keySetMeta (appendKey, "ini/arrayMember", "");
-		keySetMeta (appendKey, "ini/array", 0);
-		keySetMeta (appendKey, "parent", 0);
+		keySetMeta (appendKey, "internal/ini/arrayMember", "");
+		keySetMeta (appendKey, "internal/ini/array", 0);
+		keySetMeta (appendKey, "internal/ini/parent", 0);
 		keyAddName (appendKey, "#");
 		if (elektraArrayIncName (appendKey) == -1)
 		{
@@ -270,7 +273,7 @@ static int iniKeyToElektraArray (CallbackHandle * handle, Key * existingKey, Key
 		{
 			return -1;
 		}
-		keySetMeta (appendKey, "parent", 0);
+		keySetMeta (appendKey, "internal/ini/parent", 0);
 		keySetString (appendKey, value);
 		ksAppendKey (handle->result, keyDup (appendKey));
 		keyDel (appendKey);
@@ -284,17 +287,17 @@ static void insertKeyIntoKeySet (Key * parentKey, Key * key, KeySet * ks)
 {
 	cursor_t savedCursor = ksGetCursor (ks);
 	char * parent = findParent (parentKey, key, ksDup (ks));
-	keySetMeta (key, "parent", parent);
-	if (keyIsBinary (key))
+	keySetMeta (key, "internal/ini/parent", parent);
+	if (keyGetMeta (key, "internal/ini/section"))
 	{
-		keySetMeta (key, "ini/key/last", "#0");
+		keySetMeta (key, "internal/ini/key/last", "#0");
 		Key * cutKey = keyNew (parent, KEY_END);
 		KeySet * cutKS = ksCut (ks, cutKey);
 		Key * cur;
 		Key * prevKey = NULL;
 		while ((cur = ksNext (cutKS)) != NULL)
 		{
-			if (!keyIsBinary (cur)) continue;
+			if (!keyGetMeta (cur, "internal/ini/section")) continue;
 			if (strcmp (keyName (cur), keyName (key)) < 0)
 				prevKey = cur;
 			else
@@ -302,7 +305,7 @@ static void insertKeyIntoKeySet (Key * parentKey, Key * key, KeySet * ks)
 		}
 		if (prevKey)
 		{
-			const Key * orderMeta = keyGetMeta (prevKey, "order");
+			const Key * orderMeta = keyGetMeta (prevKey, "internal/ini/order");
 			const char * oldOrder = keyString (orderMeta);
 			setSubOrderNumber (key, oldOrder);
 		}
@@ -319,7 +322,7 @@ static void insertKeyIntoKeySet (Key * parentKey, Key * key, KeySet * ks)
 		Key * sectionKey = ksLookupByName (ks, parent, KDB_O_NONE);
 		if (!sectionKey)
 		{
-			keySetMeta (key, "order", "#0");
+			keySetMeta (key, "internal/ini/order", "#0");
 		}
 		else
 		{
@@ -337,6 +340,7 @@ static int iniKeyToElektraKey (void * vhandle, const char * section, const char 
 	{
 		Key * rootKey = keyDup (handle->parentKey);
 		keySetString (rootKey, value);
+		flushCollectedComment (handle, rootKey);
 		ksAppendKey (handle->result, rootKey);
 		return 1;
 	}
@@ -344,20 +348,7 @@ static int iniKeyToElektraKey (void * vhandle, const char * section, const char 
 	Key * sectionKey;
 	if (!section || *section == '\0')
 	{
-		if (!handle->toMeta)
-		{
-			section = INTERNAL_ROOT_SECTION;
-		}
-		else
-		{
-			Key * rootKey = ksLookup (handle->result, handle->parentKey, KDB_O_NONE);
-			if (!rootKey)
-			{
-				rootKey = keyDup (handle->parentKey);
-			}
-			keySetMeta (rootKey, name, value);
-			ksAppendKey (handle->result, rootKey);
-		}
+		section = INTERNAL_ROOT_SECTION;
 	}
 	appendKey = createUnescapedKey (appendKey, section);
 	if (!strcmp (keyBaseName (appendKey), INTERNAL_ROOT_SECTION))
@@ -365,13 +356,13 @@ static int iniKeyToElektraKey (void * vhandle, const char * section, const char 
 		sectionKey = ksLookup (handle->result, appendKey, KDB_O_NONE);
 		if (!sectionKey)
 		{
-			keySetMeta (appendKey, "order", "#0");
-			keySetMeta (appendKey, "ini/key/last", "#0");
-			keySetBinary (appendKey, 0, 0);
+			keySetMeta (appendKey, "internal/ini/order", "#0");
+			keySetMeta (appendKey, "internal/ini/key/last", "#0");
+			keySetMeta (appendKey, "internal/ini/section", "");
 			ksAppendKey (handle->result, keyDup (appendKey));
-			keySetMeta (appendKey, "order", "#0");
-			keySetMeta (appendKey, "ini/key/last", "#0");
-			keySetMeta (appendKey, "binary", 0);
+			keySetMeta (appendKey, "internal/ini/order", "#0");
+			keySetMeta (appendKey, "internal/ini/key/last", "#0");
+			keySetMeta (appendKey, "internal/ini/section", 0);
 			sectionKey = ksLookup (handle->result, appendKey, KDB_O_NONE);
 		}
 	}
@@ -383,29 +374,10 @@ static int iniKeyToElektraKey (void * vhandle, const char * section, const char 
 	Key * existingKey = NULL;
 	if ((existingKey = ksLookup (handle->result, appendKey, KDB_O_NONE)))
 	{
-		if (keyGetMeta (existingKey, "ini/duplicate"))
+		if (keyGetMeta (existingKey, "internal/ini/duplicate"))
 		{
 			mergeSections = 1;
 		}
-	}
-	if (handle->toMeta)
-	{
-		if (!existingKey) existingKey = appendKey;
-		if (lineContinuation)
-		{
-			const Key * meta = keyGetMeta (existingKey, name);
-			Key * newMeta = keyDup (meta);
-			elektraKeyAppendLine (newMeta, value);
-			keySetMeta (existingKey, name, keyString (newMeta));
-			keyDel (newMeta);
-		}
-		else
-		{
-			keySetMeta (existingKey, name, value);
-			ksAppendKey (handle->result, existingKey);
-		}
-		keyDel (appendKey);
-		return 1;
 	}
 	appendKey = createUnescapedKey (appendKey, name);
 	existingKey = ksLookup (handle->result, appendKey, KDB_O_NONE);
@@ -425,7 +397,7 @@ static int iniKeyToElektraKey (void * vhandle, const char * section, const char 
 		}
 	}
 
-	if (value == NULL) keySetMeta (appendKey, "ini/empty", "");
+	if (value == NULL) keySetMeta (appendKey, "internal/ini/empty", "");
 	if (!lineContinuation)
 	{
 		flushCollectedComment (handle, appendKey);
@@ -433,7 +405,7 @@ static int iniKeyToElektraKey (void * vhandle, const char * section, const char 
 		ksAppendKey (handle->result, appendKey);
 		if (mergeSections)
 		{
-			keySetMeta (appendKey, "order", 0);
+			keySetMeta (appendKey, "internal/ini/order", 0);
 			insertKeyIntoKeySet (handle->parentKey, appendKey, handle->result);
 		}
 		else
@@ -458,7 +430,7 @@ static int iniKeyToElektraKey (void * vhandle, const char * section, const char 
 static short isSectionKey (Key * key)
 {
 	if (!key) return 0;
-	if (keyIsBinary (key))
+	if (keyGetMeta (key, "internal/ini/section"))
 		return 1;
 	else
 		return 0;
@@ -473,13 +445,13 @@ static int iniSectionToElektraKey (void * vhandle, const char * section)
 	Key * existingKey = NULL;
 	if ((existingKey = ksLookup (handle->result, appendKey, KDB_O_NONE)))
 	{
-		if (handle->mergeSections) keySetMeta (existingKey, "ini/duplicate", "");
+		if (handle->mergeSections) keySetMeta (existingKey, "internal/ini/duplicate", "");
 		keyDel (appendKey);
 		return 1;
 	}
 	setOrderNumber (handle->parentKey, appendKey);
-	keySetMeta (appendKey, "ini/key/last", "#0");
-	keySetBinary (appendKey, 0, 0);
+	keySetMeta (appendKey, "internal/ini/key/last", "#0");
+	keySetMeta (appendKey, "internal/ini/section", "");
 	flushCollectedComment (handle, appendKey);
 	ksAppendKey (handle->result, appendKey);
 
@@ -490,7 +462,52 @@ static int iniCommentToMeta (void * vhandle, const char * comment)
 {
 	CallbackHandle * handle = (CallbackHandle *)vhandle;
 	if (!handle->collectedComment) handle->collectedComment = keyNew ("/comments", KEY_CASCADING_NAME, KEY_END);
-	elektraMetaArrayAdd (handle->collectedComment, "comments", comment);
+	if (strncmp (comment, "#@META ", 7))
+		elektraMetaArrayAdd (handle->collectedComment, "comments", comment);
+	else
+	{
+		// comment is an Electra metakey
+
+		// strip "#@META " from comment
+		char * localCopy = elektraStrDup (comment + 7);
+		size_t len = strlen (localCopy);
+		char * ptr = localCopy;
+		char * name = ptr;
+		// skip keynames leading whitespaces
+		while (isspace (*name))
+			++name;
+		char * value;
+
+		// locate key/value delimiter "="
+		ptr = strstr (localCopy, "=");
+		if (ptr)
+		{
+
+			// skip keynames trailing whitespaces starting left of delimiter
+			// and add nullbyte as string delimiter
+			char * nameEnd = ptr - 1;
+			while (isspace (*nameEnd))
+				--nameEnd;
+			*(nameEnd + 1) = '\0';
+			if (*ptr)
+			{
+
+				*ptr = '\0';
+				// skip leading whitespaces and drop trailing whitespaces
+				value = ptr + 1;
+				while (isspace (*value))
+					++value;
+				char * valueEnd = &localCopy[len - 1];
+				while (isspace (*valueEnd))
+					--valueEnd;
+				if (*valueEnd) *(valueEnd + 1) = '\0';
+				char buffer[strlen (name) + sizeof ("meta/") + 1];
+				snprintf (buffer, sizeof (buffer), "meta/%s", name);
+				keySetMeta (handle->collectedComment, buffer, value);
+			}
+		}
+		elektraFree (localCopy);
+	}
 	return 1;
 }
 
@@ -505,7 +522,6 @@ int elektraIniOpen (Plugin * handle, Key * parentKey ELEKTRA_UNUSED)
 	Key * sectionHandlingKey = ksLookupByName (config, "/section", KDB_O_NONE);
 	Key * arrayKey = ksLookupByName (config, "/array", KDB_O_NONE);
 	Key * mergeSectionsKey = ksLookupByName (config, "/mergesections", KDB_O_NONE);
-	Key * toMetaKey = ksLookupByName (config, "/meta", KDB_O_NONE);
 	Key * contStringKey = ksLookupByName (config, "/linecont", KDB_O_NONE);
 	Key * delimiterKey = ksLookupByName (config, "/delimiter", KDB_O_NONE);
 	Key * commentKey = ksLookupByName (config, "/comment", KDB_O_NONE);
@@ -519,6 +535,7 @@ int elektraIniOpen (Plugin * handle, Key * parentKey ELEKTRA_UNUSED)
 		pluginConfig->commentChar = keyString (commentKey)[0];
 	}
 
+
 	if (!contStringKey)
 	{
 		pluginConfig->continuationString = strdup ("\t");
@@ -527,7 +544,6 @@ int elektraIniOpen (Plugin * handle, Key * parentKey ELEKTRA_UNUSED)
 	{
 		pluginConfig->continuationString = strdup (keyString (contStringKey));
 	}
-	pluginConfig->toMeta = toMetaKey != 0;
 	pluginConfig->mergeSections = mergeSectionsKey != 0;
 	pluginConfig->array = arrayKey != 0;
 	if (!multilineKey)
@@ -656,7 +672,7 @@ static void setParents (KeySet * ks, Key * parentKey)
 		char * parentName = findParent (parentKey, cur, ksDup (ks));
 		if (parentName)
 		{
-			keySetMeta (cur, "parent", parentName);
+			keySetMeta (cur, "internal/ini/parent", parentName);
 		}
 		elektraFree (parentName);
 	}
@@ -704,14 +720,13 @@ int elektraIniGet (Plugin * handle, KeySet * returned, Key * parentKey)
 	iniConfig.supportMultiline = pluginConfig->supportMultiline;
 	iniConfig.delim = pluginConfig->delim;
 	pluginConfig->BOM = 0;
-	if (pluginConfig->lastOrder && !keyGetMeta (parentKey, "order"))
-		keySetMeta (parentKey, "order", pluginConfig->lastOrder);
+	if (pluginConfig->lastOrder && !keyGetMeta (parentKey, "internal/ini/order"))
+		keySetMeta (parentKey, "internal/ini/order", pluginConfig->lastOrder);
 	else
-		keySetMeta (parentKey, "order", "#1");
+		keySetMeta (parentKey, "internal/ini/order", "#1");
 	cbHandle.array = pluginConfig->array;
 	cbHandle.mergeSections = pluginConfig->mergeSections;
 	cbHandle.pluginConfig = pluginConfig;
-	cbHandle.toMeta = pluginConfig->toMeta;
 	int ret = ini_parse_file (fh, &iniConfig, &cbHandle);
 	ksRewind (cbHandle.result);
 	stripInternalData (cbHandle.parentKey, cbHandle.result);
@@ -749,7 +764,7 @@ int elektraIniGet (Plugin * handle, KeySet * returned, Key * parentKey)
 	}
 	ksDel (cbHandle.result);
 	if (pluginConfig->lastOrder) elektraFree (pluginConfig->lastOrder);
-	pluginConfig->lastOrder = strdup (keyString (keyGetMeta (parentKey, "order")));
+	pluginConfig->lastOrder = strdup (keyString (keyGetMeta (parentKey, "internal/ini/order")));
 	elektraPluginSetData (handle, pluginConfig);
 	return ret; /* success */
 }
@@ -909,11 +924,11 @@ void createGlobalRoot (Key * parentKey, KeySet * ks)
 {
 	Key * appendKey = keyDup (parentKey);
 	keySetString (appendKey, 0);
-	keySetMeta (appendKey, "order", 0);
-	keySetMeta (appendKey, "binary", 0);
+	keySetMeta (appendKey, "internal/ini/order", 0);
+	keySetMeta (appendKey, "internal/ini/section", 0);
 	keyAddName (appendKey, INTERNAL_ROOT_SECTION);
-	keySetMeta (appendKey, "order", "#0");
-	keySetMeta (appendKey, "ini/key/last", "#0");
+	keySetMeta (appendKey, "internal/ini/order", "#0");
+	keySetMeta (appendKey, "internal/ini/key/last", "#0");
 	ksAppendKey (ks, appendKey);
 }
 
@@ -923,38 +938,38 @@ void arrayHandler (Key * parentKey, Key * newKey, Key * cur, Key * sectionKey, K
 	keySetBaseName (arrayParentLookup, 0);
 	Key * arrayParent = ksLookup (newKS, arrayParentLookup, KDB_O_NONE);
 	keyDel (arrayParentLookup);
-	const Key * arrayMeta = keyGetMeta (arrayParent, "ini/array");
+	const Key * arrayMeta = keyGetMeta (arrayParent, "internal/ini/array");
 	if (arrayMeta)
 	{
 		if (strcmp (keyString (arrayMeta), keyBaseName (cur)) < 0)
 		{
-			keySetMeta (arrayParent, "ini/array", keyBaseName (newKey));
-			keySetMeta (newKey, "ini/arrayMember", "");
-			keySetMeta (newKey, "order", keyString (keyGetMeta (arrayParent, "order")));
-			keySetMeta (newKey, "ini/key/number", 0); // keyBaseName (newKey));
+			keySetMeta (arrayParent, "internal/ini/array", keyBaseName (newKey));
+			keySetMeta (newKey, "internal/ini/arrayMember", "");
+			keySetMeta (newKey, "internal/ini/order", keyString (keyGetMeta (arrayParent, "internal/ini/order")));
+			keySetMeta (newKey, "internal/ini/key/number", 0); // keyBaseName (newKey));
 			ksAppendKey (newKS, newKey);
 		}
 	}
-	else if (arrayParent && !keyIsBinary (arrayParent))
+	else if (arrayParent && !keyGetMeta (arrayParent, "internal/ini/section"))
 	{
 		const char * oldVal = keyString (arrayParent);
-		keySetMeta (arrayParent, "ini/array", keyBaseName (cur));
-		keySetMeta (arrayParent, "ini/key/number", 0);
+		keySetMeta (arrayParent, "internal/ini/array", keyBaseName (cur));
+		keySetMeta (arrayParent, "internal/ini/key/number", 0);
 		if (oldVal && strlen (oldVal))
 		{
 			Key * arrayInitKey = keyDup (arrayParent);
 			keyAddBaseName (arrayInitKey, "#0");
 			keySetString (arrayInitKey, oldVal);
-			keySetMeta (arrayInitKey, "ini/array", 0);
-			keySetMeta (arrayInitKey, "ini/arrayMember", "");
+			keySetMeta (arrayInitKey, "internal/ini/array", 0);
+			keySetMeta (arrayInitKey, "internal/ini/arrayMember", "");
 			ksAppendKey (newKS, arrayInitKey);
-			keySetMeta (arrayInitKey, "order", keyString (keyGetMeta (arrayParent, "order")));
-			keySetMeta (arrayInitKey, "ini/key/number", 0); // keyBaseName(arrayInitKey));
+			keySetMeta (arrayInitKey, "internal/ini/order", keyString (keyGetMeta (arrayParent, "internal/ini/order")));
+			keySetMeta (arrayInitKey, "internal/ini/key/number", 0); // keyBaseName(arrayInitKey));
 		}
 		ksAppendKey (newKS, newKey);
-		keySetMeta (newKey, "order", keyString (keyGetMeta (arrayParent, "order")));
-		keySetMeta (newKey, "ini/key/number", 0); // keyBaseName(newKey));
-		keySetMeta (newKey, "ini/arrayMember", "");
+		keySetMeta (newKey, "internal/ini/order", keyString (keyGetMeta (arrayParent, "internal/ini/order")));
+		keySetMeta (newKey, "internal/ini/key/number", 0); // keyBaseName(newKey));
+		keySetMeta (newKey, "internal/ini/arrayMember", "");
 	}
 	else if (arrayParent && (keyBaseName (newKey)[1] == '0'))
 	{
@@ -968,22 +983,22 @@ void arrayHandler (Key * parentKey, Key * newKey, Key * cur, Key * sectionKey, K
 		else
 		{
 			arrayParent = newParent;
-			keySetBinary (arrayParent, 0, 0);
-			keySetMeta (arrayParent, "ini/array", keyBaseName (cur));
+			keySetMeta (arrayParent, "internal/ini/section", "");
+			keySetMeta (arrayParent, "internal/ini/array", keyBaseName (cur));
 			ksAppendKey (newKS, arrayParent);
 			insertKeyIntoKeySet (parentKey, arrayParent, newKS);
-			keySetMeta (arrayParent, "ini/key/last", 0);
-			keySetMeta (arrayParent, "ini/key/number", 0);
+			keySetMeta (arrayParent, "internal/ini/key/last", 0);
+			keySetMeta (arrayParent, "internal/ini/key/number", 0);
 		}
-		keySetBinary (newKey, 0, 0);
-		keySetMeta (arrayParent, "ini/array", keyBaseName (cur));
+		keySetMeta (newKey, "internal/ini/section", "");
+		keySetMeta (arrayParent, "internal/ini/array", keyBaseName (cur));
 		keyAddName (newKey, "..");
 		ksAppendKey (newKS, newKey);
 		insertKeyIntoKeySet (parentKey, newKey, newKS);
-		keySetMeta (newKey, "binary", 0);
+		keySetMeta (newKey, "internal/ini/section", 0);
 		keySetString (newKey, keyString (cur));
-		keySetMeta (newKey, "ini/key/last", 0);
-		keySetMeta (newKey, "ini/key/number", 0);
+		keySetMeta (newKey, "internal/ini/key/last", 0);
+		keySetMeta (newKey, "internal/ini/key/number", 0);
 	}
 	else if (keyIsDirectBelow (parentKey, newKey))
 	{
@@ -1006,15 +1021,14 @@ void arrayHandler (Key * parentKey, Key * newKey, Key * cur, Key * sectionKey, K
 void insertIntoKS (Key * parentKey, Key * cur, KeySet * newKS, IniPluginConfig * pluginConfig)
 {
 	Key * appendKey = keyDup (parentKey);
-	keyCopyAllMeta (appendKey, cur);
 	keySetString (appendKey, 0);
-	keySetMeta (appendKey, "order", 0);
-	keySetMeta (appendKey, "binary", 0);
+	keySetMeta (appendKey, "internal/ini/order", 0);
+	keySetMeta (appendKey, "internal/ini/section", 0);
 	Key * sectionKey = keyDup (appendKey);
 	Key * newKey = NULL;
 	keySetName (sectionKey, keyName (cur));
-	keySetBinary (sectionKey, 0, 0);
-	if (!keyIsBinary (cur))
+	keySetMeta (sectionKey, "internal/ini/section", "");
+	if (!keyGetMeta (cur, "internal/ini/section") && !keyIsBinary (cur))
 	{
 		keyAddName (sectionKey, "..");
 		if (keyIsDirectBelow (parentKey, cur))
@@ -1032,14 +1046,19 @@ void insertIntoKS (Key * parentKey, Key * cur, KeySet * newKS, IniPluginConfig *
 		}
 		newKey = keyDup (sectionKey);
 		keyAddBaseName (newKey, keyBaseName (cur));
-		keySetMeta (newKey, "binary", 0);
+		keySetMeta (newKey, "internal/ini/section", 0);
+		keyCopyAllMeta (newKey, cur);
 		keySetString (newKey, keyString (cur));
 	}
-	if (pluginConfig->sectionHandling == ALWAYS || keyIsBinary (cur))
+	else
+	{
+		keyCopyAllMeta (sectionKey, cur);
+	}
+	if (pluginConfig->sectionHandling == ALWAYS || keyGetMeta (cur, "internal/ini/section") || keyIsBinary (cur))
 	{
 		if (!ksLookup (newKS, sectionKey, KDB_O_NONE))
 		{
-			keySetBinary (sectionKey, 0, 0);
+			keySetMeta (sectionKey, "internal/ini/section", "");
 			ksAppendKey (newKS, sectionKey);
 			insertKeyIntoKeySet (parentKey, sectionKey, newKS);
 		}
@@ -1076,10 +1095,10 @@ static int iniCmpOrder (const void * a, const void * b)
 	if (ka && !kb) return 1;
 	if (!ka && kb) return -1;
 
-	const Key * kaom = keyGetMeta (ka, "order");
-	const Key * kbom = keyGetMeta (kb, "order");
-	const Key * kakm = keyGetMeta (ka, "ini/key/number");
-	const Key * kbkm = keyGetMeta (kb, "ini/key/number");
+	const Key * kaom = keyGetMeta (ka, "internal/ini/order");
+	const Key * kbom = keyGetMeta (kb, "internal/ini/order");
+	const Key * kakm = keyGetMeta (ka, "internal/ini/key/number");
+	const Key * kbkm = keyGetMeta (kb, "internal/ini/key/number");
 
 	int ret = keyGetNamespace (ka) - keyGetNamespace (kb);
 	if (!ret)
@@ -1100,6 +1119,7 @@ static int iniCmpOrder (const void * a, const void * b)
 	return ret;
 }
 
+// test if the keyname contains a reserved character and needs to be quoted
 static int keyContainsSpecialCharacter (const char * str)
 {
 	char * ptr = (char *)str;
@@ -1116,6 +1136,8 @@ static int keyContainsSpecialCharacter (const char * str)
 	}
 	return 0;
 }
+
+// test if the keyvalue contains a reserved character and needs to be quoted
 static int valueContainsSpecialCharacter (const char * str)
 {
 	char * ptr = (char *)str;
@@ -1132,39 +1154,18 @@ static int valueContainsSpecialCharacter (const char * str)
 	return 0;
 }
 
-static void iniWriteMeta (FILE * fh, Key * parentKey, Key * key, IniPluginConfig * config)
+static void iniWriteMeta (FILE * fh, Key * key)
 {
-	uint8_t first = 1;
 	keyRewindMeta (key);
 	while (keyNextMeta (key) != NULL)
 	{
 		Key * meta = (Key *)keyCurrentMeta (key);
 		const char * name = keyName (meta);
-		if (strncmp (name, "ini/", 4) && strcmp (name, "order") && strcmp (name, "parent") && strcmp (name, "binary"))
+		if (strncmp (name, "internal/", 9) && strcmp (name, "internal/ini/section") && strncmp (name, "comment", 7))
 		{
-			if (first)
-			{
-				char * iniName = getIniName (parentKey, key);
-				fprintf (fh, "[%s]\n", iniName);
-				elektraFree (iniName);
-				first = 0;
-			}
+			if (!strcmp (name, "binary") && keyGetNamespace (key) != KEY_NS_SPEC) continue;
 			const char * string = keyString (meta);
-			if (strstr (string, "\n") == 0)
-			{
-				if (keyContainsSpecialCharacter (name))
-					fprintf (fh, "\"%s\" = ", name);
-				else
-					fprintf (fh, "%s %c ", name, config->delim);
-				if (strlen (string) && (valueContainsSpecialCharacter (string)))
-					fprintf (fh, "\"%s\"\n", string);
-				else if (strlen (string))
-					fprintf (fh, "%s\n", string);
-			}
-			else
-			{
-				writeMultilineKey (meta, name, fh, config);
-			}
+			fprintf (fh, "#@META %s = %s\n", name, string);
 		}
 	}
 }
@@ -1183,33 +1184,6 @@ static int iniWriteKeySet (FILE * fh, Key * parentKey, KeySet * returned, IniPlu
 	Key * sectionKey = parentKey;
 	int ret = 1;
 	const char delim = config->delim;
-	if (config->toMeta)
-	{
-		for (ssize_t i = 0; i < arraySize; ++i)
-		{
-			cur = keyArray[i];
-			if (!strcmp (keyName (parentKey), keyName (cur))) continue;
-			if (keyGetValueSize (cur) <= 1) continue;
-			char * name = getIniName (parentKey, cur);
-			const char * string = keyString (cur);
-			if (strstr (string, "\n") == 0)
-			{
-				if (keyContainsSpecialCharacter (name))
-					fprintf (fh, "\"%s\" %c ", name, delim);
-				else
-					fprintf (fh, "%s %c ", name, delim);
-				if (strlen (string) && (valueContainsSpecialCharacter (string)))
-					fprintf (fh, "\"%s\"\n", string);
-				else if (strlen (string))
-					fprintf (fh, "%s\n", string);
-			}
-			else
-			{
-				writeMultilineKey (cur, name, fh, config);
-			}
-			elektraFree (name);
-		}
-	}
 
 	int removeSectionKey = 0;
 
@@ -1239,15 +1213,11 @@ static int iniWriteKeySet (FILE * fh, Key * parentKey, KeySet * returned, IniPlu
 			sectionKey = cur;
 		}
 		writeComments (cur, fh, config->commentChar);
-		if (config->toMeta)
-		{
-			iniWriteMeta (fh, parentKey, cur, config);
-			continue;
-		}
-		else if (config->sectionHandling == NONE)
+		iniWriteMeta (fh, cur);
+		if (config->sectionHandling == NONE)
 		{
 			char * name = getIniName (parentKey, cur);
-			if (!keyIsBinary (cur))
+			if (!keyGetMeta (cur, "internal/ini/section"))
 			{
 				const char * string = keyString (cur);
 				if (keyContainsSpecialCharacter (name))
@@ -1277,12 +1247,12 @@ static int iniWriteKeySet (FILE * fh, Key * parentKey, KeySet * returned, IniPlu
 					fprintf (fh, "[]\n");
 				}
 			}
-			else if (!keyIsBinary (cur))
+			else if (!keyGetMeta (cur, "internal/ini/section"))
 			{
 				if (config->sectionHandling != NONE)
 				{
 					// handle possible section conflicts
-					const Key * parentMeta = keyGetMeta (cur, "parent");
+					const Key * parentMeta = keyGetMeta (cur, "internal/ini/parent");
 					if (parentMeta && !keyIsBelow (sectionKey, cur))
 					{
 						Key * oldSectionKey = sectionKey;
@@ -1328,9 +1298,9 @@ static int iniWriteKeySet (FILE * fh, Key * parentKey, KeySet * returned, IniPlu
 						}
 					}
 				}
-				if (keyGetMeta (cur, "ini/array") && config->array)
+				if (keyGetMeta (cur, "internal/ini/array") && config->array)
 				{
-					int lastArrayIndex = atoi (keyString (keyGetMeta (cur, "ini/array")) + 1);
+					int lastArrayIndex = atoi (keyString (keyGetMeta (cur, "internal/ini/array")) + 1);
 					keySetBaseName (cur, 0);
 
 					char * name = getIniName (sectionKey, cur);
@@ -1379,7 +1349,7 @@ static int iniWriteKeySet (FILE * fh, Key * parentKey, KeySet * returned, IniPlu
 						name = getIniName (parentKey, cur);
 					}
 
-					if (keyGetMeta (cur, "ini/empty"))
+					if (keyGetMeta (cur, "internal/ini/empty"))
 					{
 						if (keyContainsSpecialCharacter (name))
 							fprintf (fh, "\"%s\"\n", name);
@@ -1456,7 +1426,7 @@ static void stripInternalData (Key * parentKey ELEKTRA_UNUSED, KeySet * ks)
 			strcat (newName, "/");
 			keySetName (newKey, newName);
 			char * parent = findParent (parentKey, newKey, ksDup (newKS));
-			keySetMeta (newKey, "parent", parent);
+			keySetMeta (newKey, "internal/ini/parent", parent);
 			elektraFree (parent);
 			if (strcmp (keyName (parentKey), keyName (newKey))) ksAppendKey (newKS, keyDup (newKey));
 			keyDel (newKey);
@@ -1489,7 +1459,7 @@ static void removeLeftoverSections (KeySet * ks, KeySet * oldKS, Key * parentKey
 	ksRewind (removedKeys);
 	while ((cur = ksPop (removedKeys)) != NULL)
 	{
-		const Key * parentMeta = keyGetMeta (cur, "parent");
+		const Key * parentMeta = keyGetMeta (cur, "internal/ini/parent");
 		if (parentMeta && strcmp (keyName (parentKey), keyString (parentMeta)))
 		{
 			Key * sectionKey = ksLookupByName (ks, keyString (parentMeta), KDB_O_NONE);
@@ -1501,7 +1471,7 @@ static void removeLeftoverSections (KeySet * ks, KeySet * oldKS, Key * parentKey
 				ksRewind (cutKS);
 				while (((k = ksNext (cutKS)) != NULL) && empty)
 				{
-					const Key * meta = keyGetMeta (k, "parent");
+					const Key * meta = keyGetMeta (k, "internal/ini/parent");
 					if (meta && !strcmp (keyString (meta), keyName (sectionKey)))
 					{
 						empty = 0;
@@ -1536,16 +1506,16 @@ int elektraIniSet (Plugin * handle, KeySet * returned, Key * parentKey)
 	Key * root = keyDup (ksLookup (returned, parentKey, KDB_O_NONE));
 	Key * head = keyDup (ksHead (returned));
 	IniPluginConfig * pluginConfig = elektraPluginGetData (handle);
-	if (pluginConfig->lastOrder && !keyGetMeta (parentKey, "order"))
-		keySetMeta (parentKey, "order", pluginConfig->lastOrder);
+	if (pluginConfig->lastOrder && !keyGetMeta (parentKey, "internal/ini/order"))
+		keySetMeta (parentKey, "internal/ini/order", pluginConfig->lastOrder);
 	else
-		keySetMeta (parentKey, "order", "#1");
+		keySetMeta (parentKey, "internal/ini/order", "#1");
 	Key * cur;
 	KeySet * newKS = ksNew (0, KS_END);
 	ksRewind (returned);
 	while ((cur = ksNext (returned)) != NULL)
 	{
-		if (keyGetMeta (cur, "order"))
+		if (keyGetMeta (cur, "internal/ini/order"))
 		{
 			ksAppendKey (newKS, cur);
 			keyDel (ksLookup (returned, cur, KDB_O_POP));
@@ -1572,7 +1542,18 @@ int elektraIniSet (Plugin * handle, KeySet * returned, Key * parentKey)
 	if (keyNeedSync (parentKey) && root)
 	{
 		if (strncmp (keyString (parentKey), keyString (root), strlen (keyString (root))))
-			if (keyString (root) && strlen (keyString (root))) fprintf (fh, "= %s\n", keyString (root));
+		{
+			if (keyString (root) && strlen (keyString (root)))
+			{
+				iniWriteMeta (fh, root);
+				fprintf (fh, "= %s\n", keyString (root));
+			}
+		}
+		else
+		{
+			iniWriteMeta (fh, root);
+			fprintf (fh, "[]\n");
+		}
 	}
 	keyDel (root);
 	keyDel (head);
@@ -1590,7 +1571,7 @@ int elektraIniSet (Plugin * handle, KeySet * returned, Key * parentKey)
 	fclose (fh);
 	errno = errnosave;
 	if (pluginConfig->lastOrder) elektraFree (pluginConfig->lastOrder);
-	pluginConfig->lastOrder = strdup (keyString (keyGetMeta (parentKey, "order")));
+	pluginConfig->lastOrder = strdup (keyString (keyGetMeta (parentKey, "internal/ini/order")));
 	elektraPluginSetData (handle, pluginConfig);
 
 
@@ -1600,10 +1581,10 @@ int elektraIniSet (Plugin * handle, KeySet * returned, Key * parentKey)
 Plugin * ELEKTRA_PLUGIN_EXPORT (ini)
 {
 	// clang-format off
-	return elektraPluginExport ("ini",
-			ELEKTRA_PLUGIN_OPEN, &elektraIniOpen,
-			ELEKTRA_PLUGIN_CLOSE, &elektraIniClose,
-			ELEKTRA_PLUGIN_GET, &elektraIniGet,
-			ELEKTRA_PLUGIN_SET, &elektraIniSet, 
-			ELEKTRA_PLUGIN_END);
+    return elektraPluginExport ("ini",
+	    ELEKTRA_PLUGIN_OPEN, &elektraIniOpen,
+	    ELEKTRA_PLUGIN_CLOSE, &elektraIniClose,
+	    ELEKTRA_PLUGIN_GET, &elektraIniGet,
+	    ELEKTRA_PLUGIN_SET, &elektraIniSet, 
+	    ELEKTRA_PLUGIN_END);
 }
