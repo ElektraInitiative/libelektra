@@ -68,12 +68,12 @@ int main (int argc, char ** argv)
 	testFmt ("20:15:00", "%I:%M:%S", -1);
 	testFmt ("Sat 17 Dec 2016 08:07:43 PM CET", "%a %d %b %Y %r %Z", 1);
 
-	testIso ("2016-12-12T23:59:01Z", "<calendardate>T<time><tz>", 1);
-	testIso ("2016-12-12T23:59:01Z", "<calendardate>T<time>", -1);
-	testIso ("2016-12-12T23:59:01Z", "<weekdate>T<time><tz>", -1);
+	testIso ("2016-12-12T23:59:01Z", "<datetimecomplete>", 1);
+	testIso ("2016-12-12T23:59:01Z", "<datetimeother>", -1);
+	testIso ("2016-12-12T23:59:01Z", "<datetimeother>", -1);
 	testIso ("2016-W23", "<weekdate>", 1);
-	testIso ("22:30+04", "<time><tz>", 1);
-	testIso ("22:30-04", "<time><tz>", 1);
+	testIso ("22:30+04", "<utc>", 1);
+	testIso ("22:30-04", "<utc>", 1);
 
 	testRfc2822 ("Sat, 01 Mar 2016 23:59:01 +0400", 1);
 	testRfc2822 ("01 Mar 2016 23:59:01 -0400", 1);
