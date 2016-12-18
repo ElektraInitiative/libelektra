@@ -66,7 +66,7 @@ else()
 	)
 
 
-	# CMAKE_INSTALL_PREFIX dependant install location
+	# CMAKE_INSTALL_PREFIX dependent install location
 	# if we hit one of the usual cases (/usr/local or /usr) install the lib
 	# in Ruby default include path
 	if (${CMAKE_INSTALL_PREFIX} MATCHES "^/usr/local/?$")

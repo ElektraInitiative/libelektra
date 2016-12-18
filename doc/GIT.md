@@ -20,7 +20,7 @@ A commit message should have the following syntax:
 `component: short change description`
 
 For a clean and meaningful log the commit
-message should fullfil the following:
+message should fulfil the following:
 
 - use imperative in the subject line
 - the subject line should not be longer than 50 characters

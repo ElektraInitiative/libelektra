@@ -144,7 +144,7 @@ UNRELEASED -> unstable
 
 Fix debian/ + document in NEWS what maintainer need to consider, then build the package:
  cp ~elektra-ftp/releases/elektra-$VERSION.tar.gz ~elektra/elektra_$VERSION.orig.tar.gz
- gpg -u0B2F0DDC --sign `mktemp` # so that the step afterwards wont abort
+ gpg -u0B2F0DDC --sign `mktemp` # so that the step afterwards won't abort
  git-buildpackage -rfakeroot -k0B2F0DDC -sa
 
 Now move and install:

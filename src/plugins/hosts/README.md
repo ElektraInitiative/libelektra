@@ -58,7 +58,7 @@ Check if a comment is belonging to host "localhost":
 
     $ kdb lsmeta system/hosts/ipv4/localhost
 
-Try to change the host "localhost", should fail because it is not an ipv4 adress:
+Try to change the host "localhost", should fail because it is not an ipv4 address:
 
     $ kdb set system/hosts/ipv4/localhost ::1
 

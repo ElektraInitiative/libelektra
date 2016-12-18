@@ -272,7 +272,7 @@ int elektraCryptoBotanDecrypt (KeySet * pluginConfig, Key * k, Key * errorKey)
 		Pipe decryptor (get_cipher (ELEKTRA_CRYPTO_BOTAN_ALGORITHM, *cryptoKey, *cryptoIv, DECRYPTION));
 		kdb_octet_t flags = ELEKTRA_CRYPTO_FLAG_NONE;
 
-		// decrypt the conent
+		// decrypt the content
 		decryptor.process_msg (payload, payloadLen);
 
 		if (decryptor.remaining () > 0)

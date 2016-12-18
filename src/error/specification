@@ -889,7 +889,7 @@ module:gitresolver
 macro:GITRESOLVER_RESOLVING_ISSUE
 
 number:148
-description:a conflict occured. There are new commits in the repository.
+description:a conflict occurred. There are new commits in the repository.
 severity:error
 ingroup:plugin
 module:gitresolver

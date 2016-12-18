@@ -590,7 +590,7 @@ This operation can only be executed by the owner of an entry as well as moderato
 
         + tags: `tomcat`, `tomcat9` (array[string], optional)
 
-            A list of tags that shall be added to the entry. Tags may be used for search, so they ideally add additional information that is not already available by the other inputs. The existing tag list will be overriden by the new list, i.e. previously used, but now missing tags will be removed.
+            A list of tags that shall be added to the entry. Tags may be used for search, so they ideally add additional information that is not already available by the other inputs. The existing tag list will be overridden by the new list, i.e. previously used, but now missing tags will be removed.
 
             Regex: ^[a-z0-9\-\.]{3,20}$
 
@@ -822,6 +822,6 @@ Returns a list of supported configuration formats. In general this is a list of 
 ## Conversion Format (object)
 
 + format: `ini` (string) - The configuration format/language (e.g. ini, xml, csv, ...)
-+ plugin (object) - Informations about the plugin that this format represents
++ plugin (object) - Information about the plugin that this format represents
     + name: `simpleini` (string) - The name of the plugin that offers the format (e.g. simpleini, xmltool, csvstorage, ...)
     + statuses (array[string]) - A list of statuses that this plugin has

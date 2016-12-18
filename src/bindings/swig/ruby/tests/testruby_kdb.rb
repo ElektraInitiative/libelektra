@@ -111,7 +111,7 @@ class KdbTestCases < Test::Unit::TestCase
       assert_equal 1, ret
       assert ks.size > 0
 
-      # close has to be called explicitely
+      # close has to be called explicitly
       db.close
     end
   end

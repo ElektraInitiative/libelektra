@@ -917,7 +917,7 @@ Other improvements:
 - Install `elektra-qt-editor` binary so both the desktop files TryExec works
   and people not starting the gui trough `kdb qt-gui` have a speaking name
   in their process list.
-- Replace occurences of `Elektra Editor` with `Elektra Qt Editor` so that
+- Replace occurrences of `Elektra Editor` with `Elektra Qt Editor` so that
   we use the same name in all places apart from the tools binary.
 - Introduce Appearance Settings Window: Appearance Settings Window
   contains both color settings as well as a switch to disable or enable
@@ -1015,7 +1015,7 @@ and will no longer provide `cmake/ELEKTRA_DEBUG_BUILD` `cmake/ELEKTRA_VERBOSE_BU
   the flags,
   thanks to Marvin Mall
 - symbols in Ni_ namespace are now in elektraNi_
-- add more ipv4 and ipv6 test cases for IP adress validation
+- add more ipv4 and ipv6 test cases for IP address validation
   checker
 - crypto-plugin avoid usage of hardcoded error numbers,
   thanks to Peter Nirschl
@@ -1029,7 +1029,7 @@ and will no longer provide `cmake/ELEKTRA_DEBUG_BUILD` `cmake/ELEKTRA_VERBOSE_BU
 - doxygen is only run once during build,
   thanks to René Schwaiger
 - add script configure-home to build Elektra
-  that it will resolve all pathes to home-directories
+  that it will resolve all paths to home-directories
 - add script metaini-to-c that converts METADATA.ini
   to C-code, thanks to Thomas Waser
 - add note that default values must be present for
@@ -3014,8 +3014,8 @@ repositories! Nearly every application can benefit from such a per-dir
 configuration. Its almost certain that you have already run into the
 problem that different projects have different guidelines
 (e.g. coding conventions, languages, whitespace requirements, line breaks, ..).
-Obviously, thats not a per-user configuration and
-its also not a per-file issue (thats how its usually solved today).
+Obviously, that's not a per-user configuration and
+its also not a per-file issue (that's how its usually solved today).
 So in fact you want, e.g., your editor to have an additional per-project layer
 to choose between such settings.
 
@@ -3150,7 +3150,7 @@ Note that there are still [some bugs](http://git.libelektra.org/issues).
 - improve readability of warning output
 - run_all always uses dump for backups
 - line plugin roundtrips correctly
-- untypical resolvers have their non-existant filename handled correctly + sync ignored them correctly
+- untypical resolvers have their non-existent filename handled correctly + sync ignored them correctly
 - cmake-3.0 fixes
 - cascading merging, a big thanks to Felix Berlakovich for the last minute fix
 
@@ -3864,7 +3864,7 @@ have nothing to do):
 
     kdb mount /etc/hosts system/hosts hosts
 
-The hosts plugin now seperates from ipv4 and ipv6 which makes the host
+The hosts plugin now separates from ipv4 and ipv6 which makes the host
 names canonical again, e.g.:
 
     kdb get system/hosts/ipv4/localhost
@@ -4121,7 +4121,7 @@ how comments can be improved.
 - reuse of utilities in gen code generator
 - the gen support library is now in its own package (`support`)
 - refactor array handling
-- internal comparision functions (keyCompareByName)
+- internal comparison functions (keyCompareByName)
 
 ### Optimization:
 
@@ -4179,7 +4179,7 @@ Markus
 
 In this release we changed 578 files in 473 commits
 (68596 insertions(+), 59260 deletions(-) compared to Elektra 0.8.7).
-We assume thats the largest change set for any of Elektra's releases
+We assume that's the largest change set for any of Elektra's releases
 up to now. It happened only within a bit more than a month up
 (0.8.7 was released 28.07.2014).
 
@@ -4199,7 +4199,7 @@ A plugin writer tutorial was written (thanks Ian):
 https://github.com/ElektraInitiative/libelektra/blob/master/doc/tutorials/plugins.md
 The documentation was completely reworked:
 http://doc.libelektra.org/api/0.8.7/html/group__plugin.html
-And two new macros allow printf formating for warnings and errors
+And two new macros allow printf formatting for warnings and errors
 (ELEKTRA_ADD_WARNINGF and ELEKTRA_SET_ERRORF).
 
 The ini plugin was greatly improved (tested with samba configurations

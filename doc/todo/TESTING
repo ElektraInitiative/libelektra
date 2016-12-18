@@ -66,7 +66,7 @@ trailingslashes in TMPDIR?
 - using kdb mount spec
 
 
-== ABI compatability tests ==
+== ABI compatibility tests ==
 
 need defined set of tests which only use tests.h (and not internal,..)
 deploy them correctly and run old tests with new elektra
@@ -172,7 +172,7 @@ see if config file does proper roundtrips
 == scripts ==
 
 script testing:
-	should be runned by make test
+	should be ran by make test
 	should be available at tarket (be installed)
 	can be everything directly at the kdb commandline tool
 	should be able to run tests for all plugins +

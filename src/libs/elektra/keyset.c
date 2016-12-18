@@ -370,7 +370,7 @@ int ksDel (KeySet * ks)
  *
  * @param ks the keyset object to work with
  * @see ksAppendKey() for details on how keys are inserted in KeySets
- * @retval 0 on sucess
+ * @retval 0 on success
  * @retval -1 on failure (memory)
  */
 int ksClear (KeySet * ks)
@@ -484,7 +484,7 @@ static int keyCompareByNameCase (const void * p1, const void * p2)
 /**
  * @brief Compare only the owner of two keys (not the name)
  *
- * @return comparision result
+ * @return comparison result
  */
 static int keyCompareByOwner (const void * p1, const void * p2)
 {
@@ -564,7 +564,7 @@ static int keyCompareByNameOwnerCase (const void * p1, const void * p2)
  * @note the owner will only be used if the names are equal.
  *
  * Often is enough to know if the other key is
- * less then or greater then the other one.
+ * less then or greater than the other one.
  * But Sometimes you need more precise information,
  * see keyRel().
  *

@@ -12,8 +12,8 @@ Where `path` is the full path to the key and `default-value` is the value that s
 This command is used to retrieve the value of a key from within a script.
 When using the kdb tool in a script, the user should use the `sget` command in place of the kdb-get(1) command.
 The kdb-get(1) command should not be used in scripts because it may return an error instead of printing a value in certain circumstances.
-The `sget` command guarantees that a value will be printed (unless the user passes faulty arugments).
-This command will either print the value of the key it retrives or a default value that the user specifies.
+The `sget` command guarantees that a value will be printed (unless the user passes faulty arguments).
+This command will either print the value of the key it retrieves or a default value that the user specifies.
 
 ## OPTIONS
 
