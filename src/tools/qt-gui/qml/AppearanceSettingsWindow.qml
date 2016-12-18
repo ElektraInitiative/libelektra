@@ -47,7 +47,7 @@ BasicWindow {
 				}
 
 				Label {
-					width: longestText.widht
+					width: longestText.width
 					text: qsTr("Frame Color")
 				}
 				Rectangle {
@@ -64,7 +64,7 @@ BasicWindow {
 					}
 				}
 				Label {
-					width: longestText.widht
+					width: longestText.width
 					text: qsTr("Node with Key Color")
 				}
 				Rectangle {
@@ -128,7 +128,7 @@ BasicWindow {
 				rowSpacing: parent.parent.parent.height / 16
 				columnSpacing: parent.parent.parent.width / 16
 				Label {
-					width: longestText.widht
+					width: longestText.width
 					text: qsTr("Use system icon theme")
 				}
 				Switch {
