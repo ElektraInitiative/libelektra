@@ -9,29 +9,42 @@
 - infos/metadata =
 - infos/description = one-line description of date
 
-## Introduction ##
+## Validation options ##
 
-Copy this date if you want to start a new
-plugin written in C.
+### Format string ###
 
-## Usage ##
+`check/date/format`
+	a format string compatible to `STRPTIME(3)`,
 
-You can use `scripts/copy-date`
-to automatically rename everything to your
-plugin name:
+the date plugin tries to parse the date/time value base on the format string
 
-	cd src/plugins
-	../../scripts/copy-date yourplugin
+### ISO8601 ###
 
-Then update the README.md of your newly created plugin:
+`check/date/iso8601`
+	a combination of the basic formats specified in iso8601 (see [wikipedia.org/ISO8601](https://en.wikipedia.org/wiki/ISO_8601) )
+	
+can be either `<data>`, `<time>[<tz>]` or `<date>T<time>[<tz>]`
 
-- enter your name+email in `infos/author`
-- make sure `status` and other clauses conform to
-  descriptions in `doc/CONTRACT.ini`
-- update the one-line description above
-- add your plugin in `src/plugins/README.md`
-- and rewrite the rest of this `README.md` to give a great
-  explanation of what your plugin does
+where `<date>` can be
+
+	`<calendardate>`: Calendar representation of the date
+
+	`<weekdate>`: Week date representation
+
+	`<ordinaldate>`: Ordinal date 
+
+	`<date>`: any of the 3 date formats
+
+
+`<time>` the 24-hour representation of the time
+
+and `<tz>` the timezone designator
+
+### RFC2822 ###
+
+`check/date/rfc2822`
+	a set of possible format strings derived from rfc2822 3.3
+	
 
 ## Dependencies ##
 
