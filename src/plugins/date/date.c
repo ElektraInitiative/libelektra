@@ -69,7 +69,7 @@ static int stricmp (const char * s1, const char * s2)
 	}
 }
 
-static int isoStringValidation (const char * date, const char * isoString)
+static int doIsoStringValidation (const char * date, const char * isoString)
 {
 	int hasDate = 0;
 	int hasT = 0;
@@ -88,7 +88,7 @@ static int isoStringValidation (const char * date, const char * isoString)
 	if (hasDate)
 	{
 		const char ** fmtStrings;
-		char * localCopy = strdup (isoString);
+		char * localCopy = elektraStrDup (isoString);
 		char * tPtr = strchr (localCopy, 'T');
 		if (tPtr) *tPtr = '\0';
 		if (!stricmp (localCopy, "<date>"))
@@ -195,8 +195,20 @@ static int isoStringValidation (const char * date, const char * isoString)
 	return -1;
 }
 
+static int isoStringValidation (const char * date, const char * fmt)
+{
+	if (fmt) return doIsoStringValidation (date, fmt);
+	for (int i = 0; iso8601strings[i] != NULL; ++i)
+	{
+		int rc = doIsoStringValidation (date, iso8601strings[i]);
+		if (rc == 1) return 1;
+	}
+	return -1;
+}
+
 static int formatStringValidation (const char * date, const char * fmt)
 {
+	if (!fmt) return 0;
 	struct tm tm;
 	char * ptr = strptime (date, fmt, &tm);
 	if (!ptr)
@@ -210,9 +222,9 @@ static int formatStringValidation (const char * date, const char * fmt)
 static int rfc2822StringValidation (const char * date)
 {
 	struct tm tm;
-	for (int i = 0; rfc2822Strings[i] != NULL; ++i)
+	for (int i = 0; rfc2822strings[i] != NULL; ++i)
 	{
-		char * ptr = strptime (date, rfc2822Strings[i], &tm);
+		char * ptr = strptime (date, rfc2822strings[i], &tm);
 		if (ptr)
 		{
 			if (*ptr == '\0')
@@ -226,50 +238,42 @@ static int rfc2822StringValidation (const char * date)
 
 static int validateDate (Key * key, Key * parentKey)
 {
+	const Key * standard = keyGetMeta (key, "check/date");
 	const Key * formatStringMeta = keyGetMeta (key, "check/date/format");
-	const Key * isoMeta = keyGetMeta (key, "check/date/iso8601");
-	const Key * rfc2822Meta = keyGetMeta (key, "check/date/rfc2822");
 	const char * date = keyString (key);
 	int rc = 0;
-	if (formatStringMeta)
+	const char * stdString = keyString (standard);
+	const char * formatString = formatStringMeta ? keyString (formatStringMeta) : NULL;
+	if (!stricmp (stdString, "POSIX"))
 	{
-		const char * formatString = keyString (formatStringMeta);
 		rc = formatStringValidation (date, formatString);
 		if (rc == -1)
 		{
 			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_D_T_FMT, parentKey, "%s doesn't match format string %s", date, formatString);
 		}
 	}
-	else if (isoMeta)
+	else if (!stricmp (stdString, "ISO8601"))
 	{
-		rc = isoStringValidation (date, keyString (isoMeta));
+		rc = isoStringValidation (date, formatString);
 		if (rc == -1)
 		{
-			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_D_T_FMT, parentKey, "%s doesn't match iso specification %s", date,
-					    keyString (isoMeta));
+			if (formatString)
+				ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_D_T_FMT, parentKey, "%s doesn't match iso specification %s", date,
+						    formatString);
+			else
+				ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_D_T_FMT, parentKey, "%s is not a valid ISO8601 date", date);
 		}
 		else if (rc == 0)
 		{
-			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_D_T_FMT, parentKey, "syntax error in %s", keyString (isoMeta));
+			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_D_T_FMT, parentKey, "syntax error in ISO8601 format string \'%s\'", formatString);
 		}
 	}
-	else if (rfc2822Meta)
+	else if (!stricmp (stdString, "RFC2822"))
 	{
 		rc = rfc2822StringValidation (date);
 		if (rc == -1)
 		{
 			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_D_T_FMT, parentKey, "%s doesn't match rfc2822 specification", date);
-		}
-	}
-	else
-	{
-		setlocale (LC_TIME, "");
-		const char * formatString = nl_langinfo (D_T_FMT);
-		rc = formatStringValidation (date, formatString);
-		if (rc == -1)
-		{
-			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_D_T_FMT, parentKey, "%s doesn't match environment format string %s", date,
-					    formatString);
 		}
 	}
 
