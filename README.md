@@ -185,7 +185,7 @@ And in terms of quality, we want:
  - [04 Nov 2014 0.8.9](http://doc.libelektra.org/news/38640673-3e07-4cff-9647-f6bdd89b1b08.html) adds qt-gui
  - [02 Sep 2014 0.8.8](http://doc.libelektra.org/news/eca69e19-5ddb-438c-ac06-57c20b1a9160.html) adds 3-way merging
 
-Also see [News](doc/NEWS.md) and its [RSS feed](http://www.libelektra.org/news/feed.rss).
+Also see [News](doc/news/) and its [RSS feed](http://www.libelektra.org/news/feed.rss).
 
 
 ## Sources ##

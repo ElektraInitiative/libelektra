@@ -125,7 +125,14 @@ if (INSTALL_DOCUMENTATION)
 	#DESIGN.md
 	#GIT.md
 	#INSTALL.md
-	install (FILES NEWS.md DESTINATION ${TARGET_DOCUMENTATION_TEXT_FOLDER})
+	set (news ${CMAKE_CURRENT_BINARY_DIR}/NEWS.md)
+	file(GLOB files "news/*.md")
+	file (REMOVE ${news})
+	foreach (file ${files})
+		file (READ ${file} content)
+		file (APPEND ${news} "\n\n\n\n\n${content}")
+	endforeach ()
+	install (FILES ${news} DESTINATION ${TARGET_DOCUMENTATION_TEXT_FOLDER})
 	install (FILES WHY.md DESTINATION ${TARGET_DOCUMENTATION_TEXT_FOLDER})
 
 endif ()
