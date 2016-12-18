@@ -37,8 +37,8 @@ typedef struct
 	unsigned char lastHash[MD5_DIGEST_LENGTH];
 	const char * getUrl;
 	const char * uploadUrl;
-	const char * uploadUser;
-	const char * uploadPass;
+	const char * user;
+	const char * password;
 	const char * postFieldName;
 	UploadMethods uploadMethod;
 	unsigned short preferRemote;
@@ -109,12 +109,12 @@ int elektraCurlgetOpen (Plugin * handle, Key * errorKey ELEKTRA_UNUSED)
 	key = ksLookupByName (config, "/upload/user", KDB_O_NONE);
 	if (key)
 	{
-		data->uploadUser = keyString (key);
+		data->user = keyString (key);
 	}
 	key = ksLookupByName (config, "/upload/password", KDB_O_NONE);
 	if (key)
 	{
-		data->uploadPass = keyString (key);
+		data->password = keyString (key);
 	}
 	key = ksLookupByName (config, "/upload/method", KDB_O_NONE);
 	if (key)
@@ -175,8 +175,16 @@ static FILE * fetchFile (Data * data, int fd)
 		curl_easy_cleanup (curl);
 		return NULL;
 	}
-
+	curl_easy_setopt (curl, CURLOPT_VERBOSE, 1L);
 	curl_easy_setopt (curl, CURLOPT_URL, data->getUrl);
+	if (data->user)
+	{
+		curl_easy_setopt (curl, CURLOPT_USERNAME, data->user);
+	}
+	if (data->user)
+	{
+		curl_easy_setopt (curl, CURLOPT_PASSWORD, data->password);
+	}
 	curl_easy_setopt (curl, CURLOPT_WRITEFUNCTION, NULL);
 	FILE * fp = fdopen (fd, "w+");
 	curl_easy_setopt (curl, CURLOPT_WRITEDATA, fp);
@@ -329,13 +337,13 @@ int elektraCurlgetSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA
 		if (curl)
 		{
 			curl_easy_setopt (curl, CURLOPT_URL, data->uploadUrl);
-			if (data->uploadUser)
+			if (data->user)
 			{
-				curl_easy_setopt (curl, CURLOPT_USERNAME, data->uploadUser);
+				curl_easy_setopt (curl, CURLOPT_USERNAME, data->user);
 			}
-			if (data->uploadUser)
+			if (data->user)
 			{
-				curl_easy_setopt (curl, CURLOPT_PASSWORD, data->uploadPass);
+				curl_easy_setopt (curl, CURLOPT_PASSWORD, data->password);
 			}
 			curl_easy_setopt (curl, CURLOPT_VERBOSE, 1L);
 			if (data->uploadMethod == POST)
