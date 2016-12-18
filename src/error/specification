@@ -998,3 +998,10 @@ severity:warning
 ingroup:plugin
 module:fcrypt
 macro:FCRYPT_FUTIMENS
+
+number:164
+description:Failed to upload config file.
+severity:error
+ingroup:plugin
+module:curlget
+macro:CURL_UPLOAD_FAILED
