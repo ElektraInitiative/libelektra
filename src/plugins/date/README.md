@@ -11,40 +11,51 @@
 
 ## Validation options ##
 
-### Format string ###
+The following representation standards of dates and times are currently supported and can be use by setting `check/date` to:
 
-`check/date/format`
-	a format string compatible to `STRPTIME(3)`,
+* `POSIX`
+ 
+   see `STRPTIME(3)` for more information. a valid format has to be specified in `check/date/format` 
 
-the date plugin tries to parse the date/time value base on the format string
+* `ISO8601`
+  
+   see [ISO8601](https://en.wikipedia.org/wiki/ISO_8601). possible format strings specified in `check/date/format`:
+ 
+ * Date:
+ 
+  * `<calendardate>`
+   
+   `YYYY-MM-DD`, `YYYYMMDD`, `YYYY-MM`, `--MM-DD`, `--MMDD`
+   
+  * `<weekdate>`
+   
+   `YYYY-Www`, `YYYYWww`, `YYYY-Www-D`, `YYYYWwwD`
+   
+   * `<ordinaldate>`
+   
+   `YYYY-DDD`, `YYYYDDD`
+   
+   * `<date>`
+   
+   `<calendardate>`, `<weekdate>`, `<ordinaldate>` 
+ 
+ * Time:
+  
+  * `<time>`
+  
+   `hh:mm:ss`, `hhmmss`, `hh:mm`, `hhmm`, `hh`
+  
+  * `<tz>`
+  
+   `<time>Z`, `<time>±hh:mm`, `<time>±hhmm`, `<time>±hh`
+ 
+ * Combined:
+ 
+   `<date>T<time>`
 
-### ISO8601 ###
-
-`check/date/iso8601`
-	a combination of the basic formats specified in iso8601 (see [wikipedia.org/ISO8601](https://en.wikipedia.org/wiki/ISO_8601) )
-	
-can be either `<data>`, `<time>[<tz>]` or `<date>T<time>[<tz>]`
-
-where `<date>` can be
-
-	`<calendardate>`: Calendar representation of the date
-
-	`<weekdate>`: Week date representation
-
-	`<ordinaldate>`: Ordinal date 
-
-	`<date>`: any of the 3 date formats
-
-
-`<time>` the 24-hour representation of the time
-
-and `<tz>` the timezone designator
-
-### RFC2822 ###
-
-`check/date/rfc2822`
-	a set of possible format strings derived from rfc2822 3.3
-	
+* `RFC2822`
+ 
+  a set of possible format strings derived from rfc2822 3.3, no format string needed.
 
 ## Dependencies ##
 
