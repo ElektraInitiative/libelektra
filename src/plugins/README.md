@@ -201,6 +201,7 @@ copied by another plugin just before):
 - [mathcheck](mathcheck/) by mathematical expressions using keysvalues as operands
 - [conditionals](conditionals/) by using if-then-else like statements
 - [required](required/) rejects non-required keys
+- [date](date/) validates date and time data
 
 **Other Validation**
 
