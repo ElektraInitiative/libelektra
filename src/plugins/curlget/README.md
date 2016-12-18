@@ -11,26 +11,11 @@
 
 ## Example ##
 
-    cat /tmp/curltest.ini
-    cat: /tmp/curltest.ini: No such file or directory
+### GET + POST ###
 
-    kdb mount -R noresolver /tmp/curltest.ini system/curltest ini curlget url="https://raw.githubusercontent.com/ElektraInitiative/libelektra/master/src/plugins/ini/ini/plainini"
+kdb mount -R curlget -c get="http://127.0.0.1:8000/curltest.ini",upload="http://127.0.0.1:8000",user="thomas",password="pass",upload/method="POST",upload/postfield="file" /tmp/curltest.ini system/curl ini 
 
-    kdb ls system/curltest
-    system/curltest/nosectionkey
-    system/curltest/section1
-    system/curltest/section1/key1
-    system/curltest/section1/key2
-    system/curltest/section2
-    system/curltest/section2/emptykey
-    system/curltest/section2/key3
+### FTP GET + PUT ###
 
-    cat /tmp/curltest.ini
-    nosectionkey = nosectionvalue
-    [section1]
-    key1 = value1
-    key2 = value2
-    [section2]
-    emptykey =
-    key3 = value3
+kdb mount -R curlget -c get="ftp://127.0.0.1:21/test.ini",upload="ftp://127.0.0.1:21/test.ini",user="thomas",password="pass",upload/method="FTP" /tmp/curltest.ini system/curl ini 
 
