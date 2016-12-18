@@ -9,7 +9,7 @@
 
 include (LibFindMacros)
 
-if (LIBAUGEAS_INCLUDE_DIR)
+if (LIBAUGEAS_INCLUDE_DIR AND LIBAUGEAS_LIBRARIES AND LIBAUGEAS_PREFIX)
   # in cache already
   set (LIBAUGEAS_FOUND TRUE)
 else (LIBAUGEAS_INCLUDE_DIR)
@@ -27,11 +27,11 @@ else (LIBAUGEAS_INCLUDE_DIR)
     /usr/local/include
   )
 
-  pkg_get_variable(_LIBAUGEAS_PREFIX augeas prefix)
+  pkg_get_variable (_LIBAUGEAS_PREFIX augeas prefix)
   if (NOT _LIBAUGEAS_PREFIX)
     set (_LIBAUGEAS_PREFIX "/usr")
   endif ()
-  set(LIBAUGEAS_PREFIX "${_LIBAUGEAS_PREFIX}" CACHE INTERNAL "prefix path of libaugeas" FORCE)
+  set (LIBAUGEAS_PREFIX "${_LIBAUGEAS_PREFIX}" CACHE INTERNAL "prefix path of libaugeas" FORCE)
 
   find_library (LIBAUGEAS_LIBRARIES NAMES augeas
     PATHS
@@ -54,4 +54,4 @@ else (LIBAUGEAS_INCLUDE_DIR)
 
   mark_as_advanced(LIBAUGEAS_INCLUDE_DIR LIBAUGEAS_LIBRARIES _LIBAUGEAS_PREFIX)
 
-endif (LIBAUGEAS_INCLUDE_DIR)
+endif ()
