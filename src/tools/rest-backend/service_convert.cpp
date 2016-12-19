@@ -222,12 +222,8 @@ model::ConfigFormat ConvertEngine::exportTo (const model::PluginFormat & plugin,
 	try
 	{
 		model::Entry valEntry (entry.getPublicName ());
-		std::string format = result.getPluginformat ().getPluginname ();
-		for (auto elem : result.getPluginformat ().getConfig ())
-		{
-			format.append (" " + elem.getBaseName () + "=" + elem.getString ());
-		}
-		model::ImportedConfig importCfg = this->import (result.getConfig (), format, valEntry);
+		model::ImportedConfig importCfg =
+			this->import (result.getConfig (), result.getPluginformat ().getPluginnameWithConfig (), valEntry);
 		// compare
 		if (importCfg.getKeySet ().size () != entry.getSubkeys ().size ())
 		{
