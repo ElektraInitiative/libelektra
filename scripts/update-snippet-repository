@@ -16,7 +16,22 @@ export_snippets() {
 push_changes_to_git() {
   git add $SNIPPET_EXPORT_FILENAME.*
 
-  git commit -m "auto-commit"
+  case "$ELEKTRA_REST_ACTION" in
+    "INSERT")
+      action=added
+      ;;
+    "UPDATE")
+      action=changed
+      ;;
+    "DELETE")
+      action=deleted
+      ;;
+    *)
+      action=changed
+      ;;
+  esac
+
+  git commit -m "auto-commit: $ELEKTRA_REST_AUTHOR $action entry $ELEKTRA_REST_KEY\n\nTitle: $ELEKTRA_REST_TITLE\nPlugin: $ELEKTRA_REST_PLUGIN"
   git push
 }
 

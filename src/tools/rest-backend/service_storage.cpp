@@ -7,6 +7,7 @@
  */
 
 #include <regex>
+#include <stdlib.h>
 
 #include <service.hpp>
 
@@ -65,6 +66,9 @@ bool StorageEngine::createEntry (model::Entry & entry)
 
 	ks.append (entry);
 	ks.append (entry.getSubkeys ());
+
+	// set some environment variables that may be used for hooks
+	this->setEnvVars (entry, "INSERT");
 
 	if (kdb.set (ks, entry.getName ()) >= 1)
 	{
@@ -126,6 +130,9 @@ bool StorageEngine::updateEntry (model::Entry & entry)
 	ks.append (entry);
 	ks.append (entry.getSubkeys ());
 
+	// set some environment variables that may be used for hooks
+	this->setEnvVars (entry, "UPDATE");
+
 	if (kdb.set (ks, entry.getName ()) >= 1)
 	{
 		entries.erase (entries.begin () + i);
@@ -184,6 +191,9 @@ bool StorageEngine::deleteEntry (model::Entry & entry)
 	}
 
 	ks.cut (entry);
+
+	// set some environment variables that may be used for hooks
+	this->setEnvVars (entry, "DELETE");
 
 	if (kdb.set (ks, entry.getName ()) >= 1)
 	{
@@ -632,6 +642,21 @@ void StorageEngine::loadAllUsers ()
 		}
 		elem++;
 	}
+}
+
+void StorageEngine::setEnvVars (const model::Entry & entry, const std::string action) const
+{
+	std::string env_key (ELEKTRA_REST_ENV_VAR_PREFIX "KEY");
+	std::string env_title (ELEKTRA_REST_ENV_VAR_PREFIX "TITLE");
+	std::string env_author (ELEKTRA_REST_ENV_VAR_PREFIX "AUTHOR");
+	std::string env_plugin (ELEKTRA_REST_ENV_VAR_PREFIX "PLUGIN");
+	std::string env_action (ELEKTRA_REST_ENV_VAR_PREFIX "ACTION");
+
+	setenv (env_key.c_str (), entry.getName ().c_str (), 1);
+	setenv (env_title.c_str (), entry.getTitle ().c_str (), 1);
+	setenv (env_author.c_str (), entry.getAuthor ().c_str (), 1);
+	setenv (env_plugin.c_str (), entry.getUploadPlugin ().c_str (), 1);
+	setenv (env_action.c_str (), action.c_str (), 1);
 }
 
 } // namespace service
