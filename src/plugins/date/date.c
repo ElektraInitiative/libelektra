@@ -21,6 +21,10 @@
 #include <time.h>
 
 
+//
+// use a ISO format string table to validate the key value
+//
+
 static int individualIsoStringValidation (const char * date, const RepStruct * formats)
 {
 	struct tm tm;
@@ -35,7 +39,11 @@ static int individualIsoStringValidation (const char * date, const RepStruct * f
 	return 0;
 }
 
-static ISOType isoStrToToken (const char * fmtString)
+//
+// tokenize ISO format string
+//
+
+static ISOType ISOStrToToken (const char * fmtString)
 {
 	if (!strcasecmp (fmtString, "<date>"))
 		return DATE;
@@ -58,6 +66,10 @@ static ISOType isoStrToToken (const char * fmtString)
 	else
 		return NA;
 }
+
+//
+// return table matching ISOType
+//
 
 static const RepStruct * typeToTable (ISOType type)
 {
@@ -84,13 +96,42 @@ static const RepStruct * typeToTable (ISOType type)
 	}
 }
 
+static int countLeadingHyphen (const char * date)
+{
+	char * ptr = (char *)date;
+	int count = 0;
+	while (*ptr && (*ptr != '%'))
+	{
+		if (*ptr == '-') ++count;
+		++ptr;
+	}
+	return count;
+}
+
+//
+// create basic and extended date and time combination and
+// try to validate the key value
+//
+
 static int combineAndValidateISO (const char * toValidate, const RepStruct * date, const RepStruct * time)
 {
 	ssize_t basicLen = strlen (date->basic) + strlen (time->basic) + 2;
 	ssize_t extendedLen = 0;
 	if (date->extended && time->extended) extendedLen = strlen (date->extended) + strlen (time->extended) + 2;
 	char * buffer = elektraCalloc (basicLen);
-	snprintf (buffer, basicLen, "%sT%s", date->basic, time->basic);
+
+	// ISO 8601 5.4.2 Representations other than complete, rule b.
+	// when truncation occures in the date component of a combined date and time
+	// expresssion, it is not necessary to replace the omitted higher order components
+	// with the hypen [-];
+
+	int toValidateHyphen = countLeadingHyphen (toValidate);
+	int toDropHyphen = 0;
+	if (toValidateHyphen == 0)
+	{
+		toDropHyphen = countLeadingHyphen (date->basic);
+	}
+	snprintf (buffer, basicLen, "%sT%s", (date->basic) + toDropHyphen, time->basic);
 	struct tm tm;
 	memset (&tm, 0, sizeof (struct tm));
 	char * ptr = strptime (toValidate, buffer, &tm);
@@ -98,12 +139,18 @@ static int combineAndValidateISO (const char * toValidate, const RepStruct * dat
 	if (ptr && !(*ptr)) return 1;
 	if (!extendedLen) return -1;
 	buffer = elektraMalloc (extendedLen);
-	snprintf (buffer, extendedLen, "%sT%s", date->extended, time->extended);
+	toDropHyphen = countLeadingHyphen (date->extended);
+	snprintf (buffer, extendedLen, "%sT%s", (date->extended) + toDropHyphen, time->extended);
 	ptr = strptime (toValidate, buffer, &tm);
 	elektraFree (buffer);
 	if (ptr && !(*ptr)) return 1;
 	return -1;
 }
+
+//
+// loop through iso8601 table containing rules on valid combinations
+// and pass them to combineAndValidateISO
+//
 
 static int combinedIsoStringValidation (const char * toValidate, ISOType type)
 {
@@ -146,7 +193,7 @@ static int isoStringValidation (const char * date, const char * fmt)
 	ISOType isoToken = NA;
 	if (fmt)
 	{
-		isoToken = isoStrToToken (fmt);
+		isoToken = ISOStrToToken (fmt);
 		if (isoToken == NA) return 0;
 		int rc = -1;
 		switch (isoToken)
@@ -200,6 +247,10 @@ static int isoStringValidation (const char * date, const char * fmt)
 }
 
 
+//
+// validate key value using POSIX (strptime) format string
+//
+
 static int formatStringValidation (const char * date, const char * fmt)
 {
 	if (!fmt) return 0;
@@ -213,6 +264,11 @@ static int formatStringValidation (const char * date, const char * fmt)
 	else
 		return -1;
 }
+
+//
+// validate key value using supplied RFC2822 format string
+// or all possible format strings derived from the specification
+//
 
 static int rfc2822StringValidation (const char * date, const char * fmt)
 {
