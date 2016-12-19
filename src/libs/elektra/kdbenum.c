@@ -6,7 +6,7 @@
  * They are duplicated here to document them.
  *
  *
- * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
  */
 
 // clang-format off
@@ -21,6 +21,7 @@ enum keyswitch_t
 {
 	KEY_NAME=1,		/*!< Flag for the key name */
 	KEY_VALUE=1<<1,		/*!< Flag for the key data */
+	KEY_FLAGS=3,		/*!< Allows to define multiple flags at once. */
 	KEY_OWNER=1<<2,		/*!< Flag for the key user domain */
 	KEY_COMMENT=1<<3,	/*!< Flag for the key comment */
 	KEY_BINARY=1<<4,	/*!< Flag if the key is binary */
@@ -32,7 +33,10 @@ enum keyswitch_t
 	KEY_CTIME=1<<10,	/*!< Flag for the key status change time @deprecated do not use  */
 	KEY_SIZE=1<<11,		/*!< Flag for maximum size to limit value */
 	KEY_DIR=1<<14,		/*!< Flag for the key directories @deprecated do not use */
-	KEY_META=1<<15,		/*!< Flag for metadata*/
+	KEY_META=1<<15,		/*!< Flag for metadata */
+	KEY_NULL=1<<16,		/*!< Is *not* a flag, only as return value @deprecated do not use */
+	KEY_CASCADING_NAME=1<<20,	/*!< Is default, no need to use it @deprecated do not use */
+	KEY_META_NAME=1<<21,	/*!< Allow any key names (not only with known namespaces+cascading */
 	KEY_END=0		/*!< Used as a parameter terminator to keyNew() */
 };
 

@@ -11,57 +11,41 @@ for other activities of the current release.
 
 
 
-# 0.8.19
-
-import/editor validate strategy
-
-improvements in tutorials!
-
-use shell recorder for README.md
-	make examples more consistent
-
-fix ENABLE_DEBUG
-
-
-## docu
-
-add traceability
-
-make elektra-hierarchy reality:
-	generate errors for spec/elektra/error
-	install and mount-script for ini files in spec/elektra/metadata spec/elektra/modules
-
-install METADATA.ini and CONTRACT.ini
-
-provide information in:
-	spec/elektra/metadata (METADATA.ini)
-	spec/elektra/errors (libs/error/specification)
-	spec/elektra/modules (CONTRACT.ini)
-
-
-docu provide option in contract
-
-docu specification mount
-
-minimal generic description of commandline-options in kdb
-	long specific description in man pages
-
-
-
 
 
 # 0.8.20
 
+## kdb tool
+
+global-umount
+
+kdb set should always validate
+	(no matter how namespace is given)
+
+mount:
+	-1 -2 options?
+	reject same files!
+	lazy mount (with list plugin) -> later?
+	arbitrary number of plugins (list plugin) -> later?
+	new import/export -> later?
+
+import/editor validate strategy
+
+
+## tuts
+
+further improvements in tutorials!
+
+update global-mount (not needed at most parts anymore)
+
+add more traceability
+
+use shell recorder for further README.md
+
+
 ## tests
 
 helper function for searching symbol
-
-kdb mount:
-	-1 -2 options?
-	reject same files!
-	lazy mount (with list plugin)
-	arbitrary number of plugins (list plugin)
-	new import/export
 
 
 ## fixes

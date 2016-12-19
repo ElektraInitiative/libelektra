@@ -3,11 +3,12 @@
  *
  * @brief
  *
- * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
  */
 
 #include <kdb.h>
 #include <kdbconfig.h>
+#include <kdbmacros.h>
 #include <kdbplugin.h>
 
 #include <string.h>
@@ -168,10 +169,20 @@ static void elektraAddConstants (KeySet * ks, Key * parentKey)
 	keySetString (key, "@TARGET_PKGCONFIG_FOLDER@");
 	ksAppendKey (ks, key);
 
+	elektraAddKeyValue (ks, parentKey, "cmake/TARGET_DOCUMENTATION_TEXT_FOLDER", "@TARGET_DOCUMENTATION_TEXT_FOLDER@");
+	elektraAddKeyValue (ks, parentKey, "cmake/TARGET_DOCUMENTATION_HTML_FOLDER", "@TARGET_DOCUMENTATION_HTML_FOLDER@");
+	elektraAddKeyValue (ks, parentKey, "cmake/TARGET_DOCUMENTATION_MAN_FOLDER", "@TARGET_DOCUMENTATION_MAN_FOLDER@");
+	elektraAddKeyValue (ks, parentKey, "cmake/TARGET_DOCUMENTATION_LATEX_FOLDER", "@TARGET_DOCUMENTATION_LATEX_FOLDER@");
 
 	key = keyDup (parentKey);
 	keyAddName (key, "cmake/TARGET_TOOL_EXEC_FOLDER");
 	keySetString (key, "@TARGET_TOOL_EXEC_FOLDER@");
+	ksAppendKey (ks, key);
+
+
+	key = keyDup (parentKey);
+	keyAddName (key, "cmake/TARGET_TOOL_DATA_FOLDER");
+	keySetString (key, "@TARGET_TOOL_DATA_FOLDER@");
 	ksAppendKey (ks, key);
 
 
@@ -185,7 +196,6 @@ static void elektraAddConstants (KeySet * ks, Key * parentKey)
 	keyAddName (key, "cmake/TARGET_TEMPLATE_FOLDER");
 	keySetString (key, "@TARGET_TEMPLATE_FOLDER@");
 	ksAppendKey (ks, key);
-
 
 	key = keyDup (parentKey);
 	keyAddName (key, "cmake/LIB_SUFFIX");
@@ -357,22 +367,7 @@ int elektraConstantsSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key 
 {
 	KeySet * info = ksNew (0, KS_END);
 	elektraAddConstants (info, parentKey);
-
-	Key * k;
-	ksRewind (info);
-	ksRewind (returned);
-	while ((k = ksNext (returned)))
-	{
-		Key * c = ksNext (info);
-		if (strcmp (keyName (k), keyName (c)) || strcmp (keyString (k), keyString (c)))
-		{
-			ELEKTRA_SET_ERRORF (84, parentKey, "the key %s (expected %s) was modified to %s (expected %s)", keyName (k),
-					    keyName (c), keyString (k), keyString (c));
-			return -1;
-		}
-	}
-
-	ksDel (info);
+	ELEKTRA_SET_ERROR_READ_ONLY (info, returned, parentKey);
 	return 0;
 }
 

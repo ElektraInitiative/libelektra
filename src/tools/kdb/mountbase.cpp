@@ -3,7 +3,7 @@
  *
  * @brief
  *
- * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
  */
 
 #include <mountbase.hpp>
@@ -162,7 +162,7 @@ void MountBaseCommand::doIt ()
 		throw KDBMountException (std::string (e.what ()) +
 					 "\n\n"
 					 "IMPORTANT: Sorry, I am unable to write your requested mountpoint to system/elektra/mountpoints.\n"
-					 "           Make sure that you can write to `Configfile:` as mentioned above.\n"
+					 "           Please make sure that you can write to `Configfile:` as mentioned above.\n"
 					 "           Usually you need to be root for that (use `sudo !!`).");
 	}
 

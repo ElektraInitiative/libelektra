@@ -3,7 +3,7 @@
  *
  * @brief Exported methods of the Library
  *
- * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
  */
 
 // clang-format off
@@ -30,10 +30,9 @@
 
 
 enum {
-	KEY_FLAGS=3, // unique value, does not have to be a power of two
-	KEY_END=0,
 	KEY_NAME=1,
 	KEY_VALUE=1<<1,
+	KEY_FLAGS=3,
 	KEY_OWNER=1<<2,
 	KEY_COMMENT=1<<3,
 	KEY_BINARY=1<<4,
@@ -49,7 +48,8 @@ enum {
 	KEY_META=1<<15,
 	KEY_NULL=1<<16,
 	KEY_CASCADING_NAME=1<<20,
-	KEY_META_NAME=1<<21
+	KEY_META_NAME=1<<21,
+	KEY_END=0,
 };
 
 enum {

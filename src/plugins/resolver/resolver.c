@@ -3,7 +3,7 @@
  *
  * @brief
  *
- * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
  */
 
 #include "resolver.h"
@@ -31,7 +31,7 @@
 
 #include <kdberrors.h>
 #include <kdblogger.h>
-#include <kdbstat.h>
+#include <kdbmacros.h>
 
 #ifdef ELEKTRA_LOCK_MUTEX
 #include <pthread.h>
@@ -476,15 +476,15 @@ int ELEKTRA_PLUGIN_FUNCTION (resolver, get) (Plugin * handle, KeySet * returned,
 	}
 
 	/* Check if update needed */
-	if (pk->mtime.tv_sec == elektraStatSeconds (buf) && pk->mtime.tv_nsec == elektraStatNanoSeconds (buf))
+	if (pk->mtime.tv_sec == ELEKTRA_STAT_SECONDS (buf) && pk->mtime.tv_nsec == ELEKTRA_STAT_NANO_SECONDS (buf))
 	{
 		// no update, so storage has no job
 		errno = errnoSave;
 		return 0;
 	}
 
-	pk->mtime.tv_sec = elektraStatSeconds (buf);
-	pk->mtime.tv_nsec = elektraStatNanoSeconds (buf);
+	pk->mtime.tv_sec = ELEKTRA_STAT_SECONDS (buf);
+	pk->mtime.tv_nsec = ELEKTRA_STAT_NANO_SECONDS (buf);
 
 	errno = errnoSave;
 	return 1;
@@ -547,7 +547,7 @@ static int elektraOpenFile (resolverHandle * pk, Key * parentKey)
 		else if (pk->fd == -1)
 		{
 			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_COULD_NOT_OPEN, parentKey,
-					    "Could not reopen configuration file \"%s\" for writing because %s", pk->filename,
+					    "Could not reopen configuration file \"%s\" for writing because \"%s\"", pk->filename,
 					    strerror (errno));
 			return -1;
 		}
@@ -697,7 +697,6 @@ static int elektraCheckConflict (resolverHandle * pk, Key * parentKey)
 {
 	if (pk->isMissing)
 	{
-		pk->isMissing = 0;
 		// conflict already handled at file creation time, so just return successfully
 		return 0;
 	}
@@ -721,13 +720,13 @@ static int elektraCheckConflict (resolverHandle * pk, Key * parentKey)
 		return -1;
 	}
 
-	if (elektraStatSeconds (buf) != pk->mtime.tv_sec || elektraStatNanoSeconds (buf) != pk->mtime.tv_nsec)
+	if (ELEKTRA_STAT_SECONDS (buf) != pk->mtime.tv_sec || ELEKTRA_STAT_NANO_SECONDS (buf) != pk->mtime.tv_nsec)
 	{
 		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CONFLICT, parentKey,
 				    "conflict, file modification time stamp %ld.%ld is different than our time stamp %ld.%ld, config file "
 				    "name is \"%s\", "
 				    "our identity is uid: %u, euid: %u, gid: %u, egid: %u",
-				    elektraStatSeconds (buf), elektraStatNanoSeconds (buf), pk->mtime.tv_sec, pk->mtime.tv_nsec,
+				    ELEKTRA_STAT_SECONDS (buf), ELEKTRA_STAT_NANO_SECONDS (buf), pk->mtime.tv_sec, pk->mtime.tv_nsec,
 				    pk->filename, getuid (), geteuid (), getgid (), getegid ());
 		return -1;
 	}
@@ -922,11 +921,11 @@ static int elektraSetCommit (resolverHandle * pk, Key * parentKey)
 	}
 	else
 	{
-		if (!(pk->mtime.tv_sec == elektraStatSeconds (buf) && pk->mtime.tv_nsec == elektraStatNanoSeconds (buf)))
+		if (!(pk->mtime.tv_sec == ELEKTRA_STAT_SECONDS (buf) && pk->mtime.tv_nsec == ELEKTRA_STAT_NANO_SECONDS (buf)))
 		{
 			/* Update timestamp */
-			pk->mtime.tv_sec = elektraStatSeconds (buf);
-			pk->mtime.tv_nsec = elektraStatNanoSeconds (buf);
+			pk->mtime.tv_sec = ELEKTRA_STAT_SECONDS (buf);
+			pk->mtime.tv_nsec = ELEKTRA_STAT_NANO_SECONDS (buf);
 		}
 		else
 		{
@@ -948,6 +947,9 @@ static int elektraSetCommit (resolverHandle * pk, Key * parentKey)
 	}
 
 	elektraUpdateFileTime (pk, parentKey);
+
+	// file is present now!
+	pk->isMissing = 0;
 
 	if (buf.st_mode != pk->filemode)
 	{

@@ -3,7 +3,7 @@
  *
  * @brief filter plugin for the Base64 encoding
  *
- * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
  *
  */
 

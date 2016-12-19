@@ -25,22 +25,15 @@ def getSources (pluginDir):
 def hookNodoc (pluginName, pluginDir, tags):
 	tag = "nodoc"
 	md = open (os.path.join(pluginDir, "README.md"), "r")
-	p = re.compile (".*?(E|e)xample.*?")
-	ex = False
-	count = 0;
-	for md_line in md:
-		++count
-		if p.match (md_line):
-			ex = True
-	md.close ()
-	if count > 40 and ex:
-		if (tag in tags):
-				print ("AUTO: remove "+ tag +" to "+ pluginName)
-				tags.remove (tag)
-	else:
+	if (len (md.readlines ()) < 40):
 		if tag not in tags:
 			print ("AUTO: add "+ tag +" to "+ pluginName)
 			tags.append (tag)
+	else:
+		if (tag in tags):
+			print ("AUTO: remove "+ tag +" to "+ pluginName)
+			tags.remove (tag)
+	md.close ()
 
 def hookNodep (pluginName, pluginDir, tags):
 	tag = "nodep"
@@ -93,7 +86,7 @@ def hookMemleak (pluginName, pluginDir, tags):
 		tags.remove (tag)
 		print ("AUTO: remove "+ tag +" to "+ pluginName)
 
-def hookConfigureable (pluginName, pluginDir, tags):
+def hookConfigurable (pluginName, pluginDir, tags):
 	sources = getSources (pluginDir)
 	p = re.compile (".*?\=\s*?elektraPluginGetConfig\s*?\(.*?")
 	tag = "configurable"
@@ -144,7 +137,7 @@ def checkTags (tags, enum):
 			exitError ("'"+ k +"' not in doc/CONTRACT.ini")
 
 def main():
-	hooks = [ hookConfigureable, hookMemleak, hookUnittest, hookNodep, hookNodoc ]
+	hooks = [ hookConfigurable, hookMemleak, hookUnittest, hookNodep, hookNodoc ]
 	if not os.path.isfile (os.path.join('doc', 'CONTRACT.ini')) or not os.path.isdir (os.path.join('src', 'plugins')):
 		exitError ("You are not in an electra src dir!")
 

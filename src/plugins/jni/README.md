@@ -4,7 +4,7 @@
 - infos/provides =
 - infos/needs =
 - infos/placements =
-- infos/status = maintained configurable memleak experimental -500
+- infos/status = maintained unittest configurable memleak experimental -500
 - infos/description = generic java plugin
 
 ## Introduction ##

@@ -3,7 +3,7 @@
  *
  * @brief Tests for conditionals plugin
  *
- * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
  *
  */
 
@@ -184,7 +184,22 @@ static void test_assignThen ()
 	keyDel (parentKey);
 	PLUGIN_CLOSE ();
 }
-
+static void test_assignThen2 ()
+{
+	Key * parentKey = keyNew ("user/tests/conditionals", KEY_VALUE, "", KEY_END);
+	KeySet * ks = ksNew (5, keyNew ("user/tests/conditionals/totest", KEY_VALUE, "Hello", KEY_META, "assign/condition",
+					"(../totest=='Hello') ? ('World') : ('Fail')", KEY_END),
+			     KS_END);
+	KeySet * conf = ksNew (0, KS_END);
+	PLUGIN_OPEN ("conditionals");
+	ksRewind (ks);
+	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "error");
+	Key * key = ksLookupByName (ks, "user/tests/conditionals/totest", 0);
+	succeed_if (strcmp (keyString (key), "World") == 0, "error setting then value");
+	ksDel (ks);
+	keyDel (parentKey);
+	PLUGIN_CLOSE ();
+}
 static void test_assignElse ()
 {
 	Key * parentKey = keyNew ("user/tests/conditionals", KEY_VALUE, "", KEY_END);
@@ -446,6 +461,81 @@ static void test_doubleUp ()
 	keyDel (parentKey);
 	PLUGIN_CLOSE ();
 }
+
+
+static void test_multiCond ()
+{
+	Key * parentKey = keyNew ("user/tests/conditionals", KEY_VALUE, "", KEY_END);
+	KeySet * ks = ksNew (5, keyNew ("user/tests/conditionals/compare", KEY_VALUE, "Sun", KEY_END),
+			     keyNew ("user/tests/conditionals/totest", KEY_VALUE, "Hello", KEY_META, "check/condition", "#1", KEY_META,
+				     "check/condition/#0", "(../totest=='Bye') ? (../compare == 'Moon')", KEY_META, "check/condition/#1",
+				     "(../totest=='Hello') ? (../compare == 'Sun') ", KEY_END),
+			     KS_END);
+
+	KeySet * conf = ksNew (0, KS_END);
+	PLUGIN_OPEN ("conditionals");
+	ksRewind (ks);
+	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "error");
+	ksDel (ks);
+	keyDel (parentKey);
+	PLUGIN_CLOSE ();
+}
+
+static void test_multiCond2 ()
+{
+	Key * parentKey = keyNew ("user/tests/conditionals", KEY_VALUE, "", KEY_END);
+	KeySet * ks = ksNew (5, keyNew ("user/tests/conditionals/compare", KEY_VALUE, "Moon", KEY_END),
+			     keyNew ("user/tests/conditionals/totest", KEY_VALUE, "Bye", KEY_META, "check/condition", "#1", KEY_META,
+				     "check/condition/#0", "(../totest=='Bye') ? (../compare == 'Moon')", KEY_META, "check/condition/#1",
+				     "(../totest=='Hello') ? (../compare == 'Sun') ", KEY_END),
+			     KS_END);
+
+	KeySet * conf = ksNew (0, KS_END);
+	PLUGIN_OPEN ("conditionals");
+	ksRewind (ks);
+	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "error");
+	ksDel (ks);
+	keyDel (parentKey);
+	PLUGIN_CLOSE ();
+}
+
+static void test_multiAssign ()
+{
+	Key * parentKey = keyNew ("user/tests/conditionals", KEY_VALUE, "", KEY_END);
+	KeySet * ks = ksNew (5, keyNew ("user/tests/conditionals/totest", KEY_VALUE, "Hello", KEY_META, "assign/condition", "#1", KEY_META,
+					"assign/condition/#0", "(../totest=='Bye') ? ('Moon')", KEY_META, "assign/condition/#1",
+					"(../totest=='Hello') ? ('Sun') ", KEY_END),
+			     KS_END);
+
+	KeySet * conf = ksNew (0, KS_END);
+	PLUGIN_OPEN ("conditionals");
+	ksRewind (ks);
+	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "error");
+	Key * key = ksLookupByName (ks, "user/tests/conditionals/totest", 0);
+	succeed_if (strcmp (keyString (key), "Sun") == 0, "error setting then value");
+	ksDel (ks);
+	keyDel (parentKey);
+	PLUGIN_CLOSE ();
+}
+
+static void test_multiAssign2 ()
+{
+	Key * parentKey = keyNew ("user/tests/conditionals", KEY_VALUE, "", KEY_END);
+	KeySet * ks = ksNew (5, keyNew ("user/tests/conditionals/totest", KEY_VALUE, "Bye", KEY_META, "assign/condition", "#1", KEY_META,
+					"assign/condition/#0", "(../totest=='Bye') ? ('Moon')", KEY_META, "assign/condition/#1",
+					"(../totest=='Hello') ? ('Sun') ", KEY_END),
+			     KS_END);
+
+	KeySet * conf = ksNew (0, KS_END);
+	PLUGIN_OPEN ("conditionals");
+	ksRewind (ks);
+	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "error");
+	Key * key = ksLookupByName (ks, "user/tests/conditionals/totest", 0);
+	succeed_if (strcmp (keyString (key), "Moon") == 0, "error setting then value");
+	ksDel (ks);
+	keyDel (parentKey);
+	PLUGIN_CLOSE ();
+}
 int main (int argc, char ** argv)
 {
 	printf ("CONDITIONALS     TESTS\n");
@@ -463,6 +553,7 @@ int main (int argc, char ** argv)
 	test_ifsetthenval ();
 	test_ifsetthenkey ();
 	test_assignThen ();
+	test_assignThen2 ();
 	test_assignElse ();
 	test_assignKeyThen ();
 	test_assignKeyElse ();
@@ -477,6 +568,10 @@ int main (int argc, char ** argv)
 	test_elseWhitespace2 ();
 	test_elseWhitespace3 ();
 	test_doubleUp ();
+	test_multiCond ();
+	test_multiAssign ();
+	test_multiCond2 ();
+	test_multiAssign2 ();
 	printf ("\ntestmod_conditionals RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 
 	return nbError;

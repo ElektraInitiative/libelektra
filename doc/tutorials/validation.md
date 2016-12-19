@@ -35,7 +35,7 @@ described in this tutorial, e.g.:
 
 The most direct way to validate keys is
 
-```
+```sh
 > kdb mount validation.dump user/tutorial/together dump validation
 > kdb vset user/tutorial/together/test 123 "[1-9][0-9]*" "Not a number"
 > kdb set user/tutorial/together/test abc
@@ -47,7 +47,7 @@ Reason: Not a number
 For all other plugins (except `validation`) the convenience tool `kdb vset`
 is missing. Let us see what `kdb vset` actually did:
 
-```
+```sh
 > kdb lsmeta user/tutorial/together/test
 check/validation
 check/validation/match
@@ -57,7 +57,7 @@ check/validation/message
 So it only appended some metadata (data describing the data) next to the key,
 which we also could do by:
 
-```
+```sh
 # Following lines are (except for error conditions) identical to
 # > kdb vset user/tutorial/together/test 123 "[1-9][0-9]*" "Not a number"
 > kdb setmeta user/tutorial/together/test check/validation "[1-9][0-9]*"
@@ -104,7 +104,7 @@ globally (will be added by default with `kdb global-mount`):
 
 Then we can write metadata to `spec` and see it for every cascading key:
 
-```
+```sh
 > kdb setmeta spec/tutorial/spec/test hello world
 > kdb set user/tutorial/spec/test value
 > kdb lsmeta /tutorial/spec/test
@@ -113,7 +113,7 @@ hello
 
 But it also supports globbing (`_` for any key, `?` for any char, `[]` for character classes):
 
-```
+```sh
 > kdb setmeta "spec/tutorial/spec/_" new meta
 > kdb lsmeta /tutorial/spec/test
 hello

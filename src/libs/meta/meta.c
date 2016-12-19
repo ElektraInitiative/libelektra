@@ -3,7 +3,7 @@
  *
  * @brief Methods for metadata manipulation.
  *
- * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
  */
 
 #include <kdb.h>
@@ -509,7 +509,7 @@ cleanup:
  *
  * @deprecated This API is obsolete.
  * It is only a mapping
- * to keySetMeta(key, "mode", str) which should be prefered.
+ * to keySetMeta(key, "mode", str) which should be preferred.
  *
  * The mode consists of 9 individual bits for mode permissions.
  * In the following explanation the octal notation with leading
@@ -549,7 +549,7 @@ cleanup:
  * To be more specific for the user the single bits can elect
  * the mode for read, write and execute. 0100 only allows
  * executing which gives the information that it is a directory
- * for that user, but not accessable. 0200 only allows reading.
+ * for that user, but not accessible. 0200 only allows reading.
  * This information may be combined to 0300, which allows execute
  * and reading of the directory. Last 0400 decides about the
  * writing permissions.
@@ -1114,7 +1114,7 @@ static int resolveDeps (unsigned int j, _adjMatrix * adjMatrix, size_t size, Key
 	}
 	if (todo == 0)
 	{
-		// all dependecies are already resolved, give key an order number and add it to
+		// all dependencies are already resolved, give key an order number and add it to
 		// the our list of resolved keys (done)
 		adjMatrix[j].isResolved = 1;
 		resolveDep (j, adjMatrix, size);

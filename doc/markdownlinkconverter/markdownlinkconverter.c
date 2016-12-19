@@ -3,7 +3,7 @@
  *
  * @brief
  *
- * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
  */
 
 #include <ctype.h>
@@ -11,6 +11,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/stat.h>
 
 #define UNUSED __attribute__ ((unused))
 
@@ -225,6 +226,7 @@ static void convertLinks (FILE * input, FILE * output, char * inputFilename, int
 	fpos_t pos;
 	int state = linkStart;
 	int newstate;
+	int sCount = 0;
 	int index = 0;
 	unsigned int len = 0;
 	/* index and len help to convert a link if found.
@@ -317,10 +319,42 @@ static void convertLinks (FILE * input, FILE * output, char * inputFilename, int
 			state = linkStart;
 			continue;
 		}
+		else if (c == '`')
+		{
+			sCount++;
+			fprintf (output, "%c", c);
+		}
+		else if (sCount == 3)
+		{
+			sCount++;
+			if (c != 's')
+			{
+				fprintf (output, "%c", c);
+				sCount = 0;
+			}
+		}
+		else if (sCount == 4)
+		{
+			sCount++;
+			if (c != 'h')
+			{
+				sCount = 0;
+				fprintf (output, "s%c", c);
+			}
+		}
+		else if (sCount == 5)
+		{
+			sCount = 0;
+			if (c != '\n')
+				fprintf (output, "sh%c", c);
+			else
+				fprintf (output, "\n"); // swallow sh (from ```sh)
+		}
 		else if (linkNolink (state, newstate))
 		{
 			// print all other content
 			fprintf (output, "%c", c);
+			sCount = 0;
 		}
 		state = newstate;
 	}
@@ -334,7 +368,8 @@ int main (int argc, char * argv[])
 {
 	if (argc < 2 || argc > 3)
 	{
-		fprintf (stderr, "Argument Error: expected format <filter> [<cmake-cache-file>] <input-file>\n");
+		fprintf (stderr, "Invalid number of arguments.\n");
+		fprintf (stderr, "Usage: %s [<cmake-cache-file>] <input-file>\n", argv[0]);
 		return EXIT_FAILURE;
 	}
 
@@ -432,8 +467,8 @@ int main (int argc, char * argv[])
 static void printTarget (FILE * output, char * target, char * inputFilename, int indexofElektraRoot, bool isMarkdown, int lineCount)
 {
 	char * backupTarget = target;
-	char pathToLink[strlen (inputFilename) + strlen (target) + 10 + 1];
-	// pathToLink cannot be longer than both stings + "README.md" + terminating \0
+	char pathToLink[strlen (inputFilename) + strlen (target) + 11 + 1];
+	// pathToLink cannot be longer than both stings + "_README.md" + terminating \0
 	strcpy (pathToLink, inputFilename);
 	// distinguish between relative and absolute targets
 	if (target[0] != '/')
@@ -468,20 +503,24 @@ static void printTarget (FILE * output, char * target, char * inputFilename, int
 		++target; // remove starting /
 		strcpy (&pathToLink[indexofElektraRoot], target);
 	}
-	// if target ends with /, link it to README.md
-	if (target[strlen (target) - 1] == '/')
-	{
-		strcpy (&pathToLink[strlen (pathToLink)], "README.md");
-	}
-	// validate link
-	FILE * test = fopen (pathToLink, "r");
-	if (!test)
+
+	// check if dir and validate link
+	struct stat st;
+	if (stat (pathToLink, &st) < 0)
 	{
 		fprintf (stderr, INVALIDLINK_MESS, inputFilename, lineCount, backupTarget);
+		return;
 	}
-	else
+	if (S_ISDIR (st.st_mode))
 	{
-		fclose (test);
+		if (target[strlen (target) - 1] == FOLDER_DELIMITER)
+		{
+			strcpy (&pathToLink[strlen (pathToLink)], "README.md");
+		}
+		else
+		{
+			strcpy (&pathToLink[strlen (pathToLink)], "_README.md");
+		}
 	}
 	if (isMarkdown)
 	{

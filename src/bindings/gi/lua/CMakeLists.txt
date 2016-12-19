@@ -33,6 +33,7 @@ install (DIRECTORY lgi DESTINATION ${TARGET_LUA_LMOD_FOLDER})
 find_package (Lua 5.1)
 if (LUA_FOUND AND LUA_EXECUTABLE_VERSION_MATCHED)
 	message(STATUS "Include Binding gi_lua")
+	message(DEPRECATION "GI bindings have been deprecated")
 
 	file (GLOB TESTS testgi_*.lua)
 	foreach (file ${TESTS})

@@ -4,7 +4,7 @@
 #
 # @brief main module for kdb
 #
-# @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+# @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
 #
 # This module is an extension to the SWIG created wrapper to libelektra
 #

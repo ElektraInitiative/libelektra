@@ -3,7 +3,7 @@
  *
  * @brief filter plugin providing cryptographic operations
  *
- * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
  *
  */
 
@@ -410,7 +410,7 @@ int CRYPTO_PLUGIN_FUNCTION (set) (Plugin * handle, KeySet * ks, Key * parentKey)
  *
  * @retval 0 no changes were made to the configuration
  * @retval 1 the master password has been appended to the configuration
- * @retval -1 an error occured. Check errorKey
+ * @retval -1 an error occurred. Check errorKey
  */
 int CRYPTO_PLUGIN_FUNCTION (checkconf) (Key * errorKey, KeySet * conf)
 {

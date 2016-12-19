@@ -3,7 +3,7 @@
  *
  * @brief
  *
- * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
  */
 
 #include <tests_internal.h>
@@ -13,7 +13,7 @@ static void test_errors ()
 	succeed_if (!elektraVstackInit (0), "init 0 working");
 	// succeed_if (!elektraVstackInit (-1), "init -1 working");
 
-	succeed_if (!elektraVstackPush (NULL, NULL), "push NULL working");
+	succeed_if (elektraVstackPush (NULL, NULL), "push NULL working");
 
 	succeed_if (!elektraVstackPop (NULL), "pop NULL working");
 	Vstack * s = elektraVstackInit (1);
@@ -23,7 +23,7 @@ static void test_errors ()
 
 	succeed_if (elektraVstackIsEmpty (NULL) == -1, "isEmpty NULL working");
 
-	succeed_if (!elektraVstackClear (NULL), "clear NULL working");
+	succeed_if (elektraVstackClear (NULL), "clear NULL working");
 }
 
 static void test_empty ()
@@ -94,7 +94,7 @@ static void test_grow_shrink ()
 		exit_if_fail (s, "vstack init error");
 		for (int i = 1; i <= maxElem; ++i)
 		{
-			succeed_if (elektraVstackPush (s, &data), "push error");
+			succeed_if (!elektraVstackPush (s, &data), "push error");
 			if (i > size)
 			{
 				// grow
@@ -122,23 +122,23 @@ static void test_clear ()
 {
 	Vstack * s = elektraVstackInit (5);
 	exit_if_fail (s, "vstack init error");
-	succeed_if (elektraVstackClear (s), "clear fresh error");
+	succeed_if (!elektraVstackClear (s), "clear fresh error");
 	succeed_if (s->size == s->minSize, "minsize error");
 	int data = 42;
 	for (int i = 0; i < 11; ++i)
 	{
-		succeed_if (elektraVstackPush (s, &data), "push error");
+		succeed_if (!elektraVstackPush (s, &data), "push error");
 	}
 	size_t size = s->size;
-	succeed_if (elektraVstackClear (s), "clear error");
+	succeed_if (!elektraVstackClear (s), "clear error");
 	succeed_if (elektraVstackIsEmpty (s), "empty error");
 
 	succeed_if (s->head == s->data, "stackpoimter error");
 	succeed_if (s->size == size, "size error");
 
 	// push again
-	succeed_if (elektraVstackPush (s, &data), "push error");
-	succeed_if (elektraVstackPush (s, &data), "push error");
+	succeed_if (!elektraVstackPush (s, &data), "push error");
+	succeed_if (!elektraVstackPush (s, &data), "push error");
 
 	succeed_if (s->size == size, "size error");
 

@@ -4,7 +4,7 @@
 - infos/provides = storage/ini
 - infos/needs = code null
 - infos/placements = getstorage setstorage
-- infos/status = maintained configurable concept obsolete 3000
+- infos/status = maintained nodep concept obsolete 3000
 - infos/description = Very simple storage which writes out in a basic ini format.
 
 ## Introduction ##

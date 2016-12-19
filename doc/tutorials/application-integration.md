@@ -83,9 +83,7 @@ as arguments in the API to transport some information.
 Thus a key is only in-memory and does not need any of the other Elektra's objects.
 We always can create one:
 
-	Key *parentKey = keyNew("/sw/org/myapp/#0/current",
-		KEY_CACADING_NAME,
-		KEY_END);
+	Key *parentKey = keyNew("/sw/org/myapp/#0/current", KEY_END);
 
 - The first argument of `keyNew` always is the name of the key.
  - `sw` is for software
@@ -96,13 +94,10 @@ We always can create one:
      configuration
  - `#0` is the major version number of the configuration (to be incremented
    if you need to introduce incompatible changes).
- - `current` is the profile to be used. This is needed by administrators
+ - `current` is the [profile](/src/plugins/profile/README.md)
+     to be used. This is needed by administrators
      if they want to start up multiple applications with different
      configurations.
-- `KEY_CACADING_NAME` is needed to accept a name starting with `/`. Such a
-    name cannot physically exist in configuration files, but they are
-    the most important keys to actually work with configuration within
-    applications as we will see in this tutorial.
 - `KEY_END` is needed because C needs a proper termination of variable
     length arguments.
 
@@ -122,8 +117,7 @@ can easily lookup keys in a `KeySet` without ambiguity. Additionally, we
 can can iterate over all `Key`s in a `KeySet` without a hassle.
 To create an empty `KeySet` we use:
 
-	KeySet *conf = ksNew(200,
-		KS_END);
+	KeySet *conf = ksNew(200, KS_END);
 
 - 200 is an approximation for how many `Key`s we think we will have in
     the `KeySet` conf
@@ -135,6 +129,13 @@ Now we have everything ready to fetch the latest configuration:
 	kdbGet(repo, conf, parentKey);
 
 
+Note it is important for applications that the parentKey starts with a slash `/`.
+Only then all so-called [namespace](/doc/help/elektra-namespaces.md)
+are pulled in.
+Such a name cannot physically exist in configuration files, but they are
+the most important keys to actually work with configuration within
+applications as we will see when introducing `ksLookup`.
+
 ## Lookup
 
 To lookup a key, we simply use, e.g.:
@@ -145,6 +146,16 @@ To lookup a key, we simply use, e.g.:
 
 We see in that example that only Elektra paths are hardcoded in
 the application, no configuration file or similar.
+
+As already mentioned keys starting with slash `/` do not exist
+in configuration files, but are "representatives", "proxies" or
+"logical placeholders" for keys from any other [namespace](/doc/help/elektra-namespaces.md).
+
+So that every tool has a consistent view to the key database
+it is vital that every application does a `ksLookup` for every
+key it uses. So even if your application iterates over keys,
+always remember to do a cascading lookup for every single key!
+
 Thus we are interested in the value we use:
 
 	char *val = keyString(k);
@@ -156,6 +167,7 @@ Obviously, to do this manually has severe drawbacks:
 
 - names are hardcoded: might have typos or might be inconsistent
 - tedious handling if key or value might be absent
+- always calling `ksLookup` which gets tiresome for arrays
 - converting to needed data type is error prone
 
 So (larger) applications should not directly use `KeySet`, but
@@ -222,8 +234,11 @@ So we specify:
 Voila, we have done a system integration between `myapp` and `otherapp`!
 
 Note that the fallback, override and cascading works on *key level*,
-and not like most other systems have implemented, on
-configuration *file level*.
+and not like most other systems have implemented, on configuration *file level*.
+
+To make this work within your application make sure to always call
+`ksLookup` before using a value from Elektra.
+
 
 ## Conclusion
 

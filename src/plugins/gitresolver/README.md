@@ -5,7 +5,7 @@
 - infos/provides = resolver
 - infos/recommends =
 - infos/placements = rollback getresolver setresolver commit
-- infos/status = recommended productive maintained reviewed conformant compatible coverage specific unittest shelltest tested libc configurable final preview
+- infos/status = recommended productive maintained reviewed conformant compatible coverage specific shelltest tested libc configurable final preview nodoc
 - infos/metadata =
 - infos/description = resolver for git repositories
 

@@ -15,7 +15,8 @@ BasicWindow {
 		anchors.margins: defaultMargins
 		spacing: defaultSpacing
 		GroupBox {
-			id: "colorSettings"
+			id: colorSettings
+
 			anchors.top: parent.top
 			anchors.left: parent.left
 			anchors.leftMargin: (parent.parent.width - width) / 2 - width / 16
@@ -46,7 +47,7 @@ BasicWindow {
 				}
 
 				Label {
-					width: longestText.widht
+					width: longestText.width
 					text: qsTr("Frame Color")
 				}
 				Rectangle {
@@ -63,7 +64,7 @@ BasicWindow {
 					}
 				}
 				Label {
-					width: longestText.widht
+					width: longestText.width
 					text: qsTr("Node with Key Color")
 				}
 				Rectangle {
@@ -127,7 +128,7 @@ BasicWindow {
 				rowSpacing: parent.parent.parent.height / 16
 				columnSpacing: parent.parent.parent.width / 16
 				Label {
-					width: longestText.widht
+					width: longestText.width
 					text: qsTr("Use system icon theme")
 				}
 				Switch {

@@ -75,7 +75,7 @@ Thus please use following techniques (in order of preference):
 
    `ELEKTRA_LOG ("formatted text to be printed according log filters", ...)` 
 
-   There are four log levels:
+   There are four log levels (ERROR is reserved for aborts within `ELEKTRA_ASSERT`):
    - ELEKTRA_LOG_WARNING, something critical that should be shown the user (e.g. API misuse), see #ELEKTRA_LOG_LEVEL_WARNING
    - ELEKTRA_LOG_NOTICE, something important developers are likely interested in, see #ELEKTRA_LOG_LEVEL_NOTICE
    - ELEKTRA_LOG, standard level gives information what the code is doing without flooding the log, see #ELEKTRA_LOG_LEVEL_INFO
@@ -147,6 +147,16 @@ So do not give this responsibility out of hands entirely.
 
 **Example:** [src/bindings/cpp/include/kdb.hpp](/src/bindings/cpp/include/kdb.hpp)
 
+### Markdown Guidelines ###
+
+ * File Ending is `.md` or integrated within Doxygen
+ * Headers with same number of `#` left and right
+ * Use tabs or fences for code/examples
+ * Fences with sh are for the [shell recorder syntax](/tests/shell/shell_recorder/tutorial_wrapper)
+ * `README.md` and tutorials should be written exclusively with shell recorder syntax
+   so that we know that the code in the tutorial produces output as expected
+
+
 ### Doxygen Guidelines ###
 
 `doxygen` is used to document the API and to build the html and pdf output.
@@ -173,7 +183,7 @@ Files should start with:
 	 *
 	 * @brief <short statement about the content of the file>
 	 *
-	 * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+	 * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
 	 */
 
 \endverbatim
@@ -185,4 +195,4 @@ Note:
   so that your file gets listed at http://doc.libelektra.org/api/latest/html/files.html
 
 The duplication of the filename, author and date is not needed, because
-this information is tracked using git and doc/AUTHORS already.
+this information is tracked using git and [doc/AUTHORS.md](AUTHORS.md) already.

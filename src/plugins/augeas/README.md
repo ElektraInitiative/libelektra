@@ -103,7 +103,7 @@ This fails with an error similar to this
     with tree
     { \"canonical\" = \"newhost\" } { \"ipaddr\" = \"14.14.14.14\" }
 
-Wheras the following script succeeds due to the correct order
+Whereas the following script succeeds due to the correct order
 
     kdbGet system/hosts
     keySetName system/hosts/6

@@ -4,11 +4,12 @@
 #
 # @brief unit test cases for Kdb::KeySet
 #
-# @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+# @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
 #
 
 require 'kdb'
 require 'test/unit'
+require_relative 'test_helper'
 
 
 class KdbKeySetTestCases < Test::Unit::TestCase

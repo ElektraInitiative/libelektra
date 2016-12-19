@@ -3,7 +3,7 @@
  *
  * @brief
  *
- * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
  */
 
 #ifndef TREEVIEWMODEL_H
@@ -298,6 +298,11 @@ private:
 	 */
 	kdb::tools::merging::MergeConflictStrategy * getMergeStrategy (const QString & mergeStrategy);
 
+	/**
+         * @brief Connect to system D-Bus
+         */
+	void connectDBus ();
+
 protected:
 	QHash<int, QByteArray> roleNames () const override;
 
@@ -319,13 +324,21 @@ signals: // Use "Error", "Warning" and "Information" as title to display the acc
 	void updateIndicator () const;
 
 public slots:
+
 	/**
- * @brief showConfigNodeMessage
- * @param title
- * @param text
- * @param detailedText
- */
+	 * @brief Displays a pop up window to the user
+	 * @param title The title of the pop up window
+	 * @param text The message of the pop up window
+	 * @param detailedText A more detailed message to display
+	 */
 	void showConfigNodeMessage (QString title, QString text, QString detailedText);
+
+	/**
+	 * @brief Writes a change of the system config to std::out if in debug mode
+	 *
+	 * @param msg
+	 */
+	void configChanged (QString msg);
 };
 
 Q_DECLARE_METATYPE (TreeViewModel)

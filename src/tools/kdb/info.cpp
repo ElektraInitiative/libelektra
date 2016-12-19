@@ -3,7 +3,7 @@
  *
  * @brief
  *
- * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
  */
 
 #include <info.hpp>
@@ -14,8 +14,6 @@
 #include <plugin.hpp>
 
 #include <iostream>
-
-#include "ansicolors.hpp"
 
 using namespace std;
 using namespace kdb;

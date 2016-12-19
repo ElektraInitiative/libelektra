@@ -1,0 +1,8 @@
+#!/bin/sh
+#
+# @author Kurt Micheli <kurt.micheli@libelektra.org>
+# @brief Draws a graph out of the opmphm output (opmphmGraph.dot)
+# @date 25.11.2016
+# @tags generator, creator
+
+dot -Tpng opmphmGraph.dot -o opmphmGraph.png

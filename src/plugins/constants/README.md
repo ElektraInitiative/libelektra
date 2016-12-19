@@ -5,7 +5,7 @@
 - infos/needs =
 - infos/recommends =
 - infos/placements = setstorage getstorage
-- infos/status = maintained nodep libc readonly limited concept
+- infos/status = maintained nodep libc readonly limited nodoc concept
 - infos/description = includes constants information into kdb
 
 ## Introduction ##

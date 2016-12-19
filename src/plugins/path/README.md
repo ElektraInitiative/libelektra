@@ -4,7 +4,7 @@
 - infos/placements = presetstorage
 - infos/needs =
 - infos/provides = check
-- infos/status = maintained nodep libc
+- infos/status = maintained nodep libc nodoc
 - infos/metadata = check/path
 - infos/description = Checks if keys enriched with appropriate metadata contain valid paths as values
 

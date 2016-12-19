@@ -4,7 +4,7 @@
  * @brief test suite for the crypto plugin.
  * Contains shared functions for all compile variants.
  *
- * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
  *
  */
 

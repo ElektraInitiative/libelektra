@@ -28,6 +28,9 @@ remove obsolete key/keyset flags
 _t is reserved by POSIX, so cursor_t, keyswitch_t and option_t
 should be renamed to something elektra specific
 
+internal APIs: malloc, realloc should use 2 parameters and
+	check for multiplication overflow
+
 size_t, ssize_t are not fixed size, use uint32_t.. to have no
 problems on binary serialisation + unified behaviour (array sizes..)
 
@@ -107,7 +110,7 @@ warnings should have array conventions #0, #_10...
 
 == Libraries ==
 
-- remove libelektra.so (only have new splitted libraries)
+- remove libelektra.so (only have new split libraries)
 
 
 === Plugin API Changes ===

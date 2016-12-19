@@ -4,7 +4,7 @@
 - infos/needs =
 - infos/provides =
 - infos/placements = presetstorage pregetstorage postgetstorage precommit postcommit prerollback postrollback
-- infos/status = maintained unittest nodep libc global
+- infos/status = maintained unittest nodep libc configurable global
 - infos/description = delegates work to a list of plugins
 
 ## Introduction ##
@@ -57,6 +57,6 @@ would have the callstack:
 
 1. `list->kdbGet`
   1. `rename->kdbGet`
-  2. `keytometa>kdbGet`
+  2. `keytometa->kdbGet`
   3. `enum->kdbGet`
 

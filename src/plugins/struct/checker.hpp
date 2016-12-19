@@ -3,7 +3,7 @@
  *
  * @brief Headerfile of Struct checker
  *
- * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
  *
  */
 

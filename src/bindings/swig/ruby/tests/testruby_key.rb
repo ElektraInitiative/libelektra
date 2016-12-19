@@ -5,11 +5,12 @@
 #
 # @brief unit test cases for Kdb::Key
 #
-# @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+# @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
 #
 
 require 'kdb'
 require 'test/unit'
+require_relative 'test_helper'
 
 
 class KdbKeyTestCases < Test::Unit::TestCase
@@ -168,6 +169,34 @@ class KdbKeyTestCases < Test::Unit::TestCase
 
     assert_equal "", k["does_not_exist"]
 
+  end
+
+
+  def test_key_delete_meta
+    assert_nothing_raised do
+      k = Kdb::Key.new "user/asdf"
+
+      assert k.is_valid?
+
+      k.set_meta "comments/#0", "some value"
+      k.set_meta "comments/#1", "2nd line"
+      assert_equal "some value", k.get_meta("comments/#0")
+      assert_equal "2nd line", k.get_meta("comments/#1")
+      assert_equal 2, k.meta.size
+
+      k.del_meta "comments/#1"
+
+      assert_equal 1, k.meta.size
+      assert_equal "some value", k.get_meta("comments/#0")
+      assert_equal "", k.get_meta("comments/#1")
+
+      k["comments/#2"] = "other line"
+
+      assert_equal 2, k.meta.size
+      assert_equal "some value", k["comments/#0"]
+      assert_equal "other line", k["comments/#2"]
+
+    end
   end
 
 

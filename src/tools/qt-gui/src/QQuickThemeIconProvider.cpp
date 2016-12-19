@@ -4,7 +4,7 @@
  * @brief XDG QQuickImageProvider (original source from http://gitlab.unique-conception.org/qt-libraries/lib-qt-qml-tricks)
  * @author Gabriel Rauter (rauter.gabriel@gmail.com)
  * @author Thomas Boutroue (thebootroo@gmail.com)
- * @copyright relicenced under BSD License (see doc/COPYING or http://www.libelektra.org)
+ * @copyright relicenced under BSD License (see doc/LICENSE.md or http://www.libelektra.org)
  */
 
 #include "QQuickThemeIconProvider.hpp"

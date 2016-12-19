@@ -51,6 +51,10 @@ namespace
 {
 bool startsWith (std::string const & str, std::string const & start)
 {
+	if (str.length () < start.length ())
+	{
+		return false;
+	}
 	return std::equal (start.begin (), start.end (), str.begin ());
 }
 

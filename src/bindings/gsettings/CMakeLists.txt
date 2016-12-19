@@ -1,8 +1,19 @@
-cmake_minimum_required (VERSION 3.0)
+if (CMAKE_MAJOR_VERSION LESS 3)
+	remove_binding (gsettings "Need at least CMake 3.0 for gsettings backend")
+	return ()
+endif ()
 
+cmake_minimum_required (VERSION 3.0)
 project (elektrasettings VERSION 0.1.1 LANGUAGES C)
 
-find_package (PkgConfig REQUIRED)
+find_package (PkgConfig)
+
+if (NOT PKG_CONFIG_FOUND)
+	remove_binding (gsettings "Need PkgConfig needed to find dependencies for gsettings backend")
+	return ()
+endif ()
+
+
 pkg_check_modules (GLIB glib-2.0>=2.42 QUIET)
 pkg_check_modules (GMODULE gmodule-2.0>=2.42 QUIET)
 pkg_check_modules (GIO gio-2.0>=2.42 QUIET)
@@ -21,7 +32,7 @@ endif ()
 
 include_directories (${GLIB_INCLUDE_DIRS})
 add_library (elektrasettings SHARED elektrasettingsbackend.c ${ELEKTRA_HEADERS})
-set (GSETTINGS_MODULE_PRIORITY 200 CACHE STRING "GIO Module Priority. Lower then 100 means dconf backend will be default.")
+set (GSETTINGS_MODULE_PRIORITY 200 CACHE STRING "GIO Module Priority. Lower than 100 means dconf backend will be default.")
 target_compile_definitions (elektrasettings PRIVATE G_ELEKTRA_SETTINGS_MODULE_PRIORITY=${GSETTINGS_MODULE_PRIORITY})
 if (GELEKTRA_LIBRARY)
 	include(LibFindMacros)

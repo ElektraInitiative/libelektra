@@ -3,7 +3,7 @@
  *
  * @brief Methods for key sets.
  *
- * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
  */
 
 #ifdef HAVE_KDBCONFIG_H
@@ -370,7 +370,7 @@ int ksDel (KeySet * ks)
  *
  * @param ks the keyset object to work with
  * @see ksAppendKey() for details on how keys are inserted in KeySets
- * @retval 0 on sucess
+ * @retval 0 on success
  * @retval -1 on failure (memory)
  */
 int ksClear (KeySet * ks)
@@ -484,7 +484,7 @@ static int keyCompareByNameCase (const void * p1, const void * p2)
 /**
  * @brief Compare only the owner of two keys (not the name)
  *
- * @return comparision result
+ * @return comparison result
  */
 static int keyCompareByOwner (const void * p1, const void * p2)
 {
@@ -564,7 +564,7 @@ static int keyCompareByNameOwnerCase (const void * p1, const void * p2)
  * @note the owner will only be used if the names are equal.
  *
  * Often is enough to know if the other key is
- * less then or greater then the other one.
+ * less then or greater than the other one.
  * But Sometimes you need more precise information,
  * see keyRel().
  *
@@ -1236,11 +1236,15 @@ int ksRewind (KeySet * ks)
  *
  * @note You must not delete or change the key, use ksPop() if you want to delete it.
  *
+ * @note That applications must do ksLookup() with an cascading key for every single
+ * key before using it, because specifications allow to hide or override keys.
+ *
  * @param ks the keyset object to work with
  * @return the new current Key
  * @retval 0 when the end is reached
  * @retval 0 on NULL pointer
  * @see ksRewind(), ksCurrent()
+ * @see ksLookup() to honor specifications
  */
 Key * ksNext (KeySet * ks)
 {
@@ -1906,6 +1910,13 @@ static Key * elektraLookupCreateKey (KeySet * ks, Key * key, ELEKTRA_UNUSED opti
 
 /**
  * Look for a Key contained in @p ks that matches the name of the @p key.
+ *
+ * @note that applications should only use ksLookup() with cascading
+ * keys. Furthermore, a lookup should be done for every key, in particular
+ * during iterations so that the specifications are honored correctly.
+ * Keys of all namespaces need to be present so that ksLookup()
+ * can work correctly, so make sure to also use kdbGet() with a cascading
+ * key.
  *
  * @p ksLookup() is designed to let you work with
  * entirely pre-loaded KeySets. The

@@ -36,7 +36,7 @@ if (DOXYGEN_FOUND)
 			set (WITH_LATEX YES)
 		else (LATEX_COMPILER)
 			set (WITH_LATEX NO)
-			message (WARNING "Latex not found, PDF Manual can't be created.")
+			message (WARNING "Sorry, I cannot create the PDF Manual: I did not find Latex.")
 		endif (LATEX_COMPILER)
 	else (BUILD_PDF)
 		set (WITH_LATEX NO)
@@ -54,6 +54,9 @@ if (DOXYGEN_FOUND)
 	# fix usage with wine
 	# https://github.com/ElektraInitiative/libelektra/pull/340#discussion_r44044444
 	find_util (markdownlinkconverter MARKDOWN_LINK_CONVERTER "")
+	if (DOXYGEN_VERSION VERSION_GREATER "1.8.11")
+		set (MARKDOWN_LINK_CONVERTER "\\\"${MARKDOWN_LINK_CONVERTER}\\\"")
+	endif ()
 
 	configure_file (
 		"${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile"
@@ -80,9 +83,9 @@ if (DOXYGEN_FOUND)
 
 		add_custom_command (
 			OUTPUT ${OUTPUT_DIRECTORY}/latex/refman.pdf
-			COMMAND ${PDFLATEX_COMPILER} ARGS ${OUTPUT_DIRECTORY}/latex/refman.tex
-			COMMAND ${PDFLATEX_COMPILER} ARGS ${OUTPUT_DIRECTORY}/latex/refman.tex
-			COMMAND ${PDFLATEX_COMPILER} ARGS ${OUTPUT_DIRECTORY}/latex/refman.tex
+			COMMAND ${PDFLATEX_COMPILER} ARGS ${PDFLATEX_COMPILER_OPTIONS} ${OUTPUT_DIRECTORY}/latex/refman.tex
+			COMMAND ${PDFLATEX_COMPILER} ARGS ${PDFLATEX_COMPILER_OPTIONS} ${OUTPUT_DIRECTORY}/latex/refman.tex
+			COMMAND ${PDFLATEX_COMPILER} ARGS ${PDFLATEX_COMPILER_OPTIONS} ${OUTPUT_DIRECTORY}/latex/refman.tex
 			DEPENDS ${OUTPUT_DIRECTORY}/latex/refman.tex markdownlinkconverter
 			WORKING_DIRECTORY ${OUTPUT_DIRECTORY}/latex/
 		)
@@ -102,7 +105,36 @@ if (DOXYGEN_FOUND)
 		WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
 	)
 else (DOXYGEN_FOUND)
-	message (WARNING "Doxygen not found, Reference Manual can't be created even though requested with BUILD_DOCUMENTATION.")
+	message (WARNING "Sorry, I cannot create the reference manual: I could not find Doxygen")
 endif (DOXYGEN_FOUND)
+
+if (INSTALL_DOCUMENTATION)
+	#API.md
+	install (FILES BIGPICTURE.md DESTINATION ${TARGET_DOCUMENTATION_TEXT_FOLDER})
+	#code_of_conduct.md
+	#COMPILE.md
+	install (FILES GOALS.md DESTINATION ${TARGET_DOCUMENTATION_TEXT_FOLDER})
+	install (FILES LICENSE.md DESTINATION ${TARGET_DOCUMENTATION_TEXT_FOLDER})
+	install (FILES METADATA.ini DESTINATION ${TARGET_DOCUMENTATION_TEXT_FOLDER})
+	install (FILES SECURITY.md DESTINATION ${TARGET_DOCUMENTATION_TEXT_FOLDER})
+	#TESTING.md
+	#VERSION.md
+	install (FILES AUTHORS.md DESTINATION ${TARGET_DOCUMENTATION_TEXT_FOLDER})
+	#CODING.md
+	install (FILES CONTRACT.ini DESTINATION ${TARGET_DOCUMENTATION_TEXT_FOLDER})
+	#DESIGN.md
+	#GIT.md
+	#INSTALL.md
+	set (news ${CMAKE_CURRENT_BINARY_DIR}/NEWS.md)
+	file(GLOB files "news/*.md")
+	file (REMOVE ${news})
+	foreach (file ${files})
+		file (READ ${file} content)
+		file (APPEND ${news} "\n\n\n\n\n${content}")
+	endforeach ()
+	install (FILES ${news} DESTINATION ${TARGET_DOCUMENTATION_TEXT_FOLDER})
+	install (FILES WHY.md DESTINATION ${TARGET_DOCUMENTATION_TEXT_FOLDER})
+
+endif ()
 
 add_subdirectory(help)

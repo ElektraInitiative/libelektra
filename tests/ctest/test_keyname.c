@@ -3,7 +3,7 @@
  *
  * @brief Test suite for Libease functions accessing key name data.
  *
- * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
  */
 
 #include <kdbease.h>

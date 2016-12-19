@@ -4,7 +4,7 @@
 - infos/needs =
 - infos/provides = storage/dpkg
 - infos/placements = getstorage setstorage
-- infos/status = nodep limited nodoc unfinished
+- infos/status = unittest nodep limited nodoc unfinished
 - infos/description = can be used to mount dpkg files
 
 ## Example ##

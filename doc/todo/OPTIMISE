@@ -45,7 +45,7 @@ keySet:
 
 == metadata ==
 
-Because metadata is often the same accross many keys we introduced a way to share it.
+Because metadata is often the same across many keys we introduced a way to share it.
 heap profiling of a large keyset with/without shared metadata
 
 examine "benchmark" again, maybe some more interesting things are hidden there...

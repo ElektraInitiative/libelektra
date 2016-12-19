@@ -11,6 +11,9 @@
 ## Introduction ##
 
 This plugin allows you to read and write CSV files within Elektra.
+It aims to be compatible with RFC 4180.
+Rows and columns are written in Elektra arrays (`#0`, `#1`,..).
+Using configuration you can give columns a name.
 
 ## Configuration ##
 

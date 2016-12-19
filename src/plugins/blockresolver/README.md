@@ -32,43 +32,67 @@ A block consists of 2 parts:
 Currently the identifier must be unique.
  
 ## Example ##
+```sh
+# Backup-and-Restore:system/examples/blockresolver
+sudo kdb mount -R blockresolver /tmp/test.block system/examples/blockresolver -c identifier=">>> block config" ini
 
-    % cat /tmp/test.block
-    bla
-    bla
-    bla
-    ### block config start
-    [section1]
-    key1 = val1
-    [section2]
-    key2 = val2
-    ### block config stop
-    asdf
-    asdf
-    asdf
+# create testfile
+cat > /tmp/test.block << EOF \
+text\
+more text\
+some more text\
+>>> block config start\
+[section1]\
+key1 = val1\
+[section2]\
+key2 = val2\
+>>> block config stop\
+text again\
+and more text\
+text\
+EOF
 
-    % kdb mount -R blockresolver /tmp/test.block system/blocktest -c identifier="### block config"
-    % kdb export system/blocktest
-    [section1]
-    key1 = val1
-    [section2]
-    key2 = val2
+# check testfile
+cat /tmp/test.block
+#> text
+#> more text
+#> some more text
+#> >>> block config start
+#> [section1]
+#> key1 = val1
+#> [section2]
+#> key2 = val2
+#> >>> block config stop
+#> text again
+#> and more text
+#> text
 
-    % kdb set system/blocktest/section1/key12 val12
-    Create a new key system/blocktest/section1/key12 with string val12
+# only the block between the tags is read!
+kdb export system/examples/blockresolver ini
+#> [section1]
+#> key1 = val1
+#> [section2]
+#> key2 = val2
 
-    % cat /tmp/test.block
-    bla
-    bla
-    bla
-    ### block config start
-    [section1]
-    key1 = val1
-    key12 = val12
-    [section2]
-    key2 = val2
-    ### block config stop
-    asdf
-    asdf
-    asdf
+# add a new key to the resolved block 
+kdb set system/examples/blockresolver/section1/key12 val12
 
+cat /tmp/test.block
+#> text
+#> more text
+#> some more text
+#> >>> block config start
+#> [section1]
+#> key1 = val1
+#> key12 = val12
+#> [section2]
+#> key2 = val2
+#> >>> block config stop
+#> text again
+#> and more text
+#> text
+
+# cleanup
+kdb rm -r system/examples/blockresolver
+sudo kdb umount system/examples/blockresolver
+```

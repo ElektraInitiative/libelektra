@@ -21,7 +21,7 @@ The plugin currently supports the following metakeys for controlling the convers
 
 - `convert/metaname` specifies the name of the resulting metakey. For example tagging the key `user/config/key1` with `convert/metaname = comment` means that the key will be converted to a metakey with the name `comment`.
 - `convert/append` specifies the append strategy (see below)
-- `convert/append/samelevel` specifies that the key should only be written to the metadata of a key with the same hiearchy level (see below).
+- `convert/append/samelevel` specifies that the key should only be written to the metadata of a key with the same hierarchy level (see below).
 
 The keys converted to metadata are restored as soon as the keyset is written back.
 However, the plugin is stateful. This means that a keyset must be read and keys must be
@@ -40,7 +40,7 @@ Currently the plugin supports the following strategies:
 ### Parent Strategy ###
 
 The metadata is added to the first existing parent of the converted key.
-This does not neccessarily have to be the parent of the keyset. If no such key is found,
+This does not necessarily have to be the parent of the keyset. If no such key is found,
 the first key in a sorted keyset will receive the metadata (this is usually the parent key of the keyset).
 For example consider the following keyset:
 
@@ -87,11 +87,11 @@ The metadata resulting from a converted key is never appended to another key whi
 be converted. This prevents that the data of converted keys is invisible after the conversion.
 Instead the metadata resulting from different converted keys with the same append strategy is
 merged together (separated by a newline). Keys with different append strategies are skipped,
-until either a key with the same strategy is found (which is simply merged as decribed above)
+until either a key with the same strategy is found (which is simply merged as described above)
 or the target key is found. The keys are always processed in the order of an ordered keyset.
 For example consider the following keyset:
 
-    user/conifg/key0
+    user/config/key0
     user/config/key1 = value1
     user/config/key2 = value2
     user/config/key3 = value3

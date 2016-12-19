@@ -3,7 +3,7 @@
  *
  * @brief test suite for the fcrypt plugin
  *
- * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
  *
  */
 
@@ -23,20 +23,6 @@
 #define TEST_FILE "fcrypt_testfile"
 
 static const kdb_octet_t testContent[] = { 0x01, 0x02, 0xCA, 0xFE, 0xBA, 0xBE, 0x03, 0x04 };
-
-/*
- * @brief create temporary file name
- * @returns allocated string holding the path to the temporary file. Must be freed by the caller.
- */
-static char * getTemporaryFileName ()
-{
-	const size_t newFileAllocated = strlen (TEST_FILE) + 7;
-	char * newFile = elektraMalloc (newFileAllocated);
-	if (!newFile) return NULL;
-	snprintf (newFile, newFileAllocated, "%sXXXXXX", TEST_FILE);
-	mkstemp (newFile);
-	return newFile;
-}
 
 static KeySet * newPluginConfiguration ()
 {
@@ -145,7 +131,7 @@ static void test_file_operations ()
 	if (plugin)
 	{
 		KeySet * data = ksNew (0, KS_END);
-		char * tmpFile = getTemporaryFileName ();
+		const char * tmpFile = elektraFilename ();
 		if (tmpFile)
 		{
 			// prepare test file to be encrypted
@@ -165,7 +151,6 @@ static void test_file_operations ()
 			succeed_if (isTestFileCorrect (tmpFile) == -1, "postgetstorage did not encrypt the file again");
 
 			remove (tmpFile);
-			elektraFree (tmpFile);
 		}
 
 		ksDel (data);

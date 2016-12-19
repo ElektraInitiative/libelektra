@@ -27,3 +27,7 @@ create_lib_symlink (
 		libelektraintercept-env.so
 		libelektragetenv.so
 		)
+create_lib_symlink (
+		libelektraintercept-env.so
+		libelektragetenv.so.0
+		)

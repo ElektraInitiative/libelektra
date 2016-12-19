@@ -3,7 +3,7 @@
  *
  * @brief
  *
- * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
  */
 
 #include <set.hpp>
@@ -63,18 +63,19 @@ int SetCommand::execute (Cmdline const & cl)
 
 	Key key = conf.lookup (name);
 
+	std::ostringstream toprint;
 	if (!key)
 	{
-		if (!cl.quiet) cout << "Create a new key " << name;
+		toprint << "Create a new key " << name;
 		key = Key (name, KEY_END);
 		if (!nullValue)
 		{
-			cout << " with string " << value << endl;
+			toprint << " with string " << value << endl;
 			key.setString (value);
 		}
 		else
 		{
-			cout << " with null value" << endl;
+			toprint << " with null value" << endl;
 			key.setBinary (nullptr, 0);
 		}
 		if (!key.isValid ())
@@ -88,18 +89,20 @@ int SetCommand::execute (Cmdline const & cl)
 	{
 		if (!nullValue)
 		{
-			if (!cl.quiet) cout << "Set string to " << value << endl;
+			toprint << "Set string to " << value << endl;
 			key.setString (value);
 		}
 		else
 		{
-			if (!cl.quiet) cout << "Set null value" << endl;
+			toprint << "Set null value" << endl;
 			key.setBinary (nullptr, 0);
 		}
 	}
 	kdb.set (conf, k);
 	printWarnings (cerr, k);
 	printError (cerr, k);
+
+	if (!cl.quiet) cout << toprint.str ();
 
 	return 0;
 }

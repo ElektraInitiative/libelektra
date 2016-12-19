@@ -3,12 +3,13 @@
  *
  * @brief
  *
- * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
  */
 
 #ifndef INFO_HPP
 #define INFO_HPP
 
+#include "coloredkdbio.hpp"
 #include <command.hpp>
 
 #include <kdb.hpp>

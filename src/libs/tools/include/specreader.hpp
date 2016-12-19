@@ -3,7 +3,7 @@
  *
  * @brief Implements a way to read spec for mounting purposes
  *
- * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
  *
  */
 

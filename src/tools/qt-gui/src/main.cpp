@@ -3,7 +3,7 @@
  *
  * @brief
  *
- * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
  */
 
 #include <QApplication>
@@ -46,7 +46,6 @@ int main (int argc, char * argv[])
 	app.setOrganizationName ("ElektraInitiative");
 	app.setOrganizationDomain ("libelektra.org");
 	app.setApplicationName ("org.libelektra.elektra-qt-editor");
-	app.setApplicationDisplayName ("Elektra Qt Editor");
 
 	QQmlApplicationEngine engine;
 	QQmlContext * ctxt = engine.rootContext ();

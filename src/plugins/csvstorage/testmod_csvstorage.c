@@ -3,7 +3,7 @@
  *
  * @brief Tests for csvstorage plugin
  *
- * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
  *
  */
 
@@ -125,6 +125,51 @@ static void testSetColnames (const char * file)
 
 	PLUGIN_CLOSE ();
 }
+
+static void testreadwritecomplicated (const char * file)
+{
+	Key * parentKey = keyNew ("user/tests/csvstorage", KEY_VALUE, srcdir_file (file), KEY_END);
+	KeySet * conf = ksNew (10, keyNew ("system/delimiter", KEY_VALUE, ";", KEY_END),
+			       keyNew ("system/header", KEY_VALUE, "colname", KEY_END), KS_END);
+	KeySet * ks = ksNew (0, KS_END);
+	PLUGIN_OPEN ("csvstorage");
+	succeed_if (plugin->kdbGet (plugin, ks, parentKey) > 0, "call to kdbGet was not successful");
+	succeed_if (!strcmp (keyString (ksLookupByName (ks, "user/tests/csvstorage/#1/col3", KDB_O_NONE)), "l1;c3"),
+		    "key value doesn't match expected value");
+	succeed_if (!strcmp (keyString (ksLookupByName (ks, "user/tests/csvstorage/#1/col4", KDB_O_NONE)), "l1\"\"c4"),
+		    "key value doesn't match expected value");
+	succeed_if (!strcmp (keyString (ksLookupByName (ks, "user/tests/csvstorage/#2/col3", KDB_O_NONE)), "l2\nc3"),
+		    "key value doesn't match expected value");
+	succeed_if (!strcmp (keyString (ksLookupByName (ks, "user/tests/csvstorage/#4/col4", KDB_O_NONE)), "l4\"\"c4"),
+		    "key value doesn't match expected value");
+	succeed_if (!strcmp (keyString (ksLookupByName (ks, "user/tests/csvstorage/#5/col3", KDB_O_NONE)), "l5\"\"\nc3"),
+		    "key value doesn't match expected value");
+
+	keySetString (parentKey, elektraFilename ());
+	succeed_if (plugin->kdbSet (plugin, ks, parentKey) >= 0, "error: wrote invalid data");
+	succeed_if (compare_line_files (srcdir_file (file), keyString (parentKey)), "files do not match as expected");
+
+	ksDel (ks);
+	keyDel (parentKey);
+	PLUGIN_CLOSE ();
+}
+
+static void testreadunescapedDQuote (const char * file)
+{
+	Key * parentKey = keyNew ("user/tests/csvstorage", KEY_VALUE, srcdir_file (file), KEY_END);
+	KeySet * conf = ksNew (10, keyNew ("system/delimiter", KEY_VALUE, ";", KEY_END),
+			       keyNew ("system/header", KEY_VALUE, "colname", KEY_END), KS_END);
+	KeySet * ks = ksNew (0, KS_END);
+	PLUGIN_OPEN ("csvstorage");
+	succeed_if (plugin->kdbGet (plugin, ks, parentKey) > 0, "call to kdbGet was not successful");
+	succeed_if (!output_warnings (parentKey), "no warnings in kdbGet");
+	succeed_if (!strcmp (keyString (ksLookupByName (ks, "user/tests/csvstorage/#3/col3", KDB_O_NONE)), "l3\"c3"),
+		    "key value doesn't match expected value");
+
+	ksDel (ks);
+	keyDel (parentKey);
+	PLUGIN_CLOSE ();
+}
 int main (int argc, char ** argv)
 {
 	printf ("CSVSTORAGE     TESTS\n");
@@ -139,7 +184,8 @@ int main (int argc, char ** argv)
 	testwriteinvalidheader ("csvstorage/invalid_columns_header2.csv");
 	testwritevalidemptycol ("csvstorage/valid_empty_col.csv");
 	testSetColnames ("csvstorage/valid.csv");
-
+	testreadwritecomplicated ("csvstorage/complicated.csv");
+	testreadunescapedDQuote ("csvstorage/unescapedQuote.csv");
 	printf ("\ntestmod_csvstorage RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 
 	return nbError;

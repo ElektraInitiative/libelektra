@@ -52,8 +52,18 @@ more testing
 ncurses interface
 pstree like visualization
 
+kdb-grep
+
+interface that makes auto-completion happy
 
 
+
+
+
+== REST-BACKEND ==
+
+make nice interface for JWT library
+make use of cachefilter plugin
 
 
 
@@ -110,7 +120,7 @@ kdb tool:
 == GEN ==
 
 install kdb gen properly
-	search by default in installed pathes
+	search by default in installed paths
 
 using python kdb for gen
 
@@ -157,6 +167,17 @@ use spec+proc namespaces
 
 using kdbSet+kdbGet?
 with constraint checking+solving and so on.
+
+
+
+
+
+## HOMEPAGE ##
+
+- show front page also without javascript
+
+
+
 
 
 

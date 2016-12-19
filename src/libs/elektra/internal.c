@@ -3,7 +3,7 @@
  *
  * @brief Internal methods for Elektra.
  *
- * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
  */
 
 #ifdef HAVE_KDBCONFIG_H
@@ -80,7 +80,7 @@ ssize_t elektraMemcpy (Key ** array1, Key ** array2, size_t size)
 	char * b = (char *)array2;
 	for (size_t i = 0; i < size; i++)
 	{
-		ELEKTRA_ASSERT (a + i != b && b + i != a, "memcpy overlap: %p and %p with size %zu", a, b, size);
+		ELEKTRA_ASSERT (a + i != b && b + i != a, "memcpy overlap: %p and %p with size %zu", (void *)a, (void *)b, size);
 	}
 #endif
 	memcpy (array1, array2, size * sizeof (Key *));
@@ -123,7 +123,7 @@ ssize_t elektraMemmove (Key ** array1, Key ** array2, size_t size)
  **/
 int elektraStrCmp (const char * s1, const char * s2)
 {
-	ELEKTRA_ASSERT (s1 != NULL && s2 != NULL, "Got null pointer s1: %p s2: %p", s1, s2);
+	ELEKTRA_ASSERT (s1 != NULL && s2 != NULL, "Got null pointer s1: %p s2: %p", (void *)s1, (void *)s2);
 
 	return strcmp (s1, s2);
 }
@@ -141,13 +141,13 @@ int elektraStrCmp (const char * s1, const char * s2)
  **/
 int elektraStrCaseCmp (const char * s1, const char * s2)
 {
-	ELEKTRA_ASSERT (s1 != NULL && s2 != NULL, "Got null pointer s1: %p s2: %p", s1, s2);
+	ELEKTRA_ASSERT (s1 != NULL && s2 != NULL, "Got null pointer s1: %p s2: %p", (void *)s1, (void *)s2);
 	return strcasecmp (s1, s2);
 }
 
 /**
  * @brief Compare two memory regions but make cmp chars uppercase before
- * comparision.
+ * comparison.
  *
  * @param s1 The first string to be compared
  * @param s2 The second string to be compared
@@ -161,7 +161,7 @@ int elektraStrCaseCmp (const char * s1, const char * s2)
 int elektraMemCaseCmp (const char * s1, const char * s2, size_t size)
 {
 	size_t i;
-	ELEKTRA_ASSERT (s1 != NULL && s2 != NULL, "Got null pointer s1: %p s2: %p", s1, s2);
+	ELEKTRA_ASSERT (s1 != NULL && s2 != NULL, "Got null pointer s1: %p s2: %p", (void *)s1, (void *)s2);
 	for (i = 0; i < size; i++)
 	{
 		const unsigned char cmp1 = s1[i];
@@ -354,7 +354,7 @@ size_t elektraStrLen (const char * s)
 }
 
 /**
- * @brief Does string formating in fresh allocated memory
+ * @brief Does string formatting in fresh allocated memory
  *
  * @param format as in printf()
  * @param ... as in printf()
@@ -373,7 +373,7 @@ char * elektraFormat (const char * format, ...)
 }
 
 /**
- * @brief Does string formating in fresh allocated memory
+ * @brief Does string formatting in fresh allocated memory
  *
  * @param format as in vprintf()
  * @param arg_list as in vprintf()
@@ -517,7 +517,7 @@ int elektraUnescapeKeyNamePartBegin (const char * source, size_t size, char ** d
 	const char * sp = source;
 	char * dp = *dest;
 
-	ELEKTRA_ASSERT (sp != NULL && dp != NULL, "Got null pointer sp: %p dp: %p", sp, dp);
+	ELEKTRA_ASSERT (sp != NULL && dp != NULL, "Got null pointer sp: %p dp: %p", (void *)sp, (void *)dp);
 
 	if (!strncmp ("%", sp, size))
 	{
@@ -607,7 +607,7 @@ char * elektraUnescapeKeyNamePart (const char * source, size_t size, char * dest
 	char * dp = dest;
 	size_t count = 0;
 
-	ELEKTRA_ASSERT (sp != NULL && dp != NULL, "Got null pointer sp: %p dp: %p", sp, dp);
+	ELEKTRA_ASSERT (sp != NULL && dp != NULL, "Got null pointer sp: %p dp: %p", (void *)sp, (void *)dp);
 
 	while (size)
 	{
@@ -676,7 +676,7 @@ size_t elektraUnescapeKeyName (const char * source, char * dest)
 	char * dp = dest;
 	size_t size = 0;
 
-	ELEKTRA_ASSERT (sp != NULL && dp != NULL, "Got null pointer sp: %p dp: %p", sp, dp);
+	ELEKTRA_ASSERT (sp != NULL && dp != NULL, "Got null pointer sp: %p dp: %p", (void *)sp, (void *)dp);
 
 	if (*source == '/')
 	{
@@ -706,7 +706,7 @@ int elektraEscapeKeyNamePartBegin (const char * source, char * dest)
 	const char * sp = source;
 	char * dp = dest;
 
-	ELEKTRA_ASSERT (sp != NULL && dp != NULL, "Got null pointer sp: %p dp: %p", sp, dp);
+	ELEKTRA_ASSERT (sp != NULL && dp != NULL, "Got null pointer sp: %p dp: %p", (void *)sp, (void *)dp);
 
 	if (!strcmp ("", sp))
 	{
@@ -779,7 +779,7 @@ char * elektraEscapeKeyNamePart (const char * source, char * dest)
 	const char * sp = source;
 	char * dp = dest;
 
-	ELEKTRA_ASSERT (sp != NULL && dp != NULL, "Got null pointer sp: %p dp: %p", sp, dp);
+	ELEKTRA_ASSERT (sp != NULL && dp != NULL, "Got null pointer sp: %p dp: %p", (void *)sp, (void *)dp);
 
 	while (*sp)
 	{
