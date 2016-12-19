@@ -5,7 +5,7 @@
 - infos/provides =
 - infos/recommends =
 - infos/placements =
-- infos/status = maintained nodep libc preview experimental nodoc
+- infos/status = maintained nodep libc writeonly preview nodoc
 - infos/metadata =
 - infos/description = C-struct exports for Elektra
 

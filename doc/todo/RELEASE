@@ -19,7 +19,7 @@ Following shell expansions are used in this document:
 - Check transitions in plugin status: especially from/to experimental
 - Check if Elektra builds, installs and works on freshly installed OS
 
-
+TODO: Fix remotes of ftp+api repos
 
 = Tasks before Release =
 
