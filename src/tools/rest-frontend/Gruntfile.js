@@ -68,7 +68,7 @@ module.exports = function (grunt) {
                     ttl: 1800
                 },
                 output: {
-                    dir: 'public/rss',
+                    dir: 'public/news',
                     feed: 'feed.rss'
                 }
             }
