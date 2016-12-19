@@ -106,8 +106,7 @@ public:
 		std::string result = m_pluginname;
 		for (auto elem : m_config)
 		{
-			kdb::tools::helper::removeNamespace (elem);
-			result.append (" " + elem.getName ().substr (1) + "=" + elem.getString ());
+			result.append (" " + elem.getName ().substr (elem.getNamespace ().length () + 1) + "=" + elem.getString ());
 		}
 		return result;
 	}
