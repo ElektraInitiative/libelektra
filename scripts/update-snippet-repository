@@ -21,7 +21,7 @@ push_changes_to_git() {
       action=added
       ;;
     "UPDATE")
-      action=changed
+      action=updated
       ;;
     "DELETE")
       action=deleted
@@ -31,7 +31,7 @@ push_changes_to_git() {
       ;;
   esac
 
-  git commit -m "auto-commit: $ELEKTRA_REST_AUTHOR $action entry $ELEKTRA_REST_KEY\n\nTitle: $ELEKTRA_REST_TITLE\nPlugin: $ELEKTRA_REST_PLUGIN"
+  git commit -m "auto-commit: $ELEKTRA_REST_AUTHOR $action entry $ELEKTRA_REST_KEY" -m $"Title: $ELEKTRA_REST_TITLE\nPlugin: $ELEKTRA_REST_PLUGIN"
   git push
 }
 

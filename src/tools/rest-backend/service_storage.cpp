@@ -652,7 +652,7 @@ void StorageEngine::setEnvVars (const model::Entry & entry, const std::string ac
 	std::string env_plugin (ELEKTRA_REST_ENV_VAR_PREFIX "PLUGIN");
 	std::string env_action (ELEKTRA_REST_ENV_VAR_PREFIX "ACTION");
 
-	setenv (env_key.c_str (), entry.getName ().c_str (), 1);
+	setenv (env_key.c_str (), entry.getPublicName ().c_str (), 1);
 	setenv (env_title.c_str (), entry.getTitle ().c_str (), 1);
 	setenv (env_author.c_str (), entry.getAuthor ().c_str (), 1);
 	setenv (env_plugin.c_str (), entry.getUploadPlugin ().c_str (), 1);
