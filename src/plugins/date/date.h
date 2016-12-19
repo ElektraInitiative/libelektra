@@ -18,7 +18,49 @@ int elektraDateSet (Plugin * handle, KeySet * ks, Key * parentKey);
 
 Plugin * ELEKTRA_PLUGIN_EXPORT (date);
 
+
+
+/*
+ *
+ * RFC822 
+ *
+ */
+
+const char * rfc822strings[] = { "%a, %d %b %y %T", "%d %b %y %T", "%a, %d %b %y %H:%M", "%d %b %y %H:%M", "%a, %d %b %y %T %z", "%d %b %y %T %z", "%a, %d %b %y %H:%M %z", "%d %b %y %H:%M %z", "%a, %d %b %y %T %Z", "%d %b %y %T %Z", "%a, %d %b %y %H:%M %Z", "%d %b %y %H:%M %Z", NULL};
+
+
+/*
+ *
+ * RFC1123
+ *
+ */
+const char *rfc1123strings[] = {"%a, %d %b %Y %T GMT", NULL};
+
+/*
+ *
+ * RFC850
+ *
+ */
+const char *rfc850straings[] = {"%A, %d-%b-%y %T GMT", NULL};
+
+/*
+ *
+ * asctime
+ *
+ */
+const char *asctimestrings[] = {"%a %b %d %T GMT", NULL};
+
+
+
+/*
+ *
+ * RFC2822 format strings derived from the specification 
+ *
+ */
+
 const char * rfc2822strings[] = { "%a, %d %b %Y %T %z", "%d %b %Y %T %z", "%a, %d %b %Y %H:%M %z", "%d %b %Y %H:%M %z", NULL };
+
+
 
 /*
  *
