@@ -160,12 +160,7 @@ void ConversionApp::formats ()
 		for (auto & elem : service::ConvertEngine::instance ().getEnabledFormats ())
 		{
 			data[index]["format"] = elem.getFileformat ();
-			std::string pluginname = elem.getPluginname ();
-			for (auto confkey : elem.getConfig ())
-			{
-				pluginname.append (" " + confkey.getBaseName () + "=" + confkey.getString ());
-			}
-			data[index]["plugin"]["name"] = pluginname;
+			data[index]["plugin"]["name"] = elem.getPluginnameWithConfig ();
 			int indexStatus = 0;
 			for (auto & stat : elem.getPluginstatuses ())
 			{

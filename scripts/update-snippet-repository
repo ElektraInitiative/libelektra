@@ -1,0 +1,44 @@
+#!/bin/sh
+
+SNIPPET_REPO=/var/lib/jenkins/snippets
+SNIPPET_ROOT=system/configs
+SNIPPET_EXPORT_FILENAME=snippets
+LOCK_FILE=/run/elektra-update-snippet-repository.lock
+
+export_snippets() {
+  # snippets.dump does not need to be exported, it is the source file
+  kdb export $SNIPPET_ROOT ni > $SNIPPET_EXPORT_FILENAME.ni.ini
+  kdb export $SNIPPET_ROOT ini > $SNIPPET_EXPORT_FILENAME.ini
+  kdb export $SNIPPET_ROOT xmltool > $SNIPPET_EXPORT_FILENAME.xml
+  kdb export $SNIPPET_ROOT yajl > $SNIPPET_EXPORT_FILENAME.json
+}
+
+push_changes_to_git() {
+  git add $SNIPPET_EXPORT_FILENAME.*
+
+  case "$ELEKTRA_REST_ACTION" in
+    "INSERT")
+      action=added
+      ;;
+    "UPDATE")
+      action=updated
+      ;;
+    "DELETE")
+      action=deleted
+      ;;
+    *)
+      action=changed
+      ;;
+  esac
+
+  git commit -m "auto-commit: $ELEKTRA_REST_AUTHOR $action entry $ELEKTRA_REST_KEY" -m "$(echo "Title: $ELEKTRA_REST_TITLE\nPlugin: $ELEKTRA_REST_PLUGIN")"
+  git push
+}
+
+(
+  flock -x 9
+
+  cd $SNIPPET_REPO || exit 1
+  export_snippets
+  push_changes_to_git
+) 9>$LOCK_FILE

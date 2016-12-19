@@ -246,10 +246,10 @@ void DatabaseApp::handleGetUnique (cppcms::http::request & req, cppcms::http::re
 		auto it = formats.begin ();
 		while (it != formats.end ())
 		{
-			if (it->getPluginformat ().getPluginname () == entry.getUploadPlugin ())
+			if (it->getPluginformat ().getPluginnameWithConfig () == entry.getUploadPlugin ())
 			{
 				data["value"][j]["format"] = it->getPluginformat ().getFileformat ();
-				data["value"][j]["plugin"] = it->getPluginformat ().getPluginname ();
+				data["value"][j]["plugin"] = it->getPluginformat ().getPluginnameWithConfig ();
 				data["value"][j]["value"] = it->getConfig ();
 				data["value"][j]["validated"] = it->isValidated ();
 				j++;
@@ -262,7 +262,7 @@ void DatabaseApp::handleGetUnique (cppcms::http::request & req, cppcms::http::re
 		for (auto & elem : formats)
 		{
 			data["value"][j]["format"] = elem.getPluginformat ().getFileformat ();
-			data["value"][j]["plugin"] = elem.getPluginformat ().getPluginname ();
+			data["value"][j]["plugin"] = elem.getPluginformat ().getPluginnameWithConfig ();
 			data["value"][j]["value"] = elem.getConfig ();
 			data["value"][j]["validated"] = elem.isValidated ();
 			j++;
@@ -704,7 +704,7 @@ model::Entry DatabaseApp::buildAndValidateEntry (cppcms::http::request & req, cp
 			service::ConvertEngine::instance ().import (input_data.conf_value, input_data.conf_format, entry);
 		auto subkeys = cfg.getKeySet ();
 		entry.addSubkeys (subkeys);
-		entry.setUploadPlugin (cfg.getPluginformat ().getPluginname ());
+		entry.setUploadPlugin (cfg.getPluginformat ().getPluginnameWithConfig ());
 	}
 	catch (exception::UnsupportedConfigurationFormatException & e)
 	{
