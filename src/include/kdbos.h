@@ -39,7 +39,7 @@
  * Go ahead and write a #ifdef block for your operating system
  * when the POSIX defaults are not ok
  *
- * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
  */
 
 #ifndef KDBOS_H

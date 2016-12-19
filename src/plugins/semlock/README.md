@@ -4,7 +4,7 @@
 - infos/needs =
 - infos/provides =
 - infos/placements = pregetstorage postgetstorage presetstorage postcommit postrollback
-- infos/status = maintained reviewed nodep global experimental unfinished -10000
+- infos/status = maintained reviewed unittest global experimental unfinished nodoc -10000
 - infos/description = locks files during usage
 
 ## Semlock ##

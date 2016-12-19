@@ -3,7 +3,7 @@
  *
  * @brief Test suite for mounting related issues.
  *
- * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
  */
 
 #include <../../src/libs/elektra/backend.c>

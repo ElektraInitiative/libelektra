@@ -3,7 +3,7 @@
  *
  * @brief
  *
- * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
  */
 
 #ifdef HAVE_KDBCONFIG_H
@@ -194,7 +194,7 @@ int main (int argc, char ** argv)
 	test_utf8_needed ();
 	test_utf8_conversation ();
 
-	printf ("\ntest_backendhelpers RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
+	printf ("\ntest_iconv RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 
 	return nbError;
 }

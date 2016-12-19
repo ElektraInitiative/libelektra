@@ -1,4 +1,9 @@
 #!/bin/sh
+#
+# @author Markus Raab <elektra@markus-raab.org>
+# @brief Mount some augeas lenses
+# @date 20.11.2016
+# @tags mount, augeas
 
 if [ -z "$KDB" ]; then
 	KDB=kdb

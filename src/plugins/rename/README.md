@@ -46,7 +46,7 @@ last transformation to be applied to all keys on kdbSet.
 
 `toupper` or `tolower` tells the rename plugin to convert the whole keyname below below the parentKey to lower or uppercase.
 
-`unchanged` returnes the key to it's original name
+`unchanged` returns the key to it's original name
 
 `keyname` tells the plugin to keep the name of the advanced transformation
 

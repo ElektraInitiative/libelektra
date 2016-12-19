@@ -3,7 +3,7 @@
  *
  * @brief Private declarations.
  *
- * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
  */
 
 #ifndef KDBPRIVATE_H
@@ -13,6 +13,7 @@
 #include <kdbconfig.h>
 #include <kdbextension.h>
 #include <kdbhelper.h>
+#include <kdbmacros.h>
 #include <kdbplugin.h>
 #include <kdbproposal.h>
 #include <kdbtypes.h>
@@ -381,14 +382,6 @@ struct _Plugin
 
 
 /**
- * @defgroup internaldatastructs Internal Datastructures
- * @brief Internal used Datastructures
- */
-
-
-/**
- * @defgroup trie Trie
- * @ingroup internaldatastructs
  *
  * The private trie structure.
  *

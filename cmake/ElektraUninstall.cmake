@@ -3,19 +3,21 @@
 # xargs rm < install_manifest.txt
 #
 
-set(MANIFEST "@CMAKE_BINARY_DIR@/install_manifest.txt")
+set(MANIFEST "${CMAKE_BINARY_DIR}/install_manifest.txt")
 
-if (NOT EXISTS "@MANIFEST@")
-	message (FATAL_ERROR "Cannot find install manifest: @MANIFEST@")
-endif (NOT EXISTS "@MANIFEST@")
+if (NOT EXISTS "${MANIFEST}")
+	message (FATAL_ERROR "Cannot find install manifest: ${MANIFEST}")
+endif (NOT EXISTS "${MANIFEST}")
 
-file (READ "@MANIFEST@" files)
+#message (MANIFEST IS ${MANIFEST})
+
+file (READ "${MANIFEST}" files)
 string (REGEX REPLACE "\n" ";" files "${files}")
 foreach (file ${files})
 	message(STATUS "Uninstalling $ENV{DESTDIR}${file}")
 	if (IS_SYMLINK "$ENV{DESTDIR}${file}" OR EXISTS "$ENV{DESTDIR}${file}")
 		exec_program(
-			"@CMAKE_COMMAND@" ARGS "-E remove \"$ENV{DESTDIR}${file}\""
+			"${CMAKE_COMMAND}" ARGS "-E remove \"$ENV{DESTDIR}${file}\""
 			OUTPUT_VARIABLE rm_out
 			RETURN_VALUE rm_retval
 			)

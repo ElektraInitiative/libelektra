@@ -111,7 +111,7 @@ if (BINDINGS MATCHES "ALL")
 	list (REMOVE_ITEM BINDINGS ALL)
 endif()
 
-set (BINDINGS_DOC "Which bindings should be added? ALL for all available, SWIG, GI for plugins based on respective technology, DEFAULT for minimal set.")
+set (BINDINGS_DOC "Which bindings should be added? ALL for all available, DEFAULT for minimal set, see doc/COMPILE.md.")
 
 
 set (BINDINGS
@@ -292,13 +292,6 @@ else (BUILD_TESTING)
 	set (INSTALL_TESTING OFF CACHE BOOL "Install testcases" FORCE)
 endif (BUILD_TESTING)
 
-set (ENABLE_COVERAGE OFF CACHE BOOL "enable coverage analysis (using gcov)")
-set (COVERAGE_PREFIX
-		"${PROJECT_SOURCE_DIR}/.."
-		CACHE FILEPATH
-		"Full path to common prefix of build+source directory"
-    )
-
 if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
 	option (INSTALL_SYSTEM_FILES "Install files to system directories" OFF)
 else ()
@@ -311,8 +304,17 @@ option (ENABLE_OPTIMIZATIONS "Turn on optimizations that trade memory for speed"
 
 
 #
-# Developer builds (debug or verbose build)
+# Developer builds
 #
+
+option (ENABLE_ASAN "Activate sanitizers, see doc/TESTING.md.")
+
+set (ENABLE_COVERAGE OFF CACHE BOOL "Enable coverage analysis (using gcov), see doc/TESTING.md.")
+set (COVERAGE_PREFIX
+		"${PROJECT_SOURCE_DIR}/.."
+		CACHE FILEPATH
+		"Full path to common prefix of build+source directory"
+    )
 
 option (ENABLE_DEBUG "Build with assertions and optimize for developing with Elektra.")
 if (ENABLE_DEBUG)
@@ -357,6 +359,12 @@ set (TARGET_PKGCONFIG_FOLDER
 		"The folder (below prefix/lib) folder where to install pkgconfig files. LIB_SUFFIX is honored."
     )
 
+set (TARGET_DOCUMENTATION_TEXT_FOLDER
+		"share/doc/elektra"
+		CACHE STRING
+		"The folder (below prefix) where to install textual documentation files."
+    )
+
 set (TARGET_DOCUMENTATION_HTML_FOLDER
 		"share/doc/elektra-api/html"
 		CACHE STRING
@@ -379,6 +387,12 @@ set (TARGET_TOOL_EXEC_FOLDER
 		"lib${LIB_SUFFIX}/elektra/tool_exec"
 		CACHE STRING
 		"This folder (below prefix) will be used to install additional kdb-tools"
+    )
+
+set (TARGET_TOOL_DATA_FOLDER
+		"share/elektra/tool_data"
+		CACHE STRING
+		"The folder (below prefix) where to install tool data files."
     )
 
 set (TARGET_TEST_DATA_FOLDER

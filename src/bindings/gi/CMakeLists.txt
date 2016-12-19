@@ -22,13 +22,15 @@ if (INTROSPECTION_FOUND)
 
 	add_custom_command(
 		OUTPUT ${GIR_FILE}
-		COMMAND ${INTROSPECTION_SCANNER}
+		COMMAND ${DISABLE_LSAN}
+			${INTROSPECTION_SCANNER}
 			--warn-all --warn-error
 			--namespace=${GIR_NS}
 			--symbol-prefix=${GIR_SYMBOL_PREFIX}
 			--nsversion=${SO_VERSION}.0
 			--no-libtool
 			--library-path=${GELEKTRA_LIBRARY_DIR}
+			${ASAN_LIBRARY}
 			--library=${GELEKTRA_LIBRARY}
 			--include=GObject-2.0
 			-I${GIR_INCDIRS}

@@ -3,7 +3,7 @@
  *
  * @brief Contains the set direction of the hosts plugin
  *
- * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
  *
  */
 
@@ -140,7 +140,7 @@ int elektraHostsSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * pa
 
 	if (ret < 0)
 	{
-		ELEKTRA_SET_ERROR (67, parentKey, strerror (errno));
+		ELEKTRA_SET_ERROR (87, parentKey, strerror (errno));
 		fclose (fp);
 		return -1;
 	}

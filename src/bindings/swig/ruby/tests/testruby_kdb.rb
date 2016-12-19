@@ -4,13 +4,18 @@
 #
 # @brief unit test cases for Kdb::KDB
 #
-# @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+# @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
 #
 
 require 'kdb'
 require 'test/unit'
+require_relative 'test_helper.rb'
 
-RB_TEST_NS = "user/tests/swig_ruby"
+# basename for all keys written to a configuration used in the following
+# test cases
+RB_TEST_NS = "/tests/ruby"
+# key namespace use when creating new keys
+NAMESPACE  = "user"
 
 class KdbTestCases < Test::Unit::TestCase
 
@@ -44,8 +49,9 @@ class KdbTestCases < Test::Unit::TestCase
 
       assert ret >= 0
 
-      ks << Kdb::Key.new("#{RB_TEST_NS}/kdbgetset/c1", value: "v1")
-      ks << Kdb::Key.new("#{RB_TEST_NS}/kdbgetset/c2", value: "v2", meta: "m2")
+      ks << Kdb::Key.new("#{NAMESPACE}#{RB_TEST_NS}/kdbgetset/c1", value: "v1")
+      ks << Kdb::Key.new("#{NAMESPACE}#{RB_TEST_NS}/kdbgetset/c2",
+                         value: "v2", meta: "m2")
 
       ret = h.set ks, RB_TEST_NS
 
@@ -65,12 +71,12 @@ class KdbTestCases < Test::Unit::TestCase
       # use KDB_O_POP to remove the keys from the KeySet
       k = ks.lookup "#{RB_TEST_NS}/kdbgetset/c1", Kdb::KDB_O_POP
       assert_not_nil k
-      assert_equal "#{RB_TEST_NS}/kdbgetset/c1", k.name
+      assert_equal "#{NAMESPACE}#{RB_TEST_NS}/kdbgetset/c1", k.name
       assert_equal "v1", k.value
 
       k = ks.lookup "#{RB_TEST_NS}/kdbgetset/c2", Kdb::KDB_O_POP
       assert_not_nil k
-      assert_equal "#{RB_TEST_NS}/kdbgetset/c2", k.name
+      assert_equal "#{NAMESPACE}#{RB_TEST_NS}/kdbgetset/c2", k.name
       assert_equal "v2", k.value
       assert_equal "m2", k["meta"]
 
@@ -105,7 +111,7 @@ class KdbTestCases < Test::Unit::TestCase
       assert_equal 1, ret
       assert ks.size > 0
 
-      # close has to be called explicitely
+      # close has to be called explicitly
       db.close
     end
   end
@@ -158,7 +164,8 @@ class KdbTestCases < Test::Unit::TestCase
       assert_raise Kdb::KDBException do
         Kdb.open do |db|
           db_access = db
-          ks = Kdb::KeySet.new Kdb::Key.new("#{RB_TEST_NS}/key1", value: "v1")
+          ks = Kdb::KeySet.new Kdb::Key.new("#{NAMESPACE}#{RB_TEST_NS}/key1",
+                                            value: "v1")
           # raises an exception
           db.set ks, RB_TEST_NS
         end

@@ -35,7 +35,7 @@ The latest version (from git master) of this document can be found at
 http://doc.libelektra.org/api/latest/html
 
 
-On github links to API functions are broken, so it is recommended that you continue
+**Important:** On github links to API functions are broken, so it is recommended that you continue
 reading in one of these links above.
 
 ##  Using the Elektra Library ##

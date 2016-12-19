@@ -4,7 +4,7 @@
 - infos/provides = storage/xml
 - infos/needs = 
 - infos/placements = getstorage setstorage
-- infos/status = maintained unittest final unfinished old
+- infos/status = maintained unittest final memleak unfinished old nodoc
 - infos/description = Storage using libelektratools xml format.
 
 ## Introduction ##

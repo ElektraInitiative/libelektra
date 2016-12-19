@@ -3,7 +3,7 @@
  *
  * @brief A plugin that makes use of libaugeas to read and write configuration files
  *
- * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
  *
  */
 
@@ -13,6 +13,10 @@
 
 /* used for asprintf */
 #define _GNU_SOURCE
+
+#include <ctype.h>
+#include <glob.h>
+#include <libgen.h>
 
 #include "aug.h"
 
@@ -68,6 +72,57 @@ static const char * getLensPath (Plugin * handle)
 	return keyString (lensPathKey);
 }
 
+int elektraAugeasGenConf (KeySet * ks, Key * errorKey ELEKTRA_UNUSED)
+{
+	glob_t pglob;
+	int retval = 1;
+	const char * f = LIBAUGEAS_PREFIX "/share/augeas/lenses/dist/*.aug";
+	if (glob (f, GLOB_NOSORT, NULL, &pglob) == 0)
+	{
+		ELEKTRA_LOG ("has glob %zd", pglob.gl_pathc);
+		for (size_t i = 0; i < pglob.gl_pathc; ++i)
+		{
+			char * p = elektraStrDup (basename (pglob.gl_pathv[i]));
+			size_t l = strlen (p);
+			if (l > 4)
+			{
+				p[l - 4] = '\0';
+				Key * k = keyNew ("system/", KEY_END);
+				keyAddBaseName (k, p);
+				ksAppendKey (ks, keyDup (k));
+
+				Key * b = keyDup (k);
+				keyAddBaseName (b, "infos");
+				ksAppendKey (ks, keyDup (b));
+				keyAddBaseName (b, "provides");
+				char * s = elektraFormat ("storage/%s", p);
+				keySetString (b, s);
+				elektraFree (s);
+				ksAppendKey (ks, b);
+
+				keyAddBaseName (k, "config");
+				ksAppendKey (ks, keyDup (k));
+				keyAddBaseName (k, "lens");
+				p[0] = toupper (p[0]);
+				p[l - 1] = 's';
+				p[l - 2] = 'n';
+				p[l - 3] = 'l';
+				p[l - 4] = '.';
+				keySetString (k, p);
+				ksAppendKey (ks, k);
+			}
+			elektraFree (p);
+		}
+		globfree (&pglob);
+	}
+	else
+	{
+		ELEKTRA_SET_ERRORF (142, errorKey, "Could not glob %s", f);
+		retval = -1;
+	}
+	return retval;
+}
+
 static const char * getAugeasError (augeas * augeasHandle)
 {
 	const char * reason = 0;
@@ -93,9 +148,12 @@ static const char * getAugeasError (augeas * augeasHandle)
 			aug_get (augeasHandle, "/augeas/text" AUGEAS_TREE_ROOT "/error/message", &message);
 
 			const char * format = "%s\n\tposition: %s:%s\n\tmessage: %s\n\tlens: %s";
-			size_t messageSize = strlen (lens) + strlen (line) + strlen (character) + strlen (message) + strlen (format);
+			size_t messageSize = (augeasError ? strlen (augeasError) : 0) + (line ? strlen (line) : 0) +
+					     (character ? strlen (character) : 0) + (message ? strlen (message) : 0) +
+					     (lens ? strlen (lens) : 0) + strlen (format);
 			char * buffer = elektraMalloc (messageSize);
-			sprintf (buffer, format, augeasError, line, character, message);
+			snprintf (buffer, messageSize, format, augeasError ? augeasError : "", line ? line : "", character ? character : "",
+				  message ? message : "", lens ? lens : "");
 			reason = buffer;
 		}
 		else

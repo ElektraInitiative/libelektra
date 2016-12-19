@@ -3,36 +3,61 @@
 ## Dependencies ##
 
 For the base system you only need cmake and build-essential (make, gcc,
-some unix tools). On Linux distributions these can usually be installed via the distribution's package management.
+some unix tools):
 
-To build documentation you need doxygen, graphviz and [ronn](https://github.com/rtomayko/ronn/blob/master/INSTALLING#files).
+	sudo apt-get install cmake build-essential
 
-To build pdf documentation you need pdflatex with
+Or on RPM based systems (CentOS):
 
-    texlive-fonts-recommended
-    texlive-latex-recommended
-    texlive-latex-extra
+	sudo yum install -y cmake3 gcc-c++
+	
+Or on macOS Sierra, most of the build tools can be obtained by installing XCode (from the App Store). Other required tools may be installed using [brew](http://brew.sh/). First install brew as described on their website. Then issue the following command to get cmake to complete the basic requirements:
 
-For the debian package, please refer to debian/control (in the debian
-branch).
+	brew install cmake
+
+## Optional Dependencies ##
+
+Note: You do not need to install the dependencies listed here.
+But then some of the functionality gets disabled automatically.
+
+To build documentation you need doxygen (we recommend 1.8.8+), graphviz and [ronn](https://github.com/rtomayko/ronn/blob/master/INSTALLING#files):
+
+	apt-get install doxygen graphviz ronn
+
+Or on RPM based systems:
+
+	sudo yum install -y doxygen docbook-style-xsl graphviz ruby
+	gem install ronn
+	
+Or on macOS Sierra using brew:
+
+	brew install doxygen graphviz
+	brew install ruby (in case ruby is not already installed)
+	gem install ronn
+
+To build PDF documentation you need `pdflatex` with
+
+	apt-get install pdflatex texlive-fonts-recommended texlive-latex-recommended texlive-latex-extra
 
 For the plugins, please refer to the README.md of the respective plugin.
+For example, for CentOS:
 
-### MacOS ###
+	sudo yum install -y boost-devel libdb-devel GConf2-devel libxml2-devel yajl-devel libcurl-devel augeas-devel libgit2-devel lua-devel swig python34-devel python-devel java-1.8.0-openjdk-devel jna ruby-devel byacc
 
-On macOS you have to install XCode (from the App Store) to get most of the build tools. cmake can be installed using [brew](http://brew.sh/). First install brew as described on their website. Then you can use the command `brew install cmake` to get the last missing dependency. For building the doxygen documentation, doxygen can be also installed via brew `brew install doxygen`.
+For the Debian package, please refer to debian/control (in the debian
+branch).
 
 ## Preparation ##
 
 Elektra uses cmake.
-Tested are cmake version 2.8.9 and version 3.0.2.
+Tested are cmake version 2.8.9 (minimum) and version 3.0.2 (recommended) among others.
 
 To configure Elektra graphically (with curses) run (`..` belongs to command):
 
-    mkdir build && cd build && cmake .. && ccmake ..
+    mkdir build && cd build && ccmake ..
 
-and press 'c' to configure the cache. After applying the desired settings,
-press 'g' to generate the make file.
+and press 'c' to configure the cache (might be necessary multiple times, and once on the first time in case you dont see any settings).
+After applying the desired settings, press 'g' to generate the make file.
 
 
 All options described here, can also be used with cmake rather than
@@ -177,7 +202,7 @@ Obviously, you can pass the exact list of plugins you want, e.g.:
 
     -DPLUGINS="resolver;sync;dump"
 
-Some plugins are compile-time configureable. Then you can choose which
+Some plugins are compile-time configurable. Then you can choose which
 features are compiled in or out. This is especially important in the
 bootstrapping phase, because then only the compiled in configuration
 applies. To compile-time-configure a plugin, you just pass a underscore
@@ -251,16 +276,16 @@ For example you can use:
 
 Note that the same languages are sometimes available over GI and SWIG.
 In this case, the SWIG bindings are preferred.
-The SWIG executable my be specified with:
+The SWIG executable may be specified with:
 
     -DSWIG_EXECUTABLE=/usr/bin/swig3.0
 
 If this option is not used, cmake will find the first occurrence of
 `swig` in your environment's path.
-Per default GI bindings are not included.
+Even with `ALL` GI bindings (deprecated) and gsettings (experimental) are not included.
 To include them, use:
 
-    -DBINDINGS="ALL;GI"
+    -DBINDINGS="ALL;GI;gsettings"
 
 Some bindings provide different APIs (and not a different language), e.g:
 
@@ -269,7 +294,7 @@ Some bindings provide different APIs (and not a different language), e.g:
 
 To not add such APIs, but only `swig` bindings and `cpp`, you can use:
 
-    -DBINDINGS=SWIG;cpp
+    -DBINDINGS="SWIG;cpp"
 
 
 #### CMAKE_BUILD_TYPE  ####
@@ -286,8 +311,14 @@ It is not recommended to use these options.
 
 #### BUILD_DOCUMENTATION ####
 
-Build documentation with doxygen.
-The [kdb](/src/tools/kdb) tool does only have the integrated docu at the moment.
+Build documentation with doxygen (API) and ronn (man pages).
+
+#### Developer Options ####
+
+As developer you should enable `ENABLE_DEBUG` and `ENABLE_LOGGER`.
+(By default they should be invisible!)
+
+Then continue reading [testing](/doc/TESTING.md) for further options.
 
 #### CMAKE_INSTALL_PREFIX ####
 
@@ -379,12 +410,14 @@ You can pass:
 - `-j` for parallel builds
 - `VERBOSE=1` to see the invocations of the compiler
 
+Continue by reading [INSTALL](INSTALL.md).
+
 ### With CodeBlocks ###
 
 You can build Elektra using Code::Blocks under Gentoo:
 
 Precondition:
-Make sure you have a compiler, xml2 (for kdb tool) and xsl (see later) installed.
+Make sure you have a compiler, xml2 (for kdb tool) and xsl (see later) installed. 
 cmake configure will help you with that, it will make sure you don't forget something
 essential.
 
@@ -408,3 +441,47 @@ Note 3:
     for Gentoo is recommend to emerge sys-apps/lsb-release to name the package
     right even thou not required.
 
+## Troubleshooting ##
+
+### missing links/libraries ###
+
+If you get errors that `libelektra-resolver.so` or `libelektra-storage.so` are missing,
+or the links do not work, you can use as workaround:
+
+	cmake -DBUILD_SHARED=OFF -DBUILD_FULL=ON ..
+
+This issue was reported for:
+
+- OpenSuse 42 (when running `make run_all`)
+- CLion IDE (does not allow to build)
+
+
+### Dependencies not available for Cent OS ###
+
+Please enable EPEL https://fedoraproject.org/wiki/EPEL
+
+	# Install EPEL for RHEL 7
+	curl -o epel-release-7-8.noarch.rpm http://dl.fedoraproject.org/pub/epel/7/x86_64/e/epel-release-7-8.noarch.rpm
+	sudo rpm -ivh epel-release-7-8.noarch.rpm
+	sudo yum update    
+
+For Bindings swig3 is recommended. swig2 only works on some distributions.
+E.g., for Debian Jessie the bindings will crash.
+
+At time of writing, no swig 3 was available, not even in EPEL.
+Thus you need to install swig3 manually:
+
+	curl https://codeload.github.com/swig/swig/tar.gz/rel-3.0.10 | tar xz
+	cd swig-rel-3.0.10 && ./autogen.sh && ./configure && make
+	sudo make install
+	cd ..
+
+Also, no ronn was available, thus you need to do:
+
+	gem install ronn
+
+
+## See also
+
+- [INSTALL](INSTALL.md).
+- [TESTING](TESTING.md).

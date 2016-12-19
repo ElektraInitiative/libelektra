@@ -4,7 +4,7 @@
 - infos/needs =
 - infos/provides = storage
 - infos/placements = getstorage setstorage
-- infos/status = readonly preview difficult limited unfinished
+- infos/status = nodep configurable readonly preview difficult limited unfinished
 - infos/description = regular expressions as storage plugin
 
 ## Introduction ##

@@ -4,7 +4,7 @@
 - infos/provides = storage/info
 - infos/needs =
 - infos/placements = getstorage setstorage
-- infos/status = maintained unittest shelltest nodep readonly limited concept
+- infos/status = maintained unittest shelltest nodep readonly limited nodoc concept
 - infos/description = Includes uname information into the key database.
 
 ## Introduction ##

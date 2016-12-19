@@ -3,7 +3,7 @@
  *
  * @brief
  *
- * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
  */
 
 #include "gelektra-key.h"
@@ -85,7 +85,7 @@ static void create_global_keys ()
 	g_key = gelektra_key_new ("user/key", GELEKTRA_KEY_VALUE, "value", GELEKTRA_KEY_OWNER, "myowner", GELEKTRA_KEY_COMMENT, "mycomment",
 				  GELEKTRA_KEY_UID, "123", GELEKTRA_KEY_GID, 456, GELEKTRA_KEY_MODE, 0644, GELEKTRA_KEY_ATIME, 123,
 				  GELEKTRA_KEY_MTIME, "456", GELEKTRA_KEY_CTIME, 789, GELEKTRA_KEY_DIR, GELEKTRA_KEY_META, "by", "manuel",
-				  GELEKTRA_KEY_NULL, GELEKTRA_KEY_END);
+				  GELEKTRA_KEY_END);
 	succeed_if (g_key != NULL, "unable to create key");
 	succeed_if (gelektra_key_isvalid (g_key), "key should be valid");
 	succeed_if (gelektra_key_getref (g_key) == 1, "refcount should be 1");
@@ -219,7 +219,7 @@ static void test_meta_data ()
 	while ((meta = gelektra_key_nextmeta (g_key)) != NULL)
 	{
 		GElektraKey * curmeta = gelektra_key_currentmeta (g_key);
-		succeed_if (meta > key == curmeta > key, "meta iterators returned different keys");
+		succeed_if (meta->key == curmeta->key, "meta iterators returned different keys");
 		g_object_unref (curmeta);
 
 		++metacnt;

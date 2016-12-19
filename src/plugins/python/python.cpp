@@ -3,7 +3,7 @@
  *
  * @brief Plugin which acts as proxy and calls other plugins written in python
  *
- * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
  *
  */
 

@@ -3,7 +3,7 @@
  *
  * @brief
  *
- * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
  */
 
 #ifndef ELEKTRA_KEY_HPP
@@ -1074,7 +1074,7 @@ inline T Key::get () const
 	ist.imbue (std::locale ("C"));
 	T x;
 	ist >> x; // convert string to type
-	if (ist.fail ())
+	if (ist.fail () || !ist.eof ())
 	{
 		throw KeyTypeConversion ();
 	}

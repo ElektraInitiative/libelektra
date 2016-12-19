@@ -3,7 +3,7 @@
  *
  * @brief Source for desktop plugin
  *
- * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
  *
  */
 
@@ -13,17 +13,23 @@
 #include <stdlib.h>  // for getenv
 #include <strings.h> // for strcasecmp
 
+#include <kdberrors.h>
 #include <kdbhelper.h>
+#include <kdblogger.h>
+#include <kdbmacros.h>
 
 
 int elektraDesktopGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
 {
+	ELEKTRA_LOG ("get desktop %s from %s\n", keyName (parentKey), keyString (parentKey));
+
 	if (!elektraStrCmp (keyName (parentKey), "system/elektra/modules/desktop"))
 	{
 		KeySet * contract =
 			ksNew (30, keyNew ("system/elektra/modules/desktop", KEY_VALUE, "desktop plugin waits for your orders", KEY_END),
 			       keyNew ("system/elektra/modules/desktop/exports", KEY_END),
 			       keyNew ("system/elektra/modules/desktop/exports/get", KEY_FUNC, elektraDesktopGet, KEY_END),
+			       keyNew ("system/elektra/modules/desktop/exports/set", KEY_FUNC, elektraDesktopSet, KEY_END),
 #include ELEKTRA_README (desktop)
 			       keyNew ("system/elektra/modules/desktop/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 		ksAppend (returned, contract);
@@ -46,7 +52,7 @@ int elektraDesktopGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA
 	{
 		ksAppendKey (returned, keyNew (keyName (parentKey), KEY_VALUE, "tde", KEY_END));
 	}
-	else if (!strcasecmp (getenv ("DESKTOP_SESSION"), "unity"))
+	else if ((desktop = getenv ("DESKTOP_SESSION")) && !strcasecmp (desktop, "unity"))
 	{
 		ksAppendKey (returned, keyNew (keyName (parentKey), KEY_VALUE, "unity", KEY_END));
 	}
@@ -64,11 +70,22 @@ int elektraDesktopGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA
 	return 1; // success
 }
 
+int elektraDesktopSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
+{
+	ELEKTRA_LOG ("set desktop %s from %s\n", keyName (parentKey), keyString (parentKey));
+
+	KeySet * info = ksNew (0, KS_END);
+	elektraDesktopGet (handle, info, parentKey);
+	ELEKTRA_SET_ERROR_READ_ONLY (info, returned, parentKey);
+	return 0;
+}
+
 Plugin * ELEKTRA_PLUGIN_EXPORT (desktop)
 {
 	// clang-format off
 	return elektraPluginExport ("desktop",
 		ELEKTRA_PLUGIN_GET,	&elektraDesktopGet,
+		ELEKTRA_PLUGIN_SET,	&elektraDesktopSet,
 		ELEKTRA_PLUGIN_END);
 }
 

@@ -3,7 +3,7 @@
  *
  * @brief
  *
- * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
  */
 
 #include "treeviewmodel.hpp"
@@ -17,6 +17,11 @@
 #include <plugins.hpp>
 #include <toolexcept.hpp>
 
+#if HAVE_DBUS
+#include <QtDBus/QtDBus>
+#endif
+
+#include "kdblogger.h"
 #include <merging/automergeconfiguration.hpp>
 #include <merging/automergestrategy.hpp>
 #include <merging/mergeconflictstrategy.hpp>
@@ -37,6 +42,7 @@ TreeViewModel::TreeViewModel (QObject * parentModel) : m_root ("/", KEY_END), m_
 TreeViewModel::TreeViewModel (MergingKDB * kdb, QObject * parentModel) : m_root ("/", KEY_END), m_kdb (kdb)
 {
 	Q_UNUSED (parentModel);
+	connectDBus ();
 }
 
 TreeViewModel::TreeViewModel (const TreeViewModel & other)
@@ -789,6 +795,32 @@ MergeConflictStrategy * TreeViewModel::getMergeStrategy (const QString & mergeSt
 void TreeViewModel::showConfigNodeMessage (QString title, QString text, QString detailedText)
 {
 	emit showMessage (title, text, detailedText);
+}
+
+void TreeViewModel::connectDBus ()
+{
+#if HAVE_DBUS
+	if (QDBusConnection::sessionBus ().connect (QString (), "/org/libelektra/configuration", "org.libelektra", QString (), this,
+						    SLOT (configChanged (QString))))
+	{
+		ELEKTRA_LOG ("Successfully connected to DBus");
+	}
+	else
+	{
+		ELEKTRA_LOG ("Failed to connect to DBus");
+	}
+#else
+	ELEKTRA_LOG ("No DBus support");
+#endif
+}
+
+void TreeViewModel::configChanged (QString msg)
+{
+	Q_UNUSED (msg)
+	ELEKTRA_LOG ("config changed: %s", msg.toLocal8Bit ().data ());
+
+	synchronize ();
+	refresh ();
 }
 
 QHash<int, QByteArray> TreeViewModel::roleNames () const

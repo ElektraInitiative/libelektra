@@ -3,7 +3,7 @@
  *
  * @brief Header for desktop plugin
  *
- * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
  *
  */
 
@@ -14,6 +14,7 @@
 
 
 int elektraDesktopGet (Plugin * handle, KeySet * ks, Key * parentKey);
+int elektraDesktopSet (Plugin * handle, KeySet * ks, Key * parentKey);
 
 Plugin * ELEKTRA_PLUGIN_EXPORT (desktop);
 

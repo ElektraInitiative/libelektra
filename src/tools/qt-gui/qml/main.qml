@@ -16,7 +16,7 @@ ApplicationWindow {
 	width: Screen.desktopAvailableWidth
 	height: Screen.desktopAvailableHeight
 
-	title: "Elektra Qt Editor"
+	title: "Elektra Qt Editor (%1)".arg(mode)
 
 	onClosing: {
 		if (!undoManager.isClean()){
@@ -41,7 +41,8 @@ ApplicationWindow {
 	property bool	error: false
 	property bool	helpMode: false
 
-	property string version: "0.0.12 (beta)"
+	property string version: "0.0.13 (beta)"
+	property string mode: guiActions.toggleViewerAction.checked ? "Viewer Mode" : "Edit Mode"
 
 	//Spacing & Margins recommended by KDE HIG
 	property int    defaultMargins: 8

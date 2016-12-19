@@ -32,6 +32,10 @@ macro (create_lib_symlink src dest)
 		WORKING_DIRECTORY "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}"
 		)
 
+	if (NOT EXISTS "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/${dest}")
+		file(WRITE "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/${dest}" "to be overwritten, file needs to exists for some IDEs." )
+	endif ()
+
 	if (ARG_PLUGIN)
 		set (LIB_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/lib${LIB_SUFFIX}/${TARGET_PLUGIN_FOLDER}")
 	else ()
@@ -136,7 +140,7 @@ macro(find_swig)
 		find_package(SWIG 3)
 		if (NOT SWIG_FOUND)
 			message(STATUS "Search for swig2 instead")
-			find_package(SWIG 2 QUIET)
+			find_package(SWIG 2)
 		endif()
 	endif (NOT SWIG_FOUND)
 endmacro(find_swig)
@@ -233,11 +237,11 @@ endmacro (add_cppheaders)
 
 macro (add_toolheaders HDR_FILES)
 	include_directories ("${PROJECT_BINARY_DIR}/src/libs/tools/include")
-	file (GLOB BIN_HDR_FILES ${PROJECT_BINARY_DIR}/src/libtools/include/*)
+	file (GLOB_RECURSE BIN_HDR_FILES ${PROJECT_BINARY_DIR}/src/libtools/include/*)
 	list (APPEND ${HDR_FILES} ${BIN_HDR_FILES})
 
 	include_directories ("${PROJECT_SOURCE_DIR}/src/libs/tools/include")
-	file (GLOB SRC_HDR_FILES ${PROJECT_SOURCE_DIR}/src/libs/tools/include/*)
+	file (GLOB_RECURSE SRC_HDR_FILES ${PROJECT_SOURCE_DIR}/src/libs/tools/include/*)
 	list (APPEND ${HDR_FILES} ${SRC_HDR_FILES})
 endmacro (add_toolheaders)
 

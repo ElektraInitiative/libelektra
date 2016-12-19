@@ -1,0 +1,229 @@
+[@config_default_profile@]
+mountpoint = rest-backend.ini
+
+[@config_default_profile@/backend/api/description/raw]
+check/type = string
+description = A link to the blueprint describing the API.
+default = https://git.libelektra.org/tree/master/doc/api_blueprints/snippet-sharing.apib
+
+[@config_default_profile@/backend/api/description/html]
+check/type = string
+description = A link to the compiled blueprint describing the API.
+default = https://doc.libelektra.org/restapi/@KDB_VERSION_MAJOR@.@KDB_VERSION_MINOR@.@KDB_VERSION_MICRO@/snippet-sharing.html
+
+[@config_default_profile@/backend/jwt/encryption/secret]
+check/type = string
+description = A secret string used to encrypt session tokens (JWT).
+example = al3h120d8a_19s
+
+[@config_default_profile@/backend/jwt/validity]
+check/type = long
+description = The number of seconds a JWT is valid from its creation.
+example = 3600
+default = 7200
+
+[@config_default_profile@/backend/kdb/path/configs]
+check/type = string
+description = The root path being used to store configuration snippet entries, must start with a namespace.
+example = user/@tool@/configs
+default = dir/configs
+
+[@config_default_profile@/backend/kdb/path/users]
+check/type = string
+description = The root path being used to store user entries, must start with a namespace.
+example = user/@tool@/users
+default = dir/users
+
+[@config_default_profile@/backend/output/default/entry/sort]
+check/enum = 'asc', 'desc'
+description = The default sort direction being used for requests against configuration snippet entry resources.
+default = 'asc'
+
+[@config_default_profile@/backend/output/default/entry/sortby]
+check/enum = 'key', 'organization', 'application', 'scope', 'slug', 'title', 'author', 'created_at'
+description = The default sort criteria being used for requests against configuration snippet entry resources.
+default = 'key'
+
+[@config_default_profile@/backend/output/default/entry/filterby]
+check/enum = 'all', 'key', 'title', 'description', 'author', 'tags'
+description = The default filter criteria being used for requests against configuration snippet entry resources.
+default = 'all'
+
+[@config_default_profile@/backend/output/default/user/sort]
+check/enum  = 'asc', 'desc'
+description = The default sort direction being used for requests against user entry resources.
+default = 'asc'
+
+[@config_default_profile@/backend/output/default/user/sortby]
+check/enum = 'username', 'email', 'created_at'
+description = The default sort criteria being used for requests against user entry resources.
+default = 'username'
+
+[@config_default_profile@/backend/output/default/user/filterby]
+check/enum = 'all', 'username', 'email'
+description = The default filter criteria being used for requests against user entry resources.
+default = 'all'
+
+[@config_default_profile@/backend/permissions/entry/create]
+check/type = long
+check/type/min = 0
+check/type/max = 100
+description = The required rank a user needs to be able to create new configuration snippet entries.
+default = 10
+
+[@config_default_profile@/backend/permissions/entry/edit]
+check/type = long
+check/type/min = 0
+check/type/max = 100
+description = The required rank a user needs to be able to edit any configuration snippet entry (also from other users).
+default = 50
+
+[@config_default_profile@/backend/permissions/entry/delete]
+check/type = long
+check/type/min = 0
+check/type/max = 100
+description = The required rank a user needs to be able to delete any configuration snippet entry (also from other users).
+default = 50
+
+[@config_default_profile@/backend/permissions/user/view]
+check/type = long
+check/type/min = 0
+check/type/max = 100
+description = The required rank a user needs to be able to view account details of other users.
+default = 100
+
+[@config_default_profile@/backend/permissions/user/edit]
+check/type = long
+check/type/min = 0
+check/type/max = 100
+description = The required rank a user needs to be able to edit account details of other users.
+default = 100
+
+[@config_default_profile@/backend/permissions/user/delete]
+check/type = long
+check/type/min = 0
+check/type/max = 100
+description = The required rank a user needs to be able to delete user accounts of other users.
+default = 100
+
+[@config_default_profile@/backend/permissions/rank/default]
+check/type = long
+check/type/min = 0
+check/type/max = 100
+description = The default rank new users will receive on registration.
+default = 10
+
+
+[@config_default_profile@/cppcms/service/api]
+check/enum = 'fastcgi', 'scgi', 'http'
+description = This options specifies the API the CppCMS application communicates with client or web server.
+
+[@config_default_profile@/cppcms/service/ip]
+check/type = string
+description = This option defines the IPv4/IPv6 IP the application should listen on. By default it listens on "127.0.0.1".
+default = 127.0.0.1
+
+[@config_default_profile@/cppcms/service/port]
+check/type = long
+description = This option defines the port the application should listen on, default is 8080.
+default = 8080
+
+[@config_default_profile@/cppcms/service/socket]
+check/type = string
+description = This option defines the Unix domain socket that the application should listen on. Only use this if IP and port are not set.
+
+[@config_default_profile@/cppcms/service/worker_threads]
+check/type = long
+description = The number of worker threads per process. Default is 5 * number of CPUs. For example quad core it would be 20 threads.
+
+[@config_default_profile@/cppcms/service/worker_processes]
+check/type = long
+description = The number of forked worker processes. This option is relevant only for POSIX platforms. Values: 0 means no fork is executed, default; 1 means that one child process is forked and the parent supervises and and would restart if in case of crash; >1 several processes are forked and try to accept incoming connections.
+default = 0
+
+[@config_default_profile@/cppcms/service/backlog]
+check/type = long
+description = The second parameter to listen() system call, by default it is twice of size of service.worker_threads. It is good idea to set it to high values if you experience problems in connecting to server.
+
+[@config_default_profile@/cppcms/service/applications_pool_size]
+check/type = long
+description = User application objects are generally cached in special pool for future faster reuse, this parameter defines maximal number of applications that can be cached there. By default it is twice of size of service.worker_threads.
+
+[@config_default_profile@/cppcms/service/disable_xpowered_by]
+check/type = boolean
+description = By default CppCMS sends X-Powered-By: CppCMS/X.Y.Z handler in response, this can be disabled by setting this parameter to true.
+default = false
+
+[@config_default_profile@/cppcms/service/output_buffer_size]
+check/type = long
+description = The default size of the output buffer that is used for caching output stream.
+default = 16384
+
+[@config_default_profile@/cppcms/service/generate_http_headers]
+check/type = boolean
+description = Send the HTTP headers in response rather then CGI ones. Useful for broken SCGI connectors like isapi_scgi.
+default = false
+
+[@config_default_profile@/cppcms/security/content_length_limit]
+check/type = long
+description = The maximal size of POST data in KB.
+default = 1024
+
+[@config_default_profile@/cppcms/security/multipart_form_data_limit]
+check/type = long
+description = The maximal size of multipart/form_data POST in KB (i.e. maximal allowed upload size).
+default = 65536
+
+[@config_default_profile@/cppcms/security/file_in_memory_limit]
+check/type = long
+description = When files are uploaded for efficiency, small files are generally stored in memory and big ones are saved in files. This is the limit on the file size to be stored in memory in bytes. 
+default = 128
+
+[@config_default_profile@/cppcms/security/uploads_path]
+check/type = string
+description = The location of temporary upload files. By default they are saved in the temporary directory defined by TEMP or TMP environment variable, or if they undefined it would use /tmp as a path for temporary files.
+
+[@config_default_profile@/cppcms/security/display_error_message]
+check/type = boolean
+description = When the exception is thrown by user application and this parameter set to true its message what() would be displayed in 500 Internal Server error page, it is useful for debugging. However it should never be used in production environment.
+default = false
+
+[@config_default_profile@/cppcms/daemon/enable]
+check/type = boolean
+description = Create daemon process - fork off and become session leader.
+default = true
+
+[@config_default_profile@/cppcms/daemon/lock]
+check/type = string
+description = File name for lock file for this daemon. This file contains the process ID of the daemon that allows you to kill it.
+default = /run/elektra-@tool@.pid
+
+[@config_default_profile@/cppcms/daemon/user]
+check/type = string
+description = The unprivileged user that this daemon should run under. It is recommended to use this option if the service is started with root privileges.
+
+[@config_default_profile@/cppcms/daemon/group]
+check/type = string
+description = The unprivileged group that this daemon should run under. It is recommended to use this option if the service is started with root privileges.
+
+[@config_default_profile@/cppcms/daemon/chroot]
+check/type = string
+description = Chroot to specific directory - extra security option that limits an access to specific tree.
+
+[@config_default_profile@/cppcms/daemon/fdlimit]
+check/type = long
+description = Set maximal number of open file descriptors, it is useful for applications that handle many simulations connections.
+
+[@config_default_profile@/cppcms/http/script]
+check/type = string
+description = The name of script that the application runs on. Actually it is what the SCRIPT_NAME CGI variable should be. If you using HTTP backend you need to specify one. The script name is matched against requested URL and if it matches its beginning it is used for dispatch application.
+default = /
+
+[@config_default_profile@/cppcms/http/timeout]
+check/type = long
+description = The number of seconds to keep the idle connection alive, i.e. the connection that is blocking on read or on write other the connection that is waiting for client side disconnect using cppcms::http::context::async_on_peer_reset().
+default = 30
+
+[@config_default_profile@/cppcms/fastcgi/concurrency_hint]
+check/type = long
+description = Special setting for concurrency ability of FastCGI server that may be queried by some web servers. Default is the total number of threads application uses (in all started processes).

@@ -54,4 +54,49 @@ This file would result in the following keyset which is being displayed as
     #6: //some other comment
     #7:
     #8: setting4 -l
+```sh
+# Backup-and-Restore:/examples/line
 
+sudo kdb mount line /examples/line line
+
+# create and initialize testfile
+cat > `kdb file /examples/line` << EOF \
+setting1 true\
+setting2 false\
+setting3 1000\
+#comment\
+\
+\
+//some other comment\
+\
+setting4 -1
+
+# output filecontent and display line numbers
+awk '{print NR-1 "-" $0}' < `kdb file /examples/line`
+#> 0-setting1 true
+#> 1-setting2 false
+#> 2-setting3 1000
+#> 3-#comment
+#> 4-
+#> 5-
+#> 6-//some other comment
+#> 7-
+#> 8-setting4 -1
+
+# export keyset with syntax '_key: value'
+kdb export -c "format=_%: %" /examples/line simpleini
+#> _user: 
+#> _#0: setting1 true
+#> _#1: setting2 false
+#> _#2: setting3 1000
+#> _#3: #comment
+#> _#4: 
+#> _#5: 
+#> _#6: //some other comment
+#> _#7: 
+#> _#8: setting4 -1
+
+# cleanup
+kdb rm -r /examples/line
+sudo kdb umount /examples/line
+```

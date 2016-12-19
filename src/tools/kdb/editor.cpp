@@ -1,13 +1,16 @@
 #include <editor.hpp>
 
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <unistd.h>
+
 #include <cmdline.hpp>
 #include <external.hpp>
 #include <kdb.hpp>
 #include <keysetio.hpp>
 #include <modules.hpp>
 
-#include <kdbstat.h>
-#include <unistd.h>
+#include <kdbmacros.h>
 
 #include <export.hpp>
 #include <import.hpp>
@@ -140,7 +143,8 @@ int EditorCommand::execute (Cmdline const & cl)
 	struct stat modif;
 	stat (filename.c_str (), &modif);
 
-	if (elektraStatSeconds (orig) == elektraStatSeconds (modif) && elektraStatNanoSeconds (orig) == elektraStatNanoSeconds (modif))
+	if (ELEKTRA_STAT_SECONDS (orig) == ELEKTRA_STAT_SECONDS (modif) &&
+	    ELEKTRA_STAT_NANO_SECONDS (orig) == ELEKTRA_STAT_NANO_SECONDS (modif))
 	{
 		if (!cl.quiet) std::cout << "File was unchanged, will exit successfully";
 		return 0;
@@ -159,6 +163,7 @@ int EditorCommand::execute (Cmdline const & cl)
 		applyMeta (importedKeys, original);
 		kdb.set (importedKeys, root);
 		printWarnings (cerr, root);
+		printError (cerr, root);
 		return 0;
 	}
 

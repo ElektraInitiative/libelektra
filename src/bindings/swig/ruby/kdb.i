@@ -3,7 +3,7 @@
  *
  * @brief Swig interface file for KDB Ruby bindings
  *
- * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
  */
 
 %feature("autodoc", "3");

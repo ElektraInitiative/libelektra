@@ -29,6 +29,7 @@ endmacro (do_gi_python_test)
 find_package (PythonInterp 3)
 if (PYTHONINTERP_FOUND)
 	message(STATUS "Include Binding gi_python")
+	message(DEPRECATION "GI bindings have been deprecated")
 
 	set (PYTHON_GET_MODULES_DIR_COMMAND "from distutils.sysconfig import get_python_lib; print(get_python_lib(True, prefix='${CMAKE_INSTALL_PREFIX}'))")
 	execute_process (

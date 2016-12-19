@@ -3,25 +3,30 @@
  *
  * @brief filter plugin providing cryptographic operations
  *
- * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
  *
  */
 
 #ifndef HAVE_KDBCONFIG
 #include "kdbconfig.h"
 #endif
+
 #include "fcrypt.h"
+
+
 #include <errno.h>
 #include <fcntl.h>
 #include <gpg.h>
-#include <kdb.h>
-#include <kdberrors.h>
-#include <kdbtypes.h>
 #include <stdlib.h>
 #include <string.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
+
+#include <kdb.h>
+#include <kdberrors.h>
+#include <kdbmacros.h>
+#include <kdbtypes.h>
 
 enum FcryptGetState
 {
@@ -32,6 +37,8 @@ enum FcryptGetState
 struct _fcryptState
 {
 	enum FcryptGetState getState;
+	struct stat parentStat;
+	int parentStatOk;
 };
 typedef struct _fcryptState fcryptState;
 
@@ -131,6 +138,54 @@ static size_t getRecipientCount (KeySet * config)
 	return recipientCount;
 }
 
+/**
+ * @brief Determines mtime for the file given by parentKey.
+ * @param parentKey holds the path to the file as string value. Is also used for storing warnings.
+ * @param fileStat will hold the mtime on success.
+ * @retval 1 on success
+ * @retval 0 on failure. In this case a warning is appended to parentKey.
+ */
+static int fcryptSaveMtime (Key * parentKey, struct stat * fileStat)
+{
+	if (access (keyString (parentKey), F_OK))
+	{
+		// return failure, so no timestamp is restored later on
+		return 0;
+	}
+
+	if (stat (keyString (parentKey), fileStat) == -1)
+	{
+		ELEKTRA_ADD_WARNINGF (29, parentKey, "Failed to read file stats of %s", keyString (parentKey));
+		return 0;
+	}
+	return 1;
+}
+
+/**
+ * @brief Sets mtime (defined by fileStat) to the file given by parentKey.
+ * @param parentKey  holds the path to the file as string value. Is also used for storing warnings.
+ * @param fileStat holds the mtime to be set on the file.
+ */
+static void fcryptRestoreMtime (Key * parentKey, struct stat * fileStat)
+{
+	struct timespec times[2];
+
+	// atime - not changing
+	times[0].tv_sec = UTIME_OMIT;
+	times[0].tv_nsec = UTIME_OMIT;
+
+	// mtime
+	times[1].tv_sec = ELEKTRA_STAT_SECONDS ((*fileStat));
+	times[1].tv_nsec = ELEKTRA_STAT_NANO_SECONDS ((*fileStat));
+
+	// restore mtime on parentKeyFd
+	// if (futimens (fileDescriptor, times))
+	if (utimensat (AT_FDCWD, keyString (parentKey), times, 0))
+	{
+		ELEKTRA_ADD_WARNINGF (ELEKTRA_WARNING_FCRYPT_FUTIMENS, parentKey, "Filename: %s", keyString (parentKey));
+	}
+}
+
 static int fcryptGpgCallAndCleanup (Key * parentKey, KeySet * pluginConfig, char ** argv, int argc, int tmpFileFd, char * tmpFile)
 {
 	int parentKeyFd = -1;
@@ -140,7 +195,7 @@ static int fcryptGpgCallAndCleanup (Key * parentKey, KeySet * pluginConfig, char
 	{
 		parentKeyFd = open (keyString (parentKey), O_WRONLY);
 
-		// encryption successful, overwrite the original file with the encrypted data
+		// gpg call returned success, overwrite the original file with the gpg payload data
 		if (rename (tmpFile, keyString (parentKey)) != 0)
 		{
 			ELEKTRA_SET_ERRORF (31, parentKey, "Renaming file %s to %s failed.", tmpFile, keyString (parentKey));
@@ -178,7 +233,7 @@ static int fcryptGpgCallAndCleanup (Key * parentKey, KeySet * pluginConfig, char
  * @retval 1 on success
  * @retval -1 on error, errorKey holds an error description
  */
-static int encrypt (KeySet * pluginConfig, Key * parentKey)
+static int fcryptEncrypt (KeySet * pluginConfig, Key * parentKey)
 {
 	const size_t recipientCount = getRecipientCount (pluginConfig);
 	if (recipientCount == 0)
@@ -258,7 +313,7 @@ static int encrypt (KeySet * pluginConfig, Key * parentKey)
  * @retval 1 on success
  * @retval -1 on error, errorKey holds an error description
  */
-static int decrypt (KeySet * pluginConfig, Key * parentKey)
+static int fcryptDecrypt (KeySet * pluginConfig, Key * parentKey)
 {
 	int tmpFileFd = -1;
 	char * tmpFile = getTemporaryFileName (keyString (parentKey), &tmpFileFd);
@@ -314,6 +369,7 @@ int ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME, open) (Plugin * handle, KeySet
 	}
 
 	s->getState = PREGETSTORAGE;
+	s->parentStatOk = 0;
 
 	elektraPluginSetData (handle, s);
 	return 1;
@@ -360,13 +416,25 @@ int ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME, get) (Plugin * handle, KeySet 
 	if (s && s->getState == POSTGETSTORAGE)
 	{
 		// encrypt if this is a postgetstorage call
-		return encrypt (pluginConfig, parentKey);
+		int encryptResult = fcryptEncrypt (pluginConfig, parentKey);
+
+		// restore "original" timestamp that has been saved in kdb get / pregetstorage
+		// NOTE if we do not restore the timestamp the resolver thinks the file has been changed externally.
+		if (encryptResult == 1 && s->parentStatOk)
+		{
+			fcryptRestoreMtime (parentKey, &(s->parentStat));
+		}
+		return encryptResult;
 	}
 
 	// now this is a pregetstorage call
 	// next time treat the kdb get call as postgetstorage call to trigger encryption after the file has been read
 	s->getState = POSTGETSTORAGE;
-	return decrypt (pluginConfig, parentKey);
+
+	// save timestamp of the file
+	s->parentStatOk = fcryptSaveMtime (parentKey, &(s->parentStat));
+
+	return fcryptDecrypt (pluginConfig, parentKey);
 }
 
 /**
@@ -377,7 +445,7 @@ int ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME, get) (Plugin * handle, KeySet 
 int ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME, set) (Plugin * handle, KeySet * ks ELEKTRA_UNUSED, Key * parentKey)
 {
 	KeySet * pluginConfig = elektraPluginGetConfig (handle);
-	int encryptionResult = encrypt (pluginConfig, parentKey);
+	int encryptionResult = fcryptEncrypt (pluginConfig, parentKey);
 	if (encryptionResult != 1) return encryptionResult;
 
 	/* set all keys */
@@ -396,6 +464,14 @@ int ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME, set) (Plugin * handle, KeySet 
 		return -1;
 	}
 	close (fd);
+
+	// restore "original" timestamp that has been saved in kdb get / pregetstorage
+	// NOTE if we do not restore the timestamp the resolver thinks the file has been changed externally.
+	fcryptState * s = (fcryptState *)elektraPluginGetData (handle);
+	if (s->parentStatOk)
+	{
+		fcryptRestoreMtime (parentKey, &(s->parentStat));
+	}
 	return 1;
 }
 

@@ -4,7 +4,7 @@
 #
 # @brief example Ruby application to illustrate usage of Elektras Ruby bindings
 #
-# @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+# @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
 #
 #
 # This example is a simple command line application, which illustrates the most

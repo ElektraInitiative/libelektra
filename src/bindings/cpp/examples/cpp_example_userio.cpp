@@ -12,7 +12,7 @@
  * The output operators of Key and KeySet can be redefined without any
  * macro by simply not including \<keyio.hpp\> and \<keysetio.hpp\>.
  *
- * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
  */
 
 #define USER_DEFINED_IO

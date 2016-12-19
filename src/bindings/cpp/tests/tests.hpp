@@ -3,7 +3,7 @@
  *
  * @brief Some common functions in use for testing framework
  *
- * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
  */
 
 #ifndef KDB_TESTS_HPP

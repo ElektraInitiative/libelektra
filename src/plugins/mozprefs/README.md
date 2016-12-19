@@ -5,7 +5,7 @@
 - infos/provides = storage
 - infos/recommends =
 - infos/placements = getstorage setstorage
-- infos/status = maintained reviewed conformant compatible coverage specific tested nodep libc preview experimental difficult limited unfinished nodoc concept
+- infos/status = maintained reviewed conformant compatible coverage specific unittest tested nodep libc preview experimental difficult limited unfinished concept
 - infos/metadata =
 - infos/description = storage plugin for mozilla preferences
 
@@ -40,28 +40,32 @@ In Mozilla preference files `.` is used to separate sections, while elektra uses
 will all result in `lockPref("a.lock.key", "lock");`
 
 ## Example ##
+```sh
+# Backup-and-Restore:/examples/prefs
 
-    % kdb mount prefs.js user/prefs mozprefs
-    % kdb setmeta user/prefs/lock/a/lock/key type boolean
-    % kdb set user/prefs/lock/a/lock/key true
-    % kdb setmeta user/prefs/pref/a/default/key type string
-    % kdb set user/prefs/pref/a/default/key "i'm a default key"
-    % kdb setmeta user/prefs/user/a/user/key type integer
-    % kdb set user/prefs/user/a/user/key 123
+sudo kdb mount prefs.js /examples/prefs mozprefs
 
-    % kdb export user/prefs
+kdb setmeta user/examples/prefs/lock/a/lock/key type boolean
+kdb set /examples/prefs/lock/a/lock/key true
+kdb setmeta user/examples/prefs/pref/a/default/key type string
+kdb set /examples/prefs/pref/a/default/key "i'm a default key"
+kdb setmeta user/examples/prefs/user/a/user/key type integer
+kdb set /examples/prefs/user/a/user/key 123
 
-    [lock/a/lock]
-    key = true
-    [pref/a/default]
-    key = i'm a default key
-    [user/a/user]
-    key = 123
+kdb export user/examples/prefs ini
+#> [lock/a/lock]
+#> key = true
+#> [pref/a/default]
+#> key = i'm a default key
+#> [user/a/user]
+#> key = 123
 
+cat `kdb file user/examples/prefs`
+#> lockPref("a.lock.key", true);
+#> pref("a.default.key", "i'm a default key");
+#> user_pref("a.user.key", 123);
 
-    % cat `kdb file user/prefs`
-
-    lockPref("a.lock.key", true);
-    pref("a.default.key", "i'm a default key");
-    user_pref("a.user.key", 123);
-
+# cleanup
+kdb rm -r /examples/prefs
+sudo kdb umount /examples/prefs
+```

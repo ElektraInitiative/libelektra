@@ -3,7 +3,7 @@
  *
  * @brief Source for mathcheck plugin
  *
- * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
  *
  */
 
@@ -195,7 +195,8 @@ static PNElem doPrefixCalculation (PNElem * stack, PNElem * stackPtr)
 }
 static PNElem parsePrefixString (const char * prefixString, Key * curKey, KeySet * ks, Key * parentKey)
 {
-	const char * regexString = "((((\\.|\\.\\.|@|\\/)([[:alnum:]]*/)*[[:alnum:]]+))|('[0-9]*[.,]{0,1}[0-9]*')|(==)|([-+:/<>=!{*]))";
+	const char * regexString =
+		"(((((\\.)|(\\.\\.\\/)*|(@)|(\\/))([[:alnum:]]*/)*[[:alnum:]]+))|('[0-9]*[.,]{0,1}[0-9]*')|(==)|([-+:/<>=!{*]))";
 	char * ptr = (char *)prefixString;
 	regex_t regex;
 	Key * key;

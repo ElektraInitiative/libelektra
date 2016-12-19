@@ -12,8 +12,8 @@ kdb-mount(1) - Mount a file to the key database
   For a cascading mountpoint, `mountpoint` should start with `/`.
   See also IMPORTANT below.
 - A list of such plugins with a configuration for each of them can be given:
-  - `plugin` should be an Elektra plugin.
-  - Plugins may be followed by a `,` separated list of `keys=values` pairs which will be used as plugin configuration.
+ - `plugin` should be an Elektra plugin.
+ - Plugins may be followed by a `,` separated list of `keys=values` pairs which will be used as plugin configuration.
 
 
 ## DESCRIPTION

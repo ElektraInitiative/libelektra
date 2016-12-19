@@ -3,7 +3,7 @@
  *
  * @brief Source for filecheck plugin
  *
- * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
  *
  */
 
@@ -164,7 +164,7 @@ static int validateLineEnding (const uint8_t * line, Lineending * valid, int res
 		}
 	}
 
-	// because we work an pairs of 2 bytes we need handle the last byte explicitely
+	// because we work an pairs of 2 bytes we need handle the last byte explicitly
 	if (found == NA)
 	{
 		if (fc == CR_BYTE && *valid != CR)

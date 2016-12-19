@@ -46,15 +46,21 @@ You have some options to avoid running them as root:
 
 - All names of the test must start with test (needed by test driver for installed tests).
 - No tests should run if ENABLE_TESTING is OFF.
-- All tests that access harddisc:
- - should be tagged with kdbtests.
- - should not shall run, if `ENABLE_KDB_TESTING` is OFF.
- - should only write below `/tests` and `system/mountpoints`.
+- All tests that access system/spec namespaces (e.g. mount something):
+ - should be tagged with kdbtests:
+
+        set_property(TEST testname PROPERTY LABELS kdbtests)
+
+ - should not run, if `ENABLE_KDB_TESTING` is OFF.
+ - should only write below
+   - `/tests/<testname>` (e.g. `/tests/ruby`) and
+   - `system/elektra` (e.g. for mounts or globalplugins).
 - If your test has memleaks, e.g. because the library used leaks and
   that cannot be fixed, give them the label memleak with following
   command:
 
     set_property(TEST testname PROPERTY LABELS memleak)
+
 
 ## Strategy ##
 
@@ -133,12 +139,55 @@ The script tests have different purposes:
 - Conventions tests (do internal checks that check for common problems)
 - Meta Test Suites (run other test suites)
 
-### Other kind of Tests ###
-
-Bindings, other than C++ typically have their own way of testing.
-
-#### Fuzz Testing ####
+### Fuzz Testing ###
 
 Copy some import files to testcase_dir and run:
 
     /usr/src/afl/afl-1.46b/./afl-fuzz -i testcase_dir -o findings_dir bin/kdb import user/tests
+
+### ASAN ###
+
+To enable sanitize checks use `ENABLE_ASAN` via cmake.
+
+Then, to use ASAN, run `run_asan` in the build directory, which simply does:
+
+	ASAN_OPTIONS=symbolize=1 ASAN_SYMBOLIZER_PATH=$(shell which llvm-symbolizer) make run_all
+
+It could also happen that you need to preload ASAN library, e.g.:
+
+	LD_PRELOAD=/usr/lib/clang/3.8.0/lib/linux/libclang_rt.asan-x86_64.so run_asan
+
+or on Debian:
+
+	LD_PRELOAD=/usr/lib/llvm-3.8/lib/clang/3.8.1/lib/linux/libclang_rt.asan-x86_64.so run_asan
+
+See also build server jobs:
+
+* [clang-asan](http://build.libelektra.org:8080/job/elektra-clang-asan/)
+* [gcc-asan](http://build.libelektra.org:8080/job/elektra-gcc-asan/)
+
+### cbmc ###
+
+For bounded model checking tests, see `scripts/cbmc`.
+
+### Code Coverage ###
+
+Run:
+
+	make coverage-start
+	# now run all tests! E.g.:
+	make run_all
+	make coverage-stop
+	make coverage-genhtml
+
+The htmls can be found in the build directory in the folder `coverage`.
+
+See also the build server job:
+
+* [gcc-asan](http://build.libelektra.org:8080/job/elektra-incremental/)
+
+
+## See also
+
+- [COMPILE](COMPILE.md).
+- [INSTALL](INSTALL.md).

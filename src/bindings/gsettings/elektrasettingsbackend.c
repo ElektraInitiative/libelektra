@@ -508,7 +508,7 @@ static void elektra_settings_backend_sync (GSettingsBackend * backend)
 /*
  * Open elektra on empty level, as we asume that any application using GSettings is
  * an application and GSettings itself does not offer any such distinction. In addition
- * we dont know the application path in advance.
+ * we don't know the application path in advance.
  */
 static void elektra_settings_backend_init (ElektraSettingsBackend * esb)
 {
@@ -551,7 +551,7 @@ static void elektra_settings_backend_class_init (GSettingsBackendClass * class)
 	class->sync = elektra_settings_backend_sync;
 }
 
-// TODO check if this is changable at runtime
+// TODO check if this is changeable at runtime
 void g_io_module_load (GIOModule * module)
 {
 	g_type_module_use (G_TYPE_MODULE (module));

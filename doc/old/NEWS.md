@@ -1096,7 +1096,7 @@ with 6598 test cases.
 
 kdbSet() now supports a parent key to only set a part of the
 configuration passed by the keyset, allowing to e.g. save system and
-user configuration seperately. It only calls kdbSet_backend() when it
+user configuration separately. It only calls kdbSet_backend() when it
 is actually necessary. The splitting works much more efficient with n*b
 instead of n^2*b.
 
@@ -1189,15 +1189,15 @@ for the new key struct too.
 The directory is now marked by the executable flags. That means you can
 disallow other users or groups to list your keys.
 
-== Capabilites ==
+== Capabilities ==
 
-Some backends fullfill the whole specification of kdbGet_template() and
+Some backends fulfill the whole specification of kdbGet_template() and
 kdbSet_template() and can be used by any program for any purpose. Other
-backends have principle limitations and do not fullfill the specification,
+backends have principle limitations and do not fulfill the specification,
 but can do more than enough to be useful.
 
 To handle this problem we created a data structure describing what
-capabilites a backend does not have. With that technique you can use the
+capabilities a backend does not have. With that technique you can use the
 testing framework from early steps developing the backend on. To do so,
 just declare your backend can do nothing and delete step by step while
 your backend evolves.

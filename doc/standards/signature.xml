@@ -75,7 +75,7 @@ system/signature
 
 
 
-Additionaly, under this key, you can put SSH private and public keys, like this:
+Additionally, under this key, you can put SSH private and public keys, like this:
 
 system/signature
   ssh_host_dsa_key     = 1234676456474

@@ -3,7 +3,7 @@
  *
  * @brief Source for gitresolver plugin
  *
- * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
  *
  */
 
@@ -63,7 +63,8 @@ static void genCheckoutFileName (GitData * data)
 		fileName += 1;
 	size_t len = strlen (DEFAULT_CHECKOUT_LOCATION) + strlen (data->branch) + strlen (fileName) + TV_MAX_DIGITS + 1;
 	data->tmpFile = elektraCalloc (len);
-	snprintf (data->tmpFile, len, "%s%s_%s_%lu:%lu", DEFAULT_CHECKOUT_LOCATION, data->branch, fileName, tv.tv_sec, tv.tv_usec);
+	snprintf (data->tmpFile, len, "%s%s_%s_%lu:" ELEKTRA_TIME_USEC_F, DEFAULT_CHECKOUT_LOCATION, data->branch, fileName, tv.tv_sec,
+		  tv.tv_usec);
 }
 
 int elektraGitresolverOpen (Plugin * handle ELEKTRA_UNUSED, Key * errorKey ELEKTRA_UNUSED)

@@ -90,7 +90,7 @@ severity:warning
 ingroup:kdb
 
 number:13
-description:Processing Get Plugins failed
+description:processing Get Plugins failed
 severity:warning
 ingroup:kdb
 
@@ -100,37 +100,37 @@ severity:warning
 ingroup:kdb
 
 number:15
-description:Processing Set Plugins failed
+description:processing Set Plugins failed
 severity:warning
 ingroup:kdb
 
 number:16
-description:Unrecognised Config Tree
+description:unrecognised Config Tree
 severity:warning
 ingroup:kdb
 
 number:17
-description:Could not get configuration for Trie
+description:could not get configuration for Trie
 severity:warning
 ingroup:kdb
 
 number:18
-description:Names of Plugins must start with a #
+description:names of Plugins must start with a #
 severity:warning
 ingroup:kdb
 
 number:19
-description:Names of Plugins must start have the position number as second char
+description:names of Plugins must start have the position number as second char
 severity:warning
 ingroup:kdb
 
 number:20
-description:Tried to set more plugins than definied in NR_OF_PLUGINS
+description:tried to set more plugins than definied in NR_OF_PLUGINS
 severity:warning
 ingroup:kdb
 
 number:21
-description:Unknown additional entries in plugin
+description:unknown additional entries in plugin
 severity:warning
 ingroup:kdb
 
@@ -141,22 +141,22 @@ severity:warning
 ingroup:trie
 
 number:23
-description:Could not find any modules
+description:could not find any modules
 severity:warning
 ingroup:trie
 
 number:24
-description:Ignored invalid backend
+description:invalid backend was ignored
 severity:warning
 ingroup:trie
 
 number:25
-description:Backend has no mountpoint
+description:backend has no mountpoint
 severity:warning
 ingroup:trie
 
 number:26
-description:could not open configuration file
+description:could not open configuration file. You might want to try as root (use sudo !!).
 severity:error
 ingroup:plugin
 module:resolver
@@ -182,7 +182,7 @@ module:resolver
 
 number:30
 macro:CONFLICT
-description:A conflict occurred: Another KDB instance modified the key database.
+description:a conflict occurred: another KDB instance modified the key database
 severity:error
 ingroup:plugin
 module:resolver
@@ -240,35 +240,35 @@ ingroup:modules
 module:dl
 
 number:40
-description:Failed to open default backend (see warnings for more information)
+description:failed to open default backend (see warnings for more information)
 severity:fatal
 ingroup:kdb
 
 number:41
-description:Could not compile regex
+description:could not compile regex
 severity:fatal
 ingroup:plugin
 module:validator
 
 number:42
-description:Key Value failed to validate
+description:key value failed to validate
 severity:fatal
 ingroup:plugin
 module:validator
 
 number:43
-description:Failed to open default backend (creation of trie stopped)
+description:failed to open default backend (creation of trie stopped)
 severity:warning
 ingroup:kdb
 
 number:44
-description:Unknown error code to trigger
+description:unknown error code to trigger
 severity:error
 ingroup:plugin
 module:error
 
 number:45
-description:Unknown warning code to trigger
+description:unknown warning code to trigger
 severity:warning
 ingroup:plugin
 module:error
@@ -280,17 +280,18 @@ ingroup:plugin
 module:iconv
 
 number:47
-description:Could not close modules
+description:could not close modules
 severity:warning
 ingroup:kdb
 
 number:48
-description:Assertion Failure
+unused:yes
+description:assertion failure
 severity:warning
 ingroup:kdb
 
 number:49
-description:Unknown command detected in dumpfile
+description:unknown command detected in dumpfile
 severity:error
 ingroup:plugin
 module:dump
@@ -302,37 +303,37 @@ ingroup:plugin
 module:dump
 
 number:51
-description:Value of key is not a valid IP Address
+description:value of key is not a valid IP Address
 severity:error
 ingroup:plugin
 module:network
 
 number:52
-description:Could not type check value of key
+description:could not type check value of key
 severity:error
 ingroup:plugin
 module:type
 
 number:53
-description:Could not check the structure of the keyset
+description:could not check the structure of the keyset
 severity:error
 ingroup:plugin
 module:struct
 
 number:54
-description:Device not found
+description:device not found
 severity:warning
 ingroup:plugin
 module:path
 
 number:55
-description:Directory not found
+description:directory not found
 severity:warning
 ingroup:plugin
 module:path
 
 number:56
-description:Given path is not absolute
+description:given path is not absolute
 severity:error
 ingroup:plugin
 module:path
@@ -351,33 +352,33 @@ ingroup:plugin
 module:struct
 
 number:59
-description:Key name is not valid, discarding key
+description:key name is not valid, discarding key
 severity:warning
 ingroup:plugin
 module:simpleini
 macro:INVALID_KEY
 
 number:60
-description:Invalid Line encountered
+description:invalid line encountered
 severity:error
 ingroup:plugin
 macro:NOEOF
 module:simpleini
 
 number:61
-description:Parse error
+description:parse error
 severity:error
 ingroup:plugin
 module:tcl
 
 number:62
-description:Tried to get a key from a missing backend
+description:tried to get a key from a missing backend
 severity:error
 ingroup:plugin
 module:missing
 
 number:63
-description:Tried to set a key in a missing backend
+description:tried to set a key in a missing backend
 severity:error
 ingroup:plugin
 module:missing
@@ -389,24 +390,27 @@ ingroup:modules
 module:kdb
 
 number:65
-description:could not reference back to plugin in process plugin
+description:could not reference back to plugin
 severity:warning
 ingroup:modules
 module:kdb
 
 number:66
+unused:yes
 description:could not open kwallet
 severity:warning
 ingroup:plugin
 module:kwallet
 
 number:67
+unused:yes
 description:could not read from kwallet
 severity:error
 ingroup:plugin
 module:kwallet
 
 number:68
+unused:yes
 description:not implemented
 severity:error
 ingroup:plugin
@@ -452,14 +456,14 @@ ingroup:plugin
 module:resolver
 
 number:75
-description:Could not open file for writing.
+description:could not open file for writing
 severity:error
 ingroup:plugin
 module:storage
 see:9 109 110
 
 number:76
-description:Error while reading file
+description:error while reading file
 severity:error
 ingroup:plugin
 module:storage
@@ -471,28 +475,28 @@ ingroup:plugin
 module:yajl
 
 number:78
-description:Unknown or unsupported type found during streaming, key as string, type lost
+description:Unknown or unsupported type found during streaming, assume key as string, type lost
 severity:warning
 ingroup:plugin
 module:yajl
 
 number:79
-description:Postcondition of backend was violated
+description:postcondition of backend was violated
 severity:warning
 ingroup:kdb
 
 number:80
-description:Error during commit (this means backend is broken, reason states where it is mounted)
+description:error during commit (this means backend is broken, reason states where it is mounted)
 severity:warning
 ingroup:kdb
 
 number:81
-description:Error during rollback (this means backend is broken, reason states where it is mounted)
+description:error during rollback (this means backend is broken, reason states where it is mounted)
 severity:warning
 ingroup:kdb
 
 number:82
-description:Error key not found in keyset even though it was found before
+description:error key not found in keyset even though it was found before
 severity:warning
 ingroup:kdb
 
@@ -503,7 +507,7 @@ ingroup:plugin
 module:resolver
 
 number:84
-description:Read only plugin, kdbSet not supported
+description:read only plugin, kdbSet not supported
 severity:error
 ingroup:kdb
 
@@ -543,32 +547,32 @@ ingroup:plugin
 module:resolver
 
 number:91
-description:Failed to reopen default backend (see warnings for more information)
+description:failed to reopen default backend (see warnings for more information)
 severity:warning
 ingroup:kdb
 
 number:92
-description:Mounting modules did not work
+description:mounting modules did not work
 severity:warning
 ingroup:kdb
 
 number:93
-description:Initial loading of trie did not work
+description:initial loading of trie did not work
 severity:warning
 ingroup:kdb
 
 number:94
-description:Could not initialize the modules
+description:could not initialize the modules
 severity:fatal
 ingroup:kdb
 
 number:95
-description:Could not find plugin configuration
+description:could not find plugin configuration
 severity:fatal
 module:regexstore
 
 number:96
-description:Regex failure
+description:regex failure
 severity:warning
 module:regexstore
 
@@ -615,41 +619,41 @@ ingroup:plugin
 module:jni
 
 number:104
-description:Meta key passed as parentKey
+description:metakey passed as parentKey
 severity:error
 ingroup:kdb
 
 number:105
-description:Invalid (empty) key passed as parentKey. This is only accepted for compatibility reasons. You should use the cascading key / instead.
+description:invalid (empty) key passed as parentKey. This is only accepted for compatibility reasons. You should use the cascading key / instead.
 severity:warning
 ingroup:kdb
 
 number:106
-description:Wrong size detected in dumpfile
+description:wrong size detected in dumpfile
 severity:error
 ingroup:plugin
 module:dump
 
 number:107
 macro:STATE
-description:Sync State is wrong, maybe kdbSet() is executed without prior kdbGet(). Reason states exact mountpoint.
+description:sync state is wrong, maybe kdbSet() is executed without prior kdbGet(). Reason states mountpoint.
 severity:error
 ingroup:kdb
 
 number:108
-description:Wrong keys in postprocessing
+description:wrong keys in postprocessing
 severity:warning
 ingroup:kdb
 
 number:109
-description:Insufficient permissions to open configuration file for reading. You might want to retry as root or change access using chmod.
+description:insufficient permissions to open configuration file for reading. You might want to retry as root or change access using chmod.
 severity:error
 ingroup:plugin
 module:storage
 see:9 75 110
 
 number:110
-description:Could not open configuration file for reading.
+description:could not open configuration file for reading.
 severity:normal
 ingroup:plugin
 module:storage
@@ -686,7 +690,7 @@ ingroup:plugin
 module:lineendings
 
 number:116
-description: couldn't open file
+description:couldn't open file
 severity:error
 ingroup:plugin
 module:csvstorage
@@ -710,13 +714,13 @@ ingroup:plugin
 module:csvstorage
 
 number:120
-description: Couldn't compile regex
+description:could not compile regex
 severity: error
 ingroup:plugin
 module:enum
 
 number:121
-description:Validation failed
+description:validation failed
 severity:error
 ingroup:plugin
 module:enum
@@ -734,48 +738,48 @@ ingroup:plugin
 module:mathcheck
 
 number:124
-description:key doesn't exist
+description:key does not exist
 severity:error
 ingroup:plugin
 module:mathcheck
 
 number:125
-description:Failed to initialize the crypto library.
+description:failed to initialize the crypto library.
 macro:CRYPTO_INIT
 severity:error
 ingroup:plugin
 module:crypto
 
 number:126
-description:The crypto library reported an internal error.
+description:the crypto library reported an internal error.
 macro:CRYPTO_INTERNAL_ERROR
 severity:error
 ingroup:plugin
 module:crypto
 
 number:127
-description:Encryption failed due to an error reported by the crypto library.
+description:encryption failed due to an error reported by the crypto library.
 macro:CRYPTO_ENCRYPT_FAIL
 severity:error
 ingroup:plugin
 module:crypto
 
 number:128
-description:Decryption failed due to an error reported by the crypto library.
+description:decryption failed due to an error reported by the crypto library.
 macro:CRYPTO_DECRYPT_FAIL
 severity:error
 ingroup:plugin
 module:crypto
 
 number:129
-description:Decryption failed due to an error reported by the crypto library.
+description:decryption failed due to an error reported by the crypto library.
 macro:CRYPTO_DECRYPT_WARNING
 severity:warning
 ingroup:plugin
 module:crypto
 
 number:130
-description:The configuration is invalid or incomplete.
+description:the configuration is invalid or incomplete.
 macro:CRYPTO_CONFIG_FAULT
 severity:error
 ingroup:plugin
@@ -794,25 +798,25 @@ ingroup:plugin
 module:lua
 
 number:133
-description:Key doesn't exist
+description:key does not exist
 severity:error
 ingroup:plugin
 module:conditionals
 
 number:134
-description:Syntax error
+description:syntax error
 severity:error
 ingroup:plugin
 module:conditionals
 
 number:135
-description:Validation failed
+description:validation failed
 severity:error
 ingroup:plugin
 module:conditionals
 
 number:136
-description:Missing lineending
+description:missing lineending
 severity:warning
 ingroup:plugin
 module:csvstorage
@@ -885,7 +889,7 @@ module:gitresolver
 macro:GITRESOLVER_RESOLVING_ISSUE
 
 number:148
-description:A conflict occured. There are new commits in the repository.
+description:a conflict occurred. There are new commits in the repository.
 severity:error
 ingroup:plugin
 module:gitresolver
@@ -899,21 +903,21 @@ module:passwd
 macro:PASSWD_VALIDATION
 
 number:150
-description:Failed to generate a random master password.
+description:failed to generate a random master password.
 macro:CRYPTO_RANDOM_GEN
 ingroup:plugin
 module:crypto
 severity:error
 
 number:151
-description:Error in the GPG module.
+description:error in the GPG module.
 macro:CRYPTO_GPG
 ingroup:plugin
 module:crypto
 severity:error
 
 number:152
-description:The configuration is invalid or incomplete but a default value can be used instead.
+description:the configuration is invalid or incomplete but a default value can be used instead.
 macro:CRYPTO_CONFIG
 severity:warning
 ingroup:plugin
@@ -934,56 +938,63 @@ module:boolean
 macro:INVALID_BOOL
 
 number:155
-description:Failed to extract block.
+description:failed to extract block
 severity:error
 ingroup:plugin
 module:blockresolver
 macro:BLOCKRESOLVER_EXTRACT
 
 number:156
-description:End of block not found
+description:end of block not found
 severity:error
 ingroup:plugin
 module:blockresolver
 macro:BLOCKRESOLVER_NO_EOB
 
 number:157
-description:Base64 decoding error. Provided string was not Base64 encoded. The value of the Key has not been modified.
+description:base64 decoding error. Provided string was not Base64 encoded. The value of the Key has not been modified.
 severity:warning
 ingroup:plugin
 module:base64
 macro:BASE64_DECODING
 
 number:158
-description:Could not increment to next entry
+description:could not increment to next entry
 severity:error
 ingroup:plugin
 module:line
 macro:NO_INC
 
 number:159
-description:Non-required key found
+description:non-required key found
 severity:error
 ingroup:plugin
 module:required
 macro:REQUIRED
 
 number:160
-description:Failed to overwrite the temporary data. Unencrypted data may leak.
+description:failed to overwrite the temporary data. Unencrypted data may leak.
 severity:error
 ingroup:plugin
 module:fcrypt
 macro:FCRYPT_TMP_FILE
 
 number:161
-description:Can not replace the existing file with the temporary file.
+description:can not replace the existing file with the temporary file.
 macro:FCRYPT_RENAME
 severity:error
 ingroup:plugin
 module:fcrypt
 
 number:162
-description:Hosts validation error. The hosts keyset contains unknown keys. Only keys below ipv4 and ipv6 are allowed.
+description:hosts validation error. The hosts keyset contains unknown keys. Only keys below ipv4 and ipv6 are allowed.
 severity:error
 ingroup:plugin
 module:storage
+
+number:163
+description:Failed to restore the timestamp when the config file was modified last.
+severity:warning
+ingroup:plugin
+module:fcrypt
+macro:FCRYPT_FUTIMENS

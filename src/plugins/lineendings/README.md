@@ -2,9 +2,9 @@
 - infos/author = Thomas Waser <thomas.waser@libelektra.org>
 - infos/licence = BSD
 - infos/needs =
-- infos/provides = 
+- infos/provides =
 - infos/placements = pregetstorage precommit
-- infos/status = maintained nodep configurable
+- infos/status = maintained unittest nodep configurable nodoc
 - infos/description = verifies lineendings of files
 
 ## Introduction ##

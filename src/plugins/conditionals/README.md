@@ -6,7 +6,7 @@
 - infos/recommends =
 - infos/placements = postgetstorage presetstorage
 - infos/status = maintained unittest nodep libc global preview
-- infos/metadata = check/condition assign/condition condition/validsuffix
+- infos/metadata = check/condition assign/condition condition/validsuffix check/condition/# assign/condition/#
 - infos/description = ensures key values through conditions
 
 ## Introduction ##
@@ -49,6 +49,10 @@ The `condition/validsuffix` can be used to define a list of valid suffixes to nu
 
 Keynames are all either relative to to-be-tested key (starting with `./` or `../`), relative to the parentkey (starting with `@/`) or absolute (e.g. `system/key`).
 
+### Multiple Statements ###
+
+It's also possible to test multiple conditions using `check/condition` as a meta array and multiple assign statements using `assign/condition` as a meta array.
+
 ## Example ##
 
     (this/key  != 'value') ? (then/key == some/other/key) : (or/key <= '125')
@@ -58,49 +62,79 @@ Meaning: IF `this/key` NOT EQUAL TO `'value'` THEN `then/key` MUST EQUAL `some/o
 
 Another full example:
 
-    kdb mount conditionals.dump /tmount/conditionals conditionals dump
-    kdb set user/tmount/conditionals/fkey 3.0
-    kdb set user/tmount/conditionals/hkey hello
-    kdb setmeta user/tmount/conditionals/key check/condition "(../hkey == 'hello') ? (../fkey == '3.0')" # success
-    kdb setmeta user/tmount/conditionals/key check/condition "(../hkey == 'hello') ? (../fkey == '5.0')" # fail
+```sh
+#Backup-and-Restore:/examples/conditionals
+
+sudo kdb mount conditionals.dump /examples/conditionals conditionals dump
+
+kdb set /examples/conditionals/fkey 3.0
+kdb set /examples/conditionals/hkey hello
+
+# will succeed
+kdb setmeta user/examples/conditionals/key check/condition "(../hkey == 'hello') ? (../fkey == '3.0')"
+
+# will fail 
+kdb setmeta user/examples/conditionals/key check/condition "(../hkey == 'hello') ? (../fkey == '5.0')"
+# RET:5
+# ERRORS:135
+```
 
 Assignment example:
 
-    kdb mount conditionals.dump /tmount/conditionals conditionals dump
-    kdb set user/tmount/conditionals/hkey Hello
-    kdb setmeta user/tmount/conditionals/hkey assign/condition "(./ == 'Hello') ? ('World')" # alternative: "(../hkey == 'Hello') ? ('World')
-    kdb get user/tmount/conditionals/hkey # output: World
+```sh
+kdb set user/examples/conditionals/hkey Hello
+kdb setmeta user/examples/conditionals/hkey assign/condition "(./ == 'Hello') ? ('World')"
+# alternative syntax: "(../hkey == 'Hello') ? ('World')
+
+kdb get user/examples/conditionals/hkey
+#> World
+
+# cleanup
+kdb rm -r /examples/conditionals
+sudo kdb umount /examples/conditionals
+```
 
 Global plugin example:
 
-    % cat /tmp/main.ini
-    key1 = val1
-    [key1]
-    check/condition = (./ == 'val1') ? (../sub/key == 'true')
+```sh
+sudo kdb mount main.ini /examples/conditionals ni
+sudo kdb mount sub.ini /examples/conditionals/sub ini
 
-    % cat /tmp/sub.ini
-    key = false
+# mount conditionals as global plugin
+sudo kdb global-mount conditionals
 
-    % kdb mount /tmp/main.ini system/test ni
+# create testfiles
+cat > `kdb file /examples/conditionals` << EOF \
+key1 = val1\
+[key1]\
+check/condition = (./ == 'val1') ? (../sub/key == 'true')\
+EOF
 
-    % kdb mount /tmp/sub.ini system/test/sub ini
+echo "key = false" > `kdb file /examples/conditionals/sub`
 
-    % kdb export system/test
-    key1 = val1
-    sub/key = false
-    Error (#135) occurred!
-    Description: Validation failed
-    Ingroup: plugin
-    Module: conditionals
-    At: /home/thomas/Dev/Elektra/libelektra/src/plugins/conditionals/conditionals.c:696
-    Reason: Validation of Key key1: (./ == 'val1') ? (../sub/key == 'true') failed. ((../sub/key == 'true') failed)
-    Mountpoint: system/test
-    Configfile: /tmp/main.ini
+# should fail and yield an error
+kdb export /examples/conditionals ini
+#> sub/key = false
+#> key1 = val1
+# ERRORS:135
+# Error (#135) occurred!
+# Description: Validation failed
+# Ingroup: plugin
+# Module: conditionals
+# At: /home/thomas/Dev/Elektra/libelektra/src/plugins/conditionals/conditionals.c:696
+# Reason: Validation of Key key1: (./ == 'val1') ? (../sub/key == 'true') failed. ((../sub/key == 'true') failed)
+# Mountpoint: system/test
+# Configfile: /home/thomas/.config/main.ini
 
-    % kdb set system/test/sub/key true
-    Set string to true
+kdb set /examples/conditionals/sub/key true
 
-    % kdb export system/test
-    key1 = val1
-    sub/key = true
+# should succeed 
+kdb export /examples/conditionals ini
+#> sub/key = true
+#> key1 = val1
 
+# cleanup
+kdb rm -r /examples/conditionals
+sudo kdb umount /examples/conditionals/sub
+sudo kdb umount /examples/conditionals
+```

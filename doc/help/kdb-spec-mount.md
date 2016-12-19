@@ -16,10 +16,11 @@ kdb-spec-mount(1) - Mount a spec file to the key database
 ## DESCRIPTION
 
 This command allows a user to mount a new *backend* described by a previously mounted specification.
-To mount a specification file first use [kdb-mount(7)](kdb-mount.md).
+To mount a specification file to `spec`-[namespace](elektra-namespaces.md) first use [kdb-mount(7)](kdb-mount.md):
 
-The idea of mounting is explained [in elektra-mounting(7)](elektra-mounting.md) and.
+	kdb mount some-spec-file.ini spec/example/mountpoint ni
 
+The idea of mounting is explained [in elektra-mounting(7)](elektra-mounting.md).
 The `spec` [namespace](elektra-namespaces.md) contains metaconfiguration that describes the configuration in all other namespaces.
 The metadata used for the specification is described in [METADATA.ini](/doc/METADATA.ini).
 
@@ -29,12 +30,22 @@ During `spec-mount` the `spec` keys are searched for relevant metadata:
 - The `infos/*` and `config/needs` from [CONTRACT.ini](/doc/CONTRACT.ini), that are tagged by `usedby = spec`, will work as described there.
 - For other metadata suitable plugins are searched and mounted additionally.
 
+For example:
+
+	kdb getmeta spec/example/mountpoint mountpoint  # verify that we have a mountpoint here
+	kdb spec-mount /example/mountpoint  # mounts /example/mountpoint according to specification
+		# found at spec/example/mountpoint
+
 
 ## IMPORTANT
 
 This command writes into the `/etc` directory and as such it requires root permissions.
 Use `kdb file system/elektra/mountpoints` to find out where exactly it will write to.
 
+Note that many specifications have globs like `_` and `#`. They will only work if
+the `spec` plugin is present:
+
+	kdb global-mount
 
 ## OPTIONS
 

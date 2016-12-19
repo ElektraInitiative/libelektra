@@ -3,7 +3,7 @@
  *
  * @brief
  *
- * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
  */
 
 #include <metaset.hpp>
@@ -60,6 +60,7 @@ int MetaSetCommand::execute (Cmdline const & cl)
 
 	if (cl.arguments.size () == 2)
 	{
+		if (cl.verbose) cout << "Deleting metaname " << metaname << endl;
 		k.delMeta (metaname);
 	}
 	else
@@ -81,6 +82,7 @@ int MetaSetCommand::execute (Cmdline const & cl)
 
 	kdb.set (conf, parentKey);
 	printWarnings (cerr, parentKey);
+	printError (cerr, k);
 
 	return 0;
 }

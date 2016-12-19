@@ -1,4 +1,6 @@
-#include "kdbprivate.h"
+#include <kdbhelper.h>
+#include <kdblogger.h>
+#include <kdbopmphm.h>
 
 /**
  * Allocates vheap with size specified by parameter minSize
@@ -19,6 +21,7 @@ Vheap * elektraVheapInit (VheapComp comp, size_t minSize)
 	if (!newVheap) return NULL;
 	newVheap->comp = comp;
 	newVheap->size = minSize;
+	ELEKTRA_LOG_DEBUG ("VHEAP MALLOC TO = %zu", newVheap->size);
 	newVheap->minSize = minSize;
 	newVheap->count = 0;
 	newVheap->data = elektraMalloc (newVheap->size * sizeof (void *));
@@ -62,21 +65,22 @@ void elektraVheapDel (Vheap * vheap)
  *
  * @ingroup vheap
  * @param data the element
- * @retval 0 on error
- * @retval 1 otherwise
+ * @retval 1 on error
+ * @retval 0 otherwise
  */
 int elektraVheapInsert (Vheap * vheap, void * data)
 {
-	if (!vheap) return 0;
+	if (!vheap) return 1;
 	// grow
 	if (++vheap->count > vheap->size)
 	{
 		vheap->size <<= 1;
+		ELEKTRA_LOG_DEBUG ("VHEAP REALLOC TO = %zu", vheap->size);
 		if (elektraRealloc ((void **)&vheap->data, vheap->size * sizeof (void *)) == -1)
 		{
 			--vheap->count;
 			vheap->size >>= 1;
-			return 0;
+			return 1;
 		}
 	}
 	size_t parent, pos;
@@ -88,7 +92,7 @@ int elektraVheapInsert (Vheap * vheap, void * data)
 		vheap->data[pos] = vheap->data[parent];
 	}
 	vheap->data[pos] = data;
-	return 1;
+	return 0;
 }
 
 /**
@@ -110,6 +114,7 @@ void * elektraVheapRemove (Vheap * vheap)
 	if (vheap->size > vheap->minSize && vheap->count <= vheap->size >> 2)
 	{
 		vheap->size >>= 1;
+		ELEKTRA_LOG_DEBUG ("VHEAP REALLOC TO = %zu", vheap->size);
 		if (elektraRealloc ((void **)&vheap->data, vheap->size * sizeof (void *)) == -1)
 		{
 			++vheap->count;
@@ -148,12 +153,12 @@ void * elektraVheapRemove (Vheap * vheap)
  * The next reallocation happens at Remove.
  *
  * @ingroup vheap
- * @retval 1 on success
- * @retval 0 on error
+ * @retval 0 on success
+ * @retval 1 on error
  */
 int elektraVheapClear (Vheap * vheap)
 {
-	if (!vheap) return 0;
+	if (!vheap) return 1;
 	vheap->count = 0;
-	return 1;
+	return 0;
 }

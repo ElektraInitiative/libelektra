@@ -6,7 +6,7 @@ contextual values. For more background read
 [this paper](http://www.markus-raab.org/ftp/papers/cop2014program.pdf).
 
 
-## Motivation
+## Motivation ##
 
 Writing your own conversion of the strings parsed from commandline
 arguments and configuration files to native variables is error-prone and
@@ -27,7 +27,7 @@ Our approach avoids all such errors and saves time for more
 important implementation tasks.
 
 
-## Specification
+## Specification ##
 
 To avoid the problems we initially stated, we use [a specification](tests/lift.ini).
 Using the specification, we can generate code similar to the code above, but without any of the errors.
@@ -46,10 +46,10 @@ and access the keys as if they were variables:
 
 	std::cout << "delay: " << par.test.lift.emergency.delay << std::endl;
 
-For a full example, see [here](tests/lift_context.cpp).
+For a full example, see [here](tests/lift.cpp), or [here for a thread-safe version](tests/lift_context.cpp).
 
 
-## Contextual Values
+## Contextual Values ##
 
 The value of a key often depends on a context.
 E.g. if an application is started with another profile:
@@ -107,7 +107,7 @@ makes sure that all contextual values that contain the placeholder
 If no placeholder exists `%` will be used.
 
 
-## Commandline Arguments
+## Command-line Options ##
 
 Now if we want to implement the -P commandline option, we can do so very 
 easily using Elektra's code generator. We simply add another
@@ -136,5 +136,8 @@ commandline:
 
 	par.activate<ProfileLayer>(par.profile);
 
-If you want to know more read
-[this paper](http://www.markus-raab.org/ftp/papers/cop2014program.pdf).
+If you want to know more read:
+
+- [introduction paper](http://www.markus-raab.org/ftp/papers/cop2014program.pdf).
+- [multi-threaded extension](http://www.markus-raab.org/ftp/papers/seus2015global.pdf)
+- [multi-process extension](http://www.markus-raab.org/ftp/papers/mobile2016persistent.pdf)

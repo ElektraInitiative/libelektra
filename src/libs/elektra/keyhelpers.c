@@ -3,7 +3,7 @@
  *
  * @brief Helpers for key manipulation.
  *
- * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
  */
 
 #ifdef HAVE_KDBCONFIG_H

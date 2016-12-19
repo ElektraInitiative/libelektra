@@ -17,7 +17,7 @@ allow numbers to enter:
 calculate default values
 	same as assign, but with very low priority
 
-(dependend) optionality:
+(dependent) optionality:
 	make a key only optional on some condition
 	otherwise fail if key is not present
 
@@ -53,7 +53,7 @@ inherit/copy metadata/bind mounts:
 	und ein inherit-Plugin kopiert dann automatisch ein override /elsewhere/key/ (mit dem richtigen basename dran) in alle Subkeys (die nicht ein anderes inherit/override haben).
 
 werror plugin:
-	turn specified warnings into errors (for both get+set pathes)
+	turn specified warnings into errors (for both get+set paths)
 
 logging plugin:
 	improve error messages for validation
@@ -211,8 +211,8 @@ html plugin (to show elektra config in html format)
 literate data
 	good for documentation
 	everything is ignored except special introduced key/value pairs
-	<start><key><seperator><value><terminator>
-	needs two more special characters next to seperator, but is
+	<start><key><separator><value><terminator>
+	needs two more special characters next to separator, but is
 	otherwise alike
 
 ## folders ##
@@ -383,7 +383,7 @@ curl resolver:
 
 roresolver: check if something is modified
 	for version, constants, uname
-	and/or remove value comparision in those plugins
+	and/or remove value comparison in those plugins
 	kdbGet should return 0 if nothing modified, too
 
 noresolver: make it always return 0?
@@ -396,9 +396,9 @@ resolver-debug for tests
 	concurrency: sets breakpoints within (done!)
 	folder: write into folders controlled by env
 resolver-xdg-passwd
-	use passwd with XDG overides
+	use passwd with XDG overrides
 resolver-xdg
-	use $HOME with XDG overides
+	use $HOME with XDG overrides
 resolver-hardcoded
 	(just use KDB_DB_* for single users embedded systems)
 	done! (needs better docu)
@@ -427,7 +427,7 @@ better error messages:
 make explicit state variable (for both user+system) or return fd!=-1
 
 resolver:
-	configureable fsync
+	configurable fsync
 
 
 

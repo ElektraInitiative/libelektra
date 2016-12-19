@@ -105,7 +105,7 @@ prints out then all device entries available in the config
 
     kdb get system/org/freedesktop/openicc/device/camera/0/EXIF_manufacturer
 
-prints out "Glasshuette" with the example config in souce
+prints out "Glasshuette" with the example config in source
 
 You can export the whole system openicc config to ini with:
 

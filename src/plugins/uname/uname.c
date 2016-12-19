@@ -3,7 +3,7 @@
  *
  * @brief
  *
- * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
  */
 
 #include "uname.h"
@@ -18,6 +18,7 @@
 #endif
 
 #include <kdberrors.h>
+#include <kdbmacros.h>
 
 static void elektraAddUname (KeySet * returned, Key * parentKey)
 {
@@ -86,22 +87,7 @@ int elektraUnameSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_U
 
 	KeySet * info = ksNew (0, KS_END);
 	elektraAddUname (info, parentKey);
-
-	Key * k;
-	ksRewind (info);
-	ksRewind (returned);
-	while ((k = ksNext (returned)))
-	{
-		Key * c = ksNext (info);
-		if (strcmp (keyName (k), keyName (c)) || strcmp (keyString (k), keyString (c)))
-		{
-			ELEKTRA_SET_ERRORF (84, parentKey, "the key %s (expected %s) was modified to %s (expected %s)", keyName (k),
-					    keyName (c), keyString (k), keyString (c));
-			return -1;
-		}
-	}
-
-	ksDel (info);
+	ELEKTRA_SET_ERROR_READ_ONLY (info, returned, parentKey);
 	return 0;
 }
 

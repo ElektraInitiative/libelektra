@@ -3,7 +3,7 @@
  *
  * @brief Interna of mount functionality.
  *
- * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
  */
 
 #ifdef HAVE_KDBCONFIG_H
@@ -246,11 +246,33 @@ int mountGlobals (KDB * kdb, KeySet * keys, KeySet * modules, Key * errorKey)
 	Key * root = ksLookupByName (keys, "system/elektra/globalplugins", 0);
 	if (!root)
 	{
-#if DEBUG && VERBOSE
-		printf ("no global configuration exists\n");
-#endif
+		ELEKTRA_LOG ("no global configuration, assuming spec as default");
 		ksDel (keys);
-		return 0;
+		keys = ksNew (19, keyNew ("system/elektra/globalplugins", KEY_END),
+			      keyNew ("system/elektra/globalplugins/postcommit", KEY_VALUE, "list", KEY_END),
+			      keyNew ("system/elektra/globalplugins/postcommit/user", KEY_VALUE, "list", KEY_END),
+			      keyNew ("system/elektra/globalplugins/postcommit/user/placements", KEY_END),
+			      keyNew ("system/elektra/globalplugins/postcommit/user/placements/error", KEY_VALUE,
+				      "prerollback postrollback", KEY_END),
+			      keyNew ("system/elektra/globalplugins/postcommit/user/placements/get", KEY_VALUE,
+				      "pregetstorage postgetstorage", KEY_END),
+			      keyNew ("system/elektra/globalplugins/postcommit/user/placements/set", KEY_VALUE,
+				      "presetstorage precommit postcommit", KEY_END),
+			      keyNew ("system/elektra/globalplugins/postcommit/user/plugins", KEY_END),
+			      keyNew ("system/elektra/globalplugins/postcommit/user/plugins/#0", KEY_VALUE, "spec", KEY_END),
+			      keyNew ("system/elektra/globalplugins/postcommit/user/plugins/#0/placements", KEY_VALUE, "spec", KEY_END),
+			      keyNew ("system/elektra/globalplugins/postcommit/user/plugins/#0/placements/error", KEY_END),
+			      keyNew ("system/elektra/globalplugins/postcommit/user/plugins/#0/placements/get", KEY_VALUE, "postgetstorage",
+				      KEY_END),
+			      keyNew ("system/elektra/globalplugins/postcommit/user/plugins/#0/placements/set", KEY_VALUE, "presetstorage",
+				      KEY_END),
+			      keyNew ("system/elektra/globalplugins/postgetstorage", KEY_VALUE, "list", KEY_END),
+			      keyNew ("system/elektra/globalplugins/postrollback", KEY_VALUE, "list", KEY_END),
+			      keyNew ("system/elektra/globalplugins/precommit", KEY_VALUE, "list", KEY_END),
+			      keyNew ("system/elektra/globalplugins/pregetstorage", KEY_VALUE, "list", KEY_END),
+			      keyNew ("system/elektra/globalplugins/prerollback", KEY_VALUE, "list", KEY_END),
+			      keyNew ("system/elektra/globalplugins/presetstorage", KEY_VALUE, "list", KEY_END), KS_END);
+		root = ksHead (keys);
 	}
 	for (GlobalpluginPositions i = 0; i < NR_GLOBAL_PLUGINS; ++i)
 		kdb->globalPlugins[i] = NULL;
@@ -319,6 +341,7 @@ int mountGlobals (KDB * kdb, KeySet * keys, KeySet * modules, Key * errorKey)
 					plugin = elektraPluginOpen (pluginName, modules, ksDup (config), errorKey);
 					if (!plugin)
 					{
+						ksDel (keys);
 						ELEKTRA_ADD_WARNING (64, errorKey, pluginName);
 						return -1;
 					}

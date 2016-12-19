@@ -57,12 +57,14 @@ are:
 1. Provide a function `int genconf (KeySet * ks, Key * errorKey)` where `ks`
    is filled with a list of all variants with the essential configuration (subkeys `config`)
    and the changed parts of the contract (subkeys `infos`).
-2. Keys defined in `system/elektra/plugins/variants` have the same content,
+2. Keys defined in `system/elektra/plugins/<plugin>/variants/<variantname>` have the same content,
    but take precedence. If a variant with the same name is defined, only `config` or `infos`
    from `genconf` are considered if they are not mentioned in `system/elektra/plugins/variants`.
-   If the keys `config` or `infos` are present, it will be overwritten (deleted),
-   if only subkeys thereof are present, it will be enhanced.
-3. Empty `config` and `infos` mean:
+3. If the bool key `override` (for a plugin or a variant) is true, it will be overwritten (content
+   of `genconf` ignored, but instead a plugin or variant as given is created).
+4. If the bool key `disable` (for a plugin or a variant) is true the plugin or a variant of the
+   plugin will not be available.
+5. Empty `config` and `infos` mean:
  - `config`: The "default variant" (without any parameter) should be also available
    (has useful functionality)
  - `infos`: It is not possible to determine the changes of the contract,
@@ -72,39 +74,53 @@ are:
 
 `genconf` for augeas yields:
 ```
-access
-access/config
-access/config/lens = Access.lns
-access/infos
-access/infos/format = access
-aliases
-aliases/config
-aliases/config/lens = Aliases.lns
-aliases/config/path = /etc/aliases
-aliases/infos
-aliases/infos/format = aliases
+system/access
+system/access/config
+system/access/config/lens = Access.lns
+system/access/infos
+system/access/infos/provides = storage/access
+system/aliases
+system/aliases/config
+system/aliases/config/lens = Aliases.lns
+system/aliases/infos
+system/aliases/infos/provides = storage/aliases
 ```
 
-`genconf` for python yields:
+`genconf` for python might yield:
 ```
-configparser/config
-configparser/config/script = python_configparser.py
-```
-
-the user specifies:
-```
-system/elektra/plugins/variants/access
-system/elektra/plugins/variants/aliases/infos/status = 10000
-system/elektra/plugins/variants/configparser
-system/elektra/plugins/variants/configparser/config
-system/elektra/plugins/variants/configparser/config/script = mybetter_configparser.py
+user/configparser/config
+user/configparser/config/script = python_configparser.py
 ```
 
-then the plugin variant:
+The user/admin specifies:
+```
+system/elektra/plugins/jni/disable = 1
+system/elektra/plugins/augeas/variants/access
+system/elektra/plugins/augeas/variants/access/disable = 1
+system/elektra/plugins/augeas/variants/aliases
+system/elektra/plugins/augeas/variants/aliases/infos
+system/elektra/plugins/augeas/variants/aliases/infos/status = 10000
+system/elektra/plugins/python/variants/configparser
+system/elektra/plugins/python/variants/configparser/override = 1
+system/elektra/plugins/python/variants/configparser/config
+system/elektra/plugins/python/variants/configparser/config/script = mybetter_configparser.py
+```
 
-1. `access` is not available (`system/elektra/plugins/variants/access` overrides `genconf`)
-2. `aliases` as defined from `genconf`, but with changes in contract (`infos/status`)
-3. `configparser` is completely redefined (result from `genconf` will not be considered)
+As result we get:
+
+1. `access` of plugin `augeas` is not available
+2. `aliases` of plugin `augeas` as defined from `genconf`, but with changes in contract (`infos/status`)
+3. `configparser` of plugin `python` is completely redefined (result from `genconf` will not be considered)
+   but it will be considered as specified.
+4. the plugin `jni` will not be available
+
+
+To have a space-separated simpleini one would use:
+```
+system/elektra/plugins/simpleini/variants/spacesep
+system/elektra/plugins/simpleini/variants/spacesep/config
+system/elektra/plugins/simpleini/variants/spacesep/config/format = "% %"
+```
 
 
 ## Argument
@@ -126,8 +142,29 @@ then the plugin variant:
 - `PluginDatabase` needs an extension to list all plugin variants
 - `kdb list` should be able to list all variants, e.g. like:
   `augeas lens=Access.lns`
-  `augeas format=access`
   so that a user can copy and paste this for the `kdb mount` command.
+
+## Current state
+
+Currently only overrides of plugin configuration (`config/...`) is possible,
+overrides of other plugin information (contract information) does not work yet.
+
+It is also not possible to add additional information to a variant,
+only overrides work. E.g.
+```
+system/elektra/plugins/augeas/variants/aliases
+system/elektra/plugins/augeas/variants/aliases/override = 1
+system/elektra/plugins/augeas/variants/aliases/config
+system/elektra/plugins/augeas/variants/aliases/config/lens = Aliases.lns
+system/elektra/plugins/augeas/variants/aliases/config/otherparam = 0
+```
+works, while
+```
+system/elektra/plugins/augeas/variants/aliases
+system/elektra/plugins/augeas/variants/aliases/config
+system/elektra/plugins/augeas/variants/aliases/config/otherparam = 0
+```
+gets ignored.
 
 
 ## Related decisions

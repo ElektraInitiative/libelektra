@@ -3,7 +3,7 @@
  *
  * @brief
  *
- * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
  */
 
 #ifndef CONTRACT_H_
@@ -23,6 +23,9 @@ ksNew (30,
 				KEY_END),
 		keyNew ("system/elektra/modules/augeas/exports/open",
 				KEY_FUNC, elektraAugeasOpen,
+				KEY_END),
+		keyNew ("system/elektra/modules/augeas/exports/genconf",
+				KEY_FUNC, elektraAugeasGenConf,
 				KEY_END),
 		keyNew ("system/elektra/modules/augeas/exports/close",
 				KEY_FUNC, elektraAugeasClose,

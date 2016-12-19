@@ -98,7 +98,7 @@ Passing a KeySet of initial keys:
 	ks2 = Kdb::KeySet.new ks
 
 
-## appending keys ##
+## Appending keys ##
 
 `KeySet` supports Ruby's "append" operator `<<`
 	
@@ -111,7 +111,7 @@ Passing a KeySet of initial keys:
 	ks.each { |k| puts k.to_s }
 	ks.any? { |k| k.has_meta? "owner" }
 
-## deleting Keys ##
+## Deleting Keys ##
 
 Similar to the Ruby `Array`, `KeySet` also implements `delete` and `delete_at`
 methods, which can be used to delete a key by name or by index:
@@ -139,3 +139,10 @@ This is very similar to the `KeySet` iteration and can be accessed with `meta`:
 	k.meta.each do |m|
 		puts "#{m.name}: #{m.value}"
 	end
+
+## Building ##
+
+Note that cmake does *not* automatically rebuild SWIG bindings
+when header files are changed. Remove the build directory
+in that case.
+

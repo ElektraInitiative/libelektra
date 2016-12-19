@@ -3,7 +3,7 @@
  *
  * @brief
  *
- * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
  */
 
 #include "iterator.h"
@@ -102,7 +102,7 @@ Key * elektraNextNotBelow (KeySet * ks)
 		return 0;
 	}
 
-	// unitialized variables are ok, because do{}while guarantees initialisation
+	// uninitialized variables are ok, because do{}while guarantees initialisation
 	cursor_t pos;			// always one before current
 	const Key * current = previous; // current is same as ksCurrent()
 	do

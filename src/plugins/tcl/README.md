@@ -4,12 +4,12 @@
 - infos/provides = storage/tcl
 - infos/needs = code
 - infos/placements = setstorage getstorage
-- infos/status = unfinished nodoc concept
+- infos/status = unfinished concept
 - infos/description = Serialize tcl lists
 
 ## Introduction ##
 
-This plugin is a storage plugin which write keys to lists *in the style of*
+This plugin is a storage plugin which writes keys to lists *in the style of*
 the Tcl programming language.
 
 ## Format ##

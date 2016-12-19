@@ -4,7 +4,7 @@
 #
 # @brief example Ruby application to illustrate usage of Elektras Ruby bindings
 #
-# @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+# @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
 #
 #
 # This example illustrates the Kdb::Key aspects of Elektras Ruby bindings.
@@ -126,6 +126,9 @@ mv = kmeta["jet another"]
 
 # check if meta data exists
 kmeta.has_meta? "jet another"  # => true
+
+# delete meta data
+kmeta.del_meta "jet another"
 
 
 #

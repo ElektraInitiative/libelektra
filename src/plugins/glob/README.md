@@ -7,7 +7,7 @@
 - infos/ordering = check keytometa
 - infos/stacking = no
 - infos/placements = presetstorage postgetstorage
-- infos/status = nodep libc configurable difficult
+- infos/status = unittest nodep libc configurable difficult
 - infos/description = copies metadata to keys with the help of globbing
 
 ## Introduction ##
@@ -34,7 +34,7 @@ interpreted as a globbing key. The value of the key contains the globbing expres
 the glob expression contained in one of the globbing keys is found, the metakeys of the corresponding
 globbing key are copied. Once a match is found, no further keys will be considered for globbing. The reason
 for this are catch all globbing keys that can be used to match all keys that have not been matched by a
-preceeding globbing key.
+preceding globbing key.
 
 ### Globbing Direction ###
 
