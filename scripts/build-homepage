@@ -20,9 +20,21 @@ kdb --version
 # prevent jenkins from killing daemons
 BUILD_ID=dontKillMe
 
-# then restart the backend (sleep prevents 'address already in use')
+# allow core dumps
+ulimit -c unlimited
+
+# place for core dumps (name by: echo "core_%t_%p" > /proc/sys/kernel/core_pattern)
+cd /var/lib/jenkins
+
+pstree
+cat /run/elektra-rest-backend.pid || /bin/true
+
+# then restart the backend
 kdb stop-rest-backend
+
+# sleep prevents 'address already in use'
 sleep 3
+
 kdb run-rest-backend
 
 # we have to make sure the backend had time to start before we can go on
