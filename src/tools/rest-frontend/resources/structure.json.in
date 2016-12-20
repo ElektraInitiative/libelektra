@@ -256,7 +256,7 @@
                 "type": "link",
                 "ref": "buildserver",
                 "options": {
-                    "path": "http://build.libelektra.org:8080/"
+                    "path": "https://build.libelektra.org/"
                 }
             },
             {
@@ -264,7 +264,7 @@
                 "type": "link",
                 "ref": "apidocumentation",
                 "options": {
-                    "path": "http://doc.libelektra.org/api/current/html/"
+                    "path": "https://doc.libelektra.org/api/current/html/"
                 }
             },
             {
@@ -272,7 +272,7 @@
                 "type": "link",
                 "ref": "github",
                 "options": {
-                    "path": "http://git.libelektra.org"
+                    "path": "https://git.libelektra.org"
                 }
             }
         ]
