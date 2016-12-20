@@ -36,7 +36,6 @@ namespace kdbrest
  */
 DatabaseApp::DatabaseApp (cppcms::service & srv) : cppcms::application (srv)
 {
-
 	dispatcher ().assign ("/(([a-zA-Z0-9\\-\\.]+)(/([a-zA-Z0-9\\-\\.]+)){3})/{0,1}", &DatabaseApp::getUniqueEntry, this, 1);
 	mapper ().assign ("entry", "/{1}");
 
@@ -45,6 +44,10 @@ DatabaseApp::DatabaseApp (cppcms::service & srv) : cppcms::application (srv)
 
 	dispatcher ().assign ("(/?)", &DatabaseApp::getAllEntries, this);
 	mapper ().assign ("");
+
+	// force caching of database
+	std::cout << "Pre-caching data..." << std::endl;
+	(void)kdbrest::service::StorageEngine::instance ();
 }
 
 /**

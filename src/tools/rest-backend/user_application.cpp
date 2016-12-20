@@ -34,6 +34,10 @@ UserApp::UserApp (cppcms::service & srv) : cppcms::application (srv)
 {
 	dispatcher ().assign ("/?([a-zA-Z0-9\\-\\.]{3,20})?/{0,1}", &UserApp::handle, this, 1);
 	mapper ().assign ("handle", "/{1}");
+
+	// force caching of database
+	std::cout << "Pre-caching data..." << std::endl;
+	(void)kdbrest::service::StorageEngine::instance ();
 }
 
 /**
@@ -182,7 +186,7 @@ void UserApp::handleDispatchPut (cppcms::http::request & req, cppcms::http::resp
 		model::User user = AuthenticationApp::getCurrentUser (req);
 
 		// in case no target specified, update current user
-		if (username.empty ())
+		if (username.empty () || req.get (PARAM_CURRENT) == "true")
 		{
 			username = user.getUsername ();
 		}
