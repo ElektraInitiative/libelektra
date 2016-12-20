@@ -1,5 +1,8 @@
 #!/bin/sh
 
+# remember the build directoy
+ROOT_DIR=$PWD
+
 # build the applications
 mkdir -p build
 cd build
@@ -47,5 +50,12 @@ sleep 60
 #   every configuration run will first clean the deployment directory and copy
 #   required files afterwards, ensuring an always up-to-date deployment
 kdb build-rest-frontend
+
+# create and copy api description
+ELEKTRA_VERSION=$(kdb get --no-newline system/elektra/version/constants/KDB_VERSION)
+apiary preview --path=$ROOT_DIR/doc/api_blueprints/snippet-sharing.apib --output=/srv/libelektra/restapi/$ELEKTRA_VERSION/snippet-sharing.html
+cp $ROOT_DIR/doc/api_blueprints/snippet-sharing.apib /srv/libelektra/restapi/$ELEKTRA_VERSION/snippet-sharing.apib
+rm /srv/libelektra/restapi/current
+ln -s /srv/libelektra/restapi/$ELEKTRA_VERSION /srv/libelektra/restapi/current
 
 pstree
