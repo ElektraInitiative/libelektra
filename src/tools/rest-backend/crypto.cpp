@@ -6,6 +6,9 @@
  * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
  */
 
+#include <iomanip>
+#include <sstream>
+
 #include <openssl/sha.h>
 
 #include <crypto.hpp>
@@ -36,7 +39,7 @@ bool sha256_encrypt (const std::string & input, std::string & output)
 		return false;
 	}
 
-	if (!SHA256_Update (&context, input.c_str (), input.size ()))
+	if (!SHA256_Update (&context, input.c_str (), input.length ()))
 	{
 		return false;
 	}
@@ -46,7 +49,12 @@ bool sha256_encrypt (const std::string & input, std::string & output)
 		return false;
 	}
 
-	output = std::string (reinterpret_cast<const char *> (sha_out));
+	std::stringstream ss;
+	for (int i = 0; i < SHA256_DIGEST_LENGTH; i++)
+	{
+		ss << std::hex << std::setw (2) << std::setfill ('0') << static_cast<int> (sha_out[i]);
+	}
+	output = ss.str ();
 
 	return true;
 }
