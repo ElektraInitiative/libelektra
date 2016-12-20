@@ -30,7 +30,9 @@ ulimit -c unlimited
 cd /var/lib/jenkins
 
 pstree
+echo -n "Old PID was: "
 cat /run/elektra-rest-backend.pid || /bin/true
+echo
 
 # then restart the backend
 kdb stop-rest-backend
@@ -39,6 +41,10 @@ kdb stop-rest-backend
 sleep 3
 
 kdb run-rest-backend
+
+echo -n "New PID is: "
+cat /run/elektra-rest-backend.pid || /bin/true
+echo
 
 # we have to make sure the backend had time to start before we can go on
 # (necessary because the command `kdb run-rest-backend` runs in the background)
@@ -59,3 +65,4 @@ rm /srv/libelektra/restapi/current
 ln -s /srv/libelektra/restapi/$ELEKTRA_VERSION /srv/libelektra/restapi/current
 
 pstree
+ulimit -a
