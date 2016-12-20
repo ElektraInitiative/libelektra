@@ -205,6 +205,7 @@ void RootApp::setOk (cppcms::http::response & response, cppcms::json::value & da
 	{
 		response.set_content_header (content_type);
 	}
+	response.content_type (MIME_APPLICATION_JSON);
 	response.status (cppcms::http::response::ok);
 	response.out () << data;
 }
