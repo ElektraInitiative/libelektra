@@ -34,9 +34,12 @@ namespace kdbrest
  */
 AuthenticationApp::AuthenticationApp (cppcms::service & srv) : cppcms::application (srv)
 {
-
 	dispatcher ().assign ("", &AuthenticationApp::authenticate, this);
 	mapper ().assign ("");
+
+	// force caching of database
+	std::cout << "Pre-caching data..." << std::endl;
+	(void)kdbrest::service::StorageEngine::instance ();
 }
 
 /**
@@ -289,6 +292,13 @@ model::User AuthenticationApp::getCurrentUser (cppcms::http::request & request)
 	}
 
 	std::unique_ptr<jwt_t, void (*) (jwt_t *)> jwt_ptr (jwt, jwt_free);
+
+	// check issuer and other grants
+	if (std::string (jwt_get_grant (jwt_ptr.get (), "issuer")) != std::string (ELEKTRA_REST_AUTHENTICATION_JWT_ISSUER) ||
+	    jwt_get_grant_int (jwt_ptr.get (), "expires") < std::time (NULL))
+	{
+		throw exception::NoCurrentUserException ();
+	}
 
 	std::string username = std::string (jwt_get_grant (jwt_ptr.get (), "username"));
 	if (username.empty ())

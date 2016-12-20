@@ -32,7 +32,6 @@ namespace kdbrest
  */
 RootApp::RootApp (cppcms::service & srv) : cppcms::application (srv)
 {
-
 	attach (new AuthenticationApp (srv), "auth", "/auth{1}", // mapping
 		"/auth(/(.*))?", 1				 // dispatching
 		);

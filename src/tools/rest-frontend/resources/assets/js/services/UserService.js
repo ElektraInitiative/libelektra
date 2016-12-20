@@ -21,6 +21,7 @@ module.exports = function (Logger, $http, $q, config) {
         },
         currentUser: {
             hasUser: false,
+            lastFetch: 0,
             user: {}
         }
     };
@@ -28,6 +29,7 @@ module.exports = function (Logger, $http, $q, config) {
 
     this.clear = function () {
         service.cache.currentUser.hasCache = false;
+        service.cache.currentUser.lastFetch = 0;
         service.cache.currentUser.user = {};
     };
 
@@ -36,6 +38,9 @@ module.exports = function (Logger, $http, $q, config) {
 
         currentUser = (typeof currentUser === 'undefined') ? false : currentUser;
         force = (typeof force === 'undefined') ? false : force;
+        if (service.cache.currentUser.lastFetch + config.jwt.validity < Math.floor(Date.now() / 1000)) {
+            force = true;
+        }
 
         var deferred = $q.defer();
 
@@ -45,6 +50,7 @@ module.exports = function (Logger, $http, $q, config) {
                     // custom options
                 }).then(function (response) {
                     service.cache.currentUser.user = response.data;
+                    service.cache.currentUser.lastFetch = Math.floor(Date.now() / 1000);
                     service.cache.currentUser.hasUser = true;
                     deferred.resolve(service.cache.currentUser.user);
                 }, function (response) {
