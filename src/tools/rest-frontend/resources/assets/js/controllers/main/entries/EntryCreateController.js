@@ -21,7 +21,15 @@ module.exports = function ($scope, Logger, $state, EntryService, Notification, S
             value: ''
         }
     };
-    $scope.formats = formats;
+    $scope.formats = formats.map(function(elem) {
+        var name = elem.plugin.name;
+        var space = name.indexOf(' ');
+        if(space > -1) {
+            name = name.substring(0, space);
+        }
+        elem.plugin.nameWithoutConf = name;
+        return elem;
+    });
     $scope.entry.configuration.format = $scope.formats[0];
     $scope.typeaheads = typeaheads;
 

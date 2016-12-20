@@ -216,7 +216,11 @@
                      ng-class="{'has-error': entryForm.config_format.$invalid && !entryForm.config_format.$pristine,
                                 'has-success': entryForm.config_format.$valid && entryForm.config_format.$dirty}">
                     <label for="config_format" class="control-label">
-                        {{ 'APP.ENTRIES.FORM.LABEL.CONFIGURATION.FORMAT' | translate }}
+                        <span>{{ 'APP.ENTRIES.FORM.LABEL.CONFIGURATION.FORMAT' | translate }}</span>
+                        <span>
+                            <a href="/plugins/{{ entry.configuration.format.plugin.nameWithoutConf }}"
+                               target="_blank"><i class="fa fa-external-link"></i></a>
+                        </span>
                     </label>
                     <select id="config_format" name="config_format" class="form-control"
                             ng-model="entry.configuration.format"
