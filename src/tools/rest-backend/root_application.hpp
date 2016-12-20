@@ -46,7 +46,8 @@ static const std::string PARAM_FILTER = "filter";
 static const std::string PARAM_FILTERBY = "filterby";
 
 // mime type for application/json
-static const std::string MIME_APPLICATION_JSON = "application/json; charset=utf-8";
+static const std::string MIME_APPLICATION_JSON = "application/json";
+static const std::string CHARSET_UTF_8 = "charset=utf-8";
 // mime type for text/plain
 static const std::string MIME_TEXT_PLAIN = "text/plain";
 

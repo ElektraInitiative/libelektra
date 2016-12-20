@@ -205,7 +205,7 @@ void RootApp::setOk (cppcms::http::response & response, cppcms::json::value & da
 	{
 		response.set_content_header (content_type);
 	}
-	response.content_type (MIME_APPLICATION_JSON);
+	response.content_type (MIME_APPLICATION_JSON + ";" + CHARSET_UTF_8);
 	response.status (cppcms::http::response::ok);
 	response.out () << data;
 }
@@ -350,7 +350,7 @@ cppcms::json::value RootApp::parsePostDataAsJson (cppcms::http::request & reques
 void RootApp::setHttpStatus (cppcms::http::response & response, const int status, const std::string & message, const std::string & loca)
 {
 	// send actual response
-	response.content_type (MIME_APPLICATION_JSON);
+	response.content_type (MIME_APPLICATION_JSON + ";" + CHARSET_UTF_8);
 	response.status (status);
 	cppcms::json::value data;
 	data["status"] = cppcms::http::response::status_to_string (status);
