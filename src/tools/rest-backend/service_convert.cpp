@@ -6,9 +6,11 @@
  * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
  */
 
+#include <algorithm>
 #include <cstdio>
 #include <fstream>
 #include <iostream>
+#include <regex>
 #include <sstream>
 
 #include <boost/algorithm/string/classification.hpp>
@@ -60,6 +62,42 @@ model::PluginFormat ConvertEngine::findSuitablePlugin (const std::string & forma
 			pluginname = format;
 		}
 
+		// validate plugin name
+		std::regex regex_pluginname (REGEX_VALID_PLUGINNAME);
+		if (!std::regex_match (pluginname, regex_pluginname))
+		{
+			throw exception::UnsupportedConfigurationFormatException ();
+		}
+
+		// validate raw plugin conf
+		if (conf.length () > 1 && ((conf.at (0) == '\'' && conf.find ('\'', 1) != std::string::npos) ||
+					   (conf.at (0) == '"' && conf.find ('"', 1) != std::string::npos)))
+		{
+			if (conf.at (0) == '\'')
+			{
+				conf = conf.substr (1, conf.find_first_of ('\'', 1) - 1);
+			}
+			else if (conf.at (0) == '"')
+			{
+				conf = conf.substr (1, conf.find_first_of ('"', 1) - 1);
+			}
+		}
+		if (conf.length () > 0 && conf.find_first_of ('=') == std::string::npos)
+		{
+			throw exception::UnsupportedConfigurationFormatException ();
+		}
+
+		// parse and validate config (not empty & no whitespace-only values)
+		kdb::KeySet config (parsePluginArguments (conf, "system"));
+		for (auto elem : config)
+		{
+			std::string value (elem.getString ());
+			if (value.empty () || std::all_of (value.begin (), value.end (), isspace))
+			{
+				throw exception::UnsupportedConfigurationFormatException ();
+			}
+		}
+
 		PluginSpec plugin (pluginname);
 
 		// find status
@@ -70,9 +108,6 @@ model::PluginFormat ConvertEngine::findSuitablePlugin (const std::string & forma
 		// find format
 		std::string providers = db.lookupInfo (plugin, m_pluginProvides);
 		std::string actualFormat = this->extractFormatFromProviderList (providers);
-
-		// parse config
-		kdb::KeySet config (parsePluginArguments (conf, "system"));
 
 		return model::PluginFormat (actualFormat, plugin.getName (), statuses, config);
 	}

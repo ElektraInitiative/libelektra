@@ -6,6 +6,7 @@
  * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
  */
 
+#include <iostream>
 #include <regex>
 #include <stdlib.h>
 
@@ -22,6 +23,7 @@ namespace service
  */
 StorageEngine::StorageEngine ()
 {
+	std::cout << "Pre-caching data..." << std::endl;
 	// pre fetch the entry cache
 	this->loadAllEntries ();
 	// pre-fetch the user cache
