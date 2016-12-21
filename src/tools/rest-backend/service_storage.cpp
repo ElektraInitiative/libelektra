@@ -10,6 +10,7 @@
 #include <regex>
 #include <stdlib.h>
 
+#include <kdblogger.h>
 #include <service.hpp>
 
 namespace kdbrest
@@ -23,7 +24,7 @@ namespace service
  */
 StorageEngine::StorageEngine ()
 {
-	std::cout << "Pre-caching data..." << std::endl;
+	ELEKTRA_LOG ("Pre-caching data...");
 	// pre fetch the entry cache
 	this->loadAllEntries ();
 	// pre-fetch the user cache
