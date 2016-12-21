@@ -99,6 +99,9 @@ Snippets shared with the service are
 [BSD licensed](https://www.libelektra.org/devgettingstarted/license).
 The snippets can also be downloaded directly as bundle from a separate
 [GitHub repository](https://github.com/ElektraInitiative/snippets).
+As soon as a snippet is added, changed or deleted on the website, a job
+that updates the repository is triggered. So you can expect the repository
+to be always up-to-date.
 
 ### NoScript ###
 
