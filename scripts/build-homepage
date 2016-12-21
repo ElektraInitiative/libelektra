@@ -37,8 +37,12 @@ echo
 # then restart the backend
 kdb stop-rest-backend
 
+netstat --listen --numeric-ports | grep 80
+
 # sleep prevents 'address already in use'
 sleep 3
+
+netstat --listen --numeric-ports | grep 80
 
 kdb run-rest-backend
 
