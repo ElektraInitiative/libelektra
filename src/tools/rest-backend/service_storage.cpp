@@ -6,9 +6,11 @@
  * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
  */
 
+#include <iostream>
 #include <regex>
 #include <stdlib.h>
 
+#include <kdblogger.h>
 #include <service.hpp>
 
 namespace kdbrest
@@ -22,6 +24,7 @@ namespace service
  */
 StorageEngine::StorageEngine ()
 {
+	ELEKTRA_LOG ("Pre-caching data...");
 	// pre fetch the entry cache
 	this->loadAllEntries ();
 	// pre-fetch the user cache

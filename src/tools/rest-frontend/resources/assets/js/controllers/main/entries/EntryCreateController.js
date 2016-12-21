@@ -7,6 +7,9 @@ module.exports = function ($scope, Logger, $state, EntryService, Notification, S
     var vm = this;
 
     $scope.isCreate = true;
+    $scope.show = {
+        howDoesItWork: false
+    };
 
     $scope.cb = {
         createScopeManually: false
@@ -77,6 +80,10 @@ module.exports = function ($scope, Logger, $state, EntryService, Notification, S
                 message: 'APP.ENTRIES.CREATE.NOTIFICATION.MESSAGE.' + response.data.i18n
             });
         });
+    };
+
+    this.show = function(which) {
+        $scope.show[which] = true;
     };
 
     Logger.info('New entry controller ready');
