@@ -7,12 +7,13 @@ KEY_SLASH_REPLACED=$(echo "$ELEKTRA_REST_KEY" | tr '/' '_')
 
 export_snippets() {
   kdb export "$SNIPPET_ROOT/$ELEKTRA_REST_KEY" ni > "ni/$KEY_SLASH_REPLACED.ini"
-  kdb export "$SNIPPET_ROOT/$ELEKTRA_REST_KEY ini" > "ini/$KEY_SLASH_REPLACED.ini"
-  kdb export "$SNIPPET_ROOT/$ELEKTRA_REST_KEY xmltool" > "xmltool/$KEY_SLASH_REPLACED.xml"
-  kdb export "$SNIPPET_ROOT/$ELEKTRA_REST_KEY yajl" > "yajl/$KEY_SLASH_REPLACED.json"
+  kdb export "$SNIPPET_ROOT/$ELEKTRA_REST_KEY" ini > "ini/$KEY_SLASH_REPLACED.ini"
+  kdb export "$SNIPPET_ROOT/$ELEKTRA_REST_KEY" xmltool > "xmltool/$KEY_SLASH_REPLACED.xml"
+  kdb export "$SNIPPET_ROOT/$ELEKTRA_REST_KEY" yajl > "yajl/$KEY_SLASH_REPLACED.json"
 }
 
 push_changes_to_git() {
+  git add snippets.dump
   git add "ni/$KEY_SLASH_REPLACED.ini"
   git add "ini/$KEY_SLASH_REPLACED.ini"
   git add "xmltool/$KEY_SLASH_REPLACED.xml"
