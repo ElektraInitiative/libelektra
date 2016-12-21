@@ -227,7 +227,7 @@ Make sure to read how to add plugins, tools and bindings.
 
 ## Build Server ##
 
-The [build server](http://build.libelektra.org:8080/) builds
+The [build server](https://build.libelektra.org/) builds
 Elektra on every commit in various ways and also produces [LCOV code
 coverage report](http://doc.libelektra.org/coverage/latest).
 

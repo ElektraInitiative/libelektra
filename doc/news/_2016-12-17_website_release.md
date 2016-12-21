@@ -111,6 +111,21 @@ website does only use resources that can be found in the official Elektra
 repository. So in case you cannot or do not want to use JavaScript, you
 can find all resources also [here](https://git.libelektra.org).
 
+## Domains ##
+
+All Elektra Domains directly hosted by us are now only served by `https`.
+The former `http` sites are only redirects to `https`. This might cause
+trouble with some software, e.g., for older apt versions, make sure to
+update `/etc/apt/sources.list`:
+
+    deb     [trusted=yes] https://build.libelektra.org/debian/ wheezy main
+    deb-src [trusted=yes] https://build.libelektra.org/debian/ wheezy main
+
+The build Server is no longer reachable at port 8080, but now only directly at
+[https://build.libelektra.org/](https://build.libelektra.org/).
+
+The old Wordpress installation was shut down because of security concerns.
+
 ## Feedback ##
 
 At this point there is not much more to say about the new website except for:
