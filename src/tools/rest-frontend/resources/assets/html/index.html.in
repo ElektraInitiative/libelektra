@@ -44,6 +44,9 @@
         <!-- Vendor CSS -->
         <link rel="stylesheet" type="text/css" href="assets/skin/vendor.css">
 
+        <!-- AsciiNema CSS -->
+        <link rel="stylesheet" type="text/css" href="vendor/asciinema/asciinema-player.css">
+
         <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
         <!--[if lt IE 9]>
           <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
@@ -70,6 +73,9 @@
 
         <!-- Application JavaScript -->
         <script src="assets/js/application.js"></script>
+
+        <!-- AsciiNema JS -->
+        <script src="vendor/asciinema/asciinema-player.js"></script>
 
     </body>
 
