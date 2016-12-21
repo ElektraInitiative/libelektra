@@ -387,39 +387,6 @@ public:
 	}
 
 	/**
-     * @brief setter for the number of views of the entry
-	 * 
-     * @param views The number of views as long
-     */
-	void setViews (const long views)
-	{
-		this->setMeta<long> (ELEKTRA_REST_MODEL_ENTRY_META_VIEWS, views);
-	}
-
-	/**
-	 * @brief adds an amount of views to the current number of views
-	 * 
-	 * @param views The number of views to add
-	 */
-	void addViews (const long views)
-	{
-		this->setViews (this->getViews () + views);
-	}
-
-	/**
-     * @brief getter for the number of views of the entry
-	 * 
-     * @return The number of views as long
-     */
-	long getViews () const
-	{
-		if (this->hasMeta (ELEKTRA_REST_MODEL_ENTRY_META_VIEWS))
-			return this->getMeta<long> (ELEKTRA_REST_MODEL_ENTRY_META_VIEWS);
-		else
-			return 0;
-	}
-
-	/**
      * @brief setter for the value of the entry
 	 * 
      * @note the value is stored as the value of the key.
