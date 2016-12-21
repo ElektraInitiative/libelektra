@@ -71,11 +71,11 @@
         <!-- Space for Sub-Templates -->
         <div ui-view></div>
 
-        <!-- Application JavaScript -->
-        <script src="assets/js/application.js"></script>
-
         <!-- AsciiNema JS -->
         <script src="vendor/asciinema/asciinema-player.js"></script>
+
+        <!-- Application JavaScript -->
+        <script src="assets/js/application.js"></script>
 
     </body>
 
