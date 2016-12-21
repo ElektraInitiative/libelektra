@@ -117,9 +117,6 @@ private:
 	boost::shared_mutex m_mutex_userCache;
 };
 
-// the regex defines allow characters in a plugin name
-const std::string REGEX_VALID_PLUGINNAME = "^[a-zA-Z0-9]+$";
-
 /**
  * @brief service offering conversion functionality
  * 

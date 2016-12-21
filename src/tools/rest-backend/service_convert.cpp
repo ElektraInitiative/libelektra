@@ -62,13 +62,6 @@ model::PluginFormat ConvertEngine::findSuitablePlugin (const std::string & forma
 			pluginname = format;
 		}
 
-		// validate plugin name
-		std::regex regex_pluginname (REGEX_VALID_PLUGINNAME);
-		if (!std::regex_match (pluginname, regex_pluginname))
-		{
-			throw exception::UnsupportedConfigurationFormatException ();
-		}
-
 		// validate raw plugin conf
 		if (conf.length () > 1 && ((conf.at (0) == '\'' && conf.find ('\'', 1) != std::string::npos) ||
 					   (conf.at (0) == '"' && conf.find ('"', 1) != std::string::npos)))
@@ -98,7 +91,8 @@ model::PluginFormat ConvertEngine::findSuitablePlugin (const std::string & forma
 			}
 		}
 
-		PluginSpec plugin (pluginname);
+		// validate plugin name and open plugin
+		PluginSpec plugin (pluginname, pluginname);
 
 		// find status
 		std::string statusString = db.lookupInfo (plugin, m_pluginStatus);
@@ -112,6 +106,10 @@ model::PluginFormat ConvertEngine::findSuitablePlugin (const std::string & forma
 		return model::PluginFormat (actualFormat, plugin.getName (), statuses, config);
 	}
 	catch (kdb::tools::NoPlugin & e)
+	{
+		throw exception::UnsupportedConfigurationFormatException ();
+	}
+	catch (kdb::tools::BadPluginName & e)
 	{
 		throw exception::UnsupportedConfigurationFormatException ();
 	}
