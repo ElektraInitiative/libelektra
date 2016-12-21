@@ -12,7 +12,7 @@
                 "dev-comment": "A list of documentation files that are important for new users. Could be replaced by 'parsereadme' type in future.",
                 "children": [
                     {
-                        "name": "Readme",
+                        "name": "Github Main Page",
                         "type": "staticfile",
                         "options": {
                             "path": "README.md"
