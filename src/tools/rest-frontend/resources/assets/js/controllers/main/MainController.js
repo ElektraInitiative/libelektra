@@ -36,10 +36,8 @@ module.exports = function ($rootScope, $scope, Logger, $state, $anchorScroll, we
 
     this.goSearch = function () {
 
-        if ($rootScope.entriesSearchString) {
-            Logger.log('Go to search');
-            $state.go('main.entries.search');
-        }
+        Logger.log('Go to search');
+        $state.go('main.entries.search');
 
     };
 

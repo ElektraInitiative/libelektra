@@ -54,25 +54,19 @@ module.exports = function ($rootScope, $scope, Logger, $state, UserService) {
 
     this.loadEntries = function () {
 		$scope.options.filter = $rootScope.usersSearchString;
-        if ($scope.options.filter && $scope.options.filter.length !== 0) {
-            var params = {
-                filter: $scope.options.filter,
-                filterby: $scope.options.filterby.value.id,
-                sort: $scope.options.sort.value.id,
-                sortby: $scope.options.sortby.value.id,
-                offset: $scope.options.offset,
-                rows: $scope.options.rows.value
-            };
-            UserService.search(params).then(function (data)
-            {
-                $scope.searchResult = data;
-                vm.calculatePagination();
-            });
-        } else if (UserService.hasSearchCache()) {
-            $scope.searchResult = UserService.getSearchCache();
-            $scope.options.filter = UserService.getSearchFilter();
+        var params = {
+            filter: $scope.options.filter,
+            filterby: $scope.options.filterby.value.id,
+            sort: $scope.options.sort.value.id,
+            sortby: $scope.options.sortby.value.id,
+            offset: $scope.options.offset,
+            rows: $scope.options.rows.value
+        };
+        UserService.search(params).then(function (data)
+        {
+            $scope.searchResult = data;
             vm.calculatePagination();
-        }
+        });
     };
 
     this.calculatePagination = function () {
