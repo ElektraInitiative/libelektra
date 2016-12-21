@@ -193,24 +193,7 @@ Also see [News](doc/news/) and its [RSS feed](http://www.libelektra.org/news/fee
 ### Packages ###
 
 The preferred way to install Elektra is by using packages provided for
-your distribution:
- - [Fedora](https://admin.fedoraproject.org/pkgdb/package/elektra/)
- - [Gentoo](http://packages.gentoo.org/package/app-admin/elektra)
- - [Arch Linux](https://aur.archlinux.org/packages/elektra/)
- - [Debian](https://packages.debian.org/de/jessie/libelektra4)
- - [Ubuntu](https://launchpad.net/ubuntu/+source/elektra)
- - [Openwrt](https://github.com/openwrt/packages/tree/master/libs/elektra)
- - [OpenSuse](https://software.opensuse.org/package/elektra)
- - [PLDLinux](http://sophie.zarb.org/rpms/763d9e52beefaa15b1363d11d836b65c)
- - [LEDE](https://lede-project.org/packages/pkgdata/libelektra-core?s[]=elektra)
- - [Linux Mint](https://community.linuxmint.com/software/view/elektra-bin)
-
-Available, but not up-to-date (Version 0.7):
- - [Mageia](http://svnweb.mageia.org/packages/updates/1/elektra/)
-
-For [OpenSUSE, CentOS, Fedora, RHEL and SLE](https://build.opensuse.org/package/show/home:bekun:devel/elektra)
-Kai-Uwe Behrmann kindly provides packages [for download](http://software.opensuse.org/download.html?project=home%3Abekun%3Adevel&package=libelektra4).
-For Debian wheezy and jessie amd64 we provide latest builds. See build server below.
+your distribution, see [INSTALL](/doc/INSTALL.md) for available packages.
 
 If there are no packages available for your distribution, see the
 [installation document](doc/INSTALL.md).
@@ -247,19 +230,6 @@ Make sure to read how to add plugins, tools and bindings.
 The [build server](http://build.libelektra.org:8080/) builds
 Elektra on every commit in various ways and also produces [LCOV code
 coverage report](http://doc.libelektra.org/coverage/latest).
-
-To use the debian repository of the latest builds from master put following files in
-/etc/apt/sources.list.
-For jessie:
-
-        deb     [trusted=yes] http://debian-stable.libelektra.org/elektra-stable/ jessie main
-        deb-src [trusted=yes] http://debian-stable.libelektra.org/elektra-stable/ jessie main
-
-For wheezy:
-
-         deb     [trusted=yes] http://build.libelektra.org/debian/ wheezy main
-         deb-src [trusted=yes] http://build.libelektra.org/debian/ wheezy main
-
 
 
 ## Contributing ##
