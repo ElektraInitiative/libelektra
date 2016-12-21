@@ -82,7 +82,7 @@ We hope that you enjoy our new appearance as much as we do!
 Another important part of the website and also without doubt the part
 that took most effort to create, is the service that allows for sharing
 of configuration snippets. It is run by a REST service fully built with
-the help of [CppCMS](http://http://cppcms.com/) on basis of Elektra as
+the help of [CppCMS](http://cppcms.com/) on basis of Elektra as
 data store. All data concerning snippets and user accounts is stored
 in Elektras key database (of course with password being properly hashed).
 
@@ -94,6 +94,11 @@ the upload format as well.
 Clearly the service is meant to be driven by its users. Therefore we ask
 you to share your own configuration snippets, maybe they can be of help
 or simply a time saver for someone else!
+
+Snippets shared with the service are
+[BSD licensed](https://www.libelektra.org/devgettingstarted/license).
+The snippets can also be downloaded directly as bundle from a separate
+[GitHub repository](https://github.com/ElektraInitiative/snippets).
 
 ### NoScript ###
 
@@ -116,19 +121,19 @@ for suggestions and we also like to help with technical issues, simply
 ## Stay tuned! ##
 
 Subscribe to the reimplemented
-[RSS feed](http://www.libelektra.org/rss/feed.rss)
+[RSS feed](https://www.libelektra.org/news/feed.rss)
 to always get the release notifications.
 
 For any questions and comments, please contact the
 [mailing list](https://lists.sourceforge.net/lists/listinfo/registry-list),
-use the issue tracker [on github](http://bugs.libelektra.org)
+use the issue tracker [on github](https://bugs.libelektra.org)
 or write an email to elektra@markus-raab.org.
 For issues or feedback concerning the website, you can also
 contact us at website@libelektra.org.
 
-[Permalink to this NEWS entry](http://www.libelektra.org/rss/102b84a3-c41e-485c-8fe2-f12a24b3fbfd.html)
+[Permalink to this NEWS entry](https://www.libelektra.org/news/102b84a3-c41e-485c-8fe2-f12a24b3fbfd.html)
 
-For more information, see [http://libelektra.org](http://libelektra.org)
+For more information, see [https://libelektra.org](https://libelektra.org)
 
 Best regards,
 Marvin & Markus
