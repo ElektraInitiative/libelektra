@@ -219,10 +219,23 @@ module.exports = function (grunt) {
             options: {},
             build: {
                 src: 'resources/assets/js/application.js',
-                dest: 'public/assets/js/application.js',
+                dest: 'resources/application.js.tmp',
                 options: {
                     banner: dstFileBanner,
                     watch: true
+                }
+            }
+        },
+        uglify: {
+            options: {
+                compress: true,
+                mangle: false,
+                sourceMap: true,
+                screwIE8: false
+            },
+            build: {
+                files: {
+                    'public/assets/js/application.js': ['<%= grunt.config(\'browserify.build.dest\') %>']
                 }
             }
         },
@@ -272,6 +285,7 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-contrib-cssmin');
     grunt.loadNpmTasks('grunt-contrib-jshint');
     grunt.loadNpmTasks('grunt-contrib-less');
+    grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-contrib-watch');
     grunt.loadNpmTasks('grunt-preprocess');
 
@@ -280,11 +294,11 @@ module.exports = function (grunt) {
     grunt.registerTask('default', ['full']);
     grunt.registerTask('full', [
         'stylesheets', 'website-news', 'create-website-structure', 'copy-website-content', 'copy',
-        'create-website-sitemap', 'preprocess', 'browserify:build'
+        'create-website-sitemap', 'preprocess', 'browserify:build', 'uglify:build'
     ]);
     grunt.registerTask('install', [
         'stylesheets', 'website-news', 'create-website-structure', 'copy-website-content', 'copy',
-        'preprocess', 'browserify:build'
+        'preprocess', 'browserify:build', 'uglify:build'
     ]);
     grunt.registerTask('stylesheets', ['less', 'cssmin', 'concat']);
     grunt.registerTask('website-news', ['create-website-news', 'create-website-news-rss']);
