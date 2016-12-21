@@ -87,6 +87,7 @@
     "APP.CONVERSION.BUTTON.CLEAR": "Clear fields",
     "APP.CONVERSION.BUTTON.CONVERT": "Convert snippet",
     "APP.CONVERSION.BUTTON.REPORT_PROBLEM": "Report problem on GitHub",
+    "APP.CONVERSION.LABEL.FORMAT.INFO": "Show plugin info",
     "APP.CONVERSION.LABEL.INPUT.FORMAT": "Input format:",
     "APP.CONVERSION.LABEL.INPUT.FORMAT.CONF": "Additional plugin configuration:",
     "APP.CONVERSION.LABEL.INPUT.SNIPPET": "Input snippet:",
