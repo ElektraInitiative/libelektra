@@ -41,6 +41,11 @@ module.exports = function ($rootScope, $scope, Logger, $state, $anchorScroll, we
 
     };
 
+    this.goMySnippets = function () {
+        $rootScope.entriesSearchString = $rootScope.currentUser.username;
+        vm.goSearch();
+    };
+
     this.scrollToTop = function () {
         $anchorScroll();
     };
