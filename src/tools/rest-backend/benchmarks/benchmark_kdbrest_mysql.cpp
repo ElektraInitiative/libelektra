@@ -63,7 +63,7 @@ void clearDatabase (sql::Connection * con)
 		"`author_id` INT NOT NULL, `organization` VARCHAR(255) NOT NULL, `application` VARCHAR(255) NOT NULL, "
 		"`scope` VARCHAR(255) NOT NULL, `slug` VARCHAR(255) NOT NULL, `title` VARCHAR(255) NOT NULL, "
 		"`description` TEXT NOT NULL, `configuration` TEXT NOT NULL, `plugin` VARCHAR(100) NOT NULL, "
-		"`views` INT NOT NULL DEFAULT '0', `createdat` INT NOT NULL, PRIMARY KEY (`id`), "
+		"`createdat` INT NOT NULL, PRIMARY KEY (`id`), "
 		"FOREIGN KEY (`author_id`) REFERENCES `users`(`id`)) ENGINE=InnoDB";
 	std::string tbl_tags =
 		"CREATE TABLE `tags` (`id` INT NOT NULL AUTO_INCREMENT, `snippet_id` INT NOT NULL, "
@@ -106,7 +106,7 @@ void prepareTestData (sql::Connection * con, int numUsers, int numEntriesPerUser
 		std::string sql_tags;
 		sql_snippets =
 			"INSERT INTO `snippets` (`author_id`,`organization`,`application`,`scope`,`slug`,`title`,`description`,"
-			"`configuration`,`plugin`,`views`,`createdat`) VALUES ";
+			"`configuration`,`plugin`,`createdat`) VALUES ";
 		sql_tags = "INSERT INTO `tags` (`snippet_id`, `tag`) VALUES ";
 		int fk_id_snippets = 1;
 		int fk_id_tags = 1;
@@ -120,8 +120,7 @@ void prepareTestData (sql::Connection * con, int numUsers, int numEntriesPerUser
 				sql_snippets += "(" + std::to_string (fk_id_snippets) + ",'" + entry.getOrganization () + "','" +
 						entry.getApplication () + "','" + entry.getScope () + "','" + entry.getSlug () + "','" +
 						entry.getTitle () + "','" + entry.getDescription () + "','" + configFormat.getConfig () +
-						"','" + entry.getUploadPlugin () + "'," + std::to_string (entry.getViews ()) + "," +
-						std::to_string (entry.getCreatedAt ()) + "),";
+						"','" + entry.getUploadPlugin () + "'," + std::to_string (entry.getCreatedAt ()) + "),";
 				for (auto & tag : entry.getTags ())
 				{
 					sql_tags += "(" + std::to_string (fk_id_tags) + ", '" + tag + "'),";
@@ -181,7 +180,6 @@ std::vector<model::Entry> rsToEntryVector (sql::ResultSet * rs)
 		auto ks = cfg.getKeySet ();
 		entry.addSubkeys (ks);
 		entry.setAuthor (rs->getString ("author").asStdString ());
-		entry.setViews (rs->getInt ("views"));
 		entry.setCreatedAt (rs->getInt ("createdat"));
 
 		result.push_back (entry);

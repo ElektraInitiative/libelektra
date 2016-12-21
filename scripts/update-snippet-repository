@@ -2,19 +2,22 @@
 
 SNIPPET_REPO=/var/lib/jenkins/snippets
 SNIPPET_ROOT=system/configs
-SNIPPET_EXPORT_FILENAME=snippets
 LOCK_FILE=/run/elektra-update-snippet-repository.lock
+KEY_SLASH_REPLACED=$(echo "$ELEKTRA_REST_KEY" | tr '/' '_')
 
 export_snippets() {
-  # snippets.dump does not need to be exported, it is the source file
-  kdb export $SNIPPET_ROOT ni > $SNIPPET_EXPORT_FILENAME.ni.ini
-  kdb export $SNIPPET_ROOT ini > $SNIPPET_EXPORT_FILENAME.ini
-  kdb export $SNIPPET_ROOT xmltool > $SNIPPET_EXPORT_FILENAME.xml
-  kdb export $SNIPPET_ROOT yajl > $SNIPPET_EXPORT_FILENAME.json
+  kdb export "$SNIPPET_ROOT/$ELEKTRA_REST_KEY" ni > "ni/$KEY_SLASH_REPLACED.ini"
+  kdb export "$SNIPPET_ROOT/$ELEKTRA_REST_KEY" ini > "ini/$KEY_SLASH_REPLACED.ini"
+  kdb export "$SNIPPET_ROOT/$ELEKTRA_REST_KEY" xmltool > "xmltool/$KEY_SLASH_REPLACED.xml"
+  kdb export "$SNIPPET_ROOT/$ELEKTRA_REST_KEY" yajl > "yajl/$KEY_SLASH_REPLACED.json"
 }
 
 push_changes_to_git() {
-  git add $SNIPPET_EXPORT_FILENAME.*
+  git add snippets.dump
+  git add "ni/$KEY_SLASH_REPLACED.ini"
+  git add "ini/$KEY_SLASH_REPLACED.ini"
+  git add "xmltool/$KEY_SLASH_REPLACED.xml"
+  git add "yajl/$KEY_SLASH_REPLACED.json"
 
   case "$ELEKTRA_REST_ACTION" in
     "INSERT")

@@ -515,9 +515,10 @@ void UserApp::handleUpdate (cppcms::http::request & req, cppcms::http::response 
 		RootApp::setBadRequest (resp, "The given email is not a valid email.", "USER_UPDATE_INVALID_EMAIL");
 		return; // quit early
 	}
-	if (rank >= ELEKTRA_REST_USER_MIN_RANK && rank <= ELEKTRA_REST_USER_MAX_RANK)
+	if (rank != -1 && (rank < ELEKTRA_REST_USER_MIN_RANK || rank > ELEKTRA_REST_USER_MAX_RANK))
 	{
 		RootApp::setBadRequest (resp, "The given rank is not available.", "USER_UPDATE_INVALID_RANK");
+		return; // quit early
 	}
 
 	// get the user and update

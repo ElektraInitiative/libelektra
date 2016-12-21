@@ -147,20 +147,6 @@ TEST (kdbrestModelsEntryTest, SetAndGetUploadPlugin)
 	ASSERT_EQ (plugin, entry.getUploadPlugin ());
 }
 
-TEST (kdbrestModelsEntryTest, SetAndGetViews)
-{
-
-	kdb::Key key (kdbrest::Config::instance ().getConfig ().get<std::string> ("kdb.path.configs") + std::string ("/test/key1"),
-		      KEY_END);
-	kdbrest::model::Entry entry (key);
-	long views = 823712903;
-	entry.setViews (views);
-	ASSERT_EQ (views, entry.getViews ());
-	views += 123;
-	entry.addViews (123);
-	ASSERT_EQ (views, entry.getViews ());
-}
-
 TEST (kdbrestModelsEntryTest, SetAndGetAndHasTags)
 {
 

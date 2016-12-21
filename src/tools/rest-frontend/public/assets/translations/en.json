@@ -87,6 +87,7 @@
     "APP.CONVERSION.BUTTON.CLEAR": "Clear fields",
     "APP.CONVERSION.BUTTON.CONVERT": "Convert snippet",
     "APP.CONVERSION.BUTTON.REPORT_PROBLEM": "Report problem on GitHub",
+    "APP.CONVERSION.LABEL.FORMAT.INFO": "Show plugin info",
     "APP.CONVERSION.LABEL.INPUT.FORMAT": "Input format:",
     "APP.CONVERSION.LABEL.INPUT.FORMAT.CONF": "Additional plugin configuration:",
     "APP.CONVERSION.LABEL.INPUT.SNIPPET": "Input snippet:",
@@ -328,8 +329,8 @@
     "APP.HOME.LABEL.TOOL.OTHERS.HEADLINE": "Other Applications",
     "APP.HOME.LABEL.TOOL.QTGUI.DETAILS": "Elektra offers a GUI based on Qt Quick. It simplifies common tasks and offers easy access to the key database itself. A description for the GUI tool can be found <a href=\"/tools/qt-gui\">here</a>.",
     "APP.HOME.LABEL.TOOL.QTGUI.HEADLINE": "Graphical User Interface",
-    "APP.HOME.LABEL.TOOL.WEBGUI.DETAILS": "The Web GUI allows for remote configuration of systems. Besides the configuration of single systems, it also features cluster configuration.",
-    "APP.HOME.LABEL.TOOL.WEBGUI.HEADLINE": "Web GUI",
+    "APP.HOME.LABEL.TOOL.WEBGUI.DETAILS": "The Web GUI will allow for remote configuration of systems. Besides the configuration of single systems, it will also feature cluster configuration.",
+    "APP.HOME.LABEL.TOOL.WEBGUI.HEADLINE": "Upcoming: Web GUI",
     
     "APP.NAV.BUTTON.ACCOUNT": "Account",
     "APP.NAV.BUTTON.LOGIN": "Login",

@@ -200,7 +200,6 @@ void DatabaseApp::handleGetUnique (cppcms::http::request & req, cppcms::http::re
 	try
 	{
 		model::Entry entry = service::StorageEngine::instance ().getEntry (key);
-		this->addViewToEntry (entry);
 
 		const std::string raw = req.get (PARAM_RAW);
 		if (!raw.empty ())
@@ -915,30 +914,12 @@ void DatabaseApp::generateAndSendEntryList (cppcms::http::request & req, cppcms:
 }
 
 /**
- * @brief increases the view count of an entry by 1
- *
- * @param entry the entry to change
- */
-void DatabaseApp::addViewToEntry (model::Entry & entry) const
-{
-	entry.addViews (1);
-	try
-	{
-		(void)service::StorageEngine::instance ().updateEntry (entry);
-	}
-	catch (kdbrest::exception::EntryNotFoundException & e)
-	{
-		// do not handle exception
-	}
-}
-
-/**
  * @brief copies meta data from one entry to another
  *
  * does not copy the key of the entry itself, only meta data
  * and the configuration snippet. does also not copy data
- * that can only be changed by the system (creation date,
- * author and view count).
+ * that can only be changed by the system (creation date and
+ * author).
  *
  * @param from source entry
  * @param to target entry
