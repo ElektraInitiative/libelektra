@@ -156,6 +156,7 @@
     "APP.ENTRIES.DETAILS.BUTTON.EDIT": "Edit snippet",
     "APP.ENTRIES.DETAILS.FORMAT.HEADING": "{{ format }} (plugin: {{ plugin }})",
     "APP.ENTRIES.DETAILS.HEADING.CONFIGURATION": "Configuration",
+    "APP.ENTRIES.DETAILS.LABEL.LICENSE": "This snippet is licensed under the <a href=\"/devgettingstarted/license\">BSD license</a>.",
     "APP.ENTRIES.DETAILS.LABEL.VALIDATED": "Validated",
     "APP.ENTRIES.DETAILS.NOTIFICATION.CLIPBOARD.HEADER": "Copy snippet",
     "APP.ENTRIES.DETAILS.NOTIFICATION.CLIPBOARD.MESSAGE.ERROR": "The snippet could not be copied to the clipboard. Maybe this function is not supported or blocked by your browser.",
