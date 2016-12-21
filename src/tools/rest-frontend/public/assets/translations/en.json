@@ -112,6 +112,8 @@
     "APP.CONVERSION.FORM.OPTIONS.FORMATS": "{{ format }} (plugin: {{ plugin.name }})",
     "APP.CONVERSION.PANEL.HEADING": "Configuration snippet converter",
     
+    "APP.ENTRIES.CREATE.BUTTON.HOWDOESITWORK": "How does it work?",
+    "APP.ENTRIES.CREATE.LABEL.HOWDOESITWORK": "This form allows you to share a new configuration snippet. On the top you have to enter some information about the snippet, while on the bottom you get a chance to enter the actual snippet. In the list of formats you find plugins of which you can select one that fits (or sounds like it fits) your needs. If you cannot find one, then use the <i>line</i> plugin, it will basically store your snippet line by line as plain text.<br>Please be aware that you cannot change the fields on the top right (organization, application, scope and slug) later on.",
     "APP.ENTRIES.CREATE.NOTIFICATION.HEADER": "Create new snippet",
     "APP.ENTRIES.CREATE.NOTIFICATION.MESSAGE.ENTRY_CREATED_SUCCESSFULLY": "The configuration snippet has been stored successfully. Please check if the import has not caused any issues. In case something is wrong, simply edit the snippet!",
     "APP.ENTRIES.CREATE.NOTIFICATION.MESSAGE.ENTRY_DOES_ALREADY_EXIST": "An entry with the entered details (organization, application, scope and slug) does already exist. Please choose different values.",
