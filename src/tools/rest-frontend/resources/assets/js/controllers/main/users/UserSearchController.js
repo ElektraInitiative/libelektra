@@ -75,11 +75,11 @@ module.exports = function ($rootScope, $scope, Logger, $state, UserService) {
         entries += $scope.searchResult.elements;
         entries += $scope.searchResult.remaining;
         Logger.info('Current entries: ' + entries);
-        var numPages = Math.floor(entries / $scope.options.rows.value);
+        var numPages = Math.ceil(entries / $scope.options.rows.value);
         $scope.pagination.pageCount = numPages;
         Logger.info('Current page count: ' + numPages);
 
-        var curPage = ($scope.searchResult.offset / $scope.options.rows.value) + 1;
+        var curPage = Math.floor($scope.searchResult.offset / $scope.options.rows.value) + 1;
         $scope.pagination.currentPage = curPage;
         Logger.info('Current page: ' + curPage);
 
@@ -106,7 +106,7 @@ module.exports = function ($rootScope, $scope, Logger, $state, UserService) {
         var entries = $scope.searchResult.offset;
         entries += $scope.searchResult.elements;
         entries += $scope.searchResult.remaining;
-        if (index > entries / $scope.options.rows.value)
+        if (index > Math.ceil(entries / $scope.options.rows.value))
             return;
 
         $scope.options.offset = (index - 1) * $scope.options.rows.value;
