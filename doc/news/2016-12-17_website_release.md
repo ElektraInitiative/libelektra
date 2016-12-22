@@ -123,7 +123,7 @@ repository:
    can find all resources also [here](https://git.libelektra.org).
 2. If you are only worried about executed untrusted JavaScript,
    you can study and improve the
-   [Web Frontend](tree.libelektra.org/src/tools/rest-frontend),
+   [Web Frontend](https://blob.libelektra.org/src/tools/rest-frontend/README.md),
    which builds the website.
    Based on this, we hope you disable `NoScript` for our page
    so that you are able to share snippets!
