@@ -8,7 +8,7 @@
 ## Highlight ##
 
 1. Release of new Elektra website with an integrated service for
-   sharing configuration snippets.
+   sharing of configuration snippets.
 2. The website also supports conversion between different
    configuration formats.
 3. Website structures documentation and news sections in a new way.
@@ -81,7 +81,7 @@ The others are man pages, doxygen, and github.
 Besides the documentation we also wanted a place to properly present
 ourselves and our news around Elektra. For this reason we created a new
 home page which shall give an overview of what Elektra is and can do.
-Additionally, to that we also added a news section to keep you better
+Additionally to that, we also added a news section to keep you better
 up-to-date!
 
 We hope that you enjoy our new appearance as much as we do!
@@ -172,7 +172,7 @@ or write an email to elektra@markus-raab.org.
 For issues or feedback concerning the website, you can also
 contact us at website@libelektra.org.
 
-[Permalink to this NEWS entry](https://www.libelektra.org/news/website-release.html)
+[Permalink to this NEWS entry](https://www.libelektra.org/news/website-release)
 
 For more information, see [https://libelektra.org](https://libelektra.org)
 
