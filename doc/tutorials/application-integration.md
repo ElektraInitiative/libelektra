@@ -1,15 +1,21 @@
 # Introduction
 
-Applications should use Elektra to read (and store) configurations for a
-overall better integrated system.
-A light integration would be to write parsers for the configuration files
-of your application as Elektra plugin. This yields the following advantages:
+In Elektra different forms of application integrations are possible:
 
-- applications and administrators can easily change individual values
-- import/export of configuration
+1. A lightweight integration where only configuration files are
+   integrated in a global key database.
+   This will not be discussed here, if you are interested about this
+   [please continue reading about mounting](/doc/tutorials/mount.md)
+2. Integration techniques without modifying the applications.
+   This will also not be discussed here, if you are interested read
+   - [Intercept Environment](/src/bindings/intercept/env/README.md)
+   - [Intercept File System](/src/bindings/intercept/fs/README.md)
+3. Integration where applications directly use Elektra to read and
+   store settings.
 
+In this tutorial we will only discuss (3).
 
-For full integration, however, the application needs to be patched
+For full integration the application needs to be patched
 to directly access Elektra's key database.
 When the application is fully integrated in Elektra's ecosystem
 additional benefits arise:
@@ -33,30 +39,33 @@ additional benefits arise:
 The process to make applications aware of other's configuration is called
 "to elektrify". This tutorial is both for new and existing applications.
 
-When a software starts to use Elektra, it is called to be elektrified.
-The places where configuration is parsed or generated must be located.
+As first steop, places where configuration is parsed or generated must be located.
 Afterwards, Elektra's data structures must be used instead at these
-locations.  In Elektra 0.7, that was nearly everything the software
-developer could do.
+locations. Before we are going to describe exactly how to do this, we will describe
+some possibilities you will have to keep all the good things your previous
+configuration system had.
 
-Now more optional possibilities are open.  First, the parser and generator
-code can be moved to a storage plugin without having to rewrite additional
-parts.  Doing this, the syntax of the configuration file stays exactly
-the same as it was before.  The application immediately profits from
-Elektra's infrastructure solving basic issues like update and conflict
-detection and resolving of the file name.
+Put shortly: you can keep code you want within Elektra as plugins.
+Then not only your own application will use this code to access configuration,
+but every other application participating in Elektra's ecosystem, too.
+Doing this, the syntax of the configuration file stays exactly
+the same as it was before. You can keep the same validation as you
+had before. Nevertheless, the application immediately profits from
+Elektra's infrastructure solving basic issues like getting configuration
+from other parts of the system, update and conflict detection, and
+resolving of the file name. In particular we gain a lot because
+every other program can also access the configuration of your software.
 
-Moreover, a huge variety of plugins can be utilised to extend the
-functionality of the configuration system and the programmer can write
-supplementary plugins.  They can do syntactic checks, write out events
-in their log files and notify users if configuration has changed.  So we
-get a bunch of plugins that are reusable, and we gain a lot because
-every other program can also access the configuration of this software.
+If you do not have the code or want to get rid of it, a huge variety of
+[already implemented plugins](/src/plugins)
+can be utilised to extend the functionality of the configuration
+system.  There are plenty of plugins that parse and generate
+configuration files in many formats, do syntactic checks, do
+notifications (e.g. via dbus), and write out events in their log files.
 
-For new software the situation is similar. Additionally, there is the
-option to reuse mature and well-tested plugins to achieve the optimal
-result for configuration. New applications simply do not have the burden
-to stay compatible with the configuration system they had to before.
+New applications simply do not have the burden to stay compatible with
+the configuration system they had to before.  So they will prefer
+to use more standard plugins and contribute to make them flawless.
 But they can also use self-written plugins for adding needed behaviour
 or cross-cutting concerns.
 
@@ -81,11 +90,13 @@ Elektra's atomic unit and consists of:
 as arguments in the API to transport some information.
 
 Thus a key is only in-memory and does not need any of the other Elektra's objects.
-We always can create one:
+We always can create one (the tutorial will use the C-API, but it describes
+quite general concepts useful for other languages in the same way):
 
 	Key *parentKey = keyNew("/sw/org/myapp/#0/current", KEY_END);
 
-- The first argument of `keyNew` always is the name of the key.
+- The first argument of `keyNew` is the name of the key.
+ It consists of different parts, `/` is the hierarchy-separator:
  - `sw` is for software
  - `org` is a URL/organisation name to avoid name clashes with other
      application names. Use only one part of the URL/organisation,
@@ -101,6 +112,8 @@ We always can create one:
 - `KEY_END` is needed because C needs a proper termination of variable
     length arguments.
 
+The key name is standardized to make it easier to locale configuration.
+
 - [Read more about key-functions in API doc.](http://doc.libelektra.org/api/current/html/group__key.html)
 - [Read more about key names here.](/doc/help/elektra-key-names.md)
 
@@ -110,7 +123,7 @@ First we open our key database (KDB). This is done by:
 
 	KDB *repo = kdbOpen(parentKey);
 
-A `Key` is seldom alone, but they are often found in groups, e.g. in
+A `Key` is seldom alone, but they are often found in groups, as typical in
 configuration files. To represent many keys (a set of keys) Elektra
 has the data structure `KeySet`. Because the `Key`'s name is unique we
 can easily lookup keys in a `KeySet` without ambiguity. Additionally, we
@@ -120,20 +133,20 @@ To create an empty `KeySet` we use:
 	KeySet *conf = ksNew(200, KS_END);
 
 - 200 is an approximation for how many `Key`s we think we will have in
-    the `KeySet` conf
-- After the first argument we can list hardcoded keys.
+    the `KeySet` conf. It is for optimization purposes only.
+- After the first argument we can list build-in keys that should be
+  available in any case.
 - The last argument needs to be `KS_END`.
 
 Now we have everything ready to fetch the latest configuration:
 
 	kdbGet(repo, conf, parentKey);
 
-
 Note it is important for applications that the parentKey starts with a slash `/`.
-Only then all so-called [namespace](/doc/help/elektra-namespaces.md)
+Only then all of the so-called [namespace](/doc/help/elektra-namespaces.md)
 are pulled in.
 Such a name cannot physically exist in configuration files, but they are
-the most important keys to actually work with configuration within
+the most important key names to actually work with configuration within
 applications as we will see when introducing `ksLookup`.
 
 ## Lookup
