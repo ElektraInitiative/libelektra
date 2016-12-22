@@ -57,7 +57,7 @@ Thus please use following techniques (in order of preference):
 
 1. Comment functions with `/**/` and Doxygen, see below.
 
-2. You should use also add assertions to state what should be true at a specific
+2. You should also add assertions to state what should be true at a specific
    position in the code. Their syntax is checked and they are automatically
    verified at run-time. So they are not only useful for people reading the
    code but also for tools. Assertions in Elektra are used by:

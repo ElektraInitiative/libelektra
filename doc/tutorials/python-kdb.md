@@ -17,7 +17,7 @@ with kdb.KDB() as k:
 
 ## Keyset
 
-A keyset is basically a list of the keys that lie within the specified range of the databse. When creating an empty keyset this range is obviously zero. It is possible to load the whole database into a keyset but in a lot of cases this is not needed and you can specify which keys exactly you need (which I mean with specified range). At first it is necessary to create a new keyset. When simply calling `kdb.KeySet()` the keyset is of size 0. There is no restriction to the keyset's size. It is possible to specify a certain (maximum) size for a keyset. To load keys into to keyset from the database you simply call the method `get` provided by the kdb-object.
+A keyset is basically a list of the keys that lie within the specified range of the database. When creating an empty keyset this range is obviously zero. It is possible to load the whole database into a keyset but in a lot of cases this is not needed and you can specify which keys exactly you need (which I mean with specified range). At first it is necessary to create a new keyset. When simply calling `kdb.KeySet()` the keyset is of size 0. There is no restriction to the keyset's size. It is possible to specify a certain (maximum) size for a keyset. To load keys into to keyset from the database you simply call the method `get` provided by the kdb-object.
 
 ```
 import kdb
@@ -104,7 +104,7 @@ with kdb.KDB() as k:
 	# by changing the path here it is for instance possible to set the keyset of one user identical to another users
 ```
 
-If you have a key a very simple way to get it's name and value:
+If you have a key a very simple way to get its name and value:
 
 ```
 import kdb

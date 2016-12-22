@@ -118,7 +118,7 @@ the contract:
 					elektraCcodeCheckConf, KEY_END),
 
 `checkconf` is the most important function that is not
-available as build-in function. It is used to validate
+available as built-in function. It is used to validate
 or even correct/finish the plugin's configuration.
 
 If you want to use an exported function from a symbol,

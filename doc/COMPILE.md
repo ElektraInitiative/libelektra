@@ -463,7 +463,7 @@ using `TARGET_PLUGIN_FOLDER` and is `elektra` by default. You might
 want to encode Elektra's `SOVERSION` into the folders name, if you want
 different major versions of Elektra be co-installable.
 
-Elektra's use case for `RPATH` is considered as acceptable, so we recommend to use it
+Elektra's use case for `RPATH` is considered acceptable, so we recommend to use it
 because:
 
 - plugins do not clutter the library folder nor the `ld.so.cache`
@@ -477,7 +477,7 @@ Unfortunately, there are also drawbacks:
 - it makes Elektra non-relocatable (`RPATH` is decided at compile-time, so you cannot
   simply move Elektra's installations within the file system (e.g. from `/usr/local` to `/usr`)
 - it requires modern `ld.so` implementations that honor `RPATH` from libraries.
-  This is the case for most `libc` implementations including from Linux and Mac OS X, but not
+  This is the case for most `libc` implementations including Linux and Mac OS X, but not
   for, e.g., `musl`.
 
 

@@ -207,7 +207,7 @@ You can have a look or even edit the configuration file with `kdb editor user/ex
     [enumtest/fruit]
     check/enum = 'apple', 'banana', 'grape'
 
-In the example there is an important one issue: the configuration file is now changed in ways that might not be acceptable for applications.
+The example shows an important problem: the configuration file is now changed in ways that might not be acceptable for applications.
 We have at least two ways to avoid that:
 
 1. Encode metadata as comments

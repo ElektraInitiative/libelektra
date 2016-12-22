@@ -182,7 +182,7 @@ If you want to develop a backend, you should already have some experience
 with Elektra from the user point of view. You should be familiar with
 the data structures: [Key](@ref key) and [KeySet](@ref keyset)
 Then you can start reading about Backends that are composed out of
-[Plugin](@ref plugin).
+[Plugins](@ref plugin).
 To get started with writing plugins, first read our [plugin tutorial](/doc/tutorials/plugins.md)
 and then lookup details in the API description in @ref plugin.
 

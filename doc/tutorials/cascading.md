@@ -72,8 +72,8 @@ hello galaxy
 The **proc** namespace is not accessible from the commandline, but only from within applications. So we have to omit an example for that at this point.
 [Elektrified](/doc/help/elektra-glossary.md) applications can use this namespace to override configuration from other namespaces internally.
 
-###### Add a key to the spec namespcae ######
-Because the **spec** namespace does not contain values of keys but their metadata, Elektra handles the **spec** namespace differently to other namespaces. The followin part of the tutorial is dedicated to the impact of the **spec** namespace on cascading lookups.
+###### Add a Key to the spec Namespace ######
+Because the **spec** namespace does not contain values of keys but their metadata, Elektra handles the **spec** namespace differently to other namespaces. The following part of the tutorial is dedicated to the impact of the **spec** namespace on cascading lookups.
 
 ## Cascading ##
 

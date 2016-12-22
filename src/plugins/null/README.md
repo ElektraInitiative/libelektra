@@ -25,7 +25,7 @@ The plugin transcodes all null values to `@NULL`, all empty strings to
 
 ## Usage ##
 
-In order to use the `null` plugin you must add `null` to `info/needs`
+In order to use the `null` plugin you must add `null` to `infos/needs`
 in the plugin you wish to use.
 
 Once `null` is included in `infos/needs`, the null plugin will filter

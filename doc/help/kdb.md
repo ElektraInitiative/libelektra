@@ -135,7 +135,7 @@ You are able to use:
 - 5:
   KDB Error, could not read/write from/to KDB.
 - 7-8:
-  Unkown errors, wrong exceptions thrown.
+  Unknown errors, wrong exceptions thrown.
 - 9-10:
   Reserved error codes.
 
