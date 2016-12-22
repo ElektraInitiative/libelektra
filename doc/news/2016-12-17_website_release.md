@@ -2,7 +2,7 @@
 
 - guid: 102b84a3-c41e-485c-8fe2-f12a24b3fbfd
 - author: Marvin Mall
-- pubDate: Thu, 22 Dec 2016 16:46:19 +0100
+- pubDate: Thu, 22 Dec 2016 17:46:19 +0100
 - shortDesc: introduces new Elektra website with snippet sharing
 
 ## Highlight ##
