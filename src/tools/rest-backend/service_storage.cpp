@@ -67,8 +67,8 @@ bool StorageEngine::createEntry (model::Entry & entry)
 		throw kdbrest::exception::EntryAlreadyExistsException ();
 	}
 
-	ks.append (entry);
 	ks.append (entry.getSubkeys ());
+	ks.append (entry);
 
 	// set some environment variables that may be used for hooks
 	this->setEnvVars (entry, "INSERT");
@@ -130,8 +130,8 @@ bool StorageEngine::updateEntry (model::Entry & entry)
 	}
 
 	ks.cut (entry);
-	ks.append (entry);
 	ks.append (entry.getSubkeys ());
+	ks.append (entry);
 
 	// set some environment variables that may be used for hooks
 	this->setEnvVars (entry, "UPDATE");
