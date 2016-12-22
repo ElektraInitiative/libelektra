@@ -118,7 +118,7 @@ is available in the GitHub repository.
 
 You can read the documentation for the kdb tool, either
 
-- [on the Website](https://web.libelektra.org)
+- [on the Website](https://www.libelektra.org)
 - [in the API docu](http://doc.libelektra.org/api/latest/html/md_doc_help_kdb.html)
 - by using `man kdb`
 - by using `kdb --help` or `kdb help <command>`
