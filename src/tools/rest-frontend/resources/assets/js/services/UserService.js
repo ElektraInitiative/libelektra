@@ -90,6 +90,16 @@ module.exports = function (Logger, $http, $q, config) {
 
     };
 
+    this.delete = function (username) {
+
+        Logger.info('Attempting to delete user.');
+
+        return $http.delete(config.backend.root + 'user/' + username, {
+            // custom options
+        });
+
+    };
+
     this.search = function (params, force) {
 
         Logger.info('Load users');
