@@ -1,6 +1,11 @@
 <div class="row">
     <div class="col-md-12">
         <div class="pull-right sm-mb-10">
+            <a class="btn btn-sm btn-default"
+               href="{{ config.backend.root + 'database/' + entry.key.full }}" target="_blank">
+                <i class="fa fa-external-link"></i>
+                <span>{{ 'APP.ENTRIES.DETAILS.BUTTON.RAW' | translate }}</span>
+            </a>
             <a class="btn btn-sm btn-danger"
                ng-show="authenticated" has-rank-or-is-owner="{rank: 50, owner: entry.meta.author}"
                ng-click="ctrl.deleteEntry()">
