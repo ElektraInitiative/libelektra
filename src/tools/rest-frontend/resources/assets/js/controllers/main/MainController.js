@@ -8,7 +8,7 @@ module.exports = function ($rootScope, $scope, Logger, $state, $anchorScroll, we
 
     // build the dynamic menu
     $scope.menu = webStructure;
-    $scope.config = config;
+    $rootScope.config = config;
 
     // build date
     $scope.builddate = {

@@ -35,6 +35,22 @@
                 </div>
             </div>
         </div>
+        <div class="panel panel-default" has-rank-or-is-owner="{rank: 100, owner: user.username}">
+            <div class="panel-heading">
+                <h4 class="panel-title">
+                    {{ 'APP.USERS.DETAILS.PANEL.DELETE.HEADING' | translate }}
+                </h4>
+            </div>
+            <div class="panel-body">
+                <div class="alert alert-danger">
+                    {{ 'APP.USERS.DETAILS.PANEL.DELETE.ALERT' | translate }}
+                </div>
+                <button class="btn btn-sm btn-danger"
+                        ng-click="ctrl.deleteAccount()">
+                    {{ 'APP.USERS.DETAILS.BUTTON.DELETE' | translate }}
+                </button>
+            </div>
+        </div>
     </div>
     <div class="col-md-6">
         <div class="panel panel-default">
