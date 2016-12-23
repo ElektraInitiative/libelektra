@@ -1,4 +1,4 @@
-- infos = Information about LINE plugin is in keys below
+- infos = Information about line plugin is in keys below
 - infos/author = Ian Donnelly <ian.s.donnelly@gmail.com>
 - infos/provides = storage/line
 - infos/licence = BSD
@@ -23,6 +23,8 @@ for Elektra arrays).
 
 The value of each key hold the content of the actual file line-by-line.
 
+## Examples ##
+
 For example, consider the following content of the file `~/.config/line` where the
 numbers on the left represent the line numbers:
 
@@ -38,7 +40,7 @@ numbers on the left represent the line numbers:
 
 We mount that file by:
 
-    > kdb mount line user/line line
+    > sudo kdb mount line user/line line
 
 This file would result in the following keyset which is being displayed as
 `key: value`, e.g. with:
@@ -54,6 +56,58 @@ This file would result in the following keyset which is being displayed as
     #6: //some other comment
     #7:
     #8: setting4 -l
+
+### Creating Files ###
+
+
+```sh
+# Backup-and-Restore:/examples/line
+
+sudo kdb mount line /examples/line line
+
+kdb set /examples/line/add something
+kdb set /examples/line/ignored huhu
+kdb set /examples/line ignored   # adding parent key does nothing
+kdb set /examples/line/add here
+
+cat `kdb file /examples/line`
+#> here
+#> huhu
+#> something
+
+kdb ls /example/line
+#> user/example/line
+#> user/example/line/#0
+#> user/example/line/#1
+#> user/example/line/#2
+
+kdb export /example/line simpleini
+#> user = 
+#> #0 = here
+#> #1 = is
+#> #2 = something
+
+kdb set /example/line/#1 huhu
+#> Using name user/example/line/#1
+#> Set string to huhu
+
+kdb export /example/line simpleini 
+#> user = 
+#> #0 = here
+#> #1 = huhu
+#> #2 = something
+
+kdb export /example/line line
+#> here
+#> huhu
+#> something
+
+sudo kdb umount /examples/line
+```
+
+
+### Other Tests ###
+
 ```sh
 # Backup-and-Restore:/examples/line
 
