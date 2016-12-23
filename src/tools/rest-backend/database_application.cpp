@@ -219,6 +219,7 @@ void DatabaseApp::handleGetUnique (cppcms::http::request & req, cppcms::http::re
 			{
 				RootApp::setBadRequest (resp, "The snippet cannot be represented using the submitted format.",
 							"ENTRY_UNABLE_TO_EXPORT_SNIPPET");
+				return; // quit early
 			}
 		}
 
