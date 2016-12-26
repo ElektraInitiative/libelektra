@@ -28,4 +28,4 @@ npm run start:dev
 
 ## Accessing the API
 
-elektrad runs on http://localhost:1234
+by default, elektrad runs on http://localhost:33333

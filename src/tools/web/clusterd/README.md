@@ -29,4 +29,4 @@ npm run start:dev
 
 ## Client & API
 
-clusterd serves its API and the elektra-web client on http://localhost:1235
+by default, clusterd serves its API and the elektra-web client on http://localhost:33334

@@ -42,7 +42,7 @@ export default class CreateInstanceCard extends React.Component {
                   ref="hostField"
                   floatingLabelText="host"
                   floatingLabelFixed={true}
-                  hintText="http://127.0.0.1:1235"
+                  hintText="http://127.0.0.1:33333"
                   onChange={(evt) => this.setState({ host: evt.target.value })}
                   value={this.state.host}
                 />

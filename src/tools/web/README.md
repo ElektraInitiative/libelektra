@@ -23,7 +23,7 @@ Elektra web requires:
    * `cd clusterd`
    * `npm install`
    * `npm start`
- * You can now access the client on: [http://localhost:1235](http://localhost:1235)
+ * You can now access the client on: [http://localhost:33334](http://localhost:33334)
 
 
 ## Overview
