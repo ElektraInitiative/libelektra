@@ -97,6 +97,11 @@ int elektraCurlgetClose (Plugin * handle ELEKTRA_UNUSED, Key * errorKey ELEKTRA_
 		elektraFree (data->path);
 		data->path = NULL;
 	}
+	else if (data->path)
+	{
+		elektraFree (data->path);
+		data->path = NULL;
+	}
 	if (data->uploadFileName) elektraFree (data->__uploadFileName);
 	elektraFree (data);
 	data = NULL;
@@ -429,7 +434,9 @@ static FILE * fetchFile (Data * data, int fd)
 		curl_easy_cleanup (curl);
 		return NULL;
 	}
+#if VERBOSE
 	curl_easy_setopt (curl, CURLOPT_VERBOSE, 1L);
+#endif
 	curl_easy_setopt (curl, CURLOPT_URL, data->getUrl);
 	if (data->user)
 	{
@@ -460,7 +467,6 @@ static FILE * fetchFile (Data * data, int fd)
 	res = curl_easy_perform (curl);
 	long respCode = 0;
 	curl_easy_getinfo (curl, CURLINFO_RESPONSE_CODE, &respCode);
-	fprintf (stderr, "respCode: %ld\n", respCode);
 	curl_easy_cleanup (curl);
 	if (res != CURLE_OK || respCode != 200)
 	{
@@ -481,6 +487,7 @@ int elektraCurlgetGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA
 			       keyNew ("system/elektra/modules/curlget/exports/get", KEY_FUNC, elektraCurlgetGet, KEY_END),
 			       keyNew ("system/elektra/modules/curlget/exports/set", KEY_FUNC, elektraCurlgetSet, KEY_END),
 			       keyNew ("system/elektra/modules/curlget/exports/open", KEY_FUNC, elektraCurlgetOpen, KEY_END),
+			       keyNew ("system/elektra/modules/curlget/exports/close", KEY_FUNC, elektraCurlgetClose, KEY_END),
 			       keyNew ("system/elektra/modules/curlget/exports/error", KEY_FUNC, elektraCurlgetError, KEY_END),
 			       keyNew ("system/elektra/modules/curlget/exports/checkfile", KEY_FUNC, elektraCurlgetCheckFile, KEY_END),
 #include ELEKTRA_README (curlget)
@@ -645,7 +652,6 @@ int elektraCurlgetSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA
 		FILE * fp;
 		const char * tmpFile = keyString (parentKey);
 		fp = fopen (tmpFile, "rb");
-		fprintf (stderr, "setPhase1: pk: %s\ttmpFile: %s\tpath: %s\n", tmpFile, data->tmpFile, data->path);
 		if (!fp)
 		{
 			ELEKTRA_SET_ERRORF (26, parentKey, "Failed to open %s for reading", tmpFile);
@@ -659,7 +665,9 @@ int elektraCurlgetSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA
 		curl = curl_easy_init ();
 		if (curl)
 		{
-
+#if VERBOSE
+			curl_easy_setopt (curl, CURLOPT_VERBOSE, 1L);
+#endif
 			if (data->user)
 			{
 				curl_easy_setopt (curl, CURLOPT_USERNAME, data->user);
@@ -824,7 +832,6 @@ int elektraCurlgetSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA
 		{
 			if (data->useLocalCopy)
 			{
-				fprintf (stderr, "rename %s to %s\n", data->tmpFile, data->path);
 				rename (data->tmpFile, data->path);
 				data->tmpFile = NULL;
 				keySetString (parentKey, data->path);

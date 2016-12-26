@@ -18,7 +18,7 @@
 
   an URL has to be prefixed with the protocol. valid protocols: `http://`, `https://`, `ftp://`, `ftps://`, `scp://`, `sftp://`, `smb://` (currently not supported)
 
-filename
+`Filename`:
 
   can bei either an `URL` or a local configuration file.
   
@@ -131,11 +131,11 @@ cat /tmp/httproot/curltest.ini
 
 ### GET + POST ###
 
+kdb mount -R curlget -c url/get="http://127.0.0.1:8000/curltest.ini",url/put="http://127.0.0.1:8000",user="thomas",password="pass",upload/method="POST",upload/postfield="file" /tmp/curltest.ini system/curl ini 
 
 ### FTP GET + PUT ###
 
 kdb mount -R curlget -c url/get="ftp://127.0.0.1:21/test.ini",url/put="ftp://127.0.0.1:21/test.ini",user="thomas",password="pass",upload/method="FTP" /tmp/curltest.ini system/curl ini 
-
 
 ### no local copy ###
 
