@@ -386,6 +386,38 @@ static unsigned char * hashBuffer (void * buffer, size_t size)
 	return out;
 }
 
+static void setupSSH (CURL * curl, Data * data)
+{
+	if (data->sshAuth == SSH_PUBLICKEY || data->sshAuth == SSH_PUBKEYPW)
+	{
+		if (data->sshAuth == SSH_PUBKEYPW)
+			curl_easy_setopt (curl, CURLOPT_SSH_AUTH_TYPES, CURLSSH_AUTH_PUBLICKEY | CURLSSH_AUTH_PASSWORD);
+		else
+			curl_easy_setopt (curl, CURLOPT_SSH_AUTH_TYPES, CURLSSH_AUTH_PUBLICKEY);
+
+		curl_easy_setopt (curl, CURLOPT_SSH_PRIVATE_KEYFILE, data->keyFile);
+		if (data->keyFilePasswd)
+		{
+			curl_easy_setopt (curl, CURLOPT_KEYPASSWD, data->keyFilePasswd);
+		}
+	}
+	else if (data->sshAuth == SSH_AGENT)
+	{
+		curl_easy_setopt (curl, CURLOPT_SSH_AUTH_TYPES, CURLSSH_AUTH_AGENT);
+	}
+	else if (data->sshAuth == SSH_PASSWORD)
+	{
+		curl_easy_setopt (curl, CURLOPT_SSH_AUTH_TYPES, CURLSSH_AUTH_PASSWORD);
+	}
+	else
+	{
+		curl_easy_setopt (curl, CURLOPT_SSH_AUTH_TYPES, CURLSSH_AUTH_ANY);
+		if (data->keyFilePasswd)
+		{
+			curl_easy_setopt (curl, CURLOPT_KEYPASSWD, data->keyFilePasswd);
+		}
+	}
+}
 
 static FILE * fetchFile (Data * data, int fd)
 {
@@ -401,9 +433,23 @@ static FILE * fetchFile (Data * data, int fd)
 	{
 		curl_easy_setopt (curl, CURLOPT_USERNAME, data->user);
 	}
-	if (data->user)
+	if (data->password)
 	{
 		curl_easy_setopt (curl, CURLOPT_PASSWORD, data->password);
+	}
+	if (data->getProto == PROTO_HTTPS || data->getProto == PROTO_FTPS || data->useSSL)
+	{
+		curl_easy_setopt (curl, CURLOPT_SSL_VERIFYPEER, (long)data->sslVerifyPeer);
+		curl_easy_setopt (curl, CURLOPT_SSL_VERIFYHOST, (long)data->sslVerifyHost);
+		curl_easy_setopt (curl, CURLOPT_USE_SSL, CURLUSESSL_ALL);
+	}
+	else
+	{
+		curl_easy_setopt (curl, CURLOPT_USE_SSL, CURLUSESSL_TRY);
+	}
+	if (data->getProto == PROTO_SCP || data->getProto == PROTO_SFTP)
+	{
+		setupSSH (curl, data);
 	}
 	curl_easy_setopt (curl, CURLOPT_WRITEFUNCTION, NULL);
 	FILE * fp = fdopen (fd, "w+");
@@ -716,37 +762,7 @@ int elektraCurlgetSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA
 			}
 			else if (data->putProto == PROTO_SCP || data->putProto == PROTO_SFTP)
 			{
-				if (data->sshAuth == SSH_PUBLICKEY || data->sshAuth == SSH_PUBKEYPW)
-				{
-					if (data->sshAuth == SSH_PUBKEYPW)
-						curl_easy_setopt (curl, CURLOPT_SSH_AUTH_TYPES,
-								  CURLSSH_AUTH_PUBLICKEY | CURLSSH_AUTH_PASSWORD);
-					else
-						curl_easy_setopt (curl, CURLOPT_SSH_AUTH_TYPES, CURLSSH_AUTH_PUBLICKEY);
-
-					curl_easy_setopt (curl, CURLOPT_SSH_PRIVATE_KEYFILE, data->keyFile);
-					if (data->keyFilePasswd)
-					{
-						curl_easy_setopt (curl, CURLOPT_KEYPASSWD, data->keyFilePasswd);
-					}
-				}
-				else if (data->sshAuth == SSH_AGENT)
-				{
-					curl_easy_setopt (curl, CURLOPT_SSH_AUTH_TYPES, CURLSSH_AUTH_AGENT);
-				}
-				else if (data->sshAuth == SSH_PASSWORD)
-				{
-					curl_easy_setopt (curl, CURLOPT_SSH_AUTH_TYPES, CURLSSH_AUTH_PASSWORD);
-				}
-				else
-				{
-					curl_easy_setopt (curl, CURLOPT_SSH_AUTH_TYPES, CURLSSH_AUTH_ANY);
-					if (data->keyFilePasswd)
-					{
-						curl_easy_setopt (curl, CURLOPT_KEYPASSWD, data->keyFilePasswd);
-					}
-				}
-
+				setupSSH (curl, data);
 				if (data->uploadFileName)
 				{
 					char uploadUrl[strlen (data->uploadUrl) + strlen (data->uploadFileName) + 2];
