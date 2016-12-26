@@ -19,6 +19,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <strings.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <time.h>
@@ -29,7 +30,7 @@
 #define DEFAULT_POSTFIELDNAME "file"
 
 typedef enum { NA = 0, PUT, POST, FTP } UploadMethods;
-
+typedef enum { PROTO_INVALID = 0, PROTO_HTTP, PROTO_HTTPS, PROTO_FTP, PROTO_FTPS, PROTO_SFTP, PROTO_SCP, PROTO_SMB, } ElektraCurlProtocol;
 typedef struct
 {
 	const char * path;
@@ -43,7 +44,10 @@ typedef struct
 	const char * postFieldName;
 	UploadMethods uploadMethod;
 	unsigned short preferRemote;
-	int setPhase;
+	unsigned short setPhase;
+	unsigned short useLocalCopy;
+	ElektraCurlProtocol getProto;
+	ElektraCurlProtocol putProto;
 } Data;
 
 
@@ -63,6 +67,11 @@ int elektraCurlgetClose (Plugin * handle ELEKTRA_UNUSED, Key * errorKey ELEKTRA_
 		unlink (data->tmpFile);
 		data->tmpFile = NULL;
 	}
+	if (!data->useLocalCopy && data->path)
+	{
+	    	unlink (data->path);
+		data->path = NULL;
+	}
 	elektraFree (data);
 	data = NULL;
 	elektraPluginSetData (handle, data);
@@ -74,44 +83,127 @@ int elektraCurlgetError (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKT
 	return 1;
 }
 
-int elektraCurlgetOpen (Plugin * handle, Key * errorKey ELEKTRA_UNUSED)
+static ElektraCurlProtocol isValidURL(const char *str)
 {
-	KeySet * config = elektraPluginGetConfig (handle);
-	if (ksLookupByName (config, "/module", 0)) return 0;
-	const char * path = keyString (ksLookupByName (config, "/path", 0));
-	Data * data = elektraCalloc (sizeof (Data));
-	data->path = path;
+    if(str == NULL)
+	return PROTO_INVALID;
 
-	Key * key = ksLookupByName (config, "/get", KDB_O_NONE);
-	if (!key)
+    struct checkProtocolStruct
+    {
+	ElektraCurlProtocol proto;
+	const char *url;
+    };
+
+    const struct checkProtocolStruct urlPrefix[] = 
+    {
+	{PROTO_HTTP, "http://" },
+	{PROTO_HTTPS, "https://" },
+	{PROTO_FTP, "ftp://" },
+	{PROTO_FTPS, "ftps://" },
+	{PROTO_SFTP, "sftp://" },
+	{PROTO_SCP, "scp://" },
+	{PROTO_SMB, "smb://" },
+	{PROTO_INVALID, NULL },
+    };
+    for(int i = 0; urlPrefix[i].proto != PROTO_INVALID; ++i)
+    {
+	if(!strncasecmp(str, urlPrefix[i].url, strlen(urlPrefix[i].url)))
+	    return urlPrefix[i].proto;
+    }
+    return PROTO_INVALID;
+}
+
+static unsigned short parseURLPath(Data *data, KeySet *config)
+{
+    const char * path = keyString (ksLookupByName (config, "/path", 0));
+    ElektraCurlProtocol proto = isValidURL(path);
+    Key *key = NULL;
+    if(proto == PROTO_INVALID)
+    {
+	data->path = path;
+	data->useLocalCopy = 1;
+	key = ksLookupByName(config, "/url", KDB_O_NONE);
+	if(key)
 	{
-		elektraFree (data);
-		data = NULL;
+	    proto = isValidURL(keyString(key));
+	    if(proto != PROTO_INVALID)
+	    {
+		data->getUrl = keyString(key);
+		data->getProto = proto;
+		data->uploadUrl = data->getUrl;
+		data->putProto = data->getProto;
+	    }
+	    else
+	    {
+	    key = ksLookupByName(config, "/url/get", KDB_O_NONE);
+	    if(!key)
+	    {
 		return 0;
+	    }
+	    else
+	    {
+		proto = isValidURL(keyString(key));
+		if(proto == PROTO_INVALID)
+		{
+		    return 0;
+		}
+		else
+		{
+		    data->getProto = proto;
+		    data->getUrl = keyString(key);
+		}
+	    }
+	    key = ksLookupByName(config, "/url/put", KDB_O_NONE);
+	    if(key)
+	    {
+		proto = isValidURL(keyString(key));
+		if(proto == PROTO_INVALID)
+		{
+		    data->putProto = data->getProto;
+		    data->uploadUrl = data->getUrl;
+		}
+		else
+		{
+		    data->putProto = proto;
+		    data->uploadUrl = keyString(key);
+		}
+	    }
+	    else
+	    {
+		data->putProto = data->getProto;
+		data->uploadUrl = data->getUrl;
+	    }
+	    }
+	}
+    }
+    else
+    {
+	data->useLocalCopy = 0;
+	data->path = NULL;
+	data->getUrl = path;
+	data->getProto = proto;
+	key = ksLookupByName(config, "/url/put", KDB_O_NONE);
+	if(!key)
+	{
+	    data->uploadUrl = data->getUrl;
+	    data->putProto = data->getProto;
 	}
 	else
 	{
-		data->getUrl = keyString (key);
+	    proto = isValidURL(keyString(key));
+	    if(proto == PROTO_INVALID)
+	    {
+		return 0;
+	    }
+	    else
+	    {
+		data->uploadUrl = keyString(key);
+		data->putProto = proto;
+	    }
 	}
-	key = ksLookupByName (config, "/upload", KDB_O_NONE);
-	if (!key)
-	{
-		data->uploadUrl = NULL;
-	}
-	else
-	{
-		data->uploadUrl = keyString (key);
-	}
-	key = ksLookupByName (config, "/upload/user", KDB_O_NONE);
-	if (key)
-	{
-		data->user = keyString (key);
-	}
-	key = ksLookupByName (config, "/upload/password", KDB_O_NONE);
-	if (key)
-	{
-		data->password = keyString (key);
-	}
+    }
+    if(data->putProto != PROTO_INVALID)
+    {
 	key = ksLookupByName (config, "/upload/method", KDB_O_NONE);
 	if (key)
 	{
@@ -140,6 +232,32 @@ int elektraCurlgetOpen (Plugin * handle, Key * errorKey ELEKTRA_UNUSED)
 		{
 			data->uploadMethod = NA;
 		}
+	}
+    }
+    return 1;
+}
+
+int elektraCurlgetOpen (Plugin * handle, Key * errorKey ELEKTRA_UNUSED)
+{
+	KeySet * config = elektraPluginGetConfig (handle);
+	if (ksLookupByName (config, "/module", 0)) return 0;
+	Data * data = elektraCalloc (sizeof (Data));
+	if(!parseURLPath(data, config))
+	{
+	    elektraFree(data);
+	    data = NULL;
+	    return 0;
+	}
+	fprintf(stderr, "path: %s\tuseLocalCopy: %d\nget: %s\tput: %s\nputProto: %d\tgetProto: %d\n", data->path, data->useLocalCopy, data->getUrl, data->uploadUrl, data->getProto, data->putProto);
+	Key *key = ksLookupByName (config, "/user", KDB_O_NONE);
+	if (key)
+	{
+		data->user = keyString (key);
+	}
+	key = ksLookupByName (config, "/password", KDB_O_NONE);
+	if (key)
+	{
+		data->password = keyString (key);
 	}
 	key = ksLookupByName (config, "/prefer", KDB_O_NONE);
 	data->preferRemote = 1;
@@ -225,23 +343,18 @@ int elektraCurlgetGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA
 		return -1;
 	}
 	int fd = 0;
-	/*	if (!*(data->lastHash))
-		{
-			fd = open (data->path, O_CREAT | O_RDWR, 00755);
-		}
-		else
-		{ */
 	char name[] = "/tmp/elektraCurlTempXXXXXX";
 	fd = mkstemp (name);
+	if(*(data->lastHash))
+	    unlink(data->tmpFile);
 	data->tmpFile = name;
-	//	}
+	
 
 	if (fd == -1)
 	{
 		ELEKTRA_SET_ERRORF (26, parentKey, "Failed to open %s for reading", data->path);
 		return -1;
 	}
-
 	FILE * fp = fetchFile (data, fd);
 	if (!fp)
 	{
@@ -249,7 +362,7 @@ int elektraCurlgetGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA
 		unlink (data->tmpFile);
 		data->tmpFile = NULL;
 		fp = fopen (data->path, "rb");
-		if (fp)
+		if (fp && data->useLocalCopy)
 		{
 			ELEKTRA_ADD_WARNINGF (ELEKTRA_WARNING_CURL_LOCAL_FALLBACK, parentKey,
 					      "Failed to fetch configuration from %s, falling back to local copy %s\n", data->getUrl,
@@ -257,7 +370,7 @@ int elektraCurlgetGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA
 		}
 		else
 		{
-			ELEKTRA_SET_ERROR (26, parentKey, "Failed to read both remote and local configuration\n");
+			ELEKTRA_SET_ERROR (26, parentKey, "Failed to read configuration\n");
 			return -1;
 		}
 	}
@@ -271,9 +384,17 @@ int elektraCurlgetGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA
 	if (!*(data->lastHash))
 	{
 		memcpy (data->lastHash, hash, MD5_DIGEST_LENGTH);
-		keySetString (parentKey, data->path);
-		rename (data->tmpFile, data->path);
+		if(data->useLocalCopy)
+		{
+		    rename(data->tmpFile, data->path);
+		}
+		else
+		{
+		    data->path = data->tmpFile;
+		}
 		data->tmpFile = NULL;
+		keySetString (parentKey, data->path);
+		data->path = keyString(parentKey);
 	}
 	else if (data->tmpFile)
 	{
