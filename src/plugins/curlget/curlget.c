@@ -8,7 +8,7 @@
  */
 
 #include "curlget.h"
-#define _XOPEN_SOURCE
+
 #include <curl/curl.h>
 #include <curl/easy.h>
 #include <fcntl.h>
