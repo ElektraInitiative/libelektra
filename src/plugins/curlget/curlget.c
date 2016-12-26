@@ -25,7 +25,7 @@
 #include <time.h>
 #include <unistd.h>
 
-#define TMP_NAME "/tmp/elektraCurlTempXXXXXXXXXXXX"
+#define TMP_NAME "/tmp/elektraCurlTempXXXXXX"
 
 #define DEFAULT_POSTFIELDNAME "file"
 
@@ -495,7 +495,7 @@ int elektraCurlgetGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA
 		return -1;
 	}
 	int fd = 0;
-	char name[] = "/tmp/elektraCurlTempXXXXXX";
+	char name[] = TMP_NAME;
 	fd = mkstemp (name);
 	if (*(data->lastHash)) unlink (data->tmpFile);
 	data->tmpFile = name;
@@ -588,7 +588,7 @@ int elektraCurlgetSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA
 	int retval = 1;
 	if (data->setPhase == 0)
 	{
-		char name[] = "/tmp/elektraCurlTempXXXXXX";
+		char name[] = TMP_NAME;
 		int fd = mkstemp (name);
 		if (data->tmpFile) unlink (data->tmpFile);
 		data->tmpFile = name;
