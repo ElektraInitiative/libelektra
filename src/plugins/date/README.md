@@ -1,5 +1,5 @@
 - infos = Information about the date plugin is in keys below
-- infos/author = Name <name@libelektra.org>
+- infos/author = Thomas Waser <thomas.waser@libelektra.org>
 - infos/licence = BSD
 - infos/needs =
 - infos/provides =
@@ -19,39 +19,70 @@ The following representation standards of dates and times are currently supporte
 
 * `ISO8601`
   
-   see [ISO8601](https://en.wikipedia.org/wiki/ISO_8601). possible format strings specified in `check/date/format`:
+   see [ISO8601](https://en.wikipedia.org/wiki/ISO_8601). possible format strings specified in `check/date/format`, default: `datetime complete+truncated`:
  
- * Date:
+  * Dates/Time:
+
+    * Date:
  
-  * `<calendardate>`
+      * `calendardate`
+        calendar dates: day of month - month - year.
    
-   `YYYY-MM-DD`, `YYYYMMDD`, `YYYY-MM`, `--MM-DD`, `--MMDD`
+      * `weekdate`
+        calendar week and day numbers, e.g. YYYY-Www-D
    
-  * `<weekdate>`
+      * `ordinaldate`
+        year + day of the year
    
-   `YYYY-Www`, `YYYYWww`, `YYYY-Www-D`, `YYYYWwwD`
-   
-   * `<ordinaldate>`
-   
-   `YYYY-DDD`, `YYYYDDD`
-   
-   * `<date>`
-   
-   `<calendardate>`, `<weekdate>`, `<ordinaldate>` 
+      * `date`
+        `calendardate`, `weekdate`, and `ordinaldate` combined
  
- * Time:
+    * Time:
   
-  * `<time>`
+      * `timeofday`
+        24-hour timekeeyping system
   
-   `hh:mm:ss`, `hhmmss`, `hh:mm`, `hhmm`, `hh`
+      * `utc`
+        coordinates universal time. either by appending a time-zone designator or the time difference to `UTC` to `timeofday`
   
-  * `<tz>`
-  
-   `<time>Z`, `<time>±hh:mm`, `<time>±hhmm`, `<time>±hh`
+    * Combined:
+      `datetime`
+      combination of Dates and Time according to th ISO8601 specification. 
  
- * Combined:
- 
-   `<date>T<time>`
+  * Representation:
+    if no representation is specified, `complete+reduced+truncated` is used as default.
+
+    * `complete`
+      complete representation, dates are separated by hyphens, times by colon. e.g. YYYY-MM-DD or hh:mm:ss
+
+    * `reduced`
+       reduced precision, e.g. YYYY-MM, or hh
+
+    * `truncated`
+       truncated representation, hyphens used to indicate omitted components. e.g. --MM-DD or --ss
+
+    * `complete+reduced+truncated`
+       allow all 3 representations
+
+    * `complete+reduced`
+       allow only `complete` + `reduced` representation
+
+    * `complete+truncated`
+       allow only `complete` + `truncated` representation
+
+    * `reduced+truncated`
+       allow only `reduced` + `truncated` representation.
+
+  * Format:
+       if no format is specified both `basic` and `extended` are treated as valid.
+  
+    * `basic`
+      no separating character between individual components of a `date`, `time` or `datetime` expressen
+
+    * `extended`
+      separating characters between components. `date` components separated by hyphen, `time` components by colon.
+
+
 
 * `RFC2822`
  
@@ -59,7 +90,7 @@ The following representation standards of dates and times are currently supporte
 
 ## Dependencies ##
 
-None.
+POSIX.1-2001
 
 ## Examples ##
 
