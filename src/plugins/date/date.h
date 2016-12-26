@@ -19,47 +19,34 @@ int elektraDateSet (Plugin * handle, KeySet * ks, Key * parentKey);
 Plugin * ELEKTRA_PLUGIN_EXPORT (date);
 
 
-
 /*
  *
- * RFC822 
+ * RFC822
  *
  */
 
-const char * rfc822strings[] = { "%a, %d %b %y %T", "%d %b %y %T", "%a, %d %b %y %H:%M", "%d %b %y %H:%M", "%a, %d %b %y %T %z", "%d %b %y %T %z", "%a, %d %b %y %H:%M %z", "%d %b %y %H:%M %z", "%a, %d %b %y %T %Z", "%d %b %y %T %Z", "%a, %d %b %y %H:%M %Z", "%d %b %y %H:%M %Z", NULL};
+const char * rfc822strings[] = { "%a, %d %b %y %T",
+				 "%d %b %y %T",
+				 "%a, %d %b %y %H:%M",
+				 "%d %b %y %H:%M",
+				 "%a, %d %b %y %T %z",
+				 "%d %b %y %T %z",
+				 "%a, %d %b %y %H:%M %z",
+				 "%d %b %y %H:%M %z",
+				 "%a, %d %b %y %T %Z",
+				 "%d %b %y %T %Z",
+				 "%a, %d %b %y %H:%M %Z",
+				 "%d %b %y %H:%M %Z",
+				 NULL };
 
 
 /*
  *
- * RFC1123
- *
- */
-const char *rfc1123strings[] = {"%a, %d %b %Y %T GMT", NULL};
-
-/*
- *
- * RFC850
- *
- */
-const char *rfc850straings[] = {"%A, %d-%b-%y %T GMT", NULL};
-
-/*
- *
- * asctime
- *
- */
-const char *asctimestrings[] = {"%a %b %d %T GMT", NULL};
-
-
-
-/*
- *
- * RFC2822 format strings derived from the specification 
+ * RFC2822 format strings derived from the specification
  *
  */
 
 const char * rfc2822strings[] = { "%a, %d %b %Y %T %z", "%d %b %Y %T %z", "%a, %d %b %Y %H:%M %z", "%d %b %Y %H:%M %z", NULL };
-
 
 
 /*
@@ -70,9 +57,9 @@ const char * rfc2822strings[] = { "%a, %d %b %Y %T %z", "%d %b %Y %T %z", "%a, %
 
 typedef enum {
 	END = 0,
-	COMPLETE = 1,
-	REDUCED = 2,
-	TRUNCATED = 3,
+	COMPLETE = (1 << 4),
+	REDUCED = (2 << 4),
+	TRUNCATED = (4 << 4),
 } REP;
 
 typedef struct
@@ -138,15 +125,22 @@ const RepStruct iso8601UTC[] = {
 
 typedef enum {
 	NA = 0,
-	CALENDAR,
-	ORDINAL,
-	WEEK,
-	TIMEOFDAY,
-	UTC,
-	DATE,
-	TIME,
-	DTCMP, // Date/Time (combined) complete
-	DTOTH, // Date/Time (combined) other
+	CALENDAR = 1,
+	ORDINAL = 2,
+	WEEK = 3,
+	TIMEOFDAY = 4,
+	UTC = 5,
+	DATE = 6,
+	TIME = 7,
+	DATETIME = 8,			   // Date/Time combined
+	TYPEMASK = 8 | 4 | 2 | 1,	  // mask to split type from representation options
+	CMPLT = (1 << 4),		   // complete
+	RDCD = (2 << 4),		   // reduced
+	TRCT = (4 << 4),		   // truncated
+	REPMASK = 64 | 32 | 16 | TYPEMASK, // split representation options
+	BASIC = (1 << 7),		   // basic representation
+	EXTD = (2 << 7),		   // extended representation
+	OMITT = (4 << 7),
 } ISOType;
 
 
@@ -180,7 +174,6 @@ const CRepStruct iso8601CombinedComplete[] = {
 
 // representations other than complete
 // date truncated, time complete or reduced
-// allow skipping of leading hyphen '-' in date
 // TODO: rule c.
 
 const CRepStruct iso8601CombinedOther[] = {

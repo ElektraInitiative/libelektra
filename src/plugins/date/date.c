@@ -25,18 +25,28 @@
 // use a ISO format string table to validate the key value
 //
 
-static int individualIsoStringValidation (const char * date, const RepStruct * formats)
+static int individualIsoStringValidation (const char * date, const RepStruct * formats, ISOType opts)
 {
 	struct tm tm;
 	memset (&tm, 0, sizeof (struct tm));
 	for (int i = 0; formats[i].rep != END; ++i)
 	{
-		char * ptr = strptime (date, formats[i].basic, &tm);
-		if (ptr && !*ptr) return 1;
-		ptr = strptime (date, formats[i].extended, &tm);
-		if (ptr && !*ptr) return 1;
+		if (formats[i].rep & (opts & REPMASK))
+		{
+
+			if (opts & BASIC)
+			{
+				char * ptr = strptime (date, formats[i].basic, &tm);
+				if (ptr && !*ptr) return 1;
+			}
+			if ((opts & EXTD) && formats[i].extended)
+			{
+				char * ptr = strptime (date, formats[i].extended, &tm);
+				if (ptr && !*ptr) return 1;
+			}
+		}
 	}
-	return 0;
+	return -1;
 }
 
 //
@@ -45,26 +55,87 @@ static int individualIsoStringValidation (const char * date, const RepStruct * f
 
 static ISOType ISOStrToToken (const char * fmtString)
 {
-	if (!strcasecmp (fmtString, "<date>"))
-		return DATE;
-	else if (!strcasecmp (fmtString, "<calendardate>"))
-		return CALENDAR;
-	else if (!strcasecmp (fmtString, "<ordinaldate>"))
-		return ORDINAL;
-	else if (!strcasecmp (fmtString, "<weekdate>"))
-		return WEEK;
-	else if (!strcasecmp (fmtString, "<time>"))
-		return TIME;
-	else if (!strcasecmp (fmtString, "<timeofday>"))
-		return TIMEOFDAY;
-	else if (!strcasecmp (fmtString, "<utc>"))
-		return UTC;
-	else if (!strcasecmp (fmtString, "<datetimecomplete>"))
-		return DTCMP;
-	else if (!strcasecmp (fmtString, "<datetimeother>"))
-		return DTOTH;
+	ISOType type = NA;
+	if (!strncasecmp (fmtString, "datetime", sizeof ("datetime") - 1))
+		type = DATETIME;
+	else if (!strncasecmp (fmtString, "date", sizeof ("date") - 1))
+		type = DATE;
+	else if (!strncasecmp (fmtString, "calendardate", sizeof ("calendardate") - 1))
+		type = CALENDAR;
+	else if (!strncasecmp (fmtString, "ordinaldate", sizeof ("ordinaldate") - 1))
+		type = ORDINAL;
+	else if (!strncasecmp (fmtString, "weekdate", sizeof ("weekdate") - 1))
+		type = WEEK;
+	else if (!strncasecmp (fmtString, "timeofday", sizeof ("timeofday") - 1))
+		type = TIMEOFDAY;
+	else if (!strncasecmp (fmtString, "time", sizeof ("time") - 1))
+		type = TIME;
+	else if (!strncasecmp (fmtString, "utc", sizeof ("utc") - 1))
+		type = UTC;
+
+	if (type == NA) return type;
+
+	const char * repPtr = strchr (fmtString, ' ');
+	if (repPtr == NULL)
+	{
+		type |= ((CMPLT) | (RDCD) | (TRCT) | (BASIC) | (EXTD));
+		return type;
+	}
 	else
-		return NA;
+	{
+		++repPtr;
+	}
+	if (!strncasecmp (repPtr, "complete+reduced+truncated", sizeof ("complete+reduced+truncated") - 1))
+		type |= ((CMPLT) | (RDCD) | (TRCT));
+	else if (!strncasecmp (repPtr, "complete+reduced", sizeof ("complete+reduced") - 1))
+		type |= ((CMPLT) | (RDCD));
+	else if (!strncasecmp (repPtr, "reduced+truncated", sizeof ("reduced+truncated") - 1))
+		type |= ((RDCD) | (TRCT));
+	else if (!strncasecmp (repPtr, "complete", sizeof ("complete") - 1))
+		type |= CMPLT;
+	else if (!strncasecmp (repPtr, "reduced", sizeof ("reduced") - 1))
+		type |= RDCD;
+	else if (!strncasecmp (repPtr, "truncated", sizeof ("truncated") - 1))
+		type |= TRCT;
+
+	const char * repPtr2 = strchr (repPtr, ' ');
+	if (!repPtr2 && (((type & REPMASK) & ~TYPEMASK) == 0))
+	{
+		type |= ((CMPLT) | (RDCD) | (TRCT));
+		if (!strncasecmp (repPtr, "basic", sizeof ("basic") - 1))
+			type |= BASIC;
+		else if (!strncasecmp (repPtr, "extended", sizeof ("extended") - 1))
+			type |= EXTD;
+	}
+	else if (!repPtr2)
+	{
+		type |= ((BASIC) | (EXTD));
+	}
+	else if (repPtr2)
+	{
+		if (!strncasecmp (repPtr2 + 1, "basic", sizeof ("basic") - 1))
+			type |= BASIC;
+		else if (!strncasecmp (repPtr2 + 1, "extended", sizeof ("extended") - 1))
+			type |= EXTD;
+	}
+	repPtr = strrchr (fmtString, ' ');
+	if (repPtr)
+	{
+		++repPtr;
+		if (!strcasecmp (repPtr, "noT"))
+		{
+			if (((type & REPMASK) & ~TYPEMASK) == 0)
+			{
+				type |= ((CMPLT) | (RDCD) | (TRCT));
+			}
+			if ((type & ~REPMASK) == 0)
+			{
+				type |= ((BASIC) | (EXTD));
+			}
+			type |= OMITT;
+		}
+	}
+	return type;
 }
 
 //
@@ -73,7 +144,8 @@ static ISOType ISOStrToToken (const char * fmtString)
 
 static const RepStruct * typeToTable (ISOType type)
 {
-	switch (type)
+	ISOType typeStripped = (type & TYPEMASK);
+	switch (typeStripped)
 	{
 	case CALENDAR:
 		return iso8601calendardate;
@@ -91,7 +163,7 @@ static const RepStruct * typeToTable (ISOType type)
 		return iso8601UTC;
 		break;
 	default:
-		return NA;
+		return NULL;
 		break;
 	}
 }
@@ -100,7 +172,7 @@ static int countLeadingHyphen (const char * date)
 {
 	char * ptr = (char *)date;
 	int count = 0;
-	while (*ptr && (*ptr != '%'))
+	while (*ptr && ((*ptr == ' ') || (*ptr == '-')))
 	{
 		if (*ptr == '-') ++count;
 		++ptr;
@@ -113,12 +185,14 @@ static int countLeadingHyphen (const char * date)
 // try to validate the key value
 //
 
-static int combineAndValidateISO (const char * toValidate, const RepStruct * date, const RepStruct * time)
+static int combineAndValidateISO (const char * toValidate, const RepStruct * date, const RepStruct * time, ISOType opts)
 {
 	ssize_t basicLen = strlen (date->basic) + strlen (time->basic) + 2;
 	ssize_t extendedLen = 0;
 	if (date->extended && time->extended) extendedLen = strlen (date->extended) + strlen (time->extended) + 2;
 	char * buffer = elektraCalloc (basicLen);
+	unsigned short noT = 0;
+	if (!strchr (toValidate, 'T')) noT = 1;
 
 	// ISO 8601 5.4.2 Representations other than complete, rule b.
 	// when truncation occures in the date component of a combined date and time
@@ -129,21 +203,38 @@ static int combineAndValidateISO (const char * toValidate, const RepStruct * dat
 	int toDropHyphen = 0;
 	if (toValidateHyphen == 0)
 	{
-		toDropHyphen = countLeadingHyphen (date->basic);
+		if (opts & CMPLT) toDropHyphen = countLeadingHyphen (date->basic);
 	}
-	snprintf (buffer, basicLen, "%sT%s", (date->basic) + toDropHyphen, time->basic);
-	struct tm tm;
-	memset (&tm, 0, sizeof (struct tm));
-	char * ptr = strptime (toValidate, buffer, &tm);
-	elektraFree (buffer);
-	if (ptr && !(*ptr)) return 1;
-	if (!extendedLen) return -1;
-	buffer = elektraMalloc (extendedLen);
-	toDropHyphen = countLeadingHyphen (date->extended);
-	snprintf (buffer, extendedLen, "%sT%s", (date->extended) + toDropHyphen, time->extended);
-	ptr = strptime (toValidate, buffer, &tm);
-	elektraFree (buffer);
-	if (ptr && !(*ptr)) return 1;
+	if (opts & BASIC)
+	{
+		if (!noT)
+			snprintf (buffer, basicLen, "%sT%s", (date->basic) + toDropHyphen, time->basic);
+		else
+			snprintf (buffer, basicLen, "%s%s", (date->basic) + toDropHyphen, time->basic);
+		struct tm tm;
+		memset (&tm, 0, sizeof (struct tm));
+		char * ptr = strptime (toValidate, buffer, &tm);
+		elektraFree (buffer);
+		if (ptr && !(*ptr)) return 1;
+	}
+	if (opts & EXTD)
+	{
+		if (!extendedLen) return -1;
+		buffer = elektraMalloc (extendedLen);
+		if (toValidateHyphen == 0)
+			toDropHyphen = countLeadingHyphen (date->extended);
+		else
+			toDropHyphen = 0;
+		if (!noT)
+			snprintf (buffer, extendedLen, "%sT%s", (date->extended) + toDropHyphen, time->extended);
+		else
+			snprintf (buffer, extendedLen, "%s%s", (date->extended) + toDropHyphen, time->extended);
+		struct tm tm;
+		memset (&tm, 0, sizeof (struct tm));
+		char * ptr = strptime (toValidate, buffer, &tm);
+		elektraFree (buffer);
+		if (ptr && !(*ptr)) return 1;
+	}
 	return -1;
 }
 
@@ -152,15 +243,16 @@ static int combineAndValidateISO (const char * toValidate, const RepStruct * dat
 // and pass them to combineAndValidateISO
 //
 
-static int combinedIsoStringValidation (const char * toValidate, ISOType type)
+static int combinedIsoStringValidation (const char * toValidate, ISOType opts)
 {
 	const CRepStruct * formats;
-	switch (type)
+	ISOType strippedOpts = ((opts & REPMASK) & ~OMITT);
+	switch (strippedOpts)
 	{
-	case DTCMP:
+	case CMPLT:
 		formats = iso8601CombinedComplete;
 		break;
-	case DTOTH:
+	case TRCT:
 		formats = iso8601CombinedOther;
 		break;
 	default:
@@ -171,6 +263,10 @@ static int combinedIsoStringValidation (const char * toValidate, ISOType type)
 		const CRepStruct * e = &formats[i];
 		const REP dateRep = e->dateRep;
 		const REP timeRep = e->timeRep;
+		if (!(opts & dateRep))
+		{
+			continue;
+		}
 		const RepStruct * date = typeToTable (e->date);
 		const RepStruct * time = typeToTable (e->time);
 		if (!date || !time) continue;
@@ -180,7 +276,7 @@ static int combinedIsoStringValidation (const char * toValidate, ISOType type)
 			for (int k = 0; time[k].rep != END; ++k)
 			{
 				if (time[k].rep != timeRep) continue;
-				int rc = combineAndValidateISO (toValidate, &(date[j]), &(time[k]));
+				int rc = combineAndValidateISO (toValidate, &(date[j]), &(time[k]), opts);
 				if (rc == 1) return 1;
 			}
 		}
@@ -194,42 +290,45 @@ static int isoStringValidation (const char * date, const char * fmt)
 	if (fmt)
 	{
 		isoToken = ISOStrToToken (fmt);
-		if (isoToken == NA) return 0;
+		ISOType strippedToken = (isoToken & TYPEMASK);
+		ISOType strippedOpts = (isoToken & ~TYPEMASK);
+		if (strippedToken == NA) return 0;
 		int rc = -1;
-		switch (isoToken)
+		switch (strippedToken)
 		{
 		case CALENDAR:
-			rc = individualIsoStringValidation (date, iso8601calendardate);
+			rc = individualIsoStringValidation (date, iso8601calendardate, strippedOpts);
 			break;
 		case ORDINAL:
-			rc = individualIsoStringValidation (date, iso8601ordinaldate);
+			rc = individualIsoStringValidation (date, iso8601ordinaldate, strippedOpts);
 			break;
 		case WEEK:
-			rc = individualIsoStringValidation (date, iso8601weekdate);
+			rc = individualIsoStringValidation (date, iso8601weekdate, strippedOpts);
 			break;
 		case TIMEOFDAY:
-			rc = individualIsoStringValidation (date, iso8601timeofday);
+			rc = individualIsoStringValidation (date, iso8601timeofday, strippedOpts);
 			break;
 		case UTC:
-			rc = individualIsoStringValidation (date, iso8601UTC);
+			rc = individualIsoStringValidation (date, iso8601UTC, strippedOpts);
 			break;
 		case DATE:
-			rc = individualIsoStringValidation (date, iso8601calendardate);
+			rc = individualIsoStringValidation (date, iso8601calendardate, strippedOpts);
 			if (rc == 1) break;
-			rc = individualIsoStringValidation (date, iso8601ordinaldate);
+			rc = individualIsoStringValidation (date, iso8601ordinaldate, strippedOpts);
 			if (rc == 1) break;
-			rc = individualIsoStringValidation (date, iso8601weekdate);
+			rc = individualIsoStringValidation (date, iso8601weekdate, strippedOpts);
 			break;
 		case TIME:
-			rc = individualIsoStringValidation (date, iso8601timeofday);
+			rc = individualIsoStringValidation (date, iso8601timeofday, strippedOpts);
 			if (rc == 1) break;
-			rc = individualIsoStringValidation (date, iso8601UTC);
+			rc = individualIsoStringValidation (date, iso8601UTC, strippedOpts);
 			break;
-		case DTCMP:
-			rc = combinedIsoStringValidation (date, DTCMP);
-			break;
-		case DTOTH:
-			rc = combinedIsoStringValidation (date, DTOTH);
+		case DATETIME:
+			if (!strchr (date, 'T'))
+			{
+				if (!(strippedOpts & OMITT)) return -1;
+			}
+			rc = combinedIsoStringValidation (date, strippedOpts);
 			break;
 		default:
 			break;
@@ -239,8 +338,8 @@ static int isoStringValidation (const char * date, const char * fmt)
 	else
 	{
 		int rc = -1;
-		rc = combinedIsoStringValidation (date, DTCMP);
-		if (rc != 1) rc = combinedIsoStringValidation (date, DTOTH);
+		rc = combinedIsoStringValidation (date, (DATETIME | CMPLT));
+		if (rc != 1) rc = combinedIsoStringValidation (date, (DATETIME | TRCT));
 		return rc;
 	}
 	return -1;
@@ -270,12 +369,8 @@ static int formatStringValidation (const char * date, const char * fmt)
 // or all possible format strings derived from the specification
 //
 
-static int rfc2822StringValidation (const char * date, const char * fmt)
+static int rfc2822StringValidation (const char * date)
 {
-	if (!fmt)
-	{
-		return formatStringValidation (date, fmt);
-	}
 	struct tm tm;
 	memset (&tm, 0, sizeof (struct tm));
 	for (int i = 0; rfc2822strings[i] != NULL; ++i)
@@ -283,10 +378,22 @@ static int rfc2822StringValidation (const char * date, const char * fmt)
 		char * ptr = strptime (date, rfc2822strings[i], &tm);
 		if (ptr)
 		{
-			if (*ptr == '\0')
-				return 1;
-			else
-				return -1;
+			if (*ptr == '\0') return 1;
+		}
+	}
+	return -1;
+}
+
+static int rfc822StringValidation (const char * date)
+{
+	struct tm tm;
+	memset (&tm, 0, sizeof (struct tm));
+	for (int i = 0; rfc2822strings[i] != NULL; ++i)
+	{
+		char * ptr = strptime (date, rfc822strings[i], &tm);
+		if (ptr)
+		{
+			if (*ptr == '\0') return 1;
 		}
 	}
 	return -1;
@@ -322,18 +429,23 @@ static int validateDate (Key * key, Key * parentKey)
 		else if (rc == 0)
 		{
 			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_D_T_FMT, parentKey, "syntax error in ISO8601 format string '%s'", formatString);
+			rc = -1;
 		}
 	}
 	else if (!strcasecmp (stdString, "RFC2822"))
 	{
-		rc = rfc2822StringValidation (date, formatString);
+		rc = rfc2822StringValidation (date);
 		if (rc == -1)
 		{
-			if (formatString)
-				ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_D_T_FMT, parentKey, "%s doesn't match rfc2822 format string '%s'", date,
-						    formatString);
-			else
-				ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_D_T_FMT, parentKey, "%s doesn't match rfc2822 specification", date);
+			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_D_T_FMT, parentKey, "%s doesn't match rfc2822 specification", date);
+		}
+	}
+	else if (!strcasecmp (stdString, "RFC822"))
+	{
+		rc = rfc822StringValidation (date);
+		if (rc == -1)
+		{
+			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_D_T_FMT, parentKey, "%s doesn't match format string %s", date, formatString);
 		}
 	}
 

@@ -31,6 +31,7 @@ static void testFmt (const char * date, const char * fmt, const short res)
 
 static void testIso (const char * date, const char * isoString, const short res)
 {
+	// fprintf (stderr, "validating %s with %s. expected result: %d\n", date, isoString, res);
 	Key * parentKey = keyNew ("user/tests/date", KEY_VALUE, "", KEY_END);
 	KeySet * ks = ksNew (5, keyNew ("user/tests/date/test", KEY_VALUE, date, KEY_META, "check/date", "ISO8601", KEY_META,
 					"check/date/format", isoString, KEY_END),
@@ -68,12 +69,15 @@ int main (int argc, char ** argv)
 	testFmt ("20:15:00", "%I:%M:%S", -1);
 	testFmt ("Sat 17 Dec 2016 08:07:43 PM CET", "%a %d %b %Y %r %Z", 1);
 
-	testIso ("2016-12-12T23:59:01Z", "<datetimecomplete>", 1);
-	testIso ("2016-12-12T23:59:01Z", "<datetimeother>", -1);
-	testIso ("2016-12-12T23:59:01Z", "<datetimeother>", -1);
-	testIso ("2016-W23", "<weekdate>", 1);
-	testIso ("22:30+04", "<utc>", 1);
-	testIso ("22:30-04", "<utc>", 1);
+	testIso ("2016-12-12T23:59:01Z", "datetime complete", 1);
+	testIso ("2016-12-12 23:59:01Z", "datetime complete noT", 1);
+	testIso ("2016-12-12T23:59:01Z", "datetime truncated", -1);
+	testIso ("-12-12T23:59:01Z", "datetime truncated", 1);
+	testIso ("2016-W23", "weekdate", 1);
+	testIso ("22:30+04", "utc extended", 1);
+	testIso ("22:30-04", "utc extended", 1);
+	testIso ("2230", "timeofday extended", -1);
+	testIso ("2230", "timeofday basic", 1);
 
 	testRfc2822 ("Sat, 01 Mar 2016 23:59:01 +0400", 1);
 	testRfc2822 ("01 Mar 2016 23:59:01 -0400", 1);
