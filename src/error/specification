@@ -1000,28 +1000,28 @@ module:fcrypt
 macro:FCRYPT_FUTIMENS
 
 number:164
-description:Failed to upload config file.
+description:failed to upload config file.
 severity:error
 ingroup:plugin
 module:curlget
 macro:CURL_UPLOAD_FAILED
 
 number:165
-description:Couldn't fetch file from remote host, try falling back to local copy.
+description:could not fetch file from remote host, try falling back to local copy.
 severity:warning
 ingroup:plugin
 module:curlget
 macro:CURL_LOCAL_FALLBACK
 
 number:166
-description:Failed to fetch configuration file.
+description:failed to fetch configuration file.
 severity:error
 ingroup:plugin
 module:curlget
 macro:CURL_FETCH_FAILED
 
 number:167
-description:Invalid plugin configuration.
+description:invalid plugin configuration.
 severity:error
 ingroup:plugin
 module:curlget
