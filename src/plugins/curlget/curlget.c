@@ -609,6 +609,7 @@ int elektraCurlgetSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA
 				retval = -1;
 			}
 			unlink (data->tmpFile);
+			data->tmpFile = NULL;
 			keySetString (parentKey, name);
 		}
 		else
@@ -619,7 +620,8 @@ int elektraCurlgetSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA
 					    data->getUrl);
 			if (data->tmpFile) unlink (data->tmpFile);
 			data->tmpFile = NULL;
-			keySetString (parentKey, data->path);
+			if (data->useLocalCopy) keySetString (parentKey, data->path);
+
 			retval = -1;
 		}
 		close (fd);
@@ -628,6 +630,11 @@ int elektraCurlgetSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA
 			keySetString (parentKey, name);
 			data->tmpFile = keyString (parentKey);
 			retval = 1;
+		}
+		if (!data->useLocalCopy && data->path)
+		{
+			unlink (data->path);
+			data->path = NULL;
 		}
 	}
 	else if (data->setPhase == 1)
@@ -819,7 +826,40 @@ int elektraCurlgetSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA
 			}
 			else
 			{
-				keySetString (parentKey, data->tmpFile);
+				if (data->tmpFile)
+				{
+					unlink (data->tmpFile);
+					data->tmpFile = NULL;
+				}
+				if (data->path)
+				{
+					unlink (data->path);
+					data->path = NULL;
+				}
+			}
+		}
+		else
+		{
+			if (!data->useLocalCopy)
+			{
+				if (data->tmpFile)
+				{
+					unlink (data->tmpFile);
+					data->tmpFile = NULL;
+				}
+				if (data->path)
+				{
+					unlink (data->path);
+					data->path = NULL;
+				}
+			}
+			else
+			{
+				if (data->tmpFile)
+				{
+					unlink (data->tmpFile);
+					data->tmpFile = NULL;
+				}
 			}
 		}
 	}
