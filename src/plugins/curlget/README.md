@@ -9,6 +9,9 @@
 - infos/metadata =
 - infos/description = mount remote config files via curl
 
+## Description ##
+
+The `curlget` plugin is a resolver using libcurl to upload and download files from/to remote hosts. When mounted with a `URL` as configuration file there will be no changes to the filesystem. When mounted with a (local) path to a configuration a copy of the remote configuration is kept and used as fallback in `kdbGet()` if fetching the remote file from the server fails. 
 
 ## Configuration ##
 
@@ -40,7 +43,7 @@
 
 * `upload/method`:
 
-  only used for `HTTP` requests. use `POST` for `POST`-requests, or `PUT` for `PUT-requests.
+  only used for `HTTP` requests. use `POST` for `POST`-requests, or `PUT` for `PUT`-requests.
 
 * `upload/postfield`:
 
@@ -129,14 +132,20 @@ cat /tmp/httproot/curltest.ini
 
 
 
-### GET + POST ###
+### Mount with HTTP GET + POST and keep local copy ###
 
-kdb mount -R curlget -c url/get="http://127.0.0.1:8000/curltest.ini",url/put="http://127.0.0.1:8000",user="thomas",password="pass",upload/method="POST",upload/postfield="file" /tmp/curltest.ini system/curl ini 
+```
+    kdb mount -R curlget -c url/get="http://127.0.0.1:8000/curltest.ini",url/put="http://127.0.0.1:8000",user="thomas",password="pass",upload/method="POST",upload/postfield="file" /tmp/curltest.ini system/curl ini 
+```
 
-### FTP GET + PUT ###
+### Mount with HTTP GET + POST and keep no local copys ###
 
-kdb mount -R curlget -c url/get="ftp://127.0.0.1:21/test.ini",url/put="ftp://127.0.0.1:21/test.ini",user="thomas",password="pass",upload/method="FTP" /tmp/curltest.ini system/curl ini 
+```
+    kdb mount -R curlget -c url/put="http://127.0.0.1:8000",user="thomas",password="pass",upload/method="POST",upload/postfield="file" "http://127.0.0.1:8000/curltest.ini" system/curl ini 
+```
 
-### no local copy ###
+### Mount with FTP GET + PUT and keep local copy ###
 
-kdb mount -R curlget -c url/put="http://127.0.0.1:8000",user="thomas",password="pass",upload/method="POST",upload/postfield="file" "http://127.0.0.1:8000/curltest.ini" system/curl ini 
+```
+    kdb mount -R curlget -c url/get="ftp://127.0.0.1:21/test.ini",url/put="ftp://127.0.0.1:21/test.ini",user="thomas",password="pass",upload/method="FTP" /tmp/curltest.ini system/curl ini 
+```
