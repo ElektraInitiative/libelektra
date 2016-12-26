@@ -56,7 +56,7 @@ const escapeValues = (template, ...values) =>
     (source: @krit0n - https://github.com/ElektraInitiative/libelektra/pull/983#discussion_r83965059)
     */
     let val = values[i - 1].replace(/((\\\\)*)(\\(")|("))/g, '$1\\$4$5')
-    if (typeof val === 'string') val = `"${val}"`
+    if (typeof val === 'string') val = `'${val}'`
     return acc + val + part
   })
 
@@ -108,7 +108,7 @@ const _export = (path) =>
 // import javascript object at given `path`
 const _import = (path, value) =>
   safeExec(
-    `echo "${JSON.stringify(value).replace(/\"/g, '\\"')}" | ` + // pipe json into kdb
+    escapeValues`echo ${JSON.stringify(value)} | ` + // pipe json into kdb
     escapeValues`kdb import ${path} yajl`
   ).then(result => _export(path))
 
