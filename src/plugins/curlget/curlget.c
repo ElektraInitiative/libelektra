@@ -49,7 +49,7 @@ typedef enum {
 } SSHAuthType;
 typedef struct
 {
-	const char * path;
+	char * path;
 	const char * tmpFile;
 	time_t mtime;
 	unsigned char lastHash[MD5_DIGEST_LENGTH];
@@ -94,6 +94,7 @@ int elektraCurlgetClose (Plugin * handle ELEKTRA_UNUSED, Key * errorKey ELEKTRA_
 	if (!data->useLocalCopy && data->path)
 	{
 		unlink (data->path);
+		elektraFree (data->path);
 		data->path = NULL;
 	}
 	if (data->uploadFileName) elektraFree (data->__uploadFileName);
@@ -136,7 +137,7 @@ static unsigned short parseURLPath (Data * data, KeySet * config)
 	Key * key = NULL;
 	if (proto == PROTO_INVALID)
 	{
-		data->path = path;
+		data->path = elektraStrDup (path);
 		data->useLocalCopy = 1;
 		key = ksLookupByName (config, "/url", KDB_O_NONE);
 		if (key)
@@ -195,6 +196,7 @@ static unsigned short parseURLPath (Data * data, KeySet * config)
 	else
 	{
 		data->useLocalCopy = 0;
+		if (data->path) elektraFree (data->path);
 		data->path = NULL;
 		data->getUrl = path;
 		data->getProto = proto;
@@ -541,11 +543,11 @@ int elektraCurlgetGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA
 		}
 		else
 		{
-			data->path = data->tmpFile;
+			if (data->path) elektraFree (data->path);
+			data->path = elektraStrDup (data->tmpFile);
 		}
 		data->tmpFile = NULL;
 		keySetString (parentKey, data->path);
-		data->path = keyString (parentKey);
 	}
 	else if (data->tmpFile)
 	{
@@ -634,6 +636,7 @@ int elektraCurlgetSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA
 		if (!data->useLocalCopy && data->path)
 		{
 			unlink (data->path);
+			if (data->path) elektraFree (data->path);
 			data->path = NULL;
 		}
 	}
@@ -642,6 +645,7 @@ int elektraCurlgetSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA
 		FILE * fp;
 		const char * tmpFile = keyString (parentKey);
 		fp = fopen (tmpFile, "rb");
+		fprintf (stderr, "setPhase1: pk: %s\ttmpFile: %s\tpath: %s\n", tmpFile, data->tmpFile, data->path);
 		if (!fp)
 		{
 			ELEKTRA_SET_ERRORF (26, parentKey, "Failed to open %s for reading", tmpFile);
@@ -820,6 +824,7 @@ int elektraCurlgetSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA
 		{
 			if (data->useLocalCopy)
 			{
+				fprintf (stderr, "rename %s to %s\n", data->tmpFile, data->path);
 				rename (data->tmpFile, data->path);
 				data->tmpFile = NULL;
 				keySetString (parentKey, data->path);
@@ -834,6 +839,7 @@ int elektraCurlgetSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA
 				if (data->path)
 				{
 					unlink (data->path);
+					elektraFree (data->path);
 					data->path = NULL;
 				}
 			}
@@ -850,6 +856,7 @@ int elektraCurlgetSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA
 				if (data->path)
 				{
 					unlink (data->path);
+					elektraFree (data->path);
 					data->path = NULL;
 				}
 			}
