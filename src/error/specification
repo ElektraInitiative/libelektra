@@ -1019,3 +1019,10 @@ severity:error
 ingroup:plugin
 module:curlget
 macro:CURL_FETCH_FAILED
+
+number:167
+description:Invalid plugin configuration.
+severity:error
+ingroup:plugin
+module:curlget
+macro:CURL_CONFIG_INVALID
