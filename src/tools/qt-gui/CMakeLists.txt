@@ -68,7 +68,10 @@ target_link_libraries(qt-gui ${Qt5Quick_LIBRARIES} ${Qt5Gui_LIBRARIES}
 tool_link_elektratools(qt-gui elektra-ease)
 
 install(TARGETS qt-gui DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
-install(PROGRAMS ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/qt-gui DESTINATION bin RENAME elektra-qt-editor)
+configure_file(
+	"${CMAKE_CURRENT_SOURCE_DIR}/elektra-qt-editor.in"
+	"${CMAKE_CURRENT_BINARY_DIR}/elektra-qt-editor")
+install (PROGRAMS "${CMAKE_CURRENT_BINARY_DIR}/elektra-qt-editor" DESTINATION bin)
 install(FILES org.libelektra.elektra-qt-editor.desktop DESTINATION share/applications)
 install(FILES org.libelektra.elektra-qt-editor.appdata.xml DESTINATION share/appdata)
 install(FILES ../../../doc/images/circle.svg DESTINATION share/icons/hicolor/scalable/apps RENAME elektra.svg)
