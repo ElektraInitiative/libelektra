@@ -3,10 +3,12 @@
  *
  * @brief Loading Modules for Elektra documentation.
  *
- * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
  */
 
 /**
+ * @defgroup modules Modules
+ *
  * @brief Loading Modules for Elektra.
  *
  * Unfortunately there is no portable way to load modules, plugins or libraries.
@@ -21,12 +23,9 @@
  * - avoid loading of modules multiple times (maybe OS can't handle that well)
  * - hide the OS dependent handle inside a Key (handle is needed to
  *   close module afterwards)
- *
- * @{
  */
 
 /**
- * @ingroup modules
  * Initialises the module loading system.
  *
  * Most operating systems will have to do nothing here.
@@ -40,6 +39,7 @@
  * @param error a key to append the error information if it is not null
  * @return -1 on error
  * @return >=0 otherwise
+ * @ingroup modules
  */
 int elektraModulesInit (KeySet * modules, Key * error)
 {
