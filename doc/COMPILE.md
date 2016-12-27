@@ -432,6 +432,62 @@ Note 3:
     for Gentoo is recommend to emerge sys-apps/lsb-release to name the package
     right even thou not required.
 
+
+## Maintainer's Guide ##
+
+### Multiarch ###
+
+On multiarch (multiple architectures installed in one system), you need to set `LIB_SUFFIX`.
+For example, if you want to have the binaries in `lib64` and `lib32`, you
+would use for the libraries to be installed in `${CMAKE_INSTALL_PREFIX}/lib64`:
+
+	-DLIB_SUFFIX="64"
+
+If there is a directory for different architectures, simply prepend an `/`.
+For example, for Debian:
+
+	-DLIB_SUFFIX="/$(DEB_HOST_MULTIARCH)"
+
+
+
+
+### RPATH ###
+
+By default Elektra uses `RPATH` to hide its plugins which should not be used to
+be linked against by external applications or libraries. Instead every application
+should use the `elektraModulesLoad()` API to load Elektra's modules.
+
+The folder where the plugins are located is a subdirectory of where the libraries
+are located. If can be specified using `TARGET_PLUGIN_FOLDER` and is `elektra`
+by default. You might want to encode Elektra's `SOVERSION` into the folders name,
+if you want different major versions of Elektra be co-installable.
+
+Elektra's use case for `RPATH` is considered as acceptable, so we recommend to use it
+because:
+
+- plugins do not clutter the library folder nor the `ld.so.cache`
+- it works well with multiarch (`LIB_SUFFIX` is also honored for plugins)
+- which plugins are used should be decided at mount-time and be globally available in the
+  same way for every application. `RPATH` supports exactly that because it even overrides
+  `LD_LIBRARY_PATH`.
+
+Unfortunately, there are also drawbacks:
+
+- it makes Elektra non-relocatable (`RPATH` is decided at compile-time, so you cannot
+  simply move Elektra's installations within the file system (e.g. from `/usr/local` to `/usr`)
+- it requires modern `ld.so` implementations that honor `RPATH` from libraries.
+  This is the case for most `libc` implementations including from Linux and Mac OS X, but not
+  for, e.g., `musl`.
+
+
+If you do not want to use `RPATH`, you can add:
+
+	-DTARGET_PLUGIN_FOLDER="" -DCMAKE_SKIP_INSTALL_RPATH=ON
+
+Then all plugins are directly installed to the library directory and loaded
+like other libraries (in any of `ld.so` paths).
+
+
 ## Troubleshooting ##
 
 ### missing links/libraries ###
