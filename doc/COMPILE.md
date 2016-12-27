@@ -453,14 +453,15 @@ For example, for Debian:
 
 ### RPATH ###
 
-By default Elektra uses `RPATH` to hide its plugins which should not be used to
-be linked against by external applications or libraries. Instead every application
+By default Elektra uses `RPATH` to hide its plugins. This makes it obvious that
+external applications should *not* link against plugins. Instead every application
 should use the `elektraModulesLoad()` API to load Elektra's modules.
 
-The folder where the plugins are located is a subdirectory of where the libraries
-are located. If can be specified using `TARGET_PLUGIN_FOLDER` and is `elektra`
-by default. You might want to encode Elektra's `SOVERSION` into the folders name,
-if you want different major versions of Elektra be co-installable.
+The folder where the plugins are located is a subdirectory of where the
+libraries are installed. The name of the subdirectory can be specified
+using `TARGET_PLUGIN_FOLDER` and is `elektra` by default. You might
+want to encode Elektra's `SOVERSION` into the folders name, if you want
+different major versions of Elektra be co-installable.
 
 Elektra's use case for `RPATH` is considered as acceptable, so we recommend to use it
 because:
@@ -480,7 +481,7 @@ Unfortunately, there are also drawbacks:
   for, e.g., `musl`.
 
 
-If you do not want to use `RPATH`, you can add:
+If you want Elektra to *not* use `RPATH`, you can add:
 
 	-DTARGET_PLUGIN_FOLDER="" -DCMAKE_SKIP_INSTALL_RPATH=ON
 
