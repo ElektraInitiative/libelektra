@@ -13,8 +13,8 @@ if (CMAKE_MAJOR_VERSION EQUAL 2 AND CMAKE_MINOR_VERSION EQUAL 8)
 endif()
 
 if (Java_VERSION_MAJOR GREATER 0 AND Java_VERSION_MINOR GREATER 7)
-	file(GLOB files elektra/*.java)
-	file(GLOB pfiles elektra/plugin/*.java)
+	file(GLOB files ./libelektra4j/src/main/java/org/libelektra/*.java)
+	file(GLOB pfiles ./libelektra4j/src/main/java/org/libelektra/plugin/*.java)
 
 # find_jar(<VAR>
 #          name | NAMES name1 [name2 ...]
@@ -25,7 +25,7 @@ if (Java_VERSION_MAJOR GREATER 0 AND Java_VERSION_MINOR GREATER 7)
 
 	find_jar(jna
 		NAMES jna
-		PATHS /usr/share/java
+		PATHS /usr/share/java ./libelektra4j
 		)
 
 	if (jna)
@@ -36,7 +36,7 @@ if (Java_VERSION_MAJOR GREATER 0 AND Java_VERSION_MINOR GREATER 7)
 			INCLUDE_JARS ${jna}
 			SOURCES ${files} ${pfiles}
 			VERSION 1
-			OUTPUT_NAME libelektra
+			OUTPUT_NAME libelektra4j
 			)
 
 		install_jar(libelektra share/java)

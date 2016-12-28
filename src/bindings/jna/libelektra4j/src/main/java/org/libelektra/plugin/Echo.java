@@ -1,13 +1,16 @@
-package elektra.plugin;
+package org.libelektra.plugin;
 
-import elektra.*;
+import org.libelektra.Key;
+import org.libelektra.KeySet;
+import org.libelektra.Plugin;
 
 public class Echo implements Plugin {
 	public Echo() {
 		System.out.println("construct plugin");
 	}
 
-	public int open(KeySet conf, Key errorKey) {
+	@Override
+	public int open(final KeySet conf, final Key errorKey) {
 		System.out.println("open plugin");
 		System.out.println(errorKey);
 		System.out.println(errorKey.getString());
@@ -15,20 +18,20 @@ public class Echo implements Plugin {
 		return 0;
 	}
 
-	public int get(KeySet ks, Key parentKey) {
+	@Override
+	public int get(final KeySet ks, final Key parentKey) {
 		System.out.println("get plugin");
 		System.out.println(parentKey);
 		System.out.println(parentKey.getString());
 		System.out.println(ks);
-		String name = parentKey+"/infos/provides";
+		final String name = parentKey + "/infos/provides";
 		System.out.println("name: " + name);
-		ks.append(Key.create(name,
-				Key.KEY_VALUE, "java",
-				Key.KEY_END));
+		ks.append(Key.create(name, Key.KEY_VALUE, "java", Key.KEY_END));
 		return 0;
 	}
 
-	public int set(KeySet ks, Key parentKey) {
+	@Override
+	public int set(final KeySet ks, final Key parentKey) {
 		System.out.println("set plugin");
 		System.out.println(parentKey);
 		System.out.println(parentKey.getString());
@@ -36,7 +39,8 @@ public class Echo implements Plugin {
 		return 0;
 	}
 
-	public int error(KeySet ks, Key parentKey) {
+	@Override
+	public int error(final KeySet ks, final Key parentKey) {
 		System.out.println("error plugin");
 		System.out.println(parentKey);
 		System.out.println(parentKey.getString());
@@ -44,7 +48,8 @@ public class Echo implements Plugin {
 		return 0;
 	}
 
-	public int close(Key parentKey) {
+	@Override
+	public int close(final Key parentKey) {
 		System.out.println("close plugin");
 		System.out.println(parentKey);
 		System.out.println(parentKey.getString());
