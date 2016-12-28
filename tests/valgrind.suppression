@@ -261,12 +261,12 @@
 {
    rest-backend loadEnabledFormats jni plugin
    Memcheck:Leak
-   match-leak-kinds: reachable
+   match-leak-kinds: all
    fun:malloc
    fun:elektraMalloc
    fun:elektraJniOpen
    fun:elektraPluginOpen
    ...
-   fun:kdbrestServicesConvertengineTest_FindSuitablePluginCheck_Test::TestBody()
+   fun:_ZN61kdbrestServicesConvertengineTest_FindSuitablePluginCheck_Test8TestBodyEv
    ...
 }
