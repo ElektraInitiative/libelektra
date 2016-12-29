@@ -80,8 +80,8 @@ helper library `libfuse`.  In particular this allowed developers to
 use any programming language and easier abstractions. Elektra also
 tries hard to make plugin development simple.  For example, special
 [interpreter plugins](/src/plugins/README.md) enable developers
-to also write plugins in different languages. Furthermore, [other
-libraries](/src/libs/README.md) also assist in creating plugins.
+to also write plugins in different languages. Furthermore,
+[other libraries](/src/libs/README.md) also assist in creating plugins.
 
 Of course not every feature of virtual file systems or Elektra has
 an analogy in the other system. If they would solve the same problem,
