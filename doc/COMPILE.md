@@ -33,7 +33,9 @@ To build PDF documentation you need `pdflatex` with
 For the plugins, please refer to the README.md of the respective plugin.
 For example, for CentOS:
 
-	sudo yum install -y boost-devel libdb-devel GConf2-devel libxml2-devel yajl-devel libcurl-devel augeas-devel libgit2-devel lua-devel swig python34-devel python-devel java-1.8.0-openjdk-devel jna ruby-devel byacc
+	sudo yum install -y boost-devel libdb-devel GConf2-devel libxml2-devel yajl-devel   \
+	libcurl-devel augeas-devel libgit2-devel lua-devel swig python34-devel python-devel \
+	java-1.8.0-openjdk-devel jna ruby-devel byacc
 
 For the Debian package, please refer to debian/control (in the debian
 branch).
@@ -509,7 +511,8 @@ This issue was reported for:
 Please enable EPEL https://fedoraproject.org/wiki/EPEL
 
 	# Install EPEL for RHEL 7
-	curl -o epel-release-7-8.noarch.rpm http://dl.fedoraproject.org/pub/epel/7/x86_64/e/epel-release-7-8.noarch.rpm
+	curl -o epel-release-7-8.noarch.rpm \
+	  http://dl.fedoraproject.org/pub/epel/7/x86_64/e/epel-release-7-8.noarch.rpm
 	sudo rpm -ivh epel-release-7-8.noarch.rpm
 	sudo yum update
 

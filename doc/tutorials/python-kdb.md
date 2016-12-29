@@ -39,7 +39,8 @@ with kdb.KDB() as k:
 	ks = kdb.KeySet()
 	#loading an existing keyset
 	k.get(ks, '/path/to/keys')
-	# if you for some reason want to loop through the keyset last key first use: for i in reversed(ks):
+	# if you for some reason want to loop through the keyset last key first use:
+	# for i in reversed(ks):
 	for i in ks:
 		# print for every key in the keyset the key and the value
 		print('key: '+ str(i) + 'value: ' + str(ks[i]))
@@ -53,7 +54,8 @@ with kdb.KDB() as k:
 	ks = kdb.KeySet()
 	k.get(ks, '/path/to/keys')
 	try:
-                print('The value to the key /user/sw/pk/key_name is ' + str(ks['/user/sw/pk/key_name']) + '!')
+		print('The value to the key /user/sw/pk/key_name is ' +
+		      str(ks['/user/sw/pk/key_name']) + '!')
         except KeyError:
                 print('The key does not exist!')
 ```
@@ -101,7 +103,8 @@ with kdb.KDB() as k:
 	# ... any number of operations that manipulate the keyset as explained below
 	# setting and by doing so saving the new keyset
 	k.set(ks, '/path/to/keys')
-	# by changing the path here it is for instance possible to set the keyset of one user identical to another users
+	# by changing the path here it is for instance possible to set the keyset of
+	# one user identical to another users
 ```
 
 If you have a key a very simple way to get its name and value:
@@ -137,7 +140,8 @@ with kdb.KDB() as k:
 	# adding new_key to the existing key-set, ks['/user/sw/pk/key_name'].value == 'key_value'
 	ks.append(new_key)
 	newer_key = kdb.Key('/user/sw/pk/key_name', kdb.KEY_VALUE, 'other_key_value')
-	# adding newer_key to the existing key-set, by doing so replacing new_key, ks['/user/sw/pk/key_name'].value == 'other_key_value'
+	# adding newer_key to the existing key-set, by doing so replacing new_key,
+	# ks['/user/sw/pk/key_name'].value == 'other_key_value'
 	ks.append(newer_key)
 ```
 

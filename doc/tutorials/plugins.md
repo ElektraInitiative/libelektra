@@ -348,7 +348,9 @@ The following example demonstrates how to limit the length of the values within 
 			const char * value = keyString (cur);
 			if (strlen (value) > 3)
 			{
-				ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_VALUE_LENGTH, errorKey, "value %s is more than 3 characters long", value);
+				ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_VALUE_LENGTH, errorKey,
+						    "value %s is more than 3 characters long",
+						    value);
 				return -1; // The configuration was not OK and could not be fixed
 			}
 		}

@@ -242,7 +242,8 @@ we want to use `/sw/otherorg/otherapp/#0/current/section/subsection/key`.
 
 So we specify:
 
-    kdb setmeta spec/sw/org/myapp/#0/current/section/subsection/key "fallback/#0" /sw/otherorg/otherapp/#0/current/section/subsection/key
+    kdb setmeta spec/sw/org/myapp/#0/current/section/subsection/key \
+        "fallback/#0" /sw/otherorg/otherapp/#0/current/section/subsection/key
 
 Voila, we have done a system integration between `myapp` and `otherapp`!
 
