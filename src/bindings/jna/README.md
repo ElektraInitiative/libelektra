@@ -30,7 +30,10 @@ and also [here](/src/plugins/jni) for more information.
 
 ### Maven ###
 
-In case you want to use maven as your build system, simply go into the libelektra4j subfolder and execute mvn install. This will install the plugin into your local maven repository. Afterwards you can include it as a dependency into your maven project, and given that libelektra is actually installed on your system you can use it by including the maven dependency:
+In case you want to use maven as your build system, simply go into the libelektra4j subfolder and execute mvn install.
+This will install the plugin into your local maven repository. Afterwards you can include it as a dependency into your maven project.
+Given that libelektra is actually installed on your system you can use it by including the maven dependency:
+
 	<groupId>org.libelektra</groupId>
 	<artifactId>libelektra4j</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
@@ -49,9 +52,9 @@ Tested library versions are:
 
 It should also be possible to run the tests by command line:
 	1) Compile the library and tests (run in root directory; make sure junit4 and jna are installed and/or path is correct). Execute the following commands inside the libelektra4j folder:
-		mkdir ./target if it does not exist yet
+		mkdir ./target (if it does not exist yet)
 		javac -cp <path to junit and jna and hamcrest*> -d ./target src/main/java/org/libelektra/*.java src/main/java/org/libelektra/plugin/*.java src/test/java/org/libelektra/*.java
-		* so if you copied the jna.jar, junit.jar and hamcrest-core.jar directly to the jna directory, the correct path would be ./jna.jar:./junit.jar:./hamcrest-core.jar (separated by :), otherwise specify the appropriate locations.
+		* so if you copied the jna.jar, junit.jar and hamcrest-core.jar directly to the jna directory, the correct path would be ./jna.jar:./junit.jar:./hamcrest-core.jar (separated by : on mac and linux, by ; on windows), otherwise specify the appropriate locations.
 		for linux users they are usually in /usr/share/java/jna.jar:/usr/share/java/junit4.jar
 	2) Run all jUnit tests (please note that the -cp parameter now also has to include the target directory we created in the first step, where the compiled classfiles are):
 		java -cp <path to target, junit, jna and hamcrest> org.junit.runner.JUnitCore org.libelektra.AllTests
