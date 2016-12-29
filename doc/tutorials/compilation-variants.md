@@ -30,7 +30,7 @@ The advantage of compilation variants are:
 - Different compilation variants can have different dependencies
 - Different compilation variants can be mounted without `#refnames`
 
-## How to use it
+## How to use It
 
 To use compilation variants, add your plugin in the CMake Cache
 Variable PLUGINS multiple times.

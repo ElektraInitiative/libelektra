@@ -1,4 +1,4 @@
-## Order of namespaces ##
+## Order of Namespaces ##
 
 This tutorial assumes that you know what [namespaces](/doc/tutorials/namespaces.md) are. We will only be talking about [cascading lookup](/doc/help/elektra-cascading.md) here.
 
@@ -14,7 +14,7 @@ Looking at this order, we can see that if a configuration option is specified by
 
 But lets demonstrate this with an example:
 
-###### Add a key to the system namespace ######
+###### Add a Key to the system Namespace ######
 Configuration in the **system** namespace is readable for all users and the same for all users. Therefore this namespace provides a default or fallback configuration.
 
 In the default Elektra installation only an administrator can update configuration here:
@@ -31,7 +31,7 @@ $ kdb get /sw/tutorial/cascading/#0/current/test
 hello world
 ```
 
-###### Add a key to the user namespace ######
+###### Add a Key to the user Namespace ######
 A user may now want to override the configuration in **system**, so he sets a key in the **user** namespace:
 
 ```
@@ -44,7 +44,7 @@ hello galaxy
 ```
 Note that configuration in the **user** namespace only affects _this_ user. Other users would still get the key from the **system** namespace.
 
-###### Add a key to the dir namespace ######
+###### Add a Key to the dir Namespace ######
 The **dir** namespace is associated with a directory. The configuration in the **dir** namespace applies to the associated directory and all its subdirectories.
 This is useful if you have project specific settings (e.g. your git configuration or a .htaccess file).
 
@@ -68,7 +68,7 @@ $ kdb get /sw/tutorial/cascading/#0/current/test
 hello galaxy
 ```
 
-###### Add a key to the proc namespace ######
+###### Add a Key to the proc Namespace ######
 The **proc** namespace is not accessible from the commandline, but only from within applications. So we have to omit an example for that at this point.
 [Elektrified](/doc/help/elektra-glossary.md) applications can use this namespace to override configuration from other namespaces internally.
 
@@ -84,7 +84,7 @@ when the `user` configuration is not defined. When a key starts with `/`,
 of `system/test` will do a cascading lookup.
 
 
-## Override links ##
+## Override Links ##
 
 The `spec` namespace is special as it can completely change how the cascading
 lookup works.
@@ -127,7 +127,7 @@ Furthermore, you can specify a custom order for the namespaces, set fallback
 keys and more. For more information, read the [`elektra-spec` help page](/doc/help/elektra-spec.md).
 
 
-## User defaults ##
+## User Defaults ##
 
 Override links can also be used to define default values. It's similar to
 defining default values via the `system` namespace, but uses overrides, which

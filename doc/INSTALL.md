@@ -94,7 +94,7 @@ and send a merge request for your system.
 
 ## Troubleshooting ##
 
-### error loading libraries ###
+### Error Loading Libraries ###
 
 If you encounter the problem that the library can not be found (output like this)
 

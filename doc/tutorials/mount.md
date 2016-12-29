@@ -12,7 +12,7 @@ The heart of the approach is the so called _mounting_ of configuration files int
 
 Let us start with a motivating example first:
 
-## Mount the lookup table for hostnames
+## Mount the Lookup Table for Hostnames
 
 We mount the lookup table with the following command:
 
@@ -72,7 +72,7 @@ sudo kdb rm system/hosts/ipv4/mylocalhost
 sudo kdb umount system/hosts
 ```
 
-> ###### Why do you need superuser privileges to mount files? ######
+> ###### Why do you Need Superuser Privileges to Mount Files? ######
 >
 > Elektra manages its mountpoints in configuration below **system/elektra/mountpoints**.
 > The file that holds this configuration is, in the same way as `/etc/hosts` before, only writable by administrators:
@@ -174,7 +174,7 @@ Now let us see how smoothly the ini plugin sets and gets the git configuration.
     rob.banks@dot.com
 
 
-#### Meta data ####
+#### Meta Data ####
 
 Elektra is able to store [meta data](/doc/help/elektra-metadata.md) of keys, provided the format of the file that holds the configuration supports this feature.
 The ini plugin doesn't support this feature, but the [ni](/src/plugins/ni/README.md) and the [dump](/src/plugins/dump/README.md) plugin do.

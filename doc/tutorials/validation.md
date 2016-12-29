@@ -31,7 +31,7 @@ described in this tutorial, e.g.:
      modify its configuration)
 
 
-## Metadata together with keys
+## Metadata Together With Keys
 
 The most direct way to validate keys is
 
@@ -87,7 +87,7 @@ The drawbacks of this approach are:
 - You cannot validate structure of which keys must be present or absent.
 
 
-## Get started with spec
+## Get Started with spec
 
 These issues are resolved straightforward by separation of schemata (describing the
 configuration) and the configuration itself.
@@ -183,7 +183,7 @@ If we want to reject every optional key (and only want to allow required keys)
 we can use the plugin `required` as further discussed below.
 
 
-## Customized schemas
+## Customized Schemas
 
 Sometimes we already have configuration specifications given in some other format
 which is more compact and more directed to the needs of an individual application.

@@ -493,7 +493,7 @@ like other libraries (in any of `ld.so` paths).
 
 ## Troubleshooting ##
 
-### missing links/libraries ###
+### Missing Links/Libraries ###
 
 If you get errors that `libelektra-resolver.so` or `libelektra-storage.so` are missing,
 or the links do not work, you can use as workaround:
@@ -506,7 +506,7 @@ This issue was reported for:
 - CLion IDE (does not allow to build)
 
 
-### Dependencies not available for Cent OS ###
+### Dependencies not Available for Cent OS ###
 
 Please enable EPEL https://fedoraproject.org/wiki/EPEL
 
