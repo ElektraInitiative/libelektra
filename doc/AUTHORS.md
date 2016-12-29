@@ -156,12 +156,12 @@ improvements to the dbus plugin
 
 ## Peter Nirschl ##
 
-development of the crypto plugin, minor bug fixes, BSD/OS X support
+development of the crypto plugin, minor bug fixes, BSD/macOS support
 
 - email: peter.nirschl@gmail.com
 - github user: [petermax2](http://github.com/petermax2)
 - devel on: Fedora
-- test on: Fedora, Debian, Mac OS X
+- test on: Fedora, Debian, macOS
 
 
 ## René Schwaiger ##

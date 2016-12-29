@@ -479,7 +479,7 @@ Unfortunately, there are also drawbacks:
 - it makes Elektra non-relocatable (`RPATH` is decided at compile-time, so you cannot
   simply move Elektra's installations within the file system (e.g. from `/usr/local` to `/usr`)
 - it requires modern `ld.so` implementations that honor `RPATH` from libraries.
-  This is the case for most `libc` implementations including Linux and Mac OS X, but not
+  This is the case for most `libc` implementations including Linux and macOS, but not
   for, e.g., `musl`.
 
 
