@@ -18,7 +18,7 @@ This document's main goal is to describe the API.
 It covers:
 
 - external C-API (see Modules above), which are the essential core parts
-- C++-API (see Data Structures above) from a direct binding to high-level 
+- C++-API (see Data Structures above) from a direct binding to high-level
   functionality, such as mounting functionality
 - plugins API, see @ref Plugins
 - all other documentation of Elektra (see Related Pages next to Main Page)

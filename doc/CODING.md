@@ -62,18 +62,18 @@ Thus please use following techniques (in order of preference):
    verified at run-time. So they are not only useful for people reading the
    code but also for tools. Assertions in Elektra are used by:
 
-   `#include <kdbassert.h>` 
+   `#include <kdbassert.h>`
 
-   `ELEKTRA_ASSERT (condition, "formatted text to be printed when assert fails", ...)` 
+   `ELEKTRA_ASSERT (condition, "formatted text to be printed when assert fails", ...)`
 
    Note: Do not use assert for user-APIs, always handle arguments of user-APIs like
    untrusted input.
 
 3. If the "comment" might be useful to be printed during execution, use logging:
 
-   `#include <kdblogger.h>` 
+   `#include <kdblogger.h>`
 
-   `ELEKTRA_LOG ("formatted text to be printed according log filters", ...)` 
+   `ELEKTRA_LOG ("formatted text to be printed according log filters", ...)`
 
    There are four log levels (ERROR is reserved for aborts within `ELEKTRA_ASSERT`):
    - ELEKTRA_LOG_WARNING, something critical that should be shown the user (e.g. API misuse), see #ELEKTRA_LOG_LEVEL_WARNING

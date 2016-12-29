@@ -408,7 +408,7 @@ Continue by reading [INSTALL](INSTALL.md).
 You can build Elektra using Code::Blocks under Gentoo:
 
 Precondition:
-Make sure you have a compiler, xml2 (for kdb tool) and xsl (see later) installed. 
+Make sure you have a compiler, xml2 (for kdb tool) and xsl (see later) installed.
 cmake configure will help you with that, it will make sure you don't forget something
 essential.
 
@@ -511,7 +511,7 @@ Please enable EPEL https://fedoraproject.org/wiki/EPEL
 	# Install EPEL for RHEL 7
 	curl -o epel-release-7-8.noarch.rpm http://dl.fedoraproject.org/pub/epel/7/x86_64/e/epel-release-7-8.noarch.rpm
 	sudo rpm -ivh epel-release-7-8.noarch.rpm
-	sudo yum update    
+	sudo yum update
 
 For Bindings swig3 is recommended. swig2 only works on some distributions.
 E.g., for Debian Jessie the bindings will crash.

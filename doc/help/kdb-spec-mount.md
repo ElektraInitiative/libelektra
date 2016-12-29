@@ -3,7 +3,7 @@ kdb-spec-mount(1) - Mount a spec file to the key database
 
 ## SYNOPSIS
 
-`kdb spec-mount [/<mountpoint>] [<plugin> [<config>] [..]]`  
+`kdb spec-mount [/<mountpoint>] [<plugin> [<config>] [..]]`
 
 - `mountpoint` is where in the key database the new backend should be mounted to.
   It must be a cascading mount pount, i.e., `mountpoint` must start with `/`.
@@ -92,10 +92,10 @@ the `spec` plugin is present:
 
 ## EXAMPLES
 
-To mount /example as described in `spec/example`:  
+To mount /example as described in `spec/example`:
 `kdb spec-mount /example`
 
-Additionally, add `ini` plugin (instead of some default resolver) with `some` as config:  
+Additionally, add `ini` plugin (instead of some default resolver) with `some` as config:
 `kdb spec-mount /example ini some=value`
 
 ## SEE ALSO

@@ -6,7 +6,7 @@ When programming in python it is possible to access the kdb database, changing v
 
 ## First Steps
 
-In order to being able to use kdb, obviously, you at first need to `import kdb`. You need access to an python-object of kdb. This is accomplished by calling `kdb.KDB()` and saving this to a variable because later on this object will be needed for various operations. 
+In order to being able to use kdb, obviously, you at first need to `import kdb`. You need access to an python-object of kdb. This is accomplished by calling `kdb.KDB()` and saving this to a variable because later on this object will be needed for various operations.
 The easiest way to do this would be:
 ```
 import kdb
@@ -40,10 +40,9 @@ with kdb.KDB() as k:
 	#loading an existing keyset
 	k.get(ks, '/path/to/keys')
 	# if you for some reason want to loop through the keyset last key first use: for i in reversed(ks):
-	for i in ks: 
+	for i in ks:
 		# print for every key in the keyset the key and the value
 		print 'key: '+ str(i) + 'value: ' + str(ks[i])
-	
 ```
 
 Here an example of how you can easily check if a key exists:
@@ -71,7 +70,6 @@ with kdb.KDB() as k:
 	ks_deepcopy = copy.deepcopy(ks)
 	# creating a shallow copy
 	ks_shallowcopy = copy.copy(ks)
-	
 ```
 
 Slicing works just like for normal lists in python. But be careful: Afterwards the result will be a list - not a keyset.
@@ -90,7 +88,6 @@ with kdb.KDB() as k:
 	b = ks[start:]
 	# create keyset with keys from the beginning of the keyset to end
 	c = ks[:end]
-	
 ```
 
 If you have changed anything in the keyset and want those changes to be saved to the database, you need to call `set` which is just like `get` provided by the kdb-object.
@@ -103,7 +100,7 @@ with kdb.KDB() as k:
 	k.get(ks, '/path/to/keys')
 	# ... any number of operations that manipulate the keyset as explained below
 	# setting and by doing so saving the new keyset
-	k.set(ks, '/path/to/keys') 
+	k.set(ks, '/path/to/keys')
 	# by changing the path here it is for instance possible to set the keyset of one user identical to another users
 ```
 
