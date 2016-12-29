@@ -20,7 +20,9 @@ then you can compile and run [HelloElektra](HelloElektra.java):
 
     javac HelloElektra.java && java HelloElektra
 
-Alternatively you can also specify the classpath directly, both during compilation and execution. Note that in this example, we have the elektra and jna libraries in different directories, as mac doesn't allow writing to /usr/share/java in never versions. Also note its important in that case to include this directory containing the compiled HelloElektra.class when executing it, otherwise it will not be found:
+Alternatively you can also specify the classpath directly, both during compilation and execution.
+Note that in this example, we have the elektra and jna libraries in different directories, as mac doesn't allow writing to /usr/share/java in never versions.
+Also note its important in that case to include this directory containing the compiled HelloElektra.class when executing it, otherwise it will not be found:
 
 	javac -cp ./libelektra4j.jar:./libelektra4j/jna.jar HelloElektra.java
 	java -cp .:./libelektra4j.jar:./libelektra4j/jna.jar HelloElektra
@@ -42,7 +44,8 @@ Given that libelektra is actually installed on your system you can use it by inc
 
 ### Command Line ###
 
-Unit tests can be run after importing jUnit, JNA and the libelektra4j java library into a project (eclipse, netbeans, intelliJ, ...). Alternatively, you can use maven to both build the project or just run the unit tests.
+Unit tests can be run after importing jUnit, JNA and the libelektra4j java library into a project (eclipse, netbeans, intelliJ, ...).
+Alternatively, you can use maven to both build the project or just run the unit tests.
 
 Tested library versions are:
 	JNA: 4.2.2
