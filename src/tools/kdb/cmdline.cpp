@@ -518,8 +518,8 @@ kdb::Key Cmdline::createKey (int pos) const
 	if (!root.isValid ())
 	{
 		throw invalid_argument (name + " is not a valid keyname" +
-								"\n\n"
-								"Please make sure that the key's namespace is valid and not missing (see 'man elektra-namespaces').\n"
+								"\n\n" +
+								"For absolute keys (starting without /), please note that only one of the predefined namespaces can be used (see 'man elektra-namespaces').\n" +
 								"Please also ensure that the path is separated by a '/'."
 			);
 	}
