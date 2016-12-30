@@ -114,8 +114,8 @@ Plugins can also export arbitrary additional functions.
 To export it, simply add another `exports` symbol to
 the contract:
 
-				keyNew ("system/elektra/modules/dump/exports/checkconf", KEY_FUNC,
-					elektraCcodeCheckConf, KEY_END),
+	keyNew ("system/elektra/modules/dump/exports/checkconf", KEY_FUNC,
+		elektraCcodeCheckConf, KEY_END),
 
 `checkconf` is the most important function that is not
 available as built-in function. It is used to validate
