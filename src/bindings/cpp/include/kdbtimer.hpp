@@ -34,11 +34,15 @@ public:
 	TIMER_NOINLINE void start ()
 	{
 		gettimeofday (&begin, nullptr);
+		// clock_gettime(CLOCK_MONOTONIC, &begin);
 	}
 	TIMER_NOINLINE void stop ()
 	{
 		gettimeofday (&end, nullptr);
+		// clock_gettime(CLOCK_MONOTONIC, &end);
+
 		// force calculation in long long:
+		// could use timersub here
 		timer_t result = end.tv_sec - begin.tv_sec;
 		result *= usec_factor;
 		result += end.tv_usec - begin.tv_usec;
