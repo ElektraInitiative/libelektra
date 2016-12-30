@@ -8,10 +8,10 @@ semantics of individual keys.
 
 Most importantly it:
 
-0. describes which keys are of interest to the application
-1. describes the metadata to be copied to every key
-2. describes how the cascading lookup works
-3. describes the mountpoints including the plugins needed for them
+1. describes which keys are of interest to the application
+2. describes the metadata to be copied to every key
+3. describes how the cascading lookup works
+4. describes the mountpoints including the plugins needed for them
 
 It is, however, not limited to this but can express any other
 key database semantics (new plugins might be necessary, though).
