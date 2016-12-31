@@ -229,8 +229,10 @@ So you can't have different configuration files for the same mountpoints in othe
 Because of the same reason you cannot have different configuration file names or syntax for the same mountpoint in the `user` namespace.
 
 This is one of the reasons why Elektra promotes this [naming convention](/doc/help/elektra-key-names.md) for keys:
+
 > Key names of software-applications should always start with:
 > `/<type>/<org>/<name>/<version>/<profile>`
+
 > - **type** can be `sw` (software), `hw` (hardware) or `elektra` (for internal configuration)
 > - **org** is an URL/organisation name. E.g. `kde`
 > - **name** the name of the component that has this configuration
