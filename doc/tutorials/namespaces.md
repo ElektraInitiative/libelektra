@@ -21,6 +21,7 @@ For instance the key **/b/c** has the path **/** -> **b** -> **c**.
 Note how the name of the key determines the path to its value.
 
 You can use the file system analogy as a mnemonic to remember these commands (like the file system commands in your favorite operating system):
+
 - `kdb ls <path>`
 	lists keys below _path_
 - `kdb rm <key>`
@@ -37,6 +38,7 @@ For example `kdb get /b/c` should return `Value 2` now, if you set the values be
 Now we abandon the file system analogy and introduce the concept of _namespaces_.
 
 Every key in Elektra belongs to one of these namespaces:
+
 - **spec** for specification of other keys
 - **proc** for in-memory keys (e.g. command-line)
 - **dir** for dir keys in current working directory
