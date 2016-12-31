@@ -317,20 +317,19 @@ int mountGlobals (KDB * kdb, KeySet * keys, KeySet * modules, Key * errorKey)
 	{
 		ELEKTRA_LOG ("no global configuration, assuming spec as default");
 		ksDel (keys);
-		keys = ksNew (19, keyNew ("system/elektra/globalplugins", KEY_END),
+		keys = ksNew (18, keyNew ("system/elektra/globalplugins", KEY_VALUE, "", KEY_END),
 			      keyNew ("system/elektra/globalplugins/postcommit", KEY_VALUE, "list", KEY_END),
 			      keyNew ("system/elektra/globalplugins/postcommit/user", KEY_VALUE, "list", KEY_END),
-			      keyNew ("system/elektra/globalplugins/postcommit/user/placements", KEY_END),
+			      keyNew ("system/elektra/globalplugins/postcommit/user/placements", KEY_VALUE, "", KEY_END),
 			      keyNew ("system/elektra/globalplugins/postcommit/user/placements/error", KEY_VALUE,
 				      "prerollback postrollback", KEY_END),
 			      keyNew ("system/elektra/globalplugins/postcommit/user/placements/get", KEY_VALUE,
 				      "pregetstorage postgetstorage", KEY_END),
 			      keyNew ("system/elektra/globalplugins/postcommit/user/placements/set", KEY_VALUE,
 				      "presetstorage precommit postcommit", KEY_END),
-			      keyNew ("system/elektra/globalplugins/postcommit/user/plugins", KEY_END),
+			      keyNew ("system/elektra/globalplugins/postcommit/user/plugins", KEY_VALUE, "", KEY_END),
 			      keyNew ("system/elektra/globalplugins/postcommit/user/plugins/#0", KEY_VALUE, "spec", KEY_END),
 			      keyNew ("system/elektra/globalplugins/postcommit/user/plugins/#0/placements", KEY_VALUE, "spec", KEY_END),
-			      keyNew ("system/elektra/globalplugins/postcommit/user/plugins/#0/placements/error", KEY_END),
 			      keyNew ("system/elektra/globalplugins/postcommit/user/plugins/#0/placements/get", KEY_VALUE, "postgetstorage",
 				      KEY_END),
 			      keyNew ("system/elektra/globalplugins/postcommit/user/plugins/#0/placements/set", KEY_VALUE, "presetstorage",
@@ -355,6 +354,9 @@ int mountGlobals (KDB * kdb, KeySet * keys, KeySet * modules, Key * errorKey)
 		// the cutpoints for the plugin configs are always directly below the "root", ignore everything else
 		if (keyRel (root, cur) != 1) continue;
 		const char * placement = keyBaseName (cur);
+		ELEKTRA_LOG ("now in new mountGlobals");
+		ELEKTRA_LOG ("placement/keyBaseName: %s", placement);
+		ELEKTRA_LOG ("keyName: %s", keyName(cur));
 
 		for (GlobalpluginPositions i = 0; i < NR_GLOBAL_POSITIONS; ++i)
 		{
