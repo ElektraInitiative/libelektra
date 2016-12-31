@@ -49,14 +49,14 @@ static KeySet * createTestKeysToNotCacheCascading ()
 {
 	return ksNew (3, keyNew ("user/tests/cachefilter/will/not/be/cached/with/directory/key1", KEY_END),
 		      keyNew ("user/tests/cachefilter/will/not/be/cached/with/directory/key2", KEY_END),
-		      keyNew ("user/tests/cachefilter/will/not/be/cached/with/directory/key3", KEY_END));
+		      keyNew ("user/tests/cachefilter/will/not/be/cached/with/directory/key3", KEY_END), KS_END);
 }
 
 static KeySet * createTestKeysToNotCacheSiblings ()
 {
 	return ksNew (3, keyNew ("user/tests/cachefilter/will/not/be/cached/for/whatever/key1", KEY_END),
 		      keyNew ("user/tests/cachefilter/will/not/be/cached/for/whatever/key2", KEY_END),
-		      keyNew ("user/tests/cachefilter/will/not/be/cached/for/whatever/key3", KEY_END));
+		      keyNew ("user/tests/cachefilter/will/not/be/cached/for/whatever/key3", KEY_END), KS_END);
 }
 
 static void test_successfulCache ()
