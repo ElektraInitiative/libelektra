@@ -8,7 +8,7 @@ When programming in python it is possible to access the kdb database, changing v
 
 In order to being able to use kdb, obviously, you at first need to `import kdb`. You need access to an python-object of kdb. This is accomplished by calling `kdb.KDB()` and saving this to a variable because later on this object will be needed for various operations.
 The easiest way to do this would be:
-```
+```py
 import kdb
 with kdb.KDB() as k:
 	print('Hello world! I have a kdb-instance! :D')
@@ -19,7 +19,7 @@ with kdb.KDB() as k:
 
 A keyset is basically a list of the keys that lie within the specified range of the database. When creating an empty keyset this range is obviously zero. It is possible to load the whole database into a keyset but in a lot of cases this is not needed and you can specify which keys exactly you need (which I mean with specified range). At first it is necessary to create a new keyset. When simply calling `kdb.KeySet()` the keyset is of size 0. There is no restriction to the keyset's size. It is possible to specify a certain (maximum) size for a keyset. To load keys into to keyset from the database you simply call the method `get` provided by the kdb-object.
 
-```
+```py
 import kdb
 with kdb.KDB() as k:
 	# create empty keyset
@@ -33,7 +33,7 @@ It is also possible to iterate as expected over a keyset and use len, reversed a
 
 An example that shows how to load an existing keyset and then access every key and value of the loaded keyset:
 
-```
+```py
 import kdb
 with kdb.KDB() as k:
 	ks = kdb.KeySet()
@@ -48,7 +48,7 @@ with kdb.KDB() as k:
 
 Here an example of how you can easily check if a key exists:
 
-```
+```py
 import kdb
 with kdb.KDB() as k:
 	ks = kdb.KeySet()
@@ -62,7 +62,7 @@ with kdb.KDB() as k:
 
 Ways of copying a keyset:
 
-```
+```py
 import kdb
 import copy
 with kdb.KDB() as k:
@@ -76,7 +76,7 @@ with kdb.KDB() as k:
 
 Slicing works just like for normal lists in python. But be careful: Afterwards the result will be a list - not a keyset.
 
-```
+```py
 import kdb
 with kdb.KDB() as k:
 	ks = kdb.KeySet()
@@ -95,7 +95,7 @@ with kdb.KDB() as k:
 If you have changed anything in the keyset and want those changes to be saved to the database, you need to call `set` which is just like `get` provided by the kdb-object.
 
 An example of everything up until now could look like this:
-```
+```py
 import kdb
 with kdb.KDB() as k:
 	ks = kdb.KeySet()
@@ -109,7 +109,7 @@ with kdb.KDB() as k:
 
 If you have a key a very simple way to get its name and value:
 
-```
+```py
 import kdb
 with kdb.KDB() as k:
 	ks = kdb.KeySet()
@@ -122,7 +122,7 @@ with kdb.KDB() as k:
 
 It is possible to create new keys:
 
-```
+```py
 import kdb
 with kdb.KDB() as k:
 	# the first argument is the path to the key, the third argument is the key-value
@@ -131,7 +131,7 @@ with kdb.KDB() as k:
 
 Keys can be added to a keyset using `append`. If the key already exists, the value will be updated. Calling `keyset_name['/path/to/key'] = 'new_value` does not work for updating keys already in a keyset.
 
-```
+```py
 import kdb
 with kdb.KDB() as k:
 	ks = kdb.KeySet()

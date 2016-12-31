@@ -1,6 +1,6 @@
 Please cite Elektra the following way:
 
-```
+```bib
 @article{raab2016elektra,
 	doi = {10.21105/joss.00044},
 	url = {http://dx.doi.org/10.21105/joss.00044},
