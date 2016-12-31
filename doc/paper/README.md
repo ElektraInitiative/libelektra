@@ -1,3 +1,5 @@
+# Citations #
+
 Please cite Elektra the following way:
 
 ```bib
