@@ -19,6 +19,7 @@ But lets demonstrate this with an example:
 Configuration in the **system** namespace is readable for all users and the same for all users. Therefore this namespace provides a default or fallback configuration.
 
 In the default Elektra installation only an administrator can update configuration here:
+
 ```
 $ kdb get /sw/tutorial/cascading/#0/current/test
 Did not find key
@@ -44,6 +45,7 @@ Create a new key user/sw/tutorial/cascading/#0/current/test with string hello ga
 $ kdb get /sw/tutorial/cascading/#0/current/test
 hello galaxy
 ```
+
 Note that configuration in the **user** namespace only affects _this_ user. Other users would still get the key from the **system** namespace.
 
 ###### Add a Key to the dir Namespace ######

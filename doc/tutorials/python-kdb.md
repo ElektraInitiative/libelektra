@@ -8,6 +8,7 @@ When programming in python it is possible to access the kdb database, changing v
 
 In order to being able to use kdb, obviously, you at first need to `import kdb`. You need access to an python-object of kdb. This is accomplished by calling `kdb.KDB()` and saving this to a variable because later on this object will be needed for various operations.
 The easiest way to do this would be:
+
 ```py
 import kdb
 with kdb.KDB() as k:
@@ -95,6 +96,7 @@ with kdb.KDB() as k:
 If you have changed anything in the keyset and want those changes to be saved to the database, you need to call `set` which is just like `get` provided by the kdb-object.
 
 An example of everything up until now could look like this:
+
 ```py
 import kdb
 with kdb.KDB() as k:
