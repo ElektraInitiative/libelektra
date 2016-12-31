@@ -15,6 +15,7 @@ Looking at this order, we can see that if a configuration option is specified by
 But lets demonstrate this with an example:
 
 ###### Add a Key to the system Namespace ######
+
 Configuration in the **system** namespace is readable for all users and the same for all users. Therefore this namespace provides a default or fallback configuration.
 
 In the default Elektra installation only an administrator can update configuration here:
@@ -32,6 +33,7 @@ hello world
 ```
 
 ###### Add a Key to the user Namespace ######
+
 A user may now want to override the configuration in **system**, so he sets a key in the **user** namespace:
 
 ```
@@ -45,6 +47,7 @@ hello galaxy
 Note that configuration in the **user** namespace only affects _this_ user. Other users would still get the key from the **system** namespace.
 
 ###### Add a Key to the dir Namespace ######
+
 The **dir** namespace is associated with a directory. The configuration in the **dir** namespace applies to the associated directory and all its subdirectories.
 This is useful if you have project specific settings (e.g. your git configuration or a .htaccess file).
 
@@ -69,10 +72,12 @@ hello galaxy
 ```
 
 ###### Add a Key to the proc Namespace ######
+
 The **proc** namespace is not accessible from the commandline, but only from within applications. So we have to omit an example for that at this point.
 [Elektrified](/doc/help/elektra-glossary.md) applications can use this namespace to override configuration from other namespaces internally.
 
 ###### Add a Key to the spec Namespace ######
+
 Because the **spec** namespace does not contain values of keys but their metadata, Elektra handles the **spec** namespace differently to other namespaces. The following part of the tutorial is dedicated to the impact of the **spec** namespace on cascading lookups.
 
 ## Cascading ##
