@@ -112,7 +112,7 @@ The string until the first `/` will be considered as bookmark.
 For example, if you set the bookmark kdb:
 
 	kdb set user/sw/elektra/kdb/#0/current/bookmarks
-	kdb set user/sw/elektra/kdb/#0/current/bookmarks/kdb user/sw/elektra/kdb/#0/current`
+	kdb set user/sw/elektra/kdb/#0/current/bookmarks/kdb user/sw/elektra/kdb/#0/current
 
 You are able to use:
 
