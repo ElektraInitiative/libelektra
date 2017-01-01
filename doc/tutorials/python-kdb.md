@@ -11,7 +11,7 @@ The easiest way to do this would be:
 ```
 import kdb
 with kdb.KDB() as k:
-	print 'Hello world! I have a kdb-instance! :D'
+	print('Hello world! I have a kdb-instance! :D')
 	# do all kinds of operations explained below
 ```
 
@@ -24,7 +24,7 @@ import kdb
 with kdb.KDB() as k:
 	# create empty keyset
 	ks = kdb.KeySet()
-	print len(ks) # should be 0
+	print(len(ks)) # should be 0
 	# load an existing keyset
 	k.get(ks, '/path/to/keys')
 ```
@@ -42,7 +42,7 @@ with kdb.KDB() as k:
 	# if you for some reason want to loop through the keyset last key first use: for i in reversed(ks):
 	for i in ks:
 		# print for every key in the keyset the key and the value
-		print 'key: '+ str(i) + 'value: ' + str(ks[i])
+		print('key: '+ str(i) + 'value: ' + str(ks[i]))
 ```
 
 Here an example of how you can easily check if a key exists:
@@ -53,9 +53,9 @@ with kdb.KDB() as k:
 	ks = kdb.KeySet()
 	k.get(ks, '/path/to/keys')
 	try:
-                print 'The value to the key /user/sw/pk/key_name is ' + str(ks['/user/sw/pk/key_name']) + '!'
+                print('The value to the key /user/sw/pk/key_name is ' + str(ks['/user/sw/pk/key_name']) + '!')
         except KeyError:
-                print 'The key does not exist!'
+                print('The key does not exist!')
 ```
 
 Ways of copying a keyset:
@@ -112,9 +112,9 @@ with kdb.KDB() as k:
 	ks = kdb.KeySet()
 	k.get(ks, '/path/to/keys')
 	for i in ks:
-		print 'key-name: ' + i.name
-		print 'key-value: ' + i.value
-		print 'key-value: ' + ks.lookup(i).string
+		print('key-name: ' + i.name)
+		print('key-value: ' + i.value)
+		print('key-value: ' + ks.lookup(i).string)
 ```
 
 It is possible to create new keys:
