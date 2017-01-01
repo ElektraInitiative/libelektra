@@ -353,14 +353,17 @@ int mountGlobals (KDB * kdb, KeySet * keys, KeySet * modules, Key * errorKey)
 	{
 		// the cutpoints for the plugin configs are always directly below the "root", ignore everything else
 		if (keyRel (root, cur) != 1) continue;
-		const char * placement = keyBaseName (cur);
-		ELEKTRA_LOG ("now in new mountGlobals");
+
+		ssize_t placementSize = keyGetBaseNameSize (cur);
+		char * placement = elektraMalloc(placementSize);
+		keyGetBaseName (cur, placement, placementSize);
+		ELEKTRA_LOG ("now in mountGlobals");
 		ELEKTRA_LOG ("placement/keyBaseName: %s", placement);
-		ELEKTRA_LOG ("keyName: %s", keyName(cur));
+		ELEKTRA_LOG ("keyName: %s", keyName (cur));
 
 		for (GlobalpluginPositions i = 0; i < NR_GLOBAL_POSITIONS; ++i)
 		{
-			if (!strcasecmp (placement, GlobalpluginPositionsStr[i]))
+			if (!elektraStrCaseCmp (placement, GlobalpluginPositionsStr[i]))
 			{
 #if DEBUG && VERBOSE
 				printf ("mounting global plugin %s to %s\n", pluginName, placement);
@@ -400,6 +403,7 @@ int mountGlobals (KDB * kdb, KeySet * keys, KeySet * modules, Key * errorKey)
 				ksDel (subPositions);
 			}
 		}
+		elektraFree (placement);
 	}
 	ksDel (global);
 	ksDel (keys);
