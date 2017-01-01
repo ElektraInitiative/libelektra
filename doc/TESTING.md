@@ -166,7 +166,7 @@ See also build server jobs:
 * [clang-asan](http://build.libelektra.org:8080/job/elektra-clang-asan/)
 * [gcc-asan](http://build.libelektra.org:8080/job/elektra-gcc-asan/)
 
-### cbmc ###
+### CBMC ###
 
 For bounded model checking tests, see `scripts/cbmc`.
 

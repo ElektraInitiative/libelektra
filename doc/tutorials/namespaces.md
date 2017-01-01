@@ -1,6 +1,6 @@
 # Understanding Namespaces #
 
-## Structure of the key database ##
+## Structure of the Key Database ##
 
 The _key database_ of Elektra is _hierarchically structured_. This means that keys are organized similar to directories in a file system.
 
@@ -21,6 +21,7 @@ For instance the key **/b/c** has the path **/** -> **b** -> **c**.
 Note how the name of the key determines the path to its value.
 
 You can use the file system analogy as a mnemonic to remember these commands (like the file system commands in your favorite operating system):
+
 - `kdb ls <path>`
 	lists keys below _path_
 - `kdb rm <key>`
@@ -37,6 +38,7 @@ For example `kdb get /b/c` should return `Value 2` now, if you set the values be
 Now we abandon the file system analogy and introduce the concept of _namespaces_.
 
 Every key in Elektra belongs to one of these namespaces:
+
 - **spec** for specification of other keys
 - **proc** for in-memory keys (e.g. command-line)
 - **dir** for dir keys in current working directory
@@ -59,7 +61,7 @@ So if you are a normal user the command `kdb set /b/c 'Value 2'` was synonymous 
 At this point the key database should have this structure:
 ![Elektras namespaces](/doc/images/tutorial_namespaces_namespaces.svg)
 
-#### Cascading keys ####
+#### Cascading Keys ####
 Another question you may ask yourself now is, what happens if we lookup a key without providing a namespace. So let us retrieve the key **/b/c** with the -v flag in order to make _kdb_ more talkative.
 
 	kdb get -v /b/c
@@ -82,7 +84,7 @@ You can find out more about cascading lookups [here](cascading.md).
 
 Having namespaces enables both admins and users to set specific parts of the application's configuration, as you will see in the following example.
 
-## How it works on the command line (kdb) ##
+## How it Works on the Command Line (kdb) ##
 
 Let's say your app requires the following configuration data:
 
@@ -122,7 +124,7 @@ If you are only interested in the system key, you would use:
 
 	kdb get system/sw/org/myapp/policy
 
-## How it works in C ##
+## How it Works in C ##
 
 The idea is to call **kdbGet()** to retrieve the root key for the application.
 Looking for a specific part of the configuration is done by **ksLookup()**.

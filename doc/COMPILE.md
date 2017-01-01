@@ -33,7 +33,9 @@ To build PDF documentation you need `pdflatex` with
 For the plugins, please refer to the README.md of the respective plugin.
 For example, for CentOS:
 
-	sudo yum install -y boost-devel libdb-devel GConf2-devel libxml2-devel yajl-devel libcurl-devel augeas-devel libgit2-devel lua-devel swig python34-devel python-devel java-1.8.0-openjdk-devel jna ruby-devel byacc
+	sudo yum install -y boost-devel libdb-devel GConf2-devel libxml2-devel yajl-devel   \
+	libcurl-devel augeas-devel libgit2-devel lua-devel swig python34-devel python-devel \
+	java-1.8.0-openjdk-devel jna ruby-devel byacc
 
 For the Debian package, please refer to debian/control (in the debian
 branch).
@@ -408,7 +410,7 @@ Continue by reading [INSTALL](INSTALL.md).
 You can build Elektra using Code::Blocks under Gentoo:
 
 Precondition:
-Make sure you have a compiler, xml2 (for kdb tool) and xsl (see later) installed. 
+Make sure you have a compiler, xml2 (for kdb tool) and xsl (see later) installed.
 cmake configure will help you with that, it will make sure you don't forget something
 essential.
 
@@ -463,7 +465,7 @@ using `TARGET_PLUGIN_FOLDER` and is `elektra` by default. You might
 want to encode Elektra's `SOVERSION` into the folders name, if you want
 different major versions of Elektra be co-installable.
 
-Elektra's use case for `RPATH` is considered as acceptable, so we recommend to use it
+Elektra's use case for `RPATH` is considered acceptable, so we recommend to use it
 because:
 
 - plugins do not clutter the library folder nor the `ld.so.cache`
@@ -477,7 +479,7 @@ Unfortunately, there are also drawbacks:
 - it makes Elektra non-relocatable (`RPATH` is decided at compile-time, so you cannot
   simply move Elektra's installations within the file system (e.g. from `/usr/local` to `/usr`)
 - it requires modern `ld.so` implementations that honor `RPATH` from libraries.
-  This is the case for most `libc` implementations including from Linux and Mac OS X, but not
+  This is the case for most `libc` implementations including Linux and macOS, but not
   for, e.g., `musl`.
 
 
@@ -491,7 +493,7 @@ like other libraries (in any of `ld.so` paths).
 
 ## Troubleshooting ##
 
-### missing links/libraries ###
+### Missing Links/Libraries ###
 
 If you get errors that `libelektra-resolver.so` or `libelektra-storage.so` are missing,
 or the links do not work, you can use as workaround:
@@ -504,14 +506,15 @@ This issue was reported for:
 - CLion IDE (does not allow to build)
 
 
-### Dependencies not available for Cent OS ###
+### Dependencies not Available for Cent OS ###
 
 Please enable EPEL https://fedoraproject.org/wiki/EPEL
 
 	# Install EPEL for RHEL 7
-	curl -o epel-release-7-8.noarch.rpm http://dl.fedoraproject.org/pub/epel/7/x86_64/e/epel-release-7-8.noarch.rpm
+	curl -o epel-release-7-8.noarch.rpm \
+	  http://dl.fedoraproject.org/pub/epel/7/x86_64/e/epel-release-7-8.noarch.rpm
 	sudo rpm -ivh epel-release-7-8.noarch.rpm
-	sudo yum update    
+	sudo yum update
 
 For Bindings swig3 is recommended. swig2 only works on some distributions.
 E.g., for Debian Jessie the bindings will crash.

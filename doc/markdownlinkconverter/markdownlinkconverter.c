@@ -219,7 +219,7 @@ static void convertLinks (FILE * input, FILE * output, char * inputFilename, int
 	FILE * httplinks = fopen (HTTPLINK_FILENAME, "a");
 	if (!httplinks)
 	{
-		fprintf (stderr, "WARNING http link file %s cound not be opened\n", HTTPLINK_FILENAME);
+		fprintf (stderr, "WARNING http link file %s could not be opened\n", HTTPLINK_FILENAME);
 	}
 	int lineCount = 0;
 	int c;

@@ -16,7 +16,7 @@ file system is [here](https://en.wikipedia.org/wiki/Virtual_file_system)).
 Before file systems (or for devices without operating system) software
 simply wrote at discs (think of `dd of=/dev/sda`) to persistently store
 data. This obviously does not work with multiple applications. To allow
-multiple applications access data in `/dev/sda`, a file system structures
+multiple applications to access data in `/dev/sda`, a file system structures
 them in a way that every application knows where its bits are. In analogy
 configuration files are application-specific initialization that cannot
 be shared with other applications. So as first steps we need to have a
@@ -80,11 +80,11 @@ helper library `libfuse`.  In particular this allowed developers to
 use any programming language and easier abstractions. Elektra also
 tries hard to make plugin development simple.  For example, special
 [interpreter plugins](/src/plugins/README.md) enable developers
-to also write plugins in different languages. Furthermore, [other
-libraries](/src/libs/README.md) also assist in creating plugins.
+to also write plugins in different languages. Furthermore,
+[other libraries](/src/libs/README.md) also assist in creating plugins.
 
 Of course not every feature of virtual file systems or Elektra has
-its analogy in the other system. If they would solve the same problem,
+an analogy in the other system. If they would solve the same problem,
 one of them would be useless.  Main differences are:
 
 - API (get/set vs. read/write)

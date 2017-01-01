@@ -38,7 +38,7 @@ enforce such restrictions.
 
 Note, that you cannot mount the same configuration file multiple times.
 You can, however, use the specification to link between configuration
-items which gives an impression of an *bind mount*, i.e. having the
+items which gives an impression of a *bind mount*, i.e. having the
 same configuration values on multiple places.
 
 ## SEE ALSO
