@@ -1,24 +1,24 @@
-# Definition of Bool
+# Definition of Bool #
 
-## Issue
+## Issue ##
 
 Inconsistent use of bool in various parts of Elektra.
 
-## Constraints
+## Constraints ##
 
-## Assumptions
+## Assumptions ##
 
 - needs to be string
 - convenience plugins can convert anything to 0 or 1
 - type checker plugins can reject everything not 0 or 1
 
-## Considered Alternatives
+## Considered Alternatives ##
 
 - strictly only allow 0 and 1 (would move validation across the code)
 - only check presence or absence (no cascading override of already present key possible)
 - use as in CMake (would move convenience across the code)
 
-## Decision
+## Decision ##
 
 Use, depending on what your default should be:
 
@@ -44,18 +44,18 @@ The convenience plugin should transform (it might be combined with a plugin that
 - "false", "off", "no"  to "0"
 - "true",  "on",  "yes" to "1"
 
-## Argument
+## Argument ##
 
 - most easy to implement
 - allows presence to be true
 - plugins allow us to convert to any other behaviour
 
-## Implications
+## Implications ##
 
 - change code with different behavior
 
-## Related decisions
+## Related decisions ##
 
-## Notes
+## Notes ##
 
 See [here](https://github.com/ElektraInitiative/libelektra/issues/308)

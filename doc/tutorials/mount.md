@@ -12,7 +12,7 @@ The heart of the approach is the so called _mounting_ of configuration files int
 
 Let us start with a motivating example first:
 
-## Mount the Lookup Table for Hostnames
+## Mount the Lookup Table for Hostnames ##
 
 We mount the lookup table with the following command:
 

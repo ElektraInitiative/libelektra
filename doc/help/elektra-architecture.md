@@ -24,7 +24,7 @@ Further important concepts are explained in:
 - [sync-flag](elektra-sync-flag.md)
 
 
-## API
+## API ##
 
 The aim of the Elektra Project is to design and implement a powerful
 API for configuration.  When the project started, we assumed that this
@@ -34,7 +34,7 @@ is required because of the necessary modularity to implement flexible
 backends as introduced in Elektra.  But also the design of a good
 API has proved to be much more difficult than expected.
 
-### Changes in the APIs
+### Changes in the APIs ###
 
 From Elektra 0.7 to Elektra 0.8, we changed
 the API of Elektra as little as possible.  It should be mentioned
@@ -45,7 +45,7 @@ but the old interface still works.  These changes will be described in
 [implementation of metadata](elektra-metadata.md). However, the implementation of
 Elektra changed radically as discussed in [algorithm](elektra-algorithm.md).
 
-### API Design
+### API Design ###
 
 API Design presents a critical craft every programmer should be aware
 of. We will shortly present some of the main design
@@ -104,7 +104,7 @@ that way that programs work together well."
 
 
 
-## Modules
+## Modules ##
 
 Elektra's core can be compiled with a C compiler conforming to the
 ISO/IEC 9899:1999 standard:
@@ -136,7 +136,7 @@ After the module is loaded, the special function plugin factory
 is searched for.  This function returns a new plugin.  With the plugin
 factory the actual plugins are created.
 
-### Static Loading
+### Static Loading ###
 
 For the static loading of modules, the modules must be built-in.
 With `dlopen(const` `char*` `file)` POSIX provides a solution to look
@@ -152,7 +152,7 @@ plugins can be created out of a single module.  During the creation
 process of the plugin, dynamic information - like the configuration or
 the data handle - is added.
 
-### API
+### API ###
 
 The API of **libloader** consists
 of the following functions:
@@ -176,7 +176,7 @@ Not every plugin is loaded by `libloader`.  For example, the
 *version plugin*, which exports version information, is implemented
 internally.
 
-## Mount Point Configuration
+## Mount Point Configuration ##
 
 `kdb mount` creates a **mountpoint configuration** as shown
 in the example below.  `fstab` is a unique name
@@ -283,7 +283,7 @@ is transformed to
 and appears in the plugin configuration of the path plugin
 inside the fstab backend.
 
-### Referencing
+### Referencing ###
 
 The same plugin often must occur in more than one place within a
 backend. The most common use case is a plugin that has to be executed
@@ -310,7 +310,7 @@ above.
 `kdb mount` already implements the generation of these names as described above.
 
 
-### Changing Mount Point Configuration
+### Changing Mount Point Configuration ###
 
 When the user changes the mountpoint configuration, without
 countermeasures, applications already started will continue to run with
