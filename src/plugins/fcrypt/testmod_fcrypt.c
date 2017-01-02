@@ -111,7 +111,13 @@ static void test_gpg ()
 	Key * msg = keyNew (0);
 	keySetBinary (msg, test_key_asc, test_key_asc_len);
 
-	succeed_if (CRYPTO_PLUGIN_FUNCTION (gpgCall) (conf, errorKey, msg, argv, argc) == 1, "failed to install the GPG test key");
+	// gpg call
+	int result = CRYPTO_PLUGIN_FUNCTION (gpgCall) (conf, errorKey, msg, argv, argc);
+	if (result != 1)
+	{
+		fprintf (stderr, "GPG error: %s\n", keyString (keyGetMeta (errorKey, "error/description")));
+	}
+	succeed_if (result == 1, "failed to install the GPG test key");
 
 	keyDel (msg);
 	keyDel (errorKey);
