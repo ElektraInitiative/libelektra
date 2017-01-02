@@ -115,7 +115,7 @@ static void test_gpg ()
 	int result = CRYPTO_PLUGIN_FUNCTION (gpgCall) (conf, errorKey, msg, argv, argc);
 	if (result != 1)
 	{
-		fprintf (stderr, "GPG error: %s\n", keyString (keyGetMeta (errorKey, "error/description")));
+		fprintf (stderr, "GPG error: %s\n", keyString (keyGetMeta (errorKey, "error/reason")));
 	}
 	succeed_if (result == 1, "failed to install the GPG test key");
 
