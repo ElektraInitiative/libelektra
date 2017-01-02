@@ -56,7 +56,9 @@ int elektraCachefilterGet (Plugin * handle, KeySet * returned, Key * parentKey)
 	// then ensure to return only the requested keys
 	// (matching parentKey)
 	ksClear (returned);
-	ksAppend (returned, ksCut (toBeCached, parentKey));
+	KeySet * requestedKeys = ksCut (toBeCached, parentKey);
+	ksAppend (returned, requestedKeys);
+	ksDel (requestedKeys);
 
 	// and also keep the returned keys in cache as well
 	// this is necessary for successive kdbGet() calls
@@ -85,7 +87,7 @@ int elektraCachefilterSet (Plugin * handle, KeySet * returned, Key * parentKey)
 
 	// first remove all keys from the cache that match the parentKey
 	// but are not in the returned keyset anymore (deleted keys)
-	(void *)ksCut (cachedKeys, parentKey);
+	ksDel (ksCut (cachedKeys, parentKey));
 	ksAppend (cachedKeys, returned);
 	ksAppend (returned, cachedKeys);
 	ELEKTRA_LOG ("cachefilter set %s end %zd", keyName (parentKey), ksGetSize (returned));
