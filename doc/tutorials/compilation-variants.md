@@ -2,6 +2,7 @@
 
 To create different variants of the same feature, but avoid code
 duplications within plugins, you have multiple options:
+
 - Define a needs clause in a [contract](/doc/CONTRACT.ini) and reuse another
   plugin as it is. This should be preferred for filter and validation
   tasks.
@@ -23,6 +24,7 @@ duplications within plugins, you have multiple options:
   dependencies: it is possible to have different `LINK_LIBRARIES`.
 
 The advantage of compilation variants are:
+
 - No runtime overhead
 - Can be used during bootstrapping (when no configuration is available)
 - Different compilation variants can be built at once (no recompilation
@@ -83,6 +85,7 @@ multiple definitions.
 
 Now every public function of the plugin conflicts with itself. To avoid
 that, you can use:
+
 - static functions, but they are only visible within one file.
   This should be preferred, when possible.
 - use helper libraries using add_lib to share code

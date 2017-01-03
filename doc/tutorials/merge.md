@@ -11,16 +11,18 @@ The command to use this tool is:
 	kdb merge [options] ourpath theirpath basepath resultpath
 
 The standard naming scheme for a three-way merge consists of ours, theirs, and base:
-*	ours refers to the local copy of a file
-*	theirs refers to a remote copy
-*	base refers to their common ancestor.
+
+- ours refers to the local copy of a file
+- theirs refers to a remote copy
+- base refers to their common ancestor.
 
 This works very similarly for KeySets, especially ones that consist of mounted conffiles.
 
 For mounted conffiles:
-*	ours should be the user's copy
-*	theirs would be the maintainers copy,
-*	base would be the previous version of the maintainer's copy.
+
+- ours should be the user's copy
+- theirs would be the maintainers copy,
+- base would be the previous version of the maintainer's copy.
 
 If the user is just trying to accomplish a three-way merge using any two arbitrary keysets that share a base,
 it doesn't matter which ones are defined as ours or theirs as long as they use the correct base KeySet.

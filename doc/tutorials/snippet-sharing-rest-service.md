@@ -52,6 +52,7 @@ To install CppCMS, there are two options available:
 - Install via dependency manager
 
 To install CppCMS manually without dependency manager:
+
 - Download the (latest) CppCMS source from [SourceForge](https://sourceforge.net/projects/cppcms/files/cppcms/)
 - Extract the archive: `tar -xjf cppcms-1.x.x.tar.bz2 && cd cppcms-1.x.x` (replace 1.x.x with your version)
 - Configure the build: `mkdir build && cd build && cmake ..`

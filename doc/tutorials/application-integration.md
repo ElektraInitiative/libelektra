@@ -21,16 +21,16 @@ When the application is fully integrated in Elektra's ecosystem
 additional benefits arise:
 
 - Benefits that shared libraries have, e.g.
- - All applications profit from fixes, optimization and new features
- - Less memory consumption, because the libraries executable
-     instructions are only loaded once
- - Faster development time, because many non-trivial problems (e.g.
-     OS-dependent resolving of configuration file names with atomic
-     updates) are already solved and tested properly
+  - All applications profit from fixes, optimization and new features
+  - Less memory consumption, because the libraries executable
+      instructions are only loaded once
+  - Faster development time, because many non-trivial problems (e.g.
+      OS-dependent resolving of configuration file names with atomic
+      updates) are already solved and tested properly
 - The administrator can choose:
- - the configuration file syntax (e.g. XML or JSON)
- - notification and logging on configuration changes
- - and all other features [the plugins provide](/src/plugins/)
+  - the configuration file syntax (e.g. XML or JSON)
+  - notification and logging on configuration changes
+  - and all other features [the plugins provide](/src/plugins/)
 - Other applications can use your configuration as override or as
     fallback
 
@@ -97,18 +97,18 @@ quite general concepts useful for other languages in the same way):
 
 - The first argument of `keyNew` is the name of the key.
  It consists of different parts, `/` is the hierarchy-separator:
- - `sw` is for software
- - `org` is a URL/organisation name to avoid name clashes with other
-     application names. Use only one part of the URL/organisation,
-     so e.g. `kde` is enough.
- - `myapp` is the name of the most specific component that has its own
-     configuration
- - `#0` is the major version number of the configuration (to be incremented
-   if you need to introduce incompatible changes).
- - `current` is the [profile](/src/plugins/profile/README.md)
-     to be used. This is needed by administrators
-     if they want to start up multiple applications with different
-     configurations.
+  - `sw` is for software
+  - `org` is a URL/organisation name to avoid name clashes with other
+      application names. Use only one part of the URL/organisation,
+      so e.g. `kde` is enough.
+  - `myapp` is the name of the most specific component that has its own
+      configuration
+  - `#0` is the major version number of the configuration (to be incremented
+    if you need to introduce incompatible changes).
+  - `current` is the [profile](/src/plugins/profile/README.md)
+      to be used. This is needed by administrators
+      if they want to start up multiple applications with different
+      configurations.
 - `KEY_END` is needed because C needs a proper termination of variable
     length arguments.
 
