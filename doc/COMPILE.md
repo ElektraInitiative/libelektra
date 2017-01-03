@@ -532,6 +532,34 @@ Also, no ronn was available, thus you need to do:
 	gem install ronn
 
 
+### Cross Compiling ###
+
+In Elektra cross compiling needs two steps.  If you get errors like
+`elektra-export-errors_EXE_LOC` not found, go on reading.
+
+In the first step, you need to compile Elektra for the host architecture
+and install the build tools:
+
+	cmake -DINSTALL_BUILD_TOOLS=ON \
+	      -DINSTALL_SYSTEM_FILES=OFF \
+	      -DCMAKE_PREFIX_PATH=$(STAGING_DIR_HOST) \
+	      ..
+	make -j 5
+	make install -j 5
+
+Where `$(STAGING_DIR_HOST)` must be a directory to be found in the later
+build process.  In particular, `$(STAGING_DIR_HOST)/bin` must be in a
+directory found by a later `find_program`.
+
+Then you need to compile Elektra again, but for the target architecture.
+Now, the build tools such as `elektra-export-errors` should be found in
+the `$(STAGING_DIR_HOST)/bin` where they were installed before.
+
+For reference, you can look into the
+[OpenWRT Elektra Makefile](https://github.com/openwrt/packages/blob/master/libs/elektra/Makefile)
+and the
+[CMake in OpenWRT](https://github.com/openwrt/openwrt/blob/master/include/cmake.mk).
+
 ## See also
 
 - [INSTALL](INSTALL.md).
