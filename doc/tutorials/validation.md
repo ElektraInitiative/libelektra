@@ -33,7 +33,7 @@ described in this tutorial, e.g.:
 
 ## Metadata Together With Keys ##
 
-The most direct way to validate keys is
+The most direct way to validate keys are
 
 ```sh
 > kdb mount validation.dump user/tutorial/together dump validation

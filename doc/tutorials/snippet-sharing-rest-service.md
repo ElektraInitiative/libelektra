@@ -66,7 +66,7 @@ Unfortunately, no repository is available for Debian Jessie yet.
 
 ##### Jansson #####
 
-The Jansson library supports working with json data in C.
+The Jansson library supports working with JSON data in C.
 To install it, use the following steps:
 
 - Download the (latest) source from [their website](http://www.digip.org/jansson/releases/)
@@ -343,7 +343,7 @@ kdb set system/sw/elektra/restbackend/#0/current/backend/kdb/path/users = system
 
 ### rest-frontend ###
 
-Because of the apache server using the rest-frontend installation directory as
+Because of the Apache server using the rest-frontend installation directory as
 document root, there is no further configuration necessary other than already
 explained in the configuration section above.
 

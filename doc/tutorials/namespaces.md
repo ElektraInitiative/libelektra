@@ -122,7 +122,7 @@ Elektra loads the value for the current user and passes it to the application.
 You can also retrieve the values in the command line by using the **kdb** tool:
 
 ```sh
-kdb get system/sw/org/maypp
+kdb get system/sw/org/myapp
 ```
 
 _Cascading keys_ are keys that start with **/** and are a way of making key lookups much easier.

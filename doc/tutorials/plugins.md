@@ -101,14 +101,14 @@ The `README.md` will be used by:
 The first lines must look like:
 
 ```md
-- infos = Information about YAIL plugin is in keys below
+- infos = Information about YAJL plugin is in keys below
 - infos/author = Markus Raab <elektra@libelektra.org>
 - infos/licence = BSD
 - infos/needs =
 - infos/provides = storage
 - infos/placements = getstorage setstorage
 - infos/recommends = rebase directoryvalue comment type
-- infos/description = JSON using YAIL
+- infos/description = JSON using YAJL
 ```
 
 The information of these parts are limited to a single line.
@@ -201,7 +201,7 @@ This means that in the first time, only the `add_plugin` should be executed
 and in the second time the detection code together with `add_plugin`.
 
 So that you can distinguish the first and second phase, the variable `DEPENDENCY_PHASE`
-is set to `ON` iff you should search for all needed cmake packages. You should avoid
+is set to `ON` iff you should search for all needed CMake packages. You should avoid
 to search for packages otherwise, because this would:
 
 - clutter the output
@@ -299,7 +299,7 @@ int elektraLineSet(Plugin *handle ELEKTRA_UNUSED, KeySet *toWrite, Key *parentKe
 Lets start with the most important parameters, the KeySet and the `parentKey`. The KeySet supplied is the KeySet that is going to be persisted in
 the file. In our case it would contain the Keys representing the lines. The `parentKey` is the topmost Key of the KeySet and serves several purposes.
 First, it contains the filename of the destination file as its value. Second, errors and warnings can be emitted via the parentKey. We will discuss
-error handling in more detail later. The Plugin handle can be used to persist state information in a threadsafe way with `elektraPluginSetData`.
+error handling in more detail later. The Plugin handle can be used to persist state information in a thread-safe way with `elektraPluginSetData`.
 As our plugin is not stateful and therefore does not use the handle, it is marked as unused in order to suppress compiler warnings.
 
 Basically the implementation of `elektraLineSet` can be described with the following pseudocode:

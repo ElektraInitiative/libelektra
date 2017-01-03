@@ -39,7 +39,7 @@ additional benefits arise:
 The process to make applications aware of other's configuration is called
 "to elektrify". This tutorial is both for new and existing applications.
 
-As first steop, places where configuration is parsed or generated must be located.
+As first step, places where configuration is parsed or generated must be located.
 Afterwards, Elektra's data structures must be used instead at these
 locations. Before we are going to describe exactly how to do this, we will describe
 some possibilities you will have to keep all the good things your previous
@@ -89,7 +89,7 @@ Elektra's atomic unit and consists of:
 `Key`s are either associated with entries in configuration files or used
 as arguments in the API to transport some information.
 
-Thus a key is only in-memory and does not need any of the other Elektra's objects.
+Thus a key is only in-memory and does not need any of the other Elektra objects.
 We always can create one (the tutorial will use the C-API, but it describes
 quite general concepts useful for other languages in the same way):
 
@@ -114,7 +114,7 @@ Key *parentKey = keyNew("/sw/org/myapp/#0/current", KEY_END);
 - `KEY_END` is needed because C needs a proper termination of variable
     length arguments.
 
-The key name is standardized to make it easier to locale configuration.
+The key name is standardized to make it easier to locate configuration.
 
 - [Read more about key-functions in API doc.](http://doc.libelektra.org/api/current/html/group__key.html)
 - [Read more about key names here.](/doc/help/elektra-key-names.md)
@@ -151,7 +151,7 @@ kdbGet(repo, conf, parentKey);
 ```
 
 Note it is important for applications that the parentKey starts with a slash `/`.
-Only then all of the so-called [namespace](/doc/help/elektra-namespaces.md)
+Only then all keys of the so-called [namespace](/doc/help/elektra-namespaces.md)
 are pulled in.
 Such a name cannot physically exist in configuration files, but they are
 the most important key names to actually work with configuration within
@@ -167,7 +167,7 @@ Key *k = ksLookupByName(conf,
 	0);
 ```
 
-We see in that example that only Elektra paths are hardcoded in
+We see in this example that only Elektra paths are hardcoded in
 the application, no configuration file or similar.
 
 As already mentioned keys starting with slash `/` do not exist
@@ -247,13 +247,12 @@ will give you the *exact same value* as the application gets when it uses the
 above lookup C-code.
 
 What we do not see in the program above are the default values and
-fallbacks. They are only present in the so specification (namespace `spec`).
+fallbacks. They are only present in the so-called specification (namespace `spec`).
 Luckily, the specification consists of (meta) key/value pairs, too. So we do not have
 to learn something new.
 
-So lets say, that another application `otherapp` exactly has the
-value we actually want. We want to better integrate the system, that
-in the case we do not have a value for `/sw/org/myapp/#0/current/section/subsection/key`
+So lets say, that another application `otherapp` has exactly the
+value we actually want. We want to improve the integration. In the case that we do not have a value for `/sw/org/myapp/#0/current/section/subsection/key`,
 we want to use `/sw/otherorg/otherapp/#0/current/section/subsection/key`.
 
 So we specify:
@@ -280,7 +279,7 @@ any configuration file *at all* and still do not have anything hardcoded
 in the applications binary.
 Furthermore, by only using cascading keys for `kdbGet()` and `ksLookup()`
 Elektra gives you the possibility to specify how configuration data
-should be retrieved. In this specification you can define, that
+should be retrieved. In this specification you can define that
 configuration data from other applications or shared places should
 be considered or even preferred. Doing so, we can achieve configuration
 integration.

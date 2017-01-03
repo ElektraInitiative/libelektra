@@ -27,7 +27,7 @@ The advantage of compilation variants are:
 - No runtime overhead
 - Can be used during bootstrapping (when no configuration is available)
 - Different compilation variants can be built at once (no recompilation
-  with different cmake flags required)
+  with different CMake flags required)
 - Different compilation variants can have different dependencies
 - Different compilation variants can be mounted without `#refnames`
 
@@ -37,7 +37,7 @@ To use compilation variants, add your plugin in the CMake Cache
 Variable PLUGINS multiple times.
 Then there can be an arbitrary number of variants.
 As naming convention you should have a base name with an additional
-have appended with underscore, e.g.:
+variant appended with underscore, e.g.:
 
 ```cmake
 myplugin_varianta;myplugin_variantb
@@ -120,5 +120,5 @@ within the code and can have two plugins: one (called myplugin_varianta)
 compiled included the `#ifdef` the other (base variant called
 myplugin) without.
 
-Currently compilation variants is used in
+Currently compilation variants are used in
 [the resolver plugin](http://libelektra.org/tree/master/src/plugins/resolver/resolver.c).

@@ -2,11 +2,11 @@
 
 ## Introduction ##
 
-When programming in python it is possible to access the kdb database, changing values of existing keys, adding and deleting keys and a few other things.
+When programming in Python it is possible to access the kdb database, changing values of existing keys, adding and deleting keys and a few other things.
 
 ## First Steps ##
 
-In order to being able to use kdb, obviously, you at first need to `import kdb`. You need access to an python-object of kdb. This is accomplished by calling `kdb.KDB()` and saving this to a variable because later on this object will be needed for various operations.
+In order to being able to use kdb, obviously, you at first need to `import kdb`. You need access to an Python-Object of kdb. This is accomplished by calling `kdb.KDB()` and saving this to a variable because later on this object will be needed for various operations.
 The easiest way to do this would be:
 
 ```py
@@ -75,7 +75,7 @@ with kdb.KDB() as k:
 	ks_shallowcopy = copy.copy(ks)
 ```
 
-Slicing works just like for normal lists in python. But be careful: Afterwards the result will be a list - not a keyset.
+Slicing works just like for normal lists in Python. But be careful: Afterwards the result will be a list - not a keyset.
 
 ```py
 import kdb

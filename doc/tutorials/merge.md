@@ -18,9 +18,9 @@ The standard naming scheme for a three-way merge consists of ours, theirs, and b
 - theirs refers to a remote copy
 - base refers to their common ancestor.
 
-This works very similarly for KeySets, especially ones that consist of mounted conffiles.
+This works very similarly for KeySets, especially ones that consist of mounted configuration files.
 
-For mounted conffiles:
+For mounted configuration files:
 
 - ours should be the user's copy
 - theirs would be the maintainers copy,

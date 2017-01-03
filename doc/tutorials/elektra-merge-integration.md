@@ -30,7 +30,7 @@ serve as `ours` in the merge. The script automatically mounts `theirs`, `base`, 
 using the `kdb remount` command in order to use the same backend as `ours` (since all versions
 of the same file should use the same backend anyway) and this way users don't need to worry
 about specifying the backend for each version of the file. Then the script attempts a merge
-on the newly mounted KeySets. Once this is finished, either on success or not, the script finishes
+on the newly mounted KeySets. Once this is finished, either with success or not, the script finishes
 by unmounting all but `our` copy of the file to cleanup KDB. Then, if the merge was successful ucf
 will replace `ours` with the result providing the package with an automatically merged
 configuration which will also be updated in KDB itself.

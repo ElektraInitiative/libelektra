@@ -75,7 +75,7 @@ hello galaxy
 
 ###### Add a Key to the proc Namespace ######
 
-The **proc** namespace is not accessible from the commandline, but only from within applications. So we have to omit an example for that at this point.
+The **proc** namespace is not accessible from the commandline, but only from within applications. So we have to omit an example for this namespace at this point.
 [Elektrified](/doc/help/elektra-glossary.md) applications can use this namespace to override configuration from other namespaces internally.
 
 ###### Add a Key to the spec Namespace ######
@@ -109,7 +109,7 @@ In the cascading lookup, metadata of `spec`-keys comes in as follows:
  5. `default` value will be returned
 
 **Note:** `override/#` means an array of `override` keys, the array can be filled by
-          setting `#` followed by the position, e.g. `#0`, `#1`, etc
+          setting `#` followed by the position, e.g. `#0`, `#1`, etc.
 
 As you can see, override links are considered before everything else, which
 makes them really powerful.
