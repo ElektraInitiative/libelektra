@@ -24,7 +24,7 @@ It currently supports to specify:
 
 The plugin demonstrates how simple a configuration specification can be within the Elektra framework.
 It is conceptual and mainly for educational usage.
-You can base your plugins 
+You can base your plugins
 
 ## Configuration ##
 
