@@ -109,8 +109,7 @@ The information of these parts are limited to a single line.
 Only for the description an unlimited amount of lines can be used (until
 the end of the file).
 
-For the meaning (semantics) of those entries, please refer to [contract
-specification](/doc/CONTRACT.ini).
+For the meaning (semantics) of those entries, please refer to [contract specification](/doc/CONTRACT.ini).
 
 The already said generate_readme will produce a list of Keys using the
 information in README.md. It would look like (for the third key):
