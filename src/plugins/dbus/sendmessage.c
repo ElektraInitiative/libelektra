@@ -13,6 +13,8 @@
 #include "kdbconfig.h"
 #endif
 
+#include <kdblogger.h>
+
 int elektraDbusSendMessage (DBusBusType type, const char * keyName, const char * signalName)
 {
 	DBusConnection * connection;
@@ -26,8 +28,9 @@ int elektraDbusSendMessage (DBusBusType type, const char * keyName, const char *
 	connection = dbus_bus_get (type, &error);
 	if (connection == NULL)
 	{
-		fprintf (stderr, "Failed to open connection to %s message bus: %s\n", (type == DBUS_BUS_SYSTEM) ? "system" : "session",
-			 error.message);
+		ELEKTRA_LOG_WARNING ("Failed to open connection to %s message bus: %s", (type == DBUS_BUS_SYSTEM) ? "system" : "session",
+				     error.message);
+		dbus_connection_unref (connection);
 		dbus_error_free (&error);
 		return -1;
 	}
@@ -38,21 +41,26 @@ int elektraDbusSendMessage (DBusBusType type, const char * keyName, const char *
 
 	if (message == NULL)
 	{
-		fprintf (stderr, "Couldn't allocate D-Bus message\n");
+		ELEKTRA_LOG_WARNING ("Couldn't allocate D-Bus message");
+		dbus_connection_unref (connection);
 		dbus_error_free (&error);
 		return -1;
 	}
 
 	if (dest && !dbus_message_set_destination (message, dest))
 	{
-		fprintf (stderr, "Not enough memory\n");
+		ELEKTRA_LOG_WARNING ("Not enough memory");
+		dbus_message_unref (message);
+		dbus_connection_unref (connection);
 		dbus_error_free (&error);
 		return -1;
 	}
 
 	if (!dbus_message_append_args (message, DBUS_TYPE_STRING, &keyName, DBUS_TYPE_INVALID))
 	{
-		fprintf (stderr, "Couldn't add message argument");
+		ELEKTRA_LOG_WARNING ("Couldn't add message argument");
+		dbus_message_unref (message);
+		dbus_connection_unref (connection);
 		dbus_error_free (&error);
 		return -1;
 	}
@@ -61,7 +69,6 @@ int elektraDbusSendMessage (DBusBusType type, const char * keyName, const char *
 	dbus_connection_flush (connection);
 
 	dbus_message_unref (message);
-
 	dbus_connection_unref (connection);
 	dbus_error_free (&error);
 

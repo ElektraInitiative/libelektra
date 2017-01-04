@@ -415,9 +415,12 @@ int kdbClose (KDB * handle, Key * errorKey)
 		handle->initBackend = 0;
 	}
 
-	for (int i = 0; i < NR_GLOBAL_PLUGINS; ++i)
+	for (int i = 0; i < NR_GLOBAL_POSITIONS; ++i)
 	{
-		elektraPluginClose (handle->globalPlugins[i], errorKey);
+		for (int j = 0; j < NR_GLOBAL_SUBPOSITIONS; ++j)
+		{
+			elektraPluginClose (handle->globalPlugins[i][j], errorKey);
+		}
 	}
 
 	if (handle->modules)
@@ -567,6 +570,12 @@ static int elektraGetDoUpdateWithGlobalHooks (KDB * handle, Split * split, KeySe
 	const int bypassedSplits = 1;
 	int pgs_done = 0;
 	int pgc_done = 0;
+
+	elektraGlobalGet (handle, ks, parentKey, GETSTORAGE, INIT);
+	elektraGlobalGet (handle, ks, parentKey, GETSTORAGE, MAXONCE);
+
+	// elektraGlobalGet (handle, ks, parentKey, POSTGETSTORAGE, INIT);
+
 	for (size_t i = 0; i < split->size - bypassedSplits; i++)
 	{
 		if (!test_bit (split->syncbits[i], SPLIT_FLAG_SYNC))
@@ -592,20 +601,23 @@ static int elektraGetDoUpdateWithGlobalHooks (KDB * handle, Split * split, KeySe
 		for (int p = start; p < end; ++p)
 		{
 			int ret = 0;
-			if (!pgs_done && (p == (STORAGE_PLUGIN + 1)) && handle->globalPlugins[POSTGETSTORAGE])
+
+			if (!pgs_done && (p == (STORAGE_PLUGIN + 1)) && handle->globalPlugins[POSTGETSTORAGE][FOREACH])
 			{
 				pgs_done = 1;
 				keySetName (parentKey, keyName (initialParent));
 				ksRewind (ks);
-				handle->globalPlugins[POSTGETSTORAGE]->kdbGet (handle->globalPlugins[POSTGETSTORAGE], ks, parentKey);
+				handle->globalPlugins[POSTGETSTORAGE][FOREACH]->kdbGet (handle->globalPlugins[POSTGETSTORAGE][FOREACH], ks,
+											parentKey);
 				keySetName (parentKey, keyName (split->parents[i]));
 			}
-			else if (!pgc_done && (p == (NR_OF_PLUGINS - 1)) && handle->globalPlugins[POSTGETCLEANUP])
+			else if (!pgc_done && (p == (NR_OF_PLUGINS - 1)) && handle->globalPlugins[POSTGETCLEANUP][FOREACH])
 			{
 				pgc_done = 1;
 				keySetName (parentKey, keyName (initialParent));
 				ksRewind (ks);
-				handle->globalPlugins[POSTGETCLEANUP]->kdbGet (handle->globalPlugins[POSTGETCLEANUP], ks, parentKey);
+				handle->globalPlugins[POSTGETCLEANUP][FOREACH]->kdbGet (handle->globalPlugins[POSTGETCLEANUP][FOREACH], ks,
+											parentKey);
 				keySetName (parentKey, keyName (split->parents[i]));
 			}
 
@@ -628,10 +640,14 @@ static int elektraGetDoUpdateWithGlobalHooks (KDB * handle, Split * split, KeySe
 			{
 				// Ohh, an error occurred,
 				// lets stop the process.
+				elektraGlobalError (handle, ks, parentKey, GETSTORAGE, DEINIT);
+				// elektraGlobalError (handle, ks, parentKey, POSTGETSTORAGE, DEINIT);
 				return -1;
 			}
 		}
 	}
+	elektraGlobalGet (handle, ks, parentKey, GETSTORAGE, DEINIT);
+	// elektraGlobalGet (handle, ks, parentKey, POSTGETSTORAGE, DEINIT);
 	return 0;
 }
 
@@ -772,10 +788,11 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 		ELEKTRA_SET_ERROR (37, parentKey, "handle or ks null pointer");
 		goto error;
 	}
-	if (handle->globalPlugins[PREGETSTORAGE])
-	{
-		handle->globalPlugins[PREGETSTORAGE]->kdbGet (handle->globalPlugins[PREGETSTORAGE], ks, parentKey);
-	}
+
+	elektraGlobalGet (handle, ks, parentKey, PREGETSTORAGE, INIT);
+	elektraGlobalGet (handle, ks, parentKey, PREGETSTORAGE, MAXONCE);
+	elektraGlobalGet (handle, ks, parentKey, PREGETSTORAGE, DEINIT);
+
 	if (splitBuildup (split, handle, parentKey) == -1)
 	{
 		clearError (parentKey);
@@ -788,6 +805,7 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 	{
 	case 0: // We don't need an update so let's do nothing
 		keySetName (parentKey, keyName (initialParent));
+		elektraGlobalGet (handle, ks, parentKey, POSTGETSTORAGE, MAXONCE);
 		splitUpdateFileName (split, handle, parentKey);
 		keyDel (initialParent);
 		splitDel (split);
@@ -807,7 +825,7 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 		goto error;
 	}
 
-	if (handle->globalPlugins[POSTGETSTORAGE] || handle->globalPlugins[POSTGETCLEANUP])
+	if (handle->globalPlugins[POSTGETSTORAGE][FOREACH] || handle->globalPlugins[POSTGETCLEANUP][FOREACH])
 	{
 		clearError (parentKey);
 		if (elektraGetDoUpdateWithGlobalHooks (NULL, split, NULL, parentKey, initialParent, FIRST) == -1)
@@ -865,6 +883,8 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 		splitMerge (split, ks);
 	}
 
+	elektraGlobalGet (handle, ks, parentKey, POSTGETSTORAGE, MAXONCE);
+
 	ksRewind (ks);
 
 	keySetName (parentKey, keyName (initialParent));
@@ -878,10 +898,7 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 
 error:
 	keySetName (parentKey, keyName (initialParent));
-	if (handle && handle->globalPlugins[POSTGETSTORAGE])
-	{
-		handle->globalPlugins[POSTGETSTORAGE]->kdbGet (handle->globalPlugins[POSTGETSTORAGE], ks, parentKey);
-	}
+	elektraGlobalError (handle, ks, parentKey, POSTGETSTORAGE, MAXONCE);
 
 	keySetName (parentKey, keyName (initialParent));
 	if (handle) splitUpdateFileName (split, handle, parentKey);
@@ -903,7 +920,7 @@ error:
  * @retval -1 on error
  * @retval 0 on success
  */
-static int elektraSetPrepare (Split * split, Key * parentKey, Key ** errorKey, Plugin ** hooks)
+static int elektraSetPrepare (Split * split, Key * parentKey, Key ** errorKey, Plugin * hooks[][NR_GLOBAL_SUBPOSITIONS])
 {
 	int any_error = 0;
 	for (size_t i = 0; i < split->size; i++)
@@ -948,19 +965,18 @@ static int elektraSetPrepare (Split * split, Key * parentKey, Key ** errorKey, P
 
 			if (p == 0)
 			{
-				if (hooks[PRESETSTORAGE])
+				if (hooks[PRESETSTORAGE][FOREACH])
 				{
-					// the only place global presetstorage hooks can be executed
 					ksRewind (split->keysets[i]);
-					hooks[PRESETSTORAGE]->kdbSet (hooks[PRESETSTORAGE], split->keysets[i], parentKey);
+					hooks[PRESETSTORAGE][FOREACH]->kdbSet (hooks[PRESETSTORAGE][FOREACH], split->keysets[i], parentKey);
 				}
 			}
 			else if (p == (STORAGE_PLUGIN - 1))
 			{
-				if (hooks[PRESETCLEANUP])
+				if (hooks[PRESETCLEANUP][FOREACH])
 				{
 					ksRewind (split->keysets[i]);
-					hooks[PRESETCLEANUP]->kdbSet (hooks[PRESETCLEANUP], split->keysets[i], parentKey);
+					hooks[PRESETCLEANUP][FOREACH]->kdbSet (hooks[PRESETCLEANUP][FOREACH], split->keysets[i], parentKey);
 				}
 			}
 
@@ -1163,7 +1179,11 @@ int kdbSet (KDB * handle, KeySet * ks, Key * parentKey)
 	int errnosave = errno;
 	Key * initialParent = keyDup (parentKey);
 
-	ELEKTRA_LOG ("now in new kdbSet (%s)\n", keyName (parentKey));
+	ELEKTRA_LOG ("now in new kdbSet (%s) %p %zd", keyName (parentKey), (void *)handle, ksGetSize (ks));
+
+	elektraGlobalSet (handle, ks, parentKey, PRESETSTORAGE, MAXONCE);
+
+	ELEKTRA_LOG ("after presetstorage maxonce(%s) %p %zd", keyName (parentKey), (void *)handle, ksGetSize (ks));
 
 	Split * split = splitNew ();
 	Key * errorKey = 0;
@@ -1222,20 +1242,24 @@ int kdbSet (KDB * handle, KeySet * ks, Key * parentKey)
 		copyError (parentKey, oldError);
 	}
 	keySetName (parentKey, keyName (initialParent));
-	if (handle->globalPlugins[PRECOMMIT])
-	{
-		handle->globalPlugins[PRECOMMIT]->kdbSet (handle->globalPlugins[PRECOMMIT], ks, parentKey);
-	}
+
+	elektraGlobalSet (handle, ks, parentKey, PRECOMMIT, INIT);
+	elektraGlobalSet (handle, ks, parentKey, PRECOMMIT, MAXONCE);
+	elektraGlobalSet (handle, ks, parentKey, PRECOMMIT, DEINIT);
 
 	elektraSetCommit (split, parentKey);
+
+	elektraGlobalSet (handle, ks, parentKey, COMMIT, INIT);
+	elektraGlobalSet (handle, ks, parentKey, COMMIT, MAXONCE);
+	elektraGlobalSet (handle, ks, parentKey, COMMIT, DEINIT);
 
 	splitUpdateSize (split);
 
 	keySetName (parentKey, keyName (initialParent));
-	if (handle->globalPlugins[POSTCOMMIT])
-	{
-		handle->globalPlugins[POSTCOMMIT]->kdbSet (handle->globalPlugins[POSTCOMMIT], ks, parentKey);
-	}
+
+	elektraGlobalSet (handle, ks, parentKey, POSTCOMMIT, INIT);
+	elektraGlobalSet (handle, ks, parentKey, POSTCOMMIT, MAXONCE);
+	elektraGlobalSet (handle, ks, parentKey, POSTCOMMIT, DEINIT);
 
 	for (size_t i = 0; i < ks->size; ++i)
 	{
@@ -1253,10 +1277,8 @@ int kdbSet (KDB * handle, KeySet * ks, Key * parentKey)
 
 error:
 	keySetName (parentKey, keyName (initialParent));
-	if (handle->globalPlugins[PREROLLBACK])
-	{
-		handle->globalPlugins[PREROLLBACK]->kdbError (handle->globalPlugins[PREROLLBACK], ks, parentKey);
-	}
+
+	elektraGlobalError (handle, ks, parentKey, PREROLLBACK, MAXONCE);
 
 	elektraSetRollback (split, parentKey);
 
@@ -1270,10 +1292,8 @@ error:
 	}
 
 	keySetName (parentKey, keyName (initialParent));
-	if (handle->globalPlugins[POSTROLLBACK])
-	{
-		handle->globalPlugins[POSTROLLBACK]->kdbError (handle->globalPlugins[POSTROLLBACK], ks, parentKey);
-	}
+
+	elektraGlobalError (handle, ks, parentKey, POSTROLLBACK, MAXONCE);
 
 	keySetName (parentKey, keyName (initialParent));
 	keyDel (initialParent);
