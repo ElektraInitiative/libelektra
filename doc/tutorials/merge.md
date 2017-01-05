@@ -36,12 +36,12 @@ It's worth noting, resultpath should be empty before attempting a merge, otherwi
 
 As for the options, there are a few basic options:
 
-	-i  --interactive	which attempts the merge in an interactive way
+- `-i `, `--interactive`: which attempts the merge in an interactive way
 
-	-t  --test		which tests the proposed merge and informs you about possible
+- `-t`,  `--test`: which tests the proposed merge and informs you about possible
 				conflicts
 
-	-f --force		which overwrites any Keys in resultpath
+- `-f`, `--force`: which overwrites any Keys in resultpath
 
 ### Strategies ###
 
@@ -49,17 +49,14 @@ Additionally there is an option to specify a merge strategy, which is very impor
 
 The option for strategy is:
 
-	-s --strategy <name>	which is used to specify a strategy to use in case of a conflict
+- `-s <name>`, `--strategy <name>`: which is used to specify a strategy to use in case of a conflict
 
 The current list of strategies are:
 
-	preserve		the merge will fail if a conflict is detected
-
-	ours			the merge will use our version during a conflict
-
-	theirs			the merge will use their version during a conflict
-
-	base			the merge will use the base version during a conflict
+- `preserve`: the merge will fail if a conflict is detected
+- `ours`: the merge will use our version during a conflict
+- `theirs`: the merge will use their version during a conflict
+- `base`: the merge will use the base version during a conflict
 
 If no strategy is specified, the merge will default to the preserve strategy as to not risk making the wrong decision.
 If any of the other strategies are specified, when a conflict is detected, merge will use the Key specified by the
