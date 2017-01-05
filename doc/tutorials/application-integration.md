@@ -177,7 +177,7 @@ in configuration files, but are "representatives", "proxies" or
 So that every tool has a consistent view to the key database
 it is vital that every application does a `ksLookup` for every
 key it uses. So even if your application iterates over keys,
-always remember to do a cascading lookup for every single key!
+always remember to do a [cascading](cascading.md) lookup for every single key!
 
 Thus we are interested in the value we use:
 
