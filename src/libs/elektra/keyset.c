@@ -2061,50 +2061,7 @@ Key * ksLookup (KeySet * ks, Key * key, option_t options)
 /**
  * Convenience method to look for a Key contained in @p ks that matches @p name.
  *
- * @p ksLookupByName() is designed to let you work with
- * entirely pre-loaded KeySets, so instead of kdbGetKey(), key by key, the
- * idea is to fully kdbGetByName() for your application root key and
- * process it all at once with @p ksLookupByName().
- *
- * This function is very efficient by using binary search. Together with
- * kdbGetByName() which can you load the whole configuration with only
- * some communication to backends you can write very effective but short
- * code for configuration.
- *
- * If found, @p ks internal cursor will be positioned in the matched key
- * (also accessible by ksCurrent()), and a pointer to the Key is returned.
- * If not found, @p ks internal cursor will not move, and a NULL pointer is
- * returned.
- * If requested to pop the key, the cursor will be rewinded.
- *
- * @section cascading Cascading
- *
- * Cascading is done if the first character is a /. This leads to ignoring
- * the prefix like system/ and user/.
- * @code
-if (kdbGet(handle, "/sw/tests/myapp/#0/current", myConfig, parentKey ) == -1)
-	errorHandler ("Could not get Keys", parentKey);
-
-if ((myKey = ksLookupByName (myConfig, "/sw/tests/myapp/#0/current/key", 0)) == NULL)
-	errorHandler ("Could not Lookup Key");
- * @endcode
- *
- * This is the way multi user programs should get their configuration and
- * search after the values. It is guaranteed that more namespaces can be
- * added easily and that all values can be set by admin and user.
- * Also profile-features are available via plugins.
- * Applications should not implement cascading algorithms, but only
- * do a single lookup and put cascading functionality into plugins.
- *
- * @section fullsearch Full Search
- *
- * When KDB_O_NOALL is set the keyset will be only searched from ksCurrent()
- * to ksTail(). You need to ksRewind() the keyset yourself. ksCurrent() is
- * always set properly after searching a key, so you can go on searching
- * another key after the found key.
- *
- * When KDB_O_NOALL is not set the cursor will stay untouched and all keys
- * are considered. A much more efficient binary search will be used then.
+ * @see ksLookup() for explanation of the functionality and example.
  *
  * @param ks where to look for
  * @param name key name you are looking for
@@ -2115,7 +2072,7 @@ if ((myKey = ksLookupByName (myConfig, "/sw/tests/myapp/#0/current/key", 0)) == 
  *
  * @return pointer to the Key found, 0 otherwise
  * @retval 0 on NULL pointers
- * @see keyCompare() for very powerful Key lookups in KeySets
+ * @see ksLookup() to search with a given key
  * @see ksCurrent(), ksRewind(), ksNext()
  */
 Key * ksLookupByName (KeySet * ks, const char * name, option_t options)
