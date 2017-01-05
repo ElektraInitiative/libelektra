@@ -240,10 +240,10 @@ This technique provides complete transparency how a program will fetch a configu
 value. In practice that means that:
 
 ```sh
-kdb get "/sw/org/myapp/#0/current/section/subsection/key",
+kdb get "/sw/org/myapp/#0/current/section/subsection/key"
 ```
 
-will give you the *exact same value* as the application gets when it uses the
+, will give you the *exact same value* as the application gets when it uses the
 above lookup C-code.
 
 What we do not see in the program above are the default values and
