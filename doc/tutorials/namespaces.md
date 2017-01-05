@@ -72,6 +72,7 @@ At this point the key database should have this structure:
 ![Elektras namespaces](/doc/images/tutorial_namespaces_namespaces.svg)
 
 #### Cascading Keys ####
+
 Another question you may ask yourself now is, what happens if we lookup a key without providing a namespace. So let us retrieve the key **/b/c** with the -v flag in order to make _kdb_ more talkative.
 
 ```sh
