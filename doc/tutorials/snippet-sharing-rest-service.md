@@ -243,7 +243,7 @@ which is `/usr/local`.
 
 ### Web Server ###
 
-As web server we are using an Apache2 with the version coming with Debian Jessie.
+As web server we use Debian Jessi’s Apache2 .
 Several domains are used for different tasks, whereas only two are relevant for
 the here described service:
 

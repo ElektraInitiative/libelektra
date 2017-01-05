@@ -40,9 +40,7 @@ such as reimporting them later.  As of this writing, dump is the only way to ful
 
 ## Options ##
 
-The kdb export command takes one special option:
-
-	-E --without-elektra			which omits the system/elektra directory of keys
+The kdb export command takes one special option: `-E` or alternatively ` --without-elektra`, which tells `kdb` to omit the `system/elektra` directory of keys.
 
 ## Example ##
 

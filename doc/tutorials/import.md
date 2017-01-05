@@ -35,9 +35,7 @@ using a command such as `kdb export system/backup > backup.ecf`, they can only i
 
 ## Options ##
 
-The kdb import command only takes one special option:
-
-	-s --strategy <name>		which is used to specify a strategy
+The kdb import command only takes one special option `-s <name>` or alternatively `--strategy <name>`, which is used to specify a strategy.
 
 ## Example ##
 
