@@ -12,13 +12,13 @@
 int main ()
 {
 	KeySet * myConfig = ksNew (0, KS_END);
-	Key * key = keyNew ("/sw/MyApp", KEY_CASCADING_NAME, KEY_END);
-	KDB * handle = kdbOpen (key);
 
-	// to get an intention of proper error handling see kdbget_error.c
+	// for error handling see kdbget_error.c
 
 	// clang-format off
 //! [basic usage]
+Key * key = keyNew ("/sw/tests/myapp/#0/current/",  KEY_END);
+KDB * handle = kdbOpen (key);
 kdbGet (handle, myConfig, key);
 Key * result = ksLookupByName (myConfig, "/sw/tests/myapp/#0/current/testkey1", 0);
 //! [basic usage]
