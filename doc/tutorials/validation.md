@@ -98,7 +98,7 @@ To make this work, we need a plugin that applies all metadata found in the `spec
 to all other namespaces. This plugin is called `spec` and needs to be mounted
 globally (will be added by default with `kdb global-mount`):
 
-```
+```sh
 > kdb global-mount
 ```
 
@@ -123,7 +123,7 @@ new
 So let us combine this functionality with validation plugins.
 So we would specify:
 
-```
+```sh
 > kdb setmeta spec/tutorial/spec/test check/validation "[1-9][0-9]*"
 > kdb setmeta spec/tutorial/spec/test check/validation/match LINE
 > kdb setmeta spec/tutorial/spec/test check/validation/message "Not a number"
@@ -133,7 +133,7 @@ Alternatively, we could mount a plugin that supports metadata,
 e.g. the `ni` plugin, and specify the configuration
 using a text editor (or `cat`):
 
-```
+```sh
 > kdb mount spec.ini spec/tutorial/spec ni
 > cat << HERE > `kdb file spec/tutorial/spec`
 [test]
@@ -153,7 +153,7 @@ specification to assemble the plugins. We only have to specify where the
 mountpoint is (and which file name should be used), then we can mount
 the file according the specification and have validation for all namespaces:
 
-```
+```sh
 > kdb setmeta spec/tutorial/spec mountpoint spec-tutorial.dump
 > kdb spec-mount /tutorial/spec
 > kdb set /tutorial/spec/test wrong
@@ -170,7 +170,7 @@ Sometimes, however, applications require the presence or absence of keys.
 There are many ways to do so directly supported by [the spec plugin](/src/plugins/spec).
 Another way is to trigger errors with the [error plugin](/src/plugins/error):
 
-```
+```sh
 > kdb setmeta /tutorial/spec/should_not_be_here trigger/error 10
 > kdb spec-mount /tutorial/spec
 > kdb set /tutorial/spec/should_not_be_here abc
@@ -192,7 +192,7 @@ We can write a plugin that parses that format and transform the content to key/v
 
 For example, let us assume we have enum validations in the file `schema.txt`:
 
-```
+```sh
 cat > $PWD/schema.txt << HERE
 %: notation TBD ? graph text semi
 %: tool-support* TBD ? none compiler ide
@@ -210,7 +210,7 @@ So we want to transform above syntax to:
 
 Lucky, we already have a plugin which allows us to so:
 
-```
+```sh
 kdb mount $PWD/schema.txt spec/tutorial/schema simplespeclang keyword/enum=%:,keyword/assign=TBD
 kdb spec-mount /tutorial/schema
 ```
@@ -222,7 +222,7 @@ schema using `spec-mount`.
 Now we have enforced that the 3 configuration options `notation tool-support* applied-to`
 need to be present (and no other). For example we can import:
 
-```
+```sh
 kdb import -s validate -c "format=% : %" /tutorial/schema simpleini << HERE
 notation : graph
 tool-support : ? none
@@ -232,13 +232,13 @@ HERE
 
 Or (afterwards) setting individual values:
 
-```
+```sh
 kdb set /tutorial/schema/applied-to smal # fails, not a valid enum
 ```
 
 Or (in `sudoedit` fashion):
 
-```
+```sh
 kdb editor -s validate /tutorial/schema simpleini
 ```
 

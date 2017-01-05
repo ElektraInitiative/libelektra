@@ -8,7 +8,9 @@ the Elektra Key Database.
 
 The command to use kdb import is:
 
-    kdb import [options] destination [format]
+```sh
+kdb import [options] destination [format]
+```
 
 In this command, destination is where the imported Keys should be stored below. For
 instance, `kdb import system/imported` would store all the keys below
@@ -39,35 +41,41 @@ The kdb import command only takes one special option:
 
 ## Example ##
 
-	cat backup.ecf | kdb import system/backup
+```sh
+cat backup.ecf | kdb import system/backup
+```
 
 This command would import all keys stored in the file backup.ecf into the Key Database under system/backup.
 
 In this example, backup.ecf was exported from the KeySet using the dump format by using the command:
 
-	kdb export system/backup > backup.ecf
+```sh
+kdb export system/backup > backup.ecf
+```
 
 backup.ecf contains all the information about the keys below system/backup:
 
-	$cat backup.ecf
-	kdbOpen 1
-	ksNew 3
-	keyNew 19 0
-	system/backup/key1
-	keyMeta 7 1
-	binary
-	keyEnd
-	keyNew 19 0
-	system/backup/key2
-	keyMeta 7 1
-	binary
-	keyEnd
-	keyNew 19 0
-	system/backup/key3
-	keyMeta 7 1
-	binary
-	keyEnd
-	ksEnd
+```sh
+$ cat backup.ecf
+kdbOpen 1
+ksNew 3
+keyNew 19 0
+system/backup/key1
+keyMeta 7 1
+binary
+keyEnd
+keyNew 19 0
+system/backup/key2
+keyMeta 7 1
+binary
+keyEnd
+keyNew 19 0
+system/backup/key3
+keyMeta 7 1
+binary
+keyEnd
+ksEnd
+```
 
 Before the import command, system/backup does not exists and no keys are contained there.
 After the import command, running the command `kdb ls system/backup` prints:

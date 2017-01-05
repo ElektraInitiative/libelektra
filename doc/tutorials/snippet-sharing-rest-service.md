@@ -132,14 +132,14 @@ After that you need to set an additional configuration parameter that has no def
 It is recommended to set it for the system namespace if you will use a tool like
 `systemctl` to manage the services.
 
-```
-> kdb set -N system /sw/elektra/restbackend/#0/current/backend/jwt/encryption/secret "use a secret key here"
+```sh
+kdb set -N system /sw/elektra/restbackend/#0/current/backend/jwt/encryption/secret "use a secret key here"
 ```
 
 To generate a secure key, you can also use `pwgen` (install via `apt-get install pwgen`). Use
 
-```
-> kdb set -N system /sw/elektra/restbackend/#0/current/backend/jwt/encryption/secret "$(pwgen -1cns 30)"
+```sh
+kdb set -N system /sw/elektra/restbackend/#0/current/backend/jwt/encryption/secret "$(pwgen -1cns 30)"
 ```
 
 to generate and set a strong random encryption secret.
@@ -159,11 +159,11 @@ options are listed on [their website](http://cppcms.com/wikipp/en/page/cppcms_1x
 A stand-alone installation of the service (without proxy server) requires following
 configuration:
 
-```
-> kdb set -N system /sw/elektra/restbackend/#0/current/cppcms/service/api "http"
-> kdb set -N system /sw/elektra/restbackend/#0/current/cppcms/service/ip "0.0.0.0"
-> kdb set -N system /sw/elektra/restbackend/#0/current/cppcms/service/port 8080
-> kdb set -N system /sw/elektra/restbackend/#0/current/cppcms/http/script_names/#0 "/"
+```sh
+kdb set -N system /sw/elektra/restbackend/#0/current/cppcms/service/api "http"
+kdb set -N system /sw/elektra/restbackend/#0/current/cppcms/service/ip "0.0.0.0"
+kdb set -N system /sw/elektra/restbackend/#0/current/cppcms/service/port 8080
+kdb set -N system /sw/elektra/restbackend/#0/current/cppcms/http/script_names/#0 "/"
 ```
 
 Note: here we have not used the option `-N system` because the CppCMS configuration is
@@ -321,24 +321,24 @@ The `rest-backend` itself is configured normally as described in the configurati
 section above, but with CppCMS using SCGI instead of HTTP as API variant.
 This requires setting the keys
 
-```
-> kdb set system/sw/elektra/restbackend/#0/current/cppcms/service/api "scgi"
-> kdb set system/sw/elektra/restbackend/#0/current/cppcms/service/ip "127.0.0.1"
-> kdb set system/sw/elektra/restbackend/#0/current/cppcms/service/port 8081
+```sh
+kdb set system/sw/elektra/restbackend/#0/current/cppcms/service/api "scgi"
+kdb set system/sw/elektra/restbackend/#0/current/cppcms/service/ip "127.0.0.1"
+kdb set system/sw/elektra/restbackend/#0/current/cppcms/service/port 8081
 ```
 
 Additionally we are using a worker process, which ensures that in case of a crash
 the backend restarts automatically (= basically supervisor + worker). Config:
 
-```
-> kdb set system/sw/elektra/restbackend/#0/current/cppcms/service/worker_processes 1
+```sh
+kdb set system/sw/elektra/restbackend/#0/current/cppcms/service/worker_processes 1
 ```
 
 Configuration snippets and users are stored at `system/configs` and `system/users`:
 
-```
-> kdb set system/sw/elektra/restbackend/#0/current/backend/kdb/path/configs = system/configs
-> kdb set system/sw/elektra/restbackend/#0/current/backend/kdb/path/users = system/users
+```sh
+kdb set system/sw/elektra/restbackend/#0/current/backend/kdb/path/configs = system/configs
+kdb set system/sw/elektra/restbackend/#0/current/backend/kdb/path/users = system/users
 ```
 
 ### rest-frontend ###

@@ -39,40 +39,47 @@ Then there can be an arbitrary number of variants.
 As naming convention you should have a base name with an additional
 have appended with underscore, e.g.:
 
-	myplugin_varianta;myplugin_variantb
+```cmake
+myplugin_varianta;myplugin_variantb
+```
 
 In the CMakeLists.txt of your plugin, you have two options.
 Option (A): When you can easily enlist every variant you
 simply list all plugins one after the other (*outside of* `if (DEPENDENCY_PHASE)`):
 
-	add_plugin(myplugin_varianta
-		SOURCES      <your sources for varianta here..>
-		COMPILE_DEFINITIONS   VARIANTA ELEKTRA_VARIANT=varianta
-		LINK_LIBRARIES <libraries for varianta>
-		)
-	add_plugin(myplugin_variantb
-		SOURCES      <your sources for variantb here..>
-		COMPILE_DEFINITIONS   VARIANTB  ELEKTRA_VARIANT=variantb
-		LINK_LIBRARIES <libraries for variantb>
+```cmake
+add_plugin(myplugin_varianta
+	SOURCES      <your sources for varianta here..>
+	COMPILE_DEFINITIONS   VARIANTA ELEKTRA_VARIANT=varianta
+	LINK_LIBRARIES <libraries for varianta>
+	)
+add_plugin(myplugin_variantb
+	SOURCES      <your sources for variantb here..>
+	COMPILE_DEFINITIONS   VARIANTB  ELEKTRA_VARIANT=variantb
+	LINK_LIBRARIES <libraries for variantb>
+	)
+```
 
 Option (B): If you cannot enlist every possible compilation variant,
 you can iterate over all PLUGINS and check which names are requested.
 Then you create a plugin for every name that matches:
 
-	foreach (plugin ${PLUGINS})
-		if (${plugin} MATCHES "myplugin_.*")
-			# somehow process the variant names and include
-			# or change sources and compile definitions
-			# based on that.
-			add_plugin(${plugin}
-			SOURCES      <your sources here..>
-			COMPILE_DEFINITIONS   <definitions here..>
-				ELEKTRA_VARIANT=${plugin without prefix}
-		LINK_LIBRARIES <libraries for variantb>
-		if (${plugin} MATCHES "ALL")
-			# handle categories of plugins
-			add_plugin(myplugin_all1, ...
-			add_plugin(myplugin_all2, ..
+```cmake
+foreach (plugin ${PLUGINS})
+	if (${plugin} MATCHES "myplugin_.*")
+		# somehow process the variant names and include
+		# or change sources and compile definitions
+		# based on that.
+		add_plugin(${plugin}
+		SOURCES      <your sources here..>
+		COMPILE_DEFINITIONS   <definitions here..>
+			ELEKTRA_VARIANT=${plugin without prefix}
+	LINK_LIBRARIES <libraries for variantb>
+	if (${plugin} MATCHES "ALL")
+		# handle categories of plugins
+		add_plugin(myplugin_all1, ...)
+		add_plugin(myplugin_all2, ...)
+```
 
 For the categories such as `ALL`, however, you need to automatically
 append (using `add_plugin`) a useful set of plugins.
@@ -104,8 +111,10 @@ with other SOURCES or `COMPILE_DEFINITIONS` and even `LINK_LIBRARIES`:
 If you, e.g. just set
 the variants name as macro you can use
 
-	#ifdef varianta
-	#endif
+```c
+#ifdef varianta
+#endif
+```
 
 within the code and can have two plugins: one (called myplugin_varianta)
 compiled included the `#ifdef` the other (base variant called

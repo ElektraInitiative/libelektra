@@ -20,7 +20,7 @@ Configuration in the **system** namespace is readable for all users and the same
 
 In the default Elektra installation only an administrator can update configuration here:
 
-```
+```sh
 $ kdb get /sw/tutorial/cascading/#0/current/test
 Did not find key
 
@@ -37,7 +37,7 @@ hello world
 
 A user may now want to override the configuration in **system**, so he sets a key in the **user** namespace:
 
-```
+```sh
 $ kdb set user/sw/tutorial/cascading/#0/current/test "hello galaxy"
 Create a new key user/sw/tutorial/cascading/#0/current/test with string hello galaxy
 
@@ -55,7 +55,7 @@ This is useful if you have project specific settings (e.g. your git configuratio
 
 As **dir** precedes the **user** namespace, configuration in **dir** can overwrite user configuration:
 
-```
+```sh
 # create and change to a new directory ...
 $ mkdir kdbtutorial && cd $_
 
@@ -117,14 +117,14 @@ makes them really powerful.
 To create an override link, first you need to create a key to link the override
 to:
 
-```
+```sh
 $ sudo kdb set system/overrides/test "hello override"
 Create a new key system/overrides/test with string hello override
 ```
 
 Override links can be defined by adding them to the `override/#` array:
 
-```
+```sh
 $ sudo kdb setmeta spec/sw/tutorial/cascading/#0/current/test override/#0 /overrides/test
 $ kdb get /sw/tutorial/cascading/#0/current/test
 hello override
@@ -146,14 +146,14 @@ file we created and mounted earlier in this tutorial.
 First you need to create the system default value to link the override to if the
 user hasn't defined it:
 
-```
+```sh
 $ sudo kdb set system/overrides/test "hello default"
 Create a new key system/overrides/test with string hello default
 ```
 
 Then we can create the link:
 
-```
+```sh
 $ sudo kdb setmeta spec/sw/tutorial/cascading/#0/current/test override/#0 /overrides/test
 $ kdb get /sw/tutorial/cascading/#0/current/test
 hello default
@@ -161,7 +161,7 @@ hello default
 
 Now the user overrides the system default:
 
-```
+```sh
 $ kdb set /overrides/test "hello user"
 Using name user/overrides/test
 Create a new key user/overrides/test with string hello user

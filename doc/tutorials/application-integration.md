@@ -93,7 +93,9 @@ Thus a key is only in-memory and does not need any of the other Elektra's object
 We always can create one (the tutorial will use the C-API, but it describes
 quite general concepts useful for other languages in the same way):
 
-	Key *parentKey = keyNew("/sw/org/myapp/#0/current", KEY_END);
+```c
+Key *parentKey = keyNew("/sw/org/myapp/#0/current", KEY_END);
+```
 
 - The first argument of `keyNew` is the name of the key.
  It consists of different parts, `/` is the hierarchy-separator:
@@ -121,7 +123,9 @@ The key name is standardized to make it easier to locale configuration.
 Now we have the `Key` we will use to pass as argument.
 First we open our key database (KDB). This is done by:
 
-	KDB *repo = kdbOpen(parentKey);
+```c
+KDB *repo = kdbOpen(parentKey);
+```
 
 A `Key` is seldom alone, but they are often found in groups, as typical in
 configuration files. To represent many keys (a set of keys) Elektra
@@ -130,7 +134,9 @@ can easily lookup keys in a `KeySet` without ambiguity. Additionally, we
 can can iterate over all `Key`s in a `KeySet` without a hassle.
 To create an empty `KeySet` we use:
 
-	KeySet *conf = ksNew(200, KS_END);
+```c
+KeySet *conf = ksNew(200, KS_END);
+```
 
 - 200 is an approximation for how many `Key`s we think we will have in
     the `KeySet` conf. It is for optimization purposes only.
@@ -140,7 +146,9 @@ To create an empty `KeySet` we use:
 
 Now we have everything ready to fetch the latest configuration:
 
-	kdbGet(repo, conf, parentKey);
+```c
+kdbGet(repo, conf, parentKey);
+```
 
 Note it is important for applications that the parentKey starts with a slash `/`.
 Only then all of the so-called [namespace](/doc/help/elektra-namespaces.md)
@@ -153,9 +161,11 @@ applications as we will see when introducing `ksLookup`.
 
 To lookup a key, we simply use, e.g.:
 
-	Key *k = ksLookupByName(conf,
-		"/sw/org/myapp/#0/current/section/subsection/key",
-		0);
+```c
+Key *k = ksLookupByName(conf,
+	"/sw/org/myapp/#0/current/section/subsection/key",
+	0);
+```
 
 We see in that example that only Elektra paths are hardcoded in
 the application, no configuration file or similar.
@@ -171,7 +181,9 @@ always remember to do a cascading lookup for every single key!
 
 Thus we are interested in the value we use:
 
-	char *val = keyString(k);
+```c
+char *val = keyString(k);
+```
 
 Finally, we need to convert the configuration value to the datatype we
 need.
@@ -219,13 +231,17 @@ are now available (in the metadata of respective `spec`-keys):
 
 They can be used like this:
 
-	kdb set /overrides/test "example override"
-	sudo kdb setmeta spec/test override/#0 /overrides/test
+```sh
+kdb set /overrides/test "example override"
+sudo kdb setmeta spec/test override/#0 /overrides/test
+```
 
 This technique provides complete transparency how a program will fetch a configuration
 value. In practice that means that:
 
-    kdb get "/sw/org/myapp/#0/current/section/subsection/key",
+```sh
+kdb get "/sw/org/myapp/#0/current/section/subsection/key",
+```
 
 will give you the *exact same value* as the application gets when it uses the
 above lookup C-code.
@@ -242,8 +258,10 @@ we want to use `/sw/otherorg/otherapp/#0/current/section/subsection/key`.
 
 So we specify:
 
-    kdb setmeta spec/sw/org/myapp/#0/current/section/subsection/key \
-        "fallback/#0" /sw/otherorg/otherapp/#0/current/section/subsection/key
+```sh
+kdb setmeta spec/sw/org/myapp/#0/current/section/subsection/key \
+    "fallback/#0" /sw/otherorg/otherapp/#0/current/section/subsection/key
+```
 
 Voila, we have done a system integration between `myapp` and `otherapp`!
 

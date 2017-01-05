@@ -8,7 +8,9 @@ of KeySets from the kdb tool.
 
 The command to use this tool is:
 
-	kdb merge [options] ourpath theirpath basepath resultpath
+```sh
+kdb merge [options] ourpath theirpath basepath resultpath
+```
 
 The standard naming scheme for a three-way merge consists of ours, theirs, and base:
 
@@ -67,7 +69,9 @@ strategy (ours, theirs, or base) for the resulting Key.
 
 Basic Usage:
 
-	kdb merge system/hosts/ours system/hosts/theirs system/hosts/base system/hosts/result
+```sh
+kdb merge system/hosts/ours system/hosts/theirs system/hosts/base system/hosts/result
+```
 
 ## Examples Using Strategies ##
 
@@ -101,14 +105,18 @@ Now we will examine the result KeySet with the different strategies.
 
 ### Preserve ###
 
-	kdb merge -s preserve system/ours system/theirs system/base system/result
+```sh
+kdb merge -s preserve system/ours system/theirs system/base system/result
+```
 
 The merge will fail because of a conflict for key4 since key4 was deleted in our KeySet and
 edited in their KeySet. Since we used preserve, the merge fails and the result KeySet is not saved.
 
 ### Ours ###
 
-	kdb merge -s ours system/ours system/theirs system/base system/result
+```sh
+kdb merge -s ours system/ours system/theirs system/base system/result
+```
 
 The result KeySet, system/result will be:
 
@@ -121,7 +129,9 @@ thus deleting the key.
 
 ### Theirs ###
 
-	kdb merge -s theirs system/ours system/theirs system/base system/result
+```sh
+kdb merge -s theirs system/ours system/theirs system/base system/result
+```
 
 The result KeySet, system/result will be:
 
@@ -134,7 +144,9 @@ Here, the conflict of key4 is solved by using their copy, thus key4=banana.
 
 ### Base ###
 
-	kdb merge -s base system/ours system/theirs system/base system/result
+```sh
+kdb merge -s base system/ours system/theirs system/base system/result
+```
 
 The result KeySet, system/result will be:
 

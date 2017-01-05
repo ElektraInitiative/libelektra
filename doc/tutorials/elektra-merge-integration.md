@@ -78,16 +78,18 @@ automatic configuration merging for `smb.conf` using Elektra. We chose this pack
 uses ucf to handle `smb.conf` but it frequently requires users to manually merge changes across versions.
 Here is the patch showing what we changed:
 
-	diff samba_orig/samba-3.6.6/debian/samba-common.postinst samba/samba-3.6.6/debian/samba-common.postinst
-	92c92,93
-	< ucf --three-way --debconf-ok "$NEWFILE" "$CONFIG"
-	---
-	> kdb elektra-mount "$CONFIG" system/samba/smb ini
-	> ucf --three-way --threeway-merge-command elektra-merge --debconf-ok "$NEWFILE" "$CONFIG"
-	Only in samba/samba-3.6.6/debian/: samba-common.postinst~
-	diff samba_orig/samba-3.6.6/debian/samba-common.postrm samba/samba-3.6.6/debian/samba-common.postrm
-	4a5
-	> 	kdb elektra-umount system/samba/smb
+```diff
+diff samba_orig/samba-3.6.6/debian/samba-common.postinst samba/samba-3.6.6/debian/samba-common.postinst
+92c92,93
+< ucf --three-way --debconf-ok "$NEWFILE" "$CONFIG"
+---
+> kdb elektra-mount "$CONFIG" system/samba/smb ini
+> ucf --three-way --threeway-merge-command elektra-merge --debconf-ok "$NEWFILE" "$CONFIG"
+Only in samba/samba-3.6.6/debian/: samba-common.postinst~
+diff samba_orig/samba-3.6.6/debian/samba-common.postrm samba/samba-3.6.6/debian/samba-common.postrm
+4a5
+> 	kdb elektra-umount system/samba/smb
+```
 
 As you can see, all we had to do was add the line to mount `smb.conf` during install, update the ucf command to include the
 new `--threeway-merge-command` option, and unmount `system/samba/smb` during a purge. It really is that easy!

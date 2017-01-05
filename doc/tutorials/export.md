@@ -8,7 +8,9 @@ the Elektra Key Database.
 
 The command to use kdb export is:
 
-    kdb export [options] source [format]
+```sh
+kdb export [options] source [format]
+```
 
 In this command, source is the root key of which Keys should be exported. For
 instance, `kdb export system/export` would export all the keys below
@@ -44,6 +46,8 @@ The kdb export command takes one special option:
 
 ## Example ##
 
-	kdb export system/backup > backup.ecf
+```sh
+kdb export system/backup > backup.ecf
+```
 
 This command would export all keys stored under system/backup, along with relevant keys in system/elektra, into a file called backup.ecf.

@@ -72,14 +72,18 @@ Because the contracts also contain information for humans, these parts
 are written in a README.md files of the plugins. To make the contracts
 machine-readable, the following CMake command exists:
 
-	generate_readme(pluginname)
+```cmake
+generate_readme(pluginname)
+```
 
 It will generate a readme_plugginname.c (in the build-directory) out of the
 README.md of the plugin''s source directory.
 
 But prefer to use
 
-	add_plugin(pluginname)
+```cmake
+add_plugin(pluginname)
+```
 
 where the readme (among many other things) are already done for you.
 More details about how to write the CMakeLists.txt will be discussed
@@ -96,6 +100,7 @@ The `README.md` will be used by:
 
 The first lines must look like:
 
+```md
 - infos = Information about YAIL plugin is in keys below
 - infos/author = Markus Raab <elektra@libelektra.org>
 - infos/licence = BSD
@@ -104,6 +109,7 @@ The first lines must look like:
 - infos/placements = getstorage setstorage
 - infos/recommends = rebase directoryvalue comment type
 - infos/description = JSON using YAIL
+```
 
 The information of these parts are limited to a single line.
 Only for the description an unlimited amount of lines can be used (until
@@ -123,42 +129,46 @@ In your plugin, specifically in your elektraPluginGet()
 implementation, you have to return the contract whenever configuration
 below system/elektra/modules/plugin is requested:
 
-	if (!strcmp (keyName(parentKey), "system/elektra/modules/plugin"))
-	{
-		KeySet *moduleConfig = elektraPluginContract();
-		ksAppend(returned, moduleConfig);
-		ksDel(moduleConfig);
-		return 1;
-	}
+```c
+if (!strcmp (keyName(parentKey), "system/elektra/modules/plugin"))
+{
+	KeySet *moduleConfig = elektraPluginContract();
+	ksAppend(returned, moduleConfig);
+	ksDel(moduleConfig);
+	return 1;
+}
+```
 
 The elektraPluginContract() is a method implemented by the plug-in developer
 containing the parts of the contract not specified in README.md.
 An example of this function (taken from the yajl plugin):
 
-	static inline KeySet *elektraYajlContract()
-	{
-		return ksNew (30,
-		keyNew ("system/elektra/modules/yajl",
-			KEY_VALUE, "yajl plugin waits for your orders", KEY_END),
-		keyNew ("system/elektra/modules/yajl/exports", KEY_END),
-		keyNew ("system/elektra/modules/yajl/exports/get",
-			KEY_FUNC, elektraYajlGet,
-			KEY_END),
-		keyNew ("system/elektra/modules/yajl/exports/set",
-			KEY_FUNC, elektraYajlSet,
-			KEY_END),
-	#include "readme_yourplugin.c"
-		keyNew ("system/elektra/modules/yajl/infos/version",
-			KEY_VALUE, PLUGINVERSION, KEY_END),
-		keyNew ("system/elektra/modules/yajl/config", KEY_END),
-		keyNew ("system/elektra/modules/yajl/config/",
-			KEY_VALUE, "system",
-			KEY_END),
-		keyNew ("system/elektra/modules/yajl/config/below",
-			KEY_VALUE, "user",
-			KEY_END),
-		KS_END);
-	}
+```c
+static inline KeySet *elektraYajlContract()
+{
+	return ksNew (30,
+	keyNew ("system/elektra/modules/yajl",
+		KEY_VALUE, "yajl plugin waits for your orders", KEY_END),
+	keyNew ("system/elektra/modules/yajl/exports", KEY_END),
+	keyNew ("system/elektra/modules/yajl/exports/get",
+		KEY_FUNC, elektraYajlGet,
+		KEY_END),
+	keyNew ("system/elektra/modules/yajl/exports/set",
+		KEY_FUNC, elektraYajlSet,
+		KEY_END),
+#include "readme_yourplugin.c"
+	keyNew ("system/elektra/modules/yajl/infos/version",
+		KEY_VALUE, PLUGINVERSION, KEY_END),
+	keyNew ("system/elektra/modules/yajl/config", KEY_END),
+	keyNew ("system/elektra/modules/yajl/config/",
+		KEY_VALUE, "system",
+		KEY_END),
+	keyNew ("system/elektra/modules/yajl/config/below",
+		KEY_VALUE, "user",
+		KEY_END),
+	KS_END);
+}
+```
 
 It basically only contains the symbols to be exported (that are
 dependent on your functions to be available) and the plugin version
@@ -168,8 +178,9 @@ As already said, readme_yourplugin.c is generated in the binary directory,
 so make sure that your CMakeLists.txt contains (prefer to use add_plugin
 where this is already done correctly):
 
-	include_directories (${CMAKE_CURRENT_BINARY_DIR})
-
+```cmake
+include_directories (${CMAKE_CURRENT_BINARY_DIR})
+```
 
 
 ## CMake ##
@@ -200,28 +211,32 @@ to search for packages otherwise, because this would:
 
 So usually you would have:
 
-	if (DEPENDENCY_PHASE)
-		find_package (LibXml2)
-		if (LIBXML2_FOUND)
-			# add testdata, testcases...
-		else ()
-			remove_plugin (xmltool "libxml2 not found")
-		endif ()
+```cmake
+if (DEPENDENCY_PHASE)
+	find_package (LibXml2)
+	if (LIBXML2_FOUND)
+		# add testdata, testcases...
+	else ()
+		remove_plugin (xmltool "libxml2 not found")
 	endif ()
+endif ()
+```
 
 So if you are in the second phase (`DEPENDENCY_PHASE`), you will search for all
 dependencies, in this case `LibXml2`. If all dependencies are satisfied, you add
 everything needed for the plugin, except the plugin itself.
 This happens after `endif ()`:
 
-	add_plugin (xmltool
-		SOURCES
-			...
-		LINK_LIBRARIES
-			${LIBXML2_LIBRARIES}
-		DEPENDENCIES
-			${LIBXML2_FOUND}
-		)
+```cmake
+add_plugin (xmltool
+	SOURCES
+		...
+	LINK_LIBRARIES
+		${LIBXML2_LIBRARIES}
+	DEPENDENCIES
+		${LIBXML2_FOUND}
+	)
+```
 
 Important is that you pass the information which packages are found as boolean.
 The plugin will actually be added iff all of the `DEPENDENCIES` are true.
@@ -277,7 +292,9 @@ reads information from a file into the Elektra Key Database, `elektraPluginSet` 
 
 First have a look at the signature of `elektraLineSet`:
 
-`elektraLineSet(Plugin *handle ELEKTRA_UNUSED, KeySet *toWrite, Key *parentKey)`
+```c
+int elektraLineSet(Plugin *handle ELEKTRA_UNUSED, KeySet *toWrite, Key *parentKey);
+```
 
 Lets start with the most important parameters, the KeySet and the `parentKey`. The KeySet supplied is the KeySet that is going to be persisted in
 the file. In our case it would contain the Keys representing the lines. The `parentKey` is the topmost Key of the KeySet and serves several purposes.
@@ -287,16 +304,18 @@ As our plugin is not stateful and therefore does not use the handle, it is marke
 
 Basically the implementation of `elektraLineSet` can be described with the following pseudocode:
 
-	open the file
-	if (error)
-	{
-		ELEKTRA_SET_ERROR(74, parentKey, keyString(parentKey));
-	}
-	for each key
-	{
-		write the key value together with a newline
-	}
-	close the file
+```c
+// open the file
+if (error)
+{
+	ELEKTRA_SET_ERROR(74, parentKey, keyString(parentKey));
+}
+for (/* each key */)
+{
+	// write the key value together with a newline
+}
+// close the file
+```
 
 The full-blown code can be found at [line plugin](http://libelektra.org/tree/master/src/plugins/line/line.c).
 
@@ -326,7 +345,9 @@ hand `elektraPluginClose` is run after other functions of the plug-in and can be
 
 The `elektraPluginCheckConf` function may be used for validation of the plugin configuration during mount time. The signature of the function is:
 
-	int elektraLineCheckConfig (Key * errorKey, KeySet * conf)
+```c
+int elektraLineCheckConfig (Key * errorKey, KeySet * conf);
+```
 
 The configuration of the plugin is provided as `conf`. The function may report an error or warnings using the `errorKey` and the return value.
 
@@ -338,36 +359,39 @@ The following convention was established for the return value of `elektraPluginC
 
 The following example demonstrates how to limit the length of the values within the plugin configuration to 3 characters.
 
-	int elektraLineCheckConfig (Key * errorKey, KeySet * conf)
+```c
+int elektraLineCheckConfig (Key * errorKey, KeySet * conf)
+{
+	Key * cur;
+	ksRewind (conf);
+	while ((cur = ksNext (conf)) != 0)
 	{
-		Key * cur;
-		ksRewind (conf);
-		while ((cur = ksNext (conf)) != 0)
+		const char * value = keyString (cur);
+		if (strlen (value) > 3)
 		{
-			const char * value = keyString (cur);
-			if (strlen (value) > 3)
-			{
-				ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_VALUE_LENGTH, errorKey,
-						    "value %s is more than 3 characters long",
-						    value);
-				return -1; // The configuration was not OK and could not be fixed
-			}
+			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_VALUE_LENGTH, errorKey,
+					    "value %s is more than 3 characters long",
+					    value);
+			return -1; // The configuration was not OK and could not be fixed
 		}
-		return 0; // The configuration was OK and has not been changed
 	}
+	return 0; // The configuration was OK and has not been changed
+}
+```
 
 ### ELEKTRA_PLUGIN_EXPORT ###
 
 The last function, one that is always needed in a plug-in, is `ELEKTRA_PLUGIN_EXPORT`. This functions is responsible for letting Elektra know that
 the plug-in exists and which methods it implements. The code from the line plugin is a good example and pretty self-explanatory:
 
-	Plugin *ELEKTRA_PLUGIN_EXPORT(line)
-	{
-		return elektraPluginExport("line",
-		ELEKTRA_PLUGIN_GET, &elektraLineGet,
-		ELEKTRA_PLUGIN_SET, &elektraLineSet,
-		ELEKTRA_PLUGIN_END);
-	}
-
+```c
+Plugin *ELEKTRA_PLUGIN_EXPORT(line)
+{
+	return elektraPluginExport("line",
+	ELEKTRA_PLUGIN_GET, &elektraLineGet,
+	ELEKTRA_PLUGIN_SET, &elektraLineSet,
+	ELEKTRA_PLUGIN_END);
+}
+```
 
 For further information see [the API documentation](http://doc.libelektra.org/api/current/html/group__plugin.html).

@@ -39,17 +39,23 @@ $ kdb file system/hosts
 After mounting a file, we can modify keys below `system/hosts`.
 We need to be root, because we modify `/etc/hosts`.
 
-    $ sudo kdb set system/hosts/ipv4/mylocalhost 127.0.0.33
+```sh
+$ sudo kdb set system/hosts/ipv4/mylocalhost 127.0.0.33
+```
 
 These changes are reflected in `/etc/hosts` instantly:
 
-    $ cat /etc/hosts
-    127.0.0.33	mylocalhost
-    ...
+```sh
+$ cat /etc/hosts
+127.0.0.33	mylocalhost
+...
+```
 
 Applications will now pick up these changes:
 
-    $ ping mylocalhost
+```sh
+$ ping mylocalhost
+```
 
 We are also safe against wrong changes:
 
@@ -141,14 +147,16 @@ writing to configuration files.
 
 Let us mount a projects git configuration into the dir namespace:
 
-    # create a directory for our demonstration
-    mkdir example && cd $_
+```sh
+# create a directory for our demonstration
+mkdir example && cd $_
 
-    # this creates the .git/config file
-    git init
+# this creates the .git/config file
+git init
 
-    # mount gits configuration into Elektra
-    sudo kdb mount /.git/config dir/git ini multiline=0
+# mount gits configuration into Elektra
+sudo kdb mount /.git/config dir/git ini multiline=0
+```
 
 As git uses the ini format for its configuration we use the [ini plugin](/src/plugins/ini/README.md).
 You can pass parameters to plugins during the mount process. This is what
@@ -159,20 +167,21 @@ this behaviour and makes the ini-plugin compatible with git configuration.
 
 Now let us see how smoothly the ini plugin sets and gets the git configuration.
 
-    # set a user name ...
-    git config user.name "Rob Banks"
+```sh
+# set a user name ...
+git config user.name "Rob Banks"
 
-    # ... and read it with kdb
-    kdb get dir/git/user/name
-    Rob Banks
+# ... and read it with kdb
+kdb get dir/git/user/name
+Rob Banks
 
-    # set a user email with kdb ...
-    kdb set dir/git/user/email "rob.banks@dot.com"
+# set a user email with kdb ...
+kdb set dir/git/user/email "rob.banks@dot.com"
 
-    # and read it with git
-    git config --get user.email
-    rob.banks@dot.com
-
+# and read it with git
+git config --get user.email
+rob.banks@dot.com
+```
 
 #### Meta Data ####
 
@@ -186,26 +195,32 @@ Meta data comes in handy if we use other plugins, than just the ones that store 
 I chose the ni plugin for this demonstration, because it supports metadata and is human readable.
 So let us have a look at the [enum](/src/plugins/enum/README.md) and [mathcheck](/src/plugins/mathcheck/README.md) plugins.
 
-    # mount the backend with the plugins ...
-    $ sudo kdb mount example.ni user/example ni enum
+```sh
+# mount the backend with the plugins ...
+$ sudo kdb mount example.ni user/example ni enum
 
-    # ... and set a value for the demonstration
-    $ kdb set user/example/enumtest/fruit apple
-    Create a new key user/example/enumtest/fruit with string apple
+# ... and set a value for the demonstration
+$ kdb set user/example/enumtest/fruit apple
+Create a new key user/example/enumtest/fruit with string apple
+```
 
 By entering `kdb info enum` in the commandline, we can find out how to use this plugin.
 It turns out that this plugin allows us to define a list of valid values for our keys via the meta value `check/enum`.
 
-    $ kdb setmeta user/example/enumtest/fruit check/enum "'apple', 'banana', 'grape'"
-    $ kdb set user/example/enumtest/fruit tomato
-    # this fails because tomato is not in the list of valid values
+```sh
+$ kdb setmeta user/example/enumtest/fruit check/enum "'apple', 'banana', 'grape'"
+$ kdb set user/example/enumtest/fruit tomato
+# this fails because tomato is not in the list of valid values
+```
 
 You can have a look or even edit the configuration file with `kdb editor user/example ni` to see how the value and metadata is stored:
 
-    enumtest/fruit = apple
+```ini
+enumtest/fruit = apple
 
-    [enumtest/fruit]
-    check/enum = 'apple', 'banana', 'grape'
+[enumtest/fruit]
+check/enum = 'apple', 'banana', 'grape'
+```
 
 The example shows an important problem: the configuration file is now changed in ways that might not be acceptable for applications.
 We have at least two ways to avoid that:
