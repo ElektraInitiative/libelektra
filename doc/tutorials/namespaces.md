@@ -161,7 +161,7 @@ Looking for a specific part of the configuration is done by **ksLookup()**.
 The documentation provides the following example to illustrate the intended usage.
 If you want to use a _cascading key_ (starting with `/`),
 you use the **ksLookup()** or **ksLookupByName()** function
-(also see [doxygen](http://doc.libelektra.org/api/current/html/group__keyset.html#gaa34fc43a081e6b01e4120daa6c112004) ):
+(also see [doxygen](https://doc.libelektra.org/api/current/html/group__keyset.html#gaa34fc43a081e6b01e4120daa6c112004)):
 
 ```c
 if (kdbGet(handle, myConfig,  p=keyNew("/sw/org/myapp", KEY_END)) == -1)

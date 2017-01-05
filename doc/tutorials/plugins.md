@@ -12,15 +12,15 @@ and what various methods exists within one.
 ### The Interface ###
 
 All plug-ins use the same basic interface. This interface consists of five basic functions,
-[elektraPluginOpen](http://doc.libelektra.org/api/current/html/group__plugin.html#ga1a72ac76b618943677e00ed7ab50b372),
-[elektraPluginGet](http://doc.libelektra.org/api/current/html/group__plugin.html#ga2f14a12b205687a31e6fd0645470ec69),
-[elektraPluginSet](http://doc.libelektra.org/api/current/html/group__plugin.html#ga01dd4018e48c3a091cb03940a7a8341f),
-[elektraPluginError](http://doc.libelektra.org/api/current/html/group__plugin.html#gab0f8a88ee9868fb698b4e3040a70e000), and
-[elektraPluginClose](http://doc.libelektra.org/api/current/html/group__plugin.html#gaed8aeda2b2beab1b8052f8a64c601754).
+[elektraPluginOpen](https://doc.libelektra.org/api/current/html/group__plugin.html#ga23c2eb3584e38a4d494eb8f91e5e3d8d),
+[elektraPluginGet](https://doc.libelektra.org/api/current/html/group__plugin.html#gacb69f3441c6d84241b4362f958fbe313),
+[elektraPluginSet](https://doc.libelektra.org/api/current/html/group__plugin.html#gae65781a1deb34efc79c8cb9d9174842c),
+[elektraPluginError](https://doc.libelektra.org/api/current/html/group__plugin.html#gad74b35f558ac7c3262f6069c5c47dc79), and
+[elektraPluginClose](https://doc.libelektra.org/api/current/html/group__plugin.html#ga1236aefe5b2baf8b7bf636ba5aa9ea29).
 The developer replaces `Plugin` with the name of their plugin. So in the case of my plugin, the names of these functions would be
 `elektraLineOpen()`, `elektraLineGet()`, `elektraLineSet()`, `elektraLineError()`, and `elektraLineClose()`.
 Additionally, there is one more function called
-[ELEKTRA_PLUGIN_EXPORT](http://doc.libelektra.org/api/current/html/group__plugin.html#gabe78724d2d477eef39997fd9b85bff16),
+[ELEKTRA_PLUGIN_EXPORT](https://doc.libelektra.org/api/current/html/group__plugin.html#ga8dd092048e972a3f0c9c9f54eb41576e),
 where once again `Plugin` should be replaced with the name of the plug-in, this time in lower-case. So for my line plugin this function would be
 `ELEKTRA_PLUGIN_EXPORT(line)`.
 The developer may define `elektraPluginCheckConf()` if configuration validation at mount time is desired.
@@ -51,7 +51,7 @@ important things are left to be done:
 - provide a basic contract as described above
 
 After these two steps your plugin is ready to be compiled, installed and mounted for the first time. Have a look at
-[How-To: kdb mount](http://community.libelektra.org/wp/?p=31)
+[How-To: kdb mount](mount.md)
 
 
 
@@ -394,4 +394,4 @@ Plugin *ELEKTRA_PLUGIN_EXPORT(line)
 }
 ```
 
-For further information see [the API documentation](http://doc.libelektra.org/api/current/html/group__plugin.html).
+For further information see [the API documentation](https://doc.libelektra.org/api/current/html/group__plugin.html).
