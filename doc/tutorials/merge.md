@@ -78,7 +78,7 @@ the Key, the right side is its string value.
 
 We start with the base KeySet, `system/base`:
 
-  	key1=1
+	key1=1
 	key2=2
 	key3=3
 	key4=4
