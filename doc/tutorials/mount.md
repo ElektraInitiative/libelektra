@@ -32,29 +32,28 @@ sudo kdb mount --with-recommends /etc/hosts system/hosts hosts
 Now we use `kdb file`, to verify that all configuration below `system/hosts` is stored in `/etc/hosts`:
 
 ```sh
-$ kdb file system/hosts
-/etc/hosts
+kdb file system/hosts
+#> /etc/hosts
 ```
 
 After mounting a file, we can modify keys below `system/hosts`.
 We need to be root, because we modify `/etc/hosts`.
 
 ```sh
-$ sudo kdb set system/hosts/ipv4/mylocalhost 127.0.0.33
+sudo kdb set system/hosts/ipv4/mylocalhost 127.0.0.33
 ```
 
 These changes are reflected in `/etc/hosts` instantly:
 
 ```sh
-$ cat /etc/hosts
-127.0.0.33	mylocalhost
-...
+cat /etc/hosts | grep mylocalhost
+#>: 127.0.0.33	mylocalhost
 ```
 
 Applications will now pick up these changes:
 
 ```sh
-$ ping mylocalhost
+ping mylocalhost
 ```
 
 We are also safe against wrong changes:
@@ -173,14 +172,14 @@ git config user.name "Rob Banks"
 
 # ... and read it with kdb
 kdb get dir/git/user/name
-Rob Banks
+#> Rob Banks
 
 # set a user email with kdb ...
 kdb set dir/git/user/email "rob.banks@dot.com"
 
 # and read it with git
 git config --get user.email
-rob.banks@dot.com
+#> rob.banks@dot.com
 ```
 
 #### Meta Data ####
@@ -197,19 +196,19 @@ So let us have a look at the [enum](/src/plugins/enum/README.md) and [mathcheck]
 
 ```sh
 # mount the backend with the plugins ...
-$ sudo kdb mount example.ni user/example ni enum
+sudo kdb mount example.ni user/example ni enum
 
 # ... and set a value for the demonstration
-$ kdb set user/example/enumtest/fruit apple
-Create a new key user/example/enumtest/fruit with string apple
+kdb set user/example/enumtest/fruit apple
+#> Create a new key user/example/enumtest/fruit with string apple
 ```
 
 By entering `kdb info enum` in the commandline, we can find out how to use this plugin.
 It turns out that this plugin allows us to define a list of valid values for our keys via the meta value `check/enum`.
 
 ```sh
-$ kdb setmeta user/example/enumtest/fruit check/enum "'apple', 'banana', 'grape'"
-$ kdb set user/example/enumtest/fruit tomato
+kdb setmeta user/example/enumtest/fruit check/enum "'apple', 'banana', 'grape'"
+kdb set user/example/enumtest/fruit tomato
 # this fails because tomato is not in the list of valid values
 ```
 

@@ -14,7 +14,11 @@ Now add the the key **/a** with the Value **Value 1** and the key **/b/c** with 
 
 ```sh
 kdb set /a 'Value 1'
+#> Using name user/a
+#> Create a new key user/a with string Value 1
 kdb set /b/c 'Value 2'
+#> Using name user/b/c
+#> Create a new key user/b/c with string Value 2
 ```
 
 ![Hierarchical structure of key database](/doc/images/tutorial_namespaces_hierarchy.svg)
@@ -56,9 +60,9 @@ So I hear you asking, if every key has to belong to a namespace, where are the k
 They are in the _user_ namespace, as you can verify with:
 
 ```sh
-kdb ls user
-# user/a
-# user/b/c
+kdb ls user | grep -E '(/a|/b/c)'
+#> user/a
+#> user/b/c
 ```
 
 When we don't provide a namespace Elektra assumes a default namespace, which should be **user** for non-root users.
@@ -72,13 +76,13 @@ Another question you may ask yourself now is, what happens if we lookup a key wi
 
 ```sh
 kdb get -v /b/c
-# got 3 keys
-#  searching spec/b/c, found: <nothing>, options: KDB_O_CALLBACK
-#  searching proc/b/c, found: <nothing>, options:
-#  searching dir/b/c, found: <nothing>, options:
-#  searching user/b/c, found: user/b/c, options:
-# The resulting keyname is user/b/c
-# Value 2
+# STDOUT-REGEX: got \d+ keys
+#>  searching spec/b/c, found: <nothing>, options: KDB_O_CALLBACK
+#>  searching proc/b/c, found: <nothing>, options:
+#>  searching dir/b/c, found: <nothing>, options:
+#>  searching user/b/c, found: user/b/c, options:
+#> The resulting keyname is user/b/c
+#> Value 2
 ```
 
 Here you see how Elektra searches all namespaces for matching keys in this order:
@@ -106,6 +110,7 @@ So she enters
 
 ```sh
 sudo kdb set "system/sw/org/myapp/policy" "super-high-secure"
+#> Create a new key system/sw/org/myapp/policy with string super-high-secure
 ```
 
 The key **system/app/policy** will be stored in the system namespace (probably at `/etc/kdb` on a Linux/UNIX system).
@@ -114,6 +119,7 @@ Then the user sets his app directory by issuing:
 
 ```sh
 kdb set "user/sw/org/myapp/default_dir" "/home/user/.myapp"
+#> Create a new key user/sw/org/myapp/default_dir with string /home/user/.myapp
 ```
 
 This key will be stored in the user namespace (at the home directory) and thus may vary from user to user.
@@ -123,6 +129,8 @@ You can also retrieve the values in the command line by using the **kdb** tool:
 
 ```sh
 kdb get system/sw/org/myapp
+# RET:    0
+# STDERR: Did not find key
 ```
 
 _Cascading keys_ are keys that start with **/** and are a way of making key lookups much easier.
@@ -132,7 +140,9 @@ Just make a lookup for **/sw/org/myapp**, like this:
 
 ```sh
 kdb get /sw/org/myapp/policy
+#> super-high-secure
 kdb get /sw/org/myapp/default_dir
+#> /home/user/.myapp
 ```
 
 When using cascading key the best key will be searched at runtime.
@@ -140,6 +150,7 @@ If you are only interested in the system key, you would use:
 
 ```sh
 kdb get system/sw/org/myapp/policy
+#> super-high-secure
 ```
 
 ## How it Works in C ##
