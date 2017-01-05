@@ -47,7 +47,7 @@ Every key in Elektra belongs to one of these namespaces:
 - **proc** for in-memory keys (e.g. command-line)
 - **dir** for dir keys in current working directory
 - **user** for user keys in home directory
-- **system** for system keys in /etc or /
+- **system** for system keys in `/etc` or `/`
 
 All namespaces save their keys in a _separate hierarchical structure_ from the other namespaces.
 
@@ -108,7 +108,7 @@ So she enters
 sudo kdb set "system/sw/org/myapp/policy" "super-high-secure"
 ```
 
-The key **system/app/policy** will be stored in the system namespace (probably at /etc/kdb on a Linux/UNIX system).
+The key **system/app/policy** will be stored in the system namespace (probably at `/etc/kdb` on a Linux/UNIX system).
 
 Then the user sets his app directory by issuing:
 
@@ -148,7 +148,7 @@ The idea is to call **kdbGet()** to retrieve the root key for the application.
 Looking for a specific part of the configuration is done by **ksLookup()**.
 
 The documentation provides the following example to illustrate the intended usage.
-If you want to use a _cascading key_ (starting with /),
+If you want to use a _cascading key_ (starting with `/`),
 you use the **ksLookup()** or **ksLookupByName()** function
 (also see [doxygen](http://doc.libelektra.org/api/current/html/group__keyset.html#gaa34fc43a081e6b01e4120daa6c112004) ):
 

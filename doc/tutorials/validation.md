@@ -87,7 +87,7 @@ The drawbacks of this approach are:
 - You cannot validate structure of which keys must be present or absent.
 
 
-## Get Started with spec ##
+## Get Started with `spec` ##
 
 These issues are resolved straightforward by separation of schemata (describing the
 configuration) and the configuration itself.

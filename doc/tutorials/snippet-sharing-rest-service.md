@@ -229,7 +229,7 @@ To do so, simply run `kdb build-rest-frontend` and copy the content of the
 your desired target location.
 
 It is required that you set a rewrite rule that serves the `index.html` for every
-request that does not access a static file (js, css, png, md, etc.). If you omit
+request that does not access a static file (`js`, `css`, `png`, `md`, etc.). If you omit
 this step, it will not be possible to use direct links to access resources of the
 frontend; accessing the frontend from the `index.html` will still work though.
 

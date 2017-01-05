@@ -30,7 +30,7 @@ with kdb.KDB() as k:
 	k.get(ks, '/path/to/keys')
 ```
 
-It is also possible to iterate as expected over a keyset and use len, reversed and copying. The elements of a keyset can be accessed by indexes and a keyset can be sliced. Another way of accessing a key is by the key-name (`keyset_name['/path/to/keys/key_name']`). If the key-name does not exist within the keyset, a KeyError exception is thrown.
+It is also possible to iterate as expected over a keyset and use `len`, `reversed` and copying. The elements of a keyset can be accessed by indexes and a keyset can be sliced. Another way of accessing a key is by the key-name (`keyset_name['/path/to/keys/key_name']`). If the key-name does not exist within the keyset, a `KeyError` exception is thrown.
 
 An example that shows how to load an existing keyset and then access every key and value of the loaded keyset:
 

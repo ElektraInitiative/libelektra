@@ -23,20 +23,20 @@ Additionally, there is one more function called
 [ELEKTRA_PLUGIN_EXPORT](http://doc.libelektra.org/api/current/html/group__plugin.html#gabe78724d2d477eef39997fd9b85bff16),
 where once again `Plugin` should be replaced with the name of the plug-in, this time in lower-case. So for my line plugin this function would be
 `ELEKTRA_PLUGIN_EXPORT(line)`.
-The developer may define elektraPluginCheckConf() if configuration validation at mount time is desired.
+The developer may define `elektraPluginCheckConf()` if configuration validation at mount time is desired.
 
 The KDB relies on the first five functions for interacting with configuration files stored in the key database.
-Calls for kdbGet() and kdbClose() will call the functions elektraPluginGet() and elektraPluginClose() respectively for the
-plugin that was used to mount the configuration data. kdbSet() calls elektraPluginSet() but also elektraPluginError() when an error occurs.
-elektraPluginOpen() is called before the first call to elektraPluginGet() or elektraPluginSet(). These functions serve different purposes
+Calls for `kdbGet()` and `kdbClose()` will call the functions `elektraPluginGet()` and `elektraPluginClose()` respectively for the
+plugin that was used to mount the configuration data. `kdbSet()` calls `elektraPluginSet()` but also `elektraPluginError()` when an error occurs.
+`elektraPluginOpen()` is called before the first call to `elektraPluginGet()` or `elektraPluginSet()`. These functions serve different purposes
 that allow the plug-in to work:
 
-- elektraPluginOpen() is designed to allow each plug-in to do initialization if necessary.
-- elektraPluginGet() is designed to turn information from a configuration file into a usable KeySet, this is technically the only function that is REQUIRED in a plug-in.
-- elektraPluginSet() is designed to store the information from the keyset back into a configuration file.
-- elektraPluginError() is designed to allow proper rollback of operations if needed and is called if any plugin fails during the set operation. This allows exception-safety.
-- elektraPluginClose() is used to free resources that might be required for the plug-in.
-- ELEKTRA_PLUGIN_EXPORT(Plugin) simply lets Elektra know that the plug-in exists and what the name of the above functions are.
+- `elektraPluginOpen()` is designed to allow each plug-in to do initialization if necessary.
+- `elektraPluginGet()` is designed to turn information from a configuration file into a usable KeySet, this is technically the only function that is REQUIRED in a plug-in.
+- `elektraPluginSet()` is designed to store the information from the keyset back into a configuration file.
+- `elektraPluginError()` is designed to allow proper rollback of operations if needed and is called if any plugin fails during the set operation. This allows exception-safety.
+- `elektraPluginClose()` is used to free resources that might be required for the plug-in.
+- `ELEKTRA_PLUGIN_EXPORT(Plugin)` simply lets Elektra know that the plug-in exists and what the name of the above functions are.
 
 Most simply put: most plug-ins consist of five major functions, `elektraPluginOpen()`, `elektraPluginClose()`, `elektraPluginGet()`, `elektraPluginSet()`,
 and `ELEKTRA_EXPORT_PLUGIN(Plugin)`.
@@ -69,14 +69,14 @@ plugins can depend on.
 ### Writing a Contract ###
 
 Because the contracts also contain information for humans, these parts
-are written in a README.md files of the plugins. To make the contracts
+are written in a `README.md` files of the plugins. To make the contracts
 machine-readable, the following CMake command exists:
 
 ```cmake
 generate_readme(pluginname)
 ```
 
-It will generate a readme_plugginname.c (in the build-directory) out of the
+It will generate a `readme_plugginname.c` (in the build-directory) out of the
 README.md of the plugin''s source directory.
 
 But prefer to use
@@ -86,7 +86,7 @@ add_plugin(pluginname)
 ```
 
 where the readme (among many other things) are already done for you.
-More details about how to write the CMakeLists.txt will be discussed
+More details about how to write the `CMakeLists.txt` will be discussed
 later in the tutorial.
 
 The `README.md` will be used by:
@@ -96,7 +96,7 @@ The `README.md` will be used by:
 - to know dependencies between plugin and what metadata they process
 
 
-### Content of README.md ###
+### Content of `README.md` ###
 
 The first lines must look like:
 
@@ -117,17 +117,17 @@ the end of the file).
 
 For the meaning (semantics) of those entries, please refer to [contract specification](/doc/CONTRACT.ini).
 
-The already said generate_readme will produce a list of Keys using the
-information in README.md. It would look like (for the third key):
+The already said `generate_readme` will produce a list of Keys using the
+information in `README.md`. It would look like (for the third key):
 
 		keyNew ("system/elektra/modules/yajl/infos/licence",
 			KEY_VALUE, "BSD", KEY_END),
 
-## Including readme_pluginname.c ##
+## Including `readme_pluginname.c` ##
 
-In your plugin, specifically in your elektraPluginGet()
+In your plugin, specifically in your `elektraPluginGet()`
 implementation, you have to return the contract whenever configuration
-below system/elektra/modules/plugin is requested:
+below `system/elektra/modules/plugin` is requested:
 
 ```c
 if (!strcmp (keyName(parentKey), "system/elektra/modules/plugin"))
@@ -139,9 +139,9 @@ if (!strcmp (keyName(parentKey), "system/elektra/modules/plugin"))
 }
 ```
 
-The elektraPluginContract() is a method implemented by the plug-in developer
-containing the parts of the contract not specified in README.md.
-An example of this function (taken from the yajl plugin):
+The `elektraPluginContract()` is a method implemented by the plug-in developer
+containing the parts of the contract not specified in `README.md`.
+An example of this function (taken from the `yajl` plugin):
 
 ```c
 static inline KeySet *elektraYajlContract()
@@ -172,10 +172,10 @@ static inline KeySet *elektraYajlContract()
 
 It basically only contains the symbols to be exported (that are
 dependent on your functions to be available) and the plugin version
-information that is always defined to the macro PLUGINVERSION.
+information that is always defined to the macro `PLUGINVERSION`.
 
-As already said, readme_yourplugin.c is generated in the binary directory,
-so make sure that your CMakeLists.txt contains (prefer to use add_plugin
+As already said, `readme_yourplugin.c` is generated in the binary directory,
+so make sure that your `CMakeLists.txt` contains (prefer to use `add_plugin`
 where this is already done correctly):
 
 ```cmake
@@ -185,16 +185,16 @@ include_directories (${CMAKE_CURRENT_BINARY_DIR})
 
 ## CMake ##
 
-For every plugin you have to write a CMakeLists.txt. If your plugin has
+For every plugin you have to write a `CMakeLists.txt`. If your plugin has
 no dependencies, you can skip this section. The full documentation of
 `add_plugin` is available [here](/cmake/Modules/LibAddPlugin.cmake).
 
-In order to understand how to write the CMakeLists.txt, you need to know that
+In order to understand how to write the `CMakeLists.txt`, you need to know that
 the same file is included multiple times for different reasons.
 
 1. The first time, only the name of plugins and directories are enquired.
     In this phase, only the `add_plugin` should be executed.
-2. The second time (if the plugin is actually requested), the CMakeLists.txt
+2. The second time (if the plugin is actually requested), the `CMakeLists.txt`
     is used to detect if all dependencies are actually available.
 
 This means that in the first time, only the `add_plugin` should be executed
@@ -205,7 +205,7 @@ is set to `ON` iff you should search for all needed CMake packages. You should a
 to search for packages otherwise, because this would:
 
 - clutter the output
-- introduce more variables into the CMakeCache which are irrelevant for the user
+- introduce more variables into the `CMakeCache` which are irrelevant for the user
 - maybe even find libraries in wrong versions which are incompatible to what other
   plugins need
 
@@ -256,10 +256,10 @@ This section will focus on an overview of the kind of code you would use to deve
 and should serve as a rough guide on how to write a storage plugin that can read and write configuration data into the Elektra
 KeySet.
 
-### elektraPluginGet ###
+### `elektraPluginGet` ###
 
 `elektraPluginGet` is the function responsible for turning information from a file into a usable KeySet.
-This function usually differs pretty greatly between each plug-in. This function should be of type int, it returns 0 on success or
+This function usually differs pretty greatly between each plug-in. This function should be of type `int`, it returns `0` on success or
 another number on an error. The function will take in a Key, usually called `parentKey` which contains a string containing the path
 to the file that is mounted. For instance, if you run the command `kdb mount /etc/linetest system/linetest line` then `keyString(parentKey)`
 should be equal to `/etc/linetest`. At this point, you generally want to open the file so you can begin saving it into keys.
@@ -268,24 +268,24 @@ inside of them according to what your plug-in is supposed to do. I will give a f
 
 The line plug-in was written to read files into a KeySet line by line using the newline character as a delimiter and naming the keys by their line
 number such as `#1`, `#2`, .. `#_22` for a file with 22 lines. So once I open the file given by `parentKey`, every time as I read a line I create a new key,
-let's call it new_key using dupKey(parentKey). Then I set new_key's name to lineNN (where NN is the line number) using `keyAddBaseName` and
+let's call it `new_key` using `dupKey(parentKey)`. Then I set `new_key`'s name to `lineNN` (where NN is the line number) using `keyAddBaseName` and
 store the string value of the line into the key using `keySetString`. Once the key is initialized, I append it to the KeySet that was passed into the
-elektraPluginGet function, let's call it returned for now, using `ksAppendKey(return, new_key)`. Now the KeySet will contain `new_key` with the
+`elektraPluginGet` function, let's call it `returned` for now, using `ksAppendKey(return, new_key)`. Now the KeySet will contain `new_key` with the
 name `#N` properly saved where it should be according to the `kdb mount` command (in this case, `system/linetest/#N`), and a string value
 equal to the contents of that line in the file. The line plug-in repeats these steps as long as it hasn't reached end of file, thus saving the whole file
 into a KeySet line by line.
 
-The simpleini plug-in works similarly, but it parses for ini files instead of just line-by-line. At their most simple level, ini files are in the format of
+The `simpleini` plug-in works similarly, but it parses for `ini` files instead of just line-by-line. At their most simple level, `ini` files are in the format of
 `name=value` with each pair taking one line. So for this plug-in, it makes a lot of sense to name each Key in the KeySet by the string to the left
 of the `=` sign and store the value into each key as a string. For instance, the name of the key would be `name` and `keyGetString(name)`
 would return `value`.
 
-As you may have noticed, simpleini and line plug-ins work very similarly. However, they just parse the files differently. The simpleini plug-in parses
-the file in a way that is more natural to ini file (setting the key's name to the left side of the equals sign and the value to the right side of the equals sign).
+As you may have noticed, `simpleini` and line plug-ins work very similarly. However, they just parse the files differently. The `simpleini` plug-in parses
+the file in a way that is more natural to `ini` file (setting the key's name to the left side of the equals sign and the value to the right side of the equals sign).
 The `elektraPluginGet` function is the heart of a storage plug-in, it’s what allows Elektra to store configurations in its database. This function isn't
 just run when a file is first mounted, but whenever a file gets updated, this function is run to update the Elektra Key Database to match.
 
-### elektraPluginSet ###
+### `elektraPluginSet` ###
 
 We also gave a brief overview of the `elektraPluginSet` function. This function is basically the opposite of `elektraPluginGet`. Where `elektraPluginGet`
 reads information from a file into the Elektra Key Database, `elektraPluginSet` writes information from the database back into the mounted file.
@@ -298,7 +298,7 @@ int elektraLineSet(Plugin *handle ELEKTRA_UNUSED, KeySet *toWrite, Key *parentKe
 
 Lets start with the most important parameters, the KeySet and the `parentKey`. The KeySet supplied is the KeySet that is going to be persisted in
 the file. In our case it would contain the Keys representing the lines. The `parentKey` is the topmost Key of the KeySet and serves several purposes.
-First, it contains the filename of the destination file as its value. Second, errors and warnings can be emitted via the parentKey. We will discuss
+First, it contains the filename of the destination file as its value. Second, errors and warnings can be emitted via the `parentKey`. We will discuss
 error handling in more detail later. The Plugin handle can be used to persist state information in a thread-safe way with `elektraPluginSetData`.
 As our plugin is not stateful and therefore does not use the handle, it is marked as unused in order to suppress compiler warnings.
 
@@ -324,7 +324,7 @@ and write each key as its own line in the file. Since we don't care about the na
 the value of `keyString` for each Key as a new line in the file. That's it. Now, each time the mounted KeySet is modified, `elektraPluginSet` will
 be called and the mounted file will be updated.
 
-#### ELEKTRA_SET_ERROR ####
+#### `ELEKTRA_SET_ERROR` ####
 
 We haven't discussed `ELEKTRA_SET_ERROR` yet. Because Elektra is a library, printing errors to stderr wouldn't be a good idea. Instead, errors
 and warnings can be appended to a key in the form of metadata. This is what `ELEKTRA_SET_ERROR` does. Because the parentKey always exists
@@ -335,13 +335,13 @@ The third parameter can be used to provide additional information about the erro
 caused the error. The kdb tools will interpret this error and print it in a pretty way. Notice that this can be used in any plugin function where the
 parentKey is available.
 
-### elektraPluginOpen and elektraPluginClose ###
+### `elektraPluginOpen` and `elektraPluginClose` ###
 
 The `elektraPluginOpen` and `elektraPluginClose` functions are not commonly used for storage plug-ins, but they can be useful and are worth
 reviewing. `elektraPluginOpen` function runs before `elektraPluginGet` and is useful to do initialization if necessary for the plug-in. On the other
 hand `elektraPluginClose` is run after other functions of the plug-in and can be useful for freeing up resources.
 
-### elektraPluginCheckConf ###
+### `elektraPluginCheckConf` ###
 
 The `elektraPluginCheckConf` function may be used for validation of the plugin configuration during mount time. The signature of the function is:
 
@@ -353,9 +353,9 @@ The configuration of the plugin is provided as `conf`. The function may report a
 
 The following convention was established for the return value of `elektraPluginCheckConf`:
 
-- 0: The configuration was OK and has not been changed
-- 1: The configuration has been changed and now it is OK
-- -1: The configuration was not OK and could not be fixed. An error has to be set to errorKey.
+- `0`: The configuration was OK and has not been changed
+- `1`: The configuration has been changed and now it is OK
+- `-1`: The configuration was not OK and could not be fixed. An error has to be set to errorKey.
 
 The following example demonstrates how to limit the length of the values within the plugin configuration to 3 characters.
 
@@ -379,7 +379,7 @@ int elektraLineCheckConfig (Key * errorKey, KeySet * conf)
 }
 ```
 
-### ELEKTRA_PLUGIN_EXPORT ###
+### `ELEKTRA_PLUGIN_EXPORT` ###
 
 The last function, one that is always needed in a plug-in, is `ELEKTRA_PLUGIN_EXPORT`. This functions is responsible for letting Elektra know that
 the plug-in exists and which methods it implements. The code from the line plugin is a good example and pretty self-explanatory:
