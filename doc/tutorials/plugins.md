@@ -120,8 +120,8 @@ For the meaning (semantics) of those entries, please refer to [contract specific
 The already said `generate_readme` will produce a list of Keys using the
 information in `README.md`. It would look like (for the third key):
 
-		keyNew ("system/elektra/modules/yajl/infos/licence",
-			KEY_VALUE, "BSD", KEY_END),
+	keyNew ("system/elektra/modules/yajl/infos/licence",
+		KEY_VALUE, "BSD", KEY_END),
 
 ## Including `readme_pluginname.c` ##
 
