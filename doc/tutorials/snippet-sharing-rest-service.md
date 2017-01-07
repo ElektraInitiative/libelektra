@@ -130,14 +130,17 @@ otherwise.
 After that you need to set an additional configuration parameter that has no default value.
 It is recommended to set it for the system namespace if you will use a tool like
 `systemctl` to manage the services.
+
 ```
 > kdb set -N system /sw/elektra/restbackend/#0/current/backend/jwt/encryption/secret "use a secret key here"
 ```
 
 To generate a secure key, you can also use `pwgen` (install via `apt-get install pwgen`). Use
+
 ```
 > kdb set -N system /sw/elektra/restbackend/#0/current/backend/jwt/encryption/secret "$(pwgen -1cns 30)"
 ```
+
 to generate and set a strong random encryption secret.
 
 The option `-N system` for `kdb set` defines the used namespace (in this case it is `system`).
@@ -154,6 +157,7 @@ Additionally to the settings above, CppCMS needs some configuration. All configu
 options are listed on [their website](http://cppcms.com/wikipp/en/page/cppcms_1x_config).
 A stand-alone installation of the service (without proxy server) requires following
 configuration:
+
 ```
 > kdb set -N system /sw/elektra/restbackend/#0/current/cppcms/service/api "http"
 > kdb set -N system /sw/elektra/restbackend/#0/current/cppcms/service/ip "0.0.0.0"
@@ -247,6 +251,7 @@ the here described service:
 
 The server redirects requests on port 80 (non-SSL) to 443 using a very simple
 configuration like
+
 ```
 # file: /etc/apache2/sites-available/www.libelektra.org.conf
 <VirtualHost *:80>
@@ -254,9 +259,11 @@ configuration like
     Redirect permanent / https://www.libelektra.org/
 </VirtualHost>
 ```
+
 for the `www.libelektra.org` domain (similar for `restapi.libelektra.org`).
 
 The secured variant of the configuration looks like
+
 ```
 # file: /etc/apache2/sites-available/www.libelektra.org-le-ssl.conf
 <IfModule mod_ssl.c>
@@ -282,10 +289,12 @@ The secured variant of the configuration looks like
 </VirtualHost>
 </IfModule>
 ```
+
 Important is the `Directory` configuration because the `rest-frontend` requires the
 `FallbackResource` option to function correctly.
 
 For the `restapi.libelektra.org` domain we use an SCGI setup:
+
 ```
 # file: /etc/apache2/sites-available/restapi.libelektra.org-le-ssl.conf
 <IfModule mod_ssl.c>
@@ -310,6 +319,7 @@ For the `restapi.libelektra.org` domain we use an SCGI setup:
 The `rest-backend` itself is configured normally as described in the configuration
 section above, but with CppCMS using SCGI instead of HTTP as API variant.
 This requires setting the keys
+
 ```
 > kdb set system/sw/elektra/restbackend/#0/current/cppcms/service/api "scgi"
 > kdb set system/sw/elektra/restbackend/#0/current/cppcms/service/ip "127.0.0.1"
@@ -318,11 +328,13 @@ This requires setting the keys
 
 Additionally we are using a worker process, which ensures that in case of a crash
 the backend restarts automatically (= basically supervisor + worker). Config:
+
 ```
 > kdb set system/sw/elektra/restbackend/#0/current/cppcms/service/worker_processes 1
 ```
 
 Configuration snippets and users are stored at `system/configs` and `system/users`:
+
 ```
 > kdb set system/sw/elektra/restbackend/#0/current/backend/kdb/path/configs = system/configs
 > kdb set system/sw/elektra/restbackend/#0/current/backend/kdb/path/users = system/users
