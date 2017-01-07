@@ -16,17 +16,17 @@ file before it is written to disc.
 Any of Elektra's user interfaces will work with the technique
 described in this tutorial, e.g.:
 
-1.) `kdb qt-gui`: graphical user interface
+1. `kdb qt-gui`: graphical user interface
 
-2.) `kdb editor`: starts up your favourite text editor and
+2. `kdb editor`: starts up your favourite text editor and
     allows you to edit configuration in any syntax.
     (generalization of `sudoedit`)
 
-3.) `kdb set`: manipulate or add individual configuration
+3. `kdb set`: manipulate or add individual configuration
     entries.
     (generalization of `adduser`)
 
-4.) Any other tool using Elektra to store configuration
+4. Any other tool using Elektra to store configuration
     (e.g. if the application itself has capabilities to
      modify its configuration)
 
