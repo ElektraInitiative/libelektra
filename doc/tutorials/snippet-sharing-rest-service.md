@@ -4,7 +4,7 @@ This tutorial explains how to install, configure and run everything that is requ
 for the Snippet Sharing service and website. As operating system we expect Debian
 Jessie to be used, although most parts should also be applicable to other systems.
 
-## What is this? ##
+## What is This? ##
 
 The Snippet Sharing service consists of two parts, a backend (the REST server) and
 a frontend (an AngularJS application executed in the browser), which also includes
@@ -221,7 +221,7 @@ that your API blueprint is still syntax conform. To do so, you can use the tool
 [Drafter](https://github.com/apiaryio/drafter). After installing it, you can use
 `drafter <filename>` (e.g. `drafter snippet-sharing.apib`) to run the check.
 
-### Use other Webserver than the built-in Grunt Webserver ###
+### Use Other Webserver Than the Built-in Grunt Webserver ###
 
 Of course it is possible to use another webserver instead of the built-in one.
 To do so, simply run `kdb build-rest-frontend` and copy the content of the
@@ -315,7 +315,7 @@ For the `restapi.libelektra.org` domain we use an SCGI setup:
 </IfModule>
 ```
 
-### rest-backend ###
+### Rest-Backend ###
 
 The `rest-backend` itself is configured normally as described in the configuration
 section above, but with CppCMS using SCGI instead of HTTP as API variant.
@@ -341,7 +341,7 @@ kdb set system/sw/elektra/restbackend/#0/current/backend/kdb/path/configs = syst
 kdb set system/sw/elektra/restbackend/#0/current/backend/kdb/path/users = system/users
 ```
 
-### rest-frontend ###
+### Rest-Frontend ###
 
 Because of the Apache server using the rest-frontend installation directory as
 document root, there is no further configuration necessary other than already
