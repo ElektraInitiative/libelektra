@@ -32,7 +32,7 @@ plugin that was used to mount the configuration data. `kdbSet()` calls `elektraP
 that allow the plug-in to work:
 
 - `elektraPluginOpen()` is designed to allow each plug-in to do initialization if necessary.
-- `elektraPluginGet()` is designed to turn information from a configuration file into a usable KeySet, this is technically the only function that is REQUIRED in a plug-in.
+- `elektraPluginGet()` is designed to turn information from a configuration file into a usable KeySet, this is technically the only function that is **required** in a plug-in.
 - `elektraPluginSet()` is designed to store the information from the keyset back into a configuration file.
 - `elektraPluginError()` is designed to allow proper rollback of operations if needed and is called if any plugin fails during the set operation. This allows exception-safety.
 - `elektraPluginClose()` is used to free resources that might be required for the plug-in.
