@@ -29,3 +29,5 @@ build*
 #ignore netbeans project files
 nbproject/
 
+#ignore macOS folder attribute files
+.DS_Store
