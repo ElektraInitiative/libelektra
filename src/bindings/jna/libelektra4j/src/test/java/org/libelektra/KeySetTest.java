@@ -74,6 +74,24 @@ public class KeySetTest {
 	}
 
 	@Test
+	public void test_keySetIteratorDelete_shouldPass() {
+		final KeySet ks = KeySet.create(6, key, key2, key3, key4, key5, key6, KeySet.KS_END);
+		final Iterator<Key> iterator = ks.iterator();
+		assertTrue(iterator.hasNext());
+		while (iterator.hasNext()) {
+			final Key next = iterator.next();
+			if (key3.get().equals(next.get())) {
+				iterator.remove();
+			}
+		}
+		assertFalse(iterator.hasNext());
+		assertEquals(5, ks.length());
+		assertTrue(ks.lookup(key3).isNull());
+		assertNotNull(ks.lookup(key4));
+		assertNotNull(ks.lookup(key2));
+	}
+
+	@Test
 	public void test_keySetToString_shouldPass() {
 		final KeySet ks = KeySet.create(6, key, key2, key3, key4, key5, key6, KeySet.KS_END);
 		final String expected_result = key.toString() + "\n" + key2.toString() + "\n" + key3.toString() + "\n" + key4.toString() + "\n"

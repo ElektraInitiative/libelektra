@@ -10,6 +10,7 @@ public class KeySetIterator implements java.util.Iterator<Key> {
 
 	private int pos = 0;
 	private final KeySet con;
+	private Key current;
 
 	/**
 	 * Basic constructor for key set iterator
@@ -32,7 +33,7 @@ public class KeySetIterator implements java.util.Iterator<Key> {
 	}
 
 	/**
-	 * Gets the next value of iteration
+	 * Gets the next value of iteration.
 	 *
 	 * @return Next Key in iteration
 	 */
@@ -42,18 +43,18 @@ public class KeySetIterator implements java.util.Iterator<Key> {
 			throw new NoSuchElementException("End of KeySet reached");
 		}
 
-		final Key ret = con.at(pos);
+		current = con.at(pos);
 		++pos;
-		return ret;
+		return current;
 	}
 
 	/**
-	 * NOT SUPPORTED
-	 *
-	 * @throws UnsupportedOperationException
+	 * Removes the element of the iteration.
 	 */
 	@Override
 	public void remove() {
-		throw new UnsupportedOperationException();
+		final Key key = con.lookup(current, KeySet.KDB_O_POP);
+		key.release();
+		--pos;
 	}
 }
