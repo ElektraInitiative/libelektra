@@ -5,7 +5,7 @@ set(CMAKE_USER_MAKE_RULES_OVERRIDE "${CMAKE_SOURCE_DIR}/cmake/Platform.cmake")
 
 project (Elektra)
 
-#fix OS X RPATH issues
+#fix macOS RPATH issues
 set(CMAKE_MACOSX_RPATH 1)
 
 #additional modules for loading libraries

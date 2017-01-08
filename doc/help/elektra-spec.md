@@ -8,10 +8,10 @@ semantics of individual keys.
 
 Most importantly it:
 
-0. describes which keys are of interest to the application
-1. describes the metadata to be copied to every key
-2. describes how the cascading lookup works
-3. describes the mountpoints including the plugins needed for them
+1. describes which keys are of interest to the application
+2. describes the metadata to be copied to every key
+3. describes how the cascading lookup works
+4. describes the mountpoints including the plugins needed for them
 
 It is, however, not limited to this but can express any other
 key database semantics (new plugins might be necessary, though).
@@ -21,7 +21,7 @@ key database semantics (new plugins might be necessary, though).
 The most simple use is to enlist all keys that will be used by an application
 and maybe give a description for them (we use ini syntax in this document):
 
-```
+```ini
 [mykey]
 
 [folder/anotherkey]
@@ -51,7 +51,7 @@ are now available (in the metadata of respective `spec`-keys):
 
 E.g.
 
-```
+```ini
 [promise]
 default=20
 fallback/#0=/somewhere/else
@@ -83,7 +83,7 @@ You can tag any key using the `check` metadata so that it will be validated.
 
 For example:
 
-```
+```ini
 [folder/anotherkey]
 check/validation = abc.*
 check/validation/message = def does not start with abc
@@ -98,7 +98,7 @@ First you need the metakey `mountpoint` and a configuration file name.
 Otherwise, it basically works in the same way as the contracts
 in plugins using `infos` and `config`:
 
-```
+```ini
 []
 mountpoint=file.abc
 config/plugin/code/escape = 40

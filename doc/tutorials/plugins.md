@@ -176,7 +176,7 @@ where this is already done correctly):
 ## CMake ##
 
 For every plugin you have to write a CMakeLists.txt. If your plugin has
-no dependencies, you can jump this section. The full documentation of
+no dependencies, you can skip this section. The full documentation of
 `add_plugin` is available [here](/cmake/Modules/LibAddPlugin.cmake).
 
 In order to understand how to write the CMakeLists.txt, you need to know that
@@ -191,7 +191,7 @@ This means that in the first time, only the `add_plugin` should be executed
 and in the second time the detection code together with `add_plugin`.
 
 So that you can distinguish the first and second phase, the variable `DEPENDENCY_PHASE`
-is set to `ON` iff you should find for all needed cmake packages. You should avoid
+is set to `ON` iff you should search for all needed cmake packages. You should avoid
 to search for packages otherwise, because this would:
 
 - clutter the output
@@ -239,7 +239,7 @@ you should also read the information there.
 ## Coding ##
 
 This section will focus on an overview of the kind of code you would use to develop a plugin. It gives examples from real plugins
-and should serve as a rough guide of how to write a storage plugin that can read and write configuration data into the Elektra
+and should serve as a rough guide on how to write a storage plugin that can read and write configuration data into the Elektra
 KeySet.
 
 ### elektraPluginGet ###
@@ -268,12 +268,12 @@ would return `value`.
 
 As you may have noticed, simpleini and line plug-ins work very similarly. However, they just parse the files differently. The simpleini plug-in parses
 the file in a way that is more natural to ini file (setting the key's name to the left side of the equals sign and the value to the right side of the equals sign).
-The `elektraPluginGet` function is the heart of a storage plug-in, its what allows Elektra to store configurations in it's database. This function isn't
+The `elektraPluginGet` function is the heart of a storage plug-in, it’s what allows Elektra to store configurations in its database. This function isn't
 just run when a file is first mounted, but whenever a file gets updated, this function is run to update the Elektra Key Database to match.
 
 ### elektraPluginSet ###
 
-We also gave a brief overview of `elektraPluginSet` function. This function is basically the opposite of `elektraPluginGet`. Where `elektraPluginGet`
+We also gave a brief overview of the `elektraPluginSet` function. This function is basically the opposite of `elektraPluginGet`. Where `elektraPluginGet`
 reads information from a file into the Elektra Key Database, `elektraPluginSet` writes information from the database back into the mounted file.
 
 First have a look at the signature of `elektraLineSet`:
@@ -299,10 +299,10 @@ Basically the implementation of `elektraLineSet` can be described with the follo
 	}
 	close the file
 
-The full-blown code can be found at [line plugin](http://libelektra.org/tree/master/src/plugins/line/line.c)
+The full-blown code can be found at [line plugin](http://libelektra.org/tree/master/src/plugins/line/line.c).
 
 As you can see, all `elektraLineSet` does is open a file, take each Key from the KeySet (remember they are named `#1`, `#2` ... `#_22`) in order,
-and write each key as it's own line in the file. Since we don't care about the name of the Key in this case (other than for order), we just write
+and write each key as its own line in the file. Since we don't care about the name of the Key in this case (other than for order), we just write
 the value of `keyString` for each Key as a new line in the file. That's it. Now, each time the mounted KeySet is modified, `elektraPluginSet` will
 be called and the mounted file will be updated.
 
@@ -348,7 +348,9 @@ The following example demonstrates how to limit the length of the values within 
 			const char * value = keyString (cur);
 			if (strlen (value) > 3)
 			{
-				ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_VALUE_LENGTH, errorKey, "value %s is more than 3 characters long", value);
+				ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_VALUE_LENGTH, errorKey,
+						    "value %s is more than 3 characters long",
+						    value);
 				return -1; // The configuration was not OK and could not be fixed
 			}
 		}

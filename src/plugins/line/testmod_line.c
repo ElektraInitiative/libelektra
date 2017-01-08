@@ -58,7 +58,7 @@ int main (int argc, char ** argv)
 
 	test_readline ();
 
-	printf ("\ntest_hosts RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
+	printf ("\ntest_line RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 
 	return nbError;
 }

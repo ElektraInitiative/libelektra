@@ -1,6 +1,6 @@
-# Validation
+# Validation #
 
-## Introduction
+## Introduction ##
 
 Configuration in FLOSS unfortunately is often stored
 completely without validation. Notable exceptions are sudo
@@ -11,7 +11,7 @@ the application fails to start.
 Elektra provides a generic way to validate any configuration
 file before it is written to disc.
 
-## User Interfaces
+## User Interfaces ##
 
 Any of Elektra's user interfaces will work with the technique
 described in this tutorial, e.g.:
@@ -31,7 +31,7 @@ described in this tutorial, e.g.:
      modify its configuration)
 
 
-## Metadata together with keys
+## Metadata Together With Keys ##
 
 The most direct way to validate keys is
 
@@ -87,7 +87,7 @@ The drawbacks of this approach are:
 - You cannot validate structure of which keys must be present or absent.
 
 
-## Get started with spec
+## Get Started with spec ##
 
 These issues are resolved straightforward by separation of schemata (describing the
 configuration) and the configuration itself.
@@ -163,7 +163,7 @@ Description: Key Value failed to validate
 Reason: Not a number
 ```
 
-## Rejecting Configuration Keys
+## Rejecting Configuration Keys ##
 
 Up to now we only discussed how to reject keys that have unwanted values.
 Sometimes, however, applications require the presence or absence of keys.
@@ -183,7 +183,7 @@ If we want to reject every optional key (and only want to allow required keys)
 we can use the plugin `required` as further discussed below.
 
 
-## Customized schemas
+## Customized Schemas ##
 
 Sometimes we already have configuration specifications given in some other format
 which is more compact and more directed to the needs of an individual application.

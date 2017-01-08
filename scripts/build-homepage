@@ -1,9 +1,12 @@
 #!/bin/sh
 
+# remember the build directoy
+ROOT_DIR=$PWD
+
 # build the applications
 mkdir -p build
 cd build
-cmake -DENABLE_ASAN=ON -DBUILD_FULL=OFF -DBUILD_SHARED=ON -DBUILD_STATIC=OFF -DBUILD_DOCUMENTATION=OFF -DPLUGINS='ALL;-fstab;-semlock' -DTOOLS='kdb;rest-backend;rest-frontend' -DCMAKE_C_FLAGS='-D_FORTIFY_SOURCE=2 -Werror=format-security -fstack-protector-strong -Wstack-protector' -DCMAKE_CXX_FLAGS='-D_FORTIFY_SOURCE=2 -Werror=format-security -fstack-protector-strong -Wstack-protector' -DCMAKE_EXE_LINKER_FLAGS='-Wl,-z,now' ..
+cmake -DENABLE_ASAN=ON -DBUILD_FULL=OFF -DBUILD_SHARED=ON -DBUILD_STATIC=OFF -DBUILD_DOCUMENTATION=OFF -DPLUGINS='ALL;-fstab;-semlock' -DTOOLS='kdb;rest-backend;rest-frontend' -DCMAKE_C_FLAGS='-D_FORTIFY_SOURCE=2 -Werror=format-security -fstack-protector-strong -Wstack-protector -fPIE -pie' -DCMAKE_CXX_FLAGS='-D_FORTIFY_SOURCE=2 -Werror=format-security -fstack-protector-strong -Wstack-protector -fPIE -pie' -DCMAKE_EXE_LINKER_FLAGS='-Wl,-z,now -Wl,-z,relro' ..
 make -j 3
 
 # test the applications
@@ -20,9 +23,32 @@ kdb --version
 # prevent jenkins from killing daemons
 BUILD_ID=dontKillMe
 
+# allow core dumps
+ulimit -c unlimited
+
+# place for core dumps (name by: echo "core_%t_%p" > /proc/sys/kernel/core_pattern)
+cd /var/lib/jenkins
+
+pstree
+echo -n "Old PID was: "
+cat /run/elektra-rest-backend.pid || /bin/true
+echo
+
 # then restart the backend
 kdb stop-rest-backend
+
+netstat --listen --numeric-ports | grep 80
+
+# sleep prevents 'address already in use'
+sleep 3
+
+netstat --listen --numeric-ports | grep 80
+
 kdb run-rest-backend
+
+echo -n "New PID is: "
+cat /run/elektra-rest-backend.pid || /bin/true
+echo
 
 # we have to make sure the backend had time to start before we can go on
 # (necessary because the command `kdb run-rest-backend` runs in the background)
@@ -35,4 +61,12 @@ sleep 60
 #   required files afterwards, ensuring an always up-to-date deployment
 kdb build-rest-frontend
 
+# create and copy api description
+ELEKTRA_VERSION=$(kdb get --no-newline system/elektra/version/constants/KDB_VERSION)
+apiary preview --path=$ROOT_DIR/doc/api_blueprints/snippet-sharing.apib --output=/srv/libelektra/restapi/$ELEKTRA_VERSION/snippet-sharing.html
+cp $ROOT_DIR/doc/api_blueprints/snippet-sharing.apib /srv/libelektra/restapi/$ELEKTRA_VERSION/snippet-sharing.apib
+rm /srv/libelektra/restapi/current
+ln -s /srv/libelektra/restapi/$ELEKTRA_VERSION /srv/libelektra/restapi/current
+
 pstree
+ulimit -a

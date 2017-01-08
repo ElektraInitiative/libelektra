@@ -27,6 +27,33 @@ module.exports = function ($httpProvider, $provide) {
         }
     ]);
 
+    // http interceptor that deletes expired auth tokens
+    $provide.factory('handleAuthTokenExpired', [
+        '$q',
+        '$injector',
+        function ($q, $injector) {
+            return {
+                responseError: function (rejection) {
+
+                    var $auth = $injector.get('$auth');
+
+                    if($auth.isAuthenticated() &&
+                            (rejection.status === 401 && typeof rejection.data.i18n !== 'undefined' &&
+                            ['NEED_AUTHENTICATION', 'USER_INSUFFICIENT_PERMISSIONS'].indexOf(rejection.data.i18n) > -1) ||
+                            (rejection.status === 400 && typeof rejection.data.i18n !== 'undefined' &&
+                            ['NO_CURRENT_USER'].indexOf(rejection.data.i18n) > -1)) {
+                        // the token seems expired, let us delete it
+                        $auth.logout();
+                    }
+
+                    return $q.reject(rejection);
+                    
+                }
+            };
+        }
+    ]);
+
     $httpProvider.interceptors.push('handleServerNotReachable');
+    $httpProvider.interceptors.push('handleAuthTokenExpired');
 
 };

@@ -20,7 +20,7 @@
         <link rel="shortcut icon" type="image/x-icon" href="assets/img/logo.ico">
 
         <!-- RSS Info -->
-        <link rel="alternate" type="application/atom+xml" href="rss/feed.rss" title="Elektra RSS Feed">
+        <link rel="alternate" type="application/atom+xml" href="news/feed.rss" title="Elektra RSS Feed">
 
         <!-- Pace (load animation for requests) -->
         <script type="text/javascript">
@@ -43,6 +43,9 @@
 
         <!-- Vendor CSS -->
         <link rel="stylesheet" type="text/css" href="assets/skin/vendor.css">
+
+        <!-- AsciiNema CSS -->
+        <link rel="stylesheet" type="text/css" href="vendor/asciinema/asciinema-player.css">
 
         <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
         <!--[if lt IE 9]>
@@ -67,6 +70,9 @@
 
         <!-- Space for Sub-Templates -->
         <div ui-view></div>
+
+        <!-- AsciiNema JS -->
+        <script src="vendor/asciinema/asciinema-player.js"></script>
 
         <!-- Application JavaScript -->
         <script src="assets/js/application.js"></script>

@@ -34,6 +34,9 @@ UserApp::UserApp (cppcms::service & srv) : cppcms::application (srv)
 {
 	dispatcher ().assign ("/?([a-zA-Z0-9\\-\\.]{3,20})?/{0,1}", &UserApp::handle, this, 1);
 	mapper ().assign ("handle", "/{1}");
+
+	// force caching of database
+	(void)kdbrest::service::StorageEngine::instance ();
 }
 
 /**
@@ -182,7 +185,7 @@ void UserApp::handleDispatchPut (cppcms::http::request & req, cppcms::http::resp
 		model::User user = AuthenticationApp::getCurrentUser (req);
 
 		// in case no target specified, update current user
-		if (username.empty ())
+		if (username.empty () || req.get (PARAM_CURRENT) == "true")
 		{
 			username = user.getUsername ();
 		}
@@ -512,9 +515,10 @@ void UserApp::handleUpdate (cppcms::http::request & req, cppcms::http::response 
 		RootApp::setBadRequest (resp, "The given email is not a valid email.", "USER_UPDATE_INVALID_EMAIL");
 		return; // quit early
 	}
-	if (rank >= ELEKTRA_REST_USER_MIN_RANK && rank <= ELEKTRA_REST_USER_MAX_RANK)
+	if (rank != -1 && (rank < ELEKTRA_REST_USER_MIN_RANK || rank > ELEKTRA_REST_USER_MAX_RANK))
 	{
 		RootApp::setBadRequest (resp, "The given rank is not available.", "USER_UPDATE_INVALID_RANK");
+		return; // quit early
 	}
 
 	// get the user and update

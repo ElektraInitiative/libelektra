@@ -6,9 +6,11 @@
  * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
  */
 
+#include <algorithm>
 #include <cstdio>
 #include <fstream>
 #include <iostream>
+#include <regex>
 #include <sstream>
 
 #include <boost/algorithm/string/classification.hpp>
@@ -60,7 +62,37 @@ model::PluginFormat ConvertEngine::findSuitablePlugin (const std::string & forma
 			pluginname = format;
 		}
 
-		PluginSpec plugin (pluginname);
+		// validate raw plugin conf
+		if (conf.length () > 1 && ((conf.at (0) == '\'' && conf.find ('\'', 1) != std::string::npos) ||
+					   (conf.at (0) == '"' && conf.find ('"', 1) != std::string::npos)))
+		{
+			if (conf.at (0) == '\'')
+			{
+				conf = conf.substr (1, conf.find_first_of ('\'', 1) - 1);
+			}
+			else if (conf.at (0) == '"')
+			{
+				conf = conf.substr (1, conf.find_first_of ('"', 1) - 1);
+			}
+		}
+		if (conf.length () > 0 && conf.find_first_of ('=') == std::string::npos)
+		{
+			throw exception::UnsupportedConfigurationFormatException ();
+		}
+
+		// parse and validate config (not empty & no whitespace-only values)
+		kdb::KeySet config (parsePluginArguments (conf, "system"));
+		for (auto elem : config)
+		{
+			std::string value (elem.getString ());
+			if (value.empty () || std::all_of (value.begin (), value.end (), isspace))
+			{
+				throw exception::UnsupportedConfigurationFormatException ();
+			}
+		}
+
+		// validate plugin name and open plugin
+		PluginSpec plugin (pluginname, pluginname);
 
 		// find status
 		std::string statusString = db.lookupInfo (plugin, m_pluginStatus);
@@ -71,12 +103,13 @@ model::PluginFormat ConvertEngine::findSuitablePlugin (const std::string & forma
 		std::string providers = db.lookupInfo (plugin, m_pluginProvides);
 		std::string actualFormat = this->extractFormatFromProviderList (providers);
 
-		// parse config
-		kdb::KeySet config (parsePluginArguments (conf, "system"));
-
 		return model::PluginFormat (actualFormat, plugin.getName (), statuses, config);
 	}
 	catch (kdb::tools::NoPlugin & e)
+	{
+		throw exception::UnsupportedConfigurationFormatException ();
+	}
+	catch (kdb::tools::BadPluginName & e)
 	{
 		throw exception::UnsupportedConfigurationFormatException ();
 	}
@@ -222,12 +255,8 @@ model::ConfigFormat ConvertEngine::exportTo (const model::PluginFormat & plugin,
 	try
 	{
 		model::Entry valEntry (entry.getPublicName ());
-		std::string format = result.getPluginformat ().getPluginname ();
-		for (auto elem : result.getPluginformat ().getConfig ())
-		{
-			format.append (" " + elem.getBaseName () + "=" + elem.getString ());
-		}
-		model::ImportedConfig importCfg = this->import (result.getConfig (), format, valEntry);
+		model::ImportedConfig importCfg =
+			this->import (result.getConfig (), result.getPluginformat ().getPluginnameWithConfig (), valEntry);
 		// compare
 		if (importCfg.getKeySet ().size () != entry.getSubkeys ().size ())
 		{

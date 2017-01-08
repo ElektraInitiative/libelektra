@@ -1,0 +1,17 @@
+#!/bin/sh
+
+#Note: If you are looking for the script run_all that is installed
+#      (and can be executed using `kdb run_all`)
+#      you will find it in tests/shell/run_all.sh
+
+if [ $# -ne 1 ]
+then
+	echo "No build config. This script is supposed to run by using make run_all"
+	exit 1
+fi
+
+# run all tests
+#
+# also use `run make_memcheck` to check for memory issues (tests are complementary)
+
+LD_LIBRARY_PATH=`pwd`/lib ctest --force-new-ctest-process --output-on-failure --build-config $1

@@ -6,8 +6,11 @@
  * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
  */
 
+#include <iostream>
 #include <regex>
+#include <stdlib.h>
 
+#include <kdblogger.h>
 #include <service.hpp>
 
 namespace kdbrest
@@ -21,6 +24,7 @@ namespace service
  */
 StorageEngine::StorageEngine ()
 {
+	ELEKTRA_LOG ("Pre-caching data...");
 	// pre fetch the entry cache
 	this->loadAllEntries ();
 	// pre-fetch the user cache
@@ -63,8 +67,11 @@ bool StorageEngine::createEntry (model::Entry & entry)
 		throw kdbrest::exception::EntryAlreadyExistsException ();
 	}
 
-	ks.append (entry);
 	ks.append (entry.getSubkeys ());
+	ks.append (entry);
+
+	// set some environment variables that may be used for hooks
+	this->setEnvVars (entry, "INSERT");
 
 	if (kdb.set (ks, entry.getName ()) >= 1)
 	{
@@ -123,8 +130,11 @@ bool StorageEngine::updateEntry (model::Entry & entry)
 	}
 
 	ks.cut (entry);
-	ks.append (entry);
 	ks.append (entry.getSubkeys ());
+	ks.append (entry);
+
+	// set some environment variables that may be used for hooks
+	this->setEnvVars (entry, "UPDATE");
 
 	if (kdb.set (ks, entry.getName ()) >= 1)
 	{
@@ -184,6 +194,9 @@ bool StorageEngine::deleteEntry (model::Entry & entry)
 	}
 
 	ks.cut (entry);
+
+	// set some environment variables that may be used for hooks
+	this->setEnvVars (entry, "DELETE");
 
 	if (kdb.set (ks, entry.getName ()) >= 1)
 	{
@@ -632,6 +645,21 @@ void StorageEngine::loadAllUsers ()
 		}
 		elem++;
 	}
+}
+
+void StorageEngine::setEnvVars (const model::Entry & entry, const std::string action) const
+{
+	std::string env_key (ELEKTRA_REST_ENV_VAR_PREFIX "KEY");
+	std::string env_title (ELEKTRA_REST_ENV_VAR_PREFIX "TITLE");
+	std::string env_author (ELEKTRA_REST_ENV_VAR_PREFIX "AUTHOR");
+	std::string env_plugin (ELEKTRA_REST_ENV_VAR_PREFIX "PLUGIN");
+	std::string env_action (ELEKTRA_REST_ENV_VAR_PREFIX "ACTION");
+
+	setenv (env_key.c_str (), entry.getPublicName ().c_str (), 1);
+	setenv (env_title.c_str (), entry.getTitle ().c_str (), 1);
+	setenv (env_author.c_str (), entry.getAuthor ().c_str (), 1);
+	setenv (env_plugin.c_str (), entry.getUploadPlugin ().c_str (), 1);
+	setenv (env_action.c_str (), action.c_str (), 1);
 }
 
 } // namespace service

@@ -36,9 +36,10 @@ static char * elektraTrieStartsWith (const char * str, const char * substr);
 static Backend * elektraTriePrefixLookup (Trie * trie, const char * name);
 
 /**
- * @brief Internal Datastructure for mountpoints
+ * @brief The Trie structure
+ * @defgroup trie Trie
+ * @ingroup datastructs
  *
- * @{
  */
 
 /**
@@ -99,6 +100,18 @@ int trieClose (Trie * trie, Key * errorKey)
 	elektraFree (trie);
 	return 0;
 }
+
+/**
+ * @brief Insert into trie
+ *
+ * @ingroup trie
+ *
+ * @param trie the trie to insert to (0 to create a new trie)
+ * @param name the key's name to insert
+ * @param value the value to insert
+ *
+ * @retval trie on success
+ */
 Trie * trieInsert (Trie * trie, const char * name, Backend * value)
 {
 	char * p;

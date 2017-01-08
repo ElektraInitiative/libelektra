@@ -15,7 +15,7 @@ instance, `kdb export system/export` would export all the keys below
 system/export. Additionally, this command exports keys under the system/elektra
 directory by default. It does this so that information about the keys stored under
 this directory will be included if the Keys are later imported into an Elektra Key
-Database. This command export keys to stdout to store them into the Elektra
+Database. This command exports keys to stdout to store them into the Elektra
 Key Database. Typically, the export command is used with redirection to write the
 Keys to a file.
 

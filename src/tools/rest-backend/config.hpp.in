@@ -18,6 +18,9 @@
 // The REST API version
 #define ELEKTRA_REST_API_VERSION 1
 
+// Prefix for environment variables
+#define ELEKTRA_REST_ENV_VAR_PREFIX "ELEKTRA_REST_"
+
 // Base path for the repository used by the rest service to store its data.
 // Path may NOT end with a slash.
 #define ELEKTRA_REST_DEFAULT_PATH_CONFIGS "dir/configs"

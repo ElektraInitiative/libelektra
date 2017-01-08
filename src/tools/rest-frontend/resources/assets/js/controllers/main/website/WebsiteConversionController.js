@@ -19,7 +19,15 @@ module.exports = function ($scope, Logger, formats, ConversionService, ReportSer
             validated: false
         }
     };
-    $scope.formats = formats;
+    $scope.formats = formats.map(function(elem) {
+        var name = elem.plugin.name;
+        var space = name.indexOf(' ');
+        if(space > -1) {
+            name = name.substring(0, space);
+        }
+        elem.plugin.nameWithoutConf = name;
+        return elem;
+    });
     $scope.formatsInput = formats.filter(function (elem) {
         return (elem.plugin.statuses.indexOf("writeonly") !== -1) ? false : true;
     });

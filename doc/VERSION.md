@@ -75,5 +75,6 @@ a compatible but changed API. The revision is set back to zero then.
 Note: All 3 versioning infos are handled separately!
 
 http://www.gnu.org/software/libtool/manual/libtool.html#Versioning
+http://semver.org/
 
-> TODO write about SO_VERSION
+> TODO write about SO_VERSION and rest version

@@ -182,11 +182,13 @@ module.exports = function (Logger, $http, $q, config) {
                         if (service.cache.typeaheads.data.scopes.indexOf(entry.key.scope) === -1) {
                             service.cache.typeaheads.data.scopes.push(entry.key.scope);
                         }
-                        entry.tags.forEach(function (tag) {
-                            if (service.cache.typeaheads.data.tags.indexOf(tag) === -1) {
-                                service.cache.typeaheads.data.tags.push(tag);
-                            }
-                        });
+                        if(entry.tags && Array.isArray(entry.tags)) {
+                            entry.tags.forEach(function (tag) {
+                                if (service.cache.typeaheads.data.tags.indexOf(tag) === -1) {
+                                    service.cache.typeaheads.data.tags.push(tag);
+                                }
+                            });
+                        }
                     });
                 }
                 service.cache.typeaheads.cache = true;

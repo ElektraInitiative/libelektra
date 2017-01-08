@@ -41,7 +41,6 @@ std::vector<model::Entry> createTestEntries (model::User user, int num, int numT
 				     "value: description-") +
 			index);
 		entry.setUploadPlugin ("ini");
-		entry.setViews (0);
 		entry.setCreatedAt (static_cast<long> (std::rand () % (max - min + 1) + min));
 
 		std::vector<std::string> tags;
