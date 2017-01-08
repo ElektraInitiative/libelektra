@@ -1,5 +1,8 @@
 # How-To: Integrate elektra-merge Into a Debian Package #
 
+We assume that you know what [ucf](https://packages.debian.org/sid/ucf) is and have some
+[general knowledge about configuration file handling in Debian](https://wiki.debian.org/ConfigPackages).
+
 This guide explains how to use ucf's new `--three-way-merge-command` functionality in
 conjunction with Elektra in order to utilize Elektra's powerful tools in order to allow
 automatic three-way merges of your package's configuration during upgrades in a way
