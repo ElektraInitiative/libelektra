@@ -64,10 +64,16 @@ bool isToBeIgnored (std::string const & name)
 	return startsWith (name, "infos") || startsWith (name, "exports") || startsWith (name, "constants") ||
 	       startsWith (name, "exports") ||
 
+	       // spec-plugin
+	       startsWith (name, "conflict") || startsWith (name, "required") || startsWith (name, "array/") ||
+
 	       startsWith (name, "fallback") || startsWith (name, "override") || startsWith (name, "namespace") || name == "default" ||
 	       name == "context" ||
 
-	       startsWith (name, "callback") || startsWith (name, "required") ||
+	       // always ignore stuff internal to plugins
+	       startsWith (name, "internal") ||
+
+	       startsWith (name, "callback") ||
 
 	       startsWith (name, "binary") ||
 
