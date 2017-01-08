@@ -5,6 +5,7 @@ import org.libelektra.KeySet;
 import org.libelektra.Plugin;
 
 public class Echo implements Plugin {
+
 	public Echo() {
 		System.out.println("construct plugin");
 	}

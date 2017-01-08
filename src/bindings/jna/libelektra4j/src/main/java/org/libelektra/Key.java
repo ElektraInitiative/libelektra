@@ -2,6 +2,9 @@ package org.libelektra;
 
 import com.sun.jna.Pointer;
 
+/**
+ * Key is an essential class that encapsulates key name , value and metainfo.
+ */
 public class Key implements Iterable<String> {
 
 	private static final String WARNINGS = "warnings";
@@ -26,26 +29,37 @@ public class Key implements Iterable<String> {
 	public static final int KEY_CASCADING_NAME = 1 << 20;
 	public static final int KEY_META_NAME = 1 << 21;
 
-	// exceptions
-	public class KeyException extends java.lang.RuntimeException {
+	/**
+	 * Indicates a generic key exception occured.
+	 */
+	public static class KeyException extends java.lang.RuntimeException {
 
 		private static final long serialVersionUID = 637936674538102511L;
 
 	}
 
-	public class KeyInvalidName extends KeyException {
+	/**
+	 * Indicates an invalid key name has been used.
+	 */
+	public static class KeyInvalidName extends KeyException {
 
 		private static final long serialVersionUID = -7659317176138893895L;
 
 	}
 
-	public class KeyTypeConversion extends KeyException {
+	/**
+	 * Indicates a key's type conversion failed.
+	 */
+	public static class KeyTypeConversion extends KeyException {
 
 		private static final long serialVersionUID = -8648296754188373810L;
 
 	}
 
-	public class KeyTypeMismatch extends KeyException {
+	/**
+	 * Indicates a key's type does not match its value.
+	 */
+	public static class KeyTypeMismatch extends KeyException {
 
 		private static final long serialVersionUID = 8035874860117969698L;
 

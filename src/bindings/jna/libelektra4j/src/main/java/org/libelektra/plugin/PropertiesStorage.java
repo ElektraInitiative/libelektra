@@ -33,7 +33,7 @@ public class PropertiesStorage implements Plugin {
 			return 0;
 		}
 		final Properties properties = new Properties();
-		try (BufferedInputStream stream = new BufferedInputStream(new FileInputStream(parentKey.getString()))) {
+		try (final BufferedInputStream stream = new BufferedInputStream(new FileInputStream(parentKey.getString()))) {
 			properties.load(stream);
 		} catch (final IOException e) {
 			parentKey.setError("Could not read file");
@@ -52,7 +52,7 @@ public class PropertiesStorage implements Plugin {
 			final String newName = k.getName().substring(parentKey.getNameSize());
 			properties.setProperty(newName, k.getString());
 		}
-		try (BufferedOutputStream stream = new BufferedOutputStream(new FileOutputStream(parentKey.getString()))) {
+		try (final BufferedOutputStream stream = new BufferedOutputStream(new FileOutputStream(parentKey.getString()))) {
 			properties.store(stream, "written by elektra using Java Properties");
 		} catch (final IOException e) {
 			parentKey.setError("Could not write file");

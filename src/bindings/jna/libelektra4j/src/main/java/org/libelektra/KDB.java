@@ -2,12 +2,15 @@ package org.libelektra;
 
 import com.sun.jna.Pointer;
 
+/**
+ * Represents session with the Key database. Close after usage, or simply use a try-with-resources statement.
+ */
 public class KDB implements AutoCloseable {
 
 	/**
 	 * Custom KDB exception class being used for I/O errors
 	 */
-	public class KDBException extends java.io.IOException {
+	public static class KDBException extends java.io.IOException {
 
 		private static final long serialVersionUID = 1L;
 
@@ -109,7 +112,7 @@ public class KDB implements AutoCloseable {
 	 *
 	 * @return Native pointer object
 	 */
-	public Pointer get() {
+	protected Pointer get() {
 		return kdb;
 	}
 

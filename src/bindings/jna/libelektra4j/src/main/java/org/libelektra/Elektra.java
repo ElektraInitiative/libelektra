@@ -4,6 +4,9 @@ import com.sun.jna.Library;
 import com.sun.jna.Native;
 import com.sun.jna.Pointer;
 
+/**
+ * The JNA interface to libelektra.
+ */
 public interface Elektra extends Library {
 
 	/**

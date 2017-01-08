@@ -4,6 +4,9 @@ import java.util.Iterator;
 
 import com.sun.jna.Pointer;
 
+/**
+ * A keyset holds together a set of keys.
+ */
 public class KeySet implements java.lang.Iterable<Key> {
 
 	// constants
