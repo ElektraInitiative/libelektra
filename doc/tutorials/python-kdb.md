@@ -6,7 +6,7 @@ When programming in Python it is possible to access the kdb database, changing v
 
 ## First Steps ##
 
-In order to being able to use kdb, obviously, you at first need to `import kdb`. You need access to an Python-Object of kdb. This is accomplished by calling `kdb.KDB()` and saving this to a variable because later on this object will be needed for various operations.
+In order to being able to use `kdb`, you at first need to `import kdb`. You need access to a Python object of `KDB`. This is accomplished by calling `kdb.KDB()` and saving this to a variable because later on this object will be needed for various operations.
 The easiest way to do this would be:
 
 ```py
