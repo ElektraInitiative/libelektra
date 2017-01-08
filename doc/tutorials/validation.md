@@ -211,9 +211,12 @@ HERE
 
 And by convention for keys ending with `*`, multiple values are allowed.
 So we want to transform above syntax to:
+
+```
 %:notation TBD ? graph text semi
 %:tool-support* TBD ? none compiler ide
 %:applied-to TBD ? none small real-world
+```
 
 Lucky, we already have a plugin which allows us to so:
 
