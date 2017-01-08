@@ -193,7 +193,7 @@ We can write a plugin that parses that format and transform the content to key/v
 For example, let us assume we have enum validations in the file `schema.txt`:
 
 ```sh
-cat > $PWD/schema.txt << HERE
+cat > "$PWD/schema.txt" << HERE
 %: notation TBD ? graph text semi
 %: tool-support* TBD ? none compiler ide
 %: applied-to TBD ? none small real-world
@@ -211,7 +211,7 @@ So we want to transform above syntax to:
 Lucky, we already have a plugin which allows us to so:
 
 ```sh
-kdb mount $PWD/schema.txt spec/tutorial/schema simplespeclang keyword/enum=%:,keyword/assign=TBD
+kdb mount "$PWD/schema.txt" spec/tutorial/schema simplespeclang keyword/enum=%:,keyword/assign=TBD
 kdb spec-mount /tutorial/schema
 ```
 
