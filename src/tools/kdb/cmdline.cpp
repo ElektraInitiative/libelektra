@@ -519,8 +519,9 @@ kdb::Key Cmdline::createKey (int pos) const
 	{
 		throw invalid_argument (name + " is not a valid keyname" +
 								"\n\n" +
-								"For absolute keys (starting without /), please note that only one of the predefined namespaces can be used (see 'man elektra-namespaces').\n" +
-								"Please also ensure that the path is separated by a '/'."
+                                "For absolute keys (starting without '/'), please note that only one of the predefined namespaces can be used (see 'man elektra-namespaces').\n" +
+								"Please also ensure that the path is separated by a '/'.\n" +
+                                "An example for a valid absolute key is user/a/key, and for a valid cascading key /a/key."
 			);
 	}
 
