@@ -6,12 +6,20 @@ The _key database_ of Elektra is _hierarchically structured_. This means that ke
 
 Lets add some keys to the database. To add a key we can use this command:
 
-	kdb set <key> <value>
+```sh
+kdb set <key> <value>
+```
 
 Now add the the key **/a** with the Value **Value 1** and the key **/b/c** with the Value **Value 2**:
 
-	kdb set /a 'Value 1'
-	kdb set /b/c 'Value 2'
+```sh
+kdb set /a 'Value 1'
+#> Using name user/a
+#> Create a new key user/a with string Value 1
+kdb set /b/c 'Value 2'
+#> Using name user/b/c
+#> Create a new key user/b/c with string Value 2
+```
 
 ![Hierarchical structure of key database](/doc/images/tutorial_namespaces_hierarchy.svg)
 
@@ -43,7 +51,7 @@ Every key in Elektra belongs to one of these namespaces:
 - **proc** for in-memory keys (e.g. command-line)
 - **dir** for dir keys in current working directory
 - **user** for user keys in home directory
-- **system** for system keys in /etc or /
+- **system** for system keys in `/etc` or `/`
 
 All namespaces save their keys in a _separate hierarchical structure_ from the other namespaces.
 
@@ -51,9 +59,11 @@ But when we set the keys **/a** and **/b/c** before we didn't provide a namespac
 So I hear you asking, if every key has to belong to a namespace, where are the keys?
 They are in the _user_ namespace, as you can verify with:
 
-	kdb ls user
-	# user/a
-	# user/b/c
+```sh
+kdb ls user | grep -E '(/a|/b/c)'
+#> user/a
+#> user/b/c
+```
 
 When we don't provide a namespace Elektra assumes a default namespace, which should be **user** for non-root users.
 So if you are a normal user the command `kdb set /b/c 'Value 2'` was synonymous to `kdb set user/b/c 'Value 2'`.
@@ -62,16 +72,19 @@ At this point the key database should have this structure:
 ![Elektras namespaces](/doc/images/tutorial_namespaces_namespaces.svg)
 
 #### Cascading Keys ####
+
 Another question you may ask yourself now is, what happens if we lookup a key without providing a namespace. So let us retrieve the key **/b/c** with the -v flag in order to make _kdb_ more talkative.
 
-	kdb get -v /b/c
-	# got 3 keys
-	#  searching spec/b/c, found: <nothing>, options: KDB_O_CALLBACK
-	#  searching proc/b/c, found: <nothing>, options:
-	#  searching dir/b/c, found: <nothing>, options:
-	#  searching user/b/c, found: user/b/c, options:
-	# The resulting keyname is user/b/c
-	# Value 2
+```sh
+kdb get -v /b/c
+# STDOUT-REGEX: got \d+ keys
+#>  searching spec/b/c, found: <nothing>, options: KDB_O_CALLBACK
+#>  searching proc/b/c, found: <nothing>, options:
+#>  searching dir/b/c, found: <nothing>, options:
+#>  searching user/b/c, found: user/b/c, options:
+#> The resulting keyname is user/b/c
+#> Value 2
+```
 
 Here you see how Elektra searches all namespaces for matching keys in this order:
 **spec**, **proc**, **dir**, **user** and finally **system**
@@ -96,33 +109,50 @@ We now want to enter this configuration by using the **kdb** tool.
 The security policy will most probably be set by your system administrator.
 So she enters
 
-	sudo kdb set "system/sw/org/myapp/policy" "super-high-secure"
+```sh
+sudo kdb set "system/sw/org/myapp/policy" "super-high-secure"
+#> Create a new key system/sw/org/myapp/policy with string super-high-secure
+```
 
-The key **system/app/policy** will be stored in the system namespace (probably at /etc/kdb on a Linux/UNIX system).
+The key **system/app/policy** will be stored in the system namespace (probably at `/etc/kdb` on a Linux/UNIX system).
 
 Then the user sets his app directory by issuing:
 
-	kdb set "user/sw/org/myapp/default_dir" "/home/user/.myapp"
+```sh
+kdb set "user/sw/org/myapp/default_dir" "/home/user/.myapp"
+#> Create a new key user/sw/org/myapp/default_dir with string /home/user/.myapp
+```
 
 This key will be stored in the user namespace (at the home directory) and thus may vary from user to user.
 Elektra loads the value for the current user and passes it to the application.
 
 You can also retrieve the values in the command line by using the **kdb** tool:
 
-	kdb get system/sw/org/maypp
+```sh
+kdb get system/sw/org/myapp
+# RET:    0
+# STDERR: Did not find key
+```
 
 _Cascading keys_ are keys that start with **/** and are a way of making key lookups much easier.
 Let's say you want to load the configuration from the example above.
 You do not need to search every namespace by yourself.
 Just make a lookup for **/sw/org/myapp**, like this:
 
-	kdb get /sw/org/myapp/policy
-	kdb get /sw/org/myapp/default_dir
+```sh
+kdb get /sw/org/myapp/policy
+#> super-high-secure
+kdb get /sw/org/myapp/default_dir
+#> /home/user/.myapp
+```
 
 When using cascading key the best key will be searched at runtime.
 If you are only interested in the system key, you would use:
 
-	kdb get system/sw/org/myapp/policy
+```sh
+kdb get system/sw/org/myapp/policy
+#> super-high-secure
+```
 
 ## How it Works in C ##
 
@@ -130,11 +160,13 @@ The idea is to call **kdbGet()** to retrieve the root key for the application.
 Looking for a specific part of the configuration is done by **ksLookup()**.
 
 The documentation provides the following example to illustrate the intended usage.
-If you want to use a _cascading key_ (starting with /),
+If you want to use a _cascading key_ (starting with `/`),
 you use the **ksLookup()** or **ksLookupByName()** function
-(also see [doxygen](http://doc.libelektra.org/api/current/html/group__keyset.html#gaa34fc43a081e6b01e4120daa6c112004) ):
+(also see [doxygen](https://doc.libelektra.org/api/current/html/group__keyset.html#gaa34fc43a081e6b01e4120daa6c112004)):
 
-	if (kdbGet(handle, myConfig,  p=keyNew("/sw/org/myapp", KEY_END)) == -1)
-		errorHandler ("Could not get Keys", parentKey);
-	if ((myKey = ksLookupByName (myConfig, "/sw/org/myapp/mykey", 0)) == NULL)
-		errorHandler ("Could not Lookup Key");
+```c
+if (kdbGet(handle, myConfig,  p=keyNew("/sw/org/myapp", KEY_END)) == -1)
+	errorHandler ("Could not get Keys", parentKey);
+if ((myKey = ksLookupByName (myConfig, "/sw/org/myapp/mykey", 0)) == NULL)
+	errorHandler ("Could not Lookup Key");
+```

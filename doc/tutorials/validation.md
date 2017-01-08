@@ -16,42 +16,44 @@ file before it is written to disc.
 Any of Elektra's user interfaces will work with the technique
 described in this tutorial, e.g.:
 
-1.) `kdb qt-gui`: graphical user interface
+1. `kdb qt-gui`: graphical user interface
 
-2.) `kdb editor`: starts up your favourite text editor and
+2. `kdb editor`: starts up your favourite text editor and
     allows you to edit configuration in any syntax.
     (generalization of `sudoedit`)
 
-3.) `kdb set`: manipulate or add individual configuration
+3. `kdb set`: manipulate or add individual configuration
     entries.
     (generalization of `adduser`)
 
-4.) Any other tool using Elektra to store configuration
+4. Any other tool using Elektra to store configuration
     (e.g. if the application itself has capabilities to
      modify its configuration)
 
 
 ## Metadata Together With Keys ##
 
-The most direct way to validate keys is
+The most direct way to validate keys are
 
 ```sh
-> kdb mount validation.dump user/tutorial/together dump validation
-> kdb vset user/tutorial/together/test 123 "[1-9][0-9]*" "Not a number"
-> kdb set user/tutorial/together/test abc
-Error (#42) occurred!
-Description: Key Value failed to validate
-Reason: Not a number
+kdb mount validation.dump user/tutorial/together dump validation
+kdb vset user/tutorial/together/test 123 "[1-9][0-9]*" "Not a number"
+kdb set user/tutorial/together/test abc
+# STDERR-REGEX: The command kdb set failed while accessing the key database .*⏎
+#               Sorry, the error .#42. occurred ;(⏎
+#               Description: key value failed to validate⏎
+#               .*Reason: Not a number.*
+# RET:          5
 ```
 
 For all other plugins (except `validation`) the convenience tool `kdb vset`
 is missing. Let us see what `kdb vset` actually did:
 
 ```sh
-> kdb lsmeta user/tutorial/together/test
-check/validation
-check/validation/match
-check/validation/message
+kdb lsmeta user/tutorial/together/test
+#> check/validation
+#> check/validation/match
+#> check/validation/message
 ```
 
 So it only appended some metadata (data describing the data) next to the key,
@@ -59,11 +61,12 @@ which we also could do by:
 
 ```sh
 # Following lines are (except for error conditions) identical to
-# > kdb vset user/tutorial/together/test 123 "[1-9][0-9]*" "Not a number"
-> kdb setmeta user/tutorial/together/test check/validation "[1-9][0-9]*"
-> kdb setmeta user/tutorial/together/test check/validation/match LINE
-> kdb setmeta user/tutorial/together/test check/validation/message "Not a number"
-> kdb set user/tutorial/together/test 123
+# kdb vset user/tutorial/together/test 123 "[1-9][0-9]*" "Not a number"
+kdb setmeta user/tutorial/together/test check/validation "[1-9][0-9]*"
+kdb setmeta user/tutorial/together/test check/validation/match LINE
+kdb setmeta user/tutorial/together/test check/validation/message "Not a number"
+kdb set user/tutorial/together/test 123
+#> Set string to 123
 ```
 
 The approach is not limited to validation via regular expressions, but
@@ -87,7 +90,7 @@ The drawbacks of this approach are:
 - You cannot validate structure of which keys must be present or absent.
 
 
-## Get Started with spec ##
+## Get Started with `spec` ##
 
 These issues are resolved straightforward by separation of schemata (describing the
 configuration) and the configuration itself.
@@ -98,53 +101,54 @@ To make this work, we need a plugin that applies all metadata found in the `spec
 to all other namespaces. This plugin is called `spec` and needs to be mounted
 globally (will be added by default with `kdb global-mount`):
 
-```
-> kdb global-mount
+```sh
+kdb global-mount
 ```
 
 Then we can write metadata to `spec` and see it for every cascading key:
 
 ```sh
-> kdb setmeta spec/tutorial/spec/test hello world
-> kdb set user/tutorial/spec/test value
-> kdb lsmeta /tutorial/spec/test
-hello
+kdb setmeta spec/tutorial/spec/test hello world
+kdb set user/tutorial/spec/test value
+#> Create a new key user/tutorial/spec/test with string value
+kdb lsmeta /tutorial/spec/test
+#> hello
 ```
 
 But it also supports globbing (`_` for any key, `?` for any char, `[]` for character classes):
 
 ```sh
-> kdb setmeta "spec/tutorial/spec/_" new meta
-> kdb lsmeta /tutorial/spec/test
-hello
-new
+kdb setmeta "spec/tutorial/spec/_" new meta
+kdb lsmeta /tutorial/spec/test
+#> hello
+#> new
 ```
 
 So let us combine this functionality with validation plugins.
 So we would specify:
 
-```
-> kdb setmeta spec/tutorial/spec/test check/validation "[1-9][0-9]*"
-> kdb setmeta spec/tutorial/spec/test check/validation/match LINE
-> kdb setmeta spec/tutorial/spec/test check/validation/message "Not a number"
+```sh
+kdb setmeta spec/tutorial/spec/test check/validation "[1-9][0-9]*"
+kdb setmeta spec/tutorial/spec/test check/validation/match LINE
+kdb setmeta spec/tutorial/spec/test check/validation/message "Not a number"
 ```
 
 Alternatively, we could mount a plugin that supports metadata,
 e.g. the `ni` plugin, and specify the configuration
 using a text editor (or `cat`):
 
-```
-> kdb mount spec.ini spec/tutorial/spec ni
-> cat << HERE > `kdb file spec/tutorial/spec`
+```sh
+kdb mount spec.ini spec/tutorial/spec ni
+cat << HERE > `kdb file spec/tutorial/spec`
 [test]
 check/validation = [1-9][0-9]*
 check/validation/match = LINE
 check/validation/message = Not a number
 HERE
-> kdb lsmeta /tutorial/spec/test
-check/validation
-check/validation/match
-check/validation/message
+kdb lsmeta /tutorial/spec/test
+#> check/validation
+#> check/validation/match
+#> check/validation/message
 ```
 
 As next step we need to correctly mount all validation plugins to `/tutorial/spec`.
@@ -153,14 +157,15 @@ specification to assemble the plugins. We only have to specify where the
 mountpoint is (and which file name should be used), then we can mount
 the file according the specification and have validation for all namespaces:
 
-```
-> kdb setmeta spec/tutorial/spec mountpoint spec-tutorial.dump
-> kdb spec-mount /tutorial/spec
-> kdb set /tutorial/spec/test wrong
-Using name user/tutorial/spec/test
-Error (#42) occurred!
-Description: Key Value failed to validate
-Reason: Not a number
+```sh
+kdb setmeta spec/tutorial/spec mountpoint spec-tutorial.dump
+kdb spec-mount /tutorial/spec
+kdb set /tutorial/spec/test wrong
+#> Using name user/tutorial/spec/test
+# STDERR-REGEX: .*Sorry, the error .#42. occurred ;(⏎
+#               Description: Key Value failed to validate⏎
+#               .*Reason: Not a number.*
+# RET:          5
 ```
 
 ## Rejecting Configuration Keys ##
@@ -170,13 +175,15 @@ Sometimes, however, applications require the presence or absence of keys.
 There are many ways to do so directly supported by [the spec plugin](/src/plugins/spec).
 Another way is to trigger errors with the [error plugin](/src/plugins/error):
 
-```
-> kdb setmeta /tutorial/spec/should_not_be_here trigger/error 10
-> kdb spec-mount /tutorial/spec
-> kdb set /tutorial/spec/should_not_be_here abc
-Error (#10) occurred!
-> kdb get /tutorial/spec/should_not_be_here
-Did not find key
+```sh
+kdb setmeta /tutorial/spec/should_not_be_here trigger/error 10
+#> Using keyname spec/tutorial/spec/should_not_be_here
+kdb spec-mount /tutorial/spec
+kdb set /tutorial/spec/should_not_be_here abc
+#> Using name user/tutorial/spec/should_not_be_here
+# STDERR-REGEX: .*Error .#10. occurred!.*
+kdb get /tutorial/spec/should_not_be_here
+#> Did not find key
 ```
 
 If we want to reject every optional key (and only want to allow required keys)
@@ -192,8 +199,8 @@ We can write a plugin that parses that format and transform the content to key/v
 
 For example, let us assume we have enum validations in the file `schema.txt`:
 
-```
-cat > $PWD/schema.txt << HERE
+```sh
+cat > "$PWD/schema.txt" << HERE
 %: notation TBD ? graph text semi
 %: tool-support* TBD ? none compiler ide
 %: applied-to TBD ? none small real-world
@@ -204,14 +211,17 @@ HERE
 
 And by convention for keys ending with `*`, multiple values are allowed.
 So we want to transform above syntax to:
+
+```
 %:notation TBD ? graph text semi
 %:tool-support* TBD ? none compiler ide
 %:applied-to TBD ? none small real-world
+```
 
 Lucky, we already have a plugin which allows us to so:
 
-```
-kdb mount $PWD/schema.txt spec/tutorial/schema simplespeclang keyword/enum=%:,keyword/assign=TBD
+```sh
+kdb mount "$PWD/schema.txt" spec/tutorial/schema simplespeclang keyword/enum=%:,keyword/assign=TBD
 kdb spec-mount /tutorial/schema
 ```
 
@@ -222,7 +232,7 @@ schema using `spec-mount`.
 Now we have enforced that the 3 configuration options `notation tool-support* applied-to`
 need to be present (and no other). For example we can import:
 
-```
+```sh
 kdb import -s validate -c "format=% : %" /tutorial/schema simpleini << HERE
 notation : graph
 tool-support : ? none
@@ -232,13 +242,13 @@ HERE
 
 Or (afterwards) setting individual values:
 
-```
+```sh
 kdb set /tutorial/schema/applied-to smal # fails, not a valid enum
 ```
 
 Or (in `sudoedit` fashion):
 
-```
+```sh
 kdb editor -s validate /tutorial/schema simpleini
 ```
 

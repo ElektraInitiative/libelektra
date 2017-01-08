@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# remember the build directoy
+# remember the build directory
 ROOT_DIR=$PWD
 
 # build the applications
