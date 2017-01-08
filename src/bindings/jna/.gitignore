@@ -1,0 +1,6 @@
+# ignore maven output directory
+libelektra4j/target
+
+# ignore java class files
+*.class
+
