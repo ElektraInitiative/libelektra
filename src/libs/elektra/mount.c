@@ -309,15 +309,9 @@ Plugin * elektraMountGlobalsLoadPlugin (KeySet * referencePlugins, Key * cur, Ke
 	return plugin;
 }
 
-int mountGlobals (KDB * kdb, KeySet * keys, KeySet * modules, Key * errorKey)
+KeySet * elektraDefaultGlobalConfig ()
 {
-	int retval = 0;
-	Key * root = ksLookupByName (keys, "system/elektra/globalplugins", 0);
-	if (!root)
-	{
-		ELEKTRA_LOG ("no global configuration, assuming spec as default");
-		ksDel (keys);
-		keys = ksNew (18, keyNew ("system/elektra/globalplugins", KEY_VALUE, "", KEY_END),
+	return ksNew (18, keyNew ("system/elektra/globalplugins", KEY_VALUE, "", KEY_END),
 			      keyNew ("system/elektra/globalplugins/postcommit", KEY_VALUE, "list", KEY_END),
 			      keyNew ("system/elektra/globalplugins/postcommit/user", KEY_VALUE, "list", KEY_END),
 			      keyNew ("system/elektra/globalplugins/postcommit/user/placements", KEY_VALUE, "", KEY_END),
@@ -340,6 +334,17 @@ int mountGlobals (KDB * kdb, KeySet * keys, KeySet * modules, Key * errorKey)
 			      keyNew ("system/elektra/globalplugins/pregetstorage", KEY_VALUE, "list", KEY_END),
 			      keyNew ("system/elektra/globalplugins/prerollback", KEY_VALUE, "list", KEY_END),
 			      keyNew ("system/elektra/globalplugins/presetstorage", KEY_VALUE, "list", KEY_END), KS_END);
+}
+
+int mountGlobals (KDB * kdb, KeySet * keys, KeySet * modules, Key * errorKey)
+{
+	int retval = 0;
+	Key * root = ksLookupByName (keys, "system/elektra/globalplugins", 0);
+	if (!root)
+	{
+		ELEKTRA_LOG ("no global configuration, assuming spec as default");
+		ksDel (keys);
+		keys = elektraDefaultGlobalConfig ();
 		root = ksHead (keys);
 	}
 	for (int i = 0; i < NR_GLOBAL_POSITIONS; ++i)
