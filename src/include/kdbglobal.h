@@ -15,6 +15,12 @@
 
 /**
  * Helper for identifying global plugin positions
+ *
+ * We chose using these macros over other solutions
+ * in order to have the array available statically.
+ * Thus we can avoid initializing the KDB struct
+ * during runtime and still maintain the flexibility
+ * of easily adding new hook positions.
  */
 // clang-format off
 #define FOREACH_POSITION(POSITION) \
