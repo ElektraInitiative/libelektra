@@ -21,7 +21,7 @@ Go ahead and give it a try:
 ```bash
 $ cd /vagrant
 # this builds the commit with the tag "0.8.19"
-$ sudo ./installelektra.sh "0.8.19"
+$ sudo ./packelektra.sh "0.8.19"
 ```
 
 After this command has finished you can safely test your specified Elektrasnapshot in the VM.
