@@ -1,0 +1,3 @@
+.vagrant
+share/*
+!share/packelektra.sh

@@ -1,0 +1,28 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure(2) do |config|
+  config.vm.box = "debian/jessie64"
+
+
+  config.vm.provision :shell, path: "provision.sh"
+
+  config.vm.provider "virtualbox" do |v|
+    config.vm.provision "guestAdditions",
+      type: "shell",
+      preserve_order: true,
+      args: "5.1.12", # you might want to adapt this to your virtualbox version
+      inline: <<-SCRIPT
+        apt-get -qq -y install linux-headers-amd64
+        cd /tmp
+        wget -q -O VBoxGuestAdditions.iso "http://download.virtualbox.org/virtualbox/$1/VBoxGuestAdditions_$1.iso"
+        mkdir /media/VBoxGuestAdditions
+        mount VBoxGuestAdditions.iso -o loop /media/VBoxGuestAdditions
+        /media/VBoxGuestAdditions/VBoxLinuxAdditions.run --nox11
+        umount /media/VBoxGuestAdditions && rmdir /media/VBoxGuestAdditions
+        rm VBoxGuestAdditions.iso
+      SCRIPT
+
+    config.vm.synced_folder "share/", "/vagrant", type: "virtualbox"
+  end
+end
