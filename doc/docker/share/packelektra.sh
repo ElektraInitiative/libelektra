@@ -12,7 +12,7 @@ cd /share
 if [ ! -d "${ELEKTRADIR}" ]; then
     curl -sS ${SOURCE} | tar xz --transform "s/libelektra-${IDENTIFIER}/${ELEKTRADIR}/"
 fi
-if [ ! -d "{ELEKTRADIR}/build" ]; then
+if [ ! -d "${ELEKTRADIR}/build" ]; then
   mkdir "${ELEKTRADIR}/build"
 fi
 cd "${ELEKTRADIR}/build"
