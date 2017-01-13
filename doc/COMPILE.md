@@ -490,6 +490,10 @@ If you want Elektra to *not* use `RPATH`, you can add:
 Then all plugins are directly installed to the library directory and loaded
 like other libraries (in any of `ld.so` paths).
 
+Alternatively, which gives you the advantage not to clutter the main library path,
+is to add the plugin folder in `/etc/ld.so.conf.d/elektra`. Note that it still allows
+applications to link against plugins.
+
 
 ## Troubleshooting ##
 
