@@ -1,6 +1,6 @@
 #!/bin/sh
 
-IDENTIFIER="0.8.19" # tag or hash of commit
+IDENTIFIER="${1}" # tag or hash of commit
 PKGNAME="elektra"
 PKGVERSION="${IDENTIFIER}"
 RELEASE="1"
@@ -17,5 +17,4 @@ if [ ! -d "{ELEKTRADIR}/build" ]; then
 fi
 cd "${ELEKTRADIR}/build"
 cmake -DCMAKE_INSTALL_PREFIX=/usr .. && make
-checkinstall -D -y --pkgname ${PKGNAME} --pkgversion ${PKGVERSION} --pkgrelease ${RELEASE} --pkgsource ${SOURCE} --pakdir /vagrant
-
+checkinstall -D -y --pkgname "${PKGNAME}" --pkgversion "${PKGVERSION}" --pkgrelease "${RELEASE}" --pkgsource "${SOURCE}" --pakdir /vagrant

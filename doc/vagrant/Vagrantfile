@@ -3,7 +3,7 @@
 
 Vagrant.configure(2) do |config|
   config.vm.box = "debian/jessie64"
-
+  config.vm.synced_folder "share/", "/vagrant"
 
   config.vm.provision :shell, path: "provision.sh"
 
@@ -13,7 +13,7 @@ Vagrant.configure(2) do |config|
       preserve_order: true,
       args: "5.1.12", # you might want to adapt this to your virtualbox version
       inline: <<-SCRIPT
-        apt-get -qq -y install linux-headers-amd64
+        apt-get -qq update && apt-get -qq -y install linux-headers-amd64
         cd /tmp
         wget -q -O VBoxGuestAdditions.iso "http://download.virtualbox.org/virtualbox/$1/VBoxGuestAdditions_$1.iso"
         mkdir /media/VBoxGuestAdditions
@@ -22,7 +22,6 @@ Vagrant.configure(2) do |config|
         umount /media/VBoxGuestAdditions && rmdir /media/VBoxGuestAdditions
         rm VBoxGuestAdditions.iso
       SCRIPT
-
-    config.vm.synced_folder "share/", "/vagrant", type: "virtualbox"
   end
+
 end
