@@ -8,7 +8,6 @@ SOURCE="https://codeload.github.com/ElektraInitiative/libelektra/tar.gz/${IDENTI
 ELEKTRADIR="libelektra-${IDENTIFIER}"
 
 # install elektra and create deb package
-cd /vagrant
 if [ ! -d "${ELEKTRADIR}" ]; then
     curl -sS ${SOURCE} | tar xz --transform "s/libelektra-${IDENTIFIER}/${ELEKTRADIR}/"
 fi
