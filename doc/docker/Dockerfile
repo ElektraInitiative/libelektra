@@ -24,7 +24,7 @@ RUN apt-get -qq update && apt-get -qq -y install \
     libdbus-1-dev \
     libpcre3-dev \
     libpcre++-dev \
-    checkinstall
+    checkinstall \
     && gem install ronn
 
 # install Swig 3
@@ -32,5 +32,5 @@ ADD https://codeload.github.com/swig/swig/tar.gz/rel-3.0.11 /root/swig.tar.gz
 RUN cd && tar xzf swig.tar.gz && cd swig-rel-3.0.11 && ./autogen.sh && ./configure && make && make install
 
 # Housekeeping
-RUN apt autoremove -qq -y \
+RUN apt-get autoremove -qq -y \
     && rm -rf /var/lib/apt/lists/* && rm -rf /tmp/*
