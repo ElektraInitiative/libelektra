@@ -15,5 +15,5 @@ if [ ! -d "${ELEKTRADIR}/build" ]; then
   mkdir "${ELEKTRADIR}/build"
 fi
 cd "${ELEKTRADIR}/build"
-cmake -DCMAKE_INSTALL_PREFIX=/usr .. && make
+cmake -DCMAKE_INSTALL_PREFIX=/usr .. && make -j
 checkinstall -D -y --pkgname "${PKGNAME}" --pkgversion "${PKGVERSION}" --pkgrelease "${RELEASE}" --pkgsource "${SOURCE}" --pakdir /vagrant
