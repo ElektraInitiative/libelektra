@@ -9,10 +9,10 @@ ELEKTRADIR="libelektra-${IDENTIFIER}"
 
 # install elektra and create deb package
 if [ ! -d "${ELEKTRADIR}" ]; then
-    curl -sS ${SOURCE} | tar xz --transform "s/libelektra-${IDENTIFIER}/${ELEKTRADIR}/"
+	curl -sS ${SOURCE} | tar xz --transform "s/libelektra-${IDENTIFIER}/${ELEKTRADIR}/"
 fi
 if [ ! -d "${ELEKTRADIR}/build" ]; then
-  mkdir "${ELEKTRADIR}/build"
+	mkdir "${ELEKTRADIR}/build"
 fi
 cd "${ELEKTRADIR}/build"
 cmake -DCMAKE_INSTALL_PREFIX=/usr .. && make -j
