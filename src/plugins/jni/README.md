@@ -50,21 +50,27 @@ and run:
 
 ### Java prerequisites on macOS ###
 
-macOS includes an old apple specific version of java, based on 1.6. However, for the jni plugin version 1.8 of Java is required, so either the openjdk or the oracle jdk has to be installed.
+macOS includes an old apple specific version of java, based on 1.6.
+However, for the jni plugin version 1.8 of Java is required, so either the openjdk or the oracle jdk has to be installed.
 
-Please install oracle's jdk8 via their provided installer. After that, you have to set the JAVA_HOME environment variable to the folder where the jdk is installed, usually like
+Please install oracle's jdk8 via their provided installer.
+After that, you have to set the JAVA_HOME environment variable to the folder where the jdk is installed, usually like
 
 	export JAVA_HOME="/Library/Java/JavaVirtualMachines/jdk1.8.0_112.jdk/Contents/Home/"
 
-If it should still not find the correct jni version, or says the jni version is not 1.8, then it most likely still searches in the wrong directory for the jni header file. You can try clearing your build folder and configuring it again from scratch.
-It has been experienced that if the project has been built already without this environment variable set, the java location is cached and will be resolved wrong in future builds, even though the environment variable is set.
-
-As macOS handles linked libraries differently, there is no ldconfig command. Instead you can export an environment variable to tell elektra the location of the java dynamic libraries.
+As macOS handles linked libraries differently, there is no ldconfig command.
+Instead you can export an environment variable to tell elektra the location of the java dynamic libraries.
 
 	export DYLD_FALLBACK_LIBRARY_PATH="/Library/Java/JavaVirtualMachines/jdk1.8.0_112.jdk/Contents/Home/jre/lib:/Library/Java/JavaVirtualMachines/jdk1.8.0_112.jdk/Contents/Home/jre/lib/server/"
 
-
 Afterwards, the jni plugin should be included in the build and compile successfully.
+
+#### Troubleshooting ####
+
+If it should still not find the correct jni version, or says the jni version is not 1.8, then it most likely still searches in the wrong directory for the jni header file.
+It has been experienced that if the project has been built already without this environment variable set, the java location is cached.
+As a result, it will be resolved wrong in future builds, even though the environment variable is set.
+To resolve this, it should be enough to delete the CMakeCache.txt file in the build directory and reconfigure the build.
 
 ### Enabling the plugin ###
 Then enable the plugin using (`ALL;-EXPERIMENTAL` is default):
