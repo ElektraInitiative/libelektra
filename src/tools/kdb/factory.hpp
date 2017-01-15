@@ -48,6 +48,7 @@
 #include <sget.hpp>
 #include <shell.hpp>
 #include <specmount.hpp>
+#include <superls.hpp>
 #include <test.hpp>
 #include <umount.hpp>
 #include <validation.hpp>
@@ -82,6 +83,7 @@ public:
 		m_factory.insert (std::make_pair ("set", new Cnstancer<SetCommand> ()));
 		m_factory.insert (std::make_pair ("rm", new Cnstancer<RemoveCommand> ()));
 		m_factory.insert (std::make_pair ("ls", new Cnstancer<LsCommand> ()));
+		m_factory.insert (std::make_pair ("super-ls", new Cnstancer<SuperLsCommand> ()));
 		m_factory.insert (std::make_pair ("cp", new Cnstancer<CpCommand> ()));
 		m_factory.insert (std::make_pair ("mv", new Cnstancer<MvCommand> ()));
 		m_factory.insert (std::make_pair ("mount", new Cnstancer<MountCommand> ()));
