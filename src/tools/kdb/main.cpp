@@ -80,10 +80,8 @@ void displayVersion ()
 	}
 }
 
-
-void catchSignal (int signum)
+void printSignal (int signum)
 {
-	cerr << endl << "Sorry, I crashed by the signal ";
 	switch (signum)
 	{
 	case SIGILL:
@@ -99,6 +97,14 @@ void catchSignal (int signum)
 		cerr << "SIGSEGV";
 		break;
 	}
+}
+
+
+void catchSignal (int signum)
+{
+	cerr << endl << "Sorry, I crashed by the signal ";
+	printSignal (signum);
+	cerr << endl << "This should not have happened!" << endl;
 	cerr << endl << "Please report the issue on https://issues.libelektra.org/" << std::endl;
 	signal (SIGABRT, SIG_DFL);
 	abort ();
@@ -108,7 +114,9 @@ void setupSignal (int signum)
 {
 	if (signal (signum, catchSignal) == SIG_ERR)
 	{
-		cerr << "Sorry, I could not setup signal " << signum << " because: " << strerror (errno) << std::endl;
+		cerr << "Sorry, I could not setup signal ";
+		printSignal (signum);
+		cerr << " because: " << strerror (errno) << std::endl;
 		cerr << "Please report the issue on https://issues.libelektra.org/" << std::endl;
 	}
 }
