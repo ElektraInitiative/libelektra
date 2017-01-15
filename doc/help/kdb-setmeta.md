@@ -3,9 +3,9 @@ kdb-setmeta(1) -- Set the value of a metakey
 
 ## SYNOPSIS
 
-`kdb setmeta <key-name> <metaname> [<metavalue>]`
+`kdb setmeta <key name> <metaname> [<metavalue>]`
 
-Where `key-name` is the path to the key that the metakey is associated with,
+Where `key name` is the path to the key that the metakey is associated with,
 `metaname` is the name of the metakey the user would like to set the value of (or create),
 and `metavalue` is the value the user wishes to set the metakey to.
 If no `metavalue` is given, the metakey will be removed.

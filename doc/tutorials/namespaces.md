@@ -68,7 +68,7 @@ Another question you may ask yourself now is, what happens if we lookup a key wi
 	#  searching proc/b/c, found: <nothing>, options:
 	#  searching dir/b/c, found: <nothing>, options:
 	#  searching user/b/c, found: user/b/c, options:
-	# The resulting keyname is user/b/c
+	# The resulting key name is user/b/c
 	# Value 2
 
 Here you see how Elektra searches all namespaces for matching keys in this order:

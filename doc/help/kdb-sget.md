@@ -3,9 +3,9 @@ kdb-sget(1) -- Get the value of a key stored in the key database from a script
 
 ## SYNOPSIS
 
-`kdb sget <key-name> <default-value>`
+`kdb sget <key name> <default-value>`
 
-Where `key-name` is the full path to the key and `default-value` is the value that should be printed if no value can be retrieved.
+Where `key name` is the full path to the key and `default-value` is the value that should be printed if no value can be retrieved.
 
 ## DESCRIPTION
 

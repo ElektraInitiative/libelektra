@@ -3,9 +3,9 @@ kdb-file(1) -- Displays which file a key is stored in
 
 ## SYNOPSIS
 
-`kdb file <key-name>`  
+`kdb file <key name>`  
 
-Where `key-name` is the path of a key.  
+Where `key name` is the path of a key.  
 
 ## DESCRIPTION
 

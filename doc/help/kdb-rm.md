@@ -3,9 +3,9 @@ kdb-rm(1) -- Remove key(s) from the key database
 
 ## SYNOPSIS
 
-`kdb rm <key-name>`
+`kdb rm <key name>`
 
-Where `key-name` is the path of the key(s) you want to remove.
+Where `key name` is the path of the key(s) you want to remove.
 Note that when using the `-r` flag, `path` as well as all of the keys below it will be removed.
 
 ## DESCRIPTION

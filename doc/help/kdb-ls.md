@@ -3,9 +3,9 @@ kdb-ls(1) -- List keys in the key database
 
 ## SYNOPSIS
 
-`kdb ls <key-name>`  
+`kdb ls <key name>`  
 
-Where `key-name` is the path in which the user would like to list keys below.
+Where `key name` is the path in which the user would like to list keys below.
 
 ## DESCRIPTION
 

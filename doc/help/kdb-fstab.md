@@ -3,9 +3,9 @@ kdb-fstab(1) -- Create a new fstab entry
 
 ## SYNOPSIS
 
-`kdb fstab <key-name> <fs_spec> <fs_file> <fs_vfstype> <fs_mntops>`
+`kdb fstab <key name> <fs_spec> <fs_file> <fs_vfstype> <fs_mntops>`
 
-Where `key-name` is the path the where the key should be stored in the key database.
+Where `key name` is the path where the key should be stored in the key database.
 The other arguments are as described in fstab(5).
 
 

@@ -3,16 +3,16 @@ kdb-get(1) -- Get the value of a key stored in the key database
 
 ## SYNOPSIS
 
-`kdb get <key-name>`
+`kdb get <key name>`
 
-Where `key-name` is the full path to the key.
+Where `key name` is the full path to the key.
 
 ## DESCRIPTION
 
 This command is used to retrieve the value of a key.
 
-If you enter a `key-name` starting with a leading `/`, then a cascading lookup will be performed in order to attempt to locate the key.
-In this case, using the `-v` option allows the user to see the full `key-name` of the key if it is found.
+If you enter a `key name` starting with a leading `/`, then a cascading lookup will be performed in order to attempt to locate the key.
+In this case, using the `-v` option allows the user to see the full key name of the key if it is found.
 
 Note: There is a current limitation where only keys that are mounted will be considered during a cascading lookup.
 A workaround that will lookup all keys is to pass the `-a` option.

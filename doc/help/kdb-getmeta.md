@@ -3,9 +3,9 @@ kdb-getmeta(1) -- Get the value of a metakey stored in the key database
 
 ## SYNOPSIS
 
-`kdb getmeta <key-name> <metaname>`  
+`kdb getmeta <key name> <metaname>`  
 
-Where `key-name` is the full path to the key and
+Where `key name` is the full path to the key and
 `metaname` is the name of the metakey the user would like to access.
 
 ## DESCRIPTION
@@ -13,7 +13,7 @@ Where `key-name` is the full path to the key and
 This command is used to print the value of a metakey.
 A metakey is information stored in a key which describes that key.
 
-The handling of cascading `key-name` does not differ to `kdb get`.
+The handling of cascading `key name` does not differ to `kdb get`.
 Make sure to use the namespace `spec`, if you want metadata from there.
 
 ## RETURN VALUES
