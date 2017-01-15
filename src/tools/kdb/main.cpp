@@ -17,6 +17,7 @@
 #include <command.hpp>
 #include <external.hpp>
 #include <factory.hpp>
+#include <signal.h>
 #include <toolexcept.hpp>
 
 #include <kdb.hpp>
@@ -79,8 +80,49 @@ void displayVersion ()
 	}
 }
 
+
+void catchSignal (int signum)
+{
+	cerr << endl << "Caught signal ";
+	switch (signum)
+	{
+	case SIGILL:
+		cerr << "SIGILL";
+		break;
+	case SIGABRT:
+		cerr << "SIGABRT";
+		break;
+	case SIGFPE:
+		cerr << "SIGFPE";
+		break;
+	case SIGSEGV:
+		cerr << "SIGSEGV";
+		break;
+	}
+	cerr << endl << "Please report an issue on https://issues.libelektra.org/" << std::endl;
+	signal (SIGABRT, SIG_DFL);
+	abort ();
+}
+
+void setupSignal (int signum)
+{
+	if (signal (signum, catchSignal) == SIG_ERR)
+	{
+		cerr << "Could not setup signal " << signum << " because: " << strerror (errno) << std::endl;
+	}
+}
+
+void setupSignals ()
+{
+	setupSignal (SIGILL);
+	setupSignal (SIGABRT);
+	setupSignal (SIGFPE);
+	setupSignal (SIGSEGV);
+}
+
 int main (int argc, char ** argv)
 {
+	setupSignals ();
 	Factory f;
 
 	if (argc < 2)
