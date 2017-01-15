@@ -247,7 +247,6 @@ other file formats:
 	apache
 	kde-ini
 	gconf
-	xml
 	inittab
 
 compile lenses as plugin:

@@ -214,7 +214,3 @@ Daemon which exports whole elektra configuration
 uninstall:
 	let user find configuration of uninstalled software
 upgrade
-
-web2.0:
-	share elektra xml files
-	web frontent to kdb with xml/generate output/paste
