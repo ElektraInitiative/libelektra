@@ -37,7 +37,7 @@ int displayHelp (std::string app, Factory const & f)
 	std::vector<std::string> commands;
 	try
 	{
-		commands = f.getCommands ();
+		commands = f.getPrettyCommands ();
 	}
 	catch (kdb::KDBException const & ce)
 	{
