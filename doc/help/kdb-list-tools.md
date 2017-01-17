@@ -12,6 +12,10 @@ In the first line it prints where external tools are located.
 
 The tool itself is extern.
 
+## ENVIRONMENT
+
+- `KDB_EXEC_PATH`:
+  Allows to find additional external applications.
 
 ## OPTIONS
 
