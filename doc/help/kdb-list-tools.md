@@ -15,7 +15,8 @@ The tool itself is extern.
 ## ENVIRONMENT
 
 - `KDB_EXEC_PATH`:
-  Allows to find additional external applications.
+  Path to additional external tools.
+
 
 ## OPTIONS
 
@@ -24,4 +25,4 @@ Currently no option provided.
 
 ## SEE ALSO
 
-- `kdb list-commands` for internal kdb commands
+- `kdb list-commands` to list internal kdb commands

@@ -1,5 +1,5 @@
-kdb-list(1) -- List plugins available to Elektra
-================================================
+kdb-list-commands(1) -- List commands available to Elektra
+==========================================================
 
 ## SYNOPSIS
 
@@ -32,7 +32,7 @@ tools as long as `-v` is not used.
 ## EXAMPLES
 
 To get a list of all available commands with their help text:
-`kdb list -v`
+`kdb list-commands -v`
 
 ## SEE ALSO
 
