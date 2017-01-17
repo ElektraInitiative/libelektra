@@ -46,6 +46,10 @@ public:
 	}
 
 	virtual int execute (Cmdline const & cmdline) override;
+
+private:
+	kdb::Key getParentKey(kdb::Key key);
+	
 };
 
 #endif
