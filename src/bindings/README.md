@@ -32,4 +32,4 @@ Deprecated bindings (not included in `ALL`):
 
 ## SEE ALSO ##
 
-- See [COMPILE](/doc/COMPILE.md#bindings) how to specify the bindings to build.
+- See [COMPILE](/doc/COMPILE.md#bindings) for how to specify the bindings to build, e.g. `ALL`.
