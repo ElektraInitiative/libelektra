@@ -15,7 +15,7 @@ _kdb_paths () {
 
     typeset -a paths
     # Count the number of slashes to know where we are
-    # TODO this seems to be not working in a zsh without configuratin
+    # TODO this seems to be not working in a zsh without configuration
     # e.g. my configuration does something weird.
     # it should be ${#PREFIX//[^\/]/}
     slashes=${#PREFIX//[^\\\/]/}
