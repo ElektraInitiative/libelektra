@@ -1,5 +1,7 @@
 FROM ubuntu:xenial
 
+ARG SWIGVERSION="3.0.11"
+
 RUN apt-get -qq update && apt-get -qq -y install \
 	curl \
 	build-essential \
@@ -25,12 +27,18 @@ RUN apt-get -qq update && apt-get -qq -y install \
 	libpcre3-dev \
 	libpcre++-dev \
 	checkinstall \
-	&& gem install ronn
+&& gem install ronn \
+&& rm -rf /var/lib/apt/lists/*
 
 # install Swig 3
-ADD https://codeload.github.com/swig/swig/tar.gz/rel-3.0.11 /root/swig.tar.gz
-RUN cd && tar xzf swig.tar.gz && cd swig-rel-3.0.11 && ./autogen.sh && ./configure && make && make install
+RUN cd /tmp \
+&& curl -fsS "https://codeload.github.com/swig/swig/tar.gz/rel-${SWIGVERSION}" \
+| tar xz \
+&& cd "swig-rel-${SWIGVERSION}" \
+&& ./autogen.sh \
+&& ./configure \
+&& make \
+&& make install \
+&& rm -rf "/tmp/swig-rel-${SWIGVERSION}"
 
-# Housekeeping
-RUN apt-get autoremove -qq -y \
-	&& rm -rf /var/lib/apt/lists/* && rm -rf /tmp/*
+COPY buildelektra.sh /bin/buildelektra
