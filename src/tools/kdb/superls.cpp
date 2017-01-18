@@ -9,11 +9,12 @@
 #include <superls.hpp>
 
 #include <iostream>
+#include <stack>
+#include <functional>
 
 #include <cmdline.hpp>
 #include <kdb.hpp>
 #include <keysetio.hpp>
-#include <functional>
 
 using namespace kdb;
 using namespace std;
@@ -39,15 +40,9 @@ int SuperLsCommand::execute (Cmdline const & cl)
 		cout.unsetf (std::ios_base::skipws);
 	}
 
-	Key key;
-	Key next;
-		
-	bool isExistent = ks.size() != 0 && ks.lookup(root);
-	cout << root.getFullName() << (isExistent ? " exists!" : " nope") << " with a keyset sized " << ks.size() << " and properties isValid " << root.isValid() << " isCascading " << root.isCascading() 
-	<< " isSpec " << root.isSpec() << " isProc " << root.isProc() << " isDir " << root.isDir() << " isUser " << root.isUser() << " isSystem " << root.isSystem() << endl;
-	
 	function<bool(string)> pred = [] (string test) { return true; };
 	
+	bool isExistent = ks.size() != 0 && ks.lookup(root);
 	if (!isExistent) {
 		string fullName = root.getFullName();
 		string newKeyName = getParentKey(root).getFullName();
@@ -60,88 +55,62 @@ int SuperLsCommand::execute (Cmdline const & cl)
 	
 	ks = ks.cut (root);
 	
-	cout << "testing pred" << (pred ("user/test/this/is/ok") ? "true" : "false") << endl;
-	cout << "testing pred" << (pred ("user/toest/this/is/not/ok") ? "true" : "false") << endl;
-	cout << root.getBaseName() << " " << root.getName() << " " << root.getFullName() << " " << (root.isNull() ? "isNull" : "isNotNull") << (root.isValid() ? "isValid" : "isNotValid") << endl;
-	
-	for (NameIterator it = root.begin(); it != root.end(); it++)
-	{
-		cout << *it << endl;
-	}
-	
-	cout << "ks contains " << ks.size() << "elements" << endl;
-	
-	
-	
-	// super-ls /
-	//system/foo node 1
-	//system/foo/bla node 1
-	//system/foo/bla/something node 4
-	//system/foo/bla/something/a leaf
-	//system/foo/bla/something/b leaf
-	//system/foo/bla/something/c leaf
-	//system/foo/bla/something/d leaf
-	//system/bla node 1
-	//system/bla/xx node 0
-	
-	// also consider completion from /system/foo/b 
-	// > if the input does not end in /b, complete the parent and filter by /b
-	
-	// ok initial things:
-	
-	
-	// #1 take /system/foo
-	// #2 strip foo and take system 
-	// #3 do the analyzation function on key /System
-	// #4 
-	
-	// via map:
-	// # parent = null processed = null
-	// # system/foo -> nothing processed, no parent take system and check again
-	// # nothing, system highest, system = parent, add +1 to map for system, system/foo = processed
-	// # check system/foo/bla
-	// # case 1: cur isDirectBelow processed -> processed++; parent = processed;
-	// # case 2: cur isDirectBelow parent -> parent++;
-	// # case 4: cur isBelow parent -> back to beginning
-	// # case 3: !below parent != parent -> back to beginning for now, simple
-	
-	map<string, int> hierarchy = map<string, int>();
+	map<Key, int> hierarchy = map<Key, int>();
 	
 	ks.rewind();
-	while ((key = ks.next())) {
-		if (pred(key.getFullName())) {
-			int count = hierarchy[key.getFullName()]; // will be 0 if non existent
-			hierarchy[key.getFullName()] = ++count;
+	
+	Key parent = root;
+	Key last;
+	Key tmp;
+	
+	std::stack<Key> keyStack;
+	if (!(tmp = ks.next())) {
+		// return?
+		return 0;
+	}
+	
+	// Simply just show either only the next level or all for now
+	int maxDepth = cl.recursive ? std::numeric_limits<int>::max() : 2;
+	int curDepth = 0;
+	keyStack.push(tmp);
+	while (!keyStack.empty()) {
+		Key current = keyStack.top();
+		cout << "Currently processing " << current << endl;
+		keyStack.pop();
+		if (current.isDirectBelow(last)) { // hierarchy change
+				parent = last;
+				curDepth++;
+		}
+		if (current.isDirectBelow(parent)) { // hierarchy continues
+			if (curDepth < maxDepth + 1 && parent != root) {
+				hierarchy[parent] = ++hierarchy[parent];
+			}
+			if (curDepth < maxDepth) {
+				hierarchy[current] = ++hierarchy[current];
+			}
+			// Current hierarchy processed, we can resume with the next
+			if(keyStack.empty() && (tmp = ks.next())){
+				keyStack.push(tmp);
+			}
+		} else { // otherwise expand the current key to the stack and begin from root again
+			while (current != root) {
+				cout << "Currently expanding " << current << endl;
+				keyStack.push(current);
+				current = getParentKey(current);
+			}
+			parent = root;
+			curDepth = 0;
+		}
+		last = current;
+	}
+	
+	
+	for (auto it = hierarchy.begin(); it != hierarchy.end(); it++) {
+		if (pred(it->first.getFullName())) {
+			cout << it->first << (it->second > 1 ? " node " + std::to_string(it->second - 1): " leaf") << endl;
 		}
 	}
 	
-	for (auto it = hierarchy.begin(); it != hierarchy.end(); it++) {
-		cout << it->first << " is " << it->second << endl;
-	}
-	
-	// initial key
-	// ignore things behind initial key for now
-	// maxdepth
-	// curDepth
-	
-	// ks.rewind();
-	// while ((key = ks.next())) {
-		// cursor_t currentCursor = ks.getCursor();
-		// int count = 0;
-		// while ((next = ks.next()) && next.isBelow(key)) {
-			// if (next.isDirectBelow(key)) {
-				// count++;
-			// }
-		// }
-		// if (count == 0) {
-			// cout << key << " leaf" << endl;
-		// } else {
-			// cout << key << " node " << count << endl;
-		// }
-		// Reset it so we do the same for the next node
-		// ks.setCursor(currentCursor);
-	// }
-
 	printWarnings (cerr, root);
 
 	return 0;
