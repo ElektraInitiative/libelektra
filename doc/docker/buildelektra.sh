@@ -22,35 +22,35 @@ EOF
 while getopts "hb:s:t:" opt; do
 	case $opt in
 		h)
-      echo "${USAGE}"
-      exit
-      ;;
-    b)
-      NAME="${OPTARG}"
-      ;;
-    s)
-      SOURCE="${OPTARG}"
-      ;;
-    t)
-      DIR="${OPTARG}"
-      ;;
-    :)
-      printf "%s: missing argument for -%s\n" "${__FILE}" "${OPTARG}" >&2
-      echo "${USAGE}"
-      exit 1
-      ;;
-    \?)
-      printf "%s: illegal option: -%s\n" "${__FILE}" "${OPTARG}" >&2
-      echo "${USAGE}"
-      exit 1
-      ;;
-  esac
+			echo "${USAGE}"
+			exit
+			;;
+		b)
+			NAME="${OPTARG}"
+			;;
+		s)
+			SOURCE="${OPTARG}"
+			;;
+		t)
+			DIR="${OPTARG}"
+			;;
+		:)
+			printf "%s: missing argument for -%s\n" "${__FILE}" "${OPTARG}" >&2
+			echo "${USAGE}"
+			exit 1
+			;;
+		\?)
+			printf "%s: illegal option: -%s\n" "${__FILE}" "${OPTARG}" >&2
+			echo "${USAGE}"
+			exit 1
+			;;
+		esac
 done
 shift $((OPTIND - 1))
 if [ -z "${1}" ]; then
-  printf "%s: no argument supplied" "${__FILE}" >&2
-  echo "${USAGE}"
-  exit 1
+	printf "%s: no argument supplied" "${__FILE}" >&2
+	echo "${USAGE}"
+	exit 1
 fi
 
 TAG="${1}"
@@ -71,12 +71,9 @@ cd "${DIR}/build"
 cmake -DCMAKE_INSTALL_PREFIX=/usr .. && make -j
 
 if [ -z "${NAME}" ]; then
-  # install elektra ..
-  make install
+	# install elektra ..
+	make install
 else
-  # .. or build package
-  checkinstall -D -y --pkgname "${NAME}" --pkgsource "${SOURCE}" --install=no --fstrans --pakdir ../..
+	# .. or build package
+	checkinstall -D -y --pkgname "${NAME}" --pkgsource "${SOURCE}" --install=no --fstrans --pakdir ../..
 fi
-
-# vim: ai ts=2 sw=2 et sts=2 ft=sh
-# vim: autoindent tabstop=2 shiftwidth=2 expandtab softtabstop=2 filetype=sh
