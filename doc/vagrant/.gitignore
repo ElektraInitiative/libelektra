@@ -1,3 +1,2 @@
 .vagrant
-share/*
-!share/packelektra.sh
+*.box

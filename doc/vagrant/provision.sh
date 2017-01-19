@@ -1,5 +1,7 @@
 #!/bin/sh
 
+SWIGVERSION="3.0.11"
+
 apt-get -qq update && apt-get -qq -y install \
     curl \
     build-essential \
@@ -25,10 +27,12 @@ apt-get -qq update && apt-get -qq -y install \
     libdbus-1-dev \
     libpcre3-dev \
     libpcre++-dev \
-    checkinstall
-
+    checkinstall \
+&& rm -rf /var/lib/apt/lists/* \
+&& apt-get clean
 
 # install swig 3
 cd /tmp
-curl -sS https://codeload.github.com/swig/swig/tar.gz/rel-3.0.11 | tar xz
-cd swig-rel-3.0.11 && ./autogen.sh && ./configure && make && make install
+curl -fsS "https://codeload.github.com/swig/swig/tar.gz/rel-${SWIGVERSION}" | tar xz
+cd "swig-rel-${SWIGVERSION}" && ./autogen.sh && ./configure && make && make install
+cd && rm -rf "/tmp/swig-rel-${SWIGVERSION}"
