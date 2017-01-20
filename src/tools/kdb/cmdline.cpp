@@ -482,7 +482,7 @@ kdb::Key Cmdline::createKey (int pos) const
 	// for (auto const & n : bookmarks) std::cout << "nks: " << n.second << std::endl;
 	if (name.empty ())
 	{
-		throw invalid_argument ("<empty string> is not a valid keyname. Please enter one.");
+		throw invalid_argument ("<empty string> is not a valid keyname. Please enter a valid one.");
 	}
 
 	if (name[0] == '+')
@@ -517,12 +517,11 @@ kdb::Key Cmdline::createKey (int pos) const
 
 	if (!root.isValid ())
 	{
-		throw invalid_argument (name + " is not a valid keyname" +
-								"\n\n" +
-                                "For absolute keys (starting without '/'), please note that only one of the predefined namespaces can be used (see 'man elektra-namespaces').\n" +
-								"Please also ensure that the path is separated by a '/'.\n" +
-                                "An example for a valid absolute key is user/a/key, and for a valid cascading key /a/key."
-			);
+		throw invalid_argument (name + " is not a valid keyname" + "\n\n" +
+					"For absolute keys (starting without '/'), please note that only one of the predefined namespaces "
+					"can be used (see 'man elektra-namespaces').\n" +
+					"Please also ensure that the path is separated by a '/'.\n" +
+					"An example for a valid absolute key is user/a/key, and for a valid cascading key /a/key.");
 	}
 
 	return root;
