@@ -5,7 +5,7 @@ kdb-getmeta(1) -- Get the value of a metakey stored in the key database
 
 `kdb getmeta <key name> <metaname>`  
 
-Where `key name` is the full path to the key and
+Where `key name` is the name of the key and
 `metaname` is the name of the metakey the user would like to access.
 
 ## DESCRIPTION

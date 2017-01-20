@@ -5,7 +5,7 @@ kdb-get(1) -- Get the value of a key stored in the key database
 
 `kdb get <key name>`
 
-Where `key name` is the full path to the key.
+Where `key name` is the name of the key.
 
 ## DESCRIPTION
 

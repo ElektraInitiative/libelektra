@@ -5,7 +5,7 @@ kdb-vset(1) - Set the value of a key with a validation regular expression
 
 `kdb vset <key name> <value> <regex> [<message>]`
 
-Where `key name` is the path to the key the user wishes to set, `value` is the value the user wishes to set, and `regex` is the regular expression that should be used for validation.
+Where `key name` is the name of the key the user wishes to set, `value` is the value the user wishes to set, and `regex` is the regular expression that should be used for validation.
 The optional parameter `message` is a user-defined message that will be displayed when a user tries to set the key to a value that doesn't match the regular expression.
 The expression will be matched against the whole value (`check/validation/match=LINE`).
 

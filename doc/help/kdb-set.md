@@ -5,7 +5,7 @@ kdb-set(1) -- Set the value of a key
 
 `kdb set <key name> [<value>]`
 
-Where `key name` is the path to the key you wish to set the value of (or create) and `value` is the value you would like to set the key to.
+Where `key name` is the name of the key you wish to set the value of (or create) and `value` is the value you would like to set the key to.
 If the `value` argument is not passed, the key will be set to a value of `null`.
 
 ## DESCRIPTION

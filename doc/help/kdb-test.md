@@ -3,9 +3,9 @@ kdb-test(1) -- Run test(s) on the key database
 
 ## SYNOPSIS
 
-`kdb test <key name> [<test-name> ...]`  
+`kdb test <path> [<test-name> ...]`  
 
-Where `key name` is the path to key which the user wishes to perform the test under.
+Where `path` is the path the user wishes to perform the test under.
 The option `test-name` argument is used to specify which test(s) to run. To run multiple tests, each should be named with a trailing space.  
 If no `test-name` is provided, all the tests will be run.  
 
