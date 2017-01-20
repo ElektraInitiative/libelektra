@@ -1,0 +1,604 @@
+FORMAT: 1A
+
+# clusterd API
+
+the cluster management server (`clusterd`) provides a REST HTTP API to control
+multiple `elektrad` instances
+
+
+
+# get versions [GET /version]
+
+returns the current version of the API and elektra
+
+The API version is increased whenever breaking changes
+(i.e. changes that prevent backward compatibility) are made.
+The Elektra version is directly taken from the Elektra library,
+for further information and explanation see [doc/VERSION.md](https://github.com/ElektraInitiative/libelektra/blob/master/doc/VERSION.md).
+
++ Response 200 (application/json)
+    + Attributes (object)
+        + elektra (object) - Detailed version information about the used Elektra library
+            + version (string) - The currently used version in its complete format
+            + major (number) - The currently used major version
+            + minor (number) - The currently used minor version
+            + micro (number) - The currently used micro version
+        + api (number) - The version of the API itself
+
+
+
+# Group instances
+
+## register instance [POST /register{?apikey}]
+
+API to allow instances to register themselves with `clusterd`
+
++ Parameters
+    + apikey: `89c406a2-2fe4-4cc2-8c82-edfc24dc0d12` (string, required) - API key used to authenticate `elektrad` with `clusterd`
+
++ Request (application/json)
+    + Attributes (Base Instance)
+
++ Response 204
+
++ Response 400 (application/json)
+    + Attributes (Error)
+        + i18n (string) - a unique token representing above error description message; can be used for internationalization in frontends
+            A comprehensive list of possible errors:
+            - `APIKEY_MISSING` api key not specified
+            - `NAME_MISSING` name not specified
+            - `HOST_MISSING` host not specified
+
++ Response 401 (application/json)
+    + Attributes (Error)
+        + i18n (string) - a unique token representing above error description message; can be used for internationalization in frontends
+            A comprehensive list of possible errors:
+            - `APIKEY_INVALID` api key invalid
+
++ Response 406 (application/json)
+    + Attributes (Error)
+        + i18n (string) - a unique token representing above error description message; can be used for internationalization in frontends
+            A comprehensive list of possible errors:
+            - `REQUEST_UNSUPPORTED_CONTENT_TYPE` if the submitted Content-Type is not `application/json`
+
+
+## instances endpoint [/instances]
+
+### list all instances [GET]
+
++ Response 200 (application/json)
+    + Attributes (array[Instance])
+
++ Response 401 (application/json)
+    + Attributes (Error)
+        + i18n (string) - a unique token representing above error description message; can be used for internationalization in frontends
+            A comprehensive list of possible errors:
+            - `NEED_AUTHENTICATION` if no valid session token has been supplied or the user for whom the token has been created does not exist (anymore)
+
+### create a new instance [POST]
+
++ Attributes (Base Instance)
+
++ Request (application/json)
+
++ Response 201
+    + Attributes (Instance)
+
++ Response 400 (application/json)
+    + Attributes (Error)
+        + i18n (string) - a unique token representing above error description message; can be used for internationalization in frontends
+            A comprehensive list of possible errors:
+            - `NAME_MISSING` name not specified
+            - `HOST_MISSING` host not specified
+
++ Response 401 (application/json)
+    + Attributes (Error)
+        + i18n (string) - a unique token representing above error description message; can be used for internationalization in frontends
+            A comprehensive list of possible errors:
+            - `NEED_AUTHENTICATION` if no valid session token has been supplied or the user for whom the token has been created does not exist (anymore)
+
++ Response 406 (application/json)
+    + Attributes (Error)
+        + i18n (string) - a unique token representing above error description message; can be used for internationalization in frontends
+            A comprehensive list of possible errors:
+            - `REQUEST_UNSUPPORTED_CONTENT_TYPE` if the submitted Content-Type is not `application/json`
+
++ Response 422 (application/json)
+    + Attributes (Error)
+        + i18n (string) - a unique token representing above error description message; can be used for internationalization in frontends
+            A comprehensive list of possible errors:
+            - `HOST_DOES_ALREADY_EXIST` if the supplied `host` is already used in another instance
+
+
+## single instance [/instances/{instance_id}]
+
++ Attributes (Instance)
+
++ Parameters
+    + instance_id: `46a288ae-7475-4cdd-a04c-3826c9a4b5f5` (string) - id of an instance
+
+### get information about a single instance [GET]
+
++ Response 200 (application/json)
+    + Attributes (Instance)
+
++ Response 401 (application/json)
+    + Attributes (Error)
+        + i18n (string) - a unique token representing above error description message; can be used for internationalization in frontends
+            A comprehensive list of possible errors:
+            - `NEED_AUTHENTICATION` if no valid session token has been supplied or the user for whom the token has been created does not exist (anymore)
+
++ Response 404 (application/json)
+    + Attributes (Error)
+        + i18n (string) - a unique token representing above error description message; can be used for internationalization in frontends
+            A comprehensive list of possible errors:
+            - `INSTANCE_NOT_FOUND` if the requested instance does not exist in the database
+
+### edit a single instance [PUT]
+
++ Request update host of instance (application/json)
+    + Attributes (object)
+        + host: `192.168.0.6` (string) - hostname/IP address of the instance
+
++ Response 204
+
++ Response 401 (application/json)
+    + Attributes (Error)
+        + i18n (string) - a unique token representing above error description message; can be used for internationalization in frontends
+            A comprehensive list of possible errors:
+            - `NEED_AUTHENTICATION` if no valid session token has been supplied or the user for whom the token has been created does not exist (anymore)
+
++ Response 404 (application/json)
+    + Attributes (Error)
+        + i18n (string) - a unique token representing above error description message; can be used for internationalization in frontends
+            A comprehensive list of possible errors:
+            - `INSTANCE_NOT_FOUND` if the requested instance does not exist in the database
+
++ Response 406 (application/json)
+    + Attributes (Error)
+        + i18n (string) - a unique token representing above error description message; can be used for internationalization in frontends
+            A comprehensive list of possible errors:
+            - `REQUEST_UNSUPPORTED_CONTENT_TYPE` if the submitted Content-Type is not `application/json`
+
+### delete a single instance [DELETE]
+
++ Response 204 (application/json)
+    + Attributes (object)
+        + id: `46a288ae-7475-4cdd-a04c-3826c9a4b5f5` (string) - id of the deleted instance
+
++ Response 401 (application/json)
+    + Attributes (Error)
+        + i18n (string) - a unique token representing above error description message; can be used for internationalization in frontends
+            A comprehensive list of possible errors:
+            - `NEED_AUTHENTICATION` if no valid session token has been supplied or the user for whom the token has been created does not exist (anymore)
+
++ Response 404 (application/json)
+    + Attributes (Error)
+        + i18n (string) - a unique token representing above error description message; can be used for internationalization in frontends
+            A comprehensive list of possible errors:
+            - `INSTANCE_NOT_FOUND` if the requested instance does not exist in the database
+
+### get version of a single instance [GET /instances/{instance_id}/version]
+
++ Response 200 (application/json)
+    + Attributes (Version)
+
++ Response 401 (application/json)
+    + Attributes (Error)
+        + i18n (string) - a unique token representing above error description message; can be used for internationalization in frontends
+            A comprehensive list of possible errors:
+            - `NEED_AUTHENTICATION` if no valid session token has been supplied or the user for whom the token has been created does not exist (anymore)
+
++ Response 404 (application/json)
+    + Attributes (Error)
+        + i18n (string) - a unique token representing above error description message; can be used for internationalization in frontends
+            A comprehensive list of possible errors:
+            - `INSTANCE_NOT_FOUND` if the requested instance does not exist in the database
+
+
+## single instance key database [/instances/{instance_id}/kdb/{+path}]
+
+you can access a single instances' configuration via `clusterd` the same way you would directly access it
+
++ Parameters
+    + instance_id: `46a288ae-7475-4cdd-a04c-3826c9a4b5f5` (string) - id of an instance
+    + path: `user/hello` (string) - path to the elektra config
+
+### get configuration [GET]
+
+get the content and subkeys of the specified `path` in the elektra key database
+
++ Response 200 (application/json)
+    + Attributes (KDBResponse)
+
++ Response 401 (application/json)
+    + Attributes (Error)
+        + i18n (string) - a unique token representing above error description message; can be used for internationalization in frontends
+            A comprehensive list of possible errors:
+            - `NEED_AUTHENTICATION` if no valid session token has been supplied or the user for whom the token has been created does not exist (anymore)
+
++ Response 404 (application/json)
+    + Attributes (Error)
+        + i18n (string) - a unique token representing above error description message; can be used for internationalization in frontends
+            A comprehensive list of possible errors:
+            - `INSTANCE_NOT_FOUND` if the requested instance does not exist in the database
+            - `PATH_NOT_FOUND` if the requested path does not exist in the key database
+
+### set configuration [PUT]
+
+set the content of the specified `path` in the elektra key database
+
++ Request (text/plain)
+
+        hello world
+
++ Response 204
+
++ Request (application/json)
+
+        "hello world"
+
++ Response 204
+
++ Response 401 (application/json)
+    + Attributes (Error)
+        + i18n (string) - a unique token representing above error description message; can be used for internationalization in frontends
+            A comprehensive list of possible errors:
+            - `NEED_AUTHENTICATION` if no valid session token has been supplied or the user for whom the token has been created does not exist (anymore)
+
++ Response 404 (application/json)
+    + Attributes (Error)
+        + i18n (string) - a unique token representing above error description message; can be used for internationalization in frontends
+            A comprehensive list of possible errors:
+            - `INSTANCE_NOT_FOUND` if the requested instance does not exist in the database
+            - `PATH_NOT_FOUND` if the requested path does not exist in the key database
+
++ Response 406 (application/json)
+    + Attributes (Error)
+        + i18n (string) - a unique token representing above error description message; can be used for internationalization in frontends
+            A comprehensive list of possible errors:
+            - `REQUEST_UNSUPPORTED_CONTENT_TYPE` if the submitted Content-Type is not `application/json` or `text/plain`
+
+### delete configuration [DELETE]
+
+delete the key on the specified `path` from the elektra key database
+
++ Response 204
+
++ Response 401 (application/json)
+    + Attributes (Error)
+        + i18n (string) - a unique token representing above error description message; can be used for internationalization in frontends
+            A comprehensive list of possible errors:
+            - `NEED_AUTHENTICATION` if no valid session token has been supplied or the user for whom the token has been created does not exist (anymore)
+
++ Response 404 (application/json)
+    + Attributes (Error)
+        + i18n (string) - a unique token representing above error description message; can be used for internationalization in frontends
+            A comprehensive list of possible errors:
+            - `INSTANCE_NOT_FOUND` if the requested instance does not exist in the database
+            - `PATH_NOT_FOUND` if the requested path does not exist in the key database
+
+
+
+# Group clusters
+
+It is also possible to create and manage groups of multiple elektra instances (clusters).
+The API is the same as above, but with `/clusters` instead of `/instances`.
+
+For cluster responses, the results of the operation are grouped together.
+If every instance has the same status code, it will show that status code.
+If everything is a success, the status code of the combined document will be 200.
+Otherwise, it will be 400.
+
+
+## clusters endpoint [/clusters]
+
+### list all clusters [GET]
+
++ Response 200 (application/json)
+    + Attributes (array[Cluster])
+
++ Response 401 (application/json)
+    + Attributes (Error)
+        + i18n (string) - a unique token representing above error description message; can be used for internationalization in frontends
+            A comprehensive list of possible errors:
+            - `NEED_AUTHENTICATION` if no valid session token has been supplied or the user for whom the token has been created does not exist (anymore)
+
+### create a new cluster [POST]
+
++ Attributes (Base Cluster)
+
++ Request (application/json)
+
++ Response 201
+    + Attributes (Cluster)
+
++ Response 400 (application/json)
+    + Attributes (Error)
+        + i18n (string) - a unique token representing above error description message; can be used for internationalization in frontends
+            A comprehensive list of possible errors:
+            - `NAME_MISSING` name not specified
+
++ Response 401 (application/json)
+    + Attributes (Error)
+        + i18n (string) - a unique token representing above error description message; can be used for internationalization in frontends
+            A comprehensive list of possible errors:
+            - `NEED_AUTHENTICATION` if no valid session token has been supplied or the user for whom the token has been created does not exist (anymore)
+
++ Response 406 (application/json)
+    + Attributes (Error)
+        + i18n (string) - a unique token representing above error description message; can be used for internationalization in frontends
+            A comprehensive list of possible errors:
+            - `REQUEST_UNSUPPORTED_CONTENT_TYPE` if the submitted Content-Type is not `application/json`
+
+
+## cluster [/clusters/{cluster_id}]
+
++ Attributes (Cluster)
+
++ Parameters
+    + cluster_id: `54a92a5f-2dd5-4f61-8761-6acfc7c49799` (string) - id of a cluster
+
+### get information about a cluster [GET]
+
++ Response 200 (application/json)
+    + Attributes (Cluster)
+
++ Response 401 (application/json)
+    + Attributes (Error)
+        + i18n (string) - a unique token representing above error description message; can be used for internationalization in frontends
+            A comprehensive list of possible errors:
+            - `NEED_AUTHENTICATION` if no valid session token has been supplied or the user for whom the token has been created does not exist (anymore)
+
++ Response 404 (application/json)
+    + Attributes (Error)
+        + i18n (string) - a unique token representing above error description message; can be used for internationalization in frontends
+            A comprehensive list of possible errors:
+            - `CLUSTER_NOT_FOUND` if the requested instance does not exist in the database
+
+### edit a cluster [PUT]
+
++ Request update name of cluster (application/json)
+    + Attributes (object)
+        + name: web cluster
+
++ Response 204
+
++ Response 401 (application/json)
+    + Attributes (Error)
+        + i18n (string) - a unique token representing above error description message; can be used for internationalization in frontends
+            A comprehensive list of possible errors:
+            - `NEED_AUTHENTICATION` if no valid session token has been supplied or the user for whom the token has been created does not exist (anymore)
+
++ Response 404 (application/json)
+    + Attributes (Error)
+        + i18n (string) - a unique token representing above error description message; can be used for internationalization in frontends
+            A comprehensive list of possible errors:
+            - `CLUSTER_NOT_FOUND` if the requested instance does not exist in the database
+
++ Response 406 (application/json)
+    + Attributes (Error)
+        + i18n (string) - a unique token representing above error description message; can be used for internationalization in frontends
+            A comprehensive list of possible errors:
+            - `REQUEST_UNSUPPORTED_CONTENT_TYPE` if the submitted Content-Type is not `application/json` or `text/plain`
+
+### delete a cluster [DELETE]
+
++ Response 204 (application/json)
+    + Attributes (object)
+        + id: `54a92a5f-2dd5-4f61-8761-6acfc7c49799` (string) - id of the deleted cluster
+
++ Response 401 (application/json)
+    + Attributes (Error)
+        + i18n (string) - a unique token representing above error description message; can be used for internationalization in frontends
+            A comprehensive list of possible errors:
+            - `NEED_AUTHENTICATION` if no valid session token has been supplied or the user for whom the token has been created does not exist (anymore)
+
++ Response 404 (application/json)
+    + Attributes (Error)
+        + i18n (string) - a unique token representing above error description message; can be used for internationalization in frontends
+            A comprehensive list of possible errors:
+            - `CLUSTER_NOT_FOUND` if the requested instance does not exist in the database
+
+### get versions of a cluster [GET /version]
+
++ Response 200 (application/json)
+    + Attributes (array[Version])
+
++ Response 401 (application/json)
+    + Attributes (Error)
+        + i18n (string) - a unique token representing above error description message; can be used for internationalization in frontends
+            A comprehensive list of possible errors:
+            - `NEED_AUTHENTICATION` if no valid session token has been supplied or the user for whom the token has been created does not exist (anymore)
+
++ Response 404 (application/json)
+    + Attributes (Error)
+        + i18n (string) - a unique token representing above error description message; can be used for internationalization in frontends
+            A comprehensive list of possible errors:
+            - `CLUSTER_NOT_FOUND` if the requested instance does not exist in the database
+
+
+## cluster instances [/clusters/{cluster_id}/instances]
+
++ Parameters
+    + cluster_id: `54a92a5f-2dd5-4f61-8761-6acfc7c49799` (string) - id of a cluster
+
+### get list of instances assigned to the cluster [GET]
+
++ Response 200 (application/json)
+    + Attributes (array[Instance])
+
++ Response 401 (application/json)
+    + Attributes (Error)
+        + i18n (string) - a unique token representing above error description message; can be used for internationalization in frontends
+            A comprehensive list of possible errors:
+            - `NEED_AUTHENTICATION` if no valid session token has been supplied or the user for whom the token has been created does not exist (anymore)
+
++ Response 404 (application/json)
+    + Attributes (Error)
+        + i18n (string) - a unique token representing above error description message; can be used for internationalization in frontends
+            A comprehensive list of possible errors:
+            - `CLUSTER_NOT_FOUND` if the requested instance does not exist in the database
+
+### assign instance to cluster [POST]
+
++ Request (application/json)
+    + Attributes (object)
+        + instanceId: `46a288ae-7475-4cdd-a04c-3826c9a4b5f5` (string) - id of the instance to be assigned
+
++ Response 201
+    + Attributes (array[Instance])
+
++ Response 400 (application/json)
+    + Attributes (Error)
+        + i18n (string) - a unique token representing above error description message; can be used for internationalization in frontends
+            A comprehensive list of possible errors:
+            - `INSTANCE_ID_MISSING` instanceId not specified
+
++ Response 401 (application/json)
+    + Attributes (Error)
+        + i18n (string) - a unique token representing above error description message; can be used for internationalization in frontends
+            A comprehensive list of possible errors:
+            - `NEED_AUTHENTICATION` if no valid session token has been supplied or the user for whom the token has been created does not exist (anymore)
+
++ Response 406 (application/json)
+    + Attributes (Error)
+        + i18n (string) - a unique token representing above error description message; can be used for internationalization in frontends
+            A comprehensive list of possible errors:
+            - `REQUEST_UNSUPPORTED_CONTENT_TYPE` if the submitted Content-Type is not `application/json`
+
+### deassign instance from cluster [DELETE /clusters/{cluster_id}/instances/{instance_id}]
+
++ Parameters
+    + cluster_id: `54a92a5f-2dd5-4f61-8761-6acfc7c49799` (string) - id of a cluster
+    + instance_id: `46a288ae-7475-4cdd-a04c-3826c9a4b5f5` (string) - id of an instance
+
++ Response 204
+
++ Response 401 (application/json)
+    + Attributes (Error)
+        + i18n (string) - a unique token representing above error description message; can be used for internationalization in frontends
+            A comprehensive list of possible errors:
+            - `NEED_AUTHENTICATION` if no valid session token has been supplied or the user for whom the token has been created does not exist (anymore)
+
++ Response 404 (application/json)
+    + Attributes (Error)
+        + i18n (string) - a unique token representing above error description message; can be used for internationalization in frontends
+            A comprehensive list of possible errors:
+            - `CLUSTER_NOT_FOUND` if the requested instance does not exist in the database
+
+
+## cluster key database [/clusters/{cluster_id}/kdb/{+path}]
+
+clusters' configurations are stored on the `clusterd` server
+
++ Parameters
+    + cluster_id: `54a92a5f-2dd5-4f61-8761-6acfc7c49799` (string) - id of a cluster
+    + path: `user/hello` (string) - path to the elektra config
+
+### get configuration [GET]
+
++ Response 200 (application/json)
+    + Attributes (KDBResponse)
+
++ Response 401 (application/json)
+    + Attributes (Error)
+        + i18n (string) - a unique token representing above error description message; can be used for internationalization in frontends
+            A comprehensive list of possible errors:
+            - `NEED_AUTHENTICATION` if no valid session token has been supplied or the user for whom the token has been created does not exist (anymore)
+
++ Response 404 (application/json)
+    + Attributes (Error)
+        + i18n (string) - a unique token representing above error description message; can be used for internationalization in frontends
+            A comprehensive list of possible errors:
+            - `CLUSTER_NOT_FOUND` if the requested instance does not exist in the database
+            - `PATH_NOT_FOUND` if the requested path does not exist in the key database
+
+### set configuration [PUT]
+
++ Request (text/plain)
+
+        hello world
+
++ Response 204
+
++ Request (application/json)
+
+        "hello world"
+
++ Response 204
+
++ Response 401 (application/json)
+    + Attributes (Error)
+        + i18n (string) - a unique token representing above error description message; can be used for internationalization in frontends
+            A comprehensive list of possible errors:
+            - `NEED_AUTHENTICATION` if no valid session token has been supplied or the user for whom the token has been created does not exist (anymore)
+
++ Response 404 (application/json)
+    + Attributes (Error)
+        + i18n (string) - a unique token representing above error description message; can be used for internationalization in frontends
+            A comprehensive list of possible errors:
+            - `CLUSTER_NOT_FOUND` if the requested instance does not exist in the database
+            - `PATH_NOT_FOUND` if the requested path does not exist in the key database
+
++ Response 406 (application/json)
+    + Attributes (Error)
+        + i18n (string) - a unique token representing above error description message; can be used for internationalization in frontends
+            A comprehensive list of possible errors:
+            - `REQUEST_UNSUPPORTED_CONTENT_TYPE` if the submitted Content-Type is not `application/json` or `text/plain`
+
+
+### delete configuration [DELETE]
+
++ Response 204
+
++ Response 401 (application/json)
+    + Attributes (Error)
+        + i18n (string) - a unique token representing above error description message; can be used for internationalization in frontends
+            A comprehensive list of possible errors:
+            - `NEED_AUTHENTICATION` if no valid session token has been supplied or the user for whom the token has been created does not exist (anymore)
+
++ Response 404 (application/json)
+    + Attributes (Error)
+        + i18n (string) - a unique token representing above error description message; can be used for internationalization in frontends
+            A comprehensive list of possible errors:
+            - `CLUSTER_NOT_FOUND` if the requested instance does not exist in the database
+            - `PATH_NOT_FOUND` if the requested path does not exist in the key database
+
+
+
+# Data Structures
+
+## Base Version (object)
++ api (number) - The version of the API itself
+
+## Version (Base Version)
++ elektra (object) - Detailed version information about the used Elektra library
+    + version (string) - The currently used version in its complete format
+    + major (number) - The currently used major version
+    + minor (number) - The currently used minor version
+    + micro (number) - The currently used micro version
+
+## Base Instance (object)
++ name: test instance (string, required)
++ host: 192.168.0.5 (string, required)
+
+## Instance (Base Instance)
++ id: `46a288ae-7475-4cdd-a04c-3826c9a4b5f5` (string, required)
+
+## Base Cluster (object)
++ name: test cluster (string, required)
++ instances (array[Instance])
+
+## Cluster (Base Cluster)
++ id: `54a92a5f-2dd5-4f61-8761-6acfc7c49799` (string, required)
+
+## KDBResponse (object)
++ ls: user/hello, user/hello/world (array[string], required) - subkeys of the requested path, similar to `kdb ls`
++ value: hello world (string, required)
++ meta (object, required) - metadata of the requested path
+
+## Error (object)
++ status (string) - textual description of the HTTP status
++ message (string) - detailed error information, e.g. hint about malformed request
++ i18n (string) - a unique token representing above error description message; can be used for internationalization in frontends

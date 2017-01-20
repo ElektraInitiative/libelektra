@@ -376,7 +376,7 @@ Example:
         "type": "link",
         "ref": "buildserver",
         "options": {
-            "path": "http://build.libelektra.org:8080/"
+            "path": "https://build.libelektra.org/"
         }
     }
 
@@ -426,10 +426,10 @@ Angular binding (i.e. use `<span translate="LOCA_KEY"></span>` in favor of
 
 For external links, the normal HTML `a`-tag has to be used (`<a href="..."></a>`).
 If the external link has the same base URL as the frontend (e.g. frontend is at
-`http://localhost/` and the link points to `http://localhost/rss/feed.rss`),
+`http://localhost/` and the link points to `http://localhost/news/feed.rss`),
 the html tag `target` has to be added to the link with the desired value, e.g.
 `_self` to open the link in the same window/tab or `_blank` to use a new one.
-An example would be `<a href="http://localhost/rss/feed.rss" target="_self">...</a>`.
+An example would be `<a href="http://localhost/news/feed.rss" target="_self">...</a>`.
 
 For internal links (that are links that lead to another sub-page of the website)
 two options are available. It is possible to use the normal `href` HTML attribute

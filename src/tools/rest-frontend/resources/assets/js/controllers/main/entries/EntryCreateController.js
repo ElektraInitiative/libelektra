@@ -7,6 +7,9 @@ module.exports = function ($scope, Logger, $state, EntryService, Notification, S
     var vm = this;
 
     $scope.isCreate = true;
+    $scope.show = {
+        howDoesItWork: false
+    };
 
     $scope.cb = {
         createScopeManually: false
@@ -21,7 +24,15 @@ module.exports = function ($scope, Logger, $state, EntryService, Notification, S
             value: ''
         }
     };
-    $scope.formats = formats;
+    $scope.formats = formats.map(function(elem) {
+        var name = elem.plugin.name;
+        var space = name.indexOf(' ');
+        if(space > -1) {
+            name = name.substring(0, space);
+        }
+        elem.plugin.nameWithoutConf = name;
+        return elem;
+    });
     $scope.entry.configuration.format = $scope.formats[0];
     $scope.typeaheads = typeaheads;
 
@@ -69,6 +80,10 @@ module.exports = function ($scope, Logger, $state, EntryService, Notification, S
                 message: 'APP.ENTRIES.CREATE.NOTIFICATION.MESSAGE.' + response.data.i18n
             });
         });
+    };
+
+    this.show = function(which) {
+        $scope.show[which] = true;
     };
 
     Logger.info('New entry controller ready');

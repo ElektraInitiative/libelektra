@@ -44,7 +44,7 @@ that is the place where you usually want to set metadata.
 
 - `/sw/elektra/kdb/#0/current/namespace`:
   Specifies which default namespace should be used when setting a cascading name.
-  By default the namespace is user, except `kdb` is used as root, then `system`
+  By default the namespace is `user`, except `kdb` is used as root, then `system`
   is the default.
 
 

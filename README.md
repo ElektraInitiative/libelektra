@@ -13,9 +13,9 @@ applications' configurations, leveraging easy application integration.
 
 ## Often used links ##
 
-- [build server](http://build.libelektra.org:8080/)
-- [tutorials](http://git.libelektra.org/blob/master/doc/tutorials/)
-- [API docu](http://doc.libelektra.org/api/latest/html/)
+- [build server](https://build.libelektra.org/)
+- [tutorials](/doc/tutorials/)
+- [API docu](https://doc.libelektra.org/api/latest/html/)
 
 ## Overview ##
 
@@ -58,7 +58,7 @@ implemented in C, works cross-platform, and does not need any external dependenc
 ## Contact ##
 
 Do not hesitate to ask any question on
-[GitHub issue tracker](https://github.com/ElektraInitiative/libelektra/issues),
+[GitHub issue tracker](https://issues.libelektra.org/),
 [Mailing List](https://lists.sourceforge.net/lists/listinfo/registry-list)
 or directly to one of the [authors](doc/AUTHORS.md).
 
@@ -109,7 +109,7 @@ To get an idea of Elektra, you can take a look at the
 
 The full documentation, including:
 
-- [tutorials](http://libelektra.org/blob/master/doc/tutorials/),
+- [tutorials](/doc/tutorials/),
 - [faq](/doc/help/elektra-faq.md),
 - [glossary](/doc/help/elektra-glossary.md), and
 - [concepts and man pages](/doc/help/elektra-introduction.md)
@@ -118,11 +118,11 @@ is available in the GitHub repository.
 
 You can read the documentation for the kdb tool, either
 
-- [on the Website](https://web.libelektra.org)
-- [in the API docu](http://doc.libelektra.org/api/latest/html/md_doc_help_kdb.html)
+- [on the Website](https://www.libelektra.org)
+- [in the API docu](https://doc.libelektra.org/api/latest/html/md_doc_help_kdb.html)
 - by using `man kdb`
 - by using `kdb --help` or `kdb help <command>`
-- [on GitHub](http://libelektra.org/blob/master/doc/help/kdb.md)
+- [on GitHub](https://master.libelektra.org/doc/help/kdb.md)
 
 
 
@@ -172,20 +172,7 @@ And in terms of quality, we want:
 
 ## News ##
 
- - [22 Nov 2016 0.8.19](http://doc.libelektra.org/news/8e05231a-4f3d-488b-8dc2-5f0d5c474c39.html) tutorials, ruby, cleanup
- - [16 Sep 2016 0.8.18](http://doc.libelektra.org/news/190576e0-9fef-486e-b8da-c4e75be08329.html) adds intercept open
- - [14 Jun 2016 0.8.17](http://doc.libelektra.org/news/e6153a39-c4bd-41c3-bc86-785d451eb6c5.html) with survey, usability improvements
- - [29 Apr 2016 0.8.16](http://doc.libelektra.org/news/9c9247ee-ee9c-4f4a-a68e-76959def9b82.html) with stability improvements
- - [16 Feb 2016 0.8.15](http://doc.libelektra.org/news/1ab4a560-c286-46d2-a058-1a8e7e208fe8.html) with lib split, improved mount
- - [19 Nov 2015 0.8.14](http://doc.libelektra.org/news/519cbfac-6db5-4594-8a38-dec4c84b134f.html) adds docu and plugins
- - [17 Sep 2015 0.8.13](http://doc.libelektra.org/news/3c00a5f1-c017-4555-92b5-a2cf6e0803e3.html) adds elektrify-getenv
- - [12 Jul 2015 0.8.12](http://doc.libelektra.org/news/98770541-32a1-486a-98a1-d02f26afc81a.html) adds dir namespace
- - [03 Apr 2015 0.8.11](http://doc.libelektra.org/news/7d4647d4-4131-411e-9c2a-2aca39446e18.html) adds spec namespace
- - [02 Dec 2014 0.8.10](http://doc.libelektra.org/news/6ce57ecf-420a-4a31-821e-1c5fe5532eb4.html) adds XDG/OpenICC compatibility
- - [04 Nov 2014 0.8.9](http://doc.libelektra.org/news/38640673-3e07-4cff-9647-f6bdd89b1b08.html) adds qt-gui
- - [02 Sep 2014 0.8.8](http://doc.libelektra.org/news/eca69e19-5ddb-438c-ac06-57c20b1a9160.html) adds 3-way merging
-
-Also see [News](doc/news/) and its [RSS feed](http://www.libelektra.org/news/feed.rss).
+Go to the [website](https://www.libelektra.org), see [News](doc/news/), and its [RSS feed](https://www.libelektra.org/news/feed.rss).
 
 
 ## Sources ##
@@ -193,24 +180,7 @@ Also see [News](doc/news/) and its [RSS feed](http://www.libelektra.org/news/fee
 ### Packages ###
 
 The preferred way to install Elektra is by using packages provided for
-your distribution:
- - [Fedora](https://admin.fedoraproject.org/pkgdb/package/elektra/)
- - [Gentoo](http://packages.gentoo.org/package/app-admin/elektra)
- - [Arch Linux](https://aur.archlinux.org/packages/elektra/)
- - [Debian](https://packages.debian.org/de/jessie/libelektra4)
- - [Ubuntu](https://launchpad.net/ubuntu/+source/elektra)
- - [Openwrt](https://github.com/openwrt/packages/tree/master/libs/elektra)
- - [OpenSuse](https://software.opensuse.org/package/elektra)
- - [PLDLinux](http://sophie.zarb.org/rpms/763d9e52beefaa15b1363d11d836b65c)
- - [LEDE](https://lede-project.org/packages/pkgdata/libelektra-core?s[]=elektra)
- - [Linux Mint](https://community.linuxmint.com/software/view/elektra-bin)
-
-Available, but not up-to-date (Version 0.7):
- - [Mageia](http://svnweb.mageia.org/packages/updates/1/elektra/)
-
-For [OpenSUSE, CentOS, Fedora, RHEL and SLE](https://build.opensuse.org/package/show/home:bekun:devel/elektra)
-Kai-Uwe Behrmann kindly provides packages [for download](http://software.opensuse.org/download.html?project=home%3Abekun%3Adevel&package=libelektra4).
-For Debian wheezy and jessie amd64 we provide latest builds. See build server below.
+your distribution, see [INSTALL](/doc/INSTALL.md) for available packages.
 
 For macOS there is a homebrew tap available:
   - [macOS](https://github.com/ElektraInitiative/homebrew-elektra)
@@ -226,7 +196,7 @@ You can clone the latest version of Elektra by running:
 
          git clone https://github.com/ElektraInitiative/libelektra.git
 
-Releases can be downloaded from [http](http://www.libelektra.org/ftp/elektra/releases/) and
+Releases can be downloaded from [http](https://www.libelektra.org/ftp/elektra/releases/) and
 `ftp://ftp.libelektra.org/elektra/releases/`
 
 ### Compiling ###
@@ -248,22 +218,9 @@ Make sure to read how to add plugins, tools and bindings.
 
 ## Build Server ##
 
-The [build server](http://build.libelektra.org:8080/) builds
+The [build server](https://build.libelektra.org/) builds
 Elektra on every commit in various ways and also produces [LCOV code
 coverage report](http://doc.libelektra.org/coverage/latest).
-
-To use the debian repository of the latest builds from master put following files in
-/etc/apt/sources.list.
-For jessie:
-
-        deb     [trusted=yes] http://debian-stable.libelektra.org/elektra-stable/ jessie main
-        deb-src [trusted=yes] http://debian-stable.libelektra.org/elektra-stable/ jessie main
-
-For wheezy:
-
-         deb     [trusted=yes] http://build.libelektra.org/debian/ wheezy main
-         deb-src [trusted=yes] http://build.libelektra.org/debian/ wheezy main
-
 
 
 ## Contributing ##

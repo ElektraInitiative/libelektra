@@ -61,7 +61,8 @@ results and the names are still very compact.
 
 As decided [here](https://github.com/ElektraInitiative/libelektra/issues/302),
 the key names of software-applications should always start with:
-`/sw/org/myapp/#0/current/name/full`
+
+	/sw/org/myapp/#0/current/name/full
 
 - `sw` is for software, `hw` for hardware, `elektra` for internals
 - `org` is a URL/organisation name to avoid name clashes with other

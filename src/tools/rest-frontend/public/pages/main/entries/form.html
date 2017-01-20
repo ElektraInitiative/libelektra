@@ -65,7 +65,7 @@
                             <input type="text" id="organization" name="organization" class="form-control"
                                    ng-model="entry.organization"
                                    ng-minlength="1" ng-maxlength="255" ng-pattern="'^([a-zA-Z0-9\-\.]+)$'" required
-                                   uib-typeahead="organization for organization in typeaheads.organizations"
+                                   uib-typeahead="organization for organization in typeaheads.organizations | filter:$viewValue | limitTo:5"
                                    autocomplete="off"
                                    placeholder="{{ 'APP.ENTRIES.FORM.PLACEHOLDER.ORGANIZATION' | translate }}">
                             <span class="input-group-addon">
@@ -97,7 +97,7 @@
                             <input type="text" id="application" name="application" class="form-control"
                                    ng-model="entry.application"
                                    ng-minlength="1" ng-maxlength="255" ng-pattern="'^([a-zA-Z0-9\-\.]+)$'" required
-                                   uib-typeahead="application for application in typeaheads.applications"
+                                   uib-typeahead="application for application in typeaheads.applications | filter:$viewValue | limitTo:5"
                                    autocomplete="off"
                                    placeholder="{{ 'APP.ENTRIES.FORM.PLACEHOLDER.APPLICATION' | translate }}">
                             <span class="input-group-addon">
@@ -129,7 +129,7 @@
                             <input type="text" id="scope" name="scope" class="form-control"
                                    ng-model="entry.scope"
                                    ng-minlength="1" ng-maxlength="255" ng-pattern="'^([a-zA-Z0-9\-\.]+)$'" required
-                                   uib-typeahead="scope for scope in typeaheads.scopes" autocomplete="off"
+                                   uib-typeahead="scope for scope in typeaheads.scopes | filter:$viewValue | limitTo:5" autocomplete="off"
                                    placeholder="{{ 'APP.ENTRIES.FORM.PLACEHOLDER.SCOPE' | translate }}">
                             <span class="input-group-addon">
                                 <i class="fa fa-question form-hint"
@@ -200,7 +200,9 @@
                                 add-on-space="true"
                                 replace-spaces-with-dashes="true"
                                 allowed-tags-pattern="^[a-z0-9\-\.]{3,20}$">
-                        <auto-complete source="typeaheads.tags"></auto-complete>
+                        <auto-complete source="typeaheads.tags | filter:$query"
+                                       min-length="1" max-results-to-show="5"
+                                       load-on-focus="true" load-on-empty="true"></auto-complete>
                     </tags-input>
                 </div>
             </div>
@@ -215,8 +217,15 @@
                 <div class="form-group"
                      ng-class="{'has-error': entryForm.config_format.$invalid && !entryForm.config_format.$pristine,
                                 'has-success': entryForm.config_format.$valid && entryForm.config_format.$dirty}">
+                    <span class="pull-right">
+                        <a href="/plugins/{{ entry.configuration.format.plugin.nameWithoutConf }}"
+                           target="_blank">
+                            <span>{{ 'APP.CONVERSION.LABEL.FORMAT.INFO' | translate }}</span>
+                            <i class="fa fa-external-link"></i>
+                        </a>
+                    </span>
                     <label for="config_format" class="control-label">
-                        {{ 'APP.ENTRIES.FORM.LABEL.CONFIGURATION.FORMAT' | translate }}
+                        <span>{{ 'APP.ENTRIES.FORM.LABEL.CONFIGURATION.FORMAT' | translate }}</span>
                     </label>
                     <select id="config_format" name="config_format" class="form-control"
                             ng-model="entry.configuration.format"
@@ -264,6 +273,11 @@
     </div>
 
     <div class="row">
+        <div class="col-md-12">
+            <div class="alert alert-info"
+                 translate="APP.ENTRIES.FORM.LABEL.CONFIRMLICENSE" translate-compile>
+            </div>
+        </div>
         <div class="col-md-12">
             <button type="submit" class="btn btn-primary"
                     ng-click="ctrl.submit()"

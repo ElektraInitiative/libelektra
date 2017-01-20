@@ -398,7 +398,9 @@ Returns detailed information about the entry with the specified key (path). If t
     + application: `tomcat` (string, required) - The `application` to which the configuration of the entry belongs to
     + scope: `server.xml` (string, required) - The `application` specific `scope` to which the configuration of the entry belongs to
     + slug: `tomcat9-serverxml-example` (string, required) - The identifier of the requested entry that is unique within the namespace created by `organization`, `application` and `scope`
-    + raw: `xml` (string, optional) - If this parameter is supplied, the API will attempt to return the requested configuration snippet in the given `raw` format (regex: ^[a-zA-Z0-9\-\.\_]+$)
+    + raw: `xml` (string, optional) - If this parameter is supplied, the API will attempt to return the requested configuration snippet in the given `raw` format.
+
+        Instead of using a format (e.g. `xml`) as value, it is also possible to use a plugin name (e.g. `xmltool`) instead. It is then possible to add additional plugin configuration parameters after the plugin name (space-separated). The plugin configuration can also be enclosed in quotes (single as well as double quotes work). Plugin parameters need to be comma separated and the whole `format` parameter needs to be URL encoded of course. Example: `simpleini 'format=% %'` (readable) needs to be `simpleini%20%27format%3D%25%20%25%27` (URL encoded)
 
 + Response 200 (application/json)
     + Attributes (object)

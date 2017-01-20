@@ -108,6 +108,8 @@ private:
 	void loadAllEntries ();
 	void loadAllUsers ();
 
+	void setEnvVars (const model::Entry & entry, const std::string action) const;
+
 	std::vector<model::Entry> m_entryCache;
 	boost::shared_mutex m_mutex_entryCache;
 

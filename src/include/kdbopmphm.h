@@ -126,12 +126,12 @@ uint32_t opmphmHashfunction (const void * key, size_t length, uint32_t initval);
 uint32_t opmphmRandom (unsigned int * seedp);
 
 /**
- * The requirements are described in doc/help/elektra-data-structures.md.
- */
-
-/**
-* @defgroup datastructs Datastructures
-* @brief Datastructures
+* @defgroup datastructs Private Datastructures
+* @brief Private Datastructures
+*
+* These datastructures can be used within Elektra's ecosystem.
+*
+* The requirements are described in doc/help/elektra-data-structures.md.
 */
 
 

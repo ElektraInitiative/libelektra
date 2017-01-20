@@ -35,10 +35,6 @@ int main ()
 		return 1;
 	}
 
-	// force caching of database
-	std::cout << "Pre-caching data..." << std::endl;
-	(void)kdbrest::service::StorageEngine::instance ();
-
 	// launch rest API
 	std::cout << "Starting REST API server..." << std::endl;
 	try

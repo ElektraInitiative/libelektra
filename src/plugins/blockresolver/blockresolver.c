@@ -45,7 +45,7 @@ static const char * genTempFilename ()
 	gettimeofday (&tv, 0);
 	const char * tmpFilePrefix = "/tmp/elektra_blockresolver_";
 	char * tmpFile = elektraMalloc (strlen (tmpFilePrefix) + TV_MAX_DIGITS + 2);
-	snprintf (tmpFile, strlen (tmpFilePrefix) + TV_MAX_DIGITS + 2, "%s%lu:%lu", tmpFilePrefix, tv.tv_sec, tv.tv_usec);
+	snprintf (tmpFile, strlen (tmpFilePrefix) + TV_MAX_DIGITS + 2, "%s%lu:" ELEKTRA_TIME_USEC_F, tmpFilePrefix, tv.tv_sec, tv.tv_usec);
 	return tmpFile;
 }
 

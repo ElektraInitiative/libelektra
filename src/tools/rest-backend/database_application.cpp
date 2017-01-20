@@ -36,7 +36,6 @@ namespace kdbrest
  */
 DatabaseApp::DatabaseApp (cppcms::service & srv) : cppcms::application (srv)
 {
-
 	dispatcher ().assign ("/(([a-zA-Z0-9\\-\\.]+)(/([a-zA-Z0-9\\-\\.]+)){3})/{0,1}", &DatabaseApp::getUniqueEntry, this, 1);
 	mapper ().assign ("entry", "/{1}");
 
@@ -45,6 +44,9 @@ DatabaseApp::DatabaseApp (cppcms::service & srv) : cppcms::application (srv)
 
 	dispatcher ().assign ("(/?)", &DatabaseApp::getAllEntries, this);
 	mapper ().assign ("");
+
+	// force caching of database
+	(void)kdbrest::service::StorageEngine::instance ();
 }
 
 /**
@@ -198,7 +200,6 @@ void DatabaseApp::handleGetUnique (cppcms::http::request & req, cppcms::http::re
 	try
 	{
 		model::Entry entry = service::StorageEngine::instance ().getEntry (key);
-		this->addViewToEntry (entry);
 
 		const std::string raw = req.get (PARAM_RAW);
 		if (!raw.empty ())
@@ -218,6 +219,7 @@ void DatabaseApp::handleGetUnique (cppcms::http::request & req, cppcms::http::re
 			{
 				RootApp::setBadRequest (resp, "The snippet cannot be represented using the submitted format.",
 							"ENTRY_UNABLE_TO_EXPORT_SNIPPET");
+				return; // quit early
 			}
 		}
 
@@ -246,10 +248,10 @@ void DatabaseApp::handleGetUnique (cppcms::http::request & req, cppcms::http::re
 		auto it = formats.begin ();
 		while (it != formats.end ())
 		{
-			if (it->getPluginformat ().getPluginname () == entry.getUploadPlugin ())
+			if (it->getPluginformat ().getPluginnameWithConfig () == entry.getUploadPlugin ())
 			{
 				data["value"][j]["format"] = it->getPluginformat ().getFileformat ();
-				data["value"][j]["plugin"] = it->getPluginformat ().getPluginname ();
+				data["value"][j]["plugin"] = it->getPluginformat ().getPluginnameWithConfig ();
 				data["value"][j]["value"] = it->getConfig ();
 				data["value"][j]["validated"] = it->isValidated ();
 				j++;
@@ -262,7 +264,7 @@ void DatabaseApp::handleGetUnique (cppcms::http::request & req, cppcms::http::re
 		for (auto & elem : formats)
 		{
 			data["value"][j]["format"] = elem.getPluginformat ().getFileformat ();
-			data["value"][j]["plugin"] = elem.getPluginformat ().getPluginname ();
+			data["value"][j]["plugin"] = elem.getPluginformat ().getPluginnameWithConfig ();
 			data["value"][j]["value"] = elem.getConfig ();
 			data["value"][j]["validated"] = elem.isValidated ();
 			j++;
@@ -704,7 +706,7 @@ model::Entry DatabaseApp::buildAndValidateEntry (cppcms::http::request & req, cp
 			service::ConvertEngine::instance ().import (input_data.conf_value, input_data.conf_format, entry);
 		auto subkeys = cfg.getKeySet ();
 		entry.addSubkeys (subkeys);
-		entry.setUploadPlugin (cfg.getPluginformat ().getPluginname ());
+		entry.setUploadPlugin (cfg.getPluginformat ().getPluginnameWithConfig ());
 	}
 	catch (exception::UnsupportedConfigurationFormatException & e)
 	{
@@ -913,30 +915,12 @@ void DatabaseApp::generateAndSendEntryList (cppcms::http::request & req, cppcms:
 }
 
 /**
- * @brief increases the view count of an entry by 1
- *
- * @param entry the entry to change
- */
-void DatabaseApp::addViewToEntry (model::Entry & entry) const
-{
-	entry.addViews (1);
-	try
-	{
-		(void)service::StorageEngine::instance ().updateEntry (entry);
-	}
-	catch (kdbrest::exception::EntryNotFoundException & e)
-	{
-		// do not handle exception
-	}
-}
-
-/**
  * @brief copies meta data from one entry to another
  *
  * does not copy the key of the entry itself, only meta data
  * and the configuration snippet. does also not copy data
- * that can only be changed by the system (creation date,
- * author and view count).
+ * that can only be changed by the system (creation date and
+ * author).
  *
  * @param from source entry
  * @param to target entry

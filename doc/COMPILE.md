@@ -42,7 +42,9 @@ To build PDF documentation you need `pdflatex` with
 For the plugins, please refer to the README.md of the respective plugin.
 For example, for CentOS:
 
-	sudo yum install -y boost-devel libdb-devel GConf2-devel libxml2-devel yajl-devel libcurl-devel augeas-devel libgit2-devel lua-devel swig python34-devel python-devel java-1.8.0-openjdk-devel jna ruby-devel byacc
+	sudo yum install -y boost-devel libdb-devel GConf2-devel libxml2-devel yajl-devel   \
+	libcurl-devel augeas-devel libgit2-devel lua-devel swig python34-devel python-devel \
+	java-1.8.0-openjdk-devel jna ruby-devel byacc
 
 For the Debian package, please refer to debian/control (in the debian
 branch).
@@ -417,7 +419,7 @@ Continue by reading [INSTALL](INSTALL.md).
 You can build Elektra using Code::Blocks under Gentoo:
 
 Precondition:
-Make sure you have a compiler, xml2 (for kdb tool) and xsl (see later) installed. 
+Make sure you have a compiler, xml2 (for kdb tool) and xsl (see later) installed.
 cmake configure will help you with that, it will make sure you don't forget something
 essential.
 
@@ -441,9 +443,70 @@ Note 3:
     for Gentoo is recommend to emerge sys-apps/lsb-release to name the package
     right even thou not required.
 
+
+## Maintainer's Guide ##
+
+### Multiarch ###
+
+On multiarch (multiple architectures installed in one system), you need to set `LIB_SUFFIX`.
+For example, if you want to have the binaries in `lib64` and `lib32`, you
+would use for the libraries to be installed in `${CMAKE_INSTALL_PREFIX}/lib64`:
+
+	-DLIB_SUFFIX="64"
+
+If there is a directory for different architectures, simply prepend an `/`.
+For example, for Debian:
+
+	-DLIB_SUFFIX="/$(DEB_HOST_MULTIARCH)"
+
+
+
+
+### RPATH ###
+
+By default Elektra uses `RPATH` to hide its plugins. This makes it obvious that
+external applications should *not* link against plugins. Instead every application
+should use the `elektraModulesLoad()` API to load Elektra's modules.
+
+The folder where the plugins are located is a subdirectory of where the
+libraries are installed. The name of the subdirectory can be specified
+using `TARGET_PLUGIN_FOLDER` and is `elektra` by default. You might
+want to encode Elektra's `SOVERSION` into the folders name, if you want
+different major versions of Elektra be co-installable.
+
+Elektra's use case for `RPATH` is considered acceptable, so we recommend to use it
+because:
+
+- plugins do not clutter the library folder nor the `ld.so.cache`
+- it works well with multiarch (`LIB_SUFFIX` is also honored for plugins)
+- which plugins are used should be decided at mount-time and be globally available in the
+  same way for every application. `RPATH` supports exactly that because it even overrides
+  `LD_LIBRARY_PATH`.
+
+Unfortunately, there are also drawbacks:
+
+- it makes Elektra non-relocatable (`RPATH` is decided at compile-time, so you cannot
+  simply move Elektra's installations within the file system (e.g. from `/usr/local` to `/usr`)
+- it requires modern `ld.so` implementations that honor `RPATH` from libraries.
+  This is the case for most `libc` implementations including Linux and macOS, but not
+  for, e.g., `musl`.
+
+
+If you want Elektra to *not* use `RPATH`, you can add:
+
+	-DTARGET_PLUGIN_FOLDER="" -DCMAKE_SKIP_INSTALL_RPATH=ON
+
+Then all plugins are directly installed to the library directory and loaded
+like other libraries (in any of `ld.so` paths).
+
+Alternatively, which gives you the advantage not to clutter the main library path,
+is to add the plugin folder in `/etc/ld.so.conf.d/elektra`. Note that it still allows
+applications to link against plugins.
+
+
 ## Troubleshooting ##
 
-### missing links/libraries ###
+### Missing Links/Libraries ###
 
 If you get errors that `libelektra-resolver.so` or `libelektra-storage.so` are missing,
 or the links do not work, you can use as workaround:
@@ -456,14 +519,15 @@ This issue was reported for:
 - CLion IDE (does not allow to build)
 
 
-### Dependencies not available for Cent OS ###
+### Dependencies not Available for Cent OS ###
 
 Please enable EPEL https://fedoraproject.org/wiki/EPEL
 
 	# Install EPEL for RHEL 7
-	curl -o epel-release-7-8.noarch.rpm http://dl.fedoraproject.org/pub/epel/7/x86_64/e/epel-release-7-8.noarch.rpm
+	curl -o epel-release-7-8.noarch.rpm \
+	  http://dl.fedoraproject.org/pub/epel/7/x86_64/e/epel-release-7-8.noarch.rpm
 	sudo rpm -ivh epel-release-7-8.noarch.rpm
-	sudo yum update    
+	sudo yum update
 
 For Bindings swig3 is recommended. swig2 only works on some distributions.
 E.g., for Debian Jessie the bindings will crash.
@@ -480,6 +544,34 @@ Also, no ronn was available, thus you need to do:
 
 	gem install ronn
 
+
+### Cross Compiling ###
+
+In Elektra cross compiling needs two steps.  If you get errors like
+`elektra-export-errors_EXE_LOC` not found, go on reading.
+
+In the first step, you need to compile Elektra for the host architecture
+and install the build tools:
+
+	cmake -DINSTALL_BUILD_TOOLS=ON \
+	      -DINSTALL_SYSTEM_FILES=OFF \
+	      -DCMAKE_PREFIX_PATH=$(STAGING_DIR_HOST) \
+	      ..
+	make -j 5
+	make install -j 5
+
+Where `$(STAGING_DIR_HOST)` must be a directory to be found in the later
+build process.  In particular, `$(STAGING_DIR_HOST)/bin` must be in a
+directory found by a later `find_program`.
+
+Then you need to compile Elektra again, but for the target architecture.
+Now, the build tools such as `elektra-export-errors` should be found in
+the `$(STAGING_DIR_HOST)/bin` where they were installed before.
+
+For reference, you can look into the
+[OpenWRT Elektra Makefile](https://github.com/openwrt/packages/blob/master/libs/elektra/Makefile)
+and the
+[CMake in OpenWRT](https://github.com/openwrt/openwrt/blob/master/include/cmake.mk).
 
 ## See also
 

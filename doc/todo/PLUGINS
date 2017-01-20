@@ -233,15 +233,6 @@ folder:
 
 ## library supported ##
 
-https://github.com/toml-lang/toml
-
-https://github.com/martinh/libconfuse
-
-MacOSX plist files
-
-http://rfc.zeromq.org/spec:4/ZPL
-	https://github.com/zeromq/czmq/blob/master/src/zconfig.c
-
 xpath plugin:
 	on an xml file with an mapping from (reduced) xpath<->elektra keys
 
@@ -249,19 +240,14 @@ C/C++ serialization
 	(ksNew(keyNew()))
 	reading with llvm?
 
-/etc/groups plugin
+/etc/groups plugin (could be done with csvstorage)
 
 other file formats:
 	xfree
 	apache
 	kde-ini
 	gconf
-	xml
 	inittab
-
-tcl:
-	parse output?
-	struct output!
 
 compile lenses as plugin:
 	+ no dependency at runtime
@@ -276,7 +262,6 @@ xfconf file storage (see #47)
 
 Kyoto Cabinet
 unqlite
-libconfig
 eet
 tdb.samba (using tdb_traverse)
 sqlite

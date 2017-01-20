@@ -7,7 +7,15 @@ module.exports = function ($scope, Logger, $state, EntryService, Notification, S
     var vm = this;
 
     Logger.log(entry);
-    $scope.formats = formats;
+    $scope.formats = formats.map(function(elem) {
+        var name = elem.plugin.name;
+        var space = name.indexOf(' ');
+        if(space > -1) {
+            name = name.substring(0, space);
+        }
+        elem.plugin.nameWithoutConf = name;
+        return elem;
+    });
     $scope.entry = {
         title: entry.meta.title,
         description: entry.meta.description,

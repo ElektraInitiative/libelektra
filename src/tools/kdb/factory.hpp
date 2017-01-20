@@ -15,7 +15,9 @@
 #include <string>
 #include <vector>
 
+#include "ansicolors.hpp"
 #include "coloredkdbio.hpp"
+
 #include <command.hpp>
 #include <external.hpp>
 
@@ -32,6 +34,7 @@
 #include <import.hpp>
 #include <info.hpp>
 #include <list.hpp>
+#include <listcommands.hpp>
 #include <ls.hpp>
 #include <merge.hpp>
 #include <metaget.hpp>
@@ -105,6 +108,7 @@ public:
 		m_factory.insert (std::make_pair ("smount", new Cnstancer<SpecMountCommand> ()));
 		m_factory.insert (std::make_pair ("global-mount", new Cnstancer<GlobalMountCommand> ()));
 		m_factory.insert (std::make_pair ("gmount", new Cnstancer<GlobalMountCommand> ()));
+		m_factory.insert (std::make_pair ("list-commands", new Cnstancer<ListCommandsCommand> ()));
 	}
 
 	~Factory ()
@@ -115,8 +119,7 @@ public:
 		}
 	}
 
-	/**Returns a list of available commands */
-	std::vector<std::string> getCommands () const
+	std::vector<std::string> getPrettyCommands () const
 	{
 		std::vector<std::string> ret;
 		for (auto & elem : m_factory)
@@ -134,6 +137,19 @@ public:
 			       "View the man page of a tool");
 		ret.push_back (getStdColor (ANSI_COLOR::BOLD) + "list-tools" + getStdColor (ANSI_COLOR::RESET) + "\t" +
 			       "List all external tool");
+		return ret;
+	}
+
+	/**Returns a list of available commands */
+	std::vector<std::string> getCommands () const
+	{
+		std::vector<std::string> ret;
+		for (auto & elem : m_factory)
+		{
+			ret.push_back (elem.first);
+		}
+		ret.push_back ("help");
+		ret.push_back ("list-tools");
 		return ret;
 	}
 

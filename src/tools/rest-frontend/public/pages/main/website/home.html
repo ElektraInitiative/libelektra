@@ -12,11 +12,17 @@
         </h2>
         <div class="text-center md-pt-10">
             <button class="btn btn-success" ui-sref="main.dyn.docgettingstarted">
-                {{ 'APP.HOME.BUTTON.GETSTARTED' | translate }}
+                <i class="fa fa-play-circle"></i>
+                <span>{{ 'APP.HOME.BUTTON.GETSTARTED' | translate }}</span>
             </button>
             <button class="btn btn-primary" ui-sref="main.dyn.tutorials">
-                {{ 'APP.HOME.BUTTON.TUTORIALS' | translate }}
+                <i class="fa fa-book"></i>
+                <span>{{ 'APP.HOME.BUTTON.TUTORIALS' | translate }}</span>
             </button>
+            <a class="btn btn-default" href="https://github.com/ElektraInitiative/libelektra">
+                <i class="fa fa-github"></i>
+                <span>{{ 'APP.HOME.BUTTON.GITHUB' | translate }}</span>
+            </a>
         </div>
         <h4 class="slogan-slave text-center sm-mt-15">
             <small translate="APP.HOME.HEADLINE.SLOGAN.THIRD"></small>
@@ -111,9 +117,8 @@
             <div class="col-md-8">
                 <h3 class="text-center">{{ 'APP.HOME.HEADLINE.HOWITWORKS' | translate }}</h3>
                 <div class="text-center">
-                    <script type="text/javascript" src="https://asciinema.org/a/0z7byvhbyljcnfx89qwd8wxrb.js"
-                            id="asciicast-0z7byvhbyljcnfx89qwd8wxrb" async>
-                    </script>
+                    <asciinema-player src="vendor/asciinema/asciinema-demo.json"
+                                      cols="100" poster="npt:49"></asciinema-player>
                 </div>
             </div>
             <!-- Recent news -->

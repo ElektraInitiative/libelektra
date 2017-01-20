@@ -156,12 +156,12 @@ improvements to the dbus plugin
 
 ## Peter Nirschl ##
 
-development of the crypto plugin, minor bug fixes, BSD/OS X support
+development of the crypto plugin, minor bug fixes, BSD/macOS support
 
 - email: peter.nirschl@gmail.com
-- github user: @petermax2
+- github user: [petermax2](http://github.com/petermax2)
 - devel on: Fedora
-- test on: Fedora, Debian, Mac OS X
+- test on: Fedora, Debian, macOS
 
 
 ## René Schwaiger ##
@@ -169,7 +169,7 @@ development of the crypto plugin, minor bug fixes, BSD/OS X support
 documentation, bug fixes
 
 - email: sanssecours@f-m.fm
-- github user: @sanssecours
+- github user: [sanssecours](http://github.com/sanssecours)
 - devel/test on: macOS
 
 
@@ -178,14 +178,14 @@ documentation, bug fixes
 development of the REST service & frontend for sharing of conf. snippets, cachefilter plugin, website
 
 - email: marvin-mall@msn.com
-- github user: @Namoshek
+- github user: [Namoshek](https://github.com/Namoshek)
 - devel/test on: Debian Jessie
 
 
 ## Thomas Waser ##
 
 - email: thomas.waser@libelektra.org
-- github user: @tom-wa
+- github user: [tom-wa](https://github.com/tom-wa)
 - devel/test on: Debian Testing/Sid
 
 
@@ -194,4 +194,4 @@ development of the REST service & frontend for sharing of conf. snippets, cachef
 Design and Implementation of the qml-gui
 
 - email: raffael@libelektra.org
-- github user: @0003088
+- github user: [0003088](https://github.com/0003088)

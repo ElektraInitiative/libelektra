@@ -5,6 +5,7 @@
 #include <vector>
 
 #include <exceptions.hpp>
+#include <helper/keyhelper.hpp>
 #include <kdb_includes.hpp>
 
 /**
@@ -87,6 +88,27 @@ public:
 	std::string getPluginname () const
 	{
 		return m_pluginname;
+	}
+
+	/**
+	 * @brief getter for the plugin name with appended config params
+	 * 
+	 * example:
+	 * - plugin name: simpleini
+	 * - plugin config:
+	 *     system/format = % %
+	 * - returns: simpleini format=% %
+	 * 
+	 * @return plugin name with config params
+	 */
+	std::string getPluginnameWithConfig () const
+	{
+		std::string result = m_pluginname;
+		for (auto elem : m_config)
+		{
+			result.append (" " + elem.getName ().substr (elem.getNamespace ().length () + 1) + "=" + elem.getString ());
+		}
+		return result;
 	}
 
 	/**

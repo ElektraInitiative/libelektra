@@ -18,7 +18,7 @@ fi
 # It returns successful, even if test cases failed, so it is intended
 # to be complementary to run_all, not instead.
 
-ctest -T memcheck --output-on-failure --build-config $1 -LE memleak |\
+LD_LIBRARY_PATH=`pwd`/lib ctest -T memcheck --output-on-failure --build-config $1 -LE memleak |\
 awk '
 BEGIN { ret=0; }
 

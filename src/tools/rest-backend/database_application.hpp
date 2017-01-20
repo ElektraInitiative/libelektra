@@ -126,7 +126,6 @@ private:
 	void generateAndSendEntryList (cppcms::http::request & request, cppcms::http::response & response,
 				       const std::vector<model::Entry> & entries) const;
 
-	void addViewToEntry (model::Entry & entry) const;
 	void copyEntryData (model::Entry & from, model::Entry & to) const;
 };
 
