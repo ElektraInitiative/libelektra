@@ -11,7 +11,7 @@
 /debian/patches/
 
 #ignore all build directories of cmake
-build*
+build*/
 
 #ignore ctags + gdb history files
 .ctags
