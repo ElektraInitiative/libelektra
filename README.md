@@ -182,7 +182,10 @@ Go to the [website](https://www.libelektra.org), see [News](doc/news/), and its 
 The preferred way to install Elektra is by using packages provided for
 your distribution, see [INSTALL](/doc/INSTALL.md) for available packages.
 
-If there are no packages available for your distribution, see the
+For macOS there is a homebrew tap available:
+  - [macOS](https://github.com/ElektraInitiative/homebrew-elektra)
+
+If there are no packages available for your distribution see the
 [installation document](doc/INSTALL.md).
 
 ### Download ###
@@ -203,7 +206,8 @@ following commands to compile it:
 
  * `mkdir build`
  * `cd build`
- * `cmake ..` or `ccmake ..`
+ * `cmake ..`
+ * `ccmake ..` (optional, provides a console based GUI to give an overview of the available compilation options and settings)
  * `make`
 
 Then you can use `sudo make install` to install it.

@@ -3,9 +3,9 @@ kdb-editor(1) -- Use your editor for editing KDB
 
 ## SYNOPSIS
 
-`kdb editor <key-name> [<format>]`
+`kdb editor <path> [<format>]`
 
-Where `key-name` is the destination where the user wants to edit keys and `format` is the format in which the keys should be edited.
+Where `path` is the destination where the user wants to edit keys and `format` is the format in which the keys should be edited.
 If the `format` argument is not passed, then the default format will be used as determined by the value of the `sw/kdb/current/format` key.
 By default, that key contains `storage`.
 The `storage` plugin can be configured at compile-time or changed by the link `libelektra-storage.so`.
@@ -89,3 +89,4 @@ Or set a new editor as default using:
 ## SEE ALSO
 
 - [elektra-merge-strategy(7)](elektra-merge-strategy.md)
+- [elektra-key-names(7)](elektra-key-names.md) for an explanation of key names.

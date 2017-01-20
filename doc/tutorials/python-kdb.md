@@ -32,7 +32,7 @@ with kdb.KDB() as k:
     k.get(ks, 'user')
 ```
 
-It is also possible to iterate as expected over a keyset and use `len`, `reversed` and copying. The elements of a keyset can be accessed by indexes and a keyset can be sliced. Another way of accessing a key is by the key-name (`keyset_name['/path/to/keys/key_name']`). If the key-name does not exist within the keyset, a `KeyError` exception is thrown.
+It is also possible to iterate as expected over a keyset and use `len`, `reversed` and copying. The elements of a keyset can be accessed by indexes and a keyset can be sliced. Another way of accessing a key is by the key name (`keyset_name['/path/to/keys/key_name']`). If a key with the given name does not exist within the keyset, a `KeyError` exception is thrown.
 
 An example that shows how to load an existing keyset and then access every key and value of the loaded keyset:
 
@@ -144,8 +144,8 @@ with kdb.KDB() as k:
     ks = kdb.KeySet()
     k.get(ks, 'user')
     for key in ks:
-        print("key-name:  {}".format(key.name))
-        print("{0}{1}\n{0}{2}\n".format("key-value: ", key.value,
+        print("key name:  {}".format(key.name))
+        print("{0}{1}\n{0}{2}\n".format("key value: ", key.value,
                                         ks.lookup(key).string))
 ```
 
@@ -156,7 +156,7 @@ import kdb
 
 with kdb.KDB() as k:
     # the first argument is the path to the key,
-    # the third argument is the key-value
+    # the third argument is the key's value
     new_key = kdb.Key('/user/sw/pk/key_name', kdb.KEY_VALUE, 'key_value')
     print("{}: {}".format(new_key, new_key.value))
 ```

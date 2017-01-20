@@ -3,9 +3,9 @@ kdb-fstab(1) -- Create a new fstab entry
 
 ## SYNOPSIS
 
-`kdb fstab <key-path> <fs_spec> <fs_file> <fs_vfstype> <fs_mntops>`
+`kdb fstab <path> <fs_spec> <fs_file> <fs_vfstype> <fs_mntops>`
 
-Where `key-path` is the path the where the key should be stored in the key database.
+Where `path` is the path where the created keys should be stored in the key database.
 The other arguments are as described in fstab(5).
 
 
@@ -40,3 +40,4 @@ To create an fstab entry to mount `dev/sdb1` to `/media/external` stored in the 
 ## SEE ALSO
 
 - Use `kdb info fstab` to get information about the fstab plugin.
+- [elektra-key-names(7)](elektra-key-names.md) for an explanation of key names.

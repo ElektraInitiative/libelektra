@@ -10,7 +10,10 @@ some unix tools):
 Or on RPM based systems (CentOS):
 
 	sudo yum install -y cmake3 gcc-c++
+	
+Or on macOS Sierra, most of the build tools can be obtained by installing XCode (from the App Store). Other required tools may be installed using [brew](http://brew.sh/). First install brew as described on their website. Then issue the following command to get cmake to complete the basic requirements:
 
+	brew install cmake
 
 ## Optional Dependencies ##
 
@@ -24,6 +27,12 @@ To build documentation you need doxygen (we recommend 1.8.8+), graphviz and [ron
 Or on RPM based systems:
 
 	sudo yum install -y doxygen docbook-style-xsl graphviz ruby
+	gem install ronn
+	
+Or on macOS Sierra using brew:
+
+	brew install doxygen graphviz
+	brew install ruby (in case ruby is not already installed)
 	gem install ronn
 
 To build PDF documentation you need `pdflatex` with
@@ -49,7 +58,7 @@ To configure Elektra graphically (with curses) run (`..` belongs to command):
 
     mkdir build && cd build && ccmake ..
 
-and press 'c' to configure the cache (might be necessary multiple times).
+and press 'c' to configure the cache (might be necessary multiple times, and once on the first time in case you dont see any settings).
 After applying the desired settings, press 'g' to generate the make file.
 
 

@@ -3,11 +3,13 @@ kdb-lsmeta(1) - Print metakeys associated with a key
 
 ## SYNOPSIS
 
-`kdb lsmeta <key-name>`
+`kdb lsmeta <key name>`
+
+Where `key name` is the name of the key.
 
 ## DESCRIPTION
 
-This command prints the names of all metakeys associated with a given key.  
+This command prints the names of all metakeys associated with the key named `key name`.  
 If no metakeys are associated with the given key, nothing will be printed.  
 
 ## OPTIONS
@@ -34,3 +36,4 @@ To see which metakeys are associated with a key:
 ## SEE ALSO
 
 - [elektra-metadata(7)](elektra-metadata.md)
+- [elektra-key-names(7)](elektra-key-names.md) for an explanation of key names.
