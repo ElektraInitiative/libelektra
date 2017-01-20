@@ -21,7 +21,8 @@ kdb set /b/c 'Value 2'
 #> Create a new key user/b/c with string Value 2
 ```
 
-![Hierarchical structure of key database](/doc/images/tutorial_namespaces_hierarchy.svg)
+<img
+src="https://cdn.rawgit.com/ElektraInitiative/libelektra/master/doc/images/tutorial_namespaces_hierarchy.svg" alt="Hierarchical structure of key database" />
 
 Here you see the internal structure of the database after adding the keys **/a** and **/b/c**.
 For instance the key **/b/c** has the path **/** -> **b** -> **c**.
@@ -69,7 +70,7 @@ When we don't provide a namespace Elektra assumes a default namespace, which sho
 So if you are a normal user the command `kdb set /b/c 'Value 2'` was synonymous to `kdb set user/b/c 'Value 2'`.
 
 At this point the key database should have this structure:
-![Elektras namespaces](/doc/images/tutorial_namespaces_namespaces.svg)
+<img src="https://cdn.rawgit.com/ElektraInitiative/libelektra/master/doc/images/tutorial_namespaces_namespaces.svg" alt="Elektras namespaces" />
 
 #### Cascading Keys ####
 
