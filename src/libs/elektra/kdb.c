@@ -805,7 +805,9 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 	{
 	case 0: // We don't need an update so let's do nothing
 		keySetName (parentKey, keyName (initialParent));
+		elektraGlobalGet (handle, ks, parentKey, POSTGETSTORAGE, INIT);
 		elektraGlobalGet (handle, ks, parentKey, POSTGETSTORAGE, MAXONCE);
+		elektraGlobalGet (handle, ks, parentKey, POSTGETSTORAGE, DEINIT);
 		splitUpdateFileName (split, handle, parentKey);
 		keyDel (initialParent);
 		splitDel (split);
@@ -883,7 +885,9 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 		splitMerge (split, ks);
 	}
 
+	elektraGlobalGet (handle, ks, parentKey, POSTGETSTORAGE, INIT);
 	elektraGlobalGet (handle, ks, parentKey, POSTGETSTORAGE, MAXONCE);
+	elektraGlobalGet (handle, ks, parentKey, POSTGETSTORAGE, DEINIT);
 
 	ksRewind (ks);
 
@@ -898,7 +902,9 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 
 error:
 	keySetName (parentKey, keyName (initialParent));
+	elektraGlobalError (handle, ks, parentKey, POSTGETSTORAGE, INIT);
 	elektraGlobalError (handle, ks, parentKey, POSTGETSTORAGE, MAXONCE);
+	elektraGlobalError (handle, ks, parentKey, POSTGETSTORAGE, DEINIT);
 
 	keySetName (parentKey, keyName (initialParent));
 	if (handle) splitUpdateFileName (split, handle, parentKey);
@@ -1181,7 +1187,9 @@ int kdbSet (KDB * handle, KeySet * ks, Key * parentKey)
 
 	ELEKTRA_LOG ("now in new kdbSet (%s) %p %zd", keyName (parentKey), (void *)handle, ksGetSize (ks));
 
+	elektraGlobalSet (handle, ks, parentKey, PRESETSTORAGE, INIT);
 	elektraGlobalSet (handle, ks, parentKey, PRESETSTORAGE, MAXONCE);
+	elektraGlobalSet (handle, ks, parentKey, PRESETSTORAGE, DEINIT);
 
 	ELEKTRA_LOG ("after presetstorage maxonce(%s) %p %zd", keyName (parentKey), (void *)handle, ksGetSize (ks));
 
@@ -1278,7 +1286,9 @@ int kdbSet (KDB * handle, KeySet * ks, Key * parentKey)
 error:
 	keySetName (parentKey, keyName (initialParent));
 
+	elektraGlobalError (handle, ks, parentKey, PREROLLBACK, INIT);
 	elektraGlobalError (handle, ks, parentKey, PREROLLBACK, MAXONCE);
+	elektraGlobalError (handle, ks, parentKey, PREROLLBACK, DEINIT);
 
 	elektraSetRollback (split, parentKey);
 
@@ -1293,7 +1303,9 @@ error:
 
 	keySetName (parentKey, keyName (initialParent));
 
+	elektraGlobalError (handle, ks, parentKey, POSTROLLBACK, INIT);
 	elektraGlobalError (handle, ks, parentKey, POSTROLLBACK, MAXONCE);
+	elektraGlobalError (handle, ks, parentKey, POSTROLLBACK, DEINIT);
 
 	keySetName (parentKey, keyName (initialParent));
 	keyDel (initialParent);
