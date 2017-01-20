@@ -9,6 +9,9 @@
 #ifndef SUPERLS_H
 #define SUPERLS_H
 
+#include <map>
+#include <functional>
+
 #include "coloredkdbio.hpp"
 #include <command.hpp>
 #include <kdb.hpp>
@@ -49,7 +52,7 @@ public:
 
 private:
 	kdb::Key getParentKey(kdb::Key key);
-	
+	void increaseCount(std::map<kdb::Key, std::pair<int, int>> & hierarchy, kdb::Key key, std::function<int(int)> depthIncreaser);
 };
 
 #endif

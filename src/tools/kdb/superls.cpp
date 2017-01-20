@@ -31,7 +31,8 @@ int SuperLsCommand::execute (Cmdline const & cl)
 	}
 
 	printWarnings (cerr, root);
-	root = cl.createKey (0);
+	Key originalRoot = cl.createKey (0);
+	root = originalRoot;
 	kdb.get (ks, root);
 	
 	cout.setf (std::ios_base::unitbuf);
@@ -39,75 +40,88 @@ int SuperLsCommand::execute (Cmdline const & cl)
 	{
 		cout.unsetf (std::ios_base::skipws);
 	}
-
-	function<bool(string)> pred = [] (string test) { return true; };
 	
-	bool isExistent = ks.size() != 0 && ks.lookup(root);
+	function<bool(string)> pred = [] (string) { return true; };
+	bool isExistent = ks.lookup(root) || root.getBaseName().empty();
 	if (!isExistent) {
-		string fullName = root.getFullName();
+		string fullName = cl.arguments[0];
 		string newKeyName = getParentKey(root).getFullName();
 		cout << "new name is " << newKeyName << endl;
 		root = Key (newKeyName, KEY_END);
+		cout << " building predicate " << root.isCascading() << " " << fullName << " " << fullName.find("/") << endl;
 		pred = [=] (string test) { 
-			return fullName.size() <= test.size() && std::equal(fullName.begin(), fullName.end(), test.begin());
+			return fullName.size() <= test.size() && std::equal(fullName.begin(), fullName.end(), test.begin() + (root.isCascading() ? test.find("/") : 0));
 		};
 	}
 	
-	ks = ks.cut (root);
+	cout << "cutting at " << root << endl;
+	ks = ks.cut(root);
 	
-	map<Key, int> hierarchy = map<Key, int>();
+	map<Key, pair<int, int>> hierarchy = map<Key, pair<int, int>>();
 	
 	ks.rewind();
 	
-	Key parent = root;
+	KeySet hierarchialKeys;
+	Key parent;
 	Key last;
 	Key tmp;
 	
-	std::stack<Key> keyStack;
+	stack<Key> keyStack;
 	if (!(tmp = ks.next())) {
 		// return?
 		return 0;
 	}
 	
-	// Simply just show either only the next level or all for now
-	int maxDepth = cl.recursive ? std::numeric_limits<int>::max() : 2;
 	int curDepth = 0;
 	keyStack.push(tmp);
 	while (!keyStack.empty()) {
 		Key current = keyStack.top();
-		cout << "Currently processing " << current << endl;
 		keyStack.pop();
 		if (current.isDirectBelow(last)) { // hierarchy change
-				parent = last;
-				curDepth++;
+			parent = last;
+			curDepth++;
 		}
+		
+		cout << "Processing " << current << " vs last " << last << " at depth " << curDepth << endl;
+		
 		if (current.isDirectBelow(parent)) { // hierarchy continues
-			if (curDepth < maxDepth + 1 && parent != root) {
-				hierarchy[parent] = ++hierarchy[parent];
-			}
-			if (curDepth < maxDepth) {
-				hierarchy[current] = ++hierarchy[current];
-			}
-			// Current hierarchy processed, we can resume with the next
-			if(keyStack.empty() && (tmp = ks.next())){
-				keyStack.push(tmp);
-			}
-		} else { // otherwise expand the current key to the stack and begin from root again
-			while (current != root) {
-				cout << "Currently expanding " << current << endl;
+			increaseCount(hierarchy, parent, [](int p) {return p;});
+			increaseCount(hierarchy, current, [=](int) {return curDepth;});
+		} else { // otherwise expand the current key to the stack
+			cout << "expanding at " << current << " vs root " << root << " which is belowOrSame " << current.isBelowOrSame(root) << endl;
+			while (current.isBelow(root) && !current.getBaseName().empty() && hierarchy[current].first == 0) {
+				cout << "expanding at " << current << " vs root " << root << endl;
 				keyStack.push(current);
+				hierarchialKeys.append(current);
 				current = getParentKey(current);
 			}
-			parent = root;
-			curDepth = 0;
+			parent = getParentKey(current);
+			curDepth = hierarchy[current].second;
 		}
+		
+		// Current hierarchy processed, we can resume with the next
+		if(keyStack.empty() && (tmp = ks.next())){
+			keyStack.push(tmp);
+		}
+		
 		last = current;
 	}
 	
+	// Adjust the output offset, in case the given string exists in the hierarchy but not in the original ks
+	int offset = !isExistent && hierarchialKeys.lookup(originalRoot);
+	int minDepth = 0 + offset;
+	int maxDepth = cl.recursive ? std::numeric_limits<int>::max() : (1 + offset);
+	cout << "max is " << maxDepth << " and min is " << minDepth << endl;
 	
+	cout << "dumping all results" << endl;
 	for (auto it = hierarchy.begin(); it != hierarchy.end(); it++) {
-		if (pred(it->first.getFullName())) {
-			cout << it->first << (it->second > 1 ? " node " + std::to_string(it->second - 1): " leaf") << endl;
+		cout << it->first << " " << it->second.first << " " << it->second.second << endl;
+	}
+	
+	cout << endl << "dumping filtered results" << endl;
+	for (auto it = hierarchy.begin(); it != hierarchy.end(); it++) {
+		if (pred(it->first.getFullName()) && it->second.second > minDepth && it->second.second <= maxDepth) {
+			cout << it->first << (it->second.first > 1 ? " node " + std::to_string(it->second.first - 1): " leaf") << endl;
 		}
 	}
 	
@@ -118,6 +132,12 @@ int SuperLsCommand::execute (Cmdline const & cl)
 
 Key SuperLsCommand::getParentKey(Key key) {
 	return Key (key.getFullName().erase(key.getFullName().size() - key.getBaseName().size()), KEY_END);
+}
+
+void SuperLsCommand::increaseCount(map<Key, pair<int, int>> & hierarchy, Key key, function<int(int)> depthIncreaser) {
+	cout << "increasing for " << key << endl;
+	pair<int, int> prev = hierarchy[key];
+	hierarchy[key] = pair<int, int>(prev.first + 1, depthIncreaser(prev.second));
 }
 
 SuperLsCommand::~SuperLsCommand ()
