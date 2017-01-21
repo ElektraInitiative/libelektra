@@ -23,6 +23,7 @@
 
 // TODO: to add a new command, 1.) include your header here
 #include <check.hpp>
+#include <complete.hpp>
 #include <convert.hpp>
 #include <cp.hpp>
 #include <editor.hpp>
@@ -48,7 +49,6 @@
 #include <sget.hpp>
 #include <shell.hpp>
 #include <specmount.hpp>
-#include <superls.hpp>
 #include <test.hpp>
 #include <umount.hpp>
 #include <validation.hpp>
