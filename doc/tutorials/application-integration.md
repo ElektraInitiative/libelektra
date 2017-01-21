@@ -66,7 +66,7 @@ notifications (e.g. via dbus), and write out events in their log files.
 New applications simply do not have the burden to stay compatible with
 the configuration system they had to before.  So they will prefer
 to use more standard plugins and contribute to make them flawless.
-But they can also use self-written plugins for adding needed behaviour
+But they can also use self-written plugins for adding needed behavior
 or cross-cutting concerns.
 
 To sum up, if a developer wants to **elektrify** software, he or she can

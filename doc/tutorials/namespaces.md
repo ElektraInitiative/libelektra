@@ -100,7 +100,7 @@ Having namespaces enables both admins and users to set specific parts of the app
 
 ## How it Works on the Command Line (kdb) ##
 
-We will provide an example of how you can configure [elektrified](../help/elektra-glossary.md) applications.
+We will provide an example of how you can configure [elektrified](/doc/help/elektra-glossary.md) applications.
 
 Our exemplary application will be the key database access tool `kdb` as this should already be installed on your system.
 
@@ -109,7 +109,7 @@ Our exemplary application will be the key database access tool `kdb` as this sho
 - _/sw/elektra/kdb/#**X**/**PROFILE**/verbose_ - sets the verbosity of kdb
 - _/sw/elektra/kdb/#**X**/**PROFILE**/quiet_ - if kdb should suppress non-error messages
 
-**X** is a placeholder for the _major version number_ and **PROFILE** stands for the name of a _profile_ to which this configuration applies. If we want to set configuration for the default profile we can set **PROFILE** to %. The name of the key follows the convention described [here](../help/elektra-key-names.md).
+**X** is a placeholder for the _major version number_ and **PROFILE** stands for the name of a _profile_ to which this configuration applies. If we want to set configuration for the default profile we can set **PROFILE** to %. The name of the key follows the convention described [here](/doc/help/elektra-key-names.md).
 
 Say we want to set `kdb` to be more verbose when it is used in the current directory. In this case we have to set _verbose_ to 1 in the _dir_ namespace of the current directory.
 ```sh
