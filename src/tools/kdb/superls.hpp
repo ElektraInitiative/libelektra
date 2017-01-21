@@ -9,8 +9,8 @@
 #ifndef SUPERLS_H
 #define SUPERLS_H
 
-#include <map>
 #include <functional>
+#include <map>
 
 #include "coloredkdbio.hpp"
 #include <command.hpp>
@@ -18,10 +18,6 @@
 
 class SuperLsCommand : public Command
 {
-	kdb::Key root;
-	kdb::KDB kdb;
-	kdb::KeySet ks;
-
 public:
 	SuperLsCommand ();
 	~SuperLsCommand ();
@@ -48,11 +44,17 @@ public:
 		       "export command.";
 	}
 
-	virtual int execute (Cmdline const & cmdline) override;
+	virtual int execute (const Cmdline & cmdline) override;
 
 private:
-	kdb::Key getParentKey(kdb::Key key);
-	void increaseCount(std::map<kdb::Key, std::pair<int, int>> & hierarchy, kdb::Key key, std::function<int(int)> depthIncreaser);
+	void addMountpoints (kdb::KeySet & ks);
+	const std::map<kdb::Key, std::pair<int, int>> analyze (const kdb::KeySet & ks, const kdb::Key root, kdb::KeySet & virtualKeys);
+	const kdb::Key getParentKey (const kdb::Key key);
+	void increaseCount (std::map<kdb::Key, std::pair<int, int>> & hierarchy, const kdb::Key key,
+			    const std::function<int(int)> depthIncreaser);
+	void printResult (const kdb::Key originalRoot, const kdb::Key root, const std::map<kdb::Key, std::pair<int, int>> & hierarchy,
+			  const kdb::KeySet & virtualKeys);
+	const std::function<bool(std::string)> determineFilterPredicate (const kdb::Key originalRoot, const kdb::Key root);
 };
 
 #endif
