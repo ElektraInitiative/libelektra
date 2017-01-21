@@ -62,6 +62,8 @@ public:
 	bool humanReadable; /*!< Human readable values are preferred. */
 	bool help;	  /*!< Display help instead of the normal action.. */
 	bool interactive;   /*!< Interactive mode. */
+	int minDepth;       /*!< minimum depth for completion suggestions */
+	int maxDepth;       /*!< maximum depth for completion suggestions */
 	bool noNewline;     /*!< Do not output a newline at the end. */
 	bool test;	  /*!< Run some self tests instead of the normal action. */
 	bool recursive;     /*!< Recursive mode. */
