@@ -19,15 +19,27 @@
 using namespace kdb;
 using namespace std;
 
-SuperLsCommand::SuperLsCommand ()
+CompleteCommand::CompleteCommand ()
 {
 }
 
-int SuperLsCommand::execute (const Cmdline & cl)
+int CompleteCommand::execute (const Cmdline & cl)
 {
 	if (cl.arguments.size () != 1)
 	{
 		throw invalid_argument ("wrong number of arguments, 1 needed");
+	}
+	if (cl.maxDepth <= cl.minDepth)
+	{
+		throw invalid_argument ("the maximum depth has to be larger than the minimum depth");
+	}
+	if (cl.maxDepth < 0)
+	{
+		throw invalid_argument ("the maximum depth has to be a positive number");
+	}
+	if (cl.minDepth < 0)
+	{
+		throw invalid_argument ("the minimum depth has to be a positive number");
 	}
 
 	cout.setf (ios_base::unitbuf);
@@ -38,7 +50,7 @@ int SuperLsCommand::execute (const Cmdline & cl)
 
 	// Determine the actual root key, as for completion purpose originalRoot may not exist
 	KDB kdb;
-	const Key originalRoot = cl.createKey (0);
+	const Key originalRoot = cl.createKey (cl.arguments.size () - 1);
 	Key root = originalRoot;
 	KeySet ks;
 	printWarnings (cerr, root);
@@ -46,20 +58,25 @@ int SuperLsCommand::execute (const Cmdline & cl)
 	kdb.get (ks, root);
 	if (!ks.lookup (root) && !root.getBaseName ().empty ())
 	{
+		if (cl.verbose)
+		{
+			cout << originalRoot << " does not exist or is a cascading key, using " << root << " as the current completion path"
+			     << endl;
+		}
 		root = getParentKey (root);
 	}
 	ks = ks.cut (root);
 
 	// Now analyze the completion possibilities and print the results
-	addMountpoints (ks);
+	addMountpoints (ks, root);
 	KeySet virtualKeys;
-	printResult (originalRoot, root, analyze (ks, root, virtualKeys), virtualKeys);
+	printResult (originalRoot, root, analyze (ks, root, virtualKeys, cl), virtualKeys, cl);
 	printWarnings (cerr, root);
 
 	return 0;
 }
 
-void SuperLsCommand::addMountpoints (KeySet & ks)
+void CompleteCommand::addMountpoints (KeySet & ks, const Key root)
 {
 	KDB kdb;
 	Key mountpointPath ("system/elektra/mountpoints", KEY_END);
@@ -73,14 +90,18 @@ void SuperLsCommand::addMountpoints (KeySet & ks)
 		if (mountpoint.isDirectBelow (mountpointPath))
 		{
 			const string actualName = mountpoints.lookup (mountpoint.getFullName () + "/mountpoint").getString ();
-			ks.append (Key (actualName, KEY_END));
+			Key mountpointKey (actualName, KEY_END);
+			if (mountpointKey.isBelow (root))
+			{
+				ks.append (mountpointKey);
+			}
 		}
 	}
 
 	printWarnings (cerr, mountpointPath);
 }
 
-const map<Key, pair<int, int>> SuperLsCommand::analyze (const KeySet & ks, const Key root, KeySet & virtualKeys)
+const map<Key, pair<int, int>> CompleteCommand::analyze (const KeySet & ks, const Key root, KeySet & virtualKeys, const Cmdline & cl)
 {
 	map<Key, pair<int, int>> hierarchy;
 	stack<Key> keyStack;
@@ -105,7 +126,11 @@ const map<Key, pair<int, int>> SuperLsCommand::analyze (const KeySet & ks, const
 			curDepth++;
 		}
 
-		cout << "Processing " << current << " vs last " << last << " at depth " << curDepth << endl;
+		if (cl.debug)
+		{
+			cout << "Analyzing " << current << ", the last processed key is " << last << " and the parent is " << parent
+			     << " at depth " << curDepth << endl;
+		}
 
 		if (current.isDirectBelow (parent))
 		{ // hierarchy continues at the current level
@@ -114,23 +139,27 @@ const map<Key, pair<int, int>> SuperLsCommand::analyze (const KeySet & ks, const
 		}
 		else
 		{ // hierarchy does not fit the current parent, expand the current key to the stack to find the new parent
-			cout << "expanding at " << current << " vs root " << root << " which is belowOrSame "
-			     << current.isBelowOrSame (root) << endl;
-			// Go back up in the hierarchy until we encounter a known key or are back at the namespace level
 			while (current.isBelow (root) && !current.getBaseName ().empty () && hierarchy[current].first == 0)
-			{
-				cout << "expanding at " << current << " vs root " << root << endl;
+			{ // Go back up in the hierarchy until we encounter a known key or are back at the namespace level
+				if (cl.debug)
+				{
+					cout << "Expanding " << current << endl;
+				}
 				keyStack.push (current);
 				virtualKeys.append (current);
 				current = getParentKey (current);
 			}
 			parent = getParentKey (current);
 			curDepth = hierarchy[current].second;
+			if (cl.debug)
+			{
+				cout << "Finished expanding, resume at " << current << " with parent " << parent << " and depth "
+				     << curDepth << endl;
+			}
 		}
 
-		// Current hierarchy processed, we can resume with the next
 		if (keyStack.empty () && (ks.next ()))
-		{
+		{ // Current hierarchy processed, we can resume with the next
 			keyStack.push (ks.current ());
 		}
 		last = current;
@@ -139,35 +168,51 @@ const map<Key, pair<int, int>> SuperLsCommand::analyze (const KeySet & ks, const
 	return hierarchy;
 }
 
-const Key SuperLsCommand::getParentKey (const Key key)
+const Key CompleteCommand::getParentKey (const Key key)
 {
 	return Key (key.getFullName ().erase (key.getFullName ().size () - key.getBaseName ().size ()), KEY_END);
 }
 
-void SuperLsCommand::increaseCount (map<Key, pair<int, int>> & hierarchy, const Key key, const function<int(int)> depthIncreaser)
+void CompleteCommand::increaseCount (map<Key, pair<int, int>> & hierarchy, const Key key, const function<int(int)> depthIncreaser)
 {
 	const pair<int, int> prev = hierarchy[key];
 	hierarchy[key] = pair<int, int> (prev.first + 1, depthIncreaser (prev.second));
 }
 
-void SuperLsCommand::printResult (const Key originalRoot, const Key root, const map<Key, pair<int, int>> & hierarchy,
-				  const KeySet & virtualKeys)
+void CompleteCommand::printResult (const Key originalRoot, const Key root, const map<Key, pair<int, int>> & hierarchy,
+				   const KeySet & virtualKeys, const Cmdline & cl)
 {
 	const function<bool(string)> filterPredicate = determineFilterPredicate (originalRoot, root);
 
 	// Adjust the output offset, in case the given string exists in the hierarchy but not in the original ks
+	const bool limitMaxDepth = cl.maxDepth != numeric_limits<int>::max ();
 	const int offset = originalRoot != root && virtualKeys.lookup (originalRoot);
-	const int minDepth = 0 + offset;
-	const int maxDepth = false ? numeric_limits<int>::max () : (1 + offset);
-	cout << "max is " << maxDepth << " and min is " << minDepth << endl;
-
-	cout << "dumping all results" << endl;
-	for (const auto & it : hierarchy)
+	const int minDepth = cl.minDepth + offset;
+	const int maxDepth = limitMaxDepth ? cl.maxDepth + offset : cl.maxDepth;
+	if (cl.verbose)
 	{
-		cout << it.first << " " << it.second.first << " " << it.second.second << endl;
+		cout << "Showing results for a minimum depth of " << minDepth;
+		if (limitMaxDepth)
+		{
+			cout << " and a maximum depth of " << maxDepth;
+		}
+		else
+		{
+			cout << " and no maximum depth";
+		}
+		cout << endl;
 	}
 
-	cout << endl << "dumping filtered results" << endl;
+	if (cl.debug)
+	{
+		cout << endl << "Dumping whole analyzation results" << endl;
+		for (const auto & it : hierarchy)
+		{
+			cout << it.first << " " << it.second.first << " " << it.second.second << endl;
+		}
+		cout << endl;
+	}
+
 	for (const auto & it : hierarchy)
 	{
 		if (filterPredicate (it.first.getFullName ()) && it.second.second > minDepth && it.second.second <= maxDepth)
@@ -177,7 +222,7 @@ void SuperLsCommand::printResult (const Key originalRoot, const Key root, const 
 	}
 }
 
-const function<bool(string)> SuperLsCommand::determineFilterPredicate (const Key originalRoot, const Key root)
+const function<bool(string)> CompleteCommand::determineFilterPredicate (const Key originalRoot, const Key root)
 {
 	if (root == originalRoot)
 	{
@@ -191,6 +236,6 @@ const function<bool(string)> SuperLsCommand::determineFilterPredicate (const Key
 	};
 }
 
-SuperLsCommand::~SuperLsCommand ()
+CompleteCommand::~CompleteCommand ()
 {
 }
