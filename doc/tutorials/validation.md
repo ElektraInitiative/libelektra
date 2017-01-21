@@ -2,7 +2,7 @@
 
 ## Introduction ##
 
-Configuration in FLOSS unfortunately is often stored
+Configuration in <abbr title="Free Linux Open Source Software">FLOSS</abbr> unfortunately is often stored
 completely without validation. Notable exceptions are sudo
 (`sudoedit`), or user accounts (`adduser`) but in most cases
 you only get feedback of non-validating configuration when
@@ -251,4 +251,3 @@ Or (in `sudoedit` fashion):
 ```sh
 kdb editor -s validate /tutorial/schema simpleini
 ```
-
