@@ -50,8 +50,8 @@ Every key in Elektra belongs to one of these namespaces:
 
 - **spec** for specification of other keys
 - **proc** for in-memory keys (e.g. command-line)
-- **dir** for dir keys in current working directory
-- **user** for user keys in home directory
+- **dir** for keys that are only available in the current directory
+- **user** for keys that are only available to the current user
 - **system** for system keys in `/etc` or `/`
 
 All namespaces save their keys in a _separate hierarchical structure_ from the other namespaces.
@@ -106,16 +106,18 @@ Our exemplary application will be the key database access tool `kdb` as this sho
 
 `kdb` can be configured by the following configuration data:
 
-- **/sw/elektra/kdb/#X/PROFILE/verbose** - sets the verbosity of kdb
-- **/sw/elektra/kdb/#X/PROFILE/quiet** - if kdb should suppress non-error messages
+- _/sw/elektra/kdb/#**X**/**PROFILE**/verbose_ - sets the verbosity of kdb
+- _/sw/elektra/kdb/#**X**/**PROFILE**/quiet_ - if kdb should suppress non-error messages
 
-**X** and **PROFILE** are placeholders for the _major version number_ and the _profile_ to which this configuration applies. If we want to set configuration for the default profile we can set PROFILE to %. The name of the key follows the convention described [here](../help/elektra-key-names.md).
+**X** is a placeholder for the _major version number_ and **PROFILE** stands for the name of a _profile_ to which this configuration applies. If we want to set configuration for the default profile we can set **PROFILE** to %. The name of the key follows the convention described [here](../help/elektra-key-names.md).
 
-Say we want to set `kdb` to be more verbose in the current directory by default. In this case we have to set _verbose_ to 1 in your dir namespace.
+Say we want to set `kdb` to be more verbose when it is used in the current directory. In this case we have to set _verbose_ to 1 in the _dir_ namespace of the current directory.
 ```sh
-kdb set dir/sw/elektra/kdb/#0/%/verbose 1
+kdb set "dir/sw/elektra/kdb/#0/%/verbose" 1
 #> Create a new key dir/sw/elektra/kdb/#0/%/verbose with string 1
 ```
+> The configuration for a directory is actually stored in this directory.
+> By default the configuration is contained in a folder named `.dir`, as you can verify with `kdb file dir` (_kdb file_ tells you the file where a key is stored in).
 
 If we now search for some key, `kdb` will behave just as if we have called it with the `-v` option.
 ```sh
@@ -132,9 +134,9 @@ kdb get /some/key
 
 Verbosity is not always useful because it distracts from the essential.
 So we may decide that we want `kdb` to be only verbose if we are debugging it.
-So lets move the default configuration to another profile:
+So let us move the default configuration to another profile:
 ```sh
-kdb mv -r dir/sw/elektra/kdb/#0/% dir/sw/elektra/kdb/#0/debug
+kdb mv -r "dir/sw/elektra/kdb/#0/%" "dir/sw/elektra/kdb/#0/debug"
 #> using common basename: dir/sw/elektra/kdb/#0
 #> key: dir/sw/elektra/kdb/#0/%/verbose will be renamed to: dir/sw/elektra/kdb/#0/debug/verbose
 #> Will write out:
@@ -145,7 +147,7 @@ If we now call `kdb get /some/key` it will behave non-verbose, but if we call it
 
 We configured kdb only for the current directory. If we like this configuration we could move it to the system namespace, so that every user can enjoy a preconfigured _debug_ profile.
 ```sh
-sudo kdb mv -r dir/sw/elektra/kdb system/sw/elektra/kdb
+sudo kdb mv -r "dir/sw/elektra/kdb" "system/sw/elektra/kdb"
 #> using common basename: /sw/elektra/kdb
 #> key: dir/sw/elektra/kdb/#0/%/verbose will be renamed to: system/sw/elektra/kdb/#0/%/verbose
 #> Will write out:
@@ -160,7 +162,7 @@ You do not need to search every namespace by yourself.
 Just make a lookup for **/sw/elektra/kdb/#0/debug/verbose**, like this:
 
 ```sh
-kdb get /sw/elektra/kdb/#0/debug/verbose
+kdb get "/sw/elektra/kdb/#0/debug/verbose"
 #> 1
 ```
 
@@ -168,7 +170,7 @@ When using cascading key the best key will be searched at runtime.
 If you are only interested in the system key, you would use:
 
 ```sh
-kdb get system/sw/elektra/kdb/#0/debug/verbose
+kdb get "system/sw/elektra/kdb/#0/debug/verbose"
 #> 1
 ```
 
@@ -177,9 +179,9 @@ Because of _cascading keys_ a user can override the behavior of the _debug_ prof
 If a user sets _verbose_ in his user namespace to 0 he overrides the default behavior from the _system_ namespace.
 
 ```sh
-kdb set user/sw/elektra/kdb/#0/debug/verbose 0
+kdb set "user/sw/elektra/kdb/#0/debug/verbose" 0
 #> Create a new key user/sw/elektra/kdb/#0/debug/verbose with string 0
-kdb get /sw/elektra/kdb/#0/debug/verbose
+kdb get "/sw/elektra/kdb/#0/debug/verbose"
 #> 0
 ```
 
