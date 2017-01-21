@@ -6,7 +6,7 @@
  * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
  */
 
-#include <complete.hpp>
+#include <superls.hpp>
 
 #include <functional>
 #include <iostream>
