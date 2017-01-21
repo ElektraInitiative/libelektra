@@ -185,10 +185,7 @@ git config --get user.email
 #### Meta Data ####
 
 Elektra is able to store [meta data](/doc/help/elektra-metadata.md) of keys, provided the format of the file that holds the configuration supports this feature.
-The ini plugin doesn't support this feature, but the [ni](/src/plugins/ni/README.md) and the [dump](/src/plugins/dump/README.md) plugin do.
-
-> Actually the ini plugin creates some metadata on its own. This metadata contains information about the ordering of keys or comments, if a key has some.
-> But unlike the ni and the dump plugin we can't store arbitrary metadata with the ini plugin.
+The ini plugin does support this feature, and so does the [ni](/src/plugins/ni/README.md) and the [dump](/src/plugins/dump/README.md) plugin among others.
 
 Meta data comes in handy if we use other plugins, than just the ones that store and retrieve data.
 I chose the `ni` plugin for this demonstration, because it supports metadata and is human readable.
