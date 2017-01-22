@@ -155,8 +155,8 @@ $ sudo kdb set "system/overrides/test" "hello default"
 Then we can create the link:
 
 ```sh
-sudo kdb setmeta spec/sw/tutorial/cascading/#0/current/test override/#0 /overrides/test
-kdb get /sw/tutorial/cascading/#0/current/test
+sudo kdb setmeta "spec/sw/tutorial/cascading/#0/current/test" "override/#0" "/overrides/test"
+kdb get "/sw/tutorial/cascading/#0/current/test"
 #> hello default
 ```
 

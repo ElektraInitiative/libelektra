@@ -108,6 +108,7 @@ Our exemplary application will be the key database access tool `kdb` as this sho
 
 - _/sw/elektra/kdb/#**X**/**PROFILE**/verbose_ - sets the verbosity of kdb
 - _/sw/elektra/kdb/#**X**/**PROFILE**/quiet_ - if kdb should suppress non-error messages
+- _/sw/elektra/kdb/#**X**/**PROFILE**/namespace_ - specifies the default namespace used, when setting a cascading name
 
 **X** is a placeholder for the _major version number_ and **PROFILE** stands for the name of a _profile_ to which this configuration applies. If we want to set configuration for the default profile we can set **PROFILE** to %. The name of the key follows the convention described [here](/doc/help/elektra-key-names.md).
 
@@ -118,6 +119,10 @@ kdb set "dir/sw/elektra/kdb/#0/%/verbose" 1
 ```
 > The configuration for a directory is actually stored in this directory.
 > By default the configuration is contained in a folder named `.dir`, as you can verify with `kdb file dir` (_kdb file_ tells you the file where a key is stored in).
+>
+> For the purpose of demonstration we chose to only manipulate the verbosity of kdb.
+> Note that setting `dir/sw/elektra/kdb/#0/%/namespace` to `dir` can be handy if you want to work with configuration of an application in a certain directory.
+
 
 If we now search for some key, `kdb` will behave just as if we have called it with the `-v` option.
 ```sh
