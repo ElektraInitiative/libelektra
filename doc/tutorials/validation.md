@@ -4,7 +4,7 @@
 
 Configuration in FLOSS unfortunately is often stored
 completely without validation. Notable exceptions are sudo
-(`sudoedit`), or user accounts (`adduser`) but in most cases
+(`visudo`), or user accounts (`adduser`) but in most cases
 you only get feedback of non-validating configuration when
 the application fails to start.
 
@@ -20,7 +20,7 @@ described in this tutorial, e.g.:
 
 2. `kdb editor`: starts up your favourite text editor and
     allows you to edit configuration in any syntax.
-    (generalization of `sudoedit`)
+    (generalization of `visudo`)
 
 3. `kdb set`: manipulate or add individual configuration
     entries.
@@ -246,7 +246,7 @@ Or (afterwards) setting individual values:
 kdb set /tutorial/schema/applied-to smal # fails, not a valid enum
 ```
 
-Or (in `sudoedit` fashion):
+Or (in `visudo` fashion):
 
 ```sh
 kdb editor -s validate /tutorial/schema simpleini
