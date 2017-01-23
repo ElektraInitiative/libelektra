@@ -344,9 +344,7 @@ int mountGlobals (KDB * kdb, KeySet * keys, KeySet * modules, Key * errorKey)
 		keys = elektraDefaultGlobalConfig ();
 		root = ksHead (keys);
 	}
-	for (int i = 0; i < NR_GLOBAL_POSITIONS; ++i)
-		for (int j = 0; j < NR_GLOBAL_SUBPOSITIONS; ++j)
-			kdb->globalPlugins[i][j] = NULL;
+	memset (kdb->globalPlugins, 0, NR_GLOBAL_POSITIONS * NR_GLOBAL_SUBPOSITIONS * sizeof (Plugin *));
 
 	KeySet * global = ksCut (keys, root);
 	Key * cur;
