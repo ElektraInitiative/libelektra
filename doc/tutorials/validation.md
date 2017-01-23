@@ -180,10 +180,11 @@ Particularly a _Specfile_ contains metadata that defines
 - the plugins to load and
 - the behavior of these plugins.
 
-Let us create an example _Specfile_ in the [ni format](/doc/src/plugins/ni/README.md),
-which supports metadata:
+Let us create an example _Specfile_ in the dump format, which supports metadata
+(altough the specfile is stored in the dump format, we can still create it using
+the human readable [ni format](/doc/src/plugins/ni/README.md) by using `kdb import`):
 ```sh
-kdb mount tutorial.ini spec/tutorial ni
+kdb mount tutorial.dump spec/tutorial dump
 cat << HERE | kdb import spec/tutorial ni
 []
  mountpoint = tutorial.dump
