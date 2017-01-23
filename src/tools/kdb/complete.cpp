@@ -6,13 +6,13 @@
  * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
  */
 
-#include <superls.hpp>
+#include "complete.hpp"
 
 #include <functional>
 #include <iostream>
 #include <stack>
 
-#include <cmdline.hpp>
+#include "cmdline.hpp"
 #include <kdb.hpp>
 #include <keysetio.hpp>
 
@@ -24,7 +24,7 @@ CompleteCommand::CompleteCommand ()
 }
 
 int CompleteCommand::execute (const Cmdline & cl)
-{
+{	
 	if (cl.arguments.size () != 1)
 	{
 		throw invalid_argument ("wrong number of arguments, 1 needed");
