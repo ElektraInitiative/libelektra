@@ -39,8 +39,9 @@ kdb stop-rest-backend
 
 netstat --listen --numeric-ports | grep 80
 
-# sleep prevents 'address already in use'
-sleep 3
+# TODO: make proper check to avoid 'address already in use'
+# and too long sleeps
+sleep 5
 
 netstat --listen --numeric-ports | grep 80
 
