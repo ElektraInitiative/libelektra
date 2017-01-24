@@ -32,8 +32,10 @@ All plugins implement the same interface:
     their chance for necessary cleanups.
 -  `kdbClose()` makes sure that plugins can finally free their
     own resources in `elektraPluginClose()`.
--  `kdbPluginCheckConfig()` can be called manually to ensure a plugin is
+-  `kdbCheckConfig()` can be called manually to ensure a plugin is
    configured properly.
+-  `kdbGenConfig()` can be called to produce all valid configurations
+   of a plugin.
 
 ### KDB-Interface ###
 
@@ -55,7 +57,7 @@ Otherwise, you can visit the [the API documentation](http://doc.libelektra.org/a
 Before configuration is actually written, the file name needs to be
 determined (will be automatically added by kdb mount):
 
-- [resolver](resolver/) uses POSIX APIs to handle conflicts gracefully
+- [resolver](resolver/) uses advanced POSIX APIs to handle conflicts gracefully
 - [wresolver](wresolver/) minimalistic resolver for non-POSIX systems
 - [noresolver](noresolver/) does not resolve, but can act as one
 - [gitresolver](gitresolver/) checks out and commits files to a local git repository
