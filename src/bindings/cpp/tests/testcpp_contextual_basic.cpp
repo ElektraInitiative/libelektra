@@ -582,12 +582,14 @@ TEST (test_contextual_basic, evaluate)
 	ASSERT_EQ (c["country"], "");
 	ASSERT_EQ (c["dialect"], "");
 	ASSERT_EQ (c.evaluate ("/%language%/%country%/%dialect%/test"), "/%/%/%/test");
+	ASSERT_EQ (c.evaluate ("/%language country dialect%/test"), "/%/test");
 
 	c.activate<LanguageGermanLayer> ();
 	ASSERT_EQ (c["language"], "german");
 	ASSERT_EQ (c["country"], "");
 	ASSERT_EQ (c["dialect"], "");
 	ASSERT_EQ (c.evaluate ("/%language%/%country%/%dialect%/test"), "/german/%/%/test");
+	ASSERT_EQ (c.evaluate ("/%language country dialect%/test"), "/%german/test");
 
 	c.deactivate<LanguageGermanLayer> ();
 	ASSERT_EQ (c["language"], "");
@@ -622,11 +624,13 @@ TEST (test_contextual_basic, evaluate)
 		ASSERT_EQ (c["dialect"], "");
 		ASSERT_EQ (c.size (), 2);
 		ASSERT_EQ (c.evaluate ("/%language%/%country%/%dialect%/test"), "/german/germany/%/test");
+		ASSERT_EQ (c.evaluate ("/%language country dialect%/test"), "/%german%germany/test");
 		c.with<CountryGPSLayer> () ([&]() {
 			ASSERT_EQ (c["language"], "german");
 			ASSERT_EQ (c["country"], "austria");
 			ASSERT_EQ (c["dialect"], "");
 			ASSERT_EQ (c.evaluate ("/%language%/%country%/%dialect%/test"), "/german/austria/%/test");
+			ASSERT_EQ (c.evaluate ("/%language country dialect%/test"), "/%german%austria/test");
 			c.without<CountryGPSLayer> () ([&]() {
 				ASSERT_EQ (c["language"], "german");
 				ASSERT_EQ (c["country"], "");
@@ -638,6 +642,7 @@ TEST (test_contextual_basic, evaluate)
 		ASSERT_EQ (c["country"], "germany");
 		ASSERT_EQ (c["dialect"], "");
 		ASSERT_EQ (c.evaluate ("/%language%/%country%/%dialect%/test"), "/german/germany/%/test");
+		ASSERT_EQ (c.evaluate ("/%language country%/%dialect%/test"), "/%german%germany/%/test");
 	});
 	ASSERT_EQ (c["language"], "");
 	ASSERT_EQ (c["country"], "");
@@ -658,18 +663,29 @@ TEST (test_contextual_basic, evaluate)
 	KeySet ks;
 	Integer i (ks, c, Key ("/%application%/%version%/%profile%/%thread%/%module%/%manufacturer%/%type%/%family%/%model%/serial_number",
 			       KEY_CASCADING_NAME, KEY_META, "default", s_value, KEY_END));
+	Integer j (ks, c, Key ("/%application version profile thread module manufacturer type family model%/serial_number",
+			       KEY_CASCADING_NAME, KEY_META, "default", s_value, KEY_END));
 	ASSERT_EQ (i.getName (), "/%/%/%/%/%/%/%/%/%/serial_number");
+	ASSERT_EQ (j.getName (), "/%/serial_number");
 	c.activate<MainApplicationLayer> ();
 	ASSERT_EQ (i.getName (), "/main/%/%/%/%/%/%/%/%/serial_number");
+	ASSERT_EQ (j.getName (), "/%main/serial_number");
 	String s (ks, c, Key ("/%x%", KEY_CASCADING_NAME, KEY_META, "default", "anonymous", KEY_END));
 	c.activate<ProfileLayer> (s);
 	ASSERT_EQ (i.getName (), "/main/%/anonymous/%/%/%/%/%/%/serial_number");
+	ASSERT_EQ (j.getName (), "/%main/serial_number");
 	c.activate<KeyValueLayer> ("module", "M1");
 	ASSERT_EQ (i.getName (), "/main/%/anonymous/%/M1/%/%/%/%/serial_number");
+	ASSERT_EQ (j.getName (), "/%main/serial_number");
 	c.activate<KeyValueLayer> ("manufacturer", "hp");
 	ASSERT_EQ (i.getName (), "/main/%/anonymous/%/M1/hp/%/%/%/serial_number");
+	ASSERT_EQ (j.getName (), "/%main/serial_number");
 	c.activate<KeyValueLayer> ("family", "EliteBook");
 	ASSERT_EQ (i.getName (), "/main/%/anonymous/%/M1/hp/%/EliteBook/%/serial_number");
+	ASSERT_EQ (j.getName (), "/%main/serial_number");
+	c.activate<KeyValueLayer> ("version", "1");
+	ASSERT_EQ (i.getName (), "/main/1/anonymous/%/M1/hp/%/EliteBook/%/serial_number");
+	ASSERT_EQ (j.getName (), "/%main%1%anonymous/serial_number");
 }
 
 
