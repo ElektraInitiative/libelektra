@@ -1,11 +1,18 @@
 #!/bin/sh
 
-echo "strict digraph G {"
-#echo "	ratio = fill;"
-#echo "	size = \"13,13\";"
-echo "	splines = true;"
+set -x
+
+SELF=$(readlink -f "$0")
+SCRIPTS=$(dirname "$SELF")
+SOURCE=$(dirname "$SCRIPTS")
+OUTPUT=$SOURCE/doc/images/plugins.dot
+
+echo "strict digraph G {" > $OUTPUT
+#echo "	ratio = fill;" >> $OUTPUT
+#echo "	size = \"13,13\";" >> $OUTPUT
+echo "	splines = true;" >> $OUTPUT
 echo
-echo "	plugin [shape=Mdiamond];"
+#echo "	plugin [shape=Mdiamond];" >> $OUTPUT
 for i in `ls src/plugins`
 do
 	if [ -d "src/plugins/$i" ]
@@ -17,15 +24,17 @@ do
 			p=`echo "$p" | tr '/' ' '`
 			for x in `echo $p`
 			do
-				echo "	$x [shape=Mdiamond];"
-				echo "	$i -> $x [label=\"provides\"];"
-				echo "	$x -> plugin;" # [label=\"is a\"];"
+				echo "	$x [shape=Mdiamond];" >> $OUTPUT
+				echo "	$i -> $x;" >> $OUTPUT #  [label=\"provides\"];"
+				#echo "	$x -> plugin;" >> $OUTPUT  # [label=\"is a\"];"
 			done
-		else
-			echo "	$i -> plugin;" # [label=\"is a\"];"
+		#else
+			#echo "	$i -> plugin;" >> $OUTPUT  # [label=\"is a\"];"
 		fi
 	fi
 done
-echo "}"
+echo "}"  >> $OUTPUT
 
-echo
+echo >> $OUTPUT
+
+fdp -Tpng $OUTPUT -o $SOURCE/doc/images/plugins.png
