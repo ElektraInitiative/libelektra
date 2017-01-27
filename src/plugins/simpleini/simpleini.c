@@ -151,7 +151,12 @@ int elektraSimpleiniGet (Plugin * handle, KeySet * returned, Key * parentKey)
 		if (n == 0)
 		{
 			// discard line
-			getline (&key, &size, fp);
+			if (getline (&key, &size, fp))
+			{
+				fclose (fp);
+				ELEKTRA_SET_ERROR (ELEKTRA_ERROR_NOEOF, parentKey, "failed discarding rest of line");
+				return -1;
+			}
 			ELEKTRA_LOG_DEBUG ("Discard '%s'", key);
 			elektraFree (key);
 			key = 0;
@@ -176,6 +181,7 @@ int elektraSimpleiniGet (Plugin * handle, KeySet * returned, Key * parentKey)
 
 		if (ksAppendKey (returned, read) != ksize + 1)
 		{
+			fclose (fp);
 			ELEKTRA_SET_ERROR (ELEKTRA_ERROR_NOEOF, parentKey, "duplicated key");
 			return -1;
 		}
