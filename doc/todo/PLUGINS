@@ -21,6 +21,15 @@ calculate default values
 	make a key only optional on some condition
 	otherwise fail if key is not present
 
+### Function plugin ###
+
+allow to use functional programming in Elektra
+	e.g. if(true(abc), isnull(aaa), not('ab'))
+
+allow to load function (foo) of another plugin (check), too:
+	e.g. check::foo('abc', def)
+
+
 
 ## REWRITE plugin ##
 
@@ -46,7 +55,7 @@ logging API:
 
 ## Others
 
-lock plugin
+fix semlock plugin
 
 inherit/copy metadata/bind mounts:
 	kdb setmeta spec/something inherit/override/# '"/elsewhere/key/" + basename'
@@ -62,21 +71,12 @@ List plugin:
 	Whitelist (ignore error codes, transform error->warning)
 	lazy loading of plugins (already implemented?)
 
-## Function plugin
-
-allow to use functional programming in Elektra
-	e.g. if(true(abc), isnull(aaa), not('ab'))
-
-allow to load function (foo) of another plugin (check), too:
-
-	e.g. check::foo('abc', def)
-
-
 ## Rework plugins
 
 fix comments:
 	all plugins should use new comment-approach
 	(also iconv)
+	also handle whitespaces in comments?
 
 fix absolute plugins (should be relative, at least by default)
 	see #51
@@ -98,9 +98,10 @@ uname also to set
 
 other syscalls
 /proc and /sys files
+	e.g. battery
 
 
-## logging
+## logging ##
 
 undo plugin
 write log files on every kdbSet() that allow to undo what happened in this commit
@@ -177,15 +178,7 @@ lexer plugin:
 ## JSON ##
 
 types
-make validator that fails for inconsistent arrays #
-
-
-== Elektra types ==
-
-customized type checkers
-	which can be integrated within Frontend generator
-	(for checking default values and preloading)
-	maybe even checking of values within frontend
+make validator that fails for inconsistent arrays
 
 
 == Schema ==
@@ -259,6 +252,8 @@ xfconf file storage (see #47)
 ### binary
 
 (may need orphan search or one file per plugin)
+
+Lightning Memory-Mapped Database (LMDB)
 
 Kyoto Cabinet
 unqlite
