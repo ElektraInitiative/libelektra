@@ -1,19 +1,19 @@
-# Template
+# Template #
 
-## Issue
+## Issue ##
 
-## Constraints
+## Constraints ##
 
-## Assumptions
+## Assumptions ##
 
-## Considered Alternatives
+## Considered Alternatives ##
 
-## Decision
+## Decision ##
 
-## Argument
+## Argument ##
 
-## Implications
+## Implications ##
 
-## Related decisions
+## Related decisions ##
 
-## Notes
+## Notes ##
