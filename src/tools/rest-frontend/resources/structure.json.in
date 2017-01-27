@@ -47,6 +47,13 @@
                         }
                     },
                     {
+                        "name": "Metadata",
+                        "type": "staticfile",
+                        "options": {
+                            "path": "doc/METADATA.ini"
+                        }
+                    },
+                    {
                         "name": "Tutorials",
                         "type": "staticref",
                         "options": {
@@ -158,6 +165,13 @@
                         "type": "staticfile",
                         "options": {
                             "path": "doc/TESTING.md"
+                        }
+                    },
+                    {
+                        "name": "Contract",
+                        "type": "staticfile",
+                        "options": {
+                            "path": "doc/CONTRACT.ini"
                         }
                     },
                     {

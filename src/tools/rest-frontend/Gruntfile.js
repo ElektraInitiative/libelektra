@@ -264,7 +264,7 @@ module.exports = function (grunt) {
 //                        return middlewares;
                         var staticExtensions = [
                             'html', 'js', 'css', 'json', 'svg', 'md', 'png', 'jpg', 'gif', 'otf', 'eot', 'ttf',
-                            'woff', 'woff2', 'xml', 'c', 'h', 'cpp', 'hpp', 'java', 'py', 'rss'
+                            'woff', 'woff2', 'xml', 'c', 'h', 'cpp', 'hpp', 'java', 'py', 'rss', 'ini'
                         ];
                         return [
                             modRewrite(['!' + staticExtensions.map(function (elem) {
