@@ -23,6 +23,7 @@
 
 // TODO: to add a new command, 1.) include your header here
 #include <check.hpp>
+#include <complete.hpp>
 #include <convert.hpp>
 #include <cp.hpp>
 #include <editor.hpp>
@@ -82,6 +83,7 @@ public:
 		m_factory.insert (std::make_pair ("set", new Cnstancer<SetCommand> ()));
 		m_factory.insert (std::make_pair ("rm", new Cnstancer<RemoveCommand> ()));
 		m_factory.insert (std::make_pair ("ls", new Cnstancer<LsCommand> ()));
+		m_factory.insert (std::make_pair ("complete", new Cnstancer<CompleteCommand> ()));
 		m_factory.insert (std::make_pair ("cp", new Cnstancer<CpCommand> ()));
 		m_factory.insert (std::make_pair ("mv", new Cnstancer<MvCommand> ()));
 		m_factory.insert (std::make_pair ("mount", new Cnstancer<MountCommand> ()));

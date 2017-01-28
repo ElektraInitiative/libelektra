@@ -36,10 +36,10 @@ Cmdline::Cmdline (int argc, char ** argv, Command * command)
 : helpText (), invalidOpt (false),
 
   /*XXX: Step 2: initialise your option here.*/
-  debug (), force (), load (), humanReadable (), help (), interactive (), noNewline (), test (), recursive (), resolver (KDB_RESOLVER),
-  strategy ("preserve"), verbose (), quiet (), version (), withoutElektra (), null (), first (true), second (true), third (true),
-  withRecommends (false), all (), format (KDB_STORAGE), plugins ("sync"), globalPlugins ("spec"), pluginsConfig (""), color ("auto"),
-  ns (""), editor (), bookmarks (), profile ("current"),
+  debug (), force (), load (), humanReadable (), help (), interactive (), minDepth (0), maxDepth (numeric_limits<int>::max ()),
+  noNewline (), test (), recursive (), resolver (KDB_RESOLVER), strategy ("preserve"), verbose (), quiet (), version (), withoutElektra (),
+  null (), first (true), second (true), third (true), withRecommends (false), all (), format (KDB_STORAGE), plugins ("sync"),
+  globalPlugins ("spec"), pluginsConfig (""), color ("auto"), ns (""), editor (), bookmarks (), profile ("current"),
 
   executable (), commandName ()
 {
@@ -106,6 +106,20 @@ Cmdline::Cmdline (int argc, char ** argv, Command * command)
 		option o = { "interactive", no_argument, nullptr, 'i' };
 		long_options.push_back (o);
 		helpText += "-i --interactive         Ask the user interactively.\n";
+	}
+	if (acceptedOptions.find ('m') != string::npos)
+	{
+		option o = { "min-depth", optional_argument, nullptr, 'm' };
+		long_options.push_back (o);
+		helpText += "-m --min-depth           Specify the minimum depth of completion suggestions (0 by default), exclusive.\n";
+	}
+	if (acceptedOptions.find ('M') != string::npos)
+	{
+		option o = { "max-depth", optional_argument, nullptr, 'M' };
+		long_options.push_back (o);
+		helpText +=
+			"-M --max-depth           Specify the maximum depth of completion suggestions (unlimited by default, 1 to show "
+			"only the next level), inclusive.\n";
 	}
 	if (acceptedOptions.find ('n') != string::npos)
 	{
@@ -371,6 +385,27 @@ Cmdline::Cmdline (int argc, char ** argv, Command * command)
 			break;
 		case 'i':
 			interactive = true;
+			break;
+		case 'm':
+			if (!optarg)
+			{
+				minDepth = 0;
+				break;
+			}
+			stringstream (optarg) >> minDepth;
+			break;
+		case 'M':
+			if (!optarg)
+			{
+				cout << " no optarg for max " << endl;
+				maxDepth = numeric_limits<int>::max ();
+				break;
+			}
+			stringstream (optarg) >> maxDepth;
+			if (maxDepth == -1)
+			{
+				maxDepth = numeric_limits<int>::max ();
+			}
 			break;
 		case 'n':
 			noNewline = true;
