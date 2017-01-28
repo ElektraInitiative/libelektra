@@ -151,8 +151,9 @@ int elektraSimpleiniGet (Plugin * handle, KeySet * returned, Key * parentKey)
 		if (n == 0)
 		{
 			// discard line
-			if (getline (&key, &size, fp))
+			if (getline (&key, &size, fp) == -1 && !feof (fp))
 			{
+				elektraFree (key);
 				fclose (fp);
 				ELEKTRA_SET_ERROR (ELEKTRA_ERROR_NOEOF, parentKey, "failed discarding rest of line");
 				return -1;
