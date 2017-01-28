@@ -10,6 +10,7 @@
 
 #include <functional>
 #include <iostream>
+#include <limits>
 #include <stack>
 
 #include "cmdline.hpp"
