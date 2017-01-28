@@ -21,6 +21,23 @@ Following shell expansions are used in this document:
 
 TODO: Fix remotes of ftp+api repos
 
+TODO: redo release process
+
+TODO: update contracts using update-infos-status
+      check if meta data info is up-to-date (both in contract+METADATA.ini)
+      + if mountable
+
+TODO: regenerate dot of plugins
+
+== Testing ==
+
+- fuzz checker
+- fix memleaks
+- run on filesystem to small (buildserver!)
+
+
+
+
 = Tasks before Release =
 
 == Increment Version Number ==
