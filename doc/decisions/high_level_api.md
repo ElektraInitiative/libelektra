@@ -20,6 +20,9 @@ Limitations:
   care about reentry, thread-safety,..
 - assumes that spec is installed correctly (fail in kdbhlOpen otherwise)
   and no lookup for non-specified keys is done
+- many projects do not care about some limitations (no binary, no meta-data)
+  but prefer a straight-forward way to get/set config
+- When people hit limitations they fall back to ^KeySet^, ^Key^
 
 ## Considered Alternatives ##
 
@@ -41,7 +44,10 @@ int kdbhlGetInt (KDBHL * handle, const char * name); // enum, int, tristate
 char * kdbhlGetString (KDBHL * handle, const char * name);
 // and so on.. (all types)
 
+
+// are arrays already advanced functionality? (recursive API)
 int kdbhlGetIntArray (KDBHL * handle, const char * name, int elem); // enum, int, tristate
+int kdbhlGetArraySize (KDBHL * handle, const char * name);
 
 void kdbhlClose (KDBHL * handle);
 
@@ -62,8 +68,16 @@ void kdbhlParse (KDBHL * handle, int argc, char ** argv, char ** environ); // ma
 KDBHL * kdbhlDup (KDBHL * handle); // gives you a duplicate for other threads (same application+version), automatically calls kdbhlClear
 KDB * kdbhlGetKDB (KDBHL * handle);
 void kdbhlDefaultConfig (KDBHL * handle, KeySet * defaultConfig);
-KeySet * kdbhlGetKeySet (KDBHL * handle);
+KeySet * kdbhlGetKeySet (KDBHL * handle, const char * cutkey);
+KeySet * kdbhlGetKeyHierarchy (KDBHL * handle, const char * cutkey);
 void kdbhlSetInt (KDBHL * handle, const char * name, int value); // enum, int, tristate
+
+
+### recursive API (KeyHierarchy) ###
+
+can be transformed from/to keysets
+
+keyhAdd (KeyHierarchy * kh, Key * key);
 
 
 ### todos ###
@@ -76,13 +90,13 @@ What is not so nice:
 
 ## Argument ##
 
-Very easy to get started with, to get a key needs 3 lines of codes:
-
-```c
-KDBHL *handle = kdbhlOpen ("/sw/elektra/kdb/#0/current");
-printf ("number /mykey is %d\n", kdbhlGetInt (handle, "/mykey"));
-kdbhlClose (handle);
-```
+1. Very easy to get started with, to get a key needs 3 lines of codes:
+   ```c
+   KDBHL *handle = kdbhlOpen ("/sw/elektra/kdb/#0/current");
+   printf ("number /mykey is %d\n", kdbhlGetInt (handle, "/mykey"));
+   kdbhlClose (handle);
+   ```
+2. It is also easier to get started with writing new bindings.
 
 ## Implications ##
 
