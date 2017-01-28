@@ -153,9 +153,10 @@ int elektraSimpleiniGet (Plugin * handle, KeySet * returned, Key * parentKey)
 			// discard line
 			if (getline (&key, &size, fp) == -1 && !feof (fp))
 			{
+				ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_NOEOF, parentKey,
+						    "failed discarding rest of line at position %ld with key %s", ftell (fp), key);
 				elektraFree (key);
 				fclose (fp);
-				ELEKTRA_SET_ERROR (ELEKTRA_ERROR_NOEOF, parentKey, "failed discarding rest of line");
 				return -1;
 			}
 			ELEKTRA_LOG_DEBUG ("Discard '%s'", key);
@@ -182,8 +183,9 @@ int elektraSimpleiniGet (Plugin * handle, KeySet * returned, Key * parentKey)
 
 		if (ksAppendKey (returned, read) != ksize + 1)
 		{
+			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_NOEOF, parentKey, "duplicated key %s at position %ld", keyName (read),
+					    ftell (fp));
 			fclose (fp);
-			ELEKTRA_SET_ERROR (ELEKTRA_ERROR_NOEOF, parentKey, "duplicated key");
 			return -1;
 		}
 		++ksize;
@@ -193,9 +195,9 @@ int elektraSimpleiniGet (Plugin * handle, KeySet * returned, Key * parentKey)
 
 	if (feof (fp) == 0)
 	{
+		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_NOEOF, parentKey, "not at the end of file at position %ld", ftell (fp));
 		elektraFree (format);
 		fclose (fp);
-		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_NOEOF, parentKey, "not at the end of file");
 		return -1;
 	}
 
