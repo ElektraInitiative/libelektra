@@ -24,7 +24,7 @@ CompleteCommand::CompleteCommand ()
 }
 
 int CompleteCommand::execute (const Cmdline & cl)
-{	
+{
 	if (cl.arguments.size () != 1)
 	{
 		throw invalid_argument ("wrong number of arguments, 1 needed");
@@ -101,6 +101,9 @@ void CompleteCommand::addMountpoints (KeySet & ks, const Key root)
 	printWarnings (cerr, mountpointPath);
 }
 
+/*
+ * McCabe complexity of 13, 3 caused by debug switches so actually its ok
+ */
 const map<Key, pair<int, int>> CompleteCommand::analyze (const KeySet & ks, const Key root, KeySet & virtualKeys, const Cmdline & cl)
 {
 	map<Key, pair<int, int>> hierarchy;
@@ -179,6 +182,9 @@ void CompleteCommand::increaseCount (map<Key, pair<int, int>> & hierarchy, const
 	hierarchy[key] = pair<int, int> (prev.first + 1, depthIncreaser (prev.second));
 }
 
+/*
+ * McCabe complexity of 12, 2 caused by debug/verbose switches so actually its ok
+ */
 void CompleteCommand::printResult (const Key originalRoot, const Key root, const map<Key, pair<int, int>> & hierarchy,
 				   const KeySet & virtualKeys, const Cmdline & cl)
 {

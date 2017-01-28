@@ -41,7 +41,7 @@ public:
 	virtual std::string getLongHelpText () override
 	{
 		return "Suggestions will include existing key names, path segments of existing key names and mountpoints.\n"
-			"Additionally, the output will indicate wheter the given path is a node or a leaf in the hierarchy of keys.";
+		       "Additionally, the output will indicate wheter the given path is a node or a leaf in the hierarchy of keys.";
 	}
 
 	virtual int execute (const Cmdline & cmdline) override;

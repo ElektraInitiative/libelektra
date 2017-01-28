@@ -36,10 +36,10 @@ Cmdline::Cmdline (int argc, char ** argv, Command * command)
 : helpText (), invalidOpt (false),
 
   /*XXX: Step 2: initialise your option here.*/
-  debug (), force (), load (), humanReadable (), help (), interactive (), minDepth (0), maxDepth (numeric_limits<int>::max ()), noNewline (), test (), recursive (),
-  resolver (KDB_RESOLVER), strategy ("preserve"), verbose (), quiet (), version (), withoutElektra (), null (), first (true), second (true),
-  third (true), withRecommends (false), all (), format (KDB_STORAGE), plugins ("sync"), globalPlugins ("spec"), pluginsConfig (""),
-  color ("auto"), ns (""), editor (), bookmarks (), profile ("current"),
+  debug (), force (), load (), humanReadable (), help (), interactive (), minDepth (0), maxDepth (numeric_limits<int>::max ()),
+  noNewline (), test (), recursive (), resolver (KDB_RESOLVER), strategy ("preserve"), verbose (), quiet (), version (), withoutElektra (),
+  null (), first (true), second (true), third (true), withRecommends (false), all (), format (KDB_STORAGE), plugins ("sync"),
+  globalPlugins ("spec"), pluginsConfig (""), color ("auto"), ns (""), editor (), bookmarks (), profile ("current"),
 
   executable (), commandName ()
 {
@@ -117,7 +117,9 @@ Cmdline::Cmdline (int argc, char ** argv, Command * command)
 	{
 		option o = { "max-depth", optional_argument, nullptr, 'M' };
 		long_options.push_back (o);
-		helpText += "-M --max-depth           Specify the maximum depth of completion suggestions (unlimited by default, 1 to show only the next level), inclusive.\n";
+		helpText +=
+			"-M --max-depth           Specify the maximum depth of completion suggestions (unlimited by default, 1 to show "
+			"only the next level), inclusive.\n";
 	}
 	if (acceptedOptions.find ('n') != string::npos)
 	{
