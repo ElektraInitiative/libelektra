@@ -1,5 +1,5 @@
 - infos = Information about the template plugin is in keys below
-- infos/author = Name <name@libelektra.org>
+- infos/author = Author Name <elektra@libelektra.org>
 - infos/licence = BSD
 - infos/needs =
 - infos/provides =
@@ -25,7 +25,7 @@ plugin name:
 
 Then update the README.md of your newly created plugin:
 
-- enter your name+email in `infos/author`
+- enter your full name+email in `infos/author`
 - make sure `status` and other clauses conform to
   descriptions in `doc/CONTRACT.ini`
 - update the one-line description above
@@ -39,7 +39,7 @@ None.
 
 ## Examples ##
 
-TBD
+None.
 
 ## Limitations ##
 

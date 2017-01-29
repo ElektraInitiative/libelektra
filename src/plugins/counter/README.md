@@ -1,5 +1,5 @@
 - infos = Information about the counter plugin is in keys below
-- infos/author = Name <name@libelektra.org>
+- infos/author = Markus Raab <elektra@libelektra.org>
 - infos/licence = BSD
 - infos/provides = tracing
 - infos/needs =

@@ -1,5 +1,5 @@
 - infos = Information about the logchange plugin is in keys below
-- infos/author = Name <name@libelektra.org>
+- infos/author = Markus Raab <elektra@libelektra.org>
 - infos/licence = BSD
 - infos/needs =
 - infos/provides = tracing
