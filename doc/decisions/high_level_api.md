@@ -3,23 +3,26 @@
 ## Issue ##
 
 Some projects do not want to use code-generation but prefer
-an old-school key/value getter approach.
+an "old-school" key/value getter/setter approach.
+
+Here we propose new libraries (libelektra-highlevel and libelektra-hierarchy)
+with new high-level APIs in C.
 
 ## Constraints ##
 
-- very easy to get started with
-- hard to use it wrong
+1. should be extremely easy to get started with
+2. should be very hard to use it wrong
 
 Limitations:
 
-- should not compete with code generation
+- cannot compete with code generation
 
 ## Assumptions ##
 
 - Thread-safety: a handle is the accepted better solution than having to
-  care about reentry, thread-safety,..
-- assumes that spec is installed correctly (fail in kdbhlOpen otherwise)
-  and no lookup for non-specified keys is done
+  care about whether it is reentrant, thread-safe,..
+- assumes that spec is available and installed correctly (fail in kdbhlOpen otherwise)
+- lookups for non-specified keys yield errors (in particular if they are not present)
 - many projects do not care about some limitations (no binary, no meta-data)
   but prefer a straight-forward way to get/set config
 - When people hit limitations they fall back to ^KeySet^, ^Key^
@@ -72,6 +75,11 @@ KeySet * kdbhlGetKeySet (KDBHL * handle, const char * cutkey);
 KeySet * kdbhlGetKeyHierarchy (KDBHL * handle, const char * cutkey);
 void kdbhlSetInt (KDBHL * handle, const char * name, int value); // enum, int, tristate
 
+### Lower-level type API ###
+
+int keyGetInt (Key * key); // will be used internally in kdbhlGetInt, are for other APIs useful, too
+// and so on
+
 
 ### recursive API (KeyHierarchy) ###
 
@@ -79,13 +87,15 @@ can be transformed from/to keysets
 
 keyhAdd (KeyHierarchy * kh, Key * key);
 
+// TODO, add rest of API
+
 
 ### todos ###
 
 What is not so nice:
 
 - error handling can be forgotten
-- merging? (maybe dynamically loaded?)
+- merging on conflicts? (maybe libelektra-tools dynamically loaded?)
 - warning/error handling?
 
 ## Argument ##
