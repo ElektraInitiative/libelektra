@@ -338,13 +338,13 @@ static int iniKeyToElektraKey (void * vhandle, const char * section, const char 
 	CallbackHandle * handle = (CallbackHandle *)vhandle;
 	if ((!section || *section == '\0') && (!name || *name == '\0'))
 	{
-		Key * rootKey = keyDup (handle->parentKey);
+		Key * rootKey = keyNew (keyName(handle->parentKey), KEY_END);
 		keySetString (rootKey, value);
 		flushCollectedComment (handle, rootKey);
 		ksAppendKey (handle->result, rootKey);
 		return 1;
 	}
-	Key * appendKey = keyDup (handle->parentKey);
+	Key * appendKey = keyNew (keyName(handle->parentKey), KEY_END);
 	Key * sectionKey;
 	if (!section || *section == '\0')
 	{
@@ -439,8 +439,7 @@ static short isSectionKey (Key * key)
 static int iniSectionToElektraKey (void * vhandle, const char * section)
 {
 	CallbackHandle * handle = (CallbackHandle *)vhandle;
-	Key * appendKey = keyDup (handle->parentKey);
-	keySetString (appendKey, 0);
+	Key * appendKey = keyNew (keyName(handle->parentKey), KEY_END);
 	createUnescapedKey (appendKey, section);
 	Key * existingKey = NULL;
 	if ((existingKey = ksLookup (handle->result, appendKey, KDB_O_NONE)))
@@ -905,7 +904,7 @@ static char * getIniName (Key * section, Key * key)
 
 Key * getGlobalRoot (Key * parentKey, KeySet * ks)
 {
-	Key * lookup = keyDup (parentKey);
+	Key * lookup = keyNew (keyName(parentKey), KEY_END);
 	keyAddName (lookup, INTERNAL_ROOT_SECTION);
 	Key * found = ksLookup (ks, lookup, KDB_O_NONE);
 	keyDel (lookup);
@@ -922,10 +921,7 @@ int hasGlobalRoot (Key * parentKey, KeySet * ks)
 
 void createGlobalRoot (Key * parentKey, KeySet * ks)
 {
-	Key * appendKey = keyDup (parentKey);
-	keySetString (appendKey, 0);
-	keySetMeta (appendKey, "internal/ini/order", 0);
-	keySetMeta (appendKey, "internal/ini/section", 0);
+	Key * appendKey = keyNew (keyName(parentKey), KEY_END);
 	keyAddName (appendKey, INTERNAL_ROOT_SECTION);
 	keySetMeta (appendKey, "internal/ini/order", "#0");
 	keySetMeta (appendKey, "internal/ini/key/last", "#0");
@@ -1020,10 +1016,7 @@ void arrayHandler (Key * parentKey, Key * newKey, Key * cur, Key * sectionKey, K
 
 void insertIntoKS (Key * parentKey, Key * cur, KeySet * newKS, IniPluginConfig * pluginConfig)
 {
-	Key * appendKey = keyDup (parentKey);
-	keySetString (appendKey, 0);
-	keySetMeta (appendKey, "internal/ini/order", 0);
-	keySetMeta (appendKey, "internal/ini/section", 0);
+	Key * appendKey = keyNew (keyName(parentKey), KEY_END);
 	Key * sectionKey = keyDup (appendKey);
 	Key * newKey = NULL;
 	keySetName (sectionKey, keyName (cur));
