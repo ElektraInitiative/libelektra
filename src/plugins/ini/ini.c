@@ -1161,7 +1161,7 @@ static void iniWriteMeta (FILE * fh, Key * key)
 	{
 		Key * meta = (Key *)keyCurrentMeta (key);
 		const char * name = keyName (meta);
-		if (strncmp (name, "internal/", 9) && strcmp (name, "internal/ini/section") && strncmp (name, "comment", 7))
+		if (strncmp (name, "internal/", 9) && strcmp (name, "internal/ini/section") && strncmp (name, "comment", 7) && strncmp(name, "warnings/", 0) && strncmp(name, "error/", 6))
 		{
 			if (!strcmp (name, "binary") && keyGetNamespace (key) != KEY_NS_SPEC) continue;
 			const char * string = keyString (meta);
