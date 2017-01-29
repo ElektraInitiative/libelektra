@@ -97,6 +97,7 @@ What is not so nice:
 - error handling can be forgotten
 - merging on conflicts? (maybe libelektra-tools dynamically loaded?)
 - warning/error handling?
+- should recursive + lower-level type API in a separate library, in ease, or in core?
 
 ## Argument ##
 
