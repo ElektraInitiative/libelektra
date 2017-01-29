@@ -5,9 +5,9 @@ This is a list of people that contributed to the Elektra project.
 
 ## Markus Raab ##
 
-maintainer, main development, documentation
+maintainer, main development, documentation, quality
 
-- email: elektra@markus-raab.org
+- email: elektra@libelektra.org
 - devel/test on: Debian
 
 
@@ -24,7 +24,7 @@ bindings, swig, gobject, main development
 journald plugin, augeas plugin, keytometa, main development
 
 - email: elektra@berlakovich.net
-- devel/test on: Debian Wheezy
+- devel/test on: Debian
 
 
 ## Pino Toscano ##
@@ -72,7 +72,7 @@ desktop environment integration & usability
 
 ## Avi Alkalay ##
 
-initial concept, previous website, fstab plugin
+initial concept & implementation, previous website
 
 - email: avi@unix.sh
 
@@ -135,7 +135,7 @@ previous Debian packaging
 
 ## Daniel Bugl ##
 
-documentation, new README.md, zeromq, web ui
+documentation, web ui
 
 - email: me@omnidan.net
 
@@ -184,6 +184,8 @@ development of the REST service & frontend for sharing of conf. snippets, cachef
 
 ## Thomas Waser ##
 
+main development, many plugins
+
 - email: thomas.waser@libelektra.org
 - github user: [tom-wa](https://github.com/tom-wa)
 - devel/test on: Debian Testing/Sid
@@ -191,7 +193,7 @@ development of the REST service & frontend for sharing of conf. snippets, cachef
 
 ## Raffael Pancheri ##
 
-Design and Implementation of the qml-gui
+design and implementation of the qt-gui
 
 - email: raffael@libelektra.org
 - github user: [0003088](https://github.com/0003088)

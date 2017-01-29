@@ -1,5 +1,5 @@
 - infos = Information about ini plugin is in keys below
-- infos/author = Thomas Waser <thomas.waser@libelektra.org> Felix Berlakovich <elektra@berlakovich.net> 
+- infos/author = Thomas Waser <thomas.waser@libelektra.org>
 - infos/licence = BSD
 - infos/provides = storage/ini
 - infos/needs =
