@@ -10,11 +10,8 @@
 
 ## Introduction ##
 
-This plugin is a notification plugin which sends a signal to dbus when a
-method is called. This plugin allows external programs to take action
-when dbus notifies the program that a certain method has taken place
-with Elektra.
-
+This plugin is a notification plugin, which sends a signal to D-Bus when
+the key database (KDB) has been modified.
 
 ## Dependencies ##
 
@@ -22,15 +19,14 @@ with Elektra.
 
 ## Dbus ##
 
-A preferred way to interconnect desktop applications and even
-embedded system applications on mobile devices running Linux is
-D-Bus.  The idea of D-Bus accords to that of
-Elektra: to provide standards to let software work together more tightly.
-D-Bus provides a simple and lightweight IPC (Inter-Process
-Communication= system to be used within desktop systems.  Next to
-RPC (Remote Procedure Call), which is not used in this plugin,
-it supports signals which can notify an arbitrary number of
-other applications about changes.  Given software like a D-Bus library,
+A preferred way to interconnect desktop applications and even embedded
+system applications on mobile devices running Linux is D-Bus.  The idea
+of D-Bus accords to that of Elektra: to provide standards to let software
+work together more tightly.  D-Bus provides a simple and lightweight IPC
+(Inter-Process Communication) system to be used within desktop systems.
+Next to RPC (Remote Procedure Call), which is not used in this plugin,
+it supports signals which can notify an arbitrary number of other
+applications about changes.  Given software like a D-Bus library,
 notification itself is a rather easy task, but it involves additional
 library dependences.  So it is the perfect task to be implemented as
 a plugin.  The information about the channels to be used can be stored
@@ -51,7 +47,8 @@ The namespaces are mapped to the buses the following way:
 - system: system-wide bus
 - user: session bus
 
-Following signal names are used to notify about changes in the elektra KeySet:
+Following signal names are used to notify about changes in the Elektra's KeySet:
+
 - KeyAdded: a key has been added
 - KeyChanged: a key has been changed
 - KeyDeleted: a key has been deleted
@@ -62,7 +59,7 @@ The recommended way is to globally mount the plugin:
 
 	kdb global-mount dbus
 
-Alternatively one can mount the plugin additionally to a storage plugin, e.g.
+Alternatively one can mount the plugin additionally to a storage plugin, e.g.:
 
 	kdb mount file.dump / dump dbus
 
@@ -155,12 +152,12 @@ except KeyboardInterrupt:
 
 ## Background ##
 
-Today, programs are often interconnected in a dense way.  Such
-applications should always be informed when something in their
+Today, programs are often interconnected in a dense way.
+Such applications should always be informed when something in their
 environment changes.  For user interactive software, notification about
 configuration changes is expected.  The only alternative is polling, which
-wastes resources.  It additionally is no option, because for interactive
-software the latency needs to be low.  Instead, the software which changes
+wastes resources.  It additionally is no option for interactive software,
+where the latency needs to be low.  Instead, the software which changes
 the configuration has to notify all other interested applications that
 can reread their configuration without significant delay.  In Elektra,
 a notification plugin ensures that a notification is actually sent on
