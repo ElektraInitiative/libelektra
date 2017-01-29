@@ -214,7 +214,7 @@ static void iniBomHandler (void * vhandle, short BOM)
 
 static void setKeyOrderNumber (Key * sectionKey, Key * key)
 {
-	const Key * childMeta = keyGetMeta (sectionKey, "internal/ini/key/last");
+    const Key * childMeta = keyGetMeta (sectionKey, "internal/ini/key/last");
 	keySetMeta (key, "internal/ini/key/number", keyString (childMeta));
 	Key * newChild = keyDup (childMeta);
 	keyAddName (newChild, keyString (newChild));
@@ -722,7 +722,7 @@ int elektraIniGet (Plugin * handle, KeySet * returned, Key * parentKey)
 	pluginConfig->BOM = 0;
 	if (pluginConfig->lastOrder && !keyGetMeta (parentKey, "internal/ini/order"))
 		keySetMeta (parentKey, "internal/ini/order", pluginConfig->lastOrder);
-	else
+	else if(!keyGetMeta(parentKey, "internal/ini/order"))
 		keySetMeta (parentKey, "internal/ini/order", "#1");
 	cbHandle.array = pluginConfig->array;
 	cbHandle.mergeSections = pluginConfig->mergeSections;
@@ -1508,7 +1508,7 @@ int elektraIniSet (Plugin * handle, KeySet * returned, Key * parentKey)
 	IniPluginConfig * pluginConfig = elektraPluginGetData (handle);
 	if (pluginConfig->lastOrder && !keyGetMeta (parentKey, "internal/ini/order"))
 		keySetMeta (parentKey, "internal/ini/order", pluginConfig->lastOrder);
-	else
+	else if(!keyGetMeta(parentKey, "internal/ini/order"))
 		keySetMeta (parentKey, "internal/ini/order", "#1");
 	Key * cur;
 	KeySet * newKS = ksNew (0, KS_END);
