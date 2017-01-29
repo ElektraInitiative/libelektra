@@ -1,5 +1,5 @@
 - infos = Information about the desktop plugin is in keys below
-- infos/author = Name <name@libelektra.org>
+- infos/author = Name <elektra@libelektra.org>
 - infos/licence = BSD
 - infos/needs =
 - infos/provides = storage/info
@@ -18,11 +18,11 @@ other configuration. See [elektrify-getenv](/src/libs/getenv/README.md).
 
 To mount the plugin please use:
 
-    bin/kdb mount --resolver noresolver none system/info/desktop desktop
+    sudo kdb mount --resolver noresolver none system/info/desktop desktop
 
 or it is already included if you already mounted the info plugins with:
 
-    kdb mount-info
+    sudo kdb mount-info
 
 Then you can get desktop information via:
 
@@ -44,5 +44,5 @@ Currently supported desktops are:
 Currently the detection relies on environment variables,
 which will not work in setuid or otherwise secured binaries.
 Please open a bug report if the detection does not work for you:
-http://libelektra.org
+https://issues.libelektra.org
 
