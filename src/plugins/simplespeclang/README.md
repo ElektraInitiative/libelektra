@@ -1,5 +1,5 @@
 - infos = Information about the simplespeclang plugin is in keys below
-- infos/author = Markus Raab <markus@libelektra.org>
+- infos/author = Markus Raab <elektra@libelektra.org>
 - infos/licence = BSD
 - infos/needs =
 - infos/provides = storage

@@ -1,5 +1,5 @@
 - infos = Information about the doc plugin is in keys below
-- infos/author = Markus Raab <markus@libelektra.org>
+- infos/author = Markus Raab <elektra@libelektra.org>
 - infos/licence = BSD
 - infos/provides =
 - infos/needs =
