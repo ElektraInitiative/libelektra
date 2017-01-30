@@ -128,11 +128,16 @@ static void keyAddUnescapedBasePath (Key * key, const char * path)
 		int ret = keyAddName (key, buffer);
 		if (ret == -1)
 		{
-			char * tmp = elektraMalloc (keyGetFullNameSize (key) + strlen (buffer));
+			char * tmp = elektraMalloc (keyGetFullNameSize (key) + strlen (buffer) + 2);
 			keyGetFullName (key, tmp, keyGetFullNameSize (key));
 			strcat (tmp, "/");
 			strcat (tmp, buffer);
-			keySetName (key, tmp);
+			ssize_t rc = keySetName (key, tmp);
+			if (rc == -1 && tmp[strlen (tmp) - 1] == '\\')
+			{
+				tmp[strlen (tmp) - 1] = '\0';
+				keySetName (key, tmp);
+			}
 			elektraFree (tmp);
 		}
 		elektraFree (buffer);
