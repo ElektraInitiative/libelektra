@@ -2,7 +2,9 @@ import React from 'react'
 
 import { Card, CardHeader, CardText, CardActions } from 'material-ui/Card'
 import FlatButton from 'material-ui/FlatButton'
+
 import TreeItem from './TreeItem.jsx'
+import CreateKey from './CreateKey.jsx'
 
 // create tree structure from kdb ls result (list of available keys)
 const partsTree = (acc, parts) => {
@@ -70,17 +72,28 @@ const Configuration = ({
 }) => {
   const { id, name, subtitle } = getConfiguration(instance, cluster)
 
+  const setCorrectKey = (path, value) =>
+    configuring === 'cluster'
+      ? setClusterKey(id, path, value)
+      : setKey(id, path, value)
+
+  const getCorrectKey = (path) =>
+    configuring === 'cluster'
+      ? getClusterKey(id, path)
+      : getKey(id, path)
+
+  // add new keys from kdb to ls
+  if (kdb) {
+    Object.keys(kdb).map((path) => {
+      if (ls.indexOf(path) === -1) ls.push(path)
+    })
+  }
+
   const tree = createTree(ls)
   const treeView = createTreeView({
     kdb,
-    getKey: (path) =>
-      configuring === 'cluster'
-        ? getClusterKey(id, path)
-        : getKey(id, path),
-    setKey: (path, value) =>
-      configuring === 'cluster'
-        ? setClusterKey(id, path, value)
-        : setKey(id, path, value),
+    getKey: getCorrectKey,
+    setKey: setCorrectKey,
   }, tree)
 
   return (
@@ -92,6 +105,7 @@ const Configuration = ({
           <CardText>
             {treeView}
           </CardText>
+          <CreateKey setKey={setCorrectKey} />
           <CardActions>
               <FlatButton
                 label="done"

@@ -3,7 +3,7 @@
   "plugins": [ "react" ],
   "extends": [
     "standard",
-    "plugin:react/all"
+    "plugin:react/recommended"
   ],
   "rules": {
     "comma-dangle": [2, "always-multiline"],
