@@ -28,8 +28,8 @@ else
 	FOLDER="$1"
 fi
 
-$KDB mount $FOLDER/METADATA.ini "$MOUNTPOINT/metadata/#0" ini
-$KDB mount $FOLDER/CONTRACT.ini "$MOUNTPOINT/contract/#0" ini
+$KDB mount $FOLDER/METADATA.ini "$MOUNTPOINT/metadata/#0" ini -c linecont="  "
+$KDB mount $FOLDER/CONTRACT.ini "$MOUNTPOINT/contract/#0" ini -c linecont="  "
 
 $KDB mount --resolver noresolver none "$MOUNTPOINT/uname" uname
 $KDB mount --resolver noresolver none "$MOUNTPOINT/desktop" desktop
