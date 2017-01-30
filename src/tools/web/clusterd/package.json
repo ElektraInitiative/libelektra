@@ -14,7 +14,7 @@
     "postinstall": "cd ../client && npm install",
     "start": "npm run build && npm run start:prod",
     "start:verbose": "npm run build && npm run start:prod:verbose",
-    "build": "babel -d build/ src/ && cd ../client && npm run build",
+    "build": "cross-env NODE_ENV=production babel -d build/ src/ && cd ../client && npm run build",
     "start:prod": "cross-env NODE_ENV=production DEBUG=clusterd:*,-*debug,-*log node build/",
     "start:prod:verbose": "cross-env NODE_ENV=production DEBUG=clusterd:* node build/",
     "start:dev": "cross-env NODE_ENV=development DEBUG=clusterd:* babel-watch src/",
@@ -23,6 +23,11 @@
   },
   "dependencies": {
     "babel-loader": "^6.2.5",
+    "babel-core": "^6.11.4",
+    "babel-plugin-transform-object-rest-spread": "^6.8.0",
+    "babel-preset-es2015": "^6.9.0",
+    "babel-register": "^6.11.6",
+    "babel-runtime": "^6.11.6",
     "body-parser": "^1.15.2",
     "cors": "^2.8.1",
     "debug-dude": "^1.0.3",
@@ -33,12 +38,7 @@
   },
   "devDependencies": {
     "babel-cli": "^6.11.4",
-    "babel-core": "^6.11.4",
     "babel-eslint": "^7.1.1",
-    "babel-plugin-transform-object-rest-spread": "^6.8.0",
-    "babel-preset-es2015": "^6.9.0",
-    "babel-register": "^6.11.6",
-    "babel-runtime": "^6.11.6",
     "babel-watch": "^2.0.2",
     "eslint": "^3.11.1",
     "eslint-config-standard": "^6.2.1"
