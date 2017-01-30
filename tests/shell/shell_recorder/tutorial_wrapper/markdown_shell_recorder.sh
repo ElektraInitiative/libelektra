@@ -184,7 +184,7 @@ translate()
 	done <<<"$BUF"
 	writeBlock "$TMPFILE"
 	../shell_recorder.sh "$TMPFILE"
-	#	 rm "$TMPFILE"
+	rm "$TMPFILE"
 }
 INBLOCK=0
 IFS=''
