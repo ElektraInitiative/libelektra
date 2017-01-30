@@ -8,7 +8,7 @@
     "clusterd"
   ],
   "homepage": "http://git.libelektra.org/blob/master/src/tools/web/",
-  "license": "MIT",
+  "license": "BSD",
   "main": "src/index.js",
   "scripts": {
     "postinstall": "npm install --prefix ../client",
