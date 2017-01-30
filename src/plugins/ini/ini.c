@@ -678,6 +678,15 @@ static void setParents (KeySet * ks, Key * parentKey)
 }
 static void stripInternalData (Key * parentKey, KeySet *);
 
+static void incOrder (Key * key)
+{
+	Key * orderKey = keyNew ("/", KEY_CASCADING_NAME, KEY_END);
+	keyAddName (orderKey, keyString (keyGetMeta (key, "internal/ini/order")));
+	elektraArrayIncName (orderKey);
+	keySetMeta (key, "internal/ini/order", keyBaseName (orderKey));
+	keyDel (orderKey);
+}
+
 int elektraIniGet (Plugin * handle, KeySet * returned, Key * parentKey)
 {
 
@@ -763,6 +772,7 @@ int elektraIniGet (Plugin * handle, KeySet * returned, Key * parentKey)
 	}
 	ksDel (cbHandle.result);
 	if (pluginConfig->lastOrder) elektraFree (pluginConfig->lastOrder);
+	incOrder (parentKey);
 	pluginConfig->lastOrder = strdup (keyString (keyGetMeta (parentKey, "internal/ini/order")));
 	elektraPluginSetData (handle, pluginConfig);
 	return ret; /* success */
@@ -1501,9 +1511,18 @@ int elektraIniSet (Plugin * handle, KeySet * returned, Key * parentKey)
 	Key * head = keyDup (ksHead (returned));
 	IniPluginConfig * pluginConfig = elektraPluginGetData (handle);
 	if (pluginConfig->lastOrder && !keyGetMeta (parentKey, "internal/ini/order"))
+	{
 		keySetMeta (parentKey, "internal/ini/order", pluginConfig->lastOrder);
+		incOrder (parentKey);
+	}
 	else if (!keyGetMeta (parentKey, "internal/ini/order"))
+	{
 		keySetMeta (parentKey, "internal/ini/order", "#1");
+	}
+	else
+	{
+		incOrder (parentKey);
+	}
 	Key * cur;
 	KeySet * newKS = ksNew (0, KS_END);
 	ksRewind (returned);
