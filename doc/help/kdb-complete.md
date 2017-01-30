@@ -10,8 +10,9 @@ Where `path` is the path for which the user would like to receive completion sug
 ## DESCRIPTION
 
 Show suggestions how the current name could be completed.
-Suggestions will include existing key names, path segments of existing key names and mountpoints.
-Additionally, the output will indicate wheter the given path is a node or a leaf in the hierarchy of keys.
+Suggestions will include existing key names, path segments of existing key names, namespaces and mountpoints.
+Additionally, the output will indicate wheter the given path is a node or a leaf in the hierarchy of keys,
+nodes end with '/' as opposed to leaves.
 
 ## OPTIONS
 
@@ -26,7 +27,7 @@ Additionally, the output will indicate wheter the given path is a node or a leaf
 - `-M`, `--max-depth`=<max-depth>:
   Specify the maximum depth of completion suggestions (unlimited by default, 1 to show only the next level), inclusive.
 - `-v`, `--verbose`:
-  Explain what is happening.
+  Give a more detailed output, showing the number of child nodes and the depth level.
 - `-0`, `--null`:
   Use binary 0 termination.
 - `-d`, `--debug`:
