@@ -121,9 +121,7 @@ const getAndLs = (path) =>
   Promise.all(
     [ ls(path), get(path) ] // execute ls and get in parallel
   ).then(([ lsRes, value ]) => {
-    if (lsRes) {
-      return { ls: lsRes, value } // return results as object
-    }
+    return { ls: lsRes || [], value } // return results as object
   })
 
 // export kdb functions as `kdb` object
