@@ -101,7 +101,7 @@ sudo kdb mount main.ini /examples/conditionals ni
 sudo kdb mount sub.ini /examples/conditionals/sub ini
 
 # mount conditionals as global plugin
-sudo kdb global-mount conditionals
+sudo kdb global-mount conditionals || $(exit 0)
 
 # create testfiles
 cat > `kdb file /examples/conditionals` << EOF \
@@ -113,9 +113,9 @@ EOF
 echo "key = false" > `kdb file /examples/conditionals/sub`
 
 # should fail and yield an error
-kdb export /examples/conditionals ini
-#> sub/key = false
+kdb export /examples/conditionals simpleini
 #> key1 = val1
+#> sub/key = false
 # ERRORS:135
 # Error (#135) occurred!
 # Description: Validation failed
@@ -129,9 +129,9 @@ kdb export /examples/conditionals ini
 kdb set /examples/conditionals/sub/key true
 
 # should succeed 
-kdb export /examples/conditionals ini
-#> sub/key = true
+kdb export /examples/conditionals simpleini
 #> key1 = val1
+#> sub/key = true
 
 # cleanup
 kdb rm -r /examples/conditionals
