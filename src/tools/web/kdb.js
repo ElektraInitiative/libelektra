@@ -111,7 +111,8 @@ const _export = (path) =>
 // import javascript object at given `path`
 const _import = (path, value) =>
   safeExec(
-    escapeValues`echo ${JSON.stringify(value)} | ` + // pipe json into kdb
+    // we can trust JSON.stringify to escape values for us
+    `echo '${JSON.stringify(value)}' | ` + // pipe json into kdb
     escapeValues`kdb import ${path} yajl`
   ).then(result => _export(path))
 
