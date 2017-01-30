@@ -25,7 +25,8 @@
     "redux": "^3.6.0",
     "redux-promises": "^1.0.0",
     "rgx": "^0.2.4",
-    "cross-env": "^2.0.0"
+    "cross-env": "^2.0.0",
+    "webpack": "^1.13.2"
   },
   "devDependencies": {
     "babel-core": "^6.14.0",
@@ -41,7 +42,6 @@
     "redux-devtools": "^3.3.1",
     "redux-devtools-inspector": "^0.8.0",
     "standard": "^8.6.0",
-    "webpack": "^1.13.2",
     "webpack-dev-middleware": "^1.8.4",
     "webpack-hot-middleware": "^2.13.0"
   }
