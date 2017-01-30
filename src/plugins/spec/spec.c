@@ -674,6 +674,8 @@ static int doGlobbing (Key * parentKey, KeySet * returned, KeySet * specKS, Conf
 		ksRewind (returned);
 		while ((cur = ksNext (returned)) != NULL)
 		{
+			if (keyGetNamespace (cur) == KEY_NS_SPEC) continue;
+
 			cursor_t cursor = ksGetCursor (returned);
 			if (matchPatternToKey (pattern, cur))
 			{
