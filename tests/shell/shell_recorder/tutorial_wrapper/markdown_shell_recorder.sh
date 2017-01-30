@@ -188,6 +188,9 @@ translate()
 }
 INBLOCK=0
 IFS=''
+
+MOUNTPOINTS_BACKUP=$(kdb mount)
+
 while read -r line;
 do
 	grep -Eq '(\s)*```sh$' <<<"$line"
@@ -216,3 +219,16 @@ done <<<"$BLOCKS"
 
 translate
 
+MOUNTPOINTS=$(kdb mount)
+
+if [ "$MOUNTPOINTS_BACKUP" != "$MOUNTPOINT" ];
+then
+IFS='
+'
+    TOUMOUNT=$(diff <(echo "$MOUNTPOINTS_BACKUP") <(echo "$MOUNTPOINTS") | grep -Eo "^>.*")
+    for line in $TOUMOUNT;
+    do
+	mp=$(sed -n 's/\(.*\)with name \(.*\)/\2/p' <<< "$line")
+	kdb umount "$mp"
+    done
+fi
