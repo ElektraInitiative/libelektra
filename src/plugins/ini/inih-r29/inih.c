@@ -449,7 +449,25 @@ int ini_parse_file (FILE * file, const struct IniConfig * config, void * user)
 				{
 					rstrip (start);
 					name = start;
-					value = NULL;
+					end = strchr (start, delim);
+					if (!end)
+					{
+						value = NULL;
+					}
+					else
+					{
+						if (*end == delim) *end = '\0';
+						rstrip (end - 1);
+						value = lskip (end + 1);
+						rstrip (value);
+						if (*value == '"')
+						{
+							*(value++) = '\0';
+							while ((*end != '"') && !isprint (*end) && end > value)
+								--end;
+							if (*end == '"') *end = '\0';
+						}
+					}
 				}
 				strncpy0 (prev_name, name, sizeof (prev_name));
 
