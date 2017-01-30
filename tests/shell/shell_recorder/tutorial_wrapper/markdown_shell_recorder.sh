@@ -2,7 +2,7 @@
 INFILE="$1"
 
 
-BLOCKS=$(grep -oPz '(?s)```sh.*?```\n' "$1")
+BLOCKS=$(sed -n '/```sh/,/```\n/p' "$1")
 BUF=
 
 COMMAND=
@@ -110,17 +110,17 @@ translate()
 		grep -Eq "^(\s)*#>" <<< "$line"
 		if [ -z "$OUTBUF" ];
 		then
-			tmp=$(grep -Po "(?<=#\> ).*" <<<"$line")
+	    		tmp=$(sed -n 's/\(\s\)*#> \(.*\)/\2/p' <<<"$line")
 			OUTBUF="$tmp"
 		    else
-			tmp=$(grep -Po "(?<=#\> ).*" <<< "$line")
+	    		tmp=$(sed -n 's/\(\s\)*#> \(.*\)/\2/p' <<<"$line")
 			OUTBUF=$(echo -en "${OUTBUF}\n${tmp}")
 		fi
 
 		grep -Eq "^(\s*)#" <<< "$line"
 		if [ "$?" -eq 0 ];
 		then
-			tmp=$(grep -Po "(?<=\# )(.*)" <<< "$line")
+	    		tmp=$(sed -n 's/\(\s\)*# \(.*\)/\2/p' <<<"$line")
 			cmd=$(cut -d ':' -f1 <<< "$tmp")
 			arg=$(cut -d ':' -f2- <<< "$tmp")
 
@@ -186,17 +186,23 @@ translate()
 	../shell_recorder.sh "$TMPFILE"
 	#	 rm "$TMPFILE"
 }
-
+INBLOCK=0
 IFS=''
 while read -r line;
 do
 	grep -Eq '(\s)*```sh$' <<<"$line"
 	if [ "$?" -eq 0 ];
 	then
+	    	INBLOCK=1
 		continue;	
 	fi
 	grep -Eq '(\s)*```$' <<<"$line"
 	if [ "$?" -eq 0 ];
+	then
+	    INBLOCK=0
+	    continue
+	fi
+	if [ $INBLOCK -eq 0 ];
 	then
 	    continue
 	fi
