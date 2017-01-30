@@ -19,7 +19,7 @@ export default function configureStore (initialState) {
   const store = createStore(reducer, initialState, enhancer)
 
   // hot reload reducers
-  if (module.hot) {
+  if (process.env.NODE_ENV !== 'production' && module.hot) {
     module.hot.accept('./reducers', () =>
       store.replaceReducer(require('./reducers').default)
     )
