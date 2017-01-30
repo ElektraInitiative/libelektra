@@ -7,7 +7,7 @@
 - infos/placements = presetstorage postgetstorage
 - infos/status = recommended productive maintained reviewed conformant compatible coverage specific unittest tested libc final
 - infos/metadata =
-- infos/description = one-line description of date
+- infos/description = validates date and time strings
 
 ## Validation options ##
 
