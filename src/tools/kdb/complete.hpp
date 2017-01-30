@@ -48,14 +48,18 @@ public:
 
 private:
 	void addMountpoints (kdb::KeySet & ks, const kdb::Key root);
+	void addNamespaces (std::map<kdb::Key, std::pair<int, int>> & hierarchy);
 	const std::map<kdb::Key, std::pair<int, int>> analyze (const kdb::KeySet & ks, const kdb::Key root, kdb::KeySet & virtualKeys,
 							       const Cmdline & cmdLine);
 	const kdb::Key getParentKey (const kdb::Key key);
 	void increaseCount (std::map<kdb::Key, std::pair<int, int>> & hierarchy, const kdb::Key key,
 			    const std::function<int(int)> depthIncreaser);
-	void printResult (const kdb::Key originalRoot, const kdb::Key root, const std::map<kdb::Key, std::pair<int, int>> & hierarchy,
-			  const kdb::KeySet & virtualKeys, const Cmdline & cmdLine);
-	const std::function<bool(std::string)> determineFilterPredicate (const kdb::Key originalRoot, const kdb::Key root);
+	void printResults (const std::string originalInput, const kdb::Key originalRoot, const kdb::Key root,
+			   const std::map<kdb::Key, std::pair<int, int>> & hierarchy, const kdb::KeySet & virtualKeys,
+			   const Cmdline & cmdLine);
+	void printResult (const std::pair<kdb::Key, std::pair<int, int>> & current, const bool verbose);
+	const std::function<bool(std::string)> determineFilterPredicate (const std::string originalInput, const kdb::Key originalRoot,
+									 const kdb::Key root);
 };
 
 #endif

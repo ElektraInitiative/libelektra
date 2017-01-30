@@ -24,12 +24,11 @@ CompleteCommand::CompleteCommand ()
 {
 }
 
+/*
+ * McCabe complexity of 11, 1 caused by verbose switch so actually its ok
+ */
 int CompleteCommand::execute (const Cmdline & cl)
 {
-	if (cl.arguments.size () != 1)
-	{
-		throw invalid_argument ("wrong number of arguments, 1 needed");
-	}
 	if (cl.maxDepth <= cl.minDepth)
 	{
 		throw invalid_argument ("the maximum depth has to be larger than the minimum depth");
@@ -49,10 +48,15 @@ int CompleteCommand::execute (const Cmdline & cl)
 		cout.unsetf (ios_base::skipws);
 	}
 
-	// Determine the actual root key, as for completion purpose originalRoot may not exist
+	// For namespace completion, we get all available keys via / as the actual root and filter via the argument
+	const bool hasArgument = cl.arguments.size () > 0;
+	const string originalInput = hasArgument ? cl.arguments[cl.arguments.size () - 1] : "";
+	const Key originalUnprocessedKey (originalInput, KEY_END);
 	KDB kdb;
-	const Key originalRoot = cl.createKey (cl.arguments.size () - 1);
-	Key root = originalRoot;
+	// Determine the actual root key, as for completion purpose originalRoot may not exist
+	// Maybe we want to complete an initial namespace, in that case bookmark expansion checks done by cl.createKey are useless
+	const Key originalRoot = originalUnprocessedKey.isValid () ? cl.createKey (cl.arguments.size () - 1) : originalUnprocessedKey;
+	Key root = originalUnprocessedKey.isValid () ? originalRoot : Key ("/", KEY_END);
 	KeySet ks;
 	printWarnings (cerr, root);
 
@@ -71,7 +75,7 @@ int CompleteCommand::execute (const Cmdline & cl)
 	// Now analyze the completion possibilities and print the results
 	addMountpoints (ks, root);
 	KeySet virtualKeys;
-	printResult (originalRoot, root, analyze (ks, root, virtualKeys, cl), virtualKeys, cl);
+	printResults (originalInput, originalRoot, root, analyze (ks, root, virtualKeys, cl), virtualKeys, cl);
 	printWarnings (cerr, root);
 
 	return 0;
@@ -102,6 +106,17 @@ void CompleteCommand::addMountpoints (KeySet & ks, const Key root)
 	printWarnings (cerr, mountpointPath);
 }
 
+void CompleteCommand::addNamespaces (map<Key, pair<int, int>> & hierarchy)
+{
+	// Currently assumed to be fixed, and they are on level 0
+	const string namespaces[] = { "spec/", "proc/", "dir/", "user/", "system/" };
+	for (const auto ns : namespaces)
+	{
+		Key nsKey (ns, KEY_END);
+		hierarchy[nsKey] = pair<int, int> (1, 0);
+	}
+}
+
 /*
  * McCabe complexity of 13, 3 caused by debug switches so actually its ok
  */
@@ -111,6 +126,7 @@ const map<Key, pair<int, int>> CompleteCommand::analyze (const KeySet & ks, cons
 	stack<Key> keyStack;
 	Key parent;
 	Key last;
+	addNamespaces (hierarchy);
 
 	ks.rewind ();
 	if (!(ks.next ()))
@@ -184,16 +200,17 @@ void CompleteCommand::increaseCount (map<Key, pair<int, int>> & hierarchy, const
 }
 
 /*
- * McCabe complexity of 12, 2 caused by debug/verbose switches so actually its ok
+ * McCabe complexity of 11, 3 caused by verbose switch so actually its ok
  */
-void CompleteCommand::printResult (const Key originalRoot, const Key root, const map<Key, pair<int, int>> & hierarchy,
-				   const KeySet & virtualKeys, const Cmdline & cl)
+void CompleteCommand::printResults (const string originalInput, const Key originalRoot, const Key root,
+				    const map<Key, pair<int, int>> & hierarchy, const KeySet & virtualKeys, const Cmdline & cl)
 {
-	const function<bool(string)> filterPredicate = determineFilterPredicate (originalRoot, root);
+	const function<bool(string)> filterPredicate = determineFilterPredicate (originalInput, originalRoot, root);
 
 	// Adjust the output offset, in case the given string exists in the hierarchy but not in the original ks
+	// or for namespace completion
 	const bool limitMaxDepth = cl.maxDepth != numeric_limits<int>::max ();
-	const int offset = originalRoot != root && virtualKeys.lookup (originalRoot);
+	const int offset = originalRoot != root && virtualKeys.lookup (originalRoot) ? 1 : (originalRoot.getFullName ().empty () ? -1 : 0);
 	const int minDepth = cl.minDepth + offset;
 	const int maxDepth = limitMaxDepth ? cl.maxDepth + offset : cl.maxDepth;
 	if (cl.verbose)
@@ -210,35 +227,49 @@ void CompleteCommand::printResult (const Key originalRoot, const Key root, const
 		cout << endl;
 	}
 
-	if (cl.debug)
-	{
-		cout << endl << "Dumping whole analyzation results" << endl;
-		for (const auto & it : hierarchy)
-		{
-			cout << it.first << " " << it.second.first << " " << it.second.second << endl;
-		}
-		cout << endl;
-	}
-
 	for (const auto & it : hierarchy)
 	{
 		if (filterPredicate (it.first.getFullName ()) && it.second.second > minDepth && it.second.second <= maxDepth)
 		{
-			cout << it.first << (it.second.first > 1 ? " node " + to_string (it.second.first - 1) : " leaf") << endl;
+			printResult (it, cl.verbose);
 		}
 	}
 }
 
-const function<bool(string)> CompleteCommand::determineFilterPredicate (const Key originalRoot, const Key root)
+void CompleteCommand::printResult (const pair<Key, pair<int, int>> & current, const bool verbose)
+{
+	cout << current.first;
+	if (current.second.first > 1)
+	{
+		cout << "/ ";
+		if (verbose)
+		{
+			cout << "node " << to_string (current.second.first - 1);
+		}
+	}
+	else if (verbose)
+	{
+		cout << " leaf 0";
+	}
+	if (verbose)
+	{
+		cout << " " << current.second.second;
+	}
+	cout << endl;
+}
+
+const function<bool(string)> CompleteCommand::determineFilterPredicate (const string originalInput, const Key originalRoot, const Key root)
 {
 	if (root == originalRoot)
 	{
 		return [](string) { return true; };
 	}
-	const string fullName = originalRoot.getFullName ();
+
+	const bool namespaceCompletion = originalRoot.getFullName ().empty ();
+	const string fullName = namespaceCompletion ? originalInput : originalRoot.getFullName ();
 	return [=](string test) {
 		// For cascading keys, we ignore the preceding namespace for filtering
-		const int cascadationOffset = (root.isCascading () ? test.find ("/") : 0);
+		const int cascadationOffset = (!namespaceCompletion && root.isCascading () ? test.find ("/") : 0);
 		return fullName.size () <= test.size () && equal (fullName.begin (), fullName.end (), test.begin () + cascadationOffset);
 	};
 }
