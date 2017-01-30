@@ -1,5 +1,6 @@
 import {
   CONFIGURE_INSTANCE_SUCCESS, CONFIGURE_CLUSTER_SUCCESS, RETURN_TO_MAIN,
+  DELETE_KEY_REQUEST,
 } from './actions'
 
 export const PAGE_MAIN = 'PAGE_MAIN'
@@ -17,6 +18,11 @@ export default function routerReducer (
       return { ...action.result, page: PAGE_CONFIGURE, configuring: 'instance' }
     case RETURN_TO_MAIN:
       return { page: PAGE_MAIN }
+    case DELETE_KEY_REQUEST:
+      return {
+        ...state,
+        ls: state.ls.filter(path => path !== action.request.path),
+      }
     default:
       return state
   }

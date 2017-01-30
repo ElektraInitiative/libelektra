@@ -1,6 +1,8 @@
 import React from 'react'
 
 import TextField from 'material-ui/TextField'
+import IconButton from 'material-ui/IconButton'
+import ActionDelete from 'material-ui/svg-icons/action/delete'
 
 import TreeView from './TreeView.jsx'
 
@@ -12,11 +14,14 @@ export default class TreeItem extends React.Component {
   }
 
   render () {
-    const { name, prefix, value, children, onClick, onChange } = this.props
+    const {
+      name, prefix, value, children, allowDelete = true,
+      onClick, onChange, onDelete,
+    } = this.props
 
     const val = this.state.value || value
 
-    let valueField = val ? ( // if a key has a value, show a textfield
+    let textField = val ? ( // if a key has a value, show a textfield
         <span>
             {': '}
             <TextField
@@ -40,6 +45,23 @@ export default class TreeItem extends React.Component {
             />
         </span>
     ) : null
+
+    let deleteButton = (
+      <IconButton
+        style={{ width: 16, height: 16, padding: 0 }}
+        iconStyle={{ width: 16, height: 16 }}
+        onTouchTap={onDelete}
+      >
+        <ActionDelete />
+      </IconButton>
+    )
+
+    let valueField = ( // valueField = textField + delete button
+      <span>
+        {textField}
+        {allowDelete && deleteButton}
+      </span>
+    )
 
     return (
         <TreeView

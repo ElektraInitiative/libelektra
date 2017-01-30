@@ -36,3 +36,19 @@ export const setKey = (id, path, value, cluster = false) => thunkCreator({
 })
 
 export const setClusterKey = (id, path, value) => setKey(id, path, value, true)
+
+// ~~~
+
+export const DELETE_KEY_REQUEST = 'DELETE_KEY_REQUEST'
+export const DELETE_KEY_SUCCESS = 'DELETE_KEY_SUCCESS'
+export const DELETE_KEY_FAILURE = 'DELETE_KEY_FAILURE'
+
+export const deleteKey = (id, path, cluster = false) => thunkCreator({
+  request: { id, path },
+  types: [DELETE_KEY_REQUEST, DELETE_KEY_SUCCESS, DELETE_KEY_FAILURE],
+  promise: fetch(`/${cluster ? 'clusters' : 'instances'}/${id}/kdb/${encodePath(path)}`, {
+    method: 'DELETE',
+  }).then(response => response.json()),
+})
+
+export const deleteClusterKey = (id, path) => deleteKey(id, path, true)

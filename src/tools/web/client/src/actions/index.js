@@ -21,6 +21,7 @@ export {
 export {
   getKey, getClusterKey, GET_KEY_REQUEST, GET_KEY_SUCCESS, GET_KEY_FAILURE,
   setKey, setClusterKey, SET_KEY_REQUEST, SET_KEY_SUCCESS, SET_KEY_FAILURE,
+  deleteKey, deleteClusterKey, DELETE_KEY_REQUEST, DELETE_KEY_SUCCESS, DELETE_KEY_FAILURE,
 } from './kdb'
 
 export {

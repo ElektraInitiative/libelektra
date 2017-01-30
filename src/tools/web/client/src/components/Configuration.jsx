@@ -22,7 +22,7 @@ const createTree = (ls) =>
   }, {})
 
 // render tree view from tree object
-const createTreeView = ({ getKey, setKey, kdb }, tree, prefix = '') =>
+const createTreeView = ({ getKey, setKey, deleteKey, kdb }, tree, prefix = '') =>
   Object.keys(tree).map((key) => {
     const path = prefix ? `${prefix}/${key}` : key
 
@@ -31,16 +31,21 @@ const createTreeView = ({ getKey, setKey, kdb }, tree, prefix = '') =>
         (childKey) => getKey(`${path}/${childKey}`)
       )
 
+    // only allow deletion of items without subtrees
+    const allowDelete = Object.keys(tree[key]).length === 0
+
     return (
         <TreeItem
+          allowDelete={allowDelete}
           key={path}
           name={key + '/'}
           value={kdb && kdb[path]}
           onClick={loadChildren}
           onChange={(val) => setKey(path, val)}
+          onDelete={() => deleteKey(path)}
         >
             {Object.keys(tree[key]).length > 0
-              ? createTreeView({ getKey, setKey, kdb }, tree[key], path)
+              ? createTreeView({ getKey, setKey, deleteKey, kdb }, tree[key], path)
               : null
             }
         </TreeItem>
@@ -60,7 +65,7 @@ const getConfiguration = (instance, cluster) => {
     return {
       id: cluster.id,
       name: cluster.name,
-      subtitle: `${instanceAmt} instance${instanceAmt != 1 ? 's' : ''}`,
+      subtitle: `${instanceAmt} instance${instanceAmt !== 1 ? 's' : ''}`,
     }
   }
 }
@@ -68,19 +73,26 @@ const getConfiguration = (instance, cluster) => {
 // configuration page
 const Configuration = ({
   instance, cluster, configuring, kdb, ls,
-  returnToMain, getKey, setKey, getClusterKey, setClusterKey,
+  returnToMain,
+  getKey, setKey, deleteKey,
+  getClusterKey, setClusterKey, deleteClusterKey,
 }) => {
   const { id, name, subtitle } = getConfiguration(instance, cluster)
-
-  const setCorrectKey = (path, value) =>
-    configuring === 'cluster'
-      ? setClusterKey(id, path, value)
-      : setKey(id, path, value)
 
   const getCorrectKey = (path) =>
     configuring === 'cluster'
       ? getClusterKey(id, path)
       : getKey(id, path)
+
+  const setCorrectKey = (path, val) =>
+    configuring === 'cluster'
+      ? setClusterKey(id, path, val)
+      : setKey(id, path, val)
+
+  const deleteCorrectKey = (path) =>
+    configuring === 'cluster'
+      ? deleteClusterKey(id, path)
+      : deleteKey(id, path)
 
   // add new keys from kdb to ls
   if (kdb) {
@@ -94,6 +106,7 @@ const Configuration = ({
     kdb,
     getKey: getCorrectKey,
     setKey: setCorrectKey,
+    deleteKey: deleteCorrectKey,
   }, tree)
 
   return (
