@@ -1,5 +1,6 @@
 // kdb.js - small library to access Elektra's kdb via node.js
 const { exec } = require('child_process')
+const { readFileSync } = require('fs')
 
 // constants
 const ERR_KEY_NOT_FOUND = 'Did not find key'
@@ -100,10 +101,12 @@ const set = (path, value) =>
 const rm = (path) =>
   safeExec(escapeValues`kdb rm ${path}`)
 
+const BUFFER_FILE = '/tmp/elektra-web.buffer.json'
+
 // export javascript object from given `path`
 const _export = (path) =>
-  safeExec(escapeValues`kdb export ${path} yajl`)
-    .then(stdout => stdout && JSON.parse(stdout))
+  safeExec(escapeValues`kdb export ${path} yajl ${BUFFER_FILE}`)
+    .then(() => JSON.parse(readFileSync(BUFFER_FILE)))
 
 // import javascript object at given `path`
 const _import = (path, value) =>
