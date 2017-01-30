@@ -537,7 +537,7 @@ int elektraIniOpen (Plugin * handle, Key * parentKey ELEKTRA_UNUSED)
 
 	if (!contStringKey)
 	{
-		pluginConfig->continuationString = strdup (" ");
+		pluginConfig->continuationString = strdup ("\t");
 	}
 	else
 	{
