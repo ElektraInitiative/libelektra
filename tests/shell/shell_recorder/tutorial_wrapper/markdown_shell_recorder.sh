@@ -165,7 +165,7 @@ translate()
 			COMMAND=$(sed "s/\`[[:blank:]]*sudo\ /\`/" <<< "$COMMAND")
 			if [ "${line: -1}" == "\\" ];
 			then
-			    COMMAND="${COMMAND::-1}"
+			    COMMAND="${COMMAND%?}"
 			fi
 			while [ "${line: -1}" == "\\" ];
 			do
@@ -174,7 +174,7 @@ translate()
 			    line=$(sed "s/\`[[:blank:]]*sudo\ /\`/" <<< "$line")
 			    if [ "${line: -1}" == "\\" ];
 			    then
-				COMMAND=$(printf "%s\\\n%s" "$COMMAND" "${line::-1}")
+				COMMAND=$(printf "%s\\\n%s" "$COMMAND" "${line%?}")
 			    else
 				COMMAND=$(printf "%s\\\n%s\\\n" "$COMMAND" "$line")
 			    fi
