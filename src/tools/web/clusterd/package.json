@@ -11,10 +11,10 @@
   "license": "MIT",
   "main": "src/index.js",
   "scripts": {
-    "postinstall": "cd ../client && npm install",
+    "postinstall": "npm install --prefix ../client",
     "start": "npm run build && npm run start:prod",
     "start:verbose": "npm run build && npm run start:prod:verbose",
-    "build": "cross-env NODE_ENV=production babel -d build/ src/ && cd ../client && npm run build",
+    "build": "cross-env NODE_ENV=production babel -d build/ src/ && npm run build --prefix ../client",
     "start:prod": "cross-env NODE_ENV=production DEBUG=clusterd:*,-*debug,-*log node build/",
     "start:prod:verbose": "cross-env NODE_ENV=production DEBUG=clusterd:* node build/",
     "start:dev": "cross-env NODE_ENV=development DEBUG=clusterd:* babel-watch src/",
