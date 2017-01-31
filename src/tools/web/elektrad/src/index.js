@@ -1,3 +1,9 @@
+/* index.js
+the main entry point, this file gets executed when elektrad is started
+it will detect if Elektra is installed and show an error if that isn't the case
+otherwise, it will show version information from Elektra and initialize elektrad
+*/
+
 import makeLog from './log'
 const { info, error } = makeLog()
 

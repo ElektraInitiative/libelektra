@@ -1,7 +1,7 @@
 {
   "name": "@elektra-web/elektrad",
   "version": "1.0.0",
-  "description": "server to remotely control elektra",
+  "description": "server to remotely control Elektra",
   "keywords": [
     "elektra",
     "elektra-web",

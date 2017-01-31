@@ -1,3 +1,7 @@
+/* routes/utils.js
+utility functions used in routes
+*/
+
 export const prettyprint = (obj) =>
   JSON.stringify(obj, null, 2)
 

@@ -1,3 +1,8 @@
+/* routes/index.js
+the main entry point for routes, this exports a function that gets passed the
+express app as an argument, which can be used to define routes
+*/
+
 import { successResponse, errorResponse } from './utils'
 
 import kdb from '../../../kdb'

@@ -1,3 +1,9 @@
+/* log.js
+exports a function that creates logging functions, e.g.
+  const { info, error } = makeLog('routes')
+  info('routes loaded!') // displays "elektrad:routes:info routes loaded!"
+*/
+
 import dude from 'debug-dude'
 
 import { name } from '../package.json'
