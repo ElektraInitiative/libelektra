@@ -1,7 +1,13 @@
-/* components/Configuration.jsx
-this is the configuration page, it renders the interactive tree view and the
-CreateKey component to be able to create new keys in the Elektra key database
-*/
+/**
+ * @file
+ *
+ * @brief this is the configuration page
+ *
+ * it renders the interactive tree view and the CreateKey component to be able
+ * to create new keys in the Elektra key database
+ *
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ */
 
 import React from 'react'
 

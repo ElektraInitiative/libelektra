@@ -1,6 +1,10 @@
-/* components/CreateKey.jsx
-this component is used to create a new key on the configuration page
-*/
+/**
+ * @file
+ *
+ * @brief this component is used to create a new key on the configuration page
+ *
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ */
 
 import React from 'react'
 

@@ -1,4 +1,11 @@
-// kdb.js - small library to access Elektra's kdb via node.js
+/**
+ * @file
+ *
+ * @brief small library to access Elektra's kdb via node.js
+ *
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ */
+
 const { exec } = require('child_process')
 const { readFileSync } = require('fs')
 

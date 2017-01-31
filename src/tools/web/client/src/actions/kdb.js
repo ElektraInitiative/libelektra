@@ -1,6 +1,10 @@
-/* actions/kdb.js
-Elektra key database (kdb) specific actions, used in the tree view
-*/
+/**
+ * @file
+ *
+ * @brief Elektra key database (kdb) specific actions, used in the tree view
+ *
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ */
 
 import { thunkCreator, encodePath } from './utils'
 

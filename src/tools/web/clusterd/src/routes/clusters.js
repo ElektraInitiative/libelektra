@@ -1,7 +1,10 @@
-/* routes/clusters.js
-this exports a function that gets passed the express app as an argument, which
-is used to define the routes
-*/
+/**
+ * @file
+ *
+ * @brief this exports a function that defines routes for the express app
+ *
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ */
 
 import makeLog from '../log'
 const { error } = makeLog('routes:clusters')

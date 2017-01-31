@@ -1,6 +1,10 @@
-/* db/utils.js
-utility functions used in the database layer
-*/
+/**
+ * @file
+ *
+ * @brief utility functions used in the database layer
+ *
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ */
 
 export { v4 as generateId } from 'node-uuid'
 

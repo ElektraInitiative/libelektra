@@ -1,7 +1,13 @@
-/* components/Menu.jsx
-this is the menu (top bar) of the application, it shows the current page and,
-if on the overview page, it will show buttons to create clusters and instances
-*/
+/**
+ * @file
+ *
+ * @brief this is the menu (top bar) of the application
+ *
+ * it shows the current page and, if on the overview page, it will show buttons
+ * to create clusters and instances
+ *
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ */
 
 import React from 'react'
 

@@ -1,6 +1,10 @@
-/* router.js
-a small router implementation using redux
-*/
+/**
+ * @file
+ *
+ * @brief a small router implementation using redux
+ *
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ */
 
 import {
   CONFIGURE_INSTANCE_SUCCESS, CONFIGURE_CLUSTER_SUCCESS, RETURN_TO_MAIN,

@@ -1,6 +1,10 @@
-/* db/clusters.js
-exports database operations regarding clusters
-*/
+/**
+ * @file
+ *
+ * @brief exports database operations regarding clusters
+ *
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ */
 
 import kdb from '../../../kdb'
 import { path, generateId, findById, updateById, deleteById } from './utils'

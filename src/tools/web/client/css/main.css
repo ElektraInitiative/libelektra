@@ -1,3 +1,11 @@
+/**
+ * @file
+ *
+ * @brief main stylesheet for the elektra-web client application
+ *
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ */
+
 @font-face {
   font-family: 'Roboto';
   src: url('Roboto-Regular.ttf');

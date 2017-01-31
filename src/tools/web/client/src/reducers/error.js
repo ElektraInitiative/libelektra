@@ -1,7 +1,12 @@
-/* reducers/error.js
-handle errors that happened in actions
-they will be shown in a small notification at the bottom of the UI
-*/
+/**
+ * @file
+ *
+ * @brief handle errors that happened in actions
+ *
+ * they will be shown in a small notification at the bottom of the UI
+ *
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ */
 
 import {
   INSTANCES_FAILURE, INSTANCE_UPDATE_FAILURE, INSTANCE_DELETE_FAILURE,

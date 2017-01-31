@@ -1,6 +1,10 @@
-/* routes/utils.js
-utility functions used in routes
-*/
+/**
+ * @file
+ *
+ * @brief utility functions used in routes
+ *
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ */
 
 export const prettyprint = (obj) =>
   JSON.stringify(obj, null, 2)

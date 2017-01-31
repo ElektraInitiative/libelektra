@@ -1,7 +1,13 @@
-/* versions.js
-exports a function to get the API and elektra versions, e.g.
-  { api: 1, elektra: { version: '0.8.19', major: 0, minor: 8, micro: 19 } }
-*/
+/**
+ * @file
+ *
+ * @brief exports a function to get the API and elektra versions
+ *
+ * e.g.
+ * { api: 1, elektra: { version: '0.8.19', major: 0, minor: 8, micro: 19 } }
+ *
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ */
 
 import { version } from '../package.json'
 // api version is the major version of the package.json version

@@ -1,6 +1,10 @@
-/* reducers/container.js
-handle actions in the main overview (container of instances and clusters)
-*/
+/**
+ * @file
+ *
+ * @brief handle actions in the main overview (container of instances/clusters)
+ *
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ */
 
 import {
   ADD_INSTANCE, UNADD_INSTANCE, ADD_CLUSTER, UNADD_CLUSTER,

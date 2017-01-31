@@ -1,9 +1,15 @@
-/* components/CreateInstanceCard.jsx
-when the "create instance" button is pressed, this component is appended to the
-main overview. it's like the instance card, but with editable fields that are
-used to create the instance.
-once the instance is saved, it turns into a normal InstanceCard
-*/
+/**
+ * @file
+ *
+ * @brief card used to create a new instance
+ *
+ * when the "create instance" button is pressed, this component is appended to
+ * the main overview. it's like the instance card, but with editable fields that
+ * are used to create the instance. once the instance is saved, it turns into a
+ * normal InstanceCard
+ *
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ */
 
 import React from 'react'
 

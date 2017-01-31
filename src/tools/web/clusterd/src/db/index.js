@@ -1,7 +1,12 @@
-/* db/index.js
-the main entry point for the database, this exports database functions from
-other files
-*/
+/**
+ * @file
+ *
+ * @brief the main entry point for the database
+ *
+ * this exports database functions from other files
+ *
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ */
 
 export {
   getInstances, createInstance, getInstance, updateInstance, deleteInstance,

@@ -1,6 +1,10 @@
-/* db/instances.js
-exports database operations regarding instances
-*/
+/**
+ * @file
+ *
+ * @brief exports database operations regarding instances
+ *
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ */
 
 import kdb from '../../../kdb'
 import { path, generateId, findById, updateById, deleteById } from './utils'

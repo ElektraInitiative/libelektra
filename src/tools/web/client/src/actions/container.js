@@ -1,6 +1,10 @@
-/* actions/container.js
-container (main overview) specific actions
-*/
+/**
+ * @file
+ *
+ * @brief container (main overview) specific actions
+ *
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ */
 
 export const ADD_INSTANCE = 'ADD_INSTANCE'
 export const UNADD_INSTANCE = 'UNADD_INSTANCE'

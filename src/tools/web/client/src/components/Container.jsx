@@ -1,8 +1,13 @@
-/* components/Container.jsx
-this is the main overview of all instances and clusters, it's a grid container
-showing clusters first, then instances. it also renders the CreateInstanceCard
-when the user presses the "create instance" button.
-*/
+/**
+ * @file
+ *
+ * @brief this is the main overview of all instances and clusters
+ *
+ * it's a grid container showing clusters first, then instances. it also renders
+ * the CreateInstanceCard when the user presses the "create instance" button.
+ *
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ */
 
 import React from 'react'
 

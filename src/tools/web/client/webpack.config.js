@@ -1,3 +1,11 @@
+/**
+ * @file
+ *
+ * @brief configuration file for webpack (used to build the application)
+ *
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ */
+
 var webpack = require('webpack')
 var path = require('path')
 

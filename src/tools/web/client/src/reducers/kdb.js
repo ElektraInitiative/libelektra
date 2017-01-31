@@ -1,6 +1,10 @@
-/* reducers/kdb.js
-handle actions related to operations on the Elektra key database (kdb)
-*/
+/**
+ * @file
+ *
+ * @brief handle actions related to operations on the Elektra key database (kdb)
+ *
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ */
 
 import { GET_KEY_SUCCESS, SET_KEY_REQUEST, DELETE_KEY_REQUEST } from '../actions'
 

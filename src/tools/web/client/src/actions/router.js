@@ -1,6 +1,10 @@
-/* actions/router.js
-router specific actions
-*/
+/**
+ * @file
+ *
+ * @brief router specific actions
+ *
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ */
 
 import { thunkCreator } from './utils'
 

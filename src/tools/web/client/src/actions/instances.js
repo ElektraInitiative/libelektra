@@ -1,6 +1,10 @@
-/* actions/instances.js
-instance specific actions
-*/
+/**
+ * @file
+ *
+ * @brief instance specific actions
+ *
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ */
 
 import { thunkCreator } from './utils'
 

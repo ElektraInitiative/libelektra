@@ -1,6 +1,10 @@
-/* components/InstanceCard.jsx
-this is the representation of an instance in the main overview
-*/
+/**
+ * @file
+ *
+ * @brief this is the representation of an instance in the main overview
+ *
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ */
 
 import React from 'react'
 

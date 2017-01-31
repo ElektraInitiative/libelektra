@@ -1,6 +1,10 @@
-/* reducers/instances.js
-handle actions related to instances
-*/
+/**
+ * @file
+ *
+ * @brief handle actions related to instances
+ *
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ */
 
 import {
   INSTANCES_SUCCESS, INSTANCE_DELETE_SUCCESS, INSTANCE_UPDATE_SUCCESS,

@@ -1,12 +1,15 @@
-/* components/TreeView.jsx
-interactive tree view to edit configurations of instances and clusters
-
-adapted from https://github.com/chenglou/react-treeview
-
- - added functionality to make a dynamic tree view that allows editing of tree
-   nodes with values (via `valueField`)
- - adjusted css class names
-*/
+/**
+ * @file
+ *
+ * @brief interactive tree view to edit configurations of instances and clusters
+ *
+ * adapted from https://github.com/chenglou/react-treeview
+ *  - added functionality to make a dynamic tree view that allows editing of tree
+ *    nodes with values (via `valueField`)
+ *  - adjusted css class names
+ *
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ */
 
 import React, { PropTypes } from 'react'
 

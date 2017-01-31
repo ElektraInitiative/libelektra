@@ -1,8 +1,13 @@
-/* components/App.jsx
-this is the main component of the application
-it renders the overview page or the configuration page, depending on the router
-state. it also renders the DevTools sidebar in development mode
-*/
+/**
+ * @file
+ *
+ * @brief this is the main component of the application
+ *
+ * it renders the overview page or the configuration page, depending on the
+ * router state. it also renders the DevTools sidebar in development mode.
+ *
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ */
 
 import React from 'react'
 

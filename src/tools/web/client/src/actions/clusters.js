@@ -1,6 +1,10 @@
-/* actions/clusters.js
-cluster specific actions
-*/
+/**
+ * @file
+ *
+ * @brief cluster specific actions
+ *
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ */
 
 import { thunkCreator } from './utils'
 

@@ -1,7 +1,12 @@
-/* index.js
-this is the main entry point of the application. here we fetch all data and
-initialize redux and react
-*/
+/**
+ * @file
+ *
+ * @brief this is the main entry point of the application
+ *
+ * here we fetch all data and initialize redux and react
+ *
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ */
 
 import React from 'react'
 import ReactDOM from 'react-dom'

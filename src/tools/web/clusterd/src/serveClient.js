@@ -1,9 +1,14 @@
-/* serveClient.js
-serve the client on the same port as the API
-in production mode, this serves static pre-built client files
-in development mode, this serves the client directly via webpack, this allows
-for hot reloading (automatically update components that got changed)
-*/
+/**
+ * @file
+ *
+ * @brief serve the client on the same port as the API
+ *
+ * in production mode, this serves static pre-built client files
+ * in development mode, this serves the client directly via webpack, this allows
+ * for hot reloading (automatically update components that got changed)
+ *
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ */
 
 import makeLog from './log'
 const { info } = makeLog('client')

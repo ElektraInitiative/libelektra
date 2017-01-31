@@ -1,6 +1,10 @@
-/* connector.js
-exports function stubs to access elektrad remotely
-*/
+/**
+ * @file
+ *
+ * @brief exports function stubs to access elektrad remotely
+ *
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ */
 
 import fetch from 'node-fetch'
 

@@ -1,7 +1,12 @@
-/* containers/ConnectedClusterCard.js
-connect the ClusterCard component to redux by mapping redux state and action
-creators to its properties
-*/
+/**
+ * @file
+ *
+ * @brief connect the ClusterCard component to redux
+ *
+ * by mapping redux state and action creators to its properties
+ *
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ */
 
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'

@@ -1,6 +1,10 @@
-/* actions/index.js
-this exports all available actions so they can be imported from ./actions
-*/
+/**
+ * @file
+ *
+ * @brief exports all available actions so they can be imported from ./actions
+ *
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ */
 
 export {
   fetchInstances, INSTANCES_REQUEST, INSTANCES_SUCCESS, INSTANCES_FAILURE,

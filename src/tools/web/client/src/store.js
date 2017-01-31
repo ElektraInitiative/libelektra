@@ -1,6 +1,10 @@
-/* store.js
-initialize the redux store
-*/
+/**
+ * @file
+ *
+ * @brief initialize the redux store
+ *
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ */
 
 import { createStore, applyMiddleware, compose } from 'redux'
 import { createMiddleware as createPromisesMiddleware } from 'redux-promises'

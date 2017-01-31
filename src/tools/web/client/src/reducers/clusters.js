@@ -1,6 +1,10 @@
-/* reducers/clusters.js
-handle actions related to clusters
-*/
+/**
+ * @file
+ *
+ * @brief handle actions related to clusters
+ *
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ */
 
 import {
   CLUSTERS_SUCCESS, CLUSTER_DELETE_SUCCESS, CLUSTER_UPDATE_SUCCESS,

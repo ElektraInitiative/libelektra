@@ -1,6 +1,10 @@
-/* app.js
-this is where the express app is being created and modules and routes are loaded
-*/
+/**
+ * @file
+ *
+ * @brief this is where the express app is being created and modules and routes are loaded
+ *
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ */
 
 import express from 'express'
 import bodyParser from 'body-parser'

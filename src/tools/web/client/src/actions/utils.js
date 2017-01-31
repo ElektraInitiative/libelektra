@@ -1,6 +1,10 @@
-/* actions/utils.js
-utility functions used in multiple actions
-*/
+/**
+ * @file
+ *
+ * @brief utility functions used in multiple actions
+ *
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ */
 
 // create a promise handler that:
 //  * emits the first action type (REQUESTED) when the promise is started
