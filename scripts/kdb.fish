@@ -14,7 +14,11 @@ function __fish_kdb_no_subcommand -d 'Check if the current commandline buffer do
 end
 
 function __fish_kdb_print_subcommands -d 'Print a list of kdb subcommands'
-    kdb list-commands $argv | awk '{if(NR>1)print}'
+    set -l commands (kdb list-commands $argv)
+    if contains -- $argv -v
+        set commands (printf '%s\n' $commands | awk '{if(NR>1)print}')
+    end
+    printf '%s\n' $commands
 end
 
 # -- Completions ---------------------------------------------------------------------------------------------------------------------------
