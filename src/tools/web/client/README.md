@@ -7,7 +7,7 @@ accesses the API that [`clusterd`](../clusterd/) provides.
 
 ## Running
 
-The elektra-web client is now served by `clusterd`, please check
+The elektra-web client is served by `clusterd`, please check
 [the `clusterd` README](../clusterd/README.md) for information on how to run it.
 
 
