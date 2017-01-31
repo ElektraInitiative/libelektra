@@ -1,3 +1,7 @@
+/* actions/kdb.js
+Elektra key database (kdb) specific actions, used in the tree view
+*/
+
 import { thunkCreator, encodePath } from './utils'
 
 // ~~~

@@ -1,3 +1,8 @@
+/* components/Menu.jsx
+this is the menu (top bar) of the application, it shows the current page and,
+if on the overview page, it will show buttons to create clusters and instances
+*/
+
 import React from 'react'
 
 import { Toolbar, ToolbarGroup, ToolbarTitle } from 'material-ui/Toolbar'

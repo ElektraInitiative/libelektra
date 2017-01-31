@@ -1,3 +1,8 @@
+/* containers/ConnectedInstanceCard.js
+connect the InstanceCard component to redux by mapping redux state and action
+creators to its properties
+*/
+
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 

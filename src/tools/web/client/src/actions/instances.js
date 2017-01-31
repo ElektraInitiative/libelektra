@@ -1,3 +1,7 @@
+/* actions/instances.js
+instance specific actions
+*/
+
 import { thunkCreator } from './utils'
 
 // ~~~

@@ -1,3 +1,7 @@
+/* actions/router.js
+router specific actions
+*/
+
 import { thunkCreator } from './utils'
 
 // ~~~

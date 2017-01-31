@@ -1,3 +1,7 @@
+/* actions/utils.js
+utility functions used in multiple actions
+*/
+
 // create a promise handler that:
 //  * emits the first action type (REQUESTED) when the promise is started
 //  * emits the second action type (RESOLVED) when everything works well

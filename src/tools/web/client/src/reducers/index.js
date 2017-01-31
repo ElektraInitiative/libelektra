@@ -1,3 +1,7 @@
+/* reducers/index.js
+this combines all reducers into one tree
+*/
+
 import { combineReducers } from 'redux'
 
 import { reducer as idleReducer } from 'redux-promises'

@@ -1,3 +1,8 @@
+/* components/TreeItem.jsx
+a single item in the interactive tree view, can have a text field to change
+the value, it also provides other operations (like deleting keys)
+*/
+
 import React from 'react'
 
 import TextField from 'material-ui/TextField'

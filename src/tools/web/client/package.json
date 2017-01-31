@@ -1,7 +1,7 @@
 {
   "name": "@elektra-web/client",
   "version": "1.0.0",
-  "description": "a web interface for clusterd (elektra cluster management server)",
+  "description": "a web interface for clusterd (Elektra cluster management server)",
   "keywords": [
     "elektra",
     "elektra-web",

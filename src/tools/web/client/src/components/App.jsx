@@ -1,3 +1,9 @@
+/* components/App.jsx
+this is the main component of the application
+it renders the overview page or the configuration page, depending on the router
+state. it also renders the DevTools sidebar in development mode
+*/
+
 import React from 'react'
 
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'

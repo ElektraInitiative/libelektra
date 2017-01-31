@@ -1,3 +1,7 @@
+/* actions/clusters.js
+cluster specific actions
+*/
+
 import { thunkCreator } from './utils'
 
 // ~~~

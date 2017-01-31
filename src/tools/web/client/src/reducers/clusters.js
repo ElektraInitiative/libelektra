@@ -1,3 +1,7 @@
+/* reducers/clusters.js
+handle actions related to clusters
+*/
+
 import {
   CLUSTERS_SUCCESS, CLUSTER_DELETE_SUCCESS, CLUSTER_UPDATE_SUCCESS,
   CREATE_CLUSTER_SUCCESS,

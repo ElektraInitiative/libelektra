@@ -1,3 +1,7 @@
+/* components/ErrorSnackbar.jsx
+this component shows errors in a small notification on the bottom of the UI
+*/
+
 import React from 'react'
 import Snackbar from 'material-ui/Snackbar'
 

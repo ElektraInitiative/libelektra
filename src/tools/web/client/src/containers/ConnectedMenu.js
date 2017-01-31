@@ -1,3 +1,8 @@
+/* containers/ConnectedMenu.js
+connect the Menu component to redux by mapping redux state and action creators
+to its properties
+*/
+
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 

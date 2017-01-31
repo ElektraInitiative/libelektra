@@ -1,3 +1,7 @@
+/* router.js
+a small router implementation using redux
+*/
+
 import {
   CONFIGURE_INSTANCE_SUCCESS, CONFIGURE_CLUSTER_SUCCESS, RETURN_TO_MAIN,
   DELETE_KEY_REQUEST,

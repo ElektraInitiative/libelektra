@@ -1,3 +1,8 @@
+/* index.js
+this is the main entry point of the application. here we fetch all data and
+initialize redux and react
+*/
+
 import React from 'react'
 import ReactDOM from 'react-dom'
 

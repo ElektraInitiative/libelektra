@@ -1,3 +1,7 @@
+/* reducers/kdb.js
+handle actions related to operations on the Elektra key database (kdb)
+*/
+
 import { GET_KEY_SUCCESS, SET_KEY_REQUEST, DELETE_KEY_REQUEST } from '../actions'
 
 const updateState = (state, { id, path, value }) => {

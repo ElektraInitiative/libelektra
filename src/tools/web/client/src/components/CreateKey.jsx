@@ -1,3 +1,7 @@
+/* components/CreateKey.jsx
+this component is used to create a new key on the configuration page
+*/
+
 import React from 'react'
 
 import TextField from 'material-ui/TextField'

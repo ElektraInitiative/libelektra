@@ -1,3 +1,8 @@
+/* reducers/error.js
+handle errors that happened in actions
+they will be shown in a small notification at the bottom of the UI
+*/
+
 import {
   INSTANCES_FAILURE, INSTANCE_UPDATE_FAILURE, INSTANCE_DELETE_FAILURE,
   CREATE_INSTANCE_FAILURE,

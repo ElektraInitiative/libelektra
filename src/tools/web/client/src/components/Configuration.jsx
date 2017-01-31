@@ -1,3 +1,8 @@
+/* components/Configuration.jsx
+this is the configuration page, it renders the interactive tree view and the
+CreateKey component to be able to create new keys in the Elektra key database
+*/
+
 import React from 'react'
 
 import { Card, CardHeader, CardText, CardActions } from 'material-ui/Card'

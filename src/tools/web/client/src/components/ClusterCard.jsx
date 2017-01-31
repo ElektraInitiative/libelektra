@@ -1,3 +1,7 @@
+/* components/ClusterCard.jsx
+this is the representation of a cluster in the main overview
+*/
+
 import React from 'react'
 
 import { Card, CardHeader, CardText } from 'material-ui/Card'

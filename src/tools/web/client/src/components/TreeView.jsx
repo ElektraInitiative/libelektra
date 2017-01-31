@@ -1,6 +1,6 @@
-// interactive tree view to edit configurations of instances and clusters
+/* components/TreeView.jsx
+interactive tree view to edit configurations of instances and clusters
 
-/*
 adapted from https://github.com/chenglou/react-treeview
 
  - added functionality to make a dynamic tree view that allows editing of tree
@@ -10,36 +10,27 @@ adapted from https://github.com/chenglou/react-treeview
 
 import React, { PropTypes } from 'react'
 
-const TreeView = React.createClass({
-  propTypes: {
-    collapsed: PropTypes.bool,
-    defaultCollapsed: PropTypes.bool,
-    nodeLabel: PropTypes.node.isRequired,
-    className: PropTypes.string,
-    itemClassName: PropTypes.string,
-  },
+export default class TreeView extends React.Component {
+  getInitialState () {
+    return { collapsed: this.props.defaultCollapsed }
+  }
 
-  getInitialState() {
-    return {collapsed: this.props.defaultCollapsed}
-  },
-
-  handleClick(...args) {
-    this.setState({collapsed: !this.state.collapsed})
+  handleClick (...args) {
+    this.setState({ collapsed: !this.state.collapsed })
     if (this.props.onClick) {
       this.props.onClick(...args)
     }
-  },
+  }
 
-  render() {
+  render () {
     const {
       collapsed = this.state.collapsed,
-      defaultCollapsed,
       className = '',
       itemClassName = '',
       nodeLabel,
       valueField,
       children,
-      ...rest,
+      ...rest
     } = this.props
 
     let arrowClassName = 'tree-view-arrow'
@@ -51,13 +42,13 @@ const TreeView = React.createClass({
 
     const arrow =
       children
-      ? <div {...rest} className={className + ' ' + arrowClassName} />
-      : null
+        ? <div {...rest} className={className + ' ' + arrowClassName} />
+        : null
 
     const fullItemClassName =
       children
-      ? 'tree-view-haschildren ' + itemClassName
-      : itemClassName
+        ? 'tree-view-haschildren ' + itemClassName
+        : itemClassName
 
     return (
       <div className="tree-view">
@@ -75,7 +66,16 @@ const TreeView = React.createClass({
         </div>
       </div>
     )
-  },
-})
+  }
+}
 
-export default TreeView
+TreeView.propTypes = {
+  collapsed: PropTypes.bool,
+  defaultCollapsed: PropTypes.bool,
+  nodeLabel: PropTypes.node.isRequired,
+  className: PropTypes.string,
+  itemClassName: PropTypes.string,
+  valueField: PropTypes.Component,
+  children: PropTypes.arrayOf(PropTypes.Component),
+  onClick: PropTypes.func,
+}

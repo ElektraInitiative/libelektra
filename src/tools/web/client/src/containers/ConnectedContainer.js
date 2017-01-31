@@ -1,3 +1,8 @@
+/* containers/ConnectedContainer.js
+connect the Container component to redux by mapping redux state and action
+creators to its properties
+*/
+
 import { connect } from 'react-redux'
 
 import Container from '../components/Container.jsx'

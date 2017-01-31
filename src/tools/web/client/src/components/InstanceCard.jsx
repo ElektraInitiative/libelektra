@@ -1,3 +1,7 @@
+/* components/InstanceCard.jsx
+this is the representation of an instance in the main overview
+*/
+
 import React from 'react'
 
 import { Card, CardHeader, CardText } from 'material-ui/Card'

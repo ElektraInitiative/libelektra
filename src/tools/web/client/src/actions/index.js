@@ -1,3 +1,7 @@
+/* actions/index.js
+this exports all available actions so they can be imported from ./actions
+*/
+
 export {
   fetchInstances, INSTANCES_REQUEST, INSTANCES_SUCCESS, INSTANCES_FAILURE,
   updateInstance, INSTANCE_UPDATE_REQUEST, INSTANCE_UPDATE_SUCCESS, INSTANCE_UPDATE_FAILURE,

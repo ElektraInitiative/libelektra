@@ -11,6 +11,7 @@ const plugins = [
   }),
 ]
 
+// enable hot-reloading in development environment
 if (process.env.NODE_ENV !== 'production') {
   entry.push('webpack/hot/only-dev-server') // "only" prevents reload on syntax errors
   plugins.push(new webpack.HotModuleReplacementPlugin())

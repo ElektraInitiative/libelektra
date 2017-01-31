@@ -1,3 +1,7 @@
+/* reducers/instances.js
+handle actions related to instances
+*/
+
 import {
   INSTANCES_SUCCESS, INSTANCE_DELETE_SUCCESS, INSTANCE_UPDATE_SUCCESS,
   CREATE_INSTANCE_SUCCESS,

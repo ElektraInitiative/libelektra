@@ -1,3 +1,8 @@
+/* containers/ConnectedErrorSnackbar.js
+connect the ErrorSnackbar component to redux by mapping redux state and action
+creators to its properties
+*/
+
 import { connect } from 'react-redux'
 
 import ErrorSnackbar from '../components/ErrorSnackbar.jsx'

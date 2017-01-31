@@ -1,3 +1,7 @@
+/* actions/container.js
+container (main overview) specific actions
+*/
+
 export const ADD_INSTANCE = 'ADD_INSTANCE'
 export const UNADD_INSTANCE = 'UNADD_INSTANCE'
 

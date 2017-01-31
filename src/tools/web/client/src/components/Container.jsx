@@ -1,3 +1,9 @@
+/* components/Container.jsx
+this is the main overview of all instances and clusters, it's a grid container
+showing clusters first, then instances. it also renders the CreateInstanceCard
+when the user presses the "create instance" button.
+*/
+
 import React from 'react'
 
 import { Grid, Cell } from 'rgx'

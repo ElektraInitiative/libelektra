@@ -1,3 +1,7 @@
+/* store.js
+initialize the redux store
+*/
+
 import { createStore, applyMiddleware, compose } from 'redux'
 import { createMiddleware as createPromisesMiddleware } from 'redux-promises'
 
@@ -18,7 +22,7 @@ const enhancer = process.env.NODE_ENV === 'production'
 export default function configureStore (initialState) {
   const store = createStore(reducer, initialState, enhancer)
 
-  // hot reload reducers
+  // hot-reload reducers in development mode
   if (process.env.NODE_ENV !== 'production' && module.hot) {
     module.hot.accept('./reducers', () =>
       store.replaceReducer(require('./reducers').default)

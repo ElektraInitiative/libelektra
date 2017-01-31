@@ -1,3 +1,7 @@
+/* reducers/container.js
+handle actions in the main overview (container of instances and clusters)
+*/
+
 import {
   ADD_INSTANCE, UNADD_INSTANCE, ADD_CLUSTER, UNADD_CLUSTER,
   CREATE_INSTANCE_SUCCESS, CREATE_CLUSTER_SUCCESS,

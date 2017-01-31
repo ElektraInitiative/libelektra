@@ -1,3 +1,10 @@
+/* components/CreateInstanceCard.jsx
+when the "create instance" button is pressed, this component is appended to the
+main overview. it's like the instance card, but with editable fields that are
+used to create the instance.
+once the instance is saved, it turns into a normal InstanceCard
+*/
+
 import React from 'react'
 
 import { Card, CardHeader, CardText } from 'material-ui/Card'
