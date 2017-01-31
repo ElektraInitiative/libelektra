@@ -1,4 +1,7 @@
-# elektrad
+# elektra-web/elektrad
+
+A server that provides an [HTTP API](http://docs.elektrad.apiary.io/) to access
+Elektra remotely, built using [express](https://expressjs.com/).
 
 
 ## Installation
@@ -26,6 +29,9 @@ npm run start:dev
 ```
 
 
-## Accessing the API
+## API
 
-by default, elektrad runs on http://localhost:33333
+By default, `elektrad` runs on http://localhost:33333
+
+ - API documentation: http://docs.elektrad.apiary.io/
+ - API blueprint: [elektrad.apib](http://tree.libelektra.org/doc/api_blueprints/elektrad.apib)
