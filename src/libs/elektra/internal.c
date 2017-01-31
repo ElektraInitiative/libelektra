@@ -258,12 +258,14 @@ void * elektraCalloc (size_t size)
 	return ret;
 }
 
-/**Free memory of elektra or its backends.
+/**Free memory of Elektra or its backends.
  *
- *@param ptr the pointer to free
+ * @param ptr the pointer to free
+ *
+ * If ptr is NULL, no operation is performed.
  *
  * @ingroup internal
- *@see elektraMalloc
+ * @see elektraMalloc
  */
 void elektraFree (void * ptr)
 {
