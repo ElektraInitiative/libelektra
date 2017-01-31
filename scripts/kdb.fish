@@ -20,7 +20,7 @@ end
 function __fish_kdb_print_subcommands -d 'Print a list of kdb subcommands'
     set -l commands (kdb list-commands $argv)
     if contains -- $argv -v
-        set commands (printf '%s\n' $commands | awk '{if(NR>1)print}')
+        set commands (printf '%s\n' $commands | awk '{if(NR>1)print}' | sed 's/\.$//')
     end
     printf '%s\n' $commands
 end
