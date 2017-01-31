@@ -1,3 +1,7 @@
+/* db/instances.js
+exports database operations regarding instances
+*/
+
 import kdb from '../../../kdb'
 import { path, generateId, findById, updateById, deleteById } from './utils'
 

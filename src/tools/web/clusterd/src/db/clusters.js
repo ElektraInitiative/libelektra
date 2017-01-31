@@ -1,3 +1,7 @@
+/* db/clusters.js
+exports database operations regarding clusters
+*/
+
 import kdb from '../../../kdb'
 import { path, generateId, findById, updateById, deleteById } from './utils'
 

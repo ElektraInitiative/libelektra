@@ -1,3 +1,10 @@
+/* index.js
+the main entry point, this file gets executed when clusterd is started
+it will detect if Elektra (with the yajl plugin) is installed and show an error
+if that isn't the case. otherwise, it will show version information from Elektra
+and initialize clusterd
+*/
+
 import makeLog from './log'
 const { info, error } = makeLog()
 
@@ -25,10 +32,7 @@ getVersions()
             error(`missing dependencies`)
             error(`the yajl plugin is not installed for libelektra`)
             process.exit(1)
-          } else {
-            error(`kdb error`)
-            error(err.message)
-          }
+          } else throw err // re-throw error
         })
     }
   })

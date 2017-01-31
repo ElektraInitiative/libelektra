@@ -1,3 +1,7 @@
+/* connector.js
+exports function stubs to access elektrad remotely
+*/
+
 import fetch from 'node-fetch'
 
 const encodePath = (path) =>

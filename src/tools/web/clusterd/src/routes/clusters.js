@@ -1,3 +1,8 @@
+/* routes/clusters.js
+this exports a function that gets passed the express app as an argument, which
+is used to define the routes
+*/
+
 import makeLog from '../log'
 const { error } = makeLog('routes:clusters')
 

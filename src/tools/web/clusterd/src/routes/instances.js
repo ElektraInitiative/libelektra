@@ -1,3 +1,8 @@
+/* routes/instances.js
+this exports a function that gets passed the express app as an argument, which
+is used to define the routes
+*/
+
 import { successResponse, errorResponse } from './utils'
 
 import {

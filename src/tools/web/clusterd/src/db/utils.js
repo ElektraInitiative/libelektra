@@ -1,3 +1,7 @@
+/* db/utils.js
+utility functions used in the database layer
+*/
+
 export { v4 as generateId } from 'node-uuid'
 
 import { ROOT_PATH } from '../config'

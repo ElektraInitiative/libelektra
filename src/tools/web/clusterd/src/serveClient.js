@@ -1,3 +1,10 @@
+/* serveClient.js
+serve the client on the same port as the API
+in production mode, this serves static pre-built client files
+in development mode, this serves the client directly via webpack, this allows
+for hot reloading (automatically update components that got changed)
+*/
+
 import makeLog from './log'
 const { info } = makeLog('client')
 
