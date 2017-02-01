@@ -16,7 +16,7 @@ ctest --output-on-failure -LE external
 
 # rotate backup of previous website
 rm -rf /usr/local/share/elektra/tool_data_backup
-mv /usr/local/share/elektra/tool_data /usr/local/share/elektra/tool_data_backup || /bin/true
+cp -ra /usr/local/share/elektra/tool_data /usr/local/share/elektra/tool_data_backup
 
 # if tests were ok, we can install
 make install
