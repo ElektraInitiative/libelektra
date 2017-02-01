@@ -14,8 +14,11 @@
 import React, { PropTypes } from 'react'
 
 export default class TreeView extends React.Component {
-  getInitialState () {
-    return { collapsed: this.props.defaultCollapsed }
+  constructor (props) {
+    super(props)
+    this.state = {
+      collapsed: this.props.defaultCollapsed,
+    }
   }
 
   handleClick (...args) {
@@ -33,6 +36,7 @@ export default class TreeView extends React.Component {
       nodeLabel,
       valueField,
       children,
+      defaultCollapsed, // eslint-disable-line
       ...rest
     } = this.props
 
@@ -56,7 +60,7 @@ export default class TreeView extends React.Component {
     return (
       <div className="tree-view">
         <div className="tree-view-item">
-          <span className={fullItemClassName} onClick={children && this.handleClick}>
+          <span className={fullItemClassName} onClick={(args) => children && this.handleClick(args)}>
             {arrow}
             {nodeLabel}
           </span>
@@ -78,7 +82,7 @@ TreeView.propTypes = {
   nodeLabel: PropTypes.node.isRequired,
   className: PropTypes.string,
   itemClassName: PropTypes.string,
-  valueField: PropTypes.Component,
-  children: PropTypes.arrayOf(PropTypes.Component),
+  valueField: PropTypes.element,
+  children: PropTypes.arrayOf(PropTypes.element),
   onClick: PropTypes.func,
 }
