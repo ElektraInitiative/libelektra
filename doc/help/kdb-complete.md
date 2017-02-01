@@ -3,16 +3,19 @@ kdb-complete(1) -- Show suggestions how to complete a given path
 
 ## SYNOPSIS
 
-`kdb complete <path>`  
+`kdb complete [path]`  
 
 Where `path` is the path for which the user would like to receive completion suggestion.
+If `path` is not specified, it will show every possible completion. Its synonymous to calling `kdb complete ""`.
 
 ## DESCRIPTION
 
 Show suggestions how the current name could be completed.
 Suggestions will include existing key names, path segments of existing key names, namespaces and mountpoints.
-Additionally, the output will indicate wheter the given path is a node or a leaf in the hierarchy of keys,
+Additionally, the output will indicate whether the given path is a node or a leaf in the hierarchy of keys,
 nodes end with '/' as opposed to leaves.
+It will also work for cascading keys, and will additionally display a cascading key's namespace in the output
+to indicate from which namespace this suggestion originates from.
 
 ## OPTIONS
 
@@ -34,6 +37,15 @@ nodes end with '/' as opposed to leaves.
   Give debug information.
 
 ## EXAMPLES
+
+To show all possible completions:
+`kdb complete`
+
+To show namespace suggestions:
+`kdb complete --max-depth=1`
+
+To show all possible completions for a cascading key:
+`kdb complete /te`
 
 To show all possible completions for `user/te`:  
 `kdb complete user/te`

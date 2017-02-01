@@ -50,6 +50,7 @@ int CompleteCommand::execute (const Cmdline & cl)
 
 	// For namespace completion, we get all available keys via / as the actual root and filter via the argument
 	const bool hasArgument = cl.arguments.size () > 0;
+	// Without specifying an argument, it will show every possible completion, like calling kdb complete ""
 	const string originalInput = hasArgument ? cl.arguments[cl.arguments.size () - 1] : "";
 	const Key originalUnprocessedKey (originalInput, KEY_END);
 	KDB kdb;
@@ -241,10 +242,10 @@ void CompleteCommand::printResult (const pair<Key, pair<int, int>> & current, co
 	cout << current.first;
 	if (current.second.first > 1)
 	{
-		cout << "/ ";
+		cout << "/";
 		if (verbose)
 		{
-			cout << "node " << to_string (current.second.first - 1);
+			cout << " node " << to_string (current.second.first - 1);
 		}
 	}
 	else if (verbose)
