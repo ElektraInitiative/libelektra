@@ -15,6 +15,9 @@ end
 
 function __fish_kdb_needs_namespace -d 'Check if the current command needs a namespace completion'
     __input_includes ls get set
+function __fish_kdb_option_verbose -d 'Check if the current command allows the option verbose'
+    __input_includes (__fish_kdb_print_subcommands)
+    and not __input_includes '-v' '--verbose'
 end
 
 function __fish_kdb_print_subcommands -d 'Print a list of kdb subcommands'
@@ -32,5 +35,15 @@ end
 
 # -- Completions ---------------------------------------------------------------------------------------------------------------------------
 
+# =============
+# = Arguments =
+# =============
+
 complete -c kdb -n '__fish_kdb_no_subcommand' -x -a '(__fish_kdb_print_subcommands -v)'
 complete -c kdb -n '__fish_kdb_needs_namespace' -x -a '(__fish_kdb_print_namespaces)'
+
+# ===========
+# = Options =
+# ===========
+
+complete -c kdb -n '__fish_kdb_option_verbose' -l 'verbose' -s 'v' -d 'Explain what is happening'
