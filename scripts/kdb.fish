@@ -13,8 +13,25 @@ function __fish_kdb_no_subcommand -d 'Check if the current commandline buffer do
     not __input_includes (__fish_kdb_print_subcommands)
 end
 
+function __fish_kdb_is_namespace -d 'Check if the given argument is a namespace'
+    string match -r -- '^(dir|proc|spec|system|user|\/).*' "$argv" >/dev/null
+end
+
 function __fish_kdb_needs_namespace -d 'Check if the current command needs a namespace completion'
-    __input_includes ls get set
+    not __input_includes ls get set
+    and return 1
+
+    __fish_kdb_is_namespace (commandline -t)
+    and return 0
+
+    for input in (commandline -opc)
+        __fish_kdb_is_namespace $input
+        and return 1
+    end
+
+    return 0
+end
+
 function __fish_kdb_option_verbose -d 'Check if the current command allows the option verbose'
     __input_includes (__fish_kdb_print_subcommands)
     and not __input_includes '-v' '--verbose'
