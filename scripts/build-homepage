@@ -12,7 +12,7 @@ make -j 3
 
 # test the applications (TODO: external fails?)
 #make run_all
-ctest --output-on-failure -LE external
+ctest --output-on-failure -E external
 
 # rotate backup of previous website
 rm -rf /usr/local/share/elektra/tool_data_backup
