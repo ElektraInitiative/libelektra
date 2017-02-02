@@ -65,11 +65,24 @@ function __fish_kdb_add_option -d 'Add suggestions for a certain option to multi
     set -l completion_function $argv[1]
     set -l opt_long $argv[2]
     set -l opt_short $argv[3]
-    set -l description $argv[4..-1]
+    set -l description $argv[4]
 
-    set completion_function "$completion_function; and not __input_includes --$opt_long -$opt_short"
+    test (count $argv) -gt 4
+    and set -l arguments $argv[5..-1]
 
-    complete -c kdb -n "$completion_function" -l $opt_long -s $opt_short -d "$description"
+    if set -q arguments
+        set completion_function "if $completion_function
+                                     set -l input (commandline -op)
+                                     string match -r -- '--$opt_long|-$opt_short' \"\$input[-2..-1]\"
+                                     or not __input_includes --$opt_long -$opt_short
+                                 else
+                                     false
+                                 end"
+        complete -c kdb -x -n "$completion_function" -l $opt_long -s $opt_short -a $arguments -d "$description"
+    else
+        set completion_function "$completion_function; and not __input_includes --$opt_long -$opt_short"
+        complete -c kdb -f -n "$completion_function" -l $opt_long -s $opt_short -d "$description"
+    end
 end
 
 # ===========
@@ -105,3 +118,6 @@ __fish_kdb_add_option '__fish_kdb_subcommand_supports_common_options' 'help' 'H'
 __fish_kdb_add_option '__fish_kdb_subcommand_supports_option_null' 'null' '0' 'Use binary 0 termination.'
 __fish_kdb_add_option '__fish_kdb_subcommand_supports_option_verbose' 'verbose' 'v' 'Explain what is happening'
 __fish_kdb_add_option '__fish_kdb_subcommand_supports_common_options' 'version' 'V' 'Print version info'
+
+set -l description 'Use a different profile for kdb configuration'
+__fish_kdb_add_option '__fish_kdb_subcommand_supports_common_options' 'profile' 'p' "$description" 'current'
