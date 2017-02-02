@@ -591,6 +591,25 @@ TEST (test_contextual_basic, evaluate)
 	ASSERT_EQ (c.evaluate ("/%language%/%country%/%dialect%/test"), "/german/%/%/test");
 	ASSERT_EQ (c.evaluate ("/%language country dialect%/test"), "/%german/test");
 
+	c.activate<LanguageGermanLayer> ();
+	c.activate<CountryGermanyLayer> ();
+	ASSERT_EQ (c["language"], "german");
+	ASSERT_EQ (c["country"], "germany");
+	ASSERT_EQ (c["dialect"], "");
+	ASSERT_EQ (c.evaluate ("/%language%/%country%/%dialect%/test"), "/german/germany/%/test");
+	ASSERT_EQ (c.evaluate ("/%language country dialect%/test"), "/%german%germany/test");
+	c.deactivate<CountryGermanyLayer> ();
+
+	c.activate<LanguageGermanLayer> ();
+	c.activate<KeyValueLayer> ("country", "%");
+	ASSERT_EQ (c["language"], "german");
+	ASSERT_EQ (c["country"], "%");
+	ASSERT_EQ (c["dialect"], "");
+	// TODO: Escaping not implemented
+	// ASSERT_EQ (c.evaluate ("/%language%/%country%/%dialect%/test"), "/german/\\%/%/test");
+	// ASSERT_EQ (c.evaluate ("/%language country dialect%/test"), "/%german%\\%/test");
+	c.deactivate<KeyValueLayer> ("country", "%");
+
 	c.deactivate<LanguageGermanLayer> ();
 	ASSERT_EQ (c["language"], "");
 	ASSERT_EQ (c["country"], "");
