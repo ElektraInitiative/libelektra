@@ -14,6 +14,15 @@ function __fish_kdb_subcommand_includes -d 'Check if the current kdb subcommand 
     contains -- "$subcommand" $argv
 end
 
+function __fish_kdb_subcommand_does_not_include -d 'Check if the current kdb subcommand does not include any of the given subcommands'
+    set -l subcommand (__fish_kdb_subcommand)
+
+    test -z $subcommand
+    and return 1
+
+    not contains -- "$subcommand" $argv
+end
+
 function __fish_kdb_subcommand -d 'Check for and print the current kdb subcommand'
     set -l input (commandline -op)
 
@@ -95,11 +104,11 @@ end
 
 function __fish_kdb_subcommand_supports_option_verbose -d 'Check if the current subcommand supports the option verbose'
     set -l commands export file getmeta global-mount gmount info mount qt-gui remount rm sget shell test vset help list-tools qt-gui
-    not __fish_kdb_subcommand_includes $commands
+    __fish_kdb_subcommand_does_not_include $commands
 end
 
 function __fish_kdb_subcommand_supports_common_options -d 'Check if the current subcommand supports common options'
-    not __fish_kdb_subcommand_includes help list-tools qt-gui
+    __fish_kdb_subcommand_does_not_include help list-tools qt-gui
 end
 
 # -- Completions ---------------------------------------------------------------------------------------------------------------------------
