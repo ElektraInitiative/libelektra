@@ -40,20 +40,32 @@ echo -n "Old PID was: "
 cat /run/elektra-rest-backend.pid || /bin/true
 echo
 
-# then restart the backend, succeed if it was not started before..
+
+IP=`kdb sget /sw/elektra/restbackend/#0/current/cppcms/service/ip 127.0.0.1`
+PORT=`kdb sget /sw/elektra/restbackend/#0/current/cppcms/service/port 8080`
+
+echo "The backend should running on $IP:$PORT"
+
+netstat -p --listen --numeric-ports
+
+
+# then start the backend; succeed if it was not started before..
 kdb stop-rest-backend || /bin/true
 
 # avoid 'address already in use'
-while netstat --listen --numeric-ports | grep "LISTEN" | grep "0.0.0.0:8080"
+while netstat -p --listen --numeric-ports | grep "$IP:$PORT"
 do
 	sleep 1  # keep waiting (=downtime) short
 done
 
+# now start again
 kdb run-rest-backend
 
 echo -n "New PID is: "
 cat /run/elektra-rest-backend.pid || /bin/true
 echo
+
+netstat -p --listen --numeric-ports
 
 # we have to make sure the backend had time to start before we can go on
 # (necessary because the command `kdb run-rest-backend` runs in the background)
