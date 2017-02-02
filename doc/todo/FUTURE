@@ -14,6 +14,10 @@ no "binary" metadata hack within API:
 	just provide keyGetValue and keyGetValueSize
 	no fixed strings when GetString on binary
 
+backslash:
+	allow \ at end of keynames?
+	Autoescape on addBaseName?
+
 remove old metadata get/set
 
 remove null ptr checks? (see decision)
