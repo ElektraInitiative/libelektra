@@ -1,5 +1,7 @@
 #!/bin/bash
 
+. "$(dirname "$0")/include-common"
+
 WorkingDir="@CMAKE_INSTALL_PREFIX@/@TARGET_TOOL_EXEC_FOLDER@/"
 TriggerPort=65432
 MountPoint="user/prefs"

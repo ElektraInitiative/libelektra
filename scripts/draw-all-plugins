@@ -1,10 +1,9 @@
 #!/bin/sh
 
+. "$(dirname "$0")/include-common"
+
 set -x
 
-SELF=$(readlink -f "$0")
-SCRIPTS=$(dirname "$SELF")
-SOURCE=$(dirname "$SCRIPTS")
 OUTPUT=$SOURCE/doc/images/plugins.dot
 
 echo "strict digraph G {" > $OUTPUT
@@ -13,11 +12,11 @@ echo "strict digraph G {" > $OUTPUT
 echo "	splines = true;" >> $OUTPUT
 echo
 #echo "	plugin [shape=Mdiamond];" >> $OUTPUT
-for i in `ls src/plugins`
+for i in `ls $SOURCE/src/plugins`
 do
-	if [ -d "src/plugins/$i" ]
+	if [ -d "$SOURCE/src/plugins/$i" ]
 	then
-		r="src/plugins/$i/README.md"
+		r="$SOURCE/src/plugins/$i/README.md"
 		p=`grep "^- infos/provides" "$r" | cut -f 2 -d =`
 		if [ "$p" ]
 		then
