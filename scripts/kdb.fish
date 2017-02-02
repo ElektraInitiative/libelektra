@@ -69,7 +69,7 @@ end
 
 function __fish_kdb_print_namespaces -d 'Print a list of possible namespace completions'
     set -l namespace (commandline -ct)
-    kdb complete --max-depth=1 "$namespace"
+    kdb complete --max-depth=1 "$namespace" | string match -vr '(dir|proc|spec|user)$'
 end
 
 # -- Completions ---------------------------------------------------------------------------------------------------------------------------
