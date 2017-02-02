@@ -67,11 +67,6 @@ echo
 
 netstat -tlpen
 
-# we have to make sure the backend had time to start before we can go on
-# (necessary because the command `kdb run-rest-backend` runs in the background)
-# everything is online already, so no hurry here
-sleep 60
-
 # and finally re-compile the frontend
 # - the old frontend is still alive and does not get taken offline (not necessary)
 # - the configuration script does also take care of deleting old files,
