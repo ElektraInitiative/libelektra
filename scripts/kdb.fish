@@ -77,9 +77,13 @@ function __fish_kdb_add_option -d 'Add suggestions for a certain option to multi
     set -l description $argv[4]
 
     test (count $argv) -gt 4
-    and set -l arguments $argv[5..-1]
+    and set -l arguments $argv[5]
 
     if set -q arguments
+        set -l exclusion '-x'
+        test (count $argv) -gt 5
+        and set -l exclusion $argv[6]
+
         set completion_function "if $completion_function
                                      set -l input (commandline -op)
                                      string match -r -- '--$opt_long|-$opt_short' \"\$input[-2..-1]\"
@@ -87,7 +91,7 @@ function __fish_kdb_add_option -d 'Add suggestions for a certain option to multi
                                  else
                                      false
                                  end"
-        complete -c kdb -x -n "$completion_function" -l $opt_long -s $opt_short -a $arguments -d "$description"
+        complete -c kdb $exclusion -n "$completion_function" -l $opt_long -s $opt_short -a $arguments -d "$description"
     else
         set completion_function "$completion_function; and not __input_includes --$opt_long -$opt_short"
         complete -c kdb -f -n "$completion_function" -l $opt_long -s $opt_short -d "$description"
@@ -97,6 +101,10 @@ end
 # ===========
 # = Options =
 # ===========
+
+function __fish_kdb_subcommand_supports_option_color -d 'Check if the current subcommand supports colored output'
+    __fish_kdb_subcommand_does_not_include complete help list-tools qt-gui
+end
 
 function __fish_kdb_subcommand_supports_option_null -d 'Check if the current subcommand supports binary null termination'
     __fish_kdb_subcommand_includes complete list list-commands ls lsmeta mount
@@ -109,6 +117,12 @@ end
 
 function __fish_kdb_subcommand_supports_common_options -d 'Check if the current subcommand supports common options'
     __fish_kdb_subcommand_does_not_include help list-tools qt-gui
+end
+
+function __fish_kdb_print_option_color_arguments -d 'Print possible arguments for the option color'
+    echo -e 'always\tPrint colored output'
+    echo -e 'auto\tAuto detect if colored output makes sense'
+    echo -e 'never\tDo not print colored output'
 end
 
 # -- Completions ---------------------------------------------------------------------------------------------------------------------------
@@ -132,3 +146,7 @@ __fish_kdb_add_option "not __fish_kdb_subcommand; or __fish_kdb_subcommand_suppo
 
 set -l description 'Use a different profile for kdb configuration'
 __fish_kdb_add_option '__fish_kdb_subcommand_supports_common_options' 'profile' 'p' "$description" 'current'
+
+set -l description 'Print never/auto(default)/always colored output'
+set -l completion_function '__fish_kdb_subcommand_supports_option_color'
+__fish_kdb_add_option "$completion_function" 'color' 'C' "$description" '(__fish_kdb_print_option_color_arguments)' -f
