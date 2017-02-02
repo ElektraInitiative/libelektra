@@ -94,11 +94,12 @@ function __fish_kdb_subcommand_supports_option_null -d 'Check if the current sub
 end
 
 function __fish_kdb_subcommand_supports_option_verbose -d 'Check if the current subcommand supports the option verbose'
-    not __fish_kdb_subcommand_includes export file getmeta global-mount gmount info mount qt-gui remount rm sget shell test vset help qt-gui
+    set -l commands export file getmeta global-mount gmount info mount qt-gui remount rm sget shell test vset help list-tools qt-gui
+    not __fish_kdb_subcommand_includes $commands
 end
 
 function __fish_kdb_subcommand_supports_common_options -d 'Check if the current subcommand supports common options'
-    not __fish_kdb_subcommand_includes help qt-gui
+    not __fish_kdb_subcommand_includes help list-tools qt-gui
 end
 
 # -- Completions ---------------------------------------------------------------------------------------------------------------------------
