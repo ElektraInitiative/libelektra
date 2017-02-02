@@ -52,8 +52,11 @@ function __fish_kdb_needs_namespace -d 'Check if the current command needs a nam
 end
 
 function __fish_kdb_option_verbose -d 'Check if the current command allows the option verbose'
-    __input_includes (__fish_kdb_print_subcommands)
-    and not __input_includes '-v' '--verbose'
+    set subcommand (__fish_kdb_subcommand)
+    contains -- "$subcommand" export file getmeta global-mount gmount info mount qt-gui remount rm sget shell test vset help
+    and return 1
+
+    not __input_includes '-v' '--verbose'
 end
 
 function __fish_kdb_print_subcommands -d 'Print a list of kdb subcommands'
