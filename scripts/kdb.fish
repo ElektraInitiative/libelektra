@@ -21,7 +21,7 @@ function __fish_kdb_subcommand -d 'Check for and print the current kdb subcomman
     and return 1
 
     set -l subcommand $input[2]
-    if contains -- $subcommand (__fish_kdb_print_subcommands) then
+    if contains -- $subcommand (__fish_kdb_print_subcommands)
         echo "$subcommand"
         return 0
     end
