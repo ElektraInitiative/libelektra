@@ -1,7 +1,7 @@
 # -- Functions -----------------------------------------------------------------------------------------------------------------------------
 
 function __input_includes -d 'Check if the current command buffer contains one of the given values'
-    for input in (commandline -opc)
+    for input in (commandline -op)
         if contains -- $input $argv
             return 0
         end
