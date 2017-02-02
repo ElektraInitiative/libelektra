@@ -241,126 +241,169 @@ int mountDefault (KDB * kdb, KeySet * modules, int inFallback, Key * errorKey)
 	return 0;
 }
 
+KeySet * elektraMountGlobalsGetConfig (Key * cur, KeySet * global)
+{
+	// putting together the plugins configuration KeySet.
+	Key * sysConfigCutKey = keyDup (cur);
+	keyAddBaseName (sysConfigCutKey, "system");
+	Key * usrConfigCutKey = keyDup (cur);
+	keyAddBaseName (usrConfigCutKey, "user");
+	KeySet * sysConfigKS = ksCut (global, sysConfigCutKey);
+	KeySet * usrConfigKS = ksCut (global, usrConfigCutKey);
+	KeySet * renamedSysConfig = elektraRenameKeys (sysConfigKS, "system");
+	KeySet * renamedUsrConfig = elektraRenameKeys (usrConfigKS, "user");
+	ksDel (sysConfigKS);
+	ksDel (usrConfigKS);
+	keyDel (usrConfigCutKey);
+	keyDel (sysConfigCutKey);
+	KeySet * config = ksNew (0, KS_END);
+	ksAppend (config, renamedSysConfig);
+	ksAppend (config, renamedUsrConfig);
+	ksDel (renamedSysConfig);
+	ksDel (renamedUsrConfig);
+
+	return config;
+}
+
+Key * elektraMountGlobalsFindPlugin (KeySet * referencePlugins, Key * cur)
+{
+	Key * refKey;
+	Key * searchKey = keyNew ("/", KEY_END);
+	keyAddBaseName (searchKey, keyString (cur));
+	refKey = ksLookup (referencePlugins, searchKey, 0);
+	keyDel (searchKey);
+	return refKey;
+}
+
+Plugin * elektraMountGlobalsLoadPlugin (KeySet * referencePlugins, Key * cur, KeySet * global, KeySet * modules, Key * errorKey)
+{
+	Plugin * plugin;
+	Key * refKey = elektraMountGlobalsFindPlugin (referencePlugins, cur);
+
+	if (refKey)
+	{
+		// plugin already loaded, just reference it
+		plugin = *(Plugin **)keyValue (refKey);
+		plugin->refcounter += 1;
+	}
+	else
+	{
+		KeySet * config = elektraMountGlobalsGetConfig (cur, global);
+		const char * pluginName = keyString (cur);
+		// loading the new plugin
+		plugin = elektraPluginOpen (pluginName, modules, ksDup (config), errorKey);
+		if (!plugin)
+		{
+			ELEKTRA_ADD_WARNING (64, errorKey, pluginName);
+			return NULL;
+		}
+
+		// saving the plugin reference to avoid having to load the plugin multiple times
+		refKey = keyNew ("/", KEY_BINARY, KEY_SIZE, sizeof (Plugin *), KEY_VALUE, &plugin, KEY_END);
+		keyAddBaseName (refKey, keyString (cur));
+		ksAppendKey (referencePlugins, refKey);
+		keyDel (refKey);
+		ksDel (config);
+	}
+
+	return plugin;
+}
+
+KeySet * elektraDefaultGlobalConfig ()
+{
+	return ksNew (
+		18, keyNew ("system/elektra/globalplugins", KEY_VALUE, "", KEY_END),
+		keyNew ("system/elektra/globalplugins/postcommit", KEY_VALUE, "list", KEY_END),
+		keyNew ("system/elektra/globalplugins/postcommit/user", KEY_VALUE, "list", KEY_END),
+		keyNew ("system/elektra/globalplugins/postcommit/user/placements", KEY_VALUE, "", KEY_END),
+		keyNew ("system/elektra/globalplugins/postcommit/user/placements/error", KEY_VALUE, "prerollback postrollback", KEY_END),
+		keyNew ("system/elektra/globalplugins/postcommit/user/placements/get", KEY_VALUE, "pregetstorage postgetstorage", KEY_END),
+		keyNew ("system/elektra/globalplugins/postcommit/user/placements/set", KEY_VALUE, "presetstorage precommit postcommit",
+			KEY_END),
+		keyNew ("system/elektra/globalplugins/postcommit/user/plugins", KEY_VALUE, "", KEY_END),
+		keyNew ("system/elektra/globalplugins/postcommit/user/plugins/#0", KEY_VALUE, "spec", KEY_END),
+		keyNew ("system/elektra/globalplugins/postcommit/user/plugins/#0/placements", KEY_VALUE, "spec", KEY_END),
+		keyNew ("system/elektra/globalplugins/postcommit/user/plugins/#0/placements/get", KEY_VALUE, "postgetstorage", KEY_END),
+		keyNew ("system/elektra/globalplugins/postcommit/user/plugins/#0/placements/set", KEY_VALUE, "presetstorage", KEY_END),
+		keyNew ("system/elektra/globalplugins/postgetstorage", KEY_VALUE, "list", KEY_END),
+		keyNew ("system/elektra/globalplugins/postrollback", KEY_VALUE, "list", KEY_END),
+		keyNew ("system/elektra/globalplugins/precommit", KEY_VALUE, "list", KEY_END),
+		keyNew ("system/elektra/globalplugins/pregetstorage", KEY_VALUE, "list", KEY_END),
+		keyNew ("system/elektra/globalplugins/prerollback", KEY_VALUE, "list", KEY_END),
+		keyNew ("system/elektra/globalplugins/presetstorage", KEY_VALUE, "list", KEY_END), KS_END);
+}
+
 int mountGlobals (KDB * kdb, KeySet * keys, KeySet * modules, Key * errorKey)
 {
+	int retval = 0;
 	Key * root = ksLookupByName (keys, "system/elektra/globalplugins", 0);
 	if (!root)
 	{
 		ELEKTRA_LOG ("no global configuration, assuming spec as default");
 		ksDel (keys);
-		keys = ksNew (19, keyNew ("system/elektra/globalplugins", KEY_END),
-			      keyNew ("system/elektra/globalplugins/postcommit", KEY_VALUE, "list", KEY_END),
-			      keyNew ("system/elektra/globalplugins/postcommit/user", KEY_VALUE, "list", KEY_END),
-			      keyNew ("system/elektra/globalplugins/postcommit/user/placements", KEY_END),
-			      keyNew ("system/elektra/globalplugins/postcommit/user/placements/error", KEY_VALUE,
-				      "prerollback postrollback", KEY_END),
-			      keyNew ("system/elektra/globalplugins/postcommit/user/placements/get", KEY_VALUE,
-				      "pregetstorage postgetstorage", KEY_END),
-			      keyNew ("system/elektra/globalplugins/postcommit/user/placements/set", KEY_VALUE,
-				      "presetstorage precommit postcommit", KEY_END),
-			      keyNew ("system/elektra/globalplugins/postcommit/user/plugins", KEY_END),
-			      keyNew ("system/elektra/globalplugins/postcommit/user/plugins/#0", KEY_VALUE, "spec", KEY_END),
-			      keyNew ("system/elektra/globalplugins/postcommit/user/plugins/#0/placements", KEY_VALUE, "spec", KEY_END),
-			      keyNew ("system/elektra/globalplugins/postcommit/user/plugins/#0/placements/error", KEY_END),
-			      keyNew ("system/elektra/globalplugins/postcommit/user/plugins/#0/placements/get", KEY_VALUE, "postgetstorage",
-				      KEY_END),
-			      keyNew ("system/elektra/globalplugins/postcommit/user/plugins/#0/placements/set", KEY_VALUE, "presetstorage",
-				      KEY_END),
-			      keyNew ("system/elektra/globalplugins/postgetstorage", KEY_VALUE, "list", KEY_END),
-			      keyNew ("system/elektra/globalplugins/postrollback", KEY_VALUE, "list", KEY_END),
-			      keyNew ("system/elektra/globalplugins/precommit", KEY_VALUE, "list", KEY_END),
-			      keyNew ("system/elektra/globalplugins/pregetstorage", KEY_VALUE, "list", KEY_END),
-			      keyNew ("system/elektra/globalplugins/prerollback", KEY_VALUE, "list", KEY_END),
-			      keyNew ("system/elektra/globalplugins/presetstorage", KEY_VALUE, "list", KEY_END), KS_END);
+		keys = elektraDefaultGlobalConfig ();
 		root = ksHead (keys);
 	}
-	for (GlobalpluginPositions i = 0; i < NR_GLOBAL_PLUGINS; ++i)
-		kdb->globalPlugins[i] = NULL;
+	memset (kdb->globalPlugins, 0, NR_GLOBAL_POSITIONS * NR_GLOBAL_SUBPOSITIONS * sizeof (Plugin *));
+
 	KeySet * global = ksCut (keys, root);
 	Key * cur;
 	KeySet * referencePlugins = ksNew (0, KS_END);
 	while ((cur = ksNext (global)) != NULL)
 	{
-		if (keyRel (root, cur) !=
-		    1) // the cutpoints for the plugin configs are always directly below the "root", ignore everything else
-			continue;
-		const char * placement = keyBaseName (cur);
-		const char * pluginName = keyString (cur);
-		const char * globalPlacements[NR_GLOBAL_PLUGINS] = { "prerollback",    "postrollback",   "pregetstorage",
-								     "postgetstorage", "postgetcleanup", "presetstorage",
-								     "presetcleanup",  "precommit",      "postcommit" };
+		// the cutpoints for the plugin configs are always directly below the "root", ignore everything else
+		if (keyRel (root, cur) != 1) continue;
 
+		char * placement = elektraStrDup (keyBaseName (cur));
 
-		if (!strcmp (pluginName, ""))
+		for (GlobalpluginPositions i = 0; i < NR_GLOBAL_POSITIONS; ++i)
 		{
-			continue; // strict consistency: skip empty parent keys
-		}
-		for (GlobalpluginPositions i = 0; i < NR_GLOBAL_PLUGINS; ++i)
-		{
-			// kdb->globalPlugins[i] = NULL;
-			if (!strcmp (placement, globalPlacements[i]))
+			if (!elektraStrCaseCmp (placement, GlobalpluginPositionsStr[i]))
 			{
 #if DEBUG && VERBOSE
 				printf ("mounting global plugin %s to %s\n", pluginName, placement);
 #endif
-
-				Plugin * plugin;
-				Key * refKey;
-				Key * searchKey = keyNew ("/", KEY_END);
-				keyAddBaseName (searchKey, keyString (cur));
-				refKey = ksLookup (referencePlugins, searchKey, 0);
-				keyDel (searchKey);
-				if (refKey)
-				{
-					// plugin already loaded, just reference it
-					plugin = *(Plugin **)keyValue (refKey);
-					plugin->refcounter += 1;
-				}
+				// load plugins in implicit max once placement
+				Plugin * plugin = elektraMountGlobalsLoadPlugin (referencePlugins, cur, global, modules, errorKey);
+				if (!plugin)
+					retval = -1; // error loading plugin
 				else
+					kdb->globalPlugins[i][MAXONCE] = plugin;
+
+				// load plugins in explicit placements
+				const char * placementName = keyName (cur);
+				Key * placementKey = ksLookupByName (global, placementName, 0);
+				KeySet * subPositions = ksCut (global, placementKey);
+				Key * curSubPosition;
+				while ((curSubPosition = ksNext (subPositions)) != NULL)
 				{
-					// putting together the plugins configuration KeySet.
-					Key * sysConfigCutKey = keyDup (cur);
-					keyAddBaseName (sysConfigCutKey, "system");
-					Key * usrConfigCutKey = keyDup (cur);
-					keyAddBaseName (usrConfigCutKey, "user");
-					KeySet * sysConfigKS = ksCut (global, sysConfigCutKey);
-					KeySet * usrConfigKS = ksCut (global, usrConfigCutKey);
-					KeySet * renamedSysConfig = elektraRenameKeys (sysConfigKS, "system");
-					KeySet * renamedUsrConfig = elektraRenameKeys (usrConfigKS, "user");
-					ksDel (sysConfigKS);
-					ksDel (usrConfigKS);
-					keyDel (usrConfigCutKey);
-					keyDel (sysConfigCutKey);
-					KeySet * config = ksNew (0, KS_END);
-					ksAppend (config, renamedSysConfig);
-					ksAppend (config, renamedUsrConfig);
-					ksDel (renamedSysConfig);
-					ksDel (renamedUsrConfig);
+					if (keyRel (placementKey, curSubPosition) != 1) continue;
+					const char * subPlacement = keyBaseName (curSubPosition);
 
-					// loading the new plugin
-					plugin = elektraPluginOpen (pluginName, modules, ksDup (config), errorKey);
-					if (!plugin)
+					for (GlobalpluginSubPositions j = 0; j < NR_GLOBAL_SUBPOSITIONS; ++j)
 					{
-						ksDel (keys);
-						ELEKTRA_ADD_WARNING (64, errorKey, pluginName);
-						return -1;
-					}
+						if (j == MAXONCE) continue;
 
-					// saving the plugin reference to avoid having to load the plugin multiple times
-					refKey = keyNew ("/", KEY_BINARY, KEY_SIZE, sizeof (Plugin *), KEY_VALUE, &plugin, KEY_END);
-					keyAddBaseName (refKey, keyString (cur));
-					ksAppendKey (referencePlugins, refKey);
-					keyDel (refKey);
-					ksDel (config);
+						if (!elektraStrCaseCmp (subPlacement, GlobalpluginSubPositionsStr[j]))
+						{
+							Plugin * subPlugin = elektraMountGlobalsLoadPlugin (
+								referencePlugins, curSubPosition, subPositions, modules, errorKey);
+							if (!subPlugin)
+								retval = -1; // error loading plugin
+							else
+								kdb->globalPlugins[i][j] = subPlugin;
+						}
+					}
 				}
-				kdb->globalPlugins[i] = plugin;
+				ksDel (subPositions);
 			}
 		}
+		elektraFree (placement);
 	}
 	ksDel (global);
 	ksDel (keys);
 	ksDel (referencePlugins);
-	return 0;
+	return retval;
 }
 
 /** Mount all module configurations.
