@@ -191,6 +191,28 @@
                 ]
             },
             {
+                "name": "GSoC",
+                "type": "staticlist",
+                "ref": "devgsoc",
+                "dev-comment": "If you want to contribute to Elektra.",
+                "children": [
+                    {
+                        "name": "GSoC",
+                        "type": "staticfile",
+                        "options": {
+                            "path": "doc/IDEAS.md"
+                        }
+                    },
+                    {
+                        "name": "Contributing",
+                        "type": "staticfile",
+                        "options": {
+                            "path": ".github/CONTRIBUTING.md"
+                        }
+                    }
+                ]
+            },
+            {
                 "name": "Examples",
                 "type": "listfiles",
                 "ref": "examples",
