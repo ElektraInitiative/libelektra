@@ -1,0 +1,12 @@
+{
+  "parser": "babel-eslint",
+  "plugins": [ "react" ],
+  "extends": [
+    "standard",
+    "plugin:react/recommended"
+  ],
+  "rules": {
+    "comma-dangle": [2, "always-multiline"],
+  },
+  "env": { "browser": true },
+}

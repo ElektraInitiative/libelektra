@@ -1,0 +1,24 @@
+/**
+ * @file
+ *
+ * @brief main stylesheet for the elektra-web client application
+ *
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ */
+
+@font-face {
+  font-family: 'Roboto';
+  src: url('Roboto-Regular.ttf');
+}
+
+body {
+  margin: 0;
+  height: 100%;
+  background-color: rgba(232, 232, 232, 0.1);
+}
+
+@media (max-width: 950px) {
+  .breadcrumb { /* hide breadcrumb on small screens */
+    display: none;
+  }
+}
