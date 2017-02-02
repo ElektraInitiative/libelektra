@@ -80,7 +80,7 @@ function __fish_kdb_subcommand_supports_option_verbose -d 'Check if the current 
     not __fish_kdb_subcommand_includes export file getmeta global-mount gmount info mount qt-gui remount rm sget shell test vset help qt-gui
 end
 
-function __fish_kdb_subcommand_supports_option_version -d 'Check if the current subcommand supports the option version'
+function __fish_kdb_subcommand_supports_common_options -d 'Check if the current subcommand supports common options'
     not __fish_kdb_subcommand_includes help qt-gui
 end
 
@@ -97,5 +97,6 @@ complete -c kdb -n '__fish_kdb_needs_namespace' -x -a '(__fish_kdb_print_namespa
 # = Options =
 # ===========
 
+__fish_kdb_add_option '__fish_kdb_subcommand_supports_common_options' 'help' 'H' 'Show the man page'
 __fish_kdb_add_option '__fish_kdb_subcommand_supports_option_verbose' 'verbose' 'v' 'Explain what is happening'
-__fish_kdb_add_option '__fish_kdb_subcommand_supports_option_version' 'version' 'V' 'Print version info'
+__fish_kdb_add_option '__fish_kdb_subcommand_supports_common_options' 'version' 'V' 'Print version info'
