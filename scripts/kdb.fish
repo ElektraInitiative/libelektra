@@ -9,17 +9,19 @@ function __input_includes -d 'Check if the current command buffer contains one o
     return 1
 end
 
-function __fish_kdb_no_subcommand -d 'Check if the current commandline buffer does not contain a subcommand'
+function __fish_kdb_subcommand -d 'Check for and print the current kdb subcommand'
     set -l input (commandline -op)
 
     test (count $input) -le 1
-    and return 0
-
-    set -l subcommand $input[2]
-    contains -- $subcommand (__fish_kdb_print_subcommands)
     and return 1
 
-    return 0
+    set -l subcommand $input[2]
+    if contains -- $subcommand (__fish_kdb_print_subcommands) then
+        echo "$subcommand"
+        return 0
+    end
+
+    return 1
 end
 
 function __fish_kdb_is_namespace -d 'Check if the given argument is a namespace'
@@ -65,7 +67,7 @@ end
 # = Arguments =
 # =============
 
-complete -c kdb -n '__fish_kdb_no_subcommand' -x -a '(__fish_kdb_print_subcommands -v)'
+complete -c kdb -n 'not __fish_kdb_subcommand' -x -a '(__fish_kdb_print_subcommands -v)'
 complete -c kdb -n '__fish_kdb_needs_namespace' -x -a '(__fish_kdb_print_namespaces)'
 
 # ===========
