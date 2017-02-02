@@ -43,13 +43,11 @@ echo
 # then restart the backend
 kdb stop-rest-backend
 
-netstat --listen --numeric-ports | grep 80
-
-# TODO: make proper check to avoid 'address already in use'
-# and too long sleeps
-sleep 5
-
-netstat --listen --numeric-ports | grep 80
+# avoid 'address already in use'
+while netstat --listen --numeric-ports | grep "LISTEN" | grep "0.0.0.0:8080"
+do
+	sleep 1
+done
 
 kdb run-rest-backend
 
