@@ -76,6 +76,10 @@ end
 # = Options =
 # ===========
 
+function __fish_kdb_subcommand_supports_option_null -d 'Check if the current subcommand supports binary null termination'
+    __fish_kdb_subcommand_includes complete list list-commands ls lsmeta mount
+end
+
 function __fish_kdb_subcommand_supports_option_verbose -d 'Check if the current subcommand supports the option verbose'
     not __fish_kdb_subcommand_includes export file getmeta global-mount gmount info mount qt-gui remount rm sget shell test vset help qt-gui
 end
@@ -98,5 +102,6 @@ complete -c kdb -n '__fish_kdb_needs_namespace' -x -a '(__fish_kdb_print_namespa
 # ===========
 
 __fish_kdb_add_option '__fish_kdb_subcommand_supports_common_options' 'help' 'H' 'Show the man page'
+__fish_kdb_add_option '__fish_kdb_subcommand_supports_option_null' 'null' '0' 'Use binary 0 termination.'
 __fish_kdb_add_option '__fish_kdb_subcommand_supports_option_verbose' 'verbose' 'v' 'Explain what is happening'
 __fish_kdb_add_option '__fish_kdb_subcommand_supports_common_options' 'version' 'V' 'Print version info'
