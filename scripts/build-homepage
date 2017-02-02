@@ -40,13 +40,13 @@ echo -n "Old PID was: "
 cat /run/elektra-rest-backend.pid || /bin/true
 echo
 
-# then restart the backend
-kdb stop-rest-backend
+# then restart the backend, succeed if it was not started before..
+kdb stop-rest-backend || /bin/true
 
 # avoid 'address already in use'
 while netstat --listen --numeric-ports | grep "LISTEN" | grep "0.0.0.0:8080"
 do
-	sleep 1
+	sleep 1  # keep waiting (=downtime) short
 done
 
 kdb run-rest-backend
@@ -57,6 +57,7 @@ echo
 
 # we have to make sure the backend had time to start before we can go on
 # (necessary because the command `kdb run-rest-backend` runs in the background)
+# everything is online already, so no hurry here
 sleep 60
 
 # and finally re-compile the frontend
