@@ -154,7 +154,7 @@ __fish_kdb_add_option '__fish_kdb_subcommand_supports_option_force' 'force' 'f' 
 __fish_kdb_add_option '__fish_kdb_subcommand_supports_common_options' 'help' 'H' 'Show the man page'
 
 # --null -0
-__fish_kdb_add_option '__fish_kdb_subcommand_supports_option_null' 'null' '0' 'Use binary 0 termination.'
+__fish_kdb_add_option '__fish_kdb_subcommand_supports_option_null' 'null' '0' 'Use binary 0 termination'
 
 # --profile -p
 set -l description 'Use a different profile for kdb configuration'
