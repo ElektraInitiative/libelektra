@@ -69,8 +69,8 @@ or cross-cutting concerns.
 To sum up, if a developer wants to **elektrify** software, he or she can
 do that without any need for changes to the outside world regarding the
 format and semantics of the configuration. In the interconnected
-world it's a matter of time until other software also wants to
-access the configuration, and with elektrified software it's possible
+world it is a matter of time until other software also wants to
+access the configuration, and with elektrified software it is possible
 for every application to do so.
 
 
@@ -107,7 +107,7 @@ Key *parentKey = keyNew("/sw/org/myapp/#0/current", KEY_END);
   - `current` is the [profile](/src/plugins/profile/README.md)
       to use. Administrators need it
       if they want to start up applications with different configurations.
-- `KEY_END` is required by C needs a proper termination of variable
+- `KEY_END` as C needs a proper termination of variable
     length arguments.
 
 The key name is standardized to make it easier to locate configuration.
@@ -146,7 +146,7 @@ Now we have everything ready to fetch the latest configuration:
 kdbGet(repo, conf, parentKey);
 ```
 
-Note it's important for applications that the parentKey starts with a slash `/`.
+Note it is important for applications that the parentKey starts with a slash `/`.
 This ensures pulling in all keys of the so-called [namespace](/doc/help/elektra-namespaces.md).
 Such a name cannot physically exist in configuration files, but they are
 the most important key names to actually work with configuration within
@@ -170,7 +170,7 @@ in configuration files, but are "representatives", "proxies" or
 "logical placeholders" for keys from any other [namespace](/doc/help/elektra-namespaces.md).
 
 So that every tool has a consistent view to the key database
-it's vital that every application does a `ksLookup` for every
+it is vital that every application does a `ksLookup` for every
 key it uses. So even if your application iterates over keys,
 always remember to do a [cascading](cascading.md) lookup for every single key!
 
@@ -180,8 +180,8 @@ Thus we are interested in the value we use:
 char *val = keyString(k);
 ```
 
-Now we need to convert the configuration value to the data-type we
-need.
+We need to convert the configuration value to the data type we
+need. 
 
 To do this manually has severe drawbacks:
 
@@ -206,7 +206,7 @@ But, we did not discuss how we can actually achieve application integration,
 the goal of Elektra.
 
 Elektra 0.8.11 introduces the so called specification for the
-application's configuration. It's located below its own [namespace](/doc/help/elektra-namespaces.md)
+application's configuration, located below its own [namespace](/doc/help/elektra-namespaces.md)
 `spec` (next to user and system).
 
 Keys in `spec` allow us to specify which keys the application reads,
