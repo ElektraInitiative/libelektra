@@ -55,9 +55,10 @@ int CompleteCommand::execute (const Cmdline & cl)
 	const Key originalUnprocessedKey (originalInput, KEY_END);
 	KDB kdb;
 	// Determine the actual root key, as for completion purpose originalRoot may not exist
-	// If we want to complete an initial namespace, everything done by cl.createKey is unnecessary and will fail
-	const Key originalRoot = originalUnprocessedKey.isValid () ? cl.createKey (cl.arguments.size () - 1) : originalUnprocessedKey;
-	Key root = originalUnprocessedKey.isValid () ? originalRoot : Key ("/", KEY_END);
+	// If the input is not a valid key, it could still be a bookmark or a namespace
+	const bool isArgumentValidKey = originalUnprocessedKey.isValid () || (!originalInput.empty () && originalInput[0] == '+');
+	const Key originalRoot = isArgumentValidKey ? cl.createKey (cl.arguments.size () - 1) : originalUnprocessedKey;
+	Key root = isArgumentValidKey ? originalRoot : Key ("/", KEY_END);
 	KeySet ks;
 	printWarnings (cerr, root);
 
