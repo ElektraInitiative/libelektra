@@ -1,8 +1,6 @@
 # common configure script
+. "$(dirname "$0")/include-common"
 
-SELF=$(readlink -f "$0")
-SCRIPTS=$(dirname "$SELF")
-SOURCE=$(dirname "$SCRIPTS")
 SBUILD=$(pwd)
 BUILD=$(readlink -f "$SBUILD")
 
