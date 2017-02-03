@@ -114,6 +114,10 @@ function __fish_kdb_subcommand_supports_option_null -d 'Check if the current sub
     __fish_kdb_subcommand_includes complete list list-commands ls lsmeta mount
 end
 
+function __fish_kdb_subcommand_supports_option_plugins_config -d 'Check if the current subcommand supports plugin configuration'
+    __fish_kdb_subcommand_includes check export import info mount smount spec-mount
+end
+
 function __fish_kdb_subcommand_supports_option_verbose -d 'Check if the current subcommand supports the option verbose'
     set -l commands export file getmeta global-mount gmount info mount qt-gui remount rm sget shell test vset help list-tools qt-gui
     __fish_kdb_subcommand_does_not_include $commands
@@ -155,6 +159,9 @@ __fish_kdb_add_option '__fish_kdb_subcommand_supports_common_options' 'help' 'H'
 
 # --null -0
 __fish_kdb_add_option '__fish_kdb_subcommand_supports_option_null' 'null' '0' 'Use binary 0 termination'
+
+# --plugins-config -c
+__fish_kdb_add_option '__fish_kdb_subcommand_supports_option_plugins_config' 'plugins-config' 'c' 'Add a plugin configuration'
 
 # --profile -p
 set -l description 'Use a different profile for kdb configuration'
