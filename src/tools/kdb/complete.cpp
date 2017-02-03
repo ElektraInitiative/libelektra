@@ -55,7 +55,7 @@ int CompleteCommand::execute (const Cmdline & cl)
 	const Key originalUnprocessedKey (originalInput, KEY_END);
 	KDB kdb;
 	// Determine the actual root key, as for completion purpose originalRoot may not exist
-	// Maybe we want to complete an initial namespace, in that case bookmark expansion checks done by cl.createKey are useless
+	// If we want to complete an initial namespace, everything done by cl.createKey is unnecessary and will fail
 	const Key originalRoot = originalUnprocessedKey.isValid () ? cl.createKey (cl.arguments.size () - 1) : originalUnprocessedKey;
 	Key root = originalUnprocessedKey.isValid () ? originalRoot : Key ("/", KEY_END);
 	KeySet ks;
@@ -109,11 +109,34 @@ void CompleteCommand::addMountpoints (KeySet & ks, const Key root)
 
 void CompleteCommand::addNamespaces (map<Key, pair<int, int>> & hierarchy)
 {
-	// Currently assumed to be fixed, and they are on level 0
-	const string namespaces[] = { "spec/", "proc/", "dir/", "user/", "system/" };
-	for (const auto ns : namespaces)
+	// Always add them on level 0
+	const string namespaces[] = {
+		"spec/", "proc/", "dir/", "user/", "system/",
+	};
+
+	// Check for new namespaces, issue a warning in case
+	for (elektraNamespace ens = KEY_NS_FIRST; ens <= KEY_NS_LAST; ++ens)
 	{
-		Key nsKey (ns, KEY_END);
+		// since ens are numbers, there is no way to get a string representation if not found in that case
+		bool found = false;
+		for (const string ns : namespaces)
+		{
+			found = found || ckdb::keyGetNamespace (Key (ns, KEY_END).getKey ()) == ens;
+		}
+		if (!found)
+		{
+			cerr << "Missing namespace detected:" << ens << ". \nPlease report this issue." << endl;
+		}
+	}
+
+	for (const string ns : namespaces)
+	{
+		const Key nsKey (ns, KEY_END);
+		// Check for outdated namespaces, issue a warning in case
+		if (ckdb::keyGetNamespace (nsKey.getKey ()) == KEY_NS_EMPTY)
+		{
+			cerr << "Outdated namespace detected:" << ns << ".\nPlease report this issue." << endl;
+		}
 		hierarchy[nsKey] = pair<int, int> (1, 0);
 	}
 }
