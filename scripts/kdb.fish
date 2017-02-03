@@ -106,6 +106,10 @@ function __fish_kdb_subcommand_supports_option_color -d 'Check if the current su
     __fish_kdb_subcommand_does_not_include complete help list-tools qt-gui
 end
 
+function __fish_kdb_subcommand_supports_option_force -d 'Check if the current subcommand supports the option force'
+    __fish_kdb_subcommand_includes check merge
+end
+
 function __fish_kdb_subcommand_supports_option_null -d 'Check if the current subcommand supports binary null termination'
     __fish_kdb_subcommand_includes complete list list-commands ls lsmeta mount
 end
@@ -142,6 +146,9 @@ complete -c kdb -n '__fish_kdb_needs_namespace' -x -a '(__fish_kdb_print_namespa
 set -l description 'Print never/auto(default)/always colored output'
 set -l completion_function '__fish_kdb_subcommand_supports_option_color'
 __fish_kdb_add_option "$completion_function" 'color' 'C' "$description" '(__fish_kdb_print_option_color_arguments)' -f
+
+# --force -f
+__fish_kdb_add_option '__fish_kdb_subcommand_supports_option_force' 'force' 'f' 'Force the action to be done'
 
 # --help -H
 __fish_kdb_add_option '__fish_kdb_subcommand_supports_common_options' 'help' 'H' 'Show the man page'
