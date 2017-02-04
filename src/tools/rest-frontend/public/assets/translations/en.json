@@ -61,6 +61,7 @@
     "APP.BREADCRUMBS.MAIN.DOCUMENTATION.TEMPLATE": "Documentation",
     "APP.BREADCRUMBS.MAIN.DYN.BINDINGS": "Bindings",
     "APP.BREADCRUMBS.MAIN.DYN.DECISIONS": "Decisions",
+    "APP.BREADCRUMBS.MAIN.DYN.DEVELOPERS": "Developers",
     "APP.BREADCRUMBS.MAIN.DYN.DEVGETTINGSTARTED": "Getting started",
     "APP.BREADCRUMBS.MAIN.DYN.DOCGETTINGSTARTED": "Getting started",
     "APP.BREADCRUMBS.MAIN.DYN.EXAMPLES": "Examples",
@@ -278,6 +279,7 @@
     "APP.ENTRIES.SEARCH.TABLE.HEADER.SCOPE": "Scope",
     "APP.ENTRIES.SEARCH.TABLE.HEADER.SLUG": "Slug",
     "APP.ENTRIES.SEARCH.TABLE.HEADER.TITLE": "Title",
+    "APP.ENTRIES.SEARCH.TABLE.LABEL.ISLOADING": "Loading snippets ...",
     "APP.ENTRIES.SEARCH.TABLE.LABEL.NORESULTS": "No snippets found matching the given search criteria.",
 
     "APP.ERROR.404.HELP": "Are you sure you entered the right URL? You can also use the menu above to look around.<br />If the site seems broken, please contact us using the feedback button on the bottom.",
@@ -415,6 +417,7 @@
     "APP.USERS.SEARCH.TABLE.HEADER.EMAIL": "Email",
     "APP.USERS.SEARCH.TABLE.HEADER.RANK": "Rank",
     "APP.USERS.SEARCH.TABLE.HEADER.USERNAME": "Username",
+    "APP.USERS.SEARCH.TABLE.LABEL.ISLOADING": "Loading users ...",
     "APP.USERS.SEARCH.TABLE.LABEL.NORESULTS": "No users found matching the given search criteria.",
 
     "APP.WEBSITE.LISTFILES.BUTTON.SHOWONGITHUB": "Show on GitHub"
