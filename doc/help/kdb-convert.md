@@ -16,7 +16,7 @@ This command uses plugins to specify and convert between formats, it is only lim
 
 ## USAGE
 
-Where `import-format` is the format that the current configuration file is using, `export-format` is the format the user wishes to convert it to, `import-file` is the full path to the current configration file, and `export-file` is where the converted configuration file should be saved.
+Where `import-format` is the format that the current configuration file is using, `export-format` is the format the user wishes to convert it to, `import-file` is the full path to the current configuration file, and `export-file` is where the converted configuration file should be saved.
 
 If either `import-format` or `export-format` is not specified, the `storage` plugin will be used instead.
 The `storage` plugin can be configured at compile-time or changed by the link `libelektra-storage.so`.
