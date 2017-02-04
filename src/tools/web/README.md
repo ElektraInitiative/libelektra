@@ -34,7 +34,7 @@ Elektra web consists of multiple components:
  * a single cluster management server to communicate with the elektra daemons ([`clusterd`](clusterd/))
  * a client (web browser) that accesses the Web UI on the cluster management server ([`client`](client/))
 
-![https://cdn.rawgit.com/omnidan/libelektra/elektra-web/src/tools/web/doc/network_structure.png](https://cdn.rawgit.com/omnidan/libelektra/elektra-web/src/tools/web/doc/network_structure.png)
+![https://cdn.rawgit.com/ElektraInitiative/libelektra/master/src/tools/web/doc/network_structure.png](https://cdn.rawgit.com/ElektraInitiative/libelektra/master/src/tools/web/doc/network_structure.png)
 
 
 ## GUI
@@ -47,12 +47,12 @@ single instances can be configured independently.
 The configuration view of elektra web is similar to the tree view of the
 [qt-gui](http://git.libelektra.org/tree/master/src/tools/qt-gui).
 
-![https://cdn.rawgit.com/omnidan/libelektra/elektra-web/src/tools/web/doc/ui_structure.png](https://cdn.rawgit.com/omnidan/libelektra/elektra-web/src/tools/web/doc/ui_structure.png)
+![https://cdn.rawgit.com/ElektraInitiative/libelektra/master/src/tools/web/doc/ui_structure.png](https://cdn.rawgit.com/ElektraInitiative/libelektra/master/src/tools/web/doc/ui_structure.png)
 
 
 ## API
 
-![https://cdn.rawgit.com/omnidan/libelektra/elektra-web/src/tools/web/doc/daemon_structure.png](https://cdn.rawgit.com/omnidan/libelektra/elektra-web/src/tools/web/doc/daemon_structure.png)
+![https://cdn.rawgit.com/ElektraInitiative/libelektra/master/src/tools/web/doc/daemon_structure.png](https://cdn.rawgit.com/ElektraInitiative/libelektra/master/src/tools/web/doc/daemon_structure.png)
 
 [API blueprints](https://apiblueprint.org/) are available for both APIs:
 
