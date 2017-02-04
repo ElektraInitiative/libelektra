@@ -98,6 +98,11 @@ function __fish_kdb_needs_namespace -d 'Check if the current command needs a nam
     return 0
 end
 
+function __fish_kdb_needs_plugin -d 'Check if the current command needs a plugin completion'
+    __fish_kdb_subcommand_includes check
+    and not __input_includes (__fish_kdb_print_plugins)
+end
+
 function __fish_kdb_print_subcommands -d 'Print a list of kdb subcommands'
     set -l commands (kdb list-commands $argv)
     if contains -- $argv -v
@@ -109,6 +114,10 @@ end
 function __fish_kdb_print_namespaces -d 'Print a list of possible namespace completions'
     set -l namespace (commandline -ct)
     kdb complete --max-depth=1 -- "$namespace" | string match -vr '(dir|proc|spec|user)$'
+end
+
+function __fish_kdb_print_plugins -d 'Print a list of available plugins'
+    kdb list
 end
 
 function __fish_kdb_add_option -d 'Add suggestions for a certain option to multiple kdb subcommands'
@@ -151,6 +160,10 @@ function __fish_kdb_subcommand_supports_option_color -d 'Check if the current su
     __fish_kdb_subcommand_does_not_include complete help list-tools qt-gui
 end
 
+function __fish_kdb_subcommand_supports_option_debug -d 'Check if the current subcommand supports the option debug'
+    __fish_kdb_subcommand_includes complete mount remount smount spec-mount
+end
+
 function __fish_kdb_subcommand_supports_option_force -d 'Check if the current subcommand supports the option force'
     __fish_kdb_subcommand_includes check merge
 end
@@ -186,6 +199,7 @@ end
 
 complete -c kdb -n 'not __fish_kdb_subcommand' -x -a '(__fish_kdb_print_subcommands -v)'
 complete -c kdb -n '__fish_kdb_needs_namespace' -x -a '(__fish_kdb_print_namespaces)'
+complete -c kdb -n '__fish_kdb_needs_plugin' -x -a '(__fish_kdb_print_plugins)'
 
 # ===========
 # = Options =
@@ -196,6 +210,10 @@ set -l description 'Print never/auto(default)/always colored output'
 set -l completion_function '__fish_kdb_subcommand_supports_option_color'
 __fish_kdb_add_option "$completion_function" 'color' '' "$description" '(__fish_kdb_print_option_color_arguments)' -f
 __fish_kdb_add_option "$completion_function" '' 'C' "Do not color the output"
+
+# --debug -d
+set -l description 'Give debug information or ask debug questions (in interactive mode)'
+__fish_kdb_add_option '__fish_kdb_subcommand_supports_option_debug' 'debug' 'd' "$description"
 
 # --force -f
 __fish_kdb_add_option '__fish_kdb_subcommand_supports_option_force' 'force' 'f' 'Force the action to be done'
