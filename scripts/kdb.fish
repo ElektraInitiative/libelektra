@@ -84,7 +84,7 @@ function __fish_kdb_is_namespace -d 'Check if the given argument is a namespace'
 end
 
 function __fish_kdb_needs_namespace -d 'Check if the current command needs a namespace completion'
-    not __fish_kdb_subcommand_includes ls get set
+    not __fish_kdb_subcommand_includes complete ls get set
     and return 1
 
     __fish_kdb_is_namespace (commandline -t)
