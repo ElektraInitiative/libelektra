@@ -40,12 +40,12 @@ module.exports = function ($scope, Logger, $state, EntryService, Notification, S
         if ($scope.cb.createScopeManually === true) {
             return;
         }
-        $scope.entry.slug = Slug.slugify($scope.entry.title);
+        $scope.entry.slug = Slug.slugify($scope.entry.title).replace(/[_]+/g, '-');
     }, true);
 
     $scope.$watch('cb.createScopeManually', function () {
         if ($scope.cb.createScopeManually === false) {
-            $scope.entry.slug = Slug.slugify($scope.entry.title);
+            $scope.entry.slug = Slug.slugify($scope.entry.title).replace(/[_]+/g, '-');
         }
     }, true);
 
