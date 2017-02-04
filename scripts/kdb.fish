@@ -191,7 +191,7 @@ function __fish_kdb_print_option_color_arguments -d 'Print possible arguments fo
     echo -e 'never\tDo not print colored output'
 end
 
-function __fish_kdb_print_option_depth_arguments -d 'Print possible arguments for the option min-depth'
+function __fish_kdb_print_option_depth_arguments -d 'Print possible arguments for the options min-depth and max-depth'
     set -l description $argv[1]
     set -l start $argv[2]
     seq $start 10 | string replace -r '\d+' "\$0\tComplete at $description \$0 Level" | string replace -r '([02-9]|\d{2}) Level$' '$0s'
@@ -226,6 +226,11 @@ __fish_kdb_add_option '__fish_kdb_subcommand_supports_option_force' 'force' 'f' 
 
 # --help -H
 __fish_kdb_add_option '__fish_kdb_subcommand_supports_common_options' 'help' 'H' 'Show the man page'
+
+# --max-depth -M
+set -l description 'Specify the maximum depth of completion suggestions (unlimited by default, 1 to show only the next level), inclusive.'
+set -l argument_function '__fish_kdb_print_option_depth_arguments most 1'
+__fish_kdb_add_option '__fish_kdb_subcommand_includes complete' 'max-depth' 'M' "$description" "($argument_function)"
 
 # --min-depth -m
 set -l description 'Specify the minimum depth of completion suggestions (0 by default), exclusive'
