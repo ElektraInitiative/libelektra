@@ -143,7 +143,9 @@ end
 function __fish_kdb_print_storage_plugins -d 'Print a list of available storage plugins'
     set -l formats constants desktop dpkg dump hosts line ini json ini ni passwd regexstore simpleini simplespeclang tcl xmltool uname
     set -l regex '^(?:'(__join '|' $formats)')$'
-    string match -r $regex (__fish_kdb_print_plugins) | sort
+    set -l storage_plugins (__fish_kdb_print_plugins | string match -r $regex)
+    set -l storage_plugins $storage_plugins storage
+    printf '%s\n' $storage_plugins | sort
 end
 
 function __fish_kdb_add_option -d 'Add suggestions for a certain option to multiple kdb subcommands'
