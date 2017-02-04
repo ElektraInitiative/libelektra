@@ -4,6 +4,7 @@ module.exports = function ($rootScope, $scope, Logger, $state, EntryService) {
 
     var vm = this;
 
+    $scope.is_loaded = false;
     $scope.options = {
         is_advanced: false,
         filter: $rootScope.entriesSearchString,
@@ -60,6 +61,8 @@ module.exports = function ($rootScope, $scope, Logger, $state, EntryService) {
 
 
     this.loadEntries = function () {
+        $scope.searchResult = {};
+        $scope.is_loaded = false;
 		$scope.options.filter = $rootScope.entriesSearchString;
         var params = {
             filter: $scope.options.filter,
@@ -73,6 +76,7 @@ module.exports = function ($rootScope, $scope, Logger, $state, EntryService) {
         {
             $scope.searchResult = data;
             vm.calculatePagination();
+            $scope.is_loaded = true;
         });
     };
 

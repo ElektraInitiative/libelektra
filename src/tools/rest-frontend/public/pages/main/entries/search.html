@@ -109,7 +109,10 @@
 					</td>
 				</tr>
 				<tr ng-show="!searchResult.entries">
-					<th colspan="8" class="text-center">{{ 'APP.ENTRIES.SEARCH.TABLE.LABEL.NORESULTS' | translate }}</th>
+                    <th colspan="8" class="text-center"
+                        ng-show="!is_loaded">{{ 'APP.ENTRIES.SEARCH.TABLE.LABEL.ISLOADING' | translate }}</th>
+					<th colspan="8" class="text-center"
+                        ng-show="is_loaded">{{ 'APP.ENTRIES.SEARCH.TABLE.LABEL.NORESULTS' | translate }}</th>
 				</tr>
 			</tbody>
 		</table>
