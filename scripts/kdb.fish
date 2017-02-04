@@ -1,9 +1,17 @@
 # -- Functions -----------------------------------------------------------------------------------------------------------------------------
 
 function __input_includes -d 'Check if the current command buffer contains one of the given values'
+    set -l times 1
+    if string match -qr -- '\d+' argv[-1]
+        set times $argv[-1]
+        set -e argv[-1]
+    end
+
     for input in (commandline -op)
         if contains -- $input $argv
-            return 0
+            set times (math $times - 1)
+            test $times -le 0
+            and return 0
         end
     end
     return 1
@@ -103,6 +111,11 @@ function __fish_kdb_needs_plugin -d 'Check if the current command needs a plugin
     and not __input_includes (__fish_kdb_print_plugins)
 end
 
+function __fish_kdb_subcommand_convert_needs_storage_plugin -d 'Check if the subcommand convert needs a storage plugin completion'
+    __fish_kdb_subcommand_includes convert
+    and not __input_includes (__fish_kdb_print_storage_plugins) 2
+end
+
 function __fish_kdb_print_subcommands -d 'Print a list of kdb subcommands'
     set -l commands (kdb list-commands $argv)
     if contains -- $argv -v
@@ -118,6 +131,12 @@ end
 
 function __fish_kdb_print_plugins -d 'Print a list of available plugins'
     kdb list
+end
+
+function __fish_kdb_print_storage_plugins -d 'Print a list of available storage plugins'
+    set -l formats constants desktop dpkg dump hosts line ini json ini ni passwd regexstore simpleini simplespeclang tcl xmltool uname
+    set -l regex '^(?:'(__join '|' $formats)')$'
+    string match -r $regex (__fish_kdb_print_plugins) | sort
 end
 
 function __fish_kdb_add_option -d 'Add suggestions for a certain option to multiple kdb subcommands'
@@ -206,6 +225,7 @@ end
 complete -c kdb -n 'not __fish_kdb_subcommand' -x -a '(__fish_kdb_print_subcommands -v)'
 complete -c kdb -n '__fish_kdb_needs_namespace' -x -a '(__fish_kdb_print_namespaces)'
 complete -c kdb -n '__fish_kdb_needs_plugin' -x -a '(__fish_kdb_print_plugins)'
+complete -c kdb -n '__fish_kdb_subcommand_convert_needs_storage_plugin' -x -a '(__fish_kdb_print_storage_plugins)'
 
 # ===========
 # = Options =
