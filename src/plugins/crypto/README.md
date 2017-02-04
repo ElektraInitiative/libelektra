@@ -1,7 +1,7 @@
 - infos = Information about crypto plugin is in keys below
 - infos/author = Peter Nirschl <peter.nirschl@gmail.com>
 - infos/licence = BSD
-- infos/provides = filefilter crypto
+- infos/provides = crypto
 - infos/needs =
 - infos/recommends =
 - infos/placements = postgetstorage presetstorage

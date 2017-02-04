@@ -1,7 +1,7 @@
 - infos = Information about glob plugin is in keys below
 - infos/author = Felix Berlakovich <elektra@berlakovich.net>
 - infos/licence = BSD
-- infos/provides =
+- infos/provides = apply
 - infos/needs =
 - infos/recommends =
 - infos/ordering = check keytometa

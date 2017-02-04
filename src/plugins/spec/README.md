@@ -2,7 +2,7 @@
 - infos/author = Thomas Waser <thomas.waser@libelektra.org>
 - infos/licence = BSD
 - infos/needs =
-- infos/provides = check
+- infos/provides = check apply
 - infos/placements = postgetstorage presetstorage
 - infos/status = maintained unittest nodep configurable global preview
 - infos/description = copies meta data from spec namespace to other namespaces

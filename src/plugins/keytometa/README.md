@@ -1,7 +1,7 @@
 - infos = Information about keytometa plugin is in keys below
 - infos/author = Felix Berlakovich <elektra@berlakovich.net>
 - infos/licence = BSD
-- infos/provides = conversion
+- infos/provides = conv
 - infos/needs =
 - infos/placements = presetstorage postgetstorage
 - infos/status = maintained unittest tested nodep libc configurable

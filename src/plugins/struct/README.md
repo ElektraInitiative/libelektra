@@ -1,7 +1,7 @@
 - infos = Information about struct plugin is in keys below
 - infos/author = Markus Raab <elektra@libelektra.org>
 - infos/licence = BSD
-- infos/provides = apply
+- infos/provides = apply check
 - infos/needs =
 - infos/ordering = check
 - infos/placements = presetstorage
