@@ -21,7 +21,7 @@ provides to other programming languages.
 The type checker plugin supports all basic CORBA types:
 `short`, `unsigned_short`, `long`, `unsigned_long`, `long_long`,
 `unsigned_long_long`, `float`, `double`, `char`, `boolean`, `any` and
-`octet`. In Elektra `octet` is the same as `char`. When checking any it
+`octet`. In Elektra `octet` is the same as `char`. When checking `any` it
 will always be successful, regardless of the content. Elektra also added
 other types. `empty` will only yield true if there is no value. `string`
 allows any non-empty sequence of octets.
