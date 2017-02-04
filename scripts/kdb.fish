@@ -92,7 +92,11 @@ function __fish_kdb_is_namespace -d 'Check if the given argument is a namespace'
 end
 
 function __fish_kdb_needs_namespace -d 'Check if the current command needs a namespace completion'
-    not __fish_kdb_subcommand_includes complete ls get set
+    set times $argv[-1]
+    set -e argv[-1]
+    set commands $argv
+
+    not __fish_kdb_subcommand_includes $commands
     and return 1
 
     __fish_kdb_is_namespace (commandline -t)
@@ -100,6 +104,9 @@ function __fish_kdb_needs_namespace -d 'Check if the current command needs a nam
 
     for input in (commandline -opc)
         __fish_kdb_is_namespace $input
+        and set times (math $times - 1)
+
+        test $times -le 0
         and return 1
     end
 
@@ -223,7 +230,8 @@ end
 # =============
 
 complete -c kdb -n 'not __fish_kdb_subcommand' -x -a '(__fish_kdb_print_subcommands -v)'
-complete -c kdb -n '__fish_kdb_needs_namespace' -x -a '(__fish_kdb_print_namespaces)'
+complete -c kdb -n '__fish_kdb_needs_namespace complete ls get set 1' -x -a '(__fish_kdb_print_namespaces)'
+complete -c kdb -n '__fish_kdb_needs_namespace cp 2' -x -a '(__fish_kdb_print_namespaces)'
 complete -c kdb -n '__fish_kdb_needs_plugin' -x -a '(__fish_kdb_print_plugins)'
 complete -c kdb -n '__fish_kdb_subcommand_convert_needs_storage_plugin' -x -a '(__fish_kdb_print_storage_plugins)'
 
