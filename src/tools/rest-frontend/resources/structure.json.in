@@ -275,7 +275,7 @@
             {
                 "name": "Authors",
                 "type": "staticlist",
-                "ref": "development",
+                "ref": "developers",
                 "dev-comment": "We need to use an own section to be able to display the authors file.",
                 "children": [
                     {
