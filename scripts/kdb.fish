@@ -9,6 +9,47 @@ function __input_includes -d 'Check if the current command buffer contains one o
     return 1
 end
 
+function __input_includes_options -d 'Check if the current command buffer contains one of the given options'
+    set -l opt_long $argv[1]
+    set -l opt_short $argv[2]
+
+    test -n $opt_long
+    and set -l options --$opt_long
+
+    test -n $opt_short
+    and set -l options $options -$opt_short
+
+    __input_includes $options
+end
+
+function __input_left_includes_options -d 'Check if the input to the left of the current buffer contains one of the given options'
+    set -l opt_long $argv[1]
+    set -l opt_short $argv[2]
+    set -l input (commandline -opc)
+
+    test -n $opt_long
+    set opt_long "--$opt_long"
+    test -n $opt_short
+    set opt_short "-\w*$opt_short"
+    set -l options (__join '|' $opt_long $opt_short)
+
+    string match -r -- $options "$input"
+end
+
+function __join -d 'Join variables into one variable using a given separator'
+    set -l separator $argv[1]
+    set -l joined ''
+
+    for element in $argv[2..-2]
+        test -n $element
+        and set joined "$joined$element$separator"
+    end
+    test -n $argv[-1]
+    and set joined "$joined$argv[-1]"
+
+    echo $joined
+end
+
 function __fish_kdb_subcommand_includes -d 'Check if the current kdb subcommand is one of the given subcommands'
     set -l subcommand (__fish_kdb_subcommand)
     contains -- "$subcommand" $argv
@@ -79,22 +120,26 @@ function __fish_kdb_add_option -d 'Add suggestions for a certain option to multi
     test (count $argv) -gt 4
     and set -l arguments $argv[5]
 
+    test -n $opt_long
+    and set -l options -l $opt_long
+    test -n $opt_short
+    and set -l options $options -s $opt_short
+
     if set -q arguments
         set -l exclusion '-x'
         test (count $argv) -gt 5
         and set -l exclusion $argv[6]
 
         set completion_function "if $completion_function
-                                     set -l input (commandline -op)
-                                     string match -r -- '--$opt_long|-$opt_short' \"\$input[-2..-1]\"
-                                     or not __input_includes --$opt_long -$opt_short
-                                 else
-                                     false
-                                 end"
-        complete -c kdb $exclusion -n "$completion_function" -l $opt_long -s $opt_short -a $arguments -d "$description"
+                                      __input_left_includes_options \"$opt_long\" \"$opt_short\"
+                                      or not __input_includes_options \"$opt_long\" \"$opt_short\"
+                                  else
+                                      false
+                                  end"
+        complete -c kdb $exclusion -n "$completion_function" $options -a $arguments -d "$description"
     else
-        set completion_function "$completion_function; and not __input_includes --$opt_long -$opt_short"
-        complete -c kdb -f -n "$completion_function" -l $opt_long -s $opt_short -d "$description"
+        set completion_function "$completion_function; and not __input_includes_options \"$opt_long\" \"$opt_short\""
+        complete -c kdb -f -n "$completion_function" $options -d "$description"
     end
 end
 
@@ -149,7 +194,8 @@ complete -c kdb -n '__fish_kdb_needs_namespace' -x -a '(__fish_kdb_print_namespa
 # --color -C
 set -l description 'Print never/auto(default)/always colored output'
 set -l completion_function '__fish_kdb_subcommand_supports_option_color'
-__fish_kdb_add_option "$completion_function" 'color' 'C' "$description" '(__fish_kdb_print_option_color_arguments)' -f
+__fish_kdb_add_option "$completion_function" 'color' '' "$description" '(__fish_kdb_print_option_color_arguments)' -f
+__fish_kdb_add_option "$completion_function" '' 'C' "Do not color the output"
 
 # --force -f
 __fish_kdb_add_option '__fish_kdb_subcommand_supports_option_force' 'force' 'f' 'Force the action to be done'
