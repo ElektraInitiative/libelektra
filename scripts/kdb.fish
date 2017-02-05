@@ -289,6 +289,9 @@ complete -c kdb -n '__fish_kdb_subcommand_needs_storage_plugin' -x -a '(__fish_k
 # = Options =
 # ===========
 
+# --all -a
+__fish_kdb_add_option '__fish_kdb_subcommand_includes get' 'all' 'a' 'Consider all of the keys'
+
 # --color -C
 set -l description 'Print never/auto(default)/always colored output'
 set -l completion_function '__fish_kdb_subcommand_supports_option_color'
