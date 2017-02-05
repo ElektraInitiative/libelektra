@@ -33,6 +33,136 @@ int elektraValidationGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key
 	return 1;
 }
 
+static int validateKey(Key *key, Key *parentKey)
+{
+	const Key * regexMeta = keyGetMeta (key, "check/validation");
+
+	const Key * icaseMeta = keyGetMeta (key, "check/validation/ignorecase");
+	const Key * matchMeta = keyGetMeta (key, "check/validation/match");
+	const Key * invertMeta = keyGetMeta (key, "check/validation/invert");
+	const Key * typeMeta = keyGetMeta (key, "check/validation/type");
+
+	int lineValidation = 0;
+	int wordValidation = 0;
+	int icaseValidation = 0;
+	int invertValidation = 0;
+
+	if (icaseMeta) icaseValidation = 1;
+	if (invertMeta) invertValidation = 1;
+	if (matchMeta)
+	{
+		char * matchCopy = strdup (keyString (matchMeta));
+		char * ptr = matchCopy;
+		while (*ptr)
+		{
+			*ptr = toupper (*ptr);
+			++ptr;
+		}
+		if (!strcmp (matchCopy, "LINE")) lineValidation = 1;
+		if (!strcmp (matchCopy, "WORD")) wordValidation = 1;
+		if (!strcmp (matchCopy, "ANY"))
+		{
+			lineValidation = 0;
+			wordValidation = 0;
+		}
+		elektraFree (matchCopy);
+	}
+
+	int cflags = REG_NOSUB | REG_EXTENDED;
+	if (icaseValidation) cflags |= REG_ICASE;
+	if (lineValidation) cflags |= REG_NEWLINE;
+	if (typeMeta)
+	{
+		char * typeCopy = strdup (keyString (typeMeta));
+		char * ptr = typeCopy;
+		while (*ptr)
+		{
+			*ptr = toupper (*ptr);
+			++ptr;
+		}
+		if (!strcmp (typeCopy, "ERE"))
+			cflags |= REG_EXTENDED;
+		else if (!strcmp (typeCopy, "BRE"))
+			cflags &= REG_EXTENDED;
+		elektraFree (typeCopy);
+	}
+
+	char * regexString = NULL;
+	int freeString = 0;
+	if (lineValidation || wordValidation)
+	{
+		regexString = elektraMalloc (keyGetValueSize (regexMeta) + 2);
+		freeString = 1;
+		sprintf (regexString, "^%s$", keyString (regexMeta));
+	}
+	else
+	{
+		regexString = (char *)keyString (regexMeta);
+	}
+
+	regex_t regex;
+	regmatch_t offsets;
+	int ret = regcomp (&regex, regexString, cflags);
+
+	if (ret != 0)
+	{
+		char buffer[1000];
+		regerror (ret, &regex, buffer, 999);
+		ELEKTRA_SET_ERROR (41, parentKey, buffer);
+		regfree (&regex);
+		if (freeString) elektraFree (regexString);
+		return 0;
+	}
+	int match = 0;
+	if (!wordValidation)
+	{
+		ret = regexec (&regex, keyString (key), 1, &offsets, 0);
+		if (ret == 0) match = 1;
+	}
+	else
+	{
+		char * savePtr;
+		char * token;
+		char * string = (char *)keyString (key);
+		while ((token = strtok_r (string, " \t\n", &savePtr)) != NULL)
+		{
+			ret = regexec (&regex, token, 1, &offsets, 0);
+			if (ret == 0)
+			{
+				match = 1;
+				break;
+			}
+			string = NULL;
+		}
+	}
+	if (invertValidation) match = !match;
+
+	if (!match)
+	{
+		const Key * msg = keyGetMeta (key, "check/validation/message");
+		if (msg)
+		{
+			ELEKTRA_SET_ERROR (42, parentKey, keyString (msg));
+			regfree (&regex);
+			if (freeString) elektraFree (regexString);
+			return 0;
+		}
+		else
+		{
+			char buffer[1000];
+			regerror (ret, &regex, buffer, 999);
+			ELEKTRA_SET_ERROR (42, parentKey, buffer);
+			regfree (&regex);
+			if (freeString) elektraFree (regexString);
+			return 0;
+		}
+	}
+
+	regfree (&regex);
+	if (freeString) elektraFree (regexString);
+	return 1;
+}
+
 int elektraValidationSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
 {
 	Key * cur = 0;
@@ -42,130 +172,9 @@ int elektraValidationSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key
 		const Key * regexMeta = keyGetMeta (cur, "check/validation");
 
 		if (!regexMeta) continue;
-
-		const Key * icaseMeta = keyGetMeta (cur, "check/validation/ignorecase");
-		const Key * matchMeta = keyGetMeta (cur, "check/validation/match");
-		const Key * invertMeta = keyGetMeta (cur, "check/validation/invert");
-		const Key * typeMeta = keyGetMeta (cur, "check/validation/type");
-
-		int lineValidation = 0;
-		int wordValidation = 0;
-		int icaseValidation = 0;
-		int invertValidation = 0;
-
-		if (icaseMeta) icaseValidation = 1;
-		if (invertMeta) invertValidation = 1;
-		if (matchMeta)
-		{
-			char * matchCopy = strdup (keyString (matchMeta));
-			char * ptr = matchCopy;
-			while (*ptr)
-			{
-				*ptr = toupper (*ptr);
-				++ptr;
-			}
-			if (!strcmp (matchCopy, "LINE")) lineValidation = 1;
-			if (!strcmp (matchCopy, "WORD")) wordValidation = 1;
-			if (!strcmp (matchCopy, "ANY"))
-			{
-				lineValidation = 0;
-				wordValidation = 0;
-			}
-			elektraFree (matchCopy);
-		}
-
-		int cflags = REG_NOSUB | REG_EXTENDED;
-		if (icaseValidation) cflags |= REG_ICASE;
-		if (lineValidation) cflags |= REG_NEWLINE;
-		if (typeMeta)
-		{
-			char * typeCopy = strdup (keyString (typeMeta));
-			char * ptr = typeCopy;
-			while (*ptr)
-			{
-				*ptr = toupper (*ptr);
-				++ptr;
-			}
-			if (!strcmp (typeCopy, "ERE"))
-				cflags |= REG_EXTENDED;
-			else if (!strcmp (typeCopy, "BRE"))
-				cflags &= REG_EXTENDED;
-			elektraFree (typeCopy);
-		}
-
-		char * regexString = NULL;
-		int freeString = 0;
-		if (lineValidation || wordValidation)
-		{
-			regexString = elektraMalloc (keyGetValueSize (regexMeta) + 2);
-			freeString = 1;
-			sprintf (regexString, "^%s$", keyString (regexMeta));
-		}
-		else
-		{
-			regexString = (char *)keyString (regexMeta);
-		}
-
-		regex_t regex;
-		regmatch_t offsets;
-		int ret = regcomp (&regex, regexString, cflags);
-
-		if (ret != 0)
-		{
-			char buffer[1000];
-			regerror (ret, &regex, buffer, 999);
-			ELEKTRA_SET_ERROR (41, parentKey, buffer);
-			regfree (&regex);
-			if (freeString) elektraFree (regexString);
-			return -1;
-		}
-		int match = 0;
-		if (!wordValidation)
-		{
-			ret = regexec (&regex, keyString (cur), 1, &offsets, 0);
-			if (ret == 0) match = 1;
-		}
-		else
-		{
-			char * savePtr;
-			char * token;
-			char * string = (char *)keyString (cur);
-			while ((token = strtok_r (string, " \t\n", &savePtr)) != NULL)
-			{
-				ret = regexec (&regex, token, 1, &offsets, 0);
-				if (ret == 0)
-				{
-					match = 1;
-					break;
-				}
-				string = NULL;
-			}
-		}
-		if (invertValidation) match = !match;
-
-		if (!match)
-		{
-			const Key * msg = keyGetMeta (cur, "check/validation/message");
-			if (msg)
-			{
-				ELEKTRA_SET_ERROR (42, parentKey, keyString (msg));
-				regfree (&regex);
-				if (freeString) elektraFree (regexString);
-				return -1;
-			}
-			else
-			{
-				char buffer[1000];
-				regerror (ret, &regex, buffer, 999);
-				ELEKTRA_SET_ERROR (42, parentKey, buffer);
-				regfree (&regex);
-				if (freeString) elektraFree (regexString);
-				return -1;
-			}
-		}
-
-		regfree (&regex);
-		if (freeString) elektraFree (regexString);
+		int rc = validateKey(cur, parentKey);
+		if(!rc)
+		    return -1;
 	}
 
 	return 1; /* success */
