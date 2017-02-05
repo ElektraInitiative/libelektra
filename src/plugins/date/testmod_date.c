@@ -7,6 +7,7 @@
  *
  */
 
+#include <locale.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -62,17 +63,18 @@ int main (int argc, char ** argv)
 {
 	printf ("DATE     TESTS\n");
 	printf ("==================\n\n");
-
+	const char *old_locale = setlocale(LC_ALL, NULL);
+	setlocale(LC_ALL, "C");
 	init (argc, argv);
 
 	testFmt ("20:15:00", "%H:%M:%S", 1);
 	testFmt ("20:15:00", "%I:%M:%S", -1);
 	testFmt ("Sat 17 Dec 2016 08:07:43 PM CET", "%a %d %b %Y %r %Z", 1);
 
-	testIso ("2016-12-12T23:59:01", "datetime complete", 1);
-	testIso ("2016-12-12 23:59:01", "datetime complete noT", 1);
-	testIso ("2016-12-12T23:59:01", "datetime truncated", -1);
-	testIso ("-12-12T23:59:01", "datetime truncated", 1);
+	testIso ("2016-12-12T23:59:01Z", "datetime complete", 1);
+	testIso ("2016-12-12 23:59:01Z", "datetime complete noT", 1);
+	testIso ("2016-12-12T23:59:01Z", "datetime truncated", -1);
+	testIso ("-12-12T23:59:01Z", "datetime truncated", 1);
 	testIso ("2016-W23", "weekdate", 1);
 	testIso ("22:30+04", "utc extended", 1);
 	testIso ("22:30-04", "utc extended", 1);
@@ -84,7 +86,8 @@ int main (int argc, char ** argv)
 	testRfc2822 ("Sat, Mar 01 2016 23:59:01 +0400", -1);
 	testRfc2822 ("01 Mar 2016 23:59 +0400", 1);
 	testRfc2822 ("01 Mar 2016 01:00:59", -1);
-
+	
+	setlocale(LC_ALL, old_locale);
 	printf ("\ntestmod_date RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 
 	return nbError;
