@@ -235,6 +235,14 @@ function __fish_kdb_print_option_depth_arguments -d 'Print possible arguments fo
     seq $start 10 | string replace -r '\d+' "\$0\tComplete at $description \$0 Level" | string replace -r '([02-9]|\d{2}) Level$' '$0s'
 end
 
+function __fish_kdb_print_option_editor_arguments -d 'Print possible arguments for the option editor'
+    set -l editors atom ed emacs nano pico mate rmate subl vi vim
+    for editor in $editors
+        set -l editor_path (which $editor)
+        and echo -e "$editor_path\t$editor"
+    end
+end
+
 function __fish_kdb_print_option_strategy_arguments -d 'Print possible arguments for the option strategy'
     echo -e 'validate\tApply meta data as received from base, and then cut+append all keys as imported'
     __fish_kdb_print_option_strategy_arguments_merge
@@ -274,6 +282,10 @@ __fish_kdb_add_option "$completion_function" '' 'C' "Do not color the output"
 # --debug -d
 set -l description 'Give debug information or ask debug questions (in interactive mode)'
 __fish_kdb_add_option '__fish_kdb_subcommand_supports_option_debug' 'debug' 'd' "$description"
+
+# --editor -e
+set -l argument_function '__fish_kdb_print_option_editor_arguments'
+__fish_kdb_add_option '__fish_kdb_subcommand_includes editor' 'editor' 'e' "Specify which external editor to use" "($argument_function)"
 
 # --force -f
 __fish_kdb_add_option '__fish_kdb_subcommand_supports_option_force' 'force' 'f' 'Force the action to be done'
