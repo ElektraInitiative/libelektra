@@ -138,15 +138,23 @@ complete -c kdb -n '__fish_kdb_needs_namespace' -x -a '(__fish_kdb_print_namespa
 # = Options =
 # ===========
 
-__fish_kdb_add_option '__fish_kdb_subcommand_supports_common_options' 'help' 'H' 'Show the man page'
-__fish_kdb_add_option '__fish_kdb_subcommand_supports_option_null' 'null' '0' 'Use binary 0 termination.'
-__fish_kdb_add_option '__fish_kdb_subcommand_supports_option_verbose' 'verbose' 'v' 'Explain what is happening'
-
-__fish_kdb_add_option "not __fish_kdb_subcommand; or __fish_kdb_subcommand_supports_common_options" 'version' 'V' 'Print version info'
-
-set -l description 'Use a different profile for kdb configuration'
-__fish_kdb_add_option '__fish_kdb_subcommand_supports_common_options' 'profile' 'p' "$description" 'current'
-
+# --color -C
 set -l description 'Print never/auto(default)/always colored output'
 set -l completion_function '__fish_kdb_subcommand_supports_option_color'
 __fish_kdb_add_option "$completion_function" 'color' 'C' "$description" '(__fish_kdb_print_option_color_arguments)' -f
+
+# --help -H
+__fish_kdb_add_option '__fish_kdb_subcommand_supports_common_options' 'help' 'H' 'Show the man page'
+
+# --null -0
+__fish_kdb_add_option '__fish_kdb_subcommand_supports_option_null' 'null' '0' 'Use binary 0 termination.'
+
+# --profile -p
+set -l description 'Use a different profile for kdb configuration'
+__fish_kdb_add_option '__fish_kdb_subcommand_supports_common_options' 'profile' 'p' "$description" 'current'
+
+# --verbose -v
+__fish_kdb_add_option '__fish_kdb_subcommand_supports_option_verbose' 'verbose' 'v' 'Explain what is happening'
+
+# --version -V
+__fish_kdb_add_option "not __fish_kdb_subcommand; or __fish_kdb_subcommand_supports_common_options" 'version' 'V' 'Print version info'
