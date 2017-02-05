@@ -243,6 +243,12 @@ function __fish_kdb_print_option_editor_arguments -d 'Print possible arguments f
     end
 end
 
+function __fish_kdb_print_option_namespace_arguments -d 'Print possible arguments for the option namespace'
+    echo -e 'dir\tNamespace for directory specific configuration'
+    echo -e 'user\tNamespace for user specific configuration'
+    echo -e 'system\tNamespace for system wide configuration'
+end
+
 function __fish_kdb_print_option_strategy_arguments -d 'Print possible arguments for the option strategy'
     echo -e 'validate\tApply meta data as received from base, and then cut+append all keys as imported'
     __fish_kdb_print_option_strategy_arguments_merge
@@ -302,6 +308,11 @@ __fish_kdb_add_option '__fish_kdb_subcommand_includes complete' 'max-depth' 'M' 
 set -l description 'Specify the minimum depth of completion suggestions (0 by default), exclusive'
 set -l argument_function '__fish_kdb_print_option_depth_arguments least 0'
 __fish_kdb_add_option '__fish_kdb_subcommand_includes complete' 'min-depth' 'm' "$description" "($argument_function)"
+
+# --namespace -N
+set -l description 'Specify the namespace to use for cascading keys'
+set -l argument_function '__fish_kdb_print_option_namespace_arguments'
+__fish_kdb_add_option '__fish_kdb_subcommand_includes editor file import set' 'namespace' 'N' "$description" "($argument_function)"
 
 # --null -0
 __fish_kdb_add_option '__fish_kdb_subcommand_supports_option_null' 'null' '0' 'Use binary 0 termination'
