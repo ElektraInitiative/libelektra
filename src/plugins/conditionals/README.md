@@ -51,7 +51,9 @@ Keynames are all either relative to to-be-tested key (starting with `./` or `../
 
 ### Multiple Statements
 
-It's also possible to test multiple conditions using `check/condition` as a meta array and multiple assign statements using `assign/condition` as a meta array.
+It's also possible to test multiple conditions using `check/condition` as a meta array. By default the validation succeeds if no statement evaluates to false. Additionally the Key `check/condition/eval` can be used to specify other methods of evaluation. `*` means every statement has to be true, `?` that at least 1 statement has to be true.
+For multiple assign statements use `assign/condition` as a meta array.
+
 
 ## Example
 
