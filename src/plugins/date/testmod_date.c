@@ -69,10 +69,10 @@ int main (int argc, char ** argv)
 	testFmt ("20:15:00", "%I:%M:%S", -1);
 	testFmt ("Sat 17 Dec 2016 08:07:43 PM CET", "%a %d %b %Y %r %Z", 1);
 
-	testIso ("2016-12-12T23:59:01Z", "datetime complete", 1);
-	testIso ("2016-12-12 23:59:01Z", "datetime complete noT", 1);
-	testIso ("2016-12-12T23:59:01Z", "datetime truncated", -1);
-	testIso ("-12-12T23:59:01Z", "datetime truncated", 1);
+	testIso ("2016-12-12T23:59:01", "datetime complete", 1);
+	testIso ("2016-12-12 23:59:01", "datetime complete noT", 1);
+	testIso ("2016-12-12T23:59:01", "datetime truncated", -1);
+	testIso ("-12-12T23:59:01", "datetime truncated", 1);
 	testIso ("2016-W23", "weekdate", 1);
 	testIso ("22:30+04", "utc extended", 1);
 	testIso ("22:30-04", "utc extended", 1);
