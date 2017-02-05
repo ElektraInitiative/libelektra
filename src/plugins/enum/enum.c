@@ -181,14 +181,20 @@ static int validateWithArray (Key * key)
 	return 1;
 }
 
-static int validateKey (Key * key)
+static int validateKey (Key * key, Key *parentKey)
 {
+	int rc = 0;
 	const Key * meta = keyGetMeta (key, "check/enum");
-	if (!meta) return 1;
 	if (keyString (meta)[0] != '#')
-		return validateWithList (key);
+		rc = validateWithList (key);
 	else
-		return validateWithArray (key);
+		rc = validateWithArray (key);
+	if (!rc)
+	{
+			ELEKTRA_SET_ERRORF (121, parentKey, "Validation of key \"%s\" with string \"%s\" failed.", keyName (key),
+					    keyString (key));
+	}
+	return rc;
 }
 
 int elektraEnumSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
@@ -197,10 +203,11 @@ int elektraEnumSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UN
 	Key * cur;
 	while ((cur = ksNext (returned)) != NULL)
 	{
-		if (!validateKey (cur))
+		const Key * meta = keyGetMeta (cur, "check/enum");
+		if (!meta) continue;;
+		
+		if (!validateKey (cur, parentKey))
 		{
-			ELEKTRA_SET_ERRORF (121, parentKey, "Validation of key \"%s\" with string \"%s\" failed.", keyName (cur),
-					    keyString (cur));
 			return -1;
 		}
 	}
