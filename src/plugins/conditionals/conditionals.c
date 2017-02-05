@@ -871,22 +871,45 @@ int elektraConditionalsGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned EL
 			CondResult result;
 			if (keyString (conditionMeta)[0] == '#')
 			{
+				const Key * eval = keyGetMeta (cur, "check/condition/eval");
+				int countSucceeded = 0;
+				int countFailed = 0;
+				int countNoexpr = 0;
 				KeySet * condKS = elektraMetaArrayToKS (cur, "check/condition");
 				Key * c;
 				while ((c = ksNext (condKS)) != NULL)
 				{
 					if (keyCmp (c, conditionMeta) == 0) continue;
 					result = evaluateKey (c, suffixList, parentKey, cur, returned, CONDITION);
-					if (result == NOEXPR)
-					{
-						ret |= TRUE;
-					}
-					else
-					{
-						ret |= result;
-					}
+					if (result == TRUE)
+						++countSucceeded;
+					else if (result == ERROR)
+						++countFailed;
+					else if (result == NOEXPR)
+						++countNoexpr;
 				}
 				ksDel (condKS);
+				if (!strcmp (keyString (eval), "*"))
+				{
+					if (countFailed || countNoexpr)
+						ret |= ERROR;
+					else
+						ret |= TRUE;
+				}
+				else if (!strcmp (keyString (eval), "?"))
+				{
+					if (countSucceeded)
+						ret |= TRUE;
+					else
+						ret |= ERROR;
+				}
+				else
+				{
+					if (countFailed)
+						ret |= ERROR;
+					else
+						ret |= TRUE;
+				}
 			}
 			else
 			{
@@ -940,22 +963,45 @@ int elektraConditionalsSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned EL
 			CondResult result;
 			if (keyString (conditionMeta)[0] == '#')
 			{
+				const Key * eval = keyGetMeta (cur, "check/condition/eval");
+				int countSucceeded = 0;
+				int countFailed = 0;
+				int countNoexpr = 0;
 				KeySet * condKS = elektraMetaArrayToKS (cur, "check/condition");
 				Key * c;
 				while ((c = ksNext (condKS)) != NULL)
 				{
 					if (keyCmp (c, conditionMeta) == 0) continue;
 					result = evaluateKey (c, suffixList, parentKey, cur, returned, CONDITION);
-					if (result == NOEXPR)
-					{
-						ret |= TRUE;
-					}
-					else
-					{
-						ret |= result;
-					}
+					if (result == TRUE)
+						++countSucceeded;
+					else if (result == ERROR)
+						++countFailed;
+					else if (result == NOEXPR)
+						++countNoexpr;
 				}
 				ksDel (condKS);
+				if (!strcmp (keyString (eval), "*"))
+				{
+					if (countFailed || countNoexpr)
+						ret |= ERROR;
+					else
+						ret |= TRUE;
+				}
+				else if (!strcmp (keyString (eval), "?"))
+				{
+					if (countSucceeded)
+						ret |= TRUE;
+					else
+						ret |= ERROR;
+				}
+				else
+				{
+					if (countFailed)
+						ret |= ERROR;
+					else
+						ret |= TRUE;
+				}
 			}
 			else
 			{
