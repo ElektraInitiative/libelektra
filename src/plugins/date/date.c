@@ -399,7 +399,7 @@ static int rfc822StringValidation (const char * date)
 	return -1;
 }
 
-static int validateDate (Key * key, Key * parentKey)
+static int validateKey (Key * key, Key * parentKey)
 {
 	const Key * standard = keyGetMeta (key, "check/date");
 	const Key * formatStringMeta = keyGetMeta (key, "check/date/format");
@@ -480,7 +480,7 @@ int elektraDateGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UN
 		const Key * meta = keyGetMeta (cur, "check/date");
 		if (meta)
 		{
-			int r = validateDate (cur, parentKey);
+			int r = validateKey (cur, parentKey);
 			if (r == 0)
 			{
 				rc = -1;
@@ -501,7 +501,7 @@ int elektraDateSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UN
 		const Key * meta = keyGetMeta (cur, "check/date");
 		if (meta)
 		{
-			int r = validateDate (cur, parentKey);
+			int r = validateKey (cur, parentKey);
 			if (r == 0)
 			{
 				rc = -1;
