@@ -278,7 +278,7 @@ end
 # =============
 
 complete -c kdb -n 'not __fish_kdb_subcommand' -x -a '(__fish_kdb_print_subcommands -v)'
-complete -c kdb -n '__fish_kdb_needs_namespace complete ls editor export file fstab get set 1' -x -a '(__fish_kdb_print_namespaces)'
+complete -c kdb -n '__fish_kdb_needs_namespace complete ls editor export file fstab get getmeta set 1' -x -a '(__fish_kdb_print_namespaces)'
 complete -c kdb -n '__fish_kdb_needs_namespace cp 2' -x -a '(__fish_kdb_print_namespaces)'
 complete -c kdb -n '__fish_kdb_needs_plugin' -x -a '(__fish_kdb_print_plugins)'
 complete -c kdb -n '__fish_kdb_subcommand_convert_needs_storage_plugin' -x -a '(__fish_kdb_print_storage_plugins)'
