@@ -275,6 +275,9 @@ __fish_kdb_add_option '__fish_kdb_subcommand_supports_option_plugins_config' 'pl
 set -l description 'Use a different profile for kdb configuration'
 __fish_kdb_add_option '__fish_kdb_subcommand_supports_common_options' 'profile' 'p' "$description" 'current'
 
+# --recursive -r
+__fish_kdb_add_option '__fish_kdb_subcommand_includes cp mv rm' 'recursive' 'r' 'Work in a recursive mode'
+
 # --verbose -v
 __fish_kdb_add_option '__fish_kdb_subcommand_supports_option_verbose' 'verbose' 'v' 'Explain what is happening'
 
