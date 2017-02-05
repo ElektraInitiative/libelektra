@@ -387,3 +387,7 @@ __fish_kdb_add_option "not __fish_kdb_subcommand; or __fish_kdb_subcommand_suppo
 
 # --without-elektra -E
 __fish_kdb_add_option '__fish_kdb_subcommand_includes export' 'without-elektra' 'E' 'Omit the `/elektra` directory'
+
+# --with-recommends -W
+set -l completion_function '__fish_kdb_subcommand_includes global-mount gmount mount smount spec-mount'
+__fish_kdb_add_option "$completion_function" 'with-recommends' 'W' 'Add recommended plugins'
