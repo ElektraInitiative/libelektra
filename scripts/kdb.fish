@@ -123,6 +123,14 @@ function __fish_kdb_subcommand_convert_needs_storage_plugin -d 'Check if the sub
     and not __input_includes (__fish_kdb_print_storage_plugins) 2
 end
 
+function __fish_kdb_subcommand_fstab_needs_filesystem -d 'Check if the subcommand fstab needs a filesystem completion'
+    set -l input (commandline -opc)
+    set -l number_arguments (count $input)
+
+    __fish_kdb_subcommand_includes fstab
+    and test $number_arguments -eq 5
+end
+
 function __fish_kdb_subcommand_needs_storage_plugin -d 'Check if the current subcommand need a storage plugin completion'
     set -l subcommands editor export
 
@@ -274,6 +282,7 @@ complete -c kdb -n '__fish_kdb_needs_namespace complete ls editor export file fs
 complete -c kdb -n '__fish_kdb_needs_namespace cp 2' -x -a '(__fish_kdb_print_namespaces)'
 complete -c kdb -n '__fish_kdb_needs_plugin' -x -a '(__fish_kdb_print_plugins)'
 complete -c kdb -n '__fish_kdb_subcommand_convert_needs_storage_plugin' -x -a '(__fish_kdb_print_storage_plugins)'
+complete -c kdb -n '__fish_kdb_subcommand_fstab_needs_filesystem' -x -a '(__fish_print_filesystems)'
 complete -c kdb -n '__fish_kdb_subcommand_needs_storage_plugin' -x -a '(__fish_kdb_print_storage_plugins)'
 
 # ===========
