@@ -63,7 +63,7 @@ function __fish_kdb_subcommand_includes -d 'Check if the current kdb subcommand 
     contains -- "$subcommand" $argv
 end
 
-function __fish_kdb_subcommand_does_not_include -d 'Check if the current kdb subcommand does not include any of the given subcommands'
+function __fish_kdb_subcommand_exists_does_not_include -d 'Check if a kdb subcommand exist and does not include any of the given commands'
     set -l subcommand (__fish_kdb_subcommand)
 
     test -z $subcommand
@@ -195,7 +195,7 @@ end
 # ===========
 
 function __fish_kdb_subcommand_supports_option_color -d 'Check if the current subcommand supports colored output'
-    __fish_kdb_subcommand_does_not_include complete help list-tools qt-gui
+    __fish_kdb_subcommand_exists_does_not_include complete help list-tools qt-gui
 end
 
 function __fish_kdb_subcommand_supports_option_debug -d 'Check if the current subcommand supports the option debug'
@@ -216,11 +216,11 @@ end
 
 function __fish_kdb_subcommand_supports_option_verbose -d 'Check if the current subcommand supports the option verbose'
     set -l commands export file getmeta global-mount gmount info mount qt-gui remount rm sget shell test vset help list-tools qt-gui
-    __fish_kdb_subcommand_does_not_include $commands
+    __fish_kdb_subcommand_exists_does_not_include $commands
 end
 
 function __fish_kdb_subcommand_supports_common_options -d 'Check if the current subcommand supports common options'
-    __fish_kdb_subcommand_does_not_include help list-tools qt-gui
+    __fish_kdb_subcommand_exists_does_not_include help list-tools qt-gui
 end
 
 function __fish_kdb_print_option_color_arguments -d 'Print possible arguments for the option color'
