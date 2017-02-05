@@ -98,4 +98,5 @@ TBD
 
 ## Limitations ##
 
-None.
+Testing timezone designators currently only works with glibc.
+Unit tests using timezone designators are locale dependent.
