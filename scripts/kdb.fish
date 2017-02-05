@@ -44,6 +44,11 @@ function __input_left_includes_options -d 'Check if the input to the left of the
     string match -r -- $options "$input"
 end
 
+function __number_arguments_input_left -d 'Return the number of arguments to the left of the current cursor position'
+    set -l input (commandline -opc)
+    count $input
+end
+
 function __join -d 'Join variables into one variable using a given separator'
     set -l separator $argv[1]
     set -l joined ''
@@ -89,6 +94,13 @@ end
 
 function __fish_kdb_is_namespace -d 'Check if the given argument is a namespace'
     string match -r -- '^(dir|proc|spec|system|user|\/).*' "$argv" >/dev/null
+end
+
+function __fish_kdb_subcommand_needs_metanames -d 'Check if the current command needs a meta-name completion'
+    not __fish_kdb_subcommand_includes getmeta setmeta
+    and return 1
+
+    test (__number_arguments_input_left) -eq 3
 end
 
 function __fish_kdb_needs_namespace -d 'Check if the current command needs a namespace completion'
@@ -157,6 +169,20 @@ end
 
 function __fish_kdb_print_plugins -d 'Print a list of available plugins'
     kdb list
+end
+
+function __fish_kdb_print_metanames -d 'Print a list of possible meta-names'
+    set -l metanames 'order' 'comment' 'line' 'fallback/#' 'override/#' 'namespace/#' 'default' 'context' 'callback/_' 'binary' 'array'
+    set metanames $metanames 'mountpoint' 'infos' 'config' 'opt' 'opt/long' 'env' 'see/#' 'rationale' 'description' 'example'
+    set metanames $metanames 'rename/toupper' 'rename/tolower' 'rename/cut' 'rename/to' 'origname' 'conflict/_' 'array/range' 'required'
+    set metanames $metanames 'logs/_/_' 'warnings' 'error' 'struct' 'check/type' 'check/type/min' 'check/type/max' 'check/format'
+    set metanames $metanames 'check/path' 'check/validation' 'check/validation/message' 'check/validation/match'
+    set metanames $metanames 'check/validation/ignorecase' 'check/validation/invert' 'check/range' 'check/enum' 'check/calculate'
+    set metanames $metanames 'check/condition' 'deprecated' 'internal/<plugin>/*' 'source' 'dependency/control' 'dependency/value'
+    set metanames $metanames 'application/name' 'application/version' 'restrict/write' 'restrict/null' 'restrict/binary' 'restrict/remove'
+    set metanames $metanames 'evaluate/<language>' 'uid' 'gid' 'mode' 'atime' 'mtime' 'ctime' 'spec' 'proc' 'dir' 'user' 'system'
+    set metanames $metanames 'comment/#' 'comment/#/start' 'comment/#/space' 'csv/order' 'crypto/encrypt' 'crypto/salt'
+    printf '%s\n' $metanames
 end
 
 function __fish_kdb_print_storage_plugins -d 'Print a list of available storage plugins'
@@ -284,6 +310,7 @@ complete -c kdb -n '__fish_kdb_needs_plugin' -x -a '(__fish_kdb_print_plugins)'
 complete -c kdb -n '__fish_kdb_subcommand_convert_needs_storage_plugin' -x -a '(__fish_kdb_print_storage_plugins)'
 complete -c kdb -n '__fish_kdb_subcommand_fstab_needs_filesystem' -x -a '(__fish_print_filesystems)'
 complete -c kdb -n '__fish_kdb_subcommand_needs_storage_plugin' -x -a '(__fish_kdb_print_storage_plugins)'
+complete -c kdb -n '__fish_kdb_subcommand_needs_metanames' -x -a '(__fish_kdb_print_metanames)'
 
 # ===========
 # = Options =
