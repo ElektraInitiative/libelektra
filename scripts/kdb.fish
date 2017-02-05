@@ -145,7 +145,7 @@ function __fish_kdb_subcommand_fstab_needs_filesystem -d 'Check if the subcomman
 end
 
 function __fish_kdb_subcommand_needs_storage_plugin -d 'Check if the current subcommand need a storage plugin completion'
-    set -l subcommands editor export
+    set -l subcommands editor export import
 
     not __fish_kdb_subcommand_includes $subcommands
     and return 1
