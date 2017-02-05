@@ -12,6 +12,60 @@
 #include "kdbconfig.h"
 #endif
 
+static int validateKey(Key *key, Key *parentKey)
+{
+	struct stat buf;
+	/* TODO: make exceptions configurable using path/allow */
+	if (!strcmp (keyString (key), "proc"))
+	{
+		return 1;
+	}
+	else if (!strcmp (keyString (key), "tmpfs"))
+	{
+		return 1;
+	}
+	else if (!strcmp (keyString (key), "none"))
+	{
+		return 1;
+	}
+	else if (keyString (key)[0] != '/')
+	{
+		ELEKTRA_SET_ERROR (56, parentKey, keyString (key));
+		return 0;
+	}
+	int errnosave = errno;
+	int rc = 1;
+	const Key * meta = keyGetMeta(key, "check/path");
+	if (stat (keyString (key), &buf) == -1)
+	{
+		char * errmsg = elektraMalloc (ERRORMSG_LENGTH + 1 + +keyGetNameSize (key) + keyGetValueSize (key) +
+					       sizeof ("name:  value:  message: "));
+		strerror_r (errno, errmsg, ERRORMSG_LENGTH);
+		strcat (errmsg, " from key: ");
+		strcat (errmsg, keyName (key));
+		strcat (errmsg, " with path: ");
+		strcat (errmsg, keyValue (key));
+		ELEKTRA_ADD_WARNING (57, parentKey, errmsg);
+		elektraFree (errmsg);
+		errno = errnosave;
+	}
+	else if (!strcmp (keyString (meta), "device"))
+	{
+		if (!S_ISBLK (buf.st_mode))
+		{
+			ELEKTRA_ADD_WARNING (54, parentKey, keyString (key));
+		}
+	}
+	else if (!strcmp (keyString (meta), "directory"))
+	{
+		if (!S_ISDIR (buf.st_mode))
+		{
+			ELEKTRA_ADD_WARNING (55, parentKey, keyString (key));
+		}
+	}
+	return 1;
+}
+
 int elektraPathGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey ELEKTRA_UNUSED)
 {
 	/* contract only */
@@ -32,59 +86,14 @@ int elektraPathSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 	/* set all keys */
 	Key * cur;
 	ksRewind (returned);
+	int rc = 1;
 	while ((cur = ksNext (returned)) != 0)
 	{
 		const Key * meta = keyGetMeta (cur, "check/path");
 		if (!meta) continue;
-
-		struct stat buf;
-		/* TODO: make exceptions configurable using path/allow */
-		if (!strcmp (keyString (cur), "proc"))
-		{
-			continue;
-		}
-		else if (!strcmp (keyString (cur), "tmpfs"))
-		{
-			continue;
-		}
-		else if (!strcmp (keyString (cur), "none"))
-		{
-			continue;
-		}
-		else if (keyString (cur)[0] != '/')
-		{
-			ELEKTRA_SET_ERROR (56, parentKey, keyString (cur));
-			return -1;
-		}
-
-		int errnosave = errno;
-		if (stat (keyString (cur), &buf) == -1)
-		{
-			char * errmsg = elektraMalloc (ERRORMSG_LENGTH + 1 + +keyGetNameSize (cur) + keyGetValueSize (cur) +
-						       sizeof ("name:  value:  message: "));
-			strerror_r (errno, errmsg, ERRORMSG_LENGTH);
-			strcat (errmsg, " from key: ");
-			strcat (errmsg, keyName (cur));
-			strcat (errmsg, " with path: ");
-			strcat (errmsg, keyValue (cur));
-			ELEKTRA_ADD_WARNING (57, parentKey, errmsg);
-			elektraFree (errmsg);
-			errno = errnosave;
-		}
-		else if (!strcmp (keyString (meta), "device"))
-		{
-			if (!S_ISBLK (buf.st_mode))
-			{
-				ELEKTRA_ADD_WARNING (54, parentKey, keyString (cur));
-			}
-		}
-		else if (!strcmp (keyString (meta), "directory"))
-		{
-			if (!S_ISDIR (buf.st_mode))
-			{
-				ELEKTRA_ADD_WARNING (55, parentKey, keyString (cur));
-			}
-		}
+		rc = validateKey(cur, parentKey);
+		if(!rc)
+		    return -1;
 	}
 
 	return 1; /* success */
