@@ -155,7 +155,7 @@ function __fish_kdb_print_storage_plugins -d 'Print a list of available storage 
     set -l regex '^(?:'(__join '|' $formats)')$'
     set -l storage_plugins (__fish_kdb_print_plugins | string match -r $regex)
     set -l storage_plugins $storage_plugins storage
-    printf '%s\n' $storage_plugins | sort
+    printf '%s\n' $storage_plugins
 end
 
 function __fish_kdb_add_option -d 'Add suggestions for a certain option to multiple kdb subcommands'
