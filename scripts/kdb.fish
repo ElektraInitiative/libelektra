@@ -123,12 +123,13 @@ function __fish_kdb_subcommand_convert_needs_storage_plugin -d 'Check if the sub
     and not __input_includes (__fish_kdb_print_storage_plugins) 2
 end
 
-function __fish_kdb_subcommand_editor_needs_storage_plugin -d 'Check if the subcommand editor needs a storage plugin completion'
-    set -l subcommand (__fish_kdb_subcommand)
-    test "$subcommand" != editor
+function __fish_kdb_subcommand_needs_storage_plugin -d 'Check if the current subcommand need a storage plugin completion'
+    set -l subcommands editor export
+
+    not __fish_kdb_subcommand_includes $subcommands
     and return 1
 
-    __fish_kdb_needs_namespace editor 1
+    __fish_kdb_needs_namespace $subcommands 1
     and return 1
     not __input_includes (__fish_kdb_print_storage_plugins)
 end
@@ -273,7 +274,7 @@ complete -c kdb -n '__fish_kdb_needs_namespace complete ls editor export get set
 complete -c kdb -n '__fish_kdb_needs_namespace cp 2' -x -a '(__fish_kdb_print_namespaces)'
 complete -c kdb -n '__fish_kdb_needs_plugin' -x -a '(__fish_kdb_print_plugins)'
 complete -c kdb -n '__fish_kdb_subcommand_convert_needs_storage_plugin' -x -a '(__fish_kdb_print_storage_plugins)'
-complete -c kdb -n '__fish_kdb_subcommand_editor_needs_storage_plugin' -x -a '(__fish_kdb_print_storage_plugins)'
+complete -c kdb -n '__fish_kdb_subcommand_needs_storage_plugin' -x -a '(__fish_kdb_print_storage_plugins)'
 
 # ===========
 # = Options =
