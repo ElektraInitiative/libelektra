@@ -126,8 +126,12 @@ function __fish_kdb_needs_namespace -d 'Check if the current command needs a nam
 end
 
 function __fish_kdb_needs_plugin -d 'Check if the current command needs a plugin completion'
-    __fish_kdb_subcommand_includes check
-    and not __input_includes (__fish_kdb_print_plugins)
+    if __fish_kdb_subcommand_includes check
+        not __input_includes (__fish_kdb_print_plugins)
+        return $status
+    end
+    __fish_kdb_subcommand_includes global-mount gmount
+    and test (__number_arguments_input_left) -eq 2
 end
 
 function __fish_kdb_subcommand_convert_needs_storage_plugin -d 'Check if the subcommand convert needs a storage plugin completion'
