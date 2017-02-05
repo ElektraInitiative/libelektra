@@ -136,11 +136,8 @@ function __fish_kdb_subcommand_convert_needs_storage_plugin -d 'Check if the sub
 end
 
 function __fish_kdb_subcommand_fstab_needs_filesystem -d 'Check if the subcommand fstab needs a filesystem completion'
-    set -l input (commandline -opc)
-    set -l number_arguments (count $input)
-
     __fish_kdb_subcommand_includes fstab
-    and test $number_arguments -eq 5
+    and test (__number_arguments_input_left) -eq 5
 end
 
 function __fish_kdb_subcommand_needs_storage_plugin -d 'Check if the current subcommand need a storage plugin completion'
