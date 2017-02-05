@@ -235,6 +235,19 @@ function __fish_kdb_print_option_depth_arguments -d 'Print possible arguments fo
     seq $start 10 | string replace -r '\d+' "\$0\tComplete at $description \$0 Level" | string replace -r '([02-9]|\d{2}) Level$' '$0s'
 end
 
+function __fish_kdb_print_option_strategy_arguments -d 'Print possible arguments for the option strategy'
+    echo -e 'validate\tApply meta data as received from base, and then cut+append all keys as imported'
+    __fish_kdb_print_option_strategy_arguments_merge
+end
+
+function __fish_kdb_print_option_strategy_arguments_merge -d 'Print possible arguments for the option strategy for the subcommand merge'
+    echo -e 'preserve\tAutomatically merge only those keys where just one side deviates from base (default)'
+    echo -e 'ours\tWhenever a conflict exists, use our version'
+    echo -e 'theirs\tWhenever a conflict exists, use their version'
+    echo -e 'cut\tRemoves existing keys below the resulting path and replaces them with the merged keyset'
+    echo -e 'import\tPreserves existing keys in the resulting path if they do not exist in the merged keyset'
+end
+
 # -- Completions ---------------------------------------------------------------------------------------------------------------------------
 
 # =============
@@ -290,6 +303,14 @@ __fish_kdb_add_option '__fish_kdb_subcommand_supports_common_options' 'profile' 
 
 # --recursive -r
 __fish_kdb_add_option '__fish_kdb_subcommand_includes cp mv rm' 'recursive' 'r' 'Work in a recursive mode'
+
+# --strategy -s
+set -l argument_function '__fish_kdb_print_option_strategy_arguments'
+set -l description 'Specify the strategy to resolve conflicts'
+set -l options 'strategy' 's'
+__fish_kdb_add_option '__fish_kdb_subcommand_includes editor import' $options "$description" "($argument_function)"
+set -l argument_function '__fish_kdb_print_option_strategy_arguments_merge'
+__fish_kdb_add_option '__fish_kdb_subcommand_includes merge' $options "$description" "($argument_function)"
 
 # --verbose -v
 __fish_kdb_add_option '__fish_kdb_subcommand_supports_option_verbose' 'verbose' 'v' 'Explain what is happening'
