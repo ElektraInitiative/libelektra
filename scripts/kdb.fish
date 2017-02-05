@@ -315,6 +315,9 @@ set -l description 'Specify the namespace to use for cascading keys'
 set -l argument_function '__fish_kdb_print_option_namespace_arguments'
 __fish_kdb_add_option '__fish_kdb_subcommand_includes editor file import set' 'namespace' 'N' "$description" "($argument_function)"
 
+# --no-newline -n
+__fish_kdb_add_option '__fish_kdb_subcommand_includes file get getmeta' 'no-newline' 'n' 'Suppress the newline at the end of the output'
+
 # --null -0
 __fish_kdb_add_option '__fish_kdb_subcommand_supports_option_null' 'null' '0' 'Use binary 0 termination'
 
