@@ -439,6 +439,9 @@ __fish_kdb_add_option '__fish_kdb_subcommand_supports_option_plugins_config' 'pl
 set -l description 'Use a different profile for kdb configuration'
 __fish_kdb_add_option '__fish_kdb_subcommand_supports_common_options' 'profile' 'p' "$description" 'current'
 
+# --quiet -q
+__fish_kdb_add_option '__fish_kdb_subcommand_includes mount set setmeta smount spec-mount' 'quiet' 'q' 'Only print error messages'
+
 # --recursive -r
 __fish_kdb_add_option '__fish_kdb_subcommand_includes cp mv rm' 'recursive' 'r' 'Work in a recursive mode'
 
