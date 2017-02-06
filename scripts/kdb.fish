@@ -193,6 +193,14 @@ function __fish_kdb_subcommand_needs_storage_plugin -d 'Check if the current sub
     not __input_includes (__fish_kdb_print_storage_plugins)
 end
 
+function __fish_kdb_subcommand_remount_needs_namespace -d 'Check if the subcommand remount needs a namespace completion'
+    not __fish_kdb_subcommand_includes remount
+    and return 1
+
+    set -l number_arguments (__fish_kdb__number_arguments_input_left)
+    test $number_arguments -eq 3 -o $number_arguments -eq 4
+end
+
 # ============
 # = Printers =
 # ============
@@ -365,6 +373,7 @@ complete -c kdb -n "$completion_function" -x -a '(__fish_kdb_print_namespaces)'
 complete -c kdb -n '__fish_kdb_needs_namespace cp mv 2' -x -a '(__fish_kdb_print_namespaces)'
 complete -c kdb -n '__fish_kdb_needs_namespace merge 4' -x -a '(__fish_kdb_print_namespaces)'
 complete -c kdb -n '__fish_kdb_subcommand_mount_needs_namespace' -x -a '(__fish_kdb_print_namespaces)'
+complete -c kdb -n '__fish_kdb_subcommand_remount_needs_namespace' -x -a '(__fish_kdb_print_namespaces)'
 
 complete -c kdb -n '__fish_kdb_needs_plugin' -x -a '(__fish_kdb_print_plugins)'
 
