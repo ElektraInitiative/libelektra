@@ -126,7 +126,7 @@ function __fish_kdb_needs_namespace -d 'Check if the current command needs a nam
 end
 
 function __fish_kdb_needs_plugin -d 'Check if the current command needs a plugin completion'
-    if __fish_kdb_subcommand_includes check
+    if __fish_kdb_subcommand_includes check info
         not __input_includes (__fish_kdb_print_plugins)
         return $status
     end
