@@ -71,7 +71,7 @@ function __number_arguments_input_left -d 'Return the number of arguments to the
     set -l number_arguments (count $input)
 
     # Ignore options
-    set -l options (string match -ra -- '--(?:editor|namespace|plugins-config|profile|strategy)(\s*\w+)?|-\S+' $input)
+    set -l options (string match -ra -- '--(?:editor|namespace|plugins-config|profile|resolver|strategy)(\s*\w+)?|-\S+' $input)
     set -l number_options (count $options)
     set -l number_arguments (math $number_arguments - $number_options)
 
@@ -222,6 +222,10 @@ end
 
 function __fish_kdb_print_plugins -d 'Print a list of available plugins'
     kdb list
+end
+
+function __fish_kdb_print_resolver_plugins -d 'Print a list of available resolver plugins'
+    kdb list | string match -r '.*resolver.*'
 end
 
 function __fish_kdb_print_storage_plugins -d 'Print a list of available storage plugins'
@@ -437,6 +441,11 @@ __fish_kdb_add_option '__fish_kdb_subcommand_supports_common_options' 'profile' 
 
 # --recursive -r
 __fish_kdb_add_option '__fish_kdb_subcommand_includes cp mv rm' 'recursive' 'r' 'Work in a recursive mode'
+
+# --resolver -R
+set -l argument_function '__fish_kdb_print_resolver_plugins'
+set -l description 'Specify the resolver plugin to use'
+__fish_kdb_add_option '__fish_kdb_subcommand_includes mount smount spec-mount' 'resolver' 'R' "$description" "($argument_function)"
 
 # --strategy -s
 set -l argument_function '__fish_kdb_print_option_strategy_arguments'
