@@ -362,7 +362,7 @@ complete -c kdb -n 'not __fish_kdb_subcommand' -x -a '(__fish_kdb_print_subcomma
 
 set -l completion_function '__fish_kdb_needs_namespace complete editor export file fstab get getmeta import ls lsmeta set 1'
 complete -c kdb -n "$completion_function" -x -a '(__fish_kdb_print_namespaces)'
-complete -c kdb -n '__fish_kdb_needs_namespace cp 2' -x -a '(__fish_kdb_print_namespaces)'
+complete -c kdb -n '__fish_kdb_needs_namespace cp mv 2' -x -a '(__fish_kdb_print_namespaces)'
 complete -c kdb -n '__fish_kdb_needs_namespace merge 4' -x -a '(__fish_kdb_print_namespaces)'
 complete -c kdb -n '__fish_kdb_subcommand_mount_needs_namespace' -x -a '(__fish_kdb_print_namespaces)'
 
