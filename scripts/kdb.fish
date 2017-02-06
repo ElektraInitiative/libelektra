@@ -201,6 +201,11 @@ function __fish_kdb_subcommand_remount_needs_namespace -d 'Check if the subcomma
     test $number_arguments -eq 3 -o $number_arguments -eq 4
 end
 
+function __fish_kdb_subcommand_smount_needs_storage_plugin -d 'Check if the subcommand spec-mount needs a storage plugin completion'
+    __fish_kdb_subcommand_includes smount spec-mount
+    and test (__fish_kdb__number_arguments_input_left) -eq 3
+end
+
 # ============
 # = Printers =
 # ============
@@ -368,7 +373,8 @@ end
 
 complete -c kdb -n 'not __fish_kdb_subcommand' -x -a '(__fish_kdb_print_subcommands -v)'
 
-set -l completion_function '__fish_kdb_needs_namespace complete editor export file fstab get getmeta import ls lsmeta rm set setmeta sget 1'
+set -l plugins complete editor export file fstab get getmeta import ls lsmeta rm set setmeta sget smount spec-mount 1
+set -l completion_function "__fish_kdb_needs_namespace $plugins"
 complete -c kdb -n "$completion_function" -x -a '(__fish_kdb_print_namespaces)'
 complete -c kdb -n '__fish_kdb_needs_namespace cp mv 2' -x -a '(__fish_kdb_print_namespaces)'
 complete -c kdb -n '__fish_kdb_needs_namespace merge 4' -x -a '(__fish_kdb_print_namespaces)'
@@ -380,6 +386,7 @@ complete -c kdb -n '__fish_kdb_needs_plugin' -x -a '(__fish_kdb_print_plugins)'
 complete -c kdb -n '__fish_kdb_subcommand_convert_needs_storage_plugin' -x -a '(__fish_kdb_print_storage_plugins)'
 complete -c kdb -n '__fish_kdb_subcommand_mount_needs_storage_plugin' -x -a '(__fish_kdb_print_storage_plugins)'
 complete -c kdb -n '__fish_kdb_subcommand_needs_storage_plugin' -x -a '(__fish_kdb_print_storage_plugins)'
+complete -c kdb -n '__fish_kdb_subcommand_smount_needs_storage_plugin' -x -a '(__fish_kdb_print_storage_plugins)'
 
 complete -c kdb -n '__fish_kdb_subcommand_fstab_needs_filesystem' -x -a '(__fish_print_filesystems)'
 
