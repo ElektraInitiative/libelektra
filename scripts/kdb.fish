@@ -376,6 +376,9 @@ __fish_kdb_add_option '__fish_kdb_subcommand_supports_option_force' 'force' 'f' 
 # --help -H
 __fish_kdb_add_option '__fish_kdb_subcommand_supports_common_options' 'help' 'H' 'Show the man page'
 
+# --interactive -i
+__fish_kdb_add_option '__fish_kdb_subcommand_includes merge mount remount smount spec-mount' 'interactive' 'i' 'Ask the user interactively'
+
 # --load -l
 __fish_kdb_add_option '__fish_kdb_subcommand_includes info' 'load' 'l' 'Load plugin even if system/elektra is available'
 
