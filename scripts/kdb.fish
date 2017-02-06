@@ -341,6 +341,9 @@ __fish_kdb_add_option '__fish_kdb_subcommand_supports_option_force' 'force' 'f' 
 # --help -H
 __fish_kdb_add_option '__fish_kdb_subcommand_supports_common_options' 'help' 'H' 'Show the man page'
 
+# --load -l
+__fish_kdb_add_option '__fish_kdb_subcommand_includes info' 'load' 'l' 'Load plugin even if system/elektra is available'
+
 # --max-depth -M
 set -l description 'Specify the maximum depth of completion suggestions (unlimited by default, 1 to show only the next level), inclusive.'
 set -l argument_function '__fish_kdb_print_option_depth_arguments most 1'
