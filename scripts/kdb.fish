@@ -1,5 +1,27 @@
 # -- Functions -----------------------------------------------------------------------------------------------------------------------------
 
+# ===========
+# = General =
+# ===========
+
+function __join -d 'Join variables into one variable using a given separator'
+    set -l separator $argv[1]
+    set -l joined ''
+
+    for element in $argv[2..-2]
+        test -n $element
+        and set joined "$joined$element$separator"
+    end
+    test -n $argv[-1]
+    and set joined "$joined$argv[-1]"
+
+    echo $joined
+end
+
+# =========
+# = Input =
+# =========
+
 function __input_includes -d 'Check if the current command buffer contains one of the given values'
     set -l times 1
     if string match -qr -- '\d+' argv[-1]
@@ -49,32 +71,14 @@ function __number_arguments_input_left -d 'Return the number of arguments to the
     count $input
 end
 
-function __join -d 'Join variables into one variable using a given separator'
-    set -l separator $argv[1]
-    set -l joined ''
+# =======
+# = KDB =
+# =======
 
-    for element in $argv[2..-2]
-        test -n $element
-        and set joined "$joined$element$separator"
-    end
-    test -n $argv[-1]
-    and set joined "$joined$argv[-1]"
+# << Input >>
 
-    echo $joined
-end
-
-function __fish_kdb_subcommand_includes -d 'Check if the current kdb subcommand is one of the given subcommands'
-    set -l subcommand (__fish_kdb_subcommand)
-    contains -- "$subcommand" $argv
-end
-
-function __fish_kdb_subcommand_exists_does_not_include -d 'Check if a kdb subcommand exist and does not include any of the given commands'
-    set -l subcommand (__fish_kdb_subcommand)
-
-    test -z $subcommand
-    and return 1
-
-    not contains -- "$subcommand" $argv
+function __fish_kdb_is_namespace -d 'Check if the given argument is a namespace'
+    string match -r -- '^(dir|proc|spec|system|user|\/).*' "$argv" >/dev/null
 end
 
 function __fish_kdb_subcommand -d 'Check for and print the current kdb subcommand'
@@ -92,9 +96,21 @@ function __fish_kdb_subcommand -d 'Check for and print the current kdb subcomman
     return 1
 end
 
-function __fish_kdb_is_namespace -d 'Check if the given argument is a namespace'
-    string match -r -- '^(dir|proc|spec|system|user|\/).*' "$argv" >/dev/null
+function __fish_kdb_subcommand_exists_does_not_include -d 'Check if a kdb subcommand exist and does not include any of the given commands'
+    set -l subcommand (__fish_kdb_subcommand)
+
+    test -z $subcommand
+    and return 1
+
+    not contains -- "$subcommand" $argv
 end
+
+function __fish_kdb_subcommand_includes -d 'Check if the current kdb subcommand is one of the given subcommands'
+    set -l subcommand (__fish_kdb_subcommand)
+    contains -- "$subcommand" $argv
+end
+
+# << Completion Checks >>
 
 function __fish_kdb_subcommand_needs_metanames -d 'Check if the current command needs a meta-name completion'
     not __fish_kdb_subcommand_includes getmeta setmeta
@@ -155,22 +171,9 @@ function __fish_kdb_subcommand_needs_storage_plugin -d 'Check if the current sub
     not __input_includes (__fish_kdb_print_storage_plugins)
 end
 
-function __fish_kdb_print_subcommands -d 'Print a list of kdb subcommands'
-    set -l commands (kdb list-commands $argv)
-    if contains -- $argv -v
-        set commands (printf '%s\n' $commands | awk '{if(NR>1)print}' | sed 's/\.$//')
-    end
-    printf '%s\n' $commands
-end
-
-function __fish_kdb_print_namespaces -d 'Print a list of possible namespace completions'
-    set -l namespace (commandline -ct)
-    kdb complete --max-depth=1 -- "$namespace" | string match -vr '(dir|proc|spec|user)$'
-end
-
-function __fish_kdb_print_plugins -d 'Print a list of available plugins'
-    kdb list
-end
+# ============
+# = Printers =
+# ============
 
 function __fish_kdb_print_metanames -d 'Print a list of possible meta-names'
     set -l metanames 'order' 'comment' 'line' 'fallback/#' 'override/#' 'namespace/#' 'default' 'context' 'callback/_' 'binary' 'array'
@@ -186,6 +189,15 @@ function __fish_kdb_print_metanames -d 'Print a list of possible meta-names'
     printf '%s\n' $metanames
 end
 
+function __fish_kdb_print_namespaces -d 'Print a list of possible namespace completions'
+    set -l namespace (commandline -ct)
+    kdb complete --max-depth=1 -- "$namespace" | string match -vr '(dir|proc|spec|user)$'
+end
+
+function __fish_kdb_print_plugins -d 'Print a list of available plugins'
+    kdb list
+end
+
 function __fish_kdb_print_storage_plugins -d 'Print a list of available storage plugins'
     set -l formats constants desktop dpkg dump hosts line ini json ini ni passwd regexstore simpleini simplespeclang tcl xmltool uname
     set -l regex '^(?:'(__join '|' $formats)')$'
@@ -193,6 +205,18 @@ function __fish_kdb_print_storage_plugins -d 'Print a list of available storage 
     set -l storage_plugins $storage_plugins storage
     printf '%s\n' $storage_plugins
 end
+
+function __fish_kdb_print_subcommands -d 'Print a list of kdb subcommands'
+    set -l commands (kdb list-commands $argv)
+    if contains -- $argv -v
+        set commands (printf '%s\n' $commands | awk '{if(NR>1)print}' | sed 's/\.$//')
+    end
+    printf '%s\n' $commands
+end
+
+# ===========
+# = Options =
+# ===========
 
 function __fish_kdb_add_option -d 'Add suggestions for a certain option to multiple kdb subcommands'
     set -l completion_function $argv[1]
@@ -226,9 +250,11 @@ function __fish_kdb_add_option -d 'Add suggestions for a certain option to multi
     end
 end
 
-# ===========
-# = Options =
-# ===========
+# << Completion Checks >>
+
+function __fish_kdb_subcommand_supports_common_options -d 'Check if the current subcommand supports common options'
+    __fish_kdb_subcommand_exists_does_not_include help list-tools qt-gui
+end
 
 function __fish_kdb_subcommand_supports_option_color -d 'Check if the current subcommand supports colored output'
     __fish_kdb_subcommand_exists_does_not_include complete help list-tools qt-gui
@@ -255,9 +281,7 @@ function __fish_kdb_subcommand_supports_option_verbose -d 'Check if the current 
     __fish_kdb_subcommand_exists_does_not_include $commands
 end
 
-function __fish_kdb_subcommand_supports_common_options -d 'Check if the current subcommand supports common options'
-    __fish_kdb_subcommand_exists_does_not_include help list-tools qt-gui
-end
+# << Printers >>
 
 function __fish_kdb_print_option_color_arguments -d 'Print possible arguments for the option color'
     echo -e 'always\tPrint colored output'
