@@ -399,6 +399,9 @@ __fish_kdb_add_option '__fish_kdb_subcommand_supports_option_debug' 'debug' 'd' 
 set -l argument_function '__fish_kdb_print_option_editor_arguments'
 __fish_kdb_add_option '__fish_kdb_subcommand_includes editor' 'editor' 'e' "Specify which external editor to use" "($argument_function)"
 
+# --first -1
+__fish_kdb_add_option '__fish_kdb_subcommand_includes mount' 'first' '1' 'Suppress the first column'
+
 # --force -f
 __fish_kdb_add_option '__fish_kdb_subcommand_supports_option_force' 'force' 'f' 'Force the action to be done'
 
@@ -450,6 +453,9 @@ set -l argument_function '__fish_kdb_print_resolver_plugins'
 set -l description 'Specify the resolver plugin to use'
 __fish_kdb_add_option '__fish_kdb_subcommand_includes mount smount spec-mount' 'resolver' 'R' "$description" "($argument_function)"
 
+# --second -2
+__fish_kdb_add_option '__fish_kdb_subcommand_includes mount' 'second' '2' 'Suppress the second column'
+
 # --strategy -s
 set -l argument_function '__fish_kdb_print_option_strategy_arguments'
 set -l description 'Specify the strategy to resolve conflicts'
@@ -457,6 +463,9 @@ set -l options 'strategy' 's'
 __fish_kdb_add_option '__fish_kdb_subcommand_includes editor import' $options "$description" "($argument_function)"
 set -l argument_function '__fish_kdb_print_option_strategy_arguments_merge'
 __fish_kdb_add_option '__fish_kdb_subcommand_includes merge' $options "$description" "($argument_function)"
+
+# --third -3
+__fish_kdb_add_option '__fish_kdb_subcommand_includes mount' 'third' '3' 'Suppress the third column'
 
 # --verbose -v
 __fish_kdb_add_option '__fish_kdb_subcommand_supports_option_verbose' 'verbose' 'v' 'Explain what is happening'
