@@ -355,17 +355,23 @@ end
 # =============
 
 complete -c kdb -n 'not __fish_kdb_subcommand' -x -a '(__fish_kdb_print_subcommands -v)'
+
 set -l completion_function '__fish_kdb_needs_namespace complete editor export file fstab get getmeta import ls lsmeta set 1'
 complete -c kdb -n "$completion_function" -x -a '(__fish_kdb_print_namespaces)'
 complete -c kdb -n '__fish_kdb_needs_namespace cp 2' -x -a '(__fish_kdb_print_namespaces)'
 complete -c kdb -n '__fish_kdb_needs_namespace merge 4' -x -a '(__fish_kdb_print_namespaces)'
 complete -c kdb -n '__fish_kdb_subcommand_mount_needs_namespace' -x -a '(__fish_kdb_print_namespaces)'
+
 complete -c kdb -n '__fish_kdb_needs_plugin' -x -a '(__fish_kdb_print_plugins)'
+
 complete -c kdb -n '__fish_kdb_subcommand_convert_needs_storage_plugin' -x -a '(__fish_kdb_print_storage_plugins)'
 complete -c kdb -n '__fish_kdb_subcommand_mount_needs_storage_plugin' -x -a '(__fish_kdb_print_storage_plugins)'
-complete -c kdb -n '__fish_kdb_subcommand_fstab_needs_filesystem' -x -a '(__fish_print_filesystems)'
-complete -c kdb -n '__fish_kdb_subcommand_info_needs_clause_name' -x -a '(__fish_kdb_print_clause_names)'
 complete -c kdb -n '__fish_kdb_subcommand_needs_storage_plugin' -x -a '(__fish_kdb_print_storage_plugins)'
+
+complete -c kdb -n '__fish_kdb_subcommand_fstab_needs_filesystem' -x -a '(__fish_print_filesystems)'
+
+complete -c kdb -n '__fish_kdb_subcommand_info_needs_clause_name' -x -a '(__fish_kdb_print_clause_names)'
+
 complete -c kdb -n '__fish_kdb_subcommand_needs_metanames' -x -a '(__fish_kdb_print_metanames)'
 
 # ===========
