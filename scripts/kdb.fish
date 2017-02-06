@@ -68,7 +68,14 @@ end
 
 function __number_arguments_input_left -d 'Return the number of arguments to the left of the current cursor position'
     set -l input (commandline -opc)
-    count $input
+    set -l number_arguments (count $input)
+
+    # Ignore options
+    set -l options (string match -ra -- '--(?:editor|namespace|plugins-config|profile|strategy)(\s*\w+)?|-\S+' $input)
+    set -l number_options (count $options)
+    set -l number_arguments (math $number_arguments - $number_options)
+
+    echo $number_arguments
 end
 
 # =======
