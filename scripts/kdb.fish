@@ -160,6 +160,11 @@ function __fish_kdb_subcommand_fstab_needs_filesystem -d 'Check if the subcomman
     and test (__number_arguments_input_left) -eq 5
 end
 
+function __fish_kdb_subcommand_info_needs_clause_name -d 'Check if the subcommand info needs a clause name completion'
+    __fish_kdb_subcommand_includes info
+    and test (__number_arguments_input_left) -eq 3
+end
+
 function __fish_kdb_subcommand_needs_storage_plugin -d 'Check if the current subcommand need a storage plugin completion'
     set -l subcommands editor export import
 
@@ -174,6 +179,10 @@ end
 # ============
 # = Printers =
 # ============
+
+function __fish_kdb_print_clause_names -d 'Print a list of possible clause names'
+    printf '%s\n' licence metadata needs placements provides recommends status version
+end
 
 function __fish_kdb_print_metanames -d 'Print a list of possible meta-names'
     set -l metanames 'order' 'comment' 'line' 'fallback/#' 'override/#' 'namespace/#' 'default' 'context' 'callback/_' 'binary' 'array'
@@ -335,6 +344,7 @@ complete -c kdb -n '__fish_kdb_needs_namespace cp 2' -x -a '(__fish_kdb_print_na
 complete -c kdb -n '__fish_kdb_needs_plugin' -x -a '(__fish_kdb_print_plugins)'
 complete -c kdb -n '__fish_kdb_subcommand_convert_needs_storage_plugin' -x -a '(__fish_kdb_print_storage_plugins)'
 complete -c kdb -n '__fish_kdb_subcommand_fstab_needs_filesystem' -x -a '(__fish_print_filesystems)'
+complete -c kdb -n '__fish_kdb_subcommand_info_needs_clause_name' -x -a '(__fish_kdb_print_clause_names)'
 complete -c kdb -n '__fish_kdb_subcommand_needs_storage_plugin' -x -a '(__fish_kdb_print_storage_plugins)'
 complete -c kdb -n '__fish_kdb_subcommand_needs_metanames' -x -a '(__fish_kdb_print_metanames)'
 
