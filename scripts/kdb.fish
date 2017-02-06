@@ -18,6 +18,20 @@ function __join -d 'Join variables into one variable using a given separator'
     echo $joined
 end
 
+function __includes_options -d 'Check if the values starting at position 3 contain the options specified at position one and two'
+    set -l opt_long $argv[1]
+    set -l opt_short $argv[2]
+    set -l input $argv[3..-1]
+
+    test -n $opt_long
+    set opt_long "--$opt_long"
+    test -n $opt_short
+    set opt_short "-\w*$opt_short"
+    set -l options (__join '|' $opt_long $opt_short)
+
+    string match -r -- $options "$input"
+end
+
 # =========
 # = Input =
 # =========
@@ -40,30 +54,11 @@ function __input_includes -d 'Check if the current command buffer contains one o
 end
 
 function __input_includes_options -d 'Check if the current command buffer contains one of the given options'
-    set -l opt_long $argv[1]
-    set -l opt_short $argv[2]
-
-    test -n $opt_long
-    and set -l options --$opt_long
-
-    test -n $opt_short
-    and set -l options $options -$opt_short
-
-    __input_includes $options
+    __includes_options $argv[1] $argv[2] (commandline -op)
 end
 
 function __input_left_includes_options -d 'Check if the input to the left of the current buffer contains one of the given options'
-    set -l opt_long $argv[1]
-    set -l opt_short $argv[2]
-    set -l input (commandline -opc)
-
-    test -n $opt_long
-    set opt_long "--$opt_long"
-    test -n $opt_short
-    set opt_short "-\w*$opt_short"
-    set -l options (__join '|' $opt_long $opt_short)
-
-    string match -r -- $options "$input"
+    __includes_options $argv[1] $argv[2] (commandline -opc)
 end
 
 # =======
