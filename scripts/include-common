@@ -6,16 +6,19 @@
 # load our readlink replacement for osx
 . "$(dirname "$0")/realpath"
 
+# substring emulation which should work in dash and other shells too
+stringContain() { [ -z "${2##*$1*}" ] && [ -z "$1" -o -n "$2" ]; }
+
 # readlink replacement, currently intented only to work with -f and the 
 # argument
 readlink() {
-        if [[ "$OSTYPE" == "darwin"* ]]; then
+        if stringContain "Darwin" "$(uname)"; then
                 # no readlink -f on macOS
                 if [ "$(which greadlink)" ]; then
                         # if user brewed coreutils, greadlink is like 
-			#the gnu readlink
+			# the gnu readlink
                         greadlink "$@"
-                elif [[ "$1" == "-f" ]]; then
+                elif [ "$1" = "-f" ]; then
                         # use our readlink replacement
                         realpath "$2"
                 else
