@@ -66,7 +66,17 @@ function __input_left_includes_options -d 'Check if the input to the left of the
     string match -r -- $options "$input"
 end
 
-function __number_arguments_input_left -d 'Return the number of arguments to the left of the current cursor position'
+# =======
+# = KDB =
+# =======
+
+# << Input >>
+
+function __fish_kdb_is_namespace -d 'Check if the given argument is a namespace'
+    string match -r -- '^(dir|proc|spec|system|user|\/).*' "$argv" >/dev/null
+end
+
+function __fish_kdb__number_arguments_input_left -d 'Return the number of arguments to the left of the current cursor position'
     set -l input (commandline -opc)
     set -l number_arguments (count $input)
 
@@ -76,16 +86,6 @@ function __number_arguments_input_left -d 'Return the number of arguments to the
     set -l number_arguments (math $number_arguments - $number_options)
 
     echo $number_arguments
-end
-
-# =======
-# = KDB =
-# =======
-
-# << Input >>
-
-function __fish_kdb_is_namespace -d 'Check if the given argument is a namespace'
-    string match -r -- '^(dir|proc|spec|system|user|\/).*' "$argv" >/dev/null
 end
 
 function __fish_kdb_subcommand -d 'Check for and print the current kdb subcommand'
@@ -123,7 +123,7 @@ function __fish_kdb_subcommand_needs_metanames -d 'Check if the current command 
     not __fish_kdb_subcommand_includes getmeta setmeta
     and return 1
 
-    test (__number_arguments_input_left) -eq 3
+    test (__fish_kdb__number_arguments_input_left) -eq 3
 end
 
 function __fish_kdb_needs_namespace -d 'Check if the current command needs a namespace completion'
@@ -154,7 +154,7 @@ function __fish_kdb_needs_plugin -d 'Check if the current command needs a plugin
         return $status
     end
     __fish_kdb_subcommand_includes global-mount gmount
-    and test (__number_arguments_input_left) -eq 2
+    and test (__fish_kdb__number_arguments_input_left) -eq 2
 end
 
 function __fish_kdb_subcommand_convert_needs_storage_plugin -d 'Check if the subcommand convert needs a storage plugin completion'
@@ -164,22 +164,22 @@ end
 
 function __fish_kdb_subcommand_fstab_needs_filesystem -d 'Check if the subcommand fstab needs a filesystem completion'
     __fish_kdb_subcommand_includes fstab
-    and test (__number_arguments_input_left) -eq 5
+    and test (__fish_kdb__number_arguments_input_left) -eq 5
 end
 
 function __fish_kdb_subcommand_info_needs_clause_name -d 'Check if the subcommand info needs a clause name completion'
     __fish_kdb_subcommand_includes info
-    and test (__number_arguments_input_left) -eq 3
+    and test (__fish_kdb__number_arguments_input_left) -eq 3
 end
 
 function __fish_kdb_subcommand_mount_needs_namespace -d 'Check if the subcommand mount needs a namespace completion'
     __fish_kdb_subcommand_includes mount
-    and test (__number_arguments_input_left) -eq 3
+    and test (__fish_kdb__number_arguments_input_left) -eq 3
 end
 
 function __fish_kdb_subcommand_mount_needs_storage_plugin -d 'Check if the subcommand mount needs a storage plugin completion'
     __fish_kdb_subcommand_includes mount
-    and test (__number_arguments_input_left) -eq 4
+    and test (__fish_kdb__number_arguments_input_left) -eq 4
 end
 
 function __fish_kdb_subcommand_needs_storage_plugin -d 'Check if the current subcommand need a storage plugin completion'
