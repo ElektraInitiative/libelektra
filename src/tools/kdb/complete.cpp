@@ -122,122 +122,6 @@ void CompleteCommand::completeNormal (const string argument, const Key parsedArg
 	printResults (root, cl.minDepth, cl.maxDepth, cl, result, filter, printResult);
 }
 
-bool CompleteCommand::shallShowNextLevel (const string argument)
-{
-	auto it = argument.rbegin ();
-	// If the argument ends in / its an indicator to complete the next level (like done by shells), but not if its escaped
-	return it != argument.rend () && (*it) == '/' && ((++it) == argument.rend () || (*it) != '\\');
-}
-
-KeySet CompleteCommand::getKeys (Key root, const bool cutAtRoot)
-{
-	KeySet ks;
-	KDB kdb;
-	kdb.get (ks, root);
-	addMountpoints (ks, root);
-	if (cutAtRoot)
-	{
-		ks = ks.cut (root);
-	}
-	return ks;
-}
-
-void CompleteCommand::printResults (const Key root, const int minDepth, const int maxDepth, const Cmdline & cl,
-				    const map<Key, pair<int, int>> & result,
-				    const std::function<bool(const pair<Key, pair<int, int>> & current)> filter,
-				    const std::function<void(const pair<Key, pair<int, int>> & current, const bool verbose)> printResult)
-{
-	if (cl.verbose)
-	{
-		cout << "Showing results for a minimum depth of " << minDepth;
-		if (maxDepth != numeric_limits<int>::max ())
-		{
-			cout << " and a maximum depth of " << maxDepth;
-		}
-		else
-		{
-			cout << " and no maximum depth";
-		}
-		cout << endl;
-	}
-
-	for (const auto & it : result)
-	{
-		if (cl.debug || filter (it))
-		{
-			printResult (it, cl.verbose);
-		}
-	}
-
-	if (cl.debug || cl.verbose)
-	{ // Only print this in debug mode to avoid destroying autocompletions because of warnings
-		printWarnings (cerr, root);
-	}
-}
-
-void CompleteCommand::addMountpoints (KeySet & ks, const Key root)
-{
-	KDB kdb;
-	Key mountpointPath ("system/elektra/mountpoints", KEY_END);
-	KeySet mountpoints;
-
-	kdb.get (mountpoints, mountpointPath);
-	mountpoints = mountpoints.cut (mountpointPath);
-
-	for (const Key mountpoint : mountpoints)
-	{
-		if (mountpoint.isDirectBelow (mountpointPath))
-		{
-			const string actualName = mountpoints.lookup (mountpoint.getFullName () + "/mountpoint").getString ();
-			Key mountpointKey (actualName, KEY_END);
-			if (mountpointKey.isBelow (root))
-			{
-				ks.append (mountpointKey);
-			}
-		}
-	}
-
-	printWarnings (cerr, mountpointPath);
-}
-
-/*
- * McCabe complexity of 11, 4 caused by debug switches so its ok
- */
-void CompleteCommand::addNamespaces (map<Key, pair<int, int>> & hierarchy, const Cmdline & cl)
-{
-	const string namespaces[] = {
-		"spec/", "proc/", "dir/", "user/", "system/",
-	};
-
-	// Check for new namespaces, issue a warning in case
-	if (cl.debug || cl.verbose)
-	{
-		for (elektraNamespace ens = KEY_NS_FIRST; ens <= KEY_NS_LAST; ++ens)
-		{
-			// since ens are numbers, there is no way to get a string representation if not found in that case
-			bool found = false;
-			for (const string ns : namespaces)
-			{
-				found = found || ckdb::keyGetNamespace (Key (ns, KEY_END).getKey ()) == ens;
-			}
-			if (!found)
-			{
-				cerr << "Missing namespace detected:" << ens << ". \nPlease report this issue." << endl;
-			}
-		}
-	}
-
-	for (const string ns : namespaces)
-	{
-		const Key nsKey (ns, KEY_END);
-		if ((cl.debug || cl.verbose) && ckdb::keyGetNamespace (nsKey.getKey ()) == KEY_NS_EMPTY)
-		{ // Check for outdated namespaces, issue a warning in case
-			cerr << "Outdated namespace detected:" << ns << ".\nPlease report this issue." << endl;
-		}
-		hierarchy[nsKey] = pair<int, int> (1, 0);
-	}
-}
-
 /*
  * McCabe complexity of 12, 3 caused by debug switches so its ok
  */
@@ -308,9 +192,125 @@ const map<Key, pair<int, int>> CompleteCommand::analyze (const KeySet & ks, cons
 	return hierarchy;
 }
 
+void CompleteCommand::printResults (const Key root, const int minDepth, const int maxDepth, const Cmdline & cl,
+				    const map<Key, pair<int, int>> & result,
+				    const std::function<bool(const pair<Key, pair<int, int>> & current)> filter,
+				    const std::function<void(const pair<Key, pair<int, int>> & current, const bool verbose)> printResult)
+{
+	if (cl.verbose)
+	{
+		cout << "Showing results for a minimum depth of " << minDepth;
+		if (maxDepth != numeric_limits<int>::max ())
+		{
+			cout << " and a maximum depth of " << maxDepth;
+		}
+		else
+		{
+			cout << " and no maximum depth";
+		}
+		cout << endl;
+	}
+
+	for (const auto & it : result)
+	{
+		if (cl.debug || filter (it))
+		{
+			printResult (it, cl.verbose);
+		}
+	}
+
+	if (cl.debug || cl.verbose)
+	{ // Only print this in debug mode to avoid destroying autocompletions because of warnings
+		printWarnings (cerr, root);
+	}
+}
+
 const Key CompleteCommand::getParentKey (const Key key)
 {
 	return Key (key.getFullName ().erase (key.getFullName ().size () - key.getBaseName ().size ()), KEY_END);
+}
+
+KeySet CompleteCommand::getKeys (Key root, const bool cutAtRoot)
+{
+	KeySet ks;
+	KDB kdb;
+	kdb.get (ks, root);
+	addMountpoints (ks, root);
+	if (cutAtRoot)
+	{
+		ks = ks.cut (root);
+	}
+	return ks;
+}
+
+bool CompleteCommand::shallShowNextLevel (const string argument)
+{
+	auto it = argument.rbegin ();
+	// If the argument ends in / its an indicator to complete the next level (like done by shells), but not if its escaped
+	return it != argument.rend () && (*it) == '/' && ((++it) == argument.rend () || (*it) != '\\');
+}
+
+void CompleteCommand::addMountpoints (KeySet & ks, const Key root)
+{
+	KDB kdb;
+	Key mountpointPath ("system/elektra/mountpoints", KEY_END);
+	KeySet mountpoints;
+
+	kdb.get (mountpoints, mountpointPath);
+	mountpoints = mountpoints.cut (mountpointPath);
+
+	for (const Key mountpoint : mountpoints)
+	{
+		if (mountpoint.isDirectBelow (mountpointPath))
+		{
+			const string actualName = mountpoints.lookup (mountpoint.getFullName () + "/mountpoint").getString ();
+			Key mountpointKey (actualName, KEY_END);
+			if (mountpointKey.isBelow (root))
+			{
+				ks.append (mountpointKey);
+			}
+		}
+	}
+
+	printWarnings (cerr, mountpointPath);
+}
+
+/*
+ * McCabe complexity of 11, 4 caused by debug switches so its ok
+ */
+void CompleteCommand::addNamespaces (map<Key, pair<int, int>> & hierarchy, const Cmdline & cl)
+{
+	const string namespaces[] = {
+		"spec/", "proc/", "dir/", "user/", "system/",
+	};
+
+	// Check for new namespaces, issue a warning in case
+	if (cl.debug || cl.verbose)
+	{
+		for (elektraNamespace ens = KEY_NS_FIRST; ens <= KEY_NS_LAST; ++ens)
+		{
+			// since ens are numbers, there is no way to get a string representation if not found in that case
+			bool found = false;
+			for (const string ns : namespaces)
+			{
+				found = found || ckdb::keyGetNamespace (Key (ns, KEY_END).getKey ()) == ens;
+			}
+			if (!found)
+			{
+				cerr << "Missing namespace detected:" << ens << ". \nPlease report this issue." << endl;
+			}
+		}
+	}
+
+	for (const string ns : namespaces)
+	{
+		const Key nsKey (ns, KEY_END);
+		if ((cl.debug || cl.verbose) && ckdb::keyGetNamespace (nsKey.getKey ()) == KEY_NS_EMPTY)
+		{ // Check for outdated namespaces, issue a warning in case
+			cerr << "Outdated namespace detected:" << ns << ".\nPlease report this issue." << endl;
+		}
+		hierarchy[nsKey] = pair<int, int> (1, 0);
+	}
 }
 
 void CompleteCommand::increaseCount (map<Key, pair<int, int>> & hierarchy, const Key key, const function<int(int)> depthIncreaser)

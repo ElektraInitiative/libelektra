@@ -58,13 +58,14 @@ private:
 		      const std::function<void(const std::pair<kdb::Key, std::pair<int, int>> & current, const bool verbose)> printResult);
 
 	// helper functions
-	void increaseCount (std::map<kdb::Key, std::pair<int, int>> & hierarchy, const kdb::Key key,
-			    const std::function<int(int)> depthIncreaser);
-	void addMountpoints (kdb::KeySet & ks, const kdb::Key root);
-	void addNamespaces (std::map<kdb::Key, std::pair<int, int>> & hierarchy, const Cmdline & cl);
 	const kdb::Key getParentKey (const kdb::Key key);
 	kdb::KeySet getKeys (kdb::Key root, bool cutAtRoot);
 	bool shallShowNextLevel (const std::string argument);
+
+	void addMountpoints (kdb::KeySet & ks, const kdb::Key root);
+	void addNamespaces (std::map<kdb::Key, std::pair<int, int>> & hierarchy, const Cmdline & cl);
+	void increaseCount (std::map<kdb::Key, std::pair<int, int>> & hierarchy, const kdb::Key key,
+			    const std::function<int(int)> depthIncreaser);
 
 	// print functions
 	static void printBookmarkResult (const std::pair<kdb::Key, std::pair<int, int>> & current, const bool verbose);
