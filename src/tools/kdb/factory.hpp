@@ -138,7 +138,7 @@ public:
 		ret.push_back (getStdColor (ANSI_COLOR::BOLD) + "help" + getStdColor (ANSI_COLOR::RESET) + "\t" +
 			       "View the man page of a tool");
 		ret.push_back (getStdColor (ANSI_COLOR::BOLD) + "list-tools" + getStdColor (ANSI_COLOR::RESET) + "\t" +
-			       "List all external tool");
+			       "List all external tools");
 		return ret;
 	}
 

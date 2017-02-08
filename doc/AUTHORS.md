@@ -168,7 +168,7 @@ development of the crypto plugin, minor bug fixes, BSD/macOS support
 
 documentation, bug fixes
 
-- email: sanssecours@f-m.fm
+- email: sanssecours@me.com
 - github user: [sanssecours](http://github.com/sanssecours)
 - devel/test on: macOS
 
