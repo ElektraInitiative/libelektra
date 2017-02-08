@@ -3,11 +3,11 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.libelektra</groupId>
 	<artifactId>libelektra4j</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>@KDB_VERSION@</version>
 
 	<properties>
 		<javac.target>1.8</javac.target>
-        <java.version>1.8</java.version>
+		<java.version>1.8</java.version>
 	</properties>
 
 	<dependencies>
@@ -23,7 +23,7 @@
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
-
+	
 	<build>
 		<pluginManagement>
 			<plugins>

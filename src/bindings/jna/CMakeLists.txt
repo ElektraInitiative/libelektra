@@ -1,50 +1,53 @@
-#versioning for libelektra.jar
-set(CMAKE_JAVA_TARGET_VERSION ${KDB_VERSION})
+find_package(Java 1.8 REQUIRED)
+find_program(MAVEN_EXECUTABLE mvn)
 
-find_package(Java)
-include(UseJava)
+if (NOT MAVEN_EXECUTABLE STREQUAL "MAVEN_EXECUTABLE-NOTFOUND")
+	file (
+		MAKE_DIRECTORY libelektra4j
+	)
 
-if (CMAKE_MAJOR_VERSION EQUAL 2 AND CMAKE_MINOR_VERSION EQUAL 8)
-	if (CMAKE_PATCH_VERSION LESS 11)
-		#2.8.11 needed for add_jar INCLUDE_JARS
-		remove_binding(jna "cmake 2.8.11 needed for add_jar")
-		return()
-	endif()
-endif()
+	# first fill the elektra version in the pom file
+	# @ONLY to avoid replacing pom.xml placeholders which also use the format ${}
+	configure_file (
+		"${CMAKE_CURRENT_SOURCE_DIR}/libelektra4j/pom.xml.in"
+		"${CMAKE_CURRENT_BINARY_DIR}/libelektra4j/pom.xml"
+		@ONLY
+	)
 
-if (Java_VERSION_MAJOR GREATER 0 AND Java_VERSION_MINOR GREATER 7)
-	file(GLOB files ./libelektra4j/src/main/java/org/libelektra/*.java)
-	file(GLOB pfiles ./libelektra4j/src/main/java/org/libelektra/plugin/*.java)
+	# then copy over the source files in the build folder as thats the easiest way to handle it
+	file (
+		COPY "${CMAKE_CURRENT_SOURCE_DIR}/libelektra4j"
+		DESTINATION "${CMAKE_CURRENT_BINARY_DIR}"
+	)
 
-# find_jar(<VAR>
-#          name | NAMES name1 [name2 ...]
-#          [PATHS path1 [path2 ... ENV var]]
-#          [VERSIONS version1 [version2]]
-#          [DOC "cache documentation string"]
-#         )
+	# if the dependency is already installed in the local repository, then there is no need to run maven again
+	execute_process (
+		COMMAND ${MAVEN_EXECUTABLE} dependency:get -o -q -B -Dartifact=org.libelektra:libelektra4j:${KDB_VERSION}
+		RESULT_VARIABLE MAVEN_ARTIFACT_INSTALLED
+		OUTPUT_QUIET
+		ERROR_QUIET
+	)
+	if (NOT "${MAVEN_ARTIFACT_INSTALLED}" STREQUAL "0")
 
-	find_jar(jna
-		NAMES jna
-		PATHS /usr/share/java ./libelektra4j
+		# compile it already so build errors get detected before installing
+		add_custom_target (
+			jna ALL
+			COMMAND ${MAVEN_EXECUTABLE} -q -B -DskipTests=true compile
+			WORKING_DIRECTORY libelektra4j
 		)
 
-	if (jna)
-		# should work, too
-		# http://www.cmake.org/cmake/help/v3.0/module/UseJava.html
-		#set(CMAKE_JAVA_INCLUDE_PATH ${jna})
-		add_jar(libelektra
-			INCLUDE_JARS ${jna}
-			SOURCES ${files} ${pfiles}
-			VERSION 1
-			OUTPUT_NAME libelektra4j
-			)
+		# prepare the installation script
+		configure_file(
+			"${CMAKE_CURRENT_SOURCE_DIR}/maven_install.cmake.in"
+			"${CMAKE_CURRENT_BINARY_DIR}/maven_install.cmake"
+		)
+		install (SCRIPT ${CMAKE_CURRENT_BINARY_DIR}/maven_install.cmake)
 
-		install_jar(libelektra share/java)
+	else () # if already installed
+		message ("JNA bindings already installed in local maven repository, not building them again")
+	endif () # if already installed
+	# TODO handle testing
 
-	else(jna)
-		remove_binding(jna "jna jar file not found, searched in standard paths and /usr/share/java")
-	endif(jna)
-
-else()
-	remove_binding(jna "Java is not greater version 8, but ${Java_VERSION} was found")
-endif()
+else ()
+	remove_binding (jna, "Maven Executable not found, which is required to build the jna bindings")
+endif ()
