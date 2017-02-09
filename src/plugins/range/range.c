@@ -10,6 +10,7 @@
 #include "range.h"
 #include <ctype.h>
 #include <errno.h>
+#include <kdberrors.h>
 #include <kdbhelper.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -302,6 +303,12 @@ static int validateMultipleRanges (const char * valueStr, const char * rangeStri
 		elektraFree (localCopy);
 		return 1;
 	}
+	else if (rc == -1)
+	{
+		elektraFree (localCopy);
+		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_RANGE_SYNTAX, parentKey, "invalid syntax: %s", token);
+		return -1;
+	}
 	while ((token = strtok_r (NULL, ",", &savePtr)) != NULL)
 	{
 		rc = validateSingleRange (valueStr, token, parentKey, type);
@@ -309,6 +316,12 @@ static int validateMultipleRanges (const char * valueStr, const char * rangeStri
 		{
 			elektraFree (localCopy);
 			return 1;
+		}
+		else if (rc == -1)
+		{
+			elektraFree (localCopy);
+			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_RANGE_SYNTAX, parentKey, "invalid syntax: %s", token);
+			return -1;
 		}
 	}
 	elektraFree (localCopy);
@@ -336,11 +349,26 @@ static int validateKey (Key * key, Key * parentKey)
 
 	if (!strchr (rangeString, ','))
 	{
-		return validateSingleRange (keyString (key), rangeString, parentKey, type);
+		int rc = validateSingleRange (keyString (key), rangeString, parentKey, type);
+		if (rc == -1)
+		{
+			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_RANGE_SYNTAX, parentKey, "invalid syntax: %s", keyString (rangeMeta));
+			return -1;
+		}
+		else
+		{
+			return rc;
+		}
 	}
 	else
 	{
-		return validateMultipleRanges (keyString (key), rangeString, parentKey, type);
+		int rc = validateMultipleRanges (keyString (key), rangeString, parentKey, type);
+		if (rc == 0)
+		{
+			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_INVALID_RANGE, parentKey, "value %s not withing range %s", keyString (key),
+					    rangeString);
+		}
+		return rc;
 	}
 }
 
@@ -376,10 +404,11 @@ int elektraRangeSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_U
 	Key * cur;
 	while ((cur = ksNext (returned)) != NULL)
 	{
-		if (keyGetMeta (cur, "check/range"))
+		const Key * meta = keyGetMeta (cur, "check/range");
+		if (meta)
 		{
 			int rc = validateKey (cur, parentKey);
-			if (rc < 1)
+			if (rc <= 0)
 			{
 				return -1;
 			}

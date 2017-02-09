@@ -1,5 +1,5 @@
 - infos = Information about the range plugin is in keys below
-- infos/author = Author Name <elektra@libelektra.org>
+- infos/author = Thomas Waser <thomas.waser@libelektra.org>
 - infos/licence = BSD
 - infos/needs =
 - infos/provides =
@@ -7,39 +7,60 @@
 - infos/placements = presetstorage postgetstorage
 - infos/status = maintained conformant compatible coverage specific unittest tested libc preview experimental unfinished nodoc
 - infos/metadata =
-- infos/description = one-line description of range
+- infos/description = tests if a value is within a given range
 
 ## Introduction ##
 
-Copy this range if you want to start a new
-plugin written in C.
+The range plugin checks if a Key value is within a given range.
 
 ## Usage ##
 
-You can use `scripts/copy-range`
-to automatically rename everything to your
-plugin name:
+The plugin checks every Key in the Keyset for the Metakey `check/range` which contains either a single range with the syntax `[-]min-[-]max`, or a list of ranges separated by `,` and tests if the Key value is within the range(s).
 
-	cd src/plugins
-	../../scripts/copy-range yourplugin
+`check/range/type` can be used to specify the datatype. If not specified otherwise the default value is `INT`
 
-Then update the README.md of your newly created plugin:
+Possible values:
 
-- enter your full name+email in `infos/author`
-- make sure `status` and other clauses conform to
-  descriptions in `doc/CONTRACT.ini`
-- update the one-line description above
-- add your plugin in `src/plugins/README.md`
-- and rewrite the rest of this `README.md` to give a great
-  explanation of what your plugin does
+* `INT`
 
+   for integer values
+
+* `FLOAT`
+
+   for floating point values
+
+* `HEX`
+
+   for hexadecimal values
+
+ 
 ## Dependencies ##
 
 None.
 
 ## Examples ##
 
-None.
+```sh
+# Backup-and-Restore:/examples/range
+
+sudo kdb mount range.ecf /examples/range range dump
+
+# should succeed
+kdb set /examples/range/value 5
+kdb setmeta user/examples/range/value check/range "1-10"
+# RET: 0
+
+# should fail
+kdb set /examples/range/value 11
+# RET:5
+
+# should also fail
+kdb set /examples/range/value "\-1"
+# RET:5
+
+kdb rm -r /examples/range
+sudo kdb umount /examples/range
+```
 
 ## Limitations ##
 
