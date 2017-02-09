@@ -1,0 +1,63 @@
+# Validation
+
+## Issue
+
+Validation plugins operate as indenpendent blackboxes. 
+For every backend each mounted validation plugin iterates 
+over the whole keyset, checks every key for it's trigger metakey, 
+and validates the key.
+
+Each plugin decides on it's own what should happen when a key 
+fails to validate. 
+
+## Constraints
+
+## Assumptions
+
+While plugins should always fail and return
+an error if validation fails on kdbSet, there are be different
+requirements on what should happen on kdbGet:
+
+- do nothing
+
+  we just want to read the configuration file and don't 
+  care about invalid values
+
+- issue warnings
+
+  we want to read the whole configuration, but issue warnings
+  if keys fail to validate
+
+- remove invalid keys
+
+  we want to read the whole configuration, but drop invalid keys
+
+- fail with error
+
+  we only want to read valid configurations, and fail with
+  an error if the configuration is invalid
+
+## Considered Alternatives
+
+- Extend validation plugins to allow us to specify what should happen 
+  if a key fails to validate
+- Export a validation function that allows us to use an additional plugin 
+  to decide what should be done
+
+
+## Decision
+
+Use a wapper plugin to iterate over the keyset and delegate the validation 
+of each key to the corresponding validation plugin. 
+
+## Argument
+
+- Validation plugins don't need to know what should be done if the validation fails
+- We can run multiple validations on every key and improve error messages
+- Different ways of handling errors only need to be implemented once
+
+## Implications
+
+## Related decisions
+
+## Notes
