@@ -95,7 +95,7 @@ static int rangeStringToRange (const char * rangeString, RangeValue * min, Range
 			++ptr;
 			continue;
 		}
-		else if (isdigit (*ptr))
+		else if (isalnum (*ptr))
 		{
 			if (pos == 0)
 			{
@@ -116,6 +116,16 @@ static int rangeStringToRange (const char * rangeString, RangeValue * min, Range
 					{
 						return -1;
 					}
+					break;
+				case HEX:
+					ia = strtoll (ptr, &endPtr, 16);
+					if (errno == ERANGE || (errno != 0 && ia == 0))
+					{
+						return -1;
+					}
+					break;
+				case CHAR:
+
 					break;
 				default:
 					break;
@@ -142,6 +152,14 @@ static int rangeStringToRange (const char * rangeString, RangeValue * min, Range
 						return -1;
 					}
 					break;
+				case HEX:
+					ib = strtoll (ptr, &endPtr, 16);
+					if (errno == ERANGE || (errno != 0 && ib == 0))
+					{
+						return -1;
+					}
+					break;
+
 				default:
 					break;
 				}
@@ -164,6 +182,7 @@ static int rangeStringToRange (const char * rangeString, RangeValue * min, Range
 	switch (type)
 	{
 	case INT:
+	case HEX:
 		if (tmpIA <= tmpIB)
 		{
 			min->Value.i = tmpIA;
@@ -209,6 +228,10 @@ static int validateSingleRange (const char * valueStr, const char * rangeString,
 	case FLOAT:
 		fprintf (stderr, "%s: ret: %d, min: %Lf, max: %Lf\n", rangeString, rc, min.Value.f, max.Value.f);
 		break;
+	case HEX:
+		fprintf (stderr, "%s: ret: %d, min: 0x%x, max: 0x%x\n", rangeString, rc, (unsigned int)min.Value.i,
+			 (unsigned int)max.Value.i);
+		break;
 	}
 	if (rc)
 	{
@@ -226,6 +249,9 @@ static int validateSingleRange (const char * valueStr, const char * rangeString,
 	case FLOAT:
 		val.Value.f = strtold (valueStr, &endPtr);
 		break;
+	case HEX:
+		val.Value.i = strtoll (valueStr, &endPtr, 16);
+		break;
 	default:
 		break;
 	}
@@ -236,7 +262,7 @@ static int validateSingleRange (const char * valueStr, const char * rangeString,
 	switch (type)
 	{
 	case INT:
-
+	case HEX:
 		if (val.Value.i < min.Value.i || val.Value.i > max.Value.i)
 		{
 			return 0;
@@ -265,9 +291,7 @@ static int validateMultipleRanges (const char * valueStr, const char * rangeStri
 {
 	char * localCopy = elektraStrDup (rangeString);
 	char * savePtr = NULL;
-	;
 	char * token = NULL;
-	;
 	token = strtok_r (localCopy, ",", &savePtr);
 	int rc = validateSingleRange (valueStr, token, parentKey, type);
 	if (rc == 1)

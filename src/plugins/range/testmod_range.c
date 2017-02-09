@@ -47,6 +47,23 @@ void testFloat (const char * value, int ret, const char * rangeString)
 	PLUGIN_CLOSE ();
 }
 
+void testHex (const char * value, int ret, const char * rangeString)
+{
+	Key * parentKey = keyNew ("user/tests/range", KEY_VALUE, "", KEY_END);
+	KeySet * ks = ksNew (10, keyNew ("user/tests/range/key", KEY_VALUE, value, KEY_META, "check/range", rangeString, KEY_META,
+					 "check/range/type", "HEX", KEY_END),
+			     KS_END);
+	KeySet * conf = ksNew (0, KS_END);
+	PLUGIN_OPEN ("range");
+	ksRewind (ks);
+	int rc = plugin->kdbSet (plugin, ks, parentKey);
+	fprintf (stderr, "testing: value: %s, expected: %d, got: %d, range: %s\n", value, ret, rc, rangeString);
+	succeed_if (rc == ret, "failed");
+	ksDel (ks);
+	keyDel (parentKey);
+	PLUGIN_CLOSE ();
+}
+
 int main (int argc, char ** argv)
 {
 	printf ("RANGE     TESTS\n");
@@ -92,6 +109,15 @@ int main (int argc, char ** argv)
 
 	testFloat ("0.7", 1, "0.1-0.9");
 	testFloat ("0.7", -1, "0.1-0.5");
+
+	testFloat ("0.7", 1, "-0.8-0.9");
+
+
+	testHex ("0A", 1, "00-20");
+	testHex ("1A", -1, "0A-10");
+	testHex ("1A", -1, "00-19,1B-20");
+	testHex ("0A", 1, "00-19,1B-20");
+	testHex ("1F", 1, "00-19,1B-20");
 
 
 	printf ("\ntestmod_range RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
