@@ -127,7 +127,12 @@ static int rangeStringToRange (const char * rangeString, RangeValue * min, Range
 					}
 					break;
 				case CHAR:
-
+					if (!isalpha (*ptr))
+					{
+						return -1;
+					}
+					a.Value.i = *ptr;
+					endPtr = (char *)ptr + 1;
 					break;
 				default:
 					break;
@@ -161,11 +166,21 @@ static int rangeStringToRange (const char * rangeString, RangeValue * min, Range
 						return -1;
 					}
 					break;
-
+				case CHAR:
+					if (!isalpha (*ptr))
+					{
+						return -1;
+					}
+					a.Value.i = *ptr;
+					endPtr = (char *)ptr + 1;
 				default:
 					break;
 				}
 				ptr = endPtr;
+			}
+			else
+			{
+				return -1;
 			}
 		}
 		else
@@ -186,6 +201,7 @@ static int rangeStringToRange (const char * rangeString, RangeValue * min, Range
 	{
 	case INT:
 	case HEX:
+	case CHAR:
 		if (tmpIA <= tmpIB)
 		{
 			min->Value.i = tmpIA;
@@ -235,6 +251,8 @@ static int validateSingleRange (const char * valueStr, const char * rangeString,
 		fprintf (stderr, "%s: ret: %d, min: 0x%x, max: 0x%x\n", rangeString, rc, (unsigned int)min.Value.i,
 			 (unsigned int)max.Value.i);
 		break;
+	case CHAR:
+		fprintf (stderr, "%s: ret: %d, min: %c, max: %c\n", rangeString, rc, (char)min.Value.i, (char)max.Value.i);
 	}
 	if (rc)
 	{
@@ -255,6 +273,9 @@ static int validateSingleRange (const char * valueStr, const char * rangeString,
 	case HEX:
 		val.Value.i = strtoll (valueStr, &endPtr, 16);
 		break;
+	case CHAR:
+		val.Value.i = valueStr[0];
+		break;
 	default:
 		break;
 	}
@@ -266,6 +287,7 @@ static int validateSingleRange (const char * valueStr, const char * rangeString,
 	{
 	case INT:
 	case HEX:
+	case CHAR:
 		if (val.Value.i < min.Value.i || val.Value.i > max.Value.i)
 		{
 			return 0;

@@ -64,6 +64,23 @@ void testHex (const char * value, int ret, const char * rangeString)
 	PLUGIN_CLOSE ();
 }
 
+void testChar (const char * value, int ret, const char * rangeString)
+{
+	Key * parentKey = keyNew ("user/tests/range", KEY_VALUE, "", KEY_END);
+	KeySet * ks = ksNew (10, keyNew ("user/tests/range/key", KEY_VALUE, value, KEY_META, "check/range", rangeString, KEY_META,
+					 "check/range/type", "CHAR", KEY_END),
+			     KS_END);
+	KeySet * conf = ksNew (0, KS_END);
+	PLUGIN_OPEN ("range");
+	ksRewind (ks);
+	int rc = plugin->kdbSet (plugin, ks, parentKey);
+	fprintf (stderr, "testing: value: %s, expected: %d, got: %d, range: %s\n", value, ret, rc, rangeString);
+	succeed_if (rc == ret, "failed");
+	ksDel (ks);
+	keyDel (parentKey);
+	PLUGIN_CLOSE ();
+}
+
 int main (int argc, char ** argv)
 {
 	printf ("RANGE     TESTS\n");
@@ -119,6 +136,9 @@ int main (int argc, char ** argv)
 	testHex ("0A", 1, "00-19,1B-20");
 	testHex ("1F", 1, "00-19,1B-20");
 
+
+	testChar ("g", -1, "a-f");
+	testChar ("c", 1, "a-f");
 
 	printf ("\ntestmod_range RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 

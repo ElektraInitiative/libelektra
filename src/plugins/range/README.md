@@ -33,6 +33,10 @@ Possible values:
 
    for hexadecimal values
 
+* `CHAR`
+
+   for characters
+
  
 ## Dependencies ##
 
