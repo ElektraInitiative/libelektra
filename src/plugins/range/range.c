@@ -32,12 +32,30 @@ int elektraRangeClose (Plugin * handle ELEKTRA_UNUSED, Key * errorKey ELEKTRA_UN
 	return 1; // success
 }
 
-static int rangeStringToRange (const char * rangeString, long long int * min, long long int * max)
+typedef enum {
+	INT,
+	FLOAT,
+	CHAR,
+	HEX,
+} RangeType;
+
+typedef struct
+{
+	RangeType type;
+	union _Value {
+		long long int i;
+		long double f;
+	} Value;
+} RangeValue;
+
+static int rangeStringToRange (const char * rangeString, RangeValue * min, RangeValue * max, RangeType type)
 {
 	int factorA = 1;
 	int factorB = 1;
-	long long int a, b;
-	a = b = 0;
+	long long int ia, ib;
+	ia = ib = 0;
+	long double fa, fb;
+	fa = fb = 0;
 	int pos = 0;
 
 	const char * ptr = rangeString;
@@ -83,23 +101,51 @@ static int rangeStringToRange (const char * rangeString, long long int * min, lo
 			{
 				pos = 1;
 				char * endPtr;
-				a = strtoll (ptr, &endPtr, 10);
-				ptr = endPtr;
-				if (errno == ERANGE || (errno != 0 && a == 0))
+				switch (type)
 				{
-					return -1;
+				case INT:
+					ia = strtoll (ptr, &endPtr, 10);
+					if (errno == ERANGE || (errno != 0 && ia == 0))
+					{
+						return -1;
+					}
+					break;
+				case FLOAT:
+					fa = strtold (ptr, &endPtr);
+					if (errno == ERANGE || (errno != 0 && fa == 0))
+					{
+						return -1;
+					}
+					break;
+				default:
+					break;
 				}
+				ptr = endPtr;
 			}
 			else if (pos == 2)
 			{
 				pos = 3;
 				char * endPtr;
-				b = strtoll (ptr, &endPtr, 10);
-				ptr = endPtr;
-				if (errno == ERANGE || (errno != 0 && b == 0))
+				switch (type)
 				{
-					return -1;
+				case INT:
+					ib = strtoll (ptr, &endPtr, 10);
+					if (errno == ERANGE || (errno != 0 && ib == 0))
+					{
+						return -1;
+					}
+					break;
+				case FLOAT:
+					fb = strtold (ptr, &endPtr);
+					if (errno == ERANGE || (errno != 0 && fb == 0))
+					{
+						return -1;
+					}
+					break;
+				default:
+					break;
 				}
+				ptr = endPtr;
 			}
 		}
 		else
@@ -111,49 +157,111 @@ static int rangeStringToRange (const char * rangeString, long long int * min, lo
 	{
 		return -1;
 	}
-	long long int tmpA = factorA * a;
-	long long int tmpB = factorB * b;
-	if (tmpA <= tmpB)
+	long long int tmpIA = factorA * ia;
+	long long int tmpIB = factorB * ib;
+	long double tmpFA = factorA * fa;
+	long double tmpFB = factorB * fb;
+	switch (type)
 	{
-		*min = tmpA;
-		*max = tmpB;
-	}
-	else
-	{
-		*min = tmpB;
-		*max = tmpA;
+	case INT:
+		if (tmpIA <= tmpIB)
+		{
+			min->Value.i = tmpIA;
+			max->Value.i = tmpIB;
+		}
+		else
+		{
+			min->Value.i = tmpIB;
+			max->Value.i = tmpIA;
+		}
+		break;
+	case FLOAT:
+		if (tmpFA <= tmpFB)
+		{
+			min->Value.f = tmpFA;
+			max->Value.f = tmpFB;
+		}
+		else
+		{
+			min->Value.f = tmpFB;
+			max->Value.f = tmpFA;
+		}
+		break;
+	default:
+		break;
 	}
 	return 0;
 }
 
-static int validateSingleRange (const char * valueStr, const char * rangeString, Key * parentKey)
+static int validateSingleRange (const char * valueStr, const char * rangeString, Key * parentKey, RangeType type)
 {
-	long long int min, max;
-	min = max = 0;
-	int rc = rangeStringToRange (rangeString, &min, &max);
-	fprintf (stderr, "%s: ret: %d, min: %lld, max: %lld\n", rangeString, rc, min, max);
+	RangeValue min, max;
+	min.Value.i = 0;
+	max.Value.i = 0;
+	min.type = type;
+	max.type = type;
+	int rc = rangeStringToRange (rangeString, &min, &max, type);
+	switch (type)
+	{
+	case INT:
+		fprintf (stderr, "%s: ret: %d, min: %lld, max: %lld\n", rangeString, rc, min.Value.i, max.Value.i);
+		break;
+	case FLOAT:
+		fprintf (stderr, "%s: ret: %d, min: %Lf, max: %Lf\n", rangeString, rc, min.Value.f, max.Value.f);
+		break;
+	}
 	if (rc)
 	{
 		return -1;
 	}
-	long long int val = 0;
+	RangeValue val;
+	val.type = type;
+	val.Value.i = 0;
 	char * endPtr;
-	val = strtoll (valueStr, &endPtr, 10);
-	if (errno == ERANGE || (errno != 0 && val == 0))
+	switch (type)
+	{
+	case INT:
+		val.Value.i = strtoll (valueStr, &endPtr, 10);
+		break;
+	case FLOAT:
+		val.Value.f = strtold (valueStr, &endPtr);
+		break;
+	default:
+		break;
+	}
+	if (errno == ERANGE || (errno != 0 && val.Value.i == 0))
 	{
 		return -1;
 	}
-	if (val < min || val > max)
+	switch (type)
 	{
-		return 0;
-	}
-	else
-	{
-		return 1;
+	case INT:
+
+		if (val.Value.i < min.Value.i || val.Value.i > max.Value.i)
+		{
+			return 0;
+		}
+		else
+		{
+			return 1;
+		}
+		break;
+	case FLOAT:
+		if (val.Value.f < min.Value.f || val.Value.f > max.Value.f)
+		{
+			return 0;
+		}
+		else
+		{
+			return 1;
+		}
+		break;
+	default:
+		break;
 	}
 }
 
-static int validateMultipleRanges (const char * valueStr, const char * rangeString, Key * parentKey)
+static int validateMultipleRanges (const char * valueStr, const char * rangeString, Key * parentKey, RangeType type)
 {
 	char * localCopy = elektraStrDup (rangeString);
 	char * savePtr = NULL;
@@ -161,7 +269,7 @@ static int validateMultipleRanges (const char * valueStr, const char * rangeStri
 	char * token = NULL;
 	;
 	token = strtok_r (localCopy, ",", &savePtr);
-	int rc = validateSingleRange (valueStr, token, parentKey);
+	int rc = validateSingleRange (valueStr, token, parentKey, type);
 	if (rc == 1)
 	{
 		elektraFree (localCopy);
@@ -169,7 +277,7 @@ static int validateMultipleRanges (const char * valueStr, const char * rangeStri
 	}
 	while ((token = strtok_r (NULL, ",", &savePtr)) != NULL)
 	{
-		rc = validateSingleRange (valueStr, token, parentKey);
+		rc = validateSingleRange (valueStr, token, parentKey, type);
 		if (rc == 1)
 		{
 			elektraFree (localCopy);
@@ -184,13 +292,28 @@ static int validateKey (Key * key, Key * parentKey)
 {
 	const Key * rangeMeta = keyGetMeta (key, "check/range");
 	const char * rangeString = keyString (rangeMeta);
+	const Key * typeMeta = keyGetMeta (key, "check/range/type");
+	RangeType type = INT;
+	if (typeMeta)
+	{
+		const char * strVal = keyString (typeMeta);
+		if (!strcasecmp (strVal, "INT"))
+			type = INT;
+		else if (!strcasecmp (strVal, "FLOAT"))
+			type = FLOAT;
+		else if (!strcasecmp (strVal, "CHAR"))
+			type = CHAR;
+		else if (!strcasecmp (strVal, "HEX"))
+			type = HEX;
+	}
+
 	if (!strchr (rangeString, ','))
 	{
-		return validateSingleRange (keyString (key), rangeString, parentKey);
+		return validateSingleRange (keyString (key), rangeString, parentKey, type);
 	}
 	else
 	{
-		return validateMultipleRanges (keyString (key), rangeString, parentKey);
+		return validateMultipleRanges (keyString (key), rangeString, parentKey, type);
 	}
 }
 
