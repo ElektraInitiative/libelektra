@@ -52,10 +52,11 @@ static int rangeStringToRange (const char * rangeString, RangeValue * min, Range
 {
 	int factorA = 1;
 	int factorB = 1;
-	long long int ia, ib;
-	ia = ib = 0;
-	long double fa, fb;
-	fa = fb = 0;
+	RangeValue a, b;
+	a.type = type;
+	b.type = type;
+	a.Value.i = 0;
+	b.Value.i = 0;
 	int pos = 0;
 
 	const char * ptr = rangeString;
@@ -104,22 +105,22 @@ static int rangeStringToRange (const char * rangeString, RangeValue * min, Range
 				switch (type)
 				{
 				case INT:
-					ia = strtoll (ptr, &endPtr, 10);
-					if (errno == ERANGE || (errno != 0 && ia == 0))
+					a.Value.i = strtoll (ptr, &endPtr, 10);
+					if (errno == ERANGE || (errno != 0 && a.Value.i == 0))
 					{
 						return -1;
 					}
 					break;
 				case FLOAT:
-					fa = strtold (ptr, &endPtr);
-					if (errno == ERANGE || (errno != 0 && fa == 0))
+					a.Value.f = strtold (ptr, &endPtr);
+					if (errno == ERANGE || (errno != 0 && a.Value.f == 0))
 					{
 						return -1;
 					}
 					break;
 				case HEX:
-					ia = strtoll (ptr, &endPtr, 16);
-					if (errno == ERANGE || (errno != 0 && ia == 0))
+					a.Value.i = strtoll (ptr, &endPtr, 16);
+					if (errno == ERANGE || (errno != 0 && a.Value.i == 0))
 					{
 						return -1;
 					}
@@ -139,22 +140,22 @@ static int rangeStringToRange (const char * rangeString, RangeValue * min, Range
 				switch (type)
 				{
 				case INT:
-					ib = strtoll (ptr, &endPtr, 10);
-					if (errno == ERANGE || (errno != 0 && ib == 0))
+					b.Value.i = strtoll (ptr, &endPtr, 10);
+					if (errno == ERANGE || (errno != 0 && b.Value.i == 0))
 					{
 						return -1;
 					}
 					break;
 				case FLOAT:
-					fb = strtold (ptr, &endPtr);
-					if (errno == ERANGE || (errno != 0 && fb == 0))
+					b.Value.f = strtold (ptr, &endPtr);
+					if (errno == ERANGE || (errno != 0 && b.Value.f == 0))
 					{
 						return -1;
 					}
 					break;
 				case HEX:
-					ib = strtoll (ptr, &endPtr, 16);
-					if (errno == ERANGE || (errno != 0 && ib == 0))
+					b.Value.i = strtoll (ptr, &endPtr, 16);
+					if (errno == ERANGE || (errno != 0 && b.Value.i == 0))
 					{
 						return -1;
 					}
@@ -175,10 +176,11 @@ static int rangeStringToRange (const char * rangeString, RangeValue * min, Range
 	{
 		return -1;
 	}
-	long long int tmpIA = factorA * ia;
-	long long int tmpIB = factorB * ib;
-	long double tmpFA = factorA * fa;
-	long double tmpFB = factorB * fb;
+
+	long long int tmpIA = factorA * a.Value.i;
+	long long int tmpIB = factorB * b.Value.i;
+	long double tmpFA = factorA * a.Value.f;
+	long double tmpFB = factorB * b.Value.f;
 	switch (type)
 	{
 	case INT:
@@ -283,6 +285,7 @@ static int validateSingleRange (const char * valueStr, const char * rangeString,
 		}
 		break;
 	default:
+		return -1;
 		break;
 	}
 }
