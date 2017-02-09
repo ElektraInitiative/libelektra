@@ -51,13 +51,29 @@ static int rangeStringToRange (const char * rangeString, long long int * min, lo
 		else if (*ptr == '-')
 		{
 			if (pos == 0)
+			{
+				if (factorA == -1)
+				{
+					return -1;
+				}
 				factorA = -1;
+			}
 			else if (pos == 1)
+			{
 				pos = 2;
+			}
 			else if (pos == 2)
+			{
+				if (factorB == -1)
+				{
+					return -1;
+				}
 				factorB = -1;
+			}
 			else
+			{
 				return -1;
+			}
 			++ptr;
 			continue;
 		}
@@ -90,6 +106,10 @@ static int rangeStringToRange (const char * rangeString, long long int * min, lo
 		{
 			return -1;
 		}
+	}
+	if (pos != 3)
+	{
+		return -1;
 	}
 	long long int tmpA = factorA * a;
 	long long int tmpB = factorB * b;
@@ -209,7 +229,7 @@ int elektraRangeSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_U
 		if (keyGetMeta (cur, "check/range"))
 		{
 			int rc = validateKey (cur, parentKey);
-			if (rc == 0)
+			if (rc < 1)
 			{
 				return -1;
 			}
