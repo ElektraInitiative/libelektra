@@ -12,7 +12,7 @@
 #include "kdbconfig.h"
 #endif
 
-static int validateKey(Key *key, Key *parentKey)
+int validateKey (Key * key, Key * parentKey)
 {
 	struct stat buf;
 	/* TODO: make exceptions configurable using path/allow */
@@ -35,7 +35,7 @@ static int validateKey(Key *key, Key *parentKey)
 	}
 	int errnosave = errno;
 	int rc = 1;
-	const Key * meta = keyGetMeta(key, "check/path");
+	const Key * meta = keyGetMeta (key, "check/path");
 	if (stat (keyString (key), &buf) == -1)
 	{
 		char * errmsg = elektraMalloc (ERRORMSG_LENGTH + 1 + +keyGetNameSize (key) + keyGetValueSize (key) +
@@ -74,6 +74,7 @@ int elektraPathGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 				       keyNew ("system/elektra/modules/path/exports", KEY_END),
 				       keyNew ("system/elektra/modules/path/exports/get", KEY_FUNC, elektraPathGet, KEY_END),
 				       keyNew ("system/elektra/modules/path/exports/set", KEY_FUNC, elektraPathSet, KEY_END),
+				       keyNew ("system/elektra/modules/path/exports/validateKey", KEY_FUNC, validateKey, KEY_END),
 #include "readme_path.c"
 				       keyNew ("system/elektra/modules/path/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END));
 	ksDel (n);
@@ -91,9 +92,8 @@ int elektraPathSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 	{
 		const Key * meta = keyGetMeta (cur, "check/path");
 		if (!meta) continue;
-		rc = validateKey(cur, parentKey);
-		if(!rc)
-		    return -1;
+		rc = validateKey (cur, parentKey);
+		if (!rc) return -1;
 	}
 
 	return 1; /* success */

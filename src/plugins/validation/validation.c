@@ -17,6 +17,8 @@
 
 #include "validation.h"
 
+int validateKey (Key *, Key *);
+
 int elektraValidationGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey ELEKTRA_UNUSED)
 {
 	KeySet * n;
@@ -27,13 +29,14 @@ int elektraValidationGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key
 			     keyNew ("system/elektra/modules/validation/exports/get", KEY_FUNC, elektraValidationGet, KEY_END),
 			     keyNew ("system/elektra/modules/validation/exports/set", KEY_FUNC, elektraValidationSet, KEY_END),
 			     keyNew ("system/elektra/modules/validation/exports/ksLookupRE", KEY_FUNC, ksLookupRE, KEY_END),
+			     keyNew ("system/elektra/modules/validation/exports/validateKey", KEY_FUNC, validateKey, KEY_END),
 #include "readme_validation.c"
 			     keyNew ("system/elektra/modules/validation/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END));
 	ksDel (n);
 	return 1;
 }
 
-static int validateKey(Key *key, Key *parentKey)
+int validateKey (Key * key, Key * parentKey)
 {
 	const Key * regexMeta = keyGetMeta (key, "check/validation");
 
@@ -172,9 +175,8 @@ int elektraValidationSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key
 		const Key * regexMeta = keyGetMeta (cur, "check/validation");
 
 		if (!regexMeta) continue;
-		int rc = validateKey(cur, parentKey);
-		if(!rc)
-		    return -1;
+		int rc = validateKey (cur, parentKey);
+		if (!rc) return -1;
 	}
 
 	return 1; /* success */

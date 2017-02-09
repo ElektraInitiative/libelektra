@@ -399,7 +399,7 @@ static int rfc822StringValidation (const char * date)
 	return -1;
 }
 
-static int validateKey (Key * key, Key * parentKey)
+int validateKey (Key * key, Key * parentKey)
 {
 	const Key * standard = keyGetMeta (key, "check/date");
 	const Key * formatStringMeta = keyGetMeta (key, "check/date/format");
@@ -465,6 +465,7 @@ int elektraDateGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UN
 			       keyNew ("system/elektra/modules/date/exports", KEY_END),
 			       keyNew ("system/elektra/modules/date/exports/get", KEY_FUNC, elektraDateGet, KEY_END),
 			       keyNew ("system/elektra/modules/date/exports/set", KEY_FUNC, elektraDateSet, KEY_END),
+			       keyNew ("system/elektra/modules/date/exports/validateKey", KEY_FUNC, validateKey, KEY_END),
 #include ELEKTRA_README (date)
 			       keyNew ("system/elektra/modules/date/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 		ksAppend (returned, contract);
