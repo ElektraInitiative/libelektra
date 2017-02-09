@@ -6,7 +6,7 @@
 - infos/recommends =
 - infos/placements = presetstorage postgetstorage
 - infos/status = maintained conformant compatible coverage specific unittest tested libc preview experimental unfinished nodoc
-- infos/metadata =
+- infos/metadata = check/range check/range/type
 - infos/description = tests if a value is within a given range
 
 ## Introduction ##
