@@ -116,6 +116,8 @@ void CompleteCommand::completeNormal (const string argument, const Key parsedArg
 	const int offset = distance (root.begin (), root.end ()) - rootExists + shallShowNextLevel (argument);
 
 	const auto nameFilter = root.isCascading () ? filterCascading : filterName;
+	// Let elektra handle the escaping of the input for us
+	const string argumentEscaped = parsedArgument.getFullName ();
 	const auto filter = [&](const pair<Key, pair<int, int>> & c) {
 		return filterDepth (cl.minDepth + offset, max (cl.maxDepth, cl.maxDepth + offset), c) && nameFilter (argument, c);
 	};
@@ -227,7 +229,9 @@ void CompleteCommand::printResults (const Key root, const int minDepth, const in
 
 const Key CompleteCommand::getParentKey (const Key key)
 {
-	return Key (key.getFullName ().erase (key.getFullName ().size () - key.getBaseName ().size ()), KEY_END);
+	Key parentKey = key.dup (); // We can't set baseName on keys in keysets, so duplicate it
+	ckdb::keySetBaseName (parentKey.getKey (), NULL);
+	return parentKey;
 }
 
 KeySet CompleteCommand::getKeys (Key root, const bool cutAtRoot)
@@ -334,7 +338,6 @@ bool CompleteCommand::filterCascading (const string argument, const pair<Key, pa
 
 bool CompleteCommand::filterName (const string argument, const pair<Key, pair<int, int>> & current)
 {
-	// For a namespace completion, compare by substring
 	const string test = current.first.getFullName ();
 	return argument.size () <= test.size () && equal (argument.begin (), argument.end (), test.begin ());
 }
