@@ -149,9 +149,10 @@ So do not give this responsibility out of hands entirely.
 
 ### Markdown Guidelines ###
 
- * File Ending is `.md` or integrated within Doxygen
- * Headers with same number of `#` left and right
+ * File Ending is `.md` or integrated within Doxygen comments
+ * Headers/Titles should use the same number of `#` left and right
  * Use tabs or fences for code/examples
+ * Prefer fences which indicate the used language for better syntax highlighting
  * Fences with sh are for the [shell recorder syntax](/tests/shell/shell_recorder/tutorial_wrapper)
  * `README.md` and tutorials should be written exclusively with shell recorder syntax
    so that we know that the code in the tutorial produces output as expected
