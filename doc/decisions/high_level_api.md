@@ -134,13 +134,13 @@ What is not so nice:
 ## Argument ##
 
 1. Very easy to get started with, to get a key needs 3 lines of codes:
-   
+
 ```c
 KDBHL *handle = kdbhlOpen ("/sw/elektra/kdb/#0/current");
 printf ("number /mykey is %d\n", kdbhlGetInt (handle, "/mykey"));
 kdbhlClose (handle);
 ```
-   
+
 2. It is also easier to get started with writing new bindings.
 
 ## Implications ##

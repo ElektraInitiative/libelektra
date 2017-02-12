@@ -14,41 +14,41 @@
 The following representation standards of dates and times are currently supported and can be use by setting `check/date` to:
 
 * `POSIX`
- 
-   see `STRPTIME(3)` for more information. a valid format has to be specified in `check/date/format` 
+
+   see `STRPTIME(3)` for more information. a valid format has to be specified in `check/date/format`
 
 * `ISO8601`
-  
+
    see [ISO8601](https://en.wikipedia.org/wiki/ISO_8601). possible format strings specified in `check/date/format`, default: `datetime complete+truncated`:
- 
+
   * Dates/Time:
 
     * Date:
- 
+
       * `calendardate`
         calendar dates: day of month - month - year.
-   
+
       * `weekdate`
         calendar week and day numbers, e.g. YYYY-Www-D
-   
+
       * `ordinaldate`
         year + day of the year
-   
+
       * `date`
         `calendardate`, `weekdate`, and `ordinaldate` combined
- 
+
     * Time:
-  
+
       * `timeofday`
         24-hour timekeeyping system
-  
+
       * `utc`
         coordinates universal time. either by appending a time-zone designator or the time difference to `UTC` to `timeofday`
-  
+
     * Combined:
       `datetime`
-      combination of Dates and Time according to th ISO8601 specification. 
- 
+      combination of Dates and Time according to th ISO8601 specification.
+
   * Representation:
     if no representation is specified, `complete+reduced+truncated` is used as default.
 
@@ -75,7 +75,7 @@ The following representation standards of dates and times are currently supporte
 
   * Format:
        if no format is specified both `basic` and `extended` are treated as valid.
-  
+
     * `basic`
       no separating character between individual components of a `date`, `time` or `datetime` expressen
 
@@ -85,7 +85,7 @@ The following representation standards of dates and times are currently supporte
 
 
 * `RFC2822`
- 
+
   a set of possible format strings derived from rfc2822 3.3, no format string needed.
 
 ## Dependencies ##

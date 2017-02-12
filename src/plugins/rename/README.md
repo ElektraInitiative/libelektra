@@ -15,7 +15,7 @@ with the required names or case.
 
 If keys are renamed, their original name is stored in the `origname` MetaKey.
 
-There are 2 types of transformations: 
+There are 2 types of transformations:
 * basic
 * advanced
 
@@ -74,7 +74,7 @@ If both options are given, the MetaKey takes precedence. For example, consider t
 
     config/cut = will/be
     parent key = user/config
-    
+
     user/config/will/be/stripped/key1		<- meta rename/cut = will/be/stripped
     user/config/will/be/stripped/key2		<- meta rename/cut = will/be/stripped
     user/config/will/be/stripped/key3

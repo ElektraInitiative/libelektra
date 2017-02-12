@@ -21,16 +21,16 @@ The `blockresolver` can be used to only resolve a tagged block inside a configur
 
     `kdb mount -R blockresolver /path/to/my/file /mountpoint -c identifier="identifier-tag"`
 
-where `identifier` specifies the tag `blockresolver` will search for in the configuration file. 
+where `identifier` specifies the tag `blockresolver` will search for in the configuration file.
 
 A block consists of 2 parts:
-- beginning: the identifier suffixed with `start` 
+- beginning: the identifier suffixed with `start`
 - end: the identifier suffixed with `stop`
 
 ## Limitations ##
 
 Currently the identifier must be unique.
- 
+
 ## Example ##
 ```sh
 # Backup-and-Restore:system/examples/blockresolver
@@ -74,7 +74,7 @@ kdb export system/examples/blockresolver ini
 #> [section2]
 #> key2 = val2
 
-# add a new key to the resolved block 
+# add a new key to the resolved block
 kdb set system/examples/blockresolver/section1/key12 val12
 
 cat /tmp/test.block

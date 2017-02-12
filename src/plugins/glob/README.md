@@ -53,10 +53,10 @@ globbing function (currently fnmatch) as a comma separated list. Unknown flag na
 
 - "noescape" which enables the FNM_NOESCAPE flag
 - "pathname" which enables the FNM_PATHNAME flag
-- "period" which enables the FNM_PERIOD flag  
+- "period" which enables the FNM_PERIOD flag
 
 If the flag key does not exist, FNM_PATHNAME is used as a default (see fnmatch(3) for more details).
-An empty string disables all flags (i.e. also the default flag). 
+An empty string disables all flags (i.e. also the default flag).
 ## Contracts ##
 
 Glob statements are very useful together with contracts.
