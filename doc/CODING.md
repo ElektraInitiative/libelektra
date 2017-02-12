@@ -122,7 +122,7 @@ Rationale: Readability with split windows.
  * Use space after `,` of every function argument.
 
 The [reformat script](/scripts/reformat-source) can ensure most code style rules,
-but it is obviouly not capable of ensuring everything (e.g. naming conventions).
+but it is obviously not capable of ensuring everything (e.g. naming conventions).
 So do not give this responsibility out of hands entirely.
 
 ### C Guidelines
