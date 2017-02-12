@@ -20,7 +20,7 @@ Limitations:
 ## Assumptions ##
 
 - Thread-safety: a handle is the accepted better solution than having to
-  care about whether it is reentrant, thread-safe,..
+  care about whether it is reentrant, thread-safe, ...
 - assumes that spec is available and installed correctly (fail in kdbhlOpen otherwise)
 - lookups for non-specified keys yield errors (in particular if they are not present)
 - many projects do not care about some limitations (no binary, no meta-data)
@@ -40,57 +40,89 @@ Provide a simple getter/setter API.
 
 First draft of API:
 
-// basic stuff
-KDBHL * kdbhlOpen (const char * application); // might fail, you need to check for error afterwards!
+#### Basic ####
 
-int kdbhlGetInt (KDBHL * handle, const char * name); // enum, int, tristate
+```c
+// might fail, you need to check for error afterwards!
+KDBHL * kdbhlOpen (const char * application);
+
+// enum, int, tristate
+int kdbhlGetInt (KDBHL * handle, const char * name);
+
 char * kdbhlGetString (KDBHL * handle, const char * name);
+
 // and so on.. (all types)
 
 
 // are arrays already advanced functionality? (recursive API)
-int kdbhlGetIntArray (KDBHL * handle, const char * name, int elem); // enum, int, tristate
+
+// enum, int, tristate
+int kdbhlGetIntArray (KDBHL * handle, const char * name, int elem);
+
 int kdbhlGetArraySize (KDBHL * handle, const char * name);
 
 void kdbhlClose (KDBHL * handle);
+```
 
-// needed stuff
-void kdbhlReload (KDBHL * handle); // might fail, you need to check for error afterwards!
+#### Needed ####
 
-int kdbhlHasError (KDBHL * handle); // to abort afterwards
+```c
+// might fail, you need to check for error afterwards!
+void kdbhlReload (KDBHL * handle);
+
+// to abort afterwards
+int kdbhlHasError (KDBHL * handle);
 char * kdbhlGetErrorMessage (KDBHL * handle);
 
-int kdbhlHasInfo (KDBHL * handle); // to inform the user (e.g. warning, to display help or version)
+// to inform the user (e.g. warning, to display help or version)
+int kdbhlHasInfo (KDBHL * handle);
 char * kdbhlGetInfoMessage (KDBHL * handle);
 
-void kdbhlClear (KDBHL * handle); // clear error+info
+// clear error+info
+void kdbhlClear (KDBHL * handle);
+```
 
-### to think about ###
+#### To think about ####
 
-void kdbhlParse (KDBHL * handle, int argc, char ** argv, char ** environ); // maybe not needed: could be integrated in kdbhlOpen?
-KDBHL * kdbhlDup (KDBHL * handle); // gives you a duplicate for other threads (same application+version), automatically calls kdbhlClear
+```c
+// maybe not needed: could be integrated in kdbhlOpen?
+void kdbhlParse (KDBHL * handle, int argc, char ** argv, char ** environ);
+
+// gives you a duplicate for other threads (same application+version), automatically calls kdbhlClear
+KDBHL * kdbhlDup (KDBHL * handle);
+
 KDB * kdbhlGetKDB (KDBHL * handle);
+
 void kdbhlDefaultConfig (KDBHL * handle, KeySet * defaultConfig);
+
 KeySet * kdbhlGetKeySet (KDBHL * handle, const char * cutkey);
+
 KeySet * kdbhlGetKeyHierarchy (KDBHL * handle, const char * cutkey);
-void kdbhlSetInt (KDBHL * handle, const char * name, int value); // enum, int, tristate
 
-### Lower-level type API ###
+// enum, int, tristate
+void kdbhlSetInt (KDBHL * handle, const char * name, int value);
+```
 
-int keyGetInt (Key * key); // will be used internally in kdbhlGetInt, are for other APIs useful, too
+#### Lower-level type API ####
+
+```c
+// will be used internally in kdbhlGetInt, are for other APIs useful, too
+int keyGetInt (Key * key);
+
 // and so on
+```
 
-
-### recursive API (KeyHierarchy) ###
+#### recursive API (KeyHierarchy) ####
 
 can be transformed from/to keysets
 
+```c
 keyhAdd (KeyHierarchy * kh, Key * key);
 
 // TODO, add rest of API
+```
 
-
-### todos ###
+#### todos ####
 
 What is not so nice:
 
@@ -102,11 +134,13 @@ What is not so nice:
 ## Argument ##
 
 1. Very easy to get started with, to get a key needs 3 lines of codes:
-   ```c
-   KDBHL *handle = kdbhlOpen ("/sw/elektra/kdb/#0/current");
-   printf ("number /mykey is %d\n", kdbhlGetInt (handle, "/mykey"));
-   kdbhlClose (handle);
-   ```
+   
+```c
+KDBHL *handle = kdbhlOpen ("/sw/elektra/kdb/#0/current");
+printf ("number /mykey is %d\n", kdbhlGetInt (handle, "/mykey"));
+kdbhlClose (handle);
+```
+   
 2. It is also easier to get started with writing new bindings.
 
 ## Implications ##
