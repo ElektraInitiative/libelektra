@@ -20,7 +20,7 @@ Limitations:
 ## Assumptions
 
 - Thread-safety: a handle is the accepted better solution than having to
-  care about whether it is reentrant, thread-safe,..
+  care about whether it is reentrant, thread-safe, ...
 - assumes that spec is available and installed correctly (fail in kdbhlOpen otherwise)
 - lookups for non-specified keys yield errors (in particular if they are not present)
 - many projects do not care about some limitations (no binary, no meta-data)
@@ -42,7 +42,7 @@ First draft of API:
 
 #### Basic
 
-```
+```c
 // might fail, you need to check for error afterwards!
 KDBHL * kdbhlOpen (const char * application);
 
@@ -66,7 +66,7 @@ void kdbhlClose (KDBHL * handle);
 
 #### Needed
 
-```
+```c
 // might fail, you need to check for error afterwards!
 void kdbhlReload (KDBHL * handle);
 
@@ -84,7 +84,7 @@ void kdbhlClear (KDBHL * handle);
 
 #### To think about
 
-```
+```c
 // maybe not needed: could be integrated in kdbhlOpen?
 void kdbhlParse (KDBHL * handle, int argc, char ** argv, char ** environ);
 
@@ -105,7 +105,7 @@ void kdbhlSetInt (KDBHL * handle, const char * name, int value);
 
 #### Lower-level type API
 
-```
+```c
 // will be used internally in kdbhlGetInt, are for other APIs useful, too
 int keyGetInt (Key * key);
 
@@ -116,7 +116,7 @@ int keyGetInt (Key * key);
 
 can be transformed from/to keysets
 
-```
+```c
 keyhAdd (KeyHierarchy * kh, Key * key);
 
 // TODO, add rest of API
@@ -135,11 +135,11 @@ What is not so nice:
 
 1. Very easy to get started with, to get a key needs 3 lines of codes:
    
-   ```
-   KDBHL *handle = kdbhlOpen ("/sw/elektra/kdb/#0/current");
-   printf ("number /mykey is %d\n", kdbhlGetInt (handle, "/mykey"));
-   kdbhlClose (handle);
-   ```
+```c
+KDBHL *handle = kdbhlOpen ("/sw/elektra/kdb/#0/current");
+printf ("number /mykey is %d\n", kdbhlGetInt (handle, "/mykey"));
+kdbhlClose (handle);
+```
    
 2. It is also easier to get started with writing new bindings.
 
