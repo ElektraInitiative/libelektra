@@ -7,14 +7,14 @@
 - infos/status = maintained unittest configurable memleak
 - infos/description = proxy that calls other plugins (scripts) written in python
 
-## Introduction ##
+## Introduction
 
 The plugin uses Python to do magic things. It basically allows to call plugins written in Python.
 
 What a Python script can do is not really limited by design, so any kind of plugin may be
 implemented. The python plugin is especially useful to write filter and logging scripts.
 
-## Usage ##
+## Usage
 
 The python plugin requires the configuration parameter **script** holding the file path to a
 python script. The mount command would look like
@@ -28,7 +28,7 @@ For a Python script that serves as (json) storage plugin itself, one could also 
 
     kdb mount file.json /python python script=/path/to/json_plugin.py
 
-### Plugin Configuration ###
+### Plugin Configuration
 
 The python plugin supports following optional configuration values/flags:
 
@@ -38,7 +38,7 @@ The python plugin supports following optional configuration values/flags:
 - `shutdown` (value, 0 or 1): If enabled, the last call to `kdbClose()` will also
   shutdown Pythons engine. Default is 0.
 
-### Python Scripts ###
+### Python Scripts
 
 Python scripts must implement a class called `ElektraPlugin` with one parameter.
 The class itself can implement the following functions
@@ -59,7 +59,7 @@ Access to **kdb** can be retrieved using the Python import
 
     import kdb
 
-## Example ##
+## Example
 
 An example script that prints some information for each method call would be:
 
@@ -86,7 +86,7 @@ An example script that prints some information for each method call would be:
 
 Further examples can be found in the [python](python/) directory.
 
-## Disclaimer ##
+## Disclaimer
 
 Be aware that a Python script will never be as performant as a native C/C++ plugin.
 Spinning up the interpreter takes additional time and resources. The python plugin

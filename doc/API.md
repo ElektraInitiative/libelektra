@@ -1,4 +1,4 @@
-## Elektra Initiative Overview ##
+## Elektra Initiative Overview
 
 Elektra serves as a universal and secure framework to access configuration
 parameters in a global, hierarchical key database and provides a mature,
@@ -12,7 +12,7 @@ See the [readme](/README.md) for more introduction.
 See the [glossary](/doc/help/elektra-glossary.md) for the used
 terminology.
 
-## API Docu ##
+## API Docu
 
 This document's main goal is to describe the API.
 It covers:
@@ -38,7 +38,7 @@ http://doc.libelektra.org/api/latest/html
 **Important:** On github links to API functions are broken, so it is recommended that you continue
 reading in one of these links above.
 
-##  Using the Elektra Library ##
+##  Using the Elektra Library
 
 A C or C++ source file that wants to use Elektra should include:
 
@@ -57,7 +57,7 @@ Another way is to use CMake:
 
 Read about [compiling elektra](/doc/COMPILE.md).
 
-### Tutorials ###
+### Tutorials
 
 * [Application Integration](/doc/tutorials/application-integration.md)
 * [Compilation Variants](/doc/tutorials/compilation-variants.md)
@@ -71,7 +71,7 @@ Read about [compiling elektra](/doc/COMPILE.md).
 [List of all available Plugins](/src/plugins/) and get started by developing
 your own plugins @ref plugin.
 
-##  Elektra API ##
+##  Elektra API
 
 The API was written in pure C because Elektra was designed to be useful
 even for the most basic system programs.
@@ -109,7 +109,7 @@ entire [KeySet](@ref ksAppend)
 
 [More background information about the classes](/doc/help/elektra-classes.md)
 
-## Namespaces ##
+## Namespaces
 
 There are 5 trees (=namespaces) of keys: `spec`, `proc`, `dir`, `user` and `system`
 that are all unified (in the given order) in one cascading tree starting with `/`.
@@ -155,7 +155,7 @@ daemons and system services.
 Read more about [namespaces](/doc/help/elektra-namespaces.md)
 and a tutorial for [namespaces](/doc/tutorials/namespaces.md).
 
-## Rules for Key Names ##
+## Rules for Key Names
 
 When using Elektra to store your application's configuration and state,
 please keep in mind the following rules:
@@ -173,7 +173,7 @@ They are reserved for more generic purposes.
 
 Read more about [key names](/doc/help/elektra-key-names.md)
 
-## Backend Overview ##
+## Backend Overview
 
 The core of Elektra does not store configuration itself to the
 harddisk. Instead this work is delegated to backends.

@@ -1,6 +1,6 @@
-# How-To: kdb export #
+# How-To: kdb export
 
-## Introduction ##
+## Introduction
 
 The kdb tool allows users to interact with Elektra's Key Database via the command line.
 This tutorial explains the export function of kdb. This command lets you export Keys from
@@ -21,7 +21,7 @@ Database. This command exports keys to `stdout` to store them into the Elektra
 Key Database. Typically, the export command is used with redirection to write the
 Keys to a file.
 
-### Format ###
+### Format
 
 The format argument can be a very powerful option to use with kdb export.
 The format argument allows a user to specify which plug-in is used to export the
@@ -38,11 +38,11 @@ The dump format is a good means of backing up Keys from the key database for use
 such as reimporting them later.  As of this writing, `dump` is the only way to fully preserve all parts of the
 `KeySet`.
 
-## Options ##
+## Options
 
 The kdb export command takes one special option: `-E` or alternatively ` --without-elektra`, which tells `kdb` to omit the `system/elektra` directory of keys.
 
-## Example ##
+## Example
 
 ```sh
 kdb export system/backup > backup.ecf

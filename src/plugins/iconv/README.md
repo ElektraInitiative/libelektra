@@ -7,11 +7,11 @@
 - infos/status = maintained unittest libc
 - infos/description = Converts values of keys between charsets
 
-## Introduction ##
+## Introduction
 
 This plugin is a filter plugin that converts between different character encodings.
 
-## Purpose ##
+## Purpose
 
 Consider a user insisting on a `latin1` character encoding because
 of some old application. All other users already use, for example,
@@ -39,7 +39,7 @@ key database that requires a specific encoding can make use of it. To
 sum up, every user can select a different encoding, but the key databases
 are still properly encoded for anyone.
 
-## Example ##
+## Example
 
 For example `~/.config/iconv.ini` should be `latin1`, but all users
 have `UTF-8` settings:

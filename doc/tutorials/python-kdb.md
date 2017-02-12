@@ -1,10 +1,10 @@
-# How-To: Python kdb #
+# How-To: Python kdb
 
-## Introduction ##
+## Introduction
 
 When programming in Python it is possible to access the kdb database, changing values of existing keys, adding and deleting keys and a few other things.
 
-## First Steps ##
+## First Steps
 
 In order to being able to use `kdb`, you at first need to `import kdb`. You need access to a Python object of `KDB`. This is accomplished by calling `kdb.KDB()` and saving this to a variable because later on this object will be needed for various operations.
 The easiest way to do this would be:
@@ -17,7 +17,7 @@ with kdb.KDB() as k:
     # do all kinds of operations explained below
 ```
 
-## Keyset ##
+## Keyset
 
 A keyset is basically a list of the keys that lie within the specified range of the database. When creating an empty keyset this range is obviously zero. It is possible to load the whole database into a keyset but in a lot of cases this is not needed and you can specify which keys exactly you need (which I mean with specified range). At first it is necessary to create a new keyset. When simply calling `kdb.KeySet()` the keyset is of size 0. There is no restriction to the keyset's size. It is possible to specify a certain (maximum) size for a keyset. To load keys into to keyset from the database you simply call the method `get` provided by the kdb-object.
 

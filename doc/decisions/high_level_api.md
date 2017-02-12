@@ -1,6 +1,6 @@
-# High Level API #
+# High Level API
 
-## Issue ##
+## Issue
 
 Some projects do not want to use code-generation but prefer
 an "old-school" key/value getter/setter approach.
@@ -8,7 +8,7 @@ an "old-school" key/value getter/setter approach.
 Here we propose new libraries (libelektra-highlevel and libelektra-hierarchy)
 with new high-level APIs in C.
 
-## Constraints ##
+## Constraints
 
 1. should be extremely easy to get started with
 2. should be very hard to use it wrong
@@ -17,7 +17,7 @@ Limitations:
 
 - cannot compete with code generation
 
-## Assumptions ##
+## Assumptions
 
 - Thread-safety: a handle is the accepted better solution than having to
   care about whether it is reentrant, thread-safe, ...
@@ -27,20 +27,20 @@ Limitations:
   but prefer a straight-forward way to get/set config
 - When people hit limitations they fall back to ^KeySet^, ^Key^
 
-## Considered Alternatives ##
+## Considered Alternatives
 
 - simple vs. recursive API: recursive only for advanced users, thus it is enough if it is on top of KeySet
 - only provide generated API
 
-## Decision ##
+## Decision
 
 Provide a simple getter/setter API.
 
-### API ###
+### API
 
 First draft of API:
 
-#### Basic ####
+#### Basic
 
 ```c
 // might fail, you need to check for error afterwards!
@@ -64,7 +64,7 @@ int kdbhlGetArraySize (KDBHL * handle, const char * name);
 void kdbhlClose (KDBHL * handle);
 ```
 
-#### Needed ####
+#### Needed
 
 ```c
 // might fail, you need to check for error afterwards!
@@ -82,7 +82,7 @@ char * kdbhlGetInfoMessage (KDBHL * handle);
 void kdbhlClear (KDBHL * handle);
 ```
 
-#### To think about ####
+#### To think about
 
 ```c
 // maybe not needed: could be integrated in kdbhlOpen?
@@ -103,7 +103,7 @@ KeySet * kdbhlGetKeyHierarchy (KDBHL * handle, const char * cutkey);
 void kdbhlSetInt (KDBHL * handle, const char * name, int value);
 ```
 
-#### Lower-level type API ####
+#### Lower-level type API
 
 ```c
 // will be used internally in kdbhlGetInt, are for other APIs useful, too
@@ -112,7 +112,7 @@ int keyGetInt (Key * key);
 // and so on
 ```
 
-#### recursive API (KeyHierarchy) ####
+#### recursive API (KeyHierarchy)
 
 can be transformed from/to keysets
 
@@ -122,7 +122,7 @@ keyhAdd (KeyHierarchy * kh, Key * key);
 // TODO, add rest of API
 ```
 
-#### todos ####
+#### todos
 
 What is not so nice:
 
@@ -131,25 +131,25 @@ What is not so nice:
 - warning/error handling?
 - should recursive + lower-level type API in a separate library, in ease, or in core?
 
-## Argument ##
+## Argument
 
 1. Very easy to get started with, to get a key needs 3 lines of codes:
-   
-```c
-KDBHL *handle = kdbhlOpen ("/sw/elektra/kdb/#0/current");
-printf ("number /mykey is %d\n", kdbhlGetInt (handle, "/mykey"));
-kdbhlClose (handle);
-```
-   
+
+   ```c
+   KDBHL *handle = kdbhlOpen ("/sw/elektra/kdb/#0/current");
+   printf ("number /mykey is %d\n", kdbhlGetInt (handle, "/mykey"));
+   kdbhlClose (handle);
+   ```
+
 2. It is also easier to get started with writing new bindings.
 
-## Implications ##
+## Implications
 
 Wrong API use possible (it is not generated after all):
 
 - wrong names, unspecified names,...
 - application can be wrong
 
-## Related decisions ##
+## Related decisions
 
-## Notes ##
+## Notes

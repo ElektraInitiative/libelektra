@@ -1,8 +1,8 @@
-# Python #
+# Python
 
 Python bindings for Elektra.
 
-## Dependencies ##
+## Dependencies
 
 For Python3 on debian jessie you need:
 
@@ -16,7 +16,7 @@ debian wheezy needs:
 	-DPYTHON_INCLUDE_DIR:PATH=/usr/include/python3.2
 	-DPYTHON_LIBRARY:FILEPATH=/usr/lib/libpython3.2mu.so
 
-## Building ##
+## Building
 
 Note that cmake does *not* automatically rebuild SWIG bindings
 when header files are changed. Remove the build directory

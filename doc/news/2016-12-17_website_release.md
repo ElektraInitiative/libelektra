@@ -1,11 +1,11 @@
-# Website Release #
+# Website Release
 
 - guid: 102b84a3-c41e-485c-8fe2-f12a24b3fbfd
 - author: Marvin Mall
 - pubDate: Thu, 22 Dec 2016 17:46:19 +0100
 - shortDesc: introduces new Elektra website with snippet sharing
 
-## Highlight ##
+## Highlight
 
 1. Release of new Elektra website with an integrated service for
    sharing of configuration snippets.
@@ -13,7 +13,7 @@
    configuration formats.
 3. Website structures documentation and news sections in a new way.
 
-## Introduction ##
+## Introduction
 
 With Elektra developing into a more and more reliable as well as
 popular system to manage system configurations, the demand for a
@@ -42,7 +42,7 @@ have access to the snippets in various formats at any time, allowing
 you to use them across multiple system by mounting them with the
 [curlget](https://tree.libelektra.org/src/plugins/curlget) resolver!
 
-## The Website ##
+## The Website
 
 The website was written by Marvin Mall in the course of his
 [bachelor thesis](http://www.libelektra.org/ftp/elektra/mall2016rest.pdf)
@@ -52,7 +52,7 @@ also to create a platform that promotes his service. We think that
 this worked out quite well by connecting the website with the service
 the way it was done.
 
-### Documentation ###
+### Documentation
 
 An important aspect of the new website was to make existing documentation
 more transparent and structured. A lot of documentation files have been
@@ -76,7 +76,7 @@ you can have a look at the
 The website is already the fourth view of our markdown pages!
 The others are man pages, doxygen, and github.
 
-### Homepage & News ###
+### Homepage & News
 
 Besides the documentation we also wanted a place to properly present
 ourselves and our news around Elektra. For this reason we created a new
@@ -86,7 +86,7 @@ up-to-date!
 
 We hope that you enjoy our new appearance as much as we do!
 
-### Snippet Sharing ###
+### Snippet Sharing
 
 Another important part of the website and also without doubt the part
 that took most effort to create, is the service that allows for sharing
@@ -112,7 +112,7 @@ As soon as a snippet is added, changed or deleted on the website, a job
 that updates the repository is triggered. So you can expect the repository
 to be always up-to-date.
 
-### NoScript ###
+### NoScript
 
 The website is fully written with the help of AngularJS and is therefore
 heavily based on JavaScript. This should be no issue though as the
@@ -128,7 +128,7 @@ repository:
    Based on this, we hope you disable `NoScript` for our page
    so that you are able to share snippets!
 
-## Domains ##
+## Domains
 
 All Elektra Domains directly hosted by us are now only served by `https`.
 The former `http` sites are only redirects to `https`. This might cause
@@ -149,7 +149,7 @@ directly go to [github](https://git.libelektra.org) and also to the
 
 The old Wordpress installation was shut down because of security concerns.
 
-## Feedback ##
+## Feedback
 
 At this point there is not much more to say about the new website except for:
 Feel free to explore it!
@@ -159,7 +159,7 @@ service or other parts of the Elektra project. We always have an open ear
 for suggestions and we also like to help with technical issues, simply
 [leave us a note on github](https://bugs.libelektra.org)!
 
-## Stay tuned! ##
+## Stay tuned!
 
 Subscribe to the reimplemented
 [RSS feed](https://www.libelektra.org/news/feed.rss)

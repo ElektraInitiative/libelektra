@@ -7,12 +7,12 @@
 - infos/status = maintained unittest nodep configurable nodoc
 - infos/description = verifies lineendings of files
 
-## Introduction ##
+## Introduction
 
 The Lineendings Plugin verifies the Lineendings of a file.
 If inconsistent lineendings or lineendings that don't match `valid` are detected the plugin yields an error.
 
-## Configuration ##
+## Configuration
 
 `valid` 
 The key tells the plugin to reject all lineendings other than specified in this key. Valid options: CRLF, LFCR, CR, LF

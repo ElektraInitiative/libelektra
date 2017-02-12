@@ -1,6 +1,6 @@
-# How-To: kdb import #
+# How-To: kdb import
 
-## Introduction ##
+## Introduction
 
 The kdb tool allows users to interact with Elektra's Key Database via the command line.
 This tutorial explains the import function of kdb. This command lets you import Keys from
@@ -17,7 +17,7 @@ instance, `kdb import system/imported` would store all the keys below
 `system/imported`. This command takes Keys from `stdin` to store them into the Elektra
 Key Database. Typically, it is used with a pipe to read in the Keys from a file.
 
-### Format ###
+### Format
 
 The format argument can be a very powerful option to use with kdb import.
 The format argument allows a user to specify which plug-in is used to import the
@@ -27,17 +27,17 @@ file into KDB without mounting it, they could use the command `cat /etc/hosts | 
 This command would essentially copy the current hosts file into KDB, like mounting it. Unlike mounting it,
 changes to the Keys would not be reflected in the hosts file and vise versa.
 
-#### Dump Format ####
+#### Dump Format
 
 The dump does not rename keys by design. If a user exports a KeySet using dump
 using a command such as `kdb export system/backup > backup.ecf`, they can only import that keyset back into
 `system/backup` using a command like `cat backup.ecf | kdb import system/backup`.
 
-## Options ##
+## Options
 
 The kdb import command only takes one special option `-s <name>` or alternatively `--strategy <name>`, which is used to specify a strategy.
 
-## Example ##
+## Example
 
 ```sh
 cat backup.ecf | kdb import system/backup

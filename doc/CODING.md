@@ -1,11 +1,11 @@
-# CODING #
+# CODING
 
 This document provides an introduction in how the source code of
 libelektra is organized and how and where to add functionality.
 
 Make sure to read [DESIGN](/doc/DESIGN.md) together with this document.
 
-## Folder structure ##
+## Folder structure
 
 After you downloaded and unpacked Elektra you should see some folders.
 The most important are:
@@ -15,7 +15,7 @@ The most important are:
  * **examples:** Examples on how to use the core library.
  * **tests:** Contains the testing framework for the source (**src**).
 
-## Source Code ##
+## Source Code
 
 libelektra is the ANSI/ISO C99-Core which coordinates the interactions
 between the user and the plugins.
@@ -30,7 +30,7 @@ for static linking and win32.
 
 kdb is the commandline-tool to access and initialize the Elektra database.
 
-### General Guidelines ###
+### General Guidelines
 
 You are only allowed to break a guideline if there is a good reason
 to do so. When you do, document the fact as comment next to the code.
@@ -49,7 +49,7 @@ intent to add a new rule here.
 
 See [DESIGN](/doc/DESIGN.md) document too, they complement each other.
 
-### Code Comments ###
+### Code Comments
 
 Code is not only for the computer, but it should be readable for humans, too.
 Up-to-date code comments are essential to make code understandable for others.
@@ -84,7 +84,7 @@ Thus please use following techniques (in order of preference):
 4. Otherwise comment within source with `//` or with `/**/` for multi-line
    comments.
 
-### Coding Style ###
+### Coding Style
 
 - Limits
 
@@ -122,10 +122,10 @@ Rationale: Readability with split windows.
  * Use space after `,` of every function argument.
 
 The [reformat script](/scripts/reformat-source) can ensure most code style rules,
-but it is obviouly not capable of ensuring everything (e.g. naming conventions).
+but it is obviously not capable of ensuring everything (e.g. naming conventions).
 So do not give this responsibility out of hands entirely.
 
-### C Guidelines ###
+### C Guidelines
 
  * The compiler shall not emit any warning (or error).
  * Use goto only for error situations.
@@ -135,7 +135,7 @@ So do not give this responsibility out of hands entirely.
 
 **Example:** [src/libs/elektra/kdb.c](/src/libs/elektra/kdb.c)
 
-### C++ Guidelines ###
+### C++ Guidelines
 
  * Everything as in C if not noted otherwise.
  * Do not use goto at all, use RAII instead.
@@ -147,10 +147,10 @@ So do not give this responsibility out of hands entirely.
 
 **Example:** [src/bindings/cpp/include/kdb.hpp](/src/bindings/cpp/include/kdb.hpp)
 
-### Markdown Guidelines ###
+### Markdown Guidelines
 
  * File Ending is `.md` or integrated within Doxygen comments
- * Headers/Titles should use the same number of `#` left and right
+ * Only use `#` characters at the left side of headers/titles
  * Use tabs or fences for code/examples
  * Prefer fences which indicate the used language for better syntax highlighting
  * Fences with sh are for the [shell recorder syntax](/tests/shell/shell_recorder/tutorial_wrapper)
@@ -158,7 +158,7 @@ So do not give this responsibility out of hands entirely.
    so that we know that the code in the tutorial produces output as expected
 
 
-### Doxygen Guidelines ###
+### Doxygen Guidelines
 
 `doxygen` is used to document the API and to build the html and pdf output.
 We also support the import of Markdown pages. Doxygen 1.8.8 or later
@@ -173,7 +173,7 @@ provide a proper encoding!**
  * Do not duplicate information available in git in Doxygen comments.
  * Use `@copydoc`, `@copybrief` and `@copydetails` intensively (except for file headers).
 
-### File Headers ###
+### File Headers
 
 Files should start with:
 

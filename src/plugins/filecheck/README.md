@@ -9,11 +9,11 @@
 - infos/metadata =
 - infos/description = validates files (e.g. encoding)
 
-## Introduction ##
+## Introduction
 
 The filecheck plugin validates files. It tests: encoding, lineendings, BOM, printable characters and null bytes.
 
-## Configuration ##
+## Configuration
 
 `check/lineending`
 `valid/lineending`

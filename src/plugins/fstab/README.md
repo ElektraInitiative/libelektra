@@ -8,11 +8,11 @@
 - infos/status = unittest nodep difficult limited unfinished old
 - infos/description = Parses files in a syntax like /etc/fstab file
 
-## Introduction ##
+## Introduction
 
 This plugin is an implementation of a parser and generator of the /etc/fstab file.
 
-## Old fstab Entries ##
+## Old fstab Entries
 
 (Deprecated, remove this section after it is reimplemented in the new way)
 
@@ -54,7 +54,7 @@ which will be not like you desired!
 setmntent is used, so it is only conforming to BSD 4.3 and linux and you
 can't use any comments.
 
-## New fstab Entries ##
+## New fstab Entries
 
 Specification:
 
@@ -100,7 +100,7 @@ be reordered for now, a proper "order" could be done later.
 
 Spaces in the names are replaced by \040 in the fstab.
 
-## Example ##
+## Example
 
 Mount the plugin:
 

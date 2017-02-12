@@ -7,7 +7,7 @@
 - infos/status = productive maintained specific unittest tested libc nodep configurable
 - infos/description = system independent resolver
 
-## Introduction ##
+## Introduction
 
 The @PLUGIN_SHORT_NAME@ handles operating system dependent tasks.
 One task is the resolving of the filenames for user and system (hence its name).
@@ -60,7 +60,7 @@ For an relative path example.ini, you might get following values:
 See [the mount tutorial](/doc/tutorials/mount.md) for more examples.
 
 
-## Variants ##
+## Variants
 
 Many variants exist that additionally influence the resolving
 process, typically by using environment variables.
@@ -77,7 +77,7 @@ See [COMPILE.md](/doc/COMPILE.md) for a documentation of possible
 variants.
 
 
-### XDG Compatibility ###
+### XDG Compatibility
 
 The resolver is fully [XDG compatible](http://standards.freedesktop.org/basedir-spec/basedir-spec-latest.html)
 if configured with the variant:
@@ -97,13 +97,13 @@ way:
  - if no file was found, the least important element will be used for
    potential write attempts.
 
-## Reading Configuration ##
+## Reading Configuration
 
 1. If no update needed (unchanged modification time): quit successfully
 2. Otherwise call (storage) plugin(s) to read configuration
 3. remember the last stat time (last update)
 
-## Writing Configuration ##
+## Writing Configuration
 
 0. On unchanged configuration: quit successfully
 1. On empty configuration: remove the configuration file and quit successfully

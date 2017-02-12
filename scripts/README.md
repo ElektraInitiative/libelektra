@@ -28,7 +28,7 @@ If you are looking for something special, then there are two ways:
 All methods can be combined. For example if you search all bash scripts which do some configuration work.
 You can type `kdb find-tools -t configuration -e bash`.
 
-## The right Way to add your script to the find tools ##
+## The right Way to add your script to the find tools
 
 Meta Tags as comments in the beginning of a script are parsed.
 Mate Tags start with an `@`, here is a list of all Meta Tags:
@@ -44,7 +44,7 @@ Do not mind the '\' at the beginning it is a doxygen escaping.
 
 Beware, that these metatags should be applied at the beginning of the file (in the first 10 rows)!
 
-## Tags ##
+## Tags
 
 List of Common Tags:
 
@@ -63,7 +63,7 @@ List of Common Tags:
 If you choose to add a tag to the `@tags` then do not forget to add it in the tags map of the `find-tools` script
 and in the table here.
 
-## Example ##
+## Example
 
 \verbatim
 
@@ -78,7 +78,7 @@ and in the table here.
 \endverbatim
 
 
-## Notes ##
+## Notes
 
 The Metatag System of Epydoc is used (http://epydoc.sourceforge.net/manual-fields.html#module-metadata-variables)
 and extended with special tags.

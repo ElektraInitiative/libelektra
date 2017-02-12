@@ -8,11 +8,11 @@
 - infos/metadata = check/type check/type/min check/type/max
 - infos/description = type checker using COBRA data types
 
-## Introduction ##
+## Introduction
 
 This plugin is a type checker plugin using the `CORBA` data types.
 
-## Additional Information ##
+## Additional Information
 
 A common and successful type system happens to be CORBA with
 IDL. The system is outstanding because of the many mappings it
@@ -44,7 +44,7 @@ To sum up, many basic types like int or char are convenient and
 CORBA ensures that they can be converted to the specific type of the
 programming language.
 
-## Restrictions ##
+## Restrictions
 
 The `CORBA` type system also has its limits. The types `string` and
 `enum`, however, can be unsatisfactory. While string is too general

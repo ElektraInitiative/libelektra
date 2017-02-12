@@ -1,15 +1,15 @@
-# How-To: Write a Plugin #
+# How-To: Write a Plugin
 
 This file serves as a tutorial on how to write a storage plugin. Storage plugins are used by Elektra in order to store data in the Elektra Key Database
 in an intelligent way. They act as a liaison between configuration files and the Key Database. Storage plugins are largely responsible for
 the functionality of Elektra and they allow many of its advanced features to work.
 
-## Basics ##
+## Basics
 
 First, there are a few basic points to understand about Elektra plugins. This first section will explain the basic layout of a plugin
 and what various methods exists within one.
 
-### The Interface ###
+### The Interface
 
 All plug-ins use the same basic interface. This interface consists of five basic functions,
 [elektraPluginOpen](https://doc.libelektra.org/api/current/html/group__plugin.html#ga23c2eb3584e38a4d494eb8f91e5e3d8d),
@@ -56,7 +56,7 @@ After these two steps your plugin is ready to be compiled, installed and mounted
 
 
 
-## Contract ##
+## Contract
 
 In Elektra, multiple plugins form a backend. If every plugin would do
 whatever it likes to do, there would be chaos and backends would be
@@ -66,7 +66,7 @@ To avoid this situation, plugins export a so called *contract*. In this
 contract the plugin states how nicely it will behave and what other
 plugins can depend on.
 
-### Writing a Contract ###
+### Writing a Contract
 
 Because the contracts also contain information for humans, these parts
 are written in a `README.md` files of the plugins. To make the contracts
@@ -96,7 +96,7 @@ The `README.md` will be used by:
 - to know dependencies between plugin and what metadata they process
 
 
-### Content of `README.md` ###
+### Content of `README.md`
 
 The first lines must look like:
 
@@ -123,7 +123,7 @@ information in `README.md`. It would look like (for the third key):
 	keyNew ("system/elektra/modules/yajl/infos/licence",
 		KEY_VALUE, "BSD", KEY_END),
 
-## Including `readme_pluginname.c` ##
+## Including `readme_pluginname.c`
 
 In your plugin, specifically in your `elektraPluginGet()`
 implementation, you have to return the contract whenever configuration
@@ -183,7 +183,7 @@ include_directories (${CMAKE_CURRENT_BINARY_DIR})
 ```
 
 
-## CMake ##
+## CMake
 
 For every plugin you have to write a `CMakeLists.txt`. If your plugin has
 no dependencies, you can skip this section. The full documentation of
@@ -250,13 +250,13 @@ you should also read the information there.
 
 
 
-## Coding ##
+## Coding
 
 This section will focus on an overview of the kind of code you would use to develop a plugin. It gives examples from real plugins
 and should serve as a rough guide on how to write a storage plugin that can read and write configuration data into the Elektra
 KeySet.
 
-### `elektraPluginGet` ###
+### `elektraPluginGet`
 
 `elektraPluginGet` is the function responsible for turning information from a file into a usable KeySet.
 This function usually differs pretty greatly between each plug-in. This function should be of type `int`, it returns `0` on success or
@@ -285,7 +285,7 @@ the file in a way that is more natural to `ini` file (setting the key's name to 
 The `elektraPluginGet` function is the heart of a storage plug-in, it’s what allows Elektra to store configurations in its database. This function isn't
 just run when a file is first mounted, but whenever a file gets updated, this function is run to update the Elektra Key Database to match.
 
-### `elektraPluginSet` ###
+### `elektraPluginSet`
 
 We also gave a brief overview of the `elektraPluginSet` function. This function is basically the opposite of `elektraPluginGet`. Where `elektraPluginGet`
 reads information from a file into the Elektra Key Database, `elektraPluginSet` writes information from the database back into the mounted file.
@@ -324,7 +324,7 @@ and write each key as its own line in the file. Since we don't care about the na
 the value of `keyString` for each Key as a new line in the file. That's it. Now, each time the mounted KeySet is modified, `elektraPluginSet` will
 be called and the mounted file will be updated.
 
-#### `ELEKTRA_SET_ERROR` ####
+#### `ELEKTRA_SET_ERROR`
 
 We haven't discussed `ELEKTRA_SET_ERROR` yet. Because Elektra is a library, printing errors to stderr wouldn't be a good idea. Instead, errors
 and warnings can be appended to a key in the form of metadata. This is what `ELEKTRA_SET_ERROR` does. Because the parentKey always exists
@@ -335,13 +335,13 @@ The third parameter can be used to provide additional information about the erro
 caused the error. The kdb tools will interpret this error and print it in a pretty way. Notice that this can be used in any plugin function where the
 parentKey is available.
 
-### `elektraPluginOpen` and `elektraPluginClose` ###
+### `elektraPluginOpen` and `elektraPluginClose`
 
 The `elektraPluginOpen` and `elektraPluginClose` functions are not commonly used for storage plug-ins, but they can be useful and are worth
 reviewing. `elektraPluginOpen` function runs before `elektraPluginGet` and is useful to do initialization if necessary for the plug-in. On the other
 hand `elektraPluginClose` is run after other functions of the plug-in and can be useful for freeing up resources.
 
-### `elektraPluginCheckConf` ###
+### `elektraPluginCheckConf`
 
 The `elektraPluginCheckConf` function may be used for validation of the plugin configuration during mount time. The signature of the function is:
 
@@ -379,7 +379,7 @@ int elektraLineCheckConfig (Key * errorKey, KeySet * conf)
 }
 ```
 
-### `ELEKTRA_PLUGIN_EXPORT` ###
+### `ELEKTRA_PLUGIN_EXPORT`
 
 The last function, one that is always needed in a plug-in, is `ELEKTRA_PLUGIN_EXPORT`. This functions is responsible for letting Elektra know that
 the plug-in exists and which methods it implements. The code from the line plugin is a good example and pretty self-explanatory:

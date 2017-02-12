@@ -7,12 +7,12 @@
 - infos/status = unfinished concept
 - infos/description = Serialize tcl lists
 
-## Introduction ##
+## Introduction
 
 This plugin is a storage plugin which writes keys to lists *in the style of*
 the Tcl programming language.
 
-## Format ##
+## Format
 
 The format does not have significant spaces.  The advantage of TCL style
 lists is that also arbitrary metadata can be embedded in a natural and
@@ -30,13 +30,13 @@ distinguish-able style. It looks like:
         }
     }
 
-## Limitations ##
+## Limitations
 
 - empty and null keys not supported
 - whitespaces are discarded
 - no comments
 
-## Dependencies ##
+## Dependencies
 
 - `libboost-dev`
 

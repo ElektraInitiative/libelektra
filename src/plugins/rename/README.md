@@ -8,22 +8,22 @@
 - infos/metadata = rename/to rename/toupper rename/tolower rename/cut
 - infos/description = renaming of keys
 
-## Introduction ##
+## Introduction
 
 This plugin can be used to perform rename operations on keys. This is useful if a backend does not provide keys
 with the required names or case.
 
 If keys are renamed, their original name is stored in the `origname` MetaKey.
 
-There are 2 types of transformations: 
+There are 2 types of transformations:
 * basic
 * advanced
 
-## Basic Transformations ##
+## Basic Transformations
 
 are applied before and after the advanced transformations.
 
-### Get ###
+### Get
 
 first transformation to be applied to all keys on kdbGet.
 
@@ -34,7 +34,7 @@ first transformation to be applied to all keys on kdbGet.
 
 converts the whole keyname below the parentKey to upper- or lowercase. if no configuration or `unchanged` is used no transformation is done here.
 
-### Set ###
+### Set
 
 last transformation to be applied to all keys on kdbSet.
 
@@ -50,11 +50,11 @@ last transformation to be applied to all keys on kdbSet.
 
 `keyname` tells the plugin to keep the name of the advanced transformation
 
-## Advanced Transformations ##
+## Advanced Transformations
 
-### Cut ###
+### Cut
 
-#### Operation ####
+#### Operation
 
 The cut operation can be used to strip parts of a keys name. The cut operation is able to cut anything below the path
 of the parent key. A renamed key may even replace the parent key. For example consider a KeySet with the
@@ -66,7 +66,7 @@ would be able to strip the following key name parts:
 * with/long/path
 * with/long/path/key1
 
-#### Configuration ####
+#### Configuration
 
 The cut operation takes as its only configuration parameter the key name part to strip. This configuration can be supplied in two
 different ways. First, the global configuration key `cut` can be used. Second, keys to be stripped can be tagged with the MetaKey `rename/cut`.
@@ -74,7 +74,7 @@ If both options are given, the MetaKey takes precedence. For example, consider t
 
     config/cut = will/be
     parent key = user/config
-    
+
     user/config/will/be/stripped/key1		<- meta rename/cut = will/be/stripped
     user/config/will/be/stripped/key2		<- meta rename/cut = will/be/stripped
     user/config/will/be/stripped/key3
@@ -93,11 +93,11 @@ after the parent key path.
 
 If an invalid configuration is given or the cut operation would cause a parent key duplicate, the affected keys are simply skipped and not renamed.
 
-### Replace ###
+### Replace
 
 Using the `/replacewith` global key or `rename/to`  MetaKey the rename plugin will replace the part removed by `cut` with the supplied String
 
-#### To upper/lower ####
+#### To upper/lower
 
 Using the `/toupper` or `/tolower` global configuration key, or the `rename/toupper` or `rename/tolower` metakey the rename plugin will
 convert the keynames to uppercase or lowercase.
@@ -113,7 +113,7 @@ Note that the names refer to the representation as KeySet. For example, if you h
 
 you can use `tolower=0` to get the keys `key` and `other/key`.
 
-#### Example ####
+#### Example
 
     % kdb mount caseconversion.ini /rename ini rename toupper=1,tolower=3
 
@@ -145,7 +145,7 @@ but for your application lower case you would use:
     [SECTION]
     KEY = value
 
-## Planned Operations ##
+## Planned Operations
 
 Additional rename operations are planned for future versions of the rename plugin:
 * trim: remove spaces in the name (that are not part of parentKey)

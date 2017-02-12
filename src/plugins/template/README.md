@@ -9,12 +9,12 @@
 - infos/metadata =
 - infos/description = one-line description of template
 
-## Introduction ##
+## Introduction
 
 Copy this template if you want to start a new
 plugin written in C.
 
-## Usage ##
+## Usage
 
 You can use `scripts/copy-template`
 to automatically rename everything to your
@@ -33,14 +33,14 @@ Then update the README.md of your newly created plugin:
 - and rewrite the rest of this `README.md` to give a great
   explanation of what your plugin does
 
-## Dependencies ##
+## Dependencies
 
 None.
 
-## Examples ##
+## Examples
 
 None.
 
-## Limitations ##
+## Limitations
 
 None.

@@ -1,4 +1,4 @@
-# Ideas for Contributing to Elektra #
+# Ideas for Contributing to Elektra
 
 This page is the central point for students interested in contributing to Elektra during
 [Google Summer of Code 2017](https://summerofcode.withgoogle.com).
@@ -12,7 +12,7 @@ initiatives during summer:
 > Disclaimer: We do not yet know if we will participate!
 
 
-## Which GSoC projects are available? ##
+## Which GSoC projects are available?
 
 We think that GSoC is a perfect opportunity to bridge Elektra and other free
 software projects. So the ideal GSoC project is to elektrify some free software.
@@ -40,7 +40,7 @@ more interest to you:
 - Your own ideas?
 
 
-## What are the requirements to participate as student? ##
+## What are the requirements to participate as student?
 
 Needed skills:
 
@@ -50,7 +50,7 @@ Needed skills:
 - Ideally experience with an application (framework) or even author of a FLOSS application
 
 
-## How can I participate as student? ##
+## How can I participate as student?
 
 First you should familiarize with the Elektra Initiative:
 
@@ -66,7 +66,7 @@ Based on the quality of the PR(s) and the communication you have a good chance
 to participate in GSoC.
 
 
-## How can I participate as mentor? ##
+## How can I participate as mentor?
 
 In any case we will contact applications that should be elektrified and will
 discuss requirements. Furthermore, we will make sure that students will submit

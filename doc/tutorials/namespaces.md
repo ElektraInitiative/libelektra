@@ -1,6 +1,6 @@
-# Understanding Namespaces #
+# Understanding Namespaces
 
-## Structure of the Key Database ##
+## Structure of the Key Database
 
 The _key database_ of Elektra is _hierarchically structured_. This means that keys are organized similar to directories in a file system.
 
@@ -41,7 +41,7 @@ You can use the file system analogy as a mnemonic to remember these commands (li
 
 For example `kdb get /b/c` should return `Value 2` now, if you set the values before.
 
-## Namespaces ##
+## Namespaces
 
 Now we abandon the file system analogy and introduce the concept of _namespaces_.
 
@@ -71,7 +71,7 @@ So if you are a normal user the command `kdb set /b/c 'Value 2'` was synonymous 
 At this point the key database should have this structure:
 ![Elektras namespaces](/doc/images/tutorial_namespaces_namespaces.svg)
 
-#### Cascading Keys ####
+#### Cascading Keys
 
 Another question you may ask yourself now is, what happens if we lookup a key without providing a namespace. So let us retrieve the key **/b/c** with the -v flag in order to make _kdb_ more talkative.
 
@@ -97,7 +97,7 @@ You can find out more about cascading lookups [here](cascading.md).
 
 Having namespaces enables both admins and users to set specific parts of the application's configuration, as you will see in the following example.
 
-## How it Works on the Command Line (kdb) ##
+## How it Works on the Command Line (kdb)
 
 Let's say your app requires the following configuration data:
 
@@ -154,7 +154,7 @@ kdb get system/sw/org/myapp/policy
 #> super-high-secure
 ```
 
-## How it Works in C ##
+## How it Works in C
 
 The idea is to call **kdbGet()** to retrieve the root key for the application.
 Looking for a specific part of the configuration is done by **ksLookup()**.
