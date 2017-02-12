@@ -328,19 +328,19 @@ TEST (test_contextual_thread, activateWithDirectDependency)
 	ThreadValue<std::string> v1 (ks, c1, specKey);
 	ThreadValue<std::string> v2 (ks, c2, specKey);
 	ThreadValue<std::string> vd (ks, c2, specKey);
-	ASSERT_EQ (std::string(v1), "inactive");
-	ASSERT_EQ (std::string(v2), "inactive");
-	ASSERT_EQ (std::string(vd), "inactive");
+	ASSERT_EQ (std::string (v1), "inactive");
+	ASSERT_EQ (std::string (v2), "inactive");
+	ASSERT_EQ (std::string (vd), "inactive");
 
 	c1.activate<Activate> ();
-	ASSERT_EQ (std::string(v1), "active");
-	ASSERT_EQ (std::string(v2), "inactive");
-	ASSERT_EQ (std::string(vd), "inactive");
+	ASSERT_EQ (std::string (v1), "active");
+	ASSERT_EQ (std::string (v2), "inactive");
+	ASSERT_EQ (std::string (vd), "inactive");
 
 	c2.activate<StrDep> (vd);
-	ASSERT_EQ (std::string(v1), "active");
-	ASSERT_EQ (std::string(v2), "active");
-	ASSERT_EQ (std::string(vd), "active");
+	ASSERT_EQ (std::string (v1), "active");
+	ASSERT_EQ (std::string (v2), "active");
+	ASSERT_EQ (std::string (vd), "active");
 }
 
 
