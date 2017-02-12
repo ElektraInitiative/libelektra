@@ -2,14 +2,14 @@
 
 ## Introduction ##
 
-Configuration in FLOSS unfortunately is often stored
+Configuration in <abbr title="Free/Libre and Open Source Software">FLOSS</abbr> unfortunately is often stored
 completely without validation. Notable exceptions are sudo
 (`visudo`), or user accounts (`adduser`) but in most cases
 you only get feedback of non-validating configuration when
 the application fails to start.
 
 Elektra provides a generic way to validate any configuration
-file before it is written to disc.
+before it is written to disc.
 
 ## User Interfaces ##
 
@@ -33,7 +33,7 @@ described in this tutorial, e.g.:
 
 ## Metadata Together With Keys ##
 
-The most direct way to validate keys are
+The most direct way to validate keys is
 
 ```sh
 kdb mount validation.dump user/tutorial/together dump validation
@@ -92,8 +92,8 @@ The drawbacks of this approach are:
 
 ## Get Started with `spec` ##
 
-These issues are resolved straightforward by separation of schemata (describing the
-configuration) and the configuration itself.
+These issues are resolved straightforward by separating the configuration from
+its schemata.
 The purpose of the [spec namespace](/doc/tutorials/namespaces.md) is to hold the
 schemata, the description of how to validate the keys of all other namespaces.
 
@@ -133,39 +133,109 @@ kdb setmeta spec/tutorial/spec/test check/validation/match LINE
 kdb setmeta spec/tutorial/spec/test check/validation/message "Not a number"
 ```
 
-Alternatively, we could mount a plugin that supports metadata,
-e.g. the `ni` plugin, and specify the configuration
-using a text editor (or `cat`):
-
+If we now set a new key with
 ```sh
-kdb mount spec.ini spec/tutorial/spec ni
-cat << HERE > `kdb file spec/tutorial/spec`
-[test]
-check/validation = [1-9][0-9]*
-check/validation/match = LINE
-check/validation/message = Not a number
-HERE
+kdb set /tutorial/spec/test "not a number"
+#> Using name user/tutorial/spec/test
+#> Create a new key user/tutorial/spec/test with string not a number
+```
+this key has adopted all metadata from the spec namespace:
+```sh
 kdb lsmeta /tutorial/spec/test
 #> check/validation
 #> check/validation/match
 #> check/validation/message
 ```
+Note that this key should not have passed the validation that we defined in the
+spec namespace.
+Nonetheless we were able to set this key, because the validation plugin was not
+active for this key.
+On that behalf we have to make sure that the validation plugin is loaded for
+this key with:
+```sh
+kdb mount tutorial.dump user/tutorial dump validation
+```
+This [mounts](/doc/tutorials/mount.md) the backend `tutorial.dump` to the mountpoint
+**user/tutorial** and activates the validation plugin for the keys below the mountpoint.
+The validation plugin now uses the metadata of the keys below **user/tutorial**
+to validate values before storing them in `tutorial.dump`.
 
-As next step we need to correctly mount all validation plugins to `/tutorial/spec`.
-Because we have an extra specification of the validation, we can use this
-specification to assemble the plugins. We only have to specify where the
-mountpoint is (and which file name should be used), then we can mount
-the file according the specification and have validation for all namespaces:
+Although this is better than defining metadata in the same place as the data
+itself, we can still do better.
+The reason for that is that one of the aims of Elektra is to remove the trouble
+of validation and finding the files that hold your configuration from the users.
+At the moment a user still has to know which files should hold the configuration
+and which plugins must be loaded when he mounts configuration files.
+
+This problem can be addressed by recognizing that the location of the
+configuration files and the plugins that must be loaded is part of the
+_schema_ of our configuration and therefore should be stored in the spec namespace.
+
+### Specfiles ###
+We call the files, that contain a complete schema for configuration
+below a specific path in form of metadata, _Specfiles_.
+
+Particularly a _Specfile_ contains metadata that defines
+- the mountpoints of paths,
+- the plugins to load and
+- the behavior of these plugins.
+
+Let us create an example _Specfile_ in the dump format, which supports metadata
+(altough the specfile is stored in the dump format, we can still create it using
+the human readable [ni format](/doc/src/plugins/ni/README.md) by using `kdb import`):
+```sh
+kdb mount tutorial.dump spec/tutorial dump
+cat << HERE | kdb import spec/tutorial ni
+[]
+ mountpoint = tutorial.dump
+ infos/plugins = dump validation
+
+[/links/_]
+check/validation = https?://.*\..*
+check/validation/match = LINE
+check/validation/message = not a valid URL
+description = A link to some website
+HERE
+kdb lsmeta spec/tutorial
+#> infos/plugins
+#> mountpoint
+```
+We now have all the metadata that we need to mount and validate the data below
+`/tutorial` in one file.
+
+Now we apply this _Specfile_ to the key database to all keys below `tutorial`.
+```sh
+kdb spec-mount /tutorial
+```
+This command automatically mounts `/tutorial` to the backend `tutorial.dump` and
+loads the validation plugin.
 
 ```sh
-kdb setmeta spec/tutorial/spec mountpoint spec-tutorial.dump
-kdb spec-mount /tutorial/spec
-kdb set /tutorial/spec/test wrong
-#> Using name user/tutorial/spec/test
+kdb set /tutorial/links/url "invalid url"
+#> Using name user/tutorial/links/elektra
 # STDERR-REGEX: .*Sorry, the error .#42. occurred ;(⏎
 #               Description: Key Value failed to validate⏎
-#               .*Reason: Not a number.*
+#               .*Reason: not a valid URL.*
 # RET:          5
+```
+
+Note that the backend `tutorial.dump` is mounted for all namespaces:
+```sh
+kdb file user/tutorial
+# STDOUT-REGEX: /home/.*/\.config/tutorial\.dump
+kdb file system/tutorial
+#> /etc/kdb/tutorial.dump
+kdb file dir/tutorial
+# STDOUT-REGEX: /.*/\.dir/tutorial\.dump
+```
+
+If you want to set a key for another namespace and do not want to go without validation,
+consider that the spec plugin works only when you use cascading keys.
+You can work around that by setting the keys with the `-N` option:
+```sh
+kdb set -N system /tutorial/links/elektra https://www.libelektra.org
+#> Using name system/tutorial/links/elektra
+#> Create a new key system/tutorial/links/elektra with string https://www.libelektra.org
 ```
 
 ## Rejecting Configuration Keys ##
@@ -251,4 +321,3 @@ Or (in `visudo` fashion):
 ```sh
 kdb editor -s validate /tutorial/schema simpleini
 ```
-

@@ -4,7 +4,7 @@ This tutorial assumes that you know what [namespaces](/doc/tutorials/namespaces.
 
 When Elektra looks up a key, the namespaces are searched in this order:
 
- * [spec](https://github.com/ElektraInitiative/libelektra/blob/master/doc/help/elektra-namespaces.md#spec) (contains metadata, e.g. to modify elektra lookup behaviour)
+ * [spec](https://github.com/ElektraInitiative/libelektra/blob/master/doc/help/elektra-namespaces.md#spec) (contains metadata, e.g. to modify elektra lookup behavior)
  * [proc](https://github.com/ElektraInitiative/libelektra/blob/master/doc/help/elektra-namespaces.md#proc) (process-related information)
  * [dir](https://github.com/ElektraInitiative/libelektra/blob/master/doc/help/elektra-namespaces.md#dir) (directory-related information, e.g. `.git` or `.htaccess`)
  * [user](https://github.com/ElektraInitiative/libelektra/blob/master/doc/help/elektra-namespaces.md#user) (user configuration)
@@ -21,16 +21,16 @@ Configuration in the **system** namespace is readable for all users and the same
 In the default Elektra installation only an administrator can update configuration here:
 
 ```sh
-kdb get /sw/tutorial/cascading/#0/current/test
+kdb get "/sw/tutorial/cascading/#0/current/test"
 # RET:    1
 # STDERR: Did not find key
 
 # Now add the key ...
-sudo kdb set system/sw/tutorial/cascading/#0/current/test "hello world"
+sudo kdb set "system/sw/tutorial/cascading/#0/current/test" "hello world"
 #> create a new key system/sw/tutorial/cascading/#0/current/test with string hello world
 
 # ... and verify that it exists
-kdb get /sw/tutorial/cascading/#0/current/test
+kdb get "/sw/tutorial/cascading/#0/current/test"
 #> hello world
 ```
 
@@ -39,11 +39,11 @@ kdb get /sw/tutorial/cascading/#0/current/test
 A user may now want to override the configuration in **system**, so he sets a key in the **user** namespace:
 
 ```sh
-kdb set user/sw/tutorial/cascading/#0/current/test "hello galaxy"
+kdb set "user/sw/tutorial/cascading/#0/current/test" "hello galaxy"
 #> Create a new key user/sw/tutorial/cascading/#0/current/test with string hello galaxy
 
 # This key masks the key in the system namespace
-kdb get /sw/tutorial/cascading/#0/current/test
+kdb get "/sw/tutorial/cascading/#0/current/test"
 #> hello galaxy
 ```
 
@@ -61,16 +61,16 @@ As **dir** precedes the **user** namespace, configuration in **dir** can overwri
 mkdir kdbtutorial && cd $_
 
 # ... and create a key in this directories dir-namespace
-kdb set dir/sw/tutorial/cascading/#0/current/test "hello universe"
+kdb set "dir/sw/tutorial/cascading/#0/current/test" "hello universe"
 #> Create a new key dir/sw/tutorial/cascading/#0/current/test with string hello universe
 
 # This key masks the key in the system namespace
-kdb get /sw/tutorial/cascading/#0/current/test
+kdb get "/sw/tutorial/cascading/#0/current/test"
 #> hello universe
 
 # But is only present in the associated directory
 cd ..
-kdb get /sw/tutorial/cascading/#0/current/test
+kdb get "/sw/tutorial/cascading/#0/current/test"
 #> hello galaxy
 ```
 
@@ -119,15 +119,15 @@ To create an override link, first you need to create a key to link the override
 to:
 
 ```sh
-sudo kdb set system/overrides/test "hello override"
+sudo kdb set "system/overrides/test" "hello override"
 #> Create a new key system/overrides/test with string hello override
 ```
 
 Override links can be defined by adding them to the `override/#` array:
 
 ```sh
-sudo kdb setmeta spec/sw/tutorial/cascading/#0/current/test override/#0 /overrides/test
-kdb get /sw/tutorial/cascading/#0/current/test
+sudo kdb setmeta "spec/sw/tutorial/cascading/#0/current/test" "override/#0" "/overrides/test"
+kdb get "/sw/tutorial/cascading/#0/current/test"
 #> hello override
 ```
 
@@ -148,24 +148,24 @@ First you need to create the system default value to link the override to if the
 user hasn't defined it:
 
 ```sh
-$ sudo kdb set system/overrides/test "hello default"
+$ sudo kdb set "system/overrides/test" "hello default"
 #> Create a new key system/overrides/test with string hello default
 ```
 
 Then we can create the link:
 
 ```sh
-sudo kdb setmeta spec/sw/tutorial/cascading/#0/current/test override/#0 /overrides/test
-kdb get /sw/tutorial/cascading/#0/current/test
+sudo kdb setmeta "spec/sw/tutorial/cascading/#0/current/test" "override/#0" "/overrides/test"
+kdb get "/sw/tutorial/cascading/#0/current/test"
 #> hello default
 ```
 
 Now the user overrides the system default:
 
 ```sh
-kdb set /overrides/test "hello user"
+kdb set "/overrides/test" "hello user"
 #> Using name user/overrides/test
 #> Create a new key user/overrides/test with string hello user
-kdb get /sw/tutorial/cascading/#0/current/test
+kdb get "/sw/tutorial/cascading/#0/current/test"
 #> hello user
 ```
