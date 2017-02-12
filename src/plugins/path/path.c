@@ -16,12 +16,13 @@ int elektraPathGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 {
 	/* contract only */
 	KeySet * n;
-	ksAppend (returned, n = ksNew (30, keyNew ("system/elektra/modules/path", KEY_VALUE, "path plugin waits for your orders", KEY_END),
-				       keyNew ("system/elektra/modules/path/exports", KEY_END),
-				       keyNew ("system/elektra/modules/path/exports/get", KEY_FUNC, elektraPathGet, KEY_END),
-				       keyNew ("system/elektra/modules/path/exports/set", KEY_FUNC, elektraPathSet, KEY_END),
+	ksAppend (returned,
+		  n = ksNew (30, keyNew ("system/elektra/modules/path", KEY_VALUE, "path plugin waits for your orders", KEY_END),
+			     keyNew ("system/elektra/modules/path/exports", KEY_END),
+			     keyNew ("system/elektra/modules/path/exports/get", KEY_FUNC, elektraPathGet, KEY_END),
+			     keyNew ("system/elektra/modules/path/exports/set", KEY_FUNC, elektraPathSet, KEY_END),
 #include "readme_path.c"
-				       keyNew ("system/elektra/modules/path/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END));
+			     keyNew ("system/elektra/modules/path/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END));
 	ksDel (n);
 
 	return 1; /* success */

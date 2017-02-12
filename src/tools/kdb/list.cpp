@@ -32,11 +32,12 @@ int ListCommand::execute (Cmdline const & cl)
 	{
 		try
 		{
-			int s = db.calculateStatus (
-				db.lookupInfo (PluginSpec (plugin, KeySet (5, *Key ("system/module", KEY_VALUE,
-										    "this plugin was loaded without a config", KEY_END),
-									   KS_END)),
-					       "status"));
+			int s = db.calculateStatus (db.lookupInfo (
+				PluginSpec (plugin,
+					    KeySet (5,
+						    *Key ("system/module", KEY_VALUE, "this plugin was loaded without a config", KEY_END),
+						    KS_END)),
+				"status"));
 			sortedPlugins.insert (std::make_pair (s, plugin));
 		}
 		catch (std::exception const & e)

@@ -75,9 +75,9 @@ TEST (kdbrestModelsEntryTest, ConstructorByParts)
 
 	kdbrest::model::Entry entry (organization, application, scope, slug);
 
-	ASSERT_EQ (entry.getName (), kdbrest::Config::instance ().getConfig ().get<std::string> ("kdb.path.configs") + std::string ("/") +
-					     organization + std::string ("/") + application + std::string ("/") + scope +
-					     std::string ("/") + slug);
+	ASSERT_EQ (entry.getName (),
+		   kdbrest::Config::instance ().getConfig ().get<std::string> ("kdb.path.configs") + std::string ("/") + organization +
+			   std::string ("/") + application + std::string ("/") + scope + std::string ("/") + slug);
 	ASSERT_NE (entry.getName (), organization + std::string ("/") + application + std::string ("/") + scope + std::string ("/") + slug);
 	ASSERT_EQ (entry.getPublicName (),
 		   organization + std::string ("/") + application + std::string ("/") + scope + std::string ("/") + slug);

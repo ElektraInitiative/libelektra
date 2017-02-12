@@ -211,9 +211,10 @@ TEST (SpecReader, withNeedsResolvedNumerical)
 	mpd->data[PluginSpec ("r")]["provides"] = "resolver";
 	BackendBuilderInit mpi (mpd);
 	SpecReader sr (mpi);
-	sr.readSpecification (KeySet (5, *Key ("spec", KEY_END), *Key ("spec/mp", KEY_META, "mountpoint", "file.ini", KEY_META,
-								       "infos/needs", "resolver storage", KEY_END),
-				      *Key ("spec/mp/below", KEY_END), KS_END));
+	sr.readSpecification (
+		KeySet (5, *Key ("spec", KEY_END),
+			*Key ("spec/mp", KEY_META, "mountpoint", "file.ini", KEY_META, "infos/needs", "resolver storage", KEY_END),
+			*Key ("spec/mp/below", KEY_END), KS_END));
 	SpecBackendBuilder bi = sr.getBackends ()[Key ("spec/mp", KEY_END)];
 	EXPECT_EQ (bi.nodes, 2);
 	EXPECT_EQ (bi.getMountpoint (), "/mp");
