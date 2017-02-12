@@ -1,4 +1,4 @@
-# Markdown to Shell Recorder #
+# Markdown to Shell Recorder
 
 The purpose of this tool is to extract executable code snippets from markdown files and translate them into a suitable format for the shell_recorder.
 
@@ -6,7 +6,7 @@ Snippets are shell commands inside a syntax block with additional checks (such a
 
 
 
-## Syntax ##
+## Syntax
 
 * Commands
 

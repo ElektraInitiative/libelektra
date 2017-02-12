@@ -1,6 +1,6 @@
-# Testing #
+# Testing
 
-## Introduction ##
+## Introduction
 
 Libraries need a pervasive testing for continuous improvement. Any
 problem found and behaviour described must be written down as test and
@@ -42,7 +42,7 @@ You have some options to avoid running them as root:
 4. Use the XDG resolver (see `scripts/configure-xdg`) and set
    the environment variable `XDG_CONFIG_DIRS`, currently lacks spec namespaces, see #734.
 
-## Conventions ##
+## Conventions
 
 - All names of the test must start with test (needed by test driver for installed tests).
 - No tests should run if ENABLE_TESTING is OFF.
@@ -62,20 +62,20 @@ You have some options to avoid running them as root:
     set_property(TEST testname PROPERTY LABELS memleak)
 
 
-## Strategy ##
+## Strategy
 
 The testing must happen on every level of the software to achieve a
 maximum coverage with the available time. In the rest of the document
 we describe the different levels and where these tests are.
 
-### CFramework ###
+### CFramework
 
 This is basically a bunch of assertion macros and some output
 facilities. It is written in pure C and very lightweight.
 
 It is located [here](/tests/cframework).
 
-### ABI Tests ###
+### ABI Tests
 
 C ABI Tests are written in plain C with the help of cframework.
 
@@ -90,7 +90,7 @@ used.
 
 The tests are located [here](/tests/abi).
 
-### C Unit Tests ###
+### C Unit Tests
 
 C Unit Tests are written in plain C with the help of cframework.
 
@@ -102,7 +102,7 @@ time these tests will fail.
 
 They are located [here](/tests/ctest).
 
-#### Internal Functions ####
+#### Internal Functions
 
 According to `src/libs/elektra/libelektra-symbols.map`, all functions starting with:
 
@@ -115,7 +115,7 @@ According to `src/libs/elektra/libelektra-symbols.map`, all functions starting w
 get exported. Functions not starting with this prefix are internal only and therefore
 not visible in the test cases. Test internal functionality by including the corresponding c file.
 
-### Module Tests ###
+### Module Tests
 
 The modules, which are typically used as plugins in Elektra (but can
 also be available statically or in the `-full` variant), should have their
@@ -123,13 +123,13 @@ own tests.
 
 Use the Cmake macro `add_plugintest` for adding these tests.
 
-### C++ Unit Tests ###
+### C++ Unit Tests
 
 C++ Unit tests are done using the gtest framework. See [architectural decision](/doc/decisions/unit_testing.md).
 
 Use the CMake macro `add_gtest` for adding these tests.
 
-### Script Tests ###
+### Script Tests
 
 Script test are done using POSIX shell + CMake. See [architectural decision](/doc/decisions/script_testing.md).
 
@@ -139,13 +139,13 @@ The script tests have different purposes:
 - Conventions tests (do internal checks that check for common problems)
 - Meta Test Suites (run other test suites)
 
-### Fuzz Testing ###
+### Fuzz Testing
 
 Copy some import files to testcase_dir and run:
 
     /usr/src/afl/afl-1.46b/./afl-fuzz -i testcase_dir -o findings_dir bin/kdb import user/tests
 
-### ASAN ###
+### ASAN
 
 To enable sanitize checks use `ENABLE_ASAN` via cmake.
 
@@ -166,11 +166,11 @@ See also build server jobs:
 * [clang-asan](http://build.libelektra.org:8080/job/elektra-clang-asan/)
 * [gcc-asan](http://build.libelektra.org:8080/job/elektra-gcc-asan/)
 
-### CBMC ###
+### CBMC
 
 For bounded model checking tests, see `scripts/cbmc`.
 
-### Code Coverage ###
+### Code Coverage
 
 Run:
 

@@ -7,12 +7,12 @@
 - infos/status = maintained tested nodep configurable global
 - infos/description = Traces the execution path of a backend
 
-## Introduction ##
+## Introduction
 
 This plugin is added on every possible position within a backend.
 It allows you to trace when the backend is executed.
 
-## Usage ##
+## Usage
 
 If you want to trace how and if the backend is called:
 
@@ -45,7 +45,7 @@ Now the 3 placements in set are called.
 
 Now the 2 placements in get are called.
 
-## Module Loading ##
+## Module Loading
 
 Will not log when loaded as module (config `/module` present), unless `/logmodule` is set:
 

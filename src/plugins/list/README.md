@@ -7,12 +7,12 @@
 - infos/status = maintained unittest nodep libc configurable global
 - infos/description = delegates work to a list of plugins
 
-## Introduction ##
+## Introduction
 
 The List plugin can be used everywhere a list of plugins is required. It takes a list of plugins + configurations 
 for every placement it's placed in and loads them.
 
-## Configuration ##
+## Configuration
 
 `placements/set`
 
@@ -38,7 +38,7 @@ A list of set-placements for the plugin. Same for "get" and "error"
 
 Plugin specific config.
 
-## Example ##
+## Example
 
     placements/get = "postgetstorage"
     plugins/#0 = "rename"

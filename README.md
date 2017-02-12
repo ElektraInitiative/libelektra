@@ -1,4 +1,4 @@
-# libelektra #
+# libelektra
 
 _Elektra serves as a universal and secure framework to access configuration
 parameters in a global, hierarchical key database._
@@ -11,13 +11,13 @@ and tools regarding configuration tasks. Elektra abstracts from
 cross-platform-related issues and allows applications to be aware of other
 applications' configurations, leveraging easy application integration.
 
-## Often used links ##
+## Often used links
 
 - [build server](https://build.libelektra.org/)
 - [tutorials](/doc/tutorials/)
 - [API docu](https://doc.libelektra.org/api/latest/html/)
 
-## Overview ##
+## Overview
 
 Elektra consists of three parts:
 
@@ -55,7 +55,7 @@ implemented in C, works cross-platform, and does not need any external dependenc
 - [Big Picture of Elektra](doc/BIGPICTURE.md)
 
 
-## Contact ##
+## Contact
 
 Do not hesitate to ask any question on
 [GitHub issue tracker](https://issues.libelektra.org/),
@@ -63,11 +63,11 @@ Do not hesitate to ask any question on
 or directly to one of the [authors](doc/AUTHORS.md).
 
 
-## Quickstart ##
+## Quickstart
 
 If you want to use Elektra for your application, [read the application integration tutorial](doc/tutorials/application-integration.md).
 
-### Installation ###
+### Installation
 
 The preferred way to install Elektra is by using packages provided for
 your distribution. On Debian/Ubuntu, this can be done by running the following
@@ -87,7 +87,7 @@ It is preferable to use a recent version: They contain many bug fixes and
 additional features. See [INSTALL](doc/INSTALL.md) for other ways to install
 Elektra.
 
-### Usage ###
+### Usage
 
 Now that we have Elektra installed, we can start using the [kdb command](/doc/help/kdb.md) and
 the [qt-gui](/src/tools/qt-gui/).
@@ -101,7 +101,7 @@ For information about elektrified environment variables, see
 [/src/libgetenv/README.md](/src/libs/getenv/README.md)
 
 
-### Documentation ###
+### Documentation
 
 
 To get an idea of Elektra, you can take a look at the
@@ -126,7 +126,7 @@ You can read the documentation for the kdb tool, either
 
 
 
-## Goals ##
+## Goals
 
 - Make it trivial for applications and administrators to access
   any configuration
@@ -148,7 +148,7 @@ And in terms of quality, we want:
 [Read more about the goals of Elektra](doc/GOALS.md)
 
 
-## Facts and Features ##
+## Facts and Features
 
  * Elektra uses the [BSD licence](doc/LICENSE.md).
  * Elektra implements an [API](http://doc.libelektra.org/api/latest/html/) to fully access a global key database.
@@ -170,14 +170,14 @@ And in terms of quality, we want:
  * Elektra provides powerful [Code Generation Techniques](src/tools/gen) for high-level configuration access.
 
 
-## News ##
+## News
 
 Go to the [website](https://www.libelektra.org), see [News](doc/news/), and its [RSS feed](https://www.libelektra.org/news/feed.rss).
 
 
-## Sources ##
+## Sources
 
-### Packages ###
+### Packages
 
 The preferred way to install Elektra is by using packages provided for
 your distribution, see [INSTALL](/doc/INSTALL.md) for available packages.
@@ -188,7 +188,7 @@ For macOS there is a homebrew tap available:
 If there are no packages available for your distribution see the
 [installation document](doc/INSTALL.md).
 
-### Download ###
+### Download
 
 Elektra's uses a [git repository at GitHub](https://github.com/ElektraInitiative/libelektra).
 
@@ -199,7 +199,7 @@ You can clone the latest version of Elektra by running:
 Releases can be downloaded from [http](https://www.libelektra.org/ftp/elektra/releases/) and
 `ftp://ftp.libelektra.org/elektra/releases/`
 
-### Compiling ###
+### Compiling
 
 After downloading or cloning Elektra, `cd` to the directory and run the
 following commands to compile it:
@@ -216,14 +216,14 @@ For more information, especially how to set CMake Cache, see [here](doc/COMPILE.
 Make sure to read how to add plugins, tools and bindings.
 
 
-## Build Server ##
+## Build Server
 
 The [build server](https://build.libelektra.org/) builds
 Elektra on every commit in various ways and also produces [LCOV code
 coverage report](http://doc.libelektra.org/coverage/latest).
 
 
-## Contributing ##
+## Contributing
 
 To start development, just clone the repo and start hacking!
 We prepared [beginner friendly tasks](https://github.com/ElektraInitiative/libelektra/issues?q=is%3Aissue+is%3Aopen+label%3A%22beginner+friendly%22)

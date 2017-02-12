@@ -9,11 +9,11 @@
 - infos/metadata = check/condition assign/condition condition/validsuffix check/condition/# assign/condition/#
 - infos/description = ensures key values through conditions
 
-## Introduction ##
+## Introduction
 
 This plugin uses if-then-else like conditions. It also works as global plugin.
 
-## Check Syntax ##
+## Check Syntax
 
 Stored in the metakey `check/condition` to validate data is:
 
@@ -26,34 +26,34 @@ Operations: `!=, ==, <, <=, =>, >, :=`, where:
 - `:=` is used to set a key value
 - others are for comparison as in C
 
-### Testing if Key exists ###
+### Testing if Key exists
 
 `(! a/key)` evaluates to true if the key `a/key` doesn't exist, to false if it exists.
 
-### Assign Syntax ###
+### Assign Syntax
 
     (IF-condition) ? ('ThenValue') : ('ElseValue')
 
 Depending on if the condition is met, either 'ThenValue' or 'ElseValue' will be assigned as key value if the metakey `assign/condition` is used.
 
-### Experimental: Nested Conditions ###
+### Experimental: Nested Conditions
 
 Multiple conditions can be nested and combined using parentheses and `&&` (logical AND) or `||` (logical OR). Additional parentheses must be used to form valid conditions again. `(` `(condition 1) && (condition 2)` `)`
 
-### Valid Suffix ###
+### Valid Suffix
 
 The `condition/validsuffix` can be used to define a list of valid suffixes to numeric values. If two operants have the same valid suffix or one of them no suffix they will be treated by their numeric value ignoring their suffix.
 `condition/validsuffix = 'm', 'cm', 'km'` would treat `2.3m` just as the numeric value `2.3` when comparing to another value having the same or no suffix.
 
-### Keynames ###
+### Keynames
 
 Keynames are all either relative to to-be-tested key (starting with `./` or `../`), relative to the parentkey (starting with `@/`) or absolute (e.g. `system/key`).
 
-### Multiple Statements ###
+### Multiple Statements
 
 It's also possible to test multiple conditions using `check/condition` as a meta array and multiple assign statements using `assign/condition` as a meta array.
 
-## Example ##
+## Example
 
     (this/key  != 'value') ? (then/key == some/other/key) : (or/key <= '125')
 
@@ -128,7 +128,7 @@ kdb export /examples/conditionals ini
 
 kdb set /examples/conditionals/sub/key true
 
-# should succeed 
+# should succeed
 kdb export /examples/conditionals ini
 #> sub/key = true
 #> key1 = val1

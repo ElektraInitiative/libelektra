@@ -7,7 +7,7 @@
 - infos/status = maintained nodep libc nodoc
 - infos/description = Transforms null and empty values to text and back
 
-## Introduction ##
+## Introduction
 
 This plugin is a filter plugin which allows Elektra to better deal with
 null values and empty strings.
@@ -18,12 +18,12 @@ Some plugins that work on values are not aware of null values.
 They would crash when they try
 to access a value that is believed to be a string.
 
-## Special Values ##
+## Special Values
 
 The plugin transcodes all null values to `@NULL`, all empty strings to
 `@EMPTY`, and all strings starting with `@` to begin with `@@`.
 
-## Usage ##
+## Usage
 
 In order to use the `null` plugin you must add `null` to `infos/needs`
 in the plugin you wish to use.

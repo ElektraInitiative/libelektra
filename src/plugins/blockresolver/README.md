@@ -9,15 +9,15 @@
 - infos/metadata =
 - infos/description = resolver for parts in a file configuration file
 
-## Introduction ##
+## Introduction
 
 The `blockresolver` can be used to only resolve a tagged block inside a configuration file.
 
-### Implementation details ###
+### Implementation details
 
 `blockresolver` extracts the requested block from the configurations file and writes it into a temporary file. Afterwards Elektra will only work on the temporary file until kdbSet is called. On kdbSet the contents of the temporary file will be merged with parts outside of the requested block from the original file.
 
-## Usage ##
+## Usage
 
     `kdb mount -R blockresolver /path/to/my/file /mountpoint -c identifier="identifier-tag"`
 
@@ -27,11 +27,11 @@ A block consists of 2 parts:
 - beginning: the identifier suffixed with `start`
 - end: the identifier suffixed with `stop`
 
-## Limitations ##
+## Limitations
 
 Currently the identifier must be unique.
 
-## Example ##
+## Example
 ```sh
 # Backup-and-Restore:system/examples/blockresolver
 sudo kdb mount -R blockresolver /tmp/test.block system/examples/blockresolver -c identifier=">>> block config" ini

@@ -8,39 +8,39 @@
 - infos/status = maintained unittest nodep libc limited
 - infos/description = This plugin reads and writes /etc/hosts files.
 
-## Introduction ##
+## Introduction
 
 The `/etc/hosts` file is a simple text file that associates IP addresses
 with hostnames, one line per IP address. The format is described in `hosts(5)`.
 
-## Special values ##
+## Special values
 
-### Hostnames ###
+### Hostnames
 
 Canonical hostnames are stored as key names with the IP address as key
 value. 
 
-### Aliases ###
+### Aliases
 
 Aliases are stored as sub keys with a read only duplicate of the
 associated ip address as value. 
 
-### Comments ###
+### Comments
 
 Comments are stored according to the comment metadata specification (see [/doc/METADATA.ini](/doc/METADATA.ini) for more information)
 
-### Multi-Line Comments ###
+### Multi-Line Comments
 
 Since line breaks are preserved, you can identify multi line comments
 by their trailing line break.
 
 
-## Restrictions ##
+## Restrictions
 
 The ordering of the hosts is stored in metakeys of type "order".
 The value is an ascending number. Ordering of aliases is NOT preserved.
 
-## Examples ##
+## Examples
 
 Mount the plugin:
 
@@ -83,7 +83,7 @@ kdb get /examples/hosts/ipv4/localhost
 kdb get /examples/hosts/ipv6/localhost
 #>::1
 
-# Should both fail with error 51 and return 5 
+# Should both fail with error 51 and return 5
 kdb set /examples/hosts/ipv4/localhost ::1
 # RET:5
 # ERRORS:51

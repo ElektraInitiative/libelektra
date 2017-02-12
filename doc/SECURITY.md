@@ -1,4 +1,4 @@
-# Security #
+# Security
 
 Security is a very important point in libraries. In most use
 cases there is nearly no point of danger in using Elektra.
@@ -25,7 +25,7 @@ file system:
 - `system` or `spec`-namespace: no restrictions
 
 
-## Environment Variables ##
+## Environment Variables
 
 Environment variables are usually avoided, but instead
 Elektra itself is used to configure Elektra.
@@ -36,7 +36,7 @@ used for better integration in systems. This might
 be a security risk.
 
 
-## Compiler Options ##
+## Compiler Options
 
 Can be changed using standard CMake ways.
 Some hints:
@@ -44,7 +44,7 @@ Some hints:
 http://wiki.debian.org/Hardening
 
 
-## Memory Leaks ##
+## Memory Leaks
 
 We use valgrind (`--tool=memcheck`) to make sure that Elektra
 does not suffer memory leaks and incorrect memory handling.

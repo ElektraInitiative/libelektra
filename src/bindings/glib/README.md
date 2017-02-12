@@ -1,4 +1,4 @@
-# glib #
+# glib
 
 Provides glib bindings for Elektra.
 

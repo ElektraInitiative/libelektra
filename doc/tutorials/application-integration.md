@@ -1,4 +1,4 @@
-# Introduction #
+# Introduction
 
 In Elektra different forms of application integrations are possible:
 
@@ -34,7 +34,7 @@ those benefits arise:
 - Other applications can use your configuration as override or as
     fallback (see below)
 
-## Elektrify ##
+## Elektrify
 
 We call the process of making applications aware of other's configuration
 "to elektrify". This tutorial is suited both for new and existing applications.
@@ -74,7 +74,7 @@ access the configuration, and with elektrified software it is possible
 for every application to do so.
 
 
-## Get Started ##
+## Get Started
 
 As first step in a C-application you need to create an in-memory `Key`. Such a
 `Key` is Elektra's atomic unit and consists of:
@@ -152,7 +152,7 @@ Such a name cannot physically exist in configuration files, but they are
 the most important key names to actually work with configuration within
 applications as we will see when introducing `ksLookup`.
 
-## Lookup ##
+## Lookup
 
 To lookup a key, we use:
 
@@ -198,7 +198,7 @@ For more information about that, continue reading
 
 
 
-## Specification ##
+## Specification
 
 Now, we have a fully working configuration system without any hardcoded
 information (such as configuration files). We already gained something.
@@ -267,7 +267,7 @@ To make this work within your application make sure to always call
 `ksLookup` before using a value from Elektra.
 
 
-## Conclusion ##
+## Conclusion
 
 Elektra does not hardcode any configuration data in your application.
 Using the `default` specification, we even can startup applications without
@@ -279,6 +279,6 @@ In this specification you can define to consider or prefer configuration data
 from other applications or shared places. Doing so, we can achieve configuration
 integration.
 
-## SEE ALSO ##
+## SEE ALSO
 
 - [for advanced techniques e.g. transformations](http://www.libelektra.org/ftp/papers/kps2015sharing.pdf)

@@ -7,7 +7,7 @@
 - infos/status = maintained unittest nodep libc configurable 1000
 - infos/description = storage plugin for ini files
 
-## Introduction ##
+## Introduction
 
 This plugin allows read/write of INI files. INI files consist of simple
 key value pairs of the form `key = value`. Additionally keys can be
@@ -19,7 +19,7 @@ with the same name are merged together under the section key.
 
 The plugin is feature rich and customizable (+1000 in status)
 
-## Usage ##
+## Usage
 
 If you want to add an ini file to the global key database, simply use mount:
 
@@ -35,7 +35,7 @@ Find out which file you modified:
 
     kdb file user/example
 
-## Comments ##
+## Comments
 
 The ini plugin supports the use of comments. Comment lines start with
 a ';' or a '#'. Comments are put into the comment metadata of the key 
@@ -46,7 +46,7 @@ which will be used when writing the comment to the file. If the comment
 is not prefixed with a comment indicator, the ini plugin will use the
 character defined by the `comment` option, or default to '#'.  
 
-## Multi-Line Support ##
+## Multi-Line Support
 
 The ini plugin supports multiline ini values. Continuations of previous values
 have to start with whitespace characters. 
@@ -65,7 +65,7 @@ another key named `key2` with the value `value2\nwith continuation\nlines`.
 
 By default this feature is enabled.
 
-## Arrays ##
+## Arrays
 
 The ini plugin handles repeating keys by turning them into an elektra array when the `array` config is set.
 
@@ -90,7 +90,7 @@ will be interpreted as
 /sec/a/#3
 ```
 
-## Sections ##
+## Sections
 
 The ini plugin supports 3 different sectioning modes (via `section=`):
 
@@ -124,12 +124,12 @@ $ cat empty.ini
 b = ab
 ```
 
-### Merge Sections ###
+### Merge Sections
 
 The ini plugin supports merging duplicated section entries when the `mergesections` config is set.
 The keys will be appended to the first occurrence of the section key. 
 
-## Ordering ##
+## Ordering
 
 The ini plugin preserves the order.
 Inserted subsections get appended to the corresponding parent section and new sections by name.

@@ -1,6 +1,6 @@
-# Use Case: <Title> #
+# Use Case: <Title>
 
-## Summary ##
+## Summary
 
 Title: <Title, e.g. Authenticate>
 Scope: <Scope, e.g. Authentication>
@@ -8,7 +8,7 @@ Level: <Level, e.g. User Goal>
 Actors: <Actors, e.g. Anonymous User>
 Brief: <Short explanation, e.g. User authenticates against the service to gain more privilegues>
 
-## Scenarios ##
+## Scenarios
 
 Precondition: <What has to be satisfied before the use case can work?, e.g. Not authenticated>
 Main success scenario: <What is the main scenario, i.e. success scenario?, e.g. Is authenticated>

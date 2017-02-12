@@ -1,4 +1,4 @@
-# How-To: Integrate elektra-merge Into a Debian Package #
+# How-To: Integrate elektra-merge Into a Debian Package
 
 We assume that you know what [ucf](https://packages.debian.org/sid/ucf) is and have some
 [general knowledge about configuration file handling in Debian](https://wiki.debian.org/ConfigPackages).
@@ -10,7 +10,7 @@ that is more reliable than a diff3 merge.  This guide assumes that you are famil
 ucf already and are just trying to implement the `--three-way-merge-command` option
 using Elektra.
 
-## The New Option ##
+## The New Option
 
 The addition of the `--three-way-merge-command` option was a part of my Google
 Summer of Code Project. This option takes the form:
@@ -19,7 +19,7 @@ Summer of Code Project. This option takes the form:
 Where `command` is the command you would like to use for the merge. `New File` and
 `Destination` are the same as always.
 
-## elektra-merge ##
+## elektra-merge
 
 We added a new script to Elektra called [elektra-merge](/scripts/elektra-merge) for use with
 this new option in ucf. This script acts as a liaison between ucf and Elektra, allowing a regular
@@ -42,7 +42,7 @@ Additionally, we added two other scripts, `elektra-mount` and `elektra-umount` w
 as simple wrappers for `kdb mount` and `kdb umount`. They work identically but are more
 script friendly.
 
-## The Full Command ##
+## The Full Command
 
 The full command to use `elektra-merge` to perform a three-way merge on a file managed
 by ucf is:
@@ -52,7 +52,7 @@ That's it! As described above, `elektra-merge` is smart enough to run the whole 
 of the information from that command and utilizes the new `kdb remount` command to
 do so.
 
-## How-To Integrate ##
+## How-To Integrate
 
 Integrating `elektra-merge` into a package that already uses ucf is very easy! In `postinst` you
 should have a line similar to:
@@ -74,7 +74,7 @@ Then, in your `postrm` script, during a purge, you must unmount the config file 
 That's it! With those small changes you can use Elektra to perform automatic three-way merges on any files
 that your package uses ucf to handle!
 
-## Example ##
+## Example
 
 Below is a diff representing the changes we made to the samba-common package in order to allow
 automatic configuration merging for `smb.conf` using Elektra. We chose this package because it already

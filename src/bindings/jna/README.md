@@ -1,6 +1,6 @@
 A full java binding using JNA.
 
-## Usage ##
+## Usage
 
 For using the binding as standalone (to write applications using Elektra),
 make sure that CLASSPATH includes jna.jar and libelektra.jar (or this directory
@@ -20,7 +20,7 @@ then you can compile and run [HelloElektra](HelloElektra.java):
 For plugin development, see [plugins](elektra/plugin)
 and also [here](/src/plugins/jni) for more information.
 
-## Testing ##
+## Testing
 
 Unit tests can be run after importing jUnit, JNA and the elektra java library into a project (eclipse, netbeans, intelliJ, ...).
 
@@ -39,7 +39,7 @@ It should also be possible to run the tests by command line:
 		java -cp src:/usr/share/java/jna.jar:/usr/share/java/junit4.jar org.junit.runner.JUnitCore elektra.test.KeySetTest
 
 
-## Limitations ##
+## Limitations
 
 - no binary keys
 - error/warning fixed to a special number, no generator for any

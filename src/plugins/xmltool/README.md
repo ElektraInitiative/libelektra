@@ -7,7 +7,7 @@
 - infos/status = maintained unittest final memleak unfinished old nodoc
 - infos/description = Storage using libelektratools xml format.
 
-## Introduction ##
+## Introduction
 
 This plugin is a storage plugin allowing Elektra to read and write xml
 formatted files. It uses the `libelektratools` 0.7 xml format.
@@ -15,18 +15,18 @@ formatted files. It uses the `libelektratools` 0.7 xml format.
 This plugin can be used for migration of Key Databases
 from 0.7 -> 0.8. It should not be used otherwise.
 
-## Dependencies ##
+## Dependencies
 
 - `libxml2-dev`
 
-## Restrictions ##
+## Restrictions
 
 - only supports metadata as defined in Elektra 0.7
 - null and empty values are not distinguished
 - exported relative to first key found, not to parent key (ksGetCommonParentName)
 - error messages vague (no difference between error opening file and validation errors)
 
-## Examples ##
+## Examples
 
 After you have upgraded Elektra, you can import xml files from Elektra 0.7:
 

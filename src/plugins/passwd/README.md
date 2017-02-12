@@ -9,19 +9,19 @@
 - infos/metadata =
 - infos/description = storage plugin for passwd files
 
-## Introduction ##
+## Introduction
 
 This plugin parses `passwd` files, e.g. `/etc/passwd`. 
 
-## Implementation Details ##
+## Implementation Details
 
 If present, the not-posix compliant `fgetpwent` function will be used to read the file supplied by the resolver, otherwise `getpwent` will be used. For writing, if present, `putpwent` will be used, if not a simple implementation writing straight to the config file.
 
-## Configuration ##
+## Configuration
 
 If the config key `index` is set to `name` passwd entrys will be sorted by name, if not set or set to `uid` passwd entries will be sorted by uid
 
-## Fields ##
+## Fields
 
 - `gecos` contains the full name of the account
 - `gid` contains the accounts primary group id
@@ -30,7 +30,7 @@ If the config key `index` is set to `name` passwd entrys will be sorted by name,
 - `uid` contains the accounts uid
 - `name` contains the account name
 
-## Usage ##
+## Usage
 
     kdb mount /etc/passwd system/passwd passwd index=name
     kdb export system/passwd/root

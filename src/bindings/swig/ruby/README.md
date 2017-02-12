@@ -1,4 +1,4 @@
-# Ruby bindings #
+# Ruby bindings
 
 This module is a SWIG generated binding for KDB (http://www.libelektra.org),
 therefore the module provides wrapper classes to KDBs C++ interface and is
@@ -15,7 +15,7 @@ this module differs to the C++ API in the following way:
 
 Below, we show some specifics of the Ruby binding.
 
-## Quick start guide ##
+## Quick start guide
 
 This is a short example and illustrates how to use the binding:
 
@@ -36,7 +36,7 @@ This is a short example and illustrates how to use the binding:
 		db.set ks, '/'
 	end
 
-## Get a KDB handle ##
+## Get a KDB handle
 
 There are two ways to create a KDB handle:
 
@@ -60,7 +60,7 @@ This `open` method supports also a block:
 Note: after the block was executed, `db.close` is called implicitly, Thus you
 can not use the handle afterwards.
 
-## Exception handling ##
+## Exception handling
 
 Exception handling is directly mapped from the C++ binding:
 
@@ -73,7 +73,7 @@ Exception handling is directly mapped from the C++ binding:
 		db.close
 	end
 
-## KeySet creation ##
+## KeySet creation
 
 A KeySet can be created in different ways:
 
@@ -98,20 +98,20 @@ Passing a KeySet of initial keys:
 	ks2 = Kdb::KeySet.new ks
 
 
-## Appending keys ##
+## Appending keys
 
 `KeySet` supports Ruby's "append" operator `<<`
 
 	ks << Kdb::Key.new("user/sw/key1")
 
-## iteration ##
+## iteration
 
 `KeySet` has an `each` method and includes `Enumerable`
 
 	ks.each { |k| puts k.to_s }
 	ks.any? { |k| k.has_meta? "owner" }
 
-## Deleting Keys ##
+## Deleting Keys
 
 Similar to the Ruby `Array`, `KeySet` also implements `delete` and `delete_at`
 methods, which can be used to delete a key by name or by index:
@@ -119,7 +119,7 @@ methods, which can be used to delete a key by name or by index:
 	ks.delete "user/sw/key1"
 	ks.delete_at 2
 
-## Key creation ##
+## Key creation
 
 Keys can be created with a Hash-like variable argument list:
 
@@ -132,7 +132,7 @@ symbol value pairs. The symbol value pairs are interpreted as follows:
 - any other symbol is interpreted as meta data key and therefore will add a new
   metadata key.
 
-## Key meta data iteration ##
+## Key meta data iteration
 
 This is very similar to the `KeySet` iteration and can be accessed with `meta`:
 
@@ -140,7 +140,7 @@ This is very similar to the `KeySet` iteration and can be accessed with `meta`:
 		puts "#{m.name}: #{m.value}"
 	end
 
-## Building ##
+## Building
 
 Note that cmake does *not* automatically rebuild SWIG bindings
 when header files are changed. Remove the build directory

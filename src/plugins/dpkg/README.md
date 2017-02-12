@@ -7,7 +7,7 @@
 - infos/status = unittest nodep limited nodoc unfinished
 - infos/description = can be used to mount dpkg files
 
-## Example ##
+## Example
 
     kdb mount /var/lib/dpkg/available system/dpkg/available dpkg
     kdb mount /var/lib/dpkg/status system/dpkg/available dpkg

@@ -8,16 +8,16 @@
 - infos/status = maintained unittest libc global
 - infos/description = Sends DBus signals when a method is called
 
-## Introduction ##
+## Introduction
 
 This plugin is a notification plugin, which sends a signal to D-Bus when
 the key database (KDB) has been modified.
 
-## Dependencies ##
+## Dependencies
 
 - `libdbus-1-dev`
 
-## Dbus ##
+## Dbus
 
 A preferred way to interconnect desktop applications and even embedded
 system applications on mobile devices running Linux is D-Bus.  The idea
@@ -53,7 +53,7 @@ Following signal names are used to notify about changes in the Elektra's KeySet:
 - KeyChanged: a key has been changed
 - KeyDeleted: a key has been deleted
 
-## Usage ##
+## Usage
 
 The recommended way is to globally mount the plugin:
 
@@ -63,7 +63,7 @@ Alternatively one can mount the plugin additionally to a storage plugin, e.g.:
 
 	kdb mount file.dump / dump dbus
 
-### Shell ###
+### Shell
 
 Then we can receive the notification events using:
 
@@ -88,7 +88,7 @@ And then fire it with:
 
 	kdb set system/dbus/y a
 
-### C ###
+### C
 
 ```c
 dbus_bus_add_match (connection, "type='signal',interface='org.libelektra',path='/org/libelektra/configuration'", &error);
@@ -97,7 +97,7 @@ dbus_bus_add_match (connection, "type='signal',interface='org.libelektra',path='
 See the full example [here](/src/plugins/dbus/receivemessage.c).
 
 
-### Qt ###
+### Qt
 
 Here a small example for QDBusConnection:
 
@@ -120,7 +120,7 @@ Here comes the org.libelektra signals:
     };
 
 
-### Python ###
+### Python
 
 In Python the DBus notifications can be used as follows
 
@@ -150,7 +150,7 @@ except KeyboardInterrupt:
     loop.quit()
 ```
 
-## Background ##
+## Background
 
 Today, programs are often interconnected in a dense way.
 Such applications should always be informed when something in their

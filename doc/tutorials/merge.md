@@ -1,6 +1,6 @@
-# How-To: kdb merge #
+# How-To: kdb merge
 
-## Introduction ##
+## Introduction
 
 The kdb tool allows users to access and perform functions on the Elektra Key Database from the command line. We added
 a new command to this very useful tool, the `merge` command. This command allows a user to perform a three-way merge
@@ -32,7 +32,7 @@ In `kdb merge`, `ourpath`, `theirpath`, and `basepath` work just like `ours`, `t
 root of a KeySet. The argument `resultpath` is pretty self-explanatory, it is just where you want the result of the merge to be saved under.
 It's worth noting, `resultpath` should be empty before attempting a merge, otherwise there can be unintended consequences.
 
-## Options ##
+## Options
 
 As for the options, there are a few basic options:
 
@@ -43,7 +43,7 @@ As for the options, there are a few basic options:
 
 - `-f`, `--force`: which overwrites any Keys in `resultpath`
 
-### Strategies ###
+### Strategies
 
 Additionally there is an option to specify a merge strategy, which is very important.
 
@@ -62,7 +62,7 @@ If no strategy is specified, the merge will default to the preserve strategy as 
 If any of the other strategies are specified, when a conflict is detected, merge will use the Key specified by the
 strategy (`ours`, `theirs`, or `base`) for the resulting Key.
 
-## Basic Example ##
+## Basic Example
 
 Basic Usage:
 
@@ -70,7 +70,7 @@ Basic Usage:
 kdb merge system/hosts/ours system/hosts/theirs system/hosts/base system/hosts/result
 ```
 
-## Examples Using Strategies ##
+## Examples Using Strategies
 
 Here are examples of the same KeySets being merged using different strategies.
 The KeySets are mounted using the `simpleini` file, the left side of '=' is the name of
@@ -100,7 +100,7 @@ Here is their KeySet, `system/theirs`:
 
 Now we will examine the result KeySet with the different strategies.
 
-### Preserve ###
+### Preserve
 
 ```sh
 kdb merge -s preserve system/ours system/theirs system/base system/result
@@ -109,7 +109,7 @@ kdb merge -s preserve system/ours system/theirs system/base system/result
 The merge will fail because of a conflict for `key4` since `key4` was deleted in our KeySet and
 edited in their KeySet. Since we used preserve, the merge fails and the result KeySet is not saved.
 
-### Ours ###
+### Ours
 
 ```sh
 kdb merge -s ours system/ours system/theirs system/base system/result
@@ -124,7 +124,7 @@ The result KeySet, system/result will be:
 Because the conflict of `key4` (it was deleted in `ours` but changed in `theirs`) is solved by using our copy
 thus deleting the key.
 
-### Theirs ###
+### Theirs
 
 ```sh
 kdb merge -s theirs system/ours system/theirs system/base system/result
@@ -139,7 +139,7 @@ The result KeySet, `system/result` will be:
 
 Here, the conflict of `key4` is solved by using their copy, thus `key4=banana`.
 
-### Base ###
+### Base
 
 ```sh
 kdb merge -s base system/ours system/theirs system/base system/result

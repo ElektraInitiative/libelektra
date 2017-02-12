@@ -8,14 +8,14 @@
 - infos/status = productive maintained unittest nodep libc configurable
 - infos/description = parses csv files
 
-## Introduction ##
+## Introduction
 
 This plugin allows you to read and write CSV files within Elektra.
 It aims to be compatible with RFC 4180.
 Rows and columns are written in Elektra arrays (`#0`, `#1`,..).
 Using configuration you can give columns a name.
 
-## Configuration ##
+## Configuration
 
 `delimiter`
 Tells the plugin what delimiter is used in the file.
@@ -33,13 +33,13 @@ If this key is set the plugin will yield an error for every file that doesn't ha
 Sets the column names. Only usable in combination with the `columns` key. The number of subkeys must match the number of columns.
 Conflicts with usage of `header`.
 
-## Examples ##
+## Examples
 
 First line should determine the headers:
 
     kdb mount test.csv /csv csvstorage "delimiter=;,header=colname,columns=2,columns/names,columns/names/#0=col0Name,columns/names/#1=col1Name"
 
 
-## Limitations ##
+## Limitations
 
 - Does not work on file streams (e.g. `kdb import` without file)

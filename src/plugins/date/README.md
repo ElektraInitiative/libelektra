@@ -9,7 +9,7 @@
 - infos/metadata = check/date check/date/format
 - infos/description = validates date and time strings
 
-## Validation options ##
+## Validation options
 
 The following representation standards of dates and times are currently supported and can be use by setting `check/date` to:
 
@@ -88,15 +88,15 @@ The following representation standards of dates and times are currently supporte
 
   a set of possible format strings derived from rfc2822 3.3, no format string needed.
 
-## Dependencies ##
+## Dependencies
 
 POSIX.1-2001
 
-## Examples ##
+## Examples
 
 TBD
 
-## Limitations ##
+## Limitations
 
 Testing timezone designators currently only works with glibc.
 Unit tests using timezone designators are locale dependent.

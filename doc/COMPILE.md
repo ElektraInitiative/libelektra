@@ -1,6 +1,6 @@
-# Compile #
+# Compile
 
-## Dependencies ##
+## Dependencies
 
 For the base system you only need cmake and build-essential (make, gcc,
 some unix tools):
@@ -15,7 +15,7 @@ Or on macOS Sierra, most of the build tools can be obtained by installing XCode 
 
 	brew install cmake
 
-## Optional Dependencies ##
+## Optional Dependencies
 
 Note: You do not need to install the dependencies listed here.
 But then some of the functionality gets disabled automatically.
@@ -49,7 +49,7 @@ For example, for CentOS:
 For the Debian package, please refer to debian/control (in the debian
 branch).
 
-## Preparation ##
+## Preparation
 
 Elektra uses cmake.
 Tested are cmake version 2.8.9 (minimum) and version 3.0.2 (recommended) among others.
@@ -75,7 +75,7 @@ E.g.:
 
 Some scripts in the folder of the same name may help you running cmake.
 
-### Compilers ###
+### Compilers
 
 For supported compilers have a look at the automatic build farm on
 http://build.libelektra.org:8080/
@@ -112,7 +112,7 @@ To use gcc-4.3 for example
 
 To change the compiler with ccmake, you may need to toggle advanced options (key 't').
 
-### Options ###
+### Options
 
 Some options, i.e. `PLUGINS`, `BINDINGS` and `TOOLS` are either:
 
@@ -126,7 +126,7 @@ Some options, i.e. `PLUGINS`, `BINDINGS` and `TOOLS` are either:
 Examples for this are especially in the subsection `PLUGINS` below, but they work in the
 same fashion for `BINDINGS` and `TOOLS`.
 
-#### Plugins ####
+#### Plugins
 
 Read about available plugins [here](/src/plugins/).
 
@@ -248,7 +248,7 @@ To add `resolver_l_h_b` you need to specify
 You can add resolver with any combination of the flags, even if they are
 not available in `ALL`.
 
-#### Tools ####
+#### Tools
 
 Tools are used to add extra functionality to Elektra.
 The flag used to specify which tools are compiled is
@@ -269,7 +269,7 @@ To specify specific tools you can use, e.g.:
     -DTOOLS=qt-gui;kdb
 
 
-#### Bindings ####
+#### Bindings
 
 Bindings are used in the same way as `TOOLS`.
 For example you can use:
@@ -299,30 +299,30 @@ To not add such APIs, but only `swig` bindings and `cpp`, you can use:
     -DBINDINGS="SWIG;cpp"
 
 
-#### CMAKE_BUILD_TYPE  ####
+#### CMAKE_BUILD_TYPE
 
 `Debug`, `Release` or `RelWithDebInfo`
 See help bar at bottom of ccmake for that option or:
 http://www.cmake.org/Wiki/CMake_Useful_Variables
 
-#### ELEKTRA_DEBUG_BUILD and ELEKTRA_VERBOSE_BUILD  ####
+#### ELEKTRA_DEBUG_BUILD and ELEKTRA_VERBOSE_BUILD
 
 Only needed by Elektra developers.
 Make the library to output logging information.
 It is not recommended to use these options.
 
-#### BUILD_DOCUMENTATION ####
+#### BUILD_DOCUMENTATION
 
 Build documentation with doxygen (API) and ronn (man pages).
 
-#### Developer Options ####
+#### Developer Options
 
 As developer you should enable `ENABLE_DEBUG` and `ENABLE_LOGGER`.
 (By default they should be invisible!)
 
 Then continue reading [testing](/doc/TESTING.md) for further options.
 
-#### CMAKE_INSTALL_PREFIX ####
+#### CMAKE_INSTALL_PREFIX
 
 `CMAKE_INSTALL_PREFIX` defaults to `/usr/local`.
 So by default most files will installed below `/usr/local`.
@@ -334,7 +334,7 @@ Also called system prefix within the documentation.
 If you want to create a package afterwards it is ok to use
 paths that you can write to (e.g. `-DCMAKE_INSTALL_PREFIX=/home/username/`)
 
-#### LIB_SUFFIX ####
+#### LIB_SUFFIX
 
 Lets you install libraries into architecture specific folder.
 E.g. for 32/64 bit systems you might install libraries under
@@ -342,7 +342,7 @@ E.g. for 32/64 bit systems you might install libraries under
 So the system library folder will be `CMAKE_INSTALL_PREFIX/lib64`
 then.
 
-#### TARGET_INCLUDE_FOLDER ####
+#### TARGET_INCLUDE_FOLDER
 
 By default include folders will be installed below
 `CMAKE_INSTALL_PREFIX/include/elektra`.
@@ -350,14 +350,14 @@ This entry let you change the elektra.
 If the entry is empty, the include files will be
 installed directly to `CMAKE_INSTALL_PREFIX/include`.
 
-#### TARGET_PLUGIN_FOLDER ####
+#### TARGET_PLUGIN_FOLDER
 
 Similar to above, but with the plugins. Default is:
 `CMAKE_INSTALL_PREFIX/lib${LIB_SUFFIX}/elektra`
 It can be also left empty to install plugins next
 to other libraries.
 
-#### GTEST_ROOT ####
+#### GTEST_ROOT
 
 Specifies the root of the GoogleTest sources, to be used
 for some of the tests. A `CMakeLists.txt` inside `GTEST_ROOT`
@@ -369,12 +369,12 @@ It is recommended that you browse through all of the options using ccmake.
 Afterwards press 'c' again (maybe multiple times until all variables are
 resolved) and then 'g' to generate.  Finally press 'e' to exit.
 
-#### INSTALL_BUILD_TOOLS ####
+#### INSTALL_BUILD_TOOLS
 
 Specifies that the build tools, i.e. `elektra-export-symbols` and `elektra-export-symbols`
 are installed (by default off). Is needed for cross-compilation.
 
-#### INSTALL_SYSTEM_FILES ####
+#### INSTALL_SYSTEM_FILES
 
 Some of Elektras targets require to be installed into specific folders in the
 file system hierarchy to work properly.
@@ -396,13 +396,13 @@ Currently the installed system files are as following:
 
 > (*) Or `/usr/share/bash-completion/completions` as fallback.
 
-#### ENABLE_OPTIMIZATIONS ####
+#### ENABLE_OPTIMIZATIONS
 
 In order to keep the binaries as small as possible this flag allows to trade memory for speed.
 
-## Building ##
+## Building
 
-### Without IDE ###
+### Without IDE
 
 To build the source use:
 
@@ -414,7 +414,7 @@ You can pass:
 
 Continue by reading [INSTALL](INSTALL.md).
 
-### With CodeBlocks ###
+### With CodeBlocks
 
 You can build Elektra using Code::Blocks under Gentoo:
 
@@ -444,9 +444,9 @@ Note 3:
     right even thou not required.
 
 
-## Maintainer's Guide ##
+## Maintainer's Guide
 
-### Multiarch ###
+### Multiarch
 
 On multiarch (multiple architectures installed in one system), you need to set `LIB_SUFFIX`.
 For example, if you want to have the binaries in `lib64` and `lib32`, you
@@ -462,7 +462,7 @@ For example, for Debian:
 
 
 
-### RPATH ###
+### RPATH
 
 By default Elektra uses `RPATH` to hide its plugins. This makes it obvious that
 external applications should *not* link against plugins. Instead every application
@@ -504,9 +504,9 @@ is to add the plugin folder in `/etc/ld.so.conf.d/elektra`. Note that it still a
 applications to link against plugins.
 
 
-## Troubleshooting ##
+## Troubleshooting
 
-### Missing Links/Libraries ###
+### Missing Links/Libraries
 
 If you get errors that `libelektra-resolver.so` or `libelektra-storage.so` are missing,
 or the links do not work, you can use as workaround:
@@ -519,7 +519,7 @@ This issue was reported for:
 - CLion IDE (does not allow to build)
 
 
-### Dependencies not Available for Cent OS ###
+### Dependencies not Available for Cent OS
 
 Please enable EPEL https://fedoraproject.org/wiki/EPEL
 
@@ -545,7 +545,7 @@ Also, no ronn was available, thus you need to do:
 	gem install ronn
 
 
-### Cross Compiling ###
+### Cross Compiling
 
 In Elektra cross compiling needs two steps.  If you get errors like
 `elektra-export-errors_EXE_LOC` not found, go on reading.

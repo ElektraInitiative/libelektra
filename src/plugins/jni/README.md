@@ -7,7 +7,7 @@
 - infos/status = maintained unittest configurable memleak experimental -500
 - infos/description = generic java plugin
 
-## Introduction ##
+## Introduction
 
 Allows you to write plugins in java.
 
@@ -28,9 +28,9 @@ The java plugin itself needs to have the following methods:
 - set with arguments `elektra/KeySet` and `elektra/Key`
 - error with arguments `elektra/KeySet` and `elektra/Key`
 
-## Installation ##
+## Installation
 
-### Java prerequisites on Linux (Debian) ###
+### Java prerequisites on Linux (Debian)
 Please install java8 as package, e.g.
 [for debian](http://www.webupd8.org/2014/03/how-to-install-oracle-java-8-in-debian.html)
 and then let cmake actually find jdk8:
@@ -48,7 +48,7 @@ and run:
 
     sudo ldconfig
 
-### Java prerequisites on macOS ###
+### Java prerequisites on macOS
 
 macOS includes an old apple specific version of java, based on 1.6.
 However, for the jni plugin version 1.8 of Java is required, so either the openjdk or the oracle jdk has to be installed.
@@ -65,14 +65,14 @@ Instead you can export an environment variable to tell elektra the location of t
 
 Afterwards, the jni plugin should be included in the build and compile successfully.
 
-#### Troubleshooting ####
+#### Troubleshooting
 
 If it should still not find the correct jni version, or says the jni version is not 1.8, then it most likely still searches in the wrong directory for the jni header file.
 It has been experienced that if the project has been built already without this environment variable set, the java location is cached.
 As a result, it will be resolved wrong in future builds, even though the environment variable is set.
 To resolve this, it should be enough to delete the CMakeCache.txt file in the build directory and reconfigure the build.
 
-### Enabling the plugin ###
+### Enabling the plugin
 Then enable the plugin using (`ALL;-EXPERIMENTAL` is default):
 
     cmake -DPLUGINS="ALL;-EXPERIMENTAL;jni" /path/to/libelektra
@@ -88,7 +88,7 @@ should work then (needs BUILD_FULL cmake option), if you get one of these:
 
 You missed one of the ldconfig steps.
 
-## Plugin Config ##
+## Plugin Config
 
 You need to pass :
 - classname the classname to use as plugin, e.g. `elektra/plugin/Echo`
@@ -116,7 +116,7 @@ configuration, read about it below in the section (specific java plugin).
 If you are reading this page on github, you won't see it, because the
 plugins dynamically append text after the end of this page.
 
-## Development ##
+## Development
 
 To know how the methods of your class are called, use:
 
@@ -128,7 +128,7 @@ Also explained
 [JNI Functions](https://docs.oracle.com/javase/7/docs/technotes/guides/jni/spec/functions.html)
 [Invocation](https://docs.oracle.com/javase/7/docs/technotes/guides/jni/spec/invocation.html)
 
-## Issues ##
+## Issues
 
 (Argumentation for -500 in status)
 

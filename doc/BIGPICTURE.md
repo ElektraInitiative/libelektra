@@ -1,4 +1,4 @@
-# Big Picture #
+# Big Picture
 
 Elektra solves a non-trivial issue: how to abstract configuration
 in a way that software can be integrated and reconfiguration can
@@ -7,7 +7,7 @@ Read [why Elektra](WHY.md) for an explanation of why such a
 solution is necessary.
 
 
-## Virtual File System Analogy ##
+## Virtual File System Analogy
 
 If you know virtual file systems, you already know a very similar solution
 to a very similar problem (otherwise first read about what a virtual
@@ -108,7 +108,7 @@ one of them would be useless.  Main differences are:
 
 
 
-## Further pointers ##
+## Further pointers
 
 - Continue reading the [tutorials](/doc/tutorials)
 - Read about [bindings](/src/bindings/)

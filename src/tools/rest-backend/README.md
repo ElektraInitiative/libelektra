@@ -1,6 +1,6 @@
-# Elektra REST Backend #
+# Elektra REST Backend
 
-## Introduction ##
+## Introduction
 
 This document aims to provide information about Elektra's `rest-backend` feature.
 `rest-backend` offers a RESTful server to search, store and convert configuration snippets.
@@ -23,7 +23,7 @@ that opening the system to everyone by providing a public interface to the
 whole key database would result in a security leak.
 For a REST API with such an interface, another tool will be published.
 
-## Run and Configure ##
+## Run and Configure
 
 To run the `@tool@` we need to find out where it has been installed to.
 This can be done by running the command `kdb list-tools` which will output a list of
@@ -38,7 +38,7 @@ are listed below.
 To stop the service, run `sh stop-@tool@` in the directory where the start script is located
 or `kdb stop-@tool@` from anywhere.
 
-### Configuration ###
+### Configuration
 
 The service stores all its configuration below `@config_root@@config_default_profile@`,
 which is split into two parts:
@@ -46,7 +46,7 @@ which is split into two parts:
 - one for CppCMS below `@config_root@@config_default_profile@/cppcms` and
 - one for the service itself below `@config_root@@config_default_profile@/backend`
 
-#### CppCMS ####
+#### CppCMS
 
 All configuration options for CppCMS are listed on their [Website](http://cppcms.com/wikipp/en/page/cppcms_1x_config).
 The JSON configuration explained on the website can be translated into Elektra keys easily.
@@ -75,7 +75,7 @@ kdb set @config_root@@config_default_profile@/cppcms/security/display_error_mess
 
 Simply set the desired settings as keys in the key database and you are done!
 
-#### Backend ####
+#### Backend
 
 The service itself offers quite some configuration options as well.
 In detail, the options (without the base key `@config_root@`) are:
@@ -84,7 +84,7 @@ In detail, the options (without the base key `@config_root@`) are:
 @configuration-specification@
 ```
 
-### Configure as service ###
+### Configure as service
 
 To configure the rest-backend as service, it is possible to use `systemd` on most systems.
 
@@ -114,9 +114,9 @@ EOF
 If everything went fine, the service should be reachable and `systemctl status @tool@.service`
 should print information about the running service (PID, etc).
 
-## Compiling and Installation ##
+## Compiling and Installation
 
-### Dependencies ###
+### Dependencies
 
 In order to compile and use the new `@tool@` there are a few dependencies which must be installed.
 
@@ -128,7 +128,7 @@ In order to compile and use the new `@tool@` there are a few dependencies which 
 An extensive tutorial describing the installation and configuration can be found
 [here](/doc/tutorials/snippet-sharing-rest-service.md).
 
-### Compiling ###
+### Compiling
 
 Compile Elektra as normal as per the [COMPILE document](http://libelektra.org/tree/master/doc/COMPILE.md),
 but make sure to include the `rest-backend` tool using the `-DTOOLS` flag.
@@ -136,17 +136,17 @@ but make sure to include the `rest-backend` tool using the `-DTOOLS` flag.
 For instance:
 `-DTOOLS=ALL` or `-DTOOLS=@tool@`
 
-### Installing ###
+### Installing
 
 You can now install Elektra as you normally would or as described
 in the [install documentation](http://libelektra.org/tree/master/doc/INSTALL.md).
 
-## Implementation notes and hints for Front-Ends ##
+## Implementation notes and hints for Front-Ends
 
 The here described tool offers an API which can be consumed by either a command line tool
 like cURL or a custom front-end. In the following some hints for front-end implementations will be given.
 
-### Usability ###
+### Usability
 
 The API validates all inputs, but does not respond always with exact error messages.
 Normally error messages contain a general hint on what input was wrong
@@ -160,6 +160,6 @@ Therefore it would be advisable to implement live-validation for front-ends with
 Information about allowed input formats can be found in the
 [API description](http://libelektra.org/tree/master/doc/rest_api/snippet_sharing/api-description.apib).
 
-## Benchmarks ##
+## Benchmarks
 
 The service has been benchmarked against a MySQL solution, for further details see [benchmarks readme](benchmarks/README.md).

@@ -1,4 +1,4 @@
-# Goals #
+# Goals
 
 - Improve robustness of configuration systems by
   - rejecting invalid configuration.
@@ -12,7 +12,7 @@
 - Reduce duplication of code (a single parser/generator used by
   everyone accessing a specific part of the configuration).
 
-## Target ##
+## Target
 
 - Embedded: Elektra is on the frontier for embedded systems because of
   its tiny core and the many possibilities with its plugins.
@@ -24,7 +24,7 @@
   configuration tree. Missing is a description (schema) so that these
   values actually can be shared.
 
-## Quality Goals ##
+## Quality Goals
 
 1.) Simplicity
 
@@ -87,7 +87,7 @@ endeavours where everyone using Elektra can benefit from.
 
 Only pay for what you need.
 
-## Non-Goals ##
+## Non-Goals
 
 - Support semantics that do not fit into the KeySet (key/value pairs) with an `kdbGet()`/`kdbSet()` interface.
 - Support for non-configuration issues, e.g. storing any key/value data.
