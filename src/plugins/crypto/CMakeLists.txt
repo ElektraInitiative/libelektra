@@ -44,26 +44,11 @@ if (DEPENDENCY_PHASE)
 	# Plugin variant: crypto_openssl
 	set (plugin crypto_openssl)
 	if (NOT OPENSSL_MANUAL_OSX_HACK)
-		include (FindPkgConfig)
-		pkg_search_module (OPENSSL openssl)
+		find_package (LibOpenSSL)
 	endif ()
 
 	if ((NOT OPENSSL_FOUND) AND (NOT OPENSSL_MANUAL_OSX_HACK))
 		remove_plugin ( ${plugin} "OpenSSL development files not found")
-	else  ()
-
-		try_compile (HAS_OPENSSL_4SURE
-			"${CMAKE_BINARY_DIR}"
-			"${PROJECT_SOURCE_DIR}/src/plugins/crypto/compile_openssl.c"
-			CMAKE_FLAGS
-				-DINCLUDE_DIRECTORIES:STRING=${OPENSSL_INCLUDE_DIR}
-				-DLINK_LIBRARIES:PATH=${OPENSSL_LIBRARIES}
-		)
-
-		if (NOT HAS_OPENSSL_4SURE)
-			remove_plugin ( ${plugin} "OpenSSL compilation test failed")
-			set (OPENSSL_FOUND off)
-		endif ()
 	endif ((NOT OPENSSL_FOUND) AND (NOT OPENSSL_MANUAL_OSX_HACK))
 
 	# Plugin variant: crypto_gcrypt
