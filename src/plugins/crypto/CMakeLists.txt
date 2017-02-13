@@ -64,26 +64,11 @@ if (DEPENDENCY_PHASE)
 	# Plugin variant: crypto_botan
 	set (plugin crypto_botan)
 	if (NOT BOTAN_MANUAL_OSX_HACK)
-		include (FindPkgConfig)
-		pkg_search_module (BOTAN botan-1.10 botan-1.9 botan-1.8 botan)
+		find_package (LibBotan)
 	endif ()
 
 	if ((NOT BOTAN_FOUND) AND (NOT BOTAN_MANUAL_OSX_HACK))
 		remove_plugin ( ${plugin} "botan development files not found")
-	else ()
-
-		try_compile (HAS_BOTAN_4SURE
-			"${CMAKE_BINARY_DIR}"
-			"${PROJECT_SOURCE_DIR}/src/plugins/crypto/compile_botan.cpp"
-			CMAKE_FLAGS
-				-DINCLUDE_DIRECTORIES:STRING=${BOTAN_INCLUDE_DIRS}
-				-DLINK_LIBRARIES:PATH=${BOTAN_LIBRARIES}
-		)
-
-		if (NOT HAS_BOTAN_4SURE)
-			remove_plugin ( ${plugin} "botan compilation test failed")
-			set (BOTAN_FOUND off)
-		endif ()
 	endif ()
 
 	# clean up for dependency phase
