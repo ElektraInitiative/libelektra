@@ -2,10 +2,9 @@
 #
 # Defines:
 #
-#  OPENSSL_FOUND - set if the system has the gcrypt library
-#  OPENSSL_CFLAGS - the required gcrypt compilation flags
-#  OPENSSL_LIBRARIES - the linker libraries needed to use the gcrypt library
-#  HAS_OPENSSL_4SURE - set if a test program can be compiled and linked against the OpenSSL library.
+#  OPENSSL_FOUND - set if the system has the OpenSSL library
+#  OPENSSL_LIBRARIES - the linker libraries needed to use the OpenSSL library
+#  OPENSSL_INCLUDE_DIR - the path to the include files of the OpenSSL library
 #
 # Copyright (c) 2017 Peter Nirschl <peter.nirschl@gmail.com>
 #
@@ -34,4 +33,6 @@ if (OPENSSL_FOUND)
     set (OPENSSL_INCLUDE_DIR "")
     set (OPENSSL_LIBRARIES "")
   endif ()
+
+  unset (HAS_OPENSSL_4SURE)
 endif ()
