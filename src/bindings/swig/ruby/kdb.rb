@@ -86,4 +86,31 @@ module Kdb
       end
     end
   end
+
+
+  # Boilerplate for a Ruby based Elektra plugin
+  #
+  class Plugin
+
+    def open(warningsKey)
+      return 0
+    end
+
+    def close(warningsKey)
+      return 0
+    end
+
+    def get(returned, warningsKey)
+      return 0
+    end
+
+    def set(returned, warningsKey)
+      return 0
+    end
+
+    def error(returned, warningsKey)
+      return 0
+    end
+
+  end
 end

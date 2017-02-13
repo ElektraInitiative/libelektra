@@ -42,9 +42,16 @@ int mymain(int argc, char* argv[]) {
 VALUE test_m_do_something(VALUE self) {
 	// return rb_eval_string("puts \"printing something\"");
 	VALUE key = rb_funcall(self, rb_intern("get_key"), 0);
+	kdb::Key * cppkey = NULL;
+	ckdb::Key * ckey = NULL;
 	
 	swig_type_info * ti = SWIG_TypeQuery("Kdb::Key");
-	
+
+	int res = SWIG_ConvertPtr(key, (kdb::Key**)(&cppkey), ti, NULL);
+	if (res != -1) {
+		ckey = cppkey->getKey();
+		keySetString(ckey, "my C value");
+	}
 
 	return key;
 }
