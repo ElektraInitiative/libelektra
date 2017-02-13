@@ -74,20 +74,6 @@ if (DEPENDENCY_PHASE)
 
 	if ((NOT LIBGCRYPT_FOUND) AND (NOT LIBGCRYPT_MANUAL_OSX_HACK))
 		remove_plugin ( ${plugin} "libgcrypt development files not found")
-	else ()
-
-		try_compile (HAS_GCRYPT_4SURE
-			"${CMAKE_BINARY_DIR}"
-			"${PROJECT_SOURCE_DIR}/src/plugins/crypto/compile_gcrypt.c"
-			CMAKE_FLAGS
-				-DINCLUDE_DIRECTORIES:STRING=${LIBGCRYPT_INCLUDE_DIR}
-				-DLINK_LIBRARIES:PATH=${LIBGCRYPT_LIBRARIES}
-		)
-
-		if (NOT HAS_GCRYPT_4SURE)
-			remove_plugin ( ${plugin} "libgcrypt compilation test failed")
-			set (LIBGCRYPT_FOUND off)
-		endif ()
 	endif ((NOT LIBGCRYPT_FOUND) AND (NOT LIBGCRYPT_MANUAL_OSX_HACK))
 
 	# Plugin variant: crypto_botan
