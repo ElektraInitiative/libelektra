@@ -276,7 +276,7 @@ static int init_ruby_environment(ckdb::Key * warningsKey) {
 	return 1;
 }
 
-static VALUE load_ruby_plugin(VALUE config) {
+static VALUE load_ruby_plugin(VALUE config ELEKTRA_UNUSED) {
 	// TODO make configurable
 	// TODO search path ???
 
