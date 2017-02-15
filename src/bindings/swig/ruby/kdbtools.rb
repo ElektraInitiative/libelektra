@@ -11,7 +11,7 @@
 
 require '_kdbtools'
 
-module Kdb
+module Kdbtools
 
 
 end

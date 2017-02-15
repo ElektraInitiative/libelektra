@@ -73,7 +73,7 @@ else()
 	
 	set_source_files_properties (
 		${swig_generated_file_fullname} PROPERTIES
-		COMPILE_FLAGS "${SWIG_COMPILE_FLAGS} -Wno-unused-parameter -Wno-unused-but-set-variable -DSWIG_TYPE_TABLE=kdb"
+		COMPILE_FLAGS "${SWIG_COMPILE_FLAGS} -Wno-unused-parameter -Wno-unused-but-set-variable -DSWIG_TYPE_TABLE=kdb -Wno-sign-compare -Wno-old-style-cast"
 	)
 
 

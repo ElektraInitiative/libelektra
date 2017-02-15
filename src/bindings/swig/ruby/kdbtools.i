@@ -32,34 +32,128 @@ Please note, this documentation will show C++ types too (e.g. std::string).
 %module kdbtools
 
 
-
-%include "attribute.i"
+%include <attribute.i>
 %include <std_vector.i>
 %include <std_map.i>
 %include <std_string.i>
-%include "stdint.i"
-%include "exception.i"
-%include "std_except.i"
+%include <stdint.i>
+%include <exception.i>
+%include <std_except.i>
 
-/* add mapping for std::bad_alloc exception */
+
 namespace std {
+/* add mapping for std::bad_alloc exception */
   %std_exception_map(bad_alloc, SWIG_MemoryError);
-
+/* mapping for a vector<string> */
   %template(VectorStr) vector<string>;
 };
 
-%import "kdb.i"
 
 %{
   #include "pluginspec.hpp"
   #include "plugin.hpp"
   #include "plugins.hpp"
   #include "plugindatabase.hpp"
+  #include "modules.hpp"
 
   using namespace kdb::tools;
 %}
 
+/* let swig know about Elektra base types */
+%import "kdb.i"
+
+%init {
+  /* correct SWIG type <-> Ruby class mappying
+   *
+   * SWIG creates in the first step, for each known class to map
+   * a Ruby class under module SWIG, named 
+   *   'TYPE_p_<cpp-namespace><cpp-class-name>'
+   * I'm not really sure about its purpose, maybe a fallback?
+   * In the second step, SWIG creates all its 'real' Ruby classes
+   * under the defined module and updates its type map records, to
+   * store this 'real' class (Ruby klass VALUE).
+   *
+   * The function SWIG_Ruby_NewPointerObj(), given a type_info struct
+   * lookups the corresponding type table entry to fetch the 'real'
+   * klass Object created earlier. If no such klass Object is found for
+   * the corresponding type_info, the fallback klass under SWIG module
+   * is used.
+   *
+   * So far so good, but: The %import kdb.i lets swig know about the
+   * kdb::Key and kdb::KeySet types and creates entries in SWIGs type
+   * table. However, these type table entries arn't never filled up
+   * (more correctly the client data). So for our imported stuff from 
+   * 'kdb.i' we will end up with getting these fake 
+   * 'SWIG::TYPE_p_kdb__KeyXXX' klasses but not with our real
+   * 'Kdb::KeyXXX' klasses.
+   *
+   * Until now, if not seen any better method of correcting this myself
+   * by hand. So here we get our real 'Kdb::*' klasses and update the
+   * fallback mechanism (the SWIG modules constants).
+   */
+  VALUE my_mKdb = Qnil;
+  VALUE my_kKey = Qnil;
+  VALUE my_kKeySet = Qnil;
+
+  /* get the Kdb module and its classes (they already exist, so they
+   * aren't recreated) */
+  my_mKdb = rb_define_module("Kdb");
+  my_kKey = rb_define_class_under(my_mKdb, "Key", rb_cObject);
+  my_kKeySet = rb_define_class_under(my_mKdb, "KeySet", rb_cObject);
+
+  /* SWIG (also Ruby?) uses these constants to fetch the Ruby class
+   * object, so we simply have to reinitialize these constants */
+  /* do a remove first to avoid "const already set" warning */
+  rb_const_remove(_mSWIG, rb_intern("TYPE_p_kdb__Key"));
+  rb_const_set(_mSWIG, rb_intern("TYPE_p_kdb__Key"), my_kKey);
+  rb_const_remove(_mSWIG, rb_intern("TYPE_p_kdb__KeySet"));
+  rb_const_set(_mSWIG, rb_intern("TYPE_p_kdb__KeySet"), my_kKeySet);
+}
+
+
 %apply long { ssize_t }
+
+/* for some reason, this does not work, at least for 
+ * Modules::load() methods. Maybe because of the overloading ???
+%feature("novaluewrapper") kdb::tools::PluginPtr;
+%feature("novaluewrapper") std::unique_ptr< kdb::tools::Plugin >;
+ */
+
+%header {
+  /**
+   * SwigValueWrapper specialication for std::unique_ptr
+   * the default SwigValueWrapper implementaion does not work here,
+   * since unique_ptr::unique_ptr(&unique_ptr) = delete;
+   *
+   * Therefore we have to create our own SwigValueWrapper for the
+   * pointer wrapper unique_ptr (wrapper of wrapper in a wrapper code ;)
+   */
+  template<>
+  class SwigValueWrapper< std::unique_ptr< kdb::tools::Plugin > > {
+
+    std::unique_ptr<kdb::tools::Plugin> p;
+
+  public:
+    SwigValueWrapper() : p(nullptr) { }
+    SwigValueWrapper& operator=(const std::unique_ptr<kdb::tools::Plugin>& t) {
+      /* transfer ownership from t to p
+       * scope of t will end in this function, thus also its pointer will
+       * be deleted (Plugin).
+       * So we move the pointer (Plugin) from t to p.
+       * a 'const_cast' is required here, since 'release()' modifies t
+       */
+      p.reset( (const_cast<std::unique_ptr<kdb::tools::Plugin>&>(t)).release() );
+      return *this;
+    }
+
+    std::unique_ptr<kdb::tools::Plugin> *operator&() {
+      return &p;
+    }
+  };
+}
+
+%ignore kdb::tools::PluginPtr;
+%ignore std::unique_ptr< kdb::tools::Plugin >;
 
 /*************************************************************************
  *
@@ -98,6 +192,21 @@ namespace std {
 %ignore kdb::tools::Plugin::getSymbol;
 %ignore kdb::tools::Plugin::operator=;
 
+
+%feature("novaluewrapper") kdb::tools::PluginPtr;
+%feature("novaluewrapper") std::unique_ptr< kdb::tools::Plugin >;
+
+/* out typemap for PluginPtr (which is a std::unique_ptr)
+ * 
+ * The unique_ptr object will delete its wrapped object once its scope
+ * ends. But here we want to keep the Plugin object (the unique_ptr does
+ * not matter), so we have to do a release() on the unique_ptr object.
+ * Otherwise the Plugin is deleted and we end up with a Ruby object holding
+ * a pointer to a deleted object. */
+%typemap(out) kdb::tools::PluginPtr {
+  %set_output(SWIG_NewPointerObj($1.release(), $descriptor(kdb::tools::Plugin *), SWIG_POINTER_OWN | 0));
+}
+
 /*
  * parse plugin.hpp
  */
@@ -134,3 +243,16 @@ namespace std {
 
 
 %include "plugindatabase.hpp"
+
+
+
+/*************************************************************************
+ *
+ * kdb::tools::Modules
+ *
+ ************************************************************************/
+
+
+%include "modules.hpp"
+
+
