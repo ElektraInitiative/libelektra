@@ -56,6 +56,8 @@ namespace std {
   #include "plugindatabase.hpp"
   #include "modules.hpp"
 
+  #include "toolexcept.hpp"
+
   using namespace kdb::tools;
 %}
 
@@ -90,6 +92,8 @@ namespace std {
    * Until now, if not seen any better method of correcting this myself
    * by hand. So here we get our real 'Kdb::*' klasses and update the
    * fallback mechanism (the SWIG modules constants).
+   *
+   * I've filed an issue at https://github.com/swig/swig/issues/903
    */
   VALUE my_mKdb = Qnil;
   VALUE my_kKey = Qnil;
@@ -111,7 +115,48 @@ namespace std {
 }
 
 
+
+
 %apply long { ssize_t }
+
+/*************************************************************************
+ *
+ * kdb::tools:: Exceptions
+ *
+ ************************************************************************/
+
+%exceptionclass kdb::tools::ToolException;
+%rename("to_s") kdb::tools::ToolException::what;
+
+%exceptionclass kdb::tools::ParseException;
+%exceptionclass kdb::tools::PluginCheckException;
+%exceptionclass kdb::tools::BackendCheckException;
+%exceptionclass kdb::tools::FileNotValidException;
+%exceptionclass kdb::tools::MountpointInvalidException;
+%exceptionclass kdb::tools::MountpointAlreadyInUseException;
+%exceptionclass kdb::tools::NoSuchBackend;
+%exceptionclass kdb::tools::PluginAlreadyInserted;
+%exceptionclass kdb::tools::PluginConfigInvalid;
+%exceptionclass kdb::tools::BadPluginName;
+%exceptionclass kdb::tools::TooManyPlugins;
+%exceptionclass kdb::tools::OrderingViolation;
+%exceptionclass kdb::tools::CyclicOrderingViolation;
+%exceptionclass kdb::tools::NoPlugin;
+%exceptionclass kdb::tools::ReferenceNotFound;
+%exceptionclass kdb::tools::MissingNeeded;
+%exceptionclass kdb::tools::MissingSymbol;
+%exceptionclass kdb::tools::WrongStatus;
+%exceptionclass kdb::tools::SymbolMismatch;
+%exceptionclass kdb::tools::NoGlobalPlugin;
+%exceptionclass kdb::tools::SymbolDuplicate;
+%exceptionclass kdb::tools::StoragePlugin;
+%exceptionclass kdb::tools::ResolverPlugin;
+%exceptionclass kdb::tools::PluginNoContract;
+%exceptionclass kdb::tools::PluginNoInfo;
+%exceptionclass kdb::tools::VersionInfoMismatch;
+
+%include "toolexcept.hpp"
+
 
 /* for some reason, this does not work, at least for 
  * Modules::load() methods. Maybe because of the overloading ???
@@ -179,7 +224,30 @@ namespace std {
 %rename("refnumber=") kdb::tools::PluginSpec::setRefNumber;
 %rename("is_refnumber?") kdb::tools::PluginSpec::isRefNumber;
 
+%catches(kdb::tools::BadPluginName,
+         kdb::tools::PluginCheckException,
+         kdb::tools::ToolException
+) kdb::tools::PluginSpec::PluginSpec;
 
+%catches(kdb::tools::BadPluginName,
+         kdb::tools::PluginCheckException,
+         kdb::tools::ToolException
+) kdb::tools::PluginSpec::setFullName;
+
+%catches(kdb::tools::BadPluginName,
+         kdb::tools::PluginCheckException,
+         kdb::tools::ToolException
+) kdb::tools::PluginSpec::setRefName;
+
+%catches(kdb::tools::BadPluginName,
+         kdb::tools::PluginCheckException,
+         kdb::tools::ToolException
+) kdb::tools::PluginSpec::setName;
+
+%catches(kdb::tools::BadPluginName,
+         kdb::tools::PluginCheckException,
+         kdb::tools::ToolException
+) kdb::tools::PluginSpec::validate;
 
 %include "pluginspec.hpp"
 
@@ -207,6 +275,65 @@ namespace std {
   %set_output(SWIG_NewPointerObj($1.release(), $descriptor(kdb::tools::Plugin *), SWIG_POINTER_OWN | 0));
 }
 
+%catches (
+        kdb::tools::NoPlugin,
+        kdb::tools::PluginCheckException,
+        kdb::tools::ToolException
+) kdb::tools::Plugin::Plugin;
+
+%catches (
+        kdb::tools::MissingSymbol,
+        kdb::tools::PluginCheckException,
+        kdb::tools::ToolException
+) kdb::tools::Plugin::loadInfo;
+
+%catches (
+        kdb::tools::PluginNoContract,
+        kdb::tools::PluginNoInfo,
+        kdb::tools::PluginCheckException,
+        kdb::tools::ToolException
+) kdb::tools::Plugin::parse;
+
+%catches (
+        kdb::tools::VersionInfoMismatch,
+        kdb::tools::WrongStatus,
+        kdb::tools::SymbolMismatch,
+        kdb::tools::SymbolDuplicate,
+        kdb::tools::PluginCheckException,
+        kdb::tools::ToolException
+) kdb::tools::Plugin::check;
+
+%catches (
+        kdb::tools::MissingSymbol,
+        kdb::tools::PluginCheckException,
+        kdb::tools::ToolException
+) kdb::tools::Plugin::open;
+
+%catches (
+        kdb::tools::MissingSymbol,
+        kdb::tools::PluginCheckException,
+        kdb::tools::ToolException
+) kdb::tools::Plugin::close;
+
+%catches (
+        kdb::tools::MissingSymbol,
+        kdb::tools::PluginCheckException,
+        kdb::tools::ToolException
+) kdb::tools::Plugin::get;
+
+%catches (
+        kdb::tools::MissingSymbol,
+        kdb::tools::PluginCheckException,
+        kdb::tools::ToolException
+) kdb::tools::Plugin::set;
+
+%catches (
+        kdb::tools::MissingSymbol,
+        kdb::tools::PluginCheckException,
+        kdb::tools::ToolException
+) kdb::tools::Plugin::error;
+
+
 /*
  * parse plugin.hpp
  */
@@ -218,6 +345,61 @@ namespace std {
  * kdb::tools::Plugins
  *
  ************************************************************************/
+
+%catches(kdb::tools::TooManyPlugins,
+         kdb::tools::PluginCheckException,
+         kdb::tools::ToolException
+) kdb::tools::Plugins::checkPlacement;
+
+%catches(kdb::tools::StoragePlugin,
+         kdb::tools::PluginCheckException,
+         kdb::tools::ToolException
+) kdb::tools::Plugins::checkStorage;
+
+%catches(kdb::tools::ResolverPlugin,
+         kdb::tools::PluginCheckException,
+         kdb::tools::ToolException
+) kdb::tools::Plugins::checkResolver;
+
+%catches(kdb::tools::OrderingViolation,
+         kdb::tools::PluginCheckException,
+         kdb::tools::ToolException
+) kdb::tools::Plugins::checkOrdering;
+
+%catches(kdb::tools::ConflictViolation,
+         kdb::tools::PluginCheckException,
+         kdb::tools::ToolException
+) kdb::tools::Plugins::checkConflicts;
+
+%catches(kdb::tools::MissingSymbol,
+         kdb::tools::TooManyPlugins,
+         kdb::tools::StoragePlugin,
+         kdb::tools::ResolverPlugin,
+         kdb::tools::OrderingViolation,
+         kdb::tools::ConflictViolation,
+         kdb::tools::PluginCheckException,
+         kdb::tools::ToolException
+) kdb::tools::ErrorPlugins::tryPlugin;
+
+%catches(kdb::tools::MissingSymbol,
+         kdb::tools::TooManyPlugins,
+         kdb::tools::StoragePlugin,
+         kdb::tools::ResolverPlugin,
+         kdb::tools::OrderingViolation,
+         kdb::tools::ConflictViolation,
+         kdb::tools::PluginCheckException,
+         kdb::tools::ToolException
+) kdb::tools::GetPlugins::tryPlugin;
+
+%catches(kdb::tools::MissingSymbol,
+         kdb::tools::TooManyPlugins,
+         kdb::tools::StoragePlugin,
+         kdb::tools::ResolverPlugin,
+         kdb::tools::OrderingViolation,
+         kdb::tools::ConflictViolation,
+         kdb::tools::PluginCheckException,
+         kdb::tools::ToolException
+) kdb::tools::SetPlugins::tryPlugin;
 
 %include "plugins.hpp"
 
@@ -241,6 +423,28 @@ namespace std {
 %constant const int PLUGIN_STATUS_MISSING =
         kdb::tools::PluginDatabase::Status::missing;
 
+/* TODO, be more explicite if known */
+%catches(kdb::tools::ToolException) 
+        kdb::tools::PluginDatabase::listAllPlugins;
+%catches(kdb::tools::ToolException) 
+        kdb::tools::PluginDatabase::lookupInfo;
+%catches(kdb::tools::ToolException) 
+        kdb::tools::PluginDatabase::lookupProvides;
+%catches(kdb::tools::ToolException) 
+        kdb::tools::PluginDatabase::lookupAllProvidesWithStatus;
+%catches(kdb::tools::ToolException) 
+        kdb::tools::PluginDatabase::lookupAllProvides;
+%catches(kdb::tools::ToolException) 
+        kdb::tools::PluginDatabase::calculateStatus;
+%catches(kdb::tools::NoPlugin,
+         kdb::tools::PluginCheckException,
+         kdb::tools::ToolException
+) kdb::tools::PluginDatabase::lookupMetadata;
+
+%catches(kdb::tools::ToolException) 
+        kdb::tools::PluginVariantDatabase::getPluginVariants;
+
+
 
 %include "plugindatabase.hpp"
 
@@ -251,6 +455,20 @@ namespace std {
  * kdb::tools::Modules
  *
  ************************************************************************/
+
+%catches (
+        kdb::tools::BadPluginName,
+        kdb::tools::NoPlugin,
+        kdb::tools::MissingSymbol,
+        kdb::tools::PluginNoContract,
+        kdb::tools::PluginNoInfo,
+        kdb::tools::VersionInfoMismatch,
+        kdb::tools::WrongStatus,
+        kdb::tools::SymbolMismatch,
+        kdb::tools::SymbolDuplicate,
+        kdb::tools::PluginCheckException,
+        kdb::tools::ToolException
+) kdb::tools::Modules::load;
 
 
 %include "modules.hpp"

@@ -55,7 +55,7 @@ else()
 
 	set (CMAKE_SWIG_OUTDIR "${CMAKE_CURRENT_BINARY_DIR}")
 	set (CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_SWIG_OUTDIR}")
-	set (CMAKE_SWIG_FLAGS "-O;-autorename;-DSWIG_NO_EXPORT_ITERATOR_METHODS")
+	set (CMAKE_SWIG_FLAGS "-O;-autorename;-DSWIG_NO_EXPORT_ITERATOR_METHODS;-DSWIG_WITHOUT_OVERRIDE")
 
 	swig_add_module (swig-ruby ruby kdb.i)
 	swig_add_module (swig-ruby-tools ruby kdbtools.i)
