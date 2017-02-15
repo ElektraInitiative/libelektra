@@ -1,5 +1,5 @@
-find_package(Java 1.8 REQUIRED)
-find_program(MAVEN_EXECUTABLE mvn)
+find_package (Java 1.8 REQUIRED)
+find_program (MAVEN_EXECUTABLE mvn)
 
 if (NOT MAVEN_EXECUTABLE STREQUAL "MAVEN_EXECUTABLE-NOTFOUND")
 	file (
@@ -20,34 +20,25 @@ if (NOT MAVEN_EXECUTABLE STREQUAL "MAVEN_EXECUTABLE-NOTFOUND")
 		DESTINATION "${CMAKE_CURRENT_BINARY_DIR}"
 	)
 
-	# if the dependency is already installed in the local repository, then there is no need to run maven again
-	execute_process (
-		COMMAND ${MAVEN_EXECUTABLE} dependency:get -o -q -B -Dartifact=org.libelektra:libelektra4j:${KDB_VERSION}
-		RESULT_VARIABLE MAVEN_ARTIFACT_INSTALLED
-		OUTPUT_QUIET
-		ERROR_QUIET
+	# compile it and build the jar, but only test in test phase
+	add_custom_target (
+		jna ALL
+		COMMAND ${MAVEN_EXECUTABLE} -q -B -DskipTests=true package
+		WORKING_DIRECTORY libelektra4j
 	)
-	if (NOT "${MAVEN_ARTIFACT_INSTALLED}" STREQUAL "0")
 
-		# compile it already so build errors get detected before installing
-		add_custom_target (
-			jna ALL
-			COMMAND ${MAVEN_EXECUTABLE} -q -B -DskipTests=true compile
-			WORKING_DIRECTORY libelektra4j
-		)
+	# install_jar from UseJava doesn't really do more than that
+	install (
+		FILES "${CMAKE_CURRENT_BINARY_DIR}/libelektra4j/target/libelektra4j-${KDB_VERSION}.jar"
+		DESTINATION "share/java"
+	)
 
-		# prepare the installation script
-		configure_file(
-			"${CMAKE_CURRENT_SOURCE_DIR}/maven_install.cmake.in"
-			"${CMAKE_CURRENT_BINARY_DIR}/maven_install.cmake"
-		)
-		install (SCRIPT ${CMAKE_CURRENT_BINARY_DIR}/maven_install.cmake)
-
-	else () # if already installed
-		message ("JNA bindings already installed in local maven repository, not building them again")
-	endif () # if already installed
-	# TODO handle testing
-
+	# and add maven test to be executed with ctest in the testing phase
+	add_test (
+		NAME testjna_maven
+		COMMAND ${MAVEN_EXECUTABLE} -B test
+		WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/libelektra4j"
+	)
 else ()
-	remove_binding (jna, "Maven Executable not found, which is required to build the jna bindings")
+	remove_binding (jna "Maven Executable not found, which is required to build the jna bindings")
 endif ()
