@@ -1,7 +1,0 @@
-# called by installation to execute maven install
-# since installation scripts have no access to the environment variables, we use configure_file to fill them in before
-message ("installing jna library to the local maven repository now")
-execute_process (
-	COMMAND ${MAVEN_EXECUTABLE} -DskipTests=true -Delektra.version=${KDB_VERSION} install
-	WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/libelektra4j
-)
