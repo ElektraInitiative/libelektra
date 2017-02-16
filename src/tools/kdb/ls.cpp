@@ -21,7 +21,7 @@ LsCommand::LsCommand () : kdb (root)
 {
 }
 
-int LsCommand::execute (const Cmdline & cl)
+int LsCommand::execute (Cmdline const & cl)
 {
 	checkArguments (cl);
 
@@ -49,7 +49,7 @@ int LsCommand::execute (const Cmdline & cl)
 	return 0;
 }
 
-void LsCommand::checkArguments (const Cmdline & cl)
+void LsCommand::checkArguments (Cmdline const & cl)
 {
 	if (cl.arguments.size () != 1)
 	{
@@ -69,7 +69,7 @@ void LsCommand::checkArguments (const Cmdline & cl)
 	}
 }
 
-void LsCommand::printResults (const KeySet & part, const int rootDepth, const Cmdline & cl)
+void LsCommand::printResults (KeySet const & part, const int rootDepth, Cmdline const & cl)
 {
 	const int offset = root.getBaseName ().empty () || shallShowNextLevel (cl.arguments[0]) ? 1 : 0;
 	const int relativeMinDepth = rootDepth + cl.minDepth + offset;
@@ -95,7 +95,7 @@ void LsCommand::printResults (const KeySet & part, const int rootDepth, const Cm
 	}
 }
 
-int LsCommand::getDepth (const Key & key)
+int LsCommand::getDepth (Key const & key)
 {
 	return std::distance (key.begin (), key.end ());
 }

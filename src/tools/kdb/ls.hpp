@@ -45,12 +45,12 @@ public:
 		       "export command.";
 	}
 
-	virtual int execute (const Cmdline & cmdline) override;
+	virtual int execute (Cmdline const & cmdline) override;
 
 private:
-	void checkArguments (const Cmdline & cl);
-	void printResults (const kdb::KeySet & part, const int rootDepth, const Cmdline & cl);
-	int getDepth (const kdb::Key & key);
+	void checkArguments (Cmdline const & cl);
+	void printResults (kdb::KeySet const & part, const int rootDepth, Cmdline const & cl);
+	int getDepth (kdb::Key const & key);
 	bool shallShowNextLevel (const std::string argument);
 };
 
