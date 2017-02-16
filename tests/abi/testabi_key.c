@@ -2077,6 +2077,26 @@ static void test_keySetBaseName ()
 	succeed_if_same_string (keyName (k), "system");
 	succeed_if_same_string (keyBaseName (k), "");
 
+	keySetName (k, "/");
+	succeed_if (keySetBaseName (k, 0) -1, "could remove root name");
+	succeed_if_same_string (keyName (k), "/");
+	succeed_if_same_string (keyBaseName (k), "");
+
+	keySetName (k, "/cascading");
+	succeed_if (keySetBaseName (k, 0) == 2, "removing basename of cascading key with depth 1 failed");
+	succeed_if_same_string (keyName (k), "/");
+	succeed_if_same_string (keyBaseName (k), "");
+
+	keySetName (k, "system/notCascading");
+	succeed_if (keySetBaseName (k, 0) >= 0, "removing basename of non cascading key with depth 1 failed");
+	succeed_if_same_string (keyName (k), "system");
+	succeed_if_same_string (keyBaseName (k), "");
+
+	keySetName (k, "system/foo/bar");
+	succeed_if (keySetBaseName (k, 0) >= 0, "removing basename of non cascading key with depth 2 failed");
+	succeed_if_same_string (keyName (k), "system/foo");
+	succeed_if_same_string (keyBaseName (k), "foo");
+
 	keySetName (k, "system");
 	succeed_if (keySetBaseName (k, "valid") == -1, "add root name, but set was used");
 	succeed_if_same_string (keyName (k), "system");
@@ -2204,7 +2224,6 @@ static void test_keySetBaseName ()
 	succeed_if_same_string (keyName (k), "system/\\%");
 	succeed_if_same_string (keyBaseName (k), "%");
 	//! [base3]
-
 
 	keyDel (k);
 }
