@@ -2121,6 +2121,26 @@ static void test_keySetBaseName ()
 	succeed_if_same_string (keyName (k), "/");
 	succeed_if_same_string (keyBaseName (k), "");
 
+	keySetName (k, "/\\.");
+	succeed_if (keySetBaseName (k, 0) == 2, "removing basename of single character escaped dot cascading key with depth 1 failed");
+	succeed_if_same_string (keyName (k), "/");
+	succeed_if_same_string (keyBaseName (k), "");
+
+	keySetName (k, "/\\..");
+	succeed_if (keySetBaseName (k, 0) == 2, "removing basename of escaped dot dot cascading key with depth 1 failed");
+	succeed_if_same_string (keyName (k), "/");
+	succeed_if_same_string (keyBaseName (k), "");
+
+	keySetName (k, "/\\%");
+	succeed_if (keySetBaseName (k, 0) == 2, "removing basename of single character escaped % cascading key with depth 1 failed");
+	succeed_if_same_string (keyName (k), "/");
+	succeed_if_same_string (keyBaseName (k), "");
+
+	keySetName (k, "/#_1");
+	succeed_if (keySetBaseName (k, 0) == 2, "removing basename of array cascading key with depth 1 failed");
+	succeed_if_same_string (keyName (k), "/");
+	succeed_if_same_string (keyBaseName (k), "");
+
 	keySetName (k, "system");
 	succeed_if (keySetBaseName (k, "valid") == -1, "add root name, but set was used");
 	succeed_if_same_string (keyName (k), "system");
