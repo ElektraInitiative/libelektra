@@ -24,7 +24,7 @@ CompleteCommand::CompleteCommand ()
 {
 }
 
-int CompleteCommand::execute (const Cmdline & cl)
+int CompleteCommand::execute (Cmdline const & cl)
 {
 	if (cl.maxDepth <= cl.minDepth)
 	{
@@ -52,14 +52,14 @@ int CompleteCommand::execute (const Cmdline & cl)
 	return 0;
 }
 
-void CompleteCommand::complete (const string argument, const Cmdline & cl)
+void CompleteCommand::complete (const string argument, Cmdline const & cl)
 {
 	using namespace std::placeholders; // for bind
 
 	if (argument.empty ())
 	{ // No argument, show all completions by analyzing everything including namespaces, so adjust the offset for that
 		const Key root = Key ("/", KEY_END);
-		printResults (root, cl.minDepth, cl.maxDepth, cl, analyze (getKeys (root, false), cl),
+		printResults (root, cl.minDepth, cl.maxDepth, cl, analyze (getKeys (root, false, cl), cl),
 			      bind (filterDepth, cl.minDepth, cl.maxDepth, _1), printResult);
 	}
 	else if (!argument.empty () && argument[0] == '+')
@@ -74,8 +74,8 @@ void CompleteCommand::complete (const string argument, const Cmdline & cl)
 		{ // Bookmark not resolvable, so try a bookmark completion
 			// since for legacy reasons its probably /sw/kdb, we use /sw as a root
 			const Key root = Key ("/sw", KEY_END);
-			printResults (root, 0, cl.maxDepth, cl, analyze (getKeys (root, true), cl), bind (filterBookmarks, argument, _1),
-				      printBookmarkResult);
+			printResults (root, 0, cl.maxDepth, cl, analyze (getKeys (root, true, cl), cl),
+				      bind (filterBookmarks, argument, _1), printBookmarkResult);
 		}
 	}
 	else
@@ -87,7 +87,7 @@ void CompleteCommand::complete (const string argument, const Cmdline & cl)
 			const auto filter = [&](const pair<Key, pair<int, int>> & c) {
 				return filterDepth (cl.minDepth, cl.maxDepth, c) && filterName (argument, c);
 			};
-			printResults (root, cl.minDepth, cl.maxDepth, cl, analyze (getKeys (root, false), cl), filter, printResult);
+			printResults (root, cl.minDepth, cl.maxDepth, cl, analyze (getKeys (root, false, cl), cl), filter, printResult);
 		}
 		else
 		{ // the "normal" completion cases
@@ -96,12 +96,12 @@ void CompleteCommand::complete (const string argument, const Cmdline & cl)
 	}
 }
 
-void CompleteCommand::completeNormal (const string argument, const Key parsedArgument, const Cmdline & cl)
+void CompleteCommand::completeNormal (const string argument, Key const & parsedArgument, Cmdline const & cl)
 {
 	Key root = parsedArgument;
 	const Key parent = getParentKey (root);
 	// Its important to use the parent element here as using non-existent elements may yield no keys
-	KeySet ks = getKeys (parent, false);
+	KeySet ks = getKeys (parent, false, cl);
 	// the namespaces count as existent although not found by lookup
 	const bool isValidNamespace = parsedArgument.isValid () && parsedArgument.getBaseName ().empty ();
 	const bool rootExists = isValidNamespace || ks.lookup (root);
@@ -113,7 +113,7 @@ void CompleteCommand::completeNormal (const string argument, const Key parsedArg
 
 	// we see depth relative to the completion level, if the root exists, distance will be higher so subtract 1
 	// to add up for the offset added my shallShowNextLevel
-	const int offset = distance (root.begin (), root.end ()) - rootExists + shallShowNextLevel (argument);
+	const int offset = getKeyDepth (root) - rootExists + shallShowNextLevel (argument);
 
 	const auto nameFilter = root.isCascading () ? filterCascading : filterName;
 	// Let elektra handle the escaping of the input for us
@@ -127,7 +127,7 @@ void CompleteCommand::completeNormal (const string argument, const Key parsedArg
 /*
  * McCabe complexity of 12, 3 caused by debug switches so its ok
  */
-const map<Key, pair<int, int>> CompleteCommand::analyze (const KeySet & ks, const Cmdline & cl)
+const map<Key, pair<int, int>> CompleteCommand::analyze (KeySet const & ks, Cmdline const & cl)
 {
 	map<Key, pair<int, int>> hierarchy;
 	stack<Key> keyStack;
@@ -141,8 +141,11 @@ const map<Key, pair<int, int>> CompleteCommand::analyze (const KeySet & ks, cons
 		return hierarchy;
 	}
 
-	int curDepth = 0;
-	keyStack.push (ks.current ());
+	const Key first = ks.current ();
+	int curDepth = getKeyDepth (first) - 1;
+	hierarchy[first] = pair<int, int> (0, curDepth);
+	keyStack.push (first);
+
 	while (!keyStack.empty ())
 	{
 		Key current = keyStack.top ();
@@ -166,14 +169,16 @@ const map<Key, pair<int, int>> CompleteCommand::analyze (const KeySet & ks, cons
 		}
 		else
 		{ // hierarchy does not fit the current parent, expand the current key to the stack to find the new parent
+			Key tmp = current;
 			while (!current.getBaseName ().empty () && hierarchy[current].first == 0)
 			{ // Go back up in the hierarchy until we encounter a known key or are back at the namespace level
 				if (cl.debug)
 				{
-					cout << "Expanding " << current << endl;
+					cout << "Expanding " << tmp << endl;
 				}
-				keyStack.push (current);
-				current = getParentKey (current);
+				keyStack.push (tmp);
+				current = tmp;
+				tmp = getParentKey (tmp);
 			}
 			parent = getParentKey (current);
 			curDepth = hierarchy[current].second;
@@ -194,10 +199,10 @@ const map<Key, pair<int, int>> CompleteCommand::analyze (const KeySet & ks, cons
 	return hierarchy;
 }
 
-void CompleteCommand::printResults (const Key root, const int minDepth, const int maxDepth, const Cmdline & cl,
-				    const map<Key, pair<int, int>> & result,
-				    const std::function<bool(const pair<Key, pair<int, int>> & current)> filter,
-				    const std::function<void(const pair<Key, pair<int, int>> & current, const bool verbose)> printResult)
+void CompleteCommand::printResults (Key const & root, const int minDepth, const int maxDepth, Cmdline const & cl,
+				    map<Key, pair<int, int>> const & result,
+				    const std::function<bool(pair<Key, pair<int, int>> const & current)> filter,
+				    const std::function<void(pair<Key, pair<int, int>> const & current, const bool verbose)> printResult)
 {
 	if (cl.verbose)
 	{
@@ -227,19 +232,24 @@ void CompleteCommand::printResults (const Key root, const int minDepth, const in
 	}
 }
 
-const Key CompleteCommand::getParentKey (const Key key)
+int CompleteCommand::getKeyDepth (Key const & key)
+{
+	return std::distance (key.begin (), key.end ());
+}
+
+const Key CompleteCommand::getParentKey (Key const & key)
 {
 	Key parentKey = key.dup (); // We can't set baseName on keys in keysets, so duplicate it
 	ckdb::keySetBaseName (parentKey.getKey (), NULL);
 	return parentKey;
 }
 
-KeySet CompleteCommand::getKeys (Key root, const bool cutAtRoot)
+KeySet CompleteCommand::getKeys (Key root, const bool cutAtRoot, Cmdline const & cl)
 {
 	KeySet ks;
 	KDB kdb;
 	kdb.get (ks, root);
-	addMountpoints (ks, root);
+	addMountpoints (ks, root, cl);
 	if (cutAtRoot)
 	{
 		ks = ks.cut (root);
@@ -254,7 +264,7 @@ bool CompleteCommand::shallShowNextLevel (const string argument)
 	return it != argument.rend () && (*it) == '/' && ((++it) == argument.rend () || (*it) != '\\');
 }
 
-void CompleteCommand::addMountpoints (KeySet & ks, const Key root)
+void CompleteCommand::addMountpoints (KeySet & ks, Key const & root, Cmdline const & cl)
 {
 	KDB kdb;
 	Key mountpointPath ("system/elektra/mountpoints", KEY_END);
@@ -269,20 +279,24 @@ void CompleteCommand::addMountpoints (KeySet & ks, const Key root)
 		{
 			const string actualName = mountpoints.lookup (mountpoint.getFullName () + "/mountpoint").getString ();
 			Key mountpointKey (actualName, KEY_END);
-			if (mountpointKey.isBelow (root))
+			// If the mountpoint already has some contents, its expanded with a namespace, so leave it out then
+			if (mountpointKey.isBelow (root) && !KeySet (ks).cut (mountpointKey).size ())
 			{
 				ks.append (mountpointKey);
 			}
 		}
 	}
 
-	printWarnings (cerr, mountpointPath);
+	if (cl.debug || cl.verbose)
+	{ // Only print this in debug mode to avoid destroying autocompletions because of warnings
+		printWarnings (cerr, mountpointPath);
+	}
 }
 
 /*
  * McCabe complexity of 11, 4 caused by debug switches so its ok
  */
-void CompleteCommand::addNamespaces (map<Key, pair<int, int>> & hierarchy, const Cmdline & cl)
+void CompleteCommand::addNamespaces (map<Key, pair<int, int>> & hierarchy, Cmdline const & cl)
 {
 	const string namespaces[] = {
 		"spec/", "proc/", "dir/", "user/", "system/",
@@ -317,18 +331,18 @@ void CompleteCommand::addNamespaces (map<Key, pair<int, int>> & hierarchy, const
 	}
 }
 
-void CompleteCommand::increaseCount (map<Key, pair<int, int>> & hierarchy, const Key key, const function<int(int)> depthIncreaser)
+void CompleteCommand::increaseCount (map<Key, pair<int, int>> & hierarchy, Key const & key, const function<int(int)> depthIncreaser)
 {
 	const pair<int, int> prev = hierarchy[key];
 	hierarchy[key] = pair<int, int> (prev.first + 1, depthIncreaser (prev.second));
 }
 
-bool CompleteCommand::filterDepth (const int minDepth, const int maxDepth, const pair<Key, pair<int, int>> & current)
+bool CompleteCommand::filterDepth (const int minDepth, const int maxDepth, pair<Key, pair<int, int>> const & current)
 {
 	return current.second.second >= minDepth && current.second.second < maxDepth;
 }
 
-bool CompleteCommand::filterCascading (const string argument, const pair<Key, pair<int, int>> & current)
+bool CompleteCommand::filterCascading (const string argument, pair<Key, pair<int, int>> const & current)
 {
 	// For a cascading key completion, ignore the preceding namespace
 	const string test = current.first.getFullName ();
@@ -336,7 +350,7 @@ bool CompleteCommand::filterCascading (const string argument, const pair<Key, pa
 	return argument.size () <= test.size () && equal (argument.begin (), argument.end (), test.begin () + cascadationOffset);
 }
 
-bool CompleteCommand::filterName (const string argument, const pair<Key, pair<int, int>> & current)
+bool CompleteCommand::filterName (const string argument, pair<Key, pair<int, int>> const & current)
 {
 	const string test = current.first.getFullName ();
 	return argument.size () <= test.size () && equal (argument.begin (), argument.end (), test.begin ());
@@ -345,7 +359,7 @@ bool CompleteCommand::filterName (const string argument, const pair<Key, pair<in
 /**
  * McCabe Complexity of 15 due to the boolean conjunctions, easy to understand so its ok
  */
-bool CompleteCommand::filterBookmarks (const string bookmarkName, const pair<Key, pair<int, int>> & current)
+bool CompleteCommand::filterBookmarks (const string bookmarkName, pair<Key, pair<int, int>> const & current)
 {
 	// For a bookmark completion, ignore everything except the bookmarks by comparing the base name
 	const string test = current.first.getBaseName ();
@@ -369,7 +383,7 @@ bool CompleteCommand::filterBookmarks (const string bookmarkName, const pair<Key
 	return (elektraFound || kdbFound) && bookmarksFound && bookmarkFound;
 }
 
-void CompleteCommand::printBookmarkResult (const pair<Key, pair<int, int>> & current, const bool verbose)
+void CompleteCommand::printBookmarkResult (pair<Key, pair<int, int>> const & current, const bool verbose)
 { // Ignore the path for a bookmark completion
 	cout << "+" << current.first.getBaseName ();
 	if (current.second.first > 1)
@@ -384,7 +398,7 @@ void CompleteCommand::printBookmarkResult (const pair<Key, pair<int, int>> & cur
 	cout << endl;
 }
 
-void CompleteCommand::printResult (const pair<Key, pair<int, int>> & current, const bool verbose)
+void CompleteCommand::printResult (pair<Key, pair<int, int>> const & current, const bool verbose)
 {
 	cout << current.first.getFullName ();
 	if (current.second.first > 1)
