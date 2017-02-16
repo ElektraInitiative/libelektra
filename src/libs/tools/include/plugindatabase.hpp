@@ -325,6 +325,9 @@ public:
 private:
 	checkConfPtr checkconf = NULL;
 };
+
+
+typedef std::shared_ptr<PluginDatabase> PluginDatabasePtr;
 }
 }
 

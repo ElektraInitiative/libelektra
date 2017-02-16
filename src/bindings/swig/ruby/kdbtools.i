@@ -39,6 +39,16 @@ Please note, this documentation will show C++ types too (e.g. std::string).
 %include <stdint.i>
 %include <exception.i>
 %include <std_except.i>
+%include <std_shared_ptr.i>
+
+/* shared pointer definitions have to be before the first include
+ * statements (have to be defined before its types */
+#define SWIG_SHARED_PTR_NAMESPACE std
+%shared_ptr(kdb::tools::PluginDatabase)
+/* MUST be done for all sub-types too !!! */
+%shared_ptr(kdb::tools::ModulesPluginDatabase)
+%shared_ptr(kdb::tools::PluginVariantDatabase)
+%shared_ptr(kdb::tools::MockPluginDatabase)
 
 
 namespace std {
@@ -58,6 +68,7 @@ namespace std {
   #include "backendparser.hpp"
   #include "backend.hpp"
   #include "backends.hpp"
+  #include "backendbuilder.hpp"
 
   #include "toolexcept.hpp"
 
@@ -474,6 +485,7 @@ UNIQUE_PTR_VALUE_WRAPPER(
 
 
 
+
 /*************************************************************************
  *
  * kdb::tools::Modules
@@ -607,7 +619,33 @@ STATUS_OSTREAM_TO_STRING(kdb::tools::ImportExportBackend)
 /* is there no way to define a class constant? 
  * so this will become Kdbtools::MOUNTPOINTS_PATH
 */
-%constant const char * mountpoints_path = 
+%constant const char * mountpoints_path =
         kdb::tools::Backends::mountpointsPath;
 
 %include "backends.hpp"
+
+
+
+
+/*************************************************************************
+ *
+ * backendbuilder.hpp
+ *
+ ************************************************************************/
+
+/* this is just a local helper class */
+%ignore kdb::tools::BackendBuilderInit;
+
+%ignore kdb::tools::BackendBuilder::begin;
+%ignore kdb::tools::BackendBuilder::end;
+%ignore kdb::tools::BackendBuilder::cbegin;
+%ignore kdb::tools::BackendBuilder::cend;
+
+%rename("backend_config") kdb::tools::BackendBuilder::getBackendConfig;
+%rename("backend_config=") kdb::tools::BackendBuilder::setBackendConfig;
+
+%ignore kdb::tools::GlobalPluginsBuilder::globalPluginsPath;
+%constant const char * GLOBAL_PLUGINS_PATH =
+        kdb::tools::GlobalPluginsBuilder::globalPluginsPath;
+
+%include "backendbuilder.hpp"
