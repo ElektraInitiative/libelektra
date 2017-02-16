@@ -56,6 +56,7 @@ namespace std {
   #include "plugindatabase.hpp"
   #include "modules.hpp"
   #include "backendparser.hpp"
+  #include "backend.hpp"
 
   #include "toolexcept.hpp"
 
@@ -165,6 +166,11 @@ namespace std {
 %feature("novaluewrapper") std::unique_ptr< kdb::tools::Plugin >;
  */
 
+/* generic SWIG macro for std::unique_ptr types
+ * defines a specialization of SwigValueWrapper
+ * and a OUT typemap
+ */
+%define UNIQUE_PTR_VALUE_WRAPPER(PTR_TYPE, TYPE)
 %header {
   /**
    * SwigValueWrapper specialication for std::unique_ptr
@@ -175,31 +181,54 @@ namespace std {
    * pointer wrapper unique_ptr (wrapper of wrapper in a wrapper code ;)
    */
   template<>
-  class SwigValueWrapper< std::unique_ptr< kdb::tools::Plugin > > {
+  class SwigValueWrapper< PTR_TYPE > {
 
-    std::unique_ptr<kdb::tools::Plugin> p;
+    PTR_TYPE p;
 
   public:
     SwigValueWrapper() : p(nullptr) { }
-    SwigValueWrapper& operator=(const std::unique_ptr<kdb::tools::Plugin>& t) {
+    SwigValueWrapper& operator=(const PTR_TYPE& t) {
       /* transfer ownership from t to p
        * scope of t will end in this function, thus also its pointer will
        * be deleted (Plugin).
        * So we move the pointer (Plugin) from t to p.
        * a 'const_cast' is required here, since 'release()' modifies t
        */
-      p.reset( (const_cast<std::unique_ptr<kdb::tools::Plugin>&>(t)).release() );
+      p.reset( (const_cast<PTR_TYPE&>(t)).release() );
       return *this;
     }
 
-    std::unique_ptr<kdb::tools::Plugin> *operator&() {
+    PTR_TYPE *operator&() {
       return &p;
     }
   };
 }
 
-%ignore kdb::tools::PluginPtr;
-%ignore std::unique_ptr< kdb::tools::Plugin >;
+/* out typemap for PluginPtr (which is a std::unique_ptr)
+ * 
+ * The unique_ptr object will delete its wrapped object once its scope
+ * ends. But here we want to keep the Plugin object (the unique_ptr does
+ * not matter), so we have to do a release() on the unique_ptr object.
+ * Otherwise the Plugin is deleted and we end up with a Ruby object holding
+ * a pointer to a deleted object. */
+%typemap(out) PTR_TYPE {
+  %set_output(SWIG_NewPointerObj($1.release(), $descriptor(TYPE *), SWIG_POINTER_OWN | 0));
+}
+%enddef
+
+/* unique_ptr macro usage */
+UNIQUE_PTR_VALUE_WRAPPER(
+        kdb::tools::PluginPtr, kdb::tools::Plugin)
+
+UNIQUE_PTR_VALUE_WRAPPER(
+        kdb::tools::BackendInterfacePtr,
+        kdb::tools::BackendInterface)
+
+UNIQUE_PTR_VALUE_WRAPPER(
+        kdb::tools::MountBackendInterfacePtr,
+        kdb::tools::MountBackendInterface)
+
+
 
 /*************************************************************************
  *
@@ -268,16 +297,6 @@ namespace std {
 %feature("novaluewrapper") kdb::tools::PluginPtr;
 %feature("novaluewrapper") std::unique_ptr< kdb::tools::Plugin >;
 
-/* out typemap for PluginPtr (which is a std::unique_ptr)
- * 
- * The unique_ptr object will delete its wrapped object once its scope
- * ends. But here we want to keep the Plugin object (the unique_ptr does
- * not matter), so we have to do a release() on the unique_ptr object.
- * Otherwise the Plugin is deleted and we end up with a Ruby object holding
- * a pointer to a deleted object. */
-%typemap(out) kdb::tools::PluginPtr {
-  %set_output(SWIG_NewPointerObj($1.release(), $descriptor(kdb::tools::Plugin *), SWIG_POINTER_OWN | 0));
-}
 
 %catches (
         kdb::tools::NoPlugin,
@@ -494,3 +513,79 @@ namespace std {
 %catches (kdb::tools::ParseException) kdb::tools::parseArguments;
 
 %include "backendparser.hpp"
+
+
+
+
+/*************************************************************************
+ *
+ * backend.hpp
+ *
+ ************************************************************************/
+
+%ignore kdb::tools::operator<<(std::ostream &, Backend const &);
+%ignore kdb::tools::Backend::operator=;
+
+/* 
+ * the void status(std::ostream) methods are useless within Ruby
+ * convert them to a std::string status() method
+ */
+%ignore kdb::tools::MountBackendInterface::status;
+
+%define STATUS_OSTREAM_TO_STRING(TYPE)
+%extend TYPE {
+  std::string status() {
+    std::ostringstream os;
+    $self->status(os);
+    return os.str();
+  }
+}
+%enddef
+
+STATUS_OSTREAM_TO_STRING(kdb::tools::Backend)
+STATUS_OSTREAM_TO_STRING(kdb::tools::ImportExportBackend)
+
+
+%catches(kdb::tools::NoSuchBackend,
+         kdb::tools::BackendCheckException,
+         kdb::tools::ToolException
+) kdb::tools::BackendFactory::create;
+
+%catches(kdb::tools::MountpointAlreadyInUseException,
+         kdb::tools::MountpointInvalidException,
+         kdb::tools::BackendCheckException,
+         kdb::tools::ToolException
+) kdb::tools::Backend::setMountpoint;
+
+%catches(kdb::tools::MissingSymbol,
+         kdb::tools::FileNotValidException,
+         kdb::tools::BackendCheckException,
+         kdb::tools::ToolException
+) kdb::tools::Backend::useConfigFile;
+
+%catches(kdb::tools::PluginAlreadyInserted,
+         kdb::tools::BackendCheckException,
+         kdb::tools::ToolException
+) kdb::tools::Backend::tryPlugin;
+
+%catches(kdb::tools::BackendCheckException,
+         kdb::tools::PluginCheckException,
+         kdb::tools::ToolException
+) kdb::tools::Backend::addPlugin;
+
+%catches(kdb::tools::NoPlugin,
+         kdb::tools::BackendCheckException,
+         kdb::tools::PluginCheckException,
+         kdb::tools::ToolException
+) kdb::tools::PluginAdder::addPlugin;
+
+
+%catches(kdb::tools::NoGlobalPlugin,
+         kdb::tools::BackendCheckException,
+         kdb::tools::ToolException
+) kdb::tools::GlobalPlugins::serialize;
+
+
+%include "backend.hpp"
+
+

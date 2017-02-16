@@ -51,7 +51,7 @@ else()
 	set_source_files_properties (kdb.i kdbtools.i PROPERTIES CPLUSPLUS ON)
 
 	set_source_files_properties (kdb.i PROPERTIES SWIG_FLAGS "-initname;_kdb")
-	set_source_files_properties (kdbtools.i PROPERTIES SWIG_FLAGS "-initname;_kdbtools")
+	set_source_files_properties (kdbtools.i PROPERTIES SWIG_FLAGS "-initname;_kdbtools;-minherit")
 
 	set (CMAKE_SWIG_OUTDIR "${CMAKE_CURRENT_BINARY_DIR}")
 	set (CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_SWIG_OUTDIR}")

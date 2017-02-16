@@ -230,7 +230,8 @@ void Backend::setBackendConfig (KeySet const & ks)
 
 /**@pre: resolver needs to be loaded first
  * Will check the filename and use it as configFile for this backend.
- * @throw FileNotValidException if filename is not valid */
+ * @throw FileNotValidException if filename is not valid
+ * @throw MissingSymbol if plugin does not implement 'checkfile' */
 void Backend::useConfigFile (std::string file)
 {
 	typedef int (*checkFilePtr) (const char *);
@@ -273,7 +274,8 @@ void Backend::tryPlugin (PluginSpec const & spec)
 
 	for (auto & elem : plugins)
 	{
-		if (plugin->getFullName () == elem->getFullName ()) throw PluginAlreadyInserted (plugin->getFullName ());
+		if (plugin->getFullName () == elem->getFullName ())
+			throw PluginAlreadyInserted (plugin->getFullName ());
 	}
 
 
