@@ -44,38 +44,39 @@ public:
 		       "Additionally, the output indicates whether the given path is a node or a leaf in the hierarchy of keys.";
 	}
 
-	virtual int execute (const Cmdline & cmdline) override;
+	virtual int execute (Cmdline const & cmdline) override;
 
 private:
-	void complete (const std::string argument, const Cmdline & cmdLine);
-	void completeNormal (const std::string argument, const kdb::Key parsedArgument, const Cmdline & cmdLine);
+	void complete (const std::string argument, Cmdline const & cmdLine);
+	void completeNormal (const std::string argument, kdb::Key const & parsedArgument, Cmdline const & cmdLine);
 
-	const std::map<kdb::Key, std::pair<int, int>> analyze (const kdb::KeySet & ks, const Cmdline & cmdLine);
+	const std::map<kdb::Key, std::pair<int, int>> analyze (const kdb::KeySet & ks, Cmdline const & cmdLine);
 	void
-	printResults (const kdb::Key root, const int minDepth, const int maxDepth, const Cmdline & cmdLine,
+	printResults (kdb::Key const & root, const int minDepth, const int maxDepth, Cmdline const & cmdLine,
 		      const std::map<kdb::Key, std::pair<int, int>> & result,
-		      const std::function<bool(const std::pair<kdb::Key, std::pair<int, int>> & current)> filterPredicate,
-		      const std::function<void(const std::pair<kdb::Key, std::pair<int, int>> & current, const bool verbose)> printResult);
+		      const std::function<bool(std::pair<kdb::Key, std::pair<int, int>> const & current)> filterPredicate,
+		      const std::function<void(std::pair<kdb::Key, std::pair<int, int>> const & current, const bool verbose)> printResult);
 
 	// helper functions
-	const kdb::Key getParentKey (const kdb::Key key);
-	kdb::KeySet getKeys (kdb::Key root, bool cutAtRoot);
+	int getKeyDepth (kdb::Key const & key);
+	const kdb::Key getParentKey (kdb::Key const & key);
+	kdb::KeySet getKeys (kdb::Key root, bool cutAtRoot, Cmdline const & cl);
 	bool shallShowNextLevel (const std::string argument);
 
-	void addMountpoints (kdb::KeySet & ks, const kdb::Key root);
-	void addNamespaces (std::map<kdb::Key, std::pair<int, int>> & hierarchy, const Cmdline & cl);
-	void increaseCount (std::map<kdb::Key, std::pair<int, int>> & hierarchy, const kdb::Key key,
+	void addMountpoints (kdb::KeySet & ks, kdb::Key const & root, Cmdline const & cl);
+	void addNamespaces (std::map<kdb::Key, std::pair<int, int>> & hierarchy, Cmdline const & cl);
+	void increaseCount (std::map<kdb::Key, std::pair<int, int>> & hierarchy, kdb::Key const & key,
 			    const std::function<int(int)> depthIncreaser);
 
 	// print functions
-	static void printBookmarkResult (const std::pair<kdb::Key, std::pair<int, int>> & current, const bool verbose);
-	static void printResult (const std::pair<kdb::Key, std::pair<int, int>> & current, const bool verbose);
+	static void printBookmarkResult (std::pair<kdb::Key, std::pair<int, int>> const & current, const bool verbose);
+	static void printResult (std::pair<kdb::Key, std::pair<int, int>> const & current, const bool verbose);
 
 	// filter functions
-	static bool filterDepth (const int minDepth, const int maxDepth, const std::pair<kdb::Key, std::pair<int, int>> & current);
-	static bool filterCascading (const std::string argument, const std::pair<kdb::Key, std::pair<int, int>> & current);
-	static bool filterName (const std::string argument, const std::pair<kdb::Key, std::pair<int, int>> & current);
-	static bool filterBookmarks (const std::string bookmarkName, const std::pair<kdb::Key, std::pair<int, int>> & current);
+	static bool filterDepth (const int minDepth, const int maxDepth, std::pair<kdb::Key, std::pair<int, int>> const & current);
+	static bool filterCascading (const std::string argument, std::pair<kdb::Key, std::pair<int, int>> const & current);
+	static bool filterName (const std::string argument, std::pair<kdb::Key, std::pair<int, int>> const & current);
+	static bool filterBookmarks (const std::string bookmarkName, std::pair<kdb::Key, std::pair<int, int>> const & current);
 };
 
 #endif
