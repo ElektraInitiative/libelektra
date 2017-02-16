@@ -57,6 +57,7 @@ namespace std {
   #include "modules.hpp"
   #include "backendparser.hpp"
   #include "backend.hpp"
+  #include "backends.hpp"
 
   #include "toolexcept.hpp"
 
@@ -589,3 +590,24 @@ STATUS_OSTREAM_TO_STRING(kdb::tools::ImportExportBackend)
 %include "backend.hpp"
 
 
+
+
+/*************************************************************************
+ *
+ * backends.hpp
+ *
+ ************************************************************************/
+
+%template(BackendInfoVector) std::vector<kdb::tools::BackendInfo>;
+
+/* ignore this constant, since SWIG treats it as static member variable
+ * and defines a setter method for it */
+%ignore kdb::tools::Backends::mountpointsPath;
+
+/* is there no way to define a class constant? 
+ * so this will become Kdbtools::MOUNTPOINTS_PATH
+*/
+%constant const char * mountpoints_path = 
+        kdb::tools::Backends::mountpointsPath;
+
+%include "backends.hpp"
