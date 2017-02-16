@@ -1,8 +1,5 @@
-Storage: dump
-Mountpoint: system/tmount/kdb_ls
+Mountpoint: user/tmount/kdb_ls
 DiffType: File
-
-< kdb mount $File $Mountpoint $Storage
 
 < kdb set $Mountpoint/test bla
 < kdb set $Mountpoint/test/foo/bar bur
@@ -15,5 +12,3 @@ DiffType: File
 < kdb ls $Mountpoint --min-depth=1 --max-depth=2
 < kdb ls $Mountpoint/test
 < kdb ls $Mountpoint -v
-
-< kdb umount $Mountpoint
