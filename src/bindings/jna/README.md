@@ -4,9 +4,9 @@ the system to work.
 ## Usage ##
 
 To use the bindings in a java project, we have to include the jar file 
-libelektra-0.8.19.jar in the project. This jar is created upon build, if you 
-enable the jna bindings. You can also use maven to take care about the 
-dependencies.
+libelektra-*version*.jar in the project. The version number is the same one as 
+used for elektra. This jar is created upon build, if you enable the jna bindings. 
+You can also use maven to take care about the dependencies.
 
 Please note that the jni plugin is a different thing than the jna bindings. We 
 can use the jni plugin to develop plugins for elektra itself, whereas the jna 
@@ -21,12 +21,12 @@ make sure that CLASSPATH includes jna.jar and libelektra.jar (or this directory
 which contains the libelektra4j subdirectory that corresponds to the 
 libelektra.jar), e.g.:
 
-    export CLASSPATH="/usr/share/java/libelektra-0.8.19.jar:/usr/share/java/jna.jar"
+    export CLASSPATH="/usr/share/java/libelektra-*version*.jar:/usr/share/java/jna.jar"
     export CLASSPATH="~e/src/bindings/jna:/usr/share/java/jna.jar"
 
 to set it permanently for your user, you can use:
 
-    kdb set user/env/override/CLASSPATH "/usr/share/java/libelektra-0.8.19.jar:/usr/share/java/jna.jar"
+    kdb set user/env/override/CLASSPATH "/usr/share/java/libelektra-*version*.jar:/usr/share/java/jna.jar"
 
 then you can compile and run [HelloElektra](HelloElektra.java):
 
@@ -36,8 +36,8 @@ You can also specify the classpath directly, both during compilation and executi
 Also note its important in that case to include this directory containing the 
 compiled HelloElektra.class when executing it, otherwise it will not find it:
 
-	javac -cp /usr/share/java/libelektra4j-0.8.19.jar:/usr/share/java/jna.jar HelloElektra.java
-	java -cp .:/usr/share/java/libelektra4j-0.8.19.jar:/usr/share/java/jna.jar HelloElektra
+	javac -cp /usr/share/java/libelektra4j-*version*.jar:/usr/share/java/jna.jar HelloElektra.java
+	java -cp .:/usr/share/java/libelektra4j-*version*.jar:/usr/share/java/jna.jar HelloElektra
 
 For plugin development, see [plugins](libelektra4j/plugin)
 and also [here](/src/plugins/jni) for more information.
@@ -56,14 +56,14 @@ bindings included, they should have been automatically installed to
 ´/usr/share/java/´ along with a pom file for the library. To install it to your
 local maven repository from that location, execute the following command:
 
-	mvn org.apache.maven.plugins:maven-install-plugin:2.5.2:install-file -Dfile=/usr/local/share/java/libelektra4j-0.8.19.jar -DpomFile=/usr/local/share/java/libelektra4j-0.8.19.pom.xml
+	mvn org.apache.maven.plugins:maven-install-plugin:2.5.2:install-file -Dfile=/usr/local/share/java/libelektra4j-*version*.jar -DpomFile=/usr/local/share/java/libelektra4j-*version*.pom.xml
 
 Given that libelektra is actually installed on your system you can use it by 
 including the following maven dependency in your project afterwards:
 
 	<groupId>org.libelektra</groupId>
 	<artifactId>libelektra4j</artifactId>
-	<version>0.8.19</version>
+	<version>*version*</version>
 
 ## Testing ##
 

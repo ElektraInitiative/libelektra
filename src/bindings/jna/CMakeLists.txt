@@ -1,7 +1,9 @@
-find_package (Java 1.8 REQUIRED)
+find_package (Java)
 find_program (MAVEN_EXECUTABLE mvn)
 
-if (NOT MAVEN_EXECUTABLE STREQUAL "MAVEN_EXECUTABLE-NOTFOUND")
+if (Java_FOUND) # set by find_package
+if (Java_VERSION_MAJOR GREATER 0 AND Java_VERSION_MINOR GREATER 7)
+if (MAVEN_EXECUTABLE) # set by find_program
 	file (
 		MAKE_DIRECTORY libelektra4j
 	)
@@ -47,6 +49,12 @@ if (NOT MAVEN_EXECUTABLE STREQUAL "MAVEN_EXECUTABLE-NOTFOUND")
 		COMMAND ${MAVEN_EXECUTABLE} -B test
 		WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/libelektra4j"
 	)
-else ()
+else (MAVEN_EXECUTABLE)
 	remove_binding (jna "Maven Executable not found, but required to build the jna bindings")
-endif ()
+endif (MAVEN_EXECUTABLE)
+else (Java_VERSION_MAJOR GREATER 0 AND Java_VERSION_MINOR GREATER 7)
+	remove_binding (jna "Java is not greater version 8, but ${Java_VERSION} was found")
+endif (Java_VERSION_MAJOR GREATER 0 AND Java_VERSION_MINOR GREATER 7)
+else (Java_FOUND)
+	remove_binding (jna "Java not found, but required to build the jna bindings")
+endif (Java_FOUND)
