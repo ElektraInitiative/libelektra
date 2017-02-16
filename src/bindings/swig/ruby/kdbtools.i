@@ -55,6 +55,7 @@ namespace std {
   #include "plugins.hpp"
   #include "plugindatabase.hpp"
   #include "modules.hpp"
+  #include "backendparser.hpp"
 
   #include "toolexcept.hpp"
 
@@ -248,6 +249,9 @@ namespace std {
          kdb::tools::PluginCheckException,
          kdb::tools::ToolException
 ) kdb::tools::PluginSpec::validate;
+
+
+%template(PluginSpecVector) std::vector<kdb::tools::PluginSpec>;
 
 %include "pluginspec.hpp"
 
@@ -474,3 +478,19 @@ namespace std {
 %include "modules.hpp"
 
 
+
+
+/*************************************************************************
+ *
+ * kdb::tools::parse(Plugin)Arguments
+ *
+ ************************************************************************/
+
+%ignore kdb::tools::parseArguments(std::initializer_list<std::string>);
+%ignore kdb::tools::detail::processArgument;
+%ignore kdb::tools::detail::fixArguments;
+
+%catches (kdb::tools::ParseException) kdb::tools::parsePluginArguments;
+%catches (kdb::tools::ParseException) kdb::tools::parseArguments;
+
+%include "backendparser.hpp"
