@@ -144,6 +144,11 @@ int ini_parse_file (FILE * file, const struct IniConfig * config, void * user)
 			continue;
 		}
 		start = lskip (line);
+		if (*start == '\0')
+		{
+			if (!config->commentHandler (user, "") && !error) error = lineno;
+			continue;
+		}
 		if (isContinuation (line, config) && config->supportMultiline && *prev_name)
 		{
 			start = line + strlen (config->continuationString);
