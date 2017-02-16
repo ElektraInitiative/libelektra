@@ -1081,7 +1081,7 @@ ssize_t keySetBaseName (Key * key, const char * baseName)
 	if (!baseName)
 	{
 		// Avoid deleting the last / of a cascading key by increasing the size by one again
-		key->keySize += 1 == key->keySize && KEY_NS_CASCADING == keyGetNamespace (key);
+		key->keySize += (1 == key->keySize) && (KEY_NS_CASCADING == keyGetNamespace (key));
 
 		// just remove base name, so we are finished
 		elektraFinalizeName (key);
