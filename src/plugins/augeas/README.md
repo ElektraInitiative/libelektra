@@ -8,7 +8,7 @@
 - infos/status = maintained unittest libc configurable
 - infos/description = reading and writing configurations via libaugeas
 
-## Introduction ##
+## Introduction
 
 This is a plugin for reading and writing configuration files with help from Augeas.
 The plugin should be able to read all configuration files for which an Augeas lens exists.
@@ -16,11 +16,11 @@ However, not all stock lenses of Augeas have been tested yet.
 A detailed description of the lens language and a tutorial on how to write new lenses
 can be found at http://augeas.net/
 
-## Dependencies ##
+## Dependencies
 
 - `libaugeas-dev`: You need version 0.16 or higher
 
-## Installation ##
+## Installation
 
 If you have installed Augeas manually, it may be necessary to update the ld configuration. This is especially
 true if an older version of Augeas is installed also. Such a situation may lead to an error similar to this:
@@ -30,7 +30,7 @@ true if an older version of Augeas is installed also. Such a situation may lead 
 This is because `ld` tries to link `/usr/lib/libaugeas.so.0` which is an older version of Augeas. Simply add
 the path to the newer library to your ld search paths (consult your system documentation on how to do this).
 
-## Mounting and Configuration ##
+## Mounting and Configuration
 
 In order to mount the hosts file with the augeas plugin, issue the
 following command:
@@ -59,9 +59,9 @@ will print an error message on the first usage:
 This happens because the plugin does not know which lens it should use to read and write the configuration.
 For that reason, the lens configuration option was supplied together with the mount command.
 
-## Restrictions ##
+## Restrictions
 
-### Inner node values ###
+### Inner node values
 Currently no Augeas lens supports values for inner nodes.
 Unfortunately no validation plugin exists yet that would prevent such modifications early:
 
@@ -75,7 +75,7 @@ Unfortunately no validation plugin exists yet that would prevent such modificati
 
 The operation simply fails with an undescriptive error.
 
-### Leaky abstraction of order ###
+### Leaky abstraction of order
 Most Augeas lenses require subtrees to be in a specific order. For example the hosts lens requires the ipaddr node
 of an entry to precede the canonical node. Unfortunately the Augeas storage plugin has no knowledge about this required
 order. Therefore the correct order must be ensured via order metakeys. Otherwise saving the KeySet may fail. As an example
@@ -118,6 +118,6 @@ Whereas the following script succeeds due to the correct order
     ksAppendKey
     kdbSet system/hosts
 
-## Planned Improvements ##
+## Planned Improvements
 
 * a validation plugin preventing inner node values

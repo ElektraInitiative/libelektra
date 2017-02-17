@@ -1,20 +1,20 @@
 - infos = Information about struct plugin is in keys below
 - infos/author = Markus Raab <elektra@libelektra.org>
 - infos/licence = BSD
-- infos/provides = apply
+- infos/provides = apply check
 - infos/needs =
 - infos/ordering = check
 - infos/placements = presetstorage
 - infos/status = nodep unfinished concept
 - infos/description = Copies metadata to keys using struct
 
-## Introduction ##
+## Introduction
 
 This plugin is a check plugin which checks the structure and
 interrelations of Keys in order to verify that they represent a valid
 configuration.
 
-## Purpose ##
+## Purpose
 
 The glob plugin together with the check plugins create a good combination
 to check keys which are present in the KeySet. For some storage plugins
@@ -33,14 +33,14 @@ to specify any structure.
 The struct plugin implements such a behaviour. It allows enforcement of
 a strong consistency within the keys of one backend.
 
-## Usage ##
+## Usage
 
 In order for the `struct` plugin to do its job, it needs a plugin
 configuration to know which structure it should check for. This
 configuration can be passed from a storage plugin’s `config/needs`
 clause.
 
-## Example ##
+## Example
 
 The `fstab` plugin uses the `struct` plugin to verify the correct
 structure. Here is a snippet from it's contract:
@@ -114,7 +114,7 @@ configuration will be stored and passed to them.
 The unwritten contract is between the application and the backend.
 No contract checker, however, would detect the missing configuration.
 
-## Limitation ##
+## Limitation
 
 This approach for defining the structure works recursively. Every
 element can have a value with a new structure check.

@@ -12,8 +12,15 @@
                         <div class="form-group has-feedback"
                              ng-class="{'has-error': convertForm.input_format.$invalid && !convertForm.input_format.$pristine,
                                 'has-success': convertForm.input_format.$valid && convertForm.input_format.$dirty}">
+                            <span class="pull-right">
+                                <a href="/plugins/{{ parameters.input.format.plugin.nameWithoutConf }}"
+                                   target="_blank">
+                                    <span>{{ 'APP.CONVERSION.LABEL.FORMAT.INFO' | translate }}</span>
+                                    <i class="fa fa-external-link"></i>
+                                </a>
+                            </span>
                             <label for="input_format" class="control-label">
-                                {{ 'APP.CONVERSION.LABEL.INPUT.FORMAT' | translate }}
+                                <span>{{ 'APP.CONVERSION.LABEL.INPUT.FORMAT' | translate }}</span>
                             </label>
                             <select id="input_format" name="input_format" class="form-control"
                                     ng-model="parameters.input.format"
@@ -60,8 +67,15 @@
                         <div class="form-group has-feedback"
                              ng-class="{'has-error': convertForm.output_format.$invalid && !convertForm.output_format.$pristine,
                                 'has-success': convertForm.output_format.$valid && convertForm.output_format.$dirty}">
+                            <span class="pull-right">
+                                <a href="/plugins/{{ parameters.output.format.plugin.nameWithoutConf }}"
+                                   target="_blank">
+                                    <span>{{ 'APP.CONVERSION.LABEL.FORMAT.INFO' | translate }}</span>
+                                    <i class="fa fa-external-link"></i>
+                                </a>
+                            </span>
                             <label for="output_format" class="control-label">
-                                {{ 'APP.CONVERSION.LABEL.OUTPUT.FORMAT' | translate }}
+                                <span>{{ 'APP.CONVERSION.LABEL.OUTPUT.FORMAT' | translate }}</span>
                             </label>
                             <select id="output_format" name="output_format" class="form-control"
                                     ng-model="parameters.output.format"

@@ -9,7 +9,7 @@
 - infos/metadata = trigger/warnings trigger/error trigger/error/nofail
 - infos/description = Provokes errors for testing the plugin framework
 
-## Introduction ##
+## Introduction
 
 Plugins (should) rarely return an error or warnings, e.g. writing
 the configuration basically only fails on filesystem problems. Such
@@ -17,9 +17,9 @@ behaviour is difficult to produce for tests.
 
 This plugin tackles this issue by yielding error/warnings on request.
 
-## Usage ##
+## Usage
 
-### By metadata ###
+### By metadata
 
 Mount this plugin additionally with a working resolver and a storage
 e.g.:
@@ -51,7 +51,7 @@ fail for the error plugin then):
 
     kdb setmeta user/error/key trigger/error 10
 
-### By config ###
+### By config
 
 To yield an error in kdbOpen() the metadata approach does not work. So
 the plugin also can yield warning/errors using configuration.

@@ -5,10 +5,13 @@
 # @date 18.02.2016
 # @tags reformat
 
-SELF=$(readlink -f "$0")
-SCRIPTS=$(dirname "$SELF")
-SOURCE=$(dirname "$SCRIPTS")
+. "$(dirname "$0")/include-common"
 
-cd $SOURCE
+CLANG_FORMAT=$(which clang-format-3.8)
+if [ -z "${CLANG_FORMAT}" ]; then
+	CLANG_FORMAT=$(which clang-format)
+fi
 
-clang-format-3.8 -style=file -i `find . -name '*.[ch]' -or -name '*.[ch]pp' -or -name '*.[ch].in' | egrep -v "^(./src/tools/gen|./tests/gtest-1.7.0)"`
+cd "$SOURCE"
+
+$($CLANG_FORMAT -style=file -i `find . -name '*.[ch]' -or -name '*.[ch]pp' -or -name '*.[ch].in' | egrep -v "^(./src/tools/gen|./tests/gtest-1.7.0)"`)

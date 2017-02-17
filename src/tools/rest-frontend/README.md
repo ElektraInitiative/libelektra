@@ -1,12 +1,12 @@
-# Elektra REST Frontend #
+# Elektra REST Frontend
 
-## Introduction ##
+## Introduction
 
 This document aims to provide information about Elektras `@tool@`,
 which is the frontend of the `rest-backend` allowing for search and sharing of configuration snippets.
 Besides that functionality, the frontend also contains the Elektra website.
 
-## Design and Structure ##
+## Design and Structure
 
 The frontend is developed as single-page application (SPA) in [AngularJS (v1.5)](https://angularjs.org/).
 All dependencies are either already contained in the application project or (preferred) resolved through
@@ -14,7 +14,7 @@ the dependency manager [npm](https://www.npmjs.com/) during installation (requir
 Compiling (browserification, concatenation & minification), as well as other tasks like running a lightweight
 webserver are handled by the nodeJS based task runner [grunt](http://gruntjs.com/) (installed by npm).
 
-## Run and Configure ##
+## Run and Configure
 
 The application allows for some basic configuration.
 Under normal circumstances it is sufficient to change the
@@ -42,19 +42,19 @@ The `index.html` will then try to serve the (dynamic) URL itself.
 
 To stop the `@tool@`, simply run `kdb stop-@tool@` from anywhere.
 
-### application-config.json ###
+### application-config.json
 
 This file does not exist by default. It needs to be copied from the template `application-config.json.tpl`.
 To copy the configuration template and mount it into the key database, execute
 the command `kdb mount-rest-frontend-config`. The configuration will then be available below
 `@config_root@/@config_default_profile@`.
 
-#### APIs (Backend & GitHub) ####
+#### APIs (Backend & GitHub)
 
 The configuration file allows to set the URL to the backend in `backend.root`.
 GitHub settings may be done in `github`.
 
-#### Translations ####
+#### Translations
 
 The configuration file also allows to specify available translations in `translations.enabled`.
 To add a translation, copy an existing translation file in
@@ -64,11 +64,11 @@ After that run `grunt full` (or `kdb build-@tool@`) to re-compile the applicatio
 
 If necessary, mappings for dialects as well as a default language can be specified as well.
 
-#### Logger ####
+#### Logger
 
 It is possible to enable the frontend logger by changing `logger.enabled` in the configuration file.
 
-### Directory Structure ###
+### Directory Structure
 
 The application project itself is mainly splitted into two directories: `resources` and `public`,
 whereas only the latter can directly been accessed by clients if the built-in
@@ -81,7 +81,7 @@ The [public](public/) directory contains HTML template files, assets like fonts,
 compiled JS and CSS files, as well as translation files and all dependencies resolved by `npm`,
 which are copied by `grunt`. It does also contain copied documentation files for the website.
 
-### Part 1: Snippet Sharing ###
+### Part 1: Snippet Sharing
 
 Sharing of snippets will require authentication, therefore registration and login were implemented.
 Snippets can be looked up by using the search function, which offers some convenience options
@@ -94,14 +94,14 @@ Besides the snippet sharing functionality, the whole frontend implements a basic
 along with a permission system, allowing for higher roles with more privileges.
 This is necessary to be able to moderate the database, if necessary (spam protection).
 
-### Part 2: Elektra Website ###
+### Part 2: Elektra Website
 
 The second part of the frontend is the new Elektra website containing documentation,
 tutorials and other important artifacts like news.
 Almost all necessary resources are generated and copied from a local repository clone
 to the website deployment during build (to refresh the website, a new build is necessary).
 
-#### Important facts ####
+#### Important facts
 
 - Links are internal on the website if the target is part of it too,
   otherwise they are external (i.e. linked to repo on external site).
@@ -111,7 +111,7 @@ to the website deployment during build (to refresh the website, a new build is n
   There is a set of types which can be used to define links, menus, content of sites, etc.
   A detailed discussion for the website structure happened in #1015.
 
-#### Limitations ####
+#### Limitations
 
 **Global search:**
 It is not planned to implement a global search for the website itself (documentation, tutorials, ...)
@@ -125,9 +125,9 @@ only early previews. Because of that, the frontend was developed using AngularJS
 This shouldn't be seen as drawback, but rather as advantage as there are a lot more
 modules (plugins) available for Angular 1.5 right now than for version 2.
 
-## Compiling and Installing ##
+## Compiling and Installing
 
-### Dependencies ###
+### Dependencies
 
 The project has quite a few dependencies, of which most can be resolved automatically
 by the used package manager.
@@ -135,7 +135,7 @@ The only dependency that has to be installed beforehand is the package manager
 [npm](https://www.npmjs.com/) itself,
 which comes bundled with [Node.js](https://nodejs.org/) (preferred installation).
 
-### Compiling ###
+### Compiling
 
 The `@tool@` has full CMake integration, which does actually only two things:
 - Install (copy) the project files to a target directory.
@@ -145,7 +145,7 @@ The `@tool@` has full CMake integration, which does actually only two things:
    into working production files ([public](public/) dir) and
    copy required `npm` dependencies in the `public` folder.
 
-### Installing ###
+### Installing
 
 It is not necessary to install anything by hand, CMake does this job already.
 If changes are made to the source files in [resources](resources/),
@@ -153,7 +153,7 @@ it is sufficient to run `grunt full` (or `kdb build-@tool@`) to build the applic
 During development, it can be handy to use `grunt watch` to run a watcher daemon that re-compiles
 LESS or JS files whenever a change was made in the respective [resources](resources/) directory.
 
-### resources/structure.json.in ###
+### resources/structure.json.in
 
 This configuration file can be used to define the website structure.
 The file consists at its root of an array, which will be transformed into the main menu of the website
@@ -173,7 +173,7 @@ with some extra attributes explained below:
 It is possible to add additional attributes not used by the system without breaking anything.
 For example use `dev-comment` to leave some development notes, e.g. decision information.
 
-#### submenu ####
+#### submenu
 
 The `submenu` type can be used to create a menu point that has a (hoverable) submenu,
 but does itself not link to any page. It can only be used in the top hierarchy of the structure file.
@@ -193,7 +193,7 @@ Example:
         "children": [ ]
     }
 
-#### parsereadme ####
+#### parsereadme
 
 The `parsereadme` element type is the most powerful of all types.
 It takes a text file as input (often README.md) and creates with the help of some
@@ -243,7 +243,7 @@ Example:
         }
     }
 
-#### listdirs ####
+#### listdirs
 
 The `listdirs` element type can be used to enumerate all sub-directories of a specific directory.
 It will try to find one of the target files (i.e. readme) within the sub-directories and
@@ -270,7 +270,7 @@ Example:
         }
     }
 
-#### listfiles ####
+#### listfiles
 
 The `listfiles` element type is quite similar to the `listdirs` type,
 but instead of sub-directories it enumerates files within a directory.
@@ -297,7 +297,7 @@ Example:
         }
     }
 
-#### staticlist ####
+#### staticlist
 
 The `staticlist` element type creates a new website section that is
 entirely customizable within the structure configuration file.
@@ -318,7 +318,7 @@ Example:
         "children": [ ]
     }
 
-#### staticref ####
+#### staticref
 
 The `staticref` element type can be used in a `staticlist` to create a reference to another website part.
 
@@ -338,7 +338,7 @@ Example:
         }
     }
 
-#### staticfile ####
+#### staticfile
 
 The `staticfile` element type can be used in a `staticlist` to create a menu point for a file.
 The file is then a page in the section created by the `staticlist`.
@@ -358,7 +358,7 @@ Example:
         }
     }
 
-#### link ####
+#### link
 
 The `link` element type can be used to create a simple link to whatever is desired.
 It is recommended to use it only for external links.
@@ -376,11 +376,11 @@ Example:
         "type": "link",
         "ref": "buildserver",
         "options": {
-            "path": "http://build.libelektra.org:8080/"
+            "path": "https://build.libelektra.org/"
         }
     }
 
-## Development ##
+## Development
 
 When attempting to change the AngularJS application, it can be useful to first
 have a look at all used dependencies, which are listed in
@@ -390,7 +390,7 @@ After that, the configuration files in
 Probably the most important configuration is the router in
 [resources/assets/js/config/routes.config.js](resources/assets/js/config/routes.config.js).
 
-### Life Cycle ###
+### Life Cycle
 
 An AngularJS application is bootstrapped by first instantiating constants (can be used for configuration).
 After that, service providers are run, which allows for further configuration of services.
@@ -404,17 +404,17 @@ application (services, controllers, etc) by type-hinting the dependency name.
 
 For detailed information, the website of [Angular](https://angularjs.org/) should be visited.
 
-### Task configuration ###
+### Task configuration
 
 All `grunt` tasks can be configured using the [Gruntfile.js](Gruntfile.js) in the application root directory.
 
-### Code formatting ###
+### Code formatting
 
 The task `grunt jshint` can be used to check the code formatting of JS source files.
 
-### Noteworthy Information ###
+### Noteworthy Information
 
-#### HTML in i18n Keys ####
+#### HTML in i18n Keys
 
 It is possible to use HTML in translation files (loca keys) if the place where
 the loca key is used adds the directive `translate-compile`. The loca key itself
@@ -422,14 +422,14 @@ does also need to be placed in the `translate` directive instead of a dynamic
 Angular binding (i.e. use `<span translate="LOCA_KEY"></span>` in favor of
 `<span>{{ 'LOCA_KEY' | translate }}</span>`).
 
-#### Links ####
+#### Links
 
 For external links, the normal HTML `a`-tag has to be used (`<a href="..."></a>`).
 If the external link has the same base URL as the frontend (e.g. frontend is at
-`http://localhost/` and the link points to `http://localhost/rss/feed.rss`),
+`http://localhost/` and the link points to `http://localhost/news/feed.rss`),
 the html tag `target` has to be added to the link with the desired value, e.g.
 `_self` to open the link in the same window/tab or `_blank` to use a new one.
-An example would be `<a href="http://localhost/rss/feed.rss" target="_self">...</a>`.
+An example would be `<a href="http://localhost/news/feed.rss" target="_self">...</a>`.
 
 For internal links (that are links that lead to another sub-page of the website)
 two options are available. It is possible to use the normal `href` HTML attribute

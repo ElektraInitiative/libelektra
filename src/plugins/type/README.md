@@ -8,11 +8,11 @@
 - infos/metadata = check/type check/type/min check/type/max
 - infos/description = type checker using COBRA data types
 
-## Introduction ##
+## Introduction
 
 This plugin is a type checker plugin using the `CORBA` data types.
 
-## Additional Information ##
+## Additional Information
 
 A common and successful type system happens to be CORBA with
 IDL. The system is outstanding because of the many mappings it
@@ -21,7 +21,7 @@ provides to other programming languages.
 The type checker plugin supports all basic CORBA types:
 `short`, `unsigned_short`, `long`, `unsigned_long`, `long_long`,
 `unsigned_long_long`, `float`, `double`, `char`, `boolean`, `any` and
-`octet`. In Elektra `octet` is the same as `char`. When checking any it
+`octet`. In Elektra `octet` is the same as `char`. When checking `any` it
 will always be successful, regardless of the content. Elektra also added
 other types. `empty` will only yield true if there is no value. `string`
 allows any non-empty sequence of octets.
@@ -44,7 +44,7 @@ To sum up, many basic types like int or char are convenient and
 CORBA ensures that they can be converted to the specific type of the
 programming language.
 
-## Restrictions ##
+## Restrictions
 
 The `CORBA` type system also has its limits. The types `string` and
 `enum`, however, can be unsatisfactory. While string is too general

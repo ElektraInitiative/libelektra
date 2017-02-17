@@ -59,6 +59,8 @@ bool runAllEditors (std::string filename)
 	using namespace kdb;
 	if (runEditor ("/usr/bin/sensible-editor", filename)) return true;
 	if (runEditor ("/usr/bin/editor", filename)) return true;
+	char * editor = getenv ("EDITOR");
+	if (editor && runEditor (editor, filename)) return true;
 	if (runEditor ("/usr/bin/vi", filename)) return true;
 	if (runEditor ("/bin/vi", filename)) return true;
 	return false;

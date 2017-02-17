@@ -8,12 +8,12 @@
 - infos/metadata = check/validation check/validation/message check/validation/ignorecase check/validation/match check/validation/invert check/validation/type
 - infos/description = Validates key values using regular expressions
 
-## Introduction ##
+## Introduction
 
 This plugin is a check plugin which checks string values of Keys using
 regular expressions.
 
-## Usage ##
+## Usage
 
 The validation plugin looks for two metakeys. `check/validation`
 gives a regular expression to check against. If it is present,
@@ -26,7 +26,7 @@ expression with `^` and end it with `$`. Otherwise expressions that
 e.g. match the empty string, always return true.
 Alternatively, you can use `check/validation/match=LINE`.
 
-## Configuration ##
+## Configuration
 
 Metadata can be supplied to configure the validation:
 
@@ -34,7 +34,7 @@ Metadata can be supplied to configure the validation:
 - `check/validation/ignorecase`: If you want to ignore case.
 - `check/validation/invert`: If you want to invert match.
 
-## Implementation ##
+## Implementation
 
 The implementation consists of a loop checking for every key if it has
 the mentioned metakey. The check itself is done by the POSIX regular
@@ -44,7 +44,7 @@ expression will be compiled as an extended regular expression. `REG_NOSUB`
 gives a better performance and subexpressions cannot be used in this
 setup anyway.
 
-## Exported Methods ##
+## Exported Methods
 
 The plugin also exports the function `ksLookupRE()` that does a lookup in
 a KeySet using a regular expression. It starts from the current cursor

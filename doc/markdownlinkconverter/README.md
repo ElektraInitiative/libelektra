@@ -9,7 +9,7 @@ The Markdown link Converter gives each markdown file a header `{ #header }` whic
 and converts the links to refer to this headers. This conversion
 happens in 2 passes, which is needed because there can be files with no title.
 
-## Usage for manual invocation
+## Usage for Manual Invocation
 
 	markdownlinkconverter [<cmake-cache-file>] <input-file>
 
@@ -25,7 +25,7 @@ happens in 2 passes, which is needed because there can be files with no title.
   combination with the README.md of the containing folder.
 * Anchors wont work in imported markdown pages.
 
-## github specialities
+## GitHub Specialities
 
 * github supports source code fences with syntax highlighting which are not recognised by Doxygen.
   Thus `sh` after the fence is removed for Doxygen.
@@ -34,12 +34,12 @@ happens in 2 passes, which is needed because there can be files with no title.
 
 ## Link Validation
 
-### internal links
+### Internal Links
 
 The link validation works with a simple try to `fopen` the file,
 which the link refers to.
 
-### external links
+### External Links
 
 Every link starting with `http`, `https` or `ftp` will be written to a file named `external-links.txt` located in your
 build folder. With the following syntax:
@@ -52,7 +52,7 @@ html build process (`make clean` could be needed) to get a list without duplicat
 In the script folder is a script named `link-checker`. This script can be used to validate the links.
 Broken links will be printed. False positive not excluded (very rare).
 
-## Further improvements (which will be introduced in a later version):
+## Further Improvements (Which Will be Introduced in a Later Version):
 
 * optimize pdf output (also UTF-8 encoding)
 * if title contains --, this should be @brief

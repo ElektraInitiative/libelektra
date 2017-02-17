@@ -9,12 +9,12 @@
 - infos/metadata =
 - infos/description = storage plugin for mozilla preferences
 
-## Basics ##
+## Basics
 
 This plugin works on [Mozilla preference files](https://developer.mozilla.org/en-US/docs/Mozilla/Preferences/A_brief_guide_to_Mozilla_preferences)
 and is used in Elektras [Firefox autoconfig script](autoconfig/README.md).
 
-### Preference Types ###
+### Preference Types
 
 - Default preferences: `pref(....`, keys below `mountpoint/pref/`.
 - User preferences: `user_pref(....`, keys below `mountpoint/user/`.
@@ -23,13 +23,13 @@ and is used in Elektras [Firefox autoconfig script](autoconfig/README.md).
 
 Only Keys below one of these points are valid, everything else will be dropped
 
-### Data Types ###
+### Data Types
 
 - `integer`
 - `string`
 - `boolean`
 
-### Hierarchy ###
+### Hierarchy
 
 In Mozilla preference files `.` is used to separate sections, while elektra uses `/`. For simplification, and because `/` isn't allowed in preference keys, the plugin treats `.` and `/` equally. 
 
@@ -39,7 +39,7 @@ In Mozilla preference files `.` is used to separate sections, while elektra uses
 
 will all result in `lockPref("a.lock.key", "lock");`
 
-## Example ##
+## Example
 ```sh
 # Backup-and-Restore:/examples/prefs
 

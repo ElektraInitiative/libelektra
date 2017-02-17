@@ -736,28 +736,6 @@ static int elektraCheckConflict (resolverHandle * pk, Key * parentKey)
 }
 
 /**
- * @brief Check if setting keyset is needed.
- *
- * It is not needed, if the keyset is empty.
- * The configuration file gets removed then.
- *
- * @param pk resolver information
- * @param parentKey parent
- *
- * @retval 0 if nothing to do
- * @retval 1 set will be needed
- */
-static int elektraRemoveConfigurationFile (resolverHandle * pk, Key * parentKey)
-{
-	if (unlink (pk->filename) == -1)
-	{
-		ELEKTRA_SET_ERROR (28, parentKey, strerror (errno));
-	}
-
-	return 0;
-}
-
-/**
  * @brief Does everything needed before the storage plugin will be
  * invoked.
  *
@@ -986,6 +964,7 @@ int ELEKTRA_PLUGIN_FUNCTION (resolver, set) (Plugin * handle, KeySet * ks, Key *
 	int errnoSave = errno;
 	int ret = 1;
 
+	ELEKTRA_LOG ("entering resolver::set %d \"%s\"", pk->fd, pk->filename);
 	if (pk->fd == -1)
 	{
 		// no fd up to now, so we are in first phase
@@ -996,6 +975,13 @@ int ELEKTRA_PLUGIN_FUNCTION (resolver, set) (Plugin * handle, KeySet * ks, Key *
 		if (ksGetSize (ks) == 0)
 		{
 			ret = 0;
+
+			ELEKTRA_LOG ("check if removal of the configuration file \"%s\" would work later", pk->filename);
+			if (access (pk->dirname, W_OK | X_OK) == -1)
+			{
+				ELEKTRA_SET_ERROR (28, parentKey, strerror (errno));
+				ret = -1;
+			}
 
 			// remove file on commit
 			pk->fd = -2;
@@ -1011,8 +997,12 @@ int ELEKTRA_PLUGIN_FUNCTION (resolver, set) (Plugin * handle, KeySet * ks, Key *
 	}
 	else if (pk->fd == -2)
 	{
-		// we commit the removal of the configuration file.
-		elektraRemoveConfigurationFile (pk, parentKey);
+		ELEKTRA_LOG ("unlink configuration file \"%s\"", pk->filename);
+		if (unlink (pk->filename) == -1)
+		{
+			ELEKTRA_SET_ERROR (28, parentKey, strerror (errno));
+			ret = -1;
+		}
 
 		// reset for the next time
 		pk->fd = -1;
@@ -1029,11 +1019,11 @@ int ELEKTRA_PLUGIN_FUNCTION (resolver, set) (Plugin * handle, KeySet * ks, Key *
 			ret = -1;
 		}
 
-		errno = errnoSave; // maybe some temporary error happened
-
 		// reset for next time
 		pk->fd = -1;
 	}
+
+	ELEKTRA_LOG ("leaving resolver::set %d \"%s\"", pk->fd, pk->filename);
 
 	errno = errnoSave; // maybe some temporary error happened
 

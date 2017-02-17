@@ -1,0 +1,38 @@
+# Provides common functions and variables for shellscripts:
+# fixes readlink -f on macOS
+# provides $SELF, $SCRIPTS, $SOURCE
+# include this file via '. "$(dirname "$0")/include-common"'
+
+# load our readlink replacement for osx
+. "$(dirname "$0")/realpath"
+
+# substring emulation which should work in dash and other shells too
+stringContain() { [ -z "${2##*$1*}" ] && [ -z "$1" -o -n "$2" ]; }
+
+# readlink replacement, currently intented only to work with -f and the 
+# argument
+readlink() {
+        if stringContain "Darwin" "$(uname)"; then
+                # no readlink -f on macOS
+                if [ "$(which greadlink)" ]; then
+                        # if user brewed coreutils, greadlink is like 
+			# the gnu readlink
+                        greadlink "$@"
+                elif [ "$1" = "-f" ]; then
+                        # use our readlink replacement
+                        realpath "$2"
+                else
+                        # otherwise try to use it like it is for now
+                        $(which readlink) "$@"
+                fi
+        else
+                # on other systems, or with other parameters just 
+		# execute it as it is
+                $(which readlink) "$@"
+        fi
+}
+
+
+SELF=$(readlink -f "$0")
+SCRIPTS=$(dirname "$SELF")
+SOURCE=$(dirname "$SCRIPTS")

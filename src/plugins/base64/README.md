@@ -9,7 +9,7 @@
 - infos/metadata =
 - infos/description = Base64 Encoding
 
-## Introduction ##
+## Introduction
 
 The Base64 Encoding (specified in [RFC4648](https://www.ietf.org/rfc/rfc4648.txt)) is used to encode arbitrary binary data to ASCII strings.
 
@@ -23,7 +23,7 @@ To distinguish between the `@` as character and `@` as Base64 marker, all string
 
 See the documentation of the [null plugin](../null/), as it uses the same pattern for masking `@`.
 
-## Examples ##
+## Examples
 
 To mount a simple backend that uses the Base64 encoding, you can use:
 

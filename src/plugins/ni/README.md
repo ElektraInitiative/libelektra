@@ -7,7 +7,7 @@
 - infos/status = maintained unittest libc nodep
 - infos/description = Reads and writes the nickel ini format
 
-## Introduction ##
+## Introduction
 
 This plugin uses the nickel library in order to read/write
  [metakeys](/doc/help/elektra-metadata.md) in the nickel ini format. It's purpose is to be
@@ -50,7 +50,7 @@ For in-detail explanation of the syntax
 (nested keys are not supported by the plugin, however)
 [see /src/plugins/ni/nickel-1.1.0/include/bohr/ni.h](/src/plugins/ni/nickel-1.1.0/include/bohr/ni.h)
 
-## Limitations ##
+## Limitations
 
 - Supports most KeySets, but `kdb test` currently reports some errors
   (likely because of the UTF-8 handling happening within ni).
@@ -58,7 +58,7 @@ For in-detail explanation of the syntax
 - No comments are preserved, they are simply removed.
 - Parse errors simply result to ignoring (and removing) these parts.
 
-## Nickel ##
+## Nickel
 
 This plugin is based on the Nickel Library written by
 author: charles@chaoslizard.org

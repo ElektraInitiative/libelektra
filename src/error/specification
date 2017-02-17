@@ -998,3 +998,38 @@ severity:warning
 ingroup:plugin
 module:fcrypt
 macro:FCRYPT_FUTIMENS
+
+number:164
+description:failed to upload config file.
+severity:error
+ingroup:plugin
+module:curlget
+macro:CURL_UPLOAD_FAILED
+
+number:165
+description:could not fetch file from remote host, try falling back to local copy.
+severity:warning
+ingroup:plugin
+module:curlget
+macro:CURL_LOCAL_FALLBACK
+
+number:166
+description:failed to fetch configuration file.
+severity:error
+ingroup:plugin
+module:curlget
+macro:CURL_FETCH_FAILED
+
+number:167
+description:invalid plugin configuration.
+severity:error
+ingroup:plugin
+module:curlget
+macro:CURL_CONFIG_INVALID
+
+number:168
+description:validation of date/time string failed.
+severity:error
+ingroup:plugin
+module:date
+macro:D_T_FMT

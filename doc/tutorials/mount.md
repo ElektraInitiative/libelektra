@@ -1,4 +1,4 @@
-# Mounting #
+# Mounting
 
 Elektra provides a global key database, that can integrate configuration in various formats.
 
@@ -12,7 +12,7 @@ The heart of the approach is the so called _mounting_ of configuration files int
 
 Let us start with a motivating example first:
 
-## Mount the lookup table for hostnames
+## Mount the Lookup Table for Hostnames
 
 We mount the lookup table with the following command:
 
@@ -32,24 +32,29 @@ sudo kdb mount --with-recommends /etc/hosts system/hosts hosts
 Now we use `kdb file`, to verify that all configuration below `system/hosts` is stored in `/etc/hosts`:
 
 ```sh
-$ kdb file system/hosts
-/etc/hosts
+kdb file system/hosts
+#> /etc/hosts
 ```
 
 After mounting a file, we can modify keys below `system/hosts`.
 We need to be root, because we modify `/etc/hosts`.
 
-    $ sudo kdb set system/hosts/ipv4/mylocalhost 127.0.0.33
+```sh
+sudo kdb set system/hosts/ipv4/mylocalhost 127.0.0.33
+```
 
 These changes are reflected in `/etc/hosts` instantly:
 
-    $ cat /etc/hosts
-    127.0.0.33	mylocalhost
-    ...
+```sh
+cat /etc/hosts | grep mylocalhost
+#>: 127.0.0.33	mylocalhost
+```
 
 Applications will now pick up these changes:
 
-    $ ping mylocalhost
+```sh
+ping mylocalhost
+```
 
 We are also safe against wrong changes:
 
@@ -72,7 +77,7 @@ sudo kdb rm system/hosts/ipv4/mylocalhost
 sudo kdb umount system/hosts
 ```
 
-> ###### Why do you need superuser privileges to mount files? ######
+> ###### Why do you Need Superuser Privileges to Mount Files? ######
 >
 > Elektra manages its mountpoints in configuration below **system/elektra/mountpoints**.
 > The file that holds this configuration is, in the same way as `/etc/hosts` before, only writable by administrators:
@@ -82,7 +87,7 @@ sudo kdb umount system/hosts
 >
 > Because of that only root can mount files.
 
-## Resolver ##
+## Resolver
 
 The configuration file path you supplied to `kdb mount` above is actually not an
 absolute or relative path in your filesystem, but gets resolved to one by Elektra.
@@ -98,21 +103,21 @@ Also here you only see the unresolved paths.
 
 If you supplied an absolute path (e.g. `/example.ini`) it gets resolved to this:
 
-| namespace        | resolved path       |
-| ---------------- |-------------------- |
-| spec             | /example.ini        |
-| dir              | ${PWD}/example.ini  |
-| user             | ${HOME}/example.ini |
-| system           | /example.ini        |
+| namespace        | resolved path         |
+| ---------------- |---------------------- |
+| `spec`           | `/example.ini`        |
+| `dir`            | `${PWD}/example.ini`  |
+| `user`           | `${HOME}/example.ini` |
+| `system`         | `/example.ini`        |
 
 If you supplied a relative path (e.g. `example.ini`) it gets resolved to this:
 
-| namespace        | resolved path               |
-| ---------------- |---------------------------- |
-| spec             | /usr/share/elektra/specification/example.ini |
-| dir              | ${PWD}/.dir/example.ini     |
-| user             | ${HOME}/.config/example.ini |
-| system           | /etc/kdb/example.ini        |
+| namespace        | resolved path                                  |
+| ---------------- |----------------------------------------------- |
+| `spec`           | `/usr/share/elektra/specification/example.ini` |
+| `dir`            | `${PWD}/.dir/example.ini`                      |
+| `user`           | `${HOME}/.config/example.ini`                  |
+| `system`         | `/etc/kdb/example.ini`                         |
 
 If this differs on your system, the resolver has a different configuration.
 Type `kdb info resolver` for more information about the resolvers.
@@ -123,9 +128,9 @@ Another useful resolver is the [blockresolver](/src/plugins/blockresolver/README
 
 But resolvers are not the only plugins Elektra uses:
 
-## Plugins ##
+## Plugins
 
-Configuration files can have many different formats (ini, json, yaml, xml, csv, ... to name but a few).
+Configuration files can have many different formats (`ini`, `json`, `yaml`, `xml`, `csv`, ... to name but a few).
 
 One of the goals of Elektra is to provide users with a unified interface to all those formats.
 Elektra accomplishes this task with _storage plugins_.
@@ -141,40 +146,43 @@ writing to configuration files.
 
 Let us mount a projects git configuration into the dir namespace:
 
-    # create a directory for our demonstration
-    mkdir example && cd $_
+```sh
+# create a directory for our demonstration
+mkdir example && cd $_
 
-    # this creates the .git/config file
-    git init
+# this creates the .git/config file
+git init
 
-    # mount gits configuration into Elektra
-    sudo kdb mount /.git/config dir/git ini multiline=0
+# mount gits configuration into Elektra
+sudo kdb mount /.git/config dir/git ini multiline=0
+```
 
-As git uses the ini format for its configuration we use the [ini plugin](/src/plugins/ini/README.md).
+As git uses the `ini` format for its configuration we use the [ini plugin](/src/plugins/ini/README.md).
 You can pass parameters to plugins during the mount process. This is what
 we did with `multiline=0`. Git intends the entries in its configuration
-files and the default behaviour of the ini plugin is to interpret these indented
+files and the default behaviour of the `ini` plugin is to interpret these indented
 entries as values that span multiple lines. The passed parameter disables
 this behaviour and makes the ini-plugin compatible with git configuration.
 
 Now let us see how smoothly the ini plugin sets and gets the git configuration.
 
-    # set a user name ...
-    git config user.name "Rob Banks"
+```sh
+# set a user name ...
+git config user.name "Rob Banks"
 
-    # ... and read it with kdb
-    kdb get dir/git/user/name
-    Rob Banks
+# ... and read it with kdb
+kdb get dir/git/user/name
+#> Rob Banks
 
-    # set a user email with kdb ...
-    kdb set dir/git/user/email "rob.banks@dot.com"
+# set a user email with kdb ...
+kdb set dir/git/user/email "rob.banks@dot.com"
 
-    # and read it with git
-    git config --get user.email
-    rob.banks@dot.com
+# and read it with git
+git config --get user.email
+#> rob.banks@dot.com
+```
 
-
-#### Meta data ####
+#### Meta Data
 
 Elektra is able to store [meta data](/doc/help/elektra-metadata.md) of keys, provided the format of the file that holds the configuration supports this feature.
 The ini plugin doesn't support this feature, but the [ni](/src/plugins/ni/README.md) and the [dump](/src/plugins/dump/README.md) plugin do.
@@ -183,31 +191,37 @@ The ini plugin doesn't support this feature, but the [ni](/src/plugins/ni/README
 > But unlike the ni and the dump plugin we can't store arbitrary metadata with the ini plugin.
 
 Meta data comes in handy if we use other plugins, than just the ones that store and retrieve data.
-I chose the ni plugin for this demonstration, because it supports metadata and is human readable.
+I chose the `ni` plugin for this demonstration, because it supports metadata and is human readable.
 So let us have a look at the [enum](/src/plugins/enum/README.md) and [mathcheck](/src/plugins/mathcheck/README.md) plugins.
 
-    # mount the backend with the plugins ...
-    $ sudo kdb mount example.ni user/example ni enum
+```sh
+# mount the backend with the plugins ...
+sudo kdb mount example.ni user/example ni enum
 
-    # ... and set a value for the demonstration
-    $ kdb set user/example/enumtest/fruit apple
-    Create a new key user/example/enumtest/fruit with string apple
+# ... and set a value for the demonstration
+kdb set user/example/enumtest/fruit apple
+#> Create a new key user/example/enumtest/fruit with string apple
+```
 
 By entering `kdb info enum` in the commandline, we can find out how to use this plugin.
 It turns out that this plugin allows us to define a list of valid values for our keys via the meta value `check/enum`.
 
-    $ kdb setmeta user/example/enumtest/fruit check/enum "'apple', 'banana', 'grape'"
-    $ kdb set user/example/enumtest/fruit tomato
-    # this fails because tomato is not in the list of valid values
+```sh
+kdb setmeta user/example/enumtest/fruit check/enum "'apple', 'banana', 'grape'"
+kdb set user/example/enumtest/fruit tomato
+# this fails because tomato is not in the list of valid values
+```
 
 You can have a look or even edit the configuration file with `kdb editor user/example ni` to see how the value and metadata is stored:
 
-    enumtest/fruit = apple
+```ini
+enumtest/fruit = apple
 
-    [enumtest/fruit]
-    check/enum = 'apple', 'banana', 'grape'
+[enumtest/fruit]
+check/enum = 'apple', 'banana', 'grape'
+```
 
-In the example there is an important one issue: the configuration file is now changed in ways that might not be acceptable for applications.
+The example shows an important problem: the configuration file is now changed in ways that might not be acceptable for applications.
 We have at least two ways to avoid that:
 
 1. Encode metadata as comments
@@ -215,12 +229,12 @@ We have at least two ways to avoid that:
 
 If you want to find out more about validation I recommend reading [this](/doc/tutorials/validation.md) tutorial next.
 
-#### Backends ####
+#### Backends
 
 The plugins together with the configuration file form a _backend_. The backend determines how Elektra stores data below a mountpoint.
 You can examine every mountpoints backend by looking at the configuration below `system/elektra/mountpoints/<mountpoint>/`.
 
-## Limitations ##
+## Limitations
 
 One drawback of this approach is, that an application can bypass Elektra and change configuration files directly. If for example Elektra is configured to [validate](/doc/tutorials/validation.md) new configuration values before updating them, this is something you do not want to happen.
 
@@ -229,8 +243,10 @@ So you can't have different configuration files for the same mountpoints in othe
 Because of the same reason you cannot have different configuration file names or syntax for the same mountpoint in the `user` namespace.
 
 This is one of the reasons why Elektra promotes this [naming convention](/doc/help/elektra-key-names.md) for keys:
+
 > Key names of software-applications should always start with:
 > `/<type>/<org>/<name>/<version>/<profile>`
+
 > - **type** can be `sw` (software), `hw` (hardware) or `elektra` (for internal configuration)
 > - **org** is an URL/organisation name. E.g. `kde`
 > - **name** the name of the component that has this configuration

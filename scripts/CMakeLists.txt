@@ -19,6 +19,7 @@ install (PROGRAMS mount-openicc DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
 install (PROGRAMS find-tools DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
 generate_manpage (kdb-find-tools FILENAME ${CMAKE_CURRENT_SOURCE_DIR}/README.md)
 
+install (PROGRAMS update-snippet-repository DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
 install (PROGRAMS upgrade-bootstrap DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
 
 install (PROGRAMS umount-all DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
@@ -51,9 +52,21 @@ if (INSTALL_SYSTEM_FILES)
 			DESTINATION ${BASH_COMPLETION_COMPLETIONSDIR}
 			RENAME kdb)
 
+	set (FISH_COMPLETION_COMPLETIONSDIR "/usr/share/fish/vendor_completions.d")
+	find_package (PkgConfig)
+	if (PKG_CONFIG_FOUND)
+		pkg_check_modules (FISH_FOUND fish QUIET)
+		if (FISH_FOUND)
+			include (LibFindMacros)
+			pkg_get_variable (FISH_COMPLETION_COMPLETIONSDIR fish completionsdir)
+		endif ()
+	endif ()
+	install (FILES kdb.fish
+		DESTINATION ${FISH_COMPLETION_COMPLETIONSDIR})
+
 	if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
 		# On Mac OS X we need to copy this into another folder.
-		# Because of "System Integrity Protection", we need to 
+		# Because of "System Integrity Protection", we need to
 		# use a /usr/local path
 		install (FILES kdb_zsh_completion
 			DESTINATION /usr/local/share/zsh/site-functions

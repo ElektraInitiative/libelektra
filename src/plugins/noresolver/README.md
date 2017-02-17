@@ -7,7 +7,7 @@
 - infos/status = maintained nodep libc configurable unfinished nodoc concept
 - infos/description = resolver dummy that always succeeds
 
-## Explanation ##
+## Explanation
 
 Returns success on every call and can be used as resolver.
 

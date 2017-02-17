@@ -1,4 +1,4 @@
-# Bindings #
+# Bindings
 
 [Elektra's API](http://doc.libelektra.org/api/latest/html/) is written in C,
 but many different bindings allow *applications* in different programming languages
@@ -30,6 +30,6 @@ Deprecated bindings (not included in `ALL`):
 - [gi_python](gi/python/) GObject Introspection binding with Python specific overrides (deprecated)
 - [gi_lua](gi/lua/) GObject Introspection binding with Lua specific overrides (deprecated)
 
-## SEE ALSO ##
+## SEE ALSO
 
-- See [COMPILE](/doc/COMPILE.md#bindings) how to specify the bindings to build.
+- See [COMPILE](/doc/COMPILE.md#bindings) for how to specify the bindings to build, e.g. `ALL`.

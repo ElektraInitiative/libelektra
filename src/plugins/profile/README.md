@@ -1,5 +1,5 @@
 - infos = Information about the profile plugin is in keys below
-- infos/author = Name <name@libelektra.org>
+- infos/author = Thomas Waser <thomas.waser@libelektra.org>
 - infos/licence = BSD
 - infos/needs =
 - infos/provides =
@@ -9,7 +9,7 @@
 - infos/metadata =
 - infos/description = helps switching between configuration profiles
 
-## Usage ##
+## Usage
 
 Following the elektra keyname convention application configurations are stored under `/sw/org/myapp/#` and `/sw/org/myapp/#0/current`is the profile to be used.
 The `profile` plugin provides an easy way to switch configuration profiles. 
@@ -26,7 +26,7 @@ preferences (next to the namespace preferences):
 3. Usage of key in the `%` fallback profile
 
 
-## Example ##
+## Example
 
 Suppose we have the configuration file `profile.ini` in `~/.config`:
 

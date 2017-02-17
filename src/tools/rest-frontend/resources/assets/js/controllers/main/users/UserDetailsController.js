@@ -1,6 +1,6 @@
 'use strict';
 
-module.exports = function ($scope, Logger, Notification, UserService, $stateParams, user) {
+module.exports = function ($scope, $rootScope, Logger, $state, Notification, UserService, $stateParams, user) {
 
     var vm = this;
 
@@ -68,6 +68,25 @@ module.exports = function ($scope, Logger, Notification, UserService, $statePara
 
         // set form as pristine so a change has to be made for further requests
         form.$setPristine();
+    };
+
+    this.deleteAccount = function () {
+        UserService.delete($scope.user.username).then(function (response) {
+            Notification.success({
+                title: 'APP.USERS.DETAILS.NOTIFICATION.HEADER',
+                message: 'APP.USERS.DETAILS.NOTIFICATION.MESSAGE.' + response.data.i18n
+            });
+            if($scope.user.username === $rootScope.currentUser.username) {
+                $state.go('main.auth.logout');
+            } else {
+                $state.go('main.users.search');
+            }
+        }, function (response) {
+            Notification.success({
+                title: 'APP.USERS.DETAILS.NOTIFICATION.HEADER',
+                message: 'APP.USERS.DETAILS.NOTIFICATION.MESSAGE.' + response.data.i18n
+            });
+        });
     };
 
     Logger.info('Showing user infos for: ' + user);

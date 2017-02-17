@@ -1,5 +1,5 @@
 - infos = Information about the shell plugin is in keys below
-- infos/author = Name <name@libelektra.org>
+- infos/author = Thomas Waser <thomas.waser@libelektra.org>
 - infos/licence = BSD
 - infos/needs =
 - infos/provides =
@@ -7,7 +7,7 @@
 - infos/status = unittest nodep configurable preview unfinished
 - infos/description = executes shell commands
 
-## Usage ##
+## Usage
 
 The shell plugin executes shell commandos after set, get or error.
 
@@ -27,7 +27,7 @@ The configuration keys
 
 can be compared against the return values of the shell commandos.
 
-## Example ##
+## Example
 
     % cat /tmp/log
     cat: /tmp/log: No such file or directory

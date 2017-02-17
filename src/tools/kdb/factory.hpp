@@ -15,12 +15,15 @@
 #include <string>
 #include <vector>
 
+#include "ansicolors.hpp"
 #include "coloredkdbio.hpp"
+
 #include <command.hpp>
 #include <external.hpp>
 
 // TODO: to add a new command, 1.) include your header here
 #include <check.hpp>
+#include <complete.hpp>
 #include <convert.hpp>
 #include <cp.hpp>
 #include <editor.hpp>
@@ -32,6 +35,7 @@
 #include <import.hpp>
 #include <info.hpp>
 #include <list.hpp>
+#include <listcommands.hpp>
 #include <ls.hpp>
 #include <merge.hpp>
 #include <metaget.hpp>
@@ -79,6 +83,7 @@ public:
 		m_factory.insert (std::make_pair ("set", new Cnstancer<SetCommand> ()));
 		m_factory.insert (std::make_pair ("rm", new Cnstancer<RemoveCommand> ()));
 		m_factory.insert (std::make_pair ("ls", new Cnstancer<LsCommand> ()));
+		m_factory.insert (std::make_pair ("complete", new Cnstancer<CompleteCommand> ()));
 		m_factory.insert (std::make_pair ("cp", new Cnstancer<CpCommand> ()));
 		m_factory.insert (std::make_pair ("mv", new Cnstancer<MvCommand> ()));
 		m_factory.insert (std::make_pair ("mount", new Cnstancer<MountCommand> ()));
@@ -105,6 +110,7 @@ public:
 		m_factory.insert (std::make_pair ("smount", new Cnstancer<SpecMountCommand> ()));
 		m_factory.insert (std::make_pair ("global-mount", new Cnstancer<GlobalMountCommand> ()));
 		m_factory.insert (std::make_pair ("gmount", new Cnstancer<GlobalMountCommand> ()));
+		m_factory.insert (std::make_pair ("list-commands", new Cnstancer<ListCommandsCommand> ()));
 	}
 
 	~Factory ()
@@ -115,8 +121,7 @@ public:
 		}
 	}
 
-	/**Returns a list of available commands */
-	std::vector<std::string> getCommands () const
+	std::vector<std::string> getPrettyCommands () const
 	{
 		std::vector<std::string> ret;
 		for (auto & elem : m_factory)
@@ -133,7 +138,20 @@ public:
 		ret.push_back (getStdColor (ANSI_COLOR::BOLD) + "help" + getStdColor (ANSI_COLOR::RESET) + "\t" +
 			       "View the man page of a tool");
 		ret.push_back (getStdColor (ANSI_COLOR::BOLD) + "list-tools" + getStdColor (ANSI_COLOR::RESET) + "\t" +
-			       "List all external tool");
+			       "List all external tools");
+		return ret;
+	}
+
+	/**Returns a list of available commands */
+	std::vector<std::string> getCommands () const
+	{
+		std::vector<std::string> ret;
+		for (auto & elem : m_factory)
+		{
+			ret.push_back (elem.first);
+		}
+		ret.push_back ("help");
+		ret.push_back ("list-tools");
 		return ret;
 	}
 

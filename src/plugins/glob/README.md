@@ -1,7 +1,7 @@
 - infos = Information about glob plugin is in keys below
 - infos/author = Felix Berlakovich <elektra@berlakovich.net>
 - infos/licence = BSD
-- infos/provides =
+- infos/provides = apply
 - infos/needs =
 - infos/recommends =
 - infos/ordering = check keytometa
@@ -10,7 +10,7 @@
 - infos/status = unittest nodep libc configurable difficult
 - infos/description = copies metadata to keys with the help of globbing
 
-## Introduction ##
+## Introduction
 
 The glob plugin provides coping metadata given by the plugin's configuration
 to keys identified using *glob expressions*.
@@ -27,7 +27,7 @@ So this plugin adds metadata to keys identified by globbing expressions.
 The plugin copies the metadata of the corresponding globbing keys in its configuration.
 Globbing can be applied in get and set direction or both.
 
-## Globbing Keys ##
+## Globbing Keys
 
 The plugin is configured with globbing keys in its configuration. Each key below the configuration is
 interpreted as a globbing key. The value of the key contains the globbing expression. When a key matching
@@ -36,7 +36,7 @@ globbing key are copied. Once a match is found, no further keys will be consider
 for this are catch all globbing keys that can be used to match all keys that have not been matched by a
 preceding globbing key.
 
-### Globbing Direction ###
+### Globbing Direction
 
 Globbing keys located directly below the configuration (e.g `config/glob/#1`) are applied in both directions
 (get and set). Keys below "get" (e.g. `config/glob/get/#1`) are applied only in the get direction and keys below set
@@ -46,18 +46,18 @@ So the glob plugin iterates over a list of glob expressions for every key.
 Metadata is applied only for the first expression that matches.
 So later expressions can be used as default values.
 
-### Globbing Flags ###
+### Globbing Flags
 
 Globbing keys may contain a subkey named "flags". This optional key contains the flags to be passed to the
 globbing function (currently fnmatch) as a comma separated list. Unknown flag names will be ignored. The allowed flag names are
 
 - "noescape" which enables the FNM_NOESCAPE flag
 - "pathname" which enables the FNM_PATHNAME flag
-- "period" which enables the FNM_PERIOD flag  
+- "period" which enables the FNM_PERIOD flag
 
 If the flag key does not exist, FNM_PATHNAME is used as a default (see fnmatch(3) for more details).
-An empty string disables all flags (i.e. also the default flag). 
-## Contracts ##
+An empty string disables all flags (i.e. also the default flag).
+## Contracts
 
 Glob statements are very useful together with contracts.
 Storage plugins can request the glob plugin to fill up metadata before

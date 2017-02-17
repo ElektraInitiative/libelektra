@@ -19,10 +19,12 @@ elektra-glossary(7) -- glossary of Elektra
   hierarchically by defining separators in the key names.
   Unlike SQL databases, the key name is the only primary key; there are
   no foreign keys, and no query language exists.
+  Abbreviated as KDB.
 
 - **Global key database**:
   provides global access to all key databases
   of all applications in a system that wants to access a key database.
+  Also abbreviated as KDB.
 
 - To **elektrify** an application:
   to change the application so that it uses Elektra afterwards.

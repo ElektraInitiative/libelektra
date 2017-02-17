@@ -67,7 +67,7 @@ the behaviour of the key database).
 Again, we managed to have a great feature release with dozens of
 corrections!
 
-## New Features ##
+## New Features
 
 Thanks to Manuel Mausz for further improving lua, python3 bindings
 and the new python2 bindings.
@@ -96,7 +96,7 @@ The contextual values now got a [tutorial]
 and small fixes.
 
 
-## Corrections ##
+## Corrections
 
 Thanks to Pino Toscano for fixing a lot of spelling errors, simplify
 RPATH setting, respect $HOME and $TMPDIR, improvements of test cases,
@@ -122,7 +122,7 @@ Some remaining mem leaks in rare circumstances were fixed. Valgrind
 should now never report any leaks, if it does, please report the issue.
 
 
-## API Changes ##
+## API Changes
 
 Added delMeta() for C++, because setMeta() with NULL will set the
 number 0 and not remove the meta.
@@ -133,7 +133,7 @@ The change only effects the C++ binding, keyIsBelow is unaffected by
 the change.
 
 
-## Documentation ##
+## Documentation
 
 [Specification of metadata](doc/specification.ini) and
 [contracts](doc/contracts.ini) written/greatly improved.
@@ -146,7 +146,7 @@ structure fits better. This is especially true for GUIs. Luckily, Keys
 can be in multiple data structures because of their reference counting.
 
 
-## Other Stuff ##
+## Other Stuff
 
 We now fully embrace github:
 - We use its issue tracker (all issues from local text files were moved
@@ -182,7 +182,7 @@ A special thanks to Kai-Uwe Behrmann for providing packages for
 SLE](http://software.opensuse.org/download.html?project=home%3Abekun&package=elektra).
 
 
-## Get It! ##
+## Get It!
 
 You can download the release from:
 

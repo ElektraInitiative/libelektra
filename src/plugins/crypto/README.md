@@ -1,7 +1,7 @@
 - infos = Information about crypto plugin is in keys below
 - infos/author = Peter Nirschl <peter.nirschl@gmail.com>
 - infos/licence = BSD
-- infos/provides = filefilter crypto
+- infos/provides = crypto
 - infos/needs =
 - infos/recommends =
 - infos/placements = postgetstorage presetstorage
@@ -13,7 +13,7 @@
 - infos/metadata = crypto/encrypt
 - infos/description = Cryptographic operations
 
-## Introduction ##
+## Introduction
 
 This plugin is a filter plugin allowing Elektra to encrypt values before they are
 persisted and to decrypt values after they have been read from a backend.
@@ -32,7 +32,7 @@ At the moment the following crypto APIs are supported:
 - libgcrypt
 - Botan
 
-## Dependencies ##
+## Dependencies
 
 #ifdef ELEKTRA_CRYPTO_API_GCRYPT
 - `libgcrypt20-dev` or `libgcrypt-devel`
@@ -44,7 +44,7 @@ At the moment the following crypto APIs are supported:
 - `libbotan1.10-dev` or `botan-devel`
 #endif
 
-### GnuPG (GPG) ###
+### GnuPG (GPG)
 
 GPG is a runtime dependency for all crypto plugin variants.
 Either the `gpg` or the `gpg2` binary should be installed when using the plugin.
@@ -52,7 +52,7 @@ Note that `gpg2` will be preferred if both versions are available.
 The GPG binary can be configured in the plugin configuration as `/gpg/bin` (see _GPG Configuration_ below).
 If no such configuration is provided, the plugin will look at the PATH environment variable to find the GPG binaries.
 
-## How to compile ##
+## How to compile
 
 The following compile variants are available:
 
@@ -72,7 +72,7 @@ or it may look like:
 
     PLUGINS=CRYPTO
 
-### Manual Library Setup ###
+### Manual Library Setup
 
 If you have a custom built OpenSSL or libgcrypt on your system, you can tell CMake to use those by setting the following CMake variables.
 
@@ -91,7 +91,7 @@ For a custom Botan development file location set:
 - *BOTAN_INCLUDE_DIRS* to Botan's header files (includes)
 - *BOTAN_LIBRARIES* to Botan's binary file
 
-### Mac OS X ###
+### Mac OS X
 
 Both variants of the plugin compile under Mac OS X "El Capitan" (Version 10.11.3 (15D21)).
 
@@ -111,11 +111,11 @@ Copy the header files and the binary files to a location where all users can acc
 
 Set the CMake variables `OPENSSL_INCLUDE_DIR` and `OPENSSL_LIBRARIES` to your desired location.
 
-## Restrictions ##
+## Restrictions
 
 At the moment the plugin will only run on UNIX/Linux-like systems, that provide implementations for `fork ()` and `execv ()`.
 
-## Examples ##
+## Examples
 
 To mount a backend with the gcrypt plugin variant that uses the GPG key 9CCC3B514E196C6308CCD230666260C14A525406, use:
 
@@ -132,9 +132,9 @@ But you can still access the original value using `kdb get`:
 
     kdb get user/t/a
 
-## Configuration ##
+## Configuration
 
-### GPG Configuration ###
+### GPG Configuration
 
 The path to the gpg binary can be specified in
 
@@ -150,7 +150,7 @@ If more than one key is defined, every owner of the corresponding private key ca
 This might be useful if applications run with their own user but the administrator has to update the configuration.
 The administrator then only needs the public key of the application user in her keyring, set the values and the application will be able to decrypt the values.
 
-### Cryptographic Operations ###
+### Cryptographic Operations
 
 The length of the master password that protects all the other keys can be set in:
 
@@ -160,7 +160,7 @@ The number of iterations that are to be performed in the PBKDF2 call can be set 
 
     /crypto/iterations
 
-### Library Shutdown ###
+### Library Shutdown
 
 The following key must be set to `"1"` within the plugin configuration,
 if the plugin should shut down the crypto library:

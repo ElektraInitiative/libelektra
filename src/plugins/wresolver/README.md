@@ -11,7 +11,7 @@
 #endif
 - infos/description = Returns success on every call and can be used as resolver.
 
-## Introduction ##
+## Introduction
 
 Resolver for non-POSIX, e.g. w32/w64 systems.
 

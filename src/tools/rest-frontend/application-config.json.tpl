@@ -41,5 +41,8 @@
     },
     "logger": {
         "enabled": true
+    },
+    "jwt": {
+        "validity": 30
     }
 }

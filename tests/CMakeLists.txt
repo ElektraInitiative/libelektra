@@ -36,9 +36,8 @@ macro (do_test source)
 endmacro (do_test)
 
 add_custom_target(run_all
-	COMMAND ${CMAKE_CTEST_COMMAND}
-	--force-new-ctest-process --output-on-failure
-	--build-config "$<CONFIGURATION>"
+	COMMAND "${CMAKE_SOURCE_DIR}/scripts/run_all"
+	"$<CONFIGURATION>"
 	WORKING_DIRECTORY "${CMAKE_BINARY_DIR}")
 
 add_custom_target(run_memcheck

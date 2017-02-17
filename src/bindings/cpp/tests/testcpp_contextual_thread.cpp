@@ -291,7 +291,56 @@ TEST (test_contextual_thread, activateWithDependency)
 	c1.activate<Dep> (v1);
 	ASSERT_EQ (c1.size (), 2);
 	ASSERT_EQ (c1["dep"], "22") << "dependency not correct, activate does not do syncLayer";
+	ASSERT_EQ (c1["activate"], "active");
 	ASSERT_EQ (c2["activate"], "active");
+}
+
+class StrDep : public kdb::Layer
+{
+public:
+	StrDep (ThreadValue<std::string> const & i) : m_i ()
+	{
+		m_i = i;
+	}
+	std::string id () const override
+	{
+		return "dep";
+	}
+	std::string operator() () const override
+	{
+		return m_i;
+	}
+	std::string m_i;
+};
+
+
+TEST (test_contextual_thread, activateWithDirectDependency)
+{
+	Key specKey ("/act/%activate%", KEY_END);
+
+	KeySet ks;
+	ks.append (Key ("user/act/%", KEY_VALUE, "inactive", KEY_END));
+	ks.append (Key ("user/act/active", KEY_VALUE, "active", KEY_END));
+
+	Coordinator gc;
+	ThreadContext c1 (gc);
+	ThreadContext c2 (gc);
+	ThreadValue<std::string> v1 (ks, c1, specKey);
+	ThreadValue<std::string> v2 (ks, c2, specKey);
+	ThreadValue<std::string> vd (ks, c2, specKey);
+	ASSERT_EQ (std::string (v1), "inactive");
+	ASSERT_EQ (std::string (v2), "inactive");
+	ASSERT_EQ (std::string (vd), "inactive");
+
+	c1.activate<Activate> ();
+	ASSERT_EQ (std::string (v1), "active");
+	ASSERT_EQ (std::string (v2), "inactive");
+	ASSERT_EQ (std::string (vd), "inactive");
+
+	c2.activate<StrDep> (vd);
+	ASSERT_EQ (std::string (v1), "active");
+	ASSERT_EQ (std::string (v2), "active");
+	ASSERT_EQ (std::string (vd), "active");
 }
 
 

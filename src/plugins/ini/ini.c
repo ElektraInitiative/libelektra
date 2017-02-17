@@ -128,11 +128,16 @@ static void keyAddUnescapedBasePath (Key * key, const char * path)
 		int ret = keyAddName (key, buffer);
 		if (ret == -1)
 		{
-			char * tmp = elektraMalloc (keyGetFullNameSize (key) + strlen (buffer));
+			char * tmp = elektraMalloc (keyGetFullNameSize (key) + strlen (buffer) + 2);
 			keyGetFullName (key, tmp, keyGetFullNameSize (key));
 			strcat (tmp, "/");
 			strcat (tmp, buffer);
-			keySetName (key, tmp);
+			ssize_t rc = keySetName (key, tmp);
+			if (rc == -1 && tmp[strlen (tmp) - 1] == '\\')
+			{
+				tmp[strlen (tmp) - 1] = '\0';
+				keySetName (key, tmp);
+			}
 			elektraFree (tmp);
 		}
 		elektraFree (buffer);
@@ -338,13 +343,13 @@ static int iniKeyToElektraKey (void * vhandle, const char * section, const char 
 	CallbackHandle * handle = (CallbackHandle *)vhandle;
 	if ((!section || *section == '\0') && (!name || *name == '\0'))
 	{
-		Key * rootKey = keyDup (handle->parentKey);
+		Key * rootKey = keyNew (keyName (handle->parentKey), KEY_END);
 		keySetString (rootKey, value);
 		flushCollectedComment (handle, rootKey);
 		ksAppendKey (handle->result, rootKey);
 		return 1;
 	}
-	Key * appendKey = keyDup (handle->parentKey);
+	Key * appendKey = keyNew (keyName (handle->parentKey), KEY_END);
 	Key * sectionKey;
 	if (!section || *section == '\0')
 	{
@@ -439,8 +444,7 @@ static short isSectionKey (Key * key)
 static int iniSectionToElektraKey (void * vhandle, const char * section)
 {
 	CallbackHandle * handle = (CallbackHandle *)vhandle;
-	Key * appendKey = keyDup (handle->parentKey);
-	keySetString (appendKey, 0);
+	Key * appendKey = keyNew (keyName (handle->parentKey), KEY_END);
 	createUnescapedKey (appendKey, section);
 	Key * existingKey = NULL;
 	if ((existingKey = ksLookup (handle->result, appendKey, KDB_O_NONE)))
@@ -679,6 +683,15 @@ static void setParents (KeySet * ks, Key * parentKey)
 }
 static void stripInternalData (Key * parentKey, KeySet *);
 
+static void incOrder (Key * key)
+{
+	Key * orderKey = keyNew ("/", KEY_CASCADING_NAME, KEY_END);
+	keyAddName (orderKey, keyString (keyGetMeta (key, "internal/ini/order")));
+	elektraArrayIncName (orderKey);
+	keySetMeta (key, "internal/ini/order", keyBaseName (orderKey));
+	keyDel (orderKey);
+}
+
 int elektraIniGet (Plugin * handle, KeySet * returned, Key * parentKey)
 {
 
@@ -722,7 +735,7 @@ int elektraIniGet (Plugin * handle, KeySet * returned, Key * parentKey)
 	pluginConfig->BOM = 0;
 	if (pluginConfig->lastOrder && !keyGetMeta (parentKey, "internal/ini/order"))
 		keySetMeta (parentKey, "internal/ini/order", pluginConfig->lastOrder);
-	else
+	else if (!keyGetMeta (parentKey, "internal/ini/order"))
 		keySetMeta (parentKey, "internal/ini/order", "#1");
 	cbHandle.array = pluginConfig->array;
 	cbHandle.mergeSections = pluginConfig->mergeSections;
@@ -764,6 +777,7 @@ int elektraIniGet (Plugin * handle, KeySet * returned, Key * parentKey)
 	}
 	ksDel (cbHandle.result);
 	if (pluginConfig->lastOrder) elektraFree (pluginConfig->lastOrder);
+	incOrder (parentKey);
 	pluginConfig->lastOrder = strdup (keyString (keyGetMeta (parentKey, "internal/ini/order")));
 	elektraPluginSetData (handle, pluginConfig);
 	return ret; /* success */
@@ -905,7 +919,7 @@ static char * getIniName (Key * section, Key * key)
 
 Key * getGlobalRoot (Key * parentKey, KeySet * ks)
 {
-	Key * lookup = keyDup (parentKey);
+	Key * lookup = keyNew (keyName (parentKey), KEY_END);
 	keyAddName (lookup, INTERNAL_ROOT_SECTION);
 	Key * found = ksLookup (ks, lookup, KDB_O_NONE);
 	keyDel (lookup);
@@ -922,10 +936,7 @@ int hasGlobalRoot (Key * parentKey, KeySet * ks)
 
 void createGlobalRoot (Key * parentKey, KeySet * ks)
 {
-	Key * appendKey = keyDup (parentKey);
-	keySetString (appendKey, 0);
-	keySetMeta (appendKey, "internal/ini/order", 0);
-	keySetMeta (appendKey, "internal/ini/section", 0);
+	Key * appendKey = keyNew (keyName (parentKey), KEY_END);
 	keyAddName (appendKey, INTERNAL_ROOT_SECTION);
 	keySetMeta (appendKey, "internal/ini/order", "#0");
 	keySetMeta (appendKey, "internal/ini/key/last", "#0");
@@ -1020,10 +1031,7 @@ void arrayHandler (Key * parentKey, Key * newKey, Key * cur, Key * sectionKey, K
 
 void insertIntoKS (Key * parentKey, Key * cur, KeySet * newKS, IniPluginConfig * pluginConfig)
 {
-	Key * appendKey = keyDup (parentKey);
-	keySetString (appendKey, 0);
-	keySetMeta (appendKey, "internal/ini/order", 0);
-	keySetMeta (appendKey, "internal/ini/section", 0);
+	Key * appendKey = keyNew (keyName (parentKey), KEY_END);
 	Key * sectionKey = keyDup (appendKey);
 	Key * newKey = NULL;
 	keySetName (sectionKey, keyName (cur));
@@ -1161,7 +1169,8 @@ static void iniWriteMeta (FILE * fh, Key * key)
 	{
 		Key * meta = (Key *)keyCurrentMeta (key);
 		const char * name = keyName (meta);
-		if (strncmp (name, "internal/", 9) && strcmp (name, "internal/ini/section") && strncmp (name, "comment", 7))
+		if (strncmp (name, "internal/", 9) && strcmp (name, "internal/ini/section") && strncmp (name, "comment", 7) &&
+		    strncmp (name, "warnings/", 9) && strncmp (name, "error/", 6) && strcmp (name, "warnings") && strcmp (name, "error"))
 		{
 			if (!strcmp (name, "binary") && keyGetNamespace (key) != KEY_NS_SPEC) continue;
 			const char * string = keyString (meta);
@@ -1507,9 +1516,18 @@ int elektraIniSet (Plugin * handle, KeySet * returned, Key * parentKey)
 	Key * head = keyDup (ksHead (returned));
 	IniPluginConfig * pluginConfig = elektraPluginGetData (handle);
 	if (pluginConfig->lastOrder && !keyGetMeta (parentKey, "internal/ini/order"))
+	{
 		keySetMeta (parentKey, "internal/ini/order", pluginConfig->lastOrder);
-	else
+		incOrder (parentKey);
+	}
+	else if (!keyGetMeta (parentKey, "internal/ini/order"))
+	{
 		keySetMeta (parentKey, "internal/ini/order", "#1");
+	}
+	else
+	{
+		incOrder (parentKey);
+	}
 	Key * cur;
 	KeySet * newKS = ksNew (0, KS_END);
 	ksRewind (returned);

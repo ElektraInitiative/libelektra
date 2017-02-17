@@ -4,7 +4,7 @@ echo
 echo ELEKTRA CHECK RESOLVER
 echo
 
-#set tmp path (mainly for OS X compatibility)
+#set tmp path (mainly for macOS compatibility)
 TMPPATH=`cd /tmp; pwd -P`
 
 #checks if resolver can be mounted and also partly checks if it resolves

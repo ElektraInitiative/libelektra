@@ -1,5 +1,5 @@
 - infos = Information about the regexstore plugin is in keys below
-- infos/author = Name <name@libelektra.org>
+- infos/author = Markus Raab <elektra@libelektra.org>
 - infos/licence = BSD
 - infos/needs =
 - infos/provides = storage
@@ -7,7 +7,7 @@
 - infos/status = nodep configurable readonly preview difficult limited unfinished
 - infos/description = regular expressions as storage plugin
 
-## Introduction ##
+## Introduction
 
 Allows regular expressions to be applied as storage plugin.
 The idea is to have something like "lazy lenses" with regex
@@ -35,7 +35,7 @@ The key also might contain metadata.
 - the only characters allowed in metavalues are '#[0-9]'.
 the metadata will be replaced by the regex match then.
 
-## Limitations ##
+## Limitations
 
 The semantics of how the regex works is unsteady and the plugin should
 be avoided in productive use.
@@ -43,9 +43,9 @@ be avoided in productive use.
 Currently the storage plugin does not have write support. When writing
 is added, overlapping regex need to be disallowed.
 
-## Usage ##
+## Usage
 
-### vim config ###
+### vim config
 
 First mount the regexstore with some at least one config key:
 
@@ -67,7 +67,7 @@ then we will get two keys with:
 
     user/vim/map/:qa<CR>
 
-### emacs config ###
+### emacs config
 
     kdb mount emacs /emacs
 

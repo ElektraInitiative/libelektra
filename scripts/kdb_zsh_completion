@@ -10,12 +10,12 @@ _kdb_paths () {
 
     # TODO
     # Some paths only have a single possible completion.
-    # like if there is no other path starting with s/foo/bar and 
+    # like if there is no other path starting with s/foo/bar and
     # s/foo/bar/sdf/baz/bar/xxx is the only leaf, we can complete for this directly
 
     typeset -a paths
     # Count the number of slashes to know where we are
-    # TODO this seems to be not working in a zsh without configuratin
+    # TODO this seems to be not working in a zsh without configuration
     # e.g. my configuration does something weird.
     # it should be ${#PREFIX//[^\/]/}
     slashes=${#PREFIX//[^\\\/]/}
@@ -32,7 +32,7 @@ _kdb_paths () {
         fi
         kdb ls / | grep -q -e "^$PREFIX"
         if [ $? -ne 0 ]; then
-            # TODO need to check here for the key w/o /. 
+            # TODO need to check here for the key w/o /.
             # probably move into a function
             kdb ls / | grep -q -e "^${PREFIX:0:-1}$"
             if [ $? -eq 0 ]; then
@@ -85,12 +85,12 @@ _kdb-fstab () {
     _kdb_path
 }
 
-_kdb-get () { 
+_kdb-get () {
     # TODO disallow multiple kdb paths
     _kdb_paths
 }
 
-_kdb-getmeta () { 
+_kdb-getmeta () {
     # TODO key-name metaname
     _kdb_paths
 }
@@ -114,7 +114,7 @@ _kdb-ls () {
     _kdb_paths
 }
 
-_kdb-lsmeta () { 
+_kdb-lsmeta () {
     _kdb_paths
 }
 
@@ -131,7 +131,7 @@ _kdb-mv () {
     _kdb_paths
 }
 
-_kdb-remount () { 
+_kdb-remount () {
     # TODO new-path new-mountpoint existing-mountpoint
     _kdb_paths
 }
@@ -146,17 +146,17 @@ _kdb-set () {
     _kdb_paths
 }
 
-_kdb-setmeta () { 
+_kdb-setmeta () {
     # TODO key-name metaname metavalue
     _kdb_paths
 }
 
 _kdb-sget () {
     # TODO single path and default value
-    _kdb_paths 
+    _kdb_paths
 }
 
-_kdb-shell () { 
+_kdb-shell () {
     _message -e "No Arguments for shell"
     return
 }
@@ -166,7 +166,7 @@ _kdb-test () {
     _kdb_paths
 }
 
-_kdb-umount () { 
+_kdb-umount () {
     # TODO name
     _kdb_paths
 }
@@ -176,7 +176,7 @@ _kdb-vset () {
     _kdb_paths
 }
 
-_kdb-help () { 
+_kdb-help () {
     # TODO can we get the command list all over again?
 }
 

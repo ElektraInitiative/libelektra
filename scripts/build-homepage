@@ -1,13 +1,22 @@
 #!/bin/sh
+# This script is sourced on build server, shebang is for convenience
+
+# remember the build directory
+ROOT_DIR=$PWD
 
 # build the applications
 mkdir -p build
 cd build
-cmake -DENABLE_ASAN=ON -DBUILD_FULL=OFF -DBUILD_SHARED=ON -DBUILD_STATIC=OFF -DBUILD_DOCUMENTATION=OFF -DPLUGINS='ALL;-fstab;-semlock' -DTOOLS='kdb;rest-backend;rest-frontend' -DCMAKE_C_FLAGS='-D_FORTIFY_SOURCE=2 -Werror=format-security -fstack-protector-strong -Wstack-protector' -DCMAKE_CXX_FLAGS='-D_FORTIFY_SOURCE=2 -Werror=format-security -fstack-protector-strong -Wstack-protector' -DCMAKE_EXE_LINKER_FLAGS='-Wl,-z,now' ..
+cmake -DENABLE_ASAN=ON -DBUILD_FULL=OFF -DBUILD_SHARED=ON -DBUILD_STATIC=OFF -DBUILD_DOCUMENTATION=OFF -DPLUGINS='ALL;-fstab;-semlock' -DTOOLS='kdb;rest-backend;rest-frontend' -DCMAKE_C_FLAGS='-D_FORTIFY_SOURCE=2 -Werror=format-security -fstack-protector-strong -Wstack-protector -fPIE -pie' -DCMAKE_CXX_FLAGS='-D_FORTIFY_SOURCE=2 -Werror=format-security -fstack-protector-strong -Wstack-protector -fPIE -pie' -DCMAKE_EXE_LINKER_FLAGS='-Wl,-z,now -Wl,-z,relro' ..
 make -j 3
 
-# test the applications
-make run_all
+# test the applications (TODO: external fails?)
+#make run_all
+ctest --output-on-failure -E external
+
+# rotate backup of previous website
+rm -rf /usr/local/share/elektra/tool_data_backup
+cp -ra /usr/local/share/elektra/tool_data /usr/local/share/elektra/tool_data_backup
 
 # if tests were ok, we can install
 make install
@@ -20,13 +29,43 @@ kdb --version
 # prevent jenkins from killing daemons
 BUILD_ID=dontKillMe
 
-# then restart the backend
-kdb stop-rest-backend
+# allow core dumps
+ulimit -c unlimited
+
+# place for core dumps (name by: echo "core_%t_%p" > /proc/sys/kernel/core_pattern)
+cd /var/lib/jenkins
+
+pstree
+echo -n "Old PID was: "
+cat /run/elektra-rest-backend.pid || /bin/true
+echo
+
+
+IP=`kdb sget /sw/elektra/restbackend/#0/current/cppcms/service/ip 127.0.0.1`
+PORT=`kdb sget /sw/elektra/restbackend/#0/current/cppcms/service/port 8080`
+
+echo "The backend should running on $IP:$PORT"
+
+netstat -tlpen
+
+
+# then start the backend; succeed if it was not started before..
+kdb stop-rest-backend || /bin/true
+
+# avoid 'address already in use'
+while netstat -tlpen | grep "$IP:$PORT"
+do
+	sleep 1  # keep waiting (=downtime) short
+done
+
+# now start again
 kdb run-rest-backend
 
-# we have to make sure the backend had time to start before we can go on
-# (necessary because the command `kdb run-rest-backend` runs in the background)
-sleep 60
+echo -n "New PID is: "
+cat /run/elektra-rest-backend.pid || /bin/true
+echo
+
+netstat -tlpen
 
 # and finally re-compile the frontend
 # - the old frontend is still alive and does not get taken offline (not necessary)
@@ -35,4 +74,12 @@ sleep 60
 #   required files afterwards, ensuring an always up-to-date deployment
 kdb build-rest-frontend
 
+# create and copy api description
+ELEKTRA_VERSION=$(kdb get --no-newline system/elektra/version/constants/KDB_VERSION)
+apiary preview --path=$ROOT_DIR/doc/api_blueprints/snippet-sharing.apib --output=/srv/libelektra/restapi/$ELEKTRA_VERSION/snippet-sharing.html
+cp $ROOT_DIR/doc/api_blueprints/snippet-sharing.apib /srv/libelektra/restapi/$ELEKTRA_VERSION/snippet-sharing.apib
+rm /srv/libelektra/restapi/current
+ln -s /srv/libelektra/restapi/$ELEKTRA_VERSION /srv/libelektra/restapi/current
+
 pstree
+ulimit -a

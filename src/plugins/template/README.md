@@ -1,5 +1,5 @@
 - infos = Information about the template plugin is in keys below
-- infos/author = Name <name@libelektra.org>
+- infos/author = Author Name <elektra@libelektra.org>
 - infos/licence = BSD
 - infos/needs =
 - infos/provides =
@@ -9,12 +9,12 @@
 - infos/metadata =
 - infos/description = one-line description of template
 
-## Introduction ##
+## Introduction
 
 Copy this template if you want to start a new
 plugin written in C.
 
-## Usage ##
+## Usage
 
 You can use `scripts/copy-template`
 to automatically rename everything to your
@@ -25,7 +25,7 @@ plugin name:
 
 Then update the README.md of your newly created plugin:
 
-- enter your name+email in `infos/author`
+- enter your full name+email in `infos/author`
 - make sure `status` and other clauses conform to
   descriptions in `doc/CONTRACT.ini`
 - update the one-line description above
@@ -33,14 +33,14 @@ Then update the README.md of your newly created plugin:
 - and rewrite the rest of this `README.md` to give a great
   explanation of what your plugin does
 
-## Dependencies ##
+## Dependencies
 
 None.
 
-## Examples ##
+## Examples
 
-TBD
+None.
 
-## Limitations ##
+## Limitations
 
 None.

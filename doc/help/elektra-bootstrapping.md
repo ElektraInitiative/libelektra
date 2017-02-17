@@ -34,7 +34,7 @@ itself is stored.  After mounting all backends, Elektra checks if
 `system/elektra` still resides at the default backend.  If not,
 the init backend will be mounted there.
 
-## SUMMARY ##
+## SUMMARY
 
 To summarise, this approach delivers a good out-of-the-box experience
 capable of storing configuration. For special use cases, applications
@@ -50,7 +50,7 @@ stored in it. The implementation of the core guarantees that user and
 system keys always stay separated.
 
 
-## TRACEABILITY ##
+## TRACEABILITY
 
 - elektraOpenBootstrap() implements above algorithm
 - backendOpenDefault() opens the default backend
@@ -59,7 +59,7 @@ system keys always stay separated.
 - cmake/Modules/LibAddMacros.cmake create_lib_symlink function
 
 
-## SEE ALSO ##
+## SEE ALSO
 
 - [bootstrap decision](/doc/decisions/bootstrap.md)
 

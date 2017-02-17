@@ -74,7 +74,7 @@ For example, to permanently change verbosity one can use:
 
 Profiles allow users to change many/all configuration options of a tool
 at once. It influences from where the KDB entries are read.
-For example if you use: 
+For example if you use:
 	`kdb export -p admin system`
 
 It will read its format configuration from `/sw/elektra/kdb/#0/admin/format`.
@@ -86,7 +86,7 @@ be chosen automatically according to the current user or current working directo
 Sometimes it is useful to start with default options, for example it is not
 possible to invert the `-q` option.
 In such situations one can simply select a non-existing profile, then `-q`
-works as usual: 
+works as usual:
 	`kdb mount -p nonexist -q /abc dir/abc`
 
 ## BOOKMARKS
@@ -96,23 +96,23 @@ because it ensures flexibility in the future (e.g. to use profiles and have a co
 path for new major versions of configuration).
 
 Long paths are, however, cumbersome to enter in the CLI.
-Thus one can define bookmarks. Bookmarks are key-names that start with `+`.
+Thus one can define bookmarks. Bookmarks are keys whose key name starts with `+`.
 They are only recognized by the `kdb` tool or tools that explicit have
 support for it. Your applications should not depend on the presence of a
 bookmark.
 
-Bookmarks are stored below: 
+Bookmarks are stored below:
 	`/sw/elektra/kdb/#0/current/bookmarks`
 
 For every key found there, a new bookmark will be introduced.
 
-Bookmarks can be used to start key-names by using `+` (plus) as first character.
+Bookmarks can be used to start key names by using `+` (plus) as first character.
 The string until the first `/` will be considered as bookmark.
 
 For example, if you set the bookmark kdb:
 
 	kdb set user/sw/elektra/kdb/#0/current/bookmarks
-	kdb set user/sw/elektra/kdb/#0/current/bookmarks/kdb user/sw/elektra/kdb/#0/current`
+	kdb set user/sw/elektra/kdb/#0/current/bookmarks/kdb user/sw/elektra/kdb/#0/current
 
 You are able to use:
 
@@ -135,7 +135,7 @@ You are able to use:
 - 5:
   KDB Error, could not read/write from/to KDB.
 - 7-8:
-  Unkown errors, wrong exceptions thrown.
+  Unknown errors, wrong exceptions thrown.
 - 9-10:
   Reserved error codes.
 

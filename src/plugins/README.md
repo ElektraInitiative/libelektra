@@ -1,25 +1,22 @@
 elektra-plugins(7) -- plugins overview
 ======================================
 
-Plugins can be mounted into the KDB and can access or manipulate the
-KeySet on every access.
-
-Multiple plugins can be mounted into the [key data base](/doc/help/elektra-glossary.md).
+Multiple plugins can be mounted into the [key database](/doc/help/elektra-glossary.md) (KDB).
 On every access to the key data base they are executed and thus can change
-the functionality.
+the functionality and behavior.
 
-## Description ##
+## Description
 
-Elektra already has a wide range of different plugins.
+Elektra has a wide range of different plugins.
 The plugin folders should contain a README.md with further information.
 (Or follow links below.)
 The plugins are:
 
-![Overview Plugins](/doc/images/overview_plugins.png)
+![Overview Plugins](/doc/images/plugins.png)
 
 For background information see [elektra-plugins-framework(7)](/doc/help/elektra-plugins-framework.md).
 
-### C-Interface ###
+### C-Interface
 
 All plugins implement the same interface:
 
@@ -35,30 +32,32 @@ All plugins implement the same interface:
     their chance for necessary cleanups.
 -  `kdbClose()` makes sure that plugins can finally free their
     own resources in `elektraPluginClose()`.
--  `kdbPluginCheckConfig()` can be called manually to ensure a plugin is
+-  `kdbCheckConfig()` can be called manually to ensure a plugin is
    configured properly.
+-  `kdbGenConfig()` can be called to produce all valid configurations
+   of a plugin.
 
-### KDB-Interface ###
+### KDB-Interface
 
 - To list all plugins use [kdb-list(1)](/doc/help/kdb-list.md).
 - To check a plugin use [kdb-check(1)](/doc/help/kdb-check.md).
 - For information on a plugin use [kdb-info(1)](/doc/help/kdb-info.md).
 - For mount plugin(s) use [kdb-mount(1)](/doc/help/kdb-mount.md).
 
-## See also ##
+## See also
 
 For an easy introduction, see [this tutorial how to write a storage plugin](/doc/tutorials/plugins.md).
 For more background information of the [plugins framework, continue here](/doc/help/elektra-plugins-framework.md).
 Otherwise, you can visit the [the API documentation](http://doc.libelektra.org/api/current/html/group__plugin.html).
 
-## Plugins ##
+## Plugins
 
-### Resolver ###
+### Resolver
 
 Before configuration is actually written, the file name needs to be
 determined (will be automatically added by kdb mount):
 
-- [resolver](resolver/) uses POSIX APIs to handle conflicts gracefully
+- [resolver](resolver/) uses advanced POSIX APIs to handle conflicts gracefully
 - [wresolver](wresolver/) minimalistic resolver for non-POSIX systems
 - [noresolver](noresolver/) does not resolve, but can act as one
 - [gitresolver](gitresolver/) checks out and commits files to a local git repository
@@ -69,7 +68,7 @@ harddisc (recommended to add at every kdb mount):
 
 - [sync](sync/) uses POSIX APIs to sync configuration file with harddisc
 
-### Storage ###
+### Storage
 
 Are responsible for reading writing the configuration to configuration
 files.
@@ -112,7 +111,7 @@ productive use:
 - [mozprefs](mozprefs/) for Mozilla preference files
 - [c](c/) writes Elektra C-structures (`ksNew(.. keyNew(...`)
 
-### System Information ###
+### System Information
 
 Information compiled in Elektra:
 - version is a built-in plugin directly within the
@@ -127,7 +126,7 @@ files:
 
 - [uname](uname/) information from the uname syscall.
 
-### Filter ###
+### Filter
 
 *Filter plugins* process keys and their values in both
 directions.
@@ -164,7 +163,7 @@ Doing other stuff:
 - [hidden](hidden/) hides keys whose names start with a `.`.
 - [null](null/) takes care of null values and other binary specialities
 
-### Notification and Logging ###
+### Notification and Logging
 
 Log/Send out all changes to configuration to:
 
@@ -173,7 +172,7 @@ Log/Send out all changes to configuration to:
 - [syslog](syslog/)
 - [logchange](logchange/) prints the change of every key on the console
 
-### Debug ###
+### Debug
 
 Trace everything that happens within KDB:
 
@@ -181,7 +180,7 @@ Trace everything that happens within KDB:
 - [tracer](tracer/)
 - [counter](counter/) count and print how often plugin is used
 
-### Checker ###
+### Checker
 
 Copies metadata to keys:
 
@@ -202,13 +201,14 @@ copied by another plugin just before):
 - [mathcheck](mathcheck/) by mathematical expressions using keysvalues as operands
 - [conditionals](conditionals/) by using if-then-else like statements
 - [required](required/) rejects non-required keys
+- [date](date/) validates date and time data
 
 **Other Validation**
 
 - [filecheck](filecheck/) does sanity checks on a file
 - [lineendings](lineendings/) tests file for consistent line endings
 
-### Interpreter ###
+### Interpreter
 
 These plugins start an interpreter and allow you to execute a script
 in an interpreted language whenever Elektra's key database gets
@@ -221,7 +221,7 @@ binding during runtime.
 - [lua](lua/) Lua plugins
 - [shell](shell/) executes shell commandos
 
-### Others ###
+### Others
 
 - [doc](doc/) contains the documentation of the plugin interface
 - [error](error/) yields errors as described in metadata (handy for test purposes)

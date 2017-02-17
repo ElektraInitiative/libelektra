@@ -1,0 +1,54 @@
+/**
+ * @file
+ *
+ * @brief stylesheet for the treeview in the elektra-web client application
+ *
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ */
+
+/* the tree node's style */
+.tree-view {
+  overflow-y: hidden;
+}
+
+.tree-view-item {
+  /* immediate child of .tree-view, for styling convenience */
+}
+
+/* style for the children nodes container */
+.tree-view-children {
+  margin-left: 16px;
+}
+
+/* style for collapsed children nodes */
+.tree-view-children-collapsed {
+  height: 0px;
+}
+
+/* show pointer mouse cursor when hovering over item that has children (or the arrow next to it) */
+.tree-view-arrow, .tree-view-haschildren {
+  cursor: pointer;
+}
+
+/* style of the arrow next to a node with children */
+.tree-view-arrow {
+  margin-right: 6px;
+  display: inline-block;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+/* display triangle (opened node) */
+.tree-view-arrow:after {
+  content: '▾';
+}
+
+/* rotate the triangle to close it */
+.tree-view-arrow-collapsed {
+  -webkit-transform: rotate(-90deg);
+  -moz-transform: rotate(-90deg);
+  -ms-transform: rotate(-90deg);
+  transform: rotate(-90deg);
+}

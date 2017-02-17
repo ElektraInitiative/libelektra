@@ -20,6 +20,7 @@
 #ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
 #include <kdbopmphm.h>
 #endif
+#include <kdbglobal.h>
 
 #include <limits.h>
 
@@ -241,23 +242,6 @@ struct _KeySet
 
 
 /**
- * Helper for identifying global plugin positions
- */
-
-typedef enum {
-	PREROLLBACK = 0,
-	POSTROLLBACK,
-	PREGETSTORAGE,
-	POSTGETSTORAGE,
-	POSTGETCLEANUP,
-	PRESETSTORAGE,
-	PRESETCLEANUP,
-	PRECOMMIT,
-	POSTCOMMIT,
-	NR_GLOBAL_PLUGINS
-} GlobalpluginPositions;
-
-/**
  * The access point to the key database.
  *
  * The structure which holds all information about loaded backends.
@@ -289,7 +273,7 @@ struct _KDB
 
 	Backend * initBackend; /*!< The init backend for bootstrapping.*/
 
-	Plugin * globalPlugins[NR_GLOBAL_PLUGINS];
+	Plugin * globalPlugins[NR_GLOBAL_POSITIONS][NR_GLOBAL_SUBPOSITIONS];
 };
 
 
@@ -551,6 +535,11 @@ int keyNameIsProc (const char * keyname);
 int keyNameIsDir (const char * keyname);
 int keyNameIsSystem (const char * keyname);
 int keyNameIsUser (const char * keyname);
+
+/* global plugin calls */
+void elektraGlobalGet (KDB * handle, KeySet * ks, Key * parentKey, int position, int subPosition);
+void elektraGlobalSet (KDB * handle, KeySet * ks, Key * parentKey, int position, int subPosition);
+void elektraGlobalError (KDB * handle, KeySet * ks, Key * parentKey, int position, int subPosition);
 
 /** Test a bit. @see set_bit(), clear_bit() */
 #define test_bit(var, bit) ((var) & (bit))

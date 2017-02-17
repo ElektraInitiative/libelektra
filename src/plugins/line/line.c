@@ -127,8 +127,12 @@ int elektraLineSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 	}
 
 	Key * cur;
-	ksRewind (returned);
-	ksNext (returned); // ignore parentKey
+	if (!ksLookup (returned, parentKey, 0))
+	{
+		// ignore parentKey if found
+		ksRewind (returned);
+	}
+
 	while ((cur = ksNext (returned)) != 0)
 	{
 		fprintf (fp, "%s\n", keyString (cur));

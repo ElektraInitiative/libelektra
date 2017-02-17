@@ -258,3 +258,15 @@
    fun:elektraPluginOpen
    ...
 }
+{
+   rest-backend loadEnabledFormats jni plugin
+   Memcheck:Leak
+   match-leak-kinds: all
+   fun:malloc
+   fun:elektraMalloc
+   fun:elektraJniOpen
+   fun:elektraPluginOpen
+   ...
+   fun:_ZN61kdbrestServicesConvertengineTest_FindSuitablePluginCheck_Test8TestBodyEv
+   ...
+}

@@ -7,12 +7,12 @@
 - infos/status = maintained unittest shelltest nodep readonly limited nodoc concept
 - infos/description = Includes uname information into the key database.
 
-## Introduction ##
+## Introduction
 
 This plugin is a storage plugin that will use the syscall `uname (2)`.
 No resolver is needed for that plugin to work.
 
-## Special Values ##
+## Special Values
 
 This plugin defines following keynames below its mountpoint:
 
@@ -22,11 +22,11 @@ This plugin defines following keynames below its mountpoint:
 - version
 - machine
 
-## Restrictions ##
+## Restrictions
 
 This plugin is read-only.
 
-## Example ##
+## Example
 
 To mount uname information using this plugin:
 `kdb mount -R noresolver none system/uname uname`

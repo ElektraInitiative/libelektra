@@ -1,4 +1,4 @@
-- infos = Information about YAIL plugin is in keys below
+- infos = Information about YAJL plugin is in keys below
 - infos/author = Markus Raab <elektra@libelektra.org>
 - infos/licence = BSD
 - infos/provides = storage/json
@@ -6,9 +6,9 @@
 - infos/recommends = rebase directoryvalue comment type
 - infos/placements = getstorage setstorage
 - infos/status = maintained coverage unittest
-- infos/description = JSON using YAIL
+- infos/description = JSON using YAJL
 
-## Introduction ##
+## Introduction
 
 This is a plugin reading and writing json files
 using the library [yail](http://lloyd.github.com/yajl/)
@@ -26,11 +26,11 @@ A validator can be found [here](http://jsonlint.com/).
 Supports every KeySet except when arrays are intermixed with other keys.
 Has only limited support for metadata.
 
-## Dependencies ##
+## Dependencies
 
 - `libyajl-dev` (version 1 and 2 should work)
 
-## Types ##
+## Types
 
 My metadata `type` the used types can be chosen:
 
@@ -50,7 +50,7 @@ Any other type/value will still be treated as string, but
 the warning `#78` will be added because of the potential
 data loss.
 
-## Special values ##
+## Special values
 
 In json it is possible to have empty arrays and objects.
 In Elektra this is mapped using the special names
@@ -63,7 +63,7 @@ and
 
 Arrays are mapped to Elektra's array convention #0, #1,..
 
-## Restrictions ##
+## Restrictions
 
 - Only UTF-8 is supported. Use the `iconv` plugin if your locale are
   not UTF-8. When using non-UTF-8 the plugin will be able to write
@@ -79,7 +79,7 @@ Arrays are mapped to Elektra's array convention #0, #1,..
 Because of these potential problems a type checker,
 comments filter and directory value filter are highly recommended.
 
-## OpenICC Device Config ##
+## OpenICC Device Config
 
 This plugin was specifically designed and tested for the
 `OpenICC_device_config_DB` although it is of course not limited

@@ -81,7 +81,10 @@
 					</td>
 				</tr>
 				<tr ng-show="!searchResult.users">
-					<th colspan="5" class="text-center">{{ 'APP.USERS.SEARCH.TABLE.LABEL.NORESULTS' | translate }}</th>
+                    <th colspan="5" class="text-center"
+                        ng-show="!is_loaded">{{ 'APP.USERS.SEARCH.TABLE.LABEL.ISLOADING' | translate }}</th>
+					<th colspan="5" class="text-center"
+                        ng-show="is_loaded">{{ 'APP.USERS.SEARCH.TABLE.LABEL.NORESULTS' | translate }}</th>
 				</tr>
 			</tbody>
 		</table>

@@ -39,7 +39,7 @@ public:
 
 	virtual std::string getSynopsis () override
 	{
-		return "[mountpoint] [plugin [config] [..]]";
+		return "[plugin [config] [..]]";
 	}
 
 	virtual std::string getShortHelpText () override

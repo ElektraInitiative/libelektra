@@ -4,6 +4,7 @@ module.exports = function ($rootScope, $scope, Logger, $state, EntryService) {
 
     var vm = this;
 
+    $scope.is_loaded = false;
     $scope.options = {
         is_advanced: false,
         filter: $rootScope.entriesSearchString,
@@ -60,26 +61,23 @@ module.exports = function ($rootScope, $scope, Logger, $state, EntryService) {
 
 
     this.loadEntries = function () {
+        $scope.searchResult = {};
+        $scope.is_loaded = false;
 		$scope.options.filter = $rootScope.entriesSearchString;
-        if ($scope.options.filter && $scope.options.filter.length !== 0) {
-            var params = {
-                filter: $scope.options.filter,
-                filterby: $scope.options.filterby.value.id,
-                sort: $scope.options.sort.value.id,
-                sortby: $scope.options.sortby.value.id,
-                offset: $scope.options.offset,
-                rows: $scope.options.rows.value
-            };
-            EntryService.search(params).then(function (data)
-            {
-                $scope.searchResult = data;
-                vm.calculatePagination();
-            });
-        } else if (EntryService.hasSearchCache()) {
-            $scope.searchResult = EntryService.getSearchCache();
-            $scope.options.filter = EntryService.getSearchFilter();
+        var params = {
+            filter: $scope.options.filter,
+            filterby: $scope.options.filterby.value.id,
+            sort: $scope.options.sort.value.id,
+            sortby: $scope.options.sortby.value.id,
+            offset: $scope.options.offset,
+            rows: $scope.options.rows.value
+        };
+        EntryService.search(params).then(function (data)
+        {
+            $scope.searchResult = data;
             vm.calculatePagination();
-        }
+            $scope.is_loaded = true;
+        });
     };
 
     this.calculatePagination = function () {
@@ -88,11 +86,11 @@ module.exports = function ($rootScope, $scope, Logger, $state, EntryService) {
         entries += $scope.searchResult.elements;
         entries += $scope.searchResult.remaining;
         Logger.info('Current entries: ' + entries);
-        var numPages = Math.floor(entries / $scope.options.rows.value);
+        var numPages = Math.ceil(entries / $scope.options.rows.value);
         $scope.pagination.pageCount = numPages;
         Logger.info('Current page count: ' + numPages);
 
-        var curPage = ($scope.searchResult.offset / $scope.options.rows.value) + 1;
+        var curPage = Math.floor($scope.searchResult.offset / $scope.options.rows.value) + 1;
         $scope.pagination.currentPage = curPage;
         Logger.info('Current page: ' + curPage);
 
@@ -119,7 +117,7 @@ module.exports = function ($rootScope, $scope, Logger, $state, EntryService) {
         var entries = $scope.searchResult.offset;
         entries += $scope.searchResult.elements;
         entries += $scope.searchResult.remaining;
-        if (index > entries / $scope.options.rows.value)
+        if (index > Math.ceil(entries / $scope.options.rows.value))
             return;
 
         $scope.options.offset = (index - 1) * $scope.options.rows.value;

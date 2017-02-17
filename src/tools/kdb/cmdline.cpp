@@ -36,10 +36,10 @@ Cmdline::Cmdline (int argc, char ** argv, Command * command)
 : helpText (), invalidOpt (false),
 
   /*XXX: Step 2: initialise your option here.*/
-  debug (), force (), load (), humanReadable (), help (), interactive (), noNewline (), test (), recursive (), resolver (KDB_RESOLVER),
-  strategy ("preserve"), verbose (), quiet (), version (), withoutElektra (), null (), first (true), second (true), third (true),
-  withRecommends (false), all (), format (KDB_STORAGE), plugins ("sync"), globalPlugins ("spec"), pluginsConfig (""), color ("auto"),
-  ns (""), editor (), bookmarks (), profile ("current"),
+  debug (), force (), load (), humanReadable (), help (), interactive (), minDepth (0), maxDepth (numeric_limits<int>::max ()),
+  noNewline (), test (), recursive (), resolver (KDB_RESOLVER), strategy ("preserve"), verbose (), quiet (), version (), withoutElektra (),
+  null (), first (true), second (true), third (true), withRecommends (false), all (), format (KDB_STORAGE), plugins ("sync"),
+  globalPlugins ("spec"), pluginsConfig (""), color ("auto"), ns (""), editor (), bookmarks (), profile ("current"),
 
   executable (), commandName ()
 {
@@ -106,6 +106,22 @@ Cmdline::Cmdline (int argc, char ** argv, Command * command)
 		option o = { "interactive", no_argument, nullptr, 'i' };
 		long_options.push_back (o);
 		helpText += "-i --interactive         Ask the user interactively.\n";
+	}
+	if (acceptedOptions.find ('m') != string::npos)
+	{
+		option o = { "min-depth", optional_argument, nullptr, 'm' };
+		long_options.push_back (o);
+		helpText +=
+			"-m --min-depth           Specify the minimum depth of completion suggestions (0 by default), inclusive "
+			"and relative to the name to complete.\n";
+	}
+	if (acceptedOptions.find ('M') != string::npos)
+	{
+		option o = { "max-depth", optional_argument, nullptr, 'M' };
+		long_options.push_back (o);
+		helpText +=
+			"-M --max-depth           Specify the maximum depth of completion suggestions (unlimited by default, 1 to show "
+			"only the next level), exclusive and relative to the name to complete.\n";
 	}
 	if (acceptedOptions.find ('n') != string::npos)
 	{
@@ -372,6 +388,27 @@ Cmdline::Cmdline (int argc, char ** argv, Command * command)
 		case 'i':
 			interactive = true;
 			break;
+		case 'm':
+			if (!optarg)
+			{
+				minDepth = 0;
+				break;
+			}
+			stringstream (optarg) >> minDepth;
+			break;
+		case 'M':
+			if (!optarg)
+			{
+				cout << " no optarg for max " << endl;
+				maxDepth = numeric_limits<int>::max ();
+				break;
+			}
+			stringstream (optarg) >> maxDepth;
+			if (maxDepth == -1)
+			{
+				maxDepth = numeric_limits<int>::max ();
+			}
+			break;
 		case 'n':
 			noNewline = true;
 			break;
@@ -482,10 +519,43 @@ kdb::Key Cmdline::createKey (int pos) const
 	// for (auto const & n : bookmarks) std::cout << "nks: " << n.second << std::endl;
 	if (name.empty ())
 	{
-		throw invalid_argument ("<empty string> is not a valid keyname");
+		throw invalid_argument ("<empty string> is not a valid keyname. Please enter a valid one.");
 	}
 
+	kdb::Key root (name, KEY_END);
+
 	if (name[0] == '+')
+	{
+		kdb::Key bookmark = resolveBookmark (name);
+		if (!bookmark.isValid ())
+		{
+			throw invalid_argument ("cannot find bookmark " + bookmark.getFullName ());
+		}
+		root = bookmark;
+	}
+
+	if (!root.isValid ())
+	{
+		throw invalid_argument (name + " is not a valid keyname" + "\n\n" +
+					"For absolute keys (starting without '/'), please note that only one of the predefined namespaces "
+					"can be used (see 'man elektra-namespaces').\n" +
+					"Please also ensure that the path is separated by a '/'.\n" +
+					"An example for a valid absolute key is user/a/key, and for a valid cascading key /a/key.");
+	}
+
+	return root;
+}
+
+/**
+ * @brief resolve the bookmark with the given name
+ *
+ * @param bookmark the name of the bookmark to resolve
+ *
+ * @return a key to the resolved bookmark, or an invalid key if no bookmark with the given name exists
+ */
+kdb::Key Cmdline::resolveBookmark (std::string name) const
+{
+	if (!name.empty () && name[0] == '+')
 	{
 		size_t found = name.find ('/');
 		std::string bookmark;
@@ -501,26 +571,18 @@ kdb::Key Cmdline::createKey (int pos) const
 		}
 		auto realKeyIt = bookmarks.find (bookmark);
 		std::string realKey;
-		if (realKeyIt == bookmarks.end ())
+		if (realKeyIt != bookmarks.end ())
 		{
-			throw invalid_argument ("cannot find bookmark " + bookmark);
-		}
-		realKey = realKeyIt->second;
-		name = realKey + "/" + restKey;
-		if (verbose)
-		{
-			std::cout << "using bookmark " << bookmark << " which is: " << realKey << "-" << restKey << std::endl;
+			realKey = realKeyIt->second;
+			name = realKey + "/" + restKey;
+			if (verbose)
+			{
+				std::cout << "using bookmark " << bookmark << " which is: " << realKey << "-" << restKey << std::endl;
+			}
+			return kdb::Key (name, KEY_END);
 		}
 	}
-
-	kdb::Key root (name, KEY_END);
-
-	if (!root.isValid ())
-	{
-		throw invalid_argument (name + " is not a valid keyname");
-	}
-
-	return root;
+	return kdb::Key ();
 }
 
 std::ostream & operator<< (std::ostream & os, Cmdline & cl)

@@ -8,11 +8,11 @@
 - infos/metadata = check/path
 - infos/description = Checks if keys enriched with appropriate metadata contain valid paths as values
 
-## Introduction ##
+## Introduction
 
 This plugin checks whether the value of a key is a valid filesystem path. 
 
-## Purpose ##
+## Purpose
 
 The motivation to write this plugin is given by the two paths that exist
 in /etc/fstab: the device file and the mountpoint. A missing file is
@@ -24,7 +24,7 @@ is allowed to occur for both device and mountpoint. When checking for
 relative files, it is not enough to look at the first character if it is
 a `/`, because remote file systems and some special names are valid, too.
 
-## Usage ##
+## Usage
 
 If the metakey `check/path` is present, it is checked if the value is a
 valid absolute filesystem path. If a metavalue is present, an additional

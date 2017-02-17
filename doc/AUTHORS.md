@@ -1,17 +1,17 @@
-# Authors #
+# Authors
 
 This is a list of people that contributed to the Elektra project.
 
 
-## Markus Raab ##
+## Markus Raab
 
-maintainer, main development, documentation
+maintainer, main development, documentation, quality
 
-- email: elektra@markus-raab.org
+- email: elektra@libelektra.org
 - devel/test on: Debian
 
 
-## Manuel Mausz ##
+## Manuel Mausz
 
 bindings, swig, gobject, main development
 
@@ -19,15 +19,15 @@ bindings, swig, gobject, main development
 - devel/test on: Fedora
 
 
-## Felix Berlakovich ##
+## Felix Berlakovich
 
 journald plugin, augeas plugin, keytometa, main development
 
 - email: elektra@berlakovich.net
-- devel/test on: Debian Wheezy
+- devel/test on: Debian
 
 
-## Pino Toscano ##
+## Pino Toscano
 
 Debian packaging, documentation
 
@@ -35,14 +35,14 @@ Debian packaging, documentation
 - devel/test on: Debian
 
 
-## Kai-Uwe Behrmann ##
+## Kai-Uwe Behrmann
 
 test & packaging on CentOS, Fedora, OpenSUSE, RHEL and SLE
 
 - email: kai-uwe@behrmann.name
 
 
-## Christopher Meng ##
+## Christopher Meng
 
 Fedora packaging
 
@@ -50,7 +50,7 @@ Fedora packaging
 - devel/test on: Fedora
 
 
-## Ian S. Donnelly ##
+## Ian S. Donnelly
 
 Google Summer of Code 2014
 
@@ -58,140 +58,142 @@ Google Summer of Code 2014
 - devel/test on: Debian stable
 
 
-## Charles Lindsay ##
+## Charles Lindsay
 
 ni library
 
 
-## Gabriel Rauter ##
+## Gabriel Rauter
 
 desktop environment integration & usability
 
 - email: rauter.gabriel@gmail.com
 
 
-## Avi Alkalay ##
+## Avi Alkalay
 
-initial concept, previous website, fstab plugin
+initial concept & implementation, previous website
 
 - email: avi@unix.sh
 
 
-## Yannick Lecaillez ##
+## Yannick Lecaillez
 
 previous Mandriva packaging
 
 - email: yl@itioweb.com
 
 
-## Jens Andersen ##
+## Jens Andersen
 
 bug fixing
 
 - email: jens.andersen@gmail.com
 
 
-## Patrick Sabin ##
+## Patrick Sabin
 
 trie development, previous python bindings
 
 - email: patricksabin@gmx.at
 
 
-## Studio-HB ##
+## Studio-HB
 
 design of Elektra logo & previous website
 
 - email: contact@studio-hb.com
 
 
-## Pier Luigi Fiorini ##
+## Pier Luigi Fiorini
 
 pkg-config file
 
 - email: pierluigi.fiorini@mockup.org
 
 
-## Rèmi ##
+## Rèmi
 
 xml schema
 
 - email: remipouak@yahoo.fr
 
 
-## Andreas Rottmann ##
+## Andreas Rottmann
 
 previous Debian packaging and 0.7 scheme bindings
 
 - email: rotty@debian.org
 
 
-## Simon Law ##
+## Simon Law
 
 previous Debian packaging
 
 - email: sfllaw@debian.org
 
 
-## Daniel Bugl ##
+## Daniel Bugl
 
-documentation, new README.md, zeromq, web ui
+documentation, web ui
 
 - email: me@omnidan.net
 
 
-## Kurt Micheli ##
+## Kurt Micheli
 
 optimizing ksLookup with order preserving minimal perfect hash map, markdown link converter for doxygen
 
 - email: e1026558@student.tuwien.ac.at
 
 
-## Alexander Rössler ##
+## Alexander Rössler
 
 improvements to the dbus plugin
 
 - email: mail@roessler.systems
 
 
-## Peter Nirschl ##
+## Peter Nirschl
 
-development of the crypto plugin, minor bug fixes, BSD/OS X support
+development of the crypto plugin, minor bug fixes, BSD/macOS support
 
 - email: peter.nirschl@gmail.com
-- github user: @petermax2
+- github user: [petermax2](http://github.com/petermax2)
 - devel on: Fedora
-- test on: Fedora, Debian, Mac OS X
+- test on: Fedora, Debian, macOS
 
 
-## René Schwaiger ##
+## René Schwaiger
 
 documentation, bug fixes
 
-- email: sanssecours@f-m.fm
-- github user: @sanssecours
+- email: sanssecours@me.com
+- github user: [sanssecours](http://github.com/sanssecours)
 - devel/test on: macOS
 
 
-## Marvin Mall ##
+## Marvin Mall
 
 development of the REST service & frontend for sharing of conf. snippets, cachefilter plugin, website
 
 - email: marvin-mall@msn.com
-- github user: @Namoshek
+- github user: [Namoshek](https://github.com/Namoshek)
 - devel/test on: Debian Jessie
 
 
-## Thomas Waser ##
+## Thomas Waser
+
+main development, many plugins
 
 - email: thomas.waser@libelektra.org
-- github user: @tom-wa
+- github user: [tom-wa](https://github.com/tom-wa)
 - devel/test on: Debian Testing/Sid
 
 
-## Raffael Pancheri ##
+## Raffael Pancheri
 
-Design and Implementation of the qml-gui
+design and implementation of the qt-gui
 
 - email: raffael@libelektra.org
-- github user: @0003088
+- github user: [0003088](https://github.com/0003088)

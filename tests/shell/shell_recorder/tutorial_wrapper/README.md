@@ -1,12 +1,12 @@
-# Markdown to Shell Recorder #
+# Markdown to Shell Recorder
 
-The purpose of this tool is to extract executeable code snippets from markdown files and translate them into a suitable format for the shell_recorder. 
+The purpose of this tool is to extract executable code snippets from markdown files and translate them into a suitable format for the shell_recorder.
 
 Snippets are shell commands inside a syntax block with additional checks (such as exit code, output, errors, etc) encoded as comments. These blocks start with ```` ```sh ````  and end with ```` ``` ````.
 
 
 
-## Syntax ##
+## Syntax
 
 * Commands
 
@@ -19,7 +19,7 @@ Snippets are shell commands inside a syntax block with additional checks (such a
   * `#> STRING`
 
      `STRING` is matched 1:1 against the command output. multiple `#> ` will be concatenated automatically using `⏎`
-  
+
    `# CHECK-OPTION:VALUE`   note that there is no spaces in front of or behind the `:`. Spaces after the `:` are treated as part of the value.
 
   * `# RET:N`
@@ -36,7 +36,7 @@ Snippets are shell commands inside a syntax block with additional checks (such a
 
   * `# STDOUT:STRING`
 
-     `STRING` is matched 1:1 against the command output. newlines must be encoded as `⏎` 
+     `STRING` is matched 1:1 against the command output. newlines must be encoded as `⏎`
 
   * `# STDOUT-REGEX:REGEX-STRING`
 

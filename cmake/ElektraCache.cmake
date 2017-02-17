@@ -417,6 +417,16 @@ set (TARGET_LUA_LMOD_FOLDER "share/lua/5.2"
 	"Directory to install Lua source modules, should be in LUA_PATH)"
     )
 
+if (NOT TARGET_PLUGIN_FOLDER STREQUAL "")
+	if (CMAKE_SKIP_INSTALL_RPATH)
+		message (WARNING "You specified to remove RPATH, but TARGET_PLUGIN_FOLDER is not an empty string. Please read doc/COMPILE.md#RPATH")
+	endif ()
+endif ()
+
+if (CMAKE_SKIP_BUILD_RPATH AND BUILD_TESTING)
+	message (WARNING "You specified to remove RPATH, but did not disable tests. Please read doc/COMPILE.md#RPATH")
+endif ()
+
 #
 # Misc.
 #

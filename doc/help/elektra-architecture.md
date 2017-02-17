@@ -131,12 +131,12 @@ fact that modules must be loaded dynamically if they are not available
 statically.
 
 Plugins are usually realised with modules.  Modules and libraries are
-technically the same in most systems. (One exception is OS X.)
+technically the same in most systems. (One exception is macOS.)
 After the module is loaded, the special function plugin factory
 is searched for.  This function returns a new plugin.  With the plugin
 factory the actual plugins are created.
 
-### Static loading
+### Static Loading
 
 For the static loading of modules, the modules must be built-in.
 With `dlopen(const` `char*` `file)` POSIX provides a solution to look

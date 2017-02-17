@@ -1911,19 +1911,20 @@ static Key * elektraLookupCreateKey (KeySet * ks, Key * key, ELEKTRA_UNUSED opti
 /**
  * Look for a Key contained in @p ks that matches the name of the @p key.
  *
- * @note that applications should only use ksLookup() with cascading
- * keys. Furthermore, a lookup should be done for every key, in particular
- * during iterations so that the specifications are honored correctly.
+ * @note Applications should only use ksLookup() with cascading
+ * keys (key name starting with `/`).
+ * Furthermore, a lookup should be done for every key (also when iterating
+ * over keys) so that the specifications are honored correctly.
  * Keys of all namespaces need to be present so that ksLookup()
  * can work correctly, so make sure to also use kdbGet() with a cascading
  * key.
  *
- * @p ksLookup() is designed to let you work with
- * entirely pre-loaded KeySets. The
- * idea is to fully kdbGet() for your application root key and
- * process it all at once with @p ksLookup().
+ * @p ksLookup() is designed to let you work with a
+ * KeySet containing all keys of the application. The
+ * idea is to fully kdbGet() the whole configuration of your application and
+ * process it all at once with many @p ksLookup().
  *
- * This function is efficient by using binary search. Together with
+ * This function is efficient (at least using binary search). Together with
  * kdbGet() which can you load the whole configuration
  * you can write very effective but short code for configuration:
  *
@@ -1932,16 +1933,16 @@ static Key * elektraLookupCreateKey (KeySet * ks, Key * key, ELEKTRA_UNUSED opti
  * This is the way programs should get their configuration and
  * search after the values. It is guaranteed that more namespaces can be
  * added easily and that all values can be set by admin and user.
- * Furthermore, using the kdb-tool, it is possible to find out which value
- * an application will find.
+ * Furthermore, using the kdb-tool, it is possible to introspect which values
+ * an application will get (by doing the same cascading lookup).
  *
  * If found, @p ks internal cursor will be positioned in the matched key
  * (also accessible by ksCurrent()), and a pointer to the Key is returned.
  * If not found, @p ks internal cursor will not move, and a NULL pointer is
  * returned.
  *
- * Cascading is done if the first character is a /. This leads to search in
- * all namespaces proc/, dir/, user/ and system/, but also correctly considers
+ * Cascading lookups will by default search in
+ * all namespaces (proc/, dir/, user/ and system/), but will also correctly consider
  * the specification (=metadata) in spec/:
  *
  * - @p override/# will make sure that another key is considered before
@@ -1955,9 +1956,8 @@ static Key * elektraLookupCreateKey (KeySet * ks, Key * key, ELEKTRA_UNUSED opti
  *
  * @note override and fallback work recursively, while default does not.
  *
- * This process is very flexible, but it would be boring to follow all this links
- * in the head to find out which key will be taken.
- * So use `kdb get -v` to trace the keys.
+ * This process is very flexible, but it would be boring to manually follow all this links
+ * to find out which key will be taken in the end. Use `kdb get -v` to trace the keys.
  *
  *
  * @par KDB_O_POP
@@ -2061,50 +2061,7 @@ Key * ksLookup (KeySet * ks, Key * key, option_t options)
 /**
  * Convenience method to look for a Key contained in @p ks that matches @p name.
  *
- * @p ksLookupByName() is designed to let you work with
- * entirely pre-loaded KeySets, so instead of kdbGetKey(), key by key, the
- * idea is to fully kdbGetByName() for your application root key and
- * process it all at once with @p ksLookupByName().
- *
- * This function is very efficient by using binary search. Together with
- * kdbGetByName() which can you load the whole configuration with only
- * some communication to backends you can write very effective but short
- * code for configuration.
- *
- * If found, @p ks internal cursor will be positioned in the matched key
- * (also accessible by ksCurrent()), and a pointer to the Key is returned.
- * If not found, @p ks internal cursor will not move, and a NULL pointer is
- * returned.
- * If requested to pop the key, the cursor will be rewinded.
- *
- * @section cascading Cascading
- *
- * Cascading is done if the first character is a /. This leads to ignoring
- * the prefix like system/ and user/.
- * @code
-if (kdbGet(handle, "/sw/tests/myapp/#0/current", myConfig, parentKey ) == -1)
-	errorHandler ("Could not get Keys", parentKey);
-
-if ((myKey = ksLookupByName (myConfig, "/sw/tests/myapp/#0/current/key", 0)) == NULL)
-	errorHandler ("Could not Lookup Key");
- * @endcode
- *
- * This is the way multi user programs should get their configuration and
- * search after the values. It is guaranteed that more namespaces can be
- * added easily and that all values can be set by admin and user.
- * Also profile-features are available via plugins.
- * Applications should not implement cascading algorithms, but only
- * do a single lookup and put cascading functionality into plugins.
- *
- * @section fullsearch Full Search
- *
- * When KDB_O_NOALL is set the keyset will be only searched from ksCurrent()
- * to ksTail(). You need to ksRewind() the keyset yourself. ksCurrent() is
- * always set properly after searching a key, so you can go on searching
- * another key after the found key.
- *
- * When KDB_O_NOALL is not set the cursor will stay untouched and all keys
- * are considered. A much more efficient binary search will be used then.
+ * @see ksLookup() for explanation of the functionality and example.
  *
  * @param ks where to look for
  * @param name key name you are looking for
@@ -2115,7 +2072,7 @@ if ((myKey = ksLookupByName (myConfig, "/sw/tests/myapp/#0/current/key", 0)) == 
  *
  * @return pointer to the Key found, 0 otherwise
  * @retval 0 on NULL pointers
- * @see keyCompare() for very powerful Key lookups in KeySets
+ * @see ksLookup() to search with a given key
  * @see ksCurrent(), ksRewind(), ksNext()
  */
 Key * ksLookupByName (KeySet * ks, const char * name, option_t options)

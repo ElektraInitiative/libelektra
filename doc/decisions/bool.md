@@ -1,4 +1,4 @@
-# Definition of bool
+# Definition of Bool
 
 ## Issue
 

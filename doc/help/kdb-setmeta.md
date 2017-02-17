@@ -3,9 +3,9 @@ kdb-setmeta(1) -- Set the value of a metakey
 
 ## SYNOPSIS
 
-`kdb setmeta <key-name> <metaname> [<metavalue>]`
+`kdb setmeta <key name> <metaname> [<metavalue>]`
 
-Where `key-name` is the path to the key that the metakey is associated with,
+Where `key name` is the name of the key that the metakey is associated with,
 `metaname` is the name of the metakey the user would like to set the value of (or create),
 and `metavalue` is the value the user wishes to set the metakey to.
 If no `metavalue` is given, the metakey will be removed.
@@ -44,7 +44,7 @@ that is the place where you usually want to set metadata.
 
 - `/sw/elektra/kdb/#0/current/namespace`:
   Specifies which default namespace should be used when setting a cascading name.
-  By default the namespace is user, except `kdb` is used as root, then `system`
+  By default the namespace is `user`, except `kdb` is used as root, then `system`
   is the default.
 
 
@@ -70,3 +70,4 @@ To remove it:
 
 - How to get metadata: [kdb-getmeta(1)](kdb-getmeta.md)
 - [elektra-metadata(7)](elektra-metadata.md)
+- [elektra-key-names(7)](elektra-key-names.md) for an explanation of key names.

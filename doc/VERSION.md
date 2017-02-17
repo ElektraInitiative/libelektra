@@ -1,4 +1,4 @@
-# Version #
+# Version
 
 The version of Elektra is handeled with the kdb.h macros
 `KDB_VERSION` which is a string and `KDB_VERSION_MAJOR`,
@@ -21,7 +21,7 @@ Additionally there is also a very small API
 to plugins. It consists of only 5 functions
 and is described in [src/plugins/doc/doc.c](/src/plugins/doc/doc.c).
 
-## Compatibility ##
+## Compatibility
 
 This section describes under which circumstances API
 and ABI incompatiblities may occur. As developer from
@@ -61,7 +61,7 @@ References:
 http://tldp.org/HOWTO/Program-Library-HOWTO/shared-libraries.html
 http://packages.debian.org/de/sid/icheck
 
-## Increment ##
+## Increment
 
 This section describes how to increment the `KDB_VERSION`.
 It consists of a triplet integer `current:revision:age`.
@@ -75,5 +75,6 @@ a compatible but changed API. The revision is set back to zero then.
 Note: All 3 versioning infos are handled separately!
 
 http://www.gnu.org/software/libtool/manual/libtool.html#Versioning
+http://semver.org/
 
-> TODO write about SO_VERSION
+> TODO write about SO_VERSION and rest version

@@ -15,12 +15,12 @@
  */
 #define USER_DEFINED_IO
 
+#include "ansicolors.hpp"
+
 #include <key.hpp>
 
 #include <iomanip>
 #include <ostream>
-
-#include "ansicolors.hpp"
 
 namespace kdb
 {

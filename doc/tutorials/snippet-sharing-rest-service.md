@@ -1,23 +1,23 @@
-# REST Service for Sharing of Configuration Snippets #
+# REST Service for Sharing of Configuration Snippets
 
 This tutorial explains how to install, configure and run everything that is required
 for the Snippet Sharing service and website. As operating system we expect Debian
 Jessie to be used, although most parts should also be applicable to other systems.
 
-## What is this? ##
+## What is This?
 
 The Snippet Sharing service consists of two parts, a backend (the REST server) and
 a frontend (an AngularJS application executed in the browser), which also includes
 the Elektra website. The service itself can be used to share configuration snippets,
 i.e. configuration files of arbitrary applications.
 
-## Installation ##
+## Installation
 
-### Install Dependencies ###
+### Install Dependencies
 
 As first step we need to install some dependencies required by the applications.
 
-#### Backend ####
+#### Backend
 
 The backend requires the most dependencies and unfortunately some of them need to be
 installed manually because no APT packages are available.
@@ -39,12 +39,12 @@ The required dependencies with their own dependencies are:
 You'll also need CMake and a modern C/C++ compiler, so in case you don't have them
 installed already, use `apt-get install build-essential cmake` to do so.
 
-##### APT Packages #####
+##### APT Packages
 
 To install all required APT packages at once, simply run:
 `apt-get install libboost-all-dev libpcre3-dev zlib1g-dev libgcrypt11-dev libicu-dev python libssl-dev`
 
-##### CppCMS #####
+##### CppCMS
 
 To install CppCMS, there are two options available:
 
@@ -52,6 +52,7 @@ To install CppCMS, there are two options available:
 - Install via dependency manager
 
 To install CppCMS manually without dependency manager:
+
 - Download the (latest) CppCMS source from [SourceForge](https://sourceforge.net/projects/cppcms/files/cppcms/)
 - Extract the archive: `tar -xjf cppcms-1.x.x.tar.bz2 && cd cppcms-1.x.x` (replace 1.x.x with your version)
 - Configure the build: `mkdir build && cd build && cmake ..`
@@ -63,9 +64,9 @@ It contains also a [guide](http://cppcms.com/wikipp/en/page/apt)
 explaining the installation through a dependency manager.
 Unfortunately, no repository is available for Debian Jessie yet.
 
-##### Jansson #####
+##### Jansson
 
-The Jansson library supports working with json data in C.
+The Jansson library supports working with JSON data in C.
 To install it, use the following steps:
 
 - Download the (latest) source from [their website](http://www.digip.org/jansson/releases/)
@@ -73,7 +74,7 @@ To install it, use the following steps:
 - Configure the build: `mkdir build && cd build && cmake ..`
 - Execute the build, run tests and install: `make && make check && make install`
 
-##### LibJWT #####
+##### LibJWT
 
 Now we can also install LibJWT:
 
@@ -87,7 +88,7 @@ If you are using Ubuntu, LibJWT can also be installed through a pre-built APT pa
 - Add APT repository: `add-apt-repository ppa:ben-collins/libjwt`
 - Install via apt-get: `apt-get update && apt-get install libjwt`
 
-#### Frontend ####
+#### Frontend
 
 The frontend does only require the package manager [npm](https://www.npmjs.com/) (>= v3).
 It is preferred to install it along with [nodeJS](https://nodejs.org/),
@@ -96,7 +97,7 @@ The version that comes via Debian Jessie (v1.4) is insufficient.
 The installation was tested with npm version 3.10.8-9, but it should also work with
 other versions of 3+.
 
-### Build & Install the Applications ###
+### Build & Install the Applications
 
 After installing the dependencies, we are ready to build the applications.
 To do so, we can follow the steps explained in the [build guide](/doc/COMPILE.md).
@@ -107,12 +108,12 @@ After building Elektra and the applications, we can use `make install` to instal
 them. Further information and troubleshooting can be found in the
 [install guide](/doc/INSTALL.md).
 
-## Configuration ##
+## Configuration
 
 The applications configure themselves as much as possible during build,
 but some settings have to be set manually afterwards.
 
-### Backend ###
+### Backend
 
 After the installation, the configuration specification of the backend has to be mounted
 with the command `kdb mount-rest-backend-config`. You can check if the mounting was successful
@@ -130,14 +131,17 @@ otherwise.
 After that you need to set an additional configuration parameter that has no default value.
 It is recommended to set it for the system namespace if you will use a tool like
 `systemctl` to manage the services.
-```
-> kdb set -N system /sw/elektra/restbackend/#0/current/backend/jwt/encryption/secret "use a secret key here"
+
+```sh
+kdb set -N system /sw/elektra/restbackend/#0/current/backend/jwt/encryption/secret "use a secret key here"
 ```
 
 To generate a secure key, you can also use `pwgen` (install via `apt-get install pwgen`). Use
+
+```sh
+kdb set -N system /sw/elektra/restbackend/#0/current/backend/jwt/encryption/secret "$(pwgen -1cns 30)"
 ```
-> kdb set -N system /sw/elektra/restbackend/#0/current/backend/jwt/encryption/secret "$(pwgen -1cns 30)"
-```
+
 to generate and set a strong random encryption secret.
 
 The option `-N system` for `kdb set` defines the used namespace (in this case it is `system`).
@@ -154,17 +158,18 @@ Additionally to the settings above, CppCMS needs some configuration. All configu
 options are listed on [their website](http://cppcms.com/wikipp/en/page/cppcms_1x_config).
 A stand-alone installation of the service (without proxy server) requires following
 configuration:
-```
-> kdb set -N system /sw/elektra/restbackend/#0/current/cppcms/service/api "http"
-> kdb set -N system /sw/elektra/restbackend/#0/current/cppcms/service/ip "0.0.0.0"
-> kdb set -N system /sw/elektra/restbackend/#0/current/cppcms/service/port 8080
-> kdb set -N system /sw/elektra/restbackend/#0/current/cppcms/http/script_names/#0 "/"
+
+```sh
+kdb set -N system /sw/elektra/restbackend/#0/current/cppcms/service/api "http"
+kdb set -N system /sw/elektra/restbackend/#0/current/cppcms/service/ip "0.0.0.0"
+kdb set -N system /sw/elektra/restbackend/#0/current/cppcms/service/port 8080
+kdb set -N system /sw/elektra/restbackend/#0/current/cppcms/http/script_names/#0 "/"
 ```
 
 Note: here we have not used the option `-N system` because the CppCMS configuration is
 not part of the specification. That means it does not get validated.
 
-### Frontend ###
+### Frontend
 
 The frontend does only require small mandatory changes in its configuration.
 Before they can be made, the configuration file has to be mounted though. This can be
@@ -180,7 +185,7 @@ The parameters that need to be changed in order for the frontend to work correct
 - `system/sw/elektra/restfrontend/#0/current/backend/root`: set it to the URL where the backend will be reachable, e.g. `http://restapi.libelektra.org/` (with trailing slash!)
 - `system/sw/elektra/restfrontend/#0/current/website/url`: set it to the URL where the frontend will be reachable, e.g. `http://libelektra.org/` (with trailing slash!)
 
-## Running the Applications ##
+## Running the Applications
 
 As last step we need to run the applications:
 
@@ -190,16 +195,16 @@ As last step we need to run the applications:
 
 If everything went smooth, both applications should now be online and reachable.
 
-## Stopping the Applications ##
+## Stopping the Applications
 
 Both applications can be stopped with a simple command:
 
 - Backend: `kdb stop-rest-backend`
 - Frontend: `kdb stop-rest-frontend`
 
-## Additional Tasks ##
+## Additional Tasks
 
-### API Specification ###
+### API Specification
 
 For the backend a detailed description in the
 [API blueprint](https://apiblueprint.org/) format is available.
@@ -216,7 +221,7 @@ that your API blueprint is still syntax conform. To do so, you can use the tool
 [Drafter](https://github.com/apiaryio/drafter). After installing it, you can use
 `drafter <filename>` (e.g. `drafter snippet-sharing.apib`) to run the check.
 
-### Use other Webserver than the built-in Grunt Webserver ###
+### Use Other Webserver Than the Built-in Grunt Webserver
 
 Of course it is possible to use another webserver instead of the built-in one.
 To do so, simply run `kdb build-rest-frontend` and copy the content of the
@@ -224,11 +229,11 @@ To do so, simply run `kdb build-rest-frontend` and copy the content of the
 your desired target location.
 
 It is required that you set a rewrite rule that serves the `index.html` for every
-request that does not access a static file (js, css, png, md, etc.). If you omit
+request that does not access a static file (`js`, `css`, `png`, `md`, etc.). If you omit
 this step, it will not be possible to use direct links to access resources of the
 frontend; accessing the frontend from the `index.html` will still work though.
 
-## Example Structure ##
+## Example Structure
 
 The following is a description of the setup we used for the Elektra website
 reachable at https://www.libelektra.org.
@@ -236,9 +241,9 @@ reachable at https://www.libelektra.org.
 We assume that Elektra is now installed to the default path on Debian Jessie,
 which is `/usr/local`.
 
-### Web Server ###
+### Web Server
 
-As web server we are using an Apache2 with the version coming with Debian Jessie.
+As web server we use Debian Jessie’s Apache2.
 Several domains are used for different tasks, whereas only two are relevant for
 the here described service:
 
@@ -247,6 +252,7 @@ the here described service:
 
 The server redirects requests on port 80 (non-SSL) to 443 using a very simple
 configuration like
+
 ```
 # file: /etc/apache2/sites-available/www.libelektra.org.conf
 <VirtualHost *:80>
@@ -254,9 +260,11 @@ configuration like
     Redirect permanent / https://www.libelektra.org/
 </VirtualHost>
 ```
+
 for the `www.libelektra.org` domain (similar for `restapi.libelektra.org`).
 
 The secured variant of the configuration looks like
+
 ```
 # file: /etc/apache2/sites-available/www.libelektra.org-le-ssl.conf
 <IfModule mod_ssl.c>
@@ -282,10 +290,12 @@ The secured variant of the configuration looks like
 </VirtualHost>
 </IfModule>
 ```
+
 Important is the `Directory` configuration because the `rest-frontend` requires the
 `FallbackResource` option to function correctly.
 
 For the `restapi.libelektra.org` domain we use an SCGI setup:
+
 ```
 # file: /etc/apache2/sites-available/restapi.libelektra.org-le-ssl.conf
 <IfModule mod_ssl.c>
@@ -305,32 +315,35 @@ For the `restapi.libelektra.org` domain we use an SCGI setup:
 </IfModule>
 ```
 
-### rest-backend ###
+### Rest-Backend
 
 The `rest-backend` itself is configured normally as described in the configuration
 section above, but with CppCMS using SCGI instead of HTTP as API variant.
 This requires setting the keys
-```
-> kdb set system/sw/elektra/restbackend/#0/current/cppcms/service/api "scgi"
-> kdb set system/sw/elektra/restbackend/#0/current/cppcms/service/ip "127.0.0.1"
-> kdb set system/sw/elektra/restbackend/#0/current/cppcms/service/port 8081
+
+```sh
+kdb set system/sw/elektra/restbackend/#0/current/cppcms/service/api "scgi"
+kdb set system/sw/elektra/restbackend/#0/current/cppcms/service/ip "127.0.0.1"
+kdb set system/sw/elektra/restbackend/#0/current/cppcms/service/port 8081
 ```
 
 Additionally we are using a worker process, which ensures that in case of a crash
 the backend restarts automatically (= basically supervisor + worker). Config:
-```
-> kdb set system/sw/elektra/restbackend/#0/current/cppcms/service/worker_processes 1
+
+```sh
+kdb set system/sw/elektra/restbackend/#0/current/cppcms/service/worker_processes 1
 ```
 
 Configuration snippets and users are stored at `system/configs` and `system/users`:
-```
-> kdb set system/sw/elektra/restbackend/#0/current/backend/kdb/path/configs = system/configs
-> kdb set system/sw/elektra/restbackend/#0/current/backend/kdb/path/users = system/users
+
+```sh
+kdb set system/sw/elektra/restbackend/#0/current/backend/kdb/path/configs = system/configs
+kdb set system/sw/elektra/restbackend/#0/current/backend/kdb/path/users = system/users
 ```
 
-### rest-frontend ###
+### Rest-Frontend
 
-Because of the apache server using the rest-frontend installation directory as
+Because of the Apache server using the rest-frontend installation directory as
 document root, there is no further configuration necessary other than already
 explained in the configuration section above.
 
@@ -338,7 +351,7 @@ During the build, the frontend will be recompiled. It is not taken offline for t
 though and everything that is necessary to accomplish a clean deployment is taken
 care of by the compile script as well.
 
-### Jenkins Build Script ###
+### Jenkins Build Script
 
 The build script basically builds the applications, runs tests, installs everything
 and restarts the backend. Finally, it can run the configuration script for the frontend,
