@@ -1,3 +1,5 @@
+#!/bin/zsh
+
 #compdef kdb
 # This file needs to be renamed to _kdb to work and must be in the $fpath
 #

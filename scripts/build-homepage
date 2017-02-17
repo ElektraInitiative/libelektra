@@ -36,7 +36,7 @@ ulimit -c unlimited
 cd /var/lib/jenkins
 
 pstree
-echo -n "Old PID was: "
+printf "Old PID was: "
 cat /run/elektra-rest-backend.pid || /bin/true
 echo
 
@@ -61,7 +61,7 @@ done
 # now start again
 kdb run-rest-backend
 
-echo -n "New PID is: "
+printf "New PID is: "
 cat /run/elektra-rest-backend.pid || /bin/true
 echo
 

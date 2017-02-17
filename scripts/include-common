@@ -1,3 +1,5 @@
+#!/bin/sh
+
 # Provides common functions and variables for shellscripts:
 # fixes readlink -f on macOS
 # provides $SELF, $SCRIPTS, $SOURCE
@@ -7,7 +9,7 @@
 . "$(dirname "$0")/realpath"
 
 # substring emulation which should work in dash and other shells too
-stringContain() { [ -z "${2##*$1*}" ] && [ -z "$1" -o -n "$2" ]; }
+stringContain() { [ -z "${2##*$1*}" ] && ([ -z "$1" ] || [ -n "$2" ]); }
 
 # readlink replacement, currently intented only to work with -f and the 
 # argument
