@@ -252,7 +252,7 @@ TCL_SUBST              =
 # members will be omitted, etc.
 # The default value is: NO.
 
-OPTIMIZE_OUTPUT_FOR_C  = YES
+OPTIMIZE_OUTPUT_FOR_C  = NO
 
 # Set the OPTIMIZE_OUTPUT_JAVA tag to YES if your project consists of Java or
 # Python sources only. Doxygen will then generate output that is more tailored
@@ -768,6 +768,7 @@ INPUT                  = "@PROJECT_SOURCE_DIR@/src/libs" \
                          "@PROJECT_SOURCE_DIR@/src/libs/getenv/README.md" \
                          "@PROJECT_SOURCE_DIR@/src/include" \
                          "@PROJECT_SOURCE_DIR@/src/bindings/cpp/include" \
+			 "@PROJECT_SOURCE_DIR@/src/bindings/jna/libelektra4j/src" \
                          "@PROJECT_SOURCE_DIR@/src/plugins" \
                          "@PROJECT_SOURCE_DIR@/src/plugins/doc/doc.h" \
                          "@PROJECT_SOURCE_DIR@/doc" \
