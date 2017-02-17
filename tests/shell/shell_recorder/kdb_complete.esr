@@ -1,0 +1,30 @@
+Mountpoint: user/tmount/list
+DiffType: File
+
+< kdb set $Mountpoint/level1 foo
+< kdb set $Mountpoint/lvl1/lvl2 bar
+< kdb set $Mountpoint/lvl1/lvl2/lvl3/lvl4/lvl5 fizz
+< kdb set $Mountpoint/buzz fizzBuzz
+< kdb set $Mountpoint/\\/evil\\\\\\/tripleEscaped\\\\/doubleEscaped/key/.withADot/..andADoubleDot txt
+< kdb set $Mountpoint/#array_1 asdf
+< kdb set $Mountpoint/% nothing
+
+< kdb complete us --max-depth=1
+
+< kdb complete user --max-depth=1
+
+RET: 0
+STDOUT: .*
+< kdb complete user/ --max-depth=1
+
+< kdb complete --max-depth=1
+
+< kdb complete $Mountpoint
+
+< kdb complete $Mountpoint --max-depth=1
+
+< kdb complete $Mountpoint --min-depth=2 --max-depth=4
+
+< kdb complete $Mountpoint/ --max-depth=1
+
+< kdb complete $Mountpoint/lvl1/lvl2/lvl3

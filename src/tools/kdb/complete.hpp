@@ -55,7 +55,7 @@ private:
 	printResults (kdb::Key const & root, const int minDepth, const int maxDepth, Cmdline const & cmdLine,
 		      const std::map<kdb::Key, std::pair<int, int>> & result,
 		      const std::function<bool(std::pair<kdb::Key, std::pair<int, int>> const & current)> filterPredicate,
-		      const std::function<void(std::pair<kdb::Key, std::pair<int, int>> const & current, const bool verbose)> printResult);
+		      const std::function<void(std::pair<kdb::Key, std::pair<int, int>> const & current, const bool verbose)> resultFilter);
 
 	// helper functions
 	int getKeyDepth (kdb::Key const & key);
