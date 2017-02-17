@@ -188,7 +188,7 @@ The inclusion is determined by following preferences:
 4. if the plugin is included via a category `CATEGORY`
 5. the plugin is excluded if it is not mentioned at all
 
-Note, that changing `PLUGINS` will not modifiy the defaults used
+Note, that changing `PLUGINS` will not modify the defaults used
 after Elektra was installed.  For this endeavour you need to change:
 
     -DKDB_DEFAULT_RESOLVER=resolver
