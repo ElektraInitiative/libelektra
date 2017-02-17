@@ -1,16 +1,16 @@
-A full java binding using JNA. This binding requires elektra to be installed on
+A full java binding using JNA. This binding requires Elektra to be installed on
 the system to work.
 
 ## Usage
 
 To use the bindings in a java project, we have to include the jar file
 libelektra-*version*.jar in the project. The version number is the same one as
-used for elektra. This jar is created upon build, if you enable the jna bindings.
+used for Elektra. This jar is created upon build, if you enable the jna bindings.
 You can also use maven to take care about the dependencies.
 
 Please note that the jni plugin is a different thing than the jna bindings. We
-can use the jni plugin to develop plugins for elektra itself, whereas the jna
-bindings allow to use elektra to access configuration in java projects. The jni
+can use the jni plugin to develop plugins for Elektra itself, whereas the jna
+bindings allow to use Elektra to access configuration in java projects. The jni
 plugin is *not* required for the jna bindings to work.
 
 ### Command line
@@ -51,7 +51,7 @@ difference is that in macOS the jar file gets generally installed to
 ### Maven
 
 To use the jna bindings via maven, first you have to install the jna bindings
-to your local maven repository. When you have built elektra with the jna
+to your local maven repository. When you have built Elektra with the jna
 bindings included, they should have been automatically installed to
 ´/usr/share/java/´ along with a pom file for the library. To install it to your
 local maven repository from that location, execute the following command:
