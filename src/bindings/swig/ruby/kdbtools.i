@@ -568,35 +568,33 @@ STATUS_OSTREAM_TO_STRING(kdb::tools::ImportExportBackend)
          kdb::tools::MountpointInvalidException,
          kdb::tools::BackendCheckException,
          kdb::tools::ToolException
-) kdb::tools::Backend::setMountpoint;
+) kdb::tools::BackendInterface::setMountpoint;
 
 %catches(kdb::tools::MissingSymbol,
          kdb::tools::FileNotValidException,
          kdb::tools::BackendCheckException,
          kdb::tools::ToolException
-) kdb::tools::Backend::useConfigFile;
-
-%catches(kdb::tools::PluginAlreadyInserted,
-         kdb::tools::BackendCheckException,
-         kdb::tools::ToolException
-) kdb::tools::Backend::tryPlugin;
+) kdb::tools::MountBackendInterface::useConfigFile;
 
 %catches(kdb::tools::BackendCheckException,
          kdb::tools::PluginCheckException,
          kdb::tools::ToolException
-) kdb::tools::Backend::addPlugin;
-
-%catches(kdb::tools::NoPlugin,
-         kdb::tools::BackendCheckException,
-         kdb::tools::PluginCheckException,
-         kdb::tools::ToolException
-) kdb::tools::PluginAdder::addPlugin;
-
+) kdb::tools::BackendInterface::addPlugin;
 
 %catches(kdb::tools::NoGlobalPlugin,
          kdb::tools::BackendCheckException,
          kdb::tools::ToolException
 ) kdb::tools::GlobalPlugins::serialize;
+
+%catches(kdb::tools::TooManyPlugins,
+         kdb::tools::ToolException,
+         ...
+) kdb::tools::SerializeInterface::serialize;
+
+%catches(kdb::tools::TooManyPlugins,
+         kdb::tools::ToolException,
+         ...
+) kdb::tools::GlobalPluginsBuilder::serialize;
 
 
 %include "backend.hpp"
@@ -647,5 +645,41 @@ STATUS_OSTREAM_TO_STRING(kdb::tools::ImportExportBackend)
 %ignore kdb::tools::GlobalPluginsBuilder::globalPluginsPath;
 %constant const char * GLOBAL_PLUGINS_PATH =
         kdb::tools::GlobalPluginsBuilder::globalPluginsPath;
+
+
+%catches(kdb::tools::NoPlugin,
+         kdb::tools::CyclicOrderingViolation,
+         kdb::tools::PluginAlreadyInserted,
+         kdb::tools::PluginConfigInvalid,
+         kdb::tools::BackendCheckException,
+         kdb::tools::ToolException
+) kdb::tools::BackendBuilder::addPlugin;
+
+%catches(kdb::tools::NoPlugin,
+         kdb::tools::CyclicOrderingViolation,
+         kdb::tools::PluginAlreadyInserted,
+         kdb::tools::PluginConfigInvalid,
+         kdb::tools::BackendCheckException,
+         kdb::tools::ToolException
+) kdb::tools::BackendBuilder::addPlugins;
+
+%catches(kdb::tools::NoPlugin,
+         kdb::tools::CyclicOrderingViolation,
+         kdb::tools::PluginAlreadyInserted,
+         kdb::tools::PluginConfigInvalid,
+         kdb::tools::BackendCheckException,
+         kdb::tools::ToolException,
+         ...
+) kdb::tools::BackendBuilder::resolveNeeds;
+
+%catches(kdb::tools::ToolException,
+         ...
+) kdb::tools::BackendBuilder::fillPlugins;
+
+%catches(kdb::tools::ToolException,
+         ...
+) kdb::tools::BackendBuilder::fillPlugins;
+
+
 
 %include "backendbuilder.hpp"
