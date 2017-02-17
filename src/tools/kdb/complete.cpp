@@ -170,7 +170,7 @@ const map<Key, pair<int, int>> CompleteCommand::analyze (KeySet const & ks, Cmdl
 		else
 		{ // hierarchy does not fit the current parent, expand the current key to the stack to find the new parent
 			Key tmp = current;
-			while (!current.getBaseName ().empty () && hierarchy[current].first == 0)
+			while (!hierarchy[current].first && !(current.getBaseName ().empty () && 1 == getKeyDepth (current)))
 			{ // Go back up in the hierarchy until we encounter a known key or are back at the namespace level
 				if (cl.debug)
 				{
@@ -202,7 +202,7 @@ const map<Key, pair<int, int>> CompleteCommand::analyze (KeySet const & ks, Cmdl
 void CompleteCommand::printResults (Key const & root, const int minDepth, const int maxDepth, Cmdline const & cl,
 				    map<Key, pair<int, int>> const & result,
 				    const std::function<bool(pair<Key, pair<int, int>> const & current)> filter,
-				    const std::function<void(pair<Key, pair<int, int>> const & current, const bool verbose)> printResult)
+				    const std::function<void(pair<Key, pair<int, int>> const & current, const bool verbose)> resultPrinter)
 {
 	if (cl.verbose)
 	{
@@ -222,7 +222,7 @@ void CompleteCommand::printResults (Key const & root, const int minDepth, const 
 	{
 		if (cl.debug || filter (it))
 		{
-			printResult (it, cl.verbose);
+			resultPrinter (it, cl.verbose);
 		}
 	}
 
