@@ -51,6 +51,8 @@ don't need to host the client on a separate web server.
 
 ## Related decisions
 
+- [elektra-web recursive structure decision](elektra_web_recursive.md)
+
 ## Notes
 
 There are still some other issues, like possible conflicts when adding an
