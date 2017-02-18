@@ -57,8 +57,29 @@ else()
 	set (CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_SWIG_OUTDIR}")
 	set (CMAKE_SWIG_FLAGS "-O;-autorename;-DSWIG_NO_EXPORT_ITERATOR_METHODS;-DSWIG_WITHOUT_OVERRIDE")
 
+	# specify the SWIG_TYPE_TABLE to use (has to be in sync with the ruby plugin)
+	set (SWIG_COMPILE_FLAGS "${SWIG_COMPILE_FLAGS} -DSWIG_TYPE_TABLE=kdb")
+
+	# disable certain compiler warnings for SWIG generated files
+	set (SWIG_COMPILE_FLAGS "${SWIG_COMPILE_FLAGS} -Wno-unused-parameter -Wno-unused-but-set-variable")
+	set (SWIG_COMPILE_FLAGS "${SWIG_COMPILE_FLAGS} -Wno-sign-compare")
+
+	# add 'kdb' module
 	swig_add_module (swig-ruby ruby kdb.i)
+	# set the compiler settings for the generated file
+	# (has to be done for each module separately)
+	set_source_files_properties (
+		${swig_generated_sources} PROPERTIES
+		COMPILE_FLAGS "${SWIG_COMPILE_FLAGS}"
+	)
+
+	# add the 'kdbtools' module
 	swig_add_module (swig-ruby-tools ruby kdbtools.i)
+	set_source_files_properties (
+		${swig_generated_sources} PROPERTIES
+		COMPILE_FLAGS "${SWIG_COMPILE_FLAGS}"
+	)
+
 	swig_link_libraries (swig-ruby ${RUBY_LIBRARY} elektra-core elektra-kdb)
 	set_target_properties (swig-ruby PROPERTIES
 		OUTPUT_NAME _kdb
@@ -71,11 +92,6 @@ else()
 		PREFIX ""
 	)
 	
-	set_source_files_properties (
-		${swig_generated_file_fullname} PROPERTIES
-		COMPILE_FLAGS "${SWIG_COMPILE_FLAGS} -Wno-unused-parameter -Wno-unused-but-set-variable -DSWIG_TYPE_TABLE=kdb -Wno-sign-compare -Wno-old-style-cast"
-	)
-
 
 	# CMAKE_INSTALL_PREFIX dependent install location
 	# if we hit one of the usual cases (/usr/local or /usr) install the lib
@@ -100,11 +116,11 @@ else()
 	endif()
 
 	install (
-		TARGETS swig-ruby
+		TARGETS swig-ruby swig-ruby-tools
 		LIBRARY DESTINATION ${RUBY_LIB_INSTALL_DIR}
 	)
 	install (
-		FILES ${CMAKE_CURRENT_SOURCE_DIR}/kdb.rb
+		FILES ${CMAKE_CURRENT_SOURCE_DIR}/kdb.rb ${CMAKE_CURRENT_SOURCE_DIR}/kdbtools.rb
 		DESTINATION ${RUBY_MODULE_INSTALL_DIR}
 	)
 
