@@ -4,11 +4,9 @@
 
 For elektra-web, there needs to be a way to remotely manage instances and groups
 of instances (clusters). The remote configuration of a single instance is
-simple: Create a daemon (elektrad) that listens for requests and accesses the
-KDB.
-
-To manage multiple instances, we need to store the information to access the
-daemons, as well as information about the grouping (clusters) of daemons.
+simple. However, to manage multiple instances, we need to store the information
+to access the daemons, as well as information about the grouping (clusters) of
+daemons.
 
 ## Constraints
 
