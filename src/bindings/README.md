@@ -6,7 +6,7 @@ to use Elektra.
 
 Note that a binding does not automatically allow you to implement *plugins*
 in the respective programming languages, but you additionally need an
-[Interpreter Plugins](/src/plugins/README.md). Nevertheless, bindings
+[Interpreter Plugin](/src/plugins/README.md). Nevertheless, bindings
 can be immediately used in applications without plugins.
 
 List of currently supported bindings (included in `ALL`):

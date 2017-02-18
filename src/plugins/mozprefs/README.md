@@ -12,7 +12,7 @@
 ## Basics
 
 This plugin works on [Mozilla preference files](https://developer.mozilla.org/en-US/docs/Mozilla/Preferences/A_brief_guide_to_Mozilla_preferences)
-and is used in Elektras [Firefox autoconfig script](autoconfig/README.md).
+and is used in Elektra’s [Firefox autoconfig script](autoconfig/README.md).
 
 ### Preference Types
 

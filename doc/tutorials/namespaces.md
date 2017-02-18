@@ -69,7 +69,7 @@ When we don't provide a namespace Elektra assumes a default namespace, which sho
 So if you are a normal user the command `kdb set /b/c 'Value 2'` was synonymous to `kdb set user/b/c 'Value 2'`.
 
 At this point the key database should have this structure:
-![Elektras namespaces](/doc/images/tutorial_namespaces_namespaces.svg)
+![Elektra’s namespaces](/doc/images/tutorial_namespaces_namespaces.svg)
 
 #### Cascading Keys
 

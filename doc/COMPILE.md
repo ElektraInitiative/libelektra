@@ -376,7 +376,7 @@ are installed (by default off). Is needed for cross-compilation.
 
 #### INSTALL_SYSTEM_FILES
 
-Some of Elektras targets require to be installed into specific folders in the
+Some of Elektra’s targets require to be installed into specific folders in the
 file system hierarchy to work properly.
 
 This variable is enabled by default but requires the install target to have the
