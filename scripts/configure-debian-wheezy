@@ -1,6 +1,7 @@
 #!/bin/sh
 
-. "$(dirname "$0")/configure-common"
+SCRIPTS_DIR=$(dirname "$0")
+. "${SCRIPTS_DIR}/configure-common"
 
 cd $BUILD
 cmake	-DPLUGINS="ALL" \

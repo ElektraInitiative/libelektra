@@ -3,7 +3,8 @@
 # a variant where everything is in a home-directory
 # below .config by default
 
-. "$(dirname "$0")/configure-common"
+SCRIPTS_DIR=$(dirname "$0")
+. "${SCRIPTS_DIR}/configure-common"
 
 cd $BUILD
 cmake	-DSWIG_EXECUTABLE=/usr/bin/swig3.0 \

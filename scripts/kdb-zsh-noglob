@@ -1,4 +1,5 @@
-#To be used in .zshrc
+#!/usr/bin/zsh
+# To be used in .zshrc, shebang exists to supress checkbashisms warning
 
 alias kdb='nocorrect noglob kdb'
 alias bin/kdb='nocorrect noglob bin/kdb'

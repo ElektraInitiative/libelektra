@@ -1,6 +1,7 @@
 #!/bin/sh
 
-. "$(dirname "$0")/configure-common"
+SCRIPTS_DIR=$(dirname "$0")
+. "${SCRIPTS_DIR}/configure-common"
 
 TOOLCHAIN_FILE="$SOURCE/cmake/Toolchain/Toolchain-mingw-w64-$(uname -m).cmake"
 if [ ! -f "${TOOLCHAIN_FILE}" ]
