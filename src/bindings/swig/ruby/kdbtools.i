@@ -69,6 +69,7 @@ namespace std {
   #include "backend.hpp"
   #include "backends.hpp"
   #include "backendbuilder.hpp"
+  #include "specreader.hpp"
 
   #include "toolexcept.hpp"
 
@@ -683,3 +684,32 @@ STATUS_OSTREAM_TO_STRING(kdb::tools::ImportExportBackend)
 
 
 %include "backendbuilder.hpp"
+
+
+
+
+/*************************************************************************
+ *
+ * specreader.hpp
+ *
+ ************************************************************************/
+/* std::unordered_map is currently not supported by the 
+ * SWIG standard library. So we convert it to a std::map
+ * and use the SWIG std::map type wrapping.*/
+%template(SpecBackendBuilderMap) 
+        std::map<kdb::Key, kdb::tools::SpecBackendBuilder>;
+
+/* std::unordered_map<Key, SpecBackendBuilder> is just used
+ * as return type for SpecReader::getBackends(). Thus we just
+ * need a 'out' typemap for this now */
+%typemap(out) std::unordered_map<kdb::Key, kdb::tools::SpecBackendBuilder> (std::map<kdb::Key, kdb::tools::SpecBackendBuilder> * tmp_backends) {
+        // Backends-typemap
+  tmp_backends = new std::map<kdb::Key, kdb::tools::SpecBackendBuilder>(
+        $1.begin(), $1.end());
+  %set_output(SWIG_NewPointerObj(tmp_backends,
+        SWIG_TypeQuery("std::map< kdb::Key, kdb::tools::SpecBackendBuilder > *"),
+        1));
+}
+
+
+%include "specreader.hpp"
