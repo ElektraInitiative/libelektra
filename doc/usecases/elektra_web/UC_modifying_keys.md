@@ -10,7 +10,7 @@ Brief: User modifies a key's contents.
 
 ## Scenarios
 
-Precondition: Adding keys
+Precondition: Key validation
 Main success scenario: User edits a key's contents in a field that is
   specifically formatted according to its metadata (e.g. number/date fields vs
 	string fields with regex validation). Arrays are specifically formatted as
