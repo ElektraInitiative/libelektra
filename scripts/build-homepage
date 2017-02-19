@@ -1,5 +1,6 @@
-#!/bin/sh
+#!/bin/bash
 # This script is sourced on build server, shebang is for convenience
+# bash is used to have a predictable ulimit behavior
 
 # remember the build directory
 ROOT_DIR=$PWD

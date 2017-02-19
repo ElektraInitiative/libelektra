@@ -5,7 +5,8 @@
 # @date 18.02.2016
 # @tags reformat
 
-. "$(dirname "$0")/include-common"
+SCRIPTS_DIR=$(dirname "$0")
+. "${SCRIPTS_DIR}/include-common"
 
 CLANG_FORMAT=$(which clang-format-3.8)
 if [ -z "${CLANG_FORMAT}" ]; then

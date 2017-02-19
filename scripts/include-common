@@ -3,10 +3,14 @@
 # Provides common functions and variables for shellscripts:
 # fixes readlink -f on macOS
 # provides $SELF, $SCRIPTS, $SOURCE
-# include this file via '. "$(dirname "$0")/include-common"'
+# include this file via:
+#
+# SCRIPTS_DIR=$(dirname "$0")
+# . "${SCRIPTS_DIR}/include-common"
 
 # load our readlink replacement for osx
-. "$(dirname "$0")/realpath"
+SCRIPTS_DIR=$(dirname "$0")
+. "${SCRIPTS_DIR}/realpath"
 
 # substring emulation which should work in dash and other shells too
 stringContain() { [ -z "${2##*$1*}" ] && ([ -z "$1" ] || [ -n "$2" ]); }

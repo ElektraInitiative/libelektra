@@ -5,7 +5,8 @@
 # @date 02.09.2014
 # @tags configure, debian
 
-. "$(dirname "$0")/configure-common"
+SCRIPTS_DIR=$(dirname "$0")
+. "${SCRIPTS_DIR}/configure-common"
 
 cd $BUILD
 cmake	-DSWIG_EXECUTABLE=/usr/bin/swig3.0 \

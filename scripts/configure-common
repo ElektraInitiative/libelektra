@@ -1,7 +1,8 @@
 #!/bin/sh
 
 # common configure script
-. "$(dirname "$0")/include-common"
+SCRIPTS_DIR=$(dirname "$0")
+. "${SCRIPTS_DIR}/include-common"
 
 SBUILD=$(pwd)
 BUILD=$(readlink -f "$SBUILD")

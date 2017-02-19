@@ -1,4 +1,5 @@
-#
+#!/usr/bin/awk
+
 # Filter absolute paths from coverage data
 #
 # Copied from
