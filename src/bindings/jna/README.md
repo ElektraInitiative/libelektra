@@ -123,4 +123,3 @@ if you run all tests on a build (the target is called testjna_maven).
 - error/warning fixed to a special number, no generator for any
   error/warning
 - no java iterator for metadata
-- no simple way to print warning/errors

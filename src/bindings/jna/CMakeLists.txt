@@ -43,7 +43,7 @@ if (MAVEN_EXECUTABLE) # set by find_program
 	# and add maven test to execute with ctest in the testing phase
 	add_test (
 		NAME testjna_maven
-		COMMAND ${MAVEN_EXECUTABLE} -q -B -P env-test test
+		COMMAND ${MAVEN_EXECUTABLE} -q -B -e -P env-test test
 		WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/libelektra4j"
 	)
 else (MAVEN_EXECUTABLE)
