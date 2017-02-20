@@ -1,3 +1,5 @@
+#!/bin/sh
+
 # creates autoconfig.js and elektra.cfs for configure-firefox
 
 FFLibDir=$1
