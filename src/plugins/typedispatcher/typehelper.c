@@ -15,7 +15,7 @@ static void freeType(TypeConfig *tc)
     elektraFree(tc);
 }
 
-void freeTypes(KeySet *types)
+static void freeTypes(KeySet *types)
 {
     if(!types)
 	return;
@@ -30,7 +30,7 @@ void freeTypes(KeySet *types)
     }
 }
 
-void closePlugins(KeySet *plugins)
+static void closePlugins(KeySet *plugins)
 {
     if(!plugins)
 	return;
@@ -73,7 +73,7 @@ DispatchConfig * initDispatchConfig()
     return config;
 }
 
-KeySet *getKeysBelow(const Key *key, KeySet *ks, KeyRelType rel)
+static KeySet *getKeysBelow(const Key *key, KeySet *ks, KeyRelType rel)
 {
     if(!key)
 	return NULL;
@@ -97,12 +97,12 @@ KeySet *getKeysBelow(const Key *key, KeySet *ks, KeyRelType rel)
     return result;
 }
 
-KeySet *getAllKeysBelow(const Key *key, KeySet *ks)
+static KeySet *getAllKeysBelow(const Key *key, KeySet *ks)
 {
     return getKeysBelow(key, ks, ELEKTRA_REL_BELOW_SAME_NS);
 }
 
-KeySet *getKeysDirectBelow(const Key *key, KeySet *ks)
+static KeySet *getKeysDirectBelow(const Key *key, KeySet *ks)
 {
     return getKeysBelow(key, ks, ELEKTRA_REL_DIRECT_BELOW_SAME_NS);
 }
@@ -131,9 +131,23 @@ static void setTypeType(TypeConfig *tc, const Key *key)
 	tc->type = SUBTYPE;
 }
 
+static Key *getTypeKey(DispatchConfig *config, const char *type)
+{
+    Key *lookup = ksLookupByName(config->types, type, KDB_O_NONE);
+    return lookup;
+}
+
+static TypeConfig *getType(DispatchConfig *config, const char *type)
+{
+    Key *lookup = getTypeKey(config, type);
+    if(!lookup)
+	return NULL;
+    TypeConfig *tc = *(TypeConfig**)keyValue(lookup);
+    return tc;
+}
 
 // creates skeletons(name+type+scope) for new types and fails if type already exist
-int readTypeNames(DispatchConfig *config, const Key *scope, const Key *typeKey, Key *parentKey)
+static int readTypeNames(DispatchConfig *config, const Key *scope, const Key *typeKey, Key *parentKey)
 {
     if(!typeKey)
 	return ERROR;
@@ -142,16 +156,20 @@ int readTypeNames(DispatchConfig *config, const Key *scope, const Key *typeKey, 
 #ifdef DEVBUILD
     fprintf(stderr, "\tdefines type %s\n", typeName);
 #endif
-    Key *lookup = NULL;
-    if((lookup = ksLookupByName(config->types, typeName, KDB_O_NONE)) != NULL)
+    TypeConfig *tc = getType(config, typeName);
+    if(tc && keyCmp(tc->scope, scope))
     {
 #ifdef DEVBUILD
 	fprintf(stderr, "ERROR: %s already defined\n", typeName);
 #endif
 	return ERROR;
     }
+    else if(tc)
+    {
+	return SUCCESS;
+    }
 
-    TypeConfig *tc = newTypeConfig();
+    tc = newTypeConfig();
     if(!tc)
 	return ERROR;
     setTypeType(tc, typeKey);
@@ -164,7 +182,7 @@ int readTypeNames(DispatchConfig *config, const Key *scope, const Key *typeKey, 
 }
 
 
-int readTypeConfig(DispatchConfig *config, const Key *key, const Key *typeKey, KeySet *defKS, Key *parentKey)
+static int readTypeConfig(DispatchConfig *config, const Key *key, const Key *typeKey, KeySet *defKS, Key *parentKey)
 {
     if(!typeKey)
 	return ERROR;
@@ -174,22 +192,27 @@ int readTypeConfig(DispatchConfig *config, const Key *key, const Key *typeKey, K
     fprintf(stderr, "populating %s\n", typeName);
 #endif
 
-    Key *lookup = ksLookupByName(config->types, typeName, KDB_O_NONE);
-    if(!lookup)
+    TypeConfig *tc = getType(config, typeName);
+    if(!tc)
     {
 #ifdef DEVBUILD
 	fprintf(stderr, "datatype %s not found but should exist\n", typeName);
-#endif 
+#endif
 	return ERROR;
     }
-#if defined(DEVBUILD) && defined(VERBOSEBUILD)
     else
     {
-	fprintf(stderr, "%s found in config->types\n", keyName(lookup));
-    }
+#ifdef DEVBUILD
+	fprintf(stderr, "datatype %s found in config->types\n", typeName);
 #endif
-    TypeConfig *tc = *(TypeConfig **)keyValue(lookup);
-
+	if((ksGetSize(tc->checks) > 0) || (ksGetSize(tc->types) > 0))
+	{
+#if defined(DEVBUILD) && defined(VERBOSEBUILD)
+	    fprintf(stderr, "%s already exists - changing types at runtime not supported yet\n", typeName);
+#endif
+	    return SUCCESS;
+	}
+    }
     Key *cur;	
     Key *checkKey = keyNew(keyName(typeKey), KEY_META_NAME, KEY_END);
     keyAddBaseName(checkKey, "check");
@@ -237,14 +260,22 @@ int readTypeConfig(DispatchConfig *config, const Key *key, const Key *typeKey, K
 
     Key *relKey = keyNew(keyName(typeKey), KEY_META_NAME, KEY_END);
     keyAddBaseName(relKey, "type");
-    typeKS = getAllKeysBelow(relKey, defKS);
+    Key *lookup = ksLookup(defKS, relKey, KDB_O_NONE);
+    if(!strncmp(keyString(lookup), "#", 1))
+    {
+	typeKS = getAllKeysBelow(relKey, defKS);
+    }
+    else
+    {
+	typeKS = ksNew(0, KS_END);
+	ksAppendKey(typeKS, lookup);
+    }
+    ksRewind(typeKS);
     while((cur = ksNext(typeKS)) != NULL)
     {
-	if(!strncmp(keyString(cur), "#", 1))
-	    continue;
 	const char *relTypeName = keyString(cur);
-	lookup = ksLookupByName(config->types, relTypeName, KDB_O_NONE);
-	if(!lookup)
+	TypeConfig *rt = getType(config, relTypeName);
+	if(!rt)
 	{
 #ifdef DEVBUILD
 	    fprintf(stderr, "%s references %s, but doesn't exist\n", keyName(key), relTypeName);
@@ -255,7 +286,6 @@ int readTypeConfig(DispatchConfig *config, const Key *key, const Key *typeKey, K
 	}
 	else
 	{
-	    TypeConfig *rt = *(TypeConfig **)keyValue(lookup);
 	    if(keyCmp(rt->scope, key))
 	    {
 		if(keyRel2(rt->scope, key, ELEKTRA_REL_BELOW_SAME_NS) <= 0)
@@ -269,9 +299,9 @@ int readTypeConfig(DispatchConfig *config, const Key *key, const Key *typeKey, K
 		}
 	    }
 #ifdef DEVBUILD
-	    fprintf(stderr, "\t\t\t%s references %s - adding\n", keyName(key), keyName(lookup));
+	    fprintf(stderr, "\t\t\t%s references %s - adding\n", keyName(key), relTypeName);
 #endif
-	    ksAppendKey(tc->types, lookup);
+	    ksAppendKey(tc->types, getTypeKey(config, relTypeName));
 	}
     }
     keyDel(relKey);
@@ -280,3 +310,91 @@ int readTypeConfig(DispatchConfig *config, const Key *key, const Key *typeKey, K
     return SUCCESS;
 }
 
+
+int getTypeDefinitions(Key *key, DispatchConfig *config, Key *parentKey)
+{
+#ifdef DEVBUILD
+    fprintf(stderr, "Getting type definitions from %s\n", keyName(key));
+#endif
+    RC rc = SUCCESS;
+    KeySet *metaKS = elektraKeyGetMetaKeySet(key);
+    Key *defineParent = keyNew("define/type", KEY_META_NAME, KEY_END);
+    KeySet *defKS = getAllKeysBelow(defineParent, metaKS);
+
+    if(!defKS)
+    {
+#if defined(DEVBUILD) && defined(VERBOSEBUILD)
+	fprintf(stderr, "Key %s has no type definitions\n", keyName(key));
+#endif
+    }
+    else
+    {
+	// typeParents - define/type/<TYPENAME>
+	KeySet *typeParentKS = getKeysDirectBelow(defineParent, defKS);
+	if(!typeParentKS)
+	{
+#if defined(DEVBUILD) && defined(VERBOSEBUILD)
+	    fprintf(stderr, "Key %s has no metakey define/type/<TYPENAME>\n", keyName(key));
+#endif
+	    ksDel(defKS);
+	}	
+	else
+	{
+	    Key *typeKey = NULL;
+	    ksRewind(typeParentKS);
+	    while((typeKey = ksNext(typeParentKS)) != NULL)
+	    {
+		// since metakeys are ordered alphabetical
+		// create skeletons to handle possible dependencies
+		rc = readTypeNames(config, key, typeKey, parentKey);
+		if(rc == ERROR)
+		    goto GETDEFCLEANUP;
+	    }
+	    ksRewind(typeParentKS);
+	    while((typeKey = ksNext(typeParentKS)) != NULL)
+	    {
+		// create actual type config
+		rc = readTypeConfig(config, key, typeKey, defKS, parentKey);
+		if(rc == ERROR)
+		    goto GETDEFCLEANUP;
+	    }
+	}
+GETDEFCLEANUP:
+	ksDel(typeParentKS);
+	ksDel(defKS);
+    }
+    ksDel(metaKS);
+    keyDel(defineParent);
+    return rc;
+}
+
+
+int validateKey(Key *key, DispatchConfig *config, Key *parentKey)
+{
+    const Key *typeMeta = keyGetMeta(key, "type");
+    if(!typeMeta)
+	return SUCCESS;
+    if(!strncmp(keyString(typeMeta), "#", 1))
+    {
+	//multiple type entrys
+
+    }
+    else
+    {
+	const char *type = keyString(typeMeta);
+#ifdef DEVBUILD
+	fprintf(stderr, "%s has type meta %s\n", keyName(key), type);
+#endif
+	Key *lookup = ksLookupByName(config->types, type, KDB_O_NONE);
+	if(!lookup)
+	{
+#ifdef DEVBUILD
+	    fprintf(stderr, "%s has type unknown type meta %s\n", keyName(key), type);
+#endif
+	    return ERROR;
+	}
+
+	TypeConfig *tc = *(TypeConfig **)keyValue(lookup);
+    }
+    return SUCCESS;
+}

@@ -40,63 +40,6 @@ int elektraTypedispatcherClose (Plugin * handle ELEKTRA_UNUSED, Key * errorKey E
 	return SUCCESS; // success
 }
 
-static int getDefinitions(Key *key, DispatchConfig *config, Key *parentKey)
-{
-#ifdef DEVBUILD
-    fprintf(stderr, "Getting type definitions from %s\n", keyName(key));
-#endif
-    RC rc = SUCCESS;
-    KeySet *metaKS = elektraKeyGetMetaKeySet(key);
-    Key *defineParent = keyNew("define/type", KEY_META_NAME, KEY_END);
-    KeySet *defKS = getAllKeysBelow(defineParent, metaKS);
-
-    if(!defKS)
-    {
-#if defined(DEVBUILD) && defined(VERBOSEBUILD)
-	fprintf(stderr, "Key %s has no type definitions\n", keyName(key));
-#endif
-    }
-    else
-    {
-	// typeParents - define/type/<TYPENAME>
-	KeySet *typeParentKS = getKeysDirectBelow(defineParent, defKS);
-	if(!typeParentKS)
-	{
-#if defined(DEVBUILD) && defined(VERBOSEBUILD)
-	    fprintf(stderr, "Key %s has no metakey define/type/<TYPENAME>\n", keyName(key));
-#endif
-	    ksDel(defKS);
-	}	
-	else
-	{
-	    Key *typeKey = NULL;
-	    ksRewind(typeParentKS);
-	    while((typeKey = ksNext(typeParentKS)) != NULL)
-	    {
-		// since metakeys are ordered alphabetical
-		// create skeletons to handle possible dependencies
-		rc = readTypeNames(config, key, typeKey, parentKey);
-		if(rc == ERROR)
-		    goto GETDEFCLEANUP;
-	    }
-	    ksRewind(typeParentKS);
-	    while((typeKey = ksNext(typeParentKS)) != NULL)
-	    {
-		// create actual type config
-		rc = readTypeConfig(config, key, typeKey, defKS, parentKey);
-		if(rc == ERROR)
-		    goto GETDEFCLEANUP;
-	    }
-	}
-GETDEFCLEANUP:
-	ksDel(typeParentKS);
-	ksDel(defKS);
-    }
-    ksDel(metaKS);
-    keyDel(defineParent);
-    return rc;
-}
-
 static int iterate(DispatchConfig *config, KeySet *returned, Key *parentKey)
 {
     RC rc = SUCCESS;
@@ -104,7 +47,7 @@ static int iterate(DispatchConfig *config, KeySet *returned, Key *parentKey)
     Key *cur;
     while((cur = ksNext(returned)) != NULL)
     {
-	RC r = getDefinitions(cur, config, parentKey);
+	RC r = getTypeDefinitions(cur, config, parentKey);
 	if(r == ERROR)
 	{
 #ifdef DEVBUILD
@@ -112,7 +55,14 @@ static int iterate(DispatchConfig *config, KeySet *returned, Key *parentKey)
 #endif
 	    return ERROR;
 	}
-	
+	r = validateKey(cur, config, parentKey);
+	if(r == ERROR)
+	{
+#ifdef DEVBUILD
+	    fprintf(stderr, "Key %s failed to validate\n", keyName(cur));
+#endif
+	    return ERROR;
+	}
     }
     return rc;
 }

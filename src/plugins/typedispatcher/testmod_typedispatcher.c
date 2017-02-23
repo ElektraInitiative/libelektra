@@ -27,7 +27,7 @@ void testSimple()
 		KEY_META, "define/type/bar", "",
 		KEY_META, "define/type/bar/check/range", "3-5,8-20", 
 		KEY_END), 
-	    keyNew("user/tests/typedispatcher/all", KEY_VALUE, "10", 
+	    keyNew("user/tests/typedispatcher/all", KEY_VALUE, "4", 
 		KEY_META, "type", "#2",
 		KEY_META, "type/#0", "ace", 
 		KEY_META, "type/#1", "foo", 
@@ -40,7 +40,7 @@ void testSimple()
 	    KS_END);
     KeySet * conf = ksNew (0, KS_END);
     PLUGIN_OPEN ("typedispatcher");
-    succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "bla failed");
+    succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "Simple failed");
     ksDel (ks);
     keyDel (parentKey);
     PLUGIN_CLOSE ();
@@ -56,13 +56,13 @@ void testSub()
 		KEY_META, "define/type/ab", "", 
 		KEY_META, "define/type/ab/check/enum", "#1", 
 		KEY_META, "define/type/ab/check/enum/#0", "a", 
-		KEY_META, "define/type/ab/check/enum/#1","b", 
+		KEY_META, "define/type/ab/check/enum/#1", "b", 
 		KEY_META, "define/type/ab/type", "#0", 
 		KEY_META, "define/type/ab/type/#0", "character", 
 		KEY_META, "define/type/character", "", 
 		KEY_META, "define/type/character/check/type", "char", 
 		KEY_END), 
-	    keyNew("user/tests/typedispatcher/ab", KEY_VALUE, "c", 
+	    keyNew("user/tests/typedispatcher/ab", KEY_VALUE, "a", 
 		KEY_META, "type", "#0", 
 		KEY_META, "type/#0", "ab", 
 		KEY_END), 
@@ -74,7 +74,7 @@ void testSub()
 	    KS_END);
     KeySet * conf = ksNew (0, KS_END);
     PLUGIN_OPEN ("typedispatcher");
-    succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "bla failed");
+    succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "Sub failed");
     ksDel (ks);
     keyDel (parentKey);
     PLUGIN_CLOSE ();
@@ -92,14 +92,14 @@ void testSub2()
 		KEY_END), 
 	    keyNew("user/tests/typedispatcher/character", KEY_VALUE, "c", 
 		KEY_META, "type", "#0", 
-		KEY_META, "type/#0", "ab", 
+		KEY_META, "type/#0", "character", 
 		KEY_END), 
 	    keyNew("user/tests/typedispatcher/sub", KEY_VALUE, "", 
 		KEY_META, "define/type", "", 
 		KEY_META, "define/type/ab", "",
 		KEY_META, "define/type/ab/check/enum", "#1",
 		KEY_META, "define/type/ab/check/enum/#0", "a",
-		KEY_META, "define/type/ab/check/enum/#1","b", 
+		KEY_META, "define/type/ab/check/enum/#1", "b", 
 		KEY_META, "define/type/ab/type", "#0",
 		KEY_META, "define/type/ab/type/#0", "character", 
 		KEY_END), 
@@ -111,7 +111,7 @@ void testSub2()
 	    KS_END);
     KeySet * conf = ksNew (0, KS_END);
     PLUGIN_OPEN ("typedispatcher");
-    succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "bla failed");
+    succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "Sub2 failed");
     ksDel (ks);
     keyDel (parentKey);
     PLUGIN_CLOSE ();
@@ -134,7 +134,7 @@ void testSimpleWithOthers()
 		KEY_META, "define/type/bar", "",
 		KEY_META, "define/type/bar/check/range", "3-5,8-20", 
 		KEY_END), 
-	    keyNew("user/tests/typedispatcher/all", KEY_VALUE, "10", 
+	    keyNew("user/tests/typedispatcher/all", KEY_VALUE, "4", 
 		KEY_META, "ameta", "",
 		KEY_META, "ometa", "",
 		KEY_META, "zmeta", "",
@@ -154,7 +154,7 @@ void testSimpleWithOthers()
 	    KS_END);
     KeySet * conf = ksNew (0, KS_END);
     PLUGIN_OPEN ("typedispatcher");
-    succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "bla failed");
+    succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "SimpleWithOthers failed");
     ksDel (ks);
     keyDel (parentKey);
     PLUGIN_CLOSE ();
@@ -172,7 +172,7 @@ void testSimpleOutOfScope()
 		KEY_END), 
 	    keyNew("user/tests/typedispatcher/character", KEY_VALUE, "c", 
 		KEY_META, "type", "#0", 
-		KEY_META, "type/#0", "ab", 
+		KEY_META, "type/#0", "character", 
 		KEY_END), 
 	    keyNew("user/tests/typedispatcher/asub", KEY_VALUE, "",
 		KEY_META, "define/type", "",
@@ -184,15 +184,15 @@ void testSimpleOutOfScope()
 		KEY_META, "define/type/ab", "",
 		KEY_META, "define/type/ab/check/enum", "#1",
 		KEY_META, "define/type/ab/check/enum/#0", "a",
-		KEY_META, "define/type/ab/check/enum/#1","b", 
+		KEY_META, "define/type/ab/check/enum/#1", "b", 
 		KEY_META, "define/type/ab/type", "#1",
 		KEY_META, "define/type/ab/type/#0", "character", 
 		KEY_META, "define/type/ab/type/#1", "notReachable", 
 		KEY_END), 
-	    keyNew("user/tests/typedispatcher/sub/ab", "c", 
-		KEY_META, "type", "#0", 
-		KEY_META, "type/#0", "ab", 
-		KEY_END),
+	    keyNew("user/tests/typedispatcher/sub/ab", "a", 
+		    KEY_META, "type", "#0", 
+		    KEY_META, "type/#0", "ab", 
+		    KEY_END),
 
 	    KS_END);
     KeySet * conf = ksNew (0, KS_END);
@@ -212,9 +212,9 @@ void testSimpleClash()
 		KEY_META, "define/type/character", "", 
 		KEY_META, "define/type/character/check/type", "char", 
 		KEY_END), 
-	    keyNew("user/tests/typedispatcher/character", KEY_VALUE, "c", 
+	    keyNew("user/tests/typedispatcher/character", KEY_VALUE, "a", 
 		KEY_META, "type", "#0", 
-		KEY_META, "type/#0", "ab", 
+		KEY_META, "type/#0", "character", 
 		KEY_END), 
 	    keyNew("user/tests/typedispatcher/asub", KEY_VALUE, "",
 		KEY_META, "define/type", "",
@@ -226,7 +226,7 @@ void testSimpleClash()
 		KEY_META, "define/type/character", "", 
 		KEY_META, "define/type/character/check/type", "char", 
 		KEY_END), 
-	    keyNew("user/tests/typedispatcher/sub/ab", "c", 
+	    keyNew("user/tests/typedispatcher/sub/ab", "b", 
 		KEY_META, "type", "#0", 
 		KEY_META, "type/#0", "ab", 
 		KEY_END),
@@ -235,6 +235,60 @@ void testSimpleClash()
     KeySet * conf = ksNew (0, KS_END);
     PLUGIN_OPEN ("typedispatcher");
     succeed_if (plugin->kdbGet (plugin, ks, parentKey) == -1, "clash test failed");
+    ksDel (ks);
+    keyDel (parentKey);
+    PLUGIN_CLOSE ();
+}
+
+void testMultiSub()
+{
+    Key * parentKey = keyNew ("user/tests/typedispatcher", KEY_VALUE, "", KEY_END);
+    KeySet * ks = ksNew (5, 
+	    keyNew ("user/tests/typedispatcher", KEY_VALUE, "typedefinitions", 
+		KEY_META, "define/type", "", 
+		KEY_META, "define/type/character", "", 
+		KEY_META, "define/type/character/check/type", "char", 		
+		KEY_META, "define/type/upperChar", "",
+		KEY_META, "define/type/upperChar/check/range", "A-Z",
+		KEY_META, "define/type/upperChar/type", "character",
+		KEY_END), 
+	    keyNew("user/tests/typedispatcher/character", KEY_VALUE, "c", 
+		KEY_META, "type", "#0", 
+		KEY_META, "type/#0", "ab", 
+		KEY_END), 
+	    keyNew("user/tests/typedispatcher/asub", KEY_VALUE, "",
+		KEY_META, "define/type", "",
+		KEY_META, "define/type/notReachable", "",
+		KEY_META, "define/type/notReachable/check/type", "long",
+		KEY_END),
+	    keyNew("user/tests/typedispatcher/sub", KEY_VALUE, "",
+		KEY_META, "define/type", "",
+		KEY_META, "define/type/AB", "",
+		KEY_META, "define/type/AB/check/enum", "#1",
+		KEY_META, "define/type/AB/check/enum/#0", "A",
+		KEY_META, "define/type/AB/check/enum/#1", "B", 
+		KEY_END),
+	    keyNew("user/tests/typedispatcher/sub/sub", KEY_VALUE, "", 
+		KEY_META, "define/type", "", 
+		KEY_META, "define/type/multi", "",
+		KEY_META, "define/type/multi/type", "#1",
+		KEY_META, "define/type/multi/type/#0", "upperChar", 
+		KEY_META, "define/type/multi/type/#1", "AB",
+		KEY_END),
+	    keyNew("user/tests/typedispatcher/sub/sub/Akey", KEY_VALUE, "A",
+		KEY_META, "type", "multi", 
+		KEY_END),
+
+	    KS_END);
+    KeySet * conf = ksNew (0, KS_END);
+    PLUGIN_OPEN ("typedispatcher");
+    succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "Multi test failed");
+    fprintf(stderr, "\t=================\n");
+    ksAppendKey(ks, keyNew("user/tests/typedispatcher/sub/sub/Ckey", KEY_VALUE, "C",
+		KEY_META, "type", "multi", 
+		KEY_END));
+    succeed_if (plugin->kdbGet (plugin, ks, parentKey) == -1, "Multi test 2 failed");
+
     ksDel (ks);
     keyDel (parentKey);
     PLUGIN_CLOSE ();
@@ -259,6 +313,8 @@ int main (int argc, char ** argv)
     testSimpleOutOfScope();
     fprintf(stderr, "\n============================================\n");
     testSimpleClash();
+    fprintf(stderr, "\n============================================\n");
+    testMultiSub();
     fprintf(stderr, "\n============================================\n");
 
     printf ("\ntestmod_typedispatcher RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);

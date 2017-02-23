@@ -7,6 +7,7 @@ typedef enum
 {
     ERROR = -1,
     SUCCESS = 1,
+
 }RC;
 
 typedef enum
@@ -39,11 +40,7 @@ typedef struct
 }DispatchConfig; 
 
 
-void freeTypes(KeySet *);
-void closePlugins(KeySet *);
 DispatchConfig * initDispatchConfig();
 void closeDispatchConfig(Plugin *);
-KeySet *getAllKeysBelow(const Key *, KeySet *);
-KeySet *getKeysDirectBelow(const Key *, KeySet *);
-int readTypeNames(DispatchConfig *, const Key *, const Key *, Key *parentKey);
-int readTypeConfig(DispatchConfig *, const Key *, const Key *, KeySet *, Key *);
+int getTypeDefinitions(Key *, DispatchConfig *, Key *);
+int validateKey(Key *, DispatchConfig *, Key *);
