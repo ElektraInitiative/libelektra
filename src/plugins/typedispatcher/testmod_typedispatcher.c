@@ -161,6 +161,85 @@ void testSimpleWithOthers()
 
 }
 
+void testSimpleOutOfScope()
+{
+    Key * parentKey = keyNew ("user/tests/typedispatcher", KEY_VALUE, "", KEY_END);
+    KeySet * ks = ksNew (5, 
+	    keyNew ("user/tests/typedispatcher", KEY_VALUE, "typedefinitions", 
+		KEY_META, "define/type", "", 
+		KEY_META, "define/type/character", "", 
+		KEY_META, "define/type/character/check/type", "char", 
+		KEY_END), 
+	    keyNew("user/tests/typedispatcher/character", KEY_VALUE, "c", 
+		KEY_META, "type", "#0", 
+		KEY_META, "type/#0", "ab", 
+		KEY_END), 
+	    keyNew("user/tests/typedispatcher/asub", KEY_VALUE, "",
+		KEY_META, "define/type", "",
+		KEY_META, "define/type/notReachable", "",
+		KEY_META, "define/type/notReachable/check/type", "long",
+		KEY_END),
+	    keyNew("user/tests/typedispatcher/sub", KEY_VALUE, "", 
+		KEY_META, "define/type", "", 
+		KEY_META, "define/type/ab", "",
+		KEY_META, "define/type/ab/check/enum", "#1",
+		KEY_META, "define/type/ab/check/enum/#0", "a",
+		KEY_META, "define/type/ab/check/enum/#1","b", 
+		KEY_META, "define/type/ab/type", "#1",
+		KEY_META, "define/type/ab/type/#0", "character", 
+		KEY_META, "define/type/ab/type/#1", "notReachable", 
+		KEY_END), 
+	    keyNew("user/tests/typedispatcher/sub/ab", "c", 
+		KEY_META, "type", "#0", 
+		KEY_META, "type/#0", "ab", 
+		KEY_END),
+
+	    KS_END);
+    KeySet * conf = ksNew (0, KS_END);
+    PLUGIN_OPEN ("typedispatcher");
+    succeed_if (plugin->kdbGet (plugin, ks, parentKey) == -1, "OutOfScope test failed");
+    ksDel (ks);
+    keyDel (parentKey);
+    PLUGIN_CLOSE ();
+}
+
+void testSimpleClash()
+{
+    Key * parentKey = keyNew ("user/tests/typedispatcher", KEY_VALUE, "", KEY_END);
+    KeySet * ks = ksNew (5, 
+	    keyNew ("user/tests/typedispatcher", KEY_VALUE, "typedefinitions", 
+		KEY_META, "define/type", "", 
+		KEY_META, "define/type/character", "", 
+		KEY_META, "define/type/character/check/type", "char", 
+		KEY_END), 
+	    keyNew("user/tests/typedispatcher/character", KEY_VALUE, "c", 
+		KEY_META, "type", "#0", 
+		KEY_META, "type/#0", "ab", 
+		KEY_END), 
+	    keyNew("user/tests/typedispatcher/asub", KEY_VALUE, "",
+		KEY_META, "define/type", "",
+		KEY_META, "define/type/notReachable", "",
+		KEY_META, "define/type/notReachable/check/type", "long",
+		KEY_END),
+	    keyNew("user/tests/typedispatcher/sub", KEY_VALUE, "", 
+		KEY_META, "define/type", "",
+		KEY_META, "define/type/character", "", 
+		KEY_META, "define/type/character/check/type", "char", 
+		KEY_END), 
+	    keyNew("user/tests/typedispatcher/sub/ab", "c", 
+		KEY_META, "type", "#0", 
+		KEY_META, "type/#0", "ab", 
+		KEY_END),
+
+	    KS_END);
+    KeySet * conf = ksNew (0, KS_END);
+    PLUGIN_OPEN ("typedispatcher");
+    succeed_if (plugin->kdbGet (plugin, ks, parentKey) == -1, "clash test failed");
+    ksDel (ks);
+    keyDel (parentKey);
+    PLUGIN_CLOSE ();
+}
+
 int main (int argc, char ** argv)
 {
     printf ("TYPEDISPATCHER     TESTS\n");
@@ -176,6 +255,10 @@ int main (int argc, char ** argv)
     testSub2();
     fprintf(stderr, "\n============================================\n");
     testSimpleWithOthers();
+    fprintf(stderr, "\n============================================\n");
+    testSimpleOutOfScope();
+    fprintf(stderr, "\n============================================\n");
+    testSimpleClash();
     fprintf(stderr, "\n============================================\n");
 
     printf ("\ntestmod_typedispatcher RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);

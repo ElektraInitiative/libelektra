@@ -25,6 +25,7 @@ void freeTypes(KeySet *types)
     {
 	TypeConfig *tc = *(TypeConfig **)keyValue(key);
 	ksDel(tc->types);
+	keyDel(tc->scope);
 	freeType(tc);
     }
 }
@@ -113,11 +114,15 @@ static TypeConfig *newTypeConfig()
     if(!tc)
 	return NULL;
     tc->type = SUBTYPE;
+    tc->scope = keyNew(0, KEY_END);
     tc->checks = ksNew(0, KS_END);
     tc->types = ksNew(0, KS_END);
     return tc;
 }
 
+
+// sets TypeConfig->type to SUMTYPE if keyString matches "SUM"
+// SUBTYPE otherwise
 static void setTypeType(TypeConfig *tc, const Key *key)
 {
     if(!strncasecmp(keyString(key), "SUM", 3))
@@ -126,7 +131,9 @@ static void setTypeType(TypeConfig *tc, const Key *key)
 	tc->type = SUBTYPE;
 }
 
-int readTypeNames(DispatchConfig *config, const Key *typeKey, Key *parentKey)
+
+// creates skeletons(name+type+scope) for new types and fails if type already exist
+int readTypeNames(DispatchConfig *config, const Key *scope, const Key *typeKey, Key *parentKey)
 {
     if(!typeKey)
 	return ERROR;
@@ -135,7 +142,8 @@ int readTypeNames(DispatchConfig *config, const Key *typeKey, Key *parentKey)
 #ifdef DEVBUILD
     fprintf(stderr, "\tdefines type %s\n", typeName);
 #endif
-    if(ksLookupByName(config->types, typeName, KDB_O_NONE))
+    Key *lookup = NULL;
+    if((lookup = ksLookupByName(config->types, typeName, KDB_O_NONE)) != NULL)
     {
 #ifdef DEVBUILD
 	fprintf(stderr, "ERROR: %s already defined\n", typeName);
@@ -147,6 +155,7 @@ int readTypeNames(DispatchConfig *config, const Key *typeKey, Key *parentKey)
     if(!tc)
 	return ERROR;
     setTypeType(tc, typeKey);
+    keySetName(tc->scope, keyName(scope)); 
 
     Key *newType = keyNew(typeName, KEY_META_NAME, KEY_BINARY, KEY_SIZE, sizeof(TypeConfig *), KEY_VALUE, &tc, KEY_END);
     ksAppendKey(config->types, newType);
@@ -155,7 +164,7 @@ int readTypeNames(DispatchConfig *config, const Key *typeKey, Key *parentKey)
 }
 
 
-int readTypeConfig(DispatchConfig *config, const Key *typeKey, KeySet *defKS, Key *parentKey)
+int readTypeConfig(DispatchConfig *config, const Key *key, const Key *typeKey, KeySet *defKS, Key *parentKey)
 {
     if(!typeKey)
 	return ERROR;
@@ -214,7 +223,7 @@ int readTypeConfig(DispatchConfig *config, const Key *typeKey, KeySet *defKS, Ke
 		    metaName = elektraKeyGetRelativeName(cur2, typeKey);
 		    keySetMeta(appendKey, metaName, keyString(cur2));
 #ifdef DEVBUILD
-	    fprintf(stderr, "\t\t\tadding %s:(%s) to %s\n", metaName, keyString(cur2), keyName(appendKey));
+		    fprintf(stderr, "\t\t\tadding %s:(%s) to %s\n", metaName, keyString(cur2), keyName(appendKey));
 #endif	    
 		}
 		ksDel(c);
@@ -225,7 +234,7 @@ int readTypeConfig(DispatchConfig *config, const Key *typeKey, KeySet *defKS, Ke
     ksDel(dupKS);
     keyDel(checkKey);
     ksDel(typeKS);
-    
+
     Key *relKey = keyNew(keyName(typeKey), KEY_META_NAME, KEY_END);
     keyAddBaseName(relKey, "type");
     typeKS = getAllKeysBelow(relKey, defKS);
@@ -238,16 +247,32 @@ int readTypeConfig(DispatchConfig *config, const Key *typeKey, KeySet *defKS, Ke
 	if(!lookup)
 	{
 #ifdef DEVBUILD
-	    fprintf(stderr, "%s references %s, but doesn't exist\n", keyName(typeKey), relTypeName);
+	    fprintf(stderr, "%s references %s, but doesn't exist\n", keyName(key), relTypeName);
 #endif
 	    keyDel(relKey);
 	    ksDel(typeKS);
 	    return ERROR;
 	}
+	else
+	{
+	    TypeConfig *rt = *(TypeConfig **)keyValue(lookup);
+	    if(keyCmp(rt->scope, key))
+	    {
+		if(keyRel2(rt->scope, key, ELEKTRA_REL_BELOW_SAME_NS) <= 0)
+		{
 #ifdef DEVBUILD
-	fprintf(stderr, "\t\t\t%s references %s - adding\n", keyName(cur), keyName(lookup));
+		    fprintf(stderr, "%s references %s, but not within scope\n", keyName(key), relTypeName);
 #endif
-	ksAppendKey(tc->types, lookup);
+		    keyDel(relKey);
+		    ksDel(typeKS);
+		    return ERROR;
+		}
+	    }
+#ifdef DEVBUILD
+	    fprintf(stderr, "\t\t\t%s references %s - adding\n", keyName(key), keyName(lookup));
+#endif
+	    ksAppendKey(tc->types, lookup);
+	}
     }
     keyDel(relKey);
     ksDel(typeKS);

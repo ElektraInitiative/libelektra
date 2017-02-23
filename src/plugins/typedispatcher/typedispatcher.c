@@ -75,7 +75,7 @@ static int getDefinitions(Key *key, DispatchConfig *config, Key *parentKey)
 	    {
 		// since metakeys are ordered alphabetical
 		// create skeletons to handle possible dependencies
-		rc = readTypeNames(config, typeKey, parentKey);
+		rc = readTypeNames(config, key, typeKey, parentKey);
 		if(rc == ERROR)
 		    goto GETDEFCLEANUP;
 	    }
@@ -83,7 +83,7 @@ static int getDefinitions(Key *key, DispatchConfig *config, Key *parentKey)
 	    while((typeKey = ksNext(typeParentKS)) != NULL)
 	    {
 		// create actual type config
-		rc = readTypeConfig(config, typeKey, defKS, parentKey);
+		rc = readTypeConfig(config, key, typeKey, defKS, parentKey);
 		if(rc == ERROR)
 		    goto GETDEFCLEANUP;
 	    }
@@ -112,6 +112,7 @@ static int iterate(DispatchConfig *config, KeySet *returned, Key *parentKey)
 #endif
 	    return ERROR;
 	}
+	
     }
     return rc;
 }

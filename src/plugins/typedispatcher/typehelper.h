@@ -18,6 +18,7 @@ typedef enum
 typedef struct
 {
     Types type;
+    Key *scope;
     KeySet *checks;
     KeySet *types;
 }TypeConfig;
@@ -44,5 +45,5 @@ DispatchConfig * initDispatchConfig();
 void closeDispatchConfig(Plugin *);
 KeySet *getAllKeysBelow(const Key *, KeySet *);
 KeySet *getKeysDirectBelow(const Key *, KeySet *);
-int readTypeNames(DispatchConfig *, const Key *, Key *parentKey);
-int readTypeConfig(DispatchConfig *, const Key *, KeySet *, Key *);
+int readTypeNames(DispatchConfig *, const Key *, const Key *, Key *parentKey);
+int readTypeConfig(DispatchConfig *, const Key *, const Key *, KeySet *, Key *);
