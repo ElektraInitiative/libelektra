@@ -17,7 +17,7 @@ public class KDB implements AutoCloseable {
 		final transient Key errorKey;
 
 		public KDBException(final Key k) {
-			super(new Throwable(String.format("failure in I/O to KDB: %s", KeyUtils.getWarnings(k))));
+			super(new Throwable(String.format("failure in I/O to KDB: %s%n%s", KeyUtils.getErrors(k), KeyUtils.getWarnings(k))));
 			errorKey = k;
 		}
 
