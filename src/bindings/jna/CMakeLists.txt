@@ -41,10 +41,29 @@ if (MAVEN_EXECUTABLE) # set by find_program
 	)
 
 	# and add maven test to execute with ctest in the testing phase
+	if ( (CMAKE_SYSTEM_NAME STREQUAL "Darwin") AND NOT (CMAKE_SYSTEM_VERSION VERSION_LESS 15) )
+		# we cannot set DYLD_LIBRARY_PATH on new macOS versions, making the kdb tests
+		# fail if its not installed in the system
+		set (MAVEN_TEST_ENV "env-test-without-kdb")
+	else ()
+		set (MAVEN_TEST_ENV "env-test")
+	endif ()
+
 	add_test (
 		NAME testjna_maven
-		COMMAND ${MAVEN_EXECUTABLE} -B test
+		COMMAND ${MAVEN_EXECUTABLE} -q -B -e -P ${MAVEN_TEST_ENV} test
 		WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/libelektra4j"
+	)
+
+	set_property (
+		TEST testjna_maven
+		PROPERTY ENVIRONMENT
+			"LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib"
+	)
+
+	set_property (
+		TEST testjna_maven
+		PROPERTY LABELS bindings
 	)
 else (MAVEN_EXECUTABLE)
 	remove_binding (jna "Maven Executable not found, but required to build the jna bindings")
