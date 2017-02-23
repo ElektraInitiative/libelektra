@@ -36,9 +36,56 @@ This command will list the name of all keys below a given path.
 
 ## EXAMPLES
 
-To list all keys below `user/example`:  
-`kdb ls user/example`  
+```sh
 
+# Create the keys we use for the examples
+kdb set /sw/elektra/examples/kdb-ls/test val1
+kdb set /sw/elektra/examples/kdb-ls/test/foo/bar val2
+kdb set /sw/elektra/examples/kdb-ls/test/fizz/buzz fizzbuzz
+kdb set /sw/elektra/examples/kdb-ls/tost val3
+kdb set /sw/elektra/examples/kdb-ls/tost/level lvl 
+
+# list all keys below /sw/elektra/examples/kdb-ls
+kdb ls /sw/elektra/examples/kdb-ls
+#>user/sw/elektra/examples/kdb-ls/test
+#>user/sw/elektra/examples/kdb-ls/test/fizz/buzz
+#>user/sw/elektra/examples/kdb-ls/test/foo/bar
+#>user/sw/elektra/examples/kdb-ls/tost
+#>user/sw/elektra/examples/kdb-ls/tost/level
+
+# list the next level of keys below /sw/elektra/examples/kdb-ls
+# note that if the search key ends with a /, it lists the next level
+kdb ls /sw/elektra/examples/kdb-ls/ --max-depth=1
+#>user/sw/elektra/examples/kdb-ls/test
+#>user/sw/elektra/examples/kdb-ls/tost
+
+# list the current level of keys below /sw/elektra/examples/kdb-ls
+# note the difference to the previous example
+kdb ls /sw/elektra/examples/kdb-ls --max-depth=1
+# this yields no output as /sw/elektra/examples/kdb-ls is not a key
+
+# list all keys below /sw/elektra/examples/kdb-ls with are minimum 1 level away from that key
+# and maximum 2 levels away
+kdb ls /sw/elektra/examples/kdb-ls --min-depth=1 --max-depth=2
+#>user/sw/elektra/examples/kdb-ls/tost/level
+
+# list all keys below /sw/elektra/examples/kdb-ls/test
+kdb ls /sw/elektra/examples/kdb-ls/test
+#>user/sw/elektra/examples/kdb-ls/test
+#>user/sw/elektra/examples/kdb-ls/test/fizz/buzz
+#>user/sw/elektra/examples/kdb-ls/test/foo/bar
+
+# list all keys under /sw/elektra/examples/kdb-ls in verbose mode
+kdb ls /sw/elektra/examples/kdb-ls/ -v
+#>size of all keys in mountpoint: 31
+#>size of requested keys: 5
+#>user/sw/elektra/examples/kdb-ls/test
+#>user/sw/elektra/examples/kdb-ls/test/fizz/buzz
+#>user/sw/elektra/examples/kdb-ls/test/foo/bar
+#>user/sw/elektra/examples/kdb-ls/tost
+#>user/sw/elektra/examples/kdb-ls/tost/level
+
+```
 
 ## SEE ALSO
 
