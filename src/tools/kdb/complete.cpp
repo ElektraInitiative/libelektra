@@ -114,6 +114,12 @@ void CompleteCommand::completeNormal (const string argument, Key const & parsedA
 	// we see depth relative to the completion level, if the root exists, distance will be higher so subtract 1
 	// to add up for the offset added my shallShowNextLevel
 	const int offset = getKeyDepth (root) - rootExists + shallShowNextLevel (argument);
+	if (cl.debug)
+	{
+		cout << "Root is " << root << " with a key depth of " << getKeyDepth (root) << endl;
+		cout << "The root exists: " << rootExists << "and we shall show the next level: " << shallShowNextLevel (argument) << endl;
+		cout << "Offset relative to completion level is " << offset << endl;
+	}
 
 	const auto nameFilter = root.isCascading () ? filterCascading : filterName;
 	// Let elektra handle the escaping of the input for us
@@ -150,7 +156,7 @@ const map<Key, pair<int, int>> CompleteCommand::analyze (KeySet const & ks, Cmdl
 	{
 		Key current = keyStack.top ();
 		keyStack.pop ();
-		if (current.isDirectBelow (last))
+		if (last.isValid () && current.isDirectBelow (last))
 		{ // down in the hierarchy, last element is new parent
 			parent = last;
 			curDepth++;

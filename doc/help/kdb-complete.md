@@ -43,20 +43,55 @@ originates from.
 
 ## EXAMPLES
 
-To show all possible completions:
-`kdb complete`
+```sh
 
-To show namespace suggestions:
-`kdb complete --max-depth=1`
+# Create the keys we use for the examples
+kdb set /sw/elektra/examples/kdb-complete/level1 foo
+kdb set /sw/elektra/examples/kdb-complete/lvl1/lvl2 bar
+kdb set /sw/elektra/examples/kdb-complete/lvl1/lvl2/lvl3/lvl4/lvl5 fizz
+kdb set /sw/elektra/examples/kdb-complete/buzz fizzBuzz
+kdb set /sw/elektra/examples/kdb-complete/#array_1 asdf
+kdb set /sw/elektra/examples/kdb-complete/% nothing
 
-To show all possible completions for a cascading key:
-`kdb complete /te`
+# list suggestions for namespaces starting with us, only the current level
+kdb complete us --max-depth=1
+#>user/
 
-To show all possible completions for `user/te`:  
-`kdb complete user/te`
+# list suggestions for namespaces starting with user, only the current level
+kdb complete user --max-depth=1
+#>user/
 
-To show all possible completions for the next level for `user/te`:  
-`kdb complete --max-depth=1 user/te`
+# list suggestions for the namespace user, only the next level as it ends with /
+# note the difference to the previous example, which uses no trailing /
+kdb complete user/ --max-depth=1
+#>RET: 0
+#>STDOUT: .*
+
+# list all possible namespaces or mountpoints, only the current level
+kdb complete --max-depth=1
+#>RET: 0
+#>STDOUT: .*
+
+# list suggestions for /sw/elektra/examples/kdb-complete, only the current level
+kdb complete /sw/elektra/examples/kdb-complete --max-depth=1
+#>user/sw/elektra/examples/kdb-complete/
+
+# list suggestions for /sw/elektra/examples/kdb-complete/, only the next level
+# again, note the difference to the previous example which has no trailing /
+kdb complete /sw/elektra/examples/kdb-complete/ --max-depth=1
+#>user/sw/elektra/examples/kdb-complete/%
+#>user/sw/elektra/examples/kdb-complete/#array_1
+#>user/sw/elektra/examples/kdb-complete/buzz
+#>user/sw/elektra/examples/kdb-complete/level1
+#>user/sw/elektra/examples/kdb-complete/lvl1/
+
+# list suggestions for /sw/elektra/examples/kdb-complete which are minimum 2 levels
+# away from that key, and maximum 4 levels away
+kdb complete /sw/elektra/examples/kdb-complete/ --min-depth=2 --max-depth=4
+#>user/sw/elektra/examples/kdb-complete/lvl1/lvl2/lvl3/
+#>user/sw/elektra/examples/kdb-complete/lvl1/lvl2/lvl3/lvl4/
+
+```
 
 ## SEE ALSO
 
