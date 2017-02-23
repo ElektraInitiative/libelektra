@@ -1,37 +1,40 @@
 - infos = Information about the file plugin is in keys below
-- infos/author = Author Name <elektra@libelektra.org>
+- infos/author = Thomas Waser <thomas.waser@libelektra.org>
 - infos/licence = BSD
 - infos/needs =
 - infos/provides = storage
 - infos/recommends =
 - infos/placements = getstorage setstorage
-- infos/status = maintained conformant compatible coverage specific unittest tested nodep libc configurable preview memleak experimental difficult unfinished old nodoc concept
+- infos/status = maintained conformant compatible coverage specific unittest tested nodep libc configurable preview memleak experimental difficult old nodoc concept
 - infos/metadata =
-- infos/description = one-line description of file
+- infos/description = reads complete file into a key
 
 ## Introduction
 
-Copy this file if you want to start a new
-plugin written in C.
+The file plugin reads the content of a file and stores it into the parent key.
+
+## Configuration
+
+- `binary` 
+
+	treats the file as a binary file instead of a text file
+
+- `info`
+
+	adds additional informations about the file as metadata to the parent key.
+	
+	- `info/size` filesize
+	- `info/ctime` time of last status change
+	- `info/atime` time of last access
+	- `info/mtime` time of last modification
+	- `info/uid` user ID of owner
+	- `info/gid` group ID of owner
+	- `info/mode` protection
+	- `info/inode` inode number
 
 ## Usage
 
-You can use `scripts/copy-file`
-to automatically rename everything to your
-plugin name:
-
-	cd src/plugins
-	../../scripts/copy-file yourplugin
-
-Then update the README.md of your newly created plugin:
-
-- enter your full name+email in `infos/author`
-- make sure `status` and other clauses conform to
-  descriptions in `doc/CONTRACT.ini`
-- update the one-line description above
-- add your plugin in `src/plugins/README.md`
-- and rewrite the rest of this `README.md` to give a great
-  explanation of what your plugin does
+`kdb mount file /testfile file`
 
 ## Dependencies
 
