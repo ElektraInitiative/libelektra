@@ -5,6 +5,7 @@
 - infos/needs =
 - infos/placements = getstorage setstorage
 - infos/status = maintained unittest nodep libc configurable 1000
+- infos/metadata = order
 - infos/description = storage plugin for ini files
 
 ## Introduction

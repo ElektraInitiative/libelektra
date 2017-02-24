@@ -5,6 +5,7 @@
 - infos/needs =
 - infos/placements = postgetstorage presetstorage
 - infos/status = maintained nodep libc nodoc
+- infos/metadata = binary
 - infos/description = Transforms null and empty values to text and back
 
 ## Introduction
