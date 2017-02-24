@@ -368,33 +368,63 @@ GETDEFCLEANUP:
     return rc;
 }
 
+static int typeCheck(DispatchConfig *config, const Key *key, const char *typeName)
+{
+#ifdef DEVBUILD
+    fprintf(stderr, "\t\twith type %s\n", typeName); 
+#endif
+    Key *lookup = ksLookupByName(config->types, typeName, KDB_O_NONE);
+    if(!lookup)
+    {
+#ifdef DEVBUILD
+	fprintf(stderr, "%s has type unknown type meta %s\n", keyName(key), typeName);
+#endif
+	return ERROR;
+    }
+
+    TypeConfig *tc = *(TypeConfig **)keyValue(lookup);
+
+
+    return SUCCESS;
+}
 
 int validateKey(Key *key, DispatchConfig *config, Key *parentKey)
 {
     const Key *typeMeta = keyGetMeta(key, "type");
     if(!typeMeta)
 	return SUCCESS;
+#ifdef DEVBUILD
+    fprintf(stderr, "validating %s:(%s)\n", keyName(key), keyString(key));
+#endif
+
     if(!strncmp(keyString(typeMeta), "#", 1))
     {
 	//multiple type entrys
-
+	KeySet *metaKS = elektraKeyGetMetaKeySet(key);
+	KeySet *typeKS = getAllKeysBelow(typeMeta, metaKS);
+	ksDel(metaKS);
+	Key *cur = NULL;
+	RC rc = SUCCESS;
+	while((cur = ksNext(typeKS)) != NULL)
+	{
+	    rc = typeCheck(config, key, keyString(cur));
+	    if(rc == ERROR)
+	    {
+		ksDel(typeKS);
+		return ERROR;
+	    }
+	}
+	ksDel(typeKS);
     }
     else
     {
-	const char *type = keyString(typeMeta);
+	const char *typeName = keyString(typeMeta);
 #ifdef DEVBUILD
-	fprintf(stderr, "%s has type meta %s\n", keyName(key), type);
+	fprintf(stderr, "%s has type meta %s\n", keyName(key), typeName);
 #endif
-	Key *lookup = ksLookupByName(config->types, type, KDB_O_NONE);
-	if(!lookup)
-	{
-#ifdef DEVBUILD
-	    fprintf(stderr, "%s has type unknown type meta %s\n", keyName(key), type);
-#endif
+	RC rc = typeCheck(config, key, typeName);
+	if(rc == ERROR)
 	    return ERROR;
-	}
-
-	TypeConfig *tc = *(TypeConfig **)keyValue(lookup);
     }
     return SUCCESS;
 }
