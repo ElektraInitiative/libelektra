@@ -368,24 +368,106 @@ GETDEFCLEANUP:
     return rc;
 }
 
-static int typeCheck(DispatchConfig *config, const Key *key, const char *typeName)
+static int typeCheckHelper(Key *key, Key *checkMeta)
 {
 #ifdef DEVBUILD
-    fprintf(stderr, "\t\twith type %s\n", typeName); 
+    fprintf(stderr, "\t%s-validation\n", keyName(checkMeta));
 #endif
-    Key *lookup = ksLookupByName(config->types, typeName, KDB_O_NONE);
-    if(!lookup)
+    keyRewindMeta(checkMeta);
+    const Key *metaKey;
+    while((metaKey = keyNextMeta(checkMeta)) != NULL)
+    {
+	keySetMeta(key, keyName(metaKey), keyString(metaKey));
+#ifdef DEVBUILD
+	fprintf(stderr, "\t\t%s:(%s)\n", keyName(metaKey), keyString(metaKey));
+#endif
+    }
+
+    return SUCCESS;
+}
+
+static int doTypeCheck(DispatchConfig *config, TypeConfig *tc, const Key *key)
+{
+    ksRewind(tc->checks);
+    Key *checkMeta;
+    TypeType t = tc->type;
+    RC rc;
+    if(t == SUMTYPE)
+       rc = ERROR;
+    else
+	rc = SUCCESS;
+
+    while((checkMeta = ksNext(tc->checks)) != NULL)
+    {
+	Key *testKey = keyNew(keyName(key), KEY_VALUE, keyString(key), KEY_END);
+	RC r = typeCheckHelper(testKey, checkMeta);
+	keyDel(testKey);
+	switch(t)
+	{
+	    case SUMTYPE:
+		if(r == SUCCESS)
+		{
+		    rc = SUCCESS;
+		    goto TYPECHECKDONE;
+		}
+		break;
+	    case SUBTYPE:
+		if(r == ERROR)
+		{
+		    rc = ERROR;
+		    goto TYPECHECKDONE;
+		}
+		break;
+	}
+
+    }
+    ksRewind(tc->types);
+    while((checkMeta = ksNext(tc->types)) != NULL)
+    {
+	Key *testKey = keyNew(keyName(key), KEY_VALUE, keyString(key), KEY_END);
+	TypeConfig *t_tc = *(TypeConfig **)keyValue(checkMeta);
+	RC r = doTypeCheck(config, t_tc, testKey);
+	keyDel(testKey);
+	switch(t)
+	{
+	    case SUMTYPE:
+		if(r == SUCCESS)
+		{
+		    rc = SUCCESS;
+		    goto TYPECHECKDONE;
+		}
+		break;
+	    case SUBTYPE:
+		if(r == ERROR)
+		{
+		    rc = ERROR;
+		    goto TYPECHECKDONE;
+		}
+		break;
+	}
+    }
+TYPECHECKDONE:
+    return rc;
+}
+
+static int typeCheck(DispatchConfig *config, const Key *key, const char *typeName, Key *parentKey)
+{
+#ifdef DEVBUILD
+    fprintf(stderr, "\twith type %s\n", typeName); 
+#endif
+
+
+    TypeConfig *tc = getType(config, typeName); 
+    if(!tc)
     {
 #ifdef DEVBUILD
 	fprintf(stderr, "%s has type unknown type meta %s\n", keyName(key), typeName);
 #endif
 	return ERROR;
     }
+    RC rc = doTypeCheck(config, tc, key);
 
-    TypeConfig *tc = *(TypeConfig **)keyValue(lookup);
-
-
-    return SUCCESS;
+    return rc;
 }
 
 int validateKey(Key *key, DispatchConfig *config, Key *parentKey)
@@ -407,7 +489,7 @@ int validateKey(Key *key, DispatchConfig *config, Key *parentKey)
 	RC rc = SUCCESS;
 	while((cur = ksNext(typeKS)) != NULL)
 	{
-	    rc = typeCheck(config, key, keyString(cur));
+	    rc = typeCheck(config, key, keyString(cur), parentKey);
 	    if(rc == ERROR)
 	    {
 		ksDel(typeKS);
@@ -422,7 +504,7 @@ int validateKey(Key *key, DispatchConfig *config, Key *parentKey)
 #ifdef DEVBUILD
 	fprintf(stderr, "%s has type meta %s\n", keyName(key), typeName);
 #endif
-	RC rc = typeCheck(config, key, typeName);
+	RC rc = typeCheck(config, key, typeName, parentKey);
 	if(rc == ERROR)
 	    return ERROR;
     }

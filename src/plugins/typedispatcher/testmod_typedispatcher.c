@@ -254,7 +254,7 @@ void testMultiSub()
 		KEY_END), 
 	    keyNew("user/tests/typedispatcher/character", KEY_VALUE, "c", 
 		KEY_META, "type", "#0", 
-		KEY_META, "type/#0", "ab", 
+		KEY_META, "type/#0", "character", 
 		KEY_END), 
 	    keyNew("user/tests/typedispatcher/asub", KEY_VALUE, "",
 		KEY_META, "define/type", "",

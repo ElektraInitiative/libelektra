@@ -14,11 +14,11 @@ typedef enum
 {
     SUBTYPE,
     SUMTYPE,
-}Types;
+}TypeType;
 
 typedef struct
 {
-    Types type;
+    TypeType type;
     Key *scope;
     KeySet *checks;
     KeySet *types;
