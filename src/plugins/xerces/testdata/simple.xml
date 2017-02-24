@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<sw>
+	<elektra>
+		<tests>
+			<xerces>
+				<!-- this is an attribute -->
+				<fizz buzz="fizzBuzz" />
+				value of xerces
+			</xerces>
+		</tests>
+	</elektra>
+</sw>
