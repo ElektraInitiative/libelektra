@@ -20,7 +20,7 @@ do
 	for META in $PLUGIN_META;
 	do
 		grep -Eq "^\\[${META}\\]$" "$META_FILE"
-		succeed_if "Metadata $META of plugin $PLUGIN not present in METADATA.ini"
+		succeed_if "Metadata $META is in infos/metadata of ${PLUGINS_DIR}/$PLUGIN/README.md, but not present in $META_FILE for $PLUGIN"
 	done
 
 	USED_BY=$(awk "/usedby\\/plugin= ([^\\n]*)${PLUGIN}( |\\n)/" RS= "$META_FILE")
@@ -33,7 +33,7 @@ do
 	do
 		STRIPPED_META=$(echo "$META" | sed 's/\[//g' | sed 's/\]//g')
 		grep -Eq "infos/metadata(.*)${STRIPPED_META}" "$README"
-		succeed_if "$STRIPPED_META should be used by $PLUGIN, but not present in ${PLUGIN}/README.md infos/metadata"
+		succeed_if "Metadata $STRIPPED_META is in $META_FILE for $PLUGIN, but not present in infos/metadata of ${PLUGINS_DIR}/${PLUGIN}/README.md"
 	done
 
 	IFS="$OLD_IFS"
