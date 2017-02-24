@@ -5,6 +5,7 @@
 - infos/needs =
 - infos/placements = presetstorage postgetstorage
 - infos/status = maintained unittest tested nodep libc configurable
+- infos/metadata =
 - infos/description = conversion of keys to metakeys and vice versa
 
 ## Introduction
