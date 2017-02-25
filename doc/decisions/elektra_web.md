@@ -1,8 +1,8 @@
-# elektra-web structure
+# Elektra Web structure
 
 ## Issue
 
-For elektra-web, there needs to be a way to remotely manage instances and groups
+For Elektra Web, there needs to be a way to remotely manage instances and groups
 of instances (clusters). The remote configuration of a single instance is
 simple. However, to manage multiple instances, we need to store the information
 to access the daemons, as well as information about the grouping (clusters) of
@@ -62,8 +62,8 @@ that are set in the cluster cannot be modified.
 
 ## Related decisions
 
-- [elektra-web recursive structure decision](elektra_web_recursive.md)
+- [Elektra Web Recursive Structure decision](elektra_web_recursive.md)
 
 ## Notes
 
-- [discussion in the pull request](https://github.com/ElektraInitiative/libelektra/pull/1173)
+- [Discussion in the pull request](https://github.com/ElektraInitiative/libelektra/pull/1173)

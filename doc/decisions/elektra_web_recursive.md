@@ -1,9 +1,9 @@
-# elektra-web recursive structure
+# Elektra Web recursive structure
 
 ## Issue
 
 After deciding how to remotely manage instances and groups of instances
-(clusters) with elektra-web, there is still the issue of recursively nested
+(clusters) with Elektra Web, there is still the issue of recursively nested
 clusters (clusters of clusters).
 
 ## Constraints
@@ -52,6 +52,6 @@ the client on a separate web server.
 
 ## Related decisions
 
-- [elektra-web structure decision](elektra_web.md)
+- [Elektra Web Structure decision](elektra_web.md)
 
 ## Notes
