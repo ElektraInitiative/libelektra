@@ -267,7 +267,7 @@ static void freeKeyList (struct gpgKeyListElement * head)
 }
 
 /**
- * @brief parses the first key ID from the GPG output and writes it to gpgMissingKeyErrorBuffer.
+ * @brief parses the key IDs from the GPG output and writes it to gpgMissingKeyErrorBuffer.
  * @param msgKey holds the output of the GPG process
  * @param totalChars is set to the total number of characters of all key IDs read from the GPG output
  * @param keyCount is set to the numer of key Ids parsed from the GPG output
@@ -355,6 +355,8 @@ static struct gpgKeyListElement * parseGpgKeyIdFromOutput (Key * msgKey, size_t 
 					if (!elem)
 					{
 						freeKeyList (keylistHead);
+						*totalChars = 0;
+						*keyCount = 0;
 						return NULL;
 					}
 					elem->start = i;
@@ -413,42 +415,40 @@ static char * getMissingGpgKeyErrorText (KeySet * conf)
 	char * argv[] = { "", "--batch", "--list-secret-keys", "--with-fingerprint", "--with-colons", "--fixed-list-mode", NULL };
 	if (CRYPTO_PLUGIN_FUNCTION (gpgCall) (conf, errorKey, msgKey, argv, 7) == 1)
 	{
-		if (keyGetValueSize (msgKey) > 0)
+		size_t totalKeyIdChars = 0;
+		size_t keyCount = 0;
+		struct gpgKeyListElement * listHead = parseGpgKeyIdFromOutput (msgKey, &totalKeyIdChars, &keyCount);
+
+		if (keyCount > 0)
 		{
-			size_t totalKeyIdChars = 0;
-			size_t keyCount = 0;
-			struct gpgKeyListElement * listHead = parseGpgKeyIdFromOutput (msgKey, &totalKeyIdChars, &keyCount);
-
 			// error message + list of all key ids separated by a coma ',' + null terminator
-			errorBufferLen = strlen (GPG_ERROR_MISSING_KEY_LIST) + 1;
-			if (keyCount > 0)
-			{
-				errorBufferLen += totalKeyIdChars + keyCount - 1;
-			}
-
+			errorBufferLen = strlen (GPG_ERROR_MISSING_KEY_LIST) + totalKeyIdChars + keyCount;
 			errorBuffer = elektraMalloc (errorBufferLen);
-			if (errorBuffer)
+			if (!errorBuffer)
 			{
-				const char * content = (const char *)keyValue (msgKey);
-
-				size_t index = strlen (GPG_ERROR_MISSING_KEY_LIST);
-				strncpy (errorBuffer, GPG_ERROR_MISSING_KEY_LIST, errorBufferLen);
-
-				// construct the error list with the key ids
-				struct gpgKeyListElement * iterator = listHead;
-				while (iterator)
-				{
-					if (iterator != listHead)
-					{
-						errorBuffer[index++] = ',';
-					}
-
-					strncpy (&errorBuffer[index], &content[iterator->start], iterator->end - iterator->start);
-					index += iterator->end - iterator->start;
-					iterator = iterator->next;
-				}
-				errorBuffer[index] = '\0';
+				freeKeyList (listHead);
+				return NULL;
 			}
+
+			const char * content = (const char *)keyValue (msgKey);
+
+			size_t index = strlen (GPG_ERROR_MISSING_KEY_LIST);
+			strncpy (errorBuffer, GPG_ERROR_MISSING_KEY_LIST, errorBufferLen);
+
+			// construct the error list with the key ids
+			struct gpgKeyListElement * iterator = listHead;
+			while (iterator)
+			{
+				if (iterator != listHead)
+				{
+					errorBuffer[index++] = ',';
+				}
+
+				strncpy (&errorBuffer[index], &content[iterator->start], iterator->end - iterator->start);
+				index += iterator->end - iterator->start;
+				iterator = iterator->next;
+			}
+			errorBuffer[index] = '\0';
 
 			freeKeyList (listHead);
 			keyDel (msgKey);
