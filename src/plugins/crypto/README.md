@@ -150,7 +150,40 @@ If more than one key is defined, every owner of the corresponding private key ca
 This might be useful if applications run with their own user but the administrator has to update the configuration.
 The administrator then only needs the public key of the application user in her keyring, set the values and the application will be able to decrypt the values.
 
+If you are not sure which keys are available to you, the `kdb` program will give you suggestions in the error description.
+For example you can type:
+
+    kdb mount test.ecf user/t crypto_gcrypt
+
+In the error description you should see something like:
+
+    The command ./bin/kdb mount terminated unsuccessfully with the info:
+    The provided plugin configuration is not valid!
+    Errors/Warnings during the check were:
+    Sorry, the error (#130) occurred!
+    Description: the configuration is invalid or incomplete.
+    Ingroup: plugin
+    Module: crypto
+    At: /Users/pnirschl/Projects/libelektra/src/plugins/crypto/gpg.c:512
+    Reason: Missing GPG key (specified as /gpg/key) in plugin configuration. Available key IDs are: B815F1334CF4F830187A784256CFA3A5C54DF8E4,847378ABCF0A552B48082A80C52E8E92F785163F
+    Mountpoint: 
+    Configfile: 
+    Please report the issue on https://issues.libelektra.org/
+
+This means that the following keys are available:
+
+- B815F1334CF4F830187A784256CFA3A5C54DF8E4
+- 847378ABCF0A552B48082A80C52E8E92F785163F
+
+So the full mount command could look like this:
+
+    kdb mount test.ecf user/t crypto_gcrypt "crypto/key=847378ABCF0A552B48082A80C52E8E92F785163F"
+
+
 ### Cryptographic Operations
+
+Please note that these options are meant for experts only.
+If you do not provide these configuration options, secure defaults are being used.
 
 The length of the master password that protects all the other keys can be set in:
 
@@ -170,3 +203,10 @@ if the plugin should shut down the crypto library:
 Per default shutdown is disabled to prevent applications like the qt-gui from crashing.
 Shutdown is enabled in the unit tests to prevent memory leaks.
 
+## Technical Details
+
+### Ciphers and Mode Of Operation
+
+All of the plugin variants use the Advanced Encryption Standard (AES) in Cipher Block Chaining Mode (CBC) with a key size of 256 bit.
+
+The ciphers and modes of operations are defined in the corresponding `<plugin_variant>_operations.c` or `<plugin_variant>_operations.h` file.
