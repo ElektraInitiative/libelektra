@@ -21,7 +21,7 @@ The developer replaces `Plugin` with the name of their plugin. So in the case of
 `elektraLineOpen()`, `elektraLineGet()`, `elektraLineSet()`, `elektraLineError()`, and `elektraLineClose()`.
 Additionally, there is one more function called
 [ELEKTRA_PLUGIN_EXPORT](https://doc.libelektra.org/api/current/html/group__plugin.html#ga8dd092048e972a3f0c9c9f54eb41576e),
-where once again `Plugin` should be replaced with the name of the plug-in, this time in lower-case. So for my line plugin this function would be
+where once again `Plugin` should be replaced with the name of the plug-in, this time in uppercase. So for my line plugin this function would be
 `ELEKTRA_PLUGIN_EXPORT(line)`.
 The developer may define `elektraPluginCheckConf()` if configuration validation at mount-time is desired.
 
