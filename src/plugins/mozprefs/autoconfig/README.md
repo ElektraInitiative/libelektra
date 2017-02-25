@@ -1,6 +1,6 @@
 ## Introduction
 
-This file explains how Firefox preferences can be manipulated at runtime using Elektras intercept open and a custom autoconfig script. 
+This file explains how Firefox preferences can be manipulated at runtime using Elektra’s intercept open and a custom autoconfig script.
 
 ## Basics
 

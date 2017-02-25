@@ -31,7 +31,7 @@ installed tools and something like `External tools are located in /usr/local/lib
 With this path we can run the service like `cd /usr/local/lib/elektra/tool_exec/ && sh run-@tool@`.
 An alternative is to make use of the `kdb` tool and run `kdb run-@tool@`.
 
-The REST service can also be configured. All configuration is read from Elektras
+The REST service can also be configured. All configuration is read from Elektra’s
 key database at start-time of the service. Further details and configuration options
 are listed below.
 

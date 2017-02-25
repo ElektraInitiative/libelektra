@@ -14,7 +14,7 @@ do
 	then
 	continue
 	fi
-	
+
 	README="${PLUGINS_DIR}/${PLUGIN}/README.md"
 	PLUGIN_META=$(grep -Eo "infos/metadata(.*)" "$README" |cut -d '=' -f2)
 	for META in $PLUGIN_META;
@@ -23,7 +23,7 @@ do
 		succeed_if "Metadata $META is in infos/metadata of ${PLUGINS_DIR}/$PLUGIN/README.md, but not present in $META_FILE for $PLUGIN"
 	done
 
-	USED_BY=$(awk "/usedby\\/plugin= ([^\\n]*)${PLUGIN}( |\\n)/" RS= "$META_FILE")
+	USED_BY=$(awk "/usedby\\/plugin=([^\\n]*) ${PLUGIN}( |\\n)/" RS= "$META_FILE")
 	USED_BY_META=$(echo "$USED_BY" | grep -Eo "^\\[.*\\]$")
 
 	OLD_IFS="$IFS"

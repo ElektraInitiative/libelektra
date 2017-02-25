@@ -2,7 +2,7 @@
 
 ## Introduction
 
-This document aims to provide information about Elektras `@tool@`,
+This document aims to provide information about Elektra’s `@tool@`,
 which is the frontend of the `rest-backend` allowing for search and sharing of configuration snippets.
 Besides that functionality, the frontend also contains the Elektra website.
 
