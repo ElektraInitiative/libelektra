@@ -1077,8 +1077,8 @@ or any other type
 - Many small fixes that appeared in the switch to keyNew()
 - Many other fixes, code robustness and cleanup.
 - User-defined key types greatly improved, fixed and tested.
-- XML export can now supress obvious UID and GID for 'user/*' keys
-- XML export can now supress user domain for 'user/*' keys
+- XML export can now suppress obvious UID and GID for 'user/*' keys
+- XML export can now suppress user domain for 'user/*' keys
 - New keyNewExample.c and lookup.c on example/
 - New example/keyset.xml with example of complex keys, and how they look XML-exported.
 - XML DTD were droped. Now we have XML schemas, thanks to Rémi <remipouak@yahoo.fr>.

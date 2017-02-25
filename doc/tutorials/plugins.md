@@ -26,7 +26,7 @@ where once again `Plugin` should be replaced with the name of the plug-in, this 
 The developer may define `elektraPluginCheckConf()` if configuration validation at mount-time is desired.
 
 The KDB relies on the first five functions for interacting with configuration files stored in the key database.
-Calls for `kdbGet()` and `kdbClose()` will call the functions `elektraPluginGet()` and `elektraPluginClose()` respectively for the
+Calls to `kdbGet()` and `kdbClose()` will call the functions `elektraPluginGet()` and `elektraPluginClose()` respectively for the
 plugin that was used to mount the configuration data. `kdbSet()` calls `elektraPluginSet()` but also `elektraPluginError()` when an error occurs.
 `elektraPluginOpen()` is called before the first call to `elektraPluginGet()` or `elektraPluginSet()`. These functions serve different purposes
 that allow the plug-in to work:
@@ -77,7 +77,7 @@ generate_readme(pluginname)
 ```
 
 It will generate a `readme_plugginname.c` (in the build-directory) out of the
-README.md of the plugin''s source directory.
+README.md of the plugin’s source directory.
 
 But prefer to use
 
@@ -253,7 +253,7 @@ you should also read the information there.
 ## Coding
 
 This section will focus on an overview of the kind of code you would use to develop a plugin. It gives examples from real plugins
-and should serve as a rough guide on how to write a storage plugin that can read and write configuration data into the Elektra
+and should serve as a rough guide on how to write a storage plugin that can read and write configuration data into an Elektra
 KeySet.
 
 ### `elektraPluginGet`
