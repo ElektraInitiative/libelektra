@@ -11,7 +11,7 @@
 
 ## Usage
 
-Export Elektra's C-structs (e.g. `ksNew(.. keyNew(`). This is
+Export Elektra’s C-structs (e.g. `ksNew(.. keyNew(`). This is
 useful for generating test data, e.g.:
 
 	kdb export user/testdata c

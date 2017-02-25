@@ -61,7 +61,7 @@ and
 
     ___empty_map
 
-Arrays are mapped to Elektra's array convention #0, #1,..
+Arrays are mapped to Elektra’s array convention #0, #1,..
 
 ## Restrictions
 

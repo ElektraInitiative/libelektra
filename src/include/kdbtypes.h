@@ -1,7 +1,7 @@
 /**
  * @file
  *
- * @brief Elektra's data types for C and C++11.
+ * @brief Elektra’s data types for C and C++11.
  *
  * This header file defines portable Types used in Elektra for C and
  * C++11.

@@ -2,7 +2,7 @@
 
 ## Introduction
 
-This document aims to provide information about Elektra's `rest-backend` feature.
+This document aims to provide information about Elektra’s `rest-backend` feature.
 `rest-backend` offers a RESTful server to search, store and convert configuration snippets.
 It also offers authentication methods to restrict access to manipulative methods.
 A detailed description of the implemented API can be found in the

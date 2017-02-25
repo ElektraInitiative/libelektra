@@ -10,7 +10,7 @@ Elektra follows two design principles:
 2. aim towards an easy to use API for programmers reading and writing
    configuration.
 
-Elektra's data structures are optimized to get, set and lookup values
+Elektra’s data structures are optimized to get, set and lookup values
 easily and fast.
 
 The idea is, that the KDB API is not only implemented by Elektra.
@@ -23,7 +23,7 @@ conventions.
 
 The `Key`, `KeySet` and `KDB` data structures are defined in
 `kdbprivate.h` to remain ABI compatible when one of them is changed.
-This means, it is not possible to put one of Elektra's data structures
+This means, it is not possible to put one of Elektra’s data structures
 on the stack. You must use the memory management facilities mentioned
 in the next section.
 
@@ -141,7 +141,7 @@ might contain `0`-bytes:
 does not specify whether the returned value is binary or a string. The
 function just returns the pointer to the value. When `key` is a string
 (check with `keyIsString`) at least `""` will be returned. See section
-“Return Values” to learn more about common values returned by Elektra's
+“Return Values” to learn more about common values returned by Elektra’s
 functions. For binary data a `NULL` pointer is also possible to
 distinguish between no data and `'\0'`.
 
@@ -170,7 +170,7 @@ by `dataSize`.
 
 ## Return Value
 
-Elektra's function share common error codes. Every function must return
+Elektra’s function share common error codes. Every function must return
 `-1` on error, if its return type is integer (like `int`, `ssize_t`). If
 the function returns a pointer, `0` (`NULL`) will indicate an error.
 This behaviour can't be used for functions that return integers, since

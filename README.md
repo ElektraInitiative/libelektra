@@ -190,7 +190,7 @@ If there are no packages available for your distribution see the
 
 ### Download
 
-Elektra's uses a [git repository at GitHub](https://github.com/ElektraInitiative/libelektra).
+Elektra uses a [git repository at GitHub](https://github.com/ElektraInitiative/libelektra).
 
 You can clone the latest version of Elektra by running:
 

@@ -12,7 +12,7 @@ occurred.  These tasks have in common that they become trivial once a
 programmatic access to a global key database exists.
 
 In this manual we give an overview of the command-line tool `kdb`. It
-is part of Elektra's tools and performs the mentioned tasks.
+is part of Elektra’s tools and performs the mentioned tasks.
 `kdb` consists of individual subprograms.  The programs are independent,
 but can access a shared part that provides functionality too specific to
 be in the library -- for example, pretty printing of error messages and

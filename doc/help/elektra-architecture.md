@@ -106,7 +106,7 @@ that way that programs work together well."
 
 ## Modules
 
-Elektra's core can be compiled with a C compiler conforming to the
+Elektra’s core can be compiled with a C compiler conforming to the
 ISO/IEC 9899:1999 standard:
 
 - One line comments,

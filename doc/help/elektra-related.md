@@ -37,7 +37,7 @@ the same as applications see it.
 Additionally, Augeas has a rather poor level of abstraction and many
 syntactical details must be reflected in the configuration tree.
 Nevertheless, Elektra provides an [augeas plugin](/src/plugins/augeas/)
-which allows parts of Elektra's global configuration tree to
+which allows parts of Elektra’s global configuration tree to
 be implemented using lenses. Lenses are a promising technology,
 which allow mapping from and to configuration files to be specified
 with a single program.

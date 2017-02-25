@@ -47,7 +47,7 @@ The namespaces are mapped to the buses the following way:
 - system: system-wide bus
 - user: session bus
 
-Following signal names are used to notify about changes in the Elektra's KeySet:
+Following signal names are used to notify about changes in the Elektra’s KeySet:
 
 - KeyAdded: a key has been added
 - KeyChanged: a key has been changed

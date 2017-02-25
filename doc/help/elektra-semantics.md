@@ -1,7 +1,7 @@
 elektra-semantics(7) -- Semantics of KDB
 ========================================
 
-The use of arbitrary metadata has extensive effects in Elektra's
+The use of arbitrary metadata has extensive effects in Elektra’s
 semantics. They become simpler and more suited to carry key value pairs.
 The semantics now gives us independence of the underlying file system.
 So none of the file system's restrictions apply anymore.  No constraints
@@ -14,7 +14,7 @@ everywhere.  Keys always can have a value.  The only constraint is
 that key names are unique and occur in one of the
 [namespaces](elektra-namespaces.md).
 Every Key has an absolute name. There is no concept of relative names in
-Elektra's Keys except for metakeys belonging to a key.  Every other Key is independent
+Elektra’s Keys except for metakeys belonging to a key.  Every other Key is independent
 of each other.  We just do not care if there is another key below or
 above the accessed one in the storage or not.
 
@@ -49,7 +49,7 @@ every key is represented by a single file.  The key name was actually
 mapped to a file name and the value and the comment was written to
 that file.
 
-If the backend `filesys` was the ideal solution, Elektra's
+If the backend `filesys` was the ideal solution, Elektra’s
 API (application programming interface) would be of limited
 use. E.g.cascading, type checking and
 optional cross-cutting features would be missing.  The storage problem

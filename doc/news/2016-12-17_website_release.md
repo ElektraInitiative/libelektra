@@ -93,7 +93,7 @@ that took most effort to create, is the service that allows for sharing
 of configuration snippets. It is run by a REST service fully built with
 the help of [CppCMS](http://cppcms.com/) on basis of Elektra as
 data store. All data concerning snippets and user accounts is stored
-in Elektra's key database (of course with password being properly hashed).
+in Elektra’s key database (of course with password being properly hashed).
 
 The service allows you to paste configuration snippets in various (supported)
 formats and to tag, describe and name them. This in return allows you to

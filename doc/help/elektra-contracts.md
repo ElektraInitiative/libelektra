@@ -30,9 +30,9 @@ party. It is also possible that the administrator extends the requirements
 to every backend, for example, if notification is required.  This implies
 that every backend has to provide a specific additional service that
 will be checked using contracts.  Plugins are also involved in contracts
-with Elektra's core. This topic will be discussed in
+with Elektra’s core. This topic will be discussed in
 [elektra-algorithm(7)](elektra-algorithm.md)
-in which the algorithm used by Elektra's core is explained.
+in which the algorithm used by Elektra’s core is explained.
 
 ## Assertions
 
@@ -55,7 +55,7 @@ correcting and checking can be combined.  Plugins can work together to
 reach a certain goal.
 
 `KeySet` and `Key` already handle most parts of checking pre- and
-postconditions imposed on data structures.  Elektra's core provides
+postconditions imposed on data structures.  Elektra’s core provides
 preconditions and weak postconditions for the plugins.
 
 ## SEE ALSO

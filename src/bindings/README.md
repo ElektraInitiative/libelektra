@@ -1,6 +1,6 @@
 # Bindings
 
-[Elektra's API](http://doc.libelektra.org/api/latest/html/) is written in C,
+[Elektra’s API](http://doc.libelektra.org/api/latest/html/) is written in C,
 but many different bindings allow *applications* in different programming languages
 to use Elektra.
 

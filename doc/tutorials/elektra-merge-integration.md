@@ -4,7 +4,7 @@ We assume that you know what [ucf](https://packages.debian.org/sid/ucf) is and h
 [general knowledge about configuration file handling in Debian](https://wiki.debian.org/ConfigPackages).
 
 This guide explains how to use ucf's new `--three-way-merge-command` functionality in
-conjunction with Elektra in order to utilize Elektra's powerful tools in order to allow
+conjunction with Elektra in order to utilize Elektra’s powerful tools in order to allow
 automatic three-way merges of your package's configuration during upgrades in a way
 that is more reliable than a diff3 merge.  This guide assumes that you are familiar with
 ucf already and are just trying to implement the `--three-way-merge-command` option

@@ -2,7 +2,7 @@
 
 ## Introduction
 
-The kdb tool allows users to interact with Elektra's Key Database via the command line.
+The kdb tool allows users to interact with Elektra’s Key Database via the command line.
 This tutorial explains the export function of kdb. This command lets you export Keys from
 the Elektra Key Database.
 

@@ -41,7 +41,7 @@ The key hierarchy proposed is:
 	      passno     =  0
 
 
-The Elektra's "fstab" backend generates a tree like this using the system's
+The Elektra’s "fstab" backend generates a tree like this using the system's
 /etc/fstab, so the command:
 
 	$ KDB_BACKEND=fstab kdb export system/filesystems

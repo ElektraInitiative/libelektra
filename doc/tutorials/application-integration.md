@@ -15,9 +15,9 @@ In Elektra different forms of application integrations are possible:
 
 In this tutorial we will discuss (3).
 
-For full integration patch the application to directly access Elektra's 
+For full integration patch the application to directly access Elektra’s 
 key database.
-When the application is fully integrated in Elektra's ecosystem
+When the application is fully integrated in Elektra’s ecosystem
 those benefits arise:
 
 - Benefits that shared libraries have, e.g.
@@ -40,16 +40,16 @@ We call the process of making applications aware of other's configuration
 "to elektrify". This tutorial is suited both for new and existing applications.
 
 As first step, locate places where configuration is parsed or generated.
-Afterwards, use Elektra's data structures instead at these locations.
+Afterwards, use Elektra’s data structures instead at these locations.
 Before we are going to describe how to do this, we will describe
 some possibilities to keep all advantages your previous configuration 
 system had.
 
 You can keep code you want within Elektra as plugins. This allows your
-application, and other applications participating in Elektra's ecosystem to
+application, and other applications participating in Elektra’s ecosystem to
 access your configuration. Doing this, the syntax of the configuration file
 stays the same as before. You can keep the same validation as you had before.
-The application profits from Elektra's infrastructure solving basic issues like
+The application profits from Elektra’s infrastructure solving basic issues like
 getting configuration from other parts of the system, update and conflict
 detection, and resolving of the file name. In particular we gain a lot because
 every other program can also access the configuration of your software.
@@ -77,7 +77,7 @@ for every application to do so.
 ## Get Started
 
 As first step in a C-application you need to create an in-memory `Key`. Such a
-`Key` is Elektra's atomic unit and consists of:
+`Key` is Elektra’s atomic unit and consists of:
 
 - a unique name
 - a value

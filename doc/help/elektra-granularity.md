@@ -30,7 +30,7 @@ granularity.  It is possible to mount a backend on every single key, so
 that every key can be requested for itself.  If no backends are mounted,
 all keys reside in the default backend.
 
-To sum up, Elektra's core searches for the nearest mountpoint and gets
+To sum up, Elektra’s core searches for the nearest mountpoint and gets
 the configuration from there.  It is possible that the user gets more
 configuration than requested.  The user can decide by means of mounting
 how much configuration on specific requests are returned.

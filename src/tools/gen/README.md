@@ -110,7 +110,7 @@ If no placeholder exists `%` will be used.
 ## Command-line Options
 
 Now if we want to implement the -P commandline option, we can do so very 
-easily using Elektra's code generator. We simply add another
+easily using Elektra’s code generator. We simply add another
 item in the specification:
 
 	[/firefox/profile]

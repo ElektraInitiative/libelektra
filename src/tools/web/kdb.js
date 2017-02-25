@@ -1,7 +1,7 @@
 /**
  * @file
  *
- * @brief small library to access Elektra's kdb via node.js
+ * @brief small library to access Elektra’s kdb via node.js
  *
  * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
  */

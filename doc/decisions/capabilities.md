@@ -47,7 +47,7 @@ limitations other plugins have.
 The main problem was that the complexity was just moved to the
 applications.  In the end, application developers had to understand
 what the backend can write out.  They no longer had confidence that
-the storage was able to understand the full semantics.  Elektra's core
+the storage was able to understand the full semantics.  Elektra’s core
 was unable to hide that fact.  Capabilities did not turn out to make
 backend development much easier.  Instead, Elektra was more difficult
 to use with capabilities.  Capabilities are no longer part of Elektra

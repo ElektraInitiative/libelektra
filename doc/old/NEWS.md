@@ -20,10 +20,10 @@ more than regular expressions). Augeas is not able nor is it intended
 to provide more abstraction over the configuration files. Instead Augeas
 mirrors the structure of the configuration as closely as possible.
 
-Elektra's goal, instead, is not only to provide access to legacy
+Elektra’s goal, instead, is not only to provide access to legacy
 configuration files, but to provide access to the configuration
 exactly as the programs itself uses it. So with Elektra, the developers of
-applications are part of Elektra's ecosystem by providing specifications
+applications are part of Elektra’s ecosystem by providing specifications
 how their configuration should look like and by writing plugins that
 define how the configuration is accessed and checked. Ideally, after
 some time of legacy issues and migration, developers will also not
@@ -42,13 +42,13 @@ cross-platform-related issues with an consistent API, but also allows
 us to be aware of other applications' configurations, leveraging easy
 application integration.
 
-Config::Model shares most of Elektra's goals, especially those regarding
+Config::Model shares most of Elektra’s goals, especially those regarding
 validation (you saw the type=Boolean above) and having a unified
 interface for all programs (this feature is unavoidable with any such
 approach). The projects mainly differs that Elektra is supposed to be used
 by the programs themselves (and not only by GUIs and validation tools)
 and that Elektra uses self-describing data: the specification itself
-is also in Elektra's key database, stored in metadata and e.g. below
+is also in Elektra’s key database, stored in metadata and e.g. below
 system/elektra/mountpoints. In Elektra validators can be
 written in any language (because the specification is just data)
 and can enforce constraints on any access (because plugins define
@@ -158,7 +158,7 @@ We now fully embrace github:
   anyway)
 
 Raffael Pancheri also made progress with its qt-gui. It now features a
-model that implements great parts of Elektra's features. Unfortunately
+model that implements great parts of Elektra’s features. Unfortunately
 the model cannot be serialised and thus changes cannot made persistent.
 Also undo and other important use-cases are still not there. The GUI
 looks very clean and was evaluated in a SUS study on 23.07.2014.
@@ -454,7 +454,7 @@ The CMake variable TOOLS, similar to PLUGINS, now allows you to decide
 which tools should be built and installed. Default is "kdb" only.
 
 The first new tool that makes use of this feature creates a powerful
-alternative to directly use Elektra's API. The tool "gen", executed with
+alternative to directly use Elektra’s API. The tool "gen", executed with
 "kdb gen" can generate code and documentation for your specific
 application with your specific types. The code includes getopt parsing
 (short+long options), high level getter and setter in C and C++. The
@@ -466,7 +466,7 @@ folder "src/tools/gen" (see Makefile) and external tools using it will
 be released soon
 (see https://gitorious.org/elektra-tools/elektra-tools/).
 
-For the code generation clear mappings from Elektra's type system to
+For the code generation clear mappings from Elektra’s type system to
 C/C++11 types are needed. The new header file kdbtypes.h introduces
 these mappings using CORBAs mappings for types -- except wchar_t was not
 included, because imho it is useless to have a wide char as long it is
@@ -565,7 +565,7 @@ fallback. Additionally there is a fallback for embedded systems to the
 hardcoded variant. In case of these fallbacks a warning will be added.
 
 A new plugin uname was added. It allows you to mount the functionality
-of uname within Elektra's key/value namespace. Currently it is read-only
+of uname within Elektra’s key/value namespace. Currently it is read-only
 and needs POSIX.
 
 The built-in description of plugins, especially for new plugins, was
@@ -657,7 +657,7 @@ Quality Goals will be:
   fast.
 
 
-The roadmap for Elektra's implementation has three steps:
+The roadmap for Elektra’s implementation has three steps:
 
 1.) Elektra 0.8
 Is the current stable release branch. It will get continuous development
@@ -747,7 +747,7 @@ A cmake bug was fixed, so that "make test" now
 works immediately.
 
 The kdbconfig.h and kdbos.h received some needed cleaning
-up. The HAVE_ macros are now set correctly by cmake, Elektra's
+up. The HAVE_ macros are now set correctly by cmake, Elektra’s
 macros are prefixed with KDB_ and not needed macros were
 removed.
 

@@ -58,7 +58,7 @@ you tag (`infos/status`) it with `discouraged`.
 Please start by reading [here](/.github/CONTRIBUTING.md).
 
 
-## What is the Elektra's license?
+## What is the Elektra’s license?
 
 [New BSD license](/doc/LICENSE.md) which allows us to have plugins link against GPL
 and GPL-incompatible libraries. If you compile Elektra, e.g., with GPL plugins, the

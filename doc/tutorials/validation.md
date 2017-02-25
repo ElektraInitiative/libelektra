@@ -13,7 +13,7 @@ file before it is written to disc.
 
 ## User Interfaces
 
-Any of Elektra's user interfaces will work with the technique
+Any of Elektra’s user interfaces will work with the technique
 described in this tutorial, e.g.:
 
 1. `kdb qt-gui`: graphical user interface

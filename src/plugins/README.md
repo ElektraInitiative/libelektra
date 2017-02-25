@@ -96,7 +96,7 @@ spec-namespace (put a focus on having nice syntax for metadata):
 
 Only suited for import/export:
 
-- [xmltool](xmltool/) uses XML (in Elektra's XML schema).
+- [xmltool](xmltool/) uses XML (in Elektra’s XML schema).
 - [simpleini](simpleini/) line-based key-value pairs with configurable
   format (without sections)
 
@@ -211,7 +211,7 @@ copied by another plugin just before):
 ### Interpreter
 
 These plugins start an interpreter and allow you to execute a script
-in an interpreted language whenever Elektra's key database gets
+in an interpreted language whenever Elektra’s key database gets
 accessed. Note that they depend on the presence of the respective
 binding during runtime.
 

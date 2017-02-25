@@ -129,7 +129,7 @@ uint32_t opmphmRandom (unsigned int * seedp);
 * @defgroup datastructs Private Datastructures
 * @brief Private Datastructures
 *
-* These datastructures can be used within Elektra's ecosystem.
+* These datastructures can be used within Elektra’s ecosystem.
 *
 * The requirements are described in doc/help/elektra-data-structures.md.
 */

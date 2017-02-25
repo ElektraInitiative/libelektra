@@ -26,7 +26,7 @@ In its essence, Elektra can be thought of a database that uses standard configur
 Furthermore, a simple configuration specification language can be used to describe the data and its access to it.
 
 Because of its generic nature, we cannot give an exhaustive list of what can be done with Elektra.
-The obvious cases, how developers and administrators should use Elektra to avoid configuration integration issues mentioned earlier, are described in Elektra's documentation.
+The obvious cases, how developers and administrators should use Elektra to avoid configuration integration issues mentioned earlier, are described in Elektra’s documentation.
 But it is ongoing research to find further use cases where these abstractions are useful.
 In this paper, we will give three concrete examples where Elektra has value to the research community.
 
@@ -37,7 +37,7 @@ Currently, applications sometimes modify configuration values before using them.
 The reasons for such modifications can be called context, e.g., the number of CPUs, the current operating system, or the battery status [raab2016persistent].
 The modifications within applications are problematic because it is not transparent for the user which configuration values the application actually will use.
 
-We propose to move the logic that is responsible for determining configuration values into Elektra's specification language [@raab2015kps] [@raab2016improving] [@raab2016unanticipated].
+We propose to move the logic that is responsible for determining configuration values into Elektra’s specification language [@raab2015kps] [@raab2016improving] [@raab2016unanticipated].
 This way, the user can query the up-to-date configuration values and get identical results to what the application will see.
 But even better, users can change the way context is taken into account easily.
 
@@ -51,7 +51,7 @@ This way we can make applications context aware that previously were not.
 Developers often do not provide a way to validate configuration files [@raab2015safe].
 So administrators are forced to start applications to see if the configuration file is rejected.
 
-We propose to move the validation from the applications to Elektra's specification language [@raab2016improving].
+We propose to move the validation from the applications to Elektra’s specification language [@raab2016improving].
 Then every modification of the configuration files via Elektra gets automatically validated.
 This can be via an editor, a graphical user interface, or a web interface.
 
