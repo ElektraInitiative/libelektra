@@ -45,6 +45,17 @@ single instances or multiple instances at once. In this case, the cluster daemon
 can also serve the client, further simplifying the whole structure, because we
 don't need to host the client on a separate web server.
 
+Another advantage of this solution is that both clusterd and elektrad are using
+nodejs, which means that a wrapper script can set up and  start both daemons
+easily.
+
+There are still some other issues, like possible conflicts when adding an
+instance multiple times, or assigning an instance to multiple clusters. The
+cluster daemon should prevent adding the same instance twice. It also won't be
+possible to add an instance to two clusters. If an instance is part of a
+cluster, single instances can still be configured, but all configuration options
+that are set in the cluster cannot be modified.
+
 ## Implications
 
 - There needs to be a single point of entry for the web client to connect to.
@@ -55,11 +66,4 @@ don't need to host the client on a separate web server.
 
 ## Notes
 
-There are still some other issues, like possible conflicts when adding an
-instance multiple times, or assigning an instance to multiple clusters.
-
-The cluster daemon should prevent adding the same instance twice. It also won't
-be possible to add an instance to two clusters.
-
-If an instance is part of a cluster, single instances can still be configured,
-but all configuration options that are set in the cluster cannot be modified.
+- [discussion in the pull request](https://github.com/ElektraInitiative/libelektra/pull/1173)
