@@ -14,7 +14,7 @@ do
 	then
 	continue
 	fi
-	
+
 	README="${PLUGINS_DIR}/${PLUGIN}/README.md"
 	PLUGIN_META=$(grep -Eo "infos/metadata(.*)" "$README" |cut -d '=' -f2)
 	for META in $PLUGIN_META;
