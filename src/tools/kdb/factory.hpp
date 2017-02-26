@@ -41,6 +41,7 @@
 #include <metaget.hpp>
 #include <metals.hpp>
 #include <metaset.hpp>
+#include <metaremove.hpp>
 #include <mount.hpp>
 #include <mv.hpp>
 #include <remount.hpp>
@@ -90,6 +91,7 @@ public:
 		m_factory.insert (std::make_pair ("remount", new Cnstancer<RemountCommand> ()));
 		m_factory.insert (std::make_pair ("shell", new Cnstancer<ShellCommand> ()));
 		m_factory.insert (std::make_pair ("getmeta", new Cnstancer<MetaGetCommand> ()));
+		m_factory.insert (std::make_pair ("rmmeta", new Cnstancer<MetaRemoveCommand> ()));
 		m_factory.insert (std::make_pair ("setmeta", new Cnstancer<MetaSetCommand> ()));
 		m_factory.insert (std::make_pair ("lsmeta", new Cnstancer<MetaLsCommand> ()));
 		m_factory.insert (std::make_pair ("info", new Cnstancer<InfoCommand> ()));
