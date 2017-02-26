@@ -84,25 +84,6 @@ or it may look like:
 
     PLUGINS=CRYPTO
 
-### Manual Library Setup
-
-If you have a custom built OpenSSL or libgcrypt on your system, you can tell CMake to use those by setting the following CMake variables.
-
-For a custom OpenSSL location set:
-
-- *OPENSSL_INCLUDE_DIR* to the library's header files
-- *OPENSSL_LIBRARIES* to the library's binary file
-
-For a custom libgcrypt location set:
-
-- *LIBGCRYPT_INCLUDE_DIR* to the library's header files
-- *LIBGCRYPT_LIBRARIES* to the library's binary file
-
-For a custom Botan development file location set:
-
-- *BOTAN_INCLUDE_DIRS* to Botan's header files (includes)
-- *BOTAN_LIBRARIES* to Botan's binary file
-
 ### Mac OS X
 
 All variants of the plugin work under Mac OS Sierra (Version 10.12.3 (16D32)).
