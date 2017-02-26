@@ -107,7 +107,7 @@ For a custom Botan development file location set:
 
 All variants of the plugin work under Mac OS Sierra (Version 10.12.3 (16D32)).
 
-To set up the build environment on Mac OS Sierra we reccommend using [Homebrew](http://brew.sh/).
+To set up the build environment on Mac OS Sierra we recommend using [Homebrew](http://brew.sh/).
 Follow these steps to get everything up and running:
 
     brew update
