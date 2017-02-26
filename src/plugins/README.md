@@ -101,6 +101,7 @@ Only suited for import/export:
 - [xmltool](xmltool/) uses XML (in Elektra's XML schema).
 - [simpleini](simpleini/) line-based key-value pairs with configurable
   format (without sections)
+- [mini](mini/) minimalistic dependency free plugin for the INI  file format.
 
 Plugins that just show some functionality, (currently) not intended for
 productive use:
