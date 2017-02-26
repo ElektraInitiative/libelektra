@@ -21,7 +21,7 @@ Limitations:
 
 - Thread-safety: a handle is the accepted better solution than having to
   care about whether it is reentrant, thread-safe, ...
-- assumes that spec is available and installed correctly (fail in kdbhlOpen otherwise)
+- assumes that spec is available and installed correctly (fail in elektraOpen otherwise)
 - lookups for non-specified keys yield errors (in particular if they are not present)
 - many projects do not care about some limitations (no binary, no meta-data)
   but prefer a straight-forward way to get/set config
@@ -44,12 +44,12 @@ First draft of API:
 
 ```c
 // might fail, you need to check for error afterwards!
-KDBHL * kdbhlOpen (const char * application);
+KDBHL * elektraOpen (const char * application);
 
 // enum, int, tristate
-int kdbhlGetInt (KDBHL * handle, const char * name);
+int elektraGetInt (KDBHL * handle, const char * name);
 
-char * kdbhlGetString (KDBHL * handle, const char * name);
+char * elektraGetString (KDBHL * handle, const char * name);
 
 // and so on.. (all types)
 
@@ -57,56 +57,56 @@ char * kdbhlGetString (KDBHL * handle, const char * name);
 // are arrays already advanced functionality? (recursive API)
 
 // enum, int, tristate
-int kdbhlGetIntArray (KDBHL * handle, const char * name, int elem);
+int elektraGetIntArray (KDBHL * handle, const char * name, int elem);
 
-int kdbhlGetArraySize (KDBHL * handle, const char * name);
+int elektraGetArraySize (KDBHL * handle, const char * name);
 
-void kdbhlClose (KDBHL * handle);
+void elektraClose (KDBHL * handle);
 ```
 
 #### Needed
 
 ```c
 // might fail, you need to check for error afterwards!
-void kdbhlReload (KDBHL * handle);
+void elektraReload (KDBHL * handle);
 
 // to abort afterwards
-int kdbhlHasError (KDBHL * handle);
-char * kdbhlGetErrorMessage (KDBHL * handle);
+int elektraHasError (KDBHL * handle);
+char * elektraGetErrorMessage (KDBHL * handle);
 
 // to inform the user (e.g. warning, to display help or version)
-int kdbhlHasInfo (KDBHL * handle);
-char * kdbhlGetInfoMessage (KDBHL * handle);
+int elektraHasInfo (KDBHL * handle);
+char * elektraGetInfoMessage (KDBHL * handle);
 
 // clear error+info
-void kdbhlClear (KDBHL * handle);
+void elektraClear (KDBHL * handle);
 ```
 
 #### To think about
 
 ```c
-// maybe not needed: could be integrated in kdbhlOpen?
-void kdbhlParse (KDBHL * handle, int argc, char ** argv, char ** environ);
+// maybe not needed: could be integrated in elektraOpen?
+void elektraParse (KDBHL * handle, int argc, char ** argv, char ** environ);
 
-// gives you a duplicate for other threads (same application+version), automatically calls kdbhlClear
-KDBHL * kdbhlDup (KDBHL * handle);
+// gives you a duplicate for other threads (same application+version), automatically calls elektraClear
+KDBHL * elektraDup (KDBHL * handle);
 
-KDB * kdbhlGetKDB (KDBHL * handle);
+KDB * elektraGetKDB (KDBHL * handle);
 
-void kdbhlDefaultConfig (KDBHL * handle, KeySet * defaultConfig);
+void elektraDefaultConfig (KDBHL * handle, KeySet * defaultConfig);
 
-KeySet * kdbhlGetKeySet (KDBHL * handle, const char * cutkey);
+KeySet * elektraGetKeySet (KDBHL * handle, const char * cutkey);
 
-KeySet * kdbhlGetKeyHierarchy (KDBHL * handle, const char * cutkey);
+KeySet * elektraGetKeyHierarchy (KDBHL * handle, const char * cutkey);
 
 // enum, int, tristate
-void kdbhlSetInt (KDBHL * handle, const char * name, int value);
+void elektraSetInt (KDBHL * handle, const char * name, int value);
 ```
 
 #### Lower-level type API
 
 ```c
-// will be used internally in kdbhlGetInt, are for other APIs useful, too
+// will be used internally in elektraGetInt, are for other APIs useful, too
 int keyGetInt (Key * key);
 
 // and so on
@@ -136,9 +136,9 @@ What is not so nice:
 1. Very easy to get started with, to get a key needs 3 lines of codes:
 
    ```c
-   KDBHL *handle = kdbhlOpen ("/sw/elektra/kdb/#0/current");
-   printf ("number /mykey is %d\n", kdbhlGetInt (handle, "/mykey"));
-   kdbhlClose (handle);
+   KDBHL *handle = elektraOpen ("/sw/elektra/kdb/#0/current");
+   printf ("number /mykey is %d\n", elektraGetInt (handle, "/mykey"));
+   elektraClose (handle);
    ```
 
 2. It is also easier to get started with writing new bindings.
