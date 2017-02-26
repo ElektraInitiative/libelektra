@@ -84,11 +84,11 @@ or it may look like:
 
     PLUGINS=CRYPTO
 
-### Mac OS X
+### macOS
 
-All variants of the plugin work under Mac OS Sierra (Version 10.12.3 (16D32)).
+All variants of the plugin work under macOS Sierra (Version 10.12.3 (16D32)).
 
-To set up the build environment on Mac OS Sierra we recommend using [Homebrew](http://brew.sh/).
+To set up the build environment on macOS Sierra we recommend using [Homebrew](http://brew.sh/).
 Follow these steps to get everything up and running:
 
     brew install openssl botan libgcrypt pkg-config cmake
@@ -152,8 +152,8 @@ In the error description you should see something like:
     Module: crypto
     At: /Users/pnirschl/Projects/libelektra/src/plugins/crypto/gpg.c:512
     Reason: Missing GPG key (specified as /gpg/key) in plugin configuration. Available key IDs are: B815F1334CF4F830187A784256CFA3A5C54DF8E4,847378ABCF0A552B48082A80C52E8E92F785163F
-    Mountpoint: 
-    Configfile: 
+    Mountpoint:
+    Configfile:
     Please report the issue on https://issues.libelektra.org/
 
 This means that the following keys are available:
