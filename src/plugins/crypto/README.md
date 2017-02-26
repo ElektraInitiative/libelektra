@@ -34,15 +34,27 @@ At the moment the following crypto APIs are supported:
 
 ## Dependencies
 
+
 #ifdef ELEKTRA_CRYPTO_API_GCRYPT
+
 - `libgcrypt20-dev` or `libgcrypt-devel`
+
 #endif
+
+
 #ifdef ELEKTRA_CRYPTO_API_OPENSSL
+
 - `libssl-dev` or `openssl-devel`
+
 #endif
+
+
 #ifdef ELEKTRA_CRYPTO_API_BOTAN
+
 - `libbotan1.10-dev` or `botan-devel`
+
 #endif
+
 
 ### GnuPG (GPG)
 
@@ -100,7 +112,7 @@ Follow these steps to get everything up and running:
 
     brew update
     brew upgrade
-    brew install openssl botan libgcrypt cmake
+    brew install openssl botan libgcrypt pkg-config cmake
     # The next step is required for pkg-config to find the include files of OpenSSL
     ln -s /usr/local/opt/openssl/include/openssl/ /usr/local/include/openssl
 
