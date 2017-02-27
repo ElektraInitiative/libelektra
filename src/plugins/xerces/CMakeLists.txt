@@ -1,4 +1,3 @@
-include (LibAddMacros)
 
 if (DEPENDENCY_PHASE)
 	find_package(XercesC)
@@ -17,5 +16,12 @@ add_plugin (xerces
 		${XercesC_INCLUDE_DIRS}
 	LINK_LIBRARIES
 		${XercesC_LIBRARIES}
-	ADD_TEST
 )
+
+if (ADDTESTING_PHASE)
+	include (LibAddTest)
+	add_plugintest (xerces
+		MEMLEAK
+		INSTALL_TEST_DATA
+	)
+endif (ADDTESTING_PHASE)

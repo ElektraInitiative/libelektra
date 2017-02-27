@@ -97,7 +97,8 @@ spec-namespace (put a focus on having nice syntax for metadata):
 
 Only suited for import/export:
 
-- [xmltool](xmltool/) uses XML (in Elektra’s XML schema).
+- [xerces](xerces/) uses XML (without a specific schema).
+- [xmltool](xmltool/) uses XML (in Elektra's XML schema).
 - [simpleini](simpleini/) line-based key-value pairs with configurable
   format (without sections)
 

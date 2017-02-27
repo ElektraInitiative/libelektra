@@ -39,21 +39,18 @@ using namespace kdb;
 struct XmlChDeleter { void operator() (XMLCh * ptr) { XMLString::release (&ptr); } };
 
 struct StringDeleter {
-	// Workaround as ptr->c_str gives as a const * which we cant free
-	char * cStr;
-	// TODO test if this really frees the str too, as it seems to do
-	// delete str afterwards says its already freed
+	char * cStr; // Workaround as ptr->c_str gives as a const * which we cant free
 	void operator() (string * ptr) { XMLString::release (&cStr); }
 };
 
 // clang-format on
 
-static unique_ptr<XMLCh, XmlChDeleter> fromStr (const std::string str)
+inline static unique_ptr<XMLCh, XmlChDeleter> fromStr (const std::string str)
 {
 	return unique_ptr<XMLCh, XmlChDeleter> (XMLString::transcode (str.c_str ()));
 }
 
-static unique_ptr<std::string, StringDeleter> toStr (XMLCh const * xmlCh)
+inline static unique_ptr<std::string, StringDeleter> toStr (XMLCh const * xmlCh)
 {
 	char * cStr = XMLString::transcode (xmlCh);
 	return unique_ptr<std::string, StringDeleter> (new string (cStr), StringDeleter{ cStr });
