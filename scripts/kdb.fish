@@ -320,7 +320,7 @@ function __fish_kdb_subcommand_supports_option_plugins_config -d 'Check if the c
 end
 
 function __fish_kdb_subcommand_supports_option_verbose -d 'Check if the current subcommand supports the option verbose'
-    set -l commands export file getmeta global-mount gmount info mount qt-gui remount rm sget shell test vset help list-tools qt-gui
+    set -l commands export file getmeta global-mount gmount info mount qt-gui remount rm rmmeta sget shell test vset help list-tools qt-gui
     __fish_kdb_subcommand_exists_does_not_include $commands
 end
 
