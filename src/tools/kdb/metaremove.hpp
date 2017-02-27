@@ -26,17 +26,17 @@ public:
 		return "C";
 	}
 
-	virtual std::string getSynopsis() override
+	virtual std::string getSynopsis () override
 	{
 		return "<key-name> <metaname>";
 	}
 
-	virtual std::string getShortHelpText() override
+	virtual std::string getShortHelpText () override
 	{
 		return "Remove a metakey.";
 	}
 
-	virtual std::string getLongHelpText() override
+	virtual std::string getLongHelpText () override
 	{
 		return "";
 	}
@@ -45,4 +45,3 @@ public:
 };
 
 #endif
-

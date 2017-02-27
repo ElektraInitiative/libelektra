@@ -40,8 +40,8 @@
 #include <merge.hpp>
 #include <metaget.hpp>
 #include <metals.hpp>
-#include <metaset.hpp>
 #include <metaremove.hpp>
+#include <metaset.hpp>
 #include <mount.hpp>
 #include <mv.hpp>
 #include <remount.hpp>
