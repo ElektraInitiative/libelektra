@@ -388,7 +388,7 @@ one step closer to use only kdbi* memory management
 - use setenv
 - create_root_key now creates for a specific backend
 - create_conf for a specific file
-- #ifdef all headers, 
+- #ifdef all headers,
 - remove warings
 - xml cleanup: #ifdefs in includes
 - memory leak in ksToStream
@@ -701,7 +701,7 @@ or any other type
 - filesys cleanup: don't support old key-style and remove pointless functions
 - valgrind integrated for tests and benchmarks
 - KEY_SWITCH_DOMAIN -> KEY_SWITCH_OWNER
-	
+
 * Sun 23 Sep 2007
 - kdbHandle and KDBEXPORT only insist of 4 functions (open, close, get, set)
 - kdbHighLevel only require kdbGet and kdbSet, but considered broken
