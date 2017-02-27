@@ -8,6 +8,7 @@
 
 #include "xerces.hpp"
 #include "deserializer.hpp"
+#include <stdio.h>
 
 #include <kdbhelper.h>
 #include <xercesc/util/PlatformUtils.hpp>
@@ -49,9 +50,9 @@ int elektraXercesGet (Plugin * handle, KeySet * returned, Key * parentKey)
 
 	// TODO error handling
 	kdb::KeySet ks (returned);
-	ks.release (); // don't destroy the referenced keySet upon completion
-	deserialize ("/Users/admin/git/libelektra/src/plugins/xerces/testdata/simple.xml", ks);
-
+	deserialize (keyString (parentKey), ks);
+	// Avoid destruction of the ks at the end
+	ks.release ();
 	return 1; // success
 }
 

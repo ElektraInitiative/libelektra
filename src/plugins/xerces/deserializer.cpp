@@ -1,7 +1,7 @@
 /**
  * @file
  *
- * @brief deseialization implementation for xerces plugin
+ * @brief deserialization implementation for xerces plugin
  *
  * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
  */
@@ -43,6 +43,7 @@ struct StringDeleter {
 	void operator() (string * ptr) { XMLString::release (&cStr); }
 };
 
+struct DOMDocumentDeleter { void operator() (DOMDocument * ptr) { ptr->release (); } };
 // clang-format on
 
 inline static unique_ptr<XMLCh, XmlChDeleter> fromStr (const std::string str)
@@ -60,53 +61,62 @@ inline static unique_ptr<std::string, StringDeleter> toStr (XMLCh const * xmlCh)
  * Actual Xerces logic
  */
 
-static unique_ptr<XercesDOMParser> doc2dom (const std::string src)
+static unique_ptr<DOMDocument, DOMDocumentDeleter> doc2dom (const std::string src)
 {
-	unique_ptr<XercesDOMParser> parser (new XercesDOMParser);
-	parser->setValidationScheme (XercesDOMParser::Val_Auto);
-	parser->setDoNamespaces (false);
-	parser->setDoSchema (false);
-	parser->setCreateEntityReferenceNodes (false);
+	XercesDOMParser parser;
+	parser.setValidationScheme (XercesDOMParser::Val_Auto);
+	parser.setDoNamespaces (false);
+	parser.setDoSchema (false);
+	parser.setCreateEntityReferenceNodes (false);
 
 	try
 	{
-		parser->parse (fromStr (src).get ());
+		parser.parse (fromStr (src).get ());
 	}
 	catch (...)
 	{
 		// TODO better error handling
 		std::cerr << "An exception parsing ";
 		std::cerr << src << std::endl;
+		return unique_ptr<DOMDocument, DOMDocumentDeleter> ();
 	}
 
-	return parser;
+	return unique_ptr<DOMDocument, DOMDocumentDeleter> (parser.adoptDocument ());
 }
 
 static string getElementText (DOMNode const * parent)
 {
-	string strVal;
+	string str;
 
 	for (auto child = parent->getFirstChild (); child != NULL; child = child->getNextSibling ())
 	{
 		if (DOMNode::TEXT_NODE == child->getNodeType ())
 		{
 			DOMText * data = dynamic_cast<DOMText *> (child);
-			strVal += *toStr (data->getWholeText ());
+			if (!data->getIsElementContentWhitespace ()) str += *toStr (data->getData ());
 		}
 	}
-	return strVal;
+	// trim whitespace
+	const char * ws = " \t\n\r\f\v";
+	str.erase (str.find_last_not_of (ws) + 1);
+	str.erase (0, str.find_first_not_of (ws));
+	return str;
 }
 
-static void dom2keyset (DOMNode const * n, KeySet & ks)
+static void dom2keyset (DOMNode const * n, KeySet & ks, Key const & parent)
 {
 	if (n)
 	{
+		Key current = parent.dup ();
 		if (n->getNodeType () == DOMNode::ELEMENT_NODE)
 		{
 			cout << "Encountered Element : " << *toStr (n->getNodeName ());
 
-			// Clang doesn't allow POD variadic types so we have to use c_str instead
-			Key key (Key (toStr (n->getNodeName ())->c_str (), KEY_VALUE, getElementText (n).c_str (), KEY_END));
+			current.addBaseName (*toStr (n->getNodeName ()));
+
+			current.set<string> (getElementText (n));
+
+			cout << "new parent is " << current.getFullName () << " with value " << current.get<string> () << endl;
 
 			if (n->hasAttributes ())
 			{
@@ -119,20 +129,20 @@ static void dom2keyset (DOMNode const * n, KeySet & ks)
 					DOMAttr * pAttributeNode = dynamic_cast<DOMAttr *> (pAttributes->item (i));
 					cout << "\t" << *toStr (pAttributeNode->getName ()) << "=";
 					cout << *toStr (pAttributeNode->getValue ()) << endl;
-					key.setMeta (*toStr (pAttributeNode->getName ()), *toStr (pAttributeNode->getValue ()));
+					current.setMeta (*toStr (pAttributeNode->getName ()), *toStr (pAttributeNode->getValue ()));
 				}
 			}
-
-			ks.append (key);
+			ks.append (current);
 		}
 		for (auto child = n->getFirstChild (); child != 0; child = child->getNextSibling ())
-			dom2keyset (child, ks);
+			dom2keyset (child, ks, current);
 	}
 }
 
 // TODO: pass errorKey and set it to something in case we have an error?
 void deserialize (const string src, KeySet & ks)
 {
-	auto parser = doc2dom (src);
-	if (!parser->getErrorCount ()) dom2keyset (parser->getDocument (), ks);
+	auto document = doc2dom (src);
+	Key parent ("/");
+	if (document) dom2keyset (document->getDocumentElement (), ks, parent);
 }
