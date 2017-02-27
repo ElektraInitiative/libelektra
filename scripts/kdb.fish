@@ -119,7 +119,7 @@ end
 # << Completion Checks >>
 
 function __fish_kdb_subcommand_needs_metanames -d 'Check if the current command needs a meta-name completion'
-    not __fish_kdb_subcommand_includes getmeta setmeta
+    not __fish_kdb_subcommand_includes getmeta rmmeta setmeta
     and return 1
 
     test (__fish_kdb__number_arguments_input_left) -eq 3
