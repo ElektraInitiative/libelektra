@@ -170,9 +170,9 @@ static inline KeySet *elektraYajlContract()
 }
 ```
 
-It basically only contains the symbols to be exported (that are
-dependent on your functions to be available) and the plugin version
-information that is always defined to the macro `PLUGINVERSION`.
+It basically only contains the symbols to be exported (these symbols
+depend on the functions the plugin provides) and the plugin version
+information that is always defined by the macro `PLUGINVERSION`.
 
 As already said, `readme_yourplugin.c` is generated in the binary directory,
 so make sure that your `CMakeLists.txt` contains (prefer to use `add_plugin`
@@ -241,8 +241,7 @@ add_plugin (xmltool
 Important is that you pass the information which packages are found as boolean.
 The plugin will actually be added iff all of the `DEPENDENCIES` are true.
 
-Note that no code should be outside of `if (DEPENDENCY_PHASE)`
-thus it would be executed twice otherwise. The only exception is
+Note that no code should be outside of `if (DEPENDENCY_PHASE)`. It would be executed twice otherwise. The only exception is
 `add_plugin` which *must* be called twice to successfully add a plugin.
 
 If your plugin makes use of [compilation variants](/doc/tutorials/compilation-variants.md)
