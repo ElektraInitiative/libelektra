@@ -5,4 +5,5 @@ add_plugin (file
 		file.h
 		file.c
 	ADD_TEST
+	INSTALL_TEST_DATA
 	)
