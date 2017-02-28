@@ -411,6 +411,68 @@ void testSimpleParameterFail()
     PLUGIN_CLOSE ();
 }
 
+void testMultipleParameter()
+{
+    Key * parentKey = keyNew ("user/tests/typedispatcher", KEY_VALUE, "", KEY_END);
+    KeySet * ks = ksNew (5, 
+	    keyNew ("user/tests/typedispatcher", KEY_VALUE, "typedefinitions", 
+		KEY_META, "define/type", "", 
+		KEY_META, "define/type/paramEnum", "", 
+		KEY_META, "define/type/paramEnum/parameter", "#2",
+		KEY_META, "define/type/paramEnum/parameter/#0", "x",
+		KEY_META, "define/type/paramEnum/parameter/#1", "y",
+		KEY_META, "define/type/paramEnum/parameter/#2", "z",
+		KEY_META, "define/type/paramEnum/check/enum", "#2", 
+		KEY_META, "define/type/paramEnum/check/enum/#0", "%x%", 
+		KEY_META, "define/type/paramEnum/check/enum/#1", "%y%", 
+		KEY_META, "define/type/paramEnum/check/enum/#2", "%z%", 
+		KEY_END), 
+	    keyNew("user/tests/typedispatcher/a", KEY_VALUE, "a", 
+		KEY_META, "type", "paramEnum (a,b,c)", 
+		KEY_END), 
+	    keyNew("user/tests/typedispatcher/c", KEY_VALUE, "c",
+		KEY_META, "type", "paramEnum (a,b,c)",
+		KEY_END), 
+	    KS_END);
+    KeySet * conf = ksNew (0, KS_END);
+    PLUGIN_OPEN ("typedispatcher");
+    succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "SimpleParameter failed");
+    ksDel (ks);
+    keyDel (parentKey);
+    PLUGIN_CLOSE ();
+}
+
+void testMultipleParameterFail()
+{
+    Key * parentKey = keyNew ("user/tests/typedispatcher", KEY_VALUE, "", KEY_END);
+    KeySet * ks = ksNew (5, 
+	    keyNew ("user/tests/typedispatcher", KEY_VALUE, "typedefinitions", 
+		KEY_META, "define/type", "", 
+		KEY_META, "define/type/paramEnum", "", 
+		KEY_META, "define/type/paramEnum/parameter", "#2",
+		KEY_META, "define/type/paramEnum/parameter/#0", "x",
+		KEY_META, "define/type/paramEnum/parameter/#1", "y",
+		KEY_META, "define/type/paramEnum/parameter/#2", "z",
+		KEY_META, "define/type/paramEnum/check/enum", "#2", 
+		KEY_META, "define/type/paramEnum/check/enum/#0", "%x%", 
+		KEY_META, "define/type/paramEnum/check/enum/#1", "%y%", 
+		KEY_META, "define/type/paramEnum/check/enum/#2", "%z%", 
+		KEY_END), 
+	    keyNew("user/tests/typedispatcher/a", KEY_VALUE, "a", 
+		KEY_META, "type", "paramEnum (d,e,f)", 
+		KEY_END), 
+	    keyNew("user/tests/typedispatcher/c", KEY_VALUE, "i",
+		KEY_META, "type", "paramEnum (j,k,l)",
+		KEY_END), 
+	    KS_END);
+    KeySet * conf = ksNew (0, KS_END);
+    PLUGIN_OPEN ("typedispatcher");
+    succeed_if (plugin->kdbGet (plugin, ks, parentKey) == -1, "SimpleParameter failed");
+    ksDel (ks);
+    keyDel (parentKey);
+    PLUGIN_CLOSE ();
+}
+
 int main (int argc, char ** argv)
 {
     printf ("TYPEDISPATCHER     TESTS\n");
@@ -440,6 +502,10 @@ int main (int argc, char ** argv)
     testSimpleParameter();
     fprintf(stderr, "\n============================================\n");
     testSimpleParameterFail();
+    fprintf(stderr, "\n============================================\n");
+    testMultipleParameter();
+    fprintf(stderr, "\n============================================\n");
+    testMultipleParameterFail();
     fprintf(stderr, "\n============================================\n");
     printf ("\ntestmod_typedispatcher RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 
