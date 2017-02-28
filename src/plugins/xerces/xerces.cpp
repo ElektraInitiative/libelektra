@@ -9,22 +9,30 @@
 #include "xerces.hpp"
 #include "deserializer.hpp"
 #include "serializer.hpp"
+#include "util.hpp"
+
 #include <stdio.h>
 
-#include <kdbhelper.h>
+#include <xercesc/dom/DOM.hpp>
+#include <xercesc/util/OutOfMemoryException.hpp>
 #include <xercesc/util/PlatformUtils.hpp>
 
-using namespace ckdb;
+using namespace ckdb; // required for kdberrors.h
+
+#include <kdberrors.h>
+#include <kdbhelper.h>
+
+XERCES_CPP_NAMESPACE_USE
 
 int elektraXercesOpen (Plugin * handle, Key * errorKey)
 {
-	XERCES_CPP_NAMESPACE::XMLPlatformUtils::Initialize ();
+	XMLPlatformUtils::Initialize ();
 	return 1;
 }
 
 int elektraXercesClose (Plugin * handle, Key * errorKey)
 {
-	XERCES_CPP_NAMESPACE::XMLPlatformUtils::Terminate ();
+	XMLPlatformUtils::Terminate ();
 	return 1;
 }
 
@@ -49,21 +57,73 @@ int elektraXercesGet (Plugin * handle, KeySet * returned, Key * parentKey)
 		return 1;
 	}
 
-	// TODO error handling
-	kdb::KeySet ks (returned);
-	deserialize (keyString (parentKey), ks);
-	// Avoid destruction of the ks at the end
-	ks.release ();
-	return 1;
+	// Bridge the C++ exceptions to elektra error messages
+	try
+	{
+		kdb::KeySet ks (returned);
+		deserialize (keyString (parentKey), ks);
+		// Avoid destruction of the ks at the end
+		ks.release ();
+		return 1;
+	}
+	catch (const OutOfMemoryException & e)
+	{
+		ELEKTRA_SET_ERROR (119, parentKey, asCStr (e.getMessage ()));
+	}
+	catch (const XMLException & e)
+	{
+		ELEKTRA_SET_ERROR (169, parentKey, asCStr (e.getMessage ()));
+	}
+	catch (const DOMException & e)
+	{
+		ELEKTRA_SET_ERROR (169, parentKey, asCStr (e.getMessage ()));
+	}
+	catch (const XercesPluginException & e)
+	{
+		ELEKTRA_SET_ERROR (169, parentKey, e.what ());
+	}
+	catch (...)
+	{
+		ELEKTRA_SET_ERROR (169, parentKey, "Unknown exception occurred while reading xml file");
+	}
+
+	// some exception occured, otherwise it would have returned 1
+	return 0;
 }
 
 int elektraXercesSet (Plugin * handle, KeySet * returned, Key * parentKey)
 {
-	kdb::KeySet ks (returned);
-	serialize (keyString (parentKey), ks);
-	ks.release ();
+	// Bridge the C++ exceptions to elektra error messages
+	try
+	{
+		kdb::KeySet ks (returned);
+		serialize (keyString (parentKey), ks);
+		ks.release ();
+		return 1;
+	}
+	catch (const OutOfMemoryException & e)
+	{
+		ELEKTRA_SET_ERROR (119, parentKey, asCStr (e.getMessage ()));
+	}
+	catch (const XMLException & e)
+	{
+		ELEKTRA_SET_ERROR (169, parentKey, asCStr (e.getMessage ()));
+	}
+	catch (const DOMException & e)
+	{
+		ELEKTRA_SET_ERROR (169, parentKey, asCStr (e.getMessage ()));
+	}
+	catch (const XercesPluginException & e)
+	{
+		ELEKTRA_SET_ERROR (169, parentKey, e.what ());
+	}
+	catch (...)
+	{
+		ELEKTRA_SET_ERROR (169, parentKey, "Unknown exception occurred while writing xml file");
+	}
 
-	return 1; // success
+	// some exception occured, otherwise it would have returned 1
+	return 0;
 }
 
 int elektraXercesError (Plugin * handle, KeySet * returned, Key * parentKey)

@@ -42,18 +42,7 @@ static xerces_unique_ptr<DOMDocument> doc2dom (std::string const & src)
 	parser.setDoSchema (false);
 	parser.setCreateEntityReferenceNodes (false);
 
-	try
-	{
-		parser.parse (asXMLCh (src));
-	}
-	catch (...)
-	{
-		// TODO better error handling
-		std::cerr << "An exception parsing ";
-		std::cerr << src << std::endl;
-		return xerces_unique_ptr<DOMDocument> ();
-	}
-
+	parser.parse (asXMLCh (src));
 	return xerces_unique_ptr<DOMDocument> (parser.adoptDocument ());
 }
 
@@ -141,7 +130,6 @@ void dom2keyset (DOMDocument const & doc, KeySet & ks)
 	}
 }
 
-// TODO: pass errorKey and set it to something in case we have an error?
 void deserialize (string const & src, KeySet & ks)
 {
 	auto document = doc2dom (src);

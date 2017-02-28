@@ -1,7 +1,10 @@
 /**
  * @file
  *
- * @brief some utility functions that act as a bridge between XMLCh and std::string
+ * @brief Utility functions used in the xerces plugin
+ * 
+ * Provides unique pointers that act as a bridge between XMLCh and std::string
+ * Provides a general XercesPluginException
  *
  * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
  */
@@ -57,5 +60,24 @@ inline std::string toStr (XMLCh const * xmlCh)
 }
 
 #define asXMLCh(str) toXMLCh (str).get ()
+#define asCStr(str) toCStr (str).get ()
+
+class XercesPluginException : public std::exception
+{
+public:
+	XercesPluginException (std::string m) : msg (m)
+	{
+	}
+	~XercesPluginException () throw ()
+	{
+	}
+	const char * what () const throw ()
+	{
+		return msg.c_str ();
+	}
+
+private:
+	std::string msg;
+};
 
 #endif

@@ -93,35 +93,22 @@ void serialize (std::string const & src, kdb::KeySet const & ks)
 	DOMImplementation * impl = DOMImplementationRegistry::getDOMImplementation (asXMLCh ("Core"));
 	if (impl != NULL)
 	{
-		try
-		{
-			xerces_unique_ptr<DOMDocument> document (impl->createDocument (0, asXMLCh ("namespace"), 0));
-			ks2dom (*document, ks);
+		xerces_unique_ptr<DOMDocument> document (impl->createDocument (0, asXMLCh ("namespace"), 0));
+		ks2dom (*document, ks);
 
-			DOMImplementationLS * implLS = dynamic_cast<DOMImplementationLS *> (impl->getImplementation ());
+		DOMImplementationLS * implLS = dynamic_cast<DOMImplementationLS *> (impl->getImplementation ());
 
-			xerces_unique_ptr<DOMLSSerializer> serializer (implLS->createLSSerializer ());
-			DOMConfiguration * serializerConfig = serializer->getDomConfig ();
-			if (serializerConfig->canSetParameter (XMLUni::fgDOMWRTFormatPrettyPrint, true))
-				serializerConfig->setParameter (XMLUni::fgDOMWRTFormatPrettyPrint, true);
+		xerces_unique_ptr<DOMLSSerializer> serializer (implLS->createLSSerializer ());
+		DOMConfiguration * serializerConfig = serializer->getDomConfig ();
+		if (serializerConfig->canSetParameter (XMLUni::fgDOMWRTFormatPrettyPrint, true))
+			serializerConfig->setParameter (XMLUni::fgDOMWRTFormatPrettyPrint, true);
 
-			LocalFileFormatTarget targetFile (asXMLCh (src));
-			xerces_unique_ptr<DOMLSOutput> output (implLS->createLSOutput ());
-			output->setByteStream (&targetFile);
+		LocalFileFormatTarget targetFile (asXMLCh (src));
+		xerces_unique_ptr<DOMLSOutput> output (implLS->createLSOutput ());
+		output->setByteStream (&targetFile);
 
-			serializer->write (document.get (), output.get ());
-		}
-		catch (const DOMException & e)
-		{
-			XERCES_STD_QUALIFIER cerr << "DOMException code is:  " << e.code << XERCES_STD_QUALIFIER endl;
-		}
-		catch (...)
-		{
-			XERCES_STD_QUALIFIER cerr << "An error occurred creating the document" << XERCES_STD_QUALIFIER endl;
-		}
+		serializer->write (document.get (), output.get ());
 	}
 	else
-	{
-		XERCES_STD_QUALIFIER cerr << "Requested implementation is not supported" << XERCES_STD_QUALIFIER endl;
-	}
+		throw XercesPluginException ("DOMImplementation not available");
 }
