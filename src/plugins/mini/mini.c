@@ -11,6 +11,18 @@
 
 #include <kdbhelper.h>
 
+static inline KeySet * elektraMiniContract ()
+{
+	return ksNew (30, keyNew ("system/elektra/modules/mini", KEY_VALUE, "mini plugin waits for your orders", KEY_END),
+		      keyNew ("system/elektra/modules/mini/exports", KEY_END),
+		      keyNew ("system/elektra/modules/mini/exports/open", KEY_FUNC, elektraMiniOpen, KEY_END),
+		      keyNew ("system/elektra/modules/mini/exports/close", KEY_FUNC, elektraMiniClose, KEY_END),
+		      keyNew ("system/elektra/modules/mini/exports/get", KEY_FUNC, elektraMiniGet, KEY_END),
+		      keyNew ("system/elektra/modules/mini/exports/set", KEY_FUNC, elektraMiniSet, KEY_END),
+		      keyNew ("system/elektra/modules/mini/exports/error", KEY_FUNC, elektraMiniError, KEY_END),
+#include ELEKTRA_README (mini)
+		      keyNew ("system/elektra/modules/mini/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
+}
 
 int elektraMiniOpen (Plugin * handle ELEKTRA_UNUSED, Key * errorKey ELEKTRA_UNUSED)
 {
@@ -32,16 +44,7 @@ int elektraMiniGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 {
 	if (!elektraStrCmp (keyName (parentKey), "system/elektra/modules/mini"))
 	{
-		KeySet * contract =
-			ksNew (30, keyNew ("system/elektra/modules/mini", KEY_VALUE, "mini plugin waits for your orders", KEY_END),
-			       keyNew ("system/elektra/modules/mini/exports", KEY_END),
-			       keyNew ("system/elektra/modules/mini/exports/open", KEY_FUNC, elektraMiniOpen, KEY_END),
-			       keyNew ("system/elektra/modules/mini/exports/close", KEY_FUNC, elektraMiniClose, KEY_END),
-			       keyNew ("system/elektra/modules/mini/exports/get", KEY_FUNC, elektraMiniGet, KEY_END),
-			       keyNew ("system/elektra/modules/mini/exports/set", KEY_FUNC, elektraMiniSet, KEY_END),
-			       keyNew ("system/elektra/modules/mini/exports/error", KEY_FUNC, elektraMiniError, KEY_END),
-#include ELEKTRA_README (mini)
-			       keyNew ("system/elektra/modules/mini/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
+		KeySet * contract = elektraMiniContract ();
 		ksAppend (returned, contract);
 		ksDel (contract);
 
