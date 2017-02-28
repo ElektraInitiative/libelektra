@@ -403,7 +403,7 @@ static struct gpgKeyListElement * parseGpgKeyIdFromOutput (Key * msgKey, size_t 
  * @param conf holds the backend/plugin configuration
  * @returns the error text. This pointer must be freed by the caller!
  */
-static char * getMissingGpgKeyErrorText (KeySet * conf)
+char * CRYPTO_PLUGIN_FUNCTION (getMissingGpgKeyErrorText) (KeySet * conf)
 {
 	Key * msgKey = keyNew (0);
 	Key * errorKey = keyNew (0);
@@ -508,7 +508,7 @@ int CRYPTO_PLUGIN_FUNCTION (gpgEncryptMasterPassword) (KeySet * conf, Key * erro
 
 	if (recipientCount == 0)
 	{
-		char * errorDescription = getMissingGpgKeyErrorText (conf);
+		char * errorDescription = CRYPTO_PLUGIN_FUNCTION (getMissingGpgKeyErrorText) (conf);
 		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_CRYPTO_CONFIG_FAULT, errorKey, errorDescription);
 		elektraFree (errorDescription);
 		return -1;
