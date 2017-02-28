@@ -258,8 +258,12 @@ and should serve as a rough guide on how to write a storage plugin that can read
 ### `elektraPluginGet`
 
 `elektraPluginGet` is the function responsible for turning information from a file into a usable `KeySet`.
-This function usually differs pretty greatly between each plug-in. This function should be of type `int`, it returns `0` on success or
-another number on an error. The function will take in a Key, usually called `parentKey` which contains a string containing the path
+This function usually differs pretty greatly between each plug-in. This function should be of type `int`, it returns either `0` or on `1` on success.
+
+- `0`: The function was successful and the given keyset was **not changed**.
+- `1`: The function was successful and the given keyset was **updated**.
+
+Any other return value indicates an error. The function will take in a Key, usually called `parentKey` which contains a string containing the path
 to the file that is mounted. For instance, if you run the command `kdb mount /etc/linetest system/linetest line` then `keyString(parentKey)`
 should be equal to `/etc/linetest`. At this point, you generally want to open the file so you can begin saving it into keys.
 Here is the trickier part to explain. Basically, at this point you will want to iterate through the file and create keys and store string values
