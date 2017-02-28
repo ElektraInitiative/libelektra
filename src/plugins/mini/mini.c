@@ -7,9 +7,17 @@
  *
  */
 
+/* -- Imports --------------------------------------------------------------------------------------------------------------------------- */
+
 #include "mini.h"
 
 #include <kdbhelper.h>
+
+/* -- Functions ------------------------------------------------------------------------------------------------------------------------- */
+
+// ===========
+// = Private =
+// ===========
 
 static inline KeySet * elektraMiniContract ()
 {
@@ -23,6 +31,10 @@ static inline KeySet * elektraMiniContract ()
 #include ELEKTRA_README (mini)
 		      keyNew ("system/elektra/modules/mini/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 }
+
+// ====================
+// = Plugin Interface =
+// ====================
 
 int elektraMiniOpen (Plugin * handle ELEKTRA_UNUSED, Key * errorKey ELEKTRA_UNUSED)
 {
