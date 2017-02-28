@@ -1,7 +1,7 @@
 #include <kdbplugin.h>
 
 #define DEVBUILD
-#undef VERBOSEBUILD
+#define VERBOSEBUILD
 
 // helper for readability 
 typedef enum
@@ -26,6 +26,7 @@ typedef struct
     Key *scope;		// name of the key where the type was defined
     KeySet *checks;	// holds keys with the check metadata for each type check
     KeySet *types;	// references to the keys with supertypes
+    KeySet *params;	// parameter names + types
 }TypeConfig;
 
 // helpertype for pointers to validateKey functions
@@ -49,6 +50,14 @@ typedef struct
 }DispatchConfig; 
 
 
+// splits type string into type and arguments
+typedef struct
+{
+    char *type; 	//type name
+    KeySet *args;	//a key for each argument, keynames are array indices,
+    			// values the arguments
+}ArgumentConfig;
+
 //helpers.c functions
 DispatchConfig * initDispatchConfig();
 void closeDispatchConfig(Plugin *);
@@ -59,7 +68,9 @@ void setTypeType(TypeConfig *, const Key *);
 TypeType getTypeType(TypeConfig *);
 Key *getTypeKey(DispatchConfig *, const char *);
 TypeConfig *getType(DispatchConfig *, const char *);
-
+ArgumentConfig *parseTypeString(DispatchConfig *, const char *);
+void freeArgumentConfig(ArgumentConfig *);
+KeySet *makeParamKS(KeySet *, ArgumentConfig *);
 
 // typereader.c
 int getTypeDefinitions(Key *, DispatchConfig *, Key *);

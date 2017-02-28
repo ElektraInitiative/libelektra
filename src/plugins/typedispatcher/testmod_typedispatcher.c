@@ -352,6 +352,65 @@ void testArraySum()
     PLUGIN_CLOSE ();
 }
 
+void testSimpleParameter()
+{
+    Key * parentKey = keyNew ("user/tests/typedispatcher", KEY_VALUE, "", KEY_END);
+    KeySet * ks = ksNew (5, 
+	    keyNew ("user/tests/typedispatcher", KEY_VALUE, "typedefinitions", 
+		KEY_META, "define/type", "", 
+		KEY_META, "define/type/ab", "", 
+		KEY_META, "define/type/ab/parameter", "c",
+		KEY_META, "define/type/ab/check/enum", "#2", 
+		KEY_META, "define/type/ab/check/enum/#0", "a", 
+		KEY_META, "define/type/ab/check/enum/#1", "b", 
+		KEY_META, "define/type/ab/check/enum/#2", "%c%", 
+		KEY_END), 
+	    keyNew("user/tests/typedispatcher/ab", KEY_VALUE, "a", 
+		KEY_META, "type", "ab (c)", 
+		KEY_END), 
+	    keyNew("user/tests/typedispatcher/c", KEY_VALUE, "c",
+		KEY_META, "type", "ab (c)", 
+		KEY_END), 
+	    KS_END);
+    KeySet * conf = ksNew (0, KS_END);
+    PLUGIN_OPEN ("typedispatcher");
+    succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "SimpleParameter failed");
+    ksDel (ks);
+    keyDel (parentKey);
+    PLUGIN_CLOSE ();
+}
+
+void testSimpleParameterFail()
+{
+    Key * parentKey = keyNew ("user/tests/typedispatcher", KEY_VALUE, "", KEY_END);
+    KeySet * ks = ksNew (5, 
+	    keyNew ("user/tests/typedispatcher", KEY_VALUE, "typedefinitions", 
+		KEY_META, "define/type", "", 
+		KEY_META, "define/type/ab", "", 
+		KEY_META, "define/type/ab/parameter", "c",
+		KEY_META, "define/type/ab/check/enum", "#2", 
+		KEY_META, "define/type/ab/check/enum/#0", "a", 
+		KEY_META, "define/type/ab/check/enum/#1", "b", 
+		KEY_META, "define/type/ab/check/enum/#2", "%c%", 
+		KEY_END), 
+	    keyNew("user/tests/typedispatcher/ab", KEY_VALUE, "a", 
+		KEY_META, "type", "ab (c)", 
+		KEY_END), 
+	    keyNew("user/tests/typedispatcher/c", KEY_VALUE, "c",
+		KEY_META, "type", "ab (c)", 
+		KEY_END),
+	    keyNew("user/tests/typedispatcher/d", KEY_VALUE, "d", 
+		KEY_META, "type", "ab (c)", 
+		KEY_END), 
+	    KS_END);
+    KeySet * conf = ksNew (0, KS_END);
+    PLUGIN_OPEN ("typedispatcher");
+    succeed_if (plugin->kdbGet (plugin, ks, parentKey) == -1, "SimpleParameterFail failed");
+    ksDel (ks);
+    keyDel (parentKey);
+    PLUGIN_CLOSE ();
+}
+
 int main (int argc, char ** argv)
 {
     printf ("TYPEDISPATCHER     TESTS\n");
@@ -377,6 +436,10 @@ int main (int argc, char ** argv)
     testSimpleSum();
     fprintf(stderr, "\n============================================\n");
     testArraySum();
+    fprintf(stderr, "\n============================================\n");
+    testSimpleParameter();
+    fprintf(stderr, "\n============================================\n");
+    testSimpleParameterFail();
     fprintf(stderr, "\n============================================\n");
     printf ("\ntestmod_typedispatcher RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 

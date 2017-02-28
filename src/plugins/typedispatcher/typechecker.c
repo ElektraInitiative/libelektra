@@ -1,11 +1,42 @@
 #include "typehelper.h"
 #include <kdbproposal.h>  	//elektraKeyGetMetaKeySet
+#include <kdbconfig.h> 		//ELEKTRA_UNUSED   TODO: REMOVE
+#include <kdbhelper.h>		// elektraStrLen
 #include <stdio.h>
 
+static const Key *keyTakesParameter(const Key *key, KeySet *args)
+{
+    const char *value = keyString(key);
+    if(!strncmp(value, "%", 1))
+    {
+	if(value[elektraStrLen(value)-2] == '%')
+	{
+	    size_t len = elektraStrLen(value);
+	    char tmp[len];
+	    memset(tmp, 0, sizeof(tmp));
+	    memcpy(tmp, value+1, len-3);
+	    Key *searchKey = keyNew(tmp, KEY_META_NAME, KEY_END);
+	    Key *lookup = ksLookup(args, searchKey, KDB_O_NONE);
+	    keyDel(searchKey);
+	    if(lookup)
+	    {
+		return lookup;
+	    }
+	    else
+	    {
+		return NULL;
+	    }
+	}
+    }
+    return NULL;
+}
+
+	    
+	    
 
 // helper
 // copy check metadata  
-static void copyCheckMeta(Key *key, Key *checkMeta)
+static void copyCheckMeta(Key *key, Key *checkMeta, KeySet *args)
 {
 #ifdef DEVBUILD
     fprintf(stderr, "\t%s-validation\n", keyName(checkMeta));
@@ -14,19 +45,34 @@ static void copyCheckMeta(Key *key, Key *checkMeta)
     const Key *metaKey;
     while((metaKey = keyNextMeta(checkMeta)) != NULL)
     {
-	keySetMeta(key, keyName(metaKey), keyString(metaKey));
+	if(strncmp(keyName(metaKey), "internal/", 9))
+	{
+	    const Key *parameter = keyTakesParameter(metaKey, args);
+	    if(parameter)
+	    {
 #ifdef DEVBUILD
-	fprintf(stderr, "\t\t%s:(%s)\n", keyName(metaKey), keyString(metaKey));
+    	    fprintf(stderr, "\t\t%s:(%s)\n", keyName(metaKey), keyString(parameter));
 #endif
+		keySetMeta(key, keyName(metaKey), keyString(parameter));
+	    }
+	    else
+	    {
+#ifdef DEVBUILD
+    	    fprintf(stderr, "\t\t%s:(%s)\n", keyName(metaKey), keyString(metaKey));
+#endif
+    		keySetMeta(key, keyName(metaKey), keyString(metaKey));
+	    }
+
+	}
     }
 }
 
 // validate a key
 // checkMeta holds the metadata for a checker plugin
-static int checkKey(DispatchConfig *config, const Key *key, Key *checkMeta)
+static int checkKey(DispatchConfig *config, const Key *key, KeySet *args, Key *checkMeta)
 {
     Key *testKey = keyNew(keyName(key), KEY_VALUE, keyString(key), KEY_END);
-    copyCheckMeta(testKey, checkMeta);
+    copyCheckMeta(testKey, checkMeta, args);
     ValidateFunction validate = getValidateFunction(config, keyName(checkMeta));
     if(!validate)
     {
@@ -60,7 +106,7 @@ static int checkKey(DispatchConfig *config, const Key *key, Key *checkMeta)
 // actual typechecker 
 // first iterate over all checks for the current type and if needed
 // recursively call itself for every supertype (DFS)
-static int doTypeCheck(DispatchConfig *config, TypeConfig *tc, const Key *key)
+static int doTypeCheck(DispatchConfig *config, TypeConfig *tc, ArgumentConfig *argConfig, const Key *key)
 {
     ksRewind(tc->checks);
     Key *checkMeta;
@@ -85,7 +131,13 @@ static int doTypeCheck(DispatchConfig *config, TypeConfig *tc, const Key *key)
 
     while((checkMeta = ksNext(tc->checks)) != NULL)
     {
-	RC r = checkKey(config, key, checkMeta);
+	KeySet *args = NULL;
+	if(argConfig)
+	{
+	    args=makeParamKS(tc->params, argConfig);
+	}
+	RC r = checkKey(config, key, args, checkMeta);
+	ksDel(args);
 #if defined(DEVBUILD) && defined(VERBOSEBUILD)
 	fprintf(stderr, "\t\t\tcheckKey(config, %s:(%s), %s) returned %d\n", keyName(key), keyString(key), keyName(checkMeta), r);
 #endif
@@ -115,7 +167,9 @@ static int doTypeCheck(DispatchConfig *config, TypeConfig *tc, const Key *key)
     while((checkMeta = ksNext(tc->types)) != NULL)
     {
 	TypeConfig *t_tc = *(TypeConfig **)keyValue(checkMeta);
-	RC r = doTypeCheck(config, t_tc, key);
+	ArgumentConfig *ac = parseTypeString(config, keyString(keyGetMeta(checkMeta, "internal/typedispatcher/typeString")));
+	RC r = doTypeCheck(config, t_tc, ac, key);
+	freeArgumentConfig(ac);
 #if defined(DEVBUILD) && defined(VERBOSEBUILD)
 	fprintf(stderr, "\t\t\tcheckKey(config, %s:(%s), %s) returned %d\n", keyName(key), keyString(key), keyName(checkMeta), r);
 #endif
@@ -148,13 +202,21 @@ TYPECHECKDONE:
 // helperfunction
 // checks if type exists and calls actual typecheck function doTypCheck
 // TODO: merge with doTypeCheck
-static int typeCheck(DispatchConfig *config, const Key *key, const char *typeName, Key *parentKey)
+static int typeCheck(DispatchConfig *config, const Key *key, const char *typeString, Key *parentKey ELEKTRA_UNUSED)
 {
 #ifdef DEVBUILD
-    fprintf(stderr, "\twith type %s\n", typeName); 
+    fprintf(stderr, "\twith type %s\n", typeString); 
+#endif    
+
+    ArgumentConfig *argConfig = parseTypeString(config, typeString);
+    const char *typeName = NULL;
+    if(!argConfig)
+	typeName = typeString;
+    else
+	typeName = argConfig->type;
+#ifdef DEVBUILD
+    fprintf(stderr, "\tparseTypeString %s returned %p, typeName: %s\n", typeString, argConfig, typeName);
 #endif
-
-
     TypeConfig *tc = getType(config, typeName); 
     if(!tc)
     {
@@ -163,7 +225,9 @@ static int typeCheck(DispatchConfig *config, const Key *key, const char *typeNam
 #endif
 	return ERROR;
     }
-    RC rc = doTypeCheck(config, tc, key);
+    RC rc = doTypeCheck(config, tc, argConfig, key);
+
+    freeArgumentConfig(argConfig);
 
     return rc;
 }

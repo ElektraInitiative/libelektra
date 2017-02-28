@@ -1,12 +1,12 @@
 #include "typehelper.h"
 #include <kdbproposal.h>  	//keyRel2, elektraKeyGetMetaKeySet
 #include <kdbhelper.h> 		//elektraCalloc
-#include <kdbease.h> 		//KeyGetRelativeName
+#include <kdbease.h> 		//KeyGetRelativeName, elektraArrayIncName
 #include <stdio.h>
 
 
 // creates skeletons(name+type+scope) for new types and fails if type already exist
-static int readTypeNames(DispatchConfig *config, const Key *scope, const Key *typeKey, Key *parentKey)
+static int readTypeNames(DispatchConfig *config, const Key *scope, const Key *typeKey, Key *parentKey ELEKTRA_UNUSED)
 {
     if(!typeKey)
 	return ERROR;
@@ -41,7 +41,7 @@ static int readTypeNames(DispatchConfig *config, const Key *scope, const Key *ty
 
 // iterate over a defined types check/<PLUGIN> meta
 // and add a new key holding each plugins config to TypeConfig->checks
-static void readCheckTypeConfig(TypeConfig *tc, const Key *key, const Key *typeKey, KeySet *defKS, Key *parentKey)
+static void readCheckTypeConfig(TypeConfig *tc, const Key *key ELEKTRA_UNUSED, const Key *typeKey, KeySet *defKS, Key *parentKey ELEKTRA_UNUSED)
 {
     Key *cur = NULL;	
     Key *checkKey = keyNew(keyName(typeKey), KEY_META_NAME, KEY_END);
@@ -103,7 +103,7 @@ static void readCheckTypeConfig(TypeConfig *tc, const Key *key, const Key *typeK
 
 // iterate over a defined types type meta, checks if the supertype exists
 // and adds a reference to the supertype to TypeConfig->types
-static int readTypeTypeSuperTypes(DispatchConfig *config, TypeConfig *tc, const Key *key, const Key *typeKey, KeySet *defKS, Key *parentKey)
+static int readTypeTypeSuperTypes(DispatchConfig *config, TypeConfig *tc, const Key *key, const Key *typeKey, KeySet *defKS, Key *parentKey ELEKTRA_UNUSED)
 {
     Key *relKey = keyNew(keyName(typeKey), KEY_META_NAME, KEY_END);
     keyAddBaseName(relKey, "type");
@@ -122,8 +122,16 @@ static int readTypeTypeSuperTypes(DispatchConfig *config, TypeConfig *tc, const 
     Key *cur;
     while((cur = ksNext(typeKS)) != NULL)
     {
-	const char *relTypeName = keyString(cur);
+	const char *relTypeName = NULL;
+	const char *typeString = keyString(cur);
+    	ArgumentConfig *argConfig = parseTypeString(config, typeString);
+	if(!argConfig)
+	    relTypeName = typeString;
+	else
+	    relTypeName = argConfig->type;
+
 	TypeConfig *rt = getType(config, relTypeName);
+	freeArgumentConfig(argConfig);
 	if(!rt)
 	{
 #ifdef DEVBUILD
@@ -150,7 +158,12 @@ static int readTypeTypeSuperTypes(DispatchConfig *config, TypeConfig *tc, const 
 #ifdef DEVBUILD
 	    fprintf(stderr, "\t\t\t%s references %s - adding\n", keyName(key), relTypeName);
 #endif
-	    ksAppendKey(tc->types, getTypeKey(config, relTypeName));
+	    Key *refKey = getTypeKey(config, relTypeName);
+	    Key *appendKey = keyNew(keyName(refKey), KEY_META_NAME, KEY_BINARY, KEY_SIZE, keyGetValueSize(refKey), KEY_VALUE, keyValue(refKey), KEY_END);
+	    keyCopyAllMeta(appendKey, refKey);
+	    keySetMeta(appendKey, "internal/typedispatcher/typeString", typeString);
+//	    ksAppendKey(tc->types, getTypeKey(config, relTypeName));
+	    ksAppendKey(tc->types, appendKey);
 	}
     }
     keyDel(relKey);
@@ -238,6 +251,47 @@ static int readSubTypeTypeSuperTypes(DispatchConfig *config, TypeConfig *tc, con
     return readTypeTypeSuperTypes(config, tc, key, typeKey, defKS, parentKey);
 }
 
+static int readTypeParameters(TypeConfig *tc, const Key *key ELEKTRA_UNUSED, const Key *typeKey, KeySet *defKS, Key *parentKey ELEKTRA_UNUSED)
+{
+    Key *checkKey = keyNew(keyName(typeKey), KEY_META_NAME, KEY_END);
+    keyAddBaseName(checkKey, "parameter");
+    Key *paramKey = ksLookup(defKS, checkKey, KDB_O_NONE);
+   
+    if(!paramKey)
+    {
+	keyDel(checkKey);
+	return SUCCESS;
+    }
+    else
+    {
+	if(!strncmp(keyString(paramKey), "#", 1))
+	{
+	    // is param array
+	    KeySet *typeKS = getKeysDirectBelow(checkKey, defKS);
+	    Key *cur = NULL;	
+	    while((cur = ksNext(typeKS)) != NULL)
+	    {
+		Key *parameter = keyNew(keyBaseName(cur), KEY_META_NAME, KEY_VALUE, keyString(cur), KEY_END);
+#ifdef DEVBUILD
+		fprintf(stderr, "adding parameter key %s:(%s) to type %s\n", keyName(parameter), keyString(parameter), keyBaseName(typeKey));
+#endif
+		ksAppendKey(tc->params, parameter);
+	    }
+	    ksDel(typeKS);
+	}
+	else
+	{
+	    // single parameter
+	    Key *parameter = keyNew("#0", KEY_META_NAME, KEY_VALUE, keyString(paramKey), KEY_END);
+#ifdef DEVBUILD
+		fprintf(stderr, "adding parameter key %s:(%s) to type %s\n", keyName(parameter), keyString(parameter), keyBaseName(typeKey));
+#endif
+	    ksAppendKey(tc->params, parameter);
+	}
+    }
+    keyDel(checkKey);
+    return SUCCESS;
+}
 
 // read type configuration
 // only call after type skeletons are created with readTypeNames
@@ -283,8 +337,11 @@ static int readTypeConfig(DispatchConfig *config, const Key *key, const Key *typ
 
     if(getTypeType(tc) == SUBTYPE)
     {
+	rc = readTypeParameters(tc, key, typeKey, defKS, parentKey);
+	if(rc == ERROR)
+	    return ERROR;
 	readSubTypeCheckConfig(tc, key, typeKey, defKS, parentKey);
-    
+    	
     	rc = readSubTypeTypeSuperTypes(config, tc, key, typeKey, defKS, parentKey);
     }
     else

@@ -1,7 +1,9 @@
 #include "typehelper.h"
 #include <kdbmodule.h>    	//elektraModulesInit, elektraModulesClose
-#include <kdbprivate.h>   	//elektraPluginClose. elektraPluginOpen
+#include <kdbprivate.h>   	//elektraPluginClose. elektraPluginOpen, elektraStrNDup
+#include <kdbease.h>		//elektraArrayIncName
 #include <stdio.h>
+#include <string.h>
 #include <strings.h>
 
 
@@ -26,6 +28,7 @@ static void freeTypes(KeySet *types)
     {
 	TypeConfig *tc = *(TypeConfig **)keyValue(key);
 	ksDel(tc->types);
+	ksDel(tc->params);
 	keyDel(tc->scope);
 	freeType(tc);
     }
@@ -132,6 +135,7 @@ TypeConfig *newTypeConfig()
     tc->scope = keyNew(0, KEY_END);
     tc->checks = ksNew(0, KS_END);
     tc->types = ksNew(0, KS_END);
+    tc->params = ksNew(0, KS_END);
     return tc;
 }
 
@@ -166,3 +170,94 @@ TypeConfig *getType(DispatchConfig *config, const char *type)
     return tc;
 }
 
+
+ArgumentConfig *parseTypeString(DispatchConfig *config ELEKTRA_UNUSED, const char *typeString)
+{
+    const char *ptr = typeString;
+    while(*ptr)
+    {
+	if(*ptr == '(' || *ptr == ' ')
+	    break;
+	++ptr;
+    }
+    if(!*ptr)
+	return NULL;
+    ssize_t typeNameLen = (ptr - typeString) + 1;
+    if(typeNameLen <= 0)
+	return NULL;
+    
+    while(*ptr && (*ptr != '('))
+	++ptr;
+    if(!*ptr)
+	return NULL;
+
+    ArgumentConfig *argConfig = NULL;
+    argConfig = elektraCalloc(sizeof(ArgumentConfig));
+    argConfig->type = elektraCalloc(typeNameLen); 
+    snprintf(argConfig->type, typeNameLen, "%s", typeString);
+#ifdef DEVBUILD
+    fprintf(stderr, "parsing typeString %s\n", typeString);
+#endif
+    argConfig->args = ksNew(0, KS_END);
+    char *token = NULL;
+    char *localCopy = elektraStrDup(ptr+1);
+    char *rest = localCopy;
+    Key *indexKey = keyNew("/#", KEY_META_NAME, KEY_END);
+    while((token = strtok_r(rest, ",)", &rest)) != NULL)
+    {
+	elektraArrayIncName(indexKey);
+	Key *key = keyNew(keyBaseName(indexKey), KEY_META_NAME, KEY_VALUE, token, KEY_END);	
+#ifdef DEVBUILD
+	fprintf(stderr, "\tadding %s:(%s)\n", keyName(key), keyString(key));
+#endif
+	ksAppendKey(argConfig->args, key);
+    }
+    keyDel(indexKey);
+    elektraFree(localCopy);
+    fprintf(stderr, "argConfig: %p\n", argConfig);
+    return argConfig;
+} 
+
+KeySet *makeParamKS(KeySet *params, ArgumentConfig *argConfig)
+{
+    KeySet *args = argConfig->args;
+    if(ksGetSize(params) <= 0 || ksGetSize(args) <= 0)
+    {
+#ifdef DEVBUILD
+	fprintf(stderr, "ksSize(params): %zd, ksSize(args): %zd\n", ksGetSize(params), ksGetSize(args));
+#endif
+	return NULL;
+    }
+    ksRewind(params);
+    ksRewind(args);
+    KeySet *result = NULL;
+    result = ksNew(ksGetSize(params), KS_END);
+    Key *paramKey = NULL;
+    while((paramKey = ksNext(params)) != NULL)
+    {
+	Key *argKey = ksLookup(args, paramKey, KDB_O_NONE);
+	if(!argKey)
+	{
+	    ksDel(result);
+	    return NULL;
+	}
+	else
+	{
+	    Key *appendKey = keyNew(keyString(paramKey), KEY_META_NAME, KEY_VALUE, keyString(argKey), KEY_END);
+#ifdef DEVBUILD
+	    fprintf(stderr, "mapping argument %s:(%s) to parameter %s:(%s)\n", keyName(argKey), keyString(argKey), keyName(paramKey), keyString(paramKey));
+#endif
+	    ksAppendKey(result, appendKey);
+	}
+    }
+    return result;
+}
+
+void freeArgumentConfig(ArgumentConfig *config)
+{
+    if(!config)
+	return;
+    elektraFree(config->type);
+    ksDel(config->args);
+    elektraFree(config);
+}
