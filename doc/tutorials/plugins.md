@@ -286,7 +286,7 @@ just run when a file is first mounted, but whenever a file gets updated, this fu
 
 ### `elektraPluginSet`
 
-We also gave a brief overview of the `elektraPluginSet` function. This function is basically the opposite of `elektraPluginGet`. Where `elektraPluginGet`
+We also give a brief overview of the `elektraPluginSet` function. This function is basically the opposite of `elektraPluginGet`. Where `elektraPluginGet`
 reads information from a file into the Elektra Key Database, `elektraPluginSet` writes information from the database back into the mounted file.
 
 First have a look at the signature of `elektraLineSet`:
