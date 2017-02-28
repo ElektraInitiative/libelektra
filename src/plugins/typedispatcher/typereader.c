@@ -39,43 +39,11 @@ static int readTypeNames(DispatchConfig *config, const Key *scope, const Key *ty
     return SUCCESS;
 }
 
-
-static int readTypeConfig(DispatchConfig *config, const Key *key, const Key *typeKey, KeySet *defKS, Key *parentKey)
+// iterate over a defined types check/<PLUGIN> meta
+// and add a new key holding each plugins config to TypeConfig->checks
+static void readCheckTypeConfig(TypeConfig *tc, const Key *key, const Key *typeKey, KeySet *defKS, Key *parentKey)
 {
-    if(!typeKey)
-	return ERROR;
-
-    const char *typeName = keyBaseName(typeKey);
-#ifdef DEVBUILD
-    fprintf(stderr, "populating %s\n", typeName);
-#endif
-
-    TypeConfig *tc = getType(config, typeName);
-    if(!tc)
-    {
-#ifdef DEVBUILD
-	fprintf(stderr, "datatype %s not found but should exist\n", typeName);
-#endif
-	return ERROR;
-    }
-    else
-    {
-#ifdef DEVBUILD
-	fprintf(stderr, "datatype %s found in config->types\n", typeName);
-#endif
-	if(getTypeType(tc) != SKEL)
-	{
-#if defined(DEVBUILD) && defined(VERBOSEBUILD)
-	    fprintf(stderr, "%s already exists - changing types at runtime not supported yet\n", typeName);
-#endif
-	    return SUCCESS;
-	}
-	else
-	{
-	    setTypeType(tc, typeKey);
-	}
-    }
-    Key *cur;	
+    Key *cur = NULL;	
     Key *checkKey = keyNew(keyName(typeKey), KEY_META_NAME, KEY_END);
     keyAddBaseName(checkKey, "check");
     KeySet *typeKS = getAllKeysBelow(checkKey, defKS);
@@ -131,10 +99,16 @@ static int readTypeConfig(DispatchConfig *config, const Key *key, const Key *typ
     ksDel(dupKS);
     keyDel(checkKey);
     ksDel(typeKS);
+}
 
+// iterate over a defined types type meta, checks if the supertype exists
+// and adds a reference to the supertype to TypeConfig->types
+static int readTypeTypeSuperTypes(DispatchConfig *config, TypeConfig *tc, const Key *key, const Key *typeKey, KeySet *defKS, Key *parentKey)
+{
     Key *relKey = keyNew(keyName(typeKey), KEY_META_NAME, KEY_END);
     keyAddBaseName(relKey, "type");
     Key *lookup = ksLookup(defKS, relKey, KDB_O_NONE);
+    KeySet *typeKS = NULL;
     if(!strncmp(keyString(lookup), "#", 1))
     {
 	typeKS = getAllKeysBelow(relKey, defKS);
@@ -145,6 +119,7 @@ static int readTypeConfig(DispatchConfig *config, const Key *key, const Key *typ
 	ksAppendKey(typeKS, lookup);
     }
     ksRewind(typeKS);
+    Key *cur;
     while((cur = ksNext(typeKS)) != NULL)
     {
 	const char *relTypeName = keyString(cur);
@@ -180,11 +155,147 @@ static int readTypeConfig(DispatchConfig *config, const Key *key, const Key *typ
     }
     keyDel(relKey);
     ksDel(typeKS);
-
     return SUCCESS;
 }
 
 
+// read SUMTYPE config
+// if array-style config is found create a new type <TYPENAME>/#*
+// for every array element
+static int readSumTypeConfig(DispatchConfig *config, TypeConfig *tc, const Key *key, const Key *typeKey, KeySet *defKS, Key *parentKey)
+{
+    KeySet *typeKS = NULL;
+    Key *checkKey = keyNew(keyName(typeKey), KEY_META_NAME, KEY_END);
+    keyAddBaseName(checkKey, "#0");
+    typeKS = getAllKeysBelow(checkKey, defKS); 
+    if(ksGetSize(typeKS) <= 0)
+    {
+#ifdef DEVBUILD
+	fprintf(stderr, "no array below SUMTYPE %s\n", keyBaseName(typeKey));
+#endif
+	// no array below, treat every entry as a separate type
+	ksDel(typeKS);
+	keyDel(checkKey);
+	
+	readCheckTypeConfig(tc, key, typeKey, defKS, parentKey);
+
+	return readTypeTypeSuperTypes(config, tc, key, typeKey, defKS, parentKey);
+    }
+    else
+    {
+	// array
+#ifdef DEVBUILD	
+	fprintf(stderr, "array blow SUMTYPE %s\n", keyBaseName(typeKey));
+#endif
+	do
+	{
+	    ksDel(typeKS);
+	    typeKS = getAllKeysBelow(checkKey, defKS);
+	    if(ksGetSize(typeKS) <= 0)
+	    {
+		ksDel(typeKS);
+		break;
+	    }
+	    TypeConfig *stc = NULL;
+	    stc = newTypeConfig();
+	    stc->type = SUBTYPE;
+	    readCheckTypeConfig(stc, key, checkKey, typeKS, parentKey);
+	    RC rc = ERROR;
+	    rc = readTypeTypeSuperTypes(config, stc, key, checkKey, typeKS, parentKey);
+	    if(rc == ERROR)
+	    {
+#ifdef DEVBUILD
+		fprintf(stderr, "SUMTYPE %s/%s readTypeTypeSuperTypes failed\n", keyBaseName(typeKey), keyBaseName(checkKey));
+#endif
+		ksDel(typeKS);
+		elektraFree(stc);		
+		keyDel(checkKey);
+		return ERROR;
+	    }
+	    Key *appendKey = keyNew(keyBaseName(typeKey), KEY_META_NAME, KEY_BINARY, KEY_SIZE, sizeof(TypeConfig *), KEY_VALUE, &stc, KEY_END);
+	    keyAddBaseName(appendKey, keyBaseName(checkKey));
+#ifdef DEVBUILD
+	    fprintf(stderr, "appending new type %s\n", keyName(appendKey));
+#endif
+	    ksAppendKey(config->types, appendKey);	    
+	    ksAppendKey(tc->types, appendKey);
+	}while(elektraArrayIncName(checkKey) != ERROR);
+    }
+    keyDel(checkKey);
+    return SUCCESS;
+}
+
+
+// helper for readability
+static void readSubTypeCheckConfig(TypeConfig *tc, const Key *key, const Key *typeKey, KeySet *defKS, Key *parentKey)
+{
+    readCheckTypeConfig(tc, key, typeKey, defKS, parentKey);
+}
+
+//helper for readability
+static int readSubTypeTypeSuperTypes(DispatchConfig *config, TypeConfig *tc, const Key *key, const Key *typeKey, KeySet *defKS, Key *parentKey)
+{
+    return readTypeTypeSuperTypes(config, tc, key, typeKey, defKS, parentKey);
+}
+
+
+// read type configuration
+// only call after type skeletons are created with readTypeNames
+// depending on the algebraic type call readSubTypeCheckConfig/readSubTypeTypeSuperTypes 
+// or readSumTypeConfig
+static int readTypeConfig(DispatchConfig *config, const Key *key, const Key *typeKey, KeySet *defKS, Key *parentKey)
+{
+    if(!typeKey)
+	return ERROR;
+
+    const char *typeName = keyBaseName(typeKey);
+#if defined(DEVBUILD) && defined(VERBOSEBUILD)
+    fprintf(stderr, "populating %s\n", typeName);
+#endif
+
+    TypeConfig *tc = getType(config, typeName);
+    if(!tc)
+    {
+#ifdef DEVBUILD
+	fprintf(stderr, "datatype %s not found but should exist\n", typeName);
+#endif
+	return ERROR;
+    }
+    else
+    {
+#ifdef DEVBUILD
+	fprintf(stderr, "datatype %s found in config->types\n", typeName);
+#endif
+	if(getTypeType(tc) != SKEL)
+	{
+#if defined(DEVBUILD) && defined(VERBOSEBUILD)
+	    fprintf(stderr, "%s already exists - changing types at runtime not supported yet\n", typeName);
+#endif
+	    return SUCCESS;
+	}
+	else
+	{
+	    setTypeType(tc, typeKey);
+	}
+    }
+
+    RC rc = ERROR;
+
+    if(getTypeType(tc) == SUBTYPE)
+    {
+	readSubTypeCheckConfig(tc, key, typeKey, defKS, parentKey);
+    
+    	rc = readSubTypeTypeSuperTypes(config, tc, key, typeKey, defKS, parentKey);
+    }
+    else
+    {
+	rc = readSumTypeConfig(config, tc, key, typeKey, defKS, parentKey);
+    }
+    return rc;
+}
+
+// iterate over define/type metadata
+// and and call readTypeNames and readTypeConfig for each type
 int getTypeDefinitions(Key *key, DispatchConfig *config, Key *parentKey)
 {
 #ifdef DEVBUILD

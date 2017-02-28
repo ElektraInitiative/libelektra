@@ -40,7 +40,7 @@ static int checkKey(DispatchConfig *config, const Key *key, Key *checkMeta)
 #endif
     if(rc == 0)
     {
-#ifdef DEVBUILD
+#if defined(DEVBUILD) && defined(VERBOSEBUILD)
 	fprintf(stderr,"number: %s\n", keyString (keyGetMeta (errorKey, "error/number")));
 	fprintf(stderr,"description: : %s\n", keyString (keyGetMeta (errorKey, "error/description")));
 	fprintf(stderr,"ingroup: : %s\n", keyString (keyGetMeta (errorKey, "error/ingroup")));
@@ -67,9 +67,19 @@ static int doTypeCheck(DispatchConfig *config, TypeConfig *tc, const Key *key)
     TypeType t = getTypeType(tc);
     RC rc = ERROR;
     if(t == SUMTYPE)
+    {
+#if defined(DEVBUILD) && defined(VERBOSEBUILD)
+	fprintf(stderr, "\t\t%s has SUMTYPE\n", keyName(key));
+#endif
        rc = ERROR;
+    }
     else if(t == SUBTYPE)
+    {
 	rc = SUCCESS;
+#if defined(DEVBUILD) && defined(VERBOSEBUILD)
+	fprintf(stderr, "\t\t%s has SUBTYPE\n", keyName(key));
+#endif
+    }
     else if(t == SKEL)
 	return SUCCESS;
 
@@ -192,8 +202,8 @@ int validateKey(Key *key, DispatchConfig *config, Key *parentKey)
     else
     {
 	const char *typeName = keyString(typeMeta);
-#ifdef DEVBUILD
-	fprintf(stderr, "%s has type meta %s\n", keyName(key), typeName);
+#if defined(DEVBUILD) && defined(VERBOSEBUILD)
+	fprintf(stderr, "%s has type meta \"%s\"\n", keyName(key), typeName);
 #endif
 	RC rc = typeCheck(config, key, typeName, parentKey);
 	if(rc == ERROR)

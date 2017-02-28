@@ -2,6 +2,8 @@
 #include <kdbprivate.h>
 #include <stdio.h>
 
+
+// checks if the pluign exports a validateKey function and return a pointer to it found
 static ValidateFunction pluginGetValidateFunction(Plugin *plugin)
 {
     ValidateFunction f = NULL;
@@ -32,6 +34,8 @@ static ValidateFunction pluginGetValidateFunction(Plugin *plugin)
     return f;
 }
 
+
+// load/initialize plugin and create and append PluginConfig to DispatchConfig 
 static Key * initPlugin(DispatchConfig *config, const char *pluginName)
 {
     Plugin *plugin = NULL;
@@ -77,6 +81,9 @@ static Key * initPlugin(DispatchConfig *config, const char *pluginName)
     }
 }
 
+
+// returns pointer to validateKey function of plugin <pluginName>
+// and calls initPlugin to load plugin if needed
 ValidateFunction getValidateFunction(DispatchConfig *config, const char *pluginName)
 {
     if(!config || !pluginName)

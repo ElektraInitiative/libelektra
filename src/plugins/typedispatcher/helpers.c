@@ -69,9 +69,11 @@ void closeDispatchConfig(Plugin *handle)
     elektraPluginSetData(handle, NULL);
 }
 
+
+// initialize plugin configuration
 DispatchConfig * initDispatchConfig()
 {
-    DispatchConfig *config;
+    DispatchConfig *config = NULL;
     config = elektraCalloc(sizeof(DispatchConfig));
     if(!config)
 	return NULL;
@@ -89,7 +91,8 @@ static KeySet *getKeysBelow(const Key *key, KeySet *ks, KeyRelType rel)
     if(!ks)
 	return NULL;
     ksRewind(ks);
-    KeySet *result = ksNew(ksGetSize(ks), KS_END);
+    KeySet *result = NULL;
+    result = ksNew(ksGetSize(ks), KS_END);
     Key *cur;
     while((cur = ksNext(ks)) != NULL)
     {
@@ -106,16 +109,19 @@ static KeySet *getKeysBelow(const Key *key, KeySet *ks, KeyRelType rel)
     return result;
 }
 
+// return a keyset containing all keys below <key>
 KeySet *getAllKeysBelow(const Key *key, KeySet *ks)
 {
     return getKeysBelow(key, ks, ELEKTRA_REL_BELOW_SAME_NS);
 }
 
+// return a keyset containing all keys directly below <key>
 KeySet *getKeysDirectBelow(const Key *key, KeySet *ks)
 {
     return getKeysBelow(key, ks, ELEKTRA_REL_DIRECT_BELOW_SAME_NS);
 }
 
+//initialize type config skeleton
 TypeConfig *newTypeConfig()
 {
     TypeConfig *tc = NULL;
@@ -150,6 +156,7 @@ Key *getTypeKey(DispatchConfig *config, const char *type)
     return lookup;
 }
 
+// look up <type> and return its configuration if found
 TypeConfig *getType(DispatchConfig *config, const char *type)
 {
     Key *lookup = getTypeKey(config, type);

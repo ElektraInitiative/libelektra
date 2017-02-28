@@ -1,11 +1,11 @@
 - infos = Information about the typedispatcher plugin is in keys below
-- infos/author = Author Name <elektra@libelektra.org>
+- infos/author = Thomas Waser <thomas.waser@libelektra.org>
 - infos/licence = BSD
 - infos/needs =
-- infos/provides =
+- infos/provides = check
 - infos/recommends =
 - infos/placements =
-- infos/status = recommended productive maintained reviewed conformant compatible coverage specific unittest shelltest tested nodep libc configurable final preview memleak experimental difficult unfinished old nodoc concept orphan obsolete discouraged -1000000
+- infos/status = maintained compatible coverage specific unittest libc configurable preview memleak experimental difficult unfinished nodoc concept 
 - infos/metadata =
 - infos/description = one-line description of typedispatcher
 

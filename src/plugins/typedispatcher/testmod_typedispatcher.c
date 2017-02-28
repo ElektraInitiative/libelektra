@@ -290,6 +290,68 @@ void testMultiSub()
     PLUGIN_CLOSE ();
 }
 
+void testSimpleSum()
+{
+    Key * parentKey = keyNew ("user/tests/typedispatcher", KEY_VALUE, "", KEY_END);
+    KeySet * ks = ksNew (5, 
+	    keyNew ("user/tests/typedispatcher", KEY_VALUE, "typedefinitions", 
+		KEY_META, "define/type", "", 
+		KEY_META, "define/type/sab", "",
+		KEY_META, "define/type/sab/check/enum", "#1",
+		KEY_META, "define/type/sab/check/enum/#0", "a",
+		KEY_META, "define/type/sab/check/enum/#1", "b",
+		KEY_META, "define/type/s", "sum",
+		KEY_META, "define/type/s/check/range", "1-10",
+		KEY_META, "define/type/s/type", "sab",
+		KEY_END), 
+	    keyNew("user/tests/typedispatcher/long", KEY_VALUE, "7", 
+		KEY_META, "type", "s",
+		KEY_END), 
+	    keyNew("user/tests/typedispatcher/a", KEY_VALUE, "a",
+		KEY_META, "type", "s",
+		KEY_END),
+	    keyNew("user/tests/typedispatcher/fail", KEY_VALUE, "c",
+		KEY_META, "type", "s",
+		KEY_END),
+	    KS_END);
+    KeySet * conf = ksNew (0, KS_END);
+    PLUGIN_OPEN ("typedispatcher");
+    succeed_if (plugin->kdbGet (plugin, ks, parentKey) == -1, "SimpleSum failed");
+    ksDel (ks);
+    keyDel (parentKey);
+    PLUGIN_CLOSE ();
+}
+
+void testArraySum()
+{
+    Key * parentKey = keyNew ("user/tests/typedispatcher", KEY_VALUE, "", KEY_END);
+    KeySet * ks = ksNew (5, 
+	    keyNew ("user/tests/typedispatcher", KEY_VALUE, "typedefinitions", 
+		KEY_META, "define/type", "", 
+		KEY_META, "define/type/s", "sum",
+		KEY_META, "define/type/s/#0/check/enum", "#1",
+		KEY_META, "define/type/s/#0/check/enum/#0", "a",
+		KEY_META, "define/type/s/#0/check/enum/#1", "b",
+		KEY_META, "define/type/s/#1/check/range", "1-10",
+		KEY_END), 
+	    keyNew("user/tests/typedispatcher/long", KEY_VALUE, "5", 
+		KEY_META, "type", "s",
+		KEY_END), 
+	    keyNew("user/tests/typedispatcher/a", KEY_VALUE, "a",
+		KEY_META, "type", "s",
+		KEY_END),
+	    keyNew("user/tests/typedispatcher/fail", KEY_VALUE, "c",
+		KEY_META, "type", "s",
+		KEY_END),
+	    KS_END);
+    KeySet * conf = ksNew (0, KS_END);
+    PLUGIN_OPEN ("typedispatcher");
+    succeed_if (plugin->kdbGet (plugin, ks, parentKey) == -1, "SimpleSum failed");
+    ksDel (ks);
+    keyDel (parentKey);
+    PLUGIN_CLOSE ();
+}
+
 int main (int argc, char ** argv)
 {
     printf ("TYPEDISPATCHER     TESTS\n");
@@ -312,7 +374,10 @@ int main (int argc, char ** argv)
     fprintf(stderr, "\n============================================\n");
     testMultiSub();
     fprintf(stderr, "\n============================================\n");
-
+    testSimpleSum();
+    fprintf(stderr, "\n============================================\n");
+    testArraySum();
+    fprintf(stderr, "\n============================================\n");
     printf ("\ntestmod_typedispatcher RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 
     return nbError;
