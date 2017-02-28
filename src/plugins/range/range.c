@@ -239,23 +239,23 @@ static int validateSingleRange (const char * valueStr, const char * rangeString,
 	min.type = type;
 	max.type = type;
 	int rc = rangeStringToRange (rangeString, &min, &max, type);
-/*
-	switch (type)
-	{
-	case INT:
-		fprintf (stderr, "%s: ret: %d, min: %lld, max: %lld\n", rangeString, rc, min.Value.i, max.Value.i);
-		break;
-	case FLOAT:
-		fprintf (stderr, "%s: ret: %d, min: %Lf, max: %Lf\n", rangeString, rc, min.Value.f, max.Value.f);
-		break;
-	case HEX:
-		fprintf (stderr, "%s: ret: %d, min: 0x%x, max: 0x%x\n", rangeString, rc, (unsigned int)min.Value.i,
-			 (unsigned int)max.Value.i);
-		break;
-	case CHAR:
-		fprintf (stderr, "%s: ret: %d, min: %c, max: %c\n", rangeString, rc, (char)min.Value.i, (char)max.Value.i);
-	}
-*/
+	/*
+		switch (type)
+		{
+		case INT:
+			fprintf (stderr, "%s: ret: %d, min: %lld, max: %lld\n", rangeString, rc, min.Value.i, max.Value.i);
+			break;
+		case FLOAT:
+			fprintf (stderr, "%s: ret: %d, min: %Lf, max: %Lf\n", rangeString, rc, min.Value.f, max.Value.f);
+			break;
+		case HEX:
+			fprintf (stderr, "%s: ret: %d, min: 0x%x, max: 0x%x\n", rangeString, rc, (unsigned int)min.Value.i,
+				 (unsigned int)max.Value.i);
+			break;
+		case CHAR:
+			fprintf (stderr, "%s: ret: %d, min: %c, max: %c\n", rangeString, rc, (char)min.Value.i, (char)max.Value.i);
+		}
+	*/
 	if (rc)
 	{
 		return -1;
