@@ -231,7 +231,7 @@ static int rangeStringToRange (const char * rangeString, RangeValue * min, Range
 	return 0;
 }
 
-static int validateSingleRange (const char * valueStr, const char * rangeString, Key * parentKey, RangeType type)
+static int validateSingleRange (const char * valueStr, const char * rangeString, RangeType type)
 {
 	RangeValue min, max;
 	min.Value.i = 0;
@@ -239,6 +239,7 @@ static int validateSingleRange (const char * valueStr, const char * rangeString,
 	min.type = type;
 	max.type = type;
 	int rc = rangeStringToRange (rangeString, &min, &max, type);
+/*
 	switch (type)
 	{
 	case INT:
@@ -254,6 +255,7 @@ static int validateSingleRange (const char * valueStr, const char * rangeString,
 	case CHAR:
 		fprintf (stderr, "%s: ret: %d, min: %c, max: %c\n", rangeString, rc, (char)min.Value.i, (char)max.Value.i);
 	}
+*/
 	if (rc)
 	{
 		return -1;
@@ -319,7 +321,7 @@ static int validateMultipleRanges (const char * valueStr, const char * rangeStri
 	char * savePtr = NULL;
 	char * token = NULL;
 	token = strtok_r (localCopy, ",", &savePtr);
-	int rc = validateSingleRange (valueStr, token, parentKey, type);
+	int rc = validateSingleRange (valueStr, token, type);
 	if (rc == 1)
 	{
 		elektraFree (localCopy);
@@ -333,7 +335,7 @@ static int validateMultipleRanges (const char * valueStr, const char * rangeStri
 	}
 	while ((token = strtok_r (NULL, ",", &savePtr)) != NULL)
 	{
-		rc = validateSingleRange (valueStr, token, parentKey, type);
+		rc = validateSingleRange (valueStr, token, type);
 		if (rc == 1)
 		{
 			elektraFree (localCopy);
@@ -371,7 +373,7 @@ static int validateKey (Key * key, Key * parentKey)
 
 	if (!strchr (rangeString, ','))
 	{
-		int rc = validateSingleRange (keyString (key), rangeString, parentKey, type);
+		int rc = validateSingleRange (keyString (key), rangeString, type);
 		if (rc == -1)
 		{
 			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_RANGE_SYNTAX, parentKey, "invalid syntax: %s", keyString (rangeMeta));
