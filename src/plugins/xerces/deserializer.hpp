@@ -11,6 +11,6 @@
 
 #include <keyset.hpp>
 
-void deserialize (const std::string src, kdb::KeySet & ks);
+void deserialize (std::string const & src, kdb::KeySet & ks);
 
 #endif

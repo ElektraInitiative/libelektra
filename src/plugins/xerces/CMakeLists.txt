@@ -15,6 +15,8 @@ add_plugin (xerces
 	SOURCES
 		xerces.hpp xerces.cpp
 		deserializer.hpp deserializer.cpp
+		serializer.hpp serializer.cpp
+		util.hpp
 	INCLUDE_DIRECTORIES
 		${XercesC_INCLUDE_DIRS}
 	LINK_LIBRARIES

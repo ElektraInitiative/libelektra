@@ -1,12 +1,28 @@
-<?xml version="1.0"?>
-<sw>
-	<elektra>
-		<tests>
-			<xerces>
-				<!-- this is an attribute -->
-				<fizz buzz="fizzBuzz" />
-				value of xerces
-			</xerces>
-		</tests>
-	</elektra>
-</sw>
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+<namespace>
+	<cascading>
+		<sw>
+			<elektra>
+				<tests>
+					<xerces>
+						<!-- this is an attribute -->
+						<fizz buzz="fizzBuzz" />
+						value of xerces
+					</xerces>
+				</tests>
+			</elektra>
+		</sw>
+	</cascading>
+	<user>
+		<sw>
+			<elektra>
+				<tests>
+					<xerces>
+						<userKey user="key">withValue</userKey>
+					</xerces>
+				</tests>
+				<!-- comments are ignored -->
+			</elektra>
+		</sw>
+	</user>
+</namespace>

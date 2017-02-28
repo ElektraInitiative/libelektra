@@ -7,6 +7,7 @@
  */
 
 #include "deserializer.hpp"
+#include "util.hpp"
 
 #include <fstream>
 #include <functional>
@@ -30,38 +31,10 @@ using namespace std;
 using namespace kdb;
 
 /*
- + Smart pointer helper functions to ease the pain of dealing between XMLCh and std::string
- */
-
-// no need to expand this, just keep it in one line
-// TODO move to external file if also used for serializer
-// clang-format off
-struct XmlChDeleter { void operator() (XMLCh * ptr) { XMLString::release (&ptr); } };
-
-struct StringDeleter {
-	char * cStr; // Workaround as ptr->c_str gives as a const * which we cant free
-	void operator() (string * ptr) { XMLString::release (&cStr); }
-};
-
-struct DOMDocumentDeleter { void operator() (DOMDocument * ptr) { ptr->release (); } };
-// clang-format on
-
-inline static unique_ptr<XMLCh, XmlChDeleter> fromStr (const std::string str)
-{
-	return unique_ptr<XMLCh, XmlChDeleter> (XMLString::transcode (str.c_str ()));
-}
-
-inline static unique_ptr<std::string, StringDeleter> toStr (XMLCh const * xmlCh)
-{
-	char * cStr = XMLString::transcode (xmlCh);
-	return unique_ptr<std::string, StringDeleter> (new string (cStr), StringDeleter{ cStr });
-}
-
-/*
  * Actual Xerces logic
  */
 
-static unique_ptr<DOMDocument, DOMDocumentDeleter> doc2dom (const std::string src)
+static xerces_unique_ptr<DOMDocument> doc2dom (std::string const & src)
 {
 	XercesDOMParser parser;
 	parser.setValidationScheme (XercesDOMParser::Val_Auto);
@@ -71,17 +44,17 @@ static unique_ptr<DOMDocument, DOMDocumentDeleter> doc2dom (const std::string sr
 
 	try
 	{
-		parser.parse (fromStr (src).get ());
+		parser.parse (asXMLCh (src));
 	}
 	catch (...)
 	{
 		// TODO better error handling
 		std::cerr << "An exception parsing ";
 		std::cerr << src << std::endl;
-		return unique_ptr<DOMDocument, DOMDocumentDeleter> ();
+		return xerces_unique_ptr<DOMDocument> ();
 	}
 
-	return unique_ptr<DOMDocument, DOMDocumentDeleter> (parser.adoptDocument ());
+	return xerces_unique_ptr<DOMDocument> (parser.adoptDocument ());
 }
 
 static string getElementText (DOMNode const * parent)
@@ -93,7 +66,7 @@ static string getElementText (DOMNode const * parent)
 		if (DOMNode::TEXT_NODE == child->getNodeType ())
 		{
 			DOMText * data = dynamic_cast<DOMText *> (child);
-			if (!data->getIsElementContentWhitespace ()) str += *toStr (data->getData ());
+			if (!data->getIsElementContentWhitespace ()) str += toStr (data->getData ());
 		}
 	}
 	// trim whitespace
@@ -110,11 +83,17 @@ static void dom2keyset (DOMNode const * n, KeySet & ks, Key const & parent)
 		Key current = parent.dup ();
 		if (n->getNodeType () == DOMNode::ELEMENT_NODE)
 		{
-			cout << "Encountered Element : " << *toStr (n->getNodeName ());
+			string keyName = toStr (n->getNodeName ());
+			cout << "Encountered Element : " << keyName << endl;
+			current.addBaseName (keyName);
 
-			current.addBaseName (*toStr (n->getNodeName ()));
+			string text = getElementText (n);
+			current.set<string> (text);
 
-			current.set<string> (getElementText (n));
+			if (!current.isValid ())
+			{
+				// TODO we've encountered an invalid namespace or keyname, ignore, fail, ?
+			}
 
 			cout << "new parent is " << current.getFullName () << " with value " << current.get<string> () << endl;
 
@@ -127,22 +106,44 @@ static void dom2keyset (DOMNode const * n, KeySet & ks, Key const & parent)
 				for (XMLSize_t i = 0; i < nSize; ++i)
 				{
 					DOMAttr * pAttributeNode = dynamic_cast<DOMAttr *> (pAttributes->item (i));
-					cout << "\t" << *toStr (pAttributeNode->getName ()) << "=";
-					cout << *toStr (pAttributeNode->getValue ()) << endl;
-					current.setMeta (*toStr (pAttributeNode->getName ()), *toStr (pAttributeNode->getValue ()));
+					cout << "\t" << toStr (pAttributeNode->getName ()) << "=";
+					cout << toStr (pAttributeNode->getValue ()) << endl;
+					current.setMeta (toStr (pAttributeNode->getName ()), toStr (pAttributeNode->getValue ()));
 				}
 			}
-			ks.append (current);
+			// Only add keys with a value, attributes or leafs
+			if (n->hasAttributes () || !text.empty () || !n->getFirstChild ()) ks.append (current);
 		}
 		for (auto child = n->getFirstChild (); child != 0; child = child->getNextSibling ())
 			dom2keyset (child, ks, current);
 	}
 }
 
+void dom2keyset (DOMDocument const & doc, KeySet & ks)
+{
+	// root namespace element
+	DOMElement * root = doc.getDocumentElement ();
+
+	if (root)
+	{
+		// the namespace elements
+		for (auto ns = root->getFirstChild (); ns != nullptr; ns = ns->getNextSibling ())
+		{
+			string keyName = toStr (ns->getNodeName ());
+			if (keyName == "cascading") keyName = "/";
+			Key parent (keyName);
+			// the actual content nodes
+			for (auto child = ns->getFirstChild (); child != nullptr; child = child->getNextSibling ())
+			{
+				dom2keyset (child, ks, parent);
+			}
+		}
+	}
+}
+
 // TODO: pass errorKey and set it to something in case we have an error?
-void deserialize (const string src, KeySet & ks)
+void deserialize (string const & src, KeySet & ks)
 {
 	auto document = doc2dom (src);
-	Key parent ("/");
-	if (document) dom2keyset (document->getDocumentElement (), ks, parent);
+	if (document) dom2keyset (*document, ks);
 }

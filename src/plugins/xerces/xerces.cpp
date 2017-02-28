@@ -8,6 +8,7 @@
 
 #include "xerces.hpp"
 #include "deserializer.hpp"
+#include "serializer.hpp"
 #include <stdio.h>
 
 #include <kdbhelper.h>
@@ -18,13 +19,13 @@ using namespace ckdb;
 int elektraXercesOpen (Plugin * handle, Key * errorKey)
 {
 	XERCES_CPP_NAMESPACE::XMLPlatformUtils::Initialize ();
-	return 1; // success
+	return 1;
 }
 
 int elektraXercesClose (Plugin * handle, Key * errorKey)
 {
 	XERCES_CPP_NAMESPACE::XMLPlatformUtils::Terminate ();
-	return 1; // success
+	return 1;
 }
 
 int elektraXercesGet (Plugin * handle, KeySet * returned, Key * parentKey)
@@ -45,7 +46,7 @@ int elektraXercesGet (Plugin * handle, KeySet * returned, Key * parentKey)
 		ksAppend (returned, contract);
 		ksDel (contract);
 
-		return 1; // success
+		return 1;
 	}
 
 	// TODO error handling
@@ -53,13 +54,14 @@ int elektraXercesGet (Plugin * handle, KeySet * returned, Key * parentKey)
 	deserialize (keyString (parentKey), ks);
 	// Avoid destruction of the ks at the end
 	ks.release ();
-	return 1; // success
+	return 1;
 }
 
 int elektraXercesSet (Plugin * handle, KeySet * returned, Key * parentKey)
 {
-	// set all keys
-	// this function is optional
+	kdb::KeySet ks (returned);
+	serialize (keyString (parentKey), ks);
+	ks.release ();
 
 	return 1; // success
 }
