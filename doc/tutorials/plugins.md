@@ -269,7 +269,7 @@ The line plug-in was written to read files into a KeySet line by line using the 
 number such as `#1`, `#2`, .. `#_22` for a file with 22 lines. So once I open the file given by `parentKey`, every time as I read a line I create a new key,
 let's call it `new_key` using `dupKey(parentKey)`. Then I set `new_key`'s name to `lineNN` (where NN is the line number) using `keyAddBaseName` and
 store the string value of the line into the key using `keySetString`. Once the key is initialized, I append it to the KeySet that was passed into the
-`elektraPluginGet` function, let's call it `returned` for now, using `ksAppendKey(return, new_key)`. Now the KeySet will contain `new_key` with the
+`elektraPluginGet` function, let's call it `returned` for now, using `ksAppendKey(returned, new_key)`. Now the KeySet will contain `new_key` with the
 name `#N` properly saved where it should be according to the `kdb mount` command (in this case, `system/linetest/#N`), and a string value
 equal to the contents of that line in the file. The line plug-in repeats these steps as long as it hasn't reached end of file, thus saving the whole file
 into a KeySet line by line.
