@@ -40,7 +40,6 @@ int elektraMiniGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 			       keyNew ("system/elektra/modules/mini/exports/get", KEY_FUNC, elektraMiniGet, KEY_END),
 			       keyNew ("system/elektra/modules/mini/exports/set", KEY_FUNC, elektraMiniSet, KEY_END),
 			       keyNew ("system/elektra/modules/mini/exports/error", KEY_FUNC, elektraMiniError, KEY_END),
-			       keyNew ("system/elektra/modules/mini/exports/checkconf", KEY_FUNC, elektraMiniCheckConfig, KEY_END),
 #include ELEKTRA_README (mini)
 			       keyNew ("system/elektra/modules/mini/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 		ksAppend (returned, contract);
@@ -67,18 +66,6 @@ int elektraMiniError (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_
 	// this function is optional
 
 	return 1; // success
-}
-
-int elektraMiniCheckConfig (Key * errorKey ELEKTRA_UNUSED, KeySet * conf ELEKTRA_UNUSED)
-{
-	// validate plugin configuration
-	// this function is optional
-
-	// the return codes have the following meaning:
-	// 0: The configuration was OK and has not been changed
-	// 1: The configuration has been changed and now it is OK
-	// -1: The configuration was not OK and could not be fixed. An error has to be set to errorKey.
-	return 0;
 }
 
 Plugin * ELEKTRA_PLUGIN_EXPORT (mini)

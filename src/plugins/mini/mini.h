@@ -18,7 +18,6 @@ int elektraMiniClose (Plugin * handle, Key * errorKey);
 int elektraMiniGet (Plugin * handle, KeySet * ks, Key * parentKey);
 int elektraMiniSet (Plugin * handle, KeySet * ks, Key * parentKey);
 int elektraMiniError (Plugin * handle, KeySet * ks, Key * parentKey);
-int elektraMiniCheckConfig (Key * errorKey, KeySet * conf);
 
 Plugin * ELEKTRA_PLUGIN_EXPORT (mini);
 
