@@ -5,7 +5,7 @@
 - infos/provides = check
 - infos/recommends =
 - infos/placements =
-- infos/status = maintained compatible coverage specific unittest libc configurable preview memleak experimental difficult unfinished nodoc concept 
+- infos/status = maintained compatible coverage specific unittest libc configurable global preview memleak experimental difficult unfinished nodoc concept 
 - infos/metadata =
 - infos/description = one-line description of typedispatcher
 

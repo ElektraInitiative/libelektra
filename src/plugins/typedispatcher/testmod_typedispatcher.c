@@ -473,6 +473,62 @@ void testMultipleParameterFail()
     PLUGIN_CLOSE ();
 }
 
+void testMultiParametersExtended()
+{
+    Key * parentKey = keyNew ("user/tests/typedispatcher", KEY_VALUE, "", KEY_END);
+    KeySet * ks = ksNew (5, 
+	    keyNew ("user/tests/typedispatcher", KEY_VALUE, "typedefinitions", 
+		KEY_META, "define/type", "", 
+		KEY_META, "define/type/character", "", 
+		KEY_META, "define/type/character/parameter", "a", 
+		KEY_META, "define/type/character/check/type", "%a%", 		
+		KEY_META, "define/type/upperChar", "",
+		KEY_META, "define/type/upperChar/parameter", "b",
+		KEY_META, "define/type/upperChar/check/range", "%b%",
+		KEY_META, "define/type/upperChar/check/range/type", "CHAR",
+		KEY_META, "define/type/upperChar/type", "character (char)",
+		KEY_END), 
+	    keyNew("user/tests/typedispatcher/character", KEY_VALUE, "c", 
+		KEY_META, "type", "character (char)", 
+		KEY_END), 
+	    keyNew("user/tests/typedispatcher/sub", KEY_VALUE, "",
+		KEY_META, "define/type", "",
+		KEY_META, "define/type/AB", "",
+		KEY_META, "define/type/AB/parameter", "#1",
+		KEY_META, "define/type/AB/parameter/#0", "c",
+		KEY_META, "define/type/AB/parameter/#1", "d",
+		KEY_META, "define/type/AB/check/enum", "#1",
+		KEY_META, "define/type/AB/check/enum/#0", "%c%",
+		KEY_META, "define/type/AB/check/enum/#1", "%d%", 
+		KEY_END),
+	    keyNew("user/tests/typedispatcher/sub/sub", KEY_VALUE, "", 
+		KEY_META, "define/type", "", 
+		KEY_META, "define/type/multi", "",
+		KEY_META, "define/type/multi/parameter", "#1",
+		KEY_META, "define/type/multi/parameter/#0", "e",
+		KEY_META, "define/type/multi/parameter/#1", "f",
+		KEY_META, "define/type/multi/type", "#1",
+		KEY_META, "define/type/multi/type/#0", "upperChar (A-Z)", 
+		KEY_META, "define/type/multi/type/#1", "AB (A,B)",
+		KEY_END),
+	    keyNew("user/tests/typedispatcher/sub/sub/Akey", KEY_VALUE, "A",
+		KEY_META, "type", "multi", 
+		KEY_END),
+
+	    KS_END);
+    KeySet * conf = ksNew (0, KS_END);
+    PLUGIN_OPEN ("typedispatcher");
+    succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "MultiParameters Ext 1 failed");
+    fprintf(stderr, "\t=================\n");
+    ksAppendKey(ks, keyNew("user/tests/typedispatcher/sub/sub/Ckey", KEY_VALUE, "C",
+		KEY_META, "type", "multi", 
+		KEY_END));
+    succeed_if (plugin->kdbGet (plugin, ks, parentKey) == -1, "MultiParameters Ext 2 failed");
+    ksDel (ks);
+    keyDel (parentKey);
+    PLUGIN_CLOSE ();
+}
+
 int main (int argc, char ** argv)
 {
     printf ("TYPEDISPATCHER     TESTS\n");
@@ -506,6 +562,8 @@ int main (int argc, char ** argv)
     testMultipleParameter();
     fprintf(stderr, "\n============================================\n");
     testMultipleParameterFail();
+    fprintf(stderr, "\n============================================\n");
+    testMultiParametersExtended();
     fprintf(stderr, "\n============================================\n");
     printf ("\ntestmod_typedispatcher RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 

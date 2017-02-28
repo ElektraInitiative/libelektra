@@ -4,6 +4,9 @@
 #include <kdbhelper.h>		// elektraStrLen
 #include <stdio.h>
 
+
+// temporary helper - TODO: write actual implementation
+
 static const Key *keyTakesParameter(const Key *key, KeySet *args)
 {
     const char *value = keyString(key);
@@ -31,8 +34,6 @@ static const Key *keyTakesParameter(const Key *key, KeySet *args)
     return NULL;
 }
 
-	    
-	    
 
 // helper
 // copy check metadata  
@@ -215,7 +216,7 @@ static int typeCheck(DispatchConfig *config, const Key *key, const char *typeStr
     else
 	typeName = argConfig->type;
 #ifdef DEVBUILD
-    fprintf(stderr, "\tparseTypeString %s returned %p, typeName: %s\n", typeString, argConfig, typeName);
+    fprintf(stderr, "\tparseTypeString %s returned %p, typeName: %s\n", typeString, (void *)argConfig, typeName);
 #endif
     TypeConfig *tc = getType(config, typeName); 
     if(!tc)

@@ -171,6 +171,8 @@ TypeConfig *getType(DispatchConfig *config, const char *type)
 }
 
 
+// parses "type (arg1, arg2, ...)" strings into ArgumentConfig 
+// TODO: rewrite
 ArgumentConfig *parseTypeString(DispatchConfig *config ELEKTRA_UNUSED, const char *typeString)
 {
     const char *ptr = typeString;
@@ -201,9 +203,10 @@ ArgumentConfig *parseTypeString(DispatchConfig *config ELEKTRA_UNUSED, const cha
     argConfig->args = ksNew(0, KS_END);
     char *token = NULL;
     char *localCopy = elektraStrDup(ptr+1);
+    localCopy[elektraStrLen(localCopy)-2] = '\0';
     char *rest = localCopy;
     Key *indexKey = keyNew("/#", KEY_META_NAME, KEY_END);
-    while((token = strtok_r(rest, ",)", &rest)) != NULL)
+    while((token = strtok_r(rest, ",", &rest)) != NULL)
     {
 	elektraArrayIncName(indexKey);
 	Key *key = keyNew(keyBaseName(indexKey), KEY_META_NAME, KEY_VALUE, token, KEY_END);	
@@ -212,12 +215,14 @@ ArgumentConfig *parseTypeString(DispatchConfig *config ELEKTRA_UNUSED, const cha
 #endif
 	ksAppendKey(argConfig->args, key);
     }
+    
     keyDel(indexKey);
     elektraFree(localCopy);
-    fprintf(stderr, "argConfig: %p\n", argConfig);
     return argConfig;
 } 
 
+// merges parameter keyset with argument keyset
+// create parameter-argument value pairs
 KeySet *makeParamKS(KeySet *params, ArgumentConfig *argConfig)
 {
     KeySet *args = argConfig->args;

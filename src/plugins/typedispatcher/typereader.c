@@ -101,6 +101,7 @@ static void readCheckTypeConfig(TypeConfig *tc, const Key *key ELEKTRA_UNUSED, c
     ksDel(typeKS);
 }
 
+
 // iterate over a defined types type meta, checks if the supertype exists
 // and adds a reference to the supertype to TypeConfig->types
 static int readTypeTypeSuperTypes(DispatchConfig *config, TypeConfig *tc, const Key *key, const Key *typeKey, KeySet *defKS, Key *parentKey ELEKTRA_UNUSED)
@@ -131,12 +132,12 @@ static int readTypeTypeSuperTypes(DispatchConfig *config, TypeConfig *tc, const 
 	    relTypeName = argConfig->type;
 
 	TypeConfig *rt = getType(config, relTypeName);
-	freeArgumentConfig(argConfig);
 	if(!rt)
 	{
 #ifdef DEVBUILD
 	    fprintf(stderr, "%s references %s, but doesn't exist\n", keyName(key), relTypeName);
 #endif
+	    freeArgumentConfig(argConfig);
 	    keyDel(relKey);
 	    ksDel(typeKS);
 	    return ERROR;
@@ -150,6 +151,7 @@ static int readTypeTypeSuperTypes(DispatchConfig *config, TypeConfig *tc, const 
 #ifdef DEVBUILD
 		    fprintf(stderr, "%s references %s, but not within scope\n", keyName(key), relTypeName);
 #endif
+		    freeArgumentConfig(argConfig);
 		    keyDel(relKey);
 		    ksDel(typeKS);
 		    return ERROR;
@@ -161,9 +163,12 @@ static int readTypeTypeSuperTypes(DispatchConfig *config, TypeConfig *tc, const 
 	    Key *refKey = getTypeKey(config, relTypeName);
 	    Key *appendKey = keyNew(keyName(refKey), KEY_META_NAME, KEY_BINARY, KEY_SIZE, keyGetValueSize(refKey), KEY_VALUE, keyValue(refKey), KEY_END);
 	    keyCopyAllMeta(appendKey, refKey);
+
+	    // in cases like define/type/a/type := otherType (a, b, c) we need to store
+	    // the whole string to keep the arguments. TODO: parse arguments and store as metadata
 	    keySetMeta(appendKey, "internal/typedispatcher/typeString", typeString);
-//	    ksAppendKey(tc->types, getTypeKey(config, relTypeName));
 	    ksAppendKey(tc->types, appendKey);
+	    freeArgumentConfig(argConfig);
 	}
     }
     keyDel(relKey);
