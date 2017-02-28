@@ -95,4 +95,3 @@ Plugin * ELEKTRA_PLUGIN_EXPORT (template)
 		ELEKTRA_PLUGIN_ERROR,	&elektraTemplateError,
 		ELEKTRA_PLUGIN_END);
 }
-
