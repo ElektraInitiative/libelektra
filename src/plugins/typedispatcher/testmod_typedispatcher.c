@@ -103,7 +103,7 @@ void testSub2()
 		KEY_META, "define/type/ab/type", "#0",
 		KEY_META, "define/type/ab/type/#0", "character", 
 		KEY_END), 
-	    keyNew("user/tests/typedispatcher/sub/ab", "c", 
+	    keyNew("user/tests/typedispatcher/sub/ab", KEY_VALUE, "c", 
 		KEY_META, "type", "#0", 
 		KEY_META, "type/#0", "ab", 
 		KEY_END),
@@ -111,7 +111,7 @@ void testSub2()
 	    KS_END);
     KeySet * conf = ksNew (0, KS_END);
     PLUGIN_OPEN ("typedispatcher");
-    succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "Sub2 failed");
+    succeed_if (plugin->kdbGet (plugin, ks, parentKey) == -1, "Sub2 failed");
     ksDel (ks);
     keyDel (parentKey);
     PLUGIN_CLOSE ();
@@ -143,7 +143,7 @@ void testSimpleWithOthers()
 		KEY_META, "type/#1", "foo", 
 		KEY_META, "type/#2", "bar", 
 		KEY_END), 
-	    keyNew("user/tests/typedispatcher/fookey", "12",
+	    keyNew("user/tests/typedispatcher/fookey", KEY_VALUE, "12",
 		    KEY_META, "ameta", "",
 		    KEY_META, "ometa", "",
 		    KEY_META, "zmeta", "",
@@ -189,7 +189,7 @@ void testSimpleOutOfScope()
 		KEY_META, "define/type/ab/type/#0", "character", 
 		KEY_META, "define/type/ab/type/#1", "notReachable", 
 		KEY_END), 
-	    keyNew("user/tests/typedispatcher/sub/ab", "a", 
+	    keyNew("user/tests/typedispatcher/sub/ab", KEY_VALUE, "a", 
 		    KEY_META, "type", "#0", 
 		    KEY_META, "type/#0", "ab", 
 		    KEY_END),
@@ -216,17 +216,12 @@ void testSimpleClash()
 		KEY_META, "type", "#0", 
 		KEY_META, "type/#0", "character", 
 		KEY_END), 
-	    keyNew("user/tests/typedispatcher/asub", KEY_VALUE, "",
-		KEY_META, "define/type", "",
-		KEY_META, "define/type/notReachable", "",
-		KEY_META, "define/type/notReachable/check/type", "long",
-		KEY_END),
 	    keyNew("user/tests/typedispatcher/sub", KEY_VALUE, "", 
 		KEY_META, "define/type", "",
 		KEY_META, "define/type/character", "", 
 		KEY_META, "define/type/character/check/type", "char", 
 		KEY_END), 
-	    keyNew("user/tests/typedispatcher/sub/ab", "b", 
+	    keyNew("user/tests/typedispatcher/sub/ab", KEY_VALUE, "b", 
 		KEY_META, "type", "#0", 
 		KEY_META, "type/#0", "ab", 
 		KEY_END),
@@ -250,6 +245,7 @@ void testMultiSub()
 		KEY_META, "define/type/character/check/type", "char", 		
 		KEY_META, "define/type/upperChar", "",
 		KEY_META, "define/type/upperChar/check/range", "A-Z",
+		KEY_META, "define/type/upperChar/check/range/type", "CHAR",
 		KEY_META, "define/type/upperChar/type", "character",
 		KEY_END), 
 	    keyNew("user/tests/typedispatcher/character", KEY_VALUE, "c", 

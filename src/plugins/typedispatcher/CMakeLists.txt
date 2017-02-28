@@ -5,7 +5,10 @@ add_plugin (typedispatcher
 		typedispatcher.h
 		typedispatcher.c
 		typehelper.h
-		typehelper.c
+		helpers.c
+		typereader.c
+		typechecker.c
+		pluginhelper.c
 	LINK_ELEKTRA
 		elektra-proposal
 		elektra-ease

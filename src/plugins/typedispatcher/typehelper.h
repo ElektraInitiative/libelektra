@@ -3,6 +3,7 @@
 #define DEVBUILD
 #undef VERBOSEBUILD
 
+// helper for readability 
 typedef enum
 {
     ERROR = -1,
@@ -12,35 +13,59 @@ typedef enum
 
 typedef enum
 {
+    SKEL,
     SUBTYPE,
     SUMTYPE,
 }TypeType;
 
+
+// configuration of a defined type
 typedef struct
 {
     TypeType type;
-    Key *scope;
-    KeySet *checks;
-    KeySet *types;
+    Key *scope;		// name of the key where the type was defined
+    KeySet *checks;	// holds keys with the check metadata for each type check
+    KeySet *types;	// references to the keys with supertypes
 }TypeConfig;
 
+// helpertype for pointers to validateKey functions
 typedef int (*ValidateFunction)(Key *, Key *);
 
+// helper struct for loaded plugins
 typedef struct
 {
-    Plugin *plugin;
-    ValidateFunction f;
+    Plugin *plugin;		// address of loaded plugin
+    ValidateFunction f;		// pointer to the validateKey function of the plugin
 }PluginConfig;
 
+// holds data needed by most functions
 typedef struct
 {
-    KeySet *modules;
-    KeySet *plugins;
-    KeySet *types;
+    KeySet *modules;		// modules keyset for PluginOpen/PluginClose
+    KeySet *plugins;		// all loaded plugins. keyname == plugin name 
+    				// value == PluginConfig
+    KeySet *types;		// all defined types. keyname == name of type
+    				// value == TypeConfig
 }DispatchConfig; 
 
 
+//helpers.c functions
 DispatchConfig * initDispatchConfig();
 void closeDispatchConfig(Plugin *);
+KeySet *getAllKeysBelow(const Key *, KeySet *);
+KeySet *getKeysDirectBelow(const Key *, KeySet *);
+TypeConfig *newTypeConfig();
+void setTypeType(TypeConfig *, const Key *);
+TypeType getTypeType(TypeConfig *);
+Key *getTypeKey(DispatchConfig *, const char *);
+TypeConfig *getType(DispatchConfig *, const char *);
+
+
+// typereader.c
 int getTypeDefinitions(Key *, DispatchConfig *, Key *);
+
+// typecheck.c
 int validateKey(Key *, DispatchConfig *, Key *);
+
+// pluginhelper.c
+ValidateFunction getValidateFunction(DispatchConfig *, const char *);
