@@ -28,6 +28,25 @@ The plugin shreds, i.e. overwrites, the temporary file with zeroes to reduce the
 
 If the application crashes parts of the decrypted data may leak.
 
+## Known Issues
+
+If you encounter the following error at `kdb mount`:
+
+	The command kdb mount terminated unsuccessfully with the info:
+	Too many plugins!
+	The plugin sync can't be positioned to position precommit anymore.
+	Try to reduce the number of plugins!
+
+	Failed because precommit with 7 is larger than 6
+	Please report the issue at https://issues.libelektra.org/
+
+you might want to consider disabling the sync plugin by entering:
+
+	kdb set /sw/elektra/kdb/#0/current/plugins ""
+	kdb set system/sw/elektra/kdb/#0/current/plugins ""
+
+Please note that this is a workaround until a more sustainable solution is found.
+
 ## Dependencies
 
 This plugin uses parts of the `crypto` plugin.
