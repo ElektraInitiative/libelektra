@@ -65,7 +65,7 @@ static string getElementText (DOMNode const * parent)
 	return str;
 }
 
-static void dom2keyset (DOMNode const * n, KeySet & ks, Key const & parent)
+static void dom2keyset (DOMNode const * n, Key const & parent, KeySet & ks)
 {
 	if (n)
 	{
@@ -101,37 +101,52 @@ static void dom2keyset (DOMNode const * n, KeySet & ks, Key const & parent)
 				}
 			}
 			// Only add keys with a value, attributes or leafs
-			if (n->hasAttributes () || !text.empty () || !n->getFirstChild ()) ks.append (current);
+			if (n->hasAttributes () || !text.empty () || !n->getFirstChild ())
+			{
+				cout << "adding " << current.getFullName () << endl;
+				ks.append (current);
+			}
 		}
 		for (auto child = n->getFirstChild (); child != 0; child = child->getNextSibling ())
-			dom2keyset (child, ks, current);
+			dom2keyset (child, current, ks);
 	}
 }
 
-void dom2keyset (DOMDocument const & doc, KeySet & ks)
+void dom2keyset (DOMDocument const & doc, Key const & parent, KeySet & ks)
 {
 	// root namespace element
 	DOMElement * root = doc.getDocumentElement ();
 
 	if (root)
 	{
-		// the namespace elements
-		for (auto ns = root->getFirstChild (); ns != nullptr; ns = ns->getNextSibling ())
+		if (!parent.isValid ())
 		{
-			string keyName = toStr (ns->getNodeName ());
-			if (keyName == "cascading") keyName = "/";
-			Key parent (keyName);
-			// the actual content nodes
-			for (auto child = ns->getFirstChild (); child != nullptr; child = child->getNextSibling ())
+			// the namespace elements for absolute exports
+			for (auto ns = root->getFirstChild (); ns != nullptr; ns = ns->getNextSibling ())
 			{
-				dom2keyset (child, ks, parent);
+				string keyName = toStr (ns->getNodeName ());
+				if (keyName == "cascading") keyName = "/";
+				// the actual content nodes
+				for (auto child = ns->getFirstChild (); child != nullptr; child = child->getNextSibling ())
+				{
+					dom2keyset (child, Key (keyName), ks);
+				}
+			}
+		}
+		else
+		{
+			// Otherwise we can begin right away and don't have to parse namespaces
+			for (auto child = root->getFirstChild (); child != nullptr; child = child->getNextSibling ())
+			{
+				dom2keyset (child, parent, ks);
 			}
 		}
 	}
 }
 
-void deserialize (string const & src, KeySet & ks)
+void deserialize (Key const & parentKey, KeySet & ks)
 {
-	auto document = doc2dom (src);
-	if (document) dom2keyset (*document, ks);
+	cout << "deserialize with parent " << parentKey.get<string> () << flush << endl;
+	auto document = doc2dom (parentKey.get<string> ());
+	if (document) dom2keyset (*document, parentKey, ks);
 }

@@ -65,7 +65,7 @@ inline std::string toStr (XMLCh const * xmlCh)
 class XercesPluginException : public std::exception
 {
 public:
-	XercesPluginException (std::string m) : msg (m)
+	explicit XercesPluginException (std::string const & m) : msg (m)
 	{
 	}
 	~XercesPluginException () throw ()

@@ -39,13 +39,14 @@ static DOMElement * findChildWithName (DOMElement const & elem, std::string cons
 	return nullptr;
 }
 
-static void appendKey (DOMDocument & doc, Key const & key)
+static void appendKey (DOMDocument & doc, Key const & parentKey, Key const & key)
 {
 	DOMElement * current = doc.getDocumentElement ();
 
 	// Find the key's insertion point, creating the path if non existent
 	const auto end = key.begin () != key.end () ? --key.end () : key.end ();
 	auto name = key.begin ();
+	// if parentKey is valid, use it as the root element
 	for (; name != end; name++)
 	{
 		string actualName = *name;
@@ -80,21 +81,21 @@ static void appendKey (DOMDocument & doc, Key const & key)
 	current->appendChild (elem);
 }
 
-static void ks2dom (DOMDocument & doc, kdb::KeySet const & ks)
+static void ks2dom (DOMDocument & doc, Key const & parentKey, KeySet const & ks)
 {
 	for (auto const & k : ks)
 	{
-		appendKey (doc, k);
+		appendKey (doc, parentKey, k);
 	}
 }
 
-void serialize (std::string const & src, kdb::KeySet const & ks)
+void serialize (Key const & parentKey, KeySet const & ks)
 {
 	DOMImplementation * impl = DOMImplementationRegistry::getDOMImplementation (asXMLCh ("Core"));
 	if (impl != NULL)
 	{
 		xerces_unique_ptr<DOMDocument> document (impl->createDocument (0, asXMLCh ("namespace"), 0));
-		ks2dom (*document, ks);
+		ks2dom (*document, parentKey, ks);
 
 		DOMImplementationLS * implLS = dynamic_cast<DOMImplementationLS *> (impl->getImplementation ());
 
@@ -103,7 +104,7 @@ void serialize (std::string const & src, kdb::KeySet const & ks)
 		if (serializerConfig->canSetParameter (XMLUni::fgDOMWRTFormatPrettyPrint, true))
 			serializerConfig->setParameter (XMLUni::fgDOMWRTFormatPrettyPrint, true);
 
-		LocalFileFormatTarget targetFile (asXMLCh (src));
+		LocalFileFormatTarget targetFile (asXMLCh (parentKey.get<string> ()));
 		xerces_unique_ptr<DOMLSOutput> output (implLS->createLSOutput ());
 		output->setByteStream (&targetFile);
 

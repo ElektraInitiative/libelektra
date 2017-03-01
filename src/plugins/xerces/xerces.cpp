@@ -61,8 +61,10 @@ int elektraXercesGet (Plugin * handle, KeySet * returned, Key * parentKey)
 	try
 	{
 		kdb::KeySet ks (returned);
-		deserialize (keyString (parentKey), ks);
+		kdb::Key k (parentKey);
+		deserialize (k, ks);
 		// Avoid destruction of the ks at the end
+		k.release ();
 		ks.release ();
 		return 1;
 	}
@@ -97,7 +99,9 @@ int elektraXercesSet (Plugin * handle, KeySet * returned, Key * parentKey)
 	try
 	{
 		kdb::KeySet ks (returned);
-		serialize (keyString (parentKey), ks);
+		kdb::Key k (parentKey);
+		serialize (k, ks);
+		k.release ();
 		ks.release ();
 		return 1;
 	}

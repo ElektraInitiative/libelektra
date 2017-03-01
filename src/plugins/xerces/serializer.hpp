@@ -11,6 +11,6 @@
 
 #include <keyset.hpp>
 
-void serialize (std::string const & src, kdb::KeySet const & ks);
+void serialize (kdb::Key const & parentKey, kdb::KeySet const & ks);
 
 #endif
