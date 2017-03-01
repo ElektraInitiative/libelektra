@@ -110,6 +110,7 @@ productive use:
 - [dpkg](dpkg/) reads /var/lib/dpkg/{available,status}
 - [mozprefs](mozprefs/) for Mozilla preference files
 - [c](c/) writes Elektra C-structures (`ksNew(.. keyNew(...`)
+- [file](file/) reads and writes a file from/to a single key
 
 ### System Information
 
