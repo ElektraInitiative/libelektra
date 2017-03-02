@@ -241,7 +241,7 @@ function __fish_kdb_print_resolver_plugins -d 'Print a list of available resolve
 end
 
 function __fish_kdb_print_storage_plugins -d 'Print a list of available storage plugins'
-    set -l formats constants crypto_botan crypto_gcrypt crypto_openssl desktop dpkg dump hosts line ini json ini ni passwd regexstore
+    set -l formats constants crypto_botan crypto_gcrypt crypto_openssl desktop dpkg dump fcrypt hosts line ini json ini ni passwd regexstore
     set -l formats $formats simpleini simplespeclang tcl xmltool uname
     set -l regex '^(?:'(__join '|' $formats)')$'
     set -l storage_plugins (__fish_kdb_print_plugins | string match -r $regex)
