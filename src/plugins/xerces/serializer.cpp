@@ -20,6 +20,7 @@
 #include <xercesc/util/PlatformUtils.hpp>
 #include <xercesc/util/XMLString.hpp>
 
+#include <kdblogger.h>
 #include <key.hpp>
 
 XERCES_CPP_NAMESPACE_USE
@@ -74,7 +75,7 @@ static void appendKey (DOMDocument & doc, Key const & parentKey, Key const & key
 	itKey.rewindMeta ();
 	while (Key const & meta = itKey.nextMeta ())
 	{
-		cout << "setting element " << meta.getName () << " to " << meta.get<string> () << flush << endl;
+		ELEKTRA_LOG_DEBUG ("setting element %s to %s", meta.getName ().c_str (), meta.get<string> ().c_str ());
 		elem->setAttribute (asXMLCh (meta.getName ()), asXMLCh (meta.get<string> ()));
 	}
 
@@ -94,18 +95,18 @@ void serialize (Key const & parentKey, KeySet const & ks)
 	DOMImplementation * impl = DOMImplementationRegistry::getDOMImplementation (asXMLCh ("Core"));
 	if (impl != NULL)
 	{
-		xerces_unique_ptr<DOMDocument> document (impl->createDocument (0, asXMLCh ("namespace"), 0));
+		XercesPtr<DOMDocument> document (impl->createDocument (0, asXMLCh ("namespace"), 0));
 		ks2dom (*document, parentKey, ks);
 
 		DOMImplementationLS * implLS = dynamic_cast<DOMImplementationLS *> (impl->getImplementation ());
 
-		xerces_unique_ptr<DOMLSSerializer> serializer (implLS->createLSSerializer ());
+		XercesPtr<DOMLSSerializer> serializer (implLS->createLSSerializer ());
 		DOMConfiguration * serializerConfig = serializer->getDomConfig ();
 		if (serializerConfig->canSetParameter (XMLUni::fgDOMWRTFormatPrettyPrint, true))
 			serializerConfig->setParameter (XMLUni::fgDOMWRTFormatPrettyPrint, true);
 
 		LocalFileFormatTarget targetFile (asXMLCh (parentKey.get<string> ()));
-		xerces_unique_ptr<DOMLSOutput> output (implLS->createLSOutput ());
+		XercesPtr<DOMLSOutput> output (implLS->createLSOutput ());
 		output->setByteStream (&targetFile);
 
 		serializer->write (document.get (), output.get ());

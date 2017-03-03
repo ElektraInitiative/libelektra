@@ -42,16 +42,16 @@ struct XercesDeleter<char>
 };
 
 template <typename T>
-using xerces_unique_ptr = std::unique_ptr<T, XercesDeleter<T>>;
+using XercesPtr = std::unique_ptr<T, XercesDeleter<T>>;
 
-inline xerces_unique_ptr<XMLCh> toXMLCh (std::string const & str)
+inline XercesPtr<XMLCh> toXMLCh (std::string const & str)
 {
-	return xerces_unique_ptr<XMLCh> (XERCES_CPP_NAMESPACE::XMLString::transcode (str.c_str ()));
+	return XercesPtr<XMLCh> (XERCES_CPP_NAMESPACE::XMLString::transcode (str.c_str ()));
 }
 
-inline xerces_unique_ptr<char> toCStr (XMLCh const * xmlCh)
+inline XercesPtr<char> toCStr (XMLCh const * xmlCh)
 {
-	return xerces_unique_ptr<char> (XERCES_CPP_NAMESPACE::XMLString::transcode (xmlCh));
+	return XercesPtr<char> (XERCES_CPP_NAMESPACE::XMLString::transcode (xmlCh));
 }
 
 inline std::string toStr (XMLCh const * xmlCh)

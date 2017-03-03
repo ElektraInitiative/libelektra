@@ -161,4 +161,3 @@ Plugin * ELEKTRA_PLUGIN_EXPORT (xerces)
 		ELEKTRA_PLUGIN_ERROR, &elektraXercesError,
 		ELEKTRA_PLUGIN_END);
 }
-

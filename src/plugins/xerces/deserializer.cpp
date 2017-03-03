@@ -24,6 +24,7 @@
 #include <xercesc/dom/DOMNode.hpp>
 #include <xercesc/parsers/XercesDOMParser.hpp>
 
+#include <kdblogger.h>
 #include <key.hpp>
 
 XERCES_CPP_NAMESPACE_USE
@@ -34,7 +35,7 @@ using namespace kdb;
  * Actual Xerces logic
  */
 
-static xerces_unique_ptr<DOMDocument> doc2dom (std::string const & src)
+static XercesPtr<DOMDocument> doc2dom (std::string const & src)
 {
 	XercesDOMParser parser;
 	parser.setValidationScheme (XercesDOMParser::Val_Auto);
@@ -43,7 +44,7 @@ static xerces_unique_ptr<DOMDocument> doc2dom (std::string const & src)
 	parser.setCreateEntityReferenceNodes (false);
 
 	parser.parse (asXMLCh (src));
-	return xerces_unique_ptr<DOMDocument> (parser.adoptDocument ());
+	return XercesPtr<DOMDocument> (parser.adoptDocument ());
 }
 
 static string getElementText (DOMNode const * parent)
@@ -52,7 +53,7 @@ static string getElementText (DOMNode const * parent)
 
 	for (auto child = parent->getFirstChild (); child != NULL; child = child->getNextSibling ())
 	{
-		if (DOMNode::TEXT_NODE == child->getNodeType ())
+		if (DOMNode::TEXT_NODE == child->getNodeType () || DOMNode::CDATA_SECTION_NODE == child->getNodeType ())
 		{
 			DOMText * data = dynamic_cast<DOMText *> (child);
 			if (!data->getIsElementContentWhitespace ()) str += toStr (data->getData ());
@@ -73,7 +74,7 @@ static void dom2keyset (DOMNode const * n, Key const & parent, KeySet & ks)
 		if (n->getNodeType () == DOMNode::ELEMENT_NODE)
 		{
 			string keyName = toStr (n->getNodeName ());
-			cout << "Encountered Element : " << keyName << endl;
+			ELEKTRA_LOG_DEBUG ("Encountered Element: %s", keyName.c_str ());
 			current.addBaseName (keyName);
 
 			string text = getElementText (n);
@@ -84,26 +85,27 @@ static void dom2keyset (DOMNode const * n, Key const & parent, KeySet & ks)
 				// TODO we've encountered an invalid namespace or keyname, ignore, fail, ?
 			}
 
-			cout << "new parent is " << current.getFullName () << " with value " << current.get<string> () << endl;
+			ELEKTRA_LOG_DEBUG ("new parent is %s with value %s", current.getFullName ().c_str (),
+					   current.get<string> ().c_str ());
 
 			if (n->hasAttributes ())
 			{
 				// get all the attributes of the node
 				DOMNamedNodeMap * pAttributes = n->getAttributes ();
 				const XMLSize_t nSize = pAttributes->getLength ();
-				cout << "\tAttributes" << endl;
+				ELEKTRA_LOG_DEBUG ("\tAttributes");
 				for (XMLSize_t i = 0; i < nSize; ++i)
 				{
 					DOMAttr * pAttributeNode = dynamic_cast<DOMAttr *> (pAttributes->item (i));
-					cout << "\t" << toStr (pAttributeNode->getName ()) << "=";
-					cout << toStr (pAttributeNode->getValue ()) << endl;
+					ELEKTRA_LOG_DEBUG ("\t%s=%s", asCStr (pAttributeNode->getName ()),
+							   asCStr (pAttributeNode->getValue ()));
 					current.setMeta (toStr (pAttributeNode->getName ()), toStr (pAttributeNode->getValue ()));
 				}
 			}
 			// Only add keys with a value, attributes or leafs
 			if (n->hasAttributes () || !text.empty () || !n->getFirstChild ())
 			{
-				cout << "adding " << current.getFullName () << endl;
+				ELEKTRA_LOG_DEBUG ("adding %s", current.getFullName ().c_str ());
 				ks.append (current);
 			}
 		}
@@ -112,41 +114,10 @@ static void dom2keyset (DOMNode const * n, Key const & parent, KeySet & ks)
 	}
 }
 
-void dom2keyset (DOMDocument const & doc, Key const & parent, KeySet & ks)
-{
-	// root namespace element
-	DOMElement * root = doc.getDocumentElement ();
-
-	if (root)
-	{
-		if (!parent.isValid ())
-		{
-			// the namespace elements for absolute exports
-			for (auto ns = root->getFirstChild (); ns != nullptr; ns = ns->getNextSibling ())
-			{
-				string keyName = toStr (ns->getNodeName ());
-				if (keyName == "cascading") keyName = "/";
-				// the actual content nodes
-				for (auto child = ns->getFirstChild (); child != nullptr; child = child->getNextSibling ())
-				{
-					dom2keyset (child, Key (keyName), ks);
-				}
-			}
-		}
-		else
-		{
-			// Otherwise we can begin right away and don't have to parse namespaces
-			for (auto child = root->getFirstChild (); child != nullptr; child = child->getNextSibling ())
-			{
-				dom2keyset (child, parent, ks);
-			}
-		}
-	}
-}
-
 void deserialize (Key const & parentKey, KeySet & ks)
 {
-	cout << "deserialize with parent " << parentKey.get<string> () << flush << endl;
+	ELEKTRA_LOG_DEBUG ("deserializing relative to %s from file %s", parentKey.getFullName ().c_str (),
+			   parentKey.get<string> ().c_str ());
 	auto document = doc2dom (parentKey.get<string> ());
-	if (document) dom2keyset (*document, parentKey, ks);
+	if (document) dom2keyset (document->getDocumentElement (), parentKey, ks);
 }

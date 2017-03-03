@@ -1,28 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no" ?>
-<namespace>
-	<cascading>
-		<sw>
-			<elektra>
-				<tests>
-					<xerces>
-						<!-- this is an attribute -->
-						<fizz buzz="fizzBuzz" />
-						value of xerces
-					</xerces>
-				</tests>
-			</elektra>
-		</sw>
-	</cascading>
-	<user>
-		<sw>
-			<elektra>
-				<tests>
-					<xerces>
-						<userKey user="key">withValue</userKey>
-					</xerces>
-				</tests>
-				<!-- comments are ignored -->
-			</elektra>
-		</sw>
-	</user>
-</namespace>
+<xerces>
+	<!-- this is an attribute -->
+	<fizz buzz="fizzBuzz" />
+	value of xerces<!-- Comment inside text -->
+	<userKey user="key">withValue</userKey>
+	<!-- those need escaping: " ' < > &  -->
+	<späciöl_-keüs1 attr='"' attr2="$%(){}``äüö²[/\'>&quot;&lt;&apos;&amp;">>"&amp;&lt;'</späciöl_-keüs1>
+	<cdata more-s_päcials="1 &amp; 2 are &lt; &#51; &#x0A;"><![CDATA[this is some cdata text "'<>&ä "]]></cdata>
+</xerces>
