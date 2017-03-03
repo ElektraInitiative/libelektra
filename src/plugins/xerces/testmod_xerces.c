@@ -137,25 +137,39 @@ static void test_simple_write ()
 	printf ("test simple write\n");
 	fflush (stdout);
 
-	Key * parentKey = keyNew ("/sw/elektra/tests/xerces", KEY_VALUE, srcdir_file ("testdata/simple-gen.xml"), KEY_END);
+	Key * parentKey = keyNew ("/sw/elektra/tests/xerces", KEY_VALUE, srcdir_file ("testdata/escaping-gen.xml"), KEY_END);
 	KeySet * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("xerces");
 
 	Key * keyWithMeta = keyNew ("/sw/elektra/tests/xerces/fizz", KEY_END);
 	keySetMeta (keyWithMeta, "buzz", "fizzBuzz");
-	KeySet * ks = ksNew (3, keyNew ("/sw/elektra/tests/xerces", KEY_VALUE, "value of xerces", KEY_END),
-			     keyNew ("user/sw/elektra/tests/xerces/userKey", KEY_VALUE, "withValue", KEY_END), keyWithMeta, KS_END);
+
+	Key * specialKeys = keyNew ("/sw/elektra/tests/xerces/späciöl_-keüs1", KEY_VALUE, ">\"&<'", KEY_END);
+	keySetMeta (specialKeys, "attr", "\"");
+	keySetMeta (specialKeys, "attr2", "$%(){}``äüö²[/\\'>&<'&");
+
+	Key * moreSpecialKeys =
+		keyNew ("/sw/elektra/tests/xerces/cdata", KEY_VALUE, "<![CDATA[this is some cdata text \"'<>&ä \"]]>", KEY_END);
+	keySetMeta (moreSpecialKeys, "more-s_päcials", "1 & 2 are < 3 \n");
+
+	KeySet * ks = ksNew (5, keyNew ("/sw/elektra/tests/xerces", KEY_VALUE, "value of xerces", KEY_END),
+			     keyNew ("/sw/elektra/tests/xerces/userKey", KEY_VALUE, "withValue", KEY_END), keyWithMeta, specialKeys,
+			     moreSpecialKeys, KS_END);
 
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 1, "call to kdbSet was not successful");
-	// As compare_files does not take different formatting into account, compare using deserialization again
+
+	compare_files ("testdata/escaping.xml");
+	// Its also another good deserialization test
+	Key * resultParentKey = keyNew ("/sw/elektra/tests/", KEY_VALUE, srcdir_file ("testdata/escaping.xml"), KEY_END);
 	KeySet * result = ksNew (2, KS_END);
-	succeed_if (plugin->kdbGet (plugin, result, parentKey) == 1, "call to kdbGet was not successful");
+	succeed_if (plugin->kdbGet (plugin, result, resultParentKey) == 1, "call to kdbGet was not successful");
 	compare_keyset (ks, result);
 
-	elektraUnlink (srcdir_file ("testdata/simple-gen.xml"));
+	elektraUnlink (srcdir_file ("testdata/escaping-gen.xml"));
 
 	keyDel (parentKey);
 	ksDel (ks);
+	keyDel (resultParentKey);
 	ksDel (result);
 	PLUGIN_CLOSE ();
 
