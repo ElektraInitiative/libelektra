@@ -47,19 +47,19 @@ First draft of API:
 Elektra * elektraOpen (const char * application);
 
 // getters
-kdb_string_t kdbhlGetString (KDBHL * kdbhl, const char * name);
-kdb_boolean_t kdbhlGetBoolean (KDBHL * kdbhl, const char * name);
-kdb_char_t kdbhlGetChar (KDBHL * kdbhl, const char * name);
-kdb_octet_t kdbhlGetOctet (KDBHL * kdbhl, const char * name);
-kdb_short_t kdbhlGetShort (KDBHL * kdbhl, const char * name);
-kdb_unsigned_short_t kdbhlGetUnsignedShort (KDBHL * kdbhl, const char * name);
-kdb_long_t kdbhlGetLong (KDBHL * kdbhl, const char * name);
-kdb_unsigned_long_t kdbhlGetUnsignedLong (KDBHL * kdbhl, const char * name);
-kdb_long_long_t kdbhlGetLongLong (KDBHL * kdbhl, const char * name);
-kdb_unsigned_long_long_t kdbhlGetUnsignedLongLong (KDBHL * kdbhl, const char * name);
-kdb_float_t kdbhlGetFloat (KDBHL * kdbhl, const char * name);
-kdb_double_t kdbhlGetDouble (KDBHL * kdbhl, const char * name);
-kdb_long_double_t kdbhlGetLongDouble (KDBHL * kdbhl, const char * name);
+kdb_string_t elektraGetString (KDBHL * elektra, const char * name);
+kdb_boolean_t elektraGetBoolean (KDBHL * elektra, const char * name);
+kdb_char_t elektraGetChar (KDBHL * elektra, const char * name);
+kdb_octet_t elektraGetOctet (KDBHL * elektra, const char * name);
+kdb_short_t elektraGetShort (KDBHL * elektra, const char * name);
+kdb_unsigned_short_t elektraGetUnsignedShort (KDBHL * elektra, const char * name);
+kdb_long_t elektraGetLong (KDBHL * elektra, const char * name);
+kdb_unsigned_long_t elektraGetUnsignedLong (KDBHL * elektra, const char * name);
+kdb_long_long_t elektraGetLongLong (KDBHL * elektra, const char * name);
+kdb_unsigned_long_long_t elektraGetUnsignedLongLong (KDBHL * elektra, const char * name);
+kdb_float_t elektraGetFloat (KDBHL * elektra, const char * name);
+kdb_double_t elektraGetDouble (KDBHL * elektra, const char * name);
+kdb_long_double_t elektraGetLongDouble (KDBHL * elektra, const char * name);
 
 // arrays
 kdb_long_t elektraGetArrayLong (Elektra * handle, const char * name, size_t elem);
