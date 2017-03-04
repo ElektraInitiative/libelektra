@@ -11,6 +11,9 @@
 
 #include <keyset.hpp>
 
+namespace xerces
+{
 void deserialize (kdb::Key const & parentKey, kdb::KeySet & ks);
+}
 
 #endif

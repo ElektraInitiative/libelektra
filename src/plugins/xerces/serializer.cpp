@@ -9,16 +9,8 @@
 #include "serializer.hpp"
 #include "util.hpp"
 
-#include <fstream>
-#include <functional>
-#include <iostream>
-#include <memory>
-
 #include <xercesc/dom/DOM.hpp>
 #include <xercesc/framework/LocalFileFormatTarget.hpp>
-#include <xercesc/util/OutOfMemoryException.hpp>
-#include <xercesc/util/PlatformUtils.hpp>
-#include <xercesc/util/XMLString.hpp>
 
 #include <kdblogger.h>
 #include <key.hpp>
@@ -26,8 +18,12 @@
 XERCES_CPP_NAMESPACE_USE
 using namespace std;
 using namespace kdb;
+using namespace xerces;
 
-static DOMElement * findChildWithName (DOMNode const & elem, std::string const & name)
+namespace
+{
+
+DOMElement * findChildWithName (DOMNode const & elem, std::string const & name)
 {
 	for (auto child = elem.getFirstChild (); child != NULL; child = elem.getNextSibling ())
 	{
@@ -40,7 +36,7 @@ static DOMElement * findChildWithName (DOMNode const & elem, std::string const &
 	return nullptr;
 }
 
-static DOMElement * key2xml (DOMDocument & doc, string name, Key const & key)
+DOMElement * key2xml (DOMDocument & doc, string name, Key const & key)
 {
 	ELEKTRA_LOG_DEBUG ("creating element %s", name.c_str ());
 
@@ -66,7 +62,7 @@ static DOMElement * key2xml (DOMDocument & doc, string name, Key const & key)
 }
 
 
-static void appendKey (DOMDocument & doc, Key const & parentKey, Key const & key)
+void appendKey (DOMDocument & doc, Key const & parentKey, Key const & key)
 {
 	DOMNode * current = &doc;
 
@@ -103,7 +99,7 @@ static void appendKey (DOMDocument & doc, Key const & parentKey, Key const & key
 	current->appendChild (key2xml (doc, *name, key));
 }
 
-static void ks2dom (DOMDocument & doc, Key const & parentKey, KeySet const & ks)
+void ks2dom (DOMDocument & doc, Key const & parentKey, KeySet const & ks)
 {
 	for (auto const & k : ks)
 	{
@@ -111,7 +107,9 @@ static void ks2dom (DOMDocument & doc, Key const & parentKey, KeySet const & ks)
 	}
 }
 
-void serialize (Key const & parentKey, KeySet const & ks)
+} // namespace
+
+void xerces::serialize (Key const & parentKey, KeySet const & ks)
 {
 	DOMImplementation * impl = DOMImplementationRegistry::getDOMImplementation (asXMLCh ("Core"));
 	if (impl != NULL)

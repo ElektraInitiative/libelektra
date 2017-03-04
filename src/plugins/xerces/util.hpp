@@ -14,6 +14,9 @@
 
 #include <xercesc/util/XMLString.hpp>
 
+namespace xerces
+{
+
 template <typename T>
 struct XercesDeleter
 {
@@ -79,5 +82,6 @@ public:
 private:
 	std::string msg;
 };
+}
 
 #endif

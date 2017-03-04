@@ -4,10 +4,9 @@ if (DEPENDENCY_PHASE)
 
 	if (NOT XercesC_FOUND)
 		remove_plugin (xerces "XercesC library not found")
-	else (NOT XercesC_FOUND)
-		# this has to be done here and not in ADDTESTING_PHASE
-		# type plugin does it the same way
-	endif (NOT XercesC_FOUND)
+	elseif (XercesC_VERSION VERSION_LESS 3.0.0)
+		remove_plugin (xerces "XercesC library version 3.0.0 or higher required")
+	endif ()
 endif (DEPENDENCY_PHASE)
 
 add_plugin (xerces

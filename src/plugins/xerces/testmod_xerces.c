@@ -42,7 +42,7 @@ static void test_simple_read ()
 {
 	printf ("test simple read\n");
 
-	Key * parentKey = keyNew ("/sw/elektra/tests", KEY_VALUE, srcdir_file ("testdata/simple.xml"), KEY_END);
+	Key * parentKey = keyNew ("/sw/elektra/tests", KEY_VALUE, srcdir_file ("xerces/simple.xml"), KEY_END);
 	KeySet * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("xerces");
 
@@ -137,7 +137,7 @@ static void test_simple_write ()
 	printf ("test simple write\n");
 	fflush (stdout);
 
-	Key * parentKey = keyNew ("/sw/elektra/tests/xerces", KEY_VALUE, srcdir_file ("testdata/escaping-gen.xml"), KEY_END);
+	Key * parentKey = keyNew ("/sw/elektra/tests/xerces", KEY_VALUE, srcdir_file ("xerces/escaping-gen.xml"), KEY_END);
 	KeySet * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("xerces");
 
@@ -158,14 +158,14 @@ static void test_simple_write ()
 
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 1, "call to kdbSet was not successful");
 
-	compare_files ("testdata/escaping.xml");
+	compare_files ("xerces/escaping.xml");
 	// Its also another good deserialization test
-	Key * resultParentKey = keyNew ("/sw/elektra/tests/", KEY_VALUE, srcdir_file ("testdata/escaping.xml"), KEY_END);
+	Key * resultParentKey = keyNew ("/sw/elektra/tests/", KEY_VALUE, srcdir_file ("xerces/escaping.xml"), KEY_END);
 	KeySet * result = ksNew (2, KS_END);
 	succeed_if (plugin->kdbGet (plugin, result, resultParentKey) == 1, "call to kdbGet was not successful");
 	compare_keyset (ks, result);
 
-	elektraUnlink (srcdir_file ("testdata/escaping-gen.xml"));
+	elektraUnlink (srcdir_file ("xerces/escaping-gen.xml"));
 
 	keyDel (parentKey);
 	ksDel (ks);

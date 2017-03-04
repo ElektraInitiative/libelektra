@@ -11,13 +11,12 @@
 #include "serializer.hpp"
 #include "util.hpp"
 
-#include <stdio.h>
-
 #include <xercesc/dom/DOM.hpp>
 #include <xercesc/util/OutOfMemoryException.hpp>
 #include <xercesc/util/PlatformUtils.hpp>
 
 using namespace ckdb; // required for kdberrors.h
+using namespace xerces;
 
 #include <kdberrors.h>
 #include <kdbhelper.h>

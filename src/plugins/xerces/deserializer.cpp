@@ -9,18 +9,10 @@
 #include "deserializer.hpp"
 #include "util.hpp"
 
-#include <fstream>
-#include <functional>
-#include <iostream>
-#include <memory>
-
 #include <xercesc/dom/DOM.hpp>
 #include <xercesc/dom/DOMAttr.hpp>
 #include <xercesc/dom/DOMDocument.hpp>
-#include <xercesc/dom/DOMError.hpp>
-#include <xercesc/dom/DOMException.hpp>
 #include <xercesc/dom/DOMImplementation.hpp>
-#include <xercesc/dom/DOMNamedNodeMap.hpp>
 #include <xercesc/dom/DOMNode.hpp>
 #include <xercesc/parsers/XercesDOMParser.hpp>
 
@@ -30,12 +22,12 @@
 XERCES_CPP_NAMESPACE_USE
 using namespace std;
 using namespace kdb;
+using namespace xerces;
 
-/*
- * Actual Xerces logic
- */
+namespace
+{
 
-static XercesPtr<DOMDocument> doc2dom (std::string const & src)
+XercesPtr<DOMDocument> doc2dom (std::string const & src)
 {
 	XercesDOMParser parser;
 	parser.setValidationScheme (XercesDOMParser::Val_Auto);
@@ -47,7 +39,7 @@ static XercesPtr<DOMDocument> doc2dom (std::string const & src)
 	return XercesPtr<DOMDocument> (parser.adoptDocument ());
 }
 
-static string getElementText (DOMNode const * parent)
+string getElementText (DOMNode const * parent)
 {
 	string str;
 
@@ -66,7 +58,7 @@ static string getElementText (DOMNode const * parent)
 	return str;
 }
 
-static void dom2keyset (DOMNode const * n, Key const & parent, KeySet & ks)
+void dom2keyset (DOMNode const * n, Key const & parent, KeySet & ks)
 {
 	if (n)
 	{
@@ -114,7 +106,9 @@ static void dom2keyset (DOMNode const * n, Key const & parent, KeySet & ks)
 	}
 }
 
-void deserialize (Key const & parentKey, KeySet & ks)
+} // namespace
+
+void xerces::deserialize (Key const & parentKey, KeySet & ks)
 {
 	ELEKTRA_LOG_DEBUG ("deserializing relative to %s from file %s", parentKey.getFullName ().c_str (),
 			   parentKey.get<string> ().c_str ());
