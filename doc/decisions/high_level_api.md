@@ -44,12 +44,12 @@ First draft of API:
 
 ```c
 // might fail, you need to check for error afterwards!
-KDBHL * elektraOpen (const char * application);
+Elektra * elektraOpen (const char * application);
 
 // enum, int, tristate
-int elektraGetInt (KDBHL * handle, const char * name);
+int elektraGetInt (Elektra * handle, const char * name);
 
-char * elektraGetString (KDBHL * handle, const char * name);
+char * elektraGetString (Elektra * handle, const char * name);
 
 // and so on.. (all types)
 
@@ -57,50 +57,50 @@ char * elektraGetString (KDBHL * handle, const char * name);
 // are arrays already advanced functionality? (recursive API)
 
 // enum, int, tristate
-int elektraGetIntArray (KDBHL * handle, const char * name, int elem);
+int elektraGetIntArray (Elektra * handle, const char * name, int elem);
 
-int elektraGetArraySize (KDBHL * handle, const char * name);
+int elektraGetArraySize (Elektra * handle, const char * name);
 
-void elektraClose (KDBHL * handle);
+void elektraClose (Elektra * handle);
 ```
 
 #### Needed
 
 ```c
 // might fail, you need to check for error afterwards!
-void elektraReload (KDBHL * handle);
+void elektraReload (Elektra * handle);
 
 // to abort afterwards
-int elektraHasError (KDBHL * handle);
-char * elektraGetErrorMessage (KDBHL * handle);
+int elektraHasError (Elektra * handle);
+char * elektraGetErrorMessage (Elektra * handle);
 
 // to inform the user (e.g. warning, to display help or version)
-int elektraHasInfo (KDBHL * handle);
-char * elektraGetInfoMessage (KDBHL * handle);
+int elektraHasInfo (Elektra * handle);
+char * elektraGetInfoMessage (Elektra * handle);
 
 // clear error+info
-void elektraClear (KDBHL * handle);
+void elektraClear (Elektra * handle);
 ```
 
 #### To think about
 
 ```c
 // maybe not needed: could be integrated in elektraOpen?
-void elektraParse (KDBHL * handle, int argc, char ** argv, char ** environ);
+void elektraParse (Elektra * handle, int argc, char ** argv, char ** environ);
 
 // gives you a duplicate for other threads (same application+version), automatically calls elektraClear
-KDBHL * elektraDup (KDBHL * handle);
+Elektra * elektraDup (Elektra * handle);
 
-KDB * elektraGetKDB (KDBHL * handle);
+KDB * elektraGetKDB (Elektra * handle);
 
-void elektraDefaultConfig (KDBHL * handle, KeySet * defaultConfig);
+void elektraDefaultConfig (Elektra * handle, KeySet * defaultConfig);
 
-KeySet * elektraGetKeySet (KDBHL * handle, const char * cutkey);
+KeySet * elektraGetKeySet (Elektra * handle, const char * cutkey);
 
-KeySet * elektraGetKeyHierarchy (KDBHL * handle, const char * cutkey);
+KeySet * elektraGetKeyHierarchy (Elektra * handle, const char * cutkey);
 
 // enum, int, tristate
-void elektraSetInt (KDBHL * handle, const char * name, int value);
+void elektraSetInt (Elektra * handle, const char * name, int value);
 ```
 
 #### Lower-level type API
@@ -136,7 +136,7 @@ What is not so nice:
 1. Very easy to get started with, to get a key needs 3 lines of codes:
 
    ```c
-   KDBHL *handle = elektraOpen ("/sw/elektra/kdb/#0/current");
+   Elektra *handle = elektraOpen ("/sw/elektra/kdb/#0/current");
    printf ("number /mykey is %d\n", elektraGetInt (handle, "/mykey"));
    elektraClose (handle);
    ```
