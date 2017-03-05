@@ -1043,4 +1043,16 @@ ingroup:plugin
 module:file
 macro:STAT_FAILED
 
+number:170
+description:invalid range syntax.
+severity:error
+ingroup:plugin
+module:range
+macro:RANGE_SYNTAX
 
+number:171
+description:value not within specified range.
+severity:error
+ingroup:plugin
+module:range
+macro:INVALID_RANGE
