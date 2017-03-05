@@ -1,0 +1,12 @@
+Tests: elektra-tests
+Depends: elektra-tests
+Restrictions: allow-stderr
+
+Tests: examples-c-cpp
+Depends: build-essential, pkg-config, cmake, libelektra-dev
+
+Tests: examples-python3
+Depends: python3-elektra
+
+Tests: examples-lua
+Depends: lua5.2, lua-elektra

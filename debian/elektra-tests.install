@@ -1,0 +1,13 @@
+usr/bin/kdb-full
+usr/lib/*/elektra/tool_exec/check_*
+usr/lib/*/elektra/tool_exec/run_all
+usr/lib/*/elektra/tool_exec/test_*
+usr/lib/*/elektra/tool_exec/testabi_*
+usr/lib/*/elektra/tool_exec/testcpp_*
+usr/lib/*/elektra/tool_exec/testkdb_*
+usr/lib/*/elektra/tool_exec/testmod_*
+usr/lib/*/elektra/tool_exec/testtool_*
+usr/lib/*/elektra4/libelektratools-full.so
+usr/lib/*/libelektra-full.so.0.*
+usr/lib/*/libelektra-full.so.4
+usr/share/elektra/test_data/

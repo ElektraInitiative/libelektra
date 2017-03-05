@@ -1,0 +1,16 @@
+# doxygen generates duplicate small images, not worth to deduplicate them
+elektra-doc: duplicate-files
+# whatis is fine, the space in the template declaration creates confusion
+elektra-doc: manpage-has-bad-whatis-entry usr/share/man/man3/kdb_ContextPolicyIs.3elektra.gz
+# whatis is fine, the space in the template declaration creates confusion
+elektra-doc: manpage-has-bad-whatis-entry usr/share/man/man3/kdb_Discriminator.3elektra.gz
+# whatis is fine, the space in the template declaration creates confusion
+elektra-doc: manpage-has-bad-whatis-entry usr/share/man/man3/kdb_GetPolicyIs.3elektra.gz
+# whatis is fine, the space in the template declaration creates confusion
+elektra-doc: manpage-has-bad-whatis-entry usr/share/man/man3/kdb_LockPolicyIs.3elektra.gz
+# whatis is fine, the space in the template declaration creates confusion
+elektra-doc: manpage-has-bad-whatis-entry usr/share/man/man3/kdb_ObserverPolicyIs.3elektra.gz
+# whatis is fine, the space in the template declaration creates confusion
+elektra-doc: manpage-has-bad-whatis-entry usr/share/man/man3/kdb_SetPolicyIs.3elektra.gz
+# whatis is fine, the space in the template declaration creates confusion
+elektra-doc: manpage-has-bad-whatis-entry usr/share/man/man3/kdb_WritePolicyIs.3elektra.gz

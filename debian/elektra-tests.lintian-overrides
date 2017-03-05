@@ -1,0 +1,8 @@
+# this a wrong string on purpose
+elektra-tests: spelling-error-in-binary
+# kind of "private library"
+elektra-tests: package-name-doesnt-match-sonames libelektra-full4
+# kind of "private library"
+elektra-tests: no-symbols-control-file
+# test-only binary
+elektra-tests: binary-without-manpage usr/bin/kdb-full
