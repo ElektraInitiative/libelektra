@@ -1,31 +1,28 @@
-# High Level API
+# High-level API
 
 ## Issue
 
-Some projects do not want to use code-generation but prefer
-an "old-school" key/value getter/setter approach.
-
-Here we propose new libraries (libelektra-highlevel and libelektra-hierarchy)
-with new high-level APIs in C.
+Projects usually do not want to use low-level APIs,
+`KDB`, however is untyped and not really high-level.
 
 ## Constraints
 
 1. should be extremely easy to get started with
 2. should be very hard to use it wrong
-
-Limitations:
-
-- cannot compete with code generation
+3. all 3 APIs should work together very nicely
+   - same principles
+   - same API style
+   - same error handling
+   - can be arbitrarily intermixed
 
 ## Assumptions
 
 - Thread-safety: a handle is the accepted better solution than having to
   care about whether it is reentrant, thread-safe, ...
-- assumes that spec is available and installed correctly (fail in elektraOpen otherwise)
-- lookups for non-specified keys yield errors (in particular if they are not present)
+- assumes that spec is available (either by compiled-in `KeySet` or exit after elektraOpen)
 - many projects do not care about some limitations (no binary, no meta-data)
   but prefer a straight-forward way to get/set config
-- When people hit limitations they fall back to ^KeySet^, ^Key^
+- When people hit limitations they fall back to direct use of ^KeySet^, ^Key^
 
 ## Considered Alternatives
 
@@ -34,20 +31,33 @@ Limitations:
 
 ## Decision
 
-Provide a simple getter/setter API.
+We provide 3 C APIs:
 
-### API
+1. libelektra-highlevel (generic key/value getter/setter)
+2. libelektra-hierarchy (generic hierarchical getter/setter)
+3. code generator (specified key/value getter/setter)
 
-First draft of API:
 
-#### Basic
+### Basic
 
 ```c
-// might fail, you need to check for error afterwards!
-Elektra * elektraOpen (const char * application);
+Elektra * elektraOpen (const char * application, const KeySet * defaultConfig);
+kdb_boolean_t elektraHasError (const Elektra * handle);
+const char * elektraErrorMessage (const Elektra * handle);
+void elektraErrorClear (const Elektra * handle); // ErrorClear vs. ClearError?
+void elektraClose (Elektra * handle);
+```
 
+`elektraOpen` might fail, you need to check for error afterwards!
+If it fails, you need to exit the program with an error.
+If you want to avoid to exit, make sure to use pass a built-in `KeySet`,
+that has your whole specification included (and defaults everywhere
+needed).
+
+
+```c
 // getters
-kdb_string_t elektraGetString (Elektra * elektra, const char * name);
+const char * elektraGetString (Elektra * elektra, const char * name);
 kdb_boolean_t elektraGetBoolean (Elektra * elektra, const char * name);
 kdb_char_t elektraGetChar (Elektra * elektra, const char * name);
 kdb_octet_t elektraGetOctet (Elektra * elektra, const char * name);
@@ -60,55 +70,40 @@ kdb_unsigned_long_long_t elektraGetUnsignedLongLong (Elektra * elektra, const ch
 kdb_float_t elektraGetFloat (Elektra * elektra, const char * name);
 kdb_double_t elektraGetDouble (Elektra * elektra, const char * name);
 kdb_long_double_t elektraGetLongDouble (Elektra * elektra, const char * name);
-
-// arrays
-kdb_long_t elektraGetArrayLong (Elektra * handle, const char * name, size_t elem);
-
-size_t elektraGetArraySize (Elektra * handle, const char * name);
-
-void elektraClose (Elektra * handle);
 ```
 
-#### Needed
+### Needed for lcdproc
 
 ```c
 // might fail, you need to check for error afterwards!
 void elektraReload (Elektra * handle);
 
+// arrays
+size_t elektraArraySize (Elektra * handle, const char * name);
+kdb_long_t elektraArrayLong (Elektra * handle, const char * name, size_t elem);
+// same types as above
+
 // to abort afterwards
-int elektraHasError (Elektra * handle);
-char * elektraGetErrorMessage (Elektra * handle);
 
-// to inform the user (e.g. warning, to display help or version)
-int elektraHasInfo (Elektra * handle);
-char * elektraGetInfoMessage (Elektra * handle);
-
-// clear error+info
-void elektraClear (Elektra * handle);
+void elektraParse (Elektra * handle, int argc, char ** argv, char ** environ); // pass environ?
 ```
 
-#### To think about
+
+## More (not needed for lcdproc)
 
 ```c
-// maybe not needed: could be integrated in elektraOpen?
-void elektraParse (Elektra * handle, int argc, char ** argv, char ** environ);
-
-// gives you a duplicate for other threads (same application+version), automatically calls elektraClear
+// gives you a duplicate for other threads (same application+version), automatically calls elektraErrorClear
 Elektra * elektraDup (Elektra * handle);
 
 KDB * elektraGetKDB (Elektra * handle);
-
-void elektraDefaultConfig (Elektra * handle, KeySet * defaultConfig);
-
 KeySet * elektraGetKeySet (Elektra * handle, const char * cutkey);
-
 KeySet * elektraGetKeyHierarchy (Elektra * handle, const char * cutkey);
 
 // enum, int, tristate
 void elektraSetInt (Elektra * handle, const char * name, int value);
 ```
 
-#### Lower-level type API
+### Lower-level type API
 
 ```c
 // will be used internally in elektraGetInt, are for other APIs useful, too
@@ -117,7 +112,7 @@ int keyGetInt (Key * key);
 // and so on
 ```
 
-#### recursive API (KeyHierarchy)
+### recursive API (KeyHierarchy)
 
 can be transformed from/to keysets
 
@@ -127,14 +122,11 @@ keyhAdd (KeyHierarchy * kh, Key * key);
 // TODO, add rest of API
 ```
 
-#### todos
+### todos
 
-What is not so nice:
-
-- error handling can be forgotten
+- const char * vs. string type?
 - merging on conflicts? (maybe libelektra-tools dynamically loaded?)
-- warning/error handling?
-- should recursive + lower-level type API in a separate library, in ease, or in core?
+- warnings
 
 ## Argument
 
@@ -142,18 +134,14 @@ What is not so nice:
 
    ```c
    Elektra *handle = elektraOpen ("/sw/elektra/kdb/#0/current");
-   printf ("number /mykey is %d\n", elektraGetInt (handle, "/mykey"));
+   printf ("number /mykey is " ELEKTRA_LONG_F "\n", elektraGetLong (handle, "/mykey"));
    elektraClose (handle);
    ```
 
 2. It is also easier to get started with writing new bindings.
+3. User can combine the different APIs.
 
 ## Implications
-
-Wrong API use possible (it is not generated after all):
-
-- wrong names, unspecified names,...
-- application can be wrong
 
 ## Related decisions
 
