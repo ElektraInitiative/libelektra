@@ -127,6 +127,8 @@ keyhAdd (KeyHierarchy * kh, Key * key);
 - const char * vs. string type?
 - merging on conflicts? (maybe libelektra-tools dynamically loaded?)
 - warnings
+- default config directly in `elektraOpen`? Or in `elektraParse`?
+- some API calls have a question mark next to it
 
 ## Argument
 
@@ -146,3 +148,5 @@ keyhAdd (KeyHierarchy * kh, Key * key);
 ## Related decisions
 
 ## Notes
+
+https://issues.libelektra.org/1359
