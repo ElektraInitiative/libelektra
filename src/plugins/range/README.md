@@ -17,15 +17,19 @@ The range plugin checks if a Key value is within a given range.
 
 The plugin checks every Key in the Keyset for the Metakey `check/range` which contains either a single range with the syntax `[-]min-[-]max`, or a list of ranges separated by `,` and tests if the Key value is within the range(s).
 
-`check/range/type` can be used to specify the datatype. If not specified otherwise the default value is `INT`
+`check/type` or `type` can be used to specify the datatype. If not specified otherwise the default value is `INT`
 
 Possible values:
 
-* `INT`
+* `short`, `long`, `long long`
 
-   for integer values
+   for signed integer values
 
-* `FLOAT`
+* `unsigned short`, `unsigned long`, `unsigned long long`
+
+   for unsigned integer values
+
+* `float`, `double`, `long double`
 
    for floating point values
 
@@ -33,7 +37,7 @@ Possible values:
 
    for hexadecimal values
 
-* `CHAR`
+* `char`
 
    for characters
 
@@ -51,7 +55,7 @@ sudo kdb mount range.ecf /examples/range range dump
 
 # should succeed
 kdb set /examples/range/value 5
-kdb setmeta user/examples/range/value check/range "1-10"
+kdb setmeta /examples/range/value check/range "1-10"
 # RET: 0
 
 # should fail

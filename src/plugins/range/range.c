@@ -15,177 +15,52 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <strings.h>
 
 
 typedef enum {
 	INT,
+	UINT,
 	FLOAT,
 	CHAR,
 	HEX,
+	NA,
 } RangeType;
 
 typedef struct
 {
 	RangeType type;
-	union _Value {
-		long long int i;
+	union uValue {
+		unsigned long long int i;
 		long double f;
 	} Value;
 } RangeValue;
 
-static int rangeStringToRange (const char * rangeString, RangeValue * min, RangeValue * max, RangeType type)
+
+// switch min and max values if needed and apply -1 factor
+static void normalizeValues (RangeType type, RangeValue * min, RangeValue * max, RangeValue * a, RangeValue * b, int factorA, int factorB)
 {
-	int factorA = 1;
-	int factorB = 1;
-	RangeValue a, b;
-	a.type = type;
-	b.type = type;
-	a.Value.i = 0;
-	b.Value.i = 0;
-	int pos = 0;
-
-	const char * ptr = rangeString;
-	while (*ptr)
-	{
-		if (isspace (*ptr))
-		{
-			++ptr;
-			continue;
-		}
-		else if (*ptr == '-')
-		{
-			if (pos == 0)
-			{
-				if (factorA == -1)
-				{
-					return -1;
-				}
-				factorA = -1;
-			}
-			else if (pos == 1)
-			{
-				pos = 2;
-			}
-			else if (pos == 2)
-			{
-				if (factorB == -1)
-				{
-					return -1;
-				}
-				factorB = -1;
-			}
-			else
-			{
-				return -1;
-			}
-			++ptr;
-			continue;
-		}
-		else if (isalnum (*ptr))
-		{
-			if (pos == 0)
-			{
-				pos = 1;
-				char * endPtr;
-				switch (type)
-				{
-				case INT:
-					a.Value.i = strtoll (ptr, &endPtr, 10);
-					if (errno == ERANGE || (errno != 0 && a.Value.i == 0))
-					{
-						return -1;
-					}
-					break;
-				case FLOAT:
-					a.Value.f = strtold (ptr, &endPtr);
-					if (errno == ERANGE || (errno != 0 && a.Value.f == 0))
-					{
-						return -1;
-					}
-					break;
-				case HEX:
-					a.Value.i = strtoll (ptr, &endPtr, 16);
-					if (errno == ERANGE || (errno != 0 && a.Value.i == 0))
-					{
-						return -1;
-					}
-					break;
-				case CHAR:
-					if (!isalpha (*ptr))
-					{
-						return -1;
-					}
-					a.Value.i = *ptr;
-					endPtr = (char *)ptr + 1;
-					break;
-				default:
-					break;
-				}
-				ptr = endPtr;
-			}
-			else if (pos == 2)
-			{
-				pos = 3;
-				char * endPtr;
-				switch (type)
-				{
-				case INT:
-					b.Value.i = strtoll (ptr, &endPtr, 10);
-					if (errno == ERANGE || (errno != 0 && b.Value.i == 0))
-					{
-						return -1;
-					}
-					break;
-				case FLOAT:
-					b.Value.f = strtold (ptr, &endPtr);
-					if (errno == ERANGE || (errno != 0 && b.Value.f == 0))
-					{
-						return -1;
-					}
-					break;
-				case HEX:
-					b.Value.i = strtoll (ptr, &endPtr, 16);
-					if (errno == ERANGE || (errno != 0 && b.Value.i == 0))
-					{
-						return -1;
-					}
-					break;
-				case CHAR:
-					if (!isalpha (*ptr))
-					{
-						return -1;
-					}
-					a.Value.i = *ptr;
-					endPtr = (char *)ptr + 1;
-				default:
-					break;
-				}
-				ptr = endPtr;
-			}
-			else
-			{
-				return -1;
-			}
-		}
-		else
-		{
-			return -1;
-		}
-	}
-	if (pos != 3)
-	{
-		return -1;
-	}
-
-	long long int tmpIA = factorA * a.Value.i;
-	long long int tmpIB = factorB * b.Value.i;
-	long double tmpFA = factorA * a.Value.f;
-	long double tmpFB = factorB * b.Value.f;
+	unsigned long long int tmpIA = (unsigned long long)(factorA * (*a).Value.i);
+	unsigned long long int tmpIB = (unsigned long long)(factorB * (*b).Value.i);
+	long double tmpFA = factorA * (*a).Value.f;
+	long double tmpFB = factorB * (*b).Value.f;
 	switch (type)
 	{
 	case INT:
 	case HEX:
 	case CHAR:
+		if ((long long)tmpIA <= (long long)tmpIB)
+		{
+			min->Value.i = tmpIA;
+			max->Value.i = tmpIB;
+		}
+		else
+		{
+			min->Value.i = tmpIB;
+			max->Value.i = tmpIA;
+		}
+		break;
+	case UINT:
 		if (tmpIA <= tmpIB)
 		{
 			min->Value.i = tmpIA;
@@ -212,8 +87,155 @@ static int rangeStringToRange (const char * rangeString, RangeValue * min, Range
 	default:
 		break;
 	}
+}
+
+
+// parse value starting at ptr and set ptr to the first character
+// after value. return a RangeValue with type == NA on error
+
+RangeValue strToValue (const char ** ptr, RangeType type)
+{
+	RangeValue v;
+	v.type = type;
+	v.Value.i = 0;
+	char * endPtr = NULL;
+
+	switch (type)
+	{
+	case INT:
+	case UINT:
+		v.Value.i = (unsigned long long)strtoll (*ptr, &endPtr, 10);
+		if (errno == ERANGE || (errno != 0 && v.Value.i == 0))
+		{
+			v.type = NA;
+		}
+		break;
+	case FLOAT:
+		v.Value.f = strtold (*ptr, &endPtr);
+		if (errno == ERANGE || (errno != 0 && v.Value.f == 0))
+		{
+			v.type = NA;
+		}
+		break;
+	case HEX:
+		v.Value.i = strtoll (*ptr, &endPtr, 16);
+		if (errno == ERANGE || (errno != 0 && v.Value.i == 0))
+		{
+			v.type = NA;
+		}
+		break;
+	case CHAR:
+		if (!isalpha (**ptr))
+		{
+			v.type = NA;
+		}
+		v.Value.i = **ptr;
+		endPtr = (char *)*ptr + 1;
+	default:
+		break;
+	}
+	*ptr = endPtr;
+	return v;
+}
+
+// parse string into min - max values
+// return -1 on error, 0 on success;
+
+static int rangeStringToRange (const char * rangeString, RangeValue * min, RangeValue * max, RangeType type)
+{
+	int factorA = 1; // multiplication factors for parsed values
+	int factorB = 1; // if '-' is read, factor will be set to -1
+	RangeValue a, b;
+	a.type = type;
+	b.type = type;
+	a.Value.i = 0;
+	b.Value.i = 0;
+	int pos = 0;
+
+	const char * ptr = rangeString;
+	while (*ptr)
+	{
+		if (isspace (*ptr))
+		{
+			++ptr;
+			continue;
+		}
+		else if (*ptr == '-')
+		{
+			if (pos == 0)
+			{
+				if (factorA == -1)
+				{
+					return -1;
+				}
+				if (type == UINT)
+				{
+					return -1;
+				}
+				factorA = -1;
+			}
+			else if (pos == 1)
+			{
+				pos = 2;
+			}
+			else if (pos == 2)
+			{
+				if (factorB == -1)
+				{
+					return -1;
+				}
+				if (type == UINT)
+				{
+					return -1;
+				}
+				factorB = -1;
+			}
+			else
+			{
+				return -1;
+			}
+			++ptr;
+			continue;
+		}
+		else if (isalnum (*ptr))
+		{
+			if (pos == 0)
+			{
+				pos = 1;
+				a = strToValue (&ptr, type);
+			}
+			else if (pos == 2)
+			{
+				pos = 3;
+				b = strToValue (&ptr, type);
+				if (b.type == NA)
+				{
+					return -1;
+				}
+			}
+			else
+			{
+				return -1;
+			}
+		}
+		else
+		{
+			return -1;
+		}
+	}
+	if (pos != 1 && pos != 3)
+	{
+		return -1;
+	}
+	if (pos == 1)
+	{
+		b = a;
+		factorB = factorA;
+	}
+	normalizeValues (type, min, max, &a, &b, factorA, factorB);
 	return 0;
 }
+
 
 static int validateSingleRange (const char * valueStr, const char * rangeString, RangeType type)
 {
@@ -223,23 +245,6 @@ static int validateSingleRange (const char * valueStr, const char * rangeString,
 	min.type = type;
 	max.type = type;
 	int rc = rangeStringToRange (rangeString, &min, &max, type);
-	/*
-		switch (type)
-		{
-		case INT:
-			fprintf (stderr, "%s: ret: %d, min: %lld, max: %lld\n", rangeString, rc, min.Value.i, max.Value.i);
-			break;
-		case FLOAT:
-			fprintf (stderr, "%s: ret: %d, min: %Lf, max: %Lf\n", rangeString, rc, min.Value.f, max.Value.f);
-			break;
-		case HEX:
-			fprintf (stderr, "%s: ret: %d, min: 0x%x, max: 0x%x\n", rangeString, rc, (unsigned int)min.Value.i,
-				 (unsigned int)max.Value.i);
-			break;
-		case CHAR:
-			fprintf (stderr, "%s: ret: %d, min: %c, max: %c\n", rangeString, rc, (char)min.Value.i, (char)max.Value.i);
-		}
-	*/
 	if (rc)
 	{
 		return -1;
@@ -251,13 +256,14 @@ static int validateSingleRange (const char * valueStr, const char * rangeString,
 	switch (type)
 	{
 	case INT:
-		val.Value.i = strtoll (valueStr, &endPtr, 10);
+	case UINT:
+		val.Value.i = (unsigned long long)strtoll (valueStr, &endPtr, 10);
 		break;
 	case FLOAT:
 		val.Value.f = strtold (valueStr, &endPtr);
 		break;
 	case HEX:
-		val.Value.i = strtoll (valueStr, &endPtr, 16);
+		val.Value.i = (unsigned long long)strtoll (valueStr, &endPtr, 16);
 		break;
 	case CHAR:
 		val.Value.i = valueStr[0];
@@ -274,6 +280,16 @@ static int validateSingleRange (const char * valueStr, const char * rangeString,
 	case INT:
 	case HEX:
 	case CHAR:
+		if ((long long)val.Value.i < (long long)min.Value.i || (long long)val.Value.i > (long long)max.Value.i)
+		{
+			return 0;
+		}
+		else
+		{
+			return 1;
+		}
+		break;
+	case UINT:
 		if (val.Value.i < min.Value.i || val.Value.i > max.Value.i)
 		{
 			return 0;
@@ -336,23 +352,78 @@ static int validateMultipleRanges (const char * valueStr, const char * rangeStri
 	return 0;
 }
 
+static RangeType stringToType (const Key * typeMeta)
+{
+	static const char * intTypes[] = {
+		"short", "long", "long long", NULL,
+	};
+	static const char * uintTypes[] = {
+		"unsigned short", "unsigned long", "unsigned long long", NULL,
+	};
+	static const char * floatTypes[] = {
+		"float", "double", "long double", NULL,
+	};
+
+	if (typeMeta)
+	{
+		const char * strVal = keyString (typeMeta);
+		for (int i = 0; intTypes[i] != NULL; ++i)
+		{
+			if (!strcasecmp (strVal, intTypes[i])) return INT;
+		}
+		for (int i = 0; uintTypes[i] != NULL; ++i)
+		{
+			if (!strcasecmp (strVal, uintTypes[i])) return UINT;
+		}
+		for (int i = 0; floatTypes[i] != NULL; ++i)
+		{
+			if (!strcasecmp (strVal, floatTypes[i])) return FLOAT;
+		}
+		if (!strcasecmp (strVal, "char"))
+			return CHAR;
+		else if (!strcasecmp (strVal, "HEX"))
+			return HEX;
+	}
+	return NA;
+}
+
+static RangeType getType (const Key * key)
+{
+	const Key * typeMeta = keyGetMeta (key, "type");
+	RangeType type = NA;
+
+	type = stringToType (typeMeta);
+
+	if (type == NA) typeMeta = keyGetMeta (key, "check/type");
+
+	type = stringToType (typeMeta);
+	if (type == NA)
+		return INT;
+	else
+		return type;
+}
+
 int validateKey (Key * key, Key * parentKey)
 {
 	const Key * rangeMeta = keyGetMeta (key, "check/range");
 	const char * rangeString = keyString (rangeMeta);
-	const Key * typeMeta = keyGetMeta (key, "check/range/type");
-	RangeType type = INT;
-	if (typeMeta)
+	RangeType type = NA;
+	type = getType (key);
+	if (type == UINT)
 	{
-		const char * strVal = keyString (typeMeta);
-		if (!strcasecmp (strVal, "INT"))
-			type = INT;
-		else if (!strcasecmp (strVal, "FLOAT"))
-			type = FLOAT;
-		else if (!strcasecmp (strVal, "CHAR"))
-			type = CHAR;
-		else if (!strcasecmp (strVal, "HEX"))
-			type = HEX;
+		const char * ptr = keyString (key);
+		while (*ptr)
+		{
+			if (type == UINT && *ptr == '-')
+			{
+				return -1;
+			}
+			else if (isdigit (*ptr))
+			{
+				break;
+			}
+			++ptr;
+		}
 	}
 
 	if (!strchr (rangeString, ','))
