@@ -53,6 +53,7 @@ typedef struct
 	char * lastOrder;
 	char commentChar;
 	KeySet * oldKS;
+	Key * lastComments;
 } IniPluginConfig;
 
 typedef struct
@@ -520,6 +521,7 @@ int elektraIniOpen (Plugin * handle, Key * parentKey ELEKTRA_UNUSED)
 {
 	KeySet * config = elektraPluginGetConfig (handle);
 	IniPluginConfig * pluginConfig = elektraMalloc (sizeof (IniPluginConfig));
+	pluginConfig->lastComments = NULL;
 	pluginConfig->lastOrder = NULL;
 	pluginConfig->BOM = 0;
 	Key * multilineKey = ksLookupByName (config, "/multiline", KDB_O_NONE);
@@ -601,9 +603,10 @@ int elektraIniOpen (Plugin * handle, Key * parentKey ELEKTRA_UNUSED)
 
 int elektraIniClose (Plugin * handle, Key * parentKey ELEKTRA_UNUSED)
 {
-	IniPluginConfig * pluginConfig = (IniPluginConfig *)elektraPluginGetData (handle);
+	IniPluginConfig * pluginConfig = elektraPluginGetData (handle);
 	if (pluginConfig->oldKS) ksDel (pluginConfig->oldKS);
 	if (pluginConfig->lastOrder) elektraFree (pluginConfig->lastOrder);
+	if (pluginConfig->lastComments) keyDel (pluginConfig->lastComments);
 	elektraFree (pluginConfig->continuationString);
 	elektraFree (pluginConfig);
 	elektraPluginSetData (handle, 0);
@@ -741,6 +744,11 @@ int elektraIniGet (Plugin * handle, KeySet * returned, Key * parentKey)
 	cbHandle.mergeSections = pluginConfig->mergeSections;
 	cbHandle.pluginConfig = pluginConfig;
 	int ret = ini_parse_file (fh, &iniConfig, &cbHandle);
+	if (cbHandle.collectedComment)
+	{
+		pluginConfig->lastComments = keyDup (cbHandle.collectedComment);
+		keyDel (cbHandle.collectedComment);
+	}
 	ksRewind (cbHandle.result);
 	stripInternalData (cbHandle.parentKey, cbHandle.result);
 	setParents (cbHandle.result, cbHandle.parentKey);
@@ -1398,6 +1406,10 @@ static int iniWriteKeySet (FILE * fh, Key * parentKey, KeySet * returned, IniPlu
 				}
 			}
 		}
+	}
+	if (config->lastComments)
+	{
+		writeComments (config->lastComments, fh, config->commentChar);
 	}
 	if (removeSectionKey) keyDel (sectionKey);
 
