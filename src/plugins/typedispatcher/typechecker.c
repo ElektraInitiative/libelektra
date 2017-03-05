@@ -5,36 +5,6 @@
 #include <stdio.h>
 
 
-// temporary helper - TODO: write actual implementation
-
-static const Key *keyTakesParameter(const Key *key, KeySet *args)
-{
-    const char *value = keyString(key);
-    if(!strncmp(value, "%", 1))
-    {
-	if(value[elektraStrLen(value)-2] == '%')
-	{
-	    size_t len = elektraStrLen(value);
-	    char tmp[len];
-	    memset(tmp, 0, sizeof(tmp));
-	    memcpy(tmp, value+1, len-3);
-	    Key *searchKey = keyNew(tmp, KEY_META_NAME, KEY_END);
-	    Key *lookup = ksLookup(args, searchKey, KDB_O_NONE);
-	    keyDel(searchKey);
-	    if(lookup)
-	    {
-		return lookup;
-	    }
-	    else
-	    {
-		return NULL;
-	    }
-	}
-    }
-    return NULL;
-}
-
-
 // helper
 // copy check metadata  
 static void copyCheckMeta(Key *key, Key *checkMeta, KeySet *args)
@@ -48,22 +18,12 @@ static void copyCheckMeta(Key *key, Key *checkMeta, KeySet *args)
     {
 	if(strncmp(keyName(metaKey), "internal/", 9))
 	{
-	    const Key *parameter = keyTakesParameter(metaKey, args);
-	    if(parameter)
-	    {
+	    char *parameter = replaceParametersWithArguments(metaKey, args);
 #ifdef DEVBUILD
-    	    fprintf(stderr, "\t\t%s:(%s)\n", keyName(metaKey), keyString(parameter));
+    	    fprintf(stderr, "\t\t%s:(%s)\n", keyName(metaKey), parameter);
 #endif
-		keySetMeta(key, keyName(metaKey), keyString(parameter));
-	    }
-	    else
-	    {
-#ifdef DEVBUILD
-    	    fprintf(stderr, "\t\t%s:(%s)\n", keyName(metaKey), keyString(metaKey));
-#endif
-    		keySetMeta(key, keyName(metaKey), keyString(metaKey));
-	    }
-
+	    keySetMeta(key, keyName(metaKey), parameter);
+	    elektraFree(parameter);
 	}
     }
 }
@@ -129,16 +89,14 @@ static int doTypeCheck(DispatchConfig *config, TypeConfig *tc, ArgumentConfig *a
     }
     else if(t == SKEL)
 	return SUCCESS;
-
+    KeySet *args = NULL;
+    if(argConfig)
+    {
+	args=makeParamKS(tc->params, argConfig);
+    }
     while((checkMeta = ksNext(tc->checks)) != NULL)
     {
-	KeySet *args = NULL;
-	if(argConfig)
-	{
-	    args=makeParamKS(tc->params, argConfig);
-	}
 	RC r = checkKey(config, key, args, checkMeta);
-	ksDel(args);
 #if defined(DEVBUILD) && defined(VERBOSEBUILD)
 	fprintf(stderr, "\t\t\tcheckKey(config, %s:(%s), %s) returned %d\n", keyName(key), keyString(key), keyName(checkMeta), r);
 #endif
@@ -165,14 +123,17 @@ static int doTypeCheck(DispatchConfig *config, TypeConfig *tc, ArgumentConfig *a
 
     }
     ksRewind(tc->types);
-    while((checkMeta = ksNext(tc->types)) != NULL)
+    const Key *typeMeta = NULL;
+    while((typeMeta = ksNext(tc->types)) != NULL)
     {
-	TypeConfig *t_tc = *(TypeConfig **)keyValue(checkMeta);
-	ArgumentConfig *ac = parseTypeString(config, keyString(keyGetMeta(checkMeta, "internal/typedispatcher/typeString")));
+	TypeConfig *t_tc = *(TypeConfig **)keyValue(typeMeta);
+	char *typeString = replaceParametersWithArguments(keyGetMeta(typeMeta, "internal/typedispatcher/typeString"), args);
+	ArgumentConfig *ac = parseTypeString(config, typeString);
+	elektraFree(typeString);
 	RC r = doTypeCheck(config, t_tc, ac, key);
 	freeArgumentConfig(ac);
 #if defined(DEVBUILD) && defined(VERBOSEBUILD)
-	fprintf(stderr, "\t\t\tcheckKey(config, %s:(%s), %s) returned %d\n", keyName(key), keyString(key), keyName(checkMeta), r);
+	fprintf(stderr, "\t\t\tcheckKey(config, %s:(%s), %s) returned %d\n", keyName(key), keyString(key), keyName(typeMeta), r);
 #endif
 	switch(t)
 	{
@@ -196,6 +157,7 @@ static int doTypeCheck(DispatchConfig *config, TypeConfig *tc, ArgumentConfig *a
 	}
     }
 TYPECHECKDONE:
+    ksDel(args);
     return rc;
 }
 

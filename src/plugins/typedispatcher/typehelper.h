@@ -71,6 +71,8 @@ TypeConfig *getType(DispatchConfig *, const char *);
 ArgumentConfig *parseTypeString(DispatchConfig *, const char *);
 void freeArgumentConfig(ArgumentConfig *);
 KeySet *makeParamKS(KeySet *, ArgumentConfig *);
+int isWithinScope(const TypeConfig *, const Key *);
+char *replaceParametersWithArguments(const Key *, KeySet *);
 
 // typereader.c
 int getTypeDefinitions(Key *, DispatchConfig *, Key *);

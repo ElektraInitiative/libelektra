@@ -419,12 +419,12 @@ void testMultipleParameter()
 		KEY_META, "define/type", "", 
 		KEY_META, "define/type/paramEnum", "", 
 		KEY_META, "define/type/paramEnum/parameter", "#2",
-		KEY_META, "define/type/paramEnum/parameter/#0", "x",
-		KEY_META, "define/type/paramEnum/parameter/#1", "y",
+		KEY_META, "define/type/paramEnum/parameter/#0", "v",
+		KEY_META, "define/type/paramEnum/parameter/#1", "wxy",
 		KEY_META, "define/type/paramEnum/parameter/#2", "z",
 		KEY_META, "define/type/paramEnum/check/enum", "#2", 
-		KEY_META, "define/type/paramEnum/check/enum/#0", "%x%", 
-		KEY_META, "define/type/paramEnum/check/enum/#1", "%y%", 
+		KEY_META, "define/type/paramEnum/check/enum/#0", "%v%", 
+		KEY_META, "define/type/paramEnum/check/enum/#1", "%wxy%", 
 		KEY_META, "define/type/paramEnum/check/enum/#2", "%z%", 
 		KEY_END), 
 	    keyNew("user/tests/typedispatcher/a", KEY_VALUE, "a", 
@@ -529,6 +529,62 @@ void testMultiParametersExtended()
     PLUGIN_CLOSE ();
 }
 
+void testMultiParametersRecursive()
+{
+    Key * parentKey = keyNew ("user/tests/typedispatcher", KEY_VALUE, "", KEY_END);
+    KeySet * ks = ksNew (5, 
+	    keyNew ("user/tests/typedispatcher", KEY_VALUE, "typedefinitions", 
+		KEY_META, "define/type", "", 
+		KEY_META, "define/type/character", "", 
+		KEY_META, "define/type/character/parameter", "a", 
+		KEY_META, "define/type/character/check/type", "%a%", 		
+		KEY_META, "define/type/upperChar", "",
+		KEY_META, "define/type/upperChar/parameter", "b",
+		KEY_META, "define/type/upperChar/check/range", "%b%",
+		KEY_META, "define/type/upperChar/check/range/type", "CHAR",
+		KEY_META, "define/type/upperChar/type", "character (char)",
+		KEY_END), 
+	    keyNew("user/tests/typedispatcher/character", KEY_VALUE, "c", 
+		KEY_META, "type", "character (char)", 
+		KEY_END), 
+	    keyNew("user/tests/typedispatcher/sub", KEY_VALUE, "",
+		KEY_META, "define/type", "",
+		KEY_META, "define/type/AB", "",
+		KEY_META, "define/type/AB/parameter", "#1",
+		KEY_META, "define/type/AB/parameter/#0", "c",
+		KEY_META, "define/type/AB/parameter/#1", "d",
+		KEY_META, "define/type/AB/check/enum", "#1",
+		KEY_META, "define/type/AB/check/enum/#0", "%c%",
+		KEY_META, "define/type/AB/check/enum/#1", "%d%", 
+		KEY_END),
+	    keyNew("user/tests/typedispatcher/sub/sub", KEY_VALUE, "", 
+		KEY_META, "define/type", "", 
+		KEY_META, "define/type/multi", "",
+		KEY_META, "define/type/multi/parameter", "#1",
+		KEY_META, "define/type/multi/parameter/#0", "e",
+		KEY_META, "define/type/multi/parameter/#1", "f",
+		KEY_META, "define/type/multi/type", "#1",
+		KEY_META, "define/type/multi/type/#0", "upperChar (A-Z)", 
+		KEY_META, "define/type/multi/type/#1", "AB (%e%,%f%)",
+		KEY_END),
+	    keyNew("user/tests/typedispatcher/sub/sub/Akey", KEY_VALUE, "A",
+		KEY_META, "type", "multi (A,B)", 
+		KEY_END),
+
+	    KS_END);
+    KeySet * conf = ksNew (0, KS_END);
+    PLUGIN_OPEN ("typedispatcher");
+    succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "MultiParameters Ext 1 failed");
+    fprintf(stderr, "\t=================\n");
+    ksAppendKey(ks, keyNew("user/tests/typedispatcher/sub/sub/Ckey", KEY_VALUE, "C",
+		KEY_META, "type", "multi (A,B)",
+		KEY_END));
+    succeed_if (plugin->kdbGet (plugin, ks, parentKey) == -1, "MultiParameters Ext 2 failed");
+    ksDel (ks);
+    keyDel (parentKey);
+    PLUGIN_CLOSE ();
+}
+
 int main (int argc, char ** argv)
 {
     printf ("TYPEDISPATCHER     TESTS\n");
@@ -537,33 +593,50 @@ int main (int argc, char ** argv)
     init (argc, argv);
 
     fprintf(stderr, "\n============================================\n");
+    fprintf(stderr, "testSimple()\n");
     testSimple();
     fprintf(stderr, "\n============================================\n");
+    fprintf(stderr, "testSub()\n");
     testSub();
     fprintf(stderr, "\n============================================\n");
+    fprintf(stderr, "testSub2()\n");
     testSub2();
     fprintf(stderr, "\n============================================\n");
+    fprintf(stderr, "testSimpleWithOthers()\n");
     testSimpleWithOthers();
     fprintf(stderr, "\n============================================\n");
+    fprintf(stderr, "testSimpleOutOfScope()\n");
     testSimpleOutOfScope();
     fprintf(stderr, "\n============================================\n");
+    fprintf(stderr, "testSimpleClash()\n");
     testSimpleClash();
     fprintf(stderr, "\n============================================\n");
+    fprintf(stderr, "testMultiSub()\n");
     testMultiSub();
     fprintf(stderr, "\n============================================\n");
+    fprintf(stderr, "testSimpleSum()\n");
     testSimpleSum();
     fprintf(stderr, "\n============================================\n");
+    fprintf(stderr, "testArraySub()\n");
     testArraySum();
     fprintf(stderr, "\n============================================\n");
+    fprintf(stderr, "testSimpleParameters()\n");
     testSimpleParameter();
     fprintf(stderr, "\n============================================\n");
+    fprintf(stderr, "testSimpleParameterFail()\n");
     testSimpleParameterFail();
     fprintf(stderr, "\n============================================\n");
+    fprintf(stderr, "testMultipleParameter()\n");
     testMultipleParameter();
     fprintf(stderr, "\n============================================\n");
+    fprintf(stderr, "testMultipleParameterFail()\n");
     testMultipleParameterFail();
     fprintf(stderr, "\n============================================\n");
+    fprintf(stderr, "testMultiParametersExtended()\n");
     testMultiParametersExtended();
+    fprintf(stderr, "\n============================================\n");
+    fprintf(stderr, "testMultiParametersRecursive()\n");
+    testMultiParametersRecursive();
     fprintf(stderr, "\n============================================\n");
     printf ("\ntestmod_typedispatcher RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 

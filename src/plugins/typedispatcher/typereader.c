@@ -144,10 +144,8 @@ static int readTypeTypeSuperTypes(DispatchConfig *config, TypeConfig *tc, const 
 	}
 	else
 	{
-	    if(keyCmp(rt->scope, key))
+	    if(!isWithinScope(rt, key))
 	    {
-		if(keyRel2(rt->scope, key, ELEKTRA_REL_BELOW_SAME_NS) <= 0)
-		{
 #ifdef DEVBUILD
 		    fprintf(stderr, "%s references %s, but not within scope\n", keyName(key), relTypeName);
 #endif
@@ -155,7 +153,6 @@ static int readTypeTypeSuperTypes(DispatchConfig *config, TypeConfig *tc, const 
 		    keyDel(relKey);
 		    ksDel(typeKS);
 		    return ERROR;
-		}
 	    }
 #ifdef DEVBUILD
 	    fprintf(stderr, "\t\t\t%s references %s - adding\n", keyName(key), relTypeName);

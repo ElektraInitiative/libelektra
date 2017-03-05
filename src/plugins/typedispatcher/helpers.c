@@ -2,6 +2,8 @@
 #include <kdbmodule.h>    	//elektraModulesInit, elektraModulesClose
 #include <kdbprivate.h>   	//elektraPluginClose. elektraPluginOpen, elektraStrNDup
 #include <kdbease.h>		//elektraArrayIncName
+#include <kdbos.h>		//elektraNamespace;
+#include <kdbproposal.h>	//keyRel2, KeyRelType
 #include <stdio.h>
 #include <string.h>
 #include <strings.h>
@@ -124,6 +126,48 @@ KeySet *getKeysDirectBelow(const Key *key, KeySet *ks)
     return getKeysBelow(key, ks, ELEKTRA_REL_DIRECT_BELOW_SAME_NS);
 }
 
+// check if key is withing scope of datatype
+// key is within scope if either the key is in the same namespace
+// and below the key where the datatype has been defined, or if
+// key is below the key where the datatype has been defined and the
+// datatype has been defined in the spec namespace
+
+int isWithinScope(const TypeConfig *config, const Key *key)
+{
+    const Key *scope = config->scope;
+    if(keyCmp(scope, key))
+    {
+	if(keyRel2(scope, key, ELEKTRA_REL_BELOW_SAME_NS) <= 0)
+	{
+	    elektraNamespace scopeNS = keyGetNamespace(scope);
+	    if(scopeNS == KEY_NS_SPEC)
+	    {
+		if(keyRel2(scope, key, ELEKTRA_REL_BELOW_IGNORE_NS) <= 0)
+		{
+		    return 0;
+		}
+		else
+		{
+		    return 1;
+		}
+	    }
+	    else
+	    {
+		return 0;
+	    }
+	}
+	else
+	{
+	    return 1;
+	}
+    }
+    else
+    {
+	return 1;
+    }
+}
+
+
 //initialize type config skeleton
 TypeConfig *newTypeConfig()
 {
@@ -169,6 +213,110 @@ TypeConfig *getType(DispatchConfig *config, const char *type)
     TypeConfig *tc = *(TypeConfig**)keyValue(lookup);
     return tc;
 }
+
+char *replaceParametersWithArguments(const Key *key, KeySet *args)
+{
+    const char *ptr = keyString(key);
+#ifdef DEVBUILD
+    fprintf(stderr, "replacing parameters in %s\n", ptr);
+#endif
+    const char *lastPtr = ptr;
+    char *preparedString = NULL;
+    char *dstPtr = NULL;
+    ssize_t preparedStringLen = 1;
+    while(*ptr)
+    {
+	if(*ptr == '%')
+	{
+	    const char *endPtr = ptr+1;
+	    if(lastPtr == ptr)
+		++lastPtr;
+	    while(*endPtr)
+	    {
+		if(*endPtr == '%')
+		{
+		    // copy string from lastPtr to ptr
+		    preparedStringLen += (ptr - lastPtr) + 1;
+	    	    elektraRealloc((void **)&preparedString, preparedStringLen);
+		    if(!dstPtr)
+		    {
+			dstPtr = preparedString;
+		    }
+		    else
+		    {
+			dstPtr = preparedString + elektraStrLen(preparedString)-1;
+		    }
+		    *dstPtr = '\0';
+		    if(ptr >= lastPtr)
+		    {
+		    	memcpy(dstPtr, lastPtr, (ptr - lastPtr));
+		    	dstPtr += (ptr - lastPtr);
+			*dstPtr = '\0';
+		    	lastPtr = endPtr+1;
+		    }
+
+
+		    //extract argument name
+		    ssize_t len = (endPtr - 1) - (ptr + 1) + 1; // length of argument string
+		    char tmp[len + 1]; //length + nullbyte
+		    memset(tmp, 0, sizeof(tmp));
+		    memcpy(tmp, ptr+1, len);
+		    Key *searchKey = keyNew(tmp, KEY_META_NAME, KEY_END);
+		    Key *lookup = ksLookup(args, searchKey, KDB_O_NONE);
+		    keyDel(searchKey);
+		    if(lookup)
+		    {
+
+			ssize_t newLen = preparedStringLen + elektraStrLen(keyString(lookup)) - 1; //no need for 2 nullbytes
+			elektraRealloc((void **)&preparedString, newLen);
+			strncat(preparedString, keyString(lookup), elektraStrLen(keyString(lookup)) - 1);
+			dstPtr = preparedString + newLen - 1;
+			preparedStringLen = newLen;
+
+		    }
+		    else
+		    {
+			ssize_t newLen = elektraStrLen(preparedString) + sizeof(tmp) + 2; 
+			elektraRealloc((void **)&preparedString, newLen);
+			strcat(preparedString, "%");
+			strncat(preparedString, tmp, sizeof(tmp));
+			strcat(preparedString, "%");
+			dstPtr = preparedString+newLen-1;
+			preparedStringLen = newLen;
+		    }
+		    ptr = endPtr;
+		    lastPtr = ptr+1;
+		    break;
+	       	}
+		++endPtr;
+	    }
+	}
+	++ptr;
+    }
+    if(!(*ptr) && lastPtr && preparedString)
+    {
+	ssize_t newLen = elektraStrLen(preparedString) + (ptr - lastPtr) + 1;
+	elektraRealloc((void **)&preparedString, newLen);
+	strncat(preparedString, lastPtr, (ptr - lastPtr)+1);
+    }
+
+    if(preparedString)
+    {
+#ifdef DEVBUILD
+	fprintf(stderr, "result: %s\n", preparedString);
+#endif
+	return preparedString;
+    }
+    else
+    {
+#ifdef DEVBUILD
+   	fprintf(stderr, "result: %s\n", keyString(key));
+#endif
+	return elektraStrDup(keyString(key));
+    }
+}
+
+
 
 
 // parses "type (arg1, arg2, ...)" strings into ArgumentConfig 
