@@ -162,7 +162,7 @@ static int readTypeTypeSuperTypes(DispatchConfig *config, TypeConfig *tc, const 
 	    keyCopyAllMeta(appendKey, refKey);
 
 	    // in cases like define/type/a/type := otherType (a, b, c) we need to store
-	    // the whole string to keep the arguments. TODO: parse arguments and store as metadata
+	    // the whole string to keep the arguments.
 	    keySetMeta(appendKey, "internal/typedispatcher/typeString", typeString);
 	    ksAppendKey(tc->types, appendKey);
 	    freeArgumentConfig(argConfig);

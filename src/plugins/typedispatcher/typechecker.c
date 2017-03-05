@@ -164,7 +164,6 @@ TYPECHECKDONE:
 
 // helperfunction
 // checks if type exists and calls actual typecheck function doTypCheck
-// TODO: merge with doTypeCheck
 static int typeCheck(DispatchConfig *config, const Key *key, const char *typeString, Key *parentKey ELEKTRA_UNUSED)
 {
 #ifdef DEVBUILD
