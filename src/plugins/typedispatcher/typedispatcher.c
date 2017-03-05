@@ -20,14 +20,6 @@
 
 int elektraTypedispatcherOpen (Plugin * handle ELEKTRA_UNUSED, Key * errorKey ELEKTRA_UNUSED)
 {
-    DispatchConfig *config = elektraPluginGetData(handle);
-    if(!config)
-    {
-	config=initDispatchConfig();
-	if(!config)
-	    return ERROR;
-	elektraPluginSetData(handle, config);
-    }
     return SUCCESS; // success
 }
 
@@ -87,15 +79,16 @@ int elektraTypedispatcherGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned 
 
 		return SUCCESS; // success
 	}
-	// get all keys
 
-	DispatchConfig *config = elektraPluginGetData(handle);
+	DispatchConfig *config = NULL;
+	config=initDispatchConfig();
 	if(!config)
-	{
 	    return ERROR;
-	}
+	elektraPluginSetData(handle, config);
 	RC rc = SUCCESS;
 	rc = iterate(config, returned, parentKey);
+	closeDispatchConfig(handle);
+	elektraPluginSetData(handle, NULL);
 	return rc;
 }
 
@@ -103,8 +96,15 @@ int elektraTypedispatcherSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned 
 {
 	// set all keys
 	// this function is optional
-
-	return 1; // success
+	DispatchConfig *config = NULL;
+	config=initDispatchConfig();
+	if(!config)
+	    return ERROR;
+	RC rc = SUCCESS;
+	rc = iterate(config, returned, parentKey);
+	closeDispatchConfig(handle);
+	elektraPluginSetData(handle, NULL);
+	return rc;
 }
 
 int elektraTypedispatcherError (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
