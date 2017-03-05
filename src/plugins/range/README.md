@@ -6,7 +6,7 @@
 - infos/recommends =
 - infos/placements = presetstorage postgetstorage
 - infos/status = maintained conformant compatible coverage specific unittest tested libc preview experimental unfinished nodoc
-- infos/metadata = check/range check/range/type
+- infos/metadata = check/range check/type
 - infos/description = tests if a value is within a given range
 
 ## Introduction ##
@@ -15,7 +15,7 @@ The range plugin checks if a Key value is within a given range.
 
 ## Usage ##
 
-The plugin checks every Key in the Keyset for the Metakey `check/range` which contains either a single range with the syntax `[-]min-[-]max`, or a list of ranges separated by `,` and tests if the Key value is within the range(s).
+The plugin checks every Key in the Keyset for the Metakey `check/range` which contains either a single range with the syntax `[-]min-[-]max`, or a list of ranges or values separated by `,` and tests if the Key value is within the range(s).
 
 `check/type` or `type` can be used to specify the datatype. If not specified otherwise the default value is `INT`
 

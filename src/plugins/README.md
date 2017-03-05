@@ -203,7 +203,7 @@ copied by another plugin just before):
 - [conditionals](conditionals/) by using if-then-else like statements
 - [required](required/) rejects non-required keys
 - [date](date/) validates date and time data
-- [range](range/) checks if a value is within a specific range
+- [range](range/) checks if a value is within a given range
 
 **Other Validation**
 
