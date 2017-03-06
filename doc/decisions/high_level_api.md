@@ -40,8 +40,10 @@ We provide 3 C APIs:
 
 ### Basic
 
+(needed for lcdproc)
+
 ```c
-Elektra * elektraOpen (const char * application, const KeySet * defaultConfig);
+Elektra * elektraOpen (const char * application);
 kdb_boolean_t elektraHasError (const Elektra * handle);
 const char * elektraErrorMessage (const Elektra * handle);
 void elektraErrorClear (const Elektra * handle); // ErrorClear vs. ClearError?
@@ -72,24 +74,48 @@ kdb_double_t elektraGetDouble (Elektra * elektra, const char * name);
 kdb_long_double_t elektraGetLongDouble (Elektra * elektra, const char * name);
 ```
 
-### Needed for lcdproc
+### Reload and Parse
+
+(needed for lcdproc)
 
 ```c
 // might fail, you need to check for error afterwards!
 void elektraReload (Elektra * handle);
+void elektraParse (Elektra * handle, int argc, char ** argv, char ** environ); // pass environ?
+void elektraDefault (Elektra * handle, const KeySet * defaultConfig);
+```
 
-// arrays
+### Arrays
+
+(needed for lcdproc)
+
+
+```c
 size_t elektraArraySize (Elektra * handle, const char * name);
 kdb_long_t elektraArrayLong (Elektra * handle, const char * name, size_t elem);
 // same types as above
 
-// to abort afterwards
-
-void elektraParse (Elektra * handle, int argc, char ** argv, char ** environ); // pass environ?
 ```
 
+## Code-Generation
 
-## More (not needed for lcdproc)
+For every entry in the specification, such as:
+
+```
+[key]
+default=10
+type=long
+```
+
+The code generator yields a `kdb_long_t elektraGetKey(Elektra * handle);`.
+
+All spec keys together are part of the KeySet that is automatically applied
+on failures in lower-level calls when using:
+`elektraOpenOrgApplication()` where `OrgApplication` is the org and application name.
+
+## Extensions
+
+(not needed for lcdproc)
 
 ```c
 // gives you a duplicate for other threads (same application+version), automatically calls elektraErrorClear
@@ -105,6 +131,8 @@ void elektraSetInt (Elektra * handle, const char * name, int value);
 
 ### Lower-level type API
 
+(not needed for lcdproc)
+
 ```c
 // will be used internally in elektraGetInt, are for other APIs useful, too
 int keyGetInt (Key * key);
@@ -112,7 +140,9 @@ int keyGetInt (Key * key);
 // and so on
 ```
 
-### recursive API (KeyHierarchy)
+### recursive KeyHierarchy
+
+(not needed for lcdproc)
 
 can be transformed from/to keysets
 
