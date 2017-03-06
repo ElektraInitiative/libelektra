@@ -1,5 +1,4 @@
 #include "typehelper.h"
-#include <kdbconfig.h> //ELEKTRA_UNUSED   TODO: REMOVE
 #include <kdberrors.h>
 #include <kdbhelper.h>   // elektraStrLen
 #include <kdbproposal.h> //elektraKeyGetMetaKeySet
