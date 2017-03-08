@@ -19,7 +19,7 @@ Build-Depends: debhelper (>= 9),
  python3-dev,
  libgtest-dev,
  ruby-ronn,
- libsystemd-journal-dev,
+ libsystemd-journal-dev | libsystemd-dev,
  liblua5.2-dev,
  python2.7-dev,
 Build-Depends-Indep:
