@@ -71,45 +71,6 @@ Description: elektra configuration store, main library [development]
  .
  This package contains the development files for the main elektra library.
 
-#Package: libelektratools4
-#Section: libs
-#Architecture: any
-#Multi-Arch: same
-#Pre-Depends: ${misc:Pre-Depends}
-#Depends: libelektra4 (= ${binary:Version}),
-# ${shlibs:Depends},
-# ${misc:Depends}
-#Description: elektra configuration store, elektratools library
-# Elektra provides a universal and secure framework to store configuration
-# parameters in a hierarchical key-value pair mechanism, instead of each
-# program using its own text configuration files. This allows any program
-# to read and save its configuration with a consistent API, and allows
-# them to be aware of other applications' configurations, permitting
-# easy application integration. While architecturally similar to other OS
-# registries, Elektra does not have most of the problems found in those
-# implementations.
-# .
-# This package contains the elektratools library.
-#
-#Package: libelektratools-dev
-#Section: libdevel
-#Architecture: any
-#Depends: libelektratools4 (= ${binary:Version}),
-# libelektra-dev (= ${binary:Version}),
-# ${shlibs:Depends},
-# ${misc:Depends}
-#Description: elektra configuration store, elektratools library [development]
-# Elektra provides a universal and secure framework to store configuration
-# parameters in a hierarchical key-value pair mechanism, instead of each
-# program using its own text configuration files. This allows any program
-# to read and save its configuration with a consistent API, and allows
-# them to be aware of other applications' configurations, permitting
-# easy application integration. While architecturally similar to other OS
-# registries, Elektra does not have most of the problems found in those
-# implementations.
-# .
-# This package contains the development files for the elektratools library.
-
 Package: libelektra4-augeas
 Section: libs
 Architecture: any

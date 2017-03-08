@@ -1,2 +1,7 @@
+usr/share/applications/org.libelektra.elektra-qt-editor.desktop
+usr/share/appdata/org.libelektra.elektra-qt-editor.appdata.xml
+usr/share/icons/hicolor/scalable/apps/elektra.svg
+usr/share/icons/hicolor/scalable/apps/elektra-symbolic.svg
+usr/bin/elektra-qt-editor
 usr/lib/*/elektra/tool_exec/qt-gui
 usr/share/man/man1/kdb-qt-gui.1
