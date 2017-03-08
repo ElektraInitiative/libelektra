@@ -84,7 +84,7 @@ override_dh_makeshlibs:
 
 override_dh_shlibdeps:
 	# to find libelektragetenv.so
-	dh_shlibdeps -l$(CURDIR)/debian/tmp/usr/lib/$(DEB_HOST_MULTIARCH)/
+	dh_shlibdeps -l$(CURDIR)/debian/tmp/usr/lib/$(DEB_HOST_MULTIARCH)/ --dpkg-shlibdeps-params=--ignore-missing-info
 
 override_dh_gencontrol:
 	dh_gencontrol -- -Velektra:allPlugins='$(PKGS_ALL_PLUGINS)'
