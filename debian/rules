@@ -53,7 +53,7 @@ PKGS_ALL_PLUGINS = $(subst $(SPACE),$(COMMA_SPACE),$(filter libelektra4-%,$(shel
 export DEB_LDFLAGS_MAINT_APPEND := -Wl,--as-needed
 
 %:
-	dh $@ --parallel --buildsystem=cmake --with lua,python3
+	dh $@ --parallel --buildsystem=cmake --with lua,python3,python
 
 override_dh_auto_configure:
 	dh_auto_configure --buildsystem=cmake -- $(CMAKE_ARGS)

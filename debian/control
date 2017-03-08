@@ -257,6 +257,25 @@ Description: elektra configuration store, Python 3 bindings
  .
  This package contains the Python 3 bindings.
 
+Package: python-elektra
+Section: python
+Architecture: any
+Depends: libelektra4 (= ${binary:Version}),
+ ${shlibs:Depends},
+ ${python:Depends},
+ ${misc:Depends}
+Description: elektra configuration store, Python 2.x bindings
+ Elektra provides a universal and secure framework to store configuration
+ parameters in a hierarchical key-value pair mechanism, instead of each
+ program using its own text configuration files. This allows any program
+ to read and save its configuration with a consistent API, and allows
+ them to be aware of other applications' configurations, permitting
+ easy application integration. While architecturally similar to other OS
+ registries, Elektra does not have most of the problems found in those
+ implementations.
+ .
+ This package contains the Python 2.x bindings.
+
 Package: elektra-bin
 Architecture: any
 Multi-Arch: foreign
