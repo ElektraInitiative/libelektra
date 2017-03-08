@@ -4,7 +4,7 @@
 #export DH_VERBOSE=1
 
 # Which plugins and tools should be built
-ELEKTRA_PLUGINS='ALL;-EXPERIMENTAL;python;mozprefs;c;simplespeclang;base64;fcrypt'
+ELEKTRA_PLUGINS='ALL;-EXPERIMENTAL'
 ELEKTRA_TOOLS='ALL'
 ELEKTRA_BINDINGS='cpp;swig_lua;swig_python3;swig_python2;intercept
 
