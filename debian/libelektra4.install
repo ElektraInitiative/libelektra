@@ -3,7 +3,6 @@ usr/lib/*/elektra4/libelektra-conditionals.so
 usr/lib/*/elektra4/libelektra-constants.so
 usr/lib/*/elektra4/libelektra-counter.so
 usr/lib/*/elektra4/libelektra-csvstorage.so
-usr/lib/*/elektra4/libelektra-doc.so
 usr/lib/*/elektra4/libelektra-dump.so
 usr/lib/*/elektra4/libelektra-enum.so
 usr/lib/*/elektra4/libelektra-error.so
@@ -42,7 +41,6 @@ usr/lib/*/elektra4/libelektra-struct.so
 usr/lib/*/elektra4/libelektra-sync.so
 usr/lib/*/elektra4/libelektra-syslog.so
 usr/lib/*/elektra4/libelektra-tcl.so
-usr/lib/*/elektra4/libelektra-template.so
 usr/lib/*/elektra4/libelektra-timeofday.so
 usr/lib/*/elektra4/libelektra-tracer.so
 usr/lib/*/elektra4/libelektra-type.so
