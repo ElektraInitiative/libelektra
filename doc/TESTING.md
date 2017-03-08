@@ -8,18 +8,23 @@ integrated so that after running all tests in the build directory:
 
     make run_all
 
-and on the target (installed) system:
+And on the target (installed) system:
 
     kdb run_all
 
-it is assured that no new regressions were added.
+It is assured that no new regressions were added.
 To run memcheck tests run in the build directory:
 
     make run_memcheck
 
-For tests in the build directory ctest is used, so you alternatively also can call
-ctest with its options. On the target (installed) system our own scripts
-drive the tests.
+They are supplementary, ideally you run all three.
+To avoid running tests that write to the disc you
+can use:
+
+    make run_nokdbtests
+
+Directly running `ctest` might cause problems:
+You need to set `LD_LIBRARY_PATH` as `run_all` and `run_nokdbtests` do.
 
 Some tests write into system paths.
 If the access is denied, several tests will fail.
@@ -28,6 +33,7 @@ You have some options to avoid running them as root:
 1. To void running the problematic test cases (reduces the test coverage!)
    run ctest without tests that have the label `kdbtests`:
    `ctest --output-on-failure -LE kdbtests`
+   (which is also what `make run_nokdbtests` does)
 2. To give your user the permissions to the relevant paths, i.e. (once as root):
    ```
    kdb mount-info
