@@ -3,7 +3,7 @@
 ## Dependencies
 
 For the base system you only need cmake and build-essential (make, gcc,
-some unix tools):
+some Unix tools):
 
 	sudo apt-get install cmake build-essential
 

@@ -114,7 +114,7 @@ sudo kdb set "system/sw/org/myapp/policy" "super-high-secure"
 #> Create a new key system/sw/org/myapp/policy with string super-high-secure
 ```
 
-The key **system/app/policy** will be stored in the system namespace (probably at `/etc/kdb` on a Linux/UNIX system).
+The key **system/app/policy** will be stored in the system namespace (probably at `/etc/kdb` on a Linux/Unix system).
 
 Then the user sets his app directory by issuing:
 
@@ -146,7 +146,7 @@ kdb get /sw/org/myapp/default_dir
 #> /home/user/.myapp
 ```
 
-When using cascading key the best key will be searched at runtime.
+When using cascading key the best key will be searched at run-time.
 If you are only interested in the system key, you would use:
 
 ```sh

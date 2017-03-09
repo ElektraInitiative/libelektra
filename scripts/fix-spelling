@@ -1,0 +1,13 @@
+#!/bin/sh
+#
+# @author Markus Raab <elektra@markus-raab.org>
+# @brief Fix spelling error in most files
+# @date 09.03.2017
+# @tags reformat
+
+SCRIPTS_DIR=$(dirname "$0")
+. "${SCRIPTS_DIR}/include-common"
+
+cd "$SOURCE"
+
+$(sed -i -E -f scripts/sed `find . -type f -name '*.md' | egrep -v "^./(.git|tests/gtest-1.7.0|scripts/sed|scripts/fix-spelling|doc/images|doc/AUTHORS.md|doc/news)"`)

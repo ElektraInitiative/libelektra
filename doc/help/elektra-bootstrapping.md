@@ -25,7 +25,7 @@ they write into the configuration file `KDB_DB_INIT` (elektra.ecf by default).
 
 Thus for full and static build variants an exchange at run-time is not possible.
 Using shared libraries, however, `KDB_STORAGE` and `KDB_RESOLVER` are actually
-symlinks (`libelektra-resolver.so` and `libelektra-storage.so`) to concrete plugins
+symbolic links (`libelektra-resolver.so` and `libelektra-storage.so`) to concrete plugins
 and thus can be changed without recompilation.
 
 The **init backend** is guaranteed to stay mounted at
@@ -55,7 +55,7 @@ system keys always stay separated.
 - elektraOpenBootstrap() implements above algorithm
 - backendOpenDefault() opens the default backend
 - /src/include/kdbconfig.h.in contains above KDB_* variables
-- src/plugins/CMakeLists.txt creates the symlinks
+- src/plugins/CMakeLists.txt creates the symbolic links
 - cmake/Modules/LibAddMacros.cmake create_lib_symlink function
 
 

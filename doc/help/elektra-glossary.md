@@ -71,4 +71,4 @@ elektra-glossary(7) -- glossary of Elektra
   can be used for something else afterwards.
 
 - **remove**:
-  means that the key/value information in the physical database will be removed permanently.
+  means that the key-value information in the physical database will be removed permanently.

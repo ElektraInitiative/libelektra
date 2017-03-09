@@ -82,7 +82,7 @@ Import a KeySet using `dump`:
 
     cat example.ecf | kdb import system/example dump
 
-Using grep/diff or other unix tools on the dump file. Make sure that you
+Using grep/diff or other Unix tools on the dump file. Make sure that you
 treat it as text file, e.g.:
 
     grep --text mountpoints example.ecf

@@ -196,8 +196,8 @@ copied by another plugin just before):
 
 - [validation](validation/) by using regex
 - [network](network/) by using network APIs
-- [path](path/) by checking files on filesystem
-- [type](type/) using runtime type checking (CORBA types/)
+- [path](path/) by checking files on file system
+- [type](type/) using run-time type checking (CORBA types/)
 - [enum](enum/) compares the keyvalue against a list of valid values
 - [mathcheck](mathcheck/) by mathematical expressions using keysvalues as operands
 - [conditionals](conditionals/) by using if-then-else like statements
@@ -215,7 +215,7 @@ copied by another plugin just before):
 These plugins start an interpreter and allow you to execute a script
 in an interpreted language whenever Elektra’s key database gets
 accessed. Note that they depend on the presence of the respective
-binding during runtime.
+binding during run-time.
 
 - [jni](jni/) java plugins started by jni, works with jna plugins
 - [python](python/) Python 3 plugins

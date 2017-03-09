@@ -6,7 +6,7 @@ The version of Elektra is handeled with the kdb.h macros
 numbers. They represent the public announced version
 information.
 
-The same information can be retrieved at runtime using
+The same information can be retrieved at run-time using
 
 	system/elektra/version/constants/KDB_VERSION
 	system/elektra/version/constants/KDB_VERSION_MAJOR

@@ -57,7 +57,7 @@ The user should specify the format that the current configuration or keys are in
 ## Strategies
 
 - `validate`: 
-  apply meta data as received from base, and then cut+append all keys as imported.
+  apply metadata as received from base, and then cut+append all keys as imported.
   If the appended keys do not have a namespace, the namespace given by `-N`
   is added.
 

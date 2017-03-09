@@ -27,7 +27,7 @@ file with a different encoding.
 The iconv plugin provides a solution for both scenarios. It converts between
 many available character encodings. With the plugin’s configuration
 the user can change the from and to encoding.  The default values of the
-plugin configuration are: `from` encoding will be determined at run time.
+plugin configuration are: `from` encoding will be determined at run-time.
 `to` encoding is `UTF-8`.
 
 Parameters:

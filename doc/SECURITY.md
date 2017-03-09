@@ -46,5 +46,5 @@ http://wiki.debian.org/Hardening
 
 ## Memory Leaks
 
-We use valgrind (`--tool=memcheck`) to make sure that Elektra
+We use Valgrind (`--tool=memcheck`) to make sure that Elektra
 does not suffer memory leaks and incorrect memory handling.

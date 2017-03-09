@@ -162,7 +162,7 @@ Key *k = ksLookupByName(conf,
 	0);
 ```
 
-We see in this example that only Elektra paths are hardcoded in
+We see in this example that only Elektra paths are hard coded in
 the application, no configuration file or similar.
 
 As already mentioned keys starting with slash `/` do not exist
@@ -185,13 +185,13 @@ need.
 
 To do this manually has severe drawbacks:
 
-- hardcoded names might have typos or might be inconsistent
+- hard coded names might have typos or might be inconsistent
 - tedious handling if key or value might be absent
 - always calling `ksLookup` which gets tiresome for arrays
 - converting to needed data type is error prone
 
 So (larger) applications should not directly use `KeySet`, but
-instead use code generation to provide a type-safe front-end.
+instead use code generation to provide a type-safe frontend.
 
 For more information about that, continue reading
 [here](https://github.com/ElektraInitiative/libelektra/tree/master/src/tools/gen).
@@ -200,7 +200,7 @@ For more information about that, continue reading
 
 ## Specification
 
-Now, we have a fully working configuration system without any hardcoded
+Now, we have a fully working configuration system without any hard coded
 information (such as configuration files). We already gained something.
 But, we did not discuss how we can actually achieve application integration,
 the goal of Elektra.
@@ -239,11 +239,11 @@ kdb get "/sw/org/myapp/#0/current/section/subsection/key"
 ```
 
 , will give you the *exact same value* as the application gets when it uses the
-above lookup C-code.
+above lookup C code.
 
 What we do not see in the program above are the default values and
 fallbacks. They are present in the so-called specification (namespace `spec`).
-The specification consists of (meta) key/value pairs, too. So we do not have
+The specification consists of (meta) key-value pairs, too. So we do not have
 to learn something new.
 
 So lets say, that another application `otherapp` has the
@@ -269,9 +269,9 @@ To make this work within your application make sure to always call
 
 ## Conclusion
 
-Elektra does not hardcode any configuration data in your application.
+Elektra does not hard code any configuration data in your application.
 Using the `default` specification, we even can startup applications without
-any configuration file *at all* and still do not have anything hardcoded
+any configuration file *at all* and still do not have anything hard coded
 in the applications binary.
 Furthermore, by using cascading keys for `kdbGet()` and `ksLookup()`
 Elektra gives you the possibility to specify how to retrieve configuration data.

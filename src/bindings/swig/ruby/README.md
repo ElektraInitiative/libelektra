@@ -129,10 +129,10 @@ The first argument is the name of the `Key`, followed by an optional list of
 symbol value pairs. The symbol value pairs are interpreted as follows:
 - `value`: this will set the value of the newly created key
 - `flags`: pass a ORed list of Key flags
-- any other symbol is interpreted as meta data key and therefore will add a new
+- any other symbol is interpreted as metadata key and therefore will add a new
   metadata key.
 
-## Key meta data iteration
+## Key metadata iteration
 
 This is very similar to the `KeySet` iteration and can be accessed with `meta`:
 

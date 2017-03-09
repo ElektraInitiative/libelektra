@@ -103,7 +103,7 @@ idea that a `KeySet` will be applied to the key database is correct again.
 
 ## kdbGet
 
-It is critical for application startup time to retrieve the
+It is critical for application startup-time to retrieve the
 configuration as fast as possible.  Hence, the design goal of the
 `kdbGet()` algorithm is to be efficient while still enabling plugins
 to have relaxed postconditions.  To achieve this, the sequence of
@@ -235,7 +235,7 @@ algorithm finally finishes.
 The user can call `kdbGet()` often even if the configuration or parts
 of it are already up to date.  This can happen when applications reread
 configuration in some events.  Examples are signals (SIGHUP is
-the signal used for that on UNIX systems. It is sent when the program's
+the signal used for that on Unix systems. It is sent when the program's
 controlling terminal is closed. Daemons do not have a terminal so
 the signal is reused for reloading configuration.), notifications,
 user requests and in the worst case periodical attempts to reread

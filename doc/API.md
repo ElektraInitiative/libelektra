@@ -116,7 +116,7 @@ that are all unified (in the given order) in one cascading tree starting with `/
 
 The cascading tree is the logical tree to be used in applications.
 The other trees are the physical ones that stem from configuration sources.
-When using cascading key the best key will be searched at runtime,
+When using cascading key the best key will be searched at run-time,
 which appears like a tree on its own.
 See @ref cascading in the documentation of ksLookupByName() on how the selection
 of keys works.

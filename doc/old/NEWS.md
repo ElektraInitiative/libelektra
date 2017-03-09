@@ -376,7 +376,7 @@ needed to access those declarations from other languages. The second
 technique is called GObject Introspection. In contrast to SWIG, GObject
 Introspection generates a language independent metadata file. For dynamic
 languages the GObject Introspection support in the target language will
-load this metadata file to generate bindings at runtime. In order to
+load this metadata file to generate bindings at run-time. In order to
 provide bindings for static languages a compiler on the metadate file
 will be used. This is comparable to using SWIG. Manuel will focus on
 implementing language bindings for Python and Lua though both techniques
@@ -562,10 +562,10 @@ POSIX compatibility and handling of multi-process conflicts has
 been improved. Now the HOME environment variable will be used. The
 old behaviour (USER environment variable) is still available as
 fallback. Additionally there is a fallback for embedded systems to the
-hardcoded variant. In case of these fallbacks a warning will be added.
+hard coded variant. In case of these fallbacks a warning will be added.
 
 A new plugin uname was added. It allows you to mount the functionality
-of uname within Elektra’s key/value namespace. Currently it is read-only
+of uname within Elektra’s key-value namespace. Currently it is read-only
 and needs POSIX.
 
 The built-in description of plugins, especially for new plugins, was
@@ -643,7 +643,7 @@ The targets will be:
 
 Quality Goals will be:
 - Extensibility: Requirements for configuration can vary a lot.
-  The only common dominator are key/value pairs, nearly everything else
+  The only common dominator are key-value pairs, nearly everything else
   can differ from project to project. So Elektra needs to be, and is,
   very extensible to fulfil this wide range of goals.
 - Simplicity: The system should be very simple in its core so that it
@@ -857,7 +857,7 @@ paradigm-shifting.
 which allows you to check types and structure
 of the keys, notify by dbus, log to syslog,
 change the way how filenames are resolved and change
-the configuration format and files at runtime.
+the configuration format and files at run-time.
 
 The C-API, like defined in
  src/include/kdb.h

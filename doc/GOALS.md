@@ -75,12 +75,12 @@ Nearly every aspect of Elektra must be extremely extensible.
 On the other side semantics must be very clear and well defined
 so that this extensible system works reproducible and predictable.
 
-Only key/value pairs are the common factor and a way to get and set
+Only key-value pairs are the common factor and a way to get and set
 them, everything else is an extension.
 
 4.) Performance
 
-Configuration is the main impact for bootup and startup time.
+Configuration is the main impact for bootup and startup-time.
 Elektra needs to be similar fast then current solutions.
 Ideally it should get faster because of centralized optimization
 endeavours where everyone using Elektra can benefit from.
@@ -89,6 +89,6 @@ Only pay for what you need.
 
 ## Non-Goals
 
-- Support semantics that do not fit into the KeySet (key/value pairs) with an `kdbGet()`/`kdbSet()` interface.
-- Support for non-configuration issues, e.g. storing any key/value data.
-- Elektra is not a distributed CM, use Puppet, CFEngine on top or a distributed filesystem below Elektra.
+- Support semantics that do not fit into the KeySet (key-value pairs) with an `kdbGet()`/`kdbSet()` interface.
+- Support for non-configuration issues, e.g. storing any key-value data.
+- Elektra is not a distributed CM, use Puppet, CFEngine on top or a distributed file system below Elektra.

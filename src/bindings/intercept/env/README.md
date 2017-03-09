@@ -127,7 +127,7 @@ Values can contain / to form hierarchies, e.g. `--elektra%name%=app/profile`
 
 ### Options for Applications
  * `--elektra:key=value`, `/elektra/intercept/getenv/override/<key>` or `/elektra/intercept/getenv/fallback/<key>`:
-   set a key/value to be preferred, i.e. the first to considered as explained in [LOOKUP](#LOOKUP).
+   set a key-value to be preferred, i.e. the first to considered as explained in [LOOKUP](#LOOKUP).
 
 Keys can contain / to form hierarchies, e.g. `--elektra:my/HOME=/path/to/home`.
 

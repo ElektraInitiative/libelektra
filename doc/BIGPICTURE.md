@@ -26,9 +26,9 @@ file systems: they know how the data in configuration files should
 be interpreted.
 
 For file systems, the API is `open`, `read`, `write`, and then `close`.
-For configuration key/value access is more suitable because values are
+For configuration key-value access is more suitable because values are
 so small that a single read/write always suffices. Thus Elektra [has a
-key/value API](http://doc.libelektra.org/api/current/html) with `kdbOpen`,
+key-value API](http://doc.libelektra.org/api/current/html) with `kdbOpen`,
 `kdbGet`, `kdbSet` and `kdbClose`.  Not every application is written in C,
 thus many `bindings` where written to access file systems. For example,
 in C++ you have `fstream`, and in Java `FileReader`. Also Elektra provides
@@ -69,12 +69,12 @@ to change the character encoding.
 
 In file systems metadata describes information about files, e.g.
 when they were last accessed and who they are owned by (`ls -l`). In the
-same way Elektra has metadata that describe individual key/value pairs.
+same way Elektra has metadata that describe individual key-value pairs.
 In Elektra metadata is [defined globally](/doc/METADATA.ini) but implemented
 in many [plugins](/src/plugins/README.md).
 
 Implementations of file systems is not an easy task. The idea of
-FUSE (Filesystem in Userspace) is to make filesystem development
+FUSE (Filesystem in Userspace) is to make file system development
 easier by having the conveniences of userspace together with a
 helper library `libfuse`.  In particular this allowed developers to
 use any programming language and easier abstractions. Elektra also

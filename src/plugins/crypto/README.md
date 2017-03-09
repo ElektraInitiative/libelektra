@@ -58,7 +58,7 @@ At the moment the following crypto APIs are supported:
 
 ### GnuPG (GPG)
 
-GPG is a runtime dependency for all crypto plugin variants.
+GPG is a run-time dependency for all crypto plugin variants.
 Either the `gpg` or the `gpg2` binary should be installed when using the plugin.
 Note that `gpg2` will be preferred if both versions are available.
 The GPG binary can be configured in the plugin configuration as `/gpg/bin` (see _GPG Configuration_ below).
@@ -99,7 +99,7 @@ Also a GPG installation is required. The [GPG Tools](https://gpgtools.org) work 
 
 ## Restrictions
 
-At the moment the plugin will only run on UNIX/Linux-like systems, that provide implementations for `fork ()` and `execv ()`.
+At the moment the plugin will only run on Unix/Linux-like systems, that provide implementations for `fork ()` and `execv ()`.
 
 ## Examples
 

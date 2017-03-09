@@ -5,7 +5,7 @@
 - infos/provides = check apply
 - infos/placements = postgetstorage presetstorage
 - infos/status = maintained unittest nodep configurable global preview
-- infos/description = copies meta data from spec namespace to other namespaces
+- infos/description = copies metadata from spec namespace to other namespaces
 
 ## Introduction
 

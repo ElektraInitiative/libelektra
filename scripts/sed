@@ -1,0 +1,126 @@
+s/\<meta key\>/metakey/g
+s/\<meta-key\>/metakey/g
+s/\<meta name\>/metaname/g
+s/\<meta-name\>/metaname/g
+s/\<meta value\>/metavalue/g
+s/\<meta-value\>/metavalue/g
+
+# s/\<dir name\>/dirname/g
+# s/\<base name\>/basename/g
+
+s/\<name space\>/namespace/g
+
+s/\<meta data\>/metadata/g
+s/\<meta-data\>/metadata/g
+
+# s/\<key-name\>/key name/g
+# s/\<keyname\>/key name/g
+
+# key-value pair
+s:\<key/value:key-value:g
+
+# s/key-value/key value/g
+# s/keyvalue/key value/g
+
+s/\<data-type/data type/g
+s/\<datatype/data type/g
+
+s/\<clean up/cleanup/g
+s/\<look up/lookup/g
+
+s/\<mount point/mountpoint/g
+s/\<mount-point/mountpoint/g
+
+s/\<metaspecification/meta-specification/g
+s/\<metamodel/meta-model/g
+s/\<metalanguage/meta-language/g
+
+# \<command line or command-line (context)
+# \<up-to-date vs. up to date (depending on position!)
+
+s/\<round trip/round-trip/g
+s/\<roundtrip/round-trip/g
+
+s/\<mount time/mount-time/g
+s/\<run time/run-time/g
+s/\<compile time/compile-time/g
+s/\<startup time/startup-time/g
+s/\<deployment time/deployment-time/g
+
+s/\<mounttime/mount-time/g
+s/\<runtime/run-time/g
+s/\<compiletime/compile-time/g
+s/\<startuptime/startup-time/g
+s/\<deploymenttime/deployment-time/g
+
+s/\<time stamp/timestamp/g
+s/\<time-stamp/timestamp/g
+
+s/\<unix/Unix/g
+s/\<UNIX/Unix/g
+
+s/\<sub-project/subproject/g
+s/\<sub project/subproject/g
+
+s/\<C-string/C string/g
+s/\<C-name/C name/g
+s/\<C-code/C code/g
+s/\<C-array/C array/g
+
+s/\<multithread/multithread/g
+
+# s/\<valgrind\>/Valgrind/g
+
+# s/\<UTF/UTF/g
+# s/\<Utf/UTF/g
+# s/\<utf/UTF/g
+
+# s/\<UTF8/UTF-8/g
+# s/\<UTF 8/UTF-8/g
+
+s/\<worstcase/worst-case/g
+
+s/\<colon separated/colon-separated/g
+s/\<colonseparated/colon-separated/g
+
+s/\<errorprone/error-prone/g
+s/\<errorrelated/error-related/g
+
+s/\<exceptionrelated/exception-related/g
+s/\<filebased/file-based/g
+s/\<bottomup/bottom-up/g
+
+# get- and setmethods -> getter and setter methods
+
+s/\<hard-cod/hard cod/g
+s/\<hardcod/hard cod/g
+
+s/\<straight forward/straightforward/g
+s/\<straight-forward/straightforward/g
+
+
+s/\<front end/frontend/g
+s/\<front-end/frontend/g
+s/\<back end/backend/g
+s/\<back-end/backend/g
+
+s/\<symlink/symbolic link/g
+
+s/\<middle ware/middleware/g
+s/\<middle-ware/middleware/g
+
+s/\<cfengine/CFEngine/g
+s/\<Cfengine/CFEngine/g
+s/\<CFengine/CFEngine/g
+
+# s/\</gcc/GCC/g
+
+# plural
+s/\<filesystem\>/file system/g
+s/\<file-system\>/file system/g
+
+s/\<libreoffice/LibreOffice/g
+s/\<Libreoffice/LibreOffice/g
+
+#s/\<dependencies/dependences/g
+#s/\<dependency/dependence/g

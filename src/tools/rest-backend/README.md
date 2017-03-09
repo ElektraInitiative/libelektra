@@ -108,7 +108,7 @@ WantedBy=multi-user.target
 EOF
 ```
 2) Reload the configuration of `systemctl` with `systemctl daemon-reload`.
-3) Enable the rest-backend service with `systemctl enable @tool@.service`, a symlink should be created.
+3) Enable the rest-backend service with `systemctl enable @tool@.service`, a symbolic link should be created.
 4) Make sure the service is enabled with `systemctl is-enabled @tool@.service`.
 5) Restart the rest-backend service with `systemctl restart @tool@.service`.
 If everything went fine, the service should be reachable and `systemctl status @tool@.service`
@@ -144,7 +144,7 @@ in the [install documentation](http://libelektra.org/tree/master/doc/INSTALL.md)
 ## Implementation notes and hints for Front-Ends
 
 The here described tool offers an API which can be consumed by either a command line tool
-like cURL or a custom front-end. In the following some hints for front-end implementations will be given.
+like cURL or a custom frontend. In the following some hints for frontend implementations will be given.
 
 ### Usability
 
@@ -156,7 +156,7 @@ but not what particular constraint was wrong for the last input
 This limitation comes from the usage of regex patterns instead of atomic comparisons during validation.
 
 In terms of usability this is sufficient, but not the best possible.
-Therefore it would be advisable to implement live-validation for front-ends with more granularity.
+Therefore it would be advisable to implement live-validation for frontends with more granularity.
 Information about allowed input formats can be found in the
 [API description](http://libelektra.org/tree/master/doc/rest_api/snippet_sharing/api-description.apib).
 

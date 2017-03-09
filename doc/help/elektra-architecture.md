@@ -96,7 +96,7 @@ whole test suite runs without any memory problems. The user is
 responsible for deleting all created `Key` and `KeySet` objects
 and closing the `KDB` handle.
 
-As a final statement, we note that the UNIX philosophy should always
+As a final statement, we note that the Unix philosophy should always
 be considered: "Do only one thing, but do it in the best way. Write it
 that way that programs work together well."
 
@@ -239,7 +239,7 @@ the one in this example.
 
 - **config/path**:
 is a common setting needed by the resolver plugin. It
-is the relative path to a filename that is used by this backend.  On UNIX
+is the relative path to a filename that is used by this backend.  On Unix
 systems, the resolver would determine the name `/etc/fstab`
 for system configuration.
 

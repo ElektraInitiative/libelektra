@@ -37,7 +37,7 @@ and then let cmake actually find jdk8:
 
     cd /usr/lib/jvm/ && sudo rm -f default-java && sudo ln -s java-8-oracle default-java
 
-and for the runtime, create the file
+and for the run-time, create the file
 `/etc/ld.so.conf.d/java-8-oracle.conf` with the content (for amd64):
 
     /usr/lib/jvm/default-java/jre/lib/amd64

@@ -27,7 +27,7 @@ Conflicts when importing can be resolved using a strategy with the `-s` argument
 Specific to `kdb import` the following strategy exists:
 
 - `validate`: 
-  apply meta data as received from base, and then cut+append all keys as imported.
+  apply metadata as received from base, and then cut+append all keys as imported.
   If the appended keys do not have a namespace, the namespace given by `-N`
   is added.
 

@@ -131,7 +131,7 @@ In theory, the contract can be changed without any problems in ways that
 it provides more and obligates less.  But the problem is that it will
 not be checked if this is the case because a recheck of the contracts
 of a backend is very expensive. The contract checker doing this, only
-runs once during mount time.  Changing contracts in an incompatible way
+runs once during mount-time.  Changing contracts in an incompatible way
 forces the user to remove all mountpoints where the plugin is and mount
 it again.  Such actions are only sustainable in a development phase and
 not in a productive environment.

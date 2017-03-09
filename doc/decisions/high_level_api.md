@@ -20,8 +20,8 @@ Projects usually do not want to use low-level APIs,
 - Thread-safety: a handle is the accepted better solution than having to
   care about whether it is reentrant, thread-safe, ...
 - assumes that spec is available (either by compiled-in `KeySet` or exit after elektraOpen)
-- many projects do not care about some limitations (no binary, no meta-data)
-  but prefer a straight-forward way to get/set config
+- many projects do not care about some limitations (no binary, no metadata)
+  but prefer a straightforward way to get/set config
 - When people hit limitations they fall back to direct use of ^KeySet^, ^Key^
 
 ## Considered Alternatives
@@ -33,9 +33,9 @@ Projects usually do not want to use low-level APIs,
 
 We provide 3 C APIs:
 
-1. libelektra-highlevel (generic key/value getter/setter)
+1. libelektra-highlevel (generic key-value getter/setter)
 2. libelektra-hierarchy (generic hierarchical getter/setter)
-3. code generator (specified key/value getter/setter)
+3. code generator (specified key-value getter/setter)
 
 
 ### Basic

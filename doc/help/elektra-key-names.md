@@ -47,8 +47,8 @@ between two keys.
 ## Conventions
 
 For computers Elektra would work without any conventions, because it is
-possible to rename keys with plugins and link and transform any key/value
-to any other key/value. Obviously, for humans such chaos would be confusing and
+possible to rename keys with plugins and link and transform any key-value
+to any other key-value. Obviously, for humans such chaos would be confusing and
 harder to use, thus we encourage everyone to use the following conventions:
 
 ### Arrays

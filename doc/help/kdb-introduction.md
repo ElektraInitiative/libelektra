@@ -32,13 +32,13 @@ Furthermore, external programs can also be integrated within
 
 Only a few commands are enough for daily use.
 We can retrieve a key by:  
-`kdb get user/keyname`
+`kdb get user/key`
 
 We store a key permanently with a value given by:  
-`kdb set user/keyname value`
+`kdb set user/key value`
 
 We list all available keys arranged below a key by:  
-`kdb ls user/keyname`
+`kdb ls user/key`
 
 
 ## SEE ALSO

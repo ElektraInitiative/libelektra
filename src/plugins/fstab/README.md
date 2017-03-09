@@ -43,7 +43,7 @@ you can't rely on the pseudoname you have set.
 The biggest issue is that you can't change or delete existing
 entries. All entries you set will be appended to the other filesystems.
 
-So if you get the filesystems and change the type of the filesystem
+So if you get the filesystems and change the type of the file system
 of the rootfs and set it again the resulting fstab will be like:
 
     /dev/sda6       /               ext3>----   >----defaults,errors=remount-ro 0 1

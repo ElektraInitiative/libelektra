@@ -71,7 +71,7 @@ for the system's
 configuration when packages are installed or upgraded.
 Debconf itself does not change the configuration files.
 Instead, the administrator is asked questions depending on template files
-using different front ends.
+using different frontends.
 These answers are then cached.
 The configuration changes themselves are
 applied by post-install scripts of the particular package.

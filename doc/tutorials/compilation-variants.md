@@ -14,7 +14,7 @@ duplications within plugins, you have multiple options:
 - Have configuration for plugins (See [elektraPluginGetConfig()](http://doc.libelektra.org/api/latest/html/group__plugin.html)
   and dynamically switch with `if` according to the configuration.
   This should be preferred when you want to (de)activate some
-  features of a plugin at runtime.
+  features of a plugin at run-time.
 - Or use compilation variants to compile the plugin code multiple
   times with different `COMPILE_DEFINITIONS` (that are Macro definitions).
   This should be preferred when different macro definitions
@@ -24,7 +24,7 @@ duplications within plugins, you have multiple options:
 
 The advantage of compilation variants are:
 
-- No runtime overhead
+- No run-time overhead
 - Can be used during bootstrapping (when no configuration is available)
 - Different compilation variants can be built at once (no recompilation
   with different CMake flags required)

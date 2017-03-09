@@ -8,7 +8,7 @@ over the whole keyset, checks every key for its trigger metakey,
 and validates the key.
 
 Currently all needed validation plugins need to be specified at 
-mounttime - if additional validation is required, the backend 
+mount-time - if additional validation is required, the backend 
 has to be remounted with the required plugins and plugin 
 configuration. 
 
