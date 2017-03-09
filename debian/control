@@ -21,11 +21,11 @@ Build-Depends: debhelper (>= 9),
  ruby-ronn,
  libsystemd-journal-dev | libsystemd-dev,
  liblua5.2-dev,
- python2.7-dev,
+ python-dev,
 Build-Depends-Indep:
  doxygen,
  graphviz,
-Standards-Version: 3.9.6
+Standards-Version: 3.9.8
 Homepage: http://www.libelektra.org/
 Vcs-Browser: https://github.com/ElektraInitiative/libelektra
 Vcs-Git: https://github.com/ElektraInitiative/libelektra.git
@@ -252,7 +252,8 @@ Architecture: any
 Multi-Arch: foreign
 Depends: libelektra4 (= ${binary:Version}),
  ${shlibs:Depends},
- ${misc:Depends}
+ ${misc:Depends},
+ ${python:Depends}
 Replaces: libelektra-bin
 Breaks: libelektra-bin
 Conflicts: kernel-patch-kdb
