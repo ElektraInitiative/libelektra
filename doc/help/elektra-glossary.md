@@ -3,7 +3,7 @@ elektra-glossary(7) -- glossary of Elektra
 
 ## Introduction
 
-- **Configurations**:
+- **Configuration settings**:
   contain user preferences or other application
   settings.
 
