@@ -11,3 +11,7 @@ KeyMeta(Reverse)Iterator:
 	allow iterations over metakeys
 
 type safe get/set from/to collections
+
+## getenv
+
+detect gcc for faster compilation
