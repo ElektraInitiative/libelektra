@@ -263,7 +263,7 @@ This function usually differs pretty greatly between each plug-in. This function
 - `0`: The function was successful and the given keyset was **not changed**.
 - `1`: The function was successful and the given keyset was **updated**.
 
-Any other return value indicates an error. The function will take in a Key, usually called `parentKey` which contains a string containing the path
+Any other return value indicates an error. The function will take in a `Key`, usually called `parentKey` which contains a string containing the path
 to the file that is mounted. For instance, if you run the command `kdb mount /etc/linetest system/linetest line` then `keyString(parentKey)`
 should be equal to `/etc/linetest`. At this point, you generally want to open the file so you can begin saving it into keys.
 Here is the trickier part to explain. Basically, at this point you will want to iterate through the file and create keys and store string values
@@ -279,7 +279,7 @@ equal to the contents of that line in the file. The line plug-in repeats these s
 into a `KeySet` line by line.
 
 The `simpleini` plug-in works similarly, but it parses for `ini` files instead of just line-by-line. At their most simple level, `ini` files are in the format of
-`name=value` with each pair taking one line. So for this plug-in, it makes a lot of sense to name each Key in the `KeySet` by the string to the left
+`name=value` with each pair taking one line. So for this plug-in, it makes a lot of sense to name each `Key` in the `KeySet` by the string to the left
 of the `=` sign and store the value into each key as a string. For instance, the name of the key would be `name` and `keyGetString(name)`
 would return `value`.
 
@@ -300,7 +300,7 @@ int elektraLineSet(Plugin *handle ELEKTRA_UNUSED, KeySet *toWrite, Key *parentKe
 ```
 
 Lets start with the most important parameters, the `KeySet` and the `parentKey`. The `KeySet` supplied is the `KeySet` that is going to be persisted in
-the file. In our case it would contain the Keys representing the lines. The `parentKey` is the topmost Key of the `KeySet` and serves several purposes.
+the file. In our case it would contain the Keys representing the lines. The `parentKey` is the topmost `Key` of the `KeySet` and serves several purposes.
 First, it contains the filename of the destination file as its value. Second, errors and warnings can be emitted via the `parentKey`. We will discuss
 error handling in more detail later. The Plugin handle can be used to persist state information in a thread-safe way with `elektraPluginSetData`.
 As our plugin is not stateful and therefore does not use the handle, it is marked as unused in order to suppress compiler warnings.
@@ -322,9 +322,9 @@ for (/* each key */)
 
 The full-blown code can be found at [line plugin](http://libelektra.org/tree/master/src/plugins/line/line.c).
 
-As you can see, all `elektraLineSet` does is open a file, take each Key from the `KeySet` (remember they are named `#1`, `#2` ... `#_22`) in order,
-and write each key as its own line in the file. Since we don't care about the name of the Key in this case (other than for order), we just write
-the value of `keyString` for each Key as a new line in the file. That's it. Now, each time the mounted `KeySet` is modified, `elektraPluginSet` will
+As you can see, all `elektraLineSet` does is open a file, take each `Key` from the `KeySet` (remember they are named `#1`, `#2` ... `#_22`) in order,
+and write each key as its own line in the file. Since we don't care about the name of the `Key` in this case (other than for order), we just write
+the value of `keyString` for each `Key` as a new line in the file. That's it. Now, each time the mounted `KeySet` is modified, `elektraPluginSet` will
 be called and the mounted file will be updated.
 
 #### `ELEKTRA_SET_ERROR`
