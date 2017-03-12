@@ -21,7 +21,7 @@ elektra-glossary(7) -- glossary of Elektra
 - **Global key database**:
   provides global access to all configuration storages
   of all applications in a system.
-  Abbreviated as ^KDB^.
+  Abbreviated as `KDB`.
 
 - **LibElektra**:
   is a set of [libraries](/src/libs/) to access configuration parameters in a global,
