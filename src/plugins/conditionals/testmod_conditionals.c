@@ -467,9 +467,9 @@ static void test_multiCondAny ()
 {
 	Key * parentKey = keyNew ("user/tests/conditionals", KEY_VALUE, "", KEY_END);
 	KeySet * ks = ksNew (5, keyNew ("user/tests/conditionals/compare", KEY_VALUE, "Sun", KEY_END),
-			     keyNew ("user/tests/conditionals/totest", KEY_VALUE, "Hello", KEY_META, "check/condition", "#1", KEY_META,
-				     "check/condition/#0", "(../totest=='Bye') ? (../compare == 'Moon')", KEY_META, "check/condition/#1",
-				     "(../totest=='Hello') ? (../compare == 'Sun') ", KEY_META, "check/condition/eval", "?", KEY_END),
+			     keyNew ("user/tests/conditionals/totest", KEY_VALUE, "Hello", KEY_META, "check/condition/any", "#1", KEY_META,
+				     "check/condition/any/#0", "(../totest=='Bye') ? (../compare == 'Moon')", KEY_META,
+				     "check/condition/any/#1", "(../totest=='Hello') ? (../compare == 'Sun') ", KEY_END),
 			     KS_END);
 
 	KeySet * conf = ksNew (0, KS_END);
@@ -485,9 +485,9 @@ static void test_multiCond2Any ()
 {
 	Key * parentKey = keyNew ("user/tests/conditionals", KEY_VALUE, "", KEY_END);
 	KeySet * ks = ksNew (5, keyNew ("user/tests/conditionals/compare", KEY_VALUE, "Moon", KEY_END),
-			     keyNew ("user/tests/conditionals/totest", KEY_VALUE, "Bye", KEY_META, "check/condition", "#1", KEY_META,
-				     "check/condition/#0", "(../totest=='Bye') ? (../compare == 'Moon')", KEY_META, "check/condition/#1",
-				     "(../totest=='Hello') ? (../compare == 'Sun') ", KEY_META, "check/condition/eval", "?", KEY_END),
+			     keyNew ("user/tests/conditionals/totest", KEY_VALUE, "Bye", KEY_META, "check/condition/any", "#1", KEY_META,
+				     "check/condition/any/#0", "(../totest=='Bye') ? (../compare == 'Moon')", KEY_META,
+				     "check/condition/any/#1", "(../totest=='Hello') ? (../compare == 'Sun') ", KEY_END),
 			     KS_END);
 
 	KeySet * conf = ksNew (0, KS_END);
@@ -503,9 +503,9 @@ static void test_multiCondAll ()
 {
 	Key * parentKey = keyNew ("user/tests/conditionals", KEY_VALUE, "", KEY_END);
 	KeySet * ks = ksNew (5, keyNew ("user/tests/conditionals/compare", KEY_VALUE, "Sun", KEY_END),
-			     keyNew ("user/tests/conditionals/totest", KEY_VALUE, "Hello", KEY_META, "check/condition", "#1", KEY_META,
-				     "check/condition/#0", "(../totest=='Bye') ? (../compare == 'Moon')", KEY_META, "check/condition/#1",
-				     "(../totest=='Hello') ? (../compare == 'Sun') ", KEY_META, "check/condition/eval", "*", KEY_END),
+			     keyNew ("user/tests/conditionals/totest", KEY_VALUE, "Hello", KEY_META, "check/condition/all", "#1", KEY_META,
+				     "check/condition/all/#0", "(../totest=='Bye') ? (../compare == 'Moon')", KEY_META,
+				     "check/condition/all/#1", "(../totest=='Hello') ? (../compare == 'Sun') ", KEY_END),
 			     KS_END);
 
 	KeySet * conf = ksNew (0, KS_END);
@@ -521,9 +521,9 @@ static void test_multiCond2All ()
 {
 	Key * parentKey = keyNew ("user/tests/conditionals", KEY_VALUE, "", KEY_END);
 	KeySet * ks = ksNew (5, keyNew ("user/tests/conditionals/compare", KEY_VALUE, "Moon", KEY_END),
-			     keyNew ("user/tests/conditionals/totest", KEY_VALUE, "Bye", KEY_META, "check/condition", "#1", KEY_META,
-				     "check/condition/#0", "(../totest=='Bye') ? (../compare == 'Moon')", KEY_META, "check/condition/#1",
-				     "(../totest=='Hello') ? (../compare == 'Sun') ", KEY_META, "check/condition/eval", "*", KEY_END),
+			     keyNew ("user/tests/conditionals/totest", KEY_VALUE, "Bye", KEY_META, "check/condition/all", "#1", KEY_META,
+				     "check/condition/all/#0", "(../totest=='Bye') ? (../compare == 'Moon')", KEY_META,
+				     "check/condition/all/#1", "(../totest=='Hello') ? (../compare == 'Sun') ", KEY_END),
 			     KS_END);
 
 	KeySet * conf = ksNew (0, KS_END);
@@ -539,9 +539,9 @@ static void test_multiCondNoFail ()
 {
 	Key * parentKey = keyNew ("user/tests/conditionals", KEY_VALUE, "", KEY_END);
 	KeySet * ks = ksNew (5, keyNew ("user/tests/conditionals/compare", KEY_VALUE, "Sun", KEY_END),
-			     keyNew ("user/tests/conditionals/totest", KEY_VALUE, "Hello", KEY_META, "check/condition", "#1", KEY_META,
-				     "check/condition/#0", "(../totest=='Bye') ? (../compare == 'Moon')", KEY_META, "check/condition/#1",
-				     "(../totest=='Hello') ? (../compare == 'Sun') ", KEY_END),
+			     keyNew ("user/tests/conditionals/totest", KEY_VALUE, "Hello", KEY_META, "check/condition/none", "#1", KEY_META,
+				     "check/condition/none/#0", "(../totest=='Bye') ? (../compare == 'Moon')", KEY_META,
+				     "check/condition/none/#1", "(../totest=='Hello') ? (../compare == 'Sun') ", KEY_END),
 			     KS_END);
 
 	KeySet * conf = ksNew (0, KS_END);
@@ -557,9 +557,9 @@ static void test_multiCond2NoFail ()
 {
 	Key * parentKey = keyNew ("user/tests/conditionals", KEY_VALUE, "", KEY_END);
 	KeySet * ks = ksNew (5, keyNew ("user/tests/conditionals/compare", KEY_VALUE, "Moon", KEY_END),
-			     keyNew ("user/tests/conditionals/totest", KEY_VALUE, "Bye", KEY_META, "check/condition", "#1", KEY_META,
-				     "check/condition/#0", "(../totest=='Bye') ? (../compare == 'Moon')", KEY_META, "check/condition/#1",
-				     "(../totest=='Hello') ? (../compare == 'Sun') ", KEY_END),
+			     keyNew ("user/tests/conditionals/totest", KEY_VALUE, "Bye", KEY_META, "check/condition/none", "#1", KEY_META,
+				     "check/condition/none/#0", "(../totest=='Bye') ? (../compare == 'Moon')", KEY_META,
+				     "check/condition/none/#1", "(../totest=='Hello') ? (../compare == 'Sun') ", KEY_END),
 			     KS_END);
 
 	KeySet * conf = ksNew (0, KS_END);

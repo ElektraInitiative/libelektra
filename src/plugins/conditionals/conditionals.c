@@ -845,11 +845,10 @@ static CondResult evaluateKey (const Key * meta, const Key * suffixList, Key * p
 
 static CondResult evalMultipleConditions (Key * key, const Key * meta, const Key * suffixList, Key * parentKey, KeySet * returned)
 {
-	const Key * eval = keyGetMeta (key, "check/condition/eval");
 	int countSucceeded = 0;
 	int countFailed = 0;
 	int countNoexpr = 0;
-	KeySet * condKS = elektraMetaArrayToKS (key, "check/condition");
+	KeySet * condKS = elektraMetaArrayToKS (key, keyName (meta));
 	Key * c;
 	CondResult result = FALSE;
 	while ((c = ksNext (condKS)) != NULL)
@@ -864,7 +863,7 @@ static CondResult evalMultipleConditions (Key * key, const Key * meta, const Key
 			++countNoexpr;
 	}
 	ksDel (condKS);
-	if (!strcmp (keyString (eval), "*"))
+	if (!strcmp (keyBaseName (meta), "all"))
 	{
 		// all conditions must evaluate to TRUE
 		if (countFailed || countNoexpr)
@@ -872,7 +871,7 @@ static CondResult evalMultipleConditions (Key * key, const Key * meta, const Key
 		else
 			return TRUE;
 	}
-	else if (!strcmp (keyString (eval), "?"))
+	else if (!strcmp (keyBaseName (meta), "any"))
 	{
 		// at least one conditional must evaluate to TRUE
 		if (countSucceeded)
@@ -914,27 +913,43 @@ int elektraConditionalsGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned EL
 		Key * conditionMeta = (Key *)keyGetMeta (cur, "check/condition");
 		Key * assignMeta = (Key *)keyGetMeta (cur, "assign/condition");
 		Key * suffixList = (Key *)keyGetMeta (cur, "condition/validsuffix");
+		Key * anyConditionMeta = (Key *)keyGetMeta (cur, "check/condition/any");
+		Key * allConditionMeta = (Key *)keyGetMeta (cur, "check/condition/all");
+		Key * noneConditionMeta = (Key *)keyGetMeta (cur, "check/condition/none");
+
 		if (conditionMeta)
 		{
 			CondResult result;
-			if (keyString (conditionMeta)[0] == '#')
+
+			result = evaluateKey (conditionMeta, suffixList, parentKey, cur, returned, CONDITION);
+			if (result == NOEXPR)
 			{
-				result = evalMultipleConditions (cur, conditionMeta, suffixList, parentKey, returned);
-				ret |= result;
+				ret |= TRUE;
 			}
 			else
 			{
-				result = evaluateKey (conditionMeta, suffixList, parentKey, cur, returned, CONDITION);
-				if (result == NOEXPR)
-				{
-					ret |= TRUE;
-				}
-				else
-				{
-					ret |= result;
-				}
+				ret |= result;
 			}
 		}
+		else if (allConditionMeta)
+		{
+			CondResult result;
+			result = evalMultipleConditions (cur, allConditionMeta, suffixList, parentKey, returned);
+			ret |= result;
+		}
+		else if (anyConditionMeta)
+		{
+			CondResult result;
+			result = evalMultipleConditions (cur, anyConditionMeta, suffixList, parentKey, returned);
+			ret |= result;
+		}
+		else if (noneConditionMeta)
+		{
+			CondResult result;
+			result = evalMultipleConditions (cur, noneConditionMeta, suffixList, parentKey, returned);
+			ret |= result;
+		}
+
 		if (assignMeta)
 		{
 			if (keyString (assignMeta)[0] == '#')
@@ -969,27 +984,43 @@ int elektraConditionalsSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned EL
 		Key * conditionMeta = (Key *)keyGetMeta (cur, "check/condition");
 		Key * assignMeta = (Key *)keyGetMeta (cur, "assign/condition");
 		Key * suffixList = (Key *)keyGetMeta (cur, "condition/validsuffix");
+		Key * anyConditionMeta = (Key *)keyGetMeta (cur, "check/condition/any");
+		Key * allConditionMeta = (Key *)keyGetMeta (cur, "check/condition/all");
+		Key * noneConditionMeta = (Key *)keyGetMeta (cur, "check/condition/none");
+
 		if (conditionMeta)
 		{
 			CondResult result;
-			if (keyString (conditionMeta)[0] == '#')
+
+			result = evaluateKey (conditionMeta, suffixList, parentKey, cur, returned, CONDITION);
+			if (result == NOEXPR)
 			{
-				result = evalMultipleConditions (cur, conditionMeta, suffixList, parentKey, returned);
-				ret |= result;
+				ret |= TRUE;
 			}
 			else
 			{
-				result = evaluateKey (conditionMeta, suffixList, parentKey, cur, returned, CONDITION);
-				if (result == NOEXPR)
-				{
-					ret |= TRUE;
-				}
-				else
-				{
-					ret |= result;
-				}
+				ret |= result;
 			}
 		}
+		else if (allConditionMeta)
+		{
+			CondResult result;
+			result = evalMultipleConditions (cur, allConditionMeta, suffixList, parentKey, returned);
+			ret |= result;
+		}
+		else if (anyConditionMeta)
+		{
+			CondResult result;
+			result = evalMultipleConditions (cur, anyConditionMeta, suffixList, parentKey, returned);
+			ret |= result;
+		}
+		else if (noneConditionMeta)
+		{
+			CondResult result;
+			result = evalMultipleConditions (cur, noneConditionMeta, suffixList, parentKey, returned);
+			ret |= result;
+		}
+
 		if (assignMeta)
 		{
 			if (keyString (assignMeta)[0] == '#')

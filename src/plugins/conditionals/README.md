@@ -6,7 +6,7 @@
 - infos/recommends =
 - infos/placements = postgetstorage presetstorage
 - infos/status = maintained unittest nodep libc global preview
-- infos/metadata = check/condition assign/condition condition/validsuffix check/condition/# assign/condition/# check/condition/eval
+- infos/metadata = check/condition assign/condition condition/validsuffix check/condition/any/# check/condition/all/# check/condition/none/# assign/condition/#
 - infos/description = ensures key values through conditions
 
 ## Introduction
@@ -51,7 +51,7 @@ Keynames are all either relative to to-be-tested key (starting with `./` or `../
 
 ### Multiple Statements
 
-It's also possible to test multiple conditions using `check/condition` as a meta array. By default the validation succeeds if no statement evaluates to false. Additionally the Key `check/condition/eval` can be used to specify other methods of evaluation. `*` means every statement has to be true, `?` that at least 1 statement has to be true.
+It's also possible to test multiple conditions using `check/condition/{any,all,none}` as a meta array. Where `any` means that at least one statement has to evaluate to true, `all` that all statements have to evaluate to true, and `none` that no statement is allowed to evalutate to false (default).
 For multiple assign statements use `assign/condition` as a meta array.
 
 
