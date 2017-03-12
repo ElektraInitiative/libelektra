@@ -22,7 +22,7 @@
 
 #define VALIDATE_KEY_SUBMATCHES 3 // first submatch is the string we want, second submatch , or EOL
 
-int validateKey (Key *, Key *);
+static int validateKey (Key *, Key *);
 
 int elektraEnumGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
 {
@@ -184,7 +184,7 @@ static int validateWithArray (Key * key)
 	return 1;
 }
 
-int validateKey (Key * key, Key * parentKey)
+static int validateKey (Key * key, Key * parentKey)
 {
 	int rc = 0;
 	const Key * meta = keyGetMeta (key, "check/enum");

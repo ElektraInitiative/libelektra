@@ -399,7 +399,7 @@ static int rfc822StringValidation (const char * date)
 	return -1;
 }
 
-int validateKey (Key * key, Key * parentKey)
+static int validateKey (Key * key, Key * parentKey)
 {
 	const Key * standard = keyGetMeta (key, "check/date");
 	const Key * formatStringMeta = keyGetMeta (key, "check/date/format");

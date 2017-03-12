@@ -17,7 +17,7 @@
 
 #include "validation.h"
 
-int validateKey (Key *, Key *);
+static int validateKey (Key *, Key *);
 
 int elektraValidationGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey ELEKTRA_UNUSED)
 {
@@ -36,7 +36,7 @@ int elektraValidationGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key
 	return 1;
 }
 
-int validateKey (Key * key, Key * parentKey)
+static int validateKey (Key * key, Key * parentKey)
 {
 	const Key * regexMeta = keyGetMeta (key, "check/validation");
 

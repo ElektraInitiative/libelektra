@@ -12,7 +12,7 @@
 #include "kdbconfig.h"
 #endif
 
-int validateKey (Key * key, Key * parentKey)
+static int validateKey (Key * key, Key * parentKey)
 {
 	struct stat buf;
 	/* TODO: make exceptions configurable using path/allow */
@@ -34,7 +34,6 @@ int validateKey (Key * key, Key * parentKey)
 		return 0;
 	}
 	int errnosave = errno;
-	int rc = 1;
 	const Key * meta = keyGetMeta (key, "check/path");
 	if (stat (keyString (key), &buf) == -1)
 	{
