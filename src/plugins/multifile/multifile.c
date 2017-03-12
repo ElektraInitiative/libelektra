@@ -10,7 +10,8 @@
 #include "multifile.h"
 
 #include <dirent.h>
-#include <fnmatch.h>
+#include <glob.h>
+#include <errno.h>
 #include <kdbconfig.h>
 #include <kdbhelper.h>
 #include <kdbinternal.h>
@@ -27,14 +28,14 @@
 #define DEFAULT_STORAGE "ini"
 
 typedef enum {
-	SETRESOLVER = 0,
-	SETSTORAGE,
-	COMMIT,
+	MULTI_SETRESOLVER = 0,
+	MULTI_SETSTORAGE,
+	MULTI_COMMIT,
 } SetPhases;
 
 typedef enum {
-	GETRESOLVER = 0,
-	GETSTORAGE,
+	MULTI_GETRESOLVER = 0,
+	MULTI_GETSTORAGE,
 } GetPhases;
 
 typedef enum {
@@ -236,21 +237,26 @@ static Codes resolverGet (SingleConfig * s, KeySet * returned, Key * parentKey)
 static Codes updateFiles (MultiConfig * mc, KeySet * returned, Key * parentKey)
 {
 	Codes rc = NOUPDATE;
-	DIR * dir = NULL;
-	struct dirent * d = NULL;
-	if (!(dir = opendir (mc->directory)))
-	{
-		return ERROR;
-	}
 	KeySet * found = ksNew (0, KS_END);
 	Key * initialParent = keyDup (parentKey);
-	while ((d = readdir (dir)) != NULL)
+
+	char pattern[strlen(mc->directory)+strlen(mc->pattern)+2];
+	snprintf(pattern, sizeof(pattern), "%s/%s", mc->directory, mc->pattern);
+	glob_t results;
+	int ret;
+	ret = glob(pattern, 0, NULL, &results);
+	if(ret != 0)
 	{
-		if (d->d_type != DT_REG) continue;
-		if (fnmatch (mc->pattern, d->d_name, FNM_PATHNAME)) continue;
-		// fprintf (stderr, "- %s\n", d->d_name);
+	    return ERROR;
+	}
+	struct stat sb;
+	for(unsigned int i = 0; i < results.gl_pathc; ++i)
+	{
+	    ret = lstat(results.gl_pathv[i], &sb);
+	    if(S_ISREG(sb.st_mode))
+	    {
 		Key * lookup = keyNew ("/", KEY_CASCADING_NAME, KEY_END);
-		keyAddBaseName (lookup, d->d_name);
+		keyAddBaseName (lookup, (results.gl_pathv[i])+strlen(mc->directory));
 		Key * k;
 		if ((k = ksLookup (mc->childBackends, lookup, KDB_O_NONE)) != NULL)
 		{
@@ -259,7 +265,7 @@ static Codes updateFiles (MultiConfig * mc, KeySet * returned, Key * parentKey)
 		else
 		{
 			SingleConfig * s = elektraCalloc (sizeof (SingleConfig));
-			s->filename = elektraStrDup (d->d_name);
+			s->filename = elektraStrDup ((results.gl_pathv[i])+strlen(mc->directory));
 			Codes r = initBackend (mc, s, parentKey);
 			if (r == ERROR)
 			{
@@ -282,8 +288,10 @@ static Codes updateFiles (MultiConfig * mc, KeySet * returned, Key * parentKey)
 			}
 		}
 		keyDel (lookup);
+	
+	    }
 	}
-	closedir (dir);
+
 	ksRewind (mc->childBackends);
 	ksRewind (found);
 	Key * c;
@@ -414,15 +422,15 @@ int elektraMultifileGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key 
 		return -1;
 	}
 	Codes rc = NOUPDATE;
-	if (mc->getPhase == GETRESOLVER)
+	if (mc->getPhase == MULTI_GETRESOLVER)
 	{
 		rc = updateFiles (mc, returned, parentKey);
 		if (rc == SUCCESS)
 		{
-			mc->getPhase = GETSTORAGE;
+			mc->getPhase = MULTI_GETSTORAGE;
 		}
 	}
-	else if (mc->getPhase == GETSTORAGE)
+	else if (mc->getPhase == MULTI_GETSTORAGE)
 	{
 		rc = doGetStorage (mc, parentKey);
 		if (rc == SUCCESS || mc->hasDeleted)
@@ -430,7 +438,7 @@ int elektraMultifileGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key 
 			fillReturned (mc, returned);
 			mc->hasDeleted = 0;
 		}
-		mc->getPhase = GETRESOLVER;
+		mc->getPhase = MULTI_GETRESOLVER;
 	}
 	elektraPluginSetData (handle, mc);
 	if (rc == SUCCESS)
@@ -608,7 +616,7 @@ int elektraMultifileSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKT
 	MultiConfig * mc = elektraPluginGetData (handle);
 	if (!mc) return -1;
 	Codes rc = NOUPDATE;
-	if (mc->setPhase == SETRESOLVER)
+	if (mc->setPhase == MULTI_SETRESOLVER)
 	{
 		flagUpdateBackends (mc, returned);
 		rc = resolverSet (mc, parentKey);
@@ -617,21 +625,21 @@ int elektraMultifileSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKT
 		{
 			return -1;
 		}
-		mc->setPhase = SETSTORAGE;
+		mc->setPhase = MULTI_SETSTORAGE;
 	}
-	else if (mc->setPhase == SETSTORAGE)
+	else if (mc->setPhase == MULTI_SETSTORAGE)
 	{
 		rc = doSetStorage (mc, parentKey);
 		if (rc == ERROR)
 		{
 			return -1;
 		}
-		mc->setPhase = COMMIT;
+		mc->setPhase = MULTI_COMMIT;
 	}
-	else if (mc->setPhase == COMMIT)
+	else if (mc->setPhase == MULTI_COMMIT)
 	{
 		doCommit (mc, parentKey);
-		mc->setPhase = SETRESOLVER;
+		mc->setPhase = MULTI_SETRESOLVER;
 	}
 	if (rc == SUCCESS)
 		return 1;
