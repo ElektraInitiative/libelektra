@@ -401,7 +401,7 @@ static RangeType getType (const Key * key)
 		return type;
 }
 
-int validateKey (Key * key, Key * parentKey)
+static int validateKey (Key * key, Key * parentKey)
 {
 	const Key * rangeMeta = keyGetMeta (key, "check/range");
 	const char * rangeString = keyString (rangeMeta);
