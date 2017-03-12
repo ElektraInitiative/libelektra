@@ -9,7 +9,7 @@
 import makeLog from '../log'
 const { error } = makeLog('routes:clusters')
 
-import { successResponse, errorResponse, throwErrors } from './utils'
+import { successResponse, errorResponse } from './utils'
 
 import {
   getClusters, createCluster,
@@ -97,7 +97,6 @@ export default function initClusterRoutes (app) {
   // TODO: check if cluster id actually exists
   app.get('/clusters/:id/kdb', (req, res) =>
     kdb.getAndLs(virtualKdb(req.params.id))
-      .then(throwErrors)
       .then(stripVirtualPath(req.params.id))
       .then(output => successResponse(res, output))
       .catch(err => errorResponse(res, err))
@@ -107,7 +106,6 @@ export default function initClusterRoutes (app) {
   app.route('/clusters/:id/kdb/*')
     .get((req, res) =>
       kdb.getAndLs(virtualKdb(req.params.id, req.params[0]))
-        .then(throwErrors)
         .then(stripVirtualPath(req.params.id))
         .then(output => successResponse(res, output))
         .catch(err => errorResponse(res, err))
@@ -117,7 +115,6 @@ export default function initClusterRoutes (app) {
       const path = req.params[0]
       // set key in virtual kdb on clusterd server
       kdb.set(virtualKdb(clusterId, path), req.body)
-        .then(throwErrors)
         .then(output =>
           // set key on all instances in the cluster
           applyToAllInstances(res, clusterId,
@@ -129,7 +126,6 @@ export default function initClusterRoutes (app) {
       const clusterId = req.params.id
       const path = req.params[0]
       kdb.rm(virtualKdb(clusterId, path))
-        .then(throwErrors)
         .then(output =>
           // set key on all instances in the cluster
           applyToAllInstances(res, clusterId,

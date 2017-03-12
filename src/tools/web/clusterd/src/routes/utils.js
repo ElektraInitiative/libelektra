@@ -31,11 +31,3 @@ export const dontShowDB = (output) => {
   }
   return output
 }
-
-// throw KDB errors
-export const throwErrors = (output) => {
-  if (output && output.error) {
-    throw new Error(output.error)
-  }
-  return output
-}
