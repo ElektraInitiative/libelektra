@@ -12,6 +12,7 @@
 #include <errno.h>
 #include <kdberrors.h>
 #include <kdbhelper.h>
+#include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -112,7 +113,7 @@ RangeValue strToValue (const char ** ptr, RangeType type)
 		break;
 	case FLOAT:
 		v.Value.f = strtold (*ptr, &endPtr);
-		if (errno == ERANGE || (errno != 0 && v.Value.f == 0))
+		if (errno == ERANGE || (errno != 0 && fpclassify (v.Value.f) == FP_ZERO))
 		{
 			v.type = NA;
 		}
@@ -389,21 +390,18 @@ static RangeType stringToType (const Key * typeMeta)
 
 static RangeType getType (const Key * key)
 {
-	const Key * typeMeta = keyGetMeta (key, "type");
+	const Key * typeMeta = keyGetMeta (key, "check/type");
 	RangeType type = NA;
 
 	type = stringToType (typeMeta);
 
-	if (type == NA) typeMeta = keyGetMeta (key, "check/type");
-
-	type = stringToType (typeMeta);
 	if (type == NA)
 		return INT;
 	else
 		return type;
 }
 
-int validateKey (Key * key, Key * parentKey)
+static int validateKey (Key * key, Key * parentKey)
 {
 	const Key * rangeMeta = keyGetMeta (key, "check/range");
 	const char * rangeString = keyString (rangeMeta);

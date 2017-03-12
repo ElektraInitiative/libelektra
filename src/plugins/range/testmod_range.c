@@ -8,6 +8,7 @@
  */
 
 #include <kdbconfig.h>
+#include <locale.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -33,8 +34,8 @@ void testInt (const char * value, int ret, const char * rangeString)
 void testUInt (const char * value, int ret, const char * rangeString)
 {
 	Key * parentKey = keyNew ("user/tests/range", KEY_VALUE, "", KEY_END);
-	KeySet * ks = ksNew (10, keyNew ("user/tests/range/key", KEY_VALUE, value, KEY_META, "check/range", rangeString, KEY_META, "type",
-					 "unsigned long", KEY_END),
+	KeySet * ks = ksNew (10, keyNew ("user/tests/range/key", KEY_VALUE, value, KEY_META, "check/range", rangeString, KEY_META,
+					 "check/type", "unsigned long", KEY_END),
 			     KS_END);
 	KeySet * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("range");
@@ -105,6 +106,9 @@ int main (int argc, char ** argv)
 
 	init (argc, argv);
 
+	const char * old_locale = setlocale (LC_ALL, NULL);
+	setlocale (LC_ALL, "C");
+
 	testInt ("5", 1, "1-10");
 	testInt ("10", 1, "1-10");
 	testInt ("1", 1, "1-10");
@@ -174,6 +178,7 @@ int main (int argc, char ** argv)
 	testChar ("g", -1, "a-f");
 	testChar ("c", 1, "a-f");
 
+	setlocale (LC_ALL, old_locale);
 	printf ("\ntestmod_range RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 
 	return nbError;

@@ -270,3 +270,10 @@
    fun:_ZN61kdbrestServicesConvertengineTest_FindSuitablePluginCheck_Test8TestBodyEv
    ...
 }
+{
+   testmod_range setlocale memleak
+   Memcheck:Addr1
+   ...
+   fun:setlocale
+   fun:main
+}
