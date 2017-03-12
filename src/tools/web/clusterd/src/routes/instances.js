@@ -13,6 +13,8 @@ import {
   getInstance, updateInstance, deleteInstance,
 } from '../db'
 
+import { ROOT_PATH } from '../config'
+
 import remoteKdb from '../connector'
 
 export default function initInstanceRoutes (app) {
@@ -52,9 +54,20 @@ export default function initInstanceRoutes (app) {
       .catch(err => errorResponse(res, err))
   )
 
+  // don't show the internal database via the API
+  const dontShowDB = (output) => {
+    if (output && Array.isArray(output.ls)) {
+      output.ls = output.ls.filter(
+        path => !path.startsWith(ROOT_PATH)
+      )
+    }
+    return output
+  }
+
   app.get('/instances/:id/kdb', (req, res) =>
     getInstance(req.params.id)
       .then(instance => remoteKdb.get(instance.host))
+      .then(dontShowDB)
       .then(output => successResponse(res, output))
       .catch(err => errorResponse(res, err))
   )
@@ -63,6 +76,7 @@ export default function initInstanceRoutes (app) {
     .get((req, res) =>
       getInstance(req.params.id)
         .then(instance => remoteKdb.get(instance.host, req.params[0]))
+        .then(dontShowDB)
         .then(output => successResponse(res, output))
         .catch(err => errorResponse(res, err))
     )
