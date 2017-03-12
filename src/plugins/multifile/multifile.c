@@ -163,17 +163,29 @@ static MultiConfig * initialize (Plugin * handle)
 	Key * stayAliveKey = ksLookupByName (config, "/stayalive", 0);
 	MultiConfig * mc = elektraCalloc (sizeof (MultiConfig));
 	if (resolverKey)
-		mc->resolver = elektraStrDup (keyString (resolverKey));
+	{
+    	    mc->resolver = elektraStrDup (keyString (resolverKey));
+	}
 	else
+	{
 		mc->resolver = elektraStrDup (DEFAULT_RESOLVER);
+	}
 	if (storageKey)
+	{
 		mc->storage = elektraStrDup (keyString (storageKey));
+	}
 	else
+	{
 		mc->storage = elektraStrDup (DEFAULT_STORAGE);
+	}
 	if (patternKey)
+	{
 		mc->pattern = elektraStrDup (keyString (patternKey));
+	}
 	else
+	{
 		mc->pattern = elektraStrDup (DEFAULT_PATTERN);
+	}
 	if (stayAliveKey) mc->stayAlive = 1;
 	mc->directory = elektraStrDup (path);
 	mc->childBackends = ksNew (0, KS_END);
@@ -247,6 +259,18 @@ static Codes updateFiles (MultiConfig * mc, KeySet * returned, Key * parentKey)
 	ret = glob(pattern, 0, NULL, &results);
 	if(ret != 0)
 	{
+	    if(ret == GLOB_NOSPACE)
+	    {
+		ELEKTRA_SET_ERRORF(ELEKTRA_ERROR_MULTI_GLOB_FAILED, parentKey, "glob(%s) ran out of memory", pattern);
+	    }
+	    else if(ret == GLOB_ABORTED)
+	    {
+		ELEKTRA_SET_ERRORF(ELEKTRA_ERROR_MULTI_GLOB_FAILED, parentKey, "glob(%s) failed with a read error", pattern);
+	    }
+	    else if(ret == GLOB_NOMATCH)
+	    {
+		ELEKTRA_SET_ERRORF(ELEKTRA_ERROR_MULTI_GLOB_FAILED, parentKey, "glob(%s) failed with no matches", pattern);
+	    }
 	    return ERROR;
 	}
 	struct stat sb;
@@ -271,6 +295,7 @@ static Codes updateFiles (MultiConfig * mc, KeySet * returned, Key * parentKey)
 			{
 				if (!mc->stayAlive)
 				{
+				    	globfree(&results);
 					return ERROR;
 				}
 				else
@@ -291,6 +316,7 @@ static Codes updateFiles (MultiConfig * mc, KeySet * returned, Key * parentKey)
 	
 	    }
 	}
+	globfree(&results);
 
 	ksRewind (mc->childBackends);
 	ksRewind (found);
@@ -362,12 +388,12 @@ static Codes doGetStorage (MultiConfig * mc, Key * parentKey)
 		{
 			if (s->ks) ksDel (s->ks);
 			s->ks = ksDup (readKS);
-			;
 			rc = SUCCESS;
-			;
 		}
 		else
+		{
 			rc = ERROR;
+		}
 		ksDel (readKS);
 	}
 	keySetName (parentKey, keyName (initialParent));
@@ -442,11 +468,17 @@ int elektraMultifileGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key 
 	}
 	elektraPluginSetData (handle, mc);
 	if (rc == SUCCESS)
+	{
 		return 1;
+	}
 	else if (rc == NOUPDATE)
+	{
 		return 0;
+	}
 	else
+	{
 		return -1;
+	}
 }
 
 static Codes resolverSet (MultiConfig * mc, Key * parentKey)
@@ -541,7 +573,9 @@ static Codes doCommit (MultiConfig * mc, Key * parentKey)
 			continue;
 		}
 		else if (s->rcStorage != 1)
+		{
 			continue;
+		}
 		
 		keySetName (parentKey, s->parentString);
 		keySetString (parentKey, s->fullPath);
@@ -570,9 +604,13 @@ static int diffOrNeedSync (KeySet * ks, KeySet * checkKS)
 		key = ksNext (ks);
 		check = ksNext (checkKS);
 		if (!key && !check)
+		{
 			return 0;
+		}
 		else if (!key || !check)
+		{
 			return 1;
+		}
 		if (keyCmp (key, check)) return 1;
 		if (keyNeedSync (check)) return 1;
 	}
@@ -642,11 +680,17 @@ int elektraMultifileSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKT
 		mc->setPhase = MULTI_SETRESOLVER;
 	}
 	if (rc == SUCCESS)
+	{
 		return 1;
+	}
 	else if (rc == NOUPDATE)
+	{
 		return 0;
+	}
 	else
+	{
 		return -1;
+	}
 }
 
 int elektraMultifileError (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
