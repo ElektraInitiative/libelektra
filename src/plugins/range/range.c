@@ -390,14 +390,11 @@ static RangeType stringToType (const Key * typeMeta)
 
 static RangeType getType (const Key * key)
 {
-	const Key * typeMeta = keyGetMeta (key, "type");
+	const Key * typeMeta = keyGetMeta (key, "check/type");
 	RangeType type = NA;
 
 	type = stringToType (typeMeta);
 
-	if (type == NA) typeMeta = keyGetMeta (key, "check/type");
-
-	type = stringToType (typeMeta);
 	if (type == NA)
 		return INT;
 	else

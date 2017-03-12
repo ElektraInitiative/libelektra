@@ -34,8 +34,8 @@ void testInt (const char * value, int ret, const char * rangeString)
 void testUInt (const char * value, int ret, const char * rangeString)
 {
 	Key * parentKey = keyNew ("user/tests/range", KEY_VALUE, "", KEY_END);
-	KeySet * ks = ksNew (10, keyNew ("user/tests/range/key", KEY_VALUE, value, KEY_META, "check/range", rangeString, KEY_META, "type",
-					 "unsigned long", KEY_END),
+	KeySet * ks = ksNew (10, keyNew ("user/tests/range/key", KEY_VALUE, value, KEY_META, "check/range", rangeString, KEY_META,
+					 "check/type", "unsigned long", KEY_END),
 			     KS_END);
 	KeySet * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("range");
