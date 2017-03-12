@@ -5,37 +5,17 @@
 - infos/provides = resolver storage
 - infos/recommends =
 - infos/placements = getresolver setresolver commit rollback getstorage setstorage
-- infos/status = maintained reviewed conformant compatible coverage specific unittest shelltest tested nodep libc configurable preview memleak experimental difficult unfinished nodoc concept orphan
+- infos/status = maintained conformant compatible specific shelltest tested libc configurable preview experimental difficult nodoc
 - infos/metadata =
-- infos/description = one-line description of multifile
+- infos/description = mounts multiple files within a directory 
 
 ## Introduction ##
 
-Copy this multifile if you want to start a new
-plugin written in C.
+The multifile-resolver creates a new backend and calls resolver and storage plugin for each file matching a given pattern. 
 
 ## Usage ##
 
-You can use `scripts/copy-multifile`
-to automatically reLink encap everything to your
-plugin Link encap:
-
-	cd src/plugins
-	../../scripts/copy-multifile yourplugin
-
-Then update the README.md of your newly created plugin:
-
-- enter your Link encap+email in `infos/author`
-- make sure `status` and other clauses conform to
-  descriptions in `doc/CONTRACT.ini`
-- update the one-line description above
-- add your plugin in `src/plugins/README.md`
-- and rewrite the rest of this `README.md` to give a great
-  explanation of what your plugin does
-
-## Dependencies ##
-
-None.
+`kdb mount -R multifile -c storage="ini",pattern="*/*.ini",resolver="resolver" /path /mountpoint`
 
 ## Examples ##
 

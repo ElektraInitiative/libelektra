@@ -10,8 +10,8 @@
 #include "multifile.h"
 
 #include <dirent.h>
-#include <glob.h>
 #include <errno.h>
+#include <glob.h>
 #include <kdbconfig.h>
 #include <kdbhelper.h>
 #include <kdbinternal.h>
@@ -164,7 +164,7 @@ static MultiConfig * initialize (Plugin * handle)
 	MultiConfig * mc = elektraCalloc (sizeof (MultiConfig));
 	if (resolverKey)
 	{
-    	    mc->resolver = elektraStrDup (keyString (resolverKey));
+		mc->resolver = elektraStrDup (keyString (resolverKey));
 	}
 	else
 	{
@@ -252,71 +252,70 @@ static Codes updateFiles (MultiConfig * mc, KeySet * returned, Key * parentKey)
 	KeySet * found = ksNew (0, KS_END);
 	Key * initialParent = keyDup (parentKey);
 
-	char pattern[strlen(mc->directory)+strlen(mc->pattern)+2];
-	snprintf(pattern, sizeof(pattern), "%s/%s", mc->directory, mc->pattern);
+	char pattern[strlen (mc->directory) + strlen (mc->pattern) + 2];
+	snprintf (pattern, sizeof (pattern), "%s/%s", mc->directory, mc->pattern);
 	glob_t results;
 	int ret;
-	ret = glob(pattern, 0, NULL, &results);
-	if(ret != 0)
+	ret = glob (pattern, 0, NULL, &results);
+	if (ret != 0)
 	{
-	    if(ret == GLOB_NOSPACE)
-	    {
-		ELEKTRA_SET_ERRORF(ELEKTRA_ERROR_MULTI_GLOB_FAILED, parentKey, "glob(%s) ran out of memory", pattern);
-	    }
-	    else if(ret == GLOB_ABORTED)
-	    {
-		ELEKTRA_SET_ERRORF(ELEKTRA_ERROR_MULTI_GLOB_FAILED, parentKey, "glob(%s) failed with a read error", pattern);
-	    }
-	    else if(ret == GLOB_NOMATCH)
-	    {
-		ELEKTRA_SET_ERRORF(ELEKTRA_ERROR_MULTI_GLOB_FAILED, parentKey, "glob(%s) failed with no matches", pattern);
-	    }
-	    return ERROR;
+		if (ret == GLOB_NOSPACE)
+		{
+			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_MULTI_GLOB_FAILED, parentKey, "glob(%s) ran out of memory", pattern);
+		}
+		else if (ret == GLOB_ABORTED)
+		{
+			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_MULTI_GLOB_FAILED, parentKey, "glob(%s) failed with a read error", pattern);
+		}
+		else if (ret == GLOB_NOMATCH)
+		{
+			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_MULTI_GLOB_FAILED, parentKey, "glob(%s) failed with no matches", pattern);
+		}
+		return ERROR;
 	}
 	struct stat sb;
-	for(unsigned int i = 0; i < results.gl_pathc; ++i)
+	for (unsigned int i = 0; i < results.gl_pathc; ++i)
 	{
-	    ret = lstat(results.gl_pathv[i], &sb);
-	    if(S_ISREG(sb.st_mode))
-	    {
-		Key * lookup = keyNew ("/", KEY_CASCADING_NAME, KEY_END);
-		keyAddBaseName (lookup, (results.gl_pathv[i])+strlen(mc->directory));
-		Key * k;
-		if ((k = ksLookup (mc->childBackends, lookup, KDB_O_NONE)) != NULL)
+		ret = lstat (results.gl_pathv[i], &sb);
+		if (S_ISREG (sb.st_mode))
 		{
-			ksAppendKey (found, k);
-		}
-		else
-		{
-			SingleConfig * s = elektraCalloc (sizeof (SingleConfig));
-			s->filename = elektraStrDup ((results.gl_pathv[i])+strlen(mc->directory));
-			Codes r = initBackend (mc, s, parentKey);
-			if (r == ERROR)
+			Key * lookup = keyNew ("/", KEY_CASCADING_NAME, KEY_END);
+			keyAddBaseName (lookup, (results.gl_pathv[i]) + strlen (mc->directory));
+			Key * k;
+			if ((k = ksLookup (mc->childBackends, lookup, KDB_O_NONE)) != NULL)
 			{
-				if (!mc->stayAlive)
-				{
-				    	globfree(&results);
-					return ERROR;
-				}
-				else
-				{
-					closeBackend (s);
-				}
+				ksAppendKey (found, k);
 			}
 			else
 			{
-				Key * childKey = keyNew (keyName (lookup), KEY_CASCADING_NAME, KEY_BINARY, KEY_SIZE,
-							 sizeof (SingleConfig *), KEY_VALUE, &s, KEY_END);
-				ksAppendKey (mc->childBackends, childKey);
-				ksAppendKey (found, childKey);
-				rc = SUCCESS;
+				SingleConfig * s = elektraCalloc (sizeof (SingleConfig));
+				s->filename = elektraStrDup ((results.gl_pathv[i]) + strlen (mc->directory) + 1);
+				Codes r = initBackend (mc, s, parentKey);
+				if (r == ERROR)
+				{
+					if (!mc->stayAlive)
+					{
+						globfree (&results);
+						return ERROR;
+					}
+					else
+					{
+						closeBackend (s);
+					}
+				}
+				else
+				{
+					Key * childKey = keyNew (keyName (lookup), KEY_CASCADING_NAME, KEY_BINARY, KEY_SIZE,
+								 sizeof (SingleConfig *), KEY_VALUE, &s, KEY_END);
+					ksAppendKey (mc->childBackends, childKey);
+					ksAppendKey (found, childKey);
+					rc = SUCCESS;
+				}
 			}
+			keyDel (lookup);
 		}
-		keyDel (lookup);
-	
-	    }
 	}
-	globfree(&results);
+	globfree (&results);
 
 	ksRewind (mc->childBackends);
 	ksRewind (found);
@@ -505,7 +504,7 @@ static Codes resolverSet (MultiConfig * mc, Key * parentKey)
 		{
 			// fprintf (stderr, "UPDATE: %s:(%s)\n", s->parentString, s->fullPath);
 		}
-		
+
 		Plugin * resolver = s->resolver;
 		keySetName (parentKey, s->parentString);
 		keySetString (parentKey, s->fullPath);
@@ -541,7 +540,7 @@ static Codes doSetStorage (MultiConfig * mc, Key * parentKey)
 		{
 			continue;
 		}
-		
+
 		keySetName (parentKey, s->parentString);
 		keySetString (parentKey, s->tmpFilename);
 		Plugin * storage = s->storage;
@@ -576,7 +575,7 @@ static Codes doCommit (MultiConfig * mc, Key * parentKey)
 		{
 			continue;
 		}
-		
+
 		keySetName (parentKey, s->parentString);
 		keySetString (parentKey, s->fullPath);
 		Plugin * resolver = s->resolver;
@@ -598,23 +597,29 @@ static int diffOrNeedSync (KeySet * ks, KeySet * checkKS)
 	ksRewind (checkKS);
 	Key * key = NULL;
 	Key * check = NULL;
-	int done = 0;
-	while (!done)
+	int ret = -1;
+	while (ret == -1)
 	{
 		key = ksNext (ks);
 		check = ksNext (checkKS);
 		if (!key && !check)
 		{
-			return 0;
+			ret = 0;
 		}
 		else if (!key || !check)
 		{
-			return 1;
+			ret = 1;
 		}
-		if (keyCmp (key, check)) return 1;
-		if (keyNeedSync (check)) return 1;
+		else if (keyCmp (key, check))
+		{
+			ret = 1;
+		}
+		else if (keyNeedSync (check))
+		{
+			ret = 1;
+		}
 	}
-	return 0; // will never happen, but gcc complains
+	return ret;
 }
 
 static void flagUpdateBackends (MultiConfig * mc, KeySet * returned)
@@ -649,8 +654,6 @@ static void flagUpdateBackends (MultiConfig * mc, KeySet * returned)
 
 int elektraMultifileSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
 {
-	// set all keys
-	// this function is optional
 	MultiConfig * mc = elektraPluginGetData (handle);
 	if (!mc) return -1;
 	Codes rc = NOUPDATE;
