@@ -49,7 +49,7 @@ const createTreeView = ({ getKey, setKey, deleteKey, kdb }, tree, prefix = '') =
         <TreeItem
           allowDelete={allowDelete}
           key={path}
-          name={key + '/'}
+          name={key === '/' ? key : key + '/'}
           value={kdb && kdb[path]}
           onClick={loadChildren}
           onChange={(val) => setKey(path, val)}
@@ -118,7 +118,7 @@ const Configuration = ({
     getKey: getCorrectKey,
     setKey: setCorrectKey,
     deleteKey: deleteCorrectKey,
-  }, tree)
+  }, { '/': tree.user }) // only show user/ namespace
 
   return (
       <Card>
