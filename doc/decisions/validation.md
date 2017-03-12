@@ -66,7 +66,11 @@ of each key to the corresponding validation plugin.
 
 ## Implications
 
-- validation plugins have to export their validation routine
+validation plugins have to export their validation routine 
+
+`static int validateKey(const Key * key, const Key * errorKey)` 
+
+returning 1 if validation succeeded, 0 on failure
 
 ## Related decisions
 
