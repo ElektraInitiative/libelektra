@@ -832,10 +832,6 @@ static CondResult evaluateKey (const Key * meta, const Key * suffixList, Key * p
 	{
 		return TRUE;
 	}
-	else if (result != ERROR && op == ASSIGN)
-	{
-		return TRUE;
-	}
 	else if (result == NOEXPR)
 	{
 		return NOEXPR;
@@ -959,7 +955,20 @@ int elektraConditionalsGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned EL
 				while ((a = ksNext (assignKS)) != NULL)
 				{
 					if (keyCmp (a, assignMeta) == 0) continue;
-					ret |= evaluateKey (a, suffixList, parentKey, cur, returned, ASSIGN);
+					CondResult result = evaluateKey (a, suffixList, parentKey, cur, returned, ASSIGN);
+					if (result == TRUE)
+					{
+						ret |= TRUE;
+						break;
+					}
+					else if (result == NOEXPR)
+					{
+						ret |= TRUE;
+					}
+					else
+					{
+						ret |= ERROR;
+					}
 				}
 				ksDel (assignKS);
 			}
@@ -1030,7 +1039,20 @@ int elektraConditionalsSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned EL
 				while ((a = ksNext (assignKS)) != NULL)
 				{
 					if (keyCmp (a, assignMeta) == 0) continue;
-					ret |= evaluateKey (a, suffixList, parentKey, cur, returned, ASSIGN);
+					CondResult result = evaluateKey (a, suffixList, parentKey, cur, returned, ASSIGN);
+					if (result == TRUE)
+					{
+						ret |= TRUE;
+						break;
+					}
+					else if (result == NOEXPR)
+					{
+						ret |= TRUE;
+					}
+					else
+					{
+						ret |= ERROR;
+					}
 				}
 				ksDel (assignKS);
 			}
