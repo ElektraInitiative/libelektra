@@ -45,12 +45,15 @@ const createTreeView = ({ getKey, setKey, deleteKey, kdb }, tree, prefix = '') =
     // only allow deletion of items without subtrees
     const allowDelete = Object.keys(tree[key]).length === 0
 
+    const { value, meta } = (kdb && kdb[path]) || { value: '', meta: {} }
+
     return (
         <TreeItem
           allowDelete={allowDelete}
           key={path}
           name={key === '/' ? key : key + '/'}
-          value={kdb && kdb[path]}
+          value={value || ''}
+          metadata={meta || {}}
           onClick={loadChildren}
           onChange={(val) => setKey(path, val)}
           onDelete={() => deleteKey(path)}

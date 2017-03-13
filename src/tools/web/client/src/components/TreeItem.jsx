@@ -26,9 +26,11 @@ export default class TreeItem extends React.Component {
 
   render () {
     const {
-      name, prefix, value, children, allowDelete = true,
+      name, prefix, value, metadata, children, allowDelete = true,
       onClick, onChange, onDelete,
     } = this.props
+
+    const { description } = metadata
 
     const val = this.state.value || value
 
@@ -67,10 +69,17 @@ export default class TreeItem extends React.Component {
       </IconButton>
     )
 
+    let descriptionBox = description && (
+      <i style={{ color: 'gray', marginLeft: 10 }}>
+        {description}
+      </i>
+    )
+
     let valueField = ( // valueField = textField + delete button
       <span>
         {textField}
         {allowDelete && deleteButton}
+        {descriptionBox}
       </span>
     )
 
