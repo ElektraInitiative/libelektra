@@ -95,7 +95,9 @@ const safeExec = (script) => new Promise((resolve, reject) =>
     if (err) {
       const errors = err.message.split('\n')
       // ignore error if it's "key not found"
-      if (!(errors.length > 1 && errors[1] === ERR_KEY_NOT_FOUND)) {
+      if (errors.length > 1 && errors[1] === ERR_KEY_NOT_FOUND) {
+        return resolve()
+      } else {
         return reject(new KDBError(err.message))
       }
     }
@@ -186,7 +188,7 @@ const getmeta = (path, meta) =>
 // get all metavalues for given `path`
 const getAllMeta = (path) =>
   lsmeta(path)
-    .then(metaValues => Promise.all(
+    .then(metaValues => metaValues && Promise.all(
       metaValues.map(meta =>
         getmeta(path, meta).then(val => {
           return { [meta]: val }
@@ -194,7 +196,9 @@ const getAllMeta = (path) =>
       )
     ))
     // merge objects
-    .then(resolvedMetaValues => Object.assign.apply(Object, resolvedMetaValues))
+    .then(resolvedMetaValues =>
+      resolvedMetaValues && Object.assign.apply(Object, resolvedMetaValues)
+    )
 
 const BUFFER_FILE = '/tmp/elektra-web.buffer.json'
 
