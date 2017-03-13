@@ -12,10 +12,76 @@ const { readFileSync } = require('fs')
 // constants
 const ERR_KEY_NOT_FOUND = 'Did not find key'
 
+const ERROR_REGEX = /Sorry, the error \(\#([0-9]+)\) occurred/
+const DESCRIPTION_REGEX = /Description: (.*)$/
+const INGROUP_REGEX = /Ingroup: (.*)$/
+const MODULE_REGEX = /Module: (.*)$/
+const AT_REGEX = /At: (.*)$/
+const REASON_REGEX = /Reason: (.*)$/
+const MOUNTPOINT_REGEX = /Mountpoint: (.*)$/
+const CONFIGFILE_REGEX = /Configfile: (.*)$/
+
+function parseError (message) {
+  let error = {}
+  for (let line of message.split('\n')) {
+    let res
+    if (res = line.match(ERROR_REGEX)) {
+      error.num = Number(res[1])
+    } else if (currentError !== false) {
+      if (res = line.match(DESCRIPTION_REGEX)) {
+        currentError.description = res[1]
+      } else if (res = line.match(INGROUP_REGEX)) {
+        currentError.ingroup = res[1]
+      } else if (res = line.match(MODULE_REGEX)) {
+        currentError.module = res[1]
+      } else if (res = line.match(AT_REGEX)) {
+        currentError.at = res[1]
+      } else if (res = line.match(REASON_REGEX)) {
+        currentError.reason = res[1]
+      } else if (res = line.match(MOUNTPOINT_REGEX)) {
+        currentError.mountpoint = res[1]
+      } else if (res = line.match(CONFIGFILE_REGEX)) {
+        currentError.configfile = res[1]
+      }
+    }
+  }
+  return error
+}
+
 // KDBError
 function KDBError (message) {
     this.name = 'KDBError'
-    this.message = message || ''
+    let isError = false
+    for (let line of message.split('\n')) {
+      let res
+      if (res = line.match(ERROR_REGEX)) {
+        this.num = Number(res[1])
+        isError = true
+      } else if (isError) {
+        if (res = line.match(DESCRIPTION_REGEX)) {
+          this.description = res[1]
+        } else if (res = line.match(INGROUP_REGEX)) {
+          this.ingroup = res[1]
+        } else if (res = line.match(MODULE_REGEX)) {
+          this.module = res[1]
+        } else if (res = line.match(AT_REGEX)) {
+          this.at = res[1]
+        } else if (res = line.match(REASON_REGEX)) {
+          this.reason = res[1]
+        } else if (res = line.match(MOUNTPOINT_REGEX)) {
+          this.mountpoint = res[1]
+        } else if (res = line.match(CONFIGFILE_REGEX)) {
+          this.configfile = res[1]
+        }
+      }
+    }
+    if (this.description) {
+      this.message = this.description + (
+        this.reason ? ': ' + this.reason : ''
+      )
+    } else {
+      this.message = message || ''
+    }
 }
 KDBError.prototype = Error.prototype
 
@@ -30,7 +96,7 @@ const safeExec = (script) => new Promise((resolve, reject) =>
       const errors = err.message.split('\n')
       // ignore error if it's "key not found"
       if (!(errors.length > 1 && errors[1] === ERR_KEY_NOT_FOUND)) {
-        return reject(err)
+        return reject(new KDBError(err.message))
       }
     }
     if (stderr) {
