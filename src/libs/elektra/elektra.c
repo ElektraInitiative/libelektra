@@ -32,8 +32,8 @@ void elektraClose (Elektra * elektra)
     ksDel (elektra->config);
     keyDel (elektra->parentKey);
 
-    elektraClearError(elektra);
-    elektraFree(elektra);
+    elektraClearError (elektra);
+    elektraFree (elektra);
 }
 
 kdb_boolean_t elektraHasError (const Elektra * elektra)
@@ -48,24 +48,24 @@ const char * elektraErrorMessage (const Elektra * elektra)
 
 void elektraClearError (Elektra * elektra)
 {
-    elektraFree(elektra->error);
+    elektraFree (elektra->error);
     elektra->error = NULL;
 }
 
 const char * elektraGetString (Elektra * elektra, const char * name)
 {
     Key * const nameKey = keyDup (elektra->parentKey);
-    keyAddName(nameKey, name);
+    keyAddName (nameKey, name);
 
     Key * const resultKey = ksLookup (elektra->config, nameKey, 0);
     const char * string = keyString (resultKey);
 
-    keyDel(nameKey);
+    keyDel (nameKey);
 
     char * value = elektraMalloc (keyGetValueSize(resultKey));
     strcpy (value, string);
 
-    keyDel(resultKey);
+    keyDel (resultKey);
 
     return value;
 }
@@ -73,16 +73,16 @@ const char * elektraGetString (Elektra * elektra, const char * name)
 kdb_long_long_t elektraGetLongLong (Elektra * elektra, const char * name)
 {
     Key * const nameKey = keyDup (elektra->parentKey);
-    keyAddName(nameKey, name);
+    keyAddName (nameKey, name);
 
     Key * const resultKey = ksLookup (elektra->config, nameKey, 0);
     const char * string = keyString (resultKey);
 
-    keyDel(nameKey);
+    keyDel (nameKey);
 
     const kdb_long_long_t value = ELEKTRA_LONG_LONG_S (string, NULL, 10);
 
-    keyDel(resultKey);
+    keyDel (resultKey);
 
     return value;
 }
