@@ -174,6 +174,28 @@ const set = (path, value) =>
 const rm = (path) =>
   safeExec(escapeValues`kdb rm ${path}`)
 
+// list meta values at given `path`
+const lsmeta = (path) =>
+  safeExec(escapeValues`kdb lsmeta ${path}`)
+    .then(stdout => stdout && stdout.split('\n'))
+
+// get meta value from given `path`
+const getmeta = (path, meta) =>
+  safeExec(escapeValues`kdb getmeta ${path} ${meta}`)
+
+// get all metavalues for given `path`
+const getAllMeta = (path) =>
+  lsmeta(path)
+    .then(metaValues => Promise.all(
+      metaValues.map(meta =>
+        getmeta(path, meta).then(val => {
+          return { [meta]: val }
+        })
+      )
+    ))
+    // merge objects
+    .then(resolvedMetaValues => Object.assign.apply(Object, resolvedMetaValues))
+
 const BUFFER_FILE = '/tmp/elektra-web.buffer.json'
 
 // export javascript object from given `path`
@@ -192,12 +214,13 @@ const _import = (path, value) =>
 // get value and available paths under a given `path`
 const getAndLs = (path) =>
   Promise.all(
-    [ ls(path), get(path) ] // execute ls and get in parallel
-  ).then(([ lsRes, value ]) => {
-    return { ls: lsRes || [], value } // return results as object
+    [ ls(path), get(path), getAllMeta(path) ] // execute ls and get in parallel
+  ).then(([ lsRes, value, meta ]) => {
+    return { ls: lsRes || [], value, meta } // return results as object
   })
 
 // export kdb functions as `kdb` object
 module.exports = {
-  version, ls, get, getAndLs, set, rm, export: _export, import: _import
+  version, ls, get, getAndLs, set, rm, export: _export, import: _import,
+  getmeta, lsmeta, getAllMeta,
 }
