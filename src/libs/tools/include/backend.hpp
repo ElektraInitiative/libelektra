@@ -200,7 +200,10 @@ class ImportExportBackend : public PluginAdder
 	std::unordered_map<std::string, std::deque<std::shared_ptr<Plugin>>> plugins;
 
 public:
-	ImportExportBackend () { }
+	ImportExportBackend ()
+	{
+	}
+
 	void status (std::ostream & os) const;
 	void importFromFile (KeySet & ks, Key const & parentKey) const;
 	void exportToFile (KeySet const & ks, Key const & parentKey) const;

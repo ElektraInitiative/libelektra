@@ -34,7 +34,10 @@ protected:
 	typedef void (*func_t) ();
 
 public:
-	virtual ~PluginDatabase() { }
+	virtual ~PluginDatabase ()
+	{
+	}
+
 	/**
 	 * @brief list all plugins
 	 *

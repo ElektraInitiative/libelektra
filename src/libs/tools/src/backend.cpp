@@ -274,8 +274,7 @@ void Backend::tryPlugin (PluginSpec const & spec)
 
 	for (auto & elem : plugins)
 	{
-		if (plugin->getFullName () == elem->getFullName ())
-			throw PluginAlreadyInserted (plugin->getFullName ());
+		if (plugin->getFullName () == elem->getFullName ()) throw PluginAlreadyInserted (plugin->getFullName ());
 	}
 
 

@@ -31,7 +31,10 @@ namespace tools
 class PluginSpec
 {
 public:
-	PluginSpec() { }
+	PluginSpec ()
+	{
+	}
+
 	explicit PluginSpec (std::string pluginName, KeySet pluginConfig = KeySet ());
 
 	explicit PluginSpec (std::string pluginName, std::string refName, KeySet pluginConfig = KeySet ());
