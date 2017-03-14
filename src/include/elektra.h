@@ -9,27 +9,9 @@
 #ifndef ELEKTRA_H
 #define ELEKTRA_H
 
-#include "kdb.h"
-#include "kdbhelper.h"
 #include "kdbtypes.h"
 
-struct _ElektraError
-{
-    int errorNr;
-    const char * msg;
-};
-
 typedef struct _ElektraError ElektraError;
-
-struct _Elektra
-{
-    KDB * kdb;
-    KeySet * config;
-    Key * parentKey;
-
-    ElektraError * error;
-};
-
 typedef struct _Elektra Elektra;
 
 Elektra * elektraOpen (const char * application);
