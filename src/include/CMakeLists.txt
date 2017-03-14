@@ -76,6 +76,7 @@ install (FILES
 	kdbproposal.h
 	kdbutility.h
 	"${CMAKE_CURRENT_BINARY_DIR}/kdbversion.h"
+	elektra.h
 	DESTINATION include/${TARGET_INCLUDE_FOLDER})
 
 
