@@ -9,6 +9,9 @@
 #include "elektra.h"
 #include <stdlib.h>
 #include <memory.h>
+#include "kdb.h"
+#include "kdbhelper.h"
+#include "elektraprivate.h"
 
 Elektra * elektraOpen (const char * application)
 {
