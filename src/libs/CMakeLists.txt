@@ -27,3 +27,5 @@ add_subdirectory (notification)
 add_subdirectory (elektra)
 
 generate_manpage (elektra-libs FILENAME ${CMAKE_CURRENT_SOURCE_DIR}/README.md SECTION 7)
+
+add_subdirectory (highlevel)
