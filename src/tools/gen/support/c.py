@@ -19,7 +19,7 @@ class CSupport(Support):
 		return "set"+self.funcname(key)
 
 	def funcpretty(self, key):
-		return ''.join(x for x in key.title() if not x == '/')
+		return ''.join(x for x in key.title() if not x == '/' and not x == '_')
 
 	def userkey(self, key):
 		"""Return the key name within user/"""
