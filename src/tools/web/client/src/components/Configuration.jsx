@@ -34,8 +34,7 @@ const createTree = (ls) =>
 
 // render tree view from tree object
 const createTreeView =
-  ({ getKey, setKey, deleteKey, kdb }, tree, prefix = '') => {
-    let root = true
+  ({ getKey, setKey, deleteKey, kdb }, tree, prefix = '', root = true) => {
     return Object.keys(tree).map((key) => {
       const path = prefix ? `${prefix}/${key}` : key
 
@@ -46,7 +45,6 @@ const createTreeView =
 
       // only allow deletion of items without subtrees
       const allowDelete = root ? false : Object.keys(tree[key]).length === 0
-      root = false
 
       const { value, meta } = (kdb && kdb[path]) || { value: '', meta: {} }
 
@@ -62,7 +60,10 @@ const createTreeView =
             onDelete={() => deleteKey(path)}
           >
               {Object.keys(tree[key]).length > 0
-                ? createTreeView({ getKey, setKey, deleteKey, kdb }, tree[key], path)
+                ? createTreeView(
+                    { getKey, setKey, deleteKey, kdb },
+                    tree[key], path, false
+                  )
                 : null
               }
           </TreeItem>
