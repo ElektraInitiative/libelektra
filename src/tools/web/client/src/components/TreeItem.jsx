@@ -14,6 +14,7 @@ import React from 'react'
 import TextField from 'material-ui/TextField'
 import IconButton from 'material-ui/IconButton'
 import ActionDelete from 'material-ui/svg-icons/action/delete'
+import ContentCreate from 'material-ui/svg-icons/content/create'
 
 import TreeView from './TreeView.jsx'
 
@@ -73,7 +74,7 @@ const validateType = (metadata, value) => {
 export default class TreeItem extends React.Component {
   constructor (props) {
     super(props)
-    this.state = { value: false, error: false }
+    this.state = { value: false, error: false, expanded: false }
   }
 
   renderField () {
@@ -124,12 +125,22 @@ export default class TreeItem extends React.Component {
 
     const { description } = metadata
 
-    let field = val ? ( // if a key has a value, show a textfield
+    let field = (val || this.state.expanded) ? ( // if a key has a value, show a textfield
         <span>
             {': '}
             {this.renderField()}
         </span>
-    ) : null
+    ) : ( // otherwise, show icon that will expand the textfield
+        <span style={{ marginLeft: 4 }}>
+          <IconButton
+            style={{ width: 12, height: 12, padding: 0 }}
+            iconStyle={{ width: 12, height: 12 }}
+            onTouchTap={() => this.setState({ expanded: true })}
+          >
+            <ContentCreate />
+          </IconButton>
+        </span>
+    )
 
     let deleteButton = (
       <IconButton
