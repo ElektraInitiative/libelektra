@@ -52,7 +52,7 @@ const createTreeView =
           <TreeItem
             allowDelete={allowDelete}
             key={path}
-            name={key === '/' ? key : key + '/'}
+            name={root ? '/' : key + '/'}
             value={value || ''}
             metadata={meta || {}}
             onClick={loadChildren}
@@ -126,7 +126,7 @@ const Configuration = ({
     getKey: getCorrectKey,
     setKey: setCorrectKey,
     deleteKey: deleteCorrectKey,
-  }, { '/': (tree && tree.user) || {} }) // only show user/ namespace
+  }, { 'user': (tree && tree.user) || {} }) // only show user/ namespace
 
   return (
       <Card>
