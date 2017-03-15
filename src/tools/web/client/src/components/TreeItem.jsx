@@ -26,11 +26,7 @@ const INTEGER_TYPES = [
 const FLOAT_TYPES = [ 'float', 'double' ]
 
 const isNumber = (value) => !isNaN(parseFloat(value)) && isFinite(value)
-const isInt = (value) => {
-  if (isNaN(value)) return false
-  const x = parseFloat(value)
-  return (x | 0) === x
-}
+const isInt = (value) => /(-|\+)?[0-9]+/.test(value)
 
 const validateType = (metadata, value) => {
   if (!metadata) return false // no metadata, no validation
@@ -40,7 +36,9 @@ const validateType = (metadata, value) => {
     if (!isNumber(value)) {
       return 'invalid number, float expected'
     }
-  } else if (INTEGER_TYPES.includes(type)) {
+  }
+
+  if (INTEGER_TYPES.includes(type)) {
     if (!isInt(value)) {
       return 'invalid number, integer expected'
     }
