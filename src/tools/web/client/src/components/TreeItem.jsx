@@ -29,6 +29,12 @@ const FLOAT_TYPES = [ 'float', 'double' ]
 const isNumber = (value) => !isNaN(parseFloat(value)) && isFinite(value)
 const isInt = (value) => /(-|\+)?[0-9]+/.test(value)
 
+const elektraEnumToJSON = (val) => {
+  const convertedVal = val.replace(/'/g, '"')
+  if (val.charAt(0) !== '[') return '[' + convertedVal + ']'
+  else return convertedVal
+}
+
 const validateType = (metadata, value) => {
   if (!metadata) return false // no metadata, no validation
   const type = metadata['check/type'] || 'any'
@@ -58,7 +64,7 @@ const validateType = (metadata, value) => {
   }
 
   const validationEnum = metadata.hasOwnProperty('check/enum')
-    ? JSON.parse(metadata['check/enum'].replace(/'/g, '"'))
+    ? JSON.parse(elektraEnumToJSON(metadata['check/enum']))
     : false
   if (validationEnum && Array.isArray(validationEnum)) {
     if (!validationEnum.includes(value)) {
