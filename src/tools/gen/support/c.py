@@ -13,13 +13,13 @@ class CSupport(Support):
 			raise Exception("invalid keyname " + key)
 
 	def getfuncname(self, key):
-		return "get_"+self.funcname(key)
+		return "get"+self.funcname(key)
 
 	def setfuncname(self, key):
-		return "set_"+self.funcname(key)
+		return "set"+self.funcname(key)
 
 	def funcpretty(self, key):
-		return key.replace('/','_').replace('#','')
+		return ''.join(x for x in key.title() if not x == '/')
 
 	def userkey(self, key):
 		"""Return the key name within user/"""
