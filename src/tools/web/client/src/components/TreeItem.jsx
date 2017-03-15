@@ -25,11 +25,39 @@ const INTEGER_TYPES = [
 
 const FLOAT_TYPES = [ 'float', 'double' ]
 
-const isNumber = (str) => !isNaN(parseFloat(str)) && isFinite(str)
+const isNumber = (value) => !isNaN(parseFloat(value)) && isFinite(value)
 const isInt = (value) => {
   if (isNaN(value)) return false
   const x = parseFloat(value)
   return (x | 0) === x
+}
+
+const validateType = (metadata, value) => {
+  if (!metadata) return false // no metadata, no validation
+  const type = metadata['check/type'] || 'any'
+
+  if (FLOAT_TYPES.includes(type)) {
+    if (!isNumber(value)) {
+      return 'invalid number, float expected'
+    }
+  } else if (INTEGER_TYPES.includes(type)) {
+    if (!isInt(value)) {
+      return 'invalid number, integer expected'
+    }
+  }
+
+  const validationRegex = metadata.hasOwnProperty('check/validation')
+    ? new RegExp(metadata['check/validation'])
+    : false
+  if (validationRegex) {
+    const validationError = metadata['check/validation/message']
+    if (!validationRegex.test(value)) {
+      return validationError ||
+        'validation failed for ' + metadata['check/validation']
+    }
+  }
+
+  return false
 }
 
 // TODO: debounce onChange requests here, we're calling set every time it changes a little
@@ -47,8 +75,6 @@ export default class TreeItem extends React.Component {
 
     const val = this.state.value || value
 
-    const type = (metadata && metadata['check/type']) || 'any'
-
     return (
       <TextField
         id={`${prefix}_textfield`}
@@ -58,22 +84,14 @@ export default class TreeItem extends React.Component {
         onChange={(evt) => {
           if (this.state.timeout) clearTimeout(this.state.timeout)
           const currentValue = evt.target.value
-          console.log('type', type, 'currentValue', currentValue, isInt(currentValue))
           this.setState({
             value: currentValue,
             timeout: setTimeout(() => {
-              if (FLOAT_TYPES.includes(type)) {
-                if (!isNumber(currentValue)) {
-                  return this.setState({ error: 'invalid number, float expected' })
-                } else {
-                  this.setState({ error: false })
-                }
-              } else if (INTEGER_TYPES.includes(type)) {
-                if (!isInt(currentValue)) {
-                  return this.setState({ error: 'invalid number, integer expected' })
-                } else {
-                  this.setState({ error: false })
-                }
+              const validationError = validateType(metadata, currentValue)
+              if (validationError) {
+                return this.setState({ error: validationError })
+              } else {
+                this.setState({ error: false })
               }
               onChange(currentValue)
               this.setState({ saved: true })
