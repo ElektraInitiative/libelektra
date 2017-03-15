@@ -35,7 +35,7 @@ export default class CreateKey extends React.Component {
         />
         <RaisedButton
           label="create key"
-          onTouchTap={() => setKey(this.state.path, this.state.value)}
+          onTouchTap={() => setKey('user/' + this.state.path, this.state.value)}
         />
       </div>
     )
