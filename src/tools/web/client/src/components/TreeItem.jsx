@@ -46,14 +46,25 @@ const validateType = (metadata, value) => {
     }
   }
 
+  const validationError = metadata['check/validation/message']
+
   const validationRegex = metadata.hasOwnProperty('check/validation')
     ? new RegExp(metadata['check/validation'])
     : false
   if (validationRegex) {
-    const validationError = metadata['check/validation/message']
     if (!validationRegex.test(value)) {
       return validationError ||
         'validation failed for ' + metadata['check/validation']
+    }
+  }
+
+  const validationEnum = metadata.hasOwnProperty('check/enum')
+    ? JSON.parse(metadata['check/enum'].replace(/'/g, '"'))
+    : false
+  if (validationEnum && Array.isArray(validationEnum)) {
+    if (!validationEnum.includes(value)) {
+      return validationError ||
+        'validation failed, value must be one of: ' + validationEnum.join(', ')
     }
   }
 
@@ -64,7 +75,7 @@ const validateType = (metadata, value) => {
 export default class TreeItem extends React.Component {
   constructor (props) {
     super(props)
-    this.state = { value: props.value, error: false }
+    this.state = { value: false, error: false }
   }
 
   renderField () {
@@ -73,7 +84,7 @@ export default class TreeItem extends React.Component {
       onClick, onChange, onDelete,
     } = this.props
 
-    const val = this.state.value || value
+    const val = this.state.value === false ? value : this.state.value
 
     return (
       <TextField
