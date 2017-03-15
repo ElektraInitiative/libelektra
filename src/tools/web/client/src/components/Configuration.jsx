@@ -33,38 +33,42 @@ const createTree = (ls) =>
   }, {})
 
 // render tree view from tree object
-const createTreeView = ({ getKey, setKey, deleteKey, kdb }, tree, prefix = '') =>
-  Object.keys(tree).map((key) => {
-    const path = prefix ? `${prefix}/${key}` : key
+const createTreeView =
+  ({ getKey, setKey, deleteKey, kdb }, tree, prefix = '') => {
+    let root = true
+    return Object.keys(tree).map((key) => {
+      const path = prefix ? `${prefix}/${key}` : key
 
-    const loadChildren = () =>
-      Object.keys(tree[key]).map(
-        (childKey) => getKey(`${path}/${childKey}`)
+      const loadChildren = () =>
+        Object.keys(tree[key]).map(
+          (childKey) => getKey(`${path}/${childKey}`)
+        )
+
+      // only allow deletion of items without subtrees
+      const allowDelete = root ? false : Object.keys(tree[key]).length === 0
+      root = false
+
+      const { value, meta } = (kdb && kdb[path]) || { value: '', meta: {} }
+
+      return (
+          <TreeItem
+            allowDelete={allowDelete}
+            key={path}
+            name={key === '/' ? key : key + '/'}
+            value={value || ''}
+            metadata={meta || {}}
+            onClick={loadChildren}
+            onChange={(val) => setKey(path, val)}
+            onDelete={() => deleteKey(path)}
+          >
+              {Object.keys(tree[key]).length > 0
+                ? createTreeView({ getKey, setKey, deleteKey, kdb }, tree[key], path)
+                : null
+              }
+          </TreeItem>
       )
-
-    // only allow deletion of items without subtrees
-    const allowDelete = Object.keys(tree[key]).length === 0
-
-    const { value, meta } = (kdb && kdb[path]) || { value: '', meta: {} }
-
-    return (
-        <TreeItem
-          allowDelete={allowDelete}
-          key={path}
-          name={key === '/' ? key : key + '/'}
-          value={value || ''}
-          metadata={meta || {}}
-          onClick={loadChildren}
-          onChange={(val) => setKey(path, val)}
-          onDelete={() => deleteKey(path)}
-        >
-            {Object.keys(tree[key]).length > 0
-              ? createTreeView({ getKey, setKey, deleteKey, kdb }, tree[key], path)
-              : null
-            }
-        </TreeItem>
-    )
-  })
+    })
+  }
 
 // get configuration of the selected cluster/instance
 const getConfiguration = (instance, cluster) => {
@@ -121,7 +125,7 @@ const Configuration = ({
     getKey: getCorrectKey,
     setKey: setCorrectKey,
     deleteKey: deleteCorrectKey,
-  }, { '/': tree.user }) // only show user/ namespace
+  }, { '/': (tree && tree.user) || {} }) // only show user/ namespace
 
   return (
       <Card>
