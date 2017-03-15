@@ -15,6 +15,13 @@
 
 #include <kdbio.hpp>
 
+/* SWIG cpp preprocessor is not aware of the override statement */
+#ifndef SWIG_WITHOUT_OVERRIDE
+#define ELEKTRA_OVERRIDE override
+#else
+#define ELEKTRA_OVERRIDE
+#endif
+
 namespace kdb
 {
 
@@ -53,7 +60,7 @@ struct ParseException : public ToolException
 	{
 	}
 
-	virtual const char * what () const throw () override
+	virtual const char * what () const throw () ELEKTRA_OVERRIDE
 	{
 		return m_str.c_str ();
 	}
@@ -63,7 +70,7 @@ struct ParseException : public ToolException
 
 struct PluginCheckException : public ToolException
 {
-	virtual const char * what () const throw () override
+	virtual const char * what () const throw () ELEKTRA_OVERRIDE
 	{
 		return "When you read this, that means there was something wrong with the plugin.\n"
 		       "Seems like a check could not specify the error any further";
@@ -72,7 +79,7 @@ struct PluginCheckException : public ToolException
 
 struct BackendCheckException : public ToolException
 {
-	virtual const char * what () const throw () override
+	virtual const char * what () const throw () ELEKTRA_OVERRIDE
 	{
 		return "When you read this, that means there was something wrong with the backend.\n"
 		       "Seems like a check could not specify the error any further";
@@ -81,7 +88,7 @@ struct BackendCheckException : public ToolException
 
 struct FileNotValidException : public BackendCheckException
 {
-	virtual const char * what () const throw () override
+	virtual const char * what () const throw () ELEKTRA_OVERRIDE
 	{
 		return "The path you entered is invalid.\n"
 		       "Try to add another path instead.\n"
@@ -96,7 +103,7 @@ struct FileNotValidException : public BackendCheckException
 
 struct MountpointInvalidException : public BackendCheckException
 {
-	virtual const char * what () const throw () override
+	virtual const char * what () const throw () ELEKTRA_OVERRIDE
 	{
 		return "Given mountpoint is not a valid keyname, will abort\n"
 		       "Examples: system/hosts or user/sw/app";
@@ -113,7 +120,7 @@ struct MountpointAlreadyInUseException : public BackendCheckException
 	{
 	}
 
-	virtual const char * what () const throw () override
+	virtual const char * what () const throw () ELEKTRA_OVERRIDE
 	{
 		return m_str.c_str ();
 	}
@@ -131,7 +138,7 @@ struct NoSuchBackend : public BackendCheckException
 	{
 	}
 
-	virtual const char * what () const throw () override
+	virtual const char * what () const throw () ELEKTRA_OVERRIDE
 	{
 		return m_str.c_str ();
 	}
@@ -149,7 +156,7 @@ struct PluginAlreadyInserted : public PluginCheckException
 			"Try to add other plugins or other refnames (part after #) instead.";
 	}
 
-	virtual const char * what () const throw () override
+	virtual const char * what () const throw () ELEKTRA_OVERRIDE
 	{
 		return m_str.c_str ();
 	}
@@ -171,7 +178,7 @@ struct PluginConfigInvalid : public PluginCheckException
 	{
 	}
 
-	virtual const char * what () const throw () override
+	virtual const char * what () const throw () ELEKTRA_OVERRIDE
 	{
 		if (m_str.empty ())
 		{
@@ -202,7 +209,7 @@ struct BadPluginName : public PluginCheckException
 			"and then a-z, 0-9 and underscore (_) only";
 	}
 
-	virtual const char * what () const throw () override
+	virtual const char * what () const throw () ELEKTRA_OVERRIDE
 	{
 		return m_str.c_str ();
 	}
@@ -220,7 +227,7 @@ struct TooManyPlugins : public PluginCheckException
 	{
 	}
 
-	virtual const char * what () const throw () override
+	virtual const char * what () const throw () ELEKTRA_OVERRIDE
 	{
 		return m_str.c_str ();
 	}
@@ -230,7 +237,7 @@ struct TooManyPlugins : public PluginCheckException
 
 struct OrderingViolation : public PluginCheckException
 {
-	virtual const char * what () const throw () override
+	virtual const char * what () const throw () ELEKTRA_OVERRIDE
 	{
 		return "Ordering Violation!\n"
 		       "You tried to add a plugin which requests another plugin to be positioned first.\n"
@@ -240,7 +247,7 @@ struct OrderingViolation : public PluginCheckException
 
 struct CyclicOrderingViolation : public OrderingViolation
 {
-	virtual const char * what () const throw () override
+	virtual const char * what () const throw () ELEKTRA_OVERRIDE
 	{
 		return "Ordering Violation!\n"
 		       "Could not order plugins by their dependency because of cycle.\n"
@@ -251,7 +258,7 @@ struct CyclicOrderingViolation : public OrderingViolation
 
 struct ConflictViolation : public PluginCheckException
 {
-	virtual const char * what () const throw () override
+	virtual const char * what () const throw () ELEKTRA_OVERRIDE
 	{
 		return "Conflict Violation!\n"
 		       "You tried to add a plugin which conflicts with another.\n"
@@ -274,7 +281,7 @@ struct NoPlugin : public PluginCheckException
 	{
 	}
 
-	virtual const char * what () const throw () override
+	virtual const char * what () const throw () ELEKTRA_OVERRIDE
 	{
 		if (m_str.empty ())
 		{
@@ -305,7 +312,7 @@ private:
 
 struct ReferenceNotFound : public PluginCheckException
 {
-	virtual const char * what () const throw () override
+	virtual const char * what () const throw () ELEKTRA_OVERRIDE
 	{
 		return "Could not find a reference!\n"
 		       "Seems you forgot to create the reference before using it.\n"
@@ -323,7 +330,7 @@ struct MissingNeeded : public PluginCheckException
 	~MissingNeeded () throw ()
 	{
 	}
-	virtual const char * what () const throw () override
+	virtual const char * what () const throw () ELEKTRA_OVERRIDE
 	{
 		return msg.c_str ();
 	}
@@ -339,7 +346,7 @@ struct MissingSymbol : public PluginCheckException
 	~MissingSymbol () throw ()
 	{
 	}
-	virtual const char * what () const throw () override
+	virtual const char * what () const throw () ELEKTRA_OVERRIDE
 	{
 		return msg.c_str ();
 	}
@@ -355,7 +362,7 @@ struct WrongStatus : public PluginCheckException
 	~WrongStatus () throw ()
 	{
 	}
-	virtual const char * what () const throw () override
+	virtual const char * what () const throw () ELEKTRA_OVERRIDE
 	{
 		return msg.c_str ();
 	}
@@ -372,7 +379,7 @@ struct SymbolMismatch : public PluginCheckException
 	~SymbolMismatch () throw ()
 	{
 	}
-	virtual const char * what () const throw () override
+	virtual const char * what () const throw () ELEKTRA_OVERRIDE
 	{
 		return msg.c_str ();
 	}
@@ -388,7 +395,7 @@ struct NoGlobalPlugin : public PluginCheckException
 	~NoGlobalPlugin () throw ()
 	{
 	}
-	virtual const char * what () const throw () override
+	virtual const char * what () const throw () ELEKTRA_OVERRIDE
 	{
 		return msg.c_str ();
 	}
@@ -405,7 +412,7 @@ struct SymbolDuplicate : public PluginCheckException
 	~SymbolDuplicate () throw ()
 	{
 	}
-	virtual const char * what () const throw () override
+	virtual const char * what () const throw () ELEKTRA_OVERRIDE
 	{
 		return msg.c_str ();
 	}
@@ -413,7 +420,7 @@ struct SymbolDuplicate : public PluginCheckException
 
 struct StoragePlugin : public PluginCheckException
 {
-	virtual const char * what () const throw () override
+	virtual const char * what () const throw () ELEKTRA_OVERRIDE
 	{
 		return "There need to be exactly one storage plugin!";
 	}
@@ -422,7 +429,7 @@ struct StoragePlugin : public PluginCheckException
 
 struct ResolverPlugin : public PluginCheckException
 {
-	virtual const char * what () const throw () override
+	virtual const char * what () const throw () ELEKTRA_OVERRIDE
 	{
 		return "There need to be exactly one resolver plugin!";
 	}
@@ -430,7 +437,7 @@ struct ResolverPlugin : public PluginCheckException
 
 struct PluginNoContract : public PluginCheckException
 {
-	virtual const char * what () const throw () override
+	virtual const char * what () const throw () ELEKTRA_OVERRIDE
 	{
 		return "No contract found for that plugin!\n"
 		       "Make sure you export kdbGet correctly!";
@@ -439,7 +446,7 @@ struct PluginNoContract : public PluginCheckException
 
 struct PluginNoInfo : public PluginCheckException
 {
-	virtual const char * what () const throw () override
+	virtual const char * what () const throw () ELEKTRA_OVERRIDE
 	{
 		return "No info found for that plugin within contract!";
 	}
@@ -447,7 +454,7 @@ struct PluginNoInfo : public PluginCheckException
 
 struct VersionInfoMismatch : public PluginCheckException
 {
-	virtual const char * what () const throw () override
+	virtual const char * what () const throw () ELEKTRA_OVERRIDE
 	{
 		return "Version info does not match with library!";
 	}

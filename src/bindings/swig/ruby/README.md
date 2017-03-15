@@ -1,19 +1,51 @@
 # Ruby bindings
 
-This module is a SWIG generated binding for KDB (http://www.libelektra.org),
-therefore the module provides wrapper classes to KDBs C++ interface and is
-mainly a 1 to 1 relation. However, to provide a more Ruby-style API to KDB,
-this module differs to the C++ API in the following way:
- * C++ iterators for Key/KeySet are excluded. Instead KeySet implements
-   a 'each' method and includes 'Enumerable'. Therefore it is very similar to
-   a Ruby-Array. However, the KeySet cursor methods are still available.
- * Access to native C-level KDB structures (such as ckdb::Key) is not
-   possible, as this does not make much sense within Ruby.
+This module is a SWIG generated Ruby binding for Elektra Core API - KDB
+(http://www.libelektra.org) and its libtools library. So it consists of the two
+Ruby modules:
+ * `Kdb` wrapping Elektra's core API
+ * `Kdbtools` wrapping Elektra's libtools API
+
+The two modules provides wrapper classes the C++ interface and are
+mainly a 1 to 1 mapping. However, to provide a more Ruby-style API,
+the modules differs to the C++ API in the following way:
+
+## Ruby `Kdb` differences to C++ API
+
+ * C++ iterators for `Key`/`KeySet` are excluded. Instead `KeySet` implements
+   an `each` method and includes `Enumerable`. Therefore it is very similar to
+   a Ruby-Array. However, the `KeySet` cursor methods are still available.
  * Method names are renamed to follow Ruby naming conventions
- * Key and KeySet methods directly modify the underlying Key/KeySet
+ * Access to native C-level `KDB` structures (such as `ckdb::Key`) is not
+   possible, as this does not make much sense within Ruby.
+ * Key and `KeySet` implement a `pretty_print` method very suitable for debugging
+ * The `Kdb` module has a static `open` method taking a block, which can be
+   used to access the opened KDB handle within a block, whereas the handle is
+   closed afterwards (similar to `File.open`).
+ * `Key.new` accepts an Hash-like argument list, imitating the C++ variable
+   arguments feature. However, we do not relay on the `KEY_END` flat to
+   indicate the end of a list.
+ * Additional to `Key`s and `KeySet`s, the `KeySet`.new method also accepts a
+   Ruby-Array of `Key`s for `KeySet` creation. This allows a very short
+   KeySet creation.
+ * `KeySet` implements the usual `<<` operator for appending `Key`s and
+   `KeySet`s.
+ * `Key` and `KeySet` methods directly modify the underlying `Key`/`KeySet`
  * The `Key.setCallback` and `Key.getFunc` methods are not supported
 
-Below, we show some specifics of the Ruby binding.
+## Ruby `Kdbtools` differences to C++ API
+
+These bindings do not really change anything to the API and are basically a
+direct 1:1 mapping. However the usual renaming from C++ camelcase to Rubys
+naming conventions also was done here.
+
+ * methods for fetching library symbol function pointers are excluded
+
+## Examples
+
+Example and demo applications which a lot of documentation in it can be found
+in the Ruby-bindings source tree under 'examples'. Also the test cases (under
+'tests') can be a good point to look if you need more information.
 
 ## Quick start guide
 
