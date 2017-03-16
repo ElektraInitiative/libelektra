@@ -51,6 +51,7 @@ const createTreeView =
       return (
           <TreeItem
             allowDelete={allowDelete}
+            defaultCollapsed={!root}
             key={path}
             name={root ? '/' : key + '/'}
             value={value || ''}

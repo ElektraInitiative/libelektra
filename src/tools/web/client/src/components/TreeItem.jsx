@@ -124,7 +124,7 @@ export default class TreeItem extends React.Component {
   render () {
     const {
       name, prefix, value, metadata, children, allowDelete = true,
-      onClick, onChange, onDelete,
+      onClick, onChange, onDelete, defaultCollapsed = true,
     } = this.props
 
     const val = this.state.value || value
@@ -176,7 +176,7 @@ export default class TreeItem extends React.Component {
         <TreeView
           nodeLabel={name}
           valueField={valueField}
-          defaultCollapsed={true}
+          defaultCollapsed={defaultCollapsed}
           onClick={onClick}
         >
             {children}
