@@ -113,7 +113,7 @@ export default class TreeItem extends React.Component {
               this.setState({ saved: true })
               setTimeout(() => {
                 this.setState({ saved: false })
-              }, 1000)
+              }, 900)
             }, 500),
           })
         }}
