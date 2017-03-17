@@ -16,17 +16,15 @@
 
 static void test_basics ()
 {
-	printf ("test basics\n");
+	printf ("Test basic functionality of plugin\n");
 
-	Key * parentKey = keyNew ("user/tests/mini", KEY_END);
+	Key * parentKey = keyNew ("system/elektra/modules/mini", KEY_END);
 	KeySet * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("mini");
 
 	KeySet * ks = ksNew (0, KS_END);
 
-	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "call to kdbGet was not successful");
-
-	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 1, "call to kdbSet was not successful");
+	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "Could not retrieve plugin contract");
 
 	keyDel (parentKey);
 	ksDel (ks);
@@ -36,8 +34,8 @@ static void test_basics ()
 
 int main (int argc, char ** argv)
 {
-	printf ("MINI     TESTS\n");
-	printf ("==================\n\n");
+	printf ("mINI Tests 🚙\n");
+	printf ("==============\n\n");
 
 	init (argc, argv);
 
