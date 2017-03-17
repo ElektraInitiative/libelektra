@@ -478,7 +478,7 @@ static int iniCommentToMeta (void * vhandle, const char * comment)
 		size_t len = strlen (localCopy);
 		char * ptr = localCopy;
 		char * name = ptr;
-		// skip keynames leading whitespaces
+		// skip keynames leading whitespace
 		while (isspace (*name))
 			++name;
 		char * value;
@@ -488,7 +488,7 @@ static int iniCommentToMeta (void * vhandle, const char * comment)
 		if (ptr)
 		{
 
-			// skip keynames trailing whitespaces starting left of delimiter
+			// skip keynames trailing whitespace starting left of delimiter
 			// and add nullbyte as string delimiter
 			char * nameEnd = ptr - 1;
 			while (isspace (*nameEnd))
@@ -498,7 +498,7 @@ static int iniCommentToMeta (void * vhandle, const char * comment)
 			{
 
 				*ptr = '\0';
-				// skip leading whitespaces and drop trailing whitespaces
+				// skip leading whitespace and drop trailing whitespace
 				value = ptr + 1;
 				while (isspace (*value))
 					++value;
@@ -792,7 +792,7 @@ int elektraIniGet (Plugin * handle, KeySet * returned, Key * parentKey)
 }
 
 // TODO: # and ; comments get mixed up, patch inih to differentiate and
-// create comment keys instead of writing metadata. Wiriting the meta
+// create comment keys instead of writing metadata. Writing the meta
 // data can be done by keytometa then
 void writeComments (Key * current, FILE * fh, const char commentChar)
 {
