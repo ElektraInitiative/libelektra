@@ -11,10 +11,13 @@
 
 #include "mini.h"
 
+#include <kdberrors.h>
 #include <kdbhelper.h>
+#include <stdio.h>
 
 /* -- Macros ---------------------------------------------------------------------------------------------------------------------------- */
 
+#define ERROR -1
 #define KEYSET_UNCHANGED 0
 #define KEYSET_MODIFIED 1
 
@@ -34,12 +37,32 @@ static inline KeySet * elektraMiniContract ()
 		      keyNew ("system/elektra/modules/mini/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 }
 
+static int parseFile (KeySet * returned ELEKTRA_UNUSED, Key * parentKey)
+{
+	// Retrieve values stored in file specified via `parentKey`
+	int errorNumber = errno;
+	FILE * source = fopen (keyString (parentKey), "r");
+
+	// Could not open file for reading
+	if (!source)
+	{
+		ELEKTRA_SET_ERROR_GET (parentKey);
+		errno = errorNumber;
+		return ERROR;
+	}
+
+	fclose (source);
+
+	return KEYSET_UNCHANGED;
+}
+
 // ====================
 // = Plugin Interface =
 // ====================
 
-int elektraMiniGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey ELEKTRA_UNUSED)
+int elektraMiniGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
 {
+	// Retrieve plugin contract
 	if (!elektraStrCmp (keyName (parentKey), "system/elektra/modules/mini"))
 	{
 		KeySet * contract = elektraMiniContract ();
@@ -49,7 +72,7 @@ int elektraMiniGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 		return KEYSET_MODIFIED;
 	}
 
-	return KEYSET_UNCHANGED;
+	return parseFile (returned, parentKey);
 }
 
 int elektraMiniSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
