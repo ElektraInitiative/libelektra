@@ -1615,6 +1615,6 @@ Plugin * ELEKTRA_PLUGIN_EXPORT (ini)
 	    ELEKTRA_PLUGIN_OPEN, &elektraIniOpen,
 	    ELEKTRA_PLUGIN_CLOSE, &elektraIniClose,
 	    ELEKTRA_PLUGIN_GET, &elektraIniGet,
-	    ELEKTRA_PLUGIN_SET, &elektraIniSet, 
+	    ELEKTRA_PLUGIN_SET, &elektraIniSet,
 	    ELEKTRA_PLUGIN_END);
 }
