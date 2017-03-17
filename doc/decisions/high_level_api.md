@@ -2,14 +2,15 @@
 
 ## Issue
 
-Projects usually do not want to use low-level APIs,
-`KDB`, however is untyped and not really high-level.
+Projects usually do not want to use low-level APIs.
+`KDB` and `KeySet` is useful for plugins and to
+implement APIs but not to be directly used in applications.
 
 ## Constraints
 
 1. should be extremely easy to get started with
 2. should be very hard to use it wrong
-3. all 3 APIs should work together very nicely
+3. all high-level APIs should work together very nicely
    - same principles
    - same API style
    - same error handling
@@ -26,16 +27,29 @@ Projects usually do not want to use low-level APIs,
 
 ## Considered Alternatives
 
-- simple vs. recursive API: recursive only for advanced users, thus it is enough if it is on top of KeySet
+- storing errors in the handle:
+ - Maintenance problem if error handling is added later
+- only provide `KDB`, applications need to implement their own APIs:
+ - reduces consistency of how the API is used
 - only provide generated API
+- assume type as `string` if not given
+- force `default` to be part of parameters
 
 ## Decision
 
-We provide 3 C APIs:
+We provide 3 high-level C APIs:
 
 1. libelektra-highlevel (generic key-value getter/setter)
-2. libelektra-hierarchy (generic hierarchical getter/setter)
-3. code generator (specified key-value getter/setter)
+2. libelektra-hierarchy (generic hierarchical getter/setter in a tree)
+3. code generator (specified key-value getter/setter with function names,
+   KeySets, or strings from specifications)
+
+Furthermore, we will:
+
+- have as goal that no errors in specified keys with default can occur
+- if you use `elektraGetType` before getting a value, no error can occur when getting it later
+- enforce that every key has a type
+- use `elektraError` as extra parameter (for prototyping and examples you can pass 0)
 
 
 ### Basic
@@ -43,18 +57,36 @@ We provide 3 C APIs:
 (needed for lcdproc)
 
 ```c
-Elektra * elektraOpen (const char * application);
-kdb_boolean_t elektraHasError (const Elektra * handle);
-const char * elektraErrorMessage (const Elektra * handle);
-void elektraErrorClear (const Elektra * handle); // ErrorClear vs. ClearError?
+Elektra * elektraOpen (const char * application, const KeySet * defaultSpec, ElektraError ** error);
+void elektraReload (Elektra * handle, ElektraError ** error);
+void elektraParse (Elektra * handle, int argc, char ** argv, char ** environ); // pass environ?
+void elektraDefault (Elektra * handle);
 void elektraClose (Elektra * handle);
 ```
 
-`elektraOpen` might fail, you need to check for error afterwards!
-If it fails, you need to exit the program with an error.
-If you want to avoid to exit, make sure to use pass a built-in `KeySet`,
-that has your whole specification included (and defaults everywhere
-needed).
+If `NULL` is passed as error, the API will try to continue if possible.
+On fatal errors, i.e. on API misuse or when it is not safe to use the
+handle afterwards, the API aborts with `exit`.
+
+If you want to avoid `elektraOpen` or later `elektraReload` to fail, make
+sure to use pass a `KeySet`, that has your whole specification included
+(and defaults everywhere needed).
+
+### Error Handling
+
+```c
+const char * elektraErrorMessage (const ElektraError * error);
+kdb_boolean_t elektraErrorAbort (const ElektraError * error);
+void elektraErrorFree (ElektraError * error)
+```
+
+`elektraErrorAbort` tells you if you need to quit your application because of severe
+issues that are permanent. Otherwise, developers can just print the message and
+continue. (Default settings might be used then.)
+
+### Simple Getters
+
+(most of them needed for lcdproc)
 
 
 ```c
@@ -74,17 +106,6 @@ kdb_double_t elektraGetDouble (Elektra * elektra, const char * name);
 kdb_long_double_t elektraGetLongDouble (Elektra * elektra, const char * name);
 ```
 
-### Reload and Parse
-
-(needed for lcdproc)
-
-```c
-// might fail, you need to check for error afterwards!
-void elektraReload (Elektra * handle);
-void elektraParse (Elektra * handle, int argc, char ** argv, char ** environ); // pass environ?
-void elektraDefault (Elektra * handle, const KeySet * defaultConfig);
-```
-
 ### Arrays
 
 (needed for lcdproc)
@@ -99,6 +120,9 @@ kdb_long_t elektraArrayLong (Elektra * handle, const char * name, size_t elem);
 
 ## Code-Generation
 
+(needed for lcdproc)
+
+
 For every entry in the specification, such as:
 
 ```
@@ -107,7 +131,11 @@ default=10
 type=long
 ```
 
-The code generator yields a `kdb_long_t elektraGetKey(Elektra * handle);`.
+The code generator yields:
+
+- `kdb_long_t elektraGetKey(Elektra * handle);`
+- a `KeySet` to be used as defaultSpec
+- `elektraOpenOrgApplication()`
 
 All spec keys together are part of the KeySet that is automatically applied
 on failures in lower-level calls when using:
@@ -120,6 +148,15 @@ on failures in lower-level calls when using:
 ```c
 // gives you a duplicate for other threads (same application+version), automatically calls elektraErrorClear
 Elektra * elektraDup (Elektra * handle);
+
+enum ElektraType
+{
+	ELEKTRA_TYPE_BOOLEAN,
+	ELEKTRA_TYPE_NONE,
+	...
+};
+
+ElektraType elektraGetType (Elektra * handle);
 
 KDB * elektraGetKDB (Elektra * handle);
 KeySet * elektraGetKeySet (Elektra * handle, const char * cutkey);
@@ -142,12 +179,14 @@ int keyGetInt (Key * key);
 
 ### recursive KeyHierarchy
 
-(not needed for lcdproc)
+(needed for lcdproc in a client)
 
-can be transformed from/to keysets
+A tree of `KeyHierarchy` elements, each element has a `Key` embedded.
+Can be transformed from/to keysets.
+With iterators to iterate over sub `KeyHierarchy` elements.
 
 ```c
-keyhAdd (KeyHierarchy * kh, Key * key);
+keyhHasChildren (KeyHierarchy * kh);
 
 // TODO, add rest of API
 ```
@@ -156,8 +195,6 @@ keyhAdd (KeyHierarchy * kh, Key * key);
 
 - const char * vs. string type?
 - merging on conflicts? (maybe libelektra-tools dynamically loaded?)
-- warnings
-- default config directly in `elektraOpen`? Or in `elektraParse`?
 - some API calls have a question mark next to it
 
 ## Argument
@@ -165,7 +202,7 @@ keyhAdd (KeyHierarchy * kh, Key * key);
 1. Very easy to get started with, to get a key needs 3 lines of codes:
 
    ```c
-   Elektra *handle = elektraOpen ("/sw/elektra/kdb/#0/current");
+   Elektra *handle = elektraOpen ("/sw/elektra/kdb/#0/current", 0);
    printf ("number /mykey is " ELEKTRA_LONG_F "\n", elektraGetLong (handle, "/mykey"));
    elektraClose (handle);
    ```
