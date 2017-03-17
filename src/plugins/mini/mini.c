@@ -13,6 +13,11 @@
 
 #include <kdbhelper.h>
 
+/* -- Macros ---------------------------------------------------------------------------------------------------------------------------- */
+
+#define KEYSET_UNCHANGED 0
+#define KEYSET_MODIFIED 1
+
 /* -- Functions ------------------------------------------------------------------------------------------------------------------------- */
 
 // ===========
@@ -41,19 +46,15 @@ int elektraMiniGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 		ksAppend (returned, contract);
 		ksDel (contract);
 
-		return 1; // success
+		return KEYSET_MODIFIED;
 	}
-	// get all keys
 
-	return 1; // success
+	return KEYSET_UNCHANGED;
 }
 
 int elektraMiniSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
 {
-	// set all keys
-	// this function is optional
-
-	return 1; // success
+	return KEYSET_UNCHANGED;
 }
 
 
