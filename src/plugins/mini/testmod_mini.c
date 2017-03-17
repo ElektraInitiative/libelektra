@@ -24,15 +24,9 @@ static void test_basics ()
 
 	KeySet * ks = ksNew (0, KS_END);
 
-	succeed_if (plugin->kdbOpen (plugin, parentKey) == 1, "call to kdbOpen was not successful");
-
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "call to kdbGet was not successful");
 
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 1, "call to kdbSet was not successful");
-
-	succeed_if (plugin->kdbError (plugin, ks, parentKey) == 1, "call to kdbError was not successful");
-
-	succeed_if (plugin->kdbClose (plugin, parentKey) == 1, "call to kdbClose was not successful");
 
 	keyDel (parentKey);
 	ksDel (ks);
