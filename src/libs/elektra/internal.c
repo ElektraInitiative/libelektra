@@ -511,7 +511,7 @@ static void elektraWriteBackslashes (char ** dest, size_t number)
  *
  * @retval 0 if nothing was done (dest unmodified) and escaping of
  *         string needs to be done
- * @retval 1 if key name part was handeled correctly (dest might be
+ * @retval 1 if key name part was handled correctly (dest might be
  *         updated if it was needed)
  */
 int elektraUnescapeKeyNamePartBegin (const char * source, size_t size, char ** dest)
@@ -765,7 +765,7 @@ int elektraEscapeKeyNamePartBegin (const char * source, char * dest)
  *       Do not use the source string as destination string.
  *
  * @param source the source pointer where escaping should start
- * @param dest the destination to write to (twice the size as sp
+ * @param dest the destination to write to (twice the size as sp)
  *
  * @return pointer to destination
  */
