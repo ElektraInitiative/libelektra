@@ -133,6 +133,20 @@
                 "dev-comment": "Here we have some important documentation files for users that want start to develop with Elektra.",
                 "children": [
                     {
+                        "name": "Ideas",
+                        "type": "staticfile",
+                        "options": {
+                            "path": "doc/IDEAS.md"
+                        }
+                    },
+                    {
+                        "name": "Contributing",
+                        "type": "staticfile",
+                        "options": {
+                            "path": ".github/CONTRIBUTING.md"
+                        }
+                    },
+                    {
                         "name": "Coding",
                         "type": "staticfile",
                         "options": {
@@ -186,28 +200,6 @@
                         "type": "staticref",
                         "options": {
                             "path": "tutorials"
-                        }
-                    }
-                ]
-            },
-            {
-                "name": "GSoC",
-                "type": "staticlist",
-                "ref": "devgsoc",
-                "dev-comment": "If you want to contribute to Elektra.",
-                "children": [
-                    {
-                        "name": "GSoC",
-                        "type": "staticfile",
-                        "options": {
-                            "path": "doc/IDEAS.md"
-                        }
-                    },
-                    {
-                        "name": "Contributing",
-                        "type": "staticfile",
-                        "options": {
-                            "path": ".github/CONTRIBUTING.md"
                         }
                     }
                 ]
