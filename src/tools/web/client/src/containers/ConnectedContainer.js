@@ -14,7 +14,10 @@ import Container from '../components/Container.jsx'
 
 const inCluster = (clusters, instanceId) =>
   clusters.reduce(
-    (res, cluster) => res || cluster.instances.indexOf(instanceId) > -1,
+    (res, cluster) => {
+      if (!cluster || !cluster.instances) return res
+      return res || cluster.instances.indexOf(instanceId) > -1
+    },
     false
   )
 
