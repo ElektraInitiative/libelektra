@@ -16,7 +16,7 @@
 
 static void test_basics ()
 {
-	printf ("Test basic functionality of plugin\n");
+	printf ("• Test basic functionality of plugin\n");
 
 	Key * parentKey = keyNew ("system/elektra/modules/mini", KEY_END);
 	KeySet * conf = ksNew (0, KS_END);
@@ -41,7 +41,7 @@ int main (int argc, char ** argv)
 
 	test_basics ();
 
-	printf ("\ntestmod_mini RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
+	printf ("\nResults: %d Test%s done — %d error%s.\n", nbTest, nbTest != 1 ? "s" : "", nbError, nbError != 1 ? "s" : "");
 
 	return nbError;
 }
