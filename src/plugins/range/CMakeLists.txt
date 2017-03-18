@@ -1,6 +1,6 @@
 include (LibAddMacros)
 
-if (DEPENDENCY_PHASE)
+if (DEPENDENCY_PHASE AND NOT "${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang")
     set_source_files_properties(range.c PROPERTIES COMPILE_FLAGS -Wno-psabi)
 endif ()
 
