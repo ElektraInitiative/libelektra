@@ -59,3 +59,12 @@ The configuration view of elektra web is similar to the tree view of the
 
  * [elektrad](http://tree.libelektra.org/doc/api_blueprints/elektrad.apib), documentation: http://docs.elektrad.apiary.io/
  * [clusterd](http://tree.libelektra.org/doc/api_blueprints/clusterd.apib), documentation: http://docs.clusterd.apiary.io/
+
+
+## Auth
+
+Currently, clusterd does not support authentication. The best way to work around
+this is to use a reverse proxy (e.g. [nginx reverse proxy](https://www.nginx.com/resources/admin-guide/reverse-proxy/)).
+
+Once you set up a reverse proxy on your web server, you can use it to
+authenticate users, e.g. by [username/password auth](https://www.digitalocean.com/community/tutorials/how-to-set-up-password-authentication-with-nginx-on-ubuntu-14-04)
