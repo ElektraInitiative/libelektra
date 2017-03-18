@@ -232,9 +232,9 @@ Example:
             "path": "src/plugins/README.md",
             "target_file": ["README.md", "README", "readme.md", "readme"],
             "parsing": {
-                "start_regex": "# Plugins #",
-                "stop_regex": "####### UNUSED ######",
-                "section_regex": "### ([^#]+) ###",
+                "start_regex": "# Plugins",
+                "stop_regex": "####### UNUSED",
+                "section_regex": "### ([^#]+)",
                 "entry_regex": "^\\- \\[(.+)\\]\\(([^\\)]+)\\)(.*)"
             },
             "name": {
