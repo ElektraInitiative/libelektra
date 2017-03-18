@@ -7,6 +7,8 @@
  *
  */
 
+#include "values.h"
+
 #include <stdlib.h>
 #include <string.h>
 
@@ -24,7 +26,7 @@ static void test_basics ()
 
 	KeySet * ks = ksNew (0, KS_END);
 
-	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "Could not retrieve plugin contract");
+	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == KEYSET_MODIFIED, "Could not retrieve plugin contract");
 
 	keyDel (parentKey);
 	ksDel (ks);
