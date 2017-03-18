@@ -63,16 +63,18 @@ int elektraTclGet (Plugin *, KeySet * returned, Key * parentKey)
 	}
 	catch (boost::spirit::qi::expectation_failure<boost::spirit::istream_iterator> const & e)
 	{
-		ELEKTRA_SET_ERROR (61, parentKey, std::string (std::string ("file: ") + keyString (parentKey) +
-							       " could not be parsed because: " + std::string (e.first, e.last))
-							  .c_str ());
+		ELEKTRA_SET_ERROR (61, parentKey,
+				   std::string (std::string ("file: ") + keyString (parentKey) + " could not be parsed because: " +
+						std::string (e.first, e.last))
+					   .c_str ());
 		ret = -1;
 	}
 	catch (std::exception const & e)
 	{
-		ELEKTRA_SET_ERROR (61, parentKey, std::string (std::string ("file: ") + keyString (parentKey) +
-							       " could not be parsed because: " + e.what ())
-							  .c_str ());
+		ELEKTRA_SET_ERROR (
+			61, parentKey,
+			std::string (std::string ("file: ") + keyString (parentKey) + " could not be parsed because: " + e.what ())
+				.c_str ());
 		ret = -1;
 	}
 	input.release ();
