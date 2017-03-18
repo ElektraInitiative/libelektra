@@ -45,6 +45,7 @@ Special care for simplicity is taken for the users:
 - Application's Maintainers to correctly setup and upgrade KDB
 - Administrators that want to change the maintainers' setup
   according to their needs
+- Key-value uniformity that allows introspection
 
 2.) Robustness
 
