@@ -22,7 +22,8 @@ import configureStore from './store'
 const store = configureStore()
 
 // fetch instances when the app is loaded
-import { fetchInstances, fetchClusters } from './actions'
+import { configureInstance, fetchInstances, fetchClusters } from './actions'
+store.dispatch(configureInstance('my')) // single instance mode
 store.dispatch(fetchInstances())
 store.dispatch(fetchClusters())
 

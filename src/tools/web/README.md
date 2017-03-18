@@ -23,6 +23,7 @@ Elektra-web requires:
    * `cd clusterd`
    * `npm install`
    * `npm start`
+   * or `INSTANCE="http://localhost:33333" npm start` to connect to a single instance only
  * You can now access the client on: [http://localhost:33334](http://localhost:33334)
 
 

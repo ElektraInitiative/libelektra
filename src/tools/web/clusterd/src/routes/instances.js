@@ -9,7 +9,7 @@
 import { successResponse, errorResponse, dontShowDB } from './utils'
 
 import {
-  getInstances, createInstance,
+  getInstances as getDBInstances, createInstance,
   getInstance as getDBInstance, updateInstance, deleteInstance,
 } from '../db'
 
@@ -17,10 +17,23 @@ import { INSTANCE } from '../config'
 
 import remoteKdb from '../connector'
 
+const myInstance = () => {
+  return { host: INSTANCE, id: 'my', name: 'My Instance' }
+}
+
 const getInstance = (id) =>
   (INSTANCE && id === 'my')
-    ? { host: INSTANCE, id: 'my', name: 'My Instance' }
+    ? Promise.resolve(myInstance())
     : getDBInstance(id)
+
+const getInstances = () => {
+  if (INSTANCE) {
+    return getDBInstances()
+      .then(instances => instances.concat([ myInstance() ]))
+  } else {
+    return getDBInstances()
+  }
+}
 
 export default function initInstanceRoutes (app) {
   app.route('/instances')
