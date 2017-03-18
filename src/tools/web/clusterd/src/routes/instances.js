@@ -10,10 +10,17 @@ import { successResponse, errorResponse, dontShowDB } from './utils'
 
 import {
   getInstances, createInstance,
-  getInstance, updateInstance, deleteInstance,
+  getInstance as getDBInstance, updateInstance, deleteInstance,
 } from '../db'
 
+import { INSTANCE } from '../config'
+
 import remoteKdb from '../connector'
+
+const getInstance = (id) =>
+  (INSTANCE && id === 'my')
+    ? { host: INSTANCE, id: 'my', name: 'My Instance' }
+    : getDBInstance(id)
 
 export default function initInstanceRoutes (app) {
   app.route('/instances')
@@ -54,7 +61,12 @@ export default function initInstanceRoutes (app) {
 
   app.get('/instances/:id/kdb', (req, res) =>
     getInstance(req.params.id)
-      .then(instance => remoteKdb.get(instance.host))
+      .then(instance => {
+        if (!instance || !instance.host) {
+          throw new Error('Instance not found or invalid (no host)')
+        }
+        return remoteKdb.get(instance.host)
+      })
       .then(dontShowDB)
       .then(output => successResponse(res, output))
       .catch(err => errorResponse(res, err))

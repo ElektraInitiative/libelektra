@@ -18,8 +18,11 @@ export const successResponse = (res, output) =>
 
 export const errorResponse = (res, err) => {
   if (process.env.NODE_ENV !== 'production') console.error(err)
+  const errObj = (err instanceof Error)
+    ? { name: err.name, message: err.message }
+    : err
   return res.status(400).type('application/json')
-            .send(prettyprint({ message: err }))
+            .send(prettyprint({ error: errObj }))
 }
 
 // don't show the internal database via the API

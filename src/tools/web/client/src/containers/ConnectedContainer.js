@@ -20,10 +20,14 @@ const inCluster = (clusters, instanceId) =>
 
 const mapStateToProps = (state) => {
   return {
-    instances: state.instances.filter(
-      (instance) => !inCluster(state.clusters, instance.id)
-    ),
-    clusters: state.clusters,
+    instances: (state && Array.isArray(state.instances))
+      ? state.instances.filter(
+        (instance) => !inCluster(state.clusters, instance.id)
+      )
+      : [],
+    clusters: (state && Array.isArray(state.clusters))
+      ? state.clusters
+      : [],
     status: state.container,
   }
 }
