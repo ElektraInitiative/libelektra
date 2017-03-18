@@ -127,7 +127,7 @@ export default class Menu extends React.Component {
     return (
         <Toolbar>
           {title}
-          {actions}
+          {!subpage && actions /* don't show action buttons on subpages */}
         </Toolbar>
     )
   }
