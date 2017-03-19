@@ -13,27 +13,27 @@ import {
   getInstance as getDBInstance, updateInstance, deleteInstance,
 } from '../db'
 
-import { INSTANCE } from '../config'
+import { getSingleInstance } from '../config'
 
 import remoteKdb from '../connector'
 
-const myInstance = () => {
-  return { host: INSTANCE, id: 'my', name: 'My Instance' }
+const makeMyInstance = (host) => {
+  if (!host) return false
+  return { host, id: 'my', name: 'My Instance' }
 }
 
 const getInstance = (id) =>
-  (INSTANCE && id === 'my')
-    ? Promise.resolve(myInstance())
+  (id === 'my')
+    ? getSingleInstance().then(makeMyInstance)
     : getDBInstance(id)
 
-const getInstances = () => {
-  if (INSTANCE) {
-    return getDBInstances()
-      .then(instances => instances.concat([ myInstance() ]))
-  } else {
-    return getDBInstances()
-  }
-}
+const getInstances = () =>
+  getSingleInstance()
+    .then(host => {
+      if (!host) return getDBInstances()
+      return getDBInstances()
+        .then(instances => instances.concat([ makeMyInstance(host) ]))
+    })
 
 export default function initInstanceRoutes (app) {
   app.route('/instances')
