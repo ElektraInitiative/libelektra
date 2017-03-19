@@ -27,7 +27,7 @@ const INTEGER_TYPES = [
 const FLOAT_TYPES = [ 'float', 'double' ]
 
 const isNumber = (value) => !isNaN(value)
-const isInt = (value) => /^(-|\+)?[0-9]+$/.test(value)
+const isInt = (value) => Number.isInteger(value)
 
 const elektraEnumToJSON = (val) => {
   const convertedVal = val.replace(/'/g, '"')
