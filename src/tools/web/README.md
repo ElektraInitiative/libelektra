@@ -23,8 +23,27 @@ Elektra-web requires:
    * `cd clusterd`
    * `npm install`
    * `npm start`
-   * or `INSTANCE="http://localhost:33333" npm start` to connect to a single instance only
  * You can now access the client on: [http://localhost:33334](http://localhost:33334)
+
+### Running elektra-web on a single instance
+
+If you do not want to configure multiple instances, you can set the `INSTANCE`
+environment variable to the server you want to configure. You can also set
+`user/sw/elektra/web/#0/current/instance` to the host. Make sure to enter a full
+HTTP URL, e.g. `http://localhost:33333`.
+
+If this configuration option is set, elektra-web will load the configuration
+page for that instance instead of the main overview page.
+
+If you want to host elektra-web with clusterd and elektrad on the same instance,
+you can run clusterd as follows:
+
+```
+INSTANCE="http://localhost:33333" npm start
+```
+
+Now, when you open [http://localhost:33334](http://localhost:33334) in your
+browser, the configuration page for the instance will be opened immediately.
 
 
 ## Overview
