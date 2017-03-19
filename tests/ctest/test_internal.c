@@ -248,6 +248,18 @@ static void test_keyNameGetOneLevel ()
 	succeed_if (size == sizeof (buffer) - 1, "size not set correctly");
 }
 
+static void test_lskip ()
+{
+	printf ("Test lskip\n");
+
+	succeed_if_same_string (lskip (""), "");
+	succeed_if_same_string (lskip ("No Leading Whitespace"), "No Leading Whitespace");
+	succeed_if_same_string (lskip ("\tLeading Tab"), "Leading Tab");
+	succeed_if_same_string (lskip (" Leading Space"), "Leading Space");
+	succeed_if_same_string (lskip (" \tLeading And Trailing Whitespace\t\n "), "Leading And Trailing Whitespace\t\n ");
+}
+}
+
 int main (int argc, char ** argv)
 {
 	printf ("INTERNALS    TESTS\n");
@@ -261,6 +273,7 @@ int main (int argc, char ** argv)
 	test_elektraEscapeKeyNamePart ();
 	test_elektraUnescapeKeyName ();
 	test_keyNameGetOneLevel ();
+	test_lskip ();
 
 	printf ("\ntest_internals RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 

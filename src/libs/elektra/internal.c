@@ -820,3 +820,28 @@ char * elektraEscapeKeyNamePart (const char * source, char * dest)
 	*dp = 0;
 	return dest;
 }
+
+/**
+ * @internal
+ *
+ * @brief This function returns a pointer to the first non-whitespace
+ *        character in a given string.
+ *
+ * @pre The parameter `text` must not be `NULL`.
+ *
+ * @param text The string for which we want to determine the first
+ *             non-whitespace character
+ *
+ * @return A pointer to the first non-whitespace character in `text`
+ */
+char * lskip (char const * const text)
+{
+	ELEKTRA_ASSERT (text != NULL, "The Parameter `text` contains `NULL` instead of a valid string.");
+
+	char const * start = text;
+	while (isspace ((unsigned char)*start))
+	{
+		start++;
+	}
+	return (char *)start;
+}
