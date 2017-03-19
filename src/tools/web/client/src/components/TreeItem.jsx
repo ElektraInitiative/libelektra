@@ -18,7 +18,6 @@ import ContentCreate from 'material-ui/svg-icons/content/create'
 
 import TreeView from './TreeView.jsx'
 
-// TODO: set min/max appropriately for these types
 const INTEGER_TYPES = [
   'short', 'unsigned_short', 'long', 'unsigned_long', 'long_long',
   'unsigned_long_long',
@@ -27,7 +26,6 @@ const INTEGER_TYPES = [
 const FLOAT_TYPES = [ 'float', 'double' ]
 
 const isNumber = (value) => !isNaN(value)
-const isInt = (value) => Number.isInteger(value)
 
 const elektraEnumToJSON = (val) => {
   const convertedVal = val.replace(/'/g, '"')
@@ -46,8 +44,23 @@ const validateType = (metadata, value) => {
   }
 
   if (INTEGER_TYPES.includes(type)) {
-    if (!isInt(value)) {
+    const i = Number(value)
+    if (!Number.isInteger(i)) {
       return 'invalid number, integer expected'
+    }
+
+    if (type === 'short' && !(i >= -32768 && i <= 32767)) {
+      return 'invalid number, short (integer between -32768 and 32767) expected'
+    } else if (type === 'unsigned_short' && !(i >= 0 && i <= 65535)) {
+      return 'invalid number, unsigned short (integer between 0 and 65535) expected'
+    } else if (type === 'long' && !(i >= -2147483648 && i <= 2147483647)) {
+      return 'invalid number, long (integer between -2147483648 and 2147483647) expected'
+    } else if (type === 'unsigned_long' && !(i >= 0 && i <= 4294967295)) {
+      return 'invalid number, unsigned long (integer between 0 and 4294967295) expected'
+    } else if (type === 'long_long' && !(i >= -9223372036854775808 && i <= 9223372036854775807)) {
+      return 'invalid number, long long (integer between -9223372036854775808 and 9223372036854775807) expected'
+    } else if (type === 'unsigned_long_long' && !(i >= 0 && i <= 18446744073709551615)) {
+      return 'invalid number, unsigned long long (integer between 0 and 18446744073709551615) expected'
     }
   }
 
