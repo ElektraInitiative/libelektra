@@ -60,6 +60,9 @@ usr/lib/*/elektra4/libelektra-type.so*
 usr/lib/*/elektra4/libelektra-uname.so*
 usr/lib/*/elektra4/libelektra-validation.so*
 usr/lib/*/elektra4/libelektra-wresolver.so*
+usr/lib/*/elektra4/libelektra-multifile.so
+usr/lib/*/elektra4/libelektra-date.so
+usr/lib/*/elektra4/libelektra-c.so
 usr/lib/*/libelektra-core.so*
 usr/lib/*/libelektra-ease.so*
 usr/lib/*/libelektra-full.so*
