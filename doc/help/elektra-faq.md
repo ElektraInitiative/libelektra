@@ -19,6 +19,21 @@ Furthermore, Elektra has a defined API and you can swap implementations as neede
 So it pays off to use Elektra -- in the short and in the long term.
 
 
+## Do we retain the old way of configuring things, i.e. manually editing a ini file in /etc?
+
+Absolutely, you can think of libelektra as a small library in C that
+reads a configuration file and returns a data structure if you do not
+use any of its advanced features.
+
+
+## Do we retain the old way reloading/restarting the system service?
+
+Elektra does not interfere with restarting. It is a passive library.
+It provides some techniques for reloading but they are optional (but we
+recommend that you keep the in-memory and persistent configuration in
+sync via notification).
+
+
 ## I am stuck. Where can I get help?
 
 If this FAQ does not contain your question, [please open an issue](http://git.libelektra.org/issues).
@@ -56,7 +71,6 @@ of the plugin. If you need, e.g., a plugin that crashes the process make sure th
 you tag (`infos/status`) it with `discouraged`.
 
 Please start by reading [here](/.github/CONTRIBUTING.md).
-
 
 ## What is the Elektra’s license?
 

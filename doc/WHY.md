@@ -101,7 +101,7 @@ Features that rarely can be found elsewhere (at least in this combination):
 - `kdb editor` allows you to edit any path of Elektra with your favourite
   syntax (independent of the actual syntax of the configuration files
   that store values of this path).
-- Allows us to also (integrate commandline arguments and environment)[/src/libs/getenv]
+- Allows us to also [integrate command-line arguments and environment](/src/bindings/intercept/env)
   into a consistent place for configuration.
 - Reduces huge amount of code: Nearly every application has very similar code:
   - finding the correct configuration file (for different OS)
