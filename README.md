@@ -225,4 +225,4 @@ coverage report](http://doc.libelektra.org/coverage/latest).
 
 ## Contributing
 
-Take a look at [doc/IDEAS.md](how to start).
+Take a look at [how to start](doc/IDEAS.md).

@@ -10,8 +10,8 @@ We prepared
 for you.
 
 - We encourage you to improve documentation.
-- In the source code, you should look into [libs](src/libs/) and [plugins](/src/plugins/).
-- You can always peek into the [TODOs](doc/todo), if you don't know what to do.
+- In the source code, you should look into [libs](/src/libs/) and [plugins](/src/plugins/).
+- You can always peek into the [TODOs](/doc/todo), if you don't know what to do.
 - An ideal project is to elektrify some free software.
 
 Elektrify means:
