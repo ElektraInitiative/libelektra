@@ -3,13 +3,10 @@
 # Uncomment this to turn on verbose mode.
 #export DH_VERBOSE=1
 
-# Make sure libelektra is built before packages depending on it
-binary/libelektra-bin binary/libelektra-dev:: binary/libelektra
-
 # Which plugins and tools should be built
-ELEKTRA_PLUGINS='ALL;-EXPERIMENTAL;-python;mozprefs;c;simplespeclang;base64;fcrypt'
+ELEKTRA_PLUGINS='ALL;mozprefs;multifile'
 ELEKTRA_TOOLS='ALL'
-ELEKTRA_BINDINGS='cpp;swig_lua;swig_python2;intercept'
+ELEKTRA_BINDINGS='cpp;swig_lua;swig_python3;swig_python2;intercept
 
 #workaround for hardening flags
 CPPFLAGS:=$(shell dpkg-buildflags --get CPPFLAGS)
@@ -17,36 +14,77 @@ CFLAGS:=$(shell dpkg-buildflags --get CFLAGS) $(CPPFLAGS)
 CXXFLAGS:=$(shell dpkg-buildflags --get CXXFLAGS) $(CPPFLAGS)
 LDFLAGS:=$(shell dpkg-buildflags --get LDFLAGS)
 
-CMAKE_FLAGS = \
-	-DCMAKE_INSTALL_PREFIX=/usr \
-	-DTARGET_PLUGIN_FOLDER=elektra4 \
-	-DPLUGINS="$(ELEKTRA_PLUGINS)" \
-	-DTOOLS="$(ELEKTRA_TOOLS)" \
-	-DBINDINGS="$(ELEKTRA_BINDINGS)" \
-	-DKDB_DB_SYSTEM:PATH="/etc/kdb" \
-	-DKDB_DB_HOME:PATH="/home" \
-	-DKDB_DB_USER:PATH=".config" \
-	-DINSTALL_DOCUMENTATION=ON \
-	-DTARGET_DOCUMENTATION_HTML_FOLDER=share/doc/libelektra-doc/html \
-	-DSWIG_EXECUTABLE=/usr/bin/swig3.0 \
-	-DENABLE_TESTING=ON \
-	-DINSTALL_TESTING=ON \
-	-DENABLE_KDB_TESTING=OFF \
-	-DBUILD_PDF=OFF \
-	-DBUILD_FULL=ON \
-	-DBUILD_STATIC=ON \
-	-DTARGET_TEST_DATA_FOLDER=share/libelektra-test/test-data \
-	-DCMAKE_C_FLAGS="$(CFLAGS)" \
-	-DCMAKE_CXX_FLAGS="$(CXXFLAGS)" \
-	-DCMAKE_EXE_LINKER_FLAGS="$(LDFLAGS)" \
-	-DCMAKE_MODULE_LINKER_FLAGS="$(LDFLAGS)" \
-	-DCMAKE_SHARED_LINKER_FLAGS="$(LDFLAGS)"
+PY3VER = $(shell py3versions -d -v)
+DEB_HOST_MULTIARCH ?= $(shell dpkg-architecture -qDEB_HOST_MULTIARCH)
+
+CMAKE_ARGS = -DLIB_SUFFIX="/$(DEB_HOST_MULTIARCH)" \
+  -DTARGET_PLUGIN_FOLDER="elektra4" \
+  -DBUILD_STATIC=OFF \
+  -DPython_ADDITIONAL_VERSIONS="$(PY3VER)" \
+  -DGTEST_ROOT="/usr/src/gtest" \
+  -DCMAKE_INSTALL_PREFIX=/usr \
+  -DPLUGINS="$(ELEKTRA_PLUGINS)" \
+  -DTOOLS="$(ELEKTRA_TOOLS)" \
+  -DBINDINGS="$(ELEKTRA_BINDINGS)" \
+  -DKDB_DB_SYSTEM:PATH="/etc/kdb" \
+  -DKDB_DB_HOME:PATH="/home" \
+  -DKDB_DB_USER:PATH=".config" \
+  -DINSTALL_DOCUMENTATION=ON \
+  -DTARGET_DOCUMENTATION_HTML_FOLDER=share/doc/libelektra-doc/html \
+  -DSWIG_EXECUTABLE=/usr/bin/swig3.0 \
+  -DENABLE_TESTING=ON \
+  -DINSTALL_TESTING=ON \
+  -DENABLE_KDB_TESTING=OFF \
+  -DBUILD_PDF=OFF \
+  -DBUILD_FULL=ON \
+  -DTARGET_TEST_DATA_FOLDER=share/libelektra-test/test-data \
+  -DCMAKE_C_FLAGS="$(CFLAGS)" \
+  -DCMAKE_CXX_FLAGS="$(CXXFLAGS)" \
+  -DCMAKE_EXE_LINKER_FLAGS="$(LDFLAGS)" \
+  -DCMAKE_MODULE_LINKER_FLAGS="$(LDFLAGS)" \
+  -DCMAKE_SHARED_LINKER_FLAGS="$(LDFLAGS)"
+
+T = $(CURDIR)/teststmp
+EMPTY =
+SPACE = $(EMPTY) $(EMPTY)
+COMMA_SPACE = ,$(SPACE)
+PKGS_ALL_PLUGINS = $(subst $(SPACE),$(COMMA_SPACE),$(filter libelektra4-%,$(shell dh_listpackages)))
+
+export DEB_LDFLAGS_MAINT_APPEND := -Wl,--as-needed
 
 %:
-	dh $@ --buildsystem=cmake --parallel
+	dh $@ --parallel --buildsystem=cmake --with lua,python3,python2
 
 override_dh_auto_configure:
-	dh_auto_configure -- $(CMAKE_FLAGS)
+	dh_auto_configure --buildsystem=cmake -- $(CMAKE_ARGS)
 
 override_dh_auto_test:
-	ctest --force-new-ctest-process --output-on-failure -E testabi_ks -E test_array
+ifeq (,$(findstring nocheck,$(DEB_BUILD_OPTIONS)))
+	mkdir -p "$(T)"
+	cd obj-* && env HOME="$(T)" TMPDIR="$(T)" LD_LIBRARY_PATH="${CURDIR}/obj-${DEB_HOST_MULTIARCH}/lib" ctest --output-on-failure -LE kdbtests
+	find "$(T)" | sort
+	rm -rf "$(T)"
+endif
+
+override_dh_auto_install:
+	dh_auto_install
+	find $(CURDIR)/debian/tmp \( -name '*.map' -o -name '*.md5' \) -delete
+
+override_dh_install:
+	dh_install --list-missing
+
+override_dh_compress:
+	dh_compress -X.lua -Xexamples
+
+override_dh_strip:
+	dh_strip --dbg-package=elektra-dbg
+
+override_dh_makeshlibs:
+	dh_makeshlibs -Xusr/lib/$(DEB_HOST_MULTIARCH)/elektra4 -Xlibelektragetenv.so
+
+override_dh_shlibdeps:
+	# to find libelektragetenv.so
+	dh_shlibdeps -l$(CURDIR)/debian/tmp/usr/lib/$(DEB_HOST_MULTIARCH)/ --dpkg-shlibdeps-params=--ignore-missing-info
+
+override_dh_gencontrol:
+	dh_gencontrol -- -Velektra:allPlugins='$(PKGS_ALL_PLUGINS)'

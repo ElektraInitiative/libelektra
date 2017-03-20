@@ -1,0 +1,13 @@
+#!/bin/sh
+set -e
+
+cd $ADTTMP
+
+for lua in /usr/share/doc/lua-elektra/examples/*.lua; do
+  echo "Testing $(basename $lua)..."
+  export TMP=$(mktemp -d --tmpdir=$PWD elektra.XXXXXXXX)
+  export TMPDIR=$TMP
+  export HOME=$TMP
+
+  lua $lua
+done

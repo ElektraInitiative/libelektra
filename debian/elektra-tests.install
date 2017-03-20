@@ -1,7 +1,7 @@
-usr/lib/elektra/tool_exec/race
-usr/lib/elektra/tool_exec/test*
-usr/lib/elektra/tool_exec/check*
-usr/lib/elektra/tool_exec/run_all
+usr/lib/*/elektra/tool_exec/race
+usr/lib/*/elektra/tool_exec/test*
+usr/lib/*/elektra/tool_exec/check*
+usr/lib/*/elektra/tool_exec/run_all
 usr/share/libelektra-test/test-data/shell/*
 usr/share/libelektra-test/test-data/yajl/*
 usr/share/libelektra-test/test-data/augeas/*
@@ -14,3 +14,5 @@ usr/share/libelektra-test/test-data/csvstorage/*
 usr/share/libelektra-test/test-data/filecheck/*
 usr/share/libelektra-test/test-data/lineendings/*
 usr/share/libelektra-test/test-data/mozprefs/*
+usr/share/libelektra-test/test-data/lua/*
+

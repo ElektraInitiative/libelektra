@@ -1,0 +1,10 @@
+#!/bin/sh
+set -e
+
+cd $ADTTMP
+export HOME=$PWD/home
+mkdir -p $HOME
+export TMP=$PWD
+export TMPDIR=$PWD
+
+kdb-full run_all

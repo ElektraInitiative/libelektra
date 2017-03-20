@@ -1,0 +1,3 @@
+usr/share/doc/libelektra-doc usr/share/doc/elektra-doc
+usr/share/man/man3/*.3elektra
+usr/share/man/man7/elektra-*.7
