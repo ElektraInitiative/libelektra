@@ -1056,3 +1056,10 @@ severity:error
 ingroup:plugin
 module:range
 macro:INVALID_RANGE
+
+number:172
+description:multifile globbing failed.
+severity:error
+ingroup:plugin
+module:multifile
+macro:MULTI_GLOB_FAILED
