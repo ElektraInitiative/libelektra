@@ -54,6 +54,28 @@ Description: elektra configuration store, main library
  .
  This package contains the main elektra library, and most of the core plugins.
 
+Package: libelektra4-experimental
+Section: libs
+Architecture: any
+Multi-Arch: same
+Pre-Depends: ${misc:Pre-Depends}
+Depends: ${shlibs:Depends},
+ ${misc:Depends}
+Breaks: elektra-bin (<< 0.8.14-5~), libelektra-core4
+Replaces: elektra-bin (<< 0.8.14-5~), libelelektra-core4
+Suggests: elektra-doc, ${elektra:allPlugins}
+Description: elektra configuration store, experimental plugins
+ Elektra provides a universal and secure framework to store configuration
+ parameters in a hierarchical key-value pair mechanism, instead of each
+ program using its own text configuration files. This allows any program
+ to read and save its configuration with a consistent API, and allows
+ them to be aware of other applications' configurations, permitting
+ easy application integration. While architecturally similar to other OS
+ registries, Elektra does not have most of the problems found in those
+ implementations.
+ .
+ This package contains experimental plugins.
+
 Package: libelektra-dev
 Section: libdevel
 Architecture: any
