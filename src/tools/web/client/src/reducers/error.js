@@ -33,6 +33,7 @@ export default function errorReducer (state = false, action) {
 
     case CONFIGURE_INSTANCE_FAILURE:
     case CONFIGURE_CLUSTER_FAILURE:
+      if (action.id === 'my') return state
       if (action.error && action.error.message &&
         action.error.message === 'only absolute urls are supported'
       ) {

@@ -11,12 +11,18 @@ import Snackbar from 'material-ui/Snackbar'
 
 const ErrorSnackbar = ({ error }) => {
   if (error) console.error(error)
-  return (
-    <Snackbar
-      open={!!error}
-      message={(error && error.message) ? error.message : ''}
-    />
-  )
+  const message = typeof error === 'string' ? error : error.message
+  const name = (error && error.name) ? error.name : 'Error'
+  if (typeof message === 'string' && message.length > 0) {
+    return (
+      <Snackbar
+        open={!!error}
+        message={name + ': ' + message}
+      />
+    )
+  } else {
+    return null
+  }
 }
 
 export default ErrorSnackbar

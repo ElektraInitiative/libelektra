@@ -9,6 +9,10 @@
  */
 
 export {
+  getSingleInstanceOption,
+} from './config'
+
+export {
   getInstances, createInstance, getInstance, updateInstance, deleteInstance,
 } from './instances'
 

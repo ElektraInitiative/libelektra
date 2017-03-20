@@ -20,6 +20,11 @@ export default class CreateKey extends React.Component {
   render () {
     const { setKey } = this.props
 
+    // remove / prefix/suffix
+    const cleanPath = this.state.path
+      .replace(/^\/+/, '')
+      .replace(/\/+$/, '')
+
     return (
       <div style={{ marginLeft: 10 }}>
         Create new key:
@@ -35,7 +40,7 @@ export default class CreateKey extends React.Component {
         />
         <RaisedButton
           label="create key"
-          onTouchTap={() => setKey(this.state.path, this.state.value)}
+          onTouchTap={() => setKey('user/' + cleanPath, this.state.value)}
         />
       </div>
     )

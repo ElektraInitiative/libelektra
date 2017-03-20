@@ -8,12 +8,16 @@
 
 import { GET_KEY_SUCCESS, SET_KEY_REQUEST, DELETE_KEY_REQUEST } from '../actions'
 
-const updateState = (state, { id, path, value }) => {
+const updateState = (state, { id, path, value, meta }) => {
+  const updatedPart = {
+    value: value || (state[id] && state[id][path] && state[id][path].value),
+    meta: meta || (state[id] && state[id][path] && state[id][path].meta),
+  }
   return {
     ...state,
     [id]: {
       ...state[id],
-      [path]: value,
+      [path]: updatedPart,
     },
   }
 }

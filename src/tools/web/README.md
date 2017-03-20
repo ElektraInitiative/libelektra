@@ -25,6 +25,26 @@ Elektra-web requires:
    * `npm start`
  * You can now access the client on: [http://localhost:33334](http://localhost:33334)
 
+### Running elektra-web on a single instance
+
+If you do not want to configure multiple instances, you can set the `INSTANCE`
+environment variable to the server you want to configure. You can also set
+`user/sw/elektra/web/#0/current/instance` to the host. Make sure to enter a full
+HTTP URL, e.g. `http://localhost:33333`.
+
+If this configuration option is set, elektra-web will load the configuration
+page for that instance instead of the main overview page.
+
+If you want to host elektra-web with clusterd and elektrad on the same instance,
+you can run clusterd as follows:
+
+```
+INSTANCE="http://localhost:33333" npm start
+```
+
+Now, when you open [http://localhost:33334](http://localhost:33334) in your
+browser, the configuration page for the instance will be opened immediately.
+
 
 ## Overview
 
@@ -58,3 +78,12 @@ The configuration view of elektra web is similar to the tree view of the
 
  * [elektrad](http://tree.libelektra.org/doc/api_blueprints/elektrad.apib), documentation: http://docs.elektrad.apiary.io/
  * [clusterd](http://tree.libelektra.org/doc/api_blueprints/clusterd.apib), documentation: http://docs.clusterd.apiary.io/
+
+
+## Auth
+
+Currently, clusterd does not support authentication. The best way to work around
+this is to use a reverse proxy (e.g. [nginx reverse proxy](https://www.nginx.com/resources/admin-guide/reverse-proxy/)).
+
+Once you set up a reverse proxy on your web server, you can use it to
+authenticate users, e.g. by [username/password auth](https://www.digitalocean.com/community/tutorials/how-to-set-up-password-authentication-with-nginx-on-ubuntu-14-04)
