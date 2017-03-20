@@ -7,7 +7,7 @@
 - infos/status = maintained reviewed unittest global experimental unfinished nodoc -10000
 - infos/description = locks files during usage
 
-## Semlock ##
+## Semlock
 
 This global semlock plugin introduces a read lock while `GET` and a read/write lock
 while `SET`.
@@ -19,7 +19,7 @@ The algorithm is described [here](https://en.wikipedia.org/wiki/Readers%E2%80%93
 
 The usage of this plugin could lead to deadlocks, due to an ongoing discussion (-10000) ([Link](https://github.com/ElektraInitiative/libelektra/pull/555)).
 
-## /dev/shm ##
+## /dev/shm
 
 Is the location where the semaphores will be saved. `/dev/shm` should be mounted as tempfs, otherwise the
 semaphores can not be created (this issue only appears on older systems). More information [here](http://stackoverflow.com/questions/270113/how-do-i-stop-sem-open-failing-with-enosys).

@@ -1,7 +1,7 @@
 /**
  * @file
  *
- * @brief This examples show how Elektra's KDBException can be changed in a way so that it has user defined output.
+ * @brief This examples show how Elektra’s KDBException can be changed in a way so that it has user defined output.
  *
  *
  * It works -- because of binary compatibility -- if only the receiver

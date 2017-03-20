@@ -1,8 +1,8 @@
-# Python2 #
+# Python2
 
 Python2 bindings for Elektra.
 
-## Dependencies ##
+## Dependencies
 
 To use python2 on debian you might need following cmake defines:
 
@@ -15,13 +15,13 @@ and in the code you need to import the new print:
 	from __future__ import print_function
 	import kdb
 
-## Infos ##
+## Infos
 
 python2 is needed for the
 [kdb gen tool](/src/tools/gen/gen)
 because of its dependency to cheetah.
 
-## Building ##
+## Building
 
 Note that cmake does *not* automatically rebuild SWIG bindings
 when header files are changed. Remove the build directory

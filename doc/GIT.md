@@ -1,20 +1,20 @@
-# GIT #
+# GIT
 
-## Basic GIT Commands##
+## Basic GIT Commands
 
 	git add readme.md   // adds the changes of the file `readme.md` to the staging area
 	git add .           // adds all changes of files in the current directory (recursively) to the staging area
 	git add --all       // adds all changes of files in the repository to the staging area
 	git commit -a       // executes a commit that automatically stages all changed and deleted files before
 
-## Basic Configuration ##
+## Basic Configuration
 
 make sure to do:
 
 	git config --global merge.ff false
 	git config merge.ff false
 
-## The Commit Message ##
+## The Commit Message
 
 A commit message should have the following syntax:
 `component: short change description`
@@ -31,7 +31,7 @@ message should fulfil the following:
 
 Most commits should have a longer description in the body.
 
-## Remote Branches ##
+## Remote Branches
 
 To list all remote branches use:
 
@@ -64,7 +64,7 @@ should be on the debian branch - otherwise
 it should only contain --no-ff merges from
 master. (see config option above)
 
-## Local Branches ##
+## Local Branches
 
 You should always make your own feature branch with:
 
@@ -86,7 +86,7 @@ you can do:
 
 	git-ref-log # recover
 
-## Github ##
+## Github
 
 When doing merge requests our [buildserver](http://build.libelektra.org:8080)
 will build authorized users. If you are not yet authorized, the following

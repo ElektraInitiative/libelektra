@@ -1,6 +1,7 @@
 #!/bin/sh
 
-. "$(dirname "$0")/include-common"
+SCRIPTS_DIR=$(dirname "$0")
+. "${SCRIPTS_DIR}/include-common"
 
 set -x
 

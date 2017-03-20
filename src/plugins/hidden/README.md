@@ -7,7 +7,7 @@
 - infos/status = nodep libc final nodoc
 - infos/description = Hides keys which start with a .
 
-## Introduction ##
+## Introduction
 
 This plugin simply hides Keys whose names start with a `.`.
 

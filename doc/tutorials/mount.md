@@ -1,4 +1,4 @@
-# Mounting #
+# Mounting
 
 Elektra provides a global key database, that can integrate configuration in various formats.
 
@@ -12,7 +12,7 @@ The heart of the approach is the so called _mounting_ of configuration files int
 
 Let us start with a motivating example first:
 
-## Mount the Lookup Table for Hostnames ##
+## Mount the Lookup Table for Hostnames
 
 We mount the lookup table with the following command:
 
@@ -87,10 +87,10 @@ sudo kdb umount system/hosts
 >
 > Because of that only root can mount files.
 
-## Resolver ##
+## Resolver
 
 The configuration file path you supplied to `kdb mount` above is actually not an
-absolute or relative path in your filesystem, but gets resolved to one by Elektra.
+absolute or relative path in your file system, but gets resolved to one by Elektra.
 The plugin that is responsible for this is the [_Resolver_](/src/plugins/resolver/README.md).
 
 When you mount a configuration file the resolver first looks at the namespace of
@@ -128,7 +128,7 @@ Another useful resolver is the [blockresolver](/src/plugins/blockresolver/README
 
 But resolvers are not the only plugins Elektra uses:
 
-## Plugins ##
+## Plugins
 
 Configuration files can have many different formats (`ini`, `json`, `yaml`, `xml`, `csv`, ... to name but a few).
 
@@ -182,9 +182,9 @@ git config --get user.email
 #> rob.banks@dot.com
 ```
 
-#### Meta Data ####
+#### Meta Data
 
-Elektra is able to store [meta data](/doc/help/elektra-metadata.md) of keys, provided the format of the file that holds the configuration supports this feature.
+Elektra is able to store [metadata](/doc/help/elektra-metadata.md) of keys, provided the format of the file that holds the configuration supports this feature.
 The ini plugin doesn't support this feature, but the [ni](/src/plugins/ni/README.md) and the [dump](/src/plugins/dump/README.md) plugin do.
 
 > Actually the ini plugin creates some metadata on its own. This metadata contains information about the ordering of keys or comments, if a key has some.
@@ -204,7 +204,7 @@ kdb set user/example/enumtest/fruit apple
 ```
 
 By entering `kdb info enum` in the commandline, we can find out how to use this plugin.
-It turns out that this plugin allows us to define a list of valid values for our keys via the meta value `check/enum`.
+It turns out that this plugin allows us to define a list of valid values for our keys via the metavalue `check/enum`.
 
 ```sh
 kdb setmeta user/example/enumtest/fruit check/enum "'apple', 'banana', 'grape'"
@@ -229,12 +229,12 @@ We have at least two ways to avoid that:
 
 If you want to find out more about validation I recommend reading [this](/doc/tutorials/validation.md) tutorial next.
 
-#### Backends ####
+#### Backends
 
 The plugins together with the configuration file form a _backend_. The backend determines how Elektra stores data below a mountpoint.
 You can examine every mountpoints backend by looking at the configuration below `system/elektra/mountpoints/<mountpoint>/`.
 
-## Limitations ##
+## Limitations
 
 One drawback of this approach is, that an application can bypass Elektra and change configuration files directly. If for example Elektra is configured to [validate](/doc/tutorials/validation.md) new configuration values before updating them, this is something you do not want to happen.
 

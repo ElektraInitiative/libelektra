@@ -1,4 +1,4 @@
-# Documentation #
+# Documentation
 
 We use a fork and pull model, you can read about
 [forking repos at github help](https://help.github.com/articles/fork-a-repo/).
@@ -8,7 +8,7 @@ or README.md can be done without any further considerations!
 Simply do the fixes in your cloned repo and create a pull request.
 
 
-# Issues #
+# Issues
 
 If you have any questions you can ask them using
 [github issue](https://github.com/ElektraInitiative/libelektra/issues/new).
@@ -18,7 +18,7 @@ See also [FAQ](/doc/help/elektra-faq.md) for some details
 about creating issues.
 
 
-# General #
+# General
 
 We recommend that you read:
 
@@ -26,7 +26,7 @@ We recommend that you read:
 - [The tutorials to get some practice](/doc/tutorials/)
 
 
-# Code #
+# Code
 
 Before you issue a pull request that modifies code:
 
@@ -35,7 +35,7 @@ Before you issue a pull request that modifies code:
 - Make sure you fulfilled the [definition of done](/.github/PULL_REQUEST_TEMPLATE.md).
 
 
-# Architecture #
+# Architecture
 
 Before you start making fundamental changes:
 
@@ -45,7 +45,7 @@ Before you start making fundamental changes:
   to keep the discussion more efficient and architecture documented.
 
 
-# Labels #
+# Labels
 
 - If you do not want your PR to be merged, please label
   the PR with the label "work in progress".

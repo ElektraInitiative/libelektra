@@ -3,8 +3,6 @@ Prefer using great frameworks to do that in short time with high quality.
 
 ## TYPE ##
 
-range: check/range 5-20,23-45 (for number types)
-
 units-of-measurements
 	(e.g. 20m, 5kg, A, ..)
 

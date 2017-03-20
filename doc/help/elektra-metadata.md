@@ -2,7 +2,7 @@ elektra-metadata(7) -- metadata
 =================================
 
 
-**metadata** is data about data.  Up to now, there has been a limited
+**metadata** is data about data.  In earlier versions of Elektra, there has been a limited
 number of metadata entries suited for `filesys`.  For `filesys` this
 was efficient, but it was of limited use for every other backend. This
 situation has now changed fundamentally by introducing arbitrary metadata.
@@ -177,3 +177,9 @@ It does not matter if the old metakey was shared or not.
 This is the reason why a const pointer is always passed back.
 The metakey must not be changed because it can be used within another
 key.
+
+## See also
+
+
+- [all available metadata](/doc/METADATA.ini) in Elektra (defines SpecElektra)
+- [glossary](/doc/help/elektra-glossary.md)

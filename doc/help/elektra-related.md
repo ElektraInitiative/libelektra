@@ -37,7 +37,7 @@ the same as applications see it.
 Additionally, Augeas has a rather poor level of abstraction and many
 syntactical details must be reflected in the configuration tree.
 Nevertheless, Elektra provides an [augeas plugin](/src/plugins/augeas/)
-which allows parts of Elektra's global configuration tree to
+which allows parts of Elektra’s global configuration tree to
 be implemented using lenses. Lenses are a promising technology,
 which allow mapping from and to configuration files to be specified
 with a single program.
@@ -71,7 +71,7 @@ for the system's
 configuration when packages are installed or upgraded.
 Debconf itself does not change the configuration files.
 Instead, the administrator is asked questions depending on template files
-using different front ends.
+using different frontends.
 These answers are then cached.
 The configuration changes themselves are
 applied by post-install scripts of the particular package.

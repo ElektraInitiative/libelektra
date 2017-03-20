@@ -9,11 +9,11 @@
 - infos/metadata =
 - infos/description = ensures result keyset only contains requested keys
 
-## Introduction ##
+## Introduction
 
 A global plugin that steps in during `kdbGet()` process to filter the results in a way, so that no other keys than the requested one or descendants of it are returned. During `kdbSet()` the filtered keys are added back to the output, so that they don't get lost during the storage process. In other words, the plugin caches filtered keys to easen the use of the API.
 
-## Usage ##
+## Usage
 
 There is not much to do to use the plugin. Just mount is as global plugin and you are done:
     

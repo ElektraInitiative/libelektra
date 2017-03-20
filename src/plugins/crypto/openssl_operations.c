@@ -284,7 +284,7 @@ int elektraCryptoOpenSSLEncrypt (elektraCryptoHandle * handle, Key * k, Key * er
 
 	// prepare the crypto header data
 	kdb_octet_t flags;
-	const size_t contentLen = keyGetValueSize (k);
+	const kdb_unsigned_long_t contentLen = keyGetValueSize (k);
 	const size_t headerLen = sizeof (flags) + sizeof (contentLen);
 
 	switch (keyIsString (k))

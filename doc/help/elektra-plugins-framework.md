@@ -2,7 +2,7 @@ elektra-plugins-framework(7) -- Background about plugins framework
 ==================================================================
 
 Many component systems pass information between the various components
-by calling methods of each other.  This is not the way Elektra's plugin
+by calling methods of each other.  This is not the way Elektra’s plugin
 system works.  Instead, the core passes a `KeySet` object in one direction
 from plugin to plugin. So they form a so called pipes-and-filter.  Each of
 the plugins can modify the configuration or add any other information
@@ -57,7 +57,7 @@ kind of plugin.
 As already stated, some parts of the contracts are obligatory.
 `kdb mount` needs to know which symbols the plugin exports.  Only the
 `elektraPluginGet()` symbol is mandatory - it is used to yield this
-information.  Elektra's core also uses the functions `elektraPluginSet()`,
+information.  Elektra’s core also uses the functions `elektraPluginSet()`,
 `elektraPluginError()`, `elektraPluginOpen()` and `elektraPluginClose()`
 if available.  Other functions like `serialise`, `unserialise` or
 `lookup` which implement special features can be supported, but are
@@ -131,7 +131,7 @@ In theory, the contract can be changed without any problems in ways that
 it provides more and obligates less.  But the problem is that it will
 not be checked if this is the case because a recheck of the contracts
 of a backend is very expensive. The contract checker doing this, only
-runs once during mount time.  Changing contracts in an incompatible way
+runs once during mount-time.  Changing contracts in an incompatible way
 forces the user to remove all mountpoints where the plugin is and mount
 it again.  Such actions are only sustainable in a development phase and
 not in a productive environment.
@@ -150,7 +150,7 @@ can be described as Component-Based Software Engineering.
 
 Plugins can also be viewed as framework extensions.  A component abstracts
 plugins.  But this term is misleading in our case, because components
-usually can choose which interfaces they implement.  Elektra's plugins,
+usually can choose which interfaces they implement.  Elektra’s plugins,
 however, are restricted to implement one specific interface.  Without
 contracts, plugins could not interact as described in this chapter.
 

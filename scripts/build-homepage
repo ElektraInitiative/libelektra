@@ -1,5 +1,6 @@
-#!/bin/sh
+#!/bin/bash
 # This script is sourced on build server, shebang is for convenience
+# bash is used to have a predictable ulimit behavior
 
 # remember the build directory
 ROOT_DIR=$PWD
@@ -36,7 +37,7 @@ ulimit -c unlimited
 cd /var/lib/jenkins
 
 pstree
-echo -n "Old PID was: "
+printf "Old PID was: "
 cat /run/elektra-rest-backend.pid || /bin/true
 echo
 
@@ -61,7 +62,7 @@ done
 # now start again
 kdb run-rest-backend
 
-echo -n "New PID is: "
+printf "New PID is: "
 cat /run/elektra-rest-backend.pid || /bin/true
 echo
 

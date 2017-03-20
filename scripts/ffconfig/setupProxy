@@ -1,3 +1,5 @@
+#!/bin/bash
+
 # guided setup for proxy preferences used by configure-firefox
 
 setProxyType()

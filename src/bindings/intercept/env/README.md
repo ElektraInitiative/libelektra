@@ -47,7 +47,7 @@ global activation.
 
 The main purpose of this approach is to finally have a well-defined
 way to set and get environment variables.
-Elektra's variables will be in use immediately for every newly
+Elektra’s variables will be in use immediately for every newly
 started application (no relogin necessary).
 
 To do so, getenv(3) will lookup multiple sources next to searching in the environment
@@ -74,8 +74,8 @@ To do so, getenv(3) will lookup multiple sources next to searching in the enviro
 ## OPTIONS
 
 When `elektrify-getenv` is active, every application additionally accepts
-Elektra's getenv options.
-Interleaving Elektra's and the application's options is allowed.
+Elektra’s getenv options.
+Interleaving Elektra’s and the application's options is allowed.
 Elektra will parse its options (starting with --elektra) first and
 discard them before the other application is started.
 Therefore the application will not see that they even
@@ -127,7 +127,7 @@ Values can contain / to form hierarchies, e.g. `--elektra%name%=app/profile`
 
 ### Options for Applications
  * `--elektra:key=value`, `/elektra/intercept/getenv/override/<key>` or `/elektra/intercept/getenv/fallback/<key>`:
-   set a key/value to be preferred, i.e. the first to considered as explained in [LOOKUP](#LOOKUP).
+   set a key-value to be preferred, i.e. the first to considered as explained in [LOOKUP](#LOOKUP).
 
 Keys can contain / to form hierarchies, e.g. `--elektra:my/HOME=/path/to/home`.
 
@@ -135,7 +135,7 @@ Keys can contain / to form hierarchies, e.g. `--elektra:my/HOME=/path/to/home`.
 
 ## USAGE
 
-To always use Elektra's getenv environment, simply add the output to the file:
+To always use Elektra’s getenv environment, simply add the output to the file:
 
     elektrify-getenv | tail -1 | sudo tee -a /etc/ld.so.preload
 

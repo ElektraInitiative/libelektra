@@ -7,7 +7,7 @@
 - infos/status = maintained unittest nodep libc final limited
 - infos/description = storage plugin which stores each line from a file
 
-## Introduction ##
+## Introduction
 
 This plugin is useful if you have a file in a format not supported
 by any other plugin and want to use the Elektra tools to edit
@@ -23,7 +23,7 @@ for Elektra arrays).
 
 The value of each key hold the content of the actual file line-by-line.
 
-## Examples ##
+## Examples
 
 For example, consider the following content of the file `~/.config/line` where the
 numbers on the left represent the line numbers:
@@ -57,7 +57,7 @@ This file would result in the following keyset which is being displayed as
     #7:
     #8: setting4 -l
 
-### Creating Files ###
+### Creating Files
 
 
 ```sh
@@ -106,7 +106,7 @@ sudo kdb umount /examples/line
 ```
 
 
-### Other Tests ###
+### Other Tests
 
 ```sh
 # Backup-and-Restore:/examples/line

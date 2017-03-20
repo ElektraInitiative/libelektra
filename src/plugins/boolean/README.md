@@ -9,11 +9,11 @@
 - infos/metadata =
 - infos/description = canonicalizes boolean values
 
-## Introduction ##
+## Introduction
 
 Different configurations might use different values for `TRUE`/`FALSE`. The `boolean` plugin canonicalizes boolean values.
 
-## Configuration ##
+## Configuration
 
 - `on/true` specifies the normalized value for `TRUE`. Default: `1`
 - `on/false` specifies the normalized value for `FALSE`. Default: `0`

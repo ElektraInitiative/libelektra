@@ -1,39 +1,39 @@
 elektra-libs(7) -- libs overview
 ================================
 
-## DESCRIPTION ##
+## DESCRIPTION
 
 Since version **[0.8.15](/doc/decisions/library_split.md)** **[libelektra](elektra/)**
 is split into following libraries:
 
 ![Overview of Libraries](/doc/images/overview_libs.png)
 
-### Loader ###
+### Loader
 
 **[loader](loader/)** contains source files that implement the plugin
 loader functionality. The files are linked to **[libelektra](elektra/)**.
 
-### Libease ###
+### Libease
 
     libelektra-ease.so
 
 **[libease](ease/)** contains data-structure operations on top of libcore which do not depend on internals.
 Applications and plugins can choose to not link against it if they want to stay minimal.
 
-### Libplugin ###
+### Libplugin
 
     libelektra-plugin.so
 
 **[libplugin](plugin/)** contains `elektraPlugin*` symbols and plugins should link against it.
 
-### Libproposal ###
+### Libproposal
 
     libelektra-proposal.so
 
 **[libproposal](proposal/)** contains functions that are proposed for libcore. Depends on internas of libcore and as
 such must always fit to the exact same version.
 
-### Libmeta ###
+### Libmeta
 
     libelektra-meta.so
 
@@ -41,7 +41,7 @@ such must always fit to the exact same version.
 Will be code-generated in the future, so methods should be mechanical reflections
 of the contents in **[METADATA.ini](/doc/METADATA.ini)**.
 
-### Libcore ###
+### Libcore
 
     libelektra-core.so
     <kdbhelper.h>
@@ -51,7 +51,7 @@ Contains the fundamental data-structures every participant of Elektra needs
 to link against. It should be the only part that access the internal
 data structures.
 
-### Libtools ###
+### Libtools
 
 **[libtools](tools/)** is a high-level C++ shared-code for tools. It includes:
 

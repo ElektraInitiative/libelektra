@@ -46,7 +46,7 @@ are:
 
 - Plugins might need to self-reference (a validation plugin
   might have plugin variants, too)
-- Elektra's specification language was not complete nor consistent at point
+- Elektra’s specification language was not complete nor consistent at point
   of writing
 - Does not fit with the `checkconf` ([see here](http://git.libelektra.org/issues/559))
   approach.

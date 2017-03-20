@@ -1,4 +1,4 @@
-# SVG Conversion #
+# SVG Conversion
 
 https://github.com/shakiba/svgexport
 

@@ -7,7 +7,7 @@
 - infos/status = unittest nodep configurable preview unfinished
 - infos/description = executes shell commands
 
-## Usage ##
+## Usage
 
 The shell plugin executes shell commandos after set, get or error.
 
@@ -27,7 +27,7 @@ The configuration keys
 
 can be compared against the return values of the shell commandos.
 
-## Example ##
+## Example
 
     % cat /tmp/log
     cat: /tmp/log: No such file or directory

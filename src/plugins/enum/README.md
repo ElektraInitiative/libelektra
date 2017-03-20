@@ -9,11 +9,11 @@
 - infos/metadata = check/enum check/enum/# check/enum/multi
 - infos/description = validates values against enum
 
-## Introduction ##
+## Introduction
 
 The enum plugin checks string values of Keys by comparing it against a list of valid values.
 
-## Usage ##
+## Usage
 
 The plugin checks every Key in the Keyset for the Metakey `check/enum` containing a list
 with the syntax `'string1', 'string2', 'string3', ..., 'stringN'` and compares each 
@@ -37,7 +37,7 @@ For example:
 Then the value `middle_small` would validate.
 But `middle_small_small` would fail because every entry might only occur once.
 
-## Example ##
+## Example
 ```sh
 # Backup-and-Restore:/examples/enum
 

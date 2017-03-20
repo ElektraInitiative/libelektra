@@ -1,6 +1,6 @@
-# Validation #
+# Validation
 
-## Introduction ##
+## Introduction
 
 Configuration in FLOSS unfortunately is often stored
 completely without validation. Notable exceptions are sudo
@@ -11,9 +11,9 @@ the application fails to start.
 Elektra provides a generic way to validate any configuration
 file before it is written to disc.
 
-## User Interfaces ##
+## User Interfaces
 
-Any of Elektra's user interfaces will work with the technique
+Any of Elektra’s user interfaces will work with the technique
 described in this tutorial, e.g.:
 
 1. `kdb qt-gui`: graphical user interface
@@ -31,7 +31,7 @@ described in this tutorial, e.g.:
      modify its configuration)
 
 
-## Metadata Together With Keys ##
+## Metadata Together With Keys
 
 The most direct way to validate keys are
 
@@ -90,7 +90,7 @@ The drawbacks of this approach are:
 - You cannot validate structure of which keys must be present or absent.
 
 
-## Get Started with `spec` ##
+## Get Started with `spec`
 
 These issues are resolved straightforward by separation of schemata (describing the
 configuration) and the configuration itself.
@@ -168,7 +168,7 @@ kdb set /tutorial/spec/test wrong
 # RET:          5
 ```
 
-## Rejecting Configuration Keys ##
+## Rejecting Configuration Keys
 
 Up to now we only discussed how to reject keys that have unwanted values.
 Sometimes, however, applications require the presence or absence of keys.
@@ -190,11 +190,11 @@ If we want to reject every optional key (and only want to allow required keys)
 we can use the plugin `required` as further discussed below.
 
 
-## Customized Schemas ##
+## Customized Schemas
 
 Sometimes we already have configuration specifications given in some other format
 which is more compact and more directed to the needs of an individual application.
-We can write a plugin that parses that format and transform the content to key/value
+We can write a plugin that parses that format and transform the content to key-value
 *and* metadata (describing how to validate).
 
 For example, let us assume we have enum validations in the file `schema.txt`:

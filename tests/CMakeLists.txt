@@ -40,6 +40,11 @@ add_custom_target(run_all
 	"$<CONFIGURATION>"
 	WORKING_DIRECTORY "${CMAKE_BINARY_DIR}")
 
+add_custom_target(run_nokdbtests
+	COMMAND "${CMAKE_SOURCE_DIR}/scripts/run_nokdbtests"
+	"$<CONFIGURATION>"
+	WORKING_DIRECTORY "${CMAKE_BINARY_DIR}")
+
 add_custom_target(run_memcheck
 	COMMAND "${CMAKE_SOURCE_DIR}/scripts/run_memcheck"
 	"$<CONFIGURATION>"

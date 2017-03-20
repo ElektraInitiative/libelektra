@@ -20,10 +20,10 @@ more than regular expressions). Augeas is not able nor is it intended
 to provide more abstraction over the configuration files. Instead Augeas
 mirrors the structure of the configuration as closely as possible.
 
-Elektra's goal, instead, is not only to provide access to legacy
+Elektra’s goal, instead, is not only to provide access to legacy
 configuration files, but to provide access to the configuration
 exactly as the programs itself uses it. So with Elektra, the developers of
-applications are part of Elektra's ecosystem by providing specifications
+applications are part of Elektra’s ecosystem by providing specifications
 how their configuration should look like and by writing plugins that
 define how the configuration is accessed and checked. Ideally, after
 some time of legacy issues and migration, developers will also not
@@ -42,13 +42,13 @@ cross-platform-related issues with an consistent API, but also allows
 us to be aware of other applications' configurations, leveraging easy
 application integration.
 
-Config::Model shares most of Elektra's goals, especially those regarding
+Config::Model shares most of Elektra’s goals, especially those regarding
 validation (you saw the type=Boolean above) and having a unified
 interface for all programs (this feature is unavoidable with any such
 approach). The projects mainly differs that Elektra is supposed to be used
 by the programs themselves (and not only by GUIs and validation tools)
 and that Elektra uses self-describing data: the specification itself
-is also in Elektra's key database, stored in metadata and e.g. below
+is also in Elektra’s key database, stored in metadata and e.g. below
 system/elektra/mountpoints. In Elektra validators can be
 written in any language (because the specification is just data)
 and can enforce constraints on any access (because plugins define
@@ -67,7 +67,7 @@ the behaviour of the key database).
 Again, we managed to have a great feature release with dozens of
 corrections!
 
-## New Features ##
+## New Features
 
 Thanks to Manuel Mausz for further improving lua, python3 bindings
 and the new python2 bindings.
@@ -96,7 +96,7 @@ The contextual values now got a [tutorial]
 and small fixes.
 
 
-## Corrections ##
+## Corrections
 
 Thanks to Pino Toscano for fixing a lot of spelling errors, simplify
 RPATH setting, respect $HOME and $TMPDIR, improvements of test cases,
@@ -122,7 +122,7 @@ Some remaining mem leaks in rare circumstances were fixed. Valgrind
 should now never report any leaks, if it does, please report the issue.
 
 
-## API Changes ##
+## API Changes
 
 Added delMeta() for C++, because setMeta() with NULL will set the
 number 0 and not remove the meta.
@@ -133,7 +133,7 @@ The change only effects the C++ binding, keyIsBelow is unaffected by
 the change.
 
 
-## Documentation ##
+## Documentation
 
 [Specification of metadata](doc/specification.ini) and
 [contracts](doc/contracts.ini) written/greatly improved.
@@ -146,7 +146,7 @@ structure fits better. This is especially true for GUIs. Luckily, Keys
 can be in multiple data structures because of their reference counting.
 
 
-## Other Stuff ##
+## Other Stuff
 
 We now fully embrace github:
 - We use its issue tracker (all issues from local text files were moved
@@ -158,7 +158,7 @@ We now fully embrace github:
   anyway)
 
 Raffael Pancheri also made progress with its qt-gui. It now features a
-model that implements great parts of Elektra's features. Unfortunately
+model that implements great parts of Elektra’s features. Unfortunately
 the model cannot be serialised and thus changes cannot made persistent.
 Also undo and other important use-cases are still not there. The GUI
 looks very clean and was evaluated in a SUS study on 23.07.2014.
@@ -182,7 +182,7 @@ A special thanks to Kai-Uwe Behrmann for providing packages for
 SLE](http://software.opensuse.org/download.html?project=home%3Abekun&package=elektra).
 
 
-## Get It! ##
+## Get It!
 
 You can download the release from:
 
@@ -331,7 +331,7 @@ the kdb tool will work.
 
 One drawback of Elektra is the small number of available storage
 plugins. While writing storage plugins isn't too hard, it still requires
-knowledge of Elektras plugin architecture. In addition it is always
+knowledge of Elektra’s plugin architecture. In addition it is always
 necessary to keep both translation directions in mind (from file to
 Elektra and back).  In order to mitigate this issue Felix Berlakovich
 is working on an Elektra storage plugin which uses Augeas [1] to read
@@ -357,9 +357,9 @@ features). With the Augeas storage plugin these features cannot be used
 with only the applications already integrated into Elektra, but with all
 applications for which lenses exist.  This storage plugin targets system
 administrators as well as developers, that wish to take advantage of
-Elektras features, but were unable to do so because of missing plugins. If
+Elektra’s features, but were unable to do so because of missing plugins. If
 no lens exists already, writing a new one requires neither programming
-skills nor knowledge of Elektras plugin architecture. Furthermore,
+skills nor knowledge of Elektra’s plugin architecture. Furthermore,
 implementing a new configuration file format is just a matter of writing a
 lens instead of writing a full-fledged parser.
 [1] http://augeas.net/
@@ -376,12 +376,12 @@ needed to access those declarations from other languages. The second
 technique is called GObject Introspection. In contrast to SWIG, GObject
 Introspection generates a language independent metadata file. For dynamic
 languages the GObject Introspection support in the target language will
-load this metadata file to generate bindings at runtime. In order to
+load this metadata file to generate bindings at run-time. In order to
 provide bindings for static languages a compiler on the metadate file
 will be used. This is comparable to using SWIG. Manuel will focus on
 implementing language bindings for Python and Lua though both techniques
 will support various other languages.  As language bindings only allow
-to call into Elektras API Manuel will also embed the interpreters of
+to call into Elektra’s API Manuel will also embed the interpreters of
 both Python and Lua into two generic plugins. Using these plugins in
 combination with the languages bindings it will be fully possible to
 write plugins for Elektra in languages other than C/C++.
@@ -454,7 +454,7 @@ The CMake variable TOOLS, similar to PLUGINS, now allows you to decide
 which tools should be built and installed. Default is "kdb" only.
 
 The first new tool that makes use of this feature creates a powerful
-alternative to directly use Elektra's API. The tool "gen", executed with
+alternative to directly use Elektra’s API. The tool "gen", executed with
 "kdb gen" can generate code and documentation for your specific
 application with your specific types. The code includes getopt parsing
 (short+long options), high level getter and setter in C and C++. The
@@ -466,7 +466,7 @@ folder "src/tools/gen" (see Makefile) and external tools using it will
 be released soon
 (see https://gitorious.org/elektra-tools/elektra-tools/).
 
-For the code generation clear mappings from Elektra's type system to
+For the code generation clear mappings from Elektra’s type system to
 C/C++11 types are needed. The new header file kdbtypes.h introduces
 these mappings using CORBAs mappings for types -- except wchar_t was not
 included, because imho it is useless to have a wide char as long it is
@@ -562,10 +562,10 @@ POSIX compatibility and handling of multi-process conflicts has
 been improved. Now the HOME environment variable will be used. The
 old behaviour (USER environment variable) is still available as
 fallback. Additionally there is a fallback for embedded systems to the
-hardcoded variant. In case of these fallbacks a warning will be added.
+hard coded variant. In case of these fallbacks a warning will be added.
 
 A new plugin uname was added. It allows you to mount the functionality
-of uname within Elektra's key/value namespace. Currently it is read-only
+of uname within Elektra’s key-value namespace. Currently it is read-only
 and needs POSIX.
 
 The built-in description of plugins, especially for new plugins, was
@@ -643,7 +643,7 @@ The targets will be:
 
 Quality Goals will be:
 - Extensibility: Requirements for configuration can vary a lot.
-  The only common dominator are key/value pairs, nearly everything else
+  The only common dominator are key-value pairs, nearly everything else
   can differ from project to project. So Elektra needs to be, and is,
   very extensible to fulfil this wide range of goals.
 - Simplicity: The system should be very simple in its core so that it
@@ -657,7 +657,7 @@ Quality Goals will be:
   fast.
 
 
-The roadmap for Elektra's implementation has three steps:
+The roadmap for Elektra’s implementation has three steps:
 
 1.) Elektra 0.8
 Is the current stable release branch. It will get continuous development
@@ -747,7 +747,7 @@ A cmake bug was fixed, so that "make test" now
 works immediately.
 
 The kdbconfig.h and kdbos.h received some needed cleaning
-up. The HAVE_ macros are now set correctly by cmake, Elektra's
+up. The HAVE_ macros are now set correctly by cmake, Elektra’s
 macros are prefixed with KDB_ and not needed macros were
 removed.
 
@@ -857,7 +857,7 @@ paradigm-shifting.
 which allows you to check types and structure
 of the keys, notify by dbus, log to syslog,
 change the way how filenames are resolved and change
-the configuration format and files at runtime.
+the configuration format and files at run-time.
 
 The C-API, like defined in
  src/include/kdb.h

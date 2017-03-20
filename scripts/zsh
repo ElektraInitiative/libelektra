@@ -1,3 +1,6 @@
+#!/usr/bin/zsh
+# Not intended to be executed directly, shebang exists to supress checkbashisms warning
+
 ###########################################################################
 ##
 ## This script sets up everything needed with zsh

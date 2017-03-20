@@ -8,11 +8,11 @@
 - infos/status = unittest nodep difficult limited unfinished old
 - infos/description = Parses files in a syntax like /etc/fstab file
 
-## Introduction ##
+## Introduction
 
 This plugin is an implementation of a parser and generator of the /etc/fstab file.
 
-## Old fstab Entries ##
+## Old fstab Entries
 
 (Deprecated, remove this section after it is reimplemented in the new way)
 
@@ -43,7 +43,7 @@ you can't rely on the pseudoname you have set.
 The biggest issue is that you can't change or delete existing
 entries. All entries you set will be appended to the other filesystems.
 
-So if you get the filesystems and change the type of the filesystem
+So if you get the filesystems and change the type of the file system
 of the rootfs and set it again the resulting fstab will be like:
 
     /dev/sda6       /               ext3>----   >----defaults,errors=remount-ro 0 1
@@ -54,7 +54,7 @@ which will be not like you desired!
 setmntent is used, so it is only conforming to BSD 4.3 and linux and you
 can't use any comments.
 
-## New fstab Entries ##
+## New fstab Entries
 
 Specification:
 
@@ -100,7 +100,7 @@ be reordered for now, a proper "order" could be done later.
 
 Spaces in the names are replaced by \040 in the fstab.
 
-## Example ##
+## Example
 
 Mount the plugin:
 

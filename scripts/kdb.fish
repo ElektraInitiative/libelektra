@@ -1,3 +1,6 @@
+#!/usr/bin/fish
+# Not intended to be executed directly, shebang exists to supress checkbashisms warning
+
 # -- Functions -----------------------------------------------------------------------------------------------------------------------------
 
 # ===========

@@ -15,7 +15,7 @@ import HardwareDeviceHub from 'material-ui/svg-icons/hardware/device-hub'
 
 export default class ClusterCard extends React.Component {
   render () {
-    const { id, name, instances } = this.props
+    const { id, name, instances = [] } = this.props
     const instanceAmt = instances.length
     const { updateCluster, deleteCluster, configureCluster } = this.props // action creators
     const title = ( // show small cluster icon next to title

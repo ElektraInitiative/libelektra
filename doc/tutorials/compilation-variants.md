@@ -1,4 +1,4 @@
-# Compilation Variants #
+# Compilation Variants
 
 To create different variants of the same feature, but avoid code
 duplications within plugins, you have multiple options:
@@ -14,7 +14,7 @@ duplications within plugins, you have multiple options:
 - Have configuration for plugins (See [elektraPluginGetConfig()](http://doc.libelektra.org/api/latest/html/group__plugin.html)
   and dynamically switch with `if` according to the configuration.
   This should be preferred when you want to (de)activate some
-  features of a plugin at runtime.
+  features of a plugin at run-time.
 - Or use compilation variants to compile the plugin code multiple
   times with different `COMPILE_DEFINITIONS` (that are Macro definitions).
   This should be preferred when different macro definitions
@@ -24,14 +24,14 @@ duplications within plugins, you have multiple options:
 
 The advantage of compilation variants are:
 
-- No runtime overhead
+- No run-time overhead
 - Can be used during bootstrapping (when no configuration is available)
 - Different compilation variants can be built at once (no recompilation
   with different CMake flags required)
 - Different compilation variants can have different dependencies
 - Different compilation variants can be mounted without `#refnames`
 
-## How to use It ##
+## How to use It
 
 To use compilation variants, add your plugin in the CMake Cache
 Variable `PLUGINS` multiple times.

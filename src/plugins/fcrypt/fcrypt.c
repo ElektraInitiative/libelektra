@@ -20,6 +20,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sys/stat.h>
+#include <sys/time.h>
 #include <sys/types.h>
 #include <unistd.h>
 
@@ -168,6 +169,23 @@ static int fcryptSaveMtime (Key * parentKey, struct stat * fileStat)
  */
 static void fcryptRestoreMtime (Key * parentKey, struct stat * fileStat)
 {
+#if defined(__APPLE__)
+	struct timeval times[2];
+
+	// atime - not changing
+	times[0].tv_sec = fileStat->st_atime;
+	times[0].tv_usec = fileStat->st_atimespec.tv_nsec;
+
+	// mtime
+	times[1].tv_sec = ELEKTRA_STAT_SECONDS ((*fileStat));
+	times[1].tv_usec = ELEKTRA_STAT_NANO_SECONDS ((*fileStat));
+
+	// restore mtime on parentKeyFd
+	if (utimes (keyString (parentKey), times) < 0)
+	{
+		ELEKTRA_ADD_WARNINGF (ELEKTRA_WARNING_FCRYPT_FUTIMENS, parentKey, "Filename: %s", keyString (parentKey));
+	}
+#else
 	struct timespec times[2];
 
 	// atime - not changing
@@ -179,11 +197,11 @@ static void fcryptRestoreMtime (Key * parentKey, struct stat * fileStat)
 	times[1].tv_nsec = ELEKTRA_STAT_NANO_SECONDS ((*fileStat));
 
 	// restore mtime on parentKeyFd
-	// if (futimens (fileDescriptor, times))
 	if (utimensat (AT_FDCWD, keyString (parentKey), times, 0))
 	{
 		ELEKTRA_ADD_WARNINGF (ELEKTRA_WARNING_FCRYPT_FUTIMENS, parentKey, "Filename: %s", keyString (parentKey));
 	}
+#endif
 }
 
 static int fcryptGpgCallAndCleanup (Key * parentKey, KeySet * pluginConfig, char ** argv, int argc, int tmpFileFd, char * tmpFile)
@@ -495,8 +513,9 @@ int ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME, checkconf) (Key * errorKey, Ke
 {
 	if (getRecipientCount (conf) == 0)
 	{
-		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CRYPTO_CONFIG_FAULT, errorKey,
-				    "Missing GPG key (specified as %s) in plugin configuration.", ELEKTRA_CRYPTO_PARAM_GPG_KEY);
+		char * errorDescription = CRYPTO_PLUGIN_FUNCTION (getMissingGpgKeyErrorText) (conf);
+		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_CRYPTO_CONFIG_FAULT, errorKey, errorDescription);
+		elektraFree (errorDescription);
 		return -1;
 	}
 	return 0;

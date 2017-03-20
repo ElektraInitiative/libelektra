@@ -6,14 +6,34 @@
  * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
  */
 
-import { successResponse, errorResponse } from './utils'
+import { successResponse, errorResponse, dontShowDB } from './utils'
 
 import {
-  getInstances, createInstance,
-  getInstance, updateInstance, deleteInstance,
+  getInstances as getDBInstances, createInstance,
+  getInstance as getDBInstance, updateInstance, deleteInstance,
 } from '../db'
 
+import { getSingleInstance } from '../config'
+
 import remoteKdb from '../connector'
+
+const makeMyInstance = (host) => {
+  if (!host) return false
+  return { host, id: 'my', name: 'My Instance' }
+}
+
+const getInstance = (id) =>
+  (id === 'my')
+    ? getSingleInstance().then(makeMyInstance)
+    : getDBInstance(id)
+
+const getInstances = () =>
+  getSingleInstance()
+    .then(host => {
+      if (!host) return getDBInstances()
+      return getDBInstances()
+        .then(instances => instances.concat([ makeMyInstance(host) ]))
+    })
 
 export default function initInstanceRoutes (app) {
   app.route('/instances')
@@ -54,7 +74,13 @@ export default function initInstanceRoutes (app) {
 
   app.get('/instances/:id/kdb', (req, res) =>
     getInstance(req.params.id)
-      .then(instance => remoteKdb.get(instance.host))
+      .then(instance => {
+        if (!instance || !instance.host) {
+          throw new Error('Instance not found or invalid (no host)')
+        }
+        return remoteKdb.get(instance.host)
+      })
+      .then(dontShowDB)
       .then(output => successResponse(res, output))
       .catch(err => errorResponse(res, err))
   )
@@ -63,6 +89,7 @@ export default function initInstanceRoutes (app) {
     .get((req, res) =>
       getInstance(req.params.id)
         .then(instance => remoteKdb.get(instance.host, req.params[0]))
+        .then(dontShowDB)
         .then(output => successResponse(res, output))
         .catch(err => errorResponse(res, err))
     )

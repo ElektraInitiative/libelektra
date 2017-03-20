@@ -8,14 +8,14 @@
 - infos/status = maintained unittest nodep libc configurable
 - infos/description = Decoding/Encoding engine which escapes unwanted characters.
 
-## Introduction ##
+## Introduction
 
 This code plugin translates each unwanted character into a two cypher
 hexadecimal character. The escape character itself always needs to be
 encoded, otherwise the plugin would try to interpret the following two
 characters in the text as a hexadecimal sequence.
 
-## Restrictions ##
+## Restrictions
 
 - The escape character itself always needs to be encoded, otherwise
 the plugin would try to interpret the following two characters in the
@@ -23,7 +23,7 @@ text as a hexadecimal sequence.
 - The length of the resulting string increases. In the worst case the
 hexcode plugin makes the value three times larger.
 
-## Example ##
+## Example
 
 Consider the following _value_ of an key:
 
@@ -37,7 +37,7 @@ The disadvantage is that the length of the resulting string increases.
 In the worst case
 the hexcode plugin makes the value three times larger.
 
-## Usage ##
+## Usage
 
 Add `hexcode` to `infos/needs` for any plugin that you want to be filtered
 by hexcode.

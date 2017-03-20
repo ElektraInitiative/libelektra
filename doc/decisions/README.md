@@ -18,6 +18,8 @@ section here.
 - [CMake Plugins](cmake_plugins.md)
 - [Logging](logging.md)
 - [Internal Cache](internal_cache.md)
+- [Elektra Web Structure](elektra_web.md)
+- [Elektra Web Recursive Structure](elektra_web_recursive.md)
 
 ## Decided
 

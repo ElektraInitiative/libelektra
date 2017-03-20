@@ -148,7 +148,7 @@ class KdbTestCases < Test::Unit::TestCase
       # if called with block, nil is returned
       assert_nil block_ret
 
-      # test implicite close, we must not be able to get a keyset again
+      # test implicit close, we must not be able to get a keyset again
       assert_not_nil db_access
       assert_raise Kdb::KDBException do
         db_access.get Kdb::KeySet.new, "/"

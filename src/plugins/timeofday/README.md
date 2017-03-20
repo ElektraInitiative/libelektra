@@ -7,12 +7,12 @@
 - infos/status = maintained tested nodep configurable
 - infos/description = Prints timestamps during execution of backend
 
-## Introduction ##
+## Introduction
 
 This plugin is a logging plugin which prints a timestamp during
 all placements of backend.
 
-## Usage ##
+## Usage
 
 If you want to measure how long your storage plugin needs to do the read
 and write you mount the plugin using:
@@ -39,7 +39,7 @@ and in the set path:
 The first digit column shows the complete time passed, the second column
 shows the time from invocation to invocation.
 
-## Module Loading ##
+## Module Loading
 
 Will not log when loaded as module (config `/module` present), unless `/logmodule` is set:
 

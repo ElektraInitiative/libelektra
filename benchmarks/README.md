@@ -12,11 +12,11 @@ This has the advantage that it is reproduceable.
 Everyone can go anytime back to the benchmark commits
 and run the same benchmarks again.
 
-For running benchmarks you can use on unix:
+For running benchmarks you can use on Unix:
 
    make benchmark
 
-which will run valgrind on it.
+which will run Valgrind on it.
 
 The old STATISTICS file is no longer used and will be
 removed with this commit.

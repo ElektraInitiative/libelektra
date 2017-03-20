@@ -467,6 +467,7 @@ description:error while reading file
 severity:error
 ingroup:plugin
 module:storage
+macro:READ_FAILED
 
 number:77
 description:Yajl parser error
@@ -527,6 +528,7 @@ number:87
 description:memory allocation error
 severity:error
 ingroup:plugin
+macro:MALLOC_ERROR
 
 number:88
 description:could not sync directory
@@ -1033,3 +1035,31 @@ severity:error
 ingroup:plugin
 module:date
 macro:D_T_FMT
+
+number:169
+description:could not stat file
+severity:error
+ingroup:plugin
+module:file
+macro:STAT_FAILED
+
+number:170
+description:invalid range syntax.
+severity:error
+ingroup:plugin
+module:range
+macro:RANGE_SYNTAX
+
+number:171
+description:value not within specified range.
+severity:error
+ingroup:plugin
+module:range
+macro:INVALID_RANGE
+
+number:172
+description:multifile globbing failed.
+severity:error
+ingroup:plugin
+module:multifile
+macro:MULTI_GLOB_FAILED

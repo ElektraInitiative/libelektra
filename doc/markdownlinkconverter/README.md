@@ -1,4 +1,4 @@
-# Markdown Link Converter #
+# Markdown Link Converter
 
 The Markdown link Converter, which filters markdown pages before the processing
 of doxygen, converts the links in markdown pages. It is set up as input filter
@@ -9,13 +9,13 @@ The Markdown link Converter gives each markdown file a header `{ #header }` whic
 and converts the links to refer to this headers. This conversion
 happens in 2 passes, which is needed because there can be files with no title.
 
-## Usage for Manual Invocation ##
+## Usage for Manual Invocation
 
 	markdownlinkconverter [<cmake-cache-file>] <input-file>
 
 **The <input-file> parameter must be an absolute path!**
 
-## Conventions ##
+## Conventions
 
 * Links starting with `@ref`, `#` for anchors and `http`, `https` or `ftp` for extern links
   wont be touched.
@@ -25,21 +25,21 @@ happens in 2 passes, which is needed because there can be files with no title.
   combination with the README.md of the containing folder.
 * Anchors wont work in imported markdown pages.
 
-## GitHub Specialities ##
+## GitHub Specialities
 
 * github supports source code fences with syntax highlighting which are not recognised by Doxygen.
   Thus `sh` after the fence is removed for Doxygen.
 
 
 
-## Link Validation ##
+## Link Validation
 
-### Internal Links ###
+### Internal Links
 
 The link validation works with a simple try to `fopen` the file,
 which the link refers to.
 
-### External Links ###
+### External Links
 
 Every link starting with `http`, `https` or `ftp` will be written to a file named `external-links.txt` located in your
 build folder. With the following syntax:
@@ -52,7 +52,7 @@ html build process (`make clean` could be needed) to get a list without duplicat
 In the script folder is a script named `link-checker`. This script can be used to validate the links.
 Broken links will be printed. False positive not excluded (very rare).
 
-## Further Improvements (Which Will be Introduced in a Later Version): ##
+## Further Improvements (Which Will be Introduced in a Later Version):
 
 * optimize pdf output (also UTF-8 encoding)
 * if title contains --, this should be @brief

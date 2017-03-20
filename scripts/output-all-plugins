@@ -4,7 +4,7 @@ for i in `ls src/plugins`
 do
 	if [ -d "src/plugins/$i" ]
 	then
-		echo -n "$i;"
+		printf "%s;" $i
 		#echo "--- $i ---"
 	fi
 done

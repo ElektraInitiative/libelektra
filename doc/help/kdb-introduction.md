@@ -12,7 +12,7 @@ occurred.  These tasks have in common that they become trivial once a
 programmatic access to a global key database exists.
 
 In this manual we give an overview of the command-line tool `kdb`. It
-is part of Elektra's tools and performs the mentioned tasks.
+is part of Elektra’s tools and performs the mentioned tasks.
 `kdb` consists of individual subprograms.  The programs are independent,
 but can access a shared part that provides functionality too specific to
 be in the library -- for example, pretty printing of error messages and
@@ -32,13 +32,13 @@ Furthermore, external programs can also be integrated within
 
 Only a few commands are enough for daily use.
 We can retrieve a key by:  
-`kdb get user/keyname`
+`kdb get user/key`
 
 We store a key permanently with a value given by:  
-`kdb set user/keyname value`
+`kdb set user/key value`
 
 We list all available keys arranged below a key by:  
-`kdb ls user/keyname`
+`kdb ls user/key`
 
 
 ## SEE ALSO

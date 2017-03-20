@@ -60,7 +60,11 @@ export default class TreeView extends React.Component {
     return (
       <div className="tree-view">
         <div className="tree-view-item">
-          <span className={fullItemClassName} onClick={(args) => children && this.handleClick(args)}>
+          <span
+            className={fullItemClassName}
+            style={{ fontSize: 16 }}
+            onClick={(args) => children && this.handleClick(args)}
+          >
             {arrow}
             {nodeLabel}
           </span>

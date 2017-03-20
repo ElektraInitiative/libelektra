@@ -13,7 +13,7 @@
 - infos/metadata = crypto/encrypt
 - infos/description = Cryptographic operations
 
-## Introduction ##
+## Introduction
 
 This plugin is a filter plugin allowing Elektra to encrypt values before they are
 persisted and to decrypt values after they have been read from a backend.
@@ -32,27 +32,39 @@ At the moment the following crypto APIs are supported:
 - libgcrypt
 - Botan
 
-## Dependencies ##
+## Dependencies
+
 
 #ifdef ELEKTRA_CRYPTO_API_GCRYPT
+
 - `libgcrypt20-dev` or `libgcrypt-devel`
+
 #endif
+
+
 #ifdef ELEKTRA_CRYPTO_API_OPENSSL
+
 - `libssl-dev` or `openssl-devel`
+
 #endif
+
+
 #ifdef ELEKTRA_CRYPTO_API_BOTAN
+
 - `libbotan1.10-dev` or `botan-devel`
+
 #endif
 
-### GnuPG (GPG) ###
 
-GPG is a runtime dependency for all crypto plugin variants.
+### GnuPG (GPG)
+
+GPG is a run-time dependency for all crypto plugin variants.
 Either the `gpg` or the `gpg2` binary should be installed when using the plugin.
 Note that `gpg2` will be preferred if both versions are available.
 The GPG binary can be configured in the plugin configuration as `/gpg/bin` (see _GPG Configuration_ below).
 If no such configuration is provided, the plugin will look at the PATH environment variable to find the GPG binaries.
 
-## How to compile ##
+## How to compile
 
 The following compile variants are available:
 
@@ -72,50 +84,24 @@ or it may look like:
 
     PLUGINS=CRYPTO
 
-### Manual Library Setup ###
+### Mac OS X
 
-If you have a custom built OpenSSL or libgcrypt on your system, you can tell CMake to use those by setting the following CMake variables.
+All variants of the plugin work under Mac OS Sierra (Version 10.12.3 (16D32)).
 
-For a custom OpenSSL location set:
+To set up the build environment on Mac OS Sierra we recommend using [Homebrew](http://brew.sh/).
+Follow these steps to get everything up and running:
 
-- *OPENSSL_INCLUDE_DIR* to the library's header files
-- *OPENSSL_LIBRARIES* to the library's binary file
+    brew install openssl botan libgcrypt pkg-config cmake
+    # The next step is required for pkg-config to find the include files of OpenSSL
+    ln -s /usr/local/opt/openssl/include/openssl/ /usr/local/include/openssl
 
-For a custom libgcrypt location set:
+Also a GPG installation is required. The [GPG Tools](https://gpgtools.org) work fine for us.
 
-- *LIBGCRYPT_INCLUDE_DIR* to the library's header files
-- *LIBGCRYPT_LIBRARIES* to the library's binary file
+## Restrictions
 
-For a custom Botan development file location set:
+At the moment the plugin will only run on Unix/Linux-like systems, that provide implementations for `fork ()` and `execv ()`.
 
-- *BOTAN_INCLUDE_DIRS* to Botan's header files (includes)
-- *BOTAN_LIBRARIES* to Botan's binary file
-
-### Mac OS X ###
-
-Both variants of the plugin compile under Mac OS X "El Capitan" (Version 10.11.3 (15D21)).
-
-For the `crypto_gcrypt` variant download and install either [MacPorts](https://www.macports.org/) or [Homebrew](http://brew.sh/).
-Use one of those tools to download and install `libgcrypt`. If you choose MacPorts, you can set the CMake variables like this:
-
-- *LIBGCRYPT_INCLUDE_DIR* to `/opt/local/include/`
-- *LIBGCRYPT_LIBRARIES* to `/opt/local/lib/libgcrypt.dylib`
-
-The CMake command might look something like:
-
-    cmake -DLIBGCRYPT_INCLUDE_DIR="/opt/local/include/" -DLIBGCRYPT_LIBRARIES="/opt/local/lib/libgcrypt.dylib" -DPLUGINS="crypto;crypto_gcrypt;" /path_to_elektra_src
-
-For the `crypto_openssl` variant a custom-built OpenSSL library is necessary as the MacPorts or Homebrew variants do not seem to work.
-Download the latest version of the OpenSSL library from the [project homepage](https://www.openssl.org/source/) and compile it.
-Copy the header files and the binary files to a location where all users can access them.
-
-Set the CMake variables `OPENSSL_INCLUDE_DIR` and `OPENSSL_LIBRARIES` to your desired location.
-
-## Restrictions ##
-
-At the moment the plugin will only run on UNIX/Linux-like systems, that provide implementations for `fork ()` and `execv ()`.
-
-## Examples ##
+## Examples
 
 To mount a backend with the gcrypt plugin variant that uses the GPG key 9CCC3B514E196C6308CCD230666260C14A525406, use:
 
@@ -132,9 +118,9 @@ But you can still access the original value using `kdb get`:
 
     kdb get user/t/a
 
-## Configuration ##
+## Configuration
 
-### GPG Configuration ###
+### GPG Configuration
 
 The path to the gpg binary can be specified in
 
@@ -150,7 +136,40 @@ If more than one key is defined, every owner of the corresponding private key ca
 This might be useful if applications run with their own user but the administrator has to update the configuration.
 The administrator then only needs the public key of the application user in her keyring, set the values and the application will be able to decrypt the values.
 
-### Cryptographic Operations ###
+If you are not sure which keys are available to you, the `kdb` program will give you suggestions in the error description.
+For example you can type:
+
+    kdb mount test.ecf user/t crypto_gcrypt
+
+In the error description you should see something like:
+
+    The command ./bin/kdb mount terminated unsuccessfully with the info:
+    The provided plugin configuration is not valid!
+    Errors/Warnings during the check were:
+    Sorry, the error (#130) occurred!
+    Description: the configuration is invalid or incomplete.
+    Ingroup: plugin
+    Module: crypto
+    At: /Users/pnirschl/Projects/libelektra/src/plugins/crypto/gpg.c:512
+    Reason: Missing GPG key (specified as /gpg/key) in plugin configuration. Available key IDs are: B815F1334CF4F830187A784256CFA3A5C54DF8E4,847378ABCF0A552B48082A80C52E8E92F785163F
+    Mountpoint: 
+    Configfile: 
+    Please report the issue on https://issues.libelektra.org/
+
+This means that the following keys are available:
+
+- B815F1334CF4F830187A784256CFA3A5C54DF8E4
+- 847378ABCF0A552B48082A80C52E8E92F785163F
+
+So the full mount command could look like this:
+
+    kdb mount test.ecf user/t crypto_gcrypt "crypto/key=847378ABCF0A552B48082A80C52E8E92F785163F"
+
+
+### Cryptographic Operations
+
+Please note that these options are meant for experts only.
+If you do not provide these configuration options, secure defaults are being used.
 
 The length of the master password that protects all the other keys can be set in:
 
@@ -160,7 +179,7 @@ The number of iterations that are to be performed in the PBKDF2 call can be set 
 
     /crypto/iterations
 
-### Library Shutdown ###
+### Library Shutdown
 
 The following key must be set to `"1"` within the plugin configuration,
 if the plugin should shut down the crypto library:
@@ -170,3 +189,10 @@ if the plugin should shut down the crypto library:
 Per default shutdown is disabled to prevent applications like the qt-gui from crashing.
 Shutdown is enabled in the unit tests to prevent memory leaks.
 
+## Technical Details
+
+### Ciphers and Mode Of Operation
+
+All of the plugin variants use the Advanced Encryption Standard (AES) in Cipher Block Chaining Mode (CBC) with a key size of 256 bit.
+
+The ciphers and modes of operations are defined in the corresponding `<plugin_variant>_operations.c` or `<plugin_variant>_operations.h` file.

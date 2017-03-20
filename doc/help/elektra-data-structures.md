@@ -229,7 +229,7 @@ parts of the name.
 Without an additional index, it is not possible that
 such operations perform more efficiently
 than by a linear iteration key by key.
-For that reason, Elektra's core does not provide
+For that reason, Elektra’s core does not provide
 such functions.
 The function `ksLookupByName()`, however,
 uses the more efficient binary search
@@ -265,7 +265,7 @@ But an external cursor directly accessing the array can be much
 faster. Using an unchecked external cursor can be about 50%
 faster than using the internal cursor with ksNext().
 For this endeavour,
-Elektra's private header files need to be included.
+Elektra’s private header files need to be included.
 Including private header files, however,
 should not be done with levity
 because ABI compatibility will be gone on any changes of the data

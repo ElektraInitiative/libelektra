@@ -34,6 +34,10 @@ protected:
 	typedef void (*func_t) ();
 
 public:
+	virtual ~PluginDatabase ()
+	{
+	}
+
 	/**
 	 * @brief list all plugins
 	 *
@@ -324,6 +328,9 @@ public:
 private:
 	checkConfPtr checkconf = NULL;
 };
+
+
+typedef std::shared_ptr<PluginDatabase> PluginDatabasePtr;
 }
 }
 

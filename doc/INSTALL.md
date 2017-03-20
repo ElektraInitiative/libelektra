@@ -1,7 +1,7 @@
-# Install #
+# Install
 
 
-## Linux ##
+## Linux
 
 For the following Linux Distributions 0.8 packages are available:
 
@@ -25,7 +25,7 @@ Kai-Uwe Behrmann kindly provides packages [for download](http://software.opensus
 
 
 
-### Debian ###
+### Debian
 
 To use the debian repository of the latest builds from master put following files in
 `/etc/apt/sources.list`.
@@ -53,14 +53,14 @@ To build Debian Packages from the source you might want to use:
 
 (You need to be in the Debian branch, see [GIT](GIT.md))
 
-## macOS ##
+## macOS
 
 A tap for [Homebrew](http://brew.sh) is available [here](http://github.com/ElektraInitiative/homebrew-elektra). To install Elektra using this tap just use the two shell commands listed below.
 
 	brew tap ElektraInitiative/homebrew-elektra
 	brew install elektra
 
-## Generic ##
+## Generic
 
 First follow the steps in [COMPILE](COMPILE.md).
 
@@ -79,7 +79,7 @@ or in the build directory (will not honor DESTDIR!):
 
 	xargs rm < install_manifest.txt
 
-## CPack ##
+## CPack
 
 First follow the steps in [COMPILE](COMPILE.md).
 
@@ -92,9 +92,9 @@ implemented. See [this cmake file](/cmake/ElektraPackaging.cmake) for available 
 and send a merge request for your system.
 
 
-## Troubleshooting ##
+## Troubleshooting
 
-### Error Loading Libraries ###
+### Error Loading Libraries
 
 If you encounter the problem that the library can not be found (output like this)
 
@@ -114,13 +114,13 @@ Add the path where the library has been installed
 
 and run `ldconfig` as root.
 
-## Installation Manuals ##
+## Installation Manuals
 
 For some of the plugins and tools that ship with Elektra,
 additional installation manuals have been written.
 You can find them in the [tutorial overview](tutorials/README.md).
 
-## See also ##
+## See also
 
 - [COMPILE](COMPILE.md).
 - [TESTING](TESTING.md).

@@ -1,4 +1,4 @@
-elektra classes(7) -- introduction to Elektra's classes
+elektra classes(7) -- introduction to Elektra’s classes
 =======================================================
 
 This overview complements the introduction in
@@ -57,7 +57,7 @@ the same name will override the already existing `Key` object.
 ## KDB
 
 While objects of `Key` and `KeySet` only reside in memory,
-Elektra's third class
+Elektra’s third class
 `KDB` actually provides access to the global key database. `KDB`,
 an abbreviation of key database, is responsible for
 actually storing and receiving configuration. `KeySet` represents the

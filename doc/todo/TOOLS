@@ -3,7 +3,7 @@
 
 == MOUNT ==
 
-lazy-mount
+lazy-mount (vs. directly improve all mountpoints with lazy wrapper?)
 
 allow --no-env --no-arg --no-default arguments?
 
@@ -71,6 +71,8 @@ make use of cachefilter plugin
 
 == KDB ==
 
+get size of key
+
 generic fstab:
 	allow to specify templates that are filled out by the given arguments e.g.:
 	/sw/kdb/template/
@@ -86,14 +88,15 @@ generic fstab:
 kdb tool should work with arrays (add_entry, remove_entry)
 	or also kdb setmeta user/abc check/enum -a "first enum" "second enum" "third enum"
 	or also kdb set user/abc -a "first array entry" "second" "third array entry"
+	allow key array increments with kdb tool
+
+easier handling for comments (special case of array), maybe with generic meta-template that supports arrays?
 
 kdb tool should work with files (read in as value)
 	kdb set user/abc -F filename.txt
 
 cascading export, e.g. for nickel?
 	+ remember what was exported
-
-allow key array increments with kdb tool
 
 list existing plugins
 	dynamically detect them when installed

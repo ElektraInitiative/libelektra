@@ -1,26 +1,26 @@
-# Shell Recorder #
+# Shell Recorder
 
-## Configuration ##
+## Configuration
 
-### Mountpoint: ###
+### Mountpoint:
 
 This is the only configuration Variable that has to be set. It is used to determine where the shell_recorder should look for changes.
 e.g. `Mountpoint: user/test` tells the shell_recorder that you will be working under `user/test`.
 
-### DiffType: ###
+### DiffType:
 
 Available:
 
 `Dump`, `Ini` exports the keys below `Mountpoint` using either the dump or ini format and diffs the changes.
 `File` does a diff on the configuration file mounted to `Mountpoint`.
 
-### File: ###
+### File:
 
 Tells the shell_recorder what file to use for diffs.
 If File is preset but empty a fresh database temp file will be provided for every run.
 
 
-## Checks ##
+## Checks
 
 Posix-extended regex is used to check and validate return values and outputs.
 
@@ -57,14 +57,14 @@ Options:
 * ERRORS:
 * DIFF:
 
-## Commands ##
+## Commands
 
 A command starts with `<` followed by the usual kdb commands.
 
 
-## Examples ##
+## Examples
 
-### Basic ###
+### Basic
 
 This testcase uses the dump-format to validate database changes. the first DIFF tells the shell recorder to watch for the line `> keyNew.*user/test/key3` in the diff of the config files after the command `kdb set /test/key val` is executed. The second DIFF + set work the same, but, because this time the line `> keyNew.*user/test/key3` can't be found in the diff, yields an error
 ```
@@ -119,7 +119,7 @@ DIFF: 2c2
 ```
 
 
-### Replay ###
+### Replay
 
 ```
  % cat old_protocol
@@ -161,7 +161,7 @@ Replay test failed, protocols differ
 
 ```
 
-### another example ###
+### another example
 
 ```
  % cat script.dat

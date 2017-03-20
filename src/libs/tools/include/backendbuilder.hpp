@@ -38,7 +38,8 @@ namespace tools
 class BackendBuilderInit
 {
 private:
-	typedef std::shared_ptr<PluginDatabase> PluginDatabasePtr;
+	// typedef std::shared_ptr<PluginDatabase> PluginDatabasePtr;
+	// -> moved to plugindatabase.hpp since it is used in public API
 	PluginDatabasePtr pluginDatabase;
 
 	BackendFactory backendFactory;
@@ -82,7 +83,8 @@ private:
 	/// Recommended plugins (not yet added)
 	std::vector<std::string> recommendedPlugins;
 
-	typedef std::shared_ptr<PluginDatabase> PluginDatabasePtr;
+	// typedef std::shared_ptr<PluginDatabase> PluginDatabasePtr;
+	// -> moved to plugindatabase.hpp since it is used in public API
 	PluginDatabasePtr pluginDatabase;
 
 	BackendFactory backendFactory;

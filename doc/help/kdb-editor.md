@@ -9,7 +9,7 @@ Where `path` is the destination where the user wants to edit keys and `format` i
 If the `format` argument is not passed, then the default format will be used as determined by the value of the `sw/kdb/current/format` key.
 By default, that key contains `storage`.
 The `storage` plugin can be configured at compile-time or changed by the link `libelektra-storage.so`.
-The `format` attribute relies on Elektra's plugin system to properly import the configuration. The user can view all plugins available for use by running the kdb-list(1) command.
+The `format` attribute relies on Elektra’s plugin system to properly import the configuration. The user can view all plugins available for use by running the kdb-list(1) command.
 To learn about any plugin, the user can simply use the kdb-info(1) command.
 
 ## DESCRIPTION
@@ -57,7 +57,7 @@ The user should specify the format that the current configuration or keys are in
 ## Strategies
 
 - `validate`: 
-  apply meta data as received from base, and then cut+append all keys as imported.
+  apply metadata as received from base, and then cut+append all keys as imported.
   If the appended keys do not have a namespace, the namespace given by `-N`
   is added.
 

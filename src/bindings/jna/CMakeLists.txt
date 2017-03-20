@@ -1,50 +1,70 @@
-#versioning for libelektra.jar
-set(CMAKE_JAVA_TARGET_VERSION ${KDB_VERSION})
+find_program (MAVEN_EXECUTABLE mvn)
 
-find_package(Java)
-include(UseJava)
+if (MAVEN_EXECUTABLE) # set by find_program
+	file (
+		MAKE_DIRECTORY libelektra4j
+	)
 
-if (CMAKE_MAJOR_VERSION EQUAL 2 AND CMAKE_MINOR_VERSION EQUAL 8)
-	if (CMAKE_PATCH_VERSION LESS 11)
-		#2.8.11 needed for add_jar INCLUDE_JARS
-		remove_binding(jna "cmake 2.8.11 needed for add_jar")
-		return()
-	endif()
-endif()
+	# first fill the elektra version in the pom file
+	# @ONLY to avoid replacing pom.xml placeholders which also use the format ${}
+	configure_file (
+		"${CMAKE_CURRENT_SOURCE_DIR}/libelektra4j/pom.xml.in"
+		"${CMAKE_CURRENT_BINARY_DIR}/libelektra4j/pom.xml"
+		@ONLY
+	)
 
-if (Java_VERSION_MAJOR GREATER 0 AND Java_VERSION_MINOR GREATER 7)
-	file(GLOB files elektra/*.java)
-	file(GLOB pfiles elektra/plugin/*.java)
+	# required to have a recognizable name for the pom upon installation in case other software installs
+	# a pom to the target directory and calls it pom.xml
+	file (
+		GENERATE OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/libelektra4j/libelektra4j-${KDB_VERSION}.pom.xml"
+		INPUT "${CMAKE_CURRENT_BINARY_DIR}/libelektra4j/pom.xml"
+	)
 
-# find_jar(<VAR>
-#          name | NAMES name1 [name2 ...]
-#          [PATHS path1 [path2 ... ENV var]]
-#          [VERSIONS version1 [version2]]
-#          [DOC "cache documentation string"]
-#         )
+	# then copy over the source files in the build folder as thats the easiest way to handle it
+	file (
+		COPY "${CMAKE_CURRENT_SOURCE_DIR}/libelektra4j"
+		DESTINATION "${CMAKE_CURRENT_BINARY_DIR}"
+	)
 
-	find_jar(jna
-		NAMES jna
-		PATHS /usr/share/java
-		)
+	# compile it and build the jar
+	add_custom_target (
+		jna ALL
+		COMMAND ${MAVEN_EXECUTABLE} -q -B -DskipTests=true package
+		WORKING_DIRECTORY libelektra4j
+	)
 
-	if (jna)
-		# should work, too
-		# http://www.cmake.org/cmake/help/v3.0/module/UseJava.html
-		#set(CMAKE_JAVA_INCLUDE_PATH ${jna})
-		add_jar(libelektra
-			INCLUDE_JARS ${jna}
-			SOURCES ${files} ${pfiles}
-			VERSION 1
-			OUTPUT_NAME libelektra
-			)
+	install (
+		FILES
+			"${CMAKE_CURRENT_BINARY_DIR}/libelektra4j/target/libelektra4j-${KDB_VERSION}.jar"
+			"${CMAKE_CURRENT_BINARY_DIR}/libelektra4j/libelektra4j-${KDB_VERSION}.pom.xml"
+		DESTINATION "share/java"
+	)
 
-		install_jar(libelektra share/java)
+	# and add maven test to execute with ctest in the testing phase
+	if ( (CMAKE_SYSTEM_NAME STREQUAL "Darwin") AND NOT (CMAKE_SYSTEM_VERSION VERSION_LESS 15) )
+		# we cannot set DYLD_LIBRARY_PATH on new macOS versions, making the kdb tests
+		# fail if its not installed in the system
+		set (MAVEN_TEST_ENV "env-test-without-kdb")
+	else ()
+		set (MAVEN_TEST_ENV "env-test")
+	endif ()
 
-	else(jna)
-		remove_binding(jna "jna jar file not found, searched in standard paths and /usr/share/java")
-	endif(jna)
+	add_test (
+		NAME testjna_maven
+		COMMAND ${MAVEN_EXECUTABLE} -q -B -e -P ${MAVEN_TEST_ENV} test
+		WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/libelektra4j"
+	)
 
-else()
-	remove_binding(jna "Java is not greater version 8, but ${Java_VERSION} was found")
-endif()
+	set_property (
+		TEST testjna_maven
+		PROPERTY ENVIRONMENT
+			"LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib"
+	)
+
+	set_property (
+		TEST testjna_maven
+		PROPERTY LABELS bindings
+	)
+else (MAVEN_EXECUTABLE)
+	remove_binding (jna "Maven Executable not found, but required to build the jna bindings")
+endif (MAVEN_EXECUTABLE)

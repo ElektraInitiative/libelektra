@@ -7,14 +7,14 @@
 - infos/status = maintained unittest configurable global memleak
 - infos/description = proxy that calls other plugins (scripts) written in lua
 
-## Introduction ##
+## Introduction
 
 The plugin uses Lua to do magic things. It basically allows to call plugins written in Lua.
 
 What a Lua script can do is not really limited by design, so any kind of plugin may be
 implemented. The lua plugin is especially useful to write filter and logging scripts.
 
-## Usage ##
+## Usage
 
 The lua plugin accepts only the **script** configuration parameter holding the path to a Lua
 script. The mount command would look like
@@ -28,7 +28,7 @@ For a Lua script that serves as (json) storage plugin itself, one could also use
 
     kdb mount file.json /lua lua script=/path/to/json_plugin.lua
 
-### Lua Scripts ###
+### Lua Scripts
 
 Lua scripts can implement the following functions
 
@@ -48,7 +48,7 @@ Access to **kdb** can be retrieved using the Lua import
 
     require("kdb")
 
-## Example ##
+## Example
 
 An example script that prints some information for each method call would be:
 
@@ -79,7 +79,7 @@ An example script that prints some information for each method call would be:
 
 Further examples can be found in the [lua](lua/) directory.
 
-## Disclaimer ##
+## Disclaimer
 
 Note, this is a technical preview. It might have severe bugs
 and the API might change in the future.

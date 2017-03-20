@@ -7,12 +7,12 @@
 - infos/status = maintained nodep global nodoc
 - infos/description = demonstrates notification of key changes
 
-## Purpose ##
+## Purpose
 
 The purpose of this plugin is to demonstrate how one can
 be notified of every removed, added or changed key easily.
 
-## Usage ##
+## Usage
 
 Prints every added, changed or deleted key on the console.
 To use it, add it during mounting:

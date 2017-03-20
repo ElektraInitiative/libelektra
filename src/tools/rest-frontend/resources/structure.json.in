@@ -87,9 +87,9 @@
                     "path": "src/plugins/README.md",
                     "target_file": ["README.md", "README", "readme.md", "readme"],
                     "parsing": {
-                        "start_regex": "# Plugins #",
-                        "stop_regex": "####### UNUSED ######",
-                        "section_regex": "### ([^#]+) ###",
+                        "start_regex": "## Plugins",
+                        "stop_regex": "####### UNUSED",
+                        "section_regex": "### ([^#]+)",
                         "entry_regex": "^\\- \\[(.+)\\]\\(([^\\)]+)\\)(.*)"
                     },
                     "name": {
@@ -132,6 +132,20 @@
                 "ref": "devgettingstarted",
                 "dev-comment": "Here we have some important documentation files for users that want start to develop with Elektra.",
                 "children": [
+                    {
+                        "name": "Ideas",
+                        "type": "staticfile",
+                        "options": {
+                            "path": "doc/IDEAS.md"
+                        }
+                    },
+                    {
+                        "name": "Contributing",
+                        "type": "staticfile",
+                        "options": {
+                            "path": ".github/CONTRIBUTING.md"
+                        }
+                    },
                     {
                         "name": "Coding",
                         "type": "staticfile",
@@ -191,28 +205,6 @@
                 ]
             },
             {
-                "name": "GSoC",
-                "type": "staticlist",
-                "ref": "devgsoc",
-                "dev-comment": "If you want to contribute to Elektra.",
-                "children": [
-                    {
-                        "name": "GSoC",
-                        "type": "staticfile",
-                        "options": {
-                            "path": "doc/IDEAS.md"
-                        }
-                    },
-                    {
-                        "name": "Contributing",
-                        "type": "staticfile",
-                        "options": {
-                            "path": ".github/CONTRIBUTING.md"
-                        }
-                    }
-                ]
-            },
-            {
                 "name": "Examples",
                 "type": "listfiles",
                 "ref": "examples",
@@ -262,7 +254,7 @@
                     "path": "doc/decisions/README.md",
                     "target_file": [],
                     "parsing": {
-                        "stop_regex": "####### UNUSED ######",
+                        "stop_regex": "####### UNUSED",
                         "section_regex": "## ([^#]+)",
                         "entry_regex": "^\\- \\[(.+)\\]\\(([^\\)]+)\\)(.*)"
                     },

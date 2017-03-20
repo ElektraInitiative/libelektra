@@ -92,7 +92,7 @@ only by investigating the `KeySet`.  But only if this knowledge is
 present, the core can decide if the key set needs to be written out or
 if the configuration is unchanged.  So we decided to track how many keys
 are delivered in `kdbGet()`.  If the size of the `KeySet` is lower than
-this number determined at the previous `kdbGet()`, Elektra's core knows
+this number determined at the previous `kdbGet()`, Elektra’s core knows
 that some keys were popped.  Hence, the next `kdbSet()` invocation needs
 to change the concerned key database.
 
@@ -103,12 +103,12 @@ idea that a `KeySet` will be applied to the key database is correct again.
 
 ## kdbGet
 
-It is critical for application startup time to retrieve the
+It is critical for application startup-time to retrieve the
 configuration as fast as possible.  Hence, the design goal of the
 `kdbGet()` algorithm is to be efficient while still enabling plugins
 to have relaxed postconditions.  To achieve this, the sequence of
 *syscalls* must be optimal.  On the other hand, it is
-not tolerable to waste time or memory inside Elektra's core, especially
+not tolerable to waste time or memory inside Elektra’s core, especially
 during an initial request or when no update is available.
 
 The synopsis of the function is:
@@ -139,7 +139,7 @@ to determine if they are responsible for a key or not.	Consequently, it
 can happen that more than one backend delivers a key with the same name.
 
 `kdbGet()` ensures that a key is uniquely identified by its name.
-Elektra's core will [pop](/doc/help/elektra-glossary.md) keys that are
+Elektra’s core will [pop](/doc/help/elektra-glossary.md) keys that are
 outside of the backend's responsibility.  Hence, these keys will not be
 passed to the user and we get the desired behaviour: The nearest mounted
 backend to the key is responsible.
@@ -235,7 +235,7 @@ algorithm finally finishes.
 The user can call `kdbGet()` often even if the configuration or parts
 of it are already up to date.  This can happen when applications reread
 configuration in some events.  Examples are signals (SIGHUP is
-the signal used for that on UNIX systems. It is sent when the program's
+the signal used for that on Unix systems. It is sent when the program's
 controlling terminal is closed. Daemons do not have a terminal so
 the signal is reused for reloading configuration.), notifications,
 user requests and in the worst case periodical attempts to reread
@@ -244,13 +244,13 @@ configuration.
 The given goal is to keep the sequence of needed syscalls low.	If no
 update is needed, it is sufficient to request the timestamp
 (On POSIX systems using `stat()`) of every file. No other syscall
-is needed.  Elektra's core alone cannot check that because getting
+is needed.  Elektra’s core alone cannot check that because getting
 a timestamp is not defined within the standard C99.  So instead the
 resolver plugin handles this problem.  The resolver plugin returns 0 if
 nothing has changed.
 
 This decision yields some advantages.  Both the storage plugins and
-Elektra's core can conform to C99.  Because the resolver plugin is the
+Elektra’s core can conform to C99.  Because the resolver plugin is the
 very first in the chain of plugins, it is guaranteed that no useless
 work is done.
 

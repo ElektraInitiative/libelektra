@@ -35,7 +35,8 @@ resolve_symlinks() {
 _resolve_symlinks() {
     _assert_no_path_cycles "$@" || return
 
-    local dir_context path
+    local dir_context
+    local path
     path=$(readlink -- "$1")
     if [ $? -eq 0 ]; then
         dir_context=$(dirname -- "$1")
@@ -61,7 +62,8 @@ _prepend_path_if_relative() {
 }
 
 _assert_no_path_cycles() {
-    local target path
+    local target
+    local path
 
     target=$1
     shift
@@ -86,7 +88,8 @@ _canonicalize_dir_path() {
 }
 
 _canonicalize_file_path() {
-    local dir file
+    local dir
+    local file
     dir=$(dirname -- "$1")
     file=$(basename -- "$1")
     (cd "$dir" 2>/dev/null && printf '%s/%s\n' "$(pwd -P)" "$file")

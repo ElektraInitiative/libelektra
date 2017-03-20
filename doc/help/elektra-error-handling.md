@@ -98,7 +98,7 @@ Reporting errors is a critical task.  Users expect different aspects:
   Even more important is the information if it makes sense to try the
   same action again.  If, for example, an unreliable network connection
   or file system is used, the same action can work in a second try.
-- A **developer of the library** (Library refers to both Elektra's core and plugins.)
+- A **developer of the library** (Library refers to both Elektra’s core and plugins.)
   wants full information about anything needed to be able to reproduce
   and locate potential bugs. Ideally the error information should
   even mention the file and line where the error occurred. This can
@@ -176,7 +176,7 @@ All other locations are automatically generated instead of having
 error-prone duplicated code.  This principle is called ''Don't repeat
 yourself''.
 
-In Elektra's core and plugins, C macros are responsible for setting
+In Elektra’s core and plugins, C macros are responsible for setting
 the error information and adding warning information.  In C only a
 macro is able to add the file name and line number of the source code.
 In language bindings other code may be generated.
@@ -212,7 +212,7 @@ Elektra to provide more robustness.
 
 C does not know anything about exceptions.  But Elektra was designed
 so that both plugins and applications can be written in languages
-that provide exceptions.  One design goal of Elektra's error system is to transport
+that provide exceptions.  One design goal of Elektra’s error system is to transport
 exception-related information in a language neutral way from the plugins
 to the applications.  To do so, a language binding of the plugin needs
 to catch every exception and transform it into error information and
@@ -242,7 +242,7 @@ to be checked.  On the other hand, the C++ exception mechanism allows
 the programmer to throw an exception in any place and catch it where it
 is needed.  So in C++ the code is not cluttered with parts responsible for
 error handling.  Instead, in a single place all exceptions of a plugin can
-be transformed to Elektra's error or warning information.  The code for
+be transformed to Elektra’s error or warning information.  The code for
 this place can be generated automatically using an exception converter.
 
 Applications not written in C can also benefit from an exception

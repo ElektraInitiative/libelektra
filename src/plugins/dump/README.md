@@ -9,13 +9,13 @@
 - infos/metadata =
 - infos/description = Dumps into a format tailored for complete KeySet semantics
 
-## Introduction ##
+## Introduction
 
 This plugin is a storage plugin that supports full Elektra
 semantics. Combined with a resolver plugin it already assembles a fully
 featured backend. No other plugins are needed.
 
-## Format ##
+## Format
 
 The file format edf (Elektra dump format) consists of a simple command language with
 arguments. When an argument is binary or string data the length needs to be
@@ -38,7 +38,7 @@ is written out that is able to reconstruct the data structure the way
 it was before. The commands were designed to make parsing of the file
 an easy task.
 
-### Format Examples ###
+### Format Examples
 
 The serialised configuration can look like (0 bytes at end of strings are
 omitted):
@@ -65,14 +65,14 @@ omitted):
     keyEnd
     ksEnd
 
-## Limitations ##
+## Limitations
 
 (status -1000)
 
 - It is quite slow
 - Files cannot easily edited by hand
 
-## Examples ##
+## Examples
 
 Export a KeySet using `dump`:
 
@@ -82,7 +82,7 @@ Import a KeySet using `dump`:
 
     cat example.ecf | kdb import system/example dump
 
-Using grep/diff or other unix tools on the dump file. Make sure that you
+Using grep/diff or other Unix tools on the dump file. Make sure that you
 treat it as text file, e.g.:
 
     grep --text mountpoints example.ecf

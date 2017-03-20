@@ -45,11 +45,18 @@ int MvCommand::execute (Cmdline const & cl)
 
 	oldConf.append (tmpConf.cut (sourceKey));
 
+	if (!oldConf.size ())
+	{
+		cerr << "No key to be moved found\n";
+		return 1;
+	}
+
 	KeySet newConf;
 
 	Key k;
 	oldConf.rewind ();
 	std::string sourceName = sourceKey.getName ();
+
 	if (cl.recursive)
 	{
 		while ((k = oldConf.next ()))
@@ -61,11 +68,6 @@ int MvCommand::execute (Cmdline const & cl)
 	{
 		// just rename one key
 		k = oldConf.next ();
-		if (!k)
-		{
-			cerr << "Single key to move not found\n";
-			return 1;
-		}
 		if (k != sourceKey)
 		{
 			cerr << "First key found " << k.getName () << " does not exactly match given key " << sourceKey.getName ()

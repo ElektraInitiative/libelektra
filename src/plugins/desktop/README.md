@@ -9,12 +9,12 @@
 - infos/metadata =
 - infos/description = reads desktop information
 
-## Introduction ##
+## Introduction
 
 The plugin is informational and mainly be used to provide context for
 other configuration. See [elektrify-getenv](/src/libs/getenv/README.md).
 
-## Usage ##
+## Usage
 
 To mount the plugin please use:
 
@@ -31,7 +31,7 @@ Then you can get desktop information via:
 You either get a *lower-case* string (supported desktops see below)
 or no key if no desktop was detected.
 
-## Supported Desktop ##
+## Supported Desktop
 
 Currently supported desktops are:
 

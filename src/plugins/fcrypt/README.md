@@ -10,9 +10,9 @@
 - infos/metadata =
 - infos/description = File Encryption
 
-# fcrypt Plugin #
+# fcrypt Plugin
 
-## Introduction ##
+## Introduction
 
 This plugin enables file based encryption and decryption using GPG.
 
@@ -20,7 +20,7 @@ This plugin encrypts backend files before the commit is executed (thus `precommi
 The plugin decrypts the backend files before the getstorage opens it (thus `pregetstorage`).
 After the getstorage plugin has read the backend file, the plugin decrypts the backend file again (thus `postgetstorage`).
 
-## Security Considerations ##
+## Security Considerations
 
 During decryption the plugin temporarily writes the decrypted plain text to the same directory as the original (encrypted) file.
 This is a vulnerability as an attacker might have access to the plain text for a short period of time (the time between pregetstorage and postgetstorage calls).
@@ -28,19 +28,38 @@ The plugin shreds, i.e. overwrites, the temporary file with zeroes to reduce the
 
 If the application crashes parts of the decrypted data may leak.
 
-## Dependencies ##
+## Known Issues
+
+If you encounter the following error at `kdb mount`:
+
+	The command kdb mount terminated unsuccessfully with the info:
+	Too many plugins!
+	The plugin sync can't be positioned to position precommit anymore.
+	Try to reduce the number of plugins!
+
+	Failed because precommit with 7 is larger than 6
+	Please report the issue at https://issues.libelektra.org/
+
+you might want to consider disabling the sync plugin by entering:
+
+	kdb set /sw/elektra/kdb/#0/current/plugins ""
+	kdb set system/sw/elektra/kdb/#0/current/plugins ""
+
+Please note that this is a workaround until a more sustainable solution is found.
+
+## Dependencies
 
 This plugin uses parts of the `crypto` plugin.
 
-### GnuPG (GPG) ###
+### GnuPG (GPG)
 
 Please refer to [crypto](../crypto/).
 
-## Restrictions ##
+## Restrictions
 
 Please refer to [crypto](../crypto/).
 
-## Examples ##
+## Examples
 
 You can mount the plugin like this:
 
@@ -56,8 +75,8 @@ But you can still access `/t/a` with `kdb get`:
 
 	kdb get /t/a
 
-## Configuration ##
+## Configuration
 
-### GPG Configuration ###
+### GPG Configuration
 
 The GPG Configuration is described in [crypto](../crypto/).
