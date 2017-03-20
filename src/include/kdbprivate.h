@@ -556,5 +556,6 @@ void elektraGlobalError (KDB * handle, KeySet * ks, Key * parentKey, int positio
 /* Convenience Methods for String Handling */
 char * lskip (char const * const keyname);
 char * rstrip (char * const start, char ** end);
+char * strip (char * text);
 
 #endif /* KDBPRIVATE_H */

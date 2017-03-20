@@ -894,3 +894,22 @@ char * rstrip (char * const start, char ** end)
 
 	return start;
 }
+
+/**
+ * @internal
+ *
+ * @brief This function removes leading and trailing whitespace from a given string.
+ * *
+ * @pre The parameter `text` must not be `NULL`.
+ * @pre Since this function modifies the string in place, the memory location
+ *      containing the given string must be writeable.
+ *
+ * @param start A pointer to the start of the string from which trailing
+ *		whitespace should be removed
+ *
+ * @return A pointer to the start of the stripped string.
+ */
+inline char * strip (char * text)
+{
+	return rstrip (lskip (text), NULL);
+}
