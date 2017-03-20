@@ -28,3 +28,5 @@ target_link_elektra(test_operation elektra-meta)
 target_link_elektra(test_operation elektra-proposal)
 
 target_link_elektra(test_proposal elektra-proposal)
+
+target_link_elektra(test_utility elektra-utility)
