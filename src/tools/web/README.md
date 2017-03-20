@@ -8,7 +8,7 @@ _an API and web user interface to remotely manage multiple Elektra instances_
 Elektra-web requires:
 
  * [Elektra](http://libelektra.org/) with the [`yajl` plugin](http://tree.libelektra.org/src/plugins/yajl/) installed
- * A recent [node.js](https://nodejs.org/en/) installation (at least 4.x)
+ * A recent [node.js](https://nodejs.org/en/) installation (at least 6.x)
 
 
 ## Getting Started
