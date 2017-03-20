@@ -258,6 +258,58 @@ static void test_lskip ()
 	succeed_if_same_string (lskip (" Leading Space"), "Leading Space");
 	succeed_if_same_string (lskip (" \tLeading And Trailing Whitespace\t\n "), "Leading And Trailing Whitespace\t\n ");
 }
+
+static void test_rstrip ()
+{
+	printf ("Test rstrip\n");
+
+#define MAX_LENGTH 100
+
+	char text[MAX_LENGTH];
+	char * last = NULL;
+
+	strncpy (text, "", MAX_LENGTH);
+	succeed_if_same_string (rstrip (text, NULL), "");
+	rstrip (text, &last);
+	succeed_if_same_string (last, text);
+
+	strncpy (text, "No Trailing Whitespace", MAX_LENGTH);
+	succeed_if_same_string (rstrip (text, NULL), "No Trailing Whitespace");
+	last = NULL;
+	rstrip (text, &last);
+	succeed_if_same_string (last, "e");
+
+	strncpy (text, "\t\nLeading Whitespace", MAX_LENGTH);
+	succeed_if_same_string (rstrip (text, NULL), "\t\nLeading Whitespace");
+	last = NULL;
+	rstrip (text, &last);
+	succeed_if_same_string (last, "e");
+
+	strncpy (text, "Trailing Tab\t", MAX_LENGTH);
+	succeed_if_same_string (rstrip (text, NULL), "Trailing Tab");
+	strncpy (text, "Trailing Tab\t", MAX_LENGTH);
+	last = NULL;
+	rstrip (text, &last);
+	succeed_if_same_string (last, "b");
+
+	strncpy (text, "Trailing Whitespace\n\r\t  ", MAX_LENGTH);
+	succeed_if_same_string (rstrip (text, NULL), "Trailing Whitespace");
+	strncpy (text, "Trailing Whitespace\n\r\t  ", MAX_LENGTH);
+	last = NULL;
+	rstrip (text, &last);
+	succeed_if_same_string (last, "e");
+
+	strncpy (text, "\r  \t\nLeading And Trailing Whitespace\n  \r\n\t", MAX_LENGTH);
+	succeed_if_same_string (rstrip (text, NULL), "\r  \t\nLeading And Trailing Whitespace");
+	strncpy (text, "\r  \t\nLeading And Trailing Whitespace\n  \r\n\t", MAX_LENGTH);
+	last = NULL;
+	rstrip (text, &last);
+	succeed_if_same_string (last, "e");
+
+	strncpy (text, "\r\t\nLeading And Trailing Whitespace\n  \r\n\t", MAX_LENGTH);
+	last = text + 10;
+	succeed_if_same_string (rstrip (text, &last), "\r\t\nLeading");
+	succeed_if_same_string (last, "g");
 }
 
 int main (int argc, char ** argv)
@@ -274,6 +326,7 @@ int main (int argc, char ** argv)
 	test_elektraUnescapeKeyName ();
 	test_keyNameGetOneLevel ();
 	test_lskip ();
+	test_rstrip ();
 
 	printf ("\ntest_internals RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 
