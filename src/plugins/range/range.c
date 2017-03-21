@@ -432,6 +432,12 @@ static int validateKey (Key * key, Key * parentKey)
 			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_RANGE_SYNTAX, parentKey, "invalid syntax: %s", keyString (rangeMeta));
 			return -1;
 		}
+		else if (rc == 0)
+		{
+			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_INVALID_RANGE, parentKey, "value %s not within range %s", keyString (key),
+					    rangeString);
+			return 0;
+		}
 		else
 		{
 			return rc;
@@ -442,7 +448,7 @@ static int validateKey (Key * key, Key * parentKey)
 		int rc = validateMultipleRanges (keyString (key), rangeString, parentKey, type);
 		if (rc == 0)
 		{
-			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_INVALID_RANGE, parentKey, "value %s not withing range %s", keyString (key),
+			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_INVALID_RANGE, parentKey, "value %s not within range %s", keyString (key),
 					    rangeString);
 		}
 		return rc;
