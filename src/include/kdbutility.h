@@ -8,9 +8,9 @@ extern "C" {
 #endif
 
 /* Convenience Methods for String Handling */
-char * lskip (char const * const keyname);
-char * rstrip (char * const start, char ** end);
-char * strip (char * text);
+char * elektraLskip (char const * const keyname);
+char * elektraRstrip (char * const start, char ** end);
+char * elektraStrip (char * text);
 
 #ifdef __cplusplus
 }

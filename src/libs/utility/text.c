@@ -16,7 +16,7 @@
  *
  * @return A pointer to the first non-whitespace character in `text`
  */
-char * lskip (char const * const text)
+char * elektraLskip (char const * const text)
 {
 	ELEKTRA_ASSERT (text != NULL, "The Parameter `text` contains `NULL` instead of a valid string.");
 
@@ -58,7 +58,7 @@ char * lskip (char const * const text)
  * @return A pointer to the start of the modified string. This address is
  *	   the same as `start`.
  */
-char * rstrip (char * const start, char ** end)
+char * elektraRstrip (char * const start, char ** end)
 {
 	ELEKTRA_ASSERT (start != NULL, "The Parameter `start` contains `NULL` instead of a valid string.");
 
@@ -91,7 +91,7 @@ char * rstrip (char * const start, char ** end)
  *
  * @return A pointer to the start of the stripped string.
  */
-char * strip (char * text)
+char * elektraStrip (char * text)
 {
-	return rstrip (lskip (text), NULL);
+	return elektraRstrip (elektraLskip (text), NULL);
 }
