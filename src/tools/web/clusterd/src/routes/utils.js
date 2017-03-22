@@ -8,6 +8,12 @@
 
 import { ROOT_PATH } from '../config'
 
+export function APIError (message) {
+  this.name = 'APIError'
+  this.message = message || ''
+}
+APIError.prototype = Error.prototype
+
 export const prettyprint = (obj) =>
   JSON.stringify(obj, null, 2)
 
@@ -17,7 +23,9 @@ export const successResponse = (res, output) =>
     : res.status(404).send() // no output -> 404
 
 export const errorResponse = (res, err) => {
-  if (process.env.NODE_ENV !== 'production') console.error(err)
+  if (process.env.NODE_ENV !== 'production') {
+    if (!(err instanceof APIError)) console.error(err)
+  }
   const errObj = (err instanceof Error)
     ? { name: err.name, message: err.message }
     : err

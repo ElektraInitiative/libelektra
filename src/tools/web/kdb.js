@@ -7,7 +7,7 @@
  */
 
 const { exec } = require('child_process')
-const { readFileSync } = require('fs')
+const { readFileSync, unlink } = require('fs')
 
 // constants
 const ERR_KEY_NOT_FOUND = 'Did not find key'
@@ -200,12 +200,20 @@ const getAllMeta = (path) =>
       resolvedMetaValues && Object.assign.apply(Object, resolvedMetaValues)
     )
 
-const BUFFER_FILE = '/tmp/elektra-web.buffer.json'
+const getBufferFile = () => `/tmp/elektra-web.${Date.now()}.buffer.json`
 
 // export javascript object from given `path`
-const _export = (path) =>
-  safeExec(escapeValues`kdb export ${path} yajl ${BUFFER_FILE}`)
-    .then(() => JSON.parse(readFileSync(BUFFER_FILE)))
+const _export = (path) => {
+  const buffer = getBufferFile()
+  return safeExec(escapeValues`kdb export ${path} yajl ${buffer}`)
+    .then(() => {
+      const data = JSON.parse(readFileSync(buffer))
+      unlink(buffer, (err) =>
+        err && console.error('could not delete buffer file:', err)
+      )
+      return data
+    })
+}
 
 // import javascript object at given `path`
 const _import = (path, value) =>
