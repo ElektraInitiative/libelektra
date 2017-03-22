@@ -1,5 +1,6 @@
 #!/usr/bin/fish
-# Not intended to be executed directly, shebang exists to supress checkbashisms warning
+
+# Not intended to be executed directly, shebang exists only to suppress `checkbashisms` warning
 
 # -- Functions -----------------------------------------------------------------------------------------------------------------------------
 
@@ -118,7 +119,7 @@ end
 # << Completion Checks >>
 
 function __fish_kdb_subcommand_needs_metanames -d 'Check if the current command needs a meta-name completion'
-    not __fish_kdb_subcommand_includes getmeta setmeta
+    not __fish_kdb_subcommand_includes getmeta rmmeta setmeta
     and return 1
 
     test (__fish_kdb__number_arguments_input_left) -eq 3
@@ -240,7 +241,8 @@ function __fish_kdb_print_resolver_plugins -d 'Print a list of available resolve
 end
 
 function __fish_kdb_print_storage_plugins -d 'Print a list of available storage plugins'
-    set -l formats constants desktop dpkg dump hosts line ini json ini ni passwd regexstore simpleini simplespeclang tcl xmltool uname
+    set -l formats constants crypto_botan crypto_gcrypt crypto_openssl desktop dpkg dump fcrypt hosts line ini json ni passwd regexstore
+    set -l formats $formats simpleini simplespeclang tcl xmltool uname
     set -l regex '^(?:'(__join '|' $formats)')$'
     set -l storage_plugins (__fish_kdb_print_plugins | string match -r $regex)
     set -l storage_plugins $storage_plugins storage
@@ -318,7 +320,7 @@ function __fish_kdb_subcommand_supports_option_plugins_config -d 'Check if the c
 end
 
 function __fish_kdb_subcommand_supports_option_verbose -d 'Check if the current subcommand supports the option verbose'
-    set -l commands export file getmeta global-mount gmount info mount qt-gui remount rm sget shell test vset help list-tools qt-gui
+    set -l commands export file getmeta global-mount gmount info mount qt-gui remount rm rmmeta sget shell test vset help list-tools qt-gui
     __fish_kdb_subcommand_exists_does_not_include $commands
 end
 
@@ -371,7 +373,8 @@ end
 
 complete -c kdb -n 'not __fish_kdb_subcommand' -x -a '(__fish_kdb_print_subcommands -v)'
 
-set -l arguments complete editor export file fstab get getmeta import ls lsmeta rm set setmeta sget smount spec-mount test umount vset 1
+set -l arguments complete editor export file fstab get getmeta import ls lsmeta rm rmmeta set setmeta sget smount spec-mount test umount
+set -l arguments $arguments vset 1
 set -l completion_function "__fish_kdb_needs_namespace $arguments"
 complete -c kdb -n "$completion_function" -x -a '(__fish_kdb_print_namespaces)'
 complete -c kdb -n '__fish_kdb_needs_namespace cp mv 2' -x -a '(__fish_kdb_print_namespaces)'

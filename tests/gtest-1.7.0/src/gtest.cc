@@ -589,7 +589,7 @@ namespace internal {
 // Returns the type ID of ::testing::Test.  We should always call this
 // instead of GetTypeId< ::testing::Test>() to get the type ID of
 // testing::Test.  This is to work around a suspected linker bug when
-// using Google Test as a framework on Mac OS X.  The bug causes
+// using Google Test as a framework on macOS.  The bug causes
 // GetTypeId< ::testing::Test>() to return different values depending
 // on whether the call is from the Google Test framework itself or
 // from user test code.  GetTestTypeId() is guaranteed to always
@@ -1597,7 +1597,7 @@ bool String::CaseInsensitiveCStringEquals(const char * lhs, const char * rhs) {
   // On windows, this method uses _wcsicmp which compares according to LC_CTYPE
   // environment variable. On GNU platform this method uses wcscasecmp
   // which compares according to LC_CTYPE category of the current locale.
-  // On MacOS X, it uses towlower, which also uses LC_CTYPE category of the
+  // On macOS, it uses towlower, which also uses LC_CTYPE category of the
   // current locale.
 bool String::CaseInsensitiveWideCStringEquals(const wchar_t* lhs,
                                               const wchar_t* rhs) {
@@ -1610,7 +1610,7 @@ bool String::CaseInsensitiveWideCStringEquals(const wchar_t* lhs,
 #elif GTEST_OS_LINUX && !GTEST_OS_LINUX_ANDROID
   return wcscasecmp(lhs, rhs) == 0;
 #else
-  // Android, Mac OS X and Cygwin don't define wcscasecmp.
+  // Android, macOS and Cygwin don't define wcscasecmp.
   // Other unknown OSes may not define it either.
   wint_t left, right;
   do {
@@ -3108,7 +3108,7 @@ void XmlUnitTestResultPrinter::OnTestIterationEnd(const UnitTest& unit_test,
     //
     //   1. There is no urgent need for it.
     //   2. It's a bit involved to make the errno variable thread-safe on
-    //      all three operating systems (Linux, Windows, and Mac OS).
+    //      all three operating systems (Linux, Windows, and macOS).
     //   3. To interpret the meaning of errno in a thread-safe way,
     //      we need the strerror_r() function, which is not available on
     //      Windows.

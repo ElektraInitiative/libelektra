@@ -196,7 +196,7 @@ So let us have a look at the [enum](/src/plugins/enum/README.md) and [mathcheck]
 
 ```sh
 # mount the backend with the plugins ...
-sudo kdb mount example.ni user/example ni enum
+kdb mount example.ni user/example ni enum
 
 # ... and set a value for the demonstration
 kdb set user/example/enumtest/fruit apple

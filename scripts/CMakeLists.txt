@@ -65,7 +65,7 @@ if (INSTALL_SYSTEM_FILES)
 		DESTINATION ${FISH_COMPLETION_COMPLETIONSDIR})
 
 	if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-		# On Mac OS X we need to copy this into another folder.
+		# On macOS we need to copy this into another folder.
 		# Because of "System Integrity Protection", we need to
 		# use a /usr/local path
 		install (FILES kdb_zsh_completion

@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #
 # @author Markus Raab <elektra@markus-raab.org>
 # @brief Creates a plugin out of the template plugin
@@ -30,8 +30,8 @@ else
 	exit 1
 fi
 
-First=`echo $PLUGIN | sed 's/\<./\u&/'`
-ALL=`echo $PLUGIN | sed 's/.*/\U&/'`
+First=`echo $PLUGIN | awk '{print toupper(substr($0, 1, 1)) substr($0, 2)}'`
+ALL=`echo $PLUGIN | awk '{print toupper($0)}'`
 
 cp -r template $PLUGIN
 cd $PLUGIN
@@ -41,9 +41,13 @@ mv testmod_template.c testmod_$PLUGIN.c
 
 do_replacements()
 {
-	sed -i s/TEMPLATE/$ALL/g $*
-	sed -i s/Template/$First/g $*
-	sed -i s/template/$PLUGIN/g $*
+	# We have to use slightly different command line switches for the GNU and
+	# BSD version of `sed`. Only GNU `sed` supports the switch `--version`.
+	sed --version &>/dev/null && args=(-i) || args=(-i '')
+
+	sed "${args[@]}" s/TEMPLATE/$ALL/g $*
+	sed "${args[@]}" s/Template/$First/g $*
+	sed "${args[@]}" s/template/$PLUGIN/g $*
 }
 
 do_replacements testmod_$1.c $1.c $1.h CMakeLists.txt README.md

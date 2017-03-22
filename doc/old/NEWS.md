@@ -996,7 +996,7 @@ It is now possible to enable and disable Backends and Bindings
 with configure switches. The documentation was improved.
 The c++ binding now basically works, see the tests for examples.
 Ini and Berkleydb backends now compile again.
-There were a lot of bug fixes, like mntent.h fix for Mac OS X.
+There were a lot of bug fixes, like mntent.h fix for macOS.
 
 
 

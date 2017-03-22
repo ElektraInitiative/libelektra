@@ -50,6 +50,9 @@ int elektraTemplateGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTR
 	}
 	// get all keys
 
+	//  0: Everything was OK and `returned` has not been changed
+	//  1: Everything was OK and `returned` was updated
+	// -1: There was an error
 	return 1; // success
 }
 
@@ -92,4 +95,3 @@ Plugin * ELEKTRA_PLUGIN_EXPORT (template)
 		ELEKTRA_PLUGIN_ERROR,	&elektraTemplateError,
 		ELEKTRA_PLUGIN_END);
 }
-

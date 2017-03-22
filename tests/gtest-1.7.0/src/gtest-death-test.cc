@@ -925,7 +925,7 @@ struct ExecDeathTestArgs {
 
 #  if GTEST_OS_MAC
 inline char** GetEnviron() {
-  // When Google Test is built as a framework on MacOS X, the environ variable
+  // When Google Test is built as a framework on macOS, the environ variable
   // is unavailable. Apple's documentation (man environ) recommends using
   // _NSGetEnviron() instead.
   return *_NSGetEnviron();

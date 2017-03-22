@@ -146,25 +146,25 @@ void Backend::setMountpoint (Key mountpoint, KeySet mountConf)
 		if (std::find (alreadyUsedMountpoints.begin (), alreadyUsedMountpoints.end (), specmp.getName ()) !=
 		    alreadyUsedMountpoints.end ())
 		{
-			throw MountpointAlreadyInUseException ("Root mountpoint not possible, because spec mountpoint already exists");
+			throw MountpointAlreadyInUseException ("Root mountpoint not possible, because spec mountpoint already exists.\n");
 		}
 		Key dkmp ("dir", KEY_END);
 		if (std::find (alreadyUsedMountpoints.begin (), alreadyUsedMountpoints.end (), dkmp.getName ()) !=
 		    alreadyUsedMountpoints.end ())
 		{
-			throw MountpointAlreadyInUseException ("Root mountpoint not possible, because dir mountpoint already exists");
+			throw MountpointAlreadyInUseException ("Root mountpoint not possible, because dir mountpoint already exists.\n");
 		}
 		Key ukmp ("user", KEY_END);
 		if (std::find (alreadyUsedMountpoints.begin (), alreadyUsedMountpoints.end (), ukmp.getName ()) !=
 		    alreadyUsedMountpoints.end ())
 		{
-			throw MountpointAlreadyInUseException ("Root mountpoint not possible, because user mountpoint already exists");
+			throw MountpointAlreadyInUseException ("Root mountpoint not possible, because user mountpoint already exists.\n");
 		}
 		Key skmp ("system", KEY_END);
 		if (std::find (alreadyUsedMountpoints.begin (), alreadyUsedMountpoints.end (), skmp.getName ()) !=
 		    alreadyUsedMountpoints.end ())
 		{
-			throw MountpointAlreadyInUseException ("Root mountpoint not possible, because system mountpoint already exists");
+			throw MountpointAlreadyInUseException ("Root mountpoint not possible, because system mountpoint already exists.\n");
 		}
 	}
 	else if (smp.at (0) == '/')
@@ -174,21 +174,21 @@ void Backend::setMountpoint (Key mountpoint, KeySet mountConf)
 		    alreadyUsedMountpoints.end ())
 		{
 			throw MountpointAlreadyInUseException ("Cascading mountpoint " + smp +
-							       " not possible, because dir mountpoint already exists");
+							       " not possible, because dir mountpoint already exists.\n");
 		}
 		Key ukmp ("user" + smp, KEY_END);
 		if (std::find (alreadyUsedMountpoints.begin (), alreadyUsedMountpoints.end (), ukmp.getName ()) !=
 		    alreadyUsedMountpoints.end ())
 		{
 			throw MountpointAlreadyInUseException ("Cascading mountpoint " + smp +
-							       " not possible, because user mountpoint already exists");
+							       " not possible, because user mountpoint already exists.\n");
 		}
 		Key skmp ("system" + smp, KEY_END);
 		if (std::find (alreadyUsedMountpoints.begin (), alreadyUsedMountpoints.end (), skmp.getName ()) !=
 		    alreadyUsedMountpoints.end ())
 		{
 			throw MountpointAlreadyInUseException ("Cascading mountpoint " + smp +
-							       " not possible, because system mountpoint already exists");
+							       " not possible, because system mountpoint already exists.\n");
 		}
 	}
 	else
