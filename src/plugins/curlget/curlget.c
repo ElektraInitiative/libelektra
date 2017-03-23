@@ -637,7 +637,8 @@ int elektraCurlgetGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA
 		{
 		UNLINK_TMP:
 			// remote file is the same as our local copy
-			unlink (data->tmpFile);
+			if(data->tmpFile)
+			    unlink (data->tmpFile);
 			data->tmpFile = NULL;
 			keySetString (parentKey, data->path);
 		}
@@ -671,10 +672,12 @@ int elektraCurlgetSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA
 			++(data->setPhase);
 			if (strncmp ((char *)data->lastHash, (char *)hash, MD5_DIGEST_LENGTH))
 			{
-				ELEKTRA_SET_ERROR (ELEKTRA_ERROR_CONFLICT, parentKey, "remote file has changed");
+			    	ELEKTRA_SET_ERROR (ELEKTRA_ERROR_CONFLICT, parentKey, "remote file has changed");
 				retval = -1;
 			}
-			unlink (data->tmpFile);
+			elektraFree(hash);
+			if(data->tmpFile)
+				unlink (data->tmpFile);
 			data->tmpFile = NULL;
 			keySetString (parentKey, name);
 		}
@@ -694,7 +697,7 @@ int elektraCurlgetSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA
 		if (retval != -1)
 		{
 			keySetString (parentKey, name);
-			data->tmpFile = keyString (parentKey);
+			data->tmpFile = name;
 			retval = 1;
 		}
 		if (!data->useLocalCopy && data->path)
