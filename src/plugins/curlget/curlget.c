@@ -9,8 +9,10 @@
 
 #include "curlget.h"
 
+#include "resolve.h"
 #include <curl/curl.h>
 #include <curl/easy.h>
+#include <errno.h>
 #include <fcntl.h>
 #include <kdberrors.h>
 #include <kdbhelper.h>
@@ -24,8 +26,6 @@
 #include <sys/types.h>
 #include <time.h>
 #include <unistd.h>
-#include <errno.h>
-#include "resolve.h"
 
 #define TMP_NAME "/tmp/elektraCurlTempXXXXXX"
 
@@ -478,51 +478,50 @@ static FILE * fetchFile (Data * data, int fd)
 	return fp;
 }
 
-static int moveFile(const char *source, const char *dest)
+static int moveFile (const char * source, const char * dest)
 {
-    FILE *inFile = NULL;
-    FILE *outFile = NULL;
-    struct stat buf;
-    if(stat(source, &buf) == -1)
-	return -1;
-    size_t fileSize = buf.st_size;
-    char * buffer = elektraMalloc(fileSize);
-    inFile = fopen(source, "rb");
-    size_t bytesRead = 0;
-    while (bytesRead < fileSize)
-    {
-	size_t bytes = fread (buffer + bytesRead, 1, (size_t)fileSize, inFile);
-	if (bytes == 0) break;
-	bytesRead += bytes;
-    }
-    if (bytesRead < fileSize)
-    {
-	elektraFree (buffer);
+	FILE * inFile = NULL;
+	FILE * outFile = NULL;
+	struct stat buf;
+	if (stat (source, &buf) == -1) return -1;
+	size_t fileSize = buf.st_size;
+	char * buffer = elektraMalloc (fileSize);
+	inFile = fopen (source, "rb");
+	size_t bytesRead = 0;
+	while (bytesRead < fileSize)
+	{
+		size_t bytes = fread (buffer + bytesRead, 1, (size_t)fileSize, inFile);
+		if (bytes == 0) break;
+		bytesRead += bytes;
+	}
+	if (bytesRead < fileSize)
+	{
+		elektraFree (buffer);
+		fclose (inFile);
+		return -1;
+	}
 	fclose (inFile);
-	return -1;
-    }
-    fclose (inFile);
-    outFile = fopen (dest, "wb+");
+	outFile = fopen (dest, "wb+");
 
-    size_t bytesWritten = 0;
-    while (bytesWritten < fileSize)
-    {
-	size_t bytes = fwrite (buffer, 1, fileSize, outFile);
-	if (bytes == 0) break;
-	bytesWritten += bytes;
-    }
-    fclose (outFile);
-    elektraFree (buffer);
+	size_t bytesWritten = 0;
+	while (bytesWritten < fileSize)
+	{
+		size_t bytes = fwrite (buffer, 1, fileSize, outFile);
+		if (bytes == 0) break;
+		bytesWritten += bytes;
+	}
+	fclose (outFile);
+	elektraFree (buffer);
 
-    if (bytesWritten < fileSize)
-    {
-	return -1;
-    }
-    if(unlink(source))
-    {
-	return -1;
-    }
-    return 0;
+	if (bytesWritten < fileSize)
+	{
+		return -1;
+	}
+	if (unlink (source))
+	{
+		return -1;
+	}
+	return 0;
 }
 
 int elektraCurlgetGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey)
@@ -556,19 +555,17 @@ int elektraCurlgetGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA
 	fd = mkstemp (name);
 	if (*(data->lastHash)) unlink (data->tmpFile);
 	data->tmpFile = name;
-	
-	if(data->path)
-	    keySetString(parentKey, data->path);
-	Key *resolveKey = keyNew(keyName(parentKey), KEY_END);
-	if(!elektraResolveFilename("hpxub", keyString(parentKey), resolveKey, 0))
+
+	if (data->path) keySetString (parentKey, data->path);
+	Key * resolveKey = keyNew (keyName (parentKey), KEY_END);
+	if (!elektraResolveFilename ("hpxub", keyString (parentKey), resolveKey, 0))
 	{
-	    keyDel(resolveKey);
-	    return -1;
+		keyDel (resolveKey);
+		return -1;
 	}
-	if(data->path)
-	    elektraFree(data->path);
-	data->path = elektraStrDup(keyString (resolveKey));
-	keyDel(resolveKey);
+	if (data->path) elektraFree (data->path);
+	data->path = elektraStrDup (keyString (resolveKey));
+	keyDel (resolveKey);
 
 	if (fd == -1)
 	{
@@ -606,7 +603,7 @@ int elektraCurlgetGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA
 		memcpy (data->lastHash, hash, MD5_DIGEST_LENGTH);
 		if (data->useLocalCopy)
 		{
-		        moveFile (data->tmpFile, data->path);
+			moveFile (data->tmpFile, data->path);
 		}
 		else
 		{
@@ -640,8 +637,7 @@ int elektraCurlgetGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA
 		{
 		UNLINK_TMP:
 			// remote file is the same as our local copy
-			if(data->tmpFile)
-			    unlink (data->tmpFile);
+			if (data->tmpFile) unlink (data->tmpFile);
 			data->tmpFile = NULL;
 			keySetString (parentKey, data->path);
 		}
@@ -675,12 +671,11 @@ int elektraCurlgetSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA
 			++(data->setPhase);
 			if (strncmp ((char *)data->lastHash, (char *)hash, MD5_DIGEST_LENGTH))
 			{
-			    	ELEKTRA_SET_ERROR (ELEKTRA_ERROR_CONFLICT, parentKey, "remote file has changed");
+				ELEKTRA_SET_ERROR (ELEKTRA_ERROR_CONFLICT, parentKey, "remote file has changed");
 				retval = -1;
 			}
-			elektraFree(hash);
-			if(data->tmpFile)
-				unlink (data->tmpFile);
+			elektraFree (hash);
+			if (data->tmpFile) unlink (data->tmpFile);
 			data->tmpFile = NULL;
 			keySetString (parentKey, name);
 		}
@@ -895,12 +890,12 @@ int elektraCurlgetSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA
 		{
 			if (data->useLocalCopy)
 			{
-				if(moveFile (tmpFile, data->path))
+				if (moveFile (tmpFile, data->path))
 				{
-				    if(data->tmpFile)
-				    {
-					unlink(data->tmpFile);
-				    }
+					if (data->tmpFile)
+					{
+						unlink (data->tmpFile);
+					}
 				}
 				data->tmpFile = NULL;
 				keySetString (parentKey, data->path);
@@ -920,7 +915,7 @@ int elektraCurlgetSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA
 				}
 				if (tmpFile)
 				{
-				    unlink(tmpFile);
+					unlink (tmpFile);
 				}
 			}
 		}
@@ -941,14 +936,13 @@ int elektraCurlgetSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA
 				}
 				if (tmpFile)
 				{
-				    unlink(tmpFile);
+					unlink (tmpFile);
 				}
 			}
 			else
 			{
-				if(tmpFile)
-				    unlink(tmpFile);
-			    	if (data->tmpFile)
+				if (tmpFile) unlink (tmpFile);
+				if (data->tmpFile)
 				{
 					unlink (data->tmpFile);
 					data->tmpFile = NULL;

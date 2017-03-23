@@ -9,69 +9,69 @@
 
 #include "gitresolver.h"
 
+#include "resolve.h"
 #include <fcntl.h>
 #include <git2.h>
 #include <kdberrors.h>
 #include <kdbhelper.h>
+#include <libgen.h>
+#include <openssl/md5.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <sys/stat.h>
 #include <sys/time.h>
 #include <unistd.h>
-#include <libgen.h>
-#include <openssl/md5.h>
-#include "resolve.h"
 
 #define TV_MAX_DIGITS 26
 #define DEFAULT_CHECKOUT_LOCATION "/tmp/"
 #define REFSTRING "refs/heads/"
 
 typedef enum {
-    OBJECT,
-    HEAD,
+	OBJECT,
+	HEAD,
 } Tracking;
 
 typedef struct
 {
-    char * tmpFile;    // temporary filename for checkout
-    char * repo;       // path to repo (currently only local)
-    char * workdir;	   // repository workdir
-    char * subdirs;	   // subdirectores between file and workdir
-    char * branch;     // branchname
-    char * file;       // filename
-    char * refName;    // git reference name e.g. refs/heads/master
-    char * headID;     // id of the most recent commit
-    char * objID;      // most recent id of the file
-    Tracking tracking; // track commit ids or object ids
-    int setPhase;      // Set phase counter, 0 setresolver, 1 commit
-    mode_t dirmode;    // 
-    unsigned char lastHash[MD5_DIGEST_LENGTH];  // hash of the checkdout file
-    short checkout;	   // 1 = checkout file to repo, 0 = checkout to temporary file
+	char * tmpFile;				   // temporary filename for checkout
+	char * repo;				   // path to repo (currently only local)
+	char * workdir;				   // repository workdir
+	char * subdirs;				   // subdirectores between file and workdir
+	char * branch;				   // branchname
+	char * file;				   // filename
+	char * refName;				   // git reference name e.g. refs/heads/master
+	char * headID;				   // id of the most recent commit
+	char * objID;				   // most recent id of the file
+	Tracking tracking;			   // track commit ids or object ids
+	int setPhase;				   // Set phase counter, 0 setresolver, 1 commit
+	mode_t dirmode;				   //
+	unsigned char lastHash[MD5_DIGEST_LENGTH]; // hash of the checkdout file
+	short checkout;				   // 1 = checkout file to repo, 0 = checkout to temporary file
 } GitData;
 
 
 int elektraGitresolverCheckFile (const char * filename)
 {
-    if (filename[0] == '/') return 0;
+	if (filename[0] == '/') return 0;
 
-    return 1;
+	return 1;
 }
 
 static void genCheckoutFileName (GitData * data)
 {
-    // generate temp filename: /tmp/branch_filename_tv_sec:tv_usec
-    struct timeval tv;
-    gettimeofday (&tv, 0);
-    const char * fileName = strrchr (data->file, '/');
-    if (!fileName)
-	fileName = data->file;
-    else
-	fileName += 1;
-    size_t len = strlen (DEFAULT_CHECKOUT_LOCATION) + strlen (data->branch) + strlen (fileName) + TV_MAX_DIGITS + 1;
-    data->tmpFile = elektraCalloc (len);
-    snprintf (data->tmpFile, len, "%s%s_%s_%lu:" ELEKTRA_TIME_USEC_F, DEFAULT_CHECKOUT_LOCATION, data->branch, fileName, tv.tv_sec,
-	    tv.tv_usec);
+	// generate temp filename: /tmp/branch_filename_tv_sec:tv_usec
+	struct timeval tv;
+	gettimeofday (&tv, 0);
+	const char * fileName = strrchr (data->file, '/');
+	if (!fileName)
+		fileName = data->file;
+	else
+		fileName += 1;
+	size_t len = strlen (DEFAULT_CHECKOUT_LOCATION) + strlen (data->branch) + strlen (fileName) + TV_MAX_DIGITS + 1;
+	data->tmpFile = elektraCalloc (len);
+	snprintf (data->tmpFile, len, "%s%s_%s_%lu:" ELEKTRA_TIME_USEC_F, DEFAULT_CHECKOUT_LOCATION, data->branch, fileName, tv.tv_sec,
+		  tv.tv_usec);
 }
 
 static unsigned char * hashBuffer (const void * buffer, size_t size)
@@ -86,657 +86,640 @@ static unsigned char * hashBuffer (const void * buffer, size_t size)
 
 int elektraGitresolverOpen (Plugin * handle ELEKTRA_UNUSED, Key * errorKey ELEKTRA_UNUSED)
 {
-    // plugin initialization logic
-    // this function is optional
-    return 1; // success
+	// plugin initialization logic
+	// this function is optional
+	return 1; // success
 }
 
 int elektraGitresolverClose (Plugin * handle ELEKTRA_UNUSED, Key * errorKey ELEKTRA_UNUSED)
 {
-    // free all plugin resources and shut it down
-    // this function is optional
-    GitData * data = elektraPluginGetData (handle);
-    if (!data) return 0;
-    if (data->headID) elektraFree (data->headID);
-    if (data->tmpFile)
-    {
-	unlink (data->tmpFile); // remove temporary checked out file when closing
-	elektraFree (data->tmpFile);
-    }
-    if(data->repo)
-	elektraFree(data->repo);
-    if(data->workdir)
-	elektraFree(data->workdir);
-    if(data->subdirs)
-	elektraFree(data->subdirs);
-    if(data->file)
-	elektraFree(data->file);
-    if (data->refName) elektraFree (data->refName);
-    elektraFree (data);
-    elektraPluginSetData (handle, NULL);
-    return 1; // success
+	// free all plugin resources and shut it down
+	// this function is optional
+	GitData * data = elektraPluginGetData (handle);
+	if (!data) return 0;
+	if (data->headID) elektraFree (data->headID);
+	if (data->tmpFile)
+	{
+		unlink (data->tmpFile); // remove temporary checked out file when closing
+		elektraFree (data->tmpFile);
+	}
+	if (data->repo) elektraFree (data->repo);
+	if (data->workdir) elektraFree (data->workdir);
+	if (data->subdirs) elektraFree (data->subdirs);
+	if (data->file) elektraFree (data->file);
+	if (data->refName) elektraFree (data->refName);
+	elektraFree (data);
+	elektraPluginSetData (handle, NULL);
+	return 1; // success
 }
 static int initData (Plugin * handle, Key * parentKey)
 {
 
-    GitData * data = elektraPluginGetData (handle);
-    if (!data)
-    {
-	KeySet * config = elektraPluginGetConfig (handle);
-	data = elektraCalloc (sizeof (GitData));
+	GitData * data = elektraPluginGetData (handle);
+	if (!data)
+	{
+		KeySet * config = elektraPluginGetConfig (handle);
+		data = elektraCalloc (sizeof (GitData));
 
-	Key * key = ksLookupByName (config, "/path", KDB_O_NONE);
-	Key *resolveKey = keyNew(keyName(parentKey), KEY_END);
-	if(!elektraResolveFilename("hpxub", keyString(key), resolveKey, 0))
-	{
-	    ELEKTRA_SET_ERROR (34, parentKey, "no repository specified");
-	    keyDel(resolveKey);
-	    return -1;
-	}
-	keySetString(parentKey, keyString(resolveKey));
-	keyDel(resolveKey);
-	data->repo = elektraStrDup(keyString (parentKey));
+		Key * key = ksLookupByName (config, "/path", KDB_O_NONE);
+		Key * resolveKey = keyNew (keyName (parentKey), KEY_END);
+		if (!elektraResolveFilename ("hpxub", keyString (key), resolveKey, 0))
+		{
+			ELEKTRA_SET_ERROR (34, parentKey, "no repository specified");
+			keyDel (resolveKey);
+			return -1;
+		}
+		keySetString (parentKey, keyString (resolveKey));
+		keyDel (resolveKey);
+		data->repo = elektraStrDup (keyString (parentKey));
 
-	// default to master branch when no branchname is supplied
-	const char * defaultBranch = "master";
-	key = ksLookupByName (config, "/branch", KDB_O_NONE);
-	if (!key)
-	    data->branch = (char *)defaultBranch;
-	else
-	    data->branch = (char *)keyString (key);
+		// default to master branch when no branchname is supplied
+		const char * defaultBranch = "master";
+		key = ksLookupByName (config, "/branch", KDB_O_NONE);
+		if (!key)
+			data->branch = (char *)defaultBranch;
+		else
+			data->branch = (char *)keyString (key);
 
-	key = ksLookupByName (config, "/tracking", KDB_O_NONE);
-	if (!key)
-	    data->tracking = HEAD;
-	else
-	{
-	    if (!strcmp (keyString (key), "object"))
-		data->tracking = OBJECT;
-	    else
-		data->tracking = HEAD;
+		key = ksLookupByName (config, "/tracking", KDB_O_NONE);
+		if (!key)
+			data->tracking = HEAD;
+		else
+		{
+			if (!strcmp (keyString (key), "object"))
+				data->tracking = OBJECT;
+			else
+				data->tracking = HEAD;
+		}
+		size_t refLen = strlen (REFSTRING) + strlen (data->branch) + 1;
+		data->refName = elektraCalloc (refLen);
+		snprintf (data->refName, refLen, "%s%s", REFSTRING, data->branch);
+		key = ksLookupByName (config, "/checkout", KDB_O_NONE);
+		if (!key)
+		{
+			data->checkout = 0;
+		}
+		else
+		{
+			data->checkout = 1;
+		}
+		elektraPluginSetData (handle, data);
 	}
-	size_t refLen = strlen (REFSTRING) + strlen (data->branch) + 1;
-	data->refName = elektraCalloc (refLen);
-	snprintf (data->refName, refLen, "%s%s", REFSTRING, data->branch);
-	key = ksLookupByName (config, "/checkout", KDB_O_NONE);
-	if(!key)
-	{
-	    data->checkout = 0;
-	}
-	else 
-	{
-	    data->checkout = 1;
-	}
-	elektraPluginSetData (handle, data);
-    }
-    return 0;
+	return 0;
 }
 
-static git_buf * discover_repo(char *path)
+static git_buf * discover_repo (char * path)
 {
-    if(!strcmp(path, "/"))
-	return NULL;
+	if (!strcmp (path, "/")) return NULL;
 
-    git_buf * buf = elektraCalloc(sizeof(git_buf));
-    int rc = git_repository_discover(buf, path, 0, NULL);
-    if(rc)
-    {
-	git_buf_free(buf);
-	elektraFree(buf);
-	buf = discover_repo(dirname(path));
-	return buf;
-    }
-    else
-    {
-	return buf;
-    }
+	git_buf * buf = elektraCalloc (sizeof (git_buf));
+	int rc = git_repository_discover (buf, path, 0, NULL);
+	if (rc)
+	{
+		git_buf_free (buf);
+		elektraFree (buf);
+		buf = discover_repo (dirname (path));
+		return buf;
+	}
+	else
+	{
+		return buf;
+	}
 }
 
 static git_repository * connectToLocalRepo (GitData * data)
 {
-    git_libgit2_init ();
-    git_repository * repo;
-    int rc;
-    git_buf buf = GIT_BUF_INIT_CONST(NULL, 0);
-    rc = git_repository_discover(&buf, data->repo, 0, NULL);
-    if(rc)
-    {
-	char *repoCopy = elektraStrDup(data->repo);
-	git_buf * discovered = discover_repo(dirname(repoCopy));
-	if(discovered)
+	git_libgit2_init ();
+	git_repository * repo;
+	int rc;
+	git_buf buf = GIT_BUF_INIT_CONST (NULL, 0);
+	rc = git_repository_discover (&buf, data->repo, 0, NULL);
+	if (rc)
 	{
-	    if(data->workdir)
-		elektraFree(data->workdir);
-	    data->workdir = elektraStrDup(discovered->ptr);
-	    elektraFree(repoCopy);
-	    git_buf_free(discovered);
-	    elektraFree(discovered);
+		char * repoCopy = elektraStrDup (data->repo);
+		git_buf * discovered = discover_repo (dirname (repoCopy));
+		if (discovered)
+		{
+			if (data->workdir) elektraFree (data->workdir);
+			data->workdir = elektraStrDup (discovered->ptr);
+			elektraFree (repoCopy);
+			git_buf_free (discovered);
+			elektraFree (discovered);
+		}
+		else
+		{
+			git_buf_free (&buf);
+			elektraFree (repoCopy);
+			return NULL;
+		}
 	}
 	else
 	{
-	    git_buf_free(&buf);
-	    elektraFree(repoCopy);
-	    return NULL;
+		if (data->workdir) elektraFree (data->workdir);
+		data->workdir = elektraStrDup (buf.ptr);
 	}
-    }
-    else
-    {
-	if(data->workdir)
-	    elektraFree(data->workdir);
-	data->workdir = elektraStrDup(buf.ptr);
-    }
-    git_buf_free(&buf);
-    rc = git_repository_open_ext (&(repo), data->workdir, 0, NULL);
-    if (rc)
-    {
-	return NULL;
-    }
-    const char * repoPath = git_repository_workdir (repo);
-    if(data->workdir)
-	elektraFree(data->workdir);
-    data->workdir = elektraStrDup(repoPath);
-    struct stat buffer;
-    if(stat(data->workdir, &buffer) == -1)
-    {
-	data->dirmode = 0100;
-    }
-    else
-    {
-	data->dirmode = buffer.st_mode;
-    }
-    char *repoCopy = elektraStrDup(data->repo);
-    char *dir = dirname(repoCopy);
-    if(data->subdirs)
-	elektraFree(data->subdirs);
-    data->subdirs = elektraStrDup(dir + elektraStrLen(data->workdir) - 2);
-    if(!strcmp(data->subdirs, ""))
-    {
-	elektraFree(data->subdirs);
-	data->subdirs = NULL;
-    }
-    elektraFree(repoCopy);
-    repoCopy = elektraStrDup(data->repo);
-    if(data->file)
-	elektraFree(data->file);
-    data->file = elektraStrDup(basename(data->repo));
-    elektraFree(repoCopy);
-    return repo;
+	git_buf_free (&buf);
+	rc = git_repository_open_ext (&(repo), data->workdir, 0, NULL);
+	if (rc)
+	{
+		return NULL;
+	}
+	const char * repoPath = git_repository_workdir (repo);
+	if (data->workdir) elektraFree (data->workdir);
+	data->workdir = elektraStrDup (repoPath);
+	struct stat buffer;
+	if (stat (data->workdir, &buffer) == -1)
+	{
+		data->dirmode = 0100;
+	}
+	else
+	{
+		data->dirmode = buffer.st_mode;
+	}
+	char * repoCopy = elektraStrDup (data->repo);
+	char * dir = dirname (repoCopy);
+	if (data->subdirs) elektraFree (data->subdirs);
+	data->subdirs = elektraStrDup (dir + elektraStrLen (data->workdir) - 2);
+	if (!strcmp (data->subdirs, ""))
+	{
+		elektraFree (data->subdirs);
+		data->subdirs = NULL;
+	}
+	elektraFree (repoCopy);
+	repoCopy = elektraStrDup (data->repo);
+	if (data->file) elektraFree (data->file);
+	data->file = elektraStrDup (basename (data->repo));
+	elektraFree (repoCopy);
+	return repo;
 }
 
 static git_reference * getHeadRef (GitData * data, git_repository * repo)
 {
-    git_reference * headRef;
-    int rc = git_reference_lookup (&headRef, repo, data->refName);
-    if (rc)
-    {
-	git_reference_free (headRef);
-	return NULL;
-    }
+	git_reference * headRef;
+	int rc = git_reference_lookup (&headRef, repo, data->refName);
+	if (rc)
+	{
+		git_reference_free (headRef);
+		return NULL;
+	}
 
-    // compare newest commit id to last saved commit id
-    // only update if there's a newer commit
+	// compare newest commit id to last saved commit id
+	// only update if there's a newer commit
 
-    //const git_oid * headObj = git_reference_target (headRef);
-    //git_reference_free (headRef);
-//    return headObj;
+	// const git_oid * headObj = git_reference_target (headRef);
+	// git_reference_free (headRef);
+	//    return headObj;
 	return headRef;
 }
 
 static char * hasNewCommit (GitData * data, const git_oid * headObj)
 {
-    size_t IDSize = GIT_OID_HEXSZ + 1;
-    char * commitID = elektraCalloc (IDSize);
-    git_oid_tostr (commitID, IDSize, headObj);
-    if (!data->headID)
-    {
-	return commitID;
-    }
-    else
-    {
-	if (!strcmp (data->headID, commitID))
+	size_t IDSize = GIT_OID_HEXSZ + 1;
+	char * commitID = elektraCalloc (IDSize);
+	git_oid_tostr (commitID, IDSize, headObj);
+	if (!data->headID)
 	{
-	    elektraFree (commitID);
-	    return NULL;
+		return commitID;
 	}
 	else
 	{
-	    return commitID;
+		if (!strcmp (data->headID, commitID))
+		{
+			elektraFree (commitID);
+			return NULL;
+		}
+		else
+		{
+			return commitID;
+		}
 	}
-    }
 }
 static char * hasNewObjectCommit (GitData * data, git_object * blob)
 {
-    size_t IDSize = GIT_OID_HEXSZ + 1;
-    char * objID = elektraCalloc (IDSize);
-    git_oid_tostr (objID, IDSize, git_object_id (blob));
-    if (!data->objID)
-    {
-	return objID;
-    }
-    else
-    {
-	if (!strcmp (data->objID, objID))
+	size_t IDSize = GIT_OID_HEXSZ + 1;
+	char * objID = elektraCalloc (IDSize);
+	git_oid_tostr (objID, IDSize, git_object_id (blob));
+	if (!data->objID)
 	{
-	    elektraFree (objID);
-	    return NULL;
+		return objID;
 	}
 	else
 	{
-	    return objID;
+		if (!strcmp (data->objID, objID))
+		{
+			elektraFree (objID);
+			return NULL;
+		}
+		else
+		{
+			return objID;
+		}
 	}
-    }
 }
 
 
 static git_object * getBlob (GitData * data, git_repository * repo)
 {
-    git_object * blob;
-    size_t specSize = strlen (data->refName) + strlen (data->file) + 3;
-    if(data->subdirs)
-	specSize += strlen(data->subdirs);
-    char spec[specSize];
-    if(!data->subdirs)
-    {
-	snprintf (spec, sizeof (spec), "%s:%s", data->refName, data->file);
-    }
-    else
-    {
-	snprintf (spec, sizeof (spec), "%s:%s/%s", data->refName, (data->subdirs)+1, data->file);
-    }
-    int rc = git_revparse_single (&blob, repo, spec);
-    if (rc)
-    {
-	// file doesn't exist in repo
-	return NULL;
-    }
-    return blob;
+	git_object * blob;
+	size_t specSize = strlen (data->refName) + strlen (data->file) + 3;
+	if (data->subdirs) specSize += strlen (data->subdirs);
+	char spec[specSize];
+	if (!data->subdirs)
+	{
+		snprintf (spec, sizeof (spec), "%s:%s", data->refName, data->file);
+	}
+	else
+	{
+		snprintf (spec, sizeof (spec), "%s:%s/%s", data->refName, (data->subdirs) + 1, data->file);
+	}
+	int rc = git_revparse_single (&blob, repo, spec);
+	if (rc)
+	{
+		// file doesn't exist in repo
+		return NULL;
+	}
+	return blob;
 }
 
 // inspired by bash make_path
-static void makePath(GitData *data)
+static void makePath (GitData * data)
 {
-    if(!data->subdirs)
-	return;
-    char * path = elektraStrDup(data->repo);
-    char *ptr = strrchr(path, '/');
-    *ptr = '\0';
-    ptr = path + strlen(data->workdir) - 2;
-    struct stat sb;
-    while((ptr = strchr(ptr, '/')) != NULL)
-    {
+	if (!data->subdirs) return;
+	char * path = elektraStrDup (data->repo);
+	char * ptr = strrchr (path, '/');
 	*ptr = '\0';
-	if (stat(path, &sb) != 0)
+	ptr = path + strlen (data->workdir) - 2;
+	struct stat sb;
+	while ((ptr = strchr (ptr, '/')) != NULL)
 	{
-	    if(mkdir(path, data->dirmode))
-	    {
-		elektraFree(path);
-		return;
-	    }
+		*ptr = '\0';
+		if (stat (path, &sb) != 0)
+		{
+			if (mkdir (path, data->dirmode))
+			{
+				elektraFree (path);
+				return;
+			}
+		}
+		else if (S_ISDIR (sb.st_mode) == 0)
+		{
+			elektraFree (path);
+			return;
+		}
+		*ptr++ = '/';
 	}
-	else if (S_ISDIR(sb.st_mode) == 0)
-	{
-	    elektraFree(path);
-	    return;
-	}
-	*ptr++ = '/';
-    }
-    if(stat(path, &sb) && mkdir(path, data->dirmode))
-	elektraFree(path);
-    return;
-    elektraFree(path);
-
+	if (stat (path, &sb) && mkdir (path, data->dirmode)) elektraFree (path);
+	return;
+	elektraFree (path);
 }
 
 int elektraGitresolverGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey)
 {
-    if (!elektraStrCmp (keyName (parentKey), "system/elektra/modules/gitresolver"))
-    {
-	KeySet * contract = ksNew (
-		30, keyNew ("system/elektra/modules/gitresolver", KEY_VALUE, "gitresolver plugin waits for your orders", KEY_END),
-		keyNew ("system/elektra/modules/gitresolver/exports", KEY_END),
-		keyNew ("system/elektra/modules/gitresolver/exports/open", KEY_FUNC, elektraGitresolverOpen, KEY_END),
-		keyNew ("system/elektra/modules/gitresolver/exports/close", KEY_FUNC, elektraGitresolverClose, KEY_END),
-		keyNew ("system/elektra/modules/gitresolver/exports/get", KEY_FUNC, elektraGitresolverGet, KEY_END),
-		keyNew ("system/elektra/modules/gitresolver/exports/set", KEY_FUNC, elektraGitresolverSet, KEY_END),
-		keyNew ("system/elektra/modules/gitresolver/exports/error", KEY_FUNC, elektraGitresolverError, KEY_END),
-		keyNew ("system/elektra/modules/gitresolver/exports/checkfile", KEY_FUNC, elektraGitresolverCheckFile, KEY_END),
+	if (!elektraStrCmp (keyName (parentKey), "system/elektra/modules/gitresolver"))
+	{
+		KeySet * contract = ksNew (
+			30, keyNew ("system/elektra/modules/gitresolver", KEY_VALUE, "gitresolver plugin waits for your orders", KEY_END),
+			keyNew ("system/elektra/modules/gitresolver/exports", KEY_END),
+			keyNew ("system/elektra/modules/gitresolver/exports/open", KEY_FUNC, elektraGitresolverOpen, KEY_END),
+			keyNew ("system/elektra/modules/gitresolver/exports/close", KEY_FUNC, elektraGitresolverClose, KEY_END),
+			keyNew ("system/elektra/modules/gitresolver/exports/get", KEY_FUNC, elektraGitresolverGet, KEY_END),
+			keyNew ("system/elektra/modules/gitresolver/exports/set", KEY_FUNC, elektraGitresolverSet, KEY_END),
+			keyNew ("system/elektra/modules/gitresolver/exports/error", KEY_FUNC, elektraGitresolverError, KEY_END),
+			keyNew ("system/elektra/modules/gitresolver/exports/checkfile", KEY_FUNC, elektraGitresolverCheckFile, KEY_END),
 
 #include ELEKTRA_README (gitresolver)
-		keyNew ("system/elektra/modules/gitresolver/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
-	ksAppend (returned, contract);
-	ksDel (contract);
+			keyNew ("system/elektra/modules/gitresolver/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
+		ksAppend (returned, contract);
+		ksDel (contract);
 
-	return 1; // success
-    }
-    // get all keys
-
-    if (initData (handle, parentKey)) return -1;
-    GitData * data = elektraPluginGetData (handle);
-    git_repository * repo = connectToLocalRepo (data);
-    if (!repo)
-    {
-	ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_GITRESOLVER_RESOLVING_ISSUE, parentKey, "Failed to open Repository %s\n", data->repo);
-	git_libgit2_shutdown ();
-	return -1;
-    }
-
-    genCheckoutFileName (data);
-
-    // TODO: check for empty repo and initialize repo
-    git_reference * headRef = getHeadRef(data, repo);
-    if (!headRef)
-    {
-	ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_GITRESOLVER_RESOLVING_ISSUE, parentKey, "Failed to get reference %s\n", data->refName);
-	git_repository_free (repo);
-	git_libgit2_shutdown ();
-	return -1;
-    }
-    const git_oid * headObj = git_reference_target(headRef);
-    if (!headObj)
-    {
-	ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_GITRESOLVER_RESOLVING_ISSUE, parentKey, "Failed to get reference %s\n", data->refName);
-	git_reference_free(headRef);
-	git_repository_free (repo);
-	git_libgit2_shutdown ();
-	return -1;
-    }
-    if (data->tracking == HEAD)
-    {
-	char * newCommit = hasNewCommit (data, headObj);
-	if (data->headID && !newCommit)
-	{
-	    // still newest commit, no need to update
-	    git_reference_free(headRef);
-	    git_repository_free (repo);
-	    git_libgit2_shutdown ();
-	    return 0;
+		return 1; // success
 	}
-	else if (data->headID && newCommit)
+	// get all keys
+
+	if (initData (handle, parentKey)) return -1;
+	GitData * data = elektraPluginGetData (handle);
+	git_repository * repo = connectToLocalRepo (data);
+	if (!repo)
 	{
-	    elektraFree (data->headID);
-	    data->headID = newCommit;
+		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_GITRESOLVER_RESOLVING_ISSUE, parentKey, "Failed to open Repository %s\n", data->repo);
+		git_libgit2_shutdown ();
+		return -1;
 	}
-	else
+
+	genCheckoutFileName (data);
+
+	// TODO: check for empty repo and initialize repo
+	git_reference * headRef = getHeadRef (data, repo);
+	if (!headRef)
 	{
-	    data->headID = newCommit;
+		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_GITRESOLVER_RESOLVING_ISSUE, parentKey, "Failed to get reference %s\n", data->refName);
+		git_repository_free (repo);
+		git_libgit2_shutdown ();
+		return -1;
 	}
-	elektraPluginSetData (handle, data);
-	data = elektraPluginGetData (handle);
-    }
-    git_reference_free(headRef);
-    git_object * blob = getBlob (data, repo);
-    if (!blob)
-    {
-	ELEKTRA_ADD_WARNINGF (83, parentKey, "File %s not found in repository %s\n", data->file, data->repo);
-	git_repository_free (repo);
-	git_libgit2_shutdown ();
-	return 0;
-    }
-    if (data->tracking == OBJECT)
-    {
-	char * newObj = hasNewObjectCommit (data, blob);
-	if (!newObj)
+	const git_oid * headObj = git_reference_target (headRef);
+	if (!headObj)
 	{
-	    git_object_free (blob);
-	    git_repository_free (repo);
-	    git_libgit2_shutdown ();
-	    return 0;
+		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_GITRESOLVER_RESOLVING_ISSUE, parentKey, "Failed to get reference %s\n", data->refName);
+		git_reference_free (headRef);
+		git_repository_free (repo);
+		git_libgit2_shutdown ();
+		return -1;
 	}
-	else
+	if (data->tracking == HEAD)
 	{
-	    if (data->objID)
-	    {
-		elektraFree (data->objID);
-		data->objID = newObj;
-	    }
-	    else
-	    {
-		data->objID = newObj;
-	    }
+		char * newCommit = hasNewCommit (data, headObj);
+		if (data->headID && !newCommit)
+		{
+			// still newest commit, no need to update
+			git_reference_free (headRef);
+			git_repository_free (repo);
+			git_libgit2_shutdown ();
+			return 0;
+		}
+		else if (data->headID && newCommit)
+		{
+			elektraFree (data->headID);
+			data->headID = newCommit;
+		}
+		else
+		{
+			data->headID = newCommit;
+		}
+		elektraPluginSetData (handle, data);
+		data = elektraPluginGetData (handle);
 	}
-	elektraPluginSetData (handle, data);
-	data = elektraPluginGetData (handle);
-    }
-    FILE * outFile;
-    if(!data->checkout)
-    {
-	keySetString (parentKey, data->tmpFile);
-    }
-    else
-    {
-	keySetString (parentKey, data->repo);
-	if(data->subdirs)
-	    makePath(data);
-    }
-    outFile = fopen (keyString(parentKey), "w+");
-    if (!outFile)
-    {
-	ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_COULD_NOT_OPEN, parentKey, "Failed to check out file %s to %s\n", data->file,
-		keyString(parentKey));
-	git_object_free (blob);
-	git_repository_free (repo);
-	git_libgit2_shutdown ();
-	return -1;
-    }
-    fwrite (git_blob_rawcontent ((git_blob *)blob), (size_t)git_blob_rawsize ((git_blob *)blob), 1, outFile);
-    unsigned char * hash = hashBuffer (git_blob_rawcontent((git_blob*)blob), git_blob_rawsize((git_blob *)blob));
-    if(!*(data->lastHash))
-	memcpy (data->lastHash, hash, MD5_DIGEST_LENGTH);
-    elektraFree(hash);
-    fclose (outFile);
-    git_object_free (blob);
-    git_repository_free (repo);
-    git_libgit2_shutdown ();
-    return 1; // success
-}
-
-static git_blob * addFileToIndex (git_repository * repo, GitData * data, git_index * index)
-{
-    git_blob * blob = NULL;
-    git_oid blobID;
-    memset(&blobID, 0, sizeof(git_oid));
-    git_index_entry ie;
-    memset(&ie, 0, sizeof(git_index_entry));
-    ie.path = data->repo + elektraStrLen(data->workdir) - 1;
-    ie.mode = GIT_FILEMODE_BLOB;
-    git_blob_create_fromdisk (&blobID, repo, data->tmpFile);
-    git_blob_lookup (&blob, repo, &blobID);
-    git_index_add_frombuffer (index, &ie, git_blob_rawcontent (blob), git_blob_rawsize (blob));
-    return blob;
-}
-
-static int moveFile(const char *source, const char *dest)
-{
-    FILE *inFile = NULL;
-    FILE *outFile = NULL;
-    struct stat buf;
-    if(stat(source, &buf) == -1)
-	return -1;
-    size_t fileSize = buf.st_size;
-    char * buffer = elektraMalloc(fileSize);
-    inFile = fopen(source, "rb");
-    size_t bytesRead = 0;
-    while (bytesRead < fileSize)
-    {
-	size_t bytes = fread (buffer + bytesRead, 1, (size_t)fileSize, inFile);
-	if (bytes == 0) break;
-	bytesRead += bytes;
-    }
-    if (bytesRead < fileSize)
-    {
-	elektraFree (buffer);
-	fclose (inFile);
-	return -1;
-    }
-    fclose (inFile);
-    outFile = fopen (dest, "wb+");
-
-    size_t bytesWritten = 0;
-    while (bytesWritten < fileSize)
-    {
-	size_t bytes = fwrite (buffer, 1, fileSize, outFile);
-	if (bytes == 0) break;
-	bytesWritten += bytes;
-    }
-    fclose (outFile);
-    elektraFree (buffer);
-
-    if (bytesWritten < fileSize)
-    {
-	return -1;
-    }
-    unlink(source);
-    return 0;
-}
-
-int elektraGitresolverSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
-{
-    // get all keys
-    // this function is optional
-    GitData * data = elektraPluginGetData (handle);
-    if (!data) return -1;
-    keySetString (parentKey, data->tmpFile);
-    git_repository * repo = connectToLocalRepo (data);
-    if (!repo)
-    {
-	ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_GITRESOLVER_RESOLVING_ISSUE, parentKey, "Failed to open Repository %s\n", data->repo);
-	git_libgit2_shutdown ();
-	return -1;
-    }
-    git_reference * headRef = getHeadRef (data, repo);
-    if (!headRef)
-    {
-	ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_GITRESOLVER_RESOLVING_ISSUE, parentKey, "Failed to get reference %s\n", data->refName);
-	git_repository_free (repo);
-	git_libgit2_shutdown ();
-	return -1;
-    }
-    const git_oid * headObj = git_reference_target(headRef);
-    if (!headObj)
-    {
-	ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_GITRESOLVER_RESOLVING_ISSUE, parentKey, "Failed to get reference %s\n", data->refName);
-	git_reference_free(headRef);
-	git_repository_free (repo);
-	git_libgit2_shutdown ();
-	return -1;
-    }
-
-    if (data->tracking == HEAD)
-    {
-	char * newCommit = hasNewCommit (data, headObj);
-	if (newCommit)
-	{
-	    // newer commit in repo - abort
-	    ELEKTRA_SET_ERROR (ELEKTRA_ERROR_GITRESOLVER_CONFLICT, parentKey,
-		    "The repository has been updated and is ahead of you");
-	    elektraFree (newCommit);
-	    git_reference_free(headRef);
-	    git_repository_free (repo);
-	    git_libgit2_shutdown ();
-	    return -1;
-	}
-	elektraFree (newCommit);
-    }
-    git_reference_free(headRef);
-    if (data->tracking == OBJECT)
-    {
+	git_reference_free (headRef);
 	git_object * blob = getBlob (data, repo);
-	if (blob)
+	if (!blob)
 	{
-	    char * newObj = hasNewObjectCommit (data, blob);
-	    if (newObj)
-	    {
-		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_GITRESOLVER_CONFLICT, parentKey,
-			"The repository has been updated and is ahead of you");
-		elektraFree (newObj);
+		ELEKTRA_ADD_WARNINGF (83, parentKey, "File %s not found in repository %s\n", data->file, data->repo);
+		git_repository_free (repo);
+		git_libgit2_shutdown ();
+		return 0;
+	}
+	if (data->tracking == OBJECT)
+	{
+		char * newObj = hasNewObjectCommit (data, blob);
+		if (!newObj)
+		{
+			git_object_free (blob);
+			git_repository_free (repo);
+			git_libgit2_shutdown ();
+			return 0;
+		}
+		else
+		{
+			if (data->objID)
+			{
+				elektraFree (data->objID);
+				data->objID = newObj;
+			}
+			else
+			{
+				data->objID = newObj;
+			}
+		}
+		elektraPluginSetData (handle, data);
+		data = elektraPluginGetData (handle);
+	}
+	FILE * outFile;
+	if (!data->checkout)
+	{
+		keySetString (parentKey, data->tmpFile);
+	}
+	else
+	{
+		keySetString (parentKey, data->repo);
+		if (data->subdirs) makePath (data);
+	}
+	outFile = fopen (keyString (parentKey), "w+");
+	if (!outFile)
+	{
+		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_COULD_NOT_OPEN, parentKey, "Failed to check out file %s to %s\n", data->file,
+				    keyString (parentKey));
 		git_object_free (blob);
 		git_repository_free (repo);
 		git_libgit2_shutdown ();
 		return -1;
-	    }
-	    git_object_free (blob);
 	}
-    }
-    if (!data->setPhase)
-    {
-	++(data->setPhase);
-    }
-    else if (data->setPhase == 1)
-    {
-	// get repo index
-	git_index * index;
-	git_repository_index (&index, repo);
+	fwrite (git_blob_rawcontent ((git_blob *)blob), (size_t)git_blob_rawsize ((git_blob *)blob), 1, outFile);
+	unsigned char * hash = hashBuffer (git_blob_rawcontent ((git_blob *)blob), git_blob_rawsize ((git_blob *)blob));
+	if (!*(data->lastHash)) memcpy (data->lastHash, hash, MD5_DIGEST_LENGTH);
+	elektraFree (hash);
+	fclose (outFile);
+	git_object_free (blob);
+	git_repository_free (repo);
+	git_libgit2_shutdown ();
+	return 1; // success
+}
 
-	// add file
-	git_blob * buffer = addFileToIndex (repo, data, index);
-	unsigned char * hash = hashBuffer((unsigned char *)git_blob_rawcontent(buffer), git_blob_rawsize(buffer));
-        if(!strncmp((char *)data->lastHash, (char *)hash, MD5_DIGEST_LENGTH))
+static git_blob * addFileToIndex (git_repository * repo, GitData * data, git_index * index)
+{
+	git_blob * blob = NULL;
+	git_oid blobID;
+	memset (&blobID, 0, sizeof (git_oid));
+	git_index_entry ie;
+	memset (&ie, 0, sizeof (git_index_entry));
+	ie.path = data->repo + elektraStrLen (data->workdir) - 1;
+	ie.mode = GIT_FILEMODE_BLOB;
+	git_blob_create_fromdisk (&blobID, repo, data->tmpFile);
+	git_blob_lookup (&blob, repo, &blobID);
+	git_index_add_frombuffer (index, &ie, git_blob_rawcontent (blob), git_blob_rawsize (blob));
+	return blob;
+}
+
+static int moveFile (const char * source, const char * dest)
+{
+	FILE * inFile = NULL;
+	FILE * outFile = NULL;
+	struct stat buf;
+	if (stat (source, &buf) == -1) return -1;
+	size_t fileSize = buf.st_size;
+	char * buffer = elektraMalloc (fileSize);
+	inFile = fopen (source, "rb");
+	size_t bytesRead = 0;
+	while (bytesRead < fileSize)
 	{
-	    elektraFree(hash);
-	    git_index_free(index);
-	    git_blob_free(buffer);
-	    git_repository_free(repo);
-	    git_libgit2_shutdown();
-	    return 0;
+		size_t bytes = fread (buffer + bytesRead, 1, (size_t)fileSize, inFile);
+		if (bytes == 0) break;
+		bytesRead += bytes;
 	}
-	elektraFree(hash);
-			    
-	git_index_write (index);
-
-	// get tree id
-	git_oid treeID;
-	git_index_write_tree (&treeID, index);
-
-	// get parent commit
-	git_oid parentID;
-	git_commit * parent;
-	git_reference_name_to_id (&parentID, repo, "HEAD");
-	git_commit_lookup (&parent, repo, &parentID);
-
-	// extract default git user
-	git_signature * sig;
-	int rc = git_signature_default (&sig, repo);
-	if (rc == GIT_ENOTFOUND)
+	if (bytesRead < fileSize)
 	{
-	    git_signature_now (&sig, "Elektra", "@libelektra.org");
+		elektraFree (buffer);
+		fclose (inFile);
+		return -1;
 	}
+	fclose (inFile);
+	outFile = fopen (dest, "wb+");
 
-	// get git tree
-	git_tree * tree;
-	git_tree_lookup (&tree, repo, &treeID);
-
-	// create default commit
-	git_oid commitID;
-	git_commit_create (&commitID, repo, "HEAD", sig, sig, NULL, "kdb git autocommit", tree, 1, (const git_commit **)&parent);
-
-
-	git_signature_free (sig);
-	git_tree_free(tree);
-	git_index_free(index);
-	git_blob_free(buffer);
-	git_commit_free (parent);
-	if(data->checkout)
+	size_t bytesWritten = 0;
+	while (bytesWritten < fileSize)
 	{
-	    moveFile(data->tmpFile, data->repo);
+		size_t bytes = fwrite (buffer, 1, fileSize, outFile);
+		if (bytes == 0) break;
+		bytesWritten += bytes;
 	}
-    }
-    elektraPluginSetData (handle, data);
-    git_repository_free (repo);
-    git_libgit2_shutdown ();
-    return 1; // success
+	fclose (outFile);
+	elektraFree (buffer);
+
+	if (bytesWritten < fileSize)
+	{
+		return -1;
+	}
+	unlink (source);
+	return 0;
+}
+
+int elektraGitresolverSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
+{
+	// get all keys
+	// this function is optional
+	GitData * data = elektraPluginGetData (handle);
+	if (!data) return -1;
+	keySetString (parentKey, data->tmpFile);
+	git_repository * repo = connectToLocalRepo (data);
+	if (!repo)
+	{
+		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_GITRESOLVER_RESOLVING_ISSUE, parentKey, "Failed to open Repository %s\n", data->repo);
+		git_libgit2_shutdown ();
+		return -1;
+	}
+	git_reference * headRef = getHeadRef (data, repo);
+	if (!headRef)
+	{
+		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_GITRESOLVER_RESOLVING_ISSUE, parentKey, "Failed to get reference %s\n", data->refName);
+		git_repository_free (repo);
+		git_libgit2_shutdown ();
+		return -1;
+	}
+	const git_oid * headObj = git_reference_target (headRef);
+	if (!headObj)
+	{
+		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_GITRESOLVER_RESOLVING_ISSUE, parentKey, "Failed to get reference %s\n", data->refName);
+		git_reference_free (headRef);
+		git_repository_free (repo);
+		git_libgit2_shutdown ();
+		return -1;
+	}
+
+	if (data->tracking == HEAD)
+	{
+		char * newCommit = hasNewCommit (data, headObj);
+		if (newCommit)
+		{
+			// newer commit in repo - abort
+			ELEKTRA_SET_ERROR (ELEKTRA_ERROR_GITRESOLVER_CONFLICT, parentKey,
+					   "The repository has been updated and is ahead of you");
+			elektraFree (newCommit);
+			git_reference_free (headRef);
+			git_repository_free (repo);
+			git_libgit2_shutdown ();
+			return -1;
+		}
+		elektraFree (newCommit);
+	}
+	git_reference_free (headRef);
+	if (data->tracking == OBJECT)
+	{
+		git_object * blob = getBlob (data, repo);
+		if (blob)
+		{
+			char * newObj = hasNewObjectCommit (data, blob);
+			if (newObj)
+			{
+				ELEKTRA_SET_ERROR (ELEKTRA_ERROR_GITRESOLVER_CONFLICT, parentKey,
+						   "The repository has been updated and is ahead of you");
+				elektraFree (newObj);
+				git_object_free (blob);
+				git_repository_free (repo);
+				git_libgit2_shutdown ();
+				return -1;
+			}
+			git_object_free (blob);
+		}
+	}
+	if (!data->setPhase)
+	{
+		++(data->setPhase);
+	}
+	else if (data->setPhase == 1)
+	{
+		// get repo index
+		git_index * index;
+		git_repository_index (&index, repo);
+
+		// add file
+		git_blob * buffer = addFileToIndex (repo, data, index);
+		unsigned char * hash = hashBuffer ((unsigned char *)git_blob_rawcontent (buffer), git_blob_rawsize (buffer));
+		if (!strncmp ((char *)data->lastHash, (char *)hash, MD5_DIGEST_LENGTH))
+		{
+			elektraFree (hash);
+			git_index_free (index);
+			git_blob_free (buffer);
+			git_repository_free (repo);
+			git_libgit2_shutdown ();
+			return 0;
+		}
+		elektraFree (hash);
+
+		git_index_write (index);
+
+		// get tree id
+		git_oid treeID;
+		git_index_write_tree (&treeID, index);
+
+		// get parent commit
+		git_oid parentID;
+		git_commit * parent;
+		git_reference_name_to_id (&parentID, repo, "HEAD");
+		git_commit_lookup (&parent, repo, &parentID);
+
+		// extract default git user
+		git_signature * sig;
+		int rc = git_signature_default (&sig, repo);
+		if (rc == GIT_ENOTFOUND)
+		{
+			git_signature_now (&sig, "Elektra", "@libelektra.org");
+		}
+
+		// get git tree
+		git_tree * tree;
+		git_tree_lookup (&tree, repo, &treeID);
+
+		// create default commit
+		git_oid commitID;
+		git_commit_create (&commitID, repo, "HEAD", sig, sig, NULL, "kdb git autocommit", tree, 1, (const git_commit **)&parent);
+
+
+		git_signature_free (sig);
+		git_tree_free (tree);
+		git_index_free (index);
+		git_blob_free (buffer);
+		git_commit_free (parent);
+		if (data->checkout)
+		{
+			moveFile (data->tmpFile, data->repo);
+		}
+	}
+	elektraPluginSetData (handle, data);
+	git_repository_free (repo);
+	git_libgit2_shutdown ();
+	return 1; // success
 }
 
 int elektraGitresolverError (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
 {
-    // set all keys
-    // this function is optional
+	// set all keys
+	// this function is optional
 
-    return 1; // success
+	return 1; // success
 }
 
 Plugin * ELEKTRA_PLUGIN_EXPORT (gitresolver)
 {
-    // clang-format off
+	// clang-format off
     return elektraPluginExport ("gitresolver",
 	    ELEKTRA_PLUGIN_OPEN,	&elektraGitresolverOpen,
 	    ELEKTRA_PLUGIN_CLOSE,	&elektraGitresolverClose,
