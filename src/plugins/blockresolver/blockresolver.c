@@ -9,6 +9,7 @@
 
 #include "blockresolver.h"
 
+#include "resolve.h"
 #include <kdberrors.h>
 #include <kdbhelper.h>
 #include <stdio.h>
@@ -18,7 +19,6 @@
 #include <sys/time.h>
 #include <time.h>
 #include <unistd.h>
-#include "resolve.h"
 
 #define TV_MAX_DIGITS 26
 #define BUFSIZE_MAX 1024
@@ -50,7 +50,7 @@ static const char * genTempFilename ()
 	return tmpFile;
 }
 
-static int initData (Plugin * handle, Key *parentKey)
+static int initData (Plugin * handle, Key * parentKey)
 {
 	BlockData * data = elektraPluginGetData (handle);
 	if (!data)
@@ -64,19 +64,19 @@ static int initData (Plugin * handle, Key *parentKey)
 		data->identifier = (char *)keyString (key);
 		key = ksLookupByName (config, "/path", KDB_O_NONE);
 		if (!key) return -1;
-		Key *resolveKey = keyNew(keyName(parentKey), KEY_END);
-		if(!elektraResolveFilename("hpxub", keyString(parentKey), resolveKey, 0))
+		Key * resolveKey = keyNew (keyName (parentKey), KEY_END);
+		if (!elektraResolveFilename ("hpxub", keyString (parentKey), resolveKey, 0))
 		{
-		    keyDel(resolveKey);
-		    return -1;
+			keyDel (resolveKey);
+			return -1;
 		}
-		keySetString(parentKey, keyString(resolveKey));
-		keyDel(resolveKey);		
-		data->realFile = elektraStrDup(keyString (parentKey));
+		keySetString (parentKey, keyString (resolveKey));
+		keyDel (resolveKey);
+		data->realFile = elektraStrDup (keyString (parentKey));
 		struct stat buf;
-		if (stat (data->realFile, &buf)) 
+		if (stat (data->realFile, &buf))
 		{
-		    return -1;
+			return -1;
 		}
 		data->mtime = buf.st_mtime;
 		data->tmpFile = (char *)genTempFilename ();
@@ -100,8 +100,7 @@ int elektraBlockresolverClose (Plugin * handle ELEKTRA_UNUSED, Key * errorKey EL
 			unlink (data->tmpFile);
 			elektraFree (data->tmpFile);
 		}
-		if(data->realFile)
-		    elektraFree(data->realFile);
+		if (data->realFile) elektraFree (data->realFile);
 		elektraFree (data);
 	}
 	elektraPluginSetData (handle, 0);
