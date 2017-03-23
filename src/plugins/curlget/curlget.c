@@ -24,6 +24,8 @@
 #include <sys/types.h>
 #include <time.h>
 #include <unistd.h>
+#include <errno.h>
+#include "resolve.h"
 
 #define TMP_NAME "/tmp/elektraCurlTempXXXXXX"
 
@@ -476,8 +478,51 @@ static FILE * fetchFile (Data * data, int fd)
 	return fp;
 }
 
+static int moveFile(const char *source, const char *dest)
+{
+    FILE *inFile = NULL;
+    FILE *outFile = NULL;
+    struct stat buf;
+    if(stat(source, &buf) == -1)
+	return -1;
+    size_t fileSize = buf.st_size;
+    char * buffer = elektraMalloc(fileSize);
+    inFile = fopen(source, "rb");
+    size_t bytesRead = 0;
+    while (bytesRead < fileSize)
+    {
+	size_t bytes = fread (buffer + bytesRead, 1, (size_t)fileSize, inFile);
+	if (bytes == 0) break;
+	bytesRead += bytes;
+    }
+    if (bytesRead < fileSize)
+    {
+	elektraFree (buffer);
+	fclose (inFile);
+	return -1;
+    }
+    fclose (inFile);
+    outFile = fopen (dest, "wb+");
 
-int elektraCurlgetGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
+    size_t bytesWritten = 0;
+    while (bytesWritten < fileSize)
+    {
+	size_t bytes = fwrite (buffer, 1, fileSize, outFile);
+	if (bytes == 0) break;
+	bytesWritten += bytes;
+    }
+    fclose (outFile);
+    elektraFree (buffer);
+
+    if (bytesWritten < fileSize)
+    {
+	return -1;
+    }
+    unlink(source);
+    return 0;
+}
+
+int elektraCurlgetGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey)
 {
 	if (!elektraStrCmp (keyName (parentKey), "system/elektra/modules/curlget"))
 	{
@@ -508,7 +553,19 @@ int elektraCurlgetGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA
 	fd = mkstemp (name);
 	if (*(data->lastHash)) unlink (data->tmpFile);
 	data->tmpFile = name;
-
+	
+	if(data->path)
+	    keySetString(parentKey, data->path);
+	Key *resolveKey = keyNew(keyName(parentKey), KEY_END);
+	if(!elektraResolveFilename("hpxub", keyString(parentKey), resolveKey, 0))
+	{
+	    keyDel(resolveKey);
+	    return -1;
+	}
+	if(data->path)
+	    elektraFree(data->path);
+	data->path = elektraStrDup(keyString (resolveKey));
+	keyDel(resolveKey);
 
 	if (fd == -1)
 	{
@@ -546,7 +603,7 @@ int elektraCurlgetGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA
 		memcpy (data->lastHash, hash, MD5_DIGEST_LENGTH);
 		if (data->useLocalCopy)
 		{
-			rename (data->tmpFile, data->path);
+		        moveFile (data->tmpFile, data->path);
 		}
 		else
 		{
@@ -565,7 +622,7 @@ int elektraCurlgetGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA
 			// the remote version.
 			if (data->preferRemote)
 			{
-				rename (data->tmpFile, data->path);
+				moveFile (data->tmpFile, data->path);
 				data->tmpFile = NULL;
 				keySetString (parentKey, data->path);
 				memcpy (data->lastHash, hash, MD5_DIGEST_LENGTH);
@@ -832,7 +889,7 @@ int elektraCurlgetSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA
 		{
 			if (data->useLocalCopy)
 			{
-				rename (data->tmpFile, data->path);
+				moveFile (data->tmpFile, data->path);
 				data->tmpFile = NULL;
 				keySetString (parentKey, data->path);
 			}
