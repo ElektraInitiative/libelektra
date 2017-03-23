@@ -518,7 +518,10 @@ static int moveFile(const char *source, const char *dest)
     {
 	return -1;
     }
-    unlink(source);
+    if(unlink(source))
+    {
+	return -1;
+    }
     return 0;
 }
 
@@ -892,7 +895,13 @@ int elektraCurlgetSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA
 		{
 			if (data->useLocalCopy)
 			{
-				moveFile (data->tmpFile, data->path);
+				if(moveFile (tmpFile, data->path))
+				{
+				    if(data->tmpFile)
+				    {
+					unlink(data->tmpFile);
+				    }
+				}
 				data->tmpFile = NULL;
 				keySetString (parentKey, data->path);
 			}
@@ -908,6 +917,10 @@ int elektraCurlgetSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA
 					unlink (data->path);
 					elektraFree (data->path);
 					data->path = NULL;
+				}
+				if (tmpFile)
+				{
+				    unlink(tmpFile);
 				}
 			}
 		}
@@ -926,10 +939,16 @@ int elektraCurlgetSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA
 					elektraFree (data->path);
 					data->path = NULL;
 				}
+				if (tmpFile)
+				{
+				    unlink(tmpFile);
+				}
 			}
 			else
 			{
-				if (data->tmpFile)
+				if(tmpFile)
+				    unlink(tmpFile);
+			    	if (data->tmpFile)
 				{
 					unlink (data->tmpFile);
 					data->tmpFile = NULL;
