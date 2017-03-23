@@ -93,7 +93,6 @@ static char * elektraResolveUserXDGHome(const char *path)
 
 static char * elektraResolveEnvHome(const char *path)
 {
-    fprintf(stderr, "resolveEnvHome\n");
     const char * home = getenv ("HOME");
 
     if (!home || !strcmp (home, ""))
@@ -178,7 +177,6 @@ static void elektraResolveFinishByDirname(const char *dirname, const char *path,
 
 static Key * elektraResolveMapperUser(const char *variants, const char *path, Key * resolveKey)
 {
-    fprintf(stderr, "Resolving User with [%s], %s\n", variants, path);
     char * resolved = NULL;
     size_t i;
     for(i = 0; !resolved && i < sizeof(variants); ++i)
@@ -187,14 +185,12 @@ static Key * elektraResolveMapperUser(const char *variants, const char *path, Ke
     }
     if (!resolved)
     {
-	fprintf(stderr, "Resolving Failed\n");
 	keyDel(resolveKey);
 	return NULL;
     }
     else
     {
 	elektraResolveFinishByDirname(resolved, path, resolveKey);
-	fprintf(stderr, "Resolved: %s : %s\n", resolved, keyString(resolveKey));
 	elektraFree(resolved);
 	return resolveKey;
     }
@@ -314,7 +310,6 @@ static char *elektraResolveSystem(char variant, const char *path)
 }
 static Key * elektraResolveMapperSystem(const char *variants, const char *path, Key *resolveKey)
 {
-    fprintf(stderr, "Resolving System with [%s], %s\n", variants, path);
     char * resolved = NULL;
     size_t i;
     for(i = 0; !resolved && i < sizeof(variants); ++i)
@@ -323,13 +318,11 @@ static Key * elektraResolveMapperSystem(const char *variants, const char *path, 
     }
     if (!resolved)
     {
-	fprintf(stderr, "Resolving Failed\n");
 	keyDel(resolveKey);
 	return NULL;
     }
     else
     {
-	fprintf(stderr, "Resolved: %s\n", resolved);
 	keySetString(resolveKey, resolved);
 	elektraFree(resolved);
 	return resolveKey;
