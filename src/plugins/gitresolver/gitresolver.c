@@ -181,6 +181,7 @@ static git_buf * discover_repo(char *path)
     int rc = git_repository_discover(buf, path, 0, NULL);
     if(rc)
     {
+	git_buf_free(buf);
 	elektraFree(buf);
 	buf = discover_repo(dirname(path));
 	return buf;
@@ -208,6 +209,7 @@ static git_repository * connectToLocalRepo (GitData * data)
 		elektraFree(data->workdir);
 	    data->workdir = elektraStrDup(discovered->ptr);
 	    elektraFree(repoCopy);
+	    git_buf_free(discovered);
 	    elektraFree(discovered);
 	}
 	else
@@ -261,7 +263,7 @@ static git_repository * connectToLocalRepo (GitData * data)
     return repo;
 }
 
-static const git_oid * getHeadRef (GitData * data, git_repository * repo)
+static git_reference * getHeadRef (GitData * data, git_repository * repo)
 {
     git_reference * headRef;
     int rc = git_reference_lookup (&headRef, repo, data->refName);
@@ -274,9 +276,10 @@ static const git_oid * getHeadRef (GitData * data, git_repository * repo)
     // compare newest commit id to last saved commit id
     // only update if there's a newer commit
 
-    const git_oid * headObj = git_reference_target (headRef);
+    //const git_oid * headObj = git_reference_target (headRef);
     //git_reference_free (headRef);
-    return headObj;
+//    return headObj;
+	return headRef;
 }
 
 static char * hasNewCommit (GitData * data, const git_oid * headObj)
@@ -420,10 +423,19 @@ int elektraGitresolverGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELE
     genCheckoutFileName (data);
 
     // TODO: check for empty repo and initialize repo
-    const git_oid * headObj = getHeadRef (data, repo);
+    git_reference * headRef = getHeadRef(data, repo);
+    if (!headRef)
+    {
+	ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_GITRESOLVER_RESOLVING_ISSUE, parentKey, "Failed to get reference %s\n", data->refName);
+	git_repository_free (repo);
+	git_libgit2_shutdown ();
+	return -1;
+    }
+    const git_oid * headObj = git_reference_target(headRef);
     if (!headObj)
     {
 	ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_GITRESOLVER_RESOLVING_ISSUE, parentKey, "Failed to get reference %s\n", data->refName);
+	git_reference_free(headRef);
 	git_repository_free (repo);
 	git_libgit2_shutdown ();
 	return -1;
@@ -434,6 +446,7 @@ int elektraGitresolverGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELE
 	if (data->headID && !newCommit)
 	{
 	    // still newest commit, no need to update
+	    git_reference_free(headRef);
 	    git_repository_free (repo);
 	    git_libgit2_shutdown ();
 	    return 0;
@@ -450,6 +463,7 @@ int elektraGitresolverGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELE
 	elektraPluginSetData (handle, data);
 	data = elektraPluginGetData (handle);
     }
+    git_reference_free(headRef);
     git_object * blob = getBlob (data, repo);
     if (!blob)
     {
@@ -508,7 +522,7 @@ int elektraGitresolverGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELE
     unsigned char * hash = hashBuffer (git_blob_rawcontent((git_blob*)blob), git_blob_rawsize((git_blob *)blob));
     if(!*(data->lastHash))
 	memcpy (data->lastHash, hash, MD5_DIGEST_LENGTH);
-
+    elektraFree(hash);
     fclose (outFile);
     git_object_free (blob);
     git_repository_free (repo);
@@ -518,10 +532,11 @@ int elektraGitresolverGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELE
 
 static git_blob * addFileToIndex (git_repository * repo, GitData * data, git_index * index)
 {
-    git_blob * blob;
+    git_blob * blob = NULL;
     git_oid blobID;
-
+    memset(&blobID, 0, sizeof(git_oid));
     git_index_entry ie;
+    memset(&ie, 0, sizeof(git_index_entry));
     ie.path = data->repo + elektraStrLen(data->workdir) - 1;
     ie.mode = GIT_FILEMODE_BLOB;
     git_blob_create_fromdisk (&blobID, repo, data->tmpFile);
@@ -588,14 +603,24 @@ int elektraGitresolverSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELE
 	git_libgit2_shutdown ();
 	return -1;
     }
-    const git_oid * headObj = getHeadRef (data, repo);
-    if (!headObj)
+    git_reference * headRef = getHeadRef (data, repo);
+    if (!headRef)
     {
 	ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_GITRESOLVER_RESOLVING_ISSUE, parentKey, "Failed to get reference %s\n", data->refName);
 	git_repository_free (repo);
 	git_libgit2_shutdown ();
 	return -1;
     }
+    const git_oid * headObj = git_reference_target(headRef);
+    if (!headObj)
+    {
+	ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_GITRESOLVER_RESOLVING_ISSUE, parentKey, "Failed to get reference %s\n", data->refName);
+	git_reference_free(headRef);
+	git_repository_free (repo);
+	git_libgit2_shutdown ();
+	return -1;
+    }
+
     if (data->tracking == HEAD)
     {
 	char * newCommit = hasNewCommit (data, headObj);
@@ -605,12 +630,14 @@ int elektraGitresolverSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELE
 	    ELEKTRA_SET_ERROR (ELEKTRA_ERROR_GITRESOLVER_CONFLICT, parentKey,
 		    "The repository has been updated and is ahead of you");
 	    elektraFree (newCommit);
+	    git_reference_free(headRef);
 	    git_repository_free (repo);
 	    git_libgit2_shutdown ();
 	    return -1;
 	}
 	elektraFree (newCommit);
     }
+    git_reference_free(headRef);
     if (data->tracking == OBJECT)
     {
 	git_object * blob = getBlob (data, repo);
@@ -645,11 +672,14 @@ int elektraGitresolverSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELE
 	unsigned char * hash = hashBuffer((unsigned char *)git_blob_rawcontent(buffer), git_blob_rawsize(buffer));
         if(!strncmp((char *)data->lastHash, (char *)hash, MD5_DIGEST_LENGTH))
 	{
+	    elektraFree(hash);
+	    git_index_free(index);
 	    git_blob_free(buffer);
 	    git_repository_free(repo);
 	    git_libgit2_shutdown();
 	    return 0;
 	}
+	elektraFree(hash);
 			    
 	git_index_write (index);
 
@@ -681,6 +711,9 @@ int elektraGitresolverSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELE
 
 
 	git_signature_free (sig);
+	git_tree_free(tree);
+	git_index_free(index);
+	git_blob_free(buffer);
 	git_commit_free (parent);
 	if(data->checkout)
 	{
