@@ -6,7 +6,7 @@
 # Which plugins and tools should be built
 ELEKTRA_PLUGINS='ALL;mozprefs;multifile'
 ELEKTRA_TOOLS='ALL'
-ELEKTRA_BINDINGS='cpp;swig_lua;swig_python3;swig_python2;intercept
+ELEKTRA_BINDINGS='cpp;swig_lua;swig_python;swig_python2;intercept
 
 #workaround for hardening flags
 CPPFLAGS:=$(shell dpkg-buildflags --get CPPFLAGS)
@@ -32,6 +32,7 @@ CMAKE_ARGS = -DLIB_SUFFIX="/$(DEB_HOST_MULTIARCH)" \
   -DINSTALL_DOCUMENTATION=ON \
   -DTARGET_DOCUMENTATION_HTML_FOLDER=share/doc/libelektra-doc/html \
   -DSWIG_EXECUTABLE=/usr/bin/swig3.0 \
+  -DPYTHON_EXECUTABLE:PATH=/usr/bin/python3 \
   -DENABLE_TESTING=ON \
   -DINSTALL_TESTING=ON \
   -DENABLE_KDB_TESTING=OFF \
