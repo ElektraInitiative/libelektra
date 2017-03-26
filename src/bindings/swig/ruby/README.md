@@ -174,7 +174,10 @@ This is very similar to the `KeySet` iteration and can be accessed with `meta`:
 
 ## Building
 
-Note that cmake does *not* automatically rebuild SWIG bindings
-when header files are changed. Remove the build directory
-in that case.
+Building the Ruby bindings from Elektra src tree requires to have SWIG >= 3.0.8
+installed. Additionally ruby header files (Debian/Ubuntu ruby-dev) are required
+too. 
+
+The bindings where tested with Ruby >= 2.1.0, lower version might work but are
+not tested.
 
