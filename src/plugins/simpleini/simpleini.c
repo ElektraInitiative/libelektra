@@ -18,14 +18,15 @@
 #include <kdbease.h>
 #include <kdberrors.h>
 #include <kdblogger.h>
-#include <kdbprivate.h>    // elektraStrNDup
+#include <kdbprivate.h> // elektraStrNDup
 #include <kdbutility.h>
 
 #include <stdio.h>
 #include <stdlib.h>
 
 
-struct lineFormat {
+struct lineFormat
+{
 	char * format;
 	char * delimiter;
 };
@@ -43,7 +44,7 @@ struct lineFormat {
 static struct lineFormat getFormat (Plugin * handle)
 {
 	struct lineFormat ret;
-	//char * format;
+	// char * format;
 	Key * key = ksLookupByName (elektraPluginGetConfig (handle), "/format", 0);
 	if (!key)
 	{
@@ -86,17 +87,17 @@ static struct lineFormat getFormat (Plugin * handle)
 					ret.format[j++] = numFormatSpecifier <= 2 ? 's' : '%';
 					ret.format[j] = c;
 
-					if (numFormatSpecifier == 1) 
+					if (numFormatSpecifier == 1)
 					{
 						// first format conversion specifier
 						// position after '%'
-						delimiterStart = (char*) &(userFormat[i]);
+						delimiterStart = (char *)&(userFormat[i]);
 					}
 					else if (numFormatSpecifier == 2)
 					{
 						// second format spec.
 						// position of '%'
-						delimiterEnd = (char*) &(userFormat[i - 1]);
+						delimiterEnd = (char *)&(userFormat[i - 1]);
 					}
 				}
 				gotPercent = 0;
@@ -138,29 +139,28 @@ static struct lineFormat getFormat (Plugin * handle)
 
 static char * replaceStringFormatSpec (char * format, const char * replace)
 {
-	size_t formatLen = strlen(format);
-	size_t replaceLen = strlen(replace);
-	size_t needleLen = strlen("%s");
+	size_t formatLen = strlen (format);
+	size_t replaceLen = strlen (replace);
+	size_t needleLen = strlen ("%s");
 	size_t offset = replaceLen - needleLen;
 
-	char * result = elektraMalloc(formatLen + offset + 1);
-
-	char * posRepl = strstr(format, "%s");
+	char * posRepl = strstr (format, "%s");
 	if (posRepl)
 	{
+		char * result = elektraMalloc (formatLen + offset + 1);
+
 		size_t preReplLen = posRepl - format;
 		// copy pre replacement
-		strncpy(result, format, preReplLen);
+		strncpy (result, format, preReplLen);
 		// copy replacement
-		strncpy(result + preReplLen, replace, replaceLen);
+		strncpy (result + preReplLen, replace, replaceLen);
 		// copy post replacement
-		strncpy(result + preReplLen + replaceLen, posRepl + needleLen, formatLen - needleLen - preReplLen);
+		strncpy (result + preReplLen + replaceLen, posRepl + needleLen, formatLen - needleLen - preReplLen);
 		result[formatLen + offset] = '\0';
 		return result;
 	}
 	else
 	{
-		elektraFree(result);
 		return NULL;
 	}
 }
@@ -186,11 +186,11 @@ static char * getReadFormat (Plugin * handle)
 	// make scanf format patter with key format pattern and value format pattern
 	// (we do not use simple printf style here, since it would replace '%%' to '%' but we need those
 	// escaped '%' for a save scanf format pattern
-	char * tmp = replaceStringFormatSpec(f.format, keyFormat);
+	char * tmp = replaceStringFormatSpec (f.format, keyFormat);
 	ELEKTRA_ASSERT (tmp != 0, "format has to have a '%%s' for the key");
 
 	// replace value format specifier
-	char * ret = replaceStringFormatSpec(tmp, "%m[^\n]");
+	char * ret = replaceStringFormatSpec (tmp, "%m[^\n]");
 	ELEKTRA_ASSERT (ret != 0, "format has to have a '%%s' for the value");
 	elektraFree (tmp);
 
@@ -203,13 +203,9 @@ static char * getReadFormat (Plugin * handle)
 
 static char * getWriteFormat (Plugin * handle)
 {
-	struct lineFormat f = getFormat(handle);
-	//char * ret = elektraFormat (f.format, "%s", "%s");
+	struct lineFormat f = getFormat (handle);
 
-	//elektraFree (f.format);
 	elektraFree (f.delimiter);
-
-	//return ret;
 	return f.format;
 }
 
@@ -252,29 +248,31 @@ int elektraSimpleiniGet (Plugin * handle, KeySet * returned, Key * parentKey)
 	char * strippedkey = 0;
 	char * value = 0;
 	int errnosave = errno;
-	
+
 	char * format = getReadFormat (handle);
 	if (!format)
 	{
-		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_NOEOF, parentKey, "invalid 'format' specified");
+		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_INVALID_FORMAT, parentKey, "invalid 'format' specified");
 		return -1;
 	}
+
+	ELEKTRA_LOG ("Read from '%s' with format '%s'", keyString (parentKey), format);
 
 	FILE * fp = fopen (keyString (parentKey), "r");
 	if (!fp)
 	{
 		ELEKTRA_SET_ERROR_GET (parentKey);
 		errno = errnosave;
+		elektraFree (format);
 		return -1;
 	}
-
-	ELEKTRA_LOG ("Read from '%s' with format '%s'", keyString (parentKey), format);
 
 	int n = 0;
 	size_t size = 0;
 	ssize_t ksize = 0;
 #pragma GCC diagnostic ignored "-Wformat"
 	// icc warning #269: invalid format string conversion
+	// key and value will be both newly allocated strings
 	while ((n = fscanf (fp, format, &key, &value)) >= 0)
 	{
 		ELEKTRA_LOG_DEBUG ("Read %d parts: '%s' with value '%s'", n, key, value);
@@ -296,12 +294,17 @@ int elektraSimpleiniGet (Plugin * handle, KeySet * returned, Key * parentKey)
 		}
 
 		Key * read = keyNew (keyName (parentKey), KEY_END);
-		strippedkey = elektraStrip(key);
+		strippedkey = elektraStrip (key);
 
 		if (keyAddName (read, strippedkey) == -1)
 		{
 			ELEKTRA_ADD_WARNING (ELEKTRA_WARNING_INVALID_KEY, parentKey, strippedkey);
 			keyDel (read);
+			elektraFree (key);
+			if (n == 2)
+			{
+				elektraFree (value);
+			}
 			continue;
 		}
 
@@ -312,16 +315,18 @@ int elektraSimpleiniGet (Plugin * handle, KeySet * returned, Key * parentKey)
 			value = 0;
 		}
 
+		elektraFree (key);
+		key = 0;
+
 		if (ksAppendKey (returned, read) != ksize + 1)
 		{
 			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_NOEOF, parentKey, "duplicated key %s at position %ld", keyName (read),
 					    ftell (fp));
+			elektraFree (format);
 			fclose (fp);
 			return -1;
 		}
 		++ksize;
-		elektraFree (key);
-		key = 0;
 	}
 
 	if (feof (fp) == 0)

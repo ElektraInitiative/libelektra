@@ -12,5 +12,6 @@ if (HAVE_GLIBC)
 		LINK_ELEKTRA
 			elektra-ease
 			elektra-utility
+		ADD_TEST
 		)
 endif()

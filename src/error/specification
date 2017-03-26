@@ -1063,3 +1063,10 @@ severity:error
 ingroup:plugin
 module:multifile
 macro:MULTI_GLOB_FAILED
+
+number:173
+description:invalid line format pattern
+severity:error
+ingroup:plugin
+macro:INVALID_FORMAT
+module:simpleini
