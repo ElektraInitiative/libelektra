@@ -11,8 +11,8 @@ find_package(Ruby)
 
 if (NOT RUBY_FOUND)
 	remove_binding(swig_ruby "ruby interpreter or ruby header files not found (package ruby-dev/ruby-devel installed?)")
-elseif (SWIG_VERSION MATCHES "^[12]\\.")
-	remove_binding(swig_ruby "found SWIG version (${SWIG_VERSION}) is not suitable. SWIG version >= 3.x required")
+elseif (SWIG_VERSION MATCHES "^([12]\\.)|(3\\.0\\.[01234567])")
+	remove_binding(swig_ruby "found SWIG version (${SWIG_VERSION}) is not suitable. SWIG version >= 3.0.8 required")
 else()
 
 	message(STATUS "Include Binding swig_ruby")
