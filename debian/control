@@ -30,7 +30,7 @@ Build-Depends: debhelper (>= 9),
  libcurl4-openssl-dev,
  libcurl3 (>= 7.28.0),
  libgit2-dev,
- openjdk-7-jdk | openjdk-8-jdk,
+ java7-jdk | java8-jdk
 Build-Depends-Indep:
  doxygen,
  graphviz,
