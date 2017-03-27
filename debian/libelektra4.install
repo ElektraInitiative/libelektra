@@ -36,7 +36,6 @@ usr/lib/*/elektra4/libelektra-regexstore.so*
 usr/lib/*/elektra4/libelektra-rename.so*
 usr/lib/*/elektra4/libelektra-required.so*
 usr/lib/*/elektra4/libelektra-jni.so
-usr/lib/*/elektra4/libelektra-gitresolver.so
 usr/lib/*/elektra4/libelektra-crypto_botan.so
 usr/lib/*/elektra4/libelektra-crypto_gcrypt.so
 usr/lib/*/elektra4/libelektra-resolver_fm_b_b.so*
