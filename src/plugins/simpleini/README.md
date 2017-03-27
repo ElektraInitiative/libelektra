@@ -43,7 +43,7 @@ For example, if you want every key to be marked `%:key value` you would use:
 
 - Lines in a different format (e.g. comments) are discarded.
 - The order per line must be key and then value: the plugin cannot be used if the value is first
-- Spaces are trimmed
+- Whitespace before and after keynames are trimmed (but not for value)
 - Delimiting symbols cannot be part of the key.
 - The last occurrence of the same key wins (others are discarded).
 - The parent Key cannot be used.
