@@ -70,6 +70,7 @@ usr/lib/*/libelektra-core.so*
 usr/lib/*/libelektra-ease.so*
 usr/lib/*/libelektra-full.so*
 usr/lib/*/libelektragetenv.so*
+usr/lib/*/libelektra-utility.so*
 usr/lib/*/libelektraintercept-env.so*
 usr/lib/*/libelektraintercept-fs.so*
 usr/lib/*/libelektraintercept.so
