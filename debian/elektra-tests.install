@@ -15,4 +15,6 @@ usr/share/libelektra-test/test-data/filecheck/*
 usr/share/libelektra-test/test-data/lineendings/*
 usr/share/libelektra-test/test-data/mozprefs/*
 usr/share/libelektra-test/test-data/lua/*
-
+usr/share/libelektra-test/test-data/passwd/*
+usr/share/libelektra-test/test-data/file/*
+usr/share/libelektra-test/test-data/blockresolver/*

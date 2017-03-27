@@ -4,6 +4,7 @@ Priority: optional
 Maintainer: Pino Toscano <pino@debian.org>
 Build-Depends: debhelper (>= 9),
  dh-python,
+ dh-exec,
  cmake (>= 2.8),
  pkg-config (>= 0.9.0),
  libboost-dev,
@@ -23,6 +24,13 @@ Build-Depends: debhelper (>= 9),
  libsystemd-journal-dev | libsystemd-dev,
  liblua5.2-dev,
  python-dev,
+ libssl-dev,
+ libgcrypt20-dev,
+ libbotan1.10-dev,
+ libcurl4-gnutls-dev,
+ libcurl3 (>= 7.28.0),
+ libgit2-dev,
+ openjdk-8-jdk,
 Build-Depends-Indep:
  doxygen,
  graphviz,
@@ -32,6 +40,26 @@ Vcs-Browser: https://github.com/ElektraInitiative/libelektra
 Vcs-Git: https://github.com/ElektraInitiative/libelektra.git
 Testsuite: autopkgtest
 
+Package: libelektra4-all
+Architecture: any
+Depends: libelektra4, libelektra4-experimental, libelektra4-gen,
+  libelektra4-augeas, libelektra4-dbus, libelektra4-lua, libelektra4-python,
+  libelektra4-xmltool, libelektra4-yajl, lua-elektra, python-elektra,
+  python3-elektra, elektra-bin, elektra-qt-gui
+Recommends: elektra-tests, elektra-doc, elektra-dbg, libelektra-dev
+Description: elektra configuration store
+ Elektra provides a universal and secure framework to store configuration
+ parameters in a hierarchical key-value pair mechanism, instead of each
+ program using its own text configuration files. This allows any program
+ to read and save its configuration with a consistent API, and allows
+ them to be aware of other applications' configurations, permitting
+ easy application integration. While architecturally similar to other OS
+ registries, Elektra does not have most of the problems found in those
+ implementations.
+ .
+ This package provides the dependencies for all elektra packages.
+
+
 Package: libelektra4
 Section: libs
 Architecture: any
@@ -39,8 +67,8 @@ Multi-Arch: same
 Pre-Depends: ${misc:Pre-Depends}
 Depends: ${shlibs:Depends},
  ${misc:Depends}
-Breaks: elektra-bin (<< 0.8.14-5~), libelektra-core4
-Replaces: elektra-bin (<< 0.8.14-5~), libelelektra-core4
+Breaks: elektra-bin (<< 0.8.14-5~), libelektra-core4 (<< 0.8.19-1), libelektra-full4 (<< 0.8.19-1)
+Replaces: elektra-bin (<< 0.8.14-5~), libelelektra-core4 (<< 0.8.19-1), libelektra-full4 (<< 0.8.19-1)
 Suggests: elektra-doc, ${elektra:allPlugins}
 Description: elektra configuration store, main library
  Elektra provides a universal and secure framework to store configuration
@@ -61,8 +89,8 @@ Multi-Arch: same
 Pre-Depends: ${misc:Pre-Depends}
 Depends: ${shlibs:Depends},
  ${misc:Depends}
-Breaks: elektra-bin (<< 0.8.14-5~), libelektra-core4
-Replaces: elektra-bin (<< 0.8.14-5~), libelelektra-core4
+Breaks: elektra-bin (<< 0.8.14-5~), libelektra-core4 (<< 0.8.19-1)
+Replaces: elektra-bin (<< 0.8.14-5~), libelelektra-core4 (<< 0.8.19-1)
 Suggests: elektra-doc, ${elektra:allPlugins}
 Description: elektra configuration store, experimental plugins
  Elektra provides a universal and secure framework to store configuration
@@ -75,6 +103,27 @@ Description: elektra configuration store, experimental plugins
  implementations.
  .
  This package contains experimental plugins.
+
+Package: libelektra4-gen
+Section: libs
+Architecture: any
+Multi-Arch: same
+Pre-Depends: ${misc:Pre-Depends}
+Depends: ${python:Depends},
+ ${misc:Depends}
+Breaks: libelektra-gen (<< 0.8.19-1)
+Replaces: libelelektra-gen (<< 0.8.19-1)
+Description: elektra configuration store, gen plugin
+ Elektra provides a universal and secure framework to store configuration
+ parameters in a hierarchical key-value pair mechanism, instead of each
+ program using its own text configuration files. This allows any program
+ to read and save its configuration with a consistent API, and allows
+ them to be aware of other applications' configurations, permitting
+ easy application integration. While architecturally similar to other OS
+ registries, Elektra does not have most of the problems found in those
+ implementations.
+ .
+ This package contains gen plugin.
 
 Package: libelektra-dev
 Section: libdevel
@@ -100,8 +149,8 @@ Architecture: any
 Depends: libelektra4 (= ${binary:Version}),
  ${shlibs:Depends},
  ${misc:Depends}
-Replaces: libelektra-augeas
-Breaks: libelektra-augeas
+Replaces: libelektra-augeas4 (<< 0.8.19-1)
+Breaks: libelektra-augeas4 (<< 0.8.19-1)
 Description: elektra configuration store, augeas plugin
  Elektra provides a universal and secure framework to store configuration
  parameters in a hierarchical key-value pair mechanism, instead of each
@@ -120,8 +169,8 @@ Architecture: any
 Depends: libelektra4 (= ${binary:Version}),
  ${shlibs:Depends},
  ${misc:Depends}
-Replaces: libelektra-dbus4
-Breaks: libelektra-dbus4
+Replaces: libelektra-dbus4 (<< 0.8.19-1)
+Breaks: libelektra-dbus4 (<< 0.8.19-1)
 Description: elektra configuration store, dbus plugin
  Elektra provides a universal and secure framework to store configuration
  parameters in a hierarchical key-value pair mechanism, instead of each
@@ -158,8 +207,8 @@ Architecture: any
 Depends: libelektra4 (= ${binary:Version}),
  ${shlibs:Depends},
  ${misc:Depends}
-Replaces: libelelektra-python4
-Breaks: libelektra-python4
+Replaces: libelelektra-python4 (<< 0.8.19-1)
+Breaks: libelektra-python4 (<< 0.8.19-1)
 Description: elektra configuration store, python plugin
  Elektra provides a universal and secure framework to store configuration
  parameters in a hierarchical key-value pair mechanism, instead of each
@@ -178,8 +227,8 @@ Architecture: any
 Depends: libelektra4 (= ${binary:Version}),
  ${shlibs:Depends},
  ${misc:Depends}
-Replaces: libelektra-xmltool4
-Breaks: libelektra-xmltool4
+Replaces: libelektra-xmltool4 (<< 0.8.19-1)
+Breaks: libelektra-xmltool4 (<< 0.8.19-1)
 Description: elektra configuration store, xmltool plugin
  Elektra provides a universal and secure framework to store configuration
  parameters in a hierarchical key-value pair mechanism, instead of each
@@ -198,8 +247,8 @@ Architecture: any
 Depends: libelektra4 (= ${binary:Version}),
  ${shlibs:Depends},
  ${misc:Depends}
-Replaces: libelektra-yajl4
-Breaks: libelektra-yajl4
+Replaces: libelektra-yajl4 (<< 0.8.19-1)
+Breaks: libelektra-yajl4 (<< 0.8.19-1)
 Description: elektra configuration store, yajl plugin
  Elektra provides a universal and secure framework to store configuration
  parameters in a hierarchical key-value pair mechanism, instead of each
@@ -277,8 +326,8 @@ Depends: libelektra4 (= ${binary:Version}),
  ${shlibs:Depends},
  ${misc:Depends},
  ${python:Depends}
-Replaces: libelektra-bin
-Breaks: libelektra-bin
+Replaces: libelektra-bin (<< 0.8.19-1), libelektra-full4 (<< 0.8.19-1)
+Breaks: libelektra-bin (<< 0.8.19-1), libelektra-full4 (<< 0.8.19-1)
 Conflicts: kernel-patch-kdb
 Description: elektra configuration store, binaries
  Elektra provides a universal and secure framework to store configuration
@@ -317,6 +366,8 @@ Depends: libelektra4 (= ${binary:Version}),
  elektra-bin (= ${binary:Version}),
  ${shlibs:Depends},
  ${misc:Depends}
+Replaces: libelektra-test (<< 0.8.19-1)
+Breaks: libelektra-test (<< 0.8.19-1)
 Description: elektra configuration store, tests
  Elektra provides a universal and secure framework to store configuration
  parameters in a hierarchical key-value pair mechanism, instead of each
@@ -333,6 +384,8 @@ Package: elektra-doc
 Section: doc
 Architecture: all
 Depends: ${misc:Depends}
+Replaces: libelektra-doc (<< 0.8.19-1)
+Breaks: libelektra-doc (<< 0.8.19-1)
 Description: elektra configuration store, API documentation
  Elektra provides a universal and secure framework to store configuration
  parameters in a hierarchical key-value pair mechanism, instead of each
