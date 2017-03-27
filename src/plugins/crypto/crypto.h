@@ -55,8 +55,8 @@ typedef gcry_cipher_hd_t elektraCryptoHandle;
 #include <openssl/evp.h>
 typedef struct
 {
-	EVP_CIPHER_CTX encrypt;
-	EVP_CIPHER_CTX decrypt;
+	EVP_CIPHER_CTX * encrypt;
+	EVP_CIPHER_CTX * decrypt;
 } elektraCryptoHandle;
 
 #elif defined(ELEKTRA_CRYPTO_API_BOTAN)
