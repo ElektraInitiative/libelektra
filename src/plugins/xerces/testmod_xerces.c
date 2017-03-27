@@ -16,8 +16,10 @@
 static void test_basics ()
 {
 	printf ("test basics\n");
+	fflush (stdout);
 
 	Key * parentKey = keyNew ("system/elektra/modules/xerces", KEY_END);
+	Key * invalidKey = keyNew (0, KEY_END);
 	KeySet * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("xerces");
 
@@ -26,21 +28,29 @@ static void test_basics ()
 	succeed_if (plugin->kdbOpen (plugin, parentKey) == 1, "call to kdbOpen was not successful");
 
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "call to kdbGet was not successful");
+	succeed_if (plugin->kdbGet (plugin, ks, invalidKey) == 0, "call to kdbGet was successful though the parentKey is invalid");
 
-	// succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 1, "call to kdbSet was not successful");
+	// Will return 0 as we have no destination file set, we test serialization in detail later
+	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 0, "call to kdbSet was not successful");
+	succeed_if (plugin->kdbGet (plugin, ks, invalidKey) == 0, "call to kdbSet was successful though the parentKey is invalid");
 
 	succeed_if (plugin->kdbError (plugin, ks, parentKey) == 1, "call to kdbError was not successful");
 
 	succeed_if (plugin->kdbClose (plugin, parentKey) == 1, "call to kdbClose was not successful");
 
+	keyDel (invalidKey);
 	keyDel (parentKey);
 	ksDel (ks);
 	PLUGIN_CLOSE ();
+
+	printf ("test basics finished\n");
+	fflush (stdout);
 }
 
 static void test_simple_read ()
 {
 	printf ("test simple read\n");
+	fflush (stdout);
 
 	Key * parentKey = keyNew ("/sw/elektra/tests", KEY_VALUE, srcdir_file ("xerces/simple.xml"), KEY_END);
 	KeySet * conf = ksNew (0, KS_END);
@@ -55,7 +65,7 @@ static void test_simple_read ()
 	if (current)
 	{
 		succeed_if (strcmp (keyName (current), "/sw/elektra/tests/xerces") == 0, "wrong name");
-		succeed_if (strcmp (keyValue (current), "value of xerces") == 0, "value not correct");
+		succeed_if (strcmp (keyValue (current), "  value of xerces  ") == 0, "value not correct");
 	}
 
 	succeed_if (current = ksLookupByName (ks, "/sw/elektra/tests/xerces/fizz", 0), "fizz key not found");

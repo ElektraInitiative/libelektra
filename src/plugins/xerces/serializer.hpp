@@ -13,6 +13,7 @@
 
 namespace xerces
 {
+
 void serialize (kdb::Key const & parentKey, kdb::KeySet const & ks);
 }
 

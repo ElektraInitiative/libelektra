@@ -23,19 +23,19 @@ using namespace xerces;
 
 XERCES_CPP_NAMESPACE_USE
 
-int elektraXercesOpen (Plugin * handle, Key * errorKey)
+int elektraXercesOpen (Plugin * handle ELEKTRA_UNUSED, Key * errorKey ELEKTRA_UNUSED)
 {
 	XMLPlatformUtils::Initialize ();
 	return 1;
 }
 
-int elektraXercesClose (Plugin * handle, Key * errorKey)
+int elektraXercesClose (Plugin * handle ELEKTRA_UNUSED, Key * errorKey ELEKTRA_UNUSED)
 {
 	XMLPlatformUtils::Terminate ();
 	return 1;
 }
 
-int elektraXercesGet (Plugin * handle, KeySet * returned, Key * parentKey)
+int elektraXercesGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
 {
 	if (!elektraStrCmp (keyName (parentKey), "system/elektra/modules/xerces"))
 	{
@@ -56,16 +56,14 @@ int elektraXercesGet (Plugin * handle, KeySet * returned, Key * parentKey)
 		return 1;
 	}
 
+	kdb::KeySet ks (returned);
+	kdb::Key k (parentKey);
+	int ret = 0;
 	// Bridge the C++ exceptions to elektra error messages
 	try
 	{
-		kdb::KeySet ks (returned);
-		kdb::Key k (parentKey);
 		deserialize (k, ks);
-		// Avoid destruction of the ks at the end
-		k.release ();
-		ks.release ();
-		return 1;
+		ret = 1;
 	}
 	catch (const OutOfMemoryException & e)
 	{
@@ -88,21 +86,22 @@ int elektraXercesGet (Plugin * handle, KeySet * returned, Key * parentKey)
 		ELEKTRA_SET_ERROR (169, parentKey, "Unknown exception occurred while reading xml file");
 	}
 
-	// some exception occured, otherwise it would have returned 1
-	return 0;
+	// Avoid destruction of the pointers at the end
+	k.release ();
+	ks.release ();
+	return ret;
 }
 
-int elektraXercesSet (Plugin * handle, KeySet * returned, Key * parentKey)
+int elektraXercesSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
 {
 	// Bridge the C++ exceptions to elektra error messages
+	kdb::KeySet ks (returned);
+	kdb::Key k (parentKey);
+	int ret = 0;
 	try
 	{
-		kdb::KeySet ks (returned);
-		kdb::Key k (parentKey);
 		serialize (k, ks);
-		k.release ();
-		ks.release ();
-		return 1;
+		ret = 1;
 	}
 	catch (const OutOfMemoryException & e)
 	{
@@ -125,11 +124,13 @@ int elektraXercesSet (Plugin * handle, KeySet * returned, Key * parentKey)
 		ELEKTRA_SET_ERROR (169, parentKey, "Unknown exception occurred while writing xml file");
 	}
 
-	// some exception occured, otherwise it would have returned 1
-	return 0;
+	// Avoid destruction of the pointers at the end
+	k.release ();
+	ks.release ();
+	return ret;
 }
 
-int elektraXercesError (Plugin * handle, KeySet * returned, Key * parentKey)
+int elektraXercesError (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
 {
 	// handle errors (commit failed)
 	// this function is optional

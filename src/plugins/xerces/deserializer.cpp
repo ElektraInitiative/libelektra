@@ -16,8 +16,10 @@
 #include <xercesc/dom/DOMNode.hpp>
 #include <xercesc/parsers/XercesDOMParser.hpp>
 
+#include <iostream>
 #include <kdblogger.h>
 #include <key.hpp>
+#include <locale>
 
 XERCES_CPP_NAMESPACE_USE
 using namespace std;
@@ -31,12 +33,29 @@ XercesPtr<DOMDocument> doc2dom (std::string const & src)
 {
 	XercesDOMParser parser;
 	parser.setValidationScheme (XercesDOMParser::Val_Auto);
-	parser.setDoNamespaces (false);
-	parser.setDoSchema (false);
-	parser.setCreateEntityReferenceNodes (false);
 
 	parser.parse (asXMLCh (src));
 	return XercesPtr<DOMDocument> (parser.adoptDocument ());
+}
+
+const char * ws = " \t\n\r\f\v";
+
+string trim (string const & str)
+{
+	stringstream ss (str);
+	string to;
+	string trimmed;
+
+	while (getline (ss, to, '\n'))
+	{
+		// Remove whitespace lines, most likely caused by pretty printing
+		if (!all_of (to.begin (), to.end (), [](char c) { return isspace (c, locale ()); }))
+		{
+			trimmed += to;
+		}
+	}
+
+	return trimmed;
 }
 
 string getElementText (DOMNode const * parent)
@@ -45,17 +64,15 @@ string getElementText (DOMNode const * parent)
 
 	for (auto child = parent->getFirstChild (); child != NULL; child = child->getNextSibling ())
 	{
-		if (DOMNode::TEXT_NODE == child->getNodeType () || DOMNode::CDATA_SECTION_NODE == child->getNodeType ())
+		if (DOMNode::NodeType::TEXT_NODE == child->getNodeType () || DOMNode::NodeType::CDATA_SECTION_NODE == child->getNodeType ())
 		{
 			DOMText * data = dynamic_cast<DOMText *> (child);
 			if (!data->getIsElementContentWhitespace ()) str += toStr (data->getData ());
 		}
 	}
-	// trim whitespace
-	const char * ws = " \t\n\r\f\v";
-	str.erase (str.find_last_not_of (ws) + 1);
-	str.erase (0, str.find_first_not_of (ws));
-	return str;
+
+	// Trim whitespace that is most likely due to pretty printing
+	return trim (str);
 }
 
 void dom2keyset (DOMNode const * n, Key const & parent, KeySet & ks)
@@ -74,7 +91,7 @@ void dom2keyset (DOMNode const * n, Key const & parent, KeySet & ks)
 
 			if (!current.isValid ())
 			{
-				// TODO we've encountered an invalid namespace or keyname, ignore, fail, ?
+				throw XercesPluginException ("Given keyset contains invalid keys to serialize");
 			}
 
 			ELEKTRA_LOG_DEBUG ("new parent is %s with value %s", current.getFullName ().c_str (),
@@ -110,6 +127,9 @@ void dom2keyset (DOMNode const * n, Key const & parent, KeySet & ks)
 
 void xerces::deserialize (Key const & parentKey, KeySet & ks)
 {
+	if (!parentKey.isValid ()) throw XercesPluginException ("Parent key is invalid");
+	if (parentKey.get<string> ().empty ()) throw XercesPluginException ("No source file specified as key value");
+
 	ELEKTRA_LOG_DEBUG ("deserializing relative to %s from file %s", parentKey.getFullName ().c_str (),
 			   parentKey.get<string> ().c_str ());
 	auto document = doc2dom (parentKey.get<string> ());

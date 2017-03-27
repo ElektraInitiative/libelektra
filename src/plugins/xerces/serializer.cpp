@@ -111,6 +111,10 @@ void ks2dom (DOMDocument & doc, Key const & parentKey, KeySet const & ks)
 
 void xerces::serialize (Key const & parentKey, KeySet const & ks)
 {
+	if (!parentKey.isValid ()) throw XercesPluginException ("Parent key is invalid");
+	if (parentKey.get<string> ().empty ()) throw XercesPluginException ("No destination file specified as key value");
+
+	ELEKTRA_LOG_DEBUG ("serializing relative to %s from file %s", parentKey.getFullName ().c_str (), parentKey.get<string> ().c_str ());
 	DOMImplementation * impl = DOMImplementationRegistry::getDOMImplementation (asXMLCh ("Core"));
 	if (impl != NULL)
 	{

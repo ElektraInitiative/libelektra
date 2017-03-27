@@ -2,7 +2,7 @@
  * @file
  *
  * @brief Utility functions used in the xerces plugin
- * 
+ *
  * Provides unique pointers that act as a bridge between XMLCh and std::string
  * Provides a general XercesPluginException
  *
