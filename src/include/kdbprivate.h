@@ -503,7 +503,6 @@ ssize_t ksSearchInternal (const KeySet * ks, const Key * toAppend);
 ssize_t elektraMemcpy (Key ** array1, Key ** array2, size_t size);
 ssize_t elektraMemmove (Key ** array1, Key ** array2, size_t size);
 
-char * elektraStrNDup (const char * s, size_t l);
 ssize_t elektraFinalizeName (Key * key);
 ssize_t elektraFinalizeEmptyName (Key * key);
 

@@ -18,7 +18,6 @@
 #include <kdbease.h>
 #include <kdberrors.h>
 #include <kdblogger.h>
-#include <kdbprivate.h> // elektraStrNDup
 #include <kdbutility.h>
 
 #include <stdio.h>
