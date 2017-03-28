@@ -35,7 +35,11 @@ install (PROGRAMS "${CMAKE_CURRENT_BINARY_DIR}/install-sh-completion" DESTINATIO
 
 
 if (INSTALL_SYSTEM_FILES)
-	set (BASH_COMPLETION_COMPLETIONSDIR "/usr/share/bash-completion/completions" CACHE INTERNAL "bash completions dir")
+	if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+		set (BASH_COMPLETION_COMPLETIONSDIR "/usr/local/share/bash-completion/completions" CACHE INTERNAL "bash completions dir")
+	else ()
+		set (BASH_COMPLETION_COMPLETIONSDIR "/usr/share/bash-completion/completions" CACHE INTERNAL "bash completions dir")
+	endif ()
 	find_package (bash-completion QUIET)
 	unset (bash-completion_DIR CACHE)
 	if (NOT BASH_COMPLETION_FOUND)
@@ -51,8 +55,11 @@ if (INSTALL_SYSTEM_FILES)
 	install (FILES kdb-bash-completion
 			DESTINATION ${BASH_COMPLETION_COMPLETIONSDIR}
 			RENAME kdb)
-
-	set (FISH_COMPLETION_COMPLETIONSDIR "/usr/share/fish/vendor_completions.d")
+	if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+		set (FISH_COMPLETION_COMPLETIONSDIR "/usr/local/share/fish/completions")
+	else ()
+		set (FISH_COMPLETION_COMPLETIONSDIR "/usr/share/fish/vendor_completions.d")
+	endif ()
 	find_package (PkgConfig)
 	if (PKG_CONFIG_FOUND)
 		pkg_check_modules (FISH_FOUND fish QUIET)
