@@ -231,8 +231,11 @@ int elektraCryptoOpenSSLHandleCreate (elektraCryptoHandle ** handle, KeySet * co
 
 	pthread_mutex_lock (&mutex_ssl);
 
-	EVP_EncryptInit (&((*handle)->encrypt), EVP_aes_256_cbc (), keyBuffer, ivBuffer);
-	EVP_DecryptInit (&((*handle)->decrypt), EVP_aes_256_cbc (), keyBuffer, ivBuffer);
+	(*handle)->encrypt = EVP_CIPHER_CTX_new ();
+	(*handle)->decrypt = EVP_CIPHER_CTX_new ();
+
+	EVP_EncryptInit ((*handle)->encrypt, EVP_aes_256_cbc (), keyBuffer, ivBuffer);
+	EVP_DecryptInit ((*handle)->decrypt, EVP_aes_256_cbc (), keyBuffer, ivBuffer);
 
 	memset (keyBuffer, 0, sizeof (keyBuffer));
 	memset (ivBuffer, 0, sizeof (ivBuffer));
@@ -255,8 +258,10 @@ void elektraCryptoOpenSSLHandleDestroy (elektraCryptoHandle * handle)
 	if (handle)
 	{
 		pthread_mutex_lock (&mutex_ssl);
-		EVP_CIPHER_CTX_cleanup (&(handle->encrypt));
-		EVP_CIPHER_CTX_cleanup (&(handle->decrypt));
+		EVP_CIPHER_CTX_cleanup (handle->encrypt);
+		EVP_CIPHER_CTX_cleanup (handle->decrypt);
+		EVP_CIPHER_CTX_free (handle->encrypt);
+		EVP_CIPHER_CTX_free (handle->decrypt);
 		pthread_mutex_unlock (&mutex_ssl);
 		elektraFree (handle);
 	}
@@ -318,7 +323,7 @@ int elektraCryptoOpenSSLEncrypt (elektraCryptoHandle * handle, Key * k, Key * er
 	// encrypt the header data
 	memcpy (headerBuffer, &flags, sizeof (flags));
 	memcpy (headerBuffer + sizeof (flags), &contentLen, sizeof (contentLen));
-	EVP_EncryptUpdate (&(handle->encrypt), cipherBuffer, &written, headerBuffer, headerLen);
+	EVP_EncryptUpdate (handle->encrypt, cipherBuffer, &written, headerBuffer, headerLen);
 	if (written > 0)
 	{
 		BIO_write (encrypted, cipherBuffer, written);
@@ -343,7 +348,7 @@ int elektraCryptoOpenSSLEncrypt (elektraCryptoHandle * handle, Key * k, Key * er
 			partitionLen = contentLen - processed;
 		}
 
-		EVP_EncryptUpdate (&(handle->encrypt), cipherBuffer, &written, content, partitionLen);
+		EVP_EncryptUpdate (handle->encrypt, cipherBuffer, &written, content, partitionLen);
 		if (written > 0)
 		{
 			BIO_write (encrypted, cipherBuffer, written);
@@ -359,7 +364,7 @@ int elektraCryptoOpenSSLEncrypt (elektraCryptoHandle * handle, Key * k, Key * er
 		content += partitionLen;
 	}
 
-	EVP_EncryptFinal (&(handle->encrypt), cipherBuffer, &written);
+	EVP_EncryptFinal (handle->encrypt, cipherBuffer, &written);
 	if (written > 0)
 	{
 		BIO_write (encrypted, cipherBuffer, written);
@@ -437,7 +442,7 @@ int elektraCryptoOpenSSLDecrypt (elektraCryptoHandle * handle, Key * k, Key * er
 	// decrypt the whole BLOB and store the plain text into the memory sink
 	for (kdb_unsigned_long_t i = 0; i < payloadLen; i += ELEKTRA_CRYPTO_SSL_BLOCKSIZE)
 	{
-		EVP_DecryptUpdate (&(handle->decrypt), contentBuffer, &written, (payload + i), ELEKTRA_CRYPTO_SSL_BLOCKSIZE);
+		EVP_DecryptUpdate (handle->decrypt, contentBuffer, &written, (payload + i), ELEKTRA_CRYPTO_SSL_BLOCKSIZE);
 		if (written > 0)
 		{
 			BIO_write (decrypted, contentBuffer, written);
@@ -449,7 +454,7 @@ int elektraCryptoOpenSSLDecrypt (elektraCryptoHandle * handle, Key * k, Key * er
 		}
 	}
 
-	EVP_DecryptFinal (&(handle->decrypt), contentBuffer, &written);
+	EVP_DecryptFinal (handle->decrypt, contentBuffer, &written);
 	if (written > 0)
 	{
 		BIO_write (decrypted, contentBuffer, written);

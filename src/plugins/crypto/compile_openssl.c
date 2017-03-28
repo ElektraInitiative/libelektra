@@ -11,7 +11,6 @@
 
 int main ()
 {
-	EVP_CIPHER_CTX opensslSpecificType;
-
+	EVP_CIPHER_CTX * opensslSpecificType;
 	return 0;
 }
