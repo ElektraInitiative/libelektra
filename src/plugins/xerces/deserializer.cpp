@@ -38,8 +38,6 @@ XercesPtr<DOMDocument> doc2dom (std::string const & src)
 	return XercesPtr<DOMDocument> (parser.adoptDocument ());
 }
 
-const char * ws = " \t\n\r\f\v";
-
 string trim (string const & str)
 {
 	stringstream ss (str);

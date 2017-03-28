@@ -3,8 +3,9 @@
 - infos/licence = BSD
 - infos/provides = storage/xml
 - infos/placements = getstorage setstorage
-- infos/status = recommended experimental unittest memleak
+- infos/status = recommended experimental unittest
 - infos/description = Storage in the XML format.
+- infos/needs =
 
 ## Introduction
 
@@ -20,7 +21,7 @@ formatted files. It uses a general format which:
 
 To mount an XML file we use:
 
-    kdb mount file.xml user/test xerces
+    kdb mount file.xml user/test/file xerces
 
 The strength and usage of this plugin is that it supports arbitrary XML files and
 does not require a specific format. Given the following example of an XML file:
@@ -32,8 +33,8 @@ does not require a specific format. Given the following example of an XML file:
 
 We can observe the following result after mounting:
 
-	kdb get user/test/xerces > foo
-	kdb get user/test/xerces/bar > bar
+	kdb get user/test/file/xerces > foo
+	kdb get user/test/file/bar > bar
 	kdb getmeta user/test/xerces/bar meta > da_ta
 
 To export an existing keyset to the XML format:

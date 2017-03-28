@@ -71,7 +71,7 @@ void appendKey (DOMDocument & doc, Key const & parentKey, Key const & key)
 	// Strip the parentKey, as we use relative paths
 	auto parentName = parentKey.begin ();
 	auto name = key.begin ();
-	while (parentName != --parentKey.end () && name != key.end ())
+	while (parentName != parentKey.end () && name != key.end ())
 	{
 		parentName++;
 		name++;
