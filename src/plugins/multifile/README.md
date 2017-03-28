@@ -9,15 +9,34 @@
 - infos/metadata =
 - infos/description = mounts multiple files within a directory 
 
-## Introduction ##
+## Introduction
 
-The multifile-resolver creates a new backend and calls resolver and storage plugin for each file matching a given pattern. 
+For some applications it is beneficially to have multiple configuration files.
+One way to achieve this, is to mount different files for the application.
 
-## Usage ##
+In some situations we are not able to specify every configuration file with separate mounts
+because new configuration files might be created any time.
+Instead we want to include every configuration file matching a given pattern.
+
+The multifile-resolver does so by calling resolver and storage plugins for each file matching a given pattern.
+
+
+## Plugin Configuration
+
+- `pattern`:
+  The pattern to be used to match configuration files.
+  Internally glob (3) will be used.
+- `storage`:
+  The storage plugin to use.
+- `resolver`:
+  The resolver plugin to use.
+
+
+## Usage
 
 `kdb mount -R multifile -c storage="ini",pattern="*/*.ini",resolver="resolver" /path /mountpoint`
 
-## Examples ##
+## Examples
 
 ```sh
 rm -rf /tmp/multitest || $(exit 0)
@@ -85,6 +104,6 @@ stat /tmp/multifile/test.ini
 kdb umount system/multi
 ```
 
-## Limitations ##
+## Limitations
 
-None.
+- You cannot get rid of the configuration file name.
