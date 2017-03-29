@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no" ?>
-<xerces>value of xerces
+<root>value of xerces
 
   <cdata more-s_päcials="1 &amp; 2 are &lt; 3 &#xA;">&lt;![CDATA[this is some cdata text "'&lt;&gt;&amp;ä "]]&gt;</cdata>
 
@@ -9,4 +9,4 @@
 
   <userKey>withValue</userKey>
 
-</xerces>
+</root>

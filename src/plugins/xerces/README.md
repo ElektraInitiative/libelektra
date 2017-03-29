@@ -2,10 +2,11 @@
 - infos/author = e1528532 <e1528532@libelektra.org>
 - infos/licence = BSD
 - infos/provides = storage/xml
+- infos/needs =
 - infos/placements = getstorage setstorage
 - infos/status = recommended experimental unittest
+- infos/metadata = elektraXercesOriginalRootName
 - infos/description = Storage in the XML format.
-- infos/needs =
 
 ## Introduction
 

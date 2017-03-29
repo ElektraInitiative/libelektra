@@ -84,4 +84,6 @@ private:
 };
 }
 
+#define ELEKTRA_XERCES_ORIGINAL_ROOT_NAME "elektraXercesOriginalRootName"
+
 #endif

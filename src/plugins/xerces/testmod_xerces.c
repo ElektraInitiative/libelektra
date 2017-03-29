@@ -13,6 +13,8 @@
 
 #include <tests_plugin.h>
 
+#define ELEKTRA_XERCES_ORIGINAL_ROOT_NAME "elektraXercesOriginalRootName"
+
 static void test_basics ()
 {
 	printf ("test basics\n");
@@ -52,7 +54,7 @@ static void test_simple_read ()
 	printf ("test simple read\n");
 	fflush (stdout);
 
-	Key * parentKey = keyNew ("/sw/elektra/tests", KEY_VALUE, srcdir_file ("xerces/simple.xml"), KEY_END);
+	Key * parentKey = keyNew ("/sw/elektra/tests/xerces", KEY_VALUE, srcdir_file ("xerces/simple.xml"), KEY_END);
 	KeySet * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("xerces");
 
@@ -66,6 +68,7 @@ static void test_simple_read ()
 	{
 		succeed_if (strcmp (keyName (current), "/sw/elektra/tests/xerces") == 0, "wrong name");
 		succeed_if (strcmp (keyValue (current), "  value of xerces  ") == 0, "value not correct");
+		succeed_if (!keyGetMeta (current, "ELEKTRA_XERCES_ORIGINAL_ROOT_NAME"), "original root name metadata exists");
 	}
 
 	succeed_if (current = ksLookupByName (ks, "/sw/elektra/tests/xerces/fizz", 0), "fizz key not found");
@@ -148,8 +151,12 @@ static void test_simple_write ()
 	fflush (stdout);
 
 	Key * parentKey = keyNew ("/sw/elektra/tests/xerces", KEY_VALUE, srcdir_file ("xerces/escaping-gen.xml"), KEY_END);
+	keySetMeta (parentKey, ELEKTRA_XERCES_ORIGINAL_ROOT_NAME, "root");
 	KeySet * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("xerces");
+
+	Key * root = keyNew ("/sw/elektra/tests/xerces", KEY_VALUE, "value of xerces", KEY_END);
+	keySetMeta (root, ELEKTRA_XERCES_ORIGINAL_ROOT_NAME, "root");
 
 	Key * keyWithMeta = keyNew ("/sw/elektra/tests/xerces/fizz", KEY_END);
 	keySetMeta (keyWithMeta, "buzz", "fizzBuzz");
@@ -162,15 +169,14 @@ static void test_simple_write ()
 		keyNew ("/sw/elektra/tests/xerces/cdata", KEY_VALUE, "<![CDATA[this is some cdata text \"'<>&ä \"]]>", KEY_END);
 	keySetMeta (moreSpecialKeys, "more-s_päcials", "1 & 2 are < 3 \n");
 
-	KeySet * ks = ksNew (5, keyNew ("/sw/elektra/tests/xerces", KEY_VALUE, "value of xerces", KEY_END),
-			     keyNew ("/sw/elektra/tests/xerces/userKey", KEY_VALUE, "withValue", KEY_END), keyWithMeta, specialKeys,
-			     moreSpecialKeys, KS_END);
+	KeySet * ks = ksNew (5, root, keyNew ("/sw/elektra/tests/xerces/userKey", KEY_VALUE, "withValue", KEY_END), keyWithMeta,
+			     specialKeys, moreSpecialKeys, KS_END);
 
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 1, "call to kdbSet was not successful");
 
 	compare_files ("xerces/escaping.xml");
 	// Its also another good deserialization test
-	Key * resultParentKey = keyNew ("/sw/elektra/tests/", KEY_VALUE, srcdir_file ("xerces/escaping.xml"), KEY_END);
+	Key * resultParentKey = keyNew ("/sw/elektra/tests/xerces", KEY_VALUE, srcdir_file ("xerces/escaping.xml"), KEY_END);
 	KeySet * result = ksNew (2, KS_END);
 	succeed_if (plugin->kdbGet (plugin, result, resultParentKey) == 1, "call to kdbGet was not successful");
 	compare_keyset (ks, result);

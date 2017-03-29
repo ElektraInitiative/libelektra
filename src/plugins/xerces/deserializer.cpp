@@ -73,44 +73,61 @@ string getElementText (DOMNode const * parent)
 	return trim (str);
 }
 
+void node2key (DOMNode const * n, Key const & parent, KeySet const & ks, Key & current)
+{
+	const string keyName = toStr (n->getNodeName ());
+	ELEKTRA_LOG_DEBUG ("Encountered Element: %s", keyName.c_str ());
+
+	if (!ks.size ())
+	{ // we map the parent key to the xml root element
+		// preserve the original name if its different
+		auto parentName = parent.rbegin ();
+		if (parentName != parent.rend () && (*parentName) != keyName)
+		{
+			ELEKTRA_LOG_DEBUG ("parent name %s differs from root element name %s", (*parentName).c_str (), keyName.c_str ());
+			current.setMeta (ELEKTRA_XERCES_ORIGINAL_ROOT_NAME, keyName);
+		}
+	}
+	else
+	{
+		current.addBaseName (keyName);
+	}
+
+	const string text = getElementText (n);
+	current.set<string> (text);
+
+	if (!current.isValid ())
+	{
+		throw XercesPluginException ("Given keyset contains invalid keys to serialize");
+	}
+
+	ELEKTRA_LOG_DEBUG ("new parent is %s with value %s", current.getFullName ().c_str (), current.get<string> ().c_str ());
+
+	if (n->hasAttributes ())
+	{
+		// get all the attributes of the node
+		DOMNamedNodeMap * pAttributes = n->getAttributes ();
+		const XMLSize_t nSize = pAttributes->getLength ();
+		ELEKTRA_LOG_DEBUG ("\tAttributes");
+		for (XMLSize_t i = 0; i < nSize; ++i)
+		{
+			DOMAttr * pAttributeNode = dynamic_cast<DOMAttr *> (pAttributes->item (i));
+			ELEKTRA_LOG_DEBUG ("\t%s=%s", asCStr (pAttributeNode->getName ()), asCStr (pAttributeNode->getValue ()));
+			current.setMeta (toStr (pAttributeNode->getName ()), toStr (pAttributeNode->getValue ()));
+		}
+	}
+}
+
 void dom2keyset (DOMNode const * n, Key const & parent, KeySet & ks)
 {
 	if (n)
 	{
-		Key current = parent.dup ();
+		Key current (parent.getFullName (), KEY_END);
 		if (n->getNodeType () == DOMNode::ELEMENT_NODE)
 		{
-			string keyName = toStr (n->getNodeName ());
-			ELEKTRA_LOG_DEBUG ("Encountered Element: %s", keyName.c_str ());
-			current.addBaseName (keyName);
-
-			string text = getElementText (n);
-			current.set<string> (text);
-
-			if (!current.isValid ())
-			{
-				throw XercesPluginException ("Given keyset contains invalid keys to serialize");
-			}
-
-			ELEKTRA_LOG_DEBUG ("new parent is %s with value %s", current.getFullName ().c_str (),
-					   current.get<string> ().c_str ());
-
-			if (n->hasAttributes ())
-			{
-				// get all the attributes of the node
-				DOMNamedNodeMap * pAttributes = n->getAttributes ();
-				const XMLSize_t nSize = pAttributes->getLength ();
-				ELEKTRA_LOG_DEBUG ("\tAttributes");
-				for (XMLSize_t i = 0; i < nSize; ++i)
-				{
-					DOMAttr * pAttributeNode = dynamic_cast<DOMAttr *> (pAttributes->item (i));
-					ELEKTRA_LOG_DEBUG ("\t%s=%s", asCStr (pAttributeNode->getName ()),
-							   asCStr (pAttributeNode->getValue ()));
-					current.setMeta (toStr (pAttributeNode->getName ()), toStr (pAttributeNode->getValue ()));
-				}
-			}
-			// Only add keys with a value, attributes or leafs
-			if (n->hasAttributes () || !text.empty () || !n->getFirstChild ())
+			node2key (n, parent, ks, current);
+			// Only add keys with a value, attributes or leafs or the root to preserve the original name
+			if (n->hasAttributes () || !current.getString ().empty () || !n->getFirstChild () || !ks.size ())
 			{
 				ELEKTRA_LOG_DEBUG ("adding %s", current.getFullName ().c_str ());
 				ks.append (current);

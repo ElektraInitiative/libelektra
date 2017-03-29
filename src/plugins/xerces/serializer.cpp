@@ -23,7 +23,7 @@ using namespace xerces;
 namespace
 {
 
-DOMElement * findChildWithName (DOMNode const & elem, std::string const & name)
+DOMElement * findChildWithName (DOMNode const & elem, string const & name)
 {
 	for (auto child = elem.getFirstChild (); child != NULL; child = elem.getNextSibling ())
 	{
@@ -36,15 +36,21 @@ DOMElement * findChildWithName (DOMNode const & elem, std::string const & name)
 	return nullptr;
 }
 
+string getOriginalRootName (Key const & key, string const & name)
+{
+	return key.hasMeta (ELEKTRA_XERCES_ORIGINAL_ROOT_NAME) ? key.getMeta<string> (ELEKTRA_XERCES_ORIGINAL_ROOT_NAME) : name;
+}
+
 DOMElement * key2xml (DOMDocument & doc, string name, Key const & key)
 {
-	ELEKTRA_LOG_DEBUG ("creating element %s", name.c_str ());
+	const string actualName = getOriginalRootName (key, name);
+	ELEKTRA_LOG_DEBUG ("creating element %s", actualName.c_str ());
 
-	DOMElement * elem = doc.createElement (asXMLCh (name));
+	DOMElement * elem = doc.createElement (asXMLCh (actualName));
 	// key value = element value
 	if (!key.get<string> ().empty ())
 	{
-		ELEKTRA_LOG_DEBUG ("creating text for element %s: %s", name.c_str (), key.get<string> ().c_str ());
+		ELEKTRA_LOG_DEBUG ("creating text for element %s: %s", actualName.c_str (), key.get<string> ().c_str ());
 		elem->appendChild (doc.createTextNode (asXMLCh (key.get<string> ())));
 	}
 
@@ -53,9 +59,12 @@ DOMElement * key2xml (DOMDocument & doc, string name, Key const & key)
 	itKey.rewindMeta ();
 	while (Key const & meta = itKey.nextMeta ())
 	{
-		ELEKTRA_LOG_DEBUG ("creating attribute %s for element %s: %s", meta.getName ().c_str (), name.c_str (),
-				   meta.get<string> ().c_str ());
-		elem->setAttribute (asXMLCh (meta.getName ()), asXMLCh (meta.get<string> ()));
+		if (meta.getName () != ELEKTRA_XERCES_ORIGINAL_ROOT_NAME)
+		{
+			ELEKTRA_LOG_DEBUG ("creating attribute %s for element %s: %s", meta.getName ().c_str (), actualName.c_str (),
+					   meta.get<string> ().c_str ());
+			elem->setAttribute (asXMLCh (meta.getName ()), asXMLCh (meta.get<string> ()));
+		}
 	}
 	// intended for dom appending, which then takes ownership, so no unique_ptr necessary
 	return elem;
@@ -71,7 +80,7 @@ void appendKey (DOMDocument & doc, Key const & parentKey, Key const & key)
 	// Strip the parentKey, as we use relative paths
 	auto parentName = parentKey.begin ();
 	auto name = key.begin ();
-	while (parentName != parentKey.end () && name != key.end ())
+	while (parentName != --parentKey.end () && name != key.end ())
 	{
 		parentName++;
 		name++;
@@ -83,13 +92,17 @@ void appendKey (DOMDocument & doc, Key const & parentKey, Key const & key)
 	}
 
 	// Now create the path
+	auto rootPos = name;
 	for (; name != --key.end (); name++)
 	{
-		DOMElement * child = findChildWithName (*current, *name);
+		const string originalRootName = getOriginalRootName (parentKey, "");
+		// restore original root element name if present
+		const string actualName = !originalRootName.empty () && name == rootPos ? originalRootName : (*name);
+		DOMElement * child = findChildWithName (*current, actualName);
 		if (!child)
 		{
-			ELEKTRA_LOG_DEBUG ("creating path element %s", (*name).c_str ());
-			child = doc.createElement (asXMLCh (*name));
+			ELEKTRA_LOG_DEBUG ("creating path element %s", actualName.c_str ());
+			child = doc.createElement (asXMLCh (actualName));
 			current->appendChild (child);
 		}
 		current = child;
@@ -114,7 +127,7 @@ void xerces::serialize (Key const & parentKey, KeySet const & ks)
 	if (!parentKey.isValid ()) throw XercesPluginException ("Parent key is invalid");
 	if (parentKey.get<string> ().empty ()) throw XercesPluginException ("No destination file specified as key value");
 
-	ELEKTRA_LOG_DEBUG ("serializing relative to %s from file %s", parentKey.getFullName ().c_str (), parentKey.get<string> ().c_str ());
+	ELEKTRA_LOG_DEBUG ("serializing relative to %s to file %s", parentKey.getFullName ().c_str (), parentKey.get<string> ().c_str ());
 	DOMImplementation * impl = DOMImplementationRegistry::getDOMImplementation (asXMLCh ("Core"));
 	if (impl != NULL)
 	{
