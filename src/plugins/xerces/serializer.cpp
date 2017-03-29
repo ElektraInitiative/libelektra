@@ -36,16 +36,15 @@ DOMElement * findChildWithName (DOMNode const & elem, string const & name)
 	return nullptr;
 }
 
-DOMElement * key2xml (DOMDocument & doc, string name, Key const & key)
+void key2xml (DOMDocument & doc, DOMElement & elem, string name, Key const & key)
 {
-	ELEKTRA_LOG_DEBUG ("creating element %s", name.c_str ());
+	ELEKTRA_LOG_DEBUG ("updating element %s", name.c_str ());
 
-	DOMElement * elem = doc.createElement (asXMLCh (name));
 	// key value = element value
 	if (!key.get<string> ().empty ())
 	{
 		ELEKTRA_LOG_DEBUG ("creating text for element %s: %s", name.c_str (), key.get<string> ().c_str ());
-		elem->appendChild (doc.createTextNode (asXMLCh (key.get<string> ())));
+		elem.appendChild (doc.createTextNode (asXMLCh (key.get<string> ())));
 	}
 
 	// meta keys = attributes
@@ -57,11 +56,9 @@ DOMElement * key2xml (DOMDocument & doc, string name, Key const & key)
 		{
 			ELEKTRA_LOG_DEBUG ("creating attribute %s for element %s: %s", meta.getName ().c_str (), name.c_str (),
 					   meta.get<string> ().c_str ());
-			elem->setAttribute (asXMLCh (meta.getName ()), asXMLCh (meta.get<string> ()));
+			elem.setAttribute (asXMLCh (meta.getName ()), asXMLCh (meta.get<string> ()));
 		}
 	}
-	// intended for dom appending, which then takes ownership, so no unique_ptr necessary
-	return elem;
 }
 
 
@@ -102,9 +99,12 @@ void appendKey (DOMDocument & doc, Key const & parentKey, string const & origina
 		current = child;
 	}
 
-	const string actualName = !originalRootName.empty () && name == rootPos ? originalRootName : (*name);
 	// Now we are at the key's insertion point and the last key name part
-	current->appendChild (key2xml (doc, actualName, key));
+	const string actualName = !originalRootName.empty () && name == rootPos ? originalRootName : (*name);
+	DOMElement * child = findChildWithName (*current, actualName);
+	DOMElement * elem = child ? child : doc.createElement (asXMLCh (actualName));
+	key2xml (doc, *elem, actualName, key);
+	if (!child) current->appendChild (elem);
 }
 
 void ks2dom (DOMDocument & doc, Key const & parentKey, KeySet const & ks)

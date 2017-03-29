@@ -67,3 +67,34 @@ The main rules of an XML element name are:
 - Element names cannot contain spaces
 
 XSD transformations, schemas or DTDs are not supported yet.
+
+## Examples
+
+### Mounting, setting a key and exporting
+
+```sh
+# Backup-and-Restore:/examples/xercesfile
+
+sudo kdb mount xerces.xml /examples/xercesfile xerces
+
+kdb set /examples/xercesfile foo
+kdb setmeta /examples/xercesfile xerces/rootname xerces
+kdb set /examples/xercesfile/bar bar
+kdb setmeta /examples/xercesfile/bar meta "da_ta"
+
+kdb getmeta /examples/xercesfile xerces/rootname
+#> xerces
+
+kdb get /examples/xercesfile/bar
+#> bar
+
+kdb export /examples/xercesfile xerces
+#> <?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+#> <xerces>
+#> 
+#>   <bar meta="da_ta">bar</bar>foo
+#> 
+#> </xerces>
+
+sudo kdb umount /examples/xercesfile
+```
