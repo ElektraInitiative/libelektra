@@ -1070,3 +1070,9 @@ severity:error
 ingroup:plugin
 macro:INVALID_FORMAT
 module:simpleini
+
+number:174
+description:general xml error
+severity:error
+ingroup:plugin
+module:xerces
