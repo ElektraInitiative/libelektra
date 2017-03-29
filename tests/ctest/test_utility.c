@@ -32,10 +32,8 @@ static void test_elektraRstrip ()
 
 	strncpy (text, "", MAX_LENGTH);
 	succeed_if_same_string (elektraRstrip (text, NULL), "");
-	/*
 	elektraRstrip (text, &last);
 	succeed_if_same_string (last, text);
-	*/
 
 	strncpy (text, "No Trailing Whitespace", MAX_LENGTH);
 	succeed_if_same_string (elektraRstrip (text, NULL), "No Trailing Whitespace");

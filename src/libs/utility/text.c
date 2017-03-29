@@ -43,7 +43,7 @@ char * elektraLskip (char const * const text)
  *   string right before the last consecutive whitespace character before
  *   the character stored in `*end`. After the call to this function
  *   the variable `*end` stores the address of the last character of the
- *   stripped string.
+ *   stripped string or `'\0'` if the stripped string is empty.
  *
  * @pre The parameter `start` must not be `NULL`.
  * @pre Since this function modifies the string in place, the memory location
@@ -71,7 +71,7 @@ char * elektraRstrip (char * const start, char ** end)
 	*(last + 1) = '\0';
 	if (end != NULL)
 	{
-		*end = last;
+		*end = (last < start) ? start : last;
 	}
 
 	return start;
