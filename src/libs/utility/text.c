@@ -34,7 +34,7 @@ char * elektraLskip (char const * const text)
  * @brief This function removes trailing whitespace from the given string.
  *
  * The address stored in the parameter `end` of this function must either
- * point to the last character of the string (the one before `'0'`) or `NULL`.
+ * point to the last character of the string (the one before `'\0'`) or `NULL`.
  *
  * - If `end` is `NULL`, then the function determines the last character by
  *   calculating the length of the string.
@@ -42,7 +42,7 @@ char * elektraLskip (char const * const text)
  * - If `end` is specified manually, then the function will cut of the given
  *   string right before the last consecutive whitespace character before
  *   the character stored in `*end`. After the call to this function
- *   the variabel `*end` stores the address of the last character of the
+ *   the variable `*end` stores the address of the last character of the
  *   stripped string.
  *
  * @pre The parameter `start` must not be `NULL`.
