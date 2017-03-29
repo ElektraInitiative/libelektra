@@ -13,7 +13,7 @@
 
 #include <tests_plugin.h>
 
-#define ELEKTRA_XERCES_ORIGINAL_ROOT_NAME "elektraXercesOriginalRootName"
+#define ELEKTRA_XERCES_ORIGINAL_ROOT_NAME "xerces/rootname"
 
 static void test_basics ()
 {
@@ -151,7 +151,6 @@ static void test_simple_write ()
 	fflush (stdout);
 
 	Key * parentKey = keyNew ("/sw/elektra/tests/xerces", KEY_VALUE, srcdir_file ("xerces/escaping-gen.xml"), KEY_END);
-	keySetMeta (parentKey, ELEKTRA_XERCES_ORIGINAL_ROOT_NAME, "root");
 	KeySet * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("xerces");
 

@@ -5,7 +5,7 @@
 - infos/needs =
 - infos/placements = getstorage setstorage
 - infos/status = recommended experimental unittest
-- infos/metadata = elektraXercesOriginalRootName
+- infos/metadata = xerces/rootname
 - infos/description = Storage in the XML format.
 
 ## Introduction
@@ -32,17 +32,23 @@ does not require a specific format. Given the following example of an XML file:
 	  <bar meta="da_ta">bar</bar>
 	</xerces>
 
+Please note that if the key name does not correspond to the root element of the xml
+file, the original name gets stored in a metakey called `xerces/rootname`. The content
+of the root element gets mapped to the mountpoint.
+
 We can observe the following result after mounting:
 
-	kdb get user/test/file/xerces > foo
+	kdb get user/test/file > foo
 	kdb get user/test/file/bar > bar
-	kdb getmeta user/test/xerces/bar meta > da_ta
+	kdb getmeta user/test/file/bar meta > da_ta
 
 To export an existing keyset to the XML format:
 
     kdb export user/test/xerces xerces > example.xml
 
-The root element of the resulting XML file will be "xerces".
+The root element of the resulting XML file will be "xerces" again, restored via the
+metadata. If you don't want this behavior, delete the metadata `xerces/rootname` on 
+the mountpoint, then it uses the mountpoint's name instead.
 
 ## Dependencies
 

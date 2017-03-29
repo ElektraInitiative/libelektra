@@ -36,21 +36,15 @@ DOMElement * findChildWithName (DOMNode const & elem, string const & name)
 	return nullptr;
 }
 
-string getOriginalRootName (Key const & key, string const & name)
-{
-	return key.hasMeta (ELEKTRA_XERCES_ORIGINAL_ROOT_NAME) ? key.getMeta<string> (ELEKTRA_XERCES_ORIGINAL_ROOT_NAME) : name;
-}
-
 DOMElement * key2xml (DOMDocument & doc, string name, Key const & key)
 {
-	const string actualName = getOriginalRootName (key, name);
-	ELEKTRA_LOG_DEBUG ("creating element %s", actualName.c_str ());
+	ELEKTRA_LOG_DEBUG ("creating element %s", name.c_str ());
 
-	DOMElement * elem = doc.createElement (asXMLCh (actualName));
+	DOMElement * elem = doc.createElement (asXMLCh (name));
 	// key value = element value
 	if (!key.get<string> ().empty ())
 	{
-		ELEKTRA_LOG_DEBUG ("creating text for element %s: %s", actualName.c_str (), key.get<string> ().c_str ());
+		ELEKTRA_LOG_DEBUG ("creating text for element %s: %s", name.c_str (), key.get<string> ().c_str ());
 		elem->appendChild (doc.createTextNode (asXMLCh (key.get<string> ())));
 	}
 
@@ -61,7 +55,7 @@ DOMElement * key2xml (DOMDocument & doc, string name, Key const & key)
 	{
 		if (meta.getName () != ELEKTRA_XERCES_ORIGINAL_ROOT_NAME)
 		{
-			ELEKTRA_LOG_DEBUG ("creating attribute %s for element %s: %s", meta.getName ().c_str (), actualName.c_str (),
+			ELEKTRA_LOG_DEBUG ("creating attribute %s for element %s: %s", meta.getName ().c_str (), name.c_str (),
 					   meta.get<string> ().c_str ());
 			elem->setAttribute (asXMLCh (meta.getName ()), asXMLCh (meta.get<string> ()));
 		}
@@ -71,7 +65,7 @@ DOMElement * key2xml (DOMDocument & doc, string name, Key const & key)
 }
 
 
-void appendKey (DOMDocument & doc, Key const & parentKey, Key const & key)
+void appendKey (DOMDocument & doc, Key const & parentKey, string const & originalRootName, Key const & key)
 {
 	DOMNode * current = &doc;
 
@@ -91,12 +85,12 @@ void appendKey (DOMDocument & doc, Key const & parentKey, Key const & key)
 		throw new XercesPluginException ("Key " + key.getFullName () + " is not under " + parentKey.getFullName ());
 	}
 
-	// Now create the path
+	// restore original root element name if present
 	auto rootPos = name;
+
+	// Now create the path
 	for (; name != --key.end (); name++)
 	{
-		const string originalRootName = getOriginalRootName (parentKey, "");
-		// restore original root element name if present
 		const string actualName = !originalRootName.empty () && name == rootPos ? originalRootName : (*name);
 		DOMElement * child = findChildWithName (*current, actualName);
 		if (!child)
@@ -108,15 +102,19 @@ void appendKey (DOMDocument & doc, Key const & parentKey, Key const & key)
 		current = child;
 	}
 
+	const string actualName = !originalRootName.empty () && name == rootPos ? originalRootName : (*name);
 	// Now we are at the key's insertion point and the last key name part
-	current->appendChild (key2xml (doc, *name, key));
+	current->appendChild (key2xml (doc, actualName, key));
 }
 
 void ks2dom (DOMDocument & doc, Key const & parentKey, KeySet const & ks)
 {
+	Key root = ks.lookup (parentKey);
+	const string originalRootName =
+		root.hasMeta (ELEKTRA_XERCES_ORIGINAL_ROOT_NAME) ? root.getMeta<string> (ELEKTRA_XERCES_ORIGINAL_ROOT_NAME) : "";
 	for (auto const & k : ks)
 	{
-		appendKey (doc, parentKey, k);
+		appendKey (doc, parentKey, originalRootName, k);
 	}
 }
 
