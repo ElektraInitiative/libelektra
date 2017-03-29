@@ -97,7 +97,9 @@ endif ()
 
 if (ENABLE_ASAN)
 	set (EXTRA_FLAGS "${EXTRA_FLAGS} -fsanitize=undefined -fsanitize=address -fno-omit-frame-pointer")
-	set (CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -lubsan")
+	if (NOT APPLE)
+		set (CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -lubsan")
+	endif ()
 	set (ASAN_LIBRARY "-lasan") #this is needed for GIR to put asan in front
 
 	if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
