@@ -1,6 +1,8 @@
 find_program (RONN_LOC ronn)
 
 if (RONN_LOC)
+	SET (ENV{RUBYOPT} "-E utf-8")
+
 	add_custom_target (man ALL)
 
 

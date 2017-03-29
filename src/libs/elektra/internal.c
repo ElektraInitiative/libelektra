@@ -411,7 +411,7 @@ char * elektraVFormat (const char * format, va_list arg_list)
 		return buffer;
 	}
 
-	// String is longer then default_size.
+	// String is longer than default_size.
 	// Allocate an intermediate buffer
 	// according to the calculated length from our last try
 	size_t const adjusted_buffer_size = calculated_length + 1;
