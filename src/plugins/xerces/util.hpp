@@ -12,6 +12,7 @@
 #ifndef ELEKTRA_PLUGIN_XERCES_UTIL_H
 #define ELEKTRA_PLUGIN_XERCES_UTIL_H
 
+#include <memory>
 #include <xercesc/util/XMLString.hpp>
 
 namespace xerces

@@ -16,6 +16,7 @@
 #include <xercesc/dom/DOMNode.hpp>
 #include <xercesc/parsers/XercesDOMParser.hpp>
 
+#include <algorithm>
 #include <iostream>
 #include <kdblogger.h>
 #include <key.hpp>
