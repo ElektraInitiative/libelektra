@@ -32,3 +32,13 @@ export const thunkCreator = (action) => {
 // encode kdb path with encodeURIComponent
 export const encodePath = (path) =>
   path.split('/').map(encodeURIComponent).join('/')
+
+export const parseJSONResponse = (response) => {
+  return response.text().then(text => {
+    try {
+      return JSON.parse(text)
+    } catch (err) {
+      throw new Error('invalid response from server')
+    }
+  })
+}
