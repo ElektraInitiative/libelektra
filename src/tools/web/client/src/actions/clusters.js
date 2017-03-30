@@ -6,7 +6,7 @@
  * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
  */
 
-import { thunkCreator } from './utils'
+import { thunkCreator, parseJSONResponse } from './utils'
 
 // ~~~
 
@@ -17,7 +17,7 @@ export const CLUSTERS_FAILURE = 'CLUSTERS_FAILURE'
 export const fetchClusters = () => thunkCreator({
   types: [CLUSTERS_REQUEST, CLUSTERS_SUCCESS, CLUSTERS_FAILURE],
   promise: fetch(`/clusters`, { credentials: 'same-origin' })
-    .then(response => response.json()),
+    .then(parseJSONResponse),
 })
 
 // ~~~
@@ -35,7 +35,7 @@ export const updateCluster = (id, data) => thunkCreator({
       'Content-Type': 'application/json',
     },
     body: JSON.stringify(data),
-  }).then(response => response.json()),
+  }).then(parseJSONResponse),
 })
 
 // ~~~
@@ -49,7 +49,7 @@ export const deleteCluster = (id, data) => thunkCreator({
   promise: fetch(`/clusters/${id}`, {
     credentials: 'same-origin',
     method: 'DELETE',
-  }).then(response => response.json()),
+  }).then(parseJSONResponse),
 })
 
 // ~~~
@@ -67,5 +67,5 @@ export const createCluster = (data) => thunkCreator({
       'Content-Type': 'application/json',
     },
     body: JSON.stringify(data),
-  }).then(response => response.json()),
+  }).then(parseJSONResponse),
 })

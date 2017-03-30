@@ -6,7 +6,7 @@
  * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
  */
 
-import { thunkCreator, encodePath } from './utils'
+import { thunkCreator, encodePath, parseJSONResponse } from './utils'
 
 // ~~~
 
@@ -20,7 +20,7 @@ export const getKey = (id, path, cluster = false) => thunkCreator({
     `/${cluster ? 'clusters' : 'instances'}/${id}/kdb/${encodePath(path)}`,
     { credentials: 'same-origin' }
   )
-    .then(response => response.json())
+    .then(parseJSONResponse)
     .then(result => {
       return { ...result, id, path }
     }),
@@ -47,7 +47,7 @@ export const setKey = (id, path, value, cluster = false) => thunkCreator({
       },
       body: value,
     }
-  ).then(response => response.json()),
+  ).then(parseJSONResponse),
 })
 
 export const setClusterKey = (id, path, value) => setKey(id, path, value, true)
@@ -67,7 +67,7 @@ export const deleteKey = (id, path, cluster = false) => thunkCreator({
       credentials: 'same-origin',
       method: 'DELETE',
     }
-  ).then(response => response.json()),
+  ).then(parseJSONResponse),
 })
 
 export const deleteClusterKey = (id, path) => deleteKey(id, path, true)

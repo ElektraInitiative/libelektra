@@ -6,7 +6,7 @@
  * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
  */
 
-import { thunkCreator } from './utils'
+import { thunkCreator, parseJSONResponse } from './utils'
 
 // ~~~
 
@@ -18,7 +18,7 @@ export const configureInstance = (id) => thunkCreator({
   id,
   types: [CONFIGURE_INSTANCE_REQUEST, CONFIGURE_INSTANCE_SUCCESS, CONFIGURE_INSTANCE_FAILURE],
   promise: fetch(`/instances/${id}/kdb`, { credentials: 'same-origin' })
-    .then(response => response.json())
+    .then(parseJSONResponse)
     .then(result => {
       return { ...result, id }
     }),
@@ -34,7 +34,7 @@ export const configureCluster = (id) => thunkCreator({
   id,
   types: [CONFIGURE_CLUSTER_REQUEST, CONFIGURE_CLUSTER_SUCCESS, CONFIGURE_CLUSTER_FAILURE],
   promise: fetch(`/clusters/${id}/kdb`, { credentials: 'same-origin' })
-    .then(response => response.json())
+    .then(parseJSONResponse)
     .then(result => {
       return { ...result, id }
     }),

@@ -6,7 +6,7 @@
  * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
  */
 
-import { thunkCreator } from './utils'
+import { thunkCreator, parseJSONResponse } from './utils'
 
 // ~~~
 
@@ -17,7 +17,7 @@ export const INSTANCES_FAILURE = 'INSTANCES_FAILURE'
 export const fetchInstances = () => thunkCreator({
   types: [INSTANCES_REQUEST, INSTANCES_SUCCESS, INSTANCES_FAILURE],
   promise: fetch(`/instances`, { credentials: 'same-origin' })
-    .then(response => response.json()),
+    .then(parseJSONResponse),
 })
 
 // ~~~
@@ -35,7 +35,7 @@ export const updateInstance = (id, data) => thunkCreator({
       'Content-Type': 'application/json',
     },
     body: JSON.stringify(data),
-  }).then(response => response.json()),
+  }).then(parseJSONResponse),
 })
 
 // ~~~
@@ -49,7 +49,7 @@ export const deleteInstance = (id, data) => thunkCreator({
   promise: fetch(`/instances/${id}`, {
     credentials: 'same-origin',
     method: 'DELETE',
-  }).then(response => response.json()),
+  }).then(parseJSONResponse),
 })
 
 // ~~~
@@ -67,5 +67,5 @@ export const createInstance = (data) => thunkCreator({
       'Content-Type': 'application/json',
     },
     body: JSON.stringify(data),
-  }).then(response => response.json()),
+  }).then(parseJSONResponse),
 })
