@@ -2,7 +2,7 @@
 - infos/author = Thomas Waser <thomas.waser@libelektra.org>
 - infos/licence = BSD
 - infos/needs =
-- infos/provides = storage
+- infos/provides = storage/file
 - infos/recommends =
 - infos/placements = getstorage setstorage
 - infos/status = maintained conformant compatible coverage specific unittest tested nodep libc configurable preview memleak experimental difficult old nodoc concept
