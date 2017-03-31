@@ -4,6 +4,8 @@ if (DEPENDENCY_PHASE)
 	add_gtest (testmod_type
 		MEMLEAK
 		SOURCES types.cpp
+		LINK_ELEKTRA
+			elektra-kdb # for elektraPluginOpen elektraPluginClose
 		)
 endif ()
 

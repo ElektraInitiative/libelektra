@@ -454,12 +454,12 @@ int backendClose (Backend * backend, Key * errorKey);
 int backendUpdateSize (Backend * backend, Key * parent, int size);
 
 /*Plugin handling*/
+Plugin * elektraPluginOpen (const char * backendname, KeySet * modules, KeySet * config, Key * errorKey);
+int elektraPluginClose (Plugin * handle, Key * errorKey);
 int elektraProcessPlugin (Key * cur, int * pluginNumber, char ** pluginName, char ** referenceName, Key * errorKey);
 int elektraProcessPlugins (Plugin ** plugins, KeySet * modules, KeySet * referencePlugins, KeySet * config, KeySet * systemConfig,
 			   Key * errorKey);
 
-Plugin * elektraPluginOpen (const char * backendname, KeySet * modules, KeySet * config, Key * errorKey);
-int elektraPluginClose (Plugin * handle, Key * errorKey);
 Plugin * elektraPluginMissing (void);
 Plugin * elektraPluginVersion (void);
 

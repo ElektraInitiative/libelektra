@@ -53,12 +53,13 @@ public:
 		types.insert (pair<string, Type *> ("boolean", new TType<kdb::boolean_t> ()));
 		types.insert (pair<string, Type *> ("octet", new TType<kdb::octet_t> ()));
 
+		types.insert (pair<string, Type *> ("any", new AnyType ()));
+		types.insert (pair<string, Type *> ("string", new StringType ()));
+
 		// non-standard types (deprecated, just for
 		// compatibility):
-		types.insert (pair<string, Type *> ("any", new AnyType ()));
 		types.insert (pair<string, Type *> ("empty", new EmptyType ()));
 		types.insert (pair<string, Type *> ("FSType", new FSType ()));
-		types.insert (pair<string, Type *> ("string", new StringType ()));
 	}
 
 	bool check (Key & k)

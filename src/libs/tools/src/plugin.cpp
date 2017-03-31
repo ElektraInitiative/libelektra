@@ -14,7 +14,7 @@
 #include <kdb.h>
 #include <kdbmodule.h>
 #include <kdbplugin.h>
-#include <kdbprivate.h> // currently needed for plugin handling
+#include <kdbprivate.h> // currently needed for plugin handling (struct _Plugin)
 #include <plugindatabase.hpp>
 
 #include <algorithm>
