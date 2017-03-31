@@ -106,7 +106,7 @@ int main (int argc, char ** argv)
 
 	init (argc, argv);
 
-	const char * old_locale = setlocale (LC_ALL, NULL);
+	const char * old_locale = elektraStrDup (setlocale (LC_ALL, NULL));
 	setlocale (LC_ALL, "C");
 
 	testInt ("5", 1, "1-10");
