@@ -45,6 +45,7 @@ int elektraTypeValidateKey (ckdb::Key * key, ckdb::Key * errorKey)
 		setError (key, errorKey);
 		ret = 0;
 	}
+
 	k.release ();
 	return ret;
 }
@@ -82,15 +83,17 @@ int elektraTypeGet (ckdb::Plugin *, ckdb::KeySet * returned, ckdb::Key *)
 
 int elektraTypeSet (ckdb::Plugin * handle, ckdb::KeySet * returned, ckdb::Key * parentKey)
 {
-	/* set all keys */
+	int ret = 1;
 
-	if (!TC::get (handle)->check (reinterpret_cast<kdb::KeySet &> (returned)))
+	kdb::KeySet ks (returned); // reinterpret_cast<kdb::KeySet &> (returned)
+	if (!TC::get (handle)->check (ks))
 	{
 		setError (ksCurrent (returned), parentKey);
-		return -1;
+		ret = -1;
 	}
 
-	return 1; /* success */
+	ks.release ();
+	return ret;
 }
 
 ckdb::Plugin * ELEKTRA_PLUGIN_EXPORT (type)
