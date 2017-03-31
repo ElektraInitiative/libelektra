@@ -179,6 +179,7 @@ int main (int argc, char ** argv)
 	testChar ("c", 1, "a-f");
 
 	setlocale (LC_ALL, old_locale);
+	elektraFree (old_locale);
 	printf ("\ntestmod_range RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 
 	return nbError;
