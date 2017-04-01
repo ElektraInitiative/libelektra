@@ -14,6 +14,7 @@
 
 #include <memory>
 #include <xercesc/util/XMLString.hpp>
+#include <xercesc/util/TransService.hpp>
 
 namespace xerces
 {
@@ -50,12 +51,14 @@ using XercesPtr = std::unique_ptr<T, XercesDeleter<T>>;
 
 inline XercesPtr<XMLCh> toXMLCh (std::string const & str)
 {
-	return XercesPtr<XMLCh> (XERCES_CPP_NAMESPACE::XMLString::transcode (str.c_str ()));
+	// XMLByte required by TranscodeFromStr is an unsigned char * but basically they can be used equivalently
+	return XercesPtr<XMLCh> (XERCES_CPP_NAMESPACE::TranscodeFromStr (reinterpret_cast<const XMLByte*> (str.c_str ()), str.size(), "UTF-8").adopt());
 }
 
 inline XercesPtr<char> toCStr (XMLCh const * xmlCh)
 {
-	return XercesPtr<char> (XERCES_CPP_NAMESPACE::XMLString::transcode (xmlCh));
+	// XMLByte returned by TranscodeToStr is an unsigned char * but basically they can be used equivalently
+	return XercesPtr<char> (reinterpret_cast<char*>(XERCES_CPP_NAMESPACE::TranscodeToStr (xmlCh,"UTF-8").adopt()));
 }
 
 inline std::string toStr (XMLCh const * xmlCh)
