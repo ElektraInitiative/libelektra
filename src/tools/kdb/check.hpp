@@ -3,7 +3,7 @@
  *
  * @brief
  *
- * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ * @copyright BSD License (see doc/LICENSE.md or https://www.libelektra.org)
  */
 
 #ifndef CHECK_HPP
@@ -44,7 +44,7 @@ public:
 		       "If a plugin name is given, checks will only be done with given plugin.\n"
 		       "Use -c to pass options to the plugin.\n"
 		       "\n"
-		       "Please report any output caused by official plugins to http://www.libelektra.org\n";
+		       "Please report any output caused by official plugins to https://www.libelektra.org\n";
 	}
 
 	virtual int execute (Cmdline const & cmdline) override;

@@ -3,7 +3,7 @@
  *
  * @brief this combines all reducers into one tree
  *
- * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ * @copyright BSD License (see doc/LICENSE.md or https://www.libelektra.org)
  */
 
 import { combineReducers } from 'redux'

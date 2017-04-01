@@ -3,8 +3,8 @@
 <!-- By Rémi <remipouak@yahoo.fr> -->
 
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-	xmlns="http://www.libelektra.org"
-	targetNamespace="http://www.libelektra.org"
+	xmlns="https://www.libelektra.org"
+	targetNamespace="https://www.libelektra.org"
 	attributeFormDefault="unqualified"
 	elementFormDefault="qualified">
 
@@ -15,12 +15,12 @@
 		It validates against anything with a valid key and keyset skeleton,
 		arbitrary attributes and elements are accepted.
 
-		The targetNamespace is "http://www.libelektra.org".
+		The targetNamespace is "https://www.libelektra.org".
 		To use the schema and the namespace, make sure that the root element
 		keyset has the following attributes:
-		xmlns="http://www.libelektra.org"
+		xmlns="https://www.libelektra.org"
 		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-		xsi:schemaLocation="http://www.libelektra.org elektra.xsd"
+		xsi:schemaLocation="https://www.libelektra.org elektra.xsd"
 
 		Neither the elements (by using default namespace xmlns=) nor the attributes
 		(because of attributeFormDefault="unqualified" here)

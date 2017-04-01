@@ -3,7 +3,7 @@
  *
  * @brief Test suite for meta information.
  *
- * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ * @copyright BSD License (see doc/LICENSE.md or https://www.libelektra.org)
  */
 
 #include <tests.h>

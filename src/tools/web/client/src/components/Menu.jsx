@@ -6,7 +6,7 @@
  * it shows the current page and, if on the overview page, it will show buttons
  * to create clusters and instances
  *
- * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ * @copyright BSD License (see doc/LICENSE.md or https://www.libelektra.org)
  */
 
 import React from 'react'

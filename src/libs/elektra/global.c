@@ -3,7 +3,7 @@
  *
  * @brief Helpers for global plugins
  *
- * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ * @copyright BSD License (see doc/COPYING or https://www.libelektra.org)
  */
 
 #include <kdbglobal.h>

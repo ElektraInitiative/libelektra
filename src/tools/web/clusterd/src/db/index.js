@@ -5,7 +5,7 @@
  *
  * this exports database functions from other files
  *
- * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ * @copyright BSD License (see doc/LICENSE.md or https://www.libelektra.org)
  */
 
 export {

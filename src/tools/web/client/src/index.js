@@ -5,7 +5,7 @@
  *
  * here we fetch all data and initialize redux and react
  *
- * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ * @copyright BSD License (see doc/LICENSE.md or https://www.libelektra.org)
  */
 
 import React from 'react'

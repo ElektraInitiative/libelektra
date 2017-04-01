@@ -3,7 +3,7 @@
  *
  * @brief Models a merge conflict
  *
- * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ * @copyright BSD License (see doc/LICENSE.md or https://www.libelektra.org)
  *
  */
 

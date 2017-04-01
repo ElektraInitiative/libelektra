@@ -8,7 +8,7 @@ files found on a system.  To elektrify an application means to change
 the application so that it uses Elektra afterwards.
 
 Information on Elektra can be found on the
-[website](http://www.libelektra.org).
+[website](https://www.libelektra.org).
 For introduction in the terminology, make sure to read
 [the glossary](elektra-glossary.md).
 

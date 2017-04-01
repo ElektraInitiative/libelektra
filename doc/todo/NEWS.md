@@ -34,13 +34,13 @@ compiled against an older 0.8 version of Elektra will continue to work
 ## Get It!
 
 You can download the release from
-[here](http://www.libelektra.org/ftp/elektra/releases/elektra-0.8.<<VERSION>>.tar.gz)
+[here](https://www.libelektra.org/ftp/elektra/releases/elektra-0.8.<<VERSION>>.tar.gz)
 and also [here on github](https://github.com/ElektraInitiative/ftp/tree/master/releases/elektra-0.8.<<VERSION>>.tar.gz)
 
 <<`scripts/generate-hashsums`>>
 
 This release tarball now is also available
-[signed by me using gpg](http://www.libelektra.org/ftp/elektra/releases/elektra-0.8.<<VERSION>>.tar.gz.gpg)
+[signed by me using gpg](https://www.libelektra.org/ftp/elektra/releases/elektra-0.8.<<VERSION>>.tar.gz.gpg)
 
 already built API-Docu can be found [here](http://doc.libelektra.org/api/0.8.<<VERSION>>/html/)
 

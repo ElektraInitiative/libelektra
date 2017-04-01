@@ -5,7 +5,7 @@
  *
  * they will be shown in a small notification at the bottom of the UI
  *
- * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ * @copyright BSD License (see doc/LICENSE.md or https://www.libelektra.org)
  */
 
 import {

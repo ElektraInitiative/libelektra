@@ -8,7 +8,7 @@
  *    nodes with values (via `valueField`)
  *  - adjusted css class names
  *
- * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ * @copyright BSD License (see doc/LICENSE.md or https://www.libelektra.org)
  */
 
 import React, { PropTypes } from 'react'

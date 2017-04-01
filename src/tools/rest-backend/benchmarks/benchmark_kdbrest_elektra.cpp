@@ -3,7 +3,7 @@
  *
  * @brief benchmark for the rest service utilizing elektra
  *
- * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ * @copyright BSD License (see doc/COPYING or https://www.libelektra.org)
  */
 
 #include <algorithm>

@@ -3,7 +3,7 @@
  *
  * @brief utility functions used in routes
  *
- * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ * @copyright BSD License (see doc/LICENSE.md or https://www.libelektra.org)
  */
 
 import { ROOT_PATH } from '../config'

@@ -3,7 +3,7 @@
  *
  * @brief Header for the getenv library
  *
- * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ * @copyright BSD License (see doc/LICENSE.md or https://www.libelektra.org)
  *
  */
 

@@ -3,7 +3,7 @@
  *
  * @brief All valid and invalid namespaces, with meta and cascading.
  *
- * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ * @copyright BSD License (see doc/LICENSE.md or https://www.libelektra.org)
  */
 
 // clang-format off

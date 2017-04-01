@@ -105,7 +105,7 @@ For information about elektrified environment variables, see
 
 
 To get an idea of Elektra, you can take a look at the
-[presentation](http://www.libelektra.org/ftp/elektra/presentations/2016/FOSDEM/fosdem.odp).
+[presentation](https://www.libelektra.org/ftp/elektra/presentations/2016/FOSDEM/fosdem.odp).
 
 The full documentation, including:
 

@@ -1,7 +1,7 @@
 # Ruby bindings
 
 This module is a SWIG generated Ruby binding for Elektra Core API - KDB
-(http://www.libelektra.org) and its libtools library. So it consists of the two
+(https://www.libelektra.org) and its libtools library. So it consists of the two
 Ruby modules:
  * `Kdb` wrapping Elektra's core API
  * `Kdbtools` wrapping Elektra's libtools API

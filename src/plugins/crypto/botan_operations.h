@@ -3,7 +3,7 @@
  *
  * @brief cryptographic interface using the Botan library
  *
- * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ * @copyright BSD License (see doc/LICENSE.md or https://www.libelektra.org)
  *
  */
 

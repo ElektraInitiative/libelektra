@@ -184,7 +184,7 @@ Files should start with:
 	 *
 	 * @brief <short statement about the content of the file>
 	 *
-	 * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+	 * @copyright BSD License (see doc/LICENSE.md or https://www.libelektra.org)
 	 */
 
 \endverbatim

@@ -3,7 +3,7 @@
  *
  * @brief tests for the storage service
  *
- * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ * @copyright BSD License (see doc/LICENSE.md or https://www.libelektra.org)
  */
 
 #include <gtest/gtest.h>
