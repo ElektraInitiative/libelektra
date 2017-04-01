@@ -169,8 +169,8 @@ or on Debian:
 
 See also build server jobs:
 
-* [clang-asan](http://build.libelektra.org:8080/job/elektra-clang-asan/)
-* [gcc-asan](http://build.libelektra.org:8080/job/elektra-gcc-asan/)
+* [clang-asan](https://build.libelektra.org/job/elektra-clang-asan/)
+* [gcc-asan](https://build.libelektra.org/job/elektra-gcc-asan/)
 
 ### CBMC
 
@@ -190,7 +190,7 @@ The htmls can be found in the build directory in the folder `coverage`.
 
 See also the build server job:
 
-* [gcc-asan](http://build.libelektra.org:8080/job/elektra-incremental/)
+* [gcc-asan](https://build.libelektra.org/job/elektra-incremental/)
 
 
 ## See also

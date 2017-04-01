@@ -212,9 +212,9 @@ The Elektra Initiative moved to Github for following reasons:
 - We were seriously missing a bug tracker
 - It may make collaboration easier
 - Build Server Integration:
- - [Build on MergeRequests](http://build.libelektra.org:8080/job/elektra-mergerequests/)
+ - [Build on MergeRequests](https://build.libelektra.org/job/elektra-mergerequests/)
    waits for the first merge request to be built!
- - And the build status is now published [for this job](http://build.libelektra.org:8080/job/elektra-gcc47-all/)
+ - And the build status is now published [for this job](https://build.libelektra.org/job/elektra-gcc47-all/)
 
 
 The main entrance point and URL for any advertisement and linking stays
@@ -590,7 +590,7 @@ fixed. The list is way too long to put it here, see git log for details.
 
 
 The build server now has a job searching for TODOs:
- http://build.libelektra.org:8080/job/elektra-todo/
+ https://build.libelektra.org/job/elektra-todo/
 
 The latest documentation from git master is also build there and the
 results are published here:
@@ -767,7 +767,7 @@ The build system was improved. Now also ALL, NODEP or DEFAULT are
 accepted as magic values for a list of plugins.
 
 Most of the tests run automatically on a buildserver:
-http://build.libelektra.org:8080/
+https://build.libelektra.org/
 
 It gives you an good impression with how many different compilers elektra
 is currently tested. Elektra now also compiles with clang.

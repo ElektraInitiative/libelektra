@@ -88,7 +88,7 @@ you can do:
 
 ## Github
 
-When doing merge requests our [buildserver](http://build.libelektra.org:8080)
+When doing merge requests our [buildserver](https://build.libelektra.org)
 will build authorized users. If you are not yet authorized, the following
 question will be asked (by user markus2330):
 

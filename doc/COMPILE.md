@@ -78,7 +78,7 @@ Some scripts in the folder of the same name may help you running cmake.
 ### Compilers
 
 For supported compilers have a look at the automatic build farm on
-http://build.libelektra.org:8080/
+https://build.libelektra.org/
 
 Additionally, gcc 4.6 armhf is tested regularly.
 
