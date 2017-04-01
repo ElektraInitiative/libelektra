@@ -146,6 +146,9 @@ or if specific jobs should be started:
 * jenkins build [source-package-test](http://build.libelektra.org:8080/job/elektra-source-package-test/) please
 * jenkins build [stable](http://build.libelektra.org:8080/job/elektra-mergerequests-stable/) please
 * jenkins build [unstable](http://build.libelektra.org:8080/job/elektra-mergerequests-unstable/) please
+* jenkins build [homepage](https://build.libelektra.org/job/elektra-homepage) please
+* jenkins build [gcc-configure-debian-stretch-minimal](https://build.libelektra.org/job/elektra-gcc-configure-debian-stretch-minimal) please
+* jenkins build [gcc-configure-debian-jessie-minimal](https://build.libelektra.org/job/elektra-gcc-configure-debian-jessie-minimal) please
 
 If you want any configuration changes, please contact
 `Markus Raab <elektra@markus-raab.org>`.
