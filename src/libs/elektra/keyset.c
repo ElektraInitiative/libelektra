@@ -911,7 +911,7 @@ ssize_t ksCopyInternal (KeySet * ks, size_t to, size_t from)
 	ELEKTRA_ASSERT (length >= 0, "length %zu too small", length);
 	ELEKTRA_ASSERT (ks->size >= to, "ks->size %zu smaller than %zu", ks->size, to);
 
-	ks->size += sizediff;
+	ks->size = ssize + sizediff;
 
 	if (length != 0)
 	{
