@@ -109,7 +109,8 @@ static void replaceChars (char * str)
 			str[lenOfMsg] = '@';
 		else if (str[lenOfMsg] == '\f')
 			str[lenOfMsg] = '@';
-	} while (lenOfMsg--);
+		lenOfMsg--;
+	} while (lenOfMsg);
 	str[last] = '\n';
 }
 
