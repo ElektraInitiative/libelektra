@@ -13,7 +13,7 @@ using namespace kdb;
 
 ConfigNode::ConfigNode (QString name, QString path, const Key & key, TreeViewModel * parentModel)
 : m_name (std::move (name)), m_path (std::move (path)), m_key (key), m_children (new TreeViewModel), m_metaData (nullptr),
-m_parentModel (parentModel), m_isExpanded (false), m_isDirty (false)
+  m_parentModel (parentModel), m_isExpanded (false), m_isDirty (false)
 {
 	setValue ();
 
@@ -25,12 +25,12 @@ m_parentModel (parentModel), m_isExpanded (false), m_isDirty (false)
 
 	connect (m_children, SIGNAL (expandNode (bool)), this, SLOT (setIsExpanded (bool)));
 	connect (this, SIGNAL (showMessage (QString, QString, QString)), parentModel,
-	SLOT (showConfigNodeMessage (QString, QString, QString)));
+		 SLOT (showConfigNodeMessage (QString, QString, QString)));
 }
 
 ConfigNode::ConfigNode (const ConfigNode & other)
 : QObject (), m_name (other.m_name), m_path (other.m_path), m_value (other.m_value), m_key (other.m_key.dup ()),
-m_children (new TreeViewModel), m_metaData (nullptr), m_parentModel (nullptr), m_isExpanded (other.m_isExpanded), m_isDirty (false)
+  m_children (new TreeViewModel), m_metaData (nullptr), m_parentModel (nullptr), m_isExpanded (other.m_isExpanded), m_isDirty (false)
 {
 	if (other.m_children)
 	{
@@ -118,14 +118,16 @@ void ConfigNode::setValue (const QVariant & value)
 	else
 		m_key = m_key.dup ();
 
-	try {
+	try
+	{
 		if (m_key.getString ().compare (value.toString ().toStdString ()) != 0)
 		{
 			m_key.setString (value.toString ().toStdString ());
 			m_value = value;
 		}
 	}
-	catch (KeyTypeMismatch ex) {
+	catch (KeyTypeMismatch ex)
+	{
 		emit showMessage (tr ("Error"), tr ("Creating/Editing binary keys is not yet supported."), ex.what ());
 		return;
 	}
@@ -261,7 +263,7 @@ void ConfigNode::populateMetaModel ()
 			node->setName (QString::fromStdString (m_key.getName ()));
 			node->setKey (m_key);
 			node->setMeta (QString::fromStdString (m_key.currentMeta ().getName ()),
-			QVariant::fromValue (QString::fromStdString (m_key.currentMeta ().getString ())));
+				       QVariant::fromValue (QString::fromStdString (m_key.currentMeta ().getString ())));
 
 			m_metaData->insertRow (m_metaData->rowCount (), node, false);
 		}
@@ -292,7 +294,7 @@ void ConfigNode::setKeyName (const QString & name)
 		catch (KeyInvalidName ex)
 		{
 			emit showMessage (tr ("Error"), tr ("Could not set name because Keyname \"%1\" is invalid.").arg (name),
-			ex.what ());
+					  ex.what ());
 			return;
 		}
 	}
