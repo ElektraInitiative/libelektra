@@ -36,7 +36,8 @@ DOMElement * findChildWithName (DOMNode const & elem, string const & name)
 	return nullptr;
 }
 
-void key2xml (DOMDocument & doc, DOMElement & elem, string name, Key const & key)
+// the name parameter is only used in debug mode for logging, not in production, so we suppress the warning
+void key2xml (DOMDocument & doc, DOMElement & elem, string name ELEKTRA_UNUSED, Key const & key)
 {
 	ELEKTRA_LOG_DEBUG ("updating element %s", name.c_str ());
 
