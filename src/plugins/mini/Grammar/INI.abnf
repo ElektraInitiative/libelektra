@@ -1,0 +1,11 @@
+; This grammar specifies the INI syntax supported by the mINI plugin
+
+printable-ascii-without-equals = %x21-3C / %x3E-7E
+
+newline = LF
+ini = [key-value-wsp *(newline key-value-wsp)]
+key-value-wsp = *WSP key-value *WSP
+key-value = key *WSP "=" *WSP value
+
+key = value
+value = *printable-ascii-without-equals
