@@ -192,6 +192,41 @@ static void test_simple_write ()
 	fflush (stdout);
 }
 
+static void test_maven_pom ()
+{
+	printf ("test maven pom\n");
+	fflush (stdout);
+
+	Key * parentKey = keyNew ("/sw/elektra/tests/xerces", KEY_VALUE, srcdir_file ("xerces/pom.xml"), KEY_END);
+	KeySet * conf = ksNew (0, KS_END);
+	PLUGIN_OPEN ("xerces");
+
+	KeySet * ks = ksNew (20, KS_END);
+	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "call to kdbGet was not successful");
+
+	// Its also another good deserialization test
+	Key * serializationParentKey = keyNew ("/sw/elektra/tests/xerces", KEY_VALUE, srcdir_file ("xerces/pom-gen.xml"), KEY_END);
+	succeed_if (plugin->kdbSet (plugin, ks, serializationParentKey) == 1, "call to kdbSet was not successful");
+
+	Key * resultParentKey = keyNew ("/sw/elektra/tests/xerces", KEY_VALUE, srcdir_file ("xerces/pom-gen.xml"), KEY_END);
+	KeySet * result = ksNew (20, KS_END);
+	succeed_if (plugin->kdbGet (plugin, result, resultParentKey) == 1, "call to kdbGet was not successful");
+
+	compare_keyset (ks, result); // Should be the same
+
+	// elektraUnlink (srcdir_file ("xerces/pom-gen.xml"));
+
+	keyDel (parentKey);
+	ksDel (ks);
+	keyDel (serializationParentKey);
+	keyDel (resultParentKey);
+	ksDel (result);
+	PLUGIN_CLOSE ();
+
+	printf ("test maven pom finished\n");
+	fflush (stdout);
+}
+
 int main (int argc, char ** argv)
 {
 	printf ("XERCES    TESTS\n");
@@ -202,6 +237,7 @@ int main (int argc, char ** argv)
 	test_basics ();
 	test_simple_read ();
 	test_simple_write ();
+	test_maven_pom ();
 
 	printf ("\ntestmod_xerces RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 
