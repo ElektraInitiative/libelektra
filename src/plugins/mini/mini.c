@@ -14,6 +14,8 @@
 
 #include <kdberrors.h>
 #include <kdbhelper.h>
+#include <kdblogger.h>
+#include <kdbutility.h>
 #include <stdio.h>
 
 /* -- Functions ------------------------------------------------------------------------------------------------------------------------- */
@@ -32,6 +34,48 @@ static inline KeySet * elektraMiniContract ()
 		      keyNew ("system/elektra/modules/mini/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 }
 
+static inline void parseLine (char * line, KeySet * keySet, Key * parentKey)
+{
+	char * equals = strchr (line, '=');
+	*equals = '\0';
+
+	char * name = elektraStrip (line);
+	char * value = elektraStrip (equals + 1);
+
+	Key * key = keyNew (keyName (parentKey), KEY_END);
+	keyAddName (key, name);
+	keySetString (key, value);
+	ELEKTRA_LOG_DEBUG ("Name:  “%s”\n", keyName (key));
+	ELEKTRA_LOG_DEBUG ("Value: “%s”\n", keyString (key));
+
+	ksAppendKey (keySet, key);
+}
+
+static int parseINI (FILE * file, KeySet * keySet, Key * parentKey)
+{
+	char * line = NULL;
+	size_t length = 0;
+	int errorNumber = errno;
+
+	for (size_t lineNumber = 1; getline (&line, &length, file) != -1; ++lineNumber)
+	{
+		ELEKTRA_LOG_DEBUG ("Read Line %lu: %s", lineNumber, line);
+		parseLine (line, keySet, parentKey);
+	}
+
+	elektraFree (line);
+
+	if (!feof (file))
+	{
+		ELEKTRA_LOG_DEBUG ("Did not reach end of configuration file “%s”!\n", keyString (parentKey));
+		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_NOEOF, parentKey, strerror (errno));
+		errno = errorNumber;
+		return ERROR;
+	}
+
+	return KEYSET_MODIFIED;
+}
+
 static int parseFile (KeySet * returned ELEKTRA_UNUSED, Key * parentKey)
 {
 	// Retrieve values stored in file specified via `parentKey`
@@ -46,9 +90,10 @@ static int parseFile (KeySet * returned ELEKTRA_UNUSED, Key * parentKey)
 		return ERROR;
 	}
 
-	fclose (source);
+	int status = parseINI (source, returned, parentKey);
 
-	return KEYSET_UNCHANGED;
+	fclose (source);
+	return status;
 }
 
 // ====================
