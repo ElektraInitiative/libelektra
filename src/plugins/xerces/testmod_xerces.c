@@ -201,7 +201,7 @@ static void test_maven_pom ()
 	KeySet * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("xerces");
 
-	KeySet * ks = ksNew (20, KS_END);
+	KeySet * ks = ksNew (64, KS_END);
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "call to kdbGet was not successful");
 
 	// Its also another good deserialization test
@@ -209,12 +209,14 @@ static void test_maven_pom ()
 	succeed_if (plugin->kdbSet (plugin, ks, serializationParentKey) == 1, "call to kdbSet was not successful");
 
 	Key * resultParentKey = keyNew ("/sw/elektra/tests/xerces", KEY_VALUE, srcdir_file ("xerces/pom-gen.xml"), KEY_END);
-	KeySet * result = ksNew (20, KS_END);
+	KeySet * result = ksNew (64, KS_END);
 	succeed_if (plugin->kdbGet (plugin, result, resultParentKey) == 1, "call to kdbGet was not successful");
+
+	succeed_if (64 == ksGetSize (ks), "pom file is expected to contain 64 keys");
 
 	compare_keyset (ks, result); // Should be the same
 
-	// elektraUnlink (srcdir_file ("xerces/pom-gen.xml"));
+	elektraUnlink (srcdir_file ("xerces/pom-gen.xml"));
 
 	keyDel (parentKey);
 	ksDel (ks);
