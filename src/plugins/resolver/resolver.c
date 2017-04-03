@@ -8,6 +8,7 @@
 
 #include "resolver.h"
 
+#include <kdbassert.h>
 #include <kdbproposal.h>
 
 #include "kdbos.h"
@@ -74,6 +75,8 @@ static void resolverInit (resolverHandle * p, const char * path)
 static resolverHandle * elektraGetResolverHandle (Plugin * handle, Key * parentKey)
 {
 	resolverHandles * pks = elektraPluginGetData (handle);
+	ELEKTRA_ASSERT (pks != NULL, "Unable to retrieve plugin data");
+
 	switch (keyGetNamespace (parentKey))
 	{
 	case KEY_NS_SPEC:
