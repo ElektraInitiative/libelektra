@@ -120,7 +120,6 @@ int elektraMiniSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UN
 	return KEYSET_UNCHANGED;
 }
 
-
 Plugin * ELEKTRA_PLUGIN_EXPORT (mini)
 {
 	// clang-format off
