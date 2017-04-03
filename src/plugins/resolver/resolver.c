@@ -685,7 +685,7 @@ error:
 /**
  * @brief Check conflict for the current open file
  *
- * Does an fstat and checks if mtime are equal as they were 
+ * Does an fstat and checks if mtime are equal as they were
  *
  * @param pk to get mtime and fd from
  * @param parentKey to write errors&warnings to
