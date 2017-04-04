@@ -6,6 +6,7 @@ add_plugin (mini
 		mini.c
 		values.h
 	LINK_ELEKTRA
+		elektra-ease
 		elektra-utility
 	ADD_TEST
 	)

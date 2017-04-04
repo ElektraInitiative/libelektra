@@ -12,6 +12,7 @@
 #include "mini.h"
 #include "values.h"
 
+#include <kdbease.h>
 #include <kdberrors.h>
 #include <kdbhelper.h>
 #include <kdblogger.h>
@@ -115,7 +116,7 @@ int elektraMiniGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 	return parseFile (returned, parentKey);
 }
 
-int elektraMiniSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
+int elektraMiniSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
 {
 	ELEKTRA_LOG ("Writing configuration data\n");
 	int errorNumber = errno;
@@ -127,6 +128,15 @@ int elektraMiniSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UN
 		ELEKTRA_SET_ERROR_GET (parentKey);
 		errno = errorNumber;
 		return ERROR;
+	}
+
+	Key * key;
+	ksRewind (returned);
+	while ((key = ksNext (returned)) != 0)
+	{
+		const char * name = elektraKeyGetRelativeName (key, parentKey);
+		ELEKTRA_LOG_DEBUG ("Write mapping “%s=%s”", name, keyString (key));
+		fprintf (destination, "%s=%s", name, keyString (key));
 	}
 
 	fclose (destination);
