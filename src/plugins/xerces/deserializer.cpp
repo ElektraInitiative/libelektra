@@ -152,7 +152,7 @@ Key newArrayKey (Key const & arrayKey, KeySet & ks)
 		arrayBaseKey.addBaseName ("#");
 		result.append (arrayBaseKey);
 	}
-	return Key (elektraArrayGetNextKey (result.getKeySet ()));
+	return elektraArrayGetNextKey (result.getKeySet ());
 }
 
 void dom2keyset (DOMNode const * n, Key const & parent, KeySet & ks, map<Key, bool> & arrays)
@@ -168,7 +168,7 @@ void dom2keyset (DOMNode const * n, Key const & parent, KeySet & ks, map<Key, bo
 			auto it = arrays.find (current);
 			const bool array = it != arrays.end () && it->second;
 			// Multiple elements with that name, map as an array
-			if (array) current = newArrayKey (current, ks);
+			if (array) current.addBaseName (newArrayKey (current, ks).getBaseName ());
 
 			// Only add keys with a value, attributes or leafs or the root to preserve the original name or array keys
 			if (n->hasAttributes () || !current.getString ().empty () || !n->getFirstChild () || !ks.size () || array)

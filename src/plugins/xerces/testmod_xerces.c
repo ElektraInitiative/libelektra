@@ -71,17 +71,36 @@ static void test_simple_read ()
 		succeed_if (!keyGetMeta (current, "ELEKTRA_XERCES_ORIGINAL_ROOT_NAME"), "original root name metadata exists");
 	}
 
-	succeed_if (current = ksLookupByName (ks, "/sw/elektra/tests/xerces/fizz", 0), "fizz key not found");
+	output_keyset (ks);
+
+	succeed_if (current = ksLookupByName (ks, "/sw/elektra/tests/xerces/fizz/#0", 0), "first fizz key not found");
 	if (current)
 	{
-		succeed_if (strcmp (keyName (current), "/sw/elektra/tests/xerces/fizz") == 0, "wrong name");
-
 		const Key * meta;
 		succeed_if (meta = keyGetMeta (current, "buzz"), "no metadata exists");
 		if (meta)
 		{
 			succeed_if (strcmp (keyName (meta), "buzz") == 0, "wrong metadata name");
 			succeed_if (strcmp (keyValue (meta), "fizzBuzz") == 0, "wrong metadata value");
+		}
+	}
+
+	succeed_if (current = ksLookupByName (ks, "/sw/elektra/tests/xerces/fizz/#1", 0), "second fizz key not found");
+	if (current)
+	{
+		succeed_if (!keyGetMeta (current, "buzz"), "metadata exists");
+		succeed_if (!keyGetMeta (current, "without"), "metadata exists");
+	}
+
+	succeed_if (current = ksLookupByName (ks, "/sw/elektra/tests/xerces/fizz/#2", 0), "third fizz key not found");
+	if (current)
+	{
+		const Key * meta;
+		succeed_if (meta = keyGetMeta (current, "without"), "no metadata exists");
+		if (meta)
+		{
+			succeed_if (strcmp (keyName (meta), "without") == 0, "wrong metadata name");
+			succeed_if (strcmp (keyValue (meta), "buzz") == 0, "wrong metadata value");
 		}
 	}
 
