@@ -20,6 +20,8 @@ add_plugin (xerces
 		${XercesC_INCLUDE_DIRS}
 	LINK_LIBRARIES
 		${XercesC_LIBRARIES}
+	LINK_ELEKTRA
+		elektra-meta
 	INSTALL_TEST_DATA
 )
 

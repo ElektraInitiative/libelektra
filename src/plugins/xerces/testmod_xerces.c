@@ -71,17 +71,36 @@ static void test_simple_read ()
 		succeed_if (!keyGetMeta (current, "ELEKTRA_XERCES_ORIGINAL_ROOT_NAME"), "original root name metadata exists");
 	}
 
-	succeed_if (current = ksLookupByName (ks, "/sw/elektra/tests/xerces/fizz", 0), "fizz key not found");
+	output_keyset (ks);
+
+	succeed_if (current = ksLookupByName (ks, "/sw/elektra/tests/xerces/fizz/#0", 0), "first fizz key not found");
 	if (current)
 	{
-		succeed_if (strcmp (keyName (current), "/sw/elektra/tests/xerces/fizz") == 0, "wrong name");
-
 		const Key * meta;
 		succeed_if (meta = keyGetMeta (current, "buzz"), "no metadata exists");
 		if (meta)
 		{
 			succeed_if (strcmp (keyName (meta), "buzz") == 0, "wrong metadata name");
 			succeed_if (strcmp (keyValue (meta), "fizzBuzz") == 0, "wrong metadata value");
+		}
+	}
+
+	succeed_if (current = ksLookupByName (ks, "/sw/elektra/tests/xerces/fizz/#1", 0), "second fizz key not found");
+	if (current)
+	{
+		succeed_if (!keyGetMeta (current, "buzz"), "metadata exists");
+		succeed_if (!keyGetMeta (current, "without"), "metadata exists");
+	}
+
+	succeed_if (current = ksLookupByName (ks, "/sw/elektra/tests/xerces/fizz/#2", 0), "third fizz key not found");
+	if (current)
+	{
+		const Key * meta;
+		succeed_if (meta = keyGetMeta (current, "without"), "no metadata exists");
+		if (meta)
+		{
+			succeed_if (strcmp (keyName (meta), "without") == 0, "wrong metadata name");
+			succeed_if (strcmp (keyValue (meta), "buzz") == 0, "wrong metadata value");
 		}
 	}
 
@@ -192,6 +211,89 @@ static void test_simple_write ()
 	fflush (stdout);
 }
 
+static void test_maven_pom ()
+{
+	printf ("test maven pom\n");
+	fflush (stdout);
+
+	Key * parentKey = keyNew ("/sw/elektra/tests/xerces", KEY_VALUE, srcdir_file ("xerces/pom.xml"), KEY_END);
+	KeySet * conf = ksNew (0, KS_END);
+	PLUGIN_OPEN ("xerces");
+
+	KeySet * ks = ksNew (64, KS_END);
+	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "call to kdbGet was not successful");
+
+	// Its also another good deserialization test
+	Key * serializationParentKey = keyNew ("/sw/elektra/tests/xerces", KEY_VALUE, srcdir_file ("xerces/pom-gen.xml"), KEY_END);
+	succeed_if (plugin->kdbSet (plugin, ks, serializationParentKey) == 1, "call to kdbSet was not successful");
+
+	Key * resultParentKey = keyNew ("/sw/elektra/tests/xerces", KEY_VALUE, srcdir_file ("xerces/pom-gen.xml"), KEY_END);
+	KeySet * result = ksNew (64, KS_END);
+	succeed_if (plugin->kdbGet (plugin, result, resultParentKey) == 1, "call to kdbGet was not successful");
+
+	succeed_if (64 == ksGetSize (ks), "pom file is expected to contain 64 keys");
+
+	compare_keyset (ks, result); // Should be the same
+
+	elektraUnlink (srcdir_file ("xerces/pom-gen.xml"));
+
+	keyDel (parentKey);
+	ksDel (ks);
+	keyDel (serializationParentKey);
+	keyDel (resultParentKey);
+	ksDel (result);
+	PLUGIN_CLOSE ();
+
+	printf ("test maven pom finished\n");
+	fflush (stdout);
+}
+
+static void test_jenkins_config ()
+{
+	printf ("test jenkins config\n");
+	fflush (stdout);
+
+	Key * parentKey = keyNew ("/sw/elektra/tests/xerces", KEY_VALUE, srcdir_file ("xerces/jenkins.xml"), KEY_END);
+	KeySet * conf = ksNew (0, KS_END);
+	PLUGIN_OPEN ("xerces");
+
+	KeySet * ks = ksNew (64, KS_END);
+	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "call to kdbGet was not successful");
+
+	// Its also another good deserialization test
+	Key * serializationParentKey = keyNew ("/sw/elektra/tests/xerces", KEY_VALUE, srcdir_file ("xerces/jenkins-gen.xml"), KEY_END);
+	succeed_if (plugin->kdbSet (plugin, ks, serializationParentKey) == 1, "call to kdbSet was not successful");
+
+	Key * resultParentKey = keyNew ("/sw/elektra/tests/xerces", KEY_VALUE, srcdir_file ("xerces/jenkins-gen.xml"), KEY_END);
+	KeySet * result = ksNew (64, KS_END);
+	succeed_if (plugin->kdbGet (plugin, result, resultParentKey) == 1, "call to kdbGet was not successful");
+
+	Key * current;
+
+	succeed_if (
+		current = ksLookupByName (
+			ks, "/sw/elektra/tests/xerces/temporaryOfflineCause/user/properties/jenkins.security.ApiTokenProperty/apiToken", 0),
+		"failed to find apiToken key");
+	succeed_if (strcmp (keyValue (current), "bee4ahGhOqua3ahzsai2Eef5quie5ohK/eiSe4eav+JhVlerBftAil8Ow5AejahBe9oiksKAlla/kk1/1=") == 0,
+		    "api token is wrong");
+
+	succeed_if (86 == ksGetSize (ks), "pom file is expected to contain 64 keys");
+
+	compare_keyset (ks, result); // Should be the same
+
+	elektraUnlink (srcdir_file ("xerces/jenkins-gen.xml"));
+
+	keyDel (parentKey);
+	ksDel (ks);
+	keyDel (serializationParentKey);
+	keyDel (resultParentKey);
+	ksDel (result);
+	PLUGIN_CLOSE ();
+
+	printf ("test jenkins config finished\n");
+	fflush (stdout);
+}
+
 int main (int argc, char ** argv)
 {
 	printf ("XERCES    TESTS\n");
@@ -202,6 +304,8 @@ int main (int argc, char ** argv)
 	test_basics ();
 	test_simple_read ();
 	test_simple_write ();
+	test_maven_pom ();
+	test_jenkins_config ();
 
 	printf ("\ntestmod_xerces RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 

@@ -12,6 +12,9 @@
 #include <xercesc/dom/DOM.hpp>
 #include <xercesc/framework/LocalFileFormatTarget.hpp>
 
+#include <map>
+
+#include <kdbease.h>
 #include <kdblogger.h>
 #include <key.hpp>
 
@@ -25,7 +28,7 @@ namespace
 
 DOMElement * findChildWithName (DOMNode const & elem, string const & name)
 {
-	for (auto child = elem.getFirstChild (); child != NULL; child = elem.getNextSibling ())
+	for (auto child = elem.getFirstChild (); child != NULL; child = child->getNextSibling ())
 	{
 		if (DOMNode::ELEMENT_NODE == child->getNodeType ())
 		{
@@ -37,7 +40,7 @@ DOMElement * findChildWithName (DOMNode const & elem, string const & name)
 }
 
 // the name parameter is only used in debug mode for logging, not in production, so we suppress the warning
-void key2xml (DOMDocument & doc, DOMElement & elem, string name ELEKTRA_UNUSED, Key const & key)
+void key2xml (DOMDocument & doc, DOMElement & elem, string const & name ELEKTRA_UNUSED, Key const & key)
 {
 	ELEKTRA_LOG_DEBUG ("updating element %s", name.c_str ());
 
@@ -62,12 +65,39 @@ void key2xml (DOMDocument & doc, DOMElement & elem, string name ELEKTRA_UNUSED, 
 	}
 }
 
+DOMElement * prepareArrayNodes (DOMDocument & doc, KeySet const & ks, Key & currentPathKey, bool rootPos, string const & name,
+				string const & actualName, DOMNode * current, map<Key, DOMElement *> & arrays)
+{
+	if (rootPos) return nullptr;
 
-void appendKey (DOMDocument & doc, Key const & parentKey, string const & originalRootName, Key const & key)
+	currentPathKey.addBaseName (name);
+	auto it = arrays.find (currentPathKey);
+	Key arrayKey = currentPathKey.dup ();
+	arrayKey.addBaseName ("#");
+
+	// now check if its scanned already, if not, scan it and create and map the node elements
+	if (arrays.find (arrayKey) == arrays.end () && it == arrays.end ())
+	{
+		arrays[arrayKey] = nullptr; // used as a marker not mapped to the DOM for now
+		KeySet arrayKeys = ckdb::elektraArrayGet (currentPathKey.getKey (), ks.getKeySet ());
+		for (auto ak : arrayKeys)
+		{
+			ELEKTRA_LOG_DEBUG ("Precreating array node %s", ak->getFullName ().c_str ());
+			DOMElement * arrayNode = doc.createElement (asXMLCh (actualName));
+			arrays[ak] = arrayNode;
+			current->appendChild (arrayNode);
+		}
+	}
+	return it != arrays.end () ? it->second : nullptr;
+}
+
+void appendKey (DOMDocument & doc, KeySet const & ks, Key const & parentKey, string const & originalRootName, Key const & key,
+		map<Key, DOMElement *> & arrays)
 {
 	DOMNode * current = &doc;
 
 	// Find the key's insertion point, creating the path if non existent
+	ELEKTRA_LOG_DEBUG ("serializing key %s", key.getFullName ().c_str ());
 
 	// Strip the parentKey, as we use relative paths
 	auto parentName = parentKey.begin ();
@@ -78,19 +108,23 @@ void appendKey (DOMDocument & doc, Key const & parentKey, string const & origina
 		name++;
 	}
 
-	if (name == key.end ())
-	{
-		throw new XercesPluginException ("Key " + key.getFullName () + " is not under " + parentKey.getFullName ());
-	}
+	if (name == key.end ()) throw new XercesPluginException ("Key " + key.getFullName () + " is not under " + parentKey.getFullName ());
 
 	// restore original root element name if present
-	auto rootPos = name;
+	const auto rootPos = name;
 
 	// Now create the path
-	for (; name != --key.end (); name++)
+	Key currentPathKey = parentKey.dup ();
+	string actualName;
+	DOMElement * child;
+	for (; name != key.end (); name++)
 	{
-		const string actualName = !originalRootName.empty () && name == rootPos ? originalRootName : (*name);
-		DOMElement * child = findChildWithName (*current, actualName);
+		actualName = !originalRootName.empty () && name == rootPos ? originalRootName : (*name);
+		// If we are not at the root element we scan for array keys as those need special treatment and use their mapped node
+		DOMElement * arrayChild = prepareArrayNodes (doc, ks, currentPathKey, name == rootPos, *name, actualName, current, arrays);
+		// skip the array part of the path, in xml we can have multiple elements with the same name directly
+		child = arrayChild ? arrayChild : findChildWithName (*current, actualName);
+
 		if (!child)
 		{
 			ELEKTRA_LOG_DEBUG ("creating path element %s", actualName.c_str ());
@@ -100,12 +134,8 @@ void appendKey (DOMDocument & doc, Key const & parentKey, string const & origina
 		current = child;
 	}
 
-	// Now we are at the key's insertion point and the last key name part
-	const string actualName = !originalRootName.empty () && name == rootPos ? originalRootName : (*name);
-	DOMElement * child = findChildWithName (*current, actualName);
-	DOMElement * elem = child ? child : doc.createElement (asXMLCh (actualName));
-	key2xml (doc, *elem, actualName, key);
-	if (!child) current->appendChild (elem);
+	// Now we are at the key's insertion point and the last key name part, the loop has already set all our elements
+	key2xml (doc, *child, actualName, key);
 }
 
 void ks2dom (DOMDocument & doc, Key const & parentKey, KeySet const & ks)
@@ -113,10 +143,9 @@ void ks2dom (DOMDocument & doc, Key const & parentKey, KeySet const & ks)
 	Key root = ks.lookup (parentKey);
 	const string originalRootName =
 		root.hasMeta (ELEKTRA_XERCES_ORIGINAL_ROOT_NAME) ? root.getMeta<string> (ELEKTRA_XERCES_ORIGINAL_ROOT_NAME) : "";
+	map<Key, DOMElement *> arrays;
 	for (auto const & k : ks)
-	{
-		appendKey (doc, parentKey, originalRootName, k);
-	}
+		appendKey (doc, ks, parentKey, originalRootName, k, arrays);
 }
 
 } // namespace
