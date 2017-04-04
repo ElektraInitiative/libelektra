@@ -8,6 +8,7 @@
 
 #include "resolver.h"
 
+#include <kdbassert.h>
 #include <kdbproposal.h>
 
 #include "kdbos.h"
@@ -74,6 +75,8 @@ static void resolverInit (resolverHandle * p, const char * path)
 static resolverHandle * elektraGetResolverHandle (Plugin * handle, Key * parentKey)
 {
 	resolverHandles * pks = elektraPluginGetData (handle);
+	ELEKTRA_ASSERT (pks != NULL, "Unable to retrieve plugin data for handle %p with parentKey %s", handle, keyName (parentKey));
+
 	switch (keyGetNamespace (parentKey))
 	{
 	case KEY_NS_SPEC:
@@ -435,8 +438,6 @@ int ELEKTRA_PLUGIN_FUNCTION (resolver, close) (Plugin * handle, Key * errorKey E
 
 int ELEKTRA_PLUGIN_FUNCTION (resolver, get) (Plugin * handle, KeySet * returned, Key * parentKey)
 {
-	resolverHandle * pk = elektraGetResolverHandle (handle, parentKey);
-
 	Key * root = keyNew ("system/elektra/modules/" ELEKTRA_PLUGIN_NAME, KEY_END);
 
 	if (keyRel (root, parentKey) >= 0)
@@ -450,6 +451,7 @@ int ELEKTRA_PLUGIN_FUNCTION (resolver, get) (Plugin * handle, KeySet * returned,
 	}
 	keyDel (root);
 
+	resolverHandle * pk = elektraGetResolverHandle (handle, parentKey);
 	keySetString (parentKey, pk->filename);
 
 	int errnoSave = errno;
@@ -685,7 +687,7 @@ error:
 /**
  * @brief Check conflict for the current open file
  *
- * Does an fstat and checks if mtime are equal as they were 
+ * Does an fstat and checks if mtime are equal as they were
  *
  * @param pk to get mtime and fd from
  * @param parentKey to write errors&warnings to

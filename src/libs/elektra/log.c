@@ -109,7 +109,8 @@ static void replaceChars (char * str)
 			str[lenOfMsg] = '@';
 		else if (str[lenOfMsg] == '\f')
 			str[lenOfMsg] = '@';
-	} while (lenOfMsg--);
+		lenOfMsg--;
+	} while (lenOfMsg);
 	str[last] = '\n';
 }
 
@@ -148,7 +149,9 @@ int elektraVLog (int level ELEKTRA_UNUSED, const char * function ELEKTRA_UNUSED,
 	ret |= elektraLogFile (level, function, file, line, msg);
 #endif
 
+#ifndef NO_FILTER
 end:
+#endif
 	elektraFree (str);
 	elektraFree (msg);
 	return ret;
