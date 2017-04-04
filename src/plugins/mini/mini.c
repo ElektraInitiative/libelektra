@@ -79,7 +79,7 @@ static int parseINI (FILE * file, KeySet * keySet, Key * parentKey)
 
 static int parseFile (KeySet * returned ELEKTRA_UNUSED, Key * parentKey)
 {
-	ELEKTRA_LOG ("Reading configuration data");
+	ELEKTRA_LOG ("Read configuration data");
 	int errorNumber = errno;
 	FILE * source = fopen (keyString (parentKey), "r");
 
@@ -105,7 +105,7 @@ int elektraMiniGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 {
 	if (!elektraStrCmp (keyName (parentKey), "system/elektra/modules/mini"))
 	{
-		ELEKTRA_LOG_DEBUG ("Retrieving plugin contract");
+		ELEKTRA_LOG_DEBUG ("Retrieve plugin contract");
 		KeySet * contract = elektraMiniContract ();
 		ksAppend (returned, contract);
 		ksDel (contract);
@@ -118,7 +118,7 @@ int elektraMiniGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 
 int elektraMiniSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
 {
-	ELEKTRA_LOG ("Writing configuration data");
+	ELEKTRA_LOG ("Write configuration data");
 	int errorNumber = errno;
 	FILE * destination = fopen (keyString (parentKey), "w");
 
