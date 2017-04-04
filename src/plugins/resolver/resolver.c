@@ -438,8 +438,6 @@ int ELEKTRA_PLUGIN_FUNCTION (resolver, close) (Plugin * handle, Key * errorKey E
 
 int ELEKTRA_PLUGIN_FUNCTION (resolver, get) (Plugin * handle, KeySet * returned, Key * parentKey)
 {
-	resolverHandle * pk = elektraGetResolverHandle (handle, parentKey);
-
 	Key * root = keyNew ("system/elektra/modules/" ELEKTRA_PLUGIN_NAME, KEY_END);
 
 	if (keyRel (root, parentKey) >= 0)
@@ -453,6 +451,7 @@ int ELEKTRA_PLUGIN_FUNCTION (resolver, get) (Plugin * handle, KeySet * returned,
 	}
 	keyDel (root);
 
+	resolverHandle * pk = elektraGetResolverHandle (handle, parentKey);
 	keySetString (parentKey, pk->filename);
 
 	int errnoSave = errno;
