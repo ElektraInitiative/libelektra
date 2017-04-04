@@ -67,7 +67,7 @@ static int parseINI (FILE * file, KeySet * keySet, Key * parentKey)
 
 	if (!feof (file))
 	{
-		ELEKTRA_LOG_DEBUG ("Did not reach end of configuration file “%s”!\n", keyString (parentKey));
+		ELEKTRA_LOG_WARNING ("Did not reach end of configuration file “%s”\n", keyString (parentKey));
 		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_NOEOF, parentKey, strerror (errno));
 		errno = errorNumber;
 		return ERROR;
@@ -78,13 +78,13 @@ static int parseINI (FILE * file, KeySet * keySet, Key * parentKey)
 
 static int parseFile (KeySet * returned ELEKTRA_UNUSED, Key * parentKey)
 {
-	ELEKTRA_LOG_DEBUG ("Reading configuration data");
+	ELEKTRA_LOG ("Reading configuration data\n");
 	int errorNumber = errno;
 	FILE * source = fopen (keyString (parentKey), "r");
 
 	if (!source)
 	{
-		ELEKTRA_LOG_NOTICE ("Could not open file “%s” for reading: %s", keyString (parentKey), strerror (errno));
+		ELEKTRA_LOG_WARNING ("Could not open file “%s” for reading: %s\n", keyString (parentKey), strerror (errno));
 		ELEKTRA_SET_ERROR_GET (parentKey);
 		errno = errorNumber;
 		return ERROR;
@@ -104,7 +104,7 @@ int elektraMiniGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 {
 	if (!elektraStrCmp (keyName (parentKey), "system/elektra/modules/mini"))
 	{
-		ELEKTRA_LOG_DEBUG ("Retrieve plugin contract");
+		ELEKTRA_LOG_DEBUG ("Retrieving plugin contract\n");
 		KeySet * contract = elektraMiniContract ();
 		ksAppend (returned, contract);
 		ksDel (contract);
@@ -117,13 +117,13 @@ int elektraMiniGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 
 int elektraMiniSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
 {
-	ELEKTRA_LOG_DEBUG ("Writing configuration data");
+	ELEKTRA_LOG ("Writing configuration data\n");
 	int errorNumber = errno;
 	FILE * destination = fopen (keyString (parentKey), "w");
 
 	if (!destination)
 	{
-		ELEKTRA_LOG_NOTICE ("Could not open file “%s” for writing: %s", keyString (parentKey), strerror (errno));
+		ELEKTRA_LOG_WARNING ("Could not open file “%s” for writing: %s\n", keyString (parentKey), strerror (errno));
 		ELEKTRA_SET_ERROR_GET (parentKey);
 		errno = errorNumber;
 		return ERROR;
