@@ -33,7 +33,6 @@ static void test_basics ()
 	PLUGIN_OPEN ("mini");
 
 	KeySet * ks = ksNew (0, KS_END);
-
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == KEYSET_MODIFIED, "Could not retrieve plugin contract");
 
 	keyDel (parentKey);
@@ -44,16 +43,14 @@ static void test_basics ()
 static void test_get_simple ()
 {
 	char const * const fileName = "Examples/simple.ini";
-	char const * const prefix = "user/mini/tests/read";
-
 	printf ("• Parse file “%s”\n", fileName);
 
+	char const * const prefix = "user/mini/tests/read";
 	Key * parentKey = keyNew (prefix, KEY_VALUE, srcdir_file (fileName), KEY_END);
 	KeySet * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("mini");
 
 	KeySet * keySet = ksNew (0, KS_END);
-
 	succeed_if (plugin->kdbGet (plugin, keySet, parentKey) == KEYSET_MODIFIED, "Unable to open or parse file");
 	succeed_if (output_error (parentKey), "Received unexpected error while reading the configuration");
 	succeed_if (output_warnings (parentKey), "Received unexpected warning while reading the configuration");
@@ -65,9 +62,7 @@ static void test_get_simple ()
 		{ "wide", "open 	 spaces" },
 	};
 	Key * key;
-
 	char text[MAX_LENGTH_TEXT];
-
 	for (size_t pair = 0; pair < sizeof (keyValues) / sizeof (keyValues[0]); pair++)
 	{
 		char * name = keyValues[pair][0];
