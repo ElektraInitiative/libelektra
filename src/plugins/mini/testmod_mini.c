@@ -20,7 +20,7 @@
 
 /* -- Macros ---------------------------------------------------------------------------------------------------------------------------- */
 
-#define MAX_LENGTH_TEXT 200
+#define MAX_LENGTH_TEXT 500
 
 /* -- Functions ------------------------------------------------------------------------------------------------------------------------- */
 
@@ -81,6 +81,31 @@ static void test_get_simple ()
 	PLUGIN_CLOSE ();
 }
 
+static void test_set_simple ()
+{
+	printf ("• Write configuration data\n");
+
+	char const * const fileName = "Examples/write.ini";
+
+	Key * parentKey = keyNew ("user/mini/tests/write", KEY_VALUE, elektraFilename (), KEY_END);
+	KeySet * conf = ksNew (0, KS_END);
+	PLUGIN_OPEN ("mini");
+
+	KeySet * keySet = ksNew (10, keyNew ("user/mini/tests/write/key", KEY_VALUE, "value", KEY_END), KS_END);
+	succeed_if (plugin->kdbSet (plugin, keySet, parentKey) == KEYSET_UNCHANGED, "Unable to write to file");
+	succeed_if (output_error (parentKey), "Received unexpected error while writing the configuration");
+	succeed_if (output_warnings (parentKey), "Received unexpected warning while writing the configuration");
+
+	char text[MAX_LENGTH_TEXT];
+	snprintf (text, MAX_LENGTH_TEXT, "Output of plugin stored in “%s” does not match the expected output stored in “%s”",
+		  keyString (parentKey), srcdir_file (fileName));
+	succeed_if (compare_line_files (srcdir_file (fileName), keyString (parentKey)), text);
+
+	keyDel (parentKey);
+	ksDel (keySet);
+	PLUGIN_CLOSE ();
+}
+
 /* -- Main ------------------------------------------------------------------------------------------------------------------------------ */
 
 int main (int argc, char ** argv)
@@ -92,6 +117,7 @@ int main (int argc, char ** argv)
 
 	test_basics ();
 	test_get_simple ();
+	test_set_simple ();
 
 	printf ("\nResults: %d Test%s done — %d error%s.\n", nbTest, nbTest != 1 ? "s" : "", nbError, nbError != 1 ? "s" : "");
 
