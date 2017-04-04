@@ -75,7 +75,7 @@ static void resolverInit (resolverHandle * p, const char * path)
 static resolverHandle * elektraGetResolverHandle (Plugin * handle, Key * parentKey)
 {
 	resolverHandles * pks = elektraPluginGetData (handle);
-	ELEKTRA_ASSERT (pks != NULL, "Unable to retrieve plugin data for %s", keyName(parentKey));
+	ELEKTRA_ASSERT (pks != NULL, "Unable to retrieve plugin data for handle %p with parentKey %s", handle, keyName (parentKey));
 
 	switch (keyGetNamespace (parentKey))
 	{
