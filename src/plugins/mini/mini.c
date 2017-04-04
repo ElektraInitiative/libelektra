@@ -117,6 +117,20 @@ int elektraMiniGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 
 int elektraMiniSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
 {
+	ELEKTRA_LOG_DEBUG ("Writing configuration data");
+	int errorNumber = errno;
+	FILE * destination = fopen (keyString (parentKey), "w");
+
+	if (!destination)
+	{
+		ELEKTRA_LOG_NOTICE ("Could not open file “%s” for writing: %s", keyString (parentKey), strerror (errno));
+		ELEKTRA_SET_ERROR_GET (parentKey);
+		errno = errorNumber;
+		return ERROR;
+	}
+
+	fclose (destination);
+
 	return KEYSET_UNCHANGED;
 }
 
