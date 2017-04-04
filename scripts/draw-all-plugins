@@ -8,8 +8,11 @@ set -x
 OUTPUT=$SOURCE/doc/images/plugins.dot
 
 echo "strict digraph G {" > $OUTPUT
-#echo "	ratio = fill;" >> $OUTPUT
-#echo "	size = \"13,13\";" >> $OUTPUT
+#echo "	ratio = 1.4;" >> $OUTPUT
+#echo "	fontsize = 20;" >> $OUTPUT
+#echo "	ratio = \"compress\";" >> $OUTPUT
+#echo "	size = \"140,100\";" >> $OUTPUT
+## echo "	orientation = \"portrait\";" >> $OUTPUT
 echo "	splines = true;" >> $OUTPUT
 echo
 #echo "	plugin [shape=Mdiamond];" >> $OUTPUT
@@ -37,4 +40,6 @@ echo "}"  >> $OUTPUT
 
 echo >> $OUTPUT
 
-fdp -Tpng $OUTPUT -o $SOURCE/doc/images/plugins.png
+unflatten $OUTPUT -o ${OUTPUT}.flatten
+#fdp -Tpdf ${OUTPUT}.flatten -o $SOURCE/doc/images/plugins.pdf
+fdp -Tpng ${OUTPUT}.flatten -o $SOURCE/doc/images/plugins.png
