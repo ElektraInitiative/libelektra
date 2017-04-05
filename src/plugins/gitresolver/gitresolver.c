@@ -9,7 +9,6 @@
 
 #include "gitresolver.h"
 
-#include "resolve.h"
 #include <fcntl.h>
 #include <git2.h>
 #include <kdberrors.h>
