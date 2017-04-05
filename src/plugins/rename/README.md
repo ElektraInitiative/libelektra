@@ -44,9 +44,9 @@ last transformation to be applied to all keys on kdbSet.
 * keyname
 * unchanged   // this is the default value if no configuration is given
 
-`toupper` or `tolower` tells the rename plugin to convert the whole keyname below below the parentKey to lower or uppercase.
+`toupper` or `tolower` tells the rename plugin to convert the whole keyname below the parentKey to lower or uppercase.
 
-`unchanged` returns the key to it's original name
+`unchanged` returns the key to its original name
 
 `keyname` tells the plugin to keep the name of the advanced transformation
 
@@ -56,7 +56,7 @@ last transformation to be applied to all keys on kdbSet.
 
 #### Operation
 
-The cut operation can be used to strip parts of a keys name. The cut operation is able to cut anything below the path
+The cut operation can be used to strip parts of a key’s name. The cut operation is able to cut anything below the path
 of the parent key. A renamed key may even replace the parent key. For example consider a KeySet with the
 parent key `user/config`. If the KeySet contained a key with the name `user/config/with/long/path/key1`, the cut operation
 would be able to strip the following key name parts:
