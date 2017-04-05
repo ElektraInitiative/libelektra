@@ -39,69 +39,69 @@ The multifile-resolver does so by calling resolver and storage plugins for each 
 ## Examples
 
 ```sh
-rm -rf /tmp/multitest || $(exit 0)
-mkdir -p /tmp/multitest || $(exit 0)
+rm -rf ~/.config/multitest || $(exit 0)
+mkdir -p ~/.config/multitest || $(exit 0)
 
-cat > /tmp/multitest/lo.ini << EOF \
+cat > ~/.config/multitest/lo.ini << EOF \
 [lo]\
 addr = 127.0.0.1\
 Link encap = Loopback\
 EOF
 
-cat > /tmp/multitest/lan.ini << EOF \
+cat > ~/.config/multitest/lan.ini << EOF \
 [eth0]\
 addr = 192.168.1.216\
 Link encap = Ethernet\
 EOF
 
-cat > /tmp/multitest/wlan.ini << EOF \
+cat > ~/.config/multitest/wlan.ini << EOF \
 [wlan0]\
 addr = 192.168.1.125\
 Link encap = Ethernet\
 EOF
 
-kdb mount -R multifile -c storage="ini",pattern="*.ini",resolver="resolver" /tmp/multitest system/multi
+kdb mount -R multifile -c storage="ini",pattern="*.ini",resolver="resolver" multitest user/multi
 
-kdb ls system/multi
-#> system/multi/lan.ini/eth0
-#> system/multi/lan.ini/eth0/Link encap
-#> system/multi/lan.ini/eth0/addr
-#> system/multi/lo.ini/lo
-#> system/multi/lo.ini/lo/Link encap
-#> system/multi/lo.ini/lo/addr
-#> system/multi/wlan.ini/wlan0
-#> system/multi/wlan.ini/wlan0/Link encap
-#> system/multi/wlan.ini/wlan0/addr
+kdb ls user/multi
+#> user/multi/lan.ini/eth0
+#> user/multi/lan.ini/eth0/Link encap
+#> user/multi/lan.ini/eth0/addr
+#> user/multi/lo.ini/lo
+#> user/multi/lo.ini/lo/Link encap
+#> user/multi/lo.ini/lo/addr
+#> user/multi/wlan.ini/wlan0
+#> user/multi/wlan.ini/wlan0/Link encap
+#> user/multi/wlan.ini/wlan0/addr
 
-kdb set system/multi/lan.ini/eth0/addr 10.0.0.2
+kdb set user/multi/lan.ini/eth0/addr 10.0.0.2
 
-kdb get system/multi/lan.ini/eth0/addr
+kdb get user/multi/lan.ini/eth0/addr
 #> 10.0.0.2
 
-cat > /tmp/multitest/test.ini << EOF \
+cat > ~/.config/multitest/test.ini << EOF \
 [testsection]\
 key = val\
 EOF
 
-kdb ls system/multi
-#> system/multi/lan.ini/eth0
-#> system/multi/lan.ini/eth0/Link encap
-#> system/multi/lan.ini/eth0/addr
-#> system/multi/lo.ini/lo
-#> system/multi/lo.ini/lo/Link encap
-#> system/multi/lo.ini/lo/addr
-#> system/multi/test.ini/testsection
-#> system/multi/test.ini/testsection/key
-#> system/multi/wlan.ini/wlan0
-#> system/multi/wlan.ini/wlan0/Link encap
-#> system/multi/wlan.ini/wlan0/addr
+kdb ls user/multi
+#> user/multi/lan.ini/eth0
+#> user/multi/lan.ini/eth0/Link encap
+#> user/multi/lan.ini/eth0/addr
+#> user/multi/lo.ini/lo
+#> user/multi/lo.ini/lo/Link encap
+#> user/multi/lo.ini/lo/addr
+#> user/multi/test.ini/testsection
+#> user/multi/test.ini/testsection/key
+#> user/multi/wlan.ini/wlan0
+#> user/multi/wlan.ini/wlan0/Link encap
+#> user/multi/wlan.ini/wlan0/addr
 
-kdb rm -r system/multi/test.ini
+kdb rm -r user/multi/test.ini
 
-stat /tmp/multifile/test.ini
+#stat ~/.config/multifile/test.ini
 # RET:1
 
-kdb umount system/multi
+#kdb umount user/multi
 ```
 
 ## Limitations
