@@ -136,7 +136,7 @@ int elektraMiniSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 	{
 		const char * name = elektraKeyGetRelativeName (key, parentKey);
 		ELEKTRA_LOG_DEBUG ("Write mapping “%s=%s”", name, keyString (key));
-		fprintf (destination, "%s=%s", name, keyString (key));
+		fprintf (destination, "%s=%s\n", name, keyString (key));
 	}
 
 	fclose (destination);
