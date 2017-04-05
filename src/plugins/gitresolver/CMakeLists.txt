@@ -26,8 +26,8 @@ add_plugin (gitresolver
 	SOURCES
 		gitresolver.h
 		gitresolver.c
-		resolve.h
-		resolve.c
+	LINK_ELEKTRA
+		elektra-proposal
 	INCLUDE_DIRECTORIES
 		${GITRESOLVER_INCLUDE_DIRS}
 	LINK_LIBRARIES

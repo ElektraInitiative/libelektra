@@ -14,6 +14,7 @@
 #include <git2.h>
 #include <kdberrors.h>
 #include <kdbhelper.h>
+#include <kdbproposal.h>
 #include <libgen.h>
 #include <openssl/md5.h>
 #include <stdio.h>
@@ -122,15 +123,10 @@ static int initData (Plugin * handle, Key * parentKey)
 		data = elektraCalloc (sizeof (GitData));
 
 		Key * key = ksLookupByName (config, "/path", KDB_O_NONE);
-		Key * resolveKey = keyNew (keyName (parentKey), KEY_END);
-		if (!elektraResolveFilename ("hpxub", keyString (key), resolveKey, 0))
+		if (elektraResolveFilename (parentKey, ELEKTRA_RESOLVER_TEMPFILE_NONE) == -1)
 		{
-			ELEKTRA_SET_ERROR (34, parentKey, "no repository specified");
-			keyDel (resolveKey);
 			return -1;
 		}
-		keySetString (parentKey, keyString (resolveKey));
-		keyDel (resolveKey);
 		data->repo = elektraStrDup (keyString (parentKey));
 
 		// default to master branch when no branchname is supplied
@@ -375,131 +371,130 @@ static void makePath (GitData * data)
 
 typedef struct
 {
-    char *branchName;
-    git_oid *oid;
-}fetch_cb_data;
+	char * branchName;
+	git_oid * oid;
+} fetch_cb_data;
 
-static int fetchhead_ref_cb(const char *name, const char *url,const git_oid *oid, unsigned int is_merge, void *payload)
+static int fetchhead_ref_cb (const char * name, const char * url, const git_oid * oid, unsigned int is_merge, void * payload)
 {
-    if ( is_merge )
-    {
-	fetch_cb_data *data = payload;
-	data->branchName = elektraStrDup(name);
-	data->oid = elektraCalloc(sizeof(git_oid));
-	memcpy(data->oid, oid, sizeof(git_oid));
-    }
-    return 0;
+	if (is_merge)
+	{
+		fetch_cb_data * data = payload;
+		data->branchName = elektraStrDup (name);
+		data->oid = elektraCalloc (sizeof (git_oid));
+		memcpy (data->oid, oid, sizeof (git_oid));
+	}
+	return 0;
 }
 
-static void pullFromRemote(GitData *data, git_repository *repo)
+static void pullFromRemote (GitData * data, git_repository * repo)
 {
-    git_remote *remote;
-    int rc = git_remote_lookup(&remote, repo, "origin");
-    if(rc < 0)
-    {
-	fprintf(stderr, "git_remote_lookup failed\n");
-	return;
-    }
-    rc = git_remote_fetch( remote, NULL, NULL, NULL);
-    if(rc < 0)
-    {
-	fprintf(stderr, "git_remote_fetch failed\n");
-	return;
-    }
-    fetch_cb_data * cb_data = elektraCalloc(sizeof(fetch_cb_data));
+	git_remote * remote;
+	int rc = git_remote_lookup (&remote, repo, "origin");
+	if (rc < 0)
+	{
+		fprintf (stderr, "git_remote_lookup failed\n");
+		return;
+	}
+	rc = git_remote_fetch (remote, NULL, NULL, NULL);
+	if (rc < 0)
+	{
+		fprintf (stderr, "git_remote_fetch failed\n");
+		return;
+	}
+	fetch_cb_data * cb_data = elektraCalloc (sizeof (fetch_cb_data));
 
-    git_repository_fetchhead_foreach(repo, fetchhead_ref_cb, cb_data);
-    fprintf(stderr, "branch: %s\n", cb_data->branchName);
+	git_repository_fetchhead_foreach (repo, fetchhead_ref_cb, cb_data);
+	fprintf (stderr, "branch: %s\n", cb_data->branchName);
 
-    git_merge_options mergeOpts = GIT_MERGE_OPTIONS_INIT;
-    git_checkout_options checkoutOpts = GIT_CHECKOUT_OPTIONS_INIT;
-    checkoutOpts.checkout_strategy = GIT_CHECKOUT_FORCE;
-    git_annotated_commit *heads[1];
-    rc = git_annotated_commit_lookup(&heads[0], repo, cb_data->oid);
-    if(rc < 0)
-    {
-	fprintf(stderr, "git_annotated_commit_lookup failed\n");
-	return;
-    }
-    rc = git_merge(repo, (const git_annotated_commit **)heads, 1, &mergeOpts, &checkoutOpts);
-    if(rc < 0)
-    {
-	fprintf(stderr, "git_merge failed\n");
-	return;
-    }
+	git_merge_options mergeOpts = GIT_MERGE_OPTIONS_INIT;
+	git_checkout_options checkoutOpts = GIT_CHECKOUT_OPTIONS_INIT;
+	checkoutOpts.checkout_strategy = GIT_CHECKOUT_FORCE;
+	git_annotated_commit * heads[1];
+	rc = git_annotated_commit_lookup (&heads[0], repo, cb_data->oid);
+	if (rc < 0)
+	{
+		fprintf (stderr, "git_annotated_commit_lookup failed\n");
+		return;
+	}
+	rc = git_merge (repo, (const git_annotated_commit **)heads, 1, &mergeOpts, &checkoutOpts);
+	if (rc < 0)
+	{
+		fprintf (stderr, "git_merge failed\n");
+		return;
+	}
 
-    git_annotated_commit_free(heads[0]);
-    
-    //TODO: conflict handling
-    git_index *cIdx;
-    int hasConflicts = 0;
-    git_repository_index(&cIdx, repo);
-    hasConflicts = git_index_has_conflicts(cIdx);
-    if(hasConflicts)
-    {
-	fprintf(stderr, "Has Conflicts\n");
-	return;
-    }
-   
-    //
+	git_annotated_commit_free (heads[0]);
 
-    git_index *index;
-    git_repository_index (&index, repo);
+	// TODO: conflict handling
+	git_index * cIdx;
+	int hasConflicts = 0;
+	git_repository_index (&cIdx, repo);
+	hasConflicts = git_index_has_conflicts (cIdx);
+	if (hasConflicts)
+	{
+		fprintf (stderr, "Has Conflicts\n");
+		return;
+	}
 
-    git_oid treeID;
-    git_index_write_tree(&treeID, index);
-    
-    git_tree *tree;
-    git_tree_lookup(&tree, repo, &treeID);
-   
-    git_oid parentCommitID;
-    git_oid remoteParentCommitID;
-    git_commit *parents[2];
+	//
 
-    git_reference_name_to_id(&parentCommitID, repo, "ORIG_HEAD");
-    git_commit_lookup(&parents[0], repo, &parentCommitID);
-    git_reference_name_to_id(&remoteParentCommitID, repo, "MERGE_HEAD");
-    git_commit_lookup(&parents[1], repo, &remoteParentCommitID);
+	git_index * index;
+	git_repository_index (&index, repo);
 
+	git_oid treeID;
+	git_index_write_tree (&treeID, index);
 
+	git_tree * tree;
+	git_tree_lookup (&tree, repo, &treeID);
 
-    git_oid commitID;
-    
-    git_signature * sig;
-    rc = git_signature_default (&sig, repo);
-    if (rc == GIT_ENOTFOUND)
-    {
-	git_signature_now (&sig, "Elektra", "@libelektra.org");
-    }
+	git_oid parentCommitID;
+	git_oid remoteParentCommitID;
+	git_commit * parents[2];
 
-    rc = git_commit_create(&commitID, repo, "HEAD", sig, sig, NULL, "kdb git merge", tree, 2, (const git_commit **)&parents);
-    if(rc < 0)
-    {
-	fprintf(stderr, "git_commit_create failed\n");
-    }
+	git_reference_name_to_id (&parentCommitID, repo, "ORIG_HEAD");
+	git_commit_lookup (&parents[0], repo, &parentCommitID);
+	git_reference_name_to_id (&remoteParentCommitID, repo, "MERGE_HEAD");
+	git_commit_lookup (&parents[1], repo, &remoteParentCommitID);
 
 
-    git_repository_state_cleanup(repo);
+	git_oid commitID;
+
+	git_signature * sig;
+	rc = git_signature_default (&sig, repo);
+	if (rc == GIT_ENOTFOUND)
+	{
+		git_signature_now (&sig, "Elektra", "@libelektra.org");
+	}
+
+	rc = git_commit_create (&commitID, repo, "HEAD", sig, sig, NULL, "kdb git merge", tree, 2, (const git_commit **)&parents);
+	if (rc < 0)
+	{
+		fprintf (stderr, "git_commit_create failed\n");
+	}
+
+
+	git_repository_state_cleanup (repo);
 }
 
 int elektraGitresolverGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey)
 {
-    if (!elektraStrCmp (keyName (parentKey), "system/elektra/modules/gitresolver"))
-    {
-	KeySet * contract = ksNew (
-		30, keyNew ("system/elektra/modules/gitresolver", KEY_VALUE, "gitresolver plugin waits for your orders", KEY_END),
-		keyNew ("system/elektra/modules/gitresolver/exports", KEY_END),
-		keyNew ("system/elektra/modules/gitresolver/exports/open", KEY_FUNC, elektraGitresolverOpen, KEY_END),
-		keyNew ("system/elektra/modules/gitresolver/exports/close", KEY_FUNC, elektraGitresolverClose, KEY_END),
-		keyNew ("system/elektra/modules/gitresolver/exports/get", KEY_FUNC, elektraGitresolverGet, KEY_END),
-		keyNew ("system/elektra/modules/gitresolver/exports/set", KEY_FUNC, elektraGitresolverSet, KEY_END),
-		keyNew ("system/elektra/modules/gitresolver/exports/error", KEY_FUNC, elektraGitresolverError, KEY_END),
-		keyNew ("system/elektra/modules/gitresolver/exports/checkfile", KEY_FUNC, elektraGitresolverCheckFile, KEY_END),
+	if (!elektraStrCmp (keyName (parentKey), "system/elektra/modules/gitresolver"))
+	{
+		KeySet * contract = ksNew (
+			30, keyNew ("system/elektra/modules/gitresolver", KEY_VALUE, "gitresolver plugin waits for your orders", KEY_END),
+			keyNew ("system/elektra/modules/gitresolver/exports", KEY_END),
+			keyNew ("system/elektra/modules/gitresolver/exports/open", KEY_FUNC, elektraGitresolverOpen, KEY_END),
+			keyNew ("system/elektra/modules/gitresolver/exports/close", KEY_FUNC, elektraGitresolverClose, KEY_END),
+			keyNew ("system/elektra/modules/gitresolver/exports/get", KEY_FUNC, elektraGitresolverGet, KEY_END),
+			keyNew ("system/elektra/modules/gitresolver/exports/set", KEY_FUNC, elektraGitresolverSet, KEY_END),
+			keyNew ("system/elektra/modules/gitresolver/exports/error", KEY_FUNC, elektraGitresolverError, KEY_END),
+			keyNew ("system/elektra/modules/gitresolver/exports/checkfile", KEY_FUNC, elektraGitresolverCheckFile, KEY_END),
 
 #include ELEKTRA_README (gitresolver)
-		keyNew ("system/elektra/modules/gitresolver/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
-	ksAppend (returned, contract);
-	ksDel (contract);
+			keyNew ("system/elektra/modules/gitresolver/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
+		ksAppend (returned, contract);
+		ksDel (contract);
 
 		return 1; // success
 	}
@@ -515,8 +510,7 @@ int elektraGitresolverGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELE
 		return -1;
 	}
 
-	pullFromRemote(data, repo);
-	return 0;
+	// pullFromRemote(data, repo);
 
 	genCheckoutFileName (data);
 
