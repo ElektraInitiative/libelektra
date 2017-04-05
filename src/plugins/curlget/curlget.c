@@ -9,13 +9,13 @@
 
 #include "curlget.h"
 
-#include "resolve.h"
 #include <curl/curl.h>
 #include <curl/easy.h>
 #include <errno.h>
 #include <fcntl.h>
 #include <kdberrors.h>
 #include <kdbhelper.h>
+#include <kdbproposal.h>
 #include <libgen.h>
 #include <openssl/md5.h>
 #include <stdio.h>
@@ -557,15 +557,12 @@ int elektraCurlgetGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA
 	data->tmpFile = name;
 
 	if (data->path) keySetString (parentKey, data->path);
-	Key * resolveKey = keyNew (keyName (parentKey), KEY_END);
-	if (!elektraResolveFilename ("hpxub", keyString (parentKey), resolveKey, 0))
+	if (elektraResolveFilename (parentKey, ELEKTRA_RESOLVER_TEMPFILE_NONE) == -1)
 	{
-		keyDel (resolveKey);
 		return -1;
 	}
 	if (data->path) elektraFree (data->path);
-	data->path = elektraStrDup (keyString (resolveKey));
-	keyDel (resolveKey);
+	data->path = elektraStrDup (keyString (parentKey));
 
 	if (fd == -1)
 	{
