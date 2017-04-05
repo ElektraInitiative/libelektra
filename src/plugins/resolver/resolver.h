@@ -15,8 +15,8 @@
 
 #include <kdbconfig.h>
 #include <kdberrors.h>
-#include <kdbproposal.h>
 #include <kdbplugin.h>
+#include <kdbproposal.h>
 #include <sys/types.h>
 #include <unistd.h>
 
@@ -56,7 +56,7 @@ struct _resolverHandles
 	resolverHandle system;
 };
 
-void ELEKTRA_PLUGIN_FUNCTION(resolver, freeHandle)(ElektraResolved *);
+void ELEKTRA_PLUGIN_FUNCTION (resolver, freeHandle) (ElektraResolved *);
 int ELEKTRA_PLUGIN_FUNCTION (resolver, checkFile) (const char * filename);
 ElektraResolved * ELEKTRA_PLUGIN_FUNCTION (resolver, filename) (elektraNamespace, const char *, ElektraResolveTempfile, Key *);
 
