@@ -86,6 +86,23 @@ int keyRel2 (const Key * k1, const Key * k2, KeyRelType which);
 Key * keyAsCascading (const Key * key);
 int keyGetLevelsBelow (const Key * k1, const Key * k2);
 
+typedef struct
+{
+    char * relPath;
+    char * dirname;
+    char * fullPath;
+    char * tmpFile;
+}ElektraResolved;
+
+typedef enum 
+{
+    ELEKTRA_RESOLVER_TEMPFILE_NONE,
+    ELEKTRA_RESOLVER_TEMPFILE_SAMEDIR,
+    ELEKTRA_RESOLVER_TEMPFILE_TMPDIR,
+}ElektraResolveTempfile;
+
+int elektraResolveFilename(Key *, ElektraResolveTempfile);
+
 
 #ifdef __cplusplus
 }
