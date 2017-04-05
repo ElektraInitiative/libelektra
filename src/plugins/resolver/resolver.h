@@ -15,6 +15,7 @@
 
 #include <kdbconfig.h>
 #include <kdberrors.h>
+#include <kdbproposal.h>
 #include <kdbplugin.h>
 #include <sys/types.h>
 #include <unistd.h>
@@ -55,22 +56,7 @@ struct _resolverHandles
 	resolverHandle system;
 };
 
-typedef struct
-{
-    char * relPath;
-    char * dirname;
-    char * fullPath;
-    char * tmpFile;
-}ElektraResolved;
-
-typedef enum 
-{
-    ELEKTRA_RESOLVER_TEMPFILE_NONE,
-    ELEKTRA_RESOLVER_TEMPFILE_SAMEDIR,
-    ELEKTRA_RESOLVER_TEMPFILE_TMPDIR,
-}ElektraResolveTempfile;
-
-void elektraFreeResolvedHandle(ElektraResolved *);
+void ELEKTRA_PLUGIN_FUNCTION(resolver, freeHandle)(ElektraResolved *);
 int ELEKTRA_PLUGIN_FUNCTION (resolver, checkFile) (const char * filename);
 ElektraResolved * ELEKTRA_PLUGIN_FUNCTION (resolver, filename) (elektraNamespace, const char *, ElektraResolveTempfile, Key *);
 

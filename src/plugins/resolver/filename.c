@@ -613,7 +613,7 @@ static int elektraResolveDir(ElektraResolved *handle, ElektraResolveTempfile tmp
 
 }
 
-void elektraFreeResolvedHandle(ElektraResolved *handle)
+void ELEKTRA_PLUGIN_FUNCTION(resolver, freeHandle)(ElektraResolved *handle)
 {
     if(!handle)
         return;
@@ -674,9 +674,8 @@ ElektraResolved * ELEKTRA_PLUGIN_FUNCTION(resolver, filename) (elektraNamespace 
 	}
     if(rc == -1)
     {
-        elektraFreeResolvedHandle(handle);
+        ELEKTRA_PLUGIN_FUNCTION(resolver, freeHandle)(handle);        
         return NULL;
     }
-//    fprintf(stderr, "rel: %s, dir: %s, full: %s, tmp: %s\n", handle->relPath, handle->dirname, handle->fullPath, handle->tmpFile);
     return handle;
 }
