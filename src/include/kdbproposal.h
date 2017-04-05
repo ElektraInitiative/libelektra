@@ -88,20 +88,19 @@ int keyGetLevelsBelow (const Key * k1, const Key * k2);
 
 typedef struct
 {
-    char * relPath;
-    char * dirname;
-    char * fullPath;
-    char * tmpFile;
-}ElektraResolved;
+	char * relPath;
+	char * dirname;
+	char * fullPath;
+	char * tmpFile;
+} ElektraResolved;
 
-typedef enum 
-{
-    ELEKTRA_RESOLVER_TEMPFILE_NONE,
-    ELEKTRA_RESOLVER_TEMPFILE_SAMEDIR,
-    ELEKTRA_RESOLVER_TEMPFILE_TMPDIR,
-}ElektraResolveTempfile;
+typedef enum {
+	ELEKTRA_RESOLVER_TEMPFILE_NONE,
+	ELEKTRA_RESOLVER_TEMPFILE_SAMEDIR,
+	ELEKTRA_RESOLVER_TEMPFILE_TMPDIR,
+} ElektraResolveTempfile;
 
-int elektraResolveFilename(Key *, ElektraResolveTempfile);
+int elektraResolveFilename (Key *, ElektraResolveTempfile);
 
 
 #ifdef __cplusplus
