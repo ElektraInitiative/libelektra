@@ -55,8 +55,24 @@ struct _resolverHandles
 	resolverHandle system;
 };
 
+typedef struct
+{
+    char * relPath;
+    char * dirname;
+    char * fullPath;
+    char * tmpFile;
+}ElektraResolved;
+
+typedef enum 
+{
+    ELEKTRA_RESOLVER_TEMPFILE_NONE,
+    ELEKTRA_RESOLVER_TEMPFILE_SAMEDIR,
+    ELEKTRA_RESOLVER_TEMPFILE_TMPDIR,
+}ElektraResolveTempfile;
+
+void elektraFreeResolvedHandle(ElektraResolved *);
 int ELEKTRA_PLUGIN_FUNCTION (resolver, checkFile) (const char * filename);
-int ELEKTRA_PLUGIN_FUNCTION (resolver, filename) (Key * forKey, resolverHandle * p, Key * warningsKey);
+ElektraResolved * ELEKTRA_PLUGIN_FUNCTION (resolver, filename) (elektraNamespace, const char *, ElektraResolveTempfile, Key *);
 
 int ELEKTRA_PLUGIN_FUNCTION (resolver, open) (Plugin * handle, Key * errorKey);
 int ELEKTRA_PLUGIN_FUNCTION (resolver, close) (Plugin * handle, Key * errorKey);
