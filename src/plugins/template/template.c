@@ -17,7 +17,7 @@ int elektraTemplateOpen (Plugin * handle ELEKTRA_UNUSED, Key * errorKey ELEKTRA_
 	// plugin initialization logic
 	// this function is optional
 
-	return 1; // success
+	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }
 
 int elektraTemplateClose (Plugin * handle ELEKTRA_UNUSED, Key * errorKey ELEKTRA_UNUSED)
@@ -25,7 +25,7 @@ int elektraTemplateClose (Plugin * handle ELEKTRA_UNUSED, Key * errorKey ELEKTRA
 	// free all plugin resources and shut it down
 	// this function is optional
 
-	return 1; // success
+	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }
 
 int elektraTemplateGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
@@ -46,14 +46,11 @@ int elektraTemplateGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTR
 		ksAppend (returned, contract);
 		ksDel (contract);
 
-		return 1; // success
+		return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 	}
 	// get all keys
 
-	//  0: Everything was OK and `returned` has not been changed
-	//  1: Everything was OK and `returned` was updated
-	// -1: There was an error
-	return 1; // success
+	return ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
 }
 
 int elektraTemplateSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
@@ -61,7 +58,7 @@ int elektraTemplateSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTR
 	// set all keys
 	// this function is optional
 
-	return 1; // success
+	return ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
 }
 
 int elektraTemplateError (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
@@ -69,7 +66,7 @@ int elektraTemplateError (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEK
 	// handle errors (commit failed)
 	// this function is optional
 
-	return 1; // success
+	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }
 
 int elektraTemplateCheckConfig (Key * errorKey ELEKTRA_UNUSED, KeySet * conf ELEKTRA_UNUSED)
@@ -77,11 +74,7 @@ int elektraTemplateCheckConfig (Key * errorKey ELEKTRA_UNUSED, KeySet * conf ELE
 	// validate plugin configuration
 	// this function is optional
 
-	// the return codes have the following meaning:
-	// 0: The configuration was OK and has not been changed
-	// 1: The configuration has been changed and now it is OK
-	// -1: The configuration was not OK and could not be fixed. An error has to be set to errorKey.
-	return 0;
+	return ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
 }
 
 Plugin * ELEKTRA_PLUGIN_EXPORT (template)
