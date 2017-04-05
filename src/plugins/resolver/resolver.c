@@ -77,8 +77,8 @@ static resolverHandle * elektraGetResolverHandle (Plugin * handle, Key * parentK
 	resolverHandles * pks = elektraPluginGetData (handle);
 	ELEKTRA_ASSERT (pks != NULL, "Unable to retrieve plugin data for handle %p with parentKey %s", (void *)handle, keyName (parentKey));
 
-	
-    switch (keyGetNamespace (parentKey))
+
+	switch (keyGetNamespace (parentKey))
 	{
 	case KEY_NS_SPEC:
 		return &pks->spec;
@@ -481,8 +481,8 @@ int ELEKTRA_PLUGIN_FUNCTION (resolver, close) (Plugin * handle, Key * errorKey E
 
 int ELEKTRA_PLUGIN_FUNCTION (resolver, get) (Plugin * handle, KeySet * returned, Key * parentKey)
 {
-	
-    Key * root = keyNew ("system/elektra/modules/" ELEKTRA_PLUGIN_NAME, KEY_END);
+
+	Key * root = keyNew ("system/elektra/modules/" ELEKTRA_PLUGIN_NAME, KEY_END);
 
 	if (keyRel (root, parentKey) >= 0)
 	{
