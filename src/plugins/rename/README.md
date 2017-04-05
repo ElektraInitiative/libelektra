@@ -1,4 +1,4 @@
-- infos = Information about keytometa plugin is in keys below
+- infos = Information about rename plugin is in keys below
 - infos/author = Felix Berlakovich <elektra@berlakovich.net>
 - infos/licence = BSD
 - infos/provides = filter
