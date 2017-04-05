@@ -321,7 +321,7 @@ static int mapFilesForNamespaces (resolverHandles * p, Key * errorKey)
                     p->spec.tempfile = elektraStrDup(resolved->tmpFile);
                     p->spec.filename = elektraStrDup(resolved->fullPath);
                     p->spec.dirname = elektraStrDup(resolved->dirname);
-                    elektraFreeResolvedHandle(resolved);
+                    ELEKTRA_PLUGIN_FUNCTION(resolver, freeHandle)(resolved);
                 }
             }
 
@@ -341,7 +341,7 @@ static int mapFilesForNamespaces (resolverHandles * p, Key * errorKey)
                     p->dir.tempfile = elektraStrDup(resolved->tmpFile);
                     p->dir.filename = elektraStrDup(resolved->fullPath);
                     p->dir.dirname = elektraStrDup(resolved->dirname);
-                    elektraFreeResolvedHandle(resolved);
+                    ELEKTRA_PLUGIN_FUNCTION(resolver, freeHandle)(resolved);
                 }
             }
         case KEY_NS_USER:
@@ -360,7 +360,7 @@ static int mapFilesForNamespaces (resolverHandles * p, Key * errorKey)
                     p->user.tempfile = elektraStrDup(resolved->tmpFile);
                     p->user.filename = elektraStrDup(resolved->fullPath);
                     p->user.dirname = elektraStrDup(resolved->dirname);
-                    elektraFreeResolvedHandle(resolved);
+                    ELEKTRA_PLUGIN_FUNCTION(resolver, freeHandle)(resolved);
                 }
             }
         case KEY_NS_SYSTEM:
@@ -379,7 +379,7 @@ static int mapFilesForNamespaces (resolverHandles * p, Key * errorKey)
                     p->system.tempfile = elektraStrDup(resolved->tmpFile);
                     p->system.filename = elektraStrDup(resolved->fullPath);
                     p->system.dirname = elektraStrDup(resolved->dirname);
-                    elektraFreeResolvedHandle(resolved);
+                    ELEKTRA_PLUGIN_FUNCTION(resolver, freeHandle)(resolved);
                 }
             }
         case KEY_NS_PROC:
