@@ -64,10 +64,10 @@ static int initData (Plugin * handle, Key * parentKey)
 		data->identifier = (char *)keyString (key);
 		key = ksLookupByName (config, "/path", KDB_O_NONE);
 		if (!key) return -1;
-        if(elektraResolveFilename(parentKey, ELEKTRA_RESOLVER_TEMPFILE_NONE) == -1)
-        {
-            return -1;
-        }
+		if (elektraResolveFilename (parentKey, ELEKTRA_RESOLVER_TEMPFILE_NONE) == -1)
+		{
+			return -1;
+		}
 		data->realFile = elektraStrDup (keyString (parentKey));
 		struct stat buf;
 		if (stat (data->realFile, &buf))
