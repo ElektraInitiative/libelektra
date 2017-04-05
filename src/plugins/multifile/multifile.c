@@ -159,12 +159,14 @@ int elektraMultifileClose (Plugin * handle ELEKTRA_UNUSED, Key * errorKey ELEKTR
 
 static MultiConfig * initialize (Plugin * handle, Key * parentKey)
 {
+
+	KeySet * config = elektraPluginGetConfig (handle);
+	Key * origPath = ksLookupByName (config, "/path", 0);
+	keySetString (parentKey, keyString (origPath));
 	if (elektraResolveFilename (parentKey, ELEKTRA_RESOLVER_TEMPFILE_NONE) == -1)
 	{
 		return NULL;
 	}
-	KeySet * config = elektraPluginGetConfig (handle);
-	Key * origPath = ksLookupByName (config, "/path", 0);
 	Key * patternKey = ksLookupByName (config, "/pattern", 0);
 	Key * storageKey = ksLookupByName (config, "/storage", 0);
 	Key * resolverKey = ksLookupByName (config, "/resolver", 0);
