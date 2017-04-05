@@ -9,9 +9,9 @@
 
 #include "blockresolver.h"
 
-#include "resolve.h"
 #include <kdberrors.h>
 #include <kdbhelper.h>
+#include <kdbproposal.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -64,14 +64,10 @@ static int initData (Plugin * handle, Key * parentKey)
 		data->identifier = (char *)keyString (key);
 		key = ksLookupByName (config, "/path", KDB_O_NONE);
 		if (!key) return -1;
-		Key * resolveKey = keyNew (keyName (parentKey), KEY_END);
-		if (!elektraResolveFilename ("hpxub", keyString (parentKey), resolveKey, 0))
-		{
-			keyDel (resolveKey);
-			return -1;
-		}
-		keySetString (parentKey, keyString (resolveKey));
-		keyDel (resolveKey);
+        if(elektraResolveFilename(parentKey, ELEKTRA_RESOLVER_TEMPFILE_NONE) == -1)
+        {
+            return -1;
+        }
 		data->realFile = elektraStrDup (keyString (parentKey));
 		struct stat buf;
 		if (stat (data->realFile, &buf))
