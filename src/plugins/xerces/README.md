@@ -1,4 +1,4 @@
-- infos = Information about the template plugin is in keys below
+- infos = Information about the xerces plugin is in keys below
 - infos/author = Armin Wurzinger <e1528532@libelektra.org>
 - infos/licence = BSD
 - infos/provides = storage/xml
