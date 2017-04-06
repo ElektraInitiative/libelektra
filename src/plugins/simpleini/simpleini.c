@@ -182,7 +182,7 @@ static char * getReadFormat (Plugin * handle)
 		return 0;
 	}
 
-	// make scanf format patter with key format pattern and value format pattern
+	// make scanf format pattern with key format pattern and value format pattern
 	// (we do not use simple printf style here, since it would replace '%%' to '%' but we need those
 	// escaped '%' for a save scanf format pattern
 	char * tmp = replaceStringFormatSpec (f.format, keyFormat);
