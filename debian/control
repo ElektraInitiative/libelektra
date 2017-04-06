@@ -18,19 +18,19 @@ Build-Depends: debhelper (>= 9),
  discount,
  swig3.0,
  dh-lua,
- python3-dev,
+ python-all,
+ python3-all,
  libgtest-dev,
  ruby-ronn,
  libsystemd-journal-dev | libsystemd-dev,
  liblua5.2-dev,
- python-dev,
  libssl-dev,
  libgcrypt20-dev,
  libbotan1.10-dev,
- libcurl4-openssl-dev | libcurl4-gnutls-dev,
+ libcurl4-nss-dev | libcurl4-gnutls-dev | libcurl4-openssl-dev | libcurl-dev,
  libcurl3 (>= 7.28.0),
- libgit2-dev,
- openjdk-8-jdk | oracle-java8-installer,
+ libgit2-dev (>= 0.24.1),
+ openjdk-8-jdk | java8-jdk | oracle-java8-installer,
 Build-Depends-Indep:
  doxygen,
  graphviz,
@@ -110,7 +110,8 @@ Architecture: any
 Multi-Arch: same
 Pre-Depends: ${misc:Pre-Depends}
 Depends: ${python:Depends},
- ${misc:Depends}
+ ${misc:Depends},
+ python-cheetah
 Breaks: libelektra-gen (<< 0.8.19-1)
 Replaces: libelelektra-gen (<< 0.8.19-1)
 Description: elektra configuration store, gen plugin
@@ -325,7 +326,7 @@ Multi-Arch: foreign
 Depends: libelektra4 (= ${binary:Version}),
  ${shlibs:Depends},
  ${misc:Depends},
- ${python:Depends}
+ python-all
 Replaces: libelektra-bin (<< 0.8.19-1), libelektra-full4 (<< 0.8.19-1)
 Breaks: libelektra-bin (<< 0.8.19-1), libelektra-full4 (<< 0.8.19-1)
 Conflicts: kernel-patch-kdb
