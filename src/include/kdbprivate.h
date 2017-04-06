@@ -343,7 +343,7 @@ struct _Plugin
 	KeySet * config; /*!< This keyset contains configuration for the plugin.
 	 Direct below system/ there is the configuration supplied for the backend.
 	 Direct below user/ there is the configuration supplied just for the
-	 plugin, which should be of course prefered to the backend configuration.
+	 plugin, which should be of course preferred to the backend configuration.
 	 The keys inside contain information like /path which path should be used
 	 to write configuration to or /host to which host packets should be send.
 	 @see elektraPluginGetConfig() */

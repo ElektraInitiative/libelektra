@@ -223,7 +223,7 @@ int elektraOpenBootstrap (KDB * handle, KeySet * keys, Key * errorKey)
  * system/elektra/mountpoints will be loaded and all needed
  * libraries and mountpoints will be determined.
  * These libraries for backends will be loaded and with it the
- * @p KDB datastructure will be initialized.
+ * @p KDB data structure will be initialized.
  *
  * You must always call this method before retrieving or committing any
  * keys to the database. In the end of the program,
@@ -698,7 +698,7 @@ static void clearError (Key * key)
  * If not done earlier kdbGet() will fully retrieve all keys under the @p parentKey
  * folder recursively (See Optimization below when it will not be done).
  *
- * @note kdbGet() might retrieve more keys then requested (that are not
+ * @note kdbGet() might retrieve more keys than requested (that are not
  *     below parentKey). These keys must be passed to calls of kdbSet(),
  *     otherwise they will be lost. This stems from the fact that the
  *     user has the only copy of the whole configuration and backends
@@ -816,7 +816,7 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 		return 0;
 	case -1:
 		goto error;
-		// otherwise falltrough
+		// otherwise fall trough
 	}
 
 	// Appoint keys (some in the bypass)
@@ -873,7 +873,7 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 		{
 			copyError (parentKey, oldError);
 		}
-		/* Now postprocess the updated keysets */
+		/* Now post-process the updated keysets */
 		if (splitGet (split, parentKey, handle) == -1)
 		{
 			ELEKTRA_ADD_WARNING (108, parentKey, keyName (ksCurrent (ks)));
