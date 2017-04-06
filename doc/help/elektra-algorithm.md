@@ -117,10 +117,10 @@ The synopsis of the function is:
 
 The user passes a key set, called `returned`.
 If the user invokes `kdbGet()` the first time, he or she will usually
-pass an empty key set.	If the user wants to update the application's
+pass an empty key set. If the user wants to update the application's
 settings, `returned` will typically contain the configuration of the
 previous `kdbGet()` request.  The `parentKey` holds the information
-below which key the configuration should be retrieved.	The `handle`
+below which key the configuration should be retrieved. The `handle`
 contains the data structures needed for the algorithm, like the `Split`
 and the `Trie` objects.
 
@@ -135,7 +135,7 @@ A backend may yield keys that it is not responsible for.
 It is not possible for a backend to know that another backend has been
 mounted below and the other backend is now responsible for some of the
 keys that are still in the storage.  Additionally, plugins are not able
-to determine if they are responsible for a key or not.	Consequently, it
+to determine if they are responsible for a key or not. Consequently, it
 can happen that more than one backend delivers a key with the same name.
 
 `kdbGet()` ensures that a key is uniquely identified by its name.
@@ -197,7 +197,7 @@ and returns zero.
 
 Now we know which backends do not need an update.  For these backends, the
 previous configuration from `returned` is appointed from to the key sets
-of the `Split` object.	The algorithm will not set the *syncbits*
+of the `Split` object. The algorithm will not set the *syncbits*
 of the `Split` object for these backends because the storage of the
 backends already contains up-to-date configuration.
 
@@ -241,7 +241,7 @@ the signal is reused for reloading configuration.), notifications,
 user requests and in the worst case periodical attempts to reread
 configuration.
 
-The given goal is to keep the sequence of needed syscalls low.	If no
+The given goal is to keep the sequence of needed syscalls low. If no
 update is needed, it is sufficient to request the timestamp
 (On POSIX systems using `stat()`) of every file. No other syscall
 is needed.  Elektra’s core alone cannot check that because getting
@@ -302,7 +302,7 @@ The synopsis of the function is:
 	int kdbSet(KDB *handle, KeySet *returned, Key * parentKey);
 
 The user passes the configuration using the `KeySet` `returned`.  The key
-set will not be changed by `kdbSet()`.	The `parentKey` provides a way
+set will not be changed by `kdbSet()`. The `parentKey` provides a way
 to limit which part of the configuration is written out.  For example,
 the `parentKey` `user/sw/org/app/#0/current` will induce `kdbSet()` to
 only modify the key databases below `user/sw/org/app` even
@@ -384,7 +384,7 @@ the key database.  In order not to lose any data, `kdbSet()` fails without
 doing anything.  In conflict situations Elektra leaves the programmer
 no choice.  The programmer has to retrieve the configuration using
 `kdbGet()` again to be up to date with the key database.  Afterwards it
-is up to the application to decide which configuration to use.	In this
+is up to the application to decide which configuration to use. In this
 situation it is the best to ask the user, by showing him the description
 and reason of the error, how to continue:
 
