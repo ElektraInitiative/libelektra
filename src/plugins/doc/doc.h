@@ -274,7 +274,7 @@
  * automatically add the information that the plugin was removed,
  * so you do not need the user give that information.
  *
- * @retval 0 on success
+ * @retval 1 on success
  *
  * @param handle contains internal information of the plugin
  * @param warningsKey can be used to add warnings with the macro
@@ -309,7 +309,7 @@ int elektraDocOpen (Plugin * handle, Key * warningsKey);
  * @param warningsKey can be used to to add warnings using
  *        #ELEKTRA_ADD_WARNING (Do not add errors!)
  *
- * @retval 0 on success (no other return value currently allowed)
+ * @retval 1 on success (no other return value currently allowed)
  *
  * @retval -1 on problems (only use ELEKTRA_ADD_WARNING, but never
  * set an error).
@@ -550,8 +550,8 @@ int elektraDocError (Plugin * handle, KeySet * returned, Key * parentKey);
  * @param errorKey is used to propagate error messages to the caller
  * @param conf contains the plugin configuration to be validated
  *
- * @retval 1 on success: the configuration was OK and has not been changed.
- * @retval 0 on success: the configuration has been changed and now it is OK.
+ * @retval 0 on success: the configuration was OK and has not been changed.
+ * @retval 1 on success: the configuration has been changed and now it is OK.
  * @retval -1 on failure: the configuration was not OK and could not be fixed.
  *   Set an error using #ELEKTRA_SET_ERROR to inform the user what went wrong.
  *   Additionally you can add any number of warnings with
