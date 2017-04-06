@@ -357,7 +357,7 @@ Up to now only file-based storages with atomic properties were
 developed.  The replacement of a file with another file that has not
 yet been written is not trivial.  The straightforward way is to lock a
 file and start writing to it.  But this approach can result in broken or
-partially finished files in events like ''out of disc space'', signals
+partially finished files in events like “out of disc space”, signals
 or other asynchronous aborts of the program.
 
 A temporary file solves most of this problem, because in problematic events
