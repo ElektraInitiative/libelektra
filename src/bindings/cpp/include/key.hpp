@@ -1745,6 +1745,11 @@ inline int Key::del ()
 
 namespace std
 {
+
+// forward declaration to get rid of warning
+template <class T>
+struct hash;
+
 /**
 	 * @brief Support for putting Key in a hash
 	 */
