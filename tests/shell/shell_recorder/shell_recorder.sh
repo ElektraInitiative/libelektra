@@ -145,7 +145,7 @@ execute()
 
 
 	STDOUT=$(cat ./stdout)
-	
+
 	printf "%s\0\n" "STDOUT: $STDOUT" >> "$OutFile"
 	if [ ! -z "$STDOUTCMP" ];
 	then
@@ -313,7 +313,7 @@ echo "protocol file: $OutFile"
 run_script
 
 "$KDBCOMMAND" rm -r "$Mountpoint" 2>/dev/null
-"$KDBCOMMAND" import "$Mountpoint" dump 2>/dev/null < "$TMPFILE" 
+"$KDBCOMMAND" import "$Mountpoint" dump 2>/dev/null < "$TMPFILE"
 rm "${DBFile}.1" 2>/dev/null
 
 EVAL=0
