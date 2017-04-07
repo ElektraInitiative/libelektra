@@ -14,7 +14,7 @@ by any other plugin and want to use the Elektra tools to edit
 individual lines.
 
 This plugin is designed to save each line from a file as a key.
-The keys form an array. The key names are determined by the 
+The keys form an array. The key names are determined by the
 line number such as `#3` or `#_12` for lines 4 and 13.
 The plugin considers `#0` to be the first line.
 The plugin will automatically add `_` to the beginning
@@ -82,7 +82,7 @@ kdb ls /example/line
 #> user/example/line/#2
 
 kdb export /example/line simpleini
-#> user = 
+#> user =
 #> #0 = here
 #> #1 = is
 #> #2 = something
@@ -91,8 +91,8 @@ kdb set /example/line/#1 huhu
 #> Using name user/example/line/#1
 #> Set string to huhu
 
-kdb export /example/line simpleini 
-#> user = 
+kdb export /example/line simpleini
+#> user =
 #> #0 = here
 #> #1 = huhu
 #> #2 = something
@@ -138,15 +138,15 @@ awk '{print NR-1 "-" $0}' < `kdb file /examples/line`
 
 # export keyset with syntax '_key: value'
 kdb export -c "format=_%: %" /examples/line simpleini
-#> _user: 
+#> _user:
 #> _#0: setting1 true
 #> _#1: setting2 false
 #> _#2: setting3 1000
 #> _#3: #comment
-#> _#4: 
-#> _#5: 
+#> _#4:
+#> _#5:
 #> _#6: //some other comment
-#> _#7: 
+#> _#7:
 #> _#8: setting4 -1
 
 # cleanup
