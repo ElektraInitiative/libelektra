@@ -4,23 +4,23 @@ File: /tmp/test.dump
 MountArgs:
 DiffType: File
 
-< set $Mountpoint/test bla
+< kdb set $Mountpoint/test bla
 
 RET: 0
-< mount $File $Mountpoint $Storage
+< kdb mount $File $Mountpoint $Storage
 
 RET: 0
-< set $Mountpoint teststring
+< kdb set $Mountpoint teststring
 
-< set $Mountpoint/testkey testval
+< kdb set $Mountpoint/testkey testval
 
-< get $Mountpoint/testkey
+< kdb get $Mountpoint/testkey
 
 STDOUT: test.?ey
-< ls $Mountpoint
+< kdb ls $Mountpoint
 
-< setmeta $Mountpoint/testkey metacomment "comment blaa"
+< kdb setmeta $Mountpoint/testkey metacomment "comment blaa"
 
-< get $Mountpoint/michgibtsgarnicht
+< kdb get $Mountpoint/michgibtsgarnicht
 
-< umount $Mountpoint
+< kdb umount $Mountpoint
