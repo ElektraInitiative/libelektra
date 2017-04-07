@@ -12,7 +12,7 @@ RET: 0
 < kdb set $Mountpoint/ipv4/localhost 127.0.0.1
 
 RET: 0
-STDOUT: localhost
+STDOUT: system/tmount/hosts⏎system/tmount/hosts/ipv4/localhost
 < kdb ls $Mountpoint
 
 RET: 0
