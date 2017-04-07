@@ -10,7 +10,6 @@
 /* -- Imports --------------------------------------------------------------------------------------------------------------------------- */
 
 #include "mini.h"
-#include "values.h"
 
 #include <kdbease.h>
 #include <kdberrors.h>
@@ -71,10 +70,10 @@ static int parseINI (FILE * file, KeySet * keySet, Key * parentKey)
 		ELEKTRA_LOG_WARNING ("Did not reach end of configuration file “%s”", keyString (parentKey));
 		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_NOEOF, parentKey, strerror (errno));
 		errno = errorNumber;
-		return ERROR;
+		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
 
-	return KEYSET_MODIFIED;
+	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }
 
 static int parseFile (KeySet * returned ELEKTRA_UNUSED, Key * parentKey)
@@ -88,7 +87,7 @@ static int parseFile (KeySet * returned ELEKTRA_UNUSED, Key * parentKey)
 		ELEKTRA_LOG_WARNING ("Could not open file “%s” for reading: %s", keyString (parentKey), strerror (errno));
 		ELEKTRA_SET_ERROR_GET (parentKey);
 		errno = errorNumber;
-		return ERROR;
+		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
 
 	int status = parseINI (source, returned, parentKey);
@@ -110,7 +109,7 @@ int elektraMiniGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 		ksAppend (returned, contract);
 		ksDel (contract);
 
-		return KEYSET_MODIFIED;
+		return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 	}
 
 	return parseFile (returned, parentKey);
@@ -127,7 +126,7 @@ int elektraMiniSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 		ELEKTRA_LOG_WARNING ("Could not open file “%s” for writing: %s", keyString (parentKey), strerror (errno));
 		ELEKTRA_SET_ERROR_GET (parentKey);
 		errno = errorNumber;
-		return ERROR;
+		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
 
 	Key * key;
@@ -141,7 +140,7 @@ int elektraMiniSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 
 	fclose (destination);
 
-	return KEYSET_UNCHANGED;
+	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }
 
 Plugin * ELEKTRA_PLUGIN_EXPORT (mini)

@@ -9,8 +9,6 @@
 
 /* -- Imports --------------------------------------------------------------------------------------------------------------------------- */
 
-#include "values.h"
-
 #include <stdlib.h>
 #include <string.h>
 
@@ -33,7 +31,7 @@ static void test_basics ()
 	PLUGIN_OPEN ("mini");
 
 	KeySet * ks = ksNew (0, KS_END);
-	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == KEYSET_MODIFIED, "Could not retrieve plugin contract");
+	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "Could not retrieve plugin contract");
 
 	keyDel (parentKey);
 	ksDel (ks);
@@ -51,7 +49,7 @@ static void test_get_simple ()
 	PLUGIN_OPEN ("mini");
 
 	KeySet * keySet = ksNew (0, KS_END);
-	succeed_if (plugin->kdbGet (plugin, keySet, parentKey) == KEYSET_MODIFIED, "Unable to open or parse file");
+	succeed_if (plugin->kdbGet (plugin, keySet, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "Unable to open or parse file");
 	succeed_if (output_error (parentKey), "Received unexpected error while reading the configuration");
 	succeed_if (output_warnings (parentKey), "Received unexpected warning while reading the configuration");
 
@@ -103,7 +101,7 @@ static void test_set_simple ()
 		ksAppendKey (keySet, keyNew (text, KEY_VALUE, value, KEY_END));
 	}
 
-	succeed_if (plugin->kdbSet (plugin, keySet, parentKey) == KEYSET_UNCHANGED, "Unable to write to file");
+	succeed_if (plugin->kdbSet (plugin, keySet, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "Unable to write to file");
 	succeed_if (output_error (parentKey), "Received unexpected error while writing the configuration");
 	succeed_if (output_warnings (parentKey), "Received unexpected warning while writing the configuration");
 
