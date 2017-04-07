@@ -4,6 +4,7 @@ INFILE="$1"
 
 BLOCKS=$(sed -n '/```sh/,/```\n/p' "$1")
 BUF=
+SHELL_RECORDER_ERROR=0
 
 COMMAND=
 RET=
@@ -183,7 +184,7 @@ translate()
 		fi
 	done <<<"$BUF"
 	writeBlock "$TMPFILE"
-	../shell_recorder.sh "$TMPFILE"
+	../shell_recorder.sh "$TMPFILE" || SHELL_RECORDER_ERROR=1
 	rm "$TMPFILE"
 }
 INBLOCK=0
@@ -232,3 +233,5 @@ IFS='
 	kdb umount "$mp"
     done
 fi
+
+exit "$SHELL_RECORDER_ERROR"
