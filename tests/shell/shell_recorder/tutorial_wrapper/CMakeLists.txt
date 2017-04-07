@@ -1,11 +1,11 @@
 function (add_s_test NAME FILE)
 	add_test (
-		testshell_${NAME}
+		testshell_markdown_${NAME}
 		"${CMAKE_CURRENT_SOURCE_DIR}/markdown_shell_recorder.sh"
 		"${FILE}"
 		)
 
-	set_property(TEST testshell_${NAME} PROPERTY LABELS memleak kdbtests)
+	set_property(TEST testshell_markdown_${NAME} PROPERTY LABELS memleak kdbtests)
 endfunction ()
 
 add_s_test (enum "${CMAKE_SOURCE_DIR}/src/plugins/enum/README.md")
