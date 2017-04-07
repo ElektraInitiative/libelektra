@@ -16,7 +16,7 @@ RET: 0
 
 < kdb get $Mountpoint/testkey
 
-STDOUT: test.?ey
+STDOUT-REGEX: test.?ey
 < kdb ls $Mountpoint
 
 < kdb setmeta $Mountpoint/testkey metacomment "comment blaa"
