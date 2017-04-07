@@ -37,20 +37,18 @@ Currently the identifier must be unique.
 sudo kdb mount -R blockresolver /tmp/test.block system/examples/blockresolver -c identifier=">>> block config" ini
 
 # create testfile
-cat > /tmp/test.block << EOF \
-text\
-more text\
-some more text\
->>> block config start\
-[section1]\
-key1 = val1\
-[section2]\
-key2 = val2\
->>> block config stop\
-text again\
-and more text\
-text\
-EOF
+echo 'text'                   >  /tmp/test.block
+echo 'more text'              >> /tmp/test.block
+echo 'some more text'         >> /tmp/test.block
+echo '>>> block config start' >> /tmp/test.block
+echo '[section1]'             >> /tmp/test.block
+echo 'key1 = val1'            >> /tmp/test.block
+echo '[section2]'             >> /tmp/test.block
+echo 'key2 = val2'            >> /tmp/test.block
+echo '>>> block config stop'  >> /tmp/test.block
+echo 'text again'             >> /tmp/test.block
+echo 'and more text'          >> /tmp/test.block
+echo 'text'                   >> /tmp/test.block
 
 # check testfile
 cat /tmp/test.block

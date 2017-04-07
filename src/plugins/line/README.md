@@ -114,16 +114,15 @@ sudo kdb umount /examples/line
 sudo kdb mount line /examples/line line
 
 # create and initialize testfile
-cat > `kdb file /examples/line` << EOF \
-setting1 true\
-setting2 false\
-setting3 1000\
-#comment\
-\
-\
-//some other comment\
-\
-setting4 -1
+echo 'setting1 true'        >  `kdb file /examples/line`
+echo 'setting2 false'       >> `kdb file /examples/line`
+echo 'setting3 1000'        >> `kdb file /examples/line`
+echo '#comment'             >> `kdb file /examples/line`
+echo                        >> `kdb file /examples/line`
+echo                        >> `kdb file /examples/line`
+echo '//some other comment' >> `kdb file /examples/line`
+echo                        >> `kdb file /examples/line`
+echo 'setting4 -1'          >> `kdb file /examples/line`
 
 # output filecontent and display line numbers
 awk '{print NR-1 "-" $0}' < `kdb file /examples/line`
