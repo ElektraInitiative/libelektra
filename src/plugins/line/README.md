@@ -71,9 +71,9 @@ kdb set /examples/line ignored   # adding parent key does nothing
 kdb set /examples/line/add here
 
 cat `kdb file /examples/line`
-#> here
-#> huhu
 #> something
+#> huhu
+#> here
 
 kdb ls /examples/line
 #> user/examples/line
@@ -86,9 +86,9 @@ kdb set /examples/line/#1 huhu
 #> Set string to huhu
 
 kdb export /examples/line line
-#> here
-#> huhu
 #> something
+#> huhu
+#> here
 
 sudo kdb umount /examples/line
 ```
