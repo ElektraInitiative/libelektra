@@ -197,7 +197,7 @@ do
 	if [ "$?" -eq 0 ];
 	then
 	    	INBLOCK=1
-		continue;	
+		continue;
 	fi
 	grep -Eq '(\s)*```$' <<<"$line"
 	if [ "$?" -eq 0 ];
