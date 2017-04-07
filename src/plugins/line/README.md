@@ -75,29 +75,29 @@ cat `kdb file /examples/line`
 #> huhu
 #> something
 
-kdb ls /example/line
-#> user/example/line
-#> user/example/line/#0
-#> user/example/line/#1
-#> user/example/line/#2
+kdb ls /examples/line
+#> user/examples/line
+#> user/examples/line/#0
+#> user/examples/line/#1
+#> user/examples/line/#2
 
-kdb export /example/line simpleini
+kdb export /examples/line simpleini
 #> user =
 #> #0 = here
 #> #1 = is
 #> #2 = something
 
-kdb set /example/line/#1 huhu
-#> Using name user/example/line/#1
+kdb set /examples/line/#1 huhu
+#> Using name user/examples/line/#1
 #> Set string to huhu
 
-kdb export /example/line simpleini
+kdb export /examples/line simpleini
 #> user =
 #> #0 = here
 #> #1 = huhu
 #> #2 = something
 
-kdb export /example/line line
+kdb export /examples/line line
 #> here
 #> huhu
 #> something
