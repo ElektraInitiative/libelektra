@@ -31,7 +31,7 @@ Only Keys below one of these points are valid, everything else will be dropped
 
 ### Hierarchy
 
-In Mozilla preference files `.` is used to separate sections, while elektra uses `/`. For simplification, and because `/` isn't allowed in preference keys, the plugin treats `.` and `/` equally. 
+In Mozilla preference files `.` is used to separate sections, while elektra uses `/`. For simplification, and because `/` isn't allowed in preference keys, the plugin treats `.` and `/` equally.
 
     kdb set system/prefs/lock/a/lock/key lock
     kdb set system/prefs/lock/a/lock.key lock
@@ -54,10 +54,13 @@ kdb set /examples/prefs/user/a/user/key 123
 
 kdb export user/examples/prefs ini
 #> [lock/a/lock]
+#> #@META type = boolean
 #> key = true
 #> [pref/a/default]
+#> #@META type = string
 #> key = i'm a default key
 #> [user/a/user]
+#> #@META type = integer
 #> key = 123
 
 cat `kdb file user/examples/prefs`
