@@ -81,21 +81,9 @@ kdb ls /examples/line
 #> user/examples/line/#1
 #> user/examples/line/#2
 
-kdb export /examples/line simpleini
-#> user =
-#> #0 = here
-#> #1 = is
-#> #2 = something
-
 kdb set /examples/line/#1 huhu
 #> Using name user/examples/line/#1
 #> Set string to huhu
-
-kdb export /examples/line simpleini
-#> user =
-#> #0 = here
-#> #1 = huhu
-#> #2 = something
 
 kdb export /examples/line line
 #> here
@@ -135,19 +123,6 @@ awk '{print NR-1 "-" $0}' < `kdb file /examples/line`
 #> 6-//some other comment
 #> 7-
 #> 8-setting4 -1
-
-# export keyset with syntax '_key: value'
-kdb export -c "format=_%: %" /examples/line simpleini
-#> _user:
-#> _#0: setting1 true
-#> _#1: setting2 false
-#> _#2: setting3 1000
-#> _#3: #comment
-#> _#4:
-#> _#5:
-#> _#6: //some other comment
-#> _#7:
-#> _#8: setting4 -1
 
 # cleanup
 kdb rm -r /examples/line
