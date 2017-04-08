@@ -362,7 +362,7 @@ int elektraListGet (Plugin * handle, KeySet * returned, Key * parentKey)
 	ksRewind (pluginKS);
 	int ret = runPlugins (pluginKS, placements->modules, placements->plugins, ksDup (config), returned, parentKey, GET, ksNext);
 	placements->getCurrent = ((++currentPlacement) % getEnd);
-	while (!placements->getPlacements[placements->getCurrent])
+	while (!placements->getPlacements[currentPlacement])
 	{
 		placements->getCurrent = ((++currentPlacement) % getEnd);
 	}
@@ -380,7 +380,7 @@ int elektraListSet (Plugin * handle, KeySet * returned, Key * parentKey)
 	int ret = 0;
 	ret = runPlugins (pluginKS, placements->modules, placements->plugins, ksDup (config), returned, parentKey, SET, ksPop);
 	placements->setCurrent = ((++currentPlacement) % setEnd);
-	while (!placements->setPlacements[placements->setCurrent])
+	while (!placements->setPlacements[currentPlacement])
 	{
 		placements->setCurrent = ((++currentPlacement) % setEnd);
 	}
@@ -399,7 +399,7 @@ int elektraListError (Plugin * handle, KeySet * returned, Key * parentKey)
 	ksRewind (pluginKS);
 	int ret = runPlugins (pluginKS, placements->modules, placements->plugins, ksDup (config), returned, parentKey, ERR, ksPop);
 	placements->errCurrent = ((++currentPlacement) % errEnd);
-	while (!placements->errPlacements[placements->errCurrent])
+	while (!placements->errPlacements[currentPlacement])
 	{
 		placements->errCurrent = ((++currentPlacement) % errEnd);
 	}
