@@ -18,6 +18,10 @@ DIFF=
 OUTBUF=
 MOUNTPOINT=
 
+replace_newline_return () {
+	awk 1 ORS='⏎'
+}
+
 writeBlock()
 {
 	OUTFILE="$1"
@@ -48,12 +52,12 @@ writeBlock()
 	fi
 	if [ ! -z "$OUTBUF" ];
 	then
-		tmp=$(awk -v RS="" '{gsub (/\n/,"⏎")}1' <<< "$OUTBUF")
+		tmp=$(replace_newline_return <<< "$OUTBUF")
 		tmp=$(echo "$tmp" | sed 's/\[/\\\[/g' | sed 's/\]/\\\]/g' | sed 's/\./\\\./g' | sed 's/\*/\\\*/g' | sed 's/\?/\\\?/g')
 		echo "STDOUT: $tmp" >> "$TMPFILE"
 	    elif [ ! -z "$STDOUT" ];
 	    then
-		tmp=$(awk -v RS="" '{gsub (/\n/,"⏎")}1' <<< "$STDOUT")
+		tmp=$(replace_newline_return <<< "$STDOUT")
 		tmp=$(echo "$tmp" | sed 's/\[/\\\[/g' | sed 's/\]/\\\]/g' | sed 's/\./\\\./g' | sed 's/\*/\\\*/g' | sed 's/\?/\\\?/g')
 		echo "STDOUT: $tmp" >> "$TMPFILE"
 	    else

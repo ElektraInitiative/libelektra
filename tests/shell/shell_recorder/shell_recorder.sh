@@ -34,7 +34,7 @@ else
 fi
 
 replace_newline_return () {
-	awk -v RS="" '{gsub (/\n/,"⏎")}1'
+	awk 1 ORS='⏎'
 }
 
 execute()
