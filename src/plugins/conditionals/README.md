@@ -103,18 +103,19 @@ sudo kdb mount main.ini /examples/conditionals ni
 sudo kdb mount sub.ini /examples/conditionals/sub ini
 
 # mount conditionals as global plugin
-sudo kdb global-mount conditionals
+sudo kdb global-mount conditionals || $(exit 0)
 
 # create testfiles
 echo 'key1 = val1' 						       >  `kdb file /examples/conditionals`
 echo '[key1]' 							       >> `kdb file /examples/conditionals`
-echo 'check/condition = (./ == 'val1') ? (../sub/key == 'true')' >> `kdb file /examples/conditionals`
+echo "check/condition = (./ == 'val1') ? (../sub/key == 'true')" >> `kdb file /examples/conditionals`
 
 echo "key = false" > `kdb file /examples/conditionals/sub`
 
 # should fail and yield an error
 kdb export /examples/conditionals ini
 #> sub/key = false
+#> #@META check/condition = (./ == 'val1') ? (../sub/key == 'true')
 #> key1 = val1
 # ERRORS:135
 # Error (#135) occurred!
@@ -131,6 +132,7 @@ kdb set /examples/conditionals/sub/key true
 # should succeed
 kdb export /examples/conditionals ini
 #> sub/key = true
+#> #@META check/condition = (./ == 'val1') ? (../sub/key == 'true')
 #> key1 = val1
 
 # cleanup
