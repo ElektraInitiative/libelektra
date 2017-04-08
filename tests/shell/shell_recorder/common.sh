@@ -3,5 +3,6 @@ replace_newline_return () {
 }
 
 regex_escape () {
-	sed 's/\[/\\\[/g' | sed 's/\]/\\\]/g' | sed 's/\./\\\./g' | sed 's/\*/\\\*/g' | sed 's/\?/\\\?/g'
+	sed 's/\[/\\\[/g' | sed 's/\]/\\\]/g' | sed 's/\./\\\./g' | sed 's/\*/\\\*/g' | sed 's/\?/\\\?/g' \
+		| sed 's/(/\\\(/g' | sed 's/)/\\\)/g'
 }
