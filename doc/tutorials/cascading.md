@@ -73,7 +73,7 @@ kdb get /sw/tutorial/cascading/#0/current/test
 # But is only present in the associated directory
 cd ..
 kdb get /sw/tutorial/cascading/#0/current/test
-#> hello galaxy
+# hello galaxy
 ```
 
 ###### Add a Key to the proc Namespace
