@@ -148,7 +148,7 @@ execute()
 
 	printf "%s\0\n" "STDOUT: $STDOUT" >> "$OutFile"
 	if [ ! -z "$STDOUTCMP" ];
-		then
+	then
 		nbTest=$(( nbTest + 1 ))
 		echo "$STDOUT" | replace_newline_return | grep -Eq --text "^${STDOUTCMP}$"
 		if [ "$?" -ne "0" ];
