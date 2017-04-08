@@ -27,7 +27,7 @@ kdb get /sw/tutorial/cascading/#0/current/test
 
 # Now add the key ...
 sudo kdb set system/sw/tutorial/cascading/#0/current/test "hello world"
-#> create a new key system/sw/tutorial/cascading/#0/current/test with string hello world
+#> Create a new key system/sw/tutorial/cascading/#0/current/test with string hello world
 
 # ... and verify that it exists
 kdb get /sw/tutorial/cascading/#0/current/test
