@@ -21,9 +21,11 @@ Configuration in the **system** namespace is readable for all users and the same
 In the default Elektra installation only an administrator can update configuration here:
 
 ```sh
+# Backup-and-Restore:/sw/tutorial
+
 kdb get /sw/tutorial/cascading/#0/current/test
-# RET:    1
-# STDERR: Did not find key
+# RET: 1
+# STDERR:Did not find key
 
 # Now add the key ...
 sudo kdb set system/sw/tutorial/cascading/#0/current/test "hello world"
@@ -58,7 +60,7 @@ As **dir** precedes the **user** namespace, configuration in **dir** can overwri
 
 ```sh
 # create and change to a new directory ...
-mkdir kdbtutorial && cd $_
+mkdir -p kdbtutorial && cd $_
 
 # ... and create a key in this directories dir-namespace
 kdb set dir/sw/tutorial/cascading/#0/current/test "hello universe"
@@ -148,8 +150,8 @@ First you need to create the system default value to link the override to if the
 user hasn't defined it:
 
 ```sh
-$ sudo kdb set system/overrides/test "hello default"
-#> Create a new key system/overrides/test with string hello default
+sudo kdb set system/overrides/test "hello default"
+#> Set string to hello default
 ```
 
 Then we can create the link:
