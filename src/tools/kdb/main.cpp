@@ -232,15 +232,16 @@ int main (int argc, char ** argv)
 	{
 		std::cerr << "The command " << getErrorColor (ANSI_COLOR::BOLD) << argv[0] << " " << command
 			  << getErrorColor (ANSI_COLOR::RESET) << " terminated " << getErrorColor (ANSI_COLOR::RED) << "unsuccessfully"
-			  << getErrorColor (ANSI_COLOR::RESET) << " with the info:\n"
-			  << ce.what () << "Please report the issue at https://issues.libelektra.org/" << std::endl;
+			  << getErrorColor (ANSI_COLOR::RESET) << " with the info:" << endl
+			  << ce.what () << endl
+			  << "Please report the issue at https://issues.libelektra.org/" << std::endl;
 		return 6;
 	}
 	catch (...)
 	{
 		std::cerr << "The command " << getErrorColor (ANSI_COLOR::BOLD) << argv[0] << " " << command
 			  << getErrorColor (ANSI_COLOR::RESET) << " terminated with an " << getErrorColor (ANSI_COLOR::RED)
-			  << "unknown error" << getErrorColor (ANSI_COLOR::RESET)
+			  << "unknown error" << getErrorColor (ANSI_COLOR::RESET) << endl
 			  << "Please report the issue at https://issues.libelektra.org/" << std::endl;
 		displayHelp (argv[0], f);
 		return 7;
