@@ -110,13 +110,16 @@ translate()
 	while read -r line;
 	do
 		grep -Eq "^(\s)*#>" <<< "$line"
-		if [ -z "$OUTBUF" ];
+		if [ "$?" -eq 0 ];
 		then
-			tmp=$(sed -n 's/\(\s\)*#> \(.*\)/\2/p' <<<"$line")
-			OUTBUF="$tmp"
-		else
-			tmp=$(sed -n 's/\(\s\)*#> \(.*\)/\2/p' <<<"$line")
-			OUTBUF=$(echo -en "${OUTBUF}\n${tmp}")
+			if [ -z "$OUTBUF" ];
+			then
+				tmp=$(sed -n 's/\(\s\)*#> \(.*\)/\2/p' <<<"$line")
+				OUTBUF="$tmp"
+			else
+				tmp=$(sed -n 's/\(\s\)*#> \(.*\)/\2/p' <<<"$line")
+				[ -z "$tmp" ] && OUTBUF="${OUTBUF}⏎" || OUTBUF=$(echo -en "${OUTBUF}\n$tmp")
+			fi
 		fi
 
 		grep -Eq "^(\s*)#" <<< "$line"
