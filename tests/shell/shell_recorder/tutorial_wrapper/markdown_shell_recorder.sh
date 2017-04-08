@@ -1,6 +1,7 @@
 #!/bin/bash
 INFILE="$1"
 
+@INCLUDE_COMMON@
 
 BLOCKS=$(sed -n '/```sh/,/```\n/p' "$1")
 BUF=
@@ -17,10 +18,6 @@ STDERR=
 DIFF=
 OUTBUF=
 MOUNTPOINT=
-
-replace_newline_return () {
-	awk 1 ORS='⏎'
-}
 
 writeBlock()
 {

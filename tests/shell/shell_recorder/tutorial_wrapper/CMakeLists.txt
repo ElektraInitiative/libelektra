@@ -1,7 +1,7 @@
 function (add_s_test NAME FILE)
 	add_test (
 		testshell_markdown_${NAME}
-		"${CMAKE_CURRENT_SOURCE_DIR}/markdown_shell_recorder.sh"
+		"${CMAKE_CURRENT_BINARY_DIR}/markdown_shell_recorder.sh"
 		"${FILE}"
 		)
 

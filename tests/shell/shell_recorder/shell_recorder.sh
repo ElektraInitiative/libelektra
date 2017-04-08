@@ -1,5 +1,7 @@
 #!/bin/sh
 
+@INCLUDE_COMMON@
+
 set -f
 
 FILE=$1
@@ -32,10 +34,6 @@ if [ -z "@USE_CMAKE_KDB_COMMAND@" ]; then
 else
 	KDBCOMMAND="kdb"
 fi
-
-replace_newline_return () {
-	awk 1 ORS='⏎'
-}
 
 execute()
 {
