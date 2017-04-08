@@ -26,10 +26,10 @@ writeBlock()
 	then
 		echo "RET: $RET" >> "$TMPFILE"
 	else
-	    if [ -z "$ERRORS" ];
-	    then
-		echo "RET: 0" >> "$TMPFILE"
-	    fi
+		if [ -z "$ERRORS" ];
+		then
+			echo "RET: 0" >> "$TMPFILE"
+		fi
 	fi
 	if [ ! -z "$ERRORS" ];
 	then
@@ -52,19 +52,19 @@ writeBlock()
 		tmp=$(replace_newline_return <<< "$OUTBUF")
 		tmp=$(echo "$tmp" | sed 's/\[/\\\[/g' | sed 's/\]/\\\]/g' | sed 's/\./\\\./g' | sed 's/\*/\\\*/g' | sed 's/\?/\\\?/g')
 		echo "STDOUT: $tmp" >> "$TMPFILE"
-	    elif [ ! -z "$STDOUT" ];
-	    then
+	elif [ ! -z "$STDOUT" ];
+	then
 		tmp=$(replace_newline_return <<< "$STDOUT")
 		tmp=$(echo "$tmp" | sed 's/\[/\\\[/g' | sed 's/\]/\\\]/g' | sed 's/\./\\\./g' | sed 's/\*/\\\*/g' | sed 's/\?/\\\?/g')
 		echo "STDOUT: $tmp" >> "$TMPFILE"
-	    else
+	else
 		if [ ! -z "$STDOUTRE" ]
 		then
 			echo "STDOUT-REGEX: $STDOUT" >> "$TMPFILE"
-		    else
+		else
 			if [ ! -z "$STDOUTGLOB" ];
 			then
-			    echo "STDOUT-GLOB: $STDOUT"
+				echo "STDOUT-GLOB: $STDOUT"
 			fi
 		fi
 	fi
@@ -112,17 +112,17 @@ translate()
 		grep -Eq "^(\s)*#>" <<< "$line"
 		if [ -z "$OUTBUF" ];
 		then
-	    		tmp=$(sed -n 's/\(\s\)*#> \(.*\)/\2/p' <<<"$line")
+			tmp=$(sed -n 's/\(\s\)*#> \(.*\)/\2/p' <<<"$line")
 			OUTBUF="$tmp"
-		    else
-	    		tmp=$(sed -n 's/\(\s\)*#> \(.*\)/\2/p' <<<"$line")
+		else
+			tmp=$(sed -n 's/\(\s\)*#> \(.*\)/\2/p' <<<"$line")
 			OUTBUF=$(echo -en "${OUTBUF}\n${tmp}")
 		fi
 
 		grep -Eq "^(\s*)#" <<< "$line"
 		if [ "$?" -eq 0 ];
 		then
-	    		tmp=$(sed -n 's/\(\s\)*# \(.*\)/\2/p' <<<"$line")
+			tmp=$(sed -n 's/\(\s\)*# \(.*\)/\2/p' <<<"$line")
 			cmd=$(cut -d ':' -f1 <<< "$tmp")
 			arg=$(cut -d ':' -f2- <<< "$tmp")
 
@@ -167,19 +167,19 @@ translate()
 			COMMAND=$(sed "s/\`[[:blank:]]*sudo\ /\`/" <<< "$COMMAND")
 			if [ "${line: -1}" == "\\" ];
 			then
-			    COMMAND="${COMMAND%?}"
+				COMMAND="${COMMAND%?}"
 			fi
 			while [ "${line: -1}" == "\\" ];
 			do
-			    read -r line
-			    line=$(sed "s/^sudo\ //" <<< "$line")
-			    line=$(sed "s/\`[[:blank:]]*sudo\ /\`/" <<< "$line")
-			    if [ "${line: -1}" == "\\" ];
-			    then
-				COMMAND=$(printf "%s\\\n%s" "$COMMAND" "${line%?}")
-			    else
-				COMMAND=$(printf "%s\\\n%s\\\n" "$COMMAND" "$line")
-			    fi
+				read -r line
+				line=$(sed "s/^sudo\ //" <<< "$line")
+				line=$(sed "s/\`[[:blank:]]*sudo\ /\`/" <<< "$line")
+				if [ "${line: -1}" == "\\" ];
+				then
+					COMMAND=$(printf "%s\\\n%s" "$COMMAND" "${line%?}")
+				else
+					COMMAND=$(printf "%s\\\n%s\\\n" "$COMMAND" "$line")
+				fi
 			done
 			continue
 		fi
@@ -198,18 +198,18 @@ do
 	grep -Eq '(\s)*```sh$' <<<"$line"
 	if [ "$?" -eq 0 ];
 	then
-	    	INBLOCK=1
+		INBLOCK=1
 		continue;
 	fi
 	grep -Eq '(\s)*```$' <<<"$line"
 	if [ "$?" -eq 0 ];
 	then
-	    INBLOCK=0
-	    continue
+		INBLOCK=0
+		continue
 	fi
 	if [ $INBLOCK -eq 0 ];
 	then
-	    continue
+		continue
 	fi
 	if [ -z "$BUF" ];
 	then
@@ -227,12 +227,12 @@ if [ "$MOUNTPOINTS_BACKUP" != "$MOUNTPOINT" ];
 then
 IFS='
 '
-    TOUMOUNT=$(diff <(echo "$MOUNTPOINTS_BACKUP") <(echo "$MOUNTPOINTS") | grep -Eo "^>.*")
-    for line in $TOUMOUNT;
-    do
-	mp=$(sed -n 's/\(.*\)with name \(.*\)/\2/p' <<< "$line")
-	kdb umount "$mp"
-    done
+	TOUMOUNT=$(diff <(echo "$MOUNTPOINTS_BACKUP") <(echo "$MOUNTPOINTS") | grep -Eo "^>.*")
+	for line in $TOUMOUNT;
+	do
+		mp=$(sed -n 's/\(.*\)with name \(.*\)/\2/p' <<< "$line")
+		kdb umount "$mp"
+	done
 fi
 
 exit "$SHELL_RECORDER_ERROR"
