@@ -171,3 +171,17 @@ kdb set /overrides/test "hello user"
 kdb get /sw/tutorial/cascading/#0/current/test
 #> hello user
 ```
+
+## Cleanup
+
+As last part in this tutorial we remove the modifications to the database we made previously.
+
+```sh
+kdb rm -r user/sw/tutorial/
+kdb rm -r system/sw/tutorial
+kdb rm -r system/overrides/test
+
+kdb rm /overrides/test
+
+kdb rm -r spec/sw/tutorial/
+```
