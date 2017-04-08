@@ -47,13 +47,14 @@ These changes are reflected in `/etc/hosts` instantly:
 
 ```sh
 cat /etc/hosts | grep mylocalhost
-#>: 127.0.0.33	mylocalhost
+#> 127.0.0.33	mylocalhost
 ```
 
 Applications will now pick up these changes:
 
 ```sh
-ping mylocalhost
+ping -c 1 mylocalhost
+# RET:2
 ```
 
 We are also safe against wrong changes:
@@ -61,10 +62,10 @@ We are also safe against wrong changes:
 ```sh
 sudo kdb set system/hosts/ipv4/mylocalhost ::1
 # RET:5
-# ERROR:26
+# ERROR:51
 sudo kdb set system/hosts/ipv4/mylocalhost 300.0.0.1
 # RET:5
-# ERROR:26
+# ERROR:51
 ```
 
 We can undo these changes with:
@@ -148,12 +149,12 @@ Let us mount a projects git configuration into the dir namespace:
 
 ```sh
 # create a directory for our demonstration
-mkdir example && cd $_
+mkdir -p example && cd $_
 
 # this creates the .git/config file
 git init
 
-# mount gits configuration into Elektra
+# mount git’s configuration into Elektra
 sudo kdb mount /.git/config dir/git ini multiline=0
 ```
 
@@ -209,6 +210,7 @@ It turns out that this plugin allows us to define a list of valid values for our
 ```sh
 kdb setmeta user/example/enumtest/fruit check/enum "'apple', 'banana', 'grape'"
 kdb set user/example/enumtest/fruit tomato
+# RET:5
 # this fails because tomato is not in the list of valid values
 ```
 
