@@ -15,7 +15,7 @@ formatted files. It uses a general format which:
 
 - Maps key names to XML elements
 - Maps key values to textual content of XML elements
-- Maps metakeys to XML attributes. Metakey name = attribute name, Metakey value 
+- Maps metakeys to XML attributes. Metakey name = attribute name, Metakey value
  	= attribute value
 - Ignores XML comments
 
@@ -48,7 +48,7 @@ To export an existing keyset to the XML format:
 	kdb export user/test/xerces xerces > example.xml
 
 The root element of the resulting XML file will be "xerces" again, restored via the
-metadata. If you don't want this behavior, delete the metadata `xerces/rootname` on 
+metadata. If you don't want this behavior, delete the metadata `xerces/rootname` on
 the mountpoint, then it uses the mountpoint's name instead.
 
 ## Dependencies
@@ -59,7 +59,7 @@ the mountpoint, then it uses the mountpoint's name instead.
 
 ## Limitations
 
-This plugin is not able to handle key names which contain characters that are not 
+This plugin is not able to handle key names which contain characters that are not
 allowed to appear as an XML element name. Consider using the rename plugin to
 take care about proper escaping.
 
@@ -69,8 +69,8 @@ The main rules of an XML element name are:
 - Element names can contain letters, digits, hyphens, underscores, and periods
 - Element names cannot contain spaces
 
-The root key is not allowed to be an array, as this would correspond to multiple 
-root elements in XML (see the 
+The root key is not allowed to be an array, as this would correspond to multiple
+root elements in XML (see the
 [github issue](https://github.com/ElektraInitiative/libelektra/issues/1451)).
 
 XSD transformations, schemas or DTDs are not supported yet.
@@ -98,9 +98,9 @@ kdb get /examples/xercesfile/bar
 kdb export /examples/xercesfile xerces
 #> <?xml version="1.0" encoding="UTF-8" standalone="no" ?>
 #> <xerces>
-#> 
+#>
 #>   <bar meta="da_ta">bar</bar>foo
-#> 
+#>
 #> </xerces>
 
 sudo kdb umount /examples/xercesfile
