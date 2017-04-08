@@ -194,7 +194,7 @@ translate()
 INBLOCK=0
 IFS=''
 
-MOUNTPOINTS_BACKUP=$(kdb mount)
+MOUNTPOINTS_BACKUP=$("$KDBCOMMAND" mount)
 
 while read -r line;
 do
@@ -224,7 +224,7 @@ done <<<"$BLOCKS"
 
 translate
 
-MOUNTPOINTS=$(kdb mount)
+MOUNTPOINTS=$("$KDBCOMMAND" mount)
 
 if [ "$MOUNTPOINTS_BACKUP" != "$MOUNTPOINT" ];
 then
@@ -234,7 +234,7 @@ IFS='
 	for line in $TOUMOUNT;
 	do
 		mp=$(sed -n 's/\(.*\)with name \(.*\)/\2/p' <<< "$line")
-		kdb umount "$mp"
+		"$KDBCOMMAND" umount "$mp"
 	done
 fi
 

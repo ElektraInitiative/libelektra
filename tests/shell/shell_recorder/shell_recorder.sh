@@ -28,13 +28,6 @@ TMPFILE=$(mktemp -t elektraenv.XXXXXXXXX 2>/dev/null || mktemp -t 'elektraenv')
 nbError=0
 nbTest=0
 
-if [ -z "@USE_CMAKE_KDB_COMMAND@" ]; then
-	KDBCOMMAND="@KDB_COMMAND@"
-	export PATH="$PATH:`dirname \"$KDBCOMMAND\"`"
-else
-	KDBCOMMAND="kdb"
-fi
-
 execute()
 {
 	proto="$*"

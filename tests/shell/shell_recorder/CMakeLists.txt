@@ -10,7 +10,12 @@ if (ENABLE_KDB_TESTING)
 	else()
 		message(SEND_ERROR "no kdb tool found, please enable BUILD_FULL, BUILD_STATIC or BUILD_SHARED")
 	endif ()
-	file (READ "${CMAKE_CURRENT_SOURCE_DIR}/common.sh" INCLUDE_COMMON)
+	configure_file (
+		"${CMAKE_CURRENT_SOURCE_DIR}/common.sh"
+		"${CMAKE_CURRENT_BINARY_DIR}/common.sh"
+		@ONLY
+	)
+	file (READ "${CMAKE_CURRENT_BINARY_DIR}/common.sh" INCLUDE_COMMON)
 	configure_file (
 			"${CMAKE_CURRENT_SOURCE_DIR}/shell_recorder.sh"
 			"${CMAKE_CURRENT_BINARY_DIR}/shell_recorder.sh"
