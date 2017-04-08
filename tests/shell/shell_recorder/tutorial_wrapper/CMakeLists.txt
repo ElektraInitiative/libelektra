@@ -16,6 +16,8 @@ add_s_test (line "${CMAKE_SOURCE_DIR}/src/plugins/line/README.md")
 add_s_test (mathcheck "${CMAKE_SOURCE_DIR}/src/plugins/mathcheck/README.md")
 add_s_test (mozpref "${CMAKE_SOURCE_DIR}/src/plugins/mozprefs/README.md")
 add_s_test (tutorial_cascading "${CMAKE_SOURCE_DIR}/doc/tutorials/cascading.md")
-add_s_test (tutorial_mount "${CMAKE_SOURCE_DIR}/doc/tutorials/mount.md")
 add_s_test (kdb-complete "${CMAKE_SOURCE_DIR}/doc/help/kdb-complete.md")
 add_s_test (xerces "${CMAKE_SOURCE_DIR}/src/plugins/xerces/README.md")
+
+# Only works with super user privileges, since it writes to `/etc/hosts`:
+# add_s_test (tutorial_mount "${CMAKE_SOURCE_DIR}/doc/tutorials/mount.md")
