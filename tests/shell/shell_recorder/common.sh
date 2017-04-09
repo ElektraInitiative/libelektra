@@ -1,5 +1,5 @@
 replace_newline_return () {
-	awk 1 ORS='⏎' | sed 's/.$//' | tr -d '\n'
+	awk '{if (NR>1) {printf line"⏎";} line=$0;} END { printf line; }'
 }
 
 regex_escape () {
