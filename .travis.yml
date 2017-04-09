@@ -36,6 +36,7 @@ before_install:
       brew install qt5;
       brew install discount;
       brew install libgit2;
+      brew install xerces-c;
       export Qt5_DIR=/usr/local/opt/qt5;
       brew config;
     fi
