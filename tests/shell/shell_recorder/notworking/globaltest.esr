@@ -1,5 +1,6 @@
-DiffType: Dump
 Mountpoint: system/
+DiffType: File
+
 
 < kdb set system/elektra/globalplugins ""
 < kdb set system/elektra/globalplugins/postcommit list
@@ -9,10 +10,12 @@ Mountpoint: system/
 < kdb set system/elektra/globalplugins/postcommit/user/placements/get "pregetstorage postgetstorage postgetcleanup"
 < kdb set system/elektra/globalplugins/postcommit/user/placements/error "prerollback postrollback"
 < kdb set system/elektra/globalplugins/postcommit/user/plugins ""
-< kdb set system/elektra/globalplugins/postcommit/user/plugins/#0 profile
-< kdb set system/elektra/globalplugins/postcommit/user/plugins/#0/placements profile
-< kdb set system/elektra/globalplugins/postcommit/user/plugins/#0/placements/set "presetstorage presetcleanup"
-< kdb set system/elektra/globalplugins/postcommit/user/plugins/#0/placements/get "postgetstorage postgetcleanup"
+< kdb set system/elektra/globalplugins/postcommit/user/plugins/#0 tracer
+< kdb set system/elektra/globalplugins/postcommit/user/plugins/#0/placements tracer
+< kdb set system/elektra/globalplugins/postcommit/user/plugins/#0/placements/set "presetstorage precommit postcommit"
+< kdb set system/elektra/globalplugins/postcommit/user/plugins/#1 timeofday
+< kdb set system/elektra/globalplugins/postcommit/user/plugins/#1/placements timeofday
+< kdb set system/elektra/globalplugins/postcommit/user/plugins/#1/placements/set "presetstorage precommit postcommit"
 < kdb set system/elektra/globalplugins/postrollback list
 < kdb set system/elektra/globalplugins/precommit list
 < kdb set system/elektra/globalplugins/pregetstorage list
@@ -22,12 +25,7 @@ Mountpoint: system/
 < kdb set system/elektra/globalplugins/presetcleanup list
 < kdb set system/elektra/globalplugins/prerollback list
 
-
-
-< kdb set /sw/org/myapp/#0/current
-< kdb set /sw/org/myapp/#0/profile testprofile
-< kdb set /sw/org/myapp/#0/testprofile
-< kdb set /sw/org/myapp/#0/testprofile/testkey TEST
-
-STDOUT: TEST
-< kdb get /sw/org/myapp/#0/current/testkey
+STDOUT: (tracer.*){3}
+STDERR: (set.*di.*pos.*){3}
+RET: 0
+< kdb set system/globaltestkey

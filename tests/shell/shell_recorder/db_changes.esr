@@ -2,18 +2,18 @@ DiffType: Dump
 Mountpoint: user/tmount/db
 File: dbtest.ecf
 
-< mount $File $Mountpoint dump
+< kdb mount $File $Mountpoint dump
 
 DIFF: (> keyNew.*user/tmount/db/key)
-< set $Mountpoint/key val
+< kdb set $Mountpoint/key val
 
 DIFF: (> keyNew.*user/tmount/db/key3)
-< set $Mountpoint/key3 val2
+< kdb set $Mountpoint/key3 val2
 
 STDOUT: user/tmount/db/key⏎user/tmount/db/key3
-< ls $Mountpoint
+< kdb ls $Mountpoint
 
 RET: 0
-< rm -r $Mountpoint
+< kdb rm -r $Mountpoint
 RET: 0
-< umount $Mountpoint
+< kdb umount $Mountpoint

@@ -1,9 +1,11 @@
 #!/bin/bash
 INFILE="$1"
 
+@INCLUDE_COMMON@
 
-BLOCKS=$(grep -oPz '(?s)```sh.*?```\n' "$1")
+BLOCKS=$(sed -n '/```sh/,/```\n/p' "$1")
 BUF=
+SHELL_RECORDER_ERROR=0
 
 COMMAND=
 RET=
@@ -24,10 +26,10 @@ writeBlock()
 	then
 		echo "RET: $RET" >> "$TMPFILE"
 	else
-	    if [ -z "$ERRORS" ];
-	    then
-		echo "RET: 0" >> "$TMPFILE"
-	    fi
+		if [ -z "$ERRORS" ];
+		then
+			echo "RET: 0" >> "$TMPFILE"
+		fi
 	fi
 	if [ ! -z "$ERRORS" ];
 	then
@@ -47,22 +49,22 @@ writeBlock()
 	fi
 	if [ ! -z "$OUTBUF" ];
 	then
-		tmp=$(awk -v RS="" '{gsub (/\n/,"⏎")}1' <<< "$OUTBUF")
-		tmp=$(echo "$tmp" | sed 's/\[/\\\[/g' | sed 's/\]/\\\]/g' | sed 's/\./\\\./g' | sed 's/\*/\\\*/g' | sed 's/\?/\\\?/g')
+		tmp=$(replace_newline_return <<< "$OUTBUF")
+		tmp=$(echo "$tmp" | regex_escape)
 		echo "STDOUT: $tmp" >> "$TMPFILE"
-	    elif [ ! -z "$STDOUT" ];
-	    then
-		tmp=$(awk -v RS="" '{gsub (/\n/,"⏎")}1' <<< "$STDOUT")
-		tmp=$(echo "$tmp" | sed 's/\[/\\\[/g' | sed 's/\]/\\\]/g' | sed 's/\./\\\./g' | sed 's/\*/\\\*/g' | sed 's/\?/\\\?/g')
+	elif [ ! -z "$STDOUT" ];
+	then
+		tmp=$(replace_newline_return <<< "$STDOUT")
+		tmp=$(echo "$tmp" | regex_escape)
 		echo "STDOUT: $tmp" >> "$TMPFILE"
-	    else
+	else
 		if [ ! -z "$STDOUTRE" ]
 		then
 			echo "STDOUT-REGEX: $STDOUT" >> "$TMPFILE"
-		    else
+		else
 			if [ ! -z "$STDOUTGLOB" ];
 			then
-			    echo "STDOUT-GLOB: $STDOUT"
+				echo "STDOUT-GLOB: $STDOUT"
 			fi
 		fi
 	fi
@@ -108,19 +110,22 @@ translate()
 	while read -r line;
 	do
 		grep -Eq "^(\s)*#>" <<< "$line"
-		if [ -z "$OUTBUF" ];
+		if [ "$?" -eq 0 ];
 		then
-			tmp=$(grep -Po "(?<=#\> ).*" <<<"$line")
-			OUTBUF="$tmp"
-		    else
-			tmp=$(grep -Po "(?<=#\> ).*" <<< "$line")
-			OUTBUF=$(echo -en "${OUTBUF}\n${tmp}")
+			if [ -z "$OUTBUF" ];
+			then
+				tmp=$(sed -n 's/\(\s\)*#> \(.*\)/\2/p' <<<"$line")
+				OUTBUF="$tmp"
+			else
+				tmp=$(sed -n 's/\(\s\)*#> \(.*\)/\2/p' <<<"$line")
+				[ -z "$tmp" ] && OUTBUF="${OUTBUF}⏎" || OUTBUF=$(echo -en "${OUTBUF}\n$tmp")
+			fi
 		fi
 
 		grep -Eq "^(\s*)#" <<< "$line"
 		if [ "$?" -eq 0 ];
 		then
-			tmp=$(grep -Po "(?<=\# )(.*)" <<< "$line")
+			tmp=$(sed -n 's/\(\s\)*# \(.*\)/\2/p' <<<"$line")
 			cmd=$(cut -d ':' -f1 <<< "$tmp")
 			arg=$(cut -d ':' -f2- <<< "$tmp")
 
@@ -165,40 +170,49 @@ translate()
 			COMMAND=$(sed "s/\`[[:blank:]]*sudo\ /\`/" <<< "$COMMAND")
 			if [ "${line: -1}" == "\\" ];
 			then
-			    COMMAND="${COMMAND::-1}"
+				COMMAND="${COMMAND%?}"
 			fi
 			while [ "${line: -1}" == "\\" ];
 			do
-			    read -r line
-			    line=$(sed "s/^sudo\ //" <<< "$line")
-			    line=$(sed "s/\`[[:blank:]]*sudo\ /\`/" <<< "$line")
-			    if [ "${line: -1}" == "\\" ];
-			    then
-				COMMAND=$(printf "%s\\\n%s" "$COMMAND" "${line::-1}")
-			    else
-				COMMAND=$(printf "%s\\\n%s\\\n" "$COMMAND" "$line")
-			    fi
+				read -r line
+				line=$(sed "s/^sudo\ //" <<< "$line")
+				line=$(sed "s/\`[[:blank:]]*sudo\ /\`/" <<< "$line")
+				if [ "${line: -1}" == "\\" ];
+				then
+					COMMAND=$(printf "%s\\\n%s" "$COMMAND" "${line%?}")
+				else
+					COMMAND=$(printf "%s\\\n%s\\\n" "$COMMAND" "$line")
+				fi
 			done
 			continue
 		fi
 	done <<<"$BUF"
 	writeBlock "$TMPFILE"
-	../shell_recorder.sh "$TMPFILE"
-	#	 rm "$TMPFILE"
+	../shell_recorder.sh "$TMPFILE" || SHELL_RECORDER_ERROR=1
+	rm "$TMPFILE"
 }
-
+INBLOCK=0
 IFS=''
+
+MOUNTPOINTS_BACKUP=$("$KDBCOMMAND" mount)
+
 while read -r line;
 do
 	grep -Eq '(\s)*```sh$' <<<"$line"
 	if [ "$?" -eq 0 ];
 	then
-		continue;	
+		INBLOCK=1
+		continue;
 	fi
 	grep -Eq '(\s)*```$' <<<"$line"
 	if [ "$?" -eq 0 ];
 	then
-	    continue
+		INBLOCK=0
+		continue
+	fi
+	if [ $INBLOCK -eq 0 ];
+	then
+		continue
 	fi
 	if [ -z "$BUF" ];
 	then
@@ -210,3 +224,18 @@ done <<<"$BLOCKS"
 
 translate
 
+MOUNTPOINTS=$("$KDBCOMMAND" mount)
+
+if [ "$MOUNTPOINTS_BACKUP" != "$MOUNTPOINT" ];
+then
+IFS='
+'
+	TOUMOUNT=$(diff <(echo "$MOUNTPOINTS_BACKUP") <(echo "$MOUNTPOINTS") | grep -Eo "^>.*")
+	for line in $TOUMOUNT;
+	do
+		mp=$(sed -n 's/\(.*\)with name \(.*\)/\2/p' <<< "$line")
+		"$KDBCOMMAND" umount "$mp"
+	done
+fi
+
+exit "$SHELL_RECORDER_ERROR"
