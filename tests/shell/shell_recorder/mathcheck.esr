@@ -1,6 +1,6 @@
 Mountpoint: user/tmount/mathcheck
 DiffType: File
-File:
+File: mathcheck.esr
 Storage: mathcheck
 
 # Setup
