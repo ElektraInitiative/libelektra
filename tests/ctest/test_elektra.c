@@ -19,7 +19,7 @@ static void set (const char * parentKeyName, const char * name, const char * val
     printf ("Error occurred: %s\n", keyString (keyGetMeta (parentKey, "error/description")));
 
     // Set
-    Key *key = keyNew(parentKey, KEY_END);
+    Key *key = keyNew(parentKeyName, KEY_END);
     keyAddName(key, name);
     keySetString(key, value);
     ksAppendKey(config, key);
