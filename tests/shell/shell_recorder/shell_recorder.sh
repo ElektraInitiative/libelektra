@@ -92,7 +92,7 @@ execute()
 		echo "$RETVAL" | grep -Ewq $RETCMP
 		if [ "$?" -ne "0" ];
 		then
-			echo "Return value “$RETVAL” doesn't match “$RETCMP”"
+			printf "Return value “%s” doesn't match “%s”\n" "$RETVAL" "$RETCMP"
 			printf "%s\n" "=== FAILED return value doesn't match expected pattern $RETCMP" >> "$OutFile"
 			nbError=$(( nbError + 1 ))
 		fi
