@@ -78,13 +78,13 @@ execute()
 
 	echo "$command"
 
-	printf "%s\0\n" "CMD: $command" >> "$OutFile"
+	printf "%s\n" "CMD: $command" >> "$OutFile"
 
 	sh -c -f "$command" 2>stderr 1>stdout
 
 	RETVAL="$?"
 
-	printf "%s\0\n" "RET: $RETVAL" >> "$OutFile"
+	printf "%s\n" "RET: $RETVAL" >> "$OutFile"
 
 	if [ ! -z "$RETCMP" ];
 	then
@@ -93,7 +93,7 @@ execute()
 		if [ "$?" -ne "0" ];
 		then
 			echo "Return value “$RETVAL” doesn't match “$RETCMP”"
-			printf "%s\0\n" "=== FAILED return value doesn't match expected pattern $RETCMP" >> "$OutFile"
+			printf "%s\n" "=== FAILED return value doesn't match expected pattern $RETCMP" >> "$OutFile"
 			nbError=$(( nbError + 1 ))
 		fi
 	fi
@@ -122,7 +122,7 @@ execute()
 	STDERR=$(cat ./stderr)
 
 
-	printf "%s\0\n" "STDERR: $STDERR" >> "$OutFile"
+	printf "%s\n" "STDERR: $STDERR" >> "$OutFile"
 	if [ ! -z "$STDERRCMP" ];
 	then
 		nbTest=$(( nbTest + 1 ))
@@ -130,7 +130,7 @@ execute()
 		if [ "$?" -ne "0" ];
 		then
 			printf "\nERROR - STDERR:\n“%s”\ndoesn't match “%s”\n\n" "$STDERR" "$STDERRCMP"
-			printf "%s\0\n" "=== FAILED stderr doesn't match expected patter $STDERRCMP" >> "$OutFile"
+			printf "%s\n" "=== FAILED stderr doesn't match expected patter $STDERRCMP" >> "$OutFile"
 			nbError=$(( nbError + 1 ))
 		fi
 	fi
@@ -139,7 +139,7 @@ execute()
 
 	STDOUT=$(cat ./stdout)
 
-	printf "%s\0\n" "STDOUT: $STDOUT" >> "$OutFile"
+	printf "%s\n" "STDOUT: $STDOUT" >> "$OutFile"
 	if [ ! -z "$STDOUTCMP" ];
 	then
 		nbTest=$(( nbTest + 1 ))
@@ -147,7 +147,7 @@ execute()
 		if [ "$?" -ne "0" ];
 		then
 			printf "\nERROR - STDOUT:\n“%s”\ndoesn't match “%s”\n\n" "$STDOUT" "$STDOUTCMP"
-			printf "%s\0\n" "=== FAILED stdout doesn't match expected pattern $STDOUTCMP" >> "$OutFile"
+			printf "%s\n" "=== FAILED stdout doesn't match expected pattern $STDOUTCMP" >> "$OutFile"
 			nbError=$(( nbError + 1 ))
 		fi
 	fi
@@ -158,14 +158,14 @@ execute()
 		if [ "$?" -ne "0" ];
 		then
 			printf "\nERROR - STDOUT:\n“%s”\ndoesn't match “%s”\n\n" "$STDOUT" "$STDOUTRECMP"
-			printf "%s\0\n" "=== FAILED stdout doesn't match expected pattern $STDOUTRECMP" >> "$OutFile"
+			printf "%s\n" "=== FAILED stdout doesn't match expected pattern $STDOUTRECMP" >> "$OutFile"
 			nbError=$(( nbError + 1 ))
 		fi
 	fi
 
 	WARNINGS=$(echo "$STDERR" | sed -nE  "s/Warning number: (\d*)/\1/p" | tr '\n' ',')
 
-	printf "%s\0\n" "WARNINGS: $WARNINGS" >> "$OutFile"
+	printf "%s\n" "WARNINGS: $WARNINGS" >> "$OutFile"
 	if [ ! -z "$WARNINGSCMP" ];
 	then
 		nbTest=$(( nbTest + 1 ))
@@ -173,7 +173,7 @@ execute()
 		if [ "$?" -ne "0" ];
 		then
 			printf "\nERROR - WARNINGS:\n“%s”\ndoesn't match “%s”\n\n" "$WARNINGS" "$WARNINGSCMP"
-			printf "%s\0\n" "=== FAILED Warnings don't match expected pattern $WARNINGSCMP" >> "$OutFile"
+			printf "%s\n" "=== FAILED Warnings don't match expected pattern $WARNINGSCMP" >> "$OutFile"
 			nbError=$(( nbError + 1 ))
 		fi
 	fi
@@ -184,7 +184,7 @@ execute()
 	ERRORS=$(echo "$STDERR" | sed -nE  "s/error \(\#(\d*)/\1/p" | tr '\n' ',')
 
 
-	printf "%s\0\n" "ERRORS: $ERRORS" >> "$OutFile"
+	printf "%s\n" "ERRORS: $ERRORS" >> "$OutFile"
 	if [ ! -z "$ERRORSCMP" ];
 	then
 		nbTest=$(( nbTest + 1 ))
@@ -192,14 +192,14 @@ execute()
 		if [ "$?" -ne "0" ];
 		then
 			printf "\nERROR - ERRORS:\n“%s”\ndoesn't match “%s”\n\n" "$ERRORS" "$ERRORSCMP"
-			printf "%s\0\n" "=== FAILED Errors don't match expected pattern $ERRORSCMP" >> "$OutFile"
+			printf "%s\n" "=== FAILED Errors don't match expected pattern $ERRORSCMP" >> "$OutFile"
 			nbError=$(( nbError + 1 ))
 		fi
 	fi
 
 
 
-	printf "%s\0\n" "DIFF: $DIFF" >> "$OutFile"
+	printf "%s\n" "DIFF: $DIFF" >> "$OutFile"
 	if [ ! -z "$DIFFCMP" ];
 	then
 		nbTest=$(( nbTest + 1 ))
@@ -207,7 +207,7 @@ execute()
 		if [ "$?" -ne "0" ];
 		then
 			printf "\nERROR - Changes to %s:\n“%s”\ndon't match “%s”\n\n" "$DBFile" "$DIFFCMP"
-			printf "%s\0\n" "=== FAILED changes to database file ($DBFile) don't match $DIFFCMP" >> "$OutFile"
+			printf "%s\n" "=== FAILED changes to database file ($DBFile) don't match $DIFFCMP" >> "$OutFile"
 			nbError=$(( nbError + 1 ))
 		fi
 	fi
@@ -313,7 +313,7 @@ EVAL=0
 
 if [ "$#" -eq "1" ];
 then
-	printf "%s\0" "shell_recorder $1 RESULTS: $nbTest test(s) done"
+	printf "%s" "shell_recorder $1 RESULTS: $nbTest test(s) done"
 	echo " $nbError error(s)."
 	EVAL=$nbError
 fi
@@ -323,12 +323,12 @@ then
 	RESULT=$(diff -N --text "$2" "$OutFile" 2>/dev/null)
 	if [ "$?" -ne "0" ];
 	then
-		printf "%s\0\n" "=======================================\nReplay test failed, protocols differ"
+		printf "%s\n" "=======================================\nReplay test failed, protocols differ"
 		echo "$RESULT"
-		printf "%s\0\n" "\n\n"
+		printf "%s\n" "\n\n"
 		EVAL=1
 		else
-		printf "%s\0\n" "=======================================\nReplay test succeeded"
+		printf "%s\n" "=======================================\nReplay test succeeded"
 	fi
 fi
 
