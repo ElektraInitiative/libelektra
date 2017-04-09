@@ -75,8 +75,7 @@ const char * elektraGetString (Elektra * elektra, const char * name)
 {
     READ_KEY
 
-    char * value = elektraMalloc (keyGetValueSize(resultKey));
-    strcpy (value, string);
+    const char * value = string;
 
     RETURN_VALUE
 }
