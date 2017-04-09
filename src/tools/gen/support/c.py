@@ -13,13 +13,13 @@ class CSupport(Support):
 			raise Exception("invalid keyname " + key)
 
 	def getfuncname(self, key):
-		return "elektraGet"+self.funcname(key)
+		return "get_"+self.funcname(key)
 
 	def setfuncname(self, key):
-		return "elektraSet"+self.funcname(key)
+		return "set_"+self.funcname(key)
 
 	def funcpretty(self, key):
-		return ''.join(x for x in key.title() if not x == '/' and not x == '_')
+		return key.replace('/','_').replace('#','')
 
 	def userkey(self, key):
 		"""Return the key name within user/"""
