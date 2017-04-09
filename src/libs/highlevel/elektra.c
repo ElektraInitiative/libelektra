@@ -22,9 +22,7 @@ const char * string = keyString (resultKey); \
 \
 keyDel (nameKey); \
 
-#define RELEASE_KEY_AND_RETURN_VALUE \
-keyDel (resultKey); \
-\
+#define RETURN_VALUE \
 return value; \
 
 Elektra * elektraOpen (const char * application)
@@ -80,7 +78,7 @@ const char * elektraGetString (Elektra * elektra, const char * name)
     char * value = elektraMalloc (keyGetValueSize(resultKey));
     strcpy (value, string);
 
-    RELEASE_KEY_AND_RETURN_VALUE
+    RETURN_VALUE
 }
 
 /**
@@ -96,7 +94,7 @@ kdb_boolean_t elektraGetBoolean (Elektra * elektra, const char * name)
         value = 1;
     }
 
-    RELEASE_KEY_AND_RETURN_VALUE
+    RETURN_VALUE
 }
 
 /**
@@ -109,7 +107,7 @@ kdb_char_t elektraGetChar (Elektra * elektra, const char * name)
 
     const char value = string[0];
 
-    RELEASE_KEY_AND_RETURN_VALUE
+    RETURN_VALUE
 }
 
 /**
@@ -122,7 +120,7 @@ kdb_octet_t elektraGetOctet (Elektra * elektra, const char * name)
 
     const kdb_octet_t value = strtoul(string, NULL, 10);
 
-    RELEASE_KEY_AND_RETURN_VALUE
+    RETURN_VALUE
 }
 
 /**
@@ -135,7 +133,7 @@ kdb_short_t elektraGetShort (Elektra * elektra, const char * name)
 
     const kdb_short_t value = strtoul(string, NULL, 10);
 
-    RELEASE_KEY_AND_RETURN_VALUE
+    RETURN_VALUE
 }
 
 /**
@@ -148,7 +146,7 @@ kdb_unsigned_short_t elektraGetUnsignedShort (Elektra * elektra, const char * na
 
     const kdb_unsigned_long_t value = strtoul(string, NULL, 10);
 
-    RELEASE_KEY_AND_RETURN_VALUE
+    RETURN_VALUE
 }
 
 /**
@@ -161,7 +159,7 @@ kdb_long_t elektraGetLong (Elektra * elektra, const char * name)
 
     const kdb_long_t value = strtoul(string, NULL, 10);
 
-    RELEASE_KEY_AND_RETURN_VALUE
+    RETURN_VALUE
 }
 
 /**
@@ -174,7 +172,7 @@ kdb_unsigned_long_t elektraGetUnsignedLong (Elektra * elektra, const char * name
 
     const kdb_unsigned_long_t value = strtoul(string, NULL, 10);
 
-    RELEASE_KEY_AND_RETURN_VALUE
+    RETURN_VALUE
 }
 
 /**
@@ -187,7 +185,7 @@ kdb_long_long_t elektraGetLongLong (Elektra * elektra, const char * name)
 
     const kdb_long_long_t value = ELEKTRA_LONG_LONG_S (string, NULL, 10);
 
-    RELEASE_KEY_AND_RETURN_VALUE
+    RETURN_VALUE
 }
 
 /**
@@ -200,7 +198,7 @@ kdb_unsigned_long_long_t elektraGetUnsignedLongLong (Elektra * elektra, const ch
 
     const kdb_unsigned_long_long_t value = ELEKTRA_UNSIGNED_LONG_LONG_S (string, NULL, 10);
 
-    RELEASE_KEY_AND_RETURN_VALUE
+    RETURN_VALUE
 }
 
 /**
@@ -213,7 +211,7 @@ kdb_float_t elektraGetFloat (Elektra * elektra, const char * name)
 
     const kdb_float_t value = strtof(string, NULL);
 
-    RELEASE_KEY_AND_RETURN_VALUE
+    RETURN_VALUE
 }
 
 /**
@@ -226,7 +224,7 @@ kdb_double_t elektraGetDouble (Elektra * elektra, const char * name)
 
     const kdb_double_t value = strtod(string, NULL);
 
-    RELEASE_KEY_AND_RETURN_VALUE
+    RETURN_VALUE
 }
 
 /**
@@ -239,7 +237,7 @@ kdb_long_double_t elektraGetLongDouble (Elektra * elektra, const char * name)
 
     const kdb_long_double_t value = strtold(string, NULL);
 
-    RELEASE_KEY_AND_RETURN_VALUE
+    RETURN_VALUE
 }
 
 
