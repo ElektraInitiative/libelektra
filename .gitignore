@@ -32,3 +32,7 @@ nbproject/
 #ignore macOS folder attribute files
 .DS_Store
 .directory
+
+#ignore CLion project files
+.idea/
+cmake-build-debug/
