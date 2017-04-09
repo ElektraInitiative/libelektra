@@ -60,7 +60,8 @@ As **dir** precedes the **user** namespace, configuration in **dir** can overwri
 
 ```sh
 # create and change to a new directory ...
-mkdir -p kdbtutorial && cd $_
+mkdir -p kdbtutorial
+cd kdbtutorial
 
 # ... and create a key in this directories dir-namespace
 kdb set dir/sw/tutorial/cascading/#0/current/test "hello universe"
