@@ -24,7 +24,6 @@ before_install:
       export PATH=/usr/local/bin:/usr/local/sbin:$PATH;
       brew update;
       brew tap caskroom/cask;
-      brew install cmake;
       brew install swig;
       brew install gobject-introspection;
       brew install python3;
