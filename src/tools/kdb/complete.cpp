@@ -125,7 +125,9 @@ void CompleteCommand::completeNormal (const string argument, Key const & parsedA
 	// Let elektra handle the escaping of the input for us
 	const string argumentEscaped = parsedArgument.getFullName ();
 	const auto filter = [&](const pair<Key, pair<int, int>> & c) {
-		return filterDepth (cl.minDepth + offset, max (cl.maxDepth, cl.maxDepth + offset), c) && nameFilter (argument, c);
+		return filterDepth (cl.minDepth + offset,
+				    max (cl.maxDepth, cl.maxDepth > INT_MAX - offset ? INT_MAX : cl.maxDepth + offset), c) &&
+		       nameFilter (argument, c);
 	};
 	printResults (root, cl.minDepth, cl.maxDepth, cl, result, filter, printResult);
 }
