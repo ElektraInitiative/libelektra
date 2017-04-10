@@ -34,7 +34,7 @@ before_install:
       brew install dbus;
       brew install qt5;
       brew install discount;
-      brew install botan libgcrypt;
+      brew install openssl botan libgcrypt;
       brew install libgit2;
       brew install xerces-c;
       export Qt5_DIR=/usr/local/opt/qt5;
@@ -58,6 +58,7 @@ before_script:
       CMAKE_OPT+=("-DPYTHON_INCLUDE_DIR:PATH=$(python3-config --prefix)/include/python${python3_ver}m") &&
       CMAKE_OPT+=("-DPYTHON_LIBRARY:FILEPATH=$(python3-config --prefix)/lib/libpython${python3_ver}.dylib");
       if [[ $(uname -r | cut -d "." -f 1) == 15 ]]; then plugins="ALL;-CRYPTO"; fi;
+      ln -s /usr/local/opt/openssl/include/openssl/ /usr/local/include/openssl;
     fi
   - cmake -GNinja -DBUILD_STATIC=OFF -DPLUGINS="${plugins:-ALL}" -DBINDINGS=ALL -DTOOLS=ALL -DCMAKE_INSTALL_PREFIX=$TRAVIS_BUILD_DIR/../install -DKDB_DB_SYSTEM=$TRAVIS_BUILD_DIR/../kdbsystem ${CMAKE_OPT[@]} $TRAVIS_BUILD_DIR
 
