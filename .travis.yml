@@ -23,6 +23,7 @@ before_install:
       gem install test-unit --no-document;
       export PATH=/usr/local/bin:/usr/local/sbin:$PATH;
       brew tap caskroom/cask;
+      brew install ninja;
       brew install swig;
       brew install gobject-introspection;
       brew install python3;
@@ -58,8 +59,8 @@ before_script:
       CMAKE_OPT+=("-DPYTHON_LIBRARY:FILEPATH=$(python3-config --prefix)/lib/libpython${python3_ver}.dylib");
       if [[ $(uname -r | cut -d "." -f 1) == 15 ]]; then plugins="ALL;-CRYPTO"; fi;
     fi
-  - cmake -DBUILD_STATIC=OFF -DPLUGINS="${plugins:-ALL}" -DBINDINGS=ALL -DTOOLS=ALL -DCMAKE_INSTALL_PREFIX=$TRAVIS_BUILD_DIR/../install -DKDB_DB_SYSTEM=$TRAVIS_BUILD_DIR/../kdbsystem ${CMAKE_OPT[@]} $TRAVIS_BUILD_DIR
+  - cmake -GNinja -DBUILD_STATIC=OFF -DPLUGINS="${plugins:-ALL}" -DBINDINGS=ALL -DTOOLS=ALL -DCMAKE_INSTALL_PREFIX=$TRAVIS_BUILD_DIR/../install -DKDB_DB_SYSTEM=$TRAVIS_BUILD_DIR/../kdbsystem ${CMAKE_OPT[@]} $TRAVIS_BUILD_DIR
 
 script:
-  - make -j3
-  - make run_all
+  - ninja
+  - ninja run_all
