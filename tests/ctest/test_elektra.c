@@ -14,14 +14,18 @@ static void set (const char * parentKeyName, const char * name, const char * val
     KeySet * config = ksNew (0, KS_END);
     Key * parentKey = keyNew (parentKeyName, KEY_END);
     KDB * handle = kdbOpen (parentKey);
-    kdbGet (handle, config, parentKey);
+    int ret = kdbGet (handle, config, parentKey);
 
-    printf ("Error occurred: %s\n", keyString (keyGetMeta (parentKey, "error/description")));
+    printf ("Error occurred: %d %s\n", ret, keyString (keyGetMeta (parentKey, "error/description")));
+    printf ("File name is: %s\n", keyString(parentKey));
 
     // Set
     Key *key = keyNew(parentKeyName, KEY_END);
     keyAddName(key, name);
     keySetString(key, value);
+
+    printf ("Key name is: %s\n", keyName(key));
+    keySetString(key, "huhu");
     ksAppendKey(config, key);
 
     // Check
@@ -48,9 +52,13 @@ static void check (const char * parentKeyName, const char * name) {
     KDB * handle = kdbOpen (parentKey);
     kdbGet (handle, config, parentKey);
 
+    Key *key = keyNew(parentKeyName, KEY_END);
+    keyAddName(key, name);
+
     // Check
-    Key *checkKey = ksLookupByName (config, name, 0);
+    Key *checkKey = ksLookup (config, key, 0);
     printf ("CHECK: value is %s\n", keyString(checkKey));
+    printf ("Key name is: %s\n", keyName(checkKey));
 
     // Close
     kdbClose (handle, parentKey);
@@ -59,7 +67,7 @@ static void check (const char * parentKeyName, const char * name) {
 
 static void test_development ()
 {
-    const char * parentKey = "user/sw/elektra/kdb/#0/current";
+    const char * parentKey = "user/test/sw/elektra/kdb/#0/current";
     const char * name = "test";
     const char * value = "1";
 
