@@ -10,14 +10,12 @@
 #define ELEKTRA_H
 
 #include "kdbtypes.h"
+#include "elektra_error.h"
 
-typedef struct _ElektraError ElektraError;
 typedef struct _Elektra Elektra;
 
 Elektra * elektraOpen (const char * application, ElektraError ** error);
 void elektraClose (Elektra * elektra);
-
-void elektraErrorDel (ElektraError * error);
 
 const char * elektraGetString (Elektra * elektra, const char * name);
 kdb_boolean_t elektraGetBoolean (Elektra * elektra, const char * name);

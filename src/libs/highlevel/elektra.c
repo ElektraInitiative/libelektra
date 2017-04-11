@@ -11,7 +11,8 @@
 #include <memory.h>
 #include "kdb.h"
 #include "kdbhelper.h"
-#include "elektraprivate.h"
+#include "elektra_private.h"
+#include "elektra_error_private.h"
 
 #define READ_KEY \
 Key * const nameKey = keyDup (elektra->parentKey); \
@@ -48,20 +49,6 @@ void elektraClose (Elektra * elektra)
     keyDel (elektra->parentKey);
 
     elektraFree (elektra);
-}
-
-void elektraErrorDel (ElektraError * error)
-{
-    elektraFree(error);
-}
-
-ElektraError * elektraError (int code, const char * message)
-{
-    ElektraError * const error= elektraCalloc (sizeof (struct _ElektraError));
-    error->code = code;
-    error->message = message;
-
-    return error;
 }
 
 /**
