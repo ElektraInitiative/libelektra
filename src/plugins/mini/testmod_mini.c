@@ -58,6 +58,9 @@ static void test_get_simple ()
 		{ "keyWithLeadingWhitespace", "valueWithoutLeadingWhiteSpace" },
 		{ "keyNoSpace", "valueNoSpace" },
 		{ "wide", "open 	 spaces" },
+		{ "key containing space", "value" },
+		{ "empty", "" },
+		{ "esc\\/a\\/ped/level1/level2", "🌻" },
 	};
 	Key * key;
 	char text[MAX_LENGTH_TEXT];
@@ -90,7 +93,9 @@ static void test_set_simple ()
 	KeySet * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("mini");
 
-	char keyValues[][2][50] = { { "key", "value" }, { "space", "wide open	 spaces" } };
+	char keyValues[][2][50] = {
+		{ "key", "value" }, { "space", "wide open	 spaces" }, { "empty", "" }, { "esc\\/aped/level1/", "🐌" }
+	};
 	char text[MAX_LENGTH_TEXT];
 	KeySet * keySet = ksNew (0, KS_END);
 	for (size_t pair = 0; pair < sizeof (keyValues) / sizeof (keyValues[0]); pair++)
