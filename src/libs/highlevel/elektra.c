@@ -31,6 +31,15 @@ Elektra * elektraOpen (const char * application, ElektraError ** error)
     Key * const parentKey = keyNew (application, KEY_END);
     KDB * const kdb = kdbOpen (parentKey);
 
+    if (kdb == NULL)
+    {
+        const ElektraErrorCode code = ELEKTRA_ERROR_GENERAL_ERROR;
+        const char * message = keyString (keyGetMeta (parentKey, "error/description"));
+
+        *error = elektraErrorCreate (code, message);
+        return NULL;
+    }
+
     KeySet * const config = ksNew (0, KS_END);
     kdbGet (kdb, config, parentKey);
 
