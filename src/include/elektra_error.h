@@ -18,6 +18,6 @@ typedef enum {
 
 ElektraErrorCode elektraErrorCode (ElektraError * error);
 const char * elektraErrorMessage (ElektraError * error);
-void elektraErrorDel (ElektraError * error);
+void elektraErrorFree (ElektraError * error);
 
 #endif //ELEKTRA_ERROR_H
