@@ -37,6 +37,13 @@ static inline KeySet * elektraMiniContract ()
 static inline void parseLine (char * line, KeySet * keySet, Key * parentKey)
 {
 	char * equals = strchr (line, '=');
+
+	if (!equals)
+	{
+		ELEKTRA_LOG_NOTICE ("Ignored line “%s” since it does not contain a valid key value pair", line);
+		return;
+	}
+
 	*equals = '\0';
 
 	char * name = elektraStrip (line);
