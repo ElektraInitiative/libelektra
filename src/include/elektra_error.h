@@ -12,6 +12,7 @@
 typedef struct _ElektraError ElektraError;
 
 typedef enum {
+    // TODO: Specify errors.
     ELEKTRA_ERROR_GENERAL_ERROR = 0
 } ElektraErrorCode;
 
