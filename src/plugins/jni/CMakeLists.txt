@@ -1,5 +1,10 @@
 include (LibAddMacros)
 if (DEPENDENCY_PHASE)
+	if (APPLE)
+		execute_process (COMMAND "/usr/libexec/java_home" OUTPUT_VARIABLE JAVA_HOME)
+		string (STRIP ${JAVA_HOME} JAVA_HOME)
+	endif ()
+
 	find_package (JNI)
 
 	if (JNI_FOUND)
