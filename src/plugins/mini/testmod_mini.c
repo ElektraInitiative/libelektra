@@ -40,7 +40,7 @@ static void test_basics ()
 
 static void test_get_simple ()
 {
-	char const * const fileName = "Examples/simple.ini";
+	char const * const fileName = "Examples/read.ini";
 	printf ("• Parse file “%s”\n", fileName);
 
 	char const * const prefix = "user/mini/tests/read";
