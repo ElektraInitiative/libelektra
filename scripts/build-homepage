@@ -53,14 +53,14 @@ netstat -tlpen
 # then start the backend; succeed if it was not started before..
 kdb stop-rest-backend || /bin/true
 
+# cleanup /tmp files from build
+find /tmp -mindepth 1 -delete
+
 # avoid 'address already in use'
 while netstat -tlpen | grep "$IP:$PORT"
 do
 	sleep 1  # keep waiting (=downtime) short
 done
-
-# cleanup /tmp files from build
-find /tmp -mindepth 1 -delete
 
 # now start again
 kdb run-rest-backend
