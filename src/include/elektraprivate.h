@@ -22,8 +22,6 @@ struct _Elektra
     KDB * kdb;
     KeySet * config;
     Key * parentKey;
-
-    struct _ElektraError * error;
 };
 
 #endif //ELEKTRAPRIVATE_H
