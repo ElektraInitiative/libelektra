@@ -93,7 +93,7 @@ else()
 		OUTPUT_NAME _kdbtools
 		PREFIX ""
 	)
-	
+
 
 	# CMAKE_INSTALL_PREFIX dependent install location
 	# if we hit one of the usual cases (/usr/local or /usr) install the lib
