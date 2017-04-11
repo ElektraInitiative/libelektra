@@ -71,7 +71,7 @@ So if you are a normal user the command `kdb set /b/c 'Value 2'` was synonymous 
 At this point the key database should have this structure:
 ![Elektra’s namespaces](/doc/images/tutorial_namespaces_namespaces.svg)
 
-#### Cascading Keys
+### Cascading Keys
 
 Another question you may ask yourself now is, what happens if we lookup a key without providing a namespace. So let us retrieve the key **/b/c** with the -v flag in order to make _kdb_ more talkative.
 
@@ -91,7 +91,7 @@ Here you see how Elektra searches all namespaces for matching keys in this order
 
 If a key is found in a namespace, it masks the key in all subsequent namespaces, which is the reason why the system namespace isn't searched. Finally the virtual key **/b/c** gets resolved to the real key **user/b/c**.
 Because of the way a key without a namespace is retrieved, we call keys, that start with '**/**' **cascading keys**.
-You can find out more about cascading lookups [here](cascading.md).
+You can find out more about cascading lookups in the [cascading tutorial](cascading.md).
 
 
 
@@ -114,7 +114,7 @@ sudo kdb set "system/sw/org/myapp/policy" "super-high-secure"
 #> Create a new key system/sw/org/myapp/policy with string super-high-secure
 ```
 
-The key **system/app/policy** will be stored in the system namespace (probably at `/etc/kdb` on a Linux/Unix system).
+The key **system/sw/org/myapp/policy** will be stored in the system namespace (probably at `/etc/kdb` on a Linux/Unix system).
 
 Then the user sets his app directory by issuing:
 
@@ -123,19 +123,20 @@ kdb set "user/sw/org/myapp/default_dir" "/home/user/.myapp"
 #> Create a new key user/sw/org/myapp/default_dir with string /home/user/.myapp
 ```
 
-This key will be stored in the user namespace (at the home directory) and thus may vary from user to user.
+This key will be stored in the user namespace (below the home directory) and thus may vary from user to user.
 Elektra loads the value for the current user and passes it to the application.
 
-You can also retrieve the values in the command line by using the **kdb** tool:
+You can also retrieve the two values with the command line tool **kdb**:
 
 ```sh
-kdb get system/sw/org/myapp
-# RET:    0
-# STDERR: Did not find key
+kdb get system/sw/org/myapp/policy
+#> super-high-secure
+kdb get user/sw/org/myapp/default_dir
+#> /home/user/.myapp
 ```
 
-_Cascading keys_ are keys that start with **/** and are a way of making key lookups much easier.
-Let's say you want to load the configuration from the example above.
+The two key lookups can be done in an easier and more general way, using _cascading keys_ (i.e. key names 
+without namespace and leading slash `/`).
 You do not need to search every namespace by yourself.
 Just make a lookup for **/sw/org/myapp**, like this:
 
@@ -146,27 +147,5 @@ kdb get /sw/org/myapp/default_dir
 #> /home/user/.myapp
 ```
 
-When using cascading key the best key will be searched at run-time.
-If you are only interested in the system key, you would use:
+When using cascading keys Elektra will usually search all namespaces for a matching key in the following order: `spec`, `proc`, `dir`, `user`, `system`. This also means, that a key in the `user` namespace can override a key in the `system` namespace. For more information on this, read the [cascading turorial](cascading.md).
 
-```sh
-kdb get system/sw/org/myapp/policy
-#> super-high-secure
-```
-
-## How it Works in C
-
-The idea is to call **kdbGet()** to retrieve the root key for the application.
-Looking for a specific part of the configuration is done by **ksLookup()**.
-
-The documentation provides the following example to illustrate the intended usage.
-If you want to use a _cascading key_ (starting with `/`),
-you use the **ksLookup()** or **ksLookupByName()** function
-(also see [doxygen](https://doc.libelektra.org/api/current/html/group__keyset.html#gaa34fc43a081e6b01e4120daa6c112004)):
-
-```c
-if (kdbGet(handle, myConfig,  p=keyNew("/sw/org/myapp", KEY_END)) == -1)
-	errorHandler ("Could not get Keys", parentKey);
-if ((myKey = ksLookupByName (myConfig, "/sw/org/myapp/mykey", 0)) == NULL)
-	errorHandler ("Could not Lookup Key");
-```
