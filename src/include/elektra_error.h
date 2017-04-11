@@ -11,11 +11,11 @@
 
 typedef struct _ElektraError ElektraError;
 
-enum {
+typedef enum {
     ELEKTRA_ERROR_GENERAL_ERROR = 0
-};
+} ElektraErrorCode;
 
-int elektraErrorCode (ElektraError * error);
+ElektraErrorCode elektraErrorCode (ElektraError * error);
 const char * elektraErrorMessage (ElektraError * error);
 void elektraErrorDel (ElektraError * error);
 
