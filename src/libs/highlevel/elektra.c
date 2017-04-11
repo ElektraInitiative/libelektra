@@ -88,10 +88,7 @@ kdb_boolean_t elektraGetBoolean (Elektra * elektra, const char * name)
 {
     READ_KEY
 
-    kdb_boolean_t value = 0;
-    if (!strcmp(string, "true") || !strcmp(string, "1") || !strcmp(string, "on")) {
-        value = 1;
-    }
+    kdb_boolean_t value = strcmp(string, "1");
 
     RETURN_VALUE
 }
