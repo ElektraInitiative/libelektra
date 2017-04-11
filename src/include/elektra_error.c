@@ -29,7 +29,7 @@ const char * elektraErrorMessage(ElektraError * error)
     return error->message;
 }
 
-void elektraErrorDel (ElektraError * error)
+void elektraErrorFree (ElektraError * error)
 {
     elektraFree(error);
 }
