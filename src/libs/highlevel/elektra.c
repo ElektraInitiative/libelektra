@@ -19,6 +19,10 @@ Key * const nameKey = keyDup (elektra->parentKey); \
 keyAddName (nameKey, name); \
 \
 Key * const resultKey = ksLookup (elektra->config, nameKey, 0); \
+if (resultKey == NULL) \
+{ \
+    exit(EXIT_FAILURE); \
+} \
 const char * string = keyString (resultKey); \
 \
 keyDel (nameKey); \
@@ -33,7 +37,7 @@ Elektra * elektraOpen (const char * application, ElektraError ** error)
 
     if (kdb == NULL)
     {
-        const ElektraErrorCode code = ELEKTRA_ERROR_GENERAL_ERROR;
+        const ElektraErrorCode code = ELEKTRA_ERROR_GENERAL_ERROR; // TODO: Specify error.
         const char * message = keyString (keyGetMeta (parentKey, "error/description"));
 
         *error = elektraErrorCreate (code, message);
@@ -45,7 +49,7 @@ Elektra * elektraOpen (const char * application, ElektraError ** error)
 
     if (kdbGetResult == -1)
     {
-        const ElektraErrorCode code = ELEKTRA_ERROR_GENERAL_ERROR;
+        const ElektraErrorCode code = ELEKTRA_ERROR_GENERAL_ERROR; // TODO: Specify error.
         const char * message = keyString (keyGetMeta (parentKey, "error/description"));
 
         *error = elektraErrorCreate (code, message);
