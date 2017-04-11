@@ -19,6 +19,16 @@ ElektraError * elektraErrorCreate (int code, const char * message)
     return error;
 }
 
+int elektraErrorCode(ElektraError * error)
+{
+    return error->code;
+}
+
+const char * elektraErrorMessage(ElektraError * error)
+{
+    return error->message;
+}
+
 void elektraErrorDel (ElektraError * error)
 {
     elektraFree(error);
