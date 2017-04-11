@@ -13,8 +13,8 @@
 
 struct _ElektraError
 {
-    int errorNr;
-    const char * msg;
+    int code;
+    const char * message;
 };
 
 struct _Elektra

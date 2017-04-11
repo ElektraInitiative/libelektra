@@ -55,14 +55,13 @@ void elektraErrorDel (ElektraError * error)
     elektraFree(error);
 }
 
-kdb_boolean_t elektraHasError (const Elektra * elektra)
+ElektraError * elektraError (int code, const char * message)
 {
-    return elektra->error != NULL;
-}
+    ElektraError * const error= elektraCalloc (sizeof (struct _ElektraError));
+    error->code = code;
+    error->message = message;
 
-const char * elektraErrorMessage (const Elektra * elektra)
-{
-    return elektra->error->msg;
+    return error;
 }
 
 /**
