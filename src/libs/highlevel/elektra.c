@@ -25,7 +25,7 @@ keyDel (nameKey); \
 #define RETURN_VALUE \
 return value; \
 
-Elektra * elektraOpen (const char * application)
+Elektra * elektraOpen (const char * application, ElektraError ** error)
 {
     Key * const parentKey = keyNew (application, KEY_END);
     KDB * const kdb = kdbOpen (parentKey);

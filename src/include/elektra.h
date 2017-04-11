@@ -14,12 +14,10 @@
 typedef struct _ElektraError ElektraError;
 typedef struct _Elektra Elektra;
 
-Elektra * elektraOpen (const char * application);
+Elektra * elektraOpen (const char * application, ElektraError ** error);
 void elektraClose (Elektra * elektra);
 
-kdb_boolean_t elektraHasError (const Elektra * elektra);
-const char * elektraErrorMessage (const Elektra * elektra);
-void elektraClearError (Elektra * elektra);
+void elektraErrorDel (ElektraError * error);
 
 const char * elektraGetString (Elektra * elektra, const char * name);
 kdb_boolean_t elektraGetBoolean (Elektra * elektra, const char * name);
