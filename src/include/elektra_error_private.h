@@ -15,4 +15,6 @@ struct _ElektraError
     const char * message;
 };
 
+ElektraError * elektraErrorCreate (int code, const char * message);
+
 #endif //ELEKTRA_ERROR_PRIVATE_H
