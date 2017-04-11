@@ -59,6 +59,9 @@ do
 	sleep 1  # keep waiting (=downtime) short
 done
 
+# cleanup /tmp files from build
+find /tmp -mindepth 1 -delete
+
 # now start again
 kdb run-rest-backend
 
