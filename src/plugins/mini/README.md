@@ -15,10 +15,6 @@ The minimal INI plugin (`mini`) is a very simple storage plugin based on the [IN
 
 [INI]: https://en.wikipedia.org/wiki/INI_file
 
-## Limitations
-
-This plugin only supports simple key-value based INI files without sections. If you want a more feature complete plugin, then please take a look at the [ini plugin](../ini/).
-
 ## Examples
 
 ```sh
@@ -57,3 +53,7 @@ kdb get "/examples/mini/🔑"
 kdb rm -r /examples/mini
 kdb umount /examples/mini
 ```
+
+## Limitations
+
+This plugin only supports simple key-value based INI files without sections. If you want a more feature complete plugin, then please take a look at the [ini plugin](../ini/).
