@@ -38,7 +38,7 @@ static void test_basics ()
 	PLUGIN_CLOSE ();
 }
 
-static void test_get_simple ()
+static void test_get ()
 {
 	char const * const fileName = "Examples/read.ini";
 	printf ("• Parse file “%s”\n", fileName);
@@ -82,7 +82,7 @@ static void test_get_simple ()
 	PLUGIN_CLOSE ();
 }
 
-static void test_set_simple ()
+static void test_set ()
 {
 	printf ("• Write configuration data\n");
 
@@ -129,8 +129,8 @@ int main (int argc, char ** argv)
 	init (argc, argv);
 
 	test_basics ();
-	test_get_simple ();
-	test_set_simple ();
+	test_get ();
+	test_set ();
 
 	printf ("\nResults: %d Test%s done — %d error%s.\n", nbTest, nbTest != 1 ? "s" : "", nbError, nbError != 1 ? "s" : "");
 
