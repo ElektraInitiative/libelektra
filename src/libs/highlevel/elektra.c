@@ -46,9 +46,18 @@ void elektraClose (Elektra * elektra)
     kdbClose (elektra->kdb, elektra->parentKey);
     ksDel (elektra->config);
     keyDel (elektra->parentKey);
-
-    elektraClearError (elektra);
+    
     elektraFree (elektra);
+}
+
+void elektraErrorDel (ElektraError * error)
+{
+    if (error == NULL)
+    {
+        return;
+    }
+
+    elektraFree(error);
 }
 
 kdb_boolean_t elektraHasError (const Elektra * elektra)
@@ -59,12 +68,6 @@ kdb_boolean_t elektraHasError (const Elektra * elektra)
 const char * elektraErrorMessage (const Elektra * elektra)
 {
     return elektra->error->msg;
-}
-
-void elektraClearError (Elektra * elektra)
-{
-    elektraFree (elektra->error);
-    elektra->error = NULL;
 }
 
 /**
