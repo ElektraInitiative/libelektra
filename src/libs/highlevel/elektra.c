@@ -46,17 +46,12 @@ void elektraClose (Elektra * elektra)
     kdbClose (elektra->kdb, elektra->parentKey);
     ksDel (elektra->config);
     keyDel (elektra->parentKey);
-    
+
     elektraFree (elektra);
 }
 
 void elektraErrorDel (ElektraError * error)
 {
-    if (error == NULL)
-    {
-        return;
-    }
-
     elektraFree(error);
 }
 
