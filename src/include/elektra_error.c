@@ -19,7 +19,7 @@ ElektraError * elektraErrorCreate (int code, const char * message)
     return error;
 }
 
-int elektraErrorCode(ElektraError * error)
+ElektraErrorCode elektraErrorCode(ElektraError * error)
 {
     return error->code;
 }
