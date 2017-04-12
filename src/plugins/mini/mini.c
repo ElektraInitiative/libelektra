@@ -34,13 +34,17 @@ static inline KeySet * elektraMiniContract ()
 		      keyNew ("system/elektra/modules/mini/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 }
 
-static inline void parseLine (char * line, KeySet * keySet, Key * parentKey)
+static inline void parseLine (char * line, size_t lineNumber, ssize_t lineLength, KeySet * keySet, Key * parentKey)
 {
 	char * equals = strchr (line, '=');
 
 	if (!equals)
 	{
-		ELEKTRA_LOG_NOTICE ("Ignored line “%s” since it does not contain a valid key value pair", line);
+		if (lineLength > 0)
+		{
+			line[lineLength - 1] = '\0';
+		}
+		fprintf (stderr, "Ignored line %lu “%s” since it does not contain a valid key value pair\n", lineNumber, line);
 		return;
 	}
 
@@ -68,7 +72,7 @@ static int parseINI (FILE * file, KeySet * keySet, Key * parentKey)
 	for (size_t lineNumber = 1; (length = getline (&line, &capacity, file)) != -1; ++lineNumber)
 	{
 		ELEKTRA_LOG_DEBUG ("Read Line %lu: %s", lineNumber, line);
-		parseLine (line, keySet, parentKey);
+		parseLine (line, lineNumber, length, keySet, parentKey);
 	}
 
 	elektraFree (line);
