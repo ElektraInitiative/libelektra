@@ -34,8 +34,26 @@ static inline KeySet * elektraMiniContract ()
 		      keyNew ("system/elektra/modules/mini/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 }
 
-static inline void parseLine (char * line, size_t lineNumber, ssize_t lineLength, KeySet * keySet, Key * parentKey)
+static inline ssize_t stripComment (char * line)
 {
+	char * current = line;
+	char * before = NULL;
+
+	/* As long as we are not the end of the string and
+	   the current character is either not a comment marker or the comment marker was escaped */
+	while (*current != '\0' && ((*current != '#' && *current != ';') || (before && *before == '\\')))
+	{
+		before = current;
+		current++;
+	}
+	*current = '\0';
+	return current - line;
+}
+
+static inline void parseLine (char * line, size_t lineNumber, KeySet * keySet, Key * parentKey)
+{
+	ssize_t lineLength = stripComment (line);
+
 	char * equals = strchr (line, '=');
 
 	if (!equals)
@@ -65,14 +83,13 @@ static inline void parseLine (char * line, size_t lineNumber, ssize_t lineLength
 static int parseINI (FILE * file, KeySet * keySet, Key * parentKey)
 {
 	char * line = NULL;
-	ssize_t length = 0;
 	size_t capacity = 0;
 	int errorNumber = errno;
 
-	for (size_t lineNumber = 1; (length = getline (&line, &capacity, file)) != -1; ++lineNumber)
+	for (size_t lineNumber = 1; getline (&line, &capacity, file) != -1; ++lineNumber)
 	{
 		ELEKTRA_LOG_DEBUG ("Read Line %lu: %s", lineNumber, line);
-		parseLine (line, lineNumber, length, keySet, parentKey);
+		parseLine (line, lineNumber, keySet, parentKey);
 	}
 
 	elektraFree (line);
