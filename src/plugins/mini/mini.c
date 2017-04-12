@@ -50,6 +50,18 @@ static inline char * stripComment (char * line)
 	return line;
 }
 
+static inline char * findUnescapedEquals (char * text)
+{
+	char * equals = text;
+	char * before = NULL;
+
+	while (*equals != '\0' && (*equals != '=' || (before && *before == '\\')))
+	{
+		before = equals++;
+	}
+	return equals;
+}
+
 static inline void parseLine (char * line, size_t lineNumber, KeySet * keySet, Key * parentKey)
 {
 	char * pair = elektraStrip (stripComment (line));
@@ -59,8 +71,7 @@ static inline void parseLine (char * line, size_t lineNumber, KeySet * keySet, K
 		return;
 	}
 
-	char * equals = strchr (pair, '=');
-
+	char * equals = findUnescapedEquals (pair);
 	if (!equals)
 	{
 		fprintf (stderr, "Ignored line %lu since “%s” does not contain a valid key value pair\n", lineNumber, pair);
