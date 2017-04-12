@@ -80,8 +80,8 @@ static inline void parseLine (char * line, size_t lineNumber, KeySet * keySet, K
 
 	*equals = '\0';
 
-	char * name = elektraStrip (pair);
-	char * value = elektraStrip (equals + 1);
+	char * name = elektraRstrip (pair, NULL);
+	char * value = elektraLskip (equals + 1);
 
 	Key * key = keyNew (keyName (parentKey), KEY_END);
 	keyAddName (key, name);
