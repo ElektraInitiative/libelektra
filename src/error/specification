@@ -363,7 +363,7 @@ description:invalid line encountered
 severity:error
 ingroup:plugin
 macro:NOEOF
-module:simpleini
+module:storage
 
 number:61
 description:parse error
