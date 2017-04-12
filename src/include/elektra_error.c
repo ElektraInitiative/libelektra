@@ -10,7 +10,7 @@
 #include "elektra_error_private.h"
 #include "kdbhelper.h"
 
-ElektraError * elektraErrorCreate (int code, const char * message)
+ElektraError * elektraErrorCreate (ElektraErrorCode code, const char * message)
 {
     ElektraError * const error = elektraCalloc (sizeof (struct _ElektraError));
     error->code = code;
@@ -19,12 +19,12 @@ ElektraError * elektraErrorCreate (int code, const char * message)
     return error;
 }
 
-ElektraErrorCode elektraErrorCode(ElektraError * error)
+ElektraErrorCode elektraErrorCode (ElektraError * error)
 {
     return error->code;
 }
 
-const char * elektraErrorMessage(ElektraError * error)
+const char * elektraErrorMessage (ElektraError * error)
 {
     return error->message;
 }
