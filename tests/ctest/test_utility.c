@@ -76,7 +76,7 @@ static void test_elektraRstrip ()
 
 static void test_ElektraStrip ()
 {
-	printf ("Test strip\n");
+	printf ("Test elektraStrip\n");
 	char text[MAX_LENGTH];
 
 	strncpy (text, "", MAX_LENGTH);
