@@ -61,10 +61,11 @@ static inline void parseLine (char * line, KeySet * keySet, Key * parentKey)
 static int parseINI (FILE * file, KeySet * keySet, Key * parentKey)
 {
 	char * line = NULL;
-	size_t length = 0;
+	ssize_t length = 0;
+	size_t capacity = 0;
 	int errorNumber = errno;
 
-	for (size_t lineNumber = 1; getline (&line, &length, file) != -1; ++lineNumber)
+	for (size_t lineNumber = 1; (length = getline (&line, &capacity, file)) != -1; ++lineNumber)
 	{
 		ELEKTRA_LOG_DEBUG ("Read Line %lu: %s", lineNumber, line);
 		parseLine (line, keySet, parentKey);
