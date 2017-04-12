@@ -34,7 +34,7 @@ static inline KeySet * elektraMiniContract ()
 		      keyNew ("system/elektra/modules/mini/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 }
 
-static inline ssize_t stripComment (char * line)
+static inline char * stripComment (char * line)
 {
 	char * current = line;
 	char * before = NULL;
@@ -47,28 +47,29 @@ static inline ssize_t stripComment (char * line)
 		current++;
 	}
 	*current = '\0';
-	return current - line;
+	return line;
 }
 
 static inline void parseLine (char * line, size_t lineNumber, KeySet * keySet, Key * parentKey)
 {
-	ssize_t lineLength = stripComment (line);
+	char * pair = elektraStrip (stripComment (line));
 
-	char * equals = strchr (line, '=');
+	if (*pair == '\0')
+	{
+		return;
+	}
+
+	char * equals = strchr (pair, '=');
 
 	if (!equals)
 	{
-		if (lineLength > 0)
-		{
-			line[lineLength - 1] = '\0';
-		}
-		fprintf (stderr, "Ignored line %lu “%s” since it does not contain a valid key value pair\n", lineNumber, line);
+		fprintf (stderr, "Ignored line %lu since “%s” does not contain a valid key value pair\n", lineNumber, pair);
 		return;
 	}
 
 	*equals = '\0';
 
-	char * name = elektraStrip (line);
+	char * name = elektraStrip (pair);
 	char * value = elektraStrip (equals + 1);
 
 	Key * key = keyNew (keyName (parentKey), KEY_END);
