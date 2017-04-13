@@ -255,7 +255,7 @@ run_script()
 		WARNINGSCMP=$(echo "$line"|cut -d ' ' -f2-)
 		;;
 	STDOUT:)
-		STDOUTCMP=$(echo "$line"|cut -d ' ' -f2-)
+		STDOUTCMP=$(printf "%s" "$line"|cut -d ' ' -f2-)
 		;;
 	STDOUT-REGEX:)
 		STDOUTRECMP=$(echo "$line"|cut -d ' ' -f2-)
