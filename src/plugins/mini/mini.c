@@ -78,7 +78,7 @@ static inline void parseLine (char * line, size_t lineNumber, KeySet * keySet, K
 	}
 
 	char * equals = findUnescapedEquals (pair);
-	if (!equals)
+	if (*equals == '\0' || equals == pair)
 	{
 		fprintf (stderr, "Ignored line %lu since “%s” does not contain a valid key value pair\n", lineNumber, pair);
 		return;
