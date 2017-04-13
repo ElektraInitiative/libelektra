@@ -51,7 +51,6 @@ static void test_get ()
 	KeySet * keySet = ksNew (0, KS_END);
 	succeed_if (plugin->kdbGet (plugin, keySet, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "Unable to open or parse file");
 	succeed_if (output_error (parentKey), "Received unexpected error while reading the configuration");
-	succeed_if (output_warnings (parentKey), "Received unexpected warning while reading the configuration");
 
 	char keyValues[][2][50] = {
 		{ "keyWithoutLeadingWhitespace", "valueWithLeadingWhiteSpace" },
