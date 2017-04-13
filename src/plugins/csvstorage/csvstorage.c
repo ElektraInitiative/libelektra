@@ -23,7 +23,7 @@
 
 
 // returns next field in record
-// ignore record and field separators in quoted fiels according to RFC 4180
+// ignore record and field separators in quoted fields according to RFC 4180
 
 static char * parseLine (char * origLine, char delim, unsigned long offset, Key * parentKey, unsigned long lineNr, int lastLine)
 {
