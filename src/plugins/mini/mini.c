@@ -17,6 +17,7 @@
 #include <kdblogger.h>
 #include <kdbutility.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 /* -- Functions ------------------------------------------------------------------------------------------------------------------------- */
 
@@ -62,6 +63,11 @@ static inline char * findUnescapedEquals (char * text)
 	return equals;
 }
 
+static inline char * unescape (char const * const text)
+{
+	return elektraReplace (text, "\\=", "=");
+}
+
 static inline void parseLine (char * line, size_t lineNumber, KeySet * keySet, Key * parentKey)
 {
 	char * pair = elektraStrip (stripComment (line));
@@ -80,14 +86,17 @@ static inline void parseLine (char * line, size_t lineNumber, KeySet * keySet, K
 
 	*equals = '\0';
 
-	char * name = elektraRstrip (pair, NULL);
-	char * value = elektraLskip (equals + 1);
+	char * name = unescape (elektraRstrip (pair, NULL));
+	char * value = unescape (elektraLskip (equals + 1));
 
 	Key * key = keyNew (keyName (parentKey), KEY_END);
 	keyAddName (key, name);
 	keySetString (key, value);
 	ELEKTRA_LOG_DEBUG ("Name:  “%s”", keyName (key));
 	ELEKTRA_LOG_DEBUG ("Value: “%s”", keyString (key));
+
+	free (name);
+	free (value);
 
 	ksAppendKey (keySet, key);
 }
@@ -137,6 +146,28 @@ static int parseFile (KeySet * returned ELEKTRA_UNUSED, Key * parentKey)
 	return status;
 }
 
+static inline char * escape (char const * const text)
+{
+	return elektraReplace (text, "=", "\\=");
+}
+
+static inline void writeFile (FILE * file, KeySet * keySet, Key * parentKey)
+{
+	Key * key;
+	ksRewind (keySet);
+	while ((key = ksNext (keySet)) != 0)
+	{
+		const char * name = elektraKeyGetRelativeName (key, parentKey);
+		ELEKTRA_LOG_DEBUG ("Write mapping “%s=%s”", name, keyString (key));
+
+		char * escapedName = escape (name);
+		char * escapedKey = escape (keyString (key));
+		fprintf (file, "%s=%s\n", escapedName, escapedKey);
+		free (escapedName);
+		free (escapedKey);
+	}
+}
+
 // ====================
 // = Plugin Interface =
 // ====================
@@ -169,15 +200,7 @@ int elektraMiniSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 		errno = errorNumber;
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
-
-	Key * key;
-	ksRewind (returned);
-	while ((key = ksNext (returned)) != 0)
-	{
-		const char * name = elektraKeyGetRelativeName (key, parentKey);
-		ELEKTRA_LOG_DEBUG ("Write mapping “%s=%s”", name, keyString (key));
-		fprintf (destination, "%s=%s\n", name, keyString (key));
-	}
+	writeFile (destination, returned, parentKey);
 
 	fclose (destination);
 
