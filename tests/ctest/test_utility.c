@@ -86,6 +86,32 @@ static void test_ElektraStrip ()
 	succeed_if_same_string (elektraStrip (text), "Leading And Trailing Whitespace\n\tSecond Line");
 }
 
+static void test_ElektraReplace ()
+{
+	printf ("Test elektraReplace\n");
+	char * text;
+
+	text = elektraReplace ("=k=e=y = v=a=l=u=e=", "=", "\\=");
+	succeed_if_same_string (text, "\\=k\\=e\\=y \\= v\\=a\\=l\\=u\\=e\\=");
+	free (text);
+
+	text = elektraReplace ("\\=k\\=e\\=y \\= v\\=a\\=l\\=u\\=e\\=", "\\=", "=");
+	succeed_if_same_string (text, "=k=e=y = v=a=l=u=e=");
+	free (text);
+
+	text = elektraReplace ("🙉", "|", "|");
+	succeed_if_same_string (text, "🙉");
+	free (text);
+
+	text = elektraReplace ("replace 👻 replace", "replace", "");
+	succeed_if_same_string (text, " 👻 ");
+	free (text);
+
+	text = elektraReplace ("", "🙈", "");
+	succeed_if_same_string (text, "");
+	free (text);
+}
+
 int main (int argc, char ** argv)
 {
 	printf ("Utility Tests\n");
@@ -96,6 +122,7 @@ int main (int argc, char ** argv)
 	test_elektraLskip ();
 	test_elektraRstrip ();
 	test_ElektraStrip ();
+	test_ElektraReplace ();
 
 	printf ("\nResults: %d Test%s done — %d Error%s.\n", nbTest, nbTest == 1 ? "" : "s", nbError, nbError == 1 ? "" : "s");
 
