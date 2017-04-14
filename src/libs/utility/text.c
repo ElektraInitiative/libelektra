@@ -155,17 +155,13 @@ char * elektraReplace (char const * const text, char const * const pattern, char
 	char * destination = result;
 	while ((current = strstr (current, pattern)) != NULL)
 	{
-		size_t length = current - before;
-		strncpy (destination, before, length);
-		destination += length;
-
-		strncpy (destination, replacement, replacementLength);
-		destination += replacementLength;
+		destination = stpncpy (destination, before, current - before);       //! OCLint (False Positive: Constant Conditional OP)
+		destination = stpncpy (destination, replacement, replacementLength); //! OCLint (False Positive: Constant Conditional OP)
 
 		current += patternLength;
 		before = current;
 	}
-	strncpy (destination, before, text + textLength - before + 1);
+	strncpy (destination, before, text + textLength - before + 1); //! OCLint (False Positive: Constant Conditional OP)
 
 	return (char *)result;
 }
