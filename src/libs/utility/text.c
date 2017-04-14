@@ -3,6 +3,7 @@
 #include <string.h>
 
 #include <kdbassert.h>
+#include <kdbhelper.h>
 #include <kdblogger.h>
 
 /**
@@ -143,8 +144,8 @@ char * elektraReplace (char const * const text, char const * const pattern, char
 	ELEKTRA_LOG_DEBUG ("Found “%lu” occurrences of “%s” in “%s”", numberOccurrences, pattern, text);
 
 	ssize_t replacementLength = strlen (replacement);
-	ssize_t textLength = strlen (text);
-	char * result = malloc ((textLength + numberOccurrences * (replacementLength - patternLength) + 1) * sizeof (char));
+	ssize_t textLength = elektraStrLen (text);
+	char * result = elektraMalloc ((textLength + numberOccurrences * (replacementLength - patternLength)) * sizeof (char));
 	if (result == NULL)
 	{
 		return NULL;
@@ -161,7 +162,7 @@ char * elektraReplace (char const * const text, char const * const pattern, char
 		current += patternLength;
 		before = current;
 	}
-	strncpy (destination, before, text + textLength - before + 1); //! OCLint (False Positive: Constant Conditional OP)
+	strncpy (destination, before, text + textLength - before); //! OCLint (False Positive: Constant Conditional OP)
 
 	return (char *)result;
 }
