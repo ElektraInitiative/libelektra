@@ -120,7 +120,7 @@ static int parseINI (FILE * file, KeySet * keySet, Key * parentKey)
 
 	if (!feof (file))
 	{
-		ELEKTRA_LOG_WARNING ("Did not reach end of configuration file “%s”", keyString (parentKey));
+		ELEKTRA_LOG_WARNING ("%s:%lu: Unable to read line", keyString (parentKey), lineNumber);
 		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_NOEOF, parentKey, "Unable to read line %lu: %s", lineNumber, strerror (errno));
 		errno = errorNumber;
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
