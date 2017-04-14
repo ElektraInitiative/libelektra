@@ -40,7 +40,7 @@ static void test_basics ()
 
 static void test_get ()
 {
-	char const * const fileName = "Examples/read.ini";
+	char const * const fileName = "read.ini";
 	printf ("• Parse file “%s”\n", fileName);
 
 	char const * const prefix = "user/mini/tests/read";
@@ -86,7 +86,7 @@ static void test_set ()
 {
 	printf ("• Write configuration data\n");
 
-	char const * const fileName = "Examples/write.ini";
+	char const * const fileName = "write.ini";
 	char const * const prefix = "user/mini/tests/write";
 
 	Key * parentKey = keyNew (prefix, KEY_VALUE, elektraFilename (), KEY_END);
