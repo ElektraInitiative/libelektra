@@ -165,21 +165,33 @@ static inline char * escape (char const * const text)
 	return elektraReplace (text, "=", "\\=");
 }
 
-static inline void writeFile (FILE * file, KeySet * keySet, Key * parentKey)
+static inline int writeFile (FILE * file, KeySet * keySet, Key * parentKey)
 {
 	Key * key;
 	ksRewind (keySet);
-	while ((key = ksNext (keySet)) != 0)
+	int status = 0;
+	int errorNumber = errno;
+
+	while ((key = ksNext (keySet)) != 0 && status >= 0)
 	{
 		const char * name = elektraKeyGetRelativeName (key, parentKey);
 		ELEKTRA_LOG_DEBUG ("Write mapping “%s=%s”", name, keyString (key));
 
 		char * escapedName = escape (name);
 		char * escapedKey = escape (keyString (key));
-		fprintf (file, "%s=%s\n", escapedName, escapedKey);
+		status = fprintf (file, "%s=%s\n", escapedName, escapedKey);
 		elektraFree (escapedName);
 		elektraFree (escapedKey);
 	}
+
+	if (status < 0)
+	{
+		ELEKTRA_SET_ERROR_SET (parentKey);
+		errno = errorNumber;
+		return ELEKTRA_PLUGIN_STATUS_ERROR;
+	}
+
+	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }
 
 static inline int closeFileWrite (FILE * file, int errorNumber, Key * parentKey)
@@ -225,8 +237,9 @@ int elektraMiniSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 		errno = errorNumber;
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
-	writeFile (destination, returned, parentKey);
-	return closeFileWrite (destination, errorNumber, parentKey);
+	int statusWrite = writeFile (destination, returned, parentKey);
+	int statusClose = closeFileWrite (destination, errorNumber, parentKey);
+	return statusWrite == ELEKTRA_PLUGIN_STATUS_SUCCESS ? statusClose : statusWrite;
 }
 
 Plugin * ELEKTRA_PLUGIN_EXPORT (mini)
