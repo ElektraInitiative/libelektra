@@ -108,7 +108,8 @@ static int parseINI (FILE * file, KeySet * keySet, Key * parentKey)
 	size_t capacity = 0;
 	int errorNumber = errno;
 
-	for (size_t lineNumber = 1; getline (&line, &capacity, file) != -1; ++lineNumber)
+	size_t lineNumber;
+	for (lineNumber = 1; getline (&line, &capacity, file) != -1; ++lineNumber)
 	{
 		ELEKTRA_LOG_DEBUG ("Read Line %lu: %s", lineNumber, line);
 		parseLine (line, lineNumber, keySet, parentKey);
@@ -119,7 +120,7 @@ static int parseINI (FILE * file, KeySet * keySet, Key * parentKey)
 	if (!feof (file))
 	{
 		ELEKTRA_LOG_WARNING ("Did not reach end of configuration file “%s”", keyString (parentKey));
-		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_NOEOF, parentKey, strerror (errno));
+		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_NOEOF, parentKey, "Unable to read line %lu: %s", lineNumber, strerror (errno));
 		errno = errorNumber;
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
