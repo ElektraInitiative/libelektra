@@ -96,8 +96,8 @@ static inline void parseLine (char * line, size_t lineNumber, KeySet * keySet, K
 	ELEKTRA_LOG_DEBUG ("Name:  “%s”", keyName (key));
 	ELEKTRA_LOG_DEBUG ("Value: “%s”", keyString (key));
 
-	free (name);
-	free (value);
+	elektraFree (name);
+	elektraFree (value);
 
 	ksAppendKey (keySet, key);
 }
@@ -164,8 +164,8 @@ static inline void writeFile (FILE * file, KeySet * keySet, Key * parentKey)
 		char * escapedName = escape (name);
 		char * escapedKey = escape (keyString (key));
 		fprintf (file, "%s=%s\n", escapedName, escapedKey);
-		free (escapedName);
-		free (escapedKey);
+		elektraFree (escapedName);
+		elektraFree (escapedKey);
 	}
 }
 
