@@ -153,10 +153,9 @@ char * elektraReplace (char const * const text, char const * const pattern, char
 	char const * current = text;
 	char const * before = text;
 	char * destination = result;
-	size_t length;
 	while ((current = strstr (current, pattern)) != NULL)
 	{
-		length = current - before;
+		size_t length = current - before;
 		strncpy (destination, before, length);
 		destination += length;
 
