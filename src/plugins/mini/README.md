@@ -11,9 +11,10 @@
 
 ## mINI
 
-The minimal INI plugin (`mini`) is a very simple storage plugin based on the [INI][] file format.
+The “maybe this is not INI” plugin (`mini`) is a very simple storage plugin loosely based on the [INI][] file format. Since this plugin **does not support sections** it might be more appropriate to say that it is based on the [.properties][] format, used in many Java applications.
 
 [INI]: https://en.wikipedia.org/wiki/INI_file
+[.properties]: https://en.wikipedia.org/wiki/.properties
 
 ## Examples
 
@@ -87,7 +88,7 @@ kdb umount /examples/mini
 
 ## Limitations
 
-This plugin only supports simple key-value based INI files without sections. mINI also does not support meta data. If you want a more feature complete plugin, then please take a look at the [ini plugin](../ini/). The example below shows some of the limitations of the plugin.
+This plugin only supports simple key-value based properties files without sections. mINI also does not support meta data. If you want a more feature complete plugin, then please take a look at the [ini plugin](../ini/). The example below shows some of the limitations of the plugin.
 
 ```sh
 kdb mount mini.ini /examples/mini mini
