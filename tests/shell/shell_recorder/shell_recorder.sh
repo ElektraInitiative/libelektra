@@ -130,7 +130,7 @@ execute()
 		if [ "$?" -ne "0" ];
 		then
 			printf "\nERROR - STDERR:\n“%s”\ndoesn't match “%s”\n\n" "$STDERR" "$STDERRCMP"
-			printf "%s\n" "=== FAILED stderr doesn't match expected patter $STDERRCMP" >> "$OutFile"
+			printf "%s\n" "=== FAILED stderr doesn't match expected pattern $STDERRCMP" >> "$OutFile"
 			nbError=$(( nbError + 1 ))
 		fi
 	fi
