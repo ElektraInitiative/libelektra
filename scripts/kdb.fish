@@ -8,20 +8,6 @@
 # = General =
 # ===========
 
-function __join -d 'Join variables into one variable using a given separator'
-    set -l separator $argv[1]
-    set -l joined ''
-
-    for element in $argv[2..-2]
-        test -n $element
-        and set joined "$joined$element$separator"
-    end
-    test -n $argv[-1]
-    and set joined "$joined$argv[-1]"
-
-    echo $joined
-end
-
 function __includes_options -d 'Check if the values starting at position 3 contain the options specified at position one and two'
     set -l opt_long $argv[1]
     set -l opt_short $argv[2]
@@ -31,7 +17,7 @@ function __includes_options -d 'Check if the values starting at position 3 conta
     set opt_long "--$opt_long"
     test -n $opt_short
     set opt_short "-\w*$opt_short"
-    set -l options (__join '|' $opt_long $opt_short)
+    set -l options (string join -- '|' $opt_long $opt_short)
 
     string match -r -- $options "$input"
 end
@@ -243,7 +229,7 @@ end
 function __fish_kdb_print_storage_plugins -d 'Print a list of available storage plugins'
     set -l formats constants crypto_botan crypto_gcrypt crypto_openssl desktop dpkg dump fcrypt hosts line ini json mini ni passwd
     set -l formats $formats regexstore simpleini simplespeclang tcl xmltool uname
-    set -l regex '^(?:'(__join '|' $formats)')$'
+    set -l regex '^(?:'(string join -- '|' $formats)')$'
     set -l storage_plugins (__fish_kdb_print_plugins | string match -r $regex)
     set -l storage_plugins $storage_plugins storage
     printf '%s\n' $storage_plugins
