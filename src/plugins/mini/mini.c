@@ -129,6 +129,17 @@ static int parseINI (FILE * file, KeySet * keySet, Key * parentKey)
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }
 
+static inline int closeFileRead (FILE * file, int errorNumber, Key * parentKey)
+{
+	if (fclose (file) != 0)
+	{
+		ELEKTRA_SET_ERROR_GET (parentKey);
+		errno = errorNumber;
+		return ELEKTRA_PLUGIN_STATUS_ERROR;
+	}
+	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
+}
+
 static int parseFile (KeySet * returned ELEKTRA_UNUSED, Key * parentKey)
 {
 	ELEKTRA_LOG ("Read configuration data");
@@ -143,10 +154,10 @@ static int parseFile (KeySet * returned ELEKTRA_UNUSED, Key * parentKey)
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
 
-	int status = parseINI (source, returned, parentKey);
+	int statusParse = parseINI (source, returned, parentKey);
+	int statusClose = closeFileRead (source, errorNumber, parentKey);
 
-	fclose (source);
-	return status;
+	return statusParse == ELEKTRA_PLUGIN_STATUS_SUCCESS ? statusClose : statusParse;
 }
 
 static inline char * escape (char const * const text)
@@ -169,6 +180,17 @@ static inline void writeFile (FILE * file, KeySet * keySet, Key * parentKey)
 		elektraFree (escapedName);
 		elektraFree (escapedKey);
 	}
+}
+
+static inline int closeFileWrite (FILE * file, int errorNumber, Key * parentKey)
+{
+	if (fclose (file) != 0)
+	{
+		ELEKTRA_SET_ERROR_SET (parentKey);
+		errno = errorNumber;
+		return ELEKTRA_PLUGIN_STATUS_ERROR;
+	}
+	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }
 
 // ====================
@@ -204,10 +226,7 @@ int elektraMiniSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
 	writeFile (destination, returned, parentKey);
-
-	fclose (destination);
-
-	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
+	return closeFileWrite (destination, errorNumber, parentKey);
 }
 
 Plugin * ELEKTRA_PLUGIN_EXPORT (mini)
