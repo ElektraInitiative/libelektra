@@ -87,4 +87,36 @@ kdb umount /examples/mini
 
 ## Limitations
 
-This plugin only supports simple key-value based INI files without sections. If you want a more feature complete plugin, then please take a look at the [ini plugin](../ini/).
+This plugin only supports simple key-value based INI files without sections. mINI also does not support meta data. If you want a more feature complete plugin, then please take a look at the [ini plugin](../ini/). The example below shows some of the limitations of the plugin.
+
+```sh
+kdb mount mini.ini /examples/mini mini
+
+# The plugin does not support sections or multi-line values
+echo   '[section]'         >> `kdb file /examples/mini`
+printf 'key="multi\nline"' >> `kdb file /examples/mini`
+
+# mINI only reads the first line of the value with the name `key`, since
+# the plugin assigns no special meaning to double or single quotes.
+kdb ls /examples/mini 2> stderr.txt
+#> user/examples/mini/key
+
+# As we can see in the first two line of the standard error output below,
+# mINI will inform us about lines it was unable to parse.
+cat stderr.txt | head -n 2
+#> Ignored line 1 since “[section]” does not contain a valid key value pair
+#> Ignored line 3 since “line"” does not contain a valid key value pair
+
+# Unlike the `ini` and `ni` plugin, mINI does not support meta data.
+kdb lsmeta /examples/mini
+# RET:1
+
+# The value of `key` also contains the double quote symbol, since mINI does
+# not assign special meaning to quote characters.
+kdb get /examples/mini/key
+#> "multi
+
+# Undo modifications to the key database
+kdb rm -r /examples/mini
+kdb umount /examples/mini
+```
