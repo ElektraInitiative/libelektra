@@ -80,7 +80,7 @@ static inline void parseLine (char * line, size_t lineNumber, KeySet * keySet, K
 	char * equals = findUnescapedEquals (pair);
 	if (*equals == '\0' || equals == pair)
 	{
-		fprintf (stderr, "Ignored line %lu since “%s” does not contain a valid key value pair\n", lineNumber, pair);
+		ELEKTRA_LOG_WARNING ("Ignored line %lu since “%s” does not contain a valid key value pair\n", lineNumber, pair);
 		ELEKTRA_ADD_WARNINGF (175, parentKey, "Line %lu: “%s” is not a valid key value pair", lineNumber, pair);
 		return;
 	}
