@@ -74,7 +74,7 @@ static void test_elektraRstrip ()
 	succeed_if_same_string (last, "g");
 }
 
-static void test_ElektraStrip ()
+static void test_elektraStrip ()
 {
 	printf ("Test elektraStrip\n");
 	char text[MAX_LENGTH];
@@ -86,7 +86,7 @@ static void test_ElektraStrip ()
 	succeed_if_same_string (elektraStrip (text), "Leading And Trailing Whitespace\n\tSecond Line");
 }
 
-static void test_ElektraReplace ()
+static void test_elektraReplace ()
 {
 	printf ("Test elektraReplace\n");
 	char * text;
@@ -121,8 +121,8 @@ int main (int argc, char ** argv)
 
 	test_elektraLskip ();
 	test_elektraRstrip ();
-	test_ElektraStrip ();
-	test_ElektraReplace ();
+	test_elektraStrip ();
+	test_elektraReplace ();
 
 	printf ("\nResults: %d Test%s done — %d Error%s.\n", nbTest, nbTest == 1 ? "" : "s", nbError, nbError == 1 ? "" : "s");
 
