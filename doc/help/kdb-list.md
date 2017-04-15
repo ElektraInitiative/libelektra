@@ -3,11 +3,13 @@ kdb-list(1) -- List plugins available to Elektra
 
 ## SYNOPSIS
 
-`kdb list`
+`kdb list [provider]`
 
 ## DESCRIPTION
 
-This command will list all the available Elektra plugins.
+This command will either list all available Elektra plugins
+or all plugins that provide a specific functionality.
+
 The output will be sorted by their status.
 The best plugins will be the last in the list.
 
@@ -29,8 +31,14 @@ The best plugins will be the last in the list.
 
 ## EXAMPLES
 
-To get a sorted list of all available plugins with their status:
+To get a sorted list of all available plugins with their status:  
 `kdb list -v`
+
+To get a sorted list of all storage plugins:  
+`kdb list storage`
+
+To get a sorted list of all plugins that provide `ini` with their status:  
+`kdb list -v ini`
 
 ## SEE ALSO
 
