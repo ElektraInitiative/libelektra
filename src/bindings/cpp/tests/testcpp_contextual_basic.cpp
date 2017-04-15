@@ -402,6 +402,54 @@ TYPED_TEST (test_contextual_basic, nestedWithActivate)
 }
 
 
+TYPED_TEST (test_contextual_basic, nestedWithActivateConflicting)
+{
+	using namespace kdb;
+	KeySet ks;
+	TypeParam c = this->context;
+	ASSERT_TRUE (!ks.lookup ("/%/%/%/test"));
+	Value<int, ContextPolicyIs<TypeParam>> i (
+		ks, c, Key ("/%language%/%country%/%dialect%/test", KEY_CASCADING_NAME, KEY_META, "default", s_value, KEY_END));
+	ASSERT_EQ (i, i_value);
+	// The value always needs a connection to a key
+	ASSERT_TRUE (ks.lookup ("/%/%/%/test"));
+	i = 5;
+	ASSERT_EQ (i, 5);
+	ASSERT_EQ (i.getName (), "user/%/%/%/test");
+	ASSERT_EQ (ks.lookup ("user/%/%/%/test").getString (), "5");
+
+	c.template with<CountryGermanyLayer> () ([&]() {
+		i = 7;
+		ASSERT_EQ (i, 7);
+		ASSERT_EQ (i.getName (), "user/%/germany/%/test");
+		ASSERT_EQ (ks.lookup ("user/%/germany/%/test").getString (), "7");
+
+		c.template without<CountryGermanyLayer> () ([&]() {
+			ASSERT_EQ (i, 5);
+			ASSERT_EQ (i.getName (), "user/%/%/%/test");
+			ASSERT_EQ (ks.lookup ("user/%/%/%/test").getString (), "5");
+
+			c.template activate<CountryGermanyLayer> ();
+
+			i = 6;
+			ASSERT_EQ (i, 6);
+			ASSERT_EQ (i.getName (), "user/%/germany/%/test");
+			ASSERT_EQ (ks.lookup ("user/%/germany/%/test").getString (), "6");
+		});
+		// restore activation of layer
+
+		ASSERT_EQ (i, 6);
+		ASSERT_EQ (i.getName (), "user/%/germany/%/test");
+		ASSERT_EQ (ks.lookup ("user/%/germany/%/test").getString (), "6");
+	});
+	// restore deactivation of layer (TODO: good idea in multi-thread setups if layer activation is pulled in? rather not..)
+
+	ASSERT_EQ (i, 5);
+	ASSERT_EQ (i.getName (), "user/%/%/%/test");
+	ASSERT_EQ (ks.lookup ("user/%/%/%/test").getString (), "5");
+}
+
+
 TYPED_TEST (test_contextual_basic, counting)
 {
 	using namespace kdb;
