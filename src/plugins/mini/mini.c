@@ -60,6 +60,8 @@ static inline char * findUnescapedEquals (char * text)
 	{
 		before = equals++;
 	}
+	/* The function will return a pointer to the `\0` character at the end of the string
+	   if it did not find any unescaped `=` character. */
 	return equals;
 }
 
