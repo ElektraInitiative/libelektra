@@ -227,14 +227,11 @@ function __fish_kdb_print_non_resolver_plugins -d 'Print a list of non-resolver 
 end
 
 function __fish_kdb_print_resolver_plugins -d 'Print a list of available resolver plugins'
-    kdb list | string match -r '.*resolver.*'
+    kdb list resolver
 end
 
 function __fish_kdb_print_storage_plugins -d 'Print a list of available storage plugins'
-    for plugin in (kdb list)
-        kdb info $plugin provides ^/dev/null | string match -qr -- storage
-        and echo $plugin
-    end
+    kdb list storage
 end
 
 function __fish_kdb_print_subcommands -d 'Print a list of kdb subcommands'
