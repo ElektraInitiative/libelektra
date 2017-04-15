@@ -223,7 +223,7 @@ function __fish_kdb_print_plugins -d 'Print a list of available plugins'
 end
 
 function __fish_kdb_print_non_resolver_plugins -d 'Print a list of non-resolver plugins'
-    kdb list | string match -vr '.*resolver.*'
+    kdb list | string match -vr '.*resolver.*' | string match -vr (kdb list resolver | string join '|')
 end
 
 function __fish_kdb_print_resolver_plugins -d 'Print a list of available resolver plugins'
