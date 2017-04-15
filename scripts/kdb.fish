@@ -162,7 +162,7 @@ function __fish_kdb_subcommand_mount_needs_namespace -d 'Check if the subcommand
     and test (__fish_kdb__number_arguments_input_left) -eq 3
 end
 
-function __fish_kdb_subcommand_mount_needs_storage_plugin -d 'Check if the subcommand mount needs a storage plugin completion'
+function __fish_kdb_subcommand_mount_needs_plugin -d 'Check if the subcommand mount needs a plugin completion'
     __fish_kdb_subcommand_includes mount
     and test (__fish_kdb__number_arguments_input_left) -eq 4
 end
@@ -186,7 +186,7 @@ function __fish_kdb_subcommand_remount_needs_namespace -d 'Check if the subcomma
     test $number_arguments -eq 3 -o $number_arguments -eq 4
 end
 
-function __fish_kdb_subcommand_smount_needs_storage_plugin -d 'Check if the subcommand spec-mount needs a storage plugin completion'
+function __fish_kdb_subcommand_smount_needs_plugin -d 'Check if the subcommand spec-mount needs a plugin completion'
     __fish_kdb_subcommand_includes smount spec-mount
     and test (__fish_kdb__number_arguments_input_left) -eq 3
 end
@@ -220,6 +220,10 @@ end
 
 function __fish_kdb_print_plugins -d 'Print a list of available plugins'
     kdb list
+end
+
+function __fish_kdb_print_non_resolver_plugins -d 'Print a list of non-resolver plugins'
+    kdb list | string match -vr '.*resolver.*'
 end
 
 function __fish_kdb_print_resolver_plugins -d 'Print a list of available resolver plugins'
@@ -368,10 +372,11 @@ complete -c kdb -n '__fish_kdb_subcommand_remount_needs_namespace' -x -a '(__fis
 
 complete -c kdb -n '__fish_kdb_needs_plugin' -x -a '(__fish_kdb_print_plugins)'
 
+complete -c kdb -n '__fish_kdb_subcommand_mount_needs_plugin' -x -a '(__fish_kdb_print_non_resolver_plugins)'
+complete -c kdb -n '__fish_kdb_subcommand_smount_needs_plugin' -x -a '(__fish_kdb_print_non_resolver_plugins)'
+
 complete -c kdb -n '__fish_kdb_subcommand_convert_needs_storage_plugin' -x -a '(__fish_kdb_print_storage_plugins)'
-complete -c kdb -n '__fish_kdb_subcommand_mount_needs_storage_plugin' -x -a '(__fish_kdb_print_storage_plugins)'
 complete -c kdb -n '__fish_kdb_subcommand_needs_storage_plugin' -x -a '(__fish_kdb_print_storage_plugins)'
-complete -c kdb -n '__fish_kdb_subcommand_smount_needs_storage_plugin' -x -a '(__fish_kdb_print_storage_plugins)'
 
 complete -c kdb -n '__fish_kdb_subcommand_fstab_needs_filesystem' -x -a '(__fish_print_filesystems)'
 
