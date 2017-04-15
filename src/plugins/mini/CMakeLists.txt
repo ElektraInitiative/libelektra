@@ -8,4 +8,5 @@ add_plugin (mini
 		elektra-ease
 		elektra-utility
 	ADD_TEST
+	INSTALL_TEST_DATA
 	)
