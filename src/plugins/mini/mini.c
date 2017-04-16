@@ -80,7 +80,7 @@ static inline char * stripComment (char * line)
  * @param text The string in which the equals character should be located
  *
  * @return A pointer to the first unescaped `=` in text or a pointer to
- *	   the terminating `\0` of `text` if no such character exists.
+ *         the terminating `\0` of `text` if no such character exists.
  */
 static inline char * findUnescapedEquals (char * text)
 {
@@ -99,7 +99,7 @@ static inline char * findUnescapedEquals (char * text)
 /**
  * @brief Replace escaped equal characters (`\=`) in a given string by unescaped
  *        equal characters. For this purpose this function allocates a new string
- * 	  you need to free with `elektraFree` later.
+ *        you need to free with `elektraFree` later.
  *
  * @pre The parameter `text` must not be `NULL`.
  *
@@ -252,7 +252,7 @@ static inline int closeFileRead (FILE * file, int errorNumber, Key * parentKey)
  * @pre The parameters `returned`, and `parentKey` must not be `NULL`.
  *
  * @param returned A key set used to store the key value pairs contained in the
- * 		   file specified by the value of `parentKey`
+ *                 file specified by the value of `parentKey`
  * @param parentKey The value of this key value pair stores the path to the file
  *                  this function should parse
  *
@@ -285,7 +285,7 @@ static int parseFile (KeySet * returned, Key * parentKey)
 /**
  * @brief Replace equal characters (`=`) in a given string by escaped equal
  *        characters (`\=`). For this purpose this function allocates a new string
- * 	  you need to free with `elektraFree` later.
+ *        you need to free with `elektraFree` later.
  *
  * @pre The parameter `text` must not be `NULL`.
  *
