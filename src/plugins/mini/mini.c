@@ -320,12 +320,10 @@ static inline int writeFile (FILE * file, KeySet * keySet, Key * parentKey)
 	ELEKTRA_ASSERT (keySet != NULL, "The Parameter `keySet` contains `NULL` instead of a valid key set.");
 	ELEKTRA_ASSERT (parentKey != NULL, "The Parameter `parentKey` contains `NULL` instead of a valid key.");
 
-	Key * key;
-	ksRewind (keySet);
 	int status = 0;
 	int errorNumber = errno;
-
-	while ((key = ksNext (keySet)) != 0 && status >= 0)
+	ksRewind (keySet);
+	for (Key * key; (key = ksNext (keySet)) != 0 && status >= 0;)
 	{
 		const char * name = elektraKeyGetRelativeName (key, parentKey);
 		ELEKTRA_LOG_DEBUG ("Write mapping “%s=%s”", name, keyString (key));
