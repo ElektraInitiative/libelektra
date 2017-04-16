@@ -11,6 +11,7 @@
 
 #include "mini.h"
 
+#include <kdbassert.h>
 #include <kdbease.h>
 #include <kdberrors.h>
 #include <kdbhelper.h>
@@ -25,6 +26,11 @@
 // = Private =
 // ===========
 
+/**
+ * @brief This function returns a key set containing the contract of this plugin.
+ *
+ * @return A contract describing the functionality of this plugin.
+ */
 static inline KeySet * elektraMiniContract ()
 {
 	return ksNew (30, keyNew ("system/elektra/modules/mini", KEY_VALUE, "mini plugin waits for your orders", KEY_END),
@@ -35,8 +41,22 @@ static inline KeySet * elektraMiniContract ()
 		      keyNew ("system/elektra/modules/mini/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 }
 
+/**
+ * @brief This function removes comments marked with `;` or '#' from a
+ *        given string by locating the first non-escaped comment character.
+ *        It then overwrites this character with `\0`.
+ *
+ * @pre The parameter `line` must not be `NULL`.
+ *
+ * @param line The string from which we want to remove line comments.
+ *
+ * @return A pointer to the first character of the modified version of
+ *         line.
+ */
 static inline char * stripComment (char * line)
 {
+	ELEKTRA_ASSERT (line != NULL, "The Parameter `line` contains `NULL` instead of a valid string.");
+
 	char * current = line;
 	char * before = NULL;
 
@@ -51,8 +71,21 @@ static inline char * stripComment (char * line)
 	return line;
 }
 
+/**
+ * @brief This function locates the first non-escaped equals
+ *        character (`=`) in a given string.
+ *
+ * @pre The parameter `text` must not be `NULL`.
+ *
+ * @param text The string in which the equals character should be located
+ *
+ * @return A pointer to the first unescaped `=` in text or a pointer to
+ *	   the terminating `\0` of `text` if no such character exists.
+ */
 static inline char * findUnescapedEquals (char * text)
 {
+	ELEKTRA_ASSERT (text != NULL, "The Parameter `text` contains `NULL` instead of a valid string.");
+
 	char * equals = text;
 	char * before = NULL;
 
@@ -60,18 +93,53 @@ static inline char * findUnescapedEquals (char * text)
 	{
 		before = equals++;
 	}
-	/* The function will return a pointer to the `\0` character at the end of the string
-	   if it did not find any unescaped `=` character. */
 	return equals;
 }
 
+/**
+ * @brief Replace escaped equal characters (`\=`) in a given string by unescaped
+ *        equal characters. For this purpose this function allocates a new string
+ * 	  you need to free with `elektraFree` later.
+ *
+ * @pre The parameter `text` must not be `NULL`.
+ *
+ * @param text A string in which all escaped equal characters should be unescaped
+ *
+ * @return A pointer to a newly allocated string, which contains a copy of `text`,
+ *         where each occurrence of `\=` was replaced by `=`
+ */
 static inline char * unescape (char const * const text)
 {
+	ELEKTRA_ASSERT (text != NULL, "The Parameter `text` contains `NULL` instead of a valid string.");
 	return elektraReplace (text, "\\=", "=");
 }
 
+/**
+ * @brief Parse a single line of a text in INI like format (`key = value`) and
+ *        store the resulting key value pair in the given key set.
+ *
+ * The string stored in `line` can also be empty or contain comments denoted
+ * by `;` or `#`. The function ignores empty lines. If a line contains non-commented
+ * characters that do not follow the pattern `key = value`, then this function will
+ * add a warning about this invalid key value pair to `parentKey`.
+ *
+ * @pre The parameters `line`, `keySet` and `parentKey` must not be `NULL`.
+ *
+ * @param line A single line string that should be parsed by this function
+ * @param lineNumber The lineNumber of the current line of text. This value will
+ *                   be used by this function to generate warning messages about
+ *                   invalid key value pairs.
+ * @param keySet The keyset where the key value pair contained in `line` should
+ *               be saved
+ * @param parentKey This key is used by this function to store warnings about
+ *                  invalid key value pairs
+ */
 static inline void parseLine (char * line, size_t lineNumber, KeySet * keySet, Key * parentKey)
 {
+	ELEKTRA_ASSERT (line != NULL, "The Parameter `line` contains `NULL` instead of a valid string.");
+	ELEKTRA_ASSERT (keySet != NULL, "The Parameter `keySet` contains `NULL` instead of a valid key set.");
+	ELEKTRA_ASSERT (parentKey != NULL, "The Parameter `parentKey` contains `NULL` instead of a valid key.");
+
 	char * pair = elektraStrip (stripComment (line));
 
 	if (*pair == '\0')
@@ -105,8 +173,26 @@ static inline void parseLine (char * line, size_t lineNumber, KeySet * keySet, K
 	ksAppendKey (keySet, key);
 }
 
+/**
+ * @brief Parse a file containing text in INI like format (`key = value`).
+ *
+ * @pre The parameters `file`, `keySet` and `parentKey` must not be `NULL`.
+ *
+ * @param file The file handle that points to the data this function should parse
+ * @param keySet The keyset where the key value pairs saved in `file` should
+ *               be saved
+ * @param parentKey A key that is used by this function to store warning and error
+ *                  information
+ *
+ * @retval ELEKTRA_PLUGIN_STATUS_SUCCESS if the parsing process finished successfully
+ * @retval ELEKTRA_PLUGIN_STATUS_ERROR if the function was unable to parse `file`
+ */
 static int parseINI (FILE * file, KeySet * keySet, Key * parentKey)
 {
+	ELEKTRA_ASSERT (file != NULL, "The Parameter `file` contains `NULL` instead of a valid file handle.");
+	ELEKTRA_ASSERT (keySet != NULL, "The Parameter `keySet` contains `NULL` instead of a valid key set.");
+	ELEKTRA_ASSERT (parentKey != NULL, "The Parameter `parentKey` contains `NULL` instead of a valid key.");
+
 	char * line = NULL;
 	size_t capacity = 0;
 	int errorNumber = errno;
@@ -131,8 +217,25 @@ static int parseINI (FILE * file, KeySet * keySet, Key * parentKey)
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }
 
+/**
+ * @brief Close a given file handle opened for reading
+ *
+ * @pre The parameters `file`, and `parentKey` must not be `NULL`.
+ *
+ * @param file The file handle this function should close
+ * @param errorNumber A saved value for `errno` this function should restore
+ *                    if it was unable to close `file`
+ * @param parentKey A key that is used by this function to store error
+ *                  information if the function was unable to close `file`
+ *
+ * @retval ELEKTRA_PLUGIN_STATUS_SUCCESS if `file` was closed successfully
+ * @retval ELEKTRA_PLUGIN_STATUS_ERROR if the function was unable to close `file`
+ */
 static inline int closeFileRead (FILE * file, int errorNumber, Key * parentKey)
 {
+	ELEKTRA_ASSERT (file != NULL, "The Parameter `file` contains `NULL` instead of a valid file handle.");
+	ELEKTRA_ASSERT (parentKey != NULL, "The Parameter `parentKey` contains `NULL` instead of a valid key.");
+
 	if (fclose (file) != 0)
 	{
 		ELEKTRA_SET_ERROR_GET (parentKey);
@@ -142,8 +245,25 @@ static inline int closeFileRead (FILE * file, int errorNumber, Key * parentKey)
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }
 
+/**
+ * @brief Parse a file containing key value pairs in an INI like format and
+ *        store the obtained key value pairs in a given key set.
+ *
+ * @pre The parameters `returned`, and `parentKey` must not be `NULL`.
+ *
+ * @param returned A key set used to store the key value pairs contained in the
+ * 		   file specified by the value of `parentKey`
+ * @param parentKey The value of this key value pair stores the path to the file
+ *                  this function should parse
+ *
+ * @retval ELEKTRA_PLUGIN_STATUS_SUCCESS if the whole parsing process was successful
+ * @retval ELEKTRA_PLUGIN_STATUS_ERROR if at least one part of the parsing process failed
+ */
 static int parseFile (KeySet * returned, Key * parentKey)
 {
+	ELEKTRA_ASSERT (returned != NULL, "The Parameter `returned` contains `NULL` instead of a valid key set.");
+	ELEKTRA_ASSERT (parentKey != NULL, "The Parameter `parentKey` contains `NULL` instead of a valid key.");
+
 	ELEKTRA_LOG ("Read configuration data");
 	int errorNumber = errno;
 	FILE * source = fopen (keyString (parentKey), "r");
@@ -162,13 +282,44 @@ static int parseFile (KeySet * returned, Key * parentKey)
 	return statusParse == ELEKTRA_PLUGIN_STATUS_SUCCESS ? statusClose : statusParse;
 }
 
+/**
+ * @brief Replace equal characters (`=`) in a given string by escaped equal
+ *        characters (`\=`). For this purpose this function allocates a new string
+ * 	  you need to free with `elektraFree` later.
+ *
+ * @pre The parameter `text` must not be `NULL`.
+ *
+ * @param text A string in which all unescaped equal characters should be escaped
+ *
+ * @return A pointer to a newly allocated string, which contains a copy of `text`,
+ *         where each occurrence of `=` was replaced by `\=`
+ */
 static inline char * escape (char const * const text)
 {
+	ELEKTRA_ASSERT (text != NULL, "The Parameter `text` contains `NULL` instead of a valid string.");
 	return elektraReplace (text, "=", "\\=");
 }
 
+/**
+ * @brief Store the key value pairs of a key set in a file using an INI like format
+ *
+ * @pre The parameters `file`, `keySet`, and `parentKey` must not be `NULL`.
+ *
+ * @param keySet This key set contains the key value pairs that should be stored
+ *               in `file`
+ * @param parentKey The function uses this key to store error and warning information
+ *
+ * @retval ELEKTRA_PLUGIN_STATUS_SUCCESS if the function was able to store all key value
+ *                                       pairs successfully
+ * @retval ELEKTRA_PLUGIN_STATUS_ERROR if the function was unable to store all key value
+ *                                     pairs in `file`
+ */
 static inline int writeFile (FILE * file, KeySet * keySet, Key * parentKey)
 {
+	ELEKTRA_ASSERT (file != NULL, "The Parameter `file` contains `NULL` instead of a valid file handle.");
+	ELEKTRA_ASSERT (keySet != NULL, "The Parameter `keySet` contains `NULL` instead of a valid key set.");
+	ELEKTRA_ASSERT (parentKey != NULL, "The Parameter `parentKey` contains `NULL` instead of a valid key.");
+
 	Key * key;
 	ksRewind (keySet);
 	int status = 0;
@@ -196,8 +347,26 @@ static inline int writeFile (FILE * file, KeySet * keySet, Key * parentKey)
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }
 
+/**
+ * @brief Close a given file handle opened for writing
+ *
+ * @pre The parameters `file`, and `parentKey` must not be `NULL`.
+ *
+ * @param file The file handle this function should close
+ * @param errorNumber A saved value for `errno` this function should restore
+ *                    if it was unable to close `file`
+ * @param parentKey A key that is used by this function to store error
+ *                  information if the function was unable to close `file`
+ *
+ * @retval ELEKTRA_PLUGIN_STATUS_SUCCESS if `file` was closed successfully
+ * @retval ELEKTRA_PLUGIN_STATUS_ERROR if the function was unable to close `file`
+ */
+
 static inline int closeFileWrite (FILE * file, int errorNumber, Key * parentKey)
 {
+	ELEKTRA_ASSERT (file != NULL, "The Parameter `file` contains `NULL` instead of a valid file handle.");
+	ELEKTRA_ASSERT (parentKey != NULL, "The Parameter `parentKey` contains `NULL` instead of a valid key.");
+
 	if (fclose (file) != 0)
 	{
 		ELEKTRA_SET_ERROR_SET (parentKey);
@@ -211,6 +380,7 @@ static inline int closeFileWrite (FILE * file, int errorNumber, Key * parentKey)
 // = Plugin Interface =
 // ====================
 
+/** @see elektraDocGet */
 int elektraMiniGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
 {
 	if (!elektraStrCmp (keyName (parentKey), "system/elektra/modules/mini"))
@@ -226,6 +396,7 @@ int elektraMiniGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 	return parseFile (returned, parentKey);
 }
 
+/** @see elektraDocSet */
 int elektraMiniSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
 {
 	ELEKTRA_LOG ("Write configuration data");
