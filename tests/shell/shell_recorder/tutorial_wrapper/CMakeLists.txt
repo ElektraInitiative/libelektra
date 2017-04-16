@@ -26,6 +26,7 @@ add_plugin_shell_test (line)
 add_plugin_shell_test (mathcheck)
 add_plugin_shell_test (mozprefs)
 add_plugin_shell_test (xerces)
+add_plugin_shell_test (range)
 
 # Only works with super user privileges, since it writes to `/etc/hosts`:
 # add_s_test (tutorial_mount "${CMAKE_SOURCE_DIR}/doc/tutorials/mount.md")

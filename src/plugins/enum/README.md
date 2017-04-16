@@ -78,3 +78,9 @@ kdb set /examples/enum/multivalue ___all_small__
 kdb rm -r /examples/enum
 sudo kdb umount /examples/enum
 ```
+
+## Limitations
+
+You cannot give enum values specific values.
+If you only want to check for numerical values,
+the plugin [range](../range) is better suited.
