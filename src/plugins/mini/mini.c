@@ -301,6 +301,36 @@ static inline char * escape (char const * const text)
 }
 
 /**
+ * @brief Add an error to `parentKey` and restore `errno` if `status` contains
+ *        a negative number (write error).
+ *
+ * @pre The parameter `parentKey` must not be `NULL`.
+ *
+ * @param status This value will be checked by this function to determine if
+ *               the write function (`fprintf`) returned unsuccessfully
+ * @param errorNumber A saved value for `errno` this function should restore
+ *                    if `status` indicates an write error
+ * @param parentKey The key to which this function will add error information
+ *                  if `status` indicates an write error
+ *
+ * @retval ELEKTRA_PLUGIN_STATUS_SUCCESS if status indicates success (`status >= 0`)
+ * @retval ELEKTRA_PLUGIN_STATUS_ERROR if there was a write error (`status < 0`)
+ */
+static inline int checkWrite (int status, int errorNumber, Key * parentKey)
+{
+	ELEKTRA_ASSERT (parentKey != NULL, "The Parameter `parentKey` contains `NULL` instead of a valid key.");
+
+	if (status < 0)
+	{
+		ELEKTRA_SET_ERROR_SET (parentKey);
+		errno = errorNumber;
+		return ELEKTRA_PLUGIN_STATUS_ERROR;
+	}
+
+	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
+}
+
+/**
  * @brief Store the key value pairs of a key set in a file using an INI like format
  *
  * @pre The parameters `file`, `keySet`, and `parentKey` must not be `NULL`.
@@ -334,15 +364,7 @@ static inline int writeFile (FILE * file, KeySet * keySet, Key * parentKey)
 		elektraFree (escapedName);
 		elektraFree (escapedKey);
 	}
-
-	if (status < 0)
-	{
-		ELEKTRA_SET_ERROR_SET (parentKey);
-		errno = errorNumber;
-		return ELEKTRA_PLUGIN_STATUS_ERROR;
-	}
-
-	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
+	return checkWrite (status, errorNumber, parentKey);
 }
 
 /**
