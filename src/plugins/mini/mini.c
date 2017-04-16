@@ -142,7 +142,7 @@ static inline int closeFileRead (FILE * file, int errorNumber, Key * parentKey)
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }
 
-static int parseFile (KeySet * returned ELEKTRA_UNUSED, Key * parentKey)
+static int parseFile (KeySet * returned, Key * parentKey)
 {
 	ELEKTRA_LOG ("Read configuration data");
 	int errorNumber = errno;
