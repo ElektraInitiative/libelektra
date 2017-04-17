@@ -1,7 +1,7 @@
 - infos = Information about the mini plugin is in keys below
 - infos/author = René Schwaiger <sanssecours@me.com>
 - infos/licence = BSD
-- infos/needs =
+- infos/needs = code
 - infos/provides = storage/ini
 - infos/recommends =
 - infos/placements = getstorage setstorage
@@ -61,24 +61,22 @@ kdb umount /examples/mini
 
 ### Escaping
 
-As with most configuration file formats, some characters carry special meaning. In the case of the `mini` plugin that character is the `=` sign, which separates keys from values. In most cases you do not need to care about the special meaning of the `=` sign though, since the plugin handles escaping and unescaping of `=` for you. The following example shows this behaviour.
+As with most configuration file formats, some characters carry special meaning. In the case of the `mini` plugin that character is the `=` sign, which separates keys from values. In case of **key values** you do not need to care about the special meaning of the `=` sign most of the time, since the plugin handles escaping and unescaping of `=` for you. The following example shows this behaviour.
 
 ```sh
 kdb mount mini.ini /examples/mini mini
 
-# Store a value and a key containing equal signs (`=`)
-kdb set /examples/mini/=key value=
-#> Using name user/examples/mini/=key
-#> Create a new key user/examples/mini/=key with string value=
+# Store a value containing an equal sign (`=`)
+kdb set /examples/mini/key value=
+#> Using name user/examples/mini/key
+#> Create a new key user/examples/mini/key with string value=
 
-# The actual file contains escaped equal characters (`\=`)
-kdb export /examples/mini mini
-#> \=key=value\=
+# The actual file contains an escaped equal character (`\=`)
+kdb file /examples/mini | xargs cat
+#> key=value\=
 
-# However, if you retrieve values or keys you do not have to care about escaped values
-kdb ls /examples/mini
-#> user/examples/mini/=key
-kdb get /examples/mini/=key
+# However, if you retrieve the value you do not have to care about escaped equal signs
+kdb get /examples/mini/key
 #> value=
 
 # Undo modifications to the key database

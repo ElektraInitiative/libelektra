@@ -38,7 +38,11 @@ static inline KeySet * elektraMiniContract ()
 		      keyNew ("system/elektra/modules/mini/exports/get", KEY_FUNC, elektraMiniGet, KEY_END),
 		      keyNew ("system/elektra/modules/mini/exports/set", KEY_FUNC, elektraMiniSet, KEY_END),
 #include ELEKTRA_README (mini)
-		      keyNew ("system/elektra/modules/mini/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
+		      keyNew ("system/elektra/modules/mini/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END),
+		      keyNew ("system/elektra/modules/mini/config/needs", KEY_END),
+		      keyNew ("system/elektra/modules/mini/config/needs/chars", KEY_END),
+		      keyNew ("system/elektra/modules/mini/config/needs/chars/3D", KEY_VALUE, "3D", KEY_END), // 3D ↔︎ =
+		      KS_END);
 }
 
 /**
@@ -97,24 +101,6 @@ static inline char * findUnescapedEquals (char * text)
 }
 
 /**
- * @brief Replace escaped equal characters (`\=`) in a given string by unescaped
- *        equal characters. For this purpose this function allocates a new string
- *        you need to free with `elektraFree` later.
- *
- * @pre The parameter `text` must not be `NULL`.
- *
- * @param text A string in which all escaped equal characters should be unescaped
- *
- * @return A pointer to a newly allocated string, which contains a copy of `text`,
- *         where each occurrence of `\=` was replaced by `=`
- */
-static inline char * unescape (char const * const text)
-{
-	ELEKTRA_ASSERT (text != NULL, "The Parameter `text` contains `NULL` instead of a valid string.");
-	return elektraReplace (text, "\\=", "=");
-}
-
-/**
  * @brief Parse a single line of a text in INI like format (`key = value`) and
  *        store the resulting key value pair in the given key set.
  *
@@ -158,17 +144,14 @@ static inline void parseLine (char * line, size_t lineNumber, KeySet * keySet, K
 
 	*equals = '\0';
 
-	char * name = unescape (elektraRstrip (pair, NULL));
-	char * value = unescape (elektraLskip (equals + 1));
+	char * name = elektraRstrip (pair, NULL);
+	char * value = elektraLskip (equals + 1);
 
 	Key * key = keyNew (keyName (parentKey), KEY_END);
 	keyAddName (key, name);
 	keySetString (key, value);
 	ELEKTRA_LOG_DEBUG ("Name:  “%s”", keyName (key));
 	ELEKTRA_LOG_DEBUG ("Value: “%s”", keyString (key));
-
-	elektraFree (name);
-	elektraFree (value);
 
 	ksAppendKey (keySet, key);
 }
@@ -283,24 +266,6 @@ static int parseFile (KeySet * returned, Key * parentKey)
 }
 
 /**
- * @brief Replace equal characters (`=`) in a given string by escaped equal
- *        characters (`\=`). For this purpose this function allocates a new string
- *        you need to free with `elektraFree` later.
- *
- * @pre The parameter `text` must not be `NULL`.
- *
- * @param text A string in which all unescaped equal characters should be escaped
- *
- * @return A pointer to a newly allocated string, which contains a copy of `text`,
- *         where each occurrence of `=` was replaced by `\=`
- */
-static inline char * escape (char const * const text)
-{
-	ELEKTRA_ASSERT (text != NULL, "The Parameter `text` contains `NULL` instead of a valid string.");
-	return elektraReplace (text, "=", "\\=");
-}
-
-/**
  * @brief Add an error to `parentKey` and restore `errno` if `status` contains
  *        a negative number (write error).
  *
@@ -358,11 +323,7 @@ static inline int writeFile (FILE * file, KeySet * keySet, Key * parentKey)
 		const char * name = elektraKeyGetRelativeName (key, parentKey);
 		ELEKTRA_LOG_DEBUG ("Write mapping “%s=%s”", name, keyString (key));
 
-		char * escapedName = escape (name);
-		char * escapedKey = escape (keyString (key));
-		status = fprintf (file, "%s=%s\n", escapedName, escapedKey);
-		elektraFree (escapedName);
-		elektraFree (escapedKey);
+		status = fprintf (file, "%s=%s\n", name, keyString (key));
 	}
 	return checkWrite (status, errorNumber, parentKey);
 }
