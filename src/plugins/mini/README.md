@@ -61,28 +61,45 @@ kdb umount /examples/mini
 
 ### Escaping
 
-As with most configuration file formats, some characters carry special meaning. In the case of the `mini` plugin that character is the `=` sign, which separates keys from values. In case of **key values** you do not need to care about the special meaning of the `=` sign most of the time, since the plugin handles escaping and unescaping of `=` for you. The following example shows this behaviour.
+As with most configuration file formats, some characters carry special meaning. In the case of the `mini` plugin that character are
+
+1. the `=` sign, which separates keys from values and
+2. `#` and `;`, the characters that denote a comment.
+
+In case of **key values** you do not need to care about the special meaning of these characters most of the time, since the plugin handles escaping and unescaping of them for you. Since mINI use the backslash character (`\`) to escape values, the backspace character will be escaped too (`\\`). The following example shows the escaping behaviour.
 
 ```sh
 kdb mount mini.ini /examples/mini mini
 
-# Store a value containing an equal sign (`=`)
-kdb set /examples/mini/key value=
+# Store a value containing special characters
+kdb set /examples/mini/key ';#=\'
 #> Using name user/examples/mini/key
-#> Create a new key user/examples/mini/key with string value=
+#> Create a new key user/examples/mini/key with string ;#=\
 
-# The actual file contains an escaped equal character (`\=`)
+# The actual file contains escaped version of the characters
 kdb file /examples/mini | xargs cat
-#> key=value\=
+#> key=\;\#\=\\
 
-# However, if you retrieve the value you do not have to care about escaped equal signs
+# However, if you retrieve the value you do not have to care
+# about the escaped characters
 kdb get /examples/mini/key
-#> value=
+#> ;#=\
+
+# If we do not escape the `;` and `#` characters, then they
+# donate a comment.
+echo 'background = \#0F0F0F ; Background color' >> `kdb file /examples/mini`
+echo 'foreground = \#FFFFFF # Foreground color' >> `kdb file /examples/mini`
+kdb get /examples/mini/background
+#> #0F0F0F
+kdb get /examples/mini/foreground
+#> #FFFFFF
 
 # Undo modifications to the key database
 kdb rm -r /examples/mini
 kdb umount /examples/mini
 ```
+
+In the case of **key names** you **must not use any of the characters mentioned above** (`;`, `#` and `=`) at all. Otherwise the behaviour of the plugin will be **undefined**.
 
 ## Limitations
 

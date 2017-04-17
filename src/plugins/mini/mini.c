@@ -41,7 +41,10 @@ static inline KeySet * elektraMiniContract ()
 		      keyNew ("system/elektra/modules/mini/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END),
 		      keyNew ("system/elektra/modules/mini/config/needs", KEY_END),
 		      keyNew ("system/elektra/modules/mini/config/needs/chars", KEY_END),
-		      keyNew ("system/elektra/modules/mini/config/needs/chars/3D", KEY_VALUE, "3D", KEY_END), // 3D ↔︎ =
+		      keyNew ("system/elektra/modules/mini/config/needs/chars/23", KEY_VALUE, "23", KEY_END), // 23 ↔︎ `#`
+		      keyNew ("system/elektra/modules/mini/config/needs/chars/3B", KEY_VALUE, "3B", KEY_END), // 3B ↔︎ `;`
+		      keyNew ("system/elektra/modules/mini/config/needs/chars/3D", KEY_VALUE, "3D", KEY_END), // 3D ↔︎ `=`
+		      keyNew ("system/elektra/modules/mini/config/needs/chars/5C", KEY_VALUE, "5C", KEY_END), // 5C ↔︎ `\`
 		      KS_END);
 }
 
