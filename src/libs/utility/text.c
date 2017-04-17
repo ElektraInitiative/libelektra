@@ -114,8 +114,11 @@ static inline ssize_t occurrences (char const * const text, char const * const p
 /**
  * @internal
  *
- * @brief This function returns a new string replacing every occurrence of `pattern`
- *        in `text` with `replacement`.
+ * @brief This function returns a newly allocated string replacing every occurrence of
+ *        `pattern` in `text` with `replacement`.
+ *
+ * If the function was unable to allocate memory for the new string, then it will
+ * return `NULL` instead.
  *
  * @pre The parameter `text` must not be `NULL`.
  * @pre The parameter `pattern` must not be `NULL` or an empty string.
