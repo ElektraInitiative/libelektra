@@ -26,8 +26,6 @@ ElektraError * elektraErrorCreate (ElektraErrorCode code, const char * descripti
     return error;
 }
 
-#define ELEKTRA_ERROR_SEVERITY
-
 ElektraError * elektraErrorCreateFromKey (Key * key)
 {
     const Key * metaKey = keyGetMeta (key, "error");
@@ -83,20 +81,4 @@ ElektraErrorModule elektraErrorModule (ElektraError * error)
 void elektraErrorFree (ElektraError * error)
 {
     elektraFree(error);
-}
-
-// Private
-
-static void removeMetaData (Key * key, const char * searchfor)
-{
-    const Key * iter_key;
-    keyRewindMeta (key);
-    while ((iter_key = keyNextMeta (key)) != 0)
-    {
-        // startsWith
-        if (strncmp (searchfor, keyName (iter_key), strlen (searchfor)) == 0)
-        {
-            keySetMeta (key, keyName (iter_key), 0);
-        }
-    }
 }
