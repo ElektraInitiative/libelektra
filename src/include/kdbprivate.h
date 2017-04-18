@@ -27,6 +27,19 @@
 
 #include <limits.h>
 
+#define KDB_STRING_TO_BOOLEAN(string) !strcmp(string, "1")
+#define KDB_STRING_TO_CHAR(string) string[0]
+#define KDB_STRING_TO_OCTET(string) strtoul(string, NULL, 10)
+#define KDB_STRING_TO_SHORT(string) strtoul(string, NULL, 10)
+#define KDB_STRING_TO_UNSIGNED_SHORT(string) strtoul(string, NULL, 10)
+#define KDB_STRING_TO_LONG(string) strtoul(string, NULL, 10)
+#define KDB_STRING_TO_UNSIGNED_LONG(string) strtoul(string, NULL, 10)
+#define KDB_STRING_TO_LONG_LONG(string) ELEKTRA_LONG_LONG_S (string, NULL, 10)
+#define KDB_STRING_TO_UNSIGNED_LONG_LONG(string) ELEKTRA_UNSIGNED_LONG_LONG_S (string, NULL, 10)
+#define KDB_STRING_TO_FLOAT(string) strtof(string, NULL)
+#define KDB_STRING_TO_DOUBLE(string) strtod(string, NULL)
+#define KDB_STRING_TO_LONG_DOUBLE(string) strtold(string, NULL)
+
 /** The minimal allocation size of a keyset inclusive
 	NULL byte. ksGetAlloc() will return one less because
 	it says how much can actually be stored.*/
