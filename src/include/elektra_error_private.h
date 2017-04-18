@@ -9,12 +9,18 @@
 #ifndef ELEKTRA_ERROR_PRIVATE_H
 #define ELEKTRA_ERROR_PRIVATE_H
 
+#include "kdb.h"
+
 struct _ElektraError
 {
-    int code;
-    const char * message;
+    ElektraErrorCode code;
+    const char * description;
+    ElektraErrorSeverity severity;
+    ElektraErrorGroup group;
+    ElektraErrorModule module;
 };
 
-ElektraError * elektraErrorCreate (ElektraErrorCode code, const char * message);
+ElektraError * elektraErrorCreate (ElektraErrorCode code, const char * description, ElektraErrorSeverity severity, ElektraErrorGroup group, ElektraErrorModule module);
+ElektraError * elektraErrorCreateFromKey (Key * key);
 
 #endif //ELEKTRA_ERROR_PRIVATE_H
