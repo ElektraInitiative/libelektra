@@ -81,7 +81,7 @@ void elektraClose (Elektra * elektra)
 const char * elektraGetString (Elektra * elektra, const char * name)
 {
     READ_KEY
-    CHECK_TYPE ("string")
+    CHECK_TYPE("string")
 
     const char * value = string;
 
@@ -95,9 +95,9 @@ const char * elektraGetString (Elektra * elektra, const char * name)
 kdb_boolean_t elektraGetBoolean (Elektra * elektra, const char * name)
 {
     READ_KEY
-    CHECK_TYPE ("boolean")
+    CHECK_TYPE("boolean")
 
-    kdb_boolean_t value = KDB_STRING_TO_BOOLEAN (string);
+    kdb_boolean_t value = KDB_STRING_TO_BOOLEAN(string);
 
     RETURN_VALUE
 }
@@ -109,9 +109,9 @@ kdb_boolean_t elektraGetBoolean (Elektra * elektra, const char * name)
 kdb_char_t elektraGetChar (Elektra * elektra, const char * name)
 {
     READ_KEY
-    CHECK_TYPE ("char")
+    CHECK_TYPE("char")
 
-    const char value = KDB_STRING_TO_CHAR (string);
+    const char value = KDB_STRING_TO_CHAR(string);
 
     RETURN_VALUE
 }
@@ -123,9 +123,9 @@ kdb_char_t elektraGetChar (Elektra * elektra, const char * name)
 kdb_octet_t elektraGetOctet (Elektra * elektra, const char * name)
 {
     READ_KEY
-    CHECK_TYPE ("octet")
+    CHECK_TYPE("octet")
 
-    const kdb_octet_t value = KDB_STRING_TO_OCTET (string);
+    const kdb_octet_t value = KDB_STRING_TO_OCTET(string);
 
     RETURN_VALUE
 }
@@ -137,9 +137,9 @@ kdb_octet_t elektraGetOctet (Elektra * elektra, const char * name)
 kdb_short_t elektraGetShort (Elektra * elektra, const char * name)
 {
     READ_KEY
-    CHECK_TYPE ("short")
+    CHECK_TYPE("short")
 
-    const kdb_short_t value = KDB_STRING_TO_SHORT (string);
+    const kdb_short_t value = KDB_STRING_TO_SHORT(string);
 
     RETURN_VALUE
 }
@@ -151,9 +151,9 @@ kdb_short_t elektraGetShort (Elektra * elektra, const char * name)
 kdb_unsigned_short_t elektraGetUnsignedShort (Elektra * elektra, const char * name)
 {
     READ_KEY
-    CHECK_TYPE ("unsigned_short");
+    CHECK_TYPE("unsigned_short");
 
-    const kdb_unsigned_short_t value = KDB_STRING_TO_UNSIGNED_SHORT (string);
+    const kdb_unsigned_short_t value = KDB_STRING_TO_UNSIGNED_SHORT(string);
 
     RETURN_VALUE
 }
@@ -165,9 +165,9 @@ kdb_unsigned_short_t elektraGetUnsignedShort (Elektra * elektra, const char * na
 kdb_long_t elektraGetLong (Elektra * elektra, const char * name)
 {
     READ_KEY
-    CHECK_TYPE ("long")
+    CHECK_TYPE("long")
 
-    const kdb_long_t value = KDB_STRING_TO_LONG (string);
+    const kdb_long_t value = KDB_STRING_TO_LONG(string);
 
     RETURN_VALUE
 }
@@ -179,9 +179,9 @@ kdb_long_t elektraGetLong (Elektra * elektra, const char * name)
 kdb_unsigned_long_t elektraGetUnsignedLong (Elektra * elektra, const char * name)
 {
     READ_KEY
-    CHECK_TYPE ("unsigned_long")
+    CHECK_TYPE("unsigned_long")
 
-    const kdb_unsigned_long_t value = KDB_STRING_TO_UNSIGNED_LONG (string);
+    const kdb_unsigned_long_t value = KDB_STRING_TO_UNSIGNED_LONG(string);
 
     RETURN_VALUE
 }
@@ -193,9 +193,9 @@ kdb_unsigned_long_t elektraGetUnsignedLong (Elektra * elektra, const char * name
 kdb_long_long_t elektraGetLongLong (Elektra * elektra, const char * name)
 {
     READ_KEY
-    CHECK_TYPE ("long_long")
+    CHECK_TYPE("long_long")
 
-    const kdb_long_long_t value = KDB_STRING_TO_LONG_LONG (string);
+    const kdb_long_long_t value = KDB_STRING_TO_LONG_LONG(string);
 
     RETURN_VALUE
 }
@@ -207,9 +207,9 @@ kdb_long_long_t elektraGetLongLong (Elektra * elektra, const char * name)
 kdb_unsigned_long_long_t elektraGetUnsignedLongLong (Elektra * elektra, const char * name)
 {
     READ_KEY
-    CHECK_TYPE ("unsigned_long_long")
+    CHECK_TYPE("unsigned_long_long")
 
-    const kdb_unsigned_long_long_t value = KDB_STRING_TO_UNSIGNED_LONG_LONG (string);
+    const kdb_unsigned_long_long_t value = KDB_STRING_TO_UNSIGNED_LONG_LONG(string);
 
     RETURN_VALUE
 }
@@ -221,9 +221,9 @@ kdb_unsigned_long_long_t elektraGetUnsignedLongLong (Elektra * elektra, const ch
 kdb_float_t elektraGetFloat (Elektra * elektra, const char * name)
 {
     READ_KEY
-    CHECK_TYPE ("float")
+    CHECK_TYPE("float")
 
-    const kdb_float_t value = KDB_STRING_TO_FLOAT (string);
+    const kdb_float_t value = KDB_STRING_TO_FLOAT(string);
 
     RETURN_VALUE
 }
@@ -235,9 +235,9 @@ kdb_float_t elektraGetFloat (Elektra * elektra, const char * name)
 kdb_double_t elektraGetDouble (Elektra * elektra, const char * name)
 {
     READ_KEY
-    CHECK_TYPE ("double")
+    CHECK_TYPE("double")
 
-    const kdb_double_t value = KDB_STRING_TO_DOUBLE (string);
+    const kdb_double_t value = KDB_STRING_TO_DOUBLE(string);
 
     RETURN_VALUE
 }
@@ -249,9 +249,9 @@ kdb_double_t elektraGetDouble (Elektra * elektra, const char * name)
 kdb_long_double_t elektraGetLongDouble (Elektra * elektra, const char * name)
 {
     READ_KEY
-    CHECK_TYPE ("long_double")
+    CHECK_TYPE("long_double")
 
-    const kdb_long_double_t value = KDB_STRING_TO_LONG_DOUBLE (string);
+    const kdb_long_double_t value = KDB_STRING_TO_LONG_DOUBLE(string);
 
     RETURN_VALUE
 }
