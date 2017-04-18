@@ -30,4 +30,4 @@ target_link_elektra(test_proposal elektra-proposal)
 
 target_link_elektra(test_utility elektra-utility)
 
-target_link_elektra(test_elektra elektra-highlevel)
+target_link_elektra(test_highlevel elektra-highlevel)
