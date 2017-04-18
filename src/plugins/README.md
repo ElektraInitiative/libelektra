@@ -65,7 +65,7 @@ and afterwards the configuration file must be synced with
 harddisc (recommended to add at every kdb mount):
 - [curlget](curlget/) fetches configuration file from a remote host
 - [blockresolver](blockresolver/) resolves tagged blocks inside config files
-- [multifile](multifile/) 
+- [multifile](multifile/)
 
 - [sync](sync/) uses POSIX APIs to sync configuration file with harddisc
 
@@ -101,6 +101,7 @@ Only suited for import/export:
 - [xmltool](xmltool/) uses XML (in Elektra's XML schema).
 - [simpleini](simpleini/) line-based key-value pairs with configurable
   format (without sections)
+- [mini](mini/) dependency free, line based key-value storage plugin.
 
 Plugins that just show some functionality, (currently) not intended for
 productive use:

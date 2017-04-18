@@ -130,7 +130,7 @@ execute()
 		if [ "$?" -ne "0" ];
 		then
 			printf "\nERROR - STDERR:\n“%s”\ndoesn't match “%s”\n\n" "$STDERR" "$STDERRCMP"
-			printf "%s\n" "=== FAILED stderr doesn't match expected patter $STDERRCMP" >> "$OutFile"
+			printf "%s\n" "=== FAILED stderr doesn't match expected pattern $STDERRCMP" >> "$OutFile"
 			nbError=$(( nbError + 1 ))
 		fi
 	fi
@@ -143,7 +143,7 @@ execute()
 	if [ ! -z "$STDOUTCMP" ];
 	then
 		nbTest=$(( nbTest + 1 ))
-		echo "$STDOUT" | replace_newline_return | grep -Eq --text "^${STDOUTCMP}$"
+		printf "%s" "$STDOUT" | replace_newline_return | grep -Eq --text "^${STDOUTCMP}$"
 		if [ "$?" -ne "0" ];
 		then
 			printf "\nERROR - STDOUT:\n“%s”\ndoesn't match “%s”\n\n" "$STDOUT" "$STDOUTCMP"
@@ -255,7 +255,7 @@ run_script()
 		WARNINGSCMP=$(echo "$line"|cut -d ' ' -f2-)
 		;;
 	STDOUT:)
-		STDOUTCMP=$(echo "$line"|cut -d ' ' -f2-)
+		STDOUTCMP=$(printf "%s" "$line"|cut -d ' ' -f2-)
 		;;
 	STDOUT-REGEX:)
 		STDOUTRECMP=$(echo "$line"|cut -d ' ' -f2-)

@@ -74,9 +74,9 @@ static void test_elektraRstrip ()
 	succeed_if_same_string (last, "g");
 }
 
-static void test_ElektraStrip ()
+static void test_elektraStrip ()
 {
-	printf ("Test strip\n");
+	printf ("Test elektraStrip\n");
 	char text[MAX_LENGTH];
 
 	strncpy (text, "", MAX_LENGTH);
@@ -84,6 +84,32 @@ static void test_ElektraStrip ()
 
 	strncpy (text, "\t \nLeading And Trailing Whitespace\n\tSecond Line\n ", MAX_LENGTH);
 	succeed_if_same_string (elektraStrip (text), "Leading And Trailing Whitespace\n\tSecond Line");
+}
+
+static void test_elektraReplace ()
+{
+	printf ("Test elektraReplace\n");
+	char * text;
+
+	text = elektraReplace ("=k=e=y = v=a=l=u=e=", "=", "\\=");
+	succeed_if_same_string (text, "\\=k\\=e\\=y \\= v\\=a\\=l\\=u\\=e\\=");
+	free (text);
+
+	text = elektraReplace ("\\=k\\=e\\=y \\= v\\=a\\=l\\=u\\=e\\=", "\\=", "=");
+	succeed_if_same_string (text, "=k=e=y = v=a=l=u=e=");
+	free (text);
+
+	text = elektraReplace ("🙉", "|", "|");
+	succeed_if_same_string (text, "🙉");
+	free (text);
+
+	text = elektraReplace ("replace 👻 replace", "replace", "");
+	succeed_if_same_string (text, " 👻 ");
+	free (text);
+
+	text = elektraReplace ("", "🙈", "");
+	succeed_if_same_string (text, "");
+	free (text);
 }
 
 int main (int argc, char ** argv)
@@ -95,7 +121,8 @@ int main (int argc, char ** argv)
 
 	test_elektraLskip ();
 	test_elektraRstrip ();
-	test_ElektraStrip ();
+	test_elektraStrip ();
+	test_elektraReplace ();
 
 	printf ("\nResults: %d Test%s done — %d Error%s.\n", nbTest, nbTest == 1 ? "" : "s", nbError, nbError == 1 ? "" : "s");
 

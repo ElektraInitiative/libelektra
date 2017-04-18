@@ -1,7 +1,10 @@
 #include <ctype.h>
+#include <stdlib.h>
 #include <string.h>
 
 #include <kdbassert.h>
+#include <kdbhelper.h>
+#include <kdblogger.h>
 
 /**
  * @internal
@@ -50,13 +53,13 @@ char * elektraLskip (char const * const text)
  *      containing the given string must be writeable.
  *
  * @param start A pointer to the start of the string from which trailing
- *		whitespace should be removed
+ *              whitespace should be removed
  * @param end A pointer to a memory location pointing to the last character
- *	      (the one before `'\0'`) of the string this function should
- *	      modify or `NULL`
+ *              (the one before `'\0'`) of the string this function should
+ *              modify or `NULL`
  *
  * @return A pointer to the start of the modified string. This address is
- *	   the same as `start`.
+ *         the same as `start`.
  */
 char * elektraRstrip (char * const start, char ** end)
 {
@@ -87,11 +90,82 @@ char * elektraRstrip (char * const start, char ** end)
  *      containing the given string must be writeable.
  *
  * @param start A pointer to the start of the string from which trailing
- *		whitespace should be removed
+ *              whitespace should be removed
  *
  * @return A pointer to the start of the stripped string.
  */
 char * elektraStrip (char * text)
 {
 	return elektraRstrip (elektraLskip (text), NULL);
+}
+
+static inline ssize_t occurrences (char const * const text, char const * const pattern, ssize_t patternLength)
+{
+	ssize_t occurrences = 0;
+	char const * current = text;
+	while ((current = strstr (current, pattern)) != NULL)
+	{
+		current += patternLength;
+		occurrences++;
+	}
+	return occurrences;
+}
+
+/**
+ * @internal
+ *
+ * @brief This function returns a newly allocated string replacing every occurrence of
+ *        `pattern` in `text` with `replacement`.
+ *
+ * If the function was unable to allocate memory for the new string, then it will
+ * return `NULL` instead.
+ *
+ * @pre The parameter `text` must not be `NULL`.
+ * @pre The parameter `pattern` must not be `NULL` or an empty string.
+ * @pre The parameter `replacement` must not be `NULL`.
+ *
+ * @param text The start of a string where each occurrence of `pattern` should be
+ *             replaced with `replacement`
+ * @param pattern A pattern, that describes which part of `text` should be replaced
+ * @param replacement This pattern describes the replacement that should be used for
+ *                    `pattern`
+ *
+ * @return A pointer to the start of a newly allocated string. The new string
+ *         is identical to the string `text` except, that every occurrence of
+ *         pattern was replaced with `replacement`.
+ */
+char * elektraReplace (char const * const text, char const * const pattern, char const * const replacement)
+{
+	ELEKTRA_ASSERT (text != NULL, "The Parameter `text` contains `NULL` instead of a valid string.");
+	ELEKTRA_ASSERT (pattern != NULL, "The Parameter `pattern` contains `NULL` instead of a valid string.");
+	ELEKTRA_ASSERT (pattern != '\0',
+			"The Parameter `pattern` contains an empty string. Please provide a string with a minimum length of 1 character.");
+	ELEKTRA_ASSERT (replacement != NULL, "The Parameter `replacement` contains `NULL` instead of a valid string.");
+
+	ssize_t patternLength = strlen (pattern);
+	ssize_t numberOccurrences = occurrences (text, pattern, patternLength);
+	ELEKTRA_LOG_DEBUG ("Found “%lu” occurrences of “%s” in “%s”", numberOccurrences, pattern, text);
+
+	ssize_t replacementLength = strlen (replacement);
+	ssize_t textLength = elektraStrLen (text);
+	char * result = elektraMalloc ((textLength + numberOccurrences * (replacementLength - patternLength)) * sizeof (char));
+	if (result == NULL)
+	{
+		return NULL;
+	}
+
+	char const * current = text;
+	char const * before = text;
+	char * destination = result;
+	while ((current = strstr (current, pattern)) != NULL)
+	{
+		destination = stpncpy (destination, before, current - before);       //! OCLint (False Positive: Constant Conditional OP)
+		destination = stpncpy (destination, replacement, replacementLength); //! OCLint (False Positive: Constant Conditional OP)
+
+		current += patternLength;
+		before = current;
+	}
+	strncpy (destination, before, text + textLength - before); //! OCLint (False Positive: Constant Conditional OP)
+
+	return (char *)result;
 }

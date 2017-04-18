@@ -8,20 +8,6 @@
 # = General =
 # ===========
 
-function __join -d 'Join variables into one variable using a given separator'
-    set -l separator $argv[1]
-    set -l joined ''
-
-    for element in $argv[2..-2]
-        test -n $element
-        and set joined "$joined$element$separator"
-    end
-    test -n $argv[-1]
-    and set joined "$joined$argv[-1]"
-
-    echo $joined
-end
-
 function __includes_options -d 'Check if the values starting at position 3 contain the options specified at position one and two'
     set -l opt_long $argv[1]
     set -l opt_short $argv[2]
@@ -31,7 +17,7 @@ function __includes_options -d 'Check if the values starting at position 3 conta
     set opt_long "--$opt_long"
     test -n $opt_short
     set opt_short "-\w*$opt_short"
-    set -l options (__join '|' $opt_long $opt_short)
+    set -l options (string join -- '|' $opt_long $opt_short)
 
     string match -r -- $options "$input"
 end
@@ -176,7 +162,7 @@ function __fish_kdb_subcommand_mount_needs_namespace -d 'Check if the subcommand
     and test (__fish_kdb__number_arguments_input_left) -eq 3
 end
 
-function __fish_kdb_subcommand_mount_needs_storage_plugin -d 'Check if the subcommand mount needs a storage plugin completion'
+function __fish_kdb_subcommand_mount_needs_plugin -d 'Check if the subcommand mount needs a plugin completion'
     __fish_kdb_subcommand_includes mount
     and test (__fish_kdb__number_arguments_input_left) -eq 4
 end
@@ -200,7 +186,7 @@ function __fish_kdb_subcommand_remount_needs_namespace -d 'Check if the subcomma
     test $number_arguments -eq 3 -o $number_arguments -eq 4
 end
 
-function __fish_kdb_subcommand_smount_needs_storage_plugin -d 'Check if the subcommand spec-mount needs a storage plugin completion'
+function __fish_kdb_subcommand_smount_needs_plugin -d 'Check if the subcommand spec-mount needs a plugin completion'
     __fish_kdb_subcommand_includes smount spec-mount
     and test (__fish_kdb__number_arguments_input_left) -eq 3
 end
@@ -236,17 +222,16 @@ function __fish_kdb_print_plugins -d 'Print a list of available plugins'
     kdb list
 end
 
+function __fish_kdb_print_non_resolver_plugins -d 'Print a list of non-resolver plugins'
+    kdb list | string match -vr '.*resolver.*' | string match -vr (kdb list resolver | string join '|')
+end
+
 function __fish_kdb_print_resolver_plugins -d 'Print a list of available resolver plugins'
-    kdb list | string match -r '.*resolver.*'
+    kdb list resolver
 end
 
 function __fish_kdb_print_storage_plugins -d 'Print a list of available storage plugins'
-    set -l formats constants crypto_botan crypto_gcrypt crypto_openssl desktop dpkg dump fcrypt hosts line ini json ni passwd regexstore
-    set -l formats $formats simpleini simplespeclang tcl xmltool uname
-    set -l regex '^(?:'(__join '|' $formats)')$'
-    set -l storage_plugins (__fish_kdb_print_plugins | string match -r $regex)
-    set -l storage_plugins $storage_plugins storage
-    printf '%s\n' $storage_plugins
+    kdb list storage
 end
 
 function __fish_kdb_print_subcommands -d 'Print a list of kdb subcommands'
@@ -384,10 +369,11 @@ complete -c kdb -n '__fish_kdb_subcommand_remount_needs_namespace' -x -a '(__fis
 
 complete -c kdb -n '__fish_kdb_needs_plugin' -x -a '(__fish_kdb_print_plugins)'
 
+complete -c kdb -n '__fish_kdb_subcommand_mount_needs_plugin' -x -a '(__fish_kdb_print_non_resolver_plugins)'
+complete -c kdb -n '__fish_kdb_subcommand_smount_needs_plugin' -x -a '(__fish_kdb_print_non_resolver_plugins)'
+
 complete -c kdb -n '__fish_kdb_subcommand_convert_needs_storage_plugin' -x -a '(__fish_kdb_print_storage_plugins)'
-complete -c kdb -n '__fish_kdb_subcommand_mount_needs_storage_plugin' -x -a '(__fish_kdb_print_storage_plugins)'
 complete -c kdb -n '__fish_kdb_subcommand_needs_storage_plugin' -x -a '(__fish_kdb_print_storage_plugins)'
-complete -c kdb -n '__fish_kdb_subcommand_smount_needs_storage_plugin' -x -a '(__fish_kdb_print_storage_plugins)'
 
 complete -c kdb -n '__fish_kdb_subcommand_fstab_needs_filesystem' -x -a '(__fish_print_filesystems)'
 
