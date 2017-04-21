@@ -34,7 +34,7 @@ void serialise (ostream & ofs, KeySet & output)
 	while (Key k = output.next ())
 	{
 		ofs << "\t{" << endl;
-		ofs << "\t\t" << k.getName () << " = " << k.getString () << endl;
+		ofs << "\t\t" << k.getName () << " = " << (k.isString () ? k.getString () : k.getBinary ()) << endl;
 		k.rewindMeta ();
 		while (const Key m = k.nextMeta ())
 		{
