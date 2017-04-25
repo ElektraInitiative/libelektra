@@ -529,7 +529,7 @@ if (BUILD_DOCUMENTATION AND RONN_LOC) # disable function when RONN_LOC is not se
 	add_custom_command(
 		OUTPUT ${OUTFILE}
 		DEPENDS ${MDFILE}
-		COMMAND ${RONN_LOC}
+		COMMAND export RUBYOPT="-Eutf-8" && ${RONN_LOC}
 		ARGS -r --pipe ${MDFILE} > ${OUTFILE}
 		)
 	add_custom_target(man-${NAME} ALL DEPENDS ${OUTFILE})
