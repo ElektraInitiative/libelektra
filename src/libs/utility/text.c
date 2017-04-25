@@ -147,7 +147,7 @@ char * elektraReplace (char const * const text, char const * const pattern, char
 	ELEKTRA_LOG_DEBUG ("Found “%lu” occurrences of “%s” in “%s”", numberOccurrences, pattern, text);
 
 	ssize_t replacementLength = strlen (replacement);
-	ssize_t textLength = elektraStrLen (text);
+	ssize_t textLength = strlen (text) + 1;
 	char * result = elektraMalloc ((textLength + numberOccurrences * (replacementLength - patternLength)) * sizeof (char));
 	if (result == NULL)
 	{
@@ -159,8 +159,12 @@ char * elektraReplace (char const * const text, char const * const pattern, char
 	char * destination = result;
 	while ((current = strstr (current, pattern)) != NULL)
 	{
-		destination = stpncpy (destination, before, current - before);       //! OCLint (False Positive: Constant Conditional OP)
-		destination = stpncpy (destination, replacement, replacementLength); //! OCLint (False Positive: Constant Conditional OP)
+		size_t length = current - before;
+		strncpy (destination, before, length); //! OCLint (False Positive: Constant Conditional OP)
+		destination += length;
+
+		strncpy (destination, replacement, replacementLength); //! OCLint (False Positive: Constant Conditional OP)
+		destination += replacementLength;
 
 		current += patternLength;
 		before = current;
