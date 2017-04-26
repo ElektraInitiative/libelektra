@@ -7,12 +7,16 @@
  *
  */
 
+/* -- Imports --------------------------------------------------------------------------------------------------------------------------- */
+
 #include <stdlib.h>
 #include <string.h>
 
 #include <kdbconfig.h>
 
 #include <tests_plugin.h>
+
+/* -- Functions ------------------------------------------------------------------------------------------------------------------------- */
 
 static void test_basics ()
 {
@@ -32,6 +36,9 @@ static void test_basics ()
 	PLUGIN_CLOSE ();
 }
 
+// ========
+// = Main =
+// ========
 
 int main (int argc, char ** argv)
 {

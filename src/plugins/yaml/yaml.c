@@ -7,10 +7,18 @@
  *
  */
 
-#include "yaml.h"
+/* -- Imports --------------------------------------------------------------------------------------------------------------------------- */
 
+#include "yaml.h"
 #include <kdbhelper.h>
 
+/* -- Functions ------------------------------------------------------------------------------------------------------------------------- */
+
+// ====================
+// = Plugin Interface =
+// ====================
+
+/** @see elektraDocGet */
 int elektraYamlGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
 {
 	if (!elektraStrCmp (keyName (parentKey), "system/elektra/modules/yaml"))
@@ -31,6 +39,7 @@ int elektraYamlGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UN
 	return ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
 }
 
+/** @see elektraDocSet */
 int elektraYamlSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
 {
 	return ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
