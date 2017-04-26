@@ -40,7 +40,7 @@ static inline KeySet * contractYaml ()
 // ====================
 
 /** @see elektraDocGet */
-int elektraYamlGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
+int elektraYamlGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
 {
 	if (!elektraStrCmp (keyName (parentKey), "system/elektra/modules/yaml"))
 	{
