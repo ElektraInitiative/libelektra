@@ -64,13 +64,13 @@ kdb complete user --max-depth=1
 # list suggestions for the namespace user, only the next level as it ends with /
 # note the difference to the previous example, which uses no trailing /
 kdb complete user/ --max-depth=1
-#>RET: 0
-#>STDOUT: .*
+# RET:0
+# STDOUT-REGEX: .*
 
 # list all possible namespaces or mountpoints, only the current level
 kdb complete --max-depth=1
-#>RET: 0
-#>STDOUT: .*
+# RET:0
+# STDOUT-REGEX: .*
 
 # list suggestions for /sw/elektra/examples/kdb-complete, only the current level
 kdb complete /sw/elektra/examples/kdb-complete --max-depth=1
