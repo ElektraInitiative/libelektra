@@ -89,6 +89,7 @@ kdb complete /sw/elektra/examples/kdb-complete/ --min-depth=2 --max-depth=4
 #> user/sw/elektra/examples/kdb-complete/lvl1/lvl2/lvl3/
 #> user/sw/elektra/examples/kdb-complete/lvl1/lvl2/lvl3/lvl4/
 
+kdb rm -r user/sw/elektra/examples/kdb-complete
 ```
 
 ## SEE ALSO
