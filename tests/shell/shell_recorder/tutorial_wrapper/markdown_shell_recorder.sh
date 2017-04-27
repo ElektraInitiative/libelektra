@@ -127,7 +127,7 @@ translate()
 		then
 			tmp=$(sed -n 's/\(\s\)*# \(.*\)/\2/p' <<<"$line")
 			cmd=$(cut -d ':' -f1 <<< "$tmp")
-			arg=$(cut -d ':' -f2- <<< "$tmp")
+			arg=$(cut -d ':' -f2- <<< "$tmp" | sed 's/[[:space:]]*//')
 
 			case "$cmd" in
 				RET)

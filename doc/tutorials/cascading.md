@@ -25,7 +25,7 @@ With the default Elektra installation only an administrator can update configura
 
 kdb get /sw/tutorial/cascading/#0/current/test
 # RET: 1
-# STDERR:Did not find key
+# STDERR: Did not find key
 
 # Now add the key ...
 sudo kdb set system/sw/tutorial/cascading/#0/current/test "hello world"
