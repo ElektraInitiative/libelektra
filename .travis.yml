@@ -30,7 +30,7 @@ before_install:
       brew install yajl;
       brew install augeas;
       brew install dbus;
-      brew install qt5;
+      brew install qt;
       brew install discount;
       brew install openssl botan libgcrypt;
       brew install libgit2;
