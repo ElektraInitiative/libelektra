@@ -11,6 +11,10 @@
 
 #include "yaml.h"
 
+#include <stdio.h>
+
+#include <kdbassert.h>
+#include <kdberrors.h>
 #include <kdbhelper.h>
 #include <kdblogger.h>
 
@@ -35,6 +39,63 @@ static inline KeySet * contractYaml ()
 		      keyNew ("system/elektra/modules/yaml/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 }
 
+/**
+ * @brief Close a given file handle opened for reading
+ *
+ * @pre The parameters `file`, and `parentKey` must not be `NULL`.
+ *
+ * @param file The file handle this function should close
+ * @param errorNumber A saved value for `errno` this function should restore if it was unable to close `file`
+ * @param parentKey A key that is used by this function to store error information if the function was unable to close `file`
+ *
+ * @retval ELEKTRA_PLUGIN_STATUS_SUCCESS if `file` was closed successfully
+ * @retval ELEKTRA_PLUGIN_STATUS_ERROR if the function was unable to close `file`
+ */
+static inline int closeFileRead (FILE * file, int errorNumber, Key * parentKey)
+{
+	ELEKTRA_ASSERT (file, "The Parameter `file` contains `NULL` instead of a valid file handle.");
+	ELEKTRA_ASSERT (parentKey, "The Parameter `parentKey` contains `NULL` instead of a valid key.");
+
+	if (fclose (file) != 0)
+	{
+		ELEKTRA_SET_ERROR_GET (parentKey);
+		errno = errorNumber;
+		return ELEKTRA_PLUGIN_STATUS_ERROR;
+	}
+	return ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
+}
+
+/**
+ * @brief Parse a file containing data specified in a very basic subset of YAML and store the obtained data in a given key set.
+ *
+ * @pre The parameters `returned`, and `parentKey` must not be `NULL`.
+ *
+ * @param returned A key set used to store the data contained in the file specified by the value of `parentKey`
+ * @param parentKey The value of this key value pair stores the path to the file this function should parse
+ *
+ * @retval ELEKTRA_PLUGIN_STATUS_SUCCESS if the whole parsing process was successful
+ * @retval ELEKTRA_PLUGIN_STATUS_ERROR if at least one part of the parsing process failed
+ */
+static int parseFile (KeySet * returned ELEKTRA_UNUSED, Key * parentKey)
+{
+	ELEKTRA_ASSERT (returned, "The Parameter `returned` contains `NULL` instead of a valid key set.");
+	ELEKTRA_ASSERT (parentKey, "The Parameter `parentKey` contains `NULL` instead of a valid key.");
+
+	ELEKTRA_LOG ("Read configuration data");
+	int errorNumber = errno;
+	FILE * source = fopen (keyString (parentKey), "r");
+
+	if (!source)
+	{
+		ELEKTRA_LOG_WARNING ("Could not open file “%s” for reading: %s", keyString (parentKey), strerror (errno));
+		ELEKTRA_SET_ERROR_GET (parentKey);
+		errno = errorNumber;
+		return ELEKTRA_PLUGIN_STATUS_ERROR;
+	}
+
+	return closeFileRead (source, errorNumber, parentKey);
+}
+
 // ====================
 // = Plugin Interface =
 // ====================
@@ -52,7 +113,7 @@ int elektraYamlGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 		return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 	}
 
-	return ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
+	return parseFile (returned, parentKey);
 }
 
 /** @see elektraDocSet */

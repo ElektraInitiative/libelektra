@@ -22,14 +22,13 @@ static void test_basics ()
 {
 	printf ("• Test basic functionality of plugin\n");
 
-	Key * parentKey = keyNew ("user/tests/yaml", KEY_END);
+	Key * parentKey = keyNew ("system/elektra/modules/yaml", KEY_END);
 	KeySet * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("yaml");
 
 	KeySet * ks = ksNew (0, KS_END);
 
-	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_NO_UPDATE, "Call of kdbGet was not successful");
-	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_NO_UPDATE, "Call of kdbSet was not successful");
+	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "Could not retrieve plugin contract");
 
 	keyDel (parentKey);
 	ksDel (ks);
