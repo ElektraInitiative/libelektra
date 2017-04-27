@@ -79,9 +79,9 @@ cat `kdb file /examples/hosts`
 
 # Check if the values are read correctly
 kdb get /examples/hosts/ipv4/localhost
-#>127.0.0.1
+#> 127.0.0.1
 kdb get /examples/hosts/ipv6/localhost
-#>::1
+#> ::1
 
 # Should both fail with error 51 and return 5
 kdb set /examples/hosts/ipv4/localhost ::1
