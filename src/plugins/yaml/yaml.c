@@ -124,9 +124,5 @@ int elektraYamlSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UN
 
 Plugin * ELEKTRA_PLUGIN_EXPORT (yaml)
 {
-	// clang-format off
-	return elektraPluginExport ("yaml",
-		ELEKTRA_PLUGIN_GET,	&elektraYamlGet,
-		ELEKTRA_PLUGIN_SET,	&elektraYamlSet,
-		ELEKTRA_PLUGIN_END);
+	return elektraPluginExport ("yaml", ELEKTRA_PLUGIN_GET, &elektraYamlGet, ELEKTRA_PLUGIN_SET, &elektraYamlSet, ELEKTRA_PLUGIN_END);
 }
