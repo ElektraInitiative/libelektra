@@ -94,7 +94,7 @@ lookup works.
 
 During a cascading lookup for a specific key, the default Elektra behaviour can be changed by a corresponding `spec-key`, i.e. a key in the **spec** namespace **with the same name**.
 
-For example, the metadata `override/#0` of the respective `spec-key` 
+For example, the metadata `override/#0` of the respective `spec-key`
 can be specified to use a different key in favor of the key itself. This way, we can implement a redirect or symlink like behaviour and therefore even
 config from current folder (`dir` namespace) can be overwritten.
 
