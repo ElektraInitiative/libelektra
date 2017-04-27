@@ -60,7 +60,7 @@ writeBlock()
 	else
 		if [ ! -z "$STDOUTRE" ]
 		then
-			echo "STDOUT-REGEX: $STDOUT" >> "$TMPFILE"
+			echo "STDOUT-REGEX: $STDOUTRE" >> "$TMPFILE"
 		else
 			if [ ! -z "$STDOUTGLOB" ];
 			then
