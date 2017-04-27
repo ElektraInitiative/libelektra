@@ -5,4 +5,9 @@
 # @date 25.11.2016
 # @tags generator, creator
 
-dot -Tpng opmphmGraph.dot -o opmphmGraph.png
+if [ -z "$1" ]
+then
+	echo "Usage $0 <dotfile>"
+	exit
+fi
+dot -Tpng "$1" -o "$(cut -d "." -f1<<<"$1").png"
