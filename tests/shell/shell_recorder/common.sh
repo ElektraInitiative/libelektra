@@ -1,5 +1,5 @@
 replace_newline_return () {
-	awk '{if (NR>1) {printf line"⏎";} line=$0;} END { printf line; }'
+	awk '{if (NR>1) {printf("%s⏎", line);} line=$0;} END { printf("%s", line); }'
 }
 
 regex_escape () {
