@@ -31,3 +31,6 @@ Mountpoint: system/
 
 STDOUT: TEST
 < kdb get /sw/org/myapp/#0/current/testkey
+
+< kdb rm -r system/elektra/globalplugins
+< kdb rm -r /sw/org/myapp/#0
