@@ -31,4 +31,18 @@ kdb_float_t elektraGetFloat (Elektra * elektra, const char * name);
 kdb_double_t elektraGetDouble (Elektra * elektra, const char * name);
 kdb_long_double_t elektraGetLongDouble (Elektra * elektra, const char * name);
 
+const char * elektraGetStringArrayElement (Elektra * elektra, const char * name, size_t index);
+kdb_boolean_t elektraGetBooleanArrayElement (Elektra * elektra, const char * name, size_t index);
+kdb_char_t elektraGetCharArrayElement (Elektra * elektra, const char * name, size_t index);
+kdb_octet_t elektraGetOctetArrayElement (Elektra * elektra, const char * name, size_t index);
+kdb_short_t elektraGetShortArrayElement (Elektra * elektra, const char * name, size_t index);
+kdb_unsigned_short_t elektraGetUnsignedShortArrayElement  (Elektra * elektra, const char * name, size_t index);
+kdb_long_t elektraGetLongArrayElement (Elektra * elektra, const char * name, size_t index);
+kdb_unsigned_long_t elektraGetUnsignedLongArrayElement (Elektra * elektra, const char * name, size_t index);
+kdb_long_long_t elektraGetLongLongArrayElement (Elektra * elektra, const char * name, size_t index);
+kdb_unsigned_long_long_t elektraGetUnsignedLongLongArrayElement (Elektra * elektra, const char * name, size_t index);
+kdb_float_t elektraGetFloatArrayElement (Elektra * elektra, const char * name, size_t index);
+kdb_double_t elektraGetDoubleArrayElement (Elektra * elektra, const char * name, size_t index);
+kdb_long_double_t elektraGetLongDoubleArrayElement (Elektra * elektra, const char * name, size_t index);
+
 #endif //ELEKTRA_H
