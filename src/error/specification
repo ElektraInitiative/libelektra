@@ -902,7 +902,6 @@ ingroup:plugin
 module:crypto
 enum:CRYPTO_DECRYPT_FAILED
 
-
 number:129
 description:decryption failed due to an error reported by the crypto library.
 macro:CRYPTO_DECRYPT_WARNING
