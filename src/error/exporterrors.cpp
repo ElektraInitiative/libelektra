@@ -113,6 +113,26 @@ ostream & operator<< (ostream & os, parse_t & p)
 		os << p[i]["macro"] << " " << i << endl;
 	}
 
+    os << endl << endl;
+
+    os << "typedef enum {" << endl;
+    for (size_t i = 1; i < p.size (); ++i)
+    {
+        if (p[i]["unused"] == "yes")
+        {
+            continue;
+        }
+
+        if (p[i]["macro"].empty ())
+        {
+            continue;
+        }
+
+        os << "    ELEKTRA_ERROR_CODE_";
+        os << p[i]["enum"] << " = " << i << "," << endl;
+    }
+    os << "} ElektraErrorCode;" << endl;
+
 	os << endl << endl;
 
 	for (size_t i = 1; i < p.size (); ++i)

@@ -1092,7 +1092,7 @@ severity:warning
 ingroup:plugin
 module:boolean
 macro:INVALID_BOOL
-enum:INVALID_BOOL
+enum:INVALID_BOOL_WARNING
 
 number:155
 description:failed to extract block
