@@ -584,15 +584,18 @@ STATUS_OSTREAM_TO_STRING(kdb::tools::ImportExportBackend)
 
 %catches(kdb::tools::NoGlobalPlugin,
          kdb::tools::BackendCheckException,
+         kdb::tools::OrderingViolation,
          kdb::tools::ToolException
 ) kdb::tools::GlobalPlugins::serialize;
 
 %catches(kdb::tools::TooManyPlugins,
+         kdb::tools::OrderingViolation,
          kdb::tools::ToolException,
          ...
 ) kdb::tools::SerializeInterface::serialize;
 
 %catches(kdb::tools::TooManyPlugins,
+         kdb::tools::OrderingViolation,
          kdb::tools::ToolException,
          ...
 ) kdb::tools::GlobalPluginsBuilder::serialize;
@@ -639,6 +642,11 @@ STATUS_OSTREAM_TO_STRING(kdb::tools::ImportExportBackend)
 %ignore kdb::tools::BackendBuilder::end;
 %ignore kdb::tools::BackendBuilder::cbegin;
 %ignore kdb::tools::BackendBuilder::cend;
+%extend kdb::tools::BackendBuilder {
+    PluginSpecVector to_add() {
+       return PluginSpecVector($self->begin(), $self->end());
+    }
+}
 
 %rename("backend_config") kdb::tools::BackendBuilder::getBackendConfig;
 %rename("backend_config=") kdb::tools::BackendBuilder::setBackendConfig;
