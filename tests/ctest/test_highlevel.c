@@ -55,6 +55,7 @@ static void test_getters ()
     if (error) {
         yield_error ("elektraOpen failed");
         printf ("ElektraError: %s\n", elektraErrorDescription(error));
+        elektraErrorFree(error);
     }
 
     succeed_if (!elektraStrCmp(elektraGetString(elektra, "stringKey"), "A string"), "Wrong key value.");
