@@ -15,27 +15,11 @@
 
 #include "stdio.h"
 
-#define READ_KEY(keyName) \
-Key * const nameKey = keyDup (elektra->parentKey); \
-keyAddName (nameKey, keyName); \
-\
-Key * const resultKey = ksLookup (elektra->config, nameKey, 0); \
-if (resultKey == NULL) \
-{ \
-    exit (EXIT_FAILURE); \
-} \
-const char * string = keyString (resultKey); \
-\
-keyDel (nameKey); \
-
-#define CHECK_TYPE(type) \
-if (strcmp (keyString (keyGetMeta (resultKey, "type")), type)) \
-{ \
-    exit (EXIT_FAILURE); \
-} \
-
-#define RETURN_VALUE \
-return value; \
+static Key * generateLookupKey (Elektra * elektra, const char * name);
+static const char * getValueAsString (Elektra * elektra, const char * name, const char * type);
+static const char * getArrayElementValueAsString (Elektra * elektra, const char * name, const char * type, size_t index);
+static Key * lookup(Elektra * elektra, Key * key);
+static void checkType (Key * key, const char * type);
 
 Elektra * elektraOpen (const char * application, ElektraError ** error)
 {
@@ -61,6 +45,7 @@ Elektra * elektraOpen (const char * application, ElektraError ** error)
     elektra->kdb = kdb;
     elektra->parentKey = parentKey;
     elektra->config = config;
+    elektra->lookupKey = keyNew(NULL);
 
     return elektra;
 }
@@ -80,12 +65,7 @@ void elektraClose (Elektra * elektra)
  */
 const char * elektraGetString (Elektra * elektra, const char * name)
 {
-    READ_KEY(name)
-    CHECK_TYPE("string")
-
-    const char * value = string;
-
-    RETURN_VALUE
+    return getValueAsString(elektra, name, "string");
 }
 
 /**
@@ -94,12 +74,7 @@ const char * elektraGetString (Elektra * elektra, const char * name)
  */
 kdb_boolean_t elektraGetBoolean (Elektra * elektra, const char * name)
 {
-    READ_KEY(name)
-    CHECK_TYPE("boolean")
-
-    kdb_boolean_t value = KDB_STRING_TO_BOOLEAN(string);
-
-    RETURN_VALUE
+    return KDB_STRING_TO_BOOLEAN(getValueAsString(elektra, name, "boolean"));
 }
 
 /**
@@ -108,12 +83,7 @@ kdb_boolean_t elektraGetBoolean (Elektra * elektra, const char * name)
  */
 kdb_char_t elektraGetChar (Elektra * elektra, const char * name)
 {
-    READ_KEY(name)
-    CHECK_TYPE("char")
-
-    const char value = KDB_STRING_TO_CHAR(string);
-
-    RETURN_VALUE
+    return KDB_STRING_TO_CHAR(getValueAsString(elektra, name, "char"));
 }
 
 /**
@@ -122,12 +92,7 @@ kdb_char_t elektraGetChar (Elektra * elektra, const char * name)
  */
 kdb_octet_t elektraGetOctet (Elektra * elektra, const char * name)
 {
-    READ_KEY(name)
-    CHECK_TYPE("octet")
-
-    const kdb_octet_t value = KDB_STRING_TO_OCTET(string);
-
-    RETURN_VALUE
+    return KDB_STRING_TO_OCTET(getValueAsString(elektra, name, "octet"));
 }
 
 /**
@@ -136,12 +101,7 @@ kdb_octet_t elektraGetOctet (Elektra * elektra, const char * name)
  */
 kdb_short_t elektraGetShort (Elektra * elektra, const char * name)
 {
-    READ_KEY(name)
-    CHECK_TYPE("short")
-
-    const kdb_short_t value = KDB_STRING_TO_SHORT(string);
-
-    RETURN_VALUE
+    return KDB_STRING_TO_SHORT(getValueAsString(elektra, name, "short"));
 }
 
 /**
@@ -150,12 +110,7 @@ kdb_short_t elektraGetShort (Elektra * elektra, const char * name)
  */
 kdb_unsigned_short_t elektraGetUnsignedShort (Elektra * elektra, const char * name)
 {
-    READ_KEY(name)
-    CHECK_TYPE("unsigned_short");
-
-    const kdb_unsigned_short_t value = KDB_STRING_TO_UNSIGNED_SHORT(string);
-
-    RETURN_VALUE
+    return KDB_STRING_TO_UNSIGNED_SHORT(getValueAsString(elektra, name, "unsigned_short"));
 }
 
 /**
@@ -164,12 +119,7 @@ kdb_unsigned_short_t elektraGetUnsignedShort (Elektra * elektra, const char * na
  */
 kdb_long_t elektraGetLong (Elektra * elektra, const char * name)
 {
-    READ_KEY(name)
-    CHECK_TYPE("long")
-
-    const kdb_long_t value = KDB_STRING_TO_LONG(string);
-
-    RETURN_VALUE
+    return KDB_STRING_TO_LONG(getValueAsString(elektra, name, "long"));
 }
 
 /**
@@ -178,12 +128,7 @@ kdb_long_t elektraGetLong (Elektra * elektra, const char * name)
  */
 kdb_unsigned_long_t elektraGetUnsignedLong (Elektra * elektra, const char * name)
 {
-    READ_KEY(name)
-    CHECK_TYPE("unsigned_long")
-
-    const kdb_unsigned_long_t value = KDB_STRING_TO_UNSIGNED_LONG(string);
-
-    RETURN_VALUE
+    return KDB_STRING_TO_UNSIGNED_LONG(getValueAsString(elektra, name, "unsigned_long"));
 }
 
 /**
@@ -192,12 +137,7 @@ kdb_unsigned_long_t elektraGetUnsignedLong (Elektra * elektra, const char * name
  */
 kdb_long_long_t elektraGetLongLong (Elektra * elektra, const char * name)
 {
-    READ_KEY(name)
-    CHECK_TYPE("long_long")
-
-    const kdb_long_long_t value = KDB_STRING_TO_LONG_LONG(string);
-
-    RETURN_VALUE
+    return KDB_STRING_TO_LONG_LONG(getValueAsString(elektra, name, "long_long"));
 }
 
 /**
@@ -206,12 +146,7 @@ kdb_long_long_t elektraGetLongLong (Elektra * elektra, const char * name)
  */
 kdb_unsigned_long_long_t elektraGetUnsignedLongLong (Elektra * elektra, const char * name)
 {
-    READ_KEY(name)
-    CHECK_TYPE("unsigned_long_long")
-
-    const kdb_unsigned_long_long_t value = KDB_STRING_TO_UNSIGNED_LONG_LONG(string);
-
-    RETURN_VALUE
+    return KDB_STRING_TO_UNSIGNED_LONG_LONG(getValueAsString(elektra, name, "unsigned_long_long"));
 }
 
 /**
@@ -220,12 +155,7 @@ kdb_unsigned_long_long_t elektraGetUnsignedLongLong (Elektra * elektra, const ch
  */
 kdb_float_t elektraGetFloat (Elektra * elektra, const char * name)
 {
-    READ_KEY(name)
-    CHECK_TYPE("float")
-
-    const kdb_float_t value = KDB_STRING_TO_FLOAT(string);
-
-    RETURN_VALUE
+    return KDB_STRING_TO_FLOAT(getValueAsString(elektra, name, "float"));
 }
 
 /**
@@ -234,12 +164,7 @@ kdb_float_t elektraGetFloat (Elektra * elektra, const char * name)
  */
 kdb_double_t elektraGetDouble (Elektra * elektra, const char * name)
 {
-    READ_KEY(name)
-    CHECK_TYPE("double")
-
-    const kdb_double_t value = KDB_STRING_TO_DOUBLE(string);
-
-    RETURN_VALUE
+    return KDB_STRING_TO_DOUBLE(getValueAsString(elektra, name, "double"));
 }
 
 /**
@@ -248,35 +173,74 @@ kdb_double_t elektraGetDouble (Elektra * elektra, const char * name)
  */
 kdb_long_double_t elektraGetLongDouble (Elektra * elektra, const char * name)
 {
-    READ_KEY(name)
-    CHECK_TYPE("long_double")
-
-    const kdb_long_double_t value = KDB_STRING_TO_LONG_DOUBLE(string);
-
-    RETURN_VALUE
+    return KDB_STRING_TO_LONG_DOUBLE(getValueAsString(elektra, name, "long_double"));
 }
-
 
 const char * elektraGetStringArrayElement (Elektra * elektra, const char * name, size_t index)
 {
-    Key * const key = keyDup (elektra->parentKey);
-    keyAddName (key, name);
+    return getArrayElementValueAsString(elektra, name, "string", index);
+}
+
+// Private functions
+
+static const char * getValueAsString (Elektra * elektra, const char * name, const char * type)
+{
+    Key * const key = generateLookupKey (elektra, name);
+
+    Key * const resultKey = ksLookup (elektra->config, key, 0);
+    if (resultKey == NULL)
+    {
+        printf ("Key not found: %s\n", keyName(key));
+        exit (EXIT_FAILURE);
+    }
+
+    checkType(resultKey, type);
+
+    return keyString (resultKey);
+}
+
+static const char * getArrayElementValueAsString (Elektra * elektra, const char * name, const char * type, size_t index)
+{
+    Key * const key = generateLookupKey(elektra, name);
 
     char arrayPart[ELEKTRA_MAX_ARRAY_SIZE];
     elektraWriteArrayNumber (arrayPart, index);
     keyAddName (key, arrayPart);
 
+    Key * const resultKey = lookup(elektra, key);
+
+    checkType(resultKey, type);
+
+    return keyString (resultKey);
+}
+
+static Key * generateLookupKey (Elektra * elektra, const char * name)
+{
+    Key * const lookupKey = elektra->lookupKey;
+
+    keySetName (lookupKey, keyName (elektra->parentKey));
+    keyAddName (lookupKey, name);
+
+    return lookupKey;
+}
+
+static Key * lookup(Elektra * elektra, Key * key)
+{
     Key * const resultKey = ksLookup (elektra->config, key, 0);
     if (resultKey == NULL)
     {
-        printf ("ResultKey is null");
+        printf ("Key not found: %s\n", keyName(key));
+        exit (EXIT_FAILURE);
     }
 
-    const char * string = keyString (resultKey);
+    return resultKey;
+}
 
-    keyDel (key);
-
-    const char * value = string;
-
-    RETURN_VALUE
+static void checkType (Key * key, const char * type)
+{
+    if (strcmp (keyString (keyGetMeta (key, "type")), type))
+    {
+        printf ("Wrong type. Should be: %s\n", type);
+        exit (EXIT_FAILURE);
+    }
 }
