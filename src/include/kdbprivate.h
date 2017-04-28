@@ -27,13 +27,13 @@
 
 #include <limits.h>
 
-#define KDB_STRING_TO_BOOLEAN(string) !strcmp (string, "1")
-#define KDB_STRING_TO_CHAR(string) string[0]
-#define KDB_STRING_TO_OCTET(string) strtoul (string, NULL, 10)
-#define KDB_STRING_TO_SHORT(string) strtoul (string, NULL, 10)
-#define KDB_STRING_TO_UNSIGNED_SHORT(string) strtoul (string, NULL, 10)
-#define KDB_STRING_TO_LONG(string) strtoul (string, NULL, 10)
-#define KDB_STRING_TO_UNSIGNED_LONG(string) strtoul (string, NULL, 10)
+#define KDB_STRING_TO_BOOLEAN(string) (kdb_boolean_t) !strcmp (string, "1")
+#define KDB_STRING_TO_CHAR(string) (kdb_char_t) string[0]
+#define KDB_STRING_TO_OCTET(string) (kdb_octet_t) strtoul (string, NULL, 10)
+#define KDB_STRING_TO_SHORT(string) (kdb_short_t) strtoul (string, NULL, 10)
+#define KDB_STRING_TO_UNSIGNED_SHORT(string) (kdb_unsigned_short_t) strtoul (string, NULL, 10)
+#define KDB_STRING_TO_LONG(string) (kdb_long_t) strtoul (string, NULL, 10)
+#define KDB_STRING_TO_UNSIGNED_LONG(string) (kdb_unsigned_long_t) strtoul (string, NULL, 10)
 #define KDB_STRING_TO_LONG_LONG(string) ELEKTRA_LONG_LONG_S (string, NULL, 10)
 #define KDB_STRING_TO_UNSIGNED_LONG_LONG(string) ELEKTRA_UNSIGNED_LONG_LONG_S (string, NULL, 10)
 #define KDB_STRING_TO_FLOAT(string) strtof (string, NULL)

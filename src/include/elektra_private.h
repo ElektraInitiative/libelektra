@@ -14,8 +14,9 @@
 struct _Elektra
 {
     KDB * kdb;
-    KeySet * config;
     Key * parentKey;
+    KeySet * config;
+    Key * lookupKey;
 };
 
 #endif //ELEKTRA_PRIVATE_H
