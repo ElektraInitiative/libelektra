@@ -424,7 +424,6 @@ ingroup:plugin
 macro:NOEOF
 module:storage
 enum:NOEOF
-Add temporary enum identifiers to errors
 
 number:61
 description:parse error
