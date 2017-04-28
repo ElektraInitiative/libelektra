@@ -68,8 +68,9 @@ Elektra * elektraOpen (const char * application, ElektraError ** error)
 void elektraClose (Elektra * elektra)
 {
     kdbClose (elektra->kdb, elektra->parentKey);
-    ksDel (elektra->config);
     keyDel (elektra->parentKey);
+    ksDel (elektra->config);
+    keyDel (elektra->lookupKey);
 
     elektraFree (elektra);
 }
