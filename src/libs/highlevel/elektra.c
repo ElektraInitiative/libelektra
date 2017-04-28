@@ -176,6 +176,11 @@ kdb_long_double_t elektraGetLongDouble (Elektra * elektra, const char * name)
     return KDB_STRING_TO_LONG_DOUBLE(getValueAsString(elektra, name, "long_double"));
 }
 
+/**
+ * @param elektra The elektra instance initialized with the parent key.
+ * @param name The keyname to look up. The keyname is appended to the parent key.
+ * @param index The array index of the desired element, starting with 0.
+ */
 const char * elektraGetStringArrayElement (Elektra * elektra, const char * name, size_t index)
 {
     return getArrayElementValueAsString(elektra, name, "string", index);
