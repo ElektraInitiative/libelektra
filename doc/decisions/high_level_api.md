@@ -75,13 +75,18 @@ sure to use pass a `KeySet`, that has your whole specification included
 ### Error Handling
 
 ```c
-const char * elektraErrorMessage (const ElektraError * error);
-kdb_boolean_t elektraErrorAbort (const ElektraError * error);
-void elektraErrorFree (ElektraError * error)
+ElektraErrorCode elektraErrorCode (ElektraError * error);
+const char * elektraErrorDescription (ElektraError * error);
+ElektraErrorSeverity elektraErrorSeverity (ElektraError * error);
+ElektraErrorGroup elektraErrorGroup (ElektraError * error);
+ElektraErrorModule elektraErrorModule (ElektraError * error);
+
+void elektraErrorFree (ElektraError * error);
+
 ```
 
-`elektraErrorAbort` tells you if you need to quit your application because of severe
-issues that are permanent. Otherwise, developers can just print the message and
+`elektraErrorSeverity` tells you if you need to quit your application because of severe
+issues that are permanent (severity == ELEKTRA_ERROR_SEVERITY_FATAL). Otherwise, developers can just print the message and
 continue. (Default settings might be used then.)
 
 ### Simple Getters
@@ -113,7 +118,7 @@ kdb_long_double_t elektraGetLongDouble (Elektra * elektra, const char * name);
 
 ```c
 size_t elektraArraySize (Elektra * handle, const char * name);
-kdb_long_t elektraArrayLong (Elektra * handle, const char * name, size_t elem);
+const char * elektraGetStringArrayElement (Elektra * elektra, const char * name, size_t index);
 // same types as above
 
 ```
