@@ -98,8 +98,9 @@ kdb_long_double_t elektraGetLongDouble (Elektra * elektra, const char * name);
 /**
  * @param elektra The elektra instance initialized with the parent key.
  * @param name The keyname to look up. The keyname is appended to the parent key.
+ * @returns The number of elements in the array.
  */
-size_t elektraArraySize (Elektra * handle, const char * name);
+size_t elektraArraySize (Elektra * elektra, const char * name);
 
 /**
  * @param elektra The elektra instance initialized with the parent key.
