@@ -201,6 +201,126 @@ const char * elektraGetStringArrayElement (Elektra * elektra, const char * name,
     return getArrayElementValueAsString(elektra, name, KDB_TYPE_STRING, index);
 }
 
+/**
+ * @param elektra The elektra instance initialized with the parent key.
+ * @param name The keyname to look up. The keyname is appended to the parent key.
+ * @param index The array index of the desired element, starting with 0.
+ */
+kdb_boolean_t elektraGetBooleanArrayElement (Elektra * elektra, const char * name, size_t index)
+{
+    return KDB_STRING_TO_BOOLEAN(getArrayElementValueAsString(elektra, name, KDB_TYPE_BOOLEAN, index));
+}
+
+/**
+ * @param elektra The elektra instance initialized with the parent key.
+ * @param name The keyname to look up. The keyname is appended to the parent key.
+ * @param index The array index of the desired element, starting with 0.
+ */
+kdb_char_t elektraGetCharArrayElement (Elektra * elektra, const char * name, size_t index)
+{
+    return KDB_STRING_TO_CHAR(getArrayElementValueAsString(elektra, name, KDB_TYPE_CHAR, index));
+}
+
+/**
+ * @param elektra The elektra instance initialized with the parent key.
+ * @param name The keyname to look up. The keyname is appended to the parent key.
+ * @param index The array index of the desired element, starting with 0.
+ */
+kdb_octet_t elektraGetOctetArrayElement (Elektra * elektra, const char * name, size_t index)
+{
+    return KDB_STRING_TO_OCTET(getArrayElementValueAsString(elektra, name, KDB_TYPE_OCTET, index));
+}
+
+/**
+ * @param elektra The elektra instance initialized with the parent key.
+ * @param name The keyname to look up. The keyname is appended to the parent key.
+ * @param index The array index of the desired element, starting with 0.
+ */
+kdb_short_t elektraGetShortArrayElement (Elektra * elektra, const char * name, size_t index)
+{
+    return KDB_STRING_TO_SHORT(getArrayElementValueAsString(elektra, name, KDB_TYPE_SHORT, index));
+}
+
+/**
+ * @param elektra The elektra instance initialized with the parent key.
+ * @param name The keyname to look up. The keyname is appended to the parent key.
+ * @param index The array index of the desired element, starting with 0.
+ */
+kdb_unsigned_short_t elektraGetUnsignedShortArrayElement  (Elektra * elektra, const char * name, size_t index)
+{
+    return KDB_STRING_TO_UNSIGNED_SHORT(getArrayElementValueAsString(elektra, name, KDB_TYPE_UNSIGNED_SHORT, index));
+}
+
+/**
+ * @param elektra The elektra instance initialized with the parent key.
+ * @param name The keyname to look up. The keyname is appended to the parent key.
+ * @param index The array index of the desired element, starting with 0.
+ */
+kdb_long_t elektraGetLongArrayElement (Elektra * elektra, const char * name, size_t index)
+{
+    return KDB_STRING_TO_LONG(getArrayElementValueAsString(elektra, name, KDB_TYPE_LONG, index));
+}
+
+/**
+ * @param elektra The elektra instance initialized with the parent key.
+ * @param name The keyname to look up. The keyname is appended to the parent key.
+ * @param index The array index of the desired element, starting with 0.
+ */
+kdb_unsigned_long_t elektraGetUnsignedLongArrayElement (Elektra * elektra, const char * name, size_t index)
+{
+    return KDB_STRING_TO_UNSIGNED_LONG(getArrayElementValueAsString(elektra, name, KDB_TYPE_UNSIGNED_LONG, index));
+}
+
+/**
+ * @param elektra The elektra instance initialized with the parent key.
+ * @param name The keyname to look up. The keyname is appended to the parent key.
+ * @param index The array index of the desired element, starting with 0.
+ */
+kdb_long_long_t elektraGetLongLongArrayElement (Elektra * elektra, const char * name, size_t index)
+{
+    return KDB_STRING_TO_LONG_LONG(getArrayElementValueAsString(elektra, name, KDB_TYPE_LONG_LONG, index));
+}
+
+/**
+ * @param elektra The elektra instance initialized with the parent key.
+ * @param name The keyname to look up. The keyname is appended to the parent key.
+ * @param index The array index of the desired element, starting with 0.
+ */
+kdb_unsigned_long_long_t elektraGetUnsignedLongLongArrayElement (Elektra * elektra, const char * name, size_t index)
+{
+    return KDB_STRING_TO_UNSIGNED_LONG_LONG(getArrayElementValueAsString(elektra, name, KDB_TYPE_UNSIGNED_LONG_LONG, index));
+}
+
+/**
+ * @param elektra The elektra instance initialized with the parent key.
+ * @param name The keyname to look up. The keyname is appended to the parent key.
+ * @param index The array index of the desired element, starting with 0.
+ */
+kdb_float_t elektraGetFloatArrayElement (Elektra * elektra, const char * name, size_t index)
+{
+    return KDB_STRING_TO_FLOAT(getArrayElementValueAsString(elektra, name, KDB_TYPE_FLOAT, index));
+}
+
+/**
+ * @param elektra The elektra instance initialized with the parent key.
+ * @param name The keyname to look up. The keyname is appended to the parent key.
+ * @param index The array index of the desired element, starting with 0.
+ */
+kdb_double_t elektraGetDoubleArrayElement (Elektra * elektra, const char * name, size_t index)
+{
+    return KDB_STRING_TO_DOUBLE(getArrayElementValueAsString(elektra, name, KDB_TYPE_DOUBLE, index));
+}
+
+/**
+ * @param elektra The elektra instance initialized with the parent key.
+ * @param name The keyname to look up. The keyname is appended to the parent key.
+ * @param index The array index of the desired element, starting with 0.
+ */
+kdb_long_double_t elektraGetLongDoubleArrayElement (Elektra * elektra, const char * name, size_t index)
+{
+    return KDB_STRING_TO_LONG_DOUBLE(getArrayElementValueAsString(elektra, name, KDB_TYPE_LONG_DOUBLE, index));
+}
+
 // Private functions
 
 static const char * getValueAsString (Elektra * elektra, const char * name, KDBType type)
