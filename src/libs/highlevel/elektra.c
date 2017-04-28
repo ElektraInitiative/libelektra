@@ -15,11 +15,26 @@
 
 #include "stdio.h"
 
+typedef const char * KDBType;
+static KDBType KDB_TYPE_STRING = "string";
+static KDBType KDB_TYPE_BOOLEAN = "boolean";
+static KDBType KDB_TYPE_CHAR = "char";
+static KDBType KDB_TYPE_OCTET = "octet";
+static KDBType KDB_TYPE_SHORT = "short";
+static KDBType KDB_TYPE_UNSIGNED_SHORT = "unsigned_short";
+static KDBType KDB_TYPE_LONG = "long";
+static KDBType KDB_TYPE_UNSIGNED_LONG = "unsigned_long";
+static KDBType KDB_TYPE_LONG_LONG = "long_long";
+static KDBType KDB_TYPE_UNSIGNED_LONG_LONG = "unsigned_long_long";
+static KDBType KDB_TYPE_FLOAT = "float";
+static KDBType KDB_TYPE_LONG_DOUBLE = "long_double";
+static KDBType KDB_TYPE_DOUBLE = "double";
+
 static Key * generateLookupKey (Elektra * elektra, const char * name);
-static const char * getValueAsString (Elektra * elektra, const char * name, const char * type);
-static const char * getArrayElementValueAsString (Elektra * elektra, const char * name, const char * type, size_t index);
+static const char * getValueAsString (Elektra * elektra, const char * name, KDBType type);
+static const char * getArrayElementValueAsString (Elektra * elektra, const char * name, KDBType type, size_t index);
 static Key * lookup(Elektra * elektra, Key * key);
-static void checkType (Key * key, const char * type);
+static void checkType (Key * key, KDBType type);
 
 Elektra * elektraOpen (const char * application, ElektraError ** error)
 {
@@ -65,7 +80,7 @@ void elektraClose (Elektra * elektra)
  */
 const char * elektraGetString (Elektra * elektra, const char * name)
 {
-    return getValueAsString(elektra, name, "string");
+    return getValueAsString(elektra, name, KDB_TYPE_STRING);
 }
 
 /**
@@ -74,7 +89,7 @@ const char * elektraGetString (Elektra * elektra, const char * name)
  */
 kdb_boolean_t elektraGetBoolean (Elektra * elektra, const char * name)
 {
-    return KDB_STRING_TO_BOOLEAN(getValueAsString(elektra, name, "boolean"));
+    return KDB_STRING_TO_BOOLEAN(getValueAsString(elektra, name, KDB_TYPE_BOOLEAN));
 }
 
 /**
@@ -83,7 +98,7 @@ kdb_boolean_t elektraGetBoolean (Elektra * elektra, const char * name)
  */
 kdb_char_t elektraGetChar (Elektra * elektra, const char * name)
 {
-    return KDB_STRING_TO_CHAR(getValueAsString(elektra, name, "char"));
+    return KDB_STRING_TO_CHAR(getValueAsString(elektra, name, KDB_TYPE_CHAR));
 }
 
 /**
@@ -92,7 +107,7 @@ kdb_char_t elektraGetChar (Elektra * elektra, const char * name)
  */
 kdb_octet_t elektraGetOctet (Elektra * elektra, const char * name)
 {
-    return KDB_STRING_TO_OCTET(getValueAsString(elektra, name, "octet"));
+    return KDB_STRING_TO_OCTET(getValueAsString(elektra, name, KDB_TYPE_OCTET));
 }
 
 /**
@@ -101,7 +116,7 @@ kdb_octet_t elektraGetOctet (Elektra * elektra, const char * name)
  */
 kdb_short_t elektraGetShort (Elektra * elektra, const char * name)
 {
-    return KDB_STRING_TO_SHORT(getValueAsString(elektra, name, "short"));
+    return KDB_STRING_TO_SHORT(getValueAsString(elektra, name, KDB_TYPE_SHORT));
 }
 
 /**
@@ -110,7 +125,7 @@ kdb_short_t elektraGetShort (Elektra * elektra, const char * name)
  */
 kdb_unsigned_short_t elektraGetUnsignedShort (Elektra * elektra, const char * name)
 {
-    return KDB_STRING_TO_UNSIGNED_SHORT(getValueAsString(elektra, name, "unsigned_short"));
+    return KDB_STRING_TO_UNSIGNED_SHORT(getValueAsString(elektra, name, KDB_TYPE_UNSIGNED_SHORT));
 }
 
 /**
@@ -119,7 +134,7 @@ kdb_unsigned_short_t elektraGetUnsignedShort (Elektra * elektra, const char * na
  */
 kdb_long_t elektraGetLong (Elektra * elektra, const char * name)
 {
-    return KDB_STRING_TO_LONG(getValueAsString(elektra, name, "long"));
+    return KDB_STRING_TO_LONG(getValueAsString(elektra, name, KDB_TYPE_LONG));
 }
 
 /**
@@ -128,7 +143,7 @@ kdb_long_t elektraGetLong (Elektra * elektra, const char * name)
  */
 kdb_unsigned_long_t elektraGetUnsignedLong (Elektra * elektra, const char * name)
 {
-    return KDB_STRING_TO_UNSIGNED_LONG(getValueAsString(elektra, name, "unsigned_long"));
+    return KDB_STRING_TO_UNSIGNED_LONG(getValueAsString(elektra, name, KDB_TYPE_UNSIGNED_LONG));
 }
 
 /**
@@ -137,7 +152,7 @@ kdb_unsigned_long_t elektraGetUnsignedLong (Elektra * elektra, const char * name
  */
 kdb_long_long_t elektraGetLongLong (Elektra * elektra, const char * name)
 {
-    return KDB_STRING_TO_LONG_LONG(getValueAsString(elektra, name, "long_long"));
+    return KDB_STRING_TO_LONG_LONG(getValueAsString(elektra, name, KDB_TYPE_LONG_LONG));
 }
 
 /**
@@ -146,7 +161,7 @@ kdb_long_long_t elektraGetLongLong (Elektra * elektra, const char * name)
  */
 kdb_unsigned_long_long_t elektraGetUnsignedLongLong (Elektra * elektra, const char * name)
 {
-    return KDB_STRING_TO_UNSIGNED_LONG_LONG(getValueAsString(elektra, name, "unsigned_long_long"));
+    return KDB_STRING_TO_UNSIGNED_LONG_LONG(getValueAsString(elektra, name, KDB_TYPE_UNSIGNED_LONG_LONG));
 }
 
 /**
@@ -155,7 +170,7 @@ kdb_unsigned_long_long_t elektraGetUnsignedLongLong (Elektra * elektra, const ch
  */
 kdb_float_t elektraGetFloat (Elektra * elektra, const char * name)
 {
-    return KDB_STRING_TO_FLOAT(getValueAsString(elektra, name, "float"));
+    return KDB_STRING_TO_FLOAT(getValueAsString(elektra, name, KDB_TYPE_FLOAT));
 }
 
 /**
@@ -164,7 +179,7 @@ kdb_float_t elektraGetFloat (Elektra * elektra, const char * name)
  */
 kdb_double_t elektraGetDouble (Elektra * elektra, const char * name)
 {
-    return KDB_STRING_TO_DOUBLE(getValueAsString(elektra, name, "double"));
+    return KDB_STRING_TO_DOUBLE(getValueAsString(elektra, name, KDB_TYPE_DOUBLE));
 }
 
 /**
@@ -173,7 +188,7 @@ kdb_double_t elektraGetDouble (Elektra * elektra, const char * name)
  */
 kdb_long_double_t elektraGetLongDouble (Elektra * elektra, const char * name)
 {
-    return KDB_STRING_TO_LONG_DOUBLE(getValueAsString(elektra, name, "long_double"));
+    return KDB_STRING_TO_LONG_DOUBLE(getValueAsString(elektra, name, KDB_TYPE_LONG_DOUBLE));
 }
 
 /**
@@ -183,12 +198,12 @@ kdb_long_double_t elektraGetLongDouble (Elektra * elektra, const char * name)
  */
 const char * elektraGetStringArrayElement (Elektra * elektra, const char * name, size_t index)
 {
-    return getArrayElementValueAsString(elektra, name, "string", index);
+    return getArrayElementValueAsString(elektra, name, KDB_TYPE_STRING, index);
 }
 
 // Private functions
 
-static const char * getValueAsString (Elektra * elektra, const char * name, const char * type)
+static const char * getValueAsString (Elektra * elektra, const char * name, KDBType type)
 {
     Key * const key = generateLookupKey (elektra, name);
 
@@ -204,7 +219,7 @@ static const char * getValueAsString (Elektra * elektra, const char * name, cons
     return keyString (resultKey);
 }
 
-static const char * getArrayElementValueAsString (Elektra * elektra, const char * name, const char * type, size_t index)
+static const char * getArrayElementValueAsString (Elektra * elektra, const char * name, KDBType type, size_t index)
 {
     Key * const key = generateLookupKey(elektra, name);
 
@@ -241,7 +256,7 @@ static Key * lookup(Elektra * elektra, Key * key)
     return resultKey;
 }
 
-static void checkType (Key * key, const char * type)
+static void checkType (Key * key, KDBType type)
 {
     if (strcmp (keyString (keyGetMeta (key, "type")), type))
     {
