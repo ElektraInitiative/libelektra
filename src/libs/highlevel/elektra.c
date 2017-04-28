@@ -144,6 +144,17 @@ kdb_long_double_t elektraGetLongDouble (Elektra * elektra, const char * name)
 
 // Arrays
 
+size_t elektraArraySize (Elektra * elektra, const char * name)
+{
+    Key * const key = generateLookupKey (elektra, name);
+
+    KeySet * arrayKeys = elektraArrayGet (key, elektra->config);
+    size_t size = (size_t) ksGetSize(arrayKeys);
+    ksDel(arrayKeys);
+
+    return size;
+}
+
 const char * elektraGetStringArrayElement (Elektra * elektra, const char * name, size_t index)
 {
     return getArrayElementValueAsString (elektra, name, KDB_TYPE_STRING, index);
