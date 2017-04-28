@@ -50,6 +50,7 @@ static void test_getters ()
     setKeyValue (parentKey, "long_double", "longDoubleKey", "1.1");
 
     setKeyValue (parentKey, "string", "stringArrayKey/#0", "A string in an array");
+    setKeyValue (parentKey, "string", "stringArrayKey/#1", "Another string in an array");
 
     ElektraError *error = NULL;
     Elektra *elektra = elektraOpen(parentKey, &error);
@@ -78,6 +79,7 @@ static void test_getters ()
     succeed_if (elektraGetLongDouble(elektra, "longDoubleKey") == 1.1L, "Wrong key value.");
     ELEKTRA_DIAG_RESTORE
 
+    succeed_if (elektraArraySize(elektra, "stringArrayKey") == 2, "Wrong array size");
     succeed_if (!elektraStrCmp(elektraGetStringArrayElement(elektra, "stringArrayKey", 0), "A string in an array"), "Wrong key value.");
 }
 
