@@ -31,6 +31,20 @@ void elektraSetFloat (Elektra * elektra, const char * name, kdb_float_t value);
 void elektraSetDouble (Elektra * elektra, const char * name, kdb_double_t value);
 void elektraSetLongDouble (Elektra * elektra, const char * name, kdb_long_double_t value);
 
+void elektraSetStringArrayElement (Elektra * elektra, const char * name, const char * value, size_t index);
+void elektraSetBooleanArrayElement (Elektra * elektra, const char * name, kdb_boolean_t value, size_t index);
+void elektraSetCharArrayElement (Elektra * elektra, const char * name, kdb_char_t value, size_t index);
+void elektraSetOctetArrayElement (Elektra * elektra, const char * name, kdb_octet_t value, size_t index);
+void elektraSetShortArrayElement (Elektra * elektra, const char * name, kdb_short_t value, size_t index);
+void elektraSetUnsignedShortArrayElement (Elektra * elektra, const char * name, kdb_unsigned_short_t value, size_t index);
+void elektraSetLongArrayElement (Elektra * elektra, const char * name, kdb_long_t value, size_t index);
+void elektraSetUnsignedLongArrayElement (Elektra * elektra, const char * name, kdb_unsigned_long_t value, size_t index);
+void elektraSetLongLongArrayElement (Elektra * elektra, const char * name, kdb_long_long_t value, size_t index);
+void elektraSetUnsignedLongLongArrayElement (Elektra * elektra, const char * name, kdb_unsigned_long_long_t value, size_t index);
+void elektraSetFloatArrayElement (Elektra * elektra, const char * name, kdb_float_t value, size_t index);
+void elektraSetDoubleArrayElement (Elektra * elektra, const char * name, kdb_double_t value, size_t index);
+void elektraSetLongDoubleArrayElement (Elektra * elektra, const char * name, kdb_long_double_t value, size_t index);
+
 /**
  * @param elektra The elektra instance initialized with the parent key.
  * @param name The keyname to look up. The keyname is appended to the parent key.
