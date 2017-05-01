@@ -17,6 +17,20 @@ typedef struct _Elektra Elektra;
 Elektra * elektraOpen (const char * application, ElektraError ** error);
 void elektraClose (Elektra * elektra);
 
+void elektraSetString (Elektra * elektra, const char * name, const char * value);
+void elektraSetBoolean (Elektra * elektra, const char * name, kdb_boolean_t value);
+void elektraSetChar (Elektra * elektra, const char * name, kdb_char_t value);
+void elektraSetOctet (Elektra * elektra, const char * name, kdb_octet_t value);
+void elektraSetShort (Elektra * elektra, const char * name, kdb_short_t value);
+void elektraSetUnsignedShort (Elektra * elektra, const char * name, kdb_unsigned_short_t value);
+void elektraSetLong (Elektra * elektra, const char * name, kdb_long_t value);
+void elektraSetUnsignedLong (Elektra * elektra, const char * name, kdb_unsigned_long_t value);
+void elektraSetLongLong (Elektra * elektra, const char * name, kdb_long_long_t value);
+void elektraSetUnsignedLongLong (Elektra * elektra, const char * name, kdb_unsigned_long_long_t value);
+void elektraSetFloat (Elektra * elektra, const char * name, kdb_float_t value);
+void elektraSetDouble (Elektra * elektra, const char * name, kdb_double_t value);
+void elektraSetLongDouble (Elektra * elektra, const char * name, kdb_long_double_t value);
+
 /**
  * @param elektra The elektra instance initialized with the parent key.
  * @param name The keyname to look up. The keyname is appended to the parent key.
