@@ -31,10 +31,13 @@ static KDBType KDB_TYPE_LONG_DOUBLE = "long_double";
 static KDBType KDB_TYPE_DOUBLE = "double";
 
 static Key * generateLookupKey (Elektra * elektra, const char * name);
-static const char * getValueAsString (Elektra * elektra, const char * name, KDBType type);
-static const char * getArrayElementValueAsString (Elektra * elektra, const char * name, KDBType type, size_t index);
 static Key * lookup(Elektra * elektra, Key * key);
 static void checkType (Key * key, KDBType type);
+
+void setValueAsString (Elektra * elektra, const char * name, const char * value, KDBType type);
+static const char * getValueAsString (Elektra * elektra, const char * name, KDBType type);
+static const char * getArrayElementValueAsString (Elektra * elektra, const char * name, KDBType type, size_t index);
+
 
 Elektra * elektraOpen (const char * application, ElektraError ** error)
 {
@@ -220,12 +223,104 @@ kdb_long_double_t elektraGetLongDoubleArrayElement (Elektra * elektra, const cha
     return KDB_STRING_TO_LONG_DOUBLE (getArrayElementValueAsString (elektra, name, KDB_TYPE_LONG_DOUBLE, index));
 }
 
+// Setters
+
+void elektraSetString (Elektra * elektra, const char * name, const char * value)
+{
+    setValueAsString(elektra, name, value, KDB_TYPE_STRING);
+}
+
+void elektraSetBoolean (Elektra * elektra, const char * name, kdb_boolean_t value)
+{
+    setValueAsString(elektra, name, KDB_BOOLEAN_TO_STRING(value), KDB_TYPE_BOOLEAN);
+}
+
+void elektraSetChar (Elektra * elektra, const char * name, kdb_char_t value)
+{
+    setValueAsString(elektra, name, KDB_CHAR_TO_STRING(value), KDB_TYPE_CHAR);
+}
+
+void elektraSetOctet (Elektra * elektra, const char * name, kdb_octet_t value)
+{
+    setValueAsString(elektra, name, KDB_OCTET_TO_STRING(value), KDB_TYPE_OCTET);
+}
+
+void elektraSetShort (Elektra * elektra, const char * name, kdb_short_t value)
+{
+    setValueAsString(elektra, name, KDB_SHORT_TO_STRING(value), KDB_TYPE_SHORT);
+}
+
+void elektraSetUnsignedShort (Elektra * elektra, const char * name, kdb_unsigned_short_t value)
+{
+    setValueAsString(elektra, name, KDB_UNSIGNED_SHORT_TO_STRING(value), KDB_TYPE_UNSIGNED_SHORT);
+}
+
+void elektraSetLong (Elektra * elektra, const char * name, kdb_long_t value)
+{
+    setValueAsString(elektra, name, KDB_LONG_TO_STRING(value), KDB_TYPE_LONG);
+}
+
+void elektraSetUnsignedLong (Elektra * elektra, const char * name, kdb_unsigned_long_t value)
+{
+    setValueAsString(elektra, name, KDB_UNSIGNED_LONG_TO_STRING(value), KDB_TYPE_UNSIGNED_LONG);
+}
+
+void elektraSetLongLong (Elektra * elektra, const char * name, kdb_long_long_t value)
+{
+    setValueAsString(elektra, name, KDB_LONG_LONG_TO_STRING(value), KDB_TYPE_LONG_LONG);
+}
+
+void elektraSetUnsignedLongLong (Elektra * elektra, const char * name, kdb_unsigned_long_long_t value)
+{
+    setValueAsString(elektra, name, KDB_UNSIGNED_LONG_LONG_TO_STRING(value), KDB_TYPE_UNSIGNED_LONG_LONG);
+}
+
+void elektraSetFloat (Elektra * elektra, const char * name, kdb_float_t value)
+{
+    setValueAsString(elektra, name, KDB_FLOAT_TO_STRING(value), KDB_TYPE_FLOAT);
+}
+
+void elektraSetDouble (Elektra * elektra, const char * name, kdb_double_t value)
+{
+    setValueAsString(elektra, name, KDB_DOUBLE_TO_STRING(value), KDB_TYPE_DOUBLE);
+}
+
+void elektraSetLongDouble (Elektra * elektra, const char * name, kdb_long_double_t value)
+{
+    setValueAsString(elektra, name, KDB_LONG_DOUBLE_TO_STRING(value), KDB_TYPE_LONG_DOUBLE);
+}
+
 // Private functions
+
+void setValueAsString (Elektra * elektra, const char * name, const char * value, KDBType type)
+{
+    int ret = 0;
+    do
+    {
+        Key * const lookupKey = generateLookupKey (elektra, name);
+        Key * const key = lookup (elektra, lookupKey);
+        checkType (key, type);
+
+        keySetString(key, value);
+
+        ret = kdbSet (elektra->kdb, elektra->config, elektra->parentKey);
+        if (ret == -1)
+        {
+            Key * problemKey = ksCurrent (elektra->config);
+            if (problemKey != NULL)
+            {
+                printf ("problemKey: %s\n", keyName (problemKey));
+            }
+
+            kdbGet (elektra->kdb, elektra->config, elektra->parentKey);
+        }
+    } while (ret == -1);
+}
 
 static const char * getValueAsString (Elektra * elektra, const char * name, KDBType type)
 {
-    Key * const key = generateLookupKey (elektra, name);
-    Key * const resultKey = lookup (elektra, key);
+    Key * const lookupKey = generateLookupKey (elektra, name);
+    Key * const resultKey = lookup (elektra, lookupKey);
     checkType (resultKey, type);
 
     return keyString (resultKey);
@@ -233,13 +328,13 @@ static const char * getValueAsString (Elektra * elektra, const char * name, KDBT
 
 static const char * getArrayElementValueAsString (Elektra * elektra, const char * name, KDBType type, size_t index)
 {
-    Key * const key = generateLookupKey (elektra, name);
+    Key * const lookupKey = generateLookupKey (elektra, name);
 
     char arrayPart[ELEKTRA_MAX_ARRAY_SIZE];
     elektraWriteArrayNumber (arrayPart, index);
-    keyAddName (key, arrayPart);
+    keyAddName (lookupKey, arrayPart);
 
-    Key * const resultKey = lookup (elektra, key);
+    Key * const resultKey = lookup (elektra, lookupKey);
 
     checkType (resultKey, type);
 
