@@ -225,14 +225,7 @@ kdb_long_double_t elektraGetLongDoubleArrayElement (Elektra * elektra, const cha
 static const char * getValueAsString (Elektra * elektra, const char * name, KDBType type)
 {
     Key * const key = generateLookupKey (elektra, name);
-
-    Key * const resultKey = ksLookup (elektra->config, key, 0);
-    if (resultKey == NULL)
-    {
-        printf ("Key not found: %s\n", keyName(key));
-        exit (EXIT_FAILURE);
-    }
-
+    Key * const resultKey = lookup (elektra, key);
     checkType (resultKey, type);
 
     return keyString (resultKey);
