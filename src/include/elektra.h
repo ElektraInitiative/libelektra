@@ -10,7 +10,6 @@
 #define ELEKTRA_H
 
 #include "kdb.h"
-#include "kdblogger.h"
 #include "kdbtypes.h"
 #include "elektra_error.h"
 
