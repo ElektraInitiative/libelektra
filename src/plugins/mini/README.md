@@ -125,7 +125,7 @@ cat stderr.txt | grep 'Reason:' | sed 's/^[[:space:]]*//'
 
 # Unlike the `ini` and `ni` plugin, mINI does not support meta data.
 kdb lsmeta /examples/mini
-# RET:1
+# RET: 1
 
 # The value of `key` also contains the double quote symbol, since mINI does
 # not assign special meaning to quote characters.

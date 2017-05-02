@@ -137,6 +137,7 @@ kdb export /examples/conditionals ini
 
 # cleanup
 kdb rm -r /examples/conditionals
+kdb rm -r system/elektra/globalplugins
 sudo kdb umount /examples/conditionals/sub
 sudo kdb umount /examples/conditionals
 ```

@@ -103,5 +103,6 @@ kdb export /examples/xercesfile xerces
 #>
 #> </xerces>
 
+sudo kdb rm -r /examples/xercesfile
 sudo kdb umount /examples/xercesfile
 ```
