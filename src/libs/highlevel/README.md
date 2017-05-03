@@ -138,7 +138,7 @@ int main(int argc, char ** argv)
   if (error != NULL) 
   {
     printf ("Sorry, there seems to be an error with your Elektra setup: %s\n", elektraErrorDescription (error));
-    printf ("Will exit now...");
+    printf ("Will exit now...\n");
     exit (EXIT_FAILURE);
     elektraErrorFree (error);
   }
