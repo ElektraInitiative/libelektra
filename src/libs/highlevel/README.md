@@ -137,17 +137,17 @@ int main(int argc, char ** argv)
 
   if (error != NULL) 
   {
-    printf ("Sorry, there seems to be an error with your Elektra setup: %s\n", elektraErrorDescription(error));
+    printf ("Sorry, there seems to be an error with your Elektra setup: %s\n", elektraErrorDescription (error));
     printf ("Will exit now...");
     exit (EXIT_FAILURE);
     elektraErrorFree (error);
   }
 
-  const char * welcomeMessage = elektraGetChar(elektra, "welcomeMessage");
+  const char * welcomeMessage = elektraGetChar (elektra, "welcomeMessage");
   
   printf ("%s", welcomeMessage);
   
-  elektraClose(elektra);
+  elektraClose (elektra);
   
   return 0;
 }
