@@ -5,7 +5,7 @@
 
 The goal of the High-Level API is to increase the usability of libelektra for developers who want to integrate Elektra into their applications. Projects usually do not want to use low-level APIs. `KDB` and `KeySet` are useful for plugins and to implement APIs but not to be directly used in applications. The High-Level API should be extremely easy to get started with and at the same time it should be hard to use it in a wrong way. This tutorial gives an introduction for developers who want to elektrify their application using the High-Level API.
 
-## First Steps
+## Setup
 
 First you have to add `elektra-highlevel` to the linked libraries of your application. To be able to use it in your source file, just include the main header with `#include "elektra.h"` at the top of your file.
 
