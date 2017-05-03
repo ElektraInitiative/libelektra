@@ -55,7 +55,7 @@ static void test_primitiveGetters ()
     if (error) {
         yield_error ("elektraOpen failed");
         printf ("ElektraError: %s\n", elektraErrorDescription(error));
-        elektraErrorFree(error);
+        elektraErrorReset(&error);
     }
 
     succeed_if (!elektraStrCmp(elektraGetString(elektra, "stringKey"), "A string"), "Wrong key value.");
@@ -130,7 +130,7 @@ static void test_arrayGetters ()
     if (error) {
         yield_error ("elektraOpen failed");
         printf ("ElektraError: %s\n", elektraErrorDescription(error));
-        elektraErrorFree(error);
+        elektraErrorReset(&error);
     }
 
     succeed_if (elektraArraySize(elektra, "stringArrayKey") == 2, "Wrong array size");
@@ -209,7 +209,7 @@ static void test_primitiveSetters ()
     if (error) {
         yield_error ("elektraOpen failed");
         printf ("ElektraError: %s\n", elektraErrorDescription(error));
-        elektraErrorFree(error);
+        elektraErrorReset(&error);
     }
 
     elektraSetString(elektra, "stringKey", "A string");
@@ -298,7 +298,7 @@ static void test_arraySetters ()
     if (error) {
         yield_error ("elektraOpen failed");
         printf ("ElektraError: %s\n", elektraErrorDescription(error));
-        elektraErrorFree(error);
+        elektraErrorReset(&error);
     }
 
     elektraSetStringArrayElement(elektra, "stringArrayKey", "String 1", 0);
