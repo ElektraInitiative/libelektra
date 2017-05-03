@@ -28,6 +28,6 @@ ElektraErrorSeverity elektraErrorSeverity (ElektraError * error);
 ElektraErrorGroup elektraErrorGroup (ElektraError * error);
 ElektraErrorModule elektraErrorModule (ElektraError * error);
 
-void elektraErrorFree (ElektraError * error);
+void elektraErrorReset (ElektraError ** error);
 
 #endif //ELEKTRA_ERROR_H
