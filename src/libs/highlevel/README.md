@@ -143,7 +143,7 @@ int main(int argc, char ** argv)
     elektraErrorFree (error);
   }
 
-  const char * welcomeMessage = elektraGetChar (elektra, "welcomeMessage");
+  const char * welcomeMessage = elektraGetString (elektra, "welcomeMessage");
   
   printf ("%s", welcomeMessage);
   
