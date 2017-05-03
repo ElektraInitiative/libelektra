@@ -1,5 +1,5 @@
 
-# High-level API
+# High-Level API
 
 ## Introduction
 
