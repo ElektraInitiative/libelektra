@@ -44,12 +44,16 @@ typedef struct
  * CPP helper function to create new Ruby objects
  */
 
+/* create a new Ruby Kdb::Key object from the given ckdb::Key
+ * will be deleted by the Ruby gc. */
 static inline VALUE newRubyObject(ckdb::Key * key) {
 	return SWIG_NewPointerObj(new kdb::Key(key), SWIG_TypeQuery("kdb::Key *"), 1);
 }
 
-static inline VALUE newRubyObject(ckdb::KeySet * keySet) {
-	return SWIG_NewPointerObj(new kdb::KeySet(keySet), SWIG_TypeQuery("kdb::KeySet *"), 1);
+/* create a new Ruby object and take ownership of this object, thus given keySet will be deleted by
+ * the Ruby gc. */
+static inline VALUE newRubyObject(kdb::KeySet * keySet) {
+	return SWIG_NewPointerObj(keySet, SWIG_TypeQuery("kdb::KeySet *"), 1);
 }
 
 /*
@@ -65,12 +69,12 @@ static VALUE module_Kdb = Qnil;
 static VALUE klass_Plugin = Qnil;
 
 /* Plugin instance created by the Ruby-plugin */
-static VALUE tmp_instance = Qnil;
-/* Plugin configuration */
-static VALUE tmp_config = Qnil;
+static VALUE global_plugin_instance = Qnil;
 
 /* mutex to guard write access to global variables */
 static std::mutex global_context_mutex;
+
+#define CONFIG_KEY_SCRIPT "user/script"
 
 
 extern "C" {
@@ -81,11 +85,17 @@ extern "C" {
 static VALUE get_exception_string(VALUE exception) {
 
 	/* get backtrace array and join it to a string with '\n  ' */
-	VALUE backtrace = rb_funcall(exception, rb_intern("backtrace"), 0);
-	backtrace = rb_ary_join(backtrace, rb_str_new_cstr("\n  "));
+	ID bt_id = rb_intern("backtrace");
+	if (rb_respond_to(exception, bt_id)) {
+		VALUE backtrace = rb_funcall(exception, bt_id, 0);
+		backtrace = rb_ary_join(backtrace, rb_str_new_cstr("\n  "));
 
-	return rb_sprintf("Ruby Exception: %"PRIsVALUE": %"PRIsVALUE" \n  %"PRIsVALUE,
-			CLASS_OF(exception), exception, backtrace);
+		return rb_sprintf("Ruby Exception: %"PRIsVALUE": %"PRIsVALUE" \n  %"PRIsVALUE,
+				CLASS_OF(exception), exception, backtrace);
+	} else {
+		return rb_sprintf("Ruby Exception: %"PRIsVALUE": %"PRIsVALUE,
+				CLASS_OF(exception), exception);
+	}
 }
 
 /**
@@ -113,7 +123,7 @@ static inline VALUE clear_ruby_exception() {
  */
 static VALUE clear_ruby_exception_add_warning(ckdb::Key * warningsKey) {
 	VALUE exception = clear_ruby_exception();
-	VALUE msg = get_exception_string(clear_ruby_exception());
+	VALUE msg = get_exception_string(exception);
 
 	ELEKTRA_ADD_WARNING (ELEKTRA_WARNING_RUBY_GEN_WARN, warningsKey, StringValueCStr(msg));
 
@@ -122,7 +132,7 @@ static VALUE clear_ruby_exception_add_warning(ckdb::Key * warningsKey) {
 
 static VALUE clear_ruby_exception_set_error(ckdb::Key * errorKey) {
 	VALUE exception = clear_ruby_exception();
-	VALUE msg = get_exception_string(clear_ruby_exception());
+	VALUE msg = get_exception_string(exception);
 
 	ELEKTRA_SET_ERROR (ELEKTRA_ERROR_RUBY_GEN_ERROR, errorKey, StringValueCStr(msg));
 
@@ -188,28 +198,6 @@ static VALUE my_rb_protect(VALUE instance, ID method, int * state, int nargs, ..
 	return rb_protect(protected_ruby_call_wrapper, array, state);
 }
 
-/*
- *
- * Elektra plugin API functions
- *
- */
-
-
-int RUBY_PLUGIN_FUNCTION (CheckConf) (ckdb::Key * errorKey ELEKTRA_UNUSED, ckdb::KeySet * conf ELEKTRA_UNUSED) {
-	/*
-	 * TODO implement this
-	 */
-
-	/* 
-	 * check if given Ruby plugin script exists
-	 */
-
-	/*
-	 * if possible, start pass this call to the Ruby plugin
-	 * requires Plugin allocation ....
-	 */
-	return 1;
-}
 
 /**
  * @brief Kdb::Plugin.define(name): called by Ruby-plugin code to define a new plugin
@@ -240,7 +228,9 @@ static VALUE rb_kdb_plugin_define(VALUE self ELEKTRA_UNUSED, VALUE name) {
 		rb_raise(rb_eArgError, "a block is required");
 	}
 
-	tmp_instance = instance;
+	/* store this plugin instance in our global variable */
+	global_plugin_instance = instance;
+	ELEKTRA_LOG_DEBUG("Plugin called Kdb::Plugin.define, name: %s\n", StringValueCStr(name));
 
 	return Qnil;
 }
@@ -277,72 +267,165 @@ static int init_ruby_environment(ckdb::Key * warningsKey) {
 }
 
 static VALUE load_ruby_plugin(VALUE config ELEKTRA_UNUSED) {
-	// TODO make configurable
-	// TODO search path ???
 
-	char script_name[] = "rb_hello.rb";
+	kdb::KeySet * conf = nullptr;
+	/* get kdb::KeySet pointer from Ruby object */
+	if (SWIG_ConvertPtr(config, (void**)&conf, SWIG_TypeQuery("kdb::KeySet *"), 0) == -1) {
+		/* failed to get pointer */
+		ELEKTRA_LOG_WARNING("could not convert plugin config");
+		return Qnil;
+	}
 
-	ELEKTRA_LOG("load Ruby-plugin '%s'", script_name);
 
-	VALUE script = rb_str_new_cstr(script_name);
+	/* check if user supplied a plugin script,
+	 * do not issue an error here, otherwise a 'kdb info ruby' will print alot of error messages
+	 */
+	kdb::Key script_key = conf->lookup(CONFIG_KEY_SCRIPT);
+	if (!script_key) {
+		// don't be too verbose here
+		//ELEKTRA_LOG_WARNING("no 'script' plugin config defined");
+		return Qnil;
+	}
+
+	std::string script = script_key->getString();
+
+	ELEKTRA_LOG("load Ruby-plugin '%s'", script.c_str());
+
+	VALUE rb_script = rb_str_new_cstr(script.c_str());
 	/* load the given script */
-	rb_load(script, 0);
+	rb_load(rb_script, 0);
 
 	return Qnil;
 }
 
+/*
+ *
+ * Elektra plugin API functions
+ *
+ */
+
+
+int RUBY_PLUGIN_FUNCTION (CheckConf) (ckdb::Key * errorKey ELEKTRA_UNUSED, ckdb::KeySet * conf ELEKTRA_UNUSED) {
+
+	ELEKTRA_LOG_DEBUG("ruby plugin checkConf");
+
+	/* 
+	 * check if given Ruby plugin script exists, done by
+	 *  - try to load the plugin
+	 *  - if the plugin defines a 'check_conf', pass the check to the plugin
+	 */
+
+	VALUE config_instance = Qnil;
+	/*
+	 * create fresh keySet, since the kdb::KeySet takes ownership and deletes the ks 
+	 * once the RubyVM GC deletes the config object
+	 */
+	VALUE config = newRubyObject(new kdb::KeySet(ksDup(conf)));
+
+	global_context_mutex.lock();
+
+	/* only create a new plugin instance if this wasn't done already */
+	if (global_plugin_instance != Qnil) {
+		ELEKTRA_LOG_DEBUG("using cached plugin instance");
+	} else {
+
+		int state;
+		rb_protect(load_ruby_plugin, config, &state);
+		if (state) {
+			global_context_mutex.unlock();
+			clear_ruby_exception_set_error(errorKey);
+
+			return -1;
+		}
+
+		if (global_plugin_instance == Qnil) {
+			ELEKTRA_SET_ERROR (ELEKTRA_ERROR_RUBY_GEN_ERROR, errorKey, 
+				"invalid Ruby plugin. Plugin did not call Kdb::Plugin.define");
+
+			global_context_mutex.unlock();
+			return -1;
+		}
+	}
+
+	config_instance = global_plugin_instance;
+	global_context_mutex.unlock();
+
+	/* check if plugin has a 'check_conf' method and call it */
+	ID mConfCheck = rb_intern("check_conf");
+	if (rb_respond_to(config_instance, mConfCheck)) {
+		int exception = 0;
+		VALUE ret = my_rb_protect(config_instance, mConfCheck, &exception, 2,
+				newRubyObject(errorKey),
+				config
+				);
+		if (exception) {
+			clear_ruby_exception_set_error(errorKey);
+			return -1;
+		}
+		return RUBY_INT_OR_DEFAULT(ret);
+	}
+
+	/* its OK, if plugin has no 'check_conf' method */
+	return 0;
+}
 
 int RUBY_PLUGIN_FUNCTION (Open) (ckdb::Plugin * handle, ckdb::Key * warningsKey)
 {
 	/*
 	 * parse plugin config settings
 	 */
+	ELEKTRA_LOG_DEBUG("ruby plugin open");
 
 	/*
 	 * setup data structure and start Ruby VM
 	 */
 	global_context_mutex.lock();
-	tmp_instance = Qnil;
-	tmp_config = Qnil;
 
 	if (init_ruby_environment(warningsKey) != 1) {
 		global_context_mutex.unlock();
 		return -1;
 	}
 
-	VALUE config = newRubyObject(elektraPluginGetConfig(handle));
-	tmp_config = config;
+	ckdb::KeySet * conf_ks = elektraPluginGetConfig(handle);
+	/*
+	 * create fresh keySet, since the kdb::KeySet takes ownership and deletes the ks 
+	 * once the RubyVM GC deletes the config object
+	 */
+	VALUE config = newRubyObject(new kdb::KeySet(ksDup(conf_ks)));
 
-	int state;
-	rb_protect(load_ruby_plugin, config, &state);
-	if (state) {
-		global_context_mutex.unlock();
-		clear_ruby_exception_add_warning(warningsKey);
+	if (global_plugin_instance == Qnil) {
 
-		/* if we return -1, the module is unloaded and the Ruby VM crashes :( */
-		return 0;
-	}
-	
+		int state;
+		rb_protect(load_ruby_plugin, config, &state);
+		if (state) {
+			global_context_mutex.unlock();
+			clear_ruby_exception_add_warning(warningsKey);
 
-	if (tmp_instance == Qnil) {
-		global_context_mutex.unlock();
-
-		/* error, the Ruby-plugin did not call Kdb::Plugin.define
-		 * so we do not have a Plugin instance */
-		ELEKTRA_ADD_WARNING(ELEKTRA_WARNING_RUBY_GEN_WARN, warningsKey, 
-				"Error in Ruby-plugin, didn't call Kdb::Plugin.define");
+			/* if we return -1, the module is unloaded and the Ruby VM crashes :( */
+			return 0;
+		}
 		
-		return 0;
-	}
 
-	ELEKTRA_LOG_DEBUG("have new Ruby-plugin: %s", rb_obj_classname(tmp_instance));
+		if (global_plugin_instance == Qnil) {
+			global_context_mutex.unlock();
+
+			/* error, the Ruby-plugin did not call Kdb::Plugin.define
+			 * so we do not have a Plugin instance */
+			ELEKTRA_ADD_WARNING(ELEKTRA_WARNING_RUBY_GEN_WARN, warningsKey, 
+					"Error in Ruby-plugin, didn't call Kdb::Plugin.define");
+			
+			return 0;
+		}
+
+		ELEKTRA_LOG_DEBUG("have new Ruby-plugin: %s", rb_obj_classname(global_plugin_instance));
+	} else {
+		ELEKTRA_LOG_DEBUG("using cached plugin instance");
+	}
 	/*
 	 * store data in plugin handle
 	 */
 	moduleData * data = new moduleData();
-	data->rbInstance = tmp_instance;
-	tmp_instance = Qnil;
-	tmp_config = Qnil;
+	data->rbInstance = global_plugin_instance;
 
 	global_context_mutex.unlock();
 
@@ -371,6 +454,9 @@ int RUBY_PLUGIN_FUNCTION (Open) (ckdb::Plugin * handle, ckdb::Key * warningsKey)
 int RUBY_PLUGIN_FUNCTION (Close) (ckdb::Plugin * handle, ckdb::Key * warningsKey)
 {
 	int returnValue = 0;
+
+	ELEKTRA_LOG_DEBUG("ruby plugin close");
+
 	/* 
 	 * first pass call to ruby plugin
 	 */
@@ -444,15 +530,24 @@ int RUBY_PLUGIN_FUNCTION (Get) (ckdb::Plugin * handle, ckdb::KeySet * returned, 
 	VALUE ret = Qnil;
 
 	if (data != nullptr && rb_respond_to(data->rbInstance, method)) {
+		// this keySet will be deleted by the Ruby GC
+		kdb::KeySet * wrap_returned = new kdb::KeySet(returned);
 		ret = my_rb_protect(data->rbInstance, method, &state, 2,
-				newRubyObject(returned),
+				newRubyObject(wrap_returned),
 				newRubyObject(parentKey)
 				);
+		// release ks ownership
+		wrap_returned->release();
 		if (state) {
 			clear_ruby_exception_set_error(parentKey);
 			return -1;
 		}
 		return RUBY_INT_OR_DEFAULT(ret);
+	} else {
+		/* if not 'get' method is available, this plugin is useless, therefore set and error */
+		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_RUBY_GEN_ERROR, parentKey,
+			       "plugin does not have a 'get' method");
+		return -1;
 	}
 	return -1;
 }
@@ -468,10 +563,12 @@ int RUBY_PLUGIN_FUNCTION (Set) (ckdb::Plugin * handle, ckdb::KeySet * returned, 
 	VALUE ret = Qnil;
 
 	if (data != nullptr && rb_respond_to(data->rbInstance, method)) {
+		kdb::KeySet * wrap_returned = new kdb::KeySet(returned);
 		ret = my_rb_protect(data->rbInstance, method, &state, 2,
-				newRubyObject(returned),
+				newRubyObject(wrap_returned),
 				newRubyObject(parentKey)
 				);
+		wrap_returned->release();
 		if (state) {
 			clear_ruby_exception_set_error(parentKey);
 			return -1;
@@ -493,10 +590,12 @@ int RUBY_PLUGIN_FUNCTION (Error) (ckdb::Plugin * handle, ckdb::KeySet * returned
 	VALUE ret = Qnil;
 
 	if (data != nullptr && rb_respond_to(data->rbInstance, method)) {
+		kdb::KeySet * wrap_returned = new kdb::KeySet(returned);
 		ret = my_rb_protect(data->rbInstance, method, &state, 2,
-				newRubyObject(returned),
+				newRubyObject(wrap_returned),
 				newRubyObject(parentKey)
 				);
+		wrap_returned->release();
 		if (state) {
 			clear_ruby_exception_add_warning(parentKey);
 			return -1;

@@ -18,6 +18,12 @@ Kdb::Plugin.define :hello do
 
   def set(returned, parent)
     puts "hello set from the ruby plugin"
+    File.open parent.value, "w" do |file|
+      file.write "## ruby test plugin\n\n"
+      returned.each do |k|
+        file.write "#{k.to_s}\n"
+      end
+    end
     returned.pretty_print
     parent.pretty_print
   end
