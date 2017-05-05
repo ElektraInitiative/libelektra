@@ -11,89 +11,137 @@
 #include <kdblogger.h>
 #include <kdbopmphm.h>
 
-#include <stdio.h>  //debug
+#include <stdio.h>  //pfdebug
 #include <string.h> //strlen
-#include <time.h>   //time
 
-double opmphmRatio = 0.75;
+double opmphmRatio = 2;
+static size_t opmphmGetWidth (size_t n);
 
-/* Prints the bipartite graph to a dot file, to draw it, for debug purpose. */
-void opmphmPrintGraph (Edge * edges, void ** data, opmphmGetString fpOpmhpmGetString, size_t n)
+/** The order preserving minimal perfect hash map Init. */
+OpmphmOrder ** opmphmInit (Opmphm * opmphm, OpmphmInit * init, OpmphmOrder * order, size_t n)
 {
-	FILE * f = fopen ("opmphmGraph.dot", "wr");
-	fprintf (f, "graph graphname {\n");
-	for (size_t i = 0; i < n; ++i)
-	{
-		uint32_t h1 = edges[i].h[1];
-		uint32_t h2 = edges[i].h[2];
-		fprintf (f, "	%u -- %u [label=\"%s\"]\n", h1, h2, fpOpmhpmGetString (data[i]));
-	}
-	fprintf (f, "}\n");
-	fclose (f);
-}
-
-/** The first phase of the order preserving minimal perfect hash map build. */
-int opmphmMapping (OPMPHM * opmphm, Vertex * vertices, Edge * edges, OPMPHMinit * init, size_t n)
-{
+	ELEKTRA_ASSERT (opmphm != NULL, "passed opmphm is a Null Pointer");
+	ELEKTRA_ASSERT (init != NULL, "passed init is a Null Pointer");
+	ELEKTRA_ASSERT (order != NULL, "passed order is a Null Pointer");
+	ELEKTRA_ASSERT (n > 0, "passed n <= 0");
 	// set the seeds, for the hash function
-	for (int i = 0; i < 3; ++i)
+	for (unsigned int t = 0; t < OPMPHMNOEIOP; ++t)
 	{
-		opmphm->opmphmHashFunctionSeeds[i] = opmphmRandom (&(init->seed));
+		opmphm->opmphmHashFunctionSeeds[t] = opmphmRandom (&(init->seed));
 	}
-	size_t r = opmphmRatio * n;
-	ELEKTRA_LOG ("OPMPHM: Mapping: r=%lu seed[0]=%u seed[1]=%u seed[2]=%u\n", r, opmphm->opmphmHashFunctionSeeds[0],
-		     opmphm->opmphmHashFunctionSeeds[1], opmphm->opmphmHashFunctionSeeds[2]);
-	// init used values
-	for (size_t i = 0; i < r * 2; ++i)
-	{
-		vertices[i].degree = 0;
-		vertices[i].firstEdge = -1;
-	}
-	ELEKTRA_LOG_DEBUG ("OPMPHM: Mapping: Keys:\n");
+	OpmphmOrder ** sortOrder = malloc (sizeof (OpmphmOrder *) * n);
+	if (!sortOrder) return NULL;
+	size_t w = opmphmGetWidth (opmphmRatio * n);
+	// fill sortOrder struct
 	for (size_t i = 0; i < n; ++i)
 	{
-#if defined(HAVE_LOGGER) || !defined(OPMPHM_TEST)
+		sortOrder[i] = &order[i];
+#ifndef OPMPHM_TEST
 		// set the resulting hash values for each key
 		const char * name = init->getString (init->data[i]);
-#endif
-		ELEKTRA_LOG_DEBUG ("%s\n", name);
-#ifndef OPMPHM_TEST
-		edges[i].h[0] = opmphmHashfunction ((const uint32_t *)name, strlen (name), opmphm->opmphmHashFunctionSeeds[0]) % n;
-		edges[i].h[1] = opmphmHashfunction ((const uint32_t *)name, strlen (name), opmphm->opmphmHashFunctionSeeds[1]) % r;
-		edges[i].h[2] = (opmphmHashfunction ((const uint32_t *)name, strlen (name), opmphm->opmphmHashFunctionSeeds[2]) % r) + r;
-#endif
-		// add each key to both lists
-		edges[i].nextEdge[0] = vertices[edges[i].h[1]].firstEdge;
-		vertices[edges[i].h[1]].firstEdge = i;
-		++vertices[edges[i].h[1]].degree;
-		edges[i].nextEdge[1] = vertices[edges[i].h[2]].firstEdge;
-		vertices[edges[i].h[2]].firstEdge = i;
-		++vertices[edges[i].h[2]].degree;
-	}
-	// verify that all triples are disjunct, if not this function will be called again
-	for (size_t i = 0; i < r; ++i)
-	{
-		for (int e0 = vertices[i].firstEdge; e0 != -1; e0 = edges[e0].nextEdge[0])
+		for (unsigned int t = 0; t < OPMPHMNOEIOP; ++t)
 		{
-			for (int e1 = edges[e0].nextEdge[0]; e1 != -1; e1 = edges[e1].nextEdge[0])
+			sortOrder[i]->h[t] =
+				opmphmHashfunction ((const uint32_t *)name, strlen (name), opmphm->opmphmHashFunctionSeeds[t]) % w;
+		}
+#endif
+	}
+	// sort elements in sortOrder with radixsort
+	// determine the maximum bucket capacity
+	size_t numberOfElements = 1;
+	for (unsigned int t = 1; t < OPMPHMNOEIOP; ++t)
+	{
+		numberOfElements = numberOfElements * w;
+	}
+	ELEKTRA_LOG ("OPMPHM w= %lu n= %lu opmphmRatio= %f radix numberOfElements per Bucket= %lu", w, n, opmphmRatio, numberOfElements);
+	OpmphmOrder ** buckets = malloc (sizeof (OpmphmOrder *) * w * numberOfElements);
+	size_t * bucketsCount = malloc (sizeof (size_t) * w);
+	if (!buckets || !bucketsCount)
+	{
+		free (sortOrder);
+		return NULL;
+	}
+	for (unsigned int t = 0; t < OPMPHMNOEIOP; ++t)
+	{
+		for (size_t i = 0; i < w; ++i)
+		{
+			bucketsCount[i] = 0;
+		}
+		// partition
+		for (size_t i = 0; i < n; ++i)
+		{
+			if (bucketsCount[sortOrder[i]->h[t]] + 1 == numberOfElements + 1)
 			{
-				if (edges[e0].h[0] == edges[e1].h[0] && edges[e0].h[2] == edges[e1].h[2])
-				{
-					return 1;
-				}
+				// duplicate
+				free (buckets);
+				free (bucketsCount);
+				free (sortOrder);
+				return NULL;
+			}
+			else
+			{
+				buckets[sortOrder[i]->h[t] * numberOfElements + bucketsCount[sortOrder[i]->h[t]]] = sortOrder[i];
+				++bucketsCount[sortOrder[i]->h[t]];
+			}
+		}
+		// collection
+		size_t index = 0;
+		for (size_t i = 0; i < w; ++i)
+		{
+			for (size_t j = 0; j < bucketsCount[i]; ++j)
+			{
+				sortOrder[index] = buckets[i * numberOfElements + j];
+				++index;
 			}
 		}
 	}
-	return 0;
+	free (buckets);
+	free (bucketsCount);
+	// check for duplicates
+	for (size_t i = 0; i < n - 1; ++i)
+	{
+		bool match = true;
+		for (unsigned int t = 0; t < OPMPHMNOEIOP; ++t)
+		{
+			if (sortOrder[i]->h[t] != sortOrder[i + 1]->h[t])
+			{
+				match = false;
+				break;
+			}
+		}
+		if (match)
+		{
+			// duplicate
+			free (sortOrder);
+			return NULL;
+		}
+	}
+	return sortOrder;
 }
 
+static size_t opmphmGetWidth (size_t n)
+{
+	ELEKTRA_ASSERT (n > 0, "passed n <= 0");
+	size_t w = 1;
+	size_t space = 0;
+	while (space < n)
+	{
+		++w;
+		space = 1;
+		for (unsigned int noeiop = 0; noeiop < OPMPHMNOEIOP; ++noeiop)
+		{
+			space = space * w;
+		}
+	}
+	return w;
+}
 
 /**
  * Hash function
  * By Bob Jenkins, May 2006
  * http://burtleburtle.net/bob/c/lookup3.c
  * Original name: hashlitte (the little endian part)
- * For now assuming little endian maschine
+ * For now assuming little endian machine
  */
 uint32_t opmphmHashfunction (const void * key, size_t length, uint32_t initval)
 {
