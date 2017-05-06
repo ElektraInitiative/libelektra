@@ -169,7 +169,7 @@ Kdb::Plugin.define :shellvars do
 
 
   def set(returned, parentKey)
-    puts "shellvar plugin: writing to #{parentKey.value}"
+    #puts "shellvar plugin: writing to #{parentKey.value}"
     vars = []
     returned.each do |key|
       # only accept keys below parent key
@@ -202,6 +202,10 @@ Kdb::Plugin.define :shellvars do
         file.write "\n"
       end
     end
+  end
+
+  def close(errorKey)
+
   end
 
 end

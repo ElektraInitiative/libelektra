@@ -64,10 +64,6 @@ static inline VALUE newRubyObject(kdb::KeySet * keySet) {
  * Write access to these variables is guarded by a mutex
  */
 
-/* Ruby module and class pointer: Kdb::Plugin */
-static VALUE module_Kdb = Qnil;
-static VALUE klass_Plugin = Qnil;
-
 /* Plugin instance created by the Ruby-plugin */
 static VALUE global_plugin_instance = Qnil;
 
@@ -78,6 +74,8 @@ static std::mutex global_context_mutex;
 
 /* global ruby variable: array of plugin instances to prevent them from being gc'ed */
 #define RB_GLOBAL_VAR_PLUGINS "Kdb_ruby_plugins"
+#define RB_GLOBAL_PLUGIN_KLASS "Kdb_Plugin_klass"
+#define RB_GLOBAL_KDB_MODULE "Kdb_Module_klass"
 
 extern "C" {
 
@@ -203,6 +201,32 @@ static VALUE my_rb_protect(VALUE instance, ID method, int * state, int nargs, ..
 
 
 /**
+ * @brief: define the Kdb::Plugin class
+ */
+static VALUE define_kdb_plugin_class() {
+	rb_require("kdb");
+
+	VALUE module = Qnil;
+	VALUE klass = Qnil;
+
+	if ( ! rb_const_defined(rb_cObject, rb_intern(RB_GLOBAL_KDB_MODULE))) {
+		module = rb_define_module("Kdb");
+		rb_define_const(rb_cObject, RB_GLOBAL_KDB_MODULE, module);
+	} else {
+		module = rb_const_get(rb_cObject, rb_intern(RB_GLOBAL_KDB_MODULE));
+	}
+
+	if ( ! rb_const_defined(rb_cObject, rb_intern(RB_GLOBAL_PLUGIN_KLASS))) {
+		klass = rb_define_class_under(module, "Plugin", rb_cObject);
+		rb_define_const(rb_cObject, RB_GLOBAL_PLUGIN_KLASS, klass);
+	} else {
+		klass = rb_const_get(rb_cObject, rb_intern(RB_GLOBAL_PLUGIN_KLASS));
+	}
+	return klass;
+}
+
+
+/**
  * @brief Kdb::Plugin.define(name): called by Ruby-plugin code to define a new plugin
  *
  * create a new Ruby-plugin
@@ -219,7 +243,10 @@ static VALUE rb_kdb_plugin_define(VALUE self ELEKTRA_UNUSED, VALUE name) {
 
 	VALUE instance = Qnil;
 
-	/* create new Kdb::Plugin object */
+	/* create new Kdb::Plugin object
+	 * for some strange reason we may have to recreate the Plugin class again, maybe
+	 * the GC has deleted it ??? */
+	VALUE klass_Plugin = define_kdb_plugin_class();
 	instance = rb_funcall(klass_Plugin, rb_intern("new"), 0);
 	if (rb_block_given_p()) {
 		/* call the given block in the context of the newly created instance */
@@ -274,14 +301,9 @@ static int init_ruby_environment(ckdb::Key * warningsKey) {
 
 		ruby_init_loadpath();
 
-		/* define Plugin class, if not already */
-		if (module_Kdb == Qnil && klass_Plugin == Qnil) {
-			rb_require("kdb");
-
-			module_Kdb = rb_define_module("Kdb");
-			klass_Plugin = rb_define_class_under(module_Kdb, "Plugin", rb_cObject);
-			rb_define_singleton_method(klass_Plugin, "define", ((VALUE (*)(...)) rb_kdb_plugin_define), 1);
-		}
+		/* define Plugin class */
+		VALUE klass_Plugin = define_kdb_plugin_class();
+		rb_define_singleton_method(klass_Plugin, "define", ((VALUE (*)(...)) rb_kdb_plugin_define), 1);
 
 		/* define our global plugins array: here we collect all active ruby plugin instances */
 		if ( ! rb_const_defined(rb_cObject, rb_intern(RB_GLOBAL_VAR_PLUGINS))) {
@@ -494,23 +516,28 @@ int RUBY_PLUGIN_FUNCTION (Close) (ckdb::Plugin * handle, ckdb::Key * warningsKey
 	int state = 0;
 	VALUE ret = Qnil;
 
-	if (data != nullptr && rb_respond_to(data->rbInstance, method)) {
-		ret = my_rb_protect(data->rbInstance, method, &state, 1,
-				newRubyObject(warningsKey)
-				);
-		remove_plugin_instance(data->rbInstance);
-		if (state) {
-			clear_ruby_exception_add_warning(warningsKey);
+	// if this plugin is used via the ruby bindings, the Ruby VM crashes during 
+	// 'finialize' here. Maybe we can't all the plugin.close method any more ???
+	//
+	// if (data != nullptr && rb_respond_to(data->rbInstance, method)) {
+	// 	VALUE msg = get_exception_string(data->rbInstance);
+	// 	printf("at clone we have instance: %s\n", StringValueCStr(msg));
+	// 	ret = my_rb_protect(data->rbInstance, method, &state, 1,
+	// 			newRubyObject(warningsKey)
+	// 			);
+	//	remove_plugin_instance(data->rbInstance);
+	// 	if (state) {
+	// 		clear_ruby_exception_add_warning(warningsKey);
 
-			returnValue = -1;
-			goto free_and_clear;
-		}
+	// 		returnValue = -1;
+	// 		goto free_and_clear;
+	// 	}
 
-		returnValue = RUBY_INT_OR_DEFAULT(ret);
-		goto free_and_clear;
-	}
-
-free_and_clear:
+	// 	returnValue = RUBY_INT_OR_DEFAULT(ret);
+	// 	goto free_and_clear;
+	// }
+	//
+//free_and_clear:
 	/*
 	 * delete plugin data structure
 	 */

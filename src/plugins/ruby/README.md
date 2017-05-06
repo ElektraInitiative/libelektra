@@ -57,16 +57,11 @@ Kdb::Plugin.define :somename do
     # semantic as returning -1
   end
 
-
-  # 'Close' method, called during Elektra plugin finalization
-  # parameter:
-  #  - errorKey: Kdb::Key
-  # returns:
-  #  - nil or 0: success
-  #  - -1      : error
-  def close(errorKey)
-
-  end
+  # the close method is currently not supported, since this will crash the 
+  # Ruby-VM if this method should be called during the VM.finializaion !!!
+  #def close(errorKey)
+  #
+  #end
 
 
   # 'check_conf' method, called before this plugin is used for mouting to check
