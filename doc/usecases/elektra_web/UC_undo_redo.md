@@ -10,7 +10,7 @@ Brief: User undos/redos changes to a configuration.
 
 ## Scenarios
 
-Precondition: Adding keys, Modifying keys
+Precondition: Modifying keys, Adding keys, Duplicating keys, Drag & Drop keys
 Main success scenario: User successfully undos/redos a configuration change.
 Alternative scenario: Instance not online. The user is informed about the issue.
   If a cluster, changes will be written when the affected instance comes back
