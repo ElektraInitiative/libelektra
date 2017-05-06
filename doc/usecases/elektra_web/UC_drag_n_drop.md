@@ -10,10 +10,11 @@ Brief: User drags a key (with a subtree) to a different subtree.
 
 ## Scenarios
 
-Precondition: Describe network topology
+Precondition: View configuration of an instance
 Main success scenario: User moves a key (and its subtree) to another subtree by
   dragging it to to the desired position.
-Alternative scenario: -
+Alternative scenario: User enters data that violates a validation rule, an error
+  message is shown.
 Error scenario: Technical problems while persisting to the key database. The
   user is informed about the issue.
 Postcondition: The updated key structure is persisted to the database.
