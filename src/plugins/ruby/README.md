@@ -2,8 +2,8 @@
 - infos/author = Bernhard Denner
 - infos/licence = BSD
 - infos/needs =
-- infos/provides =
-- infos/placements =
+- infos/provides = storage
+- infos/placements = getstorage setstorage
 - infos/recommends =
 - infos/status = configurable maintained memleak
 - infos/description = Ruby plugin bridge, implement Elektra plugins with Ruby

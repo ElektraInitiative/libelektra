@@ -1,5 +1,11 @@
 
 
+def array_index_name(name, index)
+  index_str = index.to_s
+  (1..(index.to_s.size - 1)).each { index_str = "_#{index_str}" }
+  "#{name}/##{index_str}"
+end
+
 class Ssh_key
 
   attr_accessor :name
@@ -36,10 +42,10 @@ class Ssh_key
   def self.key_add_comments(key, comments)
     comments.each_with_index do |comment_line, comment_index|
       if comment_line =~ /^(\s*#\s*)(.*)$/
-        key["comment/##{comment_index}/start"] = $1
-        key["comment/##{comment_index}"] = $2
+        key["#{array_index_name "comment", comment_index}/start"] = $1
+        key[array_index_name "comment", comment_index] = $2
       else
-        key["comment/##{comment_index}"] = comment_line
+        key[array_index_name "comment", comment_index] = comment_line
       end
     end
   end
@@ -55,7 +61,7 @@ class Ssh_key
       end
     end
     key.meta.each do |mk|
-      next unless mk.name =~ /^comment\/#\d+$/
+      next unless mk.name =~ /^comment\/#_*\d+$/
 
       comment = ""
       comment_start_key = "#{mk.name}/start"
