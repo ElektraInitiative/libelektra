@@ -120,7 +120,7 @@ severity:warning
 ingroup:kdb
 
 number:19
-description:names of Plugins must start have the position number as second char
+description:names of Plugins must start with the position number as second char
 severity:warning
 ingroup:kdb
 
@@ -229,7 +229,7 @@ severity:error
 ingroup:kdb
 
 number:38
-description:could not buildup split
+description:could not build up split
 severity:error
 ingroup:kdb
 
