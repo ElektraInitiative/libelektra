@@ -117,7 +117,7 @@ You can find the complete list of the available functions for all supported valu
 Sometimes, after having read a value from the KDB, you will want to write back a modified value. As descibed in [Read values from the KDB](#read-values-from-the-kdb) we follow a naming scheme for getters. The high-level API provides setters folling an analogous naming scheme as well. For example, to write back a modified string, you can call this function:
 
 ```c
-void elektraSetString (Elektra * elektra, const char * name, const char * value);
+void elektraSetString (Elektra * elektra, const char * name, const char * value, ElektraError ** error);
 ```
 
 The counterpart for array-gettes again follows the same naming scheme:
