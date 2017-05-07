@@ -169,9 +169,9 @@ static gboolean elektra_settings_write_string (GSettingsBackend * backend, const
 static GVariant * elektra_settings_backend_read (GSettingsBackend * backend, const gchar * key, const GVariantType * expected_type,
 						 gboolean default_value)
 {
-	g_log (G_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, "%s %s %s %.*s %s %s%s", "function read:", key, "expected_type is:",
-	       (int)(g_variant_type_get_string_length (expected_type) & INT_MAX), g_variant_type_peek_string (expected_type), "and we",
-	       (default_value ? "" : "do not "), "want the default_value");
+	g_log (G_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, "%s %s %s %.*s %s %s%s", "function read:", key,
+	       "expected_type is:", (int)(g_variant_type_get_string_length (expected_type) & INT_MAX),
+	       g_variant_type_peek_string (expected_type), "and we", (default_value ? "" : "do not "), "want the default_value");
 	if (default_value)
 	{
 		return elektra_settings_read_string (backend, g_strconcat (G_ELEKTRA_SETTINGS_SYSTEM, G_ELEKTRA_SETTINGS_PATH, key, NULL),
@@ -200,8 +200,8 @@ static GVariant * elektra_settings_backend_read (GSettingsBackend * backend, con
 static GVariant * elektra_settings_backend_read_user_value (GSettingsBackend * backend, const gchar * key,
 							    const GVariantType * expected_type)
 {
-	g_log (G_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, "%s %s. %s %s.", "Function read_user_value:", key, "Expected_type is:",
-	       g_variant_type_peek_string (expected_type));
+	g_log (G_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, "%s %s. %s %s.", "Function read_user_value:", key,
+	       "Expected_type is:", g_variant_type_peek_string (expected_type));
 	return elektra_settings_read_string (backend, g_strconcat (G_ELEKTRA_SETTINGS_USER, G_ELEKTRA_SETTINGS_PATH, key, NULL),
 					     expected_type);
 }
@@ -375,8 +375,8 @@ static void elektra_settings_key_changed (GDBusConnection * connection G_GNUC_UN
 	GElektraKeySet * ks = gelektra_keyset_dup (esb->subscription_gks);
 	gelektra_keyset_rewind (ks);
 	GElektraKey * key = gelektra_key_new (keypathname, KEY_VALUE, "", KEY_END);
-	g_log (G_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, "%s %s!", "GSEttings Path: ",
-	       (g_strstr_len (g_strstr_len (keypathname, -1, "/") + 1, -1, "/")));
+	g_log (G_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, "%s %s!",
+	       "GSEttings Path: ", (g_strstr_len (g_strstr_len (keypathname, -1, "/") + 1, -1, "/")));
 	gelektra_keyset_next (ks);
 	do
 	{

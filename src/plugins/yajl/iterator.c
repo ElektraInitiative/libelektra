@@ -24,7 +24,7 @@ keyNameReverseIterator elektraKeyNameGetReverseIterator (const Key * k)
  *
  * @param it the iterator to iterate
  *
- * @return 
+ * @return
  */
 int elektraKeyNameReverseNext (keyNameReverseIterator * it)
 {

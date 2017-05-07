@@ -19,10 +19,10 @@ namespace kdbrest
 
 /**
  * @brief initializes application configuration variables
- * 
+ *
  * can use compile-time defaults if no dynamic configuration
  * is available. can also force the application to stop.
- * 
+ *
  * @param config the configuration to use
  * @return true in case of success, false otherwise
  */

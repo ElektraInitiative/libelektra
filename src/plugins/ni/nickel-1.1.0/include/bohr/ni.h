@@ -1,256 +1,256 @@
 /******************************************************************************
-* Nickel - a library for hierarchical maps and .ini files
-* One of the Bohr Game Libraries (see chaoslizard.org/devel/bohr)
-* Copyright (C) 2008 Charles Lindsay.  Some rights reserved; see COPYING.
-* $Id: ni.h 349 2008-01-19 18:18:22Z chaz $
-******************************************************************************/
+ * Nickel - a library for hierarchical maps and .ini files
+ * One of the Bohr Game Libraries (see chaoslizard.org/devel/bohr)
+ * Copyright (C) 2008 Charles Lindsay.  Some rights reserved; see COPYING.
+ * $Id: ni.h 349 2008-01-19 18:18:22Z chaz $
+ ******************************************************************************/
 
 
 /******************************************************************************
-* Extensive documentation for Nickel is maintained on the Bohr Game Libraries
-* website: http://www.chaoslizard.org/devel/bohr/wiki/Docs/Ni
-*
-* I'll give a brief overview here anyway, for those who're too lazy to look at
-* the real documentation.  But really, check out the website for details.
-*
-* Nickel, at heart, stores nodes, each of which has a name, value, and any
-* number of children.  Children are stored in a hash table for quick lookup.
-* Built around this is a set of functions for building such a map from a
-* standard Windows .ini file, as well as writing back to a file format that, if
-* the map is carefully constructed or read from a .ini file, is roughly
-* compatible with the Windows GetPrivateProfile* functions.
-*
-* The only hard-coded size limit in Nickel is the length of node names, which
-* are capped at elektraNi_KEY_SIZE-1 (127, currently) bytes (not UTF-8 characters) to
-* give a reasonable maximum boundary on search time.  Otherwise, you're limited
-* only by available memory.  Thus, Nickel can parse files as big as the C
-* standard library can handle, and node values can be as big as will fit in
-* memory.  The number of children a node can have, as well as the size of the
-* entire tree, is also limited only by available memory.
-*
-* There is some wasted memory with each node--it allocates a number (32,
-* currently) of initial spaces (each sizeof(void *)) in the hash table of the
-* node's children, so resizing (an expensive operation) occurs less frequently.
-* Also, it doubles the capacity of the hash table when it gets 3/4 full, so
-* searching has a good average-case running time, but this means there's always
-* some wasted space.
-*
-* Following are the details of the files that Nickel can parse and write.
-*
-* Files should be UTF-8 (or plain ol' ASCII) encoded, though Nickel can handle
-* arbitrary binary data too.
-*
-* On reading, Nickel treats all newline flavors (at least, CR, LF, and CRLF) as
-* simply LF (\n in C).  This applies EVEN INSIDE QUOTED STRINGS (see below).
-* If you need a CR (\r in C) character in a node's name/value, you must escape
-* it (see below), that is, put a literal "\r" (backslash, lower r).
-*
-* Though this is not enforced, the first few characters of a Nickel-compatible
-* (as per version 1 of the API) .ini file should be:
-*
-*    ;Ni1
-*
-* (that's semicolon, upper N, lower i, digit 1) followed by a newline.  This
-* gives a machine-parsable sequence that future Nickel versions or other
-* parsers can use to identify the file format, while being a .ini comment (see
-* below) and thus ignored by anything that shouldn't care.  Though it's not
-* currently checked in Nickel (it'll try to parse anything you throw at it), it
-* may be in future versions.
-*
-* There are two kinds of data Nickel looks for in .ini files: names and values.
-* A name is a sequence of characters inside a number of [] (square brackets),
-* which denotes a section heading, OR before an = (equals sign), which denotes
-* that the value for the node follows.  Either way a name is encountered, a
-* node with that name will be created (or, if the named node already exists,
-* its value or children will be modified, depending on what comes next).
-*
-* Both names and values can have surrounding "" (double quotes).  When the
-* parser encounters an opening " (double quote), it parses all data until a
-* closing " (double quote), even spanning newlines, in the context of the name
-* or value.  The parser supports string concatenation whereby:
-*
-*    "some"  "thing"
-*
-* is equivalent to:
-*
-*    "something"
-*
-* Whitespace must be the only characters between closing " (double quote) and
-* re-opening " (double quote) for this to work (or, in values, there can be a
-* \ (backslash) and a newline--see escaping, below).
-*
-* Comments are initiated with the ; (semicolon).  Any ; (semicolon) outside of
-* double quotes begins a comment (except when escaped, see below).  Comments go
-* until the end of the line (and cannot be continued onto the next line with \
-* (backslash), as in some languages).
-*
-* Any line deemed invalid (e.g. blank or without an = (equals sign) or []
-* (square brackets)) is ignored as a comment.
-*
-* Nickel understands escape sequences similar to those in C.  Nickel translates
-* these escape sequences regardless of whether it's inside quotes or not.  It
-* treats the following sequences the same as C:
-*
-*    \a \b \f \n \r \t \v \' \" \? \\ \ooo and \xhh
-*
-* where ooo is up to 3 octal digits (0-7), hh is up to 2 hex digits (0-9, a-f,
-* or A-F), and all other characters are literally as they're written there.
-* The behavior of the hex escape (\xhh) may differ from how C handles it in
-* that I believe C allows the string of hex digits to be longer than 2.  And
-* I'm not sure how C handles octal constants bigger than 255, but Nickel takes
-* the whole octal value and uses the result modulus 256.  But that's just
-* semantics.
-*
-* Nickel also understands the following escape sequences, which exist only to
-* allow .ini reserved characters in names and values in the file:
-*
-*    \; \[ \] \=
-*
-* These are simply replaced with the character following the backslash.
-*
-* Note that escape sequences aren't always necessary, but are always parsed if
-* present.  Thus the following two lines are equivalent:
-*
-*    poo = \ \="\[    ; here, the = and [ are escaped
-*    poo = "\\ =\"["  ; here, double quotes are used and \ and " are escaped
-*
-* and indicate the node has a value of: \ (backslash), space, = (equals sign),
-* " (double quote), and [ (opening square bracket).  In the example, the double
-* quotes aren't necessary on the second line, but are there to illustrate that
-* the escape sequences are the same inside and outside of quotes (except that
-* in quotes, if a " (double quote) is encountered unescaped, it obviously ends
-* the quote).
-*
-* In values only, it is possible to escape a literal newline to instruct Nickel
-* to continue consuming the next line as part of the value.  This escape
-* consists of a \ (backslash) as the last non-whitespace character on a line,
-* ignoring comments.  If following a quoted string, the \ (backslash) should
-* come after the closing " (quote).  If the string immediately before the \
-* (backslash) is quoted, the \ (backslash)-newline pair is simply omitted, but
-* if the previous string was unquoted, the pair is replaced by a single space,
-* regardless of how much intervening space there actually was.  Thus, the
-* following lines all create equivalent nodes:
-*
-*    poo = abc def   ; just the string "abc def"
-*    poo = abc    \  ; no quotes, lots of spaces, and continue on the next line
-*          "def"     ; quotes here just for shits and giggles--not necessary
-*    poo = "abc " \  ; first line with quotes, then continue on the next line
-*          def       ; which could also have quotes ("def"), doesn't matter
-*
-* with the 7-character value "abc def".
-*
-* Surrounding names and values, whitespace is eaten by the parser.  This
-* happens after comments are removed (see the above example).  If you really
-* want a node whose name or value begins or ends with spaces, enclose it in
-* quotes.  Inside names and values, whitespace is maintained.  The exception to
-* this is with the line-continuation escape, where, if the string immediately
-* preceding the \ (backslash) was unquoted, spaces trailing on the top line or
-* beginning the second line are all replaced with a single space, or if the
-* preceding string was quoted, no space is inserted and initial space on the
-* following line is ignored.  See the above example for clarification on this.
-*
-* Lines giving values to named nodes (e.g. name = value) become children of the
-* node given in the most recent previous section (e.g. [name]), or the root
-* node if there have been no sections yet.  You can define subsections (e.g.
-* [[name]]) by specifying increasing numbers of [ (opening square bracket)
-* characters.  Sections with the same number of brackets become children of the
-* most recently preceding parent defined with fewer brackets; sections with
-* more brackets become deeper children, and sections with fewer brackets are
-* closer to the root.  The following example shows the root gaining two
-* children, "child1" (with value "teh suz" and child "sub_child1") and "child2"
-* (with its own child "sub_child2"):
-*
-*    child1 = teh suz  ; create child1 as a child of the root, give it a value
-*    [  child2  ]      ; another root child, anything below is child2's child
-*     [[sub_child2 ]]  ; sub_child2, having more [, is under child2
-*    [child1]          ; back up to root's child child1
-*     sub_child1=      ; this is a child of the previous section, i.e., child1
-*
-* (Spaces were added and the order was slightly obfuscated to show these things
-* are unimportant.)  Note that the parser ignores the number of ] (closing
-* square brackets) for the sake of keeping insignificant typos from causing
-* errors, but to stay compatible with future versions of Nickel or other
-* parsers, you should close each section with the same number of ] (closing
-* square brackets) as it was opened with.
-*
-* Also note that if you skip steps in your subsections, e.g.:
-*
-*    [child1]
-*     [[[ sub_sub_child1 ]]]
-*
-* empty children are inserted to make up the difference (here, "child1" has an
-* unnamed child, which has a child "sub_sub_child1").
-*
-* If a name is given more than once under the same parent in a file, the last
-* instance overrides all previous instances.  Thus:
-*
-*    [child1]
-*     sub = asdf
-*    [child1]
-*     sub = again
-*
-* gives "child1" a child called "sub", and gives it the value "again".  Note
-* that there is only one "child1", and the value "asdf" is overwritten by
-* "again" for "sub".
-*
-* It's valid to specify empty names.  Here:
-*
-*    []
-*    =
-*
-* creates a node with an empty name as the child of the root, and gives it a
-* child with an empty name and empty value.
-*
-* One more note: the parser is pretty lax--it will glean as much valid
-* information from a line as it can, ignoring errors if it can still get
-* something useful.  This can lead to weird results.  Consider the following
-* lines:
-*
-*    [section]  child = value
-*    # comments = cool!
-*
-* Here, because anything other than a comment after the ] (closing square
-* bracket) is invalid, the parser ignores "child = value" on the first line.
-* Also, because # (hash mark) isn't the standard for initiating a comment, the
-* second line creates a child of "section" named "# comments", with the value
-* "cool!".  Keep your files valid and standard and you won't have issues.
-*
-* This gives you an idea how the parser works.  More examples are in order for
-* future revisions of this document, but as I imagine this'll mostly be used
-* for simple .ini parsing, what's above is sufficient for now.
-*
-* While Nickel should be able to parse any Windows-compatible .ini file, it
-* won't necessarily output to a format that Windows will understand.  Some
-* circumstances it will generate an incompatible file are:
-*
-*   * The tree is more than one level deep
-*   * A node's name or value contains a special character: [ = \ ; etc. (as
-*     these may be escaped by Nickel)
-*   * A node's name or value has initial or trailing whitespace (as Nickel will
-*     put such a string inside quotes)
-*
-* Nickel can always parse a file it generates; it's just that Windows doesn't
-* understand some of Nickel's syntax, I believe, like nested headings, escaped
-* characters, and quotes.  Also, if you read a Windows-compatible .ini file
-* into memory and write it right back out to disk, you'll get a Windows-
-* compatible .ini file as long as no special characters are in any node's
-* value.  Nickel is fairly good about escaping special characters only when
-* necessary (as of v1.1.0, anyway), but if maximum compatibility with other
-* parsers is your goal, avoid special characters in names and values.
-*
-* It's also worth noting that since Nickel builds an in-memory map based on the
-* .ini file, and writing files uses the in-memory representation of the data,
-* comments in the file are entirely lost.  This is unfortunate, but means that
-* Nickel runs quickly enough to be used inside, say, a game, since accessing
-* the data doesn't require costly disk reads.
-*
-* It's also unfortunate that order is lost between reading and writing.  This
-* is due to hashing mixing things up.  The speed gain from hashing entries
-* greatly outweighs maintaining order, in my mind, and keeping an index of the
-* order nodes were added would take more overhead than I believe it's worth.
-*
-* Thus concludes my lengthy explanation of Nickel's .ini parser.
-******************************************************************************/
+ * Extensive documentation for Nickel is maintained on the Bohr Game Libraries
+ * website: http://www.chaoslizard.org/devel/bohr/wiki/Docs/Ni
+ *
+ * I'll give a brief overview here anyway, for those who're too lazy to look at
+ * the real documentation.  But really, check out the website for details.
+ *
+ * Nickel, at heart, stores nodes, each of which has a name, value, and any
+ * number of children.  Children are stored in a hash table for quick lookup.
+ * Built around this is a set of functions for building such a map from a
+ * standard Windows .ini file, as well as writing back to a file format that, if
+ * the map is carefully constructed or read from a .ini file, is roughly
+ * compatible with the Windows GetPrivateProfile* functions.
+ *
+ * The only hard-coded size limit in Nickel is the length of node names, which
+ * are capped at elektraNi_KEY_SIZE-1 (127, currently) bytes (not UTF-8 characters) to
+ * give a reasonable maximum boundary on search time.  Otherwise, you're limited
+ * only by available memory.  Thus, Nickel can parse files as big as the C
+ * standard library can handle, and node values can be as big as will fit in
+ * memory.  The number of children a node can have, as well as the size of the
+ * entire tree, is also limited only by available memory.
+ *
+ * There is some wasted memory with each node--it allocates a number (32,
+ * currently) of initial spaces (each sizeof(void *)) in the hash table of the
+ * node's children, so resizing (an expensive operation) occurs less frequently.
+ * Also, it doubles the capacity of the hash table when it gets 3/4 full, so
+ * searching has a good average-case running time, but this means there's always
+ * some wasted space.
+ *
+ * Following are the details of the files that Nickel can parse and write.
+ *
+ * Files should be UTF-8 (or plain ol' ASCII) encoded, though Nickel can handle
+ * arbitrary binary data too.
+ *
+ * On reading, Nickel treats all newline flavors (at least, CR, LF, and CRLF) as
+ * simply LF (\n in C).  This applies EVEN INSIDE QUOTED STRINGS (see below).
+ * If you need a CR (\r in C) character in a node's name/value, you must escape
+ * it (see below), that is, put a literal "\r" (backslash, lower r).
+ *
+ * Though this is not enforced, the first few characters of a Nickel-compatible
+ * (as per version 1 of the API) .ini file should be:
+ *
+ *    ;Ni1
+ *
+ * (that's semicolon, upper N, lower i, digit 1) followed by a newline.  This
+ * gives a machine-parsable sequence that future Nickel versions or other
+ * parsers can use to identify the file format, while being a .ini comment (see
+ * below) and thus ignored by anything that shouldn't care.  Though it's not
+ * currently checked in Nickel (it'll try to parse anything you throw at it), it
+ * may be in future versions.
+ *
+ * There are two kinds of data Nickel looks for in .ini files: names and values.
+ * A name is a sequence of characters inside a number of [] (square brackets),
+ * which denotes a section heading, OR before an = (equals sign), which denotes
+ * that the value for the node follows.  Either way a name is encountered, a
+ * node with that name will be created (or, if the named node already exists,
+ * its value or children will be modified, depending on what comes next).
+ *
+ * Both names and values can have surrounding "" (double quotes).  When the
+ * parser encounters an opening " (double quote), it parses all data until a
+ * closing " (double quote), even spanning newlines, in the context of the name
+ * or value.  The parser supports string concatenation whereby:
+ *
+ *    "some"  "thing"
+ *
+ * is equivalent to:
+ *
+ *    "something"
+ *
+ * Whitespace must be the only characters between closing " (double quote) and
+ * re-opening " (double quote) for this to work (or, in values, there can be a
+ * \ (backslash) and a newline--see escaping, below).
+ *
+ * Comments are initiated with the ; (semicolon).  Any ; (semicolon) outside of
+ * double quotes begins a comment (except when escaped, see below).  Comments go
+ * until the end of the line (and cannot be continued onto the next line with \
+ * (backslash), as in some languages).
+ *
+ * Any line deemed invalid (e.g. blank or without an = (equals sign) or []
+ * (square brackets)) is ignored as a comment.
+ *
+ * Nickel understands escape sequences similar to those in C.  Nickel translates
+ * these escape sequences regardless of whether it's inside quotes or not.  It
+ * treats the following sequences the same as C:
+ *
+ *    \a \b \f \n \r \t \v \' \" \? \\ \ooo and \xhh
+ *
+ * where ooo is up to 3 octal digits (0-7), hh is up to 2 hex digits (0-9, a-f,
+ * or A-F), and all other characters are literally as they're written there.
+ * The behavior of the hex escape (\xhh) may differ from how C handles it in
+ * that I believe C allows the string of hex digits to be longer than 2.  And
+ * I'm not sure how C handles octal constants bigger than 255, but Nickel takes
+ * the whole octal value and uses the result modulus 256.  But that's just
+ * semantics.
+ *
+ * Nickel also understands the following escape sequences, which exist only to
+ * allow .ini reserved characters in names and values in the file:
+ *
+ *    \; \[ \] \=
+ *
+ * These are simply replaced with the character following the backslash.
+ *
+ * Note that escape sequences aren't always necessary, but are always parsed if
+ * present.  Thus the following two lines are equivalent:
+ *
+ *    poo = \ \="\[    ; here, the = and [ are escaped
+ *    poo = "\\ =\"["  ; here, double quotes are used and \ and " are escaped
+ *
+ * and indicate the node has a value of: \ (backslash), space, = (equals sign),
+ * " (double quote), and [ (opening square bracket).  In the example, the double
+ * quotes aren't necessary on the second line, but are there to illustrate that
+ * the escape sequences are the same inside and outside of quotes (except that
+ * in quotes, if a " (double quote) is encountered unescaped, it obviously ends
+ * the quote).
+ *
+ * In values only, it is possible to escape a literal newline to instruct Nickel
+ * to continue consuming the next line as part of the value.  This escape
+ * consists of a \ (backslash) as the last non-whitespace character on a line,
+ * ignoring comments.  If following a quoted string, the \ (backslash) should
+ * come after the closing " (quote).  If the string immediately before the \
+ * (backslash) is quoted, the \ (backslash)-newline pair is simply omitted, but
+ * if the previous string was unquoted, the pair is replaced by a single space,
+ * regardless of how much intervening space there actually was.  Thus, the
+ * following lines all create equivalent nodes:
+ *
+ *    poo = abc def   ; just the string "abc def"
+ *    poo = abc    \  ; no quotes, lots of spaces, and continue on the next line
+ *          "def"     ; quotes here just for shits and giggles--not necessary
+ *    poo = "abc " \  ; first line with quotes, then continue on the next line
+ *          def       ; which could also have quotes ("def"), doesn't matter
+ *
+ * with the 7-character value "abc def".
+ *
+ * Surrounding names and values, whitespace is eaten by the parser.  This
+ * happens after comments are removed (see the above example).  If you really
+ * want a node whose name or value begins or ends with spaces, enclose it in
+ * quotes.  Inside names and values, whitespace is maintained.  The exception to
+ * this is with the line-continuation escape, where, if the string immediately
+ * preceding the \ (backslash) was unquoted, spaces trailing on the top line or
+ * beginning the second line are all replaced with a single space, or if the
+ * preceding string was quoted, no space is inserted and initial space on the
+ * following line is ignored.  See the above example for clarification on this.
+ *
+ * Lines giving values to named nodes (e.g. name = value) become children of the
+ * node given in the most recent previous section (e.g. [name]), or the root
+ * node if there have been no sections yet.  You can define subsections (e.g.
+ * [[name]]) by specifying increasing numbers of [ (opening square bracket)
+ * characters.  Sections with the same number of brackets become children of the
+ * most recently preceding parent defined with fewer brackets; sections with
+ * more brackets become deeper children, and sections with fewer brackets are
+ * closer to the root.  The following example shows the root gaining two
+ * children, "child1" (with value "teh suz" and child "sub_child1") and "child2"
+ * (with its own child "sub_child2"):
+ *
+ *    child1 = teh suz  ; create child1 as a child of the root, give it a value
+ *    [  child2  ]      ; another root child, anything below is child2's child
+ *     [[sub_child2 ]]  ; sub_child2, having more [, is under child2
+ *    [child1]          ; back up to root's child child1
+ *     sub_child1=      ; this is a child of the previous section, i.e., child1
+ *
+ * (Spaces were added and the order was slightly obfuscated to show these things
+ * are unimportant.)  Note that the parser ignores the number of ] (closing
+ * square brackets) for the sake of keeping insignificant typos from causing
+ * errors, but to stay compatible with future versions of Nickel or other
+ * parsers, you should close each section with the same number of ] (closing
+ * square brackets) as it was opened with.
+ *
+ * Also note that if you skip steps in your subsections, e.g.:
+ *
+ *    [child1]
+ *     [[[ sub_sub_child1 ]]]
+ *
+ * empty children are inserted to make up the difference (here, "child1" has an
+ * unnamed child, which has a child "sub_sub_child1").
+ *
+ * If a name is given more than once under the same parent in a file, the last
+ * instance overrides all previous instances.  Thus:
+ *
+ *    [child1]
+ *     sub = asdf
+ *    [child1]
+ *     sub = again
+ *
+ * gives "child1" a child called "sub", and gives it the value "again".  Note
+ * that there is only one "child1", and the value "asdf" is overwritten by
+ * "again" for "sub".
+ *
+ * It's valid to specify empty names.  Here:
+ *
+ *    []
+ *    =
+ *
+ * creates a node with an empty name as the child of the root, and gives it a
+ * child with an empty name and empty value.
+ *
+ * One more note: the parser is pretty lax--it will glean as much valid
+ * information from a line as it can, ignoring errors if it can still get
+ * something useful.  This can lead to weird results.  Consider the following
+ * lines:
+ *
+ *    [section]  child = value
+ *    # comments = cool!
+ *
+ * Here, because anything other than a comment after the ] (closing square
+ * bracket) is invalid, the parser ignores "child = value" on the first line.
+ * Also, because # (hash mark) isn't the standard for initiating a comment, the
+ * second line creates a child of "section" named "# comments", with the value
+ * "cool!".  Keep your files valid and standard and you won't have issues.
+ *
+ * This gives you an idea how the parser works.  More examples are in order for
+ * future revisions of this document, but as I imagine this'll mostly be used
+ * for simple .ini parsing, what's above is sufficient for now.
+ *
+ * While Nickel should be able to parse any Windows-compatible .ini file, it
+ * won't necessarily output to a format that Windows will understand.  Some
+ * circumstances it will generate an incompatible file are:
+ *
+ *   * The tree is more than one level deep
+ *   * A node's name or value contains a special character: [ = \ ; etc. (as
+ *     these may be escaped by Nickel)
+ *   * A node's name or value has initial or trailing whitespace (as Nickel will
+ *     put such a string inside quotes)
+ *
+ * Nickel can always parse a file it generates; it's just that Windows doesn't
+ * understand some of Nickel's syntax, I believe, like nested headings, escaped
+ * characters, and quotes.  Also, if you read a Windows-compatible .ini file
+ * into memory and write it right back out to disk, you'll get a Windows-
+ * compatible .ini file as long as no special characters are in any node's
+ * value.  Nickel is fairly good about escaping special characters only when
+ * necessary (as of v1.1.0, anyway), but if maximum compatibility with other
+ * parsers is your goal, avoid special characters in names and values.
+ *
+ * It's also worth noting that since Nickel builds an in-memory map based on the
+ * .ini file, and writing files uses the in-memory representation of the data,
+ * comments in the file are entirely lost.  This is unfortunate, but means that
+ * Nickel runs quickly enough to be used inside, say, a game, since accessing
+ * the data doesn't require costly disk reads.
+ *
+ * It's also unfortunate that order is lost between reading and writing.  This
+ * is due to hashing mixing things up.  The speed gain from hashing entries
+ * greatly outweighs maintaining order, in my mind, and keeping an index of the
+ * order nodes were added would take more overhead than I believe it's worth.
+ *
+ * Thus concludes my lengthy explanation of Nickel's .ini parser.
+ ******************************************************************************/
 
 
 #ifndef __bohr_ni_h__

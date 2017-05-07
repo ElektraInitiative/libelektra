@@ -191,7 +191,7 @@ typedef int elektraNamespace;
 #define KDB_PATH_SEPARATOR '/'
 
 /**@brief Escape symbol for special characters in the key name.
- * 
+ *
  * @see @link keyname here @endlink.
  * */
 #define KDB_PATH_ESCAPE '\\'
