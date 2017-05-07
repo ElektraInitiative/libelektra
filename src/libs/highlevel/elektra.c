@@ -65,7 +65,7 @@ Elektra * elektraOpen (const char * application, ElektraError ** error)
     elektra->kdb = kdb;
     elektra->parentKey = parentKey;
     elektra->config = config;
-    elektra->lookupKey = keyNew(NULL);
+    elektra->lookupKey = keyNew(NULL, KEY_END);
 
     return elektra;
 }
