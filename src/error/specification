@@ -1249,3 +1249,12 @@ description:general xml error
 severity:error
 ingroup:plugin
 module:xerces
+enum:GENERAL_XML_ERROR
+
+number:175
+description:Not a valid key value pair
+severity:warning
+ingroup:plugin
+macro:NOT_VALID_KEY_VALUE_PAIR
+module:mini
+enum:INVALID_KEY_VALUE_PAIR
