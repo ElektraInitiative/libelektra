@@ -216,19 +216,26 @@ static void test_primitiveSetters ()
 		elektraErrorReset (&error);
 	}
 
-	elektraSetString (elektra, "stringKey", "A string");
-	elektraSetBoolean (elektra, "booleanKey", 1);
-	elektraSetChar (elektra, "charKey", 'c');
-	elektraSetOctet (elektra, "octetKey", 1);
-	elektraSetShort (elektra, "shortKey", 1);
-	elektraSetUnsignedShort (elektra, "unsignedShortKey", 1);
-	elektraSetLong (elektra, "longKey", 1);
-	elektraSetUnsignedLong (elektra, "unsignedLongKey", 1);
-	elektraSetLongLong (elektra, "longLongKey", 1);
-	elektraSetUnsignedLongLong (elektra, "unsignedLongLongKey", 1);
-	elektraSetFloat (elektra, "floatKey", 1.1);
-	elektraSetDouble (elektra, "doubleKey", 1.1);
-	elektraSetLongDouble (elektra, "longDoubleKey", 1.1);
+	elektraSetString (elektra, "stringKey", "A string", &error);
+	elektraSetBoolean (elektra, "booleanKey", 1, &error);
+	elektraSetChar (elektra, "charKey", 'c', &error);
+	elektraSetOctet (elektra, "octetKey", 1, &error);
+	elektraSetShort (elektra, "shortKey", 1, &error);
+	elektraSetUnsignedShort (elektra, "unsignedShortKey", 1, &error);
+	elektraSetLong (elektra, "longKey", 1, &error);
+	elektraSetUnsignedLong (elektra, "unsignedLongKey", 1, &error);
+	elektraSetLongLong (elektra, "longLongKey", 1, &error);
+	elektraSetUnsignedLongLong (elektra, "unsignedLongLongKey", 1, &error);
+	elektraSetFloat (elektra, "floatKey", 1.1, &error);
+	elektraSetDouble (elektra, "doubleKey", 1.1, &error);
+	elektraSetLongDouble (elektra, "longDoubleKey", 1.1, &error);
+
+    if (error)
+    {
+        yield_error ("A setter failed");
+        printf ("ElektraError: %s\n", elektraErrorDescription (error));
+        elektraErrorReset (&error);
+    }
 
 	succeed_if (!elektraStrCmp (elektraGetString (elektra, "stringKey"), "A string"), "Wrong key value.");
 	succeed_if (elektraGetBoolean (elektra, "booleanKey"), "Wrong key value.");
@@ -306,44 +313,51 @@ static void test_arraySetters ()
 		elektraErrorReset (&error);
 	}
 
-	elektraSetStringArrayElement (elektra, "stringArrayKey", "String 1", 0);
-	elektraSetStringArrayElement (elektra, "stringArrayKey", "String 2", 1);
+	elektraSetStringArrayElement (elektra, "stringArrayKey", "String 1", 0, &error);
+	elektraSetStringArrayElement (elektra, "stringArrayKey", "String 2", 1, &error);
 
-	elektraSetBooleanArrayElement (elektra, "booleanArrayKey", 0, 0);
-	elektraSetBooleanArrayElement (elektra, "booleanArrayKey", 1, 1);
+	elektraSetBooleanArrayElement (elektra, "booleanArrayKey", 0, 0, &error);
+	elektraSetBooleanArrayElement (elektra, "booleanArrayKey", 1, 1, &error);
 
-	elektraSetCharArrayElement (elektra, "charArrayKey", 'c', 0);
-	elektraSetCharArrayElement (elektra, "charArrayKey", 'd', 1);
+	elektraSetCharArrayElement (elektra, "charArrayKey", 'c', 0, &error);
+	elektraSetCharArrayElement (elektra, "charArrayKey", 'd', 1, &error);
 
-	elektraSetOctetArrayElement (elektra, "octetArrayKey", 1, 0);
-	elektraSetOctetArrayElement (elektra, "octetArrayKey", 2, 1);
+	elektraSetOctetArrayElement (elektra, "octetArrayKey", 1, 0, &error);
+	elektraSetOctetArrayElement (elektra, "octetArrayKey", 2, 1, &error);
 
-	elektraSetShortArrayElement (elektra, "shortArrayKey", 1, 0);
-	elektraSetShortArrayElement (elektra, "shortArrayKey", 2, 1);
+	elektraSetShortArrayElement (elektra, "shortArrayKey", 1, 0, &error);
+	elektraSetShortArrayElement (elektra, "shortArrayKey", 2, 1, &error);
 
-	elektraSetUnsignedShortArrayElement (elektra, "unsignedShortArrayKey", 1, 0);
-	elektraSetUnsignedShortArrayElement (elektra, "unsignedShortArrayKey", 2, 1);
+	elektraSetUnsignedShortArrayElement (elektra, "unsignedShortArrayKey", 1, 0, &error);
+	elektraSetUnsignedShortArrayElement (elektra, "unsignedShortArrayKey", 2, 1, &error);
 
-	elektraSetLongArrayElement (elektra, "longArrayKey", 1, 0);
-	elektraSetLongArrayElement (elektra, "longArrayKey", 2, 1);
+	elektraSetLongArrayElement (elektra, "longArrayKey", 1, 0, &error);
+	elektraSetLongArrayElement (elektra, "longArrayKey", 2, 1, &error);
 
-	elektraSetUnsignedLongArrayElement (elektra, "unsignedLongArrayKey", 1, 0);
-	elektraSetUnsignedLongArrayElement (elektra, "unsignedLongArrayKey", 2, 1);
+	elektraSetUnsignedLongArrayElement (elektra, "unsignedLongArrayKey", 1, 0, &error);
+	elektraSetUnsignedLongArrayElement (elektra, "unsignedLongArrayKey", 2, 1, &error);
 
-	elektraSetLongLongArrayElement (elektra, "longLongArrayKey", 1, 0);
-	elektraSetLongLongArrayElement (elektra, "longLongArrayKey", 2, 1);
+	elektraSetLongLongArrayElement (elektra, "longLongArrayKey", 1, 0, &error);
+	elektraSetLongLongArrayElement (elektra, "longLongArrayKey", 2, 1, &error);
 
-	elektraSetUnsignedLongLongArrayElement (elektra, "unsignedLongLongArrayKey", 1, 0);
-	elektraSetUnsignedLongLongArrayElement (elektra, "unsignedLongLongArrayKey", 2, 1);
+	elektraSetUnsignedLongLongArrayElement (elektra, "unsignedLongLongArrayKey", 1, 0, &error);
+	elektraSetUnsignedLongLongArrayElement (elektra, "unsignedLongLongArrayKey", 2, 1, &error);
 
-	elektraSetFloatArrayElement (elektra, "floatArrayKey", 1.1, 0);
-	elektraSetFloatArrayElement (elektra, "floatArrayKey", 2.1, 1);
+	elektraSetFloatArrayElement (elektra, "floatArrayKey", 1.1, 0, &error);
+	elektraSetFloatArrayElement (elektra, "floatArrayKey", 2.1, 1, &error);
 
-	elektraSetDoubleArrayElement (elektra, "doubleArrayKey", 1.1, 0);
-	elektraSetDoubleArrayElement (elektra, "doubleArrayKey", 2.1, 1);
+	elektraSetDoubleArrayElement (elektra, "doubleArrayKey", 1.1, 0, &error);
+	elektraSetDoubleArrayElement (elektra, "doubleArrayKey", 2.1, 1, &error);
 
-	elektraSetLongDoubleArrayElement (elektra, "longDoubleArrayKey", 1.1, 0);
-	elektraSetLongDoubleArrayElement (elektra, "longDoubleArrayKey", 2.1, 1);
+	elektraSetLongDoubleArrayElement (elektra, "longDoubleArrayKey", 1.1, 0, &error);
+	elektraSetLongDoubleArrayElement (elektra, "longDoubleArrayKey", 2.1, 1, &error);
+
+    if (error)
+    {
+        yield_error ("A setter failed");
+        printf ("ElektraError: %s\n", elektraErrorDescription (error));
+        elektraErrorReset (&error);
+    }
 
 	succeed_if (elektraArraySize (elektra, "stringArrayKey") == 2, "Wrong array size");
 	succeed_if (!elektraStrCmp (elektraGetStringArrayElement (elektra, "stringArrayKey", 0), "String 1"), "Wrong key value.");
