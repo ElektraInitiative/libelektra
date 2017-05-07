@@ -199,6 +199,7 @@ static VALUE my_rb_protect(VALUE instance, ID method, int * state, int nargs, ..
 	return rb_protect(protected_ruby_call_wrapper, array, state);
 }
 
+static VALUE rb_kdb_plugin_define(VALUE self ELEKTRA_UNUSED, VALUE name);
 
 /**
  * @brief: define the Kdb::Plugin class
@@ -209,19 +210,17 @@ static VALUE define_kdb_plugin_class() {
 	VALUE module = Qnil;
 	VALUE klass = Qnil;
 
+	module = rb_define_module("Kdb");
 	if ( ! rb_const_defined(rb_cObject, rb_intern(RB_GLOBAL_KDB_MODULE))) {
-		module = rb_define_module("Kdb");
 		rb_define_const(rb_cObject, RB_GLOBAL_KDB_MODULE, module);
-	} else {
-		module = rb_const_get(rb_cObject, rb_intern(RB_GLOBAL_KDB_MODULE));
 	}
 
+	klass = rb_define_class_under(module, "Plugin", rb_cObject);
 	if ( ! rb_const_defined(rb_cObject, rb_intern(RB_GLOBAL_PLUGIN_KLASS))) {
-		klass = rb_define_class_under(module, "Plugin", rb_cObject);
 		rb_define_const(rb_cObject, RB_GLOBAL_PLUGIN_KLASS, klass);
-	} else {
-		klass = rb_const_get(rb_cObject, rb_intern(RB_GLOBAL_PLUGIN_KLASS));
 	}
+
+	rb_define_singleton_method(klass, "define", ((VALUE (*)(...)) rb_kdb_plugin_define), 1);
 	return klass;
 }
 
@@ -231,7 +230,7 @@ static VALUE define_kdb_plugin_class() {
  *
  * create a new Ruby-plugin
  */
-static VALUE rb_kdb_plugin_define(VALUE self ELEKTRA_UNUSED, VALUE name) {
+static VALUE rb_kdb_plugin_define(VALUE self, VALUE name) {
 
 	if (RB_TYPE_P(name, T_SYMBOL)) {
 		// sym2name() not in 1.9
@@ -243,11 +242,7 @@ static VALUE rb_kdb_plugin_define(VALUE self ELEKTRA_UNUSED, VALUE name) {
 
 	VALUE instance = Qnil;
 
-	/* create new Kdb::Plugin object
-	 * for some strange reason we may have to recreate the Plugin class again, maybe
-	 * the GC has deleted it ??? */
-	VALUE klass_Plugin = define_kdb_plugin_class();
-	instance = rb_funcall(klass_Plugin, rb_intern("new"), 0);
+	instance = rb_funcall(self, rb_intern("new"), 0);
 	if (rb_block_given_p()) {
 		/* call the given block in the context of the newly created instance */
 		VALUE block = rb_block_proc();
@@ -301,9 +296,8 @@ static int init_ruby_environment(ckdb::Key * warningsKey) {
 
 		ruby_init_loadpath();
 
-		/* define Plugin class */
-		VALUE klass_Plugin = define_kdb_plugin_class();
-		rb_define_singleton_method(klass_Plugin, "define", ((VALUE (*)(...)) rb_kdb_plugin_define), 1);
+		/* NOT REQUIRED HERE -- define Plugin class */
+		//VALUE klass_Plugin = define_kdb_plugin_class();
 
 		/* define our global plugins array: here we collect all active ruby plugin instances */
 		if ( ! rb_const_defined(rb_cObject, rb_intern(RB_GLOBAL_VAR_PLUGINS))) {
@@ -340,6 +334,9 @@ static VALUE load_ruby_plugin(VALUE config ELEKTRA_UNUSED) {
 	ELEKTRA_LOG("load Ruby-plugin '%s'", script.c_str());
 
 	VALUE rb_script = rb_str_new_cstr(script.c_str());
+
+	/* be sure we have the Kdb::Plugin class with method 'define' */
+	define_kdb_plugin_class();	
 	/* load the given script */
 	rb_load(rb_script, 0);
 
