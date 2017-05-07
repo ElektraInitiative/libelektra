@@ -13,14 +13,15 @@
 
 struct _ElektraError
 {
-    ElektraErrorCode code;
-    const char * description;
-    ElektraErrorSeverity severity;
-    ElektraErrorGroup group;
-    ElektraErrorModule module;
+	ElektraErrorCode code;
+	const char * description;
+	ElektraErrorSeverity severity;
+	ElektraErrorGroup group;
+	ElektraErrorModule module;
 };
 
-ElektraError * elektraErrorCreate (ElektraErrorCode code, const char * description, ElektraErrorSeverity severity, ElektraErrorGroup group, ElektraErrorModule module);
+ElektraError * elektraErrorCreate (ElektraErrorCode code, const char * description, ElektraErrorSeverity severity, ElektraErrorGroup group,
+				   ElektraErrorModule module);
 ElektraError * elektraErrorCreateFromKey (Key * key);
 
-#endif //ELEKTRA_ERROR_PRIVATE_H
+#endif // ELEKTRA_ERROR_PRIVATE_H

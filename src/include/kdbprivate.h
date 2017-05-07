@@ -41,17 +41,17 @@
 #define KDB_STRING_TO_LONG_DOUBLE(string) strtold (string, NULL)
 
 #define KDB_BOOLEAN_TO_STRING(value) ((value ? "1" : "0"))
-#define KDB_CHAR_TO_STRING(value) elektraFormat("%c", value)
-#define KDB_OCTET_TO_STRING(value) elektraFormat("%d", value)
-#define KDB_SHORT_TO_STRING(value) elektraFormat("%d", value)
-#define KDB_UNSIGNED_SHORT_TO_STRING(value) elektraFormat("%d", value)
-#define KDB_LONG_TO_STRING(value) elektraFormat(ELEKTRA_LONG_F, value)
-#define KDB_UNSIGNED_LONG_TO_STRING(value) elektraFormat(ELEKTRA_UNSIGNED_LONG_F, value)
-#define KDB_LONG_LONG_TO_STRING(value) elektraFormat(ELEKTRA_LONG_LONG_F, value)
-#define KDB_UNSIGNED_LONG_LONG_TO_STRING(value) elektraFormat(ELEKTRA_UNSIGNED_LONG_LONG_F, value)
-#define KDB_FLOAT_TO_STRING(value) elektraFormat("%f", value)
-#define KDB_DOUBLE_TO_STRING(value) elektraFormat("%f", value)
-#define KDB_LONG_DOUBLE_TO_STRING(value) elektraFormat("%Lf", value)
+#define KDB_CHAR_TO_STRING(value) elektraFormat ("%c", value)
+#define KDB_OCTET_TO_STRING(value) elektraFormat ("%d", value)
+#define KDB_SHORT_TO_STRING(value) elektraFormat ("%d", value)
+#define KDB_UNSIGNED_SHORT_TO_STRING(value) elektraFormat ("%d", value)
+#define KDB_LONG_TO_STRING(value) elektraFormat (ELEKTRA_LONG_F, value)
+#define KDB_UNSIGNED_LONG_TO_STRING(value) elektraFormat (ELEKTRA_UNSIGNED_LONG_F, value)
+#define KDB_LONG_LONG_TO_STRING(value) elektraFormat (ELEKTRA_LONG_LONG_F, value)
+#define KDB_UNSIGNED_LONG_LONG_TO_STRING(value) elektraFormat (ELEKTRA_UNSIGNED_LONG_LONG_F, value)
+#define KDB_FLOAT_TO_STRING(value) elektraFormat ("%f", value)
+#define KDB_DOUBLE_TO_STRING(value) elektraFormat ("%f", value)
+#define KDB_LONG_DOUBLE_TO_STRING(value) elektraFormat ("%Lf", value)
 
 /** The minimal allocation size of a keyset inclusive
 	NULL byte. ksGetAlloc() will return one less because

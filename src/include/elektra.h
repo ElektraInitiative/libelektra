@@ -9,9 +9,9 @@
 #ifndef ELEKTRA_H
 #define ELEKTRA_H
 
+#include "elektra_error.h"
 #include "kdb.h"
 #include "kdbtypes.h"
-#include "elektra_error.h"
 
 typedef struct _Elektra Elektra;
 
@@ -339,7 +339,7 @@ kdb_short_t elektraGetShortArrayElement (Elektra * elektra, const char * name, s
  * @param name The keyname to look up. The keyname is appended to the parent key.
  * @param index The array index of the desired element, starting with 0.
  */
-kdb_unsigned_short_t elektraGetUnsignedShortArrayElement  (Elektra * elektra, const char * name, size_t index);
+kdb_unsigned_short_t elektraGetUnsignedShortArrayElement (Elektra * elektra, const char * name, size_t index);
 
 /**
  * @param elektra The elektra instance initialized with the parent key.
@@ -390,4 +390,4 @@ kdb_double_t elektraGetDoubleArrayElement (Elektra * elektra, const char * name,
  */
 kdb_long_double_t elektraGetLongDoubleArrayElement (Elektra * elektra, const char * name, size_t index);
 
-#endif //ELEKTRA_H
+#endif // ELEKTRA_H
