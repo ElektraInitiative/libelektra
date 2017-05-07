@@ -123,7 +123,7 @@ void elektraSetString (Elektra * elektra, const char * name, const char * value)
 The counterpart for array-gettes again follows the same naming scheme:
 
 ```c
-void elektraSetStringArrayElement (Elektra * elektra, const char * name, const char * value, size_t index);
+void elektraSetStringArrayElement (Elektra * elektra, const char * name, const char * value, size_t index, ElektraError ** error);
 ```
 
 Be sure not to access indexes outside of the arrays bounds. The same rules a described in [Read values from the KDB](#read-values-from-the-kdb) apply here, meaning, that you are responsible for providing a complete and correct specification (see [Application Integration](/libelektra/doc/tutorials/application-integration.md)). If you try to access a key that you have not specified, the library will call `exit(EXIT_FAILURE)`.
