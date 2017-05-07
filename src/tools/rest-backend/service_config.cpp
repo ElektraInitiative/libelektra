@@ -22,10 +22,10 @@ namespace service
 
 /**
  * @brief can be used to load the configuration of the whole application
- * 
+ *
  * the configuration is loaded from the key database provided by elektra.
  * the result can be used to bootstrap the application (cppcms service).
- * 
+ *
  * @param profile the profile for which the configuration should be loaded
  * @return the loaded configuration as cppcms::json::value
  */
@@ -46,10 +46,10 @@ cppcms::json::value ConfigEngine::loadApplicationConfiguration (const std::strin
 
 /**
  * @brief can be used to transform a kdb::KeySet into cppcms::json::value
- * 
+ *
  * will iterate through the keyset and use a helper method to add the key
  * values to the json::value
- * 
+ *
  * @param ks the keyset that needs to be transformed
  * @return a cppcms::json::value containing the configuration from the keyset
  */
@@ -84,10 +84,10 @@ cppcms::json::value ConfigEngine::transformKeysetToJsonValue (const kdb::KeySet 
 
 /**
  * @brief can be used to set a key value to a cppcms::json::value
- * 
+ *
  * checks the path for an array and recursively sets the value then.
  * for objects the path is simply set.
- * 
+ *
  * @param config the current configuration value
  * @param path remaining path to set
  * @param key the elektra key containing the value to set
@@ -153,10 +153,10 @@ void ConfigEngine::handleValueInsertion (cppcms::json::value & config, const std
 
 /**
  * @brief tries to retrieve the correct key value (correct format/type) and stores it
- * 
+ *
  * if the key does not have meta data specifying the type, it will first be
  * tried to convert the value as number, then as string
- * 
+ *
  * @param config a json value
  * @param key the key which holds the value to store
  */

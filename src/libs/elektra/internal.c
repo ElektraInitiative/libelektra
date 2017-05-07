@@ -671,7 +671,7 @@ char * elektraUnescapeKeyNamePart (const char * source, size_t size, char * dest
  *
  * May only need half the storage than the source string.
  * It is not safe to use the same string for source and dest.
-**/
+ **/
 size_t elektraUnescapeKeyName (const char * source, char * dest)
 {
 	const char * sp = source;

@@ -27,7 +27,7 @@ namespace kdbrest
 
 /**
  * @brief the constructor of the user endpoint application.
- * 
+ *
  * @param srv a service container
  */
 UserApp::UserApp (cppcms::service & srv) : cppcms::application (srv)
@@ -41,9 +41,9 @@ UserApp::UserApp (cppcms::service & srv) : cppcms::application (srv)
 
 /**
  * @brief the main handle function for this endpoint.
- * 
+ *
  * it maps requests based on their HTTP method to the corresponding handlers.
- * 
+ *
  * @param username a username that may be provided as resource parameter
  */
 void UserApp::handle (std::string username)
@@ -95,9 +95,9 @@ void UserApp::handle (std::string username)
 
 /**
  * @brief helper method for dispatching of GET requests
- * 
+ *
  * performs authentication and permission checks if necessary
- * 
+ *
  * @param req a request
  * @param resp a response
  * @param username an optional username that should be used as target resource
@@ -170,9 +170,9 @@ void UserApp::handleDispatchGet (cppcms::http::request & req, cppcms::http::resp
 
 /**
  * @brief helper method for dispatching of PUT requests
- * 
+ *
  * performs authentication and permission checks if necessary
- * 
+ *
  * @param req a request
  * @param resp a response
  * @param username an optional username that should be used as target resource
@@ -221,9 +221,9 @@ void UserApp::handleDispatchPut (cppcms::http::request & req, cppcms::http::resp
 
 /**
  * @brief helper method for dispatching of DELETE requests
- * 
+ *
  * performs authentication and permission checks if necessary
- * 
+ *
  * @param req a request
  * @param resp a response
  * @param username an optional username that should be used as target resource
@@ -271,7 +271,7 @@ void UserApp::handleDispatchDelete (cppcms::http::request & req, cppcms::http::r
 
 /**
  * @brief handles the retirval of a specific user entry
- * 
+ *
  * @param resp a response
  * @param username the username of the user whose information shall be retrieved
  */
@@ -298,7 +298,7 @@ void UserApp::handleGetUnique (cppcms::http::response & resp, const std::string 
 
 /**
  * @brief handles the retrieval of a list of user entries
- * 
+ *
  * @param req a request
  * @param resp a response
  */
@@ -314,7 +314,7 @@ void UserApp::handleGet (cppcms::http::request & req, cppcms::http::response & r
 
 /**
  * @brief handles the creation of a new user entry
- * 
+ *
  * @param req a request
  * @param resp a response
  */
@@ -459,7 +459,7 @@ void UserApp::handleInsert (cppcms::http::request & req, cppcms::http::response 
 
 /**
  * @brief handles the update of a user entry.
- * 
+ *
  * @param req a request
  * @param resp a response
  * @param username the username of the user who shall be updated
@@ -565,7 +565,7 @@ void UserApp::handleUpdate (cppcms::http::request & req, cppcms::http::response 
 
 /**
  * @brief handles a delete request for a user resource.
- * 
+ *
  * @param resp a response
  * @param username the username of the user who shall be deleted
  */
@@ -588,7 +588,7 @@ void UserApp::handleDelete (cppcms::http::response & resp, const std::string use
 
 /**
  * @brief extracts the max number of rows to print from a request.
- * 
+ *
  * @param req a request
  * @return the max number of rows to print or the default value if not set
  */
@@ -617,7 +617,7 @@ inline int UserApp::getMaxrows (cppcms::http::request & req) const
 
 /**
  * @brief extracts the offset parameter from a request.
- * 
+ *
  * @param req a request
  * @return the offset extracted from the request parameter, if not set 0
  */
@@ -642,7 +642,7 @@ inline int UserApp::getOffset (cppcms::http::request & req) const
 
 /**
  * @brief filters a vector of user entries based on parameters of a request.
- * 
+ *
  * @param req a request
  * @param users the user vector to filter
  */
@@ -667,7 +667,7 @@ inline void UserApp::processFiltering (cppcms::http::request & req, std::vector<
 
 /**
  * @brief sorts a vector of user entries based on parameters of a request.
- * 
+ *
  * @param req a request
  * @param users the user vector to sort
  */
@@ -704,13 +704,13 @@ inline void UserApp::processSorting (cppcms::http::request & req, std::vector<mo
 
 /**
  * @brief generates and sends a json list of user entries
- * 
+ *
  * Creates the output for a list of users with all helping attributes
  * like number of entries, offset, etc.
- * 
+ *
  * @note not all users in the list may actually be printed to the output.
  *       which users are used in the output depends on the offset and maxrows.
- * 
+ *
  * @param req a request
  * @param resp a response
  * @param users a list of users, of which some may be used for the output
@@ -763,11 +763,11 @@ void UserApp::generateAndSendUserList (cppcms::http::request & req, cppcms::http
 
 /**
  * @brief validates an email
- * 
+ *
  * Does basic checks on a string to validate whether it is an
  * email or not. in order to do so, it first checks if the string
  * is empty, then looks for a @ followed by a . for the TLD
- * 
+ *
  * @param email a string containing the email to validate
  * @return true in case the email is considered valid, false otherwise
  */

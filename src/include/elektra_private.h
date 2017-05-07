@@ -13,10 +13,10 @@
 
 struct _Elektra
 {
-    KDB * kdb;
-    Key * parentKey;
-    KeySet * config;
-    Key * lookupKey;
+	KDB * kdb;
+	Key * parentKey;
+	KeySet * config;
+	Key * lookupKey;
 };
 
-#endif //ELEKTRA_PRIVATE_H
+#endif // ELEKTRA_PRIVATE_H

@@ -40,7 +40,7 @@ namespace model
 
 /**
  * @brief model class for a configuration snippet entry
- * 
+ *
  * this class encapsulates all information that belongs to
  * a configuration snippet entry, including the snippet itself.
  */
@@ -49,24 +49,24 @@ class Entry : public kdb::Key
 
 public:
 	/**
-     * @brief constructs an Entry object based on a kdb::Key object
-	 * 
-     * @param key An object of type kdb::Key
-     */
+	 * @brief constructs an Entry object based on a kdb::Key object
+	 *
+	 * @param key An object of type kdb::Key
+	 */
 	Entry (kdb::Key & k) : kdb::Key (k)
 	{
 	}
 
 	/**
 	 * @brief constructs an Entry based on its public key
-	 * 
-     * Constructs an Entry object based on a key name (string).
-     * It implicitely constructs a kdb::Key object by super().
-     * Adds the base config repository path to the entry name, so
-     * it is a valid key to be used with KDB.
-	 * 
-     * @param keyName A string to be used as key name
-     */
+	 *
+	 * Constructs an Entry object based on a key name (string).
+	 * It implicitely constructs a kdb::Key object by super().
+	 * Adds the base config repository path to the entry name, so
+	 * it is a valid key to be used with KDB.
+	 *
+	 * @param keyName A string to be used as key name
+	 */
 	Entry (std::string entryName)
 	: kdb::Key (Config::instance ().getConfig ().get<std::string> ("kdb.path.configs") + std::string ("/") + entryName, KEY_END)
 	{
@@ -74,17 +74,17 @@ public:
 
 	/**
 	 * @brief constructs an Entry based on its public key parts
-	 * 
-     * Constructs an Entry object based on four key parts (strings).
-     * It implicitely constructs a kdb::Key object by super().
-     * It also adds the base config repository path to the entry name, so
-     * it is a valid key to be used with KDB.
-	 * 
-     * @param organization The organization for the Entry
-     * @param application The application for the Entry
-     * @param scope The scope for the Entry
-     * @param slug The unique slug for the Entry
-     */
+	 *
+	 * Constructs an Entry object based on four key parts (strings).
+	 * It implicitely constructs a kdb::Key object by super().
+	 * It also adds the base config repository path to the entry name, so
+	 * it is a valid key to be used with KDB.
+	 *
+	 * @param organization The organization for the Entry
+	 * @param application The application for the Entry
+	 * @param scope The scope for the Entry
+	 * @param slug The unique slug for the Entry
+	 */
 	Entry (const std::string & organization, const std::string & application, const std::string & scope, const std::string & slug)
 	: kdb::Key (Config::instance ().getConfig ().get<std::string> ("kdb.path.configs") + std::string ("/") + organization +
 			    std::string ("/") + application + std::string ("/") + scope + std::string ("/") + slug,
@@ -94,13 +94,13 @@ public:
 
 	/**
 	 * @brief attempts to add a subkey to the entry key
-	 * 
+	 *
 	 * If the secure flag is set, does check if the given
 	 * key is really a sub key. If not, nothing is added.
-	 * 
+	 *
 	 * @param key The key do be added as sub key
 	 * @param secure Whether to check if @p k is real subkey
-     */
+	 */
 	void addSubkey (kdb::Key k, bool secure = false)
 	{
 		if (!secure || k.isBelow (static_cast<kdb::Key &> (*this)))
@@ -111,10 +111,10 @@ public:
 
 	/**
 	 * @brief attempts to add all keys of the keyset as subkey
-	 * 
+	 *
 	 * If the secure flag is set, it is checked whether the keys
 	 * in the keyset are really subkeys. otherwise, nothing is added.
-	 * 
+	 *
 	 * @param ks a keyset that should be added to the entry subkeys
 	 * @param secure whether to check if @p ks keys are really subkeys
 	 */
@@ -128,14 +128,14 @@ public:
 
 	/**
 	 * @brief getter for the subkeys keyset
-	 * 
-     * Getter for the kdb::KeySet containing all added sub keys.
-     * Returned will be a reference. That means changes to the
-     * subkeys vector will affect the entry. This allows for
-     * removal of subkeys.
-	 * 
-     * @return kdb::KeySet with all sub keys
-     */
+	 *
+	 * Getter for the kdb::KeySet containing all added sub keys.
+	 * Returned will be a reference. That means changes to the
+	 * subkeys vector will affect the entry. This allows for
+	 * removal of subkeys.
+	 *
+	 * @return kdb::KeySet with all sub keys
+	 */
 	kdb::KeySet & getSubkeys ()
 	{
 		return m_subkeys;
@@ -143,13 +143,13 @@ public:
 
 	/**
 	 * @brief getter for the public part of the key name
-	 * 
-     * Getter for the public name of the entry. That is the key name
-     * without the repository prefix. So if all keys are stored
-     * under a certain path, this path is erased from the key name.
-	 * 
-     * @return Key name without the storage path prefix
-     */
+	 *
+	 * Getter for the public name of the entry. That is the key name
+	 * without the repository prefix. So if all keys are stored
+	 * under a certain path, this path is erased from the key name.
+	 *
+	 * @return Key name without the storage path prefix
+	 */
 	std::string getPublicName () const
 	{
 		return this->getName ().erase (0, Config::instance ().getConfig ().get<std::string> ("kdb.path.configs").length () + 1);
@@ -157,17 +157,17 @@ public:
 
 	/**
 	 * @brief getter for the splitted public key part
-	 * 
-     * Getter for the public name parts of the entry. That is a
-     * vector containing the four entry parts (organization,
-     * application, scope and unique slug).
-     * The public name is split at the separator "/" and the
-     * resulting parts are added to the vector in chronological order,
-     * so the first part of the entry name (key name) will also be
-     * the first entry in the resulting vector.
-	 * 
-     * @return vector containing all four public key parts
-     */
+	 *
+	 * Getter for the public name parts of the entry. That is a
+	 * vector containing the four entry parts (organization,
+	 * application, scope and unique slug).
+	 * The public name is split at the separator "/" and the
+	 * resulting parts are added to the vector in chronological order,
+	 * so the first part of the entry name (key name) will also be
+	 * the first entry in the resulting vector.
+	 *
+	 * @return vector containing all four public key parts
+	 */
 	std::vector<std::string> getPublicNameParts () const
 	{
 		std::vector<std::string> result;
@@ -178,61 +178,61 @@ public:
 
 	/**
 	 * @brief getter for the organization part of the public name
-	 * 
-     * @return The organization of the entry
-     */
+	 *
+	 * @return The organization of the entry
+	 */
 	std::string getOrganization () const
 	{
 		return this->getPublicNameParts ().at (0);
 	}
 
 	/**
-     * @brief getter for the application part of the public name
-	 * 
-     * @return The application of the entry
-     */
+	 * @brief getter for the application part of the public name
+	 *
+	 * @return The application of the entry
+	 */
 	std::string getApplication () const
 	{
 		return this->getPublicNameParts ().at (1);
 	}
 
 	/**
-     * @brief getter for the scope part of the public name
-	 * 
+	 * @brief getter for the scope part of the public name
+	 *
 	 * @return The scope of the entry
-     */
+	 */
 	std::string getScope () const
 	{
 		return this->getPublicNameParts ().at (2);
 	}
 
 	/**
-     * @brief getter for the unique slug part of the public name
-	 * 
-     * @return The unique slug of the entry
-     */
+	 * @brief getter for the unique slug part of the public name
+	 *
+	 * @return The unique slug of the entry
+	 */
 	std::string getSlug () const
 	{
 		return this->getPublicNameParts ().at (3);
 	}
 
 	/**
-     * @brief setter for the author of the entry
-	 * 
-     * @note the author is stored as meta data of the key.
-	 * 
-     * @param author The author as string
-     */
+	 * @brief setter for the author of the entry
+	 *
+	 * @note the author is stored as meta data of the key.
+	 *
+	 * @param author The author as string
+	 */
 	void setAuthor (const std::string & author)
 	{
 		this->setMeta (ELEKTRA_REST_MODEL_ENTRY_META_AUTHOR, author);
 	}
 
 	/**
-     * @brief getter for the author of the entry
-	 * 
-     * @return The author as string
-     */
+	 * @brief getter for the author of the entry
+	 *
+	 * @return The author as string
+	 */
 	std::string getAuthor () const
 	{
 		if (this->hasMeta (ELEKTRA_REST_MODEL_ENTRY_META_AUTHOR))
@@ -242,22 +242,22 @@ public:
 	}
 
 	/**
-     * @brief setter for the creation date of the entry
-	 * 
-     * @note the creation date is stored as timestamp as meta data of the key.
-	 * 
-     * @param created_at The creation date as long
-     */
+	 * @brief setter for the creation date of the entry
+	 *
+	 * @note the creation date is stored as timestamp as meta data of the key.
+	 *
+	 * @param created_at The creation date as long
+	 */
 	void setCreatedAt (const long created_at)
 	{
 		this->setMeta<long> (ELEKTRA_REST_MODEL_ENTRY_META_CREATEDAT, created_at);
 	}
 
 	/**
-     * @brief getter for the creation date of the entry
-	 * 
-     * @return The creation date as timestamp as long
-     */
+	 * @brief getter for the creation date of the entry
+	 *
+	 * @return The creation date as timestamp as long
+	 */
 	long getCreatedAt () const
 	{
 		if (this->hasMeta (ELEKTRA_REST_MODEL_ENTRY_META_CREATEDAT))
@@ -267,22 +267,22 @@ public:
 	}
 
 	/**
-     * @brief setter for the title of the entry
-	 * 
-     * @note the title is stored as meta data of the key.
-	 * 
-     * @param title The title as string
-     */
+	 * @brief setter for the title of the entry
+	 *
+	 * @note the title is stored as meta data of the key.
+	 *
+	 * @param title The title as string
+	 */
 	void setTitle (const std::string & title)
 	{
 		this->setMeta (ELEKTRA_REST_MODEL_ENTRY_META_TITLE, title);
 	}
 
 	/**
-     * @brief getter for the title of the entry
-	 * 
-     * @return The title as string
-     */
+	 * @brief getter for the title of the entry
+	 *
+	 * @return The title as string
+	 */
 	std::string getTitle () const
 	{
 		if (this->hasMeta (ELEKTRA_REST_MODEL_ENTRY_META_TITLE))
@@ -292,22 +292,22 @@ public:
 	}
 
 	/**
-     * @brief setter for the description of the entry
-	 * 
-     * @note the description is stored as meta data of the key.
-	 * 
-     * @param desc The description as string
-     */
+	 * @brief setter for the description of the entry
+	 *
+	 * @note the description is stored as meta data of the key.
+	 *
+	 * @param desc The description as string
+	 */
 	void setDescription (const std::string & desc)
 	{
 		this->setMeta (ELEKTRA_REST_MODEL_ENTRY_META_DESCRIPTION, desc);
 	}
 
 	/**
-     * @brief getter for the description of the entry
-	 * 
-     * @return The description as string
-     */
+	 * @brief getter for the description of the entry
+	 *
+	 * @return The description as string
+	 */
 	std::string getDescription () const
 	{
 		if (this->hasMeta (ELEKTRA_REST_MODEL_ENTRY_META_DESCRIPTION))
@@ -317,23 +317,23 @@ public:
 	}
 
 	/**
-     * @brief setter for the tags of the entry
-	 * 
-     * @note the tags are stored as a single string as meta data of
-     *       the key.
-	 * 
-     * @param tags A vector containing all tags as string
-     */
+	 * @brief setter for the tags of the entry
+	 *
+	 * @note the tags are stored as a single string as meta data of
+	 *       the key.
+	 *
+	 * @param tags A vector containing all tags as string
+	 */
 	void setTags (const std::vector<std::string> & tags)
 	{
 		this->setMeta (ELEKTRA_REST_MODEL_ENTRY_META_TAGS, boost::algorithm::join (tags, " "));
 	}
 
 	/**
-     * @brief getter for the tags of the entry
-	 * 
-     * @return A vector containing all tags as string
-     */
+	 * @brief getter for the tags of the entry
+	 *
+	 * @return A vector containing all tags as string
+	 */
 	std::vector<std::string> getTags () const
 	{
 		if (this->hasMeta (ELEKTRA_REST_MODEL_ENTRY_META_TAGS))
@@ -352,11 +352,11 @@ public:
 	}
 
 	/**
-     * @brief checks if the entry is tagged with a certain tag
-	 * 
-     * @param tag A string repesenting a tag to be checked for
-     * @return True if the entry is tagged with the tag
-     */
+	 * @brief checks if the entry is tagged with a certain tag
+	 *
+	 * @param tag A string repesenting a tag to be checked for
+	 * @return True if the entry is tagged with the tag
+	 */
 	bool hasTag (const std::string & tag) const
 	{
 		std::vector<std::string> tags = this->getTags ();
@@ -365,7 +365,7 @@ public:
 
 	/**
 	 * @brief setter for the upload plugin of the entry
-	 * 
+	 *
 	 * @param format The plugin name as string
 	 */
 	void setUploadPlugin (const std::string & plugin)
@@ -374,10 +374,10 @@ public:
 	}
 
 	/**
-     * @brief getter for the upload plugin of the entry
-	 * 
-     * @return The plugin name as string
-     */
+	 * @brief getter for the upload plugin of the entry
+	 *
+	 * @return The plugin name as string
+	 */
 	std::string getUploadPlugin () const
 	{
 		if (this->hasMeta (ELEKTRA_REST_MODEL_ENTRY_META_UPLOADPLUGIN))
@@ -387,22 +387,22 @@ public:
 	}
 
 	/**
-     * @brief setter for the value of the entry
-	 * 
-     * @note the value is stored as the value of the key.
-	 * 
-     * @param content A string containing the value
-     */
+	 * @brief setter for the value of the entry
+	 *
+	 * @note the value is stored as the value of the key.
+	 *
+	 * @param content A string containing the value
+	 */
 	void setValue (std::string & content)
 	{
 		this->set (content);
 	}
 
 	/**
-     * @brief getter for the value of the entry
-	 * 
-     * @return A string containing the value
-     */
+	 * @brief getter for the value of the entry
+	 *
+	 * @return A string containing the value
+	 */
 	std::string getValue () const
 	{
 		return this->get<std::string> ();
@@ -410,7 +410,7 @@ public:
 
 	/**
 	 * @brief compares two entries based on their key
-	 * 
+	 *
 	 * @param l left entry
 	 * @param r right entry
 	 * @return true if public key name of l < r
@@ -422,7 +422,7 @@ public:
 
 	/**
 	 * @brief compares two entries based on their title
-	 * 
+	 *
 	 * @param l left entry
 	 * @param r right entry
 	 * @return true if title of l < r
@@ -434,7 +434,7 @@ public:
 
 	/**
 	 * @brief compares two entries based on their creation date
-	 * 
+	 *
 	 * @param l left entry
 	 * @param r right entry
 	 * @return true if creation date of l < r
@@ -446,7 +446,7 @@ public:
 
 	/**
 	 * @brief compares two entries based on their author
-	 * 
+	 *
 	 * @param l left entry
 	 * @param r right entry
 	 * @return true if author of l < r
@@ -458,7 +458,7 @@ public:
 
 	/**
 	 * @brief compares two entries based on their organization
-	 * 
+	 *
 	 * @param l left entry
 	 * @param r right entry
 	 * @return true if organization of l < r
@@ -470,7 +470,7 @@ public:
 
 	/**
 	 * @brief compares two entries based on their application
-	 * 
+	 *
 	 * @param l left entry
 	 * @param r right entry
 	 * @return true if application of l < r
@@ -482,7 +482,7 @@ public:
 
 	/**
 	 * @brief compares two entries based on their scope
-	 * 
+	 *
 	 * @param l left entry
 	 * @param r right entry
 	 * @return true if scope of l < r
@@ -494,7 +494,7 @@ public:
 
 	/**
 	 * @brief compares two entries based on their slug
-	 * 
+	 *
 	 * @param l left entry
 	 * @param r right entry
 	 * @return true if slug of l < r

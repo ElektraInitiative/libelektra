@@ -22,7 +22,7 @@
  * @param saltLen is set to the length of the salt. Ignored if NULL is provided.
  * @retval 1 on success
  * @retval -1 on error. errorKey holds a description.
-*/
+ */
 int CRYPTO_PLUGIN_FUNCTION (getSaltFromMetakey) (Key * errorKey, Key * k, kdb_octet_t ** salt, kdb_unsigned_long_t * saltLen)
 {
 	size_t saltLenInternal = 0;
@@ -57,7 +57,7 @@ int CRYPTO_PLUGIN_FUNCTION (getSaltFromMetakey) (Key * errorKey, Key * k, kdb_oc
  * @param saltLen is set to the length of the salt. Ignored if NULL is provided.
  * @retval 1 on success
  * @retval -1 on error. errorKey holds a description.
-*/
+ */
 int CRYPTO_PLUGIN_FUNCTION (getSaltFromPayload) (Key * errorKey, Key * k, kdb_octet_t ** salt, kdb_unsigned_long_t * saltLen)
 {
 	static const size_t headerLen = sizeof (kdb_unsigned_long_t);
@@ -94,11 +94,11 @@ int CRYPTO_PLUGIN_FUNCTION (getSaltFromPayload) (Key * errorKey, Key * k, kdb_oc
 }
 
 /**
-* @brief read the encrypted password form the configuration and decrypt it.
-* @param errorKey holds an error description in case of failure.
-* @param config holds the plugin configuration.
-* @returns the decrypted master password as (Elektra) Key or NULL in case of error. Must be freed by the caller.
-*/
+ * @brief read the encrypted password form the configuration and decrypt it.
+ * @param errorKey holds an error description in case of failure.
+ * @param config holds the plugin configuration.
+ * @returns the decrypted master password as (Elektra) Key or NULL in case of error. Must be freed by the caller.
+ */
 Key * CRYPTO_PLUGIN_FUNCTION (getMasterPassword) (Key * errorKey, KeySet * config)
 {
 	Key * master = ksLookupByName (config, ELEKTRA_CRYPTO_PARAM_MASTER_PASSWORD, 0);

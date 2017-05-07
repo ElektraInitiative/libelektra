@@ -246,19 +246,21 @@ PluginSpec ModulesPluginDatabase::lookupMetadata (std::string const & which) con
 		try
 		{
 			// TODO remove /module hack
-			std::istringstream ss (
-				lookupInfo (PluginSpec (plugin, KeySet (5, *Key ("system/module", KEY_VALUE,
-										 "this plugin was loaded without a config", KEY_END),
-									KS_END)),
-					    "metadata"));
+			std::istringstream ss (lookupInfo (
+				PluginSpec (plugin,
+					    KeySet (5,
+						    *Key ("system/module", KEY_VALUE, "this plugin was loaded without a config", KEY_END),
+						    KS_END)),
+				"metadata"));
 			std::string metadata;
 			while (ss >> metadata)
 			{
 				if (metadata == which)
 				{
 					int s = calculateStatus (lookupInfo (
-						PluginSpec (plugin, KeySet (5, *Key ("system/module", KEY_VALUE,
-										     "this plugin was loaded without a config", KEY_END),
+						PluginSpec (plugin, KeySet (5,
+									    *Key ("system/module", KEY_VALUE,
+										  "this plugin was loaded without a config", KEY_END),
 									    KS_END)),
 						"status"));
 					foundPlugins.insert (std::make_pair (s, PluginSpec (plugin)));

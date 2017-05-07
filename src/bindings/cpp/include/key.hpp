@@ -1746,8 +1746,8 @@ inline int Key::del ()
 namespace std
 {
 /**
-	 * @brief Support for putting Key in a hash
-	 */
+ * @brief Support for putting Key in a hash
+ */
 template <>
 struct hash<kdb::Key>
 {

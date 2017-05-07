@@ -33,9 +33,9 @@ StorageEngine::StorageEngine ()
 
 /**
  * @brief Can be used to create an entry in the database.
- * 
+ *
  * Will add the entry and all subkeys to the database (configuration).
- * 
+ *
  * @param entry A custom Entry object holding information to store.
  * @return true if the entry was stored, false if something went wrong
  * @throws kdbrest::exception::EntryAlreadyExistsException in case an
@@ -86,9 +86,9 @@ bool StorageEngine::createEntry (model::Entry & entry)
 
 /**
  * @brief Allows for updating of a database entry.
- * 
+ *
  * Will renew the entry and all its subkeys (configuration).
- * 
+ *
  * @param entry A custom Entry object holding current information.
  * @return true if the entry was updated, false if not
  * @throw kdbrest::exception::EntryNotFoundException in case the entry
@@ -150,9 +150,9 @@ bool StorageEngine::updateEntry (model::Entry & entry)
 
 /**
  * @brief Allows for deleting of a database entry.
- * 
+ *
  * Will delete the entry iteself as well as all meta data and subkeys (configuration).
- * 
+ *
  * @param entry A custom Entry object that should be deleted.
  * @return true if the entry was deleted successfully, false otherwise
  * @throw kdbrest::exception::EntryNotFoundException in case the entry
@@ -211,8 +211,8 @@ bool StorageEngine::deleteEntry (model::Entry & entry)
 
 /**
  * @brief Checks if an entry exists
- * 
- * Can be used to determine if an entry with the given name 
+ *
+ * Can be used to determine if an entry with the given name
  * exists in the database or not.
  *
  * @param key A string containing the entry name
@@ -233,7 +233,7 @@ bool StorageEngine::entryExists (const std::string & key)
 
 /**
  * @brief attempts to retrieve an entry from the database
- * 
+ *
  * Can be used to get an entry from the database,
  * base on a given name.
  *
@@ -257,14 +257,14 @@ model::Entry StorageEngine::getEntry (const std::string & key)
 
 /**
  * @brief retrieves all entries from the database
- * 
+ *
  * Fetches all entries from the database and returns them
  * as a vector. The database keys will be converted into Entry
  * objects with their configuration stored as sub keys.
- * 
+ *
  * Returned will be a copy of the entry list that is currently in the
  * cache.
- * 
+ *
  * @param force If the cache should be re-fetched.
  * @return A vector containing all entries of the database
  */
@@ -283,16 +283,16 @@ std::vector<model::Entry> StorageEngine::getAllEntries (bool force)
 
 /**
  * @brief retireves all entries from the database
- * 
+ *
  * Fetches all entries from the database and returns them
  * as a vector. The database keys will be converted into Entry
  * objects with their configuration stored as sub keys.
- * 
- * Returned will be a reference to the entry list that is currently 
+ *
+ * Returned will be a reference to the entry list that is currently
  * in the cache. This reference should be used carefully, because
  * the list is not thread-safe. Should be used for search operations
  * only.
- * 
+ *
  * @param force If the cache should be re-fetched.
  * @return A vector containing all entries of the database
  */
@@ -348,9 +348,9 @@ void StorageEngine::loadAllEntries ()
 
 /**
  * @brief Can be used to create an user entry in the database.
- * 
+ *
  * Will add the user and all subkeys to the database (additional information).
- * 
+ *
  * @param user A custom User object holding information to store.
  * @return true if the user was stored, false if something went wrong
  * @throws kdbrest::exception::UserAlreadyExistsException in case an
@@ -398,9 +398,9 @@ bool StorageEngine::createUser (model::User & user)
 
 /**
  * @brief Allows for updating of an user entry.
- * 
+ *
  * Will renew the entry and all its subkeys (additional user information).
- * 
+ *
  * @param user A custom User object holding current information.
  * @return true if the user was updated, false if not
  * @throw kdbrest::exception::UserNotFoundException in case the user to
@@ -459,9 +459,9 @@ bool StorageEngine::updateUser (model::User & user)
 
 /**
  * @brief Allows for deleting of an user entry.
- * 
+ *
  * Will delete the entry iteself as well as all subkeys (additional user information).
- * 
+ *
  * @param user A custom User object that should be deleted.
  * @return true if the user was deleted successfully, false otherwise
  * @throw kdbrest::exception::UserNotFoundException in case the user
@@ -517,8 +517,8 @@ bool StorageEngine::deleteUser (model::User & user)
 
 /**
  * @brief checks if a user exists in the database
- * 
- * Can be used to determine if aa user with the given name 
+ *
+ * Can be used to determine if aa user with the given name
  * exists in the database or not.
  *
  * @param username A string containing the user name
@@ -539,7 +539,7 @@ bool StorageEngine::userExists (const std::string & username)
 
 /**
  * @brief retrieves a user from the database
- * 
+ *
  * Can be used to get a user from the database,
  * base on a given name.
  *
@@ -563,11 +563,11 @@ model::User StorageEngine::getUser (const std::string & username)
 
 /**
  * @brief retrieves all users from the database
- * 
+ *
  * Fetches all users from the database and returns them
  * as a vector. The database keys will be converted into User
  * objects with their personal information stored as sub keys.
- * 
+ *
  * @param force whether to force a cache refresh
  * @return A vector containing all users of the database
  */
@@ -586,14 +586,14 @@ std::vector<model::User> StorageEngine::getAllUsers (bool force)
 
 /**
  * @brief retrieves all users from the database
- * 
+ *
  * Fetches all users from the database and returns them
  * as a vector. The database keys will be converted into User
  * objects with their personal information stored as sub keys.
- * 
+ *
  * @note This function returns a reference to the internal cache.
  * Changes to the vector can therefore cause unexpected behavior!
- * 
+ *
  * @param force whether to force a cache refresh
  * @return A vector reference containing all users of the database
  */

@@ -1392,7 +1392,7 @@ TopSortCleanup:
 
 /**
  * returns the metakey array as a string separated by delim
- * 
+ *
  * @param key the key containing the metakey array
  * @param metaName the name of the metakey array parent
  * @param delim delimiter for the records in the returned string

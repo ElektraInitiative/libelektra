@@ -1,9 +1,9 @@
 /******************************************************************************
-* Nickel - a library for hierarchical maps and .ini files
-* One of the Bohr Game Libraries (see chaoslizard.org/devel/bohr)
-* Copyright (C) 2008 Charles Lindsay.  Some rights reserved; see COPYING.
-* $Id: nickel.c 339 2008-01-18 19:27:01Z chaz $
-******************************************************************************/
+ * Nickel - a library for hierarchical maps and .ini files
+ * One of the Bohr Game Libraries (see chaoslizard.org/devel/bohr)
+ * Copyright (C) 2008 Charles Lindsay.  Some rights reserved; see COPYING.
+ * $Id: nickel.c 339 2008-01-18 19:27:01Z chaz $
+ ******************************************************************************/
 
 
 #include "internal.h"

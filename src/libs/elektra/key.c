@@ -598,7 +598,7 @@ ssize_t keyDecRef (Key * key)
  *
  * You can even add the key to more KeySets:
  *
-* @snippet keyNew.c Ref in multiple KeySets
+ * @snippet keyNew.c Ref in multiple KeySets
  *
  * If you increment only by one with keyIncRef() the same as said above
  * is valid:
