@@ -1,10 +1,10 @@
 /******************************************************************************
-* Darmstadtium - a library of data structures
-* Ds_vector - a vector (growable array) library
-* One of the Bohr Game Libraries (see chaoslizard.org/devel/bohr)
-* Copyright (C) 2008 Charles Lindsay.  Some rights reserved; see COPYING.
-* $Id: ds_vector.h 317 2008-01-05 21:45:34Z chaz $
-******************************************************************************/
+ * Darmstadtium - a library of data structures
+ * Ds_vector - a vector (growable array) library
+ * One of the Bohr Game Libraries (see chaoslizard.org/devel/bohr)
+ * Copyright (C) 2008 Charles Lindsay.  Some rights reserved; see COPYING.
+ * $Id: ds_vector.h 317 2008-01-05 21:45:34Z chaz $
+ ******************************************************************************/
 
 
 // You must be careful about including this file multiple times.  Each time it's

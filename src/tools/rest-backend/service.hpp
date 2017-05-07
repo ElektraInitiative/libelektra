@@ -41,10 +41,10 @@ namespace service
 
 /**
  * @brief service offering search and filter functionality
- * 
+ *
  * Service that is responsible for doing search specific tasks such as
  * filtering a result set based on search parameters.
- * 
+ *
  * It is designed as singleton, so all applications using it will share
  * the same instance, which allows for further logic if necessary.
  */
@@ -68,12 +68,12 @@ private:
 
 /**
  * @brief service offering storage functionality
- * 
+ *
  * Service that is responsible for storing configuration and user
  * entries in the kdb database. Besides storing it is also capable of
  * updating and deleting of single entries, as well as looking up
  * single and multiple entries at the same time.
- * 
+ *
  * It is designed as singleton, so all applications using it will share
  * the same instance, which allows for further logic if necessary.
  */
@@ -119,10 +119,10 @@ private:
 
 /**
  * @brief service offering conversion functionality
- * 
+ *
  * Service that is responsible for converting configuration entries
  * into the various configuration formats with help of enabled plugins.
- * 
+ *
  * It is designed as singleton, so all applications using it will share
  * the same instance, which allows for further logic if necessary.
  */
@@ -170,7 +170,7 @@ const std::string REGEX_CHECK_KEY_IS_ARRAY =
 
 /**
  * @brief service offering application configuration retrieval
- * 
+ *
  * this service can be used to load the application configuration
  * on start up. it is based on elektra.
  */

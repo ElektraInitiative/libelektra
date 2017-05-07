@@ -50,7 +50,7 @@
  * @return a fresh allocated split object
  * @ingroup split
  * @see splitDel()
-**/
+ **/
 Split * splitNew (void)
 {
 	Split * ret = elektraCalloc (sizeof (Split));
@@ -696,7 +696,7 @@ int splitMerge (Split * split, KeySet * dest)
  * @param split the split object to work with
  * @ingroup split
  *
-**/
+ **/
 int splitSync (Split * split)
 {
 	int needsSync = 0;

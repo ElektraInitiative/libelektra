@@ -17,18 +17,18 @@
 #define MAX_NUMBER_SIZE 10
 
 /** @param name is a buffer with KDB_MAX_PATH_LENGTH space.
-  * @param fstabEntry will be used to get the name:
-  * @param swapIndex will count up for every swap
-  *
-  *   - mnt_type will be checked if it is swap
-  *
-  * TODO Improvements:
-  *   - no counting up of swap?
-  *   - handle mountpoints none?
-  *
-  * Some logic to define the filesystem name when it is not
-  * so obvious.
-  */
+ * @param fstabEntry will be used to get the name:
+ * @param swapIndex will count up for every swap
+ *
+ *   - mnt_type will be checked if it is swap
+ *
+ * TODO Improvements:
+ *   - no counting up of swap?
+ *   - handle mountpoints none?
+ *
+ * Some logic to define the filesystem name when it is not
+ * so obvious.
+ */
 void elektraFstabFsName (char * fsname, struct mntent * fstabEntry, unsigned int * swapIndex)
 {
 

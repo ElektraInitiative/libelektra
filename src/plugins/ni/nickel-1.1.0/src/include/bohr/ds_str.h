@@ -1,10 +1,10 @@
 /******************************************************************************
-* Darmstadtium - a library of data structures
-* Ds_str - a string library
-* One of the Bohr Game Libraries (see chaoslizard.org/devel/bohr)
-* Copyright (C) 2008 Charles Lindsay.  Some rights reserved; see COPYING.
-* $Id: ds_str.h 323 2008-01-06 03:55:26Z chaz $
-******************************************************************************/
+ * Darmstadtium - a library of data structures
+ * Ds_str - a string library
+ * One of the Bohr Game Libraries (see chaoslizard.org/devel/bohr)
+ * Copyright (C) 2008 Charles Lindsay.  Some rights reserved; see COPYING.
+ * $Id: ds_str.h 323 2008-01-06 03:55:26Z chaz $
+ ******************************************************************************/
 
 
 #ifndef __bohr_ds_str_h__

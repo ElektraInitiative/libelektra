@@ -20,7 +20,7 @@ static void gelektra_kdb_finalize (GObject * object)
 
 	/* Always chain up to the parent class; as with dispose(), finalize()
 	 * is guaranteed to exist on the parent's class virtual function table
-	*/
+	 */
 	G_OBJECT_CLASS (gelektra_kdb_parent_class)->finalize (object);
 }
 

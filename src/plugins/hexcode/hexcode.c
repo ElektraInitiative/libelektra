@@ -18,9 +18,9 @@
 #include <string.h>
 
 /**
-  * Gives the integer number 0-15 to a corresponding
-  * hex character '0'-'9', 'a'-'f' or 'A'-'F'.
-  */
+ * Gives the integer number 0-15 to a corresponding
+ * hex character '0'-'9', 'a'-'f' or 'A'-'F'.
+ */
 static inline int elektraHexcodeConvFromHex (char c)
 {
 	if (c == '0')
@@ -60,11 +60,11 @@ static inline int elektraHexcodeConvFromHex (char c)
 }
 
 /** Reads the value of the key and decodes all escaping
-  * codes into the buffer.
-  * @pre the buffer needs to be as large as value's size.
-  * @param cur the key holding the value to decode
-  * @param buf the buffer to write to
-  */
+ * codes into the buffer.
+ * @pre the buffer needs to be as large as value's size.
+ * @param cur the key holding the value to decode
+ * @param buf the buffer to write to
+ */
 void elektraHexcodeDecode (Key * cur, CHexData * hd)
 {
 	size_t valsize = keyGetValueSize (cur);
@@ -148,9 +148,9 @@ int elektraHexcodeGet (Plugin * handle, KeySet * returned, Key * parentKey)
 
 
 /**
-  * Gives the integer number 0-15 to a corresponding
-  * hex character '0'-'9', 'a'-'f' or 'A'-'F'.
-  */
+ * Gives the integer number 0-15 to a corresponding
+ * hex character '0'-'9', 'a'-'f' or 'A'-'F'.
+ */
 static inline char elektraHexcodeConvToHex (int c)
 {
 	switch (c)
@@ -194,12 +194,12 @@ static inline char elektraHexcodeConvToHex (int c)
 
 
 /** Reads the value of the key and encodes it in
-  * c-style in the buffer.
-  *
-  * @param cur the key which value is to encode
-  * @param buf the buffer
-  * @pre the buffer needs to have thrice as much space as the value's size
-  */
+ * c-style in the buffer.
+ *
+ * @param cur the key which value is to encode
+ * @param buf the buffer
+ * @pre the buffer needs to have thrice as much space as the value's size
+ */
 void elektraHexcodeEncode (Key * cur, CHexData * hd)
 {
 	size_t valsize = keyGetValueSize (cur);
