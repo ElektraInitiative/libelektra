@@ -230,12 +230,12 @@ static void test_primitiveSetters ()
 	elektraSetDouble (elektra, "doubleKey", 1.1, &error);
 	elektraSetLongDouble (elektra, "longDoubleKey", 1.1, &error);
 
-    if (error)
-    {
-        yield_error ("A setter failed");
-        printf ("ElektraError: %s\n", elektraErrorDescription (error));
-        elektraErrorReset (&error);
-    }
+	if (error)
+	{
+		yield_error ("A setter failed");
+		printf ("ElektraError: %s\n", elektraErrorDescription (error));
+		elektraErrorReset (&error);
+	}
 
 	succeed_if (!elektraStrCmp (elektraGetString (elektra, "stringKey"), "A string"), "Wrong key value.");
 	succeed_if (elektraGetBoolean (elektra, "booleanKey"), "Wrong key value.");
@@ -352,12 +352,12 @@ static void test_arraySetters ()
 	elektraSetLongDoubleArrayElement (elektra, "longDoubleArrayKey", 1.1, 0, &error);
 	elektraSetLongDoubleArrayElement (elektra, "longDoubleArrayKey", 2.1, 1, &error);
 
-    if (error)
-    {
-        yield_error ("A setter failed");
-        printf ("ElektraError: %s\n", elektraErrorDescription (error));
-        elektraErrorReset (&error);
-    }
+	if (error)
+	{
+		yield_error ("A setter failed");
+		printf ("ElektraError: %s\n", elektraErrorDescription (error));
+		elektraErrorReset (&error);
+	}
 
 	succeed_if (elektraArraySize (elektra, "stringArrayKey") == 2, "Wrong array size");
 	succeed_if (!elektraStrCmp (elektraGetStringArrayElement (elektra, "stringArrayKey", 0), "String 1"), "Wrong key value.");

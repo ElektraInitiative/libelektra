@@ -9,9 +9,9 @@
 #include "elektra.h"
 #include "elektra_error_private.h"
 #include "elektra_private.h"
-#include "kdbprivate.h"
 #include "kdberrors.h"
 #include "kdblogger.h"
+#include "kdbprivate.h"
 #include <memory.h>
 #include <stdlib.h>
 
@@ -36,10 +36,11 @@ static Key * generateLookupKey (Elektra * elektra, const char * name);
 static Key * lookup (Elektra * elektra, Key * key);
 static void checkType (Key * key, KDBType type);
 
-void setValueAsString (Elektra * elektra, const char * name, const char * value, KDBType type, ElektraError **error);
+void setValueAsString (Elektra * elektra, const char * name, const char * value, KDBType type, ElektraError ** error);
 static const char * getValueAsString (Elektra * elektra, const char * name, KDBType type);
 
-void setArrayElementValueAsString (Elektra * elektra, const char * name, const char * value, KDBType type, size_t index, ElektraError **error);
+void setArrayElementValueAsString (Elektra * elektra, const char * name, const char * value, KDBType type, size_t index,
+				   ElektraError ** error);
 static const char * getArrayElementValueAsString (Elektra * elektra, const char * name, KDBType type, size_t index);
 
 
@@ -84,134 +85,137 @@ void elektraClose (Elektra * elektra)
 
 // Primitive setters
 
-void elektraSetString (Elektra * elektra, const char * name, const char * value, ElektraError **error)
+void elektraSetString (Elektra * elektra, const char * name, const char * value, ElektraError ** error)
 {
 	setValueAsString (elektra, name, value, KDB_TYPE_STRING, error);
 }
 
-void elektraSetBoolean (Elektra * elektra, const char * name, kdb_boolean_t value, ElektraError **error)
+void elektraSetBoolean (Elektra * elektra, const char * name, kdb_boolean_t value, ElektraError ** error)
 {
 	setValueAsString (elektra, name, KDB_BOOLEAN_TO_STRING (value), KDB_TYPE_BOOLEAN, error);
 }
 
-void elektraSetChar (Elektra * elektra, const char * name, kdb_char_t value, ElektraError **error)
+void elektraSetChar (Elektra * elektra, const char * name, kdb_char_t value, ElektraError ** error)
 {
 	setValueAsString (elektra, name, KDB_CHAR_TO_STRING (value), KDB_TYPE_CHAR, error);
 }
 
-void elektraSetOctet (Elektra * elektra, const char * name, kdb_octet_t value, ElektraError **error)
+void elektraSetOctet (Elektra * elektra, const char * name, kdb_octet_t value, ElektraError ** error)
 {
 	setValueAsString (elektra, name, KDB_OCTET_TO_STRING (value), KDB_TYPE_OCTET, error);
 }
 
-void elektraSetShort (Elektra * elektra, const char * name, kdb_short_t value, ElektraError **error)
+void elektraSetShort (Elektra * elektra, const char * name, kdb_short_t value, ElektraError ** error)
 {
 	setValueAsString (elektra, name, KDB_SHORT_TO_STRING (value), KDB_TYPE_SHORT, error);
 }
 
-void elektraSetUnsignedShort (Elektra * elektra, const char * name, kdb_unsigned_short_t value, ElektraError **error)
+void elektraSetUnsignedShort (Elektra * elektra, const char * name, kdb_unsigned_short_t value, ElektraError ** error)
 {
 	setValueAsString (elektra, name, KDB_UNSIGNED_SHORT_TO_STRING (value), KDB_TYPE_UNSIGNED_SHORT, error);
 }
 
-void elektraSetLong (Elektra * elektra, const char * name, kdb_long_t value, ElektraError **error)
+void elektraSetLong (Elektra * elektra, const char * name, kdb_long_t value, ElektraError ** error)
 {
 	setValueAsString (elektra, name, KDB_LONG_TO_STRING (value), KDB_TYPE_LONG, error);
 }
 
-void elektraSetUnsignedLong (Elektra * elektra, const char * name, kdb_unsigned_long_t value, ElektraError **error)
+void elektraSetUnsignedLong (Elektra * elektra, const char * name, kdb_unsigned_long_t value, ElektraError ** error)
 {
 	setValueAsString (elektra, name, KDB_UNSIGNED_LONG_TO_STRING (value), KDB_TYPE_UNSIGNED_LONG, error);
 }
 
-void elektraSetLongLong (Elektra * elektra, const char * name, kdb_long_long_t value, ElektraError **error)
+void elektraSetLongLong (Elektra * elektra, const char * name, kdb_long_long_t value, ElektraError ** error)
 {
 	setValueAsString (elektra, name, KDB_LONG_LONG_TO_STRING (value), KDB_TYPE_LONG_LONG, error);
 }
 
-void elektraSetUnsignedLongLong (Elektra * elektra, const char * name, kdb_unsigned_long_long_t value, ElektraError **error)
+void elektraSetUnsignedLongLong (Elektra * elektra, const char * name, kdb_unsigned_long_long_t value, ElektraError ** error)
 {
 	setValueAsString (elektra, name, KDB_UNSIGNED_LONG_LONG_TO_STRING (value), KDB_TYPE_UNSIGNED_LONG_LONG, error);
 }
 
-void elektraSetFloat (Elektra * elektra, const char * name, kdb_float_t value, ElektraError **error)
+void elektraSetFloat (Elektra * elektra, const char * name, kdb_float_t value, ElektraError ** error)
 {
 	setValueAsString (elektra, name, KDB_FLOAT_TO_STRING (value), KDB_TYPE_FLOAT, error);
 }
 
-void elektraSetDouble (Elektra * elektra, const char * name, kdb_double_t value, ElektraError **error)
+void elektraSetDouble (Elektra * elektra, const char * name, kdb_double_t value, ElektraError ** error)
 {
 	setValueAsString (elektra, name, KDB_DOUBLE_TO_STRING (value), KDB_TYPE_DOUBLE, error);
 }
 
-void elektraSetLongDouble (Elektra * elektra, const char * name, kdb_long_double_t value, ElektraError **error)
+void elektraSetLongDouble (Elektra * elektra, const char * name, kdb_long_double_t value, ElektraError ** error)
 {
 	setValueAsString (elektra, name, KDB_LONG_DOUBLE_TO_STRING (value), KDB_TYPE_LONG_DOUBLE, error);
 }
 
 // Array setters
 
-void elektraSetStringArrayElement (Elektra * elektra, const char * name, const char * value, size_t index, ElektraError **error)
+void elektraSetStringArrayElement (Elektra * elektra, const char * name, const char * value, size_t index, ElektraError ** error)
 {
 	setArrayElementValueAsString (elektra, name, value, KDB_TYPE_STRING, index, error);
 }
 
-void elektraSetBooleanArrayElement (Elektra * elektra, const char * name, kdb_boolean_t value, size_t index, ElektraError **error)
+void elektraSetBooleanArrayElement (Elektra * elektra, const char * name, kdb_boolean_t value, size_t index, ElektraError ** error)
 {
 	setArrayElementValueAsString (elektra, name, KDB_BOOLEAN_TO_STRING (value), KDB_TYPE_BOOLEAN, index, error);
 }
 
-void elektraSetCharArrayElement (Elektra * elektra, const char * name, kdb_char_t value, size_t index, ElektraError **error)
+void elektraSetCharArrayElement (Elektra * elektra, const char * name, kdb_char_t value, size_t index, ElektraError ** error)
 {
 	setArrayElementValueAsString (elektra, name, KDB_CHAR_TO_STRING (value), KDB_TYPE_CHAR, index, error);
 }
 
-void elektraSetOctetArrayElement (Elektra * elektra, const char * name, kdb_octet_t value, size_t index, ElektraError **error)
+void elektraSetOctetArrayElement (Elektra * elektra, const char * name, kdb_octet_t value, size_t index, ElektraError ** error)
 {
 	setArrayElementValueAsString (elektra, name, KDB_OCTET_TO_STRING (value), KDB_TYPE_OCTET, index, error);
 }
 
-void elektraSetShortArrayElement (Elektra * elektra, const char * name, kdb_short_t value, size_t index, ElektraError **error)
+void elektraSetShortArrayElement (Elektra * elektra, const char * name, kdb_short_t value, size_t index, ElektraError ** error)
 {
 	setArrayElementValueAsString (elektra, name, KDB_SHORT_TO_STRING (value), KDB_TYPE_SHORT, index, error);
 }
 
-void elektraSetUnsignedShortArrayElement (Elektra * elektra, const char * name, kdb_unsigned_short_t value, size_t index, ElektraError **error)
+void elektraSetUnsignedShortArrayElement (Elektra * elektra, const char * name, kdb_unsigned_short_t value, size_t index,
+					  ElektraError ** error)
 {
 	setArrayElementValueAsString (elektra, name, KDB_UNSIGNED_SHORT_TO_STRING (value), KDB_TYPE_UNSIGNED_SHORT, index, error);
 }
 
-void elektraSetLongArrayElement (Elektra * elektra, const char * name, kdb_long_t value, size_t index, ElektraError **error)
+void elektraSetLongArrayElement (Elektra * elektra, const char * name, kdb_long_t value, size_t index, ElektraError ** error)
 {
 	setArrayElementValueAsString (elektra, name, KDB_LONG_TO_STRING (value), KDB_TYPE_LONG, index, error);
 }
 
-void elektraSetUnsignedLongArrayElement (Elektra * elektra, const char * name, kdb_unsigned_long_t value, size_t index, ElektraError **error)
+void elektraSetUnsignedLongArrayElement (Elektra * elektra, const char * name, kdb_unsigned_long_t value, size_t index,
+					 ElektraError ** error)
 {
 	setArrayElementValueAsString (elektra, name, KDB_UNSIGNED_LONG_TO_STRING (value), KDB_TYPE_UNSIGNED_LONG, index, error);
 }
 
-void elektraSetLongLongArrayElement (Elektra * elektra, const char * name, kdb_long_long_t value, size_t index, ElektraError **error)
+void elektraSetLongLongArrayElement (Elektra * elektra, const char * name, kdb_long_long_t value, size_t index, ElektraError ** error)
 {
 	setArrayElementValueAsString (elektra, name, KDB_LONG_LONG_TO_STRING (value), KDB_TYPE_LONG_LONG, index, error);
 }
 
-void elektraSetUnsignedLongLongArrayElement (Elektra * elektra, const char * name, kdb_unsigned_long_long_t value, size_t index, ElektraError **error)
+void elektraSetUnsignedLongLongArrayElement (Elektra * elektra, const char * name, kdb_unsigned_long_long_t value, size_t index,
+					     ElektraError ** error)
 {
 	setArrayElementValueAsString (elektra, name, KDB_UNSIGNED_LONG_TO_STRING (value), KDB_TYPE_UNSIGNED_LONG_LONG, index, error);
 }
 
-void elektraSetFloatArrayElement (Elektra * elektra, const char * name, kdb_float_t value, size_t index, ElektraError **error)
+void elektraSetFloatArrayElement (Elektra * elektra, const char * name, kdb_float_t value, size_t index, ElektraError ** error)
 {
 	setArrayElementValueAsString (elektra, name, KDB_FLOAT_TO_STRING (value), KDB_TYPE_FLOAT, index, error);
 }
 
-void elektraSetDoubleArrayElement (Elektra * elektra, const char * name, kdb_double_t value, size_t index, ElektraError **error)
+void elektraSetDoubleArrayElement (Elektra * elektra, const char * name, kdb_double_t value, size_t index, ElektraError ** error)
 {
 	setArrayElementValueAsString (elektra, name, KDB_DOUBLE_TO_STRING (value), KDB_TYPE_DOUBLE, index, error);
 }
 
-void elektraSetLongDoubleArrayElement (Elektra * elektra, const char * name, kdb_long_double_t value, size_t index, ElektraError **error)
+void elektraSetLongDoubleArrayElement (Elektra * elektra, const char * name, kdb_long_double_t value, size_t index, ElektraError ** error)
 {
 	setArrayElementValueAsString (elektra, name, KDB_LONG_DOUBLE_TO_STRING (value), KDB_TYPE_LONG_DOUBLE, index, error);
 }
@@ -363,7 +367,7 @@ kdb_long_double_t elektraGetLongDoubleArrayElement (Elektra * elektra, const cha
 
 // Private functions
 
-void setValueAsString (Elektra * elektra, const char * name, const char * value, KDBType type, ElektraError **error)
+void setValueAsString (Elektra * elektra, const char * name, const char * value, KDBType type, ElektraError ** error)
 {
 	int ret = 0;
 	do
@@ -378,7 +382,8 @@ void setValueAsString (Elektra * elektra, const char * name, const char * value,
 		if (ret == -1)
 		{
 			ElektraError * kdbSetError = elektraErrorCreateFromKey (elektra->parentKey);
-			if (elektraErrorCode (kdbSetError) != ELEKTRA_ERROR_CONFLICT) {
+			if (elektraErrorCode (kdbSetError) != ELEKTRA_ERROR_CONFLICT)
+			{
 				*error = kdbSetError;
 				return;
 			}
@@ -403,7 +408,8 @@ static const char * getValueAsString (Elektra * elektra, const char * name, KDBT
 	return keyString (resultKey);
 }
 
-void setArrayElementValueAsString (Elektra * elektra, const char * name, const char * value, KDBType type, size_t index, ElektraError **error)
+void setArrayElementValueAsString (Elektra * elektra, const char * name, const char * value, KDBType type, size_t index,
+				   ElektraError ** error)
 {
 	int ret = 0;
 	do
@@ -424,7 +430,8 @@ void setArrayElementValueAsString (Elektra * elektra, const char * name, const c
 		if (ret == -1)
 		{
 			ElektraError * kdbSetError = elektraErrorCreateFromKey (elektra->parentKey);
-			if (elektraErrorCode (kdbSetError) != ELEKTRA_ERROR_CONFLICT) {
+			if (elektraErrorCode (kdbSetError) != ELEKTRA_ERROR_CONFLICT)
+			{
 				*error = kdbSetError;
 				return;
 			}
