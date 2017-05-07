@@ -12,6 +12,7 @@
 #include "kdbprivate.h"
 #include "elektra_private.h"
 #include "elektra_error_private.h"
+#include <kdblogger.h>
 
 #include "stdio.h"
 
@@ -378,7 +379,7 @@ void setValueAsString (Elektra * elektra, const char * name, const char * value,
             Key * problemKey = ksCurrent (elektra->config);
             if (problemKey != NULL)
             {
-//                ELEKTRA_LOG_DEBUG("problemKey: %s\n", keyName (problemKey));
+                ELEKTRA_LOG_DEBUG("problemKey: %s\n", keyName (problemKey));
             }
 
             kdbGet (elektra->kdb, elektra->config, elektra->parentKey);
@@ -418,7 +419,7 @@ void setArrayElementValueAsString (Elektra * elektra, const char * name, const c
             Key * problemKey = ksCurrent (elektra->config);
             if (problemKey != NULL)
             {
-//                ELEKTRA_LOG_DEBUG("problemKey: %s\n", keyName (problemKey));
+                ELEKTRA_LOG_DEBUG("problemKey: %s\n", keyName (problemKey));
             }
 
             kdbGet (elektra->kdb, elektra->config, elektra->parentKey);
@@ -456,7 +457,7 @@ static Key * lookup (Elektra * elektra, Key * key)
     Key * const resultKey = ksLookup (elektra->config, key, 0);
     if (resultKey == NULL)
     {
-//        ELEKTRA_LOG_DEBUG("Key not found: %s\n", keyName (key));
+        ELEKTRA_LOG_DEBUG("Key not found: %s\n", keyName (key));
         exit (EXIT_FAILURE);
     }
 
@@ -467,7 +468,7 @@ static void checkType (Key * key, KDBType type)
 {
     if (strcmp (keyString (keyGetMeta (key, "type")), type))
     {
-//        ELEKTRA_LOG_DEBUG("Wrong type. Should be: %s\n", type);
+        ELEKTRA_LOG_DEBUG("Wrong type. Should be: %s\n", type);
         exit (EXIT_FAILURE);
     }
 }
