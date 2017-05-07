@@ -23,100 +23,92 @@ void elektraClose (Elektra * elektra);
  * @param name The keyname to look up. The keyname is appended to the parent key.
  * @param value The new value.
  */
-void elektraSetString (Elektra * elektra, const char * name, const char * value);
+void elektraSetString (Elektra * elektra, const char * name, const char * value, ElektraError **error);
 
 /**
  * @param elektra The elektra instance initialized with the parent key.
  * @param name The keyname to look up. The keyname is appended to the parent key.
  * @param value The new value.
  */
-void elektraSetBoolean (Elektra * elektra, const char * name, kdb_boolean_t value);
+void elektraSetBoolean (Elektra * elektra, const char * name, kdb_boolean_t value, ElektraError **error);
 
 /**
  * @param elektra The elektra instance initialized with the parent key.
  * @param name The keyname to look up. The keyname is appended to the parent key.
  * @param value The new value.
  */
-void elektraSetChar (Elektra * elektra, const char * name, kdb_char_t value);
+void elektraSetChar (Elektra * elektra, const char * name, kdb_char_t value, ElektraError **error);
 
 /**
  * @param elektra The elektra instance initialized with the parent key.
  * @param name The keyname to look up. The keyname is appended to the parent key.
  * @param value The new value.
  */
-void elektraSetOctet (Elektra * elektra, const char * name, kdb_octet_t value);
+void elektraSetOctet (Elektra * elektra, const char * name, kdb_octet_t value, ElektraError **error);
 
 /**
  * @param elektra The elektra instance initialized with the parent key.
  * @param name The keyname to look up. The keyname is appended to the parent key.
  * @param value The new value.
  */
-void elektraSetShort (Elektra * elektra, const char * name, kdb_short_t value);
+void elektraSetShort (Elektra * elektra, const char * name, kdb_short_t value, ElektraError **error);
 
 /**
  * @param elektra The elektra instance initialized with the parent key.
  * @param name The keyname to look up. The keyname is appended to the parent key.
  * @param value The new value.
  */
-void elektraSetUnsignedShort (Elektra * elektra, const char * name, kdb_unsigned_short_t value);
+void elektraSetUnsignedShort (Elektra * elektra, const char * name, kdb_unsigned_short_t value, ElektraError **error);
 
 /**
  * @param elektra The elektra instance initialized with the parent key.
  * @param name The keyname to look up. The keyname is appended to the parent key.
  * @param value The new value.
  */
-void elektraSetLong (Elektra * elektra, const char * name, kdb_long_t value);
+void elektraSetLong (Elektra * elektra, const char * name, kdb_long_t value, ElektraError **error);
 
 /**
  * @param elektra The elektra instance initialized with the parent key.
  * @param name The keyname to look up. The keyname is appended to the parent key.
  * @param value The new value.
  */
-void elektraSetUnsignedLong (Elektra * elektra, const char * name, kdb_unsigned_long_t value);
+void elektraSetUnsignedLong (Elektra * elektra, const char * name, kdb_unsigned_long_t value, ElektraError **error);
 
 /**
  * @param elektra The elektra instance initialized with the parent key.
  * @param name The keyname to look up. The keyname is appended to the parent key.
  * @param value The new value.
  */
-void elektraSetLongLong (Elektra * elektra, const char * name, kdb_long_long_t value);
+void elektraSetLongLong (Elektra * elektra, const char * name, kdb_long_long_t value, ElektraError **error);
 
 /**
  * @param elektra The elektra instance initialized with the parent key.
  * @param name The keyname to look up. The keyname is appended to the parent key.
  * @param value The new value.
  */
-void elektraSetUnsignedLongLong (Elektra * elektra, const char * name, kdb_unsigned_long_long_t value);
+void elektraSetUnsignedLongLong (Elektra * elektra, const char * name, kdb_unsigned_long_long_t value, ElektraError **error);
 
 /**
  * @param elektra The elektra instance initialized with the parent key.
  * @param name The keyname to look up. The keyname is appended to the parent key.
  * @param value The new value.
  */
-void elektraSetFloat (Elektra * elektra, const char * name, kdb_float_t value);
+void elektraSetFloat (Elektra * elektra, const char * name, kdb_float_t value, ElektraError **error);
 
 /**
  * @param elektra The elektra instance initialized with the parent key.
  * @param name The keyname to look up. The keyname is appended to the parent key.
  * @param value The new value.
  */
-void elektraSetDouble (Elektra * elektra, const char * name, kdb_double_t value);
+void elektraSetDouble (Elektra * elektra, const char * name, kdb_double_t value, ElektraError **error);
 
 /**
  * @param elektra The elektra instance initialized with the parent key.
  * @param name The keyname to look up. The keyname is appended to the parent key.
  * @param value The new value.
  */
-void elektraSetLongDouble (Elektra * elektra, const char * name, kdb_long_double_t value);
+void elektraSetLongDouble (Elektra * elektra, const char * name, kdb_long_double_t value, ElektraError **error);
 
-
-/**
- * @param elektra The elektra instance initialized with the parent key.
- * @param name The keyname to look up. The keyname is appended to the parent key.
- * @param value The new value.
- * @param index The array index of the desired element, starting with 0.
- */
-void elektraSetStringArrayElement (Elektra * elektra, const char * name, const char * value, size_t index);
 
 /**
  * @param elektra The elektra instance initialized with the parent key.
@@ -124,7 +116,7 @@ void elektraSetStringArrayElement (Elektra * elektra, const char * name, const c
  * @param value The new value.
  * @param index The array index of the desired element, starting with 0.
  */
-void elektraSetBooleanArrayElement (Elektra * elektra, const char * name, kdb_boolean_t value, size_t index);
+void elektraSetStringArrayElement (Elektra * elektra, const char * name, const char * value, size_t index, ElektraError **error);
 
 /**
  * @param elektra The elektra instance initialized with the parent key.
@@ -132,7 +124,7 @@ void elektraSetBooleanArrayElement (Elektra * elektra, const char * name, kdb_bo
  * @param value The new value.
  * @param index The array index of the desired element, starting with 0.
  */
-void elektraSetCharArrayElement (Elektra * elektra, const char * name, kdb_char_t value, size_t index);
+void elektraSetBooleanArrayElement (Elektra * elektra, const char * name, kdb_boolean_t value, size_t index, ElektraError **error);
 
 /**
  * @param elektra The elektra instance initialized with the parent key.
@@ -140,7 +132,7 @@ void elektraSetCharArrayElement (Elektra * elektra, const char * name, kdb_char_
  * @param value The new value.
  * @param index The array index of the desired element, starting with 0.
  */
-void elektraSetOctetArrayElement (Elektra * elektra, const char * name, kdb_octet_t value, size_t index);
+void elektraSetCharArrayElement (Elektra * elektra, const char * name, kdb_char_t value, size_t index, ElektraError **error);
 
 /**
  * @param elektra The elektra instance initialized with the parent key.
@@ -148,7 +140,7 @@ void elektraSetOctetArrayElement (Elektra * elektra, const char * name, kdb_octe
  * @param value The new value.
  * @param index The array index of the desired element, starting with 0.
  */
-void elektraSetShortArrayElement (Elektra * elektra, const char * name, kdb_short_t value, size_t index);
+void elektraSetOctetArrayElement (Elektra * elektra, const char * name, kdb_octet_t value, size_t index, ElektraError **error);
 
 /**
  * @param elektra The elektra instance initialized with the parent key.
@@ -156,7 +148,7 @@ void elektraSetShortArrayElement (Elektra * elektra, const char * name, kdb_shor
  * @param value The new value.
  * @param index The array index of the desired element, starting with 0.
  */
-void elektraSetUnsignedShortArrayElement (Elektra * elektra, const char * name, kdb_unsigned_short_t value, size_t index);
+void elektraSetShortArrayElement (Elektra * elektra, const char * name, kdb_short_t value, size_t index, ElektraError **error);
 
 /**
  * @param elektra The elektra instance initialized with the parent key.
@@ -164,7 +156,7 @@ void elektraSetUnsignedShortArrayElement (Elektra * elektra, const char * name, 
  * @param value The new value.
  * @param index The array index of the desired element, starting with 0.
  */
-void elektraSetLongArrayElement (Elektra * elektra, const char * name, kdb_long_t value, size_t index);
+void elektraSetUnsignedShortArrayElement (Elektra * elektra, const char * name, kdb_unsigned_short_t value, size_t index, ElektraError **error);
 
 /**
  * @param elektra The elektra instance initialized with the parent key.
@@ -172,7 +164,7 @@ void elektraSetLongArrayElement (Elektra * elektra, const char * name, kdb_long_
  * @param value The new value.
  * @param index The array index of the desired element, starting with 0.
  */
-void elektraSetUnsignedLongArrayElement (Elektra * elektra, const char * name, kdb_unsigned_long_t value, size_t index);
+void elektraSetLongArrayElement (Elektra * elektra, const char * name, kdb_long_t value, size_t index, ElektraError **error);
 
 /**
  * @param elektra The elektra instance initialized with the parent key.
@@ -180,7 +172,7 @@ void elektraSetUnsignedLongArrayElement (Elektra * elektra, const char * name, k
  * @param value The new value.
  * @param index The array index of the desired element, starting with 0.
  */
-void elektraSetLongLongArrayElement (Elektra * elektra, const char * name, kdb_long_long_t value, size_t index);
+void elektraSetUnsignedLongArrayElement (Elektra * elektra, const char * name, kdb_unsigned_long_t value, size_t index, ElektraError **error);
 
 /**
  * @param elektra The elektra instance initialized with the parent key.
@@ -188,7 +180,7 @@ void elektraSetLongLongArrayElement (Elektra * elektra, const char * name, kdb_l
  * @param value The new value.
  * @param index The array index of the desired element, starting with 0.
  */
-void elektraSetUnsignedLongLongArrayElement (Elektra * elektra, const char * name, kdb_unsigned_long_long_t value, size_t index);
+void elektraSetLongLongArrayElement (Elektra * elektra, const char * name, kdb_long_long_t value, size_t index, ElektraError **error);
 
 /**
  * @param elektra The elektra instance initialized with the parent key.
@@ -196,7 +188,7 @@ void elektraSetUnsignedLongLongArrayElement (Elektra * elektra, const char * nam
  * @param value The new value.
  * @param index The array index of the desired element, starting with 0.
  */
-void elektraSetFloatArrayElement (Elektra * elektra, const char * name, kdb_float_t value, size_t index);
+void elektraSetUnsignedLongLongArrayElement (Elektra * elektra, const char * name, kdb_unsigned_long_long_t value, size_t index, ElektraError **error);
 
 /**
  * @param elektra The elektra instance initialized with the parent key.
@@ -204,7 +196,7 @@ void elektraSetFloatArrayElement (Elektra * elektra, const char * name, kdb_floa
  * @param value The new value.
  * @param index The array index of the desired element, starting with 0.
  */
-void elektraSetDoubleArrayElement (Elektra * elektra, const char * name, kdb_double_t value, size_t index);
+void elektraSetFloatArrayElement (Elektra * elektra, const char * name, kdb_float_t value, size_t index, ElektraError **error);
 
 /**
  * @param elektra The elektra instance initialized with the parent key.
@@ -212,7 +204,15 @@ void elektraSetDoubleArrayElement (Elektra * elektra, const char * name, kdb_dou
  * @param value The new value.
  * @param index The array index of the desired element, starting with 0.
  */
-void elektraSetLongDoubleArrayElement (Elektra * elektra, const char * name, kdb_long_double_t value, size_t index);
+void elektraSetDoubleArrayElement (Elektra * elektra, const char * name, kdb_double_t value, size_t index, ElektraError **error);
+
+/**
+ * @param elektra The elektra instance initialized with the parent key.
+ * @param name The keyname to look up. The keyname is appended to the parent key.
+ * @param value The new value.
+ * @param index The array index of the desired element, starting with 0.
+ */
+void elektraSetLongDoubleArrayElement (Elektra * elektra, const char * name, kdb_long_double_t value, size_t index, ElektraError **error);
 
 /**
  * @param elektra The elektra instance initialized with the parent key.
