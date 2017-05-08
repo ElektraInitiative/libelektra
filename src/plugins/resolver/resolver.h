@@ -11,12 +11,13 @@
 
 #define _GNU_SOURCE // needed for recursive mutex
 
+#include "shared.h"
+
 #include <sys/stat.h>
 
 #include <kdbconfig.h>
 #include <kdberrors.h>
 #include <kdbplugin.h>
-#include <kdbproposal.h>
 #include <sys/types.h>
 #include <unistd.h>
 
