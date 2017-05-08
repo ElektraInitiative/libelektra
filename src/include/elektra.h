@@ -15,7 +15,12 @@
 
 typedef struct _Elektra Elektra;
 
-Elektra * elektraOpen (const char * application, ElektraError ** error);
+/**
+ * @param application The identifier for your application.
+ * @param defaults A KeySet containing default values. Passing NULL means "no default values".
+ * @return An elektra instance initialized with the application.
+ */
+Elektra * elektraOpen (const char * application, KeySet * defaults, ElektraError ** error);
 void elektraClose (Elektra * elektra);
 
 /**
