@@ -102,32 +102,32 @@ static inline Codes rvToRc (int rc)
 static int elektraResolveFilename (Key * parentKey, ElektraResolveTempfile tmpFile)
 {
 	int rc = 0;
-	void * handle = elektraInvokeInitialize("resolver");
-    if(!handle)
-    {
-        rc = -1;
-        goto RESOLVE_FAILED;
-    }
-    ElektraResolved * resolved = NULL;
+	void * handle = elektraInvokeInitialize ("resolver");
+	if (!handle)
+	{
+		rc = -1;
+		goto RESOLVE_FAILED;
+	}
+	ElektraResolved * resolved = NULL;
 	typedef ElektraResolved * (*resolveFileFunc) (elektraNamespace, const char *, ElektraResolveTempfile, Key *);
-	resolveFileFunc resolveFunc = *(resolveFileFunc *)elektraInvokeGetFunction(handle, "filename");
-    
-    if(!resolveFunc)
-    {
-        rc = -1;
-        goto RESOLVE_FAILED;
-    }
-	
-    typedef void (*freeHandleFunc) (ElektraResolved *);
-	freeHandleFunc freeHandle = *(freeHandleFunc *)elektraInvokeGetFunction(handle, "freeHandle");
-	
-    if(!freeHandle)
-    {
-        rc = -1;
-        goto RESOLVE_FAILED;
-    }
+	resolveFileFunc resolveFunc = *(resolveFileFunc *)elektraInvokeGetFunction (handle, "filename");
 
-    resolved = resolveFunc (keyGetNamespace (parentKey), keyString (parentKey), tmpFile, parentKey);
+	if (!resolveFunc)
+	{
+		rc = -1;
+		goto RESOLVE_FAILED;
+	}
+
+	typedef void (*freeHandleFunc) (ElektraResolved *);
+	freeHandleFunc freeHandle = *(freeHandleFunc *)elektraInvokeGetFunction (handle, "freeHandle");
+
+	if (!freeHandle)
+	{
+		rc = -1;
+		goto RESOLVE_FAILED;
+	}
+
+	resolved = resolveFunc (keyGetNamespace (parentKey), keyString (parentKey), tmpFile, parentKey);
 
 	if (!resolved)
 	{
@@ -141,8 +141,8 @@ static int elektraResolveFilename (Key * parentKey, ElektraResolveTempfile tmpFi
 	}
 
 RESOLVE_FAILED:
-	elektraInvokeClose(handle);
-    return rc;
+	elektraInvokeClose (handle);
+	return rc;
 }
 
 int elektraMultifileCheckFile (const char * filename)
