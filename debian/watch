@@ -1,0 +1,4 @@
+version = 3
+
+http://www.libelektra.org/ftp/elektra/releases/elektra-(.*)\.tar\.gz
+

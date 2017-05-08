@@ -1,0 +1,284 @@
+Source: elektra
+Section: libs
+Priority: optional
+Maintainer: Simon Law <sfllaw@debian.org>
+Uploaders: Pier Luigi Fiorini <pierluigi.fiorini@mockup.org>
+Build-Depends: debhelper (>= 8),
+ libxml2-dev,
+ doxygen,
+ libboost-dev,
+ cmake,
+ libdbus-1-dev,
+ libaugeas-dev (>= 1.0.0),
+ libyajl-dev,
+ python2.7-dev,
+ liblua5.2-dev,
+ libsystemd-journal-dev
+Standards-Version: 3.9.4
+Homepage: http://www.libelektra.org
+Vcs-Browser: http://gitorious.org/elektra-initiative/libelektra/commits/debian
+Vcs-git: git://gitorious.org/elektra-initiative/libelektra.git
+
+Package: libelektra-all
+Architecture: any
+Depends: libelektra-core4,
+ libelektra-dev,
+ libelektra-full4,
+ libelektra-bin,
+ libelektra-test,
+ libelektra-augeas4,
+ libelektra-xmltool4,
+ libelektra-yajl4,
+ libelektra-dbus4,
+ libelektra-gen,
+ ${misc:Depends}
+Description: development files for a framework to get and set configuration
+ Elektra provides a universal and secure framework to store
+ configuration parameters in a global, hierarchical key database. The
+ core is a small library implemented in C. The plugin-based framework
+ fulfills many configuration-related tasks to avoid any unnecessary code
+ duplication across applications while it still allows the core to stay
+ without any external dependency. Elektra abstracts from
+ cross-platform-related issues with an consistent API, and allows
+ applications to be aware of other applications' configurations,
+ leveraging easy application integration.
+ .
+ This meta-package installs all other packages related to Elektra.
+
+Package: libelektra-dev
+Section: libdevel
+Architecture: any
+Depends: libelektra-core4 (= ${binary:Version}),
+ libc6-dev,
+ ${misc:Depends}
+Description: development files for a framework to get and set configuration
+ Elektra provides a universal and secure framework to store
+ configuration parameters in a global, hierarchical key database. The
+ core is a small library implemented in C. The plugin-based framework
+ fulfills many configuration-related tasks to avoid any unnecessary code
+ duplication across applications while it still allows the core to stay
+ without any external dependency. Elektra abstracts from
+ cross-platform-related issues with an consistent API, and allows
+ applications to be aware of other applications' configurations,
+ leveraging easy application integration.
+ .
+ This package contains the files needed to compile and link
+ programs which use Elektra.
+ It also contains the static library.
+
+Package: libelektra-doc
+Section: doc
+Architecture: all
+Depends: ${misc:Depends}
+Description: development files for a framework to get and set configuration
+ Elektra provides a universal and secure framework to store
+ configuration parameters in a global, hierarchical key database. The
+ core is a small library implemented in C. The plugin-based framework
+ fulfills many configuration-related tasks to avoid any unnecessary code
+ duplication across applications while it still allows the core to stay
+ without any external dependency. Elektra abstracts from
+ cross-platform-related issues with an consistent API, and allows
+ applications to be aware of other applications' configurations,
+ leveraging easy application integration.
+ .
+ This package contains the html documentation.
+
+Package: libelektra-core4
+Architecture: any
+Depends: ${shlibs:Depends},
+ ${misc:Depends}
+Description: a framework to get and set configuration
+ Elektra provides a universal and secure framework to store
+ configuration parameters in a global, hierarchical key database. The
+ core is a small library implemented in C. The plugin-based framework
+ fulfills many configuration-related tasks to avoid any unnecessary code
+ duplication across applications while it still allows the core to stay
+ without any external dependency. Elektra abstracts from
+ cross-platform-related issues with an consistent API, and allows
+ applications to be aware of other applications' configurations,
+ leveraging easy application integration.
+ .
+ This package contains the core with the set of plugins
+ only having dependencies to essential packages.
+
+Package: libelektra-full4
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: full variant of a framework to get and set configuration
+ Elektra provides a universal and secure framework to store
+ configuration parameters in a global, hierarchical key database. The
+ core is a small library implemented in C. The plugin-based framework
+ fulfills many configuration-related tasks to avoid any unnecessary code
+ duplication across applications while it still allows the core to stay
+ without any external dependency. Elektra abstracts from
+ cross-platform-related issues with an consistent API, and allows
+ applications to be aware of other applications' configurations,
+ leveraging easy application integration.
+ .
+ This package contains a library with all plugins linked together.
+
+Package: libelektra-bin
+Section: admin
+Architecture: any
+Depends: libelektra-core4 (>= ${source:Version}),
+ ${shlibs:Depends},
+ ${misc:Depends}
+Description: cli tool for a framework to get and set configuration
+ Elektra provides a universal and secure framework to store
+ configuration parameters in a global, hierarchical key database. The
+ core is a small library implemented in C. The plugin-based framework
+ fulfills many configuration-related tasks to avoid any unnecessary code
+ duplication across applications while it still allows the core to stay
+ without any external dependency. Elektra abstracts from
+ cross-platform-related issues with an consistent API, and allows
+ applications to be aware of other applications' configurations,
+ leveraging easy application integration.
+ .
+ This package contains the Elektra kdb commandline tool.
+
+Package: libelektra-test
+Section: admin
+Architecture: any
+Depends: libelektra-core4 (>= ${source:Version}),
+ libelektra-python4,
+ libelektra-full4,
+ ${shlibs:Depends},
+ ${misc:Depends}
+Description: tests for a framework to get and set configuration
+ Elektra provides a universal and secure framework to store
+ configuration parameters in a global, hierarchical key database. The
+ core is a small library implemented in C. The plugin-based framework
+ fulfills many configuration-related tasks to avoid any unnecessary code
+ duplication across applications while it still allows the core to stay
+ without any external dependency. Elektra abstracts from
+ cross-platform-related issues with an consistent API, and allows
+ applications to be aware of other applications' configurations,
+ leveraging easy application integration.
+ .
+ This package contain the Elektra unit tests.
+
+Package: libelektra-augeas4
+Architecture: any
+Depends: libelektra-core4 (>= ${source:Version}),
+ ${shlibs:Depends}
+Description: augeas plugin for a framework to get and set configuration
+ Elektra provides a universal and secure framework to store
+ configuration parameters in a global, hierarchical key database. The
+ core is a small library implemented in C. The plugin-based framework
+ fulfills many configuration-related tasks to avoid any unnecessary code
+ duplication across applications while it still allows the core to stay
+ without any external dependency. Elektra abstracts from
+ cross-platform-related issues with an consistent API, and allows
+ applications to be aware of other applications' configurations,
+ leveraging easy application integration.
+ .
+ This package contains the augeas plugin
+
+Package: libelektra-xmltool4
+Architecture: any
+Depends: libelektra-core4 (>= ${source:Version}),
+ ${shlibs:Depends}
+Description: xml plugin for a framework to get and set configuration
+ Elektra provides a universal and secure framework to store
+ configuration parameters in a global, hierarchical key database. The
+ core is a small library implemented in C. The plugin-based framework
+ fulfills many configuration-related tasks to avoid any unnecessary code
+ duplication across applications while it still allows the core to stay
+ without any external dependency. Elektra abstracts from
+ cross-platform-related issues with an consistent API, and allows
+ applications to be aware of other applications' configurations,
+ leveraging easy application integration.
+ .
+ This package contains the plugin xmltool
+
+Package: libelektra-yajl4
+Architecture: any
+Depends: libelektra-core4 (>= ${source:Version}),
+ ${shlibs:Depends}
+Description: json plugin for a framework to get and set configuration
+ Elektra provides a universal and secure framework to store
+ configuration parameters in a global, hierarchical key database. The
+ core is a small library implemented in C. The plugin-based framework
+ fulfills many configuration-related tasks to avoid any unnecessary code
+ duplication across applications while it still allows the core to stay
+ without any external dependency. Elektra abstracts from
+ cross-platform-related issues with an consistent API, and allows
+ applications to be aware of other applications' configurations,
+ leveraging easy application integration.
+ .
+ This package contains the json plugin yajl
+
+Package: libelektra-dbus4
+Architecture: any
+Depends: libelektra-core4 (>= ${source:Version}),
+ ${shlibs:Depends}
+Description: dbus plugin for a framework to get and set configuration
+ Elektra provides a universal and secure framework to store
+ configuration parameters in a global, hierarchical key database. The
+ core is a small library implemented in C. The plugin-based framework
+ fulfills many configuration-related tasks to avoid any unnecessary code
+ duplication across applications while it still allows the core to stay
+ without any external dependency. Elektra abstracts from
+ cross-platform-related issues with an consistent API, and allows
+ applications to be aware of other applications' configurations,
+ leveraging easy application integration.
+ .
+ This package contains the plugin dbus
+
+Package: libelektra-python4
+Architecture: any
+Depends: libelektra-core4 (>= ${source:Version}),
+ ${shlibs:Depends},
+ ${misc:Depends}
+Description: Python2 bindings for Elektra
+ Elektra provides a universal and secure framework to store
+ configuration parameters in a global, hierarchical key database. The
+ core is a small library implemented in C. The plugin-based framework
+ fulfills many configuration-related tasks to avoid any unnecessary code
+ duplication across applications while it still allows the core to stay
+ without any external dependency. Elektra abstracts from
+ cross-platform-related issues with an consistent API, and allows
+ applications to be aware of other applications' configurations,
+ leveraging easy application integration.
+ .
+ This package contains the python2 bindings allowing libelektra integration with python.
+
+Package: libelektra-lua4
+Architecture: any
+Depends: libelektra-core4 (>= ${source:Version}),
+ ${shlibs:Depends},
+ ${misc:Depends}
+Description: Python2 bindings for Elektra
+ Elektra provides a universal and secure framework to store
+ configuration parameters in a global, hierarchical key database. The
+ core is a small library implemented in C. The plugin-based framework
+ fulfills many configuration-related tasks to avoid any unnecessary code
+ duplication across applications while it still allows the core to stay
+ without any external dependency. Elektra abstracts from
+ cross-platform-related issues with an consistent API, and allows
+ applications to be aware of other applications' configurations,
+ leveraging easy application integration.
+ .
+ This package contains the lua bindings allowing libelektra integration with lua.
+
+Package: libelektra-gen
+Architecture: any
+Depends: libelektra-bin (>= ${source:Version}),
+ python2.7,
+ python (>= 2.7.3~),
+ python-setuptools,
+ python-cheetah,
+ ${shlibs:Depends},
+ ${misc:Depends}
+Description: gen tool for Elektra
+ Elektra provides a universal and secure framework to store
+ configuration parameters in a global, hierarchical key database. The
+ core is a small library implemented in C. The plugin-based framework
+ fulfills many configuration-related tasks to avoid any unnecessary code
+ duplication across applications while it still allows the core to stay
+ without any external dependency. Elektra abstracts from
+ cross-platform-related issues with an consistent API, and allows
+ applications to be aware of other applications' configurations,
+ leveraging easy application integration.
+ .
+ This package contains the gen tool that is able to generate code.
