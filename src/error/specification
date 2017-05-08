@@ -1090,3 +1090,18 @@ severity:error
 ingroup:plugin
 macro:FCRYPT_OPERATION_MODE
 module:fcrypt
+
+number:177
+description:validation failed.
+severity:warning
+ingroup:plugin
+module:typedispatcher
+macro:TYPEDISP_VAL_FAILED
+
+number:178
+description:failed to access metadata.
+severity:error
+ingroup:plugin
+module:typedispatcher
+macro:TYPEDISP_METAINI_FAILED
+

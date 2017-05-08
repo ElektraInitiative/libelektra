@@ -1,7 +1,7 @@
 #include <kdbplugin.h>
 
-#undef DEVBUILD
-#undef VERBOSEBUILD
+#define DEVBUILD
+#define VERBOSEBUILD
 
 // helper for readability
 typedef enum {

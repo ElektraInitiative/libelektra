@@ -368,7 +368,6 @@ static RangeType stringToType (const Key * typeMeta)
 	static const char * floatTypes[] = {
 		"float", "double", "long double", NULL,
 	};
-
 	if (typeMeta)
 	{
 		const char * strVal = keyString (typeMeta);
@@ -394,7 +393,7 @@ static RangeType stringToType (const Key * typeMeta)
 
 static RangeType getType (const Key * key)
 {
-	const Key * typeMeta = keyGetMeta (key, "check/type");
+	const Key * typeMeta = keyGetMeta (key, "check/range/type");
 	RangeType type = NA;
 
 	type = stringToType (typeMeta);

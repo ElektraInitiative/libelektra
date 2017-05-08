@@ -36,7 +36,7 @@ void testUInt (const char * value, int ret, const char * rangeString)
 {
 	Key * parentKey = keyNew ("user/tests/range", KEY_VALUE, "", KEY_END);
 	KeySet * ks = ksNew (10, keyNew ("user/tests/range/key", KEY_VALUE, value, KEY_META, "check/range", rangeString, KEY_META,
-					 "check/type", "unsigned long", KEY_END),
+					 "check/range/type", "unsigned long", KEY_END),
 			     KS_END);
 	KeySet * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("range");
@@ -53,7 +53,7 @@ void testFloat (const char * value, int ret, const char * rangeString)
 {
 	Key * parentKey = keyNew ("user/tests/range", KEY_VALUE, "", KEY_END);
 	KeySet * ks = ksNew (10, keyNew ("user/tests/range/key", KEY_VALUE, value, KEY_META, "check/range", rangeString, KEY_META,
-					 "check/type", "float", KEY_END),
+					 "check/range/type", "float", KEY_END),
 			     KS_END);
 	KeySet * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("range");
@@ -70,7 +70,7 @@ void testHex (const char * value, int ret, const char * rangeString)
 {
 	Key * parentKey = keyNew ("user/tests/range", KEY_VALUE, "", KEY_END);
 	KeySet * ks = ksNew (10, keyNew ("user/tests/range/key", KEY_VALUE, value, KEY_META, "check/range", rangeString, KEY_META,
-					 "check/type", "HEX", KEY_END),
+					 "check/range/type", "HEX", KEY_END),
 			     KS_END);
 	KeySet * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("range");
@@ -87,7 +87,7 @@ void testChar (const char * value, int ret, const char * rangeString)
 {
 	Key * parentKey = keyNew ("user/tests/range", KEY_VALUE, "", KEY_END);
 	KeySet * ks = ksNew (10, keyNew ("user/tests/range/key", KEY_VALUE, value, KEY_META, "check/range", rangeString, KEY_META,
-					 "check/type", "char", KEY_END),
+					 "check/range/type", "char", KEY_END),
 			     KS_END);
 	KeySet * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("range");
@@ -193,6 +193,10 @@ int main (int argc, char ** argv)
 	testUInt (number, 1, range);
 	snprintf (number, 256, "%llu", 1ULL);
 	testUInt (number, 1, range);
+	
+    testChar ("A", 1, "A-Z");
+	testChar ("C", 1, "A-Z");
+
 
 	setlocale (LC_ALL, old_locale);
 	elektraFree (old_locale);
