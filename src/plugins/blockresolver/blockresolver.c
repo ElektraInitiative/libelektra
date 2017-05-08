@@ -49,6 +49,7 @@ static int elektraResolveFilename (Key * parentKey, ElektraResolveTempfile tmpFi
 		rc = -1;
 		goto RESOLVE_FAILED;
 	}
+
 	ElektraResolved * resolved = NULL;
 	typedef ElektraResolved * (*resolveFileFunc) (elektraNamespace, const char *, ElektraResolveTempfile, Key *);
 	resolveFileFunc resolveFunc = *(resolveFileFunc *)elektraInvokeGetFunction (handle, "filename");
@@ -67,7 +68,6 @@ static int elektraResolveFilename (Key * parentKey, ElektraResolveTempfile tmpFi
 		rc = -1;
 		goto RESOLVE_FAILED;
 	}
-
 	resolved = resolveFunc (keyGetNamespace (parentKey), keyString (parentKey), tmpFile, parentKey);
 
 	if (!resolved)
@@ -115,6 +115,7 @@ static int initData (Plugin * handle, Key * parentKey)
 		data->identifier = (char *)keyString (key);
 		key = ksLookupByName (config, "/path", KDB_O_NONE);
 		if (!key) return -1;
+		keySetString (parentKey, keyString (key));
 		if (elektraResolveFilename (parentKey, ELEKTRA_RESOLVER_TEMPFILE_NONE) == -1)
 		{
 			return -1;
