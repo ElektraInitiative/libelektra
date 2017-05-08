@@ -23,9 +23,8 @@
 static void testFmt (const char * date, const char * fmt, const short res)
 {
 	Key * parentKey = keyNew ("user/tests/date", KEY_VALUE, "", KEY_END);
-	KeySet * ks = ksNew (5,
-			     keyNew ("user/tests/date/test", KEY_VALUE, date, KEY_META, "check/date", "POSIX", KEY_META,
-				     "check/date/format", fmt, KEY_END),
+	KeySet * ks = ksNew (5, keyNew ("user/tests/date/test", KEY_VALUE, date, KEY_META, "check/date", "POSIX", KEY_META,
+					"check/date/format", fmt, KEY_END),
 			     KS_END);
 	KeySet * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("date");
@@ -38,9 +37,8 @@ static void testFmt (const char * date, const char * fmt, const short res)
 static void testIso (const char * date, const char * isoString, const short res)
 {
 	Key * parentKey = keyNew ("user/tests/date", KEY_VALUE, "", KEY_END);
-	KeySet * ks = ksNew (5,
-			     keyNew ("user/tests/date/test", KEY_VALUE, date, KEY_META, "check/date", "ISO8601", KEY_META,
-				     "check/date/format", isoString, KEY_END),
+	KeySet * ks = ksNew (5, keyNew ("user/tests/date/test", KEY_VALUE, date, KEY_META, "check/date", "ISO8601", KEY_META,
+					"check/date/format", isoString, KEY_END),
 			     KS_END);
 	KeySet * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("date");
@@ -53,9 +51,8 @@ static void testIso (const char * date, const char * isoString, const short res)
 static void testRfc2822 (const char * date, const short res)
 {
 	Key * parentKey = keyNew ("user/tests/date", KEY_VALUE, "", KEY_END);
-	KeySet * ks = ksNew (5,
-			     keyNew ("user/tests/date/test", KEY_VALUE, date, KEY_META, "check/date", "RFC2822", KEY_META,
-				     "check/date/format", "", KEY_END),
+	KeySet * ks = ksNew (5, keyNew ("user/tests/date/test", KEY_VALUE, date, KEY_META, "check/date", "RFC2822", KEY_META,
+					"check/date/format", "", KEY_END),
 			     KS_END);
 	KeySet * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("date");

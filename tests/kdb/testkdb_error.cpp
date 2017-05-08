@@ -125,8 +125,8 @@ TEST_F (Error, AgainRepeat)
 
 		EXPECT_TRUE (parentKey.getMeta<const kdb::Key> ("error"));
 		EXPECT_TRUE (parentKey.getMeta<const kdb::Key> ("error/number"));
-		EXPECT_EQ (parentKey.getMeta<int> ("error/number"), 119 + i)
-			<< " with reason: " << parentKey.getMeta<std::string> ("error/reason");
+		EXPECT_EQ (parentKey.getMeta<int> ("error/number"), 119 + i) << " with reason: "
+									     << parentKey.getMeta<std::string> ("error/reason");
 
 		ASSERT_EQ (ks.size (), 1) << "did not keep key at set (again)" << ks;
 	}
