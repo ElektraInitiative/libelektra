@@ -25,6 +25,9 @@
 #include <sys/types.h>
 #include <unistd.h>
 
+#include "../resolver/shared.h"
+#include <kdbinvoke.h>
+
 #define DEFAULT_RESOLVER "resolver"
 #define DEFAULT_PATTERN "*"
 #define DEFAULT_STORAGE "ini"
@@ -94,6 +97,52 @@ static inline Codes rvToRc (int rc)
 		break;
 	}
 	return ERROR;
+}
+
+static int elektraResolveFilename (Key * parentKey, ElektraResolveTempfile tmpFile)
+{
+	int rc = 0;
+	void * handle = elektraInvokeInitialize("resolver");
+    if(!handle)
+    {
+        rc = -1;
+        goto RESOLVE_FAILED;
+    }
+    ElektraResolved * resolved = NULL;
+	typedef ElektraResolved * (*resolveFileFunc) (elektraNamespace, const char *, ElektraResolveTempfile, Key *);
+	resolveFileFunc resolveFunc = *(resolveFileFunc *)elektraInvokeGetFunction(handle, "filename");
+    
+    if(!resolveFunc)
+    {
+        rc = -1;
+        goto RESOLVE_FAILED;
+    }
+	
+    typedef void (*freeHandleFunc) (ElektraResolved *);
+	freeHandleFunc freeHandle = *(freeHandleFunc *)elektraInvokeGetFunction(handle, "freeHandle");
+	
+    if(!freeHandle)
+    {
+        rc = -1;
+        goto RESOLVE_FAILED;
+    }
+
+    resolved = resolveFunc (keyGetNamespace (parentKey), keyString (parentKey), tmpFile, parentKey);
+
+	if (!resolved)
+	{
+		rc = -1;
+		goto RESOLVE_FAILED;
+	}
+	else
+	{
+		keySetString (parentKey, resolved->fullPath);
+		freeHandle (resolved);
+	}
+
+RESOLVE_FAILED:
+	elektraInvokeClose(handle);
+    return rc;
 }
 
 int elektraMultifileCheckFile (const char * filename)
