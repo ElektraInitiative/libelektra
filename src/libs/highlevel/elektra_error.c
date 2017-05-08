@@ -58,33 +58,60 @@ ElektraError * elektraErrorCreateFromKey (Key * key)
 
 // elektra_error.h
 
+/**
+ * \addtogroup highlevel High-level API
+ * @{
+ */
+
+/**
+ * @return Code of the given error.
+ */
 ElektraErrorCode elektraErrorCode (ElektraError * error)
 {
 	return error->code;
 }
 
+/**
+ * @return Description for the given error.
+ */
 const char * elektraErrorDescription (ElektraError * error)
 {
 	return error->description;
 }
 
+/**
+ * @return Severity of the given error.
+ */
 ElektraErrorSeverity elektraErrorSeverity (ElektraError * error)
 {
 	return error->severity;
 }
 
+/**
+ * @return Group of the given error.
+ */
 ElektraErrorGroup elektraErrorGroup (ElektraError * error)
 {
 	return error->group;
 }
 
+/**
+ * @return Module of the given error.
+ */
 ElektraErrorModule elektraErrorModule (ElektraError * error)
 {
 	return error->module;
 }
 
+/**
+ * @brief Frees memory used by the error and sets the referenced error variable to NULL.
+ */
 void elektraErrorReset (ElektraError ** error)
 {
 	elektraFree (error);
 	*error = NULL;
 }
+
+/**
+ * @}
+ */
