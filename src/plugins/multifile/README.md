@@ -105,7 +105,29 @@ kdb rm -r user/multi/test.ini
 stat ~/.config/multifile/test.ini
 # RET:1
 
-#kdb umount user/multi
+kdb umount user/multi
+```
+
+Recursive: 
+
+```sh
+rm -rf ~/.config/multitest || $(exit 0)
+mkdir -p ~/.config/multitest ~/.config/multitest/a/a1/a12 ~/.config/multitest/a/a2/a22 ~/.config/multitest/b/b1|| $(exit 0)
+
+echo "a1key = a1val" > ~/.config/multitest/a/a1/a12/testa1.file
+echo "a2key = a2val" > ~/.config/multitest/a/a2/a22/testa2.file
+echo "b1key = b1val" > ~/.config/multitest/b/b1/testb1.file
+
+kdb mount -R multifile -c storage="ini",pattern="*.file",recursive=,resolver="resolver" multitest user/multi
+
+kdb ls user/multi
+#> user/multi/a/a1/a12/testa1.file/a1key
+#> user/multi/a/a2/a22/testa2.file/a2key
+#> user/multi/b/b1/testb1.file/b1key
+
+rm -rf ~/.config/multifile
+
+kdb umount user/multi
 ```
 
 ## Limitations
