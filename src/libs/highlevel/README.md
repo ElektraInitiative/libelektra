@@ -54,7 +54,7 @@ In most cases you'll want to set the error variable to NULL before passing it to
 
 Notice, that you should always check if an error occurred by comparing it to NULL after the function call. 
 
-If an error happened, it is often useful to show an error message to the user. A description what went wrong is provided in the ElektraError struct and can be accessed by `elektraErrorDescription (error)`. A complete list of the provided accessors for error-details can be found in [elektra_error.h](/libelektra/libs/highlevel/elektra_error.h).
+If an error happened, it is often useful to show an error message to the user. A description what went wrong is provided in the ElektraError struct and can be accessed by `elektraErrorDescription (error)`. A complete list of the provided accessors for error-details can be found in [elektra_error.h](/libs/highlevel/elektra_error.h).
 
 To avoid leakage of memory, you have to call `elektraErrorReset (&error)` a soon as you are finished resolving the error:
 
@@ -106,11 +106,11 @@ To get the size of the array you would like to access you can use this function:
 size_t elektraArraySize (Elektra * elektra, const char * name);
 ```
 
-For some background information on arrays in Elektra see the [Application Integration](/libelektra/doc/tutorials/application-integration.md) document.
+For some background information on arrays in Elektra see the [Application Integration](/doc/tutorials/application-integration.md) document.
 
 Notice that both the getters for primitive types and the getters for array types do not accept error parameters. The library relies on that you are running a correct Elektra setup. If the configuration is well specified, no runtime errors can occur when reading a value. Therefore the getters do not accept an error variable as argument. If there is however a severe internal error, or you try to access a key which you have not specified correctly, then the library will call `exit(EXIT_FAILURE)` to prevent data inconsistencies or exceptions further down in your application.
 
-You can find the complete list of the available functions for all supported value types in [elektra.h](/libelektra/libs/highlevel/elektra.h)
+You can find the complete list of the available functions for all supported value types in [elektra.h](/libs/highlevel/elektra.h)
 
 ### Writing values to the KDB
 
@@ -126,7 +126,7 @@ The counterpart for array-gettes again follows the same naming scheme:
 void elektraSetStringArrayElement (Elektra * elektra, const char * name, const char * value, size_t index, ElektraError ** error);
 ```
 
-Be sure not to access indexes outside of the arrays bounds. The same rules a described in [Read values from the KDB](#read-values-from-the-kdb) apply here, meaning, that you are responsible for providing a complete and correct specification (see [Application Integration](/libelektra/doc/tutorials/application-integration.md)). If you try to access a key that you have not specified, the library will call `exit(EXIT_FAILURE)`.
+Be sure not to access indexes outside of the arrays bounds. The same rules a described in [Read values from the KDB](#read-values-from-the-kdb) apply here, meaning, that you are responsible for providing a complete and correct specification (see [Application Integration](/doc/tutorials/application-integration.md)). If you try to access a key that you have not specified, the library will call `exit(EXIT_FAILURE)`.
 
 ## Example
 ```c
