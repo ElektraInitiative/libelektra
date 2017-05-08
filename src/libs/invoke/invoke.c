@@ -8,6 +8,7 @@ typedef struct
 {
     Plugin * plugin;
     KeySet * modules;
+    KeySet * exports;
 }ElektraInvokeHandle;
 
 void * elektraInvokeInitialize(const char *elektraPluginName)
@@ -47,24 +48,33 @@ const void * elektraInvokeGetFunction(void * invokeHandle, const char *elektraPl
         return NULL;
     }
     Plugin * plugin = handle->plugin;
-    KeySet * exports = ksNew(0, KS_END);
+    KeySet * exports = NULL;
+
     Key * exportParent = keyNew("system/elektra/modules", KEY_END);
     keyAddBaseName(exportParent, plugin->name);
-    plugin->kdbGet(plugin, exports, exportParent);
+
+    if(handle->exports)
+    {
+        exports = handle->exports;
+    }
+    else
+    {
+        exports = ksNew(0, KS_END);
+        handle->exports = exports;
+        plugin->kdbGet(plugin, exports, exportParent);
+    }
     keyAddBaseName(exportParent, "exports");
     keyAddBaseName(exportParent, elektraPluginFunctionName);
-    const void * functionPtr = NULL;
     Key *functionKey = ksLookup(exports, exportParent, 0);
+    keyDel(exportParent);
     if(!functionKey)
     {
-        keyDel(exportParent);
-        ksDel(exports);
         return NULL;
     }
-    functionPtr = keyValue(functionKey);
-    keyDel(exportParent);
-    ksDel(exports);
-    return functionPtr;
+    else
+    {
+        return keyValue(functionKey);
+    }
 }
 
 void elektraInvokeClose(void *invokeHandle)
@@ -79,5 +89,6 @@ void elektraInvokeClose(void *invokeHandle)
     keyDel(errorKey);
     elektraModulesClose(handle->modules, NULL);
     ksDel(handle->modules);
+    ksDel(handle->exports);
     elektraFree(handle);
 }
