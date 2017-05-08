@@ -23,9 +23,11 @@ The multifile-resolver does so by calling resolver and storage plugins for each 
 
 ## Plugin Configuration
 
+- `recursive`:
+  If present, fts (3) will be used to traverse the directory tree and fnmatch to match `pattern` to the filename.
+  If not present, glob (3) with `pattern` will be used on the directory 
 - `pattern`:
   The pattern to be used to match configuration files.
-  Internally glob (3) will be used.
 - `storage`:
   The storage plugin to use.
 - `resolver`:
@@ -35,6 +37,8 @@ The multifile-resolver does so by calling resolver and storage plugins for each 
 ## Usage
 
 `kdb mount -R multifile -c storage="ini",pattern="*/*.ini",resolver="resolver" /path /mountpoint`
+
+`kdb mount -R multifile -c storage="ini",pattern="*.ini",recursive=,resolver="resolver" /path /mountpoint` 
 
 ## Examples
 
@@ -98,7 +102,7 @@ kdb ls user/multi
 
 kdb rm -r user/multi/test.ini
 
-#stat ~/.config/multifile/test.ini
+stat ~/.config/multifile/test.ini
 # RET:1
 
 #kdb umount user/multi
