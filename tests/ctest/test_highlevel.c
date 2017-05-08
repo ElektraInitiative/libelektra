@@ -51,7 +51,7 @@ static void test_primitiveGetters ()
 	setKeyValue (parentKey, "long_double", "longDoubleKey", "1.1");
 
 	ElektraError * error = NULL;
-	Elektra * elektra = elektraOpen (parentKey, &error);
+	Elektra * elektra = elektraOpen (parentKey, NULL, &error);
 
 	if (error)
 	{
@@ -129,7 +129,7 @@ static void test_arrayGetters ()
 	setKeyValue (parentKey, "long_double", "longDoubleArrayKey/#1", "2.1");
 
 	ElektraError * error = NULL;
-	Elektra * elektra = elektraOpen (parentKey, &error);
+	Elektra * elektra = elektraOpen (parentKey, NULL, &error);
 
 	if (error)
 	{
@@ -212,7 +212,7 @@ static void test_primitiveSetters ()
 	setKeyValue (parentKey, "long_double", "longDoubleKey", "1.1");
 
 	ElektraError * error = NULL;
-	Elektra * elektra = elektraOpen (parentKey, &error);
+	Elektra * elektra = elektraOpen (parentKey, NULL, &error);
 
 	if (error)
 	{
@@ -347,7 +347,7 @@ static void test_arraySetters ()
 	setKeyValue (parentKey, "long_double", "longDoubleArrayKey/#1", "");
 
 	ElektraError * error = NULL;
-	Elektra * elektra = elektraOpen (parentKey, &error);
+	Elektra * elektra = elektraOpen (parentKey, NULL, &error);
 
 	if (error)
 	{
@@ -556,6 +556,25 @@ static void test_arraySetters ()
 	elektraClose (elektra);
 }
 
+void test_defaultValues ()
+{
+	KeySet * defaults = ksNew(0, keyNew ("user/test/sw/elektra/kdb/#0/current/stringKey", KEY_VALUE, "A string", KEY_META, "type", "string", KEY_END), KS_END);
+
+	ElektraError * error = NULL;
+	Elektra * elektra = elektraOpen ("user/test/sw/elektra/kdb/#0/current", defaults, &error);
+
+	if (error)
+	{
+		yield_error ("elektraOpen failed");
+		printf ("ElektraError: %s\n", elektraErrorDescription (error));
+		elektraErrorReset (&error);
+	}
+
+	succeed_if (!elektraStrCmp (elektraGetString (elektra, "stringKey"), "A string"), "Wrong key value.");
+
+	elektraClose (elektra);
+}
+
 int main (int argc, char ** argv)
 {
 	init (argc, argv);
@@ -565,6 +584,8 @@ int main (int argc, char ** argv)
 
 	test_primitiveSetters ();
 	test_arraySetters ();
+
+	test_defaultValues ();
 
 	printf ("\ntest_highlevel RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 
