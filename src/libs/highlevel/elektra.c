@@ -33,8 +33,6 @@ static KDBType KDB_TYPE_LONG_DOUBLE = "long_double";
 static KDBType KDB_TYPE_DOUBLE = "double";
 
 static Key * generateLookupKey (Elektra * elektra, const char * name);
-static Key * lookup (Elektra * elektra, Key * key);
-static void checkType (Key * key, KDBType type);
 
 void setValueAsString (Elektra * elektra, const char * name, const char * value, KDBType type, ElektraError ** error);
 static const char * getValueAsString (Elektra * elektra, const char * name, KDBType type);
@@ -367,16 +365,12 @@ kdb_long_double_t elektraGetLongDoubleArrayElement (Elektra * elektra, const cha
 
 // Private functions
 
-void setValueAsString (Elektra * elektra, const char * name, const char * value, KDBType type, ElektraError ** error)
+void saveKey (Elektra * elektra, Key * key, ElektraError ** error)
 {
 	int ret = 0;
 	do
 	{
-		Key * const lookupKey = generateLookupKey (elektra, name);
-		Key * const key = lookup (elektra, lookupKey);
-		checkType (key, type);
-
-		keySetString (key, value);
+		ksAppendKey(elektra->config, key);
 
 		ret = kdbSet (elektra->kdb, elektra->config, elektra->parentKey);
 		if (ret == -1)
@@ -394,72 +388,19 @@ void setValueAsString (Elektra * elektra, const char * name, const char * value,
 				ELEKTRA_LOG_DEBUG ("problemKey: %s\n", keyName (problemKey));
 			}
 
+			key = keyDup(key);
 			kdbGet (elektra->kdb, elektra->config, elektra->parentKey);
 		}
 	} while (ret == -1);
 }
 
-static const char * getValueAsString (Elektra * elektra, const char * name, KDBType type)
+static void checkType (Key * key, KDBType type)
 {
-	Key * const lookupKey = generateLookupKey (elektra, name);
-	Key * const resultKey = lookup (elektra, lookupKey);
-	checkType (resultKey, type);
-
-	return keyString (resultKey);
-}
-
-void setArrayElementValueAsString (Elektra * elektra, const char * name, const char * value, KDBType type, size_t index,
-				   ElektraError ** error)
-{
-	int ret = 0;
-	do
+	if (strcmp (keyString (keyGetMeta (key, "type")), type))
 	{
-		Key * const lookupKey = generateLookupKey (elektra, name);
-
-		char arrayPart[ELEKTRA_MAX_ARRAY_SIZE];
-		elektraWriteArrayNumber (arrayPart, index);
-		keyAddName (lookupKey, arrayPart);
-
-		Key * const key = lookup (elektra, lookupKey);
-
-		checkType (key, type);
-
-		keySetString (key, value);
-
-		ret = kdbSet (elektra->kdb, elektra->config, elektra->parentKey);
-		if (ret == -1)
-		{
-			ElektraError * kdbSetError = elektraErrorCreateFromKey (elektra->parentKey);
-			if (elektraErrorCode (kdbSetError) != ELEKTRA_ERROR_CONFLICT)
-			{
-				*error = kdbSetError;
-				return;
-			}
-
-			Key * problemKey = ksCurrent (elektra->config);
-			if (problemKey != NULL)
-			{
-				ELEKTRA_LOG_DEBUG ("problemKey: %s\n", keyName (problemKey));
-			}
-
-			kdbGet (elektra->kdb, elektra->config, elektra->parentKey);
-		}
-	} while (ret == -1);
-}
-
-static const char * getArrayElementValueAsString (Elektra * elektra, const char * name, KDBType type, size_t index)
-{
-	Key * const lookupKey = generateLookupKey (elektra, name);
-
-	char arrayPart[ELEKTRA_MAX_ARRAY_SIZE];
-	elektraWriteArrayNumber (arrayPart, index);
-	keyAddName (lookupKey, arrayPart);
-
-	Key * const resultKey = lookup (elektra, lookupKey);
-
-	checkType (resultKey, type);
-
-	return keyString (resultKey);
+		ELEKTRA_LOG_DEBUG ("Wrong type. Should be: %s\n", type);
+		exit (EXIT_FAILURE);
+	}
 }
 
 static Key * generateLookupKey (Elektra * elektra, const char * name)
@@ -472,7 +413,43 @@ static Key * generateLookupKey (Elektra * elektra, const char * name)
 	return lookupKey;
 }
 
-static Key * lookup (Elektra * elektra, Key * key)
+static Key * generateArrayLookupKey (Elektra * elektra, const char * name, size_t index)
+{
+	Key * const lookupKey = generateLookupKey(elektra, name);
+
+	char arrayPart[ELEKTRA_MAX_ARRAY_SIZE];
+	elektraWriteArrayNumber (arrayPart, index);
+	keyAddName (lookupKey, arrayPart);
+
+	return lookupKey;
+}
+
+// Set values
+
+static void setKeyValue(Elektra * elektra, Key * key, KDBType type, const char * value, ElektraError **error)
+{
+	keySetMeta(key, "type", type);
+	keySetString (key, value);
+
+	saveKey(elektra, key, error);
+}
+
+void setValueAsString (Elektra * elektra, const char * name, const char * value, KDBType type, ElektraError ** error)
+{
+	Key * const key = keyDup(generateLookupKey (elektra, name));
+	setKeyValue(elektra, key, type, value, error);
+}
+
+void setArrayElementValueAsString (Elektra * elektra, const char * name, const char * value, KDBType type, size_t index,
+								   ElektraError ** error)
+{
+	Key * const key = keyDup(generateArrayLookupKey (elektra, name, index));
+	setKeyValue(elektra, key, type, value, error);
+}
+
+// Get values
+
+static const char * getKeyValue(Elektra * elektra, Key * key, KDBType type)
 {
 	Key * const resultKey = ksLookup (elektra->config, key, 0);
 	if (resultKey == NULL)
@@ -481,14 +458,21 @@ static Key * lookup (Elektra * elektra, Key * key)
 		exit (EXIT_FAILURE);
 	}
 
-	return resultKey;
+	checkType (resultKey, type);
+
+	return keyString (resultKey);
 }
 
-static void checkType (Key * key, KDBType type)
+static const char * getValueAsString (Elektra * elektra, const char * name, KDBType type)
 {
-	if (strcmp (keyString (keyGetMeta (key, "type")), type))
-	{
-		ELEKTRA_LOG_DEBUG ("Wrong type. Should be: %s\n", type);
-		exit (EXIT_FAILURE);
-	}
+	Key * const key = generateLookupKey (elektra, name);
+
+	return getKeyValue(elektra, key, type);
+}
+
+static const char * getArrayElementValueAsString (Elektra * elektra, const char * name, KDBType type, size_t index)
+{
+	Key * const key = generateArrayLookupKey (elektra, name, index);
+
+	return getKeyValue(elektra, key, type);
 }
