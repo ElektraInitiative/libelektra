@@ -5,7 +5,7 @@ add_plugin (blockresolver
 		blockresolver.h
 		blockresolver.c
 	LINK_ELEKTRA
-		elektra-proposal
+		elektra-invoke
 	ADD_TEST
 	INSTALL_TEST_DATA
 	)

@@ -27,7 +27,7 @@ add_plugin (gitresolver
 		gitresolver.h
 		gitresolver.c
 	LINK_ELEKTRA
-		elektra-proposal
+		elektra-invoke
 	INCLUDE_DIRECTORIES
 		${GITRESOLVER_INCLUDE_DIRS}
 	LINK_LIBRARIES
