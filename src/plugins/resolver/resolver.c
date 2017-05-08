@@ -9,8 +9,8 @@
 #include "resolver.h"
 
 #include <kdbassert.h>
-#include <kdbproposal.h>
 #include <kdbhelper.h> // elektraStrDup
+#include <kdbproposal.h>
 
 #include "kdbos.h"
 
