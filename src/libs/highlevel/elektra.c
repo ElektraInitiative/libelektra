@@ -42,7 +42,7 @@ void setArrayElementValueAsString (Elektra * elektra, const char * name, const c
 static const char * getArrayElementValueAsString (Elektra * elektra, const char * name, KDBType type, size_t index);
 
 
-Elektra * elektraOpen (const char * application, ElektraError ** error)
+Elektra * elektraOpen (const char * application, KeySet * defaults, ElektraError ** error)
 {
 	Key * const parentKey = keyNew (application, KEY_END);
 	KDB * const kdb = kdbOpen (parentKey);
@@ -54,6 +54,11 @@ Elektra * elektraOpen (const char * application, ElektraError ** error)
 	}
 
 	KeySet * const config = ksNew (0, KS_END);
+	if (defaults != NULL)
+	{
+		ksAppend(config, defaults);
+	}
+
 	const int kdbGetResult = kdbGet (kdb, config, parentKey);
 
 	if (kdbGetResult == -1)
