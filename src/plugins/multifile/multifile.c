@@ -359,6 +359,7 @@ static Codes updateFilesRecursive (MultiConfig * mc, KeySet * found, Key * paren
 										 sizeof (SingleConfig *), KEY_VALUE, &s, KEY_END);
 							ksAppendKey (mc->childBackends, childKey);
 							ksAppendKey (found, childKey);
+							rc = SUCCESS;
 						}
 					}
 					keyDel (lookup);
@@ -372,6 +373,7 @@ static Codes updateFilesRecursive (MultiConfig * mc, KeySet * found, Key * paren
 
 static Codes updateFilesGlob (MultiConfig * mc, KeySet * found, Key * parentKey)
 {
+	Codes rc = NOUPDATE;
 	glob_t results;
 	int ret;
 
@@ -432,13 +434,14 @@ static Codes updateFilesGlob (MultiConfig * mc, KeySet * found, Key * parentKey)
 								 sizeof (SingleConfig *), KEY_VALUE, &s, KEY_END);
 					ksAppendKey (mc->childBackends, childKey);
 					ksAppendKey (found, childKey);
+					rc = SUCCESS;
 				}
 			}
 			keyDel (lookup);
 		}
 	}
 	globfree (&results);
-	return SUCCESS;
+	return rc;
 }
 
 static Codes updateFiles (MultiConfig * mc, KeySet * returned, Key * parentKey)
