@@ -22,7 +22,7 @@ ElektraError * error = NULL;
 Elektra * elektra = elektraOpen ("/sw/org/myapp/#0/current", &error);
 ```
 
-Please replace `"/sw/org/myapp/#0/current"` with an appropriate value for your application (see [Namespaces](/libelektra/doc/tutorials/namespaces.md) for more information).
+Please replace `"/sw/org/myapp/#0/current"` with an appropriate value for your application (see [Namespaces](/doc/tutorials/namespaces.md) for more information).
 
 The passed in `ElektraError` can be used to check for initialization errors. You can detect initialization errors by comparing it to NULL after calling `elektraOpen`:
 
