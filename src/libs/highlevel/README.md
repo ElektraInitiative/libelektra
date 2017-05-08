@@ -54,7 +54,7 @@ In most cases you'll want to set the error variable to NULL before passing it to
 
 Notice, that you should always check if an error occurred by comparing it to NULL after the function call. 
 
-If an error happened, it is often useful to show an error message to the user. A description what went wrong is provided in the ElektraError struct and can be accessed by `elektraErrorDescription (error)`. A complete list of the provided accessors for error-details can be found in [elektra_error.h](/src/libs/highlevel/elektra_error.h).
+If an error happened, it is often useful to show an error message to the user. A description what went wrong is provided in the ElektraError struct and can be accessed by `elektraErrorDescription (error)`. A complete list of the provided accessors for error-details can be found in [elektra_error.h](/src/include/highlevel/elektra_error.h).
 
 To avoid leakage of memory, you have to call `elektraErrorReset (&error)` a soon as you are finished resolving the error:
 
