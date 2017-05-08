@@ -208,8 +208,8 @@ void Backend::setMountpoint (Key mountpoint, KeySet mountConf)
 		if (std::find (alreadyUsedMountpoints.begin (), alreadyUsedMountpoints.end (), kmp.getName ()) !=
 		    alreadyUsedMountpoints.end ())
 		{
-			throw MountpointAlreadyInUseException (std::string ("Mountpoint ") + smp +
-							       " is one of the already used names: " + namesAsString);
+			throw MountpointAlreadyInUseException (std::string ("Mountpoint ") + smp + " is one of the already used names: " +
+							       namesAsString);
 		}
 	}
 

@@ -67,9 +67,8 @@ public:
 	: ThreadBoolean (ks, context_, Key ("/test/%layer1%", KEY_CASCADING_NAME, KEY_META, "default", "1", KEY_END)),
 	  nested (ks, context_), person (ks, context_),
 	  profile (ks, context_, Key ("/%layer1%/profile", KEY_CASCADING_NAME, KEY_META, "default", "default", KEY_END)),
-	  bm (ks, context_,
-	      Key ("/%layer1%/%layer2%/%layer3%/%layer4%/%layer5%/%layer6%/%layer7%/%layer8%/%layer9%/", KEY_CASCADING_NAME, KEY_META,
-		   "default", s_value, KEY_END))
+	  bm (ks, context_, Key ("/%layer1%/%layer2%/%layer3%/%layer4%/%layer5%/%layer6%/%layer7%/%layer8%/%layer9%/", KEY_CASCADING_NAME,
+				 KEY_META, "default", s_value, KEY_END))
 	{
 	}
 

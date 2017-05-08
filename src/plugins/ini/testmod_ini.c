@@ -172,14 +172,14 @@ static void test_commentIniWrite (char * fileName)
 	KeySet * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("ini");
 
-	KeySet * ks = ksNew (30,
-			     keyNew ("user/tests/ini-write/nosectionkey", KEY_VALUE, "nosectionvalue", KEY_META, "comments", "#1", KEY_META,
-				     "comments/#0", ";nosection comment1", KEY_META, "comments/#1", ";nosection comment2", KEY_END),
-			     keyNew ("user/tests/ini-write/section1", KEY_META, "internal/ini/section", "", KEY_META, "comments", "#1",
-				     KEY_META, "comments/#0", ";section comment1", KEY_META, "comments/#1", ";section comment2", KEY_END),
-			     keyNew ("user/tests/ini-write/section1/key1", KEY_VALUE, "value1", KEY_META, "comments", "#1", KEY_META,
-				     "comments/#0", ";key comment1", KEY_META, "comments/#1", ";key comment2", KEY_END),
-			     KS_END);
+	KeySet * ks =
+		ksNew (30, keyNew ("user/tests/ini-write/nosectionkey", KEY_VALUE, "nosectionvalue", KEY_META, "comments", "#1", KEY_META,
+				   "comments/#0", ";nosection comment1", KEY_META, "comments/#1", ";nosection comment2", KEY_END),
+		       keyNew ("user/tests/ini-write/section1", KEY_META, "internal/ini/section", "", KEY_META, "comments", "#1", KEY_META,
+			       "comments/#0", ";section comment1", KEY_META, "comments/#1", ";section comment2", KEY_END),
+		       keyNew ("user/tests/ini-write/section1/key1", KEY_VALUE, "value1", KEY_META, "comments", "#1", KEY_META,
+			       "comments/#0", ";key comment1", KEY_META, "comments/#1", ";key comment2", KEY_END),
+		       KS_END);
 
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) >= 1, "call to kdbSet was not successful");
 	succeed_if (output_error (parentKey), "error in kdbSet");
@@ -538,14 +538,14 @@ static void test_commentDefaultChar (char * fileName)
 	KeySet * conf = ksNew (10, keyNew ("system/comment", KEY_VALUE, ";", KEY_END), KS_END);
 	PLUGIN_OPEN ("ini");
 
-	KeySet * ks = ksNew (30,
-			     keyNew ("user/tests/ini-write/nosectionkey", KEY_VALUE, "nosectionvalue", KEY_META, "comments", "#1", KEY_META,
-				     "comments/#0", "nosection comment1", KEY_META, "comments/#1", "nosection comment2", KEY_END),
-			     keyNew ("user/tests/ini-write/section1", KEY_BINARY, KEY_META, "comments", "#1", KEY_META, "comments/#0",
-				     "section comment1", KEY_META, "comments/#1", "section comment2", KEY_END),
-			     keyNew ("user/tests/ini-write/section1/key1", KEY_VALUE, "value1", KEY_META, "comments", "#1", KEY_META,
-				     "comments/#0", "key comment1", KEY_META, "comments/#1", "key comment2", KEY_END),
-			     KS_END);
+	KeySet * ks =
+		ksNew (30, keyNew ("user/tests/ini-write/nosectionkey", KEY_VALUE, "nosectionvalue", KEY_META, "comments", "#1", KEY_META,
+				   "comments/#0", "nosection comment1", KEY_META, "comments/#1", "nosection comment2", KEY_END),
+		       keyNew ("user/tests/ini-write/section1", KEY_BINARY, KEY_META, "comments", "#1", KEY_META, "comments/#0",
+			       "section comment1", KEY_META, "comments/#1", "section comment2", KEY_END),
+		       keyNew ("user/tests/ini-write/section1/key1", KEY_VALUE, "value1", KEY_META, "comments", "#1", KEY_META,
+			       "comments/#0", "key comment1", KEY_META, "comments/#1", "key comment2", KEY_END),
+		       KS_END);
 
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) >= 1, "call to kdbSet was not successful");
 	succeed_if (output_error (parentKey), "error in kdbSet");
