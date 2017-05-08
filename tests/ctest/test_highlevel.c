@@ -73,11 +73,13 @@ static void test_primitiveGetters ()
 
 	ELEKTRA_DIAG_STORE
 	ELEKTRA_DIAG_OFF (-Wfloat - equal)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wfloat-equal"
 
 	succeed_if (elektraGetFloat (elektra, "floatKey") == 1.1f, "Wrong key value.");
 	succeed_if (elektraGetDouble (elektra, "doubleKey") == 1.1, "Wrong key value.");
 	succeed_if (elektraGetLongDouble (elektra, "longDoubleKey") == 1.1L, "Wrong key value.");
-
+#pragma clang diagnostic pop
 	ELEKTRA_DIAG_RESTORE
 
 	elektraClose (elektra);
@@ -170,6 +172,8 @@ static void test_arrayGetters ()
 
 	ELEKTRA_DIAG_STORE
 	ELEKTRA_DIAG_OFF (-Wfloat - equal)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wfloat-equal"
 
 	succeed_if (elektraArraySize (elektra, "floatArrayKey") == 2, "Wrong array size");
 	succeed_if (elektraGetFloatArrayElement (elektra, "floatArrayKey", 0) == 1.1f, "Wrong key value.");
@@ -183,6 +187,7 @@ static void test_arrayGetters ()
 	succeed_if (elektraGetLongDoubleArrayElement (elektra, "longDoubleArrayKey", 0) == 1.1L, "Wrong key value.");
 	succeed_if (elektraGetLongDoubleArrayElement (elektra, "longDoubleArrayKey", 1) == 2.1L, "Wrong key value.");
 
+#pragma clang diagnostic pop
 	ELEKTRA_DIAG_RESTORE
 
 	elektraClose (elektra);
@@ -266,9 +271,12 @@ static void test_primitiveSetters ()
 	succeed_if (elektraGetUnsignedLongLong (elektra, "unsignedLongLongKey") == 1, "Wrong key value.");
 	ELEKTRA_DIAG_STORE
 	ELEKTRA_DIAG_OFF (-Wfloat - equal)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wfloat-equal"
 	succeed_if (elektraGetFloat (elektra, "floatKey") == 1.1f, "Wrong key value.");
 	succeed_if (elektraGetDouble (elektra, "doubleKey") == 1.1, "Wrong key value.");
 	succeed_if (elektraGetLongDouble (elektra, "longDoubleKey") == 1.1L, "Wrong key value.");
+#pragma clang diagnostic pop
 	ELEKTRA_DIAG_RESTORE
 
 	// Check new keys.
@@ -284,9 +292,12 @@ static void test_primitiveSetters ()
 	succeed_if (elektraGetUnsignedLongLong (elektra, "newUnsignedLongLongKey") == 1, "Wrong key value.");
 	ELEKTRA_DIAG_STORE
 	ELEKTRA_DIAG_OFF (-Wfloat - equal)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wfloat-equal"
 	succeed_if (elektraGetFloat (elektra, "newFloatKey") == 1.1f, "Wrong key value.");
 	succeed_if (elektraGetDouble (elektra, "newDoubleKey") == 1.1, "Wrong key value.");
 	succeed_if (elektraGetLongDouble (elektra, "newLongDoubleKey") == 1.1L, "Wrong key value.");
+#pragma clang diagnostic pop
 	ELEKTRA_DIAG_RESTORE
 
 	elektraClose (elektra);
@@ -470,6 +481,8 @@ static void test_arraySetters ()
 
 	ELEKTRA_DIAG_STORE
 	ELEKTRA_DIAG_OFF (-Wfloat - equal)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wfloat-equal"
 
 	succeed_if (elektraArraySize (elektra, "floatArrayKey") == 2, "Wrong array size");
 	succeed_if (elektraGetFloatArrayElement (elektra, "floatArrayKey", 0) == 1.1f, "Wrong key value.");
@@ -483,6 +496,7 @@ static void test_arraySetters ()
 	succeed_if (elektraGetLongDoubleArrayElement (elektra, "longDoubleArrayKey", 0) == 1.1L, "Wrong key value.");
 	succeed_if (elektraGetLongDoubleArrayElement (elektra, "longDoubleArrayKey", 1) == 2.1L, "Wrong key value.");
 
+#pragma clang diagnostic pop
 	ELEKTRA_DIAG_RESTORE
 
 	// Check new keys.
@@ -521,6 +535,8 @@ static void test_arraySetters ()
 
 	ELEKTRA_DIAG_STORE
 	ELEKTRA_DIAG_OFF (-Wfloat - equal)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wfloat-equal"
 
 	succeed_if (elektraArraySize (elektra, "newFloatArrayKey") == 2, "Wrong array size");
 	succeed_if (elektraGetFloatArrayElement (elektra, "newFloatArrayKey", 0) == 1.1f, "Wrong key value.");
@@ -534,6 +550,7 @@ static void test_arraySetters ()
 	succeed_if (elektraGetLongDoubleArrayElement (elektra, "newLongDoubleArrayKey", 0) == 1.1L, "Wrong key value.");
 	succeed_if (elektraGetLongDoubleArrayElement (elektra, "newLongDoubleArrayKey", 1) == 2.1L, "Wrong key value.");
 
+#pragma clang diagnostic pop
 	ELEKTRA_DIAG_RESTORE
 
 	elektraClose (elektra);
