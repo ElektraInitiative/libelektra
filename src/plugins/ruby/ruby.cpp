@@ -217,8 +217,6 @@ static VALUE rb_kdb_plugin_define (VALUE self ELEKTRA_UNUSED, VALUE name);
  */
 static VALUE define_kdb_plugin_class ()
 {
-	rb_require ("kdb");
-
 	VALUE module = Qnil;
 	VALUE klass = Qnil;
 
@@ -320,6 +318,7 @@ static int init_ruby_environment (ckdb::Key * warningsKey)
 
 		/* NOT REQUIRED HERE -- define Plugin class */
 		// VALUE klass_Plugin = define_kdb_plugin_class();
+		rb_require ("kdb");
 
 		/* define our global plugins array: here we collect all active ruby plugin instances */
 		if (!rb_const_defined (rb_cObject, rb_intern (RB_GLOBAL_VAR_PLUGINS)))
@@ -327,6 +326,7 @@ static int init_ruby_environment (ckdb::Key * warningsKey)
 			rb_define_const (rb_cObject, RB_GLOBAL_VAR_PLUGINS, rb_ary_new ());
 		}
 	}
+
 	return 1;
 }
 
