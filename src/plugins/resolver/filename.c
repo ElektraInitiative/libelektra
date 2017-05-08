@@ -11,7 +11,6 @@
 
 #include <errno.h>
 #include <kdbhelper.h>
-#include <kdbproposal.h>
 #include <kdbtypes.h>
 #include <libgen.h>
 #include <pwd.h>
