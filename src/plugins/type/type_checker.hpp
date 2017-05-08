@@ -49,9 +49,10 @@ public:
 		types.insert (pair<string, Type *> ("float", new TType<kdb::float_t> ()));
 		types.insert (pair<string, Type *> ("double", new TType<kdb::double_t> ()));
 		types.insert (pair<string, Type *> ("long_double", new TType<kdb::long_double_t> ()));
-		types.insert (pair<string, Type *> ("char", new TType<kdb::char_t> ()));
 		types.insert (pair<string, Type *> ("boolean", new TType<kdb::boolean_t> ()));
-		types.insert (pair<string, Type *> ("octet", new TType<kdb::octet_t> ()));
+
+		types.insert (pair<string, Type *> ("char", new CharType ()));
+		types.insert (pair<string, Type *> ("octet", new CharType ()));
 
 		types.insert (pair<string, Type *> ("any", new AnyType ()));
 		types.insert (pair<string, Type *> ("string", new StringType ()));

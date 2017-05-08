@@ -53,6 +53,15 @@ public:
 	}
 };
 
+class CharType : public Type
+{
+public:
+	bool check (Key k) override
+	{
+		return k.getString ().length () == 1;
+	}
+};
+
 class StringType : public Type
 {
 public:

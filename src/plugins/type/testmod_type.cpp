@@ -484,3 +484,55 @@ TEST (type, minmax)
 	k.setString ("");
 	succeed_if (tc.check (k), "should succeed (empty value)");
 }
+
+TEST (type, char)
+{
+	KeySet config;
+	TypeChecker tc (config);
+
+	Key k ("user/anything", KEY_VALUE, "a", KEY_META, "check/type", "char", KEY_END);
+	EXPECT_TRUE (tc.check (k)) << "a should check successfully as char";
+	k.setString ("b");
+	EXPECT_TRUE (tc.check (k)) << "b should check successfully as char";
+	k.setString (" ");
+	EXPECT_TRUE (tc.check (k)) << "space should check successfully as char";
+	k.setString ("");
+	EXPECT_FALSE (tc.check (k)) << "empty string should not check successfully as char";
+	k.setString ("ab");
+	EXPECT_FALSE (tc.check (k)) << "two chars should not check successfully as char";
+
+	for (int i = 1; i < 255; ++i)
+	{
+		char x[2];
+		x[0] = i;
+		x[1] = 0;
+		k.setString (x);
+		EXPECT_TRUE (tc.check (k)) << x << " should check successfully as char";
+	}
+}
+
+TEST (type, octet)
+{
+	KeySet config;
+	TypeChecker tc (config);
+
+	Key k ("user/anything", KEY_VALUE, "a", KEY_META, "check/type", "octet", KEY_END);
+	EXPECT_TRUE (tc.check (k)) << "a should check successfully as octet";
+	k.setString ("b");
+	EXPECT_TRUE (tc.check (k)) << "b should check successfully as octet";
+	k.setString (" ");
+	EXPECT_TRUE (tc.check (k)) << "space should check successfully as octet";
+	k.setString ("");
+	EXPECT_FALSE (tc.check (k)) << "empty string should not check successfully as octet";
+	k.setString ("ab");
+	EXPECT_FALSE (tc.check (k)) << "two chars should not check successfully as octet";
+
+	for (int i = 1; i < 255; ++i)
+	{
+		char x[2];
+		x[0] = i;
+		x[1] = 0;
+		k.setString (x);
+		EXPECT_TRUE (tc.check (k)) << x << " should check successfully as octet";
+	}
+}

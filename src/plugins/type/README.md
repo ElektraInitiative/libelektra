@@ -35,6 +35,21 @@ type was valid. For example, the type `string empty` equals the type
 types specify. It is now deprecated due to a more general sum type
 facility.
 
+## Example
+
+```sh
+sudo kdb mount typetest.dump user/typetest dump type
+kdb set user/typetest/key a
+kdb setmeta user/typetest/key check/type char
+# RET:0
+
+kdb get user/typetest/key
+#> a
+
+kdb rm user/typetest/key
+kdb umount user/typetest
+```
+
 
 ## Limitations
 
