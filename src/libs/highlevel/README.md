@@ -110,7 +110,7 @@ For some background information on arrays in Elektra see the [Application Integr
 
 Notice that both the getters for primitive types and the getters for array types do not accept error parameters. The library relies on that you are running a correct Elektra setup. If the configuration is well specified, no runtime errors can occur when reading a value. Therefore the getters do not accept an error variable as argument. If there is however a severe internal error, or you try to access a key which you have not specified correctly, then the library will call `exit(EXIT_FAILURE)` to prevent data inconsistencies or exceptions further down in your application.
 
-You can find the complete list of the available functions for all supported value types in [elektra.h](/src/libs/highlevel/elektra.h)
+You can find the complete list of the available functions for all supported value types in [elektra.h](/src/include/highlevel/elektra.h)
 
 ### Writing values to the KDB
 
