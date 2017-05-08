@@ -22,6 +22,8 @@
 
 #define VALIDATE_KEY_SUBMATCHES 3 // first submatch is the string we want, second submatch , or EOL
 
+static int validateKey (Key *, Key *);
+
 int elektraEnumGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
 {
 	if (!strcmp (keyName (parentKey), "system/elektra/modules/enum"))
@@ -31,6 +33,7 @@ int elektraEnumGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UN
 			       keyNew ("system/elektra/modules/enum/exports", KEY_END),
 			       keyNew ("system/elektra/modules/enum/exports/get", KEY_FUNC, elektraEnumGet, KEY_END),
 			       keyNew ("system/elektra/modules/enum/exports/set", KEY_FUNC, elektraEnumSet, KEY_END),
+			       keyNew ("system/elektra/modules/enum/exports/validateKey", KEY_FUNC, validateKey, KEY_END),
 #include ELEKTRA_README (enum)
 			       keyNew ("system/elektra/modules/enum/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 		ksAppend (returned, contract);
@@ -181,14 +184,19 @@ static int validateWithArray (Key * key)
 	return 1;
 }
 
-static int validateKey (Key * key)
+static int validateKey (Key * key, Key * parentKey)
 {
+	int rc = 0;
 	const Key * meta = keyGetMeta (key, "check/enum");
-	if (!meta) return 1;
 	if (keyString (meta)[0] != '#')
-		return validateWithList (key);
+		rc = validateWithList (key);
 	else
-		return validateWithArray (key);
+		rc = validateWithArray (key);
+	if (!rc)
+	{
+		ELEKTRA_SET_ERRORF (121, parentKey, "Validation of key \"%s\" with string \"%s\" failed.", keyName (key), keyString (key));
+	}
+	return rc;
 }
 
 int elektraEnumSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
@@ -197,10 +205,12 @@ int elektraEnumSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UN
 	Key * cur;
 	while ((cur = ksNext (returned)) != NULL)
 	{
-		if (!validateKey (cur))
+		const Key * meta = keyGetMeta (cur, "check/enum");
+		if (!meta) continue;
+		;
+
+		if (!validateKey (cur, parentKey))
 		{
-			ELEKTRA_SET_ERRORF (121, parentKey, "Validation of key \"%s\" with string \"%s\" failed.", keyName (cur),
-					    keyString (cur));
 			return -1;
 		}
 	}
