@@ -126,11 +126,10 @@ bool Plugins::checkPlacement (Plugin & plugin, std::string which)
 		std::ostringstream os;
 		os << "Too many plugins!\n"
 		      "The plugin "
-		   << plugin.name () << " can't be positioned to position " << which
-		   << " anymore.\n"
-		      "Try to reduce the number of plugins!\n"
-		      "\n"
-		      "Failed because of stack overflow: cant place to "
+		   << plugin.name () << " can't be positioned to position " << which << " anymore.\n"
+											"Try to reduce the number of plugins!\n"
+											"\n"
+											"Failed because of stack overflow: cant place to "
 		   << revPostGet << " because " << placementInfo["postgetstorage"].current << " is larger (this slot is in use)." << endl;
 		throw TooManyPlugins (os.str ());
 	}
@@ -140,11 +139,10 @@ bool Plugins::checkPlacement (Plugin & plugin, std::string which)
 		std::ostringstream os;
 		os << "Too many plugins!\n"
 		      "The plugin "
-		   << plugin.name () << " can't be positioned to position " << which
-		   << " anymore.\n"
-		      "Try to reduce the number of plugins!\n"
-		      "\n"
-		      "Failed because "
+		   << plugin.name () << " can't be positioned to position " << which << " anymore.\n"
+											"Try to reduce the number of plugins!\n"
+											"\n"
+											"Failed because "
 		   << which << " with " << placementInfo[which].current << " is larger than " << placementInfo[which].max << endl;
 		throw TooManyPlugins (os.str ());
 	}
