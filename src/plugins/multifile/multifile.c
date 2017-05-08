@@ -11,6 +11,8 @@
 
 #include <dirent.h>
 #include <errno.h>
+#include <fnmatch.h>
+#include <fts.h>
 #include <glob.h>
 #include <kdbconfig.h>
 #include <kdbhelper.h>
@@ -64,6 +66,7 @@ typedef struct
 	char * storage;
 	unsigned short stayAlive;
 	unsigned short hasDeleted;
+	unsigned short recursive;
 } MultiConfig;
 
 typedef struct
@@ -220,6 +223,7 @@ static MultiConfig * initialize (Plugin * handle, Key * parentKey)
 	Key * storageKey = ksLookupByName (config, "/storage", 0);
 	Key * resolverKey = ksLookupByName (config, "/resolver", 0);
 	Key * stayAliveKey = ksLookupByName (config, "/stayalive", 0);
+	Key * recursiveKey = ksLookupByName (config, "/recursive", 0);
 	MultiConfig * mc = elektraCalloc (sizeof (MultiConfig));
 	mc->directory = elektraStrDup (keyString (parentKey));
 	mc->originalPath = elektraStrDup (keyString (origPath));
@@ -248,6 +252,7 @@ static MultiConfig * initialize (Plugin * handle, Key * parentKey)
 		mc->pattern = elektraStrDup (DEFAULT_PATTERN);
 	}
 	if (stayAliveKey) mc->stayAlive = 1;
+	if (recursiveKey) mc->recursive = 1;
 
 	mc->childBackends = ksNew (0, KS_END);
 	mc->modules = ksNew (0, KS_END);
@@ -307,16 +312,72 @@ static Codes resolverGet (SingleConfig * s, KeySet * returned, Key * parentKey)
 	return s->rcResolver;
 }
 
-static Codes updateFiles (MultiConfig * mc, KeySet * returned, Key * parentKey)
+static Codes updateFilesRecursive (MultiConfig * mc, KeySet * found, Key * parentKey)
 {
 	Codes rc = NOUPDATE;
-	KeySet * found = ksNew (0, KS_END);
-	Key * initialParent = keyDup (parentKey);
+	char * dirs[2];
+	dirs[0] = mc->directory;
+	dirs[1] = (void *)NULL;
+	FTS * fts = fts_open (dirs, FTS_COMFOLLOW | FTS_NOCHDIR, NULL);
+	if (fts)
+	{
+		FTSENT * ent = NULL;
+		while ((ent = fts_read (fts)) != NULL)
+		{
+			if (ent->fts_info == FTS_F)
+			{
+				if (!fnmatch (mc->pattern, ent->fts_name, 0))
+				{
+					Key * lookup = keyNew ("/", KEY_CASCADING_NAME, KEY_END);
+					keyAddBaseName (lookup, (ent->fts_path + strlen (mc->directory)));
+					Key * k;
+					if ((k = ksLookup (mc->childBackends, lookup, KDB_O_NONE)) != NULL)
+					{
+						ksAppendKey (found, k);
+					}
+					else
+					{
+						SingleConfig * s = elektraCalloc (sizeof (SingleConfig));
+						s->filename = elektraStrDup ((ent->fts_path) + strlen (mc->directory) + 1);
+						Codes r = initBackend (mc, s, parentKey);
+						if (r == ERROR)
+						{
+							if (!mc->stayAlive)
+							{
+								keyDel (lookup);
+								fts_close (fts);
+								return ERROR;
+							}
+							else
+							{
+								closeBackend (s);
+							}
+						}
+						else
+						{
+							Key * childKey = keyNew (keyName (lookup), KEY_CASCADING_NAME, KEY_BINARY, KEY_SIZE,
+										 sizeof (SingleConfig *), KEY_VALUE, &s, KEY_END);
+							ksAppendKey (mc->childBackends, childKey);
+							ksAppendKey (found, childKey);
+						}
+					}
+					keyDel (lookup);
+				}
+			}
+		}
+		fts_close (fts);
+	}
+	return rc;
+}
+
+static Codes updateFilesGlob (MultiConfig * mc, KeySet * found, Key * parentKey)
+{
+	glob_t results;
+	int ret;
 
 	char pattern[strlen (mc->directory) + strlen (mc->pattern) + 2];
 	snprintf (pattern, sizeof (pattern), "%s/%s", mc->directory, mc->pattern);
-	glob_t results;
-	int ret;
+
 	ret = glob (pattern, 0, NULL, &results);
 	if (ret != 0)
 	{
@@ -356,6 +417,7 @@ static Codes updateFiles (MultiConfig * mc, KeySet * returned, Key * parentKey)
 				{
 					if (!mc->stayAlive)
 					{
+						keyDel (lookup);
 						globfree (&results);
 						return ERROR;
 					}
@@ -370,13 +432,35 @@ static Codes updateFiles (MultiConfig * mc, KeySet * returned, Key * parentKey)
 								 sizeof (SingleConfig *), KEY_VALUE, &s, KEY_END);
 					ksAppendKey (mc->childBackends, childKey);
 					ksAppendKey (found, childKey);
-					rc = SUCCESS;
 				}
 			}
 			keyDel (lookup);
 		}
 	}
 	globfree (&results);
+	return SUCCESS;
+}
+
+static Codes updateFiles (MultiConfig * mc, KeySet * returned, Key * parentKey)
+{
+	Codes rc = NOUPDATE;
+	KeySet * found = ksNew (0, KS_END);
+	Key * initialParent = keyDup (parentKey);
+
+	if (!mc->recursive)
+	{
+		rc = updateFilesGlob (mc, found, parentKey);
+	}
+	else
+	{
+		rc = updateFilesRecursive (mc, found, parentKey);
+	}
+	if (rc == ERROR)
+	{
+		ksDel (found);
+		keyDel (initialParent);
+		return ERROR;
+	}
 
 	ksRewind (mc->childBackends);
 	ksRewind (found);
