@@ -120,7 +120,8 @@ module.exports = function (grunt) {
             options: {},
             build: {
                 files: {
-                    'public/assets/skin/default/css/theme.css': 'resources/assets/skin/default/less/theme.less'
+                    'public/assets/skin/default/css/theme.css': 'resources/assets/skin/default/less/theme.less',
+                    'public/assets/skin/bootstrap/bootstrap.css': 'resources/assets/skin/bootstrap/bootstrap.less'
                 }
             }
         },
@@ -130,7 +131,8 @@ module.exports = function (grunt) {
             },
             build: {
                 files: {
-                    'public/assets/skin/default/css/theme.min.css': 'public/assets/skin/default/css/theme.css'
+                    'public/assets/skin/default/css/theme.min.css': 'public/assets/skin/default/css/theme.css',
+                    'public/assets/skin/bootstrap/bootstrap.min.css': 'public/assets/skin/bootstrap/bootstrap.css'
                 }
             }
         },
@@ -140,8 +142,7 @@ module.exports = function (grunt) {
             },
             vendor: {
                 src: [
-                    'node_modules/bootstrap/dist/css/bootstrap.min.css',
-                    'node_modules/bootstrap/dist/css/bootstrap-theme.min.css',
+                    'public/assets/skin/bootstrap/bootstrap.min.css',
                     'node_modules/highlight.js/styles/github.css',
                     'node_modules/angular-ui-notification/dist/angular-ui-notification.min.css',
                     'node_modules/ng-tags-input/build/ng-tags-input.min.css',
