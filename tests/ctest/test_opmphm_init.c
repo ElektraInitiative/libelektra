@@ -18,7 +18,7 @@ static const char * test_opmphm_getString (void * data ELEKTRA_UNUSED)
 static void getOrderedPair (OpmphmOrder * order, size_t w, size_t i)
 {
 	size_t result = i;
-	for (unsigned int t = 0; t < OPMPHMNOEIOP; ++t)
+	for (unsigned int t = 0; t < OPMPHMTUPLE; ++t)
 	{
 		size_t temp = result / w;
 		size_t rest = result - temp * w;
@@ -39,7 +39,7 @@ static size_t getPower (size_t p, size_t q)
 static size_t getNumber (OpmphmOrder * order, size_t w)
 {
 	size_t result = 0;
-	for (int t = OPMPHMNOEIOP - 1; t >= 0; --t)
+	for (int t = OPMPHMTUPLE - 1; t >= 0; --t)
 	{
 
 		result += order->h[t] * getPower (w, t);
@@ -56,7 +56,7 @@ static void test_success ()
 	{
 		for (size_t w = 2; w < opmphmGetWidth (maxNsimple); ++w)
 		{
-			for (size_t n = 0; n < getPower (w, OPMPHMNOEIOP); ++n)
+			for (size_t n = 0; n < getPower (w, OPMPHMTUPLE); ++n)
 			{
 				OpmphmOrder o;
 				getOrderedPair (&o, w, n);
@@ -64,14 +64,14 @@ static void test_success ()
 			}
 		}
 	}
-	/* test w, always full. w^OPMPHMNOEIOP elements in each run.
+	/* test w, always full. w^OPMPHMTUPLE elements in each run.
 	 * ascending order
 	 */
 	{
 		opmphmRatio = 1;
 		for (size_t w = 2; w < opmphmGetWidth (maxNsimple); ++w)
 		{
-			size_t n = getPower (w, OPMPHMNOEIOP);
+			size_t n = getPower (w, OPMPHMTUPLE);
 			void * datap = elektraMalloc (sizeof (void *) * n);
 			OpmphmOrder * order = elektraMalloc (sizeof (OpmphmOrder) * n);
 			exit_if_fail (datap, "malloc");
@@ -79,7 +79,7 @@ static void test_success ()
 			// prepare
 			OpmphmInit init;
 			init.getString = test_opmphm_getString;
-			init.seed = 0;
+			init.initSeed = 0;
 			init.data = datap;
 			Opmphm opmphm;
 			// fill
@@ -106,7 +106,7 @@ static void test_success ()
 	{
 		for (size_t w = 2; w < opmphmGetWidth (maxNcomplex); ++w)
 		{
-			size_t power = getPower (w, OPMPHMNOEIOP);
+			size_t power = getPower (w, OPMPHMTUPLE);
 			void * datap = elektraMalloc (sizeof (void *) * power);
 			OpmphmOrder * order = elektraMalloc (sizeof (OpmphmOrder) * power);
 			exit_if_fail (datap, "malloc");
@@ -117,7 +117,7 @@ static void test_success ()
 				// prepare
 				OpmphmInit init;
 				init.getString = test_opmphm_getString;
-				init.seed = 0;
+				init.initSeed = 0;
 				init.data = datap;
 				Opmphm opmphm;
 				// fill
@@ -138,14 +138,14 @@ static void test_success ()
 			elektraFree (datap);
 		}
 	}
-	/* test w, always full. w^OPMPHMNOEIOP elements in each run.
+	/* test w, always full. w^OPMPHMTUPLE elements in each run.
 	 * descending order
 	 */
 	{
 		opmphmRatio = 1;
 		for (size_t w = 2; w < opmphmGetWidth (maxNsimple); ++w)
 		{
-			size_t n = getPower (w, OPMPHMNOEIOP);
+			size_t n = getPower (w, OPMPHMTUPLE);
 			void * datap = elektraMalloc (sizeof (void *) * n);
 			OpmphmOrder * order = elektraMalloc (sizeof (OpmphmOrder) * n);
 			exit_if_fail (datap, "malloc");
@@ -153,7 +153,7 @@ static void test_success ()
 			// prepare
 			OpmphmInit init;
 			init.getString = test_opmphm_getString;
-			init.seed = 0;
+			init.initSeed = 0;
 			init.data = datap;
 			Opmphm opmphm;
 			// fill
@@ -180,7 +180,7 @@ static void test_success ()
 	{
 		for (size_t w = 2; w < opmphmGetWidth (maxNcomplex); ++w)
 		{
-			size_t power = getPower (w, OPMPHMNOEIOP);
+			size_t power = getPower (w, OPMPHMTUPLE);
 			void * datap = elektraMalloc (sizeof (void *) * power);
 			OpmphmOrder * order = elektraMalloc (sizeof (OpmphmOrder) * power);
 			exit_if_fail (datap, "malloc");
@@ -191,7 +191,7 @@ static void test_success ()
 				// prepare
 				OpmphmInit init;
 				init.getString = test_opmphm_getString;
-				init.seed = 0;
+				init.initSeed = 0;
 				init.data = datap;
 				Opmphm opmphm;
 				// fill
@@ -217,7 +217,7 @@ static void test_success ()
 
 static void test_fail ()
 {
-	/* test w, always full. w^OPMPHMNOEIOP elements in each run.
+	/* test w, always full. w^OPMPHMTUPLE elements in each run.
 	 * ascending order
 	 * only 1 duplicate, should be detected during partition
 	 */
@@ -225,7 +225,7 @@ static void test_fail ()
 		opmphmRatio = 1;
 		for (size_t w = 2; w < opmphmGetWidth (maxNsimple); ++w)
 		{
-			size_t n = getPower (w, OPMPHMNOEIOP);
+			size_t n = getPower (w, OPMPHMTUPLE);
 			void * datap = elektraMalloc (sizeof (void *) * n);
 			OpmphmOrder * order = elektraMalloc (sizeof (OpmphmOrder) * n);
 			exit_if_fail (datap, "malloc");
@@ -233,7 +233,7 @@ static void test_fail ()
 			// prepare
 			OpmphmInit init;
 			init.getString = test_opmphm_getString;
-			init.seed = 0;
+			init.initSeed = 0;
 			init.data = datap;
 			Opmphm opmphm;
 			// fill
@@ -241,7 +241,7 @@ static void test_fail ()
 			{
 				getOrderedPair (&order[i], w, i);
 			}
-			order[n * (3 / 4)].h[OPMPHMNOEIOP / 2] = (order[n * (3 / 4)].h[OPMPHMNOEIOP / 2] + 1) % w;
+			order[n * (3 / 4)].h[OPMPHMTUPLE / 2] = (order[n * (3 / 4)].h[OPMPHMTUPLE / 2] + 1) % w;
 			// check
 			OpmphmOrder ** sortOrder = opmphmInit (&opmphm, &init, order, n);
 			//~ succeed_if (!sortOrder, "duplicate data marked as ok");
@@ -258,7 +258,7 @@ static void test_fail ()
 	{
 		for (size_t w = 2; w < opmphmGetWidth (maxNcomplex); ++w)
 		{
-			size_t power = getPower (w, OPMPHMNOEIOP);
+			size_t power = getPower (w, OPMPHMTUPLE);
 			void * datap = elektraMalloc (sizeof (void *) * power);
 			OpmphmOrder * order = elektraMalloc (sizeof (OpmphmOrder) * power);
 			exit_if_fail (datap, "malloc");
@@ -269,7 +269,7 @@ static void test_fail ()
 				// prepare
 				OpmphmInit init;
 				init.getString = test_opmphm_getString;
-				init.seed = 0;
+				init.initSeed = 0;
 				init.data = datap;
 				Opmphm opmphm;
 				// fill
@@ -277,7 +277,7 @@ static void test_fail ()
 				{
 					getOrderedPair (&order[i], w, i);
 				}
-				for (unsigned int t = 0; t < OPMPHMNOEIOP; ++t)
+				for (unsigned int t = 0; t < OPMPHMTUPLE; ++t)
 				{
 					order[n - 1].h[t] = order[0].h[t];
 				}

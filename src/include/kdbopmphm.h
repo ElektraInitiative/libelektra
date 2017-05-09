@@ -6,18 +6,26 @@
 #include <stdlib.h>
 
 /**
- * NOEIOP stands for number of elements in ordered pair.
+ * The Order Preserving Minimal Perfect Hash Map (OPMPHM) first maps each key name to a k-tuple, k is stored in OPMPHMTUPLE.
+ * Each element of the k-tuples is in the range 0 to width. The width (abbreviated with w) determines how many keys can fit in the OPMPHM.
+ * w^OPMPHMTUPLE is the maximum number of keys that fit in. w is set dynamically to the minimum value that:
+ *
+ * w^OPMPHMTUPLE > opmphmRatio * n
+ *
+ * opmphmRatio should never be less than 1.
+ *
  */
-#define OPMPHMNOEIOP 7
+#define OPMPHMTUPLE 7
+extern double opmphmRatio;
+
 
 /**
- * OpmphmOrder represents the key.
- * Gets filled at opmphmInit () and is used at opmphmBuild ().
+ * Saves a k-tuple in h[] and tells the OPMPHM the return value of each element, only needed during build.
  */
 typedef struct
 {
-	size_t h[OPMPHMNOEIOP]; /*!< the hash function value of each key */
-	size_t order;		/*!< the desired index of the key in the opmphm hash map */
+	size_t h[OPMPHMTUPLE]; /*!< the k-tuple filled by the OPMPHM with the hash function values */
+	size_t order;	  /*!< the desired return value */
 } OpmphmOrder;
 
 /**
@@ -28,24 +36,21 @@ typedef struct
 {
 	opmphmGetString getString; /*!< Function pointer used to extract the key name from the data. */
 	void ** data;		   /*!< The data */
-	uint32_t seed;		   /*!< The seed for random actions */
+	uint32_t initSeed;	 /*!< seed for random actions */
 } OpmphmInit;
 
 
 /**
- * Opmphm represents the final order preserving hash map.
- * This struct is needed for the lookup, during the lookup the string gets hashed OPMPHMNOEIOP times
+ * Opmphm represents the final OPMPHM.
+ * This struct is needed for the lookup, during the lookup the key name gets hashed OPMPHMTUPLE times
  * with different seeds from opmphmHashFunctionSeeds.
  */
 typedef struct
 {
-	uint32_t opmphmHashFunctionSeeds[OPMPHMNOEIOP]; /*!< the seeds for the tree hash function calls */
+	uint32_t opmphmHashFunctionSeeds[OPMPHMTUPLE]; /*!< the seeds for the tree hash function calls */
 } Opmphm;
 
-/**
- *
- */
-
+// build functions
 OpmphmOrder ** opmphmInit (Opmphm * opmphm, OpmphmInit * init, OpmphmOrder * order, size_t n);
 
 /**
