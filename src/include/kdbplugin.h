@@ -21,7 +21,9 @@
 #define ELEKTRA_PLUGIN_EXPORT2(module, variant) ELEKTRA_PLUGIN_EXPORT3 (module, variant)
 #define ELEKTRA_PLUGIN_EXPORT3(module, variant) libelektra_##module##_##variant##_LTX_elektraPluginSymbol (void)
 #else
-#define ELEKTRA_PLUGIN_EXPORT(module) libelektra_##module##_LTX_elektraPluginSymbol (void)
+#define ELEKTRA_PLUGIN_EXPORT(module) ELEKTRA_PLUGIN_EXPORT2 (module)
+#define ELEKTRA_PLUGIN_EXPORT2(module) ELEKTRA_PLUGIN_EXPORT3 (module)
+#define ELEKTRA_PLUGIN_EXPORT3(module) libelektra_##module##_LTX_elektraPluginSymbol (void)
 #endif
 #else
 #define ELEKTRA_PLUGIN_EXPORT(module) elektraPluginSymbol (void)
