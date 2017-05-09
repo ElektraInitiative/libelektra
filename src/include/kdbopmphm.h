@@ -1,76 +1,57 @@
 #ifndef OPMPHM_H
 #define OPMPHM_H
 
+#include <stdbool.h>
 #include <stdint.h>
 #include <stdlib.h>
 
 /**
- * Vertex represents the vertex of the bipartite graph.
- * Only needed for build, 2*r times (see opmphmR, below).
- */
-typedef struct
-{
-	int firstEdge; /*!< index of the fist edge in the list */
-	size_t degree; /*!< number of edges in the list */
-} Vertex;
-
-/**
- * Edge represents the edge of the bipartite graph and is also the key.
- * Only needed for build, number of keys times.
- */
-typedef struct
-{
-	uint32_t h[3];   /*!< the hash function value of each key */
-	int nextEdge[2]; /*!< the index of the next edge in the edge list of the vertex */
-	size_t order;    /*!< the desired index of the key in the opmphm hash map */
-} Edge;
-
-/**
- * The vertices and edges represent the bipartite graph.
+ * The Order Preserving Minimal Perfect Hash Map (OPMPHM) first maps each key name to a k-tuple, k is stored in OPMPHMTUPLE.
+ * Each element of the k-tuples is in the range 0 to width. The width (abbreviated with w) determines how many keys can fit in the OPMPHM.
+ * w^OPMPHMTUPLE is the maximum number of keys that fit in. w is set dynamically to the minimum value that:
  *
- * Each Vertex has a list, each Edge is exactly in two lists.
- * The next element of each list is defined in nextEdge.
- * nextEdge[1] is for the lists on one side of the bipartite graph (0 to r -1)
- * nextEdge[2] is for the lists in the other side of the bipartite graph (r to 2*r-1)
+ * w^OPMPHMTUPLE > opmphmRatio * n
+ *
+ * opmphmRatio should never be less than 1.
+ *
  */
+#define OPMPHMTUPLE 7
+extern double opmphmRatio;
 
 
 /**
- * Only needed for Initialisation, during Mapping
+ * Saves a k-tuple in h[] and tells the OPMPHM the return value of each element, only needed during build.
+ */
+typedef struct
+{
+	size_t h[OPMPHMTUPLE]; /*!< the k-tuple filled by the OPMPHM with the hash function values */
+	size_t order;	  /*!< the desired return value */
+} OpmphmOrder;
+
+/**
+ * Only needed for Initialisation.
  */
 typedef const char * (*opmphmGetString) (void *);
 typedef struct
 {
 	opmphmGetString getString; /*!< Function pointer used to extract the key name from the data. */
 	void ** data;		   /*!< The data */
-	uint32_t seed;		   /*!< The seed for random actions */
-} OPMPHMinit;
+	uint32_t initSeed;	 /*!< seed for random actions */
+} OpmphmInit;
 
 
 /**
- * OPMPHM represents the final order preserving hash map.
- * This struct is needed for the lookup, during the lookup the string gets hashed 3 times
- * with different seeds from opmphmHashFunctionSeeds, the choice of the actual hash function depends on the mark bit
- * and a purely saved function g: [0 ...  2 * r] -> n, the core of the OPMPHM, is used.
+ * Opmphm represents the final OPMPHM.
+ * This struct is needed for the lookup, during the lookup the key name gets hashed OPMPHMTUPLE times
+ * with different seeds from opmphmHashFunctionSeeds.
  */
 typedef struct
 {
-	uint32_t opmphmHashFunctionSeeds[3]; /*!< the seeds for the tree hash function calls */
-	unsigned int * g;		     /*!< saves the g () function need for the lookup and filled while the search phase */
-	uint8_t * mark;			     /*!< saves boolean values, to mark the indirection */
-} OPMPHM;
+	uint32_t opmphmHashFunctionSeeds[OPMPHMTUPLE]; /*!< the seeds for the tree hash function calls */
+} Opmphm;
 
-/**
- * The ratio defines the number of vertices on one side of the biparithegraph, denoted as r.
- * Double this value to get to the Fox et al. ratio.
- */
-extern double opmphmRatio;
-
-/** The tree phases */
-int opmphmMapping (OPMPHM * opmphm, Vertex * vertices, Edge * edges, OPMPHMinit * init, size_t n);
-
-/* Debug */
-void opmphmPrintGraph (Edge * edges, void ** data, opmphmGetString fpOpmhpmGetString, size_t n);
+// build functions
+OpmphmOrder ** opmphmInit (Opmphm * opmphm, OpmphmInit * init, OpmphmOrder * order, size_t n);
 
 /**
  * Hash function
