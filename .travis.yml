@@ -64,3 +64,5 @@ before_script:
 script:
   - ninja
   - ninja run_all
+  - ninja install
+  - ninja run_all
