@@ -1,7 +1,7 @@
 #include "typehelper.h"
 #include <kdberrors.h>
 #include <kdbhelper.h>   // elektraStrLen
-#include <kdbproposal.h> //elektraKeyGetMetaKeySet
+#include <kdbproposal.h> //elektraKeyGetMetaKeySet, keyRel2
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -236,7 +236,7 @@ static int typeCheck (DispatchConfig * config, const Key * key, KeySet * returne
 
 // checks type metadata and calls typeCheck function
 // assume subtype for multiple type entries
-int validateKey (Key * key, KeySet * returned, DispatchConfig * config, Key * parentKey)
+int validateTypeKey (Key * key, KeySet * returned, DispatchConfig * config, Key * parentKey)
 {
 	const Key * typeMeta = keyGetMeta (key, "type");
 	if (!typeMeta) return SUCCESS;
@@ -273,4 +273,79 @@ int validateKey (Key * key, KeySet * returned, DispatchConfig * config, Key * pa
 		if (rc == ERROR) return ERROR;
 	}
 	return SUCCESS;
+}
+
+
+// checks for check/ metadata and validates
+int validateCheckKey (Key * key, KeySet * returned, DispatchConfig * config, Key * parentKey)
+{
+	keyRewindMeta (key);
+	const Key * metaKey = NULL;
+	Key * checkMeta = keyNew ("check", KEY_VALUE, "", KEY_META_NAME, KEY_END);
+	KeySet * metaKS = elektraKeyGetMetaKeySet (key);
+	KeySet * checkKS = getKeysDirectBelow (checkMeta, metaKS);
+	keyDel (checkMeta);
+	ksDel (metaKS);
+	RC rc = SUCCESS;
+	while ((metaKey = ksNext (checkKS)) != NULL)
+	{
+#ifdef DEVBUILD
+		fprintf (stderr, "Key %s:(%s) has metaKey %s\n", keyName (key), keyString (key), keyName (metaKey));
+#endif
+		ValidateFunction validate = getValidateFunction (config, keyBaseName (metaKey));
+		if (!validate)
+		{
+			ksDel (checkKS);
+			return ERROR;
+		}
+		Key * errorKey = keyNew (0, KEY_END);
+		rc = validate (key, errorKey);
+#ifdef DEVBUILD
+		fprintf (stderr, "%s->validateKey(%s, errorKey) returned %d\n", keyName (checkMeta), keyName (key), rc);
+#endif
+		if (rc == 0)
+		{
+#if defined(DEVBUILD) && defined(VERBOSEBUILD)
+			fprintf (stderr, "number: %s\n", keyString (keyGetMeta (errorKey, "error/number")));
+			fprintf (stderr, "description: : %s\n", keyString (keyGetMeta (errorKey, "error/description")));
+			fprintf (stderr, "ingroup: : %s\n", keyString (keyGetMeta (errorKey, "error/ingroup")));
+			fprintf (stderr, "module: : %s\n", keyString (keyGetMeta (errorKey, "error/module")));
+			fprintf (stderr, "at: %s:%s\n", keyString (keyGetMeta (errorKey, "error/file")),
+				 keyString (keyGetMeta (errorKey, "error/line")));
+			fprintf (stderr, "reason: : %s\n", keyString (keyGetMeta (errorKey, "error/reason")));
+			fprintf (stderr, "mountpoint: : %s\n", keyString (keyGetMeta (errorKey, "error/mountpoint")));
+			fprintf (stderr, "configfile: : %s\n", keyString (keyGetMeta (errorKey, "error/configfile")));
+#endif
+			copyError (errorKey, parentKey, key);
+			rc = ERROR;
+			break;
+		}
+		keyDel (errorKey);
+	}
+	ksDel (checkKS);
+
+	switch (config->onError)
+	{
+	case FAIL:
+		if (rc == ERROR)
+			return ERROR;
+		else
+			return SUCCESS;
+		break;
+	case IGNORE:
+		return SUCCESS;
+		break;
+	case DROPKEY:
+		if (rc == ERROR)
+		{
+			keyDel (ksLookup (returned, (Key *)key, KDB_O_POP));
+			return SUCCESS;
+		}
+		else
+			return SUCCESS;
+		break;
+	default:
+		return rc;
+		break;
+	}
 }

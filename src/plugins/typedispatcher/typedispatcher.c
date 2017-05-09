@@ -73,16 +73,34 @@ static int iterate (DispatchConfig * config, KeySet * returned, Key * parentKey)
 			ksDel (iterateKS);
 			return ERROR;
 		}
-		r = validateKey (cur, returned, config, parentKey);
-		if (r == ERROR)
+		if ((config->dispatchOn) & ONTYPE)
 		{
+			r = validateTypeKey (cur, returned, config, parentKey);
+			if (r == ERROR)
+			{
 #ifdef DEVBUILD
-			fprintf (stderr, "Key %s failed to validate\n", keyName (cur));
+				fprintf (stderr, "Key %s failed to validate\n", keyName (cur));
 #endif
-			ksAppend (returned, specKS);
-			ksDel (specKS);
-			ksDel (iterateKS);
-			return ERROR;
+				ksAppend (returned, specKS);
+				ksDel (specKS);
+				ksDel (iterateKS);
+				return ERROR;
+			}
+		}
+
+		if ((config->dispatchOn) & ONCHECK)
+		{
+			r = validateCheckKey (cur, returned, config, parentKey);
+			if (r == ERROR)
+			{
+#ifdef DEVBUILD
+				fprintf (stderr, "Key %s failed to validate\n", keyName (cur));
+#endif
+				ksAppend (returned, specKS);
+				ksDel (specKS);
+				ksDel (iterateKS);
+				return ERROR;
+			}
 		}
 	}
 	ksDel (iterateKS);
@@ -91,9 +109,8 @@ static int iterate (DispatchConfig * config, KeySet * returned, Key * parentKey)
 	return rc;
 }
 
-static void setOnErrorStrategy (DispatchConfig * config, Plugin * handle)
+static void setOnErrorStrategy (DispatchConfig * config, KeySet * configKS)
 {
-	KeySet * configKS = elektraPluginGetConfig (handle);
 	Key * onError = ksLookupByName (configKS, "/error", KDB_O_NONE);
 	if (onError)
 	{
@@ -111,6 +128,34 @@ static void setOnErrorStrategy (DispatchConfig * config, Plugin * handle)
 	{
 		config->onError = DROPKEY;
 	}
+}
+
+static void setDispatchOnStrategy (DispatchConfig * config, KeySet * configKS)
+{
+	Key * dispatchOnKey = ksLookupByName (configKS, "/dispatch", KDB_O_NONE);
+	if (dispatchOnKey)
+	{
+		const char * strVal = keyString (dispatchOnKey);
+		if (!strcasecmp (strVal, "TYPE"))
+			config->dispatchOn = ONTYPE;
+		else if (!strcasecmp (strVal, "CHECK"))
+			config->dispatchOn = ONCHECK;
+		else if (!strcasecmp (strVal, "ALL"))
+			config->dispatchOn = ONBOTH;
+		else
+			config->dispatchOn = ONTYPE;
+	}
+	else
+	{
+		config->dispatchOn = ONTYPE;
+	}
+}
+
+static void initPluginConfig (DispatchConfig * config, Plugin * handle)
+{
+	KeySet * configKS = elektraPluginGetConfig (handle);
+	setOnErrorStrategy (config, configKS);
+	setDispatchOnStrategy (config, configKS);
 }
 
 int elektraTypedispatcherGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
@@ -139,7 +184,7 @@ int elektraTypedispatcherGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned 
 	DispatchConfig * config = NULL;
 	config = initDispatchConfig ();
 	if (!config) return ERROR;
-	setOnErrorStrategy (config, handle);
+	initPluginConfig (config, handle);
 	KeySet * conf = elektraPluginGetConfig (handle);
 	config->pluginMeta = conf;
 	elektraPluginSetData (handle, config);
@@ -208,7 +253,7 @@ int elektraTypedispatcherCheckConfig (Key * errorKey ELEKTRA_UNUSED, KeySet * co
 		return -1;
 	}
 	Key * onErrorKey = ksLookupByName (conf, "/error", KDB_O_POP);
-	ksClear (conf);
+	//	ksClear (conf);
 	parseMetadata (metaini, KS, conf);
 	ksAppendKey (conf, onErrorKey);
 	keyDel (metaini);

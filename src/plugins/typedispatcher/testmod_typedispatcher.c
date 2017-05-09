@@ -432,6 +432,32 @@ void testSubFailDefault ()
 	PLUGIN_CLOSE ();
 }
 
+void testNormalCheck ()
+{
+	Key * parentKey = keyNew ("user/tests/typedispatcher", KEY_VALUE, "", KEY_END);
+	KeySet * ks = ksNew (5, keyNew ("user/tests/typedispatcher/key", KEY_VALUE, "3", KEY_META, "check/range", "1-5", KEY_END), KS_END);
+	KeySet * conf = ksNew (3, keyNew ("system/error", KEY_VALUE, "FAIL", KEY_END),
+			       keyNew ("system/dispatch", KEY_VALUE, "check", KEY_END), KS_END);
+	PLUGIN_OPEN ("typedispatcher");
+	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "NormalCheck failed");
+	ksDel (ks);
+	keyDel (parentKey);
+	PLUGIN_CLOSE ();
+}
+
+void testNormalCheck2 ()
+{
+	Key * parentKey = keyNew ("user/tests/typedispatcher", KEY_VALUE, "", KEY_END);
+	KeySet * ks = ksNew (5, keyNew ("user/tests/typedispatcher/key", KEY_VALUE, "7", KEY_META, "check/range", "1-5", KEY_END), KS_END);
+	KeySet * conf = ksNew (3, keyNew ("system/error", KEY_VALUE, "FAIL", KEY_END),
+			       keyNew ("system/dispatch", KEY_VALUE, "check", KEY_END), KS_END);
+	PLUGIN_OPEN ("typedispatcher");
+	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == -1, "NormalCheck failed");
+	ksDel (ks);
+	keyDel (parentKey);
+	PLUGIN_CLOSE ();
+}
+
 int main (int argc, char ** argv)
 {
 	printf ("TYPEDISPATCHER     TESTS\n");
@@ -493,7 +519,13 @@ int main (int argc, char ** argv)
 	//	fprintf (stderr, "\n============================================\n");
 	//	fprintf (stderr, "testSubFailDefault()\n");
 	testSubFailDefault ();
-	//	fprintf (stderr, "\n============================================\n");
+
+	fprintf (stderr, "\n============================================\n");
+
+	testNormalCheck ();
+
+	fprintf (stderr, "\n============================================\n");
+	testNormalCheck2 ();
 
 	printf ("\ntestmod_typedispatcher RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 

@@ -379,8 +379,13 @@ int getTypeDefinitions (Key * key, DispatchConfig * config, Key * parentKey)
 	}
 	else
 	{
+
 		// typeParents - define/type/<TYPENAME>
 		KeySet * typeParentKS = getKeysDirectBelow (defineParent, defKS);
+		if (ksGetSize (defKS) < 1)
+		{
+			goto GETDEFCLEANUP;
+		}
 		if (!typeParentKS)
 		{
 #if defined(DEVBUILD) && defined(VERBOSEBUILD)

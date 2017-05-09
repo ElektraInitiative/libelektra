@@ -22,6 +22,11 @@ typedef enum {
 	DROPKEY,
 } OnError;
 
+typedef enum {
+	ONCHECK = (1 << 0),
+	ONTYPE = (1 << 1),
+	ONBOTH = ONCHECK | ONTYPE,
+} DispatchOn;
 
 // configuration of a defined type
 typedef struct
@@ -47,6 +52,8 @@ typedef struct
 typedef struct
 {
 	OnError onError;
+	DispatchOn dispatchOn;
+
 	KeySet * modules;    // modules keyset for PluginOpen/PluginClose
 	KeySet * plugins;    // all loaded plugins. keyname == plugin name
 			     // value == PluginConfig
@@ -85,7 +92,8 @@ void parseMetadata (const Key *, KeySet *, KeySet *);
 int getTypeDefinitions (Key *, DispatchConfig *, Key *);
 
 // typecheck.c
-int validateKey (Key *, KeySet *, DispatchConfig *, Key *);
+int validateTypeKey (Key *, KeySet *, DispatchConfig *, Key *);
+int validateCheckKey (Key *, KeySet *, DispatchConfig *, Key *);
 
 // pluginhelper.c
 ValidateFunction getValidateFunction (DispatchConfig *, const char *);
