@@ -40,3 +40,5 @@ target_link_elektra (test_utility elektra-utility)
 target_link_elektra (test_globbing elektra-globbing)
 
 target_link_elektra(test_highlevel elektra-highlevel)
+set_property(TARGET test_highlevel PROPERTY C_STANDARD 11)
+set_property(TARGET test_highlevel PROPERTY C_STANDARD_REQUIRED ON)
