@@ -108,7 +108,12 @@ ElektraErrorModule elektraErrorModule (ElektraError * error)
  */
 void elektraErrorReset (ElektraError ** error)
 {
-	elektraFree (error);
+	if (*error == NULL)
+	{
+		return;
+	}
+
+	elektraFree (*error);
 	*error = NULL;
 }
 
