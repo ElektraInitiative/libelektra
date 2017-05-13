@@ -277,7 +277,7 @@ static void test_jenkins_config ()
 	succeed_if (strcmp (keyValue (current), "bee4ahGhOqua3ahzsai2Eef5quie5ohK/eiSe4eav+JhVlerBftAil8Ow5AejahBe9oiksKAlla/kk1/1=") == 0,
 		    "api token is wrong");
 
-	succeed_if (86 == ksGetSize (ks), "pom file is expected to contain 64 keys");
+	succeed_if (86 == ksGetSize (ks), "pom file is expected to contain 86 keys");
 
 	compare_keyset (ks, result); // Should be the same
 
