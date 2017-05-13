@@ -1,7 +1,7 @@
 /**
  * @file
  *
- * @brief benchmark for getenv
+ * @brief benchmark for comparing the cryptographic providers used in the crypto plugin.
  *
  * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
  *
@@ -37,13 +37,19 @@ const int benchmarkIterations = 11; // is a good number to not need mean values 
 
 kdb::KeySet toWrite;
 
-template <int VARIANT>
+template <enum PluginVariant VARIANT>
+kdb::Key getMountpointForIteration (int iteration)
+{
+	return kdb::Key ("user/iterate/" + plugin_variant_names[VARIANT] + std::to_string (iteration), KEY_END);
+}
+
+template <enum PluginVariant VARIANT>
 kdb::Key mountBackend (int iteration)
 {
 	using namespace kdb;
 	using namespace kdb::tools;
 
-	Key mp ("user/iterate/" + plugin_variant_names[VARIANT] + std::to_string (iteration), KEY_END);
+	Key mp = getMountpointForIteration<VARIANT> (iteration);
 	std::string cf = "benchmark_" + plugin_variant_names[VARIANT] + "_" + std::to_string (iteration) + ".ecf";
 	// unlink (cf.c_str ());
 
@@ -55,7 +61,7 @@ kdb::Key mountBackend (int iteration)
 	b.setMountpoint (mp, KeySet (0, KS_END));
 	b.addPlugin (PluginSpec ("resolver"));
 	b.addPlugin (PluginSpec ("dump"));
-	if (VARIANT > 0)
+	if (VARIANT != NO_CRYPTO)
 	{
 		KeySet pluginConfig;
 		pluginConfig.append (Key ("/gpg/key", KEY_VALUE, GPG_TEST_KEY_ID, KEY_END));
@@ -69,8 +75,8 @@ kdb::Key mountBackend (int iteration)
 	return mp;
 }
 
-template <int VARIANT>
-__attribute__ ((noinline)) void benchmark_crypto (int iteration)
+template <enum PluginVariant VARIANT>
+__attribute__ ((noinline)) void benchmark_crypto_set (int iteration)
 {
 	using namespace kdb;
 	using namespace kdb::tools;
@@ -82,10 +88,6 @@ __attribute__ ((noinline)) void benchmark_crypto (int iteration)
 		KDB kdb;
 		KeySet ks;
 
-		/***************************************************************************
-		 * start of measurement
-		 **************************************************************************/
-		t.start ();
 		kdb.get (ks, mp);
 		for (int i = 0; i < nr_keys; ++i)
 		{
@@ -96,14 +98,45 @@ __attribute__ ((noinline)) void benchmark_crypto (int iteration)
 					KEY_END));
 			// clang-format on
 		}
+
+		/***************************************************************************
+		 * start of measurement
+		 **************************************************************************/
+		t.start ();
 		kdb.set (ks, mp);
-		kdb.close ();
 		t.stop ();
 		/***************************************************************************
 		 * end of measurement
 		 **************************************************************************/
+
+		kdb.close ();
 	}
 
+	std::cout << t;
+}
+
+template <enum PluginVariant VARIANT>
+__attribute__ ((noinline)) void benchmark_crypto_get (int iteration)
+{
+	using namespace kdb;
+	using namespace kdb::tools;
+	static Timer t (plugin_variant_names[VARIANT]);
+
+	KDB kdb;
+	KeySet ks;
+	Key mp = getMountpointForIteration<VARIANT> (iteration);
+
+	/***************************************************************************
+    * start of measurement
+    **************************************************************************/
+	t.start ();
+	kdb.get (ks, mp);
+	t.stop ();
+	/***************************************************************************
+    * end of measurement
+    **************************************************************************/
+
+	kdb.close ();
 	std::cout << t;
 }
 
@@ -146,13 +179,25 @@ int main (int argc, char ** argv)
 	clearenv ();
 #endif
 
+	std::cout << "----- KDB SET -----" << std::endl;
 	for (int i = 0; i < benchmarkIterations; ++i)
 	{
 		std::cout << i << std::endl;
 
-		benchmark_crypto<NO_CRYPTO> (i);
-		benchmark_crypto<CRYPTO_OPENSSL> (i);
-		benchmark_crypto<CRYPTO_GCRYPT> (i);
-		benchmark_crypto<CRYPTO_BOTAN> (i);
+		benchmark_crypto_set<NO_CRYPTO> (i);
+		benchmark_crypto_set<CRYPTO_OPENSSL> (i);
+		benchmark_crypto_set<CRYPTO_GCRYPT> (i);
+		benchmark_crypto_set<CRYPTO_BOTAN> (i);
+	}
+
+	std::cout << "----- KDB GET -----" << std::endl;
+	for (int i = 0; i < benchmarkIterations; ++i)
+	{
+		std::cout << i << std::endl;
+
+		benchmark_crypto_get<NO_CRYPTO> (i);
+		benchmark_crypto_get<CRYPTO_OPENSSL> (i);
+		benchmark_crypto_get<CRYPTO_GCRYPT> (i);
+		benchmark_crypto_get<CRYPTO_BOTAN> (i);
 	}
 }
