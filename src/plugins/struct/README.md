@@ -80,8 +80,8 @@ case, FStab. The rest of the configuration specifies how entries of
 FStab must look.
 
 The information applied to the keys is given through metadata. This
-metadata is copied to each key during the structure check. If,however,a
-key is missing,the structure check will terminate with a failure. Any
+metadata is copied to each key during the structure check. If, however, a
+key is missing, the structure check will terminate with a failure. Any
 additional key will also lead to an error.
 
 The metadata may be evaluated by subsequent checks. In the situation of
