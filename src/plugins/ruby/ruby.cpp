@@ -295,6 +295,13 @@ static void remove_plugin_instance (VALUE instance)
 }
 
 
+static VALUE require_kdb(VALUE v ELEKTRA_UNUSED)
+{
+	rb_require("kdb");
+	return Qnil;
+}
+
+
 static int init_ruby_environment (ckdb::Key * warningsKey)
 {
 	/*
@@ -318,13 +325,21 @@ static int init_ruby_environment (ckdb::Key * warningsKey)
 
 		/* NOT REQUIRED HERE -- define Plugin class */
 		// VALUE klass_Plugin = define_kdb_plugin_class();
-		rb_require ("kdb");
+		//rb_require ("kdb");
 
 		/* define our global plugins array: here we collect all active ruby plugin instances */
 		if (!rb_const_defined (rb_cObject, rb_intern (RB_GLOBAL_VAR_PLUGINS)))
 		{
 			rb_define_const (rb_cObject, RB_GLOBAL_VAR_PLUGINS, rb_ary_new ());
 		}
+	}
+
+	int state = 0;
+	rb_protect(require_kdb, Qnil, &state);
+	if (state)
+	{
+		ELEKTRA_ADD_WARNING (ELEKTRA_WARNING_RUBY_GEN_WARN, warningsKey, "could not load Ruby module 'kdb'");
+		return -1;
 	}
 
 	return 1;
@@ -451,7 +466,7 @@ int RUBY_PLUGIN_FUNCTION (Open) (ckdb::Plugin * handle, ckdb::Key * warningsKey)
 	{
 		global_context_mutex.unlock ();
 		ELEKTRA_LOG_WARNING ("could not init ruby environment");
-		return -1;
+		return 0;
 	}
 
 	ckdb::KeySet * conf_ks = elektraPluginGetConfig (handle);
