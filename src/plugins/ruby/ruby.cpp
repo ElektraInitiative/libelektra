@@ -287,12 +287,12 @@ static void add_plugin_instance (VALUE instance)
 }
 
 /* remove this instance from our global plugins array, now this instance can be GCed */
-static void remove_plugin_instance (VALUE instance)
-{
-	ELEKTRA_LOG_DEBUG ("removing plugin instance to global plugins array: %ld", instance);
-	VALUE ary = rb_const_get (rb_cObject, rb_intern (RB_GLOBAL_VAR_PLUGINS));
-	rb_funcall (ary, rb_intern ("delete"), 1, instance);
-}
+// static void remove_plugin_instance (VALUE instance)
+// {
+// 	ELEKTRA_LOG_DEBUG ("removing plugin instance to global plugins array: %ld", instance);
+// 	VALUE ary = rb_const_get (rb_cObject, rb_intern (RB_GLOBAL_VAR_PLUGINS));
+// 	rb_funcall (ary, rb_intern ("delete"), 1, instance);
+// }
 
 
 static VALUE require_kdb(VALUE v ELEKTRA_UNUSED)
@@ -390,7 +390,7 @@ static VALUE load_ruby_plugin (VALUE config ELEKTRA_UNUSED)
  */
 
 
-int RUBY_PLUGIN_FUNCTION (CheckConf) (ckdb::Key * errorKey ELEKTRA_UNUSED, ckdb::KeySet * conf ELEKTRA_UNUSED)
+int RUBY_PLUGIN_FUNCTION (CheckConf) (ckdb::Key * errorKey, ckdb::KeySet * conf)
 {
 
 	ELEKTRA_LOG_DEBUG ("ruby plugin checkConf");
@@ -400,6 +400,13 @@ int RUBY_PLUGIN_FUNCTION (CheckConf) (ckdb::Key * errorKey ELEKTRA_UNUSED, ckdb:
 	 *  - try to load the plugin
 	 *  - if the plugin defines a 'check_conf', pass the check to the plugin
 	 */
+	if (!ksLookupByName (conf, CONFIG_KEY_SCRIPT, 0))
+	{
+		/* no script specified
+		 * do not issue an error or 'kdb info ruby' causes problems */
+		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_RUBY_GEN_ERROR, errorKey, "no 'script' config value specified");
+		return -1;
+	}
 
 	VALUE config_instance = Qnil;
 	/*

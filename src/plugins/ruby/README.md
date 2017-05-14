@@ -1,5 +1,5 @@
 - infos = Information about RUBY plugin is in keys below
-- infos/author = Bernhard Denner
+- infos/author = Bernhard Denner <bernhard.denner@gmail.com>
 - infos/licence = BSD
 - infos/needs =
 - infos/provides = storage
