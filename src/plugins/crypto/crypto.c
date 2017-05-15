@@ -155,11 +155,9 @@ static void elektraCryptoSafelyReleaseKey (Key * key)
 	{
 		// overwrite key content with zeroes
 		ssize_t length = keyGetValueSize (key);
-		kdb_octet_t * newVal = calloc (length, 1);
-		if (newVal)
+		if (length > 0)
 		{
-			keySetBinary (key, newVal, length);
-			free (newVal);
+			memset ((void *)keyValue (key), 0, length);
 		}
 
 		// release the key
