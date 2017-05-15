@@ -4,7 +4,7 @@
 - infos/needs =
 - infos/provides =
 - infos/placements = postgetstorage postcommit postrollback
-- infos/status = unittest nodep configurable preview unfinished
+- infos/status = nodep configurable preview unfinished
 - infos/description = executes shell commands
 
 ## Usage
