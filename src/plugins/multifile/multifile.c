@@ -105,7 +105,7 @@ static inline Codes rvToRc (int rc)
 static int elektraResolveFilename (Key * parentKey, ElektraResolveTempfile tmpFile)
 {
 	int rc = 0;
-	void * handle = elektraInvokeInitialize ("resolver");
+	ElektraInvokeHandle * handle = elektraInvokeInitialize ("resolver");
 	if (!handle)
 	{
 		rc = -1;
