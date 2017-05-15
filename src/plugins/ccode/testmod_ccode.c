@@ -198,8 +198,8 @@ void test_otherescape ()
 
 int main (int argc, char ** argv)
 {
-	printf ("   ICONV   TESTS\n");
-	printf ("====================\n\n");
+	printf ("CCODE   TESTS\n");
+	printf ("=============\n\n");
 
 	init (argc, argv);
 

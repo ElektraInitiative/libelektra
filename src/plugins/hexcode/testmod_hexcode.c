@@ -141,8 +141,8 @@ void test_config ()
 
 int main (int argc, char ** argv)
 {
-	printf ("   ICONV   TESTS\n");
-	printf ("====================\n\n");
+	printf ("HEXCODE   TESTS\n");
+	printf ("===============\n\n");
 
 	init (argc, argv);
 
