@@ -280,6 +280,7 @@ static void test_primitiveSetters ()
 	ELEKTRA_DIAG_RESTORE
 
 	// Check new keys.
+
 	succeed_if (!elektraStrCmp (elektraGetString (elektra, "newstringkey"), "A string"), "Wrong key value.");
 	succeed_if (elektraGetBoolean (elektra, "newbooleankey"), "Wrong key value.");
 	succeed_if (elektraGetChar (elektra, "newcharkey") == 'c', "Wrong key value.");
@@ -577,6 +578,72 @@ void test_defaultValues ()
 	elektraClose (elektra);
 }
 
+void test_generic ()
+{
+	const char * parentKey = "user/test/sw/elektra/kdb/#0/current";
+
+	setKeyValue (parentKey, "string", "stringkey", "A string");
+
+	ElektraError * error = NULL;
+	Elektra * elektra = elektraOpen (parentKey, NULL, &error);
+
+	if (error)
+	{
+		yield_error ("elektraOpen failed");
+		printf ("ElektraError: %s\n", elektraErrorDescription (error));
+		elektraErrorReset (&error);
+	}
+
+	ElektraStringTag stringTag = {"stringkey"};
+    ElektraBooleanTag booleanTag = {"booleankey"};
+    ElektraCharTag charTag = {"charkey"};
+    ElektraOctetTag octetTag = {"octetkey"};
+    ElektraShortTag shortTag = {"shortkey"};
+    ElektraUnsignedShortTag unsignedShortTag = {"unsignedshortkey"};
+    ElektraLongTag longTag = {"longkey"};
+    ElektraUnsignedLongTag unsignedLongTag = {"unsignedlongkey"};
+    ElektraLongLongTag longLongTag = {"longlongkey"};
+    ElektraUnsignedLongLongTag unsignedLongLongTag = {"unsignedlonglongkey"};
+    ElektraFloatTag floatTag = {"floatkey"};
+    ElektraDoubleTag doubleTag = {"doublekey"};
+    ElektraLongDoubleTag longDoubleTag = {"longdoublekey"};
+
+	elektraSet(elektra, stringTag, "A string", &error);
+	elektraSet(elektra, booleanTag, 1, &error);
+	elektraSet(elektra, charTag, 'c', &error);
+	elektraSet(elektra, octetTag, 1, &error);
+	elektraSet(elektra, shortTag, 1, &error);
+	elektraSet(elektra, unsignedShortTag, 1, &error);
+	elektraSet(elektra, longTag, 1, &error);
+	elektraSet(elektra, unsignedLongTag, 1, &error);
+	elektraSet(elektra, longLongTag, 1, &error);
+	elektraSet(elektra, unsignedLongLongTag, 1, &error);
+	elektraSet(elektra, floatTag, 1.1, &error);
+	elektraSet(elektra, doubleTag, 1.1, &error);
+	elektraSet(elektra, longDoubleTag, 1.1, &error);
+
+	// Check values.
+	succeed_if (!elektraStrCmp (elektraGet (elektra, stringTag), "A string"), "Wrong key value.");
+	succeed_if (elektraGet (elektra, booleanTag), "Wrong key value.");
+	succeed_if (elektraGet (elektra, charTag) == 'c', "Wrong key value.");
+	succeed_if (elektraGet (elektra, octetTag) == 1, "Wrong key value.");
+	succeed_if (elektraGet (elektra, shortTag) == 1, "Wrong key value.");
+	succeed_if (elektraGet (elektra, unsignedShortTag) == 1, "Wrong key value.");
+	succeed_if (elektraGet (elektra, longTag) == 1, "Wrong key value.");
+	succeed_if (elektraGet (elektra, unsignedLongTag) == 1, "Wrong key value.");
+	succeed_if (elektraGet (elektra, longLongTag) == 1, "Wrong key value.");
+	succeed_if (elektraGet (elektra, unsignedLongLongTag) == 1, "Wrong key value.");
+	ELEKTRA_DIAG_STORE
+	ELEKTRA_DIAG_OFF (-Wfloat - equal)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wfloat-equal"
+	succeed_if (elektraGet (elektra, floatTag) == 1.1f, "Wrong key value.");
+	succeed_if (elektraGet (elektra, doubleTag) == 1.1, "Wrong key value.");
+	succeed_if (elektraGet (elektra, longDoubleTag) == 1.1L, "Wrong key value.");
+#pragma clang diagnostic pop
+	ELEKTRA_DIAG_RESTORE
+}
+
 int main (int argc, char ** argv)
 {
 	init (argc, argv);
@@ -588,6 +655,8 @@ int main (int argc, char ** argv)
 	test_arraySetters ();
 
 	test_defaultValues ();
+
+	test_generic ();
 
 	printf ("\ntest_highlevel RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 
