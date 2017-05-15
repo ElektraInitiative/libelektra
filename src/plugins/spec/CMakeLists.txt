@@ -7,5 +7,4 @@ add_plugin (spec
 	LINK_ELEKTRA
 		elektra-ease
 		elektra-meta
-	ADD_TEST
 	   )

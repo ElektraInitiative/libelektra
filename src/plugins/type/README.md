@@ -41,7 +41,6 @@ facility.
 sudo kdb mount typetest.dump user/typetest dump type
 kdb set user/typetest/key a
 kdb setmeta user/typetest/key check/type char
-# RET:0
 
 kdb get user/typetest/key
 #> a

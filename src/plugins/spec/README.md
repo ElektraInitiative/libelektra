@@ -4,7 +4,7 @@
 - infos/needs =
 - infos/provides = check apply
 - infos/placements = postgetstorage presetstorage
-- infos/status = maintained unittest nodep configurable global preview
+- infos/status = maintained nodep configurable global preview
 - infos/description = copies metadata from spec namespace to other namespaces
 
 ## Introduction
@@ -41,7 +41,7 @@ Specifically it supports:
 * Invalid array `member`: an invalid array key has been detected. e.g. `/#abc`
 * Out of `range`: the array has more or less elements than specified by the `array` option.
 * Invalid number of subkeys `count`: a key matching a `_` expression has more or less subkeys than specified by the `required` option.
-* Conflicting metadata `collision`: the metakey that's supposed to be added already exists.  
+* Conflicting metadata `collision`: the metakey that's supposed to be added already exists.
 * Missing keys `missing`: the key structure doesn't contain the required subkeys flagged with the `require` metakey in the `spec` namespace.
 * Invalid keys `invalid`: keys that are subkeys of an invalid array member. e.g. `/#abc/key`
 
@@ -53,7 +53,7 @@ Specifically it supports:
 
 Actions can also be specified on a per conflict basis. Those actions take precedence over basic configuration options.
 
-Examples: 
+Examples:
 
     conflict/get/member = WARNING
     conflict/set/range = ERROR
@@ -90,7 +90,7 @@ everything still works after the source is removed):
     kdb set /example/battery/level low   # success, low is ok!
     kdb set /example/battery/level x     # fails, not one of the allowed values!
 
-    cp openicc.ini $(dirname $(kdb file spec)) 
+    cp openicc.ini $(dirname $(kdb file spec))
     kdb mount openicc.ini spec/freedesktop/openicc ni
     kdb spec-mount /freedesktop/openicc
 

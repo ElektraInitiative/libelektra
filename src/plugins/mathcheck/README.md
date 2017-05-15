@@ -4,13 +4,13 @@
 - infos/provides = check
 - infos/needs =
 - infos/placements = presetstorage
-- infos/status = maintained unittest nodep discouraged
+- infos/status = maintained unittest nodep discouraged shelltest
 - infos/metadata = check/math
 - infos/description = validates a set of keys through a mathematical expression
 
 ## Introduction
 
-Compares a key value to a mathematical expression using polish prefix notation defined in the `check/math` metakey. 
+Compares a key value to a mathematical expression using polish prefix notation defined in the `check/math` metakey.
 Operations are `+ - / *` . Operants are keys with names relative to the parent key.
 How the values are compared is specified at the beginning of the metakey using the conditions `<, <=, ==, !=, =>, >, :=`
 `:=` is used to set key values.

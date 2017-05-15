@@ -6,5 +6,4 @@ add_plugin (multifile
 		multifile.c
 	LINK_ELEKTRA
 		elektra-kdb
-	ADD_TEST
 	)

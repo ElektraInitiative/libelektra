@@ -95,8 +95,8 @@ void test_addr ()
 
 int main (int argc, char ** argv)
 {
-	printf ("   ICONV   TESTS\n");
-	printf ("====================\n\n");
+	printf ("NETWORK   TESTS\n");
+	printf ("===============\n\n");
 
 	init (argc, argv);
 
