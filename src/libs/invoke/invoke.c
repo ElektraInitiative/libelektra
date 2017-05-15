@@ -1,17 +1,8 @@
 #include <kdbinvoke.h>
 
-#include <kdbmodule.h>
-#include <kdbprivate.h>
 #include <stdio.h>
 
-typedef struct
-{
-	Plugin * plugin;
-	KeySet * modules;
-	KeySet * exports;
-} ElektraInvokeHandle;
-
-void * elektraInvokeInitialize (const char * elektraPluginName)
+ElektraInvokeHandle * elektraInvokeInitialize (const char * elektraPluginName)
 {
 	if (!elektraPluginName)
 	{
@@ -37,10 +28,10 @@ void * elektraInvokeInitialize (const char * elektraPluginName)
 	}
 	keyDel (errorKey);
 	handle->plugin = plugin;
-	return (void *)handle;
+	return handle;
 }
 
-const void * elektraInvokeGetFunction (void * invokeHandle, const char * elektraPluginFunctionName)
+const void * elektraInvokeGetFunction (ElektraInvokeHandle * invokeHandle, const char * elektraPluginFunctionName)
 {
 	ElektraInvokeHandle * handle = invokeHandle;
 	if (!handle || !elektraPluginFunctionName)
@@ -77,7 +68,7 @@ const void * elektraInvokeGetFunction (void * invokeHandle, const char * elektra
 	}
 }
 
-void elektraInvokeClose (void * invokeHandle)
+void elektraInvokeClose (ElektraInvokeHandle * invokeHandle)
 {
 	if (!invokeHandle)
 	{
