@@ -27,6 +27,8 @@
 
 #include <limits.h>
 
+#define KDB_STRING_TO_STRING(value) value
+
 #define KDB_STRING_TO_BOOLEAN(string) (kdb_boolean_t) !strcmp (string, "1")
 #define KDB_STRING_TO_CHAR(string) (kdb_char_t) string[0]
 #define KDB_STRING_TO_OCTET(string) (kdb_octet_t) strtoul (string, NULL, 10)
