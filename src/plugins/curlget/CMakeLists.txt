@@ -24,5 +24,4 @@ add_plugin (curlget
 		${CURLGET_INCLUDE_DIRS}
 	LINK_LIBRARIES
 		${CURLGET_LIBRARY_DIRS}
-	ADD_TEST
 	)
