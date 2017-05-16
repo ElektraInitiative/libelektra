@@ -27,6 +27,8 @@ install (PROGRAMS umount-all DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
 install (PROGRAMS mount-list-all-files DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
 install (PROGRAMS check-env-dep DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
 
+install (PROGRAMS restore DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
+
 file(READ "kdb_zsh_completion" CONTENT_OF_ZSH_COMP)
 file(READ "kdb-bash-completion" CONTENT_OF_BASH_COMP)
 configure_file (
@@ -125,6 +127,10 @@ configure_file(
 	"${CMAKE_CURRENT_BINARY_DIR}/change-storage-symlink" @ONLY)
 install (PROGRAMS "${CMAKE_CURRENT_BINARY_DIR}/change-storage-symlink" DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
 
+configure_file(
+	"${CMAKE_CURRENT_SOURCE_DIR}/backup.in"
+	"${CMAKE_CURRENT_BINARY_DIR}/backup" @ONLY)
+install (PROGRAMS "${CMAKE_CURRENT_BINARY_DIR}/backup" DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
 
 ADD_CUSTOM_TARGET(source-package
 		COMMAND "${CMAKE_CURRENT_BINARY_DIR}/make-source-package"

@@ -1,0 +1,32 @@
+#!/bin/sh
+
+if [ -z "$KDB" ];
+then
+    KDB=kdb
+fi
+
+TS="$(date +%s)"
+KDBSYSTEM="$($KDB file system)"
+KDBINIT="@KDB_DB_SYSTEM@/@KDB_DB_INIT@"
+KDBUSER="$($KDB file user)"
+KDBSPEC="$($KDB file spec)"
+
+TMPDIR="/tmp/elektra_backup_${TS}"
+
+mkdir -p "$TMPDIR" 2>/dev/null
+cp -a "$KDBSYSTEM" "${TMPDIR}/system_`basename $KDBSYSTEM`" 2>/dev/null
+cp -a "$KDBUSER" "${TMPDIR}/user_`basename $KDBUSER`" 2>/dev/null
+cp -a "$KDBSPEC" "${TMPDIR}/spec_`basename $KDBSPEC`" 2>/dev/null
+cp -a "$KDBINIT" "${TMPDIR}/@KDB_DB_INIT@" 2>/dev/null
+
+echo "${KDBINIT}=@KDB_DB_INIT@" > "${TMPDIR}/info"
+echo "${KDBSYSTEM}=system_`basename $KDBSYSTEM`" >> "${TMPDIR}/info"
+echo "${KDBUSER}=user_`basename $KDBUSER`" >> "${TMPDIR}/info"
+echo "${KDBSPEC}=spec_`basename $KDBSPEC`" >> "${TMPDIR}/info"
+
+$KDB umount-all 2>/dev/null
+$KDB rm -r user 2>/dev/null
+$KDB rm -r system 2>/dev/null
+$KDB rm -r spec 2>/dev/null
+
+echo "restore with \"kdb restore $TS\""
