@@ -1,3 +1,4 @@
+w
 /**
  * @file
  *
@@ -30,10 +31,10 @@
 #define DEFAULT_CHECKOUT_LOCATION "/tmp/"
 #define REFSTRING "refs/heads/"
 
-typedef enum {
-	OBJECT,
-	HEAD,
-} Tracking;
+	typedef enum {
+		OBJECT,
+		HEAD,
+	} Tracking;
 
 typedef struct
 {
@@ -51,6 +52,7 @@ typedef struct
 	mode_t dirmode;				   //
 	unsigned char lastHash[MD5_DIGEST_LENGTH]; // hash of the checkdout file
 	short checkout;				   // 1 = checkout file to repo, 0 = checkout to temporary file
+	short pull;				   // 0 = don't pull repo, 1 = pull repo
 } GitData;
 
 
@@ -170,7 +172,7 @@ static int initData (Plugin * handle, Key * parentKey)
 		data = elektraCalloc (sizeof (GitData));
 
 		Key * key = ksLookupByName (config, "/path", KDB_O_NONE);
-        keySetString(parentKey, keyString(key));
+		keySetString (parentKey, keyString (key));
 		if (elektraResolveFilename (parentKey, ELEKTRA_RESOLVER_TEMPFILE_NONE) == -1)
 		{
 			return -1;
@@ -194,6 +196,15 @@ static int initData (Plugin * handle, Key * parentKey)
 				data->tracking = OBJECT;
 			else
 				data->tracking = HEAD;
+		}
+		key = ksLookupByName (config, "/pull", KDB_O_NONE);
+		if (!key)
+		{
+			data->pull = 0;
+		}
+		else
+		{
+			data->pull = 1;
 		}
 		size_t refLen = strlen (REFSTRING) + strlen (data->branch) + 1;
 		data->refName = elektraCalloc (refLen);
@@ -435,123 +446,166 @@ static int fetchhead_ref_cb (const char * name, const char * url, const git_oid 
 	return 0;
 }
 
-static void pullFromRemote (GitData * data, git_repository * repo)
+typedef enum {
+	ERROR,
+	NONE,
+	NORMAL,
+	UPTODATE,
+	FASTFORWARD,
+	UNBORN,
+} MergeAnalysis;
+
+
+static MergeAnalysis mergeAnalysis (git_repository * repo, const git_annotated_commit ** heads)
+{
+	git_merge_analysis_t analysis;
+	git_merge_preference_t preference;
+	int rc = git_merge_analysis (&analysis, &preference, repo, (const git_annotated_commit **)heads, 1);
+	if (rc < 0)
+	{
+		return ERROR;
+	}
+	if (analysis & GIT_MERGE_ANALYSIS_FASTFORWARD)
+	{
+		return FASTFORWARD;
+	}
+	else if (analysis & GIT_MERGE_ANALYSIS_UP_TO_DATE)
+	{
+		return UPTODATE;
+	}
+	else if (analysis & GIT_MERGE_ANALYSIS_NORMAL)
+	{
+		return NORMAL;
+	}
+	else if (analysis & GIT_MERGE_ANALYSIS_NONE)
+	{
+		return NONE;
+	}
+	else if (analysis & GIT_MERGE_ANALYSIS_UNBORN)
+	{
+		return UNBORN;
+	}
+}
+
+static int doMerge (git_repository * repo, const git_annotated_commit ** heads)
+{
+	git_merge_options mergeOpts = GIT_MERGE_OPTIONS_INIT;
+	git_checkout_options checkoutOpts = GIT_CHECKOUT_OPTIONS_INIT;
+	checkoutOpts.checkout_strategy = GIT_CHECKOUT_FORCE;
+
+	int rc = git_merge (repo, (const git_annotated_commit **)heads, 1, &mergeOpts, &checkoutOpts);
+	if (rc < 0)
+	{
+		return -1;
+	}
+	return 0;
+}
+
+static int setFFTarget (git_repository * repo, git_oid * oid)
+{
+	git_reference * out;
+	git_reference * ref;
+	git_repository_head (&ref, repo);
+
+	int rc = git_reference_set_target (&out, ref, oid, "fastforward");
+	if (rc)
+	{
+		return -1;
+	}
+	return 0;
+}
+
+static int hasMergeConflicts (git_repository * repo)
+{
+	git_index * cIdx;
+	int hasConflicts = 0;
+	git_repository_index (&cIdx, repo);
+	hasConflicts = git_index_has_conflicts (cIdx);
+	git_index_free (cIdx);
+	if (hasConflicts)
+	{
+		return -1;
+	}
+	return 0;
+}
+
+static int pullFromRemote (GitData * data, git_repository * repo)
 {
 	git_remote * remote;
 	int rc = git_remote_lookup (&remote, repo, "origin");
 	if (rc < 0)
 	{
-		fprintf (stderr, "git_remote_lookup failed\n");
-		return;
+		return -1;
 	}
 	rc = git_remote_fetch (remote, NULL, NULL, NULL);
 	if (rc < 0)
 	{
-		fprintf (stderr, "git_remote_fetch failed\n");
-		return;
+		return -1;
 	}
 	fetch_cb_data * cb_data = elektraCalloc (sizeof (fetch_cb_data));
 
 	git_repository_fetchhead_foreach (repo, fetchhead_ref_cb, cb_data);
-	fprintf (stderr, "branch: %s\n", cb_data->branchName);
 
 	git_annotated_commit * heads[1];
 	rc = git_annotated_commit_lookup (&heads[0], repo, cb_data->oid);
 	if (rc < 0)
 	{
-		fprintf (stderr, "git_annotated_commit_lookup failed\n");
-		return;
+		return -1;
 	}
 
-    git_merge_analysis_t analysis;
-    git_merge_preference_t preference;
-    rc = git_merge_analysis(&analysis, &preference, repo, (const git_annotated_commit **)heads, 1);
-	if (rc < 0)
+	MergeAnalysis res = mergeAnalysis (repo, heads);
+	rc = 0;
+	switch (res)
 	{
-		fprintf (stderr, "git_merge_analysis failed\n");
-		return;
+	case ERROR:
+	case UNBORN:
+		rc = -1;
+		goto PULL_CLEANUP;
+		break;
+	case NONE:
+		goto PULL_CLEANUP;
+		break;
+	case UPTODATE:
+		goto PULL_CLEANUP;
+		break;
+	case FASTFORWARD:
+		rc = doMerge (repo, heads);
+		if (rc)
+		{
+			goto PULL_CLEANUP;
+		}
+		rc = setFFTarget (repo, cb_data->oid);
+		if (rc)
+		{
+			goto PULL_CLEANUP;
+		}
+		rc = 0;
+		break;
+	case NORMAL:
+		// rc = doMerge(repo, heads);
+		// if(rc)
+		//{
+		//    goto PULL_CLEANUP;
+		//}
+		// rc = hasMergeConflicts(repo);
+		// if(rc)
+		//{
+		//    goto PULL_CLEANUP;
+		//}
+		rc = -1;
+		goto PULL_CLEANUP;
+		break;
+	default:
+		rc = -1;
+		goto PULL_CLEANUP;
+		break;
 	}
-    if(analysis & GIT_MERGE_ANALYSIS_FASTFORWARD)
-    {
-        fprintf(stderr, "FASTFORWARD possible\n");
-    }
-    else
-    {
-        fprintf(stderr, "NO FF possible\n");
-        return;
-    }
 
-    
-    git_merge_options mergeOpts = GIT_MERGE_OPTIONS_INIT;
-	git_checkout_options checkoutOpts = GIT_CHECKOUT_OPTIONS_INIT;
-	checkoutOpts.checkout_strategy = GIT_CHECKOUT_FORCE;
-
-    rc = git_merge (repo, (const git_annotated_commit **)heads, 1, &mergeOpts, &checkoutOpts);
-	if (rc < 0)
-	{
-		fprintf (stderr, "git_merge failed\n");
-		return;
-	}
-    git_reference * out;
-    git_reference * ref;
-    git_repository_head(&ref, repo);
-
-    rc = git_reference_set_target(&out, ref, cb_data->oid, "fastforward");
-    if(rc)
-    {
-        fprintf(stderr, "git_reference_set_target failed\n");
-    }
+PULL_CLEANUP:
 	git_annotated_commit_free (heads[0]);
-/*
-	// TODO: conflict handling
-	git_index * cIdx;
-	int hasConflicts = 0;
-	git_repository_index (&cIdx, repo);
-	hasConflicts = git_index_has_conflicts (cIdx);
-	if (hasConflicts)
-	{
-		fprintf (stderr, "Has Conflicts\n");
-		return;
-	}
-
-	//
-
-	git_index * index;
-	git_repository_index (&index, repo);
-
-	git_oid treeID;
-	git_index_write_tree (&treeID, index);
-
-	git_tree * tree;
-	git_tree_lookup (&tree, repo, &treeID);
-
-	git_oid parentCommitID;
-	git_oid remoteParentCommitID;
-	git_commit * parents[2];
-
-	git_reference_name_to_id (&parentCommitID, repo, "ORIG_HEAD");
-	git_commit_lookup (&parents[0], repo, &parentCommitID);
-	git_reference_name_to_id (&remoteParentCommitID, repo, "MERGE_HEAD");
-	git_commit_lookup (&parents[1], repo, &remoteParentCommitID);
-
-
-	git_oid commitID;
-
-	git_signature * sig;
-	rc = git_signature_default (&sig, repo);
-	if (rc == GIT_ENOTFOUND)
-	{
-		git_signature_now (&sig, "Elektra", "@libelektra.org");
-	}
-
-	rc = git_commit_create (&commitID, repo, "HEAD", sig, sig, NULL, "kdb git merge", tree, 2, (const git_commit **)&parents);
-	if (rc < 0)
-	{
-		fprintf (stderr, "git_commit_create failed\n");
-	}
-
-*/
 	git_repository_state_cleanup (repo);
+
+	return rc;
 }
 
 int elektraGitresolverGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey)
@@ -598,7 +652,18 @@ int elektraGitresolverGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELE
 		git_libgit2_shutdown ();
 		return -1;
 	}
-    pullFromRemote(data, repo);
+	if (data->pull)
+	{
+		int rc = pullFromRemote (data, repo);
+		if (rc)
+		{
+			ELEKTRA_SET_ERROR (ELEKTRA_ERROR_GITRESOLVER_CONFLICT, parentKey,
+					    "Fast-forward pull failed, please pull manually\n");
+			git_repository_free (repo);
+			git_libgit2_shutdown ();
+			return -1;
+		}
+	}
 	const git_oid * headObj = git_reference_target (headRef);
 	if (!headObj)
 	{
