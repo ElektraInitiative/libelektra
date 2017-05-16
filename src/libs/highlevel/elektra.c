@@ -47,80 +47,81 @@ static const char * getArrayElementValueAsString (Elektra * elektra, const char 
  */
 
 #undef ELEKTRA_TYPES
-#define ELEKTRA_TYPES(X) \
-    X(const char *, String, KDB_TYPE_STRING, KDB_STRING_TO_STRING, KDB_STRING_TO_STRING) \
-    X(kdb_boolean_t, Boolean, KDB_TYPE_BOOLEAN, KDB_BOOLEAN_TO_STRING, KDB_STRING_TO_BOOLEAN) \
-    X(kdb_char_t, Char, KDB_TYPE_CHAR, KDB_CHAR_TO_STRING, KDB_STRING_TO_CHAR) \
-    X(kdb_octet_t, Octet, KDB_TYPE_OCTET, KDB_OCTET_TO_STRING, KDB_STRING_TO_OCTET) \
-    X(kdb_short_t, Short, KDB_TYPE_SHORT, KDB_SHORT_TO_STRING, KDB_STRING_TO_SHORT) \
-    X(kdb_unsigned_short_t, UnsignedShort, KDB_TYPE_UNSIGNED_SHORT, KDB_UNSIGNED_SHORT_TO_STRING, KDB_STRING_TO_UNSIGNED_SHORT) \
-    X(kdb_long_t, Long, KDB_TYPE_LONG, KDB_LONG_TO_STRING, KDB_STRING_TO_LONG) \
-    X(kdb_unsigned_long_t, UnsignedLong, KDB_TYPE_UNSIGNED_LONG, KDB_UNSIGNED_LONG_TO_STRING, KDB_STRING_TO_UNSIGNED_LONG) \
-    X(kdb_long_long_t, LongLong, KDB_TYPE_LONG_LONG, KDB_LONG_LONG_TO_STRING, KDB_STRING_TO_LONG_LONG) \
-    X(kdb_unsigned_long_long_t, UnsignedLongLong, KDB_TYPE_UNSIGNED_LONG_LONG, KDB_UNSIGNED_LONG_LONG_TO_STRING, KDB_STRING_TO_UNSIGNED_LONG_LONG) \
-    X(kdb_float_t, Float, KDB_TYPE_FLOAT, KDB_FLOAT_TO_STRING, KDB_STRING_TO_FLOAT) \
-    X(kdb_double_t, Double, KDB_TYPE_DOUBLE, KDB_DOUBLE_TO_STRING, KDB_STRING_TO_DOUBLE) \
-    X(kdb_long_double_t, LongDouble, KDB_TYPE_LONG_DOUBLE, KDB_LONG_DOUBLE_TO_STRING, KDB_STRING_TO_LONG_DOUBLE)
+#define ELEKTRA_TYPES(X)                                                                                                                   \
+	X (const char *, String, KDB_TYPE_STRING, KDB_STRING_TO_STRING, KDB_STRING_TO_STRING)                                              \
+	X (kdb_boolean_t, Boolean, KDB_TYPE_BOOLEAN, KDB_BOOLEAN_TO_STRING, KDB_STRING_TO_BOOLEAN)                                         \
+	X (kdb_char_t, Char, KDB_TYPE_CHAR, KDB_CHAR_TO_STRING, KDB_STRING_TO_CHAR)                                                        \
+	X (kdb_octet_t, Octet, KDB_TYPE_OCTET, KDB_OCTET_TO_STRING, KDB_STRING_TO_OCTET)                                                   \
+	X (kdb_short_t, Short, KDB_TYPE_SHORT, KDB_SHORT_TO_STRING, KDB_STRING_TO_SHORT)                                                   \
+	X (kdb_unsigned_short_t, UnsignedShort, KDB_TYPE_UNSIGNED_SHORT, KDB_UNSIGNED_SHORT_TO_STRING, KDB_STRING_TO_UNSIGNED_SHORT)       \
+	X (kdb_long_t, Long, KDB_TYPE_LONG, KDB_LONG_TO_STRING, KDB_STRING_TO_LONG)                                                        \
+	X (kdb_unsigned_long_t, UnsignedLong, KDB_TYPE_UNSIGNED_LONG, KDB_UNSIGNED_LONG_TO_STRING, KDB_STRING_TO_UNSIGNED_LONG)            \
+	X (kdb_long_long_t, LongLong, KDB_TYPE_LONG_LONG, KDB_LONG_LONG_TO_STRING, KDB_STRING_TO_LONG_LONG)                                \
+	X (kdb_unsigned_long_long_t, UnsignedLongLong, KDB_TYPE_UNSIGNED_LONG_LONG, KDB_UNSIGNED_LONG_LONG_TO_STRING,                      \
+	   KDB_STRING_TO_UNSIGNED_LONG_LONG)                                                                                               \
+	X (kdb_float_t, Float, KDB_TYPE_FLOAT, KDB_FLOAT_TO_STRING, KDB_STRING_TO_FLOAT)                                                   \
+	X (kdb_double_t, Double, KDB_TYPE_DOUBLE, KDB_DOUBLE_TO_STRING, KDB_STRING_TO_DOUBLE)                                              \
+	X (kdb_long_double_t, LongDouble, KDB_TYPE_LONG_DOUBLE, KDB_LONG_DOUBLE_TO_STRING, KDB_STRING_TO_LONG_DOUBLE)
 
-#define ELEKTRA_DEFINITIONS(Type, typeName, KDB_TYPE, TO_STRING, TO_VALUE) \
-    /** \
+#define ELEKTRA_DEFINITIONS(Type, typeName, KDB_TYPE, TO_STRING, TO_VALUE)                                                                                                                                                                                                                                                          \
+	/** \
     * @param elektra The elektra instance initialized with the parent key. \
     * @param keyName The keyname to write to. The keyname is appended to the parent key. \
     * @param value The new value. \
-    */ \
-    ELEKTRA_SET_BY_STRING_SIGNATURE(Type, typeName) \
-    { \
-        setValueAsString (elektra, keyName, TO_STRING (value), KDB_TYPE, error); \
-    } \
-\
-    ELEKTRA_SET_BY_TAG_SIGNATURE(Type, typeName) \
-    { \
-        setValueAsString (elektra, tag.keyName, TO_STRING (value), KDB_TYPE, error); \
-    } \
-\
-    /** \
+    */                                                                                                    \
+	ELEKTRA_SET_BY_STRING_SIGNATURE (Type, typeName)                                                                                                                                                                                                                                                                            \
+	{                                                                                                                                                                                                                                                                                                                           \
+		setValueAsString (elektra, keyName, TO_STRING (value), KDB_TYPE, error);                                                                                                                                                                                                                                            \
+	}                                                                                                                                                                                                                                                                                                                           \
+                                                                                                                                                                                                                                                                                                                                    \
+	ELEKTRA_SET_BY_TAG_SIGNATURE (Type, typeName)                                                                                                                                                                                                                                                                               \
+	{                                                                                                                                                                                                                                                                                                                           \
+		setValueAsString (elektra, tag.keyName, TO_STRING (value), KDB_TYPE, error);                                                                                                                                                                                                                                        \
+	}                                                                                                                                                                                                                                                                                                                           \
+                                                                                                                                                                                                                                                                                                                                    \
+	/** \
     * @param elektra The elektra instance initialized with the parent key. \
     * @param keyName The keyname to write to. The keyname is appended to the parent key. \
     * @param value The new value. \
     * @param index The array index of the desired element, starting with 0. \
-    */ \
-    ELEKTRA_SET_ARRAY_ELEMENT_SIGNATURE(Type, typeName) \
-    { \
-        setArrayElementValueAsString (elektra, keyName, TO_STRING (value), KDB_TYPE, index, error); \
-    } \
-\
-    ELEKTRA_SET_ARRAY_ELEMENT_BY_TAG_SIGNATURE(Type, typeName) \
-    { \
-        setArrayElementValueAsString (elektra, tag.keyName, TO_STRING (value), KDB_TYPE, index, error); \
-    } \
-\
-    /** \
+    */                      \
+	ELEKTRA_SET_ARRAY_ELEMENT_SIGNATURE (Type, typeName)                                                                                                                                                                                                                                                                        \
+	{                                                                                                                                                                                                                                                                                                                           \
+		setArrayElementValueAsString (elektra, keyName, TO_STRING (value), KDB_TYPE, index, error);                                                                                                                                                                                                                         \
+	}                                                                                                                                                                                                                                                                                                                           \
+                                                                                                                                                                                                                                                                                                                                    \
+	ELEKTRA_SET_ARRAY_ELEMENT_BY_TAG_SIGNATURE (Type, typeName)                                                                                                                                                                                                                                                                 \
+	{                                                                                                                                                                                                                                                                                                                           \
+		setArrayElementValueAsString (elektra, tag.keyName, TO_STRING (value), KDB_TYPE, index, error);                                                                                                                                                                                                                     \
+	}                                                                                                                                                                                                                                                                                                                           \
+                                                                                                                                                                                                                                                                                                                                    \
+	/** \
     * @param elektra The elektra instance initialized with the parent key. \
     * @param name The keyname to look up. The keyname is appended to the parent key. \
     * @param index The array index of the desired element, starting with 0. \
     * @return The value stored at the given key and index. \
     */ \
-    ELEKTRA_GET_SIGNATURE(Type, typeName) \
-    { \
-        return TO_VALUE (getValueAsString (elektra, keyName, KDB_TYPE)); \
-    } \
-\
-    ELEKTRA_GET_BY_TAG_SIGNATURE(Type, typeName) \
-    { \
-        return TO_VALUE (getValueAsString (elektra, tag.keyName, KDB_TYPE)); \
-    } \
-\
-    ELEKTRA_GET_ARRAY_ELEMENT_SIGNATURE(Type, typeName) \
-    { \
-        return TO_VALUE (getArrayElementValueAsString (elektra, keyName, KDB_TYPE, index)); \
-    } \
-\
-    ELEKTRA_GET_ARRAY_ELEMENT_BY_TAG_SIGNATURE(Type, typeName) \
-    { \
-        return TO_VALUE (getArrayElementValueAsString (elektra, tag.keyName, KDB_TYPE, index)); \
-    } \
+	ELEKTRA_GET_SIGNATURE (Type, typeName)                                                                                                                                                                                                                                                                                      \
+	{                                                                                                                                                                                                                                                                                                                           \
+		return TO_VALUE (getValueAsString (elektra, keyName, KDB_TYPE));                                                                                                                                                                                                                                                    \
+	}                                                                                                                                                                                                                                                                                                                           \
+                                                                                                                                                                                                                                                                                                                                    \
+	ELEKTRA_GET_BY_TAG_SIGNATURE (Type, typeName)                                                                                                                                                                                                                                                                               \
+	{                                                                                                                                                                                                                                                                                                                           \
+		return TO_VALUE (getValueAsString (elektra, tag.keyName, KDB_TYPE));                                                                                                                                                                                                                                                \
+	}                                                                                                                                                                                                                                                                                                                           \
+                                                                                                                                                                                                                                                                                                                                    \
+	ELEKTRA_GET_ARRAY_ELEMENT_SIGNATURE (Type, typeName)                                                                                                                                                                                                                                                                        \
+	{                                                                                                                                                                                                                                                                                                                           \
+		return TO_VALUE (getArrayElementValueAsString (elektra, keyName, KDB_TYPE, index));                                                                                                                                                                                                                                 \
+	}                                                                                                                                                                                                                                                                                                                           \
+                                                                                                                                                                                                                                                                                                                                    \
+	ELEKTRA_GET_ARRAY_ELEMENT_BY_TAG_SIGNATURE (Type, typeName)                                                                                                                                                                                                                                                                 \
+	{                                                                                                                                                                                                                                                                                                                           \
+		return TO_VALUE (getArrayElementValueAsString (elektra, tag.keyName, KDB_TYPE, index));                                                                                                                                                                                                                             \
+	}
 
-ELEKTRA_TYPES(ELEKTRA_DEFINITIONS)
+ELEKTRA_TYPES (ELEKTRA_DEFINITIONS)
 
 /**
  * Initializes a new Elektra instance.
