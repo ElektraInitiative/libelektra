@@ -24,6 +24,9 @@ install (PROGRAMS upgrade-bootstrap DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
 
 install (PROGRAMS umount-all DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
 
+install (PROGRAMS mount-list-all-files DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
+install (PROGRAMS check-env-dep DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
+
 file(READ "kdb_zsh_completion" CONTENT_OF_ZSH_COMP)
 file(READ "kdb-bash-completion" CONTENT_OF_BASH_COMP)
 configure_file (
