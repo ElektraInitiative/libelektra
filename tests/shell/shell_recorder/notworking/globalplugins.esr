@@ -7,8 +7,8 @@ DiffType: File
 < kdb set system/elektra/globalplugins/postcommit/init list
 < kdb set system/elektra/globalplugins/postcommit/init/user list
 < kdb set system/elektra/globalplugins/postcommit/init/user/placements ""
-< kdb set system/elektra/globalplugins/postcommit/init/user/placements/set "presetstorage presetcleanup precommit postcommit"
-< kdb set system/elektra/globalplugins/postcommit/init/user/placements/get "pregetstorage postgetstorage postgetcleanup"
+< kdb set system/elektra/globalplugins/postcommit/init/user/placements/set "presetstorage precommit postcommit"
+< kdb set system/elektra/globalplugins/postcommit/init/user/placements/get "pregetstorage postgetstorage"
 < kdb set system/elektra/globalplugins/postcommit/init/user/placements/error "prerollback postrollback"
 < kdb set system/elektra/globalplugins/postcommit/init/user/plugins ""
 < kdb set system/elektra/globalplugins/postcommit/init/user/plugins/#0 tracer
