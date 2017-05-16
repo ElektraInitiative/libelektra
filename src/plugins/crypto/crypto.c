@@ -21,6 +21,7 @@
 #include "botan_operations.h"
 #endif
 #include "gpg.h"
+#include "helper.h"
 #include <kdb.h>
 #include <kdberrors.h>
 #include <kdbtypes.h>
@@ -145,6 +146,26 @@ static int elektraCryptoCreateRandomString (Key * errorKey ELEKTRA_UNUSED, char 
 }
 
 /**
+ * @brief overwrites the value of the key with zeroes and then releases the Key.
+ * @param key to be overwritten and released
+ */
+static void elektraCryptoSafelyReleaseKey (Key * key)
+{
+	if (key)
+	{
+		// overwrite key content with zeroes
+		ssize_t length = keyGetValueSize (key);
+		if (length > 0)
+		{
+			memset ((void *)keyValue (key), 0, length);
+		}
+
+		// release the key
+		keyDel (key);
+	}
+}
+
+/**
  * @brief encrypt the (Elektra) Keys contained in data.
  * @param handle for the current plugin instance
  * @param data the KeySet holding the data
@@ -155,9 +176,15 @@ static int elektraCryptoCreateRandomString (Key * errorKey ELEKTRA_UNUSED, char 
 static int elektraCryptoEncrypt (Plugin * handle ELEKTRA_UNUSED, KeySet * data ELEKTRA_UNUSED, Key * errorKey ELEKTRA_UNUSED)
 {
 	Key * k;
+	Key * masterKey = NULL;
 
 #if defined(ELEKTRA_CRYPTO_API_GCRYPT) || defined(ELEKTRA_CRYPTO_API_OPENSSL) || defined(ELEKTRA_CRYPTO_API_BOTAN)
 	KeySet * pluginConfig = elektraPluginGetConfig (handle);
+	masterKey = CRYPTO_PLUGIN_FUNCTION (getMasterPassword) (errorKey, pluginConfig);
+	if (!masterKey)
+	{
+		goto error; // error has been set by getMasterPassword
+	}
 #endif
 
 #if defined(ELEKTRA_CRYPTO_API_GCRYPT) || defined(ELEKTRA_CRYPTO_API_OPENSSL)
@@ -174,15 +201,15 @@ static int elektraCryptoEncrypt (Plugin * handle ELEKTRA_UNUSED, KeySet * data E
 
 #if defined(ELEKTRA_CRYPTO_API_GCRYPT)
 
-		if (elektraCryptoGcryHandleCreate (&cryptoHandle, pluginConfig, errorKey, k, ELEKTRA_CRYPTO_ENCRYPT) != 1)
+		if (elektraCryptoGcryHandleCreate (&cryptoHandle, pluginConfig, errorKey, masterKey, k, ELEKTRA_CRYPTO_ENCRYPT) != 1)
 		{
-			return -1;
+			goto error;
 		}
 
 		if (elektraCryptoGcryEncrypt (cryptoHandle, k, errorKey) != 1)
 		{
 			elektraCryptoGcryHandleDestroy (cryptoHandle);
-			return -1;
+			goto error;
 		}
 
 		elektraCryptoGcryHandleDestroy (cryptoHandle);
@@ -190,16 +217,16 @@ static int elektraCryptoEncrypt (Plugin * handle ELEKTRA_UNUSED, KeySet * data E
 
 #elif defined(ELEKTRA_CRYPTO_API_OPENSSL)
 
-		if (elektraCryptoOpenSSLHandleCreate (&cryptoHandle, pluginConfig, errorKey, k, ELEKTRA_CRYPTO_ENCRYPT) != 1)
+		if (elektraCryptoOpenSSLHandleCreate (&cryptoHandle, pluginConfig, errorKey, masterKey, k, ELEKTRA_CRYPTO_ENCRYPT) != 1)
 		{
 			elektraCryptoOpenSSLHandleDestroy (cryptoHandle);
-			return -1;
+			goto error;
 		}
 
 		if (elektraCryptoOpenSSLEncrypt (cryptoHandle, k, errorKey) != 1)
 		{
 			elektraCryptoOpenSSLHandleDestroy (cryptoHandle);
-			return -1;
+			goto error;
 		}
 
 		elektraCryptoOpenSSLHandleDestroy (cryptoHandle);
@@ -207,14 +234,19 @@ static int elektraCryptoEncrypt (Plugin * handle ELEKTRA_UNUSED, KeySet * data E
 
 #elif defined(ELEKTRA_CRYPTO_API_BOTAN)
 
-		if (elektraCryptoBotanEncrypt (pluginConfig, k, errorKey) != 1)
+		if (elektraCryptoBotanEncrypt (pluginConfig, k, errorKey, masterKey) != 1)
 		{
-			return -1; // failure, error has been set by elektraCryptoBotanEncrypt
+			goto error; // failure, error has been set by elektraCryptoBotanEncrypt
 		}
 
 #endif
 	}
+	elektraCryptoSafelyReleaseKey (masterKey);
 	return 1;
+
+error:
+	elektraCryptoSafelyReleaseKey (masterKey);
+	return -1;
 }
 
 /**
@@ -228,9 +260,15 @@ static int elektraCryptoEncrypt (Plugin * handle ELEKTRA_UNUSED, KeySet * data E
 static int elektraCryptoDecrypt (Plugin * handle ELEKTRA_UNUSED, KeySet * data ELEKTRA_UNUSED, Key * errorKey ELEKTRA_UNUSED)
 {
 	Key * k;
+	Key * masterKey = NULL;
 
 #if defined(ELEKTRA_CRYPTO_API_GCRYPT) || defined(ELEKTRA_CRYPTO_API_OPENSSL) || defined(ELEKTRA_CRYPTO_API_BOTAN)
 	KeySet * pluginConfig = elektraPluginGetConfig (handle);
+	masterKey = CRYPTO_PLUGIN_FUNCTION (getMasterPassword) (errorKey, pluginConfig);
+	if (!masterKey)
+	{
+		goto error; // error has been set by getMasterPassword
+	}
 #endif
 
 #if defined(ELEKTRA_CRYPTO_API_GCRYPT) || defined(ELEKTRA_CRYPTO_API_OPENSSL)
@@ -247,15 +285,15 @@ static int elektraCryptoDecrypt (Plugin * handle ELEKTRA_UNUSED, KeySet * data E
 
 #if defined(ELEKTRA_CRYPTO_API_GCRYPT)
 
-		if (elektraCryptoGcryHandleCreate (&cryptoHandle, pluginConfig, errorKey, k, ELEKTRA_CRYPTO_DECRYPT) != 1)
+		if (elektraCryptoGcryHandleCreate (&cryptoHandle, pluginConfig, errorKey, masterKey, k, ELEKTRA_CRYPTO_DECRYPT) != 1)
 		{
-			return -1;
+			goto error;
 		}
 
 		if (elektraCryptoGcryDecrypt (cryptoHandle, k, errorKey) != 1)
 		{
 			elektraCryptoGcryHandleDestroy (cryptoHandle);
-			return -1;
+			goto error;
 		}
 
 		elektraCryptoGcryHandleDestroy (cryptoHandle);
@@ -263,16 +301,16 @@ static int elektraCryptoDecrypt (Plugin * handle ELEKTRA_UNUSED, KeySet * data E
 
 #elif defined(ELEKTRA_CRYPTO_API_OPENSSL)
 
-		if (elektraCryptoOpenSSLHandleCreate (&cryptoHandle, pluginConfig, errorKey, k, ELEKTRA_CRYPTO_DECRYPT) != 1)
+		if (elektraCryptoOpenSSLHandleCreate (&cryptoHandle, pluginConfig, errorKey, masterKey, k, ELEKTRA_CRYPTO_DECRYPT) != 1)
 		{
 			elektraCryptoOpenSSLHandleDestroy (cryptoHandle);
-			return -1;
+			goto error;
 		}
 
 		if (elektraCryptoOpenSSLDecrypt (cryptoHandle, k, errorKey) != 1)
 		{
 			elektraCryptoOpenSSLHandleDestroy (cryptoHandle);
-			return -1;
+			goto error;
 		}
 
 		elektraCryptoOpenSSLHandleDestroy (cryptoHandle);
@@ -280,14 +318,19 @@ static int elektraCryptoDecrypt (Plugin * handle ELEKTRA_UNUSED, KeySet * data E
 
 #elif defined(ELEKTRA_CRYPTO_API_BOTAN)
 
-		if (elektraCryptoBotanDecrypt (pluginConfig, k, errorKey) != 1)
+		if (elektraCryptoBotanDecrypt (pluginConfig, k, errorKey, masterKey) != 1)
 		{
-			return -1; // failure, error has been set by elektraCryptoBotanDecrypt
+			goto error; // failure, error has been set by elektraCryptoBotanDecrypt
 		}
 
 #endif
 	}
+	elektraCryptoSafelyReleaseKey (masterKey);
 	return 1;
+
+error:
+	elektraCryptoSafelyReleaseKey (masterKey);
+	return -1;
 }
 
 /**

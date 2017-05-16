@@ -14,6 +14,7 @@
 #include "openssl_operations.h"
 
 #include <base64_functions.h>
+#include <kdbassert.h>
 #include <kdberrors.h>
 #include <kdbtypes.h>
 #include <openssl/buffer.h>
@@ -37,17 +38,20 @@ static pthread_mutex_t mutex_ssl = PTHREAD_MUTEX_INITIALIZER;
  * @brief derive the cryptographic key and IV for a given (Elektra) Key k
  * @param config KeySet holding the plugin/backend configuration
  * @param errorKey holds an error description in case of failure
+ * @param masterKey holds the decrypted master password from the plugin configuration
  * @param k the (Elektra)-Key to be encrypted
  * @param cKey (Elektra)-Key holding the cryptographic material
  * @param cIv (Elektra)-Key holding the initialization vector
  * @retval -1 on failure. errorKey holds the error description.
  * @retval 1 on success
  */
-static int getKeyIvForEncryption (KeySet * config, Key * errorKey, Key * k, Key * cKey, Key * cIv)
+static int getKeyIvForEncryption (KeySet * config, Key * errorKey, Key * masterKey, Key * k, Key * cKey, Key * cIv)
 {
 	kdb_octet_t salt[ELEKTRA_CRYPTO_DEFAULT_SALT_LEN] = { 0 };
 	kdb_octet_t keyBuffer[KEY_BUFFER_SIZE] = { 0 };
 	char * saltHexString = NULL;
+
+	ELEKTRA_ASSERT (masterKey != NULL, "Parameter `masterKey` must not be NULL");
 
 	// generate the salt
 	pthread_mutex_lock (&mutex_ssl);
@@ -71,48 +75,42 @@ static int getKeyIvForEncryption (KeySet * config, Key * errorKey, Key * k, Key 
 	// read iteration count
 	const kdb_unsigned_long_t iterations = CRYPTO_PLUGIN_FUNCTION (getIterationCount) (errorKey, config);
 
-	// receive master password from the configuration
-	Key * msg = CRYPTO_PLUGIN_FUNCTION (getMasterPassword) (errorKey, config);
-	if (!msg) goto error; // error set by CRYPTO_PLUGIN_FUNCTION(getMasterPassword)()
-
 	// generate/derive the cryptographic key and the IV
 	pthread_mutex_lock (&mutex_ssl);
-	if (!PKCS5_PBKDF2_HMAC_SHA1 (keyValue (msg), keyGetValueSize (msg), salt, sizeof (salt), iterations, KEY_BUFFER_SIZE, keyBuffer))
+	if (!PKCS5_PBKDF2_HMAC_SHA1 (keyValue (masterKey), keyGetValueSize (masterKey), salt, sizeof (salt), iterations, KEY_BUFFER_SIZE,
+				     keyBuffer))
 	{
 		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CRYPTO_INTERNAL_ERROR, errorKey,
 				    "Failed to create a cryptographic key for encryption. Libcrypto returned error code: %lu",
 				    ERR_get_error ());
 		pthread_mutex_unlock (&mutex_ssl);
-		goto error;
+		return -1;
 	}
 	pthread_mutex_unlock (&mutex_ssl);
 
 	keySetBinary (cKey, keyBuffer, ELEKTRA_CRYPTO_SSL_KEYSIZE);
 	keySetBinary (cIv, keyBuffer + ELEKTRA_CRYPTO_SSL_KEYSIZE, ELEKTRA_CRYPTO_SSL_BLOCKSIZE);
-
-	keyDel (msg);
 	return 1;
-
-error:
-	if (msg) keyDel (msg);
-	return -1;
 }
 
 /**
  * @brief derive the cryptographic key and IV for a given (Elektra) Key k
  * @param config KeySet holding the plugin/backend configuration
  * @param errorKey holds an error description in case of failure
+ * @param masterKey holds the decrypted master password from the plugin configuration
  * @param k the (Elektra)-Key to be encrypted
  * @param cKey (Elektra)-Key holding the cryptographic material
  * @param cIv (Elektra)-Key holding the initialization vector
  * @retval -1 on failure. errorKey holds the error description.
  * @retval 1 on success
  */
-static int getKeyIvForDecryption (KeySet * config, Key * errorKey, Key * k, Key * cKey, Key * cIv)
+static int getKeyIvForDecryption (KeySet * config, Key * errorKey, Key * masterKey, Key * k, Key * cKey, Key * cIv)
 {
 	kdb_octet_t keyBuffer[KEY_BUFFER_SIZE];
 	kdb_octet_t * saltBuffer = NULL;
 	kdb_unsigned_long_t saltBufferLen = 0;
+
+	ELEKTRA_ASSERT (masterKey != NULL, "Parameter `masterKey` must not be NULL");
 
 	// get the salt
 	if (CRYPTO_PLUGIN_FUNCTION (getSaltFromPayload) (errorKey, k, &saltBuffer, &saltBufferLen) != 1)
@@ -123,32 +121,22 @@ static int getKeyIvForDecryption (KeySet * config, Key * errorKey, Key * k, Key 
 	// get the iteration count
 	const kdb_unsigned_long_t iterations = CRYPTO_PLUGIN_FUNCTION (getIterationCount) (errorKey, config);
 
-	// receive master password from the configuration
-	Key * msg = CRYPTO_PLUGIN_FUNCTION (getMasterPassword) (errorKey, config);
-	if (!msg) goto error; // error set by CRYPTO_PLUGIN_FUNCTION(getMasterPassword)()
-
 	// derive the cryptographic key and the IV
 	pthread_mutex_lock (&mutex_ssl);
-	if (!PKCS5_PBKDF2_HMAC_SHA1 (keyValue (msg), keyGetValueSize (msg), saltBuffer, saltBufferLen, iterations, KEY_BUFFER_SIZE,
-				     keyBuffer))
+	if (!PKCS5_PBKDF2_HMAC_SHA1 (keyValue (masterKey), keyGetValueSize (masterKey), saltBuffer, saltBufferLen, iterations,
+				     KEY_BUFFER_SIZE, keyBuffer))
 	{
 		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CRYPTO_INTERNAL_ERROR, errorKey,
 				    "Failed to restore the cryptographic key for decryption. Libcrypto returned the error code: %lu",
 				    ERR_get_error ());
 		pthread_mutex_unlock (&mutex_ssl);
-		goto error;
+		return -1;
 	}
 	pthread_mutex_unlock (&mutex_ssl);
 
 	keySetBinary (cKey, keyBuffer, ELEKTRA_CRYPTO_SSL_KEYSIZE);
 	keySetBinary (cIv, keyBuffer + ELEKTRA_CRYPTO_SSL_KEYSIZE, ELEKTRA_CRYPTO_SSL_BLOCKSIZE);
-
-	keyDel (msg);
 	return 1;
-
-error:
-	if (msg) keyDel (msg);
-	return -1;
 }
 
 int elektraCryptoOpenSSLInit (Key * errorKey ELEKTRA_UNUSED)
@@ -162,7 +150,7 @@ int elektraCryptoOpenSSLInit (Key * errorKey ELEKTRA_UNUSED)
 	return 1;
 }
 
-int elektraCryptoOpenSSLHandleCreate (elektraCryptoHandle ** handle, KeySet * config, Key * errorKey, Key * k,
+int elektraCryptoOpenSSLHandleCreate (elektraCryptoHandle ** handle, KeySet * config, Key * errorKey, Key * masterKey, Key * k,
 				      const enum ElektraCryptoOperation op)
 {
 	unsigned char keyBuffer[64], ivBuffer[64];
@@ -175,7 +163,7 @@ int elektraCryptoOpenSSLHandleCreate (elektraCryptoHandle ** handle, KeySet * co
 	switch (op)
 	{
 	case ELEKTRA_CRYPTO_ENCRYPT:
-		if (getKeyIvForEncryption (config, errorKey, k, key, iv) != 1)
+		if (getKeyIvForEncryption (config, errorKey, masterKey, k, key, iv) != 1)
 		{
 			keyDel (key);
 			keyDel (iv);
@@ -184,7 +172,7 @@ int elektraCryptoOpenSSLHandleCreate (elektraCryptoHandle ** handle, KeySet * co
 		break;
 
 	case ELEKTRA_CRYPTO_DECRYPT:
-		if (getKeyIvForDecryption (config, errorKey, k, key, iv) != 1)
+		if (getKeyIvForDecryption (config, errorKey, masterKey, k, key, iv) != 1)
 		{
 			keyDel (key);
 			keyDel (iv);
