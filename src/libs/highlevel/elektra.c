@@ -68,7 +68,7 @@ static const char * getArrayElementValueAsString (Elektra * elektra, const char 
     * @param keyName The keyname to write to. The keyname is appended to the parent key. \
     * @param value The new value. \
     */ \
-    ELEKTRA_SET_SIGNATURE(Type, typeName) \
+    ELEKTRA_SET_BY_STRING_SIGNATURE(Type, typeName) \
     { \
         setValueAsString (elektra, keyName, TO_STRING (value), KDB_TYPE, error); \
     } \
