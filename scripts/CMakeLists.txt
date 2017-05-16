@@ -112,6 +112,17 @@ configure_file(
 install (PROGRAMS "${CMAKE_CURRENT_BINARY_DIR}/configure-firefox" DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
 add_subdirectory (ffconfig)
 
+configure_file(
+	"${CMAKE_CURRENT_SOURCE_DIR}/change-resolver-symlink.in"
+	"${CMAKE_CURRENT_BINARY_DIR}/change-resolver-symlink" @ONLY)
+install (PROGRAMS "${CMAKE_CURRENT_BINARY_DIR}/change-resolver-symlink" DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
+
+configure_file(
+	"${CMAKE_CURRENT_SOURCE_DIR}/change-storage-symlink.in"
+	"${CMAKE_CURRENT_BINARY_DIR}/change-storage-symlink" @ONLY)
+install (PROGRAMS "${CMAKE_CURRENT_BINARY_DIR}/change-storage-symlink" DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
+
+
 ADD_CUSTOM_TARGET(source-package
 		COMMAND "${CMAKE_CURRENT_BINARY_DIR}/make-source-package"
 		COMMENT "Make a elektra source package by using git"
