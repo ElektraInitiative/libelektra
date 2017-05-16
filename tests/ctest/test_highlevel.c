@@ -594,33 +594,33 @@ void test_generic ()
 		elektraErrorReset (&error);
 	}
 
-	ElektraStringTag stringTag = {"stringkey"};
-    ElektraBooleanTag booleanTag = {"booleankey"};
-    ElektraCharTag charTag = {"charkey"};
-    ElektraOctetTag octetTag = {"octetkey"};
-    ElektraShortTag shortTag = {"shortkey"};
-    ElektraUnsignedShortTag unsignedShortTag = {"unsignedshortkey"};
-    ElektraLongTag longTag = {"longkey"};
-    ElektraUnsignedLongTag unsignedLongTag = {"unsignedlongkey"};
-    ElektraLongLongTag longLongTag = {"longlongkey"};
-    ElektraUnsignedLongLongTag unsignedLongLongTag = {"unsignedlonglongkey"};
-    ElektraFloatTag floatTag = {"floatkey"};
-    ElektraDoubleTag doubleTag = {"doublekey"};
-    ElektraLongDoubleTag longDoubleTag = {"longdoublekey"};
+	ElektraStringTag stringTag = { "stringkey" };
+	ElektraBooleanTag booleanTag = { "booleankey" };
+	ElektraCharTag charTag = { "charkey" };
+	ElektraOctetTag octetTag = { "octetkey" };
+	ElektraShortTag shortTag = { "shortkey" };
+	ElektraUnsignedShortTag unsignedShortTag = { "unsignedshortkey" };
+	ElektraLongTag longTag = { "longkey" };
+	ElektraUnsignedLongTag unsignedLongTag = { "unsignedlongkey" };
+	ElektraLongLongTag longLongTag = { "longlongkey" };
+	ElektraUnsignedLongLongTag unsignedLongLongTag = { "unsignedlonglongkey" };
+	ElektraFloatTag floatTag = { "floatkey" };
+	ElektraDoubleTag doubleTag = { "doublekey" };
+	ElektraLongDoubleTag longDoubleTag = { "longdoublekey" };
 
-	elektraSet(elektra, stringTag, "A string", &error);
-	elektraSet(elektra, booleanTag, 1, &error);
-	elektraSet(elektra, charTag, 'c', &error);
-	elektraSet(elektra, octetTag, 1, &error);
-	elektraSet(elektra, shortTag, 1, &error);
-	elektraSet(elektra, unsignedShortTag, 1, &error);
-	elektraSet(elektra, longTag, 1, &error);
-	elektraSet(elektra, unsignedLongTag, 1, &error);
-	elektraSet(elektra, longLongTag, 1, &error);
-	elektraSet(elektra, unsignedLongLongTag, 1, &error);
-	elektraSet(elektra, floatTag, 1.1, &error);
-	elektraSet(elektra, doubleTag, 1.1, &error);
-	elektraSet(elektra, longDoubleTag, 1.1, &error);
+	elektraSet (elektra, stringTag, "A string", &error);
+	elektraSet (elektra, booleanTag, 1, &error);
+	elektraSet (elektra, charTag, 'c', &error);
+	elektraSet (elektra, octetTag, 1, &error);
+	elektraSet (elektra, shortTag, 1, &error);
+	elektraSet (elektra, unsignedShortTag, 1, &error);
+	elektraSet (elektra, longTag, 1, &error);
+	elektraSet (elektra, unsignedLongTag, 1, &error);
+	elektraSet (elektra, longLongTag, 1, &error);
+	elektraSet (elektra, unsignedLongLongTag, 1, &error);
+	elektraSet (elektra, floatTag, 1.1, &error);
+	elektraSet (elektra, doubleTag, 1.1, &error);
+	elektraSet (elektra, longDoubleTag, 1.1, &error);
 
 	// Check values.
 	succeed_if (!elektraStrCmp (elektraGet (elektra, stringTag), "A string"), "Wrong key value.");
