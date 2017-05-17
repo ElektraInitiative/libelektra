@@ -3,7 +3,7 @@
  *
  * @brief create redux devtools (sidebar in development mode)
  *
- * @copyright BSD License (see doc/LICENSE.md or https://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
 import React from 'react'

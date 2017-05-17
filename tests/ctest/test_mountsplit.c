@@ -3,7 +3,7 @@
  *
  * @brief Test suite for split buildup during mount.
  *
- * @copyright BSD License (see doc/LICENSE.md or https://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
 #include <../../src/libs/elektra/backend.c>

@@ -3,7 +3,7 @@
  *
  * @brief Implements a helper class for merge related tests
  *
- * @copyright BSD License (see doc/LICENSE.md or https://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  *
  */
 

@@ -3,7 +3,7 @@
  *
  * @brief small library to access Elektra’s kdb via node.js
  *
- * @copyright BSD License (see doc/LICENSE.md or https://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
 const { exec } = require('child_process')

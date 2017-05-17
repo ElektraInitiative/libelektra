@@ -3,7 +3,7 @@
  *
  * @brief Plugin enables storage to xml files via the Xerces library
  *
- * @copyright BSD License (see doc/LICENSE.md or https://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
 #include "xerces.hpp"

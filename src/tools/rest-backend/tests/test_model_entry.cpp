@@ -3,7 +3,7 @@
  *
  * @brief tests for the entry model
  *
- * @copyright BSD License (see doc/LICENSE.md or https://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
 #include <gtest/gtest.h>
