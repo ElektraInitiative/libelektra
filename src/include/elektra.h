@@ -36,15 +36,16 @@ typedef struct _Elektra Elektra;
 	void ELEKTRA_SET_BY_STRING (typeName) (Elektra * elektra, const char * keyName, Type value, ElektraError ** error)
 #define ELEKTRA_SET_BY_TAG_SIGNATURE(Type, typeName)                                                                                       \
 	void ELEKTRA_SET_BY_TAG (typeName) (Elektra * elektra, ELEKTRA_TAG (typeName) tag, Type value, ElektraError * *error)
-#define ELEKTRA_SET_ARRAY_ELEMENT_BY_STRING_SIGNATURE(Type, typeName)                                                                                \
-	void ELEKTRA_SET_ARRAY_ELEMENT_BY_STRING (typeName) (Elektra * elektra, const char * keyName, Type value, size_t index, ElektraError ** error)
+#define ELEKTRA_SET_ARRAY_ELEMENT_BY_STRING_SIGNATURE(Type, typeName)                                                                      \
+	void ELEKTRA_SET_ARRAY_ELEMENT_BY_STRING (typeName) (Elektra * elektra, const char * keyName, Type value, size_t index,            \
+							     ElektraError ** error)
 #define ELEKTRA_SET_ARRAY_ELEMENT_BY_TAG_SIGNATURE(Type, typeName)                                                                         \
 	void ELEKTRA_SET_ARRAY_ELEMENT_BY_TAG (typeName) (Elektra * elektra, ELEKTRA_TAG (typeName) tag, Type value, size_t index,         \
 							  ElektraError * *error)
 
 #define ELEKTRA_GET_BY_STRING_SIGNATURE(Type, typeName) Type ELEKTRA_GET_BY_STRING (typeName) (Elektra * elektra, const char * keyName)
 #define ELEKTRA_GET_BY_TAG_SIGNATURE(Type, typeName) Type ELEKTRA_GET_BY_TAG (typeName) (Elektra * elektra, ELEKTRA_TAG (typeName) tag)
-#define ELEKTRA_GET_ARRAY_ELEMENT_BY_STRING_SIGNATURE(Type, typeName)                                                                                \
+#define ELEKTRA_GET_ARRAY_ELEMENT_BY_STRING_SIGNATURE(Type, typeName)                                                                      \
 	Type ELEKTRA_GET_ARRAY_ELEMENT_BY_STRING (typeName) (Elektra * elektra, const char * keyName, size_t index)
 #define ELEKTRA_GET_ARRAY_ELEMENT_BY_TAG_SIGNATURE(Type, typeName)                                                                         \
 	Type ELEKTRA_GET_ARRAY_ELEMENT_BY_TAG (typeName) (Elektra * elektra, ELEKTRA_TAG (typeName) tag, size_t index)
@@ -57,12 +58,12 @@ typedef struct _Elektra Elektra;
                                                                                                                                            \
 	ELEKTRA_SET_BY_STRING_SIGNATURE (Type, typeName);                                                                                  \
 	ELEKTRA_SET_BY_TAG_SIGNATURE (Type, typeName);                                                                                     \
-	ELEKTRA_SET_ARRAY_ELEMENT_BY_STRING_SIGNATURE (Type, typeName);                                                                              \
+	ELEKTRA_SET_ARRAY_ELEMENT_BY_STRING_SIGNATURE (Type, typeName);                                                                    \
 	ELEKTRA_SET_ARRAY_ELEMENT_BY_TAG_SIGNATURE (Type, typeName);                                                                       \
                                                                                                                                            \
-	ELEKTRA_GET_BY_STRING_SIGNATURE (Type, typeName);                                                                                            \
+	ELEKTRA_GET_BY_STRING_SIGNATURE (Type, typeName);                                                                                  \
 	ELEKTRA_GET_BY_TAG_SIGNATURE (Type, typeName);                                                                                     \
-	ELEKTRA_GET_ARRAY_ELEMENT_BY_STRING_SIGNATURE (Type, typeName);                                                                              \
+	ELEKTRA_GET_ARRAY_ELEMENT_BY_STRING_SIGNATURE (Type, typeName);                                                                    \
 	ELEKTRA_GET_ARRAY_ELEMENT_BY_TAG_SIGNATURE (Type, typeName);
 
 
@@ -157,7 +158,7 @@ ELEKTRA_TYPES (ELEKTRA_DECLARATION)
  * @param value The new value.
  * @param value Pass a reference to an ElektraError pointer.
  */
-#define elektraSetString(elektra, keynameOrTag, value, error)                                                                                  \
+#define elektraSetString(elektra, keynameOrTag, value, error)                                                                              \
 	_Generic((keynameOrTag), \
     char *: ELEKTRA_SET_BY_STRING(String), \
     ELEKTRA_TAG(String): ELEKTRA_SET_BY_TAG(String) \
@@ -166,7 +167,7 @@ ELEKTRA_TYPES (ELEKTRA_DECLARATION)
 /**
  * @copydoc elektraSetString
  */
-#define elektraSetBoolean(elektra, keynameOrTag, value, error)                                                                                 \
+#define elektraSetBoolean(elektra, keynameOrTag, value, error)                                                                             \
 	_Generic((keynameOrTag), \
     char *: ELEKTRA_SET_BY_STRING(Boolean), \
     ELEKTRA_TAG(Boolean): ELEKTRA_SET_BY_TAG(Boolean) \
@@ -175,7 +176,7 @@ ELEKTRA_TYPES (ELEKTRA_DECLARATION)
 /**
  * @copydoc elektraSetString
  */
-#define elektraSetChar(elektra, keynameOrTag, value, error)                                                                                    \
+#define elektraSetChar(elektra, keynameOrTag, value, error)                                                                                \
 	_Generic((keynameOrTag), \
     char *: ELEKTRA_SET_BY_STRING(Char), \
     ELEKTRA_TAG(Char): ELEKTRA_SET_BY_TAG(Char) \
@@ -184,7 +185,7 @@ ELEKTRA_TYPES (ELEKTRA_DECLARATION)
 /**
  * @copydoc elektraSetString
  */
-#define elektraSetOctet(elektra, keynameOrTag, value, error)                                                                                   \
+#define elektraSetOctet(elektra, keynameOrTag, value, error)                                                                               \
 	_Generic((keynameOrTag), \
     char *: ELEKTRA_SET_BY_STRING(Octet), \
     ELEKTRA_TAG(Octet): ELEKTRA_SET_BY_TAG(Octet) \
@@ -193,7 +194,7 @@ ELEKTRA_TYPES (ELEKTRA_DECLARATION)
 /**
  * @copydoc elektraSetString
  */
-#define elektraSetShort(elektra, keynameOrTag, value, error)                                                                                   \
+#define elektraSetShort(elektra, keynameOrTag, value, error)                                                                               \
 	_Generic((keynameOrTag), \
     char *: ELEKTRA_SET_BY_STRING(Short), \
     ELEKTRA_TAG(Short): ELEKTRA_SET_BY_TAG(Short) \
@@ -202,13 +203,13 @@ ELEKTRA_TYPES (ELEKTRA_DECLARATION)
 /**
  * @copydoc elektraSetString
  */
-#define elektraSetUnsignedShort(elektra, keynameOrTag, value, error)                                                                           \
+#define elektraSetUnsignedShort(elektra, keynameOrTag, value, error)                                                                       \
 	_Generic((keynameOrTag), \
     char *: ELEKTRA_SET_BY_STRING(UnsignedShort), \
     ELEKTRA_TAG(UnsignedShort): ELEKTRA_SET_BY_TAG(UnsignedShort) \
     )(elektra, keynameOrTag, value, error)
 
-#define elektraSetLong(elektra, keynameOrTag, value, error)                                                                                    \
+#define elektraSetLong(elektra, keynameOrTag, value, error)                                                                                \
 	_Generic((keynameOrTag), \
     char *: ELEKTRA_SET_BY_STRING(Long), \
     ELEKTRA_TAG(Long): ELEKTRA_SET_BY_TAG(Long) \
@@ -217,7 +218,7 @@ ELEKTRA_TYPES (ELEKTRA_DECLARATION)
 /**
  * @copydoc elektraSetString
  */
-#define elektraSetUnsignedLong(elektra, keynameOrTag, value, error)                                                                            \
+#define elektraSetUnsignedLong(elektra, keynameOrTag, value, error)                                                                        \
 	_Generic((keynameOrTag), \
     char *: ELEKTRA_SET_BY_STRING(UnsignedLong), \
     ELEKTRA_TAG(UnsignedLong): ELEKTRA_SET_BY_TAG(UnsignedLong) \
@@ -226,7 +227,7 @@ ELEKTRA_TYPES (ELEKTRA_DECLARATION)
 /**
  * @copydoc elektraSetString
  */
-#define elektraSetLongLong(elektra, keynameOrTag, value, error)                                                                                \
+#define elektraSetLongLong(elektra, keynameOrTag, value, error)                                                                            \
 	_Generic((keynameOrTag), \
     char *: ELEKTRA_SET_BY_STRING(LongLong), \
     ELEKTRA_TAG(LongLong): ELEKTRA_SET_BY_TAG(LongLong) \
@@ -235,7 +236,7 @@ ELEKTRA_TYPES (ELEKTRA_DECLARATION)
 /**
  * @copydoc elektraSetString
  */
-#define elektraSetUnsignedLongLong(elektra, keynameOrTag, value, error)                                                                        \
+#define elektraSetUnsignedLongLong(elektra, keynameOrTag, value, error)                                                                    \
 	_Generic((keynameOrTag), \
     char *: ELEKTRA_SET_BY_STRING(UnsignedLongLong), \
     ELEKTRA_TAG(UnsignedLongLong): ELEKTRA_SET_BY_TAG(UnsignedLongLong) \
@@ -244,7 +245,7 @@ ELEKTRA_TYPES (ELEKTRA_DECLARATION)
 /**
  * @copydoc elektraSetString
  */
-#define elektraSetFloat(elektra, keynameOrTag, value, error)                                                                                   \
+#define elektraSetFloat(elektra, keynameOrTag, value, error)                                                                               \
 	_Generic((keynameOrTag), \
     char *: ELEKTRA_SET_BY_STRING(Float), \
     ELEKTRA_TAG(Float): ELEKTRA_SET_BY_TAG(Float) \
@@ -253,7 +254,7 @@ ELEKTRA_TYPES (ELEKTRA_DECLARATION)
 /**
  * @copydoc elektraSetString
  */
-#define elektraSetDouble(elektra, keynameOrTag, value, error)                                                                                  \
+#define elektraSetDouble(elektra, keynameOrTag, value, error)                                                                              \
 	_Generic((keynameOrTag), \
     char *: ELEKTRA_SET_BY_STRING(Double), \
     ELEKTRA_TAG(Double): ELEKTRA_SET_BY_TAG(Double) \
@@ -262,7 +263,7 @@ ELEKTRA_TYPES (ELEKTRA_DECLARATION)
 /**
  * @copydoc elektraSetString
  */
-#define elektraSetLongDouble(elektra, keynameOrTag, value, error)                                                                              \
+#define elektraSetLongDouble(elektra, keynameOrTag, value, error)                                                                          \
 	_Generic((keynameOrTag), \
     char *: ELEKTRA_SET_BY_STRING(LongDouble), \
     ELEKTRA_TAG(LongDouble): ELEKTRA_SET_BY_TAG(LongDouble) \
@@ -276,7 +277,7 @@ ELEKTRA_TYPES (ELEKTRA_DECLARATION)
  * @param index The array index of the desired element, starting with 0.
  * @return The value stored at the given key and index.
 */
-#define elektraGetString(elektra, keynameOrTag)                                                                                                \
+#define elektraGetString(elektra, keynameOrTag)                                                                                            \
 	_Generic((keynameOrTag), \
     char *: ELEKTRA_GET_BY_STRING(String), \
     ELEKTRA_TAG(String): ELEKTRA_GET_BY_TAG(String) \
@@ -285,7 +286,7 @@ ELEKTRA_TYPES (ELEKTRA_DECLARATION)
 /**
  * @copydoc elektraGetString
  */
-#define elektraGetBoolean(elektra, keynameOrTag)                                                                                               \
+#define elektraGetBoolean(elektra, keynameOrTag)                                                                                           \
 	_Generic((keynameOrTag), \
     char *: ELEKTRA_GET_BY_STRING(Boolean), \
     ELEKTRA_TAG(Boolean): ELEKTRA_GET_BY_TAG(Boolean) \
@@ -294,25 +295,25 @@ ELEKTRA_TYPES (ELEKTRA_DECLARATION)
 /**
  * @copydoc elektraGetString
  */
-#define elektraGetChar(elektra, keynameOrTag)                                                                                                  \
+#define elektraGetChar(elektra, keynameOrTag)                                                                                              \
 	_Generic((keynameOrTag), char * : ELEKTRA_GET_BY_STRING (Char), ELEKTRA_TAG (Char) : ELEKTRA_GET_BY_TAG (Char)) (elektra, keynameOrTag)
 
 /**
  * @copydoc elektraGetString
  */
-#define elektraGetOctet(elektra, keynameOrTag)                                                                                                 \
+#define elektraGetOctet(elektra, keynameOrTag)                                                                                             \
 	_Generic((keynameOrTag), char * : ELEKTRA_GET_BY_STRING (Octet), ELEKTRA_TAG (Octet) : ELEKTRA_GET_BY_TAG (Octet)) (elektra, keynameOrTag)
 
 /**
  * @copydoc elektraGetString
  */
-#define elektraGetShort(elektra, keynameOrTag)                                                                                                 \
+#define elektraGetShort(elektra, keynameOrTag)                                                                                             \
 	_Generic((keynameOrTag), char * : ELEKTRA_GET_BY_STRING (Short), ELEKTRA_TAG (Short) : ELEKTRA_GET_BY_TAG (Short)) (elektra, keynameOrTag)
 
 /**
  * @copydoc elektraGetString
  */
-#define elektraGetUnsignedShort(elektra, keynameOrTag)                                                                                         \
+#define elektraGetUnsignedShort(elektra, keynameOrTag)                                                                                     \
 	_Generic((keynameOrTag), \
     char *: ELEKTRA_GET_BY_STRING(UnsignedShort), \
     ELEKTRA_TAG(UnsignedShort): ELEKTRA_GET_BY_TAG(UnsignedShort) \
@@ -321,13 +322,13 @@ ELEKTRA_TYPES (ELEKTRA_DECLARATION)
 /**
  * @copydoc elektraGetString
  */
-#define elektraGetLong(elektra, keynameOrTag)                                                                                                  \
+#define elektraGetLong(elektra, keynameOrTag)                                                                                              \
 	_Generic((keynameOrTag), char * : ELEKTRA_GET_BY_STRING (Long), ELEKTRA_TAG (Long) : ELEKTRA_GET_BY_TAG (Long)) (elektra, keynameOrTag)
 
 /**
  * @copydoc elektraGetString
  */
-#define elektraGetUnsignedLong(elektra, keynameOrTag)                                                                                          \
+#define elektraGetUnsignedLong(elektra, keynameOrTag)                                                                                      \
 	_Generic((keynameOrTag), \
     char *: ELEKTRA_GET_BY_STRING(UnsignedLong), \
     ELEKTRA_TAG(UnsignedLong): ELEKTRA_GET_BY_TAG(UnsignedLong) \
@@ -336,7 +337,7 @@ ELEKTRA_TYPES (ELEKTRA_DECLARATION)
 /**
  * @copydoc elektraGetString
  */
-#define elektraGetLongLong(elektra, keynameOrTag)                                                                                              \
+#define elektraGetLongLong(elektra, keynameOrTag)                                                                                          \
 	_Generic((keynameOrTag), \
     char *: ELEKTRA_GET_BY_STRING(LongLong), \
     ELEKTRA_TAG(LongLong): ELEKTRA_GET_BY_TAG(LongLong) \
@@ -345,7 +346,7 @@ ELEKTRA_TYPES (ELEKTRA_DECLARATION)
 /**
  * @copydoc elektraGetString
  */
-#define elektraGetUnsignedLongLong(elektra, keynameOrTag)                                                                                      \
+#define elektraGetUnsignedLongLong(elektra, keynameOrTag)                                                                                  \
 	_Generic((keynameOrTag), \
     char *: ELEKTRA_GET_BY_STRING(UnsignedLongLong), \
     ELEKTRA_TAG(UnsignedLongLong): ELEKTRA_GET_BY_TAG(UnsignedLongLong) \
@@ -354,13 +355,13 @@ ELEKTRA_TYPES (ELEKTRA_DECLARATION)
 /**
  * @copydoc elektraGetString
  */
-#define elektraGetFloat(elektra, keynameOrTag)                                                                                                 \
+#define elektraGetFloat(elektra, keynameOrTag)                                                                                             \
 	_Generic((keynameOrTag), char * : ELEKTRA_GET_BY_STRING (Float), ELEKTRA_TAG (Float) : ELEKTRA_GET_BY_TAG (Float)) (elektra, keynameOrTag)
 
 /**
  * @copydoc elektraGetString
  */
-#define elektraGetDouble(elektra, keynameOrTag)                                                                                                \
+#define elektraGetDouble(elektra, keynameOrTag)                                                                                            \
 	_Generic((keynameOrTag), \
     char *: ELEKTRA_GET_BY_STRING(Double), \
     ELEKTRA_TAG(Double): ELEKTRA_GET_BY_TAG(Double) \
@@ -369,7 +370,7 @@ ELEKTRA_TYPES (ELEKTRA_DECLARATION)
 /**
  * @copydoc elektraGetString
  */
-#define elektraGetLongDouble(elektra, keynameOrTag)                                                                                            \
+#define elektraGetLongDouble(elektra, keynameOrTag)                                                                                        \
 	_Generic((keynameOrTag), \
     char *: ELEKTRA_GET_BY_STRING(LongDouble), \
     ELEKTRA_TAG(LongDouble): ELEKTRA_GET_BY_TAG(LongDouble) \
@@ -383,7 +384,7 @@ ELEKTRA_TYPES (ELEKTRA_DECLARATION)
  * @param value The new value.
  * @param value Pass a reference to an ElektraError pointer.
  */
-#define elektraSetStringArrayElement(elektra, keynameOrTag, value, index, error)                                                                                  \
+#define elektraSetStringArrayElement(elektra, keynameOrTag, value, index, error)                                                           \
 	_Generic((keynameOrTag), \
     char *: ELEKTRA_SET_ARRAY_ELEMENT_BY_STRING(String), \
     ELEKTRA_TAG(String): ELEKTRA_SET_ARRAY_ELEMENT_BY_TAG(String) \
@@ -392,7 +393,7 @@ ELEKTRA_TYPES (ELEKTRA_DECLARATION)
 /**
  * @copydoc elektraSetStringArrayElement
  */
-#define elektraSetBooleanArrayElement(elektra, keynameOrTag, value, index, error)                                                                                 \
+#define elektraSetBooleanArrayElement(elektra, keynameOrTag, value, index, error)                                                          \
 	_Generic((keynameOrTag), \
     char *: ELEKTRA_SET_ARRAY_ELEMENT_BY_STRING(Boolean), \
     ELEKTRA_TAG(Boolean): ELEKTRA_SET_ARRAY_ELEMENT_BY_TAG(Boolean) \
@@ -401,7 +402,7 @@ ELEKTRA_TYPES (ELEKTRA_DECLARATION)
 /**
  * @copydoc elektraSetStringArrayElement
  */
-#define elektraSetCharArrayElement(elektra, keynameOrTag, value, index, error)                                                                                    \
+#define elektraSetCharArrayElement(elektra, keynameOrTag, value, index, error)                                                             \
 	_Generic((keynameOrTag), \
     char *: ELEKTRA_SET_ARRAY_ELEMENT_BY_STRING(Char), \
     ELEKTRA_TAG(Char): ELEKTRA_SET_ARRAY_ELEMENT_BY_TAG(Char) \
@@ -410,7 +411,7 @@ ELEKTRA_TYPES (ELEKTRA_DECLARATION)
 /**
  * @copydoc elektraSetStringArrayElement
  */
-#define elektraSetOctetArrayElement(elektra, keynameOrTag, value, index, error)                                                                                   \
+#define elektraSetOctetArrayElement(elektra, keynameOrTag, value, index, error)                                                            \
 	_Generic((keynameOrTag), \
     char *: ELEKTRA_SET_ARRAY_ELEMENT_BY_STRING(Octet), \
     ELEKTRA_TAG(Octet): ELEKTRA_SET_ARRAY_ELEMENT_BY_TAG(Octet) \
@@ -419,7 +420,7 @@ ELEKTRA_TYPES (ELEKTRA_DECLARATION)
 /**
  * @copydoc elektraSetStringArrayElement
  */
-#define elektraSetShortArrayElement(elektra, keynameOrTag, value, index, error)                                                                                   \
+#define elektraSetShortArrayElement(elektra, keynameOrTag, value, index, error)                                                            \
 	_Generic((keynameOrTag), \
     char *: ELEKTRA_SET_ARRAY_ELEMENT_BY_STRING(Short), \
     ELEKTRA_TAG(Short): ELEKTRA_SET_ARRAY_ELEMENT_BY_TAG(Short) \
@@ -428,7 +429,7 @@ ELEKTRA_TYPES (ELEKTRA_DECLARATION)
 /**
  * @copydoc elektraSetStringArrayElement
  */
-#define elektraSetUnsignedShortArrayElement(elektra, keynameOrTag, value, index, error)                                                                           \
+#define elektraSetUnsignedShortArrayElement(elektra, keynameOrTag, value, index, error)                                                    \
 	_Generic((keynameOrTag), \
     char *: ELEKTRA_SET_ARRAY_ELEMENT_BY_STRING(UnsignedShort), \
     ELEKTRA_TAG(UnsignedShort): ELEKTRA_SET_ARRAY_ELEMENT_BY_TAG(UnsignedShort) \
@@ -437,7 +438,7 @@ ELEKTRA_TYPES (ELEKTRA_DECLARATION)
 /**
  * @copydoc elektraSetStringArrayElement
  */
-#define elektraSetLongArrayElement(elektra, keynameOrTag, value, index, error)                                                                                    \
+#define elektraSetLongArrayElement(elektra, keynameOrTag, value, index, error)                                                             \
 	_Generic((keynameOrTag), \
     char *: ELEKTRA_SET_ARRAY_ELEMENT_BY_STRING(Long), \
     ELEKTRA_TAG(Long): ELEKTRA_SET_ARRAY_ELEMENT_BY_TAG(Long) \
@@ -446,7 +447,7 @@ ELEKTRA_TYPES (ELEKTRA_DECLARATION)
 /**
  * @copydoc elektraSetStringArrayElement
  */
-#define elektraSetUnsignedLongArrayElement(elektra, keynameOrTag, value, index, error)                                                                            \
+#define elektraSetUnsignedLongArrayElement(elektra, keynameOrTag, value, index, error)                                                     \
 	_Generic((keynameOrTag), \
     char *: ELEKTRA_SET_ARRAY_ELEMENT_BY_STRING(UnsignedLong), \
     ELEKTRA_TAG(UnsignedLong): ELEKTRA_SET_ARRAY_ELEMENT_BY_TAG(UnsignedLong) \
@@ -455,7 +456,7 @@ ELEKTRA_TYPES (ELEKTRA_DECLARATION)
 /**
  * @copydoc elektraSetStringArrayElement
  */
-#define elektraSetLongLongArrayElement(elektra, keynameOrTag, value, index, error)                                                                                \
+#define elektraSetLongLongArrayElement(elektra, keynameOrTag, value, index, error)                                                         \
 	_Generic((keynameOrTag), \
     char *: ELEKTRA_SET_ARRAY_ELEMENT_BY_STRING(LongLong), \
     ELEKTRA_TAG(LongLong): ELEKTRA_SET_ARRAY_ELEMENT_BY_TAG(LongLong) \
@@ -464,7 +465,7 @@ ELEKTRA_TYPES (ELEKTRA_DECLARATION)
 /**
  * @copydoc elektraSetStringArrayElement
  */
-#define elektraSetUnsignedLongLongArrayElement(elektra, keynameOrTag, value, index, error)                                                                        \
+#define elektraSetUnsignedLongLongArrayElement(elektra, keynameOrTag, value, index, error)                                                 \
 	_Generic((keynameOrTag), \
     char *: ELEKTRA_SET_ARRAY_ELEMENT_BY_STRING(UnsignedLongLong), \
     ELEKTRA_TAG(UnsignedLongLong): ELEKTRA_SET_ARRAY_ELEMENT_BY_TAG(UnsignedLongLong) \
@@ -473,7 +474,7 @@ ELEKTRA_TYPES (ELEKTRA_DECLARATION)
 /**
  * @copydoc elektraSetStringArrayElement
  */
-#define elektraSetFloatArrayElement(elektra, keynameOrTag, value, index, error)                                                                                   \
+#define elektraSetFloatArrayElement(elektra, keynameOrTag, value, index, error)                                                            \
 	_Generic((keynameOrTag), \
     char *: ELEKTRA_SET_ARRAY_ELEMENT_BY_STRING(Float), \
     ELEKTRA_TAG(Float): ELEKTRA_SET_ARRAY_ELEMENT_BY_TAG(Float) \
@@ -482,7 +483,7 @@ ELEKTRA_TYPES (ELEKTRA_DECLARATION)
 /**
  * @copydoc elektraSetStringArrayElement
  */
-#define elektraSetDoubleArrayElement(elektra, keynameOrTag, value, index, error)                                                                                  \
+#define elektraSetDoubleArrayElement(elektra, keynameOrTag, value, index, error)                                                           \
 	_Generic((keynameOrTag), \
     char *: ELEKTRA_SET_ARRAY_ELEMENT_BY_STRING(Double), \
     ELEKTRA_TAG(Double): ELEKTRA_SET_ARRAY_ELEMENT_BY_TAG(Double) \
@@ -491,7 +492,7 @@ ELEKTRA_TYPES (ELEKTRA_DECLARATION)
 /**
  * @copydoc elektraSetStringArrayElement
  */
-#define elektraSetLongDoubleArrayElement(elektra, keynameOrTag, value, index, error)                                                                              \
+#define elektraSetLongDoubleArrayElement(elektra, keynameOrTag, value, index, error)                                                       \
 	_Generic((keynameOrTag), \
     char *: ELEKTRA_SET_ARRAY_ELEMENT_BY_STRING(LongDouble), \
     ELEKTRA_TAG(LongDouble): ELEKTRA_SET_ARRAY_ELEMENT_BY_TAG(LongDouble) \
@@ -506,7 +507,7 @@ ELEKTRA_TYPES (ELEKTRA_DECLARATION)
  * @param index The array index of the desired element, starting with 0. \
  * @return The value stored at the given key and index.
 */
-#define elektraGetStringArrayElement(elektra, keynameOrTag, index)                                                                                                \
+#define elektraGetStringArrayElement(elektra, keynameOrTag, index)                                                                         \
 	_Generic((keynameOrTag), \
     char *: ELEKTRA_GET_ARRAY_ELEMENT_BY_STRING(String), \
     ELEKTRA_TAG(String): ELEKTRA_GET_ARRAY_ELEMENT_BY_TAG(String) \
@@ -515,7 +516,7 @@ ELEKTRA_TYPES (ELEKTRA_DECLARATION)
 /**
  * @copydoc elektraGetStringArrayElement
  */
-#define elektraGetBooleanArrayElement(elektra, keynameOrTag, index)                                                                                               \
+#define elektraGetBooleanArrayElement(elektra, keynameOrTag, index)                                                                        \
 	_Generic((keynameOrTag), \
     char *: ELEKTRA_GET_ARRAY_ELEMENT_BY_STRING(Boolean), \
     ELEKTRA_TAG(Boolean): ELEKTRA_GET_ARRAY_ELEMENT_BY_TAG(Boolean) \
@@ -524,25 +525,25 @@ ELEKTRA_TYPES (ELEKTRA_DECLARATION)
 /**
  * @copydoc elektraGetStringArrayElement
  */
-#define elektraGetCharArrayElement(elektra, keynameOrTag, index)                                                                                                  \
+#define elektraGetCharArrayElement(elektra, keynameOrTag, index)                                                                           \
 	_Generic((keynameOrTag), char * : ELEKTRA_GET_ARRAY_ELEMENT_BY_STRING (Char), ELEKTRA_TAG (Char) : ELEKTRA_GET_ARRAY_ELEMENT_BY_TAG (Char)) (elektra, keynameOrTag, index)
 
 /**
  * @copydoc elektraGetStringArrayElement
  */
-#define elektraGetOctetArrayElement(elektra, keynameOrTag, index)                                                                                                 \
+#define elektraGetOctetArrayElement(elektra, keynameOrTag, index)                                                                          \
 	_Generic((keynameOrTag), char * : ELEKTRA_GET_ARRAY_ELEMENT_BY_STRING (Octet), ELEKTRA_TAG (Octet) : ELEKTRA_GET_ARRAY_ELEMENT_BY_TAG (Octet)) (elektra, keynameOrTag, index)
 
 /**
  * @copydoc elektraGetStringArrayElement
  */
-#define elektraGetShortArrayElement(elektra, keynameOrTag, index)                                                                                                 \
+#define elektraGetShortArrayElement(elektra, keynameOrTag, index)                                                                          \
 	_Generic((keynameOrTag), char * : ELEKTRA_GET_ARRAY_ELEMENT_BY_STRING (Short), ELEKTRA_TAG (Short) : ELEKTRA_GET_ARRAY_ELEMENT_BY_TAG (Short)) (elektra, keynameOrTag, index)
 
 /**
  * @copydoc elektraGetStringArrayElement
  */
-#define elektraGetUnsignedShortArrayElement(elektra, keynameOrTag, index)                                                                                         \
+#define elektraGetUnsignedShortArrayElement(elektra, keynameOrTag, index)                                                                  \
 	_Generic((keynameOrTag), \
     char *: ELEKTRA_GET_ARRAY_ELEMENT_BY_STRING(UnsignedShort), \
     ELEKTRA_TAG(UnsignedShort): ELEKTRA_GET_ARRAY_ELEMENT_BY_TAG(UnsignedShort) \
@@ -551,13 +552,13 @@ ELEKTRA_TYPES (ELEKTRA_DECLARATION)
 /**
  * @copydoc elektraGetStringArrayElement
  */
-#define elektraGetLongArrayElement(elektra, keynameOrTag, index)                                                                                                  \
+#define elektraGetLongArrayElement(elektra, keynameOrTag, index)                                                                           \
 	_Generic((keynameOrTag), char * : ELEKTRA_GET_ARRAY_ELEMENT_BY_STRING (Long), ELEKTRA_TAG (Long) : ELEKTRA_GET_ARRAY_ELEMENT_BY_TAG (Long)) (elektra, keynameOrTag, index)
 
 /**
  * @copydoc elektraGetStringArrayElement
  */
-#define elektraGetUnsignedLongArrayElement(elektra, keynameOrTag, index)                                                                                          \
+#define elektraGetUnsignedLongArrayElement(elektra, keynameOrTag, index)                                                                   \
 	_Generic((keynameOrTag), \
     char *: ELEKTRA_GET_ARRAY_ELEMENT_BY_STRING(UnsignedLong), \
     ELEKTRA_TAG(UnsignedLong): ELEKTRA_GET_ARRAY_ELEMENT_BY_TAG(UnsignedLong) \
@@ -566,7 +567,7 @@ ELEKTRA_TYPES (ELEKTRA_DECLARATION)
 /**
  * @copydoc elektraGetStringArrayElement
  */
-#define elektraGetLongLongArrayElement(elektra, keynameOrTag, index)                                                                                              \
+#define elektraGetLongLongArrayElement(elektra, keynameOrTag, index)                                                                       \
 	_Generic((keynameOrTag), \
     char *: ELEKTRA_GET_ARRAY_ELEMENT_BY_STRING(LongLong), \
     ELEKTRA_TAG(LongLong): ELEKTRA_GET_ARRAY_ELEMENT_BY_TAG(LongLong) \
@@ -575,7 +576,7 @@ ELEKTRA_TYPES (ELEKTRA_DECLARATION)
 /**
  * @copydoc elektraGetStringArrayElement
  */
-#define elektraGetUnsignedLongLongArrayElement(elektra, keynameOrTag, index)                                                                                      \
+#define elektraGetUnsignedLongLongArrayElement(elektra, keynameOrTag, index)                                                               \
 	_Generic((keynameOrTag), \
     char *: ELEKTRA_GET_ARRAY_ELEMENT_BY_STRING(UnsignedLongLong), \
     ELEKTRA_TAG(UnsignedLongLong): ELEKTRA_GET_ARRAY_ELEMENT_BY_TAG(UnsignedLongLong) \
@@ -584,13 +585,13 @@ ELEKTRA_TYPES (ELEKTRA_DECLARATION)
 /**
  * @copydoc elektraGetStringArrayElement
  */
-#define elektraGetFloatArrayElement(elektra, keynameOrTag, index)                                                                                                 \
+#define elektraGetFloatArrayElement(elektra, keynameOrTag, index)                                                                          \
 	_Generic((keynameOrTag), char * : ELEKTRA_GET_ARRAY_ELEMENT_BY_STRING (Float), ELEKTRA_TAG (Float) : ELEKTRA_GET_ARRAY_ELEMENT_BY_TAG (Float)) (elektra, keynameOrTag, index)
 
 /**
  * @copydoc elektraGetStringArrayElement
  */
-#define elektraGetDoubleArrayElement(elektra, keynameOrTag, index)                                                                                                \
+#define elektraGetDoubleArrayElement(elektra, keynameOrTag, index)                                                                         \
 	_Generic((keynameOrTag), \
     char *: ELEKTRA_GET_ARRAY_ELEMENT_BY_STRING(Double), \
     ELEKTRA_TAG(Double): ELEKTRA_GET_ARRAY_ELEMENT_BY_TAG(Double) \
@@ -599,7 +600,7 @@ ELEKTRA_TYPES (ELEKTRA_DECLARATION)
 /**
  * @copydoc elektraGetStringArrayElement
  */
-#define elektraGetLongDoubleArrayElement(elektra, keynameOrTag, index)                                                                                            \
+#define elektraGetLongDoubleArrayElement(elektra, keynameOrTag, index)                                                                     \
 	_Generic((keynameOrTag), \
     char *: ELEKTRA_GET_ARRAY_ELEMENT_BY_STRING(LongDouble), \
     ELEKTRA_TAG(LongDouble): ELEKTRA_GET_ARRAY_ELEMENT_BY_TAG(LongDouble) \
