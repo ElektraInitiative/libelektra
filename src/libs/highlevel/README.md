@@ -183,7 +183,7 @@ Here is an example of how this looks like in code:
 ```c
 #include <stdio.h>
 #include <elektra.h>
-#include "elektra_gen.h
+#include "elektra_gen.h"
 
 int main ()
 {
