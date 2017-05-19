@@ -383,11 +383,11 @@ static void test_arraySetters ()
 	elektraSetUnsignedLongArrayElement (elektra, "unsignedLongarraykey", 1, 0, &error);
 	elektraSetUnsignedLongArrayElement (elektra, "unsignedLongarraykey", 2, 1, &error);
 
-    elektraSetLongArrayElement (elektra, "longarraykey", 1, 0, &error);
-    elektraSetLongArrayElement (elektra, "longarraykey", 2, 1, &error);
+	elektraSetLongArrayElement (elektra, "longarraykey", 1, 0, &error);
+	elektraSetLongArrayElement (elektra, "longarraykey", 2, 1, &error);
 
-    elektraSetUnsignedLongArrayElement (elektra, "unsignedlongarraykey", 1, 0, &error);
-    elektraSetUnsignedLongArrayElement (elektra, "unsignedlongarraykey", 2, 1, &error);
+	elektraSetUnsignedLongArrayElement (elektra, "unsignedlongarraykey", 1, 0, &error);
+	elektraSetUnsignedLongArrayElement (elektra, "unsignedlongarraykey", 2, 1, &error);
 
 	elektraSetLongLongArrayElement (elektra, "longlongarraykey", 1, 0, &error);
 	elektraSetLongLongArrayElement (elektra, "longlongarraykey", 2, 1, &error);
@@ -430,11 +430,11 @@ static void test_arraySetters ()
 	elektraSetUnsignedLongArrayElement (elektra, "newunsignedLongarraykey", 1, 0, &error);
 	elektraSetUnsignedLongArrayElement (elektra, "newunsignedLongarraykey", 2, 1, &error);
 
-    elektraSetLongArrayElement (elektra, "newlongarraykey", 1, 0, &error);
-    elektraSetLongArrayElement (elektra, "newlongarraykey", 2, 1, &error);
+	elektraSetLongArrayElement (elektra, "newlongarraykey", 1, 0, &error);
+	elektraSetLongArrayElement (elektra, "newlongarraykey", 2, 1, &error);
 
-    elektraSetUnsignedLongArrayElement (elektra, "newunsignedlongarraykey", 1, 0, &error);
-    elektraSetUnsignedLongArrayElement (elektra, "newunsignedlongarraykey", 2, 1, &error);
+	elektraSetUnsignedLongArrayElement (elektra, "newunsignedlongarraykey", 1, 0, &error);
+	elektraSetUnsignedLongArrayElement (elektra, "newunsignedlongarraykey", 2, 1, &error);
 
 	elektraSetLongLongArrayElement (elektra, "newlonglongarraykey", 1, 0, &error);
 	elektraSetLongLongArrayElement (elektra, "newlonglongarraykey", 2, 1, &error);
@@ -484,13 +484,13 @@ static void test_arraySetters ()
 	succeed_if (elektraGetUnsignedShortArrayElement (elektra, "unsignedshortarraykey", 0) == 1, "Wrong key value.");
 	succeed_if (elektraGetUnsignedShortArrayElement (elektra, "unsignedshortarraykey", 1) == 2, "Wrong key value.");
 
-    succeed_if (elektraArraySize (elektra, "longarraykey") == 2, "Wrong array size");
-    succeed_if (elektraGetLongArrayElement (elektra, "longarraykey", 0) == 1, "Wrong key value.");
-    succeed_if (elektraGetLongArrayElement (elektra, "longarraykey", 1) == 2, "Wrong key value.");
+	succeed_if (elektraArraySize (elektra, "longarraykey") == 2, "Wrong array size");
+	succeed_if (elektraGetLongArrayElement (elektra, "longarraykey", 0) == 1, "Wrong key value.");
+	succeed_if (elektraGetLongArrayElement (elektra, "longarraykey", 1) == 2, "Wrong key value.");
 
-    succeed_if (elektraArraySize (elektra, "unsignedlongarraykey") == 2, "Wrong array size");
-    succeed_if (elektraGetUnsignedLongArrayElement (elektra, "unsignedlongarraykey", 0) == 1, "Wrong key value.");
-    succeed_if (elektraGetUnsignedLongArrayElement (elektra, "unsignedlongarraykey", 1) == 2, "Wrong key value.");
+	succeed_if (elektraArraySize (elektra, "unsignedlongarraykey") == 2, "Wrong array size");
+	succeed_if (elektraGetUnsignedLongArrayElement (elektra, "unsignedlongarraykey", 0) == 1, "Wrong key value.");
+	succeed_if (elektraGetUnsignedLongArrayElement (elektra, "unsignedlongarraykey", 1) == 2, "Wrong key value.");
 
 	succeed_if (elektraArraySize (elektra, "longlongarraykey") == 2, "Wrong array size");
 	succeed_if (elektraGetLongLongArrayElement (elektra, "longlongarraykey", 0) == 1, "Wrong key value.");
