@@ -34,10 +34,10 @@ KDBType KDB_TYPE_DOUBLE = "double";
 
 static Key * generateLookupKey (Elektra * elektra, const char * name);
 
-void setValueAsString (Elektra * elektra, const char * name, const char * value, KDBType type, ElektraError ** error);
+static void setValueAsString (Elektra * elektra, const char * name, const char * value, KDBType type, ElektraError ** error);
 static const char * getValueAsString (Elektra * elektra, const char * name, KDBType type);
 
-void setArrayElementValueAsString (Elektra * elektra, const char * name, const char * value, KDBType type, size_t index,
+static void setArrayElementValueAsString (Elektra * elektra, const char * name, const char * value, KDBType type, size_t index,
 				   ElektraError ** error);
 static const char * getArrayElementValueAsString (Elektra * elektra, const char * name, KDBType type, size_t index);
 
@@ -64,11 +64,7 @@ static const char * getArrayElementValueAsString (Elektra * elektra, const char 
 	X (kdb_long_double_t, LongDouble, KDB_TYPE_LONG_DOUBLE, KDB_LONG_DOUBLE_TO_STRING, KDB_STRING_TO_LONG_DOUBLE)
 
 #define ELEKTRA_DEFINITIONS(Type, typeName, KDB_TYPE, TO_STRING, TO_VALUE)                                                                                                                                                                                                                                                          \
-	/** \
-    * @param elektra The elektra instance initialized with the parent key. \
-    * @param keyName The keyname to write to. The keyname is appended to the parent key. \
-    * @param value The new value. \
-    */                                                                                                    \
+                                                                                                  \
 	ELEKTRA_SET_BY_STRING_SIGNATURE (Type, typeName)                                                                                                                                                                                                                                                                            \
 	{                                                                                                                                                                                                                                                                                                                           \
 		setValueAsString (elektra, keyName, TO_STRING (value), KDB_TYPE, error);                                                                                                                                                                                                                                            \
@@ -79,13 +75,7 @@ static const char * getArrayElementValueAsString (Elektra * elektra, const char 
 		setValueAsString (elektra, tag.keyName, TO_STRING (value), KDB_TYPE, error);                                                                                                                                                                                                                                        \
 	}                                                                                                                                                                                                                                                                                                                           \
                                                                                                                                                                                                                                                                                                                                     \
-	/** \
-    * @param elektra The elektra instance initialized with the parent key. \
-    * @param keyName The keyname to write to. The keyname is appended to the parent key. \
-    * @param value The new value. \
-    * @param index The array index of the desired element, starting with 0. \
-    */                      \
-	ELEKTRA_SET_ARRAY_ELEMENT_SIGNATURE (Type, typeName)                                                                                                                                                                                                                                                                        \
+	ELEKTRA_SET_ARRAY_ELEMENT_BY_STRING_SIGNATURE (Type, typeName)                                                                                                                                                                                                                                                                        \
 	{                                                                                                                                                                                                                                                                                                                           \
 		setArrayElementValueAsString (elektra, keyName, TO_STRING (value), KDB_TYPE, index, error);                                                                                                                                                                                                                         \
 	}                                                                                                                                                                                                                                                                                                                           \
@@ -95,13 +85,7 @@ static const char * getArrayElementValueAsString (Elektra * elektra, const char 
 		setArrayElementValueAsString (elektra, tag.keyName, TO_STRING (value), KDB_TYPE, index, error);                                                                                                                                                                                                                     \
 	}                                                                                                                                                                                                                                                                                                                           \
                                                                                                                                                                                                                                                                                                                                     \
-	/** \
-    * @param elektra The elektra instance initialized with the parent key. \
-    * @param name The keyname to look up. The keyname is appended to the parent key. \
-    * @param index The array index of the desired element, starting with 0. \
-    * @return The value stored at the given key and index. \
-    */ \
-	ELEKTRA_GET_SIGNATURE (Type, typeName)                                                                                                                                                                                                                                                                                      \
+	ELEKTRA_GET_BY_STRING_SIGNATURE (Type, typeName)                                                                                                                                                                                                                                                                                      \
 	{                                                                                                                                                                                                                                                                                                                           \
 		return TO_VALUE (getValueAsString (elektra, keyName, KDB_TYPE));                                                                                                                                                                                                                                                    \
 	}                                                                                                                                                                                                                                                                                                                           \
@@ -111,7 +95,7 @@ static const char * getArrayElementValueAsString (Elektra * elektra, const char 
 		return TO_VALUE (getValueAsString (elektra, tag.keyName, KDB_TYPE));                                                                                                                                                                                                                                                \
 	}                                                                                                                                                                                                                                                                                                                           \
                                                                                                                                                                                                                                                                                                                                     \
-	ELEKTRA_GET_ARRAY_ELEMENT_SIGNATURE (Type, typeName)                                                                                                                                                                                                                                                                        \
+	ELEKTRA_GET_ARRAY_ELEMENT_BY_STRING_SIGNATURE (Type, typeName)                                                                                                                                                                                                                                                                        \
 	{                                                                                                                                                                                                                                                                                                                           \
 		return TO_VALUE (getArrayElementValueAsString (elektra, keyName, KDB_TYPE, index));                                                                                                                                                                                                                                 \
 	}                                                                                                                                                                                                                                                                                                                           \
@@ -127,7 +111,7 @@ ELEKTRA_TYPES (ELEKTRA_DEFINITIONS)
  * Initializes a new Elektra instance.
  * @param application The parent key for your application.
  * @param defaults A KeySet containing default values. Passing NULL means "no default values".
- * @return An elektra instance initialized with the application.
+ * @return An Elektra instance initialized with the application.
  */
 Elektra * elektraOpen (const char * application, KeySet * defaults, ElektraError ** error)
 {
@@ -165,7 +149,7 @@ Elektra * elektraOpen (const char * application, KeySet * defaults, ElektraError
 
 /**
  * Releases all ressources used by the given elektra instance. The elektra instance must not be used anymore after calling this.
- * @param elektra
+ * @param elektra An Elektra instance.
  */
 void elektraClose (Elektra * elektra)
 {
@@ -188,9 +172,13 @@ size_t elektraArraySize (Elektra * elektra, const char * name)
 	return size;
 }
 
+/**
+ * @}
+ */
+
 // Private functions
 
-void saveKey (Elektra * elektra, Key * key, ElektraError ** error)
+static void saveKey (Elektra * elektra, Key * key, ElektraError ** error)
 {
 	int ret = 0;
 	do
@@ -259,13 +247,13 @@ static void setKeyValue (Elektra * elektra, Key * key, KDBType type, const char 
 	saveKey (elektra, key, error);
 }
 
-void setValueAsString (Elektra * elektra, const char * name, const char * value, KDBType type, ElektraError ** error)
+static void setValueAsString (Elektra * elektra, const char * name, const char * value, KDBType type, ElektraError ** error)
 {
 	Key * const key = keyDup (generateLookupKey (elektra, name));
 	setKeyValue (elektra, key, type, value, error);
 }
 
-void setArrayElementValueAsString (Elektra * elektra, const char * name, const char * value, KDBType type, size_t index,
+static void setArrayElementValueAsString (Elektra * elektra, const char * name, const char * value, KDBType type, size_t index,
 				   ElektraError ** error)
 {
 	Key * const key = keyDup (generateArrayLookupKey (elektra, name, index));
@@ -301,3 +289,4 @@ static const char * getArrayElementValueAsString (Elektra * elektra, const char 
 
 	return getKeyValue (elektra, key, type);
 }
+
