@@ -10,7 +10,7 @@ This tutorial gives an introduction for developers who want to elektrify their a
 
 ## Setup
 
-First you have to add `elektra-highlevel` to the linked libraries of your application. To be able to use it in your source file, just include the main header with `#include <elektra.h>` at the top of your file.
+First you have to add `elektra-highlevel` to the linked libraries of your application. Note that your need C11 for the high-level API. To be able to use it in your source file, just include the main header with `#include <elektra.h>` at the top of your file.
 
 ## Core Concepts
 
