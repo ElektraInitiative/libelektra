@@ -19,7 +19,7 @@ First you have to add `elektra-highlevel` to the linked libraries of your applic
 
 ```c
 ElektraError * error = NULL;
-Elektra * elektra = elektraOpen ("/sw/org/myapp/#0/current", &error);
+Elektra * elektra = elektraOpen ("/sw/org/myapp/#0/current", NULL, &error);
 ```
 
 Please replace `"/sw/org/myapp/#0/current"` with an appropriate value for your application (see [Namespaces](/doc/tutorials/namespaces.md) for more information).
@@ -47,8 +47,10 @@ The library is designed to hide as many problems a developer can encounter when 
 Functions that can produce errors accept an ElektraError pointer as parameter, for example:
 
 ```c
-Elektra * elektraOpen (const char * application, ElektraError ** error);
+Elektra * elektraOpen (const char * application, KeySet * defaults, ElektraError ** error);
 ```
+
+You can use the parameter `defaults` to pass a KDB `KeySet` containing `Key`s with default values to the elektra instance. See [Code Generator](#code-generator) for more information on that.
 
 In most cases you'll want to set the error variable to NULL before passing it to the function. You can do this either by declaring and initializing a new variable with `ElektraError * error = NULL` or by reusing an already existing error variable by resetting it with `elektraErrorReset (&error)`. 
 
@@ -84,26 +86,32 @@ A typical application will want to read some configuration values at start. This
 
 `elektraGet` + the type of the value you want to read.
 
-As an example here is the signature of the function to get a string value:
+For example, you can get the value for the keyname "message" like this:
 
 ```c
-const char * elektraGetString (Elektra * elektra, const char * name);
+Elektra * elektra = elektraOpen ("/sw/org/myapp/#0/current", NULL, NULL);
+const char * message = elektraGetString (elektra, "message");
+elektraClose (elektra);
 ```
 
 Sometimes you'll want to access arrays as well. You can access single elements of an array using the provided array-getters following again a simple naming scheme: 
 
 `elektraGet` + the type of the value you want to read + `ArrayElement`.
 
-As an example here is the signature of the function to get a string value from an array:
+For example, you can get the third value for the array "message" like this:
 
 ```c
-const char * elektraGetStringArrayElement (Elektra * elektra, const char * name, size_t index);
+Elektra * elektra = elektraOpen ("/sw/org/myapp/#0/current", NULL, NULL);
+const char * message = elektraGetStringArrayElement (elektra, "message", 3);
+elektraClose (elektra);
 ```
 
-To get the size of the array you would like to access you can use this function:
+To get the size of the array you would like to access you can use the function `elektraArraySize`:
 
 ```c
-size_t elektraArraySize (Elektra * elektra, const char * name);
+Elektra * elektra = elektraOpen ("/sw/org/myapp/#0/current", NULL, NULL);
+size_t arraySize = elektraArraySize (elektra, "message");
+elektraClose (elektra);
 ```
 
 For some background information on arrays in Elektra see the [Application Integration](/doc/tutorials/application-integration.md) document.
@@ -114,21 +122,26 @@ You can find the complete list of the available functions for all supported valu
 
 ### Writing values to the KDB
 
-Sometimes, after having read a value from the KDB, you will want to write back a modified value. As descibed in [Read values from the KDB](#read-values-from-the-kdb) we follow a naming scheme for getters. The high-level API provides setters folling an analogous naming scheme as well. For example, to write back a modified string, you can call this function:
+Sometimes, after having read a value from the KDB, you will want to write back a modified value. As descibed in [Read values from the KDB](#read-values-from-the-kdb) we follow a naming scheme for getters. The high-level API provides setters folling an analogous naming scheme as well. For example, to write back a modified "message", you can call `elektraSetString`:
 
 ```c
-void elektraSetString (Elektra * elektra, const char * name, const char * value, ElektraError ** error);
+Elektra * elektra = elektraOpen ("/sw/org/myapp/#0/current", NULL, NULL);
+elektraSetString (elektra, "message", "This is the new message", NULL);
+elektraClose (elektra);
 ```
 
 The counterpart for array-gettes again follows the same naming scheme:
 
 ```c
-void elektraSetStringArrayElement (Elektra * elektra, const char * name, const char * value, size_t index, ElektraError ** error);
+Elektra * elektra = elektraOpen ("/sw/org/myapp/#0/current", NULL, NULL);
+elektraSetStringArrayElement (elektra, "message", "This is the third new message", NULL);
+elektraClose (elektra);
 ```
 
 Be sure not to access indexes outside of the arrays bounds. The same rules a described in [Read values from the KDB](#read-values-from-the-kdb) apply here, meaning, that you are responsible for providing a complete and correct specification (see [Application Integration](/doc/tutorials/application-integration.md)). If you try to access a key that you have not specified, the library will call `exit(EXIT_FAILURE)`.
 
 ## Example
+
 ```c
 #include <stdio.h>
 #include <elektra.h>
@@ -136,7 +149,7 @@ Be sure not to access indexes outside of the arrays bounds. The same rules a des
 int main ()
 {
   ElektraError * error = NULL;
-  Elektra * elektra = elektraOpen ("/sw/org/myapp/#0/current", &error);
+  Elektra * elektra = elektraOpen ("/sw/org/myapp/#0/current", NULL, &error);
 
   if (error != NULL) 
   {
@@ -156,3 +169,47 @@ int main ()
   return 0;
 }
 ```
+
+## Code Generator
+
+The high-level API is backed by a code generator you can use to generate constants for keynames and a defaults `KeySet` to pass to elektraOpen out of a specification file you provide. Use `kdb gen specification.ini elektra_gen.h -o elektra_gen.h` to generate a elektra_gen.h file and include it in your source file with `#include "elektra_gen.h"`. Read [Code Generation](/src/tools/gen/README.md) for more information on this topic.
+
+After you have generated the file, you can use the constants prefixed with ELEKTRA_TAG_ as keynames in the getters and setters described in [Read values from the KDB](#read-values-from-the-kdb). Additionally the API provides two alternative functions to use solely with the code generated keynames: `elektraSet` and `elektraGet`.
+
+The code generator also generates a defaults `KeySet` for you containing the values you have specified as defaults for each key in your specification. It is accessible by the name `ELEKTRA_DEFAULTS` and can be passed as argument for the parameter `defaults` in elektraOpen.
+
+Here is an example of how this looks like in code:
+
+```c
+#include <stdio.h>
+#include <elektra.h>
+#include "elektra_gen.h
+
+int main ()
+{
+  ElektraError * error = NULL;
+  Elektra * elektra = elektraOpen ("/sw/org/myapp/#0/current", ELEKTRA_DEFAULTS, &error);
+
+  if (error != NULL) 
+  {
+    printf ("Sorry, there seems to be an error with your Elektra setup: %s\n", elektraErrorDescription (error));
+    elektraErrorReset (&error);
+    
+    printf ("Will exit now...\n");
+    exit (EXIT_FAILURE);
+  }
+
+  // You can either get the message via elektraGetString as you would do it with keynames passed as strings.
+  const char * message = elektraGetString (elektra, ELEKTRA_TAG_MESSAGE);
+  
+  // Alternatively you can use the generic elektraGet method with ELEKTRA_TAG_MESSAGE.
+  const char * message_ = elektraGet (elektra, ELEKTRA_TAG_MESSAGE);
+  
+  printf ("%s", message);
+  
+  elektraClose (elektra);
+  
+  return 0;
+}
+```
+
