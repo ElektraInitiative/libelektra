@@ -62,6 +62,7 @@ typedef struct
 	GetPhases getPhase;
 	KeySet * modules;
 	KeySet * childBackends;
+	KeySet * childConfig;
 	char * resolver;
 	char * storage;
 	unsigned short stayAlive;
@@ -204,6 +205,7 @@ int elektraMultifileClose (Plugin * handle ELEKTRA_UNUSED, Key * errorKey ELEKTR
 	elektraModulesClose (mc->modules, NULL);
 	ksDel (mc->modules);
 	ksDel (mc->childBackends);
+	ksDel (mc->childConfig);
 	elektraFree (mc);
 	elektraPluginSetData (handle, NULL);
 	return 1; // success
@@ -253,7 +255,12 @@ static MultiConfig * initialize (Plugin * handle, Key * parentKey)
 	}
 	if (stayAliveKey) mc->stayAlive = 1;
 	if (recursiveKey) mc->recursive = 1;
-
+	Key * cutKey = keyNew ("/child", KEY_END);
+	KeySet * childConfig = ksCut (config, cutKey);
+	keyDel (cutKey);
+	mc->childConfig = elektraRenameKeys (childConfig, "system");
+	ksAppend (config, childConfig);
+	ksDel (childConfig);
 	mc->childBackends = ksNew (0, KS_END);
 	mc->modules = ksNew (0, KS_END);
 	elektraModulesInit (mc->modules, NULL);
@@ -274,8 +281,9 @@ static Codes initBackend (MultiConfig * mc, SingleConfig * s, Key * parentKey)
 	s->parentString = childParentString;
 	// fprintf (stderr, "Added file %s:(%s)\n\tChildParentKey: %s\n", s->fullPath, s->filename, s->parentString);
 	Plugin * resolver = NULL;
-	resolver = elektraPluginOpen (mc->resolver, mc->modules, ksNew (1, keyNew ("system/path", KEY_VALUE, s->fullPath, KEY_END), KS_END),
-				      parentKey);
+	KeySet * childConfig = ksDup (mc->childConfig);
+	ksAppendKey (childConfig, keyNew ("/path", KEY_VALUE, s->fullPath, KEY_END));
+	resolver = elektraPluginOpen (mc->resolver, mc->modules, childConfig, parentKey);
 	// fprintf (stderr, "%s:(%s)\n", keyName (parentKey), keyString (parentKey));
 	if (!resolver)
 	{
