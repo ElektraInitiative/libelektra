@@ -1,9 +1,9 @@
-kdb-info_2 -- Print information about the default storage and resolver or a mountpoint
+kdb-mountpoint-info -- Print information about the default storage and resolver or a mountpoint
 ======================================================================================
 
 ## SYNOPSIS
 
-`kdb info_2 [mountpoint]`
+`kdb mountpoint-info [mountpoint]`
 
 ## DESCRIPTION
 
