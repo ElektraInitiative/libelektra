@@ -1,14 +1,12 @@
-w
 /**
  * @file
  *
  * @brief Source for gitresolver plugin
  *
- * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
+ * @copyright BSD License (see doc/LICENSE.md or https://www.libelektra.org)
  *
  */
 
-#include "gitresolver.h"
 
 #include <fcntl.h>
 #include <git2.h>
@@ -27,14 +25,16 @@ w
 #include "../resolver/shared.h"
 #include <kdbinvoke.h>
 
+#include "gitresolver.h"
+
 #define TV_MAX_DIGITS 26
 #define DEFAULT_CHECKOUT_LOCATION "/tmp/"
 #define REFSTRING "refs/heads/"
 
-	typedef enum {
-		OBJECT,
-		HEAD,
-	} Tracking;
+typedef enum {
+	OBJECT,
+	HEAD,
+} Tracking;
 
 typedef struct
 {
@@ -658,7 +658,7 @@ int elektraGitresolverGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELE
 		if (rc)
 		{
 			ELEKTRA_SET_ERROR (ELEKTRA_ERROR_GITRESOLVER_CONFLICT, parentKey,
-					    "Fast-forward pull failed, please pull manually\n");
+					   "Fast-forward pull failed, please pull manually\n");
 			git_repository_free (repo);
 			git_libgit2_shutdown ();
 			return -1;
@@ -968,11 +968,11 @@ Plugin * ELEKTRA_PLUGIN_EXPORT (gitresolver)
 {
 	// clang-format off
     return elektraPluginExport ("gitresolver",
-	    ELEKTRA_PLUGIN_OPEN,	&elektraGitresolverOpen,
-	    ELEKTRA_PLUGIN_CLOSE,	&elektraGitresolverClose,
-	    ELEKTRA_PLUGIN_GET,	&elektraGitresolverGet,
-	    ELEKTRA_PLUGIN_SET,	&elektraGitresolverSet,
-	    ELEKTRA_PLUGIN_ERROR,	&elektraGitresolverError,
-	    ELEKTRA_PLUGIN_END);
+            ELEKTRA_PLUGIN_OPEN,	&elektraGitresolverOpen,
+            ELEKTRA_PLUGIN_CLOSE,	&elektraGitresolverClose,
+            ELEKTRA_PLUGIN_GET,	&elektraGitresolverGet,
+            ELEKTRA_PLUGIN_SET,	&elektraGitresolverSet,
+            ELEKTRA_PLUGIN_ERROR,	&elektraGitresolverError,
+            ELEKTRA_PLUGIN_END);
 }
 

@@ -7,5 +7,4 @@ add_plugin (multifile
 	LINK_ELEKTRA
 		elektra-kdb
 		elektra-invoke
-	ADD_TEST
 	)
