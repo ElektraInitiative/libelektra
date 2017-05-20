@@ -26,10 +26,11 @@ enum PluginVariant
 	NO_CRYPTO = 0,
 	CRYPTO_OPENSSL = 1,
 	CRYPTO_GCRYPT = 2,
-	CRYPTO_BOTAN = 3
+	CRYPTO_BOTAN = 3,
+	FCRYPT = 4
 };
 
-static const std::string plugin_variant_names[] = { "no_crypto_plugin", "crypto_openssl", "crypto_gcrypt", "crypto_botan" };
+static const std::string plugin_variant_names[] = { "no_crypto_plugin", "crypto_openssl", "crypto_gcrypt", "crypto_botan", "fcrypt" };
 
 long long nr_keys = 100LL; // should be higher but crypto performance is actually quite bad atm
 
@@ -65,6 +66,7 @@ kdb::Key mountBackend (int iteration)
 	{
 		KeySet pluginConfig;
 		pluginConfig.append (Key ("/gpg/key", KEY_VALUE, GPG_TEST_KEY_ID, KEY_END));
+		pluginConfig.append (Key ("/gpg/unit_test", KEY_VALUE, "1", KEY_END));
 		b.addPlugin (PluginSpec (plugin_variant_names[VARIANT], pluginConfig));
 	}
 	b.useConfigFile (cf);
@@ -188,6 +190,7 @@ int main (int argc, char ** argv)
 		benchmark_crypto_set<CRYPTO_OPENSSL> (i);
 		benchmark_crypto_set<CRYPTO_GCRYPT> (i);
 		benchmark_crypto_set<CRYPTO_BOTAN> (i);
+		benchmark_crypto_set<FCRYPT> (i);
 	}
 
 	std::cout << "----- KDB GET -----" << std::endl;
@@ -199,5 +202,6 @@ int main (int argc, char ** argv)
 		benchmark_crypto_get<CRYPTO_OPENSSL> (i);
 		benchmark_crypto_get<CRYPTO_GCRYPT> (i);
 		benchmark_crypto_get<CRYPTO_BOTAN> (i);
+		benchmark_crypto_get<FCRYPT> (i);
 	}
 }
