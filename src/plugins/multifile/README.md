@@ -32,7 +32,8 @@ The multifile-resolver does so by calling resolver and storage plugins for each 
   The storage plugin to use.
 - `resolver`:
   The resolver plugin to use.
-
+- 'child/<configname>':
+  configuration passed to the child backends, `child/` part gets removed.
 
 ## Usage
 
