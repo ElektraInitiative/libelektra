@@ -41,7 +41,7 @@ kdb::KeySet toWrite;
 template <enum PluginVariant VARIANT>
 kdb::Key getMountpointForIteration (int iteration)
 {
-	return kdb::Key ("user/iterate/" + plugin_variant_names[VARIANT] + std::to_string (iteration), KEY_END);
+	return kdb::Key ("user/benchmark_" + plugin_variant_names[VARIANT] + std::to_string (iteration), KEY_END);
 }
 
 template <enum PluginVariant VARIANT>
@@ -52,7 +52,7 @@ kdb::Key mountBackend (int iteration)
 
 	Key mp = getMountpointForIteration<VARIANT> (iteration);
 	std::string cf = "benchmark_" + plugin_variant_names[VARIANT] + "_" + std::to_string (iteration) + ".ecf";
-	// unlink (cf.c_str ());
+	unlink (cf.c_str ());
 
 	KDB kdb;
 	KeySet mountConfig;
@@ -61,15 +61,17 @@ kdb::Key mountBackend (int iteration)
 	MountBackendBuilder b;
 	b.setMountpoint (mp, KeySet (0, KS_END));
 	b.addPlugin (PluginSpec ("resolver"));
+	b.useConfigFile (cf);
+
 	b.addPlugin (PluginSpec ("dump"));
 	if (VARIANT != NO_CRYPTO)
 	{
 		KeySet pluginConfig;
-		pluginConfig.append (Key ("/gpg/key", KEY_VALUE, GPG_TEST_KEY_ID, KEY_END));
-		pluginConfig.append (Key ("/gpg/unit_test", KEY_VALUE, "1", KEY_END));
+		pluginConfig.append (Key ("user/gpg/key", KEY_VALUE, GPG_TEST_KEY_ID, KEY_END));
+		pluginConfig.append (Key ("user/gpg/unit_test", KEY_VALUE, "1", KEY_END));
 		b.addPlugin (PluginSpec (plugin_variant_names[VARIANT], pluginConfig));
 	}
-	b.useConfigFile (cf);
+
 	b.validated ();
 	b.serialize (mountConfig);
 	kdb.set (mountConfig, "system/elektra/mountpoints");
@@ -94,7 +96,7 @@ __attribute__ ((noinline)) void benchmark_crypto_set (int iteration)
 		for (int i = 0; i < nr_keys; ++i)
 		{
 			// clang-format off
-			ks.append (Key ("user/iterate/" + plugin_variant_names[VARIANT] + std::to_string(iteration) + "/k" + std::to_string (i),
+			ks.append (Key (mp.getName () + "/k" + std::to_string (i),
 					KEY_VALUE, "value",
 					KEY_META, "crypto/encrypt", "1",
 					KEY_END));
