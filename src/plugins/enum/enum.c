@@ -15,14 +15,210 @@
 #include "enum.h"
 #include <kdberrors.h>
 #include <kdbmeta.h>
-#include <regex.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <strings.h>
 
-#define VALIDATE_KEY_SUBMATCHES 3 // first submatch is the string we want, second submatch , or EOL
 
 static int validateKey (Key *, Key *);
+
+// turn list into null-terminated array. strip quotes from elements and
+// drop brackets from the beginning and end of the list
+
+static char ** stringToArray (const char * string, const char * delim)
+{
+	if (!string || !delim) return NULL;
+
+	char ** array = NULL;
+	int elems = 1;
+	const char * ptr = string;
+
+	while (*ptr)
+	{
+		if (*ptr == *delim)
+		{
+			++elems;
+		}
+		++ptr;
+	}
+	++elems; // terminating element
+	array = elektraCalloc (elems * sizeof (char *));
+	char * localString = NULL;
+	if (string[0] == '[' || string[0] == '(' || string[0] == '{')
+		localString = elektraStrDup (string + 1);
+	else
+		localString = elektraStrDup (string);
+	char lastChar = localString[strlen (localString) - 1];
+	if (lastChar == ']' || lastChar == ')' || lastChar == '}') localString[strlen (localString) - 1] = '\0';
+
+	int current = 0;
+	ptr = strtok (localString, delim);
+	while (ptr)
+	{
+		if (*ptr == '\0')
+		{
+			ptr = strtok (NULL, delim);
+			continue;
+		}
+		char * tmp = elektraStrDup (ptr);
+		char * start = NULL;
+		if (tmp[0] == '\'')
+			start = tmp + 1;
+		else
+			start = tmp;
+		if (tmp[strlen (tmp) - 1] == '\'') tmp[strlen (tmp) - 1] = '\0';
+		array[current++] = elektraStrDup (start);
+		elektraFree (tmp);
+		ptr = strtok (NULL, delim);
+	}
+	if (current + 1 < elems)
+	{
+		elektraRealloc ((void **)array, (current + 1) * (sizeof (char *)));
+		array[current] = NULL;
+	}
+	elektraFree (localString);
+	return array;
+}
+
+static void freeArray (char ** array)
+{
+	for (size_t i = 0; array[i] != NULL; ++i)
+	{
+		elektraFree (array[i]);
+	}
+	elektraFree (array);
+}
+
+static int validateWithList (Key * key, const char * meta)
+{
+	const char * validValues = keyString (keyGetMeta (key, meta));
+	const Key * multiEnum = keyGetMeta (key, "check/enum/multi");
+	char ** list = stringToArray (validValues, ",");
+	if (!list) return 0;
+
+	if (!multiEnum)
+	{
+		const char * value = keyString (key);
+		for (size_t i = 0; list[i] != NULL; ++i)
+		{
+			if (!strcmp (list[i], value))
+			{
+				freeArray (list);
+				return 1;
+			}
+		}
+	}
+	else
+	{
+		char * delim = (char *)keyString (multiEnum);
+		char ** array = stringToArray (keyString (key), delim);
+		if (!array)
+		{
+			freeArray (list);
+			return 0;
+		}
+		for (size_t i = 0; array[i] != NULL; ++i)
+		{
+			int found = 0;
+			for (size_t j = 0; list[j] != NULL; ++j)
+			{
+				if (!strcmp (array[i], list[j]))
+				{
+					found = 1;
+					break;
+				}
+			}
+			if (!found)
+			{
+				freeArray (array);
+				freeArray (list);
+				return 0;
+			}
+		}
+		freeArray (list);
+		freeArray (array);
+		return 1;
+	}
+	freeArray (list);
+	return 0;
+}
+
+static int validateWithArray (Key * key)
+{
+	const Key * multiEnum = keyGetMeta (key, "check/enum/multi");
+	KeySet * validValues = elektraMetaArrayToKS (key, "check/enum");
+
+	Key * cur;
+	// got to first element
+	ksNext (validValues);
+	cur = ksNext (validValues);
+	int rc = 0;
+	if (cur)
+	{
+		if (multiEnum)
+		{
+			char * delim = (char *)keyString (multiEnum);
+			char ** array = stringToArray (keyString (key), delim);
+			if (!array)
+			{
+				goto VALIDATE_END;
+			}
+			for (size_t i = 0; array[i] != NULL; ++i)
+			{
+				int found = 0;
+				ksRewind (validValues);
+				while ((cur = ksNext (validValues)) != NULL)
+				{
+					if (!strcmp (array[i], keyString (cur)))
+					{
+						keyDel (ksLookup (validValues, cur, KDB_O_POP));
+						found = 1;
+						break;
+					}
+				}
+				if (!found)
+				{
+					freeArray (array);
+					goto VALIDATE_END;
+				}
+			}
+			freeArray (array);
+			rc = 1;
+			goto VALIDATE_END;
+		}
+		else
+		{
+			ksRewind (validValues);
+			while ((cur = ksNext (validValues)) != NULL)
+			{
+				if (!strcmp (keyString (key), keyString (cur)))
+				{
+					rc = 1;
+					goto VALIDATE_END;
+				}
+			}
+		}
+	}
+VALIDATE_END:
+	ksDel (validValues);
+	return rc;
+}
+
+static int validateKey (Key * key, Key * parentKey)
+{
+	int rc = 0;
+	const Key * meta = keyGetMeta (key, "check/enum");
+	if (keyString (meta)[0] != '#')
+		rc = validateWithList (key, "check/enum");
+	else
+		rc = validateWithArray (key);
+	if (!rc)
+	{
+		ELEKTRA_SET_ERRORF (121, parentKey, "Validation of key \"%s\" with string \"%s\" failed.", keyName (key), keyString (key));
+	}
+	return rc;
+}
 
 int elektraEnumGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
 {
@@ -42,161 +238,18 @@ int elektraEnumGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UN
 		return 1; /* success */
 	}
 	/* get all keys */
-
+	Key * cur;
+	ksRewind (returned);
+	while ((cur = ksNext (returned)) != NULL)
+	{
+		const Key * meta = keyGetMeta (cur, "check/enum");
+		if (!meta) continue;
+		if (!validateKey (cur, parentKey))
+		{
+			return -1;
+		}
+	}
 	return 1; /* success */
-}
-
-static int validateWithList (Key * key)
-{
-	const char * validValues = keyString (keyGetMeta (key, "check/enum"));
-	const Key * multiEnum = keyGetMeta (key, "check/enum/multi");
-	char * delim = "\0";
-	if (multiEnum)
-	{
-		delim = (char *)keyString (multiEnum);
-	}
-	const char * regexString = "'([^']*)'\\s*(,|$|([)]}])?)";
-	regex_t regex;
-	if (regcomp (&regex, regexString, REG_EXTENDED | REG_NEWLINE))
-	{
-		ELEKTRA_SET_ERROR (120, key, "regcomp failed");
-		return -1;
-	}
-	char * ptr = (char *)validValues;
-	regmatch_t match[VALIDATE_KEY_SUBMATCHES];
-	char * value = NULL;
-	int nomatch;
-	int start;
-	int end;
-	if (!multiEnum)
-	{
-		while (1)
-		{
-			nomatch = regexec (&regex, ptr, VALIDATE_KEY_SUBMATCHES, match, 0);
-			if (nomatch) break;
-
-			start = match[1].rm_so + (ptr - validValues);
-			end = match[1].rm_eo + (ptr - validValues);
-			elektraRealloc ((void **)&value, (end - start) + 1);
-			strncpy (value, validValues + start, end - start);
-			value[(end - start)] = '\0';
-
-			if (strcmp (keyString (key), value) == 0)
-			{
-				regfree (&regex);
-				elektraFree (value);
-				return 1;
-			}
-			ptr += match[0].rm_eo;
-		}
-	}
-	else
-	{
-		char * localString = strdup (keyString (key));
-		ptr = localString;
-		int elements = 1;
-		while (*ptr)
-		{
-			if (*ptr == *delim) ++elements;
-			++ptr;
-		}
-		char * toCheck[elements];
-		int elem = 0;
-		memset (toCheck, 0, elements * sizeof (char *));
-		ptr = localString;
-		elem = 0;
-		toCheck[elem] = localString;
-		while (*ptr)
-		{
-			if (*ptr == *delim)
-			{
-				*ptr = '\0';
-				toCheck[++elem] = ptr + 1;
-			}
-			++ptr;
-		}
-		for (elem = 0; elem < elements; ++elem)
-		{
-			ptr = (char *)validValues;
-			if (toCheck[elem][0] == '\0' || toCheck[elem][0] == *delim) continue;
-			while (1)
-			{
-				nomatch = regexec (&regex, ptr, VALIDATE_KEY_SUBMATCHES, match, 0);
-				if (nomatch) break;
-
-				start = match[1].rm_so + (ptr - validValues);
-				end = match[1].rm_eo + (ptr - validValues);
-				elektraRealloc ((void **)&value, (end - start) + 1);
-				strncpy (value, validValues + start, end - start);
-				value[(end - start)] = '\0';
-				if (strcmp (toCheck[elem], value) == 0)
-				{
-					regfree (&regex);
-					elektraFree (value);
-					elektraFree (localString);
-					return 1;
-				}
-				ptr += match[0].rm_eo;
-			}
-		}
-		elektraFree (localString);
-	}
-	if (value) elektraFree (value);
-	regfree (&regex);
-	return 0;
-}
-
-static int validateWithArray (Key * key)
-{
-	const Key * multiEnum = keyGetMeta (key, "check/enum/multi");
-	char * delim = "\0";
-	if (multiEnum)
-	{
-		delim = (char *)keyString (multiEnum);
-	}
-	char * localString = elektraStrDup (keyString (key));
-	KeySet * validValues = elektraMetaArrayToKS (key, "check/enum");
-	char * value = strtok (localString, delim);
-	short isValid = 0;
-	while (value)
-	{
-		Key * cur;
-		isValid = 0;
-		ksRewind (validValues);
-		while ((cur = ksNext (validValues)) != NULL)
-		{
-			if (!strcmp (value, keyString (cur)))
-			{
-				keyDel (ksLookup (validValues, cur, KDB_O_POP));
-				isValid = 1;
-				break;
-			}
-		}
-		if (!isValid)
-		{
-			break;
-		}
-		value = strtok (NULL, delim);
-	}
-	elektraFree (localString);
-	ksDel (validValues);
-	if (!isValid) return 0;
-	return 1;
-}
-
-static int validateKey (Key * key, Key * parentKey)
-{
-	int rc = 0;
-	const Key * meta = keyGetMeta (key, "check/enum");
-	if (keyString (meta)[0] != '#')
-		rc = validateWithList (key);
-	else
-		rc = validateWithArray (key);
-	if (!rc)
-	{
-		ELEKTRA_SET_ERRORF (121, parentKey, "Validation of key \"%s\" with string \"%s\" failed.", keyName (key), keyString (key));
-	}
-	return rc;
 }
 
 int elektraEnumSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
@@ -207,8 +260,6 @@ int elektraEnumSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UN
 	{
 		const Key * meta = keyGetMeta (cur, "check/enum");
 		if (!meta) continue;
-		;
-
 		if (!validateKey (cur, parentKey))
 		{
 			return -1;
@@ -221,8 +272,8 @@ int elektraEnumSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UN
 Plugin * ELEKTRA_PLUGIN_EXPORT (enum)
 {
 	// clang-format off
-	return elektraPluginExport ("enum", 
-			ELEKTRA_PLUGIN_GET, 	&elektraEnumGet,
-			ELEKTRA_PLUGIN_SET, 	&elektraEnumSet,
-			ELEKTRA_PLUGIN_END);
+    return elektraPluginExport ("enum", 
+            ELEKTRA_PLUGIN_GET, 	&elektraEnumGet,
+            ELEKTRA_PLUGIN_SET, 	&elektraEnumSet,
+            ELEKTRA_PLUGIN_END);
 }
