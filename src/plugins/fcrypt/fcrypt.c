@@ -255,6 +255,7 @@ static int fcryptGpgCallAndCleanup (Key * parentKey, KeySet * pluginConfig, char
  */
 static int fcryptEncrypt (KeySet * pluginConfig, Key * parentKey)
 {
+	Key * k;
 	const size_t recipientCount = getRecipientCount (pluginConfig, ELEKTRA_CRYPTO_PARAM_GPG_KEY);
 	const size_t signatureCount = getRecipientCount (pluginConfig, ELEKTRA_FCRYPT_SIGN_KEY);
 
@@ -297,49 +298,55 @@ static int fcryptEncrypt (KeySet * pluginConfig, Key * parentKey)
 	argv[i++] = "--yes"; // overwrite files if they exist
 
 	// add recipients
-	Key * root = ksLookupByName (pluginConfig, ELEKTRA_CRYPTO_PARAM_GPG_KEY, 0);
+	Key * gpgRecipientRoot = ksLookupByName (pluginConfig, ELEKTRA_CRYPTO_PARAM_GPG_KEY, 0);
 
 	// append root (gpg/key) as gpg recipient
-	if (root && strlen (keyString (root)) > 0)
+	if (gpgRecipientRoot && strlen (keyString (gpgRecipientRoot)) > 0)
 	{
 		argv[i++] = "-r";
 		// NOTE argv[] values will not be modified, so const can be discarded safely
-		argv[i++] = (char *)keyString (root);
+		argv[i++] = (char *)keyString (gpgRecipientRoot);
 	}
 
 	// append keys beneath root (crypto/key/#_) as gpg recipients
-	Key * k;
-	ksRewind (pluginConfig);
-	while ((k = ksNext (pluginConfig)) != 0)
+	if (gpgRecipientRoot)
 	{
-		if (keyIsBelow (k, root))
+		ksRewind (pluginConfig);
+		while ((k = ksNext (pluginConfig)) != 0)
 		{
-			argv[i++] = "-r";
-			// NOTE argv[] values will not be modified, so const can be discarded safely
-			argv[i++] = (char *)keyString (k);
+			if (keyIsBelow (k, gpgRecipientRoot))
+			{
+				argv[i++] = "-r";
+				// NOTE argv[] values will not be modified, so const can be discarded safely
+				argv[i++] = (char *)keyString (k);
+			}
 		}
 	}
 
+
 	// add signature keys
-	root = ksLookupByName (pluginConfig, ELEKTRA_FCRYPT_SIGN_KEY, 0);
+	Key * gpgSignatureRoot = ksLookupByName (pluginConfig, ELEKTRA_FCRYPT_SIGN_KEY, 0);
 
 	// append root signature key
-	if (root && strlen (keyString (root)) > 0)
+	if (gpgSignatureRoot && strlen (keyString (gpgSignatureRoot)) > 0)
 	{
 		argv[i++] = "-u";
 		// NOTE argv[] values will not be modified, so const can be discarded safely
-		argv[i++] = (char *)keyString (root);
+		argv[i++] = (char *)keyString (gpgSignatureRoot);
 	}
 
 	// append keys beneath root (fcrypt/sign/#_) as gpg signature keys
-	ksRewind (pluginConfig);
-	while ((k = ksNext (pluginConfig)) != 0)
+	if (gpgSignatureRoot)
 	{
-		if (keyIsBelow (k, root))
+		ksRewind (pluginConfig);
+		while ((k = ksNext (pluginConfig)) != 0)
 		{
-			argv[i++] = "-u";
-			// NOTE argv[] values will not be modified, so const can be discarded safely
-			argv[i++] = (char *)keyString (k);
+			if (keyIsBelow (k, gpgSignatureRoot))
+			{
+				argv[i++] = "-u";
+				// NOTE argv[] values will not be modified, so const can be discarded safely
+				argv[i++] = (char *)keyString (k);
+			}
 		}
 	}
 
