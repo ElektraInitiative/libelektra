@@ -233,6 +233,13 @@ Key * keyAsCascading (const Key * key)
 	}
 	else
 	{
+		elektraNamespace ns = keyGetNamespace (key);
+		if (ns == KEY_NS_META || ns == KEY_NS_EMPTY || ns == KEY_NS_NONE)
+		{
+			Key * cKey = keyNew ("/", KEY_CASCADING_NAME, KEY_END);
+			keyAddName (cKey, keyName (key));
+			return cKey;
+		}
 		const char * name = keyName (key);
 		const char * ptr = strchr (name, '/');
 		if (!ptr)
