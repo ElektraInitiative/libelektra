@@ -21,13 +21,19 @@
 #define PLUGIN_NAME "fcrypt"
 #define TEST_KEY_ID "DDEBEF9EE2DC931701338212DAF635B17F230E8D"
 #define TEST_FILE "fcrypt_testfile"
+#define BUFFER_SIZE 2048
 
 static const kdb_octet_t testContent[] = { 0x01, 0x02, 0xCA, 0xFE, 0xBA, 0xBE, 0x03, 0x04 };
 
 static KeySet * newPluginConfiguration ()
 {
-	return ksNew (2, keyNew (ELEKTRA_CRYPTO_PARAM_GPG_KEY, KEY_VALUE, TEST_KEY_ID, KEY_END),
-		      keyNew (ELEKTRA_CRYPTO_PARAM_GPG_UNIT_TEST, KEY_VALUE, "1", KEY_END), KS_END);
+	// clang-format off
+	return ksNew (3,
+		keyNew (ELEKTRA_CRYPTO_PARAM_GPG_KEY, KEY_VALUE, TEST_KEY_ID, KEY_END),
+		keyNew (ELEKTRA_CRYPTO_PARAM_GPG_UNIT_TEST, KEY_VALUE, "1", KEY_END),
+		keyNew ("/fcrypt/sign", KEY_VALUE, TEST_KEY_ID, KEY_END),
+		KS_END);
+	// clang-format on
 }
 
 static void writeTestFile (const char * file)
@@ -36,6 +42,32 @@ static void writeTestFile (const char * file)
 	succeed_if (f, "can not write to temporary file");
 	if (!f) return;
 	succeed_if (fwrite (testContent, 1, sizeof (testContent), f) == sizeof (testContent), "test file preparation failed");
+	fclose (f);
+}
+
+static void mangleBitsInFile (const char * file)
+{
+	kdb_octet_t buffer[BUFFER_SIZE];
+	kdb_octet_t b;
+	size_t readBytes = 0;
+
+	FILE * f = fopen (file, "rb");
+	succeed_if (f, "can not open temporary file for read/write access");
+	if (!f) return;
+	readBytes = fread (buffer, 1, BUFFER_SIZE, f);
+	succeed_if (readBytes > 0, "failed to read from temp file");
+	fclose (f);
+
+	// let's destroy the integrity of the file
+	b = buffer[16];
+	buffer[16] = buffer[15];
+	buffer[15] = b;
+
+	// put back the damaged data
+	f = fopen (file, "wb");
+	succeed_if (f, "can not open temporary file for read/write access");
+	if (!f) return;
+	succeed_if (fwrite (buffer, 1, readBytes, f) == readBytes, "failed to write to temp file");
 	fclose (f);
 }
 
@@ -118,7 +150,7 @@ static void test_gpg ()
 	ksDel (conf);
 }
 
-static void test_file_operations ()
+static void test_file_crypto_operations ()
 {
 	Plugin * plugin = NULL;
 	Key * parentKey = keyNew ("system", KEY_END);
@@ -162,6 +194,48 @@ static void test_file_operations ()
 	keyDel (parentKey);
 }
 
+static void test_file_signature_operations ()
+{
+	Plugin * plugin = NULL;
+	Key * parentKey = keyNew ("system", KEY_END);
+	KeySet * modules = ksNew (0, KS_END);
+	KeySet * config = newPluginConfiguration ();
+
+	elektraModulesInit (modules, 0);
+	plugin = elektraPluginOpen (PLUGIN_NAME, modules, config, 0);
+	succeed_if (plugin, "failed to open plugin handle");
+	if (plugin)
+	{
+		KeySet * data = ksNew (0, KS_END);
+		const char * tmpFile = elektraFilename ();
+		if (tmpFile)
+		{
+			// prepare test file to be encrypted
+			writeTestFile (tmpFile);
+			keySetString (parentKey, tmpFile);
+
+			// try to encrypt the file
+			succeed_if (plugin->kdbSet (plugin, data, parentKey) == 1, "kdb set failed");
+			succeed_if (isTestFileCorrect (tmpFile) == -1, "file content did not change during encryption");
+
+			// simulate a faulty bit
+			mangleBitsInFile (tmpFile);
+
+			// try to decrypt the file - the signature verification should fail
+			succeed_if (plugin->kdbGet (plugin, data, parentKey) != 1, "kdb get succeeded on faulty non-verifiable file");
+
+			remove (tmpFile);
+		}
+
+		ksDel (data);
+		elektraPluginClose (plugin, 0);
+	}
+
+	elektraModulesClose (modules, 0);
+	ksDel (modules);
+	keyDel (parentKey);
+}
+
 int main (int argc, char ** argv)
 {
 	printf ("FCRYPT       TESTS\n");
@@ -171,7 +245,8 @@ int main (int argc, char ** argv)
 
 	test_gpg ();
 	test_init ();
-	test_file_operations ();
+	test_file_crypto_operations ();
+	test_file_signature_operations ();
 
 	printf ("\n" ELEKTRA_PLUGIN_NAME " RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 	return nbError;
