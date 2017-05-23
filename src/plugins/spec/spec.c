@@ -736,6 +736,14 @@ static int doGlobbing (Key * parentKey, KeySet * returned, KeySet * specKS, Conf
 				ksAppendKey (returned, keyDup (newKey));
 				keyDel (newKey);
 			}
+			else if (keyGetMeta (specKey, "default"))
+			{
+				Key * newKey = keyNew (strchr (keyName (specKey), '/'), KEY_CASCADING_NAME, KEY_VALUE,
+						       keyString (keyGetMeta (specKey, "default")), KEY_END);
+				copyMeta (newKey, specKey, parentKey);
+				ksAppendKey (returned, keyDup (newKey));
+				keyDel (newKey);
+			}
 		}
 		while ((cur = ksNext (returned)) != NULL)
 		{
