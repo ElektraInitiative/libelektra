@@ -60,7 +60,7 @@ int elektraArrayValidateName (const Key * key)
 			underscores++;
 		}
 
-		for (; isdigit ((unsigned char) *current); current++)
+		for (; isdigit ((unsigned char)*current); current++)
 		{
 			digits++;
 		}

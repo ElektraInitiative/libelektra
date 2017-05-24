@@ -79,9 +79,37 @@ static void test_relative_generic ()
 	parent = keyNew ("user", KEY_END);
 	child = keyNew ("user/K", KEY_END);
 	test_relative ("K", child, parent);
+	test_relative ("user", parent, child);
 	keyDel (child);
 	child = keyNew ("user/KK\\/Kitchens/What/Were/You/Thinking?", KEY_END);
 	test_relative ("KK\\/Kitchens/What/Were/You/Thinking?", child, parent);
+	keyDel (child);
+	keyDel (parent);
+}
+
+static void test_relative_equal ()
+{
+	printf ("Get relative name of key which is the same as the parent key\n");
+
+	Key * parent = keyNew ("system/parentChild", KEY_END);
+	Key * child = keyNew ("system/parentChild", KEY_END);
+	test_relative ("", child, parent);
+
+	keyDel (parent);
+	parent = keyNew ("/parentChild", KEY_END);
+	test_relative ("", child, parent);
+
+	keyDel (child);
+	keyDel (parent);
+	child = keyNew ("system/parentChild/#");
+	parent = keyNew ("system/parentChild/#");
+	test_relative ("", child, parent);
+
+	keyDel (child);
+	child = keyNew ("system/parentChild/#123");
+	// expected according to it's spec
+	test_relative ("23", child, parent);
+
 	keyDel (child);
 	keyDel (parent);
 }
@@ -100,6 +128,7 @@ int main (int argc, char ** argv)
 	test_relative_root ();
 	test_relative_cascading ();
 	test_relative_generic ();
+	test_relative_equal ();
 
 	printf ("\n%s RESULTS: %d test(s) done. %d error(s).\n", program_name, nbTest, nbError);
 
