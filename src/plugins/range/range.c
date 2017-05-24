@@ -12,6 +12,7 @@
 #include <errno.h>
 #include <kdberrors.h>
 #include <kdbhelper.h>
+#include <kdbassert.h>
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -41,8 +42,11 @@ typedef struct
 // switch min and max values if needed and apply -1 factor
 static void normalizeValues (RangeType type, RangeValue * min, RangeValue * max, RangeValue * a, RangeValue * b, int factorA, int factorB)
 {
-	unsigned long long int tmpIA = (unsigned long long)(factorA * (*a).Value.i);
-	unsigned long long int tmpIB = (unsigned long long)(factorB * (*b).Value.i);
+	ELEKTRA_ASSERT (factorA == -1 || factorA == 1, "factorA has to be -1 or 1 to guarantee range bounds, but is %d", factorA);
+	ELEKTRA_ASSERT (factorB == -1 || factorB == 1, "factorB has to be -1 or 1 to guarantee range bounds, but is %d", factorB);
+	// AddressSanitizer complains about this, but we guarantee the factor is either 1 or -1 so it's fine
+	unsigned long long int tmpIA = (unsigned long long int)(factorA * (*a).Value.i);
+	unsigned long long int tmpIB = (unsigned long long int)(factorB * (*b).Value.i);
 	long double tmpFA = factorA * (*a).Value.f;
 	long double tmpFB = factorB * (*b).Value.f;
 	switch (type)
