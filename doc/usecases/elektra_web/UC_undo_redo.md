@@ -13,10 +13,8 @@ Brief: User undos/redos changes to a configuration.
 Precondition: Modifying keys, Adding keys, Duplicating keys, Drag & Drop keys
 Main success scenario: User successfully undos/redos a configuration change.
 Alternative scenario: Instance not online. The user is informed about the issue.
-  If a cluster, changes will be written when the affected instance comes back
-	online.
 Error scenario: Technical problems while configuring the instance. The user is
   informed about the issue.
 Postcondition: The updated configuration is persisted to the instance/s.
 Non-functional Constraints:
-	- Ideally every operation should be undoable
+	- Every editor operation (preconditions) should be undoable
