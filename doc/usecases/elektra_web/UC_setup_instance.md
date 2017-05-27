@@ -10,7 +10,7 @@ Brief: User sets up a daemon on the instance and connects it to elektra-web.
 
 ## Scenarios
 
-Precondition: Setup
+Precondition: elektra-web is set up
 Main success scenario: User successfully sets up elektrad on the instance (by
 	installing the dependencies and starting elektrad) and connects it to
 	elektra-web (clusterd) by specifying the host and an API key in a config file.
