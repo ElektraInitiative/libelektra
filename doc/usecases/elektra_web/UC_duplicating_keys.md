@@ -16,5 +16,5 @@ Alternative scenario: User enters data that violates a validation rule, an error
   message is shown.
 Error scenario: Technical problems while persisting to the key database. The
   user is informed about the issue.
-Postcondition: The new key is persisted to the database.
+Postcondition: The new key (and its subtree) is persisted to the database.
 Non-functional Constraints: -
