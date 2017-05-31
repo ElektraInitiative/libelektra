@@ -20,5 +20,5 @@ keyNew ("$key", KEY_VALUE, "$(info["default"])", KEY_META, "type", "$(info["type
 KS_END)
 
 @for $key, $info in $parameters.iteritems()
-#define $support.tagname($key) ($support.tagtypeof(info)){"$key"}
+#define $support.tag_name($key) ($support.tag_type_of(info)){"$key"}
 @end for
