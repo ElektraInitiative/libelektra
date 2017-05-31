@@ -1,49 +1,36 @@
 from support.gen import *
 from support.util import *
 
+
 class ElektraGenSupport(Support):
-	def tagname(self, key):
+	def tag_name(self, key):
 		if key.startswith('/'):
-			return self.tagpretty(key[1:])
+			return self.tag_pretty(key[1:])
 		elif key.startswith('user/'):
-			return self.tagpretty(key[5:])
+			return self.tag_pretty(key[5:])
 		elif key.startswith('system/'):
-			return self.tagpretty(key[7:])
+			return self.tag_pretty(key[7:])
 		else:
 			raise Exception("invalid keyname '" + key + "'")
 
-	def tagpretty(self, key):
+	def tag_pretty(self, key):
 		return "ELEKTRA_TAG_" + key.upper().replace('/','_').replace('#','')
 
-	def tagtypeof(self, info):
+	def upcase_first_letter(self, s):
+		return s[:1].upper() + s[1:]
+
+	def tag_type(self, type):
+		result = ""
+		for part in type.split('_'):
+			result += self.upcase_first_letter(part)
+
+		return ("Elektra" + result + "Tag")
+
+	def tag_type_of(self, info):
 		"""Return the type for given parameter"""
 		type = info["type"]
-		if type == "string":
-			return "ElektraStringTag"
-		elif type == "boolean":
-			return "ElektraBooleanTag"
-		elif type == "char":
-			return "ElektraCharTag"
-		elif type == "octet":
-			return "ElektraOctetTag"
-		elif type == "short":
-			return "ElektraShortTag"
-		elif type == "unsigned_short":
-			return "ElektraUnsignedShortTag"
-		elif type == "long":
-			return "ElektraLongTag"
-		elif type == "unsigned_long":
-			return "ElektraUnsignedLongTag"
-		elif type == "long_long":
-			return "ElektraLongLongTag"
-		elif type == "unsigned_long_long":
-			return "ElektraUnsignedLongLongTag"
-		elif type == "float":
-			return "ElektraFloatTag"
-		elif type == "double":
-			return "ElektraDoubleTag"
-		elif type == "long_double":
-			return "ElektraLongDoubleTag"
+		if type in ["string", "boolean", "char", "octet", "short", "unsigned_short", "long", "unsigned_long", "long_long", "unsigned_long_long", "float", "double", "long_double"]:
+			return self.tag_type(type)
 		else:
 			raise Exception("invalid type '" + type + "'")
 
