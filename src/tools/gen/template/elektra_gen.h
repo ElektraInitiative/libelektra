@@ -15,7 +15,7 @@ cheetahVarStartToken = $
 
 #define ELEKTRA_DEFAULTS ksNew (0, \
 @for $key, $info in $parameters.iteritems()
-keyNew ("$key", KEY_VALUE, "$(info["default"])", KEY_META, "type", "$(info["type"])", KEY_END), \
+keyNew ("$key", KEY_VALUE, "$(info["default"])", KEY_META, "type", "$support.type_of(info)", KEY_END), \
 @end for
 KS_END)
 
