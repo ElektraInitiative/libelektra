@@ -146,7 +146,7 @@ Some options, i.e. `PLUGINS`, `BINDINGS` and `TOOLS` are either:
    (note that shells typically need `;` to be escaped)
 - a special uppercase element that gets replaced by a list of elements, that are:
   - `ALL` to include all elements (except elements with unfulfilled dependencies)
-  - `NODE` to include all elements without dependencies
+  - `NODEP` to include all elements without dependencies
 - elements prefixed with a minus symbol (`-`) to exclude an element
 
 Examples for this are especially in the subsection `PLUGINS` below, but they work in the
