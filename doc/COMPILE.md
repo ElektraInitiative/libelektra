@@ -1,9 +1,26 @@
 # Compile
 
+## Dependencies
+
+For the base system you only need cmake and build-essential (make, gcc,
+some Unix tools):
+
+	sudo apt-get install cmake build-essential
+
+Or on RPM based systems (CentOS):
+
+	sudo yum install -y cmake3 gcc-c++
+
+Or on macOS Sierra, most of the build tools can be obtained by installing XCode (from the App Store). Other required tools may be installed using [brew](http://brew.sh/). First install brew as described on their website. Then issue the following command to get cmake to complete the basic requirements:
+
+	brew install cmake
+
+
 ## Quick Guide
 
 Run the following commands to compile Elektra with non-experimental
-parts where your system happens to fulfil the dependences:
+parts where your system happens to fulfil the dependences (continue
+reading the rest of the document for details about these steps):
 
 ```
 git clone https://github.com/ElektraInitiative/libelektra.git
@@ -23,25 +40,11 @@ See [INSTALL](doc/INSTALL.md#Generic) for more information about
 installation of self-compiled Elektra (such as how to uninstall it).
 
 
-## Dependencies
+## Optional Dependences
 
-For the base system you only need cmake and build-essential (make, gcc,
-some Unix tools):
-
-	sudo apt-get install cmake build-essential
-
-Or on RPM based systems (CentOS):
-
-	sudo yum install -y cmake3 gcc-c++
-
-Or on macOS Sierra, most of the build tools can be obtained by installing XCode (from the App Store). Other required tools may be installed using [brew](http://brew.sh/). First install brew as described on their website. Then issue the following command to get cmake to complete the basic requirements:
-
-	brew install cmake
-
-## Optional Dependencies
-
-Note: You do not need to install the dependencies listed here.
-But then some of the functionality gets disabled automatically.
+> Note: You do not need to install the dependencies listed here.
+> If they are not available, some of the functionality gets disabled automatically.
+> The core of Elektra never depends on other libraries.
 
 To build documentation you need doxygen (we recommend 1.8.8+), graphviz and [ronn](https://github.com/rtomayko/ronn/blob/master/INSTALLING#files):
 
