@@ -9,8 +9,6 @@ and unusable. Thus there is an urge for this decision.
 
 ## Constraints
 
-(to be discussed)
-
 - should completely compile away with ELEKTRA_LOGGING=OFF
 - should support minimalistic, compile-time filtering
   (per modules and verbosity level?) and some sinks (stderr, syslog
