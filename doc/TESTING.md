@@ -3,8 +3,13 @@
 ## Introduction
 
 Libraries need a pervasive testing for continuous improvement. Any
-problem found and behaviour described must be written down as test and
-integrated so that after running all tests in the build directory:
+problem found and behaviour described must be written down as test
+so that it is assured that no new regressions will be added.
+
+
+## Running Tests
+
+Running all tests in the build directory:
 
     make run_all
 
@@ -12,12 +17,13 @@ And on the target (installed) system:
 
     kdb run_all
 
-It is assured that no new regressions were added.
 To run memcheck tests run in the build directory:
 
     make run_memcheck
 
 They are supplementary, ideally you run all three.
+
+Some tests write into system paths.
 To avoid running tests that write to the disc you
 can use:
 
@@ -26,7 +32,6 @@ can use:
 Directly running `ctest` might cause problems:
 You need to set `LD_LIBRARY_PATH` as `run_all` and `run_nokdbtests` do.
 
-Some tests write into system paths.
 If the access is denied, several tests will fail.
 You have some options to avoid running them as root:
 
@@ -61,11 +66,12 @@ You have some options to avoid running them as root:
  - should only write below
    - `/tests/<testname>` (e.g. `/tests/ruby`) and
    - `system/elektra` (e.g. for mounts or globalplugins).
+ - clean up everything they change (in KDB and temporary files)
 - If your test has memleaks, e.g. because the library used leaks and
   that cannot be fixed, give them the label memleak with following
   command:
 
-    set_property(TEST testname PROPERTY LABELS memleak)
+        set_property(TEST testname PROPERTY LABELS memleak)
 
 
 ## Strategy
@@ -119,7 +125,7 @@ According to `src/libs/elektra/libelektra-symbols.map`, all functions starting w
 * ks
 
 get exported. Functions not starting with this prefix are internal only and therefore
-not visible in the test cases. Test internal functionality by including the corresponding c file.
+not visible in the test cases. Test internal functionality by including the corresponding C file.
 
 ### Module Tests
 
@@ -127,23 +133,35 @@ The modules, which are typically used as plugins in Elektra (but can
 also be available statically or in the `-full` variant), should have their
 own tests.
 
-Use the Cmake macro `add_plugintest` for adding these tests.
+Use the CMake macro `add_plugintest` for adding these tests.
 
 ### C++ Unit Tests
 
-C++ Unit tests are done using the gtest framework. See [architectural decision](/doc/decisions/unit_testing.md).
+C++ Unit tests are done using the gtest framework.
+See [architectural decision](/doc/decisions/unit_testing.md).
 
 Use the CMake macro `add_gtest` for adding these tests.
 
 ### Script Tests
 
-Script test are done using POSIX shell + CMake. See [architectural decision](/doc/decisions/script_testing.md).
+Test which need scripts are done using shell recorder or directly with POSIX shell commands.
+See [architectural decision](/doc/decisions/script_testing.md).
 
 The script tests have different purposes:
-- End to End tests (usage of tools as a user would do)
-- External Compilation tests (compile and run programs as a user would do)
+
+- End to End tests (usage of tools as an end user would do)
+- External compilation tests (compile and run programs as a user would do)
 - Conventions tests (do internal checks that check for common problems)
 - Meta Test Suites (run other test suites)
+
+See [here](tests/shell).
+
+### Shell Recorder
+
+The more elegant way to specify script tests are via the so called shell recorder
+using Markdown Syntax.
+
+See [here](tests/shell/shell_recorder/tutorial_wrapper/README.md).
 
 ### Fuzz Testing
 

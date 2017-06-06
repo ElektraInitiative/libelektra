@@ -15,10 +15,36 @@ Or on macOS Sierra, most of the build tools can be obtained by installing XCode 
 
 	brew install cmake
 
-## Optional Dependencies
 
-Note: You do not need to install the dependencies listed here.
-But then some of the functionality gets disabled automatically.
+## Quick Guide
+
+Run the following commands to compile Elektra with non-experimental
+parts where your system happens to fulfil the dependences (continue
+reading the rest of the document for details about these steps):
+
+```
+git clone https://github.com/ElektraInitiative/libelektra.git
+cd libelektra
+mkdir build
+cd build
+cmake ..  # watch output to see if everything needed is included
+ccmake .. # optional: provides a console based GUI to give an overview of the available compilation options and settings
+make -j 5
+make run_nokdbtests  # optional: run tests
+```
+
+The last line only runs tests not writing into your system.
+See [TESTING](doc/TESTING.md) for how to run more tests.
+Afterwards you can use `sudo make install && sudo ldconfig` to install Elektra.
+See [INSTALL](doc/INSTALL.md#Generic) for more information about
+installation of self-compiled Elektra (such as how to uninstall it).
+
+
+## Optional Dependences
+
+> Note: You do not need to install the dependencies listed here.
+> If they are not available, some of the functionality gets disabled automatically.
+> The core of Elektra never depends on other libraries.
 
 To build documentation you need doxygen (we recommend 1.8.8+), graphviz and [ronn](https://github.com/rtomayko/ronn/blob/master/INSTALLING#files):
 
@@ -120,7 +146,7 @@ Some options, i.e. `PLUGINS`, `BINDINGS` and `TOOLS` are either:
    (note that shells typically need `;` to be escaped)
 - a special uppercase element that gets replaced by a list of elements, that are:
   - `ALL` to include all elements (except elements with unfulfilled dependencies)
-  - `NODE` to include all elements without dependencies
+  - `NODEP` to include all elements without dependencies
 - elements prefixed with a minus symbol (`-`) to exclude an element
 
 Examples for this are especially in the subsection `PLUGINS` below, but they work in the
@@ -131,8 +157,8 @@ same fashion for `BINDINGS` and `TOOLS`.
 Read about available plugins [here](/src/plugins/).
 
 Because the core of elektra is minimal, plugins are needed to
-actually read and write to configuration files (storage plugins),
-commit the changes (resolver plugin, also takes care about how
+actually read and write to configuration files (_storage plugins_),
+commit the changes (_resolver plugins_, also takes care about how
 the configuration files are named) and also do many other
 tasks related to configuration.
 
@@ -158,12 +184,13 @@ To add also experimental plugins, you can use:
 
     -DPLUGINS=ALL
 
-Note that plugins get dropped when dependencies are not satisfied.
+> Note that plugins get dropped automatically if dependences are not satisfied.
+
 To add all plugins except some plugins you can use:
 
     -DPLUGINS="ALL;-plugin1;-plugin2"
 
-E.g. if you want all plugins except the jni plugin you would use:
+For example, if you want all plugins except the jni plugin you would use:
 
     -DPLUGINS="ALL;-jni"
 
@@ -173,7 +200,8 @@ To add all plugins not having additional dependencies
     -DPLUGINS=NODEP
 
 Note, that every `infos/provides` and `infos/status` field written uppercase can
-be used to select plugins that way.  You also can combine any of these fields
+be used to select plugins that way (see README of [individual plugins](/doc/plugins)).
+You also can combine any of these fields
 and add/remove other plugins to/from it, e.g. to include all plugins without deps,
 that provide storage (except `yajl`) and are maintained, but not include all plugins
 that are experimental, you would use:
@@ -186,7 +214,8 @@ The inclusion is determined by following preferences:
 2. if the plugin is explicit included with `plugin`
 3. if the plugin is excluded via a category `-CATEGORY`
 4. if the plugin is included via a category `CATEGORY`
-5. the plugin is excluded if it is not mentioned at all
+5. plugins are excluded if they are not mentioned at all
+   (neither by category nor by name)
 
 Note, that changing `PLUGINS` will not modify the defaults used
 after Elektra was installed.  For this endeavour you need to change:
@@ -237,7 +266,7 @@ The system flags are (the order matters!):
 - note: if a path that begins with a slash (`/`) is chosen, the system flags are irrelevant
   and the path is taken as-is.
 
-E.g. one may use:
+For example, one may use:
 
     -DPLUGINS="resolver_lm_uhpb_b"
 
@@ -320,7 +349,8 @@ Build documentation with doxygen (API) and ronn (man pages).
 As developer you should enable `ENABLE_DEBUG` and `ENABLE_LOGGER`.
 (By default they should be invisible!)
 
-Then continue reading [testing](/doc/TESTING.md) for further options.
+Then continue reading [testing](/doc/TESTING.md) for options about
+testing.
 
 #### CMAKE_INSTALL_PREFIX
 
