@@ -428,7 +428,7 @@ memerror:
  * Every key created by keyNew() must be
  * deleted with keyDel().
  *
- * It is save to delete keys which are
+ * It is safe to delete keys which are
  * in a keyset, the number of references
  * will be returned then.
  *
