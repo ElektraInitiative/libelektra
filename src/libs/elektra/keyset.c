@@ -423,7 +423,10 @@ int ksDel (KeySet * ks)
 	}
 #endif
 
-	elektraFree (ks);
+	if ((ks->flags & KS_FLAG_MMAP) != KS_FLAG_MMAP)
+	{
+		elektraFree (ks);
+	}
 
 	return rc;
 }
@@ -2615,15 +2618,18 @@ int ksInit (KeySet * ks)
 int ksClose (KeySet * ks)
 {
 	Key * k;
+	int ksInMmap = (ks->flags & KS_FLAG_MMAP) == KS_FLAG_MMAP;
 
 	ksRewind (ks);
 	while ((k = ksNext (ks)) != 0)
 	{
 		keyDecRef (k);
-		keyDel (k);
+
+		if (!ksInMmap)
+			keyDel (k);
 	}
 
-	if (ks->array) elektraFree (ks->array);
+	if (ks->array && !ksInMmap) elektraFree (ks->array);
 	ks->array = 0;
 	ks->alloc = 0;
 

@@ -461,7 +461,15 @@ int keyDel (Key * key)
 	}
 
 	rc = keyClear (key);
-	elektraFree (key);
+
+	if ((key->flags & KEY_FLAG_MMAP) == KEY_FLAG_MMAP)
+	{
+		// TODO: mpranj mark this key as deletable
+	}
+	else
+	{
+		elektraFree (key);
+	}
 
 	return rc;
 }
@@ -505,9 +513,12 @@ int keyClear (Key * key)
 	size_t ref = 0;
 
 	ref = key->ksReference;
-	if (key->key) elektraFree (key->key);
-	if (key->data.v) elektraFree (key->data.v);
-	if (key->meta) ksDel (key->meta);
+
+	int keyInMmap = (key->flags & KEY_FLAG_MMAP) == KEY_FLAG_MMAP;
+
+	if (key->key && !keyInMmap) elektraFree (key->key);
+	if (key->data.v && !keyInMmap) elektraFree (key->data.v);
+	if (key->meta && !keyInMmap) ksDel (key->meta);
 
 	keyInit (key);
 

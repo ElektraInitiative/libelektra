@@ -118,12 +118,16 @@ typedef enum {
 			 to be changed. All attempts to change the value
 			 will lead to an error.
 			 Needed for metakeys*/
-	KEY_FLAG_RO_META = 1 << 3	/*!<
+	KEY_FLAG_RO_META = 1 << 3,	/*!<
 			 Read only flag for meta.
 			 Key meta is read only and not allowed
 			 to be changed. All attempts to change the value
 			 will lead to an error.
 			 Needed for metakeys.*/
+	KEY_FLAG_MMAP = 1 << 4	/*!<
+ 			 Key lies inside a mmap region.
+ 			 This flag is set once a Key has been moved to a mapped region.
+ 			 It prevents erroneous free() calls on these keys. */
 } keyflag_t;
 
 
@@ -141,12 +145,17 @@ typedef enum {
 		 If keys were popped from the Keyset
 		 this flag will be set, so that the backend will sync
 		 the keys to database.*/
+
 #ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
 	,KS_FLAG_NAME_CHANGE = 1 << 1 /*!<
 		 The OPMPHM needs to be rebuild.
 		 Every Key add, Key removal or Key name change operation
 		 sets this flag.*/
 #endif
+	,KS_FLAG_MMAP = 1 << 2	/*!<
+ 			 KeySet lies inside a mmap region.
+ 			 This flag is set once a KeySet has been moved to a mapped region.
+ 			 It prevents erroneous free() calls on these KeySets. */
 } ksflag_t;
 
 
