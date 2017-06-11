@@ -1,5 +1,18 @@
 # Script Testing
 
+## Issue
+
+Writing portable shell code for testing commandline tools is difficult.
+
+## Constraints
+
+- Should be able to record input/output/exit codes of command-line tools
+- Should be aware of configuration settings (KDB), for example, restore it on changes
+
+## Assumptions
+
+None.
+
 ## Considered Alternatives
 
 * http://pythonpaste.org/scripttest/
@@ -17,3 +30,16 @@
  - quite long for simple things (e.g. check /bin/true needs 4 lines)
  - new syntax for Elektra (TCL)
  - additional dependency
+
+
+## Decision
+
+Develop shell recorder and tutorial wrapper.
+
+## Argument
+
+## Implications
+
+## Related decisions
+
+## Notes
