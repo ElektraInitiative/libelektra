@@ -69,5 +69,5 @@ To remove it:
 ## SEE ALSO
 
 - How to get metadata: [kdb-getmeta(1)](kdb-getmeta.md)
-- [elektra-metadata(7)](elektra-metadata.md)
+- [elektra-metadata(7)](elektra-metadata.md) for an explanation of the metadata concepts.
 - [elektra-key-names(7)](elektra-key-names.md) for an explanation of key names.
