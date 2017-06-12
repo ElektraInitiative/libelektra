@@ -267,7 +267,7 @@
             {
                 "name": "Developer Docu",
                 "type": "parsereadme",
-                "ref": "devdocumentation",
+                "ref": "devdocu",
                 "options": {
                     "path": "doc/dev/README.md",
                     "target_file": [],

@@ -347,7 +347,8 @@ Build documentation with doxygen (API) and ronn (man pages).
 #### Developer Options
 
 As developer you should enable `ENABLE_DEBUG` and `ENABLE_LOGGER`.
-(By default they should be invisible!)
+By default no logging will take place, see [CODING](/doc/CODING.md)
+for information about logging.
 
 Then continue reading [testing](/doc/TESTING.md) for options about
 testing.
