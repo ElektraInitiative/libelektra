@@ -1,0 +1,3 @@
+## Internals
+
+- [Algorithm](algorithm.md)

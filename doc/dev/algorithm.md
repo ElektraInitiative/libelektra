@@ -1,5 +1,4 @@
-elektra-algorithm(7) -- core algorithm of elektra
-=================================================
+# Algorithm
 
 You might want to read
 [about architecture](elektra-architecture.md).
