@@ -1,5 +1,4 @@
-elektra-data-structures(7) -- data structures
-=============================================
+# Data Structures
 
 For an introduction, please
 [read first about elektra classes](elektra-classes.md).

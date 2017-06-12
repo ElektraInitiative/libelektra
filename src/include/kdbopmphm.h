@@ -112,7 +112,7 @@ uint32_t opmphmRandom (unsigned int * seedp);
 *
 * These datastructures can be used within Elektra’s ecosystem.
 *
-* The requirements are described in doc/help/elektra-data-structures.md.
+* The requirements are described in doc/dev/data-structures.md.
 */
 
 

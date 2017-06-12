@@ -1,5 +1,4 @@
-elektra classes(7) -- introduction to Elektra’s classes
-=======================================================
+# Classes
 
 This overview complements the introduction in
 [the API documentation](http://doc.libelektra.org/api/current/html/).
@@ -96,6 +95,6 @@ Then, attempts to use `kdbSet()` lead to a conflict.
 which configuration should be used.
 
 For details and background
-[read more about elektra data structures](elektra-data-structures.md).
+[read more about elektra data structures](data-structures.md).
 For further information see
 [the API documentation](http://doc.libelektra.org/api/current/html/).

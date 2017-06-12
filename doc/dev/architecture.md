@@ -1,5 +1,4 @@
-elektra-architecture(7) -- architecture of elektra
-==================================================
+# architecture
 
 In this document we start to explain the implementation of Elektra.
 There are several follow-up documents which explain all details of:
@@ -307,7 +306,7 @@ above.
   a label which was introduced before. This configuration does not create
   a new plugin.
 
-`kdb mount` already implements the generation of these names as described above.
+`kdb mount` implements the generation of these names as described above.
 
 
 ### Changing Mount Point Configuration
