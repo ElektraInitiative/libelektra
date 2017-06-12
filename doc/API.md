@@ -107,7 +107,7 @@ entire [KeySet](@ref ksAppend)
 - [Work with](@ref ksNext) its [internal cursor](@ref ksCurrent)
 - See [class documentation](@ref keyset) for more
 
-[More background information about the classes](/doc/help/elektra-classes.md)
+[More background information about the classes](/doc/dev/classes.md)
 
 ## Namespaces
 

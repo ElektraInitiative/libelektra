@@ -1,8 +1,7 @@
-elektra-error-handling(7) -- error handling in Elektra
-======================================================
+# Error handling
 
 You might want to read
-[about data structures first](elektra-data-structures.md).
+[about data structures first](data-structures.md).
 
 ## Terminology
 

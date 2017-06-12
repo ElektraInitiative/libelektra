@@ -1,9 +1,9 @@
 # Data Structures
 
 For an introduction, please
-[read first about elektra classes](elektra-classes.md).
+[read first about elektra classes](classes.md).
 You might want to read
-[about architecture first](elektra-architecture.md).
+[about architecture first](architecture.md).
 
 
 ## Introduction
@@ -364,7 +364,7 @@ The resolver writes the file name into the value of the `parentKey`.
 The algorithm uses the `syncbits` to decide if the key set needs to be
 synchronised.
 
-Continue reading [with the error handling](elektra-error-handling.md).
+Continue reading [with the error handling](error-handling.md).
 
 ## Order Preserving Minimal Perfect Hash Map
 

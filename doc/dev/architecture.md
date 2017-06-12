@@ -3,8 +3,8 @@
 In this document we start to explain the implementation of Elektra.
 There are several follow-up documents which explain all details of:
 
-- [error handling](elektra-error-handling.md),
-- [data structures](elektra-data-structures.md), and
+- [error handling](error-handling.md),
+- [data structures](data-structures.md), and
 - finally the [core algorithm](elektra-algorithm.md).
 
 We discuss problems and the solution space so that the reader
@@ -12,7 +12,7 @@ can understand the rationale of how problems were solved.
 
 To help readers to understand the algorithm that glues together the
 plugins, we first describe some details of the
-[data structures](elektra-data-structures.md). Full
+[data structures](data-structures.md). Full
 knowledge of the [algorithm](elektra-algorithm.md) is not presumed to be able to develop
 most plugins (with the exception of [the resolver](/src/plugins/resolver/)).
 
@@ -348,4 +348,4 @@ to use notification for mountpoint configuration changes or simply to
 use a lock-free resolver.
 
 
-Continue reading [with the data structures](elektra-data-structures.md).
+Continue reading [with the data structures](data-structures.md).

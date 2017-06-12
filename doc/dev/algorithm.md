@@ -1,9 +1,9 @@
 # Algorithm
 
 You might want to read
-[about architecture](elektra-architecture.md).
+[about architecture](architecture.md).
 and
-[data structures first](elektra-data-structures.md).
+[data structures first](data-structures.md).
 
 ## Introduction
 
