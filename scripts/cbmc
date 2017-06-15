@@ -22,7 +22,7 @@ ARG="--depth 200 -D ELEKTRA_BMC"
 EINC="-I $EDIR/src/include -I $BDIR/src/include"
 if stringContain "Darwin" "$(uname)"; then
 	YINC="-I /usr/local/include/yajl -I $BDIR/src/plugins/yajl"
-yelse
+else
 	YINC="-I /user/include/yajl -I $BDIR/src/plugins/yajl"
 fi
 
