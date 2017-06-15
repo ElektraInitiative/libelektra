@@ -32,6 +32,7 @@
 #include <fstab.hpp>
 #include <get.hpp>
 #include <globalmount.hpp>
+#include <globalumount.hpp>
 #include <import.hpp>
 #include <info.hpp>
 #include <list.hpp>
@@ -111,7 +112,9 @@ public:
 		m_factory.insert (std::make_pair ("spec-mount", new Cnstancer<SpecMountCommand> ()));
 		m_factory.insert (std::make_pair ("smount", new Cnstancer<SpecMountCommand> ()));
 		m_factory.insert (std::make_pair ("global-mount", new Cnstancer<GlobalMountCommand> ()));
+		m_factory.insert (std::make_pair ("global-umount", new Cnstancer<GlobalUmountCommand> ()));
 		m_factory.insert (std::make_pair ("gmount", new Cnstancer<GlobalMountCommand> ()));
+		m_factory.insert (std::make_pair ("gumount", new Cnstancer<GlobalUmountCommand> ()));
 		m_factory.insert (std::make_pair ("list-commands", new Cnstancer<ListCommandsCommand> ()));
 	}
 
