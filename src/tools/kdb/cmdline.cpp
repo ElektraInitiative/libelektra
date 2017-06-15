@@ -58,8 +58,9 @@ Cmdline::Cmdline (int argc, char ** argv, Command * command)
 	helpText += "\n";
 
 	string allOptions = command->getShortOptions ();
-	allOptions += "HVp";
+	allOptions += "HVp:";
 
+	// Make sure to use the unsorted allOptions for getopt to preserve argument chars : and ::
 	std::set<string::value_type> unique_sorted_chars (allOptions.begin (), allOptions.end ());
 	string acceptedOptions (unique_sorted_chars.begin (), unique_sorted_chars.end ());
 
@@ -109,7 +110,7 @@ Cmdline::Cmdline (int argc, char ** argv, Command * command)
 	}
 	if (acceptedOptions.find ('m') != string::npos)
 	{
-		option o = { "min-depth", optional_argument, nullptr, 'm' };
+		option o = { "min-depth", required_argument, nullptr, 'm' };
 		long_options.push_back (o);
 		helpText +=
 			"-m --min-depth           Specify the minimum depth of completion suggestions (0 by default), inclusive "
@@ -117,7 +118,7 @@ Cmdline::Cmdline (int argc, char ** argv, Command * command)
 	}
 	if (acceptedOptions.find ('M') != string::npos)
 	{
-		option o = { "max-depth", optional_argument, nullptr, 'M' };
+		option o = { "max-depth", required_argument, nullptr, 'M' };
 		long_options.push_back (o);
 		helpText +=
 			"-M --max-depth           Specify the maximum depth of completion suggestions (unlimited by default, 1 to show "
@@ -260,7 +261,7 @@ Cmdline::Cmdline (int argc, char ** argv, Command * command)
 
 	opterr = 0;
 
-	while ((opt = getopt_long (argc, argv, acceptedOptions.c_str (), &long_options[0], &index)) != EOF)
+	while ((opt = getopt_long (argc, argv, allOptions.c_str (), &long_options[0], &index)) != EOF)
 	{
 		switch (opt)
 		{
@@ -351,7 +352,7 @@ Cmdline::Cmdline (int argc, char ** argv, Command * command)
 		opterr = 1;
 	}
 
-	while ((opt = getopt_long (argc, argv, acceptedOptions.c_str (), &long_options[0], &index)) != EOF)
+	while ((opt = getopt_long (argc, argv, allOptions.c_str (), &long_options[0], &index)) != EOF)
 	{
 		switch (opt)
 		{
