@@ -125,7 +125,6 @@ static void test_init (const char * pluginName)
 		succeed_if (plugin->kdbClose != 0, "no close pointer");
 		succeed_if (plugin->kdbGet != 0, "no get pointer");
 		succeed_if (plugin->kdbSet != 0, "no set pointer");
-		succeed_if (plugin->kdbError != 0, "no error pointer");
 
 		// try re-opening the plugin
 		succeed_if (plugin->kdbClose (plugin, parentKey) == 1, "kdb close failed");

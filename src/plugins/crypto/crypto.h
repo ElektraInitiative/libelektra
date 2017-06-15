@@ -76,7 +76,6 @@ int CRYPTO_PLUGIN_FUNCTION (close) (Plugin * handle, Key * errorKey);
 int CRYPTO_PLUGIN_FUNCTION (get) (Plugin * handle, KeySet * ks, Key * parentKey);
 int CRYPTO_PLUGIN_FUNCTION (set) (Plugin * handle, KeySet * ks, Key * parentKey);
 int CRYPTO_PLUGIN_FUNCTION (checkconf) (Key * errorKey, KeySet * conf);
-int CRYPTO_PLUGIN_FUNCTION (error) (Plugin * handle, KeySet * ks, Key * parentKey);
 
 Plugin * ELEKTRA_PLUGIN_EXPORT (crypto);
 
