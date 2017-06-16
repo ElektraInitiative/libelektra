@@ -21,7 +21,7 @@ public:
 
 	virtual std::string getShortOptions ()
 	{
-		return "esvCN";
+		return "e:s:vC::N";
 	}
 
 	virtual std::string getSynopsis ()
