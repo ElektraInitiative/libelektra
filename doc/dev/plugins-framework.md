@@ -1,4 +1,4 @@
-# Plugins Framework(7)
+# Plugins Framework
 
 Many component systems pass information between the various components
 by calling methods of each other.  This is not the way Elektra’s plugin

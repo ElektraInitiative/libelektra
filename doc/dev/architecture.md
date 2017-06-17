@@ -1,4 +1,4 @@
-# architecture
+# Architecture
 
 In this document we start to explain the implementation of Elektra.
 There are several follow-up documents which explain all details of:

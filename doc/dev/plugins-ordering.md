@@ -1,4 +1,4 @@
-# Plugins Ordering(7)
+# Plugins Ordering
 
 You should first read [elektra-plugins](/src/plugins/) to get
 an idea about plugins.
