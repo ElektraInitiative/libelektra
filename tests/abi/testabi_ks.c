@@ -1147,9 +1147,9 @@ static void test_ksLookupName ()
 	ksAppendKey (ks, keyNew ("user/named/key", KEY_VALUE, "myvalue", KEY_END));
 	ksAppendKey (ks, keyNew ("system/named/syskey", KEY_VALUE, "syskey", KEY_END));
 	ksAppendKey (ks, keyNew ("system/sysonly/key", KEY_VALUE, "sysonlykey", KEY_END));
-	ksAppendKey (ks, keyNew ("user/named/bin", KEY_BINARY, KEY_SIZE, 10, KEY_VALUE, "binary\1\2data", KEY_END));
-	ksAppendKey (ks, keyNew ("system/named/bin", KEY_BINARY, KEY_SIZE, 10, KEY_VALUE, "sys\1bin\2", KEY_END));
-	ksAppendKey (ks, keyNew ("system/named/key", KEY_BINARY, KEY_SIZE, 10, KEY_VALUE, "syskey", KEY_END));
+	ksAppendKey (ks, keyNew ("user/named/bin", KEY_BINARY, KEY_SIZE, strlen ("binary\1\2data"), KEY_VALUE, "binary\1\2data", KEY_END));
+	ksAppendKey (ks, keyNew ("system/named/bin", KEY_BINARY, KEY_SIZE, strlen ("sys\1bin\2"), KEY_VALUE, "sys\1bin\2", KEY_END));
+	ksAppendKey (ks, keyNew ("system/named/key", KEY_BINARY, KEY_SIZE, strlen ("syskey"), KEY_VALUE, "syskey", KEY_END));
 	succeed_if (ksGetSize (ks) == 8, "could not append all keys");
 
 	// a positive testcase
@@ -1213,13 +1213,13 @@ static void test_ksLookupName ()
 	succeed_if (ksCurrent (ks) == found, "current not set correctly");
 	succeed_if (found != 0, "did not find correct name");
 	succeed_if_same_string (keyName (found), "system/named/key");
-	succeed_if_same_string (keyValue (found), "syskey");
+	succeed_if (strncmp (keyValue (found), "syskey", strlen ("syskey")) == 0, "not correct value in found key");
 
 	found = ksLookupByName (ks, "user/named/bin", 0);
 	succeed_if (ksCurrent (ks) == found, "current not set correctly");
 	succeed_if (found != 0, "did not find correct name");
 	succeed_if_same_string (keyName (found), "user/named/bin");
-	succeed_if (strncmp (keyValue (found), "binary\1\2data", 10) == 0, "not correct value in found key");
+	succeed_if (strncmp (keyValue (found), "binary\1\2data", strlen ("binary\1\2data")) == 0, "not correct value in found key");
 
 	found = ksLookupByName (ks, "user/named/key", 0);
 	succeed_if (ksCurrent (ks) == found, "current not set correctly");
@@ -2048,9 +2048,9 @@ static void test_ksLookupPop ()
 	ksAppendKey (ks, keyNew ("user/named/key", KEY_VALUE, "myvalue", KEY_END));
 	ksAppendKey (ks, keyNew ("system/named/skey", KEY_VALUE, "syskey", KEY_END));
 	ksAppendKey (ks, keyNew ("system/sysonly/key", KEY_VALUE, "sysonlykey", KEY_END));
-	ksAppendKey (ks, keyNew ("user/named/bin", KEY_BINARY, KEY_SIZE, 10, KEY_VALUE, "binary\1\2data", KEY_END));
-	ksAppendKey (ks, keyNew ("system/named/bin", KEY_BINARY, KEY_SIZE, 10, KEY_VALUE, "sys\1bin\2", KEY_END));
-	ksAppendKey (ks, keyNew ("system/named/key", KEY_BINARY, KEY_SIZE, 10, KEY_VALUE, "syskey", KEY_END));
+	ksAppendKey (ks, keyNew ("user/named/bin", KEY_BINARY, KEY_SIZE, strlen ("binary\1\2data"), KEY_VALUE, "binary\1\2data", KEY_END));
+	ksAppendKey (ks, keyNew ("system/named/bin", KEY_BINARY, KEY_SIZE, strlen ("sys\1bin\2"), KEY_VALUE, "sys\1bin\2", KEY_END));
+	ksAppendKey (ks, keyNew ("system/named/key", KEY_BINARY, KEY_SIZE, strlen ("syskey"), KEY_VALUE, "syskey", KEY_END));
 	succeed_if (ksGetSize (ks) == 8, "could not append all keys");
 
 	// a positive testcase
@@ -2121,7 +2121,7 @@ static void test_ksLookupPop ()
 	succeed_if (ksCurrent (ks) == 0, "current not set correctly");
 	succeed_if (found != 0, "did not find correct name");
 	succeed_if_same_string (keyName (found), "system/named/key");
-	succeed_if_same_string (keyValue (found), "syskey");
+	succeed_if (strncmp (keyValue (found), "syskey", strlen ("syskey")) == 0, "not correct value in found key");
 	succeed_if (keyDel (found) == 0, "could not del popped key");
 
 	found = ksLookupByName (ks, "user/named/bin", KDB_O_POP);
@@ -2129,7 +2129,7 @@ static void test_ksLookupPop ()
 	succeed_if (ksCurrent (ks) == 0, "current not set correctly");
 	succeed_if (found != 0, "did not find correct name");
 	succeed_if_same_string (keyName (found), "user/named/bin");
-	succeed_if (strncmp (keyValue (found), "binary\1\2data", 10) == 0, "not correct value in found key");
+	succeed_if (strncmp (keyValue (found), "binary\1\2data", strlen ("binary\1\2data")) == 0, "not correct value in found key");
 	succeed_if (keyDel (found) == 0, "could not del popped key");
 
 	found = ksLookupByName (ks, "user/named/key", KDB_O_POP);
