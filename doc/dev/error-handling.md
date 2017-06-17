@@ -287,4 +287,4 @@ will not be executed.  Instead, the plugins get a chance to recover from
 the faulty state.  In this catch part, the plugins are not allowed to
 yield any error information, but they are allowed to add warnings.
 
-Continue reading [with the algorithm](elektra-algorithm.md).
+Continue reading [with the algorithm](algorithm.md).

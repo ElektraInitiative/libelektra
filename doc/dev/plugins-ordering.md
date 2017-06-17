@@ -46,7 +46,7 @@ Another use case is logging after a failure has happened.
 ## Placements
 
 The ordering of plugins inside these three arrays is controlled by
-[elektra-contracts(7)](elektra-contracts.md).
+[elektra-contracts(7)](/doc/help/elektra-contracts.md).
 Each of the three arrays has ten slots.  These slots have
 names to be referred to in the contract.
 

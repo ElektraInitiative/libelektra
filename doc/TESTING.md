@@ -154,14 +154,14 @@ The script tests have different purposes:
 - Conventions tests (do internal checks that check for common problems)
 - Meta Test Suites (run other test suites)
 
-See [here](tests/shell).
+See [here](/tests/shell).
 
 ### Shell Recorder
 
 The more elegant way to specify script tests are via the so called shell recorder
 using Markdown Syntax.
 
-See [here](tests/shell/shell_recorder/tutorial_wrapper/README.md).
+See [here](/tests/shell/shell_recorder/tutorial_wrapper/README.md).
 
 ### Fuzz Testing
 

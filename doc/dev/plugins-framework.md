@@ -43,7 +43,7 @@ Plugins should not be burdened to check too many postconditions.  Instead,
 plugins focus on their task.  The plugin does not need to check the sync
 flag of keys or if the keys are below the mountpoint. The core already
 guarantees correct behaviour as described
-in [algorithm](/doc/help/elektra-algorithm.md).
+in [algorithm](/doc/dev/algorithm.md).
 
 To sum up, contracts give the information how a plugin interacts with
 others.  It describes if, and how, the `KeySet` `returned` is changed.

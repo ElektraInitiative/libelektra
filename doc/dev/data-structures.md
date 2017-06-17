@@ -313,7 +313,7 @@ In Elektra,
 it provides the information
 to decide
 in which backend a key resides.
-The algorithm, presented in [algorithm](elektra-algorithm.md),
+The algorithm, presented in [algorithm](algorithm.md),
 also needs a list of all backends.
 The initial approach was to iterate over the `Trie`
 to get a list of all backends.

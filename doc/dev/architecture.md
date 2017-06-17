@@ -5,7 +5,7 @@ There are several follow-up documents which explain all details of:
 
 - [error handling](error-handling.md),
 - [data structures](data-structures.md), and
-- finally the [core algorithm](elektra-algorithm.md).
+- finally the [core algorithm](algorithm.md).
 
 We discuss problems and the solution space so that the reader
 can understand the rationale of how problems were solved.
@@ -13,14 +13,14 @@ can understand the rationale of how problems were solved.
 To help readers to understand the algorithm that glues together the
 plugins, we first describe some details of the
 [data structures](data-structures.md). Full
-knowledge of the [algorithm](elektra-algorithm.md) is not presumed to be able to develop
+knowledge of the [algorithm](algorithm.md) is not presumed to be able to develop
 most plugins (with the exception of [the resolver](/src/plugins/resolver/)).
 
 Further important concepts are explained in:
 
-- [bootstrapping](elektra-bootstrapping.md)
-- [granularity](elektra-granularity.md)
-- [sync-flag](elektra-sync-flag.md)
+- [bootstrapping](/doc/help/elektra-bootstrapping.md)
+- [granularity](/doc/help/elektra-granularity.md)
+- [sync-flag](/doc/help/elektra-sync-flag.md)
 
 
 ## API
@@ -42,7 +42,7 @@ is now depreciated and was removed.  The handling of removed keys was
 modified.  Additionally, the API for metadata has fundamentally changed,
 but the old interface still works.  These changes will be described in
 [implementation of metadata](metadata.md). However, the implementation of
-Elektra changed radically as discussed in [algorithm](elektra-algorithm.md).
+Elektra changed radically as discussed in [algorithm](algorithm.md).
 
 ### API Design
 
