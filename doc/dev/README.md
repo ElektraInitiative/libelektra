@@ -1,3 +1,6 @@
+This section contains the developer's manual.
+It complements the man pages found [here](/doc/help).
+
 ## Overview
 
 - [Architecture](architecture.md)
