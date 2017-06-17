@@ -1,9 +1,9 @@
 # Algorithm
 
 You might want to read
-[about architecture](architecture.md).
+[about architecture](architecture.md)
 and
-[data structures first](data-structures.md).
+[data structures](data-structures.md) first.
 
 ## Introduction
 
@@ -143,7 +143,7 @@ outside of the backend's responsibility.  Hence, these keys will not be
 passed to the user and we get the desired behaviour: The nearest mounted
 backend to the key is responsible.
 
-For example, a generator plugin in the backend A always emits
+For example, a generator plugin in the backend (A) always emits
 following keys. (A) and (B) indicate from which backend the
 key comes from.
 
@@ -164,8 +164,8 @@ following keys:
 	user/sw/generator/outside (B)
 
 In this situation `kdbGet()` is responsible to pop all three keys at,
-and below, `user/sw/generator/dir` of backend A and the key
-`user/sw/generator/outside` of backend B.  The user will get the
+and below, `user/sw/generator/dir` of backend (A) and the key
+`user/sw/generator/outside` of backend (B).  The user will get the
 resulting key set:
 
 	user/sw/generator/akey (A)
