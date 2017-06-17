@@ -221,7 +221,8 @@ of the plugins, `kdbGet()` removes it.
 needs to store the number of received keys of each backend.
 - Additionally, for every key it is checked if it belongs to this
 backend.  This makes sure that every key comes from a single source
-only as designated by the `Trie`.  In this process, Elektra pops all duplicated and overlapping keys in favour of the responsible backend.
+only as designated by the `Trie`.  In this process, Elektra pops all
+duplicated and overlapping keys in favour of the responsible backend.
 
 The last step is to *merge* all these key sets together.  This step
 changes the configuration visible to the user. After some cleanup the

@@ -16,54 +16,40 @@ distinguish between configuration and information about settings.
 
 ## Implementation
 
-In this document, we discuss the implementation of metadata.
-Metakey is implemented directly in a `Key`:
-Every metakey belongs to a key **inseparable**.
-Unlike normal key names there is no absolute path for it in the hierarchy,
-but a relative one only valid within the key.
+In this document, we discuss the implementation of metadata.  Metakey
+is implemented directly in a `Key`: Every metakey belongs to a key
+**inseparable**.  Unlike normal key names there is no absolute path for
+it in the hierarchy, but a relative one only valid within the key.
 
-The advantage of embedding metadata into a key is that
-functions can operate on a key's metadata if
-a key is passed as a parameter.
-Because of this,
-`keyNew()` directly supports adding metadata.
-A key with metadata is self-contained.
-When the key is passed to a
-function, the metadata is always passed with it.
-Because of the tight integration into a `Key`,
-the metadata does not disturb the user.
+The advantage of embedding metadata into a key is that functions
+can operate on a key's metadata if a key is passed as a parameter.
+Because of this, `keyNew()` directly supports adding metadata.  A key
+with metadata is self-contained.  When the key is passed to a function,
+the metadata is always passed with it.  Because of the tight integration
+into a `Key`, the metadata does not disturb the user.
 
-A disadvantage of this approach
-is that storage plugins are more likely to ignore metadata
-because metakeys are distinct from keys and have to be handled separately.
-It is not possible to iterate over
-all keys and their metadata in a single loop.
-Instead only a nested loop provides full iteration over all keys and
-metakeys.
+A disadvantage of this approach is that storage plugins are more likely
+to ignore metadata because metakeys are distinct from keys and have to
+be handled separately.  It is not possible to iterate over all keys and
+their metadata in a single loop.  Instead only a nested loop provides
+full iteration over all keys and metakeys.
 
-The metakey itself is also represented by a `Key`.
-So the data structure
-`Key` is nested directly into a `Key`.
-The reason for this
-is to make the concept
-easier for the user who already knows how to work with a `Key`.
-But even new users need to learn only one interface.
+The metakey itself is also represented by a `Key`.  So the data structure
+`Key` is nested directly into a `Key`.  The reason for this is to
+make the concept easier for the user who already knows how to work
+with a `Key`.  But even new users need to learn only one interface.
 During iteration the metakeys, represented through a `Key` object,
-contain both the metaname and the metavalue.
-The metaname is shorter than a key name
-because the name is unique only in
-the `Key` and not for the whole global configuration.
+contain both the metaname and the metavalue.  The metaname is shorter
+than a key name because the name is unique only in the `Key` and not
+for the whole global configuration.
 
-The implementation adds no significant memory overhead per `Key`
-if no metadata is used.
-For embedded systems it is useful to have keys without metadata.
-Special plugins can help for
-systems that have very limited memory capacity.
-Also for systems with enough memory
-we should consider that adding the first metadata to a key
-has some additional overhead.
-In the current implementation
-a new `KeySet` is allocated in this situation.
+The implementation adds no significant memory overhead per `Key` if
+no metadata is used.  For embedded systems it is useful to have keys
+without metadata.  Special plugins can help for systems that have very
+limited memory capacity.  Also for systems with enough memory we should
+consider that adding the first metadata to a key has some additional
+overhead.  In the current implementation a new `KeySet` is allocated in
+this situation.
 
 
 
