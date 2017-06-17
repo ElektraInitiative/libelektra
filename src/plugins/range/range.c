@@ -10,9 +10,10 @@
 #include "range.h"
 #include <ctype.h>
 #include <errno.h>
+#include <kdbassert.h>
 #include <kdberrors.h>
 #include <kdbhelper.h>
-#include <kdbassert.h>
+#include <limits.h>
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -42,11 +43,8 @@ typedef struct
 // switch min and max values if needed and apply -1 factor
 static void normalizeValues (RangeType type, RangeValue * min, RangeValue * max, RangeValue * a, RangeValue * b, int factorA, int factorB)
 {
-	ELEKTRA_ASSERT (factorA == -1 || factorA == 1, "factorA has to be -1 or 1 to guarantee range bounds, but is %d", factorA);
-	ELEKTRA_ASSERT (factorB == -1 || factorB == 1, "factorB has to be -1 or 1 to guarantee range bounds, but is %d", factorB);
-	// AddressSanitizer complains about this, but we guarantee the factor is either 1 or -1 so it's fine
-	unsigned long long int tmpIA = (unsigned long long int)(factorA * (*a).Value.i);
-	unsigned long long int tmpIB = (unsigned long long int)(factorB * (*b).Value.i);
+	unsigned long long int tmpIA = factorA == -1 ? ULLONG_MAX - (*a).Value.i + 1 : (*a).Value.i;
+	unsigned long long int tmpIB = factorB == -1 ? ULLONG_MAX - (*b).Value.i + 1 : (*b).Value.i;
 	long double tmpFA = factorA * (*a).Value.f;
 	long double tmpFB = factorB * (*b).Value.f;
 	switch (type)
@@ -105,11 +103,12 @@ RangeValue strToValue (const char ** ptr, RangeType type)
 	v.Value.i = 0;
 	char * endPtr = NULL;
 
+	errno = 0; // the c std library doesn't reset errno, so do it before conversions to be safe
 	switch (type)
 	{
 	case INT:
 	case UINT:
-		v.Value.i = (unsigned long long)strtoll (*ptr, &endPtr, 10);
+		v.Value.i = strtoull (*ptr, &endPtr, 10);
 		if (errno == ERANGE || (errno != 0 && v.Value.i == 0))
 		{
 			v.type = NA;
@@ -123,7 +122,7 @@ RangeValue strToValue (const char ** ptr, RangeType type)
 		}
 		break;
 	case HEX:
-		v.Value.i = strtoll (*ptr, &endPtr, 16);
+		v.Value.i = strtoull (*ptr, &endPtr, 16);
 		if (errno == ERANGE || (errno != 0 && v.Value.i == 0))
 		{
 			v.type = NA;
@@ -258,17 +257,18 @@ static int validateSingleRange (const char * valueStr, const char * rangeString,
 	val.type = type;
 	val.Value.i = 0;
 	char * endPtr;
+	errno = 0; // the c std library doesn't reset errno, so do it before conversions to be safe
 	switch (type)
 	{
 	case INT:
 	case UINT:
-		val.Value.i = (unsigned long long)strtoll (valueStr, &endPtr, 10);
+		val.Value.i = strtoull (valueStr, &endPtr, 10);
 		break;
 	case FLOAT:
 		val.Value.f = strtold (valueStr, &endPtr);
 		break;
 	case HEX:
-		val.Value.i = (unsigned long long)strtoll (valueStr, &endPtr, 16);
+		val.Value.i = strtoull (valueStr, &endPtr, 16);
 		break;
 	case CHAR:
 		val.Value.i = valueStr[0];
