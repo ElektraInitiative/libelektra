@@ -1,5 +1,4 @@
-elektra-plugins-framework(7) -- Background about plugins framework
-==================================================================
+# Plugins Framework(7)
 
 Many component systems pass information between the various components
 by calling methods of each other.  This is not the way Elektra’s plugin
@@ -157,5 +156,5 @@ contracts, plugins could not interact as described in this chapter.
 
 ## SEE ALSO
 
-- [elektra-plugins-ordering(7)](elektra-plugins-ordering.md)
-- [elektra-contracts(7)](elektra-contracts.md)
+- [plugins-ordering](plugins-ordering.md)
+- [elektra-contracts(7)](/doc/help/elektra-contracts.md)

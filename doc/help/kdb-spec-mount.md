@@ -103,4 +103,3 @@ Additionally, add `ini` plugin (instead of some default resolver) with `some` as
 - [elektra-glossary(7)](elektra-glossary.md).
 - [kdb-umount(7)](kdb-umount.md).
 - [elektra-mounting(7)](elektra-mounting.md).
-- [elektra-plugins-framework(7)](elektra-plugins-framework.md).

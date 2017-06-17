@@ -2,7 +2,8 @@
 
 - [Architecture](architecture.md)
 - [Classes](classes.md)
-- [The data structures](data-structures.md)
+- [Data structures](data-structures.md)
+- [Plugins Framework](plugins-framework.md)
 
 ## Concepts
 
@@ -12,3 +13,4 @@
 ## Internals
 
 - [Algorithm](algorithm.md)
+- [Plugins Ordering](plugins-ordering.md)

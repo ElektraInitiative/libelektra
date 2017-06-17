@@ -1,11 +1,10 @@
-elektra-plugins-ordering(7) -- ordering of plugins
-==================================================
+# Plugins Ordering(7)
 
-You should first read [elektra-plugins(7)](/src/plugins/) to get
+You should first read [elektra-plugins](/src/plugins/) to get
 an idea about plugins.
 
-This document describes how [elektra-plugins(7)](/src/plugins/) are
-ordered with [elektra-backends(7)](elektra-backends.md).
+This document describes how [elektra-plugins](/src/plugins/) are
+ordered with [elektra-backends(7)](/doc/help/elektra-backends.md).
 
 Multiple plugins open up many ways in which they can be arranged.
 A simple way is to have one array with pointers to plugins.  To store a
