@@ -194,6 +194,57 @@ See also build server jobs:
 
 For bounded model checking tests, see `scripts/cbmc`.
 
+### Static Code Checkers
+
+There is a number of static code checkers available for all kind of programming languages. The 
+following section show how the most common ones can be used with libelektra.
+
+#### cppcheck
+
+[cppcheck](http://cppcheck.sourceforge.net/) can be used directly on a C or C++ source
+file by calling it with `cppcheck --enable=all <sourcefile>`. This way it might miss some header
+files though and thus doesn't detect all possible issues, but still gives useful hints in general.
+
+To analyze the whole project, use it in conjunction with cmake by calling cmake with the parameter
+`-DCMAKE_EXPORT_COMPILE_COMMANDS=ON`. This way cmake creates a file called `compile_commands.json` in
+the build directory. Afterwards, call cppcheck with the cmake settings and store the output as xml:
+
+    cppcheck --project=compile_commands.json --enable=all -j 8 --xml-version=2 2> cppcheck_result.xml
+
+Since the XML file is difficult to read directly, the best way is to convert it to an html report.
+cppcheck already includes a tool for that, call it with the xml report:
+
+    cppcheck-htmlreport --file=cppcheck_result.xml --report-dir=cppcheck_report --source-dir=.
+
+Now you can view the html report by opening `index.html` in the specified foder to get an overview 
+of the issues found in the whole project.
+
+#### scan-build
+
+[scan-build](http://clang-analyzer.llvm.org/scan-build.html) is a tool that is usually bundled along
+with LLVM/clang and is also primarily intended for C and C++ code. On macOS you have to install the 
+package `llvm` with homebrew, then you'll find the tool in the folder `/usr/local/opt/llvm/bin/`.
+
+To use it, prefix the compilation make command with `scan-build` in the build folder and specify an
+output folder for the results:
+
+    scan-build -o ./scanbuild_result make
+
+Afterwards, the report can be viewed by using the tool `scan-view`, also found in the llvm folder.
+The report is created in the folder specified above, along with the current date of the analyzation,
+for instance:
+
+    scan-view <path specified above>/2017-06-18-171027-27108-1
+
+Alternatively, you can also open the `index.html` file in the aforementioned folder, but using the tool
+the report is enriched with further information.
+
+#### SonarLint
+
+[SonarLint](http://www.sonarlint.org/) is a static code checker primarily intended for Java. It is 
+usually used by installing the corresponding plugin for the used IDE, then there is no further 
+configuration required.
+
 ### Code Coverage
 
 Run:
