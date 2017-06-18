@@ -94,6 +94,7 @@ install (FILES
 	kdbproposal.h
 	kdbinvoke.h
 	kdbutility.h
+	kdbio.h
 	"${CMAKE_CURRENT_BINARY_DIR}/kdbversion.h"
 	DESTINATION include/${TARGET_INCLUDE_FOLDER})
 

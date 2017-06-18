@@ -29,6 +29,7 @@ RUN apt-get -qq update && apt-get -qq -y install \
 	libpcre++-dev \
 	libglib2.0-dev \
 	swig3.0 \
+	libuv1-dev \
 	checkinstall \
 	valgrind \
 && gem install ronn \

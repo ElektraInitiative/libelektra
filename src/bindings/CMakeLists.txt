@@ -51,3 +51,8 @@ if (found)
 	add_subdirectory (intercept)
 endif()
 
+set (regex "io_.*")
+list_find (BINDINGS regex found)
+if (found)
+	add_subdirectory (io)
+endif()

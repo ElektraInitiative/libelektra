@@ -84,6 +84,12 @@ static void elektraAddConstants (KeySet * ks, Key * parentKey)
 
 
 	key = keyDup (parentKey);
+	keyAddName (key, "cmake/IOBINDINGS");
+	keySetString (key, "@IOBINDINGS@");
+	ksAppendKey (ks, key);
+
+
+	key = keyDup (parentKey);
 	keyAddName (key, "cmake/KDB_DB_SYSTEM");
 	keySetString (key, "@KDB_DB_SYSTEM@");
 	ksAppendKey (ks, key);
@@ -376,4 +382,3 @@ Plugin * ELEKTRA_PLUGIN_EXPORT (constants)
 		ELEKTRA_PLUGIN_SET,	&elektraConstantsSet,
 		ELEKTRA_PLUGIN_END);
 }
-
