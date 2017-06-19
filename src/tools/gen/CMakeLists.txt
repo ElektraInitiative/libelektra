@@ -34,7 +34,6 @@ if (PYTHON2INTERP_FOUND)
 			--prefix=${CMAKE_INSTALL_PREFIX}
 			--root=\$ENV{DESTDIR}
 			--install-scripts=${CMAKE_INSTALL_PREFIX}/${TARGET_TOOL_EXEC_FOLDER}
-			--install-layout=deb
 			)"
 		)
 
