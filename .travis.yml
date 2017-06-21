@@ -1,5 +1,5 @@
 notifications:
-  email: travis@libelektra-org
+  email: travis@libelektra.org
 
 language: generic
 
