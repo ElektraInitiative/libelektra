@@ -19,7 +19,7 @@ static void gelektra_keyset_finalize (GObject * object)
 
 	/* Always chain up to the parent class; as with dispose(), finalize()
 	 * is guaranteed to exist on the parent's class virtual function table
-	*/
+	 */
 	G_OBJECT_CLASS (gelektra_keyset_parent_class)->finalize (object);
 }
 

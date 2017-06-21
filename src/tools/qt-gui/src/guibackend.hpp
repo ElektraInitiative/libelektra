@@ -38,10 +38,10 @@ public:
 	}
 
 	/**
-	 * @brief Creates a new backend on a mountpoint.
-	 *
-	 * @param mountpoint The mountpoint of the new backend.
-	 */
+	   * @brief Creates a new backend on a mountpoint.
+	   *
+	   * @param mountpoint The mountpoint of the new backend.
+	   */
 	Q_INVOKABLE void createBackend (const QString & mountpoint);
 
 	/**
@@ -156,7 +156,8 @@ signals:
 	 * @brief Triggers a messagedialog in the GUI.
 	 * @param title The title of the messagedialog in the GUI.
 	 * @param text The text of the messagedialog in the GUI.This is the text that will be initially shown to the user.
-	 * @param detailedText The detailed text of the messagedialog in the GUI.The user will have to click on a button to access this text.
+	 * @param detailedText The detailed text of the messagedialog in the GUI.The user will have to click on a button to access this
+	 * text.
 	 */
 	void showMessage (QString title, QString text, QString detailedText) const;
 };

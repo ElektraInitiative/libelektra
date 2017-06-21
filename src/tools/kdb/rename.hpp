@@ -12,7 +12,7 @@
 #include <string>
 
 /** @return a renamed key
-  */
+ */
 inline kdb::Key rename_key (kdb::Key k, std::string sourceName, std::string newDirName, bool verbose)
 {
 	std::string otherName = k.getName ();

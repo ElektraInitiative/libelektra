@@ -21,7 +21,7 @@ namespace service
 
 /**
  * @brief Can be used to filter an entry vector based on a name prefix.
- * 
+ *
  * All entries that do not start with the given name prefix will be
  * removed from the result.
  *

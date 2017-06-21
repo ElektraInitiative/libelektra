@@ -117,7 +117,7 @@ model::PluginFormat ConvertEngine::findSuitablePlugin (const std::string & forma
 
 /**
  * @brief loads a list of enabled formats and plugins
- * 
+ *
  * Loads the configuration for the enabled formats from the
  * key database, parses them and stores them as enabled formats.
  *
@@ -165,7 +165,7 @@ std::vector<model::PluginFormat> ConvertEngine::loadEnabledFormats ()
 
 /**
  * @brief export entry to specific configuration format
- * 
+ *
  * If the format is not supported, an exception is thrown.
  *
  * @param format a format that shall be used for the export
@@ -193,7 +193,7 @@ model::ConfigFormat ConvertEngine::exportTo (const std::string format, model::En
 
 /**
  * @brief can be used to export an entry with the specified plugin.
- * 
+ *
  * @note This function does a round-trip check to validated whether
  *       the snippet was exported successfully (completely) without
  *       losing any information.
@@ -284,7 +284,7 @@ model::ConfigFormat ConvertEngine::exportTo (const model::PluginFormat & plugin,
 
 /**
  * @brief Can be used to convert an entry into all enabled file formats.
- * 
+ *
  * The sub keys of the entry will be taken and converted into the
  * enabled formats. To do this, a temporary file will be used, because
  * the storage plugins, which do the conversion, can operate on files
@@ -322,7 +322,7 @@ std::vector<model::ConfigFormat> ConvertEngine::exportToAll (model::Entry & entr
 
 /**
  * @brief converts a config string with format into an entry object
- * 
+ *
  * Can be used to convert a configuration given as string into
  * a usable kdb::KeySet which is stored in an ImportedConfig model.
  *
@@ -385,7 +385,7 @@ model::ImportedConfig ConvertEngine::import (const std::string & config, const s
 
 /**
  * @brief takes a provider list and extracts the storage format
- * 
+ *
  * @param providers a string containing provided functionality of a plugin
  * @return the storage format or "none" in case none was found
  */

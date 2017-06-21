@@ -40,7 +40,7 @@
  * Initialize everything with zero, except: sizes with -1
  * and refcounter with 1
  *
- * @return 
+ * @return
  */
 static Backend * elektraBackendAllocate ()
 {

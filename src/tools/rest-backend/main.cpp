@@ -18,7 +18,7 @@
 
 /**
  * @brief main function that bootstraps the application
- * 
+ *
  * @param argc command line argument count
  * @param argv command line argument list
  * @return 0 in case the service terminated gracefullly,

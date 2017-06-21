@@ -16,7 +16,8 @@ static const char padding = '=';
  * @brief encodes arbitrary binary data using the Base64 encoding scheme (RFC4648)
  * @param input holds the data to be encoded
  * @param inputLength tells how many bytes the input buffer is holding.
- * @returns an allocated string holding the Base64 encoded input data or NULL if the string can not be allocated. Must be freed by the caller.
+ * @returns an allocated string holding the Base64 encoded input data or NULL if the string can not be allocated. Must be freed by the
+ * caller.
  */
 char * ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME_C, base64Encode) (const kdb_octet_t * input, const size_t inputLength)
 {
@@ -93,7 +94,8 @@ static kdb_octet_t getBase64Index (const char c, int * errorFlag)
 /**
  * @brief decodes Base64 encoded data.
  * @param input holds the Base64 encoded data string
- * @param output will be set to an allocated buffer holding the decoded data or NULL if the allocation failed. Must be freed by the caller on success.
+ * @param output will be set to an allocated buffer holding the decoded data or NULL if the allocation failed. Must be freed by the caller
+ * on success.
  * @param outputLength will be set to the amount of decoded bytes.
  * @retval 1 on success
  * @retval -1 if the provided string has not been encoded with Base64
