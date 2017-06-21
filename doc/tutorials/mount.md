@@ -160,7 +160,7 @@ sudo kdb mount /.git/config dir/git ini multiline=0
 
 As git uses the `ini` format for its configuration we use the [ini plugin](/src/plugins/ini/README.md).
 You can pass parameters to plugins during the mount process. This is what
-we did with `multiline=0`. Git intends the entries in its configuration
+we did with `multiline=0`. Git intents the entries in its configuration
 files and the default behaviour of the `ini` plugin is to interpret these indented
 entries as values that span multiple lines. The passed parameter disables
 this behaviour and makes the ini-plugin compatible with git configuration.
@@ -186,7 +186,7 @@ git config --get user.email
 #### Meta Data
 
 Elektra is able to store [metadata](/doc/help/elektra-metadata.md) of keys, provided the format of the file that holds the configuration supports this feature.
-The ini plugin doesn't support this feature, but the [ni](/src/plugins/ni/README.md) and the [dump](/src/plugins/dump/README.md) plugin do.
+The ini plugin does support this feature, and so does the [ni](/src/plugins/ni/README.md) and the [dump](/src/plugins/dump/README.md) plugin among others.
 
 > Actually the ini plugin creates some metadata on its own. This metadata contains information about the ordering of keys or comments, if a key has some.
 > But unlike the ni and the dump plugin we can't store arbitrary metadata with the ini plugin.
