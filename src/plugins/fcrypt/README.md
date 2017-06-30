@@ -15,6 +15,7 @@
 ## Introduction
 
 This plugin enables file based encryption and decryption using GPG.
+Also an option for signing and verifying files using GPG is provided.
 
 This plugin encrypts backend files before the commit is executed (thus `precommit`).
 The plugin decrypts the backend files before the getstorage opens it (thus `pregetstorage`).
@@ -49,6 +50,8 @@ Please note that this is a workaround until a more sustainable solution is found
 
 ## Dependencies
 
+### Crypto Plugin
+
 This plugin uses parts of the `crypto` plugin.
 
 ### GnuPG (GPG)
@@ -76,6 +79,18 @@ But you can still access `/t/a` with `kdb get`:
 	kdb get /t/a
 
 ## Configuration
+
+### Signatures
+
+The GPG signature keys can be specified as `/fcrypt/sign` directly.
+If you want to use more than one key for signing, just enumerate like:
+
+    /fcrypt/sign/#0
+    /fcrypt/sign/#1
+
+If more than one key is defined, every private key is used to sign the file of the backend.
+
+If a signature is attached to a file, `fcrypt` automatically verifies its content whenever the file is being read.
 
 ### GPG Configuration
 
