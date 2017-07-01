@@ -19,6 +19,12 @@
 #include <sys/mman.h>	// mmap()
 #include <sys/stat.h>	// stat()
 
+#define SIZEOF_KEY			(sizeof (Key))
+#define SIZEOF_KEY_PTR		(sizeof (Key *))
+#define SIZEOF_KEYSET		(sizeof (KeySet))
+#define SIZEOF_KEYSET_PTR	(sizeof (KeySet *))
+
+
 
 static int elektraMmapstorageOpenFile (int fd, Key * parentKey, int errnosave)
 {
@@ -27,8 +33,8 @@ static int elektraMmapstorageOpenFile (int fd, Key * parentKey, int errnosave)
 	// TODO: arbitrarily chosen to use 0644 here, fix later
 	if ((fd = open (keyString (parentKey), O_RDWR | O_CREAT , 0644)) == -1) {
 		ELEKTRA_SET_ERROR_GET (parentKey);
-		ELEKTRA_LOG_WARNING ("error opening file %s", keyString (parentKey));
 		errno = errnosave;
+		ELEKTRA_LOG_WARNING ("error opening file %s", keyString (parentKey));
 		return -1;
 	}
 	return fd;
@@ -53,8 +59,8 @@ static int elektraMmapstorageStat (struct stat * sbuf, Key * parentKey, int errn
 
 	if (stat(keyString (parentKey), sbuf) == -1) {
 		ELEKTRA_SET_ERROR_GET (parentKey);
-		ELEKTRA_LOG_WARNING ("error on stat() for file %s", keyString (parentKey));
 		errno = errnosave;
+		ELEKTRA_LOG_WARNING ("error on stat() for file %s", keyString (parentKey));
 		return -1;
 	}
 	return 1;
@@ -66,7 +72,7 @@ static char * elektraMmapstorageMapFile (int fd, size_t mmapsize, Key * parentKe
 
 	// TODO: fix magic mmap address
 	// TODO: don't use MAP_FIXED
-	char * mappedRegion = mmap ((void *) 0x31337000000, mmapsize, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_FIXED, fd, 0);
+	char * mappedRegion = mmap ((void *) 0x31337000000, mmapsize, PROT_READ | PROT_WRITE, MAP_SHARED | MAP_FIXED, fd, 0);
 	if (mappedRegion == MAP_FAILED) {
 		ELEKTRA_SET_ERROR_GET (parentKey);
 		errno = errnosave;
@@ -92,6 +98,54 @@ static size_t elektraMmapstorageDataSize (KeySet * returned)
 	size_t mmapsize = keySetSize + keyArraySize + dynamicDataSize + keyPtrArraySize;
 
 	return mmapsize;
+}
+
+static void elektraMmapstorageWriteKeySet (KeySet * keySet, char * mappedRegion)
+{
+	// TODO: save all Keys of KeySet to mapped region
+	size_t keyArraySize = (keySet->size) * SIZEOF_KEY;
+	size_t keyPtrArraySize = (keySet->size) * SIZEOF_KEY_PTR;
+
+	size_t dataOffset = SIZEOF_KEYSET + keyArraySize; // ptr to start of DATA block
+	char * dataNextFreeBlock = mappedRegion+dataOffset;
+
+
+	Key * cur;
+	Key ** mappedKeys = elektraMalloc (keyPtrArraySize);
+	size_t keyIndex = 0;
+	ksRewind(keySet);
+	while ((cur = ksNext (keySet)) != 0)
+	{
+		// move Key name
+		memcpy (dataNextFreeBlock, (const void *) cur->key, cur->keySize); // TODO: use keyGetNameSize
+		cur->key = dataNextFreeBlock;
+		dataNextFreeBlock += cur->keySize;
+
+		// move Key value
+		memcpy (dataNextFreeBlock, cur->data.v, cur->dataSize); // TODO: use keyGetValueSize
+		cur->data.v = dataNextFreeBlock;
+		dataNextFreeBlock += cur->dataSize;
+
+		// move Key itself
+		void * mmapKey = mappedRegion + SIZEOF_KEYSET + (keyIndex * SIZEOF_KEY);
+		cur->flags |= KEY_FLAG_MMAP;
+		memcpy (mmapKey, cur, SIZEOF_KEY);
+
+		// remember pointer to Key for our root KeySet
+		mappedKeys[keyIndex] = mmapKey;
+
+		++keyIndex;
+	}
+	// copy key ptrs from array to DATA block
+	memcpy (dataNextFreeBlock, mappedKeys, keyPtrArraySize);
+	keySet->array = (Key **) dataNextFreeBlock;
+	dataNextFreeBlock += keyArraySize;
+	elektraFree (mappedKeys);
+
+	// TODO: save KeySet int mapped region
+	// TODO: update KeySet array!!!!!
+	keySet->flags |= KS_FLAG_MMAP;
+	memcpy (mappedRegion, keySet, SIZEOF_KEYSET);
 }
 
 int elektraMmapstorageOpen (Plugin * handle ELEKTRA_UNUSED, Key * errorKey ELEKTRA_UNUSED)
@@ -137,7 +191,6 @@ int elektraMmapstorageGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Ke
 
 	int errnosave = errno;
 	int fd = -1;
-	int ret;
 
 	if ((fd = elektraMmapstorageOpenFile (fd, parentKey, errnosave)) == -1)
 	{
@@ -169,7 +222,6 @@ int elektraMmapstorageSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELE
 
 	int errnosave = errno;
 	int fd = -1;
-	int ret;
 
 	if ((fd = elektraMmapstorageOpenFile (fd, parentKey, errnosave)) == -1)
 	{
@@ -191,51 +243,7 @@ int elektraMmapstorageSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELE
 		return -1;
 	}
 
-	// TODO: save all Keys of KeySet to mapped region
-	ksRewind(returned);
-
-	size_t keySetSize = sizeof (KeySet);
-	size_t keySize = sizeof (Key);
-	size_t keyArraySize = (returned->size) * keySize;
-	size_t keyPtrArraySize = (returned->size) * sizeof (Key *);
-	size_t dataOffset = keySetSize + keyArraySize; // ptr to start of DATA block
-	char * dataNextFreeBlock = mappedRegion+dataOffset;
-
-	Key * cur;
-	Key ** mappedKeys = elektraMalloc(keyPtrArraySize);
-	size_t keyIndex = 0;
-	while ((cur = ksNext (returned)) != 0)
-	{
-		// move Key name
-		memcpy (dataNextFreeBlock, (const void *) cur->key, cur->keySize); // TODO: use keyGetNameSize
-		cur->key = dataNextFreeBlock;
-		dataNextFreeBlock += cur->keySize;
-
-		// move Key value
-		memcpy (dataNextFreeBlock, cur->data.v, cur->dataSize); // TODO: use keyGetValueSize
-		cur->data.v = dataNextFreeBlock;
-		dataNextFreeBlock += cur->dataSize;
-
-		// move Key itself
-		void * mmapKey = mappedRegion+keySetSize+(keyIndex*keySize);
-		cur->flags |= KEY_FLAG_MMAP;
-		memcpy (mmapKey, cur, keySize);
-
-		// remember pointer to Key for our root KeySet
-		mappedKeys[keyIndex] = mmapKey;
-
-		++keyIndex;
-	}
-	// copy key ptrs from array to DATA block
-	memcpy (dataNextFreeBlock, mappedKeys, keyPtrArraySize);
-	returned->array = (Key **) dataNextFreeBlock;
-	dataNextFreeBlock += keyArraySize;
-	elektraFree (mappedKeys);
-
-	// TODO: save KeySet int mapped region
-	// TODO: update KeySet array!!!!!
-	returned->flags |= KS_FLAG_MMAP;
-	memcpy (mappedRegion, returned, keySetSize);
+	elektraMmapstorageWriteKeySet (returned, mappedRegion);
 
 	// munmap (mappedRegion, mmapsize);
 	// close (fd);

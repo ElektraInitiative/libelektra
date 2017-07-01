@@ -49,7 +49,7 @@
 
 /** To be used if you want the currently
   * build-in default storage, whatever it is. */
-#define KDB_STORAGE              "storage"
+#define KDB_STORAGE              "mmapstorage"
 
 /** To be used if you want the currently
   * build-in default resolver, whatever it is. */
