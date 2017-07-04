@@ -9,13 +9,13 @@ It is sometimes unavoidable that errors
 occur that ultimately have an impact for the user.  One example for such an
 error is that hard disc space is exhausted.  For a library it
 is necessary to pass information about the facts and circumstances to the
-user because the user wants to be informed why a requested action failed.
+user, because the user wants to be informed why a requested action failed.
 So Elektra gathers all information in these situations.  We call this
 resulting information **error information** or
 **warning information** depending on the severity.
 
-If the occurred error is critical and ultimately causes a situation that
-the post conditions cannot be fulfilled we say that Elektra comes into a
+If the error is critical and ultimately causes a situation in which
+the post conditions cannot be fulfilled we say that Elektra is in a
 **faulty state**.  Such a faulty state will change the control flow
 inside Elektra completely.  Elektra is unable to resolve the problem
 without assistance.  After cleaning up resources, a faulty state leads
@@ -43,10 +43,10 @@ to this message in which way to continue.
 ### Error vs. Warning Information
 
 When an error in a faulty state occurs, the error information must
-still hold the original error information.  So even in problems that
-would cause a faulty state, otherwise, the error information must be
-omitted or transformed to a warning information.  In some places only
-the adding of warning information is possible:
+still hold the original error information.  So even if a new problem would
+cause a faulty state otherwise, the error information must be
+omitted or transformed to warning information.  In some places only
+the addition of warning information is possible:
 
 - The main purpose of `kdbClose()` is to free the
   handle.  This operation is always successful and is carried out even
@@ -57,13 +57,13 @@ the adding of warning information is possible:
 
 - Also in `kdbOpen()`, only adding warning information is allowed.
   If `kdbOpen()` is not able to open a plugin, the affected backend will be
-  dropped out.  The user is certainly interested why that happened.  But it
-  was decided not to make it a faulty state, because the application might
+  dropped.  The user is certainly interested why that happened.  But
+  we decided not to make this a faulty state, because the application might
   not even access the faulty part of the key hierarchy.  An exception
   to this rule is if `kdbOpen()` fails to open the default backend.
   This situation will induce a faulty state.
 
-- In `kdbSet()`, the cleaning up of resources involves calling
+- In `kdbSet()`, the clean-up of resources involves calling
   plugins.  But during this process Elektra is in a faulty state, so only
   adding of warning information is allowed.  This ensures that the original
   error information is passed unchanged to the user.
