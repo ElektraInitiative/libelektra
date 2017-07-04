@@ -263,21 +263,28 @@ Methods are said to be exception safe if the object remains in a valid
 state.  The idea of exception safety is to ensure that no resource
 leaking is possible.  `kdbSet()` written in C++ would look like:
 
-	try {
-		plugin[1].set(); // may throw plugin[2].set(); // may
-		throw plugin[3].set(); // may throw ...
+```c++
+try {
+	plugin[1].set(); // may throw
+	plugin[2].set(); // may throw
+	plugin[3].set(); // may throw
+	...
 
-		plugin[PLUGIN_COMMIT].set(); // now all changes are
-		committed
-	} catch (...) {
-		// error situation, roll back the changes
-		plugin[1].error(); // does not throw plugin[2].error();
-		// does not throw plugin[3].error(); // does not throw ...
+	plugin[PLUGIN_COMMIT].set(); // now all changes are committed
+} catch (...) {
+	// error situation, roll back the changes
+	plugin[1].error(); // does not throw
+	plugin[2].error(); // does not throw
+	plugin[3].error(); // does not throw
+	...
 
-		// now all changes are rolled back return -1;
-	} // now do all actions on success after commit
-	plugin[POSTCOMMIT].set(); // does not throw ...  return 1; //
-	commit successful
+	// now all changes are rolled back
+	return -1;
+} // now do all actions on success after commit
+plugin[POSTCOMMIT].set(); // does not throw
+...
+return 1; // commit successful
+```
 
 This pseudo code is much clearer than the corresponding C code.  Let us
 explain the guarantee Elektra provides using this example.  One by one
