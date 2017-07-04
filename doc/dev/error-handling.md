@@ -85,8 +85,8 @@ Reporting errors is a critical task.  Users expect different aspects:
   error message at all.  If it is inevitable, he or she wants little,
   but very concrete information, about what he or she needs to do.
   The message should be short and concise.  Some error information
-  may already be captured by the application, but others like ''no
-  more free disk space'' have to be displayed.  Conflicts should also
+  may already be captured by the application, but others like “no
+  more free disk space” have to be displayed.  Conflicts should also
   be presented to the user.  It is a good idea to ask how to proceed
   if a diversity of possible reactions exists.  In case of conflicts,
   the user may have additional knowledge about the other program which
@@ -140,16 +140,16 @@ Additional metakeys yield all the details.
 - [error/number] yields a unique number for every error.
 
 - [error/description] is a description for the error to be displayed
-to the user.  For example, the metavalue can hold the text ''could not
-write to file''.
+to the user.  For example, the metavalue can hold the text “could not
+write to file”.
 
 - [error/reason] specifies the reason of the error.  The human
 readable message is in the metavalue of `error/reason`.  It states why
 the error occurred.  One example for it is ''no disc space available''.
 
-- [error/ingroup] contains ''`kdb`'' if the error occurred inside
-the core.  It contains ''`module`'' if the error happened while loading
-a module.  The metavalue is ''`plugin`'' if the error information comes
+- [error/ingroup] contains `kdb` if the error occurred inside
+the core.  It contains `module` if the error happened while loading
+a module.  The metavalue is `plugin` if the error information comes
 from a plugin.
 
 - [error/module] indicates the name of the specific module or plugin.
@@ -172,8 +172,8 @@ directly.  Instead it is used to generate source code which contains
 everything needed to add a particular error or warning information.
 With that file we achieved a central place for error-related information.
 All other locations are automatically generated instead of having
-error-prone duplicated code.  This principle is called ''Don't repeat
-yourself''.
+error-prone duplicated code.  This principle is called “Don't repeat
+yourself”.
 
 In Elektra’s core and plugins, C macros are responsible for setting
 the error information and adding warning information.  In C only a
