@@ -18,6 +18,45 @@
 #include <kdbhelper.h>
 #include <kdblogger.h>
 
+#ifdef HAVE_LOGGER
+#include <libgen.h>
+#include <sys/param.h>
+#endif
+
+/* -- Data Structures ------------------------------------------------------------------------------------------------------------------- */
+
+/** This enum specifies the possible states of the recursive descent parser. */
+typedef enum {
+	/** Unable to open file */
+	ERROR_FILE_OPEN,
+	/** Unable to close file */
+	ERROR_FILE_CLOSE,
+	/** Everything is okay */
+	OK
+} statusType;
+
+/** This structure saves various data for the recursive descent parser used in this plugin. */
+typedef struct
+{
+	/** The current state of the parsing engine */
+	statusType status;
+
+	/** The handle of the opened file */
+	FILE * file;
+	/** Current line inside `file` */
+	size_t line;
+	/** Current column inside `line` */
+	size_t column;
+
+	/** Saves filename and allows us to emit error information */
+	Key * parentKey;
+	/** Contains key values pairs we parsed (get direction) or data we need to write back (set direction) */
+	KeySet * keySet;
+
+	/** Stores previous value of `errno` */
+	int errorNumber;
+} parsingData;
+
 /* -- Functions ------------------------------------------------------------------------------------------------------------------------- */
 
 // ===========
@@ -25,11 +64,61 @@
 // ===========
 
 /**
+ * @brief Open a file for reading
+ *
+ * @pre The parameters `data` and `data->parentKey` must not be `NULL`
+ *
+ * @param data Saves the filename of the file this function opens
+ *
+ * @retval The updated parsing structure. If there were any errors opening the file, then this function sets the type of the parsing
+ * 	   structure to `ERROR_FILE_OPEN`.
+ */
+static parsingData * openFile (parsingData * const data)
+{
+	ELEKTRA_ASSERT (data, "The Parameter `data` contains `NULL`.");
+	ELEKTRA_ASSERT (data->parentKey, "The Parameter `parentKey` contains `NULL`.");
+
+	data->file = fopen (keyString (data->parentKey), "r");
+
+	if (!data->file)
+	{
+		ELEKTRA_LOG_WARNING ("Could not open file “%s” for reading: %s", keyString (data->parentKey), strerror (errno));
+		ELEKTRA_SET_ERROR_GET (data->parentKey);
+		errno = data->errorNumber;
+		data->status = ERROR_FILE_OPEN;
+	}
+	return data;
+}
+
+/**
+ * @brief Close a file handle opened for reading
+ *
+ * @pre The parameters `data` must not be `NULL`
+ *
+ * @param data Saves the file handle this function closes
+ *
+ * @retval The updated parsing structure. If there were any errors closing the file, then this function sets the type of the parsing
+ * 	   structure to `ERROR_FILE_CLOSE`.
+ */
+static parsingData * closeFileRead (parsingData * const data)
+{
+	ELEKTRA_ASSERT (data, "The Parameter `data` contains `NULL`.");
+
+	if (data->file && fclose (data->file) != 0)
+	{
+		ELEKTRA_SET_ERROR_GET (data->parentKey);
+		errno = data->errorNumber;
+		data->status = ERROR_FILE_CLOSE;
+	}
+	return data;
+}
+
+/**
  * @brief This function returns a key set containing the contract of this plugin.
  *
  * @return A contract describing the functionality of this plugin.
  */
-static inline KeySet * contractYaml ()
+static KeySet * contractYaml ()
 {
 	return ksNew (30, keyNew ("system/elektra/modules/yaml", KEY_VALUE, "yaml plugin waits for your orders", KEY_END),
 		      keyNew ("system/elektra/modules/yaml/exports", KEY_END),
@@ -37,32 +126,6 @@ static inline KeySet * contractYaml ()
 		      keyNew ("system/elektra/modules/yaml/exports/set", KEY_FUNC, elektraYamlSet, KEY_END),
 #include ELEKTRA_README (yaml)
 		      keyNew ("system/elektra/modules/yaml/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
-}
-
-/**
- * @brief Close a given file handle opened for reading
- *
- * @pre The parameters `file`, and `parentKey` must not be `NULL`.
- *
- * @param file The file handle this function should close
- * @param errorNumber A saved value for `errno` this function should restore if it was unable to close `file`
- * @param parentKey A key that is used by this function to store error information if the function was unable to close `file`
- *
- * @retval ELEKTRA_PLUGIN_STATUS_SUCCESS if `file` was closed successfully
- * @retval ELEKTRA_PLUGIN_STATUS_ERROR if the function was unable to close `file`
- */
-static inline int closeFileRead (FILE * file, int errorNumber, Key * parentKey)
-{
-	ELEKTRA_ASSERT (file, "The Parameter `file` contains `NULL` instead of a valid file handle.");
-	ELEKTRA_ASSERT (parentKey, "The Parameter `parentKey` contains `NULL` instead of a valid key.");
-
-	if (fclose (file) != 0)
-	{
-		ELEKTRA_SET_ERROR_GET (parentKey);
-		errno = errorNumber;
-		return ELEKTRA_PLUGIN_STATUS_ERROR;
-	}
-	return ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
 }
 
 /**
@@ -82,18 +145,13 @@ static int parseFile (KeySet * returned ELEKTRA_UNUSED, Key * parentKey)
 	ELEKTRA_ASSERT (parentKey, "The Parameter `parentKey` contains `NULL` instead of a valid key.");
 
 	ELEKTRA_LOG ("Read configuration data");
-	int errorNumber = errno;
-	FILE * source = fopen (keyString (parentKey), "r");
 
-	if (!source)
-	{
-		ELEKTRA_LOG_WARNING ("Could not open file “%s” for reading: %s", keyString (parentKey), strerror (errno));
-		ELEKTRA_SET_ERROR_GET (parentKey);
-		errno = errorNumber;
-		return ELEKTRA_PLUGIN_STATUS_ERROR;
-	}
+	parsingData * data = &(parsingData){
+		.status = OK, .line = 1, .column = 1, .file = NULL, .parentKey = parentKey, .keySet = returned, .errorNumber = errno
+	};
 
-	return closeFileRead (source, errorNumber, parentKey);
+	openFile (data);
+	return closeFileRead (data)->status == OK ? ELEKTRA_PLUGIN_STATUS_SUCCESS : ELEKTRA_PLUGIN_STATUS_ERROR;
 }
 
 // ====================
