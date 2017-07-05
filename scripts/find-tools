@@ -15,6 +15,7 @@ tags = {	'configure': "This script is used for the build configuration",
 		'env': "This script does some env stuff",
 		'mount': "This script mounts things",
 		'reformat': "This script reformats things",
+		'benchmark': "This script runs benchmarks",
 		'debian': "Special script for debian system"}
 
 # No changes below this line necassary!

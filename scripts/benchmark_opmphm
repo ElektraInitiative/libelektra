@@ -1,0 +1,17 @@
+#!/bin/bash
+#
+# @author Kurt Micheli <kurt.micheli@libelektra.org>
+# @brief run opmphm benchmark
+# @date 05.06.2017
+# @tags benchmark
+
+numberOfSeeds=2
+
+if [ ! -f "CMakeCache.txt" ];
+then
+	echo "Execute $0 in build dir"
+	exit 1
+fi
+
+make benchmark_opmphm
+R --slave --no-save <<< "cat(runif($numberOfSeeds,0,4294967295), sep=\"\n\")" | bin/benchmark_opmphm

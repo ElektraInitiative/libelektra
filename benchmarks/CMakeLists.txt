@@ -26,4 +26,7 @@ endmacro (do_benchmark)
 do_benchmark (large)
 do_benchmark (cmp)
 do_benchmark (createkeys)
+if (ENABLE_OPTIMIZATIONS)
+	do_benchmark (opmphm)
+endif (ENABLE_OPTIMIZATIONS)
 
