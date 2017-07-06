@@ -11,7 +11,9 @@
 
 #include "yaml.h"
 
+#include <stdbool.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 #include <kdbassert.h>
 #include <kdberrors.h>
@@ -23,6 +25,25 @@
 #include <sys/param.h>
 #endif
 
+/* -- Macros ---------------------------------------------------------------------------------------------------------------------------- */
+
+#define LOG_PARSE(data, message, ...)                                                                                                      \
+	{                                                                                                                                  \
+		char filename[MAXPATHLEN];                                                                                                 \
+		basename_r (keyString (data->parentKey), filename);                                                                        \
+		ELEKTRA_LOG_DEBUG ("%s:%lu:%lu: " message, filename, data->line, data->column, __VA_ARGS__);                               \
+	}
+
+#define SET_ERROR_PARSE(data, message, ...)                                                                                                \
+	ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_PARSE, data->parentKey, "%s:%lu:%lu: " message, keyString (data->parentKey), data->line,         \
+			    data->column, __VA_ARGS__);
+
+#define PARSE(parser, data)                                                                                                                \
+	if (parser->status != OK)                                                                                                          \
+	{                                                                                                                                  \
+		return data;                                                                                                               \
+	}
+
 /* -- Data Structures ------------------------------------------------------------------------------------------------------------------- */
 
 /** This enum specifies the possible states of the recursive descent parser. */
@@ -31,6 +52,8 @@ typedef enum {
 	ERROR_FILE_OPEN,
 	/** Unable to close file */
 	ERROR_FILE_CLOSE,
+	/** Error while parsing file */
+	ERROR_PARSE,
 	/** Everything is okay */
 	OK
 } statusType;
@@ -47,6 +70,8 @@ typedef struct
 	size_t line;
 	/** Current column inside `line` */
 	size_t column;
+	/** Last read text consumed by parser */
+	char * text;
 
 	/** Saves filename and allows us to emit error information */
 	Key * parentKey;
@@ -55,7 +80,7 @@ typedef struct
 
 	/** Stores previous value of `errno` */
 	int errorNumber;
-} parsingData;
+} parser;
 
 /* -- Functions ------------------------------------------------------------------------------------------------------------------------- */
 
@@ -73,7 +98,7 @@ typedef struct
  * @retval The updated parsing structure. If there were any errors opening the file, then this function sets the type of the parsing
  * 	   structure to `ERROR_FILE_OPEN`.
  */
-static parsingData * openFile (parsingData * const data)
+static parser * openFile (parser * const data)
 {
 	ELEKTRA_ASSERT (data, "The Parameter `data` contains `NULL`.");
 	ELEKTRA_ASSERT (data->parentKey, "The Parameter `parentKey` contains `NULL`.");
@@ -100,7 +125,7 @@ static parsingData * openFile (parsingData * const data)
  * @retval The updated parsing structure. If there were any errors closing the file, then this function sets the type of the parsing
  * 	   structure to `ERROR_FILE_CLOSE`.
  */
-static parsingData * closeFileRead (parsingData * const data)
+static parser * closeFileRead (parser * const data)
 {
 	ELEKTRA_ASSERT (data, "The Parameter `data` contains `NULL`.");
 
@@ -128,6 +153,134 @@ static KeySet * contractYaml ()
 		      keyNew ("system/elektra/modules/yaml/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 }
 
+static bool acceptChars (parser * const data, char const * const characters, size_t numberCharacters)
+{
+	ELEKTRA_ASSERT (data, "The Parameter `data` contains `NULL`.");
+	ELEKTRA_ASSERT (characters, "The Parameter `characters` contains `NULL`.");
+
+	int readCharacter;
+
+	if ((readCharacter = getc (data->file)) >= 0)
+	{
+		for (size_t char_index = 0; char_index < numberCharacters; char_index++)
+		{
+			if (readCharacter == characters[char_index])
+			{
+				LOG_PARSE (data, "Accepted character “%c”", characters[char_index]);
+				data->column++;
+				return true;
+			}
+		}
+		LOG_PARSE (data, "Put back character “%c”", readCharacter);
+		(void)ungetc (readCharacter, data->file);
+	}
+
+	if (ferror (data->file))
+	{
+		SET_ERROR_PARSE (data, "%s", strerror (errno));
+		data->status = ERROR_PARSE;
+	}
+	return false;
+}
+
+static bool acceptChar (parser * const data, char const character)
+{
+	ELEKTRA_ASSERT (data, "The Parameter `data` contains `NULL`.");
+
+	return acceptChars (data, (char[]){ character }, 1);
+}
+
+static parser * expect (parser * const data, char const character)
+{
+	ELEKTRA_ASSERT (data, "The Parameter `data` contains `NULL`.");
+
+	bool found = acceptChar (data, character);
+	if (data->status != OK)
+	{
+		return data;
+	}
+
+	if (!found)
+	{
+		SET_ERROR_PARSE (data, "Expected character “%c” but found “%c”", character, getc (data->file));
+		data->status = ERROR_PARSE;
+	}
+
+	return data;
+}
+
+static parser * whitespace (parser * const data)
+{
+	ELEKTRA_ASSERT (data, "The Parameter `data` contains `NULL`.");
+	ELEKTRA_ASSERT (data->file, "The Parameter `file` contains `NULL`.");
+
+	bool found;
+	do
+	{
+		found = acceptChars (data, (char[]){ ' ', '\t' }, 2);
+		if (data->status != OK)
+		{
+			break;
+		}
+	} while (found);
+
+	return data;
+}
+
+static parser * readUntilDoubleQuote (parser * const data)
+{
+	ELEKTRA_ASSERT (data, "The Parameter `data` contains `NULL`.");
+
+	int * previous = NULL;
+	int current;
+
+	size_t numberOfChars = 0;
+	size_t allocatedChars = 10;
+	data->text = malloc (10);
+
+	while ((current = getc (data->file)) >= 0 && (current != '"' || (previous && *previous == '\\')))
+	{
+		numberOfChars++;
+		LOG_PARSE (data, "Read character “%c”", current);
+		if (allocatedChars < numberOfChars + 1)
+		{
+			allocatedChars *= 2;
+			data->text = realloc (data->text, allocatedChars);
+		}
+
+		*(data->text + numberOfChars - 1) = current;
+	}
+	*(data->text + numberOfChars) = '\0';
+
+	if (ferror (data->file))
+	{
+		SET_ERROR_PARSE (data, "%s", strerror (errno));
+		data->status = ERROR_PARSE;
+	}
+
+	return data;
+}
+
+static parser * key (parser * const data)
+{
+	PARSE (whitespace (data), data);
+	PARSE (expect (data, '"'), data);
+	PARSE (readUntilDoubleQuote (data), data);
+
+	LOG_PARSE (data, "Read key value “%s”", data->text);
+
+	return data;
+}
+
+static parser * pair (parser * const data)
+{
+	PARSE (whitespace (data), data);
+	PARSE (expect (data, '{'), data);
+	PARSE (key (data), data);
+
+	return data;
+}
+
 /**
  * @brief Parse a file containing data specified in a very basic subset of YAML and store the obtained data in a given key set.
  *
@@ -146,12 +299,26 @@ static int parseFile (KeySet * returned ELEKTRA_UNUSED, Key * parentKey)
 
 	ELEKTRA_LOG ("Read configuration data");
 
-	parsingData * data = &(parsingData){
-		.status = OK, .line = 1, .column = 1, .file = NULL, .parentKey = parentKey, .keySet = returned, .errorNumber = errno
-	};
+	parser * data = &(parser){.status = OK,
+				  .line = 1,
+				  .column = 1,
+				  .file = NULL,
+				  .text = NULL,
+				  .parentKey = parentKey,
+				  .keySet = returned,
+				  .errorNumber = errno };
 
-	openFile (data);
-	return closeFileRead (data)->status == OK ? ELEKTRA_PLUGIN_STATUS_SUCCESS : ELEKTRA_PLUGIN_STATUS_ERROR;
+	if (openFile (data)->status == OK)
+	{
+		pair (data);
+	}
+	closeFileRead (data);
+	if (data->text)
+	{
+		free (data->text);
+	}
+
+	return data->status == OK ? ELEKTRA_PLUGIN_STATUS_SUCCESS : ELEKTRA_PLUGIN_STATUS_ERROR;
 }
 
 // ====================
