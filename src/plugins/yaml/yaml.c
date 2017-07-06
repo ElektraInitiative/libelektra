@@ -80,7 +80,7 @@ typedef struct
 
 	/** Stores previous value of `errno` */
 	int errorNumber;
-} parser;
+} parserType;
 
 /* -- Functions ------------------------------------------------------------------------------------------------------------------------- */
 
@@ -91,51 +91,51 @@ typedef struct
 /**
  * @brief Open a file for reading
  *
- * @pre The parameters `data` and `data->parentKey` must not be `NULL`
+ * @pre The parameters `parser` and `parser->parentKey` must not be `NULL`
  *
- * @param data Saves the filename of the file this function opens
+ * @param parser Saves the filename of the file this function opens
  *
  * @retval The updated parsing structure. If there were any errors opening the file, then this function sets the type of the parsing
  * 	   structure to `ERROR_FILE_OPEN`.
  */
-static parser * openFile (parser * const data)
+static parserType * openFile (parserType * const parser)
 {
-	ELEKTRA_ASSERT (data, "The Parameter `data` contains `NULL`.");
-	ELEKTRA_ASSERT (data->parentKey, "The Parameter `parentKey` contains `NULL`.");
+	ELEKTRA_ASSERT (parser, "The Parameter `parser` contains `NULL`.");
+	ELEKTRA_ASSERT (parser->parentKey, "The Parameter `parentKey` contains `NULL`.");
 
-	data->file = fopen (keyString (data->parentKey), "r");
+	parser->file = fopen (keyString (parser->parentKey), "r");
 
-	if (!data->file)
+	if (!parser->file)
 	{
-		ELEKTRA_LOG_WARNING ("Could not open file “%s” for reading: %s", keyString (data->parentKey), strerror (errno));
-		ELEKTRA_SET_ERROR_GET (data->parentKey);
-		errno = data->errorNumber;
-		data->status = ERROR_FILE_OPEN;
+		ELEKTRA_LOG_WARNING ("Could not open file “%s” for reading: %s", keyString (parser->parentKey), strerror (errno));
+		ELEKTRA_SET_ERROR_GET (parser->parentKey);
+		errno = parser->errorNumber;
+		parser->status = ERROR_FILE_OPEN;
 	}
-	return data;
+	return parser;
 }
 
 /**
  * @brief Close a file handle opened for reading
  *
- * @pre The parameters `data` must not be `NULL`
+ * @pre The parameter `parser` must not be `NULL`
  *
  * @param data Saves the file handle this function closes
  *
  * @retval The updated parsing structure. If there were any errors closing the file, then this function sets the type of the parsing
  * 	   structure to `ERROR_FILE_CLOSE`.
  */
-static parser * closeFileRead (parser * const data)
+static parserType * closeFileRead (parserType * const parser)
 {
-	ELEKTRA_ASSERT (data, "The Parameter `data` contains `NULL`.");
+	ELEKTRA_ASSERT (parser, "The Parameter `parser` contains `NULL`.");
 
-	if (data->file && fclose (data->file) != 0)
+	if (parser->file && fclose (parser->file) != 0)
 	{
-		ELEKTRA_SET_ERROR_GET (data->parentKey);
-		errno = data->errorNumber;
-		data->status = ERROR_FILE_CLOSE;
+		ELEKTRA_SET_ERROR_GET (parser->parentKey);
+		errno = parser->errorNumber;
+		parser->status = ERROR_FILE_CLOSE;
 	}
-	return data;
+	return parser;
 }
 
 /**
@@ -153,132 +153,132 @@ static KeySet * contractYaml ()
 		      keyNew ("system/elektra/modules/yaml/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 }
 
-static bool acceptChars (parser * const data, char const * const characters, size_t numberCharacters)
+static bool acceptChars (parserType * const parser, char const * const characters, size_t numberCharacters)
 {
-	ELEKTRA_ASSERT (data, "The Parameter `data` contains `NULL`.");
+	ELEKTRA_ASSERT (parser, "The Parameter `parser` contains `NULL`.");
 	ELEKTRA_ASSERT (characters, "The Parameter `characters` contains `NULL`.");
 
 	int readCharacter;
 
-	if ((readCharacter = getc (data->file)) >= 0)
+	if ((readCharacter = getc (parser->file)) >= 0)
 	{
 		for (size_t char_index = 0; char_index < numberCharacters; char_index++)
 		{
 			if (readCharacter == characters[char_index])
 			{
-				LOG_PARSE (data, "Accepted character “%c”", characters[char_index]);
-				data->column++;
+				LOG_PARSE (parser, "Accepted character “%c”", characters[char_index]);
+				parser->column++;
 				return true;
 			}
 		}
-		LOG_PARSE (data, "Put back character “%c”", readCharacter);
-		(void)ungetc (readCharacter, data->file);
+		LOG_PARSE (parser, "Put back character “%c”", readCharacter);
+		(void)ungetc (readCharacter, parser->file);
 	}
 
-	if (ferror (data->file))
+	if (ferror (parser->file))
 	{
-		SET_ERROR_PARSE (data, "%s", strerror (errno));
-		data->status = ERROR_PARSE;
+		SET_ERROR_PARSE (parser, "%s", strerror (errno));
+		parser->status = ERROR_PARSE;
 	}
 	return false;
 }
 
-static bool acceptChar (parser * const data, char const character)
+static bool acceptChar (parserType * const parser, char const character)
 {
-	ELEKTRA_ASSERT (data, "The Parameter `data` contains `NULL`.");
+	ELEKTRA_ASSERT (parser, "The Parameter `parser` contains `NULL`.");
 
-	return acceptChars (data, (char[]){ character }, 1);
+	return acceptChars (parser, (char[]){ character }, 1);
 }
 
-static parser * expect (parser * const data, char const character)
+static parserType * expect (parserType * const parser, char const character)
 {
-	ELEKTRA_ASSERT (data, "The Parameter `data` contains `NULL`.");
+	ELEKTRA_ASSERT (parser, "The Parameter `parser` contains `NULL`.");
 
-	bool found = acceptChar (data, character);
-	if (data->status != OK)
+	bool found = acceptChar (parser, character);
+	if (parser->status != OK)
 	{
-		return data;
+		return parser;
 	}
 
 	if (!found)
 	{
-		SET_ERROR_PARSE (data, "Expected character “%c” but found “%c”", character, getc (data->file));
-		data->status = ERROR_PARSE;
+		SET_ERROR_PARSE (parser, "Expected character “%c” but found “%c”", character, getc (parser->file));
+		parser->status = ERROR_PARSE;
 	}
 
-	return data;
+	return parser;
 }
 
-static parser * whitespace (parser * const data)
+static parserType * whitespace (parserType * const parser)
 {
-	ELEKTRA_ASSERT (data, "The Parameter `data` contains `NULL`.");
-	ELEKTRA_ASSERT (data->file, "The Parameter `file` contains `NULL`.");
+	ELEKTRA_ASSERT (parser, "The Parameter `parser` contains `NULL`.");
+	ELEKTRA_ASSERT (parser->file, "The Parameter `file` contains `NULL`.");
 
 	bool found;
 	do
 	{
-		found = acceptChars (data, (char[]){ ' ', '\t' }, 2);
-		if (data->status != OK)
+		found = acceptChars (parser, (char[]){ ' ', '\t' }, 2);
+		if (parser->status != OK)
 		{
 			break;
 		}
 	} while (found);
 
-	return data;
+	return parser;
 }
 
-static parser * readUntilDoubleQuote (parser * const data)
+static parserType * readUntilDoubleQuote (parserType * const parser)
 {
-	ELEKTRA_ASSERT (data, "The Parameter `data` contains `NULL`.");
+	ELEKTRA_ASSERT (parser, "The Parameter `parser` contains `NULL`.");
 
 	int * previous = NULL;
 	int current;
 
 	size_t numberOfChars = 0;
 	size_t allocatedChars = 10;
-	data->text = malloc (10);
+	parser->text = malloc (10);
 
-	while ((current = getc (data->file)) >= 0 && (current != '"' || (previous && *previous == '\\')))
+	while ((current = getc (parser->file)) >= 0 && (current != '"' || (previous && *previous == '\\')))
 	{
 		numberOfChars++;
-		LOG_PARSE (data, "Read character “%c”", current);
+		LOG_PARSE (parser, "Read character “%c”", current);
 		if (allocatedChars < numberOfChars + 1)
 		{
 			allocatedChars *= 2;
-			data->text = realloc (data->text, allocatedChars);
+			parser->text = realloc (parser->text, allocatedChars);
 		}
 
-		*(data->text + numberOfChars - 1) = current;
+		*(parser->text + numberOfChars - 1) = current;
 	}
-	*(data->text + numberOfChars) = '\0';
+	*(parser->text + numberOfChars) = '\0';
 
-	if (ferror (data->file))
+	if (ferror (parser->file))
 	{
-		SET_ERROR_PARSE (data, "%s", strerror (errno));
-		data->status = ERROR_PARSE;
+		SET_ERROR_PARSE (parser, "%s", strerror (errno));
+		parser->status = ERROR_PARSE;
 	}
 
-	return data;
+	return parser;
 }
 
-static parser * key (parser * const data)
+static parserType * key (parserType * const parser)
 {
-	PARSE (whitespace (data), data);
-	PARSE (expect (data, '"'), data);
-	PARSE (readUntilDoubleQuote (data), data);
+	PARSE (whitespace (parser), parser);
+	PARSE (expect (parser, '"'), parser);
+	PARSE (readUntilDoubleQuote (parser), parser);
 
-	LOG_PARSE (data, "Read key value “%s”", data->text);
+	LOG_PARSE (parser, "Read key value “%s”", parser->text);
 
-	return data;
+	return parser;
 }
 
-static parser * pair (parser * const data)
+static parserType * pair (parserType * const parser)
 {
-	PARSE (whitespace (data), data);
-	PARSE (expect (data, '{'), data);
-	PARSE (key (data), data);
+	PARSE (whitespace (parser), parser);
+	PARSE (expect (parser, '{'), parser);
+	PARSE (key (parser), parser);
 
-	return data;
+	return parser;
 }
 
 /**
@@ -299,26 +299,26 @@ static int parseFile (KeySet * returned ELEKTRA_UNUSED, Key * parentKey)
 
 	ELEKTRA_LOG ("Read configuration data");
 
-	parser * data = &(parser){.status = OK,
-				  .line = 1,
-				  .column = 1,
-				  .file = NULL,
-				  .text = NULL,
-				  .parentKey = parentKey,
-				  .keySet = returned,
-				  .errorNumber = errno };
+	parserType * parser = &(parserType){.status = OK,
+					    .line = 1,
+					    .column = 1,
+					    .file = NULL,
+					    .text = NULL,
+					    .parentKey = parentKey,
+					    .keySet = returned,
+					    .errorNumber = errno };
 
-	if (openFile (data)->status == OK)
+	if (openFile (parser)->status == OK)
 	{
-		pair (data);
+		pair (parser);
 	}
-	closeFileRead (data);
-	if (data->text)
+	closeFileRead (parser);
+	if (parser->text)
 	{
-		free (data->text);
+		free (parser->text);
 	}
 
-	return data->status == OK ? ELEKTRA_PLUGIN_STATUS_SUCCESS : ELEKTRA_PLUGIN_STATUS_ERROR;
+	return parser->status == OK ? ELEKTRA_PLUGIN_STATUS_SUCCESS : ELEKTRA_PLUGIN_STATUS_ERROR;
 }
 
 // ====================
