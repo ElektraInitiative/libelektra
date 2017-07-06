@@ -53,11 +53,6 @@ enum ElektraLogLevel
 	ELEKTRA_LOG_LEVEL_INFO = 2,
 
 	/**
-	 * @brief Alias for the standard log level.
-	 */
-	ELEKTRA_LOG_LEVEL = ELEKTRA_LOG_LEVEL_INFO,
-
-	/**
 	 * @brief The debug log level.
 	 *
 	 * Can be used to log anything which was useful to debug
@@ -67,6 +62,11 @@ enum ElektraLogLevel
 	 * suppressions in log.c).
 	 */
 	ELEKTRA_LOG_LEVEL_DEBUG = 1,
+
+	/**
+	 * @brief Alias for the standard log level.
+	 */
+	ELEKTRA_LOG_LEVEL = ELEKTRA_LOG_LEVEL_INFO,
 };
 
 #ifdef __cplusplus
