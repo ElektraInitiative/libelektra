@@ -101,12 +101,12 @@ static void test_relative_equal ()
 
 	keyDel (child);
 	keyDel (parent);
-	child = keyNew ("system/parentChild/#");
-	parent = keyNew ("system/parentChild/#");
+	child = keyNew ("system/parentChild/#", KEY_END);
+	parent = keyNew ("system/parentChild/#", KEY_END);
 	test_relative ("", child, parent);
 
 	keyDel (child);
-	child = keyNew ("system/parentChild/#123");
+	child = keyNew ("system/parentChild/#123", KEY_END);
 	// expected according to it's spec
 	test_relative ("23", child, parent);
 
