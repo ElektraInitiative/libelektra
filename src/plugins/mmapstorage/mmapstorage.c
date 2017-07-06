@@ -90,13 +90,12 @@ static size_t elektraMmapstorageDataSize (KeySet * returned)
 	size_t dynamicDataSize = 0;
 	while ((cur = ksNext (returned)) != 0)
 	{
-		dynamicDataSize += (cur->dataSize + cur->keySize);
+		dynamicDataSize += (keyGetNameSize(cur) + keyGetValueSize(cur));
 	}
 
-	size_t keyArraySize = (returned->size) * sizeof (Key);
-	size_t keyPtrArraySize = (returned->size) * sizeof (Key *);
-	size_t keySetSize = sizeof (KeySet);
-	size_t mmapsize = keySetSize + keyArraySize + dynamicDataSize + keyPtrArraySize;
+	size_t keyArraySize = (returned->size) * SIZEOF_KEY;
+	size_t keyPtrArraySize = (returned->size) * SIZEOF_KEY_PTR;
+	size_t mmapsize = SIZEOF_KEYSET + keyArraySize + dynamicDataSize + keyPtrArraySize;
 
 	return mmapsize;
 }
@@ -119,15 +118,14 @@ static void elektraMmapstorageWriteKeySet (KeySet * keySet, char * mappedRegion)
 	{
 		ssize_t keyNameSize = keyGetNameSize(cur);
 		ssize_t keyValueSize = keyGetValueSize(cur);
+
 		// move Key name
 		memcpy (dataNextFreeBlock, keyName(cur), keyNameSize);
-		//cur->key = dataNextFreeBlock;
 		keySetName(cur, dataNextFreeBlock);
 		dataNextFreeBlock += keyNameSize;
 
 		// move Key value
 		memcpy (dataNextFreeBlock, keyValue(cur), keyValueSize);
-		//cur->data.v = dataNextFreeBlock;
 		keySetRaw(cur, dataNextFreeBlock, keyValueSize);
 		dataNextFreeBlock += keyValueSize;
 
@@ -147,10 +145,7 @@ static void elektraMmapstorageWriteKeySet (KeySet * keySet, char * mappedRegion)
 	dataNextFreeBlock += keyPtrArraySize;
 	elektraFree (mappedKeys);
 
-
-
-	// TODO: save KeySet int mapped region
-	// TODO: update KeySet array!!!!!
+	// move KeySet itself to the mapped region
 	keySet->flags |= KS_FLAG_MMAP;
 	memcpy (mappedRegion, keySet, SIZEOF_KEYSET);
 	ksDel(keySet);
@@ -221,14 +216,10 @@ int elektraMmapstorageGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Ke
 	}
 	ELEKTRA_LOG ("mappedRegion size: %lld", sbuf.st_size);
 
-	//returned = (KeySet *) &mappedRegion;
-	//ksClear (returned);
-
 	ksCopy(returned, (KeySet *) mappedRegion);
 
-	//ksClear (returned);
-	//ksAppend (returned, (KeySet *) &mappedRegion);
-
+	//munmap(mappedRegion, sbuf.st_size);
+	//close(fd);
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }
 
@@ -261,22 +252,11 @@ int elektraMmapstorageSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Ke
 	}
 
 	elektraMmapstorageWriteKeySet (ksDup(returned), mappedRegion);
-	//msync (mappedRegion, mmapsize, MS_SYNC);
-
-	//ksClear (returned);
-	//ksAppend (returned, (KeySet *) &mappedRegion);
-
-	//returned = (KeySet *) &mappedRegion;
-	//msync (mappedRegion, mmapsize, MS_SYNC);
-	//ksClear (returned);
 
 	ksCopy(returned, (KeySet *) mappedRegion);
 
-	//ksClear(returned);
-	//ksAppend(returned, (KeySet *) mappedRegion);
-
-	// munmap (mappedRegion, mmapsize);
-	// close (fd);
+	//munmap(mappedRegion, mmapsize);
+	//close(fd);
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }
 

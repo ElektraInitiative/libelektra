@@ -69,7 +69,7 @@ static KeySet * metaTestKeySet ()
 	);
 }
 
-static void test_mmapWrite (const char * tmpFile)
+static void test_mmap_write (const char * tmpFile)
 {
 	Key * parentKey = keyNew("user/tests/mmapstorage", KEY_VALUE, tmpFile, KEY_END);
 	KeySet * conf = ksNew (0, KS_END);
@@ -83,19 +83,20 @@ static void test_mmapWrite (const char * tmpFile)
 	KeySet * expected = simpleTestKeySet ();
 	compare_keyset(returned, expected);
 
-	printf ("ks:\n");
-	output_keyset (ks);
-	printf ("expected:\n");
-	output_keyset (expected);
+//	printf ("ks:\n");
+//	output_keyset (ks);
+//	printf ("expected:\n");
+//	output_keyset (expected);
 
 	ksDel (expected);
+	ksDel (returned);
 
 	keyDel (parentKey);
 	ksDel (ks);
 	PLUGIN_CLOSE ();
 }
 
-static void test_mmapWriteRead (const char * tmpFile)
+static void test_mmap_write_read (const char * tmpFile)
 {
 	Key * parentKey = keyNew("user/tests/mmapstorage", KEY_VALUE, tmpFile, KEY_END);
 	KeySet * conf = ksNew (0, KS_END);
@@ -210,18 +211,7 @@ static void test_mmapMeta_reRead (const char * tmpFile)
 //	PLUGIN_CLOSE ();
 //}
 
-static void test_ksCopy ()
-{
-	KeySet * ks = ksNew (0, KS_END);
-	KeySet * testKeys = simpleTestKeySet ();
 
-	ksCopy(ks, testKeys);
-
-	compare_keyset(ks, testKeys);
-
-	ksDel(ks);
-	ksDel(testKeys);
-}
 
 int main (int argc, char ** argv)
 {
@@ -230,14 +220,8 @@ int main (int argc, char ** argv)
 
 	init (argc, argv);
 
-	//test_basics ();
-
-	test_ksCopy();
-
 	const char * tmpFile = elektraFilename();
-	test_mmapWrite (tmpFile);
-	//clearStorage(tmpFile);
-
+	test_mmap_write(tmpFile);
 	//test_mmapWriteRead (tmpFile);
 
 	//test_mmapRead (tmpFile);
