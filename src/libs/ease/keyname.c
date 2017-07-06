@@ -27,7 +27,7 @@
  */
 const char * elektraKeyGetRelativeName (Key const * cur, Key const * parentKey)
 {
-	size_t offset = 0;
+	ssize_t offset = 0;
 
 	if (strcmp (keyName (parentKey), "/"))
 	{
