@@ -27,7 +27,7 @@ public class Echo implements Plugin {
 		System.out.println(ks);
 		final String name = parentKey + "/infos/provides";
 		System.out.println("name: " + name);
-		ks.append(Key.create(name, Key.KEY_VALUE, "java", Key.KEY_END));
+		ks.append(Key.create(name, "java"));
 		return 0;
 	}
 

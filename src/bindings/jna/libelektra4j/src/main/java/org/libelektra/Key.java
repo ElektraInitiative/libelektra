@@ -73,7 +73,7 @@ public class Key implements Iterable<String> {
 	 * @param p
 	 *            Pointer in long format
 	 */
-	public Key(final long p) {
+	protected Key(final long p) {
 		key = new Pointer(p);
 		incRef();
 	}
@@ -84,7 +84,7 @@ public class Key implements Iterable<String> {
 	 * @param p
 	 *            Pointer as Pointer object
 	 */
-	public Key(final Pointer p) {
+	protected Key(final Pointer p) {
 		key = p;
 		incRef();
 	}
@@ -99,17 +99,67 @@ public class Key implements Iterable<String> {
 	 *            Key.KEY_VALUE, "custom key value", Key.KEY_END
 	 * @return New key object
 	 */
-	public static Key create(final String name, final Object... args) {
+	protected static Key create(final String name, final Object... args) {
 		return new Key(Elektra.INSTANCE.keyNew(name, args));
+	}
+
+	/**
+	 * Basic constructor of key class
+	 *
+	 * @param name
+	 *            Key name; first part of key-value pair
+	 * @param value
+	 *            Key value; will be determine from the object by calling {@link Object#toString()}, null is supported too
+	 * @param meta
+	 *            Metadata that should be added to this key, null keys will be filtered away
+	 * @return New key object
+	 */
+	public static Key create(final String name, final Object value, final Key... meta) {
+		int size = 0;
+		for (final Key m : meta) {
+			if (m != null) {
+				size++;
+			}
+		}
+		// 3 -> KEY_VALUE, value, KEY_END, 4 -> one more for KEY_META
+		size += size > 0 ? 4 : 3;
+		final Object[] args = new Object[size];
+		int cur = 0;
+		args[cur++] = Integer.valueOf(KEY_VALUE);
+		args[cur++] = value != null ? value.toString() : null;
+		if (size > 3) {
+			args[cur++] = Integer.valueOf(KEY_META);
+			for (final Key m : meta) {
+				args[cur++] = m;
+			}
+		}
+		args[cur] = Integer.valueOf(KEY_END);
+		return create(name, args);
+	}
+
+	/**
+	 * Basic constructor of key class
+	 *
+	 * @param name
+	 *            Key name; first part of key-value pair
+	 * @param meta
+	 *            Metadata that should be added to this key. Will filter null values.
+	 * @return New key object
+	 */
+	public static Key create(final String name, final Key... meta) {
+		return create(name, null, meta);
 	}
 
 	/**
 	 * Clean-up method to release key reference
 	 */
 	public void release() {
+
 		if (key != null) {
 			decRef();
-			Elektra.INSTANCE.keyDel(key);
+			if (getRef() == 0) {
+				Elektra.INSTANCE.keyDel(key);
+			}
 		}
 		key = null;
 	}
@@ -128,6 +178,7 @@ public class Key implements Iterable<String> {
 	 * @return Boolean if key is null
 	 */
 	public boolean isNull() {
+
 		return key == null;
 	}
 
@@ -165,7 +216,7 @@ public class Key implements Iterable<String> {
 	 *
 	 * @return Key value in byte format
 	 */
-	public Byte getByte() {
+	public byte getByte() {
 		return Byte.parseByte(getString());
 	}
 
@@ -174,7 +225,7 @@ public class Key implements Iterable<String> {
 	 *
 	 * @return Key value in short integer format
 	 */
-	public Short getShort() {
+	public short getShort() {
 		return Short.parseShort(getString());
 	}
 
@@ -183,7 +234,7 @@ public class Key implements Iterable<String> {
 	 *
 	 * @return Key value in integer format
 	 */
-	public Integer getInteger() {
+	public int getInteger() {
 		return Integer.parseInt(getString());
 	}
 
@@ -192,7 +243,7 @@ public class Key implements Iterable<String> {
 	 *
 	 * @return Key value in long integer format
 	 */
-	public Long getLong() {
+	public long getLong() {
 		return Long.parseLong(getString());
 	}
 
@@ -201,7 +252,7 @@ public class Key implements Iterable<String> {
 	 *
 	 * @return Key value in float format
 	 */
-	public Float getFloat() {
+	public float getFloat() {
 		return Float.parseFloat(getString());
 	}
 
@@ -210,7 +261,7 @@ public class Key implements Iterable<String> {
 	 *
 	 * @return Key value in double format
 	 */
-	public Double getDouble() {
+	public double getDouble() {
 		return Double.parseDouble(getString());
 	}
 
@@ -230,7 +281,7 @@ public class Key implements Iterable<String> {
 	 * @param v
 	 *            Byte value to set
 	 */
-	public void setByte(final Byte v) {
+	public void setByte(final byte v) {
 		setString(Byte.toString(v));
 	}
 
@@ -240,7 +291,7 @@ public class Key implements Iterable<String> {
 	 * @param v
 	 *            Short integer value to set
 	 */
-	public void setShort(final Short v) {
+	public void setShort(final short v) {
 		setString(Short.toString(v));
 	}
 
@@ -250,7 +301,7 @@ public class Key implements Iterable<String> {
 	 * @param v
 	 *            Integer value to set
 	 */
-	public void setInteger(final Integer v) {
+	public void setInteger(final int v) {
 		setString(Integer.toString(v));
 	}
 
@@ -260,7 +311,7 @@ public class Key implements Iterable<String> {
 	 * @param v
 	 *            Long integer value to set
 	 */
-	public void setLong(final Long v) {
+	public void setLong(final long v) {
 		setString(Long.toString(v));
 	}
 
@@ -270,7 +321,7 @@ public class Key implements Iterable<String> {
 	 * @param v
 	 *            Float value to set
 	 */
-	public void setFloat(final Float v) {
+	public void setFloat(final float v) {
 		setString(Float.toString(v));
 	}
 
@@ -280,7 +331,7 @@ public class Key implements Iterable<String> {
 	 * @param v
 	 *            Double value to set
 	 */
-	public void setDouble(final Double v) {
+	public void setDouble(final double v) {
 		setString(Double.toString(v));
 	}
 
@@ -354,31 +405,33 @@ public class Key implements Iterable<String> {
 	 *
 	 * @return New Key object containing the same information as this key
 	 */
-	Key dup() {
+	public Key dup() {
 		return new Key(Elektra.INSTANCE.keyDup(get()));
 	}
 
 	/**
-	 * Copies the information from the source key into this key
+	 * Copies the information from the source key into this key. Does nothing if null is provided.
 	 *
 	 * @param source
 	 *            Source Key object containing the information to copy
 	 */
-	void copy(final Key source) {
-		Elektra.INSTANCE.keyCopy(get(), source.get());
+	public void copy(final Key source) {
+		if (source != null) {
+			Elektra.INSTANCE.keyCopy(get(), source.get());
+		}
 	}
 
 	/**
 	 * Increments the reference counter for this key
 	 */
-	public void incRef() {
+	protected void incRef() {
 		Elektra.INSTANCE.keyIncRef(key);
 	}
 
 	/**
 	 * Decrements the reference counter for this key
 	 */
-	public void decRef() {
+	protected void decRef() {
 		Elektra.INSTANCE.keyDecRef(key);
 	}
 
@@ -419,16 +472,19 @@ public class Key implements Iterable<String> {
 	}
 
 	/**
-	 * Helper function to copy some meta information from a source Key to this key
+	 * Helper function to copy some meta information from a source Key to this key.
 	 *
 	 * @param source
 	 *            Key object that is used as source
 	 * @param metaName
 	 *            Key name of the meta to be copied
 	 * @return 1 if meta was successfully copied, 0 if source doesn't contain the required meta and nothing had to be done, -1 in case of an
-	 *         error
+	 *         error or if the source parameter was null
 	 */
 	public int copyMeta(final Key source, final String metaName) {
+		if (source == null) {
+			return -1;
+		}
 		return Elektra.INSTANCE.keyCopyMeta(get(), source.get(), metaName);
 	}
 
@@ -437,9 +493,13 @@ public class Key implements Iterable<String> {
 	 *
 	 * @param source
 	 *            Key object that is used as source
-	 * @return 1 if meta was successfully copied, 0 if source doesn't contain any meta and nothing had to be done, -1 in case of an error
+	 * @return 1 if meta was successfully copied, 0 if source doesn't contain any meta and nothing had to be done, -1 in case of an error or
+	 *         if the source parameter was null
 	 */
 	public int copyAllMeta(final Key source) {
+		if (source == null) {
+			return -1;
+		}
 		return Elektra.INSTANCE.keyCopyAllMeta(get(), source.get());
 	}
 
@@ -477,6 +537,9 @@ public class Key implements Iterable<String> {
 	 *         alphabetical order
 	 */
 	public int cmp(final Key other) {
+		if (other == null) {
+			throw new IllegalArgumentException("other should be a key, not null");
+		}
 		return Elektra.INSTANCE.keyCmp(get(), other.get());
 	}
 
@@ -488,6 +551,9 @@ public class Key implements Iterable<String> {
 	 * @return 0 if other is equal to this; > 0 if other is sub-key of this key; < 0 otherwise or in case of an error
 	 */
 	public int rel(final Key other) {
+		if (other == null) {
+			throw new IllegalArgumentException("other should be a key, not null");
+		}
 		return Elektra.INSTANCE.keyRel(get(), other.get());
 	}
 
@@ -508,6 +574,9 @@ public class Key implements Iterable<String> {
 	 * @return Boolean if this key is (non-direct) sub-key of other-key
 	 */
 	public boolean isBelow(final Key other) {
+		if (other == null) {
+			throw new IllegalArgumentException("other should be a key, not null");
+		}
 		return Elektra.INSTANCE.keyIsBelow(other.get(), get()) == 1;
 	}
 
@@ -519,6 +588,9 @@ public class Key implements Iterable<String> {
 	 * @return Boolean if this key is other key or (non-direct) sub-key of other-key
 	 */
 	public boolean isBelowOrSame(final Key other) {
+		if (other == null) {
+			throw new IllegalArgumentException("other should be a key, not null");
+		}
 		return Elektra.INSTANCE.keyIsBelowOrSame(other.get(), get()) == 1;
 	}
 
@@ -530,6 +602,9 @@ public class Key implements Iterable<String> {
 	 * @return Boolean if this key is direct sub-key of other key ("child")
 	 */
 	public boolean isDirectBelow(final Key other) {
+		if (other == null) {
+			throw new IllegalArgumentException("other should be a key, not null");
+		}
 		return Elektra.INSTANCE.keyIsDirectBelow(other.get(), get()) == 1;
 	}
 
@@ -673,7 +748,7 @@ public class Key implements Iterable<String> {
 	 *
 	 * @return Native pointer object for this key
 	 */
-	Pointer get() {
+	protected Pointer get() {
 		return key;
 	}
 }
