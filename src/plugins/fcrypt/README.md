@@ -100,6 +100,13 @@ If more than one key is defined, every private key is used to sign the file of t
 
 If a signature is attached to a file, `fcrypt` automatically verifies its content whenever the file is being read.
 
+Note that the signed file is stored in the internal format of GPG.
+So you only see binary data when opening the signed configuration file directly.
+However, you can simply display the plain text content of the file by using GPG:
+
+	gpg2 -d signed.ecf
+
+
 ### GPG Configuration
 
 The GPG Configuration is described in [crypto](../crypto/).
