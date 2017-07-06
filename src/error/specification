@@ -1085,7 +1085,7 @@ macro:NOT_VALID_KEY_VALUE_PAIR
 module:mini
 
 number:176
-description:Neither a GPG recipient (specified as /gpg/key) nor a GPG signature key (specified as /fcrypt/sign) has been provided. Please provide at least one key.
+description:Neither a GPG recipient (specified as encrypt/key) nor a GPG signature key (specified as sign/key) has been provided. Please provide at least one key.
 severity:error
 ingroup:plugin
 macro:FCRYPT_OPERATION_MODE

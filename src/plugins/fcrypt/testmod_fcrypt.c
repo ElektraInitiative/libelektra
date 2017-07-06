@@ -29,9 +29,9 @@ static KeySet * newPluginConfiguration ()
 {
 	// clang-format off
 	return ksNew (3,
-		keyNew (ELEKTRA_CRYPTO_PARAM_GPG_KEY, KEY_VALUE, TEST_KEY_ID, KEY_END),
+		keyNew (ELEKTRA_RECIPIENT_KEY, KEY_VALUE, TEST_KEY_ID, KEY_END),
 		keyNew (ELEKTRA_CRYPTO_PARAM_GPG_UNIT_TEST, KEY_VALUE, "1", KEY_END),
-		keyNew ("/fcrypt/sign", KEY_VALUE, TEST_KEY_ID, KEY_END),
+		keyNew (ELEKTRA_SIGNATURE_KEY, KEY_VALUE, TEST_KEY_ID, KEY_END),
 		KS_END);
 	// clang-format on
 }

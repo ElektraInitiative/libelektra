@@ -44,7 +44,6 @@ struct _fcryptState
 typedef struct _fcryptState fcryptState;
 
 #define ELEKTRA_FCRYPT_TMP_FILE_SUFFIX "XXXXXX"
-#define ELEKTRA_FCRYPT_SIGN_KEY "/fcrypt/sign"
 
 /**
  * @brief Allocates a new string holding the name of the temporary file.
@@ -256,15 +255,15 @@ static int fcryptGpgCallAndCleanup (Key * parentKey, KeySet * pluginConfig, char
 static int fcryptEncrypt (KeySet * pluginConfig, Key * parentKey)
 {
 	Key * k;
-	const size_t recipientCount = getRecipientCount (pluginConfig, ELEKTRA_CRYPTO_PARAM_GPG_KEY);
-	const size_t signatureCount = getRecipientCount (pluginConfig, ELEKTRA_FCRYPT_SIGN_KEY);
+	const size_t recipientCount = getRecipientCount (pluginConfig, ELEKTRA_RECIPIENT_KEY);
+	const size_t signatureCount = getRecipientCount (pluginConfig, ELEKTRA_SIGNATURE_KEY);
 
 	if (recipientCount == 0 && signatureCount == 0)
 	{
 		ELEKTRA_SET_ERRORF (
 			ELEKTRA_ERROR_FCRYPT_OPERATION_MODE, parentKey,
 			"Missing GPG recipient key (specified as %s) or GPG signature key (specified as %s) in plugin configuration.",
-			ELEKTRA_CRYPTO_PARAM_GPG_KEY, ELEKTRA_FCRYPT_SIGN_KEY);
+			ELEKTRA_RECIPIENT_KEY, ELEKTRA_SIGNATURE_KEY);
 		return -1;
 	}
 
@@ -298,7 +297,7 @@ static int fcryptEncrypt (KeySet * pluginConfig, Key * parentKey)
 	argv[i++] = "--yes"; // overwrite files if they exist
 
 	// add recipients
-	Key * gpgRecipientRoot = ksLookupByName (pluginConfig, ELEKTRA_CRYPTO_PARAM_GPG_KEY, 0);
+	Key * gpgRecipientRoot = ksLookupByName (pluginConfig, ELEKTRA_RECIPIENT_KEY, 0);
 
 	// append root (gpg/key) as gpg recipient
 	if (gpgRecipientRoot && strlen (keyString (gpgRecipientRoot)) > 0)
@@ -325,7 +324,7 @@ static int fcryptEncrypt (KeySet * pluginConfig, Key * parentKey)
 
 
 	// add signature keys
-	Key * gpgSignatureRoot = ksLookupByName (pluginConfig, ELEKTRA_FCRYPT_SIGN_KEY, 0);
+	Key * gpgSignatureRoot = ksLookupByName (pluginConfig, ELEKTRA_SIGNATURE_KEY, 0);
 
 	// append root signature key
 	if (gpgSignatureRoot && strlen (keyString (gpgSignatureRoot)) > 0)
@@ -566,8 +565,8 @@ int ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME, set) (Plugin * handle, KeySet 
  */
 int ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME, checkconf) (Key * errorKey, KeySet * conf)
 {
-	const size_t recipientCount = getRecipientCount (conf, ELEKTRA_CRYPTO_PARAM_GPG_KEY);
-	const size_t signatureCount = getRecipientCount (conf, ELEKTRA_FCRYPT_SIGN_KEY);
+	const size_t recipientCount = getRecipientCount (conf, ELEKTRA_RECIPIENT_KEY);
+	const size_t signatureCount = getRecipientCount (conf, ELEKTRA_SIGNATURE_KEY);
 
 	if (recipientCount == 0 && signatureCount == 0)
 	{

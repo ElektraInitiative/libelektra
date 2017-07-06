@@ -21,9 +21,9 @@
 #define GPG_OUTPUT_DEFAULT_BUFFER_SIZE 1024
 #define GPG_MAX_KEYID_LENGTH 32
 #define GPG_ERROR_MISSING_KEY_LIST                                                                                                         \
-	"Missing GPG key (specified as " ELEKTRA_CRYPTO_PARAM_GPG_KEY ") in plugin configuration. Available key IDs are: "
+	"Missing GPG key (specified as " ELEKTRA_RECIPIENT_KEY ") in plugin configuration. Available key IDs are: "
 #define GPG_ERROR_MISSING_KEY                                                                                                              \
-	"Missing GPG key (specified as " ELEKTRA_CRYPTO_PARAM_GPG_KEY                                                                      \
+	"Missing GPG key (specified as " ELEKTRA_RECIPIENT_KEY                                                                             \
 	") in plugin configuration. GPG could not find any secret keys. Please generate a secret key first!"
 
 enum gpgKeyListState
@@ -488,7 +488,7 @@ int CRYPTO_PLUGIN_FUNCTION (gpgEncryptMasterPassword) (KeySet * conf, Key * erro
 	// determine the number of total GPG keys to be used
 	kdb_unsigned_short_t recipientCount = 0;
 	kdb_unsigned_short_t testMode = 0;
-	Key * root = ksLookupByName (conf, ELEKTRA_CRYPTO_PARAM_GPG_KEY, 0);
+	Key * root = ksLookupByName (conf, ELEKTRA_RECIPIENT_KEY, 0);
 
 	// check root key crypto/key
 	if (root && strlen (keyString (root)) > 0)
