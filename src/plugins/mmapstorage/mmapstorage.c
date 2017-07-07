@@ -102,6 +102,16 @@ static size_t elektraMmapstorageDataSize (KeySet * returned)
 
 static void elektraMmapstorageWriteKeySet (KeySet * keySet, char * mappedRegion)
 {
+	if (keySet->size < 1)
+	{
+		// TODO: reduce this code duplication
+		// move KeySet itself to the mapped region
+		keySet->flags |= KS_FLAG_MMAP;
+		memcpy (mappedRegion, keySet, SIZEOF_KEYSET);
+		ksDel(keySet);
+		return;
+	}
+
 	// TODO: save all Keys of KeySet to mapped region
 	size_t keyArraySize = (keySet->size) * SIZEOF_KEY;
 	size_t keyPtrArraySize = (keySet->size) * SIZEOF_KEY_PTR;
