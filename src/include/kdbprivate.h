@@ -514,6 +514,10 @@ char * elektraUnescapeKeyNamePart (const char * source, size_t size, char * dest
 
 int elektraValidateKeyName (const char * name, size_t size);
 
+/*Random*/
+#define ELEKTRARANDMAX 2147483647
+void elektraRand (int32_t * seed);
+
 /*Internally used for array handling*/
 int elektraArrayValidateName (const Key * key);
 int elektraReadArrayNumber (const char * baseName, kdb_long_long_t * oldIndex);
