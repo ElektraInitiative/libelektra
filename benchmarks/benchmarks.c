@@ -55,10 +55,11 @@ void benchmarkFillup ()
 	}
 }
 
-#ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
+/**
+ * Arbitrary Key Set Generator
+ */
 
-// needed for the opmphmRandom ()
-#include "../src/libs/elektra/opmphm.c"
+static size_t shapefDefault (size_t initSize ELEKTRA_UNUSED, size_t size, size_t level, int32_t * seed);
 
 /**
  * @brief Fills a string up with random chars and null terminates it.
@@ -68,80 +69,54 @@ void benchmarkFillup ()
  * @param seed to generate random data
  *
  */
-static void fillUpWithRandomChars (char * name, int length, uint32_t * seed)
-{
-	int i = 0;
-	char * c = name;
-	while (i < length)
-	{
+const char * const alphabetnumbers = "aAbBcCdDeEfFgGhHiIjJkKlLmMnNoOpPqQrRsStTuUvVwWxXyYzZ0123456789";
+const char * const alphabetspecial = "^!\"$%&/{([)]=} ?\\+*~#';,:.-_|<>";
 
-		if ((opmphmRandom (seed) % 10) == 0)
+
+static void fillUpWithRandomChars (char * name, size_t length, int32_t * seed, KeySetShape * shape)
+{
+	// trow the dice and use 8 bit of each byte from seed for one char, determination if special or not and which
+	elektraRand (seed);
+	size_t i = 0;
+	size_t s = i;
+	char * c = name;
+	bool done = false;
+	while (!done)
+	{
+		uint8_t ds = (*seed >> (8 * s * 2)) & 0xFF;
+		uint8_t dc = (*seed >> (8 * (s * 2 + 1))) & 0xFF;
+		// special or not
+		bool special = (ds % shape->special) == 0;
+		// choose
+		if (special)
 		{
-			/* SPECIAL CHARS:
-			 *
-			 * do not use '/' = 47 for generation
-			 * 32-46 =  15
-			 * 58-64 =   7
-			 * 91-96 =   6
-			 * 123-126 = 4
-			 * ------------
-			 *          32 chars
-			 *
-			 * skip the first 32
-			 * add offset if not a special char
-			 */
-			*c = (opmphmRandom (seed) % 32) + 32;
-			if (*c > 46)
-			{
-				*c += 11;
-			}
-			if (*c > 64)
-			{
-				*c += 26;
-			}
-			if (*c > 96)
-			{
-				*c += 26;
-			}
-			// not \ at end of keyname
-			if (i == length - 1 && *c == 92)
-			{
-				continue;
-			}
+			*c = alphabetspecial[dc % strlen (alphabetspecial)];
 		}
 		else
 		{
-			/* NON SPECIAL CHARS a-z A-Z 0-9
-			 *
-			 * 48-57 =  10
-			 * 65-90 =  26
-			 * 97-122 = 26
-			 * ------------
-			 *          62 chars
-			 *
-			 * skip the first 48
-			 * add offset if special char
-			 */
-			*c = (opmphmRandom (seed) % 62) + 48;
-			if (*c > 57)
-			{
-				*c += 7;
-			}
-			if (*c > 90)
-			{
-				*c += 6;
-			}
+			*c = alphabetnumbers[dc % strlen (alphabetnumbers)];
 		}
-		++i;
 		++c;
+		++i;
+		++s;
+		if (i == length)
+		{
+			done = true;
+		}
+		else if (s == 2)
+		{
+			elektraRand (seed);
+			s = 0;
+		}
 	}
 	*c = '\0';
 }
 
+
 /**
  * @brief Generates a name for the Key and determines the number of sub Keys
  *
- * @param name the name so far
+ * @param key the actual key
  * @param size the remaining size
  * @param out the KeySet to fill
  * @param seed seed for random actions
@@ -150,16 +125,38 @@ static void fillUpWithRandomChars (char * name, int length, uint32_t * seed)
  * @param shape the shape of the KeySet
  *
  */
-static void recGenerateKeySet (char * name, size_t * size, KeySet * out, uint32_t * seed, int level, size_t initSize, KeySetShape * shape)
+static void recGenerateKeySet (Key * key, size_t * size, KeySet * out, int32_t * seed, int level, size_t initSize, KeySetShape * shape)
 {
 	// to restore if key already in keyset
 	size_t sizeBackup = *size;
-	// generate name and add to path
-	int length = (opmphmRandom (seed) % (shape->maxWordLength - shape->minWordLength)) + shape->minWordLength;
-	char subName[strlen (name) + length + 2]; // 2 = '/' + '\0'
-	strcpy (subName, name);
-	subName[strlen (name)] = '/';
-	fillUpWithRandomChars (&subName[strlen (name) + 1], length, seed);
+	Key * keyBackup = keyDup (key);
+	if (!keyBackup)
+	{
+		fprintf (stderr, "generateKeySet: Can not dup Key %s\n", keyName (key));
+		exit (EXIT_FAILURE);
+	}
+	elektraRand (seed);
+	uint32_t dl = *seed & 0xFFFFFF;
+	uint8_t dp = *seed >> 24;
+	// generate name
+	size_t length = (dl % (shape->maxWordLength - shape->minWordLength)) + shape->minWordLength;
+	char subName[length + 1]; // + '\0'
+	fillUpWithRandomChars (subName, length, seed, shape);
+	if (keyAddBaseName (key, subName) < 0)
+	{
+		fprintf (stderr, "generateKeySet: Can not add KeyBaseName %s to key %s\n", subName, keyName (key));
+		exit (EXIT_FAILURE);
+	}
+	// check if add possible
+	if (ksLookup (out, key, KDB_O_NONE))
+	{
+		// key is in out, therefore restore size and start from new
+		*size = sizeBackup;
+		keyDel (key);
+		recGenerateKeySet (keyBackup, size, out, seed, level, initSize, shape);
+		return;
+	}
+	keyDel (keyBackup);
 	// determine subkeys
 	size_t subKeys = shape->shapef (initSize, *size, level, seed);
 	ELEKTRA_ASSERT (subKeys <= *size, "KsShapeFunction return value > size");
@@ -167,19 +164,17 @@ static void recGenerateKeySet (char * name, size_t * size, KeySet * out, uint32_
 	if (subKeys)
 	{
 		*size -= (subKeys - 1); // the cost for one is included in the size from the parent call
-		if (*size && (shape->parent == 1 || (opmphmRandom (seed) % shape->parent) == 0))
+		if (*size && (shape->parent == 1 || (dp % shape->parent) == 0))
 		{
-			// can add because subKeys (no enforced add) and enough space
-			if (ksLookupByName (out, subName, KDB_O_NONE))
-			{
-				// key is in out, therefore restore size and start from new
-				*size = sizeBackup;
-				recGenerateKeySet (name, size, out, seed, level, initSize, shape);
-				return;
-			}
 			// counts extra so costs need to be removed
 			--*size;
-			if (ksAppendKey (out, keyNew (subName, KEY_END)) < 0)
+			Key * keydub = keyDup (key);
+			if (!keydub)
+			{
+				fprintf (stderr, "generateKeySet: Can not dup Key %s\n", subName);
+				exit (EXIT_FAILURE);
+			}
+			if (ksAppendKey (out, keydub) < 0)
 			{
 				fprintf (stderr, "generateKeySet: Can not add Key %s\n", subName);
 				exit (EXIT_FAILURE);
@@ -188,15 +183,8 @@ static void recGenerateKeySet (char * name, size_t * size, KeySet * out, uint32_
 	}
 	else
 	{
-		// need to add because not subKeys
-		if (ksLookupByName (out, subName, KDB_O_NONE))
-		{
-			// key is in out, therefore restore size and start from new
-			recGenerateKeySet (name, size, out, seed, level, initSize, shape);
-			return;
-		}
 		// no size decrement need because the costs where removed before
-		if (ksAppendKey (out, keyNew (subName, KEY_END)) < 0)
+		if (ksAppendKey (out, key) < 0)
 		{
 			fprintf (stderr, "generateKeySet: Can not add Key %s\n", subName);
 			exit (EXIT_FAILURE);
@@ -204,7 +192,20 @@ static void recGenerateKeySet (char * name, size_t * size, KeySet * out, uint32_
 	}
 	for (size_t i = 0; i < subKeys; ++i)
 	{
-		recGenerateKeySet (subName, size, out, seed, ++level, initSize, shape);
+		if (i)
+		{
+			Key * keydub = keyDup (key);
+			if (!keydub)
+			{
+				fprintf (stderr, "generateKeySet: Can not dup Key %s\n", subName);
+				exit (EXIT_FAILURE);
+			}
+			recGenerateKeySet (keydub, size, out, seed, ++level, initSize, shape);
+		}
+		else
+		{
+			recGenerateKeySet (key, size, out, seed, ++level, initSize, shape);
+		}
 	}
 }
 
@@ -219,23 +220,52 @@ static void recGenerateKeySet (char * name, size_t * size, KeySet * out, uint32_
  *
  * @retval KeySet * the resulting KeySet
  */
-KeySet * generateKeySet (size_t size, uint32_t * seed, KeySetShape * shape)
+KeySet * generateKeySet (size_t size, int32_t * seed, KeySetShape * shape)
 {
 	ELEKTRA_ASSERT (size != 0, "size == 0");
-	ELEKTRA_ASSERT (shape != NULL, "passed shape is NULL");
-	ELEKTRA_ASSERT (shape->minWordLength < shape->maxWordLength, "minWordLength not < maxWordLength");
-	ELEKTRA_ASSERT (shape->parent > 0, "parent <= 0");
+	if (shape)
+	{
+		ELEKTRA_ASSERT (shape->minWordLength < shape->maxWordLength, "minWordLength not < maxWordLength");
+		ELEKTRA_ASSERT (shape->maxWordLength - shape->minWordLength <= 16777215, "max world length variation exceeded 16777215");
+		ELEKTRA_ASSERT (shape->parent <= 127, "parent > 127");
+		ELEKTRA_ASSERT (shape->special <= 127, "parent > 127");
+		ELEKTRA_ASSERT (shape->shapef, "shape->shapef");
+	}
+	KeySetShape shapeDefault;
+	if (!shape)
+	{
+		/**
+		 * Default KeySetShape
+		 */
+		shapeDefault.parent = 3;
+		shapeDefault.special = 10;
+		shapeDefault.minWordLength = 4;
+		shapeDefault.maxWordLength = 7;
+		shapeDefault.shapef = shapefDefault;
+
+		shape = &shapeDefault;
+	}
 	KeySet * out = ksNew (size, KS_END);
 	size_t initSize = size;
 
 	while (size)
 	{
-		char name[1];
-		name[0] = '\0';
 		--size;
-		recGenerateKeySet (name, &size, out, seed, 1, initSize, shape);
+		Key * k = keyNew ("", KEY_END);
+		recGenerateKeySet (k, &size, out, seed, 1, initSize, shape);
 	}
 	return out;
 }
 
-#endif
+/**
+ * Default KeySetShape
+ */
+
+static size_t shapefDefault (size_t initSize ELEKTRA_UNUSED, size_t size, size_t level, int32_t * seed)
+{
+	if (!size) return 0;
+	if (level > 5) return 0;
+	if (size < level) return 1;
+	elektraRand (seed);
+	return *seed % (size / level);
+}

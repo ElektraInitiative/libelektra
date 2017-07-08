@@ -1,29 +1,26 @@
+/**
+ * @file
+ *
+ * @brief The Order Preserving Minimal Perfect Hash Map C benchmark.
+ *
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
+ */
+
+
 #include "benchmarks.h"
 
-static uint32_t * getRandomSeed (uint32_t * seed);
-
-static size_t shapef (size_t initSize ELEKTRA_UNUSED, size_t size, int level, uint32_t * seed ELEKTRA_UNUSED)
-{
-	if (!size) return 0;
-	if (level > 3) return 0;
-	return 1;
-}
+static int32_t * getRandomSeed (int32_t * seed);
 
 int main (int argc ELEKTRA_UNUSED, char ** argv ELEKTRA_UNUSED)
 {
-	uint32_t seed;
+	int32_t seed;
 	if (getRandomSeed (&seed) != &seed)
 	{
 		fprintf (stderr, "FATAL: Seed Parsing Error or feed me more seeds\n");
 		return EXIT_FAILURE;
 	}
-	KeySetShape shape;
-	shape.parent = 1;
-	shape.minWordLength = 3;
-	shape.maxWordLength = 7;
-	shape.shapef = shapef;
 
-	KeySet * ks = generateKeySet (10, &seed, &shape);
+	KeySet * ks = generateKeySet (30, &seed, NULL);
 	Key * key;
 	ksRewind (ks);
 	while ((key = ksNext (ks)))
@@ -36,7 +33,7 @@ int main (int argc ELEKTRA_UNUSED, char ** argv ELEKTRA_UNUSED)
 }
 
 
-static uint32_t * getRandomSeed (uint32_t * seed)
+static int32_t * getRandomSeed (int32_t * seed)
 {
 	// read from stdin
 	char data[10 + 2]; // min = 0, max = 2^32 - 1, len(2^32 - 1) = 10 + '\n' + '\0'

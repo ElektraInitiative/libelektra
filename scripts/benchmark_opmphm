@@ -2,10 +2,18 @@
 #
 # @author Kurt Micheli <kurt.micheli@libelektra.org>
 # @brief run opmphm benchmark
-# @date 05.06.2017
+# @date 05.07.2017
 # @tags benchmark
 
-numberOfSeeds=2
+
+#
+# Start point of the opmphm c benchmarks
+# generates numberOfSeeds seeds distributed uniformly from 1 to 2147483647 = ELEKTRARANDMAX
+#
+# This script and benchmark_opmphm are only a demos for now.
+#
+
+numberOfSeeds=1
 
 if [ ! -f "CMakeCache.txt" ];
 then
@@ -14,4 +22,4 @@ then
 fi
 
 make benchmark_opmphm
-R --slave --no-save <<< "cat(runif($numberOfSeeds,0,4294967295), sep=\"\n\")" | bin/benchmark_opmphm
+R --slave --no-save <<< "cat(runif($numberOfSeeds,1,2147483647), sep=\"\n\")" | bin/benchmark_opmphm
