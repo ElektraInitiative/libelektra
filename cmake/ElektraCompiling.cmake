@@ -64,7 +64,6 @@ if (CMAKE_COMPILER_IS_GNUCXX)
 	execute_process(COMMAND ${CMAKE_C_COMPILER} -dumpversion OUTPUT_VARIABLE GCC_VERSION)
 	if (WIN32)
 		message (STATUS "mingw detected")
-		set (ENABLE_OPTIMIZATIONS OFF CACHE BOOL "Turn on optimizations that trade memory for speed" FORCE)
 	else(WIN32)
 		#not supported by icc:
 		set (EXTRA_FLAGS "${EXTRA_FLAGS} -Wno-deprecated-declarations")

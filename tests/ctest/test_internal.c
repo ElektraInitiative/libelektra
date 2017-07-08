@@ -248,7 +248,6 @@ static void test_keyNameGetOneLevel ()
 	succeed_if (size == sizeof (buffer) - 1, "size not set correctly");
 }
 
-
 int main (int argc, char ** argv)
 {
 	printf ("INTERNALS    TESTS\n");

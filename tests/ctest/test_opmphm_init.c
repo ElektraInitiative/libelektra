@@ -79,7 +79,7 @@ static void test_success ()
 			// prepare
 			OpmphmInit init;
 			init.getString = test_opmphm_getString;
-			init.initSeed = 0;
+			init.initSeed = 1;
 			init.data = datap;
 			Opmphm opmphm;
 			// fill
@@ -117,7 +117,7 @@ static void test_success ()
 				// prepare
 				OpmphmInit init;
 				init.getString = test_opmphm_getString;
-				init.initSeed = 0;
+				init.initSeed = 1;
 				init.data = datap;
 				Opmphm opmphm;
 				// fill
@@ -153,7 +153,7 @@ static void test_success ()
 			// prepare
 			OpmphmInit init;
 			init.getString = test_opmphm_getString;
-			init.initSeed = 0;
+			init.initSeed = 1;
 			init.data = datap;
 			Opmphm opmphm;
 			// fill
@@ -191,7 +191,7 @@ static void test_success ()
 				// prepare
 				OpmphmInit init;
 				init.getString = test_opmphm_getString;
-				init.initSeed = 0;
+				init.initSeed = 1;
 				init.data = datap;
 				Opmphm opmphm;
 				// fill
@@ -233,7 +233,7 @@ static void test_fail ()
 			// prepare
 			OpmphmInit init;
 			init.getString = test_opmphm_getString;
-			init.initSeed = 0;
+			init.initSeed = 1;
 			init.data = datap;
 			Opmphm opmphm;
 			// fill
@@ -269,7 +269,7 @@ static void test_fail ()
 				// prepare
 				OpmphmInit init;
 				init.getString = test_opmphm_getString;
-				init.initSeed = 0;
+				init.initSeed = 1;
 				init.data = datap;
 				Opmphm opmphm;
 				// fill
