@@ -223,14 +223,6 @@ static void recGenerateKeySet (Key * key, size_t * size, KeySet * out, int32_t *
 KeySet * generateKeySet (size_t size, int32_t * seed, KeySetShape * shape)
 {
 	ELEKTRA_ASSERT (size != 0, "size == 0");
-	if (shape)
-	{
-		ELEKTRA_ASSERT (shape->minWordLength < shape->maxWordLength, "minWordLength not < maxWordLength");
-		ELEKTRA_ASSERT (shape->maxWordLength - shape->minWordLength <= 16777215, "max world length variation exceeded 16777215");
-		ELEKTRA_ASSERT (shape->parent <= 127, "parent > 127");
-		ELEKTRA_ASSERT (shape->special <= 127, "parent > 127");
-		ELEKTRA_ASSERT (shape->shapef, "shape->shapef");
-	}
 	KeySetShape shapeDefault;
 	if (!shape)
 	{
@@ -245,6 +237,11 @@ KeySet * generateKeySet (size_t size, int32_t * seed, KeySetShape * shape)
 
 		shape = &shapeDefault;
 	}
+	ELEKTRA_ASSERT (shape->minWordLength < shape->maxWordLength, "minWordLength not < maxWordLength");
+	ELEKTRA_ASSERT (shape->maxWordLength - shape->minWordLength <= 16777215, "max world length variation exceeded 16777215");
+	ELEKTRA_ASSERT (shape->parent <= 127, "parent > 127");
+	ELEKTRA_ASSERT (shape->special <= 127, "parent > 127");
+	ELEKTRA_ASSERT (shape->shapef, "shape->shapef");
 	KeySet * out = ksNew (size, KS_END);
 	size_t initSize = size;
 

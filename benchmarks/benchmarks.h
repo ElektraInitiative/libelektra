@@ -12,6 +12,7 @@
 #include <kdb.h>
 #include <kdbassert.h>
 #include <kdbinternal.h>
+#include <kdbrand.h>
 
 #include <stdio.h>
 #include <stdlib.h>

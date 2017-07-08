@@ -11,6 +11,7 @@
 #include <kdbhelper.h>
 #include <kdblogger.h>
 #include <kdbopmphm.h>
+#include <kdbrand.h>
 
 #include <string.h> //strlen
 
@@ -42,7 +43,8 @@ OpmphmOrder ** opmphmInit (Opmphm * opmphm, OpmphmInit * init, OpmphmOrder * ord
 	// set the seeds, for the hash function
 	for (unsigned int t = 0; t < OPMPHMTUPLE; ++t)
 	{
-		opmphm->opmphmHashFunctionSeeds[t] = opmphmRandom (&(init->initSeed));
+		elektraRand (&(init->initSeed));
+		opmphm->opmphmHashFunctionSeeds[t] = init->initSeed;
 	}
 	OpmphmOrder ** sortOrder = elektraMalloc (sizeof (OpmphmOrder *) * n);
 	if (!sortOrder) return NULL;
@@ -227,18 +229,4 @@ uint32_t opmphmHashfunction (const void * key, size_t length, uint32_t initval)
 	}
 	OPMPHM_HASHFUNCTION_FINAL (a, b, c);
 	return c;
-}
-
-/*
- * This Random function comes from:
- * S. Park & K. Miller
- * Random Number Generator: Good ones are Hard to find
- * http://www.firstpr.com.au/dsp/rand31/p1192-park.pdf
- * 1988
- */
-uint32_t opmphmRandom (unsigned int * seedp)
-{
-	ELEKTRA_ASSERT (seedp != NULL, "NULL pointer passed");
-	*seedp = (16807 * *seedp) % 2147483647;
-	return rand_r (seedp);
 }

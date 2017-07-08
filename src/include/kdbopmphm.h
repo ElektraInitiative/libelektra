@@ -1,3 +1,10 @@
+/**
+ * @file
+ *
+ * @brief Defines for the Order Preserving Minimal Perfect Hash Map.
+ *
+ * @copyright BSD License (see doc/COPYING or https://www.libelektra.org)
+ */
 #ifndef OPMPHM_H
 #define OPMPHM_H
 
@@ -36,7 +43,7 @@ typedef struct
 {
 	opmphmGetString getString; /*!< Function pointer used to extract the key name from the data. */
 	void ** data;		   /*!< The data */
-	uint32_t initSeed;	 /*!< seed for random actions */
+	int32_t initSeed;	  /*!< seed for random actions */
 } OpmphmInit;
 
 
@@ -101,9 +108,5 @@ OpmphmOrder ** opmphmInit (Opmphm * opmphm, OpmphmInit * init, OpmphmOrder * ord
 		b += a;                                                                                                                    \
 	}
 uint32_t opmphmHashfunction (const void * key, size_t length, uint32_t initval);
-
-/* Random */
-
-uint32_t opmphmRandom (unsigned int * seedp);
 
 #endif

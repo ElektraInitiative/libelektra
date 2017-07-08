@@ -248,16 +248,6 @@ static void test_keyNameGetOneLevel ()
 	succeed_if (size == sizeof (buffer) - 1, "size not set correctly");
 }
 
-static void test_elektraRand ()
-{
-	int32_t seed = 1;
-	for (int i = 0; i < 10000; ++i)
-	{
-		elektraRand (&seed);
-	}
-	succeed_if (seed == 1043618065, "seed is not 1043618065");
-}
-
 int main (int argc, char ** argv)
 {
 	printf ("INTERNALS    TESTS\n");
@@ -271,7 +261,6 @@ int main (int argc, char ** argv)
 	test_elektraEscapeKeyNamePart ();
 	test_elektraUnescapeKeyName ();
 	test_keyNameGetOneLevel ();
-	test_elektraRand ();
 
 	printf ("\ntest_internals RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 
