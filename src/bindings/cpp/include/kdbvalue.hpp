@@ -661,11 +661,12 @@ private:
 	void unsafeSyncCache () const
 	{
 		assert (m_key);
-		m_cache = m_key.get<type> ();
 
 #if DEBUG && VERBOSE
-		std::cout << "got name: " << m_key.getName () << " value: " << m_key.getString () << std::endl;
+		std::cout << "will get name: " << m_key.getName () << " value: " << m_key.getString () << std::endl;
 #endif
+
+		m_cache = m_key.get<type> ();
 	}
 
 	/**
