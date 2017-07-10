@@ -11,6 +11,7 @@
 
 #include "yaml.h"
 
+#include <assert.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -24,25 +25,6 @@
 #include <libgen.h>
 #include <sys/param.h>
 #endif
-
-/* -- Macros ---------------------------------------------------------------------------------------------------------------------------- */
-
-#define LOG_PARSE(data, message, ...)                                                                                                      \
-	{                                                                                                                                  \
-		char filename[MAXPATHLEN];                                                                                                 \
-		basename_r (keyString (data->parentKey), filename);                                                                        \
-		ELEKTRA_LOG_DEBUG ("%s:%lu:%lu: " message, filename, data->line, data->column, __VA_ARGS__);                               \
-	}
-
-#define SET_ERROR_PARSE(data, message, ...)                                                                                                \
-	ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_PARSE, data->parentKey, "%s:%lu:%lu: " message, keyString (data->parentKey), data->line,         \
-			    data->column, __VA_ARGS__);
-
-#define PARSE(parser, data)                                                                                                                \
-	if (parser->status != OK)                                                                                                          \
-	{                                                                                                                                  \
-		return data;                                                                                                               \
-	}
 
 /* -- Data Structures ------------------------------------------------------------------------------------------------------------------- */
 
@@ -73,6 +55,13 @@ typedef struct
 	/** Last read text consumed by parser */
 	char * text;
 
+	/** Text buffer for the content saved in `file` */
+	char * bufferBase;
+	/** Current location in the text buffer */
+	char * buffer;
+	/** Length of characters still available in the text buffer */
+	size_t bufferCharsAvailable;
+
 	/** Saves filename and allows us to emit error information */
 	Key * parentKey;
 	/** Contains key values pairs we parsed (get direction) or data we need to write back (set direction) */
@@ -81,6 +70,25 @@ typedef struct
 	/** Stores previous value of `errno` */
 	int errorNumber;
 } parserType;
+
+/* -- Macros ---------------------------------------------------------------------------------------------------------------------------- */
+
+#define LOG_PARSE(data, message, ...)                                                                                                      \
+	{                                                                                                                                  \
+		char filename[MAXPATHLEN];                                                                                                 \
+		basename_r (keyString (data->parentKey), filename);                                                                        \
+		ELEKTRA_LOG_DEBUG ("%s:%lu:%lu: " message, filename, data->line, data->column, __VA_ARGS__);                               \
+	}
+
+#define SET_ERROR_PARSE(data, message, ...)                                                                                                \
+	ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_PARSE, data->parentKey, "%s:%lu:%lu: " message, keyString (data->parentKey), data->line,         \
+			    data->column, __VA_ARGS__);
+
+#define PARSE(parser, data)                                                                                                                \
+	if (parser->status != OK)                                                                                                          \
+	{                                                                                                                                  \
+		return data;                                                                                                               \
+	}
 
 /* -- Functions ------------------------------------------------------------------------------------------------------------------------- */
 
@@ -153,33 +161,85 @@ static KeySet * contractYaml ()
 		      keyNew ("system/elektra/modules/yaml/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 }
 
+static parserType * setParseError (parserType * const parser)
+{
+	SET_ERROR_PARSE (parser, "%s", strerror (errno));
+	errno = parser->errorNumber;
+	parser->status = ERROR_PARSE;
+	return parser;
+}
+
+static parserType * assertNumberCharsAvailable (parserType * const parser, size_t numberChars)
+{
+	ELEKTRA_ASSERT (parser, "The parameter `parser` contains `NULL`.");
+
+	char * line = NULL;
+	size_t capacity;
+	ssize_t numberCharsRead;
+
+	while (parser->bufferCharsAvailable < numberChars && (numberCharsRead = getline (&line, &capacity, parser->file)) != -1)
+	{
+		size_t bufferCharsAvailable = parser->bufferCharsAvailable + numberCharsRead;
+		char * newBuffer = elektraMalloc (bufferCharsAvailable + 1);
+
+		if (!newBuffer) return setParseError (parser);
+		strncpy (newBuffer, parser->buffer, parser->bufferCharsAvailable);
+		strncpy (newBuffer + parser->bufferCharsAvailable, line, bufferCharsAvailable + 1);
+
+		elektraFree (parser->bufferBase);
+		free (line);
+
+		parser->bufferBase = parser->buffer = newBuffer;
+		parser->bufferCharsAvailable = bufferCharsAvailable;
+	}
+
+	if (feof (parser->file) && parser->bufferCharsAvailable < numberChars) return setParseError (parser);
+	return parser;
+}
+
+static parserType * getNextChar (parserType * parser)
+{
+	ELEKTRA_ASSERT (parser && parser->file, "The Parameter `parser` contains `NULL`.");
+
+	if (assertNumberCharsAvailable (parser, 1)->status != OK) return parser;
+
+	parser->bufferCharsAvailable--;
+	parser->text = parser->buffer;
+	parser->buffer++;
+
+	return parser;
+}
+
+static parserType * putBackChars (parserType * parser, size_t numberChars)
+{
+	ELEKTRA_ASSERT (parser, "The Parameter `parser` contains `NULL`.");
+
+	parser->bufferCharsAvailable += numberChars;
+	parser->buffer -= numberChars;
+
+	return parser;
+}
+
 static bool acceptChars (parserType * const parser, char const * const characters, size_t numberCharacters)
 {
 	ELEKTRA_ASSERT (parser, "The Parameter `parser` contains `NULL`.");
+	ELEKTRA_ASSERT (parser->file, "The Parameter `parser→file` contains `NULL`.");
 	ELEKTRA_ASSERT (characters, "The Parameter `characters` contains `NULL`.");
 
-	int readCharacter;
+	if (getNextChar (parser)->status != OK) return parser;
 
-	if ((readCharacter = getc (parser->file)) >= 0)
+	for (size_t charIndex = 0; charIndex < numberCharacters; charIndex++)
 	{
-		for (size_t char_index = 0; char_index < numberCharacters; char_index++)
+		if (*parser->text == characters[charIndex])
 		{
-			if (readCharacter == characters[char_index])
-			{
-				LOG_PARSE (parser, "Accepted character “%c”", characters[char_index]);
-				parser->column++;
-				return true;
-			}
+			LOG_PARSE (parser, "Accepted character “%c”", characters[charIndex]);
+			parser->column++;
+			return true;
 		}
-		LOG_PARSE (parser, "Put back character “%c”", readCharacter);
-		(void)ungetc (readCharacter, parser->file);
 	}
+	LOG_PARSE (parser, "Put back character “%c”", *parser->text);
+	putBackChars (parser, 1);
 
-	if (ferror (parser->file))
-	{
-		SET_ERROR_PARSE (parser, "%s", strerror (errno));
-		parser->status = ERROR_PARSE;
-	}
 	return false;
 }
 
@@ -230,33 +290,28 @@ static parserType * whitespace (parserType * const parser)
 static parserType * readUntilDoubleQuote (parserType * const parser)
 {
 	ELEKTRA_ASSERT (parser, "The Parameter `parser` contains `NULL`.");
+	ELEKTRA_ASSERT (parser->file, "The Parameter `parser→file` contains `NULL`.");
 
-	int * previous = NULL;
-	int current;
+	char * previous = NULL;
 
 	size_t numberOfChars = 0;
-	size_t allocatedChars = 10;
-	parser->text = malloc (10);
 
-	while ((current = getc (parser->file)) >= 0 && (current != '"' || (previous && *previous == '\\')))
+	char * text = parser->buffer;
+
+	while (getNextChar (parser)->status == OK && (*parser->text != '"' || (previous && *previous == '\\')))
 	{
 		numberOfChars++;
-		LOG_PARSE (parser, "Read character “%c”", current);
-		if (allocatedChars < numberOfChars + 1)
-		{
-			allocatedChars *= 2;
-			parser->text = realloc (parser->text, allocatedChars);
-		}
-
-		*(parser->text + numberOfChars - 1) = current;
+		LOG_PARSE (parser, "Read character “%c”", *parser->text);
+		previous = parser->text;
 	}
-	*(parser->text + numberOfChars) = '\0';
 
-	if (ferror (parser->file))
+	if (parser->status != OK)
 	{
-		SET_ERROR_PARSE (parser, "%s", strerror (errno));
-		parser->status = ERROR_PARSE;
+		return parser;
 	}
+
+	*(parser->text + 1) = '\0';
+	parser->text = text;
 
 	return parser;
 }
@@ -299,23 +354,25 @@ static int parseFile (KeySet * returned ELEKTRA_UNUSED, Key * parentKey)
 
 	ELEKTRA_LOG ("Read configuration data");
 
-	parserType * parser = &(parserType){.status = OK,
-					    .line = 1,
-					    .column = 1,
-					    .file = NULL,
-					    .text = NULL,
-					    .parentKey = parentKey,
-					    .keySet = returned,
-					    .errorNumber = errno };
-
+	parserType * parser = &(parserType){ .status = OK,
+					     .line = 1,
+					     .column = 1,
+					     .file = NULL,
+					     .text = NULL,
+					     .bufferBase = NULL,
+					     .buffer = NULL,
+					     .bufferCharsAvailable = 0,
+					     .parentKey = parentKey,
+					     .keySet = returned,
+					     .errorNumber = errno };
 	if (openFile (parser)->status == OK)
 	{
 		pair (parser);
 	}
 	closeFileRead (parser);
-	if (parser->text)
+	if (parser->bufferBase)
 	{
-		free (parser->text);
+		free (parser->bufferBase);
 	}
 
 	return parser->status == OK ? ELEKTRA_PLUGIN_STATUS_SUCCESS : ELEKTRA_PLUGIN_STATUS_ERROR;
