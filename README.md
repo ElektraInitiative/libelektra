@@ -1,4 +1,4 @@
-# libelektra
+# Elektra
 
 _Elektra serves as a universal and secure framework to access configuration
 settings in a global, hierarchical key database._
@@ -12,15 +12,6 @@ cross-platform-related issues and enables applications to be aware of other
 applications' configurations, leveraging easy application integration.
 
 ## Often used links
-
-> 26.05.2017
->
-> Important notice: Our server was compromised
-> and currently these resources are unfortunately
-> not available.
->
-> See https://github.com/ElektraInitiative/libelektra/issues/1505
-> for more information.
 
 - [build server](https://build.libelektra.org/)
 - [website](https://www.libelektra.org)
