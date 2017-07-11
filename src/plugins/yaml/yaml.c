@@ -89,9 +89,9 @@ typedef struct
 
 /* -- Functions ------------------------------------------------------------------------------------------------------------------------- */
 
-// ===========
-// = Private =
-// ===========
+// ========
+// = Misc =
+// ========
 
 static parserType * setError (parserType * const parser, statusType status)
 {
@@ -103,62 +103,9 @@ static parserType * setError (parserType * const parser, statusType status)
 	return parser;
 }
 
-/**
- * @brief Open a file for reading
- *
- * @pre The parameters `parser` and `parser->parentKey` must not be `NULL`
- *
- * @param parser Saves the filename of the file this function opens
- *
- * @retval The updated parsing structure. If there were any errors opening the file, then this function sets the type of the parsing
- * 	   structure to `ERROR_FILE_OPEN`.
- */
-static parserType * openFile (parserType * const parser)
-{
-	ASSERT_NOT_NULL (parser);
-	ASSERT_NOT_NULL (parser->parentKey);
-
-	parser->file = fopen (keyString (parser->parentKey), "r");
-
-	if (!parser->file) setError (parser, ERROR_FILE_OPEN);
-
-	return parser;
-}
-
-/**
- * @brief Free allocated resources
- *
- * @pre The parameter `parser` must not be `NULL`
- *
- * @param parser Contains resources this function frees
- *
- * @retval The updated parsing structure. If there were any errors closing the file specified via `parser`, then this function sets the
- *         type of the parsing structure to `ERROR_FILE_CLOSE`.
- */
-static parserType * cleanup (parserType * const parser)
-{
-	ASSERT_NOT_NULL (parser);
-
-	if (parser->file && fclose (parser->file) != 0) setError (parser, ERROR_FILE_CLOSE);
-	if (parser->bufferBase) free (parser->bufferBase);
-
-	return parser;
-}
-
-/**
- * @brief This function returns a key set containing the contract of this plugin.
- *
- * @return A contract describing the functionality of this plugin.
- */
-static KeySet * contractYaml ()
-{
-	return ksNew (30, keyNew ("system/elektra/modules/yaml", KEY_VALUE, "yaml plugin waits for your orders", KEY_END),
-		      keyNew ("system/elektra/modules/yaml/exports", KEY_END),
-		      keyNew ("system/elektra/modules/yaml/exports/get", KEY_FUNC, elektraYamlGet, KEY_END),
-		      keyNew ("system/elektra/modules/yaml/exports/set", KEY_FUNC, elektraYamlSet, KEY_END),
-#include ELEKTRA_README (yaml)
-		      keyNew ("system/elektra/modules/yaml/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
-}
+// ===========
+// = Parsing =
+// ===========
 
 static parserType * assertNumberCharsAvailable (parserType * const parser, size_t numberChars)
 {
@@ -328,6 +275,52 @@ static parserType * pair (parserType * const parser)
 	return parser;
 }
 
+// =====================
+// = Resource Handling =
+// =====================
+
+/**
+ * @brief Open a file for reading
+ *
+ * @pre The parameters `parser` and `parser->parentKey` must not be `NULL`
+ *
+ * @param parser Saves the filename of the file this function opens
+ *
+ * @retval The updated parsing structure. If there were any errors opening the file, then this function sets the type of the parsing
+ * 	   structure to `ERROR_FILE_OPEN`.
+ */
+static parserType * openFile (parserType * const parser)
+{
+	ASSERT_NOT_NULL (parser);
+	ASSERT_NOT_NULL (parser->parentKey);
+
+	parser->file = fopen (keyString (parser->parentKey), "r");
+
+	if (!parser->file) setError (parser, ERROR_FILE_OPEN);
+
+	return parser;
+}
+
+/**
+ * @brief Free allocated resources
+ *
+ * @pre The parameter `parser` must not be `NULL`
+ *
+ * @param parser Contains resources this function frees
+ *
+ * @retval The updated parsing structure. If there were any errors closing the file specified via `parser`, then this function sets the
+ *         type of the parsing structure to `ERROR_FILE_CLOSE`.
+ */
+static parserType * cleanup (parserType * const parser)
+{
+	ASSERT_NOT_NULL (parser);
+
+	if (parser->file && fclose (parser->file) != 0) setError (parser, ERROR_FILE_CLOSE);
+	if (parser->bufferBase) free (parser->bufferBase);
+
+	return parser;
+}
+
 /**
  * @brief Parse a file containing data specified in a very basic subset of YAML and store the obtained data in a given key set.
  *
@@ -362,6 +355,21 @@ static int parseFile (KeySet * returned ELEKTRA_UNUSED, Key * parentKey)
 	cleanup (parser);
 
 	return parser->status == OK ? ELEKTRA_PLUGIN_STATUS_SUCCESS : ELEKTRA_PLUGIN_STATUS_ERROR;
+}
+
+/**
+ * @brief This function returns a key set containing the contract of this plugin.
+ *
+ * @return A contract describing the functionality of this plugin.
+ */
+static KeySet * contractYaml ()
+{
+	return ksNew (30, keyNew ("system/elektra/modules/yaml", KEY_VALUE, "yaml plugin waits for your orders", KEY_END),
+		      keyNew ("system/elektra/modules/yaml/exports", KEY_END),
+		      keyNew ("system/elektra/modules/yaml/exports/get", KEY_FUNC, elektraYamlGet, KEY_END),
+		      keyNew ("system/elektra/modules/yaml/exports/set", KEY_FUNC, elektraYamlSet, KEY_END),
+#include ELEKTRA_README (yaml)
+		      keyNew ("system/elektra/modules/yaml/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 }
 
 // ====================
