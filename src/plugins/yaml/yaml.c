@@ -297,7 +297,7 @@ static parserType * readUntilDoubleQuote (parserType * const parser)
 		return parser;
 	}
 
-	*(parser->text + 1) = '\0';
+	*parser->text = '\0';
 	parser->text = text;
 
 	return parser;
