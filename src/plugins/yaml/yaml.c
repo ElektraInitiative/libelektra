@@ -139,7 +139,7 @@ static parserType * getNextChar (parserType * parser)
 {
 	ASSERT_NOT_NULL (parser);
 
-	if (assertNumberCharsAvailable (parser, 1)->status != OK) return parser;
+	RET_NOK (assertNumberCharsAvailable (parser, 1));
 
 	parser->bufferCharsAvailable--;
 	parser->text = parser->buffer;
@@ -164,7 +164,7 @@ static bool acceptChars (parserType * const parser, char const * const character
 	ASSERT_NOT_NULL (parser->file);
 	ASSERT_NOT_NULL (characters);
 
-	if (getNextChar (parser)->status != OK) return parser;
+	RET_NOK (getNextChar (parser));
 
 	for (size_t charIndex = 0; charIndex < numberCharacters; charIndex++)
 	{
@@ -193,10 +193,7 @@ static parserType * expect (parserType * const parser, char const character)
 	ASSERT_NOT_NULL (parser);
 
 	bool found = acceptChar (parser, character);
-	if (parser->status != OK)
-	{
-		return parser;
-	}
+	RET_NOK (parser);
 
 	if (!found)
 	{
@@ -239,11 +236,7 @@ static parserType * readUntilDoubleQuote (parserType * const parser)
 		LOG_PARSE (parser, "Read character “%c”", *parser->text);
 		previous = parser->text;
 	}
-
-	if (parser->status != OK)
-	{
-		return parser;
-	}
+	RET_NOK (parser);
 
 	*parser->text = '\0';
 	parser->text = text;
