@@ -116,13 +116,8 @@ static parserType * openFile (parserType * const parser)
 
 	parser->file = fopen (keyString (parser->parentKey), "r");
 
-	if (!parser->file)
-	{
-		ELEKTRA_LOG_WARNING ("Could not open file “%s” for reading: %s", keyString (parser->parentKey), strerror (errno));
-		ELEKTRA_SET_ERROR_GET (parser->parentKey);
-		errno = parser->errorNumber;
-		parser->status = ERROR_FILE_OPEN;
-	}
+	if (!parser->file) setError (parser, ERROR_FILE_OPEN);
+
 	return parser;
 }
 
