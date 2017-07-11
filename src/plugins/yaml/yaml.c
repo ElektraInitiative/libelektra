@@ -74,12 +74,7 @@ typedef struct
 /* -- Macros ---------------------------------------------------------------------------------------------------------------------------- */
 
 #define LOG_PARSE(data, message, ...)                                                                                                      \
-	{                                                                                                                                  \
-		char filename[MAXPATHLEN];                                                                                                 \
-		basename_r (keyString (data->parentKey), filename);                                                                        \
-		ELEKTRA_LOG_DEBUG ("%s:%lu:%lu: " message, filename, data->line, data->column, __VA_ARGS__);                               \
-	}
-
+	ELEKTRA_LOG_DEBUG ("%s:%lu:%lu: " message, strrchr (keyString (data->parentKey), '/') + 1, data->line, data->column, __VA_ARGS__);
 #define SET_ERROR_PARSE(data, message, ...)                                                                                                \
 	ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_PARSE, data->parentKey, "%s:%lu:%lu: " message, keyString (data->parentKey), data->line,         \
 			    data->column, __VA_ARGS__);
