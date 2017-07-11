@@ -159,7 +159,7 @@ static parserType * putBackChars (parserType * parser, size_t numberChars)
 	return parser;
 }
 
-static bool acceptChars (parserType * const parser, char const * const characters, size_t numberCharacters)
+static parserType * acceptChars (parserType * const parser, char const * const characters, size_t numberCharacters)
 {
 	ASSERT_NOT_NULL (parser);
 	ASSERT_NOT_NULL (parser->file);
@@ -167,22 +167,24 @@ static bool acceptChars (parserType * const parser, char const * const character
 
 	RET_NOK (getNextChar (parser));
 
+	char * lastCharacter = parser->text;
+	parser->text = NULL;
+
 	for (size_t charIndex = 0; charIndex < numberCharacters; charIndex++)
 	{
-		if (*parser->text == characters[charIndex])
+		if (*lastCharacter == characters[charIndex])
 		{
 			LOG_PARSE (parser, "Accepted character “%c”", characters[charIndex]);
+			parser->text = lastCharacter;
 			parser->column++;
-			return true;
+			return parser;
 		}
 	}
-	LOG_PARSE (parser, "Put back character “%c”", *parser->text);
-	putBackChars (parser, 1);
-
-	return false;
+	LOG_PARSE (parser, "Put back character “%c”", *lastCharacter);
+	return putBackChars (parser, 1);
 }
 
-static bool acceptChar (parserType * const parser, char const character)
+static parserType * acceptChar (parserType * const parser, char const character)
 {
 	ASSERT_NOT_NULL (parser);
 
@@ -193,12 +195,11 @@ static parserType * expect (parserType * const parser, char const character)
 {
 	ASSERT_NOT_NULL (parser);
 
-	bool found = acceptChar (parser, character);
-	RET_NOK (parser);
+	RET_NOK (acceptChar (parser, character));
 
-	if (!found)
+	if (!parser->text)
 	{
-		SET_ERROR_PARSE (parser, "Expected character “%c” but found “%c”", character, getc (parser->file));
+		SET_ERROR_PARSE (parser, "Expected character “%c” but found “%c”", character, *parser->buffer);
 		parser->status = ERROR_PARSE;
 	}
 
@@ -210,15 +211,8 @@ static parserType * whitespace (parserType * const parser)
 	ASSERT_NOT_NULL (parser);
 	ASSERT_NOT_NULL (parser->file);
 
-	bool found;
-	do
-	{
-		found = acceptChars (parser, (char[]){ ' ', '\t' }, 2);
-		if (parser->status != OK)
-		{
-			break;
-		}
-	} while (found);
+	while (acceptChars (parser, (char[]){ ' ', '\t' }, 2)->status == OK && parser->text)
+		; //! OCLINT
 
 	return parser;
 }
