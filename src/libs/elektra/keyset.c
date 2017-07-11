@@ -272,7 +272,8 @@ KeySet * ksDeepDup (const KeySet * source)
 		{
 			keyClearSync (d);
 		}
-		if (ksAppendKey (keyset, d) == -1) {
+		if (ksAppendKey (keyset, d) == -1)
+		{
 			ksDel (keyset);
 			return 0;
 		}
@@ -821,8 +822,10 @@ ssize_t ksAppendKey (KeySet * ks, Key * toAppend)
 		/* We want to append a new key
 		  in position insertpos */
 		++ks->size;
-		if (ks->size >= ks->alloc) {
-			if (ksResize (ks, ks->alloc * 2 - 1) == -1) {
+		if (ks->size >= ks->alloc)
+		{
+			if (ksResize (ks, ks->alloc * 2 - 1) == -1)
+			{
 				--ks->size;
 				return -1;
 			}

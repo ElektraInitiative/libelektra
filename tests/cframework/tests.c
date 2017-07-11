@@ -159,11 +159,11 @@ int compare_line_files (const char * filename, const char * genfilename)
 	fgen = fopen (genfilename, "r");
 
 	strncpy (bufferorg, "could not open file, orig: ", BUFFER_LENGTH);
-	remainingBufferLength -= strlen("could not open file, orig: ");
+	remainingBufferLength -= strlen ("could not open file, orig: ");
 	strncat (bufferorg, filename, remainingBufferLength);
-	remainingBufferLength -= strlen(filename);
+	remainingBufferLength -= strlen (filename);
 	strncat (bufferorg, " gen: ", remainingBufferLength);
-	remainingBufferLength -= strlen(" gen: ");
+	remainingBufferLength -= strlen (" gen: ");
 	strncat (bufferorg, genfilename, remainingBufferLength);
 
 	exit_if_fail (forg && fgen, bufferorg);

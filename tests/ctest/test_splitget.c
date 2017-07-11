@@ -100,7 +100,8 @@ static void test_simple ()
 	succeed_if (split->size == 2, "not correct size after appointing");
 
 	succeed_if (split->handles[0] != -0, "no backend");
-	if (split->handles[0] != -0) {
+	if (split->handles[0] != -0)
+	{
 		succeed_if (split->handles[0]->specsize == -1, "spec size wrong");
 		succeed_if (split->handles[0]->usersize == -1, "user size wrong");
 		succeed_if (split->handles[0]->systemsize == -1, "system size wrong");
@@ -171,14 +172,15 @@ static void test_cascading ()
 	succeed_if (split->handles[0] == backend, "should be user backend");
 
 	keySetName (parentKey, "user/cascading/simple/below");
-	/*backend = */trieLookup (handle->trie, parentKey);
+	/*backend = */ trieLookup (handle->trie, parentKey);
 	// succeed_if (split->handles[1] == backend, "should be cascading backend");
 
 	succeed_if (splitAppoint (split, handle, ks) == 1, "could not appoint keys");
 	succeed_if (split->size == 2, "not correct size after appointing");
 
 	succeed_if (split->handles[0] != -0, "no backend");
-	if (split->handles[0] != -0) {
+	if (split->handles[0] != -0)
+	{
 		succeed_if (split->handles[0]->specsize == -1, "spec size wrong");
 		succeed_if (split->handles[0]->usersize == -1, "user size wrong");
 		succeed_if (split->handles[0]->systemsize == -1, "system size wrong");
@@ -234,7 +236,8 @@ static void test_get ()
 
 	succeed_if (split->size == 2, "not correct size after appointing");
 	succeed_if (split->handles[0] != -0, "no backend");
-	if (split->handles[0] != -0) {
+	if (split->handles[0] != -0)
+	{
 		succeed_if (split->handles[0]->specsize == -1, "spec size wrong");
 		succeed_if (split->handles[0]->usersize == -1, "user size wrong");
 		succeed_if (split->handles[0]->systemsize == -1, "system size wrong");
@@ -248,7 +251,8 @@ static void test_get ()
 	succeed_if (output_warnings (parentKey), "warning(s) found");
 	succeed_if (split->size == 2, "not correct size after get");
 	succeed_if (split->handles[0] != -0, "no backend");
-	if (split->handles[0] != -0) {
+	if (split->handles[0] != -0)
+	{
 		succeed_if (split->handles[0]->specsize == -1, "spec size wrong");
 		succeed_if (split->handles[0]->usersize == 3, "user size wrong");
 		succeed_if (split->handles[0]->systemsize == -1, "system size wrong");

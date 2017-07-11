@@ -20,7 +20,7 @@ void elektraAbort (const char * expression, const char * function, const char * 
 
 // For scan-build / clang analyzer to detect our assertions abort
 #ifdef __clang_analyzer__
-	__attribute__((analyzer_noreturn))
+	__attribute__ ((analyzer_noreturn))
 #endif
 	;
 

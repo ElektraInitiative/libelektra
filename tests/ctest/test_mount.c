@@ -232,11 +232,12 @@ static void test_simpletrie ()
 
 	Key * mp = backend->mountpoint;
 	succeed_if (mp, "no mountpoint found");
-	if (mp) {
+	if (mp)
+	{
 		succeed_if_same_string (keyName (mp), "user/tests/backend/simple");
 		succeed_if_same_string (keyString (mp), "simple");
 	}
-	
+
 	Plugin * plugin = backend->getplugins[1];
 
 	KeySet * test_config = set_pluginconf ();
@@ -408,7 +409,8 @@ static void test_us ()
 
 	Key * mp = backend->mountpoint;
 	succeed_if (mp, "no mountpoint found");
-	if (mp) {
+	if (mp)
+	{
 		succeed_if_same_string (keyName (mp), "user");
 		succeed_if_same_string (keyString (mp), "user");
 	}

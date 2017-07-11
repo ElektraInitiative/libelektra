@@ -1227,7 +1227,9 @@ static int iniWriteKeySet (FILE * fh, Key * parentKey, KeySet * returned, IniPlu
 				keyDel (sectionKey);
 				sectionKey = parentKey;
 				removeSectionKey = 0;
-			} else {
+			}
+			else
+			{
 				sectionKey = cur;
 			}
 		}

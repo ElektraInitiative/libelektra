@@ -205,7 +205,8 @@ static void test_us ()
 	succeed_if (backend == backend2, "should be same backend");
 	mp = backend->mountpoint;
 	succeed_if (mp, "no mountpoint found");
-	if (mp) {
+	if (mp)
+	{
 		succeed_if_same_string (keyName (mp), "user");
 		succeed_if_same_string (keyString (mp), "user");
 	}

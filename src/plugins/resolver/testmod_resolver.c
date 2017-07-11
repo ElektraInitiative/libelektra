@@ -178,7 +178,8 @@ void test_tempname ()
 
 	Key * parentKey = keyNew ("system", KEY_END);
 	plugin->kdbGet (plugin, 0, parentKey);
-	succeed_if (h && !strncmp (h->system.tempfile, KDB_DB_SYSTEM "/elektra.ecf", sizeof (KDB_DB_SYSTEM)), "resulting filename not correct");
+	succeed_if (h && !strncmp (h->system.tempfile, KDB_DB_SYSTEM "/elektra.ecf", sizeof (KDB_DB_SYSTEM)),
+		    "resulting filename not correct");
 
 	keyDel (parentKey);
 	elektraPluginClose (plugin, 0);
