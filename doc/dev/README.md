@@ -10,6 +10,7 @@ It complements the man pages found [here](/doc/help).
 
 ## Concepts
 
+- [Logging](logging.md)
 - [Error Handling](error-handling.md)
 - [Metadata](metadata.md)
 
