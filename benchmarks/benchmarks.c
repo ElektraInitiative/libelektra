@@ -243,12 +243,22 @@ KeySet * generateKeySet (size_t size, int32_t * seed, KeySetShape * shape)
 	ELEKTRA_ASSERT (shape->special <= 127, "parent > 127");
 	ELEKTRA_ASSERT (shape->shapef, "shape->shapef");
 	KeySet * out = ksNew (size, KS_END);
+	if (!out)
+	{
+		fprintf (stderr, "generateKeySet: Can not create KeySet\n");
+		exit (EXIT_FAILURE);
+	}
 	size_t initSize = size;
 
 	while (size)
 	{
 		--size;
 		Key * k = keyNew ("", KEY_END);
+		if (!k)
+		{
+			fprintf (stderr, "generateKeySet: Can not create root Key \n");
+			exit (EXIT_FAILURE);
+		}
 		recGenerateKeySet (k, &size, out, seed, 1, initSize, shape);
 	}
 	return out;
