@@ -82,7 +82,7 @@ XSD transformations, schemas or DTDs are not supported yet.
 ```sh
 # Backup-and-Restore:/examples/xercesfile
 
-sudo kdb mount /xerces.xml /examples/xercesfile xerces
+sudo kdb mount xerces.xml /examples/xercesfile xerces
 
 kdb set /examples/xercesfile foo
 kdb setmeta /examples/xercesfile xerces/rootname xerces
