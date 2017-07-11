@@ -75,10 +75,10 @@ typedef struct
 
 #define LOG_PARSE(data, message, ...)                                                                                                      \
 	ELEKTRA_LOG_DEBUG ("%s:%lu:%lu: " message, strrchr (keyString (data->parentKey), '/') + 1, data->line, data->column, __VA_ARGS__);
+
 #define SET_ERROR_PARSE(data, message, ...)                                                                                                \
 	ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_PARSE, data->parentKey, "%s:%lu:%lu: " message, keyString (data->parentKey), data->line,         \
 			    data->column, __VA_ARGS__);
-
 #define RET_NOK(function)                                                                                                                  \
 	if (function->status != OK)                                                                                                        \
 	{                                                                                                                                  \
@@ -352,10 +352,8 @@ static int parseFile (KeySet * returned ELEKTRA_UNUSED, Key * parentKey)
 					     .parentKey = parentKey,
 					     .keySet = returned,
 					     .errorNumber = errno };
-	if (openFile (parser)->status == OK)
-	{
-		pair (parser);
-	}
+
+	if (openFile (parser)->status == OK) pair (parser);
 	cleanup (parser);
 
 	return parser->status == OK ? ELEKTRA_PLUGIN_STATUS_SUCCESS : ELEKTRA_PLUGIN_STATUS_ERROR;
