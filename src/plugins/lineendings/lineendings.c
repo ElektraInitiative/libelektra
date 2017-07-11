@@ -89,7 +89,6 @@ static int checkLineEndings (const char * fileName, Lineending validLineEnding, 
 				return -2;
 			}
 			++line;
-			found = NA;
 		}
 		else if (lineEnding != found && found != NA)
 		{

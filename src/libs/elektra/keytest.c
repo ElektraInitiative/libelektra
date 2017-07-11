@@ -256,7 +256,7 @@ int keyIsBelow (const Key * key, const Key * check)
 		{
 			size_t size = 0;
 			char * ptr = (char *)keyname;
-			ptr = keyNameGetOneLevel (ptr, &size);
+			keyNameGetOneLevel (ptr, &size);
 			if (size == (size_t)keysize)
 			{
 				return 1;
@@ -278,13 +278,12 @@ int keyIsBelow (const Key * key, const Key * check)
 	{
 		size_t size = 0;
 		char * ptr = (char *)checkname;
-		ptr = keyNameGetOneLevel (ptr, &size);
+		keyNameGetOneLevel (ptr, &size);
 		if (size == (size_t)checksize)
 		{
 			return 0;
 		}
 		checkname += size;
-		checksize = elektraStrLen (checkname);
 		ptr = strrchr (ucheckname, '\0');
 		uchecksize -= (ptr - ucheckname);
 		ucheckname = ptr;

@@ -118,7 +118,7 @@ static void test_elektraUnescapeKeyName ()
 	printf ("test unescape key name \n");
 
 	char dest[2000];
-	char * p = dest;
+	char * p = NULL;
 
 	succeed_if (elektraUnescapeKeyName ("abc", dest) == 4, "size of unescaping wrong");
 	succeed_if_same_string ("abc", dest);

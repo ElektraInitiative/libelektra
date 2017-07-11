@@ -172,12 +172,14 @@ static void test_mount ()
 	succeed_if (split->syncbits[2] == 2, "spec part need to by synced");
 	succeed_if (split->syncbits[3] == 2, "dir part need to by synced");
 	succeed_if (split->syncbits[4] == 2, "system/elektra part need to by synced");
-	succeed_if (ksGetSize (split->keysets[0]) == 2, "size of keyset not correct");
-	succeed_if (ksGetSize (split->keysets[1]) == 2, "size of keyset not correct");
-	succeed_if (ksGetSize (split->keysets[2]) == 0, "size of keyset not correct");
-	succeed_if (ksGetSize (split->keysets[3]) == 0, "size of keyset not correct");
-	compare_keyset (split->keysets[1], split1);
-	compare_keyset (split->keysets[0], split2);
+	if (split->keysets) {
+		succeed_if (ksGetSize (split->keysets[0]) == 2, "size of keyset not correct");
+		succeed_if (ksGetSize (split->keysets[1]) == 2, "size of keyset not correct");
+		succeed_if (ksGetSize (split->keysets[2]) == 0, "size of keyset not correct");
+		succeed_if (ksGetSize (split->keysets[3]) == 0, "size of keyset not correct");
+		compare_keyset (split->keysets[1], split1);
+		compare_keyset (split->keysets[0], split2);
+	}
 	splitDel (split);
 
 
@@ -193,8 +195,10 @@ static void test_mount ()
 	succeed_if (split->syncbits[2] == 2, "spec part does not need to by synced");
 	succeed_if (split->syncbits[3] == 2, "dir part does not need to by synced");
 	succeed_if (split->syncbits[4] == 2, "user part does not need to by synced");
-	succeed_if (ksGetSize (split->keysets[0]) == 2, "size of keyset not correct");
-	succeed_if (ksGetSize (split->keysets[1]) == 2, "size of keyset not correct");
+	if (split->keysets) {
+		succeed_if (ksGetSize (split->keysets[0]) == 2, "size of keyset not correct");
+		succeed_if (ksGetSize (split->keysets[1]) == 2, "size of keyset not correct");
+	}
 	succeed_if (split->size == 5, "not split according user, system");
 	splitDel (split);
 
@@ -209,8 +213,10 @@ static void test_mount ()
 	succeed_if (split->syncbits[2] == 2, "spec part does not need to by synced");
 	succeed_if (split->syncbits[3] == 2, "dir part does not need to by synced");
 	succeed_if (split->syncbits[4] == 2, "user part does not need to by synced");
-	succeed_if (ksGetSize (split->keysets[0]) == 2, "size of keyset not correct");
-	succeed_if (ksGetSize (split->keysets[1]) == 2, "size of keyset not correct");
+	if (split->keysets) {
+		succeed_if (ksGetSize (split->keysets[0]) == 2, "size of keyset not correct");
+		succeed_if (ksGetSize (split->keysets[1]) == 2, "size of keyset not correct");
+	}
 	succeed_if (split->size == 5, "not split according user, system");
 	splitDel (split);
 
@@ -225,8 +231,10 @@ static void test_mount ()
 	succeed_if (split->syncbits[2] == 2, "spec part does not need to by synced");
 	succeed_if (split->syncbits[3] == 2, "dir part does not need to by synced");
 	succeed_if (split->syncbits[4] == 2, "user part does not need to by synced");
-	succeed_if (ksGetSize (split->keysets[0]) == 2, "size of keyset not correct");
-	succeed_if (ksGetSize (split->keysets[1]) == 2, "size of keyset not correct");
+	if (split->keysets) {
+		succeed_if (ksGetSize (split->keysets[0]) == 2, "size of keyset not correct");
+		succeed_if (ksGetSize (split->keysets[1]) == 2, "size of keyset not correct");
+	}
 	succeed_if (split->size == 5, "not split according user, system");
 	splitDel (split);
 
@@ -264,7 +272,9 @@ static void test_easyparent ()
 	succeed_if (split->size == 1, "not split by parent");
 	succeed_if (split->syncbits[0] == 3, "user part need not to by synced");
 	succeed_if_same_string (keyName (split->parents[0]), "user");
-	compare_keyset (split->keysets[0], split2);
+	if (split->keysets) {
+		compare_keyset (split->keysets[0], split2);
+	}
 
 	splitDel (split);
 	keyDel (parentKey);
@@ -279,7 +289,9 @@ static void test_easyparent ()
 	succeed_if (split->size == 1, "not split by parent");
 	succeed_if (split->syncbits[0] == 3, "system part need to by synced");
 	succeed_if_same_string (keyName (split->parents[0]), "system");
-	compare_keyset (split->keysets[0], split1);
+	if (split->keysets) {
+		compare_keyset (split->keysets[0], split1);
+	}
 
 	splitDel (split);
 	keyDel (parentKey);
@@ -326,10 +338,11 @@ static void test_optimize ()
 	succeed_if (split->syncbits[4] == 2, "system/elektra part need to by synced");
 	compare_keyset (split->keysets[0], split1);
 	compare_keyset (split->keysets[1], split2);
-	succeed_if (ksGetSize (split->keysets[2]) == 0, "size of keyset not correct");
-	succeed_if (ksGetSize (split->keysets[3]) == 0, "size of keyset not correct");
-	succeed_if (ksGetSize (split->keysets[4]) == 0, "size of keyset not correct");
-
+	if (split->keysets) {
+		succeed_if (ksGetSize (split->keysets[2]) == 0, "size of keyset not correct");
+		succeed_if (ksGetSize (split->keysets[3]) == 0, "size of keyset not correct");
+		succeed_if (ksGetSize (split->keysets[4]) == 0, "size of keyset not correct");
+	}
 	splitDel (split);
 
 
@@ -347,12 +360,13 @@ static void test_optimize ()
 	succeed_if (split->syncbits[2] == 2, "spec part need to by synced");
 	succeed_if (split->syncbits[3] == 2, "dir part need to by synced");
 	succeed_if (split->syncbits[4] == 2, "system/elektra part need to by synced");
-	compare_keyset (split->keysets[0], split1);
-	compare_keyset (split->keysets[1], split2);
-	succeed_if (ksGetSize (split->keysets[2]) == 0, "size of keyset not correct");
-	succeed_if (ksGetSize (split->keysets[3]) == 0, "size of keyset not correct");
-	succeed_if (ksGetSize (split->keysets[4]) == 0, "size of keyset not correct");
-
+	if (split->keysets) {
+		compare_keyset (split->keysets[0], split1);
+		compare_keyset (split->keysets[1], split2);
+		succeed_if (ksGetSize (split->keysets[2]) == 0, "size of keyset not correct");
+		succeed_if (ksGetSize (split->keysets[3]) == 0, "size of keyset not correct");
+		succeed_if (ksGetSize (split->keysets[4]) == 0, "size of keyset not correct");
+	}
 	splitDel (split);
 
 
@@ -375,12 +389,13 @@ static void test_optimize ()
 	succeed_if (split->syncbits[2] == 2, "spec part need to by synced");
 	succeed_if (split->syncbits[3] == 2, "dir part need to by synced");
 	succeed_if (split->syncbits[4] == 2, "system/elektra part need to by synced");
-	compare_keyset (split->keysets[0], split1);
-	compare_keyset (split->keysets[1], split2);
-	succeed_if (ksGetSize (split->keysets[2]) == 0, "size of keyset not correct");
-	succeed_if (ksGetSize (split->keysets[3]) == 0, "size of keyset not correct");
-	succeed_if (ksGetSize (split->keysets[4]) == 0, "size of keyset not correct");
-
+	if (split->keysets) {
+		compare_keyset (split->keysets[0], split1);
+		compare_keyset (split->keysets[1], split2);
+		succeed_if (ksGetSize (split->keysets[2]) == 0, "size of keyset not correct");
+		succeed_if (ksGetSize (split->keysets[3]) == 0, "size of keyset not correct");
+		succeed_if (ksGetSize (split->keysets[4]) == 0, "size of keyset not correct");
+	}
 	splitDel (split);
 
 
@@ -426,17 +441,19 @@ static void test_three ()
 	succeed_if (split->syncbits[4] == 2, "dirpart need to by synced");
 	succeed_if (split->syncbits[5] == 3, "user default part need to by synced");
 	succeed_if (split->syncbits[6] == 2, "system/elektra default part need to by synced");
-	succeed_if (ksGetSize (split->keysets[0]) == 4, "size of keyset not correct");
-	succeed_if (ksGetSize (split->keysets[1]) == 3, "size of keyset not correct");
-	succeed_if (ksGetSize (split->keysets[2]) == 2, "size of keyset not correct");
-	succeed_if (ksGetSize (split->keysets[3]) == 0, "size of keyset not correct");
-	succeed_if (ksGetSize (split->keysets[4]) == 0, "size of keyset not correct");
-	succeed_if (ksGetSize (split->keysets[5]) == 1, "size of keyset not correct");
-	succeed_if (ksGetSize (split->keysets[6]) == 0, "size of keyset not correct");
-	compare_keyset (split->keysets[0], split0);
-	compare_keyset (split->keysets[1], split1);
-	compare_keyset (split->keysets[2], split2);
-	compare_keyset (split->keysets[5], split5);
+	if (split->keysets) {
+		succeed_if (ksGetSize (split->keysets[0]) == 4, "size of keyset not correct");
+		succeed_if (ksGetSize (split->keysets[1]) == 3, "size of keyset not correct");
+		succeed_if (ksGetSize (split->keysets[2]) == 2, "size of keyset not correct");
+		succeed_if (ksGetSize (split->keysets[3]) == 0, "size of keyset not correct");
+		succeed_if (ksGetSize (split->keysets[4]) == 0, "size of keyset not correct");
+		succeed_if (ksGetSize (split->keysets[5]) == 1, "size of keyset not correct");
+		succeed_if (ksGetSize (split->keysets[6]) == 0, "size of keyset not correct");
+		compare_keyset (split->keysets[0], split0);
+		compare_keyset (split->keysets[1], split1);
+		compare_keyset (split->keysets[2], split2);
+		compare_keyset (split->keysets[5], split5);
+	}
 
 	splitPrepare (split);
 
@@ -493,12 +510,13 @@ static void test_userremove ()
 	succeed_if (split->keysets, "did not alloc keysets array");
 	succeed_if (split->handles, "did not alloc handles array");
 	succeed_if (split->size == 4, "split size wrong");
-	succeed_if (ksGetSize (split->keysets[0]) == 0, "wrong size");
-	succeed_if (ksGetSize (split->keysets[1]) == 0, "wrong size");
-	succeed_if (ksGetSize (split->keysets[2]) == 1, "wrong size");
-	compare_keyset (split->keysets[2], ks);
-	succeed_if (ksGetSize (split->keysets[3]) == 0, "wrong size");
-
+	if (split->keysets) {
+		succeed_if (ksGetSize (split->keysets[0]) == 0, "wrong size");
+		succeed_if (ksGetSize (split->keysets[1]) == 0, "wrong size");
+		succeed_if (ksGetSize (split->keysets[2]) == 1, "wrong size");
+		compare_keyset (split->keysets[2], ks);
+		succeed_if (ksGetSize (split->keysets[3]) == 0, "wrong size");
+	}
 	splitDel (split);
 
 
@@ -513,8 +531,10 @@ static void test_userremove ()
 	succeed_if (split->handles, "did not alloc handles array");
 	succeed_if (split->size == 1, "everything is in two keyset");
 	// output_split(split);
-	succeed_if (ksGetSize (split->keysets[0]) == 1, "wrong size");
-	compare_keyset (split->keysets[0], ks);
+	if (split->keysets) {
+		succeed_if (ksGetSize (split->keysets[0]) == 1, "wrong size");
+		compare_keyset (split->keysets[0], ks);
+	}
 	keyDel (parent);
 
 	splitDel (split);
@@ -531,7 +551,9 @@ static void test_userremove ()
 	succeed_if (split->handles, "did not alloc handles array");
 	succeed_if (split->size == 1, "everything is in two keyset");
 	// output_split(split);
-	succeed_if (ksGetSize (split->keysets[0]) == 0, "should be dropped");
+	if (split->keysets) {
+		succeed_if (ksGetSize (split->keysets[0]) == 0, "should be dropped");
+	}
 	keyDel (parent);
 
 	splitDel (split);
@@ -548,11 +570,13 @@ static void test_userremove ()
 	succeed_if (split->keysets, "did not alloc keysets array");
 	succeed_if (split->handles, "did not alloc handles array");
 	succeed_if (split->size == 4, "wrong size of split");
-	succeed_if (ksGetSize (split->keysets[0]) == 0, "wrong size");
-	succeed_if (ksGetSize (split->keysets[1]) == 0, "wrong size");
-	succeed_if (ksGetSize (split->keysets[2]) == 1, "wrong size");
-	compare_keyset (split->keysets[2], ks);
-	succeed_if (ksGetSize (split->keysets[3]) == 0, "wrong size");
+	if (split->keysets) {
+		succeed_if (ksGetSize (split->keysets[0]) == 0, "wrong size");
+		succeed_if (ksGetSize (split->keysets[1]) == 0, "wrong size");
+		succeed_if (ksGetSize (split->keysets[2]) == 1, "wrong size");
+		compare_keyset (split->keysets[2], ks);
+		succeed_if (ksGetSize (split->keysets[3]) == 0, "wrong size");
+	}
 
 	splitDel (split);
 
@@ -568,8 +592,10 @@ static void test_userremove ()
 	succeed_if (split->handles, "did not alloc handles array");
 	succeed_if (split->size == 1, "everything is in two keyset");
 	// output_split(split);
-	succeed_if (ksGetSize (split->keysets[0]) == 1, "wrong size");
-	compare_keyset (split->keysets[0], ks);
+	if (split->keysets) {
+		succeed_if (ksGetSize (split->keysets[0]) == 1, "wrong size");
+		compare_keyset (split->keysets[0], ks);
+	}
 	keyDel (parent);
 
 	splitDel (split);
@@ -586,7 +612,9 @@ static void test_userremove ()
 	succeed_if (split->handles, "did not alloc handles array");
 	succeed_if (split->size == 1, "everything is in two keyset");
 	// output_split(split);
-	succeed_if (ksGetSize (split->keysets[0]) == 0, "should be dropped");
+	if (split->keysets) {
+		succeed_if (ksGetSize (split->keysets[0]) == 0, "should be dropped");
+	}
 	keyDel (parent);
 
 	splitPrepare (split);
@@ -623,11 +651,13 @@ static void test_systemremove ()
 	succeed_if (split->keysets, "did not alloc keysets array");
 	succeed_if (split->handles, "did not alloc handles array");
 	succeed_if (split->size == 4, "everything is in two keyset");
-	succeed_if (ksGetSize (split->keysets[0]) == 0, "wrong size");
-	succeed_if (ksGetSize (split->keysets[1]) == 0, "wrong size");
-	succeed_if (ksGetSize (split->keysets[2]) == 0, "wrong size");
-	succeed_if (ksGetSize (split->keysets[3]) == 1, "wrong size");
-	compare_keyset (split->keysets[3], ks);
+	if (split->keysets) {
+		succeed_if (ksGetSize (split->keysets[0]) == 0, "wrong size");
+		succeed_if (ksGetSize (split->keysets[1]) == 0, "wrong size");
+		succeed_if (ksGetSize (split->keysets[2]) == 0, "wrong size");
+		succeed_if (ksGetSize (split->keysets[3]) == 1, "wrong size");
+		compare_keyset (split->keysets[3], ks);
+	}
 
 	splitDel (split);
 
@@ -643,8 +673,10 @@ static void test_systemremove ()
 	succeed_if (split->handles, "did not alloc handles array");
 	succeed_if (split->size == 1, "everything is in one keyset");
 	// output_split(split);
-	succeed_if (ksGetSize (split->keysets[0]) == 1, "wrong size");
-	compare_keyset (split->keysets[0], ks);
+	if (split->keysets) {
+		succeed_if (ksGetSize (split->keysets[0]) == 1, "wrong size");
+		compare_keyset (split->keysets[0], ks);
+	}
 	keyDel (parent);
 
 	splitDel (split);
@@ -662,7 +694,9 @@ static void test_systemremove ()
 	succeed_if (split->handles, "did not alloc handles array");
 	succeed_if (split->size == 1, "everything is in one keyset");
 	// output_split(split);
-	succeed_if (ksGetSize (split->keysets[0]) == 0, "should be dropped");
+	if (split->keysets) {
+		succeed_if (ksGetSize (split->keysets[0]) == 0, "should be dropped");
+	}
 	keyDel (parent);
 
 	splitDel (split);
@@ -679,11 +713,13 @@ static void test_systemremove ()
 	succeed_if (split->keysets, "did not alloc keysets array");
 	succeed_if (split->handles, "did not alloc handles array");
 	succeed_if (split->size == 4, "everything is in two keyset");
-	succeed_if (ksGetSize (split->keysets[0]) == 0, "wrong size");
-	succeed_if (ksGetSize (split->keysets[1]) == 0, "wrong size");
-	succeed_if (ksGetSize (split->keysets[2]) == 0, "wrong size");
-	succeed_if (ksGetSize (split->keysets[3]) == 1, "wrong size");
-	compare_keyset (split->keysets[3], ks);
+	if (split->keysets) {
+		succeed_if (ksGetSize (split->keysets[0]) == 0, "wrong size");
+		succeed_if (ksGetSize (split->keysets[1]) == 0, "wrong size");
+		succeed_if (ksGetSize (split->keysets[2]) == 0, "wrong size");
+		succeed_if (ksGetSize (split->keysets[3]) == 1, "wrong size");
+		compare_keyset (split->keysets[3], ks);
+	}
 
 	splitDel (split);
 
@@ -699,8 +735,10 @@ static void test_systemremove ()
 	succeed_if (split->handles, "did not alloc handles array");
 	succeed_if (split->size == 1, "everything is in two keyset");
 	// output_split(split);
-	succeed_if (ksGetSize (split->keysets[0]) == 1, "wrong size");
-	compare_keyset (split->keysets[0], ks);
+	if (split->keysets) {
+		succeed_if (ksGetSize (split->keysets[0]) == 1, "wrong size");
+		compare_keyset (split->keysets[0], ks);
+	}
 	keyDel (parent);
 
 	splitDel (split);
@@ -717,7 +755,9 @@ static void test_systemremove ()
 	succeed_if (split->handles, "did not alloc handles array");
 	succeed_if (split->size == 1, "everything is in two keyset");
 	// output_split(split);
-	succeed_if (ksGetSize (split->keysets[0]) == 0, "should be dropped");
+	if (split->keysets) {
+		succeed_if (ksGetSize (split->keysets[0]) == 0, "should be dropped");
+	}
 	keyDel (parent);
 
 	splitPrepare (split);
@@ -753,10 +793,12 @@ static void test_emptyremove ()
 	succeed_if (split->keysets, "did not alloc keysets array");
 	succeed_if (split->handles, "did not alloc handles array");
 	succeed_if (split->size == 4, "there is an empty keset");
-	succeed_if (ksGetSize (split->keysets[0]) == 0, "wrong size");
-	succeed_if (ksGetSize (split->keysets[1]) == 0, "wrong size");
-	succeed_if (ksGetSize (split->keysets[2]) == 0, "wrong size");
-	succeed_if (ksGetSize (split->keysets[3]) == 0, "wrong size");
+	if (split->keysets) {
+		succeed_if (ksGetSize (split->keysets[0]) == 0, "wrong size");
+		succeed_if (ksGetSize (split->keysets[1]) == 0, "wrong size");
+		succeed_if (ksGetSize (split->keysets[2]) == 0, "wrong size");
+		succeed_if (ksGetSize (split->keysets[3]) == 0, "wrong size");
+	}
 
 	splitDel (split);
 
@@ -772,10 +814,12 @@ static void test_emptyremove ()
 	succeed_if (split->keysets, "did not alloc keysets array");
 	succeed_if (split->handles, "did not alloc handles array");
 	succeed_if (split->size == 4, "there is an empty keset");
-	succeed_if (ksGetSize (split->keysets[0]) == 0, "wrong size");
-	succeed_if (ksGetSize (split->keysets[1]) == 0, "wrong size");
-	succeed_if (ksGetSize (split->keysets[2]) == 0, "wrong size");
-	succeed_if (ksGetSize (split->keysets[3]) == 0, "wrong size");
+	if (split->keysets) {
+		succeed_if (ksGetSize (split->keysets[0]) == 0, "wrong size");
+		succeed_if (ksGetSize (split->keysets[1]) == 0, "wrong size");
+		succeed_if (ksGetSize (split->keysets[2]) == 0, "wrong size");
+		succeed_if (ksGetSize (split->keysets[3]) == 0, "wrong size");
+	}
 
 	splitDel (split);
 
@@ -791,11 +835,12 @@ static void test_emptyremove ()
 	succeed_if (split->keysets, "did not alloc keysets array");
 	succeed_if (split->handles, "did not alloc handles array");
 	succeed_if (split->size == 4, "there is an empty keset");
-	succeed_if (ksGetSize (split->keysets[0]) == 0, "wrong size");
-	succeed_if (ksGetSize (split->keysets[1]) == 0, "wrong size");
-	succeed_if (ksGetSize (split->keysets[2]) == 0, "wrong size");
-	succeed_if (ksGetSize (split->keysets[3]) == 0, "wrong size");
-
+	if (split->keysets) {
+		succeed_if (ksGetSize (split->keysets[0]) == 0, "wrong size");
+		succeed_if (ksGetSize (split->keysets[1]) == 0, "wrong size");
+		succeed_if (ksGetSize (split->keysets[2]) == 0, "wrong size");
+		succeed_if (ksGetSize (split->keysets[3]) == 0, "wrong size");
+	}
 	splitPrepare (split);
 	succeed_if (split->size == 1, "there is an empty keset");
 	succeed_if_same_string (keyName (split->parents[0]), "user");

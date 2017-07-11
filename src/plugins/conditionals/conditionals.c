@@ -328,7 +328,7 @@ static CondResult evalCondition (const Key * curKey, const char * leftSide, Comp
 		if (ret == 0 && !strcmp (leftSide, "'1'")) result = TRUE;
 		break;
 	case OR:
-		if (!strcmp (leftSide, "'1'") || !strcmp (rightSide, "'1'")) result = TRUE;
+		if (!strcmp (leftSide, "'1'") || (rightSide && !strcmp (rightSide, "'1'"))) result = TRUE;
 		break;
 	default:
 		result = ERROR;

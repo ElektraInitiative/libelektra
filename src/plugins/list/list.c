@@ -414,8 +414,8 @@ int elektraListAddPlugin (Plugin * handle, KeySet * pluginConfig)
 		return 0;
 	}
 	ksRewind (pluginConfig);
+	ksNext (pluginConfig);
 	Key * lookup = ksNext (pluginConfig);
-	lookup = ksNext (pluginConfig);
 	if (keyBaseName (lookup)[0] != '#')
 	{
 		return -1;
@@ -442,8 +442,8 @@ int elektraListEditPlugin (Plugin * handle, KeySet * pluginConfig)
 		return 0;
 	}
 	ksRewind (pluginConfig);
-	Key * lookup = ksNext (pluginConfig);
-	lookup = ksNext (pluginConfig);
+	ksNext (pluginConfig);
+	Key * lookup = lookup = ksNext (pluginConfig);
 	if (keyBaseName (lookup)[0] != '#')
 	{
 		return -1;

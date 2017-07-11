@@ -179,6 +179,7 @@ static PNElem doPrefixCalculation (PNElem * stack, PNElem * stackPtr)
 		}
 		else
 		{
+			result.op = NA;
 			return result;
 		}
 	}

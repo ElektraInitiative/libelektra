@@ -255,7 +255,7 @@ static int consumeKeyNode (KeySet * ks, const char * context, xmlTextReaderPtr r
 
 				if (xmlTextReaderNodeType (reader) == 15) /* found a </key> */
 					end = 1;
-				else
+				else if (newKey)
 				{
 					/* found a sub <key> */
 					/* prepare the context (parent) */
@@ -272,7 +272,6 @@ static int consumeKeyNode (KeySet * ks, const char * context, xmlTextReaderPtr r
 		if (newKey && !appended)
 		{
 			keyDel (newKey);
-			appended = 1;
 		}
 	}
 

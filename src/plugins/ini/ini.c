@@ -1227,8 +1227,9 @@ static int iniWriteKeySet (FILE * fh, Key * parentKey, KeySet * returned, IniPlu
 				keyDel (sectionKey);
 				sectionKey = parentKey;
 				removeSectionKey = 0;
+			} else {
+				sectionKey = cur;
 			}
-			sectionKey = cur;
 		}
 		writeComments (cur, fh, config->commentChar);
 		iniWriteMeta (fh, cur);
