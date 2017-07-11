@@ -79,10 +79,10 @@ typedef struct
 	ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_PARSE, data->parentKey, "%s:%lu:%lu: " message, keyString (data->parentKey), data->line,         \
 			    data->column, __VA_ARGS__);
 
-#define PARSE(parser, data)                                                                                                                \
-	if (parser->status != OK)                                                                                                          \
+#define RET_NOK(function)                                                                                                                  \
+	if (function->status != OK)                                                                                                        \
 	{                                                                                                                                  \
-		return data;                                                                                                               \
+		return parser; /* Requires that the name of the parsing structure is `parser`! */                                          \
 	}
 
 /* -- Functions ------------------------------------------------------------------------------------------------------------------------- */
@@ -305,9 +305,9 @@ static parserType * readUntilDoubleQuote (parserType * const parser)
 
 static parserType * key (parserType * const parser)
 {
-	PARSE (whitespace (parser), parser);
-	PARSE (expect (parser, '"'), parser);
-	PARSE (readUntilDoubleQuote (parser), parser);
+	RET_NOK (whitespace (parser));
+	RET_NOK (expect (parser, '"'));
+	RET_NOK (readUntilDoubleQuote (parser));
 
 	LOG_PARSE (parser, "Read key value “%s”", parser->text);
 
@@ -316,9 +316,9 @@ static parserType * key (parserType * const parser)
 
 static parserType * pair (parserType * const parser)
 {
-	PARSE (whitespace (parser), parser);
-	PARSE (expect (parser, '{'), parser);
-	PARSE (key (parser), parser);
+	RET_NOK (whitespace (parser));
+	RET_NOK (expect (parser, '{'));
+	RET_NOK (key (parser));
 
 	return parser;
 }
