@@ -91,6 +91,14 @@ typedef struct
 // = Private =
 // ===========
 
+static parserType * setError (parserType * const parser, statusType status)
+{
+	SET_ERROR_PARSE (parser, "%s", strerror (errno));
+	errno = parser->errorNumber;
+	parser->status = status;
+	return parser;
+}
+
 /**
  * @brief Open a file for reading
  *
@@ -119,25 +127,22 @@ static parserType * openFile (parserType * const parser)
 }
 
 /**
- * @brief Close a file handle opened for reading
+ * @brief Free allocated resources
  *
  * @pre The parameter `parser` must not be `NULL`
  *
- * @param data Saves the file handle this function closes
+ * @param parser Contains resources this function frees
  *
- * @retval The updated parsing structure. If there were any errors closing the file, then this function sets the type of the parsing
- * 	   structure to `ERROR_FILE_CLOSE`.
+ * @retval The updated parsing structure. If there were any errors closing the file specified via `parser`, then this function sets the
+ *         type of the parsing structure to `ERROR_FILE_CLOSE`.
  */
-static parserType * closeFileRead (parserType * const parser)
+static parserType * cleanup (parserType * const parser)
 {
 	ELEKTRA_ASSERT (parser, "The Parameter `parser` contains `NULL`.");
 
-	if (parser->file && fclose (parser->file) != 0)
-	{
-		ELEKTRA_SET_ERROR_GET (parser->parentKey);
-		errno = parser->errorNumber;
-		parser->status = ERROR_FILE_CLOSE;
-	}
+	if (parser->file && fclose (parser->file) != 0) setError (parser, ERROR_FILE_CLOSE);
+	if (parser->bufferBase) free (parser->bufferBase);
+
 	return parser;
 }
 
@@ -156,14 +161,6 @@ static KeySet * contractYaml ()
 		      keyNew ("system/elektra/modules/yaml/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 }
 
-static parserType * setParseError (parserType * const parser)
-{
-	SET_ERROR_PARSE (parser, "%s", strerror (errno));
-	errno = parser->errorNumber;
-	parser->status = ERROR_PARSE;
-	return parser;
-}
-
 static parserType * assertNumberCharsAvailable (parserType * const parser, size_t numberChars)
 {
 	ELEKTRA_ASSERT (parser, "The parameter `parser` contains `NULL`.");
@@ -177,7 +174,7 @@ static parserType * assertNumberCharsAvailable (parserType * const parser, size_
 		size_t bufferCharsAvailable = parser->bufferCharsAvailable + numberCharsRead;
 		char * newBuffer = elektraMalloc (bufferCharsAvailable + 1);
 
-		if (!newBuffer) return setParseError (parser);
+		if (!newBuffer) return setError (parser, ERROR_PARSE);
 		strncpy (newBuffer, parser->buffer, parser->bufferCharsAvailable);
 		strncpy (newBuffer + parser->bufferCharsAvailable, line, bufferCharsAvailable + 1);
 
@@ -188,7 +185,7 @@ static parserType * assertNumberCharsAvailable (parserType * const parser, size_
 		parser->bufferCharsAvailable = bufferCharsAvailable;
 	}
 
-	if (feof (parser->file) && parser->bufferCharsAvailable < numberChars) return setParseError (parser);
+	if (feof (parser->file) && parser->bufferCharsAvailable < numberChars) return setError (parser, ERROR_PARSE);
 	return parser;
 }
 
@@ -364,11 +361,7 @@ static int parseFile (KeySet * returned ELEKTRA_UNUSED, Key * parentKey)
 	{
 		pair (parser);
 	}
-	closeFileRead (parser);
-	if (parser->bufferBase)
-	{
-		free (parser->bufferBase);
-	}
+	cleanup (parser);
 
 	return parser->status == OK ? ELEKTRA_PLUGIN_STATUS_SUCCESS : ELEKTRA_PLUGIN_STATUS_ERROR;
 }
