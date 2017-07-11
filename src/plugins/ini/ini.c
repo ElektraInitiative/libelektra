@@ -398,7 +398,8 @@ static int iniKeyToElektraKey (void * vhandle, const char * section, const char 
 		else if (!lineContinuation)
 		{
 			keyDel (appendKey);
-			ELEKTRA_SET_ERRORF (141, handle->parentKey, "Key: %s\n", keyName (existingKey));
+			ELEKTRA_SET_ERRORF (141, handle->parentKey, "We found the key %s a second time in the INI file in section %s\n",
+					    keyName (existingKey), section);
 			return -1;
 		}
 	}
