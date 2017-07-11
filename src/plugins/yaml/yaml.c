@@ -54,6 +54,10 @@ typedef struct
 	size_t column;
 	/** Last read text consumed by parser */
 	char * text;
+	/** Last key read by parser */
+	char * key;
+	/** Last value read by parser */
+	char * value;
 
 	/** Text buffer for the content saved in `file` */
 	char * bufferBase;
@@ -225,20 +229,48 @@ static parserType * readUntilDoubleQuote (parserType * const parser)
 
 	*parser->text = '\0';
 	parser->text = text;
+	parser->buffer++;
+
+	return parser;
+}
+
+static parserType * doubleQuoted (parserType * const parser)
+{
+	ASSERT_NOT_NULL (parser);
+
+	RET_NOK (expect (parser, "\""));
+	RET_NOK (readUntilDoubleQuote (parser));
+	char * text = parser->text;
+	// RET_NOK (expect (parser, "\""));
+	parser->text = text;
+
+	return parser;
+}
+
+static parserType * doubleQuotedSpace (parserType * const parser)
+{
+	ASSERT_NOT_NULL (parser);
+
+	RET_NOK (whitespace (parser));
+	RET_NOK (doubleQuoted (parser));
+	char * text = parser->text;
+	RET_NOK (whitespace (parser));
+	parser->text = text;
 
 	return parser;
 }
 
 static parserType * key (parserType * const parser)
 {
-	ASSERT_NOT_NULL (parser);
+	RET_NOK (doubleQuotedSpace (parser));
+	parser->key = parser->text;
+	return parser;
+}
 
-	RET_NOK (whitespace (parser));
-	RET_NOK (expect (parser, "\""));
-	RET_NOK (readUntilDoubleQuote (parser));
-
-	LOG_PARSE (parser, "Read key value “%s”", parser->text);
-
+static parserType * value (parserType * const parser)
+{
+	RET_NOK (doubleQuotedSpace (parser));
+	parser->value = parser->text;
 	return parser;
 }
 
@@ -249,6 +281,12 @@ static parserType * pair (parserType * const parser)
 	RET_NOK (whitespace (parser));
 	RET_NOK (expect (parser, "{"));
 	RET_NOK (key (parser));
+	LOG_PARSE (parser, "Read key “%s”", parser->key);
+	RET_NOK (expect (parser, ":"));
+	RET_NOK (value (parser));
+	LOG_PARSE (parser, "Read value “%s”", parser->value);
+	RET_NOK (expect (parser, "}"));
+	LOG_PARSE (parser, "“%s: %s”", parser->key, parser->value);
 
 	return parser;
 }
