@@ -85,6 +85,8 @@ typedef struct
 		return parser; /* Requires that the name of the parsing structure is `parser`! */                                          \
 	}
 
+#define ASSERT_NOT_NULL(argument) ELEKTRA_ASSERT (argument, "The variable `" #argument "` contains `NULL`.")
+
 /* -- Functions ------------------------------------------------------------------------------------------------------------------------- */
 
 // ===========
@@ -93,6 +95,8 @@ typedef struct
 
 static parserType * setError (parserType * const parser, statusType status)
 {
+	ASSERT_NOT_NULL (parser);
+
 	SET_ERROR_PARSE (parser, "%s", strerror (errno));
 	errno = parser->errorNumber;
 	parser->status = status;
@@ -111,8 +115,8 @@ static parserType * setError (parserType * const parser, statusType status)
  */
 static parserType * openFile (parserType * const parser)
 {
-	ELEKTRA_ASSERT (parser, "The Parameter `parser` contains `NULL`.");
-	ELEKTRA_ASSERT (parser->parentKey, "The Parameter `parentKey` contains `NULL`.");
+	ASSERT_NOT_NULL (parser);
+	ASSERT_NOT_NULL (parser->parentKey);
 
 	parser->file = fopen (keyString (parser->parentKey), "r");
 
@@ -133,7 +137,7 @@ static parserType * openFile (parserType * const parser)
  */
 static parserType * cleanup (parserType * const parser)
 {
-	ELEKTRA_ASSERT (parser, "The Parameter `parser` contains `NULL`.");
+	ASSERT_NOT_NULL (parser);
 
 	if (parser->file && fclose (parser->file) != 0) setError (parser, ERROR_FILE_CLOSE);
 	if (parser->bufferBase) free (parser->bufferBase);
@@ -158,7 +162,7 @@ static KeySet * contractYaml ()
 
 static parserType * assertNumberCharsAvailable (parserType * const parser, size_t numberChars)
 {
-	ELEKTRA_ASSERT (parser, "The parameter `parser` contains `NULL`.");
+	ASSERT_NOT_NULL (parser);
 
 	char * line = NULL;
 	size_t capacity;
@@ -186,7 +190,7 @@ static parserType * assertNumberCharsAvailable (parserType * const parser, size_
 
 static parserType * getNextChar (parserType * parser)
 {
-	ELEKTRA_ASSERT (parser && parser->file, "The Parameter `parser` contains `NULL`.");
+	ASSERT_NOT_NULL (parser);
 
 	if (assertNumberCharsAvailable (parser, 1)->status != OK) return parser;
 
@@ -199,7 +203,7 @@ static parserType * getNextChar (parserType * parser)
 
 static parserType * putBackChars (parserType * parser, size_t numberChars)
 {
-	ELEKTRA_ASSERT (parser, "The Parameter `parser` contains `NULL`.");
+	ASSERT_NOT_NULL (parser);
 
 	parser->bufferCharsAvailable += numberChars;
 	parser->buffer -= numberChars;
@@ -209,9 +213,9 @@ static parserType * putBackChars (parserType * parser, size_t numberChars)
 
 static bool acceptChars (parserType * const parser, char const * const characters, size_t numberCharacters)
 {
-	ELEKTRA_ASSERT (parser, "The Parameter `parser` contains `NULL`.");
-	ELEKTRA_ASSERT (parser->file, "The Parameter `parser→file` contains `NULL`.");
-	ELEKTRA_ASSERT (characters, "The Parameter `characters` contains `NULL`.");
+	ASSERT_NOT_NULL (parser);
+	ASSERT_NOT_NULL (parser->file);
+	ASSERT_NOT_NULL (characters);
 
 	if (getNextChar (parser)->status != OK) return parser;
 
@@ -232,14 +236,14 @@ static bool acceptChars (parserType * const parser, char const * const character
 
 static bool acceptChar (parserType * const parser, char const character)
 {
-	ELEKTRA_ASSERT (parser, "The Parameter `parser` contains `NULL`.");
+	ASSERT_NOT_NULL (parser);
 
 	return acceptChars (parser, (char[]){ character }, 1);
 }
 
 static parserType * expect (parserType * const parser, char const character)
 {
-	ELEKTRA_ASSERT (parser, "The Parameter `parser` contains `NULL`.");
+	ASSERT_NOT_NULL (parser);
 
 	bool found = acceptChar (parser, character);
 	if (parser->status != OK)
@@ -258,8 +262,8 @@ static parserType * expect (parserType * const parser, char const character)
 
 static parserType * whitespace (parserType * const parser)
 {
-	ELEKTRA_ASSERT (parser, "The Parameter `parser` contains `NULL`.");
-	ELEKTRA_ASSERT (parser->file, "The Parameter `file` contains `NULL`.");
+	ASSERT_NOT_NULL (parser);
+	ASSERT_NOT_NULL (parser->file);
 
 	bool found;
 	do
@@ -276,13 +280,10 @@ static parserType * whitespace (parserType * const parser)
 
 static parserType * readUntilDoubleQuote (parserType * const parser)
 {
-	ELEKTRA_ASSERT (parser, "The Parameter `parser` contains `NULL`.");
-	ELEKTRA_ASSERT (parser->file, "The Parameter `parser→file` contains `NULL`.");
+	ASSERT_NOT_NULL (parser);
 
 	char * previous = NULL;
-
 	size_t numberOfChars = 0;
-
 	char * text = parser->buffer;
 
 	while (getNextChar (parser)->status == OK && (*parser->text != '"' || (previous && *previous == '\\')))
@@ -305,6 +306,8 @@ static parserType * readUntilDoubleQuote (parserType * const parser)
 
 static parserType * key (parserType * const parser)
 {
+	ASSERT_NOT_NULL (parser);
+
 	RET_NOK (whitespace (parser));
 	RET_NOK (expect (parser, '"'));
 	RET_NOK (readUntilDoubleQuote (parser));
@@ -316,6 +319,8 @@ static parserType * key (parserType * const parser)
 
 static parserType * pair (parserType * const parser)
 {
+	ASSERT_NOT_NULL (parser);
+
 	RET_NOK (whitespace (parser));
 	RET_NOK (expect (parser, '{'));
 	RET_NOK (key (parser));
@@ -336,8 +341,8 @@ static parserType * pair (parserType * const parser)
  */
 static int parseFile (KeySet * returned ELEKTRA_UNUSED, Key * parentKey)
 {
-	ELEKTRA_ASSERT (returned, "The Parameter `returned` contains `NULL` instead of a valid key set.");
-	ELEKTRA_ASSERT (parentKey, "The Parameter `parentKey` contains `NULL` instead of a valid key.");
+	ASSERT_NOT_NULL (returned);
+	ASSERT_NOT_NULL (parentKey);
 
 	ELEKTRA_LOG ("Read configuration data");
 
