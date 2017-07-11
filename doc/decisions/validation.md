@@ -2,7 +2,7 @@
 
 ## Issue
 
-Validation plugins operate as indenpendent blackboxes.
+Validation plugins operate as independent blackboxes.
 For every backend each mounted validation plugin iterates
 over the whole keyset, checks every key for its trigger metakey,
 and validates the key.
@@ -55,7 +55,7 @@ for what should happen on kdbGet and handle problems e.g.
 
 ## Decision
 
-Use a wapper plugin to iterate over the keyset and delegate the validation
+Use a wrapper plugin to iterate over the keyset and delegate the validation
 of each key to the corresponding validation plugin.
 
 ## Argument
