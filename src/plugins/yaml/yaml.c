@@ -159,7 +159,7 @@ static parserType * putBackChars (parserType * parser, size_t numberChars)
 	return parser;
 }
 
-static parserType * acceptChars (parserType * const parser, char const * const characters, size_t numberCharacters)
+static parserType * acceptChars (parserType * const parser, char const * const characters)
 {
 	ASSERT_NOT_NULL (parser);
 	ASSERT_NOT_NULL (parser->file);
@@ -170,36 +170,26 @@ static parserType * acceptChars (parserType * const parser, char const * const c
 	char * lastCharacter = parser->text;
 	parser->text = NULL;
 
-	for (size_t charIndex = 0; charIndex < numberCharacters; charIndex++)
+	if (strchr (characters, *lastCharacter))
 	{
-		if (*lastCharacter == characters[charIndex])
-		{
-			LOG_PARSE (parser, "Accepted character “%c”", characters[charIndex]);
-			parser->text = lastCharacter;
-			parser->column++;
-			return parser;
-		}
+		LOG_PARSE (parser, "Accepted character “%c”", *lastCharacter);
+		parser->text = lastCharacter;
+		parser->column++;
+		return parser;
 	}
 	LOG_PARSE (parser, "Put back character “%c”", *lastCharacter);
 	return putBackChars (parser, 1);
 }
 
-static parserType * acceptChar (parserType * const parser, char const character)
+static parserType * expect (parserType * const parser, char const * const characters)
 {
 	ASSERT_NOT_NULL (parser);
 
-	return acceptChars (parser, (char[]){ character }, 1);
-}
-
-static parserType * expect (parserType * const parser, char const character)
-{
-	ASSERT_NOT_NULL (parser);
-
-	RET_NOK (acceptChar (parser, character));
+	RET_NOK (acceptChars (parser, characters));
 
 	if (!parser->text)
 	{
-		SET_ERROR_PARSE (parser, "Expected character “%c” but found “%c”", character, *parser->buffer);
+		SET_ERROR_PARSE (parser, "Expected “%s” but found “%c”", characters, *parser->buffer);
 		parser->status = ERROR_PARSE;
 	}
 
@@ -211,7 +201,7 @@ static parserType * whitespace (parserType * const parser)
 	ASSERT_NOT_NULL (parser);
 	ASSERT_NOT_NULL (parser->file);
 
-	while (acceptChars (parser, (char[]){ ' ', '\t' }, 2)->status == OK && parser->text)
+	while (acceptChars (parser, " \t")->status == OK && parser->text)
 		; //! OCLINT
 
 	return parser;
@@ -244,7 +234,7 @@ static parserType * key (parserType * const parser)
 	ASSERT_NOT_NULL (parser);
 
 	RET_NOK (whitespace (parser));
-	RET_NOK (expect (parser, '"'));
+	RET_NOK (expect (parser, "\""));
 	RET_NOK (readUntilDoubleQuote (parser));
 
 	LOG_PARSE (parser, "Read key value “%s”", parser->text);
@@ -257,7 +247,7 @@ static parserType * pair (parserType * const parser)
 	ASSERT_NOT_NULL (parser);
 
 	RET_NOK (whitespace (parser));
-	RET_NOK (expect (parser, '{'));
+	RET_NOK (expect (parser, "{"));
 	RET_NOK (key (parser));
 
 	return parser;
