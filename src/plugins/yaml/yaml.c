@@ -83,6 +83,9 @@ typedef struct
 #define SET_ERROR_PARSE(data, message, ...)                                                                                                \
 	ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_PARSE, data->parentKey, "%s:%lu:%lu: " message, keyString (data->parentKey), data->line,         \
 			    data->column, __VA_ARGS__);
+
+#define SET_ERROR_MALLOC(data, size) ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_MALLOC, data->parentKey, "Unable to allocate %lu bytes", size);
+
 #define RET_NOK(function)                                                                                                                  \
 	if (function->status != OK)                                                                                                        \
 	{                                                                                                                                  \
@@ -97,13 +100,22 @@ typedef struct
 // = Misc =
 // ========
 
-static parserType * setError (parserType * const parser, statusType status)
+static parserType * setErrorErrno (parserType * const parser, statusType status)
 {
 	ASSERT_NOT_NULL (parser);
 
 	SET_ERROR_PARSE (parser, "%s", strerror (errno));
 	errno = parser->errorNumber;
 	parser->status = status;
+	return parser;
+}
+
+static parserType * setErrorMalloc (parserType * const parser, size_t size)
+{
+	ASSERT_NOT_NULL (parser);
+
+	SET_ERROR_MALLOC (parser, size);
+	parser->status = ERROR_PARSE;
 	return parser;
 }
 
@@ -124,7 +136,7 @@ static parserType * assertNumberCharsAvailable (parserType * const parser, size_
 		size_t bufferCharsAvailable = parser->bufferCharsAvailable + numberCharsRead;
 		char * newBuffer = elektraMalloc (bufferCharsAvailable + 1);
 
-		if (!newBuffer) return setError (parser, ERROR_PARSE);
+		if (!newBuffer) return setErrorMalloc (parser, bufferCharsAvailable + 1);
 		strncpy (newBuffer, parser->buffer, parser->bufferCharsAvailable);
 		strncpy (newBuffer + parser->bufferCharsAvailable, line, bufferCharsAvailable + 1);
 
@@ -135,7 +147,7 @@ static parserType * assertNumberCharsAvailable (parserType * const parser, size_
 		parser->bufferCharsAvailable = bufferCharsAvailable;
 	}
 
-	if (feof (parser->file) && parser->bufferCharsAvailable < numberChars) return setError (parser, ERROR_PARSE);
+	if (feof (parser->file) && parser->bufferCharsAvailable < numberChars) return setErrorErrno (parser, ERROR_PARSE);
 	return parser;
 }
 
@@ -312,7 +324,7 @@ static parserType * openFile (parserType * const parser)
 
 	parser->file = fopen (keyString (parser->parentKey), "r");
 
-	if (!parser->file) setError (parser, ERROR_FILE_OPEN);
+	if (!parser->file) setErrorErrno (parser, ERROR_FILE_OPEN);
 
 	return parser;
 }
@@ -331,7 +343,7 @@ static parserType * cleanup (parserType * const parser)
 {
 	ASSERT_NOT_NULL (parser);
 
-	if (parser->file && fclose (parser->file) != 0) setError (parser, ERROR_FILE_CLOSE);
+	if (parser->file && fclose (parser->file) != 0) setErrorErrno (parser, ERROR_FILE_CLOSE);
 	if (parser->bufferBase) free (parser->bufferBase);
 
 	return parser;
