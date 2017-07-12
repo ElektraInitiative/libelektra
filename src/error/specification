@@ -528,7 +528,7 @@ number:87
 description:memory allocation error
 severity:error
 ingroup:plugin
-macro:MALLOC_ERROR
+macro:MALLOC
 
 number:88
 description:could not sync directory
