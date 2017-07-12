@@ -17,4 +17,5 @@ pair = *WSP "{" key ":" value "}" *WSP
 key = doubleQuotedSpace
 value = doubleQuotedSpace
 doubleQuotedSpace =  *WSP doubleQuoted *WSP
-doubleQuoted = DQUOTE *printable DQUOTE
+doubleQuoted = DQUOTE content DQUOTE
+content = *printable

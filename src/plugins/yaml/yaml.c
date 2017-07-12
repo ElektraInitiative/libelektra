@@ -225,7 +225,7 @@ static parserType * whitespace (parserType * const parser)
 	return parser;
 }
 
-static parserType * readUntilDoubleQuote (parserType * const parser)
+static parserType * content (parserType * const parser)
 {
 	ASSERT_NOT_NULL (parser);
 
@@ -254,7 +254,7 @@ static parserType * doubleQuoted (parserType * const parser)
 	ASSERT_NOT_NULL (parser);
 
 	RET_NOK (expect (parser, "\""));
-	RET_NOK (readUntilDoubleQuote (parser));
+	RET_NOK (content (parser));
 	char * text = parser->text;
 	RET_NOK (expect (parser, "\""));
 	parser->text = text;
