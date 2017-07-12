@@ -52,8 +52,10 @@ typedef struct
 	size_t line;
 	/** Current column inside `line` */
 	size_t column;
-	/** Last read text consumed by parser */
+	/** Start of read text consumed by parser */
 	char * text;
+	/** End of last text consumed by parser */
+	char * end;
 	/** Last key read by parser */
 	char * key;
 	/** Last value read by parser */
@@ -239,9 +241,10 @@ static parserType * readUntilDoubleQuote (parserType * const parser)
 	}
 	RET_NOK (parser);
 
-	*parser->text = '\0';
 	parser->text = text;
-	parser->buffer++;
+	putBackChars (parser, 1);
+	parser->end = parser->buffer;
+	LOG_PARSE (parser, "End: “%c”", *parser->end);
 
 	return parser;
 }
@@ -253,7 +256,7 @@ static parserType * doubleQuoted (parserType * const parser)
 	RET_NOK (expect (parser, "\""));
 	RET_NOK (readUntilDoubleQuote (parser));
 	char * text = parser->text;
-	// RET_NOK (expect (parser, "\""));
+	RET_NOK (expect (parser, "\""));
 	parser->text = text;
 
 	return parser;
@@ -272,17 +275,32 @@ static parserType * doubleQuotedSpace (parserType * const parser)
 	return parser;
 }
 
+static parserType * saveText (parserType * const parser, char ** location)
+{
+	ASSERT_NOT_NULL (parser);
+	ASSERT_NOT_NULL (location);
+
+	size_t length = parser->end - parser->text;
+	*location = elektraMalloc (length + 1);
+	if (!*location) return setErrorMalloc (parser, length + 1);
+
+	strncpy (*location, parser->text, length);
+	(*location)[length] = '\0';
+
+	return parser;
+}
+
 static parserType * key (parserType * const parser)
 {
 	RET_NOK (doubleQuotedSpace (parser));
-	parser->key = parser->text;
+	RET_NOK (saveText (parser, &parser->key));
 	return parser;
 }
 
 static parserType * value (parserType * const parser)
 {
 	RET_NOK (doubleQuotedSpace (parser));
-	parser->value = parser->text;
+	RET_NOK (saveText (parser, &parser->value));
 	return parser;
 }
 
@@ -336,8 +354,8 @@ static parserType * openFile (parserType * const parser)
  *
  * @param parser Contains resources this function frees
  *
- * @retval The updated parsing structure. If there were any errors closing the file specified via `parser`, then this function sets the
- *         type of the parsing structure to `ERROR_FILE_CLOSE`.
+ * @retval The updated parsing structure. If there were any errors closing the file specified via `parser`, then this function sets
+ * the type of the parsing structure to `ERROR_FILE_CLOSE`.
  */
 static parserType * cleanup (parserType * const parser)
 {
@@ -345,6 +363,8 @@ static parserType * cleanup (parserType * const parser)
 
 	if (parser->file && fclose (parser->file) != 0) setErrorErrno (parser, ERROR_FILE_CLOSE);
 	if (parser->bufferBase) free (parser->bufferBase);
+	if (parser->key) free (parser->key);
+	if (parser->value) free (parser->value);
 
 	return parser;
 }
