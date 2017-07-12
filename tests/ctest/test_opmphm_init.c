@@ -18,7 +18,7 @@ static const char * test_opmphm_getString (void * data ELEKTRA_UNUSED)
 static void getOrderedPair (OpmphmOrder * order, size_t w, size_t i)
 {
 	size_t result = i;
-	for (unsigned int t = 0; t < OPMPHMTUPLE; ++t)
+	for (int t = OPMPHMTUPLE - 1; t >= 0; --t)
 	{
 		size_t temp = result / w;
 		size_t rest = result - temp * w;
@@ -39,239 +39,301 @@ static size_t getPower (size_t p, size_t q)
 static size_t getNumber (OpmphmOrder * order, size_t w)
 {
 	size_t result = 0;
-	for (int t = OPMPHMTUPLE - 1; t >= 0; --t)
+	for (unsigned int t = 0; t < OPMPHMTUPLE; ++t)
 	{
-
-		result += order->h[t] * getPower (w, t);
+		result += order->h[t] * getPower (w, OPMPHMTUPLE - t - 1);
 	}
 	return result;
 }
 
-const size_t maxNsimple = 10000000;
-const size_t maxNcomplex = 10000;
+const size_t maxNsimple = 1000000;
+const size_t maxNcomplex = 1000;
 
-static void test_success ()
+static void test_basic_functions ()
 {
-	// test test functions
+	Opmphm * opmphm = opmphmNew ();
+	exit_if_fail (opmphm, "malloc");
+	succeed_if (opmphmIsEmpty (opmphm), "opmphm should be empty");
+	opmphmDel (opmphm);
+}
+
+static void test_test_functions ()
+{
+	for (size_t w = 2; w < opmphmGetWidth (maxNsimple); ++w)
 	{
-		for (size_t w = 2; w < opmphmGetWidth (maxNsimple); ++w)
+		for (size_t n = 0; n < getPower (w, OPMPHMTUPLE); ++n)
 		{
-			for (size_t n = 0; n < getPower (w, OPMPHMTUPLE); ++n)
-			{
-				OpmphmOrder o;
-				getOrderedPair (&o, w, n);
-				succeed_if (getNumber (&o, w) == n, "relation between Ordered Pair and Integers wrong");
-			}
+			OpmphmOrder o;
+			getOrderedPair (&o, w, n);
+			succeed_if (getNumber (&o, w) == n, "relation between Ordered Pair and Integers wrong");
 		}
 	}
+}
+
+static void test_mapping_success ()
+{
 	/* test w, always full. w^OPMPHMTUPLE elements in each run.
-	 * ascending order
+	 * order.h[] in ascending order
 	 */
 	{
 		opmphmRatio = 1;
 		for (size_t w = 2; w < opmphmGetWidth (maxNsimple); ++w)
 		{
+			// prepare data
 			size_t n = getPower (w, OPMPHMTUPLE);
 			void * datap = elektraMalloc (sizeof (void *) * n);
-			OpmphmOrder * order = elektraMalloc (sizeof (OpmphmOrder) * n);
 			exit_if_fail (datap, "malloc");
+			// prepare opmphm
+			Opmphm * opmphm = opmphmNew ();
+			OpmphmOrder * order = opmphmNewOrder (n, true);
+			exit_if_fail (opmphm, "malloc");
 			exit_if_fail (order, "malloc");
-			// prepare
 			OpmphmInit init;
 			init.getString = test_opmphm_getString;
-			init.initSeed = 1;
 			init.data = datap;
-			Opmphm opmphm;
+			init.initSeed = 1;
+			init.minOrder = 0;
+			init.maxOrder = n - 1;
 			// fill
 			for (size_t i = 0; i < n; ++i)
 			{
 				getOrderedPair (&order[i], w, i);
 			}
+			// build
+			OpmphmOrder ** sortOrder = opmphmInit (opmphm, &init, order, n);
+			exit_if_fail (sortOrder, "malloc");
+			int ret = opmphmMapping (opmphm, &init, order, sortOrder, n);
+			exit_if_fail (ret >= 0, "malloc");
 			// check
-			OpmphmOrder ** sortOrder = opmphmInit (&opmphm, &init, order, n);
-			succeed_if (sortOrder, "not duplicate data marked as duplicate");
+			succeed_if (!ret, "not duplicate data marked as duplicate");
 			for (size_t i = 0; i < n - 1; ++i)
 			{
 				succeed_if (getNumber (sortOrder[i], w) < getNumber (sortOrder[i + 1], w), "sort incorrect");
 			}
-
-			elektraFree (sortOrder);
+			// cleanup
+			opmphmDel (opmphm);
 			elektraFree (order);
+			elektraFree (sortOrder);
 			elektraFree (datap);
 		}
 	}
 	/* test w, from 1 to full.
-	 * ascending order
+	 * order.h[] in ascending order
 	 */
 	{
 		for (size_t w = 2; w < opmphmGetWidth (maxNcomplex); ++w)
 		{
+			// prepare data
 			size_t power = getPower (w, OPMPHMTUPLE);
 			void * datap = elektraMalloc (sizeof (void *) * power);
-			OpmphmOrder * order = elektraMalloc (sizeof (OpmphmOrder) * power);
 			exit_if_fail (datap, "malloc");
-			exit_if_fail (order, "malloc");
-			for (size_t n = 1; n < power; ++n)
+			for (size_t n = 2; n < power; ++n)
 			{
 				opmphmRatio = (double)power / n;
-				// prepare
+				// prepare opmphm
+				Opmphm * opmphm = opmphmNew ();
+				OpmphmOrder * order = opmphmNewOrder (n, true);
+				exit_if_fail (opmphm, "malloc");
+				exit_if_fail (order, "malloc");
 				OpmphmInit init;
 				init.getString = test_opmphm_getString;
-				init.initSeed = 1;
 				init.data = datap;
-				Opmphm opmphm;
+				init.initSeed = 1;
+				init.minOrder = 0;
+				init.maxOrder = n - 1;
 				// fill
 				for (size_t i = 0; i < n; ++i)
 				{
 					getOrderedPair (&order[i], w, i);
 				}
+				// build
+				OpmphmOrder ** sortOrder = opmphmInit (opmphm, &init, order, n);
+				exit_if_fail (sortOrder, "malloc");
+				int ret = opmphmMapping (opmphm, &init, order, sortOrder, n);
+				exit_if_fail (ret >= 0, "malloc");
 				// check
-				OpmphmOrder ** sortOrder = opmphmInit (&opmphm, &init, order, n);
-				succeed_if (sortOrder, "not duplicate data marked as duplicate");
+				succeed_if (!ret, "not duplicate data marked as duplicate");
 				for (size_t i = 0; i < n - 1; ++i)
 				{
 					succeed_if (getNumber (sortOrder[i], w) < getNumber (sortOrder[i + 1], w), "sort incorrect");
 				}
+				// cleanup
+				opmphmDel (opmphm);
+				elektraFree (order);
 				elektraFree (sortOrder);
 			}
-			elektraFree (order);
+			// cleanup
 			elektraFree (datap);
 		}
 	}
 	/* test w, always full. w^OPMPHMTUPLE elements in each run.
-	 * descending order
+	 * order.h[] in descending order
 	 */
 	{
 		opmphmRatio = 1;
 		for (size_t w = 2; w < opmphmGetWidth (maxNsimple); ++w)
 		{
+			// prepare data
 			size_t n = getPower (w, OPMPHMTUPLE);
 			void * datap = elektraMalloc (sizeof (void *) * n);
-			OpmphmOrder * order = elektraMalloc (sizeof (OpmphmOrder) * n);
 			exit_if_fail (datap, "malloc");
+			// prepare opmphm
+			Opmphm * opmphm = opmphmNew ();
+			OpmphmOrder * order = opmphmNewOrder (n, true);
+			exit_if_fail (opmphm, "malloc");
 			exit_if_fail (order, "malloc");
-			// prepare
 			OpmphmInit init;
 			init.getString = test_opmphm_getString;
-			init.initSeed = 1;
 			init.data = datap;
-			Opmphm opmphm;
+			init.initSeed = 1;
+			init.minOrder = 0;
+			init.maxOrder = n - 1;
 			// fill
 			for (size_t i = 0; i < n; ++i)
 			{
 				getOrderedPair (&order[i], w, n - 1 - i);
 			}
+			// build
+			OpmphmOrder ** sortOrder = opmphmInit (opmphm, &init, order, n);
+			exit_if_fail (sortOrder, "malloc");
+			int ret = opmphmMapping (opmphm, &init, order, sortOrder, n);
+			exit_if_fail (ret >= 0, "malloc");
 			// check
-			OpmphmOrder ** sortOrder = opmphmInit (&opmphm, &init, order, n);
-			succeed_if (sortOrder, "not duplicate data marked as duplicate");
+			succeed_if (!ret, "not duplicate data marked as duplicate");
 			for (size_t i = 0; i < n - 1; ++i)
 			{
 				succeed_if (getNumber (sortOrder[i], w) < getNumber (sortOrder[i + 1], w), "sort incorrect");
 			}
-
-			elektraFree (sortOrder);
+			// cleanup
+			opmphmDel (opmphm);
 			elektraFree (order);
+			elektraFree (sortOrder);
 			elektraFree (datap);
 		}
 	}
 	/* test w, from 1 to full.
-	 * descending order
+	 * order.h[] in descending order
 	 */
 	{
 		for (size_t w = 2; w < opmphmGetWidth (maxNcomplex); ++w)
 		{
+			// prepare data
 			size_t power = getPower (w, OPMPHMTUPLE);
 			void * datap = elektraMalloc (sizeof (void *) * power);
-			OpmphmOrder * order = elektraMalloc (sizeof (OpmphmOrder) * power);
 			exit_if_fail (datap, "malloc");
-			exit_if_fail (order, "malloc");
-			for (size_t n = 1; n < power; ++n)
+			for (size_t n = 2; n < power; ++n)
 			{
 				opmphmRatio = (double)power / n;
-				// prepare
+				// prepare opmphm
+				Opmphm * opmphm = opmphmNew ();
+				OpmphmOrder * order = opmphmNewOrder (n, true);
+				exit_if_fail (opmphm, "malloc");
+				exit_if_fail (order, "malloc");
 				OpmphmInit init;
 				init.getString = test_opmphm_getString;
-				init.initSeed = 1;
 				init.data = datap;
-				Opmphm opmphm;
+				init.initSeed = 1;
+				init.minOrder = 0;
+				init.maxOrder = n - 1;
 				// fill
 				for (size_t i = 0; i < n; ++i)
 				{
 					getOrderedPair (&order[i], w, n - 1 - i);
 				}
+				// build
+				OpmphmOrder ** sortOrder = opmphmInit (opmphm, &init, order, n);
+				exit_if_fail (sortOrder, "malloc");
+				int ret = opmphmMapping (opmphm, &init, order, sortOrder, n);
+				exit_if_fail (ret >= 0, "malloc");
 				// check
-				OpmphmOrder ** sortOrder = opmphmInit (&opmphm, &init, order, n);
-				succeed_if (sortOrder, "not duplicate data marked as duplicate");
+				succeed_if (!ret, "not duplicate data marked as duplicate");
 				for (size_t i = 0; i < n - 1; ++i)
 				{
 					succeed_if (getNumber (sortOrder[i], w) < getNumber (sortOrder[i + 1], w), "sort incorrect");
 				}
+				// cleanup
+				opmphmDel (opmphm);
+				elektraFree (order);
 				elektraFree (sortOrder);
 			}
-			elektraFree (order);
+			// cleanup
 			elektraFree (datap);
 		}
 	}
 }
 
 
-static void test_fail ()
+static void test_mapping_fail ()
 {
 	/* test w, always full. w^OPMPHMTUPLE elements in each run.
-	 * ascending order
+	 * order.h[] in ascending order
 	 * only 1 duplicate, should be detected during partition
 	 */
 	{
 		opmphmRatio = 1;
 		for (size_t w = 2; w < opmphmGetWidth (maxNsimple); ++w)
 		{
+			// prepare data
 			size_t n = getPower (w, OPMPHMTUPLE);
 			void * datap = elektraMalloc (sizeof (void *) * n);
-			OpmphmOrder * order = elektraMalloc (sizeof (OpmphmOrder) * n);
 			exit_if_fail (datap, "malloc");
+			// prepare opmphm
+			Opmphm * opmphm = opmphmNew ();
+			OpmphmOrder * order = opmphmNewOrder (n, true);
+			exit_if_fail (opmphm, "malloc");
 			exit_if_fail (order, "malloc");
-			// prepare
 			OpmphmInit init;
 			init.getString = test_opmphm_getString;
-			init.initSeed = 1;
 			init.data = datap;
-			Opmphm opmphm;
+			init.initSeed = 1;
+			init.minOrder = 0;
+			init.maxOrder = n - 1;
 			// fill
 			for (size_t i = 0; i < n; ++i)
 			{
 				getOrderedPair (&order[i], w, i);
 			}
+			// set error
 			order[n * (3 / 4)].h[OPMPHMTUPLE / 2] = (order[n * (3 / 4)].h[OPMPHMTUPLE / 2] + 1) % w;
+			// build
+			OpmphmOrder ** sortOrder = opmphmInit (opmphm, &init, order, n);
+			exit_if_fail (sortOrder, "malloc");
+			int ret = opmphmMapping (opmphm, &init, order, sortOrder, n);
+			exit_if_fail (ret >= 0, "malloc");
 			// check
-			OpmphmOrder ** sortOrder = opmphmInit (&opmphm, &init, order, n);
-			//~ succeed_if (!sortOrder, "duplicate data marked as ok");
-
-			elektraFree (sortOrder);
+			succeed_if (ret, "duplicate data marked as ok");
+			// cleanup
+			opmphmDel (opmphm);
 			elektraFree (order);
+			elektraFree (sortOrder);
 			elektraFree (datap);
 		}
 	}
 	/* test w, from 1 to full-1.
-	 * ascending order
+	 * order.h[] in ascending order
 	 * use the last for a duplicate
 	 */
 	{
 		for (size_t w = 2; w < opmphmGetWidth (maxNcomplex); ++w)
 		{
+			// prepare data
 			size_t power = getPower (w, OPMPHMTUPLE);
 			void * datap = elektraMalloc (sizeof (void *) * power);
-			OpmphmOrder * order = elektraMalloc (sizeof (OpmphmOrder) * power);
 			exit_if_fail (datap, "malloc");
-			exit_if_fail (order, "malloc");
 			for (size_t n = 2; n < power; ++n)
 			{
 				opmphmRatio = (double)power / n;
-				// prepare
+				// prepare opmphm
+				Opmphm * opmphm = opmphmNew ();
+				OpmphmOrder * order = opmphmNewOrder (n, true);
+				exit_if_fail (opmphm, "malloc");
+				exit_if_fail (order, "malloc");
 				OpmphmInit init;
 				init.getString = test_opmphm_getString;
-				init.initSeed = 1;
 				init.data = datap;
-				Opmphm opmphm;
+				init.initSeed = 1;
+				init.minOrder = 0;
+				init.maxOrder = n - 1;
 				// fill
 				for (size_t i = 0; i < n; ++i)
 				{
@@ -281,12 +343,19 @@ static void test_fail ()
 				{
 					order[n - 1].h[t] = order[0].h[t];
 				}
+				// build
+				OpmphmOrder ** sortOrder = opmphmInit (opmphm, &init, order, n);
+				exit_if_fail (sortOrder, "malloc");
+				int ret = opmphmMapping (opmphm, &init, order, sortOrder, n);
+				exit_if_fail (ret >= 0, "malloc");
 				// check
-				OpmphmOrder ** sortOrder = opmphmInit (&opmphm, &init, order, n);
-				succeed_if (!sortOrder, "duplicate data marked as ok");
+				succeed_if (ret, "duplicate data marked as ok");
+				// cleanup
+				opmphmDel (opmphm);
+				elektraFree (order);
 				elektraFree (sortOrder);
 			}
-			elektraFree (order);
+			// cleanup
 			elektraFree (datap);
 		}
 	}
@@ -300,8 +369,10 @@ int main (int argc, char ** argv)
 
 	init (argc, argv);
 
-	test_success ();
-	test_fail ();
+	test_test_functions ();
+	test_basic_functions ();
+	test_mapping_success ();
+	test_mapping_fail ();
 
 	printf ("\ntest_key RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 

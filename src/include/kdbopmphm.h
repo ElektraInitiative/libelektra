@@ -22,9 +22,14 @@
  * opmphmRatio should never be less than 1.
  *
  */
-#define OPMPHMTUPLE 7
+#define OPMPHMTUPLE 5
 extern double opmphmRatio;
 
+/**
+ * Typedefs used to reduce the memory footprint
+ */
+
+typedef size_t opmphmTranssition_t;
 
 /**
  * Saves a k-tuple in h[] and tells the OPMPHM the return value of each element, only needed during build.
@@ -32,7 +37,10 @@ extern double opmphmRatio;
 typedef struct
 {
 	size_t h[OPMPHMTUPLE]; /*!< the k-tuple filled by the OPMPHM with the hash function values */
-	size_t order;	  /*!< the desired return value */
+	union {
+		size_t p;	      /*!< external usage*/
+		size_t t[OPMPHMTUPLE]; /*!< internal usage */
+	} index;		       /*!< desired hash map return value */
 } OpmphmOrder;
 
 /**
@@ -43,7 +51,9 @@ typedef struct
 {
 	opmphmGetString getString; /*!< Function pointer used to extract the key name from the data. */
 	void ** data;		   /*!< The data */
-	int32_t initSeed;	  /*!< seed for random actions */
+	int32_t initSeed;	  /*!< seed used to determine opmphmHashFunctionSeeds */
+	size_t minOrder;	   /*!< min hash map return value */
+	size_t maxOrder;	   /*!< max hash map return value */
 } OpmphmInit;
 
 
@@ -54,11 +64,42 @@ typedef struct
  */
 typedef struct
 {
-	uint32_t opmphmHashFunctionSeeds[OPMPHMTUPLE]; /*!< the seeds for the tree hash function calls */
+	opmphmTranssition_t * transsitions[OPMPHMTUPLE]; /*!< stores the opmphm automata */
+	size_t size[OPMPHMTUPLE];			 /*!< stores the opmphm automata size in bytes */
+	uint32_t opmphmHashFunctionSeeds[OPMPHMTUPLE];   /*!< the seed for the hash function calls */
+	size_t outputBase;				 /*!< the base of the output */
 } Opmphm;
 
-// build functions
+/**
+ * Only needed internal for Build.
+ */
+typedef struct
+{
+	size_t vertex;
+	size_t input;
+	bool isBuffer;
+} OpmphmStack;
+
+/**
+ * Basic functions
+ */
+Opmphm * opmphmNew ();
+void opmphmDel (Opmphm * opmphm);
+void opmphmClear (Opmphm * opmphm);
+bool opmphmIsEmpty (Opmphm * opmphm);
+
+/**
+ * Build functions
+ */
+OpmphmOrder * opmphmNewOrder (size_t n, bool opmphm);
 OpmphmOrder ** opmphmInit (Opmphm * opmphm, OpmphmInit * init, OpmphmOrder * order, size_t n);
+int opmphmMapping (Opmphm * opmphm, OpmphmInit * init, OpmphmOrder * order, OpmphmOrder ** sortOrder, size_t n);
+int opmphmBuild (Opmphm * opmphm, OpmphmOrder ** sortOrder, size_t n);
+
+/**
+ * Lookup function
+ */
+size_t opmphmLookup (Opmphm * opmphm, const void * name, size_t n);
 
 /**
  * Hash function
