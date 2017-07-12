@@ -21,6 +21,15 @@ This plugin reads configuration data specified in a **very limited** subset of  
 # Mount mini plugin to cascading namespace `/examples/yaml`
 kdb mount config.yaml /examples/yaml yaml
 
+kdb set /examples/yaml/key value
+kdb get /examples/yaml/key
+#> value
+
+kdb export /examples/yaml yaml
+#> {
+#>   "key" : "value"
+#> }
+
 kdb umount /examples/yaml
 ```
 

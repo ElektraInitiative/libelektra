@@ -17,6 +17,7 @@
 #include <stdlib.h>
 
 #include <kdbassert.h>
+#include <kdbease.h>
 #include <kdberrors.h>
 #include <kdbhelper.h>
 #include <kdblogger.h>
@@ -428,6 +429,34 @@ static KeySet * contractYaml ()
 		      keyNew ("system/elektra/modules/yaml/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 }
 
+/**
+ * @brief Store the key value pairs of a key set in a file using a YAML sequence
+ *
+ * @pre The parameters `file`, `keySet`, and `parentKey` must not be `NULL`.
+ *
+ * @param keySet This key set contains the key value pairs that should be stored in `file`
+ * @param parentKey The function uses this key to determine the relative name of a key in `keySet`
+ *
+ * @retval The function returns a positive number (including 0) on success or a negative number if there was a problem writing the file.
+ */
+static int writeFile (FILE * file, KeySet * keySet, Key * parentKey)
+{
+	ASSERT_NOT_NULL (file);
+	ASSERT_NOT_NULL (keySet);
+	ASSERT_NOT_NULL (parentKey);
+
+	ksRewind (keySet);
+
+	int status = fprintf (file, "{\n");
+	for (Key * key; status >= 0 && (key = ksNext (keySet)) != 0;)
+	{
+		const char * name = elektraKeyGetRelativeName (key, parentKey);
+		ELEKTRA_LOG_DEBUG ("Write mapping “\"%s\" : \"%s\"", name, keyString (key));
+		status = fprintf (file, "  \"%s\" : \"%s\"\n", name, keyString (key));
+	}
+	return status < 0 ? status : fprintf (file, "}");
+}
+
 // ====================
 // = Plugin Interface =
 // ====================
@@ -451,7 +480,20 @@ int elektraYamlGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 /** @see elektraDocSet */
 int elektraYamlSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
 {
-	return ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
+	ELEKTRA_LOG ("Write configuration data");
+	int errorNumber = errno;
+	FILE * destination = fopen (keyString (parentKey), "w");
+
+	if (!destination) goto error;
+	// The bitwise or in the next line is correct, since we need to close the file even if writing fails
+	if ((writeFile (destination, returned, parentKey) < 0) | (fclose (destination) == EOF)) goto error; //! OCLint
+
+	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
+
+error:
+	ELEKTRA_SET_ERROR_SET (parentKey);
+	errno = errorNumber;
+	return ELEKTRA_PLUGIN_STATUS_ERROR;
 }
 
 Plugin * ELEKTRA_PLUGIN_EXPORT (yaml)
