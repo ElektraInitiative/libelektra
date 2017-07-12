@@ -16,6 +16,10 @@
 
 #include <tests_plugin.h>
 
+/* -- Macros ---------------------------------------------------------------------------------------------------------------------------- */
+
+#define MAX_LENGTH_TEXT 500
+
 /* -- Functions ------------------------------------------------------------------------------------------------------------------------- */
 
 static void test_basics ()
@@ -51,6 +55,25 @@ static void test_get ()
 
 	succeed_if (status == ELEKTRA_PLUGIN_STATUS_SUCCESS || status == ELEKTRA_PLUGIN_STATUS_NO_UPDATE, "Unable to open or parse file");
 	succeed_if (output_error (parentKey), "Received unexpected error while reading the configuration");
+
+	char keyValues[][2][50] = {
+		{ "hello", "world" },
+	};
+
+	Key * key;
+	char text[MAX_LENGTH_TEXT];
+	for (size_t pair = 0; pair < sizeof (keyValues) / sizeof (keyValues[0]); pair++)
+	{
+		char * name = keyValues[pair][0];
+		char * value = keyValues[pair][1];
+		snprintf (text, MAX_LENGTH_TEXT, "%s/%s", prefix, name);
+		key = ksLookupByName (keySet, text, KDB_O_NONE);
+
+		snprintf (text, MAX_LENGTH_TEXT, "Key “%s” not found", name);
+		exit_if_fail (key, text);
+
+		succeed_if_same_string (keyString (key), value);
+	}
 
 	keyDel (parentKey);
 	ksDel (keySet);

@@ -318,6 +318,14 @@ static parserType * pair (parserType * const parser)
 	RET_NOK (expect (parser, "}"));
 	LOG_PARSE (parser, "“%s: %s”", parser->key, parser->value);
 
+	Key * key = keyNew (keyName (parser->parentKey), KEY_END);
+	keyAddName (key, parser->key);
+	keySetString (key, parser->value);
+	ELEKTRA_LOG_DEBUG ("Name:  “%s”", keyName (key));
+	ELEKTRA_LOG_DEBUG ("Value: “%s”", keyString (key));
+
+	ksAppendKey (parser->keySet, key);
+
 	return parser;
 }
 
