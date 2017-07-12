@@ -11,8 +11,19 @@
 
 ## Introduction
 
-This plugin reads and writes configuration data in the data serialization language [YAML](http://www.yaml.org).
+This plugin reads configuration data specified in a **very limited** subset of  the data serialization language [YAML](http://www.yaml.org).
+
+## Examples
+
+### Basic Usage
+
+```sh
+# Mount mini plugin to cascading namespace `/examples/yaml`
+kdb mount config.yaml /examples/yaml yaml
+
+kdb umount /examples/yaml
+```
 
 ## Limitations
 
-Currently this plugin **does not offer any functionality**.
+Currently this plugin **should not be used by anyone**.

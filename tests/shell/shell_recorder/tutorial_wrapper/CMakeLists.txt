@@ -30,6 +30,7 @@ add_plugin_shell_test (mozprefs)
 add_plugin_shell_test (xerces)
 add_plugin_shell_test (range)
 add_plugin_shell_test (type)
+add_plugin_shell_test (yaml)
 
 # Only works with super user privileges, since it writes to `/etc/hosts`:
 # add_s_test (tutorial_mount "${CMAKE_SOURCE_DIR}/doc/tutorials/mount.md")
