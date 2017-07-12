@@ -26,5 +26,6 @@ int CRYPTO_PLUGIN_FUNCTION (gpgEncryptMasterPassword) (KeySet * conf, Key * erro
 int CRYPTO_PLUGIN_FUNCTION (gpgDecryptMasterPassword) (KeySet * conf, Key * errorKey, Key * msgKey);
 int CRYPTO_PLUGIN_FUNCTION (gpgCall) (KeySet * conf, Key * errorKey, Key * msgKey, char * argv[], size_t argc);
 char * CRYPTO_PLUGIN_FUNCTION (getMissingGpgKeyErrorText) (KeySet * conf);
+int CRYPTO_PLUGIN_FUNCTION (gpgVerifyGpgKeysInConfig) (KeySet * conf, Key * errorKey);
 
 #endif

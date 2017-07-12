@@ -1090,3 +1090,10 @@ severity:error
 ingroup:plugin
 macro:FCRYPT_OPERATION_MODE
 module:fcrypt
+
+number:177
+description:The provided argument does not identify a valid and useable GPG key.
+severity:error
+ingroup:plugin
+macro:GPG_KEY_INVALID
+module:fcrypt

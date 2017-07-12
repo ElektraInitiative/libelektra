@@ -575,6 +575,11 @@ int ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME, checkconf) (Key * errorKey, Ke
 		elektraFree (errorDescription);
 		return -1;
 	}
+	if (CRYPTO_PLUGIN_FUNCTION (gpgVerifyGpgKeysInConfig) (conf, errorKey) != 1)
+	{
+		// error has been set by CRYPTO_PLUGIN_FUNCTION (gpgVerifyGpgKeysInConfig)
+		return -1;
+	}
 	return 0;
 }
 

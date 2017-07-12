@@ -25,6 +25,7 @@
 #define GPG_ERROR_MISSING_KEY                                                                                                              \
 	"Missing GPG key (specified as " ELEKTRA_RECIPIENT_KEY                                                                             \
 	") in plugin configuration. GPG could not find any secret keys. Please generate a secret key first!"
+#define GPG_ERROR_INVALID_KEY "'%s' does not identify a valid GPG private key."
 
 enum gpgKeyListState
 {
@@ -55,7 +56,7 @@ static inline void closePipe (int * pipe)
  * @retval 1 if the file exists and is executable
  * @retval -1 if the file can not be found
  * @retval -2 if the file exsits but it can not be executed
-*/
+ */
 static int isExecutable (const char * file, Key * errorKey)
 {
 	if (access (file, F_OK))
@@ -396,6 +397,98 @@ static struct gpgKeyListElement * parseGpgKeyIdFromOutput (Key * msgKey, size_t 
 		}
 	}
 	return keylistHead;
+}
+
+/**
+ * @brief verifies if given value is a valid GPG private key.
+ * @param conf holds the plugin configuration
+ * @param value to be checked
+ * @retval 1 if value is a valid GPG private key
+ * @retval -1 otherwise
+ */
+static int isValidGpgKey (KeySet * conf, const char * value)
+{
+	// NOTE it is save to discard the const modifier (although it is not pretty) - the value is not being modified
+	char * argv[] = { "", "--batch", "--with-colons", "--fixed-list-mode", "--list-secret-keys", (char *)value, NULL };
+	Key * errorKey = keyNew (0);
+	Key * msgKey = keyNew (0);
+
+	int status = CRYPTO_PLUGIN_FUNCTION (gpgCall) (conf, errorKey, msgKey, argv, 7);
+
+	keyDel (msgKey);
+	keyDel (errorKey);
+
+	return status;
+}
+
+/**
+ * @brief check all keys in conf at and under given root key, whether or not they hold an valid GPG private key identifier.
+ * @param root the root of the configuration key to look for
+ * @param conf holds the plugin configuration
+ * @param errorKey holds error information in case of failure.
+ * @retval 1 on success.
+ * @retval -1 on error, check errorKey for further details.
+ */
+static int verifyGpgKeysInConf (Key * root, KeySet * conf, Key * errorKey)
+{
+	if (!root) return 1; // success
+
+	// verify top level key elements
+	const char * rootValue = keyString (root);
+	if (strlen (rootValue) > 0)
+	{
+		if (isValidGpgKey (conf, rootValue) != 1)
+		{
+			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_GPG_KEY_INVALID, errorKey, GPG_ERROR_INVALID_KEY, rootValue);
+			return -1; // failure
+		}
+	}
+
+	// verify child elements
+	Key * k;
+	ksRewind (conf);
+	while ((k = ksNext (conf)) != 0)
+	{
+		if (keyIsBelow (k, root))
+		{
+			const char * childValue = keyString (k);
+			if (isValidGpgKey (conf, childValue) != 1)
+			{
+				ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_GPG_KEY_INVALID, errorKey, GPG_ERROR_INVALID_KEY, childValue);
+				return -1; // failure
+			}
+		}
+	}
+
+	return 1; // success
+}
+
+/**
+ * @brief verifies that the config only holds valid GPG private key identifiers for encryption or signing.
+ * However, this method does NOT verify that the config does contain any GPG keys at all.
+ *
+ * @param conf holds the plugin configuration
+ * @param errorKey holds an error description in case of failure.
+ * @retval 1 on success
+ * @retval -1 on error. check errorKey for further details.
+ */
+int CRYPTO_PLUGIN_FUNCTION (gpgVerifyGpgKeysInConfig) (KeySet * conf, Key * errorKey)
+{
+	Key * rootEncrypting = ksLookupByName (conf, ELEKTRA_RECIPIENT_KEY, 0);
+	if (verifyGpgKeysInConf (rootEncrypting, conf, errorKey) != 1)
+	{
+		// errorKey has been set by verifyGpgKeysInConf
+		return -1; // failure
+	}
+
+	Key * rootSignature = ksLookupByName (conf, ELEKTRA_SIGNATURE_KEY, 0);
+	if (verifyGpgKeysInConf (rootSignature, conf, errorKey) != 1)
+	{
+		// errorKey has been set by verifyGpgKeysInConf
+		return -1; // failure
+	}
+
+	return 1; // success
 }
 
 /**
