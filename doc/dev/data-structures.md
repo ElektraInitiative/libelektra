@@ -362,6 +362,37 @@ synchronised.
 
 Continue reading [with the error handling](error-handling.md).
 
-## Order Preserving Minimal Perfect Hash Map
+## Order Preserving Minimal Perfect Hash Map (aka OPMPHM)
 
 All structs are defined in [opmphm.h](/src/include/kdbopmphm.h).
+
+Generally the OPMPHM is a arbitrary function.
+
+The desired return value aka the order is set in `OpmphmOrder->index.p`,
+additionally a minimum and maximum order is needed in `OpmphmInit->minOrder`
+and `OpmphmInit->maxOrder`.
+
+Due to the nature of the OPMPHM all elements need to be known at build time.
+
+The Build consists of three steps.
+
+### The Initialization
+
+Set the data `OpmphmInit->data` and the String extraction function `OpmphmInit->getString`.
+Provide a good seed in `OpmphmInit->initSeed`, needed in the next step. Call the `opmphmNewOrder ()`
+and use the default order or your own order. Min and Max order also need to be set respectively.
+
+The `opmphmInit ()`, transforms the orders in a internal representation, this step
+is irreversible.
+
+### The Mapping
+
+The `opmphmMapping ()` uses your seed (the OpmphmInit->seed will be changed) and tries to map your elements
+to a fixed space, this mapping might not succeed, on duplicate just call it again.
+
+### The Build
+
+The `opmphmBuild ()` function calculates the final OPMPHM.
+
+After the build the OpmphmInit and OpmphmOrders can be securely freed.
+The OPMPHM is now ready for constant lookups with the `opmphmLookup ()`.
