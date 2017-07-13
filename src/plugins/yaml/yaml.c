@@ -126,7 +126,7 @@ static parserType * setErrorMalloc (parserType * const parser, size_t size)
 // = Parsing =
 // ===========
 
-static parserType * assertNumberCharsAvailable (parserType * const parser, size_t numberChars)
+static parserType * readNumberChars (parserType * const parser, size_t numberChars)
 {
 	ASSERT_NOT_NULL (parser);
 
@@ -150,7 +150,7 @@ static parserType * assertNumberCharsAvailable (parserType * const parser, size_
 		parser->bufferCharsAvailable = bufferCharsAvailable;
 	}
 
-	if (feof (parser->file) && parser->bufferCharsAvailable < numberChars) return setErrorErrno (parser, ERROR_PARSE);
+	if (ferror (parser->file)) return setErrorErrno (parser, ERROR_PARSE);
 	return parser;
 }
 
@@ -158,7 +158,13 @@ static parserType * getNextChar (parserType * parser)
 {
 	ASSERT_NOT_NULL (parser);
 
-	RET_NOK (assertNumberCharsAvailable (parser, 1));
+	RET_NOK (readNumberChars (parser, 1));
+
+	if (parser->bufferCharsAvailable < 1)
+	{
+		parser->text = NULL;
+		return parser;
+	}
 
 	parser->bufferCharsAvailable--;
 	parser->text = parser->buffer;
@@ -184,7 +190,7 @@ static parserType * acceptChars (parserType * const parser, char const * const c
 	ASSERT_NOT_NULL (parser->file);
 	ASSERT_NOT_NULL (characters);
 
-	RET_NOK (getNextChar (parser));
+	if (getNextChar (parser)->status != OK || !parser->text) return parser;
 
 	char * lastCharacter = parser->text;
 	parser->text = NULL;
@@ -208,7 +214,15 @@ static parserType * expect (parserType * const parser, char const * const charac
 
 	if (!parser->text)
 	{
-		SET_ERROR_PARSE (parser, "Expected “%s” but found “%c”", characters, *parser->buffer);
+		if (parser->bufferCharsAvailable > 0)
+		{
+			SET_ERROR_PARSE (parser, "Expected “%s” but found “%c”", characters, *parser->buffer);
+		}
+		else
+		{
+
+			SET_ERROR_PARSE (parser, "Expected “%s” but found end of file instead", characters);
+		}
 		parser->status = ERROR_PARSE;
 	}
 
@@ -229,23 +243,28 @@ static parserType * whitespace (parserType * const parser)
 static parserType * content (parserType * const parser)
 {
 	ASSERT_NOT_NULL (parser);
+	ASSERT_NOT_NULL (parser->buffer);
 
-	char * previous = NULL;
-	size_t numberOfChars = 0;
+	char * previous = parser->buffer;
+	size_t numberCharsRead = 0;
 	char * text = parser->buffer;
 
-	while (getNextChar (parser)->status == OK && (*parser->text != '"' || (previous && *previous == '\\')))
+	while (getNextChar (parser)->status == OK && parser->text && (*parser->text != '"' || *previous == '\\'))
 	{
-		numberOfChars++;
+		numberCharsRead++;
 		LOG_PARSE (parser, "Read character “%c”", *parser->text);
 		previous = parser->text;
 	}
 	RET_NOK (parser);
+	if (parser->text && *parser->text == '"')
+	{
+		putBackChars (parser, 1);
+		numberCharsRead--;
+	}
 
-	parser->text = text;
-	putBackChars (parser, 1);
-	parser->end = parser->buffer;
+	parser->end = text + numberCharsRead;
 	LOG_PARSE (parser, "End: “%c”", *parser->end);
+	parser->text = text;
 
 	return parser;
 }
@@ -281,7 +300,7 @@ static parserType * saveText (parserType * const parser, char ** location)
 	ASSERT_NOT_NULL (parser);
 	ASSERT_NOT_NULL (location);
 
-	size_t length = parser->end - parser->text;
+	size_t length = parser->end - parser->text + 1;
 	*location = elektraMalloc (length + 1);
 	if (!*location) return setErrorMalloc (parser, length + 1);
 
