@@ -92,7 +92,7 @@ public:
 	~TypeChecker ()
 	{
 		map<string, Type *>::iterator it;
-		for (it = types.begin (); it != types.end (); it++)
+		for (it = types.begin (); it != types.end (); ++it)
 		{
 			delete it->second;
 		}

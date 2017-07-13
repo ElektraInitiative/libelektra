@@ -1437,8 +1437,7 @@ static void stripInternalData (Key * parentKey ELEKTRA_UNUSED, KeySet * ks)
 			Key * newKey = keyDup (cur);
 			char * oldName = strdup (keyName (cur));
 			char * newName = elektraCalloc (elektraStrLen (keyName (cur)));
-			char * token = NULL;
-			token = strtok (oldName, "/");
+			char * token = strtok (oldName, "/");
 			strcat (newName, token);
 			while (token != NULL)
 			{

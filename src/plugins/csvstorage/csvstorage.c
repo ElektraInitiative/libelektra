@@ -78,7 +78,7 @@ static char * parseLine (char * origLine, char delim, unsigned long offset, Key 
 				isCol = 1;
 			}
 		}
-		else if (*ptr == '\n')
+		else // it's \n
 		{
 			if (!isQuoted && isCol)
 			{
@@ -195,7 +195,7 @@ static unsigned long getColumnCount (char * lineBuffer, char delim)
 				isCol = 1;
 			}
 		}
-		else if (*ptr == '\n')
+		else // it's \n
 		{
 			if (!isQuoted && isCol)
 			{
@@ -288,7 +288,7 @@ static char * readNextLine (FILE * fp, char delim, int * lastLine, int * linesRe
 					isCol = 1;
 				}
 			}
-			else if (*ptr == '\n')
+			else // its \n
 			{
 				if (isQuoted && isCol)
 				{
@@ -316,8 +316,7 @@ static int csvRead (KeySet * returned, Key * parentKey, char delim, short useHea
 {
 	const char * fileName;
 	fileName = keyString (parentKey);
-	FILE * fp = NULL;
-	fp = fopen (fileName, "rb");
+	FILE * fp = fopen (fileName, "rb");
 	if (!fp)
 	{
 		ELEKTRA_SET_ERRORF (116, parentKey, "couldn't open file %s\n", fileName);
@@ -325,9 +324,7 @@ static int csvRead (KeySet * returned, Key * parentKey, char delim, short useHea
 	}
 	int lastLine = 0;
 	int linesRead = 0;
-	char * lineBuffer = NULL;
-	;
-	lineBuffer = readNextLine (fp, delim, &lastLine, &linesRead);
+	char * lineBuffer = readNextLine (fp, delim, &lastLine, &linesRead);
 	if (!lineBuffer)
 	{
 		fclose (fp);
@@ -425,7 +422,6 @@ static int csvRead (KeySet * returned, Key * parentKey, char delim, short useHea
 	elektraFree (lineBuffer);
 	while (1)
 	{
-		lineBuffer = NULL;
 		lineBuffer = readNextLine (fp, delim, &lastLine, &linesRead);
 		if (!lineBuffer)
 		{

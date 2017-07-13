@@ -882,7 +882,7 @@ ssize_t ksAppend (KeySet * ks, const KeySet * toAppend)
 	if (!ks) return -1;
 	if (!toAppend) return -1;
 
-	if (toAppend->size <= 0) return ks->size;
+	if (toAppend->size == 0) return ks->size;
 
 	/* Do only one resize in advance */
 	for (toAlloc = ks->alloc; ks->size + toAppend->size >= toAlloc; toAlloc *= 2)
@@ -1189,7 +1189,7 @@ Key * ksPop (KeySet * ks)
 
 	ks->flags |= KS_FLAG_SYNC;
 
-	if (ks->size <= 0) return 0;
+	if (ks->size == 0) return 0;
 
 	--ks->size;
 	if (ks->size + 1 < ks->alloc / 2) ksResize (ks, ks->alloc / 2 - 1);

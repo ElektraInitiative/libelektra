@@ -135,9 +135,8 @@ class KDBMountException : public KDBException
 	std::string msg;
 
 public:
-	KDBMountException (std::string const & e) : KDBException (Key ())
+	KDBMountException (std::string const & e) : KDBException (Key ()), msg (e)
 	{
-		msg = e;
 	}
 
 	virtual const char * what () const noexcept override

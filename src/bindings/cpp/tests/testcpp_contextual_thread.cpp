@@ -210,11 +210,8 @@ TEST (test_contextual_thread, ThreadNoContext)
 class Dep : public kdb::Layer
 {
 public:
-	Dep (ThreadValue<int> const & i) : m_i ()
+	Dep (ThreadValue<int> const & i) : m_i (std::to_string (static_cast<int> (i)))
 	{
-		std::ostringstream is;
-		is << static_cast<int> (i);
-		m_i = is.str ();
 		// capture current value of contextual value here
 	}
 	std::string id () const override
@@ -303,9 +300,8 @@ TEST (test_contextual_thread, activateWithDependency)
 class StrDep : public kdb::Layer
 {
 public:
-	StrDep (ThreadValue<std::string> const & i) : m_i ()
+	StrDep (ThreadValue<std::string> const & i) : m_i (i)
 	{
-		m_i = i;
 	}
 	std::string id () const override
 	{

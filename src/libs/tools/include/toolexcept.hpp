@@ -150,10 +150,10 @@ private:
 struct PluginAlreadyInserted : public PluginCheckException
 {
 	explicit PluginAlreadyInserted (std::string name)
+	: m_str ("It is not allowed to insert the same plugin (" + name +
+		 ") again!\n"
+		 "Try to add other plugins or other refnames (part after #) instead.")
 	{
-		m_str = "It is not allowed to insert the same plugin (" + name +
-			") again!\n"
-			"Try to add other plugins or other refnames (part after #) instead.";
 	}
 
 	virtual const char * what () const throw () ELEKTRA_OVERRIDE
@@ -200,13 +200,13 @@ private:
 struct BadPluginName : public PluginCheckException
 {
 	explicit BadPluginName (std::string name)
+	: m_str ("You entered a bad name (" + name +
+		 ") for a plugin!\n"
+		 "A valid name of a plugin is either\n"
+		 "modulename or modulename#refname\n"
+		 "where both modulename and refname must start with a-z\n"
+		 "and then a-z, 0-9 and underscore (_) only")
 	{
-		m_str = "You entered a bad name (" + name +
-			") for a plugin!\n"
-			"A valid name of a plugin is either\n"
-			"modulename or modulename#refname\n"
-			"where both modulename and refname must start with a-z\n"
-			"and then a-z, 0-9 and underscore (_) only";
 	}
 
 	virtual const char * what () const throw () ELEKTRA_OVERRIDE
@@ -323,9 +323,8 @@ struct ReferenceNotFound : public PluginCheckException
 struct MissingNeeded : public PluginCheckException
 {
 	std::string msg;
-	MissingNeeded (std::string need)
+	MissingNeeded (std::string need) : msg ("The plugin " + need + " is needed by this plugin but it is not provided.")
 	{
-		msg = std::string (std::string ("The plugin ") + need + " is needed by this plugin but it is not provided.");
 	}
 	~MissingNeeded () throw ()
 	{
@@ -339,9 +338,8 @@ struct MissingNeeded : public PluginCheckException
 struct MissingSymbol : public PluginCheckException
 {
 	std::string msg;
-	MissingSymbol (std::string symbol)
+	MissingSymbol (std::string symbol) : msg ("The necessary symbol \"" + symbol + "\" is missing in that plugin!")
 	{
-		msg = std::string (std::string ("The necessary symbol \"") + symbol + "\" is missing in that plugin!");
 	}
 	~MissingSymbol () throw ()
 	{
@@ -355,9 +353,8 @@ struct MissingSymbol : public PluginCheckException
 struct WrongStatus : public PluginCheckException
 {
 	std::string msg;
-	WrongStatus (std::string status)
+	WrongStatus (std::string status) : msg ("The status \"" + status + "\" is neither a valid enum value nor an integer!")
 	{
-		msg = std::string (std::string ("The status \"") + status + "\" is neither a valid enum value nor an integer!");
 	}
 	~WrongStatus () throw ()
 	{
@@ -372,9 +369,8 @@ struct WrongStatus : public PluginCheckException
 struct SymbolMismatch : public PluginCheckException
 {
 	std::string msg;
-	SymbolMismatch (std::string symbol)
+	SymbolMismatch (std::string symbol) : msg ("The symbol \"" + symbol + "\" does not match with other exported information!")
 	{
-		msg = std::string (std::string ("The symbol \"") + symbol + "\" does not match with other exported information!");
 	}
 	~SymbolMismatch () throw ()
 	{
@@ -388,9 +384,8 @@ struct SymbolMismatch : public PluginCheckException
 struct NoGlobalPlugin : public PluginCheckException
 {
 	std::string msg;
-	NoGlobalPlugin (std::string plugin)
+	NoGlobalPlugin (std::string plugin) : msg ("The plugin \"" + plugin + "\" is not suitable to be mounted as global plugin!")
 	{
-		msg = std::string (std::string ("The plugin \"") + plugin + "\" is not suitable to be mounted as global plugin!");
 	}
 	~NoGlobalPlugin () throw ()
 	{
@@ -405,9 +400,8 @@ struct NoGlobalPlugin : public PluginCheckException
 struct SymbolDuplicate : public PluginCheckException
 {
 	std::string msg;
-	SymbolDuplicate (std::string symbol)
+	SymbolDuplicate (std::string symbol) : msg ("The symbol \"" + symbol + "\" has the same value as another symbol!")
 	{
-		msg = std::string (std::string ("The symbol \"") + symbol + "\" has the same value as another symbol!");
 	}
 	~SymbolDuplicate () throw ()
 	{

@@ -98,7 +98,7 @@ static int consumeKeyNode (KeySet * ks, const char * context, xmlTextReaderPtr r
 			char * endptr;
 			long int uid = strtol ((const char *)buffer, &endptr, 10);
 			errno = errsave;
-			if (endptr != '\0' && *endptr == '\0')
+			if (endptr && *endptr == '\0')
 			{
 				keySetUID (newKey, uid);
 			}
@@ -114,7 +114,7 @@ static int consumeKeyNode (KeySet * ks, const char * context, xmlTextReaderPtr r
 			char * endptr;
 			long int gid = strtol ((const char *)buffer, &endptr, 10);
 			errno = errsave;
-			if (endptr != '\0' && *endptr == '\0')
+			if (endptr && *endptr == '\0')
 			{
 				keySetGID (newKey, gid);
 			}
@@ -154,7 +154,7 @@ static int consumeKeyNode (KeySet * ks, const char * context, xmlTextReaderPtr r
 		/* If "isdir" appears, everything different from "0", "false" or "no"
 		marks it as a dir key */
 		buffer = xmlTextReaderGetAttribute (reader, (const xmlChar *)"isdir");
-		if (!isdir && buffer)
+		if (buffer)
 		{
 			if (strcmp ((char *)buffer, "0") && strcmp ((char *)buffer, "false") && strcmp ((char *)buffer, "no"))
 				isdir = 1;

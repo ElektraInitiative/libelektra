@@ -52,7 +52,7 @@ int keyGenerate (const Key * key, FILE * stream, option_t options)
 		if (keyIsBinary (key))
 		{
 			keyGetBinary (key, str, s);
-			fprintf (stream, ", KEY_SIZE, \"%zu\"", keyGetValueSize (key));
+			fprintf (stream, ", KEY_SIZE, \"%zd\"", keyGetValueSize (key));
 		}
 		else
 		{
@@ -96,7 +96,6 @@ int keyGenerate (const Key * key, FILE * stream, option_t options)
 int ksGenerate (const KeySet * ks, FILE * stream, option_t options)
 {
 	Key * key;
-	size_t s = 0;
 	KeySet * cks = ksDup (ks);
 
 	ksRewind (cks);
@@ -106,8 +105,6 @@ int ksGenerate (const KeySet * ks, FILE * stream, option_t options)
 	{
 		if (options & KDB_O_INACTIVE)
 			if (key && keyIsInactive (key)) continue;
-
-		s++;
 
 		keyGenerate (key, stream, options);
 		fprintf (stream, ",\n");
@@ -151,6 +148,7 @@ int elektraCSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSE
 
 	ksGenerate (returned, fp, 0);
 
+	fclose (fp);
 	return 1; // success
 }
 

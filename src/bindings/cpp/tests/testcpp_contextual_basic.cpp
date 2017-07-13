@@ -952,7 +952,7 @@ TEST (test_contextual_basic, operators)
 	ASSERT_EQ (n + n, m);
 	ASSERT_EQ (m, n + n);
 
-	n--;
+	--n;
 	ASSERT_EQ (n, 20);
 
 	ASSERT_EQ (n && n, true);

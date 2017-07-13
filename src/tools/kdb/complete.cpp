@@ -370,7 +370,6 @@ bool CompleteCommand::filterName (const string argument, pair<Key, pair<int, int
 bool CompleteCommand::filterBookmarks (const string bookmarkName, pair<Key, pair<int, int>> const & current)
 {
 	// For a bookmark completion, ignore everything except the bookmarks by comparing the base name
-	const string test = current.first.getBaseName ();
 	// as we search in /sw due to legacy reasons, ensure we have an actual bookmark by checking the path
 	bool elektraFound = false;
 	bool kdbFound = false;

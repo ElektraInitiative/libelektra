@@ -103,7 +103,6 @@ namespace
 bool hasProvides (PluginDatabase const & pd, std::string which)
 {
 	std::vector<std::string> allPlugins = pd.listAllPlugins ();
-	std::map<int, PluginSpec> foundPlugins;
 
 	for (auto const & plugin : allPlugins)
 	{
@@ -300,7 +299,7 @@ PluginSpec ModulesPluginDatabase::lookupProvides (std::string const & which) con
 	}
 	catch (kdb::tools::NoPlugin & e)
 	{
-		throw e;
+		throw;
 	}
 
 	// the largest element of the map contains the best-suited plugin:

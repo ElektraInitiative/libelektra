@@ -138,7 +138,7 @@ char * elektraReplace (char const * const text, char const * const pattern, char
 {
 	ELEKTRA_ASSERT (text != NULL, "The Parameter `text` contains `NULL` instead of a valid string.");
 	ELEKTRA_ASSERT (pattern != NULL, "The Parameter `pattern` contains `NULL` instead of a valid string.");
-	ELEKTRA_ASSERT (pattern != '\0',
+	ELEKTRA_ASSERT (*pattern != '\0',
 			"The Parameter `pattern` contains an empty string. Please provide a string with a minimum length of 1 character.");
 	ELEKTRA_ASSERT (replacement != NULL, "The Parameter `replacement` contains `NULL` instead of a valid string.");
 

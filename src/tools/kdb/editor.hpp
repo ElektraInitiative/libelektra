@@ -10,7 +10,6 @@ using namespace std;
 class EditorCommand : public Command
 {
 	std::string filename;
-	int fd;
 
 public:
 	EditorCommand ();

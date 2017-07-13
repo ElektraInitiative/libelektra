@@ -47,7 +47,7 @@ void EditorCommand::tmpFile ()
 	filename += "/elektra-test.XXXXXX";
 	char * fn = static_cast<char *> (malloc (filename.length () + 1));
 	strcpy (fn, filename.c_str ());
-	fd = mkstemp (fn);
+	int fd = mkstemp (fn);
 	filename = std::string (fn);
 	close (fd);
 	free (fn);

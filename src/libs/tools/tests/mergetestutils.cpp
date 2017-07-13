@@ -30,29 +30,26 @@ protected:
 	Key mk1, mk2, mk3, mk4, mk5;
 
 	MergeTest ()
+	: baseParent (Key ("user/parentb", KEY_END)), ourParent (Key ("user/parento", KEY_END)),
+	  theirParent (Key ("user/parentt", KEY_END)), mergeParent (Key ("user/parentm", KEY_END))
 	{
-		baseParent = Key ("user/parentb", KEY_END);
 		base.append (baseParent);
 		base.append (Key ("user/parentb/config/key1", KEY_VALUE, "value1", KEY_END));
 		base.append (Key ("user/parentb/config/key2", KEY_VALUE, "value2", KEY_END));
 		base.append (Key ("user/parentb/config/key3", KEY_VALUE, "value3", KEY_END));
 		base.append (Key ("user/parentb/config/key4", KEY_VALUE, "value4", KEY_END));
 
-		ourParent = Key ("user/parento", KEY_END);
 		ours.append (ourParent);
 		ours.append (Key ("user/parento/config/key1", KEY_VALUE, "value1", KEY_END));
 		ours.append (Key ("user/parento/config/key2", KEY_VALUE, "value2", KEY_END));
 		ours.append (Key ("user/parento/config/key3", KEY_VALUE, "value3", KEY_END));
 		ours.append (Key ("user/parento/config/key4", KEY_VALUE, "value4", KEY_END));
 
-		theirParent = Key ("user/parentt", KEY_END);
 		theirs.append (theirParent);
 		theirs.append (Key ("user/parentt/config/key1", KEY_VALUE, "value1", KEY_END));
 		theirs.append (Key ("user/parentt/config/key2", KEY_VALUE, "value2", KEY_END));
 		theirs.append (Key ("user/parentt/config/key3", KEY_VALUE, "value3", KEY_END));
 		theirs.append (Key ("user/parentt/config/key4", KEY_VALUE, "value4", KEY_END));
-
-		mergeParent = Key ("user/parentm", KEY_END);
 
 		// used as references for comparing
 		mk1 = Key ("user/parentm/config/key1", KEY_VALUE, "value1", KEY_END);

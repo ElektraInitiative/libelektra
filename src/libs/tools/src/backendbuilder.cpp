@@ -102,7 +102,6 @@ void BackendBuilder::sort ()
 			dep.addBaseName (ps.getRefName ());
 		}
 		deps.append (dep);
-		std::string v = to_string (i);
 		dep.set<size_t> (i);
 		dep.setMeta<size_t> ("order", i);
 		++i;
