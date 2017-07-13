@@ -225,10 +225,15 @@ of the issues found in the whole project.
 with LLVM/clang and is also primarily intended for C and C++ code. On macOS you have to install the 
 package `llvm` with homebrew, then you'll find the tool in the folder `/usr/local/opt/llvm/bin/`.
 
-To use it, prefix the compilation make command with `scan-build` in the build folder and specify an
-output folder for the results:
+To use it, change the c compiler and the c++ compiler to the llvm analyzer. To do this, you can
+configure the project from scratch and prefix the cmake command with `scan-build`. Alternatively, set
+the c compiler to `ccc-analyzer` and the c++ compiler to `c++-analyzer` (bundled with llvm/clang).
 
-    scan-build -o ./scanbuild_result make
+Then you can build the project with make like usual, prefixing the command with `scan-build`.
+The -o option specifies where the html results get stored. Ensure you build the project from scratch, 
+otherwise the analyzation might be incomplete.
+
+    scan-build -o ./scanbuild_result make -j 4
 
 Afterwards, the report can be viewed by using the tool `scan-view`, also found in the llvm folder.
 The report is created in the folder specified above, along with the current date of the analyzation,

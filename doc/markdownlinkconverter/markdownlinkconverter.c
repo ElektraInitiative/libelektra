@@ -495,8 +495,8 @@ static void printTarget (FILE * output, char * target, char * inputFilename, int
 					return;
 				}
 			}
+			strcpy (++lastFolderDelimiter, target);
 		}
-		strcpy (++lastFolderDelimiter, target);
 	}
 	else
 	{

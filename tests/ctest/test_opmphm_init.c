@@ -51,6 +51,7 @@ const size_t maxNcomplex = 1000;
 
 static void test_basic_functions ()
 {
+	printf ("test_basic_functions\n");
 	Opmphm * opmphm = opmphmNew ();
 	exit_if_fail (opmphm, "malloc");
 	succeed_if (opmphmIsEmpty (opmphm), "opmphm should be empty");
@@ -59,6 +60,7 @@ static void test_basic_functions ()
 
 static void test_test_functions ()
 {
+	printf ("test_test_functions\n");
 	for (size_t w = 2; w < opmphmGetWidth (maxNsimple); ++w)
 	{
 		for (size_t n = 0; n < getPower (w, OPMPHMTUPLE); ++n)
@@ -72,6 +74,7 @@ static void test_test_functions ()
 
 static void test_mapping_success ()
 {
+	printf ("test_mapping_success\n");
 	/* test w, always full. w^OPMPHMTUPLE elements in each run.
 	 * order.h[] in ascending order
 	 */
@@ -95,9 +98,12 @@ static void test_mapping_success ()
 			init.minOrder = 0;
 			init.maxOrder = n - 1;
 			// fill
-			for (size_t i = 0; i < n; ++i)
+			if (order)
 			{
-				getOrderedPair (&order[i], w, i);
+				for (size_t i = 0; i < n; ++i)
+				{
+					getOrderedPair (&order[i], w, i);
+				}
 			}
 			// build
 			OpmphmOrder ** sortOrder = opmphmInit (opmphm, &init, order, n);
@@ -106,9 +112,12 @@ static void test_mapping_success ()
 			exit_if_fail (ret >= 0, "malloc");
 			// check
 			succeed_if (!ret, "not duplicate data marked as duplicate");
-			for (size_t i = 0; i < n - 1; ++i)
+			if (sortOrder)
 			{
-				succeed_if (getNumber (sortOrder[i], w) < getNumber (sortOrder[i + 1], w), "sort incorrect");
+				for (size_t i = 0; i < n - 1; ++i)
+				{
+					succeed_if (getNumber (sortOrder[i], w) < getNumber (sortOrder[i + 1], w), "sort incorrect");
+				}
 			}
 			// cleanup
 			opmphmDel (opmphm);
@@ -142,9 +151,12 @@ static void test_mapping_success ()
 				init.minOrder = 0;
 				init.maxOrder = n - 1;
 				// fill
-				for (size_t i = 0; i < n; ++i)
+				if (order)
 				{
-					getOrderedPair (&order[i], w, i);
+					for (size_t i = 0; i < n; ++i)
+					{
+						getOrderedPair (&order[i], w, i);
+					}
 				}
 				// build
 				OpmphmOrder ** sortOrder = opmphmInit (opmphm, &init, order, n);
@@ -153,9 +165,13 @@ static void test_mapping_success ()
 				exit_if_fail (ret >= 0, "malloc");
 				// check
 				succeed_if (!ret, "not duplicate data marked as duplicate");
-				for (size_t i = 0; i < n - 1; ++i)
+				if (sortOrder)
 				{
-					succeed_if (getNumber (sortOrder[i], w) < getNumber (sortOrder[i + 1], w), "sort incorrect");
+					for (size_t i = 0; i < n - 1; ++i)
+					{
+						succeed_if (getNumber (sortOrder[i], w) < getNumber (sortOrder[i + 1], w),
+							    "sort incorrect");
+					}
 				}
 				// cleanup
 				opmphmDel (opmphm);
@@ -189,9 +205,12 @@ static void test_mapping_success ()
 			init.minOrder = 0;
 			init.maxOrder = n - 1;
 			// fill
-			for (size_t i = 0; i < n; ++i)
+			if (order)
 			{
-				getOrderedPair (&order[i], w, n - 1 - i);
+				for (size_t i = 0; i < n; ++i)
+				{
+					getOrderedPair (&order[i], w, n - 1 - i);
+				}
 			}
 			// build
 			OpmphmOrder ** sortOrder = opmphmInit (opmphm, &init, order, n);
@@ -200,9 +219,12 @@ static void test_mapping_success ()
 			exit_if_fail (ret >= 0, "malloc");
 			// check
 			succeed_if (!ret, "not duplicate data marked as duplicate");
-			for (size_t i = 0; i < n - 1; ++i)
+			if (sortOrder)
 			{
-				succeed_if (getNumber (sortOrder[i], w) < getNumber (sortOrder[i + 1], w), "sort incorrect");
+				for (size_t i = 0; i < n - 1; ++i)
+				{
+					succeed_if (getNumber (sortOrder[i], w) < getNumber (sortOrder[i + 1], w), "sort incorrect");
+				}
 			}
 			// cleanup
 			opmphmDel (opmphm);
@@ -236,9 +258,12 @@ static void test_mapping_success ()
 				init.minOrder = 0;
 				init.maxOrder = n - 1;
 				// fill
-				for (size_t i = 0; i < n; ++i)
+				if (order)
 				{
-					getOrderedPair (&order[i], w, n - 1 - i);
+					for (size_t i = 0; i < n; ++i)
+					{
+						getOrderedPair (&order[i], w, n - 1 - i);
+					}
 				}
 				// build
 				OpmphmOrder ** sortOrder = opmphmInit (opmphm, &init, order, n);
@@ -247,9 +272,13 @@ static void test_mapping_success ()
 				exit_if_fail (ret >= 0, "malloc");
 				// check
 				succeed_if (!ret, "not duplicate data marked as duplicate");
-				for (size_t i = 0; i < n - 1; ++i)
+				if (sortOrder)
 				{
-					succeed_if (getNumber (sortOrder[i], w) < getNumber (sortOrder[i + 1], w), "sort incorrect");
+					for (size_t i = 0; i < n - 1; ++i)
+					{
+						succeed_if (getNumber (sortOrder[i], w) < getNumber (sortOrder[i + 1], w),
+							    "sort incorrect");
+					}
 				}
 				// cleanup
 				opmphmDel (opmphm);
@@ -265,6 +294,7 @@ static void test_mapping_success ()
 
 static void test_mapping_fail ()
 {
+	printf ("test_mapping_fail\n");
 	/* test w, always full. w^OPMPHMTUPLE elements in each run.
 	 * order.h[] in ascending order
 	 * only 1 duplicate, should be detected during partition
@@ -289,9 +319,12 @@ static void test_mapping_fail ()
 			init.minOrder = 0;
 			init.maxOrder = n - 1;
 			// fill
-			for (size_t i = 0; i < n; ++i)
+			if (order)
 			{
-				getOrderedPair (&order[i], w, i);
+				for (size_t i = 0; i < n; ++i)
+				{
+					getOrderedPair (&order[i], w, i);
+				}
 			}
 			// set error
 			order[n * (3 / 4)].h[OPMPHMTUPLE / 2] = (order[n * (3 / 4)].h[OPMPHMTUPLE / 2] + 1) % w;
@@ -335,13 +368,16 @@ static void test_mapping_fail ()
 				init.minOrder = 0;
 				init.maxOrder = n - 1;
 				// fill
-				for (size_t i = 0; i < n; ++i)
+				if (order)
 				{
-					getOrderedPair (&order[i], w, i);
-				}
-				for (unsigned int t = 0; t < OPMPHMTUPLE; ++t)
-				{
-					order[n - 1].h[t] = order[0].h[t];
+					for (size_t i = 0; i < n; ++i)
+					{
+						getOrderedPair (&order[i], w, i);
+					}
+					for (unsigned int t = 0; t < OPMPHMTUPLE; ++t)
+					{
+						order[n - 1].h[t] = order[0].h[t];
+					}
 				}
 				// build
 				OpmphmOrder ** sortOrder = opmphmInit (opmphm, &init, order, n);

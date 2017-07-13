@@ -250,7 +250,7 @@ KeySet * ksDup (const KeySet * source)
  *
  * @param source has to be an initialized source KeySet
  * @return a deep copy of source on success
- * @retval 0 on NULL pointer
+ * @retval 0 on NULL pointer or a memory error happened
  * @see ksNew(), ksDel()
  * @see keyDup() for key duplication
  * @see ksDup() for flat copy
@@ -272,7 +272,11 @@ KeySet * ksDeepDup (const KeySet * source)
 		{
 			keyClearSync (d);
 		}
-		ksAppendKey (keyset, d);
+		if (ksAppendKey (keyset, d) == -1)
+		{
+			ksDel (keyset);
+			return 0;
+		}
 	}
 
 	return keyset;
@@ -818,7 +822,14 @@ ssize_t ksAppendKey (KeySet * ks, Key * toAppend)
 		/* We want to append a new key
 		  in position insertpos */
 		++ks->size;
-		if (ks->size >= ks->alloc) ksResize (ks, ks->alloc * 2 - 1);
+		if (ks->size >= ks->alloc)
+		{
+			if (ksResize (ks, ks->alloc * 2 - 1) == -1)
+			{
+				--ks->size;
+				return -1;
+			}
+		}
 		keyIncRef (toAppend);
 
 		if (insertpos == (ssize_t)ks->size - 1)

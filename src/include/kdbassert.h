@@ -17,6 +17,11 @@ void elektraAbort (const char * expression, const char * function, const char * 
 #ifdef __GNUC__
 	__attribute__ ((format (printf, 5, 6)))
 #endif
+
+// For scan-build / clang analyzer to detect our assertions abort
+#ifdef __clang_analyzer__
+	__attribute__ ((analyzer_noreturn))
+#endif
 	;
 
 #ifdef __cplusplus

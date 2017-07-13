@@ -12,7 +12,7 @@ int main ()
 {
 	struct utsname buf;
 
-	int ret = uname (&buf);
+	uname (&buf);
 	(void)buf.sysname;
 	(void)buf.nodename;
 	(void)buf.release;

@@ -545,7 +545,7 @@ static void test_ksCursor ()
 	ksRewind (ks);
 	for (i = 0; i < 5; i++)
 	{
-		key = ksNext (ks);
+		ksNext (ks);
 		if (i == 1)
 		{
 			cursor = ksGetCursor (ks);
@@ -553,7 +553,7 @@ static void test_ksCursor ()
 		}
 	}
 	ksSetCursor (ks, cursor);
-	key = ksCurrent (ks);
+	ksCurrent (ks);
 
 	ksDel (ks);
 
@@ -563,7 +563,7 @@ static void test_ksCursor ()
 	ksRewind (ks);
 	for (i = 0; i < 4; i++)
 	{
-		key = ksNext (ks);
+		ksNext (ks);
 		if (i == 1)
 		{
 			cursor = ksGetCursor (ks);
@@ -583,7 +583,7 @@ static void test_ksCursor ()
 	ksRewind (ks);
 	for (i = 0; i < 4; i++)
 	{
-		key = ksNext (ks);
+		ksNext (ks);
 		cursor = ksGetCursor (ks);
 		name[5] = '0' + i;
 		succeed_if_same_string (keyName (ksAtCursor (ks, cursor)), name);
@@ -756,7 +756,7 @@ static void test_ksSort ()
 	succeed_if (keyGetRef (k2) == 1, "reference counter not incremented after insertion");
 
 	ksRewind (ks);
-	key = ksNext (ks);
+	ksNext (ks);
 	ksDel (ks);
 
 	ks = ksNew (0, KS_END);
@@ -766,7 +766,7 @@ static void test_ksSort ()
 	ksAppendKey (ks, k1);
 
 	ksRewind (ks);
-	key = ksNext (ks);
+	ksNext (ks);
 	ksDel (ks);
 
 	ks = ksNew (0, KS_END);

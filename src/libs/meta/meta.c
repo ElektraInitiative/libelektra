@@ -1211,7 +1211,6 @@ int elektraSortTopology (KeySet * ks, Key ** array)
 		adjMatrix[j].isResolved = 0;
 		adjMatrix[j].deps = elektraCalloc (sizeof (unsigned long) * size);
 	}
-	i = 0;
 	kdb_octet_t hasOrder = 0;
 	if (keyGetMeta (localArray[0], "order")) hasOrder = 1;
 	unsigned int unresolved = 0;

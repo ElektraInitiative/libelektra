@@ -680,7 +680,7 @@ size_t elektraUnescapeKeyName (const char * source, char * dest)
 
 	ELEKTRA_ASSERT (sp != NULL && dp != NULL, "Got null pointer sp: %p dp: %p", (void *)sp, (void *)dp);
 
-	if (*source == '/')
+	if (*sp == '/')
 	{
 		// handling for cascading names
 		*dp = 0;
