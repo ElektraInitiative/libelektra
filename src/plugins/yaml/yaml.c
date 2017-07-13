@@ -307,25 +307,34 @@ static parserType * value (parserType * const parser)
 
 static parserType * pair (parserType * const parser)
 {
-	ASSERT_NOT_NULL (parser);
-
-	RET_NOK (whitespace (parser));
-	RET_NOK (expect (parser, "{"));
 	RET_NOK (key (parser));
 	LOG_PARSE (parser, "Read key “%s”", parser->key);
+
 	RET_NOK (expect (parser, ":"));
 	RET_NOK (value (parser));
 	LOG_PARSE (parser, "Read value “%s”", parser->value);
-	RET_NOK (expect (parser, "}"));
-	LOG_PARSE (parser, "“%s: %s”", parser->key, parser->value);
 
 	Key * key = keyNew (keyName (parser->parentKey), KEY_END);
 	keyAddName (key, parser->key);
 	keySetString (key, parser->value);
 	ELEKTRA_LOG_DEBUG ("Name:  “%s”", keyName (key));
 	ELEKTRA_LOG_DEBUG ("Value: “%s”", keyString (key));
-
 	ksAppendKey (parser->keySet, key);
+
+	return parser;
+}
+
+static parserType * pairs (parserType * const parser)
+{
+	ASSERT_NOT_NULL (parser);
+
+	RET_NOK (whitespace (parser));
+	RET_NOK (expect (parser, "{"));
+
+	RET_NOK (pair (parser));
+
+	RET_NOK (expect (parser, "}"));
+	LOG_PARSE (parser, "“%s: %s”", parser->key, parser->value);
 
 	return parser;
 }
@@ -408,7 +417,7 @@ static int parseFile (KeySet * returned ELEKTRA_UNUSED, Key * parentKey)
 					     .keySet = returned,
 					     .errorNumber = errno };
 
-	if (openFile (parser)->status == OK) pair (parser);
+	if (openFile (parser)->status == OK) pairs (parser);
 	cleanup (parser);
 
 	return parser->status == OK ? ELEKTRA_PLUGIN_STATUS_SUCCESS : ELEKTRA_PLUGIN_STATUS_ERROR;
