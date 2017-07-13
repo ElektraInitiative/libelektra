@@ -178,6 +178,8 @@ static parserType * putBackChars (parserType * parser, size_t numberChars)
 	ASSERT_NOT_NULL (parser);
 	ELEKTRA_ASSERT (parser->buffer - numberChars >= parser->bufferBase, "Can not put back more characters than available.");
 
+	LOG_PARSE (parser, "Put back %lu characters", numberChars);
+
 	parser->bufferCharsAvailable += numberChars;
 	parser->buffer -= numberChars;
 
