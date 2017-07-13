@@ -169,7 +169,8 @@ static void test_mapping_success ()
 				{
 					for (size_t i = 0; i < n - 1; ++i)
 					{
-						succeed_if (getNumber (sortOrder[i], w) < getNumber (sortOrder[i + 1], w), "sort incorrect");
+						succeed_if (getNumber (sortOrder[i], w) < getNumber (sortOrder[i + 1], w),
+							    "sort incorrect");
 					}
 				}
 				// cleanup
@@ -275,7 +276,8 @@ static void test_mapping_success ()
 				{
 					for (size_t i = 0; i < n - 1; ++i)
 					{
-						succeed_if (getNumber (sortOrder[i], w) < getNumber (sortOrder[i + 1], w), "sort incorrect");
+						succeed_if (getNumber (sortOrder[i], w) < getNumber (sortOrder[i + 1], w),
+							    "sort incorrect");
 					}
 				}
 				// cleanup
@@ -322,7 +324,6 @@ static void test_mapping_fail ()
 				for (size_t i = 0; i < n; ++i)
 				{
 					getOrderedPair (&order[i], w, i);
-				
 				}
 			}
 			// set error
