@@ -137,16 +137,15 @@ static parserType * readNumberChars (parserType * const parser, size_t numberCha
 	while (parser->bufferCharsAvailable < numberChars && (numberCharsRead = getline (&line, &capacity, parser->file)) != -1)
 	{
 		size_t bufferCharsAvailable = parser->bufferCharsAvailable + numberCharsRead;
-		char * newBuffer = elektraMalloc (bufferCharsAvailable + 1);
-
-		if (!newBuffer) return setErrorMalloc (parser, bufferCharsAvailable + 1);
-		strncpy (newBuffer, parser->buffer, parser->bufferCharsAvailable);
-		strncpy (newBuffer + parser->bufferCharsAvailable, line, bufferCharsAvailable + 1);
-
-		elektraFree (parser->bufferBase);
+		if ((parser->bufferBase == 0 && (parser->bufferBase = elektraMalloc (bufferCharsAvailable)) == NULL) ||
+		    ((elektraRealloc ((void **)&parser->bufferBase, bufferCharsAvailable + 1) < 0)))
+		{
+			return setErrorMalloc (parser, bufferCharsAvailable + 1);
+		}
+		strncpy (parser->bufferBase + parser->bufferCharsAvailable, line, numberCharsRead + 1);
+		if (!parser->buffer) parser->buffer = parser->bufferBase;
 		free (line);
 
-		parser->bufferBase = parser->buffer = newBuffer;
 		parser->bufferCharsAvailable = bufferCharsAvailable;
 	}
 
