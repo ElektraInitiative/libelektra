@@ -513,16 +513,15 @@ int elektraYamlSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UN
 	int errorNumber = errno;
 	FILE * destination = fopen (keyString (parentKey), "w");
 
-	if (!destination) goto error;
 	// The bitwise or in the next line is correct, since we need to close the file even if writing fails
-	if ((writeFile (destination, returned, parentKey) < 0) | (fclose (destination) == EOF)) goto error; //! OCLint
+	if (!destination || (writeFile (destination, returned, parentKey) < 0) | (fclose (destination) == EOF)) //! OCLint
+	{
+		ELEKTRA_SET_ERROR_SET (parentKey);
+		errno = errorNumber;
+		return ELEKTRA_PLUGIN_STATUS_ERROR;
+	}
 
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
-
-error:
-	ELEKTRA_SET_ERROR_SET (parentKey);
-	errno = errorNumber;
-	return ELEKTRA_PLUGIN_STATUS_ERROR;
 }
 
 Plugin * ELEKTRA_PLUGIN_EXPORT (yaml)
