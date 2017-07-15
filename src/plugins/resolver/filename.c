@@ -17,6 +17,7 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <sys/time.h>
 #include <sys/types.h>
 #include <unistd.h>
@@ -84,7 +85,7 @@ static void elektraGenTempFilename (ElektraResolved * handle, ElektraResolveTemp
 
 	struct timeval tv;
 	memset (&tv, 0, sizeof (struct timeval));
-	settimeofday (&tv, 0);
+	gettimeofday (&tv, 0);
 	snprintf (tmpFile + len, POSTFIX_SIZE - 1, ".%d:%ld." ELEKTRA_TIME_USEC_F ".tmp", getpid (), tv.tv_sec, tv.tv_usec);
 	handle->tmpFile = tmpFile;
 }
