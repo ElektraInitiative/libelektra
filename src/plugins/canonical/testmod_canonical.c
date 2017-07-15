@@ -457,6 +457,40 @@ static void testTristateList ()
 	PLUGIN_CLOSE ();
 }
 
+static void testTristateListToIndex ()
+{
+	Key * parentKey = keyNew ("user/tests/canonical", KEY_VALUE, "", KEY_END);
+	KeySet * ks = ksNew (20, keyNew ("user/tests/canonical/TTrue", KEY_VALUE, "On", KEY_META, "transform/canonical/list/insensitive",
+					 "#2", KEY_META, "transform/canonical/list/insensitive/#0", "'FALSE','OFF','CLOSED','DISABLE'",
+					 KEY_META, "transform/canonical/list/insensitive/#1", "'TRUE','ON','OPEN','ENABLE'", KEY_META,
+					 "transform/canonical/list/insensitive/#2", "'OTHER','NONE',''", KEY_END),
+			     keyNew ("user/tests/canonical/TFalse", KEY_VALUE, "Disable", KEY_META, "transform/canonical/list/insensitive",
+				     "#2", KEY_META, "transform/canonical/list/insensitive/#0", "'FALSE','OFF','CLOSED','DISABLE'",
+				     KEY_META, "transform/canonical/list/insensitive/#1", "'TRUE','ON','OPEN','ENABLE'", KEY_META,
+				     "transform/canonical/list/insensitive/#2", "'OTHER','NONE',''", KEY_END),
+			     keyNew ("user/tests/canonical/TOther", KEY_VALUE, "Other", KEY_META, "transform/canonical/list/insensitive",
+				     "#2", KEY_META, "transform/canonical/list/insensitive/#0", "'FALSE','OFF','CLOSED','DISABLE'",
+				     KEY_META, "transform/canonical/list/insensitive/#1", "'TRUE','ON','OPEN','ENABLE'", KEY_META,
+				     "transform/canonical/list/insensitive/#2", "'OTHER','NONE',''", KEY_END),
+
+
+			     KS_END);
+
+	KeySet * conf = ksNew (0, KS_END);
+	PLUGIN_OPEN ("canonical");
+
+	ksRewind (ks);
+
+	succeed_if (plugin->kdbGet (plugin, ks, parentKey) != (-1), "kdbGet failed");
+
+	succeed_if (!strcmp (keyString (ksLookupByName (ks, "user/tests/canonical/TTrue", KDB_O_NONE)), "1"), "kdbGet failed on TTrue");
+	succeed_if (!strcmp (keyString (ksLookupByName (ks, "user/tests/canonical/TFalse", KDB_O_NONE)), "0"), "kdbGet failed on TFalse");
+	succeed_if (!strcmp (keyString (ksLookupByName (ks, "user/tests/canonical/TOther", KDB_O_NONE)), "2"), "kdbGet failed on match3");
+	ksDel (ks);
+
+	keyDel (parentKey);
+	PLUGIN_CLOSE ();
+}
 
 int main (int argc, char ** argv)
 {
@@ -474,6 +508,7 @@ int main (int argc, char ** argv)
 	testFNMatchSingle ();
 	testFNMatchArray ();
 	testTristateList ();
+	testTristateListToIndex ();
 	printf ("\ntestmod_canonical RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 
 	return nbError;

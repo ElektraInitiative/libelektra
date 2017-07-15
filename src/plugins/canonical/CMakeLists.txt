@@ -7,5 +7,6 @@ add_plugin (canonical
 	LINK_ELEKTRA
 		elektra-meta
 		elektra-utility
+		elektra-ease
 	ADD_TEST
 	)

@@ -10,15 +10,18 @@
 #include "canonical.h"
 
 #include <fnmatch.h>
+#include <kdbease.h> //elektraReadArrayNumber
 #include <kdbhelper.h>
-#include <kdbmeta.h>
-#include <kdbutility.h>
+#include <kdbmeta.h>    //elektraMetaArrayToKS
+#include <kdbos.h>      //ELEKTRA_MAX_ARRAY_SIZE
+#include <kdbprivate.h> //elektraArrayValidateName
+#include <kdbtypes.h>   //elektra_long_long_t
+#include <kdbutility.h> //elektraLskip, elektraRstrip
 #include <regex.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <strings.h>
-
+#include <strings.h> //strcasecmp
 
 int elektraCanonicalOpen (Plugin * handle ELEKTRA_UNUSED, Key * errorKey ELEKTRA_UNUSED)
 {
@@ -98,6 +101,40 @@ static void freeArray (char ** array)
 	elektraFree (array);
 }
 
+// if meta has a child-key 'canonical' override value of key with
+// the value of <meta>/canonical
+// else
+// if meta is a valid array member, set the value of key to metas index
+static int doTransform (Key * key, const Key * meta)
+{
+	Key * searchKey = keyNew (keyName (meta), KEY_META_NAME, KEY_END);
+	keyAddBaseName (searchKey, "canonical");
+	const Key * canonicalMeta = keyGetMeta (key, keyName (searchKey));
+	keyDel (searchKey);
+	if (canonicalMeta)
+	{
+		const char * canonicalValue = keyString (canonicalMeta);
+		keySetMeta (key, "transform/canonical/origvalue", keyString (key));
+		keySetString (key, canonicalValue);
+	}
+	else if (elektraArrayValidateName (meta) == 1)
+	{
+		kdb_long_long_t index = 0;
+		const char * baseName = keyBaseName (meta);
+		++baseName;		 // skip #
+		while (*baseName == '_') // skip _
+			++baseName;
+		if (!elektraReadArrayNumber (baseName, &index))
+		{
+			char buffer[ELEKTRA_MAX_ARRAY_SIZE] = { 0 };
+			snprintf (buffer, sizeof (buffer), "%lld", (long long)index);
+			keySetMeta (key, "transform/canonical/origvalue", keyString (key));
+			keySetString (key, buffer);
+		}
+	}
+	return 1;
+}
+
 static int canonicalRegexSingle (Key * key, const Key * meta)
 {
 	const char * value = keyString (key);
@@ -118,13 +155,7 @@ static int canonicalRegexSingle (Key * key, const Key * meta)
 	regfree (&regex);
 	if (!nomatch)
 	{
-		keySetMeta (key, "transform/canonical/origvalue", value);
-		Key * searchKey = keyNew (keyName (meta), KEY_META_NAME, KEY_END);
-		keyAddBaseName (searchKey, "canonical");
-		const char * canonicalValue = keyString (keyGetMeta (key, keyName (searchKey)));
-		keyDel (searchKey);
-		keySetString (key, canonicalValue);
-		return 1;
+		return doTransform (key, meta);
 	}
 	return 0;
 }
@@ -161,13 +192,7 @@ static int canonicalFNMatchSingle (Key * key, const Key * meta)
 	const char * pattern = keyString (meta);
 	if (!fnmatch (pattern, value, 0))
 	{
-		keySetMeta (key, "transform/canonical/origvalue", value);
-		Key * searchKey = keyNew (keyName (meta), KEY_META_NAME, KEY_END);
-		keyAddBaseName (searchKey, "canonical");
-		const char * canonicalValue = keyString (keyGetMeta (key, keyName (searchKey)));
-		keyDel (searchKey);
-		keySetString (key, canonicalValue);
-		return 1;
+		return doTransform (key, meta);
 	}
 	return 0;
 }
@@ -207,13 +232,7 @@ static int canonicalListSingle (Key * key, const Key * meta, int (*cmpFun) (cons
 	{
 		if (!cmpFun (value, list[i]))
 		{
-			keySetMeta (key, "transform/canonical/origvalue", value);
-			Key * searchKey = keyNew (keyName (meta), KEY_META_NAME, KEY_END);
-			keyAddBaseName (searchKey, "canonical");
-			const char * canonicalValue = keyString (keyGetMeta (key, keyName (searchKey)));
-			keyDel (searchKey);
-			keySetString (key, canonicalValue);
-			rc = 1;
+			rc = doTransform (key, meta);
 			break;
 		}
 	}
