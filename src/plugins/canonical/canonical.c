@@ -332,7 +332,16 @@ int elektraCanonicalSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKT
 {
 	// set all keys
 	// this function is optional
-
+	Key * cur = NULL;
+	while ((cur = ksNext (returned)) != NULL)
+	{
+		const Key * origKey = keyGetMeta (cur, "transform/canonical/origvalue");
+		if (origKey)
+		{
+			keySetString (cur, keyString (origKey));
+			keySetMeta (cur, keyName (origKey), 0);
+		}
+	}
 	return ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
 }
 
