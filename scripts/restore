@@ -1,0 +1,36 @@
+#!/bin/sh
+
+if [ -z "$KDB" ];
+then
+    KDB=kdb
+fi
+
+if [ "$#" -ne 1 ];
+then
+	echo "Usage: kdb restore Timestamp"
+	exit 1
+fi
+
+TS="$1"
+TMPDIR="/tmp/elektra_backup_${TS}"
+
+if [ ! -d "$TMPDIR" ];
+then
+	echo "backup $TS doesn't exist"
+	exit 1
+fi
+
+PATHS="$(cat "${TMPDIR}/info")"
+
+$KDB umount-all 2>/dev/null
+$KDB rm -r / 2>/dev/null
+
+OLD_IFS="$IFS"
+IFS="$(printf '\n+')"
+
+for line in $PATHS;
+do
+	SOURCE="$(echo "$line" | cut -d '=' -f2)"
+	TARGET="$(echo "$line" | cut -d '=' -f1)"
+	cp -a "${TMPDIR}/${SOURCE}" "${TARGET}" 2>/dev/null
+done
