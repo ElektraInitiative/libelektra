@@ -1,5 +1,5 @@
 kdb-mountpoint-info -- Print information about the default storage and resolver or a mountpoint
-======================================================================================
+===============================================================================================
 
 ## SYNOPSIS
 
@@ -12,24 +12,26 @@ This command will print information about the version, default resolver and defa
 ## EXAMPLES
 
 ```
-kdb info_2
+kdb mountpoint-info
 #> Version: 0.8.19
 #> Default resolver: resolver_fm_hpu_b
 #> Default storage: ini
 
 kdb mount /tmp/test.ini system/test ini hello=ini -c hello=world
 
-kdb info system/test
+kdb mountpoint-info system/test
 #> Version: 0.8.19
 #> Default resolver: resolver_fm_hpu_b
 #> Default storage: ini
 #> Mountpoint: system/test
 #> File: /tmp/test.ini
-#>                 hello = world
-#>                 path = /tmp/test.ini
+#>	   config:
+#>         hello = world
+#>         path = /tmp/test.ini
 #> getplugins:
 #>         #0#resolver
 #>         #5#ini#ini#
+#>		   config:
 #>                 hello = ini
 #> setplugins:
 #>         #0#resolver
