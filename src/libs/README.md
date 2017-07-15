@@ -59,3 +59,8 @@ data structures.
 - backend interface
 - 3-way merge
 
+### Libinvoke
+
+    libelektra-invoke.so
+
+**[libinvoke](invoke/)** provides a simple API allowing us to call functions exported by plugins. 
