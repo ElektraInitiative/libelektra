@@ -102,7 +102,6 @@ static int canonicalRegexSingle (Key * key, const Key * meta)
 {
 	const char * value = keyString (key);
 	const char * regexString = keyString (meta);
-	fprintf (stderr, " === RegexSingle ===\n === %s - %s:(%s)\n", regexString, keyName (key), value);
 
 	regex_t regex;
 	int ret = regcomp (&regex, regexString, REG_EXTENDED);
@@ -111,7 +110,6 @@ static int canonicalRegexSingle (Key * key, const Key * meta)
 	{
 		char buffer[1000];
 		regerror (ret, &regex, buffer, 999);
-		fprintf (stderr, "regex error: %s\n", buffer);
 		regfree (&regex);
 		return -1;
 	}
@@ -120,14 +118,11 @@ static int canonicalRegexSingle (Key * key, const Key * meta)
 	regfree (&regex);
 	if (!nomatch)
 	{
-		fprintf (stderr, "   %s matched %s\n", regexString, value);
 		keySetMeta (key, "transform/canonical/origvalue", value);
 		Key * searchKey = keyNew (keyName (meta), KEY_META_NAME, KEY_END);
 		keyAddBaseName (searchKey, "canonical");
-		fprintf (stderr, "searchKey: %s\n", keyName (searchKey));
 		const char * canonicalValue = keyString (keyGetMeta (key, keyName (searchKey)));
 		keyDel (searchKey);
-		fprintf (stderr, "canonicalValueKey: %s\n", canonicalValue);
 		keySetString (key, canonicalValue);
 		return 1;
 	}
@@ -138,12 +133,9 @@ static int canonicalRegexArray (Key * key, const Key * meta)
 {
 	KeySet * lists = elektraMetaArrayToKS (key, keyName (meta));
 	Key * elem = NULL;
-	const char * value = keyString (key);
-	fprintf (stderr, " === RegexArray ===\n === %s:(%s)\n", keyName (key), value);
 	int rc = 0;
 	while ((elem = ksNext (lists)) != NULL)
 	{
-		fprintf (stderr, "elem: %s:(%s)\n", keyName (elem), keyString (elem));
 		rc = canonicalRegexSingle (key, elem);
 		if (rc != 0) break;
 	}
@@ -167,16 +159,13 @@ static int canonicalFNMatchSingle (Key * key, const Key * meta)
 {
 	const char * value = keyString (key);
 	const char * pattern = keyString (meta);
-	fprintf (stderr, " === FNMatchSingle ===\n === %s - %s:(%s)\n", pattern, keyName (key), value);
 	if (!fnmatch (pattern, value, 0))
 	{
 		keySetMeta (key, "transform/canonical/origvalue", value);
 		Key * searchKey = keyNew (keyName (meta), KEY_META_NAME, KEY_END);
 		keyAddBaseName (searchKey, "canonical");
-		fprintf (stderr, "searchKey: %s\n", keyName (searchKey));
 		const char * canonicalValue = keyString (keyGetMeta (key, keyName (searchKey)));
 		keyDel (searchKey);
-		fprintf (stderr, "canonicalValueKey: %s\n", canonicalValue);
 		keySetString (key, canonicalValue);
 		return 1;
 	}
@@ -187,12 +176,9 @@ static int canonicalFNMatchArray (Key * key, const Key * meta)
 {
 	KeySet * lists = elektraMetaArrayToKS (key, keyName (meta));
 	Key * elem = NULL;
-	const char * value = keyString (key);
-	fprintf (stderr, " === FNMatchArray ===\n === %s:(%s)\n", keyName (key), value);
 	int rc = 0;
 	while ((elem = ksNext (lists)) != NULL)
 	{
-		fprintf (stderr, "elem: %s:(%s)\n", keyName (elem), keyString (elem));
 		rc = canonicalFNMatchSingle (key, elem);
 		if (rc != 0) break;
 	}
@@ -214,22 +200,18 @@ static int canonicalFNMatch (Key * key, const Key * meta)
 static int canonicalListSingle (Key * key, const Key * meta, int (*cmpFun) (const char *, const char *))
 {
 	const char * value = keyString (key);
-	fprintf (stderr, " === ListSingle ===\n === %s:(%s)\n", keyName (key), value);
 	char ** list = stringToArray (keyString (meta), ",");
 	if (!list) return -1;
 	int rc = 0;
 	for (size_t i = 0; list[i] != NULL; ++i)
 	{
-		fprintf (stderr, "list[%zd] \'%s\'\n", i, list[i]);
 		if (!cmpFun (value, list[i]))
 		{
 			keySetMeta (key, "transform/canonical/origvalue", value);
 			Key * searchKey = keyNew (keyName (meta), KEY_META_NAME, KEY_END);
 			keyAddBaseName (searchKey, "canonical");
-			fprintf (stderr, "searchKey: %s\n", keyName (searchKey));
 			const char * canonicalValue = keyString (keyGetMeta (key, keyName (searchKey)));
 			keyDel (searchKey);
-			fprintf (stderr, "canonicalValueKey: %s\n", canonicalValue);
 			keySetString (key, canonicalValue);
 			rc = 1;
 			break;
@@ -244,12 +226,9 @@ static int canonicalListArray (Key * key, const Key * meta, int (*cmpFun) (const
 {
 	KeySet * lists = elektraMetaArrayToKS (key, keyName (meta));
 	Key * elem = NULL;
-	const char * value = keyString (key);
-	fprintf (stderr, " === ListArray ===\n === %s:(%s)\n", keyName (key), value);
 	int rc = 0;
 	while ((elem = ksNext (lists)) != NULL)
 	{
-		fprintf (stderr, "elem: %s:(%s)\n", keyName (elem), keyString (elem));
 		rc = canonicalListSingle (key, elem, cmpFun);
 		if (rc != 0) break;
 	}

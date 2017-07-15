@@ -36,20 +36,7 @@ static void testSensitiveListSingle ()
 
 	ksRewind (ks);
 
-	Key * cur;
-	while ((cur = ksNext (ks)) != NULL)
-	{
-		fprintf (stderr, "%s:(%s)\n", keyName (cur), keyString (cur));
-	}
-	ksRewind (ks);
-
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) != (-1), "kdbGet failed");
-
-	ksRewind (ks);
-	while ((cur = ksNext (ks)) != NULL)
-	{
-		fprintf (stderr, "%s:(%s)\n", keyName (cur), keyString (cur));
-	}
 
 	succeed_if (!strcmp (keyString (ksLookupByName (ks, "user/tests/canonical/match1", KDB_O_NONE)), "1"), "kdbGet failed on match1");
 	succeed_if (!strcmp (keyString (ksLookupByName (ks, "user/tests/canonical/match2", KDB_O_NONE)), "1"), "kdbGet failed on match2");
@@ -85,20 +72,7 @@ static void testInsensitiveListSingle ()
 
 	ksRewind (ks);
 
-	Key * cur;
-	while ((cur = ksNext (ks)) != NULL)
-	{
-		fprintf (stderr, "%s:(%s)\n", keyName (cur), keyString (cur));
-	}
-	ksRewind (ks);
-
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) != (-1), "kdbGet failed");
-
-	ksRewind (ks);
-	while ((cur = ksNext (ks)) != NULL)
-	{
-		fprintf (stderr, "%s:(%s)\n", keyName (cur), keyString (cur));
-	}
 
 	succeed_if (!strcmp (keyString (ksLookupByName (ks, "user/tests/canonical/match1", KDB_O_NONE)), "1"), "kdbGet failed on match1");
 	succeed_if (!strcmp (keyString (ksLookupByName (ks, "user/tests/canonical/match2", KDB_O_NONE)), "1"), "kdbGet failed on match2");
@@ -163,20 +137,7 @@ static void testSensitiveListArray ()
 
 	ksRewind (ks);
 
-	Key * cur;
-	while ((cur = ksNext (ks)) != NULL)
-	{
-		fprintf (stderr, "%s:(%s)\n", keyName (cur), keyString (cur));
-	}
-	ksRewind (ks);
-
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) != (-1), "kdbGet failed");
-
-	ksRewind (ks);
-	while ((cur = ksNext (ks)) != NULL)
-	{
-		fprintf (stderr, "%s:(%s)\n", keyName (cur), keyString (cur));
-	}
 
 	succeed_if (!strcmp (keyString (ksLookupByName (ks, "user/tests/canonical/match1", KDB_O_NONE)), "1true"),
 		    "kdbGet failed on match1");
@@ -247,20 +208,7 @@ static void testInsensitiveListArray ()
 
 	ksRewind (ks);
 
-	Key * cur;
-	while ((cur = ksNext (ks)) != NULL)
-	{
-		fprintf (stderr, "%s:(%s)\n", keyName (cur), keyString (cur));
-	}
-	ksRewind (ks);
-
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) != (-1), "kdbGet failed");
-
-	ksRewind (ks);
-	while ((cur = ksNext (ks)) != NULL)
-	{
-		fprintf (stderr, "%s:(%s)\n", keyName (cur), keyString (cur));
-	}
 
 	succeed_if (!strcmp (keyString (ksLookupByName (ks, "user/tests/canonical/match1", KDB_O_NONE)), "1true"),
 		    "kdbGet failed on match1");
@@ -298,20 +246,7 @@ static void testRegexSingle ()
 
 	ksRewind (ks);
 
-	Key * cur;
-	while ((cur = ksNext (ks)) != NULL)
-	{
-		fprintf (stderr, "%s:(%s)\n", keyName (cur), keyString (cur));
-	}
-	ksRewind (ks);
-
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) != (-1), "kdbGet failed");
-
-	ksRewind (ks);
-	while ((cur = ksNext (ks)) != NULL)
-	{
-		fprintf (stderr, "%s:(%s)\n", keyName (cur), keyString (cur));
-	}
 
 	succeed_if (!strcmp (keyString (ksLookupByName (ks, "user/tests/canonical/match1", KDB_O_NONE)), "1"), "kdbGet failed on match1");
 	succeed_if (!strcmp (keyString (ksLookupByName (ks, "user/tests/canonical/match2", KDB_O_NONE)), "1"), "kdbGet failed on match2");
@@ -363,20 +298,7 @@ static void testRegexArray ()
 
 	ksRewind (ks);
 
-	Key * cur;
-	while ((cur = ksNext (ks)) != NULL)
-	{
-		fprintf (stderr, "%s:(%s)\n", keyName (cur), keyString (cur));
-	}
-	ksRewind (ks);
-
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) != (-1), "kdbGet failed");
-
-	ksRewind (ks);
-	while ((cur = ksNext (ks)) != NULL)
-	{
-		fprintf (stderr, "%s:(%s)\n", keyName (cur), keyString (cur));
-	}
 
 	succeed_if (!strcmp (keyString (ksLookupByName (ks, "user/tests/canonical/match1", KDB_O_NONE)), "1true"),
 		    "kdbGet failed on match1");
@@ -416,20 +338,7 @@ static void testFNMatchSingle ()
 
 	ksRewind (ks);
 
-	Key * cur;
-	while ((cur = ksNext (ks)) != NULL)
-	{
-		fprintf (stderr, "%s:(%s)\n", keyName (cur), keyString (cur));
-	}
-	ksRewind (ks);
-
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) != (-1), "kdbGet failed");
-
-	ksRewind (ks);
-	while ((cur = ksNext (ks)) != NULL)
-	{
-		fprintf (stderr, "%s:(%s)\n", keyName (cur), keyString (cur));
-	}
 
 	succeed_if (!strcmp (keyString (ksLookupByName (ks, "user/tests/canonical/match1", KDB_O_NONE)), "1"), "kdbGet failed on match1");
 	succeed_if (!strcmp (keyString (ksLookupByName (ks, "user/tests/canonical/match2", KDB_O_NONE)), "1"), "kdbGet failed on match2");
@@ -486,20 +395,7 @@ static void testFNMatchArray ()
 
 	ksRewind (ks);
 
-	Key * cur;
-	while ((cur = ksNext (ks)) != NULL)
-	{
-		fprintf (stderr, "%s:(%s)\n", keyName (cur), keyString (cur));
-	}
-	ksRewind (ks);
-
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) != (-1), "kdbGet failed");
-
-	ksRewind (ks);
-	while ((cur = ksNext (ks)) != NULL)
-	{
-		fprintf (stderr, "%s:(%s)\n", keyName (cur), keyString (cur));
-	}
 
 	succeed_if (!strcmp (keyString (ksLookupByName (ks, "user/tests/canonical/match1", KDB_O_NONE)), "1true"),
 		    "kdbGet failed on match1");
