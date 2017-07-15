@@ -236,26 +236,31 @@ Key * keyAsCascading (const Key * key)
 		elektraNamespace ns = keyGetNamespace (key);
 		if (ns == KEY_NS_META || ns == KEY_NS_EMPTY || ns == KEY_NS_NONE)
 		{
+			// For metakeys or keys without namespace just prefix the keyname with a "/"
 			Key * cKey = keyNew ("/", KEY_CASCADING_NAME, KEY_END);
 			keyAddName (cKey, keyName (key));
 			return cKey;
 		}
-		const char * name = keyName (key);
-		const char * ptr = strchr (name, '/');
-		if (!ptr)
-		{
-			return keyNew ("/", KEY_CASCADING_NAME, KEY_END);
-		}
 		else
 		{
-			ssize_t length = keyGetNameSize (key);
-			if ((ptr - name) == (length - 1))
+			// Skip namespace
+			const char * name = keyName (key);
+			const char * ptr = strchr (name, '/');
+			if (!ptr)
 			{
 				return keyNew ("/", KEY_CASCADING_NAME, KEY_END);
 			}
 			else
 			{
-				return keyNew (ptr, KEY_CASCADING_NAME, KEY_END);
+				ssize_t length = keyGetNameSize (key);
+				if ((ptr - name) == (length - 1))
+				{
+					return keyNew ("/", KEY_CASCADING_NAME, KEY_END);
+				}
+				else
+				{
+					return keyNew (ptr, KEY_CASCADING_NAME, KEY_END);
+				}
 			}
 		}
 	}
