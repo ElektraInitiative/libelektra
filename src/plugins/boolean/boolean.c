@@ -9,12 +9,12 @@
 
 #include "boolean.h"
 
-#include <ctype.h>
 #include <kdberrors.h>
 #include <kdbhelper.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <strings.h>
 
 
 #define DEFAULT_TRUE_VALUE "1"
@@ -66,62 +66,13 @@ int elektraBooleanClose (Plugin * handle ELEKTRA_UNUSED, Key * errorKey ELEKTRA_
 	return 1; // success
 }
 
-static int stricmp (const char * s1, const char * s2)
-{
-
-	if (!(*s1) && !(*s2))
-	{
-		return 0;
-	}
-	else if (!(*s1))
-	{
-		return (-1);
-	}
-	else if (!(*s2))
-	{
-		return 1;
-	}
-	else
-	{
-		char * p1 = (char *)s1;
-		char * p2 = (char *)s2;
-		while (1)
-		{
-			if (!(*p1) && !(*p2))
-			{
-				return 0;
-			}
-			else if (!(*p1))
-			{
-				return (-1);
-			}
-			else if (!(*p2))
-			{
-				return 1;
-			}
-			else
-			{
-				if (toupper (*p1) == toupper (*p2))
-				{
-					++p1;
-					++p2;
-				}
-				else
-				{
-					return (toupper (*p1) - toupper (*p2));
-				}
-			}
-		}
-	}
-}
-
 static int isTrue (const char * value, const char ** trueValues)
 {
 	char ** ptr = (char **)trueValues;
 	int retVal = 0;
 	while (*ptr)
 	{
-		if (!stricmp (value, *ptr))
+		if (!strcasecmp (value, *ptr))
 		{
 			retVal = 1;
 			break;
@@ -137,7 +88,7 @@ static int isFalse (const char * value, const char ** falseValues)
 	int retVal = 0;
 	while (*ptr)
 	{
-		if (!stricmp (value, *ptr))
+		if (!strcasecmp (value, *ptr))
 		{
 			retVal = 1;
 			break;
@@ -255,7 +206,7 @@ static void parseConfig (KeySet * config, BoolData * data)
 	}
 	if (invalidKey)
 	{
-		if (!stricmp (keyString (invalidKey), "FALSE"))
+		if (!strcasecmp (keyString (invalidKey), "FALSE"))
 		{
 			data->invalid |= FALSE;
 		}
@@ -266,9 +217,9 @@ static void parseConfig (KeySet * config, BoolData * data)
 	}
 	if (invalidWarningKey)
 	{
-		if (!stricmp (keyString (invalidWarningKey), "TRUE"))
+		if (!strcasecmp (keyString (invalidWarningKey), "TRUE"))
 			data->invalid |= WARNING;
-		else if (!stricmp (keyString (invalidWarningKey), "FALSE"))
+		else if (!strcasecmp (keyString (invalidWarningKey), "FALSE"))
 			data->invalid &= WARNING;
 		else
 			data->invalid |= WARNING;
