@@ -118,6 +118,9 @@ static void test_keyRel2 ()
 	Key * systemGrandNephew = keyNew ("system/silbling/nephew/grandnephew", KEY_END);
 	Key * userGrandNephew = keyNew ("user/silbling/nephew/grandnephew", KEY_END);
 	Key * cascadingGrandNephew = keyNew ("/silbling/nephew/grandnephew", KEY_CASCADING_NAME, KEY_END);
+	Key * metaParent = keyNew ("meta", KEY_META_NAME, KEY_END);
+	Key * metaChild = keyNew ("meta/child", KEY_META_NAME, KEY_END);
+	Key * metaUnrelated = keyNew ("unrelated", KEY_META_NAME, KEY_END);
 
 	succeed_if (keyRel2 (systemParent, systemChild, ELEKTRA_REL_BELOW_SAME_NS) == 1, "ELEKTRA_REL_BELOW_SAME_NS keyRel2 failed\n");
 	succeed_if (keyRel2 (systemParent, userChild, ELEKTRA_REL_BELOW_SAME_NS) == 0,
@@ -181,6 +184,23 @@ static void test_keyRel2 ()
 	succeed_if (keyRel2 (systemParent, systemChild, ELEKTRA_REL_SILBLING_SAME_NS) == 0,
 		    "ELEKTRA_REL_SILBLINGSAME_NS keyRel2 should have failed\n");
 
+	succeed_if (keyRel2 (metaParent, metaChild, ELEKTRA_REL_BELOW_IGNORE_NS) == 1, "ELEKTRA_REL_BELOW_IGNORE_NS keyRel2 failed\n");
+	succeed_if (keyRel2 (metaUnrelated, metaChild, ELEKTRA_REL_BELOW_IGNORE_NS) == 0,
+		    "ELEKTRA_REL_BELOW_IGNORE_NS keyRel2 should have failed\n");
+	succeed_if (keyRel2 (metaParent, metaUnrelated, ELEKTRA_REL_SILBLING_IGNORE_NS) == 1,
+		    "ELEKTRA_REL_SILBLING_IGNORE_NS keyRel2 failed\n");
+	succeed_if (keyRel2 (metaParent, metaUnrelated, ELEKTRA_REL_BELOW_IGNORE_NS) == 0,
+		    "ELEKTRA_REL_BELOW_IGNORE_NS keyRel2 should have failed\n");
+
+	succeed_if (keyRel2 (metaParent, metaChild, ELEKTRA_REL_BELOW_CASCADING_NS) == 0,
+		    "ELEKTRA_REL_BELOW_CASCADING_NS keyRel2 should have failed\n");
+	succeed_if (keyRel2 (metaUnrelated, metaChild, ELEKTRA_REL_BELOW_CASCADING_NS) == 0,
+		    "ELEKTRA_REL_BELOW_CASCADING_NS keyRel2 should have failed\n");
+	succeed_if (keyRel2 (metaParent, metaUnrelated, ELEKTRA_REL_SILBLING_CASCADING_NS) == 0,
+		    "ELEKTRA_REL_SILBLING_CASCADING_NS keyRel2 should have failed\n");
+	succeed_if (keyRel2 (metaParent, metaUnrelated, ELEKTRA_REL_BELOW_CASCADING_NS) == 0,
+		    "ELEKTRA_REL_BELOW_CASCADING_NS keyRel2 should have failed\n");
+
 	keyDel (systemParent);
 	keyDel (userParent);
 	keyDel (systemChild);
@@ -198,6 +218,9 @@ static void test_keyRel2 ()
 	keyDel (systemGrandNephew);
 	keyDel (userGrandNephew);
 	keyDel (cascadingGrandNephew);
+	keyDel (metaParent);
+	keyDel (metaChild);
+	keyDel (metaUnrelated);
 }
 
 int main (int argc, char ** argv)
