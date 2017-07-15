@@ -434,7 +434,7 @@ typedef struct
 	git_oid * oid;
 } fetch_cb_data;
 
-static int fetchhead_ref_cb (const char * name, const char * url, const git_oid * oid, unsigned int is_merge, void * payload)
+static int fetchhead_ref_cb (const char * name, const char * url ELEKTRA_UNUSED, const git_oid * oid, unsigned int is_merge, void * payload)
 {
 	if (is_merge)
 	{
@@ -485,13 +485,16 @@ static MergeAnalysis mergeAnalysis (git_repository * repo, const git_annotated_c
 	{
 		return UNBORN;
 	}
+	else
+	{
+		return ERROR;
+	}
 }
 
 static int doMerge (git_repository * repo, const git_annotated_commit ** heads)
 {
-	git_merge_options mergeOpts = GIT_MERGE_OPTIONS_INIT;
-	git_checkout_options checkoutOpts = GIT_CHECKOUT_OPTIONS_INIT;
-	checkoutOpts.checkout_strategy = GIT_CHECKOUT_FORCE;
+	git_merge_options mergeOpts = { GIT_MERGE_OPTIONS_VERSION, .flags = GIT_MERGE_FAIL_ON_CONFLICT };
+	git_checkout_options checkoutOpts = { GIT_CHECKOUT_OPTIONS_VERSION, .checkout_strategy = GIT_CHECKOUT_FORCE };
 
 	int rc = git_merge (repo, (const git_annotated_commit **)heads, 1, &mergeOpts, &checkoutOpts);
 	if (rc < 0)
@@ -515,7 +518,7 @@ static int setFFTarget (git_repository * repo, git_oid * oid)
 	return 0;
 }
 
-static int hasMergeConflicts (git_repository * repo)
+static int ELEKTRA_UNUSED hasMergeConflicts (git_repository * repo)
 {
 	git_index * cIdx;
 	int hasConflicts = 0;
@@ -529,7 +532,7 @@ static int hasMergeConflicts (git_repository * repo)
 	return 0;
 }
 
-static int pullFromRemote (GitData * data, git_repository * repo)
+static int pullFromRemote (GitData * data ELEKTRA_UNUSED, git_repository * repo)
 {
 	git_remote * remote;
 	int rc = git_remote_lookup (&remote, repo, "origin");
@@ -553,7 +556,7 @@ static int pullFromRemote (GitData * data, git_repository * repo)
 		return -1;
 	}
 
-	MergeAnalysis res = mergeAnalysis (repo, heads);
+	MergeAnalysis res = mergeAnalysis (repo, (const git_annotated_commit **)heads);
 	rc = 0;
 	switch (res)
 	{
@@ -569,7 +572,7 @@ static int pullFromRemote (GitData * data, git_repository * repo)
 		goto PULL_CLEANUP;
 		break;
 	case FASTFORWARD:
-		rc = doMerge (repo, heads);
+		rc = doMerge (repo, (const git_annotated_commit **)heads);
 		if (rc)
 		{
 			goto PULL_CLEANUP;
