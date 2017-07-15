@@ -59,7 +59,8 @@ output_plugins()
     IFS="$(printf '\n+')"
     for p in $PLUGINS;
     do
-	echo "\t`basename \"$p\"`"
+	printf "\t%s\n" $(basename "$p")
+	#echo "\t`basename \"$p\"`"
 	output_config "${p%?}/config" 2
     done
     IFS="$OLD_IFS"
