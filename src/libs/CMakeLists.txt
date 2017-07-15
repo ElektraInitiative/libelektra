@@ -14,8 +14,8 @@ add_subdirectory (plugin)
 
 add_subdirectory (utility)
 
-add_subdirectory (elektra)
-
 add_subdirectory (invoke)
+
+add_subdirectory (elektra)
 
 generate_manpage (elektra-libs FILENAME ${CMAKE_CURRENT_SOURCE_DIR}/README.md SECTION 7)
