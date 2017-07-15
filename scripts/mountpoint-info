@@ -60,7 +60,7 @@ output_plugins()
     for p in $PLUGINS;
     do
 	echo "\t`basename \"$p\"`"
-	output_config "${p%?}/config"
+	output_config "${p%?}/config" 2
     done
     IFS="$OLD_IFS"
     return
@@ -77,13 +77,15 @@ output_config()
     fi
     OLD_IFS="$IFS"
     IFS="$(printf '\n+')"
+    DEPTH=$(printf "%${2}s" | tr ' ' '\t')
+    echo "${DEPTH}config:"
     for c in $CONFIG;
     do
 	v=$($KDB get "$c" 2> /dev/null)
 	k=$(echo "$c" | sed 's:\\:\\\\:g'| sed "s:$ECPATH/::")
 	if [ ! -z "$v" ];
 	then
-	    echo "\t\t$k = $v"
+	    echo "${DEPTH}$k = $v"
 	fi
     done
     IFS="$OLD_IFS"
@@ -102,7 +104,7 @@ then
     MOUNTPATH=$($KDB sget "${MOUNTPOINT}/config/path" "NA" 2>/dev/null)
     echo "Mountpoint: $MP"
     echo "File: $MOUNTPATH"
-    output_config "${MOUNTPOINT}/config"
+    output_config "${MOUNTPOINT}/config" 1
     output_plugins "getplugins"
     output_plugins "setplugins"
     output_plugins "errorplugins"
