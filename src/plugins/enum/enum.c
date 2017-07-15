@@ -13,8 +13,10 @@
 #endif
 
 #include "enum.h"
+#include <ctype.h>
 #include <kdberrors.h>
 #include <kdbmeta.h>
+#include <kdbutility.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -62,12 +64,10 @@ static char ** stringToArray (const char * string, const char * delim)
 			continue;
 		}
 		char * tmp = elektraStrDup (ptr);
-		char * start = NULL;
-		if (tmp[0] == '\'')
-			start = tmp + 1;
-		else
-			start = tmp;
-		if (tmp[strlen (tmp) - 1] == '\'') tmp[strlen (tmp) - 1] = '\0';
+		char * start = elektraLskip (tmp);
+		(void)elektraRstrip (start, NULL);
+		if (start[0] == '\'') ++start;
+		if (start[strlen (start) - 1] == '\'') start[strlen (start) - 1] = '\0';
 		array[current++] = elektraStrDup (start);
 		elektraFree (tmp);
 		ptr = strtok (NULL, delim);
