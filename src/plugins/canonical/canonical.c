@@ -23,21 +23,6 @@
 #include <string.h>
 #include <strings.h> //strcasecmp
 
-int elektraCanonicalOpen (Plugin * handle ELEKTRA_UNUSED, Key * errorKey ELEKTRA_UNUSED)
-{
-	// plugin initialization logic
-	// this function is optional
-
-	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
-}
-
-int elektraCanonicalClose (Plugin * handle ELEKTRA_UNUSED, Key * errorKey ELEKTRA_UNUSED)
-{
-	// free all plugin resources and shut it down
-	// this function is optional
-
-	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
-}
 
 static char ** stringToArray (const char * string, const char * delim)
 {
@@ -275,6 +260,44 @@ static int canonicalCaseInsensitiveList (Key * key, const Key * meta)
 	return rc;
 }
 
+static int transformKey (Key * key)
+{
+	const Key * pattern = NULL;
+	if (((pattern = keyGetMeta (key, "transform/canonical/regex")) != NULL) &&
+	    (keyGetMeta (key, "transform/canonical/origvalue") == NULL))
+	{
+		canonicalRegex (key, pattern);
+	}
+	if (((pattern = keyGetMeta (key, "transform/canonical/fnmatch")) != NULL) &&
+	    (keyGetMeta (key, "transform/canonical/origvalue") == NULL))
+	{
+		canonicalFNMatch (key, pattern);
+	}
+	if (((pattern = keyGetMeta (key, "transform/canonical/list/insensitive")) != NULL) &&
+	    (keyGetMeta (key, "transform/canonical/origvalue") == NULL))
+	{
+		canonicalCaseInsensitiveList (key, pattern);
+	}
+	if (((pattern = keyGetMeta (key, "transform/canonical/list/sensitive")) != NULL) &&
+	    (keyGetMeta (key, "transform/canonical/origvalue") == NULL))
+	{
+		canonicalCaseSensitiveList (key, pattern);
+	}
+
+
+	return 1;
+}
+
+static void restoreKey (Key * key)
+{
+	const Key * origKey = keyGetMeta (key, "transform/canonical/origvalue");
+	if (origKey)
+	{
+		keySetString (key, keyString (origKey));
+		keySetMeta (key, keyName (origKey), 0);
+	}
+}
+
 int elektraCanonicalGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
 {
 	if (!elektraStrCmp (keyName (parentKey), "system/elektra/modules/canonical"))
@@ -282,12 +305,11 @@ int elektraCanonicalGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key 
 		KeySet * contract = ksNew (
 			30, keyNew ("system/elektra/modules/canonical", KEY_VALUE, "canonical plugin waits for your orders", KEY_END),
 			keyNew ("system/elektra/modules/canonical/exports", KEY_END),
-			keyNew ("system/elektra/modules/canonical/exports/open", KEY_FUNC, elektraCanonicalOpen, KEY_END),
-			keyNew ("system/elektra/modules/canonical/exports/close", KEY_FUNC, elektraCanonicalClose, KEY_END),
 			keyNew ("system/elektra/modules/canonical/exports/get", KEY_FUNC, elektraCanonicalGet, KEY_END),
 			keyNew ("system/elektra/modules/canonical/exports/set", KEY_FUNC, elektraCanonicalSet, KEY_END),
-			keyNew ("system/elektra/modules/canonical/exports/error", KEY_FUNC, elektraCanonicalError, KEY_END),
 			keyNew ("system/elektra/modules/canonical/exports/checkconf", KEY_FUNC, elektraCanonicalCheckConfig, KEY_END),
+			keyNew ("system/elektra/modules/canonical/exports/transformKey", KEY_FUNC, transformKey, KEY_END),
+			keyNew ("system/elektra/modules/canonical/exports/restoreKey", KEY_FUNC, restoreKey, KEY_END),
 #include ELEKTRA_README (canonical)
 			keyNew ("system/elektra/modules/canonical/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 		ksAppend (returned, contract);
@@ -296,29 +318,10 @@ int elektraCanonicalGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key 
 		return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 	}
 	Key * cur = NULL;
+	int ELEKTRA_UNUSED rc = 0;
 	while ((cur = ksNext (returned)) != NULL)
 	{
-		const Key * pattern = NULL;
-		if (((pattern = keyGetMeta (cur, "transform/canonical/regex")) != NULL) &&
-		    (keyGetMeta (cur, "transform/canonical/origvalue") == NULL))
-		{
-			canonicalRegex (cur, pattern);
-		}
-		if (((pattern = keyGetMeta (cur, "transform/canonical/fnmatch")) != NULL) &&
-		    (keyGetMeta (cur, "transform/canonical/origvalue") == NULL))
-		{
-			canonicalFNMatch (cur, pattern);
-		}
-		if (((pattern = keyGetMeta (cur, "transform/canonical/list/insensitive")) != NULL) &&
-		    (keyGetMeta (cur, "transform/canonical/origvalue") == NULL))
-		{
-			canonicalCaseInsensitiveList (cur, pattern);
-		}
-		if (((pattern = keyGetMeta (cur, "transform/canonical/list/sensitive")) != NULL) &&
-		    (keyGetMeta (cur, "transform/canonical/origvalue") == NULL))
-		{
-			canonicalCaseSensitiveList (cur, pattern);
-		}
+		rc = transformKey (cur);
 	}
 
 	// get all keys
@@ -333,22 +336,9 @@ int elektraCanonicalSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKT
 	Key * cur = NULL;
 	while ((cur = ksNext (returned)) != NULL)
 	{
-		const Key * origKey = keyGetMeta (cur, "transform/canonical/origvalue");
-		if (origKey)
-		{
-			keySetString (cur, keyString (origKey));
-			keySetMeta (cur, keyName (origKey), 0);
-		}
+		restoreKey (cur);
 	}
 	return ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
-}
-
-int elektraCanonicalError (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
-{
-	// handle errors (commit failed)
-	// this function is optional
-
-	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }
 
 int elektraCanonicalCheckConfig (Key * errorKey ELEKTRA_UNUSED, KeySet * conf ELEKTRA_UNUSED)
@@ -363,10 +353,7 @@ Plugin * ELEKTRA_PLUGIN_EXPORT (canonical)
 {
 	// clang-format off
     return elektraPluginExport ("canonical",
-            ELEKTRA_PLUGIN_OPEN,	&elektraCanonicalOpen,
-            ELEKTRA_PLUGIN_CLOSE,	&elektraCanonicalClose,
             ELEKTRA_PLUGIN_GET,	&elektraCanonicalGet,
             ELEKTRA_PLUGIN_SET,	&elektraCanonicalSet,
-            ELEKTRA_PLUGIN_ERROR,	&elektraCanonicalError,
             ELEKTRA_PLUGIN_END);
 }

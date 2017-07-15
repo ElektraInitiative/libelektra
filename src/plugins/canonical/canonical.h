@@ -13,11 +13,8 @@
 #include <kdbplugin.h>
 
 
-int elektraCanonicalOpen (Plugin * handle, Key * errorKey);
-int elektraCanonicalClose (Plugin * handle, Key * errorKey);
 int elektraCanonicalGet (Plugin * handle, KeySet * ks, Key * parentKey);
 int elektraCanonicalSet (Plugin * handle, KeySet * ks, Key * parentKey);
-int elektraCanonicalError (Plugin * handle, KeySet * ks, Key * parentKey);
 int elektraCanonicalCheckConfig (Key * errorKey, KeySet * conf);
 
 Plugin * ELEKTRA_PLUGIN_EXPORT (canonical);
