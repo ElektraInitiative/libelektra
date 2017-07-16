@@ -155,6 +155,7 @@ Transformations:
 - [keytometa](keytometa/) transforms keys to metadata
 - [rename](rename/) renames keys according to different rules
 - [boolean](boolean/) canonicalizes boolean keys
+- [canonical](canonical/) canonicalizes key values
 
 Doing other stuff:
 
