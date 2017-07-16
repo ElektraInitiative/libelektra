@@ -24,6 +24,14 @@
 #include <strings.h> //strcasecmp
 
 
+typedef enum {
+	REGEX = (1 << 0),
+	FNMATCH = (1 << 1),
+	LISTSENSITIVE = (1 << 2),
+	LISTINSENSITIVE = (1 << 3),
+	WORD = (1 << 4),
+} TransformType;
+
 static char ** stringToArray (const char * string, const char * delim)
 {
 	if (!string || !delim) return NULL;
@@ -93,13 +101,13 @@ static void freeArray (char ** array)
 static int doTransform (Key * key, const Key * meta)
 {
 	Key * searchKey = keyNew (keyName (meta), KEY_META_NAME, KEY_END);
-	keyAddBaseName (searchKey, "canonical");
+	keyAddBaseName (searchKey, "set");
 	const Key * canonicalMeta = keyGetMeta (key, keyName (searchKey));
 	keyDel (searchKey);
 	if (canonicalMeta)
 	{
 		const char * canonicalValue = keyString (canonicalMeta);
-		keySetMeta (key, "transform/canonical/origvalue", keyString (key));
+		keySetMeta (key, "internal/canonical/origvalue", keyString (key));
 		keySetString (key, canonicalValue);
 	}
 	else if (elektraArrayValidateName (meta) == 1)
@@ -113,7 +121,7 @@ static int doTransform (Key * key, const Key * meta)
 		{
 			char buffer[ELEKTRA_MAX_ARRAY_SIZE] = { 0 };
 			snprintf (buffer, sizeof (buffer), "%lld", (long long)index);
-			keySetMeta (key, "transform/canonical/origvalue", keyString (key));
+			keySetMeta (key, "internal/canonical/origvalue", keyString (key));
 			keySetString (key, buffer);
 		}
 	}
@@ -123,7 +131,7 @@ static int doTransform (Key * key, const Key * meta)
 static int canonicalRegexSingle (Key * key, const Key * meta)
 {
 	const char * value = keyString (key);
-	const char * regexString = keyString (meta);
+	const char * regexString = strchr (keyString (meta), ':') + 1;
 
 	regex_t regex;
 	int ret = regcomp (&regex, regexString, REG_EXTENDED);
@@ -145,36 +153,10 @@ static int canonicalRegexSingle (Key * key, const Key * meta)
 	return 0;
 }
 
-static int canonicalRegexArray (Key * key, const Key * meta)
-{
-	KeySet * lists = elektraMetaArrayToKS (key, keyName (meta));
-	Key * elem = NULL;
-	int rc = 0;
-	while ((elem = ksNext (lists)) != NULL)
-	{
-		rc = canonicalRegexSingle (key, elem);
-		if (rc != 0) break;
-	}
-	ksDel (lists);
-	return rc;
-}
-
-
-static int canonicalRegex (Key * key, const Key * meta)
-{
-	int rc = 0;
-	if (keyString (meta)[0] == '#')
-		rc = canonicalRegexArray (key, meta);
-	else
-		rc = canonicalRegexSingle (key, meta);
-
-	return rc;
-}
-
 static int canonicalFNMatchSingle (Key * key, const Key * meta)
 {
 	const char * value = keyString (key);
-	const char * pattern = keyString (meta);
+	const char * pattern = strchr (keyString (meta), ':') + 1;
 	if (!fnmatch (pattern, value, 0))
 	{
 		return doTransform (key, meta);
@@ -182,35 +164,10 @@ static int canonicalFNMatchSingle (Key * key, const Key * meta)
 	return 0;
 }
 
-static int canonicalFNMatchArray (Key * key, const Key * meta)
-{
-	KeySet * lists = elektraMetaArrayToKS (key, keyName (meta));
-	Key * elem = NULL;
-	int rc = 0;
-	while ((elem = ksNext (lists)) != NULL)
-	{
-		rc = canonicalFNMatchSingle (key, elem);
-		if (rc != 0) break;
-	}
-	ksDel (lists);
-	return rc;
-}
-
-static int canonicalFNMatch (Key * key, const Key * meta)
-{
-	int rc = 0;
-	if (keyString (meta)[0] == '#')
-		rc = canonicalFNMatchArray (key, meta);
-	else
-		rc = canonicalFNMatchSingle (key, meta);
-
-	return rc;
-}
-
 static int canonicalListSingle (Key * key, const Key * meta, int (*cmpFun) (const char *, const char *))
 {
 	const char * value = keyString (key);
-	char ** list = stringToArray (keyString (meta), ",");
+	char ** list = stringToArray (strchr (keyString (meta), ':') + 1, ",");
 	if (!list) return -1;
 	int rc = 0;
 	for (size_t i = 0; list[i] != NULL; ++i)
@@ -225,72 +182,93 @@ static int canonicalListSingle (Key * key, const Key * meta, int (*cmpFun) (cons
 	return rc;
 }
 
+static int canonicalWord (Key * key, const Key * meta)
+{
+	if (!strcmp (keyString (key), keyString (meta)))
+	{
+		return doTransform (key, meta);
+	}
+	return 0;
+}
 
-static int canonicalListArray (Key * key, const Key * meta, int (*cmpFun) (const char *, const char *))
+static TransformType getType (const char * string)
+{
+	if (!strncasecmp (string, "regex:", sizeof ("regex:") - 1))
+		return REGEX;
+	else if (!strncasecmp (string, "fnm:", sizeof ("fnm:") - 1))
+		return FNMATCH;
+	else if (!strncasecmp (string, "caselist:", sizeof ("caselist:") - 1))
+		return LISTINSENSITIVE;
+	else if (!strncasecmp (string, "list:", sizeof ("list:") - 1))
+		return LISTSENSITIVE;
+	else
+		return WORD;
+}
+
+static int transformSingle (Key * key, const Key * meta)
+{
+	TransformType type = getType (keyString (meta));
+	int rc = 0;
+	switch (type)
+	{
+	case REGEX:
+		rc = canonicalRegexSingle (key, meta);
+		break;
+	case FNMATCH:
+		rc = canonicalFNMatchSingle (key, meta);
+		break;
+	case LISTSENSITIVE:
+		rc = canonicalListSingle (key, meta, strcmp);
+		break;
+	case LISTINSENSITIVE:
+		rc = canonicalListSingle (key, meta, strcasecmp);
+		break;
+	case WORD:
+		rc = canonicalWord (key, meta);
+		break;
+	default:
+		rc = 0;
+		break;
+	}
+	return rc;
+}
+
+static int transformArray (Key * key, const Key * meta)
 {
 	KeySet * lists = elektraMetaArrayToKS (key, keyName (meta));
 	Key * elem = NULL;
 	int rc = 0;
 	while ((elem = ksNext (lists)) != NULL)
 	{
-		rc = canonicalListSingle (key, elem, cmpFun);
-		if (rc != 0) break;
+		if (!strcmp (keyName (elem), "transform/canonical")) continue;
+		rc = transformSingle (key, elem);
+		if (rc == 1) break;
 	}
 	ksDel (lists);
 	return rc;
 }
 
-static int canonicalCaseSensitiveList (Key * key, const Key * meta)
-{
-	int rc = 0;
-	if (keyString (meta)[0] == '#')
-		rc = canonicalListArray (key, meta, &strcmp);
-	else
-		rc = canonicalListSingle (key, meta, &strcmp);
-	return rc;
-}
-
-static int canonicalCaseInsensitiveList (Key * key, const Key * meta)
-{
-	int rc = 0;
-	if (keyString (meta)[0] == '#')
-		rc = canonicalListArray (key, meta, &strcasecmp);
-	else
-		rc = canonicalListSingle (key, meta, &strcasecmp);
-	return rc;
-}
-
 static int transformKey (Key * key)
 {
-	const Key * pattern = NULL;
-	if (((pattern = keyGetMeta (key, "transform/canonical/regex")) != NULL) &&
-	    (keyGetMeta (key, "transform/canonical/origvalue") == NULL))
+	const Key * meta = NULL;
+	meta = keyGetMeta (key, "transform/canonical");
+	if (!meta) return 0;
+	if (keyGetMeta (key, "internal/canonical/origvalue")) return 0;
+	int rc = 0;
+	if (keyString (meta)[0] == '#')
 	{
-		canonicalRegex (key, pattern);
+		rc = transformArray (key, meta);
 	}
-	if (((pattern = keyGetMeta (key, "transform/canonical/fnmatch")) != NULL) &&
-	    (keyGetMeta (key, "transform/canonical/origvalue") == NULL))
+	else
 	{
-		canonicalFNMatch (key, pattern);
+		rc = transformSingle (key, meta);
 	}
-	if (((pattern = keyGetMeta (key, "transform/canonical/list/insensitive")) != NULL) &&
-	    (keyGetMeta (key, "transform/canonical/origvalue") == NULL))
-	{
-		canonicalCaseInsensitiveList (key, pattern);
-	}
-	if (((pattern = keyGetMeta (key, "transform/canonical/list/sensitive")) != NULL) &&
-	    (keyGetMeta (key, "transform/canonical/origvalue") == NULL))
-	{
-		canonicalCaseSensitiveList (key, pattern);
-	}
-
-
-	return 1;
+	return rc;
 }
 
 static void restoreKey (Key * key)
 {
-	const Key * origKey = keyGetMeta (key, "transform/canonical/origvalue");
+	const Key * origKey = keyGetMeta (key, "internal/canonical/origvalue");
 	if (origKey)
 	{
 		keySetString (key, keyString (origKey));
