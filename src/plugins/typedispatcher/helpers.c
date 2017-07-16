@@ -1,16 +1,25 @@
+/**
+ * @file
+ *
+ * @brief Source for typedispatcher plugin
+ *
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ *
+ */
+
 #include "typehelper.h"
 #include <ctype.h>
 #include <kdbease.h>     //elektraArrayIncName
 #include <kdbmodule.h>   //elektraModulesInit, elektraModulesClose
-#include <kdbos.h>       //elektraNamespace;
-#include <kdbprivate.h>  //elektraPluginClose. elektraPluginOpen, elektraStrNDup
+#include <kdbos.h>       //elektraNamespace,
+#include <kdbprivate.h>  //elektraPluginClose, elektraPluginOpen, elektraStrNDup
 #include <kdbproposal.h> //keyRel2, KeyRelType
 #include <stdio.h>
 #include <string.h>
 #include <strings.h>
 
 
-// hekoer fir freeTyoes
+// helper for freeTypes
 // free a single type configuration
 static void freeType (TypeConfig * tc)
 {
@@ -75,8 +84,7 @@ void closeDispatchConfig (Plugin * handle)
 // initialize plugin configuration
 DispatchConfig * initDispatchConfig ()
 {
-	DispatchConfig * config = NULL;
-	config = elektraCalloc (sizeof (DispatchConfig));
+	DispatchConfig * config = elektraCalloc (sizeof (DispatchConfig));
 	if (!config) return NULL;
 	config->onError = FAIL;
 	config->plugins = ksNew (0, KS_END);
@@ -137,14 +145,7 @@ int isWithinScope (const TypeConfig * config, const Key * key)
 			elektraNamespace scopeNS = keyGetNamespace (scope);
 			if (scopeNS == KEY_NS_SPEC)
 			{
-				if (keyRel2 (scope, key, ELEKTRA_REL_BELOW_IGNORE_NS) <= 0)
-				{
-					return 0;
-				}
-				else
-				{
-					return 1;
-				}
+				return keyRel2 (scope, key, ELEKTRA_REL_BELOW_IGNORE_NS) > 0;
 			}
 			else
 			{
@@ -194,8 +195,7 @@ TypeType getTypeType (TypeConfig * tc)
 
 Key * getTypeKey (DispatchConfig * config, const char * type)
 {
-	Key * lookup = ksLookupByName (config->types, type, KDB_O_NONE);
-	return lookup;
+	return ksLookupByName (config->types, type, KDB_O_NONE);
 }
 
 // look up <type> and return its configuration if found
@@ -271,7 +271,7 @@ char * replaceParametersWithArguments (const Key * key, KeySet * args)
 						ssize_t newLen = elektraStrLen (preparedString) + sizeof (tmp) + 2;
 						elektraRealloc ((void **)&preparedString, newLen);
 						strcat (preparedString, "%");
-						strncat (preparedString, tmp, sizeof (tmp));
+						strncat (preparedString, tmp, len);
 						strcat (preparedString, "%");
 						dstPtr = preparedString + newLen - 1;
 						preparedStringLen = newLen;
@@ -314,11 +314,8 @@ char * replaceParametersWithArguments (const Key * key, KeySet * args)
 ArgumentConfig * parseTypeString (DispatchConfig * config ELEKTRA_UNUSED, const char * typeString)
 {
 	const char * ptr = typeString;
-	while (*ptr)
-	{
-		if (*ptr == '(' || *ptr == ' ') break;
+	while (*ptr && (*ptr != '(' && *ptr != ' '))
 		++ptr;
-	}
 	if (!*ptr) return NULL;
 	ssize_t typeNameLen = (ptr - typeString) + 1;
 	if (typeNameLen <= 0) return NULL;

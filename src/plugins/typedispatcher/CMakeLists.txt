@@ -12,5 +12,6 @@ add_plugin (typedispatcher
 	LINK_ELEKTRA
 		elektra-proposal
 		elektra-ease
+		elektra-kdb
 	ADD_TEST
 	)

@@ -1,3 +1,12 @@
+/**
+ * @file
+ *
+ * @brief Source for typedispatcher plugin
+ *
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ *
+ */
+
 #include "typehelper.h"
 #include <kdberrors.h>
 #include <kdbhelper.h>   // elektraStrLen
@@ -76,6 +85,29 @@ static int checkKey (DispatchConfig * config, const Key * key, Key * parentKey, 
 	keyDel (errorKey);
 	keyDel (testKey);
 	return rc;
+}
+
+static inline int checkCleanup (DispatchConfig * config, Key * key, KeySet * returned, RC rc)
+{
+	switch (config->onError)
+	{
+	case FAIL:
+		if (rc == ERROR)
+			return ERROR;
+		else
+			return SUCCESS;
+		break;
+	case IGNORE:
+		return SUCCESS;
+		break;
+	case DROPKEY:
+		if (rc == ERROR) keyDel (ksLookup (returned, (Key *)key, KDB_O_POP));
+		return SUCCESS;
+		break;
+	default:
+		return rc;
+		break;
+	}
 }
 
 // actual typechecker
@@ -174,30 +206,7 @@ static int doTypeCheck (DispatchConfig * config, TypeConfig * tc, ArgumentConfig
 	}
 TYPECHECKDONE:
 	ksDel (args);
-	switch (config->onError)
-	{
-	case FAIL:
-		if (rc == ERROR)
-			return ERROR;
-		else
-			return SUCCESS;
-		break;
-	case IGNORE:
-		return SUCCESS;
-		break;
-	case DROPKEY:
-		if (rc == ERROR)
-		{
-			keyDel (ksLookup (returned, (Key *)key, KDB_O_POP));
-			return SUCCESS;
-		}
-		else
-			return SUCCESS;
-		break;
-	default:
-		return rc;
-		break;
-	}
+	return checkCleanup (config, key, returned, rc);
 }
 
 
@@ -323,29 +332,5 @@ int validateCheckKey (Key * key, KeySet * returned, DispatchConfig * config, Key
 		keyDel (errorKey);
 	}
 	ksDel (checkKS);
-
-	switch (config->onError)
-	{
-	case FAIL:
-		if (rc == ERROR)
-			return ERROR;
-		else
-			return SUCCESS;
-		break;
-	case IGNORE:
-		return SUCCESS;
-		break;
-	case DROPKEY:
-		if (rc == ERROR)
-		{
-			keyDel (ksLookup (returned, (Key *)key, KDB_O_POP));
-			return SUCCESS;
-		}
-		else
-			return SUCCESS;
-		break;
-	default:
-		return rc;
-		break;
-	}
+	return checkCleanup (config, key, returned, rc);
 }

@@ -1,3 +1,15 @@
+/**
+ * @file
+ *
+ * @brief Source for typedispatcher plugin
+ *
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ *
+ */
+
+#ifndef ELEKTRA_PLUGIN_TYPEDISPATCHER_HELPER_H
+#define ELEKTRA_PLUGIN_TYPEDISPATCHER_HELPER_H
+
 #include <kdbplugin.h>
 
 #define DEVBUILD
@@ -97,3 +109,5 @@ int validateCheckKey (Key *, KeySet *, DispatchConfig *, Key *);
 
 // pluginhelper.c
 ValidateFunction getValidateFunction (DispatchConfig *, const char *);
+
+#endif

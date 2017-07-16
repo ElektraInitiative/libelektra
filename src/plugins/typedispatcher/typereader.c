@@ -1,3 +1,12 @@
+/**
+ * @file
+ *
+ * @brief Source for typedispatcher plugin
+ *
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ *
+ */
+
 #include "typehelper.h"
 #include <kdbease.h>     //KeyGetRelativeName, elektraArrayIncName
 #include <kdbhelper.h>   //elektraCalloc
