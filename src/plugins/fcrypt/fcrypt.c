@@ -40,6 +40,9 @@ struct _fcryptState
 	enum FcryptGetState getState;
 	struct stat parentStat;
 	int parentStatOk;
+	int tmpFileFd;
+	char * tmpFilePath;
+	char * originalFilePath;
 };
 typedef struct _fcryptState fcryptState;
 
@@ -381,10 +384,11 @@ static int fcryptEncrypt (KeySet * pluginConfig, Key * parentKey)
  * @brief decrypt the file specified at parentKey
  * @param pluginConfig holds the plugin configuration
  * @param parentKey holds the path to the file to be encrypted. Will hold an error description in case of failure.
+ * @param state holds the plugin state
  * @retval 1 on success
  * @retval -1 on error, errorKey holds an error description
  */
-static int fcryptDecrypt (KeySet * pluginConfig, Key * parentKey)
+static int fcryptDecrypt (KeySet * pluginConfig, Key * parentKey, fcryptState * state)
 {
 	int tmpFileFd = -1;
 	char * tmpFile = getTemporaryFileName (keyString (parentKey), &tmpFileFd);
@@ -430,9 +434,23 @@ static int fcryptDecrypt (KeySet * pluginConfig, Key * parentKey)
 
 	// NOTE the decryption process works like this:
 	// gpg2 --batch --yes -o tmpfile -d configFile
-	// mv tmpfile configFile
-
-	return fcryptGpgCallAndCleanup (parentKey, pluginConfig, argv, argc, tmpFileFd, tmpFile);
+	int result = CRYPTO_PLUGIN_FUNCTION (gpgCall) (pluginConfig, parentKey, NULL, argv, argc);
+	if (result == 1)
+	{
+		state->originalFilePath = strdup (keyString (parentKey));
+		state->tmpFilePath = tmpFile;
+		state->tmpFileFd = tmpFileFd;
+		keySetString (parentKey, tmpFile);
+	}
+	else
+	{
+		// if anything went wrong above the temporary file is shredded and removed
+		shredTemporaryFile (tmpFileFd, parentKey);
+		unlink (tmpFile);
+		close (tmpFileFd);
+		elektraFree (tmpFile);
+	}
+	return result;
 }
 
 /**
@@ -451,6 +469,9 @@ int ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME, open) (Plugin * handle, KeySet
 
 	s->getState = PREGETSTORAGE;
 	s->parentStatOk = 0;
+	s->tmpFileFd = -1;
+	s->tmpFilePath = NULL;
+	s->originalFilePath = NULL;
 
 	elektraPluginSetData (handle, s);
 	return 1;
@@ -466,6 +487,18 @@ int ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME, close) (Plugin * handle, KeySe
 	fcryptState * s = (fcryptState *)elektraPluginGetData (handle);
 	if (s)
 	{
+		if (s->tmpFileFd > 0)
+		{
+			close (s->tmpFileFd);
+		}
+		if (s->tmpFilePath)
+		{
+			elektraFree (s->tmpFilePath);
+		}
+		if (s->originalFilePath)
+		{
+			elektraFree (s->originalFilePath);
+		}
 		elektraFree (s);
 		elektraPluginSetData (handle, NULL);
 	}
@@ -494,18 +527,36 @@ int ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME, get) (Plugin * handle, KeySet 
 	KeySet * pluginConfig = elektraPluginGetConfig (handle);
 	fcryptState * s = (fcryptState *)elektraPluginGetData (handle);
 
-	if (s && s->getState == POSTGETSTORAGE)
+	if (!s)
 	{
-		// encrypt if this is a postgetstorage call
-		int encryptResult = fcryptEncrypt (pluginConfig, parentKey);
+		// TODO internal plugin error
+		return -1;
+	}
 
-		// restore "original" timestamp that has been saved in kdb get / pregetstorage
-		// NOTE if we do not restore the timestamp the resolver thinks the file has been changed externally.
-		if (encryptResult == 1 && s->parentStatOk)
+	if (s->getState == POSTGETSTORAGE)
+	{
+		// postgetstorage call will re-direct the parent key to the original encrypted/signed file
+		if (s->originalFilePath)
 		{
-			fcryptRestoreMtime (parentKey, &(s->parentStat));
+			keySetString (parentKey, s->originalFilePath);
+			// TODO check if this is still necessary
+			// if(s->parentStatOk)
+			//{
+			//	fcryptRestoreMtime (parentKey, &(s->parentStat));
+			//}
 		}
-		return encryptResult;
+		// TODO else: error if not available
+
+		if (s->tmpFileFd > 0)
+		{
+			shredTemporaryFile (s->tmpFileFd, parentKey);
+			close (s->tmpFileFd);
+			s->tmpFileFd = -1;
+			unlink (s->tmpFilePath);
+			elektraFree (s->tmpFilePath);
+			s->tmpFilePath = NULL;
+		}
+		return 1;
 	}
 
 	// now this is a pregetstorage call
@@ -513,9 +564,10 @@ int ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME, get) (Plugin * handle, KeySet 
 	s->getState = POSTGETSTORAGE;
 
 	// save timestamp of the file
+	// TODO verify if this is still required
 	s->parentStatOk = fcryptSaveMtime (parentKey, &(s->parentStat));
 
-	return fcryptDecrypt (pluginConfig, parentKey);
+	return fcryptDecrypt (pluginConfig, parentKey, s);
 }
 
 /**
@@ -548,6 +600,7 @@ int ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME, set) (Plugin * handle, KeySet 
 
 	// restore "original" timestamp that has been saved in kdb get / pregetstorage
 	// NOTE if we do not restore the timestamp the resolver thinks the file has been changed externally.
+	// TODO check if this is still required
 	fcryptState * s = (fcryptState *)elektraPluginGetData (handle);
 	if (s->parentStatOk)
 	{
