@@ -15,15 +15,15 @@
 #include <kdberrors.h>
 #include <kdbprivate.h>
 
-//#include <fcntl.h>		// open()
+//#include <fcntl.h>	// open()
 #include <errno.h>
-#include <stdio.h>		// fopen()
-#include <unistd.h>		// close()
+#include <stdio.h>	// fopen()
+#include <unistd.h>	// close()
 #include <sys/mman.h>	// mmap()
 #include <sys/stat.h>	// stat()
 #include <kdblogger.h>
 
-#define SIZEOF_KEY			(sizeof (Key))
+#define SIZEOF_KEY		(sizeof (Key))
 #define SIZEOF_KEY_PTR		(sizeof (Key *))
 #define SIZEOF_KEYSET		(sizeof (KeySet))
 #define SIZEOF_KEYSET_PTR	(sizeof (KeySet *))
@@ -195,7 +195,6 @@ static void elektraMmapstorageWriteKeySet (char * mappedRegion, KeySet * keySet)
 		// move KeySet itself to the mapped region
 		keySet->flags |= KS_FLAG_MMAP;
 		memcpy (ksRegion, keySet, SIZEOF_KEYSET);
-		//fwrite (keySet, SIZEOF_KEYSET, 1, fp);
 		return;
 	}
 
@@ -229,7 +228,7 @@ static void elektraMmapstorageWriteKeySet (char * mappedRegion, KeySet * keySet)
 		dataNextFreeBlock += keyValueSize;
 
 		// move Key itself
-		Key * mmapKey = (Key *) ksRegion + SIZEOF_KEYSET + (keyIndex * SIZEOF_KEY);
+		void * mmapKey = ksRegion + SIZEOF_KEYSET + (keyIndex * SIZEOF_KEY);
 		cur->flags |= KEY_FLAG_MMAP;
 		memcpy (mmapKey, cur, SIZEOF_KEY);
 		//fwrite (cur, keyValueSize, 1, fp);
@@ -248,6 +247,15 @@ static void elektraMmapstorageWriteKeySet (char * mappedRegion, KeySet * keySet)
 	// move KeySet itself to the mapped region
 	keySet->flags |= KS_FLAG_MMAP;
 	memcpy (ksRegion, keySet, SIZEOF_KEYSET);
+}
+
+static void mmapToKeySet (char * mappedRegion, KeySet * returned)
+{
+	KeySet * keySet = (KeySet *) (mappedRegion + SIZEOF_MMAPINFO);
+	returned->array = keySet->array;
+	returned->size = keySet->size;
+	ksRewind(returned);
+	returned->flags = keySet->flags;
 }
 
 int elektraMmapstorageOpen (Plugin * handle ELEKTRA_UNUSED, Key * errorKey ELEKTRA_UNUSED)
@@ -313,7 +321,7 @@ int elektraMmapstorageGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Ke
 		ELEKTRA_LOG ("mappedRegion == MAP_FAILED");
 		return -1;
 	}
-	ELEKTRA_LOG ("mappedRegion size: %lld", sbuf.st_size);
+	ELEKTRA_LOG_WARNING ("mappedRegion size: %l", sbuf.st_size);
 
 	char * ksRegion = mappedRegion + SIZEOF_MMAPINFO;
 	ksCopy (returned, (KeySet *) ksRegion);
@@ -359,8 +367,8 @@ int elektraMmapstorageSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Ke
 
 	elektraMmapstorageWriteKeySet (mappedRegion, returned);
 
-	ksCopy(returned, (KeySet *) mappedRegion);
-	returned->flags |= KS_FLAG_MMAP;
+	//ksCopy(returned, (KeySet *) mappedRegion);
+	mmapToKeySet(mappedRegion, returned);
 	// TODO FIXME: don't use ksCopy but replace all fields inside the KeySet.
 	// just replace the pointers to Key ** array and so on
 
