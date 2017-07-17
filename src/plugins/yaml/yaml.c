@@ -245,7 +245,7 @@ static parserType * whitespace (parserType * const parser)
 	ASSERT_NOT_NULL (parser);
 	ASSERT_NOT_NULL (parser->file);
 
-	while (acceptChars (parser, " \t")->status == OK && parser->text)
+	while (acceptChars (parser, " \t\n")->status == OK && parser->text)
 		; //! OCLINT
 
 	return parser;
