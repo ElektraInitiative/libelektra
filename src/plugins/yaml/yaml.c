@@ -202,7 +202,15 @@ static parserType * acceptChars (parserType * const parser, char const * const c
 	{
 		LOG_PARSE (parser, "Accepted character “%c”", *lastCharacter);
 		parser->text = lastCharacter;
-		parser->column++;
+		if (*lastCharacter == '\n')
+		{
+			parser->line++;
+			parser->column = 1;
+		}
+		else
+		{
+			parser->column++;
+		}
 		return parser;
 	}
 	LOG_PARSE (parser, "Put back character “%c”", *lastCharacter);
