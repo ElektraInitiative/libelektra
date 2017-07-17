@@ -1097,3 +1097,10 @@ severity:error
 ingroup:plugin
 macro:GPG_KEY_INVALID
 module:fcrypt
+
+number:178
+description:The plugin is in an invalid state. Please report this issue.
+severity:error
+ingroup:plugin
+macro:FCRYPT_STATE
+module:fcrypt
