@@ -12,6 +12,13 @@
 
 #include <kdbplugin.h>
 
+typedef struct _mmapInfo MmapInfo;
+
+struct _mmapInfo
+{
+	char * addr;
+};
+
 
 int elektraMmapstorageOpen (Plugin * handle, Key * errorKey);
 int elektraMmapstorageClose (Plugin * handle, Key * errorKey);

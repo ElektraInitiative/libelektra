@@ -40,32 +40,30 @@
 //	PLUGIN_CLOSE ();
 //}
 
-static KeySet * simpleTestKeySet ()
-{
-	return ksNew(10,
-		  keyNew("user/tests/mmapstorage/simpleKey", KEY_VALUE, "root key", KEY_END),
-		  keyNew("user/tests/mmapstorage/simpleKey/a", KEY_VALUE, "a value", KEY_END),
-		  keyNew("user/tests/mmapstorage/simpleKey/b", KEY_VALUE, "b value", KEY_END),
-		  KS_END
+static KeySet *simpleTestKeySet () {
+	return ksNew (10,
+		      keyNew ("user/tests/mmapstorage/simpleKey", KEY_VALUE, "root key", KEY_END),
+		      keyNew ("user/tests/mmapstorage/simpleKey/a", KEY_VALUE, "a value", KEY_END),
+		      keyNew ("user/tests/mmapstorage/simpleKey/b", KEY_VALUE, "b value", KEY_END),
+		      KS_END
 	);
 }
 
-static KeySet * metaTestKeySet ()
-{
-	return ksNew(10,
-				 keyNew("user/tests/mmapstorage",
-							 KEY_VALUE, "root key",
-							 KEY_META, "a", "b",
-							 KEY_END),
-				 keyNew("user/tests/mmapstorage/a",
-							 KEY_VALUE, "a value",
-							 KEY_META, "ab", "cd",
-							 KEY_END),
-				 keyNew("user/tests/mmapstorage/b",
-						KEY_VALUE, "b value",
-						KEY_META, "longer val", "here some even more with ugly €@\\1¹²³¼ chars",
-						KEY_END),
-				 KS_END
+static KeySet *metaTestKeySet () {
+	return ksNew (10,
+		      keyNew ("user/tests/mmapstorage",
+			      KEY_VALUE, "root key",
+			      KEY_META, "a", "b",
+			      KEY_END),
+		      keyNew ("user/tests/mmapstorage/a",
+			      KEY_VALUE, "a value",
+			      KEY_META, "ab", "cd",
+			      KEY_END),
+		      keyNew ("user/tests/mmapstorage/b",
+			      KEY_VALUE, "b value",
+			      KEY_META, "longer val", "here some even more with ugly €@\\1¹²³¼ chars",
+			      KEY_END),
+		      KS_END
 	);
 }
 
@@ -230,11 +228,11 @@ int main (int argc, char ** argv)
 	const char * tmpFile = elektraFilename();
 
 	test_mmap_set_get (tmpFile);
-	test_mmap_get_after_reopen (tmpFile);
-
-	clearStorage (tmpFile);
-
-	test_mmap_empty_after_clear (tmpFile);
+//	test_mmap_get_after_reopen (tmpFile);
+//
+//	clearStorage (tmpFile);
+//
+//	test_mmap_empty_after_clear (tmpFile);
 
 
 
