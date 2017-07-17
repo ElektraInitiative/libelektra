@@ -176,7 +176,7 @@ static void test_file_crypto_operations ()
 
 			// try to decrypt the file again (simulating the pregetstorage call)
 			succeed_if (plugin->kdbGet (plugin, data, parentKey) == 1, "kdb get (pregetstorage) failed");
-			succeed_if (isTestFileCorrect (tmpFile) == 1, "file content could not be restored during decryption");
+			succeed_if (isTestFileCorrect (keyString (parentKey)) == 1, "file content could not be restored during decryption");
 
 			// a second call to kdb get (the postgetstorage call) should re-encrypt the file again
 			succeed_if (plugin->kdbGet (plugin, data, parentKey) == 1, "kdb get (postgetstorage) failed");
