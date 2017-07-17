@@ -38,8 +38,6 @@ enum FcryptGetState
 struct _fcryptState
 {
 	enum FcryptGetState getState;
-	struct stat parentStat;
-	int parentStatOk;
 	int tmpFileFd;
 	char * tmpFilePath;
 	char * originalFilePath;
@@ -403,7 +401,6 @@ int ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME, open) (Plugin * handle, KeySet
 	}
 
 	s->getState = PREGETSTORAGE;
-	s->parentStatOk = 0;
 	s->tmpFileFd = -1;
 	s->tmpFilePath = NULL;
 	s->originalFilePath = NULL;
