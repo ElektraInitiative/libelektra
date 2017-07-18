@@ -53,9 +53,9 @@ typedef struct
 	size_t line;
 	/** Current column inside `line` */
 	size_t column;
-	/** Start of read text consumed by parser */
-	char * text;
-	/** End of last text consumed by parser */
+	/** Start of last text matched by parser */
+	char * match;
+	/** End of last text matched by parser */
 	char * end;
 	/** Last key read by parser */
 	char * key;
@@ -163,7 +163,7 @@ static parserType * getNextChar (parserType * parser)
 
 	if (parser->bufferCharsAvailable < 1)
 	{
-		parser->text = NULL;
+		parser->match = NULL;
 		return parser;
 	}
 
@@ -178,7 +178,7 @@ static parserType * getNextChar (parserType * parser)
 	}
 
 	parser->bufferCharsAvailable--;
-	parser->text = parser->buffer;
+	parser->match = parser->buffer;
 	parser->buffer++;
 
 	return parser;
@@ -204,15 +204,15 @@ static parserType * acceptChars (parserType * const parser, char const * const c
 	ASSERT_NOT_NULL (parser->file);
 	ASSERT_NOT_NULL (characters);
 
-	if (getNextChar (parser)->status != OK || !parser->text) return parser;
+	if (getNextChar (parser)->status != OK || !parser->match) return parser;
 
-	char * lastCharacter = parser->text;
-	parser->text = NULL;
+	char * lastCharacter = parser->match;
+	parser->match = NULL;
 
 	if (strchr (characters, *lastCharacter))
 	{
 		LOG_PARSE (parser, "Accepted character “%c”", *lastCharacter);
-		parser->text = lastCharacter;
+		parser->match = lastCharacter;
 		return parser;
 	}
 	LOG_PARSE (parser, "Put back character “%c”", *lastCharacter);
@@ -225,7 +225,7 @@ static parserType * expect (parserType * const parser, char const * const charac
 
 	RET_NOK (acceptChars (parser, characters));
 
-	if (!parser->text)
+	if (!parser->match)
 	{
 		if (parser->bufferCharsAvailable > 0)
 		{
@@ -247,7 +247,7 @@ static parserType * whitespace (parserType * const parser)
 	ASSERT_NOT_NULL (parser);
 	ASSERT_NOT_NULL (parser->file);
 
-	while (acceptChars (parser, " \t\n")->status == OK && parser->text)
+	while (acceptChars (parser, " \t\n")->status == OK && parser->match)
 		; //! OCLINT
 
 	return parser;
@@ -262,14 +262,14 @@ static parserType * content (parserType * const parser)
 	size_t numberCharsRead = 0;
 	char * text = parser->buffer;
 
-	while (getNextChar (parser)->status == OK && parser->text && (*parser->text != '"' || *previous == '\\'))
+	while (getNextChar (parser)->status == OK && parser->match && (*parser->match != '"' || *previous == '\\'))
 	{
 		numberCharsRead++;
-		LOG_PARSE (parser, "Read character “%c”", *parser->text);
-		previous = parser->text;
+		LOG_PARSE (parser, "Read character “%c”", *parser->match);
+		previous = parser->match;
 	}
 	RET_NOK (parser);
-	if (parser->text && *parser->text == '"')
+	if (parser->match && *parser->match == '"')
 	{
 		putBackChar (parser);
 		numberCharsRead--;
@@ -277,7 +277,7 @@ static parserType * content (parserType * const parser)
 
 	parser->end = text + numberCharsRead;
 	LOG_PARSE (parser, "End: “%c”", *parser->end);
-	parser->text = text;
+	parser->match = text;
 
 	return parser;
 }
@@ -288,9 +288,9 @@ static parserType * doubleQuoted (parserType * const parser)
 
 	RET_NOK (expect (parser, "\""));
 	RET_NOK (content (parser));
-	char * text = parser->text;
+	char * text = parser->match;
 	RET_NOK (expect (parser, "\""));
-	parser->text = text;
+	parser->match = text;
 
 	return parser;
 }
@@ -301,9 +301,9 @@ static parserType * doubleQuotedSpace (parserType * const parser)
 
 	RET_NOK (whitespace (parser));
 	RET_NOK (doubleQuoted (parser));
-	char * text = parser->text;
+	char * text = parser->match;
 	RET_NOK (whitespace (parser));
-	parser->text = text;
+	parser->match = text;
 
 	return parser;
 }
@@ -313,11 +313,11 @@ static parserType * saveText (parserType * const parser, char ** location)
 	ASSERT_NOT_NULL (parser);
 	ASSERT_NOT_NULL (location);
 
-	size_t length = parser->end - parser->text + 1;
+	size_t length = parser->end - parser->match + 1;
 	*location = elektraMalloc (length + 1);
 	if (!*location) return setErrorMalloc (parser, length + 1);
 
-	strncpy (*location, parser->text, length);
+	strncpy (*location, parser->match, length);
 	(*location)[length] = '\0';
 
 	return parser;
@@ -358,7 +358,7 @@ static parserType * pair (parserType * const parser)
 
 static parserType * optionalAdditionalPairs (parserType * const parser)
 {
-	while (acceptChars (parser, ",")->status == OK && parser->text)
+	while (acceptChars (parser, ",")->status == OK && parser->match)
 	{
 		RET_NOK (pair (parser));
 	}
@@ -452,7 +452,7 @@ static int parseFile (KeySet * returned ELEKTRA_UNUSED, Key * parentKey)
 					     .line = 1,
 					     .column = 1,
 					     .file = NULL,
-					     .text = NULL,
+					     .match = NULL,
 					     .bufferBase = NULL,
 					     .buffer = NULL,
 					     .bufferCharsAvailable = 0,
