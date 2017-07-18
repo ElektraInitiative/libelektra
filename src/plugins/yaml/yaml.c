@@ -174,15 +174,13 @@ static parserType * getNextChar (parserType * parser)
 	return parser;
 }
 
-static parserType * putBackChars (parserType * parser, size_t numberChars)
+static parserType * putBackChar (parserType * parser)
 {
 	ASSERT_NOT_NULL (parser);
-	ELEKTRA_ASSERT (parser->buffer - numberChars >= parser->bufferBase, "Can not put back more characters than available.");
+	ELEKTRA_ASSERT (parser->buffer - 1 >= parser->bufferBase, "Can not put back more characters than available.");
 
-	LOG_PARSE (parser, "Put back %lu characters", numberChars);
-
-	parser->bufferCharsAvailable += numberChars;
-	parser->buffer -= numberChars;
+	parser->bufferCharsAvailable++;
+	parser->buffer--;
 
 	return parser;
 }
@@ -214,7 +212,7 @@ static parserType * acceptChars (parserType * const parser, char const * const c
 		return parser;
 	}
 	LOG_PARSE (parser, "Put back character “%c”", *lastCharacter);
-	return putBackChars (parser, 1);
+	return putBackChar (parser);
 }
 
 static parserType * expect (parserType * const parser, char const * const characters)
@@ -269,7 +267,7 @@ static parserType * content (parserType * const parser)
 	RET_NOK (parser);
 	if (parser->text && *parser->text == '"')
 	{
-		putBackChars (parser, 1);
+		putBackChar (parser);
 		numberCharsRead--;
 	}
 
