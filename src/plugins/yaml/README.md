@@ -30,6 +30,7 @@ kdb export /examples/yaml yaml
 #>   "key" : "value"
 #> }
 
+kdb rm -r /examples/yaml
 kdb umount /examples/yaml
 ```
 
