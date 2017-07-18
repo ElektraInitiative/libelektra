@@ -182,8 +182,9 @@ static void mmapToKeySet (char * mappedRegion, KeySet * returned)
 {
 	KeySet * keySet = (KeySet *) (mappedRegion + SIZEOF_MMAPINFO);
 	returned->array = keySet->array;
-	returned->size = keySet->size;
-	ksRewind(returned);
+	returned->size 	= keySet->size;
+	returned->alloc = keySet->alloc;
+	ksRewind(returned); // cursor = 0; current = 0
 	returned->flags = keySet->flags;
 }
 
@@ -265,14 +266,8 @@ int elektraMmapstorageGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Ke
 	}
 	ELEKTRA_LOG_WARNING ("mappedRegion size: %zu", sbuf.st_size);
 	ELEKTRA_LOG_WARNING ("mappedRegion ptr: %p", (void *) mappedRegion);
-	
-	
-	
-	
-	
-	
 
-	mmapToKeySet(mappedRegion, returned);
+	mmapToKeySet (mappedRegion, returned);
 
 	//munmap(mappedRegion, sbuf.st_size);
 	fclose (fp);
@@ -313,10 +308,10 @@ int elektraMmapstorageSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Ke
 	elektraMmapstorageWriteKeySet (mappedRegion, returned);
 
 	//ksCopy(returned, (KeySet *) mappedRegion);
-	mmapToKeySet(mappedRegion, returned);
+	mmapToKeySet (mappedRegion, returned);
 
 	//munmap(mappedRegion, mmapsize);
-	fclose(fp);
+	fclose (fp);
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }
 
