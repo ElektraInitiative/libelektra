@@ -25,9 +25,14 @@ kdb set /examples/yaml/key value
 kdb get /examples/yaml/key
 #> value
 
+kdb set /examples/yaml/kittens "warm & fuzzy"
+kdb get /examples/yaml/kittens
+#> warm & fuzzy
+
 kdb export /examples/yaml yaml
 #> {
 #>   "key" : "value"
+#> , "kittens" : "warm & fuzzy"
 #> }
 
 kdb rm -r /examples/yaml

@@ -356,6 +356,15 @@ static parserType * pair (parserType * const parser)
 	return parser;
 }
 
+static parserType * optionalAdditionalPairs (parserType * const parser)
+{
+	while (acceptChars (parser, ",")->status == OK && parser->text)
+	{
+		RET_NOK (pair (parser));
+	}
+	return parser;
+}
+
 static parserType * pairs (parserType * const parser)
 {
 	ASSERT_NOT_NULL (parser);
@@ -364,6 +373,8 @@ static parserType * pairs (parserType * const parser)
 	RET_NOK (expect (parser, "{"));
 
 	RET_NOK (pair (parser));
+
+	RET_NOK (optionalAdditionalPairs (parser));
 
 	RET_NOK (expect (parser, "}"));
 	LOG_PARSE (parser, "“%s: %s”", parser->key, parser->value);
@@ -489,11 +500,13 @@ static int writeFile (FILE * file, KeySet * keySet, Key * parentKey)
 	ksRewind (keySet);
 
 	int status = fprintf (file, "{\n");
+	bool first = true;
 	for (Key * key; status >= 0 && (key = ksNext (keySet)) != 0;)
 	{
 		const char * name = elektraKeyGetRelativeName (key, parentKey);
 		ELEKTRA_LOG_DEBUG ("Write mapping “\"%s\" : \"%s\"”", name, keyString (key));
-		status = fprintf (file, "  \"%s\" : \"%s\"\n", name, keyString (key));
+		status = fprintf (file, "%s \"%s\" : \"%s\"\n", first ? " " : ",", name, keyString (key));
+		first = false;
 	}
 	return status < 0 ? status : fprintf (file, "}");
 }
