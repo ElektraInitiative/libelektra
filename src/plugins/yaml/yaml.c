@@ -126,7 +126,7 @@ static parserType * setErrorMalloc (parserType * const parser, size_t size)
 // = Parsing =
 // ===========
 
-static parserType * readNumberChars (parserType * const parser, size_t numberChars)
+static parserType * bufferChar (parserType * const parser)
 {
 	ASSERT_NOT_NULL (parser);
 
@@ -134,7 +134,7 @@ static parserType * readNumberChars (parserType * const parser, size_t numberCha
 	size_t capacity;
 	ssize_t numberCharsRead;
 
-	while (parser->bufferCharsAvailable < numberChars && (numberCharsRead = getline (&line, &capacity, parser->file)) != -1)
+	while (parser->bufferCharsAvailable < 1 && (numberCharsRead = getline (&line, &capacity, parser->file)) != -1)
 	{
 		size_t bufferOffset = parser->buffer - parser->bufferBase;
 		size_t bufferCharsAvailable = parser->bufferCharsAvailable + numberCharsRead;
@@ -159,7 +159,7 @@ static parserType * getNextChar (parserType * parser)
 {
 	ASSERT_NOT_NULL (parser);
 
-	RET_NOK (readNumberChars (parser, 1));
+	RET_NOK (bufferChar (parser));
 
 	if (parser->bufferCharsAvailable < 1)
 	{
