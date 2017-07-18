@@ -187,10 +187,10 @@ static parserType * getNextChar (parserType * parser)
 static parserType * putBackChar (parserType * parser)
 {
 	ASSERT_NOT_NULL (parser);
-	ELEKTRA_ASSERT (parser->buffer - 1 >= parser->bufferBase, "Can not put back more characters than available.");
+	ELEKTRA_ASSERT (parser->buffer - 1 >= parser->bufferBase, "Can not put back more characters than available");
 
 	// We assume that we never put back the newline character
-	ELEKTRA_ASSERT (*(parser->buffer - 1) != '\n', "Tried to put back newline character.");
+	ELEKTRA_ASSERT (*(parser->buffer - 1) != '\n', "Tried to put back newline character");
 	parser->column--;
 	parser->bufferCharsAvailable++;
 	parser->buffer--;
