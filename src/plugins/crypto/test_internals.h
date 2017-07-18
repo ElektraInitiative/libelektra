@@ -100,7 +100,7 @@ static inline void setPluginShutdown (KeySet * config)
 
 static KeySet * newPluginConfiguration ()
 {
-	return ksNew (2, keyNew (ELEKTRA_CRYPTO_PARAM_GPG_KEY, KEY_VALUE, TEST_KEY_ID, KEY_END),
+	return ksNew (2, keyNew (ELEKTRA_RECIPIENT_KEY, KEY_VALUE, TEST_KEY_ID, KEY_END),
 		      keyNew (ELEKTRA_CRYPTO_PARAM_GPG_UNIT_TEST, KEY_VALUE, "1", KEY_END), KS_END);
 }
 

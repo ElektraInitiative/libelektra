@@ -29,9 +29,9 @@ static KeySet * newPluginConfiguration ()
 {
 	// clang-format off
 	return ksNew (3,
-		keyNew (ELEKTRA_CRYPTO_PARAM_GPG_KEY, KEY_VALUE, TEST_KEY_ID, KEY_END),
+		keyNew (ELEKTRA_RECIPIENT_KEY, KEY_VALUE, TEST_KEY_ID, KEY_END),
 		keyNew (ELEKTRA_CRYPTO_PARAM_GPG_UNIT_TEST, KEY_VALUE, "1", KEY_END),
-		keyNew ("/fcrypt/sign", KEY_VALUE, TEST_KEY_ID, KEY_END),
+		keyNew (ELEKTRA_SIGNATURE_KEY, KEY_VALUE, TEST_KEY_ID, KEY_END),
 		KS_END);
 	// clang-format on
 }
@@ -176,7 +176,7 @@ static void test_file_crypto_operations ()
 
 			// try to decrypt the file again (simulating the pregetstorage call)
 			succeed_if (plugin->kdbGet (plugin, data, parentKey) == 1, "kdb get (pregetstorage) failed");
-			succeed_if (isTestFileCorrect (tmpFile) == 1, "file content could not be restored during decryption");
+			succeed_if (isTestFileCorrect (keyString (parentKey)) == 1, "file content could not be restored during decryption");
 
 			// a second call to kdb get (the postgetstorage call) should re-encrypt the file again
 			succeed_if (plugin->kdbGet (plugin, data, parentKey) == 1, "kdb get (postgetstorage) failed");

@@ -67,7 +67,7 @@ kdb::Key mountBackend (int iteration)
 	if (VARIANT != NO_CRYPTO)
 	{
 		KeySet pluginConfig;
-		pluginConfig.append (Key ("user/gpg/key", KEY_VALUE, GPG_TEST_KEY_ID, KEY_END));
+		pluginConfig.append (Key ("user/encrypt/key", KEY_VALUE, GPG_TEST_KEY_ID, KEY_END));
 		pluginConfig.append (Key ("user/gpg/unit_test", KEY_VALUE, "1", KEY_END));
 		b.addPlugin (PluginSpec (plugin_variant_names[VARIANT], pluginConfig));
 	}

@@ -38,13 +38,13 @@ enum FcryptGetState
 struct _fcryptState
 {
 	enum FcryptGetState getState;
-	struct stat parentStat;
-	int parentStatOk;
+	int tmpFileFd;
+	char * tmpFilePath;
+	char * originalFilePath;
 };
 typedef struct _fcryptState fcryptState;
 
 #define ELEKTRA_FCRYPT_TMP_FILE_SUFFIX "XXXXXX"
-#define ELEKTRA_FCRYPT_SIGN_KEY "/fcrypt/sign"
 
 /**
  * @brief Allocates a new string holding the name of the temporary file.
@@ -141,71 +141,6 @@ static size_t getRecipientCount (KeySet * config, const char * keyName)
 	return recipientCount;
 }
 
-/**
- * @brief Determines mtime for the file given by parentKey.
- * @param parentKey holds the path to the file as string value. Is also used for storing warnings.
- * @param fileStat will hold the mtime on success.
- * @retval 1 on success
- * @retval 0 on failure. In this case a warning is appended to parentKey.
- */
-static int fcryptSaveMtime (Key * parentKey, struct stat * fileStat)
-{
-	if (access (keyString (parentKey), F_OK))
-	{
-		// return failure, so no timestamp is restored later on
-		return 0;
-	}
-
-	if (stat (keyString (parentKey), fileStat) == -1)
-	{
-		ELEKTRA_ADD_WARNINGF (29, parentKey, "Failed to read file stats of %s", keyString (parentKey));
-		return 0;
-	}
-	return 1;
-}
-
-/**
- * @brief Sets mtime (defined by fileStat) to the file given by parentKey.
- * @param parentKey  holds the path to the file as string value. Is also used for storing warnings.
- * @param fileStat holds the mtime to be set on the file.
- */
-static void fcryptRestoreMtime (Key * parentKey, struct stat * fileStat)
-{
-#if defined(__APPLE__)
-	struct timeval times[2];
-
-	// atime - not changing
-	times[0].tv_sec = fileStat->st_atime;
-	times[0].tv_usec = fileStat->st_atimespec.tv_nsec;
-
-	// mtime
-	times[1].tv_sec = ELEKTRA_STAT_SECONDS ((*fileStat));
-	times[1].tv_usec = ELEKTRA_STAT_NANO_SECONDS ((*fileStat));
-
-	// restore mtime on parentKeyFd
-	if (utimes (keyString (parentKey), times) < 0)
-	{
-		ELEKTRA_ADD_WARNINGF (ELEKTRA_WARNING_FCRYPT_FUTIMENS, parentKey, "Filename: %s", keyString (parentKey));
-	}
-#else
-	struct timespec times[2];
-
-	// atime - not changing
-	times[0].tv_sec = UTIME_OMIT;
-	times[0].tv_nsec = UTIME_OMIT;
-
-	// mtime
-	times[1].tv_sec = ELEKTRA_STAT_SECONDS ((*fileStat));
-	times[1].tv_nsec = ELEKTRA_STAT_NANO_SECONDS ((*fileStat));
-
-	// restore mtime on parentKeyFd
-	if (utimensat (AT_FDCWD, keyString (parentKey), times, 0))
-	{
-		ELEKTRA_ADD_WARNINGF (ELEKTRA_WARNING_FCRYPT_FUTIMENS, parentKey, "Filename: %s", keyString (parentKey));
-	}
-#endif
-}
-
 static int fcryptGpgCallAndCleanup (Key * parentKey, KeySet * pluginConfig, char ** argv, int argc, int tmpFileFd, char * tmpFile)
 {
 	int parentKeyFd = -1;
@@ -256,15 +191,15 @@ static int fcryptGpgCallAndCleanup (Key * parentKey, KeySet * pluginConfig, char
 static int fcryptEncrypt (KeySet * pluginConfig, Key * parentKey)
 {
 	Key * k;
-	const size_t recipientCount = getRecipientCount (pluginConfig, ELEKTRA_CRYPTO_PARAM_GPG_KEY);
-	const size_t signatureCount = getRecipientCount (pluginConfig, ELEKTRA_FCRYPT_SIGN_KEY);
+	const size_t recipientCount = getRecipientCount (pluginConfig, ELEKTRA_RECIPIENT_KEY);
+	const size_t signatureCount = getRecipientCount (pluginConfig, ELEKTRA_SIGNATURE_KEY);
 
 	if (recipientCount == 0 && signatureCount == 0)
 	{
 		ELEKTRA_SET_ERRORF (
 			ELEKTRA_ERROR_FCRYPT_OPERATION_MODE, parentKey,
 			"Missing GPG recipient key (specified as %s) or GPG signature key (specified as %s) in plugin configuration.",
-			ELEKTRA_CRYPTO_PARAM_GPG_KEY, ELEKTRA_FCRYPT_SIGN_KEY);
+			ELEKTRA_RECIPIENT_KEY, ELEKTRA_SIGNATURE_KEY);
 		return -1;
 	}
 
@@ -298,7 +233,7 @@ static int fcryptEncrypt (KeySet * pluginConfig, Key * parentKey)
 	argv[i++] = "--yes"; // overwrite files if they exist
 
 	// add recipients
-	Key * gpgRecipientRoot = ksLookupByName (pluginConfig, ELEKTRA_CRYPTO_PARAM_GPG_KEY, 0);
+	Key * gpgRecipientRoot = ksLookupByName (pluginConfig, ELEKTRA_RECIPIENT_KEY, 0);
 
 	// append root (gpg/key) as gpg recipient
 	if (gpgRecipientRoot && strlen (keyString (gpgRecipientRoot)) > 0)
@@ -325,7 +260,7 @@ static int fcryptEncrypt (KeySet * pluginConfig, Key * parentKey)
 
 
 	// add signature keys
-	Key * gpgSignatureRoot = ksLookupByName (pluginConfig, ELEKTRA_FCRYPT_SIGN_KEY, 0);
+	Key * gpgSignatureRoot = ksLookupByName (pluginConfig, ELEKTRA_SIGNATURE_KEY, 0);
 
 	// append root signature key
 	if (gpgSignatureRoot && strlen (keyString (gpgSignatureRoot)) > 0)
@@ -382,10 +317,11 @@ static int fcryptEncrypt (KeySet * pluginConfig, Key * parentKey)
  * @brief decrypt the file specified at parentKey
  * @param pluginConfig holds the plugin configuration
  * @param parentKey holds the path to the file to be encrypted. Will hold an error description in case of failure.
+ * @param state holds the plugin state
  * @retval 1 on success
  * @retval -1 on error, errorKey holds an error description
  */
-static int fcryptDecrypt (KeySet * pluginConfig, Key * parentKey)
+static int fcryptDecrypt (KeySet * pluginConfig, Key * parentKey, fcryptState * state)
 {
 	int tmpFileFd = -1;
 	char * tmpFile = getTemporaryFileName (keyString (parentKey), &tmpFileFd);
@@ -431,9 +367,23 @@ static int fcryptDecrypt (KeySet * pluginConfig, Key * parentKey)
 
 	// NOTE the decryption process works like this:
 	// gpg2 --batch --yes -o tmpfile -d configFile
-	// mv tmpfile configFile
-
-	return fcryptGpgCallAndCleanup (parentKey, pluginConfig, argv, argc, tmpFileFd, tmpFile);
+	int result = CRYPTO_PLUGIN_FUNCTION (gpgCall) (pluginConfig, parentKey, NULL, argv, argc);
+	if (result == 1)
+	{
+		state->originalFilePath = strdup (keyString (parentKey));
+		state->tmpFilePath = tmpFile;
+		state->tmpFileFd = tmpFileFd;
+		keySetString (parentKey, tmpFile);
+	}
+	else
+	{
+		// if anything went wrong above the temporary file is shredded and removed
+		shredTemporaryFile (tmpFileFd, parentKey);
+		unlink (tmpFile);
+		close (tmpFileFd);
+		elektraFree (tmpFile);
+	}
+	return result;
 }
 
 /**
@@ -451,7 +401,9 @@ int ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME, open) (Plugin * handle, KeySet
 	}
 
 	s->getState = PREGETSTORAGE;
-	s->parentStatOk = 0;
+	s->tmpFileFd = -1;
+	s->tmpFilePath = NULL;
+	s->originalFilePath = NULL;
 
 	elektraPluginSetData (handle, s);
 	return 1;
@@ -467,6 +419,18 @@ int ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME, close) (Plugin * handle, KeySe
 	fcryptState * s = (fcryptState *)elektraPluginGetData (handle);
 	if (s)
 	{
+		if (s->tmpFileFd > 0)
+		{
+			close (s->tmpFileFd);
+		}
+		if (s->tmpFilePath)
+		{
+			elektraFree (s->tmpFilePath);
+		}
+		if (s->originalFilePath)
+		{
+			elektraFree (s->originalFilePath);
+		}
 		elektraFree (s);
 		elektraPluginSetData (handle, NULL);
 	}
@@ -494,29 +458,42 @@ int ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME, get) (Plugin * handle, KeySet 
 	// check plugin state
 	KeySet * pluginConfig = elektraPluginGetConfig (handle);
 	fcryptState * s = (fcryptState *)elektraPluginGetData (handle);
-
-	if (s && s->getState == POSTGETSTORAGE)
+	if (!s)
 	{
-		// encrypt if this is a postgetstorage call
-		int encryptResult = fcryptEncrypt (pluginConfig, parentKey);
+		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_FCRYPT_STATE, parentKey, "No plugin state is available.");
+		return -1;
+	}
 
-		// restore "original" timestamp that has been saved in kdb get / pregetstorage
-		// NOTE if we do not restore the timestamp the resolver thinks the file has been changed externally.
-		if (encryptResult == 1 && s->parentStatOk)
+	if (s->getState == POSTGETSTORAGE)
+	{
+		// postgetstorage call will re-direct the parent key to the original encrypted/signed file
+		if (s->originalFilePath)
 		{
-			fcryptRestoreMtime (parentKey, &(s->parentStat));
+			keySetString (parentKey, s->originalFilePath);
 		}
-		return encryptResult;
+		else
+		{
+			ELEKTRA_SET_ERROR (ELEKTRA_ERROR_FCRYPT_STATE, parentKey, "The path to the original file is lost.");
+			// clean-up is performed by kdb close
+			return -1;
+		}
+
+		if (s->tmpFileFd > 0)
+		{
+			shredTemporaryFile (s->tmpFileFd, parentKey);
+			close (s->tmpFileFd);
+			s->tmpFileFd = -1;
+			unlink (s->tmpFilePath);
+			elektraFree (s->tmpFilePath);
+			s->tmpFilePath = NULL;
+		}
+		return 1;
 	}
 
 	// now this is a pregetstorage call
 	// next time treat the kdb get call as postgetstorage call to trigger encryption after the file has been read
 	s->getState = POSTGETSTORAGE;
-
-	// save timestamp of the file
-	s->parentStatOk = fcryptSaveMtime (parentKey, &(s->parentStat));
-
-	return fcryptDecrypt (pluginConfig, parentKey);
+	return fcryptDecrypt (pluginConfig, parentKey, s);
 }
 
 /**
@@ -532,7 +509,7 @@ int ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME, set) (Plugin * handle, KeySet 
 
 	/* set all keys */
 	const char * configFile = keyString (parentKey);
-	if (!strcmp (configFile, "")) return 0; // no underlying config file
+	if (!strcmp (configFile, "")) return 1; // no underlying config file
 	int fd = open (configFile, O_RDWR);
 	if (fd == -1)
 	{
@@ -546,19 +523,11 @@ int ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME, set) (Plugin * handle, KeySet 
 		return -1;
 	}
 	close (fd);
-
-	// restore "original" timestamp that has been saved in kdb get / pregetstorage
-	// NOTE if we do not restore the timestamp the resolver thinks the file has been changed externally.
-	fcryptState * s = (fcryptState *)elektraPluginGetData (handle);
-	if (s->parentStatOk)
-	{
-		fcryptRestoreMtime (parentKey, &(s->parentStat));
-	}
 	return 1;
 }
 
 /**
- * @brief Checks if at least one GPG recipient or at least one GPG signature key hast been provided within the plugin configuration.
+ * @brief Checks if at least one GPG recipient or at least one GPG signature key has been provided within the plugin configuration.
  *
  * @retval 0 no changes were made to the configuration
  * @retval 1 the master password has been appended to the configuration
@@ -566,14 +535,19 @@ int ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME, set) (Plugin * handle, KeySet 
  */
 int ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME, checkconf) (Key * errorKey, KeySet * conf)
 {
-	const size_t recipientCount = getRecipientCount (conf, ELEKTRA_CRYPTO_PARAM_GPG_KEY);
-	const size_t signatureCount = getRecipientCount (conf, ELEKTRA_FCRYPT_SIGN_KEY);
+	const size_t recipientCount = getRecipientCount (conf, ELEKTRA_RECIPIENT_KEY);
+	const size_t signatureCount = getRecipientCount (conf, ELEKTRA_SIGNATURE_KEY);
 
 	if (recipientCount == 0 && signatureCount == 0)
 	{
 		char * errorDescription = CRYPTO_PLUGIN_FUNCTION (getMissingGpgKeyErrorText) (conf);
 		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_FCRYPT_OPERATION_MODE, errorKey, errorDescription);
 		elektraFree (errorDescription);
+		return -1;
+	}
+	if (CRYPTO_PLUGIN_FUNCTION (gpgVerifyGpgKeysInConfig) (conf, errorKey) != 1)
+	{
+		// error has been set by CRYPTO_PLUGIN_FUNCTION (gpgVerifyGpgKeysInConfig)
 		return -1;
 	}
 	return 0;
