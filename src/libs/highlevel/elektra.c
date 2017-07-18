@@ -9,7 +9,7 @@
 #include "elektra.h"
 #include "elektra_error_private.h"
 #include "elektra_private.h"
-#include "kdberrors.h"
+//#include "kdberrors.h"
 #include "kdblogger.h"
 #include "kdbprivate.h"
 #include <memory.h>
@@ -45,23 +45,6 @@ static const char * getArrayElementValueAsString (Elektra * elektra, const char 
  * \defgroup highlevel High-level API
  * @{
  */
-
-#undef ELEKTRA_TYPES
-#define ELEKTRA_TYPES(X)                                                                                                                   \
-	X (const char *, String, KDB_TYPE_STRING, KDB_STRING_TO_STRING, KDB_STRING_TO_STRING)                                              \
-	X (kdb_boolean_t, Boolean, KDB_TYPE_BOOLEAN, KDB_BOOLEAN_TO_STRING, KDB_STRING_TO_BOOLEAN)                                         \
-	X (kdb_char_t, Char, KDB_TYPE_CHAR, KDB_CHAR_TO_STRING, KDB_STRING_TO_CHAR)                                                        \
-	X (kdb_octet_t, Octet, KDB_TYPE_OCTET, KDB_OCTET_TO_STRING, KDB_STRING_TO_OCTET)                                                   \
-	X (kdb_short_t, Short, KDB_TYPE_SHORT, KDB_SHORT_TO_STRING, KDB_STRING_TO_SHORT)                                                   \
-	X (kdb_unsigned_short_t, UnsignedShort, KDB_TYPE_UNSIGNED_SHORT, KDB_UNSIGNED_SHORT_TO_STRING, KDB_STRING_TO_UNSIGNED_SHORT)       \
-	X (kdb_long_t, Long, KDB_TYPE_LONG, KDB_LONG_TO_STRING, KDB_STRING_TO_LONG)                                                        \
-	X (kdb_unsigned_long_t, UnsignedLong, KDB_TYPE_UNSIGNED_LONG, KDB_UNSIGNED_LONG_TO_STRING, KDB_STRING_TO_UNSIGNED_LONG)            \
-	X (kdb_long_long_t, LongLong, KDB_TYPE_LONG_LONG, KDB_LONG_LONG_TO_STRING, KDB_STRING_TO_LONG_LONG)                                \
-	X (kdb_unsigned_long_long_t, UnsignedLongLong, KDB_TYPE_UNSIGNED_LONG_LONG, KDB_UNSIGNED_LONG_LONG_TO_STRING,                      \
-	   KDB_STRING_TO_UNSIGNED_LONG_LONG)                                                                                               \
-	X (kdb_float_t, Float, KDB_TYPE_FLOAT, KDB_FLOAT_TO_STRING, KDB_STRING_TO_FLOAT)                                                   \
-	X (kdb_double_t, Double, KDB_TYPE_DOUBLE, KDB_DOUBLE_TO_STRING, KDB_STRING_TO_DOUBLE)                                              \
-	X (kdb_long_double_t, LongDouble, KDB_TYPE_LONG_DOUBLE, KDB_LONG_DOUBLE_TO_STRING, KDB_STRING_TO_LONG_DOUBLE)
 
 #define ELEKTRA_DEFINITIONS(Type, typeName, KDB_TYPE, TO_STRING, TO_VALUE)                                                                 \
                                                                                                                                            \
@@ -105,7 +88,19 @@ static const char * getArrayElementValueAsString (Elektra * elektra, const char 
 		return TO_VALUE (getArrayElementValueAsString (elektra, tag.keyName, KDB_TYPE, index));                                    \
 	}
 
-ELEKTRA_TYPES (ELEKTRA_DEFINITIONS)
+ELEKTRA_DEFINITIONS (const char *, String, KDB_TYPE_STRING, KDB_STRING_TO_STRING, KDB_STRING_TO_STRING)
+ELEKTRA_DEFINITIONS (kdb_boolean_t, Boolean, KDB_TYPE_BOOLEAN, KDB_BOOLEAN_TO_STRING, KDB_STRING_TO_BOOLEAN)
+ELEKTRA_DEFINITIONS (kdb_char_t, Char, KDB_TYPE_CHAR, KDB_CHAR_TO_STRING, KDB_STRING_TO_CHAR)
+ELEKTRA_DEFINITIONS (kdb_octet_t, Octet, KDB_TYPE_OCTET, KDB_OCTET_TO_STRING, KDB_STRING_TO_OCTET)
+ELEKTRA_DEFINITIONS (kdb_short_t, Short, KDB_TYPE_SHORT, KDB_SHORT_TO_STRING, KDB_STRING_TO_SHORT)
+ELEKTRA_DEFINITIONS (kdb_unsigned_short_t, UnsignedShort, KDB_TYPE_UNSIGNED_SHORT, KDB_UNSIGNED_SHORT_TO_STRING, KDB_STRING_TO_UNSIGNED_SHORT)
+ELEKTRA_DEFINITIONS (kdb_long_t, Long, KDB_TYPE_LONG, KDB_LONG_TO_STRING, KDB_STRING_TO_LONG)
+ELEKTRA_DEFINITIONS (kdb_unsigned_long_t, UnsignedLong, KDB_TYPE_UNSIGNED_LONG, KDB_UNSIGNED_LONG_TO_STRING, KDB_STRING_TO_UNSIGNED_LONG)
+ELEKTRA_DEFINITIONS (kdb_long_long_t, LongLong, KDB_TYPE_LONG_LONG, KDB_LONG_LONG_TO_STRING, KDB_STRING_TO_LONG_LONG)
+ELEKTRA_DEFINITIONS (kdb_unsigned_long_long_t, UnsignedLongLong, KDB_TYPE_UNSIGNED_LONG_LONG, KDB_UNSIGNED_LONG_LONG_TO_STRING, KDB_STRING_TO_UNSIGNED_LONG_LONG)
+ELEKTRA_DEFINITIONS (kdb_float_t, Float, KDB_TYPE_FLOAT, KDB_FLOAT_TO_STRING, KDB_STRING_TO_FLOAT)
+ELEKTRA_DEFINITIONS (kdb_double_t, Double, KDB_TYPE_DOUBLE, KDB_DOUBLE_TO_STRING, KDB_STRING_TO_DOUBLE)
+ELEKTRA_DEFINITIONS (kdb_long_double_t, LongDouble, KDB_TYPE_LONG_DOUBLE, KDB_LONG_DOUBLE_TO_STRING, KDB_STRING_TO_LONG_DOUBLE)
 
 /**
  * Initializes a new Elektra instance.
@@ -189,7 +184,7 @@ static void saveKey (Elektra * elektra, Key * key, ElektraError ** error)
 		if (ret == -1)
 		{
 			ElektraError * kdbSetError = elektraErrorCreateFromKey (elektra->parentKey);
-			if (elektraErrorCode (kdbSetError) != ELEKTRA_ERROR_CONFLICT)
+			if (elektraErrorCode (kdbSetError) != 30) // ELEKTRA_ERROR_CONFLICT = 30
 			{
 				*error = kdbSetError;
 				return;
