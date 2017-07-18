@@ -492,7 +492,7 @@ static int writeFile (FILE * file, KeySet * keySet, Key * parentKey)
 	for (Key * key; status >= 0 && (key = ksNext (keySet)) != 0;)
 	{
 		const char * name = elektraKeyGetRelativeName (key, parentKey);
-		ELEKTRA_LOG_DEBUG ("Write mapping “\"%s\" : \"%s\"", name, keyString (key));
+		ELEKTRA_LOG_DEBUG ("Write mapping “\"%s\" : \"%s\"”", name, keyString (key));
 		status = fprintf (file, "  \"%s\" : \"%s\"\n", name, keyString (key));
 	}
 	return status < 0 ? status : fprintf (file, "}");
