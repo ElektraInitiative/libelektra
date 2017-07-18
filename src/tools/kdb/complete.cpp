@@ -52,7 +52,7 @@ int CompleteCommand::execute (Cmdline const & cl)
 	return 0;
 }
 
-void CompleteCommand::complete (const string argument, Cmdline const & cl)
+void CompleteCommand::complete (string const & argument, Cmdline const & cl)
 {
 	using namespace std::placeholders; // for bind
 
@@ -96,7 +96,7 @@ void CompleteCommand::complete (const string argument, Cmdline const & cl)
 	}
 }
 
-void CompleteCommand::completeNormal (const string argument, Key const & parsedArgument, Cmdline const & cl)
+void CompleteCommand::completeNormal (string const & argument, Key const & parsedArgument, Cmdline const & cl)
 {
 	Key root = parsedArgument;
 	const Key parent = getParentKey (root);
@@ -265,7 +265,7 @@ KeySet CompleteCommand::getKeys (Key root, const bool cutAtRoot, Cmdline const &
 	return ks;
 }
 
-bool CompleteCommand::shallShowNextLevel (const string argument)
+bool CompleteCommand::shallShowNextLevel (string const & argument)
 {
 	auto it = argument.rbegin ();
 	// If the argument ends in / its an indicator to complete the next level (like done by shells), but not if its escaped
@@ -350,7 +350,7 @@ bool CompleteCommand::filterDepth (const int minDepth, const int maxDepth, pair<
 	return current.second.second >= minDepth && current.second.second < maxDepth;
 }
 
-bool CompleteCommand::filterCascading (const string argument, pair<Key, pair<int, int>> const & current)
+bool CompleteCommand::filterCascading (string const & argument, pair<Key, pair<int, int>> const & current)
 {
 	// For a cascading key completion, ignore the preceding namespace
 	const string test = current.first.getFullName ();
@@ -358,7 +358,7 @@ bool CompleteCommand::filterCascading (const string argument, pair<Key, pair<int
 	return argument.size () <= test.size () && equal (argument.begin (), argument.end (), test.begin () + cascadationOffset);
 }
 
-bool CompleteCommand::filterName (const string argument, pair<Key, pair<int, int>> const & current)
+bool CompleteCommand::filterName (string const & argument, pair<Key, pair<int, int>> const & current)
 {
 	const string test = current.first.getFullName ();
 	return argument.size () <= test.size () && equal (argument.begin (), argument.end (), test.begin ());
@@ -367,7 +367,7 @@ bool CompleteCommand::filterName (const string argument, pair<Key, pair<int, int
 /**
  * McCabe Complexity of 15 due to the boolean conjunctions, easy to understand so its ok
  */
-bool CompleteCommand::filterBookmarks (const string bookmarkName, pair<Key, pair<int, int>> const & current)
+bool CompleteCommand::filterBookmarks (string const & bookmarkName, pair<Key, pair<int, int>> const & current)
 {
 	// For a bookmark completion, ignore everything except the bookmarks by comparing the base name
 	// as we search in /sw due to legacy reasons, ensure we have an actual bookmark by checking the path

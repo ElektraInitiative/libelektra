@@ -232,7 +232,7 @@ void Backend::setBackendConfig (KeySet const & ks)
  * Will check the filename and use it as configFile for this backend.
  * @throw FileNotValidException if filename is not valid
  * @throw MissingSymbol if plugin does not implement 'checkfile' */
-void Backend::useConfigFile (std::string file)
+void Backend::useConfigFile (std::string const & file)
 {
 	typedef int (*checkFilePtr) (const char *);
 	checkFilePtr checkFileFunction = nullptr;
@@ -457,7 +457,7 @@ void PluginAdder::addPlugin (PluginSpec const & spec)
 
 namespace
 {
-void append (std::string placement, std::string & where, std::string checkPlacement)
+void append (std::string const & placement, std::string & where, std::string const & checkPlacement)
 {
 	if (placement == checkPlacement)
 	{
@@ -480,7 +480,7 @@ struct Placements
 	std::string set;
 	std::string error;
 
-	void addPlacement (std::string placement)
+	void addPlacement (std::string const & placement)
 	{
 		append (placement, error, "prerollback");
 		append (placement, error, "rollback");
@@ -502,7 +502,7 @@ struct Placements
 
 namespace
 {
-Key g (Key placements, std::string name, std::string value)
+Key g (Key placements, std::string const & name, std::string const & value)
 {
 	Key x (placements.dup ());
 	x.addBaseName (name);

@@ -37,7 +37,7 @@ public:
 class KeyNotFoundException : public Exception
 {
 public:
-	KeyNotFoundException (std::string message) : m_str (message)
+	KeyNotFoundException (std::string const & message) : m_str (message)
 	{
 	}
 

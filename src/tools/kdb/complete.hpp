@@ -47,8 +47,8 @@ public:
 	virtual int execute (Cmdline const & cmdline) override;
 
 private:
-	void complete (const std::string argument, Cmdline const & cmdLine);
-	void completeNormal (const std::string argument, kdb::Key const & parsedArgument, Cmdline const & cmdLine);
+	void complete (std::string const & argument, Cmdline const & cmdLine);
+	void completeNormal (std::string const & argument, kdb::Key const & parsedArgument, Cmdline const & cmdLine);
 
 	const std::map<kdb::Key, std::pair<int, int>> analyze (const kdb::KeySet & ks, Cmdline const & cmdLine);
 	void
@@ -61,7 +61,7 @@ private:
 	int getKeyDepth (kdb::Key const & key);
 	const kdb::Key getParentKey (kdb::Key const & key);
 	kdb::KeySet getKeys (kdb::Key root, bool cutAtRoot, Cmdline const & cl);
-	bool shallShowNextLevel (const std::string argument);
+	bool shallShowNextLevel (std::string const & argument);
 
 	void addMountpoints (kdb::KeySet & ks, kdb::Key const & root, Cmdline const & cl);
 	void addNamespaces (std::map<kdb::Key, std::pair<int, int>> & hierarchy, Cmdline const & cl);
@@ -74,9 +74,9 @@ private:
 
 	// filter functions
 	static bool filterDepth (const int minDepth, const int maxDepth, std::pair<kdb::Key, std::pair<int, int>> const & current);
-	static bool filterCascading (const std::string argument, std::pair<kdb::Key, std::pair<int, int>> const & current);
-	static bool filterName (const std::string argument, std::pair<kdb::Key, std::pair<int, int>> const & current);
-	static bool filterBookmarks (const std::string bookmarkName, std::pair<kdb::Key, std::pair<int, int>> const & current);
+	static bool filterCascading (std::string const & argument, std::pair<kdb::Key, std::pair<int, int>> const & current);
+	static bool filterName (std::string const & argument, std::pair<kdb::Key, std::pair<int, int>> const & current);
+	static bool filterBookmarks (std::string const & bookmarkName, std::pair<kdb::Key, std::pair<int, int>> const & current);
 };
 
 #endif

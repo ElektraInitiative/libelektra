@@ -307,7 +307,7 @@ void output_backend (Backend * backend)
 {
 	if (!backend) return;
 
-	printf ("us: %zd, ss: %zu\n", backend->usersize, backend->systemsize);
+	printf ("us: %zd, ss: %zd\n", backend->usersize, backend->systemsize);
 	output_key (backend->mountpoint);
 }
 
@@ -337,7 +337,7 @@ void output_split (Split * split)
 	{
 		if (split->handles[i])
 		{
-			printf ("split #%zu size: %zu, handle: %p, sync: %d, parent: %s (%s), spec: %zd, dir: %zd, user: %zd, system: "
+			printf ("split #%zu size: %zd, handle: %p, sync: %d, parent: %s (%s), spec: %zd, dir: %zd, user: %zd, system: "
 				"%zd\n",
 				i, ksGetSize (split->keysets[i]), (void *)split->handles[i], split->syncbits[i],
 				keyName (split->parents[i]), keyString (split->parents[i]), split->handles[i]->specsize,
@@ -345,7 +345,7 @@ void output_split (Split * split)
 		}
 		else
 		{
-			printf ("split #%zu, size: %zu, default split, sync: %d\n", i, ksGetSize (split->keysets[i]), split->syncbits[i]);
+			printf ("split #%zu, size: %zd, default split, sync: %d\n", i, ksGetSize (split->keysets[i]), split->syncbits[i]);
 		}
 	}
 }
@@ -355,8 +355,8 @@ void generate_split (Split * split)
 	printf ("succeed_if (split->size == %zu, \"size of split not correct\");\n", split->size);
 	for (size_t i = 0; i < split->size; ++i)
 	{
-		printf ("succeed_if (split->syncbits[%zd]== %d, \"size of split not correct\");\n", i, split->syncbits[i]);
-		printf ("succeed_if (ksGetSize(split->keysets[%zu]) == %zu, \"wrong size\");\n", i, ksGetSize (split->keysets[i]));
+		printf ("succeed_if (split->syncbits[%zu]== %d, \"size of split not correct\");\n", i, split->syncbits[i]);
+		printf ("succeed_if (ksGetSize(split->keysets[%zu]) == %zd, \"wrong size\");\n", i, ksGetSize (split->keysets[i]));
 	}
 }
 

@@ -100,7 +100,7 @@ std::vector<std::string> ModulesPluginDatabase::listAllPlugins () const
 namespace
 {
 
-bool hasProvides (PluginDatabase const & pd, std::string which)
+bool hasProvides (PluginDatabase const & pd, std::string const & which)
 {
 	std::vector<std::string> allPlugins = pd.listAllPlugins ();
 
@@ -165,7 +165,7 @@ const std::map<std::string, int> PluginDatabase::statusMap = {
 };
 
 
-int PluginDatabase::calculateStatus (std::string statusString)
+int PluginDatabase::calculateStatus (std::string const & statusString)
 {
 	int ret = 0;
 	std::istringstream ss (statusString);
@@ -557,7 +557,7 @@ std::vector<PluginSpec> PluginVariantDatabase::getPluginVariantsFromGenconf (Plu
 }
 
 Key PluginVariantDatabase::buildVariantSysconfKey (PluginSpec const & whichplugin, std::string const & variant,
-						   const std::string attr) const
+						   std::string const & attr) const
 {
 	Key result ("system/elektra/plugins", KEY_END);
 	result.addBaseName (whichplugin.getName ());

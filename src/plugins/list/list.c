@@ -443,7 +443,7 @@ int elektraListEditPlugin (Plugin * handle, KeySet * pluginConfig)
 	}
 	ksRewind (pluginConfig);
 	ksNext (pluginConfig);
-	Key * lookup = lookup = ksNext (pluginConfig);
+	Key * lookup = ksNext (pluginConfig);
 	if (keyBaseName (lookup)[0] != '#')
 	{
 		return -1;

@@ -35,11 +35,11 @@ public:
 	{
 	}
 
-	explicit PluginSpec (std::string pluginName, KeySet pluginConfig = KeySet ());
+	explicit PluginSpec (std::string const & pluginName, KeySet pluginConfig = KeySet ());
 
-	explicit PluginSpec (std::string pluginName, std::string refName, KeySet pluginConfig = KeySet ());
+	explicit PluginSpec (std::string const & pluginName, std::string const & refName, KeySet pluginConfig = KeySet ());
 
-	explicit PluginSpec (std::string pluginName, size_t refNumber, KeySet pluginConfig = KeySet ());
+	explicit PluginSpec (std::string const & pluginName, size_t refNumber, KeySet pluginConfig = KeySet ());
 
 	std::string getFullName () const;
 	std::string getRefName () const;

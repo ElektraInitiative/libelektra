@@ -109,13 +109,13 @@ public:
 	 * Gets the whole string of an information item.
 	 * @pre loadInfo()
 	 */
-	std::string lookupInfo (std::string item, std::string section = "infos");
+	std::string lookupInfo (std::string const & item, std::string const & section = "infos");
 
 	/**
 	 * Searches within a string of an information item.
 	 * @pre loadInfo()
 	 */
-	bool findInfo (std::string check, std::string item, std::string section = "infos");
+	bool findInfo (std::string const & check, std::string const & item, std::string const & section = "infos");
 
 	/**
 	 * Returns the whole keyset of information.
@@ -149,7 +149,7 @@ public:
 	 * Returns symbol to a function.
 	 * @pre parse()
 	 */
-	func_t getSymbol (std::string which)
+	func_t getSymbol (std::string const & which)
 	{
 		if (symbols.find (which) == symbols.end ()) throw MissingSymbol (which);
 		return symbols[which];

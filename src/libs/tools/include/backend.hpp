@@ -69,7 +69,7 @@ public:
 
 	virtual void setBackendConfig (KeySet const & ks) = 0;
 
-	virtual void useConfigFile (std::string file) = 0;
+	virtual void useConfigFile (std::string const & file) = 0;
 	virtual std::string getConfigFile () const = 0;
 
 	virtual ~MountBackendInterface () = 0;
@@ -116,7 +116,7 @@ public:
 	void setMountpoint (Key mountpoint, KeySet mountConf);
 	void setBackendConfig (KeySet const & ks);
 	void addPlugin (PluginSpec const & spec);
-	void useConfigFile (std::string file);
+	void useConfigFile (std::string const & file);
 	void status (std::ostream & os) const;
 	bool validated () const;
 	void serialize (kdb::KeySet & ret);
@@ -133,7 +133,7 @@ class BackendFactory
 	std::string which;
 
 public:
-	BackendFactory (std::string whichBackend) : which (whichBackend)
+	BackendFactory (std::string const & whichBackend) : which (whichBackend)
 	{
 	}
 

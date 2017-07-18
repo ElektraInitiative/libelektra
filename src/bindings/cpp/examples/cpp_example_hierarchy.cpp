@@ -70,7 +70,7 @@ unsigned long name_depth (Key k)
 class Visitor
 {
 public:
-	virtual void visit (std::string name, unsigned long depth, Key k) = 0;
+	virtual void visit (std::string const & name, unsigned long depth, Key k) = 0;
 };
 
 class KeyHierarchy;
@@ -253,7 +253,7 @@ private:
 class PrintVisitor : public kdb::Visitor
 {
 public:
-	void visit (std::string name, unsigned long depth, kdb::Key k) override
+	void visit (std::string const & name, unsigned long depth, kdb::Key k) override
 	{
 		for (unsigned long i = 0; i < depth; ++i)
 		{

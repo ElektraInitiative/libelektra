@@ -54,7 +54,7 @@ void EditorCommand::tmpFile ()
 #endif
 }
 
-bool runAllEditors (std::string filename)
+bool runAllEditors (std::string const & filename)
 {
 	using namespace kdb;
 	if (runEditor ("/usr/bin/sensible-editor", filename)) return true;
