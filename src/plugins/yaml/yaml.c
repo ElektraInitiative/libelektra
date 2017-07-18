@@ -167,6 +167,16 @@ static parserType * getNextChar (parserType * parser)
 		return parser;
 	}
 
+	if (*parser->buffer == '\n')
+	{
+		parser->line++;
+		parser->column = 1;
+	}
+	else
+	{
+		parser->column++;
+	}
+
 	parser->bufferCharsAvailable--;
 	parser->text = parser->buffer;
 	parser->buffer++;
@@ -179,6 +189,9 @@ static parserType * putBackChar (parserType * parser)
 	ASSERT_NOT_NULL (parser);
 	ELEKTRA_ASSERT (parser->buffer - 1 >= parser->bufferBase, "Can not put back more characters than available.");
 
+	// We assume that we never put back the newline character
+	ELEKTRA_ASSERT (*(parser->buffer - 1) != '\n', "Tried to put back newline character.");
+	parser->column--;
 	parser->bufferCharsAvailable++;
 	parser->buffer--;
 
@@ -200,15 +213,6 @@ static parserType * acceptChars (parserType * const parser, char const * const c
 	{
 		LOG_PARSE (parser, "Accepted character “%c”", *lastCharacter);
 		parser->text = lastCharacter;
-		if (*lastCharacter == '\n')
-		{
-			parser->line++;
-			parser->column = 1;
-		}
-		else
-		{
-			parser->column++;
-		}
 		return parser;
 	}
 	LOG_PARSE (parser, "Put back character “%c”", *lastCharacter);
