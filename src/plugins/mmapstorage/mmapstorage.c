@@ -18,9 +18,10 @@
 //#include <fcntl.h>	// open()
 #include <errno.h>
 #include <stdio.h>	// fopen()
-#include <unistd.h>	// close()
+#include <unistd.h>	// close(), ftruncate()
 #include <sys/mman.h>	// mmap()
 #include <sys/stat.h>	// stat()
+#include <sys/types.h>	// ftruncate ()
 #include <kdblogger.h>
 
 #define SIZEOF_KEY		(sizeof (Key))
@@ -29,14 +30,12 @@
 #define SIZEOF_KEYSET_PTR	(sizeof (KeySet *))
 #define SIZEOF_MMAPINFO		(sizeof (MmapInfo))
 
-//#define MMAP_FIXED_ADDR 	(0x4096000000)
 
 static FILE * elektraMmapstorageOpenFile (Key * parentKey, int errnosave)
 {
 	FILE * fp;
 	ELEKTRA_LOG ("opening file %s", keyString (parentKey));
 
-	// TODO: arbitrarily chosen to use 0644 here, fix later
 	if ((fp = fopen (keyString (parentKey), "rw+")) == 0) {
 		ELEKTRA_SET_ERROR_GET (parentKey);
 		errno = errnosave;
@@ -79,7 +78,7 @@ static char * elektraMmapstorageMapFile (void * addr, FILE * fp, size_t mmapsize
 	ELEKTRA_LOG ("mapping file %s", keyString (parentKey));
 
 	int fd = fileno (fp);
-	char * mappedRegion = mmap (addr, mmapsize, PROT_READ | PROT_WRITE, MAP_PRIVATE, fd, 0);
+	char * mappedRegion = mmap (addr, mmapsize, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
 	if (mappedRegion == MAP_FAILED) {
 		ELEKTRA_SET_ERROR_GET (parentKey);
 		errno = errnosave;

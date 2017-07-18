@@ -228,11 +228,11 @@ int main (int argc, char ** argv)
 	const char * tmpFile = elektraFilename();
 
 	test_mmap_set_get (tmpFile);
-//	test_mmap_get_after_reopen (tmpFile);
-//
-//	clearStorage (tmpFile);
-//
-//	test_mmap_empty_after_clear (tmpFile);
+	test_mmap_get_after_reopen (tmpFile);
+
+	clearStorage (tmpFile);
+
+	test_mmap_empty_after_clear (tmpFile);
 
 
 
