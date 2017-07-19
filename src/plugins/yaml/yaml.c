@@ -269,7 +269,7 @@ static parserType * content (parserType * const parser)
 		previous = parser->match;
 	}
 	RET_NOK (parser);
-	if (parser->match && *parser->match == '"')
+	if (*(parser->buffer - 1) == '"')
 	{
 		putBackChar (parser);
 		numberCharsRead--;
@@ -326,15 +326,13 @@ static parserType * saveText (parserType * const parser, char ** location)
 static parserType * key (parserType * const parser)
 {
 	RET_NOK (doubleQuotedSpace (parser));
-	RET_NOK (saveText (parser, &parser->key));
-	return parser;
+	return saveText (parser, &parser->key);
 }
 
 static parserType * value (parserType * const parser)
 {
 	RET_NOK (doubleQuotedSpace (parser));
-	RET_NOK (saveText (parser, &parser->value));
-	return parser;
+	return saveText (parser, &parser->value);
 }
 
 static parserType * pair (parserType * const parser)
