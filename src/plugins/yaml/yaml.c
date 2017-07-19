@@ -129,6 +129,7 @@ static parserType * setErrorMalloc (parserType * const parser, size_t size)
 static parserType * bufferChar (parserType * const parser)
 {
 	ASSERT_NOT_NULL (parser);
+	ASSERT_NOT_NULL (parser->file);
 
 	char * line = NULL;
 	size_t capacity;
@@ -158,6 +159,7 @@ static parserType * bufferChar (parserType * const parser)
 static parserType * getNextChar (parserType * parser)
 {
 	ASSERT_NOT_NULL (parser);
+	ASSERT_NOT_NULL (parser->file);
 
 	RET_NOK (bufferChar (parser));
 
@@ -187,6 +189,7 @@ static parserType * getNextChar (parserType * parser)
 static parserType * putBackChar (parserType * parser)
 {
 	ASSERT_NOT_NULL (parser);
+	ASSERT_NOT_NULL (parser->buffer);
 	ELEKTRA_ASSERT (parser->buffer - 1 >= parser->bufferBase, "Can not put back more characters than available");
 
 	// We assume that we never put back the newline character
@@ -222,6 +225,8 @@ static parserType * acceptChars (parserType * const parser, char const * const c
 static parserType * expect (parserType * const parser, char const * const characters)
 {
 	ASSERT_NOT_NULL (parser);
+	ASSERT_NOT_NULL (parser->file);
+	ASSERT_NOT_NULL (characters);
 
 	RET_NOK (acceptChars (parser, characters));
 
@@ -256,6 +261,7 @@ static parserType * whitespace (parserType * const parser)
 static parserType * content (parserType * const parser)
 {
 	ASSERT_NOT_NULL (parser);
+	ASSERT_NOT_NULL (parser->file);
 	ASSERT_NOT_NULL (parser->buffer);
 
 	char * previous = parser->buffer;
@@ -285,6 +291,7 @@ static parserType * content (parserType * const parser)
 static parserType * doubleQuoted (parserType * const parser)
 {
 	ASSERT_NOT_NULL (parser);
+	ASSERT_NOT_NULL (parser->file);
 
 	RET_NOK (expect (parser, "\""));
 	RET_NOK (content (parser));
@@ -298,6 +305,7 @@ static parserType * doubleQuoted (parserType * const parser)
 static parserType * doubleQuotedSpace (parserType * const parser)
 {
 	ASSERT_NOT_NULL (parser);
+	ASSERT_NOT_NULL (parser->file);
 
 	RET_NOK (whitespace (parser));
 	RET_NOK (doubleQuoted (parser));
@@ -311,6 +319,9 @@ static parserType * doubleQuotedSpace (parserType * const parser)
 static parserType * saveText (parserType * const parser, char ** location)
 {
 	ASSERT_NOT_NULL (parser);
+	ASSERT_NOT_NULL (parser->match);
+	ASSERT_NOT_NULL (parser->end);
+	ELEKTRA_ASSERT (parser->end - parser->match >= -1, "The string specified via parser->match and parser->end has negative length");
 	ASSERT_NOT_NULL (location);
 
 	size_t length = parser->end - parser->match + 1;
@@ -325,18 +336,27 @@ static parserType * saveText (parserType * const parser, char ** location)
 
 static parserType * key (parserType * const parser)
 {
+	ASSERT_NOT_NULL (parser);
+	ASSERT_NOT_NULL (parser->file);
+
 	RET_NOK (doubleQuotedSpace (parser));
 	return saveText (parser, &parser->key);
 }
 
 static parserType * value (parserType * const parser)
 {
+	ASSERT_NOT_NULL (parser);
+	ASSERT_NOT_NULL (parser->file);
+
 	RET_NOK (doubleQuotedSpace (parser));
 	return saveText (parser, &parser->value);
 }
 
 static parserType * pair (parserType * const parser)
 {
+	ASSERT_NOT_NULL (parser);
+	ASSERT_NOT_NULL (parser->file);
+
 	RET_NOK (key (parser));
 	LOG_PARSE (parser, "Read key “%s”", parser->key);
 
@@ -356,6 +376,9 @@ static parserType * pair (parserType * const parser)
 
 static parserType * optionalAdditionalPairs (parserType * const parser)
 {
+	ASSERT_NOT_NULL (parser);
+	ASSERT_NOT_NULL (parser->file);
+
 	while (acceptChars (parser, ",")->status == OK && parser->match)
 	{
 		RET_NOK (pair (parser));
@@ -366,6 +389,7 @@ static parserType * optionalAdditionalPairs (parserType * const parser)
 static parserType * pairs (parserType * const parser)
 {
 	ASSERT_NOT_NULL (parser);
+	ASSERT_NOT_NULL (parser->file);
 
 	RET_NOK (whitespace (parser));
 	RET_NOK (expect (parser, "{"));
