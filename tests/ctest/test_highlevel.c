@@ -7,13 +7,10 @@
  */
 
 #include <elektra.h>
-#include "elektra_gen.h"
 #include <tests_internal.h>
 
 static void setKeyValue (const char * parentKeyName, const char * type, const char * name, const char * value)
 {
-	elektraGet(NULL, ELEKTRA_TAG_SERVER_SERVERSCREEN);
-
 	// Open
 	KeySet * config = ksNew (0, KS_END);
 	Key * parentKey = keyNew (parentKeyName, KEY_END);

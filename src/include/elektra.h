@@ -587,6 +587,14 @@ Elektra * elektraOpen (const char * application, KeySet * defaults, ElektraError
 void elektraClose (Elektra * elektra);
 size_t elektraArraySize (Elektra * elektra, const char * keyName);
 
+typedef const char * KDBType;
+
+void setValueAsString (Elektra * elektra, const char * name, const char * value, KDBType type, ElektraError ** error);
+const char * getValueAsString (Elektra * elektra, const char * name, KDBType type);
+
+void setArrayElementValueAsString (Elektra * elektra, const char * name, const char * value, KDBType type, size_t index,
+                                   ElektraError ** error);
+const char * getArrayElementValueAsString (Elektra * elektra, const char * name, KDBType type, size_t index);
 
 // Generic Setters and Getters
 

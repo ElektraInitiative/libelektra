@@ -12,9 +12,9 @@
  */
 
 typedef enum {
-    ELEKTRA_ENUM_SERVER_SERVERSCREEN_OFF = 0,
-    ELEKTRA_ENUM_SERVER_SERVERSCREEN_ON = 1,
-    ELEKTRA_ENUM_SERVER_SERVERSCREEN_BLANK = 2,
+ELEKTRA_ENUM_SERVER_SERVERSCREEN_OFF = 0, 
+ELEKTRA_ENUM_SERVER_SERVERSCREEN_ON = 1, 
+ELEKTRA_ENUM_SERVER_SERVERSCREEN_BLANK = 2, 
 } ElektraEnumServerServerscreen;
 
 /**
@@ -63,7 +63,7 @@ KS_END)
  * Types
  */
 
-ELEKTRA_DECLARATION(ElektraEnumServerServerscreen, EnumServerServerscreen)
+ELEKTRA_DECLARATIONS(ElektraEnumServerServerscreen, EnumServerServerscreen)
 
 #undef ELEKTRA_TAG_NAMES_GEN
 #define ELEKTRA_TAG_NAMES_GEN(X) \

@@ -17,7 +17,6 @@
 
 #include "stdio.h"
 
-typedef const char * KDBType;
 KDBType KDB_TYPE_STRING = "string";
 KDBType KDB_TYPE_BOOLEAN = "boolean";
 KDBType KDB_TYPE_CHAR = "char";
@@ -33,13 +32,6 @@ KDBType KDB_TYPE_LONG_DOUBLE = "long_double";
 KDBType KDB_TYPE_DOUBLE = "double";
 
 static Key * generateLookupKey (Elektra * elektra, const char * name);
-
-static void setValueAsString (Elektra * elektra, const char * name, const char * value, KDBType type, ElektraError ** error);
-static const char * getValueAsString (Elektra * elektra, const char * name, KDBType type);
-
-static void setArrayElementValueAsString (Elektra * elektra, const char * name, const char * value, KDBType type, size_t index,
-					  ElektraError ** error);
-static const char * getArrayElementValueAsString (Elektra * elektra, const char * name, KDBType type, size_t index);
 
 /**
  * \defgroup highlevel High-level API
@@ -200,13 +192,13 @@ static void setKeyValue (Elektra * elektra, Key * key, KDBType type, const char 
 	saveKey (elektra, key, error);
 }
 
-static void setValueAsString (Elektra * elektra, const char * name, const char * value, KDBType type, ElektraError ** error)
+void setValueAsString (Elektra * elektra, const char * name, const char * value, KDBType type, ElektraError ** error)
 {
 	Key * const key = keyDup (generateLookupKey (elektra, name));
 	setKeyValue (elektra, key, type, value, error);
 }
 
-static void setArrayElementValueAsString (Elektra * elektra, const char * name, const char * value, KDBType type, size_t index,
+void setArrayElementValueAsString (Elektra * elektra, const char * name, const char * value, KDBType type, size_t index,
 					  ElektraError ** error)
 {
 	Key * const key = keyDup (generateArrayLookupKey (elektra, name, index));
@@ -229,14 +221,14 @@ static const char * getKeyValue (Elektra * elektra, Key * key, KDBType type)
 	return keyString (resultKey);
 }
 
-static const char * getValueAsString (Elektra * elektra, const char * name, KDBType type)
+const char * getValueAsString (Elektra * elektra, const char * name, KDBType type)
 {
 	Key * const key = generateLookupKey (elektra, name);
 
 	return getKeyValue (elektra, key, type);
 }
 
-static const char * getArrayElementValueAsString (Elektra * elektra, const char * name, KDBType type, size_t index)
+const char * getArrayElementValueAsString (Elektra * elektra, const char * name, KDBType type, size_t index)
 {
 	Key * const key = generateArrayLookupKey (elektra, name, index);
 

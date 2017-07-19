@@ -51,9 +51,9 @@
 #define KDB_UNSIGNED_LONG_TO_STRING(value) elektraFormat (ELEKTRA_UNSIGNED_LONG_F, value)
 #define KDB_LONG_LONG_TO_STRING(value) elektraFormat (ELEKTRA_LONG_LONG_F, value)
 #define KDB_UNSIGNED_LONG_LONG_TO_STRING(value) elektraFormat (ELEKTRA_UNSIGNED_LONG_LONG_F, value)
-#define KDB_FLOAT_TO_STRING(value) "" //elektraFormat ("%f", value)
-#define KDB_DOUBLE_TO_STRING(value) ""//elektraFormat ("%f", value)
-#define KDB_LONG_DOUBLE_TO_STRING(value) ""//elektraFormat ("%Lf", value)
+#define KDB_FLOAT_TO_STRING(value) elektraFormat ("%f", value)
+#define KDB_DOUBLE_TO_STRING(value) elektraFormat ("%f", value)
+#define KDB_LONG_DOUBLE_TO_STRING(value) elektraFormat ("%Lf", value)
 
 /** The minimal allocation size of a keyset inclusive
 	NULL byte. ksGetAlloc() will return one less because
