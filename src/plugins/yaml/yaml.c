@@ -466,6 +466,7 @@ static parserType * saveText (parserType * const parser, char ** location)
 	ASSERT_NOT_NULL (location);
 
 	size_t length = parser->end - parser->match + 1;
+	if (*location) free (*location);
 	*location = elektraMalloc (length + 1);
 	if (!*location) return setErrorMalloc (parser, length + 1);
 
