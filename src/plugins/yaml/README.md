@@ -18,7 +18,7 @@ This plugin reads configuration data specified in a **very limited** subset of  
 ### Basic Usage
 
 ```sh
-# Mount mini plugin to cascading namespace `/examples/yaml`
+# Mount yaml plugin to cascading namespace `/examples/yaml`
 kdb mount config.yaml /examples/yaml yaml
 
 kdb set /examples/yaml/key value
