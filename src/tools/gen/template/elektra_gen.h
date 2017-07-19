@@ -47,7 +47,7 @@ KS_END)
 
 @for $key, $info in $parameters.iteritems()
 @if $support.type_of($info) == "enum"
-ELEKTRA_DECLARATION($support.enum_type($key), $support.enum_type_name($key))
+ELEKTRA_DECLARATIONS($support.enum_type($key), $support.enum_type_name($key))
 @end if
 @end for
 
