@@ -607,7 +607,7 @@ static parserType * pairs (parserType * const parser)
 /**
  * @brief Open a file for reading
  *
- * @pre The parameters `parser` and `parser->parentKey` must not be `NULL`
+ * @pre The variables `parser` and `parser->parentKey` must not be `NULL`
  *
  * @param parser Saves the filename of the file this function opens
  *
