@@ -103,6 +103,16 @@ typedef struct
 // = Misc =
 // ========
 
+/**
+ * @brief Set an error specified via the global variable `errno`
+ *
+ * @pre The parameter `parser` must not be `NULL`.
+ *
+ * @param parser Saves the parent key this function uses to emit error information
+ * @param status Specifies the type of error that this function should set
+ *
+ * @retval An updated version of the variable `parser`
+ */
 static parserType * setErrorErrno (parserType * const parser, statusType status)
 {
 	ASSERT_NOT_NULL (parser);
@@ -113,6 +123,16 @@ static parserType * setErrorErrno (parserType * const parser, statusType status)
 	return parser;
 }
 
+/**
+ * @brief Set an allocation error
+ *
+ * @pre The parameter `parser` must not be `NULL`.
+ *
+ * @param parser Saves the parent key this function uses to emit error information
+ * @param status Specifies the size of the last allocation attempt, that caused the error
+ *
+ * @retval An updated version of the variable `parser`
+ */
 static parserType * setErrorMalloc (parserType * const parser, size_t size)
 {
 	ASSERT_NOT_NULL (parser);
@@ -126,6 +146,17 @@ static parserType * setErrorMalloc (parserType * const parser, size_t size)
 // = Parsing =
 // ===========
 
+/**
+ * @brief Extend the text buffer with at least one byte if possible
+ *
+ * If there was an error, then the status of the given parser structure will be updated accordingly.
+ *
+ * @pre The variables `parser` and `parser->file` must not be `NULL`
+ *
+ * @param parser Saves the pointer to the buffer location this function tries to fill with at least one character
+ *
+ * @retval An updated version of the variable `parser`
+ */
 static parserType * bufferChar (parserType * const parser)
 {
 	ASSERT_NOT_NULL (parser);
@@ -156,6 +187,17 @@ static parserType * bufferChar (parserType * const parser)
 	return parser;
 }
 
+/**
+ * @brief Read one character from the text buffer if possible
+ *
+ * If there was an error, then the status of the given parser structure will be updated accordingly.
+ *
+ * @pre The variables `parser` and `parser->file` must not be `NULL`
+ *
+ * @param parser Saves the parsing information this function operates on
+ *
+ * @retval An updated version of the variable `parser`
+ */
 static parserType * getNextChar (parserType * parser)
 {
 	ASSERT_NOT_NULL (parser);
@@ -186,6 +228,15 @@ static parserType * getNextChar (parserType * parser)
 	return parser;
 }
 
+/**
+ * @brief Put back one character into the buffer
+ *
+ * @pre The variables `parser` and `parser->buffer` must not be `NULL`
+ *
+ * @param parser Saves the parsing information this function operates on
+ *
+ * @retval An updated version of the variable `parser`
+ */
 static parserType * putBackChar (parserType * parser)
 {
 	ASSERT_NOT_NULL (parser);
@@ -201,6 +252,21 @@ static parserType * putBackChar (parserType * parser)
 	return parser;
 }
 
+/**
+ * @brief Accept one of the characters specified via the string `characters`
+ *
+ * - If there was an error, then the status of the given parser structure will be updated accordingly.
+ * - If one of the characters in `characters` matched the character at the current buffer position, then the function returns a pointer to
+ *   the matched character inside the variable `parser->match`. Otherwise `parser->match` will be NULL.
+ * - On a match this function increments the current buffer positions.
+ *
+ * @pre The variables `parser`, `parser->file` and `characters` must not be `NULL`
+ *
+ * @param parser Saves the parsing information this function operates on
+ * @param characters Saves a list of characters this function compares with the character at the current buffer position
+ *
+ * @retval An updated version of the variable `parser`
+ */
 static parserType * acceptChars (parserType * const parser, char const * const characters)
 {
 	ASSERT_NOT_NULL (parser);
@@ -222,6 +288,21 @@ static parserType * acceptChars (parserType * const parser, char const * const c
 	return putBackChar (parser);
 }
 
+/**
+ * @brief Assert that the buffer contains one of the characters specified via the string `characters`
+ *
+ * - If there was an error, then the status of the given parser structure will be updated accordingly.
+ * - If none of the characters inside the variable `characters` matched the character at the current buffer position, then this function
+ *   will also set an error.
+ * - If there was a match, then the function increments the current buffer positions and return the match in the variable `parser->match`.
+ *
+ * @pre The variables `parser`, `parser->file` and `characters` must not be `NULL`
+ *
+ * @param parser Saves the parsing information this function operates on
+ * @param characters Saves a list of characters this function compares with the character at the current buffer position
+ *
+ * @retval An updated version of the variable `parser`
+ */
 static parserType * expect (parserType * const parser, char const * const characters)
 {
 	ASSERT_NOT_NULL (parser);
@@ -247,6 +328,17 @@ static parserType * expect (parserType * const parser, char const * const charac
 	return parser;
 }
 
+/**
+ * @brief Consume all white space at the current buffer position and increment the buffer positions to account for the read whitespace
+ *
+ * If there was an error, then the status of the given parser structure will be updated accordingly.
+ *
+ * @pre The variables `parser`, `parser->file` and `characters` must not be `NULL`
+ *
+ * @param parser Saves the parsing information this function operates on
+ *
+ * @retval An updated version of the variable `parser`
+ */
 static parserType * whitespace (parserType * const parser)
 {
 	ASSERT_NOT_NULL (parser);
@@ -258,6 +350,17 @@ static parserType * whitespace (parserType * const parser)
 	return parser;
 }
 
+/**
+ * @brief Read a value that starts at the current buffer position and ends with a non-escaped double quote sign
+ *
+ * If there was an error, then the status of the given parser structure will be updated accordingly.
+ *
+ * @pre The variables `parser`, `parser->buffer` and `parser->file` must not be `NULL`
+ *
+ * @param parser Saves the parsing information this function operates on
+ *
+ * @retval An updated version of the variable `parser`
+ */
 static parserType * content (parserType * const parser)
 {
 	ASSERT_NOT_NULL (parser);
@@ -288,6 +391,19 @@ static parserType * content (parserType * const parser)
 	return parser;
 }
 
+/**
+ * @brief Read a value that starts and ends with a non-escaped double quote sign.
+ *
+ * - If there was an error, then the status of the given parser structure will be updated accordingly.
+ * - If the value was read successfully, then the start (position right after the first `"`) and end (position right before the ending
+ *   `"`) of the content will be saved in the variables `parser->match` and `parser->end`.
+ *
+ * @pre The variables `parser` and `parser->file` must not be `NULL`
+ *
+ * @param parser Saves the parsing information this function operates on
+ *
+ * @retval An updated version of the variable `parser`
+ */
 static parserType * doubleQuoted (parserType * const parser)
 {
 	ASSERT_NOT_NULL (parser);
@@ -302,6 +418,19 @@ static parserType * doubleQuoted (parserType * const parser)
 	return parser;
 }
 
+/**
+ * @brief Read a double quoted value that starts and ends with optional whitespace characters
+ *
+ * - If there was an error, then the status of the given parser structure will be updated accordingly.
+ * - If the value was read successfully, then the start (position right after the first `"`) and end (position right before the ending
+ *   `"`) of the double quoted content will be saved in the variables `parser->match` and `parser->end`.
+ *
+ * @pre The variables `parser` and `parser->file` must not be `NULL`
+ *
+ * @param parser Saves the parsing information this function operates on
+ *
+ * @retval An updated version of the variable `parser`
+ */
 static parserType * doubleQuotedSpace (parserType * const parser)
 {
 	ASSERT_NOT_NULL (parser);
@@ -316,6 +445,18 @@ static parserType * doubleQuotedSpace (parserType * const parser)
 	return parser;
 }
 
+/**
+ * @brief Save a copy of the string specified via the variables `parser->match` and `parser->end` in `location`
+ *
+ * If there was an error, then the status of the given parser structure will be updated accordingly.
+ *
+ * @pre The variables `parser` and `parser->file` must not be `NULL`
+ *
+ * @param parser Saves the parsing information this function operates on
+ * @param location The location where this function should save the copy of the string
+ *
+ * @retval An updated version of the variable `parser`
+ */
 static parserType * saveText (parserType * const parser, char ** location)
 {
 	ASSERT_NOT_NULL (parser);
@@ -334,6 +475,17 @@ static parserType * saveText (parserType * const parser, char ** location)
 	return parser;
 }
 
+/**
+ * @brief Read a key (including leading and trailing whitespace) and save the result in the variable `parser->key`.
+ *
+ * If there was an error, then the status of the given parser structure will be updated accordingly.
+ *
+ * @pre The variables `parser` and `parser->file` must not be `NULL`
+ *
+ * @param parser Saves the parsing information this function operates on
+ *
+ * @retval An updated version of the variable `parser`
+ */
 static parserType * key (parserType * const parser)
 {
 	ASSERT_NOT_NULL (parser);
@@ -343,6 +495,17 @@ static parserType * key (parserType * const parser)
 	return saveText (parser, &parser->key);
 }
 
+/**
+ * @brief Read a value (including leading and trailing whitespace) and save the result in the variable `parser->value`.
+ *
+ * If there was an error, then the status of the given parser structure will be updated accordingly.
+ *
+ * @pre The variables `parser` and `parser->file` must not be `NULL`
+ *
+ * @param parser Saves the parsing information this function operates on
+ *
+ * @retval An updated version of the variable `parser`
+ */
 static parserType * value (parserType * const parser)
 {
 	ASSERT_NOT_NULL (parser);
@@ -352,6 +515,17 @@ static parserType * value (parserType * const parser)
 	return saveText (parser, &parser->value);
 }
 
+/**
+ * @brief Read a key value pair and save them in the key set `parser->keySet`
+ *
+ * If there was an error, then the status of the given parser structure will be updated accordingly.
+ *
+ * @pre The variables `parser` and `parser->file` must not be `NULL`
+ *
+ * @param parser Saves the parsing information this function operates on
+ *
+ * @retval An updated version of the variable `parser`
+ */
 static parserType * pair (parserType * const parser)
 {
 	ASSERT_NOT_NULL (parser);
@@ -374,6 +548,17 @@ static parserType * pair (parserType * const parser)
 	return parser;
 }
 
+/**
+ * @brief Read optional key value pairs and save them in the key set `parser->keySet`
+ *
+ * If there was an error, then the status of the given parser structure will be updated accordingly.
+ *
+ * @pre The variables `parser` and `parser->file` must not be `NULL`
+ *
+ * @param parser Saves the parsing information this function operates on
+ *
+ * @retval An updated version of the variable `parser`
+ */
 static parserType * optionalAdditionalPairs (parserType * const parser)
 {
 	ASSERT_NOT_NULL (parser);
@@ -386,6 +571,17 @@ static parserType * optionalAdditionalPairs (parserType * const parser)
 	return parser;
 }
 
+/**
+ * @brief Read a list of key value pairs and save them in the key set `parser->keySet`
+ *
+ * If there was an error, then the status of the given parser structure will be updated accordingly.
+ *
+ * @pre The variables `parser` and `parser->file` must not be `NULL`
+ *
+ * @param parser Saves the parsing information this function operates on
+ *
+ * @retval An updated version of the variable `parser`
+ */
 static parserType * pairs (parserType * const parser)
 {
 	ASSERT_NOT_NULL (parser);
