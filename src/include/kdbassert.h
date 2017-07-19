@@ -15,12 +15,12 @@ extern "C" {
 
 void elektraAbort (const char * expression, const char * function, const char * file, const int line, const char * msg, ...)
 #ifdef __GNUC__
-	__attribute__ ((format (printf, 5, 6)))
-#endif
-
-// For scan-build / clang analyzer to detect our assertions abort
+	__attribute__ ((format (printf, 5, 6))) __attribute__ ((__noreturn__))
+#else
 #ifdef __clang_analyzer__
+	// For scan-build / clang analyzer to detect our assertions abort
 	__attribute__ ((analyzer_noreturn))
+#endif
 #endif
 	;
 
