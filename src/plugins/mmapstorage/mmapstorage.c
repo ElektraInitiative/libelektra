@@ -73,40 +73,62 @@ static int elektraMmapstorageStat (struct stat * sbuf, Key * parentKey, int errn
 	return 1;
 }
 
-static char * elektraMmapstorageMapFile (void * addr, FILE * fp, size_t mmapsize, Key * parentKey, int errnosave)
+static char * elektraMmapstorageMapFile (void * addr, FILE * fp, size_t mmapSize, Key * parentKey, int errnosave)
 {
 	ELEKTRA_LOG ("mapping file %s", keyString (parentKey));
 
 	int fd = fileno (fp);
-	char * mappedRegion = mmap (addr, mmapsize, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
+	char * mappedRegion = mmap (addr, mmapSize, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
 	if (mappedRegion == MAP_FAILED) {
 		ELEKTRA_SET_ERROR_GET (parentKey);
 		errno = errnosave;
 		ELEKTRA_LOG_WARNING ("error mapping file %s", keyString (parentKey));
-		ELEKTRA_LOG_WARNING ("mmapsize: %zu", mmapsize);
+		ELEKTRA_LOG_WARNING ("mmapSize: %zu", mmapSize);
 		return MAP_FAILED;
 	}
 	return mappedRegion;
 }
 
-static size_t elektraMmapstorageDataSize (KeySet * returned)
+static MmapSize elektraMmapstorageDataSize (KeySet * returned)
 {
+	MmapSize ret;
+	
 	Key * cur;
 	ksRewind(returned);
 	size_t dynamicDataSize = 0;
+	size_t metaKeys = 0;
 	while ((cur = ksNext (returned)) != 0)
 	{
 		dynamicDataSize += (keyGetNameSize(cur) + keyGetValueSize(cur));
+		
+		if (cur->meta)
+			metaKeys += ksGetSize(cur->meta);
 	}
 
 	size_t keyArraySize = (returned->size) * SIZEOF_KEY;
 	size_t keyPtrArraySize = (returned->size) * SIZEOF_KEY_PTR;
-	size_t mmapsize = SIZEOF_MMAPINFO + SIZEOF_KEYSET + keyArraySize + dynamicDataSize + keyPtrArraySize;
+	
+	// TODO: overapproximating meta key size here, fix later
+	size_t mmapSize = SIZEOF_MMAPINFO + SIZEOF_KEYSET + keyArraySize + dynamicDataSize \
+		+ keyPtrArraySize + (metaKeys * SIZEOF_KEY) + ((returned->size) * SIZEOF_KEYSET);
+		
+	size_t ksSize = SIZEOF_MMAPINFO + SIZEOF_KEYSET + keyArraySize + dynamicDataSize + keyPtrArraySize;
 
-	return mmapsize;
+	ret.mmapSize = mmapSize;
+	ret.ksSize = ksSize;
+	ret.metaKeys = metaKeys;
+	return ret;
 }
 
-static void elektraMmapstorageWriteKeySet (char * mappedRegion, KeySet * keySet)
+static int compare_key_ptr (const void * p1, const void * p2)
+{
+	if (p1 != p2)
+		return 1;
+	else
+		return 0;
+}
+
+static void elektraMmapstorageWriteKeySet (char * mappedRegion, KeySet * keySet, MmapSize mmapSize)
 {
 	// multiple options for writing the KeySet:
 	//		* fwrite () directly from the structs (needs multiple fwrite () calls)
@@ -115,6 +137,10 @@ static void elektraMmapstorageWriteKeySet (char * mappedRegion, KeySet * keySet)
 	MmapInfo info;
 	info.addr = mappedRegion;
 	memcpy (mappedRegion, &info, SIZEOF_MMAPINFO);
+	
+	void * metaKeys[mmapSize.metaKeys];
+	memset (metaKeys, 0, (sizeof (void *) * mmapSize.metaKeys));
+	size_t metaKeysNum = 0;
 
 	char * ksRegion = mappedRegion + SIZEOF_MMAPINFO;
 
@@ -132,6 +158,7 @@ static void elektraMmapstorageWriteKeySet (char * mappedRegion, KeySet * keySet)
 
 	size_t dataOffset = SIZEOF_KEYSET + keyArraySize; // ptr to start of DATA block
 	char * dataNextFreeBlock = ksRegion + dataOffset;
+	char * metaPtr = mappedRegion + mmapSize.ksSize;
 
 
 	Key * cur;
@@ -140,8 +167,8 @@ static void elektraMmapstorageWriteKeySet (char * mappedRegion, KeySet * keySet)
 	ksRewind(keySet);
 	while ((cur = ksNext (keySet)) != 0)
 	{
-		ssize_t keyNameSize = keyGetNameSize(cur);
-		ssize_t keyValueSize = keyGetValueSize(cur);
+		size_t keyNameSize = keyGetNameSize(cur);
+		size_t keyValueSize = keyGetValueSize(cur);
 
 		// move Key name
 		memcpy (dataNextFreeBlock, keyName(cur), keyNameSize);
@@ -164,6 +191,11 @@ static void elektraMmapstorageWriteKeySet (char * mappedRegion, KeySet * keySet)
 
 		// remember pointer to Key for our root KeySet
 		mappedKeys[keyIndex] = mmapKey;
+		
+		// meta key search and so on
+		
+		bsearch((void *) cur, metaKeys, metaKeysNum, sizeof (void *), &compare_key_ptr);
+		
 
 		++keyIndex;
 	}
@@ -287,16 +319,16 @@ int elektraMmapstorageSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Ke
 	}
 
 	// TODO: calculating mmap size not needed if using fwrite() instead of mmap to write to file
-	size_t mmapsize = elektraMmapstorageDataSize (returned);
-	ELEKTRA_LOG_WARNING ("elektraMmapstorageSet -------> mmapsize: %zu", mmapsize);
+	MmapSize mmapSize = elektraMmapstorageDataSize (returned);
+	ELEKTRA_LOG_WARNING ("elektraMmapstorageSet -------> mmapsize: %zu", mmapSize.mmapSize);
 
-	if (elektraMmapstorageTruncateFile (fp, mmapsize, parentKey, errnosave) != 1)
+	if (elektraMmapstorageTruncateFile (fp, mmapSize.mmapSize, parentKey, errnosave) != 1)
 	{
 		fclose (fp);
 		return -1;
 	}
 
-	char * mappedRegion = elektraMmapstorageMapFile ((void *) 0, fp, mmapsize, parentKey, errnosave);
+	char * mappedRegion = elektraMmapstorageMapFile ((void *) 0, fp, mmapSize.mmapSize, parentKey, errnosave);
 	ELEKTRA_LOG_WARNING ("mappedRegion ptr: %p", (void *) mappedRegion);
 	if (mappedRegion == MAP_FAILED)
 	{
@@ -305,7 +337,7 @@ int elektraMmapstorageSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Ke
 		return -1;
 	}
 
-	elektraMmapstorageWriteKeySet (mappedRegion, returned);
+	elektraMmapstorageWriteKeySet (mappedRegion, returned, mmapSize);
 
 	//ksCopy(returned, (KeySet *) mappedRegion);
 	mmapToKeySet (mappedRegion, returned);

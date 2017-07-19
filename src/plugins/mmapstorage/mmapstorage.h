@@ -19,6 +19,15 @@ struct _mmapInfo
 	char * addr;
 };
 
+typedef struct _mmapSize MmapSize;
+
+struct _mmapSize
+{
+	size_t mmapSize;
+	size_t ksSize;
+	size_t metaKeys;
+};
+
 
 int elektraMmapstorageOpen (Plugin * handle, Key * errorKey);
 int elektraMmapstorageClose (Plugin * handle, Key * errorKey);
