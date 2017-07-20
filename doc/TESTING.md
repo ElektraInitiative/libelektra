@@ -2,7 +2,7 @@
 
 ## Introduction
 
-Libraries need a pervasive testing for continuous improvement. Any
+Libraries need pervasive testing for continuous improvement. Any
 problem found and behavior described must be written down as test
 so that it is assured that no new regressions will be added.
 
@@ -67,7 +67,7 @@ You have some options to avoid running them as root:
    - `/tests/<testname>` (e.g. `/tests/ruby`) and
    - `system/elektra` (e.g. for mounts or globalplugins).
  - clean up everything they change (in KDB and temporary files)
-- If your test has memleaks, e.g. because the library used leaks and
+- If your test has memory leaks, e.g. because the library used leaks and
   they cannot be fixed, give them the label `memleak` with the following
   command:
 
