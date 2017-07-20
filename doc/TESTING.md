@@ -3,7 +3,7 @@
 ## Introduction
 
 Libraries need a pervasive testing for continuous improvement. Any
-problem found and behaviour described must be written down as test
+problem found and behavior described must be written down as test
 so that it is assured that no new regressions will be added.
 
 
@@ -24,7 +24,7 @@ To run memcheck tests run in the build directory:
 They are supplementary, ideally you run all three.
 
 Some tests write into system paths.
-To avoid running tests that write to the disc you
+To avoid running tests that write to the disk you
 can use:
 
     make run_nokdbtests
