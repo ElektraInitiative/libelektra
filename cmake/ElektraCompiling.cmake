@@ -131,7 +131,7 @@ set (COMMON_FLAGS "${COMMON_FLAGS} -Wformat-security")
 set (COMMON_FLAGS "${COMMON_FLAGS} -Wshadow")
 set (COMMON_FLAGS "${COMMON_FLAGS} -Wcomments -Wtrigraphs -Wundef")
 set (COMMON_FLAGS "${COMMON_FLAGS} -Wuninitialized -Winit-self")
-#set (COMMON_FLAGS "${COMMON_FLAGS} -Wmissing-declarations -Wmissing-prototypes") # not fixed in code
+#set (C_EXTRA_FLAGS "${C_EXTRA_FLAGS} -Wstrict-prototypes") # not yet fixed in code
 
 # Not every compiler understands -Wmaybe-uninitialized
 check_c_compiler_flag(-Wmaybe-uninitialized HAS_CFLAG_MAYBE_UNINITIALIZED)
