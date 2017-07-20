@@ -360,7 +360,7 @@ int elektraMiniSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 	if (!destination)
 	{
 		ELEKTRA_LOG_WARNING ("Could not open file “%s” for writing: %s", keyString (parentKey), strerror (errno));
-		ELEKTRA_SET_ERROR_GET (parentKey);
+		ELEKTRA_SET_ERROR_SET (parentKey);
 		errno = errorNumber;
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
