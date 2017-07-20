@@ -196,7 +196,7 @@ For bounded model checking tests, see `scripts/cbmc`.
 
 ### Static Code Checkers
 
-There is a number of static code checkers available for all kind of programming languages. The 
+There is a number of static code checkers available for all kind of programming languages. The
 following section show how the most common ones can be used with libelektra.
 
 #### cppcheck
@@ -216,13 +216,13 @@ cppcheck already includes a tool for that, call it with the xml report:
 
     cppcheck-htmlreport --file=cppcheck_result.xml --report-dir=cppcheck_report --source-dir=.
 
-Now you can view the html report by opening `index.html` in the specified foder to get an overview 
+Now you can view the html report by opening `index.html` in the specified foder to get an overview
 of the issues found in the whole project.
 
 #### scan-build
 
 [scan-build](http://clang-analyzer.llvm.org/scan-build.html) is a tool that is usually bundled along
-with LLVM/clang and is also primarily intended for C and C++ code. On macOS you have to install the 
+with LLVM/clang and is also primarily intended for C and C++ code. On macOS you have to install the
 package `llvm` with homebrew, then you'll find the tool in the folder `/usr/local/opt/llvm/bin/`.
 
 To use it, change the c compiler and the c++ compiler to the llvm analyzer. To do this, you can
@@ -230,7 +230,7 @@ configure the project from scratch and prefix the cmake command with `scan-build
 the c compiler to `ccc-analyzer` and the c++ compiler to `c++-analyzer` (bundled with llvm/clang).
 
 Then you can build the project with make like usual, prefixing the command with `scan-build`.
-The -o option specifies where the html results get stored. Ensure you build the project from scratch, 
+The -o option specifies where the html results get stored. Ensure you build the project from scratch,
 otherwise the analyzation might be incomplete.
 
     scan-build -o ./scanbuild_result make -j 4
@@ -246,8 +246,8 @@ the report is enriched with further information.
 
 #### SonarLint
 
-[SonarLint](http://www.sonarlint.org/) is a static code checker primarily intended for Java. It is 
-usually used by installing the corresponding plugin for the used IDE, then there is no further 
+[SonarLint](http://www.sonarlint.org/) is a static code checker primarily intended for Java. It is
+usually used by installing the corresponding plugin for the used IDE, then there is no further
 configuration required.
 
 ### Code Coverage
