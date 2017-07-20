@@ -466,7 +466,7 @@ static parserType * saveText (parserType * const parser, char ** location)
 	ASSERT_NOT_NULL (location);
 
 	size_t length = parser->end - parser->match + 1;
-	if (*location) free (*location);
+	if (*location) elektraFree (*location);
 	*location = elektraMalloc (length + 1);
 	if (!*location) return setErrorMalloc (parser, length + 1);
 
@@ -642,9 +642,9 @@ static parserType * cleanup (parserType * const parser)
 	ASSERT_NOT_NULL (parser);
 
 	if (parser->file && fclose (parser->file) != 0) setErrorErrno (parser, ERROR_FILE_CLOSE);
-	if (parser->bufferBase) free (parser->bufferBase);
-	if (parser->key) free (parser->key);
-	if (parser->value) free (parser->value);
+	if (parser->bufferBase) elektraFree (parser->bufferBase);
+	if (parser->key) elektraFree (parser->key);
+	if (parser->value) elektraFree (parser->value);
 
 	return parser;
 }
