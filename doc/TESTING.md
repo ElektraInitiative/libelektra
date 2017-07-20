@@ -35,7 +35,7 @@ You need to set `LD_LIBRARY_PATH` as `run_all` and `run_nokdbtests` do.
 If the access is denied, several tests will fail.
 You have some options to avoid running them as root:
 
-1. To void running the problematic test cases (reduces the test coverage!)
+1. To avoid running the problematic test cases (reduces the test coverage!)
    run ctest without tests that have the label `kdbtests`:
    `ctest --output-on-failure -LE kdbtests`
    (which is also what `make run_nokdbtests` does)
@@ -68,7 +68,7 @@ You have some options to avoid running them as root:
    - `system/elektra` (e.g. for mounts or globalplugins).
  - clean up everything they change (in KDB and temporary files)
 - If your test has memleaks, e.g. because the library used leaks and
-  that cannot be fixed, give them the label memleak with following
+  they cannot be fixed, give them the label memleak with the following
   command:
 
         set_property(TEST testname PROPERTY LABELS memleak)
@@ -144,7 +144,7 @@ Use the CMake macro `add_gtest` for adding these tests.
 
 ### Script Tests
 
-Test which need scripts are done using shell recorder or directly with POSIX shell commands.
+Tests which need scripts are done using shell recorder or directly with POSIX shell commands.
 See [architectural decision](/doc/decisions/script_testing.md).
 
 The script tests have different purposes:
@@ -216,7 +216,7 @@ cppcheck already includes a tool for that, call it with the xml report:
 
     cppcheck-htmlreport --file=cppcheck_result.xml --report-dir=cppcheck_report --source-dir=.
 
-Now you can view the html report by opening `index.html` in the specified foder to get an overview
+Now you can view the html report by opening `index.html` in the specified folder to get an overview
 of the issues found in the whole project.
 
 #### scan-build
