@@ -137,7 +137,7 @@ Use the CMake macro `add_plugintest` for adding these tests.
 
 ### C++ Unit Tests
 
-C++ Unit tests are done using the gtest framework.
+C++ Unit tests are done using the Google Test framework.
 See [architectural decision](/doc/decisions/unit_testing.md).
 
 Use the CMake macro `add_gtest` for adding these tests.
@@ -199,9 +199,9 @@ For bounded model checking tests, see `scripts/cbmc`.
 There is a number of static code checkers available for all kind of programming languages. The
 following section show how the most common ones can be used with `libelektra`.
 
-#### cppcheck
+#### Cppcheck
 
-[cppcheck](http://cppcheck.sourceforge.net/) can be used directly on a C or C++ source
+[Cppcheck](http://cppcheck.sourceforge.net/) can be used directly on a C or C++ source
 file by calling it with `cppcheck --enable=all <sourcefile>`. This way it might miss some header
 files though and thus doesn't detect all possible issues, but still gives useful hints in general.
 
@@ -211,8 +211,8 @@ the build directory. Afterwards, call `cppcheck` with the cmake settings and sto
 
     cppcheck --project=compile_commands.json --enable=all -j 8 --xml-version=2 2> cppcheck_result.xml
 
-Since the XML file is difficult to read directly, the best way is to convert it to an html report.
-cppcheck already includes a tool for that, call it with the xml report:
+Since the XML file is difficult to read directly, the best way is to convert it to an HTML report.
+Cppcheck already includes a tool for that, call it with the XML report:
 
     cppcheck-htmlreport --file=cppcheck_result.xml --report-dir=cppcheck_report --source-dir=.
 
@@ -222,12 +222,12 @@ of the issues found in the whole project.
 #### scan-build
 
 [scan-build](http://clang-analyzer.llvm.org/scan-build.html) is a tool that is usually bundled along
-with LLVM/clang and is also primarily intended for C and C++ code. On macOS you have to install the
+with LLVM/Clang and is also primarily intended for C and C++ code. On macOS you have to install the
 package `llvm` with homebrew, then you'll find the tool in the folder `/usr/local/opt/llvm/bin/`.
 
-To use it, change the c compiler and the c++ compiler to the llvm analyzer. To do this, you can
+To use it, change the C compiler and the C++ compiler to the LLVM analyzer. To do this, you can
 configure the project from scratch and prefix the cmake command with `scan-build`. Alternatively, set
-the c compiler to `ccc-analyzer` and the c++ compiler to `c++-analyzer` (bundled with llvm/clang).
+the c compiler to `ccc-analyzer` and the C++ compiler to `c++-analyzer` (bundled with LLVM/Clang).
 
 Then you can build the project with `make` like usual, prefixing the command with `scan-build`.
 The `-o` option specifies where the html results get stored. Ensure you build the project from scratch,
@@ -260,7 +260,7 @@ Run:
 	make coverage-stop
 	make coverage-genhtml
 
-The htmls can be found in the build directory in the folder `coverage`.
+The HTML files can be found in the build directory in the folder `coverage`.
 
 See also the build server job:
 
