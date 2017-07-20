@@ -17,7 +17,7 @@ And on the target (installed) system:
 
     kdb run_all
 
-To run memcheck tests run in the build directory:
+To run `memcheck` tests run in the build directory:
 
     make run_memcheck
 
@@ -36,7 +36,7 @@ If the access is denied, several tests will fail.
 You have some options to avoid running them as root:
 
 1. To avoid running the problematic test cases (reduces the test coverage!)
-   run ctest without tests that have the label `kdbtests`:
+   run `ctest` without tests that have the label `kdbtests`:
    `ctest --output-on-failure -LE kdbtests`
    (which is also what `make run_nokdbtests` does)
 2. To give your user the permissions to the relevant paths, i.e. (once as root):
@@ -51,14 +51,14 @@ You have some options to avoid running them as root:
    `-DKDB_DB_SYSTEM="~/.config/kdb/system" -DKDB_DB_SPEC="~/.config/kdb/spec"`
    (for another example with ini see `scripts/configure-home`)
 4. Use the XDG resolver (see `scripts/configure-xdg`) and set
-   the environment variable `XDG_CONFIG_DIRS`, currently lacks spec namespaces, see #734.
+   the environment variable `XDG_CONFIG_DIRS`, currently lacks `spec` namespaces, see #734.
 
 ## Conventions
 
 - All names of the test must start with test (needed by test driver for installed tests).
 - No tests should run if ENABLE_TESTING is OFF.
 - All tests that access system/spec namespaces (e.g. mount something):
- - should be tagged with kdbtests:
+ - should be tagged with `kdbtests`:
 
         set_property(TEST testname PROPERTY LABELS kdbtests)
 
@@ -68,7 +68,7 @@ You have some options to avoid running them as root:
    - `system/elektra` (e.g. for mounts or globalplugins).
  - clean up everything they change (in KDB and temporary files)
 - If your test has memleaks, e.g. because the library used leaks and
-  they cannot be fixed, give them the label memleak with the following
+  they cannot be fixed, give them the label `memleak` with the following
   command:
 
         set_property(TEST testname PROPERTY LABELS memleak)
@@ -89,7 +89,7 @@ It is located [here](/tests/cframework).
 
 ### ABI Tests
 
-C ABI Tests are written in plain C with the help of cframework.
+C ABI Tests are written in plain C with the help of `cframework`.
 
 The main purpose of these tests are, that the binaries of old versions
 can be used against new versions as ABI tests.
@@ -97,14 +97,14 @@ can be used against new versions as ABI tests.
 So lets say we compile Elektra 0.8.8 (at this version dedicated ABI
 tests were introduced) in the `-full` variant. But when we run the
 tests, we use `libelektra-full.so.0.8.9` (either by installing it or
-by setting `LD_LIBRARY_PATH`). You can check with ldd which version is
+by setting `LD_LIBRARY_PATH`). You can check with `ldd` which version is
 used.
 
 The tests are located [here](/tests/abi).
 
 ### C Unit Tests
 
-C Unit Tests are written in plain C with the help of cframework.
+C Unit Tests are written in plain C with the help of `cframework`.
 
 It is used to test internal data structures of libelektra that are not
 ABI relevant.
@@ -165,7 +165,7 @@ See [here](/tests/shell/shell_recorder/tutorial_wrapper/README.md).
 
 ### Fuzz Testing
 
-Copy some import files to testcase_dir and run:
+Copy some import files to `testcase_dir` and run:
 
     /usr/src/afl/afl-1.46b/./afl-fuzz -i testcase_dir -o findings_dir bin/kdb import user/tests
 
@@ -197,7 +197,7 @@ For bounded model checking tests, see `scripts/cbmc`.
 ### Static Code Checkers
 
 There is a number of static code checkers available for all kind of programming languages. The
-following section show how the most common ones can be used with libelektra.
+following section show how the most common ones can be used with `libelektra`.
 
 #### cppcheck
 
@@ -205,9 +205,9 @@ following section show how the most common ones can be used with libelektra.
 file by calling it with `cppcheck --enable=all <sourcefile>`. This way it might miss some header
 files though and thus doesn't detect all possible issues, but still gives useful hints in general.
 
-To analyze the whole project, use it in conjunction with cmake by calling cmake with the parameter
-`-DCMAKE_EXPORT_COMPILE_COMMANDS=ON`. This way cmake creates a file called `compile_commands.json` in
-the build directory. Afterwards, call cppcheck with the cmake settings and store the output as xml:
+To analyze the whole project, use it in conjunction with `cmake` by calling `cmake` with the parameter
+`-DCMAKE_EXPORT_COMPILE_COMMANDS=ON`. This way `cmake` creates a file called `compile_commands.json` in
+the build directory. Afterwards, call `cppcheck` with the cmake settings and store the output as xml:
 
     cppcheck --project=compile_commands.json --enable=all -j 8 --xml-version=2 2> cppcheck_result.xml
 
@@ -229,8 +229,8 @@ To use it, change the c compiler and the c++ compiler to the llvm analyzer. To d
 configure the project from scratch and prefix the cmake command with `scan-build`. Alternatively, set
 the c compiler to `ccc-analyzer` and the c++ compiler to `c++-analyzer` (bundled with llvm/clang).
 
-Then you can build the project with make like usual, prefixing the command with `scan-build`.
-The -o option specifies where the html results get stored. Ensure you build the project from scratch,
+Then you can build the project with `make` like usual, prefixing the command with `scan-build`.
+The `-o` option specifies where the html results get stored. Ensure you build the project from scratch,
 otherwise the analyzation might be incomplete.
 
     scan-build -o ./scanbuild_result make -j 4
