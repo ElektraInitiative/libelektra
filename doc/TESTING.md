@@ -219,6 +219,36 @@ Cppcheck already includes a tool for that, call it with the XML report:
 Now you can view the html report by opening `index.html` in the specified folder to get an overview
 of the issues found in the whole project.
 
+#### OCLint
+
+[OCLint](http://oclint.org/) is a static code analyzer for C, C++ and Objective C. To use this tool enable the CMake option `CMAKE_EXPORT_COMPILE_COMMANDS`. The steps below show a step-by-step guide on how to analyze files with OCLint.
+
+1. Create a build directory if you have not done so already and change the working path to this directory:
+
+   ```sh
+   mkdir -p build
+   cd build
+   ```
+
+2. Run CMake with the option `CMAKE_EXPORT_COMPILE_COMMANDS`:
+
+   ```sh
+   cmake .. -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+   ```
+
+3. Build Elektra
+
+   ```sh
+   make
+   ```
+
+4. Run the `oclint` command specifying the files you want to analyze
+
+   ```sh
+   cd ..
+   oclint -p build -no-analytics -enable-global-analysis -enable-clang-static-analyzer src/plugins/ini/*.c
+   ```
+
 #### scan-build
 
 [scan-build](http://clang-analyzer.llvm.org/scan-build.html) is a tool that is usually bundled along
