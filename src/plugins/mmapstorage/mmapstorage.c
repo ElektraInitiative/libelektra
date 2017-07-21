@@ -73,12 +73,12 @@ static int elektraMmapstorageStat (struct stat * sbuf, Key * parentKey, int errn
 	return 1;
 }
 
-static char * elektraMmapstorageMapFile (void * addr, FILE * fp, size_t mmapSize, Key * parentKey, int errnosave)
+static char * elektraMmapstorageMapFile (void * addr, FILE * fp, size_t mmapSize, int mapOpts , Key * parentKey, int errnosave)
 {
 	ELEKTRA_LOG ("mapping file %s", keyString (parentKey));
 
 	int fd = fileno (fp);
-	char * mappedRegion = mmap (addr, mmapSize, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
+	char * mappedRegion = mmap (addr, mmapSize, PROT_READ | PROT_WRITE, mapOpts, fd, 0);
 	if (mappedRegion == MAP_FAILED) {
 		ELEKTRA_SET_ERROR_GET (parentKey);
 		errno = errnosave;
@@ -289,7 +289,7 @@ int elektraMmapstorageGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Ke
 	
 	void * addr = mmapAddr (fp);
 
-	char * mappedRegion = elektraMmapstorageMapFile (addr, fp, sbuf.st_size, parentKey, errnosave);
+	char * mappedRegion = elektraMmapstorageMapFile (addr, fp, sbuf.st_size, MAP_PRIVATE | MAP_FIXED, parentKey, errnosave);
 	if (mappedRegion == MAP_FAILED)
 	{
 		fclose (fp);
@@ -328,7 +328,7 @@ int elektraMmapstorageSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Ke
 		return -1;
 	}
 
-	char * mappedRegion = elektraMmapstorageMapFile ((void *) 0, fp, mmapSize.mmapSize, parentKey, errnosave);
+	char * mappedRegion = elektraMmapstorageMapFile ((void *) 0, fp, mmapSize.mmapSize, MAP_SHARED, parentKey, errnosave);
 	ELEKTRA_LOG_WARNING ("mappedRegion ptr: %p", (void *) mappedRegion);
 	if (mappedRegion == MAP_FAILED)
 	{
