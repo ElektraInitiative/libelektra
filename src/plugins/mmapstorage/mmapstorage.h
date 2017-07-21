@@ -28,6 +28,14 @@ struct _mmapSize
 	size_t metaKeys;
 };
 
+typedef struct _dynArray DynArray;
+
+struct _dynArray
+{
+	size_t size;
+	int * array;
+};
+
 
 int elektraMmapstorageOpen (Plugin * handle, Key * errorKey);
 int elektraMmapstorageClose (Plugin * handle, Key * errorKey);

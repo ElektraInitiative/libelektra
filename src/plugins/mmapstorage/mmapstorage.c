@@ -122,10 +122,30 @@ static MmapSize elektraMmapstorageDataSize (KeySet * returned)
 
 static int compare_key_ptr (const void * p1, const void * p2)
 {
-	if (p1 != p2)
+	if (p1 < p2)
+		return -1;
+	else if (p1 > p2)
 		return 1;
 	else
 		return 0;
+}
+
+static void insertionSort (DynArray * dynArray)
+{
+	if (!dynArray)
+		return;
+	
+	int * x = dynArray->array;
+	for (size_t i = 0; i < dynArray->size; ++i)
+	{
+		int t = x[i];
+		size_t j;
+		for (j = i; j > 0 && x[j-1] > t; --j)
+		{
+			x[j] = x[j-1];
+		}
+		x[j] = t;
+	}
 }
 
 static void elektraMmapstorageWriteKeySet (char * mappedRegion, KeySet * keySet, MmapSize mmapSize)
@@ -138,9 +158,14 @@ static void elektraMmapstorageWriteKeySet (char * mappedRegion, KeySet * keySet,
 	info.addr = mappedRegion;
 	memcpy (mappedRegion, &info, SIZEOF_MMAPINFO);
 	
-	void * metaKeys[mmapSize.metaKeys];
-	memset (metaKeys, 0, (sizeof (void *) * mmapSize.metaKeys));
-	size_t metaKeysNum = 0;
+	
+	DynArray dynArray;
+	dynArray.array = calloc (mmapSize.metaKeys, sizeof (int));
+	dynArray.size = 0;
+	
+// 	void * metaKeys[mmapSize.metaKeys];
+// 	memset (metaKeys, 0, (sizeof (void *) * mmapSize.metaKeys));
+// 	size_t metaKeysNum = 0;
 
 	char * ksRegion = mappedRegion + SIZEOF_MMAPINFO;
 
@@ -159,7 +184,7 @@ static void elektraMmapstorageWriteKeySet (char * mappedRegion, KeySet * keySet,
 	size_t dataOffset = SIZEOF_KEYSET + keyArraySize; // ptr to start of DATA block
 	char * dataNextFreeBlock = ksRegion + dataOffset;
 	char * metaPtr = mappedRegion + mmapSize.ksSize;
-
+	KeySet * metaCopies = ksNew (0, KS_END);
 
 	Key * cur;
 	Key ** mappedKeys = elektraMalloc (keyPtrArraySize);
@@ -193,8 +218,26 @@ static void elektraMmapstorageWriteKeySet (char * mappedRegion, KeySet * keySet,
 		mappedKeys[keyIndex] = mmapKey;
 		
 		// meta key search and so on
+		const Key * meta;
+		keyRewindMeta (cur);
+		while ((meta = keyNextMeta (cur)) != 0)
+		{
+			insertionSort (&dynArray);
+			void * found = bsearch ((const void *) meta, dynArray.array, dynArray.size, sizeof (const void *), 
+&compare_key_ptr);
+			
+			if (!found)
+			{
+				// insert in list and write to mapped regions
+			}
+			else
+			{
+				// already in mmap, reference it
+				
+			}
+		}
 		
-		bsearch((void *) cur, metaKeys, metaKeysNum, sizeof (void *), &compare_key_ptr);
+		//bsearch((void *) cur, metaKeys, metaKeysNum, sizeof (void *), &compare_key_ptr);
 		
 
 		++keyIndex;
@@ -208,6 +251,8 @@ static void elektraMmapstorageWriteKeySet (char * mappedRegion, KeySet * keySet,
 	// move KeySet itself to the mapped region
 	keySet->flags |= KS_FLAG_MMAP;
 	memcpy (ksRegion, keySet, SIZEOF_KEYSET);
+	
+	ksDel (metaCopies);
 }
 
 static void mmapToKeySet (char * mappedRegion, KeySet * returned)
