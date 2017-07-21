@@ -6,6 +6,7 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 #define _POSIX_SOURCE
+#define _POSIX_C_SOURCE 200409L
 
 #include "resolver.h"
 
