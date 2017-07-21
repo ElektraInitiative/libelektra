@@ -83,9 +83,9 @@ function (add_scripttest testname)
 				set (KDB_COMMAND "${CMAKE_BINARY_DIR}/bin/kdb-static")
 			elseif (BUILD_SHARED)
 				set (KDB_COMMAND "${CMAKE_BINARY_DIR}/bin/kdb")
-			else()
+			else ()
 				message(SEND_ERROR "no kdb tool found, please enable BUILD_FULL, BUILD_STATIC or BUILD_SHARED")
-			endif ()
+			endif (BUILD_FULL)
 			set(RACE_COMMAND "${CMAKE_BINARY_DIR}/bin/race")
 			set(INCLUDE_COMMON
 				"${INCLUDE_COMMON_FILE}KDB=\"${KDB_COMMAND}\""
