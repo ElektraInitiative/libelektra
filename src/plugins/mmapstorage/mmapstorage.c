@@ -120,32 +120,25 @@ static MmapSize elektraMmapstorageDataSize (KeySet * returned)
 	return ret;
 }
 
-static int compare_key_ptr (const void * p1, const void * p2)
+static void dynArrayInsert (const int key, const int * array, size_t numElements)
 {
-	if (p1 < p2)
-		return -1;
-	else if (p1 > p2)
-		return 1;
-	else
-		return 0;
-}
-
-static void insertionSort (DynArray * dynArray)
-{
-	if (!dynArray)
-		return;
+	size_t l = 0;
+	size_t h = numElements-1;
+	size_t m;
 	
-	int * x = dynArray->array;
-	for (size_t i = 0; i < dynArray->size; ++i)
+	while (l <= h)
 	{
-		int t = x[i];
-		size_t j;
-		for (j = i; j > 0 && x[j-1] > t; --j)
-		{
-			x[j] = x[j-1];
-		}
-		x[j] = t;
+		m = (l+h)>>1;
+		
+		if (array[m] > key)
+			h = --m;
+		else if (array[m] < key)
+			l = ++m;
+		else
+			return; // found
 	}
+	// insert key at index l
+	return;
 }
 
 static void elektraMmapstorageWriteKeySet (char * mappedRegion, KeySet * keySet, MmapSize mmapSize)
@@ -222,13 +215,13 @@ static void elektraMmapstorageWriteKeySet (char * mappedRegion, KeySet * keySet,
 		keyRewindMeta (cur);
 		while ((meta = keyNextMeta (cur)) != 0)
 		{
-			insertionSort (&dynArray);
 			void * found = bsearch ((const void *) meta, dynArray.array, dynArray.size, sizeof (const void *), 
 &compare_key_ptr);
 			
 			if (!found)
 			{
 				// insert in list and write to mapped regions
+				dynArrayInsert ((const int) meta, dynArray.array, dynArray.size);
 			}
 			else
 			{
