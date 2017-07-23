@@ -120,7 +120,7 @@ static MmapSize elektraMmapstorageDataSize (KeySet * returned)
 	return ret;
 }
 
-static void dynArrayInsert (const int key, const int * array, size_t numElements)
+static int findOrInsert (const size_t key, size_t * array, size_t numElements)
 {
 	size_t l = 0;
 	size_t h = numElements-1;
@@ -135,10 +135,12 @@ static void dynArrayInsert (const int key, const int * array, size_t numElements
 		else if (array[m] < key)
 			l = ++m;
 		else
-			return; // found
+			return 1; // found
 	}
-	// insert key at index l
-	return;
+	// insert key at index l, relies on the fact that enough memory has already been allocated for array
+	memmove ((void *) (array+l+1), (void *) (array+l), (numElements-l) * (sizeof (size_t)));
+	array[l] = key;
+	return 0;
 }
 
 static void elektraMmapstorageWriteKeySet (char * mappedRegion, KeySet * keySet, MmapSize mmapSize)
@@ -153,7 +155,7 @@ static void elektraMmapstorageWriteKeySet (char * mappedRegion, KeySet * keySet,
 	
 	
 	DynArray dynArray;
-	dynArray.array = calloc (mmapSize.metaKeys, sizeof (int));
+	dynArray.array = calloc (mmapSize.metaKeys, sizeof (size_t));
 	dynArray.size = 0;
 	
 // 	void * metaKeys[mmapSize.metaKeys];
@@ -200,39 +202,35 @@ static void elektraMmapstorageWriteKeySet (char * mappedRegion, KeySet * keySet,
 		//fwrite (keyValue(cur), keyValueSize, 1, fp);
 		keySetRaw(cur, dataNextFreeBlock, keyValueSize);
 		dataNextFreeBlock += keyValueSize;
-
-		// move Key itself
-		void * mmapKey = ksRegion + SIZEOF_KEYSET + (keyIndex * SIZEOF_KEY);
-		cur->flags |= KEY_FLAG_MMAP;
-		memcpy (mmapKey, cur, SIZEOF_KEY);
-		//fwrite (cur, keyValueSize, 1, fp);
-
-		// remember pointer to Key for our root KeySet
-		mappedKeys[keyIndex] = mmapKey;
 		
 		// meta key search and so on
 		const Key * meta;
 		keyRewindMeta (cur);
 		while ((meta = keyNextMeta (cur)) != 0)
 		{
-			void * found = bsearch ((const void *) meta, dynArray.array, dynArray.size, sizeof (const void *), 
-&compare_key_ptr);
+			int found = findOrInsert ((const size_t) meta, dynArray.array, dynArray.size);
 			
 			if (!found)
 			{
-				// insert in list and write to mapped regions
-				dynArrayInsert ((const int) meta, dynArray.array, dynArray.size);
+				// write to mapped region (metaPtr)
+				
 			}
 			else
 			{
-				// already in mmap, reference it
+				// already in mapped region, reference it
 				
 			}
 		}
-		
-		//bsearch((void *) cur, metaKeys, metaKeysNum, sizeof (void *), &compare_key_ptr);
-		
 
+		// move Key itself
+		void * mmapKey = ksRegion + SIZEOF_KEYSET + (keyIndex * SIZEOF_KEY);
+		cur->flags |= KEY_FLAG_MMAP;
+		memcpy (mmapKey, cur, SIZEOF_KEY);
+		//fwrite (cur, keyValueSize, 1, fp);
+		
+		// remember pointer to Key for our root KeySet
+		mappedKeys[keyIndex] = mmapKey;
+		
 		++keyIndex;
 	}
 	// copy key ptrs from array to DATA block
@@ -260,10 +258,10 @@ static void mmapToKeySet (char * mappedRegion, KeySet * returned)
 
 static void * mmapAddr (FILE * fp)
 {
-	char * buf[SIZEOF_MMAPINFO];
-	memset (buf, 0, SIZEOF_MMAPINFO);
+	char buf[SIZEOF_MMAPINFO];
+	memset (buf, 0, SIZEOF_MMAPINFO * (sizeof (char)));
 	
-	fread (buf, SIZEOF_MMAPINFO, 1, fp);
+	fread (buf, SIZEOF_MMAPINFO, (sizeof (char)), fp);
 	MmapInfo * info = (MmapInfo *) buf;
 	
 	return info->addr;
@@ -385,7 +383,7 @@ int elektraMmapstorageSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Ke
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }
 
-int elektraMmapstorageError (Plugin * handle, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
+int elektraMmapstorageError (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
 {
 	// handle errors (commit failed)
 	// this function is optional

@@ -33,7 +33,7 @@ typedef struct _dynArray DynArray;
 struct _dynArray
 {
 	size_t size;
-	int * array;
+	size_t * array;
 };
 
 
