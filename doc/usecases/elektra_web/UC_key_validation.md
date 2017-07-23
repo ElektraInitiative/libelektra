@@ -19,7 +19,7 @@ Alternative scenario: User enters data that fails the field validation, the
 Alternative scenario: User enters data that violates a validation rule, an error
   message is shown and the data is NOT saved to the key database.
 Error scenario: Technical problems while persisting to the key database. The
-  user is informed about the issue.
+  user is informed about the problem.
 Postcondition: The updated key is persisted to the database.
 Non-functional Constraints:
-	- Essential functionality
+  - Essential functionality

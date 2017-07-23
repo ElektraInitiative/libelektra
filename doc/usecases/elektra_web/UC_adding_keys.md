@@ -15,7 +15,7 @@ Main success scenario: User creates a new key (in a subtree).
 Alternative scenario: User enters data that violates a validation rule, an error
   message is shown.
 Error scenario: Technical problems while persisting to the key database. The
-  user is informed about the issue.
+  user is informed about the problem.
 Postcondition: The new key is persisted to the database.
 Non-functional Constraints:
-	- Essential functionality
+  - Essential functionality

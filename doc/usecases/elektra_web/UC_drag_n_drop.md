@@ -16,6 +16,6 @@ Main success scenario: User moves a key (and its subtree) to another subtree by
 Alternative scenario: User enters data that violates a validation rule, an error
   message is shown.
 Error scenario: Technical problems while persisting to the key database. The
-  user is informed about the issue.
+  user is informed about the problem.
 Postcondition: The updated key structure is persisted to the database.
 Non-functional Constraints: -
