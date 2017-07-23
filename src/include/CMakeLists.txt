@@ -82,6 +82,7 @@ install (FILES
 	kdbutility.h
 	"${CMAKE_CURRENT_BINARY_DIR}/kdbversion.h"
 	elektra.h
+	elektra_generic.h
 	elektra_error.h
 	elektra_error_codes.h
 	DESTINATION include/${TARGET_INCLUDE_FOLDER})
