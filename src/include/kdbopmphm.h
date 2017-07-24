@@ -83,7 +83,7 @@ typedef struct
 /**
  * Basic functions
  */
-Opmphm * opmphmNew ();
+Opmphm * opmphmNew (void);
 void opmphmDel (Opmphm * opmphm);
 void opmphmClear (Opmphm * opmphm);
 bool opmphmIsEmpty (Opmphm * opmphm);

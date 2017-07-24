@@ -101,7 +101,7 @@ static inline int linkNolink (int old UNUSED, int new)
 	return new == 0 || new == 1;
 }
 
-struct transitionLink genLinkTransitionTable ()
+struct transitionLink genLinkTransitionTable (void)
 {
 	struct transitionLink out = { {
 		// char\state    0  1  2  3  4  5  6(trap)
@@ -135,7 +135,7 @@ static inline int titleIsGoal (int old, int new)
 	return old == 3 && new == 0;
 }
 
-struct transitionTitle genTitleTransitionTable ()
+struct transitionTitle genTitleTransitionTable (void)
 {
 	struct transitionTitle out = { {
 		// char\state    0  1  2  3
