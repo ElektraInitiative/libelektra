@@ -9,6 +9,7 @@
 #include "resolver.h"
 
 #include <kdbassert.h>
+#include <kdbhelper.h> // elektraStrDup
 #include <kdbproposal.h>
 
 #include "kdbos.h"
@@ -301,48 +302,90 @@ static int mapFilesForNamespaces (resolverHandles * p, Key * errorKey)
 	// switch is only present to forget no namespace and to get
 	// a warning whenever a new namespace is present.
 	// In fact its linear code executed:
+	ElektraResolved * resolved = NULL;
 	switch (KEY_NS_SPEC)
 	{
 	case KEY_NS_SPEC:
 		keySetName (testKey, "spec");
-		if (needsMapping (testKey, errorKey) && ELEKTRA_PLUGIN_FUNCTION (resolver, filename) (testKey, &p->spec, errorKey) == -1)
+		if (needsMapping (testKey, errorKey))
 		{
-			resolverClose (p);
-			keyDel (testKey);
-			ELEKTRA_SET_ERROR (35, errorKey, "Could not resolve spec key");
-			return -1;
+			if ((resolved = ELEKTRA_PLUGIN_FUNCTION (resolver, filename) (KEY_NS_SPEC, (p->spec).path,
+										      ELEKTRA_RESOLVER_TEMPFILE_SAMEDIR, errorKey)) == NULL)
+			{
+				resolverClose (p);
+				keyDel (testKey);
+				ELEKTRA_SET_ERROR (35, errorKey, "Could not resolve spec key");
+				return -1;
+			}
+			else
+			{
+				p->spec.tempfile = elektraStrDup (resolved->tmpFile);
+				p->spec.filename = elektraStrDup (resolved->fullPath);
+				p->spec.dirname = elektraStrDup (resolved->dirname);
+				ELEKTRA_PLUGIN_FUNCTION (resolver, freeHandle) (resolved);
+			}
 		}
 
 	case KEY_NS_DIR:
 		keySetName (testKey, "dir");
-		if (needsMapping (testKey, errorKey) && ELEKTRA_PLUGIN_FUNCTION (resolver, filename) (testKey, &p->dir, errorKey) == -1)
+		if (needsMapping (testKey, errorKey))
 		{
-			resolverClose (p);
-			keyDel (testKey);
-			ELEKTRA_SET_ERROR (35, errorKey, "Could not resolve dir key");
-			return -1;
+			if ((resolved = ELEKTRA_PLUGIN_FUNCTION (resolver, filename) (KEY_NS_DIR, (p->dir).path,
+										      ELEKTRA_RESOLVER_TEMPFILE_SAMEDIR, errorKey)) == NULL)
+			{
+				resolverClose (p);
+				keyDel (testKey);
+				ELEKTRA_SET_ERROR (35, errorKey, "Could not resolve dir key");
+				return -1;
+			}
+			else
+			{
+				p->dir.tempfile = elektraStrDup (resolved->tmpFile);
+				p->dir.filename = elektraStrDup (resolved->fullPath);
+				p->dir.dirname = elektraStrDup (resolved->dirname);
+				ELEKTRA_PLUGIN_FUNCTION (resolver, freeHandle) (resolved);
+			}
 		}
-
 	case KEY_NS_USER:
 		keySetName (testKey, "user");
-		if (needsMapping (testKey, errorKey) && ELEKTRA_PLUGIN_FUNCTION (resolver, filename) (testKey, &p->user, errorKey) == -1)
+		if (needsMapping (testKey, errorKey))
 		{
-			resolverClose (p);
-			keyDel (testKey);
-			ELEKTRA_SET_ERRORF (35, errorKey, "Could not resolve user key with conf %s", ELEKTRA_VARIANT_USER);
-			return -1;
+			if ((resolved = ELEKTRA_PLUGIN_FUNCTION (resolver, filename) (KEY_NS_USER, (p->user).path,
+										      ELEKTRA_RESOLVER_TEMPFILE_SAMEDIR, errorKey)) == NULL)
+			{
+				resolverClose (p);
+				keyDel (testKey);
+				ELEKTRA_SET_ERRORF (35, errorKey, "Could not resolve user key with conf %s", ELEKTRA_VARIANT_USER);
+				return -1;
+			}
+			else
+			{
+				p->user.tempfile = elektraStrDup (resolved->tmpFile);
+				p->user.filename = elektraStrDup (resolved->fullPath);
+				p->user.dirname = elektraStrDup (resolved->dirname);
+				ELEKTRA_PLUGIN_FUNCTION (resolver, freeHandle) (resolved);
+			}
 		}
-
 	case KEY_NS_SYSTEM:
 		keySetName (testKey, "system");
-		if (needsMapping (testKey, errorKey) && ELEKTRA_PLUGIN_FUNCTION (resolver, filename) (testKey, &p->system, errorKey) == -1)
+		if (needsMapping (testKey, errorKey))
 		{
-			resolverClose (p);
-			keyDel (testKey);
-			ELEKTRA_SET_ERRORF (35, errorKey, "Could not resolve system key with conf %s", ELEKTRA_VARIANT_SYSTEM);
-			return -1;
+			if ((resolved = ELEKTRA_PLUGIN_FUNCTION (resolver, filename) (KEY_NS_SYSTEM, (p->system).path,
+										      ELEKTRA_RESOLVER_TEMPFILE_SAMEDIR, errorKey)) == NULL)
+			{
+				resolverClose (p);
+				keyDel (testKey);
+				ELEKTRA_SET_ERRORF (35, errorKey, "Could not resolve system key with conf %s", ELEKTRA_VARIANT_SYSTEM);
+				return -1;
+			}
+			else
+			{
+				p->system.tempfile = elektraStrDup (resolved->tmpFile);
+				p->system.filename = elektraStrDup (resolved->fullPath);
+				p->system.dirname = elektraStrDup (resolved->dirname);
+				ELEKTRA_PLUGIN_FUNCTION (resolver, freeHandle) (resolved);
+			}
 		}
-
 	case KEY_NS_PROC:
 	case KEY_NS_EMPTY:
 	case KEY_NS_NONE:
@@ -1076,12 +1119,12 @@ int ELEKTRA_PLUGIN_FUNCTION (resolver, error) (Plugin * handle, KeySet * r ELEKT
 Plugin * ELEKTRA_PLUGIN_EXPORT (resolver)
 {
 	// clang-format off
-	return elektraPluginExport(ELEKTRA_PLUGIN_NAME,
-		ELEKTRA_PLUGIN_OPEN,	&ELEKTRA_PLUGIN_FUNCTION(resolver, open),
-		ELEKTRA_PLUGIN_CLOSE,	&ELEKTRA_PLUGIN_FUNCTION(resolver, close),
-		ELEKTRA_PLUGIN_GET,	&ELEKTRA_PLUGIN_FUNCTION(resolver, get),
-		ELEKTRA_PLUGIN_SET,	&ELEKTRA_PLUGIN_FUNCTION(resolver, set),
-		ELEKTRA_PLUGIN_ERROR,	&ELEKTRA_PLUGIN_FUNCTION(resolver, error),
-		ELEKTRA_PLUGIN_END);
+    return elektraPluginExport(ELEKTRA_PLUGIN_NAME,
+            ELEKTRA_PLUGIN_OPEN,	&ELEKTRA_PLUGIN_FUNCTION(resolver, open),
+            ELEKTRA_PLUGIN_CLOSE,	&ELEKTRA_PLUGIN_FUNCTION(resolver, close),
+            ELEKTRA_PLUGIN_GET,	&ELEKTRA_PLUGIN_FUNCTION(resolver, get),
+            ELEKTRA_PLUGIN_SET,	&ELEKTRA_PLUGIN_FUNCTION(resolver, set),
+            ELEKTRA_PLUGIN_ERROR,	&ELEKTRA_PLUGIN_FUNCTION(resolver, error),
+            ELEKTRA_PLUGIN_END);
 }
 
