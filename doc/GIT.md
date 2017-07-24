@@ -130,6 +130,7 @@ or if specific jobs should be started:
 * jenkins build [gcc-configure-debian-notest](https://build.libelektra.org/job/elektra-gcc-configure-debian-notest/) please
 * jenkins build [gcc-configure-debian-shared](https://build.libelektra.org/job/elektra-gcc-configure-debian-shared/) please
 * jenkins build [gcc-configure-debian-stretch](https://build.libelektra.org/job/elektra-gcc-configure-debian-stretch/) please
+* jenkins build [gcc-configure-debian-optimizations](https://build.libelektra.org/job/elektra-gcc-configure-debian-optimizations/) please
 * jenkins build [gcc-configure-debian-wheezy](https://build.libelektra.org/job/elektra-gcc-configure-debian-wheezy/) please
 * jenkins build [gcc-configure-debian-withspace](https://build.libelektra.org/job/elektra-gcc-configure-debian-withspace/) please
 * jenkins build [gcc-configure-xdg](https://build.libelektra.org/job/elektra-gcc-configure-xdg/) please
