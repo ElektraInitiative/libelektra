@@ -20,7 +20,9 @@ add_plugin (curlget
 	SOURCES
 		curlget.h
 		curlget.c
-	INCLUDE_DIRECTORIES
+	LINK_ELEKTRA
+		elektra-invoke
+	INCLUDE_DIRECTORIES 
 		${CURLGET_INCLUDE_DIRS}
 	LINK_LIBRARIES
 		${CURLGET_LIBRARY_DIRS}

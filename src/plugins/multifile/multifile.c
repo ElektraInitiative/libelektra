@@ -11,17 +11,24 @@
 
 #include <dirent.h>
 #include <errno.h>
+#include <fnmatch.h>
+#include <fts.h>
 #include <glob.h>
 #include <kdbconfig.h>
 #include <kdbhelper.h>
 #include <kdbinternal.h>
 #include <kdbmodule.h>
+#include <kdbplugin.h>
+#include <kdbproposal.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
+
+#include "../resolver/shared.h"
+#include <kdbinvoke.h>
 
 #define DEFAULT_RESOLVER "resolver"
 #define DEFAULT_PATTERN "*"
@@ -49,15 +56,18 @@ typedef enum {
 typedef struct
 {
 	char * directory;
+	char * originalPath;
 	char * pattern;
 	SetPhases setPhase;
 	GetPhases getPhase;
 	KeySet * modules;
 	KeySet * childBackends;
+	KeySet * childConfig;
 	char * resolver;
 	char * storage;
 	unsigned short stayAlive;
 	unsigned short hasDeleted;
+	unsigned short recursive;
 } MultiConfig;
 
 typedef struct
@@ -91,6 +101,52 @@ static inline Codes rvToRc (int rc)
 		break;
 	}
 	return ERROR;
+}
+
+static int elektraResolveFilename (Key * parentKey, ElektraResolveTempfile tmpFile)
+{
+	int rc = 0;
+	ElektraInvokeHandle * handle = elektraInvokeInitialize ("resolver");
+	if (!handle)
+	{
+		rc = -1;
+		goto RESOLVE_FAILED;
+	}
+	ElektraResolved * resolved = NULL;
+	typedef ElektraResolved * (*resolveFileFunc) (elektraNamespace, const char *, ElektraResolveTempfile, Key *);
+	resolveFileFunc resolveFunc = *(resolveFileFunc *)elektraInvokeGetFunction (handle, "filename");
+
+	if (!resolveFunc)
+	{
+		rc = -1;
+		goto RESOLVE_FAILED;
+	}
+
+	typedef void (*freeHandleFunc) (ElektraResolved *);
+	freeHandleFunc freeHandle = *(freeHandleFunc *)elektraInvokeGetFunction (handle, "freeHandle");
+
+	if (!freeHandle)
+	{
+		rc = -1;
+		goto RESOLVE_FAILED;
+	}
+
+	resolved = resolveFunc (keyGetNamespace (parentKey), keyString (parentKey), tmpFile, parentKey);
+
+	if (!resolved)
+	{
+		rc = -1;
+		goto RESOLVE_FAILED;
+	}
+	else
+	{
+		keySetString (parentKey, resolved->fullPath);
+		freeHandle (resolved);
+	}
+
+RESOLVE_FAILED:
+	elektraInvokeClose (handle);
+	return rc;
 }
 
 int elektraMultifileCheckFile (const char * filename)
@@ -145,23 +201,34 @@ int elektraMultifileClose (Plugin * handle ELEKTRA_UNUSED, Key * errorKey ELEKTR
 	if (mc->pattern) elektraFree (mc->pattern);
 	if (mc->resolver) elektraFree (mc->resolver);
 	if (mc->storage) elektraFree (mc->storage);
+	if (mc->originalPath) elektraFree (mc->originalPath);
 	elektraModulesClose (mc->modules, NULL);
 	ksDel (mc->modules);
 	ksDel (mc->childBackends);
+	ksDel (mc->childConfig);
 	elektraFree (mc);
 	elektraPluginSetData (handle, NULL);
 	return 1; // success
 }
 
-static MultiConfig * initialize (Plugin * handle)
+static MultiConfig * initialize (Plugin * handle, Key * parentKey)
 {
+
 	KeySet * config = elektraPluginGetConfig (handle);
-	const char * path = keyString (ksLookupByName (config, "/path", 0));
+	Key * origPath = ksLookupByName (config, "/path", 0);
+	keySetString (parentKey, keyString (origPath));
+	if (elektraResolveFilename (parentKey, ELEKTRA_RESOLVER_TEMPFILE_NONE) == -1)
+	{
+		return NULL;
+	}
 	Key * patternKey = ksLookupByName (config, "/pattern", 0);
 	Key * storageKey = ksLookupByName (config, "/storage", 0);
 	Key * resolverKey = ksLookupByName (config, "/resolver", 0);
 	Key * stayAliveKey = ksLookupByName (config, "/stayalive", 0);
+	Key * recursiveKey = ksLookupByName (config, "/recursive", 0);
 	MultiConfig * mc = elektraCalloc (sizeof (MultiConfig));
+	mc->directory = elektraStrDup (keyString (parentKey));
+	mc->originalPath = elektraStrDup (keyString (origPath));
 	if (resolverKey)
 	{
 		mc->resolver = elektraStrDup (keyString (resolverKey));
@@ -187,7 +254,13 @@ static MultiConfig * initialize (Plugin * handle)
 		mc->pattern = elektraStrDup (DEFAULT_PATTERN);
 	}
 	if (stayAliveKey) mc->stayAlive = 1;
-	mc->directory = elektraStrDup (path);
+	if (recursiveKey) mc->recursive = 1;
+	Key * cutKey = keyNew ("/child", KEY_END);
+	KeySet * childConfig = ksCut (config, cutKey);
+	keyDel (cutKey);
+	mc->childConfig = elektraRenameKeys (childConfig, "system");
+	ksAppend (config, childConfig);
+	ksDel (childConfig);
 	mc->childBackends = ksNew (0, KS_END);
 	mc->modules = ksNew (0, KS_END);
 	elektraModulesInit (mc->modules, NULL);
@@ -198,9 +271,9 @@ static MultiConfig * initialize (Plugin * handle)
 
 static Codes initBackend (MultiConfig * mc, SingleConfig * s, Key * parentKey)
 {
-	unsigned long fullPathLen = strlen (mc->directory) + strlen (s->filename) + 2;
+	unsigned long fullPathLen = strlen (mc->originalPath) + strlen (s->filename) + 2;
 	char * fullPath = elektraCalloc (fullPathLen);
-	snprintf (fullPath, fullPathLen, "%s/%s", mc->directory, s->filename);
+	snprintf (fullPath, fullPathLen, "%s/%s", mc->originalPath, s->filename);
 	s->fullPath = fullPath;
 	unsigned long childParentStringLen = strlen (keyName (parentKey)) + strlen (s->filename) + 2;
 	char * childParentString = elektraCalloc (childParentStringLen);
@@ -208,8 +281,9 @@ static Codes initBackend (MultiConfig * mc, SingleConfig * s, Key * parentKey)
 	s->parentString = childParentString;
 	// fprintf (stderr, "Added file %s:(%s)\n\tChildParentKey: %s\n", s->fullPath, s->filename, s->parentString);
 	Plugin * resolver = NULL;
-	resolver = elektraPluginOpen (mc->resolver, mc->modules, ksNew (1, keyNew ("system/path", KEY_VALUE, s->fullPath, KEY_END), KS_END),
-				      parentKey);
+	KeySet * childConfig = ksDup (mc->childConfig);
+	ksAppendKey (childConfig, keyNew ("/path", KEY_VALUE, s->fullPath, KEY_END));
+	resolver = elektraPluginOpen (mc->resolver, mc->modules, childConfig, parentKey);
 	// fprintf (stderr, "%s:(%s)\n", keyName (parentKey), keyString (parentKey));
 	if (!resolver)
 	{
@@ -246,16 +320,74 @@ static Codes resolverGet (SingleConfig * s, KeySet * returned, Key * parentKey)
 	return s->rcResolver;
 }
 
-static Codes updateFiles (MultiConfig * mc, KeySet * returned, Key * parentKey)
+static Codes updateFilesRecursive (MultiConfig * mc, KeySet * found, Key * parentKey)
 {
 	Codes rc = NOUPDATE;
-	KeySet * found = ksNew (0, KS_END);
-	Key * initialParent = keyDup (parentKey);
+	char * dirs[2];
+	dirs[0] = mc->directory;
+	dirs[1] = (void *)NULL;
+	FTS * fts = fts_open (dirs, FTS_COMFOLLOW | FTS_NOCHDIR, NULL);
+	if (fts)
+	{
+		FTSENT * ent = NULL;
+		while ((ent = fts_read (fts)) != NULL)
+		{
+			if (ent->fts_info == FTS_F)
+			{
+				if (!fnmatch (mc->pattern, ent->fts_name, 0))
+				{
+					Key * lookup = keyNew ("/", KEY_CASCADING_NAME, KEY_END);
+					keyAddBaseName (lookup, (ent->fts_path + strlen (mc->directory)));
+					Key * k;
+					if ((k = ksLookup (mc->childBackends, lookup, KDB_O_NONE)) != NULL)
+					{
+						ksAppendKey (found, k);
+					}
+					else
+					{
+						SingleConfig * s = elektraCalloc (sizeof (SingleConfig));
+						s->filename = elektraStrDup ((ent->fts_path) + strlen (mc->directory) + 1);
+						Codes r = initBackend (mc, s, parentKey);
+						if (r == ERROR)
+						{
+							if (!mc->stayAlive)
+							{
+								keyDel (lookup);
+								fts_close (fts);
+								return ERROR;
+							}
+							else
+							{
+								closeBackend (s);
+							}
+						}
+						else
+						{
+							Key * childKey = keyNew (keyName (lookup), KEY_CASCADING_NAME, KEY_BINARY, KEY_SIZE,
+										 sizeof (SingleConfig *), KEY_VALUE, &s, KEY_END);
+							ksAppendKey (mc->childBackends, childKey);
+							ksAppendKey (found, childKey);
+							rc = SUCCESS;
+						}
+					}
+					keyDel (lookup);
+				}
+			}
+		}
+		fts_close (fts);
+	}
+	return rc;
+}
+
+static Codes updateFilesGlob (MultiConfig * mc, KeySet * found, Key * parentKey)
+{
+	Codes rc = NOUPDATE;
+	glob_t results;
+	int ret;
 
 	char pattern[strlen (mc->directory) + strlen (mc->pattern) + 2];
 	snprintf (pattern, sizeof (pattern), "%s/%s", mc->directory, mc->pattern);
-	glob_t results;
-	int ret;
+
 	ret = glob (pattern, 0, NULL, &results);
 	if (ret != 0)
 	{
@@ -295,6 +427,7 @@ static Codes updateFiles (MultiConfig * mc, KeySet * returned, Key * parentKey)
 				{
 					if (!mc->stayAlive)
 					{
+						keyDel (lookup);
 						globfree (&results);
 						return ERROR;
 					}
@@ -316,6 +449,29 @@ static Codes updateFiles (MultiConfig * mc, KeySet * returned, Key * parentKey)
 		}
 	}
 	globfree (&results);
+	return rc;
+}
+
+static Codes updateFiles (MultiConfig * mc, KeySet * returned, Key * parentKey)
+{
+	Codes rc = NOUPDATE;
+	KeySet * found = ksNew (0, KS_END);
+	Key * initialParent = keyDup (parentKey);
+
+	if (!mc->recursive)
+	{
+		rc = updateFilesGlob (mc, found, parentKey);
+	}
+	else
+	{
+		rc = updateFilesRecursive (mc, found, parentKey);
+	}
+	if (rc == ERROR)
+	{
+		ksDel (found);
+		keyDel (initialParent);
+		return ERROR;
+	}
 
 	ksRewind (mc->childBackends);
 	ksRewind (found);
@@ -328,6 +484,8 @@ static Codes updateFiles (MultiConfig * mc, KeySet * returned, Key * parentKey)
 			keySetName (parentKey, s->parentString);
 			keySetString (parentKey, s->fullPath);
 			int r = resolverGet (s, returned, parentKey);
+			elektraFree (s->fullPath);
+			s->fullPath = elektraStrDup (keyString (parentKey));
 			s->rcResolver = rvToRc (r);
 			if (s->rcResolver == ERROR)
 			{
@@ -440,7 +598,7 @@ int elektraMultifileGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key 
 	MultiConfig * mc = elektraPluginGetData (handle);
 	if (!mc)
 	{
-		mc = initialize (handle);
+		mc = initialize (handle, parentKey);
 	}
 	if (!mc)
 	{
