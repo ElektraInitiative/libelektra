@@ -20,4 +20,3 @@ Error scenario: Technical problems - the user is informed about the problem.
 Postcondition: User can now access the instance via the client.
 Non-functional Constraints:
   - Security mechanism
-  - Is precondition to use configuration functions

@@ -10,7 +10,7 @@ Brief: User drags a key (with a subtree) to a different subtree.
 
 ## Scenarios
 
-Precondition: View configuration of an instance
+Precondition: View configuration of an instance.
 Main success scenario: User moves a key (and its subtree) to another subtree by
   dragging it to to the desired position.
 Alternative scenario: User enters data that violates a validation rule, an error

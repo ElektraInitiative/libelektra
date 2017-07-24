@@ -10,7 +10,7 @@ Brief: User undos/redos changes to a configuration.
 
 ## Scenarios
 
-Precondition: Modifying keys, Adding keys, Duplicating keys, Drag & Drop keys
+Precondition: Modifying keys, Adding keys, Drag & Drop keys.
 Main success scenario: User successfully undos/redos a configuration change.
 Error scenario: Technical problems while configuring the instance. The user is
   informed about the problem.

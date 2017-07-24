@@ -10,7 +10,7 @@ Brief: User modifies a key's contents.
 
 ## Scenarios
 
-Precondition: View configuration of an instance
+Precondition: View configuration of an instance.
 Main success scenario: User edits a key's contents in a field that is
   specifically formatted according to its metadata (e.g. number/date fields vs
   string fields with regex validation). Arrays are specifically formatted as
@@ -21,5 +21,4 @@ Alternative scenario: User enters data that fails the field validation, the
 Error scenario: Technical problems while persisting to the key database. The
   user is informed about the problem.
 Postcondition: The updated key is persisted to the database.
-Non-functional Constraints:
-  - Essential functionality
+Non-functional Constraints: -
