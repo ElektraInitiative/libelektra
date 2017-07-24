@@ -49,7 +49,7 @@ static size_t getNumber (OpmphmOrder * order, size_t w)
 const size_t maxNsimple = 1000000;
 const size_t maxNcomplex = 1000;
 
-static void test_basic_functions ()
+static void test_basic_functions (void)
 {
 	printf ("test_basic_functions\n");
 	Opmphm * opmphm = opmphmNew ();
@@ -58,7 +58,7 @@ static void test_basic_functions ()
 	opmphmDel (opmphm);
 }
 
-static void test_test_functions ()
+static void test_test_functions (void)
 {
 	printf ("test_test_functions\n");
 	for (size_t w = 2; w < opmphmGetWidth (maxNsimple); ++w)
@@ -72,7 +72,7 @@ static void test_test_functions ()
 	}
 }
 
-static void test_mapping_success ()
+static void test_mapping_success (void)
 {
 	printf ("test_mapping_success\n");
 	/* test w, always full. w^OPMPHMTUPLE elements in each run.
@@ -292,7 +292,7 @@ static void test_mapping_success ()
 }
 
 
-static void test_mapping_fail ()
+static void test_mapping_fail (void)
 {
 	printf ("test_mapping_fail\n");
 	/* test w, always full. w^OPMPHMTUPLE elements in each run.

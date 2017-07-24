@@ -202,7 +202,7 @@ static size_t opmphmGetWidth (size_t n)
  * @retval Opmphm * success
  * @retval NULL memory error
  */
-Opmphm * opmphmNew ()
+Opmphm * opmphmNew (void)
 {
 	Opmphm * out = elektraMalloc (sizeof (Opmphm));
 	if (!out)
