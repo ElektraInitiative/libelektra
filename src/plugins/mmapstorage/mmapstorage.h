@@ -12,20 +12,18 @@
 
 #include <kdbplugin.h>
 
-typedef struct _mmapInfo MmapInfo;
+#define ELEKTRA_MAGIC_MMAP_NUMBER (0x656c656b747261)
 
-struct _mmapInfo
+typedef struct _mmapHeader MmapHeader;
+
+struct _mmapHeader
 {
-	char * addr;
-};
-
-typedef struct _mmapSize MmapSize;
-
-struct _mmapSize
-{
+	size_t mmapMagicNumber;
 	size_t mmapSize;
-	size_t ksSize;
-	size_t metaKeys;
+	size_t numKeys;
+	size_t numMetaKeys;
+	size_t numMetaKeySets;
+	char * addr;
 };
 
 typedef struct _dynArray DynArray;
