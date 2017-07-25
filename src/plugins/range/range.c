@@ -358,18 +358,17 @@ static int validateMultipleRanges (const char * valueStr, const char * rangeStri
 
 static RangeType stringToType (const Key * typeMeta)
 {
-	static const char * intTypes[] = {
-		"short", "long", "long long", NULL,
-	};
-	static const char * uintTypes[] = {
-		"unsigned short", "unsigned long", "unsigned long long", NULL,
-	};
-	static const char * floatTypes[] = {
-		"float", "double", "long double", NULL,
-	};
-
 	if (typeMeta)
 	{
+		static const char * intTypes[] = {
+			"short", "long", "long long", NULL,
+		};
+		static const char * uintTypes[] = {
+			"unsigned short", "unsigned long", "unsigned long long", NULL,
+		};
+		static const char * floatTypes[] = {
+			"float", "double", "long double", NULL,
+		};
 		const char * strVal = keyString (typeMeta);
 		for (int i = 0; intTypes[i] != NULL; ++i)
 		{

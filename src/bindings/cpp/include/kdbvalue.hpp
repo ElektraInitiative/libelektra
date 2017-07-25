@@ -85,7 +85,7 @@ public:
 class WrapLayer : public Layer
 {
 public:
-	WrapLayer (Wrapped const & wrapped) : m_wrapped (wrapped)
+	explicit WrapLayer (Wrapped const & wrapped) : m_wrapped (wrapped)
 	{
 	}
 

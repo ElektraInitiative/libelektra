@@ -133,7 +133,7 @@ class BackendFactory
 	std::string which;
 
 public:
-	BackendFactory (std::string const & whichBackend) : which (whichBackend)
+	explicit BackendFactory (std::string const & whichBackend) : which (whichBackend)
 	{
 	}
 

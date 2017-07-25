@@ -482,7 +482,6 @@ static int iniCommentToMeta (void * vhandle, const char * comment)
 		// skip keynames leading whitespace
 		while (isspace (*name))
 			++name;
-		char * value;
 
 		// locate key/value delimiter "="
 		ptr = strstr (localCopy, "=");
@@ -500,7 +499,7 @@ static int iniCommentToMeta (void * vhandle, const char * comment)
 
 				*ptr = '\0';
 				// skip leading whitespace and drop trailing whitespace
-				value = ptr + 1;
+				char * value = ptr + 1;
 				while (isspace (*value))
 					++value;
 				char * valueEnd = &localCopy[len - 1];

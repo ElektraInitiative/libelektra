@@ -222,7 +222,6 @@ static unsigned long getColumnCount (char * lineBuffer, char delim)
 static char * readNextLine (FILE * fp, char delim, int * lastLine, int * linesRead)
 {
 	int done = 0;
-	unsigned long len = 0;
 	unsigned long bufLen = 0;
 	unsigned long offset = 0;
 	*linesRead = 0;
@@ -232,7 +231,7 @@ static char * readNextLine (FILE * fp, char delim, int * lastLine, int * linesRe
 	{
 		int isQuoted = 0;
 		int isCol = 0;
-		len = getLineLength (fp);
+		unsigned long len = getLineLength (fp);
 		if (!len)
 		{
 			if (!lineBuffer)

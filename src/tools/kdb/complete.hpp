@@ -51,11 +51,11 @@ private:
 	void completeNormal (std::string const & argument, kdb::Key const & parsedArgument, Cmdline const & cmdLine);
 
 	const std::map<kdb::Key, std::pair<int, int>> analyze (const kdb::KeySet & ks, Cmdline const & cmdLine);
-	void
-	printResults (kdb::Key const & root, const int minDepth, const int maxDepth, Cmdline const & cmdLine,
-		      const std::map<kdb::Key, std::pair<int, int>> & result,
-		      const std::function<bool(std::pair<kdb::Key, std::pair<int, int>> const & current)> filterPredicate,
-		      const std::function<void(std::pair<kdb::Key, std::pair<int, int>> const & current, const bool verbose)> resultFilter);
+	void printResults (
+		kdb::Key const & root, const int minDepth, const int maxDepth, Cmdline const & cmdLine,
+		std::map<kdb::Key, std::pair<int, int>> const & result,
+		std::function<bool(std::pair<kdb::Key, std::pair<int, int>> const & current)> const & filterPredicate,
+		std::function<void(std::pair<kdb::Key, std::pair<int, int>> const & current, const bool verbose)> const & resultFilter);
 
 	// helper functions
 	int getKeyDepth (kdb::Key const & key);
@@ -66,7 +66,7 @@ private:
 	void addMountpoints (kdb::KeySet & ks, kdb::Key const & root, Cmdline const & cl);
 	void addNamespaces (std::map<kdb::Key, std::pair<int, int>> & hierarchy, Cmdline const & cl);
 	void increaseCount (std::map<kdb::Key, std::pair<int, int>> & hierarchy, kdb::Key const & key,
-			    const std::function<int(int)> depthIncreaser);
+			    std::function<int(int)> const & depthIncreaser);
 
 	// print functions
 	static void printBookmarkResult (std::pair<kdb::Key, std::pair<int, int>> const & current, const bool verbose);

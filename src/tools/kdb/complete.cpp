@@ -209,8 +209,8 @@ const map<Key, pair<int, int>> CompleteCommand::analyze (KeySet const & ks, Cmdl
 
 void CompleteCommand::printResults (Key const & root, const int minDepth, const int maxDepth, Cmdline const & cl,
 				    map<Key, pair<int, int>> const & result,
-				    const std::function<bool(pair<Key, pair<int, int>> const & current)> filter,
-				    const std::function<void(pair<Key, pair<int, int>> const & current, const bool verbose)> resultPrinter)
+				    std::function<bool(pair<Key, pair<int, int>> const & current)> const & filter,
+				    std::function<void(pair<Key, pair<int, int>> const & current, const bool verbose)> const & resultPrinter)
 {
 	if (cl.verbose)
 	{
@@ -339,7 +339,7 @@ void CompleteCommand::addNamespaces (map<Key, pair<int, int>> & hierarchy, Cmdli
 	}
 }
 
-void CompleteCommand::increaseCount (map<Key, pair<int, int>> & hierarchy, Key const & key, const function<int(int)> depthIncreaser)
+void CompleteCommand::increaseCount (map<Key, pair<int, int>> & hierarchy, Key const & key, function<int(int)> const & depthIncreaser)
 {
 	const pair<int, int> prev = hierarchy[key];
 	hierarchy[key] = pair<int, int> (prev.first + 1, depthIncreaser (prev.second));

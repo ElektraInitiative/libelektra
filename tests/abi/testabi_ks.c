@@ -603,7 +603,6 @@ static void test_ksAtCursor ()
 {
 	KeySet * ks;
 	Key * current;
-	Key * other;
 	Key * testKeys[5];
 	ks = ksNew (0, KS_END);
 
@@ -628,7 +627,7 @@ static void test_ksAtCursor ()
 		current = testKeys[index];
 		ksNext (ks);
 		cursor = ksGetCursor (ks);
-		other = ksAtCursor (ks, cursor);
+		Key * other = ksAtCursor (ks, cursor);
 		succeed_if_same_string (keyName (current), keyName (other));
 	}
 
@@ -940,16 +939,15 @@ static void test_ksSort ()
 
 static void ksUnsort (KeySet * ks)
 {
-	Key * cur;
-	size_t size = 0;
 	KeySet * randks = ksNew (0, KS_END); /*This is the final randomized keyset*/
 	KeySet * tempks = ksNew (0, KS_END); /*Temporary storage for keys not chosen to be inserted*/
 
 	while (ksGetSize (ks) > 0)
 	{
 		ksRewind (ks);
-		size = ksGetSize (ks);
+		size_t size = ksGetSize (ks);
 		/* printf ("iterating %d\n", size); */
+		Key * cur;
 		while ((cur = ksPop (ks)) != 0)
 		{
 			/* printf ("\titerating %s\n", keyName(cur)); */
@@ -1747,7 +1745,6 @@ static void test_ksAppend ()
 				Key * parentKey[2];
 	parentKey[0] = keyNew ("user/test/keyset", KEY_END);
 	parentKey[1] = keyNew ("user/test/keyset/dir1", KEY_END);
-	Key * current;
 
 	/* A real world example out in kdb.c */
 	for (i = 0; i < 2; i++)
@@ -1757,6 +1754,7 @@ static void test_ksAppend ()
 
 		/* add all keys direct below parentKey */
 		ksRewind (returned);
+		Key * current;
 		while ((current = ksPop (returned)) != 0)
 		{
 			if (keyIsDirectBelow (parentKey[i], current))
@@ -1835,7 +1833,6 @@ static void test_ksAppend ()
  */
 int ksForEach (KeySet * ks, int (*func) (Key * k))
 {
-	int rc = 0;
 	int ret = 0;
 	Key * current;
 
@@ -1843,7 +1840,7 @@ int ksForEach (KeySet * ks, int (*func) (Key * k))
 	ksRewind (ks);
 	while ((current = ksNext (ks)) != 0)
 	{
-		rc = func (current);
+		int rc = func (current);
 		if (rc == -1) return -1;
 		ret += rc;
 	}
@@ -1873,7 +1870,6 @@ int ksForEach (KeySet * ks, int (*func) (Key * k))
  **/
 int ksFilter (KeySet * result, KeySet * input, int (*filter) (Key * k))
 {
-	int rc = 0;
 	int ret = 0;
 	Key * current;
 
@@ -1881,7 +1877,7 @@ int ksFilter (KeySet * result, KeySet * input, int (*filter) (Key * k))
 	ksRewind (input);
 	while ((current = ksNext (input)) != 0)
 	{
-		rc = filter (current);
+		int rc = filter (current);
 		if (rc == -1)
 			return -1;
 		else if (rc != 0)

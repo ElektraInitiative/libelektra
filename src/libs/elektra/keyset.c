@@ -166,7 +166,6 @@ KeySet * ksNew (size_t alloc, ...)
 KeySet * ksVNew (size_t alloc, va_list va)
 {
 	KeySet * keyset = 0;
-	Key * key = 0;
 
 	keyset = (KeySet *)elektraMalloc (sizeof (KeySet));
 	if (!keyset)
@@ -192,7 +191,7 @@ KeySet * ksVNew (size_t alloc, va_list va)
 
 	if (alloc != 1) // is >0 because of increment earlier
 	{
-		key = (struct _Key *)va_arg (va, struct _Key *);
+		Key * key = (struct _Key *)va_arg (va, struct _Key *);
 		while (key)
 		{
 			ksAppendKey (keyset, key);

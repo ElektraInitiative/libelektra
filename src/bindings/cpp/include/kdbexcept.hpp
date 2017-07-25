@@ -28,7 +28,7 @@ namespace kdb
 class KDBException : public Exception
 {
 public:
-	KDBException (Key key) : m_key (key), m_str ()
+	explicit KDBException (Key key) : m_key (key), m_str ()
 	{
 	}
 

@@ -46,8 +46,8 @@ private:
 
 public:
 	BackendBuilderInit ();
-	BackendBuilderInit (PluginDatabasePtr const & plugins);
-	BackendBuilderInit (BackendFactory const & bf);
+	explicit BackendBuilderInit (PluginDatabasePtr const & plugins);
+	explicit BackendBuilderInit (BackendFactory const & bf);
 	BackendBuilderInit (PluginDatabasePtr const & plugins, BackendFactory const & bf);
 	BackendBuilderInit (BackendFactory const & bf, PluginDatabasePtr const & plugins);
 

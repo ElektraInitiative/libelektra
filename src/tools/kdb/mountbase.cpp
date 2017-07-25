@@ -135,7 +135,7 @@ class KDBMountException : public KDBException
 	std::string msg;
 
 public:
-	KDBMountException (std::string const & e) : KDBException (Key ()), msg (e)
+	explicit KDBMountException (std::string const & e) : KDBException (Key ()), msg (e)
 	{
 	}
 

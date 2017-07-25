@@ -221,9 +221,9 @@ static void validateWildcardSubs (KeySet * ks, Key * key, Key * specKey)
 		if (keyIsDirectBelow (parent, cur)) ++subCount;
 	}
 	long required = atol (keyString (requiredMeta));
-	char buffer[MAX_CHARS_IN_LONG + 1];
 	if (required != subCount)
 	{
+		char buffer[MAX_CHARS_IN_LONG + 1];
 		snprintf (buffer, sizeof (buffer), "%ld", subCount);
 		keySetMeta (parent, "conflict/invalid/subcount", buffer);
 	}
@@ -652,7 +652,6 @@ static int doGlobbing (Key * parentKey, KeySet * returned, KeySet * specKS, Conf
 {
 	Key * specKey;
 	ksRewind (specKS);
-	Key * cur;
 	int ret = 1;
 	while ((specKey = ksNext (specKS)) != NULL)
 	{
@@ -672,6 +671,7 @@ static int doGlobbing (Key * parentKey, KeySet * returned, KeySet * specKS, Conf
 		}
 		int found = 0;
 		ksRewind (returned);
+		Key * cur;
 		while ((cur = ksNext (returned)) != NULL)
 		{
 			if (keyGetNamespace (cur) == KEY_NS_SPEC) continue;

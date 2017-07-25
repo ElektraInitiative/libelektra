@@ -166,7 +166,6 @@ static void strToArray (Key * key, char *** array)
 	char * localString = strdup (values);
 	char * saveptr = 0;
 	char * token = 0;
-	int index = 0;
 	token = strtok_r (localString, ";", &saveptr);
 	if (!token)
 	{
@@ -175,6 +174,7 @@ static void strToArray (Key * key, char *** array)
 	}
 	else
 	{
+		int index = 0;
 		ptr = token;
 		while (*ptr == ' ')
 			++ptr;

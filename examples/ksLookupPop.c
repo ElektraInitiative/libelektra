@@ -12,13 +12,12 @@
 void f (KeySet * iterator, KeySet * lookup)
 {
 	KeySet * append = ksNew (ksGetSize (lookup), KS_END);
-	Key * key;
 	Key * current;
 
 	ksRewind (iterator);
 	while ((current = ksNext (iterator)))
 	{
-		key = ksLookup (lookup, current, KDB_O_POP);
+		Key * key = ksLookup (lookup, current, KDB_O_POP);
 		// do something...
 		ksAppendKey (append, key); // now append it to append, not lookup!
 		keyDel (key);		   // make sure to ALWAYS delete poped keys.

@@ -168,7 +168,7 @@ public:
 class ProfileLayer : public kdb::Layer
 {
 public:
-	ProfileLayer (kdb::String const & profile) : m_profile (profile)
+	explicit ProfileLayer (kdb::String const & profile) : m_profile (profile)
 	{
 	}
 	std::string id () const override

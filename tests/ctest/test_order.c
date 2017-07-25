@@ -116,13 +116,12 @@ int fac (int i)
 static void per (int k, Key ** pool, Key ** result)
 {
 	int i;
-	int selected;
 	int cursize = size - 1;
 
 	for (i = 0; i < size - 1; ++i)
 	{
 		// printf ("%d -- ", k);
-		selected = k % (cursize);
+		int selected = k % (cursize);
 		k /= cursize + 1;
 		cursize--;
 

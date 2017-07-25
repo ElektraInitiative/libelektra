@@ -373,19 +373,18 @@ int splitBuildup (Split * split, KDB * kdb, Key * parentKey)
  */
 int splitDivide (Split * split, KDB * handle, KeySet * ks)
 {
-	ssize_t curFound = 0; /* If key could be appended to any of the existing split keysets */
 	int needsSync = 0;
 	Key * curKey = 0;
-	Backend * curHandle = 0;
 
 	ksRewind (ks);
 	while ((curKey = ksNext (ks)) != 0)
 	{
 		// TODO: handle keys in wrong namespaces
-		curHandle = mountGetBackend (handle, curKey);
+		Backend * curHandle = mountGetBackend (handle, curKey);
 		if (!curHandle) return -1;
 
-		curFound = splitSearchBackend (split, curHandle, curKey);
+		/* If key could be appended to any of the existing split keysets */
+		ssize_t curFound = splitSearchBackend (split, curHandle, curKey);
 
 		if (curFound == -1) continue; // key not relevant in this kdbSet
 
@@ -437,18 +436,17 @@ void splitUpdateFileName (Split * split, KDB * handle, Key * key)
  */
 int splitAppoint (Split * split, KDB * handle, KeySet * ks)
 {
-	ssize_t curFound = 0; /* If key could be appended to any of the existing split keysets */
 	Key * curKey = 0;
-	Backend * curHandle = 0;
 	ssize_t defFound = splitAppend (split, 0, 0, 0);
 
 	ksRewind (ks);
 	while ((curKey = ksNext (ks)) != 0)
 	{
-		curHandle = mountGetBackend (handle, curKey);
+		Backend * curHandle = mountGetBackend (handle, curKey);
 		if (!curHandle) return -1;
 
-		curFound = splitSearchBackend (split, curHandle, curKey);
+		/* If key could be appended to any of the existing split keysets */
+		ssize_t curFound = splitSearchBackend (split, curHandle, curKey);
 
 		if (curFound == -1) curFound = defFound;
 
@@ -521,11 +519,10 @@ static void elektraDropCurrentKey (KeySet * ks, Key * warningKey, const Backend 
 static int elektraSplitPostprocess (Split * split, int i, Key * warningKey, KDB * handle)
 {
 	Key * cur = 0;
-	Backend * curHandle = 0;
 	ksRewind (split->keysets[i]);
 	while ((cur = ksNext (split->keysets[i])) != 0)
 	{
-		curHandle = mountGetBackend (handle, cur);
+		Backend * curHandle = mountGetBackend (handle, cur);
 		if (!curHandle) return -1;
 
 		keyClearSync (cur);

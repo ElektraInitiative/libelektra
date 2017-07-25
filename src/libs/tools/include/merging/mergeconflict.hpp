@@ -25,7 +25,7 @@ namespace merging
 class InvalidConflictOperation : public ToolException
 {
 public:
-	InvalidConflictOperation (std::string const & message) : ToolException (message){};
+	explicit InvalidConflictOperation (std::string const & message) : ToolException (message){};
 };
 
 enum ConflictOperation

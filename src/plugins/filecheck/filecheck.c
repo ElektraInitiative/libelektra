@@ -118,12 +118,11 @@ static int validateLineEnding (const uint8_t * line, Lineending * valid, int res
 		fc = line[0];
 		i = 1;
 	}
-	uint8_t sc = 0;
 	const ssize_t lineLength = (elektraStrLen ((char *)line) - 1);
 	for (; i < lineLength; ++i)
 	{
 		found = NA;
-		sc = line[i];
+		uint8_t sc = line[i];
 		switch (fc)
 		{
 		case LF_BYTE:

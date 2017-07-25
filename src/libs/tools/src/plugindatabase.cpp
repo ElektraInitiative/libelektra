@@ -382,7 +382,7 @@ std::vector<PluginSpec> ModulesPluginDatabase::lookupAllProvides (std::string co
 class PluginVariantDatabase::VariantImpl
 {
 public:
-	VariantImpl (const KeySet & conf) : pluginconf (conf)
+	explicit VariantImpl (const KeySet & conf) : pluginconf (conf)
 	{
 	}
 	~VariantImpl ()

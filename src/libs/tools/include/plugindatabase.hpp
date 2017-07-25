@@ -194,7 +194,7 @@ public:
 	 * 
 	 * @param conf keyset containing keys from system/elektra/plugins
 	 */
-	PluginVariantDatabase (const KeySet & conf);
+	explicit PluginVariantDatabase (const KeySet & conf);
 	~PluginVariantDatabase ();
 
 	std::vector<std::string> listAllPlugins () const;
