@@ -207,10 +207,10 @@ const map<Key, pair<int, int>> CompleteCommand::analyze (KeySet const & ks, Cmdl
 	return hierarchy;
 }
 
-void CompleteCommand::printResults (Key const & root, const int minDepth, const int maxDepth, Cmdline const & cl,
-				    map<Key, pair<int, int>> const & result,
-				    std::function<bool(pair<Key, pair<int, int>> const & current)> const & filter,
-				    std::function<void(pair<Key, pair<int, int>> const & current, const bool verbose)> const & resultPrinter)
+void CompleteCommand::printResults (
+	Key const & root, const int minDepth, const int maxDepth, Cmdline const & cl, map<Key, pair<int, int>> const & result,
+	std::function<bool(pair<Key, pair<int, int>> const & current)> const & filter,
+	std::function<void(pair<Key, pair<int, int>> const & current, const bool verbose)> const & resultPrinter)
 {
 	if (cl.verbose)
 	{
