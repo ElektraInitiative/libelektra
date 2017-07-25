@@ -174,7 +174,11 @@ KeySet * ksVNew (size_t alloc, va_list va)
 		/*errno = KDB_ERR_NOMEM;*/
 		return 0;
 	}
-	ksInit (keyset);
+	if (ksInit (keyset))
+	{
+		elektraFree (keyset);
+		return 0;
+	}
 
 	alloc++; /* for ending null byte */
 	if (alloc < KEYSET_SIZE)
@@ -381,6 +385,14 @@ int ksClear (KeySet * ks)
 {
 	ksClose (ks);
 	// ks->array empty now
+
+#ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
+	ks->opmphm = opmphmNew ();
+	if (!ks->opmphm)
+	{
+		return -1;
+	}
+#endif
 
 	if ((ks->array = elektraMalloc (sizeof (struct _Key *) * KEYSET_SIZE)) == 0)
 	{
@@ -2338,7 +2350,8 @@ size_t ksGetAlloc (const KeySet * ks)
  * cleaned with ksClear().
  *
  * @see ksNew(), ksClose(), keyInit()
- * @retval 1 on success
+ * @retval 0 on success
+ * @retval -1 on memory error
  */
 int ksInit (KeySet * ks)
 {
@@ -2350,7 +2363,15 @@ int ksInit (KeySet * ks)
 
 	ksRewind (ks);
 
-	return 1;
+#ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
+	ks->opmphm = opmphmNew ();
+	if (!ks->opmphm)
+	{
+		return -1;
+	}
+#endif
+
+	return 0;
 }
 
 
@@ -2378,6 +2399,10 @@ int ksClose (KeySet * ks)
 	ks->alloc = 0;
 
 	ks->size = 0;
+
+#ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
+	opmphmDel (ks->opmphm);
+#endif
 
 	return 0;
 }
