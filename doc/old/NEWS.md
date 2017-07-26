@@ -529,7 +529,7 @@ From this release on, Elektra has full read and write capabilities
 towards the world of json. json is a very popular serialization format
 which is originated in Javascript.
 It is very similar to the already existing tcl plugin, which also works
-like a parser without intermediate datastructures. But unlike the tcl
+like a parser without intermediate data structures. But unlike the tcl
 plugin, where a grammar was written, the blazing fast yajl library was
 used.
 

@@ -1,7 +1,7 @@
 /**
  * @file
  *
- * @brief example how easy it is to put keys in different datastructures
+ * @brief example how easy it is to put keys in different data structures
  *
  * - * They might even have complete other properties than KeySet, e.g. in
  * this case:
