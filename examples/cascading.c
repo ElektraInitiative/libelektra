@@ -16,7 +16,7 @@ void printError (char * what, Key const * parentKey)
 		keyString (keyGetMeta (parentKey, "error/number")), keyString (keyGetMeta (parentKey, "error/reason")));
 }
 
-int main ()
+int main (void)
 {
 	Key * parentKey = keyNew ("", KEY_CASCADING_NAME, KEY_END);
 	KDB * kdb = kdbOpen (parentKey);

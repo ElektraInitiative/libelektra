@@ -38,7 +38,7 @@ class MetaMergeStrategy : public MergeConflictStrategy
 public:
 	ThreeWayMerge & innerMerger;
 
-	MetaMergeStrategy (ThreeWayMerge & _innerStrategy) : innerMerger (_innerStrategy)
+	explicit MetaMergeStrategy (ThreeWayMerge & _innerStrategy) : innerMerger (_innerStrategy)
 	{
 	}
 

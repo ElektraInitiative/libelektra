@@ -10,5 +10,5 @@ then
 	echo "Usage $0 <dotfile>"
 	exit
 fi
-outfile="$(echo "$1" | cut -d "." -f1-).png"
+outfile="$(echo "$1" | cut -d "." -f1).png"
 dot -Tpng "$1" -o "$outfile"

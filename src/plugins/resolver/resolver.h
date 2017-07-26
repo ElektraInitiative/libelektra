@@ -11,6 +11,8 @@
 
 #define _GNU_SOURCE // needed for recursive mutex
 
+#include "shared.h"
+
 #include <sys/stat.h>
 
 #include <kdbconfig.h>
@@ -55,8 +57,9 @@ struct _resolverHandles
 	resolverHandle system;
 };
 
+void ELEKTRA_PLUGIN_FUNCTION (resolver, freeHandle) (ElektraResolved *);
 int ELEKTRA_PLUGIN_FUNCTION (resolver, checkFile) (const char * filename);
-int ELEKTRA_PLUGIN_FUNCTION (resolver, filename) (Key * forKey, resolverHandle * p, Key * warningsKey);
+ElektraResolved * ELEKTRA_PLUGIN_FUNCTION (resolver, filename) (elektraNamespace, const char *, ElektraResolveTempfile, Key *);
 
 int ELEKTRA_PLUGIN_FUNCTION (resolver, open) (Plugin * handle, Key * errorKey);
 int ELEKTRA_PLUGIN_FUNCTION (resolver, close) (Plugin * handle, Key * errorKey);

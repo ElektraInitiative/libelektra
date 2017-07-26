@@ -1,27 +1,26 @@
-elektra-architecture(7) -- architecture of elektra
-==================================================
+# Architecture
 
 In this document we start to explain the implementation of Elektra.
 There are several follow-up documents which explain all details of:
 
-- [error handling](elektra-error-handling.md),
-- [data structures](elektra-data-structures.md), and
-- finally the [core algorithm](elektra-algorithm.md).
+- [error handling](error-handling.md),
+- [data structures](data-structures.md), and
+- finally the [core algorithm](algorithm.md).
 
 We discuss problems and the solution space so that the reader
 can understand the rationale of how problems were solved.
 
 To help readers to understand the algorithm that glues together the
 plugins, we first describe some details of the
-[data structures](elektra-data-structures.md). Full
-knowledge of the [algorithm](elektra-algorithm.md) is not presumed to be able to develop
+[data structures](data-structures.md). Full
+knowledge of the [algorithm](algorithm.md) is not presumed to be able to develop
 most plugins (with the exception of [the resolver](/src/plugins/resolver/)).
 
 Further important concepts are explained in:
 
-- [bootstrapping](elektra-bootstrapping.md)
-- [granularity](elektra-granularity.md)
-- [sync-flag](elektra-sync-flag.md)
+- [bootstrapping](/doc/help/elektra-bootstrapping.md)
+- [granularity](/doc/help/elektra-granularity.md)
+- [sync-flag](/doc/help/elektra-sync-flag.md)
 
 
 ## API
@@ -42,8 +41,8 @@ that `KeySet` is now always sorted by name.  The function `ksSort()`
 is now depreciated and was removed.  The handling of removed keys was
 modified.  Additionally, the API for metadata has fundamentally changed,
 but the old interface still works.  These changes will be described in
-[implementation of metadata](elektra-metadata.md). However, the implementation of
-Elektra changed radically as discussed in [algorithm](elektra-algorithm.md).
+[implementation of metadata](metadata.md). However, the implementation of
+Elektra changed radically as discussed in [algorithm](algorithm.md).
 
 ### API Design
 
@@ -307,7 +306,7 @@ above.
   a label which was introduced before. This configuration does not create
   a new plugin.
 
-`kdb mount` already implements the generation of these names as described above.
+`kdb mount` implements the generation of these names as described above.
 
 
 ### Changing Mount Point Configuration
@@ -349,4 +348,4 @@ to use notification for mountpoint configuration changes or simply to
 use a lock-free resolver.
 
 
-Continue reading [with the data structures](elektra-data-structures.md).
+Continue reading [with the data structures](data-structures.md).

@@ -90,7 +90,7 @@ static int elektraCryptoInit (Key * errorKey ELEKTRA_UNUSED)
  *
  * Some libraries may need extra code for cleaning up the environment.
  */
-static void elektraCryptoTeardown ()
+static void elektraCryptoTeardown (void)
 {
 }
 
@@ -336,8 +336,10 @@ error:
 /**
  * @brief initialize the crypto provider for the first instance of the plugin.
  *
+ * @param handle holds the plugin handle
+ * @param errorKey holds an error description in case of failure
  * @retval 1 on success
- * @retval -1 on failure
+ * @retval -1 on failure. Check errorKey
  */
 int CRYPTO_PLUGIN_FUNCTION (open) (Plugin * handle ELEKTRA_UNUSED, Key * errorKey)
 {
@@ -358,6 +360,8 @@ int CRYPTO_PLUGIN_FUNCTION (open) (Plugin * handle ELEKTRA_UNUSED, Key * errorKe
 /**
  * @brief finalizes the crypto provider for the last instance of the plugin.
  *
+ * @param handle holds the plugin handle
+ * @param errorKey holds an error description in case of failure. Not used at the moment.
  * @retval 1 on success
  * @retval -1 on failure
  */
@@ -398,8 +402,11 @@ int CRYPTO_PLUGIN_FUNCTION (close) (Plugin * handle, Key * errorKey ELEKTRA_UNUS
  * The crypto configuration is expected to be contained within the KeySet ks.
  * All keys having a metakey "crypto/encrypted" with a strlen() > 0 are being decrypted.
  *
+ * @param handle holds the plugin handle
+ * @param ks holds the data to be operated on
+ * @param parentKey holds an error description in case of failure
  * @retval 1 on success
- * @retval -1 on failure
+ * @retval -1 on failure. Check parentKey.
  */
 int CRYPTO_PLUGIN_FUNCTION (get) (Plugin * handle, KeySet * ks, Key * parentKey)
 {
@@ -414,11 +421,6 @@ int CRYPTO_PLUGIN_FUNCTION (get) (Plugin * handle, KeySet * ks, Key * parentKey)
 		return 1;
 	}
 
-	// the actual decryption
-
-	// for now we expect the crypto configuration to be stored in the KeySet ks
-	// we may add more options in the future
-
 	return elektraCryptoDecrypt (handle, ks, parentKey);
 }
 
@@ -428,14 +430,14 @@ int CRYPTO_PLUGIN_FUNCTION (get) (Plugin * handle, KeySet * ks, Key * parentKey)
  * If a key has the metakey "crypto/encrypt" with a strlen() > 0, then the value
  * will be encrypted using the configuration stored in the KeySet ks.
  *
+ * @param handle holds the plugin handle
+ * @param ks holds the data to be operated on
+ * @param parentKey holds an error description in case of failure
  * @retval 1 on success
- * @retval -1 on failure
+ * @retval -1 on failure. Check parentKey.
  */
 int CRYPTO_PLUGIN_FUNCTION (set) (Plugin * handle, KeySet * ks, Key * parentKey)
 {
-	// for now we expect the crypto configuration to be stored in the KeySet ks
-	// we may add more options in the future
-
 	return elektraCryptoEncrypt (handle, ks, parentKey);
 }
 
@@ -451,6 +453,8 @@ int CRYPTO_PLUGIN_FUNCTION (set) (Plugin * handle, KeySet * ks, Key * parentKey)
  * An error might occur during the password generation, encryption and decryption.
  * The error will be appended to errorKey.
  *
+ * @param errorKey holds an error description in case of failure
+ * @param conf holds the plugin configuration
  * @retval 0 no changes were made to the configuration
  * @retval 1 the master password has been appended to the configuration
  * @retval -1 an error occurred. Check errorKey
@@ -494,16 +498,6 @@ int CRYPTO_PLUGIN_FUNCTION (checkconf) (Key * errorKey, KeySet * conf)
 	}
 }
 
-/**
- * @brief TBD
- * @retval 1 on success
- * @retval -1 on failure
- */
-int CRYPTO_PLUGIN_FUNCTION (error) (Plugin * handle ELEKTRA_UNUSED, KeySet * ks ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
-{
-	return 1;
-}
-
 Plugin * ELEKTRA_PLUGIN_EXPORT (crypto)
 {
 	// clang-format off
@@ -512,6 +506,5 @@ Plugin * ELEKTRA_PLUGIN_EXPORT (crypto)
 			ELEKTRA_PLUGIN_CLOSE, &CRYPTO_PLUGIN_FUNCTION(close),
 			ELEKTRA_PLUGIN_GET,   &CRYPTO_PLUGIN_FUNCTION(get),
 			ELEKTRA_PLUGIN_SET,   &CRYPTO_PLUGIN_FUNCTION(set),
-			ELEKTRA_PLUGIN_ERROR, &CRYPTO_PLUGIN_FUNCTION(error),
 			ELEKTRA_PLUGIN_END);
 }

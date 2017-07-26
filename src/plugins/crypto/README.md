@@ -126,11 +126,11 @@ The path to the gpg binary can be specified in
 
     /gpg/bin
 
-The GPG recipient keys can be specified as `/gpg/key` directly.
+The GPG recipient keys can be specified as `encrypt/key` directly.
 If you want to use more than one key, just enumerate like:
 
-    /gpg/key/#0
-    /gpg/key/#1
+    encrypt/key/#0
+    encrypt/key/#1
 
 If more than one key is defined, every owner of the corresponding private key can decrypt the values of the backend.
 This might be useful if applications run with their own user but the administrator has to update the configuration.
@@ -151,7 +151,7 @@ In the error description you should see something like:
     Ingroup: plugin
     Module: crypto
     At: /Users/pnirschl/Projects/libelektra/src/plugins/crypto/gpg.c:512
-    Reason: Missing GPG key (specified as /gpg/key) in plugin configuration. Available key IDs are: B815F1334CF4F830187A784256CFA3A5C54DF8E4,847378ABCF0A552B48082A80C52E8E92F785163F
+    Reason: Missing GPG key (specified as encrypt/key) in plugin configuration. Available key IDs are: B815F1334CF4F830187A784256CFA3A5C54DF8E4,847378ABCF0A552B48082A80C52E8E92F785163F
     Mountpoint:
     Configfile:
     Please report the issue at https://issues.libelektra.org/

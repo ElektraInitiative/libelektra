@@ -20,6 +20,33 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+/* -- Macros ---------------------------------------------------------------------------------------------------------------------------- */
+
+/**
+ * @brief Close a given file handle
+ *
+ * @pre The parameters `file`, and `parentKey` must not be `NULL`.
+ *
+ * @param file The file handle this function should close
+ * @param errorNumber A saved value for `errno` this function should restore
+ *                    if it was unable to close `file`
+ * @param parentKey A key that is used by this function to store error
+ *                  information if the function was unable to close `file`
+ * @param ERROR_FUNCTION The name of the function used to set the error in `parentKey`
+ */
+#define CLOSE_FILE(file, errorNumber, parentKey, ERROR_FUNCTION)                                                                           \
+	{                                                                                                                                  \
+		ELEKTRA_ASSERT (file, "The Parameter `file` contains `NULL` instead of a valid file handle.");                             \
+		ELEKTRA_ASSERT (parentKey, "The Parameter `parentKey` contains `NULL` instead of a valid key.");                           \
+                                                                                                                                           \
+		if (fclose (file) != 0)                                                                                                    \
+		{                                                                                                                          \
+			ERROR_FUNCTION (parentKey);                                                                                        \
+			errno = errorNumber;                                                                                               \
+			return ELEKTRA_PLUGIN_STATUS_ERROR;                                                                                \
+		}                                                                                                                          \
+	}
+
 /* -- Functions ------------------------------------------------------------------------------------------------------------------------- */
 
 // ===========
@@ -31,7 +58,7 @@
  *
  * @return A contract describing the functionality of this plugin.
  */
-static inline KeySet * elektraMiniContract ()
+static inline KeySet * elektraMiniContract (void)
 {
 	return ksNew (30, keyNew ("system/elektra/modules/mini", KEY_VALUE, "mini plugin waits for your orders", KEY_END),
 		      keyNew ("system/elektra/modules/mini/exports", KEY_END),
@@ -204,34 +231,6 @@ static int parseINI (FILE * file, KeySet * keySet, Key * parentKey)
 }
 
 /**
- * @brief Close a given file handle opened for reading
- *
- * @pre The parameters `file`, and `parentKey` must not be `NULL`.
- *
- * @param file The file handle this function should close
- * @param errorNumber A saved value for `errno` this function should restore
- *                    if it was unable to close `file`
- * @param parentKey A key that is used by this function to store error
- *                  information if the function was unable to close `file`
- *
- * @retval ELEKTRA_PLUGIN_STATUS_SUCCESS if `file` was closed successfully
- * @retval ELEKTRA_PLUGIN_STATUS_ERROR if the function was unable to close `file`
- */
-static inline int closeFileRead (FILE * file, int errorNumber, Key * parentKey)
-{
-	ELEKTRA_ASSERT (file != NULL, "The Parameter `file` contains `NULL` instead of a valid file handle.");
-	ELEKTRA_ASSERT (parentKey != NULL, "The Parameter `parentKey` contains `NULL` instead of a valid key.");
-
-	if (fclose (file) != 0)
-	{
-		ELEKTRA_SET_ERROR_GET (parentKey);
-		errno = errorNumber;
-		return ELEKTRA_PLUGIN_STATUS_ERROR;
-	}
-	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
-}
-
-/**
  * @brief Parse a file containing key value pairs in an INI like format and
  *        store the obtained key value pairs in a given key set.
  *
@@ -263,9 +262,9 @@ static int parseFile (KeySet * returned, Key * parentKey)
 	}
 
 	int statusParse = parseINI (source, returned, parentKey);
-	int statusClose = closeFileRead (source, errorNumber, parentKey);
+	CLOSE_FILE (source, errorNumber, parentKey, ELEKTRA_SET_ERROR_GET);
 
-	return statusParse == ELEKTRA_PLUGIN_STATUS_SUCCESS ? statusClose : statusParse;
+	return statusParse;
 }
 
 /**
@@ -331,35 +330,6 @@ static inline int writeFile (FILE * file, KeySet * keySet, Key * parentKey)
 	return checkWrite (status, errorNumber, parentKey);
 }
 
-/**
- * @brief Close a given file handle opened for writing
- *
- * @pre The parameters `file`, and `parentKey` must not be `NULL`.
- *
- * @param file The file handle this function should close
- * @param errorNumber A saved value for `errno` this function should restore
- *                    if it was unable to close `file`
- * @param parentKey A key that is used by this function to store error
- *                  information if the function was unable to close `file`
- *
- * @retval ELEKTRA_PLUGIN_STATUS_SUCCESS if `file` was closed successfully
- * @retval ELEKTRA_PLUGIN_STATUS_ERROR if the function was unable to close `file`
- */
-
-static inline int closeFileWrite (FILE * file, int errorNumber, Key * parentKey)
-{
-	ELEKTRA_ASSERT (file != NULL, "The Parameter `file` contains `NULL` instead of a valid file handle.");
-	ELEKTRA_ASSERT (parentKey != NULL, "The Parameter `parentKey` contains `NULL` instead of a valid key.");
-
-	if (fclose (file) != 0)
-	{
-		ELEKTRA_SET_ERROR_SET (parentKey);
-		errno = errorNumber;
-		return ELEKTRA_PLUGIN_STATUS_ERROR;
-	}
-	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
-}
-
 // ====================
 // = Plugin Interface =
 // ====================
@@ -390,13 +360,13 @@ int elektraMiniSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 	if (!destination)
 	{
 		ELEKTRA_LOG_WARNING ("Could not open file “%s” for writing: %s", keyString (parentKey), strerror (errno));
-		ELEKTRA_SET_ERROR_GET (parentKey);
+		ELEKTRA_SET_ERROR_SET (parentKey);
 		errno = errorNumber;
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
 	int statusWrite = writeFile (destination, returned, parentKey);
-	int statusClose = closeFileWrite (destination, errorNumber, parentKey);
-	return statusWrite == ELEKTRA_PLUGIN_STATUS_SUCCESS ? statusClose : statusWrite;
+	CLOSE_FILE (destination, errorNumber, parentKey, ELEKTRA_SET_ERROR_SET);
+	return statusWrite;
 }
 
 Plugin * ELEKTRA_PLUGIN_EXPORT (mini)

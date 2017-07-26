@@ -11,7 +11,7 @@
 
 #include <kdb.h>
 
-int main ()
+int main (void)
 {
 	// clang-format off
 //! [add name]

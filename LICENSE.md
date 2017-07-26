@@ -1,16 +1,6 @@
-## Introduction
+# BSD 3-Clause License
 
-This is the "New BSD license" as in
-http://opensource.org/licenses/BSD-3-Clause
-The license below does not contain the advertising clause.
-
-For discussion of BSD licenses, see:
-https://fsfe.org/freesoftware/transcripts/rms-fs-2006-03-09.en.html#q2
-
-
-## Licence
-
-Copyright (c) 2016, [ElektraInitiative](/doc/AUTHORS.md)
+Copyright (c) 2017, [ElektraInitiative](/doc/AUTHORS.md)
  Some rights reserved.
 
 

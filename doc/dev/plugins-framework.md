@@ -1,5 +1,4 @@
-elektra-plugins-framework(7) -- Background about plugins framework
-==================================================================
+# Plugins Framework
 
 Many component systems pass information between the various components
 by calling methods of each other.  This is not the way Elektra’s plugin
@@ -44,7 +43,7 @@ Plugins should not be burdened to check too many postconditions.  Instead,
 plugins focus on their task.  The plugin does not need to check the sync
 flag of keys or if the keys are below the mountpoint. The core already
 guarantees correct behaviour as described
-in [algorithm](/doc/help/elektra-algorithm.md).
+in [algorithm](/doc/dev/algorithm.md).
 
 To sum up, contracts give the information how a plugin interacts with
 others.  It describes if, and how, the `KeySet` `returned` is changed.
@@ -157,5 +156,5 @@ contracts, plugins could not interact as described in this chapter.
 
 ## SEE ALSO
 
-- [elektra-plugins-ordering(7)](elektra-plugins-ordering.md)
-- [elektra-contracts(7)](elektra-contracts.md)
+- [plugins-ordering](plugins-ordering.md)
+- [elektra-contracts(7)](/doc/help/elektra-contracts.md)

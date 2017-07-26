@@ -166,7 +166,6 @@ KeySet * ksNew (size_t alloc, ...)
 KeySet * ksVNew (size_t alloc, va_list va)
 {
 	KeySet * keyset = 0;
-	Key * key = 0;
 
 	keyset = (KeySet *)elektraMalloc (sizeof (KeySet));
 	if (!keyset)
@@ -192,7 +191,7 @@ KeySet * ksVNew (size_t alloc, va_list va)
 
 	if (alloc != 1) // is >0 because of increment earlier
 	{
-		key = (struct _Key *)va_arg (va, struct _Key *);
+		Key * key = (struct _Key *)va_arg (va, struct _Key *);
 		while (key)
 		{
 			ksAppendKey (keyset, key);
@@ -250,7 +249,7 @@ KeySet * ksDup (const KeySet * source)
  *
  * @param source has to be an initialized source KeySet
  * @return a deep copy of source on success
- * @retval 0 on NULL pointer
+ * @retval 0 on NULL pointer or a memory error happened
  * @see ksNew(), ksDel()
  * @see keyDup() for key duplication
  * @see ksDup() for flat copy
@@ -272,7 +271,11 @@ KeySet * ksDeepDup (const KeySet * source)
 		{
 			keyClearSync (d);
 		}
-		ksAppendKey (keyset, d);
+		if (ksAppendKey (keyset, d) == -1)
+		{
+			ksDel (keyset);
+			return 0;
+		}
 	}
 
 	return keyset;
@@ -818,7 +821,14 @@ ssize_t ksAppendKey (KeySet * ks, Key * toAppend)
 		/* We want to append a new key
 		  in position insertpos */
 		++ks->size;
-		if (ks->size >= ks->alloc) ksResize (ks, ks->alloc * 2 - 1);
+		if (ks->size >= ks->alloc)
+		{
+			if (ksResize (ks, ks->alloc * 2 - 1) == -1)
+			{
+				--ks->size;
+				return -1;
+			}
+		}
 		keyIncRef (toAppend);
 
 		if (insertpos == (ssize_t)ks->size - 1)
@@ -871,7 +881,7 @@ ssize_t ksAppend (KeySet * ks, const KeySet * toAppend)
 	if (!ks) return -1;
 	if (!toAppend) return -1;
 
-	if (toAppend->size <= 0) return ks->size;
+	if (toAppend->size == 0) return ks->size;
 
 	/* Do only one resize in advance */
 	for (toAlloc = ks->alloc; ks->size + toAppend->size >= toAlloc; toAlloc *= 2)
@@ -1178,7 +1188,7 @@ Key * ksPop (KeySet * ks)
 
 	ks->flags |= KS_FLAG_SYNC;
 
-	if (ks->size <= 0) return 0;
+	if (ks->size == 0) return 0;
 
 	--ks->size;
 	if (ks->size + 1 < ks->alloc / 2) ksResize (ks, ks->alloc / 2 - 1);

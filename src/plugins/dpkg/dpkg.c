@@ -89,6 +89,7 @@ static KeySet * readFile (Key * parentKey)
 		ksAppend (result, package);
 		ksDel (package);
 	}
+	fclose (fp);
 	return result;
 }
 int elektraDpkgGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)

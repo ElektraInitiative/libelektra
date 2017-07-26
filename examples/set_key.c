@@ -28,7 +28,7 @@ void print_warnings (Key * err)
 }
 
 /** After writing the key this function rereads the key and print it*/
-void check_key ()
+void check_key (void)
 {
 	Key * error_key = keyNew (0);
 	KDB * kdb_handle = kdbOpen (error_key);
@@ -51,7 +51,7 @@ void check_key ()
 }
 
 // typical usage of Elektra
-int main ()
+int main (void)
 {
 	Key * error_key = keyNew (0);
 	KDB * kdb_handle = kdbOpen (error_key);

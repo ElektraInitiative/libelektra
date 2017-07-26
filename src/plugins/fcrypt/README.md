@@ -15,6 +15,7 @@
 ## Introduction
 
 This plugin enables file based encryption and decryption using GPG.
+Also an option for signing and verifying files using GPG is provided.
 
 This plugin encrypts backend files before the commit is executed (thus `precommit`).
 The plugin decrypts the backend files before the getstorage opens it (thus `pregetstorage`).
@@ -49,6 +50,8 @@ Please note that this is a workaround until a more sustainable solution is found
 
 ## Dependencies
 
+### Crypto Plugin
+
 This plugin uses parts of the `crypto` plugin.
 
 ### GnuPG (GPG)
@@ -61,9 +64,17 @@ Please refer to [crypto](../crypto/).
 
 ## Examples
 
-You can mount the plugin like this:
+You can mount the plugin with encryption enabled like this:
 
-	kdb mount test.ecf /t fcrypt /gpg/key=DDEBEF9EE2DC931701338212DAF635B17F230E8D
+	kdb mount test.ecf /t fcrypt encrypt/key=DDEBEF9EE2DC931701338212DAF635B17F230E8D
+
+If you only want to sign the configuration file, you can mount the plugin like this:
+
+	kdb mount test.ecf /t fcrypt sign/key=DDEBEF9EE2DC931701338212DAF635B17F230E8D
+
+Both options `encrypt/key` and `sign/key` can be combined:
+
+	kdb mount test.ecf /t fcrypt encrypt/key=DDEBEF9EE2DC931701338212DAF635B17F230E8D sign/key=DDEBEF9EE2DC931701338212DAF635B17F230E8D
 
 If you create a key under `/t`
 
@@ -76,6 +87,25 @@ But you can still access `/t/a` with `kdb get`:
 	kdb get /t/a
 
 ## Configuration
+
+### Signatures
+
+The GPG signature keys can be specified as `sign/key` directly.
+If you want to use more than one key for signing, just enumerate like:
+
+    sign/key/#0
+    sign/key/#1
+
+If more than one key is defined, every private key is used to sign the file of the backend.
+
+If a signature is attached to a file, `fcrypt` automatically verifies its content whenever the file is being read.
+
+Note that the signed file is stored in the internal format of GPG.
+So you only see binary data when opening the signed configuration file directly.
+However, you can simply display the plain text content of the file by using GPG:
+
+	gpg2 -d signed.ecf
+
 
 ### GPG Configuration
 

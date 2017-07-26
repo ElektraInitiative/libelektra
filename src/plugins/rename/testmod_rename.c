@@ -25,7 +25,7 @@
 #include <tests_plugin.h>
 
 
-static KeySet * createSimpleTestKeys ()
+static KeySet * createSimpleTestKeys (void)
 {
 	return ksNew (20, keyNew ("user/tests/rename/will/be/stripped/key1", KEY_VALUE, "value1", KEY_END),
 		      keyNew ("user/tests/rename/will/be/stripped/key2", KEY_VALUE, "value2", KEY_END),
@@ -33,7 +33,7 @@ static KeySet * createSimpleTestKeys ()
 		      keyNew ("user/tests/rename/will/not/be/stripped/key4", KEY_VALUE, "value4", KEY_END), KS_END);
 }
 
-static KeySet * createSimpleMetaTestKeys ()
+static KeySet * createSimpleMetaTestKeys (void)
 {
 	// clang-format off
 	return ksNew (20,
@@ -80,7 +80,7 @@ static void compareKeySets (KeySet * ks, KeySet * expected)
 	}
 }
 
-static void test_simpleCutOnGet ()
+static void test_simpleCutOnGet (void)
 {
 	Key * parentKey = keyNew ("user/tests/rename", KEY_END);
 	KeySet * conf = ksNew (20, keyNew ("system/cut", KEY_VALUE, "will/be/stripped", KEY_END), KS_END);
@@ -106,7 +106,7 @@ static void test_simpleCutOnGet ()
 }
 
 
-static void test_metaCutOnGet ()
+static void test_metaCutOnGet (void)
 {
 	Key * parentKey = keyNew ("user/tests/rename", KEY_END);
 	KeySet * conf = ksNew (0, KS_END);
@@ -126,7 +126,7 @@ static void test_metaCutOnGet ()
 	PLUGIN_CLOSE ();
 }
 
-static void test_simpleCutRestoreOnSet ()
+static void test_simpleCutRestoreOnSet (void)
 {
 	Key * parentKey = keyNew ("user/tests/rename", KEY_END);
 	Key * parentKeyCopy = keyDup (parentKey);
@@ -165,7 +165,7 @@ static void test_simpleCutRestoreOnSet ()
 	PLUGIN_CLOSE ();
 }
 
-static void test_withoutConfig ()
+static void test_withoutConfig (void)
 {
 	Key * parentKey = keyNew ("user/tests/rename", KEY_END);
 	Key * parentKeyCopy = keyDup (parentKey);
@@ -190,7 +190,7 @@ static void test_withoutConfig ()
 	PLUGIN_CLOSE ();
 }
 
-static void test_metaConfigTakesPrecedence ()
+static void test_metaConfigTakesPrecedence (void)
 {
 	Key * parentKey = keyNew ("user/tests/rename", KEY_END);
 	KeySet * conf = ksNew (20, keyNew ("system/cut", KEY_VALUE, "will/be", KEY_END), KS_END);
@@ -222,7 +222,7 @@ static void test_metaConfigTakesPrecedence ()
 	PLUGIN_CLOSE ();
 }
 
-static void test_keyCutNamePart ()
+static void test_keyCutNamePart (void)
 {
 	Key * parentKey = keyNew ("user/tests/rename", KEY_END);
 	Key * result = elektraKeyCreateNewName (parentKey, parentKey, "wont/cut/this", NULL, NULL, NULL, 0);
@@ -252,7 +252,7 @@ static void test_keyCutNamePart ()
 	keyDel (parentKey);
 }
 
-static void test_rebaseOfNewKeys ()
+static void test_rebaseOfNewKeys (void)
 {
 	Key * parentKey = keyNew ("user/tests/rename", KEY_END);
 	KeySet * conf = ksNew (20, keyNew ("system/cut", KEY_VALUE, "new/base", KEY_END), KS_END);
@@ -287,7 +287,7 @@ static void test_rebaseOfNewKeys ()
 	PLUGIN_CLOSE ();
 }
 
-static void test_addNewBaseToParentKey ()
+static void test_addNewBaseToParentKey (void)
 {
 	Key * parentKey = keyNew ("user/tests/rename", KEY_END);
 	KeySet * conf = ksNew (20, keyNew ("system/cut", KEY_VALUE, "new/base", KEY_END), KS_END);
@@ -311,7 +311,7 @@ static void test_addNewBaseToParentKey ()
 	PLUGIN_CLOSE ();
 }
 
-static void test_replaceString ()
+static void test_replaceString (void)
 {
 	Key * parentKey = keyNew ("user/tests/rename", KEY_END);
 	KeySet * conf = ksNew (20, keyNew ("system/cut", KEY_VALUE, "will/be/stripped", KEY_END),
@@ -335,7 +335,7 @@ static void test_replaceString ()
 	PLUGIN_CLOSE ();
 }
 
-static void test_toUpper ()
+static void test_toUpper (void)
 {
 	Key * parentKey = keyNew ("user/tests/rename", KEY_END);
 	KeySet * conf = ksNew (20, keyNew ("system/toupper", KEY_VALUE, "0", KEY_END), KS_END);
@@ -355,7 +355,7 @@ static void test_toUpper ()
 	PLUGIN_CLOSE ();
 }
 
-static void test_toLower ()
+static void test_toLower (void)
 {
 	Key * parentKey = keyNew ("user/tests/rename", KEY_END);
 	KeySet * conf = ksNew (20, keyNew ("system/tolower", KEY_VALUE, "0", KEY_END), KS_END);
@@ -374,7 +374,7 @@ static void test_toLower ()
 	PLUGIN_CLOSE ();
 }
 
-static void test_mixCase ()
+static void test_mixCase (void)
 {
 	Key * parentKey = keyNew ("user/tests/rename", KEY_END);
 	KeySet * conf =
@@ -395,7 +395,7 @@ static void test_mixCase ()
 	PLUGIN_CLOSE ();
 }
 
-static void test_write ()
+static void test_write (void)
 {
 	Key * parentKey = keyNew ("user/tests/rename", KEY_END);
 	KeySet * conf =
@@ -415,7 +415,7 @@ static void test_write ()
 	PLUGIN_CLOSE ();
 }
 
-static void test_write2 ()
+static void test_write2 (void)
 {
 	Key * parentKey = keyNew ("user/tests/rename", KEY_END);
 	KeySet * conf =

@@ -107,7 +107,7 @@ entire [KeySet](@ref ksAppend)
 - [Work with](@ref ksNext) its [internal cursor](@ref ksCurrent)
 - See [class documentation](@ref keyset) for more
 
-[More background information about the classes](/doc/help/elektra-classes.md)
+[More background information about the classes](/doc/dev/classes.md)
 
 ## Namespaces
 
@@ -192,4 +192,4 @@ Read more about [mounting](/doc/help/elektra-mounting.md)
 
 - See [elektra-glossary(7)](/doc/help/elektra-glossary.md)
 - More information about [elektra-backends(7)](/doc/help/elektra-backends.md)
-- More information about [elektra-plugins-framework(7)](/doc/help/elektra-plugins-framework.md)
+- More information about [plugins-framework](/doc/dev/plugins-framework.md)

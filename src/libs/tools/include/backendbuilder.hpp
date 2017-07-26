@@ -46,8 +46,8 @@ private:
 
 public:
 	BackendBuilderInit ();
-	BackendBuilderInit (PluginDatabasePtr const & plugins);
-	BackendBuilderInit (BackendFactory const & bf);
+	explicit BackendBuilderInit (PluginDatabasePtr const & plugins);
+	explicit BackendBuilderInit (BackendFactory const & bf);
 	BackendBuilderInit (PluginDatabasePtr const & plugins, BackendFactory const & bf);
 	BackendBuilderInit (BackendFactory const & bf, PluginDatabasePtr const & plugins);
 
@@ -144,11 +144,11 @@ public:
 	void addPlugin (PluginSpec const & plugin);
 	void remPlugin (PluginSpec const & plugin);
 
-	void needMetadata (std::string metadata);
-	void needPlugin (std::string provider);
+	void needMetadata (std::string const & metadata);
+	void needPlugin (std::string const & provider);
 	std::vector<std::string> resolveNeeds (bool addRecommends = true);
 
-	void recommendPlugin (std::string provider);
+	void recommendPlugin (std::string const & provider);
 
 	void fillPlugins (BackendInterface & b) const;
 
@@ -197,7 +197,7 @@ public:
 
 	void setBackendConfig (KeySet const & ks);
 
-	void useConfigFile (std::string file);
+	void useConfigFile (std::string const & file);
 	std::string getConfigFile () const;
 
 	void serialize (kdb::KeySet & ret);

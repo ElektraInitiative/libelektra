@@ -514,6 +514,7 @@ char * elektraUnescapeKeyNamePart (const char * source, size_t size, char * dest
 
 int elektraValidateKeyName (const char * name, size_t size);
 
+
 /*Internally used for array handling*/
 int elektraArrayValidateName (const Key * key);
 int elektraReadArrayNumber (const char * baseName, kdb_long_long_t * oldIndex);

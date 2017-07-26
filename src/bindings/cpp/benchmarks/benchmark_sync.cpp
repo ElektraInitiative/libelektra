@@ -67,7 +67,6 @@ __attribute__ ((noinline)) void benchmark_layer_syncN (long long N)
 	kdb::ThreadInteger ti (ks, tc, kdb::Key ("/test/nolayer", KEY_CASCADING_NAME, KEY_META, "default", s_value, KEY_END));
 	ti = 5;
 	kdb::ThreadInteger::type x = ti;
-	std::vector<std::shared_ptr<kdb::ThreadInteger>> vi = createCV (ks, tc, N);
 
 	Timer & t = *tSync[N];
 	t.start ();
@@ -110,8 +109,6 @@ __attribute__ ((noinline)) void benchmark_kdb_reloadN (long long N)
 	kdb::ThreadInteger ti (ks, tc, kdb::Key ("/test/nolayer", KEY_CASCADING_NAME, KEY_META, "default", s_value, KEY_END));
 	ti = 5;
 	kdb::ThreadInteger::type x = ti;
-
-	std::vector<std::shared_ptr<kdb::ThreadInteger>> vi = createCV (ks, tc, N);
 
 	Timer & t = *tReload[N];
 
@@ -170,8 +167,6 @@ __attribute__ ((noinline)) void benchmark_layer_switchN (long long N)
 	kdb::ThreadInteger ti (ks, tc, kdb::Key ("/test/nolayer", KEY_CASCADING_NAME, KEY_META, "default", s_value, KEY_END));
 	ti = 5;
 	kdb::ThreadInteger::type x = ti;
-
-	std::vector<std::shared_ptr<kdb::ThreadInteger>> vi = createCV (ks, tc, N);
 
 	Timer & t = *tSwitch[N];
 	t.start ();

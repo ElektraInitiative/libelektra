@@ -44,7 +44,7 @@ void o (KeySet * ks)
 }
 //! [Shared Meta All]
 
-int main ()
+int main (void)
 {
 	Key * k = keyNew ("user/key", KEY_END);
 	c = keyNew ("user/copy", KEY_END);

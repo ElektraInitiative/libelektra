@@ -34,9 +34,9 @@ make run_nokdbtests  # optional: run tests
 ```
 
 The last line only runs tests not writing into your system.
-See [TESTING](doc/TESTING.md) for how to run more tests.
+See [TESTING](/doc/TESTING.md) for how to run more tests.
 Afterwards you can use `sudo make install && sudo ldconfig` to install Elektra.
-See [INSTALL](doc/INSTALL.md#Generic) for more information about
+See [INSTALL](/doc/INSTALL.md) for more information about
 installation of self-compiled Elektra (such as how to uninstall it).
 
 
@@ -200,7 +200,7 @@ To add all plugins not having additional dependencies
     -DPLUGINS=NODEP
 
 Note, that every `infos/provides` and `infos/status` field written uppercase can
-be used to select plugins that way (see README of [individual plugins](/doc/plugins)).
+be used to select plugins that way (see README of [individual plugins](/src/plugins)).
 You also can combine any of these fields
 and add/remove other plugins to/from it, e.g. to include all plugins without deps,
 that provide storage (except `yajl`) and are maintained, but not include all plugins
@@ -347,7 +347,8 @@ Build documentation with doxygen (API) and ronn (man pages).
 #### Developer Options
 
 As developer you should enable `ENABLE_DEBUG` and `ENABLE_LOGGER`.
-(By default they should be invisible!)
+By default no logging will take place, see [CODING](/doc/CODING.md)
+for information about logging.
 
 Then continue reading [testing](/doc/TESTING.md) for options about
 testing.

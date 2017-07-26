@@ -256,7 +256,7 @@ int keyIsBelow (const Key * key, const Key * check)
 		{
 			size_t size = 0;
 			char * ptr = (char *)keyname;
-			ptr = keyNameGetOneLevel (ptr, &size);
+			keyNameGetOneLevel (ptr, &size);
 			if (size == (size_t)keysize)
 			{
 				return 1;
@@ -278,13 +278,12 @@ int keyIsBelow (const Key * key, const Key * check)
 	{
 		size_t size = 0;
 		char * ptr = (char *)checkname;
-		ptr = keyNameGetOneLevel (ptr, &size);
+		keyNameGetOneLevel (ptr, &size);
 		if (size == (size_t)checksize)
 		{
 			return 0;
 		}
 		checkname += size;
-		checksize = elektraStrLen (checkname);
 		ptr = strrchr (ucheckname, '\0');
 		uchecksize -= (ptr - ucheckname);
 		ucheckname = ptr;
@@ -763,7 +762,6 @@ keyswitch_t keyCompare (const Key * key1, const Key * key2)
 int keyCompareMeta (const Key * k1, const Key * k2)
 {
 	const Key * meta1;
-	const Key * meta2;
 
 	Key * key1 = (Key *)k1;
 	Key * key2 = (Key *)k2;
@@ -772,7 +770,7 @@ int keyCompareMeta (const Key * k1, const Key * k2)
 	keyRewindMeta (key2);
 	while ((meta1 = keyNextMeta (key1)) != 0)
 	{
-		meta2 = keyNextMeta (key2);
+		const Key * meta2 = keyNextMeta (key2);
 		if (!meta2)
 		{
 			return KEY_META;

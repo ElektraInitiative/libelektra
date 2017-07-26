@@ -129,11 +129,10 @@ static void flushConvertedKeys (Key * target, KeySet * converted, KeySet * orig)
 
 	ksRewind (converted);
 	Key * current;
-	Key * appendTarget;
 
 	while ((current = ksNext (converted)))
 	{
-		appendTarget = target;
+		Key * appendTarget = target;
 		const char * metaName = keyString (keyGetMeta (current, CONVERT_METANAME));
 
 		Key * currentDup = keyDup (current);

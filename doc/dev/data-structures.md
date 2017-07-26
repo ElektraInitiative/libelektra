@@ -1,10 +1,9 @@
-elektra-data-structures(7) -- data structures
-=============================================
+# Data Structures
 
 For an introduction, please
-[read first about elektra classes](elektra-classes.md).
+[read first about elektra classes](classes.md).
 You might want to read
-[about architecture first](elektra-architecture.md).
+[about architecture first](architecture.md).
 
 
 ## Introduction
@@ -48,24 +47,20 @@ Application binary interface, or ABI, is the interface to all data
 structures of an application or library directly allocated or accessed
 by the user.
 
-Special care has been taken in Elektra to support all
-changes within the data
-structures without any ABI changes.
-ABI changes would entail the recompilation of applications
-and plugins using Elektra.
-The functions `keyNew()`, `ksNew()`
-and `kdbOpen()` allocate the data structures for the applications.
-The user only gets pointers to them.
-It is not possible for the user to allocate or access these data
-structures directly when only using the public header file `<kdb.h>`.
-The functions `keyDel()`, `ksDel()` and `kdbClose()` free the
-resources after use.
-Using the C++ binding deallocation is done automatically.
+Special care has been taken in Elektra to support all changes within the
+data structures without any ABI changes.  ABI changes would entail the
+recompilation of applications and plugins using Elektra.  The functions
+`keyNew()`, `ksNew()` and `kdbOpen()` allocate the data structures for the
+applications.  The user only gets pointers to them.  It is not possible
+for the user to allocate or access these data structures directly when
+only using the public header file `<kdb.h>`.  The functions `keyDel()`,
+`ksDel()` and `kdbClose()` free the resources after use.  Using the C++
+binding deallocation is done automatically.
 
 
 ## Meta Data
 
-Read [here](elektra-metadata.md).
+Read [here](metadata.md).
 
 
 ## KeySet
@@ -314,7 +309,7 @@ In Elektra,
 it provides the information
 to decide
 in which backend a key resides.
-The algorithm, presented in [algorithm](elektra-algorithm.md),
+The algorithm, presented in [algorithm](algorithm.md),
 also needs a list of all backends.
 The initial approach was to iterate over the `Trie`
 to get a list of all backends.
@@ -365,52 +360,39 @@ The resolver writes the file name into the value of the `parentKey`.
 The algorithm uses the `syncbits` to decide if the key set needs to be
 synchronised.
 
-Continue reading [with the error handling](elektra-error-handling.md).
+Continue reading [with the error handling](error-handling.md).
 
-## Order Preserving Minimal Perfect Hash Map
+## Order Preserving Minimal Perfect Hash Map (aka OPMPHM)
 
 All structs are defined in [opmphm.h](/src/include/kdbopmphm.h).
 
-### Vstack
+Generally the OPMPHM is a arbitrary function.
 
-The `Vstack` is a virtual stack implementation with dynamic memory allocation.
-The allocation doubles the space if the `Vstack` is full and reduces the space by half
-if the memory usage drops below a quarter.
+The desired return value aka the order is set in `OpmphmOrder->index.p`,
+additionally a minimum and maximum order is needed in `OpmphmInit->minOrder`
+and `OpmphmInit->maxOrder`.
 
-The data will be stored as void pointer and can be inserted with the push call.
-Retrieve is possible through the pop call.
-Besides the classical init and del functions, an is-empty check is also implemented.
+Due to the nature of the OPMPHM all elements need to be known at build time.
 
-To gain performance a clear function is also present to reset the `Vstack` for reuse.
-Allocation will not be performed until the first pop.
+The Build consists of three steps.
 
-The following [link](/src/libs/elektra/opmphm_vstack.c) leads to the code and
-[this](@ref Vstack) one to the docu.
+### The Initialization
 
-### Vheap
+Set the data `OpmphmInit->data` and the String extraction function `OpmphmInit->getString`.
+Provide a good seed in `OpmphmInit->initSeed`, needed in the next step. Call the `opmphmNewOrder ()`
+and use the default order or your own order. Min and Max order also need to be set respectively.
 
-The `Vheap` is a virtual heap implementation with dynamic memory allocation.
-A heap is an efficient data structure, if an ordered retrieval is needed.
-The allocation works like the `Vstack` allocation.
+The `opmphmInit ()`, transforms the orders in a internal representation, this step
+is irreversible.
 
-The data will be stored as void pointer and can be inserted with the insert call.
-At the point of insertion the data will be stored in a binary tree, where each parent and his children obey the order.
-The order is defined by a compare function, set at init.
+### The Mapping
 
-The compare function compares two elements and shall return 1 on a > b and 0 otherwise to construct a maximum heap.
-And 1 on a < b and 0 otherwise to construct a minimum heap.
+The `opmphmMapping ()` uses your seed (the OpmphmInit->seed will be changed) and tries to map your elements
+to a fixed space, this mapping might not succeed, on duplicate just call it again.
 
-At the removal the fist element in the data array will be taken and the data gets reordered.
-The ordering takes log (n) time so the complexity for the insert and remove is log (n).
+### The Build
 
-Beside the classical init and del functions an is-empty check is also implemented.
-The `Vheap` can also be cleared, reallocation works like the `Vstack` clear.
+The `opmphmBuild ()` function calculates the final OPMPHM.
 
-The following [link](/src/libs/elektra/opmphm_vheap.c) leads to the code and
-[this](@ref Vheap) one to the docu.
-
-Example:
-
-If the order function constructs a maximum heap it holds for all elements if they have any children:
-
-parent > child0 and parent > child1
+After the build the OpmphmInit and OpmphmOrders can be securely freed.
+The OPMPHM is now ready for constant lookups with the `opmphmLookup ()`.

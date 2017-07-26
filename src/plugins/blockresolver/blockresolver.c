@@ -11,6 +11,7 @@
 
 #include <kdberrors.h>
 #include <kdbhelper.h>
+#include <kdbproposal.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -18,6 +19,11 @@
 #include <sys/time.h>
 #include <time.h>
 #include <unistd.h>
+
+
+#include "../resolver/shared.h"
+#include <kdbinvoke.h>
+
 
 #define TV_MAX_DIGITS 26
 #define BUFSIZE_MAX 1024
@@ -34,12 +40,58 @@ typedef struct
 	unsigned short setPass;
 } BlockData;
 
+static int elektraResolveFilename (Key * parentKey, ElektraResolveTempfile tmpFile)
+{
+	int rc = 0;
+	ElektraInvokeHandle * handle = elektraInvokeInitialize ("resolver");
+	if (!handle)
+	{
+		rc = -1;
+		goto RESOLVE_FAILED;
+	}
+
+	ElektraResolved * resolved = NULL;
+	typedef ElektraResolved * (*resolveFileFunc) (elektraNamespace, const char *, ElektraResolveTempfile, Key *);
+	resolveFileFunc resolveFunc = *(resolveFileFunc *)elektraInvokeGetFunction (handle, "filename");
+
+	if (!resolveFunc)
+	{
+		rc = -1;
+		goto RESOLVE_FAILED;
+	}
+
+	typedef void (*freeHandleFunc) (ElektraResolved *);
+	freeHandleFunc freeHandle = *(freeHandleFunc *)elektraInvokeGetFunction (handle, "freeHandle");
+
+	if (!freeHandle)
+	{
+		rc = -1;
+		goto RESOLVE_FAILED;
+	}
+	resolved = resolveFunc (keyGetNamespace (parentKey), keyString (parentKey), tmpFile, parentKey);
+
+	if (!resolved)
+	{
+		rc = -1;
+		goto RESOLVE_FAILED;
+	}
+	else
+	{
+		keySetString (parentKey, resolved->fullPath);
+		freeHandle (resolved);
+	}
+
+RESOLVE_FAILED:
+	elektraInvokeClose (handle);
+	return rc;
+}
+
 int elektraBlockresolverCheckFile (const char * filename ELEKTRA_UNUSED)
 {
 	return 1;
 }
 
-static const char * genTempFilename ()
+static const char * genTempFilename (void)
 {
 	struct timeval tv;
 	gettimeofday (&tv, 0);
@@ -49,7 +101,7 @@ static const char * genTempFilename ()
 	return tmpFile;
 }
 
-static int initData (Plugin * handle)
+static int initData (Plugin * handle, Key * parentKey)
 {
 	BlockData * data = elektraPluginGetData (handle);
 	if (!data)
@@ -63,9 +115,17 @@ static int initData (Plugin * handle)
 		data->identifier = (char *)keyString (key);
 		key = ksLookupByName (config, "/path", KDB_O_NONE);
 		if (!key) return -1;
-		data->realFile = (char *)keyString (key);
+		keySetString (parentKey, keyString (key));
+		if (elektraResolveFilename (parentKey, ELEKTRA_RESOLVER_TEMPFILE_NONE) == -1)
+		{
+			return -1;
+		}
+		data->realFile = elektraStrDup (keyString (parentKey));
 		struct stat buf;
-		if (stat (data->realFile, &buf)) return -1;
+		if (stat (data->realFile, &buf))
+		{
+			return -1;
+		}
 		data->mtime = buf.st_mtime;
 		data->tmpFile = (char *)genTempFilename ();
 		data->startPos = -1;
@@ -88,6 +148,7 @@ int elektraBlockresolverClose (Plugin * handle ELEKTRA_UNUSED, Key * errorKey EL
 			unlink (data->tmpFile);
 			elektraFree (data->tmpFile);
 		}
+		if (data->realFile) elektraFree (data->realFile);
 		elektraFree (data);
 	}
 	elektraPluginSetData (handle, 0);
@@ -179,7 +240,7 @@ int elektraBlockresolverGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned E
 
 		return 1; // success
 	}
-	int rc = initData (handle);
+	int rc = initData (handle, parentKey);
 	if (rc) return -1;
 
 	int retVal = 0;

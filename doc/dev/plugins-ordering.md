@@ -1,11 +1,10 @@
-elektra-plugins-ordering(7) -- ordering of plugins
-==================================================
+# Plugins Ordering
 
-You should first read [elektra-plugins(7)](/src/plugins/) to get
+You should first read [elektra-plugins](/src/plugins/) to get
 an idea about plugins.
 
-This document describes how [elektra-plugins(7)](/src/plugins/) are
-ordered with [elektra-backends(7)](elektra-backends.md).
+This document describes how [elektra-plugins](/src/plugins/) are
+ordered with [elektra-backends(7)](/doc/help/elektra-backends.md).
 
 Multiple plugins open up many ways in which they can be arranged.
 A simple way is to have one array with pointers to plugins.  To store a
@@ -47,7 +46,7 @@ Another use case is logging after a failure has happened.
 ## Placements
 
 The ordering of plugins inside these three arrays is controlled by
-[elektra-contracts(7)](elektra-contracts.md).
+[elektra-contracts(7)](/doc/help/elektra-contracts.md).
 Each of the three arrays has ten slots.  These slots have
 names to be referred to in the contract.
 

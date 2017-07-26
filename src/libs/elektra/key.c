@@ -68,7 +68,7 @@
  *
  * @par
  * As you can imagine this refcounting allows you to put the Key in your
- * own datastructures.
+ * own data structures.
  * It can be a very powerful feature, e.g. if you need your own-defined
  * ordering or different Models of your configuration.
  */
@@ -80,7 +80,7 @@
  * Allocates and initializes a key
  * @returns 0 if allocation did not work, the key otherwise
  */
-static Key * elektraKeyMalloc ()
+static Key * elektraKeyMalloc (void)
 {
 	Key * key = (Key *)elektraMalloc (sizeof (Key));
 	if (!key) return 0;
@@ -187,7 +187,6 @@ static Key * elektraKeyMalloc ()
 Key * keyNew (const char * name, ...)
 {
 	Key * k;
-	va_list va;
 
 	if (!name)
 	{
@@ -195,6 +194,7 @@ Key * keyNew (const char * name, ...)
 	}
 	else
 	{
+		va_list va;
 		va_start (va, name);
 		k = keyVNew (name, va);
 		va_end (va);

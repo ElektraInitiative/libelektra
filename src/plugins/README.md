@@ -14,8 +14,6 @@ The plugins are:
 
 ![Overview Plugins](/doc/images/plugins.png)
 
-For background information see [elektra-plugins-framework(7)](/doc/help/elektra-plugins-framework.md).
-
 ### C-Interface
 
 All plugins implement the same interface:
@@ -47,7 +45,7 @@ All plugins implement the same interface:
 ## See also
 
 For an easy introduction, see [this tutorial how to write a storage plugin](/doc/tutorials/plugins.md).
-For more background information of the [plugins framework, continue here](/doc/help/elektra-plugins-framework.md).
+For more background information of the [plugins framework, continue here](/doc/dev/plugins-framework.md).
 Otherwise, you can visit the [the API documentation](http://doc.libelektra.org/api/current/html/group__plugin.html).
 
 ## Plugins
@@ -114,6 +112,7 @@ productive use:
 - [mozprefs](mozprefs/) for Mozilla preference files
 - [c](c/) writes Elektra C-structures (`ksNew(.. keyNew(...`)
 - [file](file/) reads and writes a file from/to a single key
+- [yaml](yaml/) reads and writes a very limited subset of [YAML](http://www.yaml.org)
 
 ### System Information
 

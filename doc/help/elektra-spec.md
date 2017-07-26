@@ -117,4 +117,3 @@ infos/recommends = hexcode
 
 - [elektra-namespaces(7)](elektra-namespaces.md)
 - [elektra-cascading(7)](elektra-cascading.md)
-- [elektra-plugins-ordering(7)](elektra-plugins-ordering.md)

@@ -59,6 +59,4 @@ can choose from a pool of existing plugins.
 
 ## SEE ALSO
 
-- More information about [elektra-plugins-framework(7)](elektra-plugins-framework.md)
 - The tool for mounting a backend is [kdb-mount(1)](kdb-mount.md)
-- The plugins are ordered as described in [elektra-plugins-ordering(7)](elektra-plugins-ordering.md)

@@ -12,7 +12,7 @@
 #include <../../src/libs/elektra/trie.c>
 #include <tests_internal.h>
 
-KDB * kdb_new ()
+KDB * kdb_new (void)
 {
 	KDB * kdb = elektraCalloc (sizeof (KDB));
 	kdb->split = splitNew ();
@@ -43,7 +43,7 @@ static void kdb_del (KDB * kdb)
 	elektraFree (kdb);
 }
 
-static void test_mount ()
+static void test_mount (void)
 {
 	printf ("test mount backend\n");
 
@@ -87,7 +87,7 @@ KeySet * minimal_config (void)
 }
 
 
-static void test_minimaltrie ()
+static void test_minimaltrie (void)
 {
 	printf ("Test minimal mount\n");
 
@@ -112,7 +112,7 @@ KeySet * simple_config (void)
 		      keyNew ("system/elektra/mountpoints/simple/mountpoint", KEY_VALUE, "user/tests/simple", KEY_END), KS_END);
 }
 
-static void test_simple ()
+static void test_simple (void)
 {
 	printf ("Test simple mount\n");
 
@@ -135,21 +135,21 @@ static void test_simple ()
 	keySetName (searchKey, "user/tests/simple");
 	backend = trieLookup (kdb->trie, searchKey);
 	succeed_if (backend, "there should be a backend");
-	compare_key (backend->mountpoint, mp);
+	if (backend) compare_key (backend->mountpoint, mp);
 
 
 	keySetName (searchKey, "user/tests/simple/below");
 	Backend * b2 = trieLookup (kdb->trie, searchKey);
 	succeed_if (b2, "there should be a backend");
 	succeed_if (backend == b2, "should be same backend");
-	compare_key (b2->mountpoint, mp);
+	if (b2) compare_key (b2->mountpoint, mp);
 
 
 	keySetName (searchKey, "user/tests/simple/deep/below");
 	b2 = trieLookup (kdb->trie, searchKey);
 	succeed_if (b2, "there should be a backend");
 	succeed_if (backend == b2, "should be same backend");
-	compare_key (b2->mountpoint, mp);
+	if (b2) compare_key (b2->mountpoint, mp);
 
 	keyDel (errorKey);
 	ksDel (modules);
@@ -158,7 +158,7 @@ static void test_simple ()
 	kdb_del (kdb);
 }
 
-KeySet * set_simple ()
+KeySet * set_simple (void)
 {
 	return ksNew (50, keyNew ("system/elektra/mountpoints/simple", KEY_END),
 
@@ -192,7 +192,7 @@ KeySet * set_simple ()
 }
 
 
-KeySet * set_pluginconf ()
+KeySet * set_pluginconf (void)
 {
 	return ksNew (10, keyNew ("system/anything", KEY_VALUE, "backend", KEY_END), keyNew ("system/more", KEY_END),
 		      keyNew ("system/more/config", KEY_END), keyNew ("system/more/config/below", KEY_END), keyNew ("system/path", KEY_END),
@@ -201,7 +201,7 @@ KeySet * set_pluginconf ()
 		      KS_END);
 }
 
-static void test_simpletrie ()
+static void test_simpletrie (void)
 {
 	printf ("Test simple mount with plugins\n");
 
@@ -230,10 +230,13 @@ static void test_simpletrie ()
 	exit_if_fail (backend->setplugins[1] != 0, "there should be a plugin");
 	succeed_if (backend->setplugins[2] == 0, "there should be no plugin");
 
-	Key * mp;
-	succeed_if ((mp = backend->mountpoint) != 0, "no mountpoint found");
-	succeed_if_same_string (keyName (mp), "user/tests/backend/simple");
-	succeed_if_same_string (keyString (mp), "simple");
+	Key * mp = backend->mountpoint;
+	succeed_if (mp, "no mountpoint found");
+	if (mp)
+	{
+		succeed_if_same_string (keyName (mp), "user/tests/backend/simple");
+		succeed_if_same_string (keyString (mp), "simple");
+	}
 
 	Plugin * plugin = backend->getplugins[1];
 
@@ -254,7 +257,7 @@ static void test_simpletrie ()
 }
 
 
-KeySet * set_two ()
+KeySet * set_two (void)
 {
 	return ksNew (50, keyNew ("system/elektra/mountpoints", KEY_END), keyNew ("system/elektra/mountpoints/simple", KEY_END),
 
@@ -307,7 +310,7 @@ KeySet * set_two ()
 		      keyNew ("system/elektra/mountpoints/two/setplugins/#2" KDB_DEFAULT_STORAGE, KEY_END), KS_END);
 }
 
-static void test_two ()
+static void test_two (void)
 {
 	printf ("Test two mounts\n");
 
@@ -367,7 +370,7 @@ static void test_two ()
 }
 
 
-KeySet * set_us ()
+KeySet * set_us (void)
 {
 	return ksNew (50, keyNew ("system/elektra/mountpoints", KEY_END), keyNew ("system/elektra/mountpoints/user", KEY_END),
 		      keyNew ("system/elektra/mountpoints/user/mountpoint", KEY_VALUE, "user", KEY_END),
@@ -375,7 +378,7 @@ KeySet * set_us ()
 		      keyNew ("system/elektra/mountpoints/system/mountpoint", KEY_VALUE, "system", KEY_END), KS_END);
 }
 
-static void test_us ()
+static void test_us (void)
 {
 	printf ("Test mounting of user and system backends\n");
 
@@ -404,11 +407,13 @@ static void test_us ()
 	exit_if_fail (backend->setplugins[1] == 0, "there should be no plugin");
 	succeed_if (backend->setplugins[2] == 0, "there should be no plugin");
 
-	Key * mp;
-	succeed_if ((mp = backend->mountpoint) != 0, "no mountpoint found");
-	succeed_if_same_string (keyName (mp), "user");
-	succeed_if_same_string (keyString (mp), "user");
-
+	Key * mp = backend->mountpoint;
+	succeed_if (mp, "no mountpoint found");
+	if (mp)
+	{
+		succeed_if_same_string (keyName (mp), "user");
+		succeed_if_same_string (keyString (mp), "user");
+	}
 
 	keySetName (key, "system/anywhere/tests/backend/two");
 	Backend * two = trieLookup (kdb->trie, key);
@@ -436,7 +441,7 @@ KeySet * endings_config (void)
 		      keyNew ("system/elektra/mountpoints/endings/mountpoint", KEY_VALUE, "user/endings\200", KEY_END), KS_END);
 }
 
-static void test_endings ()
+static void test_endings (void)
 {
 	printf ("Test mounting with different endings\n");
 
@@ -459,7 +464,7 @@ static void test_endings ()
 	keySetName (searchKey, "user/endings");
 	backend = trieLookup (kdb->trie, searchKey);
 	succeed_if (backend, "there should be a backend");
-	compare_key (backend->mountpoint, mp);
+	if (backend) compare_key (backend->mountpoint, mp);
 
 
 	keySetName (searchKey, "user/endings#");
@@ -468,7 +473,7 @@ static void test_endings ()
 	Backend * b2 = trieLookup (kdb->trie, searchKey);
 	succeed_if (b2, "there should be a backend");
 	succeed_if (backend != b2, "should be other backend");
-	compare_key (b2->mountpoint, mp);
+	if (b2) compare_key (b2->mountpoint, mp);
 
 
 	keySetName (searchKey, "user/endings/_");
@@ -477,7 +482,7 @@ static void test_endings ()
 	b2 = trieLookup (kdb->trie, searchKey);
 	succeed_if (b2, "there should be a backend");
 	succeed_if (backend == b2, "should be the same backend");
-	compare_key (b2->mountpoint, mp);
+	if (b2) compare_key (b2->mountpoint, mp);
 
 
 	keySetName (searchKey, "user/endings/X");
@@ -486,7 +491,7 @@ static void test_endings ()
 	b2 = trieLookup (kdb->trie, searchKey);
 	succeed_if (b2, "there should be a backend");
 	succeed_if (backend == b2, "should be the same backend");
-	compare_key (b2->mountpoint, mp);
+	if (b2) compare_key (b2->mountpoint, mp);
 
 
 	keySetName (searchKey, "user/endings_");
@@ -510,7 +515,7 @@ static void test_endings ()
 	b2 = trieLookup (kdb->trie, searchKey);
 	succeed_if (b2, "there should be a backend");
 	succeed_if (backend != b2, "should be other backend");
-	compare_key (b2->mountpoint, mp);
+	if (b2) compare_key (b2->mountpoint, mp);
 
 	keySetName (searchKey, "user/endings\200");
 	keySetName (mp, "user/endings\200");
@@ -518,7 +523,7 @@ static void test_endings ()
 	b2 = trieLookup (kdb->trie, searchKey);
 	succeed_if (b2, "there should be a backend");
 	succeed_if (backend != b2, "should be other backend");
-	compare_key (b2->mountpoint, mp);
+	if (b2) compare_key (b2->mountpoint, mp);
 
 	// output_trie(trie);
 
@@ -537,7 +542,7 @@ KeySet * oldroot_config (void)
 		      keyNew ("system/elektra/mountpoints/simple/mountpoint", KEY_VALUE, "user/tests/simple", KEY_END), KS_END);
 }
 
-static void test_oldroot ()
+static void test_oldroot (void)
 {
 	printf ("Test mounting with old root\n");
 
@@ -561,21 +566,21 @@ static void test_oldroot ()
 	keySetName (searchKey, "user/tests/simple");
 	backend = trieLookup (kdb->trie, searchKey);
 	succeed_if (backend, "there should be a backend");
-	compare_key (backend->mountpoint, mp);
+	if (backend) compare_key (backend->mountpoint, mp);
 
 
 	keySetName (searchKey, "user/tests/simple/below");
 	Backend * b2 = trieLookup (kdb->trie, searchKey);
 	succeed_if (b2, "there should be a backend");
 	succeed_if (backend == b2, "should be same backend");
-	compare_key (b2->mountpoint, mp);
+	if (b2) compare_key (b2->mountpoint, mp);
 
 
 	keySetName (searchKey, "user/tests/simple/deep/below");
 	b2 = trieLookup (kdb->trie, searchKey);
 	succeed_if (b2, "there should be a backend");
 	succeed_if (backend == b2, "should be same backend");
-	compare_key (b2->mountpoint, mp);
+	if (b2) compare_key (b2->mountpoint, mp);
 
 	keyDel (mp);
 	keyDel (rmp);
@@ -593,7 +598,7 @@ KeySet * cascading_config (void)
 		      keyNew ("system/elektra/mountpoints/simple/mountpoint", KEY_VALUE, "/tests/simple", KEY_END), KS_END);
 }
 
-static void test_cascading ()
+static void test_cascading (void)
 {
 	printf ("Test simple mount with cascading\n");
 
@@ -623,40 +628,40 @@ static void test_cascading ()
 	keySetName (searchKey, "user/tests/simple");
 	backend = trieLookup (kdb->trie, searchKey);
 	succeed_if (backend, "there should be a backend");
-	compare_key (backend->mountpoint, mp);
+	if (backend) compare_key (backend->mountpoint, mp);
 
 
 	keySetName (searchKey, "user/tests/simple/below");
 	Backend * b2 = trieLookup (kdb->trie, searchKey);
 	succeed_if (b2, "there should be a backend");
 	succeed_if (backend == b2, "should be same backend");
-	compare_key (b2->mountpoint, mp);
+	if (b2) compare_key (b2->mountpoint, mp);
 
 
 	keySetName (searchKey, "user/tests/simple/deep/below");
 	b2 = trieLookup (kdb->trie, searchKey);
 	succeed_if (b2, "there should be a backend");
 	succeed_if (backend == b2, "should be same backend");
-	compare_key (b2->mountpoint, mp);
+	if (b2) compare_key (b2->mountpoint, mp);
 
 
 	keySetName (searchKey, "system/tests/simple");
 	backend = trieLookup (kdb->trie, searchKey);
 	succeed_if (backend, "there should be a backend");
-	compare_key (backend->mountpoint, mp);
+	if (backend) compare_key (backend->mountpoint, mp);
 
 	keySetName (searchKey, "system/tests/simple/below");
 	b2 = trieLookup (kdb->trie, searchKey);
 	succeed_if (b2, "there should be a backend");
 	succeed_if (backend == b2, "should be same backend");
-	compare_key (b2->mountpoint, mp);
+	if (b2) compare_key (b2->mountpoint, mp);
 
 
 	keySetName (searchKey, "system/tests/simple/deep/below");
 	b2 = trieLookup (kdb->trie, searchKey);
 	succeed_if (b2, "there should be a backend");
 	succeed_if (backend == b2, "should be same backend");
-	compare_key (b2->mountpoint, mp);
+	if (b2) compare_key (b2->mountpoint, mp);
 
 
 	keyDel (errorKey);
@@ -675,7 +680,7 @@ KeySet * root_config (void)
 		      keyNew ("system/elektra/mountpoints/simple/mountpoint", KEY_VALUE, "user/tests/simple", KEY_END), KS_END);
 }
 
-static void test_root ()
+static void test_root (void)
 {
 	printf ("Test mounting with root\n");
 
@@ -696,7 +701,7 @@ static void test_root ()
 	keySetName (searchKey, "user");
 	b2 = trieLookup (kdb->trie, searchKey);
 	succeed_if (b2, "there should be a backend");
-	compare_key (b2->mountpoint, rmp);
+	if (b2) compare_key (b2->mountpoint, rmp);
 
 
 	Backend * backend = 0;
@@ -704,21 +709,21 @@ static void test_root ()
 	keySetName (searchKey, "user/tests/simple");
 	backend = trieLookup (kdb->trie, searchKey);
 	succeed_if (backend, "there should be a backend");
-	compare_key (backend->mountpoint, mp);
+	if (backend) compare_key (backend->mountpoint, mp);
 
 
 	keySetName (searchKey, "user/tests/simple/below");
 	b2 = trieLookup (kdb->trie, searchKey);
 	succeed_if (b2, "there should be a backend");
 	succeed_if (backend == b2, "should be same backend");
-	compare_key (b2->mountpoint, mp);
+	if (b2) compare_key (b2->mountpoint, mp);
 
 
 	keySetName (searchKey, "user/tests/simple/deep/below");
 	b2 = trieLookup (kdb->trie, searchKey);
 	succeed_if (b2, "there should be a backend");
 	succeed_if (backend == b2, "should be same backend");
-	compare_key (b2->mountpoint, mp);
+	if (b2) compare_key (b2->mountpoint, mp);
 
 	keyDel (mp);
 	keyDel (rmp);
@@ -730,7 +735,7 @@ static void test_root ()
 	ksDel (modules);
 }
 
-static void test_default ()
+static void test_default (void)
 {
 	printf ("Test mounting with default\n");
 
@@ -754,7 +759,7 @@ static void test_default ()
 	keySetName (searchKey, "user");
 	b2 = trieLookup (kdb->trie, searchKey);
 	succeed_if (b2, "there should be a backend");
-	compare_key (b2->mountpoint, rmp);
+	if (b2) compare_key (b2->mountpoint, rmp);
 
 
 	Backend * backend = 0;
@@ -762,34 +767,34 @@ static void test_default ()
 	keySetName (searchKey, "user/tests/simple");
 	backend = trieLookup (kdb->trie, searchKey);
 	succeed_if (backend, "there should be a backend");
-	compare_key (backend->mountpoint, mp);
+	if (backend) compare_key (backend->mountpoint, mp);
 
 
 	keySetName (searchKey, "user/tests/simple/below");
 	b2 = trieLookup (kdb->trie, searchKey);
 	succeed_if (b2, "there should be a backend");
 	succeed_if (backend == b2, "should be same backend");
-	compare_key (b2->mountpoint, mp);
+	if (b2) compare_key (b2->mountpoint, mp);
 
 
 	keySetName (searchKey, "user/tests/simple/deep/below");
 	b2 = trieLookup (kdb->trie, searchKey);
 	succeed_if (b2, "there should be a backend");
 	succeed_if (backend == b2, "should be same backend");
-	compare_key (b2->mountpoint, mp);
+	if (b2) compare_key (b2->mountpoint, mp);
 
 	Key * dmp = keyNew ("", KEY_VALUE, "default", KEY_END);
 	keySetName (searchKey, "system/elektra");
 	b2 = trieLookup (kdb->trie, searchKey);
 	succeed_if (b2, "there should be a backend");
 	succeed_if (b2 == kdb->defaultBackend, "should be the default backend");
-	compare_key (b2->mountpoint, dmp);
+	if (b2) compare_key (b2->mountpoint, dmp);
 
 	keySetName (searchKey, "system/elektra/below");
 	b2 = trieLookup (kdb->trie, searchKey);
 	succeed_if (b2, "there should be a backend");
 	succeed_if (b2 == kdb->defaultBackend, "should be the default backend");
-	compare_key (b2->mountpoint, dmp);
+	if (b2) compare_key (b2->mountpoint, dmp);
 
 	keyDel (dmp);
 	keyDel (mp);
@@ -802,7 +807,7 @@ static void test_default ()
 	ksDel (modules);
 }
 
-static void test_init ()
+static void test_init (void)
 {
 	printf ("Test mounting with init (no config)\n");
 
@@ -845,13 +850,13 @@ static void test_init ()
 	b2 = trieLookup (kdb->trie, searchKey);
 	succeed_if (b2, "there should be a backend");
 	succeed_if (b2 == kdb->initBackend, "should be the init backend");
-	compare_key (b2->mountpoint, dmp);
+	if (b2) compare_key (b2->mountpoint, dmp);
 
 	keySetName (searchKey, "system/elektra/below");
 	b2 = trieLookup (kdb->trie, searchKey);
 	succeed_if (b2, "there should be a backend");
 	succeed_if (b2 == kdb->initBackend, "should be the init backend");
-	compare_key (b2->mountpoint, dmp);
+	if (b2) compare_key (b2->mountpoint, dmp);
 
 	keySetName (searchKey, "system");
 	b2 = trieLookup (kdb->trie, searchKey);
@@ -870,7 +875,7 @@ static void test_init ()
 	ksDel (modules);
 }
 
-static void test_rootInit ()
+static void test_rootInit (void)
 {
 	printf ("Test mounting with root and init\n");
 
@@ -894,7 +899,7 @@ static void test_rootInit ()
 	keySetName (searchKey, "user");
 	b2 = trieLookup (kdb->trie, searchKey);
 	succeed_if (b2, "there should be a backend");
-	compare_key (b2->mountpoint, rmp);
+	if (b2) compare_key (b2->mountpoint, rmp);
 
 
 	Backend * backend = 0;
@@ -902,46 +907,46 @@ static void test_rootInit ()
 	keySetName (searchKey, "user/tests/simple");
 	backend = trieLookup (kdb->trie, searchKey);
 	succeed_if (backend, "there should be a backend");
-	compare_key (backend->mountpoint, mp);
+	if (backend) compare_key (backend->mountpoint, mp);
 
 
 	keySetName (searchKey, "user/tests/simple/below");
 	b2 = trieLookup (kdb->trie, searchKey);
 	succeed_if (b2, "there should be a backend");
 	succeed_if (backend == b2, "should be same backend");
-	compare_key (b2->mountpoint, mp);
+	if (b2) compare_key (b2->mountpoint, mp);
 
 
 	keySetName (searchKey, "user/tests/simple/deep/below");
 	b2 = trieLookup (kdb->trie, searchKey);
 	succeed_if (b2, "there should be a backend");
 	succeed_if (backend == b2, "should be same backend");
-	compare_key (b2->mountpoint, mp);
+	if (b2) compare_key (b2->mountpoint, mp);
 
 	Key * dmp = keyNew ("", KEY_VALUE, "default", KEY_END);
 	keySetName (searchKey, "system/elektra");
 	b2 = trieLookup (kdb->trie, searchKey);
 	succeed_if (b2, "there should be a backend");
 	succeed_if (b2 == kdb->initBackend, "should be the init backend");
-	compare_key (b2->mountpoint, dmp);
+	if (b2) compare_key (b2->mountpoint, dmp);
 
 	keySetName (searchKey, "system/elektra/below");
 	b2 = trieLookup (kdb->trie, searchKey);
 	succeed_if (b2, "there should be a backend");
 	succeed_if (b2 == kdb->initBackend, "should be the init backend");
-	compare_key (b2->mountpoint, dmp);
+	if (b2) compare_key (b2->mountpoint, dmp);
 
 	keySetName (searchKey, "system");
 	b2 = trieLookup (kdb->trie, searchKey);
 	succeed_if (b2, "there should be a backend");
 	succeed_if (b2 != kdb->initBackend, "should not be the init backend");
-	compare_key (b2->mountpoint, rmp);
+	if (b2) compare_key (b2->mountpoint, rmp);
 
 	keySetName (searchKey, "system/something");
 	b2 = trieLookup (kdb->trie, searchKey);
 	succeed_if (b2, "there should be a backend");
 	succeed_if (b2 != kdb->initBackend, "should not be the init backend");
-	compare_key (b2->mountpoint, rmp);
+	if (b2) compare_key (b2->mountpoint, rmp);
 
 	keyDel (dmp);
 	keyDel (mp);
@@ -954,7 +959,7 @@ static void test_rootInit ()
 	ksDel (modules);
 }
 
-static void test_modules ()
+static void test_modules (void)
 {
 	printf ("Test mounting with modules\n");
 
@@ -979,7 +984,7 @@ static void test_modules ()
 	keySetName (searchKey, "user");
 	b2 = trieLookup (kdb->trie, searchKey);
 	succeed_if (b2, "there should be a backend");
-	compare_key (b2->mountpoint, rmp);
+	if (b2) compare_key (b2->mountpoint, rmp);
 
 
 	Backend * backend = 0;
@@ -987,34 +992,34 @@ static void test_modules ()
 	keySetName (searchKey, "user/tests/simple");
 	backend = trieLookup (kdb->trie, searchKey);
 	succeed_if (backend, "there should be a backend");
-	compare_key (backend->mountpoint, mp);
+	if (backend) compare_key (backend->mountpoint, mp);
 
 
 	keySetName (searchKey, "user/tests/simple/below");
 	b2 = trieLookup (kdb->trie, searchKey);
 	succeed_if (b2, "there should be a backend");
 	succeed_if (backend == b2, "should be same backend");
-	compare_key (b2->mountpoint, mp);
+	if (b2) compare_key (b2->mountpoint, mp);
 
 
 	keySetName (searchKey, "user/tests/simple/deep/below");
 	b2 = trieLookup (kdb->trie, searchKey);
 	succeed_if (b2, "there should be a backend");
 	succeed_if (backend == b2, "should be same backend");
-	compare_key (b2->mountpoint, mp);
+	if (b2) compare_key (b2->mountpoint, mp);
 
 	Key * dmp = keyNew ("", KEY_VALUE, "default", KEY_END);
 	keySetName (searchKey, "system/elektra");
 	b2 = trieLookup (kdb->trie, searchKey);
 	succeed_if (b2, "there should be a backend");
 	succeed_if (b2 == kdb->defaultBackend, "should be the default backend");
-	compare_key (b2->mountpoint, dmp);
+	if (b2) compare_key (b2->mountpoint, dmp);
 
 	keySetName (searchKey, "system/elektra/below");
 	b2 = trieLookup (kdb->trie, searchKey);
 	succeed_if (b2, "there should be a backend");
 	succeed_if (b2 == kdb->defaultBackend, "should be the default backend");
-	compare_key (b2->mountpoint, dmp);
+	if (b2) compare_key (b2->mountpoint, dmp);
 
 	Key * mmp = keyNew ("system/elektra/modules", KEY_VALUE, "modules", KEY_END);
 	keyAddBaseName (mmp, "default");

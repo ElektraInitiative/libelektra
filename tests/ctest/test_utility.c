@@ -12,7 +12,7 @@
 
 #define MAX_LENGTH 100
 
-static void test_elektraLskip ()
+static void test_elektraLskip (void)
 {
 	printf ("Test elektraLskip\n");
 
@@ -23,7 +23,7 @@ static void test_elektraLskip ()
 	succeed_if_same_string (elektraLskip (" \tLeading And Trailing Whitespace\t\n "), "Leading And Trailing Whitespace\t\n ");
 }
 
-static void test_elektraRstrip ()
+static void test_elektraRstrip (void)
 {
 	printf ("Test elektraRstrip\n");
 
@@ -74,7 +74,7 @@ static void test_elektraRstrip ()
 	succeed_if_same_string (last, "g");
 }
 
-static void test_elektraStrip ()
+static void test_elektraStrip (void)
 {
 	printf ("Test elektraStrip\n");
 	char text[MAX_LENGTH];
@@ -86,7 +86,7 @@ static void test_elektraStrip ()
 	succeed_if_same_string (elektraStrip (text), "Leading And Trailing Whitespace\n\tSecond Line");
 }
 
-static void test_elektraReplace ()
+static void test_elektraReplace (void)
 {
 	printf ("Test elektraReplace\n");
 	char * text;

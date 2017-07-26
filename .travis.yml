@@ -1,5 +1,5 @@
 notifications:
-  email: travis@libelektra-org
+  email: travis@libelektra.org
 
 language: generic
 
@@ -16,7 +16,8 @@ matrix:
       osx_image: xcode6.4
 
 before_install:
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
+  - |
+   if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
       rvm list;
       rvm install 2.3.1;
       rvm use 2.3.1;
@@ -35,6 +36,7 @@ before_install:
       brew install openssl botan libgcrypt;
       brew install libgit2;
       brew install xerces-c;
+      pip install cheetah; # Required by kdb-gen
       export Qt5_DIR=/usr/local/opt/qt5;
       brew config;
     fi

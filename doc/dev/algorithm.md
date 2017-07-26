@@ -1,10 +1,9 @@
-elektra-algorithm(7) -- core algorithm of elektra
-=================================================
+# Algorithm
 
 You might want to read
-[about architecture](elektra-architecture.md).
+[about architecture](architecture.md)
 and
-[data structures first](elektra-data-structures.md).
+[data structures](data-structures.md) first.
 
 ## Introduction
 
@@ -30,7 +29,7 @@ The reading of the mountpoint configuration and the consequential self
 configuring of the system is called *bootstrapping*.  Elektra builds
 itself up with a default backend (consisting of `libelektra-resolver`
 and `libelektra-storage`).
-[Read more about bootstrapping here](elektra-bootstrapping.md)
+[Read more about bootstrapping here](/doc/help/elektra-bootstrapping.md)
 
 `kdbOpen()` creates a `Split` object.  It adds all backend handles and
 `parentKeys` during bootstrapping.  So the buildup of the `Split` object
@@ -144,7 +143,7 @@ outside of the backend's responsibility.  Hence, these keys will not be
 passed to the user and we get the desired behaviour: The nearest mounted
 backend to the key is responsible.
 
-For example, a generator plugin in the backend A always emits
+For example, a generator plugin in the backend (A) always emits
 following keys. (A) and (B) indicate from which backend the
 key comes from.
 
@@ -165,8 +164,8 @@ following keys:
 	user/sw/generator/outside (B)
 
 In this situation `kdbGet()` is responsible to pop all three keys at,
-and below, `user/sw/generator/dir` of backend A and the key
-`user/sw/generator/outside` of backend B.  The user will get the
+and below, `user/sw/generator/dir` of backend (A) and the key
+`user/sw/generator/outside` of backend (B).  The user will get the
 resulting key set:
 
 	user/sw/generator/akey (A)
@@ -222,7 +221,8 @@ of the plugins, `kdbGet()` removes it.
 needs to store the number of received keys of each backend.
 - Additionally, for every key it is checked if it belongs to this
 backend.  This makes sure that every key comes from a single source
-only as designated by the `Trie`.  In this process, Elektra pops all duplicated and overlapping keys in favour of the responsible backend.
+only as designated by the `Trie`.  In this process, Elektra pops all
+duplicated and overlapping keys in favour of the responsible backend.
 
 The last step is to *merge* all these key sets together.  This step
 changes the configuration visible to the user. After some cleanup the

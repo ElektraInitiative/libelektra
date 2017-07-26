@@ -119,7 +119,6 @@ int elektraHostsSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * pa
 {
 	int errnosave = errno;
 	FILE * fp;
-	Key * key;
 
 	fp = fopen (keyString (parentKey), "w");
 
@@ -155,7 +154,7 @@ int elektraHostsSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * pa
 	/* now write the hosts file */
 	for (size_t i = 0; i < arraySize; ++i)
 	{
-		key = keyArray[i];
+		Key * key = keyArray[i];
 
 		/* only process canonical name keys */
 		if (!keyIsDirectBelow (ipv4Base, key) && !keyIsDirectBelow (ipv6Base, key)) continue;

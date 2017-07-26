@@ -102,7 +102,6 @@ void BackendBuilder::sort ()
 			dep.addBaseName (ps.getRefName ());
 		}
 		deps.append (dep);
-		std::string v = to_string (i);
 		dep.set<size_t> (i);
 		dep.setMeta<size_t> ("order", i);
 		++i;
@@ -177,7 +176,7 @@ void BackendBuilder::sort ()
 	}
 }
 
-void BackendBuilder::needMetadata (std::string addMetadata)
+void BackendBuilder::needMetadata (std::string const & addMetadata)
 {
 	std::istringstream is (addMetadata);
 	std::string md;
@@ -289,7 +288,7 @@ void removeMissing (std::vector<std::string> & recommendedPlugins, std::vector<s
 	}
 }
 
-std::string removeArray (std::string s)
+std::string removeArray (std::string const & s)
 {
 	/*
 	std::regex e ("#_*[0-9]*");
@@ -379,7 +378,7 @@ std::vector<std::string> BackendBuilder::resolveNeeds (bool addRecommends)
 	return missingRecommends;
 }
 
-void BackendBuilder::needPlugin (std::string name)
+void BackendBuilder::needPlugin (std::string const & name)
 {
 	std::stringstream ss (name);
 	std::string n;
@@ -389,7 +388,7 @@ void BackendBuilder::needPlugin (std::string name)
 	}
 }
 
-void BackendBuilder::recommendPlugin (std::string name)
+void BackendBuilder::recommendPlugin (std::string const & name)
 {
 	std::stringstream ss (name);
 	std::string n;
@@ -569,7 +568,7 @@ void MountBackendBuilder::setBackendConfig (KeySet const & ks)
 	BackendBuilder::setBackendConfig (ks);
 }
 
-void MountBackendBuilder::useConfigFile (std::string file)
+void MountBackendBuilder::useConfigFile (std::string const & file)
 {
 	configfile = file;
 

@@ -47,7 +47,7 @@ class StructChecker : public Checker
 	kdb::KeySet config;
 
 public:
-	StructChecker (kdb::KeySet config_) : config (config_)
+	explicit StructChecker (kdb::KeySet config_) : config (config_)
 	{
 	}
 
