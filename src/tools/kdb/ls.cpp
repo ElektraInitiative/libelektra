@@ -8,6 +8,7 @@
 
 #include <ls.hpp>
 
+#include <climits>
 #include <iostream>
 
 #include <cmdline.hpp>
@@ -73,7 +74,8 @@ void LsCommand::printResults (KeySet const & part, const int rootDepth, Cmdline 
 {
 	const int offset = root.getBaseName ().empty () || shallShowNextLevel (cl.arguments[0]) ? 1 : 0;
 	const int relativeMinDepth = rootDepth + cl.minDepth + offset;
-	const int relativeMaxDepth = std::max (cl.maxDepth, rootDepth + cl.maxDepth + offset);
+	const int relativeMaxDepth =
+		std::max (cl.maxDepth, rootDepth > INT_MAX - cl.maxDepth - offset ? INT_MAX : rootDepth + cl.maxDepth + offset);
 	if (cl.debug)
 	{
 		cout << "The root depth is " << rootDepth << ", the relative minimum depth is " << relativeMinDepth
