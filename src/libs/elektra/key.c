@@ -68,7 +68,7 @@
  *
  * @par
  * As you can imagine this refcounting allows you to put the Key in your
- * own datastructures.
+ * own data structures.
  * It can be a very powerful feature, e.g. if you need your own-defined
  * ordering or different Models of your configuration.
  */
