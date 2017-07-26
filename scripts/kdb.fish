@@ -289,7 +289,7 @@ function __fish_kdb_subcommand_supports_option_color -d 'Check if the current su
 end
 
 function __fish_kdb_subcommand_supports_option_debug -d 'Check if the current subcommand supports the option debug'
-    __fish_kdb_subcommand_includes complete mount remount smount spec-mount
+    __fish_kdb_subcommand_includes complete ls mount remount smount spec-mount
 end
 
 function __fish_kdb_subcommand_supports_option_force -d 'Check if the current subcommand supports the option force'
