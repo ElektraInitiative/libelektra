@@ -101,7 +101,7 @@ static int checkBom (const uint8_t * line)
 static int validateLineEnding (const uint8_t * line, Lineending * valid, int reset)
 {
 	static uint8_t lastByte = 0;
-	if (reset)
+	if (reset || !line)
 	{
 		lastByte = 0;
 		return 0;
@@ -118,12 +118,11 @@ static int validateLineEnding (const uint8_t * line, Lineending * valid, int res
 		fc = line[0];
 		i = 1;
 	}
-	uint8_t sc = 0;
 	const ssize_t lineLength = (elektraStrLen ((char *)line) - 1);
 	for (; i < lineLength; ++i)
 	{
 		found = NA;
-		sc = line[i];
+		uint8_t sc = line[i];
 		switch (fc)
 		{
 		case LF_BYTE:
@@ -197,8 +196,8 @@ static int checkUnprintable (const uint8_t * line)
 {
 	unsigned int i;
 	for (i = 0; i < elektraStrLen ((char *)line); ++i)
-	{
-		if (line[i] < 0x20 || line[i] > 0x7E || line[i] != '\n' || line[i] != '\r') return i;
+	{ // \n is > 0x7E too
+		if (line[i] < 0x20 || line[i] > 0x7E || line[i] == '\r') return i;
 	}
 	return 0;
 }

@@ -319,12 +319,9 @@ static void test_mapping_fail (void)
 			init.minOrder = 0;
 			init.maxOrder = n - 1;
 			// fill
-			if (order)
+			for (size_t i = 0; i < n; ++i)
 			{
-				for (size_t i = 0; i < n; ++i)
-				{
-					getOrderedPair (&order[i], w, i);
-				}
+				getOrderedPair (&order[i], w, i);
 			}
 			// set error
 			order[n * (3 / 4)].h[OPMPHMTUPLE / 2] = (order[n * (3 / 4)].h[OPMPHMTUPLE / 2] + 1) % w;

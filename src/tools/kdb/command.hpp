@@ -36,7 +36,7 @@ public:
 	CommandAbortException () : msg (0)
 	{
 	}
-	CommandAbortException (const char * msg_) : msg (msg_)
+	explicit CommandAbortException (const char * msg_) : msg (msg_)
 	{
 	}
 	virtual const char * what () const throw () override

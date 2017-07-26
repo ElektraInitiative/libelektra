@@ -312,7 +312,7 @@ ckdb::Plugin * Plugin::operator-> ()
 	return plugin;
 }
 
-std::string Plugin::lookupInfo (std::string item, std::string section)
+std::string Plugin::lookupInfo (std::string const & item, std::string const & section)
 {
 	Key k ("system/elektra/modules", KEY_END);
 	k.addBaseName (spec.getName ());
@@ -325,7 +325,7 @@ std::string Plugin::lookupInfo (std::string item, std::string section)
 	return ret.getString ();
 }
 
-bool Plugin::findInfo (std::string compare, std::string item, std::string section)
+bool Plugin::findInfo (std::string const & compare, std::string const & item, std::string const & section)
 {
 	std::string str = lookupInfo (item, section);
 

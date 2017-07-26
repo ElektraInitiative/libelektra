@@ -1220,7 +1220,6 @@ int elektraSortTopology (KeySet * ks, Key ** array)
 		KeySet * deps = elektraMetaArrayToKS (cur, "dep");
 		keyDel (ksLookupByName (deps, "dep", KDB_O_POP));
 		Key * tmpDep;
-		int gotUnresolved = 0;
 		switch (ksGetSize (deps))
 		{
 		case -1:
@@ -1251,6 +1250,7 @@ int elektraSortTopology (KeySet * ks, Key ** array)
 		}
 		default:
 		{
+			int gotUnresolved = 0;
 			while ((tmpDep = ksNext (deps)) != NULL)
 			{
 				if (!isValidKeyName (keyString (tmpDep)))
@@ -1318,10 +1318,10 @@ int elektraSortTopology (KeySet * ks, Key ** array)
 		retVal = 0;
 		goto TopSortCleanup;
 	}
-	int found = 1;
 
 	if (unresolved)
 	{
+		int found = 1;
 		// we have unresolved dependencies
 		for (int j = 0; j < size + 1; ++j)
 		{

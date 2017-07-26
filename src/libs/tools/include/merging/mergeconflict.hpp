@@ -25,7 +25,7 @@ namespace merging
 class InvalidConflictOperation : public ToolException
 {
 public:
-	InvalidConflictOperation (std::string message) : ToolException (message){};
+	explicit InvalidConflictOperation (std::string const & message) : ToolException (message){};
 };
 
 enum ConflictOperation
@@ -59,7 +59,7 @@ public:
 		return "unknown";
 	}
 
-	static ConflictOperation getFromName (std::string name)
+	static ConflictOperation getFromName (std::string const & name)
 	{
 		if (name == "CONFLICT_ADD") return CONFLICT_ADD;
 		if (name == "CONFLICT_DELETE") return CONFLICT_DELETE;

@@ -337,8 +337,7 @@ static int isoStringValidation (const char * date, const char * fmt)
 	}
 	else
 	{
-		int rc = -1;
-		rc = combinedIsoStringValidation (date, (DATETIME | CMPLT));
+		int rc = combinedIsoStringValidation (date, (DATETIME | CMPLT));
 		if (rc != 1) rc = combinedIsoStringValidation (date, (DATETIME | TRCT));
 		return rc;
 	}

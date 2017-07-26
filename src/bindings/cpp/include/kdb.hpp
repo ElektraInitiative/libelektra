@@ -41,7 +41,7 @@ class KDB
 {
 public:
 	KDB ();
-	KDB (Key & errorKey);
+	explicit KDB (Key & errorKey);
 	virtual ~KDB () throw ()
 	{
 		close ();

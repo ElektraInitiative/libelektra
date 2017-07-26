@@ -168,10 +168,9 @@ OpmphmOrder ** opmphmInit (Opmphm * opmphm, OpmphmInit * init, OpmphmOrder * ord
 	for (size_t i = 0; i < n; ++i)
 	{
 		size_t result = order[i].index.p;
-		size_t temp;
 		for (unsigned int t = 0; t < OPMPHMTUPLE; ++t)
 		{
-			temp = result / opmphm->outputBase;
+			size_t temp = result / opmphm->outputBase;
 			order[i].index.t[t] = result - temp * opmphm->outputBase;
 			result = temp;
 		}

@@ -24,7 +24,7 @@ CheckCommand::CheckCommand ()
 {
 }
 
-int printProblems (Key k, std::string action, int off)
+int printProblems (Key const & k, std::string const & action, int off)
 {
 	bool wo = k.getMeta<const kdb::Key> ("warnings");
 	bool eo = k.getMeta<const kdb::Key> ("error");

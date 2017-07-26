@@ -31,7 +31,6 @@
  */
 int ksForEach (KeySet * ks, int (*func) (Key * k))
 {
-	int rc = 0;
 	int ret = 0;
 	Key * current;
 
@@ -39,7 +38,7 @@ int ksForEach (KeySet * ks, int (*func) (Key * k))
 	ksRewind (ks);
 	while ((current = ksNext (ks)) != 0)
 	{
-		rc = func (current);
+		int rc = func (current);
 		if (rc == -1) return -1;
 		ret += rc;
 	}
@@ -69,7 +68,6 @@ int ksForEach (KeySet * ks, int (*func) (Key * k))
  **/
 int ksFilter (KeySet * result, KeySet * input, int (*filter) (Key * k))
 {
-	int rc = 0;
 	int ret = 0;
 	Key * current;
 
@@ -77,7 +75,7 @@ int ksFilter (KeySet * result, KeySet * input, int (*filter) (Key * k))
 	ksRewind (input);
 	while ((current = ksNext (input)) != 0)
 	{
-		rc = filter (current);
+		int rc = filter (current);
 		if (rc == -1)
 			return -1;
 		else if (rc != 0)

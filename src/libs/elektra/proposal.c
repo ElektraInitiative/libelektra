@@ -18,7 +18,7 @@
 Key * elektraKsPrev (KeySet * ks)
 {
 	if (ks->size == 0) return 0;
-	if (ks->current <= 0)
+	if (ks->current == 0)
 	{
 		ksRewind (ks);
 		return 0;

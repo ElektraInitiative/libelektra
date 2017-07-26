@@ -187,7 +187,6 @@ static Key * elektraKeyMalloc ()
 Key * keyNew (const char * name, ...)
 {
 	Key * k;
-	va_list va;
 
 	if (!name)
 	{
@@ -195,6 +194,7 @@ Key * keyNew (const char * name, ...)
 	}
 	else
 	{
+		va_list va;
 		va_start (va, name);
 		k = keyVNew (name, va);
 		va_end (va);

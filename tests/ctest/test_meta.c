@@ -283,11 +283,10 @@ static void test_metaArrayToKS ()
 static void checkTopArray (Key ** array, unsigned int size)
 {
 	unsigned int i;
-	Key * cur;
 	KeySet * done = ksNew (size, KS_END);
 	for (i = 0; i < size; ++i)
 	{
-		cur = array[i];
+		Key * cur = array[i];
 		KeySet * deps = elektraMetaArrayToKS (cur, "dep");
 		Key * dep;
 		ksRewind (deps);

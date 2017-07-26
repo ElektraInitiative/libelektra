@@ -29,7 +29,7 @@ class OneSideValueStrategy : public MergeConflictStrategy
 public:
 	ConflictResolutionSide winningSide;
 
-	OneSideValueStrategy (ConflictResolutionSide _winningSide) : winningSide (_winningSide)
+	explicit OneSideValueStrategy (ConflictResolutionSide _winningSide) : winningSide (_winningSide)
 	{
 	}
 

@@ -33,7 +33,7 @@
 using namespace std;
 
 Cmdline::Cmdline (int argc, char ** argv, Command * command)
-: helpText (), invalidOpt (false),
+: synopsis (command->getSynopsis ()), helpText (), invalidOpt (false),
 
   /*XXX: Step 2: initialise your option here.*/
   debug (), force (), load (), humanReadable (), help (), interactive (), minDepth (0), maxDepth (numeric_limits<int>::max ()),
@@ -49,8 +49,6 @@ Cmdline::Cmdline (int argc, char ** argv, Command * command)
 	int opt;
 
 	size_t optionPos;
-
-	synopsis = command->getSynopsis ();
 
 	helpText += command->getShortHelpText ();
 	helpText += "\n";

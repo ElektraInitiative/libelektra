@@ -436,7 +436,6 @@ int backendUpdateSize (Backend * backend, Key * parent, int size)
 
 int backendClose (Backend * backend, Key * errorKey)
 {
-	int ret = 0;
 	int errorOccurred = 0;
 
 	if (!backend) return -1;
@@ -452,7 +451,7 @@ int backendClose (Backend * backend, Key * errorKey)
 
 	for (int i = 0; i < NR_OF_PLUGINS; ++i)
 	{
-		ret = elektraPluginClose (backend->setplugins[i], errorKey);
+		int ret = elektraPluginClose (backend->setplugins[i], errorKey);
 		if (ret == -1) ++errorOccurred;
 
 		ret = elektraPluginClose (backend->getplugins[i], errorKey);

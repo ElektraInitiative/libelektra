@@ -17,7 +17,7 @@
 #include <kdbconfig.h>
 #include <string>
 
-std::string makeLiteralString (std::string str)
+std::string makeLiteralString (std::string const & str)
 {
 	std::string ret;
 	for (auto & elem : str)
@@ -40,7 +40,7 @@ std::string makeLiteralString (std::string str)
  * @param tocheck the keyset to check (name + string)
  * @param name the name of the keyset
  */
-void outputGTest (kdb::KeySet tocheck, std::string name)
+void outputGTest (kdb::KeySet tocheck, std::string const & name)
 {
 	std::cout << name << ".rewind();" << std::endl;
 	tocheck.rewind ();

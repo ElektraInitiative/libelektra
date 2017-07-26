@@ -324,8 +324,7 @@ static int validateMultipleRanges (const char * valueStr, const char * rangeStri
 {
 	char * localCopy = elektraStrDup (rangeString);
 	char * savePtr = NULL;
-	char * token = NULL;
-	token = strtok_r (localCopy, ",", &savePtr);
+	char * token = strtok_r (localCopy, ",", &savePtr);
 	int rc = validateSingleRange (valueStr, token, type);
 	if (rc == 1)
 	{
@@ -359,18 +358,17 @@ static int validateMultipleRanges (const char * valueStr, const char * rangeStri
 
 static RangeType stringToType (const Key * typeMeta)
 {
-	static const char * intTypes[] = {
-		"short", "long", "long long", NULL,
-	};
-	static const char * uintTypes[] = {
-		"unsigned short", "unsigned long", "unsigned long long", NULL,
-	};
-	static const char * floatTypes[] = {
-		"float", "double", "long double", NULL,
-	};
-
 	if (typeMeta)
 	{
+		static const char * intTypes[] = {
+			"short", "long", "long long", NULL,
+		};
+		static const char * uintTypes[] = {
+			"unsigned short", "unsigned long", "unsigned long long", NULL,
+		};
+		static const char * floatTypes[] = {
+			"float", "double", "long double", NULL,
+		};
 		const char * strVal = keyString (typeMeta);
 		for (int i = 0; intTypes[i] != NULL; ++i)
 		{
@@ -395,9 +393,7 @@ static RangeType stringToType (const Key * typeMeta)
 static RangeType getType (const Key * key)
 {
 	const Key * typeMeta = keyGetMeta (key, "check/type");
-	RangeType type = NA;
-
-	type = stringToType (typeMeta);
+	RangeType type = stringToType (typeMeta);
 
 	if (type == NA)
 		return INT;
@@ -409,14 +405,13 @@ static int validateKey (Key * key, Key * parentKey)
 {
 	const Key * rangeMeta = keyGetMeta (key, "check/range");
 	const char * rangeString = keyString (rangeMeta);
-	RangeType type = NA;
-	type = getType (key);
+	RangeType type = getType (key);
 	if (type == UINT)
 	{
 		const char * ptr = keyString (key);
 		while (*ptr)
 		{
-			if (type == UINT && *ptr == '-')
+			if (*ptr == '-')
 			{
 				return -1;
 			}

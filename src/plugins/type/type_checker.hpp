@@ -33,7 +33,7 @@ class TypeChecker
 	bool enforce;
 
 public:
-	TypeChecker (KeySet config)
+	explicit TypeChecker (KeySet config)
 	{
 		enforce = config.lookup ("/enforce");
 		Key k = config.lookup ("/require_version");
@@ -92,7 +92,7 @@ public:
 	~TypeChecker ()
 	{
 		map<string, Type *>::iterator it;
-		for (it = types.begin (); it != types.end (); it++)
+		for (it = types.begin (); it != types.end (); ++it)
 		{
 			delete it->second;
 		}

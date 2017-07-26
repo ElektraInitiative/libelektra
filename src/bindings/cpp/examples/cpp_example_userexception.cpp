@@ -60,7 +60,7 @@ public:
 class KeyNotFoundException : public Exception
 {
 public:
-	KeyNotFoundException (std::string const &)
+	explicit KeyNotFoundException (std::string const &)
 	{
 	}
 	virtual const char * what () const throw ()
@@ -108,7 +108,7 @@ namespace kdb
 class KDBException : public Exception
 {
 public:
-	KDBException (Key key) : m_key (key)
+	explicit KDBException (Key key) : m_key (key)
 	{
 	}
 

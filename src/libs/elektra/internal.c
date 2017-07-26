@@ -398,6 +398,7 @@ char * elektraVFormat (const char * format, va_list arg_list)
 	if (calculated_length == -1)
 	{
 		va_end (arg_list_adj);
+		elektraFree (buffer);
 		// before Glibc 2.0.6, always -1 is returned
 		// we won't do Glibc job, please upgrade
 		return 0;

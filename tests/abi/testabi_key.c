@@ -607,7 +607,6 @@ static void test_keyName ()
 static void test_keyNameSlashes ()
 {
 	printf ("Test Slashes in Key Name\n");
-	size_t size;
 	char * buf;
 	char * getBack;
 	char ret[1000];
@@ -856,7 +855,7 @@ static void test_keyNameSlashes ()
 		succeed_if_same_string (keyBaseName (dup), tstKeyName[i].expectedBaseName);
 
 		/* keyGetBaseNameSize */
-		size = keyGetBaseNameSize (key);
+		size_t size = keyGetBaseNameSize (key);
 		succeed_if ((size == strlen (tstKeyName[i].expectedBaseName) + 1), "keyGetBaseNameSize");
 
 		/* keyGetBaseName */

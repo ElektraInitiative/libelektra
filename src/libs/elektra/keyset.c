@@ -166,7 +166,6 @@ KeySet * ksNew (size_t alloc, ...)
 KeySet * ksVNew (size_t alloc, va_list va)
 {
 	KeySet * keyset = 0;
-	Key * key = 0;
 
 	keyset = (KeySet *)elektraMalloc (sizeof (KeySet));
 	if (!keyset)
@@ -192,7 +191,7 @@ KeySet * ksVNew (size_t alloc, va_list va)
 
 	if (alloc != 1) // is >0 because of increment earlier
 	{
-		key = (struct _Key *)va_arg (va, struct _Key *);
+		Key * key = (struct _Key *)va_arg (va, struct _Key *);
 		while (key)
 		{
 			ksAppendKey (keyset, key);
@@ -882,7 +881,7 @@ ssize_t ksAppend (KeySet * ks, const KeySet * toAppend)
 	if (!ks) return -1;
 	if (!toAppend) return -1;
 
-	if (toAppend->size <= 0) return ks->size;
+	if (toAppend->size == 0) return ks->size;
 
 	/* Do only one resize in advance */
 	for (toAlloc = ks->alloc; ks->size + toAppend->size >= toAlloc; toAlloc *= 2)
@@ -1189,7 +1188,7 @@ Key * ksPop (KeySet * ks)
 
 	ks->flags |= KS_FLAG_SYNC;
 
-	if (ks->size <= 0) return 0;
+	if (ks->size == 0) return 0;
 
 	--ks->size;
 	if (ks->size + 1 < ks->alloc / 2) ksResize (ks, ks->alloc / 2 - 1);

@@ -299,7 +299,7 @@ void output_plugin (Plugin * plugin)
 {
 	if (!plugin) return;
 
-	printf ("Name: %s [%zd]\n", plugin->name, plugin->refcounter);
+	printf ("Name: %s [%zu]\n", plugin->name, plugin->refcounter);
 	output_keyset (plugin->config);
 }
 
@@ -332,12 +332,12 @@ void output_trie (Trie * trie)
 
 void output_split (Split * split)
 {
-	printf ("Split - size: %zd, alloc: %zd\n", split->size, split->alloc);
+	printf ("Split - size: %zu, alloc: %zu\n", split->size, split->alloc);
 	for (size_t i = 0; i < split->size; ++i)
 	{
 		if (split->handles[i])
 		{
-			printf ("split #%zd size: %zd, handle: %p, sync: %d, parent: %s (%s), spec: %zd, dir: %zd, user: %zd, system: "
+			printf ("split #%zu size: %zd, handle: %p, sync: %d, parent: %s (%s), spec: %zd, dir: %zd, user: %zd, system: "
 				"%zd\n",
 				i, ksGetSize (split->keysets[i]), (void *)split->handles[i], split->syncbits[i],
 				keyName (split->parents[i]), keyString (split->parents[i]), split->handles[i]->specsize,
@@ -345,18 +345,18 @@ void output_split (Split * split)
 		}
 		else
 		{
-			printf ("split #%zd, size: %zd, default split, sync: %d\n", i, ksGetSize (split->keysets[i]), split->syncbits[i]);
+			printf ("split #%zu, size: %zd, default split, sync: %d\n", i, ksGetSize (split->keysets[i]), split->syncbits[i]);
 		}
 	}
 }
 
 void generate_split (Split * split)
 {
-	printf ("succeed_if (split->size == %zd, \"size of split not correct\");\n", split->size);
+	printf ("succeed_if (split->size == %zu, \"size of split not correct\");\n", split->size);
 	for (size_t i = 0; i < split->size; ++i)
 	{
-		printf ("succeed_if (split->syncbits[%zd]== %d, \"size of split not correct\");\n", i, split->syncbits[i]);
-		printf ("succeed_if (ksGetSize(split->keysets[%zd]) == %zd, \"wrong size\");\n", i, ksGetSize (split->keysets[i]));
+		printf ("succeed_if (split->syncbits[%zu]== %d, \"size of split not correct\");\n", i, split->syncbits[i]);
+		printf ("succeed_if (ksGetSize(split->keysets[%zu]) == %zd, \"wrong size\");\n", i, ksGetSize (split->keysets[i]));
 	}
 }
 

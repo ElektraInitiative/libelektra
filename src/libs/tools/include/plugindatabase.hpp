@@ -140,7 +140,7 @@ public:
 	 *
 	 * @return The representing number for a given status.
 	 */
-	static int calculateStatus (std::string statusString);
+	static int calculateStatus (std::string const & statusString);
 
 	static const std::map<std::string, int> statusMap;
 };
@@ -194,7 +194,7 @@ public:
 	 * 
 	 * @param conf keyset containing keys from system/elektra/plugins
 	 */
-	PluginVariantDatabase (const KeySet & conf);
+	explicit PluginVariantDatabase (const KeySet & conf);
 	~PluginVariantDatabase ();
 
 	std::vector<std::string> listAllPlugins () const;
@@ -274,7 +274,7 @@ private:
 	 * 
 	 * @return a newly created key matching the inputs which can be used for lookups for example
 	 */
-	Key buildVariantSysconfKey (PluginSpec const & whichplugin, std::string const & variant, const std::string attr) const;
+	Key buildVariantSysconfKey (PluginSpec const & whichplugin, std::string const & variant, std::string const & attr) const;
 
 	/**
 	 * @brief adds all keys of a keyset below a certain key to another keyset, rebased
