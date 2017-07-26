@@ -32,12 +32,12 @@ void timePrint (char * msg)
 	gettimeofday (&start, 0);
 }
 
-void benchmarkCreate ()
+void benchmarkCreate (void)
 {
 	large = ksNew (num_key * num_dir, KS_END);
 }
 
-void benchmarkFillup ()
+void benchmarkFillup (void)
 {
 	int i, j;
 	char name[KEY_NAME_LENGTH + 1];

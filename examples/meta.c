@@ -10,7 +10,7 @@
 
 #include <stdio.h>
 
-int main ()
+int main (void)
 {
 	Key * k;
 	Key * c;

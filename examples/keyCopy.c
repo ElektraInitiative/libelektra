@@ -61,7 +61,7 @@ void i (Key * k)
 }
 //! [Individual Copy]
 
-int main ()
+int main (void)
 {
 	Key * k = keyNew ("user/hello", KEY_VALUE, "my content", KEY_END);
 

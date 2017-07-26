@@ -2807,7 +2807,7 @@ static void test_cutbelow (void)
 	keyDel (cutpoint);
 }
 
-KeySet * set_simple ()
+KeySet * set_simple (void)
 {
 	return ksNew (50, keyNew ("system/elektra/mountpoints/simple", KEY_END),
 

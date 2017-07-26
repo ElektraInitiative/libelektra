@@ -8,12 +8,12 @@
 
 #include <benchmarks.h>
 
-void benchmarkDel ()
+void benchmarkDel (void)
 {
 	ksDel (large);
 }
 
-int benchmarkIterate ()
+int benchmarkIterate (void)
 {
 	ksRewind (large);
 	Key * cur;

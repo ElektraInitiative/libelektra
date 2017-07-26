@@ -29,7 +29,7 @@ void f (KeySet * iterator, KeySet * lookup)
 }
 //! [f]
 
-int main ()
+int main (void)
 {
 	KeySet * ks1 = ksNew (20, KS_END);
 	KeySet * ks2 = ksNew (20, KS_END);

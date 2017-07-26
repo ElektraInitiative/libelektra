@@ -9,7 +9,7 @@
 #include <kdb.h>
 #include <stdio.h>
 
-int main ()
+int main (void)
 {
 	// clang-format off
 //! [Full Example]

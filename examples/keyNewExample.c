@@ -9,7 +9,7 @@
 #include <kdb.h>
 #include <stdio.h>
 
-int main ()
+int main (void)
 {
 	KeySet * ks = ksNew (0, KS_END);
 	Key * key = 0;
