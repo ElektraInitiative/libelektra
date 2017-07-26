@@ -65,6 +65,6 @@ before_script:
 
 script:
   - ninja
-  - travis_wait 30 ninja run_all
+  - ninja run_all
   - ninja install
-  - travis_wait 30 ninja run_all
+  - ninja run_all
