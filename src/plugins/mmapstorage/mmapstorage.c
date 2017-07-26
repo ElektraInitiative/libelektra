@@ -36,7 +36,7 @@ static FILE * elektraMmapstorageOpenFile (Key * parentKey, int errnosave)
 	FILE * fp;
 	ELEKTRA_LOG ("opening file %s", keyString (parentKey));
 
-	if ((fp = fopen (keyString (parentKey), "rw+")) == 0) {
+	if ((fp = fopen (keyString (parentKey), "r+")) == 0) {
 		ELEKTRA_SET_ERROR_GET (parentKey);
 		errno = errnosave;
 		ELEKTRA_LOG_WARNING ("error opening file %s", keyString (parentKey));
