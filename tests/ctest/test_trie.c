@@ -21,7 +21,7 @@ Trie * test_insert (Trie * trie, char * name, char * value)
 }
 
 
-static void test_minimaltrie ()
+static void test_minimaltrie (void)
 {
 	printf ("Test minimal trie\n");
 
@@ -55,7 +55,7 @@ KeySet * simple_config (void)
 		      keyNew ("system/elektra/mountpoints/simple/mountpoint", KEY_VALUE, "user/tests/simple", KEY_END), KS_END);
 }
 
-static void test_simple ()
+static void test_simple (void)
 {
 	printf ("Test simple trie\n");
 
@@ -106,7 +106,7 @@ static void collect_mountpoints (Trie * trie, KeySet * mountpoints)
 	}
 }
 
-static void test_iterate ()
+static void test_iterate (void)
 {
 	printf ("Test iterate trie\n");
 
@@ -175,7 +175,7 @@ static void test_iterate ()
 	keyDel (searchKey);
 }
 
-static void test_reviterate ()
+static void test_reviterate (void)
 {
 	printf ("Test reviterate trie\n");
 
@@ -272,7 +272,7 @@ KeySet * set_mountpoints (void)
 		      keyNew ("system/tests/hosts/below", KEY_VALUE, "sysbelow", KEY_END), KS_END);
 }
 
-static void test_moreiterate ()
+static void test_moreiterate (void)
 {
 	printf ("Test moreiterate trie\n");
 
@@ -367,7 +367,7 @@ static void test_moreiterate ()
 	keyDel (searchKey);
 }
 
-static void test_revmoreiterate ()
+static void test_revmoreiterate (void)
 {
 	printf ("Test revmoreiterate trie\n");
 
@@ -519,7 +519,7 @@ static void test_revmoreiterate ()
 }
 
 
-static void test_umlauts ()
+static void test_umlauts (void)
 {
 	printf ("Test umlauts trie\n");
 
@@ -574,7 +574,7 @@ static void test_umlauts ()
 	keyDel (searchKey);
 }
 
-static void test_endings ()
+static void test_endings (void)
 {
 	printf ("Test endings trie\n");
 
@@ -690,7 +690,7 @@ static void test_endings ()
 	}
 }
 
-static void test_root ()
+static void test_root (void)
 {
 	printf ("Test trie with root\n");
 
@@ -735,7 +735,7 @@ static void test_root ()
 	keyDel (searchKey);
 }
 
-static void test_double ()
+static void test_double (void)
 {
 	printf ("Test double insertion\n");
 
@@ -767,7 +767,7 @@ static void test_double ()
 	trieClose (trie, 0);
 }
 
-static void test_emptyvalues ()
+static void test_emptyvalues (void)
 {
 	printf ("Test empty values in trie\n");
 

@@ -80,7 +80,7 @@
  * Allocates and initializes a key
  * @returns 0 if allocation did not work, the key otherwise
  */
-static Key * elektraKeyMalloc ()
+static Key * elektraKeyMalloc (void)
 {
 	Key * key = (Key *)elektraMalloc (sizeof (Key));
 	if (!key) return 0;

@@ -22,7 +22,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-static inline KeySet * elektraLineContract ()
+static inline KeySet * elektraLineContract (void)
 {
 	return ksNew (30, keyNew ("system/elektra/modules/line", KEY_VALUE, "line plugin waits for your orders", KEY_END),
 		      keyNew ("system/elektra/modules/line/exports", KEY_END),

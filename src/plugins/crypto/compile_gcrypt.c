@@ -9,7 +9,7 @@
 
 #include <gcrypt.h>
 
-int main ()
+int main (void)
 {
 	gcry_cipher_hd_t elektraCryptoHandle;
 	return 0;

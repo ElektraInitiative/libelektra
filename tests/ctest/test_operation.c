@@ -8,7 +8,7 @@
 
 #include <tests_internal.h>
 
-static void test_cmpOrder ()
+static void test_cmpOrder (void)
 {
 	Key * k1 = keyNew ("user/a", KEY_META, "order", "20", KEY_END);
 	Key * k2 = keyNew ("user/b", KEY_META, "order", "10", KEY_END);
@@ -36,7 +36,7 @@ static void test_cmpOrder ()
 	keyDel (k2);
 }
 
-static KeySet * set_a ()
+static KeySet * set_a (void)
 {
 	return ksNew (16, keyNew ("user/0", KEY_END), keyNew ("user/a", KEY_END), keyNew ("user/a/a", KEY_END),
 		      keyNew ("user/a/a/a", KEY_END), keyNew ("user/a/a/b", KEY_END), keyNew ("user/a/b", KEY_END),
@@ -46,7 +46,7 @@ static KeySet * set_a ()
 		      keyNew ("user/x", KEY_END), KS_END);
 }
 
-static void test_search ()
+static void test_search (void)
 {
 	printf ("Testing operation search (internal)\n");
 
@@ -141,7 +141,7 @@ static void test_search ()
 	ksDel (a);
 }
 
-static void test_format ()
+static void test_format (void)
 {
 	printf ("Test key format\n");
 

@@ -19,7 +19,7 @@ void outputKeySet (KeySet * returned)
 	}
 }
 
-int main ()
+int main (void)
 {
 	// clang-format off
 	//! [cut]

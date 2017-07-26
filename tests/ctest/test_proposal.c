@@ -8,7 +8,7 @@
 
 #include <tests_internal.h>
 
-static void test_ksPopAtCursor ()
+static void test_ksPopAtCursor (void)
 {
 	KeySet * ks = ksNew (5, keyNew ("user/valid/key1", KEY_END), keyNew ("user/valid/key2", KEY_END),
 			     keyNew ("system/valid/key1", KEY_END), keyNew ("system/valid/key2", KEY_END), KS_END);
@@ -26,7 +26,7 @@ static void test_ksPopAtCursor ()
 	ksDel (ks_c);
 }
 
-static void test_ksToArray ()
+static void test_ksToArray (void)
 {
 	KeySet * ks = ksNew (5, keyNew ("user/test1", KEY_END), keyNew ("user/test2", KEY_END), keyNew ("user/test3", KEY_END), KS_END);
 
@@ -54,7 +54,7 @@ static void test_ksToArray ()
 	ksDel (ks);
 }
 
-static void test_keyAsCascading ()
+static void test_keyAsCascading (void)
 {
 	printf ("test keyAsCascading\n");
 	Key * system = keyNew ("system", KEY_END);
@@ -80,7 +80,7 @@ static void test_keyAsCascading ()
 	keyDel (cascadingKey);
 }
 
-static void test_keyGetLevelsBelow ()
+static void test_keyGetLevelsBelow (void)
 {
 	printf ("test keyGetLevelsBelow\n");
 	Key * parent = keyNew ("system/parent", KEY_END);
@@ -97,7 +97,7 @@ static void test_keyGetLevelsBelow ()
 	keyDel (threeLvl);
 }
 
-static void test_keyRel2 ()
+static void test_keyRel2 (void)
 {
 	printf ("test keyRel2\n");
 

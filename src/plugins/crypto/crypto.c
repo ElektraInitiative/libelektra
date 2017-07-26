@@ -90,7 +90,7 @@ static int elektraCryptoInit (Key * errorKey ELEKTRA_UNUSED)
  *
  * Some libraries may need extra code for cleaning up the environment.
  */
-static void elektraCryptoTeardown ()
+static void elektraCryptoTeardown (void)
 {
 }
 

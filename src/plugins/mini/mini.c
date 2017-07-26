@@ -58,7 +58,7 @@
  *
  * @return A contract describing the functionality of this plugin.
  */
-static inline KeySet * elektraMiniContract ()
+static inline KeySet * elektraMiniContract (void)
 {
 	return ksNew (30, keyNew ("system/elektra/modules/mini", KEY_VALUE, "mini plugin waits for your orders", KEY_END),
 		      keyNew ("system/elektra/modules/mini/exports", KEY_END),

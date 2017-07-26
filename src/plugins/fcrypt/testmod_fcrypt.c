@@ -25,7 +25,7 @@
 
 static const kdb_octet_t testContent[] = { 0x01, 0x02, 0xCA, 0xFE, 0xBA, 0xBE, 0x03, 0x04 };
 
-static KeySet * newPluginConfiguration ()
+static KeySet * newPluginConfiguration (void)
 {
 	// clang-format off
 	return ksNew (3,
@@ -101,7 +101,7 @@ static int isTestFileCorrect (const char * file)
 	return returnValue;
 }
 
-static void test_init ()
+static void test_init (void)
 {
 	Plugin * plugin = NULL;
 	Key * parentKey = keyNew ("system", KEY_END);
@@ -131,7 +131,7 @@ static void test_init ()
 	keyDel (parentKey);
 }
 
-static void test_gpg ()
+static void test_gpg (void)
 {
 	// Plugin configuration
 	KeySet * conf = newPluginConfiguration ();
@@ -150,7 +150,7 @@ static void test_gpg ()
 	ksDel (conf);
 }
 
-static void test_file_crypto_operations ()
+static void test_file_crypto_operations (void)
 {
 	Plugin * plugin = NULL;
 	Key * parentKey = keyNew ("system", KEY_END);
@@ -194,7 +194,7 @@ static void test_file_crypto_operations ()
 	keyDel (parentKey);
 }
 
-static void test_file_signature_operations ()
+static void test_file_signature_operations (void)
 {
 	Plugin * plugin = NULL;
 	Key * parentKey = keyNew ("system", KEY_END);

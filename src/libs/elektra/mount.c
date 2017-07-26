@@ -309,7 +309,7 @@ Plugin * elektraMountGlobalsLoadPlugin (KeySet * referencePlugins, Key * cur, Ke
 	return plugin;
 }
 
-KeySet * elektraDefaultGlobalConfig ()
+KeySet * elektraDefaultGlobalConfig (void)
 {
 	return ksNew (
 		18, keyNew ("system/elektra/globalplugins", KEY_VALUE, "", KEY_END),

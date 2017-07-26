@@ -15,7 +15,7 @@
 
 #define ELEKTRA_XERCES_ORIGINAL_ROOT_NAME "xerces/rootname"
 
-static void test_basics ()
+static void test_basics (void)
 {
 	printf ("test basics\n");
 	fflush (stdout);
@@ -49,7 +49,7 @@ static void test_basics ()
 	fflush (stdout);
 }
 
-static void test_simple_read ()
+static void test_simple_read (void)
 {
 	printf ("test simple read\n");
 	fflush (stdout);
@@ -164,7 +164,7 @@ static void test_simple_read ()
 	fflush (stdout);
 }
 
-static void test_simple_write ()
+static void test_simple_write (void)
 {
 	printf ("test simple write\n");
 	fflush (stdout);
@@ -211,7 +211,7 @@ static void test_simple_write ()
 	fflush (stdout);
 }
 
-static void test_maven_pom ()
+static void test_maven_pom (void)
 {
 	printf ("test maven pom\n");
 	fflush (stdout);
@@ -248,7 +248,7 @@ static void test_maven_pom ()
 	fflush (stdout);
 }
 
-static void test_jenkins_config ()
+static void test_jenkins_config (void)
 {
 	printf ("test jenkins config\n");
 	fflush (stdout);

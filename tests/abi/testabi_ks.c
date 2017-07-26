@@ -12,7 +12,7 @@
 
 char * namespaces[] = { "spec", "proc", "dir", "user", "system", 0 };
 
-static void test_ksNew ()
+static void test_ksNew (void)
 {
 	KeySet * ks = 0;
 	KeySet * keys = ksNew (15, KS_END);
@@ -87,7 +87,7 @@ static void test_ksNew ()
 	ksDel (ks_c);
 }
 
-static void test_ksEmpty ()
+static void test_ksEmpty (void)
 {
 	printf ("Test empty keysets\n");
 	KeySet * ks;
@@ -159,7 +159,7 @@ static void test_ksEmpty ()
 
 #define NR_KEYSETS 10
 
-static void test_ksReference ()
+static void test_ksReference (void)
 {
 	KeySet * ks = 0;
 	KeySet * ks1;
@@ -265,7 +265,7 @@ static void test_ksReference ()
 	}
 }
 
-static void test_ksDup ()
+static void test_ksDup (void)
 {
 	KeySet * ks = 0;
 	KeySet * other = 0;
@@ -325,7 +325,7 @@ static void test_ksDup ()
 	ksDel (ks);
 }
 
-static void test_ksCopy ()
+static void test_ksCopy (void)
 {
 	KeySet * ks = 0;
 	KeySet * other = 0;
@@ -421,7 +421,7 @@ static void test_ksCopy ()
 	ksDel (ks);
 }
 
-static void test_ksIterate ()
+static void test_ksIterate (void)
 {
 	KeySet * ks = ksNew (0, KS_END);
 	KeySet * other = ksNew (0, KS_END);
@@ -504,7 +504,7 @@ static void test_ksIterate ()
 	ksDel (other);
 }
 
-static void test_ksCursor ()
+static void test_ksCursor (void)
 {
 	KeySet * ks = ksNew (0, KS_END);
 	Key * key;
@@ -599,7 +599,7 @@ static void test_ksCursor ()
 	ksDel (ks);
 }
 
-static void test_ksAtCursor ()
+static void test_ksAtCursor (void)
 {
 	KeySet * ks;
 	Key * current;
@@ -659,7 +659,7 @@ static void test_ksAtCursor ()
 	ksDel (ks);
 }
 
-static void test_ksSort ()
+static void test_ksSort (void)
 {
 	KeySet * ks;
 	Key *key, *k1, *k2;
@@ -966,7 +966,7 @@ static void ksUnsort (KeySet * ks)
 	ksDel (tempks);
 }
 
-static void test_ksLookup ()
+static void test_ksLookup (void)
 {
 	printf ("Test lookup\n");
 
@@ -1057,7 +1057,7 @@ static void test_ksLookup ()
 	ksDel (lookupKeys);
 }
 
-static void test_ksLookupByName ()
+static void test_ksLookupByName (void)
 {
 	printf ("Test lookup by name\n");
 
@@ -1133,7 +1133,7 @@ static void test_ksLookupByName ()
 }
 
 
-static void test_ksLookupName ()
+static void test_ksLookupName (void)
 {
 	Key * found;
 	KeySet * ks = ksNew (0, KS_END);
@@ -1247,7 +1247,7 @@ static void test_ksLookupName ()
 	ksDel (ks);
 }
 
-static void test_ksLookupNameCascading ()
+static void test_ksLookupNameCascading (void)
 {
 	Key * found;
 	KeySet * ks = ksNew (0, KS_END);
@@ -1410,7 +1410,7 @@ static void test_ksLookupNameCascading ()
 	ksDel (ks);
 }
 
-static void test_ksLookupNameDomain ()
+static void test_ksLookupNameDomain (void)
 {
 	Key * found;
 	KeySet * ks = ksNew (0, KS_END);
@@ -1444,7 +1444,7 @@ static void test_ksLookupNameDomain ()
 	ksDel (ks);
 }
 
-static void test_ksLookupNameAll ()
+static void test_ksLookupNameAll (void)
 {
 	Key * found;
 	cursor_t cursor;
@@ -1586,7 +1586,7 @@ static void test_ksLookupNameAll ()
 }
 
 /*
-static void test_ksLookupValue()
+static void test_ksLookupValue(void)
 {
 	KeySet *ks = ksNew(0, KS_END);
 	Key *found;
@@ -1669,7 +1669,7 @@ static void test_ksLookupValue()
 }
 */
 
-static void test_ksExample ()
+static void test_ksExample (void)
 {
 	KeySet * ks = ksNew (0, KS_END);
 	Key * key;
@@ -1730,7 +1730,7 @@ static void test_ksExample ()
 	ksDel (ks);
 }
 
-static void test_ksAppend ()
+static void test_ksAppend (void)
 {
 	int i;
 
@@ -1925,7 +1925,7 @@ int find_80 (Key * check)
 	return n > 70 ? -1 : 1;
 }
 
-static void test_ksFunctional ()
+static void test_ksFunctional (void)
 {
 	Key * found;
 	Key * current;
@@ -1988,7 +1988,7 @@ static void test_ksFunctional ()
 	ksDel (values_below_30);
 }
 
-static void test_ksLookupPop ()
+static void test_ksLookupPop (void)
 {
 	printf ("Test ksLookup with KDB_O_POP\n");
 
@@ -2205,7 +2205,7 @@ static void test_ksLookupPop ()
 	ksDel (ks);
 }
 
-static void test_ksSync ()
+static void test_ksSync (void)
 {
 	printf ("Test sync flag of KeySet\n");
 
@@ -2247,7 +2247,7 @@ static void test_ksSync ()
 	ksDel (ks);
 }
 
-static void test_ksDoubleFree ()
+static void test_ksDoubleFree (void)
 {
 	/* Valgrind only test */
 	KeySet * ks1 = ksNew (5, keyNew ("user/abc1", KEY_VALUE, "abc1", KEY_END), keyNew ("user/abc2", KEY_VALUE, "abc1", KEY_END),
@@ -2267,7 +2267,7 @@ static void test_ksDoubleFree ()
 	ksDel (ks2);
 }
 
-static void test_ksDoubleAppend ()
+static void test_ksDoubleAppend (void)
 {
 	printf ("Test double appending\n");
 
@@ -2285,7 +2285,7 @@ static void test_ksDoubleAppend ()
 	ksDel (ks2);
 }
 
-static void test_ksDoubleAppendKey ()
+static void test_ksDoubleAppendKey (void)
 {
 	printf ("Test double appending of key\n");
 
@@ -2312,7 +2312,7 @@ static void test_ksDoubleAppendKey ()
 	// don't free key here!!
 }
 
-static void test_ksAppendKey ()
+static void test_ksAppendKey (void)
 {
 	printf ("Test cursor after appending key\n");
 	KeySet * ks = 0;
@@ -2368,7 +2368,7 @@ static void test_ksAppendKey ()
 	ksDel (ks);
 }
 
-static void test_ksModifyKey ()
+static void test_ksModifyKey (void)
 {
 	printf ("Test modify key after insertion\n");
 
@@ -2387,7 +2387,7 @@ static void test_ksModifyKey ()
 	ksDel (ks);
 }
 
-static void test_ksOrder ()
+static void test_ksOrder (void)
 {
 	KeySet * ks = ksNew (20, keyNew ("user/test/test", KEY_END), keyNew ("user/test/test/bar", KEY_END),
 			     keyNew ("user/test/test/foo", KEY_END), keyNew ("user/test/test-foo", KEY_END), KS_END);
@@ -2473,7 +2473,7 @@ KeySet * fill_vaargs (size_t size, ...)
 	return ks;
 }
 
-static void test_keyVNew ()
+static void test_keyVNew (void)
 {
 	printf ("Test keyVNew\n");
 
@@ -2499,7 +2499,7 @@ static void test_keyVNew ()
 }
 
 
-static KeySet * set_a ()
+static KeySet * set_a (void)
 {
 	return ksNew (16, keyNew ("user/0", KEY_END), keyNew ("user/a", KEY_END), keyNew ("user/a/a", KEY_END),
 		      keyNew ("user/a/a/a", KEY_END), keyNew ("user/a/a/b", KEY_END), keyNew ("user/a/b", KEY_END),
@@ -2509,7 +2509,7 @@ static KeySet * set_a ()
 		      keyNew ("user/x", KEY_END), KS_END);
 }
 
-static KeySet * set_oa ()
+static KeySet * set_oa (void)
 {
 	return ksNew (14, keyNew ("user/a", KEY_END), keyNew ("user/a/a", KEY_END), keyNew ("user/a/a/a", KEY_END),
 		      keyNew ("user/a/a/b", KEY_END), keyNew ("user/a/b", KEY_END), keyNew ("user/a/b/a", KEY_END),
@@ -2519,7 +2519,7 @@ static KeySet * set_oa ()
 }
 
 
-static void test_cut ()
+static void test_cut (void)
 {
 	printf ("Testing operation cut\n");
 
@@ -2572,7 +2572,7 @@ static void test_cut ()
 	}
 }
 
-static void test_cutpoint ()
+static void test_cutpoint (void)
 {
 	printf ("Testing operation cut point\n");
 
@@ -2602,7 +2602,7 @@ static void test_cutpoint ()
 	ksDel (cmp_part);
 }
 
-static void test_cascadingCutpoint ()
+static void test_cascadingCutpoint (void)
 {
 	printf ("Testing operation cascading cut point\n");
 
@@ -2655,7 +2655,7 @@ static void test_cascadingCutpoint ()
 	keyDel (cutpoint);
 }
 
-static void test_cascadingRootCutpoint ()
+static void test_cascadingRootCutpoint (void)
 {
 	printf ("Testing operation cascading root cut point\n");
 
@@ -2683,7 +2683,7 @@ static void test_cascadingRootCutpoint ()
 	keyDel (cutpoint);
 }
 
-static void test_cutpointRoot ()
+static void test_cutpointRoot (void)
 {
 	printf ("Testing operation cut root point\n");
 
@@ -2714,7 +2714,7 @@ static void test_cutpointRoot ()
 }
 
 
-static void test_cutpoint_1 ()
+static void test_cutpoint_1 (void)
 {
 	printf ("Testing operation cut point 1\n");
 
@@ -2746,7 +2746,7 @@ static void test_cutpoint_1 ()
 	ksDel (cmp_part);
 }
 
-static void test_unique_cutpoint ()
+static void test_unique_cutpoint (void)
 {
 	printf ("Testing operation cut with unique cutpoint\n");
 
@@ -2770,7 +2770,7 @@ static void test_unique_cutpoint ()
 	keyDel (cutpoint);
 }
 
-static void test_cutbelow ()
+static void test_cutbelow (void)
 {
 	printf ("Testing cutting below some keys\n");
 
@@ -2803,7 +2803,7 @@ static void test_cutbelow ()
 	keyDel (cutpoint);
 }
 
-KeySet * set_simple ()
+KeySet * set_simple (void)
 {
 	return ksNew (50, keyNew ("system/elektra/mountpoints/simple", KEY_END),
 
@@ -2829,7 +2829,7 @@ KeySet * set_simple ()
 		      keyNew ("system/elektra/mountpoints/simple/setplugins/#1tracer", KEY_VALUE, "tracer", KEY_END), KS_END);
 }
 
-static void test_simple ()
+static void test_simple (void)
 {
 	KeySet * config = set_simple ();
 	KeySet * result_res = ksNew (16, keyNew ("system/elektra/mountpoints/simple/config", KEY_END),
@@ -2863,7 +2863,7 @@ static void test_simple ()
 	ksDel (config);
 }
 
-static void test_cursor ()
+static void test_cursor (void)
 {
 	printf ("test cut cursor\n");
 
@@ -2926,7 +2926,7 @@ static void test_cursor ()
 	ksDel (res);
 }
 
-static void test_morecut ()
+static void test_morecut (void)
 {
 	printf ("More cut test cases\n");
 
@@ -2960,7 +2960,7 @@ static void test_morecut ()
 	ksDel (split2);
 }
 
-static void test_cutafter ()
+static void test_cutafter (void)
 {
 	printf ("More cut after\n");
 
@@ -3001,7 +3001,7 @@ static void test_cutafter ()
 	ksDel (split2);
 }
 
-static void test_simpleLookup ()
+static void test_simpleLookup (void)
 {
 	printf ("Test simple lookup\n");
 
@@ -3027,7 +3027,7 @@ static void test_simpleLookup ()
 	ksDel (ks);
 }
 
-static void test_nsLookup ()
+static void test_nsLookup (void)
 {
 	printf ("Test lookup in all namespaces\n");
 
@@ -3077,7 +3077,7 @@ static void test_nsLookup ()
 	ksDel (ks);
 }
 
-static void test_ksAppend2 ()
+static void test_ksAppend2 (void)
 {
 	printf ("Test more involved appending\n");
 
@@ -3155,7 +3155,7 @@ static void test_ksAppend2 ()
 	ksDel (ks);
 }
 
-static void test_ksAppend3 ()
+static void test_ksAppend3 (void)
 {
 	printf ("Test appending same key\n");
 

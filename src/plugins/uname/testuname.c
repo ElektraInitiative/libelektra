@@ -8,7 +8,7 @@
 
 #include <sys/utsname.h>
 
-int main ()
+int main (void)
 {
 	struct utsname buf;
 

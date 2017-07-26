@@ -17,7 +17,7 @@
 #include <tests_plugin.h>
 
 
-static void test ()
+static void test (void)
 {
 	Key * parentKey = keyNew ("user/tests/enum", KEY_VALUE, "", KEY_END);
 	Key * k1 = keyNew ("user/tests/enum/valid1", KEY_VALUE, "TRUE", KEY_META, "check/enum", "'TRUE',  'FALSE'", KEY_END);
@@ -56,7 +56,7 @@ static void test ()
 	PLUGIN_CLOSE ();
 }
 
-static void testArray ()
+static void testArray (void)
 {
 	Key * parentKey = keyNew ("user/tests/enum", KEY_VALUE, "", KEY_END);
 	Key * k1 = keyNew ("user/tests/enum/valid1", KEY_VALUE, "LOW", KEY_META, "check/enum", "#1", KEY_META, "check/enum/#0", "LOW",
@@ -102,7 +102,7 @@ static void testArray ()
 	PLUGIN_CLOSE ();
 }
 
-static void testMultiList ()
+static void testMultiList (void)
 {
 	Key * parentKey = keyNew ("user/tests/enum", KEY_VALUE, "", KEY_END);
 	Key * k1 = keyNew ("user/tests/enum/valid1", KEY_VALUE, "LOW", KEY_META, "check/enum/multi", "_", KEY_META, "check/enum",

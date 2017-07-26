@@ -20,7 +20,7 @@
 
 #include <tests_plugin.h>
 
-void test_readline ()
+void test_readline (void)
 {
 
 	char * filename = srcdir_file ("line/linetest");

@@ -22,7 +22,7 @@
 
 /* -- Functions ------------------------------------------------------------------------------------------------------------------------- */
 
-static void test_basics ()
+static void test_basics (void)
 {
 	printf ("• Test basic functionality of plugin\n");
 
@@ -39,7 +39,7 @@ static void test_basics ()
 	PLUGIN_CLOSE ();
 }
 
-static void test_get ()
+static void test_get (void)
 {
 	char const * const fileName = "yaml/simple.yaml";
 	printf ("• Parse file “%s”\n", fileName);

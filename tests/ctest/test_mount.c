@@ -12,7 +12,7 @@
 #include <../../src/libs/elektra/trie.c>
 #include <tests_internal.h>
 
-KDB * kdb_new ()
+KDB * kdb_new (void)
 {
 	KDB * kdb = elektraCalloc (sizeof (KDB));
 	kdb->split = splitNew ();
@@ -43,7 +43,7 @@ static void kdb_del (KDB * kdb)
 	elektraFree (kdb);
 }
 
-static void test_mount ()
+static void test_mount (void)
 {
 	printf ("test mount backend\n");
 
@@ -87,7 +87,7 @@ KeySet * minimal_config (void)
 }
 
 
-static void test_minimaltrie ()
+static void test_minimaltrie (void)
 {
 	printf ("Test minimal mount\n");
 
@@ -112,7 +112,7 @@ KeySet * simple_config (void)
 		      keyNew ("system/elektra/mountpoints/simple/mountpoint", KEY_VALUE, "user/tests/simple", KEY_END), KS_END);
 }
 
-static void test_simple ()
+static void test_simple (void)
 {
 	printf ("Test simple mount\n");
 
@@ -158,7 +158,7 @@ static void test_simple ()
 	kdb_del (kdb);
 }
 
-KeySet * set_simple ()
+KeySet * set_simple (void)
 {
 	return ksNew (50, keyNew ("system/elektra/mountpoints/simple", KEY_END),
 
@@ -192,7 +192,7 @@ KeySet * set_simple ()
 }
 
 
-KeySet * set_pluginconf ()
+KeySet * set_pluginconf (void)
 {
 	return ksNew (10, keyNew ("system/anything", KEY_VALUE, "backend", KEY_END), keyNew ("system/more", KEY_END),
 		      keyNew ("system/more/config", KEY_END), keyNew ("system/more/config/below", KEY_END), keyNew ("system/path", KEY_END),
@@ -201,7 +201,7 @@ KeySet * set_pluginconf ()
 		      KS_END);
 }
 
-static void test_simpletrie ()
+static void test_simpletrie (void)
 {
 	printf ("Test simple mount with plugins\n");
 
@@ -257,7 +257,7 @@ static void test_simpletrie ()
 }
 
 
-KeySet * set_two ()
+KeySet * set_two (void)
 {
 	return ksNew (50, keyNew ("system/elektra/mountpoints", KEY_END), keyNew ("system/elektra/mountpoints/simple", KEY_END),
 
@@ -310,7 +310,7 @@ KeySet * set_two ()
 		      keyNew ("system/elektra/mountpoints/two/setplugins/#2" KDB_DEFAULT_STORAGE, KEY_END), KS_END);
 }
 
-static void test_two ()
+static void test_two (void)
 {
 	printf ("Test two mounts\n");
 
@@ -370,7 +370,7 @@ static void test_two ()
 }
 
 
-KeySet * set_us ()
+KeySet * set_us (void)
 {
 	return ksNew (50, keyNew ("system/elektra/mountpoints", KEY_END), keyNew ("system/elektra/mountpoints/user", KEY_END),
 		      keyNew ("system/elektra/mountpoints/user/mountpoint", KEY_VALUE, "user", KEY_END),
@@ -378,7 +378,7 @@ KeySet * set_us ()
 		      keyNew ("system/elektra/mountpoints/system/mountpoint", KEY_VALUE, "system", KEY_END), KS_END);
 }
 
-static void test_us ()
+static void test_us (void)
 {
 	printf ("Test mounting of user and system backends\n");
 
@@ -441,7 +441,7 @@ KeySet * endings_config (void)
 		      keyNew ("system/elektra/mountpoints/endings/mountpoint", KEY_VALUE, "user/endings\200", KEY_END), KS_END);
 }
 
-static void test_endings ()
+static void test_endings (void)
 {
 	printf ("Test mounting with different endings\n");
 
@@ -542,7 +542,7 @@ KeySet * oldroot_config (void)
 		      keyNew ("system/elektra/mountpoints/simple/mountpoint", KEY_VALUE, "user/tests/simple", KEY_END), KS_END);
 }
 
-static void test_oldroot ()
+static void test_oldroot (void)
 {
 	printf ("Test mounting with old root\n");
 
@@ -598,7 +598,7 @@ KeySet * cascading_config (void)
 		      keyNew ("system/elektra/mountpoints/simple/mountpoint", KEY_VALUE, "/tests/simple", KEY_END), KS_END);
 }
 
-static void test_cascading ()
+static void test_cascading (void)
 {
 	printf ("Test simple mount with cascading\n");
 
@@ -680,7 +680,7 @@ KeySet * root_config (void)
 		      keyNew ("system/elektra/mountpoints/simple/mountpoint", KEY_VALUE, "user/tests/simple", KEY_END), KS_END);
 }
 
-static void test_root ()
+static void test_root (void)
 {
 	printf ("Test mounting with root\n");
 
@@ -735,7 +735,7 @@ static void test_root ()
 	ksDel (modules);
 }
 
-static void test_default ()
+static void test_default (void)
 {
 	printf ("Test mounting with default\n");
 
@@ -807,7 +807,7 @@ static void test_default ()
 	ksDel (modules);
 }
 
-static void test_init ()
+static void test_init (void)
 {
 	printf ("Test mounting with init (no config)\n");
 
@@ -875,7 +875,7 @@ static void test_init ()
 	ksDel (modules);
 }
 
-static void test_rootInit ()
+static void test_rootInit (void)
 {
 	printf ("Test mounting with root and init\n");
 
@@ -959,7 +959,7 @@ static void test_rootInit ()
 	ksDel (modules);
 }
 
-static void test_modules ()
+static void test_modules (void)
 {
 	printf ("Test mounting with modules\n");
 

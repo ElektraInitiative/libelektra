@@ -15,7 +15,7 @@ void printError (Key * key);
 void printWarnings (Key * key);
 void removeMetaData (Key * key, const char * searchfor);
 
-int main ()
+int main (void)
 {
 	KeySet * myConfig = ksNew (0, KS_END);
 	Key * key = keyNew ("/sw/MyApp", KEY_CASCADING_NAME, KEY_END);

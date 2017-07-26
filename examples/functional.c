@@ -126,7 +126,7 @@ int find_80 (Key * check)
 	return n > 70 ? -1 : 1;
 }
 
-int main ()
+int main (void)
 {
 	KeySet * out;
 	KeySet * ks = ksNew (64, keyNew ("user/a/1", KEY_END), keyNew ("user/a/2", KEY_END), keyNew ("user/a/b/1", KEY_END),

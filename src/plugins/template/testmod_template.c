@@ -14,7 +14,7 @@
 
 #include <tests_plugin.h>
 
-static void test_basics ()
+static void test_basics (void)
 {
 	printf ("test basics\n");
 

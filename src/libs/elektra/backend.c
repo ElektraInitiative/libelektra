@@ -42,7 +42,7 @@
  *
  * @return 
  */
-static Backend * elektraBackendAllocate ()
+static Backend * elektraBackendAllocate (void)
 {
 	Backend * backend = elektraCalloc (sizeof (struct _Backend));
 

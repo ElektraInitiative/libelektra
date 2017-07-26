@@ -20,7 +20,7 @@
 
 #include <tests_plugin.h>
 
-void test_structure ()
+void test_structure (void)
 {
 	printf ("Test structure of keys returned from uname plugin");
 

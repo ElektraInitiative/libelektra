@@ -17,7 +17,7 @@
 #include <tests.h>
 
 
-void test_addr ()
+void test_addr (void)
 {
 	// clang-format off
 	Key * k = keyNew ("user/anything",

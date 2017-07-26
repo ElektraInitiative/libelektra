@@ -12,7 +12,7 @@
 #include <../../src/libs/elektra/trie.c>
 #include <tests_internal.h>
 
-KDB * kdb_new ()
+KDB * kdb_new (void)
 {
 	KDB * kdb = elektraCalloc (sizeof (KDB));
 	kdb->split = splitNew ();
@@ -39,7 +39,7 @@ static void kdb_del (KDB * kdb)
 	elektraFree (kdb);
 }
 
-static void test_mount ()
+static void test_mount (void)
 {
 	printf ("test mount backend\n");
 
@@ -86,7 +86,7 @@ KeySet * minimal_config (void)
 }
 
 
-static void test_minimaltrie ()
+static void test_minimaltrie (void)
 {
 	printf ("Test minimal mount\n");
 
@@ -112,7 +112,7 @@ KeySet * simple_config (void)
 		      keyNew ("system/elektra/mountpoints/simple/mountpoint", KEY_VALUE, "user/tests/simple", KEY_END), KS_END);
 }
 
-static void test_simple ()
+static void test_simple (void)
 {
 	printf ("Test simple mount\n");
 
@@ -162,7 +162,7 @@ static void test_simple ()
 	kdb_del (kdb);
 }
 
-KeySet * set_us ()
+KeySet * set_us (void)
 {
 	return ksNew (50, keyNew ("system/elektra/mountpoints", KEY_END), keyNew ("system/elektra/mountpoints/user", KEY_END),
 		      keyNew ("system/elektra/mountpoints/user/mountpoint", KEY_VALUE, "user", KEY_END),
@@ -170,7 +170,7 @@ KeySet * set_us ()
 		      keyNew ("system/elektra/mountpoints/system/mountpoint", KEY_VALUE, "system", KEY_END), KS_END);
 }
 
-static void test_us ()
+static void test_us (void)
 {
 	printf ("Test mounting of user and system backends\n");
 
@@ -232,7 +232,7 @@ KeySet * cascading_config (void)
 		      keyNew ("system/elektra/mountpoints/simple/mountpoint", KEY_VALUE, "/tests/simple", KEY_END), KS_END);
 }
 
-static void test_cascading ()
+static void test_cascading (void)
 {
 	printf ("Test simple mount with cascading\n");
 
@@ -328,7 +328,7 @@ KeySet * root_config (void)
 		      keyNew ("system/elektra/mountpoints/simple/mountpoint", KEY_VALUE, "user/tests/simple", KEY_END), KS_END);
 }
 
-static void test_root ()
+static void test_root (void)
 {
 	printf ("Test mounting with root\n");
 
@@ -399,7 +399,7 @@ static void test_root ()
 	ksDel (modules);
 }
 
-static void test_default ()
+static void test_default (void)
 {
 	printf ("Test mounting with default\n");
 
@@ -492,7 +492,7 @@ static void test_default ()
 	ksDel (modules);
 }
 
-static void test_modules ()
+static void test_modules (void)
 {
 	printf ("Test mounting with modules\n");
 
@@ -604,7 +604,7 @@ static void test_modules ()
 	ksDel (modules);
 }
 
-static void test_defaultonly ()
+static void test_defaultonly (void)
 {
 	printf ("Test mounting with default only\n");
 

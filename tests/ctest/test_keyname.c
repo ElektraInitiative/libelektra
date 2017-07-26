@@ -22,7 +22,7 @@
 		succeed_if (strcmp (result, expected) == 0, error);                                                                        \
 	}
 
-static void test_relative_root ()
+static void test_relative_root (void)
 {
 	printf ("Get relative name of key with backend mounted at `/`\n");
 
@@ -40,7 +40,7 @@ static void test_relative_root ()
 	keyDel (parent);
 }
 
-static void test_relative_cascading ()
+static void test_relative_cascading (void)
 {
 	printf ("Get relative name of key with cascading mountpoint\n");
 
@@ -63,7 +63,7 @@ static void test_relative_cascading ()
 	keyDel (parent);
 }
 
-static void test_relative_generic ()
+static void test_relative_generic (void)
 {
 	printf ("Get relative name of key with generic mountpoint\n");
 
@@ -87,7 +87,7 @@ static void test_relative_generic ()
 	keyDel (parent);
 }
 
-static void test_relative_equal ()
+static void test_relative_equal (void)
 {
 	printf ("Get relative name of key which is the same as the parent key\n");
 

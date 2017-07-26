@@ -244,7 +244,7 @@ int elektraPluginSet (Plugin * plugin ELEKTRA_UNUSED, KeySet * returned, Key * p
 //![set full]
 
 
-void elektraUsercodeUselessSymbol ()
+void elektraUsercodeUselessSymbol (void)
 {
 	usercode (0, 0, 0);
 }

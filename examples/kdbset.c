@@ -29,7 +29,7 @@ KeySet * doElektraMerge (KeySet * ours, KeySet * theirs, KeySet * base)
 }
 
 
-int main ()
+int main (void)
 {
 	// clang-format off
 //! [set]
