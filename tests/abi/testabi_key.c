@@ -92,7 +92,7 @@ struct test tstKeyName[] = {
 	}
 };
 
-static void test_keyNewSpecial ()
+static void test_keyNewSpecial (void)
 {
 	printf ("Test special key creation\n");
 
@@ -128,7 +128,7 @@ static void test_keyNewSpecial ()
 	keyDel (k);
 }
 
-static void test_keyNewSystem ()
+static void test_keyNewSystem (void)
 {
 	Key * key;
 	char array[] = "here is some data stored";
@@ -219,7 +219,7 @@ static void test_keyNewSystem ()
 	succeed_if (keyDel (k3) == 0, "keyDel: Unable to delete key with name + value");
 }
 
-static void test_keyNewUser ()
+static void test_keyNewUser (void)
 {
 	Key * k1;
 	Key * k2;
@@ -253,7 +253,7 @@ static void test_keyNewUser ()
 	keyDel (k1);
 }
 
-static void test_keyReference ()
+static void test_keyReference (void)
 {
 	printf ("Test key reference\n");
 
@@ -374,7 +374,7 @@ static void test_keyReference ()
 	keyDel (key);
 }
 
-static void test_keyName ()
+static void test_keyName (void)
 {
 	Key * key;
 	char ret[1000];
@@ -604,7 +604,7 @@ static void test_keyName ()
 }
 
 
-static void test_keyNameSlashes ()
+static void test_keyNameSlashes (void)
 {
 	printf ("Test Slashes in Key Name\n");
 	size_t size;
@@ -884,7 +884,7 @@ static void test_keyNameSlashes ()
 }
 
 
-static void test_keyValue ()
+static void test_keyValue (void)
 {
 	Key * key;
 	char ret[1000];
@@ -1200,7 +1200,7 @@ static void test_keyBinary (void)
 	keyDel (key);
 }
 
-static void test_keyInactive ()
+static void test_keyInactive (void)
 {
 	Key * key = keyNew (0);
 
@@ -1255,7 +1255,7 @@ static void test_keyInactive ()
 	keyDel (key);
 }
 
-static void test_keyBelow ()
+static void test_keyBelow (void)
 {
 	Key * key1 = keyNew (0);
 	Key * key2 = keyNew (0);
@@ -1503,7 +1503,7 @@ static void test_keyBelow ()
 	keyDel (key2);
 }
 
-static void test_keyDup ()
+static void test_keyDup (void)
 {
 	Key *orig, *copy;
 
@@ -1553,7 +1553,7 @@ static void test_keyDup ()
 	keyDel (copy);
 }
 
-static void test_keyCopy ()
+static void test_keyCopy (void)
 {
 	Key *orig, *copy;
 
@@ -1632,11 +1632,11 @@ static void test_keyCopy ()
 
 
 typedef void (*fun_t) ();
-static void fun ()
+static void fun (void)
 {
 }
 
-static void test_binary ()
+static void test_binary (void)
 {
 	printf ("Test binary values\n");
 
@@ -1733,7 +1733,7 @@ static void test_binary ()
 	keyDel (k);
 }
 
-static void test_keyBelowOrSame ()
+static void test_keyBelowOrSame (void)
 {
 	Key * key1 = keyNew (0);
 	Key * key2 = keyNew (0);
@@ -1818,7 +1818,7 @@ static void test_keyBelowOrSame ()
 	keyDel (key2);
 }
 
-static void test_keyNameSpecial ()
+static void test_keyNameSpecial (void)
 {
 	printf ("Test special keynames\n");
 	Key * k = keyNew (0);
@@ -1913,7 +1913,7 @@ static void test_keyNameSpecial ()
 	keyDel (k);
 }
 
-static void test_keyClear ()
+static void test_keyClear (void)
 {
 	printf ("Test clear of key\n");
 
@@ -1978,7 +1978,7 @@ static void test_keyClear ()
 	keyDel (k1);
 }
 
-static void test_keyBaseName ()
+static void test_keyBaseName (void)
 {
 	printf ("Test basename\n");
 	Key * k = keyNew ("user:yl///foo\\///bar\\/foo_bar\\/", KEY_END);
@@ -2042,7 +2042,7 @@ static void test_keyBaseName ()
 	keyDel (k);
 }
 
-static void test_keySetBaseName ()
+static void test_keySetBaseName (void)
 {
 	printf ("Test set basename\n");
 
@@ -2272,7 +2272,7 @@ static void test_keySetBaseName ()
 	keyDel (k);
 }
 
-static void test_keyAddBaseName ()
+static void test_keyAddBaseName (void)
 {
 	printf ("Test add basename\n");
 
@@ -2348,7 +2348,7 @@ static void test_keyAddBaseName ()
 	keyDel (k);
 }
 
-static void test_keyDirectBelow ()
+static void test_keyDirectBelow (void)
 {
 	printf ("Test direct below check\n");
 
@@ -2400,7 +2400,7 @@ static void test_keyDirectBelow ()
 	keyDel (k2);
 }
 
-static void test_keyEscape ()
+static void test_keyEscape (void)
 {
 	printf ("test escape in basename\n");
 
@@ -2482,7 +2482,7 @@ static void test_keyEscape ()
 	keyDel (k);
 }
 
-static void test_keyAdd ()
+static void test_keyAdd (void)
 {
 	printf ("test keyAdd\n");
 
@@ -2529,7 +2529,7 @@ static void test_keyAdd ()
 	keyDel (k);
 }
 
-void test_keyCascading ()
+void test_keyCascading (void)
 {
 	printf ("test cascading\n");
 
@@ -2610,7 +2610,7 @@ void test_keyCascading ()
 	keyDel (k);
 }
 
-static void test_keyUnescapedName ()
+static void test_keyUnescapedName (void)
 {
 	printf ("test keyUnescapedName\n");
 
@@ -2679,7 +2679,7 @@ static void test_keyUnescapedName ()
 	keyDel (k);
 }
 
-static void test_keyCanonify ()
+static void test_keyCanonify (void)
 {
 	printf ("test canonify\n");
 

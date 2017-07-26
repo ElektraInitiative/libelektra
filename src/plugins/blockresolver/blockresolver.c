@@ -91,7 +91,7 @@ int elektraBlockresolverCheckFile (const char * filename ELEKTRA_UNUSED)
 	return 1;
 }
 
-static const char * genTempFilename ()
+static const char * genTempFilename (void)
 {
 	struct timeval tv;
 	gettimeofday (&tv, 0);

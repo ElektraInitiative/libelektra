@@ -20,7 +20,7 @@
 
 #include <tests.h>
 
-KeySet * get_dump ()
+KeySet * get_dump (void)
 {
 	Key *k1, *k2;
 	// clang-format off

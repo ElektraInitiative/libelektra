@@ -690,7 +690,7 @@ static int parseFile (KeySet * returned ELEKTRA_UNUSED, Key * parentKey)
  *
  * @return A contract describing the functionality of this plugin.
  */
-static KeySet * contractYaml ()
+static KeySet * contractYaml (void)
 {
 	return ksNew (30, keyNew ("system/elektra/modules/yaml", KEY_VALUE, "yaml plugin waits for your orders", KEY_END),
 		      keyNew ("system/elektra/modules/yaml/exports", KEY_END),

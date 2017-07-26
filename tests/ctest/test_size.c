@@ -10,7 +10,7 @@
 
 #define NAME_SIZE 250
 
-static void test_ksResize ()
+static void test_ksResize (void)
 {
 	int i;
 	KeySet * ks = 0;

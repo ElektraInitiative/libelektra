@@ -46,7 +46,7 @@ extern "C"
 {
 #endif
 
-const char *elektraGenHelpText()
+const char *elektraGenHelpText(void)
 {
 	return
 @for $key, $info in $parameters.items()

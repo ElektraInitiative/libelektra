@@ -42,7 +42,7 @@ static Key * createMergingKey (int i)
 }
 
 // clang-format off
-static KeySet* createSimpleTestKeys()
+static KeySet* createSimpleTestKeys(void)
 {
 	/* the keys to be converted are simply appended to the next
 	 * or the previous key.
@@ -77,7 +77,7 @@ static KeySet* createSimpleTestKeys()
 			KS_END);
 }
 
-static KeySet* createMergeTestkeys()
+static KeySet* createMergeTestkeys(void)
 {
 	/* the keys to be converted are merged together
 	 * into a single metadata
@@ -104,7 +104,7 @@ static KeySet* createMergeTestkeys()
 	return ks;
 }
 
-static KeySet* createSkipMergeTestKeys()
+static KeySet* createSkipMergeTestKeys(void)
 {
 	/* the keys to be converted are interweaved with keys
 	 * of the other directio
@@ -142,7 +142,7 @@ static KeySet* createSkipMergeTestKeys()
 			KS_END);
 }
 
-static KeySet *createParentTestKeys()
+static KeySet *createParentTestKeys(void)
 {
 
 	/* all keys to be converted are appended to the
@@ -194,7 +194,7 @@ static KeySet *createParentTestKeys()
 			KS_END);
 }
 
-static KeySet* createDifferentMetaNameTestKeys()
+static KeySet* createDifferentMetaNameTestKeys(void)
 {
 	return ksNew (20,
 			keyNew ("user/convertkey1",
@@ -215,7 +215,7 @@ static KeySet* createDifferentMetaNameTestKeys()
 			KS_END);
 }
 
-static KeySet* createSameLevelTestKeys()
+static KeySet* createSameLevelTestKeys(void)
 {
 	return ksNew (20,
 			keyNew ("user/levelkey1",
@@ -245,7 +245,7 @@ static KeySet* createSameLevelTestKeys()
 }
 // clang-format on
 
-void test_parentAppendMode ()
+void test_parentAppendMode (void)
 {
 	Key * parentKey = keyNew ("user/tests/keytometa", KEY_END);
 	KeySet * conf = ksNew (0, KS_END);
@@ -308,7 +308,7 @@ void test_parentAppendMode ()
 }
 
 
-void test_simpleAppendModes ()
+void test_simpleAppendModes (void)
 {
 	Key * parentKey = keyNew ("user/tests/keytometa", KEY_END);
 	KeySet * conf = ksNew (0, KS_END);
@@ -356,7 +356,7 @@ void test_simpleAppendModes ()
 }
 
 
-void test_metaMerging ()
+void test_metaMerging (void)
 {
 	Key * parentKey = keyNew ("user/tests/keytometa", KEY_END);
 	KeySet * conf = ksNew (0, KS_END);
@@ -407,7 +407,7 @@ void test_metaMerging ()
 	PLUGIN_CLOSE ();
 }
 
-void test_metaSkipMerge ()
+void test_metaSkipMerge (void)
 {
 	Key * parentKey = keyNew ("user/tests/keytometa", KEY_END);
 	KeySet * conf = ksNew (0, KS_END);
@@ -439,7 +439,7 @@ void test_metaSkipMerge ()
 	PLUGIN_CLOSE ();
 }
 
-void test_differentMetaNames ()
+void test_differentMetaNames (void)
 {
 	Key * parentKey = keyNew ("user/tests/keytometa", KEY_END);
 	KeySet * conf = ksNew (0, KS_END);
@@ -468,7 +468,7 @@ void test_differentMetaNames ()
 	PLUGIN_CLOSE ();
 }
 
-void test_appendSameLevel ()
+void test_appendSameLevel (void)
 {
 	Key * parentKey = keyNew ("user/tests/keytometa", KEY_END);
 	KeySet * conf = ksNew (0, KS_END);
@@ -502,7 +502,7 @@ void test_appendSameLevel ()
 	PLUGIN_CLOSE ();
 }
 
-void test_restoreOnSet ()
+void test_restoreOnSet (void)
 {
 	Key * parentKey = keyNew ("user/tests/keytometa", KEY_END);
 	KeySet * conf = ksNew (0, KS_END);

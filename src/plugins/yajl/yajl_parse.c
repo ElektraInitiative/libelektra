@@ -285,7 +285,7 @@ static void elektraYajlParseSuppressEmpty (KeySet * returned, Key * parentKey)
 	}
 }
 
-static inline KeySet * elektraGetModuleConfig ()
+static inline KeySet * elektraGetModuleConfig (void)
 {
 	return ksNew (30, keyNew ("system/elektra/modules/yajl", KEY_VALUE, "yajl plugin waits for your orders", KEY_END),
 		      keyNew ("system/elektra/modules/yajl/exports", KEY_END),

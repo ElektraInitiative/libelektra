@@ -14,14 +14,14 @@
 
 #include "resolver.h"
 
-KeySet * set_pluginconf ()
+KeySet * set_pluginconf (void)
 {
 	return ksNew (10, keyNew ("system/path", KEY_VALUE, KDB_DB_FILE, KEY_END), keyNew ("user/path", KEY_VALUE, "elektra.ecf", KEY_END),
 		      KS_END);
 }
 
 
-void test_resolve ()
+void test_resolve (void)
 {
 	int pathLen = tempHomeLen + 1 + strlen (KDB_DB_USER) + 12 + 1;
 	char * path = elektraMalloc (pathLen);
@@ -75,7 +75,7 @@ void test_resolve ()
 	elektraFree (path);
 }
 
-void test_name ()
+void test_name (void)
 {
 	printf ("Resolve Name\n");
 
@@ -112,7 +112,7 @@ void test_name ()
 	ksDel (modules);
 }
 
-void test_lockname ()
+void test_lockname (void)
 {
 	printf ("Resolve Dirname\n");
 
@@ -149,7 +149,7 @@ void test_lockname ()
 	ksDel (modules);
 }
 
-void test_tempname ()
+void test_tempname (void)
 {
 	printf ("Resolve Tempname\n");
 
@@ -187,7 +187,7 @@ void test_tempname ()
 	ksDel (modules);
 }
 
-void test_checkfile ()
+void test_checkfile (void)
 {
 	printf ("Check file\n");
 
@@ -239,7 +239,7 @@ void test_checkfile ()
 	ksDel (modules);
 }
 
-static void check_xdg ()
+static void check_xdg (void)
 {
 	KeySet * modules = ksNew (0, KS_END);
 	elektraModulesInit (modules, 0);

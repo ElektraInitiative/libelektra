@@ -34,7 +34,7 @@ char file[KDB_MAX_PATH_LENGTH];
 char srcdir[KDB_MAX_PATH_LENGTH];
 
 #ifdef HAVE_CLEARENV
-int clearenv ();
+int clearenv (void);
 #endif
 
 char * tmpfilename;
@@ -248,7 +248,7 @@ char * srcdir_file (const char * fileName)
 	return file;
 }
 
-const char * elektraFilename ()
+const char * elektraFilename (void)
 {
 	return tmpfilename;
 }

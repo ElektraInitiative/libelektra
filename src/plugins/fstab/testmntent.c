@@ -9,7 +9,7 @@
 #include <mntent.h>
 #include <stdio.h>
 
-int main ()
+int main (void)
 {
 	struct mntent * m;
 	FILE * f;

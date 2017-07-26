@@ -9,7 +9,7 @@
 #include <kdbproposal.h>
 #include <tests_internal.h>
 
-static void test_ro ()
+static void test_ro (void)
 {
 	Key * key;
 
@@ -28,7 +28,7 @@ static void test_ro ()
 	keyDel (key);
 }
 
-static void test_uid ()
+static void test_uid (void)
 {
 	Key * key;
 
@@ -83,7 +83,7 @@ static void test_uid ()
 }
 
 
-static void test_comment ()
+static void test_comment (void)
 {
 	Key * key;
 	char ret[10];
@@ -120,7 +120,7 @@ static void test_comment ()
 	succeed_if (keyDel (key) == 0, "could not delete key");
 }
 
-static void test_owner ()
+static void test_owner (void)
 {
 	Key * key;
 
@@ -164,7 +164,7 @@ static void test_owner ()
 	succeed_if (keyDel (key) == 0, "could not delete key with env");
 }
 
-static void test_mode ()
+static void test_mode (void)
 {
 	Key * key;
 
@@ -223,7 +223,7 @@ static void test_mode ()
 	keyDel (key);
 }
 
-static void test_metaKeySet ()
+static void test_metaKeySet (void)
 {
 	Key * key = keyNew ("user/test", KEY_END);
 	keySetMeta (key, "meta/test1", "value1");
@@ -266,7 +266,7 @@ static void test_metaKeySet ()
 	keyDel (key);
 }
 
-static void test_metaArrayToKS ()
+static void test_metaArrayToKS (void)
 {
 	Key * test = keyNew ("/a", KEY_META, "dep", "#1", KEY_META, "dep/#0", "/b", KEY_META, "dep/#1", "/c", KEY_END);
 	KeySet * ks = elektraMetaArrayToKS (test, "dep");
@@ -340,13 +340,13 @@ static void checkTopOrder3 (Key ** array)
 	succeed_if_top (2, "/c");
 	succeed_if_top (3, "/a");
 }
-uint64_t rdtsc ()
+uint64_t rdtsc (void)
 {
 	unsigned int lo, hi;
 	__asm__ __volatile__("rdtsc" : "=a"(lo), "=d"(hi));
 	return ((uint64_t)hi << 32) | lo;
 }
-static void test_top ()
+static void test_top (void)
 {
 	KeySet * test0 = ksNew (10, keyNew ("/a", KEY_VALUE, "whatever", KEY_END), KS_END);
 	KeySet * test1 = ksNew (

@@ -9,7 +9,7 @@
 #include <augeas.h>
 #include <stddef.h>
 
-int main ()
+int main (void)
 {
 	augeas * handle = aug_init (NULL, NULL, AUG_NONE);
 	aug_text_store (handle, "Hosts", "/raw/contentnode", "/raw/tree");

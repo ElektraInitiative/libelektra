@@ -55,7 +55,7 @@ static int isMarkedForEncryption (const Key * k)
 /**
  * @brief create a new KeySet holding sample data for encryption and decryption.
  */
-static KeySet * newTestdataKeySet ()
+static KeySet * newTestdataKeySet (void)
 {
 	Key * kUnchanged1 = keyNew ("user/crypto/test/nochange", KEY_END);
 	Key * kUnchanged2 = keyNew ("user/crypto/test/nochange2", KEY_END);
@@ -98,7 +98,7 @@ static inline void setPluginShutdown (KeySet * config)
 	ksAppendKey (config, keyNew (ELEKTRA_CRYPTO_PARAM_SHUTDOWN, KEY_VALUE, "1", 0));
 }
 
-static KeySet * newPluginConfiguration ()
+static KeySet * newPluginConfiguration (void)
 {
 	return ksNew (2, keyNew (ELEKTRA_RECIPIENT_KEY, KEY_VALUE, TEST_KEY_ID, KEY_END),
 		      keyNew (ELEKTRA_CRYPTO_PARAM_GPG_UNIT_TEST, KEY_VALUE, "1", KEY_END), KS_END);

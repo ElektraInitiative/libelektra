@@ -12,7 +12,7 @@
 #include <../../src/libs/elektra/trie.c>
 #include <tests_internal.h>
 
-KeySet * set_us ()
+KeySet * set_us (void)
 {
 	return ksNew (50, keyNew ("system/elektra/mountpoints", KEY_END), keyNew ("system/elektra/mountpoints/user", KEY_END),
 		      keyNew ("system/elektra/mountpoints/user/mountpoint", KEY_VALUE, "user", KEY_END),
@@ -21,7 +21,7 @@ KeySet * set_us ()
 }
 
 
-KeySet * set_three ()
+KeySet * set_three (void)
 {
 	return ksNew (50, keyNew ("system/elektra/mountpoints", KEY_END), keyNew ("system/elektra/mountpoints/system", KEY_END),
 		      keyNew ("system/elektra/mountpoints/system/mountpoint", KEY_VALUE, "system", KEY_END),
@@ -32,7 +32,7 @@ KeySet * set_three ()
 }
 
 
-KeySet * set_realworld ()
+KeySet * set_realworld (void)
 {
 	return ksNew (50, keyNew ("system/elektra/mountpoints", KEY_END), keyNew ("system/elektra/mountpoints/root", KEY_END),
 		      keyNew ("system/elektra/mountpoints/root/mountpoint", KEY_VALUE, "/", KEY_END),
@@ -52,7 +52,7 @@ KeySet * set_realworld ()
 		      keyNew ("system/elektra/mountpoints/app2/mountpoint", KEY_VALUE, "user/sw/apps/app2", KEY_END), KS_END);
 }
 
-KDB * kdb_open ()
+KDB * kdb_open (void)
 {
 	KDB * handle = elektraCalloc (sizeof (struct _KDB));
 	handle->split = splitNew ();
@@ -78,7 +78,7 @@ void simulateGet (Split * split)
 }
 
 
-static void test_needsync ()
+static void test_needsync (void)
 {
 	printf ("Test needs sync\n");
 
@@ -146,7 +146,7 @@ static void test_needsync ()
 }
 
 
-static void test_mount ()
+static void test_mount (void)
 {
 	printf ("Test mount split\n");
 
@@ -249,7 +249,7 @@ static void test_mount ()
 	kdb_close (handle);
 }
 
-static void test_easyparent ()
+static void test_easyparent (void)
 {
 	printf ("Test parent separation of user and system (default Backend)\n");
 
@@ -308,7 +308,7 @@ static void test_easyparent ()
 	kdb_close (handle);
 }
 
-static void test_optimize ()
+static void test_optimize (void)
 {
 	printf ("Test optimization split (user, system in trie)\n");
 
@@ -415,7 +415,7 @@ static void test_optimize ()
 	kdb_close (handle);
 }
 
-static void test_three ()
+static void test_three (void)
 {
 	printf ("Test three mountpoints\n");
 
@@ -496,7 +496,7 @@ static void test_three ()
 	kdb_close (handle);
 }
 
-static void test_userremove ()
+static void test_userremove (void)
 {
 	printf ("Test user removing\n");
 	Key * parent = 0;
@@ -644,7 +644,7 @@ static void test_userremove ()
 }
 
 
-static void test_systemremove ()
+static void test_systemremove (void)
 {
 	printf ("Test system removing\n");
 	Key * parent = 0;
@@ -793,7 +793,7 @@ static void test_systemremove ()
 }
 
 
-static void test_emptyremove ()
+static void test_emptyremove (void)
 {
 	printf ("Test empty removing\n");
 
@@ -879,7 +879,7 @@ static void test_emptyremove ()
 	keyDel (parent);
 }
 
-static void test_realworld ()
+static void test_realworld (void)
 {
 	printf ("Test real world example\n");
 
@@ -1144,7 +1144,7 @@ static void test_realworld ()
 }
 
 
-static void test_emptysplit ()
+static void test_emptysplit (void)
 {
 	printf ("Test empty split\n");
 
@@ -1205,7 +1205,7 @@ static void test_emptysplit ()
 	kdb_close (handle);
 }
 
-static void test_nothingsync ()
+static void test_nothingsync (void)
 {
 	printf ("Test buildup with nothing to sync\n");
 	KDB * handle = kdb_open ();
@@ -1237,7 +1237,7 @@ static void test_nothingsync ()
 	kdb_close (handle);
 }
 
-static void test_state ()
+static void test_state (void)
 {
 	printf ("Test state conflicts\n");
 	KDB * handle = kdb_open ();

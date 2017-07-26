@@ -22,7 +22,7 @@
 #include <testmod_jni.h>
 #include <tests_plugin.h>
 
-static void test_helloWorld ()
+static void test_helloWorld (void)
 {
 	Key * parentKey = keyNew ("user/tests/jni", KEY_VALUE, "", KEY_END);
 	KeySet * conf =

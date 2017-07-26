@@ -9,7 +9,7 @@
 
 #include <openssl/evp.h>
 
-int main ()
+int main (void)
 {
 	EVP_CIPHER_CTX * opensslSpecificType;
 	return 0;

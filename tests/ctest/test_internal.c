@@ -8,7 +8,7 @@
 
 #include <tests_internal.h>
 
-static void test_elektraMalloc ()
+static void test_elektraMalloc (void)
 {
 	char * buffer = 0;
 	buffer = elektraMalloc (50);
@@ -41,7 +41,7 @@ static void test_elektraMalloc ()
 	elektraFree (dup);
 }
 
-static void test_elektraStrLen ()
+static void test_elektraStrLen (void)
 {
 	char charSeq[5];
 
@@ -63,7 +63,7 @@ static void test_elektraStrLen ()
 
 #define TEST_VALIDATE_NAME_NOK(NAME, MSG) succeed_if (!elektraValidateKeyName (NAME, sizeof (NAME)), MSG " not ok");
 
-static void test_elektraValidateKeyName ()
+static void test_elektraValidateKeyName (void)
 {
 	printf ("test validate key name\n");
 
@@ -80,7 +80,7 @@ static void test_elektraValidateKeyName ()
 	TEST_VALIDATE_NAME_NOK ("tanglingKey\\\\\\\\\\\\\\", "tangling escape");
 }
 
-static void test_elektraEscapeKeyNamePart ()
+static void test_elektraEscapeKeyNamePart (void)
 {
 	printf ("test escape key name part\n");
 
@@ -113,7 +113,7 @@ static void test_elektraEscapeKeyNamePart ()
 	succeed_if_same_string (elektraEscapeKeyNamePart ("\\\\\\", dest), "\\\\\\\\\\\\");       // 3 -> 6
 }
 
-static void test_elektraUnescapeKeyName ()
+static void test_elektraUnescapeKeyName (void)
 {
 	printf ("test unescape key name \n");
 
@@ -237,7 +237,7 @@ static void test_elektraUnescapeKeyName ()
 	succeed_if_same_string ("bar/foo_bar/", p);
 }
 
-static void test_keyNameGetOneLevel ()
+static void test_keyNameGetOneLevel (void)
 {
 	printf ("test keyNameGetOneLevel\n");
 

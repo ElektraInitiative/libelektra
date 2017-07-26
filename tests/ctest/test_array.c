@@ -10,7 +10,7 @@
 
 #include "tests.h"
 
-static void test_array ()
+static void test_array (void)
 {
 	printf ("Test array\n");
 
@@ -94,7 +94,7 @@ static void test_array ()
 	keyDel (k);
 }
 
-static void test_noArray ()
+static void test_noArray (void)
 {
 	printf ("Test no array\n");
 	Key * k = keyNew ("user/noarray", KEY_END);
@@ -105,7 +105,7 @@ static void test_noArray ()
 	keyDel (k);
 }
 
-static void test_startArray ()
+static void test_startArray (void)
 {
 	printf ("Test start array\n");
 	Key * k = keyNew ("user/startarray/#", KEY_END);
@@ -118,7 +118,7 @@ static void test_startArray ()
 	keyDel (k);
 }
 
-static void test_getArray ()
+static void test_getArray (void)
 {
 	printf ("Test get array");
 
@@ -141,7 +141,7 @@ static void test_getArray ()
 }
 
 
-static void test_getArrayNext ()
+static void test_getArrayNext (void)
 {
 	printf ("Test get array next");
 
