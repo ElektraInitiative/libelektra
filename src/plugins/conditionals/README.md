@@ -140,4 +140,6 @@ kdb rm -r /examples/conditionals
 kdb rm -r system/elektra/globalplugins
 sudo kdb umount /examples/conditionals/sub
 sudo kdb umount /examples/conditionals
+
+sudo kdb global-umount conditionals
 ```

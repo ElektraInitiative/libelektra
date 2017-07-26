@@ -9,6 +9,27 @@ kdb-global-umount(1) - Unmount a global plugin from the key database
 
 Unmount a global plugin from the key database.
 
+## EXAMPLES
+
+```sh
+
+sudo kdb global-mount tracer
+
+sudo kdb global-mount
+# STDOUT-REGEX: .*tracer\nspec.*
+
+sudo kdb global-umount tracer
+
+# spec is always mounted by default
+sudo kdb global-mount
+#> spec
+
+sudo kdb global-umount spec
+
+sudo kdb global-mount
+#> 
+```
+
 ## OPTIONS
 
 - `-H`, `--help`:
