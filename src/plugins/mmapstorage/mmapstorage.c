@@ -38,8 +38,9 @@ static FILE * elektraMmapstorageOpenFile (Key * parentKey, int errnosave)
 
 	if ((fp = fopen (keyString (parentKey), "r+")) == 0) {
 		ELEKTRA_SET_ERROR_GET (parentKey);
-		errno = errnosave;
 		ELEKTRA_LOG_WARNING ("error opening file %s", keyString (parentKey));
+		ELEKTRA_LOG_WARNING ("strerror: %s", strerror (errno));
+		errno = errnosave;
 	}
 	return fp;
 }
@@ -49,8 +50,8 @@ static int elektraMmapstorageTruncateFile (FILE * fp, size_t mmapsize, Key * par
 	ELEKTRA_LOG ("truncating file %s", keyString (parentKey));
 
 	// TODO: does it matter whether we use truncate or ftruncate?
-	//int fd = fileno (fp);
-	if ((truncate (keyString (parentKey), mmapsize)) == -1) {
+	int fd = fileno (fp);
+	if ((ftruncate (fd, mmapsize)) == -1) {
 		ELEKTRA_SET_ERROR_GET (parentKey);
 		ELEKTRA_LOG_WARNING ("error truncating file %s", keyString (parentKey));
 		ELEKTRA_LOG_WARNING ("mmapsize: %zu", mmapsize);
@@ -67,8 +68,9 @@ static int elektraMmapstorageStat (struct stat * sbuf, Key * parentKey, int errn
 
 	if (stat(keyString (parentKey), sbuf) == -1) {
 		ELEKTRA_SET_ERROR_GET (parentKey);
-		errno = errnosave;
 		ELEKTRA_LOG_WARNING ("error on stat() for file %s", keyString (parentKey));
+		ELEKTRA_LOG_WARNING ("strerror: %s", strerror (errno));
+		errno = errnosave;
 		return -1;
 	}
 	return 1;
@@ -82,9 +84,10 @@ static char * elektraMmapstorageMapFile (void * addr, FILE * fp, size_t mmapSize
 	char * mappedRegion = mmap (addr, mmapSize, PROT_READ | PROT_WRITE, mapOpts, fd, 0);
 	if (mappedRegion == MAP_FAILED) {
 		ELEKTRA_SET_ERROR_GET (parentKey);
-		errno = errnosave;
 		ELEKTRA_LOG_WARNING ("error mapping file %s", keyString (parentKey));
 		ELEKTRA_LOG_WARNING ("mmapSize: %zu", mmapSize);
+		ELEKTRA_LOG_WARNING ("strerror: %s", strerror (errno));
+		errno = errnosave;
 		return MAP_FAILED;
 	}
 	return mappedRegion;
