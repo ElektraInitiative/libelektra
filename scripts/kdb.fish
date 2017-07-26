@@ -418,12 +418,12 @@ __fish_kdb_add_option '__fish_kdb_subcommand_includes merge mount remount smount
 __fish_kdb_add_option '__fish_kdb_subcommand_includes info' 'load' 'l' 'Load plugin even if system/elektra is available'
 
 # --max-depth -M
-set -l description 'Specify the maximum depth of completion suggestions (unlimited by default, 1 to show only the next level), inclusive'
+set -l description 'Specify the maximum depth (unlimited by default, 1 to show only the next level), exclusive and relative to the name'
 set -l argument_function '__fish_kdb_print_option_depth_arguments most 1'
 __fish_kdb_add_option '__fish_kdb_subcommand_includes complete ls' 'max-depth' 'M' "$description" "($argument_function)"
 
 # --min-depth -m
-set -l description 'Specify the minimum depth of completion suggestions (0 by default), exclusive'
+set -l description 'Specify the minimum depth (0 by default), inclusive and relative to the name'
 set -l argument_function '__fish_kdb_print_option_depth_arguments least 0'
 __fish_kdb_add_option '__fish_kdb_subcommand_includes complete ls' 'min-depth' 'm' "$description" "($argument_function)"
 
