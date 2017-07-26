@@ -1631,7 +1631,7 @@ static void test_keyCopy (void)
 }
 
 
-typedef void (*fun_t) ();
+typedef void (*fun_t) (void);
 static void fun (void)
 {
 }
@@ -1659,7 +1659,7 @@ static void test_binary (void)
 
 
 	union {
-		void (*f) ();
+		void (*f) (void);
 		void * v;
 	} conversation;
 
@@ -1669,7 +1669,7 @@ static void test_binary (void)
 
 	conversation.v = 0;
 	conversation.f = 0;
-	void (*g) () = 0;
+	void (*g) (void) = 0;
 	succeed_if (keyGetBinary (k, &conversation.v, sizeof (conversation)) == sizeof (conversation), "could not get binary");
 	g = conversation.f;
 	succeed_if (g == fun, "pointers to functions are not equal");

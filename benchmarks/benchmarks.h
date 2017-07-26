@@ -34,8 +34,8 @@
 void timeInit (void);
 void timePrint (char * msg);
 
-void benchmarkCreate ();
-void benchmarkFillup ();
+void benchmarkCreate (void);
+void benchmarkFillup (void);
 
 extern int num_dir; // default = NUM_DIR;
 extern int num_key; // default = NUM_KEY;
