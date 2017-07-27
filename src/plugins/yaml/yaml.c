@@ -87,15 +87,11 @@ typedef struct
 	ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_PARSE, data->parentKey, "%s:%lu:%lu: " message, keyString (data->parentKey), data->line,         \
 			    data->column, __VA_ARGS__);
 
-#define SET_ERROR_MALLOC(data, size) ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_MALLOC, data->parentKey, "Unable to allocate %lu bytes", size);
-
 #define RET_NOK(function)                                                                                                                  \
 	if (function->status != OK)                                                                                                        \
 	{                                                                                                                                  \
 		return parser; /* Requires that the name of the parsing structure is `parser`! */                                          \
 	}
-
-#define ASSERT_NOT_NULL(argument) ELEKTRA_ASSERT (argument, "The variable `" #argument "` contains `NULL`.")
 
 /* -- Functions ------------------------------------------------------------------------------------------------------------------------- */
 
@@ -115,7 +111,7 @@ typedef struct
  */
 static parserType * setErrorErrno (parserType * const parser, statusType status)
 {
-	ASSERT_NOT_NULL (parser);
+	ELEKTRA_NOT_NULL (parser);
 
 	SET_ERROR_PARSE (parser, "%s", strerror (errno));
 	errno = parser->errorNumber;
@@ -135,9 +131,9 @@ static parserType * setErrorErrno (parserType * const parser, statusType status)
  */
 static parserType * setErrorMalloc (parserType * const parser, size_t size)
 {
-	ASSERT_NOT_NULL (parser);
+	ELEKTRA_NOT_NULL (parser);
 
-	SET_ERROR_MALLOC (parser, size);
+	ELEKTRA_MALLOC_ERROR (parser->parentKey, size);
 	parser->status = ERROR_PARSE;
 	return parser;
 }
@@ -159,8 +155,8 @@ static parserType * setErrorMalloc (parserType * const parser, size_t size)
  */
 static parserType * bufferChar (parserType * const parser)
 {
-	ASSERT_NOT_NULL (parser);
-	ASSERT_NOT_NULL (parser->file);
+	ELEKTRA_NOT_NULL (parser);
+	ELEKTRA_NOT_NULL (parser->file);
 
 	char * line = NULL;
 	size_t capacity;
@@ -200,8 +196,8 @@ static parserType * bufferChar (parserType * const parser)
  */
 static parserType * getNextChar (parserType * parser)
 {
-	ASSERT_NOT_NULL (parser);
-	ASSERT_NOT_NULL (parser->file);
+	ELEKTRA_NOT_NULL (parser);
+	ELEKTRA_NOT_NULL (parser->file);
 
 	RET_NOK (bufferChar (parser));
 
@@ -239,8 +235,8 @@ static parserType * getNextChar (parserType * parser)
  */
 static parserType * putBackChar (parserType * parser)
 {
-	ASSERT_NOT_NULL (parser);
-	ASSERT_NOT_NULL (parser->buffer);
+	ELEKTRA_NOT_NULL (parser);
+	ELEKTRA_NOT_NULL (parser->buffer);
 	ELEKTRA_ASSERT (parser->buffer - 1 >= parser->bufferBase, "Can not put back more characters than available");
 
 	// We assume that we never put back the newline character
@@ -269,9 +265,9 @@ static parserType * putBackChar (parserType * parser)
  */
 static parserType * acceptChars (parserType * const parser, char const * const characters)
 {
-	ASSERT_NOT_NULL (parser);
-	ASSERT_NOT_NULL (parser->file);
-	ASSERT_NOT_NULL (characters);
+	ELEKTRA_NOT_NULL (parser);
+	ELEKTRA_NOT_NULL (parser->file);
+	ELEKTRA_NOT_NULL (characters);
 
 	if (getNextChar (parser)->status != OK || !parser->match) return parser;
 
@@ -305,9 +301,9 @@ static parserType * acceptChars (parserType * const parser, char const * const c
  */
 static parserType * expect (parserType * const parser, char const * const characters)
 {
-	ASSERT_NOT_NULL (parser);
-	ASSERT_NOT_NULL (parser->file);
-	ASSERT_NOT_NULL (characters);
+	ELEKTRA_NOT_NULL (parser);
+	ELEKTRA_NOT_NULL (parser->file);
+	ELEKTRA_NOT_NULL (characters);
 
 	RET_NOK (acceptChars (parser, characters));
 
@@ -341,8 +337,8 @@ static parserType * expect (parserType * const parser, char const * const charac
  */
 static parserType * whitespace (parserType * const parser)
 {
-	ASSERT_NOT_NULL (parser);
-	ASSERT_NOT_NULL (parser->file);
+	ELEKTRA_NOT_NULL (parser);
+	ELEKTRA_NOT_NULL (parser->file);
 
 	while (acceptChars (parser, " \t\n")->status == OK && parser->match)
 		; //! OCLINT
@@ -363,9 +359,9 @@ static parserType * whitespace (parserType * const parser)
  */
 static parserType * content (parserType * const parser)
 {
-	ASSERT_NOT_NULL (parser);
-	ASSERT_NOT_NULL (parser->file);
-	ASSERT_NOT_NULL (parser->buffer);
+	ELEKTRA_NOT_NULL (parser);
+	ELEKTRA_NOT_NULL (parser->file);
+	ELEKTRA_NOT_NULL (parser->buffer);
 
 	char * previous = parser->buffer;
 	size_t numberCharsRead = 0;
@@ -406,8 +402,8 @@ static parserType * content (parserType * const parser)
  */
 static parserType * doubleQuoted (parserType * const parser)
 {
-	ASSERT_NOT_NULL (parser);
-	ASSERT_NOT_NULL (parser->file);
+	ELEKTRA_NOT_NULL (parser);
+	ELEKTRA_NOT_NULL (parser->file);
 
 	RET_NOK (expect (parser, "\""));
 	RET_NOK (content (parser));
@@ -433,8 +429,8 @@ static parserType * doubleQuoted (parserType * const parser)
  */
 static parserType * doubleQuotedSpace (parserType * const parser)
 {
-	ASSERT_NOT_NULL (parser);
-	ASSERT_NOT_NULL (parser->file);
+	ELEKTRA_NOT_NULL (parser);
+	ELEKTRA_NOT_NULL (parser->file);
 
 	RET_NOK (whitespace (parser));
 	RET_NOK (doubleQuoted (parser));
@@ -459,11 +455,11 @@ static parserType * doubleQuotedSpace (parserType * const parser)
  */
 static parserType * saveText (parserType * const parser, char ** location)
 {
-	ASSERT_NOT_NULL (parser);
-	ASSERT_NOT_NULL (parser->match);
-	ASSERT_NOT_NULL (parser->end);
+	ELEKTRA_NOT_NULL (parser);
+	ELEKTRA_NOT_NULL (parser->match);
+	ELEKTRA_NOT_NULL (parser->end);
 	ELEKTRA_ASSERT (parser->end - parser->match >= -1, "The string specified via parser->match and parser->end has negative length");
-	ASSERT_NOT_NULL (location);
+	ELEKTRA_NOT_NULL (location);
 
 	size_t length = parser->end - parser->match + 1;
 	if (*location) elektraFree (*location);
@@ -489,8 +485,8 @@ static parserType * saveText (parserType * const parser, char ** location)
  */
 static parserType * key (parserType * const parser)
 {
-	ASSERT_NOT_NULL (parser);
-	ASSERT_NOT_NULL (parser->file);
+	ELEKTRA_NOT_NULL (parser);
+	ELEKTRA_NOT_NULL (parser->file);
 
 	RET_NOK (doubleQuotedSpace (parser));
 	return saveText (parser, &parser->key);
@@ -509,8 +505,8 @@ static parserType * key (parserType * const parser)
  */
 static parserType * value (parserType * const parser)
 {
-	ASSERT_NOT_NULL (parser);
-	ASSERT_NOT_NULL (parser->file);
+	ELEKTRA_NOT_NULL (parser);
+	ELEKTRA_NOT_NULL (parser->file);
 
 	RET_NOK (doubleQuotedSpace (parser));
 	return saveText (parser, &parser->value);
@@ -529,8 +525,8 @@ static parserType * value (parserType * const parser)
  */
 static parserType * pair (parserType * const parser)
 {
-	ASSERT_NOT_NULL (parser);
-	ASSERT_NOT_NULL (parser->file);
+	ELEKTRA_NOT_NULL (parser);
+	ELEKTRA_NOT_NULL (parser->file);
 
 	RET_NOK (key (parser));
 	LOG_PARSE (parser, "Read key “%s”", parser->key);
@@ -562,8 +558,8 @@ static parserType * pair (parserType * const parser)
  */
 static parserType * optionalAdditionalPairs (parserType * const parser)
 {
-	ASSERT_NOT_NULL (parser);
-	ASSERT_NOT_NULL (parser->file);
+	ELEKTRA_NOT_NULL (parser);
+	ELEKTRA_NOT_NULL (parser->file);
 
 	while (acceptChars (parser, ",")->status == OK && parser->match)
 	{
@@ -585,8 +581,8 @@ static parserType * optionalAdditionalPairs (parserType * const parser)
  */
 static parserType * pairs (parserType * const parser)
 {
-	ASSERT_NOT_NULL (parser);
-	ASSERT_NOT_NULL (parser->file);
+	ELEKTRA_NOT_NULL (parser);
+	ELEKTRA_NOT_NULL (parser->file);
 
 	RET_NOK (whitespace (parser));
 	RET_NOK (expect (parser, "{"));
@@ -617,8 +613,8 @@ static parserType * pairs (parserType * const parser)
  */
 static parserType * openFile (parserType * const parser)
 {
-	ASSERT_NOT_NULL (parser);
-	ASSERT_NOT_NULL (parser->parentKey);
+	ELEKTRA_NOT_NULL (parser);
+	ELEKTRA_NOT_NULL (parser->parentKey);
 
 	parser->file = fopen (keyString (parser->parentKey), "r");
 
@@ -639,7 +635,7 @@ static parserType * openFile (parserType * const parser)
  */
 static parserType * cleanup (parserType * const parser)
 {
-	ASSERT_NOT_NULL (parser);
+	ELEKTRA_NOT_NULL (parser);
 
 	if (parser->file && fclose (parser->file) != 0) setErrorErrno (parser, ERROR_FILE_CLOSE);
 	if (parser->bufferBase) elektraFree (parser->bufferBase);
@@ -662,8 +658,8 @@ static parserType * cleanup (parserType * const parser)
  */
 static int parseFile (KeySet * returned ELEKTRA_UNUSED, Key * parentKey)
 {
-	ASSERT_NOT_NULL (returned);
-	ASSERT_NOT_NULL (parentKey);
+	ELEKTRA_NOT_NULL (returned);
+	ELEKTRA_NOT_NULL (parentKey);
 
 	ELEKTRA_LOG ("Read configuration data");
 
@@ -712,9 +708,9 @@ static KeySet * contractYaml (void)
  */
 static int writeFile (FILE * file, KeySet * keySet, Key * parentKey)
 {
-	ASSERT_NOT_NULL (file);
-	ASSERT_NOT_NULL (keySet);
-	ASSERT_NOT_NULL (parentKey);
+	ELEKTRA_NOT_NULL (file);
+	ELEKTRA_NOT_NULL (keySet);
+	ELEKTRA_NOT_NULL (parentKey);
 
 	ksRewind (keySet);
 

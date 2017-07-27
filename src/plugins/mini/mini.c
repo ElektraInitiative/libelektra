@@ -36,8 +36,8 @@
  */
 #define CLOSE_FILE(file, errorNumber, parentKey, ERROR_FUNCTION)                                                                           \
 	{                                                                                                                                  \
-		ELEKTRA_ASSERT (file, "The Parameter `file` contains `NULL` instead of a valid file handle.");                             \
-		ELEKTRA_ASSERT (parentKey, "The Parameter `parentKey` contains `NULL` instead of a valid key.");                           \
+		ELEKTRA_NOT_NULL (file);                                                                                                   \
+		ELEKTRA_NOT_NULL (parentKey);                                                                                              \
                                                                                                                                            \
 		if (fclose (file) != 0)                                                                                                    \
 		{                                                                                                                          \
@@ -89,7 +89,7 @@ static inline KeySet * elektraMiniContract (void)
  */
 static inline char * stripComment (char * line)
 {
-	ELEKTRA_ASSERT (line != NULL, "The Parameter `line` contains `NULL` instead of a valid string.");
+	ELEKTRA_NOT_NULL (line);
 
 	char * current = line;
 	char * before = NULL;
@@ -118,7 +118,7 @@ static inline char * stripComment (char * line)
  */
 static inline char * findUnescapedEquals (char * text)
 {
-	ELEKTRA_ASSERT (text != NULL, "The Parameter `text` contains `NULL` instead of a valid string.");
+	ELEKTRA_NOT_NULL (text);
 
 	char * equals = text;
 	char * before = NULL;
@@ -152,9 +152,9 @@ static inline char * findUnescapedEquals (char * text)
  */
 static inline void parseLine (char * line, size_t lineNumber, KeySet * keySet, Key * parentKey)
 {
-	ELEKTRA_ASSERT (line != NULL, "The Parameter `line` contains `NULL` instead of a valid string.");
-	ELEKTRA_ASSERT (keySet != NULL, "The Parameter `keySet` contains `NULL` instead of a valid key set.");
-	ELEKTRA_ASSERT (parentKey != NULL, "The Parameter `parentKey` contains `NULL` instead of a valid key.");
+	ELEKTRA_NOT_NULL (line);
+	ELEKTRA_NOT_NULL (keySet);
+	ELEKTRA_NOT_NULL (parentKey);
 
 	char * pair = elektraStrip (stripComment (line));
 
@@ -202,9 +202,9 @@ static inline void parseLine (char * line, size_t lineNumber, KeySet * keySet, K
  */
 static int parseINI (FILE * file, KeySet * keySet, Key * parentKey)
 {
-	ELEKTRA_ASSERT (file != NULL, "The Parameter `file` contains `NULL` instead of a valid file handle.");
-	ELEKTRA_ASSERT (keySet != NULL, "The Parameter `keySet` contains `NULL` instead of a valid key set.");
-	ELEKTRA_ASSERT (parentKey != NULL, "The Parameter `parentKey` contains `NULL` instead of a valid key.");
+	ELEKTRA_NOT_NULL (file);
+	ELEKTRA_NOT_NULL (keySet);
+	ELEKTRA_NOT_NULL (parentKey);
 
 	char * line = NULL;
 	size_t capacity = 0;
@@ -246,8 +246,8 @@ static int parseINI (FILE * file, KeySet * keySet, Key * parentKey)
  */
 static int parseFile (KeySet * returned, Key * parentKey)
 {
-	ELEKTRA_ASSERT (returned != NULL, "The Parameter `returned` contains `NULL` instead of a valid key set.");
-	ELEKTRA_ASSERT (parentKey != NULL, "The Parameter `parentKey` contains `NULL` instead of a valid key.");
+	ELEKTRA_NOT_NULL (returned);
+	ELEKTRA_NOT_NULL (parentKey);
 
 	ELEKTRA_LOG ("Read configuration data");
 	int errorNumber = errno;
@@ -285,7 +285,7 @@ static int parseFile (KeySet * returned, Key * parentKey)
  */
 static inline int checkWrite (int status, int errorNumber, Key * parentKey)
 {
-	ELEKTRA_ASSERT (parentKey != NULL, "The Parameter `parentKey` contains `NULL` instead of a valid key.");
+	ELEKTRA_NOT_NULL (parentKey);
 
 	if (status < 0)
 	{
@@ -313,9 +313,9 @@ static inline int checkWrite (int status, int errorNumber, Key * parentKey)
  */
 static inline int writeFile (FILE * file, KeySet * keySet, Key * parentKey)
 {
-	ELEKTRA_ASSERT (file != NULL, "The Parameter `file` contains `NULL` instead of a valid file handle.");
-	ELEKTRA_ASSERT (keySet != NULL, "The Parameter `keySet` contains `NULL` instead of a valid key set.");
-	ELEKTRA_ASSERT (parentKey != NULL, "The Parameter `parentKey` contains `NULL` instead of a valid key.");
+	ELEKTRA_NOT_NULL (file);
+	ELEKTRA_NOT_NULL (keySet);
+	ELEKTRA_NOT_NULL (parentKey);
 
 	int status = 0;
 	int errorNumber = errno;
