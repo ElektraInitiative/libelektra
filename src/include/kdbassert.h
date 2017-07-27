@@ -43,4 +43,5 @@ void elektraAbort (const char * expression, const char * function, const char * 
 #else
 #define ELEKTRA_ASSERT(EXPR, ...)
 #endif
+#define ELEKTRA_NOT_NULL(argument) ELEKTRA_ASSERT (argument, "The variable `" #argument "` contains `NULL`.")
 #endif
