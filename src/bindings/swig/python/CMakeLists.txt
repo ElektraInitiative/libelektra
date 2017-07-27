@@ -30,7 +30,11 @@ else()
 
 	set_source_files_properties (kdb.i PROPERTIES CPLUSPLUS ON)
 	set_source_files_properties (kdb.i PROPERTIES SWIG_FLAGS "-py3;-extranative")
-	swig_add_module (swig-python python kdb.i)
+	if (CMAKE_VERSION LESS 3.8)
+		swig_add_module (swig-python python kdb.i)
+	else (CMAKE_VERSION LESS 3.8)
+		swig_add_library (swig-python LANGUAGE python SOURCES kdb.i TYPE MODULE)
+	endif (CMAKE_VERSION LESS 3.8)
 	swig_link_libraries (swig-python elektra-core elektra-kdb ${PYTHON_LIBRARIES})
 	set_target_properties (_swig-python PROPERTIES OUTPUT_NAME _kdb)
 

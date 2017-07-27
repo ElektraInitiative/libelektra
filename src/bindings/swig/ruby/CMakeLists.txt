@@ -67,7 +67,11 @@ else()
 	set (SWIG_COMPILE_FLAGS "${SWIG_COMPILE_FLAGS} -Wno-sign-compare")
 
 	# add 'kdb' module
-	swig_add_module (swig-ruby ruby kdb.i)
+	if (CMAKE_VERSION LESS 3.8)
+		swig_add_module (swig-ruby ruby kdb.i)
+	else (CMAKE_VERSION LESS 3.8)
+		swig_add_library (swig-ruby LANGUAGE ruby SOURCES kdb.i TYPE MODULE)
+	endif (CMAKE_VERSION LESS 3.8)
 	# set the compiler settings for the generated file
 	# (has to be done for each module separately)
 	set_source_files_properties (
@@ -76,7 +80,11 @@ else()
 	)
 
 	# add the 'kdbtools' module
-	swig_add_module (swig-ruby-tools ruby kdbtools.i)
+	if (CMAKE_VERSION LESS 3.8)
+		swig_add_module (swig-ruby-tools ruby kdbtools.i)
+	else (CMAKE_VERSION LESS 3.8)
+		swig_add_library (swig-ruby-tools LANGUAGE ruby SOURCES kdbtools.i TYPE MODULE)
+	endif (CMAKE_VERSION LESS 3.8)
 	set_source_files_properties (
 		${swig_generated_sources} PROPERTIES
 		COMPILE_FLAGS "${SWIG_COMPILE_FLAGS}"
