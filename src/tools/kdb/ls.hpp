@@ -25,7 +25,7 @@ public:
 
 	virtual std::string getShortOptions () override
 	{
-		return "v0C";
+		return "dM:m:v0C";
 	}
 
 	virtual std::string getSynopsis () override
@@ -46,6 +46,12 @@ public:
 	}
 
 	virtual int execute (Cmdline const & cmdline) override;
+
+private:
+	void checkArguments (Cmdline const & cl);
+	void printResults (kdb::KeySet const & part, const int rootDepth, Cmdline const & cl);
+	int getDepth (kdb::Key const & key);
+	bool shallShowNextLevel (const std::string argument);
 };
 
 #endif
