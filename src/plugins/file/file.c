@@ -156,7 +156,7 @@ int elektraFileSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UN
 	unsigned char * value = elektraMalloc (valueSize);
 	if (!value)
 	{
-		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_MALLOC, parentKey, "failed to allocate buffer of %zd bytes", valueSize);
+		ELEKTRA_MALLOC_ERROR (parentKey, valueSize);
 		fclose (fp);
 		return -1;
 	}

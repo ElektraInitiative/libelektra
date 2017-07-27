@@ -87,8 +87,6 @@ typedef struct
 	ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_PARSE, data->parentKey, "%s:%lu:%lu: " message, keyString (data->parentKey), data->line,         \
 			    data->column, __VA_ARGS__);
 
-#define SET_ERROR_MALLOC(data, size) ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_MALLOC, data->parentKey, "Unable to allocate %lu bytes", size);
-
 #define RET_NOK(function)                                                                                                                  \
 	if (function->status != OK)                                                                                                        \
 	{                                                                                                                                  \
@@ -135,7 +133,7 @@ static parserType * setErrorMalloc (parserType * const parser, size_t size)
 {
 	ELEKTRA_NOT_NULL (parser);
 
-	SET_ERROR_MALLOC (parser, size);
+	ELEKTRA_MALLOC_ERROR (parser->parentKey, size);
 	parser->status = ERROR_PARSE;
 	return parser;
 }
