@@ -45,4 +45,4 @@ sudo kdb global-mount
 
 - [kdb-global-mount(7)](kdb-global-mount.md).
 - [elektra-mounting(7)](elektra-mounting.md).
-- [elektra-plugins-framework(7)](elektra-plugins-framework.md).
+- [elektra-plugins-framework(7)](/doc/dev/plugins-framework.md).
