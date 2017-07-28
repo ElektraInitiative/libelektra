@@ -31,7 +31,9 @@ typedef struct _dynArray DynArray;
 struct _dynArray
 {
 	size_t size;
-	size_t * array;
+	size_t alloc;
+	char ** keyArray;
+	
 };
 
 

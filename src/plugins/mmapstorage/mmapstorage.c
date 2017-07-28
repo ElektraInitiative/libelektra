@@ -93,20 +93,77 @@ static char * elektraMmapstorageMapFile (void * addr, FILE * fp, size_t mmapSize
 	return mappedRegion;
 }
 
-static MmapHeader elektraMmapstorageDataSize (KeySet * returned)
+static int findOrInsert (const char * key, DynArray * dynArray)
+{
+	size_t l = 0;
+	size_t h = (dynArray->size)-1;
+	size_t m;
+	
+	if (dynArray->size == 0)
+	{
+		goto insertion;
+		ELEKTRA_LOG_WARNING ("JUMP TO INSERTION");
+	}
+	ELEKTRA_LOG_WARNING ("dynArray->size: %zu", dynArray->size);
+	ELEKTRA_LOG_WARNING ("dynArray->alloc: %zu", dynArray->alloc);
+	
+	while (l <= h)
+	{
+		m = (l+h)>>1;
+		
+		if (dynArray->keyArray[m] > key)
+			h = --m;
+		else if (dynArray->keyArray[m] < key)
+			l = ++m;
+		else
+			return 1; // found
+	}
+	// insert key at index l
+	
+insertion:
+	if (dynArray->size == dynArray->alloc)
+	{
+		// doubling the array size to keep reallocations logarithmic
+		size_t oldAllocSize = dynArray->alloc;
+		char ** new = calloc(2*oldAllocSize, sizeof(size_t));
+		memcpy (new, dynArray->keyArray, dynArray->size);
+		free(dynArray->keyArray);
+		dynArray->keyArray = new;
+		dynArray->alloc = 2 * oldAllocSize;
+	}
+
+	memmove ((void *) (dynArray->keyArray+l+1), (void *) (dynArray->keyArray+l), ((dynArray->size)-l) * (sizeof (size_t)));
+	dynArray->keyArray[l] = (char *) key;
+	dynArray->size += 1;
+	
+	return 0;
+}
+
+static MmapHeader elektraMmapstorageDataSize (KeySet * returned, DynArray * dynArray)
 {
 	MmapHeader ret;
 	
 	Key * cur;
 	ksRewind(returned);
 	size_t dataBlockSize = 0; // keyName and keyValue
-// 	size_t metaKeys = 0;
+	size_t metaKeySets = 0;
+	//size_t metaKeys = 0;
 	while ((cur = ksNext (returned)) != 0)
 	{
 		dataBlockSize += (cur->keySize + cur->keyUSize + cur->dataSize);
 		
-// 		if (cur->meta)
-// 			metaKeys += ksGetSize(cur->meta);
+		if (cur->meta)
+		{
+			++metaKeySets;
+			
+			Key * curMeta;
+			ksRewind(cur->meta);
+			while ((curMeta = ksNext (cur->meta)) != 0)
+			{
+				findOrInsert ((char *) curMeta, dynArray);
+			}
+		}
+			
 	}
 
 	size_t keyArraySize = (returned->size) * SIZEOF_KEY;
@@ -120,31 +177,9 @@ static MmapHeader elektraMmapstorageDataSize (KeySet * returned)
 
 	ret.mmapSize = mmapSize;
 	ret.numKeys = numKeys;
-// 	ret.numMetaKeys = metaKeys;
+	ret.numMetaKeySets = metaKeySets;
+	ret.numMetaKeys = dynArray->size;
 	return ret;
-}
-
-static int findOrInsert (const size_t key, size_t * array, size_t numElements)
-{
-	size_t l = 0;
-	size_t h = numElements-1;
-	size_t m;
-	
-	while (l <= h)
-	{
-		m = (l+h)>>1;
-		
-		if (array[m] > key)
-			h = --m;
-		else if (array[m] < key)
-			l = ++m;
-		else
-			return 1; // found
-	}
-	// insert key at index l, relies on the fact that enough memory has already been allocated for array
-	memmove ((void *) (array+l+1), (void *) (array+l), (numElements-l) * (sizeof (size_t)));
-	array[l] = key;
-	return 0;
 }
 
 static void writeKeySet (KeySet * keySet, const void * dest)
@@ -215,7 +250,7 @@ static void writeKeySet (KeySet * keySet, const void * dest)
 	memcpy (ksPtr, keySet, SIZEOF_KEYSET);
 }
 
-static void elektraMmapstorageWrite (char * mappedRegion, KeySet * keySet, MmapHeader mmapHeader)
+static void elektraMmapstorageWrite (char * mappedRegion, KeySet * keySet, MmapHeader mmapHeader, DynArray * dynArray)
 {
 	// multiple options for writing the KeySet:
 	//		* fwrite () directly from the structs (needs multiple fwrite () calls)
@@ -223,10 +258,6 @@ static void elektraMmapstorageWrite (char * mappedRegion, KeySet * keySet, MmapH
 	//		* use mmap to write to temp file and msync () after all data is written, then rename file
 	mmapHeader.addr = mappedRegion;
 	memcpy (mappedRegion, &mmapHeader, SIZEOF_MMAPHEADER);
-
-// 	DynArray dynArray;
-// 	dynArray.array = calloc (mmapHeader.numMetaKeys, sizeof (size_t));
-// 	dynArray.size = 0;
 	
 	char * ksPtr = mappedRegion + SIZEOF_MMAPHEADER;
 
@@ -356,9 +387,14 @@ int elektraMmapstorageSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Ke
 	{
 		return -1;
 	}
+	
+	DynArray dynArray;
+	dynArray.keyArray = calloc (1, sizeof (char *));
+	dynArray.size = 1;
+	dynArray.alloc = 1;
 
 	// TODO: calculating mmap size not needed if using fwrite() instead of mmap to write to file
-	MmapHeader mmapHeader = elektraMmapstorageDataSize (returned);
+	MmapHeader mmapHeader = elektraMmapstorageDataSize (returned, &dynArray);
 	mmapHeader.mmapMagicNumber = ELEKTRA_MAGIC_MMAP_NUMBER;
 	ELEKTRA_LOG_WARNING ("elektraMmapstorageSet -------> mmapsize: %zu", mmapHeader.mmapSize);
 
@@ -377,7 +413,7 @@ int elektraMmapstorageSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Ke
 		return -1;
 	}
 
-	elektraMmapstorageWrite (mappedRegion, returned, mmapHeader);
+	elektraMmapstorageWrite (mappedRegion, returned, mmapHeader, &dynArray);
 	mmapToKeySet (mappedRegion, returned);
 
 	fclose (fp);

@@ -123,84 +123,53 @@ static void test_mmap_empty_after_clear (const char * tmpFile)
 	PLUGIN_CLOSE ();
 }
 
-//static void test_mmapRead (const char * tmpFile)
-//{
-//	Key * parentKey = keyNew("user/tests/mmapstorage", KEY_VALUE, tmpFile, KEY_END);
-//	KeySet * conf = ksNew (0, KS_END);
-//	PLUGIN_OPEN ("mmapstorage");
-//	KeySet * ks = ksNew (0, KS_END);
+static void test_mmapMeta (const char * tmpFile)
+{
+	Key * parentKey = keyNew("user/tests/mmapstorage", KEY_VALUE, tmpFile, KEY_END);
+	KeySet * conf = ksNew (0, KS_END);
+	PLUGIN_OPEN ("mmapstorage");
+	KeySet * ks = metaTestKeySet();
+
+	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 1, "kdbSet was not successful");
+
+	KeySet * returned = ksNew (0, KS_END);
+	succeed_if (plugin->kdbGet (plugin, returned, parentKey) == 1, "kdbGet was not successful");
+
+	KeySet * expected = metaTestKeySet ();
+	compare_keyset(returned, expected);
+//	printf ("ks:\n");
+//	output_keyset (ks);
+//	printf ("expected:\n");
+//	output_keyset (expected);
+	ksDel (expected);
+	ksDel (returned);
+
+	keyDel (parentKey);
+	ksDel (ks);
+	PLUGIN_CLOSE ();
+}
 //
-//	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "kdbGet was not successful");
-//
-//	KeySet * expected = simpleTestKeySet ();
-//	compare_keyset(ks, expected);
-////	printf ("ks:\n");
-////	output_keyset (ks);
-////	printf ("expected:\n");
-////	output_keyset (expected);
-//	ksDel (expected);
-//
-//	keyDel (parentKey);
-//	//ksDel (ks);
-//	PLUGIN_CLOSE ();
-//}
-//
-//
-//static void test_mmapMeta (const char * tmpFile)
-//{
-//	Key * parentKey = keyNew("user/tests/mmapstorage", KEY_VALUE, tmpFile, KEY_END);
-//	KeySet * conf = ksNew (0, KS_END);
-//	PLUGIN_OPEN ("mmapstorage");
-//	KeySet * ks = ksNew (0, KS_END);
-//
-//	//succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "kdbGet was not successful");
-//
-//	ksAppend(ks, metaTestKeySet ());
-//
-//	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 1, "kdbSet was not successful");
-//
-//	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "kdbGet was not successful");
-//
-//	KeySet * expected = metaTestKeySet ();
-//	compare_keyset(ks, expected);
-////	printf ("ks:\n");
-////	output_keyset (ks);
-////	printf ("expected:\n");
-////	output_keyset (expected);
-//	ksDel (expected);
-//
-//	keyDel (parentKey);
-//	//ksDel (ks);
-//	PLUGIN_CLOSE ();
-//}
-//
-//static void test_mmapMeta_reRead (const char * tmpFile)
-//{
-//	Key * parentKey = keyNew("user/tests/mmapstorage", KEY_VALUE, tmpFile, KEY_END);
-//	KeySet * conf = ksNew (0, KS_END);
-//	PLUGIN_OPEN ("mmapstorage");
-//	KeySet * ks = ksNew (0, KS_END);
-//
-//	//succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "kdbGet was not successful");
-//
-//	//ksAppend(ks, metaTestKeySet ());
-//
-//	//succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 1, "kdbSet was not successful");
-//
-//	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "kdbGet was not successful");
-//
-//	KeySet * expected = metaTestKeySet ();
-//	compare_keyset(ks, expected);
-////	printf ("ks:\n");
-////	output_keyset (ks);
-////	printf ("expected:\n");
-////	output_keyset (expected);
-//	ksDel (expected);
-//
-//	keyDel (parentKey);
-//	//ksDel (ks);
-//	PLUGIN_CLOSE ();
-//}
+static void test_mmapMeta_reRead (const char * tmpFile)
+{
+	Key * parentKey = keyNew("user/tests/mmapstorage", KEY_VALUE, tmpFile, KEY_END);
+	KeySet * conf = ksNew (0, KS_END);
+	PLUGIN_OPEN ("mmapstorage");
+	KeySet * ks = ksNew (0, KS_END);
+
+	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "kdbGet was not successful");
+
+	KeySet * expected = metaTestKeySet ();
+	compare_keyset(ks, expected);
+//	printf ("ks:\n");
+//	output_keyset (ks);
+//	printf ("expected:\n");
+//	output_keyset (expected);
+	ksDel (expected);
+	
+	keyDel (parentKey);
+	ksDel (ks);
+	PLUGIN_CLOSE ();
+}
 
 static void clearStorage (const char * tmpFile)
 {
@@ -233,6 +202,9 @@ int main (int argc, char ** argv)
 	clearStorage (tmpFile);
 
 	test_mmap_empty_after_clear (tmpFile);
+	
+	test_mmapMeta (tmpFile);
+	test_mmapMeta_reRead (tmpFile);
 
 
 
