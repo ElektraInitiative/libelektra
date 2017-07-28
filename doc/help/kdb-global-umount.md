@@ -27,7 +27,7 @@ sudo kdb global-mount
 sudo kdb global-umount spec
 
 sudo kdb global-mount
-#> 
+#>
 ```
 
 ## OPTIONS
