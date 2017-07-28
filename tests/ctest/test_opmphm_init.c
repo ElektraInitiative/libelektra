@@ -51,7 +51,6 @@ const size_t maxNcomplex = 1000;
 
 static void test_basic_functions (void)
 {
-	printf ("test_basic_functions\n");
 	Opmphm * opmphm = opmphmNew ();
 	exit_if_fail (opmphm, "malloc");
 	succeed_if (opmphmIsEmpty (opmphm), "opmphm should be empty");
@@ -60,7 +59,6 @@ static void test_basic_functions (void)
 
 static void test_test_functions (void)
 {
-	printf ("test_test_functions\n");
 	for (size_t w = 2; w < opmphmGetWidth (maxNsimple); ++w)
 	{
 		for (size_t n = 0; n < getPower (w, OPMPHMTUPLE); ++n)
@@ -74,16 +72,15 @@ static void test_test_functions (void)
 
 static void test_mapping_success (void)
 {
-	printf ("test_mapping_success\n");
 	/* test w, always full. w^OPMPHMTUPLE elements in each run.
 	 * order.h[] in ascending order
 	 */
 	{
-		opmphmRatio = 1;
 		for (size_t w = 2; w < opmphmGetWidth (maxNsimple); ++w)
 		{
 			// prepare data
 			size_t n = getPower (w, OPMPHMTUPLE);
+			opmphmRatio = n;
 			void * datap = elektraMalloc (sizeof (void *) * n);
 			exit_if_fail (datap, "malloc");
 			// prepare opmphm
@@ -126,19 +123,19 @@ static void test_mapping_success (void)
 			elektraFree (datap);
 		}
 	}
-	/* test w, from 1 to full.
+	/* test w, from 1 to w^OPMPHMTUPLE elements.
 	 * order.h[] in ascending order
 	 */
 	{
 		for (size_t w = 2; w < opmphmGetWidth (maxNcomplex); ++w)
 		{
 			// prepare data
-			size_t power = getPower (w, OPMPHMTUPLE);
-			void * datap = elektraMalloc (sizeof (void *) * power);
+			size_t maxN = getPower (w, OPMPHMTUPLE);
+			void * datap = elektraMalloc (sizeof (void *) * maxN);
 			exit_if_fail (datap, "malloc");
-			for (size_t n = 2; n < power; ++n)
+			for (size_t n = 1; n < maxN; ++n)
 			{
-				opmphmRatio = (double)power / n;
+				opmphmRatio = (double)n * n / maxN;
 				// prepare opmphm
 				Opmphm * opmphm = opmphmNew ();
 				OpmphmOrder * order = opmphmNewOrder (n, true);
@@ -186,11 +183,11 @@ static void test_mapping_success (void)
 	 * order.h[] in descending order
 	 */
 	{
-		opmphmRatio = 1;
 		for (size_t w = 2; w < opmphmGetWidth (maxNsimple); ++w)
 		{
 			// prepare data
 			size_t n = getPower (w, OPMPHMTUPLE);
+			opmphmRatio = n;
 			void * datap = elektraMalloc (sizeof (void *) * n);
 			exit_if_fail (datap, "malloc");
 			// prepare opmphm
@@ -233,19 +230,19 @@ static void test_mapping_success (void)
 			elektraFree (datap);
 		}
 	}
-	/* test w, from 1 to full.
+	/* test w, from 1 to w^OPMPHMTUPLE elements.
 	 * order.h[] in descending order
 	 */
 	{
 		for (size_t w = 2; w < opmphmGetWidth (maxNcomplex); ++w)
 		{
 			// prepare data
-			size_t power = getPower (w, OPMPHMTUPLE);
-			void * datap = elektraMalloc (sizeof (void *) * power);
+			size_t maxN = getPower (w, OPMPHMTUPLE);
+			void * datap = elektraMalloc (sizeof (void *) * maxN);
 			exit_if_fail (datap, "malloc");
-			for (size_t n = 2; n < power; ++n)
+			for (size_t n = 1; n < maxN; ++n)
 			{
-				opmphmRatio = (double)power / n;
+				opmphmRatio = (double)n * n / maxN;
 				// prepare opmphm
 				Opmphm * opmphm = opmphmNew ();
 				OpmphmOrder * order = opmphmNewOrder (n, true);
@@ -294,17 +291,16 @@ static void test_mapping_success (void)
 
 static void test_mapping_fail (void)
 {
-	printf ("test_mapping_fail\n");
 	/* test w, always full. w^OPMPHMTUPLE elements in each run.
 	 * order.h[] in ascending order
-	 * only 1 duplicate, should be detected during partition
+	 * only 1 duplicate.
 	 */
 	{
-		opmphmRatio = 1;
 		for (size_t w = 2; w < opmphmGetWidth (maxNsimple); ++w)
 		{
 			// prepare data
 			size_t n = getPower (w, OPMPHMTUPLE);
+			opmphmRatio = n;
 			void * datap = elektraMalloc (sizeof (void *) * n);
 			exit_if_fail (datap, "malloc");
 			// prepare opmphm
@@ -342,7 +338,7 @@ static void test_mapping_fail (void)
 			elektraFree (datap);
 		}
 	}
-	/* test w, from 1 to full-1.
+	/* test w. from 1 to w^OPMPHMTUPLE.
 	 * order.h[] in ascending order
 	 * use the last for a duplicate
 	 */
@@ -350,12 +346,12 @@ static void test_mapping_fail (void)
 		for (size_t w = 2; w < opmphmGetWidth (maxNcomplex); ++w)
 		{
 			// prepare data
-			size_t power = getPower (w, OPMPHMTUPLE);
-			void * datap = elektraMalloc (sizeof (void *) * power);
+			size_t maxN = getPower (w, OPMPHMTUPLE);
+			void * datap = elektraMalloc (sizeof (void *) * maxN);
 			exit_if_fail (datap, "malloc");
-			for (size_t n = 2; n < power; ++n)
+			for (size_t n = 2; n < maxN; ++n)
 			{
-				opmphmRatio = (double)power / n;
+				opmphmRatio = (double)n * n / maxN;
 				// prepare opmphm
 				Opmphm * opmphm = opmphmNew ();
 				OpmphmOrder * order = opmphmNewOrder (n, true);

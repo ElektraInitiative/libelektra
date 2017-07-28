@@ -17,9 +17,9 @@
  * Each element of the k-tuples is in the range 0 to width. The width (abbreviated with w) determines how many keys can fit in the OPMPHM.
  * w^OPMPHMTUPLE is the maximum number of keys that fit in. w is set dynamically to the minimum value that:
  *
- * w^OPMPHMTUPLE > opmphmRatio * n
+ * w^OPMPHMTUPLE >= n * n / opmphmRatio
  *
- * opmphmRatio should never be less than 1.
+ * opmphmRatio should never be less or equal to 0.
  *
  */
 #define OPMPHMTUPLE 5
