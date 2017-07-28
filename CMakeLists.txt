@@ -11,14 +11,6 @@ set(CMAKE_MACOSX_RPATH 1)
 #additional modules for loading libraries
 set (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
 
-#fix policy stuff
-if (POLICY CMP0046)
-	cmake_policy(SET CMP0046 OLD) # new behaviour seems stupid, of course
-	# dependency is not yet available if it's generated later?
-endif()
-
-
-
 #needed by ifs below
 include (cmake/ElektraCache.cmake)
 include (cmake/ElektraCompiling.cmake)

@@ -351,8 +351,6 @@ function (add_plugin PLUGIN_SHORT_NAME)
 	add_library (${PLUGIN_OBJS} OBJECT ${ARG_SOURCES})
 	add_dependencies (${PLUGIN_OBJS} kdberrors_generated)
 
-	add_dependencies(${PLUGIN_OBJS} readme_${PLUGIN_SHORT_NAME}.c)
-
 	generate_readme (${PLUGIN_SHORT_NAME})
 
 	set_property(TARGET ${PLUGIN_OBJS}
