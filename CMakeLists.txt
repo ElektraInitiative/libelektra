@@ -12,9 +12,6 @@ set(CMAKE_MACOSX_RPATH 1)
 set (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
 
 #fix policy stuff
-if (POLICY CMP0026)
-	cmake_policy(SET CMP0026 OLD) # reinvestigate at 2.8.11 or later
-endif()
 if (POLICY CMP0043)
 	cmake_policy(SET CMP0043 OLD) # to have consistent behavior for pre 2.8.10
 	#also reinvestigate when they do not need to be supported anymore
