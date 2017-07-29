@@ -9,10 +9,12 @@
 
 #include <botan/auto_rng.h>
 #include <botan/filters.h>
+#include <botan/hmac.h>
 #include <botan/init.h>
 #include <botan/lookup.h>
 #include <botan/pbkdf2.h>
 #include <botan/pipe.h>
+#include <botan/sha2_32.h>
 #include <botan/symkey.h>
 #include <kdbplugin.h>
 #include <memory>
@@ -70,8 +72,8 @@ static int getKeyIvForEncryption (KeySet * config, Key * errorKey, Key * masterK
 		const kdb_unsigned_long_t iterations = CRYPTO_PLUGIN_FUNCTION (getIterationCount) (errorKey, config);
 
 		// generate/derive the cryptographic key and the IV
-		unique_ptr<PBKDF> pbkdf = unique_ptr<PBKDF> (get_pbkdf ("PBKDF2(SHA-256)"));
-		OctetString derived = pbkdf->derive_key (
+		PKCS5_PBKDF2 pbkdf (new HMAC (new SHA_256));
+		OctetString derived = pbkdf.derive_key (
 			requiredKeyBytes, std::string (reinterpret_cast<const char *> (keyValue (masterKey)), keyGetValueSize (masterKey)),
 			salt, sizeof (salt), iterations);
 
