@@ -123,8 +123,8 @@ static int getKeyIvForDecryption (KeySet * config, Key * errorKey, Key * masterK
 	try
 	{
 		// derive the cryptographic key and the IV
-		unique_ptr<PBKDF> pbkdf = unique_ptr<PBKDF> (get_pbkdf ("PBKDF2(SHA-256)"));
-		OctetString derived = pbkdf->derive_key (
+		PKCS5_PBKDF2 pbkdf (new HMAC (new SHA_256));
+		OctetString derived = pbkdf.derive_key (
 			requiredKeyBytes, std::string (reinterpret_cast<const char *> (keyValue (masterKey)), keyGetValueSize (masterKey)),
 			saltBuffer, saltBufferLen, iterations);
 
