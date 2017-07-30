@@ -72,7 +72,15 @@ Elektra * elektraOpen (const char * application, KeySet * defaults, ElektraError
 	KeySet * const config = ksNew (0, KS_END);
 	if (defaults != NULL)
 	{
-		ksAppend (config, defaults);
+        ksRewind(defaults);
+        for (Key * key = ksNext(defaults); key != NULL; key = ksNext(defaults)) {
+            Key * const dup = keyDup(key);
+            const char * name = keyName(key);
+            keySetName (dup, keyName (parentKey));
+            keyAddName (dup, name);
+
+            ksAppendKey(config, dup);
+        }
 	}
 
 	const int kdbGetResult = kdbGet (kdb, config, parentKey);
