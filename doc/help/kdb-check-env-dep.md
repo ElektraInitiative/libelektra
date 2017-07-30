@@ -1,5 +1,5 @@
-kdb-check-env-dep -- Checks which mountpoints are influced by environment variables
-===================================================================================
+kdb-check-env-dep -- Checks which mountpoints are influenced by environment variables
+=====================================================================================
 
 ## SYNOPSIS
 
@@ -7,7 +7,7 @@ kdb-check-env-dep -- Checks which mountpoints are influced by environment variab
 
 ## DESCRIPTION
 
-This command checks which mountpoint is influced by a changes to environment variables. `PATH` and `KDB` are skipped for reasons.
+This command checks which mountpoint is influenced by changes to environment variables. `PATH` and `KDB` are skipped for reasons.
 
 ## SEE ALSO
 - [kdb-mount-list-all-files(7)](kdb-mount-list-all-files.md)

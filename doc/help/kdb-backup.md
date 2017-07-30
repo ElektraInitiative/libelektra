@@ -9,7 +9,7 @@ kdb-backup -- Backup and unmount everything
 
 This command will backup the `system`, `user` and `spec` configuration, release all mountpoints and reset Elektra to a clean state. Afterwards a timestamp which can be used to restore everything will be printed.
 
-## EXMAPLES
+## EXAMPLES
 
 ```
 kdb set user/x foo

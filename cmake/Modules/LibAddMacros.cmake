@@ -150,7 +150,7 @@ endmacro(find_swig)
 #
 # Parameters:
 #
-# 1. util        [in] : the utility fo search for. Must be added using
+# 1. util        [in] : the utility to search for. Must be added using
 #                       add_executable first.
 # 2. EXE_SYM_LOC [out]: a name for a variable where the program to be executed
 #                       is written to.
@@ -186,7 +186,7 @@ function(find_util util output_loc output_arg)
 			find_program (${util}_EXE_LOC ${util})
 		endif ()
 	else (CMAKE_CROSSCOMPILING)
-		get_target_property (${util}_EXE_LOC ${util} LOCATION)
+		set(${util}_EXE_LOC $<TARGET_FILE:${util}>)
 	endif (CMAKE_CROSSCOMPILING)
 	set (${output_loc} ${${util}_EXE_LOC} PARENT_SCOPE)
 	set (${output_arg} ${ARG_LOC} PARENT_SCOPE)

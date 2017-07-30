@@ -2,6 +2,9 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(DISCOUNT_FIND_QUIETLY ON)
 
+# Disable warnings about policies in Qt’s CMake code
+cmake_policy(SET CMP0053 OLD)
+
 set(QCOMPONENTS Core Quick Gui Qml Widgets Test)
 find_package(Qt5 COMPONENTS ${QCOMPONENTS})
 find_package(Qt5 OPTIONAL_COMPONENTS Svg QUIET)
