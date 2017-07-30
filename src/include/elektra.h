@@ -22,15 +22,15 @@ typedef struct _Elektra Elektra;
 
 #define ELEKTRA_TAG(typeName) Elektra##typeName##Tag
 
-#define ELEKTRA_SET_BY_STRING(typeName) elektraSet##typeName##ByString
-#define ELEKTRA_SET_BY_TAG(typeName) elektraSet##typeName##ByTag
-#define ELEKTRA_SET_ARRAY_ELEMENT_BY_STRING(typeName) elektraSet##typeName##ArrayElementByString
-#define ELEKTRA_SET_ARRAY_ELEMENT_BY_TAG(typeName) elektraSet##typeName##ArrayElementByTag
+#define ELEKTRA_SET_BY_STRING(typeName) __elektraSet##typeName##ByString
+#define ELEKTRA_SET_BY_TAG(typeName) __elektraSet##typeName##ByTag
+#define ELEKTRA_SET_ARRAY_ELEMENT_BY_STRING(typeName) __elektraSet##typeName##ArrayElementByString
+#define ELEKTRA_SET_ARRAY_ELEMENT_BY_TAG(typeName) __elektraSet##typeName##ArrayElementByTag
 
-#define ELEKTRA_GET_BY_STRING(typeName) elektraGet##typeName##ByString
-#define ELEKTRA_GET_BY_TAG(typeName) elektraGet##typeName##ByTag
-#define ELEKTRA_GET_ARRAY_ELEMENT_BY_STRING(typeName) elektraGet##typeName##ArrayElementByString
-#define ELEKTRA_GET_ARRAY_ELEMENT_BY_TAG(typeName) elektraGet##typeName##ArrayElementByTag
+#define ELEKTRA_GET_BY_STRING(typeName) __elektraGet##typeName##ByString
+#define ELEKTRA_GET_BY_TAG(typeName) __elektraGet##typeName##ByTag
+#define ELEKTRA_GET_ARRAY_ELEMENT_BY_STRING(typeName) __elektraGet##typeName##ArrayElementByString
+#define ELEKTRA_GET_ARRAY_ELEMENT_BY_TAG(typeName) __elektraGet##typeName##ArrayElementByTag
 
 #define ELEKTRA_SET_BY_STRING_SIGNATURE(Type, typeName)                                                                                    \
 	void ELEKTRA_SET_BY_STRING (typeName) (Elektra * elektra, const char * keyName, Type value, ElektraError ** error)
