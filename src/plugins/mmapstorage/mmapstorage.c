@@ -96,39 +96,37 @@ static char * elektraMmapstorageMapFile (void * addr, FILE * fp, size_t mmapSize
 static int findOrInsert (const size_t key, DynArray * dynArray)
 {
 	size_t l = 0;
-	size_t h = (dynArray->size)-1;
-	size_t m;
+	size_t h = dynArray->size;
+	//size_t m;
 	ELEKTRA_LOG_WARNING ("l: %zu", l);
 	ELEKTRA_LOG_WARNING ("h: %zu", h);
 	
-	if (dynArray->size == 0)
-	{
-		ELEKTRA_LOG_WARNING ("JUMP TO INSERTION");
-		goto insertion;
-	}
+// 	if (dynArray->size == 0)
+// 	{
+// 		ELEKTRA_LOG_WARNING ("JUMP TO INSERTION");
+// 		goto insertion;
+// 	}
 	ELEKTRA_LOG_WARNING ("dynArray->size: %zu", dynArray->size);
 	ELEKTRA_LOG_WARNING ("dynArray->alloc: %zu", dynArray->alloc);
 	
-	while (l <= h)
+	while (l < h)
 	{
-		m = (l+h)>>1;
+		size_t m = (l+h)>>1;
 		ELEKTRA_LOG_WARNING ("m: %zu", m);
 		
 		if (dynArray->keyArray[m] > key)
-			h = --m;
+			h = m;
 		else if (dynArray->keyArray[m] < key)
 			l = ++m;
 		else
 			return 1; // found
 	}
 	// insert key at index l
-	
-insertion:
 	if (dynArray->size == dynArray->alloc)
 	{
 		// doubling the array size to keep reallocations logarithmic
 		size_t oldAllocSize = dynArray->alloc;
-		size_t * new = calloc(2*oldAllocSize, sizeof(size_t));
+		size_t * new = calloc(2 * oldAllocSize, sizeof (size_t));
 		memcpy (new, dynArray->keyArray, dynArray->size);
 		free(dynArray->keyArray);
 		dynArray->keyArray = new;
