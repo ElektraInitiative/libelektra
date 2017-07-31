@@ -19,4 +19,6 @@ int ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME, checkconf) (Key * errorKey, Ke
 
 Plugin * ELEKTRA_PLUGIN_EXPORT (crypto);
 
+#define ELEKTRA_FCRYPT_CONFIG_TEXTMODE "/fcrypt/textmode"
+
 #endif

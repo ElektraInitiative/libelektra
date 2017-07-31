@@ -111,6 +111,23 @@ static int inTestMode (KeySet * conf)
 }
 
 /**
+ * @brief lookup if the text mode is disabled in the plugin config.
+ * It is enabled per default.
+ * @param conf KeySet holding the plugin configuration.
+ * @retval 0 text mode is not enabled
+ * @retval 1 text mode is enabled
+ */
+static int inTextMode (KeySet * conf)
+{
+	Key * k = ksLookupByName (conf, ELEKTRA_FCRYPT_CONFIG_TEXTMODE, 0);
+	if (k && !strcmp (keyString (k), "0"))
+	{
+		return 0;
+	}
+	return 1;
+}
+
+/**
  * @brief Read number of total GPG recipient keys from the plugin configuration.
  * @param config holds the plugin configuration
  * @param keyName holds the name of the root key to look up
@@ -212,6 +229,7 @@ static int fcryptEncrypt (KeySet * pluginConfig, Key * parentKey)
 	}
 
 	const size_t testMode = inTestMode (pluginConfig);
+	const size_t textMode = inTextMode (pluginConfig);
 
 	// prepare argument vector for gpg call
 	// 7 static arguments (magic number below) are:
@@ -222,7 +240,7 @@ static int fcryptEncrypt (KeySet * pluginConfig, Key * parentKey)
 	//   5. yes
 	//   6. file to be encrypted
 	//   7. NULL terminator
-	int argc = 7 + (2 * recipientCount) + (2 * signatureCount) + (2 * testMode) + (recipientCount > 0 ? 1 : 0) +
+	int argc = 7 + (2 * recipientCount) + (2 * signatureCount) + (2 * testMode) + textMode + (recipientCount > 0 ? 1 : 0) +
 		   (signatureCount > 0 ? 1 : 0);
 	kdb_unsigned_short_t i = 0;
 	char * argv[argc];
@@ -292,17 +310,33 @@ static int fcryptEncrypt (KeySet * pluginConfig, Key * parentKey)
 		argv[i++] = "always";
 	}
 
+	// ASCII armor in text mode
+	if (textMode)
+	{
+		argv[i++] = "--armor";
+	}
+
 	// prepare rest of the argument vector
 	if (recipientCount > 0)
 	{
 		// encrypt the file
 		argv[i++] = "-e";
 	}
+
 	if (signatureCount > 0)
 	{
-		// sign the file
-		argv[i++] = "-s";
+		if (textMode && recipientCount == 0)
+		{
+			// clear-sign the file
+			argv[i++] = "--clearsign";
+		}
+		else
+		{
+			// sign the file
+			argv[i++] = "-s";
+		}
 	}
+
 	argv[i++] = (char *)keyString (parentKey);
 	argv[i++] = NULL;
 

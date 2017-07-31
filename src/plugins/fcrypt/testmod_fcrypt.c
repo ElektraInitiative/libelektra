@@ -18,6 +18,8 @@
 #include <gpg.h>
 #include <test_key.h>
 
+#include "fcrypt.h"
+
 #define PLUGIN_NAME "fcrypt"
 #define TEST_KEY_ID "DDEBEF9EE2DC931701338212DAF635B17F230E8D"
 #define TEST_FILE "fcrypt_testfile"
@@ -32,6 +34,7 @@ static KeySet * newPluginConfiguration (void)
 		keyNew (ELEKTRA_RECIPIENT_KEY, KEY_VALUE, TEST_KEY_ID, KEY_END),
 		keyNew (ELEKTRA_CRYPTO_PARAM_GPG_UNIT_TEST, KEY_VALUE, "1", KEY_END),
 		keyNew (ELEKTRA_SIGNATURE_KEY, KEY_VALUE, TEST_KEY_ID, KEY_END),
+		keyNew (ELEKTRA_FCRYPT_CONFIG_TEXTMODE, KEY_VALUE, "0", KEY_END),
 		KS_END);
 	// clang-format on
 }
