@@ -234,7 +234,7 @@ static void test_primitiveSetters ()
 	elektraSetUnsignedLongLong (elektra, "unsignedlonglongkey", 1, &error);
 	elektraSetFloat (elektra, "floatkey", 1.1, &error);
 	elektraSetDouble (elektra, "doublekey", 1.1, &error);
-	elektraSetLongDouble (elektra, "longdoublekey", 1.1, &error);
+	elektraSetLongDouble (elektra, "longdoublekey", 1.1L, &error);
 
 	// Add new keys.
 	elektraSetString (elektra, "newstringkey", "A string", &error);
@@ -249,7 +249,7 @@ static void test_primitiveSetters ()
 	elektraSetUnsignedLongLong (elektra, "newunsignedlonglongkey", 1, &error);
 	elektraSetFloat (elektra, "newfloatkey", 1.1, &error);
 	elektraSetDouble (elektra, "newdoublekey", 1.1, &error);
-	elektraSetLongDouble (elektra, "", 1.1, &error);
+	elektraSetLongDouble (elektra, "newlongdoublekey", 1.1L, &error);
 
 	if (error)
 	{
@@ -280,7 +280,6 @@ static void test_primitiveSetters ()
 	ELEKTRA_DIAG_RESTORE
 
 	// Check new keys.
-
 	succeed_if (!elektraStrCmp (elektraGetString (elektra, "newstringkey"), "A string"), "Wrong key value.");
 	succeed_if (elektraGetBoolean (elektra, "newbooleankey"), "Wrong key value.");
 	succeed_if (elektraGetChar (elektra, "newcharkey") == 'c', "Wrong key value.");
@@ -297,7 +296,7 @@ static void test_primitiveSetters ()
 #pragma clang diagnostic ignored "-Wfloat-equal"
 	succeed_if (elektraGetFloat (elektra, "newfloatkey") == 1.1f, "Wrong key value.");
 	succeed_if (elektraGetDouble (elektra, "newdoublekey") == 1.1, "Wrong key value.");
-	succeed_if (elektraGetLongDouble (elektra, "") == 1.1L, "Wrong key value.");
+	succeed_if (elektraGetLongDouble (elektra, "newlongdoublekey") == 1.1L, "Wrong key value.");
 #pragma clang diagnostic pop
 	ELEKTRA_DIAG_RESTORE
 
