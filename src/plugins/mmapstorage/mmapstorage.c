@@ -97,21 +97,15 @@ static int findOrInsert (const size_t key, DynArray * dynArray)
 {
 	size_t l = 0;
 	size_t h = dynArray->size;
-	//size_t m;
+	size_t m;
 	ELEKTRA_LOG_WARNING ("l: %zu", l);
 	ELEKTRA_LOG_WARNING ("h: %zu", h);
-	
-// 	if (dynArray->size == 0)
-// 	{
-// 		ELEKTRA_LOG_WARNING ("JUMP TO INSERTION");
-// 		goto insertion;
-// 	}
 	ELEKTRA_LOG_WARNING ("dynArray->size: %zu", dynArray->size);
 	ELEKTRA_LOG_WARNING ("dynArray->alloc: %zu", dynArray->alloc);
 	
 	while (l < h)
 	{
-		size_t m = (l+h)>>1;
+		m = (l+h)>>1;
 		ELEKTRA_LOG_WARNING ("m: %zu", m);
 		
 		if (dynArray->keyArray[m] > key)
@@ -183,35 +177,35 @@ static MmapHeader elektraMmapstorageDataSize (KeySet * returned, DynArray * dynA
 	return ret;
 }
 
-static void writeKeySet (KeySet * keySet, const void * dest)
+static void writeKeySet (KeySet * keySet, KeySet * dest)
 {
-	char * ksPtr = (char *) dest;
-	char * ksArrayPtr = (ksPtr + SIZEOF_KEYSET);
+	KeySet * ksPtr = dest;
+	char * ksArrayPtr = (((char *) ksPtr) + SIZEOF_KEYSET);
 	char * keyPtr = (ksArrayPtr + (keySet->size * SIZEOF_KEY_PTR));
 	char * dataPtr = (keyPtr + (keySet->size * SIZEOF_KEY));
 	
 	Key ** curKsArrayPtr = (Key **) ksArrayPtr;
 	
 	Key * cur;
-	//Key ** mappedKeys = elektraMalloc (keyPtrArraySize);
+	Key * mmapKey;
+	void * keyNamePtr;
+	void * keyValuePtr;
 	size_t keyIndex = 0;
 	ksRewind(keySet);
 	while ((cur = ksNext (keySet)) != 0)
 	{
+		mmapKey = (Key *) (keyPtr + (keyIndex * SIZEOF_KEY));
 		size_t keyNameSize = cur->keySize + cur->keyUSize;
 		size_t keyValueSize = cur->dataSize;
 
 		// move Key name
 		memcpy (dataPtr, cur->key, keyNameSize);
-		cur->key = dataPtr;
-		//keySetName(cur, dataPtr); // TODO: this is broken, need to set it raw and finalize, keysetname makes a copy
+		keyNamePtr = dataPtr;
 		dataPtr += keyNameSize;
-		keyDup (cur);
 
 		// move Key value
 		memcpy (dataPtr, cur->data.v, keyValueSize);
-		cur->data.v =  dataPtr;
-		//keySetRaw(cur, dataPtr, keyValueSize);
+		keyValuePtr = dataPtr;
 		dataPtr += keyValueSize;
 		
 		// meta key search and so on
@@ -234,21 +228,20 @@ static void writeKeySet (KeySet * keySet, const void * dest)
 // 		}
 
 		// move Key itself
-		void * mmapKey = keyPtr + (keyIndex * SIZEOF_KEY);
-		cur->flags |= KEY_FLAG_MMAP;
 		memcpy (mmapKey, cur, SIZEOF_KEY);
-		//fwrite (cur, keyValueSize, 1, fp);
+		mmapKey->flags |= KEY_FLAG_MMAP;
+		mmapKey->key = keyNamePtr;
+		mmapKey->data.v = keyValuePtr;
 		
 		// write the Key pointer into the KeySet array
 		memcpy (++curKsArrayPtr, mmapKey, SIZEOF_KEY);
 		
 		++keyIndex;
 	}
-
-	keySet->array = (Key **) ksArrayPtr;
-	ksRewind(keySet);
-	keySet->flags |= KS_FLAG_MMAP;
+	
 	memcpy (ksPtr, keySet, SIZEOF_KEYSET);
+	ksPtr->flags |= KS_FLAG_MMAP;
+	ksPtr->array = (Key **) ksArrayPtr;
 }
 
 static void elektraMmapstorageWrite (char * mappedRegion, KeySet * keySet, MmapHeader mmapHeader, DynArray * dynArray)
@@ -260,17 +253,17 @@ static void elektraMmapstorageWrite (char * mappedRegion, KeySet * keySet, MmapH
 	mmapHeader.addr = mappedRegion;
 	memcpy (mappedRegion, &mmapHeader, SIZEOF_MMAPHEADER);
 	
-	char * ksPtr = mappedRegion + SIZEOF_MMAPHEADER;
+	KeySet * ksPtr = (KeySet *) (mappedRegion + SIZEOF_MMAPHEADER);
 
 	if (keySet->size < 1)
 	{
 		// TODO: review mpranj
-		keySet->flags |= KS_FLAG_MMAP;
 		memcpy (ksPtr, keySet, SIZEOF_KEYSET);
+		ksPtr->flags |= KS_FLAG_MMAP;
 		return;
 	}
 	
-	writeKeySet (keySet, (const void *) ksPtr);
+	writeKeySet (keySet, ksPtr);
 }
 
 static void mmapToKeySet (char * mappedRegion, KeySet * returned)
@@ -413,10 +406,13 @@ int elektraMmapstorageSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Ke
 		ELEKTRA_LOG ("mappedRegion == MAP_FAILED");
 		return -1;
 	}
-
+	
 	elektraMmapstorageWrite (mappedRegion, returned, mmapHeader, &dynArray);
+	ksClose (returned);
 	mmapToKeySet (mappedRegion, returned);
-
+	
+	if (dynArray.keyArray)
+		elektraFree (dynArray.keyArray);
 	fclose (fp);
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }

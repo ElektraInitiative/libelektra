@@ -416,6 +416,7 @@ int ksDel (KeySet * ks)
 
 	rc = ksClose (ks);
 
+
 #ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
 	if (ks->opmphm)
 	{
@@ -2625,8 +2626,7 @@ int ksClose (KeySet * ks)
 	{
 		keyDecRef (k);
 
-		if (!ksInMmap)
-			keyDel (k);
+		keyDel (k);
 	}
 
 	if (ks->array && !ksInMmap) elektraFree (ks->array);
