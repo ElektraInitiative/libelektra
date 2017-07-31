@@ -32,7 +32,7 @@ struct _dynArray
 {
 	size_t size;
 	size_t alloc;
-	char ** keyArray;
+	size_t * keyArray;
 	
 };
 
