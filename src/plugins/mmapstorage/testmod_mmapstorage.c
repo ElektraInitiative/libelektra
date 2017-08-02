@@ -94,7 +94,7 @@ static void test_mmap_get_after_reopen (const char * tmpFile)
 	Key * parentKey = keyNew("user/tests/mmapstorage", KEY_VALUE, tmpFile, KEY_END);
 	KeySet * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("mmapstorage");
-	KeySet * returned = ksNew (10, KS_END);
+	KeySet * returned = ksNew (0, KS_END);
 
 	succeed_if (plugin->kdbGet (plugin, returned, parentKey) == 1, "kdbGet was not successful");
 
@@ -112,7 +112,7 @@ static void test_mmap_empty_after_clear (const char * tmpFile)
 	Key * parentKey = keyNew("user/tests/mmapstorage", KEY_VALUE, tmpFile, KEY_END);
 	KeySet * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("mmapstorage");
-	KeySet * returned = ksNew (10, KS_END);
+	KeySet * returned = ksNew (0, KS_END);
 
 	succeed_if (plugin->kdbGet (plugin, returned, parentKey) == 1, "kdbGet was not successful");
 
