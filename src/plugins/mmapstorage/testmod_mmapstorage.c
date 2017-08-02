@@ -136,7 +136,7 @@ static void test_mmapMeta (const char * tmpFile)
 	succeed_if (plugin->kdbGet (plugin, returned, parentKey) == 1, "kdbGet was not successful");
 
 	KeySet * expected = metaTestKeySet ();
-	compare_keyset(returned, expected);
+	compare_keyset(expected, returned);
 //	printf ("ks:\n");
 //	output_keyset (ks);
 //	printf ("expected:\n");
@@ -159,7 +159,7 @@ static void test_mmapMeta_reRead (const char * tmpFile)
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "kdbGet was not successful");
 
 	KeySet * expected = metaTestKeySet ();
-	compare_keyset(ks, expected);
+	compare_keyset(expected, ks);
 //	printf ("ks:\n");
 //	output_keyset (ks);
 //	printf ("expected:\n");
