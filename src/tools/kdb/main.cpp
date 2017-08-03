@@ -210,7 +210,13 @@ int main (int argc, char ** argv)
 			  << getErrorColor (ANSI_COLOR::RESET) << " terminated " << getErrorColor (ANSI_COLOR::RED) << "unsuccessfully"
 			  << getErrorColor (ANSI_COLOR::RESET) << " with the info:\n"
 			  << ce.what () << std::endl;
-		return 3;
+		if (ce.errorCode () != 3 && (ce.errorCode () < 11 || ce.errorCode () > 20))
+		{
+			std::cerr << "Command used invalid return value (" << ce.errorCode ()
+				  << "), please report the issue at https://issues.libelektra.org/" << std::endl;
+			return 3;
+		}
+		return ce.errorCode ();
 	}
 	catch (UnknownCommand const & uc)
 	{
@@ -235,7 +241,7 @@ int main (int argc, char ** argv)
 			  << getErrorColor (ANSI_COLOR::RESET) << " with the info:" << endl
 			  << ce.what () << endl
 			  << "Please report the issue at https://issues.libelektra.org/" << std::endl;
-		return 6;
+		return 7;
 	}
 	catch (...)
 	{
