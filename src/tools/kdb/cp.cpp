@@ -62,9 +62,14 @@ int CpCommand::execute (Cmdline const & cl)
 		while ((k = oldConf.next ()))
 		{
 			Key rk = rename_key (k, sourceName, newDirName, cl.verbose);
-			if (tmpConf.lookup (rk))
+			if (cl.force)
 			{
-				std::cerr << "Coping of " << rk.getName () << " will have no effect (already exists)" << endl;
+				tmpConf.lookup (rk, KDB_O_POP);
+			}
+			else if (tmpConf.lookup (rk))
+			{
+				std::cerr << "Copy will have no effect, because " << rk.getName () << " already exists" << endl;
+				return 11;
 			}
 			newConf.append (rk);
 		}
@@ -74,9 +79,14 @@ int CpCommand::execute (Cmdline const & cl)
 		// just copy one key
 		Key k = oldConf.next ();
 		Key rk = rename_key (k, sourceName, newDirName, cl.verbose);
-		if (tmpConf.lookup (rk))
+		if (cl.force)
+		{
+			tmpConf.lookup (rk, KDB_O_POP);
+		}
+		else if (tmpConf.lookup (rk))
 		{
 			std::cerr << "Copy will have no effect, because " << rk.getName () << " already exists" << endl;
+			return 11;
 		}
 		newConf.append (rk);
 	}
