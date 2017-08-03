@@ -206,6 +206,7 @@ int main (int argc, char ** argv)
 	test_mmapMeta (tmpFile);
 	test_mmapMeta_reRead (tmpFile);
 
+	// TODO: test keyCopyMeta
 
 
 	printf ("\ntestmod_mmapstorage RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);

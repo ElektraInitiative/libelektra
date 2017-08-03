@@ -140,12 +140,12 @@ static MmapHeader elektraMmapstorageDataSize (KeySet * returned, DynArray * dynA
 	
 	Key * cur;
 	ksRewind(returned);
-	size_t dataBlockSize = 0; // keyName and keyValue
+	size_t dataBlocksSize = 0; // keyName and keyValue
 	size_t metaKeySets = 0;
-	//size_t metaKeys = 0;
+	size_t metaKeysWithDup = 0; // number of meta keys including copies
 	while ((cur = ksNext (returned)) != 0)
 	{
-		dataBlockSize += (cur->keySize + cur->keyUSize + cur->dataSize);
+		dataBlocksSize += (cur->keySize + cur->keyUSize + cur->dataSize);
 		
 		if (cur->meta)
 		{
@@ -155,23 +155,25 @@ static MmapHeader elektraMmapstorageDataSize (KeySet * returned, DynArray * dynA
 			ksRewind(cur->meta);
 			while ((curMeta = ksNext (cur->meta)) != 0)
 			{
-				findOrInsert ((size_t) curMeta, dynArray);
+				if (findOrInsert ((size_t) curMeta, dynArray) != 1)
+				{
+					// key was just inserted
+					dataBlocksSize += (curMeta->keySize + curMeta->keyUSize + curMeta->dataSize);
+				}
 			}
+			metaKeysWithDup += cur->meta->size;
 		}
 			
 	}
 
 	size_t keyArraySize = (returned->size) * SIZEOF_KEY;
 	size_t keyPtrArraySize = (returned->size) * SIZEOF_KEY_PTR;
-	
-	// TODO: overapproximating meta key size here, fix later
-	size_t mmapSize = SIZEOF_MMAPHEADER + SIZEOF_KEYSET + keyPtrArraySize + keyArraySize + dataBlockSize;
-	// + (metaKeys * SIZEOF_KEY) + ((returned->size) * SIZEOF_KEYSET)
-		
-	size_t numKeys = returned->size;
+
+	size_t mmapSize = SIZEOF_MMAPHEADER + SIZEOF_KEYSET + keyPtrArraySize + keyArraySize + dataBlocksSize \
+ 		+ (metaKeySets * SIZEOF_KEYSET) + (metaKeysWithDup * SIZEOF_KEY_PTR) + (dynArray->size * SIZEOF_KEY);
 
 	ret.mmapSize = mmapSize;
-	ret.numKeys = numKeys;
+	ret.numKeys = returned->size;
 	ret.numMetaKeySets = metaKeySets;
 	ret.numMetaKeys = dynArray->size;
 	return ret;
