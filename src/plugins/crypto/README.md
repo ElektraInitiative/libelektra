@@ -62,7 +62,7 @@ If no such configuration is provided, the plugin will look at the PATH environme
 
 ## How to compile
 
-The following compile variants are available:
+The following compilation variants are available:
 
 1. crypto_gcrypt
 2. crypto_openssl
