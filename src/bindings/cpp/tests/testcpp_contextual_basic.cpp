@@ -721,11 +721,20 @@ TEST (test_contextual_basic, evaluate)
 		ASSERT_EQ (c["country"], "germany");
 		ASSERT_EQ (c["dialect"], "");
 		ASSERT_EQ (c.evaluate ("/%language%/%country%/%dialect%/test"), "/german/germany/%/test");
+		ASSERT_EQ (c.evaluate ("/%language%/%language%/%dialect%/test"), "/german/german/%/test");
+
+		ASSERT_EQ (c.evaluate ("/%language%%country%%dialect%/test"), "/germangermany%/test");
+		ASSERT_EQ (c.evaluate ("/%language%%language%%dialect%/test"), "/germangerman%/test");
 	});
 	ASSERT_EQ (c["language"], "");
 	ASSERT_EQ (c["country"], "");
 	ASSERT_EQ (c["dialect"], "");
 	ASSERT_EQ (c.evaluate ("/%language%/%country%/%dialect%/test"), "/%/%/%/test");
+
+	ASSERT_EQ (c["language"], "");
+	ASSERT_EQ (c["country"], "");
+	ASSERT_EQ (c["dialect"], "");
+	ASSERT_EQ (c.evaluate ("/%language%%country%%dialect%/test"), "/%%%/test");
 
 	KeySet ks;
 	Integer i (ks, c, Key ("/%application%/%version%/%profile%/%thread%/%module%/%manufacturer%/%type%/%family%/%model%/serial_number",
