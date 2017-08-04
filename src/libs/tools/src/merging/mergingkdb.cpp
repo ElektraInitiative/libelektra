@@ -37,7 +37,7 @@ int MergingKDB::get (KeySet & returned, std::string const & keyname)
 	return ret;
 }
 
-int MergingKDB::get (KeySet & returned, Key & parentKey)
+int MergingKDB::get (KeySet & returned, Key const & parentKey)
 {
 	int ret = KDB::get (returned, parentKey);
 	base = returned.dup ();
@@ -50,7 +50,7 @@ int MergingKDB::synchronize (KeySet & returned, std::string const & keyname, Thr
 	return synchronize (returned, parentKey, merger);
 }
 
-int MergingKDB::synchronize (KeySet & returned, Key & parentKey, ThreeWayMerge & merger)
+int MergingKDB::synchronize (KeySet & returned, Key const & parentKey, ThreeWayMerge & merger)
 {
 	try
 	{
