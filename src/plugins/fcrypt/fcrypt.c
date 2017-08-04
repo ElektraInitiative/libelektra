@@ -186,7 +186,11 @@ static int fcryptGpgCallAndCleanup (Key * parentKey, KeySet * pluginConfig, char
 	{
 		// if anything went wrong above the temporary file is shredded and removed
 		shredTemporaryFile (tmpFileFd, parentKey);
-		unlink (tmpFile);
+		if (unlink (tmpFile))
+		{
+			ELEKTRA_ADD_WARNINGF (ELEKTRA_WARNING_FCRYPT_UNLINK, parentKey, "Affected file: %s, error description: %s", tmpFile,
+					      strerror (errno));
+		}
 	}
 
 	if (parentKeyFd >= 0 && close (parentKeyFd))
@@ -416,7 +420,11 @@ static int fcryptDecrypt (KeySet * pluginConfig, Key * parentKey, fcryptState * 
 	{
 		// if anything went wrong above the temporary file is shredded and removed
 		shredTemporaryFile (tmpFileFd, parentKey);
-		unlink (tmpFile);
+		if (unlink (tmpFile))
+		{
+			ELEKTRA_ADD_WARNINGF (ELEKTRA_WARNING_FCRYPT_UNLINK, parentKey, "Affected file: %s, error description: %s", tmpFile,
+					      strerror (errno));
+		}
 		if (close (tmpFileFd))
 		{
 			ELEKTRA_ADD_WARNINGF (ELEKTRA_WARNING_FCRYPT_CLOSE, parentKey, "%s", strerror (errno));
@@ -526,7 +534,11 @@ int ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME, get) (Plugin * handle, KeySet 
 				ELEKTRA_ADD_WARNINGF (ELEKTRA_WARNING_FCRYPT_CLOSE, parentKey, "%s", strerror (errno));
 			}
 			s->tmpFileFd = -1;
-			unlink (s->tmpFilePath);
+			if (unlink (s->tmpFilePath))
+			{
+				ELEKTRA_ADD_WARNINGF (ELEKTRA_WARNING_FCRYPT_UNLINK, parentKey, "Affected file: %s, error description: %s",
+						      s->tmpFilePath, strerror (errno));
+			}
 			elektraFree (s->tmpFilePath);
 			s->tmpFilePath = NULL;
 		}

@@ -1111,3 +1111,10 @@ severity:warning
 ingroup:plugin
 macro:FCRYPT_CLOSE
 module:fcrypt
+
+number:180
+description:Failed to unlink a temporary file. WARNING: unencrypted data may leak! Please try to delete the file manually.
+severity:warning
+ingroup:plugin
+macro:FCRYPT_UNLINK
+module:fcrypt
