@@ -39,18 +39,18 @@ Find out which file you modified:
 ## Comments
 
 The ini plugin supports the use of comments. Comment lines start with
-a ';' or a '#'. Comments are put into the comment metadata of the key 
+a ';' or a '#'. Comments are put into the comment metadata of the key
 following the comment. This can be either a section key or a normal key.
-When creating new comments (e.g. via `kdb setmeta`) you can prefix 
-your comment with the comment indicator for your choice (';' or '#') 
+When creating new comments (e.g. via `kdb setmeta`) you can prefix
+your comment with the comment indicator for your choice (';' or '#')
 which will be used when writing the comment to the file. If the comment
 is not prefixed with a comment indicator, the ini plugin will use the
-character defined by the `comment` option, or default to '#'.  
+character defined by the `comment` option, or default to '#'.
 
 ## Multi-Line Support
 
 The ini plugin supports multiline ini values. Continuations of previous values
-have to start with whitespace characters. 
+have to start with whitespace characters.
 
 For example consider the following ini file:
 
@@ -61,7 +61,7 @@ key2 = value2
     lines
 ```
 
-This would result in a KeySet containing two keys. One key named `key1` with the value `value1` and 
+This would result in a KeySet containing two keys. One key named `key1` with the value `value1` and
 another key named `key2` with the value `value2\nwith continuation\nlines`.
 
 By default this feature is enabled.
@@ -128,7 +128,7 @@ b = ab
 ### Merge Sections
 
 The ini plugin supports merging duplicated section entries when the `mergesections` config is set.
-The keys will be appended to the first occurrence of the section key. 
+The keys will be appended to the first occurrence of the section key.
 
 ## Ordering
 
