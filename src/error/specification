@@ -1104,3 +1104,10 @@ severity:error
 ingroup:plugin
 macro:FCRYPT_STATE
 module:fcrypt
+
+number:179
+description:Failed to close a file descriptor.
+severity:warning
+ingroup:plugin
+macro:FCRYPT_CLOSE
+module:fcrypt

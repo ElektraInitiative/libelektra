@@ -189,11 +189,14 @@ static int fcryptGpgCallAndCleanup (Key * parentKey, KeySet * pluginConfig, char
 		unlink (tmpFile);
 	}
 
-	if (parentKeyFd >= 0)
+	if (parentKeyFd >= 0 && close (parentKeyFd))
 	{
-		close (parentKeyFd);
+		ELEKTRA_ADD_WARNINGF (ELEKTRA_WARNING_FCRYPT_CLOSE, parentKey, "%s", strerror (errno));
 	}
-	close (tmpFileFd);
+	if (close (tmpFileFd))
+	{
+		ELEKTRA_ADD_WARNINGF (ELEKTRA_WARNING_FCRYPT_CLOSE, parentKey, "%s", strerror (errno));
+	}
 	elektraFree (tmpFile);
 	return result;
 }
@@ -414,7 +417,10 @@ static int fcryptDecrypt (KeySet * pluginConfig, Key * parentKey, fcryptState * 
 		// if anything went wrong above the temporary file is shredded and removed
 		shredTemporaryFile (tmpFileFd, parentKey);
 		unlink (tmpFile);
-		close (tmpFileFd);
+		if (close (tmpFileFd))
+		{
+			ELEKTRA_ADD_WARNINGF (ELEKTRA_WARNING_FCRYPT_CLOSE, parentKey, "%s", strerror (errno));
+		}
 		elektraFree (tmpFile);
 	}
 	return result;
@@ -453,9 +459,9 @@ int ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME, close) (Plugin * handle, KeySe
 	fcryptState * s = (fcryptState *)elektraPluginGetData (handle);
 	if (s)
 	{
-		if (s->tmpFileFd > 0)
+		if (s->tmpFileFd > 0 && close (s->tmpFileFd))
 		{
-			close (s->tmpFileFd);
+			ELEKTRA_ADD_WARNINGF (ELEKTRA_WARNING_FCRYPT_CLOSE, parentKey, "%s", strerror (errno));
 		}
 		if (s->tmpFilePath)
 		{
@@ -515,7 +521,10 @@ int ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME, get) (Plugin * handle, KeySet 
 		if (s->tmpFileFd > 0)
 		{
 			shredTemporaryFile (s->tmpFileFd, parentKey);
-			close (s->tmpFileFd);
+			if (close (s->tmpFileFd))
+			{
+				ELEKTRA_ADD_WARNINGF (ELEKTRA_WARNING_FCRYPT_CLOSE, parentKey, "%s", strerror (errno));
+			}
 			s->tmpFileFd = -1;
 			unlink (s->tmpFilePath);
 			elektraFree (s->tmpFilePath);
@@ -553,10 +562,16 @@ int ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME, set) (Plugin * handle, KeySet 
 	if (fsync (fd) == -1)
 	{
 		ELEKTRA_SET_ERRORF (89, parentKey, "Could not fsync config file %s because %s", configFile, strerror (errno));
-		close (fd);
+		if (close (fd))
+		{
+			ELEKTRA_ADD_WARNINGF (ELEKTRA_WARNING_FCRYPT_CLOSE, parentKey, "%s", strerror (errno));
+		}
 		return -1;
 	}
-	close (fd);
+	if (close (fd))
+	{
+		ELEKTRA_ADD_WARNINGF (ELEKTRA_WARNING_FCRYPT_CLOSE, parentKey, "%s", strerror (errno));
+	}
 	return 1;
 }
 
