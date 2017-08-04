@@ -12,7 +12,7 @@
 
 This plugin allows read/write of INI files. INI files consist of simple
 key value pairs of the form `key = value`. Additionally keys can be
-categorised into different sections. Sections must be enclosed in "[]",
+categorized into different sections. Sections must be enclosed in "[]",
 for example "[section]". Each section is converted into a directory key
 (without value) and keys below the section are located below the section
 key. If the same section appears multiple times, the keys of all sections
