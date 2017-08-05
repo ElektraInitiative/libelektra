@@ -13,6 +13,8 @@
 
 #include <kdbhelper.h>
 
+#include <string>
+
 // -- Functions ----------------------------------------------------------------------------------------------------------------------------
 
 using namespace ckdb;
@@ -40,7 +42,7 @@ static KeySet * contractYamlCpp (void)
 /** @see elektraDocGet */
 int elektraYamlcppGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
 {
-	if (!elektraStrCmp (keyName (parentKey), "system/elektra/modules/yamlcpp"))
+	if (std::string (keyName (parentKey)) == "system/elektra/modules/yamlcpp")
 	{
 		KeySet * contract = contractYamlCpp ();
 		ksAppend (returned, contract);
