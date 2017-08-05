@@ -111,6 +111,23 @@ static int inTestMode (KeySet * conf)
 }
 
 /**
+ * @brief lookup if the text mode is disabled in the plugin config.
+ * It is enabled per default.
+ * @param conf KeySet holding the plugin configuration.
+ * @retval 0 text mode is not enabled
+ * @retval 1 text mode is enabled
+ */
+static int inTextMode (KeySet * conf)
+{
+	Key * k = ksLookupByName (conf, ELEKTRA_FCRYPT_CONFIG_TEXTMODE, 0);
+	if (k && !strcmp (keyString (k), "0"))
+	{
+		return 0;
+	}
+	return 1;
+}
+
+/**
  * @brief Read number of total GPG recipient keys from the plugin configuration.
  * @param config holds the plugin configuration
  * @param keyName holds the name of the root key to look up
@@ -169,14 +186,21 @@ static int fcryptGpgCallAndCleanup (Key * parentKey, KeySet * pluginConfig, char
 	{
 		// if anything went wrong above the temporary file is shredded and removed
 		shredTemporaryFile (tmpFileFd, parentKey);
-		unlink (tmpFile);
+		if (unlink (tmpFile))
+		{
+			ELEKTRA_ADD_WARNINGF (ELEKTRA_WARNING_FCRYPT_UNLINK, parentKey, "Affected file: %s, error description: %s", tmpFile,
+					      strerror (errno));
+		}
 	}
 
-	if (parentKeyFd >= 0)
+	if (parentKeyFd >= 0 && close (parentKeyFd))
 	{
-		close (parentKeyFd);
+		ELEKTRA_ADD_WARNINGF (ELEKTRA_WARNING_FCRYPT_CLOSE, parentKey, "%s", strerror (errno));
 	}
-	close (tmpFileFd);
+	if (close (tmpFileFd))
+	{
+		ELEKTRA_ADD_WARNINGF (ELEKTRA_WARNING_FCRYPT_CLOSE, parentKey, "%s", strerror (errno));
+	}
 	elektraFree (tmpFile);
 	return result;
 }
@@ -212,6 +236,7 @@ static int fcryptEncrypt (KeySet * pluginConfig, Key * parentKey)
 	}
 
 	const size_t testMode = inTestMode (pluginConfig);
+	const size_t textMode = inTextMode (pluginConfig);
 
 	// prepare argument vector for gpg call
 	// 7 static arguments (magic number below) are:
@@ -222,7 +247,7 @@ static int fcryptEncrypt (KeySet * pluginConfig, Key * parentKey)
 	//   5. yes
 	//   6. file to be encrypted
 	//   7. NULL terminator
-	int argc = 7 + (2 * recipientCount) + (2 * signatureCount) + (2 * testMode) + (recipientCount > 0 ? 1 : 0) +
+	int argc = 7 + (2 * recipientCount) + (2 * signatureCount) + (2 * testMode) + textMode + (recipientCount > 0 ? 1 : 0) +
 		   (signatureCount > 0 ? 1 : 0);
 	kdb_unsigned_short_t i = 0;
 	char * argv[argc];
@@ -292,17 +317,33 @@ static int fcryptEncrypt (KeySet * pluginConfig, Key * parentKey)
 		argv[i++] = "always";
 	}
 
+	// ASCII armor in text mode
+	if (textMode)
+	{
+		argv[i++] = "--armor";
+	}
+
 	// prepare rest of the argument vector
 	if (recipientCount > 0)
 	{
 		// encrypt the file
 		argv[i++] = "-e";
 	}
+
 	if (signatureCount > 0)
 	{
-		// sign the file
-		argv[i++] = "-s";
+		if (textMode && recipientCount == 0)
+		{
+			// clear-sign the file
+			argv[i++] = "--clearsign";
+		}
+		else
+		{
+			// sign the file
+			argv[i++] = "-s";
+		}
 	}
+
 	argv[i++] = (char *)keyString (parentKey);
 	argv[i++] = NULL;
 
@@ -379,8 +420,15 @@ static int fcryptDecrypt (KeySet * pluginConfig, Key * parentKey, fcryptState * 
 	{
 		// if anything went wrong above the temporary file is shredded and removed
 		shredTemporaryFile (tmpFileFd, parentKey);
-		unlink (tmpFile);
-		close (tmpFileFd);
+		if (unlink (tmpFile))
+		{
+			ELEKTRA_ADD_WARNINGF (ELEKTRA_WARNING_FCRYPT_UNLINK, parentKey, "Affected file: %s, error description: %s", tmpFile,
+					      strerror (errno));
+		}
+		if (close (tmpFileFd))
+		{
+			ELEKTRA_ADD_WARNINGF (ELEKTRA_WARNING_FCRYPT_CLOSE, parentKey, "%s", strerror (errno));
+		}
 		elektraFree (tmpFile);
 	}
 	return result;
@@ -419,9 +467,9 @@ int ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME, close) (Plugin * handle, KeySe
 	fcryptState * s = (fcryptState *)elektraPluginGetData (handle);
 	if (s)
 	{
-		if (s->tmpFileFd > 0)
+		if (s->tmpFileFd > 0 && close (s->tmpFileFd))
 		{
-			close (s->tmpFileFd);
+			ELEKTRA_ADD_WARNINGF (ELEKTRA_WARNING_FCRYPT_CLOSE, parentKey, "%s", strerror (errno));
 		}
 		if (s->tmpFilePath)
 		{
@@ -481,9 +529,16 @@ int ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME, get) (Plugin * handle, KeySet 
 		if (s->tmpFileFd > 0)
 		{
 			shredTemporaryFile (s->tmpFileFd, parentKey);
-			close (s->tmpFileFd);
+			if (close (s->tmpFileFd))
+			{
+				ELEKTRA_ADD_WARNINGF (ELEKTRA_WARNING_FCRYPT_CLOSE, parentKey, "%s", strerror (errno));
+			}
 			s->tmpFileFd = -1;
-			unlink (s->tmpFilePath);
+			if (unlink (s->tmpFilePath))
+			{
+				ELEKTRA_ADD_WARNINGF (ELEKTRA_WARNING_FCRYPT_UNLINK, parentKey, "Affected file: %s, error description: %s",
+						      s->tmpFilePath, strerror (errno));
+			}
 			elektraFree (s->tmpFilePath);
 			s->tmpFilePath = NULL;
 		}
@@ -519,10 +574,16 @@ int ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME, set) (Plugin * handle, KeySet 
 	if (fsync (fd) == -1)
 	{
 		ELEKTRA_SET_ERRORF (89, parentKey, "Could not fsync config file %s because %s", configFile, strerror (errno));
-		close (fd);
+		if (close (fd))
+		{
+			ELEKTRA_ADD_WARNINGF (ELEKTRA_WARNING_FCRYPT_CLOSE, parentKey, "%s", strerror (errno));
+		}
 		return -1;
 	}
-	close (fd);
+	if (close (fd))
+	{
+		ELEKTRA_ADD_WARNINGF (ELEKTRA_WARNING_FCRYPT_CLOSE, parentKey, "%s", strerror (errno));
+	}
 	return 1;
 }
 

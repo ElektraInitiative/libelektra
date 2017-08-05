@@ -66,15 +66,15 @@ Please refer to [crypto](../crypto/).
 
 You can mount the plugin with encryption enabled like this:
 
-	kdb mount test.ecf /t fcrypt encrypt/key=DDEBEF9EE2DC931701338212DAF635B17F230E8D
+	kdb mount test.ecf /t fcrypt "encrypt/key=DDEBEF9EE2DC931701338212DAF635B17F230E8D"
 
 If you only want to sign the configuration file, you can mount the plugin like this:
 
-	kdb mount test.ecf /t fcrypt sign/key=DDEBEF9EE2DC931701338212DAF635B17F230E8D
+	kdb mount test.ecf /t fcrypt "sign/key=DDEBEF9EE2DC931701338212DAF635B17F230E8D"
 
 Both options `encrypt/key` and `sign/key` can be combined:
 
-	kdb mount test.ecf /t fcrypt encrypt/key=DDEBEF9EE2DC931701338212DAF635B17F230E8D sign/key=DDEBEF9EE2DC931701338212DAF635B17F230E8D
+	kdb mount test.ecf /t fcrypt "encrypt/key=DDEBEF9EE2DC931701338212DAF635B17F230E8D,sign/key=DDEBEF9EE2DC931701338212DAF635B17F230E8D"
 
 If you create a key under `/t`
 
@@ -110,3 +110,12 @@ However, you can simply display the plain text content of the file by using GPG:
 ### GPG Configuration
 
 The GPG Configuration is described in [crypto](../crypto/).
+
+### Textmode
+
+`fcrypt` operates in textmode per default. In textmode `fcrypt` uses the `--armor` option of GPG, thus the
+output of `fcrypt` is ASCII armored. If no encryption key is provided (i.e. only signature is requested)
+`fcrypt` uses the `--clearsign` option of GPG.
+
+Textmode can be disabled by setting `fcrypt/textmode` to `0` in the plugin configuration.
+
