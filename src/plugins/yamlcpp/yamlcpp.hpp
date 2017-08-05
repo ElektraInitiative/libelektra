@@ -12,9 +12,14 @@
 
 #include <kdbplugin.h>
 
+using namespace ckdb;
+extern "C" {
+
 int elektraYamlcppGet (Plugin * handle, KeySet * ks, Key * parentKey);
 int elektraYamlcppSet (Plugin * handle, KeySet * ks, Key * parentKey);
 
 Plugin * ELEKTRA_PLUGIN_EXPORT (yamlcpp);
+
+} // end extern "C"
 
 #endif

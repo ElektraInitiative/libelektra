@@ -9,11 +9,14 @@
 
 // -- Imports ------------------------------------------------------------------------------------------------------------------------------
 
-#include "yamlcpp.h"
+#include "yamlcpp.hpp"
 
 #include <kdbhelper.h>
 
 // -- Functions ----------------------------------------------------------------------------------------------------------------------------
+
+using namespace ckdb;
+extern "C" {
 
 /**
  * @brief This function returns a key set containing the contract of this plugin.
@@ -60,3 +63,5 @@ Plugin * ELEKTRA_PLUGIN_EXPORT (yamlcpp)
 	return elektraPluginExport ("yamlcpp", ELEKTRA_PLUGIN_GET, &elektraYamlcppGet, ELEKTRA_PLUGIN_SET, &elektraYamlcppSet,
 				    ELEKTRA_PLUGIN_END);
 }
+
+} // end extern "C"

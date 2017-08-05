@@ -1,8 +1,9 @@
 include (LibAddMacros)
 
 add_plugin (yamlcpp
-	SOURCES
-		yamlcpp.h
-		yamlcpp.c
+	CPP
 	ADD_TEST
+	SOURCES
+		yamlcpp.hpp
+		yamlcpp.cpp
 	)
