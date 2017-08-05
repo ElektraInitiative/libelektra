@@ -30,6 +30,35 @@ distinguish-able style. It looks like:
         }
     }
 
+## Example
+
+```sh
+# Mount Tcl plugin to namespace `user/examples/tcl`
+kdb mount config.tcl user/examples/tcl tcl
+
+# Add a key value pair to the database
+kdb set user/examples/tcl/key value
+# The Tcl plugin also supports metadata
+kdb setmeta user/examples/tcl/key comment "This key contains example data."
+# A known limitation of the plugin is that it discards whitespace characters
+kdb getmeta user/examples/tcl/key comment
+#> Thiskeycontainsexampledata.
+
+kdb export user/examples/tcl tcl
+#> {
+#> 	{
+#> 		user/examples/tcl/key = value
+#> 		{
+#> 			comment = Thiskeycontainsexampledata.
+#> 		}
+#> 	}
+#> }
+
+# Undo modifications
+kdb rm -r user/examples/tcl
+kdb umount user/examples/tcl
+```
+
 ## Limitations
 
 - empty and null keys not supported

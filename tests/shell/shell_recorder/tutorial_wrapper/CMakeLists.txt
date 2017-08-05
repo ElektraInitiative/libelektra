@@ -32,6 +32,7 @@ add_plugin_shell_test (mini)
 add_plugin_shell_test (mozprefs)
 add_plugin_shell_test (xerces)
 add_plugin_shell_test (range)
+add_plugin_shell_test (tcl)
 add_plugin_shell_test (type)
 add_plugin_shell_test (yaml)
 
