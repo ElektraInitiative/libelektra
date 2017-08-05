@@ -90,6 +90,7 @@ Remove/Refactor/Rename obsolete/not needed methods:
 - have consistent instantiate+backreferencing syntax for both backend+global mounting
    (system/elektra/mountpoints and system/elektra/globalplugins)
 - remove legacy bootstrapping: always use KDB_FILE_INIT (elektra.ecf)
+- recursive backend=plugin (separate commit method)
 
 
 == Methods ==
@@ -103,10 +104,11 @@ all exported methods of elektra need to be:
 	having test cases for error cases
 	otherwise fix or mark it obsolete
 
-
 == Conventions ==
 
 conventions should be used everywhere
+
+Encode numbers /#222/ by adding _. (so not only convention)? (only unescaped name has #__)
 
 warnings should have array conventions #0, #_10...
 	also allow many errors? (for many validation/parse errors)
