@@ -5,11 +5,7 @@
 - infos/needs =
 - infos/recommends =
 - infos/placements = postgetstorage presetstorage
-#ifdef ELEKTRA_CRYPTO_API_GCRYPT
 - infos/status = unittest configurable memleak experimental unfinished discouraged
-#else
-- infos/status = unittest configurable memleak experimental unfinished discouraged
-#endif
 - infos/metadata = crypto/encrypt
 - infos/description = Cryptographic operations
 
@@ -66,7 +62,7 @@ If no such configuration is provided, the plugin will look at the PATH environme
 
 ## How to compile
 
-The following compile variants are available:
+The following compilation variants are available:
 
 1. crypto_gcrypt
 2. crypto_openssl
