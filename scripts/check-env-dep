@@ -5,7 +5,7 @@ IFS="$(printf '\n+')"
 
 generate_random_string()
 {
-	cat /dev/urandom | tr -dc 'a-z' | fold -w 6 | head -n 1
+	cat /dev/urandom | LC_ALL=C tr -dc 'a-z' | fold -w 6 | head -n 1
 }
 
 if [ -z "$KDB" ];
