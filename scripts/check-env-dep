@@ -33,8 +33,8 @@ do
 	ORIG_VALUE="$(echo "$env" | cut -d '=' -f2- 2>/dev/null)"
 	NEW_VALUE=$(generate_random_string)
 	export "$NAME"="$NEW_VALUE" > /dev/null 2>&1
-	NEW_PATHS="$($KDB mount-list-all-files 2>/dev/null)"	
-	DIFF="$(comm -3 <(echo "$ORIG_PATHS" | sort 2>/dev/null) <(echo "$NEW_PATHS" | sort 2>/dev/null))"	
+	NEW_PATHS="$($KDB mount-list-all-files 2>/dev/null)"
+	DIFF="$(comm -3 <(echo "$ORIG_PATHS" | sort 2>/dev/null) <(echo "$NEW_PATHS" | sort 2>/dev/null))"
 	if [ ! -z "$DIFF" ];
 	then
 		echo "$NAME influences $DIFF"
