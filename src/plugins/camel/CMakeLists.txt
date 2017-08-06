@@ -7,4 +7,5 @@ add_plugin (camel
 	LINK_ELEKTRA
 		elektra-ease
 	ADD_TEST
+	INSTALL_TEST_DATA
 	)
