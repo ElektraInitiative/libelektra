@@ -38,6 +38,7 @@ if (NOT (${CMAKE_SYSTEM_NAME} MATCHES "Linux" AND ENABLE_ASAN))
 	add_plugin_shell_test (multifile)
 	add_plugin_shell_test (mini)
 	add_plugin_shell_test (tcl)
+	add_plugin_shell_test (yamlcpp)
 endif (NOT (${CMAKE_SYSTEM_NAME} MATCHES "Linux" AND ENABLE_ASAN))
 
 # Only works with super user privileges, since it writes to `/etc/hosts`:
