@@ -57,6 +57,7 @@ before_install:
       else
         # Linking `crypto_botan` using `gcc` fails on macOS
         brew install botan
+        brew install yaml-cpp
       fi
       brew install augeas
       brew install checkbashisms
@@ -81,6 +82,7 @@ before_install:
       sudo apt-get -qq update
       sudo apt-get install clang-format-3.8
       sudo apt-get install ninja-build
+      sudo apt-get install libyaml-cpp-dev
     fi
 
 #
