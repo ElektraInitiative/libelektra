@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 OLD_IFS="$IFS"
 IFS="$(printf '\n+')"
