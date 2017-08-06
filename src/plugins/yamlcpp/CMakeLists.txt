@@ -1,11 +1,10 @@
 include (LibAddMacros)
 
 if (DEPENDENCY_PHASE)
-	find_package(PkgConfig REQUIRED)
-	pkg_check_modules(YAML_CPP QUIET yaml-cpp>=0.5)
-	if (NOT YAML_CPP_FOUND)
-		remove_plugin (yamlcpp "yaml-cpp (version 0.5 or newer) was not found")
-	endif (NOT YAML_CPP_FOUND)
+	find_package(yaml-cpp QUIET 0.5)
+	if (NOT YAML-CPP_FOUND)
+		remove_plugin (yamlcpp "yaml-cpp (version 0.5) was not found")
+	endif (NOT YAML-CPP_FOUND)
 endif (DEPENDENCY_PHASE)
 
 add_plugin (yamlcpp
@@ -15,7 +14,7 @@ add_plugin (yamlcpp
 		yamlcpp.hpp
 		yamlcpp.cpp
 	INCLUDE_DIRECTORIES
-		${YAML_CPP_INCLUDEDIR}/yaml-cpp
+		${YAML-CPP_INCLUDE_DIR}
 	LINK_LIBRARIES
-		${YAML_CPP_LIBRARIES}
+		${YAML-CPP_LIBRARIES}
 	)
