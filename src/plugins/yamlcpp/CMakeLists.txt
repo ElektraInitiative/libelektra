@@ -1,5 +1,3 @@
-include (LibAddMacros)
-
 if (DEPENDENCY_PHASE)
 	find_package(yaml-cpp QUIET 0.5)
 	if (NOT YAML-CPP_FOUND)
