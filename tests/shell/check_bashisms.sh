@@ -9,7 +9,9 @@ command -v checkbashisms >/dev/null 2>&1 || { echo "checkbashisms command needed
 cd "@CMAKE_SOURCE_DIR@"
 
 # this way we also check subdirectories
-scripts=$(find scripts/ -type f | xargs)
+# The script `check-env-dep` uses process substitution which is **not** a standard `sh` feature!
+# See also: https://unix.stackexchange.com/questions/151925
+scripts=$(find -E scripts/ -type f -not -regex '.+(check-env-dep|\.(cmake|fish|in|md|txt))$' | xargs)
 checkbashisms $scripts
 ret=$?
 # 2 means skipped file, e.g. README.md, that is fine
