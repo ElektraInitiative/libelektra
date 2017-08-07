@@ -1,11 +1,11 @@
-- infos = Information about the yaml plugin is in keys below
+- infos = Information about the camel plugin is in keys below
 - infos/author = René Schwaiger <sanssecours@me.com>
 - infos/licence = BSD
 - infos/needs =
 - infos/provides =
 - infos/recommends =
 - infos/placements =
-- infos/status = maintained preview experimental unfinished concept discouraged
+- infos/status = maintained preview experimental unfinished concept discouraged shelltest unittest
 - infos/metadata =
 - infos/description = A very basic plugin that reads and writes a very small subset of YAML
 
@@ -18,28 +18,28 @@ This plugin reads configuration data specified in a **very limited** subset of  
 ### Basic Usage
 
 ```sh
-# Mount yaml plugin to cascading namespace `/examples/yaml`
-kdb mount config.yaml /examples/yaml yaml
+# Mount yaml plugin to cascading namespace `/examples/camel`
+kdb mount config.yaml /examples/camel camel
 
-kdb set /examples/yaml/key value
-kdb get /examples/yaml/key
+kdb set /examples/camel/key value
+kdb get /examples/camel/key
 #> value
 
-kdb set /examples/yaml/kittens "warm & fuzzy"
-kdb get /examples/yaml/kittens
+kdb set /examples/camel/kittens "warm & fuzzy"
+kdb get /examples/camel/kittens
 #> warm & fuzzy
 
-kdb set /examples/yaml/empty ""
+kdb set /examples/camel/empty ""
 
-kdb export /examples/yaml yaml
+kdb export /examples/camel camel
 #> {
 #>   "empty" : ""
 #> , "key" : "value"
 #> , "kittens" : "warm & fuzzy"
 #> }
 
-kdb rm -r /examples/yaml
-kdb umount /examples/yaml
+kdb rm -r /examples/camel
+kdb umount /examples/camel
 ```
 
 ## Limitations

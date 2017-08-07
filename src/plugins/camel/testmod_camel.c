@@ -1,7 +1,7 @@
 /**
  * @file
  *
- * @brief Tests for yaml plugin
+ * @brief Tests for camel plugin
  *
  * @copyright BSD License (see doc/LICENSE.md or https://www.libelektra.org)
  *
@@ -26,9 +26,9 @@ static void test_basics (void)
 {
 	printf ("• Test basic functionality of plugin\n");
 
-	Key * parentKey = keyNew ("system/elektra/modules/yaml", KEY_END);
+	Key * parentKey = keyNew ("system/elektra/modules/camel", KEY_END);
 	KeySet * conf = ksNew (0, KS_END);
-	PLUGIN_OPEN ("yaml");
+	PLUGIN_OPEN ("camel");
 
 	KeySet * ks = ksNew (0, KS_END);
 
@@ -41,13 +41,13 @@ static void test_basics (void)
 
 static void test_get (void)
 {
-	char const * const fileName = "yaml/simple.yaml";
+	char const * const fileName = "camel/simple.yaml";
 	printf ("• Parse file “%s”\n", fileName);
 
-	char const * const prefix = "user/yaml/tests/read";
+	char const * const prefix = "user/camel/tests/read";
 	Key * parentKey = keyNew (prefix, KEY_VALUE, srcdir_file (fileName), KEY_END);
 	KeySet * conf = ksNew (0, KS_END);
-	PLUGIN_OPEN ("yaml");
+	PLUGIN_OPEN ("camel");
 
 	KeySet * keySet = ksNew (0, KS_END);
 
@@ -86,8 +86,8 @@ static void test_get (void)
 
 int main (int argc, char ** argv)
 {
-	printf ("🐪 YAML Tests\n");
-	printf ("==============\n\n");
+	printf ("🐪 Camel Tests\n");
+	printf ("===============\n\n");
 
 	init (argc, argv);
 

@@ -18,7 +18,7 @@ tags = {	'configure': "This script is used for the build configuration",
 		'benchmark': "This script runs benchmarks",
 		'debian': "Special script for debian system"}
 
-# No changes below this line necassary!
+# No changes below this line necessary!
 
 from itertools import islice
 import os

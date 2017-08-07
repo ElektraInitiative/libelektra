@@ -192,7 +192,7 @@ static void test_simple_write (void)
 
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 1, "call to kdbSet was not successful");
 
-	compare_files ("xerces/escaping.xml");
+	compare_files (srcdir_file ("xerces/escaping.xml"));
 	// Its also another good deserialization test
 	Key * resultParentKey = keyNew ("/sw/elektra/tests/xerces", KEY_VALUE, srcdir_file ("xerces/escaping.xml"), KEY_END);
 	KeySet * result = ksNew (2, KS_END);

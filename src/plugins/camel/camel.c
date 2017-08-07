@@ -1,7 +1,7 @@
 /**
  * @file
  *
- * @brief Source for yaml plugin
+ * @brief Source for camel plugin
  *
  * @copyright BSD License (see doc/LICENSE.md or https://www.libelektra.org)
  *
@@ -9,7 +9,7 @@
 
 /* -- Imports --------------------------------------------------------------------------------------------------------------------------- */
 
-#include "yaml.h"
+#include "camel.h"
 
 #include <assert.h>
 #include <stdbool.h>
@@ -686,14 +686,14 @@ static int parseFile (KeySet * returned ELEKTRA_UNUSED, Key * parentKey)
  *
  * @return A contract describing the functionality of this plugin.
  */
-static KeySet * contractYaml (void)
+static KeySet * contractCamel (void)
 {
-	return ksNew (30, keyNew ("system/elektra/modules/yaml", KEY_VALUE, "yaml plugin waits for your orders", KEY_END),
-		      keyNew ("system/elektra/modules/yaml/exports", KEY_END),
-		      keyNew ("system/elektra/modules/yaml/exports/get", KEY_FUNC, elektraYamlGet, KEY_END),
-		      keyNew ("system/elektra/modules/yaml/exports/set", KEY_FUNC, elektraYamlSet, KEY_END),
-#include ELEKTRA_README (yaml)
-		      keyNew ("system/elektra/modules/yaml/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
+	return ksNew (30, keyNew ("system/elektra/modules/camel", KEY_VALUE, "camel plugin waits for your orders", KEY_END),
+		      keyNew ("system/elektra/modules/camel/exports", KEY_END),
+		      keyNew ("system/elektra/modules/camel/exports/get", KEY_FUNC, elektraCamelGet, KEY_END),
+		      keyNew ("system/elektra/modules/camel/exports/set", KEY_FUNC, elektraCamelSet, KEY_END),
+#include ELEKTRA_README (camel)
+		      keyNew ("system/elektra/modules/camel/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 }
 
 /**
@@ -731,12 +731,12 @@ static int writeFile (FILE * file, KeySet * keySet, Key * parentKey)
 // ====================
 
 /** @see elektraDocGet */
-int elektraYamlGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
+int elektraCamelGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
 {
-	if (!elektraStrCmp (keyName (parentKey), "system/elektra/modules/yaml"))
+	if (!elektraStrCmp (keyName (parentKey), "system/elektra/modules/camel"))
 	{
 		ELEKTRA_LOG_DEBUG ("Retrieve plugin contract");
-		KeySet * contract = contractYaml ();
+		KeySet * contract = contractCamel ();
 		ksAppend (returned, contract);
 		ksDel (contract);
 
@@ -747,7 +747,7 @@ int elektraYamlGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 }
 
 /** @see elektraDocSet */
-int elektraYamlSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
+int elektraCamelSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
 {
 	ELEKTRA_LOG ("Write configuration data");
 	int errorNumber = errno;
@@ -764,7 +764,8 @@ int elektraYamlSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UN
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }
 
-Plugin * ELEKTRA_PLUGIN_EXPORT (yaml)
+Plugin * ELEKTRA_PLUGIN_EXPORT (camel)
 {
-	return elektraPluginExport ("yaml", ELEKTRA_PLUGIN_GET, &elektraYamlGet, ELEKTRA_PLUGIN_SET, &elektraYamlSet, ELEKTRA_PLUGIN_END);
+	return elektraPluginExport ("camel", ELEKTRA_PLUGIN_GET, &elektraCamelGet, ELEKTRA_PLUGIN_SET, &elektraCamelSet,
+				    ELEKTRA_PLUGIN_END);
 }

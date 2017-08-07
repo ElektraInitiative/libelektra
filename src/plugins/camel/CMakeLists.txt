@@ -1,10 +1,11 @@
 include (LibAddMacros)
 
-add_plugin (yaml
+add_plugin (camel
 	SOURCES
-		yaml.h
-		yaml.c
+		camel.h
+		camel.c
 	LINK_ELEKTRA
 		elektra-ease
 	ADD_TEST
+	INSTALL_TEST_DATA
 	)
