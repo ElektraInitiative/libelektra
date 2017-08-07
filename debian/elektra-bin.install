@@ -2,6 +2,13 @@ usr/bin/kdb
 usr/bin/kdb-full
 usr/lib/*/libelektratools.so
 usr/lib/*/libelektratools.so*
+usr/lib/*/elektra/tool_exec/backup
+usr/lib/*/elektra/tool_exec/restore
+usr/lib/*/elektra/tool_exec/change-resolver-symlink
+usr/lib/*/elektra/tool_exec/change-storage-symlink
+usr/lib/*/elektra/tool_exec/check-env-dep
+usr/lib/*/elektra/tool_exec/mount-list-all-files
+usr/lib/*/elektra/tool_exec/mountpoint-info
 usr/lib/*/elektra/tool_exec/benchmark-createtree
 usr/lib/*/elektra/tool_exec/configure-firefox
 usr/lib/*/elektra/tool_exec/convert-fstab
@@ -70,3 +77,10 @@ usr/share/man/man1/kdb-umount.1
 usr/share/man/man1/kdb-vset.1
 usr/share/man/man1/kdb-elektrify-getenv.1
 usr/share/man/man1/kdb-introduction.1
+usr/share/man/man1/kdb-backup.1
+usr/share/man/man1/kdb-restore.1
+usr/share/man/man1/kdb-change-resolver-symlink.1
+usr/share/man/man1/kdb-change-storage-symlink.1
+usr/share/man/man1/kdb-check-env-dep.1
+usr/share/man/man1/kdb-mount-list-all-files.1
+usr/share/man/man1/kdb-mountpoint-info.1
