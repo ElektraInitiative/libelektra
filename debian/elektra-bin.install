@@ -6,7 +6,6 @@ usr/lib/*/elektra/tool_exec/backup
 usr/lib/*/elektra/tool_exec/restore
 usr/lib/*/elektra/tool_exec/change-resolver-symlink
 usr/lib/*/elektra/tool_exec/change-storage-symlink
-usr/lib/*/elektra/tool_exec/check-env-dep
 usr/lib/*/elektra/tool_exec/mount-list-all-files
 usr/lib/*/elektra/tool_exec/mountpoint-info
 usr/lib/*/elektra/tool_exec/benchmark-createtree
