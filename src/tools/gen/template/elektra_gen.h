@@ -20,9 +20,9 @@ cheetahVarStartToken = $
 @for $key, $info in $parameters.iteritems()
 @if $support.type_of($info) == "enum"
 $support.enum_typedef($key, $info)
+
 @end if
 @end for
-
 /**
  * Default KeySet
  */
