@@ -4,14 +4,22 @@ from support.util import *
 
 class ElektraGenSupport(Support):
 	def normalized_key(self, key):
+		result = key
 		if key.startswith('/'):
-			return key[1:]
+			result = result[1:]
 		elif key.startswith('user/'):
-			return key[5:]
+			result = result[5:]
 		elif key.startswith('system/'):
-			return key[7:]
+			result = result[7:]
 		else:
 			raise Exception("invalid keyname '" + key + "'")
+
+		if key.endswith('/'):
+			result = result[:-1]
+		elif key.endswith('/#'):
+			result = result[:-2]
+
+		return result
 
 	def key_to_uppercase(self, key):
 		return key.upper().replace('/','_').replace('#','')
