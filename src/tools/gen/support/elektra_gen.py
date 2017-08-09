@@ -40,7 +40,7 @@ class ElektraGenSupport(Support):
 		if type in ["enum", "string", "boolean", "char", "octet", "short", "unsigned_short", "long", "unsigned_long", "long_long", "unsigned_long_long", "float", "double", "long_double"]:
 			return type
 		else:
-			raise Exception("Invalid type '" + type + "'")
+			raise Exception("Invalid type: '" + type + "'")
 
 	def kdb_type_to_tag_type(self, type):
 		result = ""
@@ -75,7 +75,7 @@ class ElektraGenSupport(Support):
 		enum_values = self.toarray(info, "check/enum")
 		for i, v in enumerate(enum_values):
 			case = prefix + "_" + v.upper()
-			result += case + " = " + str(i) + ", \n"
+			result += case + " = " + str(i) + ",\n"
 
 		result += "} " + self.enum_type(key) + ";"
 
