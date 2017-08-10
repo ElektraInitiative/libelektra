@@ -20,6 +20,12 @@ extern "C" {
 #define ELEKTRARANDMAX 2147483647
 void elektraRand (int32_t * seed);
 
+#ifdef KDBRAND_BENCHMARK
+extern int32_t elektraRandBenchmarkInitSeed;
+#endif
+
+int32_t elektraRandGetInitSeed ();
+
 #ifdef __cplusplus
 }
 }
