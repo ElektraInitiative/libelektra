@@ -384,7 +384,7 @@ int ksDel (KeySet * ks)
 int ksClear (KeySet * ks)
 {
 	ksClose (ks);
-	// ks->array empty now
+// ks->array empty now
 
 #ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
 	ks->opmphm = opmphmNew ();
