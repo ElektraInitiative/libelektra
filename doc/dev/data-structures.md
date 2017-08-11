@@ -366,33 +366,37 @@ Continue reading [with the error handling](error-handling.md).
 
 All structs are defined in [opmphm.h](/src/include/kdbopmphm.h).
 
-Generally the OPMPHM is a arbitrary function.
+The OPMPHM is not an ordinary hash map. The OPMPHM inserts all elements at once,
+this process is known as build. The OPMPHM is designed to return an index when looking up
+an element with `opmphmLookup ()`. Those indices must be known when building the OPMPHM.
+Due to the compression of the OPMPHM data structure, adding an element will most likely
+lead to a complete rebuild.
 
-The desired return value aka the order is set in `OpmphmOrder->index.p`,
+The index, also known as the order is set in `OpmphmOrder->index.p`,
 additionally a minimum and maximum order is needed in `OpmphmInit->minOrder`
 and `OpmphmInit->maxOrder`.
 
-Due to the nature of the OPMPHM all elements need to be known at build time.
-
-The Build consists of three steps.
+The build consists of three steps.
 
 ### The Initialization
 
-Set the data `OpmphmInit->data` and the String extraction function `OpmphmInit->getString`.
-Provide a good seed in `OpmphmInit->initSeed`, needed in the next step. Call the `opmphmNewOrder ()`
-and use the default order or your own order. Min and Max order also need to be set respectively.
+Set your data array `OpmphmInit->data` and the string extraction function `OpmphmInit->getString`,
+which should extract the string from a single data array entry.
+Provide a good seed in `OpmphmInit->initSeed`, needed in the next step.
+Call the `opmphmNewOrder ()` and use the default order or your own order.
+Min and Max order also need to be set respectively.
 
 The `opmphmInit ()`, transforms the orders in a internal representation, this step
 is irreversible.
 
 ### The Mapping
 
-The `opmphmMapping ()` uses your seed (the OpmphmInit->seed will be changed) and tries to map your elements
-to a fixed space, this mapping might not succeed, on duplicate just call it again.
+The `opmphmMapping ()` uses your seed (the OpmphmInit->seed will be changed) and tries to map your
+elements to a fixed space, this mapping might not succeed, on duplicate just call it again.
 
 ### The Build
 
-The `opmphmBuild ()` function calculates the final OPMPHM.
+The `opmphmBuild ()` function builds the final OPMPHM.
 
-After the build the OpmphmInit and OpmphmOrders can be securely freed.
+After the build the OpmphmInit and OpmphmOrders should be freed.
 The OPMPHM is now ready for constant lookups with the `opmphmLookup ()`.

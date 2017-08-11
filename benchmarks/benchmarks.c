@@ -86,7 +86,7 @@ static void fillUpWithRandomChars (char * name, size_t length, int32_t * seed, K
 		uint8_t ds = (*seed >> (8 * s * 2)) & 0xFF;
 		uint8_t dc = (*seed >> (8 * (s * 2 + 1))) & 0xFF;
 		// special or not
-		bool special = (ds % shape->special) == 0;
+		bool special = shape->special && (ds % shape->special) == 0;
 		// choose
 		if (special)
 		{
@@ -125,7 +125,7 @@ static void fillUpWithRandomChars (char * name, size_t length, int32_t * seed, K
  * @param shape the shape of the KeySet
  *
  */
-static void recGenerateKeySet (Key * key, size_t * size, KeySet * out, int32_t * seed, int level, size_t initSize, KeySetShape * shape)
+static void recGenerateKeySet (Key * key, size_t * size, KeySet * out, int32_t * seed, size_t level, size_t initSize, KeySetShape * shape)
 {
 	// to restore if key already in keyset
 	size_t sizeBackup = *size;
@@ -147,66 +147,64 @@ static void recGenerateKeySet (Key * key, size_t * size, KeySet * out, int32_t *
 		fprintf (stderr, "generateKeySet: Can not add KeyBaseName %s to key %s\n", subName, keyName (key));
 		exit (EXIT_FAILURE);
 	}
-	// check if add possible
-	if (ksLookup (out, key, KDB_O_NONE))
-	{
-		// key is in out, therefore restore size and start from new
-		*size = sizeBackup;
-		keyDel (key);
-		recGenerateKeySet (keyBackup, size, out, seed, level, initSize, shape);
-		return;
-	}
-	keyDel (keyBackup);
 	// determine subkeys
 	size_t subKeys = shape->shapef (initSize, *size, level, seed);
-	ELEKTRA_ASSERT (subKeys <= *size, "KsShapeFunction return value > size");
+	ELEKTRA_ASSERT (subKeys <= *size + 1, "KsShapeFunction return value > size");
 	// remove costs for subkeys
 	if (subKeys)
 	{
 		*size -= (subKeys - 1); // the cost for one is included in the size from the parent call
-		if (*size && (shape->parent == 1 || (dp % shape->parent) == 0))
+		if (*size && shape->parent && (dp % shape->parent) == 0)
 		{
 			// counts extra so costs need to be removed
 			--*size;
-			Key * keydub = keyDup (key);
-			if (!keydub)
-			{
-				fprintf (stderr, "generateKeySet: Can not dup Key %s\n", subName);
-				exit (EXIT_FAILURE);
-			}
-			if (ksAppendKey (out, keydub) < 0)
+			ssize_t sizeBefore = ksGetSize (out);
+			if (ksAppendKey (out, key) < 0)
 			{
 				fprintf (stderr, "generateKeySet: Can not add Key %s\n", subName);
 				exit (EXIT_FAILURE);
+			}
+			if (sizeBefore == ksGetSize (out))
+			{
+				// key is in out, therefore restore size and start from new
+				*size = sizeBackup;
+				keyDel (key);
+				recGenerateKeySet (keyBackup, size, out, seed, level, initSize, shape);
+				return;
 			}
 		}
 	}
 	else
 	{
 		// no size decrement need because the costs where removed before
+		ssize_t sizeBefore = ksGetSize (out);
 		if (ksAppendKey (out, key) < 0)
 		{
 			fprintf (stderr, "generateKeySet: Can not add Key %s\n", subName);
 			exit (EXIT_FAILURE);
 		}
+		if (sizeBefore == ksGetSize (out))
+		{
+			// key is in out, therefore restore size and start from new
+			*size = sizeBackup;
+			keyDel (key);
+			recGenerateKeySet (keyBackup, size, out, seed, level, initSize, shape);
+			return;
+		}
 	}
+	keyDel (keyBackup);
+	++level;
 	for (size_t i = 0; i < subKeys; ++i)
 	{
-		if (i)
+		Key * keydub = keyDup (key);
+		if (!keydub)
 		{
-			Key * keydub = keyDup (key);
-			if (!keydub)
-			{
-				fprintf (stderr, "generateKeySet: Can not dup Key %s\n", subName);
-				exit (EXIT_FAILURE);
-			}
-			recGenerateKeySet (keydub, size, out, seed, ++level, initSize, shape);
+			fprintf (stderr, "generateKeySet: Can not dup Key %s\n", subName);
+			exit (EXIT_FAILURE);
 		}
-		else
-		{
-			recGenerateKeySet (key, size, out, seed, ++level, initSize, shape);
-		}
+		recGenerateKeySet (keydub, size, out, seed, level, initSize, shape);
 	}
+	keyDel (key);
 }
 
 /**
@@ -241,6 +239,8 @@ KeySet * generateKeySet (size_t size, int32_t * seed, KeySetShape * shape)
 	ELEKTRA_ASSERT (shape->maxWordLength - shape->minWordLength <= 16777215, "max world length variation exceeded 16777215");
 	ELEKTRA_ASSERT (shape->parent <= 127, "parent > 127");
 	ELEKTRA_ASSERT (shape->special <= 127, "parent > 127");
+	ELEKTRA_ASSERT (shape->minWordLength != 0, "minWordLength is 0");
+	ELEKTRA_ASSERT (shape->maxWordLength != 0, "maxWordLength is 0");
 	ELEKTRA_ASSERT (shape->shapef, "shape->shapef");
 	KeySet * out = ksNew (size, KS_END);
 	if (!out)

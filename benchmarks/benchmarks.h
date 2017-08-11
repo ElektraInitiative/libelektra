@@ -14,6 +14,7 @@
 #include <kdbinternal.h>
 #include <kdbrand.h>
 
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -54,8 +55,10 @@ extern KeySet * large;
  * Restrictions due to elektraRand:
  *
  * maxWordLength - minWordLength <= 16777215
- * parent <= 127
- * special <= 127
+ * 0 < maxWordLength
+ * 0 < minWordLength
+ * 0 <= parent <= 127
+ * 0 <= special <= 127
  *
  * The shapef is used to determine the number of sub Keys.
  * shapef will be executed on each node in the hierarchal tree of your KeySet.
@@ -63,10 +66,10 @@ extern KeySet * large;
  *
  * initSize: is the maximal size of the KeySet
  * size: the remaining space in the KeySet
- * level: the actual level (root is 1)
+ * level: the actual level (root is 0)
  * seed: a seed for random actions
  *
- * The shapef should retuen always a value >= 0 and <= size.
+ * The shapef should retuen always a value >= 0 and <= size + 1.
  *
  * Example:
  * Call: generateKeySet (100,...
@@ -80,6 +83,8 @@ extern KeySet * large;
  * level= 3
  *
  */
+extern const char * const alphabetnumbers;
+extern const char * const alphabetspecial;
 
 typedef size_t (*KsShapeFunction) (size_t, size_t, size_t, int32_t *);
 typedef struct

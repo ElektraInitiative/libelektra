@@ -389,6 +389,9 @@ int ksClear (KeySet * ks)
 	}
 	ks->alloc = KEYSET_SIZE;
 
+#ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
+	ks->opmphm = opmphmNew ();
+#endif
 
 	return 0;
 }
@@ -2337,7 +2340,7 @@ size_t ksGetAlloc (const KeySet * ks)
  * cleaned with ksClear().
  *
  * @see ksNew(), ksClose(), keyInit()
- * @retval 1 on success
+ * @retval 0 on success
  */
 int ksInit (KeySet * ks)
 {
@@ -2349,7 +2352,11 @@ int ksInit (KeySet * ks)
 
 	ksRewind (ks);
 
-	return 1;
+#ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
+	ks->opmphm = opmphmNew ();
+#endif
+
+	return 0;
 }
 
 
@@ -2359,7 +2366,7 @@ int ksInit (KeySet * ks)
  * KeySet object initializer.
  *
  * @see ksDel(), ksNew(), keyInit()
- * @retval 1 on success
+ * @retval 0 on success
  */
 int ksClose (KeySet * ks)
 {
@@ -2377,6 +2384,10 @@ int ksClose (KeySet * ks)
 	ks->alloc = 0;
 
 	ks->size = 0;
+
+#ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
+	if (ks->opmphm) opmphmDel (ks->opmphm);
+#endif
 
 	return 0;
 }

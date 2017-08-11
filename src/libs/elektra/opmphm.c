@@ -13,7 +13,7 @@
 #include <kdbopmphm.h>
 #include <kdbrand.h>
 
-#include <string.h> //strlen
+#include <string.h>
 
 double opmphmRatio = 2;
 static size_t opmphmGetWidth (size_t n);
@@ -42,14 +42,17 @@ int opmphmMapping (Opmphm * opmphm, OpmphmInit * init, OpmphmOrder * order, Opmp
 	ELEKTRA_ASSERT (order != NULL, "passed order is a Null Pointer");
 	ELEKTRA_ASSERT (sortOrder != NULL, "passed sortOrder is a Null Pointer");
 	ELEKTRA_ASSERT (n > 0, "passed n <= 0");
-	ELEKTRA_ASSERT (opmphmRatio >= 1, "opmphmRatio less 1");
+	ELEKTRA_ASSERT (opmphmRatio >= 0.0, "opmphmRatio less or equal 0");
 	// set the seeds, for the hash function
 	for (unsigned int t = 0; t < OPMPHMTUPLE; ++t)
 	{
 		elektraRand (&(init->initSeed));
 		opmphm->opmphmHashFunctionSeeds[t] = init->initSeed;
 	}
-	const size_t w = opmphmGetWidth (opmphmRatio * n);
+	const size_t w = opmphmGetWidth (n * n / opmphmRatio);
+	size_t offset[w];
+	size_t nextOffset[w];
+	memset (offset, 0, w * sizeof (size_t));
 	// fill sortOrder struct
 	for (size_t i = 0; i < n; ++i)
 	{
@@ -63,75 +66,61 @@ int opmphmMapping (Opmphm * opmphm, OpmphmInit * init, OpmphmOrder * order, Opmp
 				opmphmHashfunction ((const uint32_t *)name, strlen (name), opmphm->opmphmHashFunctionSeeds[t]) % w;
 		}
 #endif
+		// gather offset for first run
+		++offset[sortOrder[i]->h[OPMPHMTUPLE - 1]];
+	}
+	// calculate offset
+	for (size_t i = w - 1; i > 0; --i)
+	{
+		offset[i] = offset[i - 1];
+	}
+	offset[0] = 0;
+	for (size_t i = 1; i < w; ++i)
+	{
+		offset[i] += offset[i - 1];
 	}
 	// sort elements in sortOrder with radixsort
-	// determine the maximum bucket capacity
-	size_t numberOfElements = 1;
-	for (unsigned int t = 1; t < OPMPHMTUPLE; ++t)
-	{
-		numberOfElements = numberOfElements * w;
-	}
-	OpmphmOrder ** buckets = elektraMalloc (sizeof (OpmphmOrder *) * w * numberOfElements);
+	OpmphmOrder ** buckets = elektraMalloc (sizeof (OpmphmOrder *) * n);
 	if (!buckets)
 	{
 		return -1;
 	}
-	size_t * bucketsCount = elektraMalloc (sizeof (size_t) * w);
-	if (!bucketsCount)
-	{
-		elektraFree (buckets);
-		return -1;
-	}
 	for (int t = OPMPHMTUPLE - 1; t >= 0; --t)
 	{
-		for (size_t i = 0; i < w; ++i)
-		{
-			bucketsCount[i] = 0;
-		}
+		memset (nextOffset, 0, w * sizeof (size_t));
 		// partition
 		for (size_t i = 0; i < n; ++i)
 		{
-			if (bucketsCount[sortOrder[i]->h[t]] + 1 == numberOfElements + 1)
+			buckets[offset[sortOrder[i]->h[t]]] = sortOrder[i];
+			++offset[sortOrder[i]->h[t]];
+			// gather offset for next run
+			if (t)
 			{
-				// duplicate
-				elektraFree (buckets);
-				elektraFree (bucketsCount);
-				return 1;
-			}
-			else
-			{
-				buckets[sortOrder[i]->h[t] * numberOfElements + bucketsCount[sortOrder[i]->h[t]]] = sortOrder[i];
-				++bucketsCount[sortOrder[i]->h[t]];
+				++nextOffset[sortOrder[i]->h[t - 1]];
 			}
 		}
-		// collection
-		size_t index = 0;
-		for (size_t i = 0; i < w; ++i)
+		// calculate offset
+		for (size_t i = w - 1; i > 0; --i)
 		{
-			for (size_t j = 0; j < bucketsCount[i]; ++j)
-			{
-				sortOrder[index] = buckets[i * numberOfElements + j];
-				++index;
-			}
+			offset[i] = nextOffset[i - 1];
+		}
+		offset[0] = 0;
+		for (size_t i = 1; i < w; ++i)
+		{
+			offset[i] += offset[i - 1];
+		}
+		// collection
+		for (size_t i = 0; i < n; ++i)
+		{
+			sortOrder[i] = buckets[i];
 		}
 	}
 	elektraFree (buckets);
-	elektraFree (bucketsCount);
 	// check for duplicates
 	for (size_t i = 0; i < n - 1; ++i)
 	{
-		bool match = true;
-		for (unsigned int t = 0; t < OPMPHMTUPLE; ++t)
+		if (!memcmp (&(sortOrder[i]->h[0]), &(sortOrder[i + 1]->h[0]), sizeof (size_t) * OPMPHMTUPLE))
 		{
-			if (sortOrder[i]->h[t] != sortOrder[i + 1]->h[t])
-			{
-				match = false;
-				break;
-			}
-		}
-		if (match)
-		{
-			// duplicate
 			return 1;
 		}
 	}
@@ -158,8 +147,8 @@ OpmphmOrder ** opmphmInit (Opmphm * opmphm, OpmphmInit * init, OpmphmOrder * ord
 	ELEKTRA_ASSERT (init != NULL, "passed init is a Null Pointer");
 	ELEKTRA_ASSERT (order != NULL, "passed order is a Null Pointer");
 	ELEKTRA_ASSERT (n > 0, "passed n <= 0");
-	ELEKTRA_ASSERT (opmphmRatio >= 1, "opmphmRatio less 1");
-	ELEKTRA_ASSERT (init->minOrder < init->maxOrder, "maxOrder - minOrder <= 0");
+	ELEKTRA_ASSERT (opmphmRatio >= 0.0, "opmphmRatio less or equal 0");
+	ELEKTRA_ASSERT (init->minOrder <= init->maxOrder, "maxOrder - minOrder <= 0");
 	// calculate result width
 	opmphm->outputBase = opmphmGetWidth (init->maxOrder - init->minOrder);
 	OpmphmOrder ** sortOrder = elektraMalloc (sizeof (OpmphmOrder *) * n);
@@ -180,10 +169,9 @@ OpmphmOrder ** opmphmInit (Opmphm * opmphm, OpmphmInit * init, OpmphmOrder * ord
 
 static size_t opmphmGetWidth (size_t n)
 {
-	ELEKTRA_ASSERT (n > 0, "passed n <= 0");
 	size_t w = 1;
 	size_t space = 0;
-	while (space < n)
+	while (space <= n)
 	{
 		++w;
 		space = 1;

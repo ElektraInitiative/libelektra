@@ -238,6 +238,12 @@ struct _KeySet
 	 * Some control and internal flags.
 	 */
 	ksflag_t flags;
+#ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
+	/**
+	 * The Order Preserving Minimal Perfect Hash Map.
+	 */
+	Opmphm * opmphm;
+#endif
 };
 
 
