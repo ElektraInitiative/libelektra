@@ -174,11 +174,7 @@ KeySet * ksVNew (size_t alloc, va_list va)
 		/*errno = KDB_ERR_NOMEM;*/
 		return 0;
 	}
-	if (ksInit (keyset))
-	{
-		elektraFree (keyset);
-		return 0;
-	}
+	ksInit (keyset);
 
 	alloc++; /* for ending null byte */
 	if (alloc < KEYSET_SIZE)
@@ -384,15 +380,7 @@ int ksDel (KeySet * ks)
 int ksClear (KeySet * ks)
 {
 	ksClose (ks);
-// ks->array empty now
-
-#ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
-	ks->opmphm = opmphmNew ();
-	if (!ks->opmphm)
-	{
-		return -1;
-	}
-#endif
+	// ks->array empty now
 
 	if ((ks->array = elektraMalloc (sizeof (struct _Key *) * KEYSET_SIZE)) == 0)
 	{
@@ -402,6 +390,9 @@ int ksClear (KeySet * ks)
 	}
 	ks->alloc = KEYSET_SIZE;
 
+#ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
+	ks->opmphm = opmphmNew ();
+#endif
 
 	return 0;
 }
@@ -2351,7 +2342,6 @@ size_t ksGetAlloc (const KeySet * ks)
  *
  * @see ksNew(), ksClose(), keyInit()
  * @retval 0 on success
- * @retval -1 on memory error
  */
 int ksInit (KeySet * ks)
 {
@@ -2365,10 +2355,6 @@ int ksInit (KeySet * ks)
 
 #ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
 	ks->opmphm = opmphmNew ();
-	if (!ks->opmphm)
-	{
-		return -1;
-	}
 #endif
 
 	return 0;
@@ -2381,7 +2367,7 @@ int ksInit (KeySet * ks)
  * KeySet object initializer.
  *
  * @see ksDel(), ksNew(), keyInit()
- * @retval 1 on success
+ * @retval 0 on success
  */
 int ksClose (KeySet * ks)
 {
@@ -2401,7 +2387,7 @@ int ksClose (KeySet * ks)
 	ks->size = 0;
 
 #ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
-	opmphmDel (ks->opmphm);
+	if (ks->opmphm) opmphmDel (ks->opmphm);
 #endif
 
 	return 0;
