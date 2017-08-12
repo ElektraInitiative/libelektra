@@ -86,7 +86,7 @@ if(NOT XercesC_LIBRARY)
   find_library(XercesC_LIBRARY_DEBUG
                NAMES "xerces-cd" "xerces-c_3D" "xerces-c_3_1D"
                DOC "Xerces-C++ libraries (debug)")
-  include(${CMAKE_CURRENT_LIST_DIR}/SelectLibraryConfigurations.cmake)
+  include(SelectLibraryConfigurations)
   select_library_configurations(XercesC)
   mark_as_advanced(XercesC_LIBRARY_RELEASE XercesC_LIBRARY_DEBUG)
 endif()
@@ -95,7 +95,7 @@ if(XercesC_INCLUDE_DIR)
   _XercesC_GET_VERSION("${XercesC_INCLUDE_DIR}/xercesc/util/XercesVersion.hpp")
 endif()
 
-include(${CMAKE_CURRENT_LIST_DIR}/FindPackageHandleStandardArgs.cmake)
+include(FindPackageHandleStandardArgs)
 FIND_PACKAGE_HANDLE_STANDARD_ARGS(XercesC
                                   FOUND_VAR XercesC_FOUND
                                   REQUIRED_VARS XercesC_LIBRARY
