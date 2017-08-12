@@ -43,8 +43,8 @@ Package: libelektra4-all
 Architecture: any
 Depends: libelektra4, libelektra4-experimental, libelektra4-gen,
   libelektra4-augeas, libelektra4-dbus, libelektra4-lua, libelektra4-python,
-  libelektra4-xmltool, libelektra4-yajl, lua-elektra, python-elektra,
-  python3-elektra, elektra-bin, elektra-qt-gui
+  libelektra4-xmltool, libelektra4-xerces, libelektra4-yajl, lua-elektra,
+  python-elektra, python3-elektra, elektra-bin, elektra-qt-gui
 Recommends: elektra-tests, elektra-doc, elektra-dbg, libelektra-dev
 Description: elektra configuration store
  Elektra provides a universal and secure framework to store configuration
@@ -240,6 +240,26 @@ Description: elektra configuration store, xmltool plugin
  implementations.
  .
  This package contains the 'xmltool' plugin.
+
+Package: libelektra4-xerces
+Section: libs
+Architecture: any
+Depends: libelektra4 (= ${binary:Version}),
+ ${shlibs:Depends},
+ ${misc:Depends}
+Replaces: libelektra-xerces4 (<< 0.8.19-1)
+Breaks: libelektra-xerces4 (<< 0.8.19-1)
+Description: elektra configuration store, xerces plugin
+ Elektra provides a universal and secure framework to store configuration
+ parameters in a hierarchical key-value pair mechanism, instead of each
+ program using its own text configuration files. This allows any program
+ to read and save its configuration with a consistent API, and allows
+ them to be aware of other applications' configurations, permitting
+ easy application integration. While architecturally similar to other OS
+ registries, Elektra does not have most of the problems found in those
+ implementations.
+ .
+ This package contains the 'xerces' plugin.
 
 Package: libelektra4-yajl
 Section: libs
