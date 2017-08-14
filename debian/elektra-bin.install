@@ -3,6 +3,7 @@ usr/bin/kdb-full
 usr/lib/*/libelektratools.so
 usr/lib/*/libelektratools.so*
 usr/lib/*/elektra/tool_exec/backup
+usr/lib/*/elektra/tool_exec/stash
 usr/lib/*/elektra/tool_exec/restore
 usr/lib/*/elektra/tool_exec/change-resolver-symlink
 usr/lib/*/elektra/tool_exec/change-storage-symlink
@@ -77,6 +78,7 @@ usr/share/man/man1/kdb-vset.1
 usr/share/man/man1/kdb-elektrify-getenv.1
 usr/share/man/man1/kdb-introduction.1
 usr/share/man/man1/kdb-backup.1
+usr/share/man/man1/kdb-stash.1
 usr/share/man/man1/kdb-restore.1
 usr/share/man/man1/kdb-change-resolver-symlink.1
 usr/share/man/man1/kdb-change-storage-symlink.1
