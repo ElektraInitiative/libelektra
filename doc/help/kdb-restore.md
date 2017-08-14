@@ -7,7 +7,7 @@ kdb-restore -- Restore from backup
 
 ## DESCRIPTION
 
-This command will everything backed up by `kdb backup` (or stashed by `kdb stash`)
+This command will restore everything backed up by `kdb backup` (or stashed by `kdb stash`)
 where `timestamp` is the timestamp returned by `kdb backup` (or `kdb stash`).
 
 ## EXMAPLES
