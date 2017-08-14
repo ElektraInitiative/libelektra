@@ -1,4 +1,9 @@
 #!/bin/sh
+#
+# @author Thomas Waser <thomas.waser@libelektra.org>
+# @brief Restores a backup (or stash) 
+# @date 14.08.2017
+# @tags backup, stash, helper
 
 if [ -z "$KDB" ];
 then
@@ -12,7 +17,7 @@ then
 fi
 
 TS="$1"
-TMPDIR="/tmp/elektra_backup_${TS}"
+TMPDIR="/var/tmp/elektra_backup/${TS}"
 
 if [ ! -d "$TMPDIR" ];
 then
