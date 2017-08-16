@@ -156,6 +156,7 @@ Transformations:
 - [keytometa](keytometa/) transforms keys to metadata
 - [rename](rename/) renames keys according to different rules
 - [boolean](boolean/) canonicalizes boolean keys
+- [size](size/) transforms WIDTHxHEIGHT values into separate keys
 
 Doing other stuff:
 
