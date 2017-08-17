@@ -126,7 +126,7 @@ kdb ls user/multi
 #> user/multi/a/a2/a22/testa2.file/a2key
 #> user/multi/b/b1/testb1.file/b1key
 
-rm -rf ~/.config/multifile
+rm -rf ~/.config/multitest
 
 kdb umount user/multi
 ```
