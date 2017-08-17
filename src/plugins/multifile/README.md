@@ -7,7 +7,7 @@
 - infos/placements = getresolver setresolver commit rollback getstorage setstorage
 - infos/status = maintained conformant compatible specific shelltest tested configurable
 - infos/metadata =
-- infos/description = mounts multiple files within a directory 
+- infos/description = mounts multiple files within a directory
 
 ## Introduction
 
@@ -25,7 +25,7 @@ The multifile-resolver does so by calling resolver and storage plugins for each 
 
 - `recursive`:
   If present, fts (3) will be used to traverse the directory tree and fnmatch to match `pattern` to the filename.
-  If not present, glob (3) with `pattern` will be used on the directory 
+  If not present, glob (3) with `pattern` will be used on the directory
 - `pattern`:
   The pattern to be used to match configuration files.
 - `storage`:
@@ -39,7 +39,7 @@ The multifile-resolver does so by calling resolver and storage plugins for each 
 
 `kdb mount -R multifile -c storage="ini",pattern="*/*.ini",resolver="resolver" /path /mountpoint`
 
-`kdb mount -R multifile -c storage="ini",pattern="*.ini",recursive=,resolver="resolver" /path /mountpoint` 
+`kdb mount -R multifile -c storage="ini",pattern="*.ini",recursive=,resolver="resolver" /path /mountpoint`
 
 ## Examples
 
@@ -109,7 +109,7 @@ stat ~/.config/multifile/test.ini
 kdb umount user/multi
 ```
 
-Recursive: 
+Recursive:
 
 ```sh
 rm -rf ~/.config/multitest || $(exit 0)
