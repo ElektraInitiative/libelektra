@@ -22,11 +22,11 @@
 	Key * parentKey = keyNew (parent, KEY_END);                                                                                        \
 	KeySet * conf = ksNew (0, KS_END);                                                                                                 \
 	PLUGIN_OPEN ("yamlcpp");                                                                                                           \
-	KeySet * ks = ksNew (0, KS_END)
+	KeySet * keySet = ksNew (0, KS_END)
 
 #define CLOSE_PLUGIN()                                                                                                                     \
 	keyDel (parentKey);                                                                                                                \
-	ksDel (ks);                                                                                                                        \
+	ksDel (keySet);                                                                                                                    \
 	PLUGIN_CLOSE ()
 
 // -- Functions ----------------------------------------------------------------------------------------------------------------------------
@@ -37,7 +37,7 @@ static void test_contract (void)
 
 	INIT_PLUGIN ("system/elektra/modules/yamlcpp");
 
-	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "Could not retrieve plugin contract");
+	succeed_if (plugin->kdbGet (plugin, keySet, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "Could not retrieve plugin contract");
 
 	CLOSE_PLUGIN ();
 }
