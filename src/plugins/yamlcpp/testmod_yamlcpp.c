@@ -16,23 +16,30 @@
 
 #include <tests_plugin.h>
 
+// -- Macros -------------------------------------------------------------------------------------------------------------------------------
+
+#define INIT_PLUGIN(parent)                                                                                                                \
+	Key * parentKey = keyNew (parent, KEY_END);                                                                                        \
+	KeySet * conf = ksNew (0, KS_END);                                                                                                 \
+	PLUGIN_OPEN ("yamlcpp");                                                                                                           \
+	KeySet * ks = ksNew (0, KS_END)
+
+#define CLOSE_PLUGIN()                                                                                                                     \
+	keyDel (parentKey);                                                                                                                \
+	ksDel (ks);                                                                                                                        \
+	PLUGIN_CLOSE ()
+
 // -- Functions ----------------------------------------------------------------------------------------------------------------------------
 
 static void test_contract (void)
 {
 	printf ("• Retrieve plugin contract\n");
 
-	Key * parentKey = keyNew ("system/elektra/modules/yamlcpp", KEY_END);
-	KeySet * conf = ksNew (0, KS_END);
-	PLUGIN_OPEN ("yamlcpp");
-
-	KeySet * ks = ksNew (0, KS_END);
+	INIT_PLUGIN ("system/elektra/modules/yamlcpp");
 
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "Could not retrieve plugin contract");
 
-	keyDel (parentKey);
-	ksDel (ks);
-	PLUGIN_CLOSE ();
+	CLOSE_PLUGIN ();
 }
 
 // -- Main ---------------------------------------------------------------------------------------------------------------------------------
