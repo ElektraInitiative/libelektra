@@ -24,7 +24,7 @@ void elektraRand (int32_t * seed);
 extern int32_t elektraRandBenchmarkInitSeed;
 #endif
 
-int32_t elektraRandGetInitSeed ();
+int32_t elektraRandGetInitSeed (void);
 
 #ifdef __cplusplus
 }

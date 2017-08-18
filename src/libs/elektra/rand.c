@@ -51,7 +51,7 @@ void elektraRand (int32_t * seed)
 	*seed = (int32_t)lo;
 }
 
-int32_t elektraRandGetInitSeed ()
+int32_t elektraRandGetInitSeed (void)
 {
 #ifdef KDBRAND_BENCHMARK
 	return elektraRandBenchmarkInitSeed;
