@@ -42,6 +42,17 @@ static void test_contract (void) __attribute__ ((annotate ("oclint:suppress[high
 	CLOSE_PLUGIN ();
 }
 
+static void test_read (void) __attribute__ ((annotate ("oclint:suppress[high ncss method]")))
+{
+	printf ("• Retrieve data\n");
+
+	INIT_PLUGIN ("user/examples/yamlcpp", srcdir_file ("yamlcpp/test.yaml"));
+
+	plugin->kdbGet (plugin, keySet, parentKey);
+
+	CLOSE_PLUGIN ();
+}
+
 // -- Main ---------------------------------------------------------------------------------------------------------------------------------
 
 int main (int argc, char ** argv)
@@ -52,6 +63,7 @@ int main (int argc, char ** argv)
 	init (argc, argv);
 
 	test_contract ();
+	test_read ();
 
 	printf ("\nResults: %d Test%s done — %d error%s.\n", nbTest, nbTest == 1 ? "" : "s", nbError, nbError == 1 ? "" : "s");
 

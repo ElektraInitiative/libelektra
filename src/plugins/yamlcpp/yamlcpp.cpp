@@ -12,14 +12,30 @@
 #include "yamlcpp.hpp"
 #include "yaml.h"
 
+#include <kdb.hpp>
 #include <kdbhelper.h>
+#include <kdblogger.h>
 
+#include <sstream>
 #include <string>
 
 // -- Functions ----------------------------------------------------------------------------------------------------------------------------
 
-using namespace ckdb;
+static int yamlRead (kdb::KeySet & mappings ELEKTRA_UNUSED, kdb::Key & parent)
+{
+	using namespace kdb;
+
+	YAML::Node config = YAML::LoadFile (parent.getString ());
+	std::ostringstream data;
+	data << config;
+
+	ELEKTRA_LOG_DEBUG ("Data: “%s”", data.str ().c_str ());
+
+	return ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
+}
+
 extern "C" {
+using namespace ckdb;
 
 /**
  * @brief This function returns a key set containing the contract of this plugin.
@@ -52,7 +68,17 @@ int elektraYamlcppGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * 
 		return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 	}
 
-	return ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
+	kdb::Key parent = kdb::Key (parentKey);
+	kdb::KeySet keys = kdb::KeySet (returned);
+
+	ELEKTRA_LOG_DEBUG ("Read file “%s”", parent.getString ().c_str ());
+
+	int status = yamlRead (keys, parent);
+
+	parent.release ();
+	keys.release ();
+
+	return status;
 }
 
 /** @see elektraDocSet */
