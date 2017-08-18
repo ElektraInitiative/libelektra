@@ -71,8 +71,17 @@ before_script:
       ln -s /usr/local/opt/openssl/include/openssl/ /usr/local/include/openssl;
     fi
   - >
-    cmake -GNinja -DBUILD_STATIC=OFF -DPLUGINS="${plugins:-ALL}" -DBINDINGS=ALL -DTOOLS=ALL -DINSTALL_SYSTEM_FILES=OFF
-    -DCMAKE_INSTALL_PREFIX=$TRAVIS_BUILD_DIR/../install -DKDB_DB_SYSTEM=$TRAVIS_BUILD_DIR/../kdbsystem ${CMAKE_OPT[@]} $TRAVIS_BUILD_DIR
+    cmake
+    -GNinja
+    -DBUILD_STATIC=OFF
+    -DPLUGINS="${plugins:-ALL}"
+    -DBINDINGS=ALL
+    -DTOOLS=ALL
+    -DINSTALL_SYSTEM_FILES=OFF
+    -DCMAKE_INSTALL_PREFIX=$TRAVIS_BUILD_DIR/../install
+    -DKDB_DB_SYSTEM=$TRAVIS_BUILD_DIR/../kdbsystem
+    ${CMAKE_OPT[@]}
+    $TRAVIS_BUILD_DIR
   - PATH=$PATH:$(ruby -e "puts File.expand_path('$TRAVIS_BUILD_DIR/../install/bin')")
 
 script:
