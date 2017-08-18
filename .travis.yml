@@ -56,6 +56,8 @@ before_install:
 #
 before_script:
   - cd $TRAVIS_BUILD_DIR/..
+  - INSTALL_DIR="$PWD/install"
+  - SYSTEM_DIR="$PWD/kdbsystem"
   - mkdir build && cd build
   - CMAKE_OPT=()
   - echo $PATH
@@ -78,11 +80,12 @@ before_script:
     -DBINDINGS=ALL
     -DTOOLS=ALL
     -DINSTALL_SYSTEM_FILES=OFF
-    -DCMAKE_INSTALL_PREFIX=$TRAVIS_BUILD_DIR/../install
-    -DKDB_DB_SYSTEM=$TRAVIS_BUILD_DIR/../kdbsystem
+    -DCMAKE_INSTALL_PREFIX="$INSTALL_DIR"
+    -DKDB_DB_SYSTEM="$SYSTEM_DIR"
     ${CMAKE_OPT[@]}
     $TRAVIS_BUILD_DIR
-  - PATH=$PATH:$(ruby -e "puts File.expand_path('$TRAVIS_BUILD_DIR/../install/bin')")
+  - export PATH=$PATH:"$INSTALL_DIR/bin"
+  - export LD_LIBRARY_PATH="$INSTALL_DIR/lib"
 
 script:
   - ninja
