@@ -18,8 +18,8 @@
 
 // -- Macros -------------------------------------------------------------------------------------------------------------------------------
 
-#define INIT_PLUGIN(parent)                                                                                                                \
-	Key * parentKey = keyNew (parent, KEY_END);                                                                                        \
+#define INIT_PLUGIN(parent, filepath)                                                                                                      \
+	Key * parentKey = keyNew (parent, KEY_VALUE, filepath, KEY_END);                                                                   \
 	KeySet * conf = ksNew (0, KS_END);                                                                                                 \
 	PLUGIN_OPEN ("yamlcpp");                                                                                                           \
 	KeySet * keySet = ksNew (0, KS_END)
@@ -35,7 +35,7 @@ static void test_contract (void) __attribute__ ((annotate ("oclint:suppress[high
 {
 	printf ("• Retrieve plugin contract\n");
 
-	INIT_PLUGIN ("system/elektra/modules/yamlcpp");
+	INIT_PLUGIN ("system/elektra/modules/yamlcpp", "");
 
 	succeed_if (plugin->kdbGet (plugin, keySet, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "Could not retrieve plugin contract");
 
