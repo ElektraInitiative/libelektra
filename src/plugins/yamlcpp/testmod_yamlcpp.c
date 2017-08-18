@@ -31,7 +31,7 @@
 
 // -- Functions ----------------------------------------------------------------------------------------------------------------------------
 
-static void test_contract (void)
+static void test_contract (void) __attribute__ ((annotate ("oclint:suppress[high ncss method]")))
 {
 	printf ("• Retrieve plugin contract\n");
 
