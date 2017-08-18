@@ -14,7 +14,7 @@
 
 if (NOT BOTAN_FOUND)
   include (FindPkgConfig)
-  pkg_search_module (BOTAN QUIET botan-1.10 botan-1.9 botan-1.8 botan)
+  pkg_search_module (BOTAN QUIET botan-1.10 botan-1.9 botan-1.8 botan-2 botan)
 endif ()
 
 if (BOTAN_FOUND)
