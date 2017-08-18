@@ -1118,3 +1118,17 @@ severity:warning
 ingroup:plugin
 macro:FCRYPT_UNLINK
 module:fcrypt
+
+number:181
+description:The provided data could not be recognized as valid cryptographic payload. The data is possibly corrupted.
+severity:error
+ingroup:plugin
+macro:CRYPTO_PAYLOAD
+module:crypto
+
+number:182
+description:The version of the cryptographic payload is not compatible with the version of the plugin.
+severity:error
+ingroup:plugin
+macro:CRYPTO_VERSION
+module:crypto

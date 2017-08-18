@@ -68,6 +68,40 @@ static inline int isSpecNamespace (const Key * k)
 #endif
 
 /**
+ * @brief verify the version of the cryptographic payload of the given key.
+ * @param k holds the encrypted payload.
+ * @param errorKey holds an error description if the version does not match or the format is wrong at all.
+ * @return 1 if the payload version could be verified.
+ * @return 0 otherwise.
+ */
+static int checkPayloadVersion (Key * k, Key * errorKey)
+{
+	if (keyGetValueSize (k) < ((ssize_t)ELEKTRA_CRYPTO_MAGIC_NUMBER_LEN))
+	{
+		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CRYPTO_PAYLOAD, errorKey, "%s", keyName (k));
+		return 0; // failure
+	}
+
+	// check the magic number without the version
+	const kdb_octet_t * value = (kdb_octet_t *)keyValue (k);
+	if (memcmp (value, ELEKTRA_CRYPTO_MAGIC_NUMBER, ELEKTRA_CRYPTO_MAGIC_NUMBER_LEN - 2))
+	{
+		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CRYPTO_PAYLOAD, errorKey, "%s", keyName (k));
+		return 0; // failure
+	}
+
+	// check the version
+	const size_t versionOffset = ELEKTRA_CRYPTO_MAGIC_NUMBER_LEN - 2;
+	if (memcmp (&value[versionOffset], ELEKTRA_CRYPTO_PAYLOAD_VERSION, 2))
+	{
+		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CRYPTO_VERSION, errorKey, "%s", keyName (k));
+		return 0; // failure
+	}
+
+	return 1; // success
+}
+
+/**
  * @brief initialize the crypto backend
  * @retval 1 on success
  * @retval -1 on failure
@@ -257,7 +291,7 @@ error:
  * @retval 1 on success
  * @retval -1 on failure. errorKey holds an error description.
  */
-static int elektraCryptoDecrypt (Plugin * handle ELEKTRA_UNUSED, KeySet * data ELEKTRA_UNUSED, Key * errorKey ELEKTRA_UNUSED)
+static int elektraCryptoDecrypt (Plugin * handle ELEKTRA_UNUSED, KeySet * data, Key * errorKey)
 {
 	Key * k;
 	Key * masterKey = NULL;
@@ -281,6 +315,12 @@ static int elektraCryptoDecrypt (Plugin * handle ELEKTRA_UNUSED, KeySet * data E
 		if (!isMarkedForEncryption (k) || isSpecNamespace (k))
 		{
 			continue;
+		}
+
+		if (!checkPayloadVersion (k, errorKey))
+		{
+			// error has been set by checkPayloadVersion()
+			goto error;
 		}
 
 #if defined(ELEKTRA_CRYPTO_API_GCRYPT)
