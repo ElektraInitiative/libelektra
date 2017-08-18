@@ -16,8 +16,6 @@ int elektraXercesOpen (ckdb::Plugin * handle, ckdb::Key * errorKey);
 int elektraXercesClose (ckdb::Plugin * handle, ckdb::Key * errorKey);
 int elektraXercesGet (ckdb::Plugin * handle, ckdb::KeySet * ks, ckdb::Key * parentKey);
 int elektraXercesSet (ckdb::Plugin * handle, ckdb::KeySet * ks, ckdb::Key * parentKey);
-int elektraXercesError (ckdb::Plugin * handle, ckdb::KeySet * ks, ckdb::Key * parentKey);
-int elektraXercesCheckConfig (ckdb::Key * errorKey, ckdb::KeySet * conf);
 
 ckdb::Plugin * ELEKTRA_PLUGIN_EXPORT (xerces);
 }

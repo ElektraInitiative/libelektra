@@ -46,8 +46,6 @@ int elektraXercesGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * p
 			       keyNew ("system/elektra/modules/xerces/exports/close", KEY_FUNC, elektraXercesClose, KEY_END),
 			       keyNew ("system/elektra/modules/xerces/exports/get", KEY_FUNC, elektraXercesGet, KEY_END),
 			       keyNew ("system/elektra/modules/xerces/exports/set", KEY_FUNC, elektraXercesSet, KEY_END),
-			       keyNew ("system/elektra/modules/xerces/exports/error", KEY_FUNC, elektraXercesError, KEY_END),
-			       keyNew ("system/elektra/modules/xerces/exports/checkconf", KEY_FUNC, elektraXercesCheckConfig, KEY_END),
 #include ELEKTRA_README (xerces)
 			       keyNew ("system/elektra/modules/xerces/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 		ksAppend (returned, contract);
@@ -130,26 +128,6 @@ int elektraXercesSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * p
 	return ret;
 }
 
-int elektraXercesError (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
-{
-	// handle errors (commit failed)
-	// this function is optional
-
-	return 1; // success
-}
-
-int elektraXercesCheckConfig (Key * errorKey ELEKTRA_UNUSED, KeySet * conf ELEKTRA_UNUSED)
-{
-	// validate plugin configuration
-	// this function is optional
-
-	// the return codes have the following meaning:
-	// 0: The configuration was OK and has not been changed
-	// 1: The configuration has been changed and now it is OK
-	// -1: The configuration was not OK and could not be fixed. An error has to be set to errorKey.
-	return 0;
-}
-
 Plugin * ELEKTRA_PLUGIN_EXPORT (xerces)
 {
 	// clang-format off
@@ -158,6 +136,5 @@ Plugin * ELEKTRA_PLUGIN_EXPORT (xerces)
 		ELEKTRA_PLUGIN_CLOSE, &elektraXercesClose,
 		ELEKTRA_PLUGIN_GET,   &elektraXercesGet,
 		ELEKTRA_PLUGIN_SET,   &elektraXercesSet,
-		ELEKTRA_PLUGIN_ERROR, &elektraXercesError,
 		ELEKTRA_PLUGIN_END);
 }
