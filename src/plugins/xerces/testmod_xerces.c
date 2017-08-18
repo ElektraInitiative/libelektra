@@ -36,10 +36,6 @@ static void test_basics (void)
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 0, "call to kdbSet was not successful");
 	succeed_if (plugin->kdbGet (plugin, ks, invalidKey) == 0, "call to kdbSet was successful though the parentKey is invalid");
 
-	succeed_if (plugin->kdbError (plugin, ks, parentKey) == 1, "call to kdbError was not successful");
-
-	succeed_if (plugin->kdbClose (plugin, parentKey) == 1, "call to kdbClose was not successful");
-
 	keyDel (invalidKey);
 	keyDel (parentKey);
 	ksDel (ks);
