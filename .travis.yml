@@ -14,6 +14,8 @@ matrix:
       osx_image: xcode7.3
     - os: osx
       osx_image: xcode6.4
+    - os: linux
+      dist: trusty
 
 before_install:
   - |
@@ -41,6 +43,12 @@ before_install:
       export Qt5_DIR=/usr/local/opt/qt5;
       brew config;
     fi
+  - |
+    if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
+      sudo apt-get -qq update;
+      sudo apt-get install clang-format-3.8;
+      sudo apt-get install ninja-build;
+    fi
 
 #
 # Source is checked out in $TRAVIS_BUILD_DIR
@@ -48,9 +56,12 @@ before_install:
 #
 before_script:
   - cd $TRAVIS_BUILD_DIR/..
+  - INSTALL_DIR="$PWD/install"
+  - SYSTEM_DIR="$PWD/kdbsystem"
   - mkdir build && cd build
   - CMAKE_OPT=()
   - echo $PATH
+  - plugins="ALL;-jni";
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
       python2_ver=$(python2 -c 'import sys; print(".".join(map(str, sys.version_info[:2])))') &&
       CMAKE_OPT+=("-DPYTHON2_INCLUDE_DIR:PATH=$(python2-config --prefix)/include/python${python2_ver}") &&
@@ -58,11 +69,23 @@ before_script:
       python3_ver=$(python3 -c 'import sys; print(".".join(map(str, sys.version_info[:2])))') &&
       CMAKE_OPT+=("-DPYTHON_INCLUDE_DIR:PATH=$(python3-config --prefix)/include/python${python3_ver}m") &&
       CMAKE_OPT+=("-DPYTHON_LIBRARY:FILEPATH=$(python3-config --prefix)/lib/libpython${python3_ver}.dylib");
-      plugins="ALL;-jni";
       if [[ $(uname -r | cut -d "." -f 1) == 15 ]]; then plugins="${plugins};-CRYPTO"; fi;
       ln -s /usr/local/opt/openssl/include/openssl/ /usr/local/include/openssl;
     fi
-  - cmake -GNinja -DBUILD_STATIC=OFF -DPLUGINS="${plugins:-ALL}" -DBINDINGS=ALL -DTOOLS=ALL -DKDB_DB_SYSTEM=$TRAVIS_BUILD_DIR/../kdbsystem ${CMAKE_OPT[@]} $TRAVIS_BUILD_DIR
+  - >
+    cmake
+    -GNinja
+    -DBUILD_STATIC=OFF
+    -DPLUGINS="${plugins:-ALL}"
+    -DBINDINGS=ALL
+    -DTOOLS=ALL
+    -DINSTALL_SYSTEM_FILES=OFF
+    -DCMAKE_INSTALL_PREFIX="$INSTALL_DIR"
+    -DKDB_DB_SYSTEM="$SYSTEM_DIR"
+    ${CMAKE_OPT[@]}
+    $TRAVIS_BUILD_DIR
+  - export PATH=$PATH:"$INSTALL_DIR/bin"
+  - export LD_LIBRARY_PATH="$INSTALL_DIR/lib"
 
 script:
   - ninja

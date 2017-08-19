@@ -7,6 +7,7 @@ project (Elektra)
 
 #fix macOS RPATH issues
 set(CMAKE_MACOSX_RPATH 1)
+SET(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
 
 #additional modules for loading libraries
 set (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
