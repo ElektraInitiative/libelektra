@@ -224,9 +224,10 @@ int elektraCryptoBotanEncrypt (KeySet * pluginConfig, Key * k, Key * errorKey, K
 			memcpy (&buffer[bufferIndex], &saltLen, sizeof (kdb_unsigned_long_t));
 			bufferIndex += sizeof (kdb_unsigned_long_t);
 			memcpy (&buffer[bufferIndex], salt, saltLen);
+			bufferIndex += saltLen;
 
-			const size_t buffered = encryptor.read (&buffer[sizeof (kdb_unsigned_long_t) + saltLen], msgLength);
-			keySetBinary (k, &buffer[0], buffered + sizeof (kdb_unsigned_long_t) + saltLen);
+			const size_t buffered = encryptor.read (&buffer[bufferIndex], msgLength);
+			keySetBinary (k, &buffer[0], buffered + bufferIndex);
 		}
 	}
 	catch (std::exception & e)
