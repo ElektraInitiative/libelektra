@@ -18,9 +18,9 @@ CXXFLAGS=-O0 -ggdb
 FLAGS = -I. -I../../bindings/cpp/include `pkg-config --libs --cflags elektra`
 
 .PHONY:all
-all:lift cpplift nestedlift dynamiccontextlift lift.html lift.3
+all:lift cpplift nestedlift dynamiccontextlift lift.html lift.3 location
 
-#staticcontextlift contextvisit contexteditor
+#staticcontextlift contextvisit contexteditor location
 
 util.py:util/util.c
 	${GEN} -p tests/lift.ini util/util.c -o util.py
@@ -46,6 +46,9 @@ lift_nested.hpp:${GEN} tests/lift.ini template/nested.hpp support/nested.py util
 lift_context_dynamic.hpp:${GEN} tests/lift.ini template/context_dynamic.hpp support/context.py util.py cpp_util.py
 	${GEN} tests/lift.ini template/context_dynamic.hpp -o lift_context_dynamic.hpp
 
+location.hpp:${GEN} tests/location.ini template/context_dynamic.hpp support/context.py util.py cpp_util.py
+	${GEN} tests/location.ini template/context_dynamic.hpp -o location.hpp
+
 #lift_context_static.hpp:${GEN} tests/lift.ini template/context_static.hpp support/context.py util.py cpp_util.py
 #	${GEN} tests/lift.ini template/context_static.hpp -o lift_context_static.hpp
 #
@@ -70,6 +73,9 @@ cpplift:tests/lift.cpp lift.hpp
 dynamiccontextlift:lift_context_dynamic.hpp tests/lift_context.cpp
 	c++ ${FLAGS} ${LDFLAGS} ${CXXFLAGS} -DDYNAMIC  -std=c++11 -Wall tests/lift_context.cpp lift_context_dynamic.hpp ${ELEKTRA}  -o dynamiccontextlift
 
+location:location.hpp tests/location.cpp
+	c++ ${FLAGS} ${LDFLAGS} ${CXXFLAGS} -DDYNAMIC  -std=c++11 -Wall tests/location.cpp location.hpp ${ELEKTRA}  -o location
+
 nestedlift:lift_nested.hpp tests/lift_nested.cpp
 	c++ ${FLAGS} ${LDFLAGS} ${CXXFLAGS}  -std=c++11 -Wall tests/lift_nested.cpp lift_nested.hpp ${ELEKTRA}  -o nestedlift
 
@@ -84,6 +90,8 @@ nestedlift:lift_nested.hpp tests/lift_nested.cpp
 
 .PHONY:clean
 clean:
+	rm -f location.hpp
+	rm -f location
 	rm -f lift.h
 	rm -f lift.hpp
 	rm -f lift.html
