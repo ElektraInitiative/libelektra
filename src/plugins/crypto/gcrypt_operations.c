@@ -285,6 +285,7 @@ int elektraCryptoGcryEncrypt (elektraCryptoHandle * handle, Key * k, Key * error
 		outputLen = (contentLen / ELEKTRA_CRYPTO_GCRY_BLOCKSIZE) + 2;
 	}
 	outputLen *= ELEKTRA_CRYPTO_GCRY_BLOCKSIZE;
+	outputLen += ELEKTRA_CRYPTO_MAGIC_NUMBER_LEN;
 	outputLen += sizeof (kdb_unsigned_long_t) + saltLen;
 	kdb_octet_t * output = elektraMalloc (outputLen);
 	if (!output)
@@ -294,9 +295,13 @@ int elektraCryptoGcryEncrypt (elektraCryptoHandle * handle, Key * k, Key * error
 		return -1;
 	}
 
-	// encode the salt into the crypto payload
 	kdb_octet_t * current = output;
 
+	// output of the magic number
+	memcpy (current, ELEKTRA_CRYPTO_MAGIC_NUMBER, ELEKTRA_CRYPTO_MAGIC_NUMBER_LEN);
+	current += ELEKTRA_CRYPTO_MAGIC_NUMBER_LEN;
+
+	// encode the salt into the crypto payload
 	memcpy (current, &saltLen, sizeof (kdb_unsigned_long_t));
 	current += sizeof (kdb_unsigned_long_t);
 	memcpy (current, salt, saltLen);
@@ -317,7 +322,8 @@ int elektraCryptoGcryEncrypt (elektraCryptoHandle * handle, Key * k, Key * error
 	current += ELEKTRA_CRYPTO_GCRY_BLOCKSIZE;
 
 	// encrypt the value using gcrypt's in-place encryption
-	const size_t dataLen = outputLen - ELEKTRA_CRYPTO_GCRY_BLOCKSIZE - sizeof (kdb_unsigned_long_t) - saltLen;
+	const size_t dataLen =
+		outputLen - ELEKTRA_CRYPTO_GCRY_BLOCKSIZE - sizeof (kdb_unsigned_long_t) - saltLen - ELEKTRA_CRYPTO_MAGIC_NUMBER_LEN;
 	memcpy (current, content, contentLen);
 	gcry_err = gcry_cipher_encrypt (*handle, current, dataLen, NULL, 0);
 	if (gcry_err != 0)
@@ -350,8 +356,8 @@ int elektraCryptoGcryDecrypt (elektraCryptoHandle * handle, Key * k, Key * error
 	saltLen += sizeof (kdb_unsigned_long_t);
 
 	// set payload pointer
-	const kdb_octet_t * payload = ((kdb_octet_t *)keyValue (k)) + saltLen;
-	const size_t payloadLen = keyGetValueSize (k) - saltLen;
+	const kdb_octet_t * payload = ((kdb_octet_t *)keyValue (k)) + saltLen + ELEKTRA_CRYPTO_MAGIC_NUMBER_LEN;
+	const size_t payloadLen = keyGetValueSize (k) - saltLen - ELEKTRA_CRYPTO_MAGIC_NUMBER_LEN;
 
 	// plausibility check
 	if (payloadLen % ELEKTRA_CRYPTO_GCRY_BLOCKSIZE != 0)

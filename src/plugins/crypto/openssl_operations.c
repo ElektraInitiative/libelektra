@@ -304,6 +304,9 @@ int elektraCryptoOpenSSLEncrypt (elektraCryptoHandle * handle, Key * k, Key * er
 		return -1;
 	}
 
+	// write out the magic number
+	BIO_write (encrypted, ELEKTRA_CRYPTO_MAGIC_NUMBER, ELEKTRA_CRYPTO_MAGIC_NUMBER_LEN);
+
 	// encode the salt into the payload
 	BIO_write (encrypted, &saltLen, sizeof (saltLen));
 	BIO_write (encrypted, salt, saltLen);
@@ -401,8 +404,8 @@ int elektraCryptoOpenSSLDecrypt (elektraCryptoHandle * handle, Key * k, Key * er
 	saltLen += sizeof (kdb_unsigned_long_t);
 
 	// set payload pointer
-	const kdb_octet_t * payload = ((kdb_octet_t *)keyValue (k)) + saltLen;
-	const size_t payloadLen = keyGetValueSize (k) - saltLen;
+	const kdb_octet_t * payload = ((kdb_octet_t *)keyValue (k)) + saltLen + ELEKTRA_CRYPTO_MAGIC_NUMBER_LEN;
+	const size_t payloadLen = keyGetValueSize (k) - saltLen - ELEKTRA_CRYPTO_MAGIC_NUMBER_LEN;
 
 	// initialize crypto header data
 	kdb_unsigned_long_t contentLen = 0;
