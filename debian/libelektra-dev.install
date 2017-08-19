@@ -33,6 +33,7 @@ usr/include/elektra/keysetget.hpp
 usr/include/elektra/keyset.hpp
 usr/include/elektra/keysetio.hpp
 usr/include/elektra/kdbutility.h
+usr/include/elektra/kdbinvoke.h
 usr/include/elektra/merging/automergeconfiguration.hpp
 usr/include/elektra/merging/automergestrategy.hpp
 usr/include/elektra/merging/importmergeconfiguration.hpp

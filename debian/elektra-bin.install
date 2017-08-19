@@ -74,6 +74,7 @@ usr/share/man/man1/kdb-shell.1
 usr/share/man/man1/kdb-spec-mount.1
 usr/share/man/man1/kdb-test.1
 usr/share/man/man1/kdb-umount.1
+usr/share/man/man1/kdb-global-umount.1
 usr/share/man/man1/kdb-vset.1
 usr/share/man/man1/kdb-elektrify-getenv.1
 usr/share/man/man1/kdb-introduction.1
