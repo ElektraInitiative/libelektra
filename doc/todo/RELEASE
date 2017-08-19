@@ -21,6 +21,8 @@ Following shell expansions are used in this document:
 
 TODO: Fix remotes of ftp+api repos
 
+TODO: update/run ~e/scripts/build-debian-package
+
 TODO: redo release process
 
 TODO: update contracts using update-infos-status
