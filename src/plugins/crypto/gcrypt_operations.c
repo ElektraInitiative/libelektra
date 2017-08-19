@@ -322,7 +322,8 @@ int elektraCryptoGcryEncrypt (elektraCryptoHandle * handle, Key * k, Key * error
 	current += ELEKTRA_CRYPTO_GCRY_BLOCKSIZE;
 
 	// encrypt the value using gcrypt's in-place encryption
-	const size_t dataLen = outputLen - ELEKTRA_CRYPTO_GCRY_BLOCKSIZE - sizeof (kdb_unsigned_long_t) - saltLen;
+	const size_t dataLen =
+		outputLen - ELEKTRA_CRYPTO_GCRY_BLOCKSIZE - sizeof (kdb_unsigned_long_t) - saltLen - ELEKTRA_CRYPTO_MAGIC_NUMBER_LEN;
 	memcpy (current, content, contentLen);
 	gcry_err = gcry_cipher_encrypt (*handle, current, dataLen, NULL, 0);
 	if (gcry_err != 0)
