@@ -72,6 +72,9 @@ class ElektraGenSupport(Support):
 			enum_values = self.toarray(info, "check/enum")
 			return enum_values.index(value)
 		else:
+			if value.startswith('"') and value.endswith('"'):
+				value = value[1:]
+				value = value[:-1]
 			return value
 
 	def enum_typedef(self, key, info):
