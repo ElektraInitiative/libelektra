@@ -20,3 +20,4 @@ usr/share/libelektra-test/test-data/lua/*
 usr/share/libelektra-test/test-data/passwd/*
 usr/share/libelektra-test/test-data/file/*
 usr/share/libelektra-test/test-data/blockresolver/*
+usr/share/libelektra-test/test-data/xerces/*
