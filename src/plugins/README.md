@@ -53,7 +53,7 @@ Otherwise, you can visit the [the API documentation](http://doc.libelektra.org/a
 ### Resolver
 
 Before configuration is actually written, the file name needs to be
-determined (will be automatically added by kdb mount):
+determined (resolvers will be automatically added by kdb mount):
 
 - [resolver](resolver/) uses advanced POSIX APIs to handle conflicts gracefully
 - [wresolver](wresolver/) minimalistic resolver for non-POSIX systems
@@ -65,7 +65,7 @@ harddisc (recommended to add at every kdb mount):
 - [blockresolver](blockresolver/) resolves tagged blocks inside config files
 - [multifile](multifile/)
 
-- [sync](sync/) uses POSIX APIs to sync configuration file with harddisc
+- [sync](sync/) uses POSIX APIs to sync configuration files with the hard disk
 
 ### Storage
 
@@ -161,7 +161,7 @@ Doing other stuff:
 
 - [crypto](crypto/) encrypts / decrypts confidential values
 - [fcrypt](fcrypt/) encrypts / decrypts entire backend files
-- [iconv](iconv/) make sure the configuration will have correct
+- [iconv](iconv/) makes sure the configuration will have correct
   character encoding
 - [hidden](hidden/) hides keys whose names start with a `.`.
 - [null](null/) takes care of null values and other binary specialities
@@ -170,29 +170,31 @@ Doing other stuff:
 
 Log/Send out all changes to configuration to:
 
-- [dbus](dbus/)
-- [journald](journald/)
-- [syslog](syslog/)
+- [dbus](dbus/) sends notifications for every change via dbus
+- [syslog](syslog/) logs key database changes to syslog
+- [journald](journald/) logs key database changes to journald
 - [logchange](logchange/) prints the change of every key on the console
 
 ### Debug
 
 Trace everything that happens within KDB:
 
-- [timeofday](timeofday/) print timestamps
-- [tracer](tracer/)
-- [counter](counter/) count and print how often plugin is used
+- [timeofday](timeofday/) prints timestamps
+- [tracer](tracer/) traces all calls
+- [counter](counter/) count and print how often a plugin is used
 
 ### Checker
 
 Copies metadata to keys:
 
-- [glob](glob/) using globbing techniques
+- [spec](spec/) copies metadata from spec namespace (the
+  standard way)
+- [glob](glob/) using globbing techniques (needed by some plugins)
 - [struct](struct/) using a defined structure (may also reject
   configuration not conforming to that structure)
-- [spec](spec/) copies metadata from spec namespace
+
 Plugins that check if values are valid based on metadata (typically
-copied by another plugin just before):
+copied by the `spec` plugin just before):
 
 **Value Validation**
 
