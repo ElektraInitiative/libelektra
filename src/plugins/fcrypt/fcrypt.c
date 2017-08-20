@@ -17,6 +17,7 @@
 #include <errno.h>
 #include <fcntl.h>
 #include <gpg.h>
+#include <libgen.h>
 #include <stdlib.h>
 #include <string.h>
 #include <sys/stat.h>
@@ -48,19 +49,47 @@ typedef struct _fcryptState fcryptState;
 
 /**
  * @brief Allocates a new string holding the name of the temporary file.
+ * This method makes use of the "fcrypt/tmpdir" plugin configuration option.
+ * @param conf holds the plugin configuration
  * @param file holds the path to the original file
  * @param fd will hold the file descriptor to the temporary file in case of success
  * @returns an allocated string holding the name of the encrypted file. Must be freed by the caller.
  */
-static char * getTemporaryFileName (const char * file, int * fd)
+static char * getTemporaryFileName (KeySet * conf, const char * file, int * fd)
 {
+	// read the temporary directory to use from the plugin configuration
+	const char * tmpDir;
+	Key * k = ksLookupByName (conf, ELEKTRA_FCRYPT_CONFIG_TMPDIR, 0);
+	if (k)
+	{
+		tmpDir = keyString (k);
+	}
+	else
+	{
+		tmpDir = ELEKTRA_FCRYPT_DEFAULT_TMPDIR;
+	}
+
+	// extract the file name (base name) from the path
+	char * fileDup = strdup (file);
+	if (!fileDup) goto error;
+	const char * baseName = basename (fileDup);
+
+	// + 1 to add an additional '/' as path separator
 	// + 1 to reserve space for the NULL terminator
-	const size_t newFileAllocated = strlen (file) + strlen (ELEKTRA_FCRYPT_TMP_FILE_SUFFIX) + 1;
+	// ----------------------------------------------
+	// + 2 characters in total
+	const size_t newFileAllocated = strlen (tmpDir) + strlen (baseName) + strlen (ELEKTRA_FCRYPT_TMP_FILE_SUFFIX) + 2;
 	char * newFile = elektraMalloc (newFileAllocated);
-	if (!newFile) return NULL;
-	snprintf (newFile, newFileAllocated, "%s" ELEKTRA_FCRYPT_TMP_FILE_SUFFIX, file);
+	if (!newFile) goto error;
+	snprintf (newFile, newFileAllocated, "%s/%s" ELEKTRA_FCRYPT_TMP_FILE_SUFFIX, tmpDir, baseName);
 	*fd = mkstemp (newFile);
+
+	elektraFree (fileDup);
 	return newFile;
+
+error:
+	if (fileDup) elektraFree (fileDup);
+	return NULL;
 }
 
 /**
@@ -228,7 +257,7 @@ static int fcryptEncrypt (KeySet * pluginConfig, Key * parentKey)
 	}
 
 	int tmpFileFd = -1;
-	char * tmpFile = getTemporaryFileName (keyString (parentKey), &tmpFileFd);
+	char * tmpFile = getTemporaryFileName (pluginConfig, keyString (parentKey), &tmpFileFd);
 	if (!tmpFile)
 	{
 		ELEKTRA_SET_ERROR (87, parentKey, "Memory allocation failed");
@@ -365,7 +394,7 @@ static int fcryptEncrypt (KeySet * pluginConfig, Key * parentKey)
 static int fcryptDecrypt (KeySet * pluginConfig, Key * parentKey, fcryptState * state)
 {
 	int tmpFileFd = -1;
-	char * tmpFile = getTemporaryFileName (keyString (parentKey), &tmpFileFd);
+	char * tmpFile = getTemporaryFileName (pluginConfig, keyString (parentKey), &tmpFileFd);
 	if (!tmpFile)
 	{
 		ELEKTRA_SET_ERROR (87, parentKey, "Memory allocation failed");
