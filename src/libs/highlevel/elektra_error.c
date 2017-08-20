@@ -36,7 +36,7 @@ ElektraError * elektraErrorCreateFromKey (Key * key)
 		return NULL;
 	}
 
-	ElektraErrorCode code = KDB_STRING_TO_SHORT (keyString (keyGetMeta (key, "error/number")));
+	ElektraErrorCode code = KDB_STRING_TO_LONG (keyString (keyGetMeta (key, "error/number")));
 	const char * description = keyString (keyGetMeta (key, "error/description"));
 
 	const char * severityString = keyString (keyGetMeta (key, "error/severity"));
