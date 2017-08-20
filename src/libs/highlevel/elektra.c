@@ -9,7 +9,6 @@
 #include "elektra.h"
 #include "elektra_error_private.h"
 #include "elektra_private.h"
-//#include "kdberrors.h"
 #include "kdblogger.h"
 #include "kdbprivate.h"
 #include <memory.h>
