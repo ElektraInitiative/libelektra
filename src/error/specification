@@ -24,7 +24,6 @@ module:dl
 severity:warning
 class:FailedLoadModuleError
 extends:ModuleError
-enum:DLOPEN_FAILED
 
 number:2
 ingroup:modules
@@ -33,21 +32,18 @@ module:dl
 severity:warning
 class:FailedResolveSymbolError
 extends:ModuleError
-enum:DLSYM_FAILED
 
 number:3
 ingroup:modules
 description:could not find root key
 severity:warning
 module:dl
-enum:COULD_NOT_FIND_ROOT_KEY
 
 number:4
 ingroup:modules
 description:could not close a module, dlclose failed
 severity:warning
 module:dl
-enum:DLCLOSE_FAILED
 
 number:5
 description:failed to open default backend
@@ -55,39 +51,33 @@ ingroup:kdb
 severity:fatal
 class:NoDefaultBackendError
 extends:KDBOpenError
-enum:NO_DEFAULT_BACKEND
 
 number:6
 description:Could not call function exported by ELEKTRA_PLUGIN_EXPORT
 ingroup:kdb
 severity:warning
-enum:COULD_NOT_CALL_FUNCTION_EXPORTED_BY_ELEKTRA_PLUGIN_EXPORT
 
 number:7
 description:failed to open trie, continue with default backend
 severity:warning
 ingroup:kdb
-enum:FAILED_TO_OPEN_TRIE
 
 number:8
 description:no default backend found, but should be (reason contains keyname)
 severity:fatal
 ingroup:kdb
-enum:NO_DEFAULT_BACKEND_FOUND
 
 number:9
 description:Insufficient permissions to open configuration file for writing. You might want to retry as root.
 severity:error
 ingroup:kdb
 see:75 109 110
-enum:INSUFFICIENT_PERMISSIONS_TO_OPEN_CONFIGURATION_FILE
 
 number:10
 description:general parse error
 severity:error
 ingroup:kdb
 macro:PARSE
-enum:GENERAL_PARSE_ERROR
 
 number:11
 description:open of plugin returned unsuccessfully (reason contains plugin, see other warnings for details)
@@ -99,86 +89,72 @@ number:12
 description:kdbClose() failed
 severity:warning
 ingroup:kdb
-enum:KDBCLOSE_FAILED
 
 number:13
 description:processing Get Plugins failed
 severity:warning
 ingroup:kdb
-enum:PROCESSING_GET_PLUGINS_FAILED
 
 number:14
 description:given mount point not valid
 severity:warning
 ingroup:kdb
-enum:INVALID_MOUNTPOINT
 
 number:15
 description:processing Set Plugins failed
 severity:warning
 ingroup:kdb
-enum:PROCESSING_SET_PLUGINS_FAILED
 
 number:16
 description:unrecognised Config Tree
 severity:warning
 ingroup:kdb
-enum:UNRECOGNIZED_CONFIG_TREE
 
 number:17
 description:could not get configuration for Trie
 severity:warning
 ingroup:kdb
-enum:COULD_NOT_GET_CONFIGURATION_FOR_TRIE
 
 number:18
 description:names of Plugins must start with a #
 severity:warning
 ingroup:kdb
-enum:INVALID_PLUGIN_NAME
 
 number:19
 description:names of Plugins must start with the position number as second char
 severity:warning
 ingroup:kdb
-enum:PLUGIN_NAME_MISSING_POSITION_NUMBER
 
 number:20
 description:tried to set more plugins than defined in NR_OF_PLUGINS
 severity:warning
 ingroup:kdb
-enum:TOO_MANY_PLUGINS
 
 number:21
 description:unknown additional entries in plugin
 severity:warning
 ingroup:kdb
-enum:UNKNOWN_ENTRIES_IN_PLUGINS
 
 number:22
 unused:yes
 description:system/elektra/mountpoints is appended if missing
 severity:warning
 ingroup:trie
-enum:FIXED_MOUNTPOINT
 
 number:23
 description:could not find any modules
 severity:warning
 ingroup:trie
-enum:NO_MODULES_FOUND
 
 number:24
 description:invalid backend was ignored
 severity:warning
 ingroup:trie
-enum:INVALID_BACKEND
 
 number:25
 description:backend has no mount point
 severity:warning
 ingroup:trie
-enum:NO_MOUNTPOINT
 
 number:26
 description:could not open configuration file. You might want to try as root (use sudo !!).
@@ -186,28 +162,24 @@ severity:error
 ingroup:plugin
 module:resolver
 macro:COULD_NOT_OPEN
-enum:COULD_NOT_OPEN_CONFIGURATION_FILE
 
 number:27
 description:locking yield an error
 severity:warning
 ingroup:plugin
 module:resolver
-enum:LOCKING_ERROR
 
 number:28
 description:could not remove file
 severity:error
 ingroup:plugin
 module:resolver
-enum:COULD_NOT_REMOVE_FILE
 
 number:29
 description:could not stat file
 severity:warning
 ingroup:plugin
 module:resolver
-enum:RESOLVER_COULD_NOT_STAT_FILE
 
 number:30
 macro:CONFLICT
@@ -215,191 +187,163 @@ description:a conflict occurred: another KDB instance modified the key database
 severity:error
 ingroup:plugin
 module:resolver
-enum:KEY_DATABASE_MODIFIED
 
 number:31
 description:could not rename file
 severity:error
 ingroup:plugin
 module:resolver
-enum:FAILED_TO_RENAME_FILE
 
 number:32
 description:could not unlock file
 severity:warning
 ingroup:plugin
 module:resolver
-enum:FAILED_TO_UNLOCK_FILE
 
 number:33
 description:could not close file
 severity:warning
 ingroup:plugin
 module:resolver
-enum:FAILED_TO_CLOSE_FILE
 
 number:34
 description:no file given in configuration, not possible to resolve filename
 severity:error
 ingroup:plugin
 module:resolver
-enum:NO_FILE_IN_CONFIGURATION
 
 number:35
 description:could not resolve filename, not possible to resolve filename
 severity:error
 ingroup:plugin
 module:resolver
-enum:COULD_NOT_RESOLVE_FILENAME
 
 number:36
 description:could not unlink file
 severity:warning
 ingroup:plugin
 module:resolver
-enum:FAILED_TO_UNLINK_FILE
 
 number:37
 description:null pointer passed
 severity:error
 ingroup:kdb
-enum:NULL_POINTER_PASSED
 
 number:38
 description:could not build up split
 severity:error
 ingroup:kdb
-enum:COULD_NOT_BUILD_UP_SPLIT
 
 number:39
 description:not a valid name supplied for a plugin
 severity:warning
 ingroup:modules
 module:dl
-enum:NO_VALID_NAME_FOR_PLUGIN
 
 number:40
 description:failed to open default backend (see warnings for more information)
 severity:fatal
 ingroup:kdb
-enum:FAILED_TO_OPEN_DEFAULT_BACKEND
 
 number:41
 description:could not compile regex
 severity:fatal
 ingroup:plugin
 module:validator
-enum:COULD_NOT_COMPILE_REGEX
 
 number:42
 description:key value failed to validate
 severity:fatal
 ingroup:plugin
 module:validator
-enum:FAILED_TO_VALIDATE_KEY_VALUE
 
 number:43
 description:failed to open default backend (creation of trie stopped)
 severity:warning
 ingroup:kdb
-enum:CREATION_OF_TRIE_STOPPED
 
 number:44
 description:unknown error code to trigger
 severity:error
 ingroup:plugin
 module:error
-enum:UNKNOWN_ERROR_CODE_TO_TRIGGER_ERROR
 
 number:45
 description:unknown warning code to trigger
 severity:warning
 ingroup:plugin
 module:error
-enum:UNKNOWN_ERROR_CODE_TO_TRIGGER_WARNING
 
 number:46
 description:conversation error
 severity:error
 ingroup:plugin
 module:iconv
-enum:CONVERSATION_ERROR
 
 number:47
 description:could not close modules
 severity:warning
 ingroup:kdb
-enum:FAILED_TO_CLOSE_MODULES
 
 number:48
 unused:yes
 description:assertion failure
 severity:warning
 ingroup:kdb
-enum:ASSERTION_FAILURE
 
 number:49
 description:unknown command detected in dumpfile
 severity:error
 ingroup:plugin
 module:dump
-enum:UNKNOWN_COMMAND_IN_DUMPFILE
 
 number:50
 description:wrong version detected in dumpfile
 severity:error
 ingroup:plugin
 module:dump
-enum:WRONG_VERSION_IN_DUMPFILE
 
 number:51
 description:value of key is not a valid IP Address
 severity:error
 ingroup:plugin
 module:network
-enum:NO_VALID_IP_ADDRESS
 
 number:52
 description:could not type check value of key
 severity:error
 ingroup:plugin
 module:type
-enum:FAILED_TO_CHECK_VALUE_OF_KEY
 
 number:53
 description:could not check the structure of the keyset
 severity:error
 ingroup:plugin
 module:struct
-enum:FAILED_TO_CHECK_STRUCTURE_OF_KEYSET
 
 number:54
 description:device not found
 severity:warning
 ingroup:plugin
 module:path
-enum:DEVICE_NOT_FOUND
 
 number:55
 description:directory not found
 severity:warning
 ingroup:plugin
 module:path
-enum:DIRECTORY_NOT_FOUND
 
 number:56
 description:given path is not absolute
 severity:error
 ingroup:plugin
 module:path
-enum:PATH_NOT_ABSOLUTE
 
 number:57
 description:could not stat file
 severity:warning
 ingroup:plugin
 module:path
-enum:PATH_COULD_NOT_STAT_FILE
 
 number:58
 unused:yes
@@ -407,7 +351,6 @@ description:could not build up structure checker
 severity:warning
 ingroup:plugin
 module:struct
-enum:COULD_NOT_BUILD_UP_STRUCTURE_CHECKER
 
 number:59
 description:key name is not valid, discarding key
@@ -415,7 +358,6 @@ severity:warning
 ingroup:plugin
 module:simpleini
 macro:INVALID_KEY
-enum:INVALID_KEY
 
 number:60
 description:invalid line encountered
@@ -423,42 +365,36 @@ severity:error
 ingroup:plugin
 macro:NOEOF
 module:storage
-enum:NOEOF
 
 number:61
 description:parse error
 severity:error
 ingroup:plugin
 module:tcl
-enum:PARSE_ERROR
 
 number:62
 description:tried to get a key from a missing backend
 severity:error
 ingroup:plugin
 module:missing
-enum:TRIED_GET_KEY_MISSING_BACKEND
 
 number:63
 description:tried to set a key in a missing backend
 severity:error
 ingroup:plugin
 module:missing
-enum:TRIED_TO_SET_KEY_MISSING_BACKEND
 
 number:64
 description:could not load plugin in process plugin
 severity:warning
 ingroup:modules
 module:kdb
-enum:FAILED_TO_LOAD_PLUGIN
 
 number:65
 description:could not reference back to plugin
 severity:warning
 ingroup:modules
 module:kdb
-enum:FAILED_TO_REFERENCE_BACK_TO_PLUGIN
 
 number:66
 unused:yes
@@ -466,7 +402,6 @@ description:could not open kwallet
 severity:warning
 ingroup:plugin
 module:kwallet
-enum:FAILED_TO_OPEN_KWALLET
 
 number:67
 unused:yes
@@ -474,21 +409,18 @@ description:could not read from kwallet
 severity:error
 ingroup:plugin
 module:kwallet
-enum:FAILED_TO_READ_FROM_KWALLET
 
 number:68
 unused:yes
 description:not implemented
 severity:error
 ingroup:plugin
-enum:NOT_IMPLEMENTED
 
 number:69
 description:could not create C++ plugin
 severity:warning
 ingroup:plugin
 module:type
-enum:COULD_NOT_CREATE_CPP_PLUGIN
 
 number:70
 ingroup:modules
@@ -497,7 +429,6 @@ module:static
 severity:warning
 class:FailedLoadModuleError
 extends:ModuleError
-enum:COULD_NOT_LOAD_MODULE
 
 number:71
 ingroup:modules
@@ -506,28 +437,24 @@ module:dl
 severity:warning
 class:FailedResolveSymbolError
 extends:ModuleError
-enum:STATIC_SYM_FAILED
 
 number:72
 description:could not stat configuration directory
 severity:warning
 ingroup:plugin
 module:resolver
-enum:COULD_NOT_STAT_CONFIGURATION_DIRECTORY
 
 number:73
 description:configuration directory is not a directory
 severity:error
 ingroup:plugin
 module:resolver
-enum:NOT_A_DIRECTORY
 
 number:74
 description:could not create configuration directory
 severity:error
 ingroup:plugin
 module:resolver
-enum:COULD_NOT_CREATE_DIRECTORY
 
 number:75
 description:could not open file for writing
@@ -535,7 +462,6 @@ severity:error
 ingroup:plugin
 module:storage
 see:9 109 110
-enum:FAILED_TO_OPEN_FILE_FOR_WRITING
 
 number:76
 description:error while reading file
@@ -543,217 +469,184 @@ severity:error
 ingroup:plugin
 module:storage
 macro:READ_FAILED
-enum:READ_FILE_FAILED
 
 number:77
 description:Yajl parser error
 severity:error
 ingroup:plugin
 module:yajl
-enum:YAJL_PARSE_ERROR
 
 number:78
 description:Unknown or unsupported type found during streaming, assume key as string, type lost
 severity:warning
 ingroup:plugin
 module:yajl
-enum:UNKNOWN_TYPE_FOUND_DURING_STREAMING
 
 number:79
 description:postcondition of backend was violated
 severity:warning
 ingroup:kdb
-enum:POSTCONDITION_VIOLATED
 
 number:80
 description:error during commit (this means backend is broken, reason states where it is mounted)
 severity:warning
 ingroup:kdb
-enum:ERROR_DURING_COMMIT
 
 number:81
 description:error during rollback (this means backend is broken, reason states where it is mounted)
 severity:warning
 ingroup:kdb
-enum:ERROR_DURING_ROLLBACK
 
 number:82
 description:error key not found in keyset even though it was found before
 severity:warning
 ingroup:kdb
-enum:ERROR_KEY_NOT_FOUND
 
 number:83
 description:resolver was not able to resolve a filename
 severity:warning
 ingroup:plugin
 module:resolver
-enum:COULD_NOT_RESOLVE_FILENAME
 
 number:84
 description:read only plugin, kdbSet not supported
 severity:error
 ingroup:kdb
-enum:READ_ONLY_PLUGIN
 
 number:85
 description:an Augeas error occurred
 severity:error
 ingroup:plugin
 module:storage
-enum:AUGEAS_ERROR
 
 number:86
 description:no Augeas lens was configured
 severity:error
 ingroup:plugin
 module:storage
-enum:NO_AUGEAS_LENS_CONFIGURED
 
 number:87
 description:memory allocation error
 severity:error
 ingroup:plugin
 macro:MALLOC
-enum:MALLOC_ERROR
 
 number:88
 description:could not sync directory
 severity:warning
 ingroup:plugin
 module:resolver
-enum:COULD_NOT_SYNC_DIRECTORY
 
 number:89
 description:could not sync config file
 severity:error
 ingroup:plugin
 module:sync
-enum:COULD_NOT_SYNC_CONFIG_FILE
 
 number:90
 description:could not retrieve from passwd using getpwuid_r
 severity:warning
 ingroup:plugin
 module:resolver
-enum:COULD_NOT_RECEIVE_FROM_PASSWD
 
 number:91
 description:failed to reopen default backend (see warnings for more information)
 severity:warning
 ingroup:kdb
-enum:FAILED_TO_REOPEN_DEFAULT_BACKEND
 
 number:92
 description:mounting modules did not work
 severity:warning
 ingroup:kdb
-enum:FAILED_TO_MOUNT_MODULES
 
 number:93
 description:initial loading of trie did not work
 severity:warning
 ingroup:kdb
-enum:FAILED_TO_LOAD_TRIE
 
 number:94
 description:could not initialize the modules
 severity:fatal
 ingroup:kdb
-enum:FAILED_TO_INIT_MODULES
 
 number:95
 description:could not find plugin configuration
 severity:fatal
 module:regexstore
-enum:PLUGIN_CONFIGURATION_NOT_FOUND
 
 number:96
 description:regex failure
 severity:warning
 module:regexstore
-enum:REGEX_FAILURE
 
 number:97
 description:writing multiline values is not enabled
 severity:error
 ingroup:plugin
 module:storage
-enum:WRITING_MULTILINE_VALUES_NOT_ENABLED
 
 number:98
 description:invalid ini syntax
 severity:error
 ingroup:plugin
 module:storage
-enum:INVALID_INI_SYNTAX
 
 number:99
 description:could not update metadata of file
 severity:warning
 ingroup:plugin
 module:resolver
-enum:FAILED_TO_UPDATE_TIME_OF_FILE
 
 number:100
 description:environment variable is not absolute and cannot be used
 severity:warning
 ingroup:plugin
 module:resolver
-enum:ENV_VAR_INVALID
 
 number:101
 description:java exception caught
 severity:warning
 ingroup:plugin
 module:jni
-enum:JAVA_EXCEPTION_CAUGHT
 
 number:102
 description:jni/java error
 severity:error
 ingroup:plugin
 module:jni
-enum:JNI_ERROR
 
 number:103
 description:jni/java warning
 severity:warning
 ingroup:plugin
 module:jni
-enum:JNI_WARNING
 
 number:104
 description:metakey passed as parentKey
 severity:error
 ingroup:kdb
-enum:METAKEY_PASSED_AS_PARENT_KEY
 
 number:105
 description:invalid (empty) key passed as parentKey. This is only accepted for compatibility reasons. You should use the cascading key / instead.
 severity:warning
 ingroup:kdb
-enum:INVALID_PARENT_KEY
 
 number:106
 description:wrong size detected in dumpfile
 severity:error
 ingroup:plugin
 module:dump
-enum:WRONG_SIZE_IN_DUMPFILE
 
 number:107
 macro:STATE
 description:sync state is wrong, maybe kdbSet() is executed without prior kdbGet(). Reason states mount point.
 severity:error
 ingroup:kdb
-enum:WRONG_SYNC_STATE
 
 number:108
 description:wrong keys in postprocessing
 severity:warning
 ingroup:kdb
-enum:WRONG_KEYS_IN_POSTPROCESSING
 
 number:109
 description:insufficient permissions to open configuration file for reading. You might want to retry as root or change access using chmod.
@@ -761,7 +654,6 @@ severity:error
 ingroup:plugin
 module:storage
 see:9 75 110
-enum:INSUFFICIENT_PERMISSIONS_TO_OPEN_CONFIG_FILE
 
 number:110
 description:could not open configuration file for reading.
@@ -769,105 +661,90 @@ severity:error
 ingroup:plugin
 module:storage
 see:9 75 109
-enum:COULD_NOT_OPEN_CONFIGURATION_FILE
 
 number:111
 description:python error
 severity:error
 ingroup:plugin
 module:python
-enum:PYTHON_ERROR
 
 number:112
 description:python warning
 severity:warning
 ingroup:plugin
 module:python
-enum:PYTHON_WARNING
 
 number:113
 description:could not open file
 severity:error
 ingroup:plugin
 module:lineendings
-enum:COULD_NOT_OPEN_FILE
 
 number:114
 description:invalid line ending
 severity:error
 ingroup:plugin
 module:lineendings
-enum:INVALID_LINE_ENDINGS
 
 number:115
 description:inconsistent line endings
 severity:error
 ingroup:plugin
 module:lineendings
-enum:INCONSISTENT_LINE_ENDINGS
 
 number:116
 description:couldn't open file
 severity:error
 ingroup:plugin
 module:csvstorage
-enum:CVS_COULD_NOT_OPEN_FILE
 
 number:117
 description:invalid number of columns
 severity:error
 ingroup:plugin
 module:csvstorage
-enum:INVALID_NUMBER_OF_COLUMNS
 
 number:118
 description:problem during parsing of csvfile (see reason)
 severity:warning
 ingroup:plugin
 module:csvstorage
-enum:PROBLEM_PARSING_CSVFILE
 
 number:119
 description:out of memory
 severity:error
 ingroup:plugin
 module:csvstorage
-enum:OUT_OF_MEMORY
 
 number:120
 description:could not compile regex
 severity: error
 ingroup:plugin
 module:enum
-enum:COULD_NOT_COMPILE_REGEX
 
 number:121
 description:validation failed
 severity:error
 ingroup:plugin
 module:enum
-enum:VALIDATION_FAILED
 
 number:122
 description:not a valid Polish prefix notation syntax
 severity:error
 ingroup:plugin
 module:mathcheck
-enum:INVALID_PREFIX_SYNTAX
 
 number:123
 description:invalid value
 severity:error
 ingroup:plugin
 module:mathcheck
-enum:INVALID_VALUE
 
 number:124
 description:key does not exist
 severity:error
 ingroup:plugin
 module:mathcheck
-enum:KEY_DOES_NOT_EXIST
 
 number:125
 description:failed to initialize the crypto library.
@@ -875,7 +752,6 @@ macro:CRYPTO_INIT
 severity:error
 ingroup:plugin
 module:crypto
-enum:FAILED_TO_INIT_CRYPTO
 
 number:126
 description:the crypto library reported an internal error.
@@ -883,7 +759,6 @@ macro:CRYPTO_INTERNAL_ERROR
 severity:error
 ingroup:plugin
 module:crypto
-enum:INTERNAL_ERROR
 
 number:127
 description:encryption failed due to an error reported by the crypto library.
@@ -891,7 +766,6 @@ macro:CRYPTO_ENCRYPT_FAIL
 severity:error
 ingroup:plugin
 module:crypto
-enum:CRYPTO_ENCRYPT_FAILED
 
 number:128
 description:decryption failed due to an error reported by the crypto library.
@@ -899,7 +773,6 @@ macro:CRYPTO_DECRYPT_FAIL
 severity:error
 ingroup:plugin
 module:crypto
-enum:CRYPTO_DECRYPT_FAILED
 
 number:129
 description:decryption failed due to an error reported by the crypto library.
@@ -907,7 +780,6 @@ macro:CRYPTO_DECRYPT_WARNING
 severity:warning
 ingroup:plugin
 module:crypto
-enum:CRYPTO_DECRYPT_WARNING
 
 number:130
 description:the configuration is invalid or incomplete.
@@ -915,111 +787,95 @@ macro:CRYPTO_CONFIG_FAULT
 severity:error
 ingroup:plugin
 module:crypto
-enum:CRYPTO_CONFIG_FAULT
 
 number:131
 description:lua error
 severity:error
 ingroup:plugin
 module:lua
-enum:LUA_ERROR
 
 number:132
 description:lua warning
 severity:warning
 ingroup:plugin
 module:lua
-enum:LUA_WARNING
 
 number:133
 description:key does not exist
 severity:error
 ingroup:plugin
 module:conditionals
-enum:KEY_DOES_NOT_EXIST
 
 number:134
 description:syntax error
 severity:error
 ingroup:plugin
 module:conditionals
-enum:SYNTAX_ERROR
 
 number:135
 description:validation failed
 severity:error
 ingroup:plugin
 module:conditionals
-enum:VALIDATION_FAILED
 
 number:136
 description:missing lineending
 severity:warning
 ingroup:plugin
 module:csvstorage
-enum:MISSING_LINEENDINGS
 
 number:137
 description:filecheck validation failed
 severity:error
 ingroup:plugin
 module:filecheck
-enum:VALIDATION_FAILED
 
 number:138
 description:failed to initialize filecheck data
 severity:error
 ingroup:plugin
 module:filecheck
-enum:FAILED_TO_INIT
 
 number:139
 description:failed to mount global plugins
 severity:warning
 ingroup:kdb
-enum:FAILED_TO_MOUNT
 
 number:140
 description:duplicated section entry in INI file
 severity:error
 ingroup:plugin
 module:ini
-enum:DUPLICATE_SECTION
 
 number:141
 description:duplicated key entry in INI file
 severity:error
 ingroup:plugin
 module:ini
-enum:DUPLICATE_KEY
 
 number:142
 description:globbing error
 severity:error
 ingroup:plugin
 module:spec
-enum:GLOBBING_ERROR
 
 number:143
 description:globbing warning
 severity:warning
 ingroup:plugin
 module:spec
-enum:GLOBBING_WARNINGS
 
 number:144
 description:shell plugin error
 severity:error
 ingroup:plugin
 module:shell
-enum:SHELL_PLUGIN_ERROR
 
 number:145
 description:semlock plugin error
 severity:error
 ingroup:plugin
 module:semlock
-enum:SEMLOCK_ERROR
 
 number:146
 description:could not get current directory
@@ -1027,7 +883,6 @@ severity:warning
 ingroup:plugin
 module:resolver
 macro:NOCWD
-enum:COULD_NOT_GET_CURRENT_DIR
 
 number:147
 description:issue while interfacing with git
@@ -1035,7 +890,6 @@ severity:error
 ingroup:plugin
 module:gitresolver
 macro:GITRESOLVER_RESOLVING_ISSUE
-enum:ISSUE_WHILE_INTERFACING_WITH_GIT
 
 number:148
 description:a conflict occurred. There are new commits in the repository.
@@ -1043,7 +897,6 @@ severity:error
 ingroup:plugin
 module:gitresolver
 macro:GITRESOLVER_CONFLICT
-enum:GIT_CONFLICT
 
 number:149
 description:validation of passwd entry failed
@@ -1051,7 +904,6 @@ severity:error
 ingroup:plugin
 module:passwd
 macro:PASSWD_VALIDATION
-enum:VALIDATION_OF_PASSWD_FAILED
 
 number:150
 description:failed to generate a random master password.
@@ -1059,7 +911,6 @@ macro:CRYPTO_RANDOM_GEN
 ingroup:plugin
 module:crypto
 severity:error
-enum:FAILED_TO_GENERATE_MASTER_PASSWORD
 
 number:151
 description:error in the GPG module.
@@ -1067,7 +918,6 @@ macro:CRYPTO_GPG
 ingroup:plugin
 module:crypto
 severity:error
-enum:ERROR_IN_GPG_MODULE
 
 number:152
 description:the configuration is invalid or incomplete but a default value can be used instead.
@@ -1075,7 +925,6 @@ macro:CRYPTO_CONFIG
 severity:warning
 ingroup:plugin
 module:crypto
-enum:CRYPTO_CONFIGURATION_INVALID
 
 number:153
 description:not a valid boolean value
@@ -1083,7 +932,6 @@ severity:error
 ingroup:plugin
 module:boolean
 macro:INVALID_BOOL
-enum:INVALID_BOOL
 
 number:154
 description:not a valid boolean value
@@ -1091,7 +939,6 @@ severity:warning
 ingroup:plugin
 module:boolean
 macro:INVALID_BOOL
-enum:INVALID_BOOL_WARNING
 
 number:155
 description:failed to extract block
@@ -1099,7 +946,6 @@ severity:error
 ingroup:plugin
 module:blockresolver
 macro:BLOCKRESOLVER_EXTRACT
-enum:FAILED_TO_EXTRACT_BLOCK
 
 number:156
 description:end of block not found
@@ -1107,7 +953,6 @@ severity:error
 ingroup:plugin
 module:blockresolver
 macro:BLOCKRESOLVER_NO_EOB
-enum:END_OF_BLOCK_NOT_FOUND
 
 number:157
 description:base64 decoding error. Provided string was not Base64 encoded. The value of the Key has not been modified.
@@ -1115,7 +960,6 @@ severity:warning
 ingroup:plugin
 module:base64
 macro:BASE64_DECODING
-enum:BASE64_WARNING
 
 number:158
 description:could not increment to next entry
@@ -1123,7 +967,6 @@ severity:error
 ingroup:plugin
 module:line
 macro:NO_INC
-enum:COULD_NOT_INCREMENT
 
 number:159
 description:non-required key found
@@ -1131,7 +974,6 @@ severity:error
 ingroup:plugin
 module:required
 macro:REQUIRED
-enum:NON_REQURED_KEY_FOUND
 
 number:160
 description:failed to overwrite the temporary data. Unencrypted data may leak.
@@ -1139,7 +981,6 @@ severity:error
 ingroup:plugin
 module:fcrypt
 macro:FCRYPT_TMP_FILE
-enum:FAILED_TO_OVERWRITE
 
 number:161
 description:can not replace the existing file with the temporary file.
@@ -1147,14 +988,12 @@ macro:FCRYPT_RENAME
 severity:error
 ingroup:plugin
 module:fcrypt
-enum:CANNOT_REPLACE
 
 number:162
 description:hosts validation error. The hosts keyset contains unknown keys. Only keys below ipv4 and ipv6 are allowed.
 severity:error
 ingroup:plugin
 module:storage
-enum:HOSTS_VALIDATION_ERROR
 
 number:163
 description:Failed to restore the timestamp when the config file was modified last.
@@ -1162,7 +1001,6 @@ severity:warning
 ingroup:plugin
 module:fcrypt
 macro:FCRYPT_FUTIMENS
-enum:FAILED_TO_RESTORE_TIMESTAMP
 
 number:164
 description:failed to upload config file.
@@ -1170,7 +1008,6 @@ severity:error
 ingroup:plugin
 module:curlget
 macro:CURL_UPLOAD_FAILED
-enum:FAILED_TO_UPLOAD_CONFIG_FILE
 
 number:165
 description:could not fetch file from remote host, try falling back to local copy.
@@ -1178,7 +1015,6 @@ severity:warning
 ingroup:plugin
 module:curlget
 macro:CURL_LOCAL_FALLBACK
-enum:COULD_NOT_FETCH_FILE
 
 number:166
 description:failed to fetch configuration file.
@@ -1186,7 +1022,6 @@ severity:error
 ingroup:plugin
 module:curlget
 macro:CURL_FETCH_FAILED
-enum:FAILED_TO_FETCH_CONFIG_FILE
 
 number:167
 description:invalid plugin configuration.
@@ -1194,7 +1029,6 @@ severity:error
 ingroup:plugin
 module:curlget
 macro:CURL_CONFIG_INVALID
-enum:INVALID_PLUGIN_CONFIG
 
 number:168
 description:validation of date/time string failed.
@@ -1202,7 +1036,6 @@ severity:error
 ingroup:plugin
 module:date
 macro:D_T_FMT
-enum:VALIDATION_OF_DATETIME_FAILED
 
 number:169
 description:could not stat file
@@ -1210,7 +1043,6 @@ severity:error
 ingroup:plugin
 module:file
 macro:STAT_FAILED
-enum:COULD_NOT_STAT_FILE
 
 number:170
 description:invalid range syntax.
@@ -1218,7 +1050,6 @@ severity:error
 ingroup:plugin
 module:range
 macro:RANGE_SYNTAX
-enum:INVALID_RANGE_SYNTAX
 
 number:171
 description:value not within specified range.
@@ -1226,7 +1057,6 @@ severity:error
 ingroup:plugin
 module:range
 macro:INVALID_RANGE
-enum:VALUE_NOT_WITHIN_RANGE
 
 number:172
 description:multifile globbing failed.
@@ -1234,7 +1064,6 @@ severity:error
 ingroup:plugin
 module:multifile
 macro:MULTI_GLOB_FAILED
-enum:MULTIFILE_GLOBBING_FAILED
 
 number:173
 description:invalid line format pattern
@@ -1242,14 +1071,12 @@ severity:error
 ingroup:plugin
 macro:INVALID_FORMAT
 module:simpleini
-enum:INVALID_LINE_FORMAT_PATTERN
 
 number:174
 description:general xml error
 severity:error
 ingroup:plugin
 module:xerces
-enum:GENERAL_XML_ERROR
 
 number:175
 description:Not a valid key value pair
@@ -1257,7 +1084,6 @@ severity:warning
 ingroup:plugin
 macro:NOT_VALID_KEY_VALUE_PAIR
 module:mini
-enum:INVALID_KEY_VALUE_PAIR
 
 number:176
 description:Neither a GPG recipient (specified as encrypt/key) nor a GPG signature key (specified as sign/key) has been provided. Please provide at least one key.
