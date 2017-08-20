@@ -18,7 +18,8 @@
  * @param error Pass a reference to an ElektraError pointer.
  */
 #define elektraSet(ELEKTRA, TAG, VALUE, ERROR)                                                                                             \
-	_Generic((TAG), ELEKTRA_TAG_NAMES_GEN (ELEKTRA_GENERIC_SET_ENTRY) ELEKTRA_TAG_NAMES_EXCEPT_STRING (ELEKTRA_GENERIC_SET_ENTRY) ELEKTRA_TAG (String)                                   \
+	_Generic((TAG), ELEKTRA_TAG_NAMES_GEN (ELEKTRA_GENERIC_SET_ENTRY) ELEKTRA_TAG_NAMES_EXCEPT_STRING (ELEKTRA_GENERIC_SET_ENTRY)      \
+				ELEKTRA_TAG (String)                                                                                       \
 		 : ELEKTRA_SET_BY_TAG (String)) (ELEKTRA, TAG, VALUE, ERROR)
 
 /**
@@ -28,7 +29,8 @@
  * @param error Pass a reference to an ElektraError pointer.
  */
 #define elektraSetArrayElement(ELEKTRA, TAG, VALUE, INDEX, ERROR)                                                                          \
-	_Generic((TAG), ELEKTRA_TAG_NAMES_GEN (ELEKTRA_GENERIC_SET_ARRAY_ELEMENT_ENTRY) ELEKTRA_TAG_NAMES_EXCEPT_STRING (ELEKTRA_GENERIC_SET_ARRAY_ELEMENT_ENTRY) ELEKTRA_TAG (String)                     \
+	_Generic((TAG), ELEKTRA_TAG_NAMES_GEN (ELEKTRA_GENERIC_SET_ARRAY_ELEMENT_ENTRY)                                                    \
+				ELEKTRA_TAG_NAMES_EXCEPT_STRING (ELEKTRA_GENERIC_SET_ARRAY_ELEMENT_ENTRY) ELEKTRA_TAG (String)             \
 		 : ELEKTRA_SET_ARRAY_ELEMENT_BY_TAG (String)) (ELEKTRA, TAG, VALUE, INDEX, ERROR)
 
 /**
@@ -38,7 +40,8 @@
  * @return The value stored at the given key and index.
 */
 #define elektraGet(ELEKTRA, TAG)                                                                                                           \
-	_Generic((TAG), ELEKTRA_TAG_NAMES_GEN (ELEKTRA_GENERIC_GET_ENTRY) ELEKTRA_TAG_NAMES_EXCEPT_STRING (ELEKTRA_GENERIC_GET_ENTRY) ELEKTRA_TAG (String)                                   \
+	_Generic((TAG), ELEKTRA_TAG_NAMES_GEN (ELEKTRA_GENERIC_GET_ENTRY) ELEKTRA_TAG_NAMES_EXCEPT_STRING (ELEKTRA_GENERIC_GET_ENTRY)      \
+				ELEKTRA_TAG (String)                                                                                       \
 		 : ELEKTRA_GET_BY_TAG (String)) (ELEKTRA, TAG)
 
 /**
@@ -49,5 +52,6 @@
  * @return The value stored at the given key and index.
 */
 #define elektraGetArrayElement(ELEKTRA, TAG, INDEX)                                                                                        \
-	_Generic((TAG), ELEKTRA_TAG_NAMES_GEN (ELEKTRA_GENERIC_GET_ARRAY_ELEMENT_ENTRY) ELEKTRA_TAG_NAMES_EXCEPT_STRING (ELEKTRA_GENERIC_GET_ARRAY_ELEMENT_ENTRY) ELEKTRA_TAG (String)                     \
+	_Generic((TAG), ELEKTRA_TAG_NAMES_GEN (ELEKTRA_GENERIC_GET_ARRAY_ELEMENT_ENTRY)                                                    \
+				ELEKTRA_TAG_NAMES_EXCEPT_STRING (ELEKTRA_GENERIC_GET_ARRAY_ELEMENT_ENTRY) ELEKTRA_TAG (String)             \
 		 : ELEKTRA_GET_ARRAY_ELEMENT_BY_TAG (String)) (ELEKTRA, TAG, INDEX)
