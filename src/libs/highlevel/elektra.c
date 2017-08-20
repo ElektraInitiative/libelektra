@@ -42,11 +42,13 @@ ELEKTRA_DEFINITIONS (kdb_boolean_t, Boolean, KDB_TYPE_BOOLEAN, KDB_BOOLEAN_TO_ST
 ELEKTRA_DEFINITIONS (kdb_char_t, Char, KDB_TYPE_CHAR, KDB_CHAR_TO_STRING, KDB_STRING_TO_CHAR)
 ELEKTRA_DEFINITIONS (kdb_octet_t, Octet, KDB_TYPE_OCTET, KDB_OCTET_TO_STRING, KDB_STRING_TO_OCTET)
 ELEKTRA_DEFINITIONS (kdb_short_t, Short, KDB_TYPE_SHORT, KDB_SHORT_TO_STRING, KDB_STRING_TO_SHORT)
-ELEKTRA_DEFINITIONS (kdb_unsigned_short_t, UnsignedShort, KDB_TYPE_UNSIGNED_SHORT, KDB_UNSIGNED_SHORT_TO_STRING, KDB_STRING_TO_UNSIGNED_SHORT)
+ELEKTRA_DEFINITIONS (kdb_unsigned_short_t, UnsignedShort, KDB_TYPE_UNSIGNED_SHORT, KDB_UNSIGNED_SHORT_TO_STRING,
+		     KDB_STRING_TO_UNSIGNED_SHORT)
 ELEKTRA_DEFINITIONS (kdb_long_t, Long, KDB_TYPE_LONG, KDB_LONG_TO_STRING, KDB_STRING_TO_LONG)
 ELEKTRA_DEFINITIONS (kdb_unsigned_long_t, UnsignedLong, KDB_TYPE_UNSIGNED_LONG, KDB_UNSIGNED_LONG_TO_STRING, KDB_STRING_TO_UNSIGNED_LONG)
 ELEKTRA_DEFINITIONS (kdb_long_long_t, LongLong, KDB_TYPE_LONG_LONG, KDB_LONG_LONG_TO_STRING, KDB_STRING_TO_LONG_LONG)
-ELEKTRA_DEFINITIONS (kdb_unsigned_long_long_t, UnsignedLongLong, KDB_TYPE_UNSIGNED_LONG_LONG, KDB_UNSIGNED_LONG_LONG_TO_STRING, KDB_STRING_TO_UNSIGNED_LONG_LONG)
+ELEKTRA_DEFINITIONS (kdb_unsigned_long_long_t, UnsignedLongLong, KDB_TYPE_UNSIGNED_LONG_LONG, KDB_UNSIGNED_LONG_LONG_TO_STRING,
+		     KDB_STRING_TO_UNSIGNED_LONG_LONG)
 ELEKTRA_DEFINITIONS (kdb_float_t, Float, KDB_TYPE_FLOAT, KDB_FLOAT_TO_STRING, KDB_STRING_TO_FLOAT)
 ELEKTRA_DEFINITIONS (kdb_double_t, Double, KDB_TYPE_DOUBLE, KDB_DOUBLE_TO_STRING, KDB_STRING_TO_DOUBLE)
 ELEKTRA_DEFINITIONS (kdb_long_double_t, LongDouble, KDB_TYPE_LONG_DOUBLE, KDB_LONG_DOUBLE_TO_STRING, KDB_STRING_TO_LONG_DOUBLE)
@@ -71,15 +73,16 @@ Elektra * elektraOpen (const char * application, KeySet * defaults, ElektraError
 	KeySet * const config = ksNew (0, KS_END);
 	if (defaults != NULL)
 	{
-        ksRewind(defaults);
-        for (Key * key = ksNext(defaults); key != NULL; key = ksNext(defaults)) {
-            Key * const dup = keyDup(key);
-            const char * name = keyName(key);
-            keySetName (dup, keyName (parentKey));
-            keyAddName (dup, name);
+		ksRewind (defaults);
+		for (Key * key = ksNext (defaults); key != NULL; key = ksNext (defaults))
+		{
+			Key * const dup = keyDup (key);
+			const char * name = keyName (key);
+			keySetName (dup, keyName (parentKey));
+			keyAddName (dup, name);
 
-            ksAppendKey(config, dup);
-        }
+			ksAppendKey (config, dup);
+		}
 	}
 
 	const int kdbGetResult = kdbGet (kdb, config, parentKey);
@@ -206,7 +209,7 @@ void setValueAsString (Elektra * elektra, const char * name, const char * value,
 }
 
 void setArrayElementValueAsString (Elektra * elektra, const char * name, const char * value, KDBType type, size_t index,
-					  ElektraError ** error)
+				   ElektraError ** error)
 {
 	Key * const key = keyDup (generateArrayLookupKey (elektra, name, index));
 	setKeyValue (elektra, key, type, value, error);
