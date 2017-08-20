@@ -6,7 +6,7 @@
 - infos/recommends =
 - infos/placements = pregetstorage postgetstorage precommit
 - infos/ordering = sync
-- infos/status = unittest nodep configurable experimental unfinished discouraged
+- infos/status = unittest nodep configurable
 - infos/metadata =
 - infos/description = File Encryption
 
@@ -23,8 +23,9 @@ After the getstorage plugin has read the backend file, the plugin decrypts the b
 
 ## Security Considerations
 
-During decryption the plugin temporarily writes the decrypted plain text to the same directory as the original (encrypted) file.
-This is a vulnerability as an attacker might have access to the plain text for a short period of time (the time between pregetstorage and postgetstorage calls).
+During decryption the plugin temporarily writes the decrypted plain text to a configurable temporary directory (`/tmp` is used as default).
+This might be a vulnerability as an attacker might have access to the plain text for a short period of time (the time between pregetstorage and postgetstorage calls).
+We recommend to either mount `/tmp` to a RAM disk (`tmpfs`) or to specify an isolated temporary directory in the plugin configuration.
 The plugin shreds, i.e. overwrites, the temporary file with zeroes to reduce the risk of leakage.
 
 If the application crashes parts of the decrypted data may leak.
@@ -119,3 +120,12 @@ output of `fcrypt` is ASCII armored. If no encryption key is provided (i.e. only
 
 Textmode can be disabled by setting `fcrypt/textmode` to `0` in the plugin configuration.
 
+### Temporary Directory
+
+`fcrypt` uses the configuration option `fcrypt/tmpdir` to generate paths for temporary files during encryption and decryption.
+The path is forwarded to GPG via the `-o` option, so GPG will output to this path.
+
+`/tmp` is used as default value.
+
+We recommend to specify a path that is mounted to a RAM disk.
+It is advisable to set restrictive access rules to this path, so that other users on the system can not access it.
