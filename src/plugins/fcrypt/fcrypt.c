@@ -17,7 +17,7 @@
 #include <errno.h>
 #include <fcntl.h>
 #include <gpg.h>
-#include <libgen.h>
+#include <libgen.h> // provides basename()
 #include <stdlib.h>
 #include <string.h>
 #include <sys/stat.h>
@@ -58,15 +58,11 @@ typedef struct _fcryptState fcryptState;
 static char * getTemporaryFileName (KeySet * conf, const char * file, int * fd)
 {
 	// read the temporary directory to use from the plugin configuration
-	const char * tmpDir;
+	const char * tmpDir = ELEKTRA_FCRYPT_DEFAULT_TMPDIR;
 	Key * k = ksLookupByName (conf, ELEKTRA_FCRYPT_CONFIG_TMPDIR, 0);
 	if (k)
 	{
 		tmpDir = keyString (k);
-	}
-	else
-	{
-		tmpDir = ELEKTRA_FCRYPT_DEFAULT_TMPDIR;
 	}
 
 	// extract the file name (base name) from the path
@@ -83,12 +79,17 @@ static char * getTemporaryFileName (KeySet * conf, const char * file, int * fd)
 	if (!newFile) goto error;
 	snprintf (newFile, newFileAllocated, "%s/%s" ELEKTRA_FCRYPT_TMP_FILE_SUFFIX, tmpDir, baseName);
 	*fd = mkstemp (newFile);
+	if (*fd < 0)
+	{
+		free (newFile);
+		goto error;
+	}
 
 	elektraFree (fileDup);
 	return newFile;
 
 error:
-	if (fileDup) elektraFree (fileDup);
+	elektraFree (fileDup);
 	return NULL;
 }
 
