@@ -13,7 +13,6 @@
 #include "yaml.h"
 
 #include <kdb.hpp>
-#include <kdbhelper.h>
 #include <kdblogger.h>
 
 #include <sstream>
