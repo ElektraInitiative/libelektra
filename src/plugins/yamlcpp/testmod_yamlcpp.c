@@ -18,11 +18,12 @@
 
 // -- Macros -------------------------------------------------------------------------------------------------------------------------------
 
-#define INIT_PLUGIN(parent, filepath)                                                                                                      \
+#define INIT_PLUGIN(parent, filepath, errorMessage)                                                                                        \
 	Key * parentKey = keyNew (parent, KEY_VALUE, filepath, KEY_END);                                                                   \
 	KeySet * conf = ksNew (0, KS_END);                                                                                                 \
 	PLUGIN_OPEN ("yamlcpp");                                                                                                           \
-	KeySet * keySet = ksNew (0, KS_END)
+	KeySet * keySet = ksNew (0, KS_END);                                                                                               \
+	succeed_if (plugin->kdbGet (plugin, keySet, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, errorMessage)
 
 #define CLOSE_PLUGIN()                                                                                                                     \
 	keyDel (parentKey);                                                                                                                \
@@ -38,10 +39,7 @@ static void test_contract (void)
 {
 	printf ("• Retrieve plugin contract\n");
 
-	INIT_PLUGIN ("system/elektra/modules/yamlcpp", "");
-
-	succeed_if (plugin->kdbGet (plugin, keySet, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "Could not retrieve plugin contract");
-
+	INIT_PLUGIN ("system/elektra/modules/yamlcpp", "", "Could not retrieve plugin contract");
 	CLOSE_PLUGIN ();
 }
 
@@ -52,9 +50,8 @@ static void test_read (void)
 {
 	printf ("• Retrieve data\n");
 
-	INIT_PLUGIN ("user/examples/yamlcpp", srcdir_file ("yamlcpp/test.yaml"));
+	INIT_PLUGIN ("user/examples/yamlcpp", srcdir_file ("yamlcpp/test.yaml"), "Unable to open or parse file");
 
-	succeed_if (plugin->kdbGet (plugin, keySet, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "Unable to open or parse file");
 	KeySet * expected = ksNew (10, keyNew ("user/examples/yamlcpp/hello", KEY_VALUE, "world", KEY_END), KS_END);
 	compare_keyset (keySet, expected);
 
