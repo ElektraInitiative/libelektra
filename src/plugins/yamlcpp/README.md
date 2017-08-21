@@ -29,6 +29,27 @@ kdb umount /examples/yamlcpp
 
 .
 
+## Examples
+
+```sh
+# Mount yamlcpp plugin to cascading namespace `/examples/yamlcpp`
+kdb mount config.yaml /examples/yamlcpp yamlcpp
+
+# Manually add some mappings to the database
+echo "🔑 : 🐳"               > `kdb file /examples/yamlcpp`
+echo "some key : 'some value'" >> `kdb file /examples/yamlcpp`
+
+# Retrieve the value of the manually added keys
+kdb get /examples/yamlcpp/🔑
+#> 🐳
+kdb get "/examples/yamlcpp/some key"
+#> some value
+
+# Undo modifications to the key database
+rm `kdb file /examples/yamlcpp`
+kdb umount /examples/yamlcpp
+```
+
 ## Dependencies
 
 This plugin requires [yaml-cpp][]. On a Debian based OS the package for the library is called `libyaml-cpp-dev` . On macOS you can install the package `yaml-cpp` via [HomeBrew](https://brew.sh).

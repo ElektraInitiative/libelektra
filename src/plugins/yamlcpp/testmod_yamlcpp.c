@@ -47,14 +47,16 @@ static void test_contract (void)
 
 static void test_read (void)
 #ifdef __llvm__
-	__attribute__ ((annotate ("oclint:suppress[high ncss method]")))
+	__attribute__ ((annotate ("oclint:suppress")))
 #endif
 {
 	printf ("• Retrieve data\n");
 
 	INIT_PLUGIN ("user/examples/yamlcpp", srcdir_file ("yamlcpp/test.yaml"));
 
-	plugin->kdbGet (plugin, keySet, parentKey);
+	succeed_if (plugin->kdbGet (plugin, keySet, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "Unable to open or parse file");
+	KeySet * expected = ksNew (10, keyNew ("user/examples/yamlcpp/hello", KEY_VALUE, "world", KEY_END), KS_END);
+	compare_keyset (keySet, expected);
 
 	CLOSE_PLUGIN ();
 }

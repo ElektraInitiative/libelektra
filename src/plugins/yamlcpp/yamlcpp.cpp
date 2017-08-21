@@ -20,17 +20,27 @@
 
 // -- Functions ----------------------------------------------------------------------------------------------------------------------------
 
-static int yamlRead (kdb::KeySet & mappings ELEKTRA_UNUSED, kdb::Key & parent)
+static int yamlRead (kdb::KeySet & mappings, kdb::Key & parent)
 {
 	using namespace kdb;
+	using namespace std;
 
 	YAML::Node config = YAML::LoadFile (parent.getString ());
-	std::ostringstream data;
+	ostringstream data;
 	data << config;
 
 	ELEKTRA_LOG_DEBUG ("Data: “%s”", data.str ().c_str ());
+	for (auto element : config)
+	{
+		Key key (parent.getFullName (), KEY_END);
+		key.addBaseName (element.first.as<string> ());
+		key.set<string> (element.second.as<string> ());
+		ELEKTRA_LOG_DEBUG ("%s: %s", key.get<string> ().c_str (), key.getName ().c_str ());
+		mappings.append (key);
+	}
+	ELEKTRA_LOG_DEBUG ("Number of keys: %zd", mappings.size ());
 
-	return ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
+	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }
 
 extern "C" {
