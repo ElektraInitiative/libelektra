@@ -414,33 +414,6 @@ static parserType * doubleQuoted (parserType * const parser)
 	return parser;
 }
 
-static parserType * saveText (parserType * const parser, char ** location);
-
-/**
- * @brief Read a double quoted value that starts and ends with optional whitespace characters
- *
- * - The content of the double quoted value will be stored at the address specified via the variable `location`.
- * - If there was an error, then the status of the given parser structure will be updated accordingly.
- *
- * @pre The variables `parser` and `parser->file` must not be `NULL`
- *
- * @param parser Saves the parsing information this function operates on
- *
- * @retval An updated version of the variable `parser`
- */
-static parserType * doubleQuotedSpace (parserType * const parser, char ** location)
-{
-	ELEKTRA_NOT_NULL (parser);
-	ELEKTRA_NOT_NULL (parser->file);
-
-	RET_NOK (whitespace (parser));
-	RET_NOK (doubleQuoted (parser));
-	RET_NOK (saveText (parser, location));
-	RET_NOK (whitespace (parser));
-
-	return parser;
-}
-
 /**
  * @brief Save a copy of the string specified via the variables `parser->match` and `parser->end` in `location`
  *
@@ -468,6 +441,31 @@ static parserType * saveText (parserType * const parser, char ** location)
 
 	strncpy (*location, parser->match, length);
 	(*location)[length] = '\0';
+
+	return parser;
+}
+
+/**
+ * @brief Read a double quoted value that starts and ends with optional whitespace characters
+ *
+ * - The content of the double quoted value will be stored at the address specified via the variable `location`.
+ * - If there was an error, then the status of the given parser structure will be updated accordingly.
+ *
+ * @pre The variables `parser` and `parser->file` must not be `NULL`
+ *
+ * @param parser Saves the parsing information this function operates on
+ *
+ * @retval An updated version of the variable `parser`
+ */
+static parserType * doubleQuotedSpace (parserType * const parser, char ** location)
+{
+	ELEKTRA_NOT_NULL (parser);
+	ELEKTRA_NOT_NULL (parser->file);
+
+	RET_NOK (whitespace (parser));
+	RET_NOK (doubleQuoted (parser));
+	RET_NOK (saveText (parser, location));
+	RET_NOK (whitespace (parser));
 
 	return parser;
 }
