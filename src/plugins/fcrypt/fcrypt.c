@@ -81,7 +81,7 @@ static char * getTemporaryFileName (KeySet * conf, const char * file, int * fd)
 	*fd = mkstemp (newFile);
 	if (*fd < 0)
 	{
-		free (newFile);
+		elektraFree (newFile);
 		goto error;
 	}
 
