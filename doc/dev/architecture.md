@@ -138,7 +138,7 @@ factory the actual plugins are created.
 ### Static Loading
 
 For the static loading of modules, the modules must be built-in.
-With `dlopen(const` `char*` `file)` POSIX provides a solution to look
+With `dlopen(const char* file)` POSIX provides a solution to look
 up such symbols by passing a null pointer for the parameter `file`.
 Non-POSIX operating systems may not support this kind of static loading.
 Therefore, Elektra provides a C99 conforming solution for that problem: a
