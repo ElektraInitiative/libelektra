@@ -65,7 +65,7 @@ in documentation.  In Elektra, the data structures are robust and some
 efforts were taken to make misuse unlikely.
 
 Another fundamental principle is that the API must hide implementation
-details and should not be optimised towards speed.  In Elektra, the
+details and should not be optimized towards speed.  In Elektra, the
 actual process of making configuration permanent is completely hidden.
 
 "Off-by-one confusion" is a topic of its own.  The best is to stick to
@@ -163,7 +163,7 @@ Interface of Module System:
 			const char *name, Key *error);
 	int elektraModulesClose (KeySet *modules, Key *error);
 
-`elektraModulesInit()` initialises the module
+`elektraModulesInit()` initializes the module
 cache and calls necessary operating system facilities if
 needed. `elektraModulesLoad()` does the main work by either
 returning a pointer to the plugin factory from cache or loading it from
