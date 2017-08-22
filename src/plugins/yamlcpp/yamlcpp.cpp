@@ -54,6 +54,15 @@ static int yamlRead (kdb::KeySet & mappings, kdb::Key & parent)
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }
 
+/**
+ * @brief This function saves the key-value pairs stored in `mappings` as YAML data in the location specified via `parent`.
+ *
+ * @param mappings This key set stores the mappings that should be saved as YAML data.
+ * @param parent This key specifies the path to the YAML data file that should be written.
+ *
+ * @retval ELEKTRA_PLUGIN_STATUS_SUCCESS if writing was successful
+ * @retval ELEKTRA_PLUGIN_STATUS_ERROR if there were any problems
+ */
 static int yamlWrite (kdb::KeySet & mappings, kdb::Key & parent)
 {
 	using namespace kdb;
