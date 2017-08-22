@@ -158,8 +158,8 @@ of the following functions:
 
 Interface of Module System:
 
-	elektraModulesInit (KeySet *modules, Key *error); elektraPluginFactory
-	elektraModulesLoad (KeySet *modules,
+	int elektraModulesInit (KeySet *modules, Key *error);
+	elektraPluginFactory elektraModulesLoad (KeySet *modules,
 			const char *name, Key *error);
 	int elektraModulesClose (KeySet *modules, Key *error);
 
