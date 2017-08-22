@@ -158,10 +158,12 @@ of the following functions:
 
 Interface of Module System:
 
-	int elektraModulesInit (KeySet *modules, Key *error);
-	elektraPluginFactory elektraModulesLoad (KeySet *modules,
-			const char *name, Key *error);
-	int elektraModulesClose (KeySet *modules, Key *error);
+```c
+int elektraModulesInit (KeySet *modules, Key *error);
+elektraPluginFactory elektraModulesLoad (KeySet *modules,
+		const char *name, Key *error);
+int elektraModulesClose (KeySet *modules, Key *error);
+```
 
 `elektraModulesInit()` initializes the module
 cache and calls necessary operating system facilities if
