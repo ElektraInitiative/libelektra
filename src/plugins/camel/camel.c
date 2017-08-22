@@ -107,7 +107,7 @@ typedef struct
  * @param parser Saves the parent key this function uses to emit error information
  * @param status Specifies the type of error that this function should set
  *
- * @retval An updated version of the variable `parser`
+ * @return An updated version of the variable `parser`
  */
 static parserType * setErrorErrno (parserType * const parser, statusType status)
 {
@@ -127,7 +127,7 @@ static parserType * setErrorErrno (parserType * const parser, statusType status)
  * @param parser Saves the parent key this function uses to emit error information
  * @param status Specifies the size of the last allocation attempt, that caused the error
  *
- * @retval An updated version of the variable `parser`
+ * @return An updated version of the variable `parser`
  */
 static parserType * setErrorMalloc (parserType * const parser, size_t size)
 {
@@ -151,7 +151,7 @@ static parserType * setErrorMalloc (parserType * const parser, size_t size)
  *
  * @param parser Saves the pointer to the buffer location this function tries to fill with at least one character
  *
- * @retval An updated version of the variable `parser`
+ * @return An updated version of the variable `parser`
  */
 static parserType * bufferChar (parserType * const parser)
 {
@@ -192,7 +192,7 @@ static parserType * bufferChar (parserType * const parser)
  *
  * @param parser Saves the parsing information this function operates on
  *
- * @retval An updated version of the variable `parser`
+ * @return An updated version of the variable `parser`
  */
 static parserType * getNextChar (parserType * parser)
 {
@@ -231,7 +231,7 @@ static parserType * getNextChar (parserType * parser)
  *
  * @param parser Saves the parsing information this function operates on
  *
- * @retval An updated version of the variable `parser`
+ * @return An updated version of the variable `parser`
  */
 static parserType * putBackChar (parserType * parser)
 {
@@ -261,7 +261,7 @@ static parserType * putBackChar (parserType * parser)
  * @param parser Saves the parsing information this function operates on
  * @param characters Saves a list of characters this function compares with the character at the current buffer position
  *
- * @retval An updated version of the variable `parser`
+ * @return An updated version of the variable `parser`
  */
 static parserType * acceptChars (parserType * const parser, char const * const characters)
 {
@@ -297,7 +297,7 @@ static parserType * acceptChars (parserType * const parser, char const * const c
  * @param parser Saves the parsing information this function operates on
  * @param characters Saves a list of characters this function compares with the character at the current buffer position
  *
- * @retval An updated version of the variable `parser`
+ * @return An updated version of the variable `parser`
  */
 static parserType * expect (parserType * const parser, char const * const characters)
 {
@@ -333,7 +333,7 @@ static parserType * expect (parserType * const parser, char const * const charac
  *
  * @param parser Saves the parsing information this function operates on
  *
- * @retval An updated version of the variable `parser`
+ * @return An updated version of the variable `parser`
  */
 static parserType * whitespace (parserType * const parser)
 {
@@ -355,7 +355,7 @@ static parserType * whitespace (parserType * const parser)
  *
  * @param parser Saves the parsing information this function operates on
  *
- * @retval An updated version of the variable `parser`
+ * @return An updated version of the variable `parser`
  */
 static parserType * content (parserType * const parser)
 {
@@ -398,7 +398,7 @@ static parserType * content (parserType * const parser)
  *
  * @param parser Saves the parsing information this function operates on
  *
- * @retval An updated version of the variable `parser`
+ * @return An updated version of the variable `parser`
  */
 static parserType * doubleQuoted (parserType * const parser)
 {
@@ -424,7 +424,7 @@ static parserType * doubleQuoted (parserType * const parser)
  * @param parser Saves the parsing information this function operates on
  * @param location The location where this function should save the copy of the string
  *
- * @retval An updated version of the variable `parser`
+ * @return An updated version of the variable `parser`
  */
 static parserType * saveText (parserType * const parser, char ** location)
 {
@@ -455,7 +455,7 @@ static parserType * saveText (parserType * const parser, char ** location)
  *
  * @param parser Saves the parsing information this function operates on
  *
- * @retval An updated version of the variable `parser`
+ * @return An updated version of the variable `parser`
  */
 static parserType * doubleQuotedSpace (parserType * const parser, char ** location)
 {
@@ -479,7 +479,7 @@ static parserType * doubleQuotedSpace (parserType * const parser, char ** locati
  *
  * @param parser Saves the parsing information this function operates on
  *
- * @retval An updated version of the variable `parser`
+ * @return An updated version of the variable `parser`
  */
 static parserType * key (parserType * const parser)
 {
@@ -498,7 +498,7 @@ static parserType * key (parserType * const parser)
  *
  * @param parser Saves the parsing information this function operates on
  *
- * @retval An updated version of the variable `parser`
+ * @return An updated version of the variable `parser`
  */
 static parserType * value (parserType * const parser)
 {
@@ -517,7 +517,7 @@ static parserType * value (parserType * const parser)
  *
  * @param parser Saves the parsing information this function operates on
  *
- * @retval An updated version of the variable `parser`
+ * @return An updated version of the variable `parser`
  */
 static parserType * pair (parserType * const parser)
 {
@@ -550,7 +550,7 @@ static parserType * pair (parserType * const parser)
  *
  * @param parser Saves the parsing information this function operates on
  *
- * @retval An updated version of the variable `parser`
+ * @return An updated version of the variable `parser`
  */
 static parserType * optionalAdditionalPairs (parserType * const parser)
 {
@@ -573,7 +573,7 @@ static parserType * optionalAdditionalPairs (parserType * const parser)
  *
  * @param parser Saves the parsing information this function operates on
  *
- * @retval An updated version of the variable `parser`
+ * @return An updated version of the variable `parser`
  */
 static parserType * pairs (parserType * const parser)
 {
@@ -604,7 +604,7 @@ static parserType * pairs (parserType * const parser)
  *
  * @param parser Saves the filename of the file this function opens
  *
- * @retval The updated parsing structure. If there were any errors opening the file, then this function sets the type of the parsing
+ * @return The updated parsing structure. If there were any errors opening the file, then this function sets the type of the parsing
  * 	   structure to `ERROR_FILE_OPEN`.
  */
 static parserType * openFile (parserType * const parser)
@@ -626,7 +626,7 @@ static parserType * openFile (parserType * const parser)
  *
  * @param parser Contains resources this function frees
  *
- * @retval The updated parsing structure. If there were any errors closing the file specified via `parser`, then this function sets
+ * @return The updated parsing structure. If there were any errors closing the file specified via `parser`, then this function sets
  * the type of the parsing structure to `ERROR_FILE_CLOSE`.
  */
 static parserType * cleanup (parserType * const parser)
@@ -700,7 +700,7 @@ static KeySet * contractCamel (void)
  * @param keySet This key set contains the key value pairs that should be stored in `file`
  * @param parentKey The function uses this key to determine the relative name of a key in `keySet`
  *
- * @retval The function returns a positive number (including 0) on success or a negative number if there was a problem writing the file.
+ * @return The function returns a positive number (including 0) on success or a negative number if there was a problem writing the file.
  */
 static int writeFile (FILE * file, KeySet * keySet, Key * parentKey)
 {
