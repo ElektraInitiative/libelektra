@@ -2,9 +2,9 @@
 - infos/author = René Schwaiger <sanssecours@me.com>
 - infos/licence = BSD
 - infos/needs =
-- infos/provides =
+- infos/provides = storage/camel
 - infos/recommends =
-- infos/placements =
+- infos/placements = getstorage setstorage
 - infos/status = maintained preview experimental unfinished concept discouraged shelltest unittest
 - infos/metadata =
 - infos/description = A very basic plugin that reads and writes a very small subset of YAML
