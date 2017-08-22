@@ -13,8 +13,10 @@
 #include "yaml.h"
 
 #include <kdb.hpp>
+#include <kdbease.h>
 #include <kdblogger.h>
 
+#include <fstream>
 #include <sstream>
 #include <string>
 
@@ -39,6 +41,26 @@ static int yamlRead (kdb::KeySet & mappings, kdb::Key & parent)
 		mappings.append (key);
 	}
 	ELEKTRA_LOG_DEBUG ("Number of keys: %zd", mappings.size ());
+
+	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
+}
+
+static int yamlWrite (kdb::KeySet & mappings, kdb::Key & parent)
+{
+	using namespace kdb;
+	using namespace std;
+
+	YAML::Node config;
+
+	for (auto key : mappings)
+	{
+		const char * name = elektraKeyGetRelativeName (key.getKey (), parent.getKey ());
+		config[name] = key.get<string> ();
+		ELEKTRA_LOG_DEBUG ("%s: %s", key.get<string> ().c_str (), key.getName ().c_str ());
+	}
+
+	ofstream output (parent.getString ());
+	output << config;
 
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }
@@ -91,9 +113,17 @@ int elektraYamlcppGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * 
 }
 
 /** @see elektraDocSet */
-int elektraYamlcppSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
+int elektraYamlcppSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
 {
-	return ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
+	kdb::Key parent = kdb::Key (parentKey);
+	kdb::KeySet keys = kdb::KeySet (returned);
+
+	int status = yamlWrite (keys, parent);
+
+	parent.release ();
+	keys.release ();
+
+	return status;
 }
 
 Plugin * ELEKTRA_PLUGIN_EXPORT (yamlcpp)

@@ -45,8 +45,18 @@ kdb get /examples/yamlcpp/🔑
 kdb get "/examples/yamlcpp/some key"
 #> some value
 
+# Add some values via `kdb set`
+kdb set /examples/yamlcpp/fleetwood mac
+kdb set /examples/yamlcpp/the chain
+
+# Retrieve the new values
+kdb get /examples/yamlcpp/the
+#> chain
+kdb get /examples/yamlcpp/fleetwood
+#> mac
+
 # Undo modifications to the key database
-rm `kdb file /examples/yamlcpp`
+kdb rm -r /examples/yamlcpp
 kdb umount /examples/yamlcpp
 ```
 

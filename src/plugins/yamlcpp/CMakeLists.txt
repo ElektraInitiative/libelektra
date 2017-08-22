@@ -21,4 +21,6 @@ add_plugin (yamlcpp
 		${YAML-CPP_INCLUDE_DIR}
 	LINK_LIBRARIES
 		${YAML-CPP_LIBRARIES}
+	LINK_ELEKTRA
+		elektra-ease
 	)
