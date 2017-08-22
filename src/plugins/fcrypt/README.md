@@ -6,7 +6,7 @@
 - infos/recommends =
 - infos/placements = pregetstorage postgetstorage precommit
 - infos/ordering = sync
-- infos/status = unittest nodep configurable experimental unfinished discouraged
+- infos/status = unittest nodep configurable
 - infos/metadata =
 - infos/description = File Encryption
 
@@ -23,11 +23,19 @@ After the getstorage plugin has read the backend file, the plugin decrypts the b
 
 ## Security Considerations
 
-During decryption the plugin temporarily writes the decrypted plain text to the same directory as the original (encrypted) file.
-This is a vulnerability as an attacker might have access to the plain text for a short period of time (the time between pregetstorage and postgetstorage calls).
-The plugin shreds, i.e. overwrites, the temporary file with zeroes to reduce the risk of leakage.
+There are two things to consider when using the `fcrypt` plugin:
 
-If the application crashes parts of the decrypted data may leak.
+1. Decrypted data is visible on the filesystem for a short period of time.
+2. Decrypted data might end up on a hard disk or some other persistent storage.
+
+The plugin directs GPG to write its (decrypted) output to a temporary directoy.
+From there on the data can be processed by other plugins.
+After the `get` phase is over, `fcrypt` overwrites the temporary file and unlinks it afterwards.
+However, if the application crashes during `get` the decrypted data may remain in the temporary directory.
+
+If the temporary directory is mounted on a hard disk, GPG writes the decrypted data on that disk.
+Thus we recommend to either mount `/tmp` to a RAM disk or specify another path as temporary direcotry within the plugin configuration
+(see Configuration below).
 
 ## Known Issues
 
@@ -119,3 +127,13 @@ output of `fcrypt` is ASCII armored. If no encryption key is provided (i.e. only
 
 Textmode can be disabled by setting `fcrypt/textmode` to `0` in the plugin configuration.
 
+### Temporary Directory
+
+`fcrypt` uses the configuration option `fcrypt/tmpdir` to generate paths for temporary files during encryption and decryption.
+The path is forwarded to GPG via the `-o` option, so GPG will output to this path.
+The directory must be readable and writable by the user.
+
+`/tmp` is used as default value.
+
+We recommend to specify a path that is mounted to a RAM disk.
+It is advisable to set restrictive access rules to this path, so that other users on the system can not access it.
