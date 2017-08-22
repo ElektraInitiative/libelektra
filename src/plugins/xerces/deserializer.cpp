@@ -89,7 +89,7 @@ void node2key (DOMNode const * n, Key const & parent, KeySet const & ks, Key & c
 
 	if (!ks.size ())
 	{ // we map the parent key to the xml root element
-		// preserve the original name if its different
+		// preserve the original name if it is different
 		auto parentName = parent.rbegin ();
 		if (parentName != parent.rend () && (*parentName) != keyName)
 		{

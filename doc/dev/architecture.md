@@ -65,7 +65,7 @@ in documentation.  In Elektra, the data structures are robust and some
 efforts were taken to make misuse unlikely.
 
 Another fundamental principle is that the API must hide implementation
-details and should not be optimised towards speed.  In Elektra, the
+details and should not be optimized towards speed.  In Elektra, the
 actual process of making configuration permanent is completely hidden.
 
 "Off-by-one confusion" is a topic of its own.  The best is to stick to
@@ -138,7 +138,7 @@ factory the actual plugins are created.
 ### Static Loading
 
 For the static loading of modules, the modules must be built-in.
-With `dlopen(const` `char*` `file)` POSIX provides a solution to look
+With `dlopen(const char* file)` POSIX provides a solution to look
 up such symbols by passing a null pointer for the parameter `file`.
 Non-POSIX operating systems may not support this kind of static loading.
 Therefore, Elektra provides a C99 conforming solution for that problem: a
@@ -158,12 +158,14 @@ of the following functions:
 
 Interface of Module System:
 
-	elektraModulesInit (KeySet *modules, Key *error); elektraPluginFactory
-	elektraModulesLoad (KeySet *modules,
-			const char *name, Key *error);
-	int elektraModulesClose (KeySet *modules, Key *error);
+```c
+int elektraModulesInit (KeySet *modules, Key *error);
+elektraPluginFactory elektraModulesLoad (KeySet *modules,
+		const char *name, Key *error);
+int elektraModulesClose (KeySet *modules, Key *error);
+```
 
-`elektraModulesInit()` initialises the module
+`elektraModulesInit()` initializes the module
 cache and calls necessary operating system facilities if
 needed. `elektraModulesLoad()` does the main work by either
 returning a pointer to the plugin factory from cache or loading it from
