@@ -414,12 +414,13 @@ static parserType * doubleQuoted (parserType * const parser)
 	return parser;
 }
 
+static parserType * saveText (parserType * const parser, char ** location);
+
 /**
  * @brief Read a double quoted value that starts and ends with optional whitespace characters
  *
+ * - The content of the double quoted value will be stored at the address specified via the variable `location`.
  * - If there was an error, then the status of the given parser structure will be updated accordingly.
- * - If the value was read successfully, then the start (position right after the first `"`) and end (position right before the ending
- *   `"`) of the double quoted content will be saved in the variables `parser->match` and `parser->end`.
  *
  * @pre The variables `parser` and `parser->file` must not be `NULL`
  *
@@ -427,16 +428,15 @@ static parserType * doubleQuoted (parserType * const parser)
  *
  * @retval An updated version of the variable `parser`
  */
-static parserType * doubleQuotedSpace (parserType * const parser)
+static parserType * doubleQuotedSpace (parserType * const parser, char ** location)
 {
 	ELEKTRA_NOT_NULL (parser);
 	ELEKTRA_NOT_NULL (parser->file);
 
 	RET_NOK (whitespace (parser));
 	RET_NOK (doubleQuoted (parser));
-	char * text = parser->match;
+	RET_NOK (saveText (parser, location));
 	RET_NOK (whitespace (parser));
-	parser->match = text;
 
 	return parser;
 }
@@ -488,8 +488,7 @@ static parserType * key (parserType * const parser)
 	ELEKTRA_NOT_NULL (parser);
 	ELEKTRA_NOT_NULL (parser->file);
 
-	RET_NOK (doubleQuotedSpace (parser));
-	return saveText (parser, &parser->key);
+	return doubleQuotedSpace (parser, &parser->key);
 }
 
 /**
@@ -508,8 +507,7 @@ static parserType * value (parserType * const parser)
 	ELEKTRA_NOT_NULL (parser);
 	ELEKTRA_NOT_NULL (parser->file);
 
-	RET_NOK (doubleQuotedSpace (parser));
-	return saveText (parser, &parser->value);
+	return doubleQuotedSpace (parser, &parser->value);
 }
 
 /**
