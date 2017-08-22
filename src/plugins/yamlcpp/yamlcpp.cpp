@@ -22,6 +22,15 @@
 
 // -- Functions ----------------------------------------------------------------------------------------------------------------------------
 
+/**
+ * @brief Read a YAML file and add the resulting data to a given key set
+ *
+ * @param mappings The key set where the YAML data will be stored
+ * @param parent This key stores the path to the YAML data file that should be read
+ *
+ * @retval ELEKTRA_PLUGIN_STATUS_SUCCESS if reading, parsing and storing was successful
+ * @retval ELEKTRA_PLUGIN_STATUS_ERROR if there were any problems
+ */
 static int yamlRead (kdb::KeySet & mappings, kdb::Key & parent)
 {
 	using namespace kdb;
