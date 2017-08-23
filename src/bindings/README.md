@@ -24,6 +24,7 @@ List of currently supported bindings (included in `ALL`):
 Experimental bindings (not included in `ALL`):
 
 - [gsettings](gsettings/) GLib bindings (experimental)
+- [haskell](haskell/) Haskell bindings
 
 Deprecated bindings (not included in `ALL`):
 
