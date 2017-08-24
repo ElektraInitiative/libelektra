@@ -27,7 +27,7 @@ using namespace kdb;
  * @retval ELEKTRA_PLUGIN_STATUS_SUCCESS if reading, parsing and storing was successful
  * @retval ELEKTRA_PLUGIN_STATUS_ERROR if there were any problems
  */
-int yamlcpp::yamlRead (KeySet & mappings, Key & parent)
+int yamlcpp::yamlRead (KeySet & mappings, Key const & parent)
 {
 	YAML::Node config = YAML::LoadFile (parent.getString ());
 	ostringstream data;

@@ -13,7 +13,7 @@
 
 namespace yamlcpp
 {
-int yamlWrite (kdb::KeySet & mappings, kdb::Key & parent);
+int yamlWrite (kdb::KeySet const & mappings, kdb::Key const & parent);
 }
 
 #endif

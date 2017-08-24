@@ -27,7 +27,7 @@ using namespace kdb;
  * @retval ELEKTRA_PLUGIN_STATUS_SUCCESS if writing was successful
  * @retval ELEKTRA_PLUGIN_STATUS_ERROR if there were any problems
  */
-int yamlcpp::yamlWrite (KeySet & mappings, Key & parent)
+int yamlcpp::yamlWrite (KeySet const & mappings, Key const & parent)
 {
 	ofstream output (parent.getString ());
 	YAML::Emitter emitter (output);
