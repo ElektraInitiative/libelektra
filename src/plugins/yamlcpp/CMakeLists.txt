@@ -15,8 +15,9 @@ add_plugin (yamlcpp
 	ADD_TEST
 	INSTALL_TEST_DATA
 	SOURCES
-		yamlcpp.hpp
-		yamlcpp.cpp
+		yamlcpp.hpp yamlcpp.cpp
+		read.hpp read.cpp
+		write.hpp write.cpp
 	INCLUDE_DIRECTORIES
 		${YAML-CPP_INCLUDE_DIR}
 	LINK_LIBRARIES
