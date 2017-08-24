@@ -48,7 +48,7 @@ static void test_read (char const * const filepath, KeySet const * const expecte
 	__attribute__ ((annotate ("oclint:suppress")))
 #endif
 {
-	printf ("• Retrieve data\n");
+	printf ("• Retrieve data from file “%s”\n", filepath);
 
 	INIT_PLUGIN ("user/examples/yamlcpp", srcdir_file (filepath), "Unable to open or parse file");
 
@@ -69,6 +69,9 @@ int main (int argc, char ** argv)
 	test_contract ();
 	test_read ("yamlcpp/Flat Block Mapping.yaml",
 #include "yamlcpp/Flat Block Mapping.h"
+		   );
+	test_read ("yamlcpp/Flat Flow Mapping.yaml",
+#include "yamlcpp/Flat Flow Mapping.h"
 		   );
 
 	printf ("\nResults: %d Test%s done — %d error%s.\n", nbTest, nbTest == 1 ? "" : "s", nbError, nbError == 1 ? "" : "s");
