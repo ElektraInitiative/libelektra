@@ -43,16 +43,15 @@ static void test_contract (void)
 	CLOSE_PLUGIN ();
 }
 
-static void test_read (void)
+static void test_read (char const * const filepath, KeySet const * const expected)
 #ifdef __llvm__
 	__attribute__ ((annotate ("oclint:suppress")))
 #endif
 {
 	printf ("• Retrieve data\n");
 
-	INIT_PLUGIN ("user/examples/yamlcpp", srcdir_file ("yamlcpp/Flat Block Mapping.yaml"), "Unable to open or parse file");
+	INIT_PLUGIN ("user/examples/yamlcpp", srcdir_file (filepath), "Unable to open or parse file");
 
-	KeySet * expected = ksNew (10, keyNew ("user/examples/yamlcpp/hello", KEY_VALUE, "world", KEY_END), KS_END);
 	compare_keyset (keySet, expected);
 
 	CLOSE_PLUGIN ();
@@ -68,7 +67,8 @@ int main (int argc, char ** argv)
 	init (argc, argv);
 
 	test_contract ();
-	test_read ();
+	test_read ("yamlcpp/Flat Block Mapping.yaml",
+		   ksNew (10, keyNew ("user/examples/yamlcpp/hello", KEY_VALUE, "world", KEY_END), KS_END));
 
 	printf ("\nResults: %d Test%s done — %d error%s.\n", nbTest, nbTest == 1 ? "" : "s", nbError, nbError == 1 ? "" : "s");
 
