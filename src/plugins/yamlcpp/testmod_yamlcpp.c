@@ -57,6 +57,24 @@ static void test_read (char const * const filepath, KeySet const * const expecte
 	CLOSE_PLUGIN ();
 }
 
+static void test_write (char const * const filepath, KeySet * const keySet)
+#ifdef __llvm__
+	__attribute__ ((annotate ("oclint:suppress[high ncss method]")))
+#endif
+{
+	printf ("• Write data and compare result with “%s”\n", filepath);
+
+	Key * parentKey = keyNew ("user/examples/yamlcpp", KEY_VALUE, elektraFilename (), KEY_END);
+	KeySet * conf = ksNew (0, KS_END);
+	PLUGIN_OPEN ("yamlcpp");
+	succeed_if (plugin->kdbSet (plugin, keySet, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "Unable to write to file");
+
+	succeed_if (compare_line_files (srcdir_file (filepath), keyString (parentKey)),
+		    "Output of plugin does not match the expected output");
+
+	CLOSE_PLUGIN ();
+}
+
 // -- Main ---------------------------------------------------------------------------------------------------------------------------------
 
 int main (int argc, char ** argv)
@@ -73,6 +91,9 @@ int main (int argc, char ** argv)
 	test_read ("yamlcpp/Flat Flow Mapping.yaml",
 #include "yamlcpp/Flat Flow Mapping.h"
 		   );
+	test_write ("yamlcpp/Output.yaml",
+#include "yamlcpp/Flat Flow Mapping.h"
+		    );
 
 	printf ("\nResults: %d Test%s done — %d error%s.\n", nbTest, nbTest == 1 ? "" : "s", nbError, nbError == 1 ? "" : "s");
 
