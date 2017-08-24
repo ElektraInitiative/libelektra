@@ -18,12 +18,19 @@
 
 // -- Macros -------------------------------------------------------------------------------------------------------------------------------
 
-#define INIT_PLUGIN(parent, filepath, errorMessage)                                                                                        \
+#define INIT_PLUGIN(parent, filepath)                                                                                                      \
 	Key * parentKey = keyNew (parent, KEY_VALUE, filepath, KEY_END);                                                                   \
 	KeySet * conf = ksNew (0, KS_END);                                                                                                 \
-	PLUGIN_OPEN ("yamlcpp");                                                                                                           \
+	PLUGIN_OPEN ("yamlcpp")
+
+#define INIT_PLUGIN_GET(parent, filepath, errorMessage)                                                                                    \
+	INIT_PLUGIN (parent, filepath);                                                                                                    \
 	KeySet * keySet = ksNew (0, KS_END);                                                                                               \
 	succeed_if (plugin->kdbGet (plugin, keySet, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, errorMessage)
+
+#define INIT_PLUGIN_SET(parent, filepath, errorMessage)                                                                                    \
+	INIT_PLUGIN (parent, filepath);                                                                                                    \
+	succeed_if (plugin->kdbSet (plugin, keySet, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, errorMessage)
 
 #define CLOSE_PLUGIN()                                                                                                                     \
 	keyDel (parentKey);                                                                                                                \
@@ -39,7 +46,7 @@ static void test_contract (void)
 {
 	printf ("• Retrieve plugin contract\n");
 
-	INIT_PLUGIN ("system/elektra/modules/yamlcpp", "", "Could not retrieve plugin contract");
+	INIT_PLUGIN_GET ("system/elektra/modules/yamlcpp", "", "Could not retrieve plugin contract");
 	CLOSE_PLUGIN ();
 }
 
@@ -50,7 +57,7 @@ static void test_read (char const * const filepath, KeySet const * const expecte
 {
 	printf ("• Retrieve data from file “%s”\n", filepath);
 
-	INIT_PLUGIN ("user/examples/yamlcpp", srcdir_file (filepath), "Unable to open or parse file");
+	INIT_PLUGIN_GET ("user/examples/yamlcpp", srcdir_file (filepath), "Unable to open or parse file");
 
 	compare_keyset (keySet, expected);
 
@@ -64,10 +71,7 @@ static void test_write (char const * const filepath, KeySet * const keySet)
 {
 	printf ("• Write data and compare result with “%s”\n", filepath);
 
-	Key * parentKey = keyNew ("user/examples/yamlcpp", KEY_VALUE, elektraFilename (), KEY_END);
-	KeySet * conf = ksNew (0, KS_END);
-	PLUGIN_OPEN ("yamlcpp");
-	succeed_if (plugin->kdbSet (plugin, keySet, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "Unable to write to file");
+	INIT_PLUGIN_SET ("user/examples/yamlcpp", elektraFilename (), "Unable to write to file");
 
 	succeed_if (compare_line_files (srcdir_file (filepath), keyString (parentKey)),
 		    "Output of plugin does not match the expected output");
