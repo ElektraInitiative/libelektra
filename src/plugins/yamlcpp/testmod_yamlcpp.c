@@ -50,7 +50,7 @@ static void test_read (void)
 {
 	printf ("• Retrieve data\n");
 
-	INIT_PLUGIN ("user/examples/yamlcpp", srcdir_file ("yamlcpp/test.yaml"), "Unable to open or parse file");
+	INIT_PLUGIN ("user/examples/yamlcpp", srcdir_file ("yamlcpp/Flat Block Mapping.yaml"), "Unable to open or parse file");
 
 	KeySet * expected = ksNew (10, keyNew ("user/examples/yamlcpp/hello", KEY_VALUE, "world", KEY_END), KS_END);
 	compare_keyset (keySet, expected);
