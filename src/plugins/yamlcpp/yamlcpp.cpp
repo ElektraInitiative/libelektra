@@ -68,17 +68,18 @@ static int yamlWrite (kdb::KeySet & mappings, kdb::Key & parent)
 	using namespace kdb;
 	using namespace std;
 
-	YAML::Node config;
+	ofstream output (parent.getString ());
+	YAML::Emitter emitter (output);
+	emitter << YAML::BeginMap;
 
 	for (auto key : mappings)
 	{
 		const char * name = elektraKeyGetRelativeName (key.getKey (), parent.getKey ());
-		config[name] = key.get<string> ();
+		emitter << YAML::Key << name << YAML::Value << key.get<string> ();
 		ELEKTRA_LOG_DEBUG ("%s: %s", key.get<string> ().c_str (), key.getName ().c_str ());
 	}
 
-	ofstream output (parent.getString ());
-	output << config;
+	emitter << YAML::EndMap;
 
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }
