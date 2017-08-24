@@ -66,6 +66,11 @@ This plugin requires [yaml-cpp][]. On a Debian based OS the package for the libr
 
 ## Limitations
 
-Currently this plugin offers **no functionality** at all.
+- **Error checking** is quite limited and not properly integrated into Elektra
+- The plugin only reads **simple mappings** (no nesting)
+- Adding and removing keys does remove **comments** inside the configuration file
+- No support for Elektra’s **array data type**
+- The plugin currently lacks proper **type support** for scalars
+- The current **test suite** is quite limited
 
 [yaml-cpp]: https://github.com/jbeder/yaml-cpp
