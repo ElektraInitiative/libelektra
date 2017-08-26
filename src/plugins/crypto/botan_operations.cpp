@@ -275,7 +275,11 @@ int elektraCryptoBotanDecrypt (KeySet * pluginConfig, Key * k, Key * errorKey, K
 		if (decryptor.remaining () > 0)
 		{
 			// decode the "header" flags
-			decryptor.read (static_cast<byte *> (&flags), sizeof (kdb_octet_t));
+			const size_t flagLength = decryptor.read (static_cast<byte *> (&flags), sizeof (kdb_octet_t));
+			if (flagLength != sizeof (kdb_octet_t))
+			{
+				throw std::length_error ("Failed to restore the original data type of the value.");
+			}
 		}
 
 		const size_t msgLength = decryptor.remaining ();
