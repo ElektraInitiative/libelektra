@@ -102,6 +102,7 @@ error:
  */
 static int shredTemporaryFile (int fd, Key * errorKey)
 {
+	kdb_octet_t error = 0;
 	kdb_octet_t buffer[512] = { 0 };
 	struct stat tmpStat;
 
@@ -113,15 +114,27 @@ static int shredTemporaryFile (int fd, Key * errorKey)
 
 	if (lseek (fd, 0, SEEK_SET))
 	{
-		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_FCRYPT_TMP_FILE, errorKey, "Failed to overwrite the temporary file.");
-		return -1;
+		goto error;
 	}
 
 	for (off_t i = 0; i < tmpStat.st_size; i += sizeof (buffer))
 	{
-		write (fd, buffer, sizeof (buffer));
+		if (write (fd, buffer, sizeof (buffer)) != sizeof (buffer))
+		{
+			// save the error state but keep on writing in the hope that further writes wont't fail
+			error = 1;
+		}
 	}
+	if (error)
+	{
+		goto error;
+	}
+
 	return 1;
+
+error:
+	ELEKTRA_SET_ERROR (ELEKTRA_ERROR_FCRYPT_TMP_FILE, errorKey, "Failed to overwrite the temporary file.");
+	return -1;
 }
 
 /**
