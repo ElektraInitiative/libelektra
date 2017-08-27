@@ -787,7 +787,7 @@ int CRYPTO_PLUGIN_FUNCTION (gpgCall) (KeySet * conf, Key * errorKey, Key * msgKe
 			if (dup (pipe_stdin[0]) < 0)
 			{
 				ELEKTRA_SET_ERROR (ELEKTRA_ERROR_CRYPTO_GPG, errorKey, "failed to redirect stdin.");
-				return -2;
+				exit (42);
 			}
 		}
 		close (pipe_stdin[0]);
@@ -797,7 +797,7 @@ int CRYPTO_PLUGIN_FUNCTION (gpgCall) (KeySet * conf, Key * errorKey, Key * msgKe
 		if (dup (pipe_stdout[1]) < 0)
 		{
 			ELEKTRA_SET_ERROR (ELEKTRA_ERROR_CRYPTO_GPG, errorKey, "failed to redirect the stdout.");
-			return -2;
+			exit (42);
 		}
 		close (pipe_stdout[1]);
 
@@ -806,7 +806,7 @@ int CRYPTO_PLUGIN_FUNCTION (gpgCall) (KeySet * conf, Key * errorKey, Key * msgKe
 		if (dup (pipe_stderr[1]) < 0)
 		{
 			ELEKTRA_SET_ERROR (ELEKTRA_ERROR_CRYPTO_GPG, errorKey, "failed to redirect stderr.");
-			return -2;
+			exit (42);
 		}
 		close (pipe_stderr[1]);
 
@@ -814,7 +814,7 @@ int CRYPTO_PLUGIN_FUNCTION (gpgCall) (KeySet * conf, Key * errorKey, Key * msgKe
 		if (execv (argv[0], argv) < 0)
 		{
 			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CRYPTO_GPG, errorKey, "failed to start the gpg binary: %s", argv[0]);
-			return -2;
+			exit (42);
 		}
 		// end of the child process
 	}
@@ -863,7 +863,7 @@ int CRYPTO_PLUGIN_FUNCTION (gpgCall) (KeySet * conf, Key * errorKey, Key * msgKe
 		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_CRYPTO_GPG, errorKey, "GPG reported a bad signature");
 		break;
 
-	case -2:
+	case 42:
 		// error has been set to errorKey by the child process
 		break;
 
