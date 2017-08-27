@@ -29,7 +29,9 @@ $support.enum_typedef($key, $info)
 
 #define ELEKTRA_DEFAULTS ksNew ($len($parameters), \
 @for $key, $info in $parameters.iteritems()
+@if $support.check_default($key, $info)
 keyNew ("$key", KEY_VALUE, "$support.default_value(key, info)", KEY_META, "type", "$support.type_of(info)", KEY_END), \
+@end if
 @end for
 KS_END)
 
