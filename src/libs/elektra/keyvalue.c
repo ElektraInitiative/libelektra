@@ -59,7 +59,7 @@
  */
 
 
-/******************************************* 
+/*******************************************
  *    General value manipulation methods   *
  *******************************************/
 
@@ -127,7 +127,7 @@ kdbGetByName(handle,ks,"system/sw/my",KDB_O_SORT|KDB_O_RECURSIVE);
 ksRewind(ks);
 while (current=ksNext(ks)) {
 	size_t size=0;
-	
+
 	if (keyIsBin(current)) {
 		size=keyGetValueSize(current);
 		printf("Key %s has a value of size %d bytes. Value: <BINARY>\nComment: %s",

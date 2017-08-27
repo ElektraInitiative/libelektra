@@ -404,9 +404,9 @@ void BackendBuilder::recommendPlugin (std::string const & name)
  * @pre Needs to be a unique new name (use refname if you want to add the same module multiple times)
  *
  * Will automatically resolve virtual plugins to actual plugins.
- * 
- * Also calls the checkconf function if provided by the plugin. The checkconf function has the 
- * following signature: int checkconf (Key * errorKey, KeySet * config) and allows a plugin to 
+ *
+ * Also calls the checkconf function if provided by the plugin. The checkconf function has the
+ * following signature: int checkconf (Key * errorKey, KeySet * config) and allows a plugin to
  * verify its configuration at mount time.
  *
  * @see resolveNeeds()

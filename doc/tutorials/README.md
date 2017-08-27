@@ -24,6 +24,7 @@ provides.
 - [Python Bindings](python-kdb.md)
 - [Ruby Bindings](/src/bindings/swig/ruby/README.md)
 - [Code Generation](/src/tools/gen/README.md)
+- [High Level API](/src/libs/highlevel/README.md)
 
 ## System Administrators
 

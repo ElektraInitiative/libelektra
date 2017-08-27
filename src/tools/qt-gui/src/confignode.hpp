@@ -140,12 +140,12 @@ public:
 	QSharedPointer<ConfigNode> getChildByName (QString & name) const;
 
 	/**
-	  * @brief Returns a child on a given index.
-	  *
-	  * @param index The index of the wanted child.
-	  *
-	  * @return The child on the given index.
-	  */
+	 * @brief Returns a child on a given index.
+	 *
+	 * @param index The index of the wanted child.
+	 *
+	 * @return The child on the given index.
+	 */
 	Q_INVOKABLE QSharedPointer<ConfigNode> getChildByIndex (int index) const;
 
 	/**

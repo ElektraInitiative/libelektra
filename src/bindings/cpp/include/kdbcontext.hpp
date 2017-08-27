@@ -262,7 +262,7 @@ public:
 	 * @par on_layer is called for every layer in the
 	 * specification.
 	 * @return the evaluated string
-	*/
+	 */
 	std::string evaluate (std::string const & key_name,
 			      std::function<bool(std::string const &, std::string &, bool in_group)> const & on_layer) const
 	{

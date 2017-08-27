@@ -214,7 +214,7 @@ void Plugins::checkResolver (Plugin & plugin)
 
 
 /** Check ordering of plugins.
-  */
+ */
 void Plugins::checkOrdering (Plugin & plugin)
 {
 	std::string order;
@@ -234,7 +234,7 @@ void Plugins::checkOrdering (Plugin & plugin)
 }
 
 /** Check conflicts of plugins.
-  */
+ */
 void Plugins::checkConflicts (Plugin & plugin)
 {
 	{

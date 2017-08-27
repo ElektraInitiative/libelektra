@@ -45,9 +45,9 @@ public:
 	}
 
 	/**
-	 * @brief highlightColor The color of the highlight bar in the views.
-	 * @return The color of the highlight bar in the views.
-	 */
+	   * @brief highlightColor The color of the highlight bar in the views.
+	   * @return The color of the highlight bar in the views.
+	   */
 	QColor highlightColor () const;
 
 	/**
@@ -148,8 +148,8 @@ signals:
 	void useSystemIconThemeChanged ();
 
 	/**
-		 * @brief This signal is emitted if the viewermode setting has changed.
-		 */
+	 * @brief This signal is emitted if the viewermode setting has changed.
+	 */
 	void viewermodeChanged ();
 
 private:

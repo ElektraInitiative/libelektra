@@ -89,11 +89,11 @@ public:
 };
 
 /**
-  * Reversible Type
-  * This checks even more pedantic, if the type is reversible
-  * to the same string.
-  * E.g. -1 might get to highest value (but this is not guaranteed)!
-  * */
+ * Reversible Type
+ * This checks even more pedantic, if the type is reversible
+ * to the same string.
+ * E.g. -1 might get to highest value (but this is not guaranteed)!
+ * */
 template <typename T>
 class RType : public Type
 {
@@ -117,11 +117,11 @@ public:
 };
 
 /**
-  * Reversible Type with min, max values
-  * This checks even more pedantic, if the type is reversible
-  * to the same string.
-  * E.g. -1 might get to highest value (but this is not guaranteed)!
-  * */
+ * Reversible Type with min, max values
+ * This checks even more pedantic, if the type is reversible
+ * to the same string.
+ * E.g. -1 might get to highest value (but this is not guaranteed)!
+ * */
 template <typename T>
 class MType : public Type
 {
