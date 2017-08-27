@@ -65,6 +65,14 @@ class ElektraGenSupport(Support):
 		else:
 			return self.kdb_type_to_tag_type(type)
 
+	def check_default(self, key, info):
+		if "default" in info:
+			return True
+		else:
+			if not "required" in info:
+				raise Exception("Key '" + key + "' has neither default nor required property!")
+			return False
+
 	def default_value(self, key, info):
 		value = info["default"]
 		type = self.type_of(info)
