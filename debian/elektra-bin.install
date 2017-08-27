@@ -1,5 +1,4 @@
 usr/bin/kdb
-usr/bin/kdb-full
 usr/lib/*/libelektratools.so
 usr/lib/*/libelektratools.so*
 usr/lib/*/elektra/tool_exec/backup

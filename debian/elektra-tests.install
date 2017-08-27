@@ -1,3 +1,4 @@
+usr/bin/kdb-full
 usr/lib/*/elektra/tool_exec/race
 usr/lib/*/elektra/tool_exec/test*
 usr/lib/*/elektra/tool_exec/check*
