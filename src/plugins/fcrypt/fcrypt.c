@@ -102,7 +102,6 @@ error:
  */
 static int shredTemporaryFile (int fd, Key * errorKey)
 {
-	kdb_octet_t error = 0;
 	kdb_octet_t buffer[512] = { 0 };
 	struct stat tmpStat;
 
@@ -121,15 +120,9 @@ static int shredTemporaryFile (int fd, Key * errorKey)
 	{
 		if (write (fd, buffer, sizeof (buffer)) != sizeof (buffer))
 		{
-			// save the error state but keep on writing in the hope that further writes wont't fail
-			error = 1;
+			goto error;
 		}
 	}
-	if (error)
-	{
-		goto error;
-	}
-
 	return 1;
 
 error:
