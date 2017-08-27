@@ -199,7 +199,7 @@ int main (int argc, char ** argv)
 		}
 		catch (std::invalid_argument const & ia)
 		{
-			cerr << "Invalid arguments passed: " << ia.what () << endl << endl;
+			cerr << "Sorry, I could not process the arguments: " << ia.what () << endl << endl;
 			cerr << cl << endl;
 			return 2;
 		}

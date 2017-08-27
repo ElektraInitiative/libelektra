@@ -588,7 +588,7 @@ std::ostream & operator<< (std::ostream & os, Cmdline & cl)
 {
 	if (cl.invalidOpt)
 	{
-		os << "Invalid option given\n" << endl;
+		os << "Sorry, I could not process the given options (see errors above)\n" << endl;
 	}
 
 	os << "Usage: " << cl.executable << " " << cl.commandName << " " << cl.synopsis;
