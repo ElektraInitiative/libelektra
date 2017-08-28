@@ -44,6 +44,9 @@ before_install:
         brew link --overwrite gcc;
         export CC=gcc-7;
         export CXX=g++-7;
+      else
+        # Linking `crypto_botan` using `gcc` fails on macOS
+        brew install botan;
       fi;
       brew install ninja;
       brew install checkbashisms;
@@ -57,7 +60,7 @@ before_install:
       brew install dbus;
       brew install qt;
       brew install discount;
-      brew install openssl botan libgcrypt;
+      brew install openssl libgcrypt;
       brew install libgit2;
       brew install xerces-c;
       pip install cheetah; # Required by kdb-gen
