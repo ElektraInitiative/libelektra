@@ -36,6 +36,14 @@ enum gpgKeyListState
 	GPG_KEYLIST_STATE_KEYID
 };
 
+enum gpgCallErrorCode
+{
+	GPG_CALL_DUP_STDIN = 0x4200,
+	GPG_CALL_DUP_STDOUT = 0x4201,
+	GPG_CALL_DUP_STDERR = 0x4202,
+	GPG_CALL_EXECV = 0x4203
+};
+
 struct gpgKeyListElement
 {
 	size_t start;
@@ -786,8 +794,7 @@ int CRYPTO_PLUGIN_FUNCTION (gpgCall) (KeySet * conf, Key * errorKey, Key * msgKe
 			close (STDIN_FILENO);
 			if (dup (pipe_stdin[0]) < 0)
 			{
-				ELEKTRA_SET_ERROR (ELEKTRA_ERROR_CRYPTO_GPG, errorKey, "failed to redirect stdin.");
-				exit (42);
+				exit (GPG_CALL_DUP_STDIN);
 			}
 		}
 		close (pipe_stdin[0]);
@@ -796,8 +803,7 @@ int CRYPTO_PLUGIN_FUNCTION (gpgCall) (KeySet * conf, Key * errorKey, Key * msgKe
 		close (STDOUT_FILENO);
 		if (dup (pipe_stdout[1]) < 0)
 		{
-			ELEKTRA_SET_ERROR (ELEKTRA_ERROR_CRYPTO_GPG, errorKey, "failed to redirect the stdout.");
-			exit (42);
+			exit (GPG_CALL_DUP_STDOUT);
 		}
 		close (pipe_stdout[1]);
 
@@ -805,16 +811,14 @@ int CRYPTO_PLUGIN_FUNCTION (gpgCall) (KeySet * conf, Key * errorKey, Key * msgKe
 		close (STDERR_FILENO);
 		if (dup (pipe_stderr[1]) < 0)
 		{
-			ELEKTRA_SET_ERROR (ELEKTRA_ERROR_CRYPTO_GPG, errorKey, "failed to redirect stderr.");
-			exit (42);
+			exit (GPG_CALL_DUP_STDERR);
 		}
 		close (pipe_stderr[1]);
 
 		// finally call the gpg executable
 		if (execv (argv[0], argv) < 0)
 		{
-			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CRYPTO_GPG, errorKey, "failed to start the gpg binary: %s", argv[0]);
-			exit (42);
+			exit (GPG_CALL_EXECV);
 		}
 		// end of the child process
 	}
@@ -863,8 +867,20 @@ int CRYPTO_PLUGIN_FUNCTION (gpgCall) (KeySet * conf, Key * errorKey, Key * msgKe
 		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_CRYPTO_GPG, errorKey, "GPG reported a bad signature");
 		break;
 
-	case 42:
-		// error has been set to errorKey by the child process
+	case GPG_CALL_DUP_STDIN:
+		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_CRYPTO_GPG, errorKey, "failed to redirect stdin.");
+		break;
+
+	case GPG_CALL_DUP_STDOUT:
+		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_CRYPTO_GPG, errorKey, "failed to redirect stdout.");
+		break;
+
+	case GPG_CALL_DUP_STDERR:
+		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_CRYPTO_GPG, errorKey, "failed to redirect stderr.");
+		break;
+
+	case GPG_CALL_EXECV:
+		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CRYPTO_GPG, errorKey, "failed to start the gpg binary: %s", argv[0]);
 		break;
 
 	default:
