@@ -56,7 +56,7 @@ The ini plugin supports the use of comments. Comment lines start with
 a ';' or a '#'. Comments are put into the comment metadata of the key
 following the comment. This can be either a section key or a normal key.
 When creating new comments (e.g. via `kdb setmeta`) you can prefix
-your comment with the comment indicator for your choice (';' or '#')
+your comment with the comment indicator of your choice (';' or '#')
 which will be used when writing the comment to the file. If the comment
 is not prefixed with a comment indicator, the ini plugin will use the
 character defined by the `comment` option, or default to '#'.
