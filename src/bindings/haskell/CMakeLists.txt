@@ -3,7 +3,9 @@ find_program (CABAL_EXECUTABLE cabal)
 find_program (C2HS_EXECUTABLE c2hs)
 
 
-if (CABAL_EXECUTABLE AND C2HS_EXECUTABLE AND GHC_EXECUTABLE) # set by find_program
+if (CABAL_EXECUTABLE) # set by find_program
+if (C2HS_EXECUTABLE)
+if (GHC_EXECUTABLE)
 	
 	SET (CABAL_INCLUDE_DIRS "${CMAKE_SOURCE_DIR}/src/include, ${CMAKE_BINARY_DIR}/src/include")
 	SET (CABAL_EXTRA_LIB_DIRS "")
@@ -30,10 +32,14 @@ if (CABAL_EXECUTABLE AND C2HS_EXECUTABLE AND GHC_EXECUTABLE) # set by find_progr
 		WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
 	)
 
-	set_property (
-		TEST testhaskell_cabal
-		PROPERTY LABELS bindings
-	)
-else ()
-	remove_binding (haskell "Either Cabal, C2HS or GHC not found, but required")
-endif ()
+	set_property (TEST testhaskell_cabal PROPERTY LABELS bindings)
+	set_property (TEST testhaskell_cabal PROPERTY LABELS kdbtests)
+else (GHC_EXECUTABLE)
+	remove_binding (haskell "GHC not found")
+endif (GHC_EXECUTABLE)
+else (C2HS_EXECUTABLE)
+	remove_binding (haskell "c2hs not found")
+endif (C2HS_EXECUTABLE)
+else (CABAL_EXECUTABLE)
+	remove_binding (haskell "cabal not found")
+endif (CABAL_EXECUTABLE)

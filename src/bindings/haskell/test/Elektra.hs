@@ -7,16 +7,18 @@ import Control.Monad
 main :: IO ()
 main = hspec $ do
   describe "Key" $ do
-    it "does what i want" $ testSingleKeyOp "/test/haskell" keyGetNameSize 14
-    it "returns the correct name size" $ testSingleKeyOp "/test/haskell" keyGetNameSize 14
-    it "returns the correct full name size" $ testSingleKeyOp "/test/haskell" keyGetFullNameSize 14
-    it "returns the correct base name size" $ testSingleKeyOp "/test/haskell" keyGetBaseNameSize 8
-    it "returns the correct unescaped name size" $ testSingleKeyOp "/test/haskell" keyGetUnescapedNameSize 14
-    it "returns the correct base size" $ testSingleKeyOp "/test/haskell" keyBaseName "haskell"
-    it "returns the correct namespace" $ testSingleKeyOp "/test/haskell" keyGetNamespace KeyNsCascading
+    it "does what i want" $ testSingleKeyOp name keyGetNameSize 25
+    it "returns the correct name size" $ testSingleKeyOp name keyGetNameSize 25
+    it "returns the correct full name size" $ testSingleKeyOp name keyGetFullNameSize 25
+    it "returns the correct full name" $ testSingleKeyOp name keyGetFullName name
+    it "returns the correct base name size" $ testSingleKeyOp name keyGetBaseNameSize 18
+    it "returns the correct base name" $ testSingleKeyOp name keyBaseName "testhaskell_cabal"
+    it "returns the correct unescaped name size" $ testSingleKeyOp name keyGetUnescapedNameSize 25
+    it "returns the correct unescaped name" $ testSingleKeyOp name keyUnescapedName "\0tests\0testhaskell_cabal\0"
+    it "returns the correct namespace" $ testSingleKeyOp name keyGetNamespace KeyNsCascading
     it "creates a new key successfully with the correct name" $ testSingleKeyOp name keyName name
     it "sets the keys name" $ testKeyModOp name (`keySetName` otherName) keyName otherName
-    it "sets the base name" $ testKeyModOp name (`keySetBaseName` other) keyName "/test/other"
+    it "sets the base name" $ testKeyModOp (name ++ "/baseName") (`keySetBaseName` other) keyName (name ++ "/" ++ other)
     it "adds an escaped name" $ testKeyModOp name (`keyAddName` otherName) keyName (name ++ otherName)
     it "adds a base name" $ testKeyModOp name (`keyAddBaseName` "haskell") keyName (name ++ "/haskell")
     it "supports multiple operations on the same key" $ do
@@ -39,20 +41,26 @@ main = hspec $ do
       parent <- keyNew "/parent"
       ks <- ksNew 1
       kdb <- kdbOpen parent
-      keyNew haskellPersisted >>= ksAppendKey ks
       kdbGet kdb ks parent
+      keyNew haskellPersisted >>= ksAppendKey ks
       kdbSet kdb ks parent
       kdbClose kdb parent
       ksAfter <- ksNew 1
       kdbAfter <- kdbOpen parent
       kdbGet kdbAfter ksAfter parent
+      putStrLn "yo?"
+      test <- ksLookupByName ksAfter haskellPersisted KdbONone
+      putStrLn "yo2?"
+      name <- keyName test
+      putStrLn "yo3?"
+      putStrLn name
       ksLookupByName ksAfter haskellPersisted KdbONone >>= keyName >>= (`shouldBe` haskellPersisted)
       True `shouldBe` True
   where
-    name = "/test/haskell"
-    otherName = "/test/haskell/other"
+    name = "/tests/testhaskell_cabal"
+    otherName = "/tests/testhaskell_cabal/other"
     other = "other"
-    haskellPersisted = "user/test/haskellPersisted"
+    haskellPersisted = "user/tests/testhaskell_cabal/haskellPersisted"
 
 testSingleKeyOp name fn expected = keyNew name >>= fn >>= (`shouldBe` expected)
 testKeyModOp name modFn testFn expected = keyNew name >>= (\x -> modFn x >> testFn x >>= (`shouldBe` expected))

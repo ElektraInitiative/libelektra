@@ -1,12 +1,14 @@
 module Elektra.Key (Key (..), Namespace (..), LookupOptions (..), withKey,
     keyNew, keyDup, keyCopy, keyClear, keyIncRef, keyDecRef, keyGetRef,
-    keyName, keyGetNameSize, keyGetUnescapedNameSize, keySetName, keyGetFullNameSize, keyAddName, 
-    keyBaseName, keyGetBaseNameSize, keyAddBaseName, keySetBaseName, keyGetNamespace,
+    keyName, keyGetNameSize, keyUnescapedName, keyGetUnescapedNameSize, keySetName, keyGetFullNameSize, keyGetFullName,
+    keyAddName,  keyBaseName, keyGetBaseNameSize, keyAddBaseName, keySetBaseName, keyGetNamespace,
     keyString, keyGetValueSize, keySetString,
     keyRewindMeta, keyNextMeta, keyCurrentMeta, keyCopyMeta, keyCopyAllMeta, keyGetMeta, keySetMeta,
     keyCmp, keyNeedSync, keyIsBelow, keyIsDirectBelow, keyRel, keyIsInactive, keyIsBinary, keyIsString) where
 
 #include <kdb.h>
+import Foreign.Marshal.Alloc (allocaBytes)
+import Foreign.Ptr (castPtr)
 
 {#context lib="libelektra" #}
 
@@ -19,18 +21,21 @@ module Elektra.Key (Key (..), Namespace (..), LookupOptions (..), withKey,
 {#typedef size_t Int#}
 {#typedef ssize_t Int #}
 
--- TODO put in own shared file and hide the internal FFI constructors
-
 {#enum KEY_NS_NONE as Namespace { underscoreToCase } deriving (Show, Eq) #}
 --{#enum KEY_NAME as ElektraKeyVarargs { underscoreToCase } deriving (Show, Eq) #} not required, we don't use the varargs version
 {#enum KDB_O_NONE as LookupOptions { underscoreToCase } deriving (Show, Eq) #}
 
 -- ***
 -- KEY CREATION / DELETION / COPPY METHODS
--- Note there is no varargs in haskell directly, hacked via lists
 -- ***
 
-{#fun unsafe keyNew {`String'} -> `Key' #}
+-- as we use haskell's reference counting here, increase the number by one
+-- so it gets deleted properly when haskell calls the finalizer
+keyNew name = do
+    key <- keyNewRaw name
+    keyIncRef key
+    return key
+{#fun unsafe keyNew as keyNewRaw {`String'} -> `Key' #}
 {#fun unsafe keyDup {`Key'} -> `Key' #}
 {#fun unsafe keyCopy {`Key', `Key'} -> `Int' #}
 {#fun unsafe keyClear {`Key'} -> `Int' #}
@@ -43,17 +48,27 @@ module Elektra.Key (Key (..), Namespace (..), LookupOptions (..), withKey,
 -- ***
 
 {#fun unsafe keyName {`Key'} -> `String' #}
+keyGetName = keyName
 {#fun unsafe keyGetNameSize {`Key'} -> `Int' #}
---{#fun keyUnescapedName {`Key'} -> `String' #}
+keyUnescapedName :: (Key) -> IO ((String))
+keyUnescapedName key = do
+    size <- keyGetUnescapedNameSize key
+    withKey key $ (\cKey -> do
+        result <- {#call unsafe keyUnescapedName as keyUnescapedNameRaw #} cKey
+        C2HSImp.peekCStringLen (castPtr result, size))
 {#fun unsafe keyGetUnescapedNameSize {`Key'} -> `Int' #}
--- TODO leave those away, as it probably makes very little sense to have these in a haskell binding
---{#fun unsafe keyGetName {`Key', alloca- `String' peekCString*, `Int'} -> `Int'#}
 {#fun unsafe keySetName {`Key', `String'} -> `Int' #}
+keyGetFullName :: (Key) -> IO ((String))
+keyGetFullName key = do
+    size <- keyGetFullNameSize key
+    withKey key $ \cKey -> 
+        allocaBytes size (\result -> do
+            {#call unsafe keyGetFullName as keyGetFullNameRaw #} cKey result size
+            C2HSImp.peekCString result)
 {#fun unsafe keyGetFullNameSize {`Key'} -> `Int' #}
---{#fun keyGetFullName {`Key'} -> `String' #}
 {#fun unsafe keyBaseName {`Key'} -> `String' #}
+keyGetBaseName = keyBaseName
 {#fun unsafe keyGetBaseNameSize {`Key'} -> `Int' #}
---{#fun keyGetBaseName {`Key'} -> `String' #}
 {#fun unsafe keyAddBaseName {`Key', `String'} -> `Int' #}
 {#fun unsafe keyAddName {`Key', `String'} -> `Int' #}
 {#fun unsafe keySetBaseName {`Key', `String'} -> `Int' #}

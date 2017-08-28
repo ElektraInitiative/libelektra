@@ -21,8 +21,8 @@ type ElektraCursor = Int
 -- To get around the variadic arguments, we simply directly pass 0 to denote the nullptr for now
 -- varargs are not supported by haskell, so apart from defining some fixed amounts of key parameters
 -- there is not much more we can do
-ksNew size = ksNewTerminated size 0
-{#fun unsafe variadic ksNew[int] as ksNewTerminated {`Int', `Int'} -> `KeySet' #}
+ksNew size = ksNewRaw size 0
+{#fun unsafe variadic ksNew[int] as ksNewRaw {`Int', `Int'} -> `KeySet' #}
 {#fun unsafe ksDup {`KeySet'} -> `KeySet' #}
 {#fun unsafe ksCopy {`KeySet', `KeySet'} -> `Int' #}
 

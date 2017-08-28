@@ -1,11 +1,11 @@
 name:                libelektra-haskell
-version:             0.1.0.0
+version:             @KDB_VERSION@
 -- synopsis:
 description:         Haskell bindings for libelektra
-homepage:            https://github.com/ElektraInitiative/libelektra#readme
+homepage:            https://www.libelektra.org
 license:             BSD3
 author:              e1528532
-maintainer:          e1528532@student.tuwien.ac.at
+maintainer:          e1528532@libelektra.org
 copyright:           libelektra.org
 category:            binding
 build-type:          Simple
@@ -37,4 +37,4 @@ test-suite libelektra-haskell-test
 
 source-repository head
   type:     git
-  location: https://github.com/ElektraInitiative/libelektra
+  location: https://git.libelektra.org

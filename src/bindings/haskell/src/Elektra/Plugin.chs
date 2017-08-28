@@ -1,4 +1,4 @@
-module Elektra.Plugin where
+module Elektra.Plugin (elektraPluginGetConfig, elektraPluginSetData, elektraPluginGetData) where
 
 {#import Elektra.Key#}
 {#import Elektra.KeySet#}
@@ -11,11 +11,12 @@ module Elektra.Plugin where
 -- PLUGIN METHODS
 -- ***
 
--- TODO this calls back into haskell, show how we could handle function pointers here
---{#fun elektraPluginExport {`Key'} -> `KDB' #}
---{#fun unsafe elektraPluginGetConfig {`Plugin'} -> `KeySet' #}
---{#fun unsafe elektraPluginSetData {`Plugin',} -> `Int' #}
---{#fun unsafe elektraPluginGetData {`KDB', `KeySet', `Key'} -> `Int' #}
+{#fun unsafe elektraPluginGetConfig {`Plugin'} -> `KeySet' #}
+-- You have to cast it using Foreign.Ptr.castPtr to the data structure you use manually
+{#fun unsafe elektraPluginSetData {`Plugin', `Ptr ()'} -> `()' #}
+{#fun unsafe elektraPluginGetData {`Plugin'} -> `Ptr ()' #}
+
+-- foreign export ccall elektraPluginOpen :: Plugin -> Key -> Int
 
 -- TODO provide the plugin methods as a type class for the different plugins along with a convenient way to register them?
 -- IDEA: We still need a c file too, which initializes the haskell environment and asks haskell for the function pointers for our plugin

@@ -11,8 +11,6 @@ module Elektra.KDB (kdbOpen, kdbClose, kdbGet, kdbSet) where
 -- KDB METHODS
 -- ***
 
--- TODO do we need this?
---{#fun unsafe elektraOpenBootstrap {`KDB', `KeySet', `Key'} -> `Int' #}
 {#fun unsafe kdbOpen {`Key'} -> `KDB' #}
 {#fun unsafe kdbClose {`KDB', `Key'} -> `Int' #}
 {#fun unsafe kdbGet {`KDB', `KeySet', `Key'} -> `Int' #}
