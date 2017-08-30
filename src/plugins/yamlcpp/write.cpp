@@ -23,11 +23,8 @@ using namespace kdb;
  *
  * @param mappings This key set stores the mappings that should be saved as YAML data.
  * @param parent This key specifies the path to the YAML data file that should be written.
- *
- * @retval ELEKTRA_PLUGIN_STATUS_SUCCESS if writing was successful
- * @retval ELEKTRA_PLUGIN_STATUS_ERROR if there were any problems
  */
-int yamlcpp::yamlWrite (KeySet const & mappings, Key const & parent)
+void yamlcpp::yamlWrite (KeySet const & mappings, Key const & parent)
 {
 	ofstream output (parent.getString ());
 	YAML::Emitter emitter (output);
@@ -41,6 +38,4 @@ int yamlcpp::yamlWrite (KeySet const & mappings, Key const & parent)
 	}
 
 	emitter << YAML::EndMap;
-
-	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }

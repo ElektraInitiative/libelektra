@@ -12,14 +12,16 @@
 #include "yamlcpp.hpp"
 #include "read.hpp"
 #include "write.hpp"
+using namespace yamlcpp;
 
 #include <kdb.hpp>
+using namespace ckdb;
+#include <kdberrors.h>
 #include <kdblogger.h>
 
-// -- Functions ----------------------------------------------------------------------------------------------------------------------------
+#include "yaml.h"
 
-using namespace ckdb;
-using namespace yamlcpp;
+// -- Functions ----------------------------------------------------------------------------------------------------------------------------
 
 /**
  * @brief This function returns a key set containing the contract of this plugin.
@@ -71,7 +73,24 @@ int elektraYamlcppSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * 
 	kdb::Key parent = kdb::Key (parentKey);
 	kdb::KeySet keys = kdb::KeySet (returned);
 
-	int status = yamlWrite (keys, parent);
+	int status = ELEKTRA_PLUGIN_STATUS_ERROR;
+
+	try
+	{
+		yamlWrite (keys, parent);
+		status = ELEKTRA_PLUGIN_STATUS_SUCCESS;
+	}
+	catch (YAML::BadFile & exception)
+	{
+		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_YAMLCPP_WRITE_FAILED, parent.getKey (), "Unable to write to file “%s”: %s.",
+				    parent.getString ().c_str (), exception.what ());
+	}
+	catch (YAML::EmitterException & exception)
+	{
+		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_YAMLCPP_EMITTER_FAILED, parent.getKey (),
+				    "Something went wrong while emitting YAML data to file “%s”: %s.", parent.getString ().c_str (),
+				    exception.what ());
+	}
 
 	parent.release ();
 	keys.release ();
