@@ -203,6 +203,7 @@ notification: new notification api (only for frontend!)
 		KdbCallback *cb, void *userdata);
 	void kdbDeliverEvents(long iterations, int sleep);
 
+clause infos/needs could automatically imply ordering?
 
 libelektra-metadata:
 	multilanguage comments
