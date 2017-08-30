@@ -59,7 +59,23 @@ int elektraYamlcppGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * 
 
 	ELEKTRA_LOG_DEBUG ("Read file “%s”", parent.getString ().c_str ());
 
-	int status = yamlRead (keys, parent);
+	int status = ELEKTRA_PLUGIN_STATUS_ERROR;
+
+	try
+	{
+		yamlRead (keys, parent);
+		status = ELEKTRA_PLUGIN_STATUS_SUCCESS;
+	}
+	catch (YAML::ParserException & exception)
+	{
+		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_YAMLCPP_PARSER_FAILED, parent.getKey (), "Unable to parse file “%s”: %s.",
+				    parent.getString ().c_str (), exception.what ());
+	}
+	catch (YAML::RepresentationException & exception)
+	{
+		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_YAMLCPP_REPRESENTATION, parent.getKey (), "Unable to read data from file “%s”: %s",
+				    parent.getString ().c_str (), exception.what ());
+	}
 
 	parent.release ();
 	keys.release ();

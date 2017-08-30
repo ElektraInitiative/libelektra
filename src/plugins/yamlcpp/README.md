@@ -35,15 +35,24 @@ kdb umount /examples/yamlcpp
 # Mount yamlcpp plugin to cascading namespace `/examples/yamlcpp`
 kdb mount config.yaml /examples/yamlcpp yamlcpp
 
-# Manually add some mappings to the database
+# Manually add a mapping to the database
 echo "🔑 : 🐳"               > `kdb file /examples/yamlcpp`
-echo "some key : 'some value'" >> `kdb file /examples/yamlcpp`
-
-# Retrieve the value of the manually added keys
+# Retrieve the value of the manually added key
 kdb get /examples/yamlcpp/🔑
 #> 🐳
+
+# Save the location of the config file so we can use it later
+echo `kdb file /examples/yamlcpp` > /tmp/data_file
+# Manually add syntactically incorrect data
+echo "some key = 'some value'" >> `kdb file /examples/yamlcpp`
 kdb get "/examples/yamlcpp/some key"
-#> some value
+# STDERR-REGEX: .*Sorry, the error .#186. occurred ;(⏎
+#               Description: Failed to retrieve YAML representation⏎
+#               .*yaml-cpp: error at line 2, column 1: bad conversion.*
+# RET: 5
+
+# Overwrite incorrect data
+echo "🔑: value" >  `cat /tmp/data_file`
 
 # Add some values via `kdb set`
 kdb set /examples/yamlcpp/fleetwood mac
@@ -66,7 +75,6 @@ This plugin requires [yaml-cpp][]. On a Debian based OS the package for the libr
 
 ## Limitations
 
-- **Error checking** is quite limited and not properly integrated into Elektra
 - The plugin only reads **simple mappings** (no nesting)
 - Adding and removing keys does remove **comments** inside the configuration file
 - No support for Elektra’s **array data type**

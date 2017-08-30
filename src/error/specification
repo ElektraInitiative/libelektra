@@ -1146,3 +1146,17 @@ severity:error
 ingroup:plugin
 module:yamlcpp
 macro:YAMLCPP_EMITTER_FAILED
+
+number:185
+description:Parsing failed
+severity:error
+ingroup:plugin
+module:yamlcpp
+macro:YAMLCPP_PARSER_FAILED
+
+number:186
+description:Failed to retrieve YAML representation
+severity:error
+ingroup:plugin
+module:yamlcpp
+macro:YAMLCPP_REPRESENTATION

@@ -23,11 +23,8 @@ using namespace kdb;
  *
  * @param mappings The key set where the YAML data will be stored
  * @param parent This key stores the path to the YAML data file that should be read
- *
- * @retval ELEKTRA_PLUGIN_STATUS_SUCCESS if reading, parsing and storing was successful
- * @retval ELEKTRA_PLUGIN_STATUS_ERROR if there were any problems
  */
-int yamlcpp::yamlRead (KeySet & mappings, Key const & parent)
+void yamlcpp::yamlRead (KeySet & mappings, Key const & parent)
 {
 	YAML::Node config = YAML::LoadFile (parent.getString ());
 	ostringstream data;
@@ -43,6 +40,4 @@ int yamlcpp::yamlRead (KeySet & mappings, Key const & parent)
 		mappings.append (key);
 	}
 	ELEKTRA_LOG_DEBUG ("Number of keys: %zd", mappings.size ());
-
-	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }
