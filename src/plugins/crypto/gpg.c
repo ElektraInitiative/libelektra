@@ -36,6 +36,14 @@ enum gpgKeyListState
 	GPG_KEYLIST_STATE_KEYID
 };
 
+enum gpgCallErrorCode
+{
+	GPG_CALL_DUP_STDIN = 0x4200,
+	GPG_CALL_DUP_STDOUT = 0x4201,
+	GPG_CALL_DUP_STDERR = 0x4202,
+	GPG_CALL_EXECV = 0x4203
+};
+
 struct gpgKeyListElement
 {
 	size_t start;
@@ -784,25 +792,33 @@ int CRYPTO_PLUGIN_FUNCTION (gpgCall) (KeySet * conf, Key * errorKey, Key * msgKe
 		if (msgKey)
 		{
 			close (STDIN_FILENO);
-			dup (pipe_stdin[0]);
+			if (dup (pipe_stdin[0]) < 0)
+			{
+				exit (GPG_CALL_DUP_STDIN);
+			}
 		}
 		close (pipe_stdin[0]);
 
 		// redirect stdout to pipe
 		close (STDOUT_FILENO);
-		dup (pipe_stdout[1]);
+		if (dup (pipe_stdout[1]) < 0)
+		{
+			exit (GPG_CALL_DUP_STDOUT);
+		}
 		close (pipe_stdout[1]);
 
 		// redirect stderr to pipe
 		close (STDERR_FILENO);
-		dup (pipe_stderr[1]);
+		if (dup (pipe_stderr[1]) < 0)
+		{
+			exit (GPG_CALL_DUP_STDERR);
+		}
 		close (pipe_stderr[1]);
 
 		// finally call the gpg executable
 		if (execv (argv[0], argv) < 0)
 		{
-			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CRYPTO_GPG, errorKey, "failed to start the gpg binary: %s", argv[0]);
-			return -1;
+			exit (GPG_CALL_EXECV);
 		}
 		// end of the child process
 	}
@@ -813,9 +829,19 @@ int CRYPTO_PLUGIN_FUNCTION (gpgCall) (KeySet * conf, Key * errorKey, Key * msgKe
 	close (pipe_stderr[1]);
 
 	// pass the message to the gpg process
-	if (msgKey && keyGetValueSize (msgKey) > 0)
+	const ssize_t sendMessageSize = keyGetValueSize (msgKey);
+	if (msgKey && sendMessageSize > 0)
 	{
-		write (pipe_stdin[1], keyValue (msgKey), keyGetValueSize (msgKey));
+		if (write (pipe_stdin[1], keyValue (msgKey), sendMessageSize) != sendMessageSize)
+		{
+			ELEKTRA_SET_ERROR (ELEKTRA_ERROR_CRYPTO_GPG, errorKey, "The communication with the GPG process failed.");
+			closePipe (pipe_stdin);
+			closePipe (pipe_stdout);
+			closePipe (pipe_stderr);
+			elektraFree (buffer);
+			elektraFree (argv[0]);
+			return -1;
+		}
 	}
 	close (pipe_stdin[1]);
 
@@ -839,6 +865,22 @@ int CRYPTO_PLUGIN_FUNCTION (gpgCall) (KeySet * conf, Key * errorKey, Key * msgKe
 	case 1:
 		// bad signature
 		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_CRYPTO_GPG, errorKey, "GPG reported a bad signature");
+		break;
+
+	case GPG_CALL_DUP_STDIN:
+		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_CRYPTO_GPG, errorKey, "failed to redirect stdin.");
+		break;
+
+	case GPG_CALL_DUP_STDOUT:
+		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_CRYPTO_GPG, errorKey, "failed to redirect stdout.");
+		break;
+
+	case GPG_CALL_DUP_STDERR:
+		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_CRYPTO_GPG, errorKey, "failed to redirect stderr.");
+		break;
+
+	case GPG_CALL_EXECV:
+		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CRYPTO_GPG, errorKey, "failed to start the gpg binary: %s", argv[0]);
 		break;
 
 	default:

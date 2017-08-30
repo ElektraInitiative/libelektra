@@ -113,15 +113,21 @@ static int shredTemporaryFile (int fd, Key * errorKey)
 
 	if (lseek (fd, 0, SEEK_SET))
 	{
-		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_FCRYPT_TMP_FILE, errorKey, "Failed to overwrite the temporary file.");
-		return -1;
+		goto error;
 	}
 
 	for (off_t i = 0; i < tmpStat.st_size; i += sizeof (buffer))
 	{
-		write (fd, buffer, sizeof (buffer));
+		if (write (fd, buffer, sizeof (buffer)) != sizeof (buffer))
+		{
+			goto error;
+		}
 	}
 	return 1;
+
+error:
+	ELEKTRA_SET_ERROR (ELEKTRA_ERROR_FCRYPT_TMP_FILE, errorKey, "Failed to overwrite the temporary file.");
+	return -1;
 }
 
 /**
