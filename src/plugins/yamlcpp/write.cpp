@@ -18,6 +18,26 @@
 using namespace std;
 using namespace kdb;
 
+namespace
+{
+/**
+* @brief Save a key set in a YAML emitter
+*
+* @param mappings The key set that should be stored in `emitter`
+* @param parent This key stores the common prefix for the key name
+* @param node This emitter stores the converted key set
+*/
+void convertKeySetToEmitter (KeySet const & mappings, Key const & parent, YAML::Emitter & emitter)
+{
+	for (auto key : mappings)
+	{
+		const char * name = elektraKeyGetRelativeName (key.getKey (), parent.getKey ());
+		emitter << YAML::Key << name << YAML::Value << key.get<string> ();
+		ELEKTRA_LOG_DEBUG ("%s: %s", key.get<string> ().c_str (), key.getName ().c_str ());
+	}
+}
+} // end namespace
+
 /**
  * @brief This function saves the key-value pairs stored in `mappings` as YAML data in the location specified via `parent`.
  *
@@ -30,12 +50,7 @@ void yamlcpp::yamlWrite (KeySet const & mappings, Key const & parent)
 	YAML::Emitter emitter (output);
 	emitter << YAML::BeginMap;
 
-	for (auto key : mappings)
-	{
-		const char * name = elektraKeyGetRelativeName (key.getKey (), parent.getKey ());
-		emitter << YAML::Key << name << YAML::Value << key.get<string> ();
-		ELEKTRA_LOG_DEBUG ("%s: %s", key.get<string> ().c_str (), key.getName ().c_str ());
-	}
+	convertKeySetToEmitter (mappings, parent, emitter);
 
 	emitter << YAML::EndMap;
 }
