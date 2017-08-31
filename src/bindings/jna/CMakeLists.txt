@@ -27,11 +27,13 @@ if (MAVEN_EXECUTABLE) # set by find_program
 	)
 
 	# compile it and build the jar
-	add_custom_target (
-		jna ALL
+	add_custom_command (
+		OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/libelektra4j/target/libelektra4j-${KDB_VERSION}.jar"
 		COMMAND ${MAVEN_EXECUTABLE} -q -B -DskipTests=true package
 		WORKING_DIRECTORY libelektra4j
+		DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/libelektra4j/pom.xml"
 	)
+	add_custom_target(jna ALL DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/libelektra4j/target/libelektra4j-${KDB_VERSION}.jar")
 
 	install (
 		FILES
