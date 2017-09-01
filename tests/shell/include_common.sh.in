@@ -16,7 +16,7 @@ nbTest=0
 nbSkip=0
 
 # the script itself
-scriptName=`basename $0`
+scriptName=`basename "$0"`
 
 MOUNTPOINT="/tests/script"
 
