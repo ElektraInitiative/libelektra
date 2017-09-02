@@ -25,6 +25,20 @@
 #define TEST_FILE "fcrypt_testfile"
 #define BUFFER_SIZE 2048
 
+#define FAULTY_SIGNATURE_FILE                                                                                                              \
+	"-----BEGIN PGP SIGNED MESSAGE-----\n\
+Hash: SHA512\n\
+\n\
+test (modified)\n\
+-----BEGIN PGP SIGNATURE-----\n\
+\n\
+iJwEAQEKAAYFAlmqZsMACgkQ2vY1sX8jDo2etAP/UA4s7e+SR38wa+AqQbWXKrPp\n\
+i3hoYLPP9lIz5ypedFBlNjcJRjv47wvGc0Z2C1Q6pMtTNcI+is2X9zJNucv9aMeA\n\
+nghsNiEgaIARzOFIe13QTevCg/HEFnq48gFSYNyeVgcsPmVP6tu3xWoEUkVEu6Vf\n\
+XRrYPw+gFVq5zeOAI4A=\n\
+=MjjB\n\
+-----END PGP SIGNATURE-----\n"
+
 static const kdb_octet_t testContent[] = { 0x01, 0x02, 0xCA, 0xFE, 0xBA, 0xBE, 0x03, 0x04 };
 
 static KeySet * newPluginConfiguration (void)
@@ -39,6 +53,18 @@ static KeySet * newPluginConfiguration (void)
 	// clang-format on
 }
 
+static KeySet * newPluginConfigurationWithTextmodeEnabled (void)
+{
+	// clang-format off
+	return ksNew (3,
+		keyNew (ELEKTRA_RECIPIENT_KEY, KEY_VALUE, TEST_KEY_ID, KEY_END),
+		keyNew (ELEKTRA_CRYPTO_PARAM_GPG_UNIT_TEST, KEY_VALUE, "1", KEY_END),
+		keyNew (ELEKTRA_SIGNATURE_KEY, KEY_VALUE, TEST_KEY_ID, KEY_END),
+		keyNew (ELEKTRA_FCRYPT_CONFIG_TEXTMODE, KEY_VALUE, "1", KEY_END),
+		KS_END);
+	// clang-format on
+}
+
 static void writeTestFile (const char * file)
 {
 	FILE * f = fopen (file, "wb");
@@ -48,29 +74,13 @@ static void writeTestFile (const char * file)
 	fclose (f);
 }
 
-static void mangleBitsInFile (const char * file)
+static void writeFaultySignatureFile (const char * file)
 {
-	kdb_octet_t buffer[BUFFER_SIZE];
-	kdb_octet_t b;
-	size_t readBytes = 0;
-
-	FILE * f = fopen (file, "rb");
-	succeed_if (f, "can not open temporary file for read/write access");
+	FILE * f = fopen (file, "w");
+	succeed_if (f, "can not write to temporary file");
 	if (!f) return;
-	readBytes = fread (buffer, 1, BUFFER_SIZE, f);
-	succeed_if (readBytes > 0, "failed to read from temp file");
-	fclose (f);
-
-	// let's destroy the integrity of the file
-	b = buffer[16];
-	buffer[16] = buffer[15];
-	buffer[15] = b;
-
-	// put back the damaged data
-	f = fopen (file, "wb");
-	succeed_if (f, "can not open temporary file for read/write access");
-	if (!f) return;
-	succeed_if (fwrite (buffer, 1, readBytes, f) == readBytes, "failed to write to temp file");
+	succeed_if (fwrite (FAULTY_SIGNATURE_FILE, 1, strlen (FAULTY_SIGNATURE_FILE), f) == strlen (FAULTY_SIGNATURE_FILE),
+		    "test file preparation failed");
 	fclose (f);
 }
 
@@ -221,11 +231,43 @@ static void test_file_signature_operations (void)
 			succeed_if (plugin->kdbSet (plugin, data, parentKey) == 1, "kdb set failed");
 			succeed_if (isTestFileCorrect (tmpFile) == -1, "file content did not change during encryption");
 
-			// simulate a faulty bit
-			mangleBitsInFile (tmpFile);
+			// try to decrypt/verify the file
+			succeed_if (plugin->kdbGet (plugin, data, parentKey) == 1, "kdb get failed");
 
-			// try to decrypt the file - the signature verification should fail
-			succeed_if (plugin->kdbGet (plugin, data, parentKey) != 1, "kdb get succeeded on faulty non-verifiable file");
+			remove (tmpFile);
+		}
+
+		ksDel (data);
+		elektraPluginClose (plugin, 0);
+	}
+
+	elektraModulesClose (modules, 0);
+	ksDel (modules);
+	keyDel (parentKey);
+}
+
+static void test_file_faulty_signature (void)
+{
+	Plugin * plugin = NULL;
+	Key * parentKey = keyNew ("system", KEY_END);
+	KeySet * modules = ksNew (0, KS_END);
+	KeySet * config = newPluginConfigurationWithTextmodeEnabled ();
+
+	elektraModulesInit (modules, 0);
+	plugin = elektraPluginOpen (PLUGIN_NAME, modules, config, 0);
+	succeed_if (plugin, "failed to open plugin handle");
+	if (plugin)
+	{
+		KeySet * data = ksNew (0, KS_END);
+		const char * tmpFile = elektraFilename ();
+		if (tmpFile)
+		{
+			// prepare test file to be encrypted
+			writeFaultySignatureFile (tmpFile);
+			keySetString (parentKey, tmpFile);
+
+			// try to decrypt/verify the file -- should fail
+			succeed_if (plugin->kdbGet (plugin, data, parentKey) == -1, "kdb get succeeded on a faulty signature");
 
 			remove (tmpFile);
 		}
@@ -250,6 +292,7 @@ int main (int argc, char ** argv)
 	test_init ();
 	test_file_crypto_operations ();
 	test_file_signature_operations ();
+	test_file_faulty_signature ();
 
 	printf ("\n" ELEKTRA_PLUGIN_NAME " RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 	return nbError;
