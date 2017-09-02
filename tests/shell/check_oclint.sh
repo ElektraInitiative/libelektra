@@ -13,6 +13,7 @@ oclint -p "@PROJECT_BINARY_DIR@" -enable-global-analysis -enable-clang-static-an
 	"@CMAKE_SOURCE_DIR@/src/libs/ease/keyname.c" \
 	"@CMAKE_SOURCE_DIR@/src/libs/utility/text.c" \
 	"@CMAKE_SOURCE_DIR@/src/plugins/camel/camel.c" \
+	"@CMAKE_SOURCE_DIR@/src/plugins/mini/mini.c" \
 	"@CMAKE_SOURCE_DIR@/src/plugins/yamlcpp/"*.{c,cpp}
 exit_if_fail "OCLint found problematic code"
 
