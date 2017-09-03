@@ -20,33 +20,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-/* -- Macros ---------------------------------------------------------------------------------------------------------------------------- */
-
-/**
- * @brief Close a given file handle
- *
- * @pre The parameters `file`, and `parentKey` must not be `NULL`.
- *
- * @param file The file handle this function should close
- * @param errorNumber A saved value for `errno` this function should restore
- *                    if it was unable to close `file`
- * @param parentKey A key that is used by this function to store error
- *                  information if the function was unable to close `file`
- * @param ERROR_FUNCTION The name of the function used to set the error in `parentKey`
- */
-#define CLOSE_FILE(file, errorNumber, parentKey, ERROR_FUNCTION)                                                                           \
-	{                                                                                                                                  \
-		ELEKTRA_NOT_NULL (file);                                                                                                   \
-		ELEKTRA_NOT_NULL (parentKey);                                                                                              \
-                                                                                                                                           \
-		if (fclose (file) != 0)                                                                                                    \
-		{                                                                                                                          \
-			ERROR_FUNCTION (parentKey);                                                                                        \
-			errno = errorNumber;                                                                                               \
-			return ELEKTRA_PLUGIN_STATUS_ERROR;                                                                                \
-		}                                                                                                                          \
-	}
-
 /* -- Functions ------------------------------------------------------------------------------------------------------------------------- */
 
 // ===========
@@ -253,18 +226,14 @@ static int parseFile (KeySet * returned, Key * parentKey)
 	int errorNumber = errno;
 	FILE * source = fopen (keyString (parentKey), "r");
 
-	if (!source)
+	if (!source || parseINI (source, returned, parentKey) < 0 | fclose (source) != 0) //! OCLint
 	{
-		ELEKTRA_LOG_WARNING ("Could not open file “%s” for reading: %s", keyString (parentKey), strerror (errno));
 		ELEKTRA_SET_ERROR_GET (parentKey);
 		errno = errorNumber;
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
 
-	int statusParse = parseINI (source, returned, parentKey);
-	CLOSE_FILE (source, errorNumber, parentKey, ELEKTRA_SET_ERROR_GET);
-
-	return statusParse;
+	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }
 
 /**
@@ -357,16 +326,13 @@ int elektraMiniSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 	int errorNumber = errno;
 	FILE * destination = fopen (keyString (parentKey), "w");
 
-	if (!destination)
+	if (!destination || (writeFile (destination, returned, parentKey) < 0) | (fclose (destination) == EOF)) //! OCLint
 	{
-		ELEKTRA_LOG_WARNING ("Could not open file “%s” for writing: %s", keyString (parentKey), strerror (errno));
 		ELEKTRA_SET_ERROR_SET (parentKey);
 		errno = errorNumber;
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
-	int statusWrite = writeFile (destination, returned, parentKey);
-	CLOSE_FILE (destination, errorNumber, parentKey, ELEKTRA_SET_ERROR_SET);
-	return statusWrite;
+	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }
 
 Plugin * ELEKTRA_PLUGIN_EXPORT (mini)

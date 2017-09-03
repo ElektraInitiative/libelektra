@@ -106,7 +106,7 @@ if (ENABLE_ASAN)
 		set (EXTRA_FLAGS "${EXTRA_FLAGS} -fsanitize=integer")
 	endif ()
 
-	if (CMAKE_COMPILER_IS_GNUCXX)
+	if (CMAKE_COMPILER_IS_GNUCXX AND NOT APPLE)
 		set (CMAKE_SHARED_LINKER_FLAGS "-fsanitize=address ${CMAKE_SHARED_LINKER_FLAGS}")
 		# this is needed because of wrong pthread detection https://gcc.gnu.org/bugzilla/show_bug.cgi?id=69443
 		find_package(Threads)

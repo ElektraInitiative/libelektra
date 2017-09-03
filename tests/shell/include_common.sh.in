@@ -16,7 +16,7 @@ nbTest=0
 nbSkip=0
 
 # the script itself
-scriptName=`basename $0`
+scriptName=`basename "$0"`
 
 MOUNTPOINT="/tests/script"
 
@@ -99,10 +99,10 @@ end_script()
 		cleanup
 	fi
 
-	echo -n "$scriptName RESULTS: $nbTest test(s) done"
+	printf "$scriptName RESULTS: $nbTest test(s) done"
 	if [ $nbSkip -ne 0 ]
 	then
-		echo -n " $nbSkip skipped"
+		printf " $nbSkip skipped"
 	fi
 	echo " $nbError error(s)."
 	exit "$nbError"
