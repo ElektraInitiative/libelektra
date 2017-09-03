@@ -1,7 +1,7 @@
 # Classes
 
 This overview complements the introduction in
-[the API documentation](http://doc.libelektra.org/api/current/html/).
+[the API documentation](https://doc.libelektra.org/api/current/html/).
 
 ## Key
 
@@ -83,4 +83,4 @@ which configuration should be used.
 For details and background
 [read more about elektra data structures](data-structures.md).
 For further information see
-[the API documentation](http://doc.libelektra.org/api/current/html/).
+[the API documentation](https://doc.libelektra.org/api/current/html/).

@@ -46,7 +46,7 @@ All plugins implement the same interface:
 
 For an easy introduction, see [this tutorial how to write a storage plugin](/doc/tutorials/plugins.md).
 For more background information of the [plugins framework, continue here](/doc/dev/plugins-framework.md).
-Otherwise, you can visit the [the API documentation](http://doc.libelektra.org/api/current/html/group__plugin.html).
+Otherwise, you can visit the [the API documentation](https://doc.libelektra.org/api/current/html/group__plugin.html).
 
 ## Plugins
 

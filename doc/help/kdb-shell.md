@@ -49,5 +49,5 @@ To execute commands from a textfile, you can use:
 
 ## SEE ALSO
 
-To learn more about these commands and how they work, refer to the [Elektra API Documentation](http://doc.libelektra.org/api/current/html).
+To learn more about these commands and how they work, refer to the [Elektra API Documentation](https://doc.libelektra.org/api/current/html).
 

@@ -29,10 +29,10 @@ other hand it gives an informal description what methods must and may provide
 to allow an alternative implementation of the API.
 
 The current version (for stable releases) of this document can be found at
-http://doc.libelektra.org/api/current/html
+https://doc.libelektra.org/api/current/html
 
 The latest version (from git master) of this document can be found at
-http://doc.libelektra.org/api/latest/html
+https://doc.libelektra.org/api/latest/html
 
 
 **Important:** On github links to API functions are broken, so it is recommended that you continue

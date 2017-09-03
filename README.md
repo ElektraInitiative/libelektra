@@ -143,7 +143,7 @@ And in terms of quality, we want:
 
  * Elektra uses simple key-value pairs.
  * Elektra uses the [BSD licence](LICENSE.md).
- * Elektra implements an [API](http://doc.libelektra.org/api/latest/html/) to fully access a global key database.
+ * Elektra implements an [API](https://doc.libelektra.org/api/latest/html/) to fully access a global key database.
  * Elektra can be thought of a [virtual file system for configuration](/doc/BIGPICTURE.md).
  * Elektra supports mounting of existing configuration files into a global key database.
  * Elektra has dozens of [Plugins](src/plugins/) that make it possible
@@ -183,7 +183,7 @@ Releases can be downloaded from [http](https://www.libelektra.org/ftp/elektra/re
 
 The [build server](https://build.libelektra.org/) builds
 Elektra for every pull request and on every commit in various ways and also produces [LCOV code
-coverage report](http://doc.libelektra.org/coverage/latest).
+coverage report](https://doc.libelektra.org/coverage/latest).
 
 
 ## Contributing

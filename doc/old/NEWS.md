@@ -195,7 +195,7 @@ sha256: 698ebd41d540eb0c6427c17c13a6a0f03eef94655fbd40655c9b42d612ea1c9b
 
 already build API-Docu can be found here:
 
-http://doc.libelektra.org/api/0.8.7/html/
+https://doc.libelektra.org/api/0.8.7/html/
 
 Best regards,
 Markus
@@ -225,7 +225,7 @@ The main entrance point and URL for any advertisement and linking stays
 
 
 Additionally (not related to github), we now have a
-[LCOV code coverage report](http://doc.libelektra.org/coverage/latest/)!
+[LCOV code coverage report](https://doc.libelektra.org/coverage/latest/)!
 
 
 best regards,
@@ -413,7 +413,7 @@ You can download the release at:
 
 
 Docu can be found here:
- http://doc.libelektra.org/api/0.8.6/html/
+ https://doc.libelektra.org/api/0.8.6/html/
 
 You can install the debian packages for debian (wheezy, amd64 only,
 some packages will be added later) by adding following lines to your
@@ -505,7 +505,7 @@ You can download the release at:
  sha256: 4ff9fc35ce9354d3bfe7877ae7ac3426621952c974feaab8d1ad20f72c4fb9ce
 
 Docu can be found here:
- http://doc.libelektra.org/api/0.8.5/html/
+ https://doc.libelektra.org/api/0.8.5/html/
 
 You can install the debian packages for debian (wheezy, amd64 only;
 gen tool, and "all" package will be added later) by
@@ -594,13 +594,13 @@ The build server now has a job searching for TODOs:
 
 The latest documentation from git master is also build there and the
 results are published here:
- http://doc.libelektra.org/api/latest/html
+ https://doc.libelektra.org/api/latest/html
 
 The current release is always documented at:
- http://doc.libelektra.org/api/current/html
+ https://doc.libelektra.org/api/current/html
 
 To get exactly this version you can look at:
- http://doc.libelektra.org/api/0.8.4/html
+ https://doc.libelektra.org/api/0.8.4/html
 
 You can download the release at:
  http://www.markus-raab.org/ftp/elektra/releases/elektra-0.8.4.tar.gz

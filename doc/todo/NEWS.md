@@ -42,13 +42,13 @@ and also [here on github](https://github.com/ElektraInitiative/ftp/tree/master/r
 This release tarball now is also available
 [signed by me using gpg](https://www.libelektra.org/ftp/elektra/releases/elektra-0.8.<<VERSION>>.tar.gz.gpg)
 
-already built API-Docu can be found [here](http://doc.libelektra.org/api/0.8.<<VERSION>>/html/)
+already built API-Docu can be found [here](https://doc.libelektra.org/api/0.8.<<VERSION>>/html/)
 
 
 ## Stay tuned!
 
 Subscribe to the
-[RSS feed](http://doc.libelektra.org/news/feed.rss)
+[RSS feed](https://doc.libelektra.org/news/feed.rss)
 to always get the release notifications.
 
 For any questions and comments, please contact the
@@ -56,7 +56,7 @@ For any questions and comments, please contact the
 the issue tracker [on github](http://git.libelektra.org/issues)
 or by email elektra@markus-raab.org.
 
-[Permalink to this NEWS entry](http://doc.libelektra.org/news/<<UID>>.html)
+[Permalink to this NEWS entry](https://doc.libelektra.org/news/<<UID>>.html)
 
 For more information, see [http://libelektra.org](http://libelektra.org)
 

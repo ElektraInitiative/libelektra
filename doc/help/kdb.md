@@ -14,10 +14,10 @@ applications' configurations, leveraging easy application integration.
 ## OVERVIEW
 
 The man pages can also be viewed online at:
-http://doc.libelektra.org/api/current/html/pages.html
+https://doc.libelektra.org/api/current/html/pages.html
 
 And the page you are currently reading at:
-http://doc.libelektra.org/api/current/html/md_doc_help_kdb.html
+https://doc.libelektra.org/api/current/html/md_doc_help_kdb.html
 
 Concepts are in man page section 7 and are prefixed with `elektra-`.
 You should start reading [elektra-introduction(7)](elektra-introduction.md).
