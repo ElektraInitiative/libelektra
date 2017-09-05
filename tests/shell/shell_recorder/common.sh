@@ -9,7 +9,7 @@ regex_escape () {
 
 if [ -z "@USE_CMAKE_KDB_COMMAND@" ]; then
 	KDBCOMMAND="@KDB_COMMAND@"
-	export PATH="$PATH:`dirname \"$KDBCOMMAND\"`"
+	export PATH="`dirname \"$KDBCOMMAND\"`:$PATH"
 else
 	KDBCOMMAND="kdb"
 fi
