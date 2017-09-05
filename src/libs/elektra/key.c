@@ -153,7 +153,7 @@ static Key * elektraKeyMalloc (void)
  *
  *
  *
- * @deprecated These other flags deprecated and ::KEY_META should be
+ * @deprecated The flags below are deprecated and ::KEY_META should be
  * preferred. They remain some time, however, for compatibility:
  * - ::KEY_DIR \n
  *   Define that the key is a directory rather than a ordinary key.
