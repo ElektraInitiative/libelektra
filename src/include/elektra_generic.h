@@ -28,8 +28,8 @@
  * @param value The new value.
  * @param error Pass a reference to an ElektraError pointer.
  */
-#define elektraSetEnum(ELEKTRA, TAG, VALUE, ERROR)                                                                                                \
-_Generic((TAG), ELEKTRA_TAG_NAMES_GEN (ELEKTRA_GENERIC_SET_ENTRY) ELEKTRA_TAG_NAMES_EXCEPT_STRING (ELEKTRA_GENERIC_SET_ENTRY)      \
+#define elektraSetEnum(ELEKTRA, TAG, VALUE, ERROR)                                                                                         \
+	_Generic((TAG), ELEKTRA_TAG_NAMES_GEN (ELEKTRA_GENERIC_SET_ENTRY) ELEKTRA_TAG_NAMES_EXCEPT_STRING (ELEKTRA_GENERIC_SET_ENTRY)      \
 char * : __elektraSetEnum \
 ) (ELEKTRA, TAG, VALUE, ERROR)
 
@@ -51,8 +51,8 @@ char * : __elektraSetEnum \
  * @param index The array index of the desired element, starting with 0. \
  * @return The value stored at the given key and index.
  */
-#define elektraSetEnumArrayElement(ELEKTRA, TAG, VALUE, INDEX, ERROR)                                                                                        \
-_Generic((TAG), ELEKTRA_TAG_NAMES_GEN (ELEKTRA_GENERIC_SET_ARRAY_ELEMENT_ENTRY)                                                  \
+#define elektraSetEnumArrayElement(ELEKTRA, TAG, VALUE, INDEX, ERROR)                                                                      \
+	_Generic((TAG), ELEKTRA_TAG_NAMES_GEN (ELEKTRA_GENERIC_SET_ARRAY_ELEMENT_ENTRY)                                                  \
 char * : __elektraSetEnumArrayElement \
 ) (ELEKTRA, TAG, VALUE, INDEX, ERROR)
 
@@ -74,8 +74,8 @@ char * : __elektraSetEnumArrayElement \
  * @param index The array index of the desired element, starting with 0.
  * @return The value stored at the given key and index.
  */
-#define elektraGetEnum(ELEKTRA, TAG)                                                                                                           \
-_Generic((TAG), ELEKTRA_TAG_NAMES_GEN (ELEKTRA_GENERIC_GET_ENTRY) ELEKTRA_TAG_NAMES_EXCEPT_STRING (ELEKTRA_GENERIC_GET_ENTRY)      \
+#define elektraGetEnum(ELEKTRA, TAG)                                                                                                       \
+	_Generic((TAG), ELEKTRA_TAG_NAMES_GEN (ELEKTRA_GENERIC_GET_ENTRY) ELEKTRA_TAG_NAMES_EXCEPT_STRING (ELEKTRA_GENERIC_GET_ENTRY)      \
 char * : __elektraGetEnum \
 ) (ELEKTRA, TAG)
 
@@ -98,7 +98,7 @@ char * : __elektraGetEnum \
  * @param index The array index of the desired element, starting with 0. \
  * @return The value stored at the given key and index.
  */
-#define elektraGetEnumArrayElement(ELEKTRA, TAG, INDEX)                                                                                        \
-_Generic((TAG), ELEKTRA_TAG_NAMES_GEN (ELEKTRA_GENERIC_GET_ARRAY_ELEMENT_ENTRY)                                                  \
+#define elektraGetEnumArrayElement(ELEKTRA, TAG, INDEX)                                                                                    \
+	_Generic((TAG), ELEKTRA_TAG_NAMES_GEN (ELEKTRA_GENERIC_GET_ARRAY_ELEMENT_ENTRY)                                                  \
 char * : __elektraGetEnumArrayElement \
 ) (ELEKTRA, TAG, INDEX)
