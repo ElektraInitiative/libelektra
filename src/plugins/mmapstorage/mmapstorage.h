@@ -20,6 +20,7 @@ struct _mmapHeader
 {
 	size_t mmapMagicNumber;
 	size_t mmapSize;
+	size_t dataSize;
 	size_t numKeys;
 	size_t numMetaKeys;
 	size_t numMetaKeySets;
@@ -32,9 +33,13 @@ struct _dynArray
 {
 	size_t size;
 	size_t alloc;
-	size_t * keyArray;
-	
+	Key ** keyArray;
+	Key ** mappedKeyArray;
 };
+
+#ifdef DEBUG
+int findOrInsert (Key * key, DynArray * dynArray);
+#endif
 
 
 int elektraMmapstorageOpen (Plugin * handle, Key * errorKey);
@@ -43,6 +48,7 @@ int elektraMmapstorageGet (Plugin * handle, KeySet * ks, Key * parentKey);
 int elektraMmapstorageSet (Plugin * handle, KeySet * ks, Key * parentKey);
 int elektraMmapstorageError (Plugin * handle, KeySet * ks, Key * parentKey);
 int elektraMmapstorageCheckConfig (Key * errorKey, KeySet * conf);
+
 
 Plugin * ELEKTRA_PLUGIN_EXPORT (mmapstorage);
 
