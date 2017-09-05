@@ -25,17 +25,24 @@ namespace
 *
 * @param node This YAML node stores the data that should be added to the keyset `mappings`
 * @param mappings The key set where the YAML data will be stored
-* @param prefix This string stores a prefix for the key name
+* @param prefix This key stores the prefix for the key name
 */
-void convertNodeToKeySet (YAML::Node const & node, KeySet & mappings, string const & prefix)
+void convertNodeToKeySet (YAML::Node const & node, KeySet & mappings, Key const & parent)
 {
-	for (auto element : node)
+	if (node.IsScalar ())
 	{
-		Key key (prefix, KEY_END);
-		key.addBaseName (element.first.as<string> ());
-		key.set<string> (element.second.as<string> ());
-		ELEKTRA_LOG_DEBUG ("%s: %s", key.get<string> ().c_str (), key.getName ().c_str ());
+		Key key (parent.getFullName (), KEY_VALUE, node.as<string> ().c_str (), KEY_END);
+		ELEKTRA_LOG_DEBUG ("%s: %s", key.getName ().c_str (), key.get<string> ().c_str ());
 		mappings.append (key);
+	}
+	else if (node.IsMap ())
+	{
+		for (auto element : node)
+		{
+			Key key (parent.getFullName (), KEY_END);
+			key.addBaseName (element.first.as<string> ());
+			convertNodeToKeySet (element.second, mappings, key);
+		}
 	}
 }
 } // end namespace
@@ -53,6 +60,6 @@ void yamlcpp::yamlRead (KeySet & mappings, Key const & parent)
 	data << config;
 
 	ELEKTRA_LOG_DEBUG ("Data: “%s”", data.str ().c_str ());
-	convertNodeToKeySet (config, mappings, parent.getFullName ());
+	convertNodeToKeySet (config, mappings, parent);
 	ELEKTRA_LOG_DEBUG ("Number of keys: %zd", mappings.size ());
 }

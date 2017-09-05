@@ -44,11 +44,11 @@ kdb get /examples/yamlcpp/🔑
 # Save the location of the config file so we can use it later
 echo `kdb file /examples/yamlcpp` > /tmp/data_file
 # Manually add syntactically incorrect data
-echo "some key = 'some value'" >> `kdb file /examples/yamlcpp`
+echo "some key: @some  value" >> `kdb file /examples/yamlcpp`
 kdb get "/examples/yamlcpp/some key"
-# STDERR-REGEX: .*Sorry, the error .#186. occurred ;(⏎
-#               Description: Failed to retrieve YAML representation⏎
-#               .*yaml-cpp: error at line 2, column 1: bad conversion.*
+# STDERR-REGEX: .*Sorry, the error .#185. occurred ;(⏎
+#               Description: Parsing failed⏎
+#               .*yaml-cpp: error at line 1, column 11: unknown token.*
 # RET: 5
 
 # Overwrite incorrect data
