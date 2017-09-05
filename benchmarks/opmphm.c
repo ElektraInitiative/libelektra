@@ -25,7 +25,7 @@ void printStderrExit (const char * msg);
 void showShape (void);
 // generate KeySets
 KeySetShape * getKeySetShapes (void);
-const size_t numberOfShapes = 336;
+const size_t numberOfShapes = 660;
 // config
 const size_t keySetsPerShape = 1;
 const size_t minN = 1000;
@@ -725,12 +725,11 @@ KeySetShape * getKeySetShapes (void)
 	if (!out) printStderrExit ("malloc KeySetShapes");
 	const unsigned int wordLength[4] = { 1, 5, 20, 50 };
 	const unsigned int special[2] = { 5, 10 };
-	//~ const unsigned int parent[5] = { 0, 1, 5, 15, 30 };
-	const unsigned int parent[4] = { 0, 1, 5, 15 };
-	const KsShapeFunction shapeFunctions[7] =
-		{ shapefConstBinary5, shapefConstBinary10, shapefConstBinary20, shapefBinaryRand,
-		  shapefConstBranch2, shapefConstBranch3,  shapefConstBranch5 /*,    shapefDynamicBranch5, shapefDynamicBranch10,
-						     shapefDynamicBranch15, shapefDynamicBranch20 */ };
+	const unsigned int parent[5] = { 0, 1, 5, 15, 30 };
+	const KsShapeFunction shapeFunctions[11] = { shapefConstBinary5,    shapefConstBinary10,  shapefConstBinary20,
+						     shapefBinaryRand,      shapefConstBranch2,   shapefConstBranch3,
+						     shapefConstBranch5,    shapefDynamicBranch5, shapefDynamicBranch10,
+						     shapefDynamicBranch15, shapefDynamicBranch20 };
 	// numberOfShapes = 6 * 2 * 5 * shapefCount
 	size_t shapeCount = 0;
 	for (int w0 = 0; w0 < 4; ++w0)
@@ -739,9 +738,9 @@ KeySetShape * getKeySetShapes (void)
 		{
 			for (int s = 0; s < 2; ++s)
 			{
-				for (int p = 0; p < 4; ++p)
+				for (int p = 0; p < 5; ++p)
 				{
-					for (int sf = 0; sf < 7; ++sf)
+					for (int sf = 0; sf < 11; ++sf)
 					{
 						out[shapeCount].minWordLength = wordLength[w0];
 						out[shapeCount].maxWordLength = wordLength[w1];
