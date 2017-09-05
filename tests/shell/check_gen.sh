@@ -36,7 +36,7 @@ GEN="$GEN_FOLDER/gen"
 TESTPROGS="./lift ./cpplift ./nestedlift ./dynamiccontextlift"
 # ./staticcontextlift commented out
 
-if $GEN -h | grep "^usage:"
+if "$GEN" -h | grep "^usage:"
 then
 	echo "$GEN available"
 else
@@ -68,7 +68,7 @@ succeed_if "could not mount: $HEAVY_MATERIAL_LIFT_FILE at $HEAVY_MATERIAL_LIFT_M
 
 
 
-cd $GEN_FOLDER
+cd "$GEN_FOLDER"
 
 
 BUILD_DIR="@CMAKE_BINARY_DIR@" make
