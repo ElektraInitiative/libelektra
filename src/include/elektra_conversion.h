@@ -9,8 +9,8 @@
 #ifndef ELEKTRA_CONVERSION_H
 #define ELEKTRA_CONVERSION_H
 
-#include <stdlib.h>
 #include "kdbhelper.h"
+#include <stdlib.h>
 
 #define KDB_STRING_TO_STRING(value) value
 

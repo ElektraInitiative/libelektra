@@ -20,6 +20,6 @@ cheetahVarStartToken = $
 
 @for $key, $info in $parameters.iteritems()
 @if $support.type_of($info) == "enum"
-ELEKTRA_DEFINITIONS ($support.enum_type($key), $support.enum_type_name($key), KDB_TYPE_ENUM, KDB_ENUM_TO_STRING, KDB_STRING_TO_ENUM)
+ELEKTRA_DEFINITIONS ($support.enum_type($key), $support.enum_type_name($key), "enum", KDB_ENUM_TO_STRING, KDB_STRING_TO_ENUM)
 @end if
 @end for
