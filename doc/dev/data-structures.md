@@ -373,7 +373,7 @@ an element with `opmphmLookup ()`. Those indices must be known when building the
 The desired return index, also known as the order is set in `OpmphmGraph->edges[i].order`.
 Where `i` is the i-th element.
 
-The build consists of tree steps.
+The build consists of three steps.
 
 ### Initialization
 
