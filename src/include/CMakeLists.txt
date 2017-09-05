@@ -85,6 +85,7 @@ install (FILES
 	elektra_generic.h
 	elektra_error.h
 	elektra_error_codes.h
+	elektra_conversion.h
 	DESTINATION include/${TARGET_INCLUDE_FOLDER})
 
 

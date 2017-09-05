@@ -10,6 +10,7 @@
 #define ELEKTRA_H
 
 #include "elektra_error.h"
+#include "elektra_conversion.h"
 #include "kdb.h"
 #include "kdbtypes.h"
 
@@ -91,7 +92,8 @@ struct ElektraTag
 	X (kdb_unsigned_long_long_t, UnsignedLongLong)                                                                                     \
 	X (kdb_float_t, Float)                                                                                                             \
 	X (kdb_double_t, Double)                                                                                                           \
-	X (kdb_long_double_t, LongDouble)
+    X (kdb_long_double_t, LongDouble)                                                                                                  \
+    X (int, Enum)
 
 ELEKTRA_TYPES (ELEKTRA_DECLARATIONS)
 
@@ -182,6 +184,12 @@ ELEKTRA_TYPES (ELEKTRA_DECLARATIONS)
 #define elektraSetLongDouble(elektra, keynameOrTag, value, error)                                                                          \
 	ELEKTRA_SET_VALUE_AS_STRING (LongDouble, "long_double", elektra, keynameOrTag, KDB_LONG_DOUBLE_TO_STRING (value), error)
 
+/**
+ * @copydoc elektraSetString
+ */
+//#define elektraSetEnum(elektra, keynameOrTag, value, error)                                                                               \
+//ELEKTRA_SET_VALUE_AS_STRING (Enum, "enum", elektra, keynameOrTag, KDB_ENUM_TO_STRING (value), error)
+
 // Getters
 
 #define ELEKTRA_GET_VALUE_AS_STRING(typeName, KDB_TYPE, elektra, keynameOrTag)                                                             \
@@ -260,6 +268,12 @@ ELEKTRA_TYPES (ELEKTRA_DECLARATIONS)
  */
 #define elektraGetLongDouble(elektra, keynameOrTag)                                                                                        \
 	KDB_STRING_TO_LONG_DOUBLE (ELEKTRA_GET_VALUE_AS_STRING (LongDouble, "long_double", elektra, keynameOrTag))
+
+/**
+ * @copydoc elektraGetString
+ */
+//#define elektraGetEnum(elektra, keynameOrTag)                                                                                        \
+//KDB_STRING_TO_ENUM (ELEKTRA_GET_VALUE_AS_STRING (Enum, "enum", elektra, keynameOrTag))
 
 // Array-Setters
 
@@ -442,6 +456,11 @@ ELEKTRA_TYPES (ELEKTRA_DECLARATIONS)
 #define elektraGetLongDoubleArrayElement(elektra, keynameOrTag, index)                                                                     \
 	KDB_STRING_TO_LONG_DOUBLE (ELEKTRA_GET_ARRAY_ELEMENT_VALUE_AS_STRING (LongDouble, "long_double", elektra, keynameOrTag, index))
 
+void __elektraSetEnum(Elektra * elektra, char * name, int value, ElektraError ** error);
+void __elektraSetEnumArrayElement(Elektra * elektra, char * name, int value, size_t index, ElektraError ** error);
+int __elektraGetEnum(Elektra * elektra, char * keyName);
+int __elektraGetEnumArrayElement(Elektra * elektra, char * keyName, int index);
+
 Elektra * elektraOpen (const char * application, KeySet * defaults, ElektraError ** error);
 void elektraClose (Elektra * elektra);
 size_t elektraArraySize (Elektra * elektra, const char * keyName);
@@ -459,11 +478,11 @@ const char * getArrayElementValueAsString (Elektra * elektra, const char * name,
 
 #define ELEKTRA_GENERIC_SET_ENTRY(typeName) ELEKTRA_TAG (typeName) : ELEKTRA_SET_BY_TAG (typeName),
 
-#define ELEKTRA_GENERIC_SET_ARRAY_ELEMENT_ENTRY(typeName) ELEKTRA_TAG (typeName) : ELEKTRA_SET_BY_TAG (typeName),
+#define ELEKTRA_GENERIC_SET_ARRAY_ELEMENT_ENTRY(typeName) ELEKTRA_TAG (typeName) : ELEKTRA_SET_ARRAY_ELEMENT_BY_TAG (typeName),
 
 #define ELEKTRA_GENERIC_GET_ENTRY(typeName) ELEKTRA_TAG (typeName) : ELEKTRA_GET_BY_TAG (typeName),
 
-#define ELEKTRA_GENERIC_GET_ARRAY_ELEMENT_ENTRY(typeName) ELEKTRA_TAG (typeName) : ELEKTRA_GET_BY_TAG (typeName),
+#define ELEKTRA_GENERIC_GET_ARRAY_ELEMENT_ENTRY(typeName) ELEKTRA_TAG (typeName) : ELEKTRA_GET_ARRAY_ELEMENT_BY_TAG (typeName),
 
 #define ELEKTRA_TAG_NAMES_EXCEPT_STRING(X)                                                                                                 \
 	X (Boolean)                                                                                                                        \
@@ -477,7 +496,8 @@ const char * getArrayElementValueAsString (Elektra * elektra, const char * name,
 	X (UnsignedLongLong)                                                                                                               \
 	X (Float)                                                                                                                          \
 	X (Double)                                                                                                                         \
-	X (LongDouble)
+	X (LongDouble)                                                                                                                     \
+    X (Enum)
 
 #include "elektra_generic.h"
 
