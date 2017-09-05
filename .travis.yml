@@ -117,4 +117,5 @@ script:
   - ninja
   - ninja run_all
   - ninja install
+  - ninja test
   - kdb run_all
