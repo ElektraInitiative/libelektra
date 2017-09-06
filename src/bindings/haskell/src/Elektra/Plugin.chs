@@ -1,11 +1,32 @@
-module Elektra.Plugin (elektraPluginGetConfig, elektraPluginSetData, elektraPluginGetData) where
+module Elektra.Plugin (Plugin, elektraPluginGetConfig, elektraPluginSetData, elektraPluginGetData,
+    elektraPluginOpenWith, elektraPluginCloseWith, elektraPluginGetWith, elektraPluginSetWith,
+    elektraPluginErrorWith, elektraPluginCheckConfigWith,
+    PluginStatus (..)) where
 
 {#import Elektra.Key#}
 {#import Elektra.KeySet#}
+import Foreign.Ptr (Ptr)
+import Foreign.ForeignPtr (newForeignPtr_)
+import Control.Monad (join, liftM, liftM2, liftM3)
 
 #include <kdbplugin.h>
 
 {#pointer *Plugin foreign newtype #}
+
+-- ***
+-- CONSTANTS
+-- **
+
+data PluginStatus = Error | NoUpdate | Success deriving (Show, Eq)
+instance Enum PluginStatus where
+    fromEnum Error = -1
+    fromEnum NoUpdate = 0
+    fromEnum Success = 1
+
+    toEnum (-1) = Error
+    toEnum 0 = NoUpdate
+    toEnum 1 = Success
+    toEnum unmatched = error ("PluginStatus.toEnum: Cannot match " ++ show unmatched)
 
 -- ***
 -- PLUGIN METHODS
@@ -16,9 +37,32 @@ module Elektra.Plugin (elektraPluginGetConfig, elektraPluginSetData, elektraPlug
 {#fun unsafe elektraPluginSetData {`Plugin', `Ptr ()'} -> `()' #}
 {#fun unsafe elektraPluginGetData {`Plugin'} -> `Ptr ()' #}
 
--- foreign export ccall elektraPluginOpen :: Plugin -> Key -> Int
+-- ***
+-- PLUGIN STUB METHODS
+-- ***
 
--- TODO provide the plugin methods as a type class for the different plugins along with a convenient way to register them?
--- IDEA: We still need a c file too, which initializes the haskell environment and asks haskell for the function pointers for our plugin
--- Then in the c file it calls startupHaskell and shutdownHaskell, the rest gets either directly forwarded to the haskell functions or pulled through
--- {#fun unsafe elektraPlugin {`KDB', `KeySet', `Key'} -> `Int' #}
+elektraPluginOpenWith :: (Plugin -> Key -> IO PluginStatus) -> Ptr Plugin -> Ptr Key -> IO Int
+elektraPluginOpenWith = elektraPlugin2
+
+elektraPluginCloseWith :: (Plugin -> Key -> IO PluginStatus) -> Ptr Plugin -> Ptr Key -> IO Int
+elektraPluginCloseWith = elektraPlugin2
+
+elektraPluginGetWith :: (Plugin -> KeySet -> Key -> IO PluginStatus) -> Ptr Plugin -> Ptr KeySet -> Ptr Key -> IO Int
+elektraPluginGetWith = elektraPlugin3
+
+elektraPluginSetWith :: (Plugin -> KeySet -> Key -> IO PluginStatus) -> Ptr Plugin -> Ptr KeySet -> Ptr Key -> IO Int
+elektraPluginSetWith = elektraPlugin3
+
+elektraPluginErrorWith :: (Plugin -> KeySet -> Key -> IO PluginStatus) -> Ptr Plugin -> Ptr KeySet -> Ptr Key -> IO Int
+elektraPluginErrorWith = elektraPlugin3
+
+elektraPluginCheckConfigWith :: (Key -> KeySet -> IO PluginStatus) -> Ptr Key -> Ptr KeySet -> IO Int
+elektraPluginCheckConfigWith f k ks = liftM fromEnum $ join $ liftM2 f (liftM Key $ newForeignPtr_ k) (liftM KeySet $ newForeignPtr_ ks)
+
+-- shared parameter conversation
+
+elektraPlugin2 :: (Plugin -> Key -> IO PluginStatus) -> Ptr Plugin -> Ptr Key -> IO Int
+elektraPlugin2 f p k = liftM fromEnum $ join $ liftM2 f (liftM Plugin $ newForeignPtr_ p) (liftM Key $ newForeignPtr_ k)
+
+elektraPlugin3 :: (Plugin -> KeySet -> Key -> IO PluginStatus) -> Ptr Plugin -> Ptr KeySet -> Ptr Key -> IO Int
+elektraPlugin3 f p ks k = liftM fromEnum $ join $ liftM3 f (liftM Plugin $ newForeignPtr_ p) (liftM KeySet $ newForeignPtr_ ks) (liftM Key $ newForeignPtr_ k)

@@ -48,14 +48,9 @@ main = hspec $ do
       ksAfter <- ksNew 1
       kdbAfter <- kdbOpen parent
       kdbGet kdbAfter ksAfter parent
-      putStrLn "yo?"
       test <- ksLookupByName ksAfter haskellPersisted KdbONone
-      putStrLn "yo2?"
       name <- keyName test
-      putStrLn "yo3?"
-      putStrLn name
       ksLookupByName ksAfter haskellPersisted KdbONone >>= keyName >>= (`shouldBe` haskellPersisted)
-      True `shouldBe` True
   where
     name = "/tests/testhaskell_cabal"
     otherName = "/tests/testhaskell_cabal/other"

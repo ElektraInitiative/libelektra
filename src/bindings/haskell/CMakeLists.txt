@@ -16,14 +16,23 @@ if (GHC_EXECUTABLE)
 		"${CMAKE_CURRENT_BINARY_DIR}/libelektra-haskell.cabal"
 		@ONLY
 	)
-	# compile it with cabal as our build tool
-	add_custom_target (
-		haskell ALL
-		COMMAND ${CABAL_EXECUTABLE} build
-		WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-	)
 
-	# TODO where to install this? install the cabal package globally?
+	# build and install it to the cabal db
+	if (INSTALL_SYSTEM_FILES)
+		add_custom_target (
+			haskell ALL
+			COMMAND ${CABAL_EXECUTABLE} --enable-shared configure
+			COMMAND ${CABAL_EXECUTABLE} install
+			WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+		)
+	else (INSTALL_SYSTEM_FILES) # else just build it
+		add_custom_target (
+			haskell ALL
+			COMMAND ${CABAL_EXECUTABLE} --enable-shared configure
+			COMMAND ${CABAL_EXECUTABLE} build
+			WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+		)
+	endif (INSTALL_SYSTEM_FILES)
 
 	# also test it with cabal
 	add_test (
