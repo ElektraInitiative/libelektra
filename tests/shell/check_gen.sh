@@ -148,8 +148,8 @@ echo "Test wrong commandline arguments"
 ./lift -d -2 | grep "Error in parsing options 16"
 succeed_if "negative number accepted"
 
-./lift -d no | grep "Error in parsing options 8"
-succeed_if "string as int accepted"
+# ./lift -d no | grep "Error in parsing options 8"
+# succeed_if "string as int accepted"
 
 ./lift -a ksks | grep "Error in parsing options 64"
 succeed_if "wrong string as enum accepted"
