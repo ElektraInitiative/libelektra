@@ -103,6 +103,7 @@ clean:
 	rm -f core
 	rm -f cpplift
 	rm -f *.pyc
+	rm -fr *.dSYM
 	rm -f lift.3
 	rm -f lift_nested.hpp
 	rm -f nestedlift
