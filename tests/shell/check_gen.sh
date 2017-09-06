@@ -30,6 +30,16 @@ else
 	exit
 fi
 
+[ -z "${CC}" ] && CC=gcc
+[ -z "${CXX}" ] && CXX=g++
+if "${CC}" --version 2> /dev/null | grep -Eq '^gcc'
+then
+	echo "GCC available"
+else
+	echo "GCC not available"
+	exit
+fi
+
 GEN_FOLDER="@CMAKE_SOURCE_DIR@/src/tools/gen"
 GEN="$GEN_FOLDER/gen"
 
@@ -71,7 +81,7 @@ succeed_if "could not mount: $HEAVY_MATERIAL_LIFT_FILE at $HEAVY_MATERIAL_LIFT_M
 cd "$GEN_FOLDER"
 
 
-BUILD_DIR="@CMAKE_BINARY_DIR@" make
+BUILD_DIR="@CMAKE_BINARY_DIR@" make CC="${CC}" CXX="${CXX}"
 
 
 
