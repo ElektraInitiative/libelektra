@@ -22,7 +22,7 @@ else
 	exit
 fi
 
-if test -x /usr/bin/python
+if /usr/bin/env python2 -V >& /dev/null
 then
 	echo "python available"
 else
