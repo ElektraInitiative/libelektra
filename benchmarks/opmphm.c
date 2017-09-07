@@ -15,7 +15,7 @@ int32_t elektraRandBenchmarkInitSeed;
 
 // benchmarks helpers
 static int32_t * getRandomSeed (int32_t * seed);
-static FILE * openOutFileWithR_PARTITEpostfix (const char * name);
+static FILE * openOutFileWithRPartitepostfix (const char * name);
 static const char * elektraGetString (void * data);
 static size_t getPower (size_t p, size_t q);
 size_t getNCount (void);
@@ -107,7 +107,7 @@ void benchmarkAllHashFunctionInit (size_t ** results)
  */
 void benchmarkAllHashFunctionDeinit (size_t * results, const char * filename)
 {
-	FILE * out = openOutFileWithR_PARTITEpostfix (filename);
+	FILE * out = openOutFileWithRPartitepostfix (filename);
 	if (!out) printStderrExit ("can not open out file");
 	const size_t cCount = getCCount ();
 	size_t n;
@@ -292,10 +292,10 @@ void benchmarkFoxHashFunctionRun (KeySet * ks, size_t * results, size_t n, size_
 				for (uint8_t r = 0; r < OPMPHMR_PARTITE; ++r)
 				{
 					// set edge.h[]
-					graph->edges[i].h[r] = foxHash (fHash[r], elektraGetString (key)) % opmphm->p;
+					graph->edges[i].h[r] = foxHash (fHash[r], elektraGetString (key)) % opmphm->componentSize;
 					// add edge to graph
 					// set edge.nextEdge[r]
-					size_t v = r * opmphm->p + graph->edges[i].h[r];
+					size_t v = r * opmphm->componentSize + graph->edges[i].h[r];
 					graph->edges[i].nextEdge[r] = graph->vertices[v].firstEdge;
 					// set vertex.firstEdge
 					graph->vertices[v].firstEdge = i;
@@ -310,7 +310,7 @@ void benchmarkFoxHashFunctionRun (KeySet * ks, size_t * results, size_t n, size_
 			cyclic = hasCycle (opmphm, graph, n);
 			if (cyclic)
 			{
-				memset (graph->vertices, 0, opmphm->p * OPMPHMR_PARTITE * sizeof (OpmphmVertex));
+				memset (graph->vertices, 0, opmphm->componentSize * OPMPHMR_PARTITE * sizeof (OpmphmVertex));
 			}
 			++calls;
 		} while (cyclic && calls < benchmarkAllHashFunctionMaxCalls);
@@ -354,7 +354,7 @@ void benchmarkOpmphmHashFunctionRun (KeySet * ks, size_t * results, size_t n, si
 		{
 			ret = opmphmMapping (opmphm, graph, &init, n);
 			++calls;
-		} while (ret > 0 && calls < benchmarkAllHashFunctionMaxCalls);
+		} while (ret && calls < benchmarkAllHashFunctionMaxCalls);
 		opmphmDel (opmphm);
 		opmphmGraphDel (graph);
 		results[nIndex * (cCount * numberOfShapes * keySetsPerShape) + cIndex * (numberOfShapes * keySetsPerShape) +
@@ -464,7 +464,7 @@ static int32_t * getRandomSeed (int32_t * seed)
 	return seed;
 }
 // supports OPMPHMTUPLE < 100
-static FILE * openOutFileWithR_PARTITEpostfix (const char * name)
+static FILE * openOutFileWithRPartitepostfix (const char * name)
 {
 	const char * const format = "%u.csv";
 	char formatData[strlen (name) + strlen (format) + 1];

@@ -368,7 +368,7 @@ All structs are defined in [opmphm.h](/src/include/kdbopmphm.h).
 
 The OPMPHM is not an ordinary hash map. The OPMPHM inserts all elements at once,
 this process is known as build. The OPMPHM is designed to return an index when looking up
-an element with `opmphmLookup ()`. Those indices must be known when building the OPMPHM.
+an element. Those indices must be known when building the OPMPHM.
 
 The desired return index, also known as the order is set in `OpmphmGraph->edges[i].order`.
 Where `i` is the i-th element.
@@ -385,7 +385,7 @@ Provide a good seed in `OpmphmInit->initSeed`, needed in the next step.
 
 ### Mapping
 
-The `opmphmMapping ()` uses your seed (the `OpmphmInit->seed` will be changed) and tries to map your
+The function `opmphmMapping` uses your seed (the `OpmphmInit->seed` will be changed) and tries to map your
 elements to edges in a acyclic r-partite hypergraph, this mapping might not succeed, on cycles just call it again.
 
 ### Assignment

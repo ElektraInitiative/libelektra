@@ -28,7 +28,7 @@ static int hasCycle (Opmphm * opmphm, OpmphmGraph * graph, size_t n);
 size_t opmphmLookup (Opmphm * opmphm, const void * name)
 {
 	ELEKTRA_ASSERT (opmphm != NULL, "passed opmphm is a Null Pointer");
-	ELEKTRA_ASSERT (opmphm->g != NULL, "passed opmphm is empty");
+	ELEKTRA_ASSERT (opmphm->graph != NULL, "passed opmphm is empty");
 	ELEKTRA_ASSERT (name != NULL, "passed name is a Null Pointer");
 	size_t ret = 0;
 #ifndef OPMPHM_TEST
@@ -37,13 +37,13 @@ size_t opmphmLookup (Opmphm * opmphm, const void * name)
 	for (uint8_t r = 0; r < OPMPHMR_PARTITE; ++r)
 	{
 #ifndef OPMPHM_TEST
-		uint32_t hash = opmphmHashfunction (name, nameLength, opmphm->opmphmHashFunctionSeeds[r]) % opmphm->p;
+		uint32_t hash = opmphmHashfunction (name, nameLength, opmphm->opmphmHashFunctionSeeds[r]) % opmphm->componentSize;
 #else
 		uint32_t hash = ((uint32_t *)name)[r];
 #endif
-		ret += opmphm->g[r * opmphm->p + hash];
+		ret += opmphm->graph[r * opmphm->componentSize + hash];
 	}
-	return ret % (opmphm->p * OPMPHMR_PARTITE);
+	return ret % (opmphm->componentSize * OPMPHMR_PARTITE);
 }
 
 /**
@@ -68,18 +68,17 @@ int opmphmAssignment (Opmphm * opmphm, OpmphmGraph * graph, size_t n, int defaul
 	ELEKTRA_ASSERT (graph != NULL, "passed graph is a Null Pointer");
 	ELEKTRA_ASSERT (graph->removeIndex == n, "graph contains a cycle");
 	ELEKTRA_ASSERT (n > 0, "n is 0");
-	// malloc g
-	opmphm->size = opmphm->p * OPMPHMR_PARTITE * sizeof (size_t);
-	opmphm->g = elektraCalloc (opmphm->size);
-	if (!opmphm->g)
+	opmphm->size = opmphm->componentSize * OPMPHMR_PARTITE * sizeof (size_t);
+	opmphm->graph = elektraCalloc (opmphm->size);
+	if (!opmphm->graph)
 	{
 		return -1;
 	}
 	// malloc assignment flag for each vertex
-	uint8_t * isAssigned = elektraCalloc (opmphm->p * OPMPHMR_PARTITE * sizeof (uint8_t));
+	uint8_t * isAssigned = elektraCalloc (opmphm->componentSize * OPMPHMR_PARTITE * sizeof (uint8_t));
 	if (!isAssigned)
 	{
-		elektraFree (opmphm->g);
+		elektraFree (opmphm->graph);
 		opmphm->size = 0;
 		return -1;
 	}
@@ -92,22 +91,22 @@ int opmphmAssignment (Opmphm * opmphm, OpmphmGraph * graph, size_t n, int defaul
 		size_t e = graph->removeOrder[i];
 		for (uint8_t r = 0; r < OPMPHMR_PARTITE; ++r)
 		{
-			size_t v = r * opmphm->p + graph->edges[e].h[r];
+			size_t v = r * opmphm->componentSize + graph->edges[e].h[r];
 			if (!isAssigned[v])
 			{
 				++notAssignedCount;
 			}
 			else
 			{
-				assignedValue += opmphm->g[v];
+				assignedValue += opmphm->graph[v];
 			}
 		}
-		ELEKTRA_ASSERT (notAssignedCount != 0, "no not Assigned vertex");
+		ELEKTRA_ASSERT (notAssignedCount != 0, "no not assigned vertex");
 		// set all but one to assigned state
 		uint8_t r = 0;
 		while (notAssignedCount > 1)
 		{
-			size_t v = r * opmphm->p + graph->edges[e].h[r];
+			size_t v = r * opmphm->componentSize + graph->edges[e].h[r];
 			if (!isAssigned[v])
 			{
 				isAssigned[v] = 1;
@@ -118,23 +117,24 @@ int opmphmAssignment (Opmphm * opmphm, OpmphmGraph * graph, size_t n, int defaul
 		// give the last the desired order
 		for (; r < OPMPHMR_PARTITE; ++r)
 		{
-			size_t v = r * opmphm->p + graph->edges[e].h[r];
+			size_t v = r * opmphm->componentSize + graph->edges[e].h[r];
 			if (!isAssigned[v])
 			{
 				ssize_t diff;
 				if (defaultOrder)
 				{
-					diff = ((ssize_t)e - assignedValue) % (ssize_t) (opmphm->p * OPMPHMR_PARTITE);
+					diff = ((ssize_t)e - assignedValue) % (ssize_t) (opmphm->componentSize * OPMPHMR_PARTITE);
 				}
 				else
 				{
-					diff = ((ssize_t)graph->edges[e].order - assignedValue) % (ssize_t) (opmphm->p * OPMPHMR_PARTITE);
+					diff = ((ssize_t)graph->edges[e].order - assignedValue) %
+					       (ssize_t) (opmphm->componentSize * OPMPHMR_PARTITE);
 				}
 				if (diff < 0)
 				{
-					diff += opmphm->p * OPMPHMR_PARTITE;
+					diff += opmphm->componentSize * OPMPHMR_PARTITE;
 				}
-				opmphm->g[v] = diff;
+				opmphm->graph[v] = diff;
 				isAssigned[v] = 1;
 			}
 		}
@@ -155,7 +155,7 @@ int opmphmAssignment (Opmphm * opmphm, OpmphmGraph * graph, size_t n, int defaul
  * @param n the number of elements
  * 
  * @retval 0 on success
- * @retval 1 mapping not possible
+ * @retval -1 mapping not possible
  */
 int opmphmMapping (Opmphm * opmphm, OpmphmGraph * graph, OpmphmInit * init, size_t n)
 {
@@ -180,11 +180,12 @@ int opmphmMapping (Opmphm * opmphm, OpmphmGraph * graph, OpmphmInit * init, size
 		{
 #ifndef OPMPHM_TEST
 			// set edge.h[]
-			graph->edges[i].h[r] = opmphmHashfunction (name, strlen (name), opmphm->opmphmHashFunctionSeeds[r]) % opmphm->p;
+			graph->edges[i].h[r] =
+				opmphmHashfunction (name, strlen (name), opmphm->opmphmHashFunctionSeeds[r]) % opmphm->componentSize;
 #endif
 			// add edge to graph
 			// set edge.nextEdge[r]
-			size_t v = r * opmphm->p + graph->edges[i].h[r];
+			size_t v = r * opmphm->componentSize + graph->edges[i].h[r];
 			graph->edges[i].nextEdge[r] = graph->vertices[v].firstEdge;
 			// set vertex.firstEdge
 			graph->vertices[v].firstEdge = i;
@@ -195,8 +196,8 @@ int opmphmMapping (Opmphm * opmphm, OpmphmGraph * graph, OpmphmInit * init, size
 	if (hasCycle (opmphm, graph, n))
 	{
 		// reset graph vertices
-		memset (graph->vertices, 0, opmphm->p * OPMPHMR_PARTITE * sizeof (OpmphmVertex));
-		return 1;
+		memset (graph->vertices, 0, opmphm->componentSize * OPMPHMR_PARTITE * sizeof (OpmphmVertex));
+		return -1;
 	}
 	else
 	{
@@ -225,7 +226,7 @@ static void peel_off (Opmphm * opmphm, OpmphmGraph * graph, size_t v)
 	for (uint8_t r = 0; r < OPMPHMR_PARTITE; ++r)
 	{
 		// w is adjacent to v through e
-		size_t w = r * opmphm->p + graph->edges[e].h[r];
+		size_t w = r * opmphm->componentSize + graph->edges[e].h[r];
 		// remove e from w
 		size_t * j = &(graph->vertices[w].firstEdge);
 		for (; *j != e; j = &(graph->edges[*j].nextEdge[r]))
@@ -237,7 +238,7 @@ static void peel_off (Opmphm * opmphm, OpmphmGraph * graph, size_t v)
 	// all vertices adjacent to v through e
 	for (uint8_t r = 0; r < OPMPHMR_PARTITE; ++r)
 	{
-		size_t w = r * opmphm->p + graph->edges[e].h[r];
+		size_t w = r * opmphm->componentSize + graph->edges[e].h[r];
 		// if degree 1, go on
 		if (graph->vertices[w].degree == 1)
 		{
@@ -264,7 +265,7 @@ static int hasCycle (Opmphm * opmphm, OpmphmGraph * graph, size_t n)
 {
 	graph->removeIndex = 0;
 	// search all vertices
-	for (size_t v = 0; v < opmphm->p * OPMPHMR_PARTITE; ++v)
+	for (size_t v = 0; v < opmphm->componentSize * OPMPHMR_PARTITE; ++v)
 	{
 		// for a vertex with degree 1
 		if (graph->vertices[v].degree == 1)
@@ -286,7 +287,7 @@ static int hasCycle (Opmphm * opmphm, OpmphmGraph * graph, size_t n)
  * @brief Allocates and initializes the OpmphmGraph.
  * 
  * The OpmphmGraph represents a r-partite hypergraph.
- * Calculates also the size of one partition in the r-partite hypergraph and stores it in `opmphm->p`.
+ * Calculates also the size of one partition in the r-partite hypergraph and stores it in `opmphm->componentSize`.
  *
  * @param opmphm the Opmphm
  * @param n the number of elements
@@ -300,8 +301,8 @@ OpmphmGraph * opmphmGraphNew (Opmphm * opmphm, size_t n, double c)
 	ELEKTRA_ASSERT (opmphm != NULL, "passed opmphm is a Null Pointer");
 	ELEKTRA_ASSERT (n > 0, "n is 0");
 	ELEKTRA_ASSERT (c > 0.0, "ratio <= 0");
-	// calculate opmphm->p, number of elements in one part of r-partite hypergraph
-	opmphm->p = (c * n / OPMPHMR_PARTITE) + 1;
+	// calculate opmphm->componentSize, number of elements in one part of r-partite hypergraph
+	opmphm->componentSize = (c * n / OPMPHMR_PARTITE) + 1;
 	// mallocs
 	OpmphmGraph * graph = elektraMalloc (sizeof (OpmphmGraph));
 	if (!graph)
@@ -321,7 +322,7 @@ OpmphmGraph * opmphmGraphNew (Opmphm * opmphm, size_t n, double c)
 		elektraFree (graph);
 		return NULL;
 	}
-	graph->vertices = elektraCalloc (opmphm->p * OPMPHMR_PARTITE * sizeof (OpmphmVertex));
+	graph->vertices = elektraCalloc (opmphm->componentSize * OPMPHMR_PARTITE * sizeof (OpmphmVertex));
 	if (!graph->vertices)
 	{
 		elektraFree (graph->removeOrder);
@@ -392,7 +393,7 @@ void opmphmClear (Opmphm * opmphm)
 	ELEKTRA_ASSERT (opmphm != NULL, "passed opmphm is a Null Pointer");
 	if (!opmphmIsEmpty (opmphm))
 	{
-		elektraFree (opmphm->g);
+		elektraFree (opmphm->graph);
 		opmphm->size = 0;
 	}
 }

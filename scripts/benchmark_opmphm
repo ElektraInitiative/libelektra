@@ -13,7 +13,7 @@
 # Note: feed exact amount of needed seeds otherwise you get a SIGPIPE
 #
 
-maxOPMPHMR_PARTITE=6
+MAX_OPMPHMR_PARTITE=6
 numberOfSeeds=1000000
 seedsFile="benchmark_opmphmSeeds"
 
@@ -33,7 +33,7 @@ then
 			echo "Error: generate seeds with $0 gseeds first!"
 			exit 1
 		fi
-		for i in $(seq 2 "$maxOPMPHMR_PARTITE");
+		for i in $(seq 2 "$MAX_OPMPHMR_PARTITE");
 		do
 			echo "OPMPHMR_PARTITE $i"
 			# set OPMPHMR_PARTITE

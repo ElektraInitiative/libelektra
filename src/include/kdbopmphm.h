@@ -12,7 +12,7 @@
 #include <stdlib.h>
 
 /**
- * The Order Preserving Minimal Perfect Hash Map (opmphm) maps each element to an edge in a r-partite hypergraph.
+ * The Order Preserving Minimal Perfect Hash Map (opmphm) maps each element to an edge in an r-partite hypergraph.
  * The r-partite hypergraph consist of `OPMPHMR_PARTITE` components, each component has `Opmphm->p` vertices.
  * An edge connects `OPMPHMR_PARTITE` vertices, each one in separate components of the r-partite hypergraph.
  * The number of vertices in one component of the r-partite hypergraph (`Opmphm->p`) is calculated during
@@ -54,10 +54,10 @@ typedef struct
  */
 typedef struct
 {
-	size_t * g;					  /*!< array containing the final opmphm */
+	size_t * graph;					  /*!< array containing the final opmphm */
 	size_t size;					  /*!< size of g in bytes */
 	int32_t opmphmHashFunctionSeeds[OPMPHMR_PARTITE]; /*!< the seed for the hash function calls */
-	size_t p;					  /*!< the number of vertices in one part of the r-partite hypergraph */
+	size_t componentSize;				  /*!< the number of vertices in one part of the r-partite hypergraph */
 } Opmphm;
 
 /**
