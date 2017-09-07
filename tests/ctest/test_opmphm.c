@@ -22,8 +22,8 @@ const size_t maxP = 1000;
 static void test_cyclicMultipleEdges (void)
 {
 	/**
-		 * Test multiple edges, there is at least one edge multiple times
-		 */
+	 * Test multiple edges, there is at least one edge multiple times
+	 */
 	for (size_t p = 2; p < maxP; ++p)
 	{
 		// find max n for this p
@@ -59,8 +59,8 @@ static void test_cyclicMultipleEdges (void)
 static void test_cyclicCountUpEdges (void)
 {
 	/**
-		 * Test cycles, fill up edge.h[] with all possible edges, starting from (0,...,0), no multiple edges.
-		 */
+	 * Test cycles, fill up edge.h[] with all possible edges, starting from (0,...,0), no multiple edges.
+	 */
 	for (size_t p = 3; p < maxP; ++p)
 	{
 		// find max n for this p
@@ -108,8 +108,8 @@ static void test_cyclicCountUpEdges (void)
 static void test_cyclicCountDownEdges (void)
 {
 	/**
-		 * Test cycles, fill up edge.h[] with all possible edges, starting from (p - 1,...,p - 1), no multiple edges.
-		 */
+	 * Test cycles, fill up edge.h[] with all possible edges, starting from (p - 1,...,p - 1), no multiple edges.
+	 */
 	for (size_t p = 3; p < maxP; ++p)
 	{
 		// find max n for this p
@@ -163,12 +163,12 @@ static void test_cyclicCountDownEdges (void)
 static void test_acyclicDefaultOrder (void)
 {
 	/**
-		 * Test:
-		 * * Empty and Clear
-		 * * reuse of mapping
-		 * * assignment (default order)
-		 * * lookup
-		 */
+	 * Test:
+	 * * Empty and Clear
+	 * * reuse of mapping
+	 * * assignment (default order)
+	 * * lookup
+	 */
 	for (size_t p = 3; p < maxP; ++p)
 	{
 		// find max n for this p
@@ -224,12 +224,12 @@ static void test_acyclicDefaultOrder (void)
 static void test_acyclicReverseOrder (void)
 {
 	/**
-		 * Test:
-		 * * Empty and Clear
-		 * * reuse of mapping
-		 * * assignment (reverse order)
-		 * * lookup
-		 */
+	 * Test:
+	 * * Empty and Clear
+	 * * reuse of mapping
+	 * * assignment (reverse order)
+	 * * lookup
+	 */
 	for (size_t p = 3; p < maxP; ++p)
 	{
 		// find max n for this p
