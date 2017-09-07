@@ -20,14 +20,14 @@ if (GHC_EXECUTABLE)
 	# build and install it to the cabal db
 	if (INSTALL_SYSTEM_FILES)
 		add_custom_target (
-			haskell ALL
+			c2hs_haskell ALL
 			COMMAND ${CABAL_EXECUTABLE} --enable-shared configure
 			COMMAND ${CABAL_EXECUTABLE} install
 			WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
 		)
 	else (INSTALL_SYSTEM_FILES) # else just build it
 		add_custom_target (
-			haskell ALL
+			c2hs_haskell ALL
 			COMMAND ${CABAL_EXECUTABLE} --enable-shared configure
 			COMMAND ${CABAL_EXECUTABLE} build
 			WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
@@ -44,11 +44,11 @@ if (GHC_EXECUTABLE)
 	set_property (TEST testhaskell_cabal PROPERTY LABELS bindings)
 	set_property (TEST testhaskell_cabal PROPERTY LABELS kdbtests)
 else (GHC_EXECUTABLE)
-	remove_binding (haskell "GHC not found")
+	remove_binding (c2hs_haskell "GHC not found")
 endif (GHC_EXECUTABLE)
 else (C2HS_EXECUTABLE)
-	remove_binding (haskell "c2hs not found")
+	remove_binding (c2hs_haskell "c2hs not found")
 endif (C2HS_EXECUTABLE)
 else (CABAL_EXECUTABLE)
-	remove_binding (haskell "cabal not found")
+	remove_binding (c2hs_haskell "cabal not found")
 endif (CABAL_EXECUTABLE)
