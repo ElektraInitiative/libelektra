@@ -8,40 +8,69 @@
 #ifndef OPMPHM_H
 #define OPMPHM_H
 
-#include <stdbool.h>
 #include <stdint.h>
 #include <stdlib.h>
 
 /**
- * The Order Preserving Minimal Perfect Hash Map (OPMPHM) first maps each key name to a k-tuple, k is stored in OPMPHMTUPLE.
- * Each element of the k-tuples is in the range 0 to width. The width (abbreviated with w) determines how many keys can fit in the OPMPHM.
- * w^OPMPHMTUPLE is the maximum number of keys that fit in. w is set dynamically to the minimum value that:
+ * The Order Preserving Minimal Perfect Hash Map (OPMPHM) maps each element to an edge in an r-partite hypergraph.
+ * The r-partite hypergraph consist of `OPMPHMR_PARTITE` components, each component has `Opmphm->componentSize` vertices.
+ * An edge connects `OPMPHMR_PARTITE` vertices, each one in separate components of the r-partite hypergraph.
+ * The number of vertices in one component of the r-partite hypergraph (`Opmphm->componentSize`) is calculated during
+ * `opmphmGraphNew ()` the following way:
  *
- * w^OPMPHMTUPLE >= n * n / opmphmRatio
+ * ```
+ * Opmphm->componentSize = (c * n / OPMPHMR_PARTITE) + 1;
+ * ```
  *
- * opmphmRatio should never be less or equal to 0.
+ * Note that `c` must have a minimal value in order to generate acyclic r-partite hypergraphs.
+ * The minimal value of `c` depends on `OPMPHMR_PARTITE` and is provided by the function `opmphmMinC ()`.
  *
+ * The finals size of the opmphm (`Opmphm->graph`) is: `Opmphm->componentSize * OPMPHMR_PARTITE`
  */
-#define OPMPHMTUPLE 5
-extern double opmphmRatio;
+
+#define OPMPHMR_PARTITE 3
 
 /**
- * Typedefs used to reduce the memory footprint
- */
-
-typedef size_t opmphmTranssition_t;
-
-/**
- * Saves a k-tuple in h[] and tells the OPMPHM the return value of each element, only needed during build.
+ * The r-partite hypergraph
  */
 typedef struct
 {
-	size_t h[OPMPHMTUPLE]; /*!< the k-tuple filled by the OPMPHM with the hash function values */
-	union {
-		size_t p;	      /*!< external usage*/
-		size_t t[OPMPHMTUPLE]; /*!< internal usage */
-	} index;		       /*!< desired hash map return value */
-} OpmphmOrder;
+	uint32_t h[OPMPHMR_PARTITE];      /*!< hash function values and index of vertices which the edge connects*/
+	size_t order;			  /*!< desired hash map return value */
+	size_t nextEdge[OPMPHMR_PARTITE]; /*!< index of the next edge in the lists */
+} OpmphmEdge;
+
+typedef struct
+{
+	size_t firstEdge; /*!< first edge in the list of edges of a vertex */
+	size_t degree;    /*!< length of the list */
+} OpmphmVertex;
+
+typedef struct
+{
+	OpmphmEdge * edges;      /*!< array of all edges */
+	OpmphmVertex * vertices; /*!< array of all vertices */
+	size_t * removeOrder;    /*!< remove sequence of acyclic r-partite hypergraph */
+	size_t removeIndex;      /*!< the index used for insertion in removeOrder  */
+} OpmphmGraph;
+
+/**
+ * The opmphm
+ */
+typedef struct
+{
+	size_t * graph;					  /*!< array containing the final OPMPHM */
+	size_t size;					  /*!< size of g in bytes */
+	int32_t opmphmHashFunctionSeeds[OPMPHMR_PARTITE]; /*!< the seed for the hash function calls */
+	size_t componentSize;				  /*!< the number of vertices in one part of the r-partite hypergraph */
+} Opmphm;
+
+/**
+ * Graph functions
+ */
+double opmphmMinC (void);
+OpmphmGraph * opmphmGraphNew (Opmphm * opmphm, size_t n, double c);
+void opmphmGraphDel (OpmphmGraph * graph);
 
 /**
  * Only needed for Initialisation.
@@ -49,36 +78,21 @@ typedef struct
 typedef const char * (*opmphmGetString) (void *);
 typedef struct
 {
-	opmphmGetString getString; /*!< Function pointer used to extract the key name from the data. */
-	void ** data;		   /*!< The data */
+	opmphmGetString getString; /*!< function pointer used to extract the key name from the data. */
+	void ** data;		   /*!< the data */
 	int32_t initSeed;	  /*!< seed used to determine opmphmHashFunctionSeeds */
-	size_t minOrder;	   /*!< min hash map return value */
-	size_t maxOrder;	   /*!< max hash map return value */
 } OpmphmInit;
 
+/**
+ * Build functions
+ */
+int opmphmMapping (Opmphm * opmphm, OpmphmGraph * graph, OpmphmInit * init, size_t n);
+int opmphmAssignment (Opmphm * opmphm, OpmphmGraph * graph, size_t n, int defaultOrder);
 
 /**
- * Opmphm represents the final OPMPHM.
- * This struct is needed for the lookup, during the lookup the key name gets hashed OPMPHMTUPLE times
- * with different seeds from opmphmHashFunctionSeeds.
+ * Lookup functions
  */
-typedef struct
-{
-	opmphmTranssition_t * transsitions[OPMPHMTUPLE]; /*!< stores the opmphm automata */
-	size_t size[OPMPHMTUPLE];			 /*!< stores the opmphm automata size in bytes */
-	uint32_t opmphmHashFunctionSeeds[OPMPHMTUPLE];   /*!< the seed for the hash function calls */
-	size_t outputBase;				 /*!< the base of the output */
-} Opmphm;
-
-/**
- * Only needed internal for Build.
- */
-typedef struct
-{
-	size_t vertex;
-	size_t input;
-	bool isBuffer;
-} OpmphmStack;
+size_t opmphmLookup (Opmphm * opmphm, const void * name);
 
 /**
  * Basic functions
@@ -86,20 +100,7 @@ typedef struct
 Opmphm * opmphmNew (void);
 void opmphmDel (Opmphm * opmphm);
 void opmphmClear (Opmphm * opmphm);
-bool opmphmIsEmpty (Opmphm * opmphm);
-
-/**
- * Build functions
- */
-OpmphmOrder * opmphmNewOrder (size_t n, bool opmphm);
-OpmphmOrder ** opmphmInit (Opmphm * opmphm, OpmphmInit * init, OpmphmOrder * order, size_t n);
-int opmphmMapping (Opmphm * opmphm, OpmphmInit * init, OpmphmOrder * order, OpmphmOrder ** sortOrder, size_t n);
-int opmphmBuild (Opmphm * opmphm, OpmphmOrder ** sortOrder, size_t n);
-
-/**
- * Lookup function
- */
-size_t opmphmLookup (Opmphm * opmphm, const void * name, size_t n);
+int opmphmIsEmpty (Opmphm * opmphm);
 
 /**
  * Hash function
