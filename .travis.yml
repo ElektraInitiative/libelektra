@@ -80,7 +80,8 @@ before_install:
 #
 before_script:
   - cd $TRAVIS_BUILD_DIR/..
-  - INSTALL_DIR="$PWD/install"
+  - >
+    [[ "$TRAVIS_OS_NAME" == "linux" ]] && INSTALL_DIR="$PWD/install" || INSTALL_DIR="/usr/local"
   - SYSTEM_DIR="$PWD/kdbsystem"
   - mkdir build && cd build
   - CMAKE_OPT=()
