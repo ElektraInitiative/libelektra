@@ -18,11 +18,11 @@
 static int hasCycle (Opmphm * opmphm, OpmphmGraph * graph, size_t n);
 
 /**
- * @brief Looks up a element in the opmphm.
+ * @brief Looks up a element in the OPMPHM.
  *
- * @param opmphm the Opmphm
+ * @param opmphm the OPMPHM
  * @param name the name of the element
- * 
+ *
  * @retval size_t the order of the element.
  */
 size_t opmphmLookup (Opmphm * opmphm, const void * name)
@@ -48,17 +48,17 @@ size_t opmphmLookup (Opmphm * opmphm, const void * name)
 
 /**
  * @brief Assigns the vertices of the r-partite hypergraph.
- * 
- * Allocs the memory for the final opmphm `Opmphm->g`.
+ *
+ * Allocs the memory for the final OPMPHM `Opmphm->graph`.
  * Uses the remove sequence `OpmphmGraph->removeOrder`, generated during cycle check, to assign
  * each vertex. Either with `OpmphmEdge->order` or the default order, default is the order
  * of `OpmphmInit->data`.
  *
- * @param opmphm the Opmphm
+ * @param opmphm the OPMPHM
  * @param graph the OpmphmGraph
  * @param n the number of elements
  * @param defaultOrder boolean flag
- * 
+ *
  * @retval 0 on success
  * @retval -1 on memory error
  */
@@ -145,15 +145,15 @@ int opmphmAssignment (Opmphm * opmphm, OpmphmGraph * graph, size_t n, int defaul
 
 /**
  * @brief Maps the elements to edges in a r-partite hypergraph.
- * 
+ *
  * Sets the seeds for the opmphmHashfunctions, `OpmphmInit->initSeed` will be changed.
  * Inserts each element as edge in the r-partite hypergraph and checks if the graph contains a cycle.
  *
- * @param opmphm the Opmphm
+ * @param opmphm the OPMPHM
  * @param graph the OpmphmGraph
  * @param init the OpmphmInit
  * @param n the number of elements
- * 
+ *
  * @retval 0 on success
  * @retval -1 mapping not possible
  */
@@ -207,12 +207,12 @@ int opmphmMapping (Opmphm * opmphm, OpmphmGraph * graph, OpmphmInit * init, size
 
 /**
  * @brief Recursive function used by hasCycle
- * 
+ *
  * `v` is a degree 1 vertex with edge `e`. The edge `e` will be removed completely from the graph and
  * inserted in the `OpmphmGraph->removeOrder`.
  * For all vertices connected through `e` with degree 1 the function will be called again.
  *
- * @param opmphm the Opmphm
+ * @param opmphm the OPMPHM
  * @param graph the OpmphmGraph
  * @param v a vertex with degree 1
  */
@@ -249,15 +249,15 @@ static void peel_off (Opmphm * opmphm, OpmphmGraph * graph, size_t v)
 
 /**
  * @brief Checks if a OpmphmGraph is Acyclic
- * 
+ *
  * Removes edges that have a degree 1 vertex, until the graph is empty.
  * The sequence of removed edges will be saved in `OpmphmGraph->removeOrder`.
  * The passed OpmphmGraph is will be destroyed.
  *
- * @param opmphm the Opmphm
+ * @param opmphm the OPMPHM
  * @param graph the OpmphmGraph
  * @param n the number of elements
- * 
+ *
  * @retval 0 on Acyclic
  * @retval 1 if there is a cycle
  */
@@ -284,15 +284,50 @@ static int hasCycle (Opmphm * opmphm, OpmphmGraph * graph, size_t n)
 }
 
 /**
+ * @brief Provides the minimal c value
+ *
+ * This minimal values come from Fabiano Cupertino Botelho, Near-Optimal Space Perfect Hashing Algorithms, 2008.
+ *
+ * @retval c the minimal c value
+ */
+double opmphmMinC (void)
+{
+	ELEKTRA_ASSERT (OPMPHMR_PARTITE > 1 && OPMPHMR_PARTITE < 11, "OPMPHMR_PARTITE out of range");
+	switch (OPMPHMR_PARTITE)
+	{
+	case 2:
+		return 2.01;
+	case 3:
+		return 1.24;
+	case 4:
+		return 1.31;
+	case 5:
+		return 1.45;
+	case 6:
+		return 1.6;
+	case 7:
+		return 1.75;
+	case 8:
+		return 1.9;
+	case 9:
+		return 2.05;
+	case 10:
+		return 2.2;
+	default:
+		return 0;
+	}
+}
+
+/**
  * @brief Allocates and initializes the OpmphmGraph.
- * 
+ *
  * The OpmphmGraph represents a r-partite hypergraph.
  * Calculates also the size of one partition in the r-partite hypergraph and stores it in `opmphm->componentSize`.
  *
- * @param opmphm the Opmphm
+ * @param opmphm the OPMPHM
  * @param n the number of elements
  * @param c space influencing parameter
- * 
+ *
  * @retval OpmphmGraph * success
  * @retval NULL memory error
  */
@@ -349,9 +384,9 @@ void opmphmGraphDel (OpmphmGraph * graph)
 }
 
 /**
- * @brief Allocates and initializes the Opmphm.
- * 
- * The returned Opmphm instance is Empty.
+ * @brief Allocates and initializes the OPMPHM.
+ *
+ * The returned OPMPHM instance is Empty.
  *
  * @retval Opmphm * success
  * @retval NULL memory error
@@ -368,11 +403,11 @@ Opmphm * opmphmNew (void)
 }
 
 /**
- * @brief Deletes the Opmphm.
+ * @brief Deletes the OPMPHM.
  *
  * Clears and frees all memory in Opmphm.
  *
- * @param opmphm the Opmphm
+ * @param opmphm the OPMPHM
  */
 void opmphmDel (Opmphm * opmphm)
 {
@@ -382,7 +417,7 @@ void opmphmDel (Opmphm * opmphm)
 }
 
 /**
- * @brief Clears the Opmphm.
+ * @brief Clears the OPMPHM.
  *
  * Clears and frees all internal memory of Opmphm, but not the Opmphm instance.
  *
@@ -399,11 +434,11 @@ void opmphmClear (Opmphm * opmphm)
 }
 
 /**
- * @brief Determines if the Opmphm is Empty.
- * 
+ * @brief Determines if the OPMPHM is Empty.
+ *
  * Empty means opmphm->size is 0.
  *
- * @param opmphm the Opmphm
+ * @param opmphm the OPMPHM
  *
  * @retval true empty
  * @retval false non empty

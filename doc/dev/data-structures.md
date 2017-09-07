@@ -377,7 +377,9 @@ The build consists of three steps.
 
 ### Initialization
 
-Use `opmphmNew ()` and `opmphmGraphNew ()` to instantiate the needed structures.
+Use `opmphmNew ()` and `opmphmGraphNew (...)` to instantiate the needed structures.
+The function `opmphmGraphNew (...)` takes a parameter `c`, use the `opmphmMinC ()` to ensure
+the the passed value is over the minimum.
 To initialize the OPMPHM build the `OpmphmInit` must be set with information about your data.
 Set your data array `OpmphmInit->data` and the string extraction function `OpmphmInit->getString`,
 which should extract the string from a single data array entry.
@@ -387,11 +389,14 @@ Provide a good seed in `OpmphmInit->initSeed`, needed in the next step.
 
 The function `opmphmMapping` uses your seed (the `OpmphmInit->seed` will be changed) and tries to map your
 elements to edges in a acyclic r-partite hypergraph, this mapping might not succeed, on cycles just call it again.
+When the `c` value from the initialization is lower than the minimum, the probability of finding
+such a acyclic r-partite hypergraph is 0.
 
 ### Assignment
 
-The `opmphmAssignment ()` function assigns either your order or a default order. The default order is the order
-of `OpmphmInit->data`. The `defaultOrder` parameter indicates the behaviour.
+The `opmphmAssignment ()` function assigns either your order (set at `OpmphmGraph->edges[i].order`) or a default order.
+The default order is the order of `OpmphmInit->data`. The `defaultOrder` parameter indicates the behaviour.
+When the OPMPHM is build with the default order, `OpmphmGraph->edges[i].order` must not be set.
 
 After the build the OpmphmInit and OpmphmGraph should be freed.
 The OPMPHM is now ready for constant lookups with the `opmphmLookup ()`.

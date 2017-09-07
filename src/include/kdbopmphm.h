@@ -12,15 +12,20 @@
 #include <stdlib.h>
 
 /**
- * The Order Preserving Minimal Perfect Hash Map (opmphm) maps each element to an edge in an r-partite hypergraph.
- * The r-partite hypergraph consist of `OPMPHMR_PARTITE` components, each component has `Opmphm->p` vertices.
+ * The Order Preserving Minimal Perfect Hash Map (OPMPHM) maps each element to an edge in an r-partite hypergraph.
+ * The r-partite hypergraph consist of `OPMPHMR_PARTITE` components, each component has `Opmphm->componentSize` vertices.
  * An edge connects `OPMPHMR_PARTITE` vertices, each one in separate components of the r-partite hypergraph.
- * The number of vertices in one component of the r-partite hypergraph (`Opmphm->p`) is calculated during
+ * The number of vertices in one component of the r-partite hypergraph (`Opmphm->componentSize`) is calculated during
  * `opmphmGraphNew ()` the following way:
+ *
  * ```
- * Opmphm->p = (c * n / OPMPHMR_PARTITE) + 1;
+ * Opmphm->componentSize = (c * n / OPMPHMR_PARTITE) + 1;
  * ```
- * The finals size of the opmphm (`Opmphm->g`) is: `Opmphm->p * OPMPHMR_PARTITE`
+ *
+ * Note that `c` must have a minimal value in order to generate acyclic r-partite hypergraphs.
+ * The minimal value of `c` depends on `OPMPHMR_PARTITE` and is provided by the function `opmphmMinC ()`.
+ *
+ * The finals size of the opmphm (`Opmphm->graph`) is: `Opmphm->componentSize * OPMPHMR_PARTITE`
  */
 
 #define OPMPHMR_PARTITE 3
@@ -54,7 +59,7 @@ typedef struct
  */
 typedef struct
 {
-	size_t * graph;					  /*!< array containing the final opmphm */
+	size_t * graph;					  /*!< array containing the final OPMPHM */
 	size_t size;					  /*!< size of g in bytes */
 	int32_t opmphmHashFunctionSeeds[OPMPHMR_PARTITE]; /*!< the seed for the hash function calls */
 	size_t componentSize;				  /*!< the number of vertices in one part of the r-partite hypergraph */
@@ -63,6 +68,7 @@ typedef struct
 /**
  * Graph functions
  */
+double opmphmMinC (void);
 OpmphmGraph * opmphmGraphNew (Opmphm * opmphm, size_t n, double c);
 void opmphmGraphDel (OpmphmGraph * graph);
 
