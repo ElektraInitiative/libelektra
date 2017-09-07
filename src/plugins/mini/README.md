@@ -29,10 +29,10 @@ kdb mount mini.ini /examples/mini mini
 # Add two key value pairs to the database
 kdb set /examples/mini/key value
 #> Using name user/examples/mini/key
-#> Create a new key user/examples/mini/key with string value
+#> Create a new key user/examples/mini/key with string "value"
 kdb set /examples/mini/mi/mi/mr beaker
 #> Using name user/examples/mini/mi/mi/mr
-#> Create a new key user/examples/mini/mi/mi/mr with string beaker
+#> Create a new key user/examples/mini/mi/mi/mr with string "beaker"
 
 # Export our current configuration
 kdb export /examples/mini mini
@@ -74,7 +74,7 @@ kdb mount mini.ini /examples/mini mini
 # Store a value containing special characters
 kdb set /examples/mini/key ';#=\'
 #> Using name user/examples/mini/key
-#> Create a new key user/examples/mini/key with string ;#=\
+#> Create a new key user/examples/mini/key with string ";#=\"
 
 # The actual file contains escaped version of the characters
 kdb file /examples/mini | xargs cat

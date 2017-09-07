@@ -201,7 +201,7 @@ kdb mount example.ni user/example ni enum
 
 # ... and set a value for the demonstration
 kdb set user/example/enumtest/fruit apple
-#> Create a new key user/example/enumtest/fruit with string apple
+#> Create a new key user/example/enumtest/fruit with string "apple"
 ```
 
 By entering `kdb info enum` in the commandline, we can find out how to use this plugin.

@@ -29,7 +29,7 @@ kdb get /sw/tutorial/cascading/#0/current/test
 
 # Now add the key ...
 sudo kdb set system/sw/tutorial/cascading/#0/current/test "hello world"
-#> Create a new key system/sw/tutorial/cascading/#0/current/test with string hello world
+#> Create a new key system/sw/tutorial/cascading/#0/current/test with string "hello world"
 
 # ... and verify that it exists
 kdb get /sw/tutorial/cascading/#0/current/test
@@ -42,7 +42,7 @@ A user may now want to override the configuration in **system**, so he/she sets 
 
 ```sh
 kdb set user/sw/tutorial/cascading/#0/current/test "hello galaxy"
-#> Create a new key user/sw/tutorial/cascading/#0/current/test with string hello galaxy
+#> Create a new key user/sw/tutorial/cascading/#0/current/test with string "hello galaxy"
 
 # This key masks the key in the system namespace
 kdb get /sw/tutorial/cascading/#0/current/test
@@ -65,7 +65,7 @@ cd kdbtutorial
 
 # ... and create a key in this directories dir-namespace
 kdb set dir/sw/tutorial/cascading/#0/current/test "hello universe"
-#> Create a new key dir/sw/tutorial/cascading/#0/current/test with string hello universe
+#> Create a new key dir/sw/tutorial/cascading/#0/current/test with string "hello universe"
 
 # This key masks the key in the system namespace
 kdb get /sw/tutorial/cascading/#0/current/test
@@ -116,7 +116,7 @@ First, we create a target key to demostrate the override link mechanism:
 
 ```sh
 sudo kdb set system/overrides/test "hello override"
-#> Create a new key system/overrides/test with string hello override
+#> Create a new key system/overrides/test with string "hello override"
 ```
 
 Override links can be defined by adding them to the `override/#` metadata array key of the correspoding `spec-key`:
@@ -137,7 +137,7 @@ As we used a cascading key for our override link (`/overrides/test`) we can use 
 ```sh
 kdb set /overrides/test "hello user"
 #> Using name user/overrides/test
-#> Create a new key user/overrides/test with string hello user
+#> Create a new key user/overrides/test with string "hello user"
 kdb get /sw/tutorial/cascading/#0/current/test
 #> hello user
 ```

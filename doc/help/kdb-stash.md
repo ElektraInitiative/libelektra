@@ -17,7 +17,7 @@ The backup will be done in the `/var/tmp` directory, so make sure the backup is 
 ```
 kdb set user/x foo
 #>
-#> Create a new key user/x with string foo
+#> Create a new key user/x with string "foo"
 
 kdb mount a.ini /a
 kdb mount

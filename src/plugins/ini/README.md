@@ -32,11 +32,11 @@ Then you can modify the contents of the ini file using set:
 
 ```sh
 kdb set user/example/key value
-#> Create a new key user/example/key with string value
+#> Create a new key user/example/key with string "value"
 kdb set user/example/section
 #> Create a new key user/example/section with null value
 kdb set user/example/section/key value
-#> Create a new key user/example/section/key with string value
+#> Create a new key user/example/section/key with string "value"
 ```
 
 Find out which file you modified:

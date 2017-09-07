@@ -73,7 +73,7 @@ kdb setmeta user/tutorial/together/test check/validation "[1-9][0-9]*"
 kdb setmeta user/tutorial/together/test check/validation/match LINE
 kdb setmeta user/tutorial/together/test check/validation/message "Not a number"
 kdb set user/tutorial/together/test 123
-#> Set string to 123
+#> Set string to "123"
 ```
 
 The approach is not limited to validation via regular expressions, but
@@ -117,7 +117,7 @@ Then we can write metadata to `spec` and see it for every cascading key:
 ```sh
 kdb setmeta spec/tutorial/spec/test hello world
 kdb set user/tutorial/spec/test value
-#> Create a new key user/tutorial/spec/test with string value
+#> Create a new key user/tutorial/spec/test with string "value"
 kdb lsmeta /tutorial/spec/test
 #> hello
 ```
@@ -144,7 +144,7 @@ If we now set a new key with
 ```sh
 kdb set /tutorial/spec/test "not a number"
 #> Using name user/tutorial/spec/test
-#> Create a new key user/tutorial/spec/test with string not a number
+#> Create a new key user/tutorial/spec/test with string "not a number"
 ```
 this key has adopted all metadata from the spec namespace:
 ```sh
@@ -242,7 +242,7 @@ You can work around that by setting the keys with the `-N` option:
 ```sh
 kdb set -N system /tutorial/links/elektra https://www.libelektra.org
 #> Using name system/tutorial/links/elektra
-#> Create a new key system/tutorial/links/elektra with string https://www.libelektra.org
+#> Create a new key system/tutorial/links/elektra with string "https://www.libelektra.org"
 ```
 
 ## Rejecting Configuration Keys

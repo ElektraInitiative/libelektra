@@ -15,10 +15,10 @@ Now add the the key **/a** with the Value **Value 1** and the key **/b/c** with 
 ```sh
 kdb set /a 'Value 1'
 #> Using name user/a
-#> Create a new key user/a with string Value 1
+#> Create a new key user/a with string "Value 1"
 kdb set /b/c 'Value 2'
 #> Using name user/b/c
-#> Create a new key user/b/c with string Value 2
+#> Create a new key user/b/c with string "Value 2"
 ```
 
 <img src="https://cdn.rawgit.com/ElektraInitiative/libelektra/master/doc/images/tutorial_namespaces_hierarchy.svg" alt="Hierarchical structure of key database" />
@@ -114,7 +114,7 @@ Our exemplary application will be the key database access tool `kdb` as this sho
 Say we want to set `kdb` to be more verbose when it is used in the current directory. In this case we have to set _verbose_ to 1 in the _dir_ namespace of the current directory.
 ```sh
 kdb set "dir/sw/elektra/kdb/#0/%/verbose" 1
-#> Create a new key dir/sw/elektra/kdb/#0/%/verbose with string 1
+#> Create a new key dir/sw/elektra/kdb/#0/%/verbose with string "1"
 ```
 > The configuration for a directory is actually stored in this directory.
 > By default the configuration is contained in a folder named `.dir`, as you can verify with `kdb file dir` (_kdb file_ tells you the file where a key is stored in).
@@ -184,7 +184,7 @@ If a user sets _verbose_ in his user namespace to 0 she overrides the default be
 
 ```sh
 kdb set "user/sw/elektra/kdb/#0/debug/verbose" 0
-#> Create a new key user/sw/elektra/kdb/#0/debug/verbose with string 0
+#> Create a new key user/sw/elektra/kdb/#0/debug/verbose with string "0"
 kdb get "/sw/elektra/kdb/#0/debug/verbose"
 #> 0
 ```
