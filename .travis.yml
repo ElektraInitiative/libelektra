@@ -63,7 +63,7 @@ before_install:
       brew install openssl libgcrypt;
       brew install libgit2;
       brew install xerces-c;
-      pip install cheetah; # Required by kdb-gen
+      pip2 install cheetah; # Required by kdb-gen
       export Qt5_DIR=/usr/local/opt/qt5;
       brew config;
     fi
@@ -80,7 +80,8 @@ before_install:
 #
 before_script:
   - cd $TRAVIS_BUILD_DIR/..
-  - INSTALL_DIR="$PWD/install"
+  - >
+    [[ "$TRAVIS_OS_NAME" == "linux" ]] && INSTALL_DIR="$PWD/install" || INSTALL_DIR="/usr/local"
   - SYSTEM_DIR="$PWD/kdbsystem"
   - mkdir build && cd build
   - CMAKE_OPT=()
@@ -117,4 +118,5 @@ script:
   - ninja
   - ninja run_all
   - ninja install
+  - ninja test
   - kdb run_all

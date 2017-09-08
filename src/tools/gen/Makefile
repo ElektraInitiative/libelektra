@@ -16,6 +16,8 @@ ELEKTRA=-lelektra -lelektra-meta -pthread
 CFLAGS=-O0 -ggdb
 CXXFLAGS=-O0 -ggdb
 FLAGS = -I. -I../../bindings/cpp/include `pkg-config --libs --cflags elektra`
+CC = gcc
+CXX = g++
 
 .PHONY:all
 all:lift cpplift nestedlift dynamiccontextlift lift.html lift.3 location
@@ -65,19 +67,19 @@ genopt.h:${GEN} tests/lift.ini template/genopt.h support/genopt.py util.py
 	${GEN} tests/lift.ini template/genopt.h -o genopt.h
 
 lift:tests/lift.c lift.h genopt.c genopt.h
-	cc ${FLAGS} ${LDFLAGS} ${CFLAGS} -Wall -D _GNU_SOURCE tests/lift.c genopt.c genopt.h lift.h ${ELEKTRA} -o lift
+	${CC} ${FLAGS} ${LDFLAGS} ${CFLAGS} -Wall -D _GNU_SOURCE tests/lift.c genopt.c genopt.h lift.h ${ELEKTRA} -o lift
 
 cpplift:tests/lift.cpp lift.hpp
-	c++ ${FLAGS} ${LDFLAGS} ${CXXFLAGS}  -std=c++11 -Wall tests/lift.cpp lift.hpp ${ELEKTRA}  -o cpplift
+	${CXX} ${FLAGS} ${LDFLAGS} ${CXXFLAGS}  -std=c++11 -Wall tests/lift.cpp lift.hpp ${ELEKTRA}  -o cpplift
 
 dynamiccontextlift:lift_context_dynamic.hpp tests/lift_context.cpp
-	c++ ${FLAGS} ${LDFLAGS} ${CXXFLAGS} -DDYNAMIC  -std=c++11 -Wall tests/lift_context.cpp lift_context_dynamic.hpp ${ELEKTRA}  -o dynamiccontextlift
+	${CXX} ${FLAGS} ${LDFLAGS} ${CXXFLAGS} -DDYNAMIC  -std=c++11 -Wall tests/lift_context.cpp lift_context_dynamic.hpp ${ELEKTRA}  -o dynamiccontextlift
 
 location:location.hpp tests/location.cpp
-	c++ ${FLAGS} ${LDFLAGS} ${CXXFLAGS} -DDYNAMIC  -std=c++11 -Wall tests/location.cpp location.hpp ${ELEKTRA}  -o location
+	${CXX} ${FLAGS} ${LDFLAGS} ${CXXFLAGS} -DDYNAMIC  -std=c++11 -Wall tests/location.cpp location.hpp ${ELEKTRA}  -o location
 
 nestedlift:lift_nested.hpp tests/lift_nested.cpp
-	c++ ${FLAGS} ${LDFLAGS} ${CXXFLAGS}  -std=c++11 -Wall tests/lift_nested.cpp lift_nested.hpp ${ELEKTRA}  -o nestedlift
+	${CXX} ${FLAGS} ${LDFLAGS} ${CXXFLAGS}  -std=c++11 -Wall tests/lift_nested.cpp lift_nested.hpp ${ELEKTRA}  -o nestedlift
 
 #staticcontextlift:lift_context_static.hpp tests/lift_context.cpp
 #	c++ ${FLAGS} ${LDFLAGS} ${CXXFLAGS}  -std=c++11 -Wall tests/lift_context.cpp lift_context_static.hpp ${ELEKTRA}  -o staticcontextlift
@@ -101,6 +103,7 @@ clean:
 	rm -f core
 	rm -f cpplift
 	rm -f *.pyc
+	rm -fr *.dSYM
 	rm -f lift.3
 	rm -f lift_nested.hpp
 	rm -f nestedlift
