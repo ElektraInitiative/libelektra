@@ -37,6 +37,7 @@ set (BUILTIN_PLUGIN_FOLDER
 	"${CMAKE_INSTALL_PREFIX}/lib${LIB_SUFFIX}/${TARGET_PLUGIN_FOLDER}")
 set (ELEKTRA_DEPRECATED "__attribute__ ((deprecated))")
 set (ELEKTRA_UNUSED "__attribute__ ((unused))")
+set (ELEKTRA_FALLTHROUGH "__attribute__ ((fallthrough))")
 
 set (BUILTIN_SPEC_FOLDER
 	"${CMAKE_INSTALL_PREFIX}/${KDB_DB_SPEC}")
