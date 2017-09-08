@@ -1,6 +1,7 @@
 include(CheckIncludeFile)
 include(CheckSymbolExists)
 include(CheckTypeSize)
+include(TestBigEndian)
 
 check_symbol_exists(clearenv      "stdlib.h"         HAVE_CLEARENV)
 check_symbol_exists(setenv        "stdlib.h"         HAVE_SETENV)
@@ -45,6 +46,8 @@ set (BUILTIN_SPEC_REAL_FOLDER
 if (ENABLE_OPTIMIZATIONS)
 	set (ELEKTRA_ENABLE_OPTIMIZATIONS "1")
 endif (ENABLE_OPTIMIZATIONS)
+
+TEST_BIG_ENDIAN(ELEKTRA_BIG_ENDIAN)
 
 configure_file (
 	"${CMAKE_CURRENT_SOURCE_DIR}/kdb.h.in"

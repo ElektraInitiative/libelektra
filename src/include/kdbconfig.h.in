@@ -98,6 +98,9 @@
 /* ENABLE_OPTIMIZATIONS */
 #cmakedefine @ELEKTRA_ENABLE_OPTIMIZATIONS@
 
+/* ENDIANNESS */
+#cmakedefine @ELEKTRA_BIG_ENDIAN@
+
 /* debug mode */
 #define DEBUG @DEBUG@
 
