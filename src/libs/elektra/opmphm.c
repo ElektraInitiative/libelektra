@@ -457,8 +457,7 @@ int opmphmIsEmpty (Opmphm * opmphm)
  * Hash function
  * By Bob Jenkins, May 2006
  * http://burtleburtle.net/bob/c/lookup3.c
- * Original name: hashlitte (the little endian part)
- * For now assuming little endian machine
+ * Original name: hashlitte
  */
 uint32_t opmphmHashfunction (const void * key, size_t length, uint32_t initval)
 {
@@ -546,7 +545,7 @@ uint32_t opmphmHashfunction (const void * key, size_t length, uint32_t initval)
 		c += ((uint32_t)k[9]) << 8;
 		c += ((uint32_t)k[10]) << 16;
 		c += ((uint32_t)k[11]) << 24;
-		mix (a, b, c);
+		OPMPHM_HASHFUNCTION_MIX (a, b, c);
 		length -= 12;
 		k += 12;
 	}
