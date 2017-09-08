@@ -10,18 +10,24 @@ then
     KDB=kdb
 fi
 
+DIR="/var/tmp/elektra_backup"
+
 if [ "$#" -ne 1 ];
 then
-	echo "Usage: kdb restore Timestamp"
+	echo "Usage: kdb restore <timestamp>"
+	echo "Available timestamp(s) are:"
+	ls "${DIR}"
 	exit 1
 fi
 
 TS="$1"
-TMPDIR="/var/tmp/elektra_backup/${TS}"
+TMPDIR="${DIR}/${TS}"
 
 if [ ! -d "$TMPDIR" ];
 then
-	echo "backup $TS doesn't exist"
+	echo "Timestamp $TS doesn't exist"
+	echo "Available timestamp(s) are:"
+	ls "${DIR}"
 	exit 1
 fi
 
