@@ -1,14 +1,17 @@
 module Elektra.Key (Key (..), Namespace (..), LookupOptions (..), withKey,
-    keyNew, keyDup, keyCopy, keyClear, keyIncRef, keyDecRef, keyGetRef,
+    keyNew, keyNewWithValue, keyDup, keyCopy, keyClear, keyIncRef, keyDecRef, keyGetRef,
     keyName, keyGetNameSize, keyUnescapedName, keyGetUnescapedNameSize, keySetName, keyGetFullNameSize, keyGetFullName,
-    keyAddName,  keyBaseName, keyGetBaseNameSize, keyAddBaseName, keySetBaseName, keyGetNamespace,
-    keyString, keyGetValueSize, keySetString,
-    keyRewindMeta, keyNextMeta, keyCurrentMeta, keyCopyMeta, keyCopyAllMeta, keyGetMeta, keySetMeta,
+    keyAddName,  keyBaseName, keyGetBaseName, keyGetBaseNameSize, keyAddBaseName, keySetBaseName, keyGetNamespace,
+    keyString, keyGetValueSize, keySetString, keySet,
+    keyRewindMeta, keyNextMeta, keyCurrentMeta, keyCopyMeta, keyCopyAllMeta, keyGetMeta, keySetMeta, keyListMeta,
     keyCmp, keyNeedSync, keyIsBelow, keyIsDirectBelow, keyRel, keyIsInactive, keyIsBinary, keyIsString) where
 
 #include <kdb.h>
 import Foreign.Marshal.Alloc (allocaBytes)
-import Foreign.Ptr (castPtr)
+import Foreign.Ptr (castPtr, nullPtr)
+import Foreign.ForeignPtr (withForeignPtr)
+import System.IO.Unsafe (unsafePerformIO)
+import Control.Monad (liftM)
 
 {#context lib="libelektra" #}
 
@@ -22,20 +25,30 @@ import Foreign.Ptr (castPtr)
 {#typedef ssize_t Int #}
 
 {#enum KEY_NS_NONE as Namespace { underscoreToCase } deriving (Show, Eq) #}
---{#enum KEY_NAME as ElektraKeyVarargs { underscoreToCase } deriving (Show, Eq) #} not required, we don't use the varargs version
+{#enum KEY_NAME as ElektraKeyVarargs { underscoreToCase } deriving (Show, Eq) #}
 {#enum KDB_O_NONE as LookupOptions { underscoreToCase } deriving (Show, Eq) #}
 
 -- ***
 -- KEY CREATION / DELETION / COPPY METHODS
 -- ***
 
+keyNotNull :: Key -> IO Bool
+keyNotNull (Key ptr) = withForeignPtr ptr (return . (== nullPtr))
+
 -- as we use haskell's reference counting here, increase the number by one
 -- so it gets deleted properly when haskell calls the finalizer
+keyNew :: String -> IO Key
 keyNew name = do
     key <- keyNewRaw name
     keyIncRef key
     return key
+keyNewWithValue :: String -> String -> IO Key
+keyNewWithValue name value = do
+    key <- keyNewRawWithValue name KeyValue value
+    keyIncRef key
+    return key
 {#fun unsafe keyNew as keyNewRaw {`String'} -> `Key' #}
+{#fun unsafe variadic keyNew[keyswitch_t, const char *] as keyNewRawWithValue {`String', `ElektraKeyVarargs', `String'} -> `Key' #}
 {#fun unsafe keyDup {`Key'} -> `Key' #}
 {#fun unsafe keyCopy {`Key', `Key'} -> `Int' #}
 {#fun unsafe keyClear {`Key'} -> `Int' #}
@@ -50,7 +63,7 @@ keyNew name = do
 {#fun unsafe keyName {`Key'} -> `String' #}
 keyGetName = keyName
 {#fun unsafe keyGetNameSize {`Key'} -> `Int' #}
-keyUnescapedName :: (Key) -> IO ((String))
+keyUnescapedName :: Key -> IO String
 keyUnescapedName key = do
     size <- keyGetUnescapedNameSize key
     withKey key $ (\cKey -> do
@@ -58,7 +71,7 @@ keyUnescapedName key = do
         C2HSImp.peekCStringLen (castPtr result, size))
 {#fun unsafe keyGetUnescapedNameSize {`Key'} -> `Int' #}
 {#fun unsafe keySetName {`Key', `String'} -> `Int' #}
-keyGetFullName :: (Key) -> IO ((String))
+keyGetFullName :: (Key) -> IO String
 keyGetFullName key = do
     size <- keyGetFullNameSize key
     withKey key $ \cKey -> 
@@ -67,6 +80,7 @@ keyGetFullName key = do
             C2HSImp.peekCString result)
 {#fun unsafe keyGetFullNameSize {`Key'} -> `Int' #}
 {#fun unsafe keyBaseName {`Key'} -> `String' #}
+keyGetBaseName :: Key -> IO String
 keyGetBaseName = keyBaseName
 {#fun unsafe keyGetBaseNameSize {`Key'} -> `Int' #}
 {#fun unsafe keyAddBaseName {`Key', `String'} -> `Int' #}
@@ -82,6 +96,8 @@ keyGetBaseName = keyBaseName
 -- {#fun unsafe keyValue {`Key'} -> `PPtr' #}
 {#fun unsafe keyString {`Key'} -> `String' #}
 {#fun unsafe keyGetValueSize {`Key'} -> `Int' #}
+keySet :: Show a => Key -> a -> IO Int
+keySet key = keySetString key . show
 {#fun unsafe keySetString {`Key', `String'} -> `Int' #}
 
 -- ***
@@ -95,6 +111,13 @@ keyGetBaseName = keyBaseName
 {#fun unsafe keyCopyAllMeta {`Key', `Key'} -> `Int' #}
 {#fun unsafe keyGetMeta {`Key', `String'} -> `Key' #}
 {#fun unsafe keySetMeta {`Key', `String', `String'} -> `Int' #}
+keyListMeta :: Key -> IO [Key]
+keyListMeta key = keyRewindMeta key >> listMeta key
+    where
+        listMeta key = do
+            cur <- keyNextMeta key
+            null <- keyNotNull cur
+            if null then return [] else liftM (cur :) (listMeta key)
 
 -- ***
 -- KEY TESTING METHODS
@@ -124,3 +147,18 @@ peekMaybeBool x =
         -1 -> Nothing
         0 -> Just False
         _ -> Just True
+
+-- ***
+-- COMMON HASKELL TYPE CLASSES
+-- unsafePerformIO should be ok here, as those functions don't alter the key's state
+-- ***
+
+instance Show Key where
+    show key = unsafePerformIO $ do
+        name <- keyName key
+        value <- keyString key
+        return $ name ++ " " ++ value
+
+instance Eq Key where
+    key1 == key2 = unsafePerformIO $ fmap (== 0) $ keyCmp key1 key2
+    

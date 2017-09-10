@@ -45,7 +45,7 @@ int elektraHaskellGet (Plugin * handle, KeySet * returned, Key * parentKey)
 			keyNew ("system/elektra/modules/@PLUGIN_NAME@/exports/set", KEY_FUNC, elektraHaskellSet, KEY_END),
 			keyNew ("system/elektra/modules/@PLUGIN_NAME@/exports/error", KEY_FUNC, elektraHaskellError, KEY_END),
 			keyNew ("system/elektra/modules/@PLUGIN_NAME@/exports/checkconf", KEY_FUNC, elektraHaskellCheckConfig, KEY_END),
-#include ELEKTRA_README (@PLUGIN_NAME @)
+#include ELEKTRA_README (@PLUGIN_NAME@)
 			keyNew ("system/elektra/modules/@PLUGIN_NAME@/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 		ksAppend (returned, contract);
 		ksDel (contract);
@@ -76,7 +76,7 @@ int elektraHaskellCheckConfig (Key * errorKey, KeySet * conf)
 	return hs_elektraHaskellCheckConfig (errorKey, conf);
 }
 
-Plugin * ELEKTRA_PLUGIN_EXPORT (@PLUGIN_NAME @)
+Plugin * ELEKTRA_PLUGIN_EXPORT (@PLUGIN_NAME@)
 {
 	// clang-format off
 	return elektraPluginExport ("@PLUGIN_NAME@",
