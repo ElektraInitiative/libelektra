@@ -40,5 +40,5 @@ main = do
     keySetMeta key1 "comment" "this is my example key"
     putStrLn "Keys can have metadata. We can iterate over or fetch them by name."
     putStrLn "Meta data of Key1 with their values:"
-    keyListMeta key1 >>= mapM (putStrLn . show)
+    keyListMeta key1 >>= mapM_ print
     putStrLn "Remember: Metadata is returned as a Key object."

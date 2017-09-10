@@ -1,12 +1,23 @@
-module Elektra.KeySet (KeySet (..), withKeySet, ElektraCursor, ksNew, ksDup, ksCopy, ksDel, ksGetSize, ksNeedSync,
-    ksAppendKey, ksAppend, ksCut, ksPop, ksRewind, ksNext, ksCurrent, ksHead, ksTail,
-    ksGetCursor, ksSetCursor, ksAtCursor, ksLookup, ksLookupByName) where
+module Elektra.KeySet (KeySet (..), LookupOptions (..), withKeySet, ElektraCursor, ksNew, ksDup, ksCopy, ksDel, ksGetSize, ksNeedSync,
+    ksAppendKey, ksAppend, ksCut, ksPop, ksRewind, ksNext, ksCurrent, ksHead, ksTail, ksList,
+    ksGetCursor, ksSetCursor, ksAtCursor, ksLookup, ksLookupO, ksLookupByName, ksLookupByNameO) where
 
 {#import Elektra.Key#}
+import Control.Monad (liftM, liftM2)
+import Data.List (intercalate, deleteFirstsBy)
+import System.IO.Unsafe (unsafePerformIO)
 
 #include <kdb.h>
 
+-- ***
+-- TYPE DEFINITIONS
+-- ***
+
 {#pointer *KeySet foreign finalizer ksDel newtype #}
+
+-- TODO right now we don't support combinations via |, as most of the options are being
+-- phased out its probably not necessary.
+{#enum KDB_O_NONE as LookupOptions { underscoreToCase } deriving (Show, Eq) #}
 
 -- TODO consider making this a newtype to prevent abusal?
 type ElektraCursor = Int
@@ -50,5 +61,27 @@ ksNew size = ksNewRaw size 0
 {#fun unsafe ksGetCursor {`KeySet'} -> `ElektraCursor' #}
 {#fun unsafe ksSetCursor {`KeySet', `ElektraCursor'} -> `Int' #}
 {#fun unsafe ksAtCursor {`KeySet', `ElektraCursor'} -> `Key' #}
-{#fun unsafe ksLookup {`KeySet', `Key', `LookupOptions'} -> `Key' #}
-{#fun unsafe ksLookupByName {`KeySet', `String', `LookupOptions'} -> `Key' #}
+ksLookup :: KeySet -> Key -> IO Key
+ksLookup ks k = ksLookupO ks k KdbONone
+{#fun unsafe ksLookup as ksLookupO {`KeySet', `Key', `LookupOptions'} -> `Key' #}
+ksLookupByName :: KeySet -> String -> IO Key
+ksLookupByName ks k = ksLookupByNameO ks k KdbONone
+{#fun unsafe ksLookupByName as ksLookupByNameO {`KeySet', `String', `LookupOptions'} -> `Key' #}
+ksList :: KeySet -> IO [Key]
+ksList ks = ksRewind ks >> list []
+    where
+        list res = do
+            cur <- ksNext ks
+            isNull <- keyPtrNull cur
+            if isNull then return res else liftM (cur :) (list res)
+            
+-- ***
+-- COMMON HASKELL TYPE CLASSES
+-- unsafePerformIO should be ok here, as we use ksDup to "hide" the side effect of ksRewind
+-- ***
+
+instance Show KeySet where
+    show ks = unsafePerformIO $ ksDup ks >>= ksList >>= return . (intercalate "\n") . (map show)
+
+instance Eq KeySet where
+    ks1 == ks2 = null $ unsafePerformIO $ liftM2 (deleteFirstsBy (==)) (ksDup ks1 >>= ksList) (ksDup ks2 >>= ksList)

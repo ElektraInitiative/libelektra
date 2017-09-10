@@ -1,10 +1,10 @@
-module Elektra.Key (Key (..), Namespace (..), LookupOptions (..), withKey,
+module Elektra.Key (Key (..), Namespace (..), withKey,
     keyNew, keyNewWithValue, keyDup, keyCopy, keyClear, keyIncRef, keyDecRef, keyGetRef,
     keyName, keyGetNameSize, keyUnescapedName, keyGetUnescapedNameSize, keySetName, keyGetFullNameSize, keyGetFullName,
     keyAddName,  keyBaseName, keyGetBaseName, keyGetBaseNameSize, keyAddBaseName, keySetBaseName, keyGetNamespace,
     keyString, keyGetValueSize, keySetString, keySet,
     keyRewindMeta, keyNextMeta, keyCurrentMeta, keyCopyMeta, keyCopyAllMeta, keyGetMeta, keySetMeta, keyListMeta,
-    keyCmp, keyNeedSync, keyIsBelow, keyIsDirectBelow, keyRel, keyIsInactive, keyIsBinary, keyIsString) where
+    keyCmp, keyNeedSync, keyIsBelow, keyIsDirectBelow, keyRel, keyIsInactive, keyIsBinary, keyIsString, keyPtrNull, ifKey) where
 
 #include <kdb.h>
 import Foreign.Marshal.Alloc (allocaBytes)
@@ -26,30 +26,35 @@ import Control.Monad (liftM)
 
 {#enum KEY_NS_NONE as Namespace { underscoreToCase } deriving (Show, Eq) #}
 {#enum KEY_NAME as ElektraKeyVarargs { underscoreToCase } deriving (Show, Eq) #}
-{#enum KDB_O_NONE as LookupOptions { underscoreToCase } deriving (Show, Eq) #}
 
 -- ***
 -- KEY CREATION / DELETION / COPPY METHODS
 -- ***
 
-keyNotNull :: Key -> IO Bool
-keyNotNull (Key ptr) = withForeignPtr ptr (return . (== nullPtr))
+keyPtrNull :: Key -> IO Bool
+keyPtrNull (Key ptr) = withForeignPtr ptr (return . (== nullPtr))
 
 -- as we use haskell's reference counting here, increase the number by one
 -- so it gets deleted properly when haskell calls the finalizer
 keyNew :: String -> IO Key
 keyNew name = do
-    key <- keyNewRaw name
+    key <- keyNewRaw name KeyEnd
     keyIncRef key
     return key
 keyNewWithValue :: String -> String -> IO Key
 keyNewWithValue name value = do
-    key <- keyNewRawWithValue name KeyValue value
+    key <- keyNewRawWithValue name KeyValue value KeyEnd
     keyIncRef key
     return key
-{#fun unsafe keyNew as keyNewRaw {`String'} -> `Key' #}
-{#fun unsafe variadic keyNew[keyswitch_t, const char *] as keyNewRawWithValue {`String', `ElektraKeyVarargs', `String'} -> `Key' #}
-{#fun unsafe keyDup {`Key'} -> `Key' #}
+{#fun unsafe variadic keyNew[keyswitch_t] as keyNewRaw {`String', `ElektraKeyVarargs'} -> `Key' #}
+{#fun unsafe variadic keyNew[keyswitch_t, const char *, keyswitch_t]
+    as keyNewRawWithValue {`String', `ElektraKeyVarargs', `String', `ElektraKeyVarargs'} -> `Key' #}
+keyDup :: Key -> IO Key
+keyDup key = do
+    dup <- keyDupRaw key
+    keyIncRef dup
+    return dup
+{#fun unsafe keyDup as keyDupRaw {`Key'} -> `Key' #}
 {#fun unsafe keyCopy {`Key', `Key'} -> `Int' #}
 {#fun unsafe keyClear {`Key'} -> `Int' #}
 {#fun unsafe keyIncRef {`Key'} -> `Int' #}
@@ -112,12 +117,12 @@ keySet key = keySetString key . show
 {#fun unsafe keyGetMeta {`Key', `String'} -> `Key' #}
 {#fun unsafe keySetMeta {`Key', `String', `String'} -> `Int' #}
 keyListMeta :: Key -> IO [Key]
-keyListMeta key = keyRewindMeta key >> listMeta key
+keyListMeta key = keyRewindMeta key >> listMeta []
     where
-        listMeta key = do
+        listMeta res = do
             cur <- keyNextMeta key
-            null <- keyNotNull cur
-            if null then return [] else liftM (cur :) (listMeta key)
+            isNull <- keyPtrNull cur
+            if isNull then return res else liftM (cur :) (listMeta res)
 
 -- ***
 -- KEY TESTING METHODS
@@ -157,8 +162,17 @@ instance Show Key where
     show key = unsafePerformIO $ do
         name <- keyName key
         value <- keyString key
-        return $ name ++ " " ++ value
+        ref <- keyGetRef key
+        return $ name ++ " " ++ value ++ " " ++ (show ref)
 
 instance Eq Key where
     key1 == key2 = unsafePerformIO $ fmap (== 0) $ keyCmp key1 key2
-    
+
+-- ***
+-- ADDITIONAL HELPERS USEFUL IN HASKELL
+-- ***
+
+ifKey :: IO Key -> (Key -> IO a) -> IO a -> IO a
+ifKey k t f = do
+    null <- k >>= keyPtrNull
+    if null then f else k >>= t

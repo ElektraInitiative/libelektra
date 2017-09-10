@@ -40,17 +40,16 @@ main = hspec $ do
   describe "KDB" $ it "creates a new kdb connection, saves a key, closes the connection, reopens it and checks the stored key" $ do
       parent <- keyNew "/parent"
       ks <- ksNew 1
-      kdb <- kdbOpen parent
-      kdbGet kdb ks parent
-      keyNew haskellPersisted >>= ksAppendKey ks
-      kdbSet kdb ks parent
-      kdbClose kdb parent
+      kdbOpen parent $ \kdb -> do
+        kdbGet kdb ks parent
+        keyNew haskellPersisted >>= ksAppendKey ks
+        kdbSet kdb ks parent
       ksAfter <- ksNew 1
-      kdbAfter <- kdbOpen parent
-      kdbGet kdbAfter ksAfter parent
-      test <- ksLookupByName ksAfter haskellPersisted KdbONone
-      name <- keyName test
-      ksLookupByName ksAfter haskellPersisted KdbONone >>= keyName >>= (`shouldBe` haskellPersisted)
+      kdbOpen parent $ \kdbAfter -> do
+        kdbGet kdbAfter ksAfter parent
+        test <- ksLookupByName ksAfter haskellPersisted
+        name <- keyName test
+        ksLookupByName ksAfter haskellPersisted >>= keyName >>= (`shouldBe` haskellPersisted)
   where
     name = "/tests/testhaskell_cabal"
     otherName = "/tests/testhaskell_cabal/other"
