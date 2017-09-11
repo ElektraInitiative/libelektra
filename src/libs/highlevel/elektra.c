@@ -214,14 +214,14 @@ void __elektraSetEnum (Elektra * elektra, char * name, int value, ElektraError *
 	setKeyValue (elektra, key, "enum", KDB_ENUM_TO_STRING (value), error);
 }
 
-void elektraSetArrayElementValue (Elektra * elektra, const char * name, const char * value, KDBType type, size_t index,
+void elektraSetArrayElementValue (Elektra * elektra, const char * name, size_t index, const char * value, KDBType type,
 				   ElektraError ** error)
 {
 	Key * const key = keyDup (generateArrayLookupKey (elektra, name, index));
 	setKeyValue (elektra, key, type, value, error);
 }
 
-void __elektraSetEnumArrayElement (Elektra * elektra, char * name, int value, size_t index, ElektraError ** error)
+void __elektraSetEnumArrayElement (Elektra * elektra, char * name, size_t index, int value, ElektraError ** error)
 {
 	Key * const key = keyDup (generateArrayLookupKey (elektra, name, index));
 	setKeyValue (elektra, key, "enum", KDB_ENUM_TO_STRING (value), error);
@@ -255,7 +255,7 @@ int __elektraGetEnum (Elektra * elektra, char * keyName)
 	return KDB_STRING_TO_ENUM (elektraGetValue (elektra, keyName, KDB_TYPE_ENUM));
 }
 
-const char * elektraGetArrayElementValue (Elektra * elektra, const char * name, KDBType type, size_t index)
+const char * elektraGetArrayElementValue (Elektra * elektra, const char * name, size_t index, KDBType type)
 {
 	Key * const key = generateArrayLookupKey (elektra, name, index);
 
@@ -264,5 +264,5 @@ const char * elektraGetArrayElementValue (Elektra * elektra, const char * name, 
 
 int __elektraGetEnumArrayElement (Elektra * elektra, char * keyName, int index)
 {
-	return KDB_STRING_TO_ENUM (elektraGetArrayElementValue (elektra, keyName, KDB_TYPE_ENUM, index));
+	return KDB_STRING_TO_ENUM (elektraGetArrayElementValue (elektra, keyName, index, KDB_TYPE_ENUM));
 }
