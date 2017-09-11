@@ -226,7 +226,7 @@ static int parseFile (KeySet * returned, Key * parentKey)
 	int errorNumber = errno;
 	FILE * source = fopen (keyString (parentKey), "r");
 
-	if (!source || parseINI (source, returned, parentKey) < 0 | fclose (source) != 0) //! OCLint
+	if (!source || (parseINI (source, returned, parentKey) < 0) | (fclose (source) != 0)) //! OCLint
 	{
 		ELEKTRA_SET_ERROR_GET (parentKey);
 		errno = errorNumber;
