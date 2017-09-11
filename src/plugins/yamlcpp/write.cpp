@@ -20,22 +20,36 @@ using namespace kdb;
 
 namespace
 {
-/**
-* @brief Save a key set in a YAML emitter
-*
-* @param mappings The key set that should be stored in `emitter`
-* @param parent This key stores the common prefix for the key name
-* @param node This emitter stores the converted key set
-*/
-void convertKeySetToEmitter (KeySet const & mappings, Key const & parent, YAML::Emitter & emitter)
+void addKey (YAML::Node data, NameIterator & keyIterator, Key const & key)
+{
+	if (keyIterator == --key.end ())
+	{
+		data[*keyIterator] = YAML::Node (key.getString ());
+		return;
+	}
+
+	YAML::Node dictionary = (data[*keyIterator] && data[*keyIterator].IsMap ()) ? data[*keyIterator] : YAML::Node (YAML::NodeType::Map);
+	data[*keyIterator] = dictionary;
+
+	addKey (dictionary, ++keyIterator, key);
+}
+
+void addKeys (YAML::Node data, KeySet const & mappings, Key const & parent)
 {
 	for (auto key : mappings)
 	{
-		const char * name = elektraKeyGetRelativeName (key.getKey (), parent.getKey ());
-		emitter << YAML::Key << name << YAML::Value << key.get<string> ();
-		ELEKTRA_LOG_DEBUG ("%s: %s", key.get<string> ().c_str (), key.getName ().c_str ());
+		auto parentIterator = parent.begin ();
+		auto keyIterator = key.begin ();
+		while (parentIterator != parent.end () && keyIterator != key.end ())
+		{
+			parentIterator++;
+			keyIterator++;
+		}
+
+		addKey (data, keyIterator, key);
 	}
 }
+
 } // end namespace
 
 /**
@@ -47,10 +61,8 @@ void convertKeySetToEmitter (KeySet const & mappings, Key const & parent, YAML::
 void yamlcpp::yamlWrite (KeySet const & mappings, Key const & parent)
 {
 	ofstream output (parent.getString ());
-	YAML::Emitter emitter (output);
-	emitter << YAML::BeginMap;
+	auto data = YAML::Node (YAML::NodeType::Map);
+	addKeys (data, mappings, parent);
 
-	convertKeySetToEmitter (mappings, parent, emitter);
-
-	emitter << YAML::EndMap;
+	output << data;
 }
