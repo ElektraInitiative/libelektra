@@ -20,6 +20,18 @@ using namespace kdb;
 
 namespace
 {
+NameIterator relativeKeyIterator (Key const & key, Key const & parent)
+{
+	auto parentIterator = parent.begin ();
+	auto keyIterator = key.begin ();
+	while (parentIterator != parent.end () && keyIterator != key.end ())
+	{
+		parentIterator++;
+		keyIterator++;
+	}
+	return keyIterator;
+}
+
 void addKey (YAML::Node data, NameIterator & keyIterator, Key const & key)
 {
 	if (keyIterator == --key.end ())
@@ -38,14 +50,7 @@ void addKeys (YAML::Node data, KeySet const & mappings, Key const & parent)
 {
 	for (auto key : mappings)
 	{
-		auto parentIterator = parent.begin ();
-		auto keyIterator = key.begin ();
-		while (parentIterator != parent.end () && keyIterator != key.end ())
-		{
-			parentIterator++;
-			keyIterator++;
-		}
-
+		NameIterator keyIterator = relativeKeyIterator (key, parent);
 		addKey (data, keyIterator, key);
 	}
 }
