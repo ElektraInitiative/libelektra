@@ -358,97 +358,97 @@ static void test_arraySetters ()
 
 	// Overwrite existing values.
 
-	elektraSetStringArrayElement (elektra, "stringarraykey", "String 1", 0, &error);
-	elektraSetStringArrayElement (elektra, "stringarraykey", "String 2", 1, &error);
+	elektraSetStringArrayElement (elektra, "stringarraykey", 0, "String 1", &error);
+	elektraSetStringArrayElement (elektra, "stringarraykey", 1, "String 2", &error);
 
 	elektraSetBooleanArrayElement (elektra, "booleanarraykey", 0, 0, &error);
 	elektraSetBooleanArrayElement (elektra, "booleanarraykey", 1, 1, &error);
 
-	elektraSetCharArrayElement (elektra, "chararraykey", 'c', 0, &error);
-	elektraSetCharArrayElement (elektra, "chararraykey", 'd', 1, &error);
+	elektraSetCharArrayElement (elektra, "chararraykey", 0, 'c', &error);
+	elektraSetCharArrayElement (elektra, "chararraykey", 1, 'd', &error);
 
-	elektraSetOctetArrayElement (elektra, "octetarraykey", 1, 0, &error);
-	elektraSetOctetArrayElement (elektra, "octetarraykey", 2, 1, &error);
+	elektraSetOctetArrayElement (elektra, "octetarraykey", 0, 1, &error);
+	elektraSetOctetArrayElement (elektra, "octetarraykey", 1, 2, &error);
 
-	elektraSetShortArrayElement (elektra, "shortarraykey", 1, 0, &error);
-	elektraSetShortArrayElement (elektra, "shortarraykey", 2, 1, &error);
+	elektraSetShortArrayElement (elektra, "shortarraykey", 0, 1, &error);
+	elektraSetShortArrayElement (elektra, "shortarraykey", 1, 2, &error);
 
-	elektraSetUnsignedShortArrayElement (elektra, "unsignedshortarraykey", 1, 0, &error);
-	elektraSetUnsignedShortArrayElement (elektra, "unsignedshortarraykey", 2, 1, &error);
+	elektraSetUnsignedShortArrayElement (elektra, "unsignedshortarraykey", 0, 1, &error);
+	elektraSetUnsignedShortArrayElement (elektra, "unsignedshortarraykey", 1, 2, &error);
 
-	elektraSetLongArrayElement (elektra, "longarraykey", 1, 0, &error);
-	elektraSetLongArrayElement (elektra, "longarraykey", 2, 1, &error);
+	elektraSetLongArrayElement (elektra, "longarraykey", 0, 1, &error);
+	elektraSetLongArrayElement (elektra, "longarraykey", 1, 2, &error);
 
-	elektraSetUnsignedLongArrayElement (elektra, "unsignedLongarraykey", 1, 0, &error);
-	elektraSetUnsignedLongArrayElement (elektra, "unsignedLongarraykey", 2, 1, &error);
+	elektraSetUnsignedLongArrayElement (elektra, "unsignedLongarraykey", 0, 1, &error);
+	elektraSetUnsignedLongArrayElement (elektra, "unsignedLongarraykey", 1, 2, &error);
 
-	elektraSetLongArrayElement (elektra, "longarraykey", 1, 0, &error);
-	elektraSetLongArrayElement (elektra, "longarraykey", 2, 1, &error);
+	elektraSetLongArrayElement (elektra, "longarraykey", 0, 1, &error);
+	elektraSetLongArrayElement (elektra, "longarraykey", 1, 2, &error);
 
-	elektraSetUnsignedLongArrayElement (elektra, "unsignedlongarraykey", 1, 0, &error);
-	elektraSetUnsignedLongArrayElement (elektra, "unsignedlongarraykey", 2, 1, &error);
+	elektraSetUnsignedLongArrayElement (elektra, "unsignedlongarraykey", 0, 1, &error);
+	elektraSetUnsignedLongArrayElement (elektra, "unsignedlongarraykey", 1, 2, &error);
 
-	elektraSetLongLongArrayElement (elektra, "longlongarraykey", 1, 0, &error);
-	elektraSetLongLongArrayElement (elektra, "longlongarraykey", 2, 1, &error);
+	elektraSetLongLongArrayElement (elektra, "longlongarraykey", 0, 1, &error);
+	elektraSetLongLongArrayElement (elektra, "longlongarraykey", 1, 2, &error);
 
-	elektraSetUnsignedLongLongArrayElement (elektra, "unsignedlonglongarraykey", 1, 0, &error);
-	elektraSetUnsignedLongLongArrayElement (elektra, "unsignedlonglongarraykey", 2, 1, &error);
+	elektraSetUnsignedLongLongArrayElement (elektra, "unsignedlonglongarraykey", 0, 1, &error);
+	elektraSetUnsignedLongLongArrayElement (elektra, "unsignedlonglongarraykey", 1, 2, &error);
 
-	elektraSetFloatArrayElement (elektra, "floatarraykey", 1.1, 0, &error);
-	elektraSetFloatArrayElement (elektra, "floatarraykey", 2.1, 1, &error);
+	elektraSetFloatArrayElement (elektra, "floatarraykey", 0, 1.1, &error);
+	elektraSetFloatArrayElement (elektra, "floatarraykey", 1, 2.1, &error);
 
-	elektraSetDoubleArrayElement (elektra, "doublearraykey", 1.1, 0, &error);
-	elektraSetDoubleArrayElement (elektra, "doublearraykey", 2.1, 1, &error);
+	elektraSetDoubleArrayElement (elektra, "doublearraykey", 0, 1.1, &error);
+	elektraSetDoubleArrayElement (elektra, "doublearraykey", 1, 2.1, &error);
 
-	elektraSetLongDoubleArrayElement (elektra, "longdoublearraykey", 1.1, 0, &error);
-	elektraSetLongDoubleArrayElement (elektra, "longdoublearraykey", 2.1, 1, &error);
+	elektraSetLongDoubleArrayElement (elektra, "longdoublearraykey", 0, 1.1, &error);
+	elektraSetLongDoubleArrayElement (elektra, "longdoublearraykey", 1, 2.1, &error);
 
 	// Add new keys.
 
-	elektraSetStringArrayElement (elektra, "newstringarraykey", "String 1", 0, &error);
-	elektraSetStringArrayElement (elektra, "newstringarraykey", "String 2", 1, &error);
+	elektraSetStringArrayElement (elektra, "newstringarraykey", 0, "String 1", &error);
+	elektraSetStringArrayElement (elektra, "newstringarraykey", 1, "String 2", &error);
 
 	elektraSetBooleanArrayElement (elektra, "newbooleanarraykey", 0, 0, &error);
 	elektraSetBooleanArrayElement (elektra, "newbooleanarraykey", 1, 1, &error);
 
-	elektraSetCharArrayElement (elektra, "newchararraykey", 'c', 0, &error);
-	elektraSetCharArrayElement (elektra, "newchararraykey", 'd', 1, &error);
+	elektraSetCharArrayElement (elektra, "newchararraykey", 0, 'c', &error);
+	elektraSetCharArrayElement (elektra, "newchararraykey", 1, 'd', &error);
 
-	elektraSetOctetArrayElement (elektra, "newoctetarraykey", 1, 0, &error);
-	elektraSetOctetArrayElement (elektra, "newoctetarraykey", 2, 1, &error);
+	elektraSetOctetArrayElement (elektra, "newoctetarraykey", 0, 1, &error);
+	elektraSetOctetArrayElement (elektra, "newoctetarraykey", 1, 2, &error);
 
-	elektraSetShortArrayElement (elektra, "newshortarraykey", 1, 0, &error);
-	elektraSetShortArrayElement (elektra, "newshortarraykey", 2, 1, &error);
+	elektraSetShortArrayElement (elektra, "newshortarraykey", 0, 1, &error);
+	elektraSetShortArrayElement (elektra, "newshortarraykey", 1, 2, &error);
 
-	elektraSetUnsignedShortArrayElement (elektra, "newunsignedshortarraykey", 1, 0, &error);
-	elektraSetUnsignedShortArrayElement (elektra, "newunsignedshortarraykey", 2, 1, &error);
+	elektraSetUnsignedShortArrayElement (elektra, "newunsignedshortarraykey", 0, 1, &error);
+	elektraSetUnsignedShortArrayElement (elektra, "newunsignedshortarraykey", 1, 2, &error);
 
-	elektraSetLongArrayElement (elektra, "newlongarraykey", 1, 0, &error);
-	elektraSetLongArrayElement (elektra, "newlongarraykey", 2, 1, &error);
+	elektraSetLongArrayElement (elektra, "newlongarraykey", 0, 1, &error);
+	elektraSetLongArrayElement (elektra, "newlongarraykey", 1, 2, &error);
 
-	elektraSetUnsignedLongArrayElement (elektra, "newunsignedLongarraykey", 1, 0, &error);
-	elektraSetUnsignedLongArrayElement (elektra, "newunsignedLongarraykey", 2, 1, &error);
+	elektraSetUnsignedLongArrayElement (elektra, "newunsignedLongarraykey", 0, 1, &error);
+	elektraSetUnsignedLongArrayElement (elektra, "newunsignedLongarraykey", 1, 2, &error);
 
-	elektraSetLongArrayElement (elektra, "newlongarraykey", 1, 0, &error);
-	elektraSetLongArrayElement (elektra, "newlongarraykey", 2, 1, &error);
+	elektraSetLongArrayElement (elektra, "newlongarraykey", 0, 1, &error);
+	elektraSetLongArrayElement (elektra, "newlongarraykey", 1, 2, &error);
 
-	elektraSetUnsignedLongArrayElement (elektra, "newunsignedlongarraykey", 1, 0, &error);
-	elektraSetUnsignedLongArrayElement (elektra, "newunsignedlongarraykey", 2, 1, &error);
+	elektraSetUnsignedLongArrayElement (elektra, "newunsignedlongarraykey", 0, 1, &error);
+	elektraSetUnsignedLongArrayElement (elektra, "newunsignedlongarraykey", 1, 2, &error);
 
-	elektraSetLongLongArrayElement (elektra, "newlonglongarraykey", 1, 0, &error);
-	elektraSetLongLongArrayElement (elektra, "newlonglongarraykey", 2, 1, &error);
+	elektraSetLongLongArrayElement (elektra, "newlonglongarraykey", 0, 1, &error);
+	elektraSetLongLongArrayElement (elektra, "newlonglongarraykey", 1, 2, &error);
 
-	elektraSetUnsignedLongLongArrayElement (elektra, "newunsignedlonglongarraykey", 1, 0, &error);
-	elektraSetUnsignedLongLongArrayElement (elektra, "newunsignedlonglongarraykey", 2, 1, &error);
+	elektraSetUnsignedLongLongArrayElement (elektra, "newunsignedlonglongarraykey", 0, 1, &error);
+	elektraSetUnsignedLongLongArrayElement (elektra, "newunsignedlonglongarraykey", 1, 2, &error);
 
-	elektraSetFloatArrayElement (elektra, "newfloatarraykey", 1.1, 0, &error);
-	elektraSetFloatArrayElement (elektra, "newfloatarraykey", 2.1, 1, &error);
+	elektraSetFloatArrayElement (elektra, "newfloatarraykey", 0, 1.1, &error);
+	elektraSetFloatArrayElement (elektra, "newfloatarraykey", 1, 2.1, &error);
 
-	elektraSetDoubleArrayElement (elektra, "newdoublearraykey", 1.1, 0, &error);
-	elektraSetDoubleArrayElement (elektra, "newdoublearraykey", 2.1, 1, &error);
+	elektraSetDoubleArrayElement (elektra, "newdoublearraykey", 0, 1.1, &error);
+	elektraSetDoubleArrayElement (elektra, "newdoublearraykey", 1, 2.1, &error);
 
-	elektraSetLongDoubleArrayElement (elektra, "newlongdoublearraykey", 1.1, 0, &error);
-	elektraSetLongDoubleArrayElement (elektra, "newlongdoublearraykey", 2.1, 1, &error);
+	elektraSetLongDoubleArrayElement (elektra, "newlongdoublearraykey", 0, 1.1, &error);
+	elektraSetLongDoubleArrayElement (elektra, "newlongdoublearraykey", 1, 2.1, &error);
 
 	if (error)
 	{

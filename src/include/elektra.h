@@ -32,7 +32,7 @@ typedef struct _Elektra Elektra;
 #define ELEKTRA_SET_BY_TAG_SIGNATURE(Type, typeName)                                                                                       \
 	void ELEKTRA_SET_BY_TAG (typeName) (Elektra * elektra, ELEKTRA_TAG (typeName) tag, Type value, ElektraError * *error)
 #define ELEKTRA_SET_ARRAY_ELEMENT_BY_TAG_SIGNATURE(Type, typeName)                                                                         \
-	void ELEKTRA_SET_ARRAY_ELEMENT_BY_TAG (typeName) (Elektra * elektra, ELEKTRA_TAG (typeName) tag, Type value, size_t index,         \
+	void ELEKTRA_SET_ARRAY_ELEMENT_BY_TAG (typeName) (Elektra * elektra, ELEKTRA_TAG (typeName) tag, size_t index, Type value,         \
 							  ElektraError * *error)
 
 #define ELEKTRA_GET_BY_TAG_SIGNATURE(Type, typeName) Type ELEKTRA_GET_BY_TAG (typeName) (Elektra * elektra, ELEKTRA_TAG (typeName) tag)
@@ -64,7 +64,7 @@ struct ElektraTag
                                                                                                                                            \
 	ELEKTRA_SET_ARRAY_ELEMENT_BY_TAG_SIGNATURE (Type, typeName)                                                                        \
 	{                                                                                                                                  \
-		elektraSetArrayElementValue (elektra, tag.keyName, TO_STRING (value), KDB_TYPE, index, error);                            \
+		elektraSetArrayElementValue (elektra, tag.keyName, index, TO_STRING (value), KDB_TYPE, error);                            \
 	}                                                                                                                                  \
                                                                                                                                            \
 	ELEKTRA_GET_BY_TAG_SIGNATURE (Type, typeName)                                                                                      \
@@ -74,7 +74,7 @@ struct ElektraTag
                                                                                                                                            \
 	ELEKTRA_GET_ARRAY_ELEMENT_BY_TAG_SIGNATURE (Type, typeName)                                                                        \
 	{                                                                                                                                  \
-		return TO_VALUE (elektraGetArrayElementValue (elektra, tag.keyName, KDB_TYPE, index));                                    \
+		return TO_VALUE (elektraGetArrayElementValue (elektra, tag.keyName, index, KDB_TYPE));                                    \
 	}
 
 // Elektra built-in types
@@ -277,8 +277,8 @@ ELEKTRA_TYPES (ELEKTRA_DECLARATIONS)
 
 // Array-Setters
 
-#define ELEKTRA_SET_ARRAY_ELEMENT_VALUE(typeName, KDB_TYPE, elektra, keynameOrTag, value, index, error)                          \
-	elektraSetArrayElementValue (elektra, _Generic((keynameOrTag), char *: keynameOrTag, ELEKTRA_TAG(typeName): ((ELEKTRA_TAG(typeName) *)&keynameOrTag)->keyName), value, KDB_TYPE, index, error)
+#define ELEKTRA_SET_ARRAY_ELEMENT_VALUE(typeName, KDB_TYPE, elektra, keynameOrTag, index, value, error)                          \
+	elektraSetArrayElementValue (elektra, _Generic((keynameOrTag), char *: keynameOrTag, ELEKTRA_TAG(typeName): ((ELEKTRA_TAG(typeName) *)&keynameOrTag)->keyName), index, value, KDB_TYPE, error)
 
 /**
  * @param elektra The elektra instance initialized with the parent key.
@@ -286,90 +286,89 @@ ELEKTRA_TYPES (ELEKTRA_DECLARATIONS)
  * @param value The new value.
  * @param value Pass a reference to an ElektraError pointer.
  */
-#define elektraSetStringArrayElement(elektra, keynameOrTag, value, index, error)                                                           \
-	ELEKTRA_SET_ARRAY_ELEMENT_VALUE (String, "string", elektra, keynameOrTag, value, index, error)
+#define elektraSetStringArrayElement(elektra, keynameOrTag, index, value, error)                                                           \
+	ELEKTRA_SET_ARRAY_ELEMENT_VALUE (String, "string", elektra, keynameOrTag, index, value, error)
 
 /**
  * @copydoc elektraSetStringArrayElement
  */
-#define elektraSetBooleanArrayElement(elektra, keynameOrTag, value, index, error)                                                          \
-	ELEKTRA_SET_ARRAY_ELEMENT_VALUE (Boolean, "boolean", elektra, keynameOrTag, KDB_BOOLEAN_TO_STRING (value), index, error)
+#define elektraSetBooleanArrayElement(elektra, keynameOrTag, index, value, error)                                                          \
+	ELEKTRA_SET_ARRAY_ELEMENT_VALUE (Boolean, "boolean", elektra, keynameOrTag, index, KDB_BOOLEAN_TO_STRING (value), error)
 
 /**
  * @copydoc elektraSetStringArrayElement
  */
-#define elektraSetCharArrayElement(elektra, keynameOrTag, value, index, error)                                                             \
-	ELEKTRA_SET_ARRAY_ELEMENT_VALUE (Char, "char", elektra, keynameOrTag, KDB_CHAR_TO_STRING (value), index, error)
+#define elektraSetCharArrayElement(elektra, keynameOrTag, index, value, error)                                                             \
+	ELEKTRA_SET_ARRAY_ELEMENT_VALUE (Char, "char", elektra, keynameOrTag, index, KDB_CHAR_TO_STRING (value), error)
 
 /**
  * @copydoc elektraSetStringArrayElement
  */
-#define elektraSetOctetArrayElement(elektra, keynameOrTag, value, index, error)                                                            \
-	ELEKTRA_SET_ARRAY_ELEMENT_VALUE (Octet, "octet", elektra, keynameOrTag, KDB_OCTET_TO_STRING (value), index, error)
+#define elektraSetOctetArrayElement(elektra, keynameOrTag, index, value, error)                                                            \
+	ELEKTRA_SET_ARRAY_ELEMENT_VALUE (Octet, "octet", elektra, keynameOrTag, index, KDB_OCTET_TO_STRING (value), error)
 
 /**
  * @copydoc elektraSetStringArrayElement
  */
-#define elektraSetShortArrayElement(elektra, keynameOrTag, value, index, error)                                                            \
-	ELEKTRA_SET_ARRAY_ELEMENT_VALUE (Short, "short", elektra, keynameOrTag, KDB_SHORT_TO_STRING (value), index, error)
+#define elektraSetShortArrayElement(elektra, keynameOrTag, index, value, error)                                                            \
+	ELEKTRA_SET_ARRAY_ELEMENT_VALUE (Short, "short", elektra, keynameOrTag, index, KDB_SHORT_TO_STRING (value), error)
 
 /**
  * @copydoc elektraSetStringArrayElement
  */
-#define elektraSetUnsignedShortArrayElement(elektra, keynameOrTag, value, index, error)                                                    \
-	ELEKTRA_SET_ARRAY_ELEMENT_VALUE (UnsignedShort, "unsigned_short", elektra, keynameOrTag,                                 \
-						   KDB_UNSIGNED_SHORT_TO_STRING (value), index, error)
+#define elektraSetUnsignedShortArrayElement(elektra, keynameOrTag, index, value, error)                                                    \
+	ELEKTRA_SET_ARRAY_ELEMENT_VALUE (UnsignedShort, "unsigned_short", elektra, keynameOrTag, index,                                 \
+						   KDB_UNSIGNED_SHORT_TO_STRING (value), error)
 
 /**
  * @copydoc elektraSetStringArrayElement
  */
-#define elektraSetLongArrayElement(elektra, keynameOrTag, value, index, error)                                                             \
-	ELEKTRA_SET_ARRAY_ELEMENT_VALUE (Long, "long", elektra, keynameOrTag, KDB_LONG_TO_STRING (value), index, error)
+#define elektraSetLongArrayElement(elektra, keynameOrTag, index, value, error)                                                             \
+	ELEKTRA_SET_ARRAY_ELEMENT_VALUE (Long, "long", elektra, keynameOrTag, index, KDB_LONG_TO_STRING (value), error)
 
 /**
  * @copydoc elektraSetStringArrayElement
  */
-#define elektraSetUnsignedLongArrayElement(elektra, keynameOrTag, value, index, error)                                                     \
-	ELEKTRA_SET_ARRAY_ELEMENT_VALUE (UnsignedLong, "unsigned_long", elektra, keynameOrTag,                                   \
-						   KDB_UNSIGNED_LONG_TO_STRING (value), index, error)
+#define elektraSetUnsignedLongArrayElement(elektra, keynameOrTag, index, value, error)                                                     \
+	ELEKTRA_SET_ARRAY_ELEMENT_VALUE (UnsignedLong, "unsigned_long", elektra, keynameOrTag, index,                                   \
+						   KDB_UNSIGNED_LONG_TO_STRING (value), error)
 
 /**
  * @copydoc elektraSetStringArrayElement
  */
-#define elektraSetLongLongArrayElement(elektra, keynameOrTag, value, index, error)                                                         \
-	ELEKTRA_SET_ARRAY_ELEMENT_VALUE (LongLong, "long_long", elektra, keynameOrTag, KDB_LONG_LONG_TO_STRING (value), index,   \
+#define elektraSetLongLongArrayElement(elektra, keynameOrTag, index, value, error)                                                         \
+	ELEKTRA_SET_ARRAY_ELEMENT_VALUE (LongLong, "long_long", elektra, keynameOrTag, index, KDB_LONG_LONG_TO_STRING (value),   \
 						   error)
 
 /**
  * @copydoc elektraSetStringArrayElement
  */
-#define elektraSetUnsignedLongLongArrayElement(elektra, keynameOrTag, value, index, error)                                                 \
-	ELEKTRA_SET_ARRAY_ELEMENT_VALUE (UnsignedLongLong, "unsigned_long_long", elektra, keynameOrTag,                          \
-						   KDB_UNSIGNED_LONG_LONG_TO_STRING (value), index, error)
+#define elektraSetUnsignedLongLongArrayElement(elektra, keynameOrTag, index, value, error)                                                 \
+	ELEKTRA_SET_ARRAY_ELEMENT_VALUE (UnsignedLongLong, "unsigned_long_long", elektra, keynameOrTag, index,                          \
+						   KDB_UNSIGNED_LONG_LONG_TO_STRING (value), error)
 
 /**
  * @copydoc elektraSetStringArrayElement
  */
-#define elektraSetFloatArrayElement(elektra, keynameOrTag, value, index, error)                                                            \
-	ELEKTRA_SET_ARRAY_ELEMENT_VALUE (Float, "float", elektra, keynameOrTag, KDB_FLOAT_TO_STRING (value), index, error)
+#define elektraSetFloatArrayElement(elektra, keynameOrTag, index, value, error)                                                            \
+	ELEKTRA_SET_ARRAY_ELEMENT_VALUE (Float, "float", elektra, keynameOrTag, index, KDB_FLOAT_TO_STRING (value), error)
 
 /**
  * @copydoc elektraSetStringArrayElement
  */
-#define elektraSetDoubleArrayElement(elektra, keynameOrTag, value, index, error)                                                           \
-	ELEKTRA_SET_ARRAY_ELEMENT_VALUE (Double, "double", elektra, keynameOrTag, KDB_DOUBLE_TO_STRING (value), index, error)
+#define elektraSetDoubleArrayElement(elektra, keynameOrTag, index, value, error)                                                           \
+	ELEKTRA_SET_ARRAY_ELEMENT_VALUE (Double, "double", elektra, keynameOrTag, index, KDB_DOUBLE_TO_STRING (value), error)
 
 /**
  * @copydoc elektraSetStringArrayElement
  */
-#define elektraSetLongDoubleArrayElement(elektra, keynameOrTag, value, index, error)                                                       \
-	ELEKTRA_SET_ARRAY_ELEMENT_VALUE (LongDouble, "longDouble", elektra, keynameOrTag, KDB_LONG_DOUBLE_TO_STRING (value),     \
-						   index, error)
+#define elektraSetLongDoubleArrayElement(elektra, keynameOrTag, index, value, error)                                                       \
+ELEKTRA_SET_ARRAY_ELEMENT_VALUE (LongDouble, "longDouble", elektra, keynameOrTag, index, KDB_LONG_DOUBLE_TO_STRING (value), error)
 
 // Array-Getters
 
 #define ELEKTRA_GET_ARRAY_ELEMENT_VALUE(typeName, KDB_TYPE, elektra, keynameOrTag, index)                                        \
-	elektraGetArrayElementValue (elektra, _Generic((keynameOrTag), char *: keynameOrTag, ELEKTRA_TAG(typeName): ((ELEKTRA_TAG(typeName) *)&keynameOrTag)->keyName), KDB_TYPE, index)
+	elektraGetArrayElementValue (elektra, _Generic((keynameOrTag), char *: keynameOrTag, ELEKTRA_TAG(typeName): ((ELEKTRA_TAG(typeName) *)&keynameOrTag)->keyName), index, KDB_TYPE)
 
 /**
  * @param elektra The elektra instance initialized with the parent key.
@@ -457,7 +456,7 @@ ELEKTRA_TYPES (ELEKTRA_DECLARATIONS)
 	KDB_STRING_TO_LONG_DOUBLE (ELEKTRA_GET_ARRAY_ELEMENT_VALUE (LongDouble, "long_double", elektra, keynameOrTag, index))
 
 void __elektraSetEnum (Elektra * elektra, char * name, int value, ElektraError ** error);
-void __elektraSetEnumArrayElement (Elektra * elektra, char * name, int value, size_t index, ElektraError ** error);
+void __elektraSetEnumArrayElement (Elektra * elektra, char * name, size_t index, int value, ElektraError ** error);
 int __elektraGetEnum (Elektra * elektra, char * keyName);
 int __elektraGetEnumArrayElement (Elektra * elektra, char * keyName, int index);
 
@@ -470,9 +469,9 @@ typedef const char * KDBType;
 void elektraSetValue (Elektra * elektra, const char * name, const char * value, KDBType type, ElektraError ** error);
 const char * elektraGetValue (Elektra * elektra, const char * name, KDBType type);
 
-void elektraSetArrayElementValue (Elektra * elektra, const char * name, const char * value, KDBType type, size_t index,
+void elektraSetArrayElementValue (Elektra * elektra, const char * name, size_t index, const char * value, KDBType type,
 				   ElektraError ** error);
-const char * elektraGetArrayElementValue (Elektra * elektra, const char * name, KDBType type, size_t index);
+const char * elektraGetArrayElementValue (Elektra * elektra, const char * name, size_t index, KDBType type);
 
 // Generic Setters and Getters
 
