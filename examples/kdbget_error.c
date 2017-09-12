@@ -7,9 +7,13 @@
  */
 
 #include <kdb.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
+#define XSTR(s) STR (s)
+#define STR(s) #s
 
 void printError (Key * key);
 void printWarnings (Key * key);
@@ -81,19 +85,19 @@ void printWarnings (Key * key)
 {
 	if (!keyGetMeta (key, "warnings")) return;
 	char * end;
-	int warn_count = strtol (keyString (keyGetMeta (key, "warnings")), &end, 10);
+	size_t warn_count = strtol (keyString (keyGetMeta (key, "warnings")), &end, 10);
 	if (*end)
 	{
 		printf ("strtol error\n");
 		return;
 	}
-	int warn_iter = 0;
+	size_t warn_iter = 0;
 
-	char buffer[sizeof ("warnings/#00/description")];
+	char buffer[sizeof ("warnings/#00/description") + sizeof (XSTR (SIZE_MAX))];
 
 	do
 	{
-		snprintf (&buffer[0], sizeof (buffer), "warnings/#%02i/description", warn_iter);
+		snprintf (&buffer[0], sizeof (buffer), "warnings/#%02zu/description", warn_iter);
 
 		const Key * warnkey = keyGetMeta (key, buffer);
 		printf ("Warning occurred: %s\n", keyString (warnkey));
