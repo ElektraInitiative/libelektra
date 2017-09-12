@@ -93,10 +93,7 @@ void printWarnings (Key * key)
 
 	do
 	{
-		if (warn_iter < 10)
-			sprintf (&buffer[0], "warnings/#0%i/description", warn_iter);
-		else
-			sprintf (&buffer[0], "warnings/#%i/description", warn_iter);
+		snprintf (&buffer[0], sizeof (buffer), "warnings/#%02i/description", warn_iter);
 
 		const Key * warnkey = keyGetMeta (key, buffer);
 		printf ("Warning occurred: %s\n", keyString (warnkey));
