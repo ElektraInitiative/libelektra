@@ -1,12 +1,10 @@
-#!/usr/bin/zsh
-# Not intended to be executed directly, shebang exists to supress checkbashisms warning 
-
 #compdef kdb
 # This file needs to be renamed to _kdb to work and must be in the $fpath
+# It must start with #compdef kdb
 #
 # ZSH completion file for KDB
 #
-# Sebastian Bachmann <hello@reox.at>, 2016
+# Sebastian Bachmann <hello@reox.at>, 2017
 
 _kdb_paths () {
     # Function to complete a KDB path by using `kdb complete`
