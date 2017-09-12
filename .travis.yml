@@ -25,11 +25,9 @@ matrix:
       compiler: clang
 
     - os: linux
-      dist: trusty
       compiler: gcc
 
     - os: linux
-      dist: trusty
       compiler: clang
 
 before_install:
