@@ -9,54 +9,34 @@
 # Sebastian Bachmann <hello@reox.at>, 2016
 
 _kdb_paths () {
-    # It seems this is enough to get all keys into the compsystem
-
-    # TODO
-    # Some paths only have a single possible completion.
-    # like if there is no other path starting with s/foo/bar and
-    # s/foo/bar/sdf/baz/bar/xxx is the only leaf, we can complete for this directly
+    # Function to complete a KDB path by using `kdb complete`
 
     typeset -a paths
-    # Count the number of slashes to know where we are
-    # TODO this seems to be not working in a zsh without configuration
-    # e.g. my configuration does something weird.
-    # it should be ${#PREFIX//[^\/]/}
-    slashes=${#PREFIX//[^\\\/]/}
-    if [ $slashes -eq 0 ]; then
-        # If no slashes, we perform search on /
-        paths=($(kdb ls / | cut -d "/" -f 1 | uniq))
-    else
-        # Check if key is a leaf
-        # TODO how we can get rid of the trailing / then?
-        kdb ls / | grep -q -e "^${PREFIX}$"
-        if [ $? -eq 0 ]; then
-            _message "$PREFIX is a leaf."
-            return
-        fi
-        kdb ls / | grep -q -e "^$PREFIX"
-        if [ $? -ne 0 ]; then
-            # TODO need to check here for the key w/o /.
-            # probably move into a function
-            kdb ls / | grep -q -e "^${PREFIX:0:-1}$"
-            if [ $? -eq 0 ]; then
-                _message "${PREFIX:0:-1} is a leaf."
-                return
-            fi
-            _message -e "Could not find $PREFIX as a valid path"
-        fi
+    # The current user input is saved in $PREFIX
+    # we can use kdb complete -M 1 $PREFIX to look up new paths
+    #
+    # as the _values function already completes with a seperator,
+    # we need to remove trailing slashes from the list.
+    paths=($(kdb complete -M 1 $PREFIX | sed 's#/$##'))
 
-        # We need to check if the last char is a /
-        # If not, we remove the garbled part at the end and search from there.
-        if [[ ${PREFIX[-1]} == "/" ]]; then
-            paths=($(kdb ls $PREFIX | cut -d "/" -f -$(( slashes + 1 )) ))
-        else
-            pre=$(cut -d "/" -f -$slashes <<< $PREFIX)
-            paths=($(kdb ls $pre | cut -d "/" -f -$(( slashes + 1 )) ))
-        fi
-
+    # Check if kdb complete got any result at all
+    if [ $#paths -eq 0 ]; then
+        _message "No key to complete"
+        return
     fi
-    # TODO an approximate form would be nice, so we can correct for user input
-    _values -s / 'kdb path' $paths
+
+    # Check if the supplied path completes to a leaf:
+    kdb complete $PREFIX | grep -q -e '/$'
+    if [ $? -eq 1 ] && [ $#paths -eq 1 ]; then
+        # Leaf
+        _message "$PREFIX is a leaf."
+        # If we have a leaf, we do not add the / seperator but a whitespace
+        _values 'kdb path' $paths
+        return
+    else
+        # Otherwise we add a / seperator
+        _values -s '/' 'kdb path' $paths
+    fi
 }
 
 # These are the functions for each command
