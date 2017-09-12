@@ -3,7 +3,7 @@
  *
  * @brief
  *
- * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
 #include <stdlib.h>
@@ -17,7 +17,7 @@
 
 #include <tests_plugin.h>
 
-static void init_env ()
+static void init_env (void)
 {
 	setenv ("PYTHONDONTWRITEBYTECODE", "1", 1);
 	setenv ("PYTHONPATH", ".", 1);
@@ -47,7 +47,7 @@ static char * python_file (const char * filename)
 }
 
 // test simple variable passing
-static void test_variable_passing ()
+static void test_variable_passing (void)
 {
 	printf ("Testing simple variable passing...\n");
 
@@ -68,7 +68,7 @@ static void test_variable_passing ()
 }
 
 // test loading python twice
-static void test_two_scripts ()
+static void test_two_scripts (void)
 {
 	printf ("Testing loading of two active python plugins...\n");
 
@@ -102,7 +102,7 @@ static void test_two_scripts ()
 }
 
 // simple return value test
-static void test_fail ()
+static void test_fail (void)
 {
 	printf ("Testing return values from python functions...\n");
 
@@ -124,7 +124,7 @@ static void test_fail ()
 }
 
 // test script with wrong class name
-static void test_wrong ()
+static void test_wrong (void)
 {
 	printf ("Testing python script with wrong class name...\n");
 

@@ -14,8 +14,6 @@ The plugins are:
 
 ![Overview Plugins](/doc/images/plugins.png)
 
-For background information see [elektra-plugins-framework(7)](/doc/help/elektra-plugins-framework.md).
-
 ### C-Interface
 
 All plugins implement the same interface:
@@ -47,15 +45,15 @@ All plugins implement the same interface:
 ## See also
 
 For an easy introduction, see [this tutorial how to write a storage plugin](/doc/tutorials/plugins.md).
-For more background information of the [plugins framework, continue here](/doc/help/elektra-plugins-framework.md).
-Otherwise, you can visit the [the API documentation](http://doc.libelektra.org/api/current/html/group__plugin.html).
+For more background information of the [plugins framework, continue here](/doc/dev/plugins-framework.md).
+Otherwise, you can visit the [the API documentation](https://doc.libelektra.org/api/current/html/group__plugin.html).
 
 ## Plugins
 
 ### Resolver
 
 Before configuration is actually written, the file name needs to be
-determined (will be automatically added by kdb mount):
+determined (resolvers will be automatically added by kdb mount):
 
 - [resolver](resolver/) uses advanced POSIX APIs to handle conflicts gracefully
 - [wresolver](wresolver/) minimalistic resolver for non-POSIX systems
@@ -65,9 +63,9 @@ and afterwards the configuration file must be synced with
 harddisc (recommended to add at every kdb mount):
 - [curlget](curlget/) fetches configuration file from a remote host
 - [blockresolver](blockresolver/) resolves tagged blocks inside config files
-- [multifile](multifile/) 
+- [multifile](multifile/)
 
-- [sync](sync/) uses POSIX APIs to sync configuration file with harddisc
+- [sync](sync/) uses POSIX APIs to sync configuration files with the hard disk
 
 ### Storage
 
@@ -97,9 +95,11 @@ spec-namespace (put a focus on having nice syntax for metadata):
 
 Only suited for import/export:
 
-- [xmltool](xmltool/) uses XML (in Elektra’s XML schema).
+- [xerces](xerces/) uses XML (without a specific schema).
+- [xmltool](xmltool/) uses XML (in Elektra's XML schema).
 - [simpleini](simpleini/) line-based key-value pairs with configurable
   format (without sections)
+- [mini](mini/) dependency free, line based key-value storage plugin.
 
 Plugins that just show some functionality, (currently) not intended for
 productive use:
@@ -112,6 +112,7 @@ productive use:
 - [mozprefs](mozprefs/) for Mozilla preference files
 - [c](c/) writes Elektra C-structures (`ksNew(.. keyNew(...`)
 - [file](file/) reads and writes a file from/to a single key
+- [camel](camel/) reads and writes a very limited subset of [YAML](http://www.yaml.org)
 
 ### System Information
 
@@ -160,7 +161,7 @@ Doing other stuff:
 
 - [crypto](crypto/) encrypts / decrypts confidential values
 - [fcrypt](fcrypt/) encrypts / decrypts entire backend files
-- [iconv](iconv/) make sure the configuration will have correct
+- [iconv](iconv/) makes sure the configuration will have correct
   character encoding
 - [hidden](hidden/) hides keys whose names start with a `.`.
 - [null](null/) takes care of null values and other binary specialities
@@ -169,29 +170,31 @@ Doing other stuff:
 
 Log/Send out all changes to configuration to:
 
-- [dbus](dbus/)
-- [journald](journald/)
-- [syslog](syslog/)
+- [dbus](dbus/) sends notifications for every change via dbus
+- [syslog](syslog/) logs key database changes to syslog
+- [journald](journald/) logs key database changes to journald
 - [logchange](logchange/) prints the change of every key on the console
 
 ### Debug
 
 Trace everything that happens within KDB:
 
-- [timeofday](timeofday/) print timestamps
-- [tracer](tracer/)
-- [counter](counter/) count and print how often plugin is used
+- [timeofday](timeofday/) prints timestamps
+- [tracer](tracer/) traces all calls
+- [counter](counter/) count and print how often a plugin is used
 
 ### Checker
 
 Copies metadata to keys:
 
-- [glob](glob/) using globbing techniques
+- [spec](spec/) copies metadata from spec namespace (the
+  standard way)
+- [glob](glob/) using globbing techniques (needed by some plugins)
 - [struct](struct/) using a defined structure (may also reject
   configuration not conforming to that structure)
-- [spec](spec/) copies metadata from spec namespace
+
 Plugins that check if values are valid based on metadata (typically
-copied by another plugin just before):
+copied by the `spec` plugin just before):
 
 **Value Validation**
 

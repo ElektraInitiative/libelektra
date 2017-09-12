@@ -1,5 +1,5 @@
 This ChangeLog is not used anymore.
-Use git-log to see the changelog.
+See doc/news for current news!
 
 
 * Fri 31 Oct 2008
@@ -388,7 +388,7 @@ one step closer to use only kdbi* memory management
 - use setenv
 - create_root_key now creates for a specific backend
 - create_conf for a specific file
-- #ifdef all headers, 
+- #ifdef all headers,
 - remove warings
 - xml cleanup: #ifdefs in includes
 - memory leak in ksToStream
@@ -701,7 +701,7 @@ or any other type
 - filesys cleanup: don't support old key-style and remove pointless functions
 - valgrind integrated for tests and benchmarks
 - KEY_SWITCH_DOMAIN -> KEY_SWITCH_OWNER
-	
+
 * Sun 23 Sep 2007
 - kdbHandle and KDBEXPORT only insist of 4 functions (open, close, get, set)
 - kdbHighLevel only require kdbGet and kdbSet, but considered broken
@@ -1077,8 +1077,8 @@ or any other type
 - Many small fixes that appeared in the switch to keyNew()
 - Many other fixes, code robustness and cleanup.
 - User-defined key types greatly improved, fixed and tested.
-- XML export can now supress obvious UID and GID for 'user/*' keys
-- XML export can now supress user domain for 'user/*' keys
+- XML export can now suppress obvious UID and GID for 'user/*' keys
+- XML export can now suppress user domain for 'user/*' keys
 - New keyNewExample.c and lookup.c on example/
 - New example/keyset.xml with example of complex keys, and how they look XML-exported.
 - XML DTD were droped. Now we have XML schemas, thanks to Rémi <remipouak@yahoo.fr>.

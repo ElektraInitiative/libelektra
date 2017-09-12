@@ -35,7 +35,7 @@ For Jessie:
         deb     [trusted=yes] https://debian-stable.libelektra.org/elektra-stable/ jessie main
         deb-src [trusted=yes] https://debian-stable.libelektra.org/elektra-stable/ jessie main
 
-For Wheezy:
+For Wheezy (not updated anymore, contains 0.8.19-8121 packages):
 
         deb     [trusted=yes] https://build.libelektra.org/debian/ wheezy main
         deb-src [trusted=yes] https://build.libelektra.org/debian/ wheezy main

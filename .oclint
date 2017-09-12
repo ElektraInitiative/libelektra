@@ -1,0 +1,5 @@
+rule-configurations:
+  - key: LONG_LINE
+    value: 140
+disable-rules:
+  - GotoStatement

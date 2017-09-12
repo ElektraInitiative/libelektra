@@ -150,7 +150,7 @@ endmacro(find_swig)
 #
 # Parameters:
 #
-# 1. util        [in] : the utility fo search for. Must be added using
+# 1. util        [in] : the utility to search for. Must be added using
 #                       add_executable first.
 # 2. EXE_SYM_LOC [out]: a name for a variable where the program to be executed
 #                       is written to.
@@ -186,7 +186,7 @@ function(find_util util output_loc output_arg)
 			find_program (${util}_EXE_LOC ${util})
 		endif ()
 	else (CMAKE_CROSSCOMPILING)
-		get_target_property (${util}_EXE_LOC ${util} LOCATION)
+		set(${util}_EXE_LOC $<TARGET_FILE:${util}>)
 	endif (CMAKE_CROSSCOMPILING)
 	set (${output_loc} ${${util}_EXE_LOC} PARENT_SCOPE)
 	set (${output_arg} ${ARG_LOC} PARENT_SCOPE)
@@ -529,7 +529,7 @@ if (BUILD_DOCUMENTATION AND RONN_LOC) # disable function when RONN_LOC is not se
 	add_custom_command(
 		OUTPUT ${OUTFILE}
 		DEPENDS ${MDFILE}
-		COMMAND ${RONN_LOC}
+		COMMAND export RUBYOPT="-Eutf-8" && ${RONN_LOC}
 		ARGS -r --pipe ${MDFILE} > ${OUTFILE}
 		)
 	add_custom_target(man-${NAME} ALL DEPENDS ${OUTFILE})
@@ -581,7 +581,7 @@ function (generate_readme p)
 	STRING(REGEX REPLACE "\n" "\\\\n\"\n\"" contents "${contents}")
 	STRING(REGEX REPLACE "- infos = ([a-zA-Z0-9 ]*)\\\\n\"" "keyNew(\"system/elektra/modules/${p}/infos\",\nKEY_VALUE, \"\\1\", KEY_END)," contents "${contents}")
 	STRING(REGEX REPLACE "\"- +infos/licence *= *([a-zA-Z0-9 ]*)\\\\n\"" "keyNew(\"system/elektra/modules/${p}/infos/licence\",\nKEY_VALUE, \"\\1\", KEY_END)," contents "${contents}")
-	STRING(REGEX REPLACE "\"- +infos/author *= *([.@<>a-zA-Z0-9 %_-]*)\\\\n\"" "keyNew(\"system/elektra/modules/${p}/infos/author\",\nKEY_VALUE, \"\\1\", KEY_END)," contents "${contents}")
+	STRING(REGEX REPLACE "\"- +infos/author *= *([.@<>a-zéA-Z0-9 %_-]*)\\\\n\"" "keyNew(\"system/elektra/modules/${p}/infos/author\",\nKEY_VALUE, \"\\1\", KEY_END)," contents "${contents}")
 
 	STRING(REGEX MATCH "\"- +infos/provides *= *([a-zA-Z0-9/ ]*)\\\\n\"" PROVIDES "${contents}")
 	STRING(REGEX REPLACE "\"- +infos/provides *= *([a-zA-Z0-9/ ]*)\\\\n\"" "\\1" PROVIDES "${PROVIDES}")

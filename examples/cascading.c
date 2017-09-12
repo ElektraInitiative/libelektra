@@ -3,7 +3,7 @@
  *
  * @brief
  *
- * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
 #include <kdb.h>
@@ -16,7 +16,7 @@ void printError (char * what, Key const * parentKey)
 		keyString (keyGetMeta (parentKey, "error/number")), keyString (keyGetMeta (parentKey, "error/reason")));
 }
 
-int main ()
+int main (void)
 {
 	Key * parentKey = keyNew ("", KEY_CASCADING_NAME, KEY_END);
 	KDB * kdb = kdbOpen (parentKey);

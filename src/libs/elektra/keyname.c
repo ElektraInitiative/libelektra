@@ -3,7 +3,7 @@
  *
  * @brief Methods for Key name manipulation.
  *
- * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
 /** @class doxygenNamespaces
@@ -624,7 +624,6 @@ ssize_t keyGetFullNameSize (const Key * key)
 ssize_t keyGetFullName (const Key * key, char * returnedName, size_t maxSize)
 {
 	size_t userSize = sizeof ("user") - 1;
-	size_t ownerSize;
 	ssize_t length;
 	ssize_t maxSSize;
 	char * cursor;
@@ -660,7 +659,7 @@ ssize_t keyGetFullName (const Key * key, char * returnedName, size_t maxSize)
 		{
 			*cursor = ':';
 			++cursor;
-			ownerSize = keyGetValueSize (keyGetMeta (key, "owner")) - 1;
+			size_t ownerSize = keyGetValueSize (keyGetMeta (key, "owner")) - 1;
 			strncpy (cursor, keyValue (keyGetMeta (key, "owner")), ownerSize);
 			cursor += ownerSize;
 		}

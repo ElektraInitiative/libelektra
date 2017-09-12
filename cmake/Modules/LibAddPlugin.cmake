@@ -276,7 +276,6 @@ function (add_plugin PLUGIN_SHORT_NAME)
 					INCLUDE_DIRECTORIES "${ARG_INCLUDE_DIRECTORIES}"
 					INCLUDE_SYSTEM_DIRECTORIES "${ARG_INCLUDE_SYSTEM_DIRECTORIES}"
 					LINK_ELEKTRA "${ARG_LINK_ELEKTRA}"
-					"${HAS_CPP}"
 					"${HAS_INSTALL_TEST_DATA}"
 					)
 		endif ()
@@ -350,8 +349,6 @@ function (add_plugin PLUGIN_SHORT_NAME)
 
 	add_library (${PLUGIN_OBJS} OBJECT ${ARG_SOURCES})
 	add_dependencies (${PLUGIN_OBJS} kdberrors_generated)
-
-	add_dependencies(${PLUGIN_OBJS} readme_${PLUGIN_SHORT_NAME}.c)
 
 	generate_readme (${PLUGIN_SHORT_NAME})
 

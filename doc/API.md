@@ -29,10 +29,10 @@ other hand it gives an informal description what methods must and may provide
 to allow an alternative implementation of the API.
 
 The current version (for stable releases) of this document can be found at
-http://doc.libelektra.org/api/current/html
+https://doc.libelektra.org/api/current/html
 
 The latest version (from git master) of this document can be found at
-http://doc.libelektra.org/api/latest/html
+https://doc.libelektra.org/api/latest/html
 
 
 **Important:** On github links to API functions are broken, so it is recommended that you continue
@@ -107,7 +107,7 @@ entire [KeySet](@ref ksAppend)
 - [Work with](@ref ksNext) its [internal cursor](@ref ksCurrent)
 - See [class documentation](@ref keyset) for more
 
-[More background information about the classes](/doc/help/elektra-classes.md)
+[More background information about the classes](/doc/dev/classes.md)
 
 ## Namespaces
 
@@ -192,4 +192,4 @@ Read more about [mounting](/doc/help/elektra-mounting.md)
 
 - See [elektra-glossary(7)](/doc/help/elektra-glossary.md)
 - More information about [elektra-backends(7)](/doc/help/elektra-backends.md)
-- More information about [elektra-plugins-framework(7)](/doc/help/elektra-plugins-framework.md)
+- More information about [plugins-framework](/doc/dev/plugins-framework.md)

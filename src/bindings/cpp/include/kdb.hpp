@@ -3,7 +3,7 @@
  *
  * @brief
  *
- * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
 #ifndef ELEKTRA_KDB_HPP
@@ -41,7 +41,7 @@ class KDB
 {
 public:
 	KDB ();
-	KDB (Key & errorKey);
+	explicit KDB (Key & errorKey);
 	virtual ~KDB () throw ()
 	{
 		close ();
@@ -52,9 +52,9 @@ public:
 	virtual inline void close (Key & errorKey) throw ();
 
 	virtual inline int get (KeySet & returned, std::string const & keyname);
-	virtual inline int get (KeySet & returned, Key & parentKey);
+	virtual inline int get (KeySet & returned, Key const & parentKey);
 	virtual inline int set (KeySet & returned, std::string const & keyname);
-	virtual inline int set (KeySet & returned, Key & parentKey);
+	virtual inline int set (KeySet & returned, Key const & parentKey);
 
 private:
 	ckdb::KDB * handle; ///< holds an kdb handle
@@ -160,7 +160,7 @@ inline void KDB::close (Key & errorKey) throw ()
  *
  * @see KDB::get (KeySet & returned, Key & parentKey)
  */
-inline int KDB::get (KeySet & returned, std::string const & keyname)
+inline int KDB::get (KeySet & returned, std::string const & keyname = "/")
 {
 	Key parentKey (keyname.c_str (), KEY_CASCADING_NAME, KEY_END);
 	return get (returned, parentKey);
@@ -178,7 +178,7 @@ inline int KDB::get (KeySet & returned, std::string const & keyname)
  *
  * @throw KDBException if there were problems with the database
  */
-inline int KDB::get (KeySet & returned, Key & parentKey)
+inline int KDB::get (KeySet & returned, Key const & parentKey = kdb::Key ("/"))
 {
 	int ret = ckdb::kdbGet (handle, returned.getKeySet (), parentKey.getKey ());
 	if (ret == -1)
@@ -202,7 +202,7 @@ inline int KDB::get (KeySet & returned, Key & parentKey)
  *
  * @throw KDBException if there were problems with the database
  */
-inline int KDB::set (KeySet & returned, std::string const & keyname)
+inline int KDB::set (KeySet & returned, std::string const & keyname = "/")
 {
 	Key parentKey (keyname.c_str (), KEY_CASCADING_NAME, KEY_END);
 	return set (returned, parentKey);
@@ -222,7 +222,7 @@ inline int KDB::set (KeySet & returned, std::string const & keyname)
  *
  * @throw KDBException if there were problems with the database
  */
-inline int KDB::set (KeySet & returned, Key & parentKey)
+inline int KDB::set (KeySet & returned, Key const & parentKey = kdb::Key ("/"))
 {
 	int ret = ckdb::kdbSet (handle, returned.getKeySet (), parentKey.getKey ());
 	if (ret == -1)

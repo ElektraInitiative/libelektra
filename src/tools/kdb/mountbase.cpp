@@ -3,7 +3,7 @@
  *
  * @brief
  *
- * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
 #include <mountbase.hpp>
@@ -135,9 +135,8 @@ class KDBMountException : public KDBException
 	std::string msg;
 
 public:
-	KDBMountException (std::string const & e) : KDBException (Key ())
+	explicit KDBMountException (std::string const & e) : KDBException (Key ()), msg (e)
 	{
-		msg = e;
 	}
 
 	virtual const char * what () const noexcept override

@@ -1089,7 +1089,7 @@ elektraNi_PRIVATE uint32_t Hash (const void * restrict key, size_t length, uint3
 #ifdef SELF_TEST
 
 /* used for timings */
-void driver1 ()
+void driver1 (void)
 {
 	uint8_t buf[256];
 	uint32_t i;
@@ -1112,7 +1112,7 @@ void driver1 ()
 #define HASHLEN 1
 #define MAXPAIR 60
 #define MAXLEN 70
-void driver2 ()
+void driver2 (void)
 {
 	uint8_t qa[MAXLEN + 1], qb[MAXLEN + 2], *a = &qa[0], *b = &qb[1];
 	uint32_t c[HASHSTATE], d[HASHSTATE], i = 0, j = 0, k, l, m = 0, z;
@@ -1184,7 +1184,7 @@ void driver2 ()
 }
 
 /* Check for reading beyond the end of the buffer and alignment problems */
-void driver3 ()
+void driver3 (void)
 {
 	uint8_t buf[MAXLEN + 20], *b;
 	uint32_t len;
@@ -1264,7 +1264,7 @@ void driver3 ()
 }
 
 /* check for problems with nulls */
-void driver4 ()
+void driver4 (void)
 {
 	uint8_t buf[1];
 	uint32_t h, i, state[HASHSTATE];
@@ -1282,7 +1282,7 @@ void driver4 ()
 }
 
 
-int main ()
+int main (void)
 {
 	driver1 (); /* test that the key is hashed: used for timings */
 	driver2 (); /* test that whole key is hashed thoroughly */

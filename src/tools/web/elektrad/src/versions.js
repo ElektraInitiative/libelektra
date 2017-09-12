@@ -6,7 +6,7 @@
  * e.g.
  * { api: 1, elektra: { version: '0.8.19', major: 0, minor: 8, micro: 19 } }
  *
- * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
 import { version } from '../package.json'

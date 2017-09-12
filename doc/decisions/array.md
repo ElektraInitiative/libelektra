@@ -48,7 +48,7 @@ myarray/#5 = value5
 
 - Is very similar to `binary` metadata.
 - The key alone suffices to know if its an array
-- one can distuinigish an array with keys that are called by chance #0
+- one can distinguish an array with keys that are called by chance #0
 
 ## Implications
 

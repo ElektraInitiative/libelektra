@@ -3,10 +3,10 @@
  *
  * @brief this exports a function that defines routes for the express app
  *
- * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-import { successResponse, errorResponse, dontShowDB } from './utils'
+import { APIError, successResponse, errorResponse, dontShowDB } from './utils'
 
 import {
   getInstances as getDBInstances, createInstance,
@@ -76,7 +76,7 @@ export default function initInstanceRoutes (app) {
     getInstance(req.params.id)
       .then(instance => {
         if (!instance || !instance.host) {
-          throw new Error('Instance not found or invalid (no host)')
+          throw new APIError('Instance not found or invalid (no host)')
         }
         return remoteKdb.get(instance.host)
       })

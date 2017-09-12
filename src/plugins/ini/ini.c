@@ -3,7 +3,7 @@
  *
  * @brief A plugin for reading and writing ini files
  *
- * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  *
  */
 
@@ -398,7 +398,8 @@ static int iniKeyToElektraKey (void * vhandle, const char * section, const char 
 		else if (!lineContinuation)
 		{
 			keyDel (appendKey);
-			ELEKTRA_SET_ERRORF (141, handle->parentKey, "Key: %s\n", keyName (existingKey));
+			ELEKTRA_SET_ERRORF (141, handle->parentKey, "We found the key %s a second time in the INI file in section %s\n",
+					    keyName (existingKey), section);
 			return -1;
 		}
 	}
@@ -478,17 +479,16 @@ static int iniCommentToMeta (void * vhandle, const char * comment)
 		size_t len = strlen (localCopy);
 		char * ptr = localCopy;
 		char * name = ptr;
-		// skip keynames leading whitespaces
+		// skip keynames leading whitespace
 		while (isspace (*name))
 			++name;
-		char * value;
 
 		// locate key/value delimiter "="
 		ptr = strstr (localCopy, "=");
 		if (ptr)
 		{
 
-			// skip keynames trailing whitespaces starting left of delimiter
+			// skip keynames trailing whitespace starting left of delimiter
 			// and add nullbyte as string delimiter
 			char * nameEnd = ptr - 1;
 			while (isspace (*nameEnd))
@@ -498,8 +498,8 @@ static int iniCommentToMeta (void * vhandle, const char * comment)
 			{
 
 				*ptr = '\0';
-				// skip leading whitespaces and drop trailing whitespaces
-				value = ptr + 1;
+				// skip leading whitespace and drop trailing whitespace
+				char * value = ptr + 1;
 				while (isspace (*value))
 					++value;
 				char * valueEnd = &localCopy[len - 1];
@@ -792,7 +792,7 @@ int elektraIniGet (Plugin * handle, KeySet * returned, Key * parentKey)
 }
 
 // TODO: # and ; comments get mixed up, patch inih to differentiate and
-// create comment keys instead of writing metadata. Wiriting the meta
+// create comment keys instead of writing metadata. Writing the meta
 // data can be done by keytometa then
 void writeComments (Key * current, FILE * fh, const char commentChar)
 {
@@ -1227,7 +1227,10 @@ static int iniWriteKeySet (FILE * fh, Key * parentKey, KeySet * returned, IniPlu
 				sectionKey = parentKey;
 				removeSectionKey = 0;
 			}
-			sectionKey = cur;
+			else
+			{
+				sectionKey = cur;
+			}
 		}
 		writeComments (cur, fh, config->commentChar);
 		iniWriteMeta (fh, cur);
@@ -1433,8 +1436,7 @@ static void stripInternalData (Key * parentKey ELEKTRA_UNUSED, KeySet * ks)
 			Key * newKey = keyDup (cur);
 			char * oldName = strdup (keyName (cur));
 			char * newName = elektraCalloc (elektraStrLen (keyName (cur)));
-			char * token = NULL;
-			token = strtok (oldName, "/");
+			char * token = strtok (oldName, "/");
 			strcat (newName, token);
 			while (token != NULL)
 			{
@@ -1615,6 +1617,6 @@ Plugin * ELEKTRA_PLUGIN_EXPORT (ini)
 	    ELEKTRA_PLUGIN_OPEN, &elektraIniOpen,
 	    ELEKTRA_PLUGIN_CLOSE, &elektraIniClose,
 	    ELEKTRA_PLUGIN_GET, &elektraIniGet,
-	    ELEKTRA_PLUGIN_SET, &elektraIniSet, 
+	    ELEKTRA_PLUGIN_SET, &elektraIniSet,
 	    ELEKTRA_PLUGIN_END);
 }

@@ -3,7 +3,7 @@
  *
  * @brief tests for jni module
  *
- * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  *
  */
 
@@ -22,7 +22,7 @@
 #include <testmod_jni.h>
 #include <tests_plugin.h>
 
-static void test_helloWorld ()
+static void test_helloWorld (void)
 {
 	Key * parentKey = keyNew ("user/tests/jni", KEY_VALUE, "", KEY_END);
 	KeySet * conf =

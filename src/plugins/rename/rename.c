@@ -1,9 +1,9 @@
 /**
  * @file
  *
- * @brief A plugin that converts keys to metakeys and vice versa
+ * @brief Implementation of plugin rename
  *
- * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  *
  */
 
@@ -21,15 +21,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include <kdbprivate.h> // for access to sync bit (keyClearSync)
+#include <kdbobsolete.h> // for keyNameGetOneLevel
+#include <kdbprivate.h>  // for access to sync bit (keyClearSync)
 
 #define ELEKTRA_ORIGINAL_NAME_META "origname"
 #define TOLOWER (-1)
 #define TOUPPER 1
 #define UNCHNGD 0
 #define KEYNAME 2
-// TODO defined privately in keyhelpers.c, API break possible..
-char * keyNameGetOneLevel (const char * name, size_t * size);
 
 static void doConversion (char * newName, int levels, const int toCase)
 {

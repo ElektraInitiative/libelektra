@@ -3,7 +3,7 @@
  *
  * @brief Defines for global plugins
  *
- * @copyright BSD License (see doc/COPYING or http://www.libelektra.org)
+ * @copyright BSD License (see doc/COPYING or https://www.libelektra.org)
  */
 
 #ifndef ELEKTRA_KDBGLOBAL_H

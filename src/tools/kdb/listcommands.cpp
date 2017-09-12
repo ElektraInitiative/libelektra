@@ -3,7 +3,7 @@
  *
  * @brief
  *
- * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
 #include <factory.hpp>
@@ -41,7 +41,7 @@ int ListCommandsCommand::execute (Cmdline const & cl)
 		std::cerr << "Sorry, I have a severe problem, it seems like I am not installed correctly!\n"
 			  << "kdbOpen() failed with the info:" << std::endl
 			  << ce.what () << std::endl
-			  << "Please report the issue on https://issues.libelektra.org/";
+			  << "Please report the issue at https://issues.libelektra.org/";
 		return 8;
 	}
 

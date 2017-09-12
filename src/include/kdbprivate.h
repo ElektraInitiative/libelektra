@@ -3,7 +3,7 @@
  *
  * @brief Private declarations.
  *
- * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
 #ifndef KDBPRIVATE_H
@@ -238,6 +238,12 @@ struct _KeySet
 	 * Some control and internal flags.
 	 */
 	ksflag_t flags;
+#ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
+	/**
+	 * The Order Preserving Minimal Perfect Hash Map.
+	 */
+	Opmphm * opmphm;
+#endif
 };
 
 
@@ -343,7 +349,7 @@ struct _Plugin
 	KeySet * config; /*!< This keyset contains configuration for the plugin.
 	 Direct below system/ there is the configuration supplied for the backend.
 	 Direct below user/ there is the configuration supplied just for the
-	 plugin, which should be of course prefered to the backend configuration.
+	 plugin, which should be of course preferred to the backend configuration.
 	 The keys inside contain information like /path which path should be used
 	 to write configuration to or /host to which host packets should be send.
 	 @see elektraPluginGetConfig() */
@@ -454,12 +460,12 @@ int backendClose (Backend * backend, Key * errorKey);
 int backendUpdateSize (Backend * backend, Key * parent, int size);
 
 /*Plugin handling*/
+Plugin * elektraPluginOpen (const char * backendname, KeySet * modules, KeySet * config, Key * errorKey);
+int elektraPluginClose (Plugin * handle, Key * errorKey);
 int elektraProcessPlugin (Key * cur, int * pluginNumber, char ** pluginName, char ** referenceName, Key * errorKey);
 int elektraProcessPlugins (Plugin ** plugins, KeySet * modules, KeySet * referencePlugins, KeySet * config, KeySet * systemConfig,
 			   Key * errorKey);
 
-Plugin * elektraPluginOpen (const char * backendname, KeySet * modules, KeySet * config, Key * errorKey);
-int elektraPluginClose (Plugin * handle, Key * errorKey);
 Plugin * elektraPluginMissing (void);
 Plugin * elektraPluginVersion (void);
 
@@ -503,7 +509,6 @@ ssize_t ksSearchInternal (const KeySet * ks, const Key * toAppend);
 ssize_t elektraMemcpy (Key ** array1, Key ** array2, size_t size);
 ssize_t elektraMemmove (Key ** array1, Key ** array2, size_t size);
 
-char * elektraStrNDup (const char * s, size_t l);
 ssize_t elektraFinalizeName (Key * key);
 ssize_t elektraFinalizeEmptyName (Key * key);
 
@@ -514,6 +519,7 @@ int elektraUnescapeKeyNamePartBegin (const char * source, size_t size, char ** d
 char * elektraUnescapeKeyNamePart (const char * source, size_t size, char * dest);
 
 int elektraValidateKeyName (const char * name, size_t size);
+
 
 /*Internally used for array handling*/
 int elektraArrayValidateName (const Key * key);

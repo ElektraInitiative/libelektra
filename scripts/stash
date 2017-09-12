@@ -1,0 +1,18 @@
+#!/bin/sh
+#
+# @author Thomas Waser <thomas.waser@libelektra.org>
+# @brief Stashes away the current KDB to be restored later.
+# @date 14.08.2017
+# @tags backup, stash, helper
+
+if [ -z "$KDB" ];
+then
+    KDB=kdb
+fi
+
+$KDB backup
+
+$KDB umount-all 2>/dev/null
+$KDB rm -r system 2>/dev/null
+$KDB rm -r user 2>/dev/null
+$KDB rm -r spec 2>/dev/null

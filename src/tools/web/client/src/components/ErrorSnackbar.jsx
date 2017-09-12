@@ -3,7 +3,7 @@
  *
  * @brief shows errors in a small notification on the bottom of the UI
  *
- * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
 import React from 'react'

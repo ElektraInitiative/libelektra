@@ -1,0 +1,48 @@
+#!/bin/bash
+#
+# @author Kurt Micheli <kurt.micheli@libelektra.org>
+# @brief run opmphm benchmark
+# @date 05.07.2017
+# @tags benchmark
+
+
+#
+# Start point of the opmphm c benchmarks
+# generates numberOfSeeds seeds distributed uniformly from 1 to 2147483647 = ELEKTRARANDMAX
+# and feeds the seeds to the benchmark executable.
+# Note: feed exact amount of needed seeds otherwise you get a SIGPIPE
+#
+
+MAX_OPMPHMR_PARTITE=6
+numberOfSeeds=1000000
+seedsFile="benchmark_opmphmSeeds"
+
+if [ ! -f "CMakeCache.txt" ]
+then
+	echo "Execute $0 in build dir"
+	exit 1
+fi
+
+if [ "$1" == "gseeds" ]
+then
+	R --slave --no-save <<< "options(scipen=999);cat(round(runif($numberOfSeeds,1,2147483647)), sep=\"\n\")" > "$seedsFile"
+elif [ "$1" == "run" ]
+then
+		if [ ! -f "$seedsFile" ]
+		then
+			echo "Error: generate seeds with $0 gseeds first!"
+			exit 1
+		fi
+		for i in $(seq 2 "$MAX_OPMPHMR_PARTITE");
+		do
+			echo "OPMPHMR_PARTITE $i"
+			# set OPMPHMR_PARTITE
+			sed -i "s/\#define OPMPHMR_PARTITE [0-9][0-9]*/\#define OPMPHMR_PARTITE $i/g" ../src/include/kdbopmphm.h
+			make benchmark_opmphm -j8 2> /dev/null > /dev/null
+			bin/benchmark_opmphm < "$seedsFile"
+		done
+else
+	echo "Usage: $0 [ gseeds | run ]"
+	echo "seedsFile = $seedsFile"
+	exit 1
+fi

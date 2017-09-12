@@ -3,7 +3,7 @@
  *
  * @brief Implementation of plugin
  *
- * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  *
  */
 
@@ -14,7 +14,7 @@
 #include <kdb.h>
 #include <kdbmodule.h>
 #include <kdbplugin.h>
-#include <kdbprivate.h> // currently needed for plugin handling
+#include <kdbprivate.h> // currently needed for plugin handling (struct _Plugin)
 #include <plugindatabase.hpp>
 
 #include <algorithm>
@@ -312,7 +312,7 @@ ckdb::Plugin * Plugin::operator-> ()
 	return plugin;
 }
 
-std::string Plugin::lookupInfo (std::string item, std::string section)
+std::string Plugin::lookupInfo (std::string const & item, std::string const & section)
 {
 	Key k ("system/elektra/modules", KEY_END);
 	k.addBaseName (spec.getName ());
@@ -325,7 +325,7 @@ std::string Plugin::lookupInfo (std::string item, std::string section)
 	return ret.getString ();
 }
 
-bool Plugin::findInfo (std::string compare, std::string item, std::string section)
+bool Plugin::findInfo (std::string const & compare, std::string const & item, std::string const & section)
 {
 	std::string str = lookupInfo (item, section);
 

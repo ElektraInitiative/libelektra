@@ -3,7 +3,7 @@
  *
  * @brief
  *
- * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
 #include <kdb.h>
@@ -61,7 +61,7 @@ void i (Key * k)
 }
 //! [Individual Copy]
 
-int main ()
+int main (void)
 {
 	Key * k = keyNew ("user/hello", KEY_VALUE, "my content", KEY_END);
 

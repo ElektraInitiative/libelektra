@@ -16,7 +16,7 @@ nbTest=0
 nbSkip=0
 
 # the script itself
-scriptName=`basename $0`
+scriptName=`basename "$0"`
 
 MOUNTPOINT="/tests/script"
 
@@ -99,10 +99,10 @@ end_script()
 		cleanup
 	fi
 
-	echo -n "$scriptName RESULTS: $nbTest test(s) done"
+	printf "$scriptName RESULTS: $nbTest test(s) done"
 	if [ $nbSkip -ne 0 ]
 	then
-		echo -n " $nbSkip skipped"
+		printf " $nbSkip skipped"
 	fi
 	echo " $nbError error(s)."
 	exit "$nbError"
@@ -132,11 +132,11 @@ check_version()
 
 	REAL_KDB_VERSION="`"$KDB" get system/elektra/version/constants/KDB_VERSION 2> /dev/null`"
 	[ "x$REAL_KDB_VERSION" = "x$KDB_VERSION" ]
-	exit_if_fail "Script was not compiled ($KDB_VERSION) with this elektra version ($REAL_KDB_VERSION): KDB_VERSION mismatch use CHECK_VERSION=NO to disable"
+	exit_if_fail "Script was not compiled ($KDB_VERSION) with this elektra version ($REAL_KDB_VERSION): KDB_VERSION mismatch for kdb-tool ($KDB), use CHECK_VERSION=NO to disable"
 
 	REAL_SO_VERSION="`"$KDB" get system/elektra/version/constants/SO_VERSION 2> /dev/null`"
 	[ "x$REAL_SO_VERSION" = "x$SO_VERSION" ]
-	exit_if_fail "Script was not compiled ($SO_VERSION) with this elektra version ($REAL_SO_VERSION): SO_VERSION mismatch"
+	exit_if_fail "Script was not compiled ($SO_VERSION) with this elektra version ($REAL_SO_VERSION): SO_VERSION mismatch for kdb-tool ($KDB), use CHECK_VERSION=NO to disable"
 }
 
 check_remaining_files()

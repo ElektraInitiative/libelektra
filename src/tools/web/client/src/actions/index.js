@@ -3,7 +3,7 @@
  *
  * @brief exports all available actions so they can be imported from ./actions
  *
- * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
 export {

@@ -3,7 +3,7 @@
  *
  * @brief test suite for the fcrypt plugin
  *
- * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  *
  */
 
@@ -23,12 +23,12 @@ static const char * decoded[] = { "", "f", "fo", "foo", "foob", "fooba", "foobar
 static const char * encoded[] = { "", "Zg==", "Zm8=", "Zm9v", "Zm9vYg==", "Zm9vYmE=", "Zm9vYmFy" };
 static const size_t testcaseCounter = sizeof (decoded) / sizeof (const char *);
 
-static inline KeySet * newPluginConfiguration ()
+static inline KeySet * newPluginConfiguration (void)
 {
 	return ksNew (0, KS_END);
 }
 
-static void test_init ()
+static void test_init (void)
 {
 	Plugin * plugin = NULL;
 	Key * parentKey = keyNew ("system", KEY_END);
@@ -61,7 +61,7 @@ static inline char testcase2char (size_t i)
 	return '0' + i + 1;
 }
 
-static void test_base64_encoding ()
+static void test_base64_encoding (void)
 {
 	char errorAlloc[] = "Encoding #.: Memory allocation failed";
 	char errorMismatch[] = "Encoding #.: returned unexpected result";
@@ -81,7 +81,7 @@ static void test_base64_encoding ()
 	}
 }
 
-static void test_base64_decoding ()
+static void test_base64_decoding (void)
 {
 	char errorFail[] = "Decoding #.: operation failed";
 	char errorMismatch[] = "Decoding #.: returned unexpected result vector";
@@ -121,7 +121,7 @@ static void test_base64_decoding ()
 	}
 }
 
-static void test_base64_plugin_regular ()
+static void test_base64_plugin_regular (void)
 {
 	Plugin * plugin = NULL;
 	Key * parentKey = keyNew ("system", KEY_END);
@@ -221,7 +221,7 @@ static void test_base64_plugin_regular ()
 	keyDel (parentKey);
 }
 
-static void test_base64_plugin_decoding_error ()
+static void test_base64_plugin_decoding_error (void)
 {
 	Plugin * plugin = NULL;
 	Key * parentKey = keyNew ("system", KEY_END);

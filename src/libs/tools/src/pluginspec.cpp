@@ -3,7 +3,7 @@
  *
  * @brief Implementation of plugin spec
  *
- * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  *
  */
 
@@ -31,7 +31,8 @@ namespace tools
  *
  * @see setFullName()
  */
-PluginSpec::PluginSpec (std::string pluginName, KeySet pluginConfig) : name (pluginName), refname (pluginName), config (pluginConfig)
+PluginSpec::PluginSpec (std::string const & pluginName, KeySet pluginConfig)
+: name (pluginName), refname (pluginName), config (pluginConfig)
 {
 	setFullName (pluginName);
 }
@@ -48,7 +49,7 @@ PluginSpec::PluginSpec (std::string pluginName, KeySet pluginConfig) : name (plu
  * @see setName()
  * @see setRefName()
  */
-PluginSpec::PluginSpec (std::string pluginName, std::string refName, KeySet pluginConfig)
+PluginSpec::PluginSpec (std::string const & pluginName, std::string const & refName, KeySet pluginConfig)
 : name (pluginName), refname (refName), config (pluginConfig)
 {
 	validate (pluginName);
@@ -67,7 +68,7 @@ PluginSpec::PluginSpec (std::string pluginName, std::string refName, KeySet plug
  * @see setName()
  * @see setRefName()
  */
-PluginSpec::PluginSpec (std::string pluginName, size_t refNumber, KeySet pluginConfig)
+PluginSpec::PluginSpec (std::string const & pluginName, size_t refNumber, KeySet pluginConfig)
 : name (pluginName), refname (), config (pluginConfig)
 {
 	validate (pluginName);

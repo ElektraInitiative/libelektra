@@ -5,11 +5,7 @@
 - infos/needs =
 - infos/recommends =
 - infos/placements = postgetstorage presetstorage
-#ifdef ELEKTRA_CRYPTO_API_GCRYPT
 - infos/status = unittest configurable memleak experimental unfinished discouraged
-#else
-- infos/status = unittest configurable memleak experimental unfinished discouraged
-#endif
 - infos/metadata = crypto/encrypt
 - infos/description = Cryptographic operations
 
@@ -66,7 +62,7 @@ If no such configuration is provided, the plugin will look at the PATH environme
 
 ## How to compile
 
-The following compile variants are available:
+The following compilation variants are available:
 
 1. crypto_gcrypt
 2. crypto_openssl
@@ -84,11 +80,11 @@ or it may look like:
 
     PLUGINS=CRYPTO
 
-### Mac OS X
+### macOS
 
-All variants of the plugin work under Mac OS Sierra (Version 10.12.3 (16D32)).
+All variants of the plugin work under macOS Sierra (Version 10.12.3 (16D32)).
 
-To set up the build environment on Mac OS Sierra we recommend using [Homebrew](http://brew.sh/).
+To set up the build environment on macOS Sierra we recommend using [Homebrew](http://brew.sh/).
 Follow these steps to get everything up and running:
 
     brew install openssl botan libgcrypt pkg-config cmake
@@ -126,11 +122,11 @@ The path to the gpg binary can be specified in
 
     /gpg/bin
 
-The GPG recipient keys can be specified as `/gpg/key` directly.
+The GPG recipient keys can be specified as `encrypt/key` directly.
 If you want to use more than one key, just enumerate like:
 
-    /gpg/key/#0
-    /gpg/key/#1
+    encrypt/key/#0
+    encrypt/key/#1
 
 If more than one key is defined, every owner of the corresponding private key can decrypt the values of the backend.
 This might be useful if applications run with their own user but the administrator has to update the configuration.
@@ -151,10 +147,10 @@ In the error description you should see something like:
     Ingroup: plugin
     Module: crypto
     At: /Users/pnirschl/Projects/libelektra/src/plugins/crypto/gpg.c:512
-    Reason: Missing GPG key (specified as /gpg/key) in plugin configuration. Available key IDs are: B815F1334CF4F830187A784256CFA3A5C54DF8E4,847378ABCF0A552B48082A80C52E8E92F785163F
-    Mountpoint: 
-    Configfile: 
-    Please report the issue on https://issues.libelektra.org/
+    Reason: Missing GPG key (specified as encrypt/key) in plugin configuration. Available key IDs are: B815F1334CF4F830187A784256CFA3A5C54DF8E4,847378ABCF0A552B48082A80C52E8E92F785163F
+    Mountpoint:
+    Configfile:
+    Please report the issue at https://issues.libelektra.org/
 
 This means that the following keys are available:
 

@@ -3,7 +3,7 @@
  *
  * @brief
  *
- * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
 #ifdef HAVE_KDBCONFIG_H
@@ -26,7 +26,7 @@
 
 #define NR_KEYS 1
 
-void test_latin1_to_utf8 ()
+void test_latin1_to_utf8 (void)
 {
 	KeySet * latin1 = 0;
 	KeySet * utf8 = 0;
@@ -66,7 +66,7 @@ void test_latin1_to_utf8 ()
 	ksDel (modules);
 }
 
-void test_utf8_to_latin1 ()
+void test_utf8_to_latin1 (void)
 {
 	KeySet * latin1 = 0;
 	KeySet * utf8 = 0;
@@ -107,7 +107,7 @@ void test_utf8_to_latin1 ()
 	ksDel (modules);
 }
 
-void test_utf8_needed ()
+void test_utf8_needed (void)
 {
 	printf ("Test if utf8 conversation is needed\n");
 	KeySet * modules = ksNew (0, KS_END);
@@ -147,7 +147,7 @@ static void set_str (char ** str, size_t * len, char * newstr)
 	strcpy (*str, newstr);
 }
 
-void test_utf8_conversation ()
+void test_utf8_conversation (void)
 {
 	KeySet * modules = ksNew (0, KS_END);
 	elektraModulesInit (modules, 0);

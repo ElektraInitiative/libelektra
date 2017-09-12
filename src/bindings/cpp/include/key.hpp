@@ -3,7 +3,7 @@
  *
  * @brief
  *
- * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
 #ifndef ELEKTRA_KEY_HPP
@@ -1068,8 +1068,7 @@ inline QColor Key::get() const
 template <class T>
 inline T Key::get () const
 {
-	std::string str;
-	str = getString ();
+	std::string str = getString ();
 	std::istringstream ist (str);
 	ist.imbue (std::locale ("C"));
 	T x;
@@ -1150,7 +1149,6 @@ inline std::string Key::get () const
 template <class T>
 inline void Key::set (T x)
 {
-	std::string str;
 	std::ostringstream ost;
 	ost.imbue (std::locale ("C"));
 	ost << x; // convert type to string
@@ -1746,8 +1744,8 @@ inline int Key::del ()
 namespace std
 {
 /**
-	 * @brief Support for putting Key in a hash
-	 */
+ * @brief Support for putting Key in a hash
+ */
 template <>
 struct hash<kdb::Key>
 {

@@ -3,7 +3,7 @@
  *
  * @brief Tests for cachefilter plugin
  *
- * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  *
  */
 
@@ -17,49 +17,49 @@
 
 #include <tests_plugin.h>
 
-static KeySet * createTestKeysToCache ()
+static KeySet * createTestKeysToCache (void)
 {
 	return ksNew (3, keyNew ("user/tests/cachefilter/will/be/cached/key1", KEY_VALUE, "cached1", KEY_END),
 		      keyNew ("user/tests/cachefilter/will/be/cached/key2", KEY_VALUE, "cached2", KEY_END),
 		      keyNew ("user/tests/cachefilter/will/be/cached", KEY_VALUE, "cached", KEY_END), KS_END);
 }
 
-static KeySet * createTestKeysToCache2 ()
+static KeySet * createTestKeysToCache2 (void)
 {
 	return ksNew (3, keyNew ("user/tests/cachefilter/will/be/cached/key3", KEY_VALUE, "cached1", KEY_END),
 		      keyNew ("user/tests/cachefilter/will/be/cached/key4", KEY_VALUE, "cached2", KEY_END),
 		      keyNew ("user/tests/cachefilter/will/be/cached/key5", KEY_VALUE, "cached", KEY_END), KS_END);
 }
 
-static KeySet * createTestKeysToCache3 ()
+static KeySet * createTestKeysToCache3 (void)
 {
 	return ksNew (3, keyNew ("user/tests/cachefilter/will/be/cached/key6", KEY_VALUE, "cached1", KEY_END),
 		      keyNew ("user/tests/cachefilter/will/be/cached/key7", KEY_VALUE, "cached2", KEY_END),
 		      keyNew ("user/tests/cachefilter/will/be/cached/key8", KEY_VALUE, "cached", KEY_END), KS_END);
 }
 
-static KeySet * createTestKeysToNotCache ()
+static KeySet * createTestKeysToNotCache (void)
 {
 	return ksNew (3, keyNew ("user/tests/cachefilter/will/not/be/cached/key1", KEY_VALUE, "not-cached1", KEY_END),
 		      keyNew ("user/tests/cachefilter/will/not/be/cached/key2", KEY_VALUE, "not-cached2", KEY_END),
 		      keyNew ("user/tests/cachefilter/will/not/be/cached", KEY_VALUE, "not-cached", KEY_END), KS_END);
 }
 
-static KeySet * createTestKeysToNotCacheCascading ()
+static KeySet * createTestKeysToNotCacheCascading (void)
 {
 	return ksNew (3, keyNew ("user/tests/cachefilter/will/not/be/cached/with/directory/key1", KEY_END),
 		      keyNew ("user/tests/cachefilter/will/not/be/cached/with/directory/key2", KEY_END),
 		      keyNew ("user/tests/cachefilter/will/not/be/cached/with/directory/key3", KEY_END), KS_END);
 }
 
-static KeySet * createTestKeysToNotCacheSiblings ()
+static KeySet * createTestKeysToNotCacheSiblings (void)
 {
 	return ksNew (3, keyNew ("user/tests/cachefilter/will/not/be/cached/for/whatever/key1", KEY_END),
 		      keyNew ("user/tests/cachefilter/will/not/be/cached/for/whatever/key2", KEY_END),
 		      keyNew ("user/tests/cachefilter/will/not/be/cached/for/whatever/key3", KEY_END), KS_END);
 }
 
-static void test_successfulCache ()
+static void test_successfulCache (void)
 {
 	Key * parentKey = keyNew ("user/tests/cachefilter/will/not/be/cached", KEY_END);
 	KeySet * conf = ksNew (0, KS_END);
@@ -103,7 +103,7 @@ static void test_successfulCache ()
 	PLUGIN_CLOSE ();
 }
 
-static void test_successfulCacheLong ()
+static void test_successfulCacheLong (void)
 {
 	Key * parentKey = keyNew ("user/tests/cachefilter/will/not/be/cached", KEY_END);
 	KeySet * conf = ksNew (0, KS_END);
@@ -179,7 +179,7 @@ static void test_successfulCacheLong ()
 	PLUGIN_CLOSE ();
 }
 
-static void test_successfulGetSetGetSet ()
+static void test_successfulGetSetGetSet (void)
 {
 	Key * parentKey = keyNew ("user/tests/cachefilter/will/not/be/cached", KEY_END);
 	KeySet * conf = ksNew (0, KS_END);
@@ -247,7 +247,7 @@ static void test_successfulGetSetGetSet ()
 	PLUGIN_CLOSE ();
 }
 
-static void test_successfulGetGetGet ()
+static void test_successfulGetGetGet (void)
 {
 	Key * parentKey = keyNew ("user/tests/cachefilter/will/not/be/cached", KEY_END);
 	Key * parentKey2 = keyNew ("user/tests/cachefilter/will/not/be/cached/with", KEY_END);
@@ -317,7 +317,7 @@ static void test_successfulGetGetGet ()
 	PLUGIN_CLOSE ();
 }
 
-static void test_successfulSiblingGets ()
+static void test_successfulSiblingGets (void)
 {
 	Key * parentKey = keyNew ("user/tests/cachefilter/will/not/be/cached/with", KEY_END);
 	Key * parentKey2 = keyNew ("user/tests/cachefilter/will/not/be/cached/for", KEY_END);

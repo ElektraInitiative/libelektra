@@ -3,7 +3,7 @@
  *
  * @brief Internal methods for Elektra.
  *
- * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
 #ifdef HAVE_KDBCONFIG_H
@@ -398,6 +398,7 @@ char * elektraVFormat (const char * format, va_list arg_list)
 	if (calculated_length == -1)
 	{
 		va_end (arg_list_adj);
+		elektraFree (buffer);
 		// before Glibc 2.0.6, always -1 is returned
 		// we won't do Glibc job, please upgrade
 		return 0;
@@ -411,7 +412,7 @@ char * elektraVFormat (const char * format, va_list arg_list)
 		return buffer;
 	}
 
-	// String is longer then default_size.
+	// String is longer than default_size.
 	// Allocate an intermediate buffer
 	// according to the calculated length from our last try
 	size_t const adjusted_buffer_size = calculated_length + 1;
@@ -511,7 +512,7 @@ static void elektraWriteBackslashes (char ** dest, size_t number)
  *
  * @retval 0 if nothing was done (dest unmodified) and escaping of
  *         string needs to be done
- * @retval 1 if key name part was handeled correctly (dest might be
+ * @retval 1 if key name part was handled correctly (dest might be
  *         updated if it was needed)
  */
 int elektraUnescapeKeyNamePartBegin (const char * source, size_t size, char ** dest)
@@ -680,7 +681,7 @@ size_t elektraUnescapeKeyName (const char * source, char * dest)
 
 	ELEKTRA_ASSERT (sp != NULL && dp != NULL, "Got null pointer sp: %p dp: %p", (void *)sp, (void *)dp);
 
-	if (*source == '/')
+	if (*sp == '/')
 	{
 		// handling for cascading names
 		*dp = 0;
@@ -765,7 +766,7 @@ int elektraEscapeKeyNamePartBegin (const char * source, char * dest)
  *       Do not use the source string as destination string.
  *
  * @param source the source pointer where escaping should start
- * @param dest the destination to write to (twice the size as sp
+ * @param dest the destination to write to (twice the size as sp)
  *
  * @return pointer to destination
  */

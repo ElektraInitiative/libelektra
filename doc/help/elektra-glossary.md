@@ -64,7 +64,7 @@ elektra-glossary(7) -- glossary of Elektra
 - [Namespaces](elektra-namespaces.md):
   Allow us to have multiple keys for the same purpose and otherwise the same key name.
 
-- [Plugins](elektra-plugins-framework.md):
+- [Plugins](/src/plugins):
   The unit of implementation for a feature.
 
 - [Metadata](elektra-metadata.md):

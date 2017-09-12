@@ -3,7 +3,7 @@
  *
  * @brief
  *
- * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
 #include <kdb.h>
@@ -12,13 +12,12 @@
 void f (KeySet * iterator, KeySet * lookup)
 {
 	KeySet * append = ksNew (ksGetSize (lookup), KS_END);
-	Key * key;
 	Key * current;
 
 	ksRewind (iterator);
 	while ((current = ksNext (iterator)))
 	{
-		key = ksLookup (lookup, current, KDB_O_POP);
+		Key * key = ksLookup (lookup, current, KDB_O_POP);
 		// do something...
 		ksAppendKey (append, key); // now append it to append, not lookup!
 		keyDel (key);		   // make sure to ALWAYS delete poped keys.
@@ -29,7 +28,7 @@ void f (KeySet * iterator, KeySet * lookup)
 }
 //! [f]
 
-int main ()
+int main (void)
 {
 	KeySet * ks1 = ksNew (20, KS_END);
 	KeySet * ks2 = ksNew (20, KS_END);

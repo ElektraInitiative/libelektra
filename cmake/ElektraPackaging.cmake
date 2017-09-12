@@ -1,6 +1,6 @@
 set (PACKAGE_NAME "elektra")
 set (CPACK_PACKAGE_NAME "${PACKAGE_NAME}")
-set (PACKAGE_URL "http://www.libelektra.org/")
+set (PACKAGE_URL "https://www.libelektra.org/")
 set (PACKAGE_BUGREPORT "http://bugs.libelektra.org/")
 
 

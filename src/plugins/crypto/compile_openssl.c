@@ -3,15 +3,14 @@
  *
  * @brief tests if compilation works (include and build paths set correct, etc...)
  *
- * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  *
  */
 
 #include <openssl/evp.h>
 
-int main ()
+int main (void)
 {
-	EVP_CIPHER_CTX opensslSpecificType;
-
+	EVP_CIPHER_CTX * opensslSpecificType;
 	return 0;
 }

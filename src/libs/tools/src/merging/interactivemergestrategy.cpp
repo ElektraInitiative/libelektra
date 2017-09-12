@@ -3,7 +3,7 @@
  *
  * @brief Implementation of InteractiveMergeStrategy
  *
- * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  *
  */
 
@@ -23,7 +23,7 @@ namespace tools
 namespace merging
 {
 
-void outputKeyInfo (string whichKey, Key & key, ostream & outputStream)
+void outputKeyInfo (string const & whichKey, Key & key, ostream & outputStream)
 {
 	if (!key)
 	{

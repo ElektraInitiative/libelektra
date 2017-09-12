@@ -3,15 +3,15 @@
  *
  * @brief Swig interface file for KDB Ruby bindings
  *
- * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
 %feature("autodoc", "3");
 /*
-%define CPPDOCURL "http://doc.libelektra.org/api/current/html" %enddef
+%define CPPDOCURL "https://doc.libelektra.org/api/current/html" %enddef
 
 %define DOCSTRING
-"This module is a SWIG generated binding for KDB (http://www.libelektra.org),
+"This module is a SWIG generated binding for KDB (https://www.libelektra.org),
 therefore the module provides wrapper classes to KDBs C++ interface and is
 mainly a 1 to 1 relation. However, to provide a more Ruby-style API to KDB,
 this module differs to the C++ API in the following way:
@@ -584,15 +584,18 @@ STATUS_OSTREAM_TO_STRING(kdb::tools::ImportExportBackend)
 
 %catches(kdb::tools::NoGlobalPlugin,
          kdb::tools::BackendCheckException,
+         kdb::tools::OrderingViolation,
          kdb::tools::ToolException
 ) kdb::tools::GlobalPlugins::serialize;
 
 %catches(kdb::tools::TooManyPlugins,
+         kdb::tools::OrderingViolation,
          kdb::tools::ToolException,
          ...
 ) kdb::tools::SerializeInterface::serialize;
 
 %catches(kdb::tools::TooManyPlugins,
+         kdb::tools::OrderingViolation,
          kdb::tools::ToolException,
          ...
 ) kdb::tools::GlobalPluginsBuilder::serialize;
@@ -639,6 +642,11 @@ STATUS_OSTREAM_TO_STRING(kdb::tools::ImportExportBackend)
 %ignore kdb::tools::BackendBuilder::end;
 %ignore kdb::tools::BackendBuilder::cbegin;
 %ignore kdb::tools::BackendBuilder::cend;
+%extend kdb::tools::BackendBuilder {
+    PluginSpecVector to_add() {
+       return PluginSpecVector($self->begin(), $self->end());
+    }
+}
 
 %rename("backend_config") kdb::tools::BackendBuilder::getBackendConfig;
 %rename("backend_config=") kdb::tools::BackendBuilder::setBackendConfig;

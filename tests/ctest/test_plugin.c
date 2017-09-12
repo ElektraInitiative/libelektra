@@ -3,7 +3,7 @@
  *
  * @brief
  *
- * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
 #include <tests_internal.h>
@@ -113,7 +113,7 @@ static void test_process (void)
 	keyDel (k);
 }
 
-KeySet * set_pluginconf ()
+KeySet * set_pluginconf (void)
 {
 	return ksNew (10, keyNew ("system/anything", KEY_VALUE, "backend", KEY_END), keyNew ("system/more", KEY_END),
 		      keyNew ("system/more/config", KEY_END), keyNew ("system/more/config/below", KEY_END), keyNew ("system/path", KEY_END),
@@ -122,7 +122,7 @@ KeySet * set_pluginconf ()
 		      KS_END);
 }
 
-static void test_simple ()
+static void test_simple (void)
 {
 	printf ("Test plugin\n");
 
@@ -146,7 +146,7 @@ static void test_simple ()
 	ksDel (modules);
 }
 
-static void test_name ()
+static void test_name (void)
 {
 	printf ("Test name\n");
 	KeySet * modules = ksNew (0, KS_END);

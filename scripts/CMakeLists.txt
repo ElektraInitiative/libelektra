@@ -24,6 +24,11 @@ install (PROGRAMS upgrade-bootstrap DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
 
 install (PROGRAMS umount-all DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
 
+install (PROGRAMS mountpoint-info DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
+install (PROGRAMS mount-list-all-files DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
+install (PROGRAMS check-env-dep DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
+
+
 file(READ "kdb_zsh_completion" CONTENT_OF_ZSH_COMP)
 file(READ "kdb-bash-completion" CONTENT_OF_BASH_COMP)
 configure_file (
@@ -35,7 +40,11 @@ install (PROGRAMS "${CMAKE_CURRENT_BINARY_DIR}/install-sh-completion" DESTINATIO
 
 
 if (INSTALL_SYSTEM_FILES)
-	set (BASH_COMPLETION_COMPLETIONSDIR "/usr/share/bash-completion/completions" CACHE INTERNAL "bash completions dir")
+	if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+		set (BASH_COMPLETION_COMPLETIONSDIR "/usr/local/share/bash-completion/completions" CACHE INTERNAL "bash completions dir")
+	else ()
+		set (BASH_COMPLETION_COMPLETIONSDIR "/usr/share/bash-completion/completions" CACHE INTERNAL "bash completions dir")
+	endif ()
 	find_package (bash-completion QUIET)
 	unset (bash-completion_DIR CACHE)
 	if (NOT BASH_COMPLETION_FOUND)
@@ -51,8 +60,11 @@ if (INSTALL_SYSTEM_FILES)
 	install (FILES kdb-bash-completion
 			DESTINATION ${BASH_COMPLETION_COMPLETIONSDIR}
 			RENAME kdb)
-
-	set (FISH_COMPLETION_COMPLETIONSDIR "/usr/share/fish/vendor_completions.d")
+	if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+		set (FISH_COMPLETION_COMPLETIONSDIR "/usr/local/share/fish/completions")
+	else ()
+		set (FISH_COMPLETION_COMPLETIONSDIR "/usr/share/fish/vendor_completions.d")
+	endif ()
 	find_package (PkgConfig)
 	if (PKG_CONFIG_FOUND)
 		pkg_check_modules (FISH_FOUND fish QUIET)
@@ -65,7 +77,7 @@ if (INSTALL_SYSTEM_FILES)
 		DESTINATION ${FISH_COMPLETION_COMPLETIONSDIR})
 
 	if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-		# On Mac OS X we need to copy this into another folder.
+		# On macOS we need to copy this into another folder.
 		# Because of "System Integrity Protection", we need to
 		# use a /usr/local path
 		install (FILES kdb_zsh_completion
@@ -104,6 +116,23 @@ configure_file(
 	"${CMAKE_CURRENT_BINARY_DIR}/configure-firefox" @ONLY)
 install (PROGRAMS "${CMAKE_CURRENT_BINARY_DIR}/configure-firefox" DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
 add_subdirectory (ffconfig)
+
+configure_file(
+	"${CMAKE_CURRENT_SOURCE_DIR}/change-resolver-symlink.in"
+	"${CMAKE_CURRENT_BINARY_DIR}/change-resolver-symlink" @ONLY)
+install (PROGRAMS "${CMAKE_CURRENT_BINARY_DIR}/change-resolver-symlink" DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
+
+configure_file(
+	"${CMAKE_CURRENT_SOURCE_DIR}/change-storage-symlink.in"
+	"${CMAKE_CURRENT_BINARY_DIR}/change-storage-symlink" @ONLY)
+install (PROGRAMS "${CMAKE_CURRENT_BINARY_DIR}/change-storage-symlink" DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
+
+configure_file(
+	"${CMAKE_CURRENT_SOURCE_DIR}/backup.in"
+	"${CMAKE_CURRENT_BINARY_DIR}/backup" @ONLY)
+install (PROGRAMS "${CMAKE_CURRENT_BINARY_DIR}/backup" DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
+install (PROGRAMS stash DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
+install (PROGRAMS restore DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
 
 ADD_CUSTOM_TARGET(source-package
 		COMMAND "${CMAKE_CURRENT_BINARY_DIR}/make-source-package"

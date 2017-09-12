@@ -3,15 +3,15 @@
  *
  * @brief Swig interface file for KDB Ruby bindings
  *
- * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
 %feature("autodoc", "3");
 
-%define CPPDOCURL "http://doc.libelektra.org/api/current/html" %enddef
+%define CPPDOCURL "https://doc.libelektra.org/api/current/html" %enddef
 
 %define DOCSTRING
-"This module is a SWIG generated binding for KDB (http://www.libelektra.org),
+"This module is a SWIG generated binding for KDB (https://www.libelektra.org),
 therefore the module provides wrapper classes to KDBs C++ interface and is
 mainly a 1 to 1 relation. However, to provide a more Ruby-style API to KDB,
 this module differs to the C++ API in the following way:

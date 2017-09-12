@@ -3,7 +3,7 @@
  *
  * @brief
  *
- * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
 #include <../../src/libs/elektra/backend.c>
@@ -27,7 +27,7 @@ KeySet * simple_config (void)
 }
 
 
-KeySet * set_us ()
+KeySet * set_us (void)
 {
 	return ksNew (50, keyNew ("system/elektra/mountpoints", KEY_END), keyNew ("system/elektra/mountpoints/user", KEY_END),
 		      keyNew ("system/elektra/mountpoints/user/mountpoint", KEY_VALUE, "user", KEY_END),
@@ -43,7 +43,7 @@ KeySet * root_config (void)
 }
 
 
-static void test_create ()
+static void test_create (void)
 {
 	printf ("Test create split\n");
 
@@ -64,7 +64,7 @@ static void test_create ()
 	splitDel (split);
 }
 
-static void test_resize ()
+static void test_resize (void)
 {
 	printf ("Test resize split\n");
 
@@ -87,7 +87,7 @@ static void test_resize ()
 	splitDel (split);
 }
 
-static void test_append ()
+static void test_append (void)
 {
 	printf ("Test append split\n");
 
@@ -114,7 +114,7 @@ static void test_append ()
 	splitDel (split);
 }
 
-static void test_remove ()
+static void test_remove (void)
 {
 	printf ("Test remove from split\n");
 

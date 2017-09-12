@@ -20,6 +20,7 @@ section here.
 - [Internal Cache](internal_cache.md)
 - [Elektra Web Structure](elektra_web.md)
 - [Elektra Web Recursive Structure](elektra_web_recursive.md)
+- [Cryptographic Key Handling](cryptograhic_key_handling.md)
 
 ## Decided
 
@@ -34,6 +35,7 @@ section here.
 - [Global Plugins](global_plugins.md)
 - [Script Testing](script_testing.md)
 - [Array](array.md)
+- [Vendor Spec](vendor_spec.md)
 
 ## Drafts
 

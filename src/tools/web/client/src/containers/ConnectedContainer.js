@@ -5,7 +5,7 @@
  *
  * by mapping redux state and action creators to its properties
  *
- * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
 import { connect } from 'react-redux'

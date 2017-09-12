@@ -7,7 +7,7 @@
  * error if that isn't the case. otherwise, it will show version information
  * from Elektra and initialize clusterd
  *
- * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
 import makeLog from './log'

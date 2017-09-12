@@ -3,7 +3,7 @@
  *
  * @brief
  *
- * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
 #ifndef HAVE_KDBCONFIG
@@ -156,7 +156,6 @@ int elektraJniOpen (Plugin * handle, Key * errorKey)
 	Data * data = elektraMalloc (sizeof (Data));
 	data->module = 0;
 	data->printException = 0;
-	elektraPluginSetData (handle, data);
 
 	KeySet * config = elektraPluginGetConfig (handle);
 	Key * k = ksLookupByName (config, "/module", 0);
@@ -295,16 +294,23 @@ int elektraJniOpen (Plugin * handle, Key * errorKey)
 		return -1;
 	}
 
-	return call2Arg (data, config, errorKey, "open");
+	int ret = call2Arg (data, config, errorKey, "open");
+	if (ret != -1)
+	{
+		elektraPluginSetData (handle, data);
+	}
+	return ret;
 }
 
 int elektraJniClose (Plugin * handle, Key * errorKey)
 {
 	Data * data = elektraPluginGetData (handle);
-	if (data->module == 1)
+
+	if (!data || data->module == 1)
 	{
 		return 0;
 	}
+
 	int ret = call1Arg (data, errorKey, "close");
 
 	(*data->jvm)->DestroyJavaVM (data->jvm);
@@ -332,10 +338,12 @@ int elektraJniGet (Plugin * handle, KeySet * returned, Key * parentKey)
 	}
 
 	Data * data = elektraPluginGetData (handle);
-	if (data->module == 1)
+
+	if (!data || data->module == 1)
 	{
 		return 0;
 	}
+
 	return call2Arg (data, returned, parentKey, "get");
 }
 

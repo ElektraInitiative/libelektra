@@ -2,22 +2,22 @@
 - infos/author = Markus Raab <elektra@libelektra.org>
 - infos/description =
 
-elektrify-getenv(1) -- elektrify the environment of applications
+kdb-elektrify-getenv(1) -- elektrify the environment of applications
 ================================================================
 
 ## SYNOPSIS
 
-`elektrify-getenv` <application> <options>
+`kdb elektrify-getenv` <application> <options>
 
 
 ## EXAMPLE
 
     kdb elektrify-getenv curl --elektra-version
-    kdb elektrify-getenv curl http://www.libelektra.org
+    kdb elektrify-getenv curl https://www.libelektra.org
     kdb set system/elektra/intercept/getenv/override/http_proxy http://www.example.com/
-    kdb elektrify-getenv curl http://www.libelektra.org
+    kdb elektrify-getenv curl https://www.libelektra.org
 
-By using `elektrify-getenv` the last curl invocation will use a different http proxy.
+By using `kdb elektrify-getenv` the last curl invocation will use a different http proxy.
 Or you can also reload while the application is running:
 
     ELEKTRA_RELOAD_TIMEOUT=100 kdb elektrify-getenv firefox
@@ -55,14 +55,14 @@ To do so, getenv(3) will lookup multiple sources next to searching in the enviro
 
 1. Given commandline parameters will always be preferred (see [OPTIONS](#OPTIONS) below).
 
-   E.g. `elektrify-getenv <app> --elektra:HOME=/path/to/home`
+   E.g. `kdb elektrify-getenv <app> --elektra:HOME=/path/to/home`
 2. Then `/elektra/intercept/getenv/override/<key>` will be looked up, where <key> is the parameter to `getenv`.
    If found, the key will be returned, if it is a null keys, `getenv` will return `NULL`.
 
    E.g. `kdb set user/elektra/intercept/getenv/override/HOME /path/to/home`
 3. Then environment will be requested.
 
-   E.g. `HOME=/path/to/home elektrify-getenv <application>`
+   E.g. `HOME=/path/to/home kdb elektrify-getenv <application>`
 4. Then `/elektra/intercept/getenv/fallback/<key>` will be looked up.
    If found, the key will be returned, if it is a null keys, `getenv` will return `NULL`.
 
@@ -79,7 +79,7 @@ Interleaving Elektra’s and the application's options is allowed.
 Elektra will parse its options (starting with --elektra) first and
 discard them before the other application is started.
 Therefore the application will not see that they even
-existed, e.g.: given `elektrify-getenv <application> -V --elektra-debug -L`
+existed, e.g.: given `kdb elektrify-getenv <application> -V --elektra-debug -L`
 the application will be called with `<application> -V -L`.
 
 ### Internal Options
@@ -137,12 +137,12 @@ Keys can contain / to form hierarchies, e.g. `--elektra:my/HOME=/path/to/home`.
 
 To always use Elektra’s getenv environment, simply add the output to the file:
 
-    elektrify-getenv | tail -1 | sudo tee -a /etc/ld.so.preload
+    kdb elektrify-getenv | tail -1 | sudo tee -a /etc/ld.so.preload
 
-this also can be done using Elektra:
+Or in a more Elektra-like way with mounting:
 
     sudo kdb mount /etc/ld.so.preload system/ld/preload line null
-    sudo kdb set "system/ld/preload/new"  `elektrify-getenv | tail -1`
+    sudo kdb set "system/ld/preload/new"  `kdb elektrify-getenv | tail -1`
 
 
 ## CONTEXT
@@ -199,7 +199,7 @@ won't have any effect because only for `nice` `COLUMNS` will be set.
 
 For illustration this section gives some more examples.
 
-    elektrify-getenv man man --elektra:MANWIDTH=40
+    kdb elektrify-getenv man man --elektra:MANWIDTH=40
 
 Will use MANWIDTH 40 for this invocation of man man.
 This feature is handy, if an option is only available
@@ -221,7 +221,7 @@ Debugging:
 Some more examples:
 
     kdb set user/elektra/intercept/getenv/override/MANOPT -- "--regex -LC"
-    elektrify-getenv getenv MANOPT   # to check if it is set as expected
+    kdb elektrify-getenv getenv MANOPT   # to check if it is set as expected
     kdb getenv MANOPT   # if /etc/ld.so.preload is active
 
 Will permanently and user-wide change MANOPT to include --regex, and -LC so

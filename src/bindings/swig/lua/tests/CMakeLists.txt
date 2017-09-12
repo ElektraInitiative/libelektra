@@ -27,7 +27,10 @@ macro (do_lua_test source)
 	endif ()
 endmacro (do_lua_test)
 
-file (GLOB TESTS *.lua)
+if (NOT (APPLE AND ENABLE_ASAN))
+	file (GLOB TESTS *.lua)
+endif (NOT (APPLE AND ENABLE_ASAN))
+
 foreach (file ${TESTS})
 	do_lua_test (${file})
 endforeach (file ${TESTS})

@@ -3,17 +3,17 @@
  *
  * @brief
  *
- * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
 #include <benchmarks.h>
 
-void benchmarkDel ()
+void benchmarkDel (void)
 {
 	ksDel (large);
 }
 
-int benchmarkIterate ()
+int benchmarkIterate (void)
 {
 	ksRewind (large);
 	Key * cur;

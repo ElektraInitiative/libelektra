@@ -1,9 +1,9 @@
 /**
  * @file
  *
- * @brief A plugin that makes use of libaugeas to read and write configuration files
+ * @brief A plugin for renaming
  *
- * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  *
  */
 

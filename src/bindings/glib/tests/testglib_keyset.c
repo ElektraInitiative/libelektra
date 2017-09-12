@@ -3,14 +3,14 @@
  *
  * @brief
  *
- * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
 #include "gelektra-keyset.h"
 #include <glib-object.h>
 #include <tests.h>
 
-static void test_ctor ()
+static void test_ctor (void)
 {
 	GElektraKeySet * ks;
 
@@ -29,7 +29,7 @@ static void test_ctor ()
 	g_object_unref (ks);
 }
 
-static void test_basic ()
+static void test_basic (void)
 {
 	GElektraKeySet *ks1, *ks2;
 	GElektraKey * key;
@@ -67,7 +67,7 @@ static void test_basic ()
 	g_object_unref (ks1);
 }
 
-static void test_searching ()
+static void test_searching (void)
 {
 	GElektraKeySet * ks;
 	GElektraKey *key1, *key2;
@@ -90,7 +90,7 @@ static void test_searching ()
 	g_object_unref (ks);
 }
 
-static void test_iterating ()
+static void test_iterating (void)
 {
 	GElektraKeySet * ks;
 	GElektraKey *key1, *key2, *tmpkey;

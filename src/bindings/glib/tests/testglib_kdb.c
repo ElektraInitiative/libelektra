@@ -3,7 +3,7 @@
  *
  * @brief
  *
- * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
 #include "gelektra-kdb.h"
@@ -12,7 +12,7 @@
 
 #define TEST_NS "user/tests/glib"
 
-static void test_open_close ()
+static void test_open_close (void)
 {
 	GElektraKdb * kdb;
 	GElektraKey * error = gelektra_key_new (NULL);
@@ -37,7 +37,7 @@ static void test_open_close ()
 }
 
 
-static void test_get_set ()
+static void test_get_set (void)
 {
 	GElektraKdb * kdb;
 	GElektraKeySet * ks;

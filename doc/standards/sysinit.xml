@@ -23,9 +23,9 @@
 
 
 
-<keyset xmlns="http://www.libelektra.org"
+<keyset xmlns="https://www.libelektra.org"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:schemaLocation="http://www.libelektra.org elektra.xsd"
+        xsi:schemaLocation="https://www.libelektra.org elektra.xsd"
 
         parent="system/init">
 

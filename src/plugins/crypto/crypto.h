@@ -3,7 +3,7 @@
  *
  * @brief filter plugin providing cryptographic operations
  *
- * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  *
  */
 
@@ -25,6 +25,29 @@ enum ElektraCryptoOperation
 	ELEKTRA_CRYPTO_ENCRYPT = 0,
 	ELEKTRA_CRYPTO_DECRYPT = 1
 };
+
+/*
+ * A NOTE ABOUT THE CRYPTOGRAPHIC PAYLOAD
+ *
+ * Every compilation variant shall keep to the following format when writing encrypted payload to Keys.
+ *
+ * The following header is stored before the encrypted data.
+ *
+ * +----+-------------------------------------------+---------+--------+-----------------------+-----------+
+ * |    | Element                                   |  Offset | Length | Data Type             | Encrypted |
+ * +----+-------------------------------------------+---------+--------+-----------------------+-----------+
+ * |    | magic number #!crypto                     |       0 |    8 B | char                  | NO        |
+ * |    | crypto payload version                    |       8 |    2 B | char                  | NO        |
+ * | Ls | length of the salt                        |      10 |    4 B | unsigned long integer | NO        |
+ * | S  | salt                                      |      14 |   Ls B | byte                  | NO        |
+ * | T  | original data type (string, binary, null) | 14 + Ls |    1 B | byte                  | YES       |
+ * | Lc | original content length                   | 15 + Ls |    4 B | unsigned long integer | YES       |
+ * +----+-------------------------------------------+---------+--------+-----------------------+-----------+
+ *
+ */
+#define ELEKTRA_CRYPTO_PAYLOAD_VERSION "00"
+#define ELEKTRA_CRYPTO_MAGIC_NUMBER "#!crypto" ELEKTRA_CRYPTO_PAYLOAD_VERSION
+#define ELEKTRA_CRYPTO_MAGIC_NUMBER_LEN (sizeof (ELEKTRA_CRYPTO_MAGIC_NUMBER) - 1)
 
 // plugin defaults
 #define ELEKTRA_CRYPTO_DEFAULT_MASTER_PWD_LENGTH (30)
@@ -55,8 +78,8 @@ typedef gcry_cipher_hd_t elektraCryptoHandle;
 #include <openssl/evp.h>
 typedef struct
 {
-	EVP_CIPHER_CTX encrypt;
-	EVP_CIPHER_CTX decrypt;
+	EVP_CIPHER_CTX * encrypt;
+	EVP_CIPHER_CTX * decrypt;
 } elektraCryptoHandle;
 
 #elif defined(ELEKTRA_CRYPTO_API_BOTAN)
@@ -76,7 +99,6 @@ int CRYPTO_PLUGIN_FUNCTION (close) (Plugin * handle, Key * errorKey);
 int CRYPTO_PLUGIN_FUNCTION (get) (Plugin * handle, KeySet * ks, Key * parentKey);
 int CRYPTO_PLUGIN_FUNCTION (set) (Plugin * handle, KeySet * ks, Key * parentKey);
 int CRYPTO_PLUGIN_FUNCTION (checkconf) (Key * errorKey, KeySet * conf);
-int CRYPTO_PLUGIN_FUNCTION (error) (Plugin * handle, KeySet * ks, Key * parentKey);
 
 Plugin * ELEKTRA_PLUGIN_EXPORT (crypto);
 

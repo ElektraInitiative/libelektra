@@ -3,7 +3,7 @@
  *
  * @brief Array methods.
  *
- * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
 #define __STDC_FORMAT_MACROS
@@ -60,7 +60,7 @@ int elektraArrayValidateName (const Key * key)
 			underscores++;
 		}
 
-		for (; isdigit (*current); current++)
+		for (; isdigit ((unsigned char)*current); current++)
 		{
 			digits++;
 		}
@@ -175,7 +175,7 @@ int elektraArrayIncName (Key * key)
  *
  * Returns true (1) for all keys that are part of the array
  * identified by the supplied array parent. Only the array
- * eleements themself, but no subkeys of them will be filtered
+ * elements themself, but no subkeys of them will be filtered
  *
  * @pre The supplied argument has to be of type (const Key *)
  * and is the parent of the array to be extracted. For example
@@ -191,8 +191,7 @@ int elektraArrayIncName (Key * key)
 static int arrayFilter (const Key * key, void * argument)
 {
 	const Key * arrayParent = (const Key *)argument;
-
-	return keyIsDirectBelow (arrayParent, key) && elektraArrayValidateName (key);
+	return keyIsDirectBelow (arrayParent, key) && elektraArrayValidateName (key) > 0;
 }
 
 

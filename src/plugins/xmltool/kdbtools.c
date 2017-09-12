@@ -3,7 +3,7 @@
  *
  * @brief
  *
- * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
 #include <errno.h>
@@ -31,23 +31,18 @@
  */
 static int consumeKeyNode (KeySet * ks, const char * context, xmlTextReaderPtr reader)
 {
-	xmlChar * nodeName = 0;
-	xmlChar * keyNodeName = 0;
-	xmlChar * buffer = 0;
-	xmlChar * privateContext = 0;
-	Key * newKey = 0;
-	int appended = 0;
-
 	/* printf("%s", KDB_SCHEMA_PATH); */
 
-	keyNodeName = xmlTextReaderName (reader);
+	xmlChar * keyNodeName = xmlTextReaderName (reader);
 	if (!strcmp ((char *)keyNodeName, "key"))
 	{
+		xmlChar * privateContext = 0;
+		int appended = 0;
 		mode_t isdir = 0;
 		int isbin = 0;
 		int end = 0;
 
-		newKey = keyNew (0);
+		Key * newKey = keyNew (0);
 
 		/* a <key> must have one of the following:
 		   - a "name" attribute, used as an absolute name overriding the context
@@ -55,7 +50,7 @@ static int consumeKeyNode (KeySet * ks, const char * context, xmlTextReaderPtr r
 		   - a "parent" plus "basename" attributes, both appended to current context
 		   - only a "parent", appended to current context
 		*/
-		buffer = xmlTextReaderGetAttribute (reader, (const xmlChar *)"name");
+		xmlChar * buffer = xmlTextReaderGetAttribute (reader, (const xmlChar *)"name");
 		if (buffer)
 		{
 			/* set absolute name */
@@ -98,7 +93,7 @@ static int consumeKeyNode (KeySet * ks, const char * context, xmlTextReaderPtr r
 			char * endptr;
 			long int uid = strtol ((const char *)buffer, &endptr, 10);
 			errno = errsave;
-			if (endptr != '\0' && *endptr == '\0')
+			if (endptr && *endptr == '\0')
 			{
 				keySetUID (newKey, uid);
 			}
@@ -114,7 +109,7 @@ static int consumeKeyNode (KeySet * ks, const char * context, xmlTextReaderPtr r
 			char * endptr;
 			long int gid = strtol ((const char *)buffer, &endptr, 10);
 			errno = errsave;
-			if (endptr != '\0' && *endptr == '\0')
+			if (endptr && *endptr == '\0')
 			{
 				keySetGID (newKey, gid);
 			}
@@ -154,7 +149,7 @@ static int consumeKeyNode (KeySet * ks, const char * context, xmlTextReaderPtr r
 		/* If "isdir" appears, everything different from "0", "false" or "no"
 		marks it as a dir key */
 		buffer = xmlTextReaderGetAttribute (reader, (const xmlChar *)"isdir");
-		if (!isdir && buffer)
+		if (buffer)
 		{
 			if (strcmp ((char *)buffer, "0") && strcmp ((char *)buffer, "false") && strcmp ((char *)buffer, "no"))
 				isdir = 1;
@@ -172,7 +167,7 @@ static int consumeKeyNode (KeySet * ks, const char * context, xmlTextReaderPtr r
 		while (!end)
 		{
 			xmlTextReaderRead (reader);
-			nodeName = xmlTextReaderName (reader);
+			xmlChar * nodeName = xmlTextReaderName (reader);
 
 			if (!strcmp ((char *)nodeName, "value"))
 			{
@@ -255,7 +250,7 @@ static int consumeKeyNode (KeySet * ks, const char * context, xmlTextReaderPtr r
 
 				if (xmlTextReaderNodeType (reader) == 15) /* found a </key> */
 					end = 1;
-				else
+				else if (newKey)
 				{
 					/* found a sub <key> */
 					/* prepare the context (parent) */
@@ -272,7 +267,6 @@ static int consumeKeyNode (KeySet * ks, const char * context, xmlTextReaderPtr r
 		if (newKey && !appended)
 		{
 			keyDel (newKey);
-			appended = 1;
 		}
 	}
 
@@ -284,17 +278,13 @@ static int consumeKeyNode (KeySet * ks, const char * context, xmlTextReaderPtr r
 
 static int consumeKeySetNode (KeySet * ks, const char * context, xmlTextReaderPtr reader)
 {
-	xmlChar * nodeName = 0;
-	xmlChar * keySetNodeName = 0;
-	xmlChar * privateContext = 0;
-	xmlChar fullContext[800] = "";
-
-	keySetNodeName = xmlTextReaderName (reader);
+	xmlChar * keySetNodeName = xmlTextReaderName (reader);
 	if (!strcmp ((char *)keySetNodeName, "keyset"))
 	{
+		xmlChar fullContext[800] = "";
 		int end = 0;
 
-		privateContext = xmlTextReaderGetAttribute (reader, (const xmlChar *)"parent");
+		xmlChar * privateContext = xmlTextReaderGetAttribute (reader, (const xmlChar *)"parent");
 		if (context && privateContext)
 		{
 /*In libxml earlier than 2.9.4 const char * was used as argument, leading to a warning.
@@ -309,7 +299,7 @@ https://git.gnome.org/browse/libxml2/diff/include/libxml/xmlstring.h?id=4472c3a5
 		while (!end)
 		{
 			xmlTextReaderRead (reader);
-			nodeName = xmlTextReaderName (reader);
+			xmlChar * nodeName = xmlTextReaderName (reader);
 
 			if (!strcmp ((char *)nodeName, "key"))
 			{
@@ -346,14 +336,11 @@ https://git.gnome.org/browse/libxml2/diff/include/libxml/xmlstring.h?id=4472c3a5
  */
 static int ksFromXMLReader (KeySet * ks, xmlTextReaderPtr reader)
 {
-	int ret = 0;
-	xmlChar * nodeName = 0;
-
-	ret = xmlTextReaderRead (reader); /* go to first node */
+	int ret = xmlTextReaderRead (reader); /* go to first node */
 	while (ret == 1)
 	{
 		/* walk node per node until the end of the stream */
-		nodeName = xmlTextReaderName (reader);
+		xmlChar * nodeName = xmlTextReaderName (reader);
 
 		if (!strcmp ((char *)nodeName, "key"))
 			consumeKeyNode (ks, 0, reader);

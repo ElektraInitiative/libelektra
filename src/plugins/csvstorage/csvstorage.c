@@ -3,7 +3,7 @@
  *
  * @brief Source for csvstorage plugin
  *
- * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  *
  */
 
@@ -15,7 +15,6 @@
 #include "csvstorage.h"
 #include <errno.h>
 #include <kdbease.h>
-#include <kdbease.h>
 #include <kdberrors.h>
 #include <kdbhelper.h>
 #include <stdio.h>
@@ -24,7 +23,7 @@
 
 
 // returns next field in record
-// ignore record and field separators in quoted fiels according to RFC 4180
+// ignore record and field separators in quoted fields according to RFC 4180
 
 static char * parseLine (char * origLine, char delim, unsigned long offset, Key * parentKey, unsigned long lineNr, int lastLine)
 {
@@ -79,7 +78,7 @@ static char * parseLine (char * origLine, char delim, unsigned long offset, Key 
 				isCol = 1;
 			}
 		}
-		else if (*ptr == '\n')
+		else // it's \n
 		{
 			if (!isQuoted && isCol)
 			{
@@ -196,7 +195,7 @@ static unsigned long getColumnCount (char * lineBuffer, char delim)
 				isCol = 1;
 			}
 		}
-		else if (*ptr == '\n')
+		else // it's \n
 		{
 			if (!isQuoted && isCol)
 			{
@@ -223,7 +222,6 @@ static unsigned long getColumnCount (char * lineBuffer, char delim)
 static char * readNextLine (FILE * fp, char delim, int * lastLine, int * linesRead)
 {
 	int done = 0;
-	unsigned long len = 0;
 	unsigned long bufLen = 0;
 	unsigned long offset = 0;
 	*linesRead = 0;
@@ -233,7 +231,7 @@ static char * readNextLine (FILE * fp, char delim, int * lastLine, int * linesRe
 	{
 		int isQuoted = 0;
 		int isCol = 0;
-		len = getLineLength (fp);
+		unsigned long len = getLineLength (fp);
 		if (!len)
 		{
 			if (!lineBuffer)
@@ -289,7 +287,7 @@ static char * readNextLine (FILE * fp, char delim, int * lastLine, int * linesRe
 					isCol = 1;
 				}
 			}
-			else if (*ptr == '\n')
+			else // its \n
 			{
 				if (isQuoted && isCol)
 				{
@@ -317,8 +315,7 @@ static int csvRead (KeySet * returned, Key * parentKey, char delim, short useHea
 {
 	const char * fileName;
 	fileName = keyString (parentKey);
-	FILE * fp = NULL;
-	fp = fopen (fileName, "rb");
+	FILE * fp = fopen (fileName, "rb");
 	if (!fp)
 	{
 		ELEKTRA_SET_ERRORF (116, parentKey, "couldn't open file %s\n", fileName);
@@ -326,9 +323,7 @@ static int csvRead (KeySet * returned, Key * parentKey, char delim, short useHea
 	}
 	int lastLine = 0;
 	int linesRead = 0;
-	char * lineBuffer = NULL;
-	;
-	lineBuffer = readNextLine (fp, delim, &lastLine, &linesRead);
+	char * lineBuffer = readNextLine (fp, delim, &lastLine, &linesRead);
 	if (!lineBuffer)
 	{
 		fclose (fp);
@@ -426,7 +421,6 @@ static int csvRead (KeySet * returned, Key * parentKey, char delim, short useHea
 	elektraFree (lineBuffer);
 	while (1)
 	{
-		lineBuffer = NULL;
 		lineBuffer = readNextLine (fp, delim, &lastLine, &linesRead);
 		if (!lineBuffer)
 		{

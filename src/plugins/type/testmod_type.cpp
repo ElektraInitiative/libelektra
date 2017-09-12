@@ -3,7 +3,7 @@
  *
  * @brief Tests for data type checker
  *
- * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  *
  */
 
@@ -11,10 +11,16 @@
 
 #include "type_checker.hpp"
 
+// #include <tests_plugin.h> // not available for C++
+#include <kdbmodule.h>
+#include <kdbplugin.h>
+#include <kdbprivate.h> // currently needed for plugin handle (struct _Plugin)
+
 #include <locale>
 #include <stdexcept>
 
 using namespace elektra;
+
 
 TEST (type, version)
 {
@@ -42,6 +48,49 @@ TEST (type, version)
 	{
 		succeed_if (false, "version should match");
 	}
+}
+
+TEST (type, validate)
+{
+	ckdb::Key * parentKey = ckdb::keyNew ("system/elektra/modules/type", KEY_END);
+	ckdb::KeySet * conf = ckdb::ksNew (0, KS_END);
+
+	ckdb::KeySet * modules = ckdb::ksNew (0, KS_END);
+	ckdb::elektraModulesInit (modules, 0);
+	ckdb::Key * errorKey = ckdb::keyNew ("", KEY_END);
+	ckdb::Plugin * plugin = ckdb::elektraPluginOpen ("type", modules, conf, errorKey);
+	ckdb::keyDel (errorKey);
+	exit_if_fail (plugin != 0, "could not open type plugin");
+
+	ckdb::KeySet * ks = ckdb::ksNew (0, KS_END);
+	succeed_if (plugin->kdbGet (plugin, ks, parentKey) >= 1, "call to kdbGet was not successful");
+	ckdb::Key * key;
+	key = ckdb::ksLookupByName (ks, "system/elektra/modules/type/exports/validateKey", 0);
+	exit_if_fail (key, "key not found");
+
+	union {
+		int (*f) (ckdb::Key *, ckdb::Key *);
+		void * v;
+	} conversation;
+
+	ASSERT_TRUE (ckdb::keyGetBinary (key, &conversation.v, sizeof (conversation)) == sizeof (conversation));
+
+	ckdb::Key * k = ckdb::keyNew ("user/anything", KEY_VALUE, "0", KEY_META, "check/type", "short", KEY_END);
+	EXPECT_TRUE (conversation.f (k, parentKey));
+	EXPECT_FALSE (ckdb::keyGetMeta (parentKey, "error/number"));
+
+	ckdb::keySetString (k, "a");
+	EXPECT_FALSE (conversation.f (k, parentKey));
+	EXPECT_TRUE (ckdb::keyGetMeta (parentKey, "error/number"));
+
+	ckdb::keyDel (k);
+
+	ckdb::ksDel (ks);
+	ckdb::keyDel (parentKey);
+
+	ckdb::elektraPluginClose (plugin, 0);
+	ckdb::elektraModulesClose (modules, 0);
+	ckdb::ksDel (modules);
 }
 
 TEST (type, short)
@@ -434,4 +483,56 @@ TEST (type, minmax)
 	succeed_if (!tc.check (k), "should fail");
 	k.setString ("");
 	succeed_if (tc.check (k), "should succeed (empty value)");
+}
+
+TEST (type, char)
+{
+	KeySet config;
+	TypeChecker tc (config);
+
+	Key k ("user/anything", KEY_VALUE, "a", KEY_META, "check/type", "char", KEY_END);
+	EXPECT_TRUE (tc.check (k)) << "a should check successfully as char";
+	k.setString ("b");
+	EXPECT_TRUE (tc.check (k)) << "b should check successfully as char";
+	k.setString (" ");
+	EXPECT_TRUE (tc.check (k)) << "space should check successfully as char";
+	k.setString ("");
+	EXPECT_FALSE (tc.check (k)) << "empty string should not check successfully as char";
+	k.setString ("ab");
+	EXPECT_FALSE (tc.check (k)) << "two chars should not check successfully as char";
+
+	for (int i = 1; i < 255; ++i)
+	{
+		char x[2];
+		x[0] = i;
+		x[1] = 0;
+		k.setString (x);
+		EXPECT_TRUE (tc.check (k)) << x << " should check successfully as char";
+	}
+}
+
+TEST (type, octet)
+{
+	KeySet config;
+	TypeChecker tc (config);
+
+	Key k ("user/anything", KEY_VALUE, "a", KEY_META, "check/type", "octet", KEY_END);
+	EXPECT_TRUE (tc.check (k)) << "a should check successfully as octet";
+	k.setString ("b");
+	EXPECT_TRUE (tc.check (k)) << "b should check successfully as octet";
+	k.setString (" ");
+	EXPECT_TRUE (tc.check (k)) << "space should check successfully as octet";
+	k.setString ("");
+	EXPECT_FALSE (tc.check (k)) << "empty string should not check successfully as octet";
+	k.setString ("ab");
+	EXPECT_FALSE (tc.check (k)) << "two chars should not check successfully as octet";
+
+	for (int i = 1; i < 255; ++i)
+	{
+		char x[2];
+		x[0] = i;
+		x[1] = 0;
+		k.setString (x);
+		EXPECT_TRUE (tc.check (k)) << x << " should check successfully as octet";
+	}
 }

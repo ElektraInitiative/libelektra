@@ -3,7 +3,7 @@
  *
  * @brief this is where the express app is being created and modules and routes are loaded
  *
- * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
 import express from 'express'

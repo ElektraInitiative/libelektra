@@ -3,7 +3,7 @@
  *
  * @brief
  *
- * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
 #include "confignode.hpp"
@@ -118,10 +118,18 @@ void ConfigNode::setValue (const QVariant & value)
 	else
 		m_key = m_key.dup ();
 
-	if (m_key.getString ().compare (value.toString ().toStdString ()) != 0)
+	try
 	{
-		m_key.setString (value.toString ().toStdString ());
-		m_value = value;
+		if (m_key.getString ().compare (value.toString ().toStdString ()) != 0)
+		{
+			m_key.setString (value.toString ().toStdString ());
+			m_value = value;
+		}
+	}
+	catch (KeyTypeMismatch ex)
+	{
+		emit showMessage (tr ("Error"), tr ("Creating/Editing binary keys is not yet supported."), ex.what ());
+		return;
 	}
 }
 

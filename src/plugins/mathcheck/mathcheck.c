@@ -3,7 +3,7 @@
  *
  * @brief Source for mathcheck plugin
  *
- * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  *
  */
 
@@ -179,6 +179,7 @@ static PNElem doPrefixCalculation (PNElem * stack, PNElem * stackPtr)
 		}
 		else
 		{
+			result.op = NA;
 			return result;
 		}
 	}
@@ -214,21 +215,18 @@ static PNElem parsePrefixString (const char * prefixString, Key * curKey, KeySet
 		return result;
 	}
 	regmatch_t match;
-	int nomatch;
-	int start;
-	int len;
 	char * searchKey = NULL;
 	while (1)
 	{
 		stackPtr->op = ERROR;
 		stackPtr->value = 0;
-		nomatch = regexec (&regex, ptr, 1, &match, 0);
+		int nomatch = regexec (&regex, ptr, 1, &match, 0);
 		if (nomatch)
 		{
 			break;
 		}
-		len = match.rm_eo - match.rm_so;
-		start = match.rm_so + (ptr - prefixString);
+		int len = match.rm_eo - match.rm_so;
+		int start = match.rm_so + (ptr - prefixString);
 		if (!strncmp (prefixString + start, "==", 2))
 		{
 			resultOp = EQU;
@@ -378,11 +376,10 @@ static PNElem parsePrefixString (const char * prefixString, Key * curKey, KeySet
 int elektraMathcheckSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
 {
 	Key * cur;
-	const Key * meta;
 	PNElem result;
 	while ((cur = ksNext (returned)) != NULL)
 	{
-		meta = keyGetMeta (cur, "check/math");
+		const Key * meta = keyGetMeta (cur, "check/math");
 		if (!meta) continue;
 		result = parsePrefixString (keyString (meta), cur, ksDup (returned), parentKey);
 		char val1[MAX_CHARS_DOUBLE];

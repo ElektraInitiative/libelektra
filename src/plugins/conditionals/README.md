@@ -51,8 +51,8 @@ Keynames are all either relative to to-be-tested key (starting with `./` or `../
 
 ### Multiple Statements
 
-It's also possible to test multiple conditions using `check/condition/{any,all,none}` as a meta array. Where `any` means that at least one statement has to evaluate to true, `all` that all statements have to evaluate to true, and `none` that no statement is allowed to evalutate to false (default).
-For multiple assign statements use `assign/condition` as a meta array. The first `assign/condition/#` statement that evaluates to true will be assigned and the rest ignored.  
+It's also possible to test multiple conditions using `check/condition/{any,all,none}` as a meta array. Where `any` means that at least one statement has to evaluate to true, `all` that all statements have to evaluate to true, and `none` that no statement is allowed to evaluate to false (default).
+For multiple assign statements use `assign/condition` as a meta array. The first `assign/condition/#` statement that evaluates to true will be assigned and the rest ignored.
 
 
 ## Example
@@ -75,7 +75,7 @@ kdb set /examples/conditionals/hkey hello
 # will succeed
 kdb setmeta user/examples/conditionals/key check/condition "(../hkey == 'hello') ? (../fkey == '3.0')"
 
-# will fail 
+# will fail
 kdb setmeta user/examples/conditionals/key check/condition "(../hkey == 'hello') ? (../fkey == '5.0')"
 # RET:5
 # ERRORS:135
@@ -103,20 +103,19 @@ sudo kdb mount main.ini /examples/conditionals ni
 sudo kdb mount sub.ini /examples/conditionals/sub ini
 
 # mount conditionals as global plugin
-sudo kdb global-mount conditionals
+sudo kdb global-mount conditionals || $(exit 0)
 
 # create testfiles
-cat > `kdb file /examples/conditionals` << EOF \
-key1 = val1\
-[key1]\
-check/condition = (./ == 'val1') ? (../sub/key == 'true')\
-EOF
+echo 'key1 = val1' 						       >  `kdb file /examples/conditionals`
+echo '[key1]' 							       >> `kdb file /examples/conditionals`
+echo "check/condition = (./ == 'val1') ? (../sub/key == 'true')" >> `kdb file /examples/conditionals`
 
 echo "key = false" > `kdb file /examples/conditionals/sub`
 
 # should fail and yield an error
 kdb export /examples/conditionals ini
 #> sub/key = false
+#> #@META check/condition = (./ == 'val1') ? (../sub/key == 'true')
 #> key1 = val1
 # ERRORS:135
 # Error (#135) occurred!
@@ -133,10 +132,13 @@ kdb set /examples/conditionals/sub/key true
 # should succeed
 kdb export /examples/conditionals ini
 #> sub/key = true
+#> #@META check/condition = (./ == 'val1') ? (../sub/key == 'true')
 #> key1 = val1
 
 # cleanup
 kdb rm -r /examples/conditionals
 sudo kdb umount /examples/conditionals/sub
 sudo kdb umount /examples/conditionals
+
+sudo kdb global-umount conditionals
 ```

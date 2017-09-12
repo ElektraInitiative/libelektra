@@ -17,7 +17,7 @@ Available:
 ### File:
 
 Tells the shell_recorder what file to use for diffs.
-If File is preset but empty a fresh database temp file will be provided for every run.
+If File is present but empty a fresh database temp file will be provided for every run.
 
 
 ## Checks
@@ -89,7 +89,7 @@ CMD: set /test/key val
 RET: 0
 STDERR:
 STDOUT: Using name user/test/key
-Create a new key user/test/key with string val
+Create a new key user/test/key with string "val"
 WARNINGS:
 ERRORS:
 DIFF: 2c2,5
@@ -104,7 +104,7 @@ CMD: set /test/key2 val2
 RET: 0
 STDERR:
 STDOUT: Using name user/test/key2
-Create a new key user/test/key2 with string val2
+Create a new key user/test/key2 with string "val2"
 WARNINGS:
 ERRORS:
 DIFF: 2c2
@@ -127,7 +127,7 @@ CMD: set /tmount/key $RANDOM
 RET: 0
 STDERR:
 STDOUT: Using name user/tmount/key
-Create a new key user/tmount/key with string 31371
+Create a new key user/tmount/key with string "31371"
 WARNINGS:
 ERRORS:
 DIFF: 2,5c2
@@ -151,9 +151,9 @@ set /tmount/key $RANDOM
 =======================================
 Replay test failed, protocols differ
 5c5
-< Create a new key user/tmount/key with string 31371
+< Create a new key user/tmount/key with string "31371"
 ---
-> Create a new key user/tmount/key with string 26223
+> Create a new key user/tmount/key with string "26223"
 11c11
 < < user/tmount/key31371
 ---
@@ -218,7 +218,7 @@ WARNINGS doesn't match 79|80
 CMD: set system/testmount/test/test bla
 RET: 0
 STDERR:
-STDOUT: Create a new key system/testmount/test/test with string bla
+STDOUT: Create a new key system/testmount/test/test with string "bla"
 WARNINGS:
 ERRORS:
 DIFF:
@@ -235,7 +235,7 @@ CMD: set system/testmount/test teststring
 RET: 0
 === FAILED return value doesn't match expected pattern 2
 STDERR:
-STDOUT: Create a new key system/testmount/test with string teststring
+STDOUT: Create a new key system/testmount/test with string "teststring"
 WARNINGS:
 ERRORS:
 DIFF: 1,6d0
@@ -249,7 +249,7 @@ DIFF: 1,6d0
 CMD: set system/testmount/test/testkey testval
 RET: 0
 STDERR:
-STDOUT: Create a new key system/testmount/test/testkey with string testval
+STDOUT: Create a new key system/testmount/test/testkey with string "testval"
 WARNINGS:
 ERRORS:
 DIFF: 2c2

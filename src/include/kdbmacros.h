@@ -5,7 +5,7 @@
  *
  * Macros start with ELEKTRA_ and are uppercase.
  *
- * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
 
@@ -42,6 +42,8 @@
 		else                                                                                                                       \
 			ELEKTRA_SET_ERROR (75, parentKey, strerror (errno));                                                               \
 	} while (0)
+
+#define ELEKTRA_MALLOC_ERROR(key, size) ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_MALLOC, key, "Unable to allocate %zu bytes.", size);
 
 /**
  * @brief Sets error 84 if info != returned

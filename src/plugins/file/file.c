@@ -3,7 +3,7 @@
  *
  * @brief Source for file plugin
  *
- * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  *
  */
 
@@ -63,8 +63,7 @@ int elektraFileGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UN
 
 	if (!buffer)
 	{
-		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_MALLOC_ERROR, parentKey, "failed to allocate buffer of %lld bytes for %s", fileSize,
-				    fileName);
+		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_MALLOC, parentKey, "failed to allocate buffer of %lld bytes for %s", fileSize, fileName);
 		return -1;
 	}
 
@@ -157,7 +156,7 @@ int elektraFileSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UN
 	unsigned char * value = elektraMalloc (valueSize);
 	if (!value)
 	{
-		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_MALLOC_ERROR, parentKey, "failed to allocate buffer of %zd bytes", valueSize);
+		ELEKTRA_MALLOC_ERROR (parentKey, valueSize);
 		fclose (fp);
 		return -1;
 	}

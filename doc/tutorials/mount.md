@@ -47,13 +47,14 @@ These changes are reflected in `/etc/hosts` instantly:
 
 ```sh
 cat /etc/hosts | grep mylocalhost
-#>: 127.0.0.33	mylocalhost
+#> 127.0.0.33	mylocalhost
 ```
 
 Applications will now pick up these changes:
 
 ```sh
-ping mylocalhost
+ping -c 1 mylocalhost
+# RET:2
 ```
 
 We are also safe against wrong changes:
@@ -61,10 +62,10 @@ We are also safe against wrong changes:
 ```sh
 sudo kdb set system/hosts/ipv4/mylocalhost ::1
 # RET:5
-# ERROR:26
+# ERROR:51
 sudo kdb set system/hosts/ipv4/mylocalhost 300.0.0.1
 # RET:5
-# ERROR:26
+# ERROR:51
 ```
 
 We can undo these changes with:
@@ -148,18 +149,18 @@ Let us mount a projects git configuration into the dir namespace:
 
 ```sh
 # create a directory for our demonstration
-mkdir example && cd $_
+mkdir -p example && cd $_
 
 # this creates the .git/config file
 git init
 
-# mount gits configuration into Elektra
+# mount git’s configuration into Elektra
 sudo kdb mount /.git/config dir/git ini multiline=0
 ```
 
 As git uses the `ini` format for its configuration we use the [ini plugin](/src/plugins/ini/README.md).
 You can pass parameters to plugins during the mount process. This is what
-we did with `multiline=0`. Git intends the entries in its configuration
+we did with `multiline=0`. Git intents the entries in its configuration
 files and the default behaviour of the `ini` plugin is to interpret these indented
 entries as values that span multiple lines. The passed parameter disables
 this behaviour and makes the ini-plugin compatible with git configuration.
@@ -185,7 +186,7 @@ git config --get user.email
 #### Meta Data
 
 Elektra is able to store [metadata](/doc/help/elektra-metadata.md) of keys, provided the format of the file that holds the configuration supports this feature.
-The ini plugin doesn't support this feature, but the [ni](/src/plugins/ni/README.md) and the [dump](/src/plugins/dump/README.md) plugin do.
+The ini plugin does support this feature, and so does the [ni](/src/plugins/ni/README.md) and the [dump](/src/plugins/dump/README.md) plugin among others.
 
 > Actually the ini plugin creates some metadata on its own. This metadata contains information about the ordering of keys or comments, if a key has some.
 > But unlike the ni and the dump plugin we can't store arbitrary metadata with the ini plugin.
@@ -196,11 +197,11 @@ So let us have a look at the [enum](/src/plugins/enum/README.md) and [mathcheck]
 
 ```sh
 # mount the backend with the plugins ...
-sudo kdb mount example.ni user/example ni enum
+kdb mount example.ni user/example ni enum
 
 # ... and set a value for the demonstration
 kdb set user/example/enumtest/fruit apple
-#> Create a new key user/example/enumtest/fruit with string apple
+#> Create a new key user/example/enumtest/fruit with string "apple"
 ```
 
 By entering `kdb info enum` in the commandline, we can find out how to use this plugin.
@@ -209,6 +210,7 @@ It turns out that this plugin allows us to define a list of valid values for our
 ```sh
 kdb setmeta user/example/enumtest/fruit check/enum "'apple', 'banana', 'grape'"
 kdb set user/example/enumtest/fruit tomato
+# RET:5
 # this fails because tomato is not in the list of valid values
 ```
 

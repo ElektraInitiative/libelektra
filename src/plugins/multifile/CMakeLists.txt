@@ -4,5 +4,7 @@ add_plugin (multifile
 	SOURCES
 		multifile.h
 		multifile.c
-	ADD_TEST
+	LINK_ELEKTRA
+		elektra-kdb
+		elektra-invoke
 	)

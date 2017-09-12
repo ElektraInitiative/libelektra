@@ -6,7 +6,7 @@
  * can have a text field to change the value, it also provides other operations
  * (like deleting keys)
  *
- * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
 import React from 'react'

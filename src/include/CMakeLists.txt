@@ -1,6 +1,7 @@
 include(CheckIncludeFile)
 include(CheckSymbolExists)
 include(CheckTypeSize)
+include(TestBigEndian)
 
 check_symbol_exists(clearenv      "stdlib.h"         HAVE_CLEARENV)
 check_symbol_exists(setenv        "stdlib.h"         HAVE_SETENV)
@@ -36,6 +37,7 @@ set (BUILTIN_PLUGIN_FOLDER
 	"${CMAKE_INSTALL_PREFIX}/lib${LIB_SUFFIX}/${TARGET_PLUGIN_FOLDER}")
 set (ELEKTRA_DEPRECATED "__attribute__ ((deprecated))")
 set (ELEKTRA_UNUSED "__attribute__ ((unused))")
+set (ELEKTRA_FALLTHROUGH "__attribute__ ((fallthrough))")
 
 set (BUILTIN_SPEC_FOLDER
 	"${CMAKE_INSTALL_PREFIX}/${KDB_DB_SPEC}")
@@ -45,6 +47,8 @@ set (BUILTIN_SPEC_REAL_FOLDER
 if (ENABLE_OPTIMIZATIONS)
 	set (ELEKTRA_ENABLE_OPTIMIZATIONS "1")
 endif (ENABLE_OPTIMIZATIONS)
+
+TEST_BIG_ENDIAN(ELEKTRA_BIG_ENDIAN)
 
 configure_file (
 	"${CMAKE_CURRENT_SOURCE_DIR}/kdb.h.in"
@@ -74,6 +78,8 @@ install (FILES
 	kdbplugin.h
 	kdbprivate.h
 	kdbproposal.h
+	kdbinvoke.h
+	kdbutility.h
 	"${CMAKE_CURRENT_BINARY_DIR}/kdbversion.h"
 	DESTINATION include/${TARGET_INCLUDE_FOLDER})
 

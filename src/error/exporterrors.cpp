@@ -3,7 +3,7 @@
  *
  * @brief
  *
- * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
 #include "parser.hpp"
@@ -143,7 +143,7 @@ ostream & operator<< (ostream & os, parse_t & p)
 				os << "{" << endl
 				   << "	if (!warningKey) return;" << endl
 				   << "" << endl
-				   << "	char buffer[] = \"warnings/#00\\0description\";" << endl
+				   << "	char buffer[25] = \"warnings/#00\";buffer[12] = '\\0';" << endl
 				   << "	const Key *meta = keyGetMeta(warningKey, \"warnings\");" << endl
 				   << "	if (meta)" << endl
 				   << "	{" << endl
@@ -212,7 +212,7 @@ ostream & operator<< (ostream & os, parse_t & p)
 				}
 				os << "{" << endl
 				   << "	if (!errorKey) return;" << endl
-				   << "	char buffer[] = \"warnings/#00\\0description\";" << endl
+				   << "	char buffer[25] = \"warnings/#00\";" << endl
 				   << " 	const Key *meta = keyGetMeta(errorKey, \"error\");" << endl
 				   << "	if (meta)" << endl
 				   << "	{" << endl

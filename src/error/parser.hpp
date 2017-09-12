@@ -3,7 +3,7 @@
  *
  * @brief
  *
- * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
 #ifndef PARSER_HPP
@@ -18,7 +18,7 @@ struct parse_error : std::exception
 	std::string info;
 	int linenr;
 
-	parse_error (std::string info_, int linenr_) : info (std::move (info_)), linenr (linenr_)
+	parse_error (std::string const & info_, int linenr_) : info (std::move (info_)), linenr (linenr_)
 	{
 	}
 

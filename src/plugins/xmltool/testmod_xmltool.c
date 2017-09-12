@@ -3,7 +3,7 @@
  *
  * @brief
  *
- * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
 #include <tests_internal.h>
@@ -13,7 +13,7 @@
 
 #include <unistd.h>
 
-void test_readwrite ()
+void test_readwrite (void)
 {
 	KeySet * ks;
 	FILE * fout;
@@ -32,7 +32,7 @@ void test_readwrite ()
 	ksDel (ks);
 }
 
-void test_readwrite_hier ()
+void test_readwrite_hier (void)
 {
 	KeySet * ks;
 	FILE * fout;
@@ -52,7 +52,7 @@ void test_readwrite_hier ()
 }
 
 
-void test_key ()
+void test_key (void)
 {
 	KeySet * ks;
 	Key * cur;
@@ -154,7 +154,7 @@ void test_key ()
 	ksDel (ks);
 }
 
-void test_keyset ()
+void test_keyset (void)
 {
 	KeySet * ks;
 	Key * cur;
@@ -221,7 +221,7 @@ void test_keyset ()
 
 #define MAX_SIZE 200
 
-static void test_ksCommonParentName ()
+static void test_ksCommonParentName (void)
 {
 	char ret[MAX_SIZE + 1];
 	KeySet * ks =

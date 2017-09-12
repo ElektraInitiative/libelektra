@@ -19,12 +19,12 @@ with hostnames, one line per IP address. The format is described in `hosts(5)`.
 ### Hostnames
 
 Canonical hostnames are stored as key names with the IP address as key
-value. 
+value.
 
 ### Aliases
 
 Aliases are stored as sub keys with a read only duplicate of the
-associated ip address as value. 
+associated ip address as value.
 
 ### Comments
 
@@ -69,9 +69,8 @@ Try to change the host "localhost", should fail because it is not an ipv4 addres
 sudo kdb mount --with-recommends hosts /examples/hosts hosts
 
 # Create hosts file for testing
-cat > `kdb file /examples/hosts` << EOF \
-127.0.0.1	localhost\
-::1	localhost
+echo '127.0.0.1	localhost' >  `kdb file /examples/hosts`
+echo '::1	localhost'	    >> `kdb file /examples/hosts`
 
 # Check the file
 cat `kdb file /examples/hosts`
@@ -80,9 +79,9 @@ cat `kdb file /examples/hosts`
 
 # Check if the values are read correctly
 kdb get /examples/hosts/ipv4/localhost
-#>127.0.0.1
+#> 127.0.0.1
 kdb get /examples/hosts/ipv6/localhost
-#>::1
+#> ::1
 
 # Should both fail with error 51 and return 5
 kdb set /examples/hosts/ipv4/localhost ::1

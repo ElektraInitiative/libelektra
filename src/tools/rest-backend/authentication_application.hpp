@@ -3,7 +3,7 @@
  *
  * @brief header for cppcms controller managing authentication resources
  *
- * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
 #ifndef ELEKTRA_REST_AUTHENTICATIONAPP_HPP

@@ -3,7 +3,7 @@
  *
  * @brief Implementation of backend
  *
- * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  *
  */
 
@@ -146,25 +146,25 @@ void Backend::setMountpoint (Key mountpoint, KeySet mountConf)
 		if (std::find (alreadyUsedMountpoints.begin (), alreadyUsedMountpoints.end (), specmp.getName ()) !=
 		    alreadyUsedMountpoints.end ())
 		{
-			throw MountpointAlreadyInUseException ("Root mountpoint not possible, because spec mountpoint already exists");
+			throw MountpointAlreadyInUseException ("Root mountpoint not possible, because spec mountpoint already exists.\n");
 		}
 		Key dkmp ("dir", KEY_END);
 		if (std::find (alreadyUsedMountpoints.begin (), alreadyUsedMountpoints.end (), dkmp.getName ()) !=
 		    alreadyUsedMountpoints.end ())
 		{
-			throw MountpointAlreadyInUseException ("Root mountpoint not possible, because dir mountpoint already exists");
+			throw MountpointAlreadyInUseException ("Root mountpoint not possible, because dir mountpoint already exists.\n");
 		}
 		Key ukmp ("user", KEY_END);
 		if (std::find (alreadyUsedMountpoints.begin (), alreadyUsedMountpoints.end (), ukmp.getName ()) !=
 		    alreadyUsedMountpoints.end ())
 		{
-			throw MountpointAlreadyInUseException ("Root mountpoint not possible, because user mountpoint already exists");
+			throw MountpointAlreadyInUseException ("Root mountpoint not possible, because user mountpoint already exists.\n");
 		}
 		Key skmp ("system", KEY_END);
 		if (std::find (alreadyUsedMountpoints.begin (), alreadyUsedMountpoints.end (), skmp.getName ()) !=
 		    alreadyUsedMountpoints.end ())
 		{
-			throw MountpointAlreadyInUseException ("Root mountpoint not possible, because system mountpoint already exists");
+			throw MountpointAlreadyInUseException ("Root mountpoint not possible, because system mountpoint already exists.\n");
 		}
 	}
 	else if (smp.at (0) == '/')
@@ -174,21 +174,21 @@ void Backend::setMountpoint (Key mountpoint, KeySet mountConf)
 		    alreadyUsedMountpoints.end ())
 		{
 			throw MountpointAlreadyInUseException ("Cascading mountpoint " + smp +
-							       " not possible, because dir mountpoint already exists");
+							       " not possible, because dir mountpoint already exists.\n");
 		}
 		Key ukmp ("user" + smp, KEY_END);
 		if (std::find (alreadyUsedMountpoints.begin (), alreadyUsedMountpoints.end (), ukmp.getName ()) !=
 		    alreadyUsedMountpoints.end ())
 		{
 			throw MountpointAlreadyInUseException ("Cascading mountpoint " + smp +
-							       " not possible, because user mountpoint already exists");
+							       " not possible, because user mountpoint already exists.\n");
 		}
 		Key skmp ("system" + smp, KEY_END);
 		if (std::find (alreadyUsedMountpoints.begin (), alreadyUsedMountpoints.end (), skmp.getName ()) !=
 		    alreadyUsedMountpoints.end ())
 		{
 			throw MountpointAlreadyInUseException ("Cascading mountpoint " + smp +
-							       " not possible, because system mountpoint already exists");
+							       " not possible, because system mountpoint already exists.\n");
 		}
 	}
 	else
@@ -232,7 +232,7 @@ void Backend::setBackendConfig (KeySet const & ks)
  * Will check the filename and use it as configFile for this backend.
  * @throw FileNotValidException if filename is not valid
  * @throw MissingSymbol if plugin does not implement 'checkfile' */
-void Backend::useConfigFile (std::string file)
+void Backend::useConfigFile (std::string const & file)
 {
 	typedef int (*checkFilePtr) (const char *);
 	checkFilePtr checkFileFunction = nullptr;
@@ -244,7 +244,7 @@ void Backend::useConfigFile (std::string file)
 			checkFileFunction = reinterpret_cast<checkFilePtr> (elem->getSymbol ("checkfile"));
 			break;
 		}
-		catch (MissingSymbol ms)
+		catch (MissingSymbol & ms)
 		{
 		}
 	}
@@ -457,7 +457,7 @@ void PluginAdder::addPlugin (PluginSpec const & spec)
 
 namespace
 {
-void append (std::string placement, std::string & where, std::string checkPlacement)
+void append (std::string const & placement, std::string & where, std::string const & checkPlacement)
 {
 	if (placement == checkPlacement)
 	{
@@ -480,7 +480,7 @@ struct Placements
 	std::string set;
 	std::string error;
 
-	void addPlacement (std::string placement)
+	void addPlacement (std::string const & placement)
 	{
 		append (placement, error, "prerollback");
 		append (placement, error, "rollback");
@@ -502,7 +502,7 @@ struct Placements
 
 namespace
 {
-Key g (Key placements, std::string name, std::string value)
+Key g (Key placements, std::string const & name, std::string const & value)
 {
 	Key x (placements.dup ());
 	x.addBaseName (name);

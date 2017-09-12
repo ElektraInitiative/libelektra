@@ -4,7 +4,7 @@
  *
  * @brief Tests for boolean plugin
  *
- * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  *
  */
 
@@ -15,7 +15,7 @@
 
 #include <tests_plugin.h>
 
-static void test_default ()
+static void test_default (void)
 {
 	Key * parentKey = keyNew ("user/tests/boolean", KEY_END);
 	KeySet * conf = ksNew (0, KS_END);
@@ -44,7 +44,7 @@ static void test_default ()
 	PLUGIN_CLOSE ();
 }
 
-static void test_defaultRestore ()
+static void test_defaultRestore (void)
 {
 	Key * parentKey = keyNew ("user/tests/boolean", KEY_END);
 	KeySet * conf = ksNew (0, KS_END);
@@ -64,7 +64,7 @@ static void test_defaultRestore ()
 	PLUGIN_CLOSE ();
 }
 
-static void test_defaultError ()
+static void test_defaultError (void)
 {
 	Key * parentKey = keyNew ("user/tests/boolean", KEY_END);
 	KeySet * conf = ksNew (0, KS_END);
@@ -85,7 +85,7 @@ static void test_defaultError ()
 	PLUGIN_CLOSE ();
 }
 
-static void test_userValue ()
+static void test_userValue (void)
 {
 	Key * parentKey = keyNew ("user/tests/boolean", KEY_END);
 	KeySet * conf = ksNew (10, keyNew ("system/on/true", KEY_VALUE, "7", KEY_END),

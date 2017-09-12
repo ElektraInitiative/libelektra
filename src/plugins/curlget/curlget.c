@@ -3,7 +3,7 @@
  *
  * @brief Source for curlget plugin
  *
- * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  *
  */
 
@@ -11,9 +11,11 @@
 
 #include <curl/curl.h>
 #include <curl/easy.h>
+#include <errno.h>
 #include <fcntl.h>
 #include <kdberrors.h>
 #include <kdbhelper.h>
+#include <kdbproposal.h>
 #include <libgen.h>
 #include <openssl/md5.h>
 #include <stdio.h>
@@ -24,6 +26,9 @@
 #include <sys/types.h>
 #include <time.h>
 #include <unistd.h>
+
+#include "../resolver/shared.h"
+#include <kdbinvoke.h>
 
 #define TMP_NAME "/tmp/elektraCurlTempXXXXXX"
 
@@ -74,6 +79,51 @@ typedef struct
 	SSHAuthType sshAuth;
 } Data;
 
+static int elektraResolveFilename (Key * parentKey, ElektraResolveTempfile tmpFile)
+{
+	int rc = 0;
+	void * handle = elektraInvokeInitialize ("resolver");
+	if (!handle)
+	{
+		rc = -1;
+		goto RESOLVE_FAILED;
+	}
+	ElektraResolved * resolved = NULL;
+	typedef ElektraResolved * (*resolveFileFunc) (elektraNamespace, const char *, ElektraResolveTempfile, Key *);
+	resolveFileFunc resolveFunc = *(resolveFileFunc *)elektraInvokeGetFunction (handle, "filename");
+
+	if (!resolveFunc)
+	{
+		rc = -1;
+		goto RESOLVE_FAILED;
+	}
+
+	typedef void (*freeHandleFunc) (ElektraResolved *);
+	freeHandleFunc freeHandle = *(freeHandleFunc *)elektraInvokeGetFunction (handle, "freeHandle");
+
+	if (!freeHandle)
+	{
+		rc = -1;
+		goto RESOLVE_FAILED;
+	}
+
+	resolved = resolveFunc (keyGetNamespace (parentKey), keyString (parentKey), tmpFile, parentKey);
+
+	if (!resolved)
+	{
+		rc = -1;
+		goto RESOLVE_FAILED;
+	}
+	else
+	{
+		keySetString (parentKey, resolved->fullPath);
+		freeHandle (resolved);
+	}
+
+RESOLVE_FAILED:
+	elektraInvokeClose (handle);
+	return rc;
+}
 
 int elektraCurlgetCheckFile (const char * filename)
 {
@@ -476,8 +526,53 @@ static FILE * fetchFile (Data * data, int fd)
 	return fp;
 }
 
+static int moveFile (const char * source, const char * dest)
+{
+	FILE * inFile = NULL;
+	FILE * outFile = NULL;
+	struct stat buf;
+	if (stat (source, &buf) == -1) return -1;
+	size_t fileSize = buf.st_size;
+	char * buffer = elektraMalloc (fileSize);
+	inFile = fopen (source, "rb");
+	size_t bytesRead = 0;
+	while (bytesRead < fileSize)
+	{
+		size_t bytes = fread (buffer + bytesRead, 1, (size_t)fileSize, inFile);
+		if (bytes == 0) break;
+		bytesRead += bytes;
+	}
+	if (bytesRead < fileSize)
+	{
+		elektraFree (buffer);
+		fclose (inFile);
+		return -1;
+	}
+	fclose (inFile);
+	outFile = fopen (dest, "wb+");
 
-int elektraCurlgetGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
+	size_t bytesWritten = 0;
+	while (bytesWritten < fileSize)
+	{
+		size_t bytes = fwrite (buffer, 1, fileSize, outFile);
+		if (bytes == 0) break;
+		bytesWritten += bytes;
+	}
+	fclose (outFile);
+	elektraFree (buffer);
+
+	if (bytesWritten < fileSize)
+	{
+		return -1;
+	}
+	if (unlink (source))
+	{
+		return -1;
+	}
+	return 0;
+}
+
+int elektraCurlgetGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey)
 {
 	if (!elektraStrCmp (keyName (parentKey), "system/elektra/modules/curlget"))
 	{
@@ -509,6 +604,13 @@ int elektraCurlgetGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA
 	if (*(data->lastHash)) unlink (data->tmpFile);
 	data->tmpFile = name;
 
+	if (data->path) keySetString (parentKey, data->path);
+	if (elektraResolveFilename (parentKey, ELEKTRA_RESOLVER_TEMPFILE_NONE) == -1)
+	{
+		return -1;
+	}
+	if (data->path) elektraFree (data->path);
+	data->path = elektraStrDup (keyString (parentKey));
 
 	if (fd == -1)
 	{
@@ -546,7 +648,7 @@ int elektraCurlgetGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA
 		memcpy (data->lastHash, hash, MD5_DIGEST_LENGTH);
 		if (data->useLocalCopy)
 		{
-			rename (data->tmpFile, data->path);
+			moveFile (data->tmpFile, data->path);
 		}
 		else
 		{
@@ -565,7 +667,7 @@ int elektraCurlgetGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA
 			// the remote version.
 			if (data->preferRemote)
 			{
-				rename (data->tmpFile, data->path);
+				moveFile (data->tmpFile, data->path);
 				data->tmpFile = NULL;
 				keySetString (parentKey, data->path);
 				memcpy (data->lastHash, hash, MD5_DIGEST_LENGTH);
@@ -580,7 +682,7 @@ int elektraCurlgetGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA
 		{
 		UNLINK_TMP:
 			// remote file is the same as our local copy
-			unlink (data->tmpFile);
+			if (data->tmpFile) unlink (data->tmpFile);
 			data->tmpFile = NULL;
 			keySetString (parentKey, data->path);
 		}
@@ -617,7 +719,8 @@ int elektraCurlgetSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA
 				ELEKTRA_SET_ERROR (ELEKTRA_ERROR_CONFLICT, parentKey, "remote file has changed");
 				retval = -1;
 			}
-			unlink (data->tmpFile);
+			elektraFree (hash);
+			if (data->tmpFile) unlink (data->tmpFile);
 			data->tmpFile = NULL;
 			keySetString (parentKey, name);
 		}
@@ -637,7 +740,7 @@ int elektraCurlgetSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA
 		if (retval != -1)
 		{
 			keySetString (parentKey, name);
-			data->tmpFile = keyString (parentKey);
+			data->tmpFile = name;
 			retval = 1;
 		}
 		if (!data->useLocalCopy && data->path)
@@ -832,7 +935,13 @@ int elektraCurlgetSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA
 		{
 			if (data->useLocalCopy)
 			{
-				rename (data->tmpFile, data->path);
+				if (moveFile (tmpFile, data->path))
+				{
+					if (data->tmpFile)
+					{
+						unlink (data->tmpFile);
+					}
+				}
 				data->tmpFile = NULL;
 				keySetString (parentKey, data->path);
 			}
@@ -848,6 +957,10 @@ int elektraCurlgetSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA
 					unlink (data->path);
 					elektraFree (data->path);
 					data->path = NULL;
+				}
+				if (tmpFile)
+				{
+					unlink (tmpFile);
 				}
 			}
 		}
@@ -866,9 +979,14 @@ int elektraCurlgetSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA
 					elektraFree (data->path);
 					data->path = NULL;
 				}
+				if (tmpFile)
+				{
+					unlink (tmpFile);
+				}
 			}
 			else
 			{
+				if (tmpFile) unlink (tmpFile);
 				if (data->tmpFile)
 				{
 					unlink (data->tmpFile);

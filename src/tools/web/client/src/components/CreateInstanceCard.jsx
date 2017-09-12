@@ -8,7 +8,7 @@
  * are used to create the instance. once the instance is saved, it turns into a
  * normal InstanceCard
  *
- * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
 import React from 'react'

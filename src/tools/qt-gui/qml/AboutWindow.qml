@@ -46,7 +46,7 @@ BasicWindow {
 					title: qsTr("About")
 
 					TextArea{
-						property string link: "http://www.libelektra.org"
+						property string link: "https://www.libelektra.org"
 						readOnly: true
 						textFormat: TextEdit.RichText
 						backgroundVisible: false

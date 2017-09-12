@@ -3,7 +3,7 @@
  *
  * @brief Source for list plugin
  *
- * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  *
  */
 
@@ -362,7 +362,7 @@ int elektraListGet (Plugin * handle, KeySet * returned, Key * parentKey)
 	ksRewind (pluginKS);
 	int ret = runPlugins (pluginKS, placements->modules, placements->plugins, ksDup (config), returned, parentKey, GET, ksNext);
 	placements->getCurrent = ((++currentPlacement) % getEnd);
-	while (!placements->getPlacements[currentPlacement])
+	while (currentPlacement < getEnd && !placements->getPlacements[currentPlacement])
 	{
 		placements->getCurrent = ((++currentPlacement) % getEnd);
 	}
@@ -380,7 +380,7 @@ int elektraListSet (Plugin * handle, KeySet * returned, Key * parentKey)
 	int ret = 0;
 	ret = runPlugins (pluginKS, placements->modules, placements->plugins, ksDup (config), returned, parentKey, SET, ksPop);
 	placements->setCurrent = ((++currentPlacement) % setEnd);
-	while (!placements->setPlacements[currentPlacement])
+	while (currentPlacement < setEnd && !placements->setPlacements[currentPlacement])
 	{
 		placements->setCurrent = ((++currentPlacement) % setEnd);
 	}
@@ -399,7 +399,7 @@ int elektraListError (Plugin * handle, KeySet * returned, Key * parentKey)
 	ksRewind (pluginKS);
 	int ret = runPlugins (pluginKS, placements->modules, placements->plugins, ksDup (config), returned, parentKey, ERR, ksPop);
 	placements->errCurrent = ((++currentPlacement) % errEnd);
-	while (!placements->errPlacements[currentPlacement])
+	while (currentPlacement < errEnd && !placements->errPlacements[currentPlacement])
 	{
 		placements->errCurrent = ((++currentPlacement) % errEnd);
 	}
@@ -414,8 +414,8 @@ int elektraListAddPlugin (Plugin * handle, KeySet * pluginConfig)
 		return 0;
 	}
 	ksRewind (pluginConfig);
+	ksNext (pluginConfig);
 	Key * lookup = ksNext (pluginConfig);
-	lookup = ksNext (pluginConfig);
 	if (keyBaseName (lookup)[0] != '#')
 	{
 		return -1;
@@ -442,8 +442,8 @@ int elektraListEditPlugin (Plugin * handle, KeySet * pluginConfig)
 		return 0;
 	}
 	ksRewind (pluginConfig);
+	ksNext (pluginConfig);
 	Key * lookup = ksNext (pluginConfig);
-	lookup = ksNext (pluginConfig);
 	if (keyBaseName (lookup)[0] != '#')
 	{
 		return -1;

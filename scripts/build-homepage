@@ -8,7 +8,7 @@ ROOT_DIR=$PWD
 # build the applications
 mkdir -p build
 cd build
-cmake -DENABLE_ASAN=ON -DBUILD_FULL=OFF -DBUILD_SHARED=ON -DBUILD_STATIC=OFF -DBUILD_DOCUMENTATION=OFF -DPLUGINS='ALL;-fstab;-semlock' -DTOOLS='kdb;rest-backend;rest-frontend' -DCMAKE_C_FLAGS='-D_FORTIFY_SOURCE=2 -Werror=format-security -fstack-protector-strong -Wstack-protector -fPIE -pie' -DCMAKE_CXX_FLAGS='-D_FORTIFY_SOURCE=2 -Werror=format-security -fstack-protector-strong -Wstack-protector -fPIE -pie' -DCMAKE_EXE_LINKER_FLAGS='-Wl,-z,now -Wl,-z,relro' ..
+cmake -DENABLE_ASAN=ON -DBUILD_FULL=OFF -DBUILD_SHARED=ON -DBUILD_STATIC=OFF -DBUILD_DOCUMENTATION=OFF -DPLUGINS='ALL;-fstab;-semlock;file;xerces' -DTOOLS='kdb;rest-backend;rest-frontend' -DCMAKE_C_FLAGS='-D_FORTIFY_SOURCE=2 -Werror=format-security -fstack-protector-strong -Wstack-protector -fPIE -pie' -DCMAKE_CXX_FLAGS='-D_FORTIFY_SOURCE=2 -Werror=format-security -fstack-protector-strong -Wstack-protector -fPIE -pie' -DCMAKE_EXE_LINKER_FLAGS='-Wl,-z,now -Wl,-z,relro' ..
 make -j 3
 
 # test the applications (TODO: external fails?)
@@ -52,6 +52,9 @@ netstat -tlpen
 
 # then start the backend; succeed if it was not started before..
 kdb stop-rest-backend || /bin/true
+
+# cleanup /tmp files from build
+find /tmp -mindepth 1 -delete
 
 # avoid 'address already in use'
 while netstat -tlpen | grep "$IP:$PORT"

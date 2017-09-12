@@ -3,7 +3,7 @@
  *
  * @brief
  *
- * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
 #ifndef LIST_H
@@ -20,23 +20,22 @@ public:
 
 	virtual std::string getShortOptions () override
 	{
-		return "0vC";
+		return "0vC::";
 	}
 
 	virtual std::string getSynopsis () override
 	{
-		return "";
+		return "[provider]";
 	}
 
 	virtual std::string getShortHelpText () override
 	{
-		return "List available plugins.";
+		return "List all available or provided plugins.";
 	}
 
 	virtual std::string getLongHelpText () override
 	{
-		return "Currently it only lists plugins that were compiled\n"
-		       "together with the source\n";
+		return "";
 	}
 
 	virtual int execute (Cmdline const & cmdline) override;

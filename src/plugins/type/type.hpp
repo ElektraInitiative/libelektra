@@ -3,7 +3,7 @@
  *
  * @brief Header file for entry points
  *
- * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  *
  */
 
@@ -21,6 +21,7 @@ int elektraTypeClose (ckdb::Plugin * handle, ckdb::Key * errorKey);
 int elektraTypeGet (ckdb::Plugin * handle, ckdb::KeySet * ks, ckdb::Key * parentKey);
 int elektraTypeSet (ckdb::Plugin * handle, ckdb::KeySet * ks, ckdb::Key * parentKey);
 int elektraTypeError (ckdb::Plugin * handle, ckdb::KeySet * ks, ckdb::Key * parentKey);
+int elektraTypeValidateKey (ckdb::Key * key, ckdb::Key * errorKey);
 
 ckdb::Plugin * ELEKTRA_PLUGIN_EXPORT (type);
 }

@@ -3,7 +3,7 @@
  *
  * @brief Source for spec plugin
  *
- * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  *
  */
 
@@ -221,9 +221,9 @@ static void validateWildcardSubs (KeySet * ks, Key * key, Key * specKey)
 		if (keyIsDirectBelow (parent, cur)) ++subCount;
 	}
 	long required = atol (keyString (requiredMeta));
-	char buffer[MAX_CHARS_IN_LONG + 1];
 	if (required != subCount)
 	{
+		char buffer[MAX_CHARS_IN_LONG + 1];
 		snprintf (buffer, sizeof (buffer), "%ld", subCount);
 		keySetMeta (parent, "conflict/invalid/subcount", buffer);
 	}
@@ -652,7 +652,6 @@ static int doGlobbing (Key * parentKey, KeySet * returned, KeySet * specKS, Conf
 {
 	Key * specKey;
 	ksRewind (specKS);
-	Key * cur;
 	int ret = 1;
 	while ((specKey = ksNext (specKS)) != NULL)
 	{
@@ -672,6 +671,7 @@ static int doGlobbing (Key * parentKey, KeySet * returned, KeySet * specKS, Conf
 		}
 		int found = 0;
 		ksRewind (returned);
+		Key * cur;
 		while ((cur = ksNext (returned)) != NULL)
 		{
 			if (keyGetNamespace (cur) == KEY_NS_SPEC) continue;
@@ -733,6 +733,14 @@ static int doGlobbing (Key * parentKey, KeySet * returned, KeySet * specKS, Conf
 			{
 				Key * newKey = keyNew (strchr (keyName (specKey), '/'), KEY_CASCADING_NAME, KEY_END);
 				keySetMeta (newKey, "assign/condition", keyString (keyGetMeta (specKey, "assign/condition")));
+				ksAppendKey (returned, keyDup (newKey));
+				keyDel (newKey);
+			}
+			else if (keyGetMeta (specKey, "default"))
+			{
+				Key * newKey = keyNew (strchr (keyName (specKey), '/'), KEY_CASCADING_NAME, KEY_VALUE,
+						       keyString (keyGetMeta (specKey, "default")), KEY_END);
+				copyMeta (newKey, specKey, parentKey);
 				ksAppendKey (returned, keyDup (newKey));
 				keyDel (newKey);
 			}

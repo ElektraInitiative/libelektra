@@ -26,22 +26,22 @@ Version information.
 
 Use `kdb mount-info` to mount these mountpoints.
 
-## system/info/constants
+## system/info/elektra/constants
 
 Gives information about how Elektra was build.
 
 
-## system/info/uname
+## system/info/elektra/uname
 
 System Information given with `uname`.
 
 
-## system/info/desktop
+## system/info/elektra/desktop
 
 System Information about currently running desktop.
 
 
-## system/info/metadata
+## system/info/elektra/metadata
 
 Gives information about which metadata is currently
 understood by Elektra.
@@ -49,7 +49,7 @@ understood by Elektra.
 `METADATA.ini` needs to be mounted there.
 
 
-## system/info/contract
+## system/info/elektra/contract
 
 Gives information about clauses in plugin's contract
 that is currently understood.

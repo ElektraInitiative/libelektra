@@ -7,7 +7,7 @@
  * in development mode, this serves the client directly via webpack, this allows
  * for hot reloading (automatically update components that got changed)
  *
- * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
 import makeLog from './log'

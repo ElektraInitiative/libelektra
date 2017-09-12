@@ -3,7 +3,7 @@
  *
  * @brief
  *
- * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
 #ifdef HAVE_KDBCONFIG_H
@@ -20,7 +20,7 @@
 
 #define NR_KEYS 1
 
-void test_match ()
+void test_match (void)
 {
 	succeed_if (fnmatch ("user/*/to/key", "user/path/to/key", FNM_PATHNAME) == 0, "could not do simple fnmatch");
 }
@@ -51,14 +51,14 @@ void testKeys (KeySet * ks)
 	succeed_if (strcmp ("testvalue2", keyValue (metaKey)) == 0, "value of metakey testmetakey2 not correct");
 }
 
-KeySet * createKeys ()
+KeySet * createKeys (void)
 {
 	KeySet * ks = ksNew (30, keyNew ("user/tests/glob/test1", KEY_END), keyNew ("user/tests/glob/test2/subtest1", KEY_END),
 			     keyNew ("user/tests/glob/test3", KEY_END), KS_END);
 	return ks;
 }
 
-void test_zeroMatchFlags ()
+void test_zeroMatchFlags (void)
 {
 	Key * parentKey = keyNew ("user/tests/glob", KEY_END);
 	KeySet * conf = ksNew (20, keyNew ("user/glob/#1", KEY_VALUE, "*test1", KEY_META, "testmetakey1", "testvalue1", KEY_END),
@@ -94,7 +94,7 @@ void test_zeroMatchFlags ()
 	PLUGIN_CLOSE ();
 }
 
-void test_setGlobalMatch ()
+void test_setGlobalMatch (void)
 {
 	Key * parentKey = keyNew ("user/tests/glob", KEY_END);
 	// clang-format off
@@ -120,7 +120,7 @@ void test_setGlobalMatch ()
 	PLUGIN_CLOSE ();
 }
 
-void test_getGlobalMatch ()
+void test_getGlobalMatch (void)
 {
 	Key * parentKey = keyNew ("user/tests/glob", KEY_END);
 	// clang-format off
@@ -146,7 +146,7 @@ void test_getGlobalMatch ()
 	PLUGIN_CLOSE ();
 }
 
-void test_getDirectionMatch ()
+void test_getDirectionMatch (void)
 {
 	Key * parentKey = keyNew ("user/tests/glob", KEY_END);
 	// clang-format off
@@ -176,7 +176,7 @@ void test_getDirectionMatch ()
 	PLUGIN_CLOSE ();
 }
 
-void test_setDirectionMatch ()
+void test_setDirectionMatch (void)
 {
 	Key * parentKey = keyNew ("user/tests/glob", KEY_END);
 	// clang-format off
@@ -206,7 +206,7 @@ void test_setDirectionMatch ()
 	PLUGIN_CLOSE ();
 }
 
-void test_namedMatchFlags ()
+void test_namedMatchFlags (void)
 {
 	Key * parentKey = keyNew ("user/tests/glob", KEY_END);
 	KeySet * conf = ksNew (20, keyNew ("user/glob/#1", KEY_VALUE, "user/tests/glob/*", KEY_META, "testmetakey1", "testvalue1", KEY_END),
@@ -240,7 +240,7 @@ void test_namedMatchFlags ()
 	PLUGIN_CLOSE ();
 }
 
-void test_onlyFirstMatchIsApplied ()
+void test_onlyFirstMatchIsApplied (void)
 {
 	Key * parentKey = keyNew ("user/tests/glob", KEY_END);
 	// clang-format off

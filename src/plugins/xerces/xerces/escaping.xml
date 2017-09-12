@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+<root>value of xerces
+
+  <cdata more-s_päcials="1 &amp; 2 are &lt; 3 &#xA;">&lt;![CDATA[this is some cdata text "'&lt;&gt;&amp;ä "]]&gt;</cdata>
+
+  <fizz buzz="fizzBuzz"/>
+
+  <späciöl_-keüs1 attr="&quot;" attr2="$%(){}``äüö²[/\'>&amp;&lt;'&amp;">&gt;"&amp;&lt;'</späciöl_-keüs1>
+
+  <userKey>withValue</userKey>
+
+</root>

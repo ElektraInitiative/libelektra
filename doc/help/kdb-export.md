@@ -56,8 +56,6 @@ To backup a keyset stored in `user/keyset` in the `ini` format to a file called 
 Change default format to `simpleini`:  
 `kdb set /sw/elektra/kdb/#0/current/format simpleini`
 
+## Note
 
-## SEE ALSO
-
-- For an introductions into plugins, read [elektra-plugins-framework(7)](elektra-plugins-framework.md).
 - Only storage plugins can be used for formatting.

@@ -3,102 +3,468 @@
  *
  * @brief The Order Preserving Minimal Perfect Hash Map.
  *
- * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
 
 #include <kdbassert.h>
+#include <kdbhelper.h>
 #include <kdblogger.h>
 #include <kdbopmphm.h>
+#include <kdbrand.h>
 
-#include <stdio.h>  //debug
-#include <string.h> //strlen
-#include <time.h>   //time
+#include <string.h>
 
-double opmphmRatio = 0.75;
+static int hasCycle (Opmphm * opmphm, OpmphmGraph * graph, size_t n);
 
-/* Prints the bipartite graph to a dot file, to draw it, for debug purpose. */
-void opmphmPrintGraph (Edge * edges, void ** data, opmphmGetString fpOpmhpmGetString, size_t n)
+/**
+ * @brief Looks up a element in the OPMPHM.
+ *
+ * @param opmphm the OPMPHM
+ * @param name the name of the element
+ *
+ * @retval size_t the order of the element.
+ */
+size_t opmphmLookup (Opmphm * opmphm, const void * name)
 {
-	FILE * f = fopen ("opmphmGraph.dot", "wr");
-	fprintf (f, "graph graphname {\n");
-	for (size_t i = 0; i < n; ++i)
+	ELEKTRA_ASSERT (opmphm != NULL, "passed opmphm is a Null Pointer");
+	ELEKTRA_ASSERT (opmphm->graph != NULL, "passed opmphm is empty");
+	ELEKTRA_ASSERT (name != NULL, "passed name is a Null Pointer");
+	size_t ret = 0;
+#ifndef OPMPHM_TEST
+	size_t nameLength = strlen (name);
+#endif
+	for (uint8_t r = 0; r < OPMPHMR_PARTITE; ++r)
 	{
-		uint32_t h1 = edges[i].h[1];
-		uint32_t h2 = edges[i].h[2];
-		fprintf (f, "	%u -- %u [label=\"%s\"]\n", h1, h2, fpOpmhpmGetString (data[i]));
+#ifndef OPMPHM_TEST
+		uint32_t hash = opmphmHashfunction (name, nameLength, opmphm->opmphmHashFunctionSeeds[r]) % opmphm->componentSize;
+#else
+		uint32_t hash = ((uint32_t *)name)[r];
+#endif
+		ret += opmphm->graph[r * opmphm->componentSize + hash];
 	}
-	fprintf (f, "}\n");
-	fclose (f);
+	return ret % (opmphm->componentSize * OPMPHMR_PARTITE);
 }
 
-/** The first phase of the order preserving minimal perfect hash map build. */
-int opmphmMapping (OPMPHM * opmphm, Vertex * vertices, Edge * edges, OPMPHMinit * init, size_t n)
+/**
+ * @brief Assigns the vertices of the r-partite hypergraph.
+ *
+ * Allocs the memory for the final OPMPHM `Opmphm->graph`.
+ * Uses the remove sequence `OpmphmGraph->removeOrder`, generated during cycle check, to assign
+ * each vertex. Either with `OpmphmEdge->order` or the default order, default is the order
+ * of `OpmphmInit->data`.
+ *
+ * @param opmphm the OPMPHM
+ * @param graph the OpmphmGraph
+ * @param n the number of elements
+ * @param defaultOrder boolean flag
+ *
+ * @retval 0 on success
+ * @retval -1 on memory error
+ */
+int opmphmAssignment (Opmphm * opmphm, OpmphmGraph * graph, size_t n, int defaultOrder)
 {
-	// set the seeds, for the hash function
-	for (int i = 0; i < 3; ++i)
+	ELEKTRA_ASSERT (opmphm != NULL, "passed opmphm is a Null Pointer");
+	ELEKTRA_ASSERT (graph != NULL, "passed graph is a Null Pointer");
+	ELEKTRA_ASSERT (graph->removeIndex == n, "graph contains a cycle");
+	ELEKTRA_ASSERT (n > 0, "n is 0");
+	opmphm->size = opmphm->componentSize * OPMPHMR_PARTITE * sizeof (size_t);
+	opmphm->graph = elektraCalloc (opmphm->size);
+	if (!opmphm->graph)
 	{
-		opmphm->opmphmHashFunctionSeeds[i] = opmphmRandom (&(init->seed));
+		return -1;
 	}
-	size_t r = opmphmRatio * n;
-	ELEKTRA_LOG ("OPMPHM: Mapping: r=%lu seed[0]=%u seed[1]=%u seed[2]=%u\n", r, opmphm->opmphmHashFunctionSeeds[0],
-		     opmphm->opmphmHashFunctionSeeds[1], opmphm->opmphmHashFunctionSeeds[2]);
-	// init used values
-	for (size_t i = 0; i < r * 2; ++i)
+	// malloc assignment flag for each vertex
+	uint8_t * isAssigned = elektraCalloc (opmphm->componentSize * OPMPHMR_PARTITE * sizeof (uint8_t));
+	if (!isAssigned)
 	{
-		vertices[i].degree = 0;
-		vertices[i].firstEdge = -1;
+		elektraFree (opmphm->graph);
+		opmphm->size = 0;
+		return -1;
 	}
-	ELEKTRA_LOG_DEBUG ("OPMPHM: Mapping: Keys:\n");
-	for (size_t i = 0; i < n; ++i)
+	for (ssize_t i = n - 1; i >= 0; --i)
 	{
-#if defined(HAVE_LOGGER) || !defined(OPMPHM_TEST)
-		// set the resulting hash values for each key
-		const char * name = init->getString (init->data[i]);
-#endif
-		ELEKTRA_LOG_DEBUG ("%s\n", name);
-#ifndef OPMPHM_TEST
-		edges[i].h[0] = opmphmHashfunction ((const uint32_t *)name, strlen (name), opmphm->opmphmHashFunctionSeeds[0]) % n;
-		edges[i].h[1] = opmphmHashfunction ((const uint32_t *)name, strlen (name), opmphm->opmphmHashFunctionSeeds[1]) % r;
-		edges[i].h[2] = (opmphmHashfunction ((const uint32_t *)name, strlen (name), opmphm->opmphmHashFunctionSeeds[2]) % r) + r;
-#endif
-		// add each key to both lists
-		edges[i].nextEdge[0] = vertices[edges[i].h[1]].firstEdge;
-		vertices[edges[i].h[1]].firstEdge = i;
-		++vertices[edges[i].h[1]].degree;
-		edges[i].nextEdge[1] = vertices[edges[i].h[2]].firstEdge;
-		vertices[edges[i].h[2]].firstEdge = i;
-		++vertices[edges[i].h[2]].degree;
-	}
-	// verify that all triples are disjunct, if not this function will be called again
-	for (size_t i = 0; i < r; ++i)
-	{
-		for (int e0 = vertices[i].firstEdge; e0 != -1; e0 = edges[e0].nextEdge[0])
+		// assign edge e
+		// find out how many vertices are assigned and what is the sum of the values
+		uint8_t notAssignedCount = 0;
+		ssize_t assignedValue = 0;
+		size_t e = graph->removeOrder[i];
+		for (uint8_t r = 0; r < OPMPHMR_PARTITE; ++r)
 		{
-			for (int e1 = edges[e0].nextEdge[0]; e1 != -1; e1 = edges[e1].nextEdge[0])
+			size_t v = r * opmphm->componentSize + graph->edges[e].h[r];
+			if (!isAssigned[v])
 			{
-				if (edges[e0].h[0] == edges[e1].h[0] && edges[e0].h[2] == edges[e1].h[2])
+				++notAssignedCount;
+			}
+			else
+			{
+				assignedValue += opmphm->graph[v];
+			}
+		}
+		ELEKTRA_ASSERT (notAssignedCount != 0, "no not assigned vertex");
+		// set all but one to assigned state
+		uint8_t r = 0;
+		while (notAssignedCount > 1)
+		{
+			size_t v = r * opmphm->componentSize + graph->edges[e].h[r];
+			if (!isAssigned[v])
+			{
+				isAssigned[v] = 1;
+				--notAssignedCount;
+			}
+			++r;
+		}
+		// give the last the desired order
+		for (; r < OPMPHMR_PARTITE; ++r)
+		{
+			size_t v = r * opmphm->componentSize + graph->edges[e].h[r];
+			if (!isAssigned[v])
+			{
+				ssize_t diff;
+				if (defaultOrder)
 				{
-					return 1;
+					diff = ((ssize_t)e - assignedValue) % (ssize_t) (opmphm->componentSize * OPMPHMR_PARTITE);
 				}
+				else
+				{
+					diff = ((ssize_t)graph->edges[e].order - assignedValue) %
+					       (ssize_t) (opmphm->componentSize * OPMPHMR_PARTITE);
+				}
+				if (diff < 0)
+				{
+					diff += opmphm->componentSize * OPMPHMR_PARTITE;
+				}
+				opmphm->graph[v] = diff;
+				isAssigned[v] = 1;
 			}
 		}
 	}
+	elektraFree (isAssigned);
 	return 0;
 }
 
+/**
+ * @brief Maps the elements to edges in a r-partite hypergraph.
+ *
+ * Sets the seeds for the opmphmHashfunctions, `OpmphmInit->initSeed` will be changed.
+ * Inserts each element as edge in the r-partite hypergraph and checks if the graph contains a cycle.
+ *
+ * @param opmphm the OPMPHM
+ * @param graph the OpmphmGraph
+ * @param init the OpmphmInit
+ * @param n the number of elements
+ *
+ * @retval 0 on success
+ * @retval -1 mapping not possible
+ */
+int opmphmMapping (Opmphm * opmphm, OpmphmGraph * graph, OpmphmInit * init, size_t n)
+{
+	ELEKTRA_ASSERT (opmphm != NULL, "passed opmphm is a Null Pointer");
+	ELEKTRA_ASSERT (graph != NULL, "passed graph is a Null Pointer");
+	ELEKTRA_ASSERT (init != NULL, "passed init is a Null Pointer");
+	ELEKTRA_ASSERT (init->getString != NULL, "passed init->getString is a Null Pointer");
+	ELEKTRA_ASSERT (init->data != NULL, "passed init->data is a Null Pointer");
+	ELEKTRA_ASSERT (n > 0, "n is 0");
+	// set seeds
+	for (uint8_t r = 0; r < OPMPHMR_PARTITE; ++r)
+	{
+		elektraRand (&(init->initSeed));
+		opmphm->opmphmHashFunctionSeeds[r] = init->initSeed;
+	}
+	for (size_t i = 0; i < n; ++i)
+	{
+#ifndef OPMPHM_TEST
+		const char * name = init->getString (init->data[i]);
+#endif
+		for (uint8_t r = 0; r < OPMPHMR_PARTITE; ++r)
+		{
+#ifndef OPMPHM_TEST
+			// set edge.h[]
+			graph->edges[i].h[r] =
+				opmphmHashfunction (name, strlen (name), opmphm->opmphmHashFunctionSeeds[r]) % opmphm->componentSize;
+#endif
+			// add edge to graph
+			// set edge.nextEdge[r]
+			size_t v = r * opmphm->componentSize + graph->edges[i].h[r];
+			graph->edges[i].nextEdge[r] = graph->vertices[v].firstEdge;
+			// set vertex.firstEdge
+			graph->vertices[v].firstEdge = i;
+			// increment degree
+			++graph->vertices[v].degree;
+		}
+	}
+	if (hasCycle (opmphm, graph, n))
+	{
+		// reset graph vertices
+		memset (graph->vertices, 0, opmphm->componentSize * OPMPHMR_PARTITE * sizeof (OpmphmVertex));
+		return -1;
+	}
+	else
+	{
+		return 0;
+	}
+}
+
+/**
+ * @brief Recursive function used by hasCycle
+ *
+ * `v` is a degree 1 vertex with edge `e`. The edge `e` will be removed completely from the graph and
+ * inserted in the `OpmphmGraph->removeOrder`.
+ * For all vertices connected through `e` with degree 1 the function will be called again.
+ *
+ * @param opmphm the OPMPHM
+ * @param graph the OpmphmGraph
+ * @param v a vertex with degree 1
+ */
+static void peel_off (Opmphm * opmphm, OpmphmGraph * graph, size_t v)
+{
+	size_t e = graph->vertices[v].firstEdge;
+	// add it to graph->removeOrder
+	graph->removeOrder[graph->removeIndex] = e;
+	++graph->removeIndex;
+	// remove edge e from graph
+	for (uint8_t r = 0; r < OPMPHMR_PARTITE; ++r)
+	{
+		// w is adjacent to v through e
+		size_t w = r * opmphm->componentSize + graph->edges[e].h[r];
+		// remove e from w
+		size_t * j = &(graph->vertices[w].firstEdge);
+		for (; *j != e; j = &(graph->edges[*j].nextEdge[r]))
+			;
+		*j = graph->edges[*j].nextEdge[r];
+		// decrease degree
+		--graph->vertices[w].degree;
+	}
+	// all vertices adjacent to v through e
+	for (uint8_t r = 0; r < OPMPHMR_PARTITE; ++r)
+	{
+		size_t w = r * opmphm->componentSize + graph->edges[e].h[r];
+		// if degree 1, go on
+		if (graph->vertices[w].degree == 1)
+		{
+			peel_off (opmphm, graph, w);
+		}
+	}
+}
+
+/**
+ * @brief Checks if a OpmphmGraph is Acyclic
+ *
+ * Removes edges that have a degree 1 vertex, until the graph is empty.
+ * The sequence of removed edges will be saved in `OpmphmGraph->removeOrder`.
+ * The passed OpmphmGraph is will be destroyed.
+ *
+ * @param opmphm the OPMPHM
+ * @param graph the OpmphmGraph
+ * @param n the number of elements
+ *
+ * @retval 0 on Acyclic
+ * @retval 1 if there is a cycle
+ */
+static int hasCycle (Opmphm * opmphm, OpmphmGraph * graph, size_t n)
+{
+	graph->removeIndex = 0;
+	// search all vertices
+	for (size_t v = 0; v < opmphm->componentSize * OPMPHMR_PARTITE; ++v)
+	{
+		// for a vertex with degree 1
+		if (graph->vertices[v].degree == 1)
+		{
+			peel_off (opmphm, graph, v);
+		}
+	}
+	if (graph->removeIndex == n)
+	{
+		return 0;
+	}
+	else
+	{
+		return 1;
+	}
+}
+
+/**
+ * @brief Provides the minimal c value
+ *
+ * This minimal values come from Fabiano Cupertino Botelho, Near-Optimal Space Perfect Hashing Algorithms, 2008.
+ *
+ * @retval c the minimal c value
+ */
+double opmphmMinC (void)
+{
+	ELEKTRA_ASSERT (OPMPHMR_PARTITE > 1 && OPMPHMR_PARTITE < 11, "OPMPHMR_PARTITE out of range");
+	switch (OPMPHMR_PARTITE)
+	{
+	case 2:
+		return 2.01;
+	case 3:
+		return 1.24;
+	case 4:
+		return 1.31;
+	case 5:
+		return 1.45;
+	case 6:
+		return 1.6;
+	case 7:
+		return 1.75;
+	case 8:
+		return 1.9;
+	case 9:
+		return 2.05;
+	case 10:
+		return 2.2;
+	default:
+		return 0;
+	}
+}
+
+/**
+ * @brief Allocates and initializes the OpmphmGraph.
+ *
+ * The OpmphmGraph represents a r-partite hypergraph.
+ * Calculates also the size of one partition in the r-partite hypergraph and stores it in `opmphm->componentSize`.
+ *
+ * @param opmphm the OPMPHM
+ * @param n the number of elements
+ * @param c space influencing parameter
+ *
+ * @retval OpmphmGraph * success
+ * @retval NULL memory error
+ */
+OpmphmGraph * opmphmGraphNew (Opmphm * opmphm, size_t n, double c)
+{
+	ELEKTRA_ASSERT (opmphm != NULL, "passed opmphm is a Null Pointer");
+	ELEKTRA_ASSERT (n > 0, "n is 0");
+	ELEKTRA_ASSERT (c > 0.0, "ratio <= 0");
+	// calculate opmphm->componentSize, number of elements in one part of r-partite hypergraph
+	opmphm->componentSize = (c * n / OPMPHMR_PARTITE) + 1;
+	// mallocs
+	OpmphmGraph * graph = elektraMalloc (sizeof (OpmphmGraph));
+	if (!graph)
+	{
+		return NULL;
+	}
+	graph->edges = elektraMalloc (n * sizeof (OpmphmEdge));
+	if (!graph->edges)
+	{
+		elektraFree (graph);
+		return NULL;
+	}
+	graph->removeOrder = elektraMalloc (n * sizeof (size_t));
+	if (!graph->edges)
+	{
+		elektraFree (graph->removeOrder);
+		elektraFree (graph);
+		return NULL;
+	}
+	graph->vertices = elektraCalloc (opmphm->componentSize * OPMPHMR_PARTITE * sizeof (OpmphmVertex));
+	if (!graph->vertices)
+	{
+		elektraFree (graph->removeOrder);
+		elektraFree (graph->vertices);
+		elektraFree (graph);
+		return NULL;
+	}
+	return graph;
+}
+
+
+/**
+ * @brief Deletes the OpmphmGraph.
+ *
+ * @param graph the OpmphmGraph
+ */
+void opmphmGraphDel (OpmphmGraph * graph)
+{
+	ELEKTRA_ASSERT (graph != NULL, "passed graph is a Null Pointer");
+	elektraFree (graph->edges);
+	elektraFree (graph->removeOrder);
+	elektraFree (graph->vertices);
+	elektraFree (graph);
+}
+
+/**
+ * @brief Allocates and initializes the OPMPHM.
+ *
+ * The returned OPMPHM instance is Empty.
+ *
+ * @retval Opmphm * success
+ * @retval NULL memory error
+ */
+Opmphm * opmphmNew (void)
+{
+	Opmphm * out = elektraMalloc (sizeof (Opmphm));
+	if (!out)
+	{
+		return NULL;
+	}
+	out->size = 0;
+	return out;
+}
+
+/**
+ * @brief Deletes the OPMPHM.
+ *
+ * Clears and frees all memory in Opmphm.
+ *
+ * @param opmphm the OPMPHM
+ */
+void opmphmDel (Opmphm * opmphm)
+{
+	ELEKTRA_ASSERT (opmphm != NULL, "passed opmphm is a Null Pointer");
+	opmphmClear (opmphm);
+	elektraFree (opmphm);
+}
+
+/**
+ * @brief Clears the OPMPHM.
+ *
+ * Clears and frees all internal memory of Opmphm, but not the Opmphm instance.
+ *
+ * @param opmphm the OPMPHM
+ */
+void opmphmClear (Opmphm * opmphm)
+{
+	ELEKTRA_ASSERT (opmphm != NULL, "passed opmphm is a Null Pointer");
+	if (!opmphmIsEmpty (opmphm))
+	{
+		elektraFree (opmphm->graph);
+		opmphm->size = 0;
+	}
+}
+
+/**
+ * @brief Determines if the OPMPHM is Empty.
+ *
+ * Empty means opmphm->size is 0.
+ *
+ * @param opmphm the OPMPHM
+ *
+ * @retval true empty
+ * @retval false non empty
+
+ */
+int opmphmIsEmpty (Opmphm * opmphm)
+{
+	ELEKTRA_ASSERT (opmphm != NULL, "passed opmphm is a Null Pointer");
+	if (opmphm->size)
+		return 0;
+	else
+		return 1;
+}
 
 /**
  * Hash function
  * By Bob Jenkins, May 2006
  * http://burtleburtle.net/bob/c/lookup3.c
- * Original name: hashlitte (the little endian part)
- * For now assuming little endian maschine
+ * Original name: hashlitte
  */
 uint32_t opmphmHashfunction (const void * key, size_t length, uint32_t initval)
 {
 	uint32_t a, b, c;
 	a = b = c = 0xdeadbeef + ((uint32_t)length) + initval;
+#ifndef ELEKTRA_BIG_ENDIAN
+	// little endian
 	const uint32_t * k = (const uint32_t *)key;
 	while (length > 12)
 	{
@@ -162,20 +528,69 @@ uint32_t opmphmHashfunction (const void * key, size_t length, uint32_t initval)
 	case 0:
 		return c;
 	}
+#else
+	// big endian
+	const uint8_t * k = (const uint8_t *)key;
+	while (length > 12)
+	{
+		a += k[0];
+		a += ((uint32_t)k[1]) << 8;
+		a += ((uint32_t)k[2]) << 16;
+		a += ((uint32_t)k[3]) << 24;
+		b += k[4];
+		b += ((uint32_t)k[5]) << 8;
+		b += ((uint32_t)k[6]) << 16;
+		b += ((uint32_t)k[7]) << 24;
+		c += k[8];
+		c += ((uint32_t)k[9]) << 8;
+		c += ((uint32_t)k[10]) << 16;
+		c += ((uint32_t)k[11]) << 24;
+		OPMPHM_HASHFUNCTION_MIX (a, b, c);
+		length -= 12;
+		k += 12;
+	}
+	switch (length)
+	{
+	case 12:
+		c += ((uint32_t)k[11]) << 24;
+		ELEKTRA_FALLTHROUGH;
+	case 11:
+		c += ((uint32_t)k[10]) << 16;
+		ELEKTRA_FALLTHROUGH;
+	case 10:
+		c += ((uint32_t)k[9]) << 8;
+		ELEKTRA_FALLTHROUGH;
+	case 9:
+		c += k[8];
+		ELEKTRA_FALLTHROUGH;
+	case 8:
+		b += ((uint32_t)k[7]) << 24;
+		ELEKTRA_FALLTHROUGH;
+	case 7:
+		b += ((uint32_t)k[6]) << 16;
+		ELEKTRA_FALLTHROUGH;
+	case 6:
+		b += ((uint32_t)k[5]) << 8;
+		ELEKTRA_FALLTHROUGH;
+	case 5:
+		b += k[4];
+		ELEKTRA_FALLTHROUGH;
+	case 4:
+		a += ((uint32_t)k[3]) << 24;
+		ELEKTRA_FALLTHROUGH;
+	case 3:
+		a += ((uint32_t)k[2]) << 16;
+		ELEKTRA_FALLTHROUGH;
+	case 2:
+		a += ((uint32_t)k[1]) << 8;
+		ELEKTRA_FALLTHROUGH;
+	case 1:
+		a += k[0];
+		break;
+	case 0:
+		return c;
+	}
+#endif
 	OPMPHM_HASHFUNCTION_FINAL (a, b, c);
 	return c;
-}
-
-/*
- * This Random function comes from:
- * S. Park & K. Miller
- * Random Number Generator: Good ones are Hard to find
- * http://www.firstpr.com.au/dsp/rand31/p1192-park.pdf
- * 1988
- */
-uint32_t opmphmRandom (unsigned int * seedp)
-{
-	ELEKTRA_ASSERT (seedp != NULL, "NULL pointer passed");
-	*seedp = (16807 * *seedp) % 2147483647;
-	return rand_r (seedp);
 }

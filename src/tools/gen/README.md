@@ -136,6 +136,23 @@ commandline:
 
 	par.activate<ProfileLayer>(par.profile);
 
+## Limitations
+
+This is an experimental prototype. You should have a look at the
+test cases to see what is actually working.
+
+The code generator has little (none) checks for valid specifications.
+For problems in the specification you usually get hard-to-interpret
+compile errors.
+
+Not all of Elektra's types are supported, for example, char and octet
+do not work.
+
+Please open an issue if you plan to use the code.
+
+
+## See also
+
 If you want to know more read:
 
 - [introduction paper](http://www.markus-raab.org/ftp/papers/cop2014program.pdf).

@@ -3,7 +3,7 @@
  *
  * @brief Some common functions in use for testing framework.
  *
- * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
 #ifndef TESTS_H
@@ -89,7 +89,7 @@ int init (int argc, char ** argv);
                                                                                                                                            \
 			strcpy (errorMsg, "key name \"");                                                                                  \
 			strcat (errorMsg, keyName (nmmk1));                                                                                \
-			strcat (errorMsg, "\" is not equal \"");                                                                           \
+			strcat (errorMsg, "\" is not equal to \"");                                                                        \
 			strcat (errorMsg, keyName (nmmk2));                                                                                \
 			strcat (errorMsg, "\"");                                                                                           \
                                                                                                                                            \
@@ -108,7 +108,7 @@ int init (int argc, char ** argv);
                                                                                                                                            \
 			strcpy (errorMsg, "key value \"");                                                                                 \
 			strcat (errorMsg, keyString (smmk1));                                                                              \
-			strcat (errorMsg, "\" is not equal \"");                                                                           \
+			strcat (errorMsg, "\" is not equal to \"");                                                                        \
 			strcat (errorMsg, keyString (smmk2));                                                                              \
 			strcat (errorMsg, "\"");                                                                                           \
                                                                                                                                            \
@@ -148,7 +148,7 @@ int init (int argc, char ** argv);
                                                                                                                                            \
 				strcpy (errorMsg, "string \"");                                                                            \
 				strcat (errorMsg, s1);                                                                                     \
-				strcat (errorMsg, "\" is not equal \"");                                                                   \
+				strcat (errorMsg, "\" is not equal to \"");                                                                \
 				strcat (errorMsg, s2);                                                                                     \
 				strcat (errorMsg, "\"");                                                                                   \
                                                                                                                                            \
@@ -167,7 +167,7 @@ int init (int argc, char ** argv);
 		{                                                                                                                          \
 			char errorMsg[BUFFER_LENGTH];                                                                                      \
                                                                                                                                            \
-			snprintf (errorMsg, BUFFER_LENGTH, "int %d is not equal %d", s1, s2);                                              \
+			snprintf (errorMsg, BUFFER_LENGTH, "int %d is not equal to %d", s1, s2);                                           \
                                                                                                                                            \
 			yield_error (errorMsg);                                                                                            \
 		}                                                                                                                          \
@@ -273,7 +273,7 @@ int compare_files (const char * filename);
 int compare_line_files (const char * filename, const char * genfilename);
 
 char * srcdir_file (const char * fileName);
-const char * elektraFilename ();
+const char * elektraFilename (void);
 void elektraUnlink (const char * filename);
 
 Key * create_root_key (const char * backendName);

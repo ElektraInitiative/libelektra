@@ -14,20 +14,20 @@ if (PYTHON2INTERP_FOUND)
 
 	install(CODE "execute_process(COMMAND
 			${PYTHON2_EXECUTABLE}
-			${CMAKE_CURRENT_SOURCE_DIR}/gen
+			\"${CMAKE_CURRENT_SOURCE_DIR}/gen\"
 			-p tests/lift.ini
-			${CMAKE_CURRENT_SOURCE_DIR}/util/util.c
-			-o ${CMAKE_CURRENT_BINARY_DIR}/util.py)")
+			\"${CMAKE_CURRENT_SOURCE_DIR}/util/util.c\"
+			-o \"${CMAKE_CURRENT_BINARY_DIR}/util.py\")")
 
 	install(CODE "execute_process(COMMAND
 			${PYTHON2_EXECUTABLE}
-			${CMAKE_CURRENT_SOURCE_DIR}/gen
+			\"${CMAKE_CURRENT_SOURCE_DIR}/gen\"
 			-p tests/lift.ini
-			${CMAKE_CURRENT_SOURCE_DIR}/util/util.cpp
-			-o ${CMAKE_CURRENT_BINARY_DIR}/cpp_util.py)")
+			\"${CMAKE_CURRENT_SOURCE_DIR}/util/util.cpp\"
+			-o \"${CMAKE_CURRENT_BINARY_DIR}/cpp_util.py\")")
 
 	install(CODE "execute_process(COMMAND
-			${PYTHON2_EXECUTABLE} ${SETUP_PY}
+			${PYTHON2_EXECUTABLE} \"${SETUP_PY}\"
 			--no-user-cfg
 			--quiet
 			install
@@ -56,7 +56,7 @@ if (PYTHON2INTERP_FOUND)
 		#		${OUTPUT}
 		#	WORKING_DIRECTORY
 		#		${CMAKE_BINARY_DIR}/src/tools/gen
-		#	MAIN_DEPENDENCY ${TEMPLATE} 
+		#	MAIN_DEPENDENCY ${TEMPLATE}
 		#	DEPENDS ${SUPPORT}
 		#	COMMENT "build the util ${TEMPLATE}"
 		#	)

@@ -3,7 +3,7 @@
  *
  * @brief Tests for the ini plugin
  *
- * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  *
  */
 
@@ -251,7 +251,7 @@ static void test_multilineIniWrite (char * fileName)
 
 	PLUGIN_CLOSE ();
 }
-static void test_multilineIniInvalidConfigWrite ()
+static void test_multilineIniInvalidConfigWrite (void)
 {
 	Key * parentKey = keyNew ("user/tests/ini-multiline-write", KEY_VALUE, elektraFilename (), KEY_END);
 	KeySet * conf = ksNew (30, keyNew ("system/multiline", KEY_VALUE, "0", KEY_END),

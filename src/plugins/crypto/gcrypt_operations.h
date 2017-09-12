@@ -3,7 +3,7 @@
  *
  * @brief cryptographic interface using the gcrypt library
  *
- * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  *
  */
 
@@ -18,7 +18,7 @@
 
 char * elektraCryptoGcryCreateRandomString (Key * errorKey, const kdb_unsigned_short_t length);
 int elektraCryptoGcryInit (Key * errorKey);
-int elektraCryptoGcryHandleCreate (elektraCryptoHandle ** handle, KeySet * config, Key * errorKey, Key * k,
+int elektraCryptoGcryHandleCreate (elektraCryptoHandle ** handle, KeySet * config, Key * errorKey, Key * masterKey, Key * k,
 				   const enum ElektraCryptoOperation op);
 void elektraCryptoGcryHandleDestroy (elektraCryptoHandle * handle);
 int elektraCryptoGcryEncrypt (elektraCryptoHandle * handle, Key * k, Key * errorKey);

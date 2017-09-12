@@ -27,11 +27,13 @@ if (MAVEN_EXECUTABLE) # set by find_program
 	)
 
 	# compile it and build the jar
-	add_custom_target (
-		jna ALL
+	add_custom_command (
+		OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/libelektra4j/target/libelektra4j-${KDB_VERSION}.jar"
 		COMMAND ${MAVEN_EXECUTABLE} -q -B -DskipTests=true package
 		WORKING_DIRECTORY libelektra4j
+		DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/libelektra4j/pom.xml"
 	)
+	add_custom_target(jna ALL DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/libelektra4j/target/libelektra4j-${KDB_VERSION}.jar")
 
 	install (
 		FILES
@@ -49,22 +51,25 @@ if (MAVEN_EXECUTABLE) # set by find_program
 		set (MAVEN_TEST_ENV "env-test")
 	endif ()
 
-	add_test (
-		NAME testjna_maven
-		COMMAND ${MAVEN_EXECUTABLE} -q -B -e -P ${MAVEN_TEST_ENV} test
-		WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/libelektra4j"
-	)
 
-	set_property (
-		TEST testjna_maven
-		PROPERTY ENVIRONMENT
-			"LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib"
-	)
+	if (NOT ENABLE_ASAN)
+		add_test (
+			NAME testjna_maven
+			COMMAND ${MAVEN_EXECUTABLE} -q -B -e -P ${MAVEN_TEST_ENV} test
+			WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/libelektra4j"
+		)
 
-	set_property (
-		TEST testjna_maven
-		PROPERTY LABELS bindings
-	)
+		set_property (
+			TEST testjna_maven
+			PROPERTY ENVIRONMENT
+				"LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib"
+		)
+
+		set_property (
+			TEST testjna_maven
+			PROPERTY LABELS bindings
+		)
+	endif (NOT ENABLE_ASAN)
 else (MAVEN_EXECUTABLE)
 	remove_binding (jna "Maven Executable not found, but required to build the jna bindings")
 endif (MAVEN_EXECUTABLE)

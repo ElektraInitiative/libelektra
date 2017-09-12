@@ -3,7 +3,7 @@
  *
  * @brief
  *
- * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
 #include <kdb.h>
@@ -15,7 +15,7 @@ void printError (Key * key);
 void printWarnings (Key * key);
 void removeMetaData (Key * key, const char * searchfor);
 
-int main ()
+int main (void)
 {
 	KeySet * myConfig = ksNew (0, KS_END);
 	Key * key = keyNew ("/sw/MyApp", KEY_CASCADING_NAME, KEY_END);

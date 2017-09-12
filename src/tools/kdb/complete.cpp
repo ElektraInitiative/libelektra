@@ -3,7 +3,7 @@
  *
  * @brief
  *
- * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
 #include "complete.hpp"
@@ -52,7 +52,7 @@ int CompleteCommand::execute (Cmdline const & cl)
 	return 0;
 }
 
-void CompleteCommand::complete (const string argument, Cmdline const & cl)
+void CompleteCommand::complete (string const & argument, Cmdline const & cl)
 {
 	using namespace std::placeholders; // for bind
 
@@ -96,7 +96,7 @@ void CompleteCommand::complete (const string argument, Cmdline const & cl)
 	}
 }
 
-void CompleteCommand::completeNormal (const string argument, Key const & parsedArgument, Cmdline const & cl)
+void CompleteCommand::completeNormal (string const & argument, Key const & parsedArgument, Cmdline const & cl)
 {
 	Key root = parsedArgument;
 	const Key parent = getParentKey (root);
@@ -125,7 +125,9 @@ void CompleteCommand::completeNormal (const string argument, Key const & parsedA
 	// Let elektra handle the escaping of the input for us
 	const string argumentEscaped = parsedArgument.getFullName ();
 	const auto filter = [&](const pair<Key, pair<int, int>> & c) {
-		return filterDepth (cl.minDepth + offset, max (cl.maxDepth, cl.maxDepth + offset), c) && nameFilter (argument, c);
+		return filterDepth (cl.minDepth + offset,
+				    max (cl.maxDepth, cl.maxDepth > INT_MAX - offset ? INT_MAX : cl.maxDepth + offset), c) &&
+		       nameFilter (argument, c);
 	};
 	printResults (root, cl.minDepth, cl.maxDepth, cl, result, filter, printResult);
 }
@@ -205,10 +207,10 @@ const map<Key, pair<int, int>> CompleteCommand::analyze (KeySet const & ks, Cmdl
 	return hierarchy;
 }
 
-void CompleteCommand::printResults (Key const & root, const int minDepth, const int maxDepth, Cmdline const & cl,
-				    map<Key, pair<int, int>> const & result,
-				    const std::function<bool(pair<Key, pair<int, int>> const & current)> filter,
-				    const std::function<void(pair<Key, pair<int, int>> const & current, const bool verbose)> resultPrinter)
+void CompleteCommand::printResults (
+	Key const & root, const int minDepth, const int maxDepth, Cmdline const & cl, map<Key, pair<int, int>> const & result,
+	std::function<bool(pair<Key, pair<int, int>> const & current)> const & filter,
+	std::function<void(pair<Key, pair<int, int>> const & current, const bool verbose)> const & resultPrinter)
 {
 	if (cl.verbose)
 	{
@@ -263,7 +265,7 @@ KeySet CompleteCommand::getKeys (Key root, const bool cutAtRoot, Cmdline const &
 	return ks;
 }
 
-bool CompleteCommand::shallShowNextLevel (const string argument)
+bool CompleteCommand::shallShowNextLevel (string const & argument)
 {
 	auto it = argument.rbegin ();
 	// If the argument ends in / its an indicator to complete the next level (like done by shells), but not if its escaped
@@ -337,7 +339,7 @@ void CompleteCommand::addNamespaces (map<Key, pair<int, int>> & hierarchy, Cmdli
 	}
 }
 
-void CompleteCommand::increaseCount (map<Key, pair<int, int>> & hierarchy, Key const & key, const function<int(int)> depthIncreaser)
+void CompleteCommand::increaseCount (map<Key, pair<int, int>> & hierarchy, Key const & key, function<int(int)> const & depthIncreaser)
 {
 	const pair<int, int> prev = hierarchy[key];
 	hierarchy[key] = pair<int, int> (prev.first + 1, depthIncreaser (prev.second));
@@ -348,7 +350,7 @@ bool CompleteCommand::filterDepth (const int minDepth, const int maxDepth, pair<
 	return current.second.second >= minDepth && current.second.second < maxDepth;
 }
 
-bool CompleteCommand::filterCascading (const string argument, pair<Key, pair<int, int>> const & current)
+bool CompleteCommand::filterCascading (string const & argument, pair<Key, pair<int, int>> const & current)
 {
 	// For a cascading key completion, ignore the preceding namespace
 	const string test = current.first.getFullName ();
@@ -356,7 +358,7 @@ bool CompleteCommand::filterCascading (const string argument, pair<Key, pair<int
 	return argument.size () <= test.size () && equal (argument.begin (), argument.end (), test.begin () + cascadationOffset);
 }
 
-bool CompleteCommand::filterName (const string argument, pair<Key, pair<int, int>> const & current)
+bool CompleteCommand::filterName (string const & argument, pair<Key, pair<int, int>> const & current)
 {
 	const string test = current.first.getFullName ();
 	return argument.size () <= test.size () && equal (argument.begin (), argument.end (), test.begin ());
@@ -365,10 +367,9 @@ bool CompleteCommand::filterName (const string argument, pair<Key, pair<int, int
 /**
  * McCabe Complexity of 15 due to the boolean conjunctions, easy to understand so its ok
  */
-bool CompleteCommand::filterBookmarks (const string bookmarkName, pair<Key, pair<int, int>> const & current)
+bool CompleteCommand::filterBookmarks (string const & bookmarkName, pair<Key, pair<int, int>> const & current)
 {
 	// For a bookmark completion, ignore everything except the bookmarks by comparing the base name
-	const string test = current.first.getBaseName ();
 	// as we search in /sw due to legacy reasons, ensure we have an actual bookmark by checking the path
 	bool elektraFound = false;
 	bool kdbFound = false;

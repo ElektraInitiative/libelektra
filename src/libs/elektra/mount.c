@@ -3,7 +3,7 @@
  *
  * @brief Interna of mount functionality.
  *
- * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
 #ifdef HAVE_KDBCONFIG_H
@@ -309,7 +309,7 @@ Plugin * elektraMountGlobalsLoadPlugin (KeySet * referencePlugins, Key * cur, Ke
 	return plugin;
 }
 
-KeySet * elektraDefaultGlobalConfig ()
+KeySet * elektraDefaultGlobalConfig (void)
 {
 	return ksNew (
 		18, keyNew ("system/elektra/globalplugins", KEY_VALUE, "", KEY_END),

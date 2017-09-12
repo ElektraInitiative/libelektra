@@ -3,7 +3,7 @@
  *
  * @brief
  *
- * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
 #include "dump.hpp"
@@ -211,6 +211,7 @@ int elektraDumpGet (ckdb::Plugin *, ckdb::KeySet * returned, ckdb::Key * parentK
 				    keyNew ("system/elektra/modules/dump/exports/set", KEY_FUNC, elektraDumpSet, KEY_END),
 				    keyNew ("system/elektra/modules/dump/exports/serialise", KEY_FUNC, dump::serialise, KEY_END),
 				    keyNew ("system/elektra/modules/dump/exports/unserialise", KEY_FUNC, dump::unserialise, KEY_END),
+				    keyNew ("system/elektra/modules/dump/config/needs/fcrypt/textmode", KEY_VALUE, "0", KEY_END),
 #include "readme_dump.c"
 				    keyNew ("system/elektra/modules/dump/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 		ksAppend (returned, n);

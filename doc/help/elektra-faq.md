@@ -19,6 +19,21 @@ Furthermore, Elektra has a defined API and you can swap implementations as neede
 So it pays off to use Elektra -- in the short and in the long term.
 
 
+## Do we retain the old way of configuring things, i.e. manually editing a ini file in /etc?
+
+Absolutely, you can think of libelektra as a small library in C that
+reads a configuration file and returns a data structure if you do not
+use any of its advanced features.
+
+
+## Do we retain the old way reloading/restarting the system service?
+
+Elektra does not interfere with restarting. It is a passive library.
+It provides some techniques for reloading but they are optional (but we
+recommend that you keep the in-memory and persistent configuration in
+sync via notification).
+
+
 ## I am stuck. Where can I get help?
 
 If this FAQ does not contain your question, [please open an issue](http://git.libelektra.org/issues).
@@ -57,10 +72,9 @@ you tag (`infos/status`) it with `discouraged`.
 
 Please start by reading [here](/.github/CONTRIBUTING.md).
 
-
 ## What is the Elektra’s license?
 
-[New BSD license](/doc/LICENSE.md) which allows us to have plugins link against GPL
+[New BSD license](/LICENSE.md) which allows us to have plugins link against GPL
 and GPL-incompatible libraries. If you compile Elektra, e.g., with GPL plugins, the
 result is GPL.
 
@@ -72,7 +86,7 @@ result is GPL.
 
 ## How can I advertise Elektra?
 
-If questions about configuration come up, point users to http://www.libelektra.org
+If questions about configuration come up, point users to https://www.libelektra.org
 Display the logos found at http://tree.libelektra.org/doc/images (see logo.png or the circle*.svg).
 Distribute the flyer found at http://tree.libelektra.org/doc/images/flyer.odt
 And of course: talk about it!

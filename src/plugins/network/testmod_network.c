@@ -3,7 +3,7 @@
  *
  * @brief
  *
- * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
 #ifdef HAVE_KDBCONFIG_H
@@ -17,7 +17,7 @@
 #include <tests.h>
 
 
-void test_addr ()
+void test_addr (void)
 {
 	// clang-format off
 	Key * k = keyNew ("user/anything",
@@ -95,8 +95,8 @@ void test_addr ()
 
 int main (int argc, char ** argv)
 {
-	printf ("   ICONV   TESTS\n");
-	printf ("====================\n\n");
+	printf ("NETWORK   TESTS\n");
+	printf ("===============\n\n");
 
 	init (argc, argv);
 

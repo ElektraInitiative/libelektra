@@ -3,7 +3,7 @@
  *
  * @brief initialize the redux store
  *
- * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
 import { createStore, applyMiddleware, compose } from 'redux'

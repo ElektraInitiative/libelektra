@@ -3,7 +3,7 @@
  *
  * @brief Methods for metadata manipulation.
  *
- * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
 #include <kdb.h>
@@ -1211,7 +1211,6 @@ int elektraSortTopology (KeySet * ks, Key ** array)
 		adjMatrix[j].isResolved = 0;
 		adjMatrix[j].deps = elektraCalloc (sizeof (unsigned long) * size);
 	}
-	i = 0;
 	kdb_octet_t hasOrder = 0;
 	if (keyGetMeta (localArray[0], "order")) hasOrder = 1;
 	unsigned int unresolved = 0;
@@ -1221,7 +1220,6 @@ int elektraSortTopology (KeySet * ks, Key ** array)
 		KeySet * deps = elektraMetaArrayToKS (cur, "dep");
 		keyDel (ksLookupByName (deps, "dep", KDB_O_POP));
 		Key * tmpDep;
-		int gotUnresolved = 0;
 		switch (ksGetSize (deps))
 		{
 		case -1:
@@ -1252,6 +1250,7 @@ int elektraSortTopology (KeySet * ks, Key ** array)
 		}
 		default:
 		{
+			int gotUnresolved = 0;
 			while ((tmpDep = ksNext (deps)) != NULL)
 			{
 				if (!isValidKeyName (keyString (tmpDep)))
@@ -1319,10 +1318,10 @@ int elektraSortTopology (KeySet * ks, Key ** array)
 		retVal = 0;
 		goto TopSortCleanup;
 	}
-	int found = 1;
 
 	if (unresolved)
 	{
+		int found = 1;
 		// we have unresolved dependencies
 		for (int j = 0; j < size + 1; ++j)
 		{

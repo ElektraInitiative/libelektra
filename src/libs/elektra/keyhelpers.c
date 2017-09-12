@@ -3,7 +3,7 @@
  *
  * @brief Helpers for key manipulation.
  *
- * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
 #ifdef HAVE_KDBCONFIG_H
@@ -241,21 +241,21 @@ static int elektraSetMode (Key * key, mode_t mode)
  */
 void keyVInit (Key * key, const char * name, va_list va)
 {
-	keyswitch_t action = 0;
-	size_t value_size = 0;
-	void * value = 0;
-	void (*func) (void) = 0;
-	int flags = 0;
-	char * owner = 0;
-	int mode = 0;
-	int hasMode = 0;
-
 	if (!key) return;
 
 	keyInit (key);
 
 	if (name)
 	{
+		keyswitch_t action = 0;
+		size_t value_size = 0;
+		void * value = 0;
+		void (*func) (void) = 0;
+		int flags = 0;
+		char * owner = 0;
+		int mode = 0;
+		int hasMode = 0;
+
 		while ((action = va_arg (va, keyswitch_t)))
 		{
 			switch (action)
