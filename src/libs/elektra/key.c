@@ -462,14 +462,8 @@ int keyDel (Key * key)
 
 	rc = keyClear (key);
 
-	if ((key->flags & KEY_FLAG_MMAP) == KEY_FLAG_MMAP)
-	{
-		// TODO: mpranj mark this key as deletable
-	}
-	else
-	{
+	if ((key->flags & KEY_FLAG_MMAP) != KEY_FLAG_MMAP)
 		elektraFree (key);
-	}
 
 	return rc;
 }

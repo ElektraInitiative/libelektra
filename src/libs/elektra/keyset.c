@@ -30,7 +30,11 @@
 
 #include "kdbinternal.h"
 #include <kdbassert.h>
+<<<<<<< HEAD
 #include <kdbrand.h>
+=======
+#include <kdblogger.h>
+>>>>>>> mmapstorage: backup
 
 
 #define ELEKTRA_MAX_PREFIX_SIZE sizeof ("namespace/")
@@ -483,6 +487,10 @@ static int keyCompareByName (const void * p1, const void * p2)
 	size_t const nameSize1 = key1->keyUSize;
 	size_t const nameSize2 = key2->keyUSize;
 	int ret = 0;
+	ELEKTRA_LOG_WARNING ("name1 ptr: %p", (void *) name1);
+	ELEKTRA_LOG_WARNING ("name1 size: %zu", nameSize1);
+	ELEKTRA_LOG_WARNING ("name2 ptr: %p", (void *) name2);
+	ELEKTRA_LOG_WARNING ("name2 size: %zu", nameSize2);
 	if (nameSize1 == nameSize2)
 	{
 		ret = memcmp (name1, name2, nameSize2);
@@ -957,7 +965,9 @@ ssize_t ksAppend (KeySet * ks, const KeySet * toAppend)
 	/* Do only one resize in advance */
 	for (toAlloc = ks->alloc; ks->size + toAppend->size >= toAlloc; toAlloc *= 2)
 		;
-	ksResize (ks, toAlloc - 1);
+	
+	if (ksResize (ks, toAlloc - 1) == -1)
+		exit (EXIT_FAILURE);
 
 	/* TODO: here is lots of room for optimizations */
 	for (size_t i = 0; i < toAppend->size; ++i)

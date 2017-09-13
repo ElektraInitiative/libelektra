@@ -12,7 +12,7 @@
 
 #include <kdbplugin.h>
 
-#define ELEKTRA_MAGIC_MMAP_NUMBER (0x656c656b747261)
+#define ELEKTRA_MAGIC_MMAP_NUMBER (0x0A6172746B656C45)
 
 typedef struct _mmapHeader MmapHeader;
 
