@@ -97,6 +97,23 @@ struct ElektraTag
 
 ELEKTRA_TYPES (ELEKTRA_DECLARATIONS)
 
+typedef const char * KDBType;
+
+extern KDBType KDB_TYPE_STRING;
+extern KDBType KDB_TYPE_BOOLEAN;
+extern KDBType KDB_TYPE_CHAR;
+extern KDBType KDB_TYPE_OCTET;
+extern KDBType KDB_TYPE_SHORT;
+extern KDBType KDB_TYPE_UNSIGNED_SHORT;
+extern KDBType KDB_TYPE_LONG;
+extern KDBType KDB_TYPE_UNSIGNED_LONG;
+extern KDBType KDB_TYPE_LONG_LONG;
+extern KDBType KDB_TYPE_UNSIGNED_LONG_LONG;
+extern KDBType KDB_TYPE_FLOAT;
+extern KDBType KDB_TYPE_LONG_DOUBLE;
+extern KDBType KDB_TYPE_DOUBLE;
+extern KDBType KDB_TYPE_ENUM;
+
 // Setters
 
 #define ELEKTRA_SET_VALUE(typeName, KDB_TYPE, elektra, keynameOrTag, value, error)                                                         \
@@ -456,8 +473,6 @@ int __elektraGetEnumArrayElement (Elektra * elektra, char * keyName, int index);
 Elektra * elektraOpen (const char * application, KeySet * defaults, ElektraError ** error);
 void elektraClose (Elektra * elektra);
 size_t elektraArraySize (Elektra * elektra, const char * keyName);
-
-typedef const char * KDBType;
 
 void elektraSetValue (Elektra * elektra, const char * name, const char * value, KDBType type, ElektraError ** error);
 const char * elektraGetValue (Elektra * elektra, const char * name, KDBType type);
