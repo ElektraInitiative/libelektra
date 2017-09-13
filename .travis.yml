@@ -83,7 +83,10 @@ before_script:
   - SYSTEM_DIR="$PWD/kdbsystem"
   - mkdir build && cd build
   - CMAKE_OPT=()
-  - if [[ "$TRAVIS_OS_NAME" == "linux" && "$CC" == "clang" ]]; then CMAKE_OPT+=("-DCOMMON_FLAGS=-Werror"); fi;
+  - |
+    if [[ "$TRAVIS_OS_NAME" == "linux" && "$CC" == "clang" || "$TRAVIS_OS_NAME" == "osx" && "${CC:0:3}" == "gcc" ]]; then
+      CMAKE_OPT+=("-DCOMMON_FLAGS=-Werror");
+    fi
   - echo $PATH
   - plugins="ALL;-jni";
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
