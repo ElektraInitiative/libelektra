@@ -400,8 +400,8 @@ static void test_arraySetters ()
 	elektraSetDoubleArrayElement (elektra, "doublearraykey", 0, 1.1, &error);
 	elektraSetDoubleArrayElement (elektra, "doublearraykey", 1, 2.1, &error);
 
-	elektraSetLongDoubleArrayElement (elektra, "longdoublearraykey", 0, 1.1, &error);
-	elektraSetLongDoubleArrayElement (elektra, "longdoublearraykey", 1, 2.1, &error);
+	elektraSetLongDoubleArrayElement (elektra, "longdoublearraykey", 0, 1.1L, &error);
+	elektraSetLongDoubleArrayElement (elektra, "longdoublearraykey", 1, 2.1L, &error);
 
 	// Add new keys.
 
@@ -447,8 +447,8 @@ static void test_arraySetters ()
 	elektraSetDoubleArrayElement (elektra, "newdoublearraykey", 0, 1.1, &error);
 	elektraSetDoubleArrayElement (elektra, "newdoublearraykey", 1, 2.1, &error);
 
-	elektraSetLongDoubleArrayElement (elektra, "newlongdoublearraykey", 0, 1.1, &error);
-	elektraSetLongDoubleArrayElement (elektra, "newlongdoublearraykey", 1, 2.1, &error);
+	elektraSetLongDoubleArrayElement (elektra, "newlongdoublearraykey", 0, 1.1L, &error);
+	elektraSetLongDoubleArrayElement (elektra, "newlongdoublearraykey", 1, 2.1L, &error);
 
 	if (error)
 	{
