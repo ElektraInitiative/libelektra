@@ -69,9 +69,7 @@ class ElektraGenSupport(Support):
 		if "default" in info:
 			return True
 		else:
-			if not "required" in info:
-				raise Exception("Key '" + key + "' has neither default nor required property!")
-			return False
+			raise Exception("Key '" + key + "' doesn't have a default value!")
 
 	def default_value(self, key, info):
 		value = info["default"]
