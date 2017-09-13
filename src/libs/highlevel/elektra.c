@@ -215,7 +215,7 @@ void __elektraSetEnum (Elektra * elektra, char * name, int value, ElektraError *
 }
 
 void elektraSetArrayElementValue (Elektra * elektra, const char * name, size_t index, const char * value, KDBType type,
-				   ElektraError ** error)
+				  ElektraError ** error)
 {
 	Key * const key = keyDup (generateArrayLookupKey (elektra, name, index));
 	setKeyValue (elektra, key, type, value, error);
