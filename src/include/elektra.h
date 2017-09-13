@@ -375,7 +375,7 @@ extern KDBType KDB_TYPE_ENUM;
  * @copydoc elektraSetStringArrayElement
  */
 #define elektraSetLongDoubleArrayElement(elektra, keynameOrTag, index, value, error)                                                       \
-	ELEKTRA_SET_ARRAY_ELEMENT_VALUE (LongDouble, "longDouble", elektra, keynameOrTag, index, KDB_LONG_DOUBLE_TO_STRING (value), error)
+	ELEKTRA_SET_ARRAY_ELEMENT_VALUE (LongDouble, "long_double", elektra, keynameOrTag, index, KDB_LONG_DOUBLE_TO_STRING (value), error)
 
 // Array-Getters
 
