@@ -28,10 +28,6 @@
 	KeySet * keySet = ksNew (0, KS_END);                                                                                               \
 	succeed_if (plugin->kdbGet (plugin, keySet, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, errorMessage)
 
-#define INIT_PLUGIN_SET(parent, filepath, errorMessage)                                                                                    \
-	INIT_PLUGIN (parent, filepath);                                                                                                    \
-	succeed_if (plugin->kdbSet (plugin, keySet, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, errorMessage)
-
 #define CLOSE_PLUGIN()                                                                                                                     \
 	keyDel (parentKey);                                                                                                                \
 	ksDel (keySet);                                                                                                                    \
@@ -64,18 +60,27 @@ static void test_read (char const * const filepath, KeySet const * const expecte
 	CLOSE_PLUGIN ();
 }
 
-static void test_write (char const * const filepath, KeySet * const keySet)
+static void test_write_read (KeySet * const keySet)
 #ifdef __llvm__
-	__attribute__ ((annotate ("oclint:suppress[high ncss method]")))
+	__attribute__ ((annotate ("oclint:suppress")))
 #endif
 {
-	printf ("• Write data and compare result with “%s”\n", filepath);
+	printf ("• Write data, then read the written data and compare the results\n");
 
-	INIT_PLUGIN_SET ("user/examples/yamlcpp", elektraFilename (), "Unable to write to file");
+	INIT_PLUGIN ("user/examples/yamlcpp", elektraFilename ());
 
-	succeed_if (compare_line_files (srcdir_file (filepath), keyString (parentKey)),
-		    "Output of plugin does not match the expected output");
+	// Write key set to file
+	succeed_if (plugin->kdbSet (plugin, keySet, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "Unable to write to file");
 
+	// Read written data
+	KeySet * keySetRead = ksNew (0, KS_END);
+	succeed_if (plugin->kdbGet (plugin, keySetRead, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "Unable to open or parse file");
+
+	// Compare data
+	compare_keyset (keySet, keySetRead);
+
+	// Clean up
+	ksDel (keySetRead);
 	CLOSE_PLUGIN ();
 }
 
@@ -95,9 +100,9 @@ int main (int argc, char ** argv)
 	test_read ("yamlcpp/Flat Flow Mapping.yaml",
 #include "yamlcpp/Flat Flow Mapping.h"
 		   );
-	test_write ("yamlcpp/Output.yaml",
+	test_write_read (
 #include "yamlcpp/Flat Flow Mapping.h"
-		    );
+		);
 
 	printf ("\nResults: %d Test%s done — %d error%s.\n", nbTest, nbTest == 1 ? "" : "s", nbError, nbError == 1 ? "" : "s");
 
