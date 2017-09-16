@@ -170,7 +170,7 @@ kdb get "/sw/elektra/kdb/#0/debug/verbose"
 #> 1
 ```
 
-When using cascading key the best key will be searched at runtime.
+When using cascading key the best key will be searched at run-time.
 If you are only interested in the system key, you would use:
 
 ```sh
