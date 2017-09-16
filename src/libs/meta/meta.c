@@ -1248,6 +1248,7 @@ int elektraSortTopology (KeySet * ks, Key ** array)
 			}
 			// if not, fallthrough to normal dependency handling
 		}
+		// FALLTHROUGH
 		default:
 		{
 			int gotUnresolved = 0;
