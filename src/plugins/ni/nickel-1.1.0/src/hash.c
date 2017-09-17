@@ -329,7 +329,7 @@ static uint32_t hashlittle (const void * restrict key, size_t length, uint32_t i
 	} u; /* needed for Mac Powerbook G4 */
 
 	/* Set up the internal state */
-	a = b = c = 0xdeadbeef + ((uint32_t)length) + initval;
+	a = b = c = (uint32_t) (0xdeadbeef + length + initval);
 
 	u.ptr = key;
 	if (HASH_LITTLE_ENDIAN && ((u.i & 0x3) == 0))
