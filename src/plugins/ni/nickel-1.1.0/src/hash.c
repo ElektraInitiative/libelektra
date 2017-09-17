@@ -80,6 +80,10 @@ on 1 byte), but shoehorning those bytes into integers efficiently is messy.
 #define hashmask(n) (hashsize (n) - 1)
 #define rot(x, k) (((x) << (k)) | ((x) >> (32 - (k))))
 
+#ifndef __has_feature
+#define __has_feature(something) 0
+#endif
+
 /*
 -------------------------------------------------------------------------------
 mix -- mix 3 32-bit values reversibly.
@@ -335,7 +339,7 @@ static uint32_t hashlittle (const void * restrict key, size_t length, uint32_t i
 	if (HASH_LITTLE_ENDIAN && ((u.i & 0x3) == 0))
 	{
 		const uint32_t * k = (const uint32_t *)key; /* read 32-bit chunks */
-#if defined(VALGRIND) || defined(__SANITIZE_ADDRESS__)
+#if defined(VALGRIND) || defined(__SANITIZE_ADDRESS__) || defined(__has_feature) && __has_feature(address_sanitizer)
 		const uint8_t * k8;
 #endif
 
@@ -360,7 +364,7 @@ static uint32_t hashlittle (const void * restrict key, size_t length, uint32_t i
  * still catch it and complain.  The masking trick does make the hash
  * noticeably faster for short strings (like English words).
  */
-#if !defined(VALGRIND) && !defined(__SANITIZE_ADDRESS__)
+#if !defined(VALGRIND) && !defined(__SANITIZE_ADDRESS__) && !(defined(__has_feature) && __has_feature(address_sanitizer))
 
 		switch (length)
 		{
