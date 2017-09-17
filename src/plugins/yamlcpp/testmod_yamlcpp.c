@@ -46,7 +46,7 @@ static void test_contract (void)
 	CLOSE_PLUGIN ();
 }
 
-static void test_read (char const * const filepath, KeySet const * const expected)
+static void test_read (char const * const filepath, KeySet * const expected)
 #ifdef __llvm__
 	__attribute__ ((annotate ("oclint:suppress")))
 #endif
@@ -57,6 +57,7 @@ static void test_read (char const * const filepath, KeySet const * const expecte
 
 	compare_keyset (keySet, expected);
 
+	ksDel (expected);
 	CLOSE_PLUGIN ();
 }
 
