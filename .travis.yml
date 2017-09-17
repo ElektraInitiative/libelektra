@@ -8,6 +8,18 @@ language: cpp
 #
 matrix:
   include:
+
+    - os: osx
+      osx_image: xcode8.3
+      compiler: clang
+      env:
+        - ASAN=ON
+
+    - os: linux
+      compiler: clang
+      env:
+        - ASAN=ON
+
     - os: osx
       osx_image: xcode8.3
       compiler: gcc
@@ -82,7 +94,8 @@ before_script:
     [[ "$TRAVIS_OS_NAME" == "linux" ]] && INSTALL_DIR="$PWD/install" || INSTALL_DIR="/usr/local"
   - SYSTEM_DIR="$PWD/kdbsystem"
   - mkdir build && cd build
-  - CMAKE_OPT=()
+  - >
+    [[ $ASAN == ON ]] && CMAKE_OPT=(-DENABLE_ASAN=ON) || CMAKE_OPT=()
   - |
     if [[ "$TRAVIS_OS_NAME" == "linux" && "$CC" == "clang" || "$TRAVIS_OS_NAME" == "osx" && "${CC:0:3}" == "gcc" ]]; then
       CMAKE_OPT+=("-DCOMMON_FLAGS=-Werror");
@@ -118,6 +131,9 @@ before_script:
 script:
   - ninja
   - ninja run_all
-  - ninja install
-  - ninja test
-  - kdb run_all
+  - |
+    if [[ $ASAN != ON ]]; then
+      ninja install
+      ninja test
+      kdb run_all
+    fi
