@@ -37,9 +37,6 @@ static Backend * elektraTriePrefixLookup (Trie * trie, const char * name);
 
 /**
  * @brief The Trie structure
- * @defgroup trie Trie
- * @ingroup datastructs
- *
  */
 
 /**
