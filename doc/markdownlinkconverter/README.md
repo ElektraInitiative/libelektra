@@ -1,11 +1,11 @@
 # Markdown Link Converter
 
-The Markdown link Converter, which filters markdown pages before the processing
-of doxygen, converts the links in markdown pages. It is set up as input filter
-in doxygen, if a markdown file is desired to be in the API documentation
+The Markdown link Converter, which filters Markdown pages before the processing
+of doxygen, converts the links in Markdown pages. It is set up as input filter
+in doxygen, if a Markdown file is desired to be in the API documentation
 it only must have the extension `.md` and be in the `INPUT` path.
 
-The Markdown link Converter gives each markdown file a header `{ #header }` which is attached to a title
+The Markdown link Converter gives each Markdown file a header `{ #header }` which is attached to a title
 and converts the links to refer to this headers. This conversion
 happens in 2 passes, which is needed because there can be files with no title.
 
@@ -19,11 +19,11 @@ happens in 2 passes, which is needed because there can be files with no title.
 
 * Links starting with `@ref`, `#` for anchors and `http`, `https` or `ftp` for extern links
   wont be touched.
-* All other links to markdown or arbitrary source files will be converted.
+* All other links to Markdown or arbitrary source files will be converted.
 * All links to folders will be altered to the README.md in the Folder.
   This feature was introduced to be compatible with GitHub, where you can show the content of a folder in
   combination with the README.md of the containing folder.
-* Anchors wont work in imported markdown pages.
+* Anchors wont work in imported Markdown pages.
 
 ## GitHub Specialities
 

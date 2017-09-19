@@ -15,6 +15,8 @@ s/([^.`])git[hH]ub([^.][^\w])/\1GitHub\2/g
 
 s/\<[Ll]ibreoffice/LibreOffice/g
 
+s/\<mark[Dd]own\>/Markdown/g
+
 s/\<unix|UNIX/Unix/g
 
 # ===================

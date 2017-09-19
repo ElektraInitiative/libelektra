@@ -151,7 +151,7 @@ can be in multiple data structures because of their reference counting.
 We now fully embrace github:
 - We use its issue tracker (all issues from local text files were moved
   there)
-- We have rewritten many READMEs to use GitHubs markdown
+- We have rewritten many READMEs to use GitHubs Markdown
 - On pull requests the build server checks if the merge would break
   the build.
 - All previous gitorious users are now at github. (Most had an account
