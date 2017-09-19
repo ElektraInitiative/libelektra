@@ -100,7 +100,6 @@ before_script:
     if [[ "$TRAVIS_OS_NAME" == "linux" && "$CC" == "clang" || "$TRAVIS_OS_NAME" == "osx" && "${CC:0:3}" == "gcc" ]]; then
       CMAKE_OPT+=("-DCOMMON_FLAGS=-Werror");
     fi
-  - echo $PATH
   - plugins="ALL;-jni";
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
       python2_ver=$(python2 -c 'import sys; print(".".join(map(str, sys.version_info[:2])))') &&
