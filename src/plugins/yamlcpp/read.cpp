@@ -41,6 +41,7 @@ void convertNodeToKeySet (YAML::Node const & node, KeySet & mappings, Key const 
 		{
 			Key key (parent.getFullName (), KEY_END);
 			key.addBaseName (element.first.as<string> ());
+			mappings.append (key);
 			convertNodeToKeySet (element.second, mappings, key);
 		}
 	}
