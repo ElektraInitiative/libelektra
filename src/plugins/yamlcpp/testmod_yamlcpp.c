@@ -95,19 +95,21 @@ int main (int argc, char ** argv)
 	init (argc, argv);
 
 	test_contract ();
+
 	test_read ("yamlcpp/Flat Block Mapping.yaml",
 #include "yamlcpp/Flat Block Mapping.h"
 		   );
+
 	test_read ("yamlcpp/Flat Flow Mapping.yaml",
 #include "yamlcpp/Flat Flow Mapping.h"
 		   );
-	test_read ("yamlcpp/Nested Block Mapping.yaml",
-#include "yamlcpp/Nested Block Mapping.h"
-		   );
-
 	test_write_read (
 #include "yamlcpp/Flat Flow Mapping.h"
 		);
+
+	test_read ("yamlcpp/Nested Block Mapping.yaml",
+#include "yamlcpp/Nested Block Mapping.h"
+		   );
 	test_write_read (
 #include "yamlcpp/Nested Block Mapping.h"
 		);
