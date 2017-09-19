@@ -45,7 +45,7 @@ A C or C++ source file that wants to use Elektra should include:
 	#include <kdb.h>
 
 To link an executable with the Elektra library, one way is to
-use the @c pkg-config tool:
+use the `pkg-config` tool:
 
 	$ gcc -o application `pkg-config --cflags --libs elektra` application.c
 
