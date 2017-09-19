@@ -1,5 +1,5 @@
-- infos = Information about the Elektra intercept library below 
-- infos/author = Thomas Waser <thomas.waser@libelektra.org> 
+- infos = Information about the Elektra intercept library below
+- infos/author = Thomas Waser <thomas.waser@libelektra.org>
 - infos/description = File system interception
 
 ## DESCRIPTION
