@@ -99,6 +99,9 @@ int main (int argc, char ** argv)
 	test_read ("yamlcpp/Flat Block Mapping.yaml",
 #include "yamlcpp/Flat Block Mapping.h"
 		   );
+	test_write_read (
+#include "yamlcpp/Flat Block Mapping.h"
+		);
 
 	test_read ("yamlcpp/Flat Flow Mapping.yaml",
 #include "yamlcpp/Flat Flow Mapping.h"
