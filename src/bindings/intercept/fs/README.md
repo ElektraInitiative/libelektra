@@ -20,7 +20,7 @@ Syntax:
 
 ## INTERNALS
 
-After the library is loaded it parses its configuration into its internal data structure, canonicalizes the both the real path and the new path and looks for the `open/mode` metakey.
+After the library is loaded it parses its configuration into its internal data structure, canonicalizes both the real path and the new path and looks for the `open/mode` metakey.
 When an application tries to call `open` or `open64` it canonicalizes the pathname with which the function is called and looks for it in it's data structure. If found, the pathname will be set to configured replacement path. If the read-only key is set to `1`, the WR_ONLY flag will be removed from oflags. Afterwards the real open function will be called with our values.
 If the `/generate` and `/generate/plugin` keys are set, the library will generate a configuration from the backend pointed to by `/generate` using the storage plugin specified in `/generate/plugin`
 
