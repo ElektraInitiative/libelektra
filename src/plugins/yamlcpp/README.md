@@ -80,6 +80,5 @@ This plugin requires [yaml-cpp][]. On a Debian based OS the package for the libr
 - No support for Elektra’s **array data type**
 - The plugin currently lacks proper **type support** for scalars
 - The current **test suite** is quite limited
-- Building the plugin with **GCC on macOS** does not work
 
 [yaml-cpp]: https://github.com/jbeder/yaml-cpp
