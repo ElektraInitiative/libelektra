@@ -20,6 +20,17 @@ using namespace kdb;
 
 namespace
 {
+
+/**
+* @brief This function returns a `NameIterator` starting at the first level that is not part of `parent`.
+*
+* @pre The parameter `key` must be a child of `parent`.
+*
+* @param key This is the key for which this function returns a relative iterator.
+* @param parent This key specifies the part of the name iterator that will not be part of the return value of this function.
+*
+* @returns A relative iterator that starts with the first part of the name of `key` not contained in `parent`.
+*/
 NameIterator relativeKeyIterator (Key const & key, Key const & parent)
 {
 	auto parentIterator = parent.begin ();
@@ -32,6 +43,14 @@ NameIterator relativeKeyIterator (Key const & key, Key const & parent)
 	return keyIterator;
 }
 
+/**
+ * @brief This function adds a key to a YAML node.
+ *
+ * @param data This node stores the data specified via `keyIterator`.
+ * @param keyIterator This iterator specifies the current part of the key name this function adds to `data`.
+ * @param key This parameter specifies the key that should be added to `data`.
+ *
+**/
 void addKey (YAML::Node & data, NameIterator & keyIterator, Key const & key)
 {
 	if (keyIterator == --key.end ())
@@ -46,6 +65,14 @@ void addKey (YAML::Node & data, NameIterator & keyIterator, Key const & key)
 	addKey (dictionary, ++keyIterator, key);
 }
 
+/**
+ * @brief This function adds a key set to a YAML node.
+ *
+ * @param data This node stores the data specified via `mappings`.
+ * @param mappings This keyset specifies all keys and values this function adds to `data`.
+ * @param parent This key is the root of all keys stored in `mappings`.
+ *
+**/
 void addKeys (YAML::Node & data, KeySet const & mappings, Key const & parent)
 {
 	for (auto key : mappings)
