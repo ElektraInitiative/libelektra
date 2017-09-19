@@ -110,6 +110,12 @@ static void test_nested (void)
 	test_write_read (
 #include "yamlcpp/Nested Block Mapping.h"
 		);
+	test_read ("yamlcpp/Nested Mixed Mapping.yaml",
+#include "yamlcpp/Nested Mixed Mapping.h"
+		   );
+	test_write_read (
+#include "yamlcpp/Nested Mixed Mapping.h"
+		);
 }
 
 // -- Main ---------------------------------------------------------------------------------------------------------------------------------
