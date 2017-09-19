@@ -29,7 +29,9 @@ kdb umount /examples/yamlcpp
 
 .
 
-## Examples
+### Examples
+
+The following examples show how you can store and retrieve data via `yamlcpp`.
 
 ```sh
 # Mount yamlcpp plugin to cascading namespace `/examples/yamlcpp`
