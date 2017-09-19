@@ -25,7 +25,7 @@ and maybe give a description for them (we use ini syntax in this document):
 [mykey]
 
 [folder/anotherkey]
-description = set this key if you want another behaviour
+description = set this key if you want another behavior
 ```
 
 So Keys in `spec` allow us to specify which keys are read by the application.

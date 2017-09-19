@@ -227,7 +227,7 @@ Some more examples:
 Will permanently and user-wide change MANOPT to include --regex, and -LC so
 that regular expressions will be used (note `man echo` will return many man
 pages then) and that they will be shown in English.
-This feature is handy to change the default behaviour of
+This feature is handy to change the default behavior of
 applications (either system, user or directory-wide).
 
 

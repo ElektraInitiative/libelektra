@@ -52,7 +52,7 @@ is also in Elektra’s key database, stored in metadata and e.g. below
 system/elektra/mountpoints. In Elektra validators can be
 written in any language (because the specification is just data)
 and can enforce constraints on any access (because plugins define
-the behaviour of the key database).
+the behavior of the key database).
 
 
 
@@ -560,7 +560,7 @@ not be used anymore.
 
 POSIX compatibility and handling of multi-process conflicts has
 been improved. Now the HOME environment variable will be used. The
-old behaviour (USER environment variable) is still available as
+old behavior (USER environment variable) is still available as
 fallback. Additionally there is a fallback for embedded systems to the
 hard coded variant. In case of these fallbacks a warning will be added.
 

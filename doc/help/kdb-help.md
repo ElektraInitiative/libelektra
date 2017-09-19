@@ -10,7 +10,7 @@ kdb-help(1) -- Show man page for elektra tools
 ## DESCRIPTION
 
 Show a man page for one of Elektra’s tools.
-Note that `kdb <tool> --help` might have a different behaviour, depending on the tool.
+Note that `kdb <tool> --help` might have a different behavior, depending on the tool.
 
 Also note that, no additional commandline options are allowed for this kind of
 invocation. If you want that use `--help` or `-H` after `<tool>`.

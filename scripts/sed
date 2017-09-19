@@ -1,3 +1,13 @@
+# ==============================
+# = British → American English =
+# ==============================
+
+s/behaviour/behavior/g
+
+# ===================
+# = Technical Terms =
+# ===================
+
 s/\<meta[- ]key\>/metakey/g
 s/\<meta[- ]name\>/metaname/g
 s/\<meta[- ]value\>/metavalue/g

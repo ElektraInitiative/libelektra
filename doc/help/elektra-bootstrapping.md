@@ -5,7 +5,7 @@ One important aspect of a configuration library is the out-of-the-box
 experience. How does the system work before anything is configured?
 The optimal situation is that everything fully works, and applications,
 that just want to load and store configuration, do not see any difference
-between out-of-the-box behaviour and a well-configured, fine-tuned system.
+between out-of-the-box behavior and a well-configured, fine-tuned system.
 
 To support that experience, a so-called **default backend** is
 responsible in the case that nothing was configured so far.  It must
