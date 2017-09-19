@@ -108,6 +108,9 @@ int main (int argc, char ** argv)
 	test_write_read (
 #include "yamlcpp/Flat Flow Mapping.h"
 		);
+	test_write_read (
+#include "yamlcpp/Nested Block Mapping.h"
+		);
 
 	printf ("\nResults: %d Test%s done — %d error%s.\n", nbTest, nbTest == 1 ? "" : "s", nbError, nbError == 1 ? "" : "s");
 
