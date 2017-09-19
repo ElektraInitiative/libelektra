@@ -66,7 +66,7 @@ static void test_write_read (KeySet * const keySet)
 	__attribute__ ((annotate ("oclint:suppress")))
 #endif
 {
-	printf ("• Write data, then read the written data and compare the results\n");
+	printf ("• Write data, read data, and compare results\n");
 
 	INIT_PLUGIN ("user/examples/yamlcpp", elektraFilename ());
 
