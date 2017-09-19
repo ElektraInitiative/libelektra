@@ -1,6 +1,3 @@
-notifications:
-  email: travis@libelektra.org
-
 language: cpp
 
 #
