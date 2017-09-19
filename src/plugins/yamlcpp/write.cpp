@@ -32,7 +32,7 @@ NameIterator relativeKeyIterator (Key const & key, Key const & parent)
 	return keyIterator;
 }
 
-void addKey (YAML::Node data, NameIterator & keyIterator, Key const & key)
+void addKey (YAML::Node & data, NameIterator & keyIterator, Key const & key)
 {
 	if (keyIterator == --key.end ())
 	{
@@ -46,7 +46,7 @@ void addKey (YAML::Node data, NameIterator & keyIterator, Key const & key)
 	addKey (dictionary, ++keyIterator, key);
 }
 
-void addKeys (YAML::Node data, KeySet const & mappings, Key const & parent)
+void addKeys (YAML::Node & data, KeySet const & mappings, Key const & parent)
 {
 	for (auto key : mappings)
 	{
