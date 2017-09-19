@@ -5,7 +5,7 @@ those which are necessary to fulfil the initial tasks).
 A complete list of ideas what could be done can be found in the
 [todo folder](.).
 
-Also see [githubs issues](http://git.libelektra.org/issues)
+Also see [GitHubs issues](http://git.libelektra.org/issues)
 for other activities of the current release.
 
 

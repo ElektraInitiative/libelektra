@@ -151,7 +151,7 @@ can be in multiple data structures because of their reference counting.
 We now fully embrace github:
 - We use its issue tracker (all issues from local text files were moved
   there)
-- We have rewritten many READMEs to use githubs markdown
+- We have rewritten many READMEs to use GitHubs markdown
 - On pull requests the build server checks if the merge would break
   the build.
 - All previous gitorious users are now at github. (Most had an account
@@ -221,10 +221,10 @@ The main entrance point and URL for any advertisement and linking stays
 
   http://www.libelektra.org
 
-(which points to github at the moment)
+(which points to GitHub at the moment)
 
 
-Additionally (not related to github), we now have a
+Additionally (not related to GitHub), we now have a
 [LCOV code coverage report](https://doc.libelektra.org/coverage/latest/)!
 
 

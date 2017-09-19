@@ -35,7 +35,7 @@ compiled against an older 0.8 version of Elektra will continue to work
 
 You can download the release from
 [here](https://www.libelektra.org/ftp/elektra/releases/elektra-0.8.<<VERSION>>.tar.gz)
-and also [here on github](https://github.com/ElektraInitiative/ftp/tree/master/releases/elektra-0.8.<<VERSION>>.tar.gz)
+and also [here on GitHub](https://github.com/ElektraInitiative/ftp/tree/master/releases/elektra-0.8.<<VERSION>>.tar.gz)
 
 <<`scripts/generate-hashsums`>>
 
@@ -53,7 +53,7 @@ to always get the release notifications.
 
 For any questions and comments, please contact the
 [Mailing List](https://lists.sourceforge.net/lists/listinfo/registry-list)
-the issue tracker [on github](http://git.libelektra.org/issues)
+the issue tracker [on GitHub](http://git.libelektra.org/issues)
 or by email elektra@markus-raab.org.
 
 [Permalink to this NEWS entry](https://doc.libelektra.org/news/<<UID>>.html)

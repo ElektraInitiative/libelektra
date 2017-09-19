@@ -21,13 +21,13 @@ happens in 2 passes, which is needed because there can be files with no title.
   wont be touched.
 * All other links to markdown or arbitrary source files will be converted.
 * All links to folders will be altered to the README.md in the Folder.
-  This feature was introduced to be compatible with github, where you can show the content of a folder in
+  This feature was introduced to be compatible with GitHub, where you can show the content of a folder in
   combination with the README.md of the containing folder.
 * Anchors wont work in imported markdown pages.
 
 ## GitHub Specialities
 
-* github supports source code fences with syntax highlighting which are not recognised by Doxygen.
+* GitHub supports source code fences with syntax highlighting which are not recognised by Doxygen.
   Thus `sh` after the fence is removed for Doxygen.
 
 

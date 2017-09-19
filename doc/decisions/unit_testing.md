@@ -65,4 +65,4 @@ the assertion that failed).
 ## Notes
 
 - We had discussions on Mailinglists
-- We had discussions on [github](https://github.com/ElektraInitiative/libelektra/pull/26)
+- We had discussions on [GitHub](https://github.com/ElektraInitiative/libelektra/pull/26)

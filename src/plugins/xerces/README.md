@@ -71,7 +71,7 @@ The main rules of an XML element name are:
 
 The root key is not allowed to be an array, as this would correspond to multiple
 root elements in XML (see the
-[github issue](https://github.com/ElektraInitiative/libelektra/issues/1451)).
+[GitHub issue](https://github.com/ElektraInitiative/libelektra/issues/1451)).
 
 XSD transformations, schemas or DTDs are not supported yet.
 
