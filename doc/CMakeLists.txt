@@ -118,6 +118,7 @@ if (DOXYGEN_FOUND)
 			DEPENDS ${OUTPUT_DIRECTORY}/html/index.html markdownlinkconverter
 			WORKING_DIRECTORY ${OUTPUT_DIRECTORY}/html
 		)
+		file (COPY ${CMAKE_SOURCE_DIR}/doc/images/icon.png DESTINATION ${OUTPUT_DIRECTORY}/html/org.libelektra.docset/)
 		add_custom_target (docset ALL DEPENDS ${OUTPUT_DIRECTORY}/html/org.libelektra.docset)
 	endif (WITH_DOCSET)
 
