@@ -10,6 +10,7 @@
 #include "yaml.h"
 
 #include <kdb.hpp>
+#include <kdbease.h>
 #include <kdblogger.h>
 #include <kdbplugin.h>
 
@@ -37,6 +38,28 @@ Key newKey (string const & name, Key const & parent)
 }
 
 /**
+ * @brief This function creates a new array key from the given parameters.
+ *
+ * @param mappings This argument specifies the key set of the new key this function creates.
+ * @param arrayKey This argument specifies the key that represents the root of the array.
+ *
+ * @returns The function returns a new key that is part of the array represented by `arrayKey`.
+ */
+Key newArrayKey (KeySet const & mappings, Key const & arrayKey)
+{
+	KeySet arrayEntries{ elektraArrayGet (arrayKey.getKey (), mappings.getKeySet ()) };
+
+	if (arrayEntries.size () <= 0)
+	{
+		Key first = arrayKey.dup ();
+		first.addBaseName ("#");
+		arrayEntries.append (first);
+	}
+
+	return elektraArrayGetNextKey (arrayEntries.getKeySet ());
+}
+
+/**
  * @brief Convert a YAML node to a key set
  *
  * @param node This YAML node stores the data that should be added to the keyset `mappings`
@@ -51,13 +74,13 @@ void convertNodeToKeySet (YAML::Node const & node, KeySet & mappings, Key const 
 		ELEKTRA_LOG_DEBUG ("%s: %s", key.getName ().c_str (), key.get<string> ().c_str ());
 		mappings.append (key);
 	}
-	else if (node.IsMap ())
+	else if (node.IsMap () || node.IsSequence ())
 	{
 		for (auto element : node)
 		{
-			Key const & key = newKey (element.first.as<string> (), parent);
+			Key const & key = node.IsMap () ? newKey (element.first.as<string> (), parent) : newArrayKey (mappings, parent);
 			mappings.append (key);
-			convertNodeToKeySet (element.second, mappings, key);
+			convertNodeToKeySet (node.IsMap () ? element.second : element, mappings, key);
 		}
 	}
 }

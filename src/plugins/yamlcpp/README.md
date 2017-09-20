@@ -27,11 +27,7 @@ kdb mount config.yaml /examples/yamlcpp yamlcpp
 kdb umount /examples/yamlcpp
 ```
 
-.
-
-### Examples
-
-The following examples show how you can store and retrieve data via `yamlcpp`.
+. The following examples show how you can store and retrieve data via `yamlcpp`.
 
 ```sh
 # Mount yamlcpp plugin to cascading namespace `/examples/yamlcpp`
@@ -67,6 +63,35 @@ kdb get /examples/yamlcpp/fleetwood
 #> mac
 
 # Undo modifications to the key database
+kdb rm -r /examples/yamlcpp
+kdb umount /examples/yamlcpp
+```
+
+## Arrays
+
+YAML CPP provides read only support for Elektra’s array data type.
+
+```sh
+# Mount yamlcpp plugin to cascading namespace `/examples/yamlcpp`
+kdb mount config.yaml /examples/yamlcpp yamlcpp
+
+# Manually add an array to the database
+echo 'sunny:'       >  `kdb file /examples/yamlcpp`
+echo '  - Charlie'  >> `kdb file /examples/yamlcpp`
+echo '  - Dee'      >> `kdb file /examples/yamlcpp`
+
+# List the array entries
+kdb ls /examples/yamlcpp
+#> user/examples/yamlcpp/sunny
+#> user/examples/yamlcpp/sunny/#0
+#> user/examples/yamlcpp/sunny/#1
+
+# Read an array entry
+kdb get user/examples/yamlcpp/sunny/#1
+#> Dee
+
+# Undo modifications to the key database
+echo 'kill: me' > `kdb file /examples/yamlcpp`
 kdb rm -r /examples/yamlcpp
 kdb umount /examples/yamlcpp
 ```
@@ -135,7 +160,7 @@ level 1:
 ### Other Limitations
 
 - Adding and removing keys does remove **comments** inside the configuration file
-- No support for Elektra’s **array data type**
+- Only partial support for Elektra’s **array data type**
 - The plugin currently lacks proper **type support** for scalars
 
 [yaml-cpp]: https://github.com/jbeder/yaml-cpp
