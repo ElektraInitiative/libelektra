@@ -96,7 +96,7 @@ a = 4
 
 will be interpreted as
 
-```ini
+```
 /sec
 /sec/a
 /sec/a/#0
