@@ -127,7 +127,7 @@ int elektraReadArrayNumber (const char * baseName, kdb_long_long_t * oldIndex)
  *
  * @param key which base name will be incremented
  *
- * @retval -1 on error (e.g. too large array, not validated array)
+ * @retval -1 on error (e.g. array too large, non-valid array)
  * @retval 0 on success
  */
 int elektraArrayIncName (Key * key)
@@ -175,7 +175,7 @@ int elektraArrayIncName (Key * key)
  *
  * Returns true (1) for all keys that are part of the array
  * identified by the supplied array parent. Only the array
- * elements themself, but no subkeys of them will be filtered
+ * elements themselves, but no subkeys of them will be filtered
  *
  * @pre The supplied argument has to be of type (const Key *)
  * and is the parent of the array to be extracted. For example
@@ -196,8 +196,8 @@ static int arrayFilter (const Key * key, void * argument)
 
 
 /**
- * Return all the array keys below the given arrayparent
- * The arrayparent itself is not returned.
+ * Return all the array keys below the given array parent
+ * The array parent itself is not returned.
  * For example, if user/config/# is an array,
  * user/config is the array parent.
  * Only the direct array keys will be returned. This means
@@ -210,7 +210,7 @@ static int arrayFilter (const Key * key, void * argument)
  * @param arrayParent the parent of the array to be returned
  * @param keys the keyset containing the array keys.
  *
- * @return a keyset containing the arraykeys (if any)
+ * @return a keyset containing the array keys (if any)
  * @retval NULL on NULL pointers
  */
 KeySet * elektraArrayGet (const Key * arrayParent, KeySet * keys)
