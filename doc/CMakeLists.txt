@@ -42,6 +42,16 @@ if (DOXYGEN_FOUND)
 		set (WITH_LATEX NO)
 	endif (BUILD_PDF)
 
+	if (BUILD_DOCSET)
+		execute_process (COMMAND make ARGS -v RESULT_VARIABLE MAKE_NOT_AVAILABLE OUTPUT_QUIET)
+		if (MAKE_NOT_AVAILABLE)
+			set (WITH_DOCSET NO)
+			message (WARNING "Sorry, since Make is not available I can not build the DocSet.")
+		else (MAKE_NOT_AVAILABLE)
+			set (WITH_DOCSET YES)
+		endif (MAKE_NOT_AVAILABLE)
+	endif (BUILD_DOCSET)
+
 	if (DOXYGEN_DOT_FOUND)
 		set (WITH_DOT YES)
 	else (DOXYGEN_DOT_FOUND)
@@ -100,6 +110,16 @@ if (DOXYGEN_FOUND)
 		add_dependencies(pdf latex)
 
 	endif (WITH_LATEX)
+
+	if (WITH_DOCSET)
+		add_custom_command (
+			OUTPUT ${OUTPUT_DIRECTORY}/html/org.libelektra.docset
+			COMMAND make
+			DEPENDS ${OUTPUT_DIRECTORY}/html/index.html markdownlinkconverter
+			WORKING_DIRECTORY ${OUTPUT_DIRECTORY}/html
+		)
+		add_custom_target (docset ALL DEPENDS ${OUTPUT_DIRECTORY}/html/org.libelektra.docset)
+	endif (WITH_DOCSET)
 
 	add_custom_command (
 		OUTPUT ${outputs}
