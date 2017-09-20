@@ -21,12 +21,12 @@ using namespace kdb;
 namespace
 {
 /**
-* @brief Convert a YAML node to a key set
-*
-* @param node This YAML node stores the data that should be added to the keyset `mappings`
-* @param mappings The key set where the YAML data will be stored
-* @param prefix This key stores the prefix for the key name
-*/
+ * @brief Convert a YAML node to a key set
+ *
+ * @param node This YAML node stores the data that should be added to the keyset `mappings`
+ * @param mappings The key set where the YAML data will be stored
+ * @param prefix This key stores the prefix for the key name
+ */
 void convertNodeToKeySet (YAML::Node const & node, KeySet & mappings, Key const & parent)
 {
 	if (node.IsScalar ())
