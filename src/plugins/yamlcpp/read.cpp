@@ -21,6 +21,22 @@ using namespace kdb;
 namespace
 {
 /**
+ * @brief This function creates a new key from the given parameters.
+ *
+ * @param name This string specifies the postfix of the name of the key produced by this function.
+ * @param parent This key specifies the prefix of the name of the key produced by this function.
+ *
+ * @returns The function returns a new key that combines the name of the parent key and `name`.
+ */
+Key newKey (string const & name, Key const & parent)
+{
+	Key key{ parent.getFullName (), KEY_END };
+	key.addBaseName (name);
+
+	return key;
+}
+
+/**
  * @brief Convert a YAML node to a key set
  *
  * @param node This YAML node stores the data that should be added to the keyset `mappings`
@@ -39,8 +55,7 @@ void convertNodeToKeySet (YAML::Node const & node, KeySet & mappings, Key const 
 	{
 		for (auto element : node)
 		{
-			Key key (parent.getFullName (), KEY_END);
-			key.addBaseName (element.first.as<string> ());
+			Key const & key = newKey (element.first.as<string> (), parent);
 			mappings.append (key);
 			convertNodeToKeySet (element.second, mappings, key);
 		}
