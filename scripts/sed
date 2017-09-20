@@ -20,7 +20,6 @@ s:\<key/value:key-value:g
 
 s/\<data-?type/data type/g
 
-s/\<clean up/cleanup/g
 s/\<look up/lookup/g
 
 s/\<mount[- ]point/mountpoint/g
@@ -72,7 +71,7 @@ s/\<straight[- ]forward/straightforward/g
 
 s/\<(back|front)[- ]end/\1end/g
 
-s/\<symlink/symbolic link/g
+s/\<[^-]symlink/symbolic link/g
 
 s/\<middle[- ]ware/middleware/g
 

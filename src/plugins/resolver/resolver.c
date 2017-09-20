@@ -325,6 +325,7 @@ static int mapFilesForNamespaces (resolverHandles * p, Key * errorKey)
 				ELEKTRA_PLUGIN_FUNCTION (resolver, freeHandle) (resolved);
 			}
 		}
+	// FALLTHROUGH
 
 	case KEY_NS_DIR:
 		keySetName (testKey, "dir");
@@ -346,6 +347,7 @@ static int mapFilesForNamespaces (resolverHandles * p, Key * errorKey)
 				ELEKTRA_PLUGIN_FUNCTION (resolver, freeHandle) (resolved);
 			}
 		}
+	// FALLTHROUGH
 	case KEY_NS_USER:
 		keySetName (testKey, "user");
 		if (needsMapping (testKey, errorKey))
@@ -366,6 +368,7 @@ static int mapFilesForNamespaces (resolverHandles * p, Key * errorKey)
 				ELEKTRA_PLUGIN_FUNCTION (resolver, freeHandle) (resolved);
 			}
 		}
+	// FALLTHROUGH
 	case KEY_NS_SYSTEM:
 		keySetName (testKey, "system");
 		if (needsMapping (testKey, errorKey))
@@ -386,6 +389,7 @@ static int mapFilesForNamespaces (resolverHandles * p, Key * errorKey)
 				ELEKTRA_PLUGIN_FUNCTION (resolver, freeHandle) (resolved);
 			}
 		}
+	// FALLTHROUGH
 	case KEY_NS_PROC:
 	case KEY_NS_EMPTY:
 	case KEY_NS_NONE:

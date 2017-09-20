@@ -80,6 +80,10 @@ on 1 byte), but shoehorning those bytes into integers efficiently is messy.
 #define hashmask(n) (hashsize (n) - 1)
 #define rot(x, k) (((x) << (k)) | ((x) >> (32 - (k))))
 
+#ifndef __has_feature
+#define __has_feature(something) 0
+#endif
+
 /*
 -------------------------------------------------------------------------------
 mix -- mix 3 32-bit values reversibly.
@@ -329,13 +333,13 @@ static uint32_t hashlittle (const void * restrict key, size_t length, uint32_t i
 	} u; /* needed for Mac Powerbook G4 */
 
 	/* Set up the internal state */
-	a = b = c = 0xdeadbeef + ((uint32_t)length) + initval;
+	a = b = c = (uint32_t) (0xdeadbeef + length + initval);
 
 	u.ptr = key;
 	if (HASH_LITTLE_ENDIAN && ((u.i & 0x3) == 0))
 	{
 		const uint32_t * k = (const uint32_t *)key; /* read 32-bit chunks */
-#if defined(VALGRIND) || defined(__SANITIZE_ADDRESS__)
+#if defined(VALGRIND) || defined(__SANITIZE_ADDRESS__) || defined(__has_feature) && __has_feature(address_sanitizer)
 		const uint8_t * k8;
 #endif
 
@@ -360,7 +364,7 @@ static uint32_t hashlittle (const void * restrict key, size_t length, uint32_t i
  * still catch it and complain.  The masking trick does make the hash
  * noticeably faster for short strings (like English words).
  */
-#if !defined(VALGRIND) && !defined(__SANITIZE_ADDRESS__)
+#if !defined(VALGRIND) && !defined(__SANITIZE_ADDRESS__) && !(defined(__has_feature) && __has_feature(address_sanitizer))
 
 		switch (length)
 		{
@@ -547,27 +551,27 @@ static uint32_t hashlittle (const void * restrict key, size_t length, uint32_t i
 		switch (length) /* all the case statements fall through */
 		{
 		case 12:
-			c += ((uint32_t)k[11]) << 24;
+			c += ((uint32_t)k[11]) << 24; // FALLTHROUGH
 		case 11:
-			c += ((uint32_t)k[10]) << 16;
+			c += ((uint32_t)k[10]) << 16; // FALLTHROUGH
 		case 10:
-			c += ((uint32_t)k[9]) << 8;
+			c += ((uint32_t)k[9]) << 8; // FALLTHROUGH
 		case 9:
-			c += k[8];
+			c += k[8]; // FALLTHROUGH
 		case 8:
-			b += ((uint32_t)k[7]) << 24;
+			b += ((uint32_t)k[7]) << 24; // FALLTHROUGH
 		case 7:
-			b += ((uint32_t)k[6]) << 16;
+			b += ((uint32_t)k[6]) << 16; // FALLTHROUGH
 		case 6:
-			b += ((uint32_t)k[5]) << 8;
+			b += ((uint32_t)k[5]) << 8; // FALLTHROUGH
 		case 5:
-			b += k[4];
+			b += k[4]; // FALLTHROUGH
 		case 4:
-			a += ((uint32_t)k[3]) << 24;
+			a += ((uint32_t)k[3]) << 24; // FALLTHROUGH
 		case 3:
-			a += ((uint32_t)k[2]) << 16;
+			a += ((uint32_t)k[2]) << 16; // FALLTHROUGH
 		case 2:
-			a += ((uint32_t)k[1]) << 8;
+			a += ((uint32_t)k[1]) << 8; // FALLTHROUGH
 		case 1:
 			a += k[0];
 			break;

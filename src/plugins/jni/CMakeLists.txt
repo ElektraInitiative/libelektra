@@ -48,7 +48,7 @@ add_plugin(jni
 if (ADDTESTING_PHASE)
 	list (FIND BINDINGS "jna" FINDEX)
 	if (BUILD_TESTING AND FINDEX GREATER -1)
-		set (libelektra_jar ${CMAKE_BINARY_DIR}/src/bindings/jna/libelektra.jar)
+		set (libelektra_jar ${CMAKE_BINARY_DIR}/src/bindings/jna/libelektra4j/target/libelektra4j-${KDB_VERSION}.jar)
 
 		configure_file (
 			"${CMAKE_CURRENT_SOURCE_DIR}/testmod_jni.h.in"

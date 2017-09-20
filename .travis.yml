@@ -8,6 +8,18 @@ language: cpp
 #
 matrix:
   include:
+
+    - os: osx
+      osx_image: xcode8.3
+      compiler: clang
+      env:
+        - ASAN=ON
+
+    - os: linux
+      compiler: clang
+      env:
+        - ASAN=ON
+
     - os: osx
       osx_image: xcode8.3
       compiler: gcc
@@ -25,11 +37,9 @@ matrix:
       compiler: clang
 
     - os: linux
-      dist: trusty
       compiler: gcc
 
     - os: linux
-      dist: trusty
       compiler: clang
 
 before_install:
@@ -84,9 +94,12 @@ before_script:
     [[ "$TRAVIS_OS_NAME" == "linux" ]] && INSTALL_DIR="$PWD/install" || INSTALL_DIR="/usr/local"
   - SYSTEM_DIR="$PWD/kdbsystem"
   - mkdir build && cd build
-  - CMAKE_OPT=()
-  - if [[ "$TRAVIS_OS_NAME" == "linux" && "$CC" == "clang" ]]; then CMAKE_OPT+=("-DCOMMON_FLAGS=-Werror"); fi;
-  - echo $PATH
+  - >
+    [[ $ASAN == ON ]] && CMAKE_OPT=(-DENABLE_ASAN=ON) || CMAKE_OPT=()
+  - |
+    if [[ "$TRAVIS_OS_NAME" == "linux" && "$CC" == "clang" || "$TRAVIS_OS_NAME" == "osx" && "${CC:0:3}" == "gcc" ]]; then
+      CMAKE_OPT+=("-DCOMMON_FLAGS=-Werror");
+    fi
   - plugins="ALL;-jni";
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
       python2_ver=$(python2 -c 'import sys; print(".".join(map(str, sys.version_info[:2])))') &&
@@ -104,6 +117,7 @@ before_script:
     -DBUILD_STATIC=OFF
     -DPLUGINS="${plugins:-ALL}"
     -DBINDINGS=ALL
+    -DENABLE_DEBUG=ON
     -DTOOLS=ALL
     -DINSTALL_SYSTEM_FILES=OFF
     -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
@@ -117,6 +131,9 @@ before_script:
 script:
   - ninja
   - ninja run_all
-  - ninja install
-  - ninja test
-  - kdb run_all
+  - |
+    if [[ $ASAN != ON ]]; then
+      ninja install
+      ninja test
+      kdb run_all
+    fi

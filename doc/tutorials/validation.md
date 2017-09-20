@@ -271,7 +271,7 @@ we can use the plugin `required` as further discussed below.
 
 Sometimes we already have configuration specifications given in some other format
 which is more compact and more directed to the needs of an individual application.
-We can write a plugin that parses that format and transform the content to key/value
+We can write a plugin that parses that format and transform the content to key-value
 *and* metadata (describing how to validate).
 
 For example, let us assume we have enum validations in the file `schema.txt`:

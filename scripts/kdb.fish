@@ -74,7 +74,7 @@ function __fish_kdb__number_arguments_input_left -d 'Return the number of argume
 end
 
 function __fish_kdb_subcommand -d 'Check for and print the current kdb subcommand'
-    set -l input (commandline -op)
+    set -l input (commandline -opc)
 
     test (count $input) -le 1
     and return 1

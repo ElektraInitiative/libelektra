@@ -217,7 +217,7 @@ static void elektraAddConstants (KeySet * ks, Key * parentKey)
 
 	key = keyDup (parentKey);
 	keyAddName (key, "compiler/c_flags");
-	keySetString (key, "@CMAKE_C_FLAGS@");
+	keySetString (key, "@C_FLAGS_ESCAPED@");
 	ksAppendKey (ks, key);
 
 
@@ -235,7 +235,7 @@ static void elektraAddConstants (KeySet * ks, Key * parentKey)
 
 	key = keyDup (parentKey);
 	keyAddName (key, "compiler/cxx_flags");
-	keySetString (key, "@CMAKE_CXX_FLAGS@");
+	keySetString (key, "@CXX_FLAGS_ESCAPED@");
 	ksAppendKey (ks, key);
 
 

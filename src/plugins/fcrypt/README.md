@@ -25,7 +25,7 @@ After the getstorage plugin has read the backend file, the plugin decrypts the b
 
 There are two things to consider when using the `fcrypt` plugin:
 
-1. Decrypted data is visible on the filesystem for a short period of time.
+1. Decrypted data is visible on the file system for a short period of time.
 2. Decrypted data might end up on a hard disk or some other persistent storage.
 
 The plugin directs GPG to write its (decrypted) output to a temporary directoy.

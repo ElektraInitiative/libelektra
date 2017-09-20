@@ -103,7 +103,7 @@ In the case of **key names** you **must not use any of the characters mentioned 
 
 ## Limitations
 
-This plugin only supports simple key-value based properties files without sections. mINI also does not support meta data. If you want a more feature complete plugin, then please take a look at the [ini plugin](../ini/). The example below shows some of the limitations of the plugin.
+This plugin only supports simple key-value based properties files without sections. mINI also does not support metadata. If you want a more feature complete plugin, then please take a look at the [ini plugin](../ini/). The example below shows some of the limitations of the plugin.
 
 ```sh
 kdb mount mini.ini /examples/mini mini
@@ -123,7 +123,7 @@ cat stderr.txt | grep 'Reason:' | sed 's/^[[:space:]]*//'
 #> Reason: Line 1: “[section]” is not a valid key value pair
 #> Reason: Line 3: “line"” is not a valid key value pair
 
-# Unlike the `ini` and `ni` plugin, mINI does not support meta data.
+# Unlike the `ini` and `ni` plugin, mINI does not support metadata.
 kdb lsmeta /examples/mini
 # RET: 1
 
