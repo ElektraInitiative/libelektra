@@ -112,14 +112,18 @@ if (DOXYGEN_FOUND)
 	endif (WITH_LATEX)
 
 	if (WITH_DOCSET)
+		set (DOCSET_PATH ${OUTPUT_DIRECTORY}/html/org.libelektra.docset)
 		add_custom_command (
-			OUTPUT ${OUTPUT_DIRECTORY}/html/org.libelektra.docset
+			OUTPUT ${DOCSET_PATH}
 			COMMAND make
+			COMMAND ${CMAKE_COMMAND} ARGS
+				-D DOCSET_PATH=${DOCSET_PATH}
+				-D ICON_PATH=${CMAKE_SOURCE_DIR}/doc/images/icon.png
+				-P ${CMAKE_SOURCE_DIR}/cmake/ElektraDocSet.cmake
 			DEPENDS ${OUTPUT_DIRECTORY}/html/index.html markdownlinkconverter
 			WORKING_DIRECTORY ${OUTPUT_DIRECTORY}/html
 		)
-		file (COPY ${CMAKE_SOURCE_DIR}/doc/images/icon.png DESTINATION ${OUTPUT_DIRECTORY}/html/org.libelektra.docset/)
-		add_custom_target (docset ALL DEPENDS ${OUTPUT_DIRECTORY}/html/org.libelektra.docset)
+		add_custom_target (docset ALL DEPENDS ${DOCSET_PATH})
 	endif (WITH_DOCSET)
 
 	add_custom_command (
