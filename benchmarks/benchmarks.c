@@ -567,7 +567,7 @@ static void shapeDefaultDel (void * data)
 {
 	elektraFree (data);
 }
-static void shapefDefault (const size_t initSize ELEKTRA_UNUSED, size_t size, size_t level, int32_t * seed ELEKTRA_UNUSED,
+static void shapefDefault (const size_t initSize ELEKTRA_UNUSED, size_t size ELEKTRA_UNUSED, size_t level, int32_t * seed ELEKTRA_UNUSED,
 			   KsShapeFunctionReturn * ret, void * data)
 {
 	uint8_t * labelSet = data;
