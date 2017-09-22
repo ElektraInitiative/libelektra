@@ -44,6 +44,20 @@ NameIterator relativeKeyIterator (Key const & key, Key const & parent)
 }
 
 /**
+ * @brief This function checks if a key name specifies an array key.
+ *
+ * @param nameIterator This iterator specifies the name of the key.
+ *
+ * @retval true if `name` specifies an array key
+ * @retval false otherwise
+ */
+bool isArrayKey (NameIterator const & nameIterator)
+{
+	string const & current = *nameIterator;
+	return current.size () != 0 && current.front () == '#';
+}
+
+/**
  * @brief This function adds a key to a YAML node.
  *
  * @param data This node stores the data specified via `keyIterator`.
@@ -54,14 +68,21 @@ void addKey (YAML::Node & data, NameIterator & keyIterator, Key const & key)
 {
 	if (keyIterator == --key.end ())
 	{
-		data[*keyIterator] = YAML::Node (key.getString ());
+		if (isArrayKey (keyIterator))
+		{
+			data.push_back (YAML::Node (key.getString ()));
+		}
+		else
+		{
+			data[*keyIterator] = YAML::Node (key.getString ());
+		}
+
 		return;
 	}
 
-	YAML::Node dictionary = (data[*keyIterator] && data[*keyIterator].IsMap ()) ? data[*keyIterator] : YAML::Node (YAML::NodeType::Map);
-	data[*keyIterator] = dictionary;
-
-	addKey (dictionary, ++keyIterator, key);
+	YAML::Node node = (data[*keyIterator] && !data[*keyIterator].IsScalar ()) ? data[*keyIterator] : YAML::Node ();
+	data[*keyIterator] = node;
+	addKey (node, ++keyIterator, key);
 }
 
 /**

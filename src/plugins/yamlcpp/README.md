@@ -69,7 +69,7 @@ kdb umount /examples/yamlcpp
 
 ## Arrays
 
-YAML CPP provides read only support for Elektra’s array data type.
+YAML CPP provides basic support for Elektra’s array data type.
 
 ```sh
 # Mount yamlcpp plugin to cascading namespace `/examples/yamlcpp`
@@ -90,8 +90,16 @@ kdb ls /examples/yamlcpp
 kdb get user/examples/yamlcpp/sunny/#1
 #> Dee
 
+# Extend the array
+kdb set user/examples/yamlcpp/sunny/#2 Dennis
+kdb set user/examples/yamlcpp/sunny/#3 Frank
+kdb set user/examples/yamlcpp/sunny/#4 Mac
+
+# Read one of the new array entries
+kdb get user/examples/yamlcpp/sunny/#3
+#> Frank
+
 # Undo modifications to the key database
-echo 'kill: me' > `kdb file /examples/yamlcpp`
 kdb rm -r /examples/yamlcpp
 kdb umount /examples/yamlcpp
 ```
