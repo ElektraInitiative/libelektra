@@ -131,9 +131,10 @@ before_script:
 
 script:
   - ninja
-  - ninja run_all
   - |
-    if [[ $ASAN != ON || $FAST != 0N ]]; then
+    if [[ "$FAST" == "ON" || "$ASAN" = "ON" ]]; then
+      ninja run_all
+    else
       ninja install
       ninja test
       kdb run_all
