@@ -113,7 +113,7 @@ Or if `.jar` is already installed:
 
 Additionally, the java implementation can request any other additional
 configuration, read about it below in the section (specific java plugin).
-If you are reading this page on github, you won't see it, because the
+If you are reading this page on GitHub, you won't see it, because the
 plugins dynamically append text after the end of this page.
 
 ## Development

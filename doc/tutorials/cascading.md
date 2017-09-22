@@ -4,7 +4,7 @@ This tutorial assumes that you are already familiar with [namespaces](/doc/tutor
 
 When Elektra looks up a _cascading key_ (i.e. key names without a namespace and a leading slash `/`, the namespaces are searched in the following order:
 
- * [spec](https://github.com/ElektraInitiative/libelektra/blob/master/doc/help/elektra-namespaces.md#spec) (contains metadata, e.g. to modify elektra lookup behaviour)
+ * [spec](https://github.com/ElektraInitiative/libelektra/blob/master/doc/help/elektra-namespaces.md#spec) (contains metadata, e.g. to modify elektra lookup behavior)
  * [proc](https://github.com/ElektraInitiative/libelektra/blob/master/doc/help/elektra-namespaces.md#proc) (process-related information)
  * [dir](https://github.com/ElektraInitiative/libelektra/blob/master/doc/help/elektra-namespaces.md#dir) (directory-related information, e.g. `.git` or `.htaccess`)
  * [user](https://github.com/ElektraInitiative/libelektra/blob/master/doc/help/elektra-namespaces.md#user) (user configuration)
@@ -92,10 +92,10 @@ The **spec** namespace is used to store metadata about keys and therefore Elektr
 The `spec` namespace is special as it can completely change how the cascading
 lookup works.
 
-During a cascading lookup for a specific key, the default Elektra behaviour can be changed by a corresponding `spec-key`, i.e. a key in the **spec** namespace **with the same name**.
+During a cascading lookup for a specific key, the default Elektra behavior can be changed by a corresponding `spec-key`, i.e. a key in the **spec** namespace **with the same name**.
 
 For example, the metadata `override/#0` of the respective `spec-key`
-can be specified to use a different key in favor of the key itself. This way, we can implement a redirect or symlink like behaviour and therefore even
+can be specified to use a different key in favor of the key itself. This way, we can implement a redirect or symlink like behavior and therefore even
 config from current folder (`dir` namespace) can be overwritten.
 
 The cascading lookup will consider the following **metadata keys** of `spec-key`:

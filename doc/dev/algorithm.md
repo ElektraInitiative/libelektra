@@ -46,7 +46,7 @@ key database.  Elektra could not guarantee that every application
 retrieves the same configuration with the same key names any longer.
 
 In `kdbOpen()`, nearly no checks are done regarding the expected
-behaviour of the backend.  The contract checker guarantees that only
+behavior of the backend.  The contract checker guarantees that only
 appropriate mountpoints are written into the mountpoint configuration.
 `kdbOpen()` checks only if the opening of plugin was successful.  If not,
 the backend enclosing the plugin is not mounted at all.
@@ -59,7 +59,7 @@ single `Key` object could be removed from the database.  For configuration
 files this method is inapplicable.  For `filesys`, however, it was easy
 to implement.
 
-In Elektra version 0.7, the behaviour changed.  Removing keys was
+In Elektra version 0.7, the behavior changed.  Removing keys was
 integrated into `kdbSet()`.  The user tagged keys that should be removed.
 After the next `kdbSet()`, these keys were removed from the key database.
 On the one hand, backends writing configuration files simply ignored
@@ -83,7 +83,7 @@ properties for `kdbSet()`.  The same `KeySet` can be applied multiple
 times, but after the first time, the key database will not be changed
 anymore. (Note that `kdbSet()`) actually detects that
 there are no changes and will do nothing. To actually show the idempotent
-behaviour the KeySet has to be regenerated or the key database needs to
+behavior the KeySet has to be regenerated or the key database needs to
 be reopened.
 
 It is, however, not known if keys should be removed permanently
@@ -140,7 +140,7 @@ can happen that more than one backend delivers a key with the same name.
 `kdbGet()` ensures that a key is uniquely identified by its name.
 Elektra’s core will [pop](/doc/help/elektra-glossary.md) keys that are
 outside of the backend's responsibility.  Hence, these keys will not be
-passed to the user and we get the desired behaviour: The nearest mounted
+passed to the user and we get the desired behavior: The nearest mounted
 backend to the key is responsible.
 
 For example, a generator plugin in the backend (A) always emits
@@ -276,7 +276,7 @@ and `kdbGet()` works as expected.
 
 ## kdbSet
 
-Not performance, but robust and reliable behaviour is the most
+Not performance, but robust and reliable behavior is the most
 important issue for `kdbSet()`.  The design was chosen so that some
 additional in-memory comparisons are preferred to a suboptimal sequence
 of `syscalls`.  The algorithm makes sure that keys

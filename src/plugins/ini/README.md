@@ -96,13 +96,46 @@ a = 4
 
 will be interpreted as
 
-```ini
+```
 /sec
 /sec/a
 /sec/a/#0
 /sec/a/#1
 /sec/a/#2
 /sec/a/#3
+```
+
+The following example shows how you can store and retrieve array values using the `ini` plugin.
+
+```sh
+# Mount the INI plugin with array support
+kdb mount config.ini user/examples/ini ini array=true
+
+# Add an array storing song titles
+kdb set user/examples/ini/songs/#0 "Non-Zero Possibility"
+kdb set user/examples/ini/songs/#1 "Black Art Number One"
+kdb set user/examples/ini/songs/#2 "A Story Of Two Convicts"
+
+# Check if INI saved all array entries
+kdb ls user/examples/ini/songs
+#> user/examples/ini/songs
+#> user/examples/ini/songs/#0
+#> user/examples/ini/songs/#1
+#> user/examples/ini/songs/#2
+
+# Retrieve an array item
+kdb get user/examples/ini/songs/#2
+#> A Story Of Two Convicts
+
+# Check the file written by the INI plugin
+kdb file user/examples/ini | xargs cat
+#> songs = Non-Zero Possibility
+#> songs = Black Art Number One
+#> songs = A Story Of Two Convicts
+
+# Undo modifications
+kdb rm -r user/examples/ini
+kdb umount user/examples/ini
 ```
 
 ## Sections

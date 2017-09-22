@@ -1,3 +1,28 @@
+# ==============================
+# = British → American English =
+# ==============================
+
+s/behaviour/behavior/g
+
+# ==========
+# = Brands =
+# ==========
+
+s/\<[CcFf]engine/CFEngine/g
+
+# Only fix spelling of GitHub outside of URLs:
+s/([^.`])git[hH]ub([^.][^\w])/\1GitHub\2/g
+
+s/\<[Ll]ibreoffice/LibreOffice/g
+
+s/\<mark[Dd]own\>/Markdown/g
+
+s/\<unix|UNIX/Unix/g
+
+# ===================
+# = Technical Terms =
+# ===================
+
 s/\<meta[- ]key\>/metakey/g
 s/\<meta[- ]name\>/metaname/g
 s/\<meta[- ]value\>/metavalue/g
@@ -37,8 +62,6 @@ s/\<(compile|deployment|mount|run|startup) ?time/\1-time/g
 
 s/\<time[- ]stamp/timestamp/g
 
-s/\<unix|UNIX/Unix/g
-
 s/\<sub[- ]project/subproject/g
 
 s/\<C-(array|code|name|string)/C \1/g
@@ -75,14 +98,10 @@ s/\<[^-]symlink/symbolic link/g
 
 s/\<middle[- ]ware/middleware/g
 
-s/\<[CcFf]engine/CFEngine/g
-
 # s/\</gcc/GCC/g
 
 # plural
 s/\<files-?ystem\>/file system/g
-
-s/\<[Ll]ibreoffice/LibreOffice/g
 
 #s/\<dependencies/dependences/g
 #s/\<dependency/dependence/g

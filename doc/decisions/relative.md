@@ -2,7 +2,7 @@
 
 ## Issue
 
-There is a different behaviour of various plugins whether their name is
+There is a different behavior of various plugins whether their name is
 absolute or relative, including:
 
 1. mounting the same file somewhere else does not work

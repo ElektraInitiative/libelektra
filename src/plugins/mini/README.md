@@ -66,7 +66,7 @@ As with most configuration file formats, some characters carry special meaning. 
 1. the `=` sign, which separates keys from values and
 2. `#` and `;`, the characters that denote a comment.
 
-In case of **key values** you do not need to care about the special meaning of these characters most of the time, since the plugin handles escaping and unescaping of them for you. Since mINI use the backslash character (`\`) to escape values, the backspace character will be escaped too (`\\`). The following example shows the escaping behaviour.
+In case of **key values** you do not need to care about the special meaning of these characters most of the time, since the plugin handles escaping and unescaping of them for you. Since mINI use the backslash character (`\`) to escape values, the backspace character will be escaped too (`\\`). The following example shows the escaping behavior.
 
 ```sh
 kdb mount mini.ini /examples/mini mini
@@ -99,7 +99,7 @@ kdb rm -r /examples/mini
 kdb umount /examples/mini
 ```
 
-In the case of **key names** you **must not use any of the characters mentioned above** (`;`, `#` and `=`) at all. Otherwise the behaviour of the plugin will be **undefined**.
+In the case of **key names** you **must not use any of the characters mentioned above** (`;`, `#` and `=`) at all. Otherwise the behavior of the plugin will be **undefined**.
 
 ## Limitations
 

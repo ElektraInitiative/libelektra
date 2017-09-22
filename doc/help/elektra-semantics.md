@@ -26,7 +26,7 @@ inheritance.  We see that plugins are able to add more semantics to
 Elektra.
 
 There are no symbolic links, hard links, device files or anything else
-different from key value pairs. Again, most of these behaviours can be
+different from key value pairs. Again, most of these behaviors can be
 mimicked using metadata. Especially, links are available using the metadata
 `override` and `fallback`.
 

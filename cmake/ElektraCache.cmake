@@ -261,6 +261,7 @@ option (BUILD_DOCUMENTATION "Build the documentation (API, man pages)" ON)
 if (BUILD_DOCUMENTATION)
 	option (INSTALL_DOCUMENTATION "Install the documentation (API, man pages)" ON)
 	option (BUILD_PDF "Build the documentation also in PDF form" OFF)
+	option (BUILD_DOCSET "Generate a DocSet usable in applications such as Xcode, Dash and Zeal" OFF)
 else (BUILD_DOCUMENTATION)
 	#install documentation makes no sense if it is not build
 	#(even though the option would not harm)
