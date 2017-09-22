@@ -10,131 +10,149 @@
 #include "../src/libs/elektra/opmphm.c"
 #include "../src/libs/elektra/rand.c"
 #include "benchmarks.h"
+#include <sys/time.h>
 
 int32_t elektraRandBenchmarkInitSeed;
 
 // benchmarks helpers
 static int32_t * getRandomSeed (int32_t * seed);
-static FILE * openOutFileWithRPartitepostfix (const char * name);
+static FILE * openOutFileWithRPartitePostfix (const char * name);
 static const char * elektraGetString (void * data);
 static size_t getPower (size_t p, size_t q);
-size_t getNCount (void);
-size_t getCCount (void);
-void printStderrExit (const char * msg);
 // shapes helpers
-void showShape (void);
+static void showShape (void);
 // generate KeySets
-KeySetShape * getKeySetShapes (void);
-const size_t numberOfShapes = 660;
-// config
-const size_t keySetsPerShape = 1;
-const size_t minN = 1000;
-const size_t maxN = 1000;
-const size_t stepN = 1000;
-const double minC = 1.2;
-const double maxC = 1.4;
-const double stepC = 0.1;
+static KeySetShape * getKeySetShapes (void);
+const size_t numberOfShapes = 90;
+
 
 /**
  * General structure of a benchmark
  *
- * The generateKeySet () is not so fast, thus each KeySet will be only generated once and fed to all benchmarks.
- * The initBenchmarks is called before the generation starts, the runBenchmarks runs for each KeySet and the deinitBenchmarks run at the end.
- * The results store the benchmarks results.
- *
+ * `name` is a unique name of the benchmark and `benchmarkF` is the independent function executing the benchmark.
+ * Execute a benchmark with benchmark_opmphm `name`.
  */
-typedef void (*initBenchmarkf) (size_t **);
-typedef void (*deinitBenchmarkf) (size_t *);
-typedef void (*runBenchmarkf) (KeySet *, size_t *, size_t, size_t, size_t, size_t);
 typedef struct
 {
-	size_t * results;
-	initBenchmarkf initBenchmark;
-	runBenchmarkf runBenchmark;
-	deinitBenchmarkf deinitBenchmark;
+	char * name;
+	void (*benchmarkF) (void);
 } Benchmark;
 
-/**
- * START ======================= Compares the Opmphm Hash Function vs Hash Function suggested by Fox et al. ========================== START
- *
- * This comparison counts how often the mapping process needs to be done for one KeySet. The Opmphm Hash Function uses one seed
- * for each KeySet, the Hash Function suggested by Fox et al. uses for each mapping OPMPHMTUPLE seeds.
- */
-
-const size_t benchmarkAllHashFunctionMaxCalls = 3;
-/**
- * Common functions
- */
 
 /**
- * @brief Init the result
+ * START ======================================= Measures the Opmphm Hash Function time ============================================== START
  *
- * One result field has the following attributes:
+ * This benchmark measures the time for hashing a whole KeySet, variegating in the size. Executed multiple times.
  *
- * * n
- * * r
- * * shapes
- * * keySetsPerShape
+ * The output has the following header: n;n;n;n;... (for each KeySetShape)
  *
- * Malloc and init.
- *
- * @param results the results not initialized
+ * This benchmark takes numberOfShapes * nCount seeds
  */
-void benchmarkAllHashFunctionInit (size_t ** results)
+static void benchmarkHashFunctionTime (void)
 {
-	const size_t nCount = getNCount ();
-	const size_t cCount = getCCount ();
-	*results = elektraMalloc (sizeof (size_t) * nCount * cCount * numberOfShapes * keySetsPerShape);
-	if (!*results) printStderrExit ("malloc");
-	memset (*results, 0, sizeof (size_t) * nCount * cCount * numberOfShapes * keySetsPerShape);
-}
-
-/**
- * @brief Write result to filename and deinit
- *
- * One result field has the following attributes:
- *
- * * n
- * * r
- * * shapes
- * * keySetsPerShape
- *
- * Write out the data in csv format. First row contains n/r/w, the second the shape Index (which shape was used) and
- * the following rows contains the number of mapping calls for each KeySet respective to the shape n and r.
- *
- * @param results the results not initialized
- * @param filename output filename
- */
-void benchmarkAllHashFunctionDeinit (size_t * results, const char * filename)
-{
-	FILE * out = openOutFileWithRPartitepostfix (filename);
-	if (!out) printStderrExit ("can not open out file");
-	const size_t cCount = getCCount ();
-	size_t n;
-	size_t nIndex;
-	fprintf (out, "n/r/size;shapeIndex;data\n");
-	for (n = minN, nIndex = 0; n <= maxN; n += stepN, ++nIndex)
+	const size_t nCount = 4;
+	const size_t n[] = { 10, 100, 1000, 10000 };
+	const size_t runs = 11;
+	// init results
+	size_t * results = elektraMalloc (nCount * numberOfShapes * runs * sizeof (size_t));
+	if (!results)
 	{
-		double c;
-		size_t cIndex;
-		for (c = minC, cIndex = 0; c <= maxC; c += stepC, ++cIndex)
+		printExit ("malloc");
+	}
+	// benchmark
+	KeySetShape * keySetShapes = getKeySetShapes ();
+	for (size_t i = 0; i < nCount; ++i)
+	{
+		for (size_t s = 0; s < numberOfShapes; ++s)
+		{
+			printf ("now at n: %lu/%lu shape: %lu/%lu\r", i, nCount, s, numberOfShapes);
+			int32_t seed;
+			if (getRandomSeed (&seed) != &seed) printExit ("Seed Parsing Error or feed me more seeds");
+			KeySet * ks = generateKeySet (n[i], &seed, &keySetShapes[s]);
+			for (size_t r = 0; r < runs; ++r)
+			{
+				Key * key;
+				ksRewind (ks);
+				struct timeval start;
+				struct timeval end;
+				__asm__("");
+				gettimeofday (&start, 0);
+				__asm__("");
+				// measure
+				while ((key = ksNext (ks)))
+				{
+					__asm__("");
+					opmphmHashfunction (keyName (key), strlen (keyName (key)), 1337);
+					__asm__("");
+				}
+				__asm__("");
+				gettimeofday (&end, 0);
+				__asm__("");
+				results[i * (numberOfShapes * runs) + s * runs + r] =
+					(end.tv_sec - start.tv_sec) * 1000000 + (end.tv_usec - start.tv_usec);
+			}
+			ksDel (ks);
+		}
+	}
+	elektraFree (keySetShapes);
+	// wirte out results
+	FILE * out = openOutFileWithRPartitePostfix ("benchmark_opmphm_hashfunctiontime");
+	if (!out)
+	{
+		printExit ("open out file");
+	}
+	// print header
+	for (size_t i = 0; i < nCount; ++i)
+	{
+		for (size_t s = 0; s < numberOfShapes; ++s)
+		{
+			if (!s && !i)
+			{
+				fprintf (out, "%lu", n[i]);
+			}
+			else
+			{
+				fprintf (out, ";%lu", n[i]);
+			}
+		}
+	}
+	fprintf (out, "\n");
+	// print data
+	for (size_t r = 0; r < runs; ++r)
+	{
+		for (size_t i = 0; i < nCount; ++i)
 		{
 			for (size_t s = 0; s < numberOfShapes; ++s)
 			{
-				fprintf (out, "%lu/%f/%lu;%lu", n, c, (size_t) ((n * c / OPMPHMR_PARTITE) + 1) * OPMPHMR_PARTITE, s);
-				for (size_t i = 0; i < keySetsPerShape; ++i)
+				if (!s && !i)
 				{
-					fprintf (out, ";%lu",
-						 results[nIndex * (cCount * numberOfShapes * keySetsPerShape) +
-							 cIndex * (numberOfShapes * keySetsPerShape) + s * (keySetsPerShape) + i]);
+					fprintf (out, "%lu", results[i * (numberOfShapes * runs) + s * runs + r]);
 				}
-				fprintf (out, "\n");
+				else
+				{
+					fprintf (out, ";%lu", results[i * (numberOfShapes * runs) + s * runs + r]);
+				}
 			}
 		}
+		fprintf (out, "\n");
 	}
 	fclose (out);
 	elektraFree (results);
 }
+/**
+ * END ========================================= Measures the Opmphm Hash Function time ================================================ END
+ */
+
+/**
+ * START ======================= Compares the Opmphm Hash Function vs Hash Function suggested by Fox et al. ========================== START
+ *
+ * This comparison counts how often the mapping process needs to be done. The benchmark tries different n and c (all c above the minimum c),
+ * for one n and c multiple seeds are used.
+ *
+ * The output format is: n/c;n/c;... (each n and c are unique)
+ *
+ * This benchmark takes (numberOfShapes * nCount) + (different c * seeds) seeds
+ */
 
 /**
  * Benchmark the suggested hash function by
@@ -159,7 +177,7 @@ typedef struct
  * @retval FoxHash * success
  * @retval NULL memory error
  */
-FoxHash * createFoxHash (int32_t * initSeed, KeySet * ks)
+static FoxHash * createFoxHash (int32_t * initSeed, KeySet * ks)
 {
 	ELEKTRA_ASSERT (initSeed, "seed is NULL");
 	ELEKTRA_ASSERT (ks, "KeySet is NULL");
@@ -201,7 +219,7 @@ FoxHash * createFoxHash (int32_t * initSeed, KeySet * ks)
  *
  * @param f the fox hash
  */
-void destroyFoxHash (FoxHash * f)
+static void destroyFoxHash (FoxHash * f)
 {
 	ELEKTRA_ASSERT (f, "FoxHash is NULL");
 	elektraFree (f->randomData);
@@ -219,7 +237,7 @@ void destroyFoxHash (FoxHash * f)
  *
  * @retval int32_t hash function value.
  */
-int32_t foxHash (FoxHash * f, const void * key)
+static int32_t foxHash (FoxHash * f, const void * key)
 {
 	int32_t h = 0;
 	char * c = (char *)key;
@@ -253,194 +271,307 @@ int32_t foxHash (FoxHash * f, const void * key)
 	return h;
 }
 
-void benchmarkFoxHashFunctionDeinit (size_t * results)
+static size_t benchmarkHashFunctionVsFox (KeySet * ks, size_t n, double c, int32_t seed, const size_t maxMappingCalls)
 {
-	benchmarkAllHashFunctionDeinit (results, "opmphmFoxHashFuction");
-}
-
-void benchmarkFoxHashFunctionRun (KeySet * ks, size_t * results, size_t n, size_t nIndex, size_t shapeIndex, size_t keysetIndex)
-{
-	const size_t cCount = getCCount ();
-	size_t cIndex;
-	double c;
-	for (cIndex = 0, c = minC; c <= maxC; c += stepC, ++cIndex)
+	size_t calls = 0;
+	FoxHash * fHash[OPMPHMR_PARTITE];
+	Opmphm * opmphm = opmphmNew ();
+	if (!opmphm) printExit ("opmphm");
+	OpmphmGraph * graph = opmphmGraphNew (opmphm, n, c);
+	if (!graph) printExit ("graph");
+	int cyclic;
+	do
 	{
-		FoxHash * fHash[OPMPHMR_PARTITE];
-		Opmphm * opmphm = opmphmNew ();
-		if (!opmphm) printStderrExit ("opmphm");
-		OpmphmGraph * graph = opmphmGraphNew (opmphm, n, c);
-		if (!graph) printStderrExit ("graph");
-		size_t calls = 0;
-		int cyclic;
-		do
+		// init fox hash
+		for (uint8_t r = 0; r < OPMPHMR_PARTITE; ++r)
 		{
-			// init fox hash
+			fHash[r] = createFoxHash (&seed, ks);
+			if (!fHash[r]) printExit ("foxhash");
+		}
+		size_t i = 0;
+		Key * key;
+		ksRewind (ks);
+		while ((key = ksNext (ks)))
+		{
 			for (uint8_t r = 0; r < OPMPHMR_PARTITE; ++r)
 			{
-				int32_t hashseed;
-				if (getRandomSeed (&hashseed) != &hashseed) printStderrExit ("Seed Parsing Error or feed me more seeds");
-
-				fHash[r] = createFoxHash (&hashseed, ks);
-				if (!fHash[r]) printStderrExit ("foxhash");
+				// set edge.h[]
+				graph->edges[i].h[r] = foxHash (fHash[r], elektraGetString (key)) % opmphm->componentSize;
+				// add edge to graph
+				// set edge.nextEdge[r]
+				size_t v = r * opmphm->componentSize + graph->edges[i].h[r];
+				graph->edges[i].nextEdge[r] = graph->vertices[v].firstEdge;
+				// set vertex.firstEdge
+				graph->vertices[v].firstEdge = i;
+				// increment degree
+				++graph->vertices[v].degree;
 			}
+			++i;
+		}
+		for (uint8_t r = 0; r < OPMPHMR_PARTITE; ++r)
+		{
+			destroyFoxHash (fHash[r]);
+		}
+		cyclic = hasCycle (opmphm, graph, n);
+		if (cyclic)
+		{
+			memset (graph->vertices, 0, opmphm->componentSize * OPMPHMR_PARTITE * sizeof (OpmphmVertex));
+		}
+		++calls;
+	} while (cyclic && calls < maxMappingCalls);
+	opmphmDel (opmphm);
+	opmphmGraphDel (graph);
+	return calls;
+}
 
-			size_t i = 0;
-			Key * key;
-			ksRewind (ks);
-			while ((key = ksNext (ks)))
+static size_t benchmarkHashFunctionVsOpmphm (KeySet * ks, size_t n, double c, int32_t seed, const size_t maxMappingCalls)
+{
+	size_t calls = 0;
+	Opmphm * opmphm = opmphmNew ();
+	if (!opmphm) printExit ("opmphm");
+	OpmphmGraph * graph = opmphmGraphNew (opmphm, n, c);
+	if (!graph) printExit ("graph");
+	OpmphmInit init;
+	init.getString = elektraGetString;
+	init.data = (void **)ks->array;
+	init.initSeed = seed;
+	int ret;
+	do
+	{
+		ret = opmphmMapping (opmphm, graph, &init, n);
+		++calls;
+	} while (ret && calls < maxMappingCalls);
+	opmphmDel (opmphm);
+	opmphmGraphDel (graph);
+	return calls;
+}
+
+static void benchmarkHashFunctionVs (void)
+{
+	const size_t nCount = 1;
+	const size_t n[] = { 10, 100, 1000, 10000 };
+	const size_t seeds = 11;
+	const size_t cCount = 6;
+	const double c[] = { 0.0, 0.1, 0.2, 0.3, 0.4, 0.5 };
+	const size_t maxMappingCalls = 5;
+	// init results
+	size_t * opmphmResults = elektraMalloc (nCount * numberOfShapes * cCount * seeds * sizeof (size_t));
+	if (!opmphmResults)
+	{
+		printExit ("malloc");
+	}
+	size_t * foxResults = elektraMalloc (nCount * numberOfShapes * cCount * seeds * sizeof (size_t));
+	if (!foxResults)
+	{
+		printExit ("malloc");
+	}
+	// benchmarks
+	KeySetShape * keySetShapes = getKeySetShapes ();
+	for (size_t i = 0; i < nCount; ++i)
+	{
+		for (size_t s = 0; s < numberOfShapes; ++s)
+		{
+			printf ("now at n: %lu/%lu shape: %lu/%lu\r", i, nCount, s, numberOfShapes);
+			int32_t genSeed;
+			if (getRandomSeed (&genSeed) != &genSeed) printExit ("Seed Parsing Error or feed me more seeds");
+			KeySet * ks = generateKeySet (n[i], &genSeed, &keySetShapes[s]);
+			for (size_t cI = 0; cI < cCount; ++cI)
 			{
-				for (uint8_t r = 0; r < OPMPHMR_PARTITE; ++r)
+				for (size_t sI = 0; sI < seeds; ++sI)
 				{
-					// set edge.h[]
-					graph->edges[i].h[r] = foxHash (fHash[r], elektraGetString (key)) % opmphm->componentSize;
-					// add edge to graph
-					// set edge.nextEdge[r]
-					size_t v = r * opmphm->componentSize + graph->edges[i].h[r];
-					graph->edges[i].nextEdge[r] = graph->vertices[v].firstEdge;
-					// set vertex.firstEdge
-					graph->vertices[v].firstEdge = i;
-					// increment degree
-					++graph->vertices[v].degree;
+					// get seed for run
+					int32_t runSeed;
+					if (getRandomSeed (&runSeed) != &runSeed) printExit ("Seed Parsing Error or feed me more seeds");
+					// opmphm
+					opmphmResults[i * (numberOfShapes * cCount * seeds) + s * (cCount * seeds) + cI * seeds + sI] =
+						benchmarkHashFunctionVsOpmphm (ks, n[i], opmphmMinC () + c[cI], runSeed, maxMappingCalls);
+					// fox
+					foxResults[i * (numberOfShapes * cCount * seeds) + s * (cCount * seeds) + cI * seeds + sI] =
+						benchmarkHashFunctionVsFox (ks, n[i], opmphmMinC () + c[cI], runSeed, maxMappingCalls);
 				}
 			}
-			for (uint8_t r = 0; r < OPMPHMR_PARTITE; ++r)
-			{
-				destroyFoxHash (fHash[r]);
-			}
-			cyclic = hasCycle (opmphm, graph, n);
-			if (cyclic)
-			{
-				memset (graph->vertices, 0, opmphm->componentSize * OPMPHMR_PARTITE * sizeof (OpmphmVertex));
-			}
-			++calls;
-		} while (cyclic && calls < benchmarkAllHashFunctionMaxCalls);
-		results[nIndex * (cCount * numberOfShapes * keySetsPerShape) + cIndex * (numberOfShapes * keySetsPerShape) +
-			shapeIndex * (keySetsPerShape) + keysetIndex] = calls;
-
-		opmphmDel (opmphm);
-		opmphmGraphDel (graph);
+			ksDel (ks);
+		}
 	}
+	elektraFree (keySetShapes);
+	// write out
+	FILE * opmphmOut = openOutFileWithRPartitePostfix ("benchmark_opmphm_hashfunction_opmphm");
+	if (!opmphmOut)
+	{
+		printExit ("open out file");
+	}
+	FILE * foxOut = openOutFileWithRPartitePostfix ("benchmark_opmphm_hashfunction_fox");
+	if (!foxOut)
+	{
+		printExit ("open out file");
+	}
+	// print header
+	for (size_t i = 0; i < nCount; ++i)
+	{
+		for (size_t cI = 0; cI < cCount; ++cI)
+		{
+			if (!cI && !i)
+			{
+				fprintf (opmphmOut, "%lu/%f", n[i], opmphmMinC () + c[cI]);
+				fprintf (foxOut, "%lu/%f", n[i], opmphmMinC () + c[cI]);
+			}
+			else
+			{
+				fprintf (opmphmOut, ";%lu/%f", n[i], opmphmMinC () + c[cI]);
+				fprintf (foxOut, ";%lu/%f", n[i], opmphmMinC () + c[cI]);
+			}
+		}
+	}
+	fprintf (opmphmOut, "\n");
+	fprintf (foxOut, "\n");
+	// print data
+	for (size_t s = 0; s < numberOfShapes; ++s)
+	{
+		for (size_t sI = 0; sI < seeds; ++sI)
+		{
+			for (size_t i = 0; i < nCount; ++i)
+			{
+				for (size_t cI = 0; cI < cCount; ++cI)
+				{
+					if (!cI && !i)
+					{
+						fprintf (opmphmOut, "%lu", opmphmResults[i * (numberOfShapes * cCount * seeds) +
+											 s * (cCount * seeds) + cI * seeds + sI]);
+						fprintf (foxOut, "%lu", foxResults[i * (numberOfShapes * cCount * seeds) +
+										   s * (cCount * seeds) + cI * seeds + sI]);
+					}
+					else
+					{
+						fprintf (opmphmOut, ";%lu", opmphmResults[i * (numberOfShapes * cCount * seeds) +
+											  s * (cCount * seeds) + cI * seeds + sI]);
+						fprintf (foxOut, ";%lu", foxResults[i * (numberOfShapes * cCount * seeds) +
+										    s * (cCount * seeds) + cI * seeds + sI]);
+					}
+				}
+			}
+			fprintf (opmphmOut, "\n");
+			fprintf (foxOut, "\n");
+		}
+	}
+	fclose (opmphmOut);
+	fclose (foxOut);
+	elektraFree (opmphmResults);
+	elektraFree (foxResults);
 }
+/**
+ * END ========================= Compares the Opmphm Hash Function vs Hash Function suggested by Fox at al. ============================ END
+ */
 
 /**
- * Benchmark the opmphmMapping with the opmphmHashFunction
+ * START ====================================== Tests all possible seeds for one KeySet ============================================== START
+ * 
+ * not finished.
  */
-void benchmarkOpmphmHashFunctionDeinit (size_t * results)
-{
-	benchmarkAllHashFunctionDeinit (results, "opmphmHashFuction");
-}
 
-void benchmarkOpmphmHashFunctionRun (KeySet * ks, size_t * results, size_t n, size_t nIndex, size_t shapeIndex, size_t keysetIndex)
+void benchmarkHashFunctionAllSeeds (void)
 {
-	const size_t cCount = getCCount ();
-	size_t cIndex = 0;
-	double c;
-	for (c = minC, cIndex = 0; c <= maxC; c += stepC, ++cIndex)
+	const size_t n = 2000;
+	const double c = opmphmMinC () + 0.1;
+	const size_t shapeId = 40;
+	const size_t maxMappingCalls = 5;
+	const int32_t startSeed = 25698431;
+	const int32_t maxSeed = 25698431 + 10000;
+	if (shapeId >= numberOfShapes)
 	{
-		// benchmark
-		Opmphm * opmphm = opmphmNew ();
-		if (!opmphm) printStderrExit ("opmphm");
-		OpmphmGraph * graph = opmphmGraphNew (opmphm, n, c);
-		if (!graph) printStderrExit ("graph");
-		OpmphmInit init;
-		init.getString = elektraGetString;
-		init.data = (void **)ks->array;
-		int32_t hashseed;
-		if (getRandomSeed (&hashseed) != &hashseed) printStderrExit ("Seed Parsing Error or feed me more seeds");
-		init.initSeed = hashseed;
-		int ret;
-		size_t calls = 0;
-		do
-		{
-			ret = opmphmMapping (opmphm, graph, &init, n);
-			++calls;
-		} while (ret && calls < benchmarkAllHashFunctionMaxCalls);
-		opmphmDel (opmphm);
-		opmphmGraphDel (graph);
-		results[nIndex * (cCount * numberOfShapes * keySetsPerShape) + cIndex * (numberOfShapes * keySetsPerShape) +
-			shapeIndex * (keySetsPerShape) + keysetIndex] = calls;
+		printExit ("shapeId higher than numberOfShapes");
 	}
+	size_t * result = elektraMalloc (maxMappingCalls * sizeof (size_t));
+	if (!result)
+	{
+		printExit ("malloc");
+	}
+	for (size_t i = 0; i < maxMappingCalls; ++i)
+	{
+		result[i] = 0;
+	}
+	KeySetShape * keySetShapes = getKeySetShapes ();
+	int32_t genSeed;
+	if (getRandomSeed (&genSeed) != &genSeed) printExit ("Seed Parsing Error or feed me more seeds");
+	KeySet * ks = generateKeySet (n, &genSeed, &keySetShapes[shapeId]);
+	for (int32_t seed = startSeed; seed != maxSeed; ++seed)
+	{
+		++result[benchmarkHashFunctionVsOpmphm (ks, n, c, seed, maxMappingCalls - 1)];
+		if (seed & 10000)
+		{
+			printf ("now at seed: %i/%i\r", seed, maxSeed - 2);
+		}
+	}
+	ksDel (ks);
+	elektraFree (keySetShapes);
+	for (size_t i = 0; i < maxMappingCalls; ++i)
+	{
+		printf ("%lu: %lu of %i\n", i, result[i], maxSeed - 2 - startSeed);
+	}
+	elektraFree (result);
 }
 
 /**
  * END ========================= Compares the Opmphm Hash Function vs Hash Function suggested by Fox at al. ============================ END
  */
 
-
-int main (int argc ELEKTRA_UNUSED, char ** argv ELEKTRA_UNUSED)
+int main (int argc, char ** argv)
 {
-	// define benchmarks
-	Benchmark opmphmHashFunction;
-	opmphmHashFunction.initBenchmark = benchmarkAllHashFunctionInit;
-	opmphmHashFunction.deinitBenchmark = benchmarkOpmphmHashFunctionDeinit;
-	opmphmHashFunction.runBenchmark = benchmarkOpmphmHashFunctionRun;
-	Benchmark foxHashFunction;
-	foxHashFunction.initBenchmark = benchmarkAllHashFunctionInit;
-	foxHashFunction.deinitBenchmark = benchmarkFoxHashFunctionDeinit;
-	foxHashFunction.runBenchmark = benchmarkFoxHashFunctionRun;
-	// add to benchmarks array
-	Benchmark benchmarks[2] = { opmphmHashFunction, foxHashFunction };
-	const int benchmarksCount = 2;
-	// init
-	for (int b = 0; b < benchmarksCount; ++b)
+	// define all benchmarks
+	const size_t benchmarksCount = 3;
+	Benchmark benchmarks[benchmarksCount];
+	// hashfunctiontime
+	char * benchmarkNameHashFunctionTime = "hashfunctiontime";
+	benchmarks[0].name = benchmarkNameHashFunctionTime;
+	benchmarks[0].benchmarkF = benchmarkHashFunctionTime;
+	// hashfunctionvs
+	char * benchmarkNameHashFunctionVs = "hashfunctionvs";
+	benchmarks[1].name = benchmarkNameHashFunctionVs;
+	benchmarks[1].benchmarkF = benchmarkHashFunctionVs;
+	// hashfunctionvs
+	char * benchmarkNameHashFunctionAllSeeds = "hashfunctionallseeds";
+	benchmarks[1].name = benchmarkNameHashFunctionAllSeeds;
+	benchmarks[1].benchmarkF = benchmarkHashFunctionAllSeeds;
+
+	// run benchmark
+	if (argc == 1)
 	{
-		benchmarks[b].initBenchmark (&benchmarks[b].results);
-	}
-	KeySetShape * keySetShapes = getKeySetShapes ();
-	size_t n;
-	size_t nIndex;
-	for (n = minN, nIndex = 0; n <= maxN; n += stepN, ++nIndex)
-	{
-		for (size_t s = 0; s < numberOfShapes; ++s)
+		fprintf (stderr, "Usage: %s <benchmark>\n", argv[0]);
+		fprintf (stderr, "Available benchmarks:\n");
+		for (size_t i = 0; i < benchmarksCount; ++i)
 		{
-			for (size_t i = 0; i < keySetsPerShape; ++i)
-			{
-				printf ("now at n: %lu/%lu shape: %lu/%lu\r", nIndex, getNCount (), s, numberOfShapes);
-				int32_t seed;
-				if (getRandomSeed (&seed) != &seed) printStderrExit ("Seed Parsing Error or feed me more seeds");
-				KeySet * ks = generateKeySet (n, &seed, &keySetShapes[s]);
-				// run
-				for (int b = 0; b < benchmarksCount; ++b)
-				{
-					benchmarks[b].runBenchmark (ks, benchmarks[b].results, n, nIndex, s, i);
-				}
-				ksDel (ks);
-			}
+			fprintf (stderr, "* %s\n", benchmarks[i].name);
+		}
+		return EXIT_FAILURE;
+	}
+	for (size_t i = 0; i < benchmarksCount; ++i)
+	{
+		if (!strncmp (benchmarks[i].name, argv[1], strlen (benchmarks[i].name)))
+		{
+			benchmarks[i].benchmarkF ();
+			return EXIT_SUCCESS;
 		}
 	}
-	elektraFree (keySetShapes);
-	// deinit
-	for (int b = 0; b < benchmarksCount; ++b)
+	fprintf (stderr, "Error: %s is not a benchmark\n", argv[1]);
+	fprintf (stderr, "Available benchmarks:\n");
+	for (size_t i = 0; i < benchmarksCount; ++i)
 	{
-		benchmarks[b].deinitBenchmark (benchmarks[b].results);
+		fprintf (stderr, "* %s\n", benchmarks[i].name);
 	}
-	return EXIT_SUCCESS;
+	return EXIT_FAILURE;
 }
 
 /**
  * Benchmark helpers
  */
 
-size_t getNCount (void)
-{
-	size_t nCount = 0;
-	for (size_t n = minN; n <= maxN; n += stepN)
-	{
-		++nCount;
-	}
-	return nCount;
-}
-
-size_t getCCount (void)
-{
-	size_t cCount = 0;
-	for (double c = minC; c <= maxC; c += stepC)
-	{
-		++cCount;
-	}
-	return cCount;
-}
-
+/**
+ * @brief Read a seed from STDIN.
+ *
+ * @param seed storage for the read in seed
+ *
+ * @retval int32_t * on success
+ * @retval NULL on read or parse error
+ */
 static int32_t * getRandomSeed (int32_t * seed)
 {
 	// read from stdin
@@ -463,8 +594,18 @@ static int32_t * getRandomSeed (int32_t * seed)
 	}
 	return seed;
 }
-// supports OPMPHMTUPLE < 100
-static FILE * openOutFileWithRPartitepostfix (const char * name)
+
+/**
+ * @brief Opens file with OPMPHMR_PARTITE postfix.
+ *
+ * supports OPMPHMTUPLE < 100
+ *
+ * @param name name of the file
+ *
+ * @retval FILE * on success
+ * @retval NULL on error
+ */
+static FILE * openOutFileWithRPartitePostfix (const char * name)
 {
 	const char * const format = "%u.csv";
 	char formatData[strlen (name) + strlen (format) + 1];
@@ -484,6 +625,15 @@ static const char * elektraGetString (void * data)
 {
 	return keyName ((Key *)data);
 }
+
+/**
+ * @brief Power function.
+ *
+ * @param p basis
+ * @param q exponent
+ *
+ * @retval size_t p^q
+ */
 static size_t getPower (size_t p, size_t q)
 {
 	size_t result = 1;
@@ -494,50 +644,34 @@ static size_t getPower (size_t p, size_t q)
 	return result;
 }
 
-void printStderrExit (const char * msg)
-{
-	fprintf (stderr, "FATAL: %s\n", msg);
-	exit (EXIT_FAILURE);
-}
-
 /**
  * The Key Set shapes
  */
+// ** regular shaped **
 // binary: only 0 or 1 as return
-static size_t shapefConstBinary5 (size_t initSize ELEKTRA_UNUSED, size_t size ELEKTRA_UNUSED, size_t level, int32_t * seed ELEKTRA_UNUSED)
+/**
+ * every key name is unique and goes 5 level deep
+ */
+static void shapefConstBinary (const size_t initSize ELEKTRA_UNUSED, size_t size ELEKTRA_UNUSED, size_t level,
+			       int32_t * seed ELEKTRA_UNUSED, KsShapeFunctionReturn * ret, void * data ELEKTRA_UNUSED)
 {
 	size_t maxLevel = 5;
-	if (level > maxLevel) return 0;
-	return 1;
-}
-static size_t shapefConstBinary10 (size_t initSize ELEKTRA_UNUSED, size_t size ELEKTRA_UNUSED, size_t level, int32_t * seed ELEKTRA_UNUSED)
-{
-	size_t maxLevel = 10;
-	if (level > maxLevel) return 0;
-	return 1;
-}
-static size_t shapefConstBinary20 (size_t initSize ELEKTRA_UNUSED, size_t size ELEKTRA_UNUSED, size_t level, int32_t * seed ELEKTRA_UNUSED)
-{
-	size_t maxLevel = 20;
-	if (level > maxLevel) return 0;
-	return 1;
-}
-static size_t shapefBinaryRand (size_t initSize ELEKTRA_UNUSED, size_t size ELEKTRA_UNUSED, size_t level, int32_t * seed)
-{
-	size_t maxLevel = 100;
-	if (level > maxLevel) return 0;
-	elektraRand (seed);
-	if ((*seed % 5) == 0)
+	if (level > maxLevel)
 	{
-		return 0;
+		ret->subKeys = 0;
 	}
 	else
 	{
-		return 1;
+		ret->subKeys = 1;
 	}
+	ret->label = 0;
 }
+/**
+ * binary tree
+ */
 // non binary: 1 > as return
-static size_t shapefConstBranch2 (size_t initSize, size_t size, size_t level, int32_t * seed ELEKTRA_UNUSED)
+static void shapefBinaryBranch (const size_t initSize, size_t size, size_t level, int32_t * seed ELEKTRA_UNUSED,
+				KsShapeFunctionReturn * ret, void * data ELEKTRA_UNUSED)
 {
 	size_t subKeys = 2;
 	size_t vertices = 0;
@@ -547,67 +681,21 @@ static size_t shapefConstBranch2 (size_t initSize, size_t size, size_t level, in
 	}
 	if (subKeys > size || vertices > initSize)
 	{
-		return 0;
+		ret->subKeys = 0;
 	}
 	else
 	{
-		return subKeys;
+		ret->subKeys = subKeys;
 	}
+	ret->label = 0;
 }
-static size_t shapefConstBranch3 (size_t initSize, size_t size, size_t level, int32_t * seed ELEKTRA_UNUSED)
+/**
+ * every parent has n/branchfactor children
+ */
+static void shapefDynamicBranch (const size_t initSize, size_t size ELEKTRA_UNUSED, size_t level, int32_t * seed ELEKTRA_UNUSED,
+				 KsShapeFunctionReturn * ret, void * data ELEKTRA_UNUSED)
 {
-	size_t subKeys = 3;
-	size_t vertices = 0;
-	for (size_t i = 1; i < level; ++i)
-	{
-		vertices += getPower (subKeys, i);
-	}
-	if (subKeys > size || vertices > initSize)
-	{
-		return 0;
-	}
-	else
-	{
-		return subKeys;
-	}
-}
-static size_t shapefConstBranch5 (size_t initSize, size_t size, size_t level, int32_t * seed ELEKTRA_UNUSED)
-{
-	size_t subKeys = 5;
-	size_t vertices = 0;
-	for (size_t i = 1; i < level; ++i)
-	{
-		vertices += getPower (subKeys, i);
-	}
-	if (subKeys > size || vertices > initSize)
-	{
-		return 0;
-	}
-	else
-	{
-		return subKeys;
-	}
-}
-//~ static size_t shapefConstBranch11 (size_t initSize, size_t size, size_t level, int32_t * seed ELEKTRA_UNUSED)
-//~ {
-//~ size_t subKeys = 11;
-//~ size_t vertices = 0;
-//~ for (size_t i = 1; i < level; ++i)
-//~ {
-//~ vertices += getPower (subKeys, i);
-//~ }
-//~ if (subKeys > size || vertices > initSize)
-//~ {
-//~ return 0;
-//~ }
-//~ else
-//~ {
-//~ return subKeys;
-//~ }
-//~ }
-static size_t shapefDynamicBranch5 (size_t initSize, size_t size, size_t level, int32_t * seed ELEKTRA_UNUSED)
-{
-	size_t branchFactor = 5;
+	size_t branchFactor = 9;
 	size_t subKeys = (initSize / branchFactor);
 	if (subKeys < 2)
 	{
@@ -618,18 +706,32 @@ static size_t shapefDynamicBranch5 (size_t initSize, size_t size, size_t level, 
 	{
 		vertices += getPower (subKeys, i);
 	}
-	if (subKeys > size || vertices > initSize)
+	if (vertices > initSize)
 	{
-		return 0;
+		ret->subKeys = 0;
 	}
 	else
 	{
-		return subKeys;
+		ret->subKeys = subKeys;
 	}
+	ret->label = 0;
 }
-static size_t shapefDynamicBranch10 (size_t initSize, size_t size, size_t level, int32_t * seed ELEKTRA_UNUSED)
+// ** abnormal shaped **
+/**
+ * all key names have a common start, startLevel length
+ */
+static void shapefLateDynamicBranch (const size_t initSize, size_t size ELEKTRA_UNUSED, size_t level, int32_t * seed ELEKTRA_UNUSED,
+				     KsShapeFunctionReturn * ret, void * data ELEKTRA_UNUSED)
 {
-	size_t branchFactor = 10;
+	ret->label = 0;
+	size_t startLevel = 5;
+	if (level <= startLevel)
+	{
+		ret->subKeys = 1;
+		return;
+	}
+	level -= startLevel;
+	size_t branchFactor = 9;
 	size_t subKeys = (initSize / branchFactor);
 	if (subKeys < 2)
 	{
@@ -640,107 +742,114 @@ static size_t shapefDynamicBranch10 (size_t initSize, size_t size, size_t level,
 	{
 		vertices += getPower (subKeys, i);
 	}
-	if (subKeys > size || vertices > initSize)
+	if (vertices > initSize)
 	{
-		return 0;
+		ret->subKeys = 0;
 	}
 	else
 	{
-		return subKeys;
+		ret->subKeys = subKeys;
 	}
 }
-static size_t shapefDynamicBranch15 (size_t initSize, size_t size, size_t level, int32_t * seed ELEKTRA_UNUSED)
+/**
+* all key names have a common start and end
+*/
+static void * shapefCommonStartEndInit (void)
 {
-	size_t branchFactor = 15;
-	size_t subKeys = (initSize / branchFactor);
-	if (subKeys < 2)
+	uint8_t * data = elektraMalloc (sizeof (uint8_t));
+	if (!data)
 	{
-		subKeys = 2;
+		return NULL;
 	}
-	size_t vertices = 0;
-	for (size_t i = 1; i < level; ++i)
-	{
-		vertices += getPower (subKeys, i);
-	}
-	if (subKeys > size || vertices > initSize)
-	{
-		return 0;
-	}
-	else
-	{
-		return subKeys;
-	}
+	*data = 0;
+	return data;
 }
-static size_t shapefDynamicBranch20 (size_t initSize, size_t size, size_t level, int32_t * seed ELEKTRA_UNUSED)
+
+static void shapefCommonStartEndDel (void * data)
 {
-	size_t branchFactor = 20;
-	size_t subKeys = (initSize / branchFactor);
-	if (subKeys < 2)
-	{
-		subKeys = 2;
-	}
-	size_t vertices = 0;
-	for (size_t i = 1; i < level; ++i)
-	{
-		vertices += getPower (subKeys, i);
-	}
-	if (subKeys > size || vertices > initSize)
-	{
-		return 0;
-	}
-	else
-	{
-		return subKeys;
-	}
+	elektraFree (data);
 }
-// too random choosen random functions
-//~ static size_t shapefBranchRand0 (size_t initSize ELEKTRA_UNUSED, size_t size, size_t level, int32_t * seed)
-//~ {
-//~ size_t maxLevel = 100;
-//~ if (level > maxLevel) return 0;
-//~ elektraRand (seed);
-//~ if (!size) return 0;
-//~ return *seed % size;
-//~ }
-//~ static size_t shapefBranchRand1 (size_t initSize ELEKTRA_UNUSED, size_t size, size_t level, int32_t * seed)
-//~ {
-//~ size_t maxLevel = 100;
-//~ if (level > maxLevel) return 0;
-//~ elektraRand (seed);
-//~ size_t result = *seed % initSize;
-//~ if (result > size)
-//~ {
-//~ return 0;
-//~ }
-//~ else
-//~ {
-//~ return result;
-//~ }
-//~ }
 
 
-KeySetShape * getKeySetShapes (void)
+static void shapefCommonStartEnd (const size_t initSize ELEKTRA_UNUSED, size_t size, size_t level, int32_t * seed ELEKTRA_UNUSED,
+				  KsShapeFunctionReturn * ret, void * data)
+{
+	size_t notCommonLevel = 4;
+	size_t maxLevel = 10;
+	if (level < notCommonLevel)
+	{
+		// creates common start
+		ret->subKeys = 1;
+		ret->label = 0;
+	}
+	else if (notCommonLevel == level)
+	{
+		// creates level with different names
+		ret->subKeys = size + 1;
+		ret->label = 0;
+	}
+	else if (level > notCommonLevel)
+	{
+		uint8_t * isLabelSet = data;
+		if (!*isLabelSet)
+		{
+			// creates common end
+			if (level == notCommonLevel + 1)
+			{
+				// set label
+				ret->label = 1;
+				ret->subKeys = 1;
+			}
+			else if (level == maxLevel)
+			{
+				// end of deep key
+				ret->label = 0;
+				ret->subKeys = 0;
+				*isLabelSet = 1;
+			}
+			else
+			{
+				// create deep key
+				ret->label = 0;
+				ret->subKeys = 1;
+			}
+		}
+		else
+		{
+			// use common end
+			ret->subKeys = -1;
+			ret->label = 1;
+		}
+	}
+}
+
+
+/**
+ * @brief Generates all possible KeySetShapes.
+ *
+ * Uses a predefined set of parameters and KsShapeFunctions to generate all possible KeySetShape.
+ *
+ * @retval KeySetShape * on success
+ */
+static KeySetShape * getKeySetShapes (void)
 {
 	KeySetShape * out = elektraMalloc (sizeof (KeySetShape) * numberOfShapes);
-	if (!out) printStderrExit ("malloc KeySetShapes");
-	const unsigned int wordLength[4] = { 1, 5, 20, 50 };
+	if (!out) printExit ("malloc KeySetShapes");
+	const unsigned int wordLength[3] = { 1, 25, 50 };
 	const unsigned int special[2] = { 5, 10 };
 	const unsigned int parent[5] = { 0, 1, 5, 15, 30 };
-	const KsShapeFunction shapeFunctions[11] = { shapefConstBinary5,    shapefConstBinary10,  shapefConstBinary20,
-						     shapefBinaryRand,      shapefConstBranch2,   shapefConstBranch3,
-						     shapefConstBranch5,    shapefDynamicBranch5, shapefDynamicBranch10,
-						     shapefDynamicBranch15, shapefDynamicBranch20 };
-	// numberOfShapes = 6 * 2 * 5 * shapefCount
+	const KsShapeFunction shapeFunctions[4] = { shapefConstBinary, shapefBinaryBranch, shapefDynamicBranch, shapefLateDynamicBranch };
+	// numberOfShapes = 3 * 2 * 5 * shapefCount
 	size_t shapeCount = 0;
-	for (int w0 = 0; w0 < 4; ++w0)
+	for (int w0 = 0; w0 < 3; ++w0)
 	{
-		for (int w1 = w0 + 1; w1 < 4; ++w1)
+		for (int w1 = w0 + 1; w1 < 3; ++w1)
 		{
 			for (int s = 0; s < 2; ++s)
 			{
 				for (int p = 0; p < 5; ++p)
 				{
-					for (int sf = 0; sf < 11; ++sf)
+					for (int sf = 0; sf < 4; ++sf)
 					{
 						out[shapeCount].minWordLength = wordLength[w0];
 						out[shapeCount].maxWordLength = wordLength[w1];
@@ -753,33 +862,30 @@ KeySetShape * getKeySetShapes (void)
 			}
 		}
 	}
-	if (shapeCount != numberOfShapes) printStderrExit ("shapeCount != numberOfShapes");
+	if (shapeCount != numberOfShapes) printExit ("shapeCount != numberOfShapes");
 	return out;
 }
 
-void showShape (void)
+static void showShape (void)
 {
-	int n = 10000;
+	size_t n = 20;
 	// SHAPE
 	KeySetShape shape;
-	shape.minWordLength = 5;
-	shape.maxWordLength = 20;
-	shape.special = 10;
-	shape.parent = 1;
-	shape.shapef = shapefDynamicBranch5;
+	shape.minWordLength = 20;
+	shape.maxWordLength = 30;
+	shape.special = 0;
+	shape.parent = 0;
+	shape.shapeInit = shapefCommonStartEndInit;
+	shape.shapef = shapefCommonStartEnd;
+	shape.shapeDel = shapefCommonStartEndDel;
 	// SHAPE
 	// GENERATE
-	int32_t seed;
-	if (getRandomSeed (&seed) != &seed) printStderrExit ("Seed Parsing Error or feed me more seeds");
-	__asm__("");
-	timeInit ();
-	KeySet * ks = generateKeySet (n, &seed, &shape);
-	timePrint ("generate");
-	__asm__("");
+	KeySet * ks = generateKeySet (n, NULL, &shape);
 	// GENERATE
-	if (0)
+	if (1)
 	{
 		// print KS
+		printf ("print\n");
 		Key * key;
 		ksRewind (ks);
 		while ((key = ksNext (ks)))
@@ -788,5 +894,6 @@ void showShape (void)
 		}
 		// print KS
 	}
+	printf ("%li\n", ksGetSize (ks));
 	ksDel (ks);
 }
