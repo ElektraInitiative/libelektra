@@ -46,15 +46,33 @@ NameIterator relativeKeyIterator (Key const & key, Key const & parent)
 /**
  * @brief This function checks if a key name specifies an array key.
  *
+ * If the key name contains a valid array index that is smaller than `unsigned long long`, then the function will also return this index.
+ *
  * @param nameIterator This iterator specifies the name of the key.
  *
- * @retval true if `name` specifies an array key
- * @retval false otherwise
+ * @retval (true, arrayIndex) if `name` specifies an array key, where `arrayIndex` specifies the index stored in the array key.
+ * @retval (false, 0) otherwise
  */
-bool isArrayKey (NameIterator const & nameIterator)
+std::pair<bool, unsigned long long> isArrayIndex (NameIterator const & nameIterator)
 {
-	string const & current = *nameIterator;
-	return current.size () != 0 && current.front () == '#';
+	string const name = *nameIterator;
+	if (name.size () < 2 || name.front () != '#') return std::make_pair (false, 0);
+
+	auto errnoValue = errno;
+
+	try
+	{
+		return std::make_pair (true, stoull (name.substr (name.find_first_not_of ("#\\_"))));
+	}
+	catch (invalid_argument)
+	{
+		return std::make_pair (false, 0);
+	}
+	catch (out_of_range)
+	{
+		errno = errnoValue;
+		return std::make_pair (false, 0);
+	}
 }
 
 /**
@@ -66,11 +84,15 @@ bool isArrayKey (NameIterator const & nameIterator)
  */
 void addKey (YAML::Node & data, NameIterator & keyIterator, Key const & key)
 {
+	auto const isArrayAndIndex = isArrayIndex (keyIterator);
+	auto const isArray = isArrayAndIndex.first;
+	auto const arrayIndex = isArrayAndIndex.second;
+
 	if (keyIterator == --key.end ())
 	{
-		if (isArrayKey (keyIterator))
+		if (isArray)
 		{
-			data.push_back (YAML::Node (key.getString ()));
+			data[arrayIndex] = YAML::Node (key.getString ());
 		}
 		else
 		{
@@ -80,8 +102,18 @@ void addKey (YAML::Node & data, NameIterator & keyIterator, Key const & key)
 		return;
 	}
 
-	YAML::Node node = (data[*keyIterator] && !data[*keyIterator].IsScalar ()) ? data[*keyIterator] : YAML::Node ();
-	data[*keyIterator] = node;
+	YAML::Node node;
+
+	if (isArray)
+	{
+		node = (data[arrayIndex] && !data[arrayIndex].IsScalar ()) ? data[arrayIndex] : YAML::Node ();
+		data[arrayIndex] = node;
+	}
+	else
+	{
+		node = (data[*keyIterator] && !data[*keyIterator].IsScalar ()) ? data[*keyIterator] : YAML::Node ();
+		data[*keyIterator] = node;
+	}
 	addKey (node, ++keyIterator, key);
 }
 

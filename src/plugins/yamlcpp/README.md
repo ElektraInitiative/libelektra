@@ -104,6 +104,57 @@ kdb rm -r /examples/yamlcpp
 kdb umount /examples/yamlcpp
 ```
 
+The plugin also supports nested arrays.
+
+```sh
+# Mount yamlcpp plugin to cascading namespace `/examples/yamlcpp`
+kdb mount config.yaml /examples/yamlcpp yamlcpp
+
+# Add some key value pairs
+kdb set /examples/yamlcpp/key value
+kdb set /examples/yamlcpp/array/#0 scalar
+kdb set /examples/yamlcpp/array/#1/key value
+kdb set /examples/yamlcpp/array/#1/🔑 🙈
+
+kdb ls /examples/yamlcpp
+#> user/examples/yamlcpp/array
+#> user/examples/yamlcpp/array/#0
+#> user/examples/yamlcpp/array/#1
+#> user/examples/yamlcpp/array/#1/key
+#> user/examples/yamlcpp/array/#1/🔑
+#> user/examples/yamlcpp/key
+
+# Retrieve part of an array value
+kdb get /examples/yamlcpp/array/#1/key
+#> value
+
+# Remove part of an array value
+kdb rm /examples/yamlcpp/array/#1/key
+
+kdb ls /examples/yamlcpp
+#> user/examples/yamlcpp/array
+#> user/examples/yamlcpp/array/#0
+#> user/examples/yamlcpp/array/#1
+#> user/examples/yamlcpp/array/#1/🔑
+#> user/examples/yamlcpp/key
+
+# The plugin stores array keys using YAML sequences.
+# Since yaml-cpp stores keys in arbitrary order -
+# either `key` or `array` could be the “first” key -
+# we remove `key` before we retrieve the data. This way
+# we make sure that the output below will always look
+# the same.
+kdb rm /examples/yamlcpp/key
+kdb file /examples/yamlcpp | xargs cat
+#> array:
+#>   - scalar
+#>   - 🔑: 🙈
+
+# Undo modifications to the key database
+kdb rm -r /examples/yamlcpp
+kdb umount /examples/yamlcpp
+```
+
 ## Dependencies
 
 This plugin requires [yaml-cpp][]. On a Debian based OS the package for the library is called `libyaml-cpp-dev` . On macOS you can install the package `yaml-cpp` via [HomeBrew](https://brew.sh).
@@ -168,7 +219,7 @@ level 1:
 ### Other Limitations
 
 - Adding and removing keys does remove **comments** inside the configuration file
-- Only partial support for Elektra’s **array data type**
+- The plugin does not store the index of the last array element in the parent key
 - The plugin currently lacks proper **type support** for scalars
 
 [yaml-cpp]: https://github.com/jbeder/yaml-cpp
