@@ -196,22 +196,23 @@ static int arrayFilter (const Key * key, void * argument)
 
 
 /**
- * Return all the array keys below the given array parent
+ * @brief Return all the array keys below the given array parent
+ *
  * The array parent itself is not returned.
- * For example, if user/config/# is an array,
- * user/config is the array parent.
+ * For example, if `user/config/#` is an array,
+ * `user/config` is the array parent.
  * Only the direct array keys will be returned. This means
- * that for example user/config/#1/key will not be included,
- * but only user/config/#1.
+ * that for example `user/config/#1/key` will not be included,
+ * but only `user/config/#1`.
  *
  * A new keyset will be allocated for the resulting keys.
- * This means that the caller must ksDel the resulting keyset.
+ * This means that the caller must `ksDel` the resulting keyset.
  *
  * @param arrayParent the parent of the array to be returned
- * @param keys the keyset containing the array keys.
+ * @param keys the keyset containing the array keys
  *
  * @return a keyset containing the array keys (if any)
- * @retval NULL on NULL pointers
+ * @retval NULL on `NULL` pointers
  */
 KeySet * elektraArrayGet (const Key * arrayParent, KeySet * keys)
 {
