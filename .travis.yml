@@ -9,19 +9,16 @@ matrix:
     - os: osx
       osx_image: xcode8.3
       compiler: clang
-      env:
-        - FAST=ON
+      env: [ FAST=ON ]
 
     - os: osx
       osx_image: xcode8.3
       compiler: clang
-      env:
-        - ASAN=ON
+      env: [ ASAN=ON ]
 
     - os: linux
       compiler: clang
-      env:
-        - ASAN=ON
+      env: [ ASAN=ON ]
 
     - os: osx
       osx_image: xcode8.3
