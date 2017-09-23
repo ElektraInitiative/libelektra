@@ -54,8 +54,11 @@ before_install:
         brew link --overwrite gcc
         export CC=gcc-7
         export CXX=g++-7
+        # Install yaml-cpp from source, since otherwise linking fails
+        # We upgrade CMake and Boost first, since otherwise the last Homebrew command would install them from source too
+        brew upgrade cmake; brew upgrade boost; brew install --cc=gcc-7 --c++11 yaml-cpp
       else
-        # Linking `crypto_botan` using `gcc` fails on macOS
+        # Linking the Homebrew versions of Botan and yaml-cpp using `gcc` fails on macOS
         brew install botan
         brew install yaml-cpp
       fi
