@@ -49,40 +49,40 @@ before_install:
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install ninja; fi
   - |
     if [[ "$TRAVIS_OS_NAME" == "osx" && "$FAST" != "ON" ]]; then
-      rvm install 2.3.1;
-      rvm use 2.3.1;
-      gem install test-unit --no-document;
+      rvm install 2.3.1
+      rvm use 2.3.1
+      gem install test-unit --no-document
       if [[ "$CC" == "gcc" ]]; then
-        brew install gcc;
-        brew link --overwrite gcc;
-        export CC=gcc-7;
-        export CXX=g++-7;
+        brew install gcc
+        brew link --overwrite gcc
+        export CC=gcc-7
+        export CXX=g++-7
       else
         # Linking `crypto_botan` using `gcc` fails on macOS
-        brew install botan;
-      fi;
-      brew install checkbashisms;
-      brew install swig;
-      brew install gobject-introspection;
-      brew install python3;
-      brew install python;
-      brew install lua;
-      brew install yajl;
-      brew install augeas;
-      brew install dbus;
-      brew install qt;
-      brew install discount;
-      brew install openssl libgcrypt;
-      brew install libgit2;
-      brew install xerces-c;
-      pip2 install cheetah; # Required by kdb-gen
-      export Qt5_DIR=/usr/local/opt/qt5;
+        brew install botan
+      fi
+      brew install checkbashisms
+      brew install swig
+      brew install gobject-introspection
+      brew install python3
+      brew install python
+      brew install lua
+      brew install yajl
+      brew install augeas
+      brew install dbus
+      brew install qt
+      brew install discount
+      brew install openssl libgcrypt
+      brew install libgit2
+      brew install xerces-c
+      pip2 install cheetah # Required by kdb-gen
+      export Qt5_DIR=/usr/local/opt/qt5
     fi
   - |
     if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
-      sudo apt-get -qq update;
-      sudo apt-get install clang-format-3.8;
-      sudo apt-get install ninja-build;
+      sudo apt-get -qq update
+      sudo apt-get install clang-format-3.8
+      sudo apt-get install ninja-build
     fi
 
 #
@@ -99,18 +99,19 @@ before_script:
     [[ $ASAN == ON ]] && CMAKE_OPT=(-DENABLE_ASAN=ON) || CMAKE_OPT=()
   - |
     if [[ "$TRAVIS_OS_NAME" == "linux" && "$CC" == "clang" || "$TRAVIS_OS_NAME" == "osx" && "${CC:0:3}" == "gcc" ]]; then
-      CMAKE_OPT+=("-DCOMMON_FLAGS=-Werror");
+      CMAKE_OPT+=("-DCOMMON_FLAGS=-Werror")
     fi
-  - plugins="ALL;-jni";
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
-      python2_ver=$(python2 -c 'import sys; print(".".join(map(str, sys.version_info[:2])))') &&
-      CMAKE_OPT+=("-DPYTHON2_INCLUDE_DIR:PATH=$(python2-config --prefix)/include/python${python2_ver}") &&
-      CMAKE_OPT+=("-DPYTHON2_LIBRARY:FILEPATH=$(python2-config --prefix)/lib/libpython${python2_ver}.dylib") &&
-      python3_ver=$(python3 -c 'import sys; print(".".join(map(str, sys.version_info[:2])))') &&
-      CMAKE_OPT+=("-DPYTHON_INCLUDE_DIR:PATH=$(python3-config --prefix)/include/python${python3_ver}m") &&
-      CMAKE_OPT+=("-DPYTHON_LIBRARY:FILEPATH=$(python3-config --prefix)/lib/libpython${python3_ver}.dylib");
-      if [[ $(uname -r | cut -d "." -f 1) == 15 ]]; then plugins="${plugins};-CRYPTO"; fi;
-      ln -s /usr/local/opt/openssl/include/openssl/ /usr/local/include/openssl;
+  - plugins="ALL;-jni"
+  - |
+    if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
+      python2_ver=$(python2 -c 'import sys; print(".".join(map(str, sys.version_info[:2])))') &&                  \
+        CMAKE_OPT+=("-DPYTHON2_INCLUDE_DIR:PATH=$(python2-config --prefix)/include/python${python2_ver}") &&      \
+        CMAKE_OPT+=("-DPYTHON2_LIBRARY:FILEPATH=$(python2-config --prefix)/lib/libpython${python2_ver}.dylib") && \
+        python3_ver=$(python3 -c 'import sys; print(".".join(map(str, sys.version_info[:2])))') &&                \
+        CMAKE_OPT+=("-DPYTHON_INCLUDE_DIR:PATH=$(python3-config --prefix)/include/python${python3_ver}m") &&      \
+        CMAKE_OPT+=("-DPYTHON_LIBRARY:FILEPATH=$(python3-config --prefix)/lib/libpython${python3_ver}.dylib")
+      if [[ $(uname -r | cut -d "." -f 1) == 15 ]]; then plugins="${plugins};-CRYPTO"; fi
+      ln -s /usr/local/opt/openssl/include/openssl/ /usr/local/include/openssl
     fi
   - >
     cmake
