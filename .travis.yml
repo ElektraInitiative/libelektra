@@ -61,20 +61,21 @@ before_install:
         # Linking `crypto_botan` using `gcc` fails on macOS
         brew install botan
       fi
-      brew install checkbashisms
-      brew install swig
-      brew install gobject-introspection
-      brew install python3
-      brew install python
-      brew install lua
-      brew install yajl
       brew install augeas
+      brew install checkbashisms
       brew install dbus
-      brew install qt
       brew install discount
-      brew install openssl libgcrypt
+      brew install gobject-introspection
+      brew install libgcrypt
       brew install libgit2
+      brew install lua
+      brew install openssl
+      brew install python
+      brew install python3
+      brew install qt
+      brew install swig
       brew install xerces-c
+      brew install yajl
       pip2 install cheetah # Required by kdb-gen
       export Qt5_DIR=/usr/local/opt/qt5
     fi
