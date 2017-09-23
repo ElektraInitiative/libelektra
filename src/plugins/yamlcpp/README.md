@@ -90,14 +90,18 @@ kdb ls /examples/yamlcpp
 kdb get user/examples/yamlcpp/sunny/#1
 #> Dee
 
+# You can retrieve the last index of an array by reading the metakey `array`
+kdb getmeta /examples/yamlcpp/sunny array
+# 1
+
 # Extend the array
 kdb set user/examples/yamlcpp/sunny/#2 Dennis
 kdb set user/examples/yamlcpp/sunny/#3 Frank
 kdb set user/examples/yamlcpp/sunny/#4 Mac
 
-# Read one of the new array entries
-kdb get user/examples/yamlcpp/sunny/#3
-#> Frank
+# Retrieve the last array entry
+kdb get user/examples/yamlcpp/sunny/#$(kdb getmeta user/examples/yamlcpp/sunny array)
+#> Mac
 
 # Undo modifications to the key database
 kdb rm -r /examples/yamlcpp
@@ -219,7 +223,6 @@ level 1:
 ### Other Limitations
 
 - Adding and removing keys does remove **comments** inside the configuration file
-- The plugin does not store the index of the last array element in the parent key
 - The plugin currently lacks proper **type support** for scalars
 
 [yaml-cpp]: https://github.com/jbeder/yaml-cpp

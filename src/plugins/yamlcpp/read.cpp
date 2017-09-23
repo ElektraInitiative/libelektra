@@ -45,7 +45,7 @@ Key newKey (string const & name, Key const & parent)
  *
  * @returns The function returns a new key that is part of the array represented by `arrayKey`.
  */
-Key newArrayKey (KeySet const & mappings, Key const & arrayKey)
+Key newArrayKey (KeySet const & mappings, Key & arrayKey)
 {
 	KeySet arrayEntries{ elektraArrayGet (arrayKey.getKey (), mappings.getKeySet ()) };
 
@@ -55,6 +55,8 @@ Key newArrayKey (KeySet const & mappings, Key const & arrayKey)
 		first.addBaseName ("#");
 		arrayEntries.append (first);
 	}
+
+	arrayKey.setMeta ("array", arrayEntries.size ());
 
 	return elektraArrayGetNextKey (arrayEntries.getKeySet ());
 }
@@ -66,7 +68,7 @@ Key newArrayKey (KeySet const & mappings, Key const & arrayKey)
  * @param mappings The key set where the YAML data will be stored
  * @param prefix This key stores the prefix for the key name
  */
-void convertNodeToKeySet (YAML::Node const & node, KeySet & mappings, Key const & parent)
+void convertNodeToKeySet (YAML::Node const & node, KeySet & mappings, Key & parent)
 {
 	if (node.IsScalar ())
 	{
@@ -78,7 +80,7 @@ void convertNodeToKeySet (YAML::Node const & node, KeySet & mappings, Key const 
 	{
 		for (auto element : node)
 		{
-			Key const & key = node.IsMap () ? newKey (element.first.as<string> (), parent) : newArrayKey (mappings, parent);
+			Key key = node.IsMap () ? newKey (element.first.as<string> (), parent) : newArrayKey (mappings, parent);
 			mappings.append (key);
 			convertNodeToKeySet (node.IsMap () ? element.second : element, mappings, key);
 		}
@@ -92,7 +94,7 @@ void convertNodeToKeySet (YAML::Node const & node, KeySet & mappings, Key const 
  * @param mappings The key set where the YAML data will be stored
  * @param parent This key stores the path to the YAML data file that should be read
  */
-void yamlcpp::yamlRead (KeySet & mappings, Key const & parent)
+void yamlcpp::yamlRead (KeySet & mappings, Key & parent)
 {
 	YAML::Node config = YAML::LoadFile (parent.getString ());
 	ostringstream data;

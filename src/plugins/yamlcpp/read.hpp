@@ -13,7 +13,7 @@
 
 namespace yamlcpp
 {
-void yamlRead (kdb::KeySet & mappings, kdb::Key const & parent);
+void yamlRead (kdb::KeySet & mappings, kdb::Key & parent);
 }
 
 #endif
