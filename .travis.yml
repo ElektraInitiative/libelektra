@@ -135,6 +135,6 @@ script:
       ninja run_all
     else
       ninja install
-      ninja test
+      ninja run_all
       kdb run_all
     fi
