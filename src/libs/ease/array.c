@@ -251,6 +251,7 @@ Key * elektraArrayGetNextKey (KeySet * arrayKeys)
 
 	ksAppendKey (arrayKeys, last);
 	Key * newKey = keyDup (last);
+	keySetString (newKey, "");
 	int ret = elektraArrayIncName (newKey);
 
 	if (ret == -1)
