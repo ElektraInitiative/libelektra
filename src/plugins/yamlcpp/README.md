@@ -132,6 +132,14 @@ kdb ls /examples/yamlcpp
 kdb get /examples/yamlcpp/array/#1/key
 #> value
 
+# Since an array saves a list of values, an array parent
+# - which represent the array - does not store a value!
+echo "/examples/yamlcpp/array: “`kdb get /examples/yamlcpp/array`”"
+#> /examples/yamlcpp/array: “”
+kdb get /examples/yamlcpp/array/#1
+echo "/examples/yamlcpp/array/#1: “`kdb get /examples/yamlcpp/array/#1`”"
+#> /examples/yamlcpp/array/#1: “”
+
 # Remove part of an array value
 kdb rm /examples/yamlcpp/array/#1/key
 
