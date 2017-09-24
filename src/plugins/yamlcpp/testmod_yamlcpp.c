@@ -126,6 +126,13 @@ static void test_array (void)
 	test_write_read (
 #include "yamlcpp/Simple Sequence.h"
 		);
+
+	test_read ("yamlcpp/Nested Sequences.yaml",
+#include "yamlcpp/Nested Sequences.h"
+		   );
+	test_write_read (
+#include "yamlcpp/Nested Sequences.h"
+		);
 }
 
 // -- Main ---------------------------------------------------------------------------------------------------------------------------------
