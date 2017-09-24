@@ -224,5 +224,6 @@ level 1:
 
 - Adding and removing keys does remove **comments** inside the configuration file
 - The plugin currently lacks proper **type support** for scalars
+- The plugin does not support **metadata**
 
 [yaml-cpp]: https://github.com/jbeder/yaml-cpp
