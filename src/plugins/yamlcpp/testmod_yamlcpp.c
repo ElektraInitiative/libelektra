@@ -118,6 +118,16 @@ static void test_nested (void)
 		);
 }
 
+static void test_array (void)
+{
+	test_read ("yamlcpp/Simple Sequence.yaml",
+#include "yamlcpp/Simple Sequence.h"
+		   );
+	test_write_read (
+#include "yamlcpp/Simple Sequence.h"
+		);
+}
+
 // -- Main ---------------------------------------------------------------------------------------------------------------------------------
 
 int main (int argc, char ** argv)
@@ -130,6 +140,7 @@ int main (int argc, char ** argv)
 	test_contract ();
 	test_flat ();
 	test_nested ();
+	test_array ();
 
 	printf ("\nResults: %d Test%s done — %d error%s.\n", nbTest, nbTest == 1 ? "" : "s", nbError, nbError == 1 ? "" : "s");
 

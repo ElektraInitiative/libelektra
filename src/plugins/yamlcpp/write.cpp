@@ -144,7 +144,7 @@ void addKeys (YAML::Node & data, KeySet const & mappings, Key const & parent)
 void yamlcpp::yamlWrite (KeySet const & mappings, Key const & parent)
 {
 	ofstream output (parent.getString ());
-	auto data = YAML::Node (YAML::NodeType::Map);
+	auto data = YAML::Node ();
 	addKeys (data, mappings, parent);
 
 	output << data;
