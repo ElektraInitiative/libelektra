@@ -32,7 +32,18 @@ test-suite libelektra-haskell-test
                    , libelektra-haskell
                    , hspec
   extra-libraries:   elektra
-  ghc-options:       -threaded -rtsopts -with-rtsopts=-N
+  ghc-options:       -threaded -rtsopts -with-rtsopts=-N -O0 -j
+  default-language:  Haskell2010
+
+test-suite libelektra-haskell-test-optimized
+  type:              exitcode-stdio-1.0
+  hs-source-dirs:    @CMAKE_CURRENT_SOURCE_DIR@/test
+  main-is:           Elektra.hs
+  build-depends:     base
+                   , libelektra-haskell
+                   , hspec
+  extra-libraries:   elektra
+  ghc-options:       -threaded -rtsopts -with-rtsopts=-N -O1 -j
   default-language:  Haskell2010
 
 source-repository head

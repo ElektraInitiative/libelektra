@@ -35,13 +35,13 @@ macro (add_haskell_plugin target)
 		if (GHC-PKG_EXECUTABLE)
 
 			# needed for HsFFI.h
-			exec_program (${GHC_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}
-				ARGS --numeric-version
-				OUTPUT_VARIABLE GHC_VERSION
+			execute_process (
+				COMMAND ${GHC_EXECUTABLE} --numeric-version
+				OUTPUT_VARIABLE GHC_VERSION OUTPUT_STRIP_TRAILING_WHITESPACE
 			)
-			exec_program (${GHC_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}
-				ARGS --print-libdir
-				OUTPUT_VARIABLE GHC_LIB_DIR
+			execute_process (
+				COMMAND ${GHC_EXECUTABLE} --print-libdir
+				OUTPUT_VARIABLE GHC_LIB_DIR OUTPUT_STRIP_TRAILING_WHITESPACE
 			)
 
 			set (GHC_INCLUDE_DIRS
@@ -56,37 +56,25 @@ macro (add_haskell_plugin target)
 			find_library (GHC_FFI_LIB Cffi PATHS ${GHC_LIB_DIR}/rts)
 			# use HSrts_thr for the threaded version of the rts
 			find_library (GHC_RTS_LIB HSrts PATHS ${GHC_LIB_DIR}/rts)
-			exec_program (${GHC-PKG_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}
-				ARGS latest base
-				OUTPUT_VARIABLE GHC_BASE_NAME
+			execute_process (
+				COMMAND ${GHC-PKG_EXECUTABLE} latest base
+				OUTPUT_VARIABLE GHC_BASE_NAME OUTPUT_STRIP_TRAILING_WHITESPACE
 			)
 			find_library (GHC_BASE_LIB "HS${GHC_BASE_NAME}" ${GHC_LIB_DIR}/${GHC_BASE_NAME})
-			exec_program (${GHC-PKG_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}
-				ARGS latest integer-gmp
-				OUTPUT_VARIABLE GHC_GMP_NAME
+			execute_process (
+				COMMAND ${GHC-PKG_EXECUTABLE} latest integer-gmp
+				OUTPUT_VARIABLE GHC_GMP_NAME OUTPUT_STRIP_TRAILING_WHITESPACE
 			)
 			find_library (GHC_GMP_LIB "HS${GHC_GMP_NAME}" ${GHC_LIB_DIR}/${GHC_GMP_NAME})
-			exec_program (${GHC-PKG_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}
-				ARGS latest ghc-prim
-				OUTPUT_VARIABLE GHC_PRIM_NAME
+			execute_process (
+				COMMAND ${GHC-PKG_EXECUTABLE} latest ghc-prim
+				OUTPUT_VARIABLE GHC_PRIM_NAME OUTPUT_STRIP_TRAILING_WHITESPACE
 			)
 			find_library (GHC_PRIM_LIB "HS${GHC_PRIM_NAME}" ${GHC_LIB_DIR}/${GHC_PRIM_NAME})
 
-			exec_program (${GHC-PKG_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}
-				ARGS --simple-output field libelektra-haskell id
-				OUTPUT_VARIABLE GHC_LIBELEKTRA_HASKELL_NAME
-			)
-			exec_program (${GHC-PKG_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}
-				ARGS --simple-output field libelektra-haskell library-dirs
-				OUTPUT_VARIABLE GHC_LIBELEKTRA_HASKELL_DIR
-			)
-
-			# TODO right now this depends on the library being installed locally, and only one version of it...
-			find_library (GHC_LIBELEKTRA_HASKELL_LIB "HS${GHC_LIBELEKTRA_HASKELL_NAME}" ${GHC_LIBELEKTRA_HASKELL_DIR})
-
 			set (GHC_LIB_DIRS
 				"${CMAKE_CURRENT_BINARY_DIR}/dist/build/libHS${target}.a"
-				${GHC_LIBELEKTRA_HASKELL_LIB}
+				"${CMAKE_BINARY_DIR}/src/bindings/haskell/dist/build/libHSlibelektra-haskell-${KDB_VERSION}.a"
 				${GHC_FFI_LIB}
 				${GHC_RTS_LIB}
 				${GHC_BASE_LIB}
@@ -119,14 +107,24 @@ macro (add_haskell_plugin target)
 				COPY "${CMAKE_CURRENT_SOURCE_DIR}/README.md"
 				DESTINATION "${CMAKE_CURRENT_BINARY_DIR}"
 			)
-			# this way it will generate predictable output filenames
-			# and compile the haskell part of this plugin with cabal
+
+			# register the bindings for the compilation
 			add_custom_target (
-				${target}
-				COMMAND ${CABAL_EXECUTABLE} --enable-shared --ipid=${target} configure
+				${target}-register ALL
+				COMMAND ${CABAL_EXECUTABLE} register --inplace
+				WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/src/bindings/haskell
+				DEPENDS c2hs_haskell
+			)
+			add_custom_target (
+				${target} ALL
+				# this way it will generate predictable output filenames
+				# and compile the haskell part of this plugin with cabal
+				COMMAND ${CABAL_EXECUTABLE} --ipid=${target} configure
 				COMMAND ${CABAL_EXECUTABLE} build
 				WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+				DEPENDS ${target}-register
 			)
+
 		else (GHC-PKG_EXECUTABLE)
 			remove_plugin (${target} "ghc-pkg not found")
 		endif (GHC-PKG_EXECUTABLE)
@@ -149,7 +147,7 @@ macro (add_haskell_plugin target)
 		LINK_LIBRARIES
 			${GHC_LIB_DIRS}
 		DEPENDS
-			${target}
+			${target} c2hs_haskell
 		ADD_TEST
 	)
 endmacro (add_haskell_plugin)

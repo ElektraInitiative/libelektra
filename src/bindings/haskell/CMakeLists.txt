@@ -17,22 +17,15 @@ if (GHC_EXECUTABLE)
 		@ONLY
 	)
 
+	add_custom_target (
+		c2hs_haskell ALL
+		COMMAND ${CABAL_EXECUTABLE} --ipid=libelektra-haskell-${KDB_VERSION} configure
+		COMMAND ${CABAL_EXECUTABLE} build
+		WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+	)
+
 	# build and install it to the cabal db
-	if (INSTALL_SYSTEM_FILES)
-		add_custom_target (
-			c2hs_haskell ALL
-			COMMAND ${CABAL_EXECUTABLE} --enable-shared configure
-			COMMAND ${CABAL_EXECUTABLE} install
-			WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-		)
-	else (INSTALL_SYSTEM_FILES) # else just build it
-		add_custom_target (
-			c2hs_haskell ALL
-			COMMAND ${CABAL_EXECUTABLE} --enable-shared configure
-			COMMAND ${CABAL_EXECUTABLE} build
-			WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-		)
-	endif (INSTALL_SYSTEM_FILES)
+	install(CODE "execute_process (COMMAND ${CABAL_EXECUTABLE} install WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})")
 
 	# also test it with cabal
 	add_test (
