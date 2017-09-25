@@ -8,7 +8,7 @@
   - Syntax of the configuration file(s)
   - Side effects (e.g. logging, vcs commit, notifications)
   - Flexible adoption to specific needs
-  - Adoption of standards (xdg, xml, json)
+  - Adoption of standards (xdg, xml, JSON)
 - Reduce duplication of code (a single parser/generator used by
   everyone accessing a specific part of the configuration).
 

@@ -58,7 +58,7 @@ compiler warnings:
 
 consistent type vs. check/type
 different type systems?
-let json use same types (double, boolean, nothing for string)
+let JSON use same types (double, boolean, nothing for string)
 
 type checker plugin redesign: take care of simplicity + working together with others
 	set of types (min, max as 1-20, enums as user-defined types,...), space separated as now
