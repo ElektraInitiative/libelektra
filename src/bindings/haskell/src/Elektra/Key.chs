@@ -136,22 +136,6 @@ keyListMeta key = keyRewindMeta key >> listMeta []
 {#fun unsafe keyIsInactive {`Key'} -> `Int' #}
 {#fun unsafe keyIsBinary {`Key'} -> `Int' #}
 {#fun unsafe keyIsString {`Key'} -> `Int' #}
--- testing out custom marshallers, this probably fits better to haskell
-{#fun unsafe keyIsString as keyIsStringMaybe {`Key'} -> `Maybe Bool' peekMaybeBool #}
-
--- ***
--- CUSTOM MARSHALLERS WHICH FIT HASKELL BETTER
--- ***
-
-withMaybeBool (Just False) = 0
-withMaybeBool (Just True) = 1
-withMaybeBool Nothing = -1 
-
-peekMaybeBool x =
-    case fromIntegral x of
-        -1 -> Nothing
-        0 -> Just False
-        _ -> Just True
 
 -- ***
 -- COMMON HASKELL TYPE CLASSES

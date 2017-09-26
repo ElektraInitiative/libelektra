@@ -2,7 +2,6 @@ find_program (GHC_EXECUTABLE ghc)
 find_program (CABAL_EXECUTABLE cabal)
 find_program (C2HS_EXECUTABLE c2hs)
 
-
 if (CABAL_EXECUTABLE) # set by find_program
 if (C2HS_EXECUTABLE)
 if (GHC_EXECUTABLE)
@@ -27,15 +26,25 @@ if (GHC_EXECUTABLE)
 	# build and install it to the cabal db
 	install(CODE "execute_process (COMMAND ${CABAL_EXECUTABLE} install WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})")
 
-	# also test it with cabal
-	add_test (
-		NAME testhaskell_cabal
-		COMMAND ${CABAL_EXECUTABLE} test
-		WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-	)
+	if (BUILD_TESTING)
+		# also test it with cabal
+		add_test (
+			NAME testhaskell_cabal
+			COMMAND ${CABAL_EXECUTABLE} test libelektra-haskell-test libelektra-haskell-test-optimized
+			WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+		)
+		set_property (TEST testhaskell_cabal PROPERTY LABELS bindings)
 
-	set_property (TEST testhaskell_cabal PROPERTY LABELS bindings)
-	set_property (TEST testhaskell_cabal PROPERTY LABELS kdbtests)
+		if (ENABLE_KDB_TESTING)
+			add_test (
+				NAME testhaskell_realworld_cabal
+				COMMAND ${CABAL_EXECUTABLE} test libelektra-haskell-test-realworld libelektra-haskell-test-realworld-optimized
+				WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+			)
+			set_property (TEST testhaskell_realworld_cabal PROPERTY LABELS bindings)
+			set_property (TEST testhaskell_realworld_cabal APPEND PROPERTY LABELS kdbtests)
+		endif (ENABLE_KDB_TESTING)
+	endif (BUILD_TESTING)
 else (GHC_EXECUTABLE)
 	remove_binding (c2hs_haskell "GHC not found")
 endif (GHC_EXECUTABLE)
