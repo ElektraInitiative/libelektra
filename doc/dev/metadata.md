@@ -59,9 +59,11 @@ The interface to access metadata consists of the following functions:
 
 Interface of metadata:
 
-	const Key *keyGetMeta(const Key *key, const char* metaName);
-	ssize_t    keySetMeta(Key *key, const char* metaName,
-		const char *newMetaString);
+```c
+const Key *keyGetMeta(const Key *key, const char* metaName);
+ssize_t    keySetMeta(Key *key, const char* metaName,
+	const char *newMetaString);
+```
 
 Inside a `Key`, metadata with a given metaname and a metavalue can be set
 using `keySetMeta()` and retrieved using `keyGetMeta()`.
@@ -69,9 +71,11 @@ Iteration over metadata is possible with:
 
 Interface for iterating metadata:
 
-	int keyRewindMeta(Key *key);
-	const Key *keyNextMeta(Key *key);
-	const Key *keyCurrentMeta(const Key *key);
+```c
+int keyRewindMeta(Key *key);
+const Key *keyNextMeta(Key *key);
+const Key *keyCurrentMeta(const Key *key);
+```
 
 Rewinding and forwarding to the next key works as for the `KeySet`.
 Programmers used to Elektra will immediately be familiar with
@@ -89,8 +93,10 @@ Only one metakey resides in memory
 as long as the metadata is not changed with `keySetMeta()`.
 To copy metadata, the following functions can be used:
 
-	int keyCopyMeta(Key *dest, const Key *source, const char *metaName);
-	int keyCopyAllMeta(Key *dest, const Key *source);
+```c
+int keyCopyMeta(Key *dest, const Key *source, const char *metaName);
+int keyCopyAllMeta(Key *dest, const Key *source);
+```
 
 The name `copy` is used because the information is copied from one key to
 another. It has the same meaning as in `ksCopy()`.
