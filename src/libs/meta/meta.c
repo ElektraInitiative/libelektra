@@ -936,20 +936,31 @@ void elektraMetaArrayAdd (Key * key, const char * metaName, const char * value)
 	keySetMeta (key, metaName, keyBaseName (arrayKey));
 	keyDel (arrayKey);
 }
+
 /**
- * creates a KeySet from a MetaKey array.
- * e.g.
- * elektraMetaArrayToKS(keyNew ("/a", KEY_VALUE, "b, c",
- * 	KEY_META, "dep", "#1", KEY_META, "dep/#0", "/b", KEY_META, "dep/#1", "/c", KEY_END), "dep");
- * returns a KeySet containing the keys "dep/#0" with value "/b" and "dep/#1" with value "/c"
- * If no MetaKey array is found, null is returned.
- * The returned KeySet must be free'd with ksDel
+ * Create a `KeySet` from a metakey array.
+ *
+ * For example, the following function call
+ *
+ * @code
+elektraMetaArrayToKS(
+        keyNew ("/a", KEY_VALUE, "b, c",
+                KEY_META, "dep",    "#1",
+                KEY_META, "dep/#0", "/b",
+                KEY_META, "dep/#1", "/c", KEY_END),
+        "dep");
+ * @endcode
+ *
+ * returns a `KeySet` containing the keys `"dep/#0"` with value `"/b"` and
+ * `"dep/#1"` with value `"/c"`.
+ *
+ * If no meta key array is found, null is returned.
+ * The returned `KeySet` must be freed with `ksDel`
  *
  * @returns a keyset containing all the metakeys of the metakey array
  * @param key the key containing the metakey array
  * @param metaName the name of the metakey array parent
  */
-
 KeySet * elektraMetaArrayToKS (Key * key, const char * metaName)
 {
 	const Key * meta = keyGetMeta (key, metaName);

@@ -3,6 +3,7 @@
 # ==============================
 
 s/behaviour/behavior/g
+s/generalises/generalizes/g
 
 # ==========
 # = Brands =
@@ -44,6 +45,8 @@ s:\<key/value:key-value:g
 # s/keyvalue/key value/g
 
 s/\<data-?type/data type/g
+
+s/([^\./`-])[Jj]son/\1JSON/
 
 s/\<look up/lookup/g
 

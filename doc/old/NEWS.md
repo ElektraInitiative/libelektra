@@ -524,9 +524,9 @@ and install or upgrade the packages with:
 
 I am proud to announce this amazing feature release!
 
-Elektra now speaks json!
+Elektra now speaks JSON!
 From this release on, Elektra has full read and write capabilities
-towards the world of json. json is a very popular serialization format
+towards the world of JSON. JSON is a very popular serialization format
 which is originated in Javascript.
 It is very similar to the already existing tcl plugin, which also works
 like a parser without intermediate data structures. But unlike the tcl
@@ -534,7 +534,7 @@ plugin, where a grammar was written, the blazing fast yajl library was
 used.
 
 Elektra now has convention for arrays!
-Multiplicity is a very common need within configuration. Json specifically
+Multiplicity is a very common need within configuration. JSON specifically
 has syntactic support for it. Up to now Elektra used different conventions
 for arrays. E.g. Mountpoints name their plugins #0-#9, and fstab had
 #00-#99 lines. These approaches
@@ -665,7 +665,7 @@ with releases at least every two month. They focus will be on stability,
 better user experience, integration of new programming languages and
 more serialise formats.
 Some ideas:
-- serialiser: e.g. json, using lenses
+- serialiser: e.g. JSON, using lenses
 - resolver: e.g. xdg with improved locking
 - testing: automated abi compatibility checks, shell test suite
 - bindings: gobject, swig

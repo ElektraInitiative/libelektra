@@ -2,7 +2,7 @@ elektra-metadata(7) -- metadata
 =================================
 
 
-**metadata** is data about data.  In earlier versions of Elektra, there has been a limited
+**Metadata** is data about data.  In earlier versions of Elektra, there has been a limited
 number of metadata entries suited for `filesys`.  For `filesys` this
 was efficient, but it was of limited use for every other backend. This
 situation has now changed fundamentally by introducing arbitrary metadata.
@@ -54,7 +54,7 @@ information is uniquely identified by numerical codes.  Metadata can
 also embed descriptive text specifying a reason for the error.
 
 -  Applications can remember something about keys in metadata.
-Such metadata generalises the application-defined flag.
+Such metadata generalizes the application-defined flag.
 
 -  A more advanced idea is to use metadata to generate forms in a
 programmatic way. While it is certainly possible to store the necessary
