@@ -17,7 +17,7 @@ The plugin was tested with yajl version 1.0.8-1 from Debian 6
 and yajl version 2.0.4-2 from Debian 7.
 
 Examples of files which are used for testing can be found
-below the folder in "src/plugins/yajl/examples".
+below the folder in "src/plugins/yajl/yajl".
 
 The JSON grammar can be found [here](http://www.ietf.org/rfc/rfc4627.txt).
 
