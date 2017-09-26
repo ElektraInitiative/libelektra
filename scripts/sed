@@ -3,6 +3,7 @@
 # ==============================
 
 s/behaviour/behavior/g
+s/generalises/generalizes/g
 
 # ==========
 # = Brands =
