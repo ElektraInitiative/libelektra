@@ -2,7 +2,7 @@ elektra-metadata(7) -- metadata
 =================================
 
 
-**metadata** is data about data.  In earlier versions of Elektra, there has been a limited
+**Metadata** is data about data.  In earlier versions of Elektra, there has been a limited
 number of metadata entries suited for `filesys`.  For `filesys` this
 was efficient, but it was of limited use for every other backend. This
 situation has now changed fundamentally by introducing arbitrary metadata.
