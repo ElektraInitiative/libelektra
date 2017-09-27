@@ -7,6 +7,11 @@ if (DEPENDENCY_PHASE)
 	find_package(yaml-cpp QUIET 0.5)
 	if (NOT YAML-CPP_FOUND)
 		remove_plugin (yamlcpp "yaml-cpp (version 0.5) was not found")
+	else (NOT YAML-CPP_FOUND)
+		# Disable warnings about shadow declarations in yaml-cpp source code
+		if (APPLE AND CMAKE_COMPILER_IS_GNUCXX)
+			string (REPLACE "-Wshadow" "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
+		endif (APPLE AND CMAKE_COMPILER_IS_GNUCXX)
 	endif (NOT YAML-CPP_FOUND)
 endif (DEPENDENCY_PHASE)
 
