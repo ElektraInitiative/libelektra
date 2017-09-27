@@ -14,7 +14,7 @@ find_package(PkgConfig)
 pkg_check_modules(PC_YAML-CPP QUIET yaml-cpp)
 
 find_path(YAML-CPP_INCLUDE_DIR
-	yaml.h
+	NAMES yaml-cpp/yaml.h
 	HINTS ${PC_YAML-CPP_INCLUDEDIR} ${PC_YAML-CPP_INCLUDE_DIRS}
 	PATH_SUFFIXES yaml-cpp)
 

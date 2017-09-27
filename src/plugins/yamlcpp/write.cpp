@@ -7,7 +7,7 @@
  */
 
 #include "write.hpp"
-#include "yaml.h"
+#include "yaml-cpp/yaml.h"
 
 #include <kdbease.h>
 #include <kdblogger.h>

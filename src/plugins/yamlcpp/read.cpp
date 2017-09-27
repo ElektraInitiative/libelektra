@@ -7,7 +7,7 @@
  */
 
 #include "read.hpp"
-#include "yaml.h"
+#include "yaml-cpp/yaml.h"
 
 #include <kdb.hpp>
 #include <kdbease.h>

@@ -19,7 +19,7 @@ using namespace ckdb;
 #include <kdberrors.h>
 #include <kdblogger.h>
 
-#include "yaml.h"
+#include "yaml-cpp/yaml.h"
 
 // -- Functions ----------------------------------------------------------------------------------------------------------------------------
 
