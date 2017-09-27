@@ -4,6 +4,7 @@ import Elektra.Key
 import Elektra.KeySet
 import Elektra.KDB
 import Test.Hspec
+import Test.QuickCheck
 import Control.Monad
 
 main :: IO ()
@@ -29,6 +30,11 @@ main = hspec $ do
             keyName key >>= (`shouldBe` name ++ "/haskell")
             keyAddBaseName key "other"
             keyName key >>= (`shouldBe` name ++ "/haskell/other")
+        it "creates arbitrary key names" $ property $ forAll genSafeString $ \s1 -> forAll genSafeString $ \s2 -> do
+            key <- keyNew ('/' : s1)
+            keyAddBaseName key s2
+            keyBaseName key >>= (`shouldBe` s2)
+            keyName key >>= (`shouldBe` accepted s1 s2)
     describe "KeySet" $ do
         it "creates a new empty keyset" $ testSingleKeySetOp 5 ksGetSize 0
         it "creates a duplicate keyset which is not the same" $ do
@@ -43,7 +49,14 @@ main = hspec $ do
         name = "/tests/testhaskell_cabal"
         otherName = "/tests/testhaskell_cabal/other"
         other = "other"
+        accepted s1 s2
+            | null s1 && null s2 = "/%"
+            | null s1 = '/':s2
+            | null s2 = '/':s1 ++ "/%"
+            | otherwise = '/':s1 ++ '/':s2
 
 testSingleKeyOp name fn expected = keyNew name >>= fn >>= (`shouldBe` expected)
 testKeyModOp name modFn testFn expected = keyNew name >>= (\x -> modFn x >> testFn x >>= (`shouldBe` expected))
 testSingleKeySetOp size fn expected = ksNew size >>= fn >>= (`shouldBe` expected)
+
+genSafeString = listOf $ elements ['a'..'z']
