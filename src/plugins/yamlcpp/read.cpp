@@ -56,9 +56,10 @@ Key newArrayKey (KeySet const & mappings, Key & arrayKey)
 		arrayEntries.append (first);
 	}
 
-	arrayKey.setMeta ("array", arrayEntries.size ());
+	Key newKey{ elektraArrayGetNextKey (arrayEntries.getKeySet ()) };
+	arrayKey.setMeta ("array", newKey.getBaseName ());
 
-	return elektraArrayGetNextKey (arrayEntries.getKeySet ());
+	return newKey;
 }
 
 /**
