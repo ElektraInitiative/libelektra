@@ -1,10 +1,10 @@
 if (DEPENDENCY_PHASE)
-	find_package(Boost QUIET)
+	find_package (Boost QUIET)
 	if (NOT Boost_FOUND)
 		remove_plugin (yamlcpp "boost was not found")
 	endif (NOT Boost_FOUND)
 
-	find_package(yaml-cpp QUIET 0.5)
+	find_package (yaml-cpp QUIET 0.5)
 	if (NOT YAML-CPP_FOUND)
 		remove_plugin (yamlcpp "yaml-cpp (version 0.5) was not found")
 	else (NOT YAML-CPP_FOUND)
