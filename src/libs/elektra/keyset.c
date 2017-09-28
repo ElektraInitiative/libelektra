@@ -420,7 +420,6 @@ int ksDel (KeySet * ks)
 
 	rc = ksClose (ks);
 
-
 #ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
 	if (ks->opmphm)
 	{
@@ -487,10 +486,10 @@ static int keyCompareByName (const void * p1, const void * p2)
 	size_t const nameSize1 = key1->keyUSize;
 	size_t const nameSize2 = key2->keyUSize;
 	int ret = 0;
-	ELEKTRA_LOG_WARNING ("name1 ptr: %p", (void *) name1);
-	ELEKTRA_LOG_WARNING ("name1 size: %zu", nameSize1);
-	ELEKTRA_LOG_WARNING ("name2 ptr: %p", (void *) name2);
-	ELEKTRA_LOG_WARNING ("name2 size: %zu", nameSize2);
+// 	ELEKTRA_LOG_WARNING ("name1 ptr: %p", (void *) name1);
+// 	ELEKTRA_LOG_WARNING ("name1 size: %zu", nameSize1);
+// 	ELEKTRA_LOG_WARNING ("name2 ptr: %p", (void *) name2);
+// 	ELEKTRA_LOG_WARNING ("name2 size: %zu", nameSize2);
 	if (nameSize1 == nameSize2)
 	{
 		ret = memcmp (name1, name2, nameSize2);
@@ -2559,7 +2558,8 @@ int ksResize (KeySet * ks, size_t alloc)
 
 	if (elektraRealloc ((void **) &ks->array, sizeof (struct _Key *) * ks->alloc) == -1)
 	{
-		elektraFree (ks->array);
+		if (test_bit(ks->flags, KS_FLAG_MMAP) != KS_FLAG_MMAP)
+			elektraFree (ks->array);
 		ks->array = 0;
 		/*errno = KDB_ERR_NOMEM;*/
 		return -1;
@@ -2629,7 +2629,9 @@ int ksInit (KeySet * ks)
 int ksClose (KeySet * ks)
 {
 	Key * k;
-	int ksInMmap = (ks->flags & KS_FLAG_MMAP) == KS_FLAG_MMAP;
+	
+	if (test_bit(ks->flags, KS_FLAG_MMAP) == KS_FLAG_MMAP)
+		return 0;
 
 	ksRewind (ks);
 	while ((k = ksNext (ks)) != 0)
@@ -2639,7 +2641,7 @@ int ksClose (KeySet * ks)
 		keyDel (k);
 	}
 
-	if (ks->array && !ksInMmap) elektraFree (ks->array);
+	if (ks->array) elektraFree (ks->array);
 	ks->array = 0;
 	ks->alloc = 0;
 

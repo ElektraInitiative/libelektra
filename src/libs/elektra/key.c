@@ -449,6 +449,21 @@ memerror:
  * @ingroup key
  *
  */
+#include <kdblogger.h>
+static void m_output_key (Key * k)
+{
+	// output_meta will print endline
+	if (!k)
+		ELEKTRA_LOG_WARNING ("Key is NULL");
+		
+	ELEKTRA_LOG_WARNING ("Key ptr: %p", (void *)k);
+	ELEKTRA_LOG_WARNING ("keyname ptr: %p", (void *)k->key);
+	ELEKTRA_LOG_WARNING ("keyname: %s", keyName (k));
+	ELEKTRA_LOG_WARNING ("keystring ptr: %p", (void *)k->data.v);
+	ELEKTRA_LOG_WARNING ("keystring: %s", keyString (k));
+	ELEKTRA_LOG_WARNING ("key flags: %u", k->flags);
+	//m_output_meta (k);
+}
 int keyDel (Key * key)
 {
 	int rc;
@@ -459,11 +474,15 @@ int keyDel (Key * key)
 	{
 		return key->ksReference;
 	}
-
+	
+	int keyInMmap = test_bit(key->flags, KEY_FLAG_MMAP) == KEY_FLAG_MMAP;
+	//m_output_key(key);
 	rc = keyClear (key);
 
-	if ((key->flags & KEY_FLAG_MMAP) != KEY_FLAG_MMAP)
+	if (!keyInMmap)
+	{
 		elektraFree (key);
+	}
 
 	return rc;
 }
@@ -508,11 +527,11 @@ int keyClear (Key * key)
 
 	ref = key->ksReference;
 
-	int keyInMmap = (key->flags & KEY_FLAG_MMAP) == KEY_FLAG_MMAP;
+	int keyInMmap = test_bit(key->flags, KEY_FLAG_MMAP) == KEY_FLAG_MMAP;
 
 	if (key->key && !keyInMmap) elektraFree (key->key);
 	if (key->data.v && !keyInMmap) elektraFree (key->data.v);
-	if (key->meta && !keyInMmap) ksDel (key->meta);
+	if (key->meta) ksDel (key->meta);
 
 	keyInit (key);
 

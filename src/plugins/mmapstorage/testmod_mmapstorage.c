@@ -70,9 +70,68 @@ static KeySet *metaTestKeySet () {
 	);
 }
 
+static void m_output_meta (Key * k)
+{
+	const Key * meta;
+
+	keyRewindMeta (k);
+	while ((meta = keyNextMeta (k)) != 0)
+	{
+		ELEKTRA_LOG_WARNING ("Meta KeySet size: %zu", k->meta->size);
+		if (!meta)
+			ELEKTRA_LOG_WARNING ("Meta Key is NULL");
+		ELEKTRA_LOG_WARNING (", %s: %s", keyName (meta), (const char *)keyValue (meta));
+	}
+	ELEKTRA_LOG_WARNING ("\n");
+}
+
+static void m_output_key (Key * k)
+{
+	// output_meta will print endline
+	if (!k)
+		ELEKTRA_LOG_WARNING ("Key is NULL");
+		
+	ELEKTRA_LOG_WARNING ("Key ptr: %p", (void *)k);
+	ELEKTRA_LOG_WARNING ("keyname ptr: %p", (void *)k->key);
+	ELEKTRA_LOG_WARNING ("keyname: %s", keyName (k));
+	ELEKTRA_LOG_WARNING ("keystring ptr: %p", (void *)k->data.v);
+	ELEKTRA_LOG_WARNING ("keystring: %s", keyString (k));
+	ELEKTRA_LOG_WARNING ("key flags: %u", k->flags);
+	m_output_meta (k);
+}
+
+static void m_output_keyset (KeySet * ks)
+{
+	ELEKTRA_LOG_WARNING ("-------------------> output keyset start");
+	if (!ks)
+		ELEKTRA_LOG_WARNING ("KeySet is NULL");
+	if(ks->size == 0)
+		ELEKTRA_LOG_WARNING ("KeySet is empty");
+	
+	ELEKTRA_LOG_WARNING ("KeySet size: %zu", ks->size);
+	
+	Key * k;
+	ksRewind (ks);
+	size_t ks_iterations = 0;
+	while ((k = ksNext (ks)) != 0)
+	{
+		ELEKTRA_LOG_WARNING ("Key:");
+		m_output_key (k);
+		++ks_iterations;
+	}
+	ELEKTRA_LOG_WARNING ("KeySet iteration: %zu", ks_iterations);
+	ELEKTRA_LOG_WARNING ("KeySet current: %zu", ks->current);
+	ELEKTRA_LOG_WARNING ("KeySet size: %zu", ks->size);
+	ELEKTRA_LOG_WARNING ("-------------------> output keyset done");
+}
+
 static void test_mmap_set_get (const char * tmpFile)
 {
 	Key * parentKey = keyNew("user/tests/mmapstorage", KEY_VALUE, tmpFile, KEY_END);
+// 	KeySet * test = ksNew(0, KS_END);
+// 	ksAppendKey(test, parentKey);
+// 	m_output_keyset(test);
+// 	exit(1234);
 	KeySet * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("mmapstorage");
 	KeySet * ks = simpleTestKeySet ();
@@ -83,15 +142,20 @@ static void test_mmap_set_get (const char * tmpFile)
 	succeed_if (plugin->kdbGet (plugin, returned, parentKey) == 1, "kdbGet was not successful");
 	KeySet * expected = simpleTestKeySet ();
 	compare_keyset(expected, returned);
-	printf ("ks:\n");
-	output_keyset (ks);
-	printf ("expected:\n");
-	output_keyset (expected);
+// 	printf ("ks:\n");
+// 	output_keyset (ks);
+// 	printf ("expected:\n");
+// 	output_keyset (expected);
 
 	ksDel (expected);
+	//m_output_keyset(returned);
 	ksDel (returned);
 
 	keyDel (parentKey);
+	
+	//m_output_keyset(ks);
+	
+	
 	ksDel (ks);
 	PLUGIN_CLOSE ();
 }
@@ -104,6 +168,7 @@ static void test_mmap_get_after_reopen (const char * tmpFile)
 	KeySet * returned = ksNew (0, KS_END);
 
 	succeed_if (plugin->kdbGet (plugin, returned, parentKey) == 1, "kdbGet was not successful");
+	//m_output_keyset(returned);
 
 	KeySet * expected = simpleTestKeySet ();
 	compare_keyset(expected, returned);
@@ -136,19 +201,24 @@ static void test_mmapMeta (const char * tmpFile)
 	KeySet * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("mmapstorage");
 	KeySet * ks = metaTestKeySet();
+	m_output_keyset(ks);
 
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 1, "kdbSet was not successful");
+	m_output_keyset(ks);
 
 	KeySet * returned = ksNew (0, KS_END);
 	succeed_if (plugin->kdbGet (plugin, returned, parentKey) == 1, "kdbGet was not successful");
 
 	KeySet * expected = metaTestKeySet ();
+	m_output_keyset(expected);
+	m_output_keyset(returned);
 	compare_keyset(expected, returned);
 // 	printf ("ks:\n");
 // 	output_keyset (ks);
 // 	printf ("expected:\n");
 // 	output_keyset (expected);
-	output_keyset(ks);
+
+	
 	ksDel (expected);
 	ksDel (returned);
 
@@ -266,10 +336,10 @@ int main (int argc, char ** argv)
 	init (argc, argv);
 	
 #ifdef DEBUG
-	testDynArray1();
+ 	testDynArray1();
 #endif
 	
-	//testMetaPreAnything();
+	testMetaPreAnything();
 	
 	const char * tmpFile = elektraFilename();
 
