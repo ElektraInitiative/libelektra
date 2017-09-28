@@ -63,6 +63,23 @@ Key newArrayKey (KeySet const & mappings, Key & arrayKey)
 }
 
 /**
+ * @brief Add metadata saved in a YAML map to the specified key
+ *
+ * @param key This parameter saves the key to which this function should add the metadata stored in `node`.
+ * @param node This YAML node stores a map containing metadata.
+ */
+void addMetadata (Key & key, YAML::Node const & node)
+{
+	for (auto & element : node)
+	{
+		auto metakey = element.first.as<string> ();
+		auto metavalue = element.second.IsNull () ? "" : element.second.as<string> ();
+		ELEKTRA_LOG_DEBUG ("%s: %s", metakey.c_str (), metavalue.c_str ());
+		key.setMeta (metakey, metavalue);
+	}
+}
+
+/**
  * @brief Convert a YAML node to a key set
  *
  * @param node This YAML node stores the data that should be added to the keyset `mappings`
@@ -71,7 +88,14 @@ Key newArrayKey (KeySet const & mappings, Key & arrayKey)
  */
 void convertNodeToKeySet (YAML::Node const & node, KeySet & mappings, Key & parent)
 {
-	if (node.IsScalar ())
+	if (node.Tag () == "!elektra/meta")
+	{
+		Key key (parent.getFullName (), KEY_VALUE, node[0].as<string> ().c_str (), KEY_END);
+		ELEKTRA_LOG_DEBUG ("%s: %s", key.getName ().c_str (), key.get<string> ().c_str ());
+		mappings.append (key);
+		addMetadata (key, node[1]);
+	}
+	else if (node.IsScalar ())
 	{
 		Key key (parent.getFullName (), KEY_VALUE, node.as<string> ().c_str (), KEY_END);
 		ELEKTRA_LOG_DEBUG ("%s: %s", key.getName ().c_str (), key.get<string> ().c_str ());

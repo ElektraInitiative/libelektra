@@ -167,6 +167,47 @@ kdb rm -r /examples/yamlcpp
 kdb umount /examples/yamlcpp
 ```
 
+## Metadata
+
+The plugin has read-only support for metadata. The example below shows how a basic `Key` including some metadata, looks inside the YAML configuration file:
+
+```yaml
+key without metadata: value
+key with metadata:
+  !elektra/meta
+    - value2
+    - metakey: metavalue
+      empty metakey:
+      another metakey: another metavalue
+```
+
+. As we can see above the value containing metadata is marked by the tag handle `!elektra/meta`. The data type contains a list with two elements. The first element of this list specifies the value of the key, while the second element contains a map saving the metadata for the key. The data above represents the following key set in Elektra if we mount the file directly to the namespace `user`:
+
+|            Name           |  Value |     Metaname    |     Metavalue     |
+|:-------------------------:|:------:|:---------------:|:-----------------:|
+| user/key without metadata | value1 |        —        |         —         |
+| user/key with metadata    | value2 |     metakey     |     metavalue     |
+|                           |        |  empty metakey  |         —         |
+|                           |        | another metakey | another metavalue |
+
+. The example below shows how we can read metadata using the `yamlcpp` plugin via `kdb`.
+
+```sh
+# Mount yamlcpp plugin to cascading namespace `/examples/yamlcpp`
+kdb mount config.yaml /examples/yamlcpp yamlcpp
+
+# Manually add a key including metadata to the database
+echo "🔑: !elektra/meta [🦄, {comment: Unicorn}]" >  `kdb file /examples/yamlcpp`
+kdb lsmeta /examples/yamlcpp/🔑
+#> comment
+kdb getmeta /examples/yamlcpp/🔑 comment
+#> Unicorn
+
+# Undo modifications to the key database
+echo 'remove: me' > `kdb file /examples/yamlcpp`
+kdb umount /examples/yamlcpp
+```
+
 ## Dependencies
 
 This plugin requires [yaml-cpp][]. On a Debian based OS the package for the library is called `libyaml-cpp-dev` . On macOS you can install the package `yaml-cpp` via [HomeBrew](https://brew.sh).
@@ -232,6 +273,6 @@ level 1:
 
 - Adding and removing keys does remove **comments** inside the configuration file
 - The plugin currently lacks proper **type support** for scalars
-- The plugin does not support **metadata**
+- The plugin only supports reading of **metadata**
 
 [yaml-cpp]: https://github.com/jbeder/yaml-cpp
