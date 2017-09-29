@@ -94,7 +94,7 @@ But you can still access `/t/a` with `kdb get`:
 
 	kdb get /t/a
 
-If you are looking for a more interactive example, have a look at the following ASCIIcast at: 
+If you are looking for a more interactive example, have a look at the following ASCIIcast at:
 
 [https://asciinema.org/a/136021](https://asciinema.org/a/136021)
 
