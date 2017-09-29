@@ -74,7 +74,7 @@ void addMetadata (Key & key, YAML::Node const & node)
 	{
 		auto metakey = element.first.as<string> ();
 		auto metavalue = element.second.IsNull () ? "" : element.second.as<string> ();
-		ELEKTRA_LOG_DEBUG ("%s: %s", metakey.c_str (), metavalue.c_str ());
+		ELEKTRA_LOG_DEBUG ("Add metakey “%s: %s”", metakey.c_str (), metavalue.c_str ());
 		key.setMeta (metakey, metavalue);
 	}
 }
@@ -91,14 +91,14 @@ void convertNodeToKeySet (YAML::Node const & node, KeySet & mappings, Key & pare
 	if (node.Tag () == "!elektra/meta")
 	{
 		Key key (parent.getFullName (), KEY_VALUE, node[0].as<string> ().c_str (), KEY_END);
-		ELEKTRA_LOG_DEBUG ("%s: %s", key.getName ().c_str (), key.get<string> ().c_str ());
+		ELEKTRA_LOG_DEBUG ("Add key “%s: %s”", key.getName ().c_str (), key.get<string> ().c_str ());
 		mappings.append (key);
 		addMetadata (key, node[1]);
 	}
 	else if (node.IsScalar ())
 	{
 		Key key (parent.getFullName (), KEY_VALUE, node.as<string> ().c_str (), KEY_END);
-		ELEKTRA_LOG_DEBUG ("%s: %s", key.getName ().c_str (), key.get<string> ().c_str ());
+		ELEKTRA_LOG_DEBUG ("Add key “%s: %s”", key.getName ().c_str (), key.get<string> ().c_str ());
 		mappings.append (key);
 	}
 	else if (node.IsMap () || node.IsSequence ())
@@ -106,6 +106,7 @@ void convertNodeToKeySet (YAML::Node const & node, KeySet & mappings, Key & pare
 		for (auto element : node)
 		{
 			Key key = node.IsMap () ? newKey (element.first.as<string> (), parent) : newArrayKey (mappings, parent);
+			ELEKTRA_LOG_DEBUG ("Add intermediate key “%s”", key.getName ().c_str ());
 			mappings.append (key);
 			convertNodeToKeySet (node.IsMap () ? element.second : element, mappings, key);
 		}
@@ -122,10 +123,13 @@ void convertNodeToKeySet (YAML::Node const & node, KeySet & mappings, Key & pare
 void yamlcpp::yamlRead (KeySet & mappings, Key & parent)
 {
 	YAML::Node config = YAML::LoadFile (parent.getString ());
+
+#ifdef LOGGING_ENABLED
 	ostringstream data;
 	data << config;
+	ELEKTRA_LOG_DEBUG ("Read data “%s”", data.str ().c_str ());
+#endif
 
-	ELEKTRA_LOG_DEBUG ("Data: “%s”", data.str ().c_str ());
 	convertNodeToKeySet (config, mappings, parent);
-	ELEKTRA_LOG_DEBUG ("Number of keys: %zd", mappings.size ());
+	ELEKTRA_LOG_DEBUG ("Added %zd key%s", mappings.size (), mappings.size () == 1 ? "" : "s");
 }

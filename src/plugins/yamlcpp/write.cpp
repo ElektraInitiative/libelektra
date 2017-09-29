@@ -128,8 +128,15 @@ void addKeys (YAML::Node & data, KeySet const & mappings, Key const & parent)
 {
 	for (auto key : mappings)
 	{
+		ELEKTRA_LOG_DEBUG ("Convert key “%s: %s”", key.getName ().c_str (), key.get<string> ().c_str ());
 		NameIterator keyIterator = relativeKeyIterator (key, parent);
 		addKey (data, keyIterator, key);
+
+#ifdef LOGGING_ENABLED
+		ostringstream output;
+		output << data;
+		ELEKTRA_LOG_DEBUG ("Converted key data “%s”", output.str ().c_str ());
+#endif
 	}
 }
 
@@ -146,6 +153,13 @@ void yamlcpp::yamlWrite (KeySet const & mappings, Key const & parent)
 	ofstream output (parent.getString ());
 	auto data = YAML::Node ();
 	addKeys (data, mappings, parent);
+
+#ifdef LOGGING_ENABLED
+	ostringstream outputString;
+	outputString << data;
+
+	ELEKTRA_LOG_DEBUG ("Write data “%s”", outputString.str ().c_str ());
+#endif
 
 	output << data;
 }
