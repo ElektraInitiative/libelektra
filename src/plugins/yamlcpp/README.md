@@ -305,6 +305,6 @@ level 1:
 ### Other Limitations
 
 - Adding and removing keys does remove **comments** inside the configuration file
-- The plugin currently lacks proper **type support** for scalars
+- The plugin currently lacks proper **type support** for scalars. For example, YAML CPP saves binary keys directly as string. Ideally the plugin should [base64](https://en.wikipedia.org/wiki/Base64)-encode binary data and then save the result using the tag `tag:yaml.org,2002:binary` (shorthand: `!!binary`).
 
 [yaml-cpp]: https://github.com/jbeder/yaml-cpp
