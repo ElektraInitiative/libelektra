@@ -220,6 +220,27 @@ kdb rm -r /examples/yamlcpp
 kdb umount /examples/yamlcpp
 ```
 
+We can also invoke additional plugins that use metadata like `type`.
+
+```sh
+kdb mount config.yaml /examples/yamlcpp yamlcpp type
+kdb set /examples/yamlcpp/typetest/number 21
+kdb setmeta /examples/yamlcpp/typetest/number check/type short
+
+kdb set /examples/yamlcpp/typetest/number "One"
+# RET: 5
+# STDERR-REGEX: .*Sorry, the error .#52. occurred ;(⏎
+#               Description: could not type check value of key⏎
+#               .*Reason: The type long failed to match for .*/number with string: One.*
+
+kdb get /examples/yamlcpp/typetest/number
+#> 21
+
+# Undo modifications to the key database
+kdb rm -r /examples/yamlcpp
+kdb umount /examples/yamlcpp
+```
+
 ## Dependencies
 
 This plugin requires [yaml-cpp][]. On a Debian based OS the package for the library is called `libyaml-cpp-dev` . On macOS you can install the package `yaml-cpp` via [HomeBrew](https://brew.sh).
