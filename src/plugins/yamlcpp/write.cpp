@@ -76,13 +76,53 @@ std::pair<bool, unsigned long long> isArrayIndex (NameIterator const & nameItera
 }
 
 /**
+ * @brief This function creates a YAML Node containing a key value and optionally metadata.
+ *
+ * @param key This key specifies the data that should be saved in the YAML node returned by this function.
+ *
+ * @returns A new YAML node containing the data and metadata specified in `key`
+ */
+YAML::Node createLeafNode (Key & key)
+{
+	key.rewindMeta ();
+
+	auto metaNode{ YAML::Node (YAML::NodeType::Map) };
+	Key meta;
+	while ((meta = key.nextMeta ()))
+	{
+		if (meta.getName () == "array") continue;
+		metaNode[meta.getName ()] = meta.getString ();
+		ELEKTRA_LOG_DEBUG ("Add metakey “%s: %s”", meta.getName ().c_str (), meta.getString ().c_str ());
+	}
+
+	if (metaNode.size () <= 0)
+	{
+		ELEKTRA_LOG_DEBUG ("Return leaf node with value “%s”", key.getString ().c_str ());
+		return YAML::Node (key.getString ());
+	}
+
+	auto node{ YAML::Node (YAML::NodeType::Sequence) };
+	node.SetTag ("!elektra/meta");
+	node.push_back (key.getString ());
+	node.push_back (metaNode);
+
+#ifdef LOGGING_ENABLED
+	ostringstream data;
+	data << node;
+	ELEKTRA_LOG_DEBUG ("Return meta leaf node with value “%s”", data.str ().c_str ());
+#endif
+
+	return node;
+}
+
+/**
  * @brief This function adds a key to a YAML node.
  *
  * @param data This node stores the data specified via `keyIterator`.
  * @param keyIterator This iterator specifies the current part of the key name this function adds to `data`.
  * @param key This parameter specifies the key that should be added to `data`.
  */
-void addKey (YAML::Node & data, NameIterator & keyIterator, Key const & key)
+void addKey (YAML::Node & data, NameIterator & keyIterator, Key & key)
 {
 	auto const isArrayAndIndex = isArrayIndex (keyIterator);
 	auto const isArray = isArrayAndIndex.first;
@@ -92,11 +132,11 @@ void addKey (YAML::Node & data, NameIterator & keyIterator, Key const & key)
 	{
 		if (isArray)
 		{
-			data[arrayIndex] = YAML::Node (key.getString ());
+			data[arrayIndex] = createLeafNode (key);
 		}
 		else
 		{
-			data[*keyIterator] = YAML::Node (key.getString ());
+			data[*keyIterator] = createLeafNode (key);
 		}
 
 		return;

@@ -169,7 +169,7 @@ kdb umount /examples/yamlcpp
 
 ## Metadata
 
-The plugin has read-only support for metadata. The example below shows how a basic `Key` including some metadata, looks inside the YAML configuration file:
+The plugin supports metadata. The example below shows how a basic `Key` including some metadata, looks inside the YAML configuration file:
 
 ```yaml
 key without metadata: value
@@ -190,7 +190,7 @@ key with metadata:
 |                           |        |  empty metakey  |         —         |
 |                           |        | another metakey | another metavalue |
 
-. The example below shows how we can read metadata using the `yamlcpp` plugin via `kdb`.
+. The example below shows how we can read and write metadata using the `yamlcpp` plugin via `kdb`.
 
 ```sh
 # Mount yamlcpp plugin to cascading namespace `/examples/yamlcpp`
@@ -203,8 +203,20 @@ kdb lsmeta /examples/yamlcpp/🔑
 kdb getmeta /examples/yamlcpp/🔑 comment
 #> Unicorn
 
+# Add a new key and add some metadata to the new key
+kdb set /examples/yamlcpp/brand new
+kdb setmeta /examples/yamlcpp/brand comment "The Devil And God Are Raging Inside Me"
+kdb setmeta /examples/yamlcpp/brand rationale "Because I Love It"
+
+# Retrieve metadata
+kdb lsmeta /examples/yamlcpp/brand
+#> comment
+#> rationale
+kdb getmeta /examples/yamlcpp/brand rationale
+#> Because I Love It
+
 # Undo modifications to the key database
-echo 'remove: me' > `kdb file /examples/yamlcpp`
+kdb rm -r /examples/yamlcpp
 kdb umount /examples/yamlcpp
 ```
 
@@ -273,6 +285,5 @@ level 1:
 
 - Adding and removing keys does remove **comments** inside the configuration file
 - The plugin currently lacks proper **type support** for scalars
-- The plugin only supports reading of **metadata**
 
 [yaml-cpp]: https://github.com/jbeder/yaml-cpp
