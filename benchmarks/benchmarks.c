@@ -5,8 +5,9 @@
  *
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
-
+#define _GNU_SOURCE
 #include <benchmarks.h>
+#include <search.h>
 #include <sys/time.h>
 
 struct timeval start;
@@ -71,6 +72,7 @@ struct _KsTreeVertex
 	uint8_t isKey;			  /*!< when true the path from root to vertex is a Key in the resulting KeySet */
 	uint8_t isLink;			  /*!< determines if vertex is link, used at recFreeKsTree (...) */
 	struct _KsTreeVertex ** children; /*!< stores the children */
+	struct hsearch_data * htab;       /*!< stores the Hash Map, containing the children names */
 	size_t numberofChildren;	  /*!< number of the stored children */
 	size_t mallocSize;		  /*!< size malloced for the children */
 };
@@ -89,6 +91,65 @@ static void shapefDefault (const size_t initSize, size_t size, size_t level, int
 const char * const alphabetnumbers = "aAbBcCdDeEfFgGhHiIjJkKlLmMnNoOpPqQrRsStTuUvVwWxXyYzZ0123456789";
 const char * const alphabetspecial = "^!\"$%&/{([)]=} ?\\+*~#';,:.-_|<>";
 
+
+/**
+ * @brief Creates the Hash Map for a given vertex.
+ *
+ * vertex->mallocSize must be set.
+ *
+ * @param vertex the vertex
+ */
+static void createHashMap (KsTreeVertex * vertex)
+{
+	vertex->htab = elektraCalloc (sizeof (struct hsearch_data));
+	if (!vertex->htab || !hcreate_r (vertex->mallocSize, vertex->htab))
+	{
+		printExit ("recGenerateKsTree: can not create Hash Map");
+	}
+}
+
+/**
+ * @brief Deletes the Hash Map for a given vertex.
+ *
+ * @param vertex the vertex
+ */
+static void deleteHashMap (KsTreeVertex * vertex)
+{
+	hdestroy_r (vertex->htab);
+	elektraFree (vertex->htab);
+}
+/**
+ * @brief Searches in the Hash Map of vertex for the name.
+ *
+ * If not in vertex insert it.
+ *
+ * @param vertex the vertex
+ * @param name the name to search
+ *
+ * @retval 1 if not in vertex, unique
+ * @retval 0 if in vertex, not unique
+ */
+static int searchHashMap (KsTreeVertex * vertex, char * name)
+{
+	ENTRY e;
+	ENTRY * ep;
+	e.key = name;
+	e.data = NULL;
+	if (!hsearch_r (e, FIND, &ep, vertex->htab))
+	{
+		// not in Hash Map, insert
+		if (!hsearch_r (e, ENTER, &ep, vertex->htab))
+		{
+			printExit ("recGenerateKsTree: can not insert in Hash Map");
+		}
+		return 1;
+	}
+	else
+	{
+		return 0;
+	}
+}
+
 /**
  * @brief Fills a string up with random chars and null terminates it.
  *
@@ -96,7 +157,6 @@ const char * const alphabetspecial = "^!\"$%&/{([)]=} ?\\+*~#';,:.-_|<>";
  * @param length the length of the string (excluding the '\0')
  * @param seed to generate random data
  * @param shape the shape of the KeySet
- *
  */
 static void fillUpWithRandomChars (char * name, size_t length, int32_t * seed, KeySetShape * shape)
 {
@@ -183,14 +243,7 @@ static char * generateName (KsTreeVertex * parent, int32_t * seed, KeySetShape *
 	{
 		// generate name and see if name is unique
 		fillUpWithRandomChars (out, length, seed, shape);
-		uniqueName = 1;
-		for (size_t i = 0; i < parent->numberofChildren; ++i)
-		{
-			if (!strcmp (parent->children[i]->name, out))
-			{
-				uniqueName = 0;
-			}
-		}
+		uniqueName = searchHashMap (parent, out);
 		++nameGenerationTries;
 		if (nameGenerationTries > maxNameGenerationTries && !uniqueName)
 		{
@@ -269,6 +322,7 @@ static KsTreeVertex * recGenerateKsTree (KsTreeVertex * parent, const size_t siz
 			// prepare children
 			vertex->numberofChildren = 0;
 			vertex->mallocSize = ret.subKeys;
+			createHashMap (vertex);
 			vertex->children = elektraMalloc (vertex->mallocSize * sizeof (KsTreeVertex *));
 			if (!vertex->children)
 			{
@@ -406,7 +460,11 @@ static void recFreeKsTree (KsTreeVertex * vertex)
 		}
 	}
 	if (vertex->name) elektraFree (vertex->name);
-	if (vertex->numberofChildren && !vertex->isLink) elektraFree (vertex->children);
+	if (vertex->numberofChildren && !vertex->isLink)
+	{
+		elektraFree (vertex->children);
+		deleteHashMap (vertex);
+	}
 	elektraFree (vertex);
 }
 
@@ -473,7 +531,8 @@ KeySet * generateKeySet (const size_t size, int32_t * seed, KeySetShape * shape)
 	root->name = NULL;
 	root->isKey = 0;
 	root->isLink = 0;
-	root->mallocSize = size / 4;
+	root->mallocSize = size;
+	createHashMap (root);
 	root->numberofChildren = 0;
 	root->children = elektraMalloc (root->mallocSize * sizeof (KsTreeVertex *));
 	if (!root->children)
@@ -487,15 +546,6 @@ KeySet * generateKeySet (const size_t size, int32_t * seed, KeySetShape * shape)
 		--actualSize;
 		root->children[root->numberofChildren] = recGenerateKsTree (root, size, &actualSize, 1, seed, shape, data);
 		++root->numberofChildren;
-		if (root->numberofChildren >= root->mallocSize)
-		{
-			// resize root
-			root->mallocSize += size / 4;
-			if (elektraRealloc ((void **)&root->children, root->mallocSize * sizeof (KsTreeVertex *)))
-			{
-				printExit ("generateKeySet: root children realloc");
-			}
-		}
 	}
 	// del data
 	if (shape->shapeDel)
