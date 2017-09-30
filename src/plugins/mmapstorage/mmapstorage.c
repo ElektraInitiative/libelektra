@@ -578,12 +578,13 @@ int elektraMmapstorageGet (Plugin * handle, KeySet * returned, Key * parentKey)
 		// TODO: fix this
 // 		addr = mmapAddr (fp);
 // 		mappedRegion = elektraMmapstorageMapFile (addr, fp, sbuf.st_size, MAP_SHARED | MAP_FIXED, parentKey, errnosave);
-		ELEKTRA_LOG_WARNING ("FAILED to read mmap fixed address, NOT IMPLEMENTED");
-		exit(128);
+		//ELEKTRA_LOG_WARNING ("FAILED to read mmap fixed address, NOT IMPLEMENTED");
+		//exit(128);
+		mappedRegion = elektraMmapstorageMapFile ((void *) 0, fp, sbuf.st_size, MAP_PRIVATE, parentKey, errnosave);
 	}
 	else
 	{
-		mappedRegion = elektraMmapstorageMapFile (addr, fp, sbuf.st_size, MAP_SHARED | MAP_FIXED, parentKey, errnosave);
+		mappedRegion = elektraMmapstorageMapFile (addr, fp, sbuf.st_size, MAP_PRIVATE | MAP_FIXED, parentKey, errnosave);
 	}
 	
 	if (mappedRegion == MAP_FAILED)
@@ -653,6 +654,18 @@ int elektraMmapstorageSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Ke
 	elektraMmapstorageWrite (mappedRegion, returned, &mmapHeader, &dynArray);
 	//msync ((void *) mappedRegion, mmapHeader.mmapSize, MS_SYNC);
 	ksClose (returned);
+	
+	// all data is written, further changes need to be copy-on-write
+	mappedRegion = elektraMmapstorageMapFile ((void *) mappedRegion, fp, mmapHeader.mmapSize, MAP_PRIVATE | MAP_FIXED, parentKey, 
+errnosave);
+	ELEKTRA_LOG_WARNING ("mappedRegion ptr: %p", (void *) mappedRegion);
+	if (mappedRegion == MAP_FAILED)
+	{
+		fclose (fp);
+		ELEKTRA_LOG ("could not remap to MAP_PRIVATE");
+		return -1;
+	}
+	
 	mmapToKeySet (mappedRegion, returned);
 	//m_output_keyset (returned);
 	
