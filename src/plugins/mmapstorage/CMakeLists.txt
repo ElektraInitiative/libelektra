@@ -1,4 +1,4 @@
-include (LibAddMacros)
+include (LibAddPlugin)
 
 add_plugin (mmapstorage
 	SOURCES
