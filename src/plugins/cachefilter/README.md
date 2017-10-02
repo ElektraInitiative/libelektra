@@ -16,5 +16,5 @@ A global plugin that steps in during `kdbGet()` process to filter the results in
 ## Usage
 
 There is not much to do to use the plugin. Just mount is as global plugin and you are done:
-    
+
     kdb global-mount cachefilter
