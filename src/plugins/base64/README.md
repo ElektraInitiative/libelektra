@@ -1,7 +1,7 @@
 - infos = Information about base64 plugin is in keys below
 - infos/author = Peter Nirschl <peter.nirschl@gmail.com>
 - infos/licence = BSD
-- infos/provides = filefilter
+- infos/provides = binary
 - infos/needs =
 - infos/recommends =
 - infos/placements = postgetstorage presetstorage
