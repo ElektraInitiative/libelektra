@@ -24,8 +24,6 @@
 
 #define MIN_VALID_STACK 3
 #define EPSILON 0.00001
-#define str(s) #s
-#define xstr(s) str (s)
 
 typedef enum {
 	ERROR = 0,
@@ -65,7 +63,9 @@ int elektraMathcheckGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKT
 #include ELEKTRA_README (mathcheck)
 			keyNew ("system/elektra/modules/mathcheck/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END),
 			keyNew ("system/elektra/modules/mathcheck/export/constants", KEY_END),
-			keyNew ("system/elektra/modules/mathcheck/export/constants/EPSILON", KEY_VALUE, xstr (EPSILON), KEY_END), KS_END);
+			keyNew ("system/elektra/modules/mathcheck/export/constants/EPSILON", KEY_VALUE, ELEKTRA_STRINGIFY (EPSILON),
+				KEY_END),
+			KS_END);
 		ksAppend (returned, contract);
 		ksDel (contract);
 

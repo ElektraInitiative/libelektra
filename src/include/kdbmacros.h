@@ -13,6 +13,7 @@
 #define KDBMACROS_H
 
 #define ELEKTRA_QUOTE(x) #x
+#define ELEKTRA_STRINGIFY(x) ELEKTRA_QUOTE (x)
 
 #if defined(__APPLE__)
 #define ELEKTRA_STAT_SECONDS(status) status.st_mtime
