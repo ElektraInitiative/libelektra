@@ -17,4 +17,12 @@ A global plugin that steps in during `kdbGet()` process to filter the results in
 
 There is not much to do to use the plugin. Just mount is as global plugin and you are done:
 
-    kdb global-mount cachefilter
+```sh
+kdb global-mount cachefilter
+```
+
+To remove the plugin just use `kdb global-umount`:
+
+```sh
+kdb global-umount cachefilter
+```
