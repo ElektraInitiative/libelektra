@@ -30,11 +30,10 @@
 
 #include "kdbinternal.h"
 #include <kdbassert.h>
-<<<<<<< HEAD
 #include <kdbrand.h>
-=======
+
 #include <kdblogger.h>
->>>>>>> mmapstorage: backup
+
 
 
 #define ELEKTRA_MAX_PREFIX_SIZE sizeof ("namespace/")
@@ -2507,7 +2506,7 @@ Key * ksLookupByBinary (KeySet * ks, const void * value, size_t size, option_t o
  *
  * Resize keyset.
  *
- * For internal useage only.
+ * For internal usage only.
  *
  * Don't use that function to be portable. You can give an hint
  * how large the keyset should be in ksNew().
@@ -2541,12 +2540,15 @@ int ksResize (KeySet * ks, size_t alloc)
 		else
 			return 0;
 	}
+	
+	int inMmap = test_bit (ks->flags, KS_FLAG_MMAP) == KS_FLAG_MMAP;
 
-	if (ks->array == NULL)
+	if ((ks->array == NULL) || inMmap)
 	{ /* Not allocated up to now */
 		ks->alloc = alloc;
 		ks->size = 0;
 		ks->array = elektraMalloc (sizeof (struct _Key *) * ks->alloc);
+		clear_bit (ks->flags, KS_FLAG_MMAP);
 		if (!ks->array)
 		{
 			/*errno = KDB_ERR_NOMEM;*/
@@ -2554,12 +2556,16 @@ int ksResize (KeySet * ks, size_t alloc)
 		}
 	}
 	ks->alloc = alloc;
+<<<<<<< HEAD
 
 
 	if (elektraRealloc ((void **) &ks->array, sizeof (struct _Key *) * ks->alloc) == -1)
+=======
+	
+	if (elektraRealloc ((void **)&ks->array, sizeof (struct _Key *) * ks->alloc) == -1)
+>>>>>>> mmapstorage: fix ksResize for mapped keysets
 	{
-		if (test_bit(ks->flags, KS_FLAG_MMAP) != KS_FLAG_MMAP)
-			elektraFree (ks->array);
+		elektraFree (ks->array);
 		ks->array = 0;
 		/*errno = KDB_ERR_NOMEM;*/
 		return -1;
