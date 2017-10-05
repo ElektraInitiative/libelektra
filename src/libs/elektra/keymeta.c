@@ -32,7 +32,7 @@
 #include <kdb.h>
  * @endcode
  *
- * Next to \link keyname Name (key and owner) \endlink and 
+ * Next to \link keyname Name (key and owner) \endlink and
  * \link keyvalue Value (data and comment) \endlink there
  * is the so called meta information inside every key.
  *
