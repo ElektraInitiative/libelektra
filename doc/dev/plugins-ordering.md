@@ -63,6 +63,6 @@ Here you see a table that contains all names:
 	8    postrollback      postgetstorage     postcommit
 	9    postrollback      postgetstorage     postcommit
 
-how the placement is influenced using infos/placement, infos/ordering
-and infos/stacking as described in
+. How the placement is influenced using infos/placement, infos/ordering
+and infos/stacking is described in
 [CONTRACT.ini](/doc/CONTRACT.ini).
