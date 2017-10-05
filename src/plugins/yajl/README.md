@@ -79,6 +79,46 @@ Arrays are mapped to Elektra’s array convention #0, #1,..
 Because of these potential problems a type checker,
 comments filter and directory value filter are highly recommended.
 
+## Usage
+
+The following example shows you how you can read and write data using this plugin.
+
+```sh
+# Mount the plugin to the cascading namespace `/examples/yajl`
+kdb mount config.json /examples/yajl yajl
+
+# Manually add a key-value pair to the database
+printf '{ "number": 1337 }' > `kdb file /examples/yajl`
+
+# Retrieve the new value
+kdb get /examples/yajl/number
+#> 1337
+
+# Determine the data type of the value
+kdb getmeta /examples/yajl/number type
+#> double
+
+# Add another key-value pair
+kdb set /examples/yajl/key value
+#> Using name user/examples/yajl/key
+#> Create a new key user/examples/yajl/key with string "value"
+
+# Retrieve the new value
+kdb get /examples/yajl/key
+#> value
+
+# Check the format of the configuration file
+kdb file user/examples/yajl/ | xargs cat
+#> {
+#>     "key": "value",
+#>     "number": 1337
+#> }
+
+# Undo modifications to the database
+kdb rm -r /examples/yajl
+kdb umount /examples/yajl
+```
+
 ## OpenICC Device Config
 
 This plugin was specifically designed and tested for the

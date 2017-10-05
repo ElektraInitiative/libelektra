@@ -33,6 +33,7 @@ add_plugin_shell_test (mozprefs)
 add_plugin_shell_test (range)
 add_plugin_shell_test (type)
 add_plugin_shell_test (xerces)
+add_plugin_shell_test (yajl)
 
 # The tests below might fail on Linux if ASAN is enabled because of problematic code in `stl_tree.h`
 if (NOT (${CMAKE_SYSTEM_NAME} MATCHES "Linux" AND ENABLE_ASAN))
