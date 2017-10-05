@@ -22,6 +22,7 @@ add_s_test (kdb-global-umount "${CMAKE_SOURCE_DIR}/doc/help/kdb-global-umount.md
 add_s_test (kdb-ls "${CMAKE_SOURCE_DIR}/doc/help/kdb-ls.md")
 
 add_plugin_shell_test (base64)
+add_plugin_shell_test (base666)
 add_plugin_shell_test (cachefilter)
 add_plugin_shell_test (camel)
 add_plugin_shell_test (conditionals)

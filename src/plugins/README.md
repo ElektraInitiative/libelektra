@@ -153,6 +153,7 @@ Rewrite unwanted characters with different techniques:
   language C
 - [hexcode](hexcode/) using hex codes
 - [base64](base64/) using the Base64 encoding scheme (RFC4648)
+- [base666](base666/) adds Base64 support for the YAML CPP plugin
 
 Transformations:
 
