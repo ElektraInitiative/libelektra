@@ -32,7 +32,7 @@ Has only limited support for metadata.
 
 ## Types
 
-My metadata `type` the used types can be chosen:
+The type of the data is available via the metadata `type`:
 
 - `string`:
   The JSON string type.
