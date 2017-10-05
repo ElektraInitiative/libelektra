@@ -561,7 +561,7 @@ cleanup:
  * but the gid of the the key, has full access.
  *
  * 0007 decides about the world permissions. This is taken into
- * account when neighter the uid nor the gid matches. So that
+ * account when neither the uid nor the gid matches. So that
  * example would allow everyone with a different uid and gid
  * of that key gains full access.
  *
@@ -1279,7 +1279,7 @@ int elektraSortTopology (KeySet * ks, Key ** array)
 				}
 				else if (i == j)
 				{
-					// reflexiv depencency, do nothing
+					// reflexiv dependency, do nothing
 				}
 				else
 				{
@@ -1301,7 +1301,7 @@ int elektraSortTopology (KeySet * ks, Key ** array)
 			{
 				adjMatrix[j].isResolved = 0;
 				++unresolved;
-				// cound unresolved dependencies
+				// count unresolved dependencies
 				depCount += gotUnresolved;
 			}
 			ksDel (deps);
