@@ -87,51 +87,51 @@ static void test_write_read (KeySet * const keySet)
 
 static void test_flat (void)
 {
-	test_read ("yamlcpp/Flat Block Mapping.yaml",
-#include "yamlcpp/Flat Block Mapping.h"
+	test_read ("yamlcpp/flat_block_mapping.yaml",
+#include "yamlcpp/flat_block_mapping.h"
 		   );
 	test_write_read (
-#include "yamlcpp/Flat Block Mapping.h"
+#include "yamlcpp/flat_block_mapping.h"
 		);
 
-	test_read ("yamlcpp/Flat Flow Mapping.yaml",
-#include "yamlcpp/Flat Flow Mapping.h"
+	test_read ("yamlcpp/flat_flow_mapping.yaml",
+#include "yamlcpp/flat_flow_mapping.h"
 		   );
 	test_write_read (
-#include "yamlcpp/Flat Flow Mapping.h"
+#include "yamlcpp/flat_flow_mapping.h"
 		);
 }
 
 static void test_nested (void)
 {
-	test_read ("yamlcpp/Nested Block Mapping.yaml",
-#include "yamlcpp/Nested Block Mapping.h"
+	test_read ("yamlcpp/nested_block_mapping.yaml",
+#include "yamlcpp/nested_block_mapping.h"
 		   );
 	test_write_read (
-#include "yamlcpp/Nested Block Mapping.h"
+#include "yamlcpp/nested_block_mapping.h"
 		);
-	test_read ("yamlcpp/Nested Mixed Mapping.yaml",
-#include "yamlcpp/Nested Mixed Mapping.h"
+	test_read ("yamlcpp/nested_mixed_mapping.yaml",
+#include "yamlcpp/nested_mixed_mapping.h"
 		   );
 	test_write_read (
-#include "yamlcpp/Nested Mixed Mapping.h"
+#include "yamlcpp/nested_mixed_mapping.h"
 		);
 }
 
 static void test_array (void)
 {
-	test_read ("yamlcpp/Simple Sequence.yaml",
-#include "yamlcpp/Simple Sequence.h"
+	test_read ("yamlcpp/simple_sequence.yaml",
+#include "yamlcpp/simple_sequence.h"
 		   );
 	test_write_read (
-#include "yamlcpp/Simple Sequence.h"
+#include "yamlcpp/simple_sequence.h"
 		);
 
-	test_read ("yamlcpp/Nested Sequences.yaml",
-#include "yamlcpp/Nested Sequences.h"
+	test_read ("yamlcpp/nested_sequences.yaml",
+#include "yamlcpp/nested_sequences.h"
 		   );
 	test_write_read (
-#include "yamlcpp/Nested Sequences.h"
+#include "yamlcpp/nested_sequences.h"
 		);
 }
 
