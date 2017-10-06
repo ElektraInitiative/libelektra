@@ -85,7 +85,7 @@ The following example shows you how you can read and write data using this plugi
 
 ```sh
 # Mount the plugin to the cascading namespace `/examples/yajl`
-kdb mount config.json /examples/yajl yajl
+sudo kdb mount config.json /examples/yajl yajl
 
 # Manually add a key-value pair to the database
 printf '{ "number": 1337 }' > `kdb file /examples/yajl`
@@ -116,7 +116,7 @@ kdb file user/examples/yajl/ | xargs cat
 
 # Undo modifications to the database
 kdb rm -r /examples/yajl
-kdb umount /examples/yajl
+sudo kdb umount /examples/yajl
 ```
 
 ## OpenICC Device Config

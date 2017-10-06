@@ -24,7 +24,7 @@ The following example shows basic usage of the `mini` plugin.
 
 ```sh
 # Mount mini plugin to cascading namespace `/examples/mini`
-kdb mount mini.ini /examples/mini mini
+sudo kdb mount mini.ini /examples/mini mini
 
 # Add two key value pairs to the database
 kdb set /examples/mini/key value
@@ -56,7 +56,7 @@ kdb get "/examples/mini/🔑"
 
 # Undo modifications to the key database
 kdb rm -r /examples/mini
-kdb umount /examples/mini
+sudo kdb umount /examples/mini
 ```
 
 ### Escaping
@@ -69,7 +69,7 @@ As with most configuration file formats, some characters carry special meaning. 
 In case of **key values** you do not need to care about the special meaning of these characters most of the time, since the plugin handles escaping and unescaping of them for you. Since mINI use the backslash character (`\`) to escape values, the backspace character will be escaped too (`\\`). The following example shows the escaping behavior.
 
 ```sh
-kdb mount mini.ini /examples/mini mini
+sudo kdb mount mini.ini /examples/mini mini
 
 # Store a value containing special characters
 kdb set /examples/mini/key ';#=\'
@@ -96,7 +96,7 @@ kdb get /examples/mini/foreground
 
 # Undo modifications to the key database
 kdb rm -r /examples/mini
-kdb umount /examples/mini
+sudo kdb umount /examples/mini
 ```
 
 In the case of **key names** you **must not use any of the characters mentioned above** (`;`, `#` and `=`) at all. Otherwise the behavior of the plugin will be **undefined**.
@@ -106,7 +106,7 @@ In the case of **key names** you **must not use any of the characters mentioned 
 This plugin only supports simple key-value based properties files without sections. mINI also does not support metadata. If you want a more feature complete plugin, then please take a look at the [ini plugin](../ini/). The example below shows some of the limitations of the plugin.
 
 ```sh
-kdb mount mini.ini /examples/mini mini
+sudo kdb mount mini.ini /examples/mini mini
 
 # The plugin does not support sections or multi-line values
 echo   '[section]'         >> `kdb file /examples/mini`
@@ -134,5 +134,5 @@ kdb get /examples/mini/key
 
 # Undo modifications to the key database
 kdb rm -r /examples/mini
-kdb umount /examples/mini
+sudo kdb umount /examples/mini
 ```

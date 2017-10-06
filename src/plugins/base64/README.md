@@ -28,13 +28,13 @@ See the documentation of the [null plugin](../null/), as it uses the same patter
 To mount a simple backend that uses the Base64 encoding, you can use:
 
 ```sh
-kdb mount test.ecf /examples/base64/test base64
+sudo kdb mount test.ecf /examples/base64/test base64
 ```
 
 . To unmount the plugin use the following command:
 
 ```sh
-kdb umount /examples/base64/test
+sudo kdb umount /examples/base64/test
 ```
 
 . All encoded binary values will look something like this:

@@ -19,7 +19,7 @@ This plugin reads configuration data specified in a **very limited** subset of  
 
 ```sh
 # Mount yaml plugin to cascading namespace `/examples/camel`
-kdb mount config.yaml /examples/camel camel
+sudo kdb mount config.yaml /examples/camel camel
 
 kdb set /examples/camel/key value
 kdb get /examples/camel/key
@@ -39,7 +39,7 @@ kdb export /examples/camel camel
 #> }
 
 kdb rm -r /examples/camel
-kdb umount /examples/camel
+sudo kdb umount /examples/camel
 ```
 
 ## Limitations

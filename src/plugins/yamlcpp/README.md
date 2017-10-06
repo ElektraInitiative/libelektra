@@ -18,20 +18,20 @@ The YAML CPP plugin reads and writes configuration data via the [yaml-cpp][] lib
 You can mount this plugin via `kdb mount`:
 
 ```sh
-kdb mount config.yaml /examples/yamlcpp yamlcpp
+sudo kdb mount config.yaml /examples/yamlcpp yamlcpp
 ```
 
 . To unmount the plugin use  `kdb umount`:
 
 ```sh
-kdb umount /examples/yamlcpp
+sudo kdb umount /examples/yamlcpp
 ```
 
 . The following examples show how you can store and retrieve data via `yamlcpp`.
 
 ```sh
 # Mount yamlcpp plugin to cascading namespace `/examples/yamlcpp`
-kdb mount config.yaml /examples/yamlcpp yamlcpp
+sudo kdb mount config.yaml /examples/yamlcpp yamlcpp
 
 # Manually add a mapping to the database
 echo "🔑 : 🐳"               > `kdb file /examples/yamlcpp`
@@ -64,7 +64,7 @@ kdb get /examples/yamlcpp/fleetwood
 
 # Undo modifications to the key database
 kdb rm -r /examples/yamlcpp
-kdb umount /examples/yamlcpp
+sudo kdb umount /examples/yamlcpp
 ```
 
 ## Arrays
@@ -73,7 +73,7 @@ YAML CPP provides basic support for Elektra’s array data type.
 
 ```sh
 # Mount yamlcpp plugin to cascading namespace `/examples/yamlcpp`
-kdb mount config.yaml /examples/yamlcpp yamlcpp
+sudo kdb mount config.yaml /examples/yamlcpp yamlcpp
 
 # Manually add an array to the database
 echo 'sunny:'       >  `kdb file /examples/yamlcpp`
@@ -105,14 +105,14 @@ kdb get user/examples/yamlcpp/sunny/$(kdb getmeta user/examples/yamlcpp/sunny ar
 
 # Undo modifications to the key database
 kdb rm -r /examples/yamlcpp
-kdb umount /examples/yamlcpp
+sudo kdb umount /examples/yamlcpp
 ```
 
 The plugin also supports nested arrays.
 
 ```sh
 # Mount yamlcpp plugin to cascading namespace `/examples/yamlcpp`
-kdb mount config.yaml /examples/yamlcpp yamlcpp
+sudo kdb mount config.yaml /examples/yamlcpp yamlcpp
 
 # Add some key value pairs
 kdb set /examples/yamlcpp/key value
@@ -164,7 +164,7 @@ kdb file /examples/yamlcpp | xargs cat
 
 # Undo modifications to the key database
 kdb rm -r /examples/yamlcpp
-kdb umount /examples/yamlcpp
+sudo kdb umount /examples/yamlcpp
 ```
 
 ## Metadata
@@ -194,7 +194,7 @@ key with metadata:
 
 ```sh
 # Mount yamlcpp plugin to cascading namespace `/examples/yamlcpp`
-kdb mount config.yaml /examples/yamlcpp yamlcpp
+sudo kdb mount config.yaml /examples/yamlcpp yamlcpp
 
 # Manually add a key including metadata to the database
 echo "🔑: !elektra/meta [🦄, {comment: Unicorn}]" >  `kdb file /examples/yamlcpp`
@@ -217,13 +217,13 @@ kdb getmeta /examples/yamlcpp/brand rationale
 
 # Undo modifications to the key database
 kdb rm -r /examples/yamlcpp
-kdb umount /examples/yamlcpp
+sudo kdb umount /examples/yamlcpp
 ```
 
 We can also invoke additional plugins that use metadata like `type`.
 
 ```sh
-kdb mount config.yaml /examples/yamlcpp yamlcpp type
+sudo kdb mount config.yaml /examples/yamlcpp yamlcpp type
 kdb set /examples/yamlcpp/typetest/number 21
 kdb setmeta /examples/yamlcpp/typetest/number check/type short
 
@@ -238,7 +238,7 @@ kdb get /examples/yamlcpp/typetest/number
 
 # Undo modifications to the key database
 kdb rm -r /examples/yamlcpp
-kdb umount /examples/yamlcpp
+sudo kdb umount /examples/yamlcpp
 ```
 
 ## Dependencies
