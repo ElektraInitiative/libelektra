@@ -9,6 +9,8 @@
 - infos/metadata =
 - infos/description = This storage plugin reads and writes data in the YAML format
 
+# YAML CPP
+
 ## Introduction
 
 The YAML CPP plugin reads and writes configuration data via the [yaml-cpp][] library.
