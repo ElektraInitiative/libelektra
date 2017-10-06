@@ -44,7 +44,7 @@ echo `kdb file /examples/yamlcpp` > /tmp/data_file
 # Manually add syntactically incorrect data
 echo "some key: @some  value" >> `kdb file /examples/yamlcpp`
 kdb get "/examples/yamlcpp/some key"
-# STDERR-REGEX: .*Sorry, the error .#185. occurred ;(⏎
+# STDERR-REGEX: .*Sorry, the error .#10. occurred ;(⏎
 #               Description: Parsing failed⏎
 #               .*yaml-cpp: error at line 1, column 11: unknown token.*
 # RET: 5
