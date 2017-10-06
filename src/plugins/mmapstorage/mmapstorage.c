@@ -241,7 +241,7 @@ static MmapHeader elektraMmapstorageDataSize (KeySet * returned, DynArray * dynA
 	ksRewind(returned);
 	size_t dataBlocksSize = 0; // keyName and keyValue
 	size_t metaKeySets = 0;
-	size_t metaKeysWithDup = 0; // number of meta keys including copies
+	size_t metaKeysAlloc = 0; // number of meta keys including copies
 	while ((cur = ksNext (returned)) != 0)
 	{
 		dataBlocksSize += (cur->keySize + cur->keyUSize + cur->dataSize);
@@ -260,16 +260,16 @@ static MmapHeader elektraMmapstorageDataSize (KeySet * returned, DynArray * dynA
 					dataBlocksSize += (curMeta->keySize + curMeta->keyUSize + curMeta->dataSize);
 				}
 			}
-			metaKeysWithDup += (cur->meta->size + 1); // still needed to store all the pointers, +1 for ending nullptr
+			metaKeysAlloc += (cur->meta->alloc);
 		}
 			
 	}
 
 	size_t keyArraySize = (returned->size) * SIZEOF_KEY;
-	size_t keyPtrArraySize = (returned->size + 1) * SIZEOF_KEY_PTR; // +1 for ending nullptr
+	size_t keyPtrArraySize = (returned->alloc) * SIZEOF_KEY_PTR;
 
 	size_t mmapSize = SIZEOF_MMAPHEADER + SIZEOF_KEYSET + keyPtrArraySize + keyArraySize + dataBlocksSize \
- 		+ (metaKeySets * SIZEOF_KEYSET) + (metaKeysWithDup * SIZEOF_KEY_PTR) + (dynArray->size * SIZEOF_KEY);
+ 		+ (metaKeySets * SIZEOF_KEYSET) + (metaKeysAlloc * SIZEOF_KEY_PTR) + (dynArray->size * SIZEOF_KEY);
 
 	ret.mmapSize = mmapSize;
 	ret.dataSize = dataBlocksSize;
@@ -283,7 +283,7 @@ static void writeKeySet (MmapHeader * mmapHeader, KeySet * keySet, KeySet * dest
 {
 	KeySet * ksPtr = dest;
 	char * ksArrayPtr = (((char *) ksPtr) + SIZEOF_KEYSET);
-	char * keyPtr = (ksArrayPtr + ((keySet->size + 1) * SIZEOF_KEY_PTR)); // +1 for ending nullptr
+	char * keyPtr = (ksArrayPtr + ((keySet->alloc) * SIZEOF_KEY_PTR));
 	char * dataPtr = (keyPtr + (keySet->size * SIZEOF_KEY));
 	char * metaPtr = (dataPtr + (mmapHeader->dataSize));
 	char * metaKsPtr = (metaPtr + (dynArray->size * sizeof (Key)));
@@ -417,10 +417,10 @@ static void writeKeySet (MmapHeader * mmapHeader, KeySet * keySet, KeySet * dest
 				++metaKeyIndex;
 			}
 			newMeta->array[oldMeta->size] = 0;
-			newMeta->alloc = oldMeta->size + 1;
+			newMeta->alloc = oldMeta->alloc;
 			newMeta->size = oldMeta->size;
 			ksRewind(newMeta);
-			metaKsPtr += (newMeta->size + 1) * sizeof (Key *); // +1 for ending nullptr
+			metaKsPtr += (newMeta->alloc) * SIZEOF_KEY_PTR;
 		}
 		ELEKTRA_LOG_WARNING ("INSERT META INTO REAL KEY, HERE IS THE META KS:");
 		m_output_keyset(newMeta);
@@ -451,7 +451,7 @@ static void writeKeySet (MmapHeader * mmapHeader, KeySet * keySet, KeySet * dest
 	ksPtr->flags = keySet->flags | KS_FLAG_MMAP;
 	ksPtr->array = (Key **) ksArrayPtr;
 	ksPtr->array[keySet->size] = 0;
- 	ksPtr->alloc = keySet->size + 1;
+ 	ksPtr->alloc = keySet->alloc;
  	ksPtr->size = keySet->size;
 	ksRewind (ksPtr);
 	//m_output_keyset (ksPtr);
@@ -489,7 +489,7 @@ static void mmapToKeySet (char * mappedRegion, KeySet * returned)
 	KeySet * keySet = (KeySet *) (mappedRegion + SIZEOF_MMAPHEADER);
 	returned->array = keySet->array;
 	returned->size 	= keySet->size;
-	returned->alloc = keySet->alloc; // we allocate only the exact size
+	returned->alloc = keySet->alloc;
 	//ksRewind(returned); // cursor = 0; current = 0
 	returned->cursor = 0;
 	returned->current = 0;
