@@ -230,7 +230,7 @@ function (add_plugin PLUGIN_SHORT_NAME)
 	cmake_parse_arguments (ARG
 		"CPP;ADD_TEST;INSTALL_TEST_DATA" # optional keywords
 		"INCLUDE_SYSTEM_DIRECTORIES" # one value keywords
-		"SOURCES;LINK_LIBRARIES;COMPILE_DEFINITIONS;INCLUDE_DIRECTORIES;LINK_ELEKTRA" # multi value keywords
+		"SOURCES;LINK_LIBRARIES;COMPILE_DEFINITIONS;INCLUDE_DIRECTORIES;LINK_ELEKTRA;DEPENDS" # multi value keywords
 		${ARGN}
 	)
 
@@ -349,6 +349,9 @@ function (add_plugin PLUGIN_SHORT_NAME)
 
 	add_library (${PLUGIN_OBJS} OBJECT ${ARG_SOURCES})
 	add_dependencies (${PLUGIN_OBJS} kdberrors_generated)
+	if (ARG_DEPENDS)
+		add_dependencies (${PLUGIN_OBJS} ${ARG_DEPENDS})
+	endif ()
 
 	generate_readme (${PLUGIN_SHORT_NAME})
 
@@ -372,7 +375,7 @@ function (add_plugin PLUGIN_SHORT_NAME)
 			APPEND PROPERTY COMPILE_FLAGS
 			"${CMAKE_INCLUDE_SYSTEM_FLAG_CXX} ${ARG_INCLUDE_SYSTEM_DIRECTORIES} ${CMAKE_PIC_FLAGS}"
 			)
-	else()
+	else ()
 		set_property(TARGET ${PLUGIN_OBJS}
 			APPEND PROPERTY COMPILE_FLAGS
 			${CMAKE_PIC_FLAGS} # needed for shared libraries
@@ -386,6 +389,9 @@ function (add_plugin PLUGIN_SHORT_NAME)
 	if (BUILD_SHARED)
 		add_library (${PLUGIN_NAME} MODULE ${ARG_SOURCES})
 		add_dependencies (${PLUGIN_NAME} kdberrors_generated)
+		if (ARG_DEPENDS)
+			add_dependencies (${PLUGIN_NAME} ${ARG_DEPENDS})
+		endif ()
 		if (ARG_LINK_ELEKTRA)
 			target_link_libraries (${PLUGIN_NAME} elektra-plugin ${ARG_LINK_ELEKTRA})
 		else()

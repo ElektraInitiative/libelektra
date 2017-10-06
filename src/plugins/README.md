@@ -237,3 +237,4 @@ binding during run-time.
 - [semlock](semlock/) a semaphore based global locking logic
 - [profile](profile/) links profile keys
 - [simplespeclang](simplespeclang/) simple configuration specification language
+- [haskell](haskell/) used for linking haskell plugins and is a small example for such plugins itself
