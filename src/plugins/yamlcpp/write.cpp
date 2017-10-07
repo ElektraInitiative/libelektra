@@ -87,10 +87,17 @@ YAML::Node createLeafNode (Key & key)
 	key.rewindMeta ();
 
 	YAML::Node metaNode{ YAML::Node (YAML::NodeType::Map) };
+	YAML::Node dataNode{ YAML::Node (key.getString ()) };
 	Key meta;
+
 	while ((meta = key.nextMeta ()))
 	{
 		if (meta.getName () == "array") continue;
+		if (meta.getName () == "type" && meta.getString () == "binary")
+		{
+			dataNode.SetTag ("tag:yaml.org,2002:binary");
+			continue;
+		}
 		metaNode[meta.getName ()] = meta.getString ();
 		ELEKTRA_LOG_DEBUG ("Add metakey “%s: %s”", meta.getName ().c_str (), meta.getString ().c_str ());
 	}
@@ -98,12 +105,12 @@ YAML::Node createLeafNode (Key & key)
 	if (metaNode.size () <= 0)
 	{
 		ELEKTRA_LOG_DEBUG ("Return leaf node with value “%s”", key.getString ().c_str ());
-		return YAML::Node (key.getString ());
+		return dataNode;
 	}
 
 	YAML::Node node{ YAML::Node (YAML::NodeType::Sequence) };
 	node.SetTag ("!elektra/meta");
-	node.push_back (key.getString ());
+	node.push_back (dataNode);
 	node.push_back (metaNode);
 
 #ifdef LOGGING_ENABLED

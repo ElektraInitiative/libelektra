@@ -99,6 +99,11 @@ void convertNodeToKeySet (YAML::Node const & node, KeySet & mappings, Key & pare
 	{
 		Key key (parent.getFullName (), KEY_VALUE, node.as<string> ().c_str (), KEY_END);
 		ELEKTRA_LOG_DEBUG ("Add key “%s: %s”", key.getName ().c_str (), key.get<string> ().c_str ());
+		if (node.Tag () == "tag:yaml.org,2002:binary")
+		{
+			ELEKTRA_LOG_DEBUG ("Set metadata type of key to binary");
+			key.setMeta ("type", "binary");
+		}
 		mappings.append (key);
 	}
 	else if (node.IsMap () || node.IsSequence ())
