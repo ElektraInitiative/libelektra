@@ -46,10 +46,10 @@ The most direct way to validate keys is
 kdb mount validation.dump user/tutorial/together dump validation
 kdb vset user/tutorial/together/test 123 "[1-9][0-9]*" "Not a number"
 kdb set user/tutorial/together/test abc
-# STDERR-REGEX:The command kdb set failed while accessing the key database .*⏎
-#              Sorry, the error .#42. occurred ;(⏎
-#              Description: key value failed to validate⏎
-#              .*Reason: Not a number.*
+# STDERR: The command kdb set failed while accessing the key database .*⏎
+#         Sorry, the error .#42. occurred ;(⏎
+#         Description: key value failed to validate⏎
+#         .*Reason: Not a number.*
 # RET:5
 ```
 
@@ -220,10 +220,10 @@ loads the validation plugin.
 ```sh
 kdb set /tutorial/links/url "invalid url"
 #> Using name user/tutorial/links/elektra
-# STDERR-REGEX: .*Sorry, the error .#42. occurred ;(⏎
-#               Description: Key Value failed to validate⏎
-#               .*Reason: not a valid URL.*
-# RET:          5
+# STDERR: .*Sorry, the error .#42. occurred ;(⏎
+#         Description: Key Value failed to validate⏎
+#         .*Reason: not a valid URL.*
+# RET:    5
 ```
 
 Note that the backend `tutorial.dump` is mounted for all namespaces:
@@ -258,7 +258,7 @@ kdb setmeta /tutorial/spec/should_not_be_here trigger/error 10
 kdb spec-mount /tutorial/spec
 kdb set /tutorial/spec/should_not_be_here abc
 #> Using name user/tutorial/spec/should_not_be_here
-# STDERR-REGEX: .*Error .#10. occurred!.*
+# STDERR: .*Error .#10. occurred!.*
 kdb get /tutorial/spec/should_not_be_here
 #> Did not find key
 ```
