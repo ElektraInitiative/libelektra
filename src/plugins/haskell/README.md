@@ -11,7 +11,7 @@
 
 ## Introduction
 
-A plugin which takes care about initializing the haskell runtime. 
+A plugin which takes care about initializing the haskell run-time. 
 
 ## Usage
 
