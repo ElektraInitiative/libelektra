@@ -3,7 +3,7 @@
 - infos/licence = BSD
 - infos/needs =
 - infos/provides = storage/yaml
-- infos/recommends =
+- infos/recommends = base666
 - infos/placements = getstorage setstorage
 - infos/status = maintained preview experimental unfinished concept discouraged
 - infos/metadata =
@@ -243,6 +243,38 @@ kdb get /examples/yamlcpp/typetest/number
 # Undo modifications to the key database
 kdb rm -r /examples/yamlcpp
 sudo kdb umount /examples/yamlcpp
+```
+
+## Binary Data
+
+YAML CPP also supports [base64](https://tools.ietf.org/html/rfc4648) encoded data via the [Base 666](../base666) plugin.
+
+```sh
+# Mount YAML CPP plugin together with Base 666 plugin at cascading namespace `/examples/base666`
+sudo kdb mount test.yaml /examples/base666 yamlcpp base666
+# Manually add binary data
+echo 'bin: !!binary aGk=' > `kdb file /examples/base666`
+
+# Retrieval of the new value fails! Base 666 decodes the data `aGk=` to `hi` and
+# stores the value in binary form. However, `kdb get` does not support binary data.
+kdb get /examples/base666/bin
+# RET:    7
+# STDERR: .*Binary/String key mismatch.*
+
+# Add a string value to the database
+kdb set /examples/base666/text mate
+# Base 666 does not modify textual values
+kdb get /examples/base666/text
+#> mate
+
+# The Base 666 plugin re-encodes binary data before YAML CPP stores the key set. Hence the
+# configuration file contains the value `aGk=` even after YAML CPP wrote a new configuration.
+grep -q 'bin: !.* aGk=' `kdb file user/examples/base666`
+# RET: 0
+
+# Undo modifications to the database
+kdb rm -r /examples/base666
+sudo kdb umount /examples/base666
 ```
 
 ## Dependencies
