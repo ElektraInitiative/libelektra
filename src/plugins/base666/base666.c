@@ -15,7 +15,7 @@ int decode (Key * key, Key * parent)
 {
 	const char * strVal = keyString (key);
 
-	if (keyIsString (key) == 0 || !keyGetMeta (key, "type") || strcmp (keyValue (keyGetMeta (key, "type")), "binary")) return 1;
+	if (keyIsString (key) == 0 || !keyGetMeta (key, "type") || strcmp (keyValue (keyGetMeta (key, "type")), "binary")) return 0;
 
 	ELEKTRA_LOG_DEBUG ("Decode binary value");
 
@@ -48,7 +48,7 @@ int decode (Key * key, Key * parent)
 
 int encode (Key * key, Key * parent)
 {
-	if (keyIsBinary (key) == 0 || strcmp (keyValue (keyGetMeta (key, "type")), "binary")) return 1;
+	if (keyIsBinary (key) == 0) return 0;
 
 	char * base64 = ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME_C, base64Encode) (keyValue (key), (size_t)keyGetValueSize (key));
 	if (!base64)
@@ -88,7 +88,7 @@ int elektraBase666Get (Plugin * handle ELEKTRA_UNUSED, KeySet * keySet, Key * pa
 	int status = 0;
 	while (status >= 0 && (key = ksNext (keySet)))
 	{
-		status = decode (key, parent);
+		status |= decode (key, parent);
 	}
 	return status;
 }
@@ -106,7 +106,7 @@ int elektraBase666Set (Plugin * handle ELEKTRA_UNUSED, KeySet * keySet, Key * pa
 	int status = 0;
 	while (status >= 0 && (key = ksNext (keySet)))
 	{
-		status = encode (key, parent);
+		status |= encode (key, parent);
 	}
 	return status;
 }
