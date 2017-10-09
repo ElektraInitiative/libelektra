@@ -17,67 +17,72 @@
 #include <stdlib.h>
 #include <string.h>
 
+int decode (Key * key, Key * parent)
+{
+	const char * strVal = keyString (key);
+
+	if (!keyGetMeta (key, "type") || strcmp (keyValue (keyGetMeta (key, "type")), "binary")) return 1;
+
+	ELEKTRA_LOG_DEBUG ("Decode binary value");
+
+	kdb_octet_t * buffer;
+	size_t bufferLen;
+
+	int result = ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME_C, base64Decode) (strVal, &buffer, &bufferLen);
+	if (result == 1)
+	{
+		// success
+		keySetBinary (key, buffer, bufferLen);
+	}
+	else if (result == -1)
+	{
+		// decoding error
+		ELEKTRA_ADD_WARNINGF (ELEKTRA_WARNING_BASE64_DECODING, parent, "Not Base64 encoded: %s.", strVal);
+	}
+	else if (result == -2)
+	{
+		// memory error
+		ELEKTRA_SET_ERROR (87, parent, "Memory allocation failed");
+		return -1;
+	}
+
+	ELEKTRA_LOG_DEBUG ("Decoded data “%s”", (char *)buffer);
+
+	elektraFree (buffer);
+	return 1;
+}
+
 /**
  * @brief establish the Elektra plugin contract and decode all Base64 encoded values back to their original binary form.
  * @retval 1 on success
  * @retval -1 on failure
  */
-int elektraBase666Get (Plugin * handle ELEKTRA_UNUSED, KeySet * ks ELEKTRA_UNUSED, Key * parentKey)
+int elektraBase666Get (Plugin * handle ELEKTRA_UNUSED, KeySet * keySet, Key * parent)
 {
 	// Publish module configuration to Elektra (establish the contract)
-	if (!strcmp (keyName (parentKey), "system/elektra/modules/base666"))
+	if (!strcmp (keyName (parent), "system/elektra/modules/base666"))
 	{
 		KeySet * moduleConfig = ksNew (30,
 #include "contract.h"
 					       KS_END);
-		ksAppend (ks, moduleConfig);
+		ksAppend (keySet, moduleConfig);
 		ksDel (moduleConfig);
 		return 1;
 	}
 
 	// base64 decoding
-	Key * k;
+	Key * key;
 
-	ksRewind (ks);
-	while ((k = ksNext (ks)))
+	ksRewind (keySet);
+	int status = 0;
+	while (status >= 0 && (key = ksNext (keySet)))
 	{
-		if (keyIsString (k) == 1)
+		if (keyIsString (key) == 1)
 		{
-			const char * strVal = keyString (k);
-
-			if (keyGetMeta (k, "type") && !strcmp (keyValue (keyGetMeta (k, "type")), "binary"))
-			{
-				ELEKTRA_LOG_DEBUG ("Decode binary value");
-
-				kdb_octet_t * buffer;
-				size_t bufferLen;
-
-				int result = ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME_C, base64Decode) (strVal, &buffer, &bufferLen);
-				if (result == 1)
-				{
-					// success
-					keySetBinary (k, buffer, bufferLen);
-				}
-				else if (result == -1)
-				{
-					// decoding error
-					ELEKTRA_ADD_WARNINGF (ELEKTRA_WARNING_BASE64_DECODING, parentKey, "Not Base64 encoded: %s.",
-							      strVal);
-				}
-				else if (result == -2)
-				{
-					// memory error
-					ELEKTRA_SET_ERROR (87, parentKey, "Memory allocation failed");
-					return -1;
-				}
-
-				ELEKTRA_LOG_DEBUG ("Decoded data “%s”", (char *)buffer);
-
-				elektraFree (buffer);
-			}
+			status = decode (key, parent);
 		}
 	}
-	return 1;
+	return status;
 }
 
 /**
@@ -85,25 +90,25 @@ int elektraBase666Get (Plugin * handle ELEKTRA_UNUSED, KeySet * ks ELEKTRA_UNUSE
  * @retval 1 on success
  * @retval -1 on failure
  */
-int elektraBase666Set (Plugin * handle ELEKTRA_UNUSED, KeySet * ks, Key * parentKey)
+int elektraBase666Set (Plugin * handle ELEKTRA_UNUSED, KeySet * keySet, Key * parent)
 {
-	Key * k;
+	Key * key;
 
-	ksRewind (ks);
-	while ((k = ksNext (ks)))
+	ksRewind (keySet);
+	while ((key = ksNext (keySet)))
 	{
 		// Base 64 encoding
-		if (keyIsBinary (k) == 1 && !strcmp (keyValue (keyGetMeta (k, "type")), "binary"))
+		if (keyIsBinary (key) == 1 && !strcmp (keyValue (keyGetMeta (key, "type")), "binary"))
 		{
-			char * base64 =
-				ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME_C, base64Encode) (keyValue (k), (size_t)keyGetValueSize (k));
+			char * base64 = ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME_C, base64Encode) (keyValue (key),
+												       (size_t)keyGetValueSize (key));
 			if (!base64)
 			{
-				ELEKTRA_SET_ERROR (87, parentKey, "Memory allocation failed");
+				ELEKTRA_SET_ERROR (87, parent, "Memory allocation failed");
 				return -1;
 			}
 
-			keySetString (k, base64);
+			keySetString (key, base64);
 			elektraFree (base64);
 		}
 	}
