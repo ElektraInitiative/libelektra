@@ -52,6 +52,23 @@ int decode (Key * key, Key * parent)
 	return 1;
 }
 
+int encode (Key * key, Key * parent)
+{
+	if (keyIsBinary (key) == 0 || strcmp (keyValue (keyGetMeta (key, "type")), "binary")) return 1;
+
+	char * base64 = ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME_C, base64Encode) (keyValue (key), (size_t)keyGetValueSize (key));
+	if (!base64)
+	{
+		ELEKTRA_SET_ERROR (87, parent, "Memory allocation failed");
+		return -1;
+	}
+
+	keySetString (key, base64);
+	elektraFree (base64);
+
+	return 1;
+}
+
 /**
  * @brief establish the Elektra plugin contract and decode all Base64 encoded values back to their original binary form.
  * @retval 1 on success
@@ -95,24 +112,12 @@ int elektraBase666Set (Plugin * handle ELEKTRA_UNUSED, KeySet * keySet, Key * pa
 	Key * key;
 
 	ksRewind (keySet);
-	while ((key = ksNext (keySet)))
+	int status = 0;
+	while (status >= 0 && (key = ksNext (keySet)))
 	{
-		// Base 64 encoding
-		if (keyIsBinary (key) == 1 && !strcmp (keyValue (keyGetMeta (key, "type")), "binary"))
-		{
-			char * base64 = ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME_C, base64Encode) (keyValue (key),
-												       (size_t)keyGetValueSize (key));
-			if (!base64)
-			{
-				ELEKTRA_SET_ERROR (87, parent, "Memory allocation failed");
-				return -1;
-			}
-
-			keySetString (key, base64);
-			elektraFree (base64);
-		}
+		status = encode (key, parent);
 	}
-	return 1;
+	return status;
 }
 
 Plugin * ELEKTRA_PLUGIN_EXPORT (base666)
