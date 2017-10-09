@@ -255,11 +255,10 @@ sudo kdb mount test.yaml /examples/base666 yamlcpp base666
 # Manually add binary data
 echo 'bin: !!binary aGk=' > `kdb file /examples/base666`
 
-# Retrieval of the new value fails! Base 666 decodes the data `aGk=` to `hi` and
-# stores the value in binary form. However, `kdb get` does not support binary data.
+# Base 666 decodes the data `aGk=` to `hi` and stores the value in binary form.
+# The command `kdb get` prints the data as hexadecimal byte values.
 kdb get /examples/base666/bin
-# RET:    7
-# STDERR: .*Binary/String key mismatch.*
+#> \x68\x69
 
 # Add a string value to the database
 kdb set /examples/base666/text mate
