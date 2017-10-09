@@ -119,9 +119,6 @@ int elektraBase666Set (Plugin * handle ELEKTRA_UNUSED, KeySet * keySet, Key * pa
 
 Plugin * ELEKTRA_PLUGIN_EXPORT (base666)
 {
-	// clang-format off
-	return elektraPluginExport("base666",
-			ELEKTRA_PLUGIN_GET, &elektraBase666Get,
-			ELEKTRA_PLUGIN_SET, &elektraBase666Set,
-			ELEKTRA_PLUGIN_END);
+	return elektraPluginExport ("base666", ELEKTRA_PLUGIN_GET, &elektraBase666Get, ELEKTRA_PLUGIN_SET, &elektraBase666Set,
+				    ELEKTRA_PLUGIN_END);
 }
