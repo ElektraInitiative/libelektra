@@ -108,7 +108,7 @@ int elektraBase666Get (Plugin * handle ELEKTRA_UNUSED, KeySet * keySet, Key * pa
 		KeySet * contract = base666Contract ();
 		ksAppend (keySet, contract);
 		ksDel (contract);
-		return 1;
+		return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 	}
 
 	Key * key;
