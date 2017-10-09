@@ -21,7 +21,7 @@ int decode (Key * key, Key * parent)
 {
 	const char * strVal = keyString (key);
 
-	if (!keyGetMeta (key, "type") || strcmp (keyValue (keyGetMeta (key, "type")), "binary")) return 1;
+	if (keyIsString (key) == 0 || !keyGetMeta (key, "type") || strcmp (keyValue (keyGetMeta (key, "type")), "binary")) return 1;
 
 	ELEKTRA_LOG_DEBUG ("Decode binary value");
 
@@ -94,10 +94,7 @@ int elektraBase666Get (Plugin * handle ELEKTRA_UNUSED, KeySet * keySet, Key * pa
 	int status = 0;
 	while (status >= 0 && (key = ksNext (keySet)))
 	{
-		if (keyIsString (key) == 1)
-		{
-			status = decode (key, parent);
-		}
+		status = decode (key, parent);
 	}
 	return status;
 }
