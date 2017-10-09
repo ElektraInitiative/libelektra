@@ -11,7 +11,7 @@
 #include <kdb.h>
 #include <kdberrors.h>
 
-int decode (Key * key, Key * parent)
+static int decode (Key * key, Key * parent)
 {
 	const char * strVal = keyString (key);
 
@@ -46,7 +46,7 @@ int decode (Key * key, Key * parent)
 	return 1;
 }
 
-int encode (Key * key, Key * parent)
+static int encode (Key * key, Key * parent)
 {
 	if (keyIsBinary (key) == 0) return 0;
 
