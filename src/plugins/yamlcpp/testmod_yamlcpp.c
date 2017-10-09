@@ -149,7 +149,7 @@ int main (int argc, char ** argv)
 	test_nested ();
 	test_array ();
 
-	printf ("\nResults: %d Test%s done — %d error%s.\n", nbTest, nbTest == 1 ? "" : "s", nbError, nbError == 1 ? "" : "s");
+	print_result ("testmod_yamlcpp");
 
 	return nbError;
 }

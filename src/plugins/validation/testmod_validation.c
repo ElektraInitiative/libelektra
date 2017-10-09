@@ -261,7 +261,7 @@ int main (int argc, char ** argv)
 	line_test ();
 	icase_test ();
 	invert_test ();
-	printf ("\ntest_backendhelpers RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
+	print_result ("testmod_validation");
 
 	return nbError;
 }

@@ -563,7 +563,7 @@ int main (int argc, char ** argv)
 	test_appendSameLevel ();
 	test_restoreOnSet ();
 
-	printf ("\ntest_keytometa RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
+	print_result ("test_keytometa");
 
 	return nbError;
 }

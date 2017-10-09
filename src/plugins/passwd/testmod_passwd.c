@@ -81,7 +81,7 @@ int main (int argc, char ** argv)
 	test_read_write ();
 #endif
 
-	printf ("\ntestmod_passwd RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
+	print_result ("testmod_passwd");
 
 	return nbError;
 }

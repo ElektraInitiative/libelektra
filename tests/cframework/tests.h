@@ -43,6 +43,12 @@ extern int tempHomeLen;
 
 int init (int argc, char ** argv);
 
+#define print_result(name)                                                                                                                 \
+	{                                                                                                                                  \
+		printf ("\n" name " Results: %d Test%s done — %d error%s.\n", nbTest, nbTest == 1 ? "" : "s", nbError,                     \
+			nbError == 1 ? "" : "s");                                                                                          \
+	}
+
 #define warn_if_fail(expression, message)                                                                                                  \
 	{                                                                                                                                  \
 		nbTest++;                                                                                                                  \

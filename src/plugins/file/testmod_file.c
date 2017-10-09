@@ -135,7 +135,7 @@ int main (int argc, char ** argv)
 	testWriteMultiLine ("file/multiline");
 	testRoundTrip ("file/multiline");
 
-	printf ("\ntestmod_file RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
+	print_result ("testmod_file");
 
 	return nbError;
 }

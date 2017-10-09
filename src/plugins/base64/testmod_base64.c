@@ -272,6 +272,6 @@ int main (int argc, char ** argv)
 	test_base64_plugin_regular ();
 	test_base64_plugin_decoding_error ();
 
-	printf ("\n" ELEKTRA_PLUGIN_NAME " RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
+	print_result (ELEKTRA_PLUGIN_NAME);
 	return nbError;
 }

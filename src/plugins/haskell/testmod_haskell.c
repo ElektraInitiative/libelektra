@@ -42,14 +42,14 @@ static void test_basics (void)
 
 int main (int argc, char ** argv)
 {
-	printf ("HASKELLTEMPLATE     TESTS\n");
+	printf ("HASKELL      TESTS\n");
 	printf ("==================\n\n");
 
 	init (argc, argv);
 
 	test_basics ();
 
-	printf ("\ntestmod_haskelltemplate RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
+	print_result ("testmod_haskell");
 
 	return nbError;
 }

@@ -52,7 +52,7 @@ int main (int argc, char ** argv)
 
 	test_helloWorld ();
 
-	printf ("\ntest_jni RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
+	print_result ("test_jni");
 
 	return nbError;
 }

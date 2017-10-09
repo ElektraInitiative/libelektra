@@ -608,7 +608,7 @@ int main (int argc, char ** argv)
 	test_commentDefaultChar ("ini/commentini");
 	test_readCommentMeta ("ini/testCommentMeta.ini");
 	test_writeMeta ("ini/writeCommentMeta.ini");
-	printf ("\ntest_ini RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
+	print_result ("test_ini");
 
 	return nbError;
 }
