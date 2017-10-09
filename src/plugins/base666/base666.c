@@ -7,15 +7,9 @@
  *
  */
 
-#ifndef HAVE_KDBCONFIG
-#include "kdbconfig.h"
-#endif
 #include "base666.h"
 #include <kdb.h>
-#include <kdbassert.h>
 #include <kdberrors.h>
-#include <stdlib.h>
-#include <string.h>
 
 int decode (Key * key, Key * parent)
 {

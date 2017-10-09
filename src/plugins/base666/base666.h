@@ -11,8 +11,6 @@
 #define ELEKTRA_PLUGIN_BASE666_H
 
 #include <kdbplugin.h>
-#include <kdbtypes.h>
-#include <stdio.h>
 
 #include "../base64/base64_functions.h"
 
