@@ -7,6 +7,5 @@ add_plugin (base666
 		base666.h
 		base666.c
 	COMPILE_DEFINITIONS
-		ELEKTRA_PLUGIN_NAME=\"base666\"
 		ELEKTRA_PLUGIN_NAME_C=base666
 )

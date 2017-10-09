@@ -22,10 +22,10 @@
  * @retval 1 on success
  * @retval -1 on failure
  */
-int ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME_C, get) (Plugin * handle ELEKTRA_UNUSED, KeySet * ks ELEKTRA_UNUSED, Key * parentKey)
+int elektraBase666Get (Plugin * handle ELEKTRA_UNUSED, KeySet * ks ELEKTRA_UNUSED, Key * parentKey)
 {
 	// Publish module configuration to Elektra (establish the contract)
-	if (!strcmp (keyName (parentKey), "system/elektra/modules/" ELEKTRA_PLUGIN_NAME))
+	if (!strcmp (keyName (parentKey), "system/elektra/modules/base666"))
 	{
 		KeySet * moduleConfig = ksNew (30,
 #include "contract.h"
@@ -85,7 +85,7 @@ int ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME_C, get) (Plugin * handle ELEKTR
  * @retval 1 on success
  * @retval -1 on failure
  */
-int ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME_C, set) (Plugin * handle ELEKTRA_UNUSED, KeySet * ks, Key * parentKey)
+int elektraBase666Set (Plugin * handle ELEKTRA_UNUSED, KeySet * ks, Key * parentKey)
 {
 	Key * k;
 
@@ -113,8 +113,8 @@ int ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME_C, set) (Plugin * handle ELEKTR
 Plugin * ELEKTRA_PLUGIN_EXPORT (base666)
 {
 	// clang-format off
-	return elektraPluginExport(ELEKTRA_PLUGIN_NAME,
-			ELEKTRA_PLUGIN_GET,   &ELEKTRA_PLUGIN_FUNCTION(ELEKTRA_PLUGIN_NAME_C, get),
-			ELEKTRA_PLUGIN_SET,   &ELEKTRA_PLUGIN_FUNCTION(ELEKTRA_PLUGIN_NAME_C, set),
+	return elektraPluginExport("base666",
+			ELEKTRA_PLUGIN_GET, &elektraBase666Get,
+			ELEKTRA_PLUGIN_SET, &elektraBase666Set,
 			ELEKTRA_PLUGIN_END);
 }
