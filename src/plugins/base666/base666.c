@@ -12,6 +12,23 @@
 #include <kdberrors.h>
 
 /**
+ * @brief This function returns a key set containing the contract of this plugin.
+ *
+ * @return A contract describing the functionality of this plugin.
+ */
+static inline KeySet * base666Contract (void)
+{
+	return ksNew (30, keyNew ("system/elektra/modules/base666", KEY_VALUE, "base666 plugin waits for your orders", KEY_END),
+		      keyNew ("system/elektra/modules/base666/exports", KEY_END),
+		      keyNew ("system/elektra/modules/base666/exports/get", KEY_FUNC, elektraBase666Get, KEY_END),
+		      keyNew ("system/elektra/modules/base666/exports/set", KEY_FUNC, elektraBase666Set, KEY_END),
+#include ELEKTRA_README (base666)
+		      keyNew ("system/elektra/modules/base666/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END),
+
+		      KS_END);
+}
+
+/**
  * @brief Decode a base64 encoded key value and save the result as binary data in the key.
  *
  * The conversion only happens if
@@ -86,14 +103,11 @@ static int encode (Key * key, Key * parent)
 /** @see elektraDocGet */
 int elektraBase666Get (Plugin * handle ELEKTRA_UNUSED, KeySet * keySet, Key * parent)
 {
-	// Publish module configuration to Elektra (establish the contract)
 	if (!strcmp (keyName (parent), "system/elektra/modules/base666"))
 	{
-		KeySet * moduleConfig = ksNew (30,
-#include "contract.h"
-					       KS_END);
-		ksAppend (keySet, moduleConfig);
-		ksDel (moduleConfig);
+		KeySet * contract = base666Contract ();
+		ksAppend (keySet, contract);
+		ksDel (contract);
 		return 1;
 	}
 
