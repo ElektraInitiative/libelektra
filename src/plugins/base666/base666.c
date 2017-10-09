@@ -11,6 +11,20 @@
 #include <kdb.h>
 #include <kdberrors.h>
 
+/**
+ * @brief Decode a base64 encoded key value and save the result as binary data in the key.
+ *
+ * The conversion only happens if
+ *
+ * - the value of the key has type `string`
+ * - the key contains a metakey `type` with value `binary`
+ *
+ * .
+ *
+ * @retval -1 if the function was unable to convert the value of `key`
+ * @retval 0 if no conversion has taken place
+ * @retval 1 if the function successfully converted the value of `key`
+ */
 static int decode (Key * key, Key * parent)
 {
 	const char * strVal = keyString (key);
@@ -25,18 +39,15 @@ static int decode (Key * key, Key * parent)
 	int result = ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME_C, base64Decode) (strVal, &buffer, &bufferLen);
 	if (result == 1)
 	{
-		// success
-		keySetBinary (key, buffer, bufferLen);
+		keySetBinary (key, buffer, bufferLen); // Success
 	}
 	else if (result == -1)
 	{
-		// decoding error
-		ELEKTRA_ADD_WARNINGF (ELEKTRA_WARNING_BASE64_DECODING, parent, "Not Base64 encoded: %s.", strVal);
+		ELEKTRA_ADD_WARNINGF (ELEKTRA_WARNING_BASE64_DECODING, parent, "Not Base64 encoded: %s.", strVal); // Decoding error
 	}
 	else if (result == -2)
 	{
-		// memory error
-		ELEKTRA_SET_ERROR (87, parent, "Memory allocation failed");
+		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_MALLOC, parent, "Memory allocation failed"); // Memory error
 		return -1;
 	}
 
@@ -46,6 +57,13 @@ static int decode (Key * key, Key * parent)
 	return 1;
 }
 
+/**
+ * @brief Encode a binary key value using base64 encoding and save the result as textual data in the key.
+ *
+ * @retval -1 if the function was unable to convert the value of `key`
+ * @retval 0 if no conversion has taken place
+ * @retval 1 if the function successfully converted the value of `key`
+ */
 static int encode (Key * key, Key * parent)
 {
 	if (keyIsBinary (key) == 0) return 0;
@@ -53,7 +71,7 @@ static int encode (Key * key, Key * parent)
 	char * base64 = ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME_C, base64Encode) (keyValue (key), (size_t)keyGetValueSize (key));
 	if (!base64)
 	{
-		ELEKTRA_SET_ERROR (87, parent, "Memory allocation failed");
+		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_MALLOC, parent, "Memory allocation failed");
 		return -1;
 	}
 
@@ -63,11 +81,9 @@ static int encode (Key * key, Key * parent)
 	return 1;
 }
 
-/**
- * @brief establish the Elektra plugin contract and decode all Base64 encoded values back to their original binary form.
- * @retval 1 on success
- * @retval -1 on failure
- */
+// -- Plugin Functions ---------------------------------------------------------------------------------------------------------------------
+
+/** @see elektraDocGet */
 int elektraBase666Get (Plugin * handle ELEKTRA_UNUSED, KeySet * keySet, Key * parent)
 {
 	// Publish module configuration to Elektra (establish the contract)
@@ -81,9 +97,7 @@ int elektraBase666Get (Plugin * handle ELEKTRA_UNUSED, KeySet * keySet, Key * pa
 		return 1;
 	}
 
-	// base64 decoding
 	Key * key;
-
 	ksRewind (keySet);
 	int status = 0;
 	while (status >= 0 && (key = ksNext (keySet)))
@@ -93,15 +107,10 @@ int elektraBase666Get (Plugin * handle ELEKTRA_UNUSED, KeySet * keySet, Key * pa
 	return status;
 }
 
-/**
- * @brief Encode all binary values using the Base64 encoding scheme.
- * @retval 1 on success
- * @retval -1 on failure
- */
+/** @see elektraDocSet */
 int elektraBase666Set (Plugin * handle ELEKTRA_UNUSED, KeySet * keySet, Key * parent)
 {
 	Key * key;
-
 	ksRewind (keySet);
 	int status = 0;
 	while (status >= 0 && (key = ksNext (keySet)))
