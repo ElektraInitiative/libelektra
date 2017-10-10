@@ -306,7 +306,7 @@ int main (int argc, char ** argv)
 	test_namedMatchFlags ();
 	test_onlyFirstMatchIsApplied ();
 
-	printf ("\ntestmod_glob RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
+	print_result ("testmod_glob");
 
 	return nbError;
 }

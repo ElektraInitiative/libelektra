@@ -32,8 +32,8 @@
 #include <kdb.h>
  * @endcode
  *
- * Next to \link keyname Name (key and owner) \endlink and 
- * \link keyvalue Value (data and comment) \endlink there
+ * Next to \link keyname Name (key and owner) \endlink and
+ * \link keyvalue value (data and comment) \endlink there
  * is the so called meta information inside every key.
  *
  * Key meta information are an unlimited number of key/value
@@ -194,7 +194,7 @@ const Key * keyNextMeta (Key * key)
 	return ret;
 }
 
-/**Returns the Value of a Meta-Information which is current.
+/**Returns the value of a meta-information which is current.
  *
  * The pointer is NULL if you reached the end or after
  * ksRewind().
@@ -386,7 +386,7 @@ int keyCopyAllMeta (Key * dest, const Key * source)
 	return 0;
 }
 
-/**Returns the Value of a Meta-Information given by name.
+/**Returns the value of a meta-information given by name.
  *
  * This is a much more efficient version of keyGetMeta().
  * But unlike with keyGetMeta you are not allowed to modify
@@ -409,7 +409,7 @@ int f(Key *k)
  * @param metaName the name of the meta information you want the value from
  * @retval 0 if the key or metaName is 0
  * @retval 0 if no such metaName is found
- * @return value of Meta-Information if Meta-Information is found
+ * @return value of meta-information if meta-information is found
  * @see keyGetMeta(), keySetMeta()
  * @ingroup keymeta
  **/
@@ -433,15 +433,15 @@ const Key * keyGetMeta (const Key * key, const char * metaName)
 }
 
 
-/**Set a new Meta-Information.
+/**Set a new meta-information.
  *
- * Will set a new Meta-Information pair consisting of
+ * Will set a new meta-information pair consisting of
  * metaName and newMetaString.
  *
- * Will add a new Pair for Meta-Information if metaName was
+ * Will add a new Pair for meta-information if metaName was
  * not added up to now.
  *
- * It will modify a existing Pair of Meta-Information if the
+ * It will modify a existing Pair of meta-information if the
  * the metaName was inserted already.
  *
  * It will remove a meta information if newMetaString is 0.
@@ -452,8 +452,8 @@ const Key * keyGetMeta (const Key * key, const char * metaName)
  * @param newMetaString the new value for the meta information
  * @retval -1 on error if key or metaName is 0, out of memory
  *         or names are not valid
- * @retval 0 if the Meta-Information for metaName was removed
- * @return size (>0) of newMetaString if Meta-Information was
+ * @retval 0 if the meta-information for metaName was removed
+ * @return size (>0) of newMetaString if meta-information was
  *         successfully added
  * @see keyGetMeta()
  * @ingroup keymeta

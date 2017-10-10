@@ -7,13 +7,11 @@
  */
 
 #include <kdb.h>
+#include <kdbmacros.h> // Declares `ELEKTRA_STRINGIFY`
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
-#define XSTR(s) STR (s)
-#define STR(s) #s
 
 void printError (Key * key);
 void printWarnings (Key * key);
@@ -93,7 +91,7 @@ void printWarnings (Key * key)
 	}
 	size_t warn_iter = 0;
 
-	char buffer[sizeof ("warnings/#00/description") + sizeof (XSTR (SIZE_MAX))];
+	char buffer[sizeof ("warnings/#00/description") + sizeof (ELEKTRA_STRINGIFY (SIZE_MAX))];
 
 	do
 	{

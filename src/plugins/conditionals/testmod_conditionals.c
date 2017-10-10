@@ -668,7 +668,7 @@ int main (int argc, char ** argv)
 	test_multiCond2NoFail ();
 	test_multiAssign2 ();
 	test_multiAssign3 ();
-	printf ("\ntestmod_conditionals RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
+	print_result ("testmod_conditionals");
 
 	return nbError;
 }

@@ -294,6 +294,6 @@ int main (int argc, char ** argv)
 	test_file_signature_operations ();
 	test_file_faulty_signature ();
 
-	printf ("\n" ELEKTRA_PLUGIN_NAME " RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
+	print_result (ELEKTRA_PLUGIN_NAME);
 	return nbError;
 }

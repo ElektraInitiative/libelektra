@@ -112,7 +112,10 @@ productive use:
 - [mozprefs](mozprefs/) for Mozilla preference files
 - [c](c/) writes Elektra C-structures (`ksNew(.. keyNew(...`)
 - [file](file/) reads and writes a file from/to a single key
-- [camel](camel/) reads and writes a very limited subset of [YAML](http://www.yaml.org)
+- [camel](camel/) reads and writes a very limited subset of [YAML][]
+- [yamlcpp](yamlcpp/) reads and writes data in the [YAML][] format using [yaml-cpp](https://github.com/jbeder/yaml-cpp)
+
+[YAML]: http://www.yaml.org
 
 ### System Information
 

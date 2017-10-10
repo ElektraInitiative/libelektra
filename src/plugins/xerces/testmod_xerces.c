@@ -303,7 +303,7 @@ int main (int argc, char ** argv)
 	test_maven_pom ();
 	test_jenkins_config ();
 
-	printf ("\ntestmod_xerces RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
+	print_result ("testmod_xerces");
 
 	return nbError;
 }

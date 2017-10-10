@@ -90,7 +90,7 @@ int main (int argc, char ** argv)
 	test_BlockresolverRead ("blockresolver/test.block");
 	test_BlockresolverWrite ("blockresolver/test.block", "blockresolver/compare.block");
 
-	printf ("\ntestmod_blockresolver RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
+	print_result ("testmod_blockresolver");
 
 	return nbError;
 }

@@ -23,3 +23,4 @@ else
 fi
 
 $(sed "${inplace[@]}" -E -f "$script" `find . -type f -name '*.md' | egrep -v "^./(.git|tests/gtest-1.7.0|scripts/sed|scripts/fix-spelling|doc/images|doc/AUTHORS.md|doc/news)"`)
+$(sed "${inplace[@]}" -E -f "$script" doc/*.ini)

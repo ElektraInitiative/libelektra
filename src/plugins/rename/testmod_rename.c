@@ -456,7 +456,7 @@ int main (int argc, char ** argv)
 	test_replaceString ();
 	test_write ();
 	test_write2 ();
-	printf ("\ntest_rename RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
+	print_result ("test_rename");
 
 	return nbError;
 }

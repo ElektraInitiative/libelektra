@@ -152,6 +152,7 @@ static void test_getArrayNext (void)
 	Key * nextKey = elektraArrayGetNextKey (array);
 	exit_if_fail (array, "The getnext function did not return a proper key");
 	succeed_if (!strcmp (keyName (nextKey), "user/test/array/#2"), "The getnext function did not use the correct keyname");
+	succeed_if (!strcmp (keyString (nextKey), ""), "The getnext function did not return an empty key");
 
 	keyDel (nextKey);
 	ksClear (array);

@@ -1,7 +1,7 @@
 - infos = Information about base64 plugin is in keys below
 - infos/author = Peter Nirschl <peter.nirschl@gmail.com>
 - infos/licence = BSD
-- infos/provides = filefilter
+- infos/provides = binary
 - infos/needs =
 - infos/recommends =
 - infos/placements = postgetstorage presetstorage
@@ -27,8 +27,18 @@ See the documentation of the [null plugin](../null/), as it uses the same patter
 
 To mount a simple backend that uses the Base64 encoding, you can use:
 
-    kdb mount test.ecf /test base64
+```sh
+sudo kdb mount test.ecf /examples/base64/test base64
+```
 
-All encoded binary values will look something like this:
+. To unmount the plugin use the following command:
+
+```sh
+sudo kdb umount /examples/base64/test
+```
+
+. All encoded binary values will look something like this:
 
     @BASE64SGVsbG8gV29ybGQhCg==
+
+.

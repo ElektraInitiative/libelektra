@@ -146,7 +146,7 @@ int main (int argc, char ** argv)
 
 	test_multiUp ();
 
-	printf ("\ntestmod_mathcheck RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
+	print_result ("testmod_mathcheck");
 
 	char buffer[24];
 	elektraFtoA (buffer, sizeof (buffer), (1.5));

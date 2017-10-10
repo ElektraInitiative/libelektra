@@ -33,7 +33,7 @@ int main (void)
 	// printf ("Write key set to disk\n");
 	// kdbSet (handle, config, root);
 
-	printf ("Delete mappings inside memory\n");
+	printf ("Delete key-value pairs inside memory\n");
 	ksDel (config);
 	printf ("Close key database\n");
 	kdbClose (handle, 0);

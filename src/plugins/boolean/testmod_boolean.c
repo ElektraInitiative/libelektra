@@ -115,7 +115,7 @@ int main (int argc, char ** argv)
 	test_defaultRestore ();
 	test_defaultError ();
 	test_userValue ();
-	printf ("\ntestmod_boolean RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
+	print_result ("testmod_boolean");
 
 	return nbError;
 }

@@ -27,6 +27,7 @@
 
 #include <kdb.h>
 #include <kdbhelper.h>
+#include <kdbmacros.h>
 
 #define BUFFER_LENGTH 4096
 #define ELEKTRA_TEST_ROOT "/tests/ckdb/"
@@ -41,6 +42,12 @@ extern char * tempHome;
 extern int tempHomeLen;
 
 int init (int argc, char ** argv);
+
+#define print_result(name)                                                                                                                 \
+	{                                                                                                                                  \
+		printf ("\n" name " Results: %d Test%s done — %d error%s.\n", nbTest, nbTest == 1 ? "" : "s", nbError,                     \
+			nbError == 1 ? "" : "s");                                                                                          \
+	}
 
 #define warn_if_fail(expression, message)                                                                                                  \
 	{                                                                                                                                  \
@@ -75,8 +82,6 @@ int init (int argc, char ** argv);
 			exit (1);                                                                                                          \
 		}                                                                                                                          \
 	}
-
-#define quote_string(x) #x
 
 #define compare_key_name(pk1, pk2)                                                                                                         \
 	{                                                                                                                                  \
@@ -202,7 +207,7 @@ int init (int argc, char ** argv);
 					nbError++;                                                                                         \
 					printf ("%s:%d: error in %s: Compare key \"%s\" with \"%s\" failed, did not find corresponding "   \
 						"metakey %s (k1 > k2)\n",                                                                  \
-						__FILE__, __LINE__, __func__, quote_string (mmk1), quote_string (mmk2), keyName (meta));   \
+						__FILE__, __LINE__, __func__, ELEKTRA_QUOTE (mmk1), ELEKTRA_QUOTE (mmk2), keyName (meta)); \
 					break;                                                                                             \
 				}                                                                                                          \
 			}                                                                                                                  \
@@ -212,7 +217,7 @@ int init (int argc, char ** argv);
 			{                                                                                                                  \
 				nbError++;                                                                                                 \
 				printf ("%s:%d: error in %s: Compare key \"%s\" with \"%s\" failed, too many metakeys found (k1 < k2)\n",  \
-					__FILE__, __LINE__, __func__, quote_string (mmk1), quote_string (mmk2));                           \
+					__FILE__, __LINE__, __func__, ELEKTRA_QUOTE (mmk1), ELEKTRA_QUOTE (mmk2));                         \
 			}                                                                                                                  \
 		}                                                                                                                          \
 	}
@@ -233,16 +238,16 @@ int init (int argc, char ** argv);
 			Key * cmmk1 = 0;                                                                                                   \
 			Key * cmmk2 = 0;                                                                                                   \
                                                                                                                                            \
-			if (ksGetSize (mmks1) == 0) yield_error ("real size of " quote_string (mmks1) " was 0");                           \
-			if (ksGetSize (mmks2) == 0) yield_error ("real size of " quote_string (mmks2) " was 0");                           \
+			if (ksGetSize (mmks1) == 0) yield_error ("real size of " ELEKTRA_QUOTE (mmks1) " was 0");                          \
+			if (ksGetSize (mmks2) == 0) yield_error ("real size of " ELEKTRA_QUOTE (mmks2) " was 0");                          \
                                                                                                                                            \
 			if (ksGetSize (mmks1) != ksGetSize (mmks2))                                                                        \
 			{                                                                                                                  \
 				nbError++;                                                                                                 \
 				printf ("%s:%d: error in %s: Compare keyset failed, size of keysets are not equal with size(%s): %d, "     \
 					"size(%s): %d\n",                                                                                  \
-					__FILE__, __LINE__, __func__, quote_string (mmks1), (int)ksGetSize (mmks1), quote_string (mmks2),  \
-					(int)ksGetSize (mmks2));                                                                           \
+					__FILE__, __LINE__, __func__, ELEKTRA_QUOTE (mmks1), (int)ksGetSize (mmks1),                       \
+					ELEKTRA_QUOTE (mmks2), (int)ksGetSize (mmks2));                                                    \
 				printf ("mmks1:\n");                                                                                       \
 				output_keyset (mmks1);                                                                                     \
 				printf ("mmks2:\n");                                                                                       \
@@ -259,7 +264,7 @@ int init (int argc, char ** argv);
 					cmmk2 = ksNext (mmks2);                                                                            \
 					if (!cmmk2)                                                                                        \
 					{                                                                                                  \
-						yield_error ("Compare keyset " quote_string (mmks1) " with " quote_string (                \
+						yield_error ("Compare keyset " ELEKTRA_QUOTE (mmks1) " with " ELEKTRA_QUOTE (              \
 							mmks2) " failed, did not find corresponding key") break;                           \
 					}                                                                                                  \
                                                                                                                                            \

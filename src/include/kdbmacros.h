@@ -12,7 +12,10 @@
 #ifndef KDBMACROS_H
 #define KDBMACROS_H
 
+/** Surround a value with double quotes */
 #define ELEKTRA_QUOTE(x) #x
+/** Surround a **macro value** with double quotes */
+#define ELEKTRA_STRINGIFY(x) ELEKTRA_QUOTE (x)
 
 #if defined(__APPLE__)
 #define ELEKTRA_STAT_SECONDS(status) status.st_mtime

@@ -281,7 +281,7 @@ int main (int argc, char ** argv)
 	test_tempname ();
 
 
-	printf ("\ntest_backendhelpers RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
+	print_result ("testmod_resolver");
 
 	return nbError;
 }

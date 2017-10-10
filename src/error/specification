@@ -1132,3 +1132,24 @@ severity:error
 ingroup:plugin
 macro:CRYPTO_VERSION
 module:crypto
+
+number:183
+description:Unable to write to file
+severity:error
+ingroup:plugin
+module:yamlcpp
+macro:YAMLCPP_WRITE_FAILED
+
+number:184
+description:Something went wrong while emitting YAML data
+severity:error
+ingroup:plugin
+module:yamlcpp
+macro:YAMLCPP_EMITTER_FAILED
+
+number:185
+description:Failed to retrieve YAML representation
+severity:error
+ingroup:plugin
+module:yamlcpp
+macro:YAMLCPP_REPRESENTATION

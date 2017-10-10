@@ -61,7 +61,7 @@ int main (int argc, char ** argv)
 
 	test_basics ();
 
-	printf ("\ntestmod_iterate RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
+	print_result ("testmod_iterate");
 
 	return nbError;
 }

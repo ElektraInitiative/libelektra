@@ -34,7 +34,7 @@ distinguish-able style. It looks like:
 
 ```sh
 # Mount Tcl plugin to namespace `user/examples/tcl`
-kdb mount config.tcl user/examples/tcl tcl
+sudo kdb mount config.tcl user/examples/tcl tcl
 
 # Add a key value pair to the database
 kdb set user/examples/tcl/key value
@@ -56,7 +56,7 @@ kdb export user/examples/tcl tcl
 
 # Undo modifications
 kdb rm -r user/examples/tcl
-kdb umount user/examples/tcl
+sudo kdb umount user/examples/tcl
 ```
 
 ## Limitations

@@ -6,7 +6,7 @@
 - **Scope:** Configuration conversion
 - **Level:** User Goal
 - **Actors:** Anonymous user (+ all others)
-- **Brief:** User can input a configuration snippet in any supported format (e.g. ini, xml) and convert it into another supported format (e.g. json).
+- **Brief:** User can input a configuration snippet in any supported format (e.g. ini, xml) and convert it into another supported format (e.g. JSON).
 
 ## Scenarios
 
