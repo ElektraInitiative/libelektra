@@ -17,6 +17,8 @@ if (DEPENDENCY_PHASE)
 			add_definitions (-DLOGGING_ENABLED)
 		endif (HAVE_LOGGER)
 	endif (NOT YAML-CPP_FOUND)
+
+	set (YAML_PLUGIN_INCLUDE_DIRS ${YAML-CPP_INCLUDE_DIR} ${Boost_INCLUDE_DIR})
 endif (DEPENDENCY_PHASE)
 
 add_plugin (yamlcpp
@@ -28,7 +30,7 @@ add_plugin (yamlcpp
 		read.hpp read.cpp
 		write.hpp write.cpp
 	INCLUDE_DIRECTORIES
-		${YAML-CPP_INCLUDE_DIR} ${Boost_INCLUDE_DIR}
+		${YAML_PLUGIN_INCLUDE_DIRS}
 	LINK_LIBRARIES
 		${YAML-CPP_LIBRARIES}
 	LINK_ELEKTRA
