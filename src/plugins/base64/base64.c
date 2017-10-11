@@ -108,7 +108,7 @@ static int encode (Key * key, Key * parent)
 	return 1;
 }
 
-int escape (Key * key, Key * parent)
+static int escape (Key * key, Key * parent)
 {
 	if (keyIsString (key) == 0) return 0;
 
@@ -200,9 +200,6 @@ int ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME_C, set) (Plugin * handle ELEKTR
 
 Plugin * ELEKTRA_PLUGIN_EXPORT (base64)
 {
-	// clang-format off
-	return elektraPluginExport(ELEKTRA_PLUGIN_NAME,
-			ELEKTRA_PLUGIN_GET,   &ELEKTRA_PLUGIN_FUNCTION(ELEKTRA_PLUGIN_NAME_C, get),
-			ELEKTRA_PLUGIN_SET,   &ELEKTRA_PLUGIN_FUNCTION(ELEKTRA_PLUGIN_NAME_C, set),
-			ELEKTRA_PLUGIN_END);
+	return elektraPluginExport (ELEKTRA_PLUGIN_NAME, ELEKTRA_PLUGIN_GET, &ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME_C, get),
+				    ELEKTRA_PLUGIN_SET, &ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME_C, set), ELEKTRA_PLUGIN_END);
 }
