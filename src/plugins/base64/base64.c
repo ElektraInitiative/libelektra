@@ -70,6 +70,45 @@ static int decode (Key * key, Key * parent)
 }
 
 /**
+ * @brief Encode a binary key value using base64 encoding and save the result as textual data in the key.
+ *
+ * @retval -1 if the function was unable to convert the value of `key`
+ * @retval 0 if no conversion has taken place
+ * @retval 1 if the function successfully converted the value of `key`
+ */
+static int encode (Key * key, Key * parent)
+{
+	const char * prefix = ELEKTRA_PLUGIN_BASE64_PREFIX;
+	const size_t prefixLen = strlen (prefix);
+
+	if (!keyIsBinary (key)) return 0;
+
+	char * base64 = ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME_C, base64Encode) (keyValue (key), (size_t)keyGetValueSize (key));
+	if (!base64)
+	{
+		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_MALLOC, parent, "Memory allocation failed");
+		return -1;
+	}
+
+	const size_t newValLen = strlen (base64) + prefixLen + 1;
+	char * newVal = elektraMalloc (newValLen);
+	if (!newVal)
+	{
+		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_MALLOC, parent, "Memory allocation failed");
+		elektraFree (base64);
+		return -1;
+	}
+	snprintf (newVal, newValLen, "%s%s", prefix, base64);
+
+	keySetString (key, newVal);
+
+	elektraFree (newVal);
+	elektraFree (base64);
+
+	return 1;
+}
+
+/**
  * @brief establish the Elektra plugin contract and decode all Base64 encoded values back to their original binary form.
  * @retval 1 on success
  * @retval -1 on failure
@@ -124,9 +163,6 @@ int ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME_C, set) (Plugin * handle ELEKTR
 {
 	Key * k;
 
-	const char * prefix = ELEKTRA_PLUGIN_BASE64_PREFIX;
-	const size_t prefixLen = strlen (prefix);
-
 	ksRewind (ks);
 	while ((k = ksNext (ks)))
 	{
@@ -154,32 +190,7 @@ int ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME_C, set) (Plugin * handle ELEKTR
 			}
 		}
 
-		// Base 64 encoding
-		if (keyIsBinary (k) == 1)
-		{
-			char * base64 =
-				ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME_C, base64Encode) (keyValue (k), (size_t)keyGetValueSize (k));
-			if (!base64)
-			{
-				ELEKTRA_SET_ERROR (ELEKTRA_ERROR_MALLOC, parentKey, "Memory allocation failed");
-				return -1;
-			}
-
-			const size_t newValLen = strlen (base64) + prefixLen + 1;
-			char * newVal = elektraMalloc (newValLen);
-			if (!newVal)
-			{
-				ELEKTRA_SET_ERROR (ELEKTRA_ERROR_MALLOC, parentKey, "Memory allocation failed");
-				elektraFree (base64);
-				return -1;
-			}
-			snprintf (newVal, newValLen, "%s%s", prefix, base64);
-
-			keySetString (k, newVal);
-
-			elektraFree (newVal);
-			elektraFree (base64);
-		}
+		if (encode (k, parentKey) == -1) return -1;
 	}
 	return 1;
 }
