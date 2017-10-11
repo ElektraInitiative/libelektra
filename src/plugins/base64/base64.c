@@ -18,6 +18,58 @@
 #include <string.h>
 
 /**
+ * @brief Decode a base64 encoded key value and save the result as binary data in the key.
+ *
+ * The conversion only happens if
+ *
+ * - the value of the key has type `string`
+ * - the key value starts with `ELEKTRA_PLUGIN_BASE64_PREFIX` (`@`).
+ *
+ * .
+ *
+ * @retval -1 if the function was unable to convert the value of `key`
+ * @retval 0 if no conversion has taken place
+ * @retval 1 if the function successfully converted the value of `key`
+ */
+static int decode (Key * key, Key * parent)
+{
+	if (!keyIsString (key)) return 0;
+
+	const char * strVal = keyString (key);
+	const char * prefix = ELEKTRA_PLUGIN_BASE64_PREFIX;
+	const size_t prefixLen = strlen (prefix);
+	if (strlen (strVal) < prefixLen || strncmp (strVal, prefix, prefixLen) != 0) return 0;
+
+	ELEKTRA_LOG_DEBUG ("Decode binary value");
+
+	kdb_octet_t * buffer;
+	size_t bufferLen;
+
+	int result = ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME_C, base64Decode) (strVal + prefixLen, &buffer, &bufferLen);
+	if (result == 1)
+	{
+		// Success
+		keySetBinary (key, buffer, bufferLen);
+	}
+	else if (result == -1)
+	{
+		// Decoding error
+		ELEKTRA_ADD_WARNINGF (ELEKTRA_WARNING_BASE64_DECODING, parent, "Not Base64 encoded: %s", strVal);
+	}
+	else if (result == -2)
+	{
+		// Memory error
+		ELEKTRA_SET_ERROR (87, parent, "Memory allocation failed");
+		return -1;
+	}
+
+	ELEKTRA_LOG_DEBUG ("Decoded data “%s”", (char *)buffer);
+
+	elektraFree (buffer);
+	return 1;
+}
+
+/**
  * @brief establish the Elektra plugin contract and decode all Base64 encoded values back to their original binary form.
  * @retval 1 on success
  * @retval -1 on failure
@@ -37,58 +89,27 @@ int ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME_C, get) (Plugin * handle ELEKTR
 
 	// base64 decoding
 	Key * k;
-
-	const char * prefix = ELEKTRA_PLUGIN_BASE64_PREFIX;
-	const size_t prefixLen = strlen (prefix);
 	const char escapedPrefix[] = ELEKTRA_PLUGIN_BASE64_ESCAPE ELEKTRA_PLUGIN_BASE64_ESCAPE;
 
 	ksRewind (ks);
 	while ((k = ksNext (ks)))
 	{
-		if (keyIsString (k) == 1)
+		int status = decode (k, parentKey);
+		if (status == -1) return -1; // Error
+		if (status != 0 || !keyIsString (k)) continue;
+
+		const char * strVal = keyString (k);
+		if (strlen (strVal) >= 2 && strncmp (strVal, escapedPrefix, 2) == 0)
 		{
-			const char * strVal = keyString (k);
-
-			if (strlen (strVal) >= prefixLen && strncmp (strVal, prefix, prefixLen) == 0)
+			// Discard the first escape character
+			char * unescaped = strdup (&strVal[1]);
+			if (!unescaped)
 			{
-				// Base64 encoding
-				kdb_octet_t * buffer;
-				size_t bufferLen;
-
-				int result = ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME_C, base64Decode) (strVal + prefixLen, &buffer,
-													    &bufferLen);
-				if (result == 1)
-				{
-					// success
-					keySetBinary (k, buffer, bufferLen);
-				}
-				else if (result == -1)
-				{
-					// decoding error
-					ELEKTRA_ADD_WARNINGF (ELEKTRA_WARNING_BASE64_DECODING, parentKey,
-							      "Not Base64 encoded: %s. Maybe use a different prefix?", strVal);
-				}
-				else if (result == -2)
-				{
-					// memory error
-					ELEKTRA_SET_ERROR (87, parentKey, "Memory allocation failed");
-					return -1;
-				}
-
-				elektraFree (buffer);
+				ELEKTRA_SET_ERROR (87, parentKey, "Memory allocation failed");
+				return -1;
 			}
-			else if (strlen (strVal) >= 2 && strncmp (strVal, escapedPrefix, 2) == 0)
-			{
-				// discard the first escape character
-				char * unescaped = strdup (&strVal[1]);
-				if (!unescaped)
-				{
-					ELEKTRA_SET_ERROR (87, parentKey, "Memory allocation failed");
-					return -1;
-				}
-				keySetString (k, unescaped);
-				elektraFree (unescaped);
-			}
+			keySetString (k, unescaped);
+			elektraFree (unescaped);
 		}
 	}
 	return 1;
