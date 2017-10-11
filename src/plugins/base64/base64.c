@@ -108,6 +108,33 @@ static int encode (Key * key, Key * parent)
 	return 1;
 }
 
+int escape (Key * key, Key * parent)
+{
+	if (keyIsString (key) == 0) return 0;
+
+	// escape the prefix character
+	const char * strVal = keyString (key);
+	const size_t strValLen = strlen (strVal);
+	if (strValLen > 0 && strncmp (strVal, ELEKTRA_PLUGIN_BASE64_ESCAPE, 1) == 0)
+	{
+		// + 1 for the additional escape character
+		// + 1 for the NULL terminator
+		char * escapedVal = elektraMalloc (strValLen + 2);
+		if (!escapedVal)
+		{
+			ELEKTRA_SET_ERROR (ELEKTRA_ERROR_MALLOC, parent, "Memory allocation failed");
+			return -1;
+		}
+
+		// add the escape character in front of the original value
+		escapedVal[0] = ELEKTRA_PLUGIN_BASE64_ESCAPE_CHAR;
+		strncpy (&escapedVal[1], strVal, strValLen + 1);
+		keySetString (key, escapedVal);
+		elektraFree (escapedVal);
+	}
+	return 1;
+}
+
 /**
  * @brief establish the Elektra plugin contract and decode all Base64 encoded values back to their original binary form.
  * @retval 1 on success
@@ -166,31 +193,7 @@ int ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME_C, set) (Plugin * handle ELEKTR
 	ksRewind (ks);
 	while ((k = ksNext (ks)))
 	{
-		// escape the prefix character
-		if (keyIsString (k) == 1)
-		{
-			const char * strVal = keyString (k);
-			const size_t strValLen = strlen (strVal);
-			if (strValLen > 0 && strncmp (strVal, ELEKTRA_PLUGIN_BASE64_ESCAPE, 1) == 0)
-			{
-				// + 1 for the additional escape character
-				// + 1 for the NULL terminator
-				char * escapedVal = elektraMalloc (strValLen + 2);
-				if (!escapedVal)
-				{
-					ELEKTRA_SET_ERROR (ELEKTRA_ERROR_MALLOC, parentKey, "Memory allocation failed");
-					return -1;
-				}
-
-				// add the escape character in front of the original value
-				escapedVal[0] = ELEKTRA_PLUGIN_BASE64_ESCAPE_CHAR;
-				strncpy (&escapedVal[1], strVal, strValLen + 1);
-				keySetString (k, escapedVal);
-				elektraFree (escapedVal);
-			}
-		}
-
-		if (encode (k, parentKey) == -1) return -1;
+		if ((escape (k, parentKey) == -1) || (encode (k, parentKey) == -1)) return -1;
 	}
 	return 1;
 }
