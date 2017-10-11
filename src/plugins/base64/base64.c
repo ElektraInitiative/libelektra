@@ -59,7 +59,7 @@ static int decode (Key * key, Key * parent)
 	else if (result == -2)
 	{
 		// Memory error
-		ELEKTRA_SET_ERROR (87, parent, "Memory allocation failed");
+		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_MALLOC, parent, "Memory allocation failed");
 		return -1;
 	}
 
@@ -105,7 +105,7 @@ int ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME_C, get) (Plugin * handle ELEKTR
 			char * unescaped = strdup (&strVal[1]);
 			if (!unescaped)
 			{
-				ELEKTRA_SET_ERROR (87, parentKey, "Memory allocation failed");
+				ELEKTRA_SET_ERROR (ELEKTRA_ERROR_MALLOC, parentKey, "Memory allocation failed");
 				return -1;
 			}
 			keySetString (k, unescaped);
@@ -142,7 +142,7 @@ int ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME_C, set) (Plugin * handle ELEKTR
 				char * escapedVal = elektraMalloc (strValLen + 2);
 				if (!escapedVal)
 				{
-					ELEKTRA_SET_ERROR (87, parentKey, "Memory allocation failed");
+					ELEKTRA_SET_ERROR (ELEKTRA_ERROR_MALLOC, parentKey, "Memory allocation failed");
 					return -1;
 				}
 
@@ -161,7 +161,7 @@ int ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME_C, set) (Plugin * handle ELEKTR
 				ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME_C, base64Encode) (keyValue (k), (size_t)keyGetValueSize (k));
 			if (!base64)
 			{
-				ELEKTRA_SET_ERROR (87, parentKey, "Memory allocation failed");
+				ELEKTRA_SET_ERROR (ELEKTRA_ERROR_MALLOC, parentKey, "Memory allocation failed");
 				return -1;
 			}
 
@@ -169,7 +169,7 @@ int ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME_C, set) (Plugin * handle ELEKTR
 			char * newVal = elektraMalloc (newValLen);
 			if (!newVal)
 			{
-				ELEKTRA_SET_ERROR (87, parentKey, "Memory allocation failed");
+				ELEKTRA_SET_ERROR (ELEKTRA_ERROR_MALLOC, parentKey, "Memory allocation failed");
 				elektraFree (base64);
 				return -1;
 			}
