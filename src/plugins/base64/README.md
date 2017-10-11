@@ -41,4 +41,24 @@ sudo kdb umount /examples/base64/test
 
     @BASE64SGVsbG8gV29ybGQhCg==
 
-.
+. The following example shows how you can use this plugin together with the INI plugin to store binary data.
+
+```sh
+# Mount the INI and Base64 plugin
+kdb mount config.ini user/examples/base64 ini base64
+
+# Copy binary data
+kdb cp system/elektra/modules/dump/exports/unserialise user/examples/base64/binary
+
+# Print binary data
+kdb get user/examples/base64/binary
+# STDOUT-REGEX: ^(\\\\x[0-9a-f]{1,2})+$
+
+# The value inside the configuration file is encoded by the Base64 plugin
+kdb file user/examples/base64 | xargs cat
+# STDOUT-REGEX: binary = "@BASE64[a-zA-Z0-9+/]+={0,2}"
+
+# Undo modifications
+kdb rm -r user/examples/base64
+kdb umount user/examples/base64
+```
