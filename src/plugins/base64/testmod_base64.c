@@ -7,12 +7,6 @@
  *
  */
 
-#include <kdb.h>
-#include <kdbinternal.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <tests_internal.h>
 #include <tests_plugin.h>
 
 #include "base64.h"

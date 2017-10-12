@@ -1,12 +1,6 @@
-#ifndef HAVE_KDBCONFIG
-#include "kdbconfig.h"
-#endif
 #include "base64_functions.h"
-#include <kdb.h>
 #include <kdbassert.h>
 #include <kdberrors.h>
-#include <stdlib.h>
-#include <string.h>
 
 static const char alphabet[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 #define ALPHABET_LENGTH (sizeof (alphabet) - 1)
