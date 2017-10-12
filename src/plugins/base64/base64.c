@@ -135,6 +135,27 @@ static int escape (Key * key, Key * parent)
 	return 1;
 }
 
+static int unescape (Key * key, Key * parent)
+{
+	if (!keyIsString (key)) return 0;
+
+	const char escapedPrefix[] = ELEKTRA_PLUGIN_BASE64_ESCAPE ELEKTRA_PLUGIN_BASE64_ESCAPE;
+	const char * strVal = keyString (key);
+	if (strlen (strVal) >= 2 && strncmp (strVal, escapedPrefix, 2) == 0)
+	{
+		// Discard the first escape character
+		char * unescaped = strdup (&strVal[1]);
+		if (!unescaped)
+		{
+			ELEKTRA_SET_ERROR (ELEKTRA_ERROR_MALLOC, parent, "Memory allocation failed");
+			return -1;
+		}
+		keySetString (key, unescaped);
+		elektraFree (unescaped);
+	}
+	return 1;
+}
+
 /**
  * @brief establish the Elektra plugin contract and decode all Base64 encoded values back to their original binary form.
  * @retval 1 on success
@@ -155,28 +176,14 @@ int ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME_C, get) (Plugin * handle ELEKTR
 
 	// base64 decoding
 	Key * k;
-	const char escapedPrefix[] = ELEKTRA_PLUGIN_BASE64_ESCAPE ELEKTRA_PLUGIN_BASE64_ESCAPE;
 
 	ksRewind (ks);
 	while ((k = ksNext (ks)))
 	{
 		int status = decode (k, parentKey);
-		if (status == -1) return -1; // Error
-		if (status != 0 || !keyIsString (k)) continue;
-
-		const char * strVal = keyString (k);
-		if (strlen (strVal) >= 2 && strncmp (strVal, escapedPrefix, 2) == 0)
-		{
-			// Discard the first escape character
-			char * unescaped = strdup (&strVal[1]);
-			if (!unescaped)
-			{
-				ELEKTRA_SET_ERROR (ELEKTRA_ERROR_MALLOC, parentKey, "Memory allocation failed");
-				return -1;
-			}
-			keySetString (k, unescaped);
-			elektraFree (unescaped);
-		}
+		if (status == -1) return -1;
+		if (status == 0) status = unescape (k, parentKey);
+		if (status == -1) return -1;
 	}
 	return 1;
 }
