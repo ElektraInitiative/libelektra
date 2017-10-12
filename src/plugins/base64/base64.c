@@ -98,7 +98,7 @@ static int encode (Key * key, Key * parent)
 		elektraFree (base64);
 		return -1;
 	}
-	snprintf (newVal, newValLen, "%s%s", prefix, base64);
+	snprintf (newVal, newValLen, "%s%s", prefix, base64); //! OCLint (constant conditional operator)
 
 	keySetString (key, newVal);
 
@@ -115,23 +115,22 @@ static int escape (Key * key, Key * parent)
 	// escape the prefix character
 	const char * strVal = keyString (key);
 	const size_t strValLen = strlen (strVal);
-	if (strValLen > 0 && strncmp (strVal, ELEKTRA_PLUGIN_BASE64_ESCAPE, 1) == 0)
-	{
-		// + 1 for the additional escape character
-		// + 1 for the NULL terminator
-		char * escapedVal = elektraMalloc (strValLen + 2);
-		if (!escapedVal)
-		{
-			ELEKTRA_SET_ERROR (ELEKTRA_ERROR_MALLOC, parent, "Memory allocation failed");
-			return -1;
-		}
+	if (strValLen <= 0 || strncmp (strVal, ELEKTRA_PLUGIN_BASE64_ESCAPE, 1) != 0) return 0;
 
-		// add the escape character in front of the original value
-		escapedVal[0] = ELEKTRA_PLUGIN_BASE64_ESCAPE_CHAR;
-		strncpy (&escapedVal[1], strVal, strValLen + 1);
-		keySetString (key, escapedVal);
-		elektraFree (escapedVal);
+	// + 1 for the additional escape character
+	// + 1 for the NULL terminator
+	char * escapedVal = elektraMalloc (strValLen + 2);
+	if (!escapedVal)
+	{
+		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_MALLOC, parent, "Memory allocation failed");
+		return -1;
 	}
+
+	// add the escape character in front of the original value
+	escapedVal[0] = ELEKTRA_PLUGIN_BASE64_ESCAPE_CHAR;
+	strncpy (&escapedVal[1], strVal, strValLen + 1); //! OCLint (constant conditional operator)
+	keySetString (key, escapedVal);
+	elektraFree (escapedVal);
 	return 1;
 }
 
@@ -161,7 +160,7 @@ static int unescape (Key * key, Key * parent)
  * @retval 1 on success
  * @retval -1 on failure
  */
-int PLUGIN_FUNCTION (get) (Plugin * handle ELEKTRA_UNUSED, KeySet * ks, Key * parentKey)
+int PLUGIN_FUNCTION (get) (Plugin * handle ELEKTRA_UNUSED, KeySet * keySet, Key * parentKey)
 {
 	// Publish module configuration to Elektra (establish the contract)
 	if (!strcmp (keyName (parentKey), "system/elektra/modules/" ELEKTRA_PLUGIN_NAME))
@@ -169,20 +168,20 @@ int PLUGIN_FUNCTION (get) (Plugin * handle ELEKTRA_UNUSED, KeySet * ks, Key * pa
 		KeySet * moduleConfig = ksNew (30,
 #include "contract.h"
 					       KS_END);
-		ksAppend (ks, moduleConfig);
+		ksAppend (keySet, moduleConfig);
 		ksDel (moduleConfig);
 		return 1;
 	}
 
 	// base64 decoding
-	Key * k;
+	Key * key;
 
-	ksRewind (ks);
-	while ((k = ksNext (ks)))
+	ksRewind (keySet);
+	while ((key = ksNext (keySet)))
 	{
-		int status = decode (k, parentKey);
+		int status = decode (key, parentKey);
 		if (status == -1) return -1;
-		if (status == 0) status = unescape (k, parentKey);
+		if (status == 0) status = unescape (key, parentKey);
 		if (status == -1) return -1;
 	}
 	return 1;
@@ -193,14 +192,14 @@ int PLUGIN_FUNCTION (get) (Plugin * handle ELEKTRA_UNUSED, KeySet * ks, Key * pa
  * @retval 1 on success
  * @retval -1 on failure
  */
-int PLUGIN_FUNCTION (set) (Plugin * handle ELEKTRA_UNUSED, KeySet * ks, Key * parentKey)
+int PLUGIN_FUNCTION (set) (Plugin * handle ELEKTRA_UNUSED, KeySet * keySet, Key * parentKey)
 {
-	Key * k;
+	Key * key;
 
-	ksRewind (ks);
-	while ((k = ksNext (ks)))
+	ksRewind (keySet);
+	while ((key = ksNext (keySet)))
 	{
-		if ((escape (k, parentKey) == -1) || (encode (k, parentKey) == -1)) return -1;
+		if ((escape (key, parentKey) == -1) || (encode (key, parentKey) == -1)) return -1;
 	}
 	return 1;
 }
