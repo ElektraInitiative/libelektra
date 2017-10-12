@@ -130,13 +130,13 @@ static int encode (Key * key, Key * parent)
 }
 
 /**
- * @brief Escape the prefix character `@` in a key value.
+ * @brief Escape the prefix character `ELEKTRA_PLUGIN_BASE64_PREFIX` (`@`) in a key value by prefixing it with another `@`.
  *
- * This function only replaces the prefix character if the type of `key` is string.
+ * This function only inserts another prefix character if the type of `key` is string.
  *
  * @retval -1 if the function was unable to escape the key value
  * @retval 0 if the function did not change the key value
- * @retval 1 if the function successfully converted the value of `key`
+ * @retval 1 if the function successfully escaped the value of `key`
  */
 static int escape (Key * key, Key * parent)
 {
