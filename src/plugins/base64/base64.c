@@ -10,6 +10,7 @@
 #include "base64.h"
 #include <kdb.h>
 #include <kdberrors.h>
+#include <stdbool.h>
 #include <string.h>
 
 /**
@@ -41,28 +42,49 @@ static int unescape (Key * key, Key * parent)
 }
 
 /**
+ * @brief Check if the given key should be decoded by the plugin.
+ *
+ * @pre The type of the key value must be string.
+ *
+ * @retval true if the plugin should decode the given key
+ * @retval false otherwise
+ */
+bool shouldDecode (Key * key, bool metaMode)
+{
+	if (metaMode)
+	{
+		return keyGetMeta (key, "type") && strcmp (keyValue (keyGetMeta (key, "type")), "binary") == 0;
+	}
+	else
+	{
+		const char * strVal = keyString (key);
+		return strlen (strVal) >= ELEKTRA_PLUGIN_BASE64_PREFIX_LENGTH &&
+		       strncmp (strVal, ELEKTRA_PLUGIN_BASE64_PREFIX, ELEKTRA_PLUGIN_BASE64_PREFIX_LENGTH) == 0;
+	}
+}
+
+/**
  * @brief Decode a base64 encoded key value and save the result as binary data in the key.
  *
- * The conversion only happens if
+ * The conversion only happens if the value of the key has type `string` and
  *
- * - the value of the key has type `string`
- * - the key value starts with `ELEKTRA_PLUGIN_BASE64_PREFIX` (`"@BASE64"`).
+ *   1. in escaping mode: the key value starts with `ELEKTRA_PLUGIN_BASE64_PREFIX` (`"@BASE64"`),
+ *   2. in meta mode: the key contains the metakey `type` with the value `binary`
  *
- * . If the key value starts with two prefix characters (`@@`), then the function unescapes the value by removing one of the prefix
- * characters.
+ * . If the key value starts with two prefix characters (`@@`) in **escaping mode**, then the function unescapes the value by removing one
+ * of the prefix characters.
  *
  * @retval -1 if the function was unable to convert or unescape the value of `key`
  * @retval 0 if the given key was not modified
  * @retval 1 if the function successfully modified `key`
  */
-static int decode (Key * key, Key * parent)
+static int decode (Key * key, Key * parent, bool metaMode)
 {
 	if (!keyIsString (key)) return 0;
 
-	const char * strVal = keyString (key);
-	if (strlen (strVal) < ELEKTRA_PLUGIN_BASE64_PREFIX_LENGTH ||
-	    strncmp (strVal, ELEKTRA_PLUGIN_BASE64_PREFIX, ELEKTRA_PLUGIN_BASE64_PREFIX_LENGTH) != 0)
+	if (!shouldDecode (key, metaMode))
 	{
+		if (metaMode) return 0;
 		return unescape (key, parent);
 	}
 
@@ -70,8 +92,8 @@ static int decode (Key * key, Key * parent)
 
 	kdb_octet_t * buffer;
 	size_t bufferLen;
-
-	int result = PLUGIN_FUNCTION (base64Decode) (strVal + ELEKTRA_PLUGIN_BASE64_PREFIX_LENGTH, &buffer, &bufferLen);
+	const char * strVal = keyString (key);
+	int result = PLUGIN_FUNCTION (base64Decode) (strVal + (metaMode ? 0 : ELEKTRA_PLUGIN_BASE64_PREFIX_LENGTH), &buffer, &bufferLen);
 	if (result == 1)
 	{
 		// Success
@@ -100,7 +122,7 @@ static int decode (Key * key, Key * parent)
  * @retval 0 if no conversion has taken place
  * @retval 1 if the function successfully converted the value of `key`
  */
-static int encode (Key * key, Key * parent)
+static int encode (Key * key, Key * parent, bool metaMode)
 {
 	if (!keyIsBinary (key)) return 0;
 
@@ -111,19 +133,25 @@ static int encode (Key * key, Key * parent)
 		return -1;
 	}
 
-	const size_t newValLen = strlen (base64) + ELEKTRA_PLUGIN_BASE64_PREFIX_LENGTH + 1;
-	char * newVal = elektraMalloc (newValLen);
-	if (!newVal)
+	if (metaMode)
 	{
-		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_MALLOC, parent, "Memory allocation failed");
-		elektraFree (base64);
-		return -1;
+		keySetString (key, base64);
 	}
-	snprintf (newVal, newValLen, "%s%s", ELEKTRA_PLUGIN_BASE64_PREFIX, base64); //! OCLint (constant conditional operator)
+	else
+	{
+		const size_t newValLen = strlen (base64) + ELEKTRA_PLUGIN_BASE64_PREFIX_LENGTH + 1;
+		char * newVal = elektraMalloc (newValLen);
+		if (!newVal)
+		{
+			ELEKTRA_SET_ERROR (ELEKTRA_ERROR_MALLOC, parent, "Memory allocation failed");
+			elektraFree (base64);
+			return -1;
+		}
+		snprintf (newVal, newValLen, "%s%s", ELEKTRA_PLUGIN_BASE64_PREFIX, base64); //! OCLint (constant conditional operator)
+		keySetString (key, newVal);
+		elektraFree (newVal);
+	}
 
-	keySetString (key, newVal);
-
-	elektraFree (newVal);
 	elektraFree (base64);
 
 	return 1;
@@ -165,13 +193,28 @@ static int escape (Key * key, Key * parent)
 }
 
 /**
+ * @brief Check if the plugin should use meta mode for the base64 conversion.
+ *
+ * @retval true if the plugin should use meta mode
+ * @retval false if the plugin should use escaping mode
+ */
+static bool useMetaMode (Plugin * handle)
+{
+	KeySet * config = elektraPluginGetConfig (handle);
+	Key * metaMode = ksLookupByName (config, "/binary/meta", 0);
+
+	ELEKTRA_LOG ("Using %s mode", metaMode ? "meta" : "escaping");
+	return metaMode ? true : false;
+}
+
+/**
  * @brief Establish the Elektra plugin contract and decode all Base64 encoded values back to their original binary form.
  *
  * @retval 1 if any keys were updated
  * @retval 0 if `keyset` was not modified
  * @retval -1 on failure
  */
-int PLUGIN_FUNCTION (get) (Plugin * handle ELEKTRA_UNUSED, KeySet * keySet, Key * parentKey)
+int PLUGIN_FUNCTION (get) (Plugin * handle, KeySet * keySet, Key * parentKey)
 {
 	// Publish module configuration to Elektra (establish the contract)
 	if (!strcmp (keyName (parentKey), "system/elektra/modules/" ELEKTRA_PLUGIN_NAME))
@@ -184,13 +227,15 @@ int PLUGIN_FUNCTION (get) (Plugin * handle ELEKTRA_UNUSED, KeySet * keySet, Key 
 		return 1;
 	}
 
+	bool metaMode = useMetaMode (handle);
+
 	// base64 decoding
 	Key * key;
 	ksRewind (keySet);
 	int status = 0;
 	while (status >= 0 && (key = ksNext (keySet)))
 	{
-		status |= decode (key, parentKey);
+		status |= decode (key, parentKey, metaMode);
 	}
 	return status;
 }
@@ -202,17 +247,23 @@ int PLUGIN_FUNCTION (get) (Plugin * handle ELEKTRA_UNUSED, KeySet * keySet, Key 
  * @retval 0 if `keyset` was not modified
  * @retval -1 on failure
  */
-int PLUGIN_FUNCTION (set) (Plugin * handle ELEKTRA_UNUSED, KeySet * keySet, Key * parentKey)
+int PLUGIN_FUNCTION (set) (Plugin * handle, KeySet * keySet, Key * parentKey)
 {
 	Key * key;
 
 	ksRewind (keySet);
+
+	bool metaMode = useMetaMode (handle);
+
 	int status = 0;
 	while (status >= 0 && (key = ksNext (keySet)))
 	{
-		status |= escape (key, parentKey);
-		if (status < 0) break;
-		status |= encode (key, parentKey);
+		if (!metaMode)
+		{
+			status |= escape (key, parentKey);
+			if (status < 0) break;
+		}
+		status |= encode (key, parentKey, metaMode);
 	}
 	return status;
 }
