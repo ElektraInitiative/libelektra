@@ -12,6 +12,15 @@
 #include <kdberrors.h>
 #include <string.h>
 
+/**
+ * @brief Unescape a key value starting with two `ELEKTRA_PLUGIN_BASE64_ESCAPE` characters (`@@`).
+ *
+ * @pre The type of the key value must be string.
+ *
+ * @retval -1 if the function was unable to unescape the value of `key`
+ * @retval 0 if the given key was not modified
+ * @retval 1 if the function successfully unescaped `key`
+ */
 static int unescape (Key * key, Key * parent)
 {
 	const char * strVal = keyString (key);
