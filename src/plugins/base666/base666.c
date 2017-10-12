@@ -23,9 +23,7 @@ static inline KeySet * base666Contract (void)
 		      keyNew ("system/elektra/modules/base666/exports/get", KEY_FUNC, elektraBase666Get, KEY_END),
 		      keyNew ("system/elektra/modules/base666/exports/set", KEY_FUNC, elektraBase666Set, KEY_END),
 #include ELEKTRA_README (base666)
-		      keyNew ("system/elektra/modules/base666/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END),
-
-		      KS_END);
+		      keyNew ("system/elektra/modules/base666/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 }
 
 /**
