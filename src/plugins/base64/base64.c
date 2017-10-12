@@ -195,7 +195,9 @@ int PLUGIN_FUNCTION (get) (Plugin * handle ELEKTRA_UNUSED, KeySet * keySet, Key 
 
 /**
  * @brief Encode all binary values using the Base64 encoding scheme.
- * @retval 1 on success
+ *
+ * @retval 1 if any keys were updated
+ * @retval 0 if `keyset` was not modified
  * @retval -1 on failure
  */
 int PLUGIN_FUNCTION (set) (Plugin * handle ELEKTRA_UNUSED, KeySet * keySet, Key * parentKey)
@@ -203,11 +205,14 @@ int PLUGIN_FUNCTION (set) (Plugin * handle ELEKTRA_UNUSED, KeySet * keySet, Key 
 	Key * key;
 
 	ksRewind (keySet);
-	while ((key = ksNext (keySet)))
+	int status = 0;
+	while (status >= 0 && (key = ksNext (keySet)))
 	{
-		if ((escape (key, parentKey) == -1) || (encode (key, parentKey) == -1)) return -1;
+		status |= escape (key, parentKey);
+		if (status < 0) break;
+		status |= encode (key, parentKey);
 	}
-	return 1;
+	return status;
 }
 
 Plugin * ELEKTRA_PLUGIN_EXPORT (base64)
