@@ -71,7 +71,7 @@ static void test_base64_encoding (void)
 		errorAlloc[10] = testcase2char (i);
 		errorMismatch[10] = testcase2char (i);
 
-		char * e = ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME_C, base64Encode) ((kdb_octet_t *)decoded[i], strlen (decoded[i]));
+		char * e = PLUGIN_FUNCTION (base64Encode) ((kdb_octet_t *)decoded[i], strlen (decoded[i]));
 		succeed_if (e, errorAlloc);
 		if (e)
 		{
@@ -91,8 +91,7 @@ static void test_base64_decoding (void)
 	size_t bufferLen = 0;
 
 	// first test case is a little special because we expect NULL on success here
-	succeed_if (ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME_C, base64Decode) (encoded[0], &buffer, &bufferLen) == 1,
-		    "decoding of test vector 1 failed");
+	succeed_if (PLUGIN_FUNCTION (base64Decode) (encoded[0], &buffer, &bufferLen) == 1, "decoding of test vector 1 failed");
 	succeed_if (buffer == NULL, "decoding of test vector 1 returned unexpected result vector");
 	succeed_if (bufferLen == 0, "decoding of test vector 1 returned unexpected result length");
 	if (buffer)
@@ -106,8 +105,7 @@ static void test_base64_decoding (void)
 		errorFail[10] = testcase2char (i);
 		errorLength[10] = testcase2char (i);
 
-		succeed_if (ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME_C, base64Decode) (encoded[i], &buffer, &bufferLen) == 1,
-			    errorFail);
+		succeed_if (PLUGIN_FUNCTION (base64Decode) (encoded[i], &buffer, &bufferLen) == 1, errorFail);
 		if (buffer)
 		{
 			succeed_if (bufferLen == strlen (decoded[i]), errorLength);

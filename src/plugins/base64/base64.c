@@ -45,7 +45,7 @@ static int decode (Key * key, Key * parent)
 	kdb_octet_t * buffer;
 	size_t bufferLen;
 
-	int result = ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME_C, base64Decode) (strVal + prefixLen, &buffer, &bufferLen);
+	int result = PLUGIN_FUNCTION (base64Decode) (strVal + prefixLen, &buffer, &bufferLen);
 	if (result == 1)
 	{
 		// Success
@@ -83,7 +83,7 @@ static int encode (Key * key, Key * parent)
 
 	if (!keyIsBinary (key)) return 0;
 
-	char * base64 = ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME_C, base64Encode) (keyValue (key), (size_t)keyGetValueSize (key));
+	char * base64 = PLUGIN_FUNCTION (base64Encode) (keyValue (key), (size_t)keyGetValueSize (key));
 	if (!base64)
 	{
 		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_MALLOC, parent, "Memory allocation failed");
@@ -161,7 +161,7 @@ static int unescape (Key * key, Key * parent)
  * @retval 1 on success
  * @retval -1 on failure
  */
-int ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME_C, get) (Plugin * handle ELEKTRA_UNUSED, KeySet * ks, Key * parentKey)
+int PLUGIN_FUNCTION (get) (Plugin * handle ELEKTRA_UNUSED, KeySet * ks, Key * parentKey)
 {
 	// Publish module configuration to Elektra (establish the contract)
 	if (!strcmp (keyName (parentKey), "system/elektra/modules/" ELEKTRA_PLUGIN_NAME))
@@ -193,7 +193,7 @@ int ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME_C, get) (Plugin * handle ELEKTR
  * @retval 1 on success
  * @retval -1 on failure
  */
-int ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME_C, set) (Plugin * handle ELEKTRA_UNUSED, KeySet * ks, Key * parentKey)
+int PLUGIN_FUNCTION (set) (Plugin * handle ELEKTRA_UNUSED, KeySet * ks, Key * parentKey)
 {
 	Key * k;
 
@@ -207,6 +207,6 @@ int ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME_C, set) (Plugin * handle ELEKTR
 
 Plugin * ELEKTRA_PLUGIN_EXPORT (base64)
 {
-	return elektraPluginExport (ELEKTRA_PLUGIN_NAME, ELEKTRA_PLUGIN_GET, &ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME_C, get),
-				    ELEKTRA_PLUGIN_SET, &ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME_C, set), ELEKTRA_PLUGIN_END);
+	return elektraPluginExport (ELEKTRA_PLUGIN_NAME, ELEKTRA_PLUGIN_GET, &PLUGIN_FUNCTION (get), ELEKTRA_PLUGIN_SET,
+				    &PLUGIN_FUNCTION (set), ELEKTRA_PLUGIN_END);
 }

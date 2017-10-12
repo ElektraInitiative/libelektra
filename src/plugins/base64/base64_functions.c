@@ -18,7 +18,7 @@ static const char padding = '=';
  * @param inputLength tells how many bytes the input buffer is holding.
  * @returns an allocated string holding the Base64 encoded input data or NULL if the string can not be allocated. Must be freed by the caller.
  */
-char * ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME_C, base64Encode) (const kdb_octet_t * input, const size_t inputLength)
+char * PLUGIN_FUNCTION (base64Encode) (const kdb_octet_t * input, const size_t inputLength)
 {
 	size_t encodedLength = 0;
 	if (inputLength % 3 == 0)
@@ -99,7 +99,7 @@ static kdb_octet_t getBase64Index (const char c, int * errorFlag)
  * @retval -1 if the provided string has not been encoded with Base64
  * @retval -2 if the output buffer allocation failed
  */
-int ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME_C, base64Decode) (const char * input, kdb_octet_t ** output, size_t * outputLength)
+int PLUGIN_FUNCTION (base64Decode) (const char * input, kdb_octet_t ** output, size_t * outputLength)
 {
 	const size_t inputLen = strlen (input);
 	if (inputLen == 0 || (inputLen == 1 && input[0] == '\0'))

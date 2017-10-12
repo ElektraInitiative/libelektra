@@ -17,8 +17,8 @@
 #include "base64_functions.h"
 
 // kdb functions
-int ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME_C, get) (Plugin * handle, KeySet * ks, Key * parentKey);
-int ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME_C, set) (Plugin * handle, KeySet * ks, Key * parentKey);
+int PLUGIN_FUNCTION (get) (Plugin * handle, KeySet * ks, Key * parentKey);
+int PLUGIN_FUNCTION (set) (Plugin * handle, KeySet * ks, Key * parentKey);
 
 Plugin * ELEKTRA_PLUGIN_EXPORT (base64);
 
