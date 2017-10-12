@@ -12,6 +12,25 @@
 #include <kdberrors.h>
 #include <string.h>
 
+static int unescape (Key * key, Key * parent)
+{
+	const char escapedPrefix[] = ELEKTRA_PLUGIN_BASE64_ESCAPE ELEKTRA_PLUGIN_BASE64_ESCAPE;
+	const char * strVal = keyString (key);
+	if (strlen (strVal) >= 2 && strncmp (strVal, escapedPrefix, 2) == 0)
+	{
+		// Discard the first escape character
+		char * unescaped = strdup (&strVal[1]);
+		if (!unescaped)
+		{
+			ELEKTRA_SET_ERROR (ELEKTRA_ERROR_MALLOC, parent, "Memory allocation failed");
+			return -1;
+		}
+		keySetString (key, unescaped);
+		elektraFree (unescaped);
+	}
+	return 1;
+}
+
 /**
  * @brief Decode a base64 encoded key value and save the result as binary data in the key.
  *
@@ -20,11 +39,12 @@
  * - the value of the key has type `string`
  * - the key value starts with `ELEKTRA_PLUGIN_BASE64_PREFIX` (`"@BASE64"`).
  *
- * .
+ * . If the key value starts with two prefix characters (`@@`), then the function unescapes the value by removing one of the prefix
+ * characters.
  *
- * @retval -1 if the function was unable to convert the value of `key`
- * @retval 0 if no conversion has taken place
- * @retval 1 if the function successfully converted the value of `key` or if the key value was not base64 encoded
+ * @retval -1 if the function was unable to convert or unescape the value of `key`
+ * @retval 0 if the given key was not modified
+ * @retval 1 if the function successfully modified `key`
  */
 static int decode (Key * key, Key * parent)
 {
@@ -33,7 +53,9 @@ static int decode (Key * key, Key * parent)
 	const char * strVal = keyString (key);
 	if (strlen (strVal) < ELEKTRA_PLUGIN_BASE64_PREFIX_LENGTH ||
 	    strncmp (strVal, ELEKTRA_PLUGIN_BASE64_PREFIX, ELEKTRA_PLUGIN_BASE64_PREFIX_LENGTH) != 0)
-		return 0;
+	{
+		return unescape (key, parent);
+	}
 
 	ELEKTRA_LOG_DEBUG ("Decode binary value");
 
@@ -133,27 +155,6 @@ static int escape (Key * key, Key * parent)
 	return 1;
 }
 
-static int unescape (Key * key, Key * parent)
-{
-	if (!keyIsString (key)) return 0;
-
-	const char escapedPrefix[] = ELEKTRA_PLUGIN_BASE64_ESCAPE ELEKTRA_PLUGIN_BASE64_ESCAPE;
-	const char * strVal = keyString (key);
-	if (strlen (strVal) >= 2 && strncmp (strVal, escapedPrefix, 2) == 0)
-	{
-		// Discard the first escape character
-		char * unescaped = strdup (&strVal[1]);
-		if (!unescaped)
-		{
-			ELEKTRA_SET_ERROR (ELEKTRA_ERROR_MALLOC, parent, "Memory allocation failed");
-			return -1;
-		}
-		keySetString (key, unescaped);
-		elektraFree (unescaped);
-	}
-	return 1;
-}
-
 /**
  * @brief establish the Elektra plugin contract and decode all Base64 encoded values back to their original binary form.
  * @retval 1 on success
@@ -174,16 +175,13 @@ int PLUGIN_FUNCTION (get) (Plugin * handle ELEKTRA_UNUSED, KeySet * keySet, Key 
 
 	// base64 decoding
 	Key * key;
-
 	ksRewind (keySet);
-	while ((key = ksNext (keySet)))
+	int status = 0;
+	while (status >= 0 && (key = ksNext (keySet)))
 	{
-		int status = decode (key, parentKey);
-		if (status == -1) return -1;
-		if (status == 0) status = unescape (key, parentKey);
-		if (status == -1) return -1;
+		status |= decode (key, parentKey);
 	}
-	return 1;
+	return status;
 }
 
 /**
