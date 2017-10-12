@@ -31,15 +31,16 @@ static int decode (Key * key, Key * parent)
 	if (!keyIsString (key)) return 0;
 
 	const char * strVal = keyString (key);
-	const size_t prefixLen = strlen (ELEKTRA_PLUGIN_BASE64_PREFIX);
-	if (strlen (strVal) < prefixLen || strncmp (strVal, ELEKTRA_PLUGIN_BASE64_PREFIX, prefixLen) != 0) return 0;
+	if (strlen (strVal) < ELEKTRA_PLUGIN_BASE64_PREFIX_LENGTH ||
+	    strncmp (strVal, ELEKTRA_PLUGIN_BASE64_PREFIX, ELEKTRA_PLUGIN_BASE64_PREFIX_LENGTH) != 0)
+		return 0;
 
 	ELEKTRA_LOG_DEBUG ("Decode binary value");
 
 	kdb_octet_t * buffer;
 	size_t bufferLen;
 
-	int result = PLUGIN_FUNCTION (base64Decode) (strVal + prefixLen, &buffer, &bufferLen);
+	int result = PLUGIN_FUNCTION (base64Decode) (strVal + ELEKTRA_PLUGIN_BASE64_PREFIX_LENGTH, &buffer, &bufferLen);
 	if (result == 1)
 	{
 		// Success
@@ -81,7 +82,7 @@ static int encode (Key * key, Key * parent)
 		return -1;
 	}
 
-	const size_t newValLen = strlen (base64) + strlen (ELEKTRA_PLUGIN_BASE64_PREFIX) + 1;
+	const size_t newValLen = strlen (base64) + ELEKTRA_PLUGIN_BASE64_PREFIX_LENGTH + 1;
 	char * newVal = elektraMalloc (newValLen);
 	if (!newVal)
 	{
