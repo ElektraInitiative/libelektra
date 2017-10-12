@@ -14,20 +14,20 @@
 
 static int unescape (Key * key, Key * parent)
 {
-	const char escapedPrefix[] = ELEKTRA_PLUGIN_BASE64_ESCAPE ELEKTRA_PLUGIN_BASE64_ESCAPE;
 	const char * strVal = keyString (key);
-	if (strlen (strVal) >= 2 && strncmp (strVal, escapedPrefix, 2) == 0)
+	const char escapedPrefix[] = ELEKTRA_PLUGIN_BASE64_ESCAPE ELEKTRA_PLUGIN_BASE64_ESCAPE;
+
+	if (strlen (strVal) < 2 || strncmp (strVal, escapedPrefix, 2) != 0) return 0;
+
+	// Discard the first escape character
+	char * unescaped = strdup (&strVal[1]);
+	if (!unescaped)
 	{
-		// Discard the first escape character
-		char * unescaped = strdup (&strVal[1]);
-		if (!unescaped)
-		{
-			ELEKTRA_SET_ERROR (ELEKTRA_ERROR_MALLOC, parent, "Memory allocation failed");
-			return -1;
-		}
-		keySetString (key, unescaped);
-		elektraFree (unescaped);
+		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_MALLOC, parent, "Memory allocation failed");
+		return -1;
 	}
+	keySetString (key, unescaped);
+	elektraFree (unescaped);
 	return 1;
 }
 
