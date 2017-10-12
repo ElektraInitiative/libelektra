@@ -105,7 +105,7 @@ static int escape (Key * key, Key * parent)
 	// escape the prefix character
 	const char * strVal = keyString (key);
 	const size_t strValLen = strlen (strVal);
-	if (strValLen <= 0 || strncmp (strVal, ELEKTRA_PLUGIN_BASE64_ESCAPE, 1) != 0) return 0;
+	if (strValLen <= 0 || strVal[0] != ELEKTRA_PLUGIN_BASE64_ESCAPE_CHAR) return 0;
 
 	// + 1 for the additional escape character
 	// + 1 for the NULL terminator
