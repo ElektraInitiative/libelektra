@@ -6,10 +6,14 @@ language: cpp
 matrix:
   include:
 
+    # FAST: Do not install any dependencies
+
     - os: osx
       osx_image: xcode8.3
       compiler: clang
       env: [ FAST=ON ]
+
+    # ASAN: Enable AddressSanitizer
 
     - os: osx
       osx_image: xcode8.3
@@ -19,6 +23,8 @@ matrix:
     - os: linux
       compiler: clang
       env: [ ASAN=ON ]
+
+    # FULL: Build full version of Elektra (BUILD_FULL=ON)
 
     - os: linux
       compiler: gcc
