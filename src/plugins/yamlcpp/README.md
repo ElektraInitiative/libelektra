@@ -1,9 +1,9 @@
 - infos = Information about the yamlcpp plugin is in keys below
 - infos/author = René Schwaiger <sanssecours@me.com>
 - infos/licence = BSD
-- infos/needs =
+- infos/needs = base64
 - infos/provides = storage/yaml
-- infos/recommends = base666
+- infos/recommends =
 - infos/placements = getstorage setstorage
 - infos/status = maintained preview experimental unfinished concept discouraged
 - infos/metadata =
@@ -247,33 +247,33 @@ sudo kdb umount /examples/yamlcpp
 
 ## Binary Data
 
-YAML CPP also supports [base64](https://tools.ietf.org/html/rfc4648) encoded data via the [Base 666](../base666) plugin.
+YAML CPP also supports [base64](https://tools.ietf.org/html/rfc4648) encoded data via the [Base64](../base64) plugin.
 
 ```sh
-# Mount YAML CPP plugin together with Base 666 plugin at cascading namespace `/examples/base666`
-sudo kdb mount test.yaml /examples/base666 yamlcpp base666
+# Mount YAML CPP plugin at cascading namespace `/examples/binary`
+sudo kdb mount test.yaml /examples/binary yamlcpp
 # Manually add binary data
-echo 'bin: !!binary aGk=' > `kdb file /examples/base666`
+echo 'bin: !!binary aGk=' > `kdb file /examples/binary`
 
-# Base 666 decodes the data `aGk=` to `hi` and stores the value in binary form.
+# Base 64 decodes the data `aGk=` to `hi` and stores the value in binary form.
 # The command `kdb get` prints the data as hexadecimal byte values.
-kdb get /examples/base666/bin
+kdb get /examples/binary/bin
 #> \x68\x69
 
 # Add a string value to the database
-kdb set /examples/base666/text mate
-# Base 666 does not modify textual values
-kdb get /examples/base666/text
+kdb set /examples/binary/text mate
+# Base 64 does not modify textual values
+kdb get /examples/binary/text
 #> mate
 
-# The Base 666 plugin re-encodes binary data before YAML CPP stores the key set. Hence the
+# The Base 64 plugin re-encodes binary data before YAML CPP stores the key set. Hence the
 # configuration file contains the value `aGk=` even after YAML CPP wrote a new configuration.
-grep -q 'bin: !.* aGk=' `kdb file user/examples/base666`
+grep -q 'bin: !.* aGk=' `kdb file user/examples/binary`
 # RET: 0
 
 # Undo modifications to the database
-kdb rm -r /examples/base666
-sudo kdb umount /examples/base666
+kdb rm -r /examples/binary
+sudo kdb umount /examples/binary
 ```
 
 ## Dependencies
