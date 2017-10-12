@@ -98,6 +98,15 @@ static int encode (Key * key, Key * parent)
 	return 1;
 }
 
+/**
+ * @brief Escape the prefix character `@` in a key value.
+ *
+ * This function only replaces the prefix character if the type of `key` is string.
+ *
+ * @retval -1 if the function was unable to escape the key value
+ * @retval 0 if the function did not change the key value
+ * @retval 1 if the function successfully converted the value of `key`
+ */
 static int escape (Key * key, Key * parent)
 {
 	if (keyIsString (key) == 0) return 0;
