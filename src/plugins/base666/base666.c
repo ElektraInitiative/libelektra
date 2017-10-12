@@ -44,9 +44,8 @@ static inline KeySet * base666Contract (void)
  */
 static int decode (Key * key, Key * parent)
 {
-	const char * strVal = keyString (key);
-
 	if (keyIsString (key) == 0 || !keyGetMeta (key, "type") || strcmp (keyValue (keyGetMeta (key, "type")), "binary")) return 0;
+	const char * strVal = keyString (key);
 
 	ELEKTRA_LOG_DEBUG ("Decode binary value");
 
