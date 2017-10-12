@@ -12,8 +12,8 @@
 # Base 666
 
 > If You're 555 then I’m 666. What’s it like to be a heretic?
-
-Slipknot — The Heretic Anthem
+>
+> — <cite>Slipknot – The Heretic Anthem</cite>
 
 ## Introduction
 
