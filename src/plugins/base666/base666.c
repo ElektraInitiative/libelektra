@@ -67,8 +67,6 @@ static int decode (Key * key, Key * parent)
 		return -1;
 	}
 
-	ELEKTRA_LOG_DEBUG ("Decoded data “%s”", (char *)buffer);
-
 	elektraFree (buffer);
 	return 1;
 }
