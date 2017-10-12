@@ -53,7 +53,7 @@ static int decode (Key * key, Key * parent)
 	kdb_octet_t * buffer;
 	size_t bufferLen;
 
-	int result = ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME_C, base64Decode) (strVal, &buffer, &bufferLen);
+	int result = PLUGIN_FUNCTION (base64Decode) (strVal, &buffer, &bufferLen);
 	if (result == 1)
 	{
 		keySetBinary (key, buffer, bufferLen); // Success
@@ -85,7 +85,7 @@ static int encode (Key * key, Key * parent)
 {
 	if (keyIsBinary (key) == 0) return 0;
 
-	char * base64 = ELEKTRA_PLUGIN_FUNCTION (ELEKTRA_PLUGIN_NAME_C, base64Encode) (keyValue (key), (size_t)keyGetValueSize (key));
+	char * base64 = PLUGIN_FUNCTION (base64Encode) (keyValue (key), (size_t)keyGetValueSize (key));
 	if (!base64)
 	{
 		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_MALLOC, parent, "Memory allocation failed");
