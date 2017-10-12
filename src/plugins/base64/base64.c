@@ -165,8 +165,10 @@ static int escape (Key * key, Key * parent)
 }
 
 /**
- * @brief establish the Elektra plugin contract and decode all Base64 encoded values back to their original binary form.
- * @retval 1 on success
+ * @brief Establish the Elektra plugin contract and decode all Base64 encoded values back to their original binary form.
+ *
+ * @retval 1 if any keys were updated
+ * @retval 0 if `keyset` was not modified
  * @retval -1 on failure
  */
 int PLUGIN_FUNCTION (get) (Plugin * handle ELEKTRA_UNUSED, KeySet * keySet, Key * parentKey)
