@@ -18,13 +18,13 @@
  * The conversion only happens if
  *
  * - the value of the key has type `string`
- * - the key value starts with `ELEKTRA_PLUGIN_BASE64_PREFIX` (`@`).
+ * - the key value starts with `ELEKTRA_PLUGIN_BASE64_PREFIX` (`"@BASE64"`).
  *
  * .
  *
  * @retval -1 if the function was unable to convert the value of `key`
  * @retval 0 if no conversion has taken place
- * @retval 1 if the function successfully converted the value of `key`
+ * @retval 1 if the function successfully converted the value of `key` or if the key value was not base64 encoded
  */
 static int decode (Key * key, Key * parent)
 {
