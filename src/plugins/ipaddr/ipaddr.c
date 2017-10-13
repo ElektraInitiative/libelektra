@@ -131,12 +131,9 @@ int elektraIpaddrGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_
 			       keyNew ("system/elektra/modules/ipaddr/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 		ksAppend (returned, contract);
 		ksDel (contract);
-
-		return 1; // success
+		return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 	}
-	// get all keys
-
-	return 1; // success
+	return ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
 }
 
 int elektraIpaddrSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
@@ -150,9 +147,9 @@ int elektraIpaddrSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_
 		const Key * meta = keyGetMeta (cur, "check/ipaddr");
 		if (!meta) continue;
 		int rc = validateKey (cur, parentKey);
-		if (!rc) return -1;
+		if (!rc) return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
-	return 1; // success
+	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }
 
 Plugin * ELEKTRA_PLUGIN_EXPORT (ipaddr)
