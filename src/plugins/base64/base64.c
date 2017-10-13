@@ -18,6 +18,9 @@
  *
  * @pre The type of the key value must be string.
  *
+ * @param key This parameter contains the key value this function escapes.
+ * @param parent The function stores information about errors in this parameter.
+ *
  * @retval -1 if the function was unable to unescape the value of `key`
  * @retval 0 if the given key was not modified
  * @retval 1 if the function successfully unescaped `key`
@@ -46,6 +49,9 @@ static int unescape (Key * key, Key * parent)
  *
  * @pre The type of the key value must be string.
  *
+ * @param key This parameter specifies the key for which this function decides if it should be encoded or not.
+ * @param metaMode This parameter specifies if the plugin uses meta mode or not.
+ *
  * @retval true if the plugin should decode the given key
  * @retval false otherwise
  */
@@ -73,6 +79,10 @@ bool shouldDecode (Key * key, bool metaMode)
  *
  * . If the key value starts with two prefix characters (`@@`) in **escaping mode**, then the function unescapes the value by removing one
  * of the prefix characters.
+ *
+ * @param key This parameter specifies the key that this function decodes.
+ * @param parent The function stores information about errors/warnings in this parameter.
+ * @param metaMode This parameter specifies if the plugin uses meta mode or not.
  *
  * @retval -1 if the function was unable to convert or unescape the value of `key`
  * @retval 0 if the given key was not modified
@@ -118,6 +128,10 @@ static int decode (Key * key, Key * parent, bool metaMode)
 /**
  * @brief Encode a binary key value using base64 encoding and save the result as textual data in the key.
  *
+ * @param key This parameter specifies the key that this function encodes.
+ * @param parent The function stores information about errors in this parameter.
+ * @param metaMode This parameter specifies if the plugin uses meta mode or not.
+ *
  * @retval -1 if the function was unable to convert the value of `key`
  * @retval 0 if no conversion has taken place
  * @retval 1 if the function successfully converted the value of `key`
@@ -162,6 +176,9 @@ static int encode (Key * key, Key * parent, bool metaMode)
  *
  * This function only inserts another prefix character if the type of `key` is string.
  *
+ * @param key This parameter specifies the key value that this function escapes.
+ * @param parent The function stores information about errors in this parameter.
+ *
  * @retval -1 if the function was unable to escape the key value
  * @retval 0 if the function did not change the key value
  * @retval 1 if the function successfully escaped the value of `key`
@@ -195,6 +212,8 @@ static int escape (Key * key, Key * parent)
 /**
  * @brief Check if the plugin should use meta mode for the base64 conversion.
  *
+ * @param handle This parameter stores the configuration of the plugin.
+ *
  * @retval true if the plugin should use meta mode
  * @retval false if the plugin should use escaping mode
  */
@@ -209,6 +228,10 @@ static bool useMetaMode (Plugin * handle)
 
 /**
  * @brief Establish the Elektra plugin contract and decode all Base64 encoded values back to their original binary form.
+ *
+ * @param handle This parameter stores the configuration of the plugin.
+ * @param keySet This parameter specifies the key set that this function updates.
+ * @param parent The function stores information about errors/warnings in this parameter.
  *
  * @retval 1 if any keys were updated
  * @retval 0 if `keyset` was not modified
@@ -242,6 +265,10 @@ int PLUGIN_FUNCTION (get) (Plugin * handle, KeySet * keySet, Key * parentKey)
 
 /**
  * @brief Encode all binary values using the Base64 encoding scheme.
+ *
+ * @param handle This parameter stores the configuration of the plugin.
+ * @param keySet This parameter specifies the key set that this function updates.
+ * @param parent The function stores information about errors in this parameter.
  *
  * @retval 1 if any keys were updated
  * @retval 0 if `keyset` was not modified
