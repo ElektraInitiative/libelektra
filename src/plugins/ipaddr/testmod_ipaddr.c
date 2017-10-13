@@ -37,6 +37,11 @@ static inline void testIPv4 (const char * ip, int ret)
 	testIP (ip, ret, "ipv4");
 }
 
+static inline void testIPAny (const char * ip, int ret)
+{
+	testIP (ip, ret, "");
+}
+
 int main (int argc, char ** argv)
 {
 	printf ("IPADDR     TESTS\n");
@@ -62,6 +67,11 @@ int main (int argc, char ** argv)
 	testIPv6 (":0db8:85a3:0000:0000:1234:8a2e:0370:7334", -1);
 	testIPv6 ("::", -1);
 	testIPv6 ("::ffff:192.0.128", -1);
+
+	testIPAny ("::ffff:192.0.128", -1);
+	testIPAny ("1.2.3.", -1);
+	testIPAny ("::1", 1);
+	testIPAny ("42.42.42.42", 1);
 
 	print_result ("testmod_ipaddr");
 
