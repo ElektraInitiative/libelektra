@@ -18,23 +18,6 @@
 
 #include <kdbhelper.h>
 
-
-int elektraIpaddrOpen (Plugin * handle ELEKTRA_UNUSED, Key * errorKey ELEKTRA_UNUSED)
-{
-	// plugin initialization logic
-	// this function is optional
-
-	return 1; // success
-}
-
-int elektraIpaddrClose (Plugin * handle ELEKTRA_UNUSED, Key * errorKey ELEKTRA_UNUSED)
-{
-	// free all plugin resources and shut it down
-	// this function is optional
-
-	return 1; // success
-}
-
 static int validateIPv4 (const char * addr)
 {
 	if (!addr) return 0;
@@ -133,12 +116,8 @@ int elektraIpaddrGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_
 		KeySet * contract =
 			ksNew (30, keyNew ("system/elektra/modules/ipaddr", KEY_VALUE, "ipaddr plugin waits for your orders", KEY_END),
 			       keyNew ("system/elektra/modules/ipaddr/exports", KEY_END),
-			       keyNew ("system/elektra/modules/ipaddr/exports/open", KEY_FUNC, elektraIpaddrOpen, KEY_END),
-			       keyNew ("system/elektra/modules/ipaddr/exports/close", KEY_FUNC, elektraIpaddrClose, KEY_END),
 			       keyNew ("system/elektra/modules/ipaddr/exports/get", KEY_FUNC, elektraIpaddrGet, KEY_END),
 			       keyNew ("system/elektra/modules/ipaddr/exports/set", KEY_FUNC, elektraIpaddrSet, KEY_END),
-			       keyNew ("system/elektra/modules/ipaddr/exports/error", KEY_FUNC, elektraIpaddrError, KEY_END),
-			       keyNew ("system/elektra/modules/ipaddr/exports/checkconf", KEY_FUNC, elektraIpaddrCheckConfig, KEY_END),
 #include ELEKTRA_README (ipaddr)
 			       keyNew ("system/elektra/modules/ipaddr/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 		ksAppend (returned, contract);
@@ -167,35 +146,12 @@ int elektraIpaddrSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_
 	return 1; // success
 }
 
-int elektraIpaddrError (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
-{
-	// handle errors (commit failed)
-	// this function is optional
-
-	return 1; // success
-}
-
-int elektraIpaddrCheckConfig (Key * errorKey ELEKTRA_UNUSED, KeySet * conf ELEKTRA_UNUSED)
-{
-	// validate plugin configuration
-	// this function is optional
-
-	// the return codes have the following meaning:
-	// 0: The configuration was OK and has not been changed
-	// 1: The configuration has been changed and now it is OK
-	// -1: The configuration was not OK and could not be fixed. An error has to be set to errorKey.
-	return 0;
-}
-
 Plugin * ELEKTRA_PLUGIN_EXPORT (ipaddr)
 {
 	// clang-format off
 	return elektraPluginExport ("ipaddr",
-		ELEKTRA_PLUGIN_OPEN,	&elektraIpaddrOpen,
-		ELEKTRA_PLUGIN_CLOSE,	&elektraIpaddrClose,
 		ELEKTRA_PLUGIN_GET,	&elektraIpaddrGet,
 		ELEKTRA_PLUGIN_SET,	&elektraIpaddrSet,
-		ELEKTRA_PLUGIN_ERROR,	&elektraIpaddrError,
 		ELEKTRA_PLUGIN_END);
 }
 
