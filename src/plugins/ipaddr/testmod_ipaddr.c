@@ -15,11 +15,11 @@
 
 #include <tests_plugin.h>
 
-static void testIPv4 (const char * ip, int ret)
+static void testIP (const char * ip, int ret, char const * const version)
 {
 	Key * parentKey = keyNew ("user/tests/ipaddr", KEY_VALUE, "", KEY_END);
 	KeySet * conf = ksNew (0, KS_END);
-	KeySet * ks = ksNew (10, keyNew ("user/test/ipaddr/totest", KEY_VALUE, ip, KEY_META, "check/ipaddr", "ipv4", KEY_END), KS_END);
+	KeySet * ks = ksNew (10, keyNew ("user/test/ipaddr/totest", KEY_VALUE, ip, KEY_META, "check/ipaddr", version, KEY_END), KS_END);
 	PLUGIN_OPEN ("ipaddr");
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == ret, "validation failed");
 	ksDel (ks);
@@ -27,16 +27,14 @@ static void testIPv4 (const char * ip, int ret)
 	PLUGIN_CLOSE ();
 }
 
-static void testIPv6 (const char * ip, int ret)
+static inline void testIPv6 (const char * ip, int ret)
 {
-	Key * parentKey = keyNew ("user/tests/ipaddr", KEY_VALUE, "", KEY_END);
-	KeySet * conf = ksNew (0, KS_END);
-	KeySet * ks = ksNew (10, keyNew ("user/test/ipaddr/totest", KEY_VALUE, ip, KEY_META, "check/ipaddr", "ipv6", KEY_END), KS_END);
-	PLUGIN_OPEN ("ipaddr");
-	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == ret, "validation failed");
-	ksDel (ks);
-	keyDel (parentKey);
-	PLUGIN_CLOSE ();
+	testIP (ip, ret, "ipv6");
+}
+
+static inline void testIPv4 (const char * ip, int ret)
+{
+	testIP (ip, ret, "ipv4");
 }
 
 int main (int argc, char ** argv)
