@@ -7,12 +7,12 @@
  *
  */
 
+#include <kdberrors.h>
+#include <regex.h>
+#include <stdio.h>
 #include <string.h>
 #include <strings.h>
-#include <stdio.h>
 #include <sys/types.h>
-#include <regex.h>
-#include <kdberrors.h>
 
 #include "ipaddr.h"
 
@@ -35,99 +35,92 @@ int elektraIpaddrClose (Plugin * handle ELEKTRA_UNUSED, Key * errorKey ELEKTRA_U
 	return 1; // success
 }
 
-static int validateIPv4(const char *addr)
+static int validateIPv4 (const char * addr)
 {
-    if(!addr)
-	return 0;
-    unsigned int a, b, c, d;
-    a = b = c = d = 0;
-    const char *regexString = "^([0-9]{1,3}\\.){3}([0-9]{1,3})$";
-    regex_t regex;
-    regmatch_t offsets;
-    int ret = regcomp(&regex, regexString, REG_NOSUB | REG_EXTENDED | REG_NEWLINE);
-    if(ret)
-	return -1;
-    ret = regexec(&regex, addr, 1, &offsets, 0);
-    regfree(&regex);
-    if(!ret)
-    {
-	sscanf(addr, "%u.%u.%u.%u", &a, &b, &c, &d);
-	if(a > 255 || b > 255 || c > 255 || d > 255)
+	if (!addr) return 0;
+	unsigned int a, b, c, d;
+	a = b = c = d = 0;
+	const char * regexString = "^([0-9]{1,3}\\.){3}([0-9]{1,3})$";
+	regex_t regex;
+	regmatch_t offsets;
+	int ret = regcomp (&regex, regexString, REG_NOSUB | REG_EXTENDED | REG_NEWLINE);
+	if (ret) return -1;
+	ret = regexec (&regex, addr, 1, &offsets, 0);
+	regfree (&regex);
+	if (!ret)
 	{
-	    return 0;
+		sscanf (addr, "%u.%u.%u.%u", &a, &b, &c, &d);
+		if (a > 255 || b > 255 || c > 255 || d > 255)
+		{
+			return 0;
+		}
+		else
+			return 1;
 	}
+	return 0;
+}
+
+static int validateIPv6 (const char * addr)
+{
+	if (!addr) return 0;
+	const char * regexString =
+		"(^((:(([0-9A-Fa-f]{0,4}):){1,6}(([0-9A-Fa-f]{1,4})))|(([0-9A-Fa-f]{1,4})(:([0-9A-Fa-f]{0,4})){1,7}))$)|(^((:(([0-9A-Fa-f]{"
+		"0,4}):){1,4}(([0-9A-Fa-f]{1,4})))|(([0-9A-Fa-f]{1,4})(:([0-9A-Fa-f]{0,4})){1,5}))((([0-9]{1,3}\\.){3})([0-9]{1,3}))$)";
+	regex_t regex;
+	regmatch_t offsets;
+	int ret = regcomp (&regex, regexString, REG_NOSUB | REG_EXTENDED | REG_NEWLINE);
+	if (ret) return -1;
+	ret = regexec (&regex, addr, 1, &offsets, 0);
+	regfree (&regex);
+	if (ret)
+		return 0;
 	else
-	    return 1;
-    }
-    return 0;
-
+	{
+		char * ptr = (char *)addr;
+		int count = 0;
+		while (*ptr)
+		{
+			if (*ptr == ':') ++count;
+			++ptr;
+		}
+		if (count > 7)
+		{
+			return 0;
+		}
+		else if (count < 7)
+		{
+			if (!strstr (addr, "::")) return 0;
+		}
+		if (strchr (addr, '.'))
+		{
+			char * ipv4ptr = strrchr (addr, ':');
+			++ipv4ptr;
+			ret = validateIPv4 (ipv4ptr);
+			if (!ret) return 0;
+		}
+		return 1;
+	}
 }
 
-static int validateIPv6(const char *addr)
+static int validateKey (Key * key, Key * parentKey)
 {
-    if(!addr)
-	return 0;
-    const char *regexString = "(^((:(([0-9A-Fa-f]{0,4}):){1,6}(([0-9A-Fa-f]{1,4})))|(([0-9A-Fa-f]{1,4})(:([0-9A-Fa-f]{0,4})){1,7}))$)|(^((:(([0-9A-Fa-f]{0,4}):){1,4}(([0-9A-Fa-f]{1,4})))|(([0-9A-Fa-f]{1,4})(:([0-9A-Fa-f]{0,4})){1,5}))((([0-9]{1,3}\\.){3})([0-9]{1,3}))$)";
-    regex_t regex;
-    regmatch_t offsets;
-    int ret = regcomp(&regex, regexString, REG_NOSUB | REG_EXTENDED | REG_NEWLINE);
-    if(ret)
-	return -1;
-    ret = regexec(&regex, addr, 1, &offsets, 0);
-    regfree(&regex);
-    if(ret)
-	return 0;
-    else
-    {
-	char *ptr = (char *)addr;
-	int count = 0;
-	while(*ptr)
-	{
-	    if(*ptr == ':')
-		++count;
-	    ++ptr;
-	}
-	if(count > 7)
-	{
-	    return 0;
-	}
-	else if(count < 7)
-	{
-	    if(!strstr(addr, "::"))
-		return 0;
-	}
-	if(strchr(addr, '.'))
-	{
-	    char *ipv4ptr = strrchr(addr, ':');
-	    ++ipv4ptr;
-	    ret = validateIPv4(ipv4ptr);
-	    if(!ret)
-		return 0;
-	}
-	return 1;
-    }
-}
-
-static int validateKey(Key *key, Key *parentKey)
-{
-	const Key *meta = keyGetMeta(key, "check/ipaddr");
-	if(!meta)
-	    return 1;
+	const Key * meta = keyGetMeta (key, "check/ipaddr");
+	if (!meta) return 1;
 	int rc = 0;
-	if(!strcasecmp(keyString(meta), "ipv4"))
-	    rc = validateIPv4(keyString(key));
-	else if(!strcasecmp(keyString(meta), "ipv6"))
-	    rc = validateIPv6(keyString(key));
-	else 
-	    rc = 1;
-	if(!rc)
+	if (!strcasecmp (keyString (meta), "ipv4"))
+		rc = validateIPv4 (keyString (key));
+	else if (!strcasecmp (keyString (meta), "ipv6"))
+		rc = validateIPv6 (keyString (key));
+	else
+		rc = 1;
+	if (!rc)
 	{
-	    ELEKTRA_SET_ERRORF(51, parentKey, "Validation of key %s with value %s failed.", keyName(key), keyString(key)); 
+		ELEKTRA_SET_ERRORF (51, parentKey, "Validation of key %s with value %s failed.", keyName (key), keyString (key));
 	}
-	else if(rc == -1)
+	else if (rc == -1)
 	{
-	    ELEKTRA_SET_ERROR(87, parentKey, "Out of memory");
-	    rc = 0;
+		ELEKTRA_SET_ERROR (87, parentKey, "Out of memory");
+		rc = 0;
 	}
 
 	return rc;
@@ -162,16 +155,14 @@ int elektraIpaddrSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_
 {
 	// set all keys
 	// this function is optional
-	Key *cur;
-	ksRewind(returned);
-	while((cur = ksNext(returned)) != NULL)
+	Key * cur;
+	ksRewind (returned);
+	while ((cur = ksNext (returned)) != NULL)
 	{
-	    const Key *meta = keyGetMeta(cur, "check/ipaddr");
-	    if(!meta)
-		continue;
-	    int rc = validateKey(cur, parentKey);
-	    if(!rc)
-		return -1;
+		const Key * meta = keyGetMeta (cur, "check/ipaddr");
+		if (!meta) continue;
+		int rc = validateKey (cur, parentKey);
+		if (!rc) return -1;
 	}
 	return 1; // success
 }
