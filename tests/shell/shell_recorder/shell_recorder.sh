@@ -154,7 +154,7 @@ execute()
 	if [ ! -z "$STDOUTRECMP" ];
 	then
 		nbTest=$(( nbTest + 1 ))
-		echo "$STDOUT" | replace_newline_return | grep -Eq --text "$STDOUTRECMP"
+		printf "%s" "$STDOUT" | replace_newline_return | grep -Eq --text "$STDOUTRECMP"
 		if [ "$?" -ne "0" ];
 		then
 			printf "\nERROR - STDOUT:\n“%s”\ndoesn't match “%s”\n\n" "$STDOUT" "$STDOUTRECMP"

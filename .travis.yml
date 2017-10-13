@@ -6,10 +6,14 @@ language: cpp
 matrix:
   include:
 
+    # FAST: Do not install any dependencies
+
     - os: osx
       osx_image: xcode8.3
       compiler: clang
       env: [ FAST=ON ]
+
+    # ASAN: Enable AddressSanitizer
 
     - os: osx
       osx_image: xcode8.3
@@ -19,6 +23,12 @@ matrix:
     - os: linux
       compiler: clang
       env: [ ASAN=ON ]
+
+    # FULL: Build full version of Elektra (BUILD_FULL=ON)
+
+    - os: linux
+      compiler: gcc
+      env: [ FULL=ON ]
 
     - os: osx
       osx_image: xcode8.3
@@ -102,6 +112,7 @@ before_script:
   - mkdir build && cd build
   - >
     [[ $ASAN == ON ]] && CMAKE_OPT=(-DENABLE_ASAN=ON) || CMAKE_OPT=()
+  - if [[ $FULL == ON ]]; then CMAKE_OPT+=(-DBUILD_FULL=ON); fi
   - |
     if [[ "$TRAVIS_OS_NAME" == "linux" && "$CC" == "clang" || "$TRAVIS_OS_NAME" == "osx" && "${CC:0:3}" == "gcc" ]]; then
       CMAKE_OPT+=("-DCOMMON_FLAGS=-Werror")
