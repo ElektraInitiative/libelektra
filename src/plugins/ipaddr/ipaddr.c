@@ -90,12 +90,21 @@ static int validateKey (Key * key, Key * parentKey)
 	const Key * meta = keyGetMeta (key, "check/ipaddr");
 	if (!meta) return 1;
 	int rc = 0;
+
 	if (!strcasecmp (keyString (meta), "ipv4"))
+	{
 		rc = validateIPv4 (keyString (key));
+	}
 	else if (!strcasecmp (keyString (meta), "ipv6"))
+	{
 		rc = validateIPv6 (keyString (key));
+	}
 	else
-		rc = 1;
+	{
+		// By default we allow both type of addresses
+		if (!(rc = validateIPv4 (keyString (key)))) rc = validateIPv6 (keyString (key));
+	}
+
 	if (!rc)
 	{
 		ELEKTRA_SET_ERRORF (51, parentKey, "Validation of key %s with value %s failed.", keyName (key), keyString (key));
