@@ -38,6 +38,7 @@ static void testIPv6 (const char * ip, int ret)
 	keyDel (parentKey);
 	PLUGIN_CLOSE ();
 }
+
 int main (int argc, char ** argv)
 {
 	printf ("IPADDR     TESTS\n");
@@ -64,7 +65,7 @@ int main (int argc, char ** argv)
 	testIPv6 ("::", -1);
 	testIPv6 ("::ffff:192.0.128", -1);
 
-	printf ("\ntestmod_ipaddr RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
+	print_result ("testmod_ipaddr");
 
 	return nbError;
 }
