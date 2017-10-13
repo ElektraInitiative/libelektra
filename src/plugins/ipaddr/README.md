@@ -38,6 +38,19 @@ kdb set /examples/ipaddr/ipv4 127.0.0.1
 kdb get /examples/ipaddr/ipv4
 #> 127.0.0.1
 
+# By default the plugin allows both IPv4 and IPv6 addresses
+kdb setmeta /examples/ipaddr/address check/ipaddr ""
+
+# Set correct IP addresses
+kdb set /examples/ipaddr/address 1.2.3.4
+kdb set /examples/ipaddr/address ::1
+
+# Try to set incorrect addresses
+kdb set /examples/ipaddr/address bad::ip
+# RET: 5
+kdb set /examples/ipaddr/address 1.2.-3.4
+# RET: 5
+
 # Undo modifications to the database
 kdb rm -r /examples/ipaddr
 kdb umount /examples/ipaddr
