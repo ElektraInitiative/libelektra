@@ -55,7 +55,7 @@ static int unescape (Key * key, Key * parent)
  * @retval true if the plugin should decode the given key
  * @retval false otherwise
  */
-bool shouldDecode (Key * key, bool metaMode)
+static bool shouldDecode (Key * key, bool metaMode)
 {
 	if (metaMode)
 	{
