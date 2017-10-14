@@ -11,7 +11,7 @@
 
 #include <tests_plugin.h>
 
-static void testIP (const char * ip, int ret, char const * const version)
+static void testIP (char const * const ip, const int ret, char const * const version)
 {
 	Key * parentKey = keyNew ("user/tests/ipaddr", KEY_VALUE, "", KEY_END);
 	KeySet * conf = ksNew (0, KS_END);
@@ -25,17 +25,17 @@ static void testIP (const char * ip, int ret, char const * const version)
 	PLUGIN_CLOSE ();
 }
 
-static inline void testIPv6 (const char * ip, int ret)
+static inline void testIPv6 (char const * const ip, int ret)
 {
 	testIP (ip, ret, "ipv6");
 }
 
-static inline void testIPv4 (const char * ip, int ret)
+static inline void testIPv4 (char const * const ip, int ret)
 {
 	testIP (ip, ret, "ipv4");
 }
 
-static inline void testIPAny (const char * ip, int ret)
+static inline void testIPAny (char const * const ip, int ret)
 {
 	testIP (ip, ret, "");
 }
