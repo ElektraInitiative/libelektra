@@ -17,9 +17,11 @@ static void testIP (char const * const ip, const int ret, char const * const ver
 	KeySet * conf = ksNew (0, KS_END);
 	KeySet * ks = ksNew (10, keyNew ("user/test/ipaddr/totest", KEY_VALUE, ip, KEY_META, "check/ipaddr", version, KEY_END), KS_END);
 	PLUGIN_OPEN (PLUGIN_NAME);
+	const int pluginStatus = plugin->kdbSet (plugin, ks, parentKey);
 	char message[200];
-	(void)snprintf (message, 200, "validation of %s address “%s” failed", version[0] == '\0' ? "IP" : version, ip);
-	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == ret, message);
+	(void)snprintf (message, 200, "validation of %s address “%s” returned %d instead of %d", version[0] == '\0' ? "IP" : version, ip,
+			pluginStatus, ret);
+	succeed_if (pluginStatus == ret, message);
 	ksDel (ks);
 	keyDel (parentKey);
 	PLUGIN_CLOSE ();
