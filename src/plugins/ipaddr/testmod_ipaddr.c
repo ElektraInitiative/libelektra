@@ -42,12 +42,8 @@ static inline void testIPAny (char const * const ip, int ret)
 	testIP (ip, ret, "");
 }
 
-int main (int argc, char ** argv)
+static void testIPAll (void)
 {
-	printf ("IPADDR     TESTS\n");
-	printf ("==================\n\n");
-
-	init (argc, argv);
 	testIPv4 ("192.168.1.1", 1);
 	testIPv4 ("300.168.1.1", -1);
 	testIPv4 ("192.168.1", -1);
@@ -72,6 +68,15 @@ int main (int argc, char ** argv)
 	testIPAny ("1.2.3.", -1);
 	testIPAny ("::1", 1);
 	testIPAny ("42.42.42.42", 1);
+}
+
+int main (int argc, char ** argv)
+{
+	printf ("IPADDR     TESTS\n");
+	printf ("==================\n\n");
+
+	init (argc, argv);
+	testIPAll ();
 
 	print_result ("testmod_ipaddr");
 
