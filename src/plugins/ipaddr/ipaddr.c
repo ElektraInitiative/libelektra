@@ -10,13 +10,8 @@
 #include <kdberrors.h>
 #include <regex.h>
 #include <stdio.h>
-#include <string.h>
-#include <strings.h>
-#include <sys/types.h>
 
 #include "ipaddr.h"
-
-#include <kdbhelper.h>
 
 static int validateIPv4 (const char * addr)
 {
