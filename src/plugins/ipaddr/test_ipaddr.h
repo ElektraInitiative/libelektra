@@ -46,13 +46,12 @@ static void testIPAll (void)
 {
 	testIPv4 ("192.168.1.1", 1);
 	testIPv4 ("300.168.1.1", -1);
-	testIPv4 ("192.168.1", -1);
 	testIPv4 ("192.168.a.1", -1);
 
 	testIPv6 ("2001:0db8:85a3:0000:0000:8a2e:0370:7334", 1);
 	testIPv6 ("2001:0db8:85a3:0:0:8a2e:0370:7334", 1);
 	testIPv6 ("2001:0db8:85a3::8a2e:0370:7334", 1);
-	testIPv6 (":0db8:85a3:0000:0000:8a2e:0370:7334", 1);
+
 	testIPv6 ("::1", 1);
 	testIPv6 ("2001::7334", 1);
 	testIPv6 ("::ffff:192.0.2.128", 1);
@@ -61,8 +60,23 @@ static void testIPAll (void)
 	testIPv6 ("2001:0db8:85a3:0:0:z:0370:7334", -1);
 	testIPv6 ("0db8:85a3:0370:7334", -1);
 	testIPv6 (":0db8:85a3:0000:0000:1234:8a2e:0370:7334", -1);
-	testIPv6 ("::", -1);
 	testIPv6 ("::ffff:192.0.128", -1);
+
+	if (strncmp (PLUGIN_NAME, "network", sizeof ("ipaddr") - 1) == 0)
+	{
+		// Tested with
+		//      - http://formvalidation.io/validators/ip/
+		//      - https://www.helpsystems.com/intermapper/ipv6-test-address-validation
+		testIPv6 (":0db8:85a3:0000:0000:8a2e:0370:7334", -1); // Invalid
+		testIPv6 ("::", 1);				      // Valid
+	}
+	else
+	{
+		// Tested with
+		//      - http://formvalidation.io/validators/ip/
+		//      - http://www.csgnetwork.com/directipverify.html?IPvalue=192.168.1
+		testIPv4 ("192.168.1", -1); // Invalid
+	}
 
 	testIPAny ("::ffff:192.0.128", -1);
 	testIPAny ("1.2.3.", -1);
