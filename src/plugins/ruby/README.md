@@ -130,3 +130,9 @@ Kdb::Plugin.define :somename do
 end
 ```
 
+## Known Issues
+
+The plugin might cause a SIGSEGV crash on application shutdown. This is a result of missing
+RubyVM de initialization, which is silently ignored as we can't determine if the Ruby VM
+is still needed or not (libelektra might be used by an Ruby application).
+
