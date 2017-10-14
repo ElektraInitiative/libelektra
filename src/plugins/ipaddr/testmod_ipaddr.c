@@ -11,12 +11,14 @@
 
 #include <tests_plugin.h>
 
+#define PLUGIN_NAME "ipaddr"
+
 static void testIP (char const * const ip, const int ret, char const * const version)
 {
 	Key * parentKey = keyNew ("user/tests/ipaddr", KEY_VALUE, "", KEY_END);
 	KeySet * conf = ksNew (0, KS_END);
 	KeySet * ks = ksNew (10, keyNew ("user/test/ipaddr/totest", KEY_VALUE, ip, KEY_META, "check/ipaddr", version, KEY_END), KS_END);
-	PLUGIN_OPEN ("ipaddr");
+	PLUGIN_OPEN (PLUGIN_NAME);
 	char message[200];
 	(void)snprintf (message, 200, "validation of %s address “%s” failed", version[0] == '\0' ? "IP" : version, ip);
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == ret, message);
