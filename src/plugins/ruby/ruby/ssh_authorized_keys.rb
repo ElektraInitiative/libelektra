@@ -181,7 +181,7 @@ Kdb::Plugin.define :ssh_authorized_keys do
         end
       end
 
-      # finially write comments attached to the parent key
+      # finally write comments attached to the parent key
       x = Ssh_key.new
       x.set_from_key parent
       x.comments.each do |cline|

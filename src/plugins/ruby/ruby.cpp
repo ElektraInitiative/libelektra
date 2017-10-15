@@ -125,7 +125,7 @@ static inline VALUE clear_ruby_exception ()
 }
 
 /**
- * @brief additional to 'clear_ruby_exception()' addes exception msg to warningsKey
+ * @brief additional to 'clear_ruby_exception()' adds exception msg to warningsKey
  *
  */
 static VALUE clear_ruby_exception_add_warning (ckdb::Key * warningsKey)
@@ -183,7 +183,7 @@ static VALUE protected_ruby_call_wrapper (VALUE args)
  * calls method 'method' of Ruby instance 'instance' with given arguments, whereas
  * 'nargs' defines the number of given arguments (all arguments have to be of type
  * 'VALUE').
- * 'state' will be set to a non-zero value, iff an excpetion was thrown (compare
+ * 'state' will be set to a non-zero value, iff an exception was thrown (compare
  * rb_protect), otherwise 'state' will be set to 0.
  */
 static VALUE my_rb_protect (VALUE instance, ID method, int * state, int nargs, ...)
@@ -277,7 +277,7 @@ static VALUE rb_kdb_plugin_define (VALUE self, VALUE name)
 }
 
 /* ensure this Ruby instance is not garbage collected
- * we simply put them in a global constant arry, to the GC finds them and doesn't delete them
+ * we simply put them in a global constant array, to the GC finds them and doesn't delete them
  */
 static void add_plugin_instance (VALUE instance)
 {
@@ -306,7 +306,7 @@ static int init_ruby_environment (ckdb::Key * warningsKey)
 {
 	/*
 	 * init and start Ruby-VM
-	 * does nothing, if it is already runngin
+	 * does nothing, if it is already running
 	 */
 	ELEKTRA_LOG ("init and start Ruby-VM");
 	if (ruby_setup ())
@@ -359,7 +359,7 @@ static VALUE load_ruby_plugin (VALUE config ELEKTRA_UNUSED)
 
 
 	/* check if user supplied a plugin script,
-	 * do not issue an error here, otherwise a 'kdb info ruby' will print alot of error messages
+	 * do not issue an error here, otherwise a 'kdb info ruby' will print a lot of error messages
 	 */
 	kdb::Key script_key = conf->lookup (CONFIG_KEY_SCRIPT);
 	if (!script_key)
@@ -565,7 +565,7 @@ int RUBY_PLUGIN_FUNCTION (Close) (ckdb::Plugin * handle, ckdb::Key * warningsKey
 	VALUE ret = Qnil;
 
 	// if this plugin is used via the ruby bindings, the Ruby VM crashes during
-	// 'finialize' here. Maybe we can't all the plugin.close method any more ???
+	// 'finalize' here. Maybe we can't all the plugin.close method any more ???
 	//
 	// if (data != nullptr && rb_respond_to(data->rbInstance, method)) {
 	// 	VALUE msg = get_exception_string(data->rbInstance);

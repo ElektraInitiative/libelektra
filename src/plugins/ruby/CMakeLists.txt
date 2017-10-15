@@ -13,7 +13,10 @@ if (DEPENDENCY_PHASE)
 		)
 
 		# we call this SWIG_COMPILE_FLAGS because we have the same variable in our swig bindings
-		set (SWIG_COMPILE_FLAGS "-Wno-shadow -Wno-old-style-cast -Wno-unused-variable -Wno-unused-parameter -Wno-literal-suffix -Wno-reserved-user-defined-literal")
+		set (SWIG_COMPILE_FLAGS "-Wno-shadow -Wno-old-style-cast -Wno-unused-variable -Wno-unused-parameter -Wno-reserved-user-defined-literal")
+		if (NOT CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+			set (SWIG_COMPILE_FLAGS "${SWIG_COMPILE_FLAGS} -Wno-literal-suffix")
+		endif ()
 		set_source_files_properties ("ruby.cpp" PROPERTIES COMPILE_FLAGS "${SWIG_COMPILE_FLAGS}")
 	elseif (NOT RUBY_FOUND)
 		remove_plugin (ruby "ruby not found")

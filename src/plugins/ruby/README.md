@@ -10,7 +10,7 @@
 
 ## Introduction
 
-This plugin is a Elektra to Ruby bridge and makes is possible to implement Elektra plugins with Ruby.
+This plugin is an Elektra to Ruby bridge and makes is possible to implement Elektra plugins with Ruby.
 
 
 ## Configuration Options
@@ -64,7 +64,7 @@ Kdb::Plugin.define :somename do
   #end
 
 
-  # 'check_conf' method, called before this plugin is used for mouting to check
+  # 'check_conf' method, called before this plugin is used for mounting to check
   # if the supplied config is valid. Missing or invalid config settings can be
   # 'corrected' or added.
   # Parameter:
@@ -132,7 +132,10 @@ end
 
 ## Known Issues
 
-The plugin might cause a SIGSEGV crash on application shutdown. This is a result of missing
-RubyVM de initialization, which is silently ignored as we can't determine if the Ruby VM
-is still needed or not (libelektra might be used by an Ruby application).
+- The plugin might cause a SIGSEGV crash on application shutdown. This is a result of missing
+  RubyVM de initialization, which is silently ignored as we can't determine if the Ruby VM
+  is still needed or not (libelektra might be used by an Ruby application).
+- The plugin does not work correctly with Ruby version managers like `rbenv` or `rvm` and is
+  intended to be used with the Ruby ecosystem installed in system context.
+- Automated test cases are missing
 
