@@ -113,7 +113,7 @@ YAML::Node createLeafNode (Key & key)
 	node.push_back (dataNode);
 	node.push_back (metaNode);
 
-#ifdef LOGGING_ENABLED
+#ifdef HAVE_LOGGER
 	ostringstream data;
 	data << node;
 	ELEKTRA_LOG_DEBUG ("Return meta leaf node with value “%s”", data.str ().c_str ());
@@ -179,7 +179,7 @@ void addKeys (YAML::Node & data, KeySet const & mappings, Key const & parent)
 		NameIterator keyIterator = relativeKeyIterator (key, parent);
 		addKey (data, keyIterator, key);
 
-#ifdef LOGGING_ENABLED
+#ifdef HAVE_LOGGER
 		ostringstream output;
 		output << data;
 		ELEKTRA_LOG_DEBUG ("Converted key data “%s”", output.str ().c_str ());
@@ -201,7 +201,7 @@ void yamlcpp::yamlWrite (KeySet const & mappings, Key const & parent)
 	auto data = YAML::Node ();
 	addKeys (data, mappings, parent);
 
-#ifdef LOGGING_ENABLED
+#ifdef HAVE_LOGGER
 	ostringstream outputString;
 	outputString << data;
 
