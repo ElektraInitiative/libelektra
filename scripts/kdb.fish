@@ -164,7 +164,7 @@ end
 
 function __fish_kdb_subcommand_mount_needs_plugin -d 'Check if the subcommand mount needs a plugin completion'
     __fish_kdb_subcommand_includes mount
-    and test (__fish_kdb__number_arguments_input_left) -eq 4
+    and test (__fish_kdb__number_arguments_input_left) -ge 4
 end
 
 function __fish_kdb_subcommand_needs_storage_plugin -d 'Check if the current subcommand need a storage plugin completion'
