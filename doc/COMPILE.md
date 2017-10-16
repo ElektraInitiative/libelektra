@@ -285,9 +285,12 @@ The flag used to specify which tools are compiled is
 but is more limited in its functionality (which does not
 matter, because there are not so many tools).
 
-To add all tools, you can use::
+To add all non-experimental tools, you can use::
 
     -DTOOLS=ALL
+
+> Note that the behavior is different to PLUGINS
+> which includes all PLUGINS if ALL is used.
 
 To add all tools except of race, you can use:
 
@@ -301,9 +304,12 @@ To specify specific tools you can use, e.g.:
 #### Bindings
 
 Bindings are used in the same way as `TOOLS`.
-For example you can use:
+For example, to include all non-experimental bindings you can use:
 
     -DBINDINGS=ALL
+
+> Note that the behavior is different to PLUGINS
+> which includes all PLUGINS if ALL is used.
 
 Note that the same languages are sometimes available over GI and SWIG.
 In this case, the SWIG bindings are preferred.
