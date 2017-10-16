@@ -150,7 +150,7 @@ macro (add_haskell_plugin target)
 			endif (GHC_FFI_LIB)
 
 		else (FINDEX GREATER -1)
-			remove_plugin (${target} "haskell bindings are not included in the make configuration")
+			remove_plugin (${target} "haskell bindings are not included in the cmake configuration")
 		endif (FINDEX GREATER -1)
 		else (GHC-PKG_EXECUTABLE)
 			remove_plugin (${target} "ghc-pkg not found")
