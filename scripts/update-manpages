@@ -19,11 +19,10 @@ SCRIPTS_DIR=$(dirname "$0")
 
 ELEKTRA_DIR=`realpath "$SCRIPTS_DIR"/..`
 BUILD_DIR="$ELEKTRA_DIR/build"
-MANPAGES_INPUT_DIRS=("$BUILD_DIR/doc/man" "$BUILD_DIR/doc/help")
+MANPAGES_INPUT_DIR="$BUILD_DIR/doc/help"
 MANPAGES_OUTPUT_DIR="$ELEKTRA_DIR/doc/man"
 
 command -v ronn >/dev/null 2>&1 || { printf 'Unable to locate ronn' >&2; exit 1; }
-command -v doxygen >/dev/null 2>&1 || { printf 'Unable to locate Doxygen' >&2; exit 1; }
 command -v make >/dev/null 2>&1 || { printf 'Unable to locate Make' >&2; exit 1; }
 command -v cmake >/dev/null 2>&1 || { printf 'Unable to locate CMake' >&2; exit 1; }
 
@@ -44,15 +43,6 @@ make -j9 || ninja || { printf 'Unable to build Elektra' >&2; cleanup; exit 1; }
 
 printf '📑  Copy man pages\n'
 mkdir -p "$MANPAGES_OUTPUT_DIR" || { printf 'Unable to create “%s”' "$MANPAGES_OUTPUT_DIR" >&2; cleanup; exit 1; }
-find -E "${MANPAGES_INPUT_DIRS[@]}" -regex '.+\.([0-9]|3elektra)$' -exec cp '{}' "$MANPAGES_OUTPUT_DIR" \;
-
-printf '🙈  Patch name of man pages\n'
-PREFIX=`echo "$ELEKTRA_DIR" | sed -E 's/[/]/_/g'`
-(
-IFS=$'\n'
-for filepath in `find "$MANPAGES_OUTPUT_DIR" -name "*$PREFIX*.3elektra"`; do
-        mv -v "$filepath" `echo "$filepath" | sed s/"$PREFIX"_//`
-done
-)
+find -E "$MANPAGES_INPUT_DIR" -regex '.+\.[0-9]$' -exec cp '{}' "$MANPAGES_OUTPUT_DIR" \;
 
 cleanup
