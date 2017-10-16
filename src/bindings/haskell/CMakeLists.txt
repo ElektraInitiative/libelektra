@@ -6,8 +6,7 @@ if (CABAL_EXECUTABLE) # set by find_program
 if (C2HS_EXECUTABLE)
 if (GHC_EXECUTABLE)
 	
-	SET (CABAL_INCLUDE_DIRS "${CMAKE_SOURCE_DIR}/src/include, ${CMAKE_BINARY_DIR}/src/include")
-	SET (CABAL_EXTRA_LIB_DIRS "")
+	set (CABAL_INCLUDE_DIRS "${CMAKE_SOURCE_DIR}/src/include, ${CMAKE_BINARY_DIR}/src/include")
 
 	# configure include paths
 	configure_file (
@@ -54,3 +53,9 @@ endif (C2HS_EXECUTABLE)
 else (CABAL_EXECUTABLE)
 	remove_binding (c2hs_haskell "cabal not found")
 endif (CABAL_EXECUTABLE)
+
+mark_as_advanced (
+	GHC_EXECUTABLE
+	C2HS_EXECUTABLE
+	CABAL_EXECUTABLE
+)
