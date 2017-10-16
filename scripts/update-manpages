@@ -43,7 +43,7 @@ cd "$BUILD_DIR" || exit
 
 if ! grep -E -q "BUILD_DOCUMENTATION.+(ON|YES)" "$CMAKE_CACHE"; then
         printf '🔍  Run CMake\n'
-        cmake -DBUILD_DOCUMENTATION=ON -DTOOLS='ALL' -DBINDINGS='ALL' -DPLUGINS='ALL' ..
+        cmake -DBUILD_DOCUMENTATION=ON ..
 fi
 
 printf '📙  Build Elektra and its documentation\n'
