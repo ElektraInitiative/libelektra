@@ -203,6 +203,7 @@ copied by the `spec` plugin just before):
 
 - [validation](validation/) by using regex
 - [network](network/) by using network APIs
+- [ipaddr](ipaddr/) checks IP addresses using regular expressions
 - [path](path/) by checking files on file system
 - [type](type/) using run-time type checking (CORBA types/)
 - [enum](enum/) compares the keyvalue against a list of valid values
