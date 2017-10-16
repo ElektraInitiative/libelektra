@@ -17,8 +17,8 @@ macro (add_haskell_plugin target)
 		${ARGN}
 	)
 
-	SET (PLUGIN_NAME ${target})
-	SET (PLUGIN_NAME_CAPITALIZED ${target})
+	set (PLUGIN_NAME ${target})
+	set (PLUGIN_NAME_CAPITALIZED ${target})
 	string (SUBSTRING ${PLUGIN_NAME} 0 1 FIRST_LETTER)
 	string (TOUPPER ${FIRST_LETTER} FIRST_LETTER)
 	string (REGEX REPLACE "^.(.*)" "${FIRST_LETTER}\\1" PLUGIN_NAME_CAPITALIZED "${PLUGIN_NAME}")
@@ -33,6 +33,8 @@ macro (add_haskell_plugin target)
 		if (CABAL_EXECUTABLE)
 		if (GHC_EXECUTABLE)
 		if (GHC-PKG_EXECUTABLE)
+		list (FIND BINDINGS "haskell" FINDEX)
+		if (FINDEX GREATER -1)
 
 			# needed for HsFFI.h
 			execute_process (
@@ -71,6 +73,12 @@ macro (add_haskell_plugin target)
 				OUTPUT_VARIABLE GHC_PRIM_NAME OUTPUT_STRIP_TRAILING_WHITESPACE
 			)
 			find_library (GHC_PRIM_LIB "HS${GHC_PRIM_NAME}" ${GHC_LIB_DIR}/${GHC_PRIM_NAME})
+
+			if (GHC_FFI_LIB)
+			if (GHC_RTS_LIB)
+			if (GHC_BASE_LIB)
+			if (GHC_GMP_LIB)
+			if (GHC_PRIM_LIB)
 
 			set (GHC_LIB_DIRS
 				"${CMAKE_CURRENT_BINARY_DIR}/dist/build/libHS${target}.a"
@@ -125,6 +133,25 @@ macro (add_haskell_plugin target)
 				DEPENDS ${target}-register
 			)
 
+			else (GHC_PRIM_LIB)
+				remove_plugin (${target} "GHC_PRIM_LIB not found")
+			endif (GHC_PRIM_LIB)
+			else (GHC_GMP_LIB)
+				remove_plugin (${target} "GHC_GMP_LIB not found")
+			endif (GHC_GMP_LIB)
+			else (GHC_BASE_LIB)
+				remove_plugin (${target} "GHC_BASE_LIB not found")
+			endif (GHC_BASE_LIB)
+			else (GHC_RTS_LIB)
+				remove_plugin (${target} "GHC_RTS_LIB not found")
+			endif (GHC_RTS_LIB)
+			else (GHC_FFI_LIB)
+				remove_plugin (${target} "GHC_FFI_LIB not found")
+			endif (GHC_FFI_LIB)
+
+		else (FINDEX GREATER -1)
+			remove_plugin (${target} "haskell bindings are not included in the make configuration")
+		endif (FINDEX GREATER -1)
 		else (GHC-PKG_EXECUTABLE)
 			remove_plugin (${target} "ghc-pkg not found")
 		endif (GHC-PKG_EXECUTABLE)
@@ -149,5 +176,16 @@ macro (add_haskell_plugin target)
 		DEPENDS
 			${target} c2hs_haskell
 		ADD_TEST
+	)
+
+	mark_as_advanced (
+		GHC_EXECUTABLE
+		GHC-PKG_EXECUTABLE
+		CABAL_EXECUTABLE
+		GHC_FFI_LIB
+		GHC_RTS_LIB
+		GHC_BASE_LIB
+		GHC_GMP_LIB
+		GHC_PRIM_LIB
 	)
 endmacro (add_haskell_plugin)
