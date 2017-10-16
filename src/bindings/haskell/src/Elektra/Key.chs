@@ -122,7 +122,7 @@ keyListMeta key = keyRewindMeta key >> listMeta []
         listMeta res = do
             cur <- keyNextMeta key
             isNull <- keyPtrNull cur
-            if isNull then return res else liftM (cur :) (listMeta res)
+            if isNull then return res else keyIncRef cur >> liftM (cur :) (listMeta res)
 
 -- ***
 -- KEY TESTING METHODS
