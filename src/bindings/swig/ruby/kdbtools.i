@@ -80,7 +80,7 @@ namespace std {
 %import "kdb.i"
 
 %init {
-  /* correct SWIG type <-> Ruby class mappying
+  /* correct SWIG type <-> Ruby class mapping
    *
    * SWIG creates in the first step, for each known class to map
    * a Ruby class under module SWIG, named
@@ -186,8 +186,8 @@ namespace std {
 %define UNIQUE_PTR_VALUE_WRAPPER(PTR_TYPE, TYPE)
 %header {
   /**
-   * SwigValueWrapper specialication for std::unique_ptr
-   * the default SwigValueWrapper implementaion does not work here,
+   * SwigValueWrapper specialization for std::unique_ptr
+   * the default SwigValueWrapper implementation does not work here,
    * since unique_ptr::unique_ptr(&unique_ptr) = delete;
    *
    * Therefore we have to create our own SwigValueWrapper for the
