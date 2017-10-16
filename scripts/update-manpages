@@ -24,6 +24,7 @@ SCRIPTS_DIR=$(dirname "$0")
 CURRENT_DIR="$PWD"
 
 BUILD_DIR="$SOURCE/build"
+CMAKE_CACHE="$BUILD_DIR/CMakeCache.txt"
 MANPAGES_INPUT_DIR="$BUILD_DIR/doc/help"
 MANPAGES_OUTPUT_DIR="$SOURCE/doc/man"
 
@@ -40,8 +41,10 @@ mkdir -p "$BUILD_DIR" || { printf 'Unable to create “%s”' "$BUILD_DIR" >&2; 
 printf '👋  Change into build directory “%s”\n' "$BUILD_DIR"
 cd "$BUILD_DIR" || exit
 
-printf '🔍  Run CMake\n'
-cmake -DBUILD_DOCUMENTATION=ON -DTOOLS='ALL' -DBINDINGS='ALL' -DPLUGINS='ALL' ..
+if ! grep -E -q "BUILD_DOCUMENTATION.+(ON|YES)" "$CMAKE_CACHE"; then
+        printf '🔍  Run CMake\n'
+        cmake -DBUILD_DOCUMENTATION=ON -DTOOLS='ALL' -DBINDINGS='ALL' -DPLUGINS='ALL' ..
+fi
 
 printf '📙  Build Elektra and its documentation\n'
 make -j9 || ninja || { printf 'Unable to build Elektra' >&2; cleanup; exit 1; }
