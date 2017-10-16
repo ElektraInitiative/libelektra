@@ -16,5 +16,12 @@ if (RONN_LOC)
 		generate_manpage (${NAME} SECTION 7)
 	endforeach ()
 else ()
-	message (WARNING "Sorry, I cannot find ronn, thus I cannot build the man pages. Please install https://github.com/rtomayko/ronn.")
+	message ("Sorry, I cannot find ronn (https://github.com/rtomayko/ronn), thus generating the man pages will not work. "
+		 "I will install the man pages directly from the repository instead.")
+	set (MAN_PAGES_DIR "${CMAKE_SOURCE_DIR}/doc/man")
+
+	if (INSTALL_DOCUMENTATION)
+		install (DIRECTORY "${MAN_PAGES_DIR}/" DESTINATION share/man/man1 FILES_MATCHING PATTERN "*.1")
+		install (DIRECTORY "${MAN_PAGES_DIR}/" DESTINATION share/man/man7 FILES_MATCHING PATTERN "*.7")
+	endif (INSTALL_DOCUMENTATION)
 endif ()
