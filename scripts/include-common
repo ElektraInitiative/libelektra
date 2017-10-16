@@ -21,7 +21,7 @@ readlink() {
         if stringContain "Darwin" "$(uname)"; then
                 # no readlink -f on macOS
                 if [ "$(which greadlink)" ]; then
-                        # if user brewed coreutils, greadlink is like 
+                        # if user brewed coreutils, greadlink is like
 			# the gnu readlink
                         greadlink "$@"
                 elif [ "$1" = "-f" ]; then
@@ -32,7 +32,7 @@ readlink() {
                         $(which readlink) "$@"
                 fi
         else
-                # on other systems, or with other parameters just 
+                # on other systems, or with other parameters just
 		# execute it as it is
                 $(which readlink) "$@"
         fi
