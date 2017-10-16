@@ -18,14 +18,14 @@ cleanup() {
 # = Init =
 # ========
 
-CURRENT_DIR="$PWD"
 SCRIPTS_DIR=$(dirname "$0")
-. "$SCRIPTS_DIR/realpath"
+. "${SCRIPTS_DIR}/include-common"
 
-ELEKTRA_DIR=`realpath "$SCRIPTS_DIR"/..`
-BUILD_DIR="$ELEKTRA_DIR/build"
+CURRENT_DIR="$PWD"
+
+BUILD_DIR="$SOURCE/build"
 MANPAGES_INPUT_DIR="$BUILD_DIR/doc/help"
-MANPAGES_OUTPUT_DIR="$ELEKTRA_DIR/doc/man"
+MANPAGES_OUTPUT_DIR="$SOURCE/doc/man"
 
 command -v ronn >/dev/null 2>&1 || { printf 'Unable to locate ronn' >&2; exit 1; }
 command -v make >/dev/null 2>&1 || { printf 'Unable to locate Make' >&2; exit 1; }
