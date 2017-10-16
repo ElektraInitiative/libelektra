@@ -1,4 +1,9 @@
 #!/bin/bash
+#
+# @author René Schwaiger <sanssecours@me.com>
+# @brief Generate man pages via ronn and copy them to the repository
+# @date 16.10.2017
+# @tags generator, helper
 
 # =============
 # = Functions =
