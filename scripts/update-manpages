@@ -28,9 +28,9 @@ CMAKE_CACHE="$BUILD_DIR/CMakeCache.txt"
 MANPAGES_INPUT_DIR="$BUILD_DIR/doc/help"
 MANPAGES_OUTPUT_DIR="$SOURCE/doc/man"
 
-command -v ronn >/dev/null 2>&1 || { printf 'Unable to locate ronn' >&2; exit 1; }
-command -v make >/dev/null 2>&1 || { printf 'Unable to locate Make' >&2; exit 1; }
-command -v cmake >/dev/null 2>&1 || { printf 'Unable to locate CMake' >&2; exit 1; }
+command -v ronn >/dev/null 2>&1 || { printf 'Unable to locate ronn\n' >&2; exit 1; }
+command -v make >/dev/null 2>&1 || { printf 'Unable to locate Make\n' >&2; exit 1; }
+command -v cmake >/dev/null 2>&1 || { printf 'Unable to locate CMake\n' >&2; exit 1; }
 
 mkdir -p "$BUILD_DIR" || { printf 'Unable to create “%s”' "$BUILD_DIR" >&2; exit 1; }
 
@@ -47,10 +47,10 @@ if ! grep -E -q "BUILD_DOCUMENTATION.+(ON|YES)" "$CMAKE_CACHE"; then
 fi
 
 printf '📙  Build Elektra and its documentation\n'
-make -j9 || ninja || { printf 'Unable to build Elektra' >&2; cleanup; exit 1; }
+make -j9 || ninja || { printf 'Unable to build Elektra\n' >&2; cleanup; exit 1; }
 
 printf '📑  Copy man pages\n'
-mkdir -p "$MANPAGES_OUTPUT_DIR" || { printf 'Unable to create “%s”' "$MANPAGES_OUTPUT_DIR" >&2; cleanup; exit 1; }
+mkdir -p "$MANPAGES_OUTPUT_DIR" || { printf 'Unable to create “%s”\n' "$MANPAGES_OUTPUT_DIR" >&2; cleanup; exit 1; }
 find -E "$MANPAGES_INPUT_DIR" -regex '.+\.[0-9]$' -exec cp '{}' "$MANPAGES_OUTPUT_DIR" \;
 
 cleanup
