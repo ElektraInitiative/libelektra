@@ -69,7 +69,8 @@ set (DIRECTORIES
 
 remove_directories ("${DIRECTORIES}")
 
-# The following directories might be empty
+# The following directories might be empty. The order of the directories is important, since we remove them in the given order.
+# A directory that occurs later in the list might be empty, since we removed all its subdirectories before.
 set (REMOVAL_CANDIDATES
 	"/usr/local/bin"
 	"/usr/local/include"
