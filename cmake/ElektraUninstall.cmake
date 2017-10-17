@@ -93,6 +93,11 @@ set (REMOVAL_CANDIDATES
 	"/usr/local/share/man/man7"
 	"/usr/local/share/man"
 	"/usr/local/share"
+	"/usr/share/bash-completion/completions"
+	"/usr/share/bash-completion"
+	"/usr/share/zsh/vendor-completions"
+	"/usr/share/zsh"
+	"/usr/share"
 )
 
 foreach (directory ${REMOVAL_CANDIDATES})
