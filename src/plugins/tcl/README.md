@@ -78,16 +78,16 @@ kdb ls user/tests/dump
 #> user/tests/dump/PerfectBinaryKey
 #> user/tests/dump/PerfectDirectoryKey
 #> user/tests/dump/PerfectStringKey
-#> user/tests/dump/Ug.ly:Bin@aryKey
-#> user/tests/dump/Ug.ly:Dir@ectoryKey
-#> user/tests/dump/Ug.ly:St@rin.gKey
+#> user/tests/dump/Ug.ly:Bin@a€ryKey
+#> user/tests/dump/Ug.ly:Dir@ect€oryKey
+#> user/tests/dump/Ug.ly:St@ri€n.gKey
 
 # The plugin supports binary data…
 kdb get user/tests/dump/PerfectBinaryKey
 #> \x42\x69\x6e\x61\x72\x79\x56\x61\x6c\x75\x65\x0
 
 # … and empty keys
-kdb get user/tests/dump/Ug.ly:Bin@aryKey
+kdb get user/tests/dump/Ug.ly:Bin@a€ryKey
 
 # Undo modifications
 kdb rm -r user/tests
