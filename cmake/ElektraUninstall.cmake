@@ -16,6 +16,7 @@ endif (NOT EXISTS "${MANIFEST}")
 # =========
 
 file (READ "${MANIFEST}" files)
+string (APPEND files "\n/usr/local/lib/python2.7/site-packages/elektra_gen-${KDB_VERSION}-py2.7.egg-info")
 string (REGEX REPLACE "\n" ";" files "${files}")
 foreach (file ${files})
 	message(STATUS "Uninstalling $ENV{DESTDIR}${file}")
@@ -63,6 +64,7 @@ set (DIRECTORIES
 	"/usr/local/share/doc/elektra-api"
 	"/usr/local/share/elektra"
 	"/usr/local/share/share/elektra"
+	"/usr/local/lib/python2.7/site-packages/support"
 )
 
 remove_directories ("${DIRECTORIES}")
@@ -75,6 +77,8 @@ set (REMOVAL_CANDIDATES
 	"/usr/local/lib/lua/5.2"
 	"/usr/local/lib/lua"
 	"/usr/local/lib/pkgconfig"
+	"/usr/local/lib/python2.7/site-packages"
+	"/usr/local/lib/python2.7"
 	"/usr/local/share/appdata"
 	"/usr/local/share/applications"
 	"/usr/local/share/doc"
