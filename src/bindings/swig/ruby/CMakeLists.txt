@@ -63,8 +63,11 @@ else()
 	set (SWIG_COMPILE_FLAGS "${SWIG_COMPILE_FLAGS} -DSWIG_TYPE_TABLE=kdb")
 
 	# disable certain compiler warnings for SWIG generated files
-	set (SWIG_COMPILE_FLAGS "${SWIG_COMPILE_FLAGS} -Wno-unused-parameter -Wno-unused-but-set-variable")
+	set (SWIG_COMPILE_FLAGS "${SWIG_COMPILE_FLAGS} -Wno-unused-parameter")
 	set (SWIG_COMPILE_FLAGS "${SWIG_COMPILE_FLAGS} -Wno-sign-compare")
+	if (CMAKE_CXX_COMPILER_ID MATCHES "GNU")
+		set (SWIG_COMPILE_FLAGS "${SWIG_COMPILE_FLAGS} -Wno-unused-but-set-variable")
+	endif (CMAKE_CXX_COMPILER_ID MATCHES "GNU")
 
 	# add 'kdb' module
 	if (CMAKE_VERSION LESS 3.8)

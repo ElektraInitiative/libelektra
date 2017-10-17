@@ -1,0 +1,57 @@
+.\" generated with Ronn/v0.7.3
+.\" http://github.com/rtomayko/ronn/tree/0.7.3
+.
+.TH "KDB\-INTRODUCTION" "1" "October 2017" "" ""
+.
+.SH "NAME"
+\fBkdb\-introduction\fR \- introduction to kdb
+.
+.P
+\fBElektra\fR solves the task of accessing the configuration access\. Additionally, a tooling gathered around Elektra helps with administrative configuration problems that appear every day\. Maybe the administrator needs a cron job that periodically changes the settings of a service\. Maybe the user wants to have an overview of the whole configuration to learn what can be tweaked\. Maybe the developer needs to fully export the configuration the program had when a failure occurred\. These tasks have in common that they become trivial once a programmatic access to a global key database exists\.
+.
+.P
+In this manual we give an overview of the command\-line tool \fBkdb\fR\. It is part of Elektra’s tools and performs the mentioned tasks\. \fBkdb\fR consists of individual subprograms\. The programs are independent, but can access a shared part that provides functionality too specific to be in the library \-\- for example, pretty printing of error messages and warnings\. Most parts of this suite are short programs which basically call \fBkdbGet()\fR, do something with the data structure and eventually write it back using \fBkdbSet()\fR\. Note that the command\-line tool \fBkdb\fR should not be confused with the class \fBKDB\fR\.
+.
+.P
+Every part of the application suite accepts its own command line arguments and has its own documentation (via man pages accessible using \fB\-\-help\fR and \fB\-H\fR)\. To get an overview of all tools in \fBkdb\fR, simply type:
+.
+.br
+\fBkdb\fR
+.
+.P
+Furthermore, external programs can also be integrated within \fBkdb\fR\. They can be listed via:
+.
+.br
+\fBkdb list\-tools\fR\.
+.
+.P
+Only a few commands are enough for daily use\. We can retrieve a key by:
+.
+.br
+\fBkdb get user/key\fR
+.
+.P
+We store a key permanently with a value given by:
+.
+.br
+\fBkdb set user/key value\fR
+.
+.P
+We list all available keys arranged below a key by:
+.
+.br
+\fBkdb ls user/key\fR
+.
+.SH "SEE ALSO"
+.
+.IP "\(bu" 4
+Get a big picture \fI/doc/BIGPICTURE\.md\fR
+.
+.IP "\(bu" 4
+For more about tools go on reading here \fI/doc/help/kdb\.md\fR\.
+.
+.IP "\(bu" 4
+To read more about the API (that explains what \fBkdbGet()\fR, \fBkdbSet()\fR and \fBKDB\fR is), please continue to read here \fIhttps://doc\.libelektra\.org/api/current/html\fR
+.
+.IP "" 0
+

@@ -80,10 +80,10 @@ namespace std {
 %import "kdb.i"
 
 %init {
-  /* correct SWIG type <-> Ruby class mappying
+  /* correct SWIG type <-> Ruby class mapping
    *
    * SWIG creates in the first step, for each known class to map
-   * a Ruby class under module SWIG, named 
+   * a Ruby class under module SWIG, named
    *   'TYPE_p_<cpp-namespace><cpp-class-name>'
    * I'm not really sure about its purpose, maybe a fallback?
    * In the second step, SWIG creates all its 'real' Ruby classes
@@ -99,8 +99,8 @@ namespace std {
    * So far so good, but: The %import kdb.i lets swig know about the
    * kdb::Key and kdb::KeySet types and creates entries in SWIGs type
    * table. However, these type table entries arn't never filled up
-   * (more correctly the client data). So for our imported stuff from 
-   * 'kdb.i' we will end up with getting these fake 
+   * (more correctly the client data). So for our imported stuff from
+   * 'kdb.i' we will end up with getting these fake
    * 'SWIG::TYPE_p_kdb__KeyXXX' klasses but not with our real
    * 'Kdb::KeyXXX' klasses.
    *
@@ -173,7 +173,7 @@ namespace std {
 %include "toolexcept.hpp"
 
 
-/* for some reason, this does not work, at least for 
+/* for some reason, this does not work, at least for
  * Modules::load() methods. Maybe because of the overloading ???
 %feature("novaluewrapper") kdb::tools::PluginPtr;
 %feature("novaluewrapper") std::unique_ptr< kdb::tools::Plugin >;
@@ -186,8 +186,8 @@ namespace std {
 %define UNIQUE_PTR_VALUE_WRAPPER(PTR_TYPE, TYPE)
 %header {
   /**
-   * SwigValueWrapper specialication for std::unique_ptr
-   * the default SwigValueWrapper implementaion does not work here,
+   * SwigValueWrapper specialization for std::unique_ptr
+   * the default SwigValueWrapper implementation does not work here,
    * since unique_ptr::unique_ptr(&unique_ptr) = delete;
    *
    * Therefore we have to create our own SwigValueWrapper for the
@@ -218,7 +218,7 @@ namespace std {
 }
 
 /* out typemap for PluginPtr (which is a std::unique_ptr)
- * 
+ *
  * The unique_ptr object will delete its wrapped object once its scope
  * ends. But here we want to keep the Plugin object (the unique_ptr does
  * not matter), so we have to do a release() on the unique_ptr object.
@@ -460,24 +460,24 @@ UNIQUE_PTR_VALUE_WRAPPER(
         kdb::tools::PluginDatabase::Status::missing;
 
 /* TODO, be more explicite if known */
-%catches(kdb::tools::ToolException) 
+%catches(kdb::tools::ToolException)
         kdb::tools::PluginDatabase::listAllPlugins;
-%catches(kdb::tools::ToolException) 
+%catches(kdb::tools::ToolException)
         kdb::tools::PluginDatabase::lookupInfo;
-%catches(kdb::tools::ToolException) 
+%catches(kdb::tools::ToolException)
         kdb::tools::PluginDatabase::lookupProvides;
-%catches(kdb::tools::ToolException) 
+%catches(kdb::tools::ToolException)
         kdb::tools::PluginDatabase::lookupAllProvidesWithStatus;
-%catches(kdb::tools::ToolException) 
+%catches(kdb::tools::ToolException)
         kdb::tools::PluginDatabase::lookupAllProvides;
-%catches(kdb::tools::ToolException) 
+%catches(kdb::tools::ToolException)
         kdb::tools::PluginDatabase::calculateStatus;
 %catches(kdb::tools::NoPlugin,
          kdb::tools::PluginCheckException,
          kdb::tools::ToolException
 ) kdb::tools::PluginDatabase::lookupMetadata;
 
-%catches(kdb::tools::ToolException) 
+%catches(kdb::tools::ToolException)
         kdb::tools::PluginVariantDatabase::getPluginVariants;
 
 
@@ -540,7 +540,7 @@ UNIQUE_PTR_VALUE_WRAPPER(
 %ignore kdb::tools::operator<<(std::ostream &, Backend const &);
 %ignore kdb::tools::Backend::operator=;
 
-/* 
+/*
  * the void status(std::ostream) methods are useless within Ruby
  * convert them to a std::string status() method
  */
@@ -618,7 +618,7 @@ STATUS_OSTREAM_TO_STRING(kdb::tools::ImportExportBackend)
  * and defines a setter method for it */
 %ignore kdb::tools::Backends::mountpointsPath;
 
-/* is there no way to define a class constant? 
+/* is there no way to define a class constant?
  * so this will become Kdbtools::MOUNTPOINTS_PATH
 */
 %constant const char * mountpoints_path =
@@ -701,10 +701,10 @@ STATUS_OSTREAM_TO_STRING(kdb::tools::ImportExportBackend)
  * specreader.hpp
  *
  ************************************************************************/
-/* std::unordered_map is currently not supported by the 
+/* std::unordered_map is currently not supported by the
  * SWIG standard library. So we convert it to a std::map
  * and use the SWIG std::map type wrapping.*/
-%template(SpecBackendBuilderMap) 
+%template(SpecBackendBuilderMap)
         std::map<kdb::Key, kdb::tools::SpecBackendBuilder>;
 
 /* std::unordered_map<Key, SpecBackendBuilder> is just used
