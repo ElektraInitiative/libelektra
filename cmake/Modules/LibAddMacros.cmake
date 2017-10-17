@@ -529,8 +529,8 @@ if (BUILD_DOCUMENTATION AND RONN_LOC) # disable function when RONN_LOC is not se
 	add_custom_command(
 		OUTPUT ${OUTFILE}
 		DEPENDS ${MDFILE}
-		COMMAND export RUBYOPT="-Eutf-8" && ${RONN_LOC}
-		ARGS -r --pipe ${MDFILE} > ${OUTFILE}
+		COMMAND export RUBYOPT="-Eutf-8" && ${RONN_LOC} ARGS -r --pipe ${MDFILE} > ${OUTFILE}
+		COMMAND ${CMAKE_COMMAND} ARGS -E copy ${OUTFILE} "${CMAKE_SOURCE_DIR}/doc/man/"
 		)
 	add_custom_target(man-${NAME} ALL DEPENDS ${OUTFILE})
 	add_dependencies(man man-${NAME})
