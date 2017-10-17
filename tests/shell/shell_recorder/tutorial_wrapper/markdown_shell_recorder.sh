@@ -188,7 +188,7 @@ translate()
 		fi
 	done <<<"$BUF"
 	writeBlock "$TMPFILE"
-	../shell_recorder.sh "$TMPFILE" || SHELL_RECORDER_ERROR=1
+	"@CMAKE_CURRENT_BINARY_DIR@"/shell_recorder.sh "$TMPFILE" || SHELL_RECORDER_ERROR=1
 	rm "$TMPFILE"
 }
 INBLOCK=0

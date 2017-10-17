@@ -1,10 +1,9 @@
 function (add_s_test NAME FILE)
 	add_test (
-		testshell_markdown_${NAME}
-		"${CMAKE_CURRENT_BINARY_DIR}/markdown_shell_recorder.sh"
-		"${FILE}"
+		NAME testshell_markdown_${NAME}
+		COMMAND "${CMAKE_CURRENT_BINARY_DIR}/markdown_shell_recorder.sh" "${FILE}"
+		WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}"
 		)
-
 	set_property(TEST testshell_markdown_${NAME} PROPERTY LABELS memleak kdbtests)
 endfunction ()
 

@@ -51,7 +51,7 @@ void unserialise (istream & in, KeySet & input)
 {
 	namespace qi = boost::spirit::qi;
 
-	using boost::spirit::ascii::space;
+	using boost::spirit::qi::space;
 
 	in.unsetf (std::ios::skipws);
 	boost::spirit::istream_iterator begin (in);
