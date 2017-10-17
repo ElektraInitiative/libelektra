@@ -2,7 +2,7 @@
 - infos/author = Markus Raab <elektra@libelektra.org>
 - infos/licence = BSD
 - infos/provides = storage/tcl
-- infos/needs = code
+- infos/needs = code null binary
 - infos/placements = setstorage getstorage
 - infos/status = unfinished concept
 - infos/description = Serialize tcl lists
@@ -30,7 +30,7 @@ distinguish-able style. It looks like:
         }
     }
 
-## Example
+## Basic Usage
 
 ```sh
 # Mount Tcl plugin to namespace `user/examples/tcl`
@@ -59,9 +59,43 @@ kdb rm -r user/examples/tcl
 sudo kdb umount user/examples/tcl
 ```
 
+## Binary Data
+
+The plugin also supports binary data via the [base64 plugin](../base64/) and null keys via the [null plugin](../null/).
+
+```sh
+# Mount plugin
+sudo kdb mount config.tcl user/tests tcl
+
+# Import some data
+kdb import user/tests/dump xmltool < src/plugins/xmltool/xmltool/dump.xml
+
+# Take a look at imported data
+kdb ls user/tests/dump
+#> user/tests/dump/.HiddenBinaryKey
+#> user/tests/dump/.HiddenDirectoryKey
+#> user/tests/dump/.HiddenStringKey
+#> user/tests/dump/PerfectBinaryKey
+#> user/tests/dump/PerfectDirectoryKey
+#> user/tests/dump/PerfectStringKey
+#> user/tests/dump/Ug.ly:Bin@aryKey
+#> user/tests/dump/Ug.ly:Dir@ectoryKey
+#> user/tests/dump/Ug.ly:St@rin.gKey
+
+# The plugin supports binary data…
+kdb get user/tests/dump/PerfectBinaryKey
+#> \x42\x69\x6e\x61\x72\x79\x56\x61\x6c\x75\x65\x0
+
+# … and empty keys
+kdb get user/tests/dump/Ug.ly:Bin@aryKey
+
+# Undo modifications
+kdb rm -r user/tests
+sudo kdb umount user/tests
+```
+
 ## Limitations
 
-- empty and null keys not supported
 - whitespaces are discarded
 - no comments
 
