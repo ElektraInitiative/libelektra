@@ -130,6 +130,7 @@ macro (add_haskell_plugin target)
 				COMMAND ${CABAL_EXECUTABLE} --ipid=${target} configure
 				COMMAND ${CABAL_EXECUTABLE} build
 				WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+				BYPRODUCTS ${CMAKE_CURRENT_BINARY_DIR}/dist/build/libHS${target}.a
 				DEPENDS ${target}-register
 			)
 
