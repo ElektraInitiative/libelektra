@@ -19,6 +19,7 @@ if (GHC_EXECUTABLE)
 		c2hs_haskell ALL
 		COMMAND ${CABAL_EXECUTABLE} --ipid=libelektra-haskell-${KDB_VERSION} configure
 		COMMAND ${CABAL_EXECUTABLE} build
+		BYPRODUCTS ${CMAKE_CURRENT_BINARY_DIR}/dist/build/libHSlibelektra-haskell-${KDB_VERSION}.a
 		WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
 	)
 
