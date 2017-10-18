@@ -1153,3 +1153,17 @@ severity:error
 ingroup:plugin
 module:yamlcpp
 macro:YAMLCPP_REPRESENTATION
+
+number:186
+description:ruby warning
+severity:warning
+ingroup:plugin
+module:ruby
+macro:RUBY_GEN_WARN
+
+number:187
+description:ruby error
+severity:error
+ingroup:plugin
+module:ruby
+macro:RUBY_GEN_ERROR

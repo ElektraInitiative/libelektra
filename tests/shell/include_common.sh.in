@@ -60,6 +60,11 @@ then
 	KDB=${KDB_GETENV};
 fi
 
+# ensure ruby plugin finds Ruby bindings without installation
+# (require both the src and the build dir)
+export RUBYLIB="@CMAKE_SOURCE_DIR@/src/bindings/swig/ruby:@CMAKE_BINARY_DIR@/src/bindings/swig/ruby"
+export SAVE=0 # some Rubies do not accept RUBYLIB if SAVE is not 0
+
 #
 # ASSERTIONS
 #
@@ -212,7 +217,8 @@ is_not_rw_storage()
 	-o "x$PLUGIN" = "xpasswd" \
 	-o "x$PLUGIN" = "xsimplespeclang" \
 	-o "x$PLUGIN" = "xmozprefs" \
-	-o "x$PLUGIN" = "xfile"
+	-o "x$PLUGIN" = "xfile" \
+	-o "x$PLUGIN" = "xruby"
 }
 
 is_plugin_available()

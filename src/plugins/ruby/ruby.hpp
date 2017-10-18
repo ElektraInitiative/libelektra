@@ -1,0 +1,30 @@
+/**
+ * @file
+ *
+ * @brief
+ *
+ * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ */
+
+#ifndef ELEKTRA_PLUGIN_RUBY_H
+#define ELEKTRA_PLUGIN_RUBY_H
+
+#define RUBY_PLUGIN_NAME ruby
+#define RUBY_PLUGIN_NAME_STR "ruby"
+
+#define RUBY_PLUGIN_FUNCTION(func) ELEKTRA_PLUGIN_FUNCTION (Ruby, func)
+
+extern "C" {
+#include <kdbplugin.h>
+
+int RUBY_PLUGIN_FUNCTION (Open) (ckdb::Plugin * handle, ckdb::Key * errorKey);
+int RUBY_PLUGIN_FUNCTION (Close) (ckdb::Plugin * handle, ckdb::Key * errorKey);
+int RUBY_PLUGIN_FUNCTION (Get) (ckdb::Plugin * handle, ckdb::KeySet * ks, ckdb::Key * parentKey);
+int RUBY_PLUGIN_FUNCTION (Set) (ckdb::Plugin * handle, ckdb::KeySet * ks, ckdb::Key * parentKey);
+int RUBY_PLUGIN_FUNCTION (Error) (ckdb::Plugin * handle, ckdb::KeySet * ks, ckdb::Key * parentKey);
+int RUBY_PLUGIN_FUNCTION (CheckConf) (ckdb::Key * errorKey, ckdb::KeySet * conf);
+
+ckdb::Plugin * ELEKTRA_PLUGIN_EXPORT (RUBY_PLUGIN_NAME);
+}
+
+#endif
