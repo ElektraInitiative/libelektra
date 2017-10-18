@@ -277,7 +277,7 @@ static VALUE rb_kdb_plugin_define (VALUE self, VALUE name)
 }
 
 /* ensure this Ruby instance is not garbage collected
- * we simply put them in a global constant array, to the GC finds them and doesn't delete them
+ * we simply put them in a global constant array, so the GC finds them and doesn't delete them
  */
 static void add_plugin_instance (VALUE instance)
 {

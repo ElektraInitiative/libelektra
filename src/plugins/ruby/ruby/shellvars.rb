@@ -66,7 +66,7 @@ class Simpleline < FileElement
   end
 
   def order=(value)
-    if value.is_a? Fixnum
+    if value.is_a? Integer
       @order = value
     elsif value.is_a? String and value =~ /^\d+$/
       @order = value.to_i

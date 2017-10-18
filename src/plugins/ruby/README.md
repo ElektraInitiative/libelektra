@@ -5,7 +5,7 @@
 - infos/provides = storage
 - infos/placements = getstorage setstorage
 - infos/recommends =
-- infos/status = configurable maintained memleak
+- infos/status = configurable maintained memleak reviewed tested nodep preview experimental
 - infos/description = Ruby plugin bridge, implement Elektra plugins with Ruby
 
 ## Introduction
