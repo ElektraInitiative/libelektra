@@ -2,10 +2,10 @@ include (LibAddMacros)
 
 # Allows one to add plugins written in haskell, setting up the include paths and
 # libraries automatically.
-# 
+#
 # Expects that plugins make use of cabal as their build system.
-# Expects that 
-# 
+# Expects that
+#
 # MODULES:
 #  the name of the haskell modules to be compiled
 #  by default it assumes there is a single module called Elektra.<pluginName>
