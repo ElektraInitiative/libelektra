@@ -15,13 +15,14 @@ if (GHC_EXECUTABLE)
 		@ONLY
 	)
 
-	add_custom_target (
-		c2hs_haskell ALL
+	add_custom_command (
+		OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/dist/build/libHSlibelektra-haskell-${KDB_VERSION}.a"
 		COMMAND ${CABAL_EXECUTABLE} --ipid=libelektra-haskell-${KDB_VERSION} configure
 		COMMAND ${CABAL_EXECUTABLE} build
-		BYPRODUCTS ${CMAKE_CURRENT_BINARY_DIR}/dist/build/libHSlibelektra-haskell-${KDB_VERSION}.a
 		WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+		DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/libelektra-haskell.cabal"
 	)
+	add_custom_target (c2hs_haskell ALL DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/dist/build/libHSlibelektra-haskell-${KDB_VERSION}.a")
 
 	# build and install it to the cabal db
 	install(CODE "execute_process (COMMAND ${CABAL_EXECUTABLE} install WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})")

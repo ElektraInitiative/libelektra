@@ -117,22 +117,23 @@ macro (add_haskell_plugin target)
 			)
 
 			# register the bindings for the compilation
-			add_custom_target (
-				${target}-register ALL
+			add_custom_command (
+				OUTPUT "${CMAKE_BINARY_DIR}/src/bindings/haskell/${target}-register"
 				COMMAND ${CABAL_EXECUTABLE} register --inplace
+				COMMAND ${CMAKE_COMMAND} ARGS -E touch "${target}-register"
 				WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/src/bindings/haskell
 				DEPENDS c2hs_haskell
 			)
-			add_custom_target (
-				${target} ALL
+			add_custom_command (
+				OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/dist/build/libHS${target}.a
 				# this way it will generate predictable output filenames
 				# and compile the haskell part of this plugin with cabal
 				COMMAND ${CABAL_EXECUTABLE} --ipid=${target} configure
 				COMMAND ${CABAL_EXECUTABLE} build
 				WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-				BYPRODUCTS ${CMAKE_CURRENT_BINARY_DIR}/dist/build/libHS${target}.a
-				DEPENDS ${target}-register
+				DEPENDS "${CMAKE_BINARY_DIR}/src/bindings/haskell/${target}-register"
 			)
+			add_custom_target (${target} DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/dist/build/libHS${target}.a")
 
 			else (GHC_PRIM_LIB)
 				remove_plugin (${target} "GHC_PRIM_LIB not found")
