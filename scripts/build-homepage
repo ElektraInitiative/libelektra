@@ -12,10 +12,13 @@ ROOT_DIR=$PWD
 mkdir -p build
 cd build
 
+INSTALL_PATH="/usr/local/elektra_backend"
+
 C_FLAGS='-D_FORTIFY_SOURCE=2 -Wformat -Werror=format-security -fstack-protector-strong -Wstack-protector -fPIE -pie'
 LD_FLAGS='-Wl,-z,now -Wl,-z,relro'
 
 cmake -DENABLE_ASAN=ON -DBUILD_FULL=OFF -DBUILD_SHARED=ON -DBUILD_STATIC=OFF -DBUILD_DOCUMENTATION=OFF \
+	-DCMAKE_INSTALL_PREFIX="${INSTALL_PATH}"  -DINSTALL_SYSTEM_FILES=OFF \
         -DPLUGINS='ALL;-fstab;-semlock;file;-xerces' \
         -DTOOLS='kdb;rest-backend;rest-frontend' \
         -DCMAKE_C_FLAGS="$C_FLAGS" \
@@ -35,8 +38,14 @@ cp -ra /usr/local/share/elektra/tool_data /usr/local/share/elektra/tool_data_bac
 # if tests were ok, we can install
 make install
 
+
+# use installed binaries and libs
+export PATH=${INSTALL_PATH}/bin:${PATH}
+export LD_LIBRARY_PATH=${INSTALL_PATH}/lib
+
 # now lets first output some version information for the build log
 kdb --version
+
 # print key database for debugging
 #kdb export / simpleini
 
