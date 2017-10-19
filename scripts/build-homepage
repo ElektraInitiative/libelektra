@@ -2,13 +2,27 @@
 # This script is sourced on build server, shebang is for convenience
 # bash is used to have a predictable ulimit behavior
 
+set -e
+set -x
+
 # remember the build directory
 ROOT_DIR=$PWD
 
 # build the applications
 mkdir -p build
 cd build
-cmake -DENABLE_ASAN=ON -DBUILD_FULL=OFF -DBUILD_SHARED=ON -DBUILD_STATIC=OFF -DBUILD_DOCUMENTATION=OFF -DPLUGINS='ALL;-fstab;-semlock;file;xerces' -DTOOLS='kdb;rest-backend;rest-frontend' -DCMAKE_C_FLAGS='-D_FORTIFY_SOURCE=2 -Werror=format-security -fstack-protector-strong -Wstack-protector -fPIE -pie' -DCMAKE_CXX_FLAGS='-D_FORTIFY_SOURCE=2 -Werror=format-security -fstack-protector-strong -Wstack-protector -fPIE -pie' -DCMAKE_EXE_LINKER_FLAGS='-Wl,-z,now -Wl,-z,relro' ..
+
+C_FLAGS='-D_FORTIFY_SOURCE=2 -Wformat -Werror=format-security -fstack-protector-strong -Wstack-protector -fPIE -pie'
+LD_FLAGS='-Wl,-z,now -Wl,-z,relro'
+
+cmake -DENABLE_ASAN=ON -DBUILD_FULL=OFF -DBUILD_SHARED=ON -DBUILD_STATIC=OFF -DBUILD_DOCUMENTATION=OFF \
+        -DPLUGINS='ALL;-fstab;-semlock;file;xerces' \
+        -DTOOLS='kdb;rest-backend;rest-frontend' \
+        -DCMAKE_C_FLAGS="$C_FLAGS" \
+        -DCMAKE_CXX_FLAGS="$C_FLAGS" \
+        -DCMAKE_EXE_LINKER_FLAGS="$LD_FLAGS" \
+        ..
+
 make -j 3
 
 # test the applications (TODO: external fails?)
