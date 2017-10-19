@@ -10,13 +10,44 @@ if (NOT EXISTS "${MANIFEST}")
 endif (NOT EXISTS "${MANIFEST}")
 
 #message (MANIFEST IS ${MANIFEST})
+file (READ "${MANIFEST}" files)
+
+# ==========
+# = Python =
+# ==========
+
+set (PYTHON_GET_MODULES_DIR_COMMAND
+	"from distutils.sysconfig import get_python_lib; print(get_python_lib(True, prefix='${CMAKE_INSTALL_PREFIX}'))")
+
+find_package (Python2Interp 2.7 QUIET)
+find_package (Python2Libs 2.7 QUIET)
+
+if (PYTHON2INTERP_FOUND)
+	execute_process (
+		COMMAND ${PYTHON2_EXECUTABLE} -c "${PYTHON_GET_MODULES_DIR_COMMAND}"
+		OUTPUT_VARIABLE PYTHON2_SITE_PACKAGES
+		OUTPUT_STRIP_TRAILING_WHITESPACE
+	)
+	string (APPEND files "\n${PYTHON2_SITE_PACKAGES}/elektra_gen-${KDB_VERSION}-py2.7.egg-info")
+endif (PYTHON2INTERP_FOUND)
+
+find_package (PythonInterp 3 QUIET)
+find_package (PythonLibs 3 QUIET)
+
+if (PYTHONINTERP_FOUND)
+	execute_process (
+		COMMAND ${PYTHON_EXECUTABLE} -c "${PYTHON_GET_MODULES_DIR_COMMAND}"
+		OUTPUT_VARIABLE PYTHON_SITE_PACKAGES
+		OUTPUT_STRIP_TRAILING_WHITESPACE
+	)
+	string (APPEND files
+		"\n${PYTHON_SITE_PACKAGES}/elektra_gen-${KDB_VERSION}-py${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR}.egg-info")
+endif (PYTHONINTERP_FOUND)
 
 # =========
 # = Files =
 # =========
 
-file (READ "${MANIFEST}" files)
-string (APPEND files "\n/usr/local/lib/python2.7/site-packages/elektra_gen-${KDB_VERSION}-py2.7.egg-info")
 string (REGEX REPLACE "\n" ";" files "${files}")
 foreach (file ${files})
 	message(STATUS "Uninstalling $ENV{DESTDIR}${file}")
@@ -64,8 +95,13 @@ set (DIRECTORIES
 	"${CMAKE_INSTALL_PREFIX}/share/doc/elektra-api"
 	"${CMAKE_INSTALL_PREFIX}/share/elektra"
 	"${CMAKE_INSTALL_PREFIX}/share/share/elektra"
-	"/usr/local/lib/python2.7/site-packages/support"
 )
+if (${PYTHON2_SITE_PACKAGES})
+	list (APPEND DIRECTORIES "${PYTHON2_SITE_PACKAGES}/support")
+endif (${PYTHON2_SITE_PACKAGES})
+if (${PYTHON_SITE_PACKAGES})
+	list (APPEND DIRECTORIES "${PYTHON_SITE_PACKAGES}/support")
+endif (${PYTHON_SITE_PACKAGES})
 
 remove_directories ("${DIRECTORIES}")
 
