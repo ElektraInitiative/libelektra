@@ -10,12 +10,23 @@ if (ENABLE_KDB_TESTING)
 	else()
 		message(SEND_ERROR "no kdb tool found, please enable BUILD_FULL, BUILD_STATIC or BUILD_SHARED")
 	endif ()
-	configure_file (
-		"${CMAKE_CURRENT_SOURCE_DIR}/common.sh"
-		"${CMAKE_CURRENT_BINARY_DIR}/common.sh"
-		@ONLY
-	)
-	file (READ "${CMAKE_CURRENT_BINARY_DIR}/common.sh" INCLUDE_COMMON)
+
+	get_filename_component (PARENT_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR} DIRECTORY)
+	file (COPY "${PARENT_SOURCE_DIR}/include_common.sh.in" DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+	configure_file ("${CMAKE_CURRENT_BINARY_DIR}/include_common.sh.in" "${CMAKE_CURRENT_BINARY_DIR}/include_common.sh" @ONLY)
+
+	file (READ "${CMAKE_CURRENT_BINARY_DIR}/include_common.sh" INCLUDE_COMMON_FILE)
+	string (LENGTH "${USE_CMAKE_KDB_COMMAND}" LENGTH_KDB_COMMAND)
+	if (LENGTH_KDB_COMMAND EQUAL 0)
+		set (INCLUDE_COMMON
+			"${INCLUDE_COMMON_FILE}\n
+			KDBCOMMAND=\"${KDB_COMMAND}\"\n\
+			export PATH=\"`dirname \\\"$KDBCOMMAND\\\"`:$PATH\""
+		)
+	else (LENGTH_KDB_COMMAND EQUAL 0)
+		set (INCLUDE_COMMON "${INCLUDE_COMMON_FILE}\nKDBCOMMAND=\"kdb\"")
+	endif (LENGTH_KDB_COMMAND EQUAL 0)
+
 	configure_file (
 			"${CMAKE_CURRENT_SOURCE_DIR}/shell_recorder.sh"
 			"${CMAKE_CURRENT_BINARY_DIR}/shell_recorder.sh"
