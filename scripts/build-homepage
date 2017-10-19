@@ -25,9 +25,8 @@ cmake -DENABLE_ASAN=ON -DBUILD_FULL=OFF -DBUILD_SHARED=ON -DBUILD_STATIC=OFF -DB
 
 make -j 3
 
-# test the applications (TODO: external fails?)
-#make run_all
-ctest --output-on-failure -E external
+# run tests (exclude tests which write in system paths)
+make run_nokdbtests
 
 # rotate backup of previous website
 rm -rf /usr/local/share/elektra/tool_data_backup
