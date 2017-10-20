@@ -10,7 +10,7 @@ DBFile=
 Storage=
 MountArgs=
 DiffType=File
-OutFile=$(mktemp -t elektraenv.XXXXXXXXX 2>/dev/null || mktemp -t 'elektraenv')
+OutFile=$(mktempfile_elektra)
 
 RETCMP=
 ERRORSCMP=
@@ -22,7 +22,7 @@ STDERRCMP=
 DIFFCMP=
 
 BACKUP=0
-TMPFILE=$(mktemp -t elektraenv.XXXXXXXXX 2>/dev/null || mktemp -t 'elektraenv')
+TMPFILE=$(mktempfile_elektra)
 
 # variables to count up errors and tests
 nbError=0
@@ -230,7 +230,7 @@ run_script()
 	File:)
 		DBFile=$(echo "$line"|cut -d ' ' -f2)
 		if [ "$DBFile" = "File:" ] || [ -z "$DBFile" ]; then
-			DBFile=$(mktemp -t elektraenv.XXXXXXXXX 2>/dev/null || mktemp -t 'elektraenv')
+			DBFile=$(mktempfile_elektra)
 		fi
 		;;
 	Storage:)
