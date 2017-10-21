@@ -30,6 +30,13 @@ matrix:
       compiler: gcc
       env: [ FULL=ON ]
 
+    # HASKELL: Only build Haskell binding and plugin
+
+    - os: osx
+      osx_image: xcode8.3
+      compiler: clang
+      env: [ HASKELL=ON ]
+
     - os: osx
       osx_image: xcode8.3
       compiler: gcc
@@ -55,7 +62,7 @@ before_install:
       brew install ninja
     fi
   - |
-    if [[ "$TRAVIS_OS_NAME" == "osx" && "$FAST" != "ON" ]]; then
+    if [[ "$TRAVIS_OS_NAME" == "osx" && "$FAST" != "ON" && "$HASKELL" != "ON" ]]; then
       rvm install 2.3.1
       rvm use 2.3.1
       gem install test-unit --no-document
@@ -64,9 +71,6 @@ before_install:
         brew link --overwrite gcc
         export CC=gcc-7
         export CXX=g++-7
-        # Install yaml-cpp from source, since otherwise linking fails
-        # We upgrade CMake and Boost first, since otherwise the last Homebrew command would install them from source too
-        brew upgrade cmake; brew upgrade boost; brew install --cc=gcc-7 --c++11 yaml-cpp
       else
         # Linking the Homebrew versions of Botan and yaml-cpp using `gcc` fails on macOS
         brew install botan
@@ -90,6 +94,14 @@ before_install:
       brew install yajl
       pip2 install cheetah # Required by kdb-gen
       export Qt5_DIR=/usr/local/opt/qt5
+    fi
+  - |
+    if [[ "$TRAVIS_OS_NAME" == "osx" && "$HASKELL" == "ON" ]] ; then
+      brew install cabal-install
+      cabal update
+      cabal install happy alex
+      PATH=$PATH:"$HOME/.cabal/bin"
+      cabal install QuickCheck hspec c2hs
     fi
   - |
     if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
@@ -118,6 +130,7 @@ before_script:
       CMAKE_OPT+=("-DCOMMON_FLAGS=-Werror")
     fi
   - plugins="ALL;-jni"
+  - if [[ $HASKELL == ON ]]; then bindings="ALL;haskell"; fi
   - |
     if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
       python2_ver=$(python2 -c 'import sys; print(".".join(map(str, sys.version_info[:2])))') &&                  \
@@ -134,7 +147,7 @@ before_script:
     -GNinja
     -DBUILD_STATIC=OFF
     -DPLUGINS="${plugins:-ALL}"
-    -DBINDINGS=ALL
+    -DBINDINGS="${bindings:-ALL}"
     -DENABLE_DEBUG=ON
     -DTOOLS=ALL
     -DINSTALL_SYSTEM_FILES=OFF
@@ -153,6 +166,10 @@ script:
       ninja run_all
     else
       ninja install
-      ninja run_all
-      kdb run_all
+      # Unfortunately the Haskell tests do not work currently:
+      # https://github.com/ElektraInitiative/libelektra/issues/1631
+      if [[ "$HASKELL" != "ON" ]]; then
+        ninja run_all
+        kdb run_all
+      fi
     fi

@@ -12,7 +12,7 @@ build-type:          Simple
 cabal-version:       >=1.10
 
 library
-  hs-source-dirs:    @CMAKE_CURRENT_SOURCE_DIR@/src
+  hs-source-dirs:    "@CMAKE_CURRENT_SOURCE_DIR@/src"
   exposed-modules:   Elektra.Key
                    , Elektra.KeySet
                    , Elektra.KDB
@@ -26,7 +26,7 @@ library
 
 test-suite libelektra-haskell-test
   type:              exitcode-stdio-1.0
-  hs-source-dirs:    @CMAKE_CURRENT_SOURCE_DIR@/test
+  hs-source-dirs:    "@CMAKE_CURRENT_SOURCE_DIR@/test"
   main-is:           Elektra.hs
   build-depends:     base
                    , libelektra-haskell
@@ -38,7 +38,7 @@ test-suite libelektra-haskell-test
 
 test-suite libelektra-haskell-test-optimized
   type:              exitcode-stdio-1.0
-  hs-source-dirs:    @CMAKE_CURRENT_SOURCE_DIR@/test
+  hs-source-dirs:    "@CMAKE_CURRENT_SOURCE_DIR@/test"
   main-is:           Elektra.hs
   build-depends:     base
                    , libelektra-haskell
@@ -50,7 +50,7 @@ test-suite libelektra-haskell-test-optimized
 
 test-suite libelektra-haskell-test-realworld
   type:              exitcode-stdio-1.0
-  hs-source-dirs:    @CMAKE_CURRENT_SOURCE_DIR@/test
+  hs-source-dirs:    "@CMAKE_CURRENT_SOURCE_DIR@/test"
   main-is:           ElektraRealWorld.hs
   build-depends:     base
                    , libelektra-haskell
@@ -62,7 +62,7 @@ test-suite libelektra-haskell-test-realworld
 
 test-suite libelektra-haskell-test-realworld-optimized
   type:              exitcode-stdio-1.0
-  hs-source-dirs:    @CMAKE_CURRENT_SOURCE_DIR@/test
+  hs-source-dirs:    "@CMAKE_CURRENT_SOURCE_DIR@/test"
   main-is:           ElektraRealWorld.hs
   build-depends:     base
                    , libelektra-haskell
