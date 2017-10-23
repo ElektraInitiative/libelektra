@@ -68,7 +68,7 @@ execute()
 		;;
 	Ini)
 		rm ./previousState 2>/dev/null
-		"$KDBCOMMAND" export "$Mountpoint" simpleini > ./previousState 2>/dev/null
+		"$KDBCOMMAND" export "$Mountpoint" ini > ./previousState 2>/dev/null
 		;;
 	Dump)
 		rm ./previousState 2>/dev/null
@@ -104,7 +104,7 @@ execute()
 		DIFF=$(diff -N --text "${DBFile}" "${DBFile}.1" 2>/dev/null)
 		;;
 	Ini)
-		"$KDBCOMMAND" export $Mountpoint simpleini > ./newState 2>/dev/null
+		"$KDBCOMMAND" export $Mountpoint ini > ./newState 2>/dev/null
 		DIFF=$(diff -N --text ./previousState ./newState 2>/dev/null)
 		rm ./newState 2>/dev/null
 		rm ./previousState 2>/dev/null
