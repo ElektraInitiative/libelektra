@@ -67,11 +67,9 @@ execute()
 		cp "${DBFile}" "${DBFile}.1" 2>/dev/null
 		;;
 	Ini)
-		rm ./previousState 2>/dev/null
 		"$KDBCOMMAND" export "$Mountpoint" ini > ./previousState 2>/dev/null
 		;;
 	Dump)
-		rm ./previousState 2>/dev/null
 		"$KDBCOMMAND" export "$Mountpoint" dump > ./previousState 2>/dev/null
 		;;
 	esac
