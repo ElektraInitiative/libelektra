@@ -34,7 +34,7 @@ execute()
 
 	if [ -z "$Mountpoint" ];
 	then
-		echo "Error: no mountpoint specified in script"
+		echo 'Error: no mountpoint specified in script'
 		exit 1
 	fi
 
@@ -43,7 +43,7 @@ execute()
 		DBFile=$("$KDBCOMMAND" file "$Mountpoint" 2>/dev/null)
 	fi
 
-	if [ "$BACKUP" -eq "1" ];
+	if [ "$BACKUP" -eq '1' ];
 	then
 		"$KDBCOMMAND" export "$Mountpoint" dump > "$TMPFILE" 2>/dev/null
 		if [ "$?" -ne 0 ];
@@ -76,22 +76,22 @@ execute()
 
 	echo "$command"
 
-	printf "%s\n" "CMD: $command" >> "$OutFile"
+	printf '%s\n' "CMD: $command" >> "$OutFile"
 
 	sh -c -f "$command" 2>stderr 1>stdout
 
 	RETVAL="$?"
 
-	printf "%s\n" "RET: $RETVAL" >> "$OutFile"
+	printf '%s\n' "RET: $RETVAL" >> "$OutFile"
 
 	if [ ! -z "$RETCMP" ];
 	then
 		nbTest=$(( nbTest + 1 ))
 		echo "$RETVAL" | grep -Ewq $RETCMP
-		if [ "$?" -ne "0" ];
+		if [ "$?" -ne '0' ];
 		then
-			printf "Return value “%s” does not match “%s”\n" "$RETVAL" "$RETCMP"
-			printf "%s\n" "=== FAILED return value does not match expected pattern $RETCMP" >> "$OutFile"
+			printf 'Return value “%s” does not match “%s”\n' "$RETVAL" "$RETCMP"
+			printf '%s\n' "=== FAILED return value does not match expected pattern $RETCMP" >> "$OutFile"
 			nbError=$(( nbError + 1 ))
 		fi
 	fi
@@ -118,15 +118,15 @@ execute()
 	STDERR=$(cat ./stderr)
 
 
-	printf "%s\n" "STDERR: $STDERR" >> "$OutFile"
+	printf '%s\n' "STDERR: $STDERR" >> "$OutFile"
 	if [ ! -z "$STDERRCMP" ];
 	then
 		nbTest=$(( nbTest + 1 ))
 		echo "$STDERR" | replace_newline_return | grep -Eq --text "$STDERRCMP"
-		if [ "$?" -ne "0" ];
+		if [ "$?" -ne '0' ];
 		then
-			printf "\nERROR - STDERR:\n“%s”\ndoes not match “%s”\n\n" "$STDERR" "$STDERRCMP"
-			printf "%s\n" "=== FAILED stderr does not match expected pattern $STDERRCMP" >> "$OutFile"
+			printf '\nERROR - STDERR:\n“%s”\ndoes not match “%s”\n\n' "$STDERR" "$STDERRCMP"
+			printf '%s\n' "=== FAILED stderr does not match expected pattern $STDERRCMP" >> "$OutFile"
 			nbError=$(( nbError + 1 ))
 		fi
 	fi
@@ -135,41 +135,41 @@ execute()
 
 	STDOUT=$(cat ./stdout)
 
-	printf "%s\n" "STDOUT: $STDOUT" >> "$OutFile"
+	printf '%s\n' "STDOUT: $STDOUT" >> "$OutFile"
 	if [ ! -z "$STDOUTCMP" ];
 	then
 		nbTest=$(( nbTest + 1 ))
-		printf "%s" "$STDOUT" | replace_newline_return | grep -Eq --text "^${STDOUTCMP}$"
-		if [ "$?" -ne "0" ];
+		printf '%s' "$STDOUT" | replace_newline_return | grep -Eq --text "^${STDOUTCMP}$"
+		if [ "$?" -ne '0' ];
 		then
-			printf "\nERROR - STDOUT:\n“%s”\ndoes not match “%s”\n\n" "$STDOUT" "$STDOUTCMP"
-			printf "%s\n" "=== FAILED stdout does not match expected pattern $STDOUTCMP" >> "$OutFile"
+			printf '\nERROR - STDOUT:\n“%s”\ndoes not match “%s”\n\n' "$STDOUT" "$STDOUTCMP"
+			printf '%s\n' "=== FAILED stdout does not match expected pattern $STDOUTCMP" >> "$OutFile"
 			nbError=$(( nbError + 1 ))
 		fi
 	fi
 	if [ ! -z "$STDOUTRECMP" ];
 	then
 		nbTest=$(( nbTest + 1 ))
-		printf "%s" "$STDOUT" | replace_newline_return | grep -Eq --text "$STDOUTRECMP"
-		if [ "$?" -ne "0" ];
+		printf '%s' "$STDOUT" | replace_newline_return | grep -Eq --text "$STDOUTRECMP"
+		if [ "$?" -ne '0' ];
 		then
-			printf "\nERROR - STDOUT:\n“%s”\ndoes not match “%s”\n\n" "$STDOUT" "$STDOUTRECMP"
-			printf "%s\n" "=== FAILED stdout does not match expected pattern $STDOUTRECMP" >> "$OutFile"
+			printf '\nERROR - STDOUT:\n“%s”\ndoes not match “%s”\n\n' "$STDOUT" "$STDOUTRECMP"
+			printf '%s\n' "=== FAILED stdout does not match expected pattern $STDOUTRECMP" >> "$OutFile"
 			nbError=$(( nbError + 1 ))
 		fi
 	fi
 
-	WARNINGS=$(echo "$STDERR" | sed -nE  "s/Warning number: (\d*)/\1/p" | tr '\n' ',')
+	WARNINGS=$(echo "$STDERR" | sed -nE  's/Warning number: (\d*)/\1/p' | tr '\n' ',')
 
-	printf "%s\n" "WARNINGS: $WARNINGS" >> "$OutFile"
+	printf '%s\n' "WARNINGS: $WARNINGS" >> "$OutFile"
 	if [ ! -z "$WARNINGSCMP" ];
 	then
 		nbTest=$(( nbTest + 1 ))
 		echo "$WARNINGS" | replace_newline_return | grep -Eq --text "$WARNINGSCMP"
-		if [ "$?" -ne "0" ];
+		if [ "$?" -ne '0' ];
 		then
-			printf "\nERROR - WARNINGS:\n“%s”\ndoes not match “%s”\n\n" "$WARNINGS" "$WARNINGSCMP"
-			printf "%s\n" "=== FAILED Warnings do not match expected pattern $WARNINGSCMP" >> "$OutFile"
+			printf '\nERROR - WARNINGS:\n“%s”\ndoes not match “%s”\n\n' "$WARNINGS" "$WARNINGSCMP"
+			printf '%s\n' "=== FAILED Warnings do not match expected pattern $WARNINGSCMP" >> "$OutFile"
 			nbError=$(( nbError + 1 ))
 		fi
 	fi
@@ -177,33 +177,33 @@ execute()
 
 
 
-	ERRORS=$(echo "$STDERR" | sed -nE  "s/error \(\#(\d*)/\1/p" | tr '\n' ',')
+	ERRORS=$(echo "$STDERR" | sed -nE  's/error \(\#(\d*)/\1/p' | tr '\n' ',')
 
 
-	printf "%s\n" "ERRORS: $ERRORS" >> "$OutFile"
+	printf '%s\n' "ERRORS: $ERRORS" >> "$OutFile"
 	if [ ! -z "$ERRORSCMP" ];
 	then
 		nbTest=$(( nbTest + 1 ))
 		echo "$ERRORS" | replace_newline_return | grep -Eq --text "$ERRORSCMP"
-		if [ "$?" -ne "0" ];
+		if [ "$?" -ne '0' ];
 		then
-			printf "\nERROR - ERRORS:\n“%s”\ndoes not match “%s”\n\n" "$ERRORS" "$ERRORSCMP"
-			printf "%s\n" "=== FAILED Errors do not match expected pattern $ERRORSCMP" >> "$OutFile"
+			printf '\nERROR - ERRORS:\n“%s”\ndoes not match “%s”\n\n' "$ERRORS" "$ERRORSCMP"
+			printf '%s\n' "=== FAILED Errors do not match expected pattern $ERRORSCMP" >> "$OutFile"
 			nbError=$(( nbError + 1 ))
 		fi
 	fi
 
 
 
-	printf "%s\n" "DIFF: $DIFF" >> "$OutFile"
+	printf '%s\n' "DIFF: $DIFF" >> "$OutFile"
 	if [ ! -z "$DIFFCMP" ];
 	then
 		nbTest=$(( nbTest + 1 ))
 		echo "$DIFF" | replace_newline_return | grep -Eq --text "$DIFFCMP"
-		if [ "$?" -ne "0" ];
+		if [ "$?" -ne '0' ];
 		then
-			printf "\nERROR - Changes to %s:\n“%s”\ndo not match “%s”\n\n" "$DBFile" "$DIFFCMP" "$DIFF"
-			printf "%s\n" "=== FAILED changes to database file ($DBFile) do not match $DIFFCMP" >> "$OutFile"
+			printf '\nERROR - Changes to %s:\n“%s”\ndo not match “%s”\n\n' "$DBFile" "$DIFFCMP" "$DIFF"
+			printf '%s\n' "=== FAILED changes to database file ($DBFile) do not match $DIFFCMP" >> "$OutFile"
 			nbError=$(( nbError + 1 ))
 		fi
 	fi
@@ -218,7 +218,7 @@ run_script()
 	do
 	OP=
 	ARG=
-	cmd=$(printf "%s" "$line"|cut -d ' ' -f1)
+	cmd=$(printf '%s' "$line"|cut -d ' ' -f1)
 	case "$cmd" in
 	Mountpoint:)
 		Mountpoint=$(echo "$line"|cut -d ' ' -f2)
@@ -251,7 +251,7 @@ run_script()
 		WARNINGSCMP=$(echo "$line"|cut -d ' ' -f2-)
 		;;
 	STDOUT:)
-		STDOUTCMP=$(printf "%s" "$line"|cut -d ' ' -f2-)
+		STDOUTCMP=$(printf '%s' "$line"|cut -d ' ' -f2-)
 		;;
 	STDOUT-REGEX:)
 		STDOUTRECMP=$(echo "$line"|cut -d ' ' -f2-)
@@ -267,7 +267,7 @@ run_script()
 		;;
 	\<)
 		OP="$cmd"
-		ARG=$(printf "%s" "$line"|cut -d ' ' -f2-)
+		ARG=$(printf '%s' "$line"|cut -d ' ' -f2-)
 		;;
 	esac
 	if [ "$OP" = "<" ];
@@ -287,9 +287,9 @@ run_script()
 
 rm -f ./stdout ./stderr
 
-if [ "$#" -lt "1" ] || [ "$#" -gt "2" ];
+if [ "$#" -lt '1' ] || [ "$#" -gt '2' ];
 then
-	echo "Usage: ./shell_recorder inputscript [protocol to compare]"
+	echo 'Usage: ./shell_recorder inputscript [protocol to compare]'
 	rm "$OutFile"
 	exit 0
 fi
@@ -306,24 +306,24 @@ rm -rf "${DBFile}.1"
 
 EVAL=0
 
-if [ "$#" -eq "1" ];
+if [ "$#" -eq '1' ];
 then
-	printf "%s" "shell_recorder $1 RESULTS: $nbTest test(s) done"
+	printf '%s' "shell_recorder $1 RESULTS: $nbTest test(s) done"
 	echo " $nbError error(s)."
 	EVAL=$nbError
 fi
 
-if [ "$#" -eq "2" ];
+if [ "$#" -eq '2' ];
 then
 	RESULT=$(diff -N --text "$2" "$OutFile" 2>/dev/null)
-	if [ "$?" -ne "0" ];
+	if [ "$?" -ne '0' ];
 	then
-		printf "%s\n" "=======================================\nReplay test failed, protocols differ"
+		printf '%s\n' '=======================================\nReplay test failed, protocols differ'
 		echo "$RESULT"
-		printf "%s\n" "\n\n"
+		printf '%s\n' '\n\n'
 		EVAL=1
 		else
-		printf "%s\n" "=======================================\nReplay test succeeded"
+		printf '%s\n' '=======================================\nReplay test succeeded'
 	fi
 fi
 
