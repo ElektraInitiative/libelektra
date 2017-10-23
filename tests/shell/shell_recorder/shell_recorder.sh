@@ -319,7 +319,7 @@ then
 		echo "$RESULT"
 		printf '\n\n\n'
 		EVAL=1
-		else
+	else
 		printf '=======================================\nReplay test succeeded\n'
 	fi
 fi
