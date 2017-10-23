@@ -167,7 +167,7 @@ execute()
 	if [ ! -z "$WARNINGSCMP" ];
 	then
 		nbTest=$(( nbTest + 1 ))
-		echo "$WARNINGS" | replace_newline_return | grep -Eq --text "($WARNINGSCMP)"
+		echo "$WARNINGS" | replace_newline_return | grep -Eq --text "$WARNINGSCMP"
 		if [ "$?" -ne "0" ];
 		then
 			printf "\nERROR - WARNINGS:\n“%s”\ndoes not match “%s”\n\n" "$WARNINGS" "$WARNINGSCMP"
@@ -186,7 +186,7 @@ execute()
 	if [ ! -z "$ERRORSCMP" ];
 	then
 		nbTest=$(( nbTest + 1 ))
-		echo "$ERRORS" | replace_newline_return | grep -Eq --text "($ERRORSCMP)"
+		echo "$ERRORS" | replace_newline_return | grep -Eq --text "$ERRORSCMP"
 		if [ "$?" -ne "0" ];
 		then
 			printf "\nERROR - ERRORS:\n“%s”\ndoes not match “%s”\n\n" "$ERRORS" "$ERRORSCMP"
@@ -201,7 +201,7 @@ execute()
 	if [ ! -z "$DIFFCMP" ];
 	then
 		nbTest=$(( nbTest + 1 ))
-		echo "$DIFF" | replace_newline_return | grep -Eq --text "($DIFFCMP)"
+		echo "$DIFF" | replace_newline_return | grep -Eq --text "$DIFFCMP"
 		if [ "$?" -ne "0" ];
 		then
 			printf "\nERROR - Changes to %s:\n“%s”\ndo not match “%s”\n\n" "$DBFile" "$DIFFCMP" "$DIFF"
