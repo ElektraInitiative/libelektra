@@ -63,7 +63,7 @@ execute()
 
 	case "$DiffType" in
 	File)
-		rm "${DBFile}.1" 2>/dev/null
+		rm -f "${DBFile}.1"
 		cp "${DBFile}" "${DBFile}.1" 2>/dev/null
 		;;
 	Ini)
@@ -106,14 +106,12 @@ execute()
 	Ini)
 		"$KDBCOMMAND" export $Mountpoint ini > ./newState 2>/dev/null
 		DIFF=$(diff -N --text ./previousState ./newState 2>/dev/null)
-		rm ./newState 2>/dev/null
-		rm ./previousState 2>/dev/null
+		rm -f ./newState ./previousState
 		;;
 	Dump)
 		"$KDBCOMMAND" export $Mountpoint dump > ./newState 2>/dev/null
 		DIFF=$(diff -N --text ./previousState ./newState 2>/dev/null)
-		rm ./newState 2>/dev/null
-		rm ./previousState 2>/dev/null
+		rm -f ./newState ./previousState
 		;;
 	esac
 
@@ -289,8 +287,7 @@ run_script()
 	done < "$FILE"
 }
 
-rm ./stdout 2>/dev/null
-rm ./stderr 2>/dev/null
+rm -f ./stdout ./stderr
 
 if [ "$#" -lt "1" ] || [ "$#" -gt "2" ];
 then
@@ -307,7 +304,7 @@ run_script
 
 "$KDBCOMMAND" rm -r "$Mountpoint" 2>/dev/null
 "$KDBCOMMAND" import "$Mountpoint" dump 2>/dev/null < "$TMPFILE"
-rm "${DBFile}.1" 2>/dev/null
+rm -rf "${DBFile}.1"
 
 EVAL=0
 
@@ -333,8 +330,7 @@ then
 fi
 
 # this should be in temporary files, and/or in a trap exit
-rm ./stdout 2>/dev/null
-rm ./stderr 2>/dev/null
+rm -f ./stdout ./stderr
 
 rm "${TMPFILE}"
 exit "$EVAL"
