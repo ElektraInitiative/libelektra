@@ -128,10 +128,11 @@ macro (add_haskell_plugin target)
 				OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/dist/build/libHS${target}.a
 				# this way it will generate predictable output filenames
 				# and compile the haskell part of this plugin with cabal
-				COMMAND ${CABAL_EXECUTABLE} --ipid=${target} configure
+				COMMAND ${CABAL_EXECUTABLE} --ipid=${target} --enable-shared configure
 				COMMAND ${CABAL_EXECUTABLE} build
 				WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
 				DEPENDS "${CMAKE_BINARY_DIR}/src/bindings/haskell/${target}-register"
+				"${CMAKE_SOURCE_DIR}/src/plugins/haskell/Elektra/Haskell.hs"
 			)
 			add_custom_target (${target} DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/dist/build/libHS${target}.a")
 

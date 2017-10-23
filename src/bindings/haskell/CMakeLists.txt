@@ -17,33 +17,59 @@ if (GHC_EXECUTABLE)
 
 	add_custom_command (
 		OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/dist/build/libHSlibelektra-haskell-${KDB_VERSION}.a"
-		COMMAND ${CABAL_EXECUTABLE} --ipid=libelektra-haskell-${KDB_VERSION} configure
+		"${CMAKE_CURRENT_BINARY_DIR}/dist/build/testhaskell_basic/testhaskell_basic"
+		"${CMAKE_CURRENT_BINARY_DIR}/dist/build/testhaskell_basic_optimized/testhaskell_basic_optimized"
+		"${CMAKE_CURRENT_BINARY_DIR}/dist/build/testhaskell_realworld/testhaskell_realworld"
+		"${CMAKE_CURRENT_BINARY_DIR}/dist/build/testhaskell_realworld_optimized/testhaskell_realworld_optimized"
+		COMMAND ${CABAL_EXECUTABLE} --ipid=libelektra-haskell-${KDB_VERSION} --enable-tests --enable-shared configure
 		COMMAND ${CABAL_EXECUTABLE} build
 		WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
 		DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/libelektra-haskell.cabal"
+		"${CMAKE_CURRENT_SOURCE_DIR}/src/Elektra/Key.chs"
+		"${CMAKE_CURRENT_SOURCE_DIR}/src/Elektra/KeySet.chs"
+		"${CMAKE_CURRENT_SOURCE_DIR}/src/Elektra/Plugin.chs"
+		"${CMAKE_CURRENT_SOURCE_DIR}/src/Elektra/KDB.chs"
+		"${CMAKE_CURRENT_SOURCE_DIR}/test/Elektra.hs"
+		"${CMAKE_CURRENT_SOURCE_DIR}/test/ElektraRealWorld.hs"
+		elektra
 	)
 	add_custom_target (c2hs_haskell ALL DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/dist/build/libHSlibelektra-haskell-${KDB_VERSION}.a")
 
 	# build and install it to the cabal db
-	install(CODE "execute_process (COMMAND ${CABAL_EXECUTABLE} install WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})")
+	install (CODE "execute_process (COMMAND ${CABAL_EXECUTABLE} install WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})")
 
 	if (BUILD_TESTING)
-		# also test it with cabal
+		# test it using the executables, so cmake takes care about the rpaths
 		add_test (
-			NAME testhaskell_cabal
-			COMMAND ${CABAL_EXECUTABLE} test libelektra-haskell-test libelektra-haskell-test-optimized
-			WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+			NAME testhaskell_basic
+			COMMAND "${CMAKE_CURRENT_BINARY_DIR}/dist/build/testhaskell_basic/testhaskell_basic"
 		)
-		set_property (TEST testhaskell_cabal PROPERTY LABELS bindings)
+		set_property (TEST testhaskell_basic PROPERTY LABELS bindings)
+		set_property (TEST testhaskell_basic PROPERTY ENVIRONMENT "LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib")
+
+		add_test (
+			NAME testhaskell_basic_optimized
+			COMMAND "${CMAKE_CURRENT_BINARY_DIR}/dist/build/testhaskell_basic_optimized/testhaskell_basic_optimized"
+		)
+		set_property (TEST testhaskell_basic_optimized PROPERTY LABELS bindings)
+		set_property (TEST testhaskell_basic_optimized PROPERTY ENVIRONMENT "LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib")
 
 		if (ENABLE_KDB_TESTING)
 			add_test (
-				NAME testhaskell_realworld_cabal
-				COMMAND ${CABAL_EXECUTABLE} test libelektra-haskell-test-realworld libelektra-haskell-test-realworld-optimized
-				WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+				NAME testhaskell_realworld
+				COMMAND "${CMAKE_CURRENT_BINARY_DIR}/dist/build/testhaskell_realworld/testhaskell_realworld"
 			)
-			set_property (TEST testhaskell_realworld_cabal PROPERTY LABELS bindings)
-			set_property (TEST testhaskell_realworld_cabal APPEND PROPERTY LABELS kdbtests)
+			set_property (TEST testhaskell_realworld PROPERTY LABELS bindings)
+			set_property (TEST testhaskell_realworld APPEND PROPERTY LABELS kdbtests)
+			set_property (TEST testhaskell_realworld PROPERTY ENVIRONMENT "LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib")
+
+			add_test (
+				NAME testhaskell_realworld_optimized
+				COMMAND "${CMAKE_CURRENT_BINARY_DIR}/dist/build/testhaskell_realworld_optimized/testhaskell_realworld_optimized"
+			)
+			set_property (TEST testhaskell_realworld_optimized PROPERTY LABELS bindings)
+			set_property (TEST testhaskell_realworld_optimized APPEND PROPERTY LABELS kdbtests)
+			set_property (TEST testhaskell_realworld_optimized PROPERTY ENVIRONMENT "LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib")
 		endif (ENABLE_KDB_TESTING)
 	endif (BUILD_TESTING)
 else (GHC_EXECUTABLE)

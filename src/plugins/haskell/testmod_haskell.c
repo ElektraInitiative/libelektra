@@ -18,9 +18,9 @@ static void test_basics (void)
 {
 	printf ("test basics\n");
 
-	Key * parentKey = keyNew ("user/tests/haskelltemplate", KEY_END);
+	Key * parentKey = keyNew ("user/tests/haskell", KEY_END);
 	KeySet * conf = ksNew (0, KS_END);
-	PLUGIN_OPEN ("haskelltemplate");
+	PLUGIN_OPEN ("haskell");
 
 	KeySet * ks = ksNew (0, KS_END);
 
