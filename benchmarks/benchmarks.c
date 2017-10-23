@@ -89,7 +89,7 @@ static void shapeDefaultDel (void * data);
 static void shapefDefault (const size_t initSize, size_t size, size_t level, int32_t * seed, KsShapeFunctionReturn * ret, void * data);
 
 const char * const alphabetnumbers = "aAbBcCdDeEfFgGhHiIjJkKlLmMnNoOpPqQrRsStTuUvVwWxXyYzZ0123456789";
-const char * const alphabetspecial = "^!\"$%&/{([)]=} ?\\+*~#';,:.-_|<>";
+const char * const alphabetspecial = "^!\"$`%&/{([)]=} %?\\+*~#';,:§.-_|<>¸¬½¼³²¹ł€¶øæßðđł˝«»¢“”nµ─·";
 
 
 /**
