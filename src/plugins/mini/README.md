@@ -132,7 +132,8 @@ kdb lsmeta /examples/mini
 kdb get /examples/mini/key
 #> "multi
 
-# Undo modifications to the key database
+# Undo modifications
+rm stderr.txt
 kdb rm -r /examples/mini
 sudo kdb umount /examples/mini
 ```
