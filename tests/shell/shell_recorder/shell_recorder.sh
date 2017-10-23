@@ -235,9 +235,6 @@ run_script()
 	MountArgs:)
 		MountArgs=$(echo "$line"|cut -d ' ' -f2-)
 		;;
-	Echo:)
-		echo "$line"|cut -d ' ' -f2-
-		;;
 	DiffType:)
 		DiffType=$(echo "$line"|cut -d ' ' -f2)
 		;;
