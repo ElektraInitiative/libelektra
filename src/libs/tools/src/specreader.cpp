@@ -162,8 +162,17 @@ SpecBackendBuilder SpecMountpointReader::readMountpointSpecification (KeySet con
 
 void SpecReader::readSpecification (KeySet const & cks)
 {
-	KeySet ks (cks);
+	KeySet ks;
 	Key mp;
+
+	// only accept keys in 'spec' namespace
+	for (Key k : cks)
+	{
+		if (k.isSpec ())
+		{
+			ks.append (k);
+		}
+	}
 
 	ks.rewind (); // we need old fashioned loop, because it can handle ks.cut during iteration
 	for (Key k = ks.next (); k; k = ks.next ())
