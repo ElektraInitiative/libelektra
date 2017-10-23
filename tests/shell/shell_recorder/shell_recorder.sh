@@ -206,7 +206,7 @@ execute()
 		echo "$DIFF" | replace_newline_return | grep -Eq --text "($DIFFCMP)"
 		if [ "$?" -ne "0" ];
 		then
-			printf "\nERROR - Changes to %s:\n“%s”\ndo not match “%s”\n\n" "$DBFile" "$DIFFCMP"
+			printf "\nERROR - Changes to %s:\n“%s”\ndo not match “%s”\n\n" "$DBFile" "$DIFFCMP" "$DIFF"
 			printf "%s\n" "=== FAILED changes to database file ($DBFile) do not match $DIFFCMP" >> "$OutFile"
 			nbError=$(( nbError + 1 ))
 		fi
