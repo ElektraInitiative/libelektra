@@ -997,10 +997,4 @@ regex_escape () {
 
 
 
-
-
-
-
-
-
 # empty lines up to 1000 so that line numbers are more useful
