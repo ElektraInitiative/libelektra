@@ -56,10 +56,10 @@ execute()
 	fi
 
 	[ -z "$Storage" ] && Storage="dump"
-	command=$(echo "$proto" | sed "s~\$Mountpoint~${Mountpoint}~g")
-	command=$(echo "$command" | sed "s~\$File~${DBFile}~g")
-	command=$(echo "$command" | sed "s~\$Storage~${Storage}~g")
-	command=$(echo "$command" | sed "s~\$MountArgs~${MountArgs}~g")
+	command=$(echo "$proto" | sed -e "s~\$Mountpoint~${Mountpoint}~g" \
+	                              -e "s~\$File~${DBFile}~g"           \
+	                              -e "s~\$Storage~${Storage}~g"       \
+	                              -e "s~\$MountArgs~${MountArgs}~g")
 
 	case "$DiffType" in
 	File)
