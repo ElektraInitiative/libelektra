@@ -104,7 +104,7 @@ execute()
 
 	printf 'RET: %s\n' "$RETVAL" >> "$OutFile"
 
-	if [ ! -z "$RETCMP" ];
+	if [ -n "$RETCMP" ];
 	then
 		nbTest=$(( nbTest + 1 ))
 		if ! echo "$RETVAL" | grep -Ewq $RETCMP;
@@ -123,7 +123,7 @@ execute()
 
 
 	printf 'STDERR: %s\n' "$STDERR" >> "$OutFile"
-	if [ ! -z "$STDERRCMP" ];
+	if [ -n "$STDERRCMP" ];
 	then
 		nbTest=$(( nbTest + 1 ))
 		if ! echo "$STDERR" | replace_newline_return | grep -Eq --text "$STDERRCMP";
@@ -141,7 +141,7 @@ execute()
 	STDOUT=$(cat ./stdout)
 
 	printf '%s\n' "STDOUT: $STDOUT" >> "$OutFile"
-	if [ ! -z "$STDOUTCMP" ];
+	if [ -n "$STDOUTCMP" ];
 	then
 		nbTest=$(( nbTest + 1 ))
 		if ! printf '%s' "$STDOUT" | replace_newline_return | grep -Fx --text "$STDOUTCMP";
@@ -156,7 +156,7 @@ execute()
 # = STDOUT-REGEX =
 # ================
 
-	if [ ! -z "$STDOUTRECMP" ];
+	if [ -n "$STDOUTRECMP" ];
 	then
 		nbTest=$(( nbTest + 1 ))
 		if !  printf '%s' "$STDOUT" | replace_newline_return | grep -Eq --text "$STDOUTRECMP";
@@ -174,7 +174,7 @@ execute()
 	WARNINGS=$(echo "$STDERR" | sed -nE  's/Warning number: (\d*)/\1/p' | tr '\n' ',')
 
 	printf 'WARNINGS: %s\n' "$WARNINGS" >> "$OutFile"
-	if [ ! -z "$WARNINGSCMP" ];
+	if [ -n "$WARNINGSCMP" ];
 	then
 		nbTest=$(( nbTest + 1 ))
 		if ! echo "$WARNINGS" | replace_newline_return | grep -Eq --text "$WARNINGSCMP";
@@ -193,7 +193,7 @@ execute()
 
 
 	printf 'ERRORS: %s\n' "$ERRORS" >> "$OutFile"
-	if [ ! -z "$ERRORSCMP" ];
+	if [ -n "$ERRORSCMP" ];
 	then
 		nbTest=$(( nbTest + 1 ))
 		if ! echo "$ERRORS" | replace_newline_return | grep -Eq --text "$ERRORSCMP";
@@ -209,7 +209,7 @@ execute()
 # ========
 
 	printf '%s\n' "DIFF: $DIFF" >> "$OutFile"
-	if [ ! -z "$DIFFCMP" ];
+	if [ -n "$DIFFCMP" ];
 	then
 		nbTest=$(( nbTest + 1 ))
 		if ! echo "$DIFF" | replace_newline_return | grep -Eq --text "$DIFFCMP";
