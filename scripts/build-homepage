@@ -43,7 +43,7 @@ make install
 
 # use installed binaries and libs
 export PATH=${INSTALL_PATH}/bin:${PATH}
-export LD_LIBRARY_PATH=${INSTALL_PATH}/lib
+export LD_LIBRARY_PATH=${INSTALL_PATH}/lib:${INSTALL_PATH}/lib/elektra
 
 # now lets first output some version information for the build log
 kdb --version
@@ -58,9 +58,9 @@ BUILD_ID=dontKillMe
 ulimit -c unlimited
 
 # place for core dumps (name by: echo "core_%t_%p" > /proc/sys/kernel/core_pattern)
-cd /var/lib/jenkins
+cd ${INSTALL_PATH}
 
-pstree
+ps -ef
 printf "Old PID was: "
 cat /run/elektra-rest-backend.pid || /bin/true
 echo
@@ -109,5 +109,5 @@ cp $ROOT_DIR/doc/api_blueprints/snippet-sharing.apib /srv/libelektra/restapi/$EL
 rm /srv/libelektra/restapi/current
 ln -s /srv/libelektra/restapi/$ELEKTRA_VERSION /srv/libelektra/restapi/current
 
-pstree
+ps -ef
 ulimit -a
