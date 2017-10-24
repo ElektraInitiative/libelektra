@@ -45,8 +45,7 @@ execute()
 
 	if [ "$BACKUP" -eq '1' ];
 	then
-		"$KDBCOMMAND" export "$Mountpoint" dump > "$TMPFILE" 2>/dev/null
-		if [ "$?" -ne 0 ];
+		if ! "$KDBCOMMAND" export "$Mountpoint" dump > "$TMPFILE" 2>/dev/null;
 		then
 			echo "ERROR: Failed to backup $Mountpoint\nStopping testcase."
 			exit 1
@@ -87,8 +86,7 @@ execute()
 	if [ ! -z "$RETCMP" ];
 	then
 		nbTest=$(( nbTest + 1 ))
-		echo "$RETVAL" | grep -Ewq $RETCMP
-		if [ "$?" -ne '0' ];
+		if ! echo "$RETVAL" | grep -Ewq $RETCMP;
 		then
 			printf 'Return value “%s” does not match “%s”\n' "$RETVAL" "$RETCMP"
 			printf '=== FAILED return value does not match expected pattern %s\n' "$RETCMP" >> "$OutFile"
@@ -122,8 +120,7 @@ execute()
 	if [ ! -z "$STDERRCMP" ];
 	then
 		nbTest=$(( nbTest + 1 ))
-		echo "$STDERR" | replace_newline_return | grep -Eq --text "$STDERRCMP"
-		if [ "$?" -ne '0' ];
+		if ! echo "$STDERR" | replace_newline_return | grep -Eq --text "$STDERRCMP";
 		then
 			printf '\nERROR - STDERR:\n“%s”\ndoes not match “%s”\n\n' "$STDERR" "$STDERRCMP"
 			printf '=== FAILED stderr does not match expected pattern %s\n' "$STDERRCMP" >> "$OutFile"
@@ -139,8 +136,7 @@ execute()
 	if [ ! -z "$STDOUTCMP" ];
 	then
 		nbTest=$(( nbTest + 1 ))
-		printf '%s' "$STDOUT" | replace_newline_return | grep -Eq --text "^${STDOUTCMP}$"
-		if [ "$?" -ne '0' ];
+		if ! printf '%s' "$STDOUT" | replace_newline_return | grep -Eq --text "^${STDOUTCMP}$";
 		then
 			printf '\nERROR - STDOUT:\n“%s”\ndoes not match “%s”\n\n' "$STDOUT" "$STDOUTCMP"
 			printf '=== FAILED stdout does not match expected pattern %s\n' "$STDOUTCMP" >> "$OutFile"
@@ -150,8 +146,7 @@ execute()
 	if [ ! -z "$STDOUTRECMP" ];
 	then
 		nbTest=$(( nbTest + 1 ))
-		printf '%s' "$STDOUT" | replace_newline_return | grep -Eq --text "$STDOUTRECMP"
-		if [ "$?" -ne '0' ];
+		if !  printf '%s' "$STDOUT" | replace_newline_return | grep -Eq --text "$STDOUTRECMP";
 		then
 			printf '\nERROR - STDOUT:\n“%s”\ndoes not match “%s”\n\n' "$STDOUT" "$STDOUTRECMP"
 			printf '=== FAILED stdout does not match expected pattern %s\n' "$STDOUTRECMP" >> "$OutFile"
@@ -165,8 +160,7 @@ execute()
 	if [ ! -z "$WARNINGSCMP" ];
 	then
 		nbTest=$(( nbTest + 1 ))
-		echo "$WARNINGS" | replace_newline_return | grep -Eq --text "$WARNINGSCMP"
-		if [ "$?" -ne '0' ];
+		if ! echo "$WARNINGS" | replace_newline_return | grep -Eq --text "$WARNINGSCMP";
 		then
 			printf '\nERROR - WARNINGS:\n“%s”\ndoes not match “%s”\n\n' "$WARNINGS" "$WARNINGSCMP"
 			printf '=== FAILED Warnings do not match expected pattern %s\n' "$WARNINGSCMP" >> "$OutFile"
@@ -184,8 +178,7 @@ execute()
 	if [ ! -z "$ERRORSCMP" ];
 	then
 		nbTest=$(( nbTest + 1 ))
-		echo "$ERRORS" | replace_newline_return | grep -Eq --text "$ERRORSCMP"
-		if [ "$?" -ne '0' ];
+		if ! echo "$ERRORS" | replace_newline_return | grep -Eq --text "$ERRORSCMP";
 		then
 			printf '\nERROR - ERRORS:\n“%s”\ndoes not match “%s”\n\n' "$ERRORS" "$ERRORSCMP"
 			printf '=== FAILED Errors do not match expected pattern %s\n' "$ERRORSCMP" >> "$OutFile"
@@ -199,8 +192,7 @@ execute()
 	if [ ! -z "$DIFFCMP" ];
 	then
 		nbTest=$(( nbTest + 1 ))
-		echo "$DIFF" | replace_newline_return | grep -Eq --text "$DIFFCMP"
-		if [ "$?" -ne '0' ];
+		if ! echo "$DIFF" | replace_newline_return | grep -Eq --text "$DIFFCMP";
 		then
 			printf '\nERROR - Changes to %s:\n“%s”\ndo not match “%s”\n\n' "$DBFile" "$DIFFCMP" "$DIFF"
 			printf '=== FAILED changes to database file (%s) do not match %s\n' "$DBFile" "$DIFFCMP" >> "$OutFile"
