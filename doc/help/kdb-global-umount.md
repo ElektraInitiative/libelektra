@@ -27,7 +27,7 @@ Unmount a global plugin from the key database.
 sudo kdb global-mount tracer
 
 sudo kdb global-mount
-# STDOUT-REGEX: .*tracer\nspec.*
+# STDOUT-REGEX: .*spec⏎tracer.*
 
 sudo kdb global-umount tracer
 

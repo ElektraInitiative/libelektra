@@ -68,7 +68,7 @@ kdb cp system/elektra/modules/dump/exports/unserialise user/examples/base64/bina
 
 # Print binary data
 kdb get user/examples/base64/binary
-# STDOUT-REGEX: ^(\\\\x[0-9a-f]{1,2})+$
+# STDOUT-REGEX: ^(\\x[0-9a-f]{1,2})+$
 
 # The value inside the configuration file is encoded by the Base64 plugin
 kdb file user/examples/base64 | xargs cat

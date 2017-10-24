@@ -204,59 +204,72 @@ execute()
 	echo >> "$OutFile"
 }
 
+tail()
+{
+	printf '%s' "$*" | cut -d ' ' -f2-
+}
+
+first() {
+	printf '%s' "$*" | cut -d ' ' -f1
+}
+
+second() {
+	printf '%s' "$*" | cut -d ' ' -f2
+}
+
 run_script()
 {
 	while read -r line;
 	do
 	OP=
 	ARG=
-	cmd=$(printf '%s' "$line"|cut -d ' ' -f1)
+	cmd=$(first "$line")
 	case "$cmd" in
 	Mountpoint:)
-		Mountpoint=$(echo "$line"|cut -d ' ' -f2)
+		Mountpoint=$(second "$line")
 		;;
 	File:)
-		DBFile=$(echo "$line"|cut -d ' ' -f2)
+		DBFile=$(second "$line")
 		if [ "$DBFile" = "File:" ] || [ -z "$DBFile" ]; then
 			DBFile=$(mktempfile_elektra)
 		fi
 		;;
 	Storage:)
-		Storage=$(echo "$line"|cut -d ' ' -f2)
+		Storage=$(second "$line")
 		;;
 	MountArgs:)
-		MountArgs=$(echo "$line"|cut -d ' ' -f2-)
+		MountArgs=$(tail "$line")
 		;;
 	DiffType:)
-		DiffType=$(echo "$line"|cut -d ' ' -f2)
+		DiffType=$(second "$line")
 		;;
 	RET:)
-		RETCMP=$(echo "$line"|cut -d ' ' -f2-)
+		RETCMP=$(tail "$line")
 		;;
 	ERRORS:)
-		ERRORSCMP=$(echo "$line"|cut -d ' ' -f2-)
+		ERRORSCMP=$(tail "$line")
 		;;
 	WARNINGS:)
-		WARNINGSCMP=$(echo "$line"|cut -d ' ' -f2-)
+		WARNINGSCMP=$(tail "$line")
 		;;
 	STDOUT:)
-		STDOUTCMP=$(printf '%s' "$line"|cut -d ' ' -f2-)
+		STDOUTCMP=$(tail "$line")
 		;;
 	STDOUT-REGEX:)
-		STDOUTRECMP=$(echo "$line"|cut -d ' ' -f2-)
+		STDOUTRECMP=$(tail "$line")
 		;;
 	STDOUT-GLOB:)
-		STDOUTGLOBCMP=$(echo "$line"|cut -d ' ' -f2-)
+		STDOUTGLOBCMP=$(tail "$line")
 		;;
 	STDERR:)
-		STDERRCMP=$(echo "$line"|cut -d ' ' -f2-)
+		STDERRCMP=$(tail "$line")
 		;;
 	DIFF:)
-		DIFFCMP=$(echo "$line"|cut -d ' ' -f2-)
+		DIFFCMP=$(tail "$line")
 		;;
 	\<)
 		OP="$cmd"
-		ARG=$(printf '%s' "$line"|cut -d ' ' -f2-)
+		ARG=$(tail "$line")
 		;;
 	esac
 	if [ "$OP" = "<" ];
