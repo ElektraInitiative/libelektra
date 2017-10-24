@@ -47,7 +47,7 @@ execute()
 	then
 		if ! "$KDBCOMMAND" export "$Mountpoint" dump > "$TMPFILE" 2>/dev/null;
 		then
-			echo "ERROR: Failed to backup $Mountpoint\nStopping testcase."
+			echo "ERROR: Failed to backup $Mountpoint\nStopping test case."
 			exit 1
 		fi
 		BACKUP=0
@@ -310,7 +310,7 @@ rm -f ./stdout ./stderr
 
 if [ "$#" -lt '1' ] || [ "$#" -gt '2' ];
 then
-	echo 'Usage: ./shell_recorder inputscript [protocol to compare]'
+	echo 'Usage: ./shell_recorder input_script [protocol to compare]'
 	rm "$OutFile"
 	exit 0
 fi
