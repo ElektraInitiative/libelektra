@@ -55,7 +55,6 @@ macro (add_haskell_plugin target)
 			# we compile via the c compiler instead of ghc
 			# so we must feed it with the ghc library paths manually
 			# inspired by https://github.com/jarrett/cpphs/blob/master/Makefile
-			find_library (GHC_FFI_LIB Cffi PATHS ${GHC_LIB_DIR}/rts)
 			# use HSrts_thr for the threaded version of the rts
 			find_library (GHC_RTS_LIB HSrts PATHS ${GHC_LIB_DIR}/rts)
 			execute_process (
@@ -74,7 +73,6 @@ macro (add_haskell_plugin target)
 			)
 			find_library (GHC_PRIM_LIB "HS${GHC_PRIM_NAME}" ${GHC_LIB_DIR}/${GHC_PRIM_NAME})
 
-			if (GHC_FFI_LIB)
 			if (GHC_RTS_LIB)
 			if (GHC_BASE_LIB)
 			if (GHC_GMP_LIB)
@@ -83,14 +81,27 @@ macro (add_haskell_plugin target)
 			set (GHC_LIB_DIRS
 				"${CMAKE_CURRENT_BINARY_DIR}/dist/build/libHS${target}.a"
 				"${CMAKE_BINARY_DIR}/src/bindings/haskell/dist/build/libHSlibelektra-haskell-${KDB_VERSION}.a"
-				${GHC_FFI_LIB}
 				${GHC_RTS_LIB}
 				${GHC_BASE_LIB}
 				${GHC_GMP_LIB}
 				${GHC_PRIM_LIB}
-				iconv
 				gmp
 			)
+
+			# GHC's structure differs between OSX and Linux
+			# On OSX we need to link iconv and Cffi additionally
+			if (APPLE)
+				find_library (GHC_FFI_LIB Cffi PATHS ${GHC_LIB_DIR}/rts)
+				if (GHC_FFI_LIB)
+					set (GHC_LIB_DIRS
+						${GHC_LIB_DIRS}
+						${GHC_FFI_LIB}
+						iconv
+					)
+				else (GHC_FFI_LIB)
+					remove_plugin (${target} "GHC_FFI_LIB not found")
+				endif (GHC_FFI_LIB)
+			endif (APPLE)
 
 			# configure include paths
 			configure_file (
@@ -148,9 +159,6 @@ macro (add_haskell_plugin target)
 			else (GHC_RTS_LIB)
 				remove_plugin (${target} "GHC_RTS_LIB not found")
 			endif (GHC_RTS_LIB)
-			else (GHC_FFI_LIB)
-				remove_plugin (${target} "GHC_FFI_LIB not found")
-			endif (GHC_FFI_LIB)
 
 		else (FINDEX GREATER -1)
 			remove_plugin (${target} "haskell bindings are not included in the cmake configuration")

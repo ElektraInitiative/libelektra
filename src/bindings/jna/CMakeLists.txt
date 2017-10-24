@@ -73,3 +73,7 @@ if (MAVEN_EXECUTABLE) # set by find_program
 else (MAVEN_EXECUTABLE)
 	remove_binding (jna "Maven Executable not found, but required to build the jna bindings")
 endif (MAVEN_EXECUTABLE)
+
+mark_as_advanced (
+	MAVEN_EXECUTABLE
+)
