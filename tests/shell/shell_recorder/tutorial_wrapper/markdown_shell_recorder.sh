@@ -21,7 +21,7 @@ MOUNTPOINT=
 writeBlock()
 {
 	OUTFILE="$1"
-	[ -n "$RET" ] && echo "RET: $RET" >> "$TMPFILE" || { [ -z "$ERRORS" ] && echo "RET: 0" >> "$TMPFILE"; }
+	[ -n "$RET" ] && echo "RET: $RET" >> "$TMPFILE" || { [ -z "$ERRORS" ] && echo 'RET: 0' >> "$TMPFILE"; }
 	[ -n "$ERRORS" ] && echo "ERRORS: $ERRORS" >> "$TMPFILE"
 	[ -n "$WARNINGS" ] && echo "WARNINGS: $WARNINGS" >> "$TMPFILE"
 	[ -n "$DIFF" ] && echo "DIFF: $DIFF" >> "$TMPFILE"
@@ -48,8 +48,8 @@ translate()
 {
 	TMPFILE=$(mktemp)
 	MOUNTPOINT=$(echo "$BUF" | head -n 1)
-	if grep -Eq "Backup-and-Restore:" <<< "$MOUNTPOINT"; then echo "Mountpoint: $(cut -d ':' -f2 <<< "$MOUNTPOINT")" >> "$TMPFILE"
-	else echo "Mountpoint: /examples" >> "$TMPFILE"
+	if grep -Eq 'Backup-and-Restore:' <<< "$MOUNTPOINT"; then echo "Mountpoint: $(cut -d ':' -f2 <<< "$MOUNTPOINT")" >> "$TMPFILE"
+	else echo 'Mountpoint: /examples' >> "$TMPFILE"
 	fi
 	COMMAND=
 	RET=
@@ -64,7 +64,7 @@ translate()
 	IFS=''
 	while read -r line;
 	do
-		if grep -Eq "^(\s)*#>" <<< "$line"; then
+		if grep -Eq '^\s*#>' <<< "$line"; then
 			output=$(sed -n 's/\s*#> \(.*\)/\1/p' <<< "$line")
 			[ -z "$OUTBUF" ] && OUTBUF="$output" || OUTBUF="${OUTBUF}⏎$output"
 		fi
@@ -104,13 +104,13 @@ translate()
 		if [ -n "$line" ];
 		then
 			[ -n "$COMMAND" ] && writeBlock "$TMPFILE"
-			COMMAND=$(grep -Eo '[^ \\t].*' <<< "$line")
-			[ "${line: -1}" == "\\" ] && COMMAND="${COMMAND%?}"
-			while [ "${line: -1}" == "\\" ];
+			COMMAND=$(grep -Eo '[^ \t].*' <<< "$line")
+			[ "${line: -1}" == '\' ] && COMMAND="${COMMAND%?}"
+			while [ "${line: -1}" == '\' ];
 			do
 				read -r line
-				if [ "${line: -1}" == "\\" ]; then COMMAND=$(printf "%s\\\n%s" "$COMMAND" "${line%?}")
-				else COMMAND=$(printf "%s\\\n%s\\\n" "$COMMAND" "$line")
+				if [ "${line: -1}" == '\' ]; then COMMAND=$(printf '%s\\n%s' "$COMMAND" "${line%?}")
+				else COMMAND=$(printf '%s\\n%s\\n' "$COMMAND" "$line")
 				fi
 			done
 			continue
@@ -130,7 +130,7 @@ do
 	grep -Eq '(\s)*```sh$' <<< "$line" && { INBLOCK=1; continue; }
 	grep -Eq '(\s)*```$' <<< "$line" && INBLOCK=0
 	[ $INBLOCK -eq 0 ] && continue
-	[ -z "$BUF" ] && BUF="$line" || BUF=$(printf "%s\n%s" "$BUF" "$line")
+	[ -z "$BUF" ] && BUF="$line" || BUF=$(printf '%s\n%s' "$BUF" "$line")
 done <<< "$BLOCKS"
 
 translate
