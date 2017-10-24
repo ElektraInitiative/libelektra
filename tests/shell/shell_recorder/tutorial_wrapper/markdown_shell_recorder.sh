@@ -13,7 +13,6 @@ ERRORS=
 WARNINGS=
 STDOUT=
 STDOUTRE=
-STDOUTGLOB=
 STDERR=
 DIFF=
 OUTBUF=
@@ -59,11 +58,6 @@ writeBlock()
 		if [ ! -z "$STDOUTRE" ]
 		then
 			echo "STDOUT-REGEX: $STDOUTRE" >> "$TMPFILE"
-		else
-			if [ ! -z "$STDOUTGLOB" ];
-			then
-				echo "STDOUT-GLOB: $STDOUT"
-			fi
 		fi
 	fi
 	COMMAND=$(sed s/sudo\ //g <<<"$COMMAND")
@@ -75,7 +69,6 @@ writeBlock()
 	WARNINGS=
 	STDOUT=
 	STDOUTRE=
-	STDOUTGLOB=
 	STDERR=
 	DIFF=
 	OUTBUF=
@@ -99,7 +92,6 @@ translate()
 	WARNINGS=
 	STDOUT=
 	STDOUTRE=
-	STDOUTGLOB=
 	STDERR=
 	DIFF=
 	OUTBUF=
@@ -136,9 +128,6 @@ translate()
 					;;
 				STDOUT-REGEX)
 					STDOUTRE="$arg"
-					;;
-				STDOUT-GLOB)
-					STDOUTGLOB="$arg"
 					;;
 				STDERR)
 					STDERR="$arg"

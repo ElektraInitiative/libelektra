@@ -17,7 +17,6 @@ ERRORSCMP=
 WARNINGSCMP=
 STDOUTCMP=
 STDOUTRECMP=
-STDOUTGLOBCMP=
 STDERRCMP=
 DIFFCMP=
 
@@ -276,9 +275,6 @@ run_script()
 	STDOUT-REGEX:)
 		STDOUTRECMP=$(tail "$line")
 		;;
-	STDOUT-GLOB:)
-		STDOUTGLOBCMP=$(tail "$line")
-		;;
 	STDERR:)
 		STDERRCMP=$(tail "$line")
 		;;
@@ -298,7 +294,6 @@ run_script()
 		WARNINGSCMP=
 		STDOUTCMP=
 		STDOUTRECMP=
-		STDOUTGLOBCMP=
 		STDERRCMP=
 		DIFFCMP=
 	fi
