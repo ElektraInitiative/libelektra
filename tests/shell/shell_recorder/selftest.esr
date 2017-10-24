@@ -1,0 +1,27 @@
+Storage: mini
+Mountpoint: user/test
+File: config.ini
+DiffType: Ini
+
+RET: 0
+< kdb mount $File $Mountpoint $Storage $MountArgs
+
+DIFF: > key = value
+< kdb set $Mountpoint/key value
+
+STDOUT: Set string to "value"
+< kdb set $Mountpoint/key value
+
+STDOUT-REGEX: .*value.
+< kdb set $Mountpoint/key value
+
+STDERR: The command kdb not-a-command is not known
+< kdb not-a-command 1>/dev/null
+
+STDERR: .+not-a-command.+
+< kdb not-a-command 1>/dev/null
+
+< kdb rm -r $Mountpoint
+
+RET: 0
+< kdb umount $Mountpoint
