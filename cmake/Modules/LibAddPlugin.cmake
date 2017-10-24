@@ -259,11 +259,6 @@ function (add_plugin PLUGIN_SHORT_NAME)
 		endif ()
 
 		if (ARG_ADD_TEST)
-			set (HAS_CPP "")
-			if (ARG_CPP)
-				set (HAS_CPP "CPP")
-			endif (ARG_CPP)
-
 			set (HAS_INSTALL_TEST_DATA "")
 			if (ARG_INSTALL_TEST_DATA)
 				set (HAS_INSTALL_TEST_DATA "INSTALL_TEST_DATA")
