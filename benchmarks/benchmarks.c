@@ -72,9 +72,11 @@ struct _KsTreeVertex
 	uint8_t isKey;			  /*!< when true the path from root to vertex is a Key in the resulting KeySet */
 	uint8_t isLink;			  /*!< determines if vertex is link, used at recFreeKsTree (...) */
 	struct _KsTreeVertex ** children; /*!< stores the children */
-	struct hsearch_data * htab;       /*!< stores the Hash Map, containing the children names */
-	size_t numberofChildren;	  /*!< number of the stored children */
-	size_t mallocSize;		  /*!< size malloced for the children */
+#ifdef __linux__
+	struct hsearch_data * htab; /*!< stores the Hash Map, containing the children names */
+#endif
+	size_t numberofChildren; /*!< number of the stored children */
+	size_t mallocSize;       /*!< size malloced for the children */
 };
 
 /**
@@ -92,6 +94,7 @@ const char * const alphabetnumbers = "aAbBcCdDeEfFgGhHiIjJkKlLmMnNoOpPqQrRsStTuU
 const char * const alphabetspecial = "^!\"$`%&/{([)]=} %?\\+*~#';,:§.-_|<>¸¬½¼³²¹ł€¶øæßðđł˝«»¢“”nµ─·";
 
 
+#ifdef __linux__
 /**
  * @brief Creates the Hash Map for a given vertex.
  *
@@ -149,6 +152,26 @@ static int searchHashMap (KsTreeVertex * vertex, char * name)
 		return 0;
 	}
 }
+#else
+// no hsearch use dummys and linear search
+static void createHashMap (KsTreeVertex * vertex ELEKTRA_UNUSED)
+{
+}
+static void deleteHashMap (KsTreeVertex * vertex ELEKTRA_UNUSED)
+{
+}
+static int searchHashMap (KsTreeVertex * vertex, char * name)
+{
+	for (size_t i = 0; i < vertex->numberofChildren; ++i)
+	{
+		if (!strcmp (vertex->children[i]->name, name))
+		{
+			return 0;
+		}
+	}
+	return 1;
+}
+#endif
 
 /**
  * @brief Fills a string up with random chars and null terminates it.

@@ -433,17 +433,21 @@ static void benchmarkHashFunctionVs (void)
 				{
 					if (!cI && !i)
 					{
-						fprintf (opmphmOut, "%lu", opmphmResults[i * (numberOfShapes * cCount * seeds) +
-											 s * (cCount * seeds) + cI * seeds + sI]);
-						fprintf (foxOut, "%lu", foxResults[i * (numberOfShapes * cCount * seeds) +
-										   s * (cCount * seeds) + cI * seeds + sI]);
+						fprintf (opmphmOut, "%lu",
+							 opmphmResults[i * (numberOfShapes * cCount * seeds) + s * (cCount * seeds) +
+								       cI * seeds + sI]);
+						fprintf (foxOut, "%lu",
+							 foxResults[i * (numberOfShapes * cCount * seeds) + s * (cCount * seeds) +
+								    cI * seeds + sI]);
 					}
 					else
 					{
-						fprintf (opmphmOut, ";%lu", opmphmResults[i * (numberOfShapes * cCount * seeds) +
-											  s * (cCount * seeds) + cI * seeds + sI]);
-						fprintf (foxOut, ";%lu", foxResults[i * (numberOfShapes * cCount * seeds) +
-										    s * (cCount * seeds) + cI * seeds + sI]);
+						fprintf (opmphmOut, ";%lu",
+							 opmphmResults[i * (numberOfShapes * cCount * seeds) + s * (cCount * seeds) +
+								       cI * seeds + sI]);
+						fprintf (foxOut, ";%lu",
+							 foxResults[i * (numberOfShapes * cCount * seeds) + s * (cCount * seeds) +
+								    cI * seeds + sI]);
 					}
 				}
 			}
@@ -471,7 +475,8 @@ static void benchmarkHashFunctionVs (void)
  *
  * trials;n_%luc_%lu;... (each n and c are unique)
  *
- * The number of needed seeds for this benchmarks is: nCount * numberOfShapes * keySetsPerShape (KeySets generation) + numberOfSeeds (tested seeds)
+ * The number of needed seeds for this benchmarks is: nCount * numberOfShapes * keySetsPerShape (KeySets generation) + numberOfSeeds (tested
+ * seeds)
  */
 
 static void benchmarkMapping (void)
@@ -911,8 +916,8 @@ static void shapefLateDynamicBranch (const size_t initSize, size_t size ELEKTRA_
 	}
 }
 /**
-* all key names have a common start and end
-*/
+ * all key names have a common start and end
+ */
 static void * shapeCommonStartEndInit (void)
 {
 	uint8_t * data = elektraMalloc (sizeof (uint8_t));
@@ -923,7 +928,7 @@ static void * shapeCommonStartEndInit (void)
 	*data = 0;
 	return data;
 }
-static void shapefCommonStartEndDel (void * data)
+static void shapeCommonStartEndDel (void * data)
 {
 	elektraFree (data);
 }
@@ -979,8 +984,8 @@ static void shapefCommonStartEnd (const size_t initSize ELEKTRA_UNUSED, size_t s
 	}
 }
 /**
-* modules, level 1 keys same, one level 2 key stores the modules. Like system/elektra.
-*/
+ * modules, level 1 keys same, one level 2 key stores the modules. Like system/elektra.
+ */
 static void * shapeModulesInit (void)
 {
 	// three boolean flags if the respective label where set, the fourth counts from 1 to 3 for label assignment
@@ -1086,8 +1091,8 @@ static void shapefModules (const size_t initSize, size_t size ELEKTRA_UNUSED, si
 	}
 }
 /**
-* always wider, subKeys are incremented by one every level
-*/
+ * always wider, subKeys are incremented by one every level
+ */
 static void shapefWide (const size_t initSize, size_t size ELEKTRA_UNUSED, size_t level, int32_t * seed ELEKTRA_UNUSED,
 			KsShapeFunctionReturn * ret, void * data ELEKTRA_UNUSED)
 {
@@ -1111,8 +1116,8 @@ static void shapefWide (const size_t initSize, size_t size ELEKTRA_UNUSED, size_
 	}
 }
 /**
-* always tighter, subKeys are decrementing by one every level till two is reached
-*/
+ * always tighter, subKeys are decrementing by one every level till two is reached
+ */
 static void shapefTight (const size_t initSize, size_t size ELEKTRA_UNUSED, size_t level, int32_t * seed ELEKTRA_UNUSED,
 			 KsShapeFunctionReturn * ret, void * data ELEKTRA_UNUSED)
 {
@@ -1213,7 +1218,7 @@ static KeySetShape * getKeySetShapes (void)
 	out[shapeCount].parent = 0;
 	out[shapeCount].shapeInit = shapeCommonStartEndInit;
 	out[shapeCount].shapef = shapefCommonStartEnd;
-	out[shapeCount].shapeDel = shapefCommonStartEndDel;
+	out[shapeCount].shapeDel = shapeCommonStartEndDel; // remove f
 	++shapeCount;
 
 	// shapefModules
