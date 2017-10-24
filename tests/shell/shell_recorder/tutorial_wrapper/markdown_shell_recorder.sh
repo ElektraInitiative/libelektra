@@ -127,8 +127,8 @@ MOUNTPOINTS_BACKUP=$("$KDBCOMMAND" mount)
 
 while read -r line;
 do
-	grep -Eq '(\s)*```sh$' <<< "$line" && { INBLOCK=1; continue; }
-	grep -Eq '(\s)*```$' <<< "$line" && INBLOCK=0
+	grep -Eq '\s*```sh$' <<< "$line" && { INBLOCK=1; continue; }
+	grep -Eq '\s*```$' <<< "$line" && INBLOCK=0
 	[ $INBLOCK -eq 0 ] && continue
 	[ -z "$BUF" ] && BUF="$line" || BUF=$(printf '%s\n%s' "$BUF" "$line")
 done <<< "$BLOCKS"
@@ -144,7 +144,7 @@ IFS='
 	TOUMOUNT=$(diff <(echo "$MOUNTPOINTS_BACKUP") <(echo "$MOUNTPOINTS") | grep -Eo "^>.*")
 	for line in $TOUMOUNT;
 	do
-		mp=$(sed -n 's/\(.*\)with name \(.*\)/\2/p' <<< "$line")
+		mp=$(sed -n 's/.*with name \(.*\)/\1/p' <<< "$line")
 		"$KDBCOMMAND" umount "$mp"
 	done
 fi
