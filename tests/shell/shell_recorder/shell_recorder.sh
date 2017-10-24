@@ -136,7 +136,7 @@ execute()
 	if [ ! -z "$STDOUTCMP" ];
 	then
 		nbTest=$(( nbTest + 1 ))
-		if ! printf '%s' "$STDOUT" | replace_newline_return | grep -Eq --text "^${STDOUTCMP}$";
+		if ! printf '%s' "$STDOUT" | replace_newline_return | grep -Fx --text "$STDOUTCMP";
 		then
 			printf '\nERROR - STDOUT:\n“%s”\ndoes not match “%s”\n\n' "$STDOUT" "$STDOUTCMP"
 			printf '=== FAILED stdout does not match expected pattern %s\n' "$STDOUTCMP" >> "$OutFile"

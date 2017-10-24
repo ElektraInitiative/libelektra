@@ -9,7 +9,7 @@ RET: 0
 
 < kdb mount $File $Mountpoint $Storage $MountArgs
 
-STDOUT: (tracer.*){3}
+STDOUT-REGEX: (tracer.*){3}
 STDERR: (set.*di.*pos.*){2}
 RET: 0
 < kdb set $Mountpoint test

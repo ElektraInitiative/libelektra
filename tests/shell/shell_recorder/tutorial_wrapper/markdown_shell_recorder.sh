@@ -50,12 +50,10 @@ writeBlock()
 	if [ ! -z "$OUTBUF" ];
 	then
 		tmp=$(replace_newline_return <<< "$OUTBUF")
-		tmp=$(echo "$tmp" | regex_escape)
 		echo "STDOUT: $tmp" >> "$TMPFILE"
 	elif [ ! -z "$STDOUT" ];
 	then
 		tmp=$(replace_newline_return <<< "$STDOUT")
-		tmp=$(echo "$tmp" | regex_escape)
 		echo "STDOUT: $tmp" >> "$TMPFILE"
 	else
 		if [ ! -z "$STDOUTRE" ]
