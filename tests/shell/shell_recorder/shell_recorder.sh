@@ -81,19 +81,6 @@ execute()
 
 	RETVAL="$?"
 
-	printf 'RET: %s\n' "$RETVAL" >> "$OutFile"
-
-	if [ ! -z "$RETCMP" ];
-	then
-		nbTest=$(( nbTest + 1 ))
-		if ! echo "$RETVAL" | grep -Ewq $RETCMP;
-		then
-			printf 'Return value “%s” does not match “%s”\n' "$RETVAL" "$RETCMP"
-			printf '=== FAILED return value does not match expected pattern %s\n' "$RETCMP" >> "$OutFile"
-			nbError=$(( nbError + 1 ))
-		fi
-	fi
-
 	DIFF=
 	case "$DiffType" in
 	File)
@@ -111,7 +98,26 @@ execute()
 		;;
 	esac
 
+# =======
+# = RET =
+# =======
 
+	printf 'RET: %s\n' "$RETVAL" >> "$OutFile"
+
+	if [ ! -z "$RETCMP" ];
+	then
+		nbTest=$(( nbTest + 1 ))
+		if ! echo "$RETVAL" | grep -Ewq $RETCMP;
+		then
+			printf 'Return value “%s” does not match “%s”\n' "$RETVAL" "$RETCMP"
+			printf '=== FAILED return value does not match expected pattern %s\n' "$RETCMP" >> "$OutFile"
+			nbError=$(( nbError + 1 ))
+		fi
+	fi
+
+# ==========
+# = STDERR =
+# ==========
 
 	STDERR=$(cat ./stderr)
 
@@ -128,7 +134,9 @@ execute()
 		fi
 	fi
 
-
+# ==========
+# = STDOUT =
+# ==========
 
 	STDOUT=$(cat ./stdout)
 
@@ -143,6 +151,11 @@ execute()
 			nbError=$(( nbError + 1 ))
 		fi
 	fi
+
+# ================
+# = STDOUT-REGEX =
+# ================
+
 	if [ ! -z "$STDOUTRECMP" ];
 	then
 		nbTest=$(( nbTest + 1 ))
@@ -153,6 +166,10 @@ execute()
 			nbError=$(( nbError + 1 ))
 		fi
 	fi
+
+# ============
+# = WARNINGS =
+# ============
 
 	WARNINGS=$(echo "$STDERR" | sed -nE  's/Warning number: (\d*)/\1/p' | tr '\n' ',')
 
@@ -168,8 +185,9 @@ execute()
 		fi
 	fi
 
-
-
+# ==========
+# = ERRORS =
+# ==========
 
 	ERRORS=$(echo "$STDERR" | sed -nE  's/error \(\#(\d*)/\1/p' | tr '\n' ',')
 
@@ -186,7 +204,9 @@ execute()
 		fi
 	fi
 
-
+# ========
+# = DIFF =
+# ========
 
 	printf '%s\n' "DIFF: $DIFF" >> "$OutFile"
 	if [ ! -z "$DIFFCMP" ];
@@ -199,7 +219,6 @@ execute()
 			nbError=$(( nbError + 1 ))
 		fi
 	fi
-
 
 	echo >> "$OutFile"
 }
