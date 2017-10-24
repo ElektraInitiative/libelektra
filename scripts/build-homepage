@@ -60,9 +60,11 @@ ulimit -c unlimited
 # place for core dumps (name by: echo "core_%t_%p" > /proc/sys/kernel/core_pattern)
 cd ${INSTALL_PATH}
 
+PID_FILE=`kdb sget /sw/elektra/restbackend/#0/current/cppcms/daemon/lock /run/elektra-rest-backend.pid`
+
 ps -ef
 printf "Old PID was: "
-cat /run/elektra-rest-backend.pid || /bin/true
+cat ${PID_FILE} || /bin/true
 echo
 
 
@@ -78,7 +80,7 @@ netstat -tlpen
 kdb stop-rest-backend || /bin/true
 
 # cleanup /tmp files from build
-find /tmp -mindepth 1 -delete
+find /tmp -mindepth 1 -user `id -u` -delete || true
 
 # avoid 'address already in use'
 while netstat -tlpen | grep "$IP:$PORT"
@@ -90,7 +92,7 @@ done
 kdb run-rest-backend
 
 printf "New PID is: "
-cat /run/elektra-rest-backend.pid || /bin/true
+cat ${PID_FILE} || /bin/true
 echo
 
 netstat -tlpen
@@ -102,12 +104,15 @@ netstat -tlpen
 #   required files afterwards, ensuring an always up-to-date deployment
 kdb build-rest-frontend
 
-# create and copy api description
 ELEKTRA_VERSION=$(kdb get --no-newline system/elektra/version/constants/KDB_VERSION)
-apiary preview --path=$ROOT_DIR/doc/api_blueprints/snippet-sharing.apib --output=/srv/libelektra/restapi/$ELEKTRA_VERSION/snippet-sharing.html
-cp $ROOT_DIR/doc/api_blueprints/snippet-sharing.apib /srv/libelektra/restapi/$ELEKTRA_VERSION/snippet-sharing.apib
-rm /srv/libelektra/restapi/current
-ln -s /srv/libelektra/restapi/$ELEKTRA_VERSION /srv/libelektra/restapi/current
+API_DOC_DIR="${ROOT_DIR}/build/API_DOC/restapi/${ELEKTRA_VERSION}"
+
+mkdir -p ${API_DOC_DIR}
+
+# create and copy api description
+apiary preview --path=$ROOT_DIR/doc/api_blueprints/snippet-sharing.apib --output=${API_DOC_DIR}/snippet-sharing.html
+cp $ROOT_DIR/doc/api_blueprints/snippet-sharing.apib ${API_DOC_DIR}/snippet-sharing.apib
+(cd ${API_DOC_DIR}/.. ; rm -f current ; ln -s $ELEKTRA_VERSION current )
 
 ps -ef
 ulimit -a
