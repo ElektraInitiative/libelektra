@@ -80,8 +80,8 @@ Now we can also install LibJWT:
 
 - Download the (latest) source from [GitHub](https://github.com/benmcollins/libjwt/releases)
 - Extract the archive: `tar -xjf v1.x.x && cd libjwt-1.x.x` (replace 1.x.x with your version)
-- Configure the build: `mkdir build && cd build && cmake ..`
-- Execute the build and run tests: `make jwt && make jwt_static && make check`
+- Configure the build: `autoreconf -i && ./configure`
+- Execute the build and run tests: `make all && make check`
 
 If you are using Ubuntu, LibJWT can also be installed through a pre-built APT package:
 
