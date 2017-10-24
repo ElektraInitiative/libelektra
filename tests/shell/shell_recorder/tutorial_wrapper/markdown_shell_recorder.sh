@@ -21,44 +21,14 @@ MOUNTPOINT=
 writeBlock()
 {
 	OUTFILE="$1"
-	if [ -n "$RET" ];
-	then
-		echo "RET: $RET" >> "$TMPFILE"
-	else
-		if [ -z "$ERRORS" ];
-		then
-			echo "RET: 0" >> "$TMPFILE"
-		fi
-	fi
-	if [ -n "$ERRORS" ];
-	then
-		echo "ERRORS: $ERRORS" >> "$TMPFILE"
-	fi
-	if [ -n "$WARNINGS" ];
-	then
-		echo "WARNINGS: $WARNINGS" >> "$TMPFILE"
-	fi
-	if [ -n "$DIFF" ];
-	then
-		echo "DIFF: $DIFF" >> "$TMPFILE"
-	fi
-	if [ -n "$STDERR" ];
-	then
-		echo "STDERR: $STDERR" >> "$TMPFILE"
-	fi
-	if [ -n "$OUTBUF" ];
-	then
-		tmp=$(replace_newline_return <<< "$OUTBUF")
-		echo "STDOUT: $tmp" >> "$TMPFILE"
-	elif [ -n "$STDOUT" ];
-	then
-		tmp=$(replace_newline_return <<< "$STDOUT")
-		echo "STDOUT: $tmp" >> "$TMPFILE"
-	else
-		if [ -n "$STDOUTRE" ]
-		then
-			echo "STDOUT-REGEX: $STDOUTRE" >> "$TMPFILE"
-		fi
+	[ -n "$RET" ] && echo "RET: $RET" >> "$TMPFILE" || { [ -z "$ERRORS" ] && echo "RET: 0" >> "$TMPFILE"; }
+	[ -n "$ERRORS" ] && echo "ERRORS: $ERRORS" >> "$TMPFILE"
+	[ -n "$WARNINGS" ] && echo "WARNINGS: $WARNINGS" >> "$TMPFILE"
+	[ -n "$DIFF" ] && echo "DIFF: $DIFF" >> "$TMPFILE"
+	[ -n "$STDERR" ] && echo "STDERR: $STDERR" >> "$TMPFILE"
+	if [ -n "$OUTBUF" ]; then echo "STDOUT: $(replace_newline_return <<< "$OUTBUF")" >> "$TMPFILE"
+	elif [ -n "$STDOUT" ]; then echo "STDOUT: $(replace_newline_return <<< "$STDOUT")" >> "$TMPFILE"
+	elif [ -n "$STDOUTRE" ]; then echo "STDOUT-REGEX: $STDOUTRE" >> "$TMPFILE"
 	fi
 	COMMAND=$(sed s/sudo\ //g <<<"$COMMAND")
 	echo "< $COMMAND" >> "$TMPFILE"
@@ -78,13 +48,8 @@ translate()
 {
 	TMPFILE=$(mktemp)
 	MOUNTPOINT=$(echo "$BUF" | head -n 1)
-	grep -Eq "Backup-and-Restore:" <<< "$MOUNTPOINT"
-	if [ "$?" -eq 0 ];
-	then
-		MOUNTPOINT=$(echo "$MOUNTPOINT" | cut -d ':' -f2)
-		echo "Mountpoint: $MOUNTPOINT" >> "$TMPFILE"
-	else
-		echo "Mountpoint: /examples" >> "$TMPFILE"
+	if grep -Eq "Backup-and-Restore:" <<< "$MOUNTPOINT"; then echo "Mountpoint: $(cut -d ':' -f2 <<< "$MOUNTPOINT")" >> "$TMPFILE"
+	else echo "Mountpoint: /examples" >> "$TMPFILE"
 	fi
 	COMMAND=
 	RET=
