@@ -21,7 +21,7 @@ MOUNTPOINT=
 writeBlock()
 {
 	OUTFILE="$1"
-	if [ ! -z "$RET" ];
+	if [ -n "$RET" ];
 	then
 		echo "RET: $RET" >> "$TMPFILE"
 	else
@@ -30,32 +30,32 @@ writeBlock()
 			echo "RET: 0" >> "$TMPFILE"
 		fi
 	fi
-	if [ ! -z "$ERRORS" ];
+	if [ -n "$ERRORS" ];
 	then
 		echo "ERRORS: $ERRORS" >> "$TMPFILE"
 	fi
-	if [ ! -z "$WARNINGS" ];
+	if [ -n "$WARNINGS" ];
 	then
 		echo "WARNINGS: $WARNINGS" >> "$TMPFILE"
 	fi
-	if [ ! -z "$DIFF" ];
+	if [ -n "$DIFF" ];
 	then
 		echo "DIFF: $DIFF" >> "$TMPFILE"
 	fi
-	if [ ! -z "$STDERR" ];
+	if [ -n "$STDERR" ];
 	then
 		echo "STDERR: $STDERR" >> "$TMPFILE"
 	fi
-	if [ ! -z "$OUTBUF" ];
+	if [ -n "$OUTBUF" ];
 	then
 		tmp=$(replace_newline_return <<< "$OUTBUF")
 		echo "STDOUT: $tmp" >> "$TMPFILE"
-	elif [ ! -z "$STDOUT" ];
+	elif [ -n "$STDOUT" ];
 	then
 		tmp=$(replace_newline_return <<< "$STDOUT")
 		echo "STDOUT: $tmp" >> "$TMPFILE"
 	else
-		if [ ! -z "$STDOUTRE" ]
+		if [ -n "$STDOUTRE" ]
 		then
 			echo "STDOUT-REGEX: $STDOUTRE" >> "$TMPFILE"
 		fi
@@ -146,9 +146,9 @@ translate()
 			esac
 			continue
 		fi
-		if [ ! -z "$line" ];
+		if [ -n "$line" ];
 		then
-			if [ ! -z "$COMMAND" ];
+			if [ -n "$COMMAND" ];
 			then
 				writeBlock "$TMPFILE"
 			fi
