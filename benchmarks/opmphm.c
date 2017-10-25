@@ -551,9 +551,8 @@ static void benchmarkMapping (void)
 			// go through all KeySets from n
 			for (size_t ksCacheI = 0; ksCacheI < numberOfShapes * keySetsPerShape; ++ksCacheI)
 			{
-				printf ("now at: %lu/%lu\r",
-					nI * (cCount * numberOfShapes * keySetsPerShape) + cI * (numberOfShapes * keySetsPerShape) +
-						ksCacheI + 1,
+				printf ("now at: %lu/%lu\r", nI * (cCount * numberOfShapes * keySetsPerShape) +
+								     cI * (numberOfShapes * keySetsPerShape) + ksCacheI + 1,
 					nCount * cCount * numberOfShapes * keySetsPerShape);
 				// OPMPHM
 				init.data = (void **)(keySetsCache[nI * (numberOfShapes * keySetsPerShape) + ksCacheI]->array);
