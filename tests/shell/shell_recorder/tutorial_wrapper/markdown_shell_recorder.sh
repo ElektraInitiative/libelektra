@@ -70,9 +70,9 @@ translate()
 		fi
 
 		if grep -Eq "^(\s*)#" <<< "$line"; then
-			tmp=$(sed -n 's/\s*# \(.*\)/\1/p' <<< "$line")
-			cmd=$(cut -d ':' -f1 <<< "$tmp")
-			arg=$(cut -d ':' -f2- <<< "$tmp" | sed 's/[[:space:]]*//')
+			directive=$(sed -n 's/\s*# \(.*\)/\1/p' <<< "$line")
+			cmd=$(cut -d ':' -f1 <<< "$directive")
+			arg=$(cut -d ':' -f2- <<< "$directive" | sed 's/[[:space:]]*//')
 
 			case "$cmd" in
 				RET)
