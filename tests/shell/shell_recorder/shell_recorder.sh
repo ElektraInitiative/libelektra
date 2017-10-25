@@ -308,7 +308,7 @@ rm -f ./stdout ./stderr
 
 if [ "$#" -lt '1' ] || [ "$#" -gt '2' ];
 then
-	printf 'Usage: ./shell_recorder input_script [protocol to compare]\n'
+	printf 'Usage: %s input_script [protocol to compare]\n' "$0"
 	rm "$OutFile"
 	exit 0
 fi
