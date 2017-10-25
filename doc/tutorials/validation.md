@@ -104,19 +104,16 @@ The drawbacks of this approach are:
 ## Get Started with `spec`
 
 These issues are resolved straightforward by separating the configuration from
-its schemata.
+its configuration specification (often called schemata in XML or JSON).
 The purpose of the [spec namespace](/doc/tutorials/namespaces.md) is to hold the
-schemata, the description of how to validate the keys of all other namespaces.
+configuration specification, i.e., the description of how to validate the keys of
+all other namespaces.
 
 To make this work, we need a plugin that applies all metadata found in the `spec`-namespace
 to all other namespaces. This plugin is called `spec` and needs to be mounted
-globally (will be added by default with `kdb global-mount`):
+globally (will be added by default and also with any `kdb global-mount` call).
 
-```sh
-sudo kdb global-mount
-```
-
-Then we can write metadata to `spec` and see it for every cascading key:
+We write metadata to the namespace `spec` and the plugin `spec` applies it to every cascading key:
 
 ```sh
 kdb setmeta spec/tutorial/spec/test hello world
@@ -134,7 +131,7 @@ kdb lsmeta /tutorial/spec/test
 #> hello
 #> new
 
-# Remove metadata from command above
+# Remove keys and metadata from the commands above
 kdb rm -r spec/tutorial/spec
 kdb rm -r user/tutorial/spec
 ```
