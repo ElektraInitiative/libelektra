@@ -6,6 +6,11 @@ set -f
 
 # -- Functions -----------------------------------------------------------------------------------------------------------------------------
 
+cleanup()
+{
+	rm -f ./stdout ./stderr
+}
+
 execute()
 {
 	proto="$*"
@@ -281,6 +286,8 @@ run_script()
 
 # -- Main ----------------------------------------------------------------------------------------------------------------------------------
 
+trap cleanup 1 2 3 6
+
 FILE=$1
 Mountpoint=
 DBFile=
@@ -303,8 +310,6 @@ TMPFILE=$(mktempfile_elektra)
 # variables to count up errors and tests
 nbError=0
 nbTest=0
-
-rm -f ./stdout ./stderr
 
 if [ "$#" -lt '1' ] || [ "$#" -gt '2' ];
 then
@@ -340,9 +345,6 @@ then
 		printf '=======================================\nReplay test succeeded\n'
 	fi
 fi
-
-# this should be in temporary files, and/or in a trap exit
-rm -f ./stdout ./stderr
 
 if [ "$EVAL" -eq 0 ]; then
 	rm -f "$OutFile"
