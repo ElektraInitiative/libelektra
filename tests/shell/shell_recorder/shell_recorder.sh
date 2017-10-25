@@ -4,28 +4,7 @@
 
 set -f
 
-FILE=$1
-Mountpoint=
-DBFile=
-Storage=
-MountArgs=
-DiffType=File
-OutFile=$(mktempfile_elektra)
-
-RETCMP=
-ERRORSCMP=
-WARNINGSCMP=
-STDOUTCMP=
-STDOUTRECMP=
-STDERRCMP=
-DIFFCMP=
-
-BACKUP=0
-TMPFILE=$(mktempfile_elektra)
-
-# variables to count up errors and tests
-nbError=0
-nbTest=0
+# -- Functions -----------------------------------------------------------------------------------------------------------------------------
 
 execute()
 {
@@ -299,6 +278,31 @@ run_script()
 	fi
 	done < "$FILE"
 }
+
+# -- Main ----------------------------------------------------------------------------------------------------------------------------------
+
+FILE=$1
+Mountpoint=
+DBFile=
+Storage=
+MountArgs=
+DiffType=File
+OutFile=$(mktempfile_elektra)
+
+RETCMP=
+ERRORSCMP=
+WARNINGSCMP=
+STDOUTCMP=
+STDOUTRECMP=
+STDERRCMP=
+DIFFCMP=
+
+BACKUP=0
+TMPFILE=$(mktempfile_elektra)
+
+# variables to count up errors and tests
+nbError=0
+nbTest=0
 
 rm -f ./stdout ./stderr
 
