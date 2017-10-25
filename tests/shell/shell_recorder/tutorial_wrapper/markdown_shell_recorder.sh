@@ -7,16 +7,19 @@ BLOCKS=$(sed -n '/```sh/,/```\n/p' "$1")
 BUF=
 SHELL_RECORDER_ERROR=0
 
-COMMAND=
-RET=
-ERRORS=
-WARNINGS=
-STDOUT=
-STDOUTRE=
-STDERR=
-DIFF=
-OUTBUF=
-MOUNTPOINT=
+resetGlobals()
+{
+	COMMAND=
+	RET=
+	ERRORS=
+	WARNINGS=
+	STDOUT=
+	STDOUTRE=
+	STDERR=
+	DIFF=
+	OUTBUF=
+	MOUNTPOINT=
+}
 
 writeBlock()
 {
@@ -32,16 +35,7 @@ writeBlock()
 	fi
 	COMMAND=$(sed s/sudo\ //g <<< "$COMMAND")
 	echo "< $COMMAND" >> "$TMPFILE"
-
-	COMMAND=
-	RET=
-	ERRORS=
-	WARNINGS=
-	STDOUT=
-	STDOUTRE=
-	STDERR=
-	DIFF=
-	OUTBUF=
+	resetGlobals
 }
 
 translate()
@@ -51,17 +45,8 @@ translate()
 	if grep -Eq 'Backup-and-Restore:' <<< "$MOUNTPOINT"; then echo "Mountpoint: $(cut -d ':' -f2 <<< "$MOUNTPOINT")" >> "$TMPFILE"
 	else echo 'Mountpoint: /examples' >> "$TMPFILE"
 	fi
-	COMMAND=
-	RET=
-	ERRORS=
-	WARNINGS=
-	STDOUT=
-	STDOUTRE=
-	STDERR=
-	DIFF=
-	OUTBUF=
-	MOUNTPOINT=
-	IFS=''
+
+	resetGlobals
 	while read -r line;
 	do
 		if grep -Eq '^\s*#>' <<< "$line"; then
@@ -120,6 +105,9 @@ translate()
 	"@CMAKE_CURRENT_BINARY_DIR@"/shell_recorder.sh "$TMPFILE" || SHELL_RECORDER_ERROR=1
 	rm "$TMPFILE"
 }
+
+resetGlobals
+
 INBLOCK=0
 IFS=''
 
