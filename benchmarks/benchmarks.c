@@ -5,9 +5,12 @@
  *
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
+
 #define _GNU_SOURCE
 #include <benchmarks.h>
+#ifdef HAVE_HSEARCHR
 #include <search.h>
+#endif
 #include <sys/time.h>
 
 struct timeval start;
@@ -72,7 +75,7 @@ struct _KsTreeVertex
 	uint8_t isKey;			  /*!< when true the path from root to vertex is a Key in the resulting KeySet */
 	uint8_t isLink;			  /*!< determines if vertex is link, used at recFreeKsTree (...) */
 	struct _KsTreeVertex ** children; /*!< stores the children */
-#ifdef __linux__
+#ifdef HAVE_HSEARCHR
 	struct hsearch_data * htab; /*!< stores the Hash Map, containing the children names */
 #endif
 	size_t numberofChildren; /*!< number of the stored children */
@@ -94,7 +97,7 @@ const char * const alphabetnumbers = "aAbBcCdDeEfFgGhHiIjJkKlLmMnNoOpPqQrRsStTuU
 const char * const alphabetspecial = "^!\"$`%&/{([)]=} %?\\+*~#';,:§.-_|<>¸¬½¼³²¹ł€¶øæßðđł˝«»¢“”nµ─·";
 
 
-#ifdef __linux__
+#ifdef HAVE_HSEARCHR
 /**
  * @brief Creates the Hash Map for a given vertex.
  *

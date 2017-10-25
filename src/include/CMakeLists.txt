@@ -6,6 +6,10 @@ include(TestBigEndian)
 check_symbol_exists(clearenv      "stdlib.h"         HAVE_CLEARENV)
 check_symbol_exists(setenv        "stdlib.h"         HAVE_SETENV)
 check_symbol_exists(futimens      "sys/stat.h"       HAVE_FUTIMENS)
+# look for hsearch_r function family
+list(APPEND CMAKE_REQUIRED_DEFINITIONS -D_GNU_SOURCE)
+check_symbol_exists(hsearch_r      "search.h"       HAVE_HSEARCHR)
+list(REMOVE_ITEM CMAKE_REQUIRED_DEFINITIONS -D_GNU_SOURCE)
 
 if (APPLE)
 	# Work around a bug on macOS where `futimes` can not be located if we specify the compiler switch `-Werror`

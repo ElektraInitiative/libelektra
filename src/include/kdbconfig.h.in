@@ -189,4 +189,14 @@
 #cmakedefine HAVE_UNISTD_H
 #endif
 
+/* define if your system has the `hsearch_r' function family. */
+#ifndef HAVE_HSEARCHR
+#cmakedefine HAVE_HSEARCHR
+#endif
+
+
+
+
+
+
 #endif

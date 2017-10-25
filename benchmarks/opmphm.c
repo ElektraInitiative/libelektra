@@ -378,7 +378,7 @@ static void benchmarkHashFunctionVs (void)
 				for (size_t sI = 0; sI < seeds; ++sI)
 				{
 					// get seed for run
-					int32_t runSeed;
+					int32_t runSeed = 1;
 					if (getRandomSeed (&runSeed) != &runSeed) printExit ("Seed Parsing Error or feed me more seeds");
 					// opmphm
 					opmphmResults[i * (numberOfShapes * cCount * seeds) + s * (cCount * seeds) + cI * seeds + sI] =
@@ -433,21 +433,17 @@ static void benchmarkHashFunctionVs (void)
 				{
 					if (!cI && !i)
 					{
-						fprintf (opmphmOut, "%lu",
-							 opmphmResults[i * (numberOfShapes * cCount * seeds) + s * (cCount * seeds) +
-								       cI * seeds + sI]);
-						fprintf (foxOut, "%lu",
-							 foxResults[i * (numberOfShapes * cCount * seeds) + s * (cCount * seeds) +
-								    cI * seeds + sI]);
+						fprintf (opmphmOut, "%lu", opmphmResults[i * (numberOfShapes * cCount * seeds) +
+											 s * (cCount * seeds) + cI * seeds + sI]);
+						fprintf (foxOut, "%lu", foxResults[i * (numberOfShapes * cCount * seeds) +
+										   s * (cCount * seeds) + cI * seeds + sI]);
 					}
 					else
 					{
-						fprintf (opmphmOut, ";%lu",
-							 opmphmResults[i * (numberOfShapes * cCount * seeds) + s * (cCount * seeds) +
-								       cI * seeds + sI]);
-						fprintf (foxOut, ";%lu",
-							 foxResults[i * (numberOfShapes * cCount * seeds) + s * (cCount * seeds) +
-								    cI * seeds + sI]);
+						fprintf (opmphmOut, ";%lu", opmphmResults[i * (numberOfShapes * cCount * seeds) +
+											  s * (cCount * seeds) + cI * seeds + sI]);
+						fprintf (foxOut, ";%lu", foxResults[i * (numberOfShapes * cCount * seeds) +
+										    s * (cCount * seeds) + cI * seeds + sI]);
 					}
 				}
 			}
