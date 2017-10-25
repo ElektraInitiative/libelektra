@@ -315,8 +315,6 @@ fi
 
 BACKUP=1
 
-printf 'protocol file: %s\n' "$OutFile"
-
 run_script
 
 "$KDBCOMMAND" rm -r "$Mountpoint" 2>/dev/null
@@ -345,6 +343,12 @@ fi
 
 # this should be in temporary files, and/or in a trap exit
 rm -f ./stdout ./stderr
+
+if [ "$EVAL" -eq 0 ]; then
+	rm -f "$OutFile"
+else
+	>&2 printf '\n📕  Protocol File: %s\n' "$OutFile"
+fi
 
 rm "${TMPFILE}"
 exit "$EVAL"
