@@ -117,16 +117,26 @@ We write metadata to the namespace `spec` and the plugin `spec` applies it to ev
 
 ```sh
 kdb setmeta spec/tutorial/spec/test hello world
-kdb set user/tutorial/spec/test value
+kdb set /tutorial/spec/test value
+#> Using name user/tutorial/spec/test
 #> Create a new key user/tutorial/spec/test with string "value"
+kdb lsmeta spec/tutorial/spec/test
+#> hello
 kdb lsmeta /tutorial/spec/test
 #> hello
+kdb getmeta /tutorial/spec/test hello
+#> world
+kdb getmeta user/tutorial/spec/test hello
+#> world
 ```
 
 But it also supports globbing (`_` for any key, `?` for any char, `[]` for character classes):
 
 ```sh
-kdb setmeta "spec/tutorial/spec/_" new meta
+kdb setmeta "spec/tutorial/spec/_" new metaval
+kdb set /tutorial/spec/test value
+#> Using name user/tutorial/spec/test
+#> Set string to "value"
 kdb lsmeta /tutorial/spec/test
 #> hello
 #> new
