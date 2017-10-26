@@ -20,7 +20,7 @@ of Elektra.
 - User Customizability:
   - Users must be able to add new plugin variants
   - Users should be able to suppress plugin variants
-- Modularity: 
+- Modularity:
   - The plugins themselves yield a list of plugin variants
   - The code defining variants is part of the plugin's code
   - To get a full list of all variants of all plugins, one
