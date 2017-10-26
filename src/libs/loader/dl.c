@@ -53,9 +53,9 @@ int elektraModulesInit (KeySet * modules, Key * error ELEKTRA_UNUSED)
 elektraPluginFactory elektraModulesLoad (KeySet * modules, const char * name, Key * errorKey)
 {
 #ifdef _WIN32
-	const char elektraPluginPostfix[] = ".dll";
+	static const char elektraPluginPostfix[] = ".dll";
 #else
-	const char elektraPluginPostfix[] = ".so";
+	static const char elektraPluginPostfix[] = ".so";
 #endif
 
 	Key * moduleKey = keyNew ("system/elektra/modules", KEY_END);
