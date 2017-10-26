@@ -19,6 +19,7 @@ s/\<[Ll]ibreoffice/LibreOffice/g
 s/\<mark[Dd]own\>/Markdown/g
 
 s/\<unix|UNIX/Unix/g
+s/\<XCode\>/Xcode/g
 
 # ===================
 # = Technical Terms =

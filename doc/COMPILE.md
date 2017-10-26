@@ -11,7 +11,7 @@ Or on RPM based systems (CentOS):
 
 	sudo yum install -y cmake3 gcc-c++
 
-Or on macOS Sierra, most of the build tools can be obtained by installing XCode (from the App Store). Other required tools may be installed using [brew](http://brew.sh/). First install brew as described on their website. Then issue the following command to get cmake to complete the basic requirements:
+Or on macOS Sierra, most of the build tools can be obtained by installing Xcode (from the App Store). Other required tools may be installed using [brew](http://brew.sh/). First install brew as described on their website. Then issue the following command to get cmake to complete the basic requirements:
 
 	brew install cmake
 
