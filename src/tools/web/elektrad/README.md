@@ -34,4 +34,4 @@ npm run start:dev
 By default, `elektrad` runs on [http://localhost:33333](http://localhost:33333)
 
  - API documentation: http://docs.elektrad.apiary.io/
- - API blueprint: [elektrad.apib](http://tree.libelektra.org/doc/api_blueprints/elektrad.apib)
+ - API blueprint: [elektrad.apib](https://master.libelektra.org/doc/api_blueprints/elektrad.apib)

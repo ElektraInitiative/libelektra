@@ -8,7 +8,7 @@ instances and clusters of instances (multiple instances at once).
 
 ## Installation
 
- * first, install [libelektra](https://libelektra.org/) with the [`yajl` plugin](http://tree.libelektra.org/src/plugins/yajl/)
+ * first, install [libelektra](https://libelektra.org/) with the [`yajl` plugin](https://master.libelektra.org/src/plugins/yajl/)
  * now run `npm install`
 
 
@@ -37,4 +37,4 @@ By default, `clusterd` serves its API and the elektra-web client on
 [http://localhost:33334](http://localhost:33334)
 
  - API documentation: http://docs.clusterd.apiary.io/
- - API blueprint: [clusterd.apib](http://tree.libelektra.org/doc/api_blueprints/clusterd.apib)
+ - API blueprint: [clusterd.apib](https://master.libelektra.org/doc/api_blueprints/clusterd.apib)

@@ -7,7 +7,7 @@ _an API and web user interface to remotely manage multiple Elektra instances_
 
 Elektra-web requires:
 
- * [Elektra](https://libelektra.org/) with the [`yajl` plugin](http://tree.libelektra.org/src/plugins/yajl/) installed
+ * [Elektra](https://libelektra.org/) with the [`yajl` plugin](https://master.libelektra.org/src/plugins/yajl/) installed
  * A recent [node.js](https://nodejs.org/en/) installation (at least 6.x)
 
 
@@ -76,8 +76,8 @@ The configuration view of elektra web is similar to the tree view of the
 
 [API blueprints](https://apiblueprint.org/) are available for both APIs:
 
- * [elektrad](http://tree.libelektra.org/doc/api_blueprints/elektrad.apib), documentation: http://docs.elektrad.apiary.io/
- * [clusterd](http://tree.libelektra.org/doc/api_blueprints/clusterd.apib), documentation: http://docs.clusterd.apiary.io/
+ * [elektrad](https://master.libelektra.org/doc/api_blueprints/elektrad.apib), documentation: http://docs.elektrad.apiary.io/
+ * [clusterd](https://master.libelektra.org/doc/api_blueprints/clusterd.apib), documentation: http://docs.clusterd.apiary.io/
 
 
 ## Auth

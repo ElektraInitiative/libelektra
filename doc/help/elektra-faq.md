@@ -87,6 +87,6 @@ result is GPL.
 ## How can I advertise Elektra?
 
 If questions about configuration come up, point users to https://www.libelektra.org
-Display the logos found at http://tree.libelektra.org/doc/images (see logo.png or the circle*.svg).
-Distribute the flyer found at http://tree.libelektra.org/doc/images/flyer.odt
+Display the logos found at https://master.libelektra.org/doc/images (see logo.png or the circle*.svg).
+Distribute the flyer found at https://master.libelektra.org/doc/images/flyer.odt
 And of course: talk about it!
