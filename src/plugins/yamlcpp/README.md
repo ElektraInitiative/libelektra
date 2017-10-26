@@ -41,9 +41,6 @@ echo "🔑 : 🐳"               > `kdb file /examples/yamlcpp`
 kdb get /examples/yamlcpp/🔑
 #> 🐳
 
-# Save the location of the config file so we can use it later
-mkdir /tmp/elektra
-echo `kdb file /examples/yamlcpp` > /tmp/elektra/data_file
 # Manually add syntactically incorrect data
 echo "some key: @some  value" >> `kdb file /examples/yamlcpp`
 kdb get "/examples/yamlcpp/some key"
@@ -53,7 +50,7 @@ kdb get "/examples/yamlcpp/some key"
 # RET: 5
 
 # Overwrite incorrect data
-echo "🔑: value" >  `cat /tmp/elektra/data_file`
+echo "🔑: value" >  `kdb file /examples/yamlcpp`
 
 # Add some values via `kdb set`
 kdb set /examples/yamlcpp/fleetwood mac
@@ -66,7 +63,6 @@ kdb get /examples/yamlcpp/fleetwood
 #> mac
 
 # Undo modifications
-rm -r /tmp/elektra
 kdb rm -r /examples/yamlcpp
 sudo kdb umount /examples/yamlcpp
 ```
