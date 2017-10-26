@@ -7,7 +7,7 @@
     "elektra-web",
     "clusterd"
   ],
-  "homepage": "http://git.libelektra.org/blob/master/src/tools/web/",
+  "homepage": "https://git.libelektra.org/blob/master/src/tools/web/",
   "license": "BSD",
   "main": "src/index.js",
   "scripts": {

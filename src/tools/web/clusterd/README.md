@@ -8,7 +8,7 @@ instances and clusters of instances (multiple instances at once).
 
 ## Installation
 
- * first, install [libelektra](http://libelektra.org/) with the [`yajl` plugin](http://tree.libelektra.org/src/plugins/yajl/)
+ * first, install [libelektra](https://libelektra.org/) with the [`yajl` plugin](http://tree.libelektra.org/src/plugins/yajl/)
  * now run `npm install`
 
 

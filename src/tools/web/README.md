@@ -7,7 +7,7 @@ _an API and web user interface to remotely manage multiple Elektra instances_
 
 Elektra-web requires:
 
- * [Elektra](http://libelektra.org/) with the [`yajl` plugin](http://tree.libelektra.org/src/plugins/yajl/) installed
+ * [Elektra](https://libelektra.org/) with the [`yajl` plugin](http://tree.libelektra.org/src/plugins/yajl/) installed
  * A recent [node.js](https://nodejs.org/en/) installation (at least 6.x)
 
 
@@ -65,7 +65,7 @@ edited, the changes are pushed to all instances in the cluster. Furthermore,
 single instances can be configured independently.
 
 The configuration view of elektra web is similar to the tree view of the
-[qt-gui](http://git.libelektra.org/tree/master/src/tools/qt-gui).
+[qt-gui](https://git.libelektra.org/tree/master/src/tools/qt-gui).
 
 ![https://cdn.rawgit.com/ElektraInitiative/libelektra/master/src/tools/web/doc/ui_structure.png](https://cdn.rawgit.com/ElektraInitiative/libelektra/master/src/tools/web/doc/ui_structure.png)
 

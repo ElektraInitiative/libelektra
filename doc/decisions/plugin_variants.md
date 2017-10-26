@@ -48,7 +48,7 @@ are:
   might have plugin variants, too)
 - Elektra’s specification language was not complete nor consistent at point
   of writing
-- Does not fit with the `checkconf` ([see here](http://git.libelektra.org/issues/559))
+- Does not fit with the `checkconf` ([see here](https://git.libelektra.org/issues/559))
   approach.
 
 
@@ -174,4 +174,4 @@ gets ignored.
 
 ## Notes
 
-Discussions took place [here](http://git.libelektra.org/issues/1006).
+Discussions took place [here](https://git.libelektra.org/issues/1006).

@@ -6,7 +6,7 @@ Elektra remotely, built using [express](https://expressjs.com/).
 
 ## Installation
 
- * first, install [libelektra](http://libelektra.org/)
+ * first, install [libelektra](https://libelektra.org/)
  * now run `npm install`
 
 

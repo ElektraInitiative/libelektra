@@ -36,9 +36,9 @@ sync via notification).
 
 ## I am stuck. Where can I get help?
 
-If this FAQ does not contain your question, [please open an issue](http://git.libelektra.org/issues).
+If this FAQ does not contain your question, [please open an issue](https://git.libelektra.org/issues).
 You can simply remove all template text and it is enough if the issue only contains your question.
-If you want you can [label it as question](http://git.libelektra.org/issues/labels/question), but we
+If you want you can [label it as question](https://git.libelektra.org/issues/labels/question), but we
 can also categorize it for you.
 
 Please do not waste too much time to find something out yourself. Information where people get
@@ -48,7 +48,7 @@ you posted the question: the pointer can be helpful for other people having the 
 
 ## Is this an actual problem of Elektra or is it just me?
 
-In case of doubt [please open an issue](http://git.libelektra.org/issues).
+In case of doubt [please open an issue](https://git.libelektra.org/issues).
 If the question was already answered or is already in the documentation, we will
 simply point it out to you.
 
@@ -58,8 +58,8 @@ feedback, only then we can improve the documentation such as this FAQ!
 
 ## What should I do if I found a bug?
 
-Please check the [issue tracker](http://git.libelektra.org/issues) if it has already been reported.
-If it has not, please [fill out the template](http://git.libelektra.org/issues/new).
+Please check the [issue tracker](https://git.libelektra.org/issues) if it has already been reported.
+If it has not, please [fill out the template](https://git.libelektra.org/issues/new).
 If you are in doubt, please report it.
 
 
