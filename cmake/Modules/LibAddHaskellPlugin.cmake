@@ -122,10 +122,10 @@ macro (add_haskell_plugin target)
 			# GHC's structure differs between OSX and Linux
 			# On OSX we need to link iconv and Cffi additionally
 			if (APPLE)
-				find_library (GHC_FFI_LIB "Cffi" PATHS "${GHC_LIB_DIR}/rts")
+				find_library (GHC_FFI_LIB Cffi PATHS "${GHC_LIB_DIR}/rts")
 				if (GHC_FFI_LIB)
-					set (GHC_LIB_DIRS
-						${GHC_LIB_DIRS}
+					set (GHC_LIBS
+						${GHC_LIBS}
 						${GHC_FFI_LIB}
 						iconv
 					)
@@ -177,6 +177,13 @@ macro (add_haskell_plugin target)
 				"${CMAKE_SOURCE_DIR}/src/plugins/haskell/Elektra/Haskell.hs"
 			)
 			add_custom_target (${target} DEPENDS ${PLUGIN_HASKELL_NAME})
+			if (BUILD_SHARED)
+				add_custom_command(TARGET ${target} POST_BUILD
+			    	COMMAND ${CMAKE_COMMAND} -E copy
+			    		"${PLUGIN_HASKELL_NAME}"
+	    				"${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/"
+				)
+			endif (BUILD_SHARED)
 
 			else (GHC_PRIM_LIB)
 				remove_plugin (${target} "GHC_PRIM_LIB not found")
