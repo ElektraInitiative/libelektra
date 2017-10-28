@@ -144,11 +144,11 @@ public:
 	void addPlugin (PluginSpec const & plugin);
 	void remPlugin (PluginSpec const & plugin);
 
-	void needMetadata (std::string const & metadata);
-	void needPlugin (std::string const & provider);
+	void needMetadata (std::string metadata);
+	void needPlugin (std::string provider);
 	std::vector<std::string> resolveNeeds (bool addRecommends = true);
 
-	void recommendPlugin (std::string const & provider);
+	void recommendPlugin (std::string provider);
 
 	void fillPlugins (BackendInterface & b) const;
 
@@ -197,7 +197,7 @@ public:
 
 	void setBackendConfig (KeySet const & ks);
 
-	void useConfigFile (std::string const & file);
+	void useConfigFile (std::string file);
 	std::string getConfigFile () const;
 
 	void serialize (kdb::KeySet & ret);

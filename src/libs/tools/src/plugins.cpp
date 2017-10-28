@@ -85,7 +85,7 @@ void Plugins::addInfo (Plugin & plugin)
 	}
 }
 
-void Plugins::addPlugin (Plugin & plugin, std::string const & which)
+void Plugins::addPlugin (Plugin & plugin, std::string which)
 {
 	if (!plugin.findInfo (which, "placements")) return;
 
@@ -110,7 +110,7 @@ void Plugins::addPlugin (Plugin & plugin, std::string const & which)
  * @retval true if it should be added
  * @retval false no placements (will not be added)
  */
-bool Plugins::checkPlacement (Plugin & plugin, std::string const & which)
+bool Plugins::checkPlacement (Plugin & plugin, std::string which)
 {
 	if (!plugin.findInfo (which, "placements")) return false; // nothing to check, won't be added anyway
 
@@ -398,7 +398,7 @@ bool SetPlugins::validated () const
 
 namespace
 {
-void serializeConfig (std::string const & name, KeySet const & ks, KeySet & ret)
+void serializeConfig (std::string name, KeySet const & ks, KeySet & ret)
 {
 	if (!ks.size ()) return;
 

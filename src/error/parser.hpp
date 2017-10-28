@@ -18,7 +18,7 @@ struct parse_error : std::exception
 	std::string info;
 	int linenr;
 
-	parse_error (std::string const & info_, int linenr_) : info (std::move (info_)), linenr (linenr_)
+	parse_error (std::string info_, int linenr_) : info (std::move (info_)), linenr (linenr_)
 	{
 	}
 

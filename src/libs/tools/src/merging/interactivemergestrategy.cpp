@@ -23,7 +23,7 @@ namespace tools
 namespace merging
 {
 
-void outputKeyInfo (string const & whichKey, Key & key, ostream & outputStream)
+void outputKeyInfo (string whichKey, Key & key, ostream & outputStream)
 {
 	if (!key)
 	{

@@ -106,7 +106,7 @@ private:
 class KeyValueLayer : public kdb::Layer
 {
 public:
-	KeyValueLayer (std::string const & key, std::string const & value) : m_key (std::move (key)), m_value (std::move (value))
+	KeyValueLayer (std::string key, std::string value) : m_key (std::move (key)), m_value (std::move (value))
 	{
 	}
 	std::string id () const override
