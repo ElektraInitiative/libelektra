@@ -311,6 +311,11 @@ int elektraJniClose (Plugin * handle, Key * errorKey)
 		return 0;
 	}
 
+	if (!data)
+	{
+		return -1;
+	}
+
 	int ret = call1Arg (data, errorKey, "close");
 
 	(*data->jvm)->DestroyJavaVM (data->jvm);
@@ -342,6 +347,11 @@ int elektraJniGet (Plugin * handle, KeySet * returned, Key * parentKey)
 	if (!data || data->module == 1)
 	{
 		return 0;
+	}
+
+	if (!data)
+	{
+		return -1;
 	}
 
 	return call2Arg (data, returned, parentKey, "get");
