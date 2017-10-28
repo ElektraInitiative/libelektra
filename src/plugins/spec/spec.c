@@ -729,14 +729,16 @@ static int doGlobbing (Key * parentKey, KeySet * returned, KeySet * specKS, Conf
 		ksRewind (returned);
 		if (!found && dir == GET)
 		{
-			if (keyGetMeta (specKey, "assign/condition")) // hardcoded for now because only assign/conditional currently exists
+			if (keyGetMeta (specKey, "assign/condition")) // hardcoded for now because only "assign/condition" from "assign/*"
+								      // currently exists
 			{
 				Key * newKey = keyNew (strchr (keyName (specKey), '/'), KEY_CASCADING_NAME, KEY_END);
 				keySetMeta (newKey, "assign/condition", keyString (keyGetMeta (specKey, "assign/condition")));
 				ksAppendKey (returned, keyDup (newKey));
 				keyDel (newKey);
 			}
-			else if (keyGetMeta (specKey, "default"))
+			else if (keyGetMeta (specKey,
+					     "default")) // hardcoded for now because only "default" from "default/*" currently exists
 			{
 				Key * newKey = keyNew (strchr (keyName (specKey), '/'), KEY_CASCADING_NAME, KEY_VALUE,
 						       keyString (keyGetMeta (specKey, "default")), KEY_END);
@@ -875,7 +877,7 @@ int elektraSpecGet (Plugin * handle, KeySet * returned, Key * parentKey)
 	ksDel (specKS);
 	elektraFree (ch);
 	ksRewind (returned);
-	return ret; // success
+	return ret;
 }
 
 int elektraSpecSet (Plugin * handle, KeySet * returned, Key * parentKey)
@@ -940,7 +942,7 @@ int elektraSpecSet (Plugin * handle, KeySet * returned, Key * parentKey)
 	elektraFree (ch);
 	ksRewind (returned);
 	elektraPluginSetData (handle, pluginConfig);
-	return ret; // success
+	return ret;
 }
 
 int elektraSpecClose (Plugin * handle, Key * parentKey ELEKTRA_UNUSED)
@@ -957,7 +959,7 @@ Plugin * ELEKTRA_PLUGIN_EXPORT (spec)
 {
 	// clang-format off
 	return elektraPluginExport ("spec",
-            ELEKTRA_PLUGIN_CLOSE, &elektraSpecClose,
+		ELEKTRA_PLUGIN_CLOSE, &elektraSpecClose,
 			ELEKTRA_PLUGIN_GET,	&elektraSpecGet,
 			ELEKTRA_PLUGIN_SET,	&elektraSpecSet,
 			ELEKTRA_PLUGIN_END);
