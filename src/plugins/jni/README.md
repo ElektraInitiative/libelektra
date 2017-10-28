@@ -4,22 +4,22 @@
 - infos/provides =
 - infos/needs =
 - infos/placements =
-- infos/status = unittest configurable memleak experimental -10000
-- infos/description = generic java plugin
+- infos/status = unittest configurable memleak experimental -500
+- infos/description = generic Java plugin
 
 ## Introduction
 
-Allows you to write plugins in java.
+Allows you to write plugins in Nava.
 
 Needs Java 8 or later. While the plugin internally uses JNI, the Java
-binding for your java-plugin may use something different, e.g. JNA.
-The requirements for the java bindings are:
+binding for your Java plugin may use something different, e.g. JNA.
+The requirements for the Java bindings are:
 
 - needs to have the classes `elektra/Key` and `elektra/KeySet` with
  - a constructor that takes a C-Pointer as long (J)
  - a method "release" that gives up ownership (set internal pointer to NULL)
 
-The java plugin itself needs to have the following methods:
+The Java plugin itself needs to have the following methods:
 
 - constructor without arguments (i.e. default constructor)
 - open with argument `elektra/KeySet` (the plugin's conf) and `elektra/Key`
@@ -30,7 +30,18 @@ The java plugin itself needs to have the following methods:
 
 ## Installation
 
-### Java prerequisites on Linux (Debian)
+### Java prerequisites on Debian 9
+
+Install openjdk-9-jdk openjdk-9-jdk-headless openjdk-9-jre from backports.
+
+When manually executing testcases the following LD_LIBRARY_PATH might be needed:
+`/usr/lib/jvm/java-9-openjdk-amd64/lib:/usr/lib/jvm/java-9-openjdk-amd64/lib/server`
+
+openjdk-8 is known not to work (jvm crashes without usable backtrace).
+
+
+### Java prerequisites on Debian 8
+
 Please install java8 as package, e.g.
 [for debian](http://www.webupd8.org/2014/03/how-to-install-oracle-java-8-in-debian.html)
 and then let cmake actually find jdk8:
@@ -132,10 +143,10 @@ Also explained
 
 (Argumentation for -500 in status)
 
-- In Debian Wheezy you cannot use openjdk:
+- In Debian Wheezy/Jessie you cannot use openjdk:
   you get a linker error because of some missing private SUN symbols.
   Maybe just the cmake mechanism to find java is broken.
 - Only a single java plugin can be loaded
-- when this plugin is enabled, valgrind detects memory problems even if
+- When this plugin is enabled, valgrind detects memory problems even if
   the plugin is not mounted.
 
