@@ -246,6 +246,16 @@ static void parseConfig (KeySet * config, BoolData * data)
 	}
 }
 
+static int isBool (const Key * key)
+{
+	const Key * boolMeta = keyGetMeta (key, "type");
+	if (boolMeta && !strcmp (keyString (boolMeta), "boolean")) return 1;
+
+	boolMeta = keyGetMeta (key, "check/type");
+	if (boolMeta && !strcmp (keyString (boolMeta), "boolean")) return 1;
+	return 0;
+}
+
 int elektraBooleanGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
 {
 	if (!elektraStrCmp (keyName (parentKey), "system/elektra/modules/boolean"))
@@ -276,9 +286,7 @@ int elektraBooleanGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA
 	ksRewind (returned);
 	while ((key = ksNext (returned)) != NULL)
 	{
-		const Key * boolMeta = keyGetMeta (key, "type");
-		if (!boolMeta) continue;
-		if (!strcmp (keyString (boolMeta), "boolean"))
+		if (isBool (key))
 		{
 			normalize (key, parentKey, data);
 		}
@@ -308,22 +316,18 @@ int elektraBooleanSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA
 	int retVal = 1;
 	while ((key = ksNext (returned)) != NULL)
 	{
-		const Key * checkMeta = keyGetMeta (key, "type");
-		if (checkMeta)
+		if (isBool (key))
 		{
-			if (!strcmp (keyString (checkMeta), "boolean"))
+			const Key * nameMeta = keyGetMeta (key, "origvalue");
+			if ((!(!strcmp (keyString (key), trueValue) || !strcmp (keyString (key), falseValue))) ||
+			    (keyGetMeta (key, "boolean/invalid")))
 			{
-				const Key * nameMeta = keyGetMeta (key, "origvalue");
-				if ((!(!strcmp (keyString (key), trueValue) || !strcmp (keyString (key), falseValue))) ||
-				    (keyGetMeta (key, "boolean/invalid")))
-				{
-					keySetMeta (key, "boolean/invalid", 0);
-					ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_INVALID_BOOL, parentKey, "%s is not a valid boolean value",
-							    keyString (nameMeta));
-					retVal = -1;
-				}
-				if (nameMeta) restoreValue (key, keyString (nameMeta));
+				keySetMeta (key, "boolean/invalid", 0);
+				ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_INVALID_BOOL, parentKey, "%s is not a valid boolean value",
+						    keyString (nameMeta));
+				retVal = -1;
 			}
+			if (nameMeta) restoreValue (key, keyString (nameMeta));
 		}
 	}
 	return retVal; // success
