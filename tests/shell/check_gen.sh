@@ -30,6 +30,14 @@ else
 	exit
 fi
 
+if /usr/bin/env python2 -c 'from Cheetah.Template import Template' 2> /dev/null
+then
+	echo "Cheetah available"
+else
+	echo "Cheetah not available"
+	exit
+fi
+
 [ -z "${CC}" ] && CC=gcc
 [ -z "${CXX}" ] && CXX=g++
 if "${CC}" --version 2> /dev/null | grep -Eq '^gcc'
