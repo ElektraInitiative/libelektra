@@ -34,9 +34,11 @@ protected:
 	typedef void (*func_t) ();
 
 public:
+	/* TODO: reintroduce with next API break
 	virtual ~PluginDatabase ()
 	{
 	}
+	*/
 
 	/**
 	 * @brief list all plugins
