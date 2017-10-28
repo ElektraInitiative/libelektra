@@ -52,13 +52,13 @@ Subscribe to the
 to always get the release notifications.
 
 For any questions and comments, please contact the
-[Mailing List](https://lists.sourceforge.net/lists/listinfo/registry-list)
-the issue tracker [on GitHub](https://git.libelektra.org/issues)
-or by email elektra@markus-raab.org.
+issue tracker [on GitHub](http://git.libelektra.org/issues)
+or me by email using elektra@markus-raab.org.
 
 [Permalink to this NEWS entry](https://doc.libelektra.org/news/<<UID>>.html)
 
 For more information, see [https://libelektra.org](https://libelektra.org)
+
 
 Best regards,
 Markus
