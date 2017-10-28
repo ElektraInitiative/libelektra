@@ -67,7 +67,7 @@ if (MAVEN_EXECUTABLE) # set by find_program
 
 		set_property (
 			TEST testjna_maven
-			PROPERTY LABELS bindings
+			PROPERTY LABELS bindings memleak
 		)
 	endif (NOT ENABLE_ASAN)
 else (MAVEN_EXECUTABLE)
