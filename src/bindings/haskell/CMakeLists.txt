@@ -62,7 +62,7 @@ if (GHC_EXECUTABLE)
 	add_custom_target (c2hs_haskell ALL DEPENDS "${BINDING_HASKELL_NAME}")
 
 	# build and install it to the cabal db
-	install (CODE "execute_process (COMMAND ${CABAL_EXECUTABLE} install WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})")
+	install (CODE "execute_process (COMMAND ${CABAL_EXECUTABLE} install WORKING_DIRECTORY \"${CMAKE_CURRENT_BINARY_DIR}\")")
 
 	if (BUILD_TESTING)
 		# test it using the executables, so cmake takes care about the rpaths
