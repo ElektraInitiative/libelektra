@@ -183,7 +183,7 @@ Note that the frontend is not elektrified, only changes within
 The parameters that need to be changed in order for the frontend to work correctly, are:
 
 - `system/sw/elektra/restfrontend/#0/current/backend/root`: set it to the URL where the backend will be reachable, e.g. `http://restapi.libelektra.org/` (with trailing slash!)
-- `system/sw/elektra/restfrontend/#0/current/website/url`: set it to the URL where the frontend will be reachable, e.g. `http://libelektra.org/` (with trailing slash!)
+- `system/sw/elektra/restfrontend/#0/current/website/url`: set it to the URL where the frontend will be reachable, e.g. `https://libelektra.org/` (with trailing slash!)
 
 ## Running the Applications
 

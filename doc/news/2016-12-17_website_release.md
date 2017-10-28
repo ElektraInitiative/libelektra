@@ -40,7 +40,7 @@ But sharing of snippets does not only help other users, it can help
 yourself as well because you can search for them easier. You also
 have access to the snippets in various formats at any time, allowing
 you to use them across multiple system by mounting them with the
-[curlget](https://tree.libelektra.org/src/plugins/curlget) resolver!
+[curlget](https://master.libelektra.org/src/plugins/curlget) resolver!
 
 ## The Website
 

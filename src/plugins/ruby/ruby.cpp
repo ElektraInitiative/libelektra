@@ -3,7 +3,7 @@
  *
  * @brief
  *
- * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ * @copyright BSD License (see doc/LICENSE.md or https://www.libelektra.org)
  *
  */
 
@@ -108,7 +108,7 @@ static VALUE get_exception_string (VALUE exception)
  * @brief clear ruby exception, log and return it
  *
  * this method should be called directly after rb_protect (or similar function), iff
- * that call issued an exception. This will clear the exception and log a warning 
+ * that call issued an exception. This will clear the exception and log a warning
  * message.
  * (inline, to have better logs)
  */
@@ -158,7 +158,7 @@ static VALUE clear_ruby_exception_set_error (ckdb::Key * errorKey)
 
 /**
  * @brief wrapper function to be called by rb_protect
- * 
+ *
  * takes a Ruby array with arguments, method id and instance (in that order)
  * to be called.
  */
