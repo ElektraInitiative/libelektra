@@ -244,7 +244,7 @@ void Backend::useConfigFile (std::string file)
 			checkFileFunction = reinterpret_cast<checkFilePtr> (elem->getSymbol ("checkfile"));
 			break;
 		}
-		catch (MissingSymbol & ms)
+		catch (MissingSymbol const & ms)
 		{
 		}
 	}
