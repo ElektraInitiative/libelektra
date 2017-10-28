@@ -8,6 +8,32 @@ if (GHC_EXECUTABLE)
 
 	set (CABAL_INCLUDE_DIRS "\"${CMAKE_SOURCE_DIR}/src/include\", \"${CMAKE_BINARY_DIR}/src/include\"")
 
+	execute_process (
+		COMMAND ${GHC_EXECUTABLE} --numeric-version
+		OUTPUT_VARIABLE GHC_VERSION OUTPUT_STRIP_TRAILING_WHITESPACE
+	)
+
+	set (BINDING_HASKELL_NAME "${CMAKE_CURRENT_BINARY_DIR}/dist/build/libHSlibelektra-haskell-${KDB_VERSION}")
+	set (CABAL_OPTS "--prefix=${CMAKE_INSTALL_PREFIX}")
+	if (BUILD_SHARED OR BUILD_FULL)
+		set (BINDING_HASKELL_NAME "${BINDING_HASKELL_NAME}-ghc${GHC_VERSION}.so")
+		set (CABAL_OPTS "${CABAL_OPTS};--enable-shared")
+		if (BUILD_SHARED)
+			set (ELEKTRA_DEPENDENCY "elektra;elektra-kdb;")
+		elseif (BUILD_FULL)
+			set (ELEKTRA_DEPENDENCY "elektra-full;")
+		endif ()
+	elseif (BUILD_STATIC)
+		set (BINDING_HASKELL_NAME "${BINDING_HASKELL_NAME}.a")
+		set (ELEKTRA_DEPENDENCY "elektra-static;")
+	endif ()
+
+	if (BUILD_TESTING)
+		set (CABAL_OPTS "${CABAL_OPTS};--enable-tests")
+	endif (BUILD_TESTING)
+
+	string (REPLACE ";" " " CABAL_ELEKTRA_DEPENDENCY "${ELEKTRA_DEPENDENCY}")
+	
 	# configure include paths
 	configure_file (
 		"${CMAKE_CURRENT_SOURCE_DIR}/libelektra-haskell.cabal.in"
@@ -16,12 +42,12 @@ if (GHC_EXECUTABLE)
 	)
 
 	add_custom_command (
-		OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/dist/build/libHSlibelektra-haskell-${KDB_VERSION}.a"
+		OUTPUT ${BINDING_HASKELL_NAME}
 		"${CMAKE_CURRENT_BINARY_DIR}/dist/build/testhaskell_basic/testhaskell_basic"
 		"${CMAKE_CURRENT_BINARY_DIR}/dist/build/testhaskell_basic_optimized/testhaskell_basic_optimized"
 		"${CMAKE_CURRENT_BINARY_DIR}/dist/build/testhaskell_realworld/testhaskell_realworld"
 		"${CMAKE_CURRENT_BINARY_DIR}/dist/build/testhaskell_realworld_optimized/testhaskell_realworld_optimized"
-		COMMAND ${CABAL_EXECUTABLE} --ipid=libelektra-haskell-${KDB_VERSION} --enable-tests --enable-shared configure
+		COMMAND ${CABAL_EXECUTABLE} --ipid=libelektra-haskell-${KDB_VERSION} ${CABAL_OPTS} configure
 		COMMAND ${CABAL_EXECUTABLE} build
 		WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
 		DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/libelektra-haskell.cabal"
@@ -31,9 +57,9 @@ if (GHC_EXECUTABLE)
 		"${CMAKE_CURRENT_SOURCE_DIR}/src/Elektra/KDB.chs"
 		"${CMAKE_CURRENT_SOURCE_DIR}/test/Elektra.hs"
 		"${CMAKE_CURRENT_SOURCE_DIR}/test/ElektraRealWorld.hs"
-		elektra
+		"${ELEKTRA_DEPENDENCY}"
 	)
-	add_custom_target (c2hs_haskell ALL DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/dist/build/libHSlibelektra-haskell-${KDB_VERSION}.a")
+	add_custom_target (c2hs_haskell ALL DEPENDS "${BINDING_HASKELL_NAME}")
 
 	# build and install it to the cabal db
 	install (CODE "execute_process (COMMAND ${CABAL_EXECUTABLE} install WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})")
