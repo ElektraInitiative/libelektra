@@ -32,8 +32,12 @@ Show the man page\.
 Print version info\.
 .
 .TP
-\fB\-p\fR, \fB\-\-profile\fR=\fIprofile\fR
+\fB\-p\fR, \fB\-\-profile <profile>\fR
 Use a different kdb profile\.
+.
+.TP
+\fB\-C\fR, \fB\-\-color <when>\fR
+Print never/auto(default)/always colored output\.
 .
 .TP
 \fB\-d\fR, \fB\-\-debug\fR
@@ -42,10 +46,6 @@ Give debug information or ask debug questions (in interactive mode)\.
 .TP
 \fB\-i\fR, \fB\-\-interactive\fR
 Instead of passing all information by parameters ask the user interactively\.
-.
-.TP
-\fB\-C\fR, \fB\-\-color\fR=[when]
-Print never/auto(default)/always colored output\.
 .
 .SH "EXAMPLES"
 To mount a new file using an existing backend that is mounted to \fBsystem/example\fR:

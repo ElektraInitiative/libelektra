@@ -25,8 +25,10 @@ Additionally, a user can use the command `kdb ls <same key>` to see if an overri
   Show the man page.
 - `-V`, `--version`:
   Print version info.
-- `-p`, `--profile`=<profile>:
+- `-p`, `--profile <profile>`:
   Use a different kdb profile.
+- `-C`, `--color <when>`:
+  Print never/auto(default)/always colored output.
 - `-a`, `--all`:
   Consider all of the keys.
 - `-n`, `--no-newline`:
@@ -35,8 +37,6 @@ Additionally, a user can use the command `kdb ls <same key>` to see if an overri
   Explain what is happening.
   Gives a complete trace of all tried keys.
   Very useful to debug fallback and overrides.
-- `-C`, `--color`=[when]:
-  Print never/auto(default)/always colored output.
 
 
 ## EXAMPLES

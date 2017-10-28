@@ -56,7 +56,7 @@ Cmdline::Cmdline (int argc, char ** argv, Command * command)
 	helpText += "\n";
 
 	string allOptions = command->getShortOptions ();
-	allOptions += "HVp:";
+	allOptions += "HVCp";
 
 	// Make sure to use the unsorted allOptions for getopt to preserve argument chars : and ::
 	std::set<string::value_type> unique_sorted_chars (allOptions.begin (), allOptions.end ());
@@ -106,21 +106,21 @@ Cmdline::Cmdline (int argc, char ** argv, Command * command)
 		long_options.push_back (o);
 		helpText += "-i --interactive         Ask the user interactively.\n";
 	}
-	if (acceptedOptions.find ('m') != string::npos)
+	optionPos = acceptedOptions.find ('m');
+	if (optionPos != string::npos)
 	{
+		acceptedOptions.insert (optionPos + 1, ":");
 		option o = { "min-depth", required_argument, nullptr, 'm' };
 		long_options.push_back (o);
-		helpText +=
-			"-m --min-depth           Specify the minimum depth of completion suggestions (0 by default), inclusive "
-			"and relative to the name to complete.\n";
+		helpText += "-m --min-depth <min>     Specify the minimum depth (default 0).\n";
 	}
-	if (acceptedOptions.find ('M') != string::npos)
+	optionPos = acceptedOptions.find ('M');
+	if (optionPos != string::npos)
 	{
+		acceptedOptions.insert (optionPos + 1, ":");
 		option o = { "max-depth", required_argument, nullptr, 'M' };
 		long_options.push_back (o);
-		helpText +=
-			"-M --max-depth           Specify the maximum depth of completion suggestions (unlimited by default, 1 to show "
-			"only the next level), exclusive and relative to the name to complete.\n";
+		helpText += "-M --max-depth <max>     Specify the maximum depth (unlimited by default).\n";
 	}
 	if (acceptedOptions.find ('n') != string::npos)
 	{
@@ -194,7 +194,7 @@ Cmdline::Cmdline (int argc, char ** argv, Command * command)
 		acceptedOptions.insert (optionPos + 1, ":");
 		option o = { "editor", required_argument, 0, 'e' };
 		long_options.push_back (o);
-		helpText += "-e --editor              Which external editor to use.\n";
+		helpText += "-e --editor <editor>     Which external editor to use.\n";
 	}
 	if (acceptedOptions.find ('W') != string::npos)
 	{
@@ -232,7 +232,7 @@ Cmdline::Cmdline (int argc, char ** argv, Command * command)
 		acceptedOptions.insert (optionPos + 1, ":");
 		option o = { "namespace", required_argument, nullptr, 'N' };
 		long_options.push_back (o);
-		helpText += "-N --namespace ns        Specify the namespace to use for cascading keys.\n";
+		helpText += "-N --namespace <ns>      Specify the namespace to use for cascading keys.\n";
 	}
 	optionPos = acceptedOptions.find ('c');
 	if (optionPos != string::npos)
@@ -240,14 +240,15 @@ Cmdline::Cmdline (int argc, char ** argv, Command * command)
 		acceptedOptions.insert (optionPos + 1, ":");
 		option o = { "plugins-config", required_argument, nullptr, 'c' };
 		long_options.push_back (o);
-		helpText += "-c --plugins-config      Add a plugin configuration.\n";
+		helpText += "-c --plugins-config <c>  Add a plugin configuration.\n";
 	}
 	optionPos = acceptedOptions.find ('C');
 	if (optionPos != string::npos)
 	{
-		option o = { "color", optional_argument, nullptr, 'C' };
+		acceptedOptions.insert (optionPos + 1, ":");
+		option o = { "color", required_argument, nullptr, 'C' };
 		long_options.push_back (o);
-		helpText += "-C --color[=WHEN]        Print never/auto(default)/always colored output.\n";
+		helpText += "-C --color <when>       Print never/auto(default)/always colored output.\n";
 	}
 
 	int index = 0;
@@ -259,7 +260,7 @@ Cmdline::Cmdline (int argc, char ** argv, Command * command)
 
 	opterr = 0;
 
-	while ((opt = getopt_long (argc, argv, allOptions.c_str (), &long_options[0], &index)) != EOF)
+	while ((opt = getopt_long (argc, argv, acceptedOptions.c_str (), &long_options[0], &index)) != EOF)
 	{
 		switch (opt)
 		{
@@ -350,7 +351,7 @@ Cmdline::Cmdline (int argc, char ** argv, Command * command)
 		opterr = 1;
 	}
 
-	while ((opt = getopt_long (argc, argv, allOptions.c_str (), &long_options[0], &index)) != EOF)
+	while ((opt = getopt_long (argc, argv, acceptedOptions.c_str (), &long_options[0], &index)) != EOF)
 	{
 		switch (opt)
 		{
@@ -359,12 +360,12 @@ Cmdline::Cmdline (int argc, char ** argv, Command * command)
 			all = true;
 			break;
 		case 'C':
-			if (!optarg)
-			{
-				color = "auto";
-				break;
-			}
 			color = optarg;
+			if (color != "never" && color != "auto" && color != "always")
+			{
+				std::cerr << argv[0] << ": -C --color needs never, auto, or always as argument\n";
+				invalidOpt = true;
+			}
 			break;
 		case 'd':
 			debug = true;
@@ -388,21 +389,27 @@ Cmdline::Cmdline (int argc, char ** argv, Command * command)
 			interactive = true;
 			break;
 		case 'm':
-			if (!optarg)
+			try
 			{
-				minDepth = 0;
-				break;
+				minDepth = stoi (optarg);
 			}
-			stringstream (optarg) >> minDepth;
+			catch (std::invalid_argument & ia)
+			{
+				std::cerr << argv[0] << ": -m --min-depth needs a valid number as argument\n";
+				invalidOpt = true;
+			}
 			break;
 		case 'M':
-			if (!optarg)
+			try
 			{
-				cout << " no optarg for max " << endl;
-				maxDepth = numeric_limits<int>::max ();
-				break;
+				maxDepth = stoi (optarg);
 			}
-			stringstream (optarg) >> maxDepth;
+			catch (std::invalid_argument & ia)
+			{
+				std::cerr << argv[0] << ": -M --max-depth needs a valid number as argument\n";
+				invalidOpt = true;
+			}
+
 			if (maxDepth == -1)
 			{
 				maxDepth = numeric_limits<int>::max ();

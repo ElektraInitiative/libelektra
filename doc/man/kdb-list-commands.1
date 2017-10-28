@@ -23,8 +23,12 @@ Show the man page\.
 Print version info\.
 .
 .TP
-\fB\-p\fR, \fB\-\-profile\fR=\fIprofile\fR
+\fB\-p\fR, \fB\-\-profile <profile>\fR
 Use a different kdb profile\.
+.
+.TP
+\fB\-C\fR, \fB\-\-color <when>\fR
+Print never/auto(default)/always colored output\.
 .
 .TP
 \fB\-v\fR, \fB\-\-verbose\fR
@@ -33,10 +37,6 @@ Also output some explanation for every command\. The command names are bold if c
 .TP
 \fB\-0\fR, \fB\-\-null\fR
 Use binary 0 termination
-.
-.TP
-\fB\-C\fR, \fB\-\-color\fR=[when]
-Print never/auto(default)/always colored output\.
 .
 .SH "EXAMPLES"
 To get a list of all available commands with their help text: \fBkdb list\-commands \-v\fR

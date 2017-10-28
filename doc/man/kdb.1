@@ -39,8 +39,12 @@ Show the man page\.
 Print version info\.
 .
 .TP
-\fB\-p\fR, \fB\-\-profile\fR=\fIprofile\fR
+\fB\-p\fR, \fB\-\-profile <profile>\fR
 Use a different kdb profile, see below\.
+.
+.TP
+\fB\-C\fR, \fB\-\-color <when>\fR
+Print never/auto(default)/always colored output\.
 .
 .SH "COMMON OPTIONS"
 Most tools have the following options:
@@ -52,10 +56,6 @@ Explain what is happening\.
 .TP
 \fB\-q\fR, \fB\-\-quiet\fR
 Suppress non\-error messages\.
-.
-.TP
-\fB\-C\fR, \fB\-\-color\fR=[when]
-Print never/auto(default)/always colored output\.
 .
 .SH "KDB"
 The \fBkdb\fR utility reads its own configuration from three sources within the KDB (key database):
@@ -181,21 +181,6 @@ Reserved error codes\.
 .TP
 11\-20
 Command\-specific error codes\. See man page of specific command\.
-.
-.SH "OPTIONS"
-Commonly used options for all programs:
-.
-.TP
-\fB\-H\fR, \fB\-\-help\fR
-Show the man page\.
-.
-.TP
-\fB\-V\fR, \fB\-\-version\fR
-Print version info\.
-.
-.TP
-\fB\-p <profile>\fR, \fB\-\-profile <profile>\fR
-Use a different profile instead of current\.
 .
 .SH "SEE ALSO"
 .

@@ -42,8 +42,12 @@ Show the man page\.
 Print version info\.
 .
 .TP
-\fB\-p\fR, \fB\-\-profile\fR=\fIprofile\fR
+\fB\-p\fR, \fB\-\-profile <profile>\fR
 Use a different kdb profile\.
+.
+.TP
+\fB\-C\fR, \fB\-\-color <when>\fR
+Print never/auto(default)/always colored output\.
 .
 .TP
 \fB\-s\fR, \fB\-\-strategy <name>\fR
@@ -58,11 +62,7 @@ Explain what is happening\.
 Add a configuration to the format plugin\.
 .
 .TP
-\fB\-C\fR, \fB\-\-color\fR=[when]
-Print never/auto(default)/always colored output\.
-.
-.TP
-\fB\-N\fR, \fB\-\-namespace\fR=\fIns\fR
+\fB\-N\fR, \fB\-\-namespace <namespace>\fR
 Specify the namespace to use when writing cascading keys (\fBvalidate\fR strategy only)\. See \fIbelow in KDB\fR\.
 .
 .SH "KDB"

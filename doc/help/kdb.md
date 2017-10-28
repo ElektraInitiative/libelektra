@@ -37,8 +37,10 @@ Every core-tool has the following options:
   Show the man page.
 - `-V`, `--version`:
   Print version info.
-- `-p`, `--profile`=<profile>:
+- `-p`, `--profile <profile>`:
   Use a different kdb profile, see below.
+- `-C`, `--color <when>`:
+  Print never/auto(default)/always colored output.
 
 ## COMMON OPTIONS
 
@@ -48,8 +50,6 @@ Most tools have the following options:
   Explain what is happening.
 - `-q`, `--quiet`:
   Suppress non-error messages.
-- `-C`, `--color`=[when]:
-  Print never/auto(default)/always colored output.
 
 ## KDB
 
@@ -142,17 +142,6 @@ You are able to use:
   Reserved error codes.
 - 11-20:
   Command-specific error codes. See man page of specific command.
-
-## OPTIONS
-
-Commonly used options for all programs:
-
-- `-H`, `--help`:
-   Show the man page.
-- `-V`, `--version`:
-   Print version info.
-- `-p <profile>`, `--profile <profile>`:
-   Use a different profile instead of current.
 
 ## SEE ALSO
 

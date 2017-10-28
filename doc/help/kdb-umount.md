@@ -15,12 +15,12 @@ Unmount backend from key database.
   Show the man page.
 - `-V`, `--version`:
   Print version info.
-- `-p`, `--profile`=<profile>:
+- `-p`, `--profile <profile>`:
   Use a different kdb profile.
+- `-C`, `--color <when>`:
+  Print never/auto(default)/always colored output.
 - `-v`, `--verbose`:
   Show which mountpoints were considered.
-- `-C`, `--color`=[when]:
-  Print never/auto(default)/always colored output.
 
 ## SEE ALSO
 

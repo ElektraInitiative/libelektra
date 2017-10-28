@@ -26,8 +26,12 @@ Show the man page\.
 Print version info\.
 .
 .TP
-\fB\-p\fR, \fB\-\-profile\fR=\fIprofile\fR
+\fB\-p\fR, \fB\-\-profile <profile>\fR
 Use a different kdb profile\.
+.
+.TP
+\fB\-C\fR, \fB\-\-color <when>\fR
+Print never/auto(default)/always colored output\.
 .
 .TP
 \fB\-f\fR, \fB\-\-force\fR
@@ -38,12 +42,8 @@ The user can also use this tool to perform write tests\. Please note that this c
 Explain what is happening\.
 .
 .TP
-\fB\-c\fR, \fB\-\-plugins\-config\fR=\fIpluginconfig\fR
+\fB\-c\fR, \fB\-\-plugins\-config <plugins\-config>\fR
 Add a plugin configuration in addition to \fB/module\fR\.
-.
-.TP
-\fB\-C\fR, \fB\-\-color\fR=[when]
-Print never/auto(default)/always colored output\.
 .
 .SH "RETURN VALUES"
 There are two different types of checks, a check on a plugin (by specifying the name of a plugin as an argument) or a check on the key database itself\.

@@ -17,20 +17,20 @@ This command will list the name of all keys below a given path.
   Show the man page.
 - `-V`, `--version`:
   Print version info.
-- `-p`, `--profile`=<profile>:
+- `-p`, `--profile <profile>`:
   Use a different kdb profile.
-- `-m`, `--min-depth`=<min-depth>:
+- `-C`, `--color <when>`:
+  Print never/auto(default)/always colored output.
+- `-m`, `--min-depth <min-depth>`:
   Specify the minimum path depth of the output (0 by default), exclusive 
   and relative to the name to list.
-- `-M`, `--max-depth`=<max-depth>:
+- `-M`, `--max-depth <max-depth>`:
   Specify the maximum path depth of the output (unlimited by default, 1 
   to show only the next level), inclusive and relative to the name to list.
 - `-v`, `--verbose`:
   Explain what is happening.
 - `-0`, `--null`:
   Use binary 0 termination.
-- `-C`, `--color`=[when]:
-  Print never/auto(default)/always colored output.
 - `-d`, `--debug`:
   Give debug information.
 

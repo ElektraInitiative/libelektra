@@ -24,7 +24,7 @@ public:
 
 	virtual std::string getShortOptions () override
 	{
-		return "EcC::";
+		return "Ec";
 	}
 
 	virtual std::string getSynopsis () override

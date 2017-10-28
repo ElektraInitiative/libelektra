@@ -37,9 +37,9 @@ The kdb shell offers a number of commands to interact with the key database.
   Show the man page.
 - `-V`, `--version`:
   Print version info.
-- `-p`, `--profile`=<profile>:
+- `-p`, `--profile <profile>`:
   Use a different kdb profile.
-- `-C`, `--color`=[when]:
+- `-C`, `--color <when>`:
   Print never/auto(default)/always colored output.
 
 ## EXAMPLES

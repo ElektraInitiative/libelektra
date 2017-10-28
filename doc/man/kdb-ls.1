@@ -26,15 +26,19 @@ Show the man page\.
 Print version info\.
 .
 .TP
-\fB\-p\fR, \fB\-\-profile\fR=\fIprofile\fR
+\fB\-p\fR, \fB\-\-profile <profile>\fR
 Use a different kdb profile\.
 .
 .TP
-\fB\-m\fR, \fB\-\-min\-depth\fR=\fImin\-depth\fR
+\fB\-C\fR, \fB\-\-color <when>\fR
+Print never/auto(default)/always colored output\.
+.
+.TP
+\fB\-m\fR, \fB\-\-min\-depth <min\-depth>\fR
 Specify the minimum path depth of the output (0 by default), exclusive and relative to the name to list\.
 .
 .TP
-\fB\-M\fR, \fB\-\-max\-depth\fR=\fImax\-depth\fR
+\fB\-M\fR, \fB\-\-max\-depth <max\-depth>\fR
 Specify the maximum path depth of the output (unlimited by default, 1 to show only the next level), inclusive and relative to the name to list\.
 .
 .TP
@@ -44,10 +48,6 @@ Explain what is happening\.
 .TP
 \fB\-0\fR, \fB\-\-null\fR
 Use binary 0 termination\.
-.
-.TP
-\fB\-C\fR, \fB\-\-color\fR=[when]
-Print never/auto(default)/always colored output\.
 .
 .TP
 \fB\-d\fR, \fB\-\-debug\fR
