@@ -38,14 +38,14 @@ user/test/key2
 
 ```
 STDOUT: user/test/key1⏎user/test/key2
-< ls user/test
+< kdb ls user/test
 ```
 
 . If you only want to check that `key1` and `key2` are part of the output you can use the regex `key1.*key2` instead:
 
 ```
 STDOUT-REGEX: key1.*key2
-< ls user/test
+< kdb ls user/test
 ```
 
 . As you can see the line ending is considered  a normal character (`.`) in the output.
