@@ -887,23 +887,25 @@ static void elektraModifyFileTime (resolverHandle * pk)
 /* Update timestamp of old file to provoke conflicts in
  * stalling processes that might still wait with the old
  * filedescriptor */
-static void elektraUpdateFileTime (resolverHandle * pk, Key * parentKey)
+static void elektraUpdateFileTime (resolverHandle * pk, int fd, Key * parentKey)
 {
 #ifdef HAVE_FUTIMENS
 	const struct timespec times[2] = { pk->mtime,   // atime
 					   pk->mtime }; // mtime
 
-	if (futimens (pk->fd, times) == -1)
+	if (futimens (fd, times) == -1)
 	{
-		ELEKTRA_ADD_WARNINGF (99, parentKey, "Could not update time stamp of \"%s\", because %s", pk->filename, strerror (errno));
+		ELEKTRA_ADD_WARNINGF (99, parentKey, "Could not update time stamp of \"%s\", because %s",
+				      fd == pk->fd ? pk->filename : pk->tempfile, strerror (errno));
 	}
 #elif defined(HAVE_FUTIMES)
 	const struct timeval times[2] = { { pk->mtime.tv_sec, pk->mtime.tv_nsec / 1000 },   // atime
 					  { pk->mtime.tv_sec, pk->mtime.tv_nsec / 1000 } }; // mtime
 
-	if (futimes (pk->fd, times) == -1)
+	if (futimes (fd, times) == -1)
 	{
-		ELEKTRA_ADD_WARNINGF (99, parentKey, "Could not update time stamp of \"%s\", because %s", pk->filename, strerror (errno));
+		ELEKTRA_ADD_WARNINGF (99, parentKey, "Could not update time stamp of \"%s\", because %s",
+				      fd == pk->fd ? pk->filename : pk->tempfile, strerror (errno));
 	}
 #else
 #warning futimens/futimes not defined
@@ -929,7 +931,8 @@ static int elektraSetCommit (resolverHandle * pk, Key * parentKey)
 	if (fd == -1)
 	{
 		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_COULD_NOT_OPEN, parentKey,
-				    "Could not open file again for changing metadata of file \"%s\", because %s", pk->tempfile, strerror (errno));
+				    "Could not open file again for changing metadata of file \"%s\", because %s", pk->tempfile,
+				    strerror (errno));
 		ret = -1;
 	}
 
@@ -958,10 +961,7 @@ static int elektraSetCommit (resolverHandle * pk, Key * parentKey)
 		{
 			elektraModifyFileTime (pk);
 			// update file visible in filesystem:
-			int pfd = pk->fd;
-			pk->fd = fd;
-			elektraUpdateFileTime (pk, parentKey);
-			pk->fd = pfd;
+			elektraUpdateFileTime (pk, fd, parentKey);
 
 			/* @post
 			   For timejump backwards or time not changed,
@@ -973,7 +973,7 @@ static int elektraSetCommit (resolverHandle * pk, Key * parentKey)
 		}
 	}
 
-	elektraUpdateFileTime (pk, parentKey);
+	elektraUpdateFileTime (pk, pk->fd, parentKey);
 
 	// file is present now!
 	pk->isMissing = 0;
@@ -983,14 +983,16 @@ static int elektraSetCommit (resolverHandle * pk, Key * parentKey)
 		// change mode to what it was before
 		if (fchmod (fd, pk->filemode) == -1)
 		{
-			ELEKTRA_ADD_WARNINGF (99, parentKey, "Could not fchmod temporary file \"%s\", because %s", pk->tempfile, strerror (errno));
+			ELEKTRA_ADD_WARNINGF (99, parentKey, "Could not fchmod temporary file \"%s\", because %s", pk->tempfile,
+					      strerror (errno));
 		}
 	}
 	if (buf.st_uid != pk->uid || buf.st_gid != pk->gid)
 	{
 		if (fchown (fd, pk->uid, pk->gid) == -1)
 		{
-			ELEKTRA_ADD_WARNINGF (99, parentKey, "Could not fchown temporary file \"%s\", because %s", pk->tempfile, strerror (errno));
+			ELEKTRA_ADD_WARNINGF (99, parentKey, "Could not fchown temporary file \"%s\", because %s", pk->tempfile,
+					      strerror (errno));
 		}
 	}
 
