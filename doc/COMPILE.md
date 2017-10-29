@@ -341,6 +341,30 @@ To not add such APIs, but only `swig` bindings and `cpp`, you can use:
 See help bar at bottom of ccmake for that option or:
 http://www.cmake.org/Wiki/CMake_Useful_Variables
 
+
+### BUILD_SHARED BUILD_FULL BUILD_STATIC
+
+`BUILD_SHARED` is the typical build you want to have on systems that support `dlopen`.
+It can be used for desktop builds, but also embedded systems as long as they support
+`dlopen`, for example, `BUILD_SHARED` is used on OpenWRT with musl.
+Using `BUILD_SHARED` every plugin is its own shared object.
+
+`BUILD_FULL` links together all parts of Elektra as a single shared `.so` library.
+This is ideal if shared libraries are available, but you want to avoid `dlopen`.
+Some tests only work with `BUILD_FULL`, so you might turn it on to get full
+coverage.
+
+`BUILD_STATIC` also links together all parts but as static `.a` library.
+It is only useful for systems without `dlopen` or if the overhead of
+`dlopen` needs to be avoided.
+
+All three forms of builds can be intermixed freely.
+
+For example, to enable shared and full build, but disable static build,
+one would use:
+
+    cmake -DBUILD_SHARED=ON -DBUILD_FULL=ON -DBUILD_STATIC=OFF ..
+
 #### ELEKTRA_DEBUG_BUILD and ELEKTRA_VERBOSE_BUILD
 
 Only needed by Elektra developers.
