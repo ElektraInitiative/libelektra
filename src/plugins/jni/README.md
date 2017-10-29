@@ -34,11 +34,14 @@ The Java plugin itself needs to have the following methods:
 
 Install openjdk-9-jdk openjdk-9-jdk-headless openjdk-9-jre from backports.
 
-When manually executing testcases the following LD_LIBRARY_PATH might be needed:
-`/usr/lib/jvm/java-9-openjdk-amd64/lib:/usr/lib/jvm/java-9-openjdk-amd64/lib/server`
-
 Make sure that 9 is also default java, otherwise CMake will not be able to locate it:
 `/usr/lib/jvm/default-java -> java-9-openjdk-amd64`
+
+When manually executing testcases the following LD_LIBRARY_PATH might be needed:
+`/usr/lib/jvm/default-java/lib:/usr/lib/jvm/default-java/lib/server`
+
+It also works with Java 8 from Oracle, but then the LD_LIBRARY_PATH needs to be:
+`/usr/lib/jvm/default-java/jre/lib/amd64:/usr/lib/jvm/default-java/jre/lib/amd64/server`
 
 
 openjdk-8 is known not to work (jvm crashes without usable backtrace).
