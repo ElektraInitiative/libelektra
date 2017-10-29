@@ -137,7 +137,7 @@ The Shell Recorder provides the following checks
 * `STDERR:` The Shell Recorder compares the **regular expression** after this directive with the standard error output of the command.
 * `RET:` The Shell Recorder compares this **regular expression** with the return code (exit status) of the command.
 * `WARNINGS:` This **comma separated list** of numbers is compared with the warnings thrown by a `kdb` command.
-* `ERRORS:` The Shell Recorder compares this **comma separated list** of numbers with the errors thrown by a `kdb` command.
+* `ERROR:` The Shell Recorder compares this number to the error thrown by a `kdb` command.
 * `DIFF:` This **regular expression** is compared with the output of a `diff` command. The input for the `diff` command is the last and current state of the key database. The directive `DiffType` specifies if the the Shell Recorder compares the file of the storage plugin (`File`) directly, or if it uses the INI (`Ini`) or Dump (`Dump`) format.
 
 ## Commands

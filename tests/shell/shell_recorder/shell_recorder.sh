@@ -168,20 +168,19 @@ execute()
 	fi
 
 # ==========
-# = ERRORS =
+# = ERROR =
 # ==========
 
-	ERRORS=$(echo "$STDERR" | sed -nE  's/error \(\#(\d*)/\1/p' | tr '\n' ',')
+	ERROR=$(echo "$STDERR" | sed -nE 's/.*error \(#([0-9]+).*/\1/p')
 
-
-	printf 'ERRORS: %s\n' "$ERRORS" >> "$OutFile"
-	if [ -n "$ERRORSCMP" ];
+	printf 'ERROR: %s\n' "$ERROR" >> "$OutFile"
+	if [ -n "$ERRORCMP" ];
 	then
 		nbTest=$(( nbTest + 1 ))
-		if ! printf '%s' "$ERRORS" | replace_newline_return | grep -Eq --text "$ERRORSCMP";
+		if ! printf '%s' "$ERROR" | replace_newline_return | grep -Eq --text "$ERRORCMP";
 		then
-			printf '\nERROR - ERRORS:\n“%s”\ndoes not match\n“%s”\n\n' "$ERRORS" "$ERRORSCMP"
-			printf '=== FAILED Errors do not match expected pattern %s\n' "$ERRORSCMP" >> "$OutFile"
+			printf '\nERROR - ERROR:\n“%s”\ndoes not match\n“%s”\n\n' "$ERROR" "$ERRORCMP"
+			printf '=== FAILED Errors do not match expected pattern %s\n' "$ERRORCMP" >> "$OutFile"
 			nbError=$(( nbError + 1 ))
 		fi
 	fi
@@ -247,8 +246,8 @@ run_script()
 	RET:)
 		RETCMP=$(tail "$line")
 		;;
-	ERRORS:)
-		ERRORSCMP=$(tail "$line")
+	ERROR:)
+		ERRORCMP=$(tail "$line")
 		;;
 	WARNINGS:)
 		WARNINGSCMP=$(tail "$line")
@@ -274,7 +273,7 @@ run_script()
 	then
 		execute "$ARG"
 		RETCMP=
-		ERRORSCMP=
+		ERRORCMP=
 		WARNINGSCMP=
 		STDOUTCMP=
 		STDOUTRECMP=
@@ -297,7 +296,7 @@ DiffType=File
 OutFile=$(mktempfile_elektra)
 
 RETCMP=
-ERRORSCMP=
+ERRORCMP=
 WARNINGSCMP=
 STDOUTCMP=
 STDOUTRECMP=
