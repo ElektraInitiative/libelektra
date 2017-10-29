@@ -74,7 +74,7 @@ library into a project (eclipse, netbeans, intelliJ, ...).
 
 Tested library versions are:
 
-- JNA: 4.2.2
+- JNA: 4.5.0
 - jUnit: 4.12 [jUnit 3 is not supported]
 - hamcrest-core: 1.13 (required by newer jUnit versions)
 
@@ -82,6 +82,8 @@ Tested JDK versions are:
 
 - Oracle JDK 1.8.0_112 on macOS 10.12 Sierra
 - OpenJDK 1.8.0_121 on Arch Linux
+- OpenJDK 1.9 on Ubuntu
+- Oracle JDK 1.9 build 9+181 on macOS 10.12 Sierra
 
 Both libraries should work on version 4.0 too, though.
 
