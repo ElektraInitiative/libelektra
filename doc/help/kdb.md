@@ -11,6 +11,7 @@ external dependency. Elektra abstracts from cross-platform-related issues
 with an consistent API, and allows applications to be aware of other
 applications' configurations, leveraging easy application integration.
 
+
 ## OVERVIEW
 
 The man pages can also be viewed online at:
@@ -28,6 +29,7 @@ You should start reading [kdb-introduction(1)](kdb-introduction.md).
 Documentation of plugins is available using the
 [kdb-info(1)](kdb-info.md) tool.
 Run `kdb list` for a list of plugins.
+
 
 ## BASIC OPTIONS
 
@@ -147,3 +149,4 @@ You are able to use:
 
 - [elektra-introduction(7)](elektra-introduction.md)
 - [kdb-introduction(1)](kdb-introduction.md)
+- Get a [big picture about Elektra](/doc/BIGPICTURE.md)
