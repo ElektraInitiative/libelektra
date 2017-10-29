@@ -1,8 +1,84 @@
 # Shell Recorder
 
-The Shell Recorder is a test tool that checks the output and return values of  shell commands such as `kdb`. It allows you to write unit and  regression tests. The Shell Recorder also records the result of tests in so-called protocol files. These protocol files can be used as basis for new Shell Recorder tests.
+## Overview
+
+The Shell Recorder is a test tool that checks the output and return values of shell commands such as `kdb`. It allows you to write unit and
+regression tests. Lets take a look at a simple Shell Recorder test first. We store the following text in a file called `test.esr`:
+
+```
+Mountpoint: user/examples/shellrecorder
+
+STDOUT: Create a new key user/examples/shellrecorder/key with string "value"
+RET: 0
+< kdb set user/examples/shellrecorder/key value
+```
+
+in the folder `Documents` in the home directory (`~/Documents/test.esr`). Shell Recorder tests start with a list of global values. The only
+required value is `Mountpoint`. It specifies the location in the KDB that the Shell Recorder will save before it runs the tests and restore
+after it is finished. In our example the Shell Recorder will backup and restore everything below the namespace
+`user/examples/shellrecorder`. After the global values a Shell Recorder file contains a list of tests.
+
+As you can see above, we specify the command we want to test after an initial smaller-than sign (`<`). In our case we want to test the
+command `kdb set /examples/shellrecorder/key value`. The words above the command are directives that tell the Shell Recorder what it should
+test. In our case we want to make sure, that the command prints the text
+`Create a new key user/examples/shellrecorder/key with string"value"` to `stdout`, and that the exit code of the command (return value)
+is `0`.
+
+Before we use the Shell Recorder we need to [build Elektra](/doc/COMPILE.md). If we assume that we built Elektra in the root of the
+repository in a folder called `build`, then the Shell Recorder is located at `build/tests/shell/shell_recorder/shell_recorder.sh`. To start
+our test we call the Shell Recorder from the root of the repository and specify our test file as first argument:
+
+```sh
+build/tests/shell/shell_recorder/shell_recorder.sh ~/Documents/test.esr
+```
+
+. The Shell Recorder should then print something like the following text:
+
+```
+kdb set user/examples/shellrecorder/key value
+shell_recorder /Users/rene/Documents/test.esr RESULTS: 2 test(s) done 0 error(s).
+```
+
+. If we want to check that the Shell Recorder really works we can modify the test:
+
+```
+Mountpoint: user/examples/shellrecorder
+
+STDOUT: NaNaNaNaNaNaNa
+RET: 1337
+< kdb set user/examples/shellrecorder/key value
+```
+
+. Now the output should look something like this:
+
+```
+kdb set user/examples/shellrecorder/key value
+Return value “0” does not match “1337”
+
+ERROR - STDOUT:
+“Create a new key user/examples/shellrecorder/key with string "value"”
+does not match
+“NaNaNaNaNaNaNa”
+
+shell_recorder /Users/rene/Documents/test.esr RESULTS: 2 test(s) done 2 error(s).
+📕  Protocol File: /var/folders/hx/flbncdhj4fs87095gzxvnj3h0000gn/T/elektraenv.XXXXXXXXX.gWyTCr2O
+```
+
+. We see that both checks failed. The protocol file at the end of the output contain the real output and  return value of the command:
+
+```
+…
+RET: 0
+…
+STDOUT: Create a new key user/examples/shellrecorder/key with string "value"
+…
+```
+
+.
 
 ## Configuration
+
+You can use the global values below at the start of Shell Recorder test. The basic syntax is `Variable: Value`.
 
 ### Mountpoint
 
