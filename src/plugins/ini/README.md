@@ -71,14 +71,15 @@ For example consider the following ini file:
 ```ini
 key1 = value1
 key2 = value2
-    with continuation
-    lines
+	with continuation
+	lines
 ```
 
 This would result in a KeySet containing two keys. One key named `key1` with the value `value1` and
 another key named `key2` with the value `value2\nwith continuation\nlines`.
 
-By default this feature is enabled.
+By default this feature is enabled. The default continuation character is tab (`\t`).
+If you want to use another character, then please specify the configuration option `linecont`.
 
 ## Arrays
 
