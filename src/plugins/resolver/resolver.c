@@ -510,9 +510,11 @@ int ELEKTRA_PLUGIN_FUNCTION (resolver, get) (Plugin * handle, KeySet * returned,
 	{
 		// no file, so storage has no job
 		errno = errnoSave;
-		pk->mtime.tv_sec = 0;  // no file, so no time
-		pk->mtime.tv_nsec = 0; // no file, so no time
 		pk->isMissing = 1;
+
+		// no file, so no metadata:
+		pk->mtime.tv_sec = 0;
+		pk->mtime.tv_nsec = 0;
 		return 0;
 	}
 	else
@@ -975,26 +977,27 @@ static int elektraSetCommit (resolverHandle * pk, Key * parentKey)
 
 	elektraUpdateFileTime (pk, pk->fd, parentKey);
 
-	// file is present now!
-	pk->isMissing = 0;
-
 	if (buf.st_mode != pk->filemode)
 	{
 		// change mode to what it was before
 		if (fchmod (fd, pk->filemode) == -1)
 		{
-			ELEKTRA_ADD_WARNINGF (99, parentKey, "Could not fchmod temporary file \"%s\", because %s", pk->tempfile,
-					      strerror (errno));
+			ELEKTRA_ADD_WARNINGF (99, parentKey, "Could not fchmod temporary file \"%s\" from %o to %o, because %s",
+					      pk->tempfile, buf.st_mode, pk->filemode, strerror (errno));
 		}
 	}
-	if (buf.st_uid != pk->uid || buf.st_gid != pk->gid)
+
+	if (!pk->isMissing && (buf.st_uid != pk->uid || buf.st_gid != pk->gid))
 	{
 		if (fchown (fd, pk->uid, pk->gid) == -1)
 		{
-			ELEKTRA_ADD_WARNINGF (99, parentKey, "Could not fchown temporary file \"%s\", because %s", pk->tempfile,
-					      strerror (errno));
+			ELEKTRA_ADD_WARNINGF (99, parentKey, "Could not fchown temporary file \"%s\" from %d.%d to %d.%d, because %s",
+					      pk->tempfile, buf.st_uid, buf.st_gid, pk->uid, pk->gid, strerror (errno));
 		}
 	}
+
+	// file is present now!
+	pk->isMissing = 0;
 
 	DIR * dirp = opendir (pk->dirname);
 	// checking dirp not needed, fsync will have EBADF
