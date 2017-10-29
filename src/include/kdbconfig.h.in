@@ -56,11 +56,11 @@
 
 /** To be used if you want the currently
   * build-in default storage, whatever it is. */
-#define KDB_STORAGE      "storage"
+#define KDB_STORAGE              "storage"
 
 /** To be used if you want the currently
   * build-in default resolver, whatever it is. */
-#define KDB_RESOLVER     "resolver"
+#define KDB_RESOLVER             "resolver"
 
 #define ELEKTRA_PLUGINS          "@ADDED_PLUGINS@"
 
@@ -70,7 +70,7 @@
 #define ELEKTRA_UNUSED           @ELEKTRA_UNUSED@
 
 /** Declares a switch fallthrough case. */
-#define ELEKTRA_FALLTHROUGH	@ELEKTRA_FALLTHROUGH@
+#define ELEKTRA_FALLTHROUGH      @ELEKTRA_FALLTHROUGH@
 
 /** Declares an API as deprecated. */
 #define ELEKTRA_DEPRECATED       @ELEKTRA_DEPRECATED@
