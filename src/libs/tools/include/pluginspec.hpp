@@ -31,9 +31,11 @@ namespace tools
 class PluginSpec
 {
 public:
+	/* TODO: add with ABI break?
 	PluginSpec ()
 	{
 	}
+	*/
 
 	explicit PluginSpec (std::string pluginName, KeySet pluginConfig = KeySet ());
 
