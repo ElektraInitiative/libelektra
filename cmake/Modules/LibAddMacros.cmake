@@ -503,8 +503,6 @@ endmacro()
 
 
 function (generate_manpage NAME)
-if (BUILD_DOCUMENTATION AND RONN_LOC) # disable function when RONN_LOC is not set
-
 	cmake_parse_arguments (ARG
 		"" # optional keywords
 		"SECTION;FILENAME" # one value keywords
@@ -524,16 +522,17 @@ if (BUILD_DOCUMENTATION AND RONN_LOC) # disable function when RONN_LOC is not se
 		set(MDFILE ${CMAKE_CURRENT_SOURCE_DIR}/${NAME}.md)
 	endif ()
 
-	set(OUTFILE ${CMAKE_CURRENT_BINARY_DIR}/${NAME}.${SECTION})
+	set(OUTFILE ${CMAKE_SOURCE_DIR}/doc/man/${NAME}.${SECTION})
 
-	add_custom_command(
-		OUTPUT ${OUTFILE}
-		DEPENDS ${MDFILE}
-		COMMAND export RUBYOPT="-Eutf-8" && ${RONN_LOC} ARGS -r --pipe ${MDFILE} > ${OUTFILE}
-		COMMAND ${CMAKE_COMMAND} ARGS -E copy ${OUTFILE} "${CMAKE_SOURCE_DIR}/doc/man/"
+	if (RONN_LOC)
+		add_custom_command(
+			OUTPUT ${OUTFILE}
+			DEPENDS ${MDFILE}
+			COMMAND export RUBYOPT="-Eutf-8" && ${RONN_LOC} ARGS -r --pipe ${MDFILE} > ${OUTFILE}
 		)
-	add_custom_target(man-${NAME} ALL DEPENDS ${OUTFILE})
-	add_dependencies(man man-${NAME})
+		add_custom_target(man-${NAME} ALL DEPENDS ${OUTFILE})
+		add_dependencies(man man-${NAME})
+	endif (RONN_LOC)
 
 	if (INSTALL_DOCUMENTATION)
 		install(
@@ -541,7 +540,6 @@ if (BUILD_DOCUMENTATION AND RONN_LOC) # disable function when RONN_LOC is not se
 			DESTINATION share/man/man${SECTION}
 			)
 	endif ()
-endif (BUILD_DOCUMENTATION AND RONN_LOC)
 endfunction ()
 
 
