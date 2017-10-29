@@ -929,7 +929,7 @@ static int elektraSetCommit (resolverHandle * pk, Key * parentKey)
 	if (fd == -1)
 	{
 		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_COULD_NOT_OPEN, parentKey,
-				    "Could not open file again for changing properties of file because %s", strerror (errno));
+				    "Could not open file again for changing metadata of file \"%s\", because %s", pk->tempfile, strerror (errno));
 		ret = -1;
 	}
 
@@ -981,11 +981,17 @@ static int elektraSetCommit (resolverHandle * pk, Key * parentKey)
 	if (buf.st_mode != pk->filemode)
 	{
 		// change mode to what it was before
-		fchmod (fd, pk->filemode);
+		if (fchmod (fd, pk->filemode) == -1)
+		{
+			ELEKTRA_ADD_WARNINGF (99, parentKey, "Could not fchmod temporary file \"%s\", because %s", pk->tempfile, strerror (errno));
+		}
 	}
 	if (buf.st_uid != pk->uid || buf.st_gid != pk->gid)
 	{
-		fchown (fd, pk->uid, pk->gid);
+		if (fchown (fd, pk->uid, pk->gid) == -1)
+		{
+			ELEKTRA_ADD_WARNINGF (99, parentKey, "Could not fchown temporary file \"%s\", because %s", pk->tempfile, strerror (errno));
+		}
 	}
 
 	DIR * dirp = opendir (pk->dirname);

@@ -591,7 +591,7 @@ ingroup:plugin
 module:storage
 
 number:99
-description:could not update time of file
+description:could not update metadata of file
 severity:warning
 ingroup:plugin
 module:resolver
