@@ -4,9 +4,9 @@ usr/lib/*/elektra4/libelektra-template.so
 usr/lib/*/elektra4/libelektra-blockresolver.so
 usr/lib/*/elektra4/libelektra-passwd.so
 usr/lib/*/elektra4/libelektra-doc.so
-usr/lib/*/elektra4/libelektra-base64.so
 usr/lib/*/elektra4/libelektra-fcrypt.so
 usr/lib/*/elektra4/libelektra-cachefilter.so
 usr/lib/*/elektra4/libelektra-simplespeclang.so
 usr/lib/*/elektra4/libelektra-range.so
 usr/lib/*/elektra4/libelektra-file.so
+usr/lib/*/elektra4/libelektra-ipaddr.so
