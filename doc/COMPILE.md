@@ -106,8 +106,6 @@ Some scripts in the folder of the same name may help you running cmake.
 For supported compilers have a look at the automatic build farm on
 https://build.libelektra.org/
 
-Additionally, gcc 4.6 armhf is tested regularly.
-
 
 |   Compiler        |         Version             |      Target       |
 |-------------------|-----------------------------|-------------------|
