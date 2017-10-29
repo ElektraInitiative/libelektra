@@ -5,6 +5,7 @@ find_program (C2HS_EXECUTABLE c2hs)
 if (CABAL_EXECUTABLE) # set by find_program
 if (C2HS_EXECUTABLE)
 if (GHC_EXECUTABLE)
+if (NOT BUILD_STATIC)
 
 	set (CABAL_INCLUDE_DIRS "\"${CMAKE_SOURCE_DIR}/src/include\", \"${CMAKE_BINARY_DIR}/src/include\"")
 
@@ -128,14 +129,17 @@ if (GHC_EXECUTABLE)
 			set_property (TEST testhaskell_realworld_optimized PROPERTY ENVIRONMENT "LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib")
 		endif (ENABLE_KDB_TESTING)
 	endif (BUILD_TESTING)
+else (NOT BUILD_STATIC)
+	remove_binding (haskell "BUILD_STATIC is currently not compatible with the haskell bindings")
+endif (NOT BUILD_STATIC)
 else (GHC_EXECUTABLE)
-	remove_binding (c2hs_haskell "GHC not found")
+	remove_binding (haskell "GHC not found")
 endif (GHC_EXECUTABLE)
 else (C2HS_EXECUTABLE)
-	remove_binding (c2hs_haskell "c2hs not found")
+	remove_binding (haskell "c2hs not found")
 endif (C2HS_EXECUTABLE)
 else (CABAL_EXECUTABLE)
-	remove_binding (c2hs_haskell "cabal not found")
+	remove_binding (haskell "cabal not found")
 endif (CABAL_EXECUTABLE)
 
 mark_as_advanced (
