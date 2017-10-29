@@ -83,7 +83,7 @@ You can use the global values below at the start of Shell Recorder test. The bas
 ### Mountpoint
 
 This is the only configuration variable that has to be set. It is used to determine where the `shell_recorder` should look for changes.
-e.g. `Mountpoint: user/test` tells the `shell_recorder` that you will be working under `user/test`.
+e.g. `Mountpoint: user/test` tells `shell_recorder` that you will be working under `user/test`.
 
 ### DiffType
 
@@ -103,7 +103,9 @@ If `File` is present but empty a fresh database file will be provided for every 
 
 Posix-extended regular expressions are used to check and validate return values and outputs.
 
-**Remark:** Shell Recorder uses the `⏎` symbol as line terminator. This means that you need to use the character `⏎`  (instead of `\n`) if you want to match a line ending in a multiline output. For example: Assume there are exactly two keys with the name `key1` and `key2` located under the path `user/test`. The output of the command `kdb ls user/test` would then be the following
+**Remark:** Shell Recorder uses the `⏎` symbol as line terminator. This means that you need to use the character `⏎` (instead of `\n`) if
+you want to match a line ending in a multiline output. For example: Assume there are exactly two keys with the name `key1` and `key2`
+located under the path `user/test`. The output of the command `kdb ls user/test` would then be the following
 
 ```
 user/test/key1
