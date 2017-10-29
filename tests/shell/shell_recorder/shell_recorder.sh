@@ -110,7 +110,7 @@ execute()
 		nbTest=$(( nbTest + 1 ))
 		if ! printf '%s' "$STDERR" | replace_newline_return | grep -Eq --text "$STDERRCMP";
 		then
-			printf '\nERROR - STDERR:\n“%s”\ndoes not match “%s”\n\n' "$STDERR" "$STDERRCMP"
+			printf '\nERROR - STDERR:\n“%s”\ndoes not match\n“%s”\n\n' "$STDERR" "$STDERRCMP"
 			printf '=== FAILED stderr does not match expected pattern %s\n' "$STDERRCMP" >> "$OutFile"
 			nbError=$(( nbError + 1 ))
 		fi
@@ -128,7 +128,7 @@ execute()
 		nbTest=$(( nbTest + 1 ))
 		if ! printf '%s' "$STDOUT" | replace_newline_return | grep -Fqx --text "$STDOUTCMP";
 		then
-			printf '\nERROR - STDOUT:\n“%s”\ndoes not match “%s”\n\n' "$STDOUT" "$STDOUTCMP"
+			printf '\nERROR - STDOUT:\n“%s”\ndoes not match\n“%s”\n\n' "$STDOUT" "$STDOUTCMP"
 			printf '=== FAILED stdout does not match expected pattern %s\n' "$STDOUTCMP" >> "$OutFile"
 			nbError=$(( nbError + 1 ))
 		fi
@@ -143,7 +143,7 @@ execute()
 		nbTest=$(( nbTest + 1 ))
 		if !  printf '%s' "$STDOUT" | replace_newline_return | grep -Eq --text "$STDOUTRECMP";
 		then
-			printf '\nERROR - STDOUT:\n“%s”\ndoes not match “%s”\n\n' "$STDOUT" "$STDOUTRECMP"
+			printf '\nERROR - STDOUT:\n“%s”\ndoes not match\n“%s”\n\n' "$STDOUT" "$STDOUTRECMP"
 			printf '=== FAILED stdout does not match expected pattern %s\n' "$STDOUTRECMP" >> "$OutFile"
 			nbError=$(( nbError + 1 ))
 		fi
@@ -161,7 +161,7 @@ execute()
 		nbTest=$(( nbTest + 1 ))
 		if ! printf '%s' "$WARNINGS" | replace_newline_return | grep -Eq --text "$WARNINGSCMP";
 		then
-			printf '\nERROR - WARNINGS:\n“%s”\ndoes not match “%s”\n\n' "$WARNINGS" "$WARNINGSCMP"
+			printf '\nERROR - WARNINGS:\n“%s”\ndoes not match\n“%s”\n\n' "$WARNINGS" "$WARNINGSCMP"
 			printf '=== FAILED Warnings do not match expected pattern %s\n' "$WARNINGSCMP" >> "$OutFile"
 			nbError=$(( nbError + 1 ))
 		fi
@@ -180,7 +180,7 @@ execute()
 		nbTest=$(( nbTest + 1 ))
 		if ! printf '%s' "$ERRORS" | replace_newline_return | grep -Eq --text "$ERRORSCMP";
 		then
-			printf '\nERROR - ERRORS:\n“%s”\ndoes not match “%s”\n\n' "$ERRORS" "$ERRORSCMP"
+			printf '\nERROR - ERRORS:\n“%s”\ndoes not match\n“%s”\n\n' "$ERRORS" "$ERRORSCMP"
 			printf '=== FAILED Errors do not match expected pattern %s\n' "$ERRORSCMP" >> "$OutFile"
 			nbError=$(( nbError + 1 ))
 		fi
@@ -196,7 +196,7 @@ execute()
 		nbTest=$(( nbTest + 1 ))
 		if ! printf '%s' "$DIFF" | replace_newline_return | grep -Eq --text "$DIFFCMP";
 		then
-			printf '\nERROR - Changes to %s:\n“%s”\ndo not match “%s”\n\n' "$DBFile" "$DIFFCMP" "$DIFF"
+			printf '\nERROR - Changes to %s:\n“%s”\ndo not match\n“%s”\n\n' "$DBFile" "$DIFFCMP" "$DIFF"
 			printf '=== FAILED changes to database file (%s) do not match %s\n' "$DBFile" "$DIFFCMP" >> "$OutFile"
 			nbError=$(( nbError + 1 ))
 		fi
