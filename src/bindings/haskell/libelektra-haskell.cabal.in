@@ -20,11 +20,13 @@ library
   build-depends:     base >= 4.7 && < 5
   includes:          kdb.h, kdbplugin.h
   include-dirs:      @CABAL_INCLUDE_DIRS@
+  extra-lib-dirs:    "@CMAKE_BINARY_DIR@/lib"
   default-language:  Haskell2010
   other-extensions:  ForeignFunctionInterface
   build-tools:       c2hs
+  ghc-options:       -fPIC
 
-test-suite libelektra-haskell-test
+test-suite testhaskell_basic
   type:              exitcode-stdio-1.0
   hs-source-dirs:    "@CMAKE_CURRENT_SOURCE_DIR@/test"
   main-is:           Elektra.hs
@@ -32,11 +34,11 @@ test-suite libelektra-haskell-test
                    , libelektra-haskell
                    , hspec
                    , QuickCheck
-  extra-libraries:   elektra
-  ghc-options:       -threaded -rtsopts -with-rtsopts=-N -O0 -j
+  extra-libraries:   @CABAL_ELEKTRA_DEPENDENCY@
+  ghc-options:       -O0 -j
   default-language:  Haskell2010
 
-test-suite libelektra-haskell-test-optimized
+test-suite testhaskell_basic_optimized
   type:              exitcode-stdio-1.0
   hs-source-dirs:    "@CMAKE_CURRENT_SOURCE_DIR@/test"
   main-is:           Elektra.hs
@@ -44,11 +46,11 @@ test-suite libelektra-haskell-test-optimized
                    , libelektra-haskell
                    , hspec
                    , QuickCheck
-  extra-libraries:   elektra
-  ghc-options:       -threaded -rtsopts -with-rtsopts=-N -O1 -j
+  extra-libraries:   @CABAL_ELEKTRA_DEPENDENCY@
+  ghc-options:       -O1 -j
   default-language:  Haskell2010
 
-test-suite libelektra-haskell-test-realworld
+test-suite testhaskell_realworld
   type:              exitcode-stdio-1.0
   hs-source-dirs:    "@CMAKE_CURRENT_SOURCE_DIR@/test"
   main-is:           ElektraRealWorld.hs
@@ -56,11 +58,11 @@ test-suite libelektra-haskell-test-realworld
                    , libelektra-haskell
                    , hspec
                    , QuickCheck
-  extra-libraries:   elektra
-  ghc-options:       -threaded -rtsopts -with-rtsopts=-N -O0 -j
+  extra-libraries:   @CABAL_ELEKTRA_DEPENDENCY@
+  ghc-options:       -O0 -j
   default-language:  Haskell2010
 
-test-suite libelektra-haskell-test-realworld-optimized
+test-suite testhaskell_realworld_optimized
   type:              exitcode-stdio-1.0
   hs-source-dirs:    "@CMAKE_CURRENT_SOURCE_DIR@/test"
   main-is:           ElektraRealWorld.hs
@@ -68,8 +70,8 @@ test-suite libelektra-haskell-test-realworld-optimized
                    , libelektra-haskell
                    , hspec
                    , QuickCheck
-  extra-libraries:   elektra
-  ghc-options:       -threaded -rtsopts -with-rtsopts=-N -O1 -j
+  extra-libraries:   @CABAL_ELEKTRA_DEPENDENCY@
+  ghc-options:       -O1 -j
   default-language:  Haskell2010
 
 source-repository head

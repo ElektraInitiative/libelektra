@@ -20,3 +20,4 @@ To open the bindings in ghci to play around with them call
   	- keyGetFullName doesn't has a size argument either
   	- keyGetBaseName behaves like keyBaseName
   	- keyUnescapedName returns a String, the null separators are written with \0
+- BUILD_STATIC is currently not compatible with the haskell bindings

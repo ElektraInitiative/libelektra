@@ -51,47 +51,90 @@ macro (add_haskell_plugin target)
 				${GHC_LIB_DIR}/include # for HsFFI.h
 			)
 
+			set (CABAL_OPTS "--prefix=${CMAKE_INSTALL_PREFIX}")
+			if (BUILD_SHARED OR BUILD_FULL)
+				# shared variants of ghc libraries have the ghc version as a suffix
+				set (GHC_DYNAMIC_SUFFIX "-ghc${GHC_VERSION}")
+				if (APPLE)
+					set (GHC_DYNAMIC_ENDING ".dylib")
+				else (APPLE)
+					set (GHC_DYNAMIC_ENDING ".so")
+				endif (APPLE)
+				set (CABAL_OPTS "${CABAL_OPTS};--enable-shared")
+			elseif (BUILD_STATIC)
+				set (GHC_DYNAMIC_ENDING ".a")
+				set (CABAL_OPTS "${CABAL_OPTS};--disable-shared")
+			endif ()
+
 			# since we want to continue to use our cmake add_plugin macro
 			# we compile via the c compiler instead of ghc
 			# so we must feed it with the ghc library paths manually
 			# inspired by https://github.com/jarrett/cpphs/blob/master/Makefile
-			find_library (GHC_FFI_LIB Cffi PATHS ${GHC_LIB_DIR}/rts)
 			# use HSrts_thr for the threaded version of the rts
-			find_library (GHC_RTS_LIB HSrts PATHS ${GHC_LIB_DIR}/rts)
+			find_library (
+				GHC_RTS_LIB "HSrts${GHC_DYNAMIC_SUFFIX}"
+				PATHS "${GHC_LIB_DIR}/rts"
+			)
+
 			execute_process (
 				COMMAND ${GHC-PKG_EXECUTABLE} latest base
 				OUTPUT_VARIABLE GHC_BASE_NAME OUTPUT_STRIP_TRAILING_WHITESPACE
 			)
-			find_library (GHC_BASE_LIB "HS${GHC_BASE_NAME}" ${GHC_LIB_DIR}/${GHC_BASE_NAME})
+			find_library (
+				GHC_BASE_LIB "HS${GHC_BASE_NAME}${GHC_DYNAMIC_SUFFIX}"
+				PATHS "${GHC_LIB_DIR}/${GHC_BASE_NAME}"
+			)
+
 			execute_process (
 				COMMAND ${GHC-PKG_EXECUTABLE} latest integer-gmp
 				OUTPUT_VARIABLE GHC_GMP_NAME OUTPUT_STRIP_TRAILING_WHITESPACE
 			)
-			find_library (GHC_GMP_LIB "HS${GHC_GMP_NAME}" ${GHC_LIB_DIR}/${GHC_GMP_NAME})
+			find_library (
+				GHC_GMP_LIB "HS${GHC_GMP_NAME}${GHC_DYNAMIC_SUFFIX}"
+				PATHS "${GHC_LIB_DIR}/${GHC_GMP_NAME}"
+			)
+
 			execute_process (
 				COMMAND ${GHC-PKG_EXECUTABLE} latest ghc-prim
 				OUTPUT_VARIABLE GHC_PRIM_NAME OUTPUT_STRIP_TRAILING_WHITESPACE
 			)
-			find_library (GHC_PRIM_LIB "HS${GHC_PRIM_NAME}" ${GHC_LIB_DIR}/${GHC_PRIM_NAME})
+			find_library (
+				GHC_PRIM_LIB "HS${GHC_PRIM_NAME}${GHC_DYNAMIC_SUFFIX}"
+				PATHS "${GHC_LIB_DIR}/${GHC_PRIM_NAME}"
+			)
 
-			if (GHC_FFI_LIB)
 			if (GHC_RTS_LIB)
 			if (GHC_BASE_LIB)
 			if (GHC_GMP_LIB)
 			if (GHC_PRIM_LIB)
 
-			set (GHC_LIB_DIRS
-				"${CMAKE_CURRENT_BINARY_DIR}/dist/build/libHS${target}.a"
-				"${CMAKE_BINARY_DIR}/src/bindings/haskell/dist/build/libHSlibelektra-haskell-${KDB_VERSION}.a"
-				${GHC_FFI_LIB}
+			set (PLUGIN_HASKELL_NAME "${CMAKE_CURRENT_BINARY_DIR}/dist/build/libHS${target}${GHC_DYNAMIC_SUFFIX}${GHC_DYNAMIC_ENDING}")
+
+			set (GHC_LIBS
+				${PLUGIN_HASKELL_NAME}
+				"${CMAKE_BINARY_DIR}/src/bindings/haskell/dist/build/libHSlibelektra-haskell-${KDB_VERSION}${GHC_DYNAMIC_SUFFIX}${GHC_DYNAMIC_ENDING}"
 				${GHC_RTS_LIB}
 				${GHC_BASE_LIB}
 				${GHC_GMP_LIB}
-				${GHC_PRIM_LIB}
-				iconv
 				gmp
+				${GHC_PRIM_LIB}
 			)
 
+			# GHC's structure differs between OSX and Linux
+			# On OSX we need to link iconv and Cffi additionally
+			if (APPLE)
+				find_library (GHC_FFI_LIB Cffi PATHS "${GHC_LIB_DIR}/rts")
+				if (GHC_FFI_LIB)
+					set (GHC_LIBS
+						${GHC_LIBS}
+						${GHC_FFI_LIB}
+						iconv
+					)
+				else (GHC_FFI_LIB)
+					remove_plugin (${target} "GHC_FFI_LIB not found")
+				endif (GHC_FFI_LIB)
+			endif (APPLE)
+			
 			# configure include paths
 			configure_file (
 				"${CMAKE_CURRENT_SOURCE_DIR}/${target}.cabal.in"
@@ -125,15 +168,23 @@ macro (add_haskell_plugin target)
 				DEPENDS c2hs_haskell
 			)
 			add_custom_command (
-				OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/dist/build/libHS${target}.a
+				OUTPUT ${PLUGIN_HASKELL_NAME}
 				# this way it will generate predictable output filenames
 				# and compile the haskell part of this plugin with cabal
-				COMMAND ${CABAL_EXECUTABLE} --ipid=${target} configure
+				COMMAND ${CABAL_EXECUTABLE} --ipid=${target} ${CABAL_OPTS} configure
 				COMMAND ${CABAL_EXECUTABLE} build
 				WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
 				DEPENDS "${CMAKE_BINARY_DIR}/src/bindings/haskell/${target}-register"
+				"${CMAKE_SOURCE_DIR}/src/plugins/haskell/Elektra/Haskell.hs"
 			)
-			add_custom_target (${target} DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/dist/build/libHS${target}.a")
+			add_custom_target (${target} DEPENDS ${PLUGIN_HASKELL_NAME})
+			if (BUILD_SHARED OR BUILD_FULL)
+				add_custom_command(TARGET ${target} POST_BUILD 
+			    	COMMAND ${CMAKE_COMMAND} -E copy
+			    		"${PLUGIN_HASKELL_NAME}"
+	    				"${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/"
+				)
+			endif (BUILD_SHARED OR BUILD_FULL)
 
 			else (GHC_PRIM_LIB)
 				remove_plugin (${target} "GHC_PRIM_LIB not found")
@@ -147,9 +198,6 @@ macro (add_haskell_plugin target)
 			else (GHC_RTS_LIB)
 				remove_plugin (${target} "GHC_RTS_LIB not found")
 			endif (GHC_RTS_LIB)
-			else (GHC_FFI_LIB)
-				remove_plugin (${target} "GHC_FFI_LIB not found")
-			endif (GHC_FFI_LIB)
 
 		else (FINDEX GREATER -1)
 			remove_plugin (${target} "haskell bindings are not included in the cmake configuration")
@@ -174,11 +222,15 @@ macro (add_haskell_plugin target)
 		INCLUDE_DIRECTORIES
 			${GHC_INCLUDE_DIRS}
 		LINK_LIBRARIES
-			${GHC_LIB_DIRS}
+			${GHC_LIBS}
 		DEPENDS
 			${target} c2hs_haskell
 		ADD_TEST
 	)
+
+	if (ADDTESTING_PHASE)
+		set_property (TEST testmod_haskell PROPERTY ENVIRONMENT "LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib")
+	endif (ADDTESTING_PHASE)
 
 	mark_as_advanced (
 		GHC_EXECUTABLE
