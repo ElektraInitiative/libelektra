@@ -31,9 +31,9 @@ if (GHC_EXECUTABLE)
 		endif ()
 	elseif (BUILD_STATIC)
 		set (BINDING_HASKELL_NAME "${BINDING_HASKELL_NAME}.a")
+		set (CABAL_OPTS "${CABAL_OPTS};--disable-shared")
 		set (ELEKTRA_DEPENDENCY "elektra-static;")
 	endif ()
-
 	string (REPLACE ";" " " CABAL_ELEKTRA_DEPENDENCY "${ELEKTRA_DEPENDENCY}")
 	
 	# configure include paths
@@ -57,13 +57,13 @@ if (GHC_EXECUTABLE)
 		"${CMAKE_CURRENT_SOURCE_DIR}/test/ElektraRealWorld.hs"
 	)
 	add_custom_target (c2hs_haskell ALL DEPENDS "${BINDING_HASKELL_NAME}")
-	if (BUILD_SHARED)
+	if (BUILD_SHARED OR BUILD_FULL)
 		add_custom_command(TARGET c2hs_haskell POST_BUILD
 	    	COMMAND ${CMAKE_COMMAND} -E copy
 	    		"${BINDING_HASKELL_NAME}"
 	    		"${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/"
 		)
-	endif (BUILD_SHARED)
+	endif (BUILD_SHARED OR BUILD_FULL)
 	# build and install it to the cabal db
 	install (CODE "execute_process (COMMAND ${CABAL_EXECUTABLE} install WORKING_DIRECTORY \"${CMAKE_CURRENT_BINARY_DIR}\")")
 

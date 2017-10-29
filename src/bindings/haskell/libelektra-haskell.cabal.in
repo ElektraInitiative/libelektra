@@ -24,6 +24,7 @@ library
   default-language:  Haskell2010
   other-extensions:  ForeignFunctionInterface
   build-tools:       c2hs
+  ghc-options:       -fPIC
 
 test-suite testhaskell_basic
   type:              exitcode-stdio-1.0
@@ -34,7 +35,7 @@ test-suite testhaskell_basic
                    , hspec
                    , QuickCheck
   extra-libraries:   @CABAL_ELEKTRA_DEPENDENCY@
-  ghc-options:       -threaded -rtsopts -with-rtsopts=-N -O0 -j
+  ghc-options:       -O0 -j
   default-language:  Haskell2010
 
 test-suite testhaskell_basic_optimized
@@ -46,7 +47,7 @@ test-suite testhaskell_basic_optimized
                    , hspec
                    , QuickCheck
   extra-libraries:   @CABAL_ELEKTRA_DEPENDENCY@
-  ghc-options:       -threaded -rtsopts -with-rtsopts=-N -O1 -j
+  ghc-options:       -O1 -j
   default-language:  Haskell2010
 
 test-suite testhaskell_realworld
@@ -58,7 +59,7 @@ test-suite testhaskell_realworld
                    , hspec
                    , QuickCheck
   extra-libraries:   @CABAL_ELEKTRA_DEPENDENCY@
-  ghc-options:       -threaded -rtsopts -with-rtsopts=-N -O0 -j
+  ghc-options:       -O0 -j
   default-language:  Haskell2010
 
 test-suite testhaskell_realworld_optimized
@@ -70,7 +71,7 @@ test-suite testhaskell_realworld_optimized
                    , hspec
                    , QuickCheck
   extra-libraries:   @CABAL_ELEKTRA_DEPENDENCY@
-  ghc-options:       -threaded -rtsopts -with-rtsopts=-N -O1 -j
+  ghc-options:       -O1 -j
   default-language:  Haskell2010
 
 source-repository head

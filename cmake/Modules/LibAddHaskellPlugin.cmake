@@ -52,7 +52,7 @@ macro (add_haskell_plugin target)
 			)
 
 			set (CABAL_OPTS "--prefix=${CMAKE_INSTALL_PREFIX}")
-			if (BUILD_SHARED)
+			if (BUILD_SHARED OR BUILD_FULL)
 				# shared variants of ghc libraries have the ghc version as a suffix
 				set (GHC_DYNAMIC_SUFFIX "-ghc${GHC_VERSION}")
 				if (APPLE)
@@ -61,9 +61,10 @@ macro (add_haskell_plugin target)
 					set (GHC_DYNAMIC_ENDING ".so")
 				endif (APPLE)
 				set (CABAL_OPTS "${CABAL_OPTS};--enable-shared")
-			else (BUILD_SHARED)
+			elseif (BUILD_STATIC)
 				set (GHC_DYNAMIC_ENDING ".a")
-			endif (BUILD_SHARED)
+				set (CABAL_OPTS "${CABAL_OPTS};--disable-shared")
+			endif ()
 
 			# since we want to continue to use our cmake add_plugin macro
 			# we compile via the c compiler instead of ghc
@@ -177,13 +178,13 @@ macro (add_haskell_plugin target)
 				"${CMAKE_SOURCE_DIR}/src/plugins/haskell/Elektra/Haskell.hs"
 			)
 			add_custom_target (${target} DEPENDS ${PLUGIN_HASKELL_NAME})
-			if (BUILD_SHARED)
-				add_custom_command(TARGET ${target} POST_BUILD
+			if (BUILD_SHARED OR BUILD_FULL)
+				add_custom_command(TARGET ${target} POST_BUILD 
 			    	COMMAND ${CMAKE_COMMAND} -E copy
 			    		"${PLUGIN_HASKELL_NAME}"
 	    				"${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/"
 				)
-			endif (BUILD_SHARED)
+			endif (BUILD_SHARED OR BUILD_FULL)
 
 			else (GHC_PRIM_LIB)
 				remove_plugin (${target} "GHC_PRIM_LIB not found")
