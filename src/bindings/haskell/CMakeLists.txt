@@ -1,11 +1,30 @@
 find_program (GHC_EXECUTABLE ghc)
 find_program (CABAL_EXECUTABLE cabal)
 find_program (C2HS_EXECUTABLE c2hs)
+find_program (GHC-PKG_EXECUTABLE ghc-pkg)
 
 if (CABAL_EXECUTABLE) # set by find_program
 if (C2HS_EXECUTABLE)
 if (GHC_EXECUTABLE)
+if (GHC-PKG_EXECUTABLE)
 if (NOT BUILD_STATIC)
+
+# check for hspec and QuickCheck
+# ghc-pkg return code is 0 on success, 1 otherwise
+execute_process (
+	COMMAND ${GHC-PKG_EXECUTABLE} latest hspec
+	RESULT_VARIABLE GHC_HSPEC_FOUND
+	OUTPUT_QUIET ERROR_QUIET
+)
+if (GHC_HSPEC_FOUND EQUAL 0)
+
+execute_process (
+	COMMAND ${GHC-PKG_EXECUTABLE} latest QuickCheck
+	RESULT_VARIABLE GHC_QUICKCHECK_FOUND
+	OUTPUT_QUIET ERROR_QUIET
+)
+if (GHC_QUICKCHECK_FOUND EQUAL 0)
+	message ("all fine, configuring")
 
 	set (CABAL_INCLUDE_DIRS "\"${CMAKE_SOURCE_DIR}/src/include\", \"${CMAKE_BINARY_DIR}/src/include\"")
 
@@ -129,9 +148,18 @@ if (NOT BUILD_STATIC)
 			set_property (TEST testhaskell_realworld_optimized PROPERTY ENVIRONMENT "LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib")
 		endif (ENABLE_KDB_TESTING)
 	endif (BUILD_TESTING)
+else (GHC_QUICKCHECK_FOUND EQUAL 0)
+	remove_binding (haskell "QuickCheck library not found")
+endif (GHC_QUICKCHECK_FOUND EQUAL 0)
+else (GHC_HSPEC_FOUND EQUAL 0)
+	remove_binding (haskell "hspec library not found")
+endif (GHC_HSPEC_FOUND EQUAL 0)
 else (NOT BUILD_STATIC)
 	remove_binding (haskell "BUILD_STATIC is currently not compatible with the haskell bindings")
 endif (NOT BUILD_STATIC)
+else (GHC-PKG_EXECUTABLE)
+	remove_binding (haskell "ghc-pkg not found")
+endif (GHC-PKG_EXECUTABLE)
 else (GHC_EXECUTABLE)
 	remove_binding (haskell "GHC not found")
 endif (GHC_EXECUTABLE)
@@ -144,6 +172,9 @@ endif (CABAL_EXECUTABLE)
 
 mark_as_advanced (
 	GHC_EXECUTABLE
+	GHC-PKG_EXECUTABLE
 	C2HS_EXECUTABLE
 	CABAL_EXECUTABLE
+	GHC_HSPEC_FOUND
+	GHC_QUICKCHECK_FOUND
 )
