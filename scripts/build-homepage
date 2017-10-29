@@ -19,7 +19,7 @@ fi
 C_FLAGS='-D_FORTIFY_SOURCE=2 -Wformat -Werror=format-security -fstack-protector-strong -Wstack-protector -fPIE -pie'
 LD_FLAGS='-Wl,-z,now -Wl,-z,relro'
 
-cmake -DENABLE_ASAN=ON -DBUILD_FULL=OFF -DBUILD_SHARED=ON -DBUILD_STATIC=OFF -DBUILD_DOCUMENTATION=OFF \
+cmake -DBUILD_FULL=OFF -DBUILD_SHARED=ON -DBUILD_STATIC=OFF -DBUILD_DOCUMENTATION=OFF \
 	-DCMAKE_INSTALL_PREFIX="${INSTALL_PATH}"  -DINSTALL_SYSTEM_FILES=OFF \
 	-DPLUGINS='ALL;-fstab;-semlock;file;-xerces;-ruby;-lua;-python;-python2' \
 	-DTOOLS='kdb;rest-backend;rest-frontend' \
@@ -36,6 +36,9 @@ make run_nokdbtests
 # rotate backup of previous website
 rm -rf ${INSTALL_PATH}/share/elektra/tool_data_backup
 cp -ra ${INSTALL_PATH}/share/elektra/tool_data ${INSTALL_PATH}/share/elektra/tool_data_backup
+
+# cleanup old installed libraries (might have plugin we do not want any more or cause problems)
+rm -rf ${INSTALL_PATH}/lib/*
 
 # if tests were ok, we can install
 make install
@@ -87,6 +90,9 @@ while netstat -tlpen | grep "$IP:$PORT"
 do
 	sleep 1  # keep waiting (=downtime) short
 done
+
+# ensure daemon mode is enabled, otherwise script will be blocked
+kdb set '/sw/elektra/restbackend/#0/current/cppcms/daemon/enable' '1'
 
 # now start again
 kdb run-rest-backend
