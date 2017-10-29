@@ -24,7 +24,6 @@ execute_process (
 	OUTPUT_QUIET ERROR_QUIET
 )
 if (GHC_QUICKCHECK_FOUND EQUAL 0)
-	message ("all fine, configuring")
 
 	set (CABAL_INCLUDE_DIRS "\"${CMAKE_SOURCE_DIR}/src/include\", \"${CMAKE_BINARY_DIR}/src/include\"")
 
