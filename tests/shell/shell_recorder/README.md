@@ -3,7 +3,7 @@
 ## Overview
 
 The Shell Recorder is a test tool that checks the output and return values of shell commands such as `kdb`. It allows you to write unit and
-regression tests. Lets take a look at a simple Shell Recorder test first. We store the following text in a file called `test.esr`:
+regression tests. Lets take a look at a simple Shell Recorder test first. We store the text:
 
 ```
 Mountpoint: user/examples/shellrecorder
@@ -13,10 +13,10 @@ RET: 0
 < kdb set user/examples/shellrecorder/key value
 ```
 
-in the folder `Documents` in the home directory (`~/Documents/test.esr`). Shell Recorder tests start with a list of global values. The only
-required value is `Mountpoint`. It specifies the location in the KDB that the Shell Recorder will save before it runs the tests and restore
-after it is finished. In our example the Shell Recorder will backup and restore everything below the namespace
-`user/examples/shellrecorder`. After the global values a Shell Recorder file contains a list of tests.
+in a file called `test.esr` in the folder `Documents` in the home directory (`~/Documents/test.esr`). Shell Recorder tests start with a
+list of global values. The only required value is `Mountpoint`. It specifies the location in the KDB that the Shell Recorder will save
+before it runs the tests and restore after it is finished. In our example the Shell Recorder will backup and restore everything below the
+namespace `user/examples/shellrecorder`. After the global values a Shell Recorder file contains a list of tests.
 
 As you can see above, we specify the command we want to test after an initial smaller-than sign (`<`). In our case we want to test the
 command `kdb set /examples/shellrecorder/key value`. The words above the command are directives that tell the Shell Recorder what it should
@@ -26,7 +26,7 @@ is `0`.
 
 Before we use the Shell Recorder we need to [build Elektra](/doc/COMPILE.md). If we assume that we built Elektra in the root of the
 repository in a folder called `build`, then the Shell Recorder is located at `build/tests/shell/shell_recorder/shell_recorder.sh`. To start
-our test we call the Shell Recorder from the root of the repository and specify our test file as first argument:
+our test we call the Shell Recorder from the root of the repository and specify our test file as argument:
 
 ```sh
 build/tests/shell/shell_recorder/shell_recorder.sh ~/Documents/test.esr
