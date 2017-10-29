@@ -1,20 +1,36 @@
 #!/bin/sh
 #
+# @author e1528532 <e1528532@libelektra.org>
+# @brief run randoop on the jna bindings
+# @date 29.10.2017
+# @tags test java jna
+
+#
 # Executes the test generation tool randoop (https://randoop.github.io/randoop/)
 # against the jna bindings with a standard configuration.
+#
 # Needs java to be accessible in the environment.
-# By default it assumes randoop to be in the directory containing this script and 
-# the jna bindings to be in /usr/share/java.
-# You can pass a custom location for the two files by calling this script like
-# ./randoop <path to randoop jar> <path to libelektra4j jar>
+# Furthermore it expects the complete randoop bundle including its dependencies,
+# which is called randoop-all-<version>.jar . It can be obtained from the randoop
+# website mentioned above.
+# By default it expects randoop-all-3.1.5.jar to be located in this directory.
+# The jna bindings are expected to be in /usr/share/java on linux and 
+# /usr/local/share/java on macOS.
+#
+# You can pass a custom location for the two files by calling this script like:
+#
+# ./randoop [path to randoop jar] [path to libelektra4j jar]
+#
+# In case you have the required files in the standard paths, simply call ./randoop
+#
 
 RANDOOP="${1:-randoop-all-3.1.5.jar}"
 
 stringContain() { [ -z "${2##*$1*}" ] && ([ -z "$1" ] || [ -n "$2" ]); }
 if stringContain "Darwin" "$(uname)"; then
-	BINDINGS="${2:-/usr/local/share/java/libelektra4j-0.8.19.jar}"
+	BINDINGS="${2:-/usr/local/share/java/libelektra4j-0.8.20.jar}"
 else
-	BINDINGS="${2:-/usr/share/java/libelektra4j-0.8.19.jar}"
+	BINDINGS="${2:-/usr/share/java/libelektra4j-0.8.20.jar}"
 fi
 CLASSPATH="${BINDINGS}:${RANDOOP}"
 
