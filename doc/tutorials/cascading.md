@@ -60,10 +60,11 @@ As **dir** precedes the **user** namespace, configuration in **dir** can overwri
 
 ```sh
 # create and change to a new directory ...
-mkdir -p kdbtutorial
+mkdir kdbtutorial
 cd kdbtutorial
 
 # ... and create a key in this directories dir-namespace
+# By default this data will be saved in the directory `.dir`.
 kdb set dir/sw/tutorial/cascading/#0/current/test "hello universe"
 #> Create a new key dir/sw/tutorial/cascading/#0/current/test with string "hello universe"
 
@@ -158,4 +159,7 @@ kdb rm -r system/overrides/test
 kdb rm /overrides/test
 
 kdb rm -r spec/sw/tutorial/
+
+rm -r .dir/
+rmdir kdbtutorial
 ```
