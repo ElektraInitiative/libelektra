@@ -1,10 +1,6 @@
-find_program (GHC_EXECUTABLE ghc)
-find_program (CABAL_EXECUTABLE cabal)
-find_program (C2HS_EXECUTABLE c2hs)
+find_package (Haskell)
 
-if (CABAL_EXECUTABLE) # set by find_program
-if (C2HS_EXECUTABLE)
-if (GHC_EXECUTABLE)
+if (HASKELL_FOUND) 
 if (NOT BUILD_STATIC)
 
 	set (CABAL_INCLUDE_DIRS "\"${CMAKE_SOURCE_DIR}/src/include\", \"${CMAKE_BINARY_DIR}/src/include\"")
@@ -132,18 +128,6 @@ if (NOT BUILD_STATIC)
 else (NOT BUILD_STATIC)
 	remove_binding (haskell "BUILD_STATIC is currently not compatible with the haskell bindings")
 endif (NOT BUILD_STATIC)
-else (GHC_EXECUTABLE)
-	remove_binding (haskell "GHC not found")
-endif (GHC_EXECUTABLE)
-else (C2HS_EXECUTABLE)
-	remove_binding (haskell "c2hs not found")
-endif (C2HS_EXECUTABLE)
-else (CABAL_EXECUTABLE)
-	remove_binding (haskell "cabal not found")
-endif (CABAL_EXECUTABLE)
-
-mark_as_advanced (
-	GHC_EXECUTABLE
-	C2HS_EXECUTABLE
-	CABAL_EXECUTABLE
-)
+else (HASKELL_FOUND)
+	remove_binding (haskell ${HASKELL_NOTFOUND_INFO})
+endif (HASKELL_FOUND)
