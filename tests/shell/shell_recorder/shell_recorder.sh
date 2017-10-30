@@ -38,10 +38,10 @@ execute()
 	fi
 
 	[ -z "$Storage" ] && Storage="dump"
-	command=$(echo "$proto" | sed -e "s~\$Mountpoint~${Mountpoint}~g" \
-	                              -e "s~\$File~${DBFile}~g"           \
-	                              -e "s~\$Storage~${Storage}~g"       \
-	                              -e "s~\$MountArgs~${MountArgs}~g")
+	command=$(printf '%s' "$proto" | sed -e "s~\$Mountpoint~${Mountpoint}~g" \
+	                                     -e "s~\$File~${DBFile}~g"           \
+	                                     -e "s~\$Storage~${Storage}~g"       \
+	                                     -e "s~\$MountArgs~${MountArgs}~g")
 
 	case "$DiffType" in
 	File)
@@ -153,7 +153,7 @@ execute()
 # = WARNINGS =
 # ============
 
-	WARNINGS=$(echo "$STDERR" | sed -nE  's/.*Warning \(#([0-9]+).*/\1/p' | tr '\n' ',' | sed 's/.$//')
+	WARNINGS=$(printf '%s' "$STDERR" | sed -nE  's/.*Warning \(#([0-9]+).*/\1/p' | tr '\n' ',' | sed 's/.$//')
 
 	printf 'WARNINGS: %s\n' "$WARNINGS" >> "$OutFile"
 	if [ -n "$WARNINGSCMP" ];
@@ -171,7 +171,7 @@ execute()
 # = ERROR =
 # ==========
 
-	ERROR=$(echo "$STDERR" | sed -nE 's/.*error \(#([0-9]+).*/\1/p')
+	ERROR=$(printf '%s' "$STDERR" | sed -nE 's/.*error \(#([0-9]+).*/\1/p')
 
 	printf 'ERROR: %s\n' "$ERROR" >> "$OutFile"
 	if [ -n "$ERRORCMP" ];
