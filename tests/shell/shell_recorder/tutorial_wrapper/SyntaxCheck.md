@@ -43,7 +43,7 @@ echo test
 
 #> test
 
-echo "test\nbla"
+printf 'test\nbla'
 #> test
 
 #> bla
