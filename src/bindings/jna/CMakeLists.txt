@@ -8,7 +8,7 @@ if (Java_JAVAC_EXECUTABLE)
 # on ubuntu/open jdk its called java 1.9.0
 # therefore this workaround should work in all cases
 # as 9.x.x > 1.8 and 1.8.x > 1.8 and 1.9.x > 1.8
-if (Java_VERSION VERSION_GREATER_EQUAL "1.8.0")
+if (${Java_VERSION} VERSION_GREATER_EQUAL "1.8.0")
 if (MAVEN_EXECUTABLE) # set by find_program
 	file (
 		MAKE_DIRECTORY libelektra4j
