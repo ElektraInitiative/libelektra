@@ -24,6 +24,9 @@ STDERR: .+not-a-command.+
 < echo   '[section]' > `kdb file $Mountpoint`
 < printf 'key="multi\nline"' >> `kdb file $Mountpoint`
 
+STDOUT: [section]⏎key="multi⏎line"
+< cat `kdb file $Mountpoint`
+
 WARNINGS: 175,175
 < kdb ls $Mountpoint
 
