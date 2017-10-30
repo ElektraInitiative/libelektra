@@ -25,14 +25,10 @@ macro (add_haskell_plugin target)
 	string (TOUPPER ${PLUGIN_NAME} PLUGIN_NAME_UPPERCASE)
 
 	if (DEPENDENCY_PHASE)
-		find_program (GHC_EXECUTABLE ghc)
-		find_program (GHC-PKG_EXECUTABLE ghc-pkg)
-		find_program (CABAL_EXECUTABLE cabal)
+		find_package (Haskell)
 
 		 # set by find_program
-		if (CABAL_EXECUTABLE)
-		if (GHC_EXECUTABLE)
-		if (GHC-PKG_EXECUTABLE)
+		if (HASKELL_FOUND)
 		list (FIND BINDINGS "haskell" FINDEX)
 		if (FINDEX GREATER -1)
 
@@ -202,16 +198,10 @@ macro (add_haskell_plugin target)
 		else (FINDEX GREATER -1)
 			remove_plugin (${target} "haskell bindings are not included in the cmake configuration")
 		endif (FINDEX GREATER -1)
-		else (GHC-PKG_EXECUTABLE)
-			remove_plugin (${target} "ghc-pkg not found")
-		endif (GHC-PKG_EXECUTABLE)
-		else (GHC_EXECUTABLE)
-			remove_plugin (${target} "GHC not found")
-		endif (GHC_EXECUTABLE)
-		else (CABAL_EXECUTABLE)
-			remove_plugin (${target} "cabal not found")
-		endif (CABAL_EXECUTABLE)
-	endif ()
+		else (HASKELL_FOUND)
+			remove_plugin (${target} ${HASKELL_NOTFOUND_INFO})
+		endif (HASKELL_FOUND)
+	endif (DEPENDENCY_PHASE)
 
 	# compile our c wrapper which takes care of invoking the haskell runtime
 	# the actual haskell plugin gets linked in dynamically as a library
@@ -227,15 +217,11 @@ macro (add_haskell_plugin target)
 			${target} c2hs_haskell
 		ADD_TEST
 	)
-
-	if (ADDTESTING_PHASE)
-		set_property (TEST testmod_haskell PROPERTY ENVIRONMENT "LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib")
-	endif (ADDTESTING_PHASE)
+	if (ADDTESTING_PHASE AND BUILD_TESTING)
+		set_property (TEST testmod_${target} PROPERTY ENVIRONMENT "LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib")
+	endif (ADDTESTING_PHASE AND BUILD_TESTING)
 
 	mark_as_advanced (
-		GHC_EXECUTABLE
-		GHC-PKG_EXECUTABLE
-		CABAL_EXECUTABLE
 		GHC_FFI_LIB
 		GHC_RTS_LIB
 		GHC_BASE_LIB
