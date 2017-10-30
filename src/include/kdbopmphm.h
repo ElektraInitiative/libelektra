@@ -12,20 +12,20 @@
 #include <stdlib.h>
 
 /**
- * The Order Preserving Minimal Perfect Hash Map (OPMPHM) maps each element to an edge in an r-partite hypergraph.
- * The r-partite hypergraph consist of `OPMPHMR_PARTITE` components, each component has `Opmphm->componentSize` vertices.
- * An edge connects `OPMPHMR_PARTITE` vertices, each one in separate components of the r-partite hypergraph.
- * The number of vertices in one component of the r-partite hypergraph (`Opmphm->componentSize`) is calculated during
+ * The Order Preserving Minimal Perfect Hash Map (OPMPHM) maps each element to an edge in an r-uniform r-partite hypergraph.
+ * The r-uniform r-partite hypergraph consist of `OPMPHMR_PARTITE` components, each component has `Opmphm->componentSize`
+ * vertices. An edge connects `OPMPHMR_PARTITE` vertices, each one in separate components of the r-uniform r-partite hypergraph.
+ * The number of vertices in one component of the r-uniform r-partite hypergraph (`Opmphm->componentSize`) is calculated during
  * `opmphmGraphNew ()` the following way:
  *
  * ```
  * Opmphm->componentSize = (c * n / OPMPHMR_PARTITE) + 1;
  * ```
  *
- * Note that `c` must have a minimal value in order to generate acyclic r-partite hypergraphs.
+ * Note that `c` must have a minimal value in order to generate acyclic r-uniform r-partite hypergraphs.
  * The minimal value of `c` depends on `OPMPHMR_PARTITE` and is provided by the function `opmphmMinC ()`.
  *
- * The finals size of the opmphm (`Opmphm->graph`) is: `Opmphm->componentSize * OPMPHMR_PARTITE`
+ * The finals size of the opmphm (`Opmphm->graph`) is: `Opmphm->componentSize * OPMPHMR_PARTITE`.
  */
 
 #define OPMPHMR_PARTITE 3

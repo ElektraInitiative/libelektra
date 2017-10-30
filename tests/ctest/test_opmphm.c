@@ -18,7 +18,18 @@ static const char * test_opmphm_getString (void * data ELEKTRA_UNUSED)
 
 const size_t maxP = 1000;
 
-
+static void test_minComponentSize (void)
+{
+	Opmphm * opmphm = opmphmNew ();
+	exit_if_fail (opmphm, "opmphmNew");
+	OpmphmGraph * graph = opmphmGraphNew (opmphm, 1, 1);
+	exit_if_fail (graph, "opmphmGraphNew");
+	// check
+	succeed_if (1 == opmphm->componentSize, "min componentSize is not 1");
+	// cleanup
+	opmphmDel (opmphm);
+	opmphmGraphDel (graph);
+}
 static void test_cyclicMultipleEdges (void)
 {
 	/**
@@ -292,6 +303,7 @@ int main (int argc, char ** argv)
 
 	init (argc, argv);
 
+	test_minComponentSize ();
 	test_cyclicMultipleEdges ();
 	test_cyclicCountUpEdges ();
 	test_cyclicCountDownEdges ();
