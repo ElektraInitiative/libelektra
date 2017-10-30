@@ -26,7 +26,7 @@ is `0`.
 
 Before we use the Shell Recorder we need to [build Elektra](/doc/COMPILE.md). If we assume that we built Elektra in the root of the
 repository in a folder called `build`, then the Shell Recorder is located at `build/tests/shell/shell_recorder/shell_recorder.sh`. To start
-our test we call the Shell Recorder from the root of the repository and specify our test file as argument:
+our test we call the Shell Recorder from the root of the repository. The root directory of the repo is also the **default working directory** for tests (`*.esr`) located in this folder. We specify our test file as argument for the Shell Recorder:
 
 ```sh
 build/tests/shell/shell_recorder/shell_recorder.sh ~/Documents/test.esr
