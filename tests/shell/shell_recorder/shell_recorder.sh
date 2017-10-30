@@ -153,7 +153,7 @@ execute()
 # = WARNINGS =
 # ============
 
-	WARNINGS=$(printf '%s' "$STDERR" | sed -nE  's/.*Warning \(#([0-9]+).*/\1/p' | tr '\n' ',' | sed 's/.$//')
+	WARNINGS=$(printf '%s' "$STDERR" | sed -nE  's/.*Warning (number: |\(#)([0-9]+).*/\2/p' | tr '\n' ',' | sed 's/.$//')
 
 	printf 'WARNINGS: %s\n' "$WARNINGS" >> "$OutFile"
 	if [ -n "$WARNINGSCMP" ];
