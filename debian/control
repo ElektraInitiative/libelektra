@@ -28,7 +28,6 @@ Build-Depends: debhelper (>= 9),
  libbotan1.10-dev,
  libcurl4-nss-dev | libcurl4-gnutls-dev | libcurl4-openssl-dev | libcurl-dev,
  libcurl3 (>= 7.28.0),
- openjdk-8-jdk | openjdk-9-jdk | java8-jdk | java9-jdk | oracle-java8-installer,
 Build-Depends-Indep:
  doxygen,
  graphviz,
