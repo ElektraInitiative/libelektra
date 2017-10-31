@@ -381,7 +381,10 @@ Package: elektra-qt-gui
 Architecture: any
 Depends: libelektra4 (= ${binary:Version}),
  ${shlibs:Depends},
- ${misc:Depends}
+ ${misc:Depends},
+ qml-module-qtquick2, qml-module-qtquick-window2,
+ qml-module-qtquick-controls-styles-breeze, qml-module-qtquick-dialogs,
+ qml-module-qt-labs-folderlistmodel, qml-module-qt-labs-settings
 Description: Elektra configuration store, Qt gui
  Elektra provides a universal and secure framework to store configuration
  parameters in a hierarchical key-value pair mechanism, instead of each
