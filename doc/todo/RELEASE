@@ -80,8 +80,8 @@ Make an empty builddirectory:
 Try to move as much as possible from this manual checks to build-server!
 
 Before release is done, following must be checked:
-- Everything blue on http://community.markus-raab.org:8080/
-- Not many warnings on community.markus-raab.org:8080/view/compiler%20warnings/
+- Everything blue on https://build.libelektra.org/
+- Not many warnings on https://build.libelektra.org/view/compiler%20warnings/
 
 If version numbers are correct in
 - CMakeLists.txt
@@ -109,7 +109,7 @@ Check if there are really >=135 or >=95 tests
 - Check library
 
   ls -l /usr/lib/libelektra.so.$VERSION > ~elektra/$VERSION/size
-  readelf -a /usr/lib/libelektra.so.$VERSION > ~elektra/$VERSION/version
+  readelf -a /usr/lib/x86_64-linux-gnu/libelektra-core.so > ~elektra/$VERSION/readelf-core
 
 
 Check if [doc/todo/API] is fulfilled
