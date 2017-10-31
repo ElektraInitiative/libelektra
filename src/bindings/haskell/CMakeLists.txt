@@ -52,6 +52,7 @@ if (NOT BUILD_STATIC)
 		"${CMAKE_CURRENT_SOURCE_DIR}/src/Elektra/KDB.chs"
 		"${CMAKE_CURRENT_SOURCE_DIR}/test/Elektra.hs"
 		"${CMAKE_CURRENT_SOURCE_DIR}/test/ElektraRealWorld.hs"
+		${ELEKTRA_DEPENDENCY}
 	)
 	add_custom_target (c2hs_haskell ALL DEPENDS "${BINDING_HASKELL_NAME}")
 	if (BUILD_SHARED OR BUILD_FULL)
