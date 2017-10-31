@@ -11,10 +11,10 @@ module.exports = function (Logger, $http, $q, config) {
 
         $http.get(config.website.content_root + url, {
             skipAuthorization: true
-        }).success(function (data) {
-            deferred.resolve(data);
-        }).error(function (data) {
-            deferred.reject(data);
+        }).then(function (response) {
+            deferred.resolve(response.data);
+        }, function (response) {
+            deferred.reject(response.data);
         });
 
         return deferred.promise;

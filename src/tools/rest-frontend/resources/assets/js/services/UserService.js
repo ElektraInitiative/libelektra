@@ -54,7 +54,7 @@ module.exports = function (Logger, $http, $q, config) {
                     service.cache.currentUser.hasUser = true;
                     deferred.resolve(service.cache.currentUser.user);
                 }, function (response) {
-                    deferred.reject(response);
+                    deferred.reject(response.data);
                 });
             } else {
                 deferred.resolve(service.cache.currentUser.user);
@@ -65,7 +65,7 @@ module.exports = function (Logger, $http, $q, config) {
             }).then(function (response) {
                 deferred.resolve(response.data);
             }, function (response) {
-                deferred.reject(response);
+                deferred.reject(response.data);
             });
         }
 
@@ -111,11 +111,11 @@ module.exports = function (Logger, $http, $q, config) {
             Logger.info('Loading users');
             $http.get(config.backend.root + 'user', {
                 params: params
-            }).success(function (data) {
-                service.cache.search.users = data;
+            }).then(function (response) {
+                service.cache.search.users = response.data;
                 service.cache.search.params = params;
                 deferred.resolve(service.cache.search.users);
-            }).error(function (data) {
+            }, function (response) {
                 deferred.reject('Error loading data');
             });
         } else {
