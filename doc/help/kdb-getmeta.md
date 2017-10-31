@@ -3,9 +3,9 @@ kdb-getmeta(1) -- Get the value of a metakey stored in the key database
 
 ## SYNOPSIS
 
-`kdb getmeta <key-name> <metaname>`  
+`kdb getmeta <key name> <metaname>`  
 
-Where `key-name` is the full path to the key and
+Where `key name` is the name of the key and
 `metaname` is the name of the metakey the user would like to access.
 
 ## DESCRIPTION
@@ -13,7 +13,7 @@ Where `key-name` is the full path to the key and
 This command is used to print the value of a metakey.
 A metakey is information stored in a key which describes that key.
 
-The handling of cascading `key-name` does not differ to `kdb get`.
+The handling of cascading `key name` does not differ to `kdb get`.
 Make sure to use the namespace `spec`, if you want metadata from there.
 
 ## RETURN VALUES
@@ -33,12 +33,12 @@ This command will return the following values as an exit status:
   Show the man page.
 - `-V`, `--version`:
   Print version info.
-- `-p`, `--profile`=<profile>:
+- `-p`, `--profile <profile>`:
   Use a different kdb profile.
+- `-C`, `--color <when>`:
+  Print never/auto(default)/always colored output.
 - `-n`, `--no-newline`:
   Suppress the newline at the end of the output.
-- `-C`, `--color`=[when]:
-  Print never/auto(default)/always colored output.
 
 ## EXAMPLES
 
@@ -52,4 +52,5 @@ To get the value of metakey called `override/#0` stored in the key `spec/example
 
 - How to set metadata: [kdb-setmeta(1)](kdb-setmeta.md)
 - For more about cascading keys see [elektra-cascading(7)](elektra-cascading.md)
-- For general information about metadata see [elektra-metadata(7)](elektra-metadata.md)
+- [elektra-metadata(7)](elektra-metadata.md) for an explanation of the metadata concepts.
+- [elektra-key-names(7)](elektra-key-names.md) for an explanation of key names.

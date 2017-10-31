@@ -12,7 +12,7 @@ setup(name='elektra-gen',
       license='bsd',
       author='Markus Raab',
       author_email='elektra@markus-raab.org',
-      url='http://www.libelektra.org/',
+      url='https://www.libelektra.org/',
       package_dir={
           'support': '${CMAKE_CURRENT_SOURCE_DIR}/support',
            '': '${CMAKE_CURRENT_BINARY_DIR}'

@@ -1,5 +1,5 @@
 - infos = Information about the sync plugin is in keys below
-- infos/author = Markus Raab <markus@libelektra.org>
+- infos/author = Markus Raab <elektra@libelektra.org>
 - infos/licence = BSD
 - infos/provides = sync
 - infos/needs =
@@ -7,7 +7,7 @@
 - infos/status = recommended productive maintained tested nodep libc final
 - infos/description = Makes sure that config file is written to disc
 
-## Introduction ##
+## Introduction
 
 Storage plugins usually do not use fsync (2) for writing their file
 to disc. That means that the content of the file could be in some
@@ -17,7 +17,7 @@ This is good for power saving on laptops, but not a good idea on
 production use otherwise. So it is strongly recommended to always
 add this plugin.
 
-## Usage ##
+## Usage
 
 Just add this plugin to the list of plugins during mounting, e.g.
 

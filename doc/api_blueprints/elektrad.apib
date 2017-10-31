@@ -1,0 +1,134 @@
+FORMAT: 1A
+
+# elektrad API
+
+to access single instances, each elektra daemon (`elektrad`) provides a REST
+HTTP API
+
+
+## get versions [GET /version]
+
+returns the current version of the API and elektra
+
+The API version is increased whenever breaking changes
+(i.e. changes that prevent backward compatibility) are made.
+The Elektra version is directly taken from the Elektra library,
+for further information and explanation see [doc/VERSION.md](https://github.com/ElektraInitiative/libelektra/blob/master/doc/VERSION.md).
+
++ Response 200 (application/json)
+    + Attributes (object)
+        + elektra (object) - Detailed version information about the used Elektra library
+            + version (string) - The currently used version in its complete format
+            + major (number) - The currently used major version
+            + minor (number) - The currently used minor version
+            + micro (number) - The currently used micro version
+        + api (number) - The version of the API itself
+
+
+## elektra key database [/kdb/{+path}{?apikey}]
+
+access the elektra key database by specifying a `path`
+
++ Parameters
+    + path: `user/hello` (string) - path to the elektra config
+    + apikey: `7b7947e6-adc5-4d23-b53c-783623f894f8` (string, required) - API key used to authenticate with `elektrad`
+
+### get configuration [GET]
+
++ Response 200 (application/json)
+    + Attributes (object)
+        + ls: user/hello, user/hello/world (array[string], required) - subkeys of the requested path, similar to `kdb ls`
+        + value: hello world (string, required)
+        + meta (object, required) - metadata of the requested path
+
++ Response 400 (application/json)
+    + Attributes (Error)
+        + i18n (string)
+            A comprehensive list of possible errors:
+            - `APIKEY_MISSING` api key not specified
+
++ Response 401 (application/json)
+    + Attributes (Error)
+        + i18n (string)
+            A comprehensive list of possible errors:
+            - `NEED_AUTHENTICATION` if no valid apikey has been supplied
+
++ Response 404 (application/json)
+    + Attributes (Error)
+        + i18n (string)
+            A comprehensive list of possible errors:
+            - `PATH_NOT_FOUND` if the requested path does not exist in the key database
+
+### set configuration [PUT]
+
++ Request (text/plain)
+
+        hello world
+
++ Response 204
+
++ Request (application/json)
+
+        "hello world"
+
++ Response 204
+
++ Response 400 (application/json)
+    + Attributes (Error)
+        + i18n (string)
+            A comprehensive list of possible errors:
+            - `APIKEY_MISSING` api key not specified
+
++ Response 401 (application/json)
+    + Attributes (Error)
+        + i18n (string)
+            A comprehensive list of possible errors:
+            - `NEED_AUTHENTICATION` if no valid apikey has been supplied
+
++ Response 404 (application/json)
+    + Attributes (Error)
+        + i18n (string)
+            A comprehensive list of possible errors:
+            - `PATH_NOT_FOUND` if the requested path does not exist in the key database
+
++ Response 406 (application/json)
+    + Attributes (Error)
+        + i18n (string)
+            A comprehensive list of possible errors:
+            - `REQUEST_UNSUPPORTED_CONTENT_TYPE` if the submitted Content-Type is not `application/json` or `text/plain`
+
+### delete configuration [DELETE]
+
++ Response 204
+
++ Response 400 (application/json)
+    + Attributes (Error)
+        + i18n (string)
+            A comprehensive list of possible errors:
+            - `APIKEY_MISSING` api key not specified
+
++ Response 401 (application/json)
+    + Attributes (Error)
+        + i18n (string)
+            A comprehensive list of possible errors:
+            - `NEED_AUTHENTICATION` if no valid apikey has been supplied
+
++ Response 404 (application/json)
+    + Attributes (Error)
+        + i18n (string)
+            A comprehensive list of possible errors:
+            - `PATH_NOT_FOUND` if the requested path does not exist in the key database
+
+
+
+# Data Structures
+
+## KDBResponse (object)
++ ls: user/hello, user/hello/world (array[string], required) - subkeys of the requested path, similar to `kdb ls`
++ value: hello world (string, required)
++ meta (object, required) - metadata of the requested path
+
+## Error (object)
++ status (string) - textual description of the HTTP status
++ message (string) - detailed error information, e.g. hint about malformed request
++ i18n (string) - a unique token representing above error description message; can be used for internationalization in frontends

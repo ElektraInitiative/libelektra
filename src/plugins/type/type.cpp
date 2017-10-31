@@ -3,7 +3,7 @@
  *
  * @brief Implementation of entry points
  *
- * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  *
  */
 
@@ -18,7 +18,37 @@ using namespace ckdb;
 
 typedef Delegator<elektra::TypeChecker> TC;
 
+static void setError (Key * key, Key * errorKey)
+{
+	std::string msg = "The type ";
+	msg += keyString (keyGetMeta (key, "check/type"));
+	msg += " failed to match for ";
+	const char * name = keyName (key);
+	if (name) msg += name;
+	msg += " with string: ";
+	const char * value = keyString (key);
+	if (value) msg += value;
+	ELEKTRA_SET_ERROR (52, errorKey, msg.c_str ());
+}
+
 extern "C" {
+
+int elektraTypeValidateKey (ckdb::Key * key, ckdb::Key * errorKey)
+{
+	kdb::KeySet config;
+	elektra::TypeChecker tc (config);
+	int ret = 1;
+
+	kdb::Key k (key); // reinterpret_cast<kdb::Key &> (key)
+	if (!tc.check (k))
+	{
+		setError (key, errorKey);
+		ret = 0;
+	}
+
+	k.release ();
+	return ret;
+}
 
 int elektraTypeOpen (ckdb::Plugin * handle, ckdb::Key * errorKey)
 {
@@ -36,14 +66,16 @@ int elektraTypeGet (ckdb::Plugin *, ckdb::KeySet * returned, ckdb::Key *)
 {
 	/* configuration only */
 	KeySet * n;
-	ksAppend (returned, n = ksNew (30, keyNew ("system/elektra/modules/type", KEY_VALUE, "type plugin waits for your orders", KEY_END),
-				       keyNew ("system/elektra/modules/type/exports", KEY_END),
-				       keyNew ("system/elektra/modules/type/exports/open", KEY_FUNC, elektraTypeOpen, KEY_END),
-				       keyNew ("system/elektra/modules/type/exports/close", KEY_FUNC, elektraTypeClose, KEY_END),
-				       keyNew ("system/elektra/modules/type/exports/get", KEY_FUNC, elektraTypeGet, KEY_END),
-				       keyNew ("system/elektra/modules/type/exports/set", KEY_FUNC, elektraTypeSet, KEY_END),
+	ksAppend (returned,
+		  n = ksNew (30, keyNew ("system/elektra/modules/type", KEY_VALUE, "type plugin waits for your orders", KEY_END),
+			     keyNew ("system/elektra/modules/type/exports", KEY_END),
+			     keyNew ("system/elektra/modules/type/exports/open", KEY_FUNC, elektraTypeOpen, KEY_END),
+			     keyNew ("system/elektra/modules/type/exports/close", KEY_FUNC, elektraTypeClose, KEY_END),
+			     keyNew ("system/elektra/modules/type/exports/get", KEY_FUNC, elektraTypeGet, KEY_END),
+			     keyNew ("system/elektra/modules/type/exports/set", KEY_FUNC, elektraTypeSet, KEY_END),
+			     keyNew ("system/elektra/modules/type/exports/validateKey", KEY_FUNC, elektraTypeValidateKey, KEY_END),
 #include "readme_type.c"
-				       keyNew ("system/elektra/modules/type/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END));
+			     keyNew ("system/elektra/modules/type/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END));
 	ksDel (n);
 
 	return 1; /* success */
@@ -51,23 +83,17 @@ int elektraTypeGet (ckdb::Plugin *, ckdb::KeySet * returned, ckdb::Key *)
 
 int elektraTypeSet (ckdb::Plugin * handle, ckdb::KeySet * returned, ckdb::Key * parentKey)
 {
-	/* set all keys */
+	int ret = 1;
 
-	if (!TC::get (handle)->check (reinterpret_cast<kdb::KeySet &> (returned)))
+	kdb::KeySet ks (returned); // reinterpret_cast<kdb::KeySet &> (returned)
+	if (!TC::get (handle)->check (ks))
 	{
-		std::string msg = "None of supplied types (";
-		msg += keyString (keyGetMeta (ksCurrent (returned), "check/type"));
-		msg += ") matched for ";
-		const char * name = keyName (ksCurrent (returned));
-		if (name) msg += name;
-		msg += " with string: ";
-		const char * value = keyString (ksCurrent (returned));
-		if (value) msg += value;
-		ELEKTRA_SET_ERROR (52, parentKey, msg.c_str ());
-		return -1;
+		setError (ksCurrent (returned), parentKey);
+		ret = -1;
 	}
 
-	return 1; /* success */
+	ks.release ();
+	return ret;
 }
 
 ckdb::Plugin * ELEKTRA_PLUGIN_EXPORT (type)

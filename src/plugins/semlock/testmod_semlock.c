@@ -3,7 +3,7 @@
  *
  * @brief Tests for semlock plugin
  *
- * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  *
  */
 
@@ -14,7 +14,7 @@
 
 #include <tests_plugin.h>
 
-static void test_OpenClose ()
+static void test_OpenClose (void)
 {
 	printf ("test Open & Close\n");
 
@@ -26,7 +26,7 @@ static void test_OpenClose ()
 	PLUGIN_CLOSE ();
 }
 
-static void test_GetSet ()
+static void test_GetSet (void)
 {
 	printf ("test Get & Set\n");
 
@@ -58,7 +58,7 @@ int main (int argc, char ** argv)
 	test_OpenClose ();
 	test_GetSet ();
 
-	printf ("\ntestmod_semlock RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
+	print_result ("testmod_semlock");
 
 	return nbError;
 }

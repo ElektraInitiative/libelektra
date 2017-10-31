@@ -18,7 +18,7 @@ less portable backends.  Many different aspects clutter the code making
 the backends unmaintainable.  Features of other backends cannot be taken
 with ease because they are interwoven with other code.
 
-To support the reuse of a functionality, they must be useful in different
+To support the reuse of functionality, they must be useful in different
 situations.  Separation of concerns is required for that.  Each backend
 needs to have a specific purpose rather than implementing the full
 semantics of Elektra.
@@ -29,10 +29,10 @@ and type checking have always been in the developers' heads, but there was
 no place where it would fit in without making the system unmaintainable,
 complex and full of unwanted external dependences.
 
-To solve this dilemma, Elektra uses **multiple plugins** together
+To solve this dilemma, Elektra uses **multiple plugins** together to
 build up a backend.  The key set processed by one plugin will be passed
 to the next.  This approach allows us to implement separate features
-in separate plugins.  Plugins concerned with reading and writing to
+in separate plugins.  Plugins concerned with reading from and writing to
 permanent storage are called **storage plugins**.
 We cleaned existing backends from other tasks so that their only job
 now is related to the storage.  Using this approach, the plugins provide
@@ -59,6 +59,4 @@ can choose from a pool of existing plugins.
 
 ## SEE ALSO
 
-- More information about [elektra-plugins-framework(7)](elektra-plugins-framework.md)
 - The tool for mounting a backend is [kdb-mount(1)](kdb-mount.md)
-- The plugins are ordered as described in [elektra-plugins-ordering(7)](elektra-plugins-ordering.md)

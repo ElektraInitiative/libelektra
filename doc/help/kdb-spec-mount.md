@@ -3,11 +3,11 @@ kdb-spec-mount(1) - Mount a spec file to the key database
 
 ## SYNOPSIS
 
-`kdb spec-mount [/<mountpoint>] [<plugin> [<config>] [..]]`  
+`kdb spec-mount [/<mountpoint>] [<plugin> [<config>] [..]]`
 
 - `mountpoint` is where in the key database the new backend should be mounted to.
-  It must be a cascading mount pount, i.e., `mountpoint` must start with `/`.
-- `plugin` are be extra Elektra plugins to be used (next to the one specified in `spec/`).
+  It must be a cascading mount point, i.e., `mountpoint` must start with `/`.
+- `plugin` are extra Elektra plugins to be used (next to the one specified in `spec/`).
 - Plugins may be followed by a `,` separated list of `keys=values` pairs which will be used as plugin configuration.
 
 `kdb smount` is an alias and can be used in the same way as `kdb spec-mount`.
@@ -16,10 +16,11 @@ kdb-spec-mount(1) - Mount a spec file to the key database
 ## DESCRIPTION
 
 This command allows a user to mount a new *backend* described by a previously mounted specification.
-To mount a specification file first use [kdb-mount(7)](kdb-mount.md).
+To mount a specification file to `spec`-[namespace](elektra-namespaces.md) first use [kdb-mount(7)](kdb-mount.md):
 
-The idea of mounting is explained [in elektra-mounting(7)](elektra-mounting.md) and.
+	kdb mount some-spec-file.ini spec/example/mountpoint ni
 
+The idea of mounting is explained [in elektra-mounting(7)](elektra-mounting.md).
 The `spec` [namespace](elektra-namespaces.md) contains metaconfiguration that describes the configuration in all other namespaces.
 The metadata used for the specification is described in [METADATA.ini](/doc/METADATA.ini).
 
@@ -29,12 +30,22 @@ During `spec-mount` the `spec` keys are searched for relevant metadata:
 - The `infos/*` and `config/needs` from [CONTRACT.ini](/doc/CONTRACT.ini), that are tagged by `usedby = spec`, will work as described there.
 - For other metadata suitable plugins are searched and mounted additionally.
 
+For example:
+
+	kdb getmeta spec/example/mountpoint mountpoint  # verify that we have a mountpoint here
+	kdb spec-mount /example/mountpoint  # mounts /example/mountpoint according to specification
+		# found at spec/example/mountpoint
+
 
 ## IMPORTANT
 
 This command writes into the `/etc` directory and as such it requires root permissions.
 Use `kdb file system/elektra/mountpoints` to find out where exactly it will write to.
 
+Note that many specifications have globs like `_` and `#`. They will only work if
+the `spec` plugin is present:
+
+	kdb global-mount
 
 ## OPTIONS
 
@@ -42,20 +53,20 @@ Use `kdb file system/elektra/mountpoints` to find out where exactly it will writ
   Show the man page.
 - `-V`, `--version`:
   Print version info.
+- `-p`, `--profile <profile>`:
+  Use a different kdb profile.
+- `-C`, `--color <when>`:
+  Print never/auto(default)/always colored output.
 - `-v`, `--verbose`:
   Explain what is happening.
 - `-q`, `--quiet`:
   Suppress non-error messages.
-- `-p`, `--profile`=<profile>:
-  Use a different kdb profile.
-- `-R`, `--resolver`=<name>:
+- `-R`, `--resolver <resolver>`:
   Specify the resolver plugin to use if no resolver is given, the default resolver is used.
   See also [below in KDB](#KDB).
   Note that the resolver will only added as dependency, but not directly added.
-- `-c`, `--plugins-config`=<config>:
+- `-c`, `--plugins-config <plugins-config>`:
   Add a plugin configuration for all plugins.
-- `-C`, `--color`=[when]:
-  Print never/auto(default)/always colored output.
 - `-W`, `--with-recommends`:
   Also add recommended plugins and warn if they are not available.
 
@@ -81,10 +92,10 @@ Use `kdb file system/elektra/mountpoints` to find out where exactly it will writ
 
 ## EXAMPLES
 
-To mount /example as described in `spec/example`:  
+To mount /example as described in `spec/example`:
 `kdb spec-mount /example`
 
-Additionally, add `ini` plugin (instead of some default resolver) with `some` as config:  
+Additionally, add `ini` plugin (instead of some default resolver) with `some` as config:
 `kdb spec-mount /example ini some=value`
 
 ## SEE ALSO
@@ -92,4 +103,3 @@ Additionally, add `ini` plugin (instead of some default resolver) with `some` as
 - [elektra-glossary(7)](elektra-glossary.md).
 - [kdb-umount(7)](kdb-umount.md).
 - [elektra-mounting(7)](elektra-mounting.md).
-- [elektra-plugins-framework(7)](elektra-plugins-framework.md).

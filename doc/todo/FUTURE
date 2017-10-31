@@ -14,6 +14,10 @@ no "binary" metadata hack within API:
 	just provide keyGetValue and keyGetValueSize
 	no fixed strings when GetString on binary
 
+backslash:
+	allow \ at end of keynames?
+	Autoescape on addBaseName?
+
 remove old metadata get/set
 
 remove null ptr checks? (see decision)
@@ -27,6 +31,9 @@ remove obsolete key/keyset flags
 
 _t is reserved by POSIX, so cursor_t, keyswitch_t and option_t
 should be renamed to something elektra specific
+
+internal APIs: malloc, realloc should use 2 parameters and
+	check for multiplication overflow
 
 size_t, ssize_t are not fixed size, use uint32_t.. to have no
 problems on binary serialisation + unified behaviour (array sizes..)
@@ -83,6 +90,7 @@ Remove/Refactor/Rename obsolete/not needed methods:
 - have consistent instantiate+backreferencing syntax for both backend+global mounting
    (system/elektra/mountpoints and system/elektra/globalplugins)
 - remove legacy bootstrapping: always use KDB_FILE_INIT (elektra.ecf)
+- recursive backend=plugin (separate commit method)
 
 
 == Methods ==
@@ -96,10 +104,11 @@ all exported methods of elektra need to be:
 	having test cases for error cases
 	otherwise fix or mark it obsolete
 
-
 == Conventions ==
 
 conventions should be used everywhere
+
+Encode numbers /#222/ by adding _. (so not only convention)? (only unescaped name has #__)
 
 warnings should have array conventions #0, #_10...
 	also allow many errors? (for many validation/parse errors)
@@ -107,7 +116,7 @@ warnings should have array conventions #0, #_10...
 
 == Libraries ==
 
-- remove libelektra.so (only have new splitted libraries)
+- remove libelektra.so (only have new split libraries)
 
 
 === Plugin API Changes ===
@@ -194,6 +203,7 @@ notification: new notification api (only for frontend!)
 		KdbCallback *cb, void *userdata);
 	void kdbDeliverEvents(long iterations, int sleep);
 
+clause infos/needs could automatically imply ordering?
 
 libelektra-metadata:
 	multilanguage comments

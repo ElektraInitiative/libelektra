@@ -3,29 +3,45 @@ elektra-glossary(7) -- glossary of Elektra
 
 ## Introduction
 
-- **Configurations**:
-  contain user preferences or other application
-  settings.
+- **Configuration settings**:
+  customize applications towards the users
+  needs.
 
 - **Configuration storage**:
-  makes this information permanent.
+  makes configuration settings persistent.
   The application will read the configuration
-  at every start, but it is only stored
-  if a user changes settings.
+  at every start from the configuration storage,
+  but it is only stored if a user changes settings.
 
 - **Key databases**:
-  are used because of these constraints.
+  are used for configuration storages because of these constraints.
   They can do fast key lookups and the keys can be structured
   hierarchically by defining separators in the key names.
-  Unlike SQL databases, the key name is the only primary key; there are
-  no foreign keys, and no query language exists.
 
 - **Global key database**:
-  provides global access to all key databases
-  of all applications in a system that wants to access a key database.
+  provides global access to all configuration storages
+  of all applications in a system.
+  Abbreviated as `KDB`.
+
+- **LibElektra**:
+  is a set of [libraries](/src/libs/) to access configuration parameters in a global,
+  hierarchical key database.
+
+- **SpecElektra**:
+  is a [specification language](/doc/METADATA.ini) that allows us to describe the
+  content of the global key database.
+
+- **Elektra**:
+  is a framework consisting of LibElektra, SpecElektra,
+  and a collection of tools.
 
 - To **elektrify** an application:
-  to change the application so that it uses Elektra afterwards.
+  to change the application so that it uses LibElektra afterwards.
+
+- **Elektra Initiative**:
+  is a community that develops LibElektra, expands SpecElektra,
+  improves Elektra's tooling and helps to elektrify applications.
+
 
 ## Technical Concepts
 
@@ -48,8 +64,11 @@ elektra-glossary(7) -- glossary of Elektra
 - [Namespaces](elektra-namespaces.md):
   Allow us to have multiple keys for the same purpose and otherwise the same key name.
 
-- [Plugins](elektra-plugins-framework.md):
+- [Plugins](/src/plugins):
   The unit of implementation for a feature.
+
+- [Metadata](elektra-metadata.md):
+  Allows us to describe configuration settings.
 
 
 ## Details
@@ -69,4 +88,4 @@ elektra-glossary(7) -- glossary of Elektra
   can be used for something else afterwards.
 
 - **remove**:
-  means that the key/value information in the physical database will be removed permanently.
+  means that the key-value information in the physical database will be removed permanently.

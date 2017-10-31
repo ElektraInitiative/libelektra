@@ -3,14 +3,14 @@
  *
  * @brief
  *
- * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
 #include <tests_internal.h>
 
 #define NAME_SIZE 250
 
-static void test_ksResize ()
+static void test_ksResize (void)
 {
 	int i;
 	KeySet * ks = 0;

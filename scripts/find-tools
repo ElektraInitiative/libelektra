@@ -15,9 +15,10 @@ tags = {	'configure': "This script is used for the build configuration",
 		'env': "This script does some env stuff",
 		'mount': "This script mounts things",
 		'reformat': "This script reformats things",
+		'benchmark': "This script runs benchmarks",
 		'debian': "Special script for debian system"}
 
-# No changes below this line necassary!
+# No changes below this line necessary!
 
 from itertools import islice
 import os
@@ -98,7 +99,7 @@ def main():
 	so.add_argument ("-d", "--date", help="Search by date (format DD.MM.YYYY)")
 	so.add_argument ("-t", "--tags", help="Search by tags", nargs="+")
 	so.add_argument ("-b", "--brief", help="Search inside the brief text")
-	so.add_argument ("-e", "--execute", help="Search by file executeable (shebang)")
+	so.add_argument ("-e", "--execute", help="Search by file executable (shebang)")
 
 	args = parser.parse_args ()
 
@@ -120,7 +121,7 @@ def main():
 			if d["shebang"] == "":
 				message.append ("No Shebang")
 			if d["perm"] == 0:
-				message.append ("Not executeable")
+				message.append ("Not executable")
 			if d["tags"] == {}:
 				message.append ("No Metatags")
 			if d["modeline"] == "":

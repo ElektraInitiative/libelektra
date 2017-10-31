@@ -3,7 +3,7 @@
  *
  * @brief
  *
- * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
 #include "doc.h"
@@ -244,7 +244,7 @@ int elektraPluginSet (Plugin * plugin ELEKTRA_UNUSED, KeySet * returned, Key * p
 //![set full]
 
 
-void elektraUsercodeUselessSymbol ()
+void elektraUsercodeUselessSymbol (void)
 {
 	usercode (0, 0, 0);
 }

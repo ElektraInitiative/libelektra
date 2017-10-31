@@ -35,10 +35,19 @@ macro (do_test source)
 			)
 endmacro (do_test)
 
+if (NOT CMAKE_VERSION VERSION_LESS 3.2)
+	set (USES_TERMINAL USES_TERMINAL)
+endif (NOT CMAKE_VERSION VERSION_LESS 3.2)
+
 add_custom_target(run_all
-	COMMAND ${CMAKE_CTEST_COMMAND}
-	--force-new-ctest-process --output-on-failure
-	--build-config "$<CONFIGURATION>"
+	COMMAND "${CMAKE_SOURCE_DIR}/scripts/run_all"
+	"$<CONFIGURATION>"
+	WORKING_DIRECTORY "${CMAKE_BINARY_DIR}"
+	${USES_TERMINAL})
+
+add_custom_target(run_nokdbtests
+	COMMAND "${CMAKE_SOURCE_DIR}/scripts/run_nokdbtests"
+	"$<CONFIGURATION>"
 	WORKING_DIRECTORY "${CMAKE_BINARY_DIR}")
 
 add_custom_target(run_memcheck

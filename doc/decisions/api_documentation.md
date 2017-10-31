@@ -1,4 +1,4 @@
-# REST API documentation
+# REST API Documentation
 
 ## Issue
 

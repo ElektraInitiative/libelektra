@@ -7,13 +7,15 @@
 - infos/status = maintained nodep concept obsolete 3000
 - infos/description = Very simple storage which writes out in a basic ini format.
 
-## Introduction ##
+## Introduction
 
 This plugin reads and writes files written in a basic line-oriented ini-like format.
 It is very simplistic without sections, the [ini](../ini/) plugin and for specifications
-the [ni](../ni/) plugin should be preferred in most cases.
+the [ni](../ni/) plugin should be preferred in most cases. Since the `simpleini` plugin requires
+the GNU C library it **will not work** on operating systems that use another C library
+such as macOS.
 
-## Usage ##
+## Usage
 
 It is quite suitable to export configuration if you want line-by-line key, value pairs
 without sections or metadata.
@@ -21,7 +23,7 @@ without sections or metadata.
 
     $ kdb export system/samba simpleini
 
-## Configuration ##
+## Configuration
 
 The only parameter simpleini supports is `format` which allows you to change the syntax
 of individual lines.
@@ -39,11 +41,11 @@ For example, if you want every key to be marked `%:key value` you would use:
     %:key value
     %:key2 value2
 
-## Restrictions ##
+## Restrictions
 
 - Lines in a different format (e.g. comments) are discarded.
 - The order per line must be key and then value: the plugin cannot be used if the value is first
-- Spaces are trimmed
+- Whitespace before and after keynames are trimmed (but not for value)
 - Delimiting symbols cannot be part of the key.
 - The last occurrence of the same key wins (others are discarded).
 - The parent Key cannot be used.
@@ -51,7 +53,7 @@ For example, if you want every key to be marked `%:key value` you would use:
   A code plugin is used for the escape character for some symbols (but does not respect user-defined `format`)
   and the null plugin is used to handle null values.
 
-## Examples ##
+## Examples
 
 Mount the plugin:
 

@@ -3,7 +3,7 @@
  *
  * @brief
  *
- * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
 #ifndef GET_HPP
@@ -21,7 +21,7 @@ public:
 
 	virtual std::string getShortOptions () override
 	{
-		return "anvC";
+		return "anv";
 	}
 
 	virtual std::string getSynopsis () override

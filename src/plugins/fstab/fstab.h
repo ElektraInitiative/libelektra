@@ -3,7 +3,7 @@
  *
  * @brief
  *
- * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
 #ifndef FSTAB_H
@@ -17,7 +17,6 @@
 #include <dirent.h>
 #include <errno.h>
 #include <fcntl.h>
-#include <stdio.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

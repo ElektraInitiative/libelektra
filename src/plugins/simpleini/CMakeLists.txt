@@ -11,5 +11,7 @@ if (HAVE_GLIBC)
 			simpleini.c
 		LINK_ELEKTRA
 			elektra-ease
+			elektra-utility
+		ADD_TEST
 		)
 endif()

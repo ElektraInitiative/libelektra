@@ -1,25 +1,20 @@
 elektra-plugins(7) -- plugins overview
 ======================================
 
-Plugins can be mounted into the KDB and can access or manipulate the
-KeySet on every access.
-
-Multiple plugins can be mounted into the [key data base](/doc/help/elektra-glossary.md).
+Multiple plugins can be mounted into the [key database](/doc/help/elektra-glossary.md) (KDB).
 On every access to the key data base they are executed and thus can change
-the functionality.
+the functionality and behavior.
 
-## Description ##
+## Description
 
-Elektra already has a wide range of different plugins.
+Elektra has a wide range of different plugins.
 The plugin folders should contain a README.md with further information.
 (Or follow links below.)
 The plugins are:
 
-![Overview Plugins](/doc/images/overview_plugins.png)
+![Overview Plugins](/doc/images/plugins.png)
 
-For background information see [elektra-plugins-framework(7)](/doc/help/elektra-plugins-framework.md).
-
-### C-Interface ###
+### C-Interface
 
 All plugins implement the same interface:
 
@@ -35,30 +30,32 @@ All plugins implement the same interface:
     their chance for necessary cleanups.
 -  `kdbClose()` makes sure that plugins can finally free their
     own resources in `elektraPluginClose()`.
--  `kdbPluginCheckConfig()` can be called manually to ensure a plugin is
+-  `kdbCheckConfig()` can be called manually to ensure a plugin is
    configured properly.
+-  `kdbGenConfig()` can be called to produce all valid configurations
+   of a plugin.
 
-### KDB-Interface ###
+### KDB-Interface
 
 - To list all plugins use [kdb-list(1)](/doc/help/kdb-list.md).
 - To check a plugin use [kdb-check(1)](/doc/help/kdb-check.md).
 - For information on a plugin use [kdb-info(1)](/doc/help/kdb-info.md).
 - For mount plugin(s) use [kdb-mount(1)](/doc/help/kdb-mount.md).
 
-## See also ##
+## See also
 
 For an easy introduction, see [this tutorial how to write a storage plugin](/doc/tutorials/plugins.md).
-For more background information of the [plugins framework, continue here](/doc/help/elektra-plugins-framework.md).
-Otherwise, you can visit the [the API documentation](http://doc.libelektra.org/api/current/html/group__plugin.html).
+For more background information of the [plugins framework, continue here](/doc/dev/plugins-framework.md).
+Otherwise, you can visit the [the API documentation](https://doc.libelektra.org/api/current/html/group__plugin.html).
 
-## Plugins ##
+## Plugins
 
-### Resolver ###
+### Resolver
 
 Before configuration is actually written, the file name needs to be
-determined (will be automatically added by kdb mount):
+determined (resolvers will be automatically added by kdb mount):
 
-- [resolver](resolver/) uses POSIX APIs to handle conflicts gracefully
+- [resolver](resolver/) uses advanced POSIX APIs to handle conflicts gracefully
 - [wresolver](wresolver/) minimalistic resolver for non-POSIX systems
 - [noresolver](noresolver/) does not resolve, but can act as one
 - [gitresolver](gitresolver/) checks out and commits files to a local git repository
@@ -66,10 +63,11 @@ and afterwards the configuration file must be synced with
 harddisc (recommended to add at every kdb mount):
 - [curlget](curlget/) fetches configuration file from a remote host
 - [blockresolver](blockresolver/) resolves tagged blocks inside config files
+- [multifile](multifile/)
 
-- [sync](sync/) uses POSIX APIs to sync configuration file with harddisc
+- [sync](sync/) uses POSIX APIs to sync configuration files with the hard disk
 
-### Storage ###
+### Storage
 
 Are responsible for reading writing the configuration to configuration
 files.
@@ -97,9 +95,11 @@ spec-namespace (put a focus on having nice syntax for metadata):
 
 Only suited for import/export:
 
+- [xerces](xerces/) uses XML (without a specific schema).
 - [xmltool](xmltool/) uses XML (in Elektra's XML schema).
 - [simpleini](simpleini/) line-based key-value pairs with configurable
   format (without sections)
+- [mini](mini/) dependency free, line based key-value storage plugin.
 
 Plugins that just show some functionality, (currently) not intended for
 productive use:
@@ -111,8 +111,13 @@ productive use:
 - [dpkg](dpkg/) reads /var/lib/dpkg/{available,status}
 - [mozprefs](mozprefs/) for Mozilla preference files
 - [c](c/) writes Elektra C-structures (`ksNew(.. keyNew(...`)
+- [file](file/) reads and writes a file from/to a single key
+- [camel](camel/) reads and writes a very limited subset of [YAML][]
+- [yamlcpp](yamlcpp/) reads and writes data in the [YAML][] format using [yaml-cpp](https://github.com/jbeder/yaml-cpp)
 
-### System Information ###
+[YAML]: http://www.yaml.org
+
+### System Information
 
 Information compiled in Elektra:
 - version is a built-in plugin directly within the
@@ -127,7 +132,7 @@ files:
 
 - [uname](uname/) information from the uname syscall.
 
-### Filter ###
+### Filter
 
 *Filter plugins* process keys and their values in both
 directions.
@@ -159,69 +164,76 @@ Doing other stuff:
 
 - [crypto](crypto/) encrypts / decrypts confidential values
 - [fcrypt](fcrypt/) encrypts / decrypts entire backend files
-- [iconv](iconv/) make sure the configuration will have correct
+- [iconv](iconv/) makes sure the configuration will have correct
   character encoding
 - [hidden](hidden/) hides keys whose names start with a `.`.
 - [null](null/) takes care of null values and other binary specialities
 
-### Notification and Logging ###
+### Notification and Logging
 
 Log/Send out all changes to configuration to:
 
-- [dbus](dbus/)
-- [journald](journald/)
-- [syslog](syslog/)
+- [dbus](dbus/) sends notifications for every change via dbus
+- [syslog](syslog/) logs key database changes to syslog
+- [journald](journald/) logs key database changes to journald
 - [logchange](logchange/) prints the change of every key on the console
 
-### Debug ###
+### Debug
 
 Trace everything that happens within KDB:
 
-- [timeofday](timeofday/) print timestamps
-- [tracer](tracer/)
-- [counter](counter/) count and print how often plugin is used
+- [timeofday](timeofday/) prints timestamps
+- [tracer](tracer/) traces all calls
+- [counter](counter/) count and print how often a plugin is used
 
-### Checker ###
+### Checker
 
 Copies metadata to keys:
 
-- [glob](glob/) using globbing techniques
+- [spec](spec/) copies metadata from spec namespace (the
+  standard way)
+- [glob](glob/) using globbing techniques (needed by some plugins)
 - [struct](struct/) using a defined structure (may also reject
   configuration not conforming to that structure)
-- [spec](spec/) copies metadata from spec namespace
+
 Plugins that check if values are valid based on metadata (typically
-copied by another plugin just before):
+copied by the `spec` plugin just before):
 
 **Value Validation**
 
 - [validation](validation/) by using regex
 - [network](network/) by using network APIs
-- [path](path/) by checking files on filesystem
-- [type](type/) using runtime type checking (CORBA types/)
+- [ipaddr](ipaddr/) checks IP addresses using regular expressions
+- [path](path/) by checking files on file system
+- [type](type/) using run-time type checking (CORBA types/)
 - [enum](enum/) compares the keyvalue against a list of valid values
 - [mathcheck](mathcheck/) by mathematical expressions using keysvalues as operands
 - [conditionals](conditionals/) by using if-then-else like statements
 - [required](required/) rejects non-required keys
+- [date](date/) validates date and time data
+- [range](range/) checks if a value is within a given range
 
 **Other Validation**
 
 - [filecheck](filecheck/) does sanity checks on a file
 - [lineendings](lineendings/) tests file for consistent line endings
 
-### Interpreter ###
+### Interpreter
 
 These plugins start an interpreter and allow you to execute a script
-in an interpreted language whenever Elektra's key database gets
+in an interpreted language whenever Elektra’s key database gets
 accessed. Note that they depend on the presence of the respective
-binding during runtime.
+binding during run-time.
 
 - [jni](jni/) java plugins started by jni, works with jna plugins
 - [python](python/) Python 3 plugins
 - [python2](python2/) Python 2 plugins (deprecated)
+- [ruby](ruby/) Ruby plugins
 - [lua](lua/) Lua plugins
 - [shell](shell/) executes shell commandos
+- [haskell](haskell/) used for linking haskell plugins and is a small example for such plugins itself
 
-### Others ###
+### Others
 
 - [doc](doc/) contains the documentation of the plugin interface
 - [error](error/) yields errors as described in metadata (handy for test purposes)

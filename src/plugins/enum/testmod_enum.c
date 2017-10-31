@@ -3,7 +3,7 @@
  *
  * @brief Tests for enum plugin
  *
- * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  *
  */
 
@@ -17,12 +17,12 @@
 #include <tests_plugin.h>
 
 
-static void test ()
+static void test (void)
 {
 	Key * parentKey = keyNew ("user/tests/enum", KEY_VALUE, "", KEY_END);
-	Key * k1 = keyNew ("user/tests/enum/valid1", KEY_VALUE, "TRUE", KEY_META, "check/enum", "'TRUE','FALSE'", KEY_END);
+	Key * k1 = keyNew ("user/tests/enum/valid1", KEY_VALUE, "TRUE", KEY_META, "check/enum", "'TRUE',  'FALSE'", KEY_END);
 	Key * k2 = keyNew ("user/tests/enum/valid2", KEY_VALUE, "FALSE", KEY_META, "check/enum", "'TRUE','FALSE'", KEY_END);
-	Key * k3 = keyNew ("user/tests/enum/invalid1", KEY_VALUE, "BLA", KEY_META, "check/enum", "'TRUE','FALSE'", KEY_END);
+	Key * k3 = keyNew ("user/tests/enum/invalid1", KEY_VALUE, "BLA", KEY_META, "check/enum", " 'TRUE' , 'FALSE'", KEY_END);
 	Key * k4 = keyNew ("user/tests/enum/invalid2", KEY_VALUE, "", KEY_META, "check/enum", "'TRUE','FALSE'", KEY_END);
 	KeySet * conf = ksNew (0, KS_END);
 	KeySet * ks;
@@ -56,7 +56,7 @@ static void test ()
 	PLUGIN_CLOSE ();
 }
 
-static void testArray ()
+static void testArray (void)
 {
 	Key * parentKey = keyNew ("user/tests/enum", KEY_VALUE, "", KEY_END);
 	Key * k1 = keyNew ("user/tests/enum/valid1", KEY_VALUE, "LOW", KEY_META, "check/enum", "#1", KEY_META, "check/enum/#0", "LOW",
@@ -102,7 +102,7 @@ static void testArray ()
 	PLUGIN_CLOSE ();
 }
 
-static void testMultiList ()
+static void testMultiList (void)
 {
 	Key * parentKey = keyNew ("user/tests/enum", KEY_VALUE, "", KEY_END);
 	Key * k1 = keyNew ("user/tests/enum/valid1", KEY_VALUE, "LOW", KEY_META, "check/enum/multi", "_", KEY_META, "check/enum",
@@ -111,8 +111,8 @@ static void testMultiList ()
 			   "'LOW','MIDDLE','HIGH'", KEY_END);
 	Key * k3 = keyNew ("user/tests/enum/invalid1", KEY_VALUE, "HIGH", KEY_META, "check/enum/multi", "_", KEY_META, "check/enum",
 			   "'LOW','MIDDLE'", KEY_END);
-	Key * k4 = keyNew ("user/tests/enum/invalid2", KEY_VALUE, "_LOW_FAIL_", KEY_META, "check/enum/multi", "_", KEY_META, "check/enum",
-			   "'MIDDLE','HIGH'", KEY_END);
+	Key * k4 = keyNew ("user/tests/enum/invalid2", KEY_VALUE, "_MIDDLE_FAIL_", KEY_META, "check/enum/multi", "_", KEY_META,
+			   "check/enum", "'MIDDLE','HIGH'", KEY_END);
 	KeySet * conf = ksNew (0, KS_END);
 	KeySet * ks;
 	PLUGIN_OPEN ("enum");
@@ -155,7 +155,8 @@ int main (int argc, char ** argv)
 	test ();
 	testArray ();
 	testMultiList ();
-	printf ("\ntestmod_enum RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
+
+	print_result ("testmod_enum");
 
 	return nbError;
 }

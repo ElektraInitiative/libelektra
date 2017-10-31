@@ -3,7 +3,7 @@
  *
  * @brief
  *
- * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
 #ifndef FACTORY_HPP
@@ -15,12 +15,15 @@
 #include <string>
 #include <vector>
 
+#include "ansicolors.hpp"
 #include "coloredkdbio.hpp"
+
 #include <command.hpp>
 #include <external.hpp>
 
 // TODO: to add a new command, 1.) include your header here
 #include <check.hpp>
+#include <complete.hpp>
 #include <convert.hpp>
 #include <cp.hpp>
 #include <editor.hpp>
@@ -29,13 +32,16 @@
 #include <fstab.hpp>
 #include <get.hpp>
 #include <globalmount.hpp>
+#include <globalumount.hpp>
 #include <import.hpp>
 #include <info.hpp>
 #include <list.hpp>
+#include <listcommands.hpp>
 #include <ls.hpp>
 #include <merge.hpp>
 #include <metaget.hpp>
 #include <metals.hpp>
+#include <metaremove.hpp>
 #include <metaset.hpp>
 #include <mount.hpp>
 #include <mv.hpp>
@@ -79,12 +85,14 @@ public:
 		m_factory.insert (std::make_pair ("set", new Cnstancer<SetCommand> ()));
 		m_factory.insert (std::make_pair ("rm", new Cnstancer<RemoveCommand> ()));
 		m_factory.insert (std::make_pair ("ls", new Cnstancer<LsCommand> ()));
+		m_factory.insert (std::make_pair ("complete", new Cnstancer<CompleteCommand> ()));
 		m_factory.insert (std::make_pair ("cp", new Cnstancer<CpCommand> ()));
 		m_factory.insert (std::make_pair ("mv", new Cnstancer<MvCommand> ()));
 		m_factory.insert (std::make_pair ("mount", new Cnstancer<MountCommand> ()));
 		m_factory.insert (std::make_pair ("remount", new Cnstancer<RemountCommand> ()));
 		m_factory.insert (std::make_pair ("shell", new Cnstancer<ShellCommand> ()));
 		m_factory.insert (std::make_pair ("getmeta", new Cnstancer<MetaGetCommand> ()));
+		m_factory.insert (std::make_pair ("rmmeta", new Cnstancer<MetaRemoveCommand> ()));
 		m_factory.insert (std::make_pair ("setmeta", new Cnstancer<MetaSetCommand> ()));
 		m_factory.insert (std::make_pair ("lsmeta", new Cnstancer<MetaLsCommand> ()));
 		m_factory.insert (std::make_pair ("info", new Cnstancer<InfoCommand> ()));
@@ -104,7 +112,10 @@ public:
 		m_factory.insert (std::make_pair ("spec-mount", new Cnstancer<SpecMountCommand> ()));
 		m_factory.insert (std::make_pair ("smount", new Cnstancer<SpecMountCommand> ()));
 		m_factory.insert (std::make_pair ("global-mount", new Cnstancer<GlobalMountCommand> ()));
+		m_factory.insert (std::make_pair ("global-umount", new Cnstancer<GlobalUmountCommand> ()));
 		m_factory.insert (std::make_pair ("gmount", new Cnstancer<GlobalMountCommand> ()));
+		m_factory.insert (std::make_pair ("gumount", new Cnstancer<GlobalUmountCommand> ()));
+		m_factory.insert (std::make_pair ("list-commands", new Cnstancer<ListCommandsCommand> ()));
 	}
 
 	~Factory ()
@@ -115,8 +126,7 @@ public:
 		}
 	}
 
-	/**Returns a list of available commands */
-	std::vector<std::string> getCommands () const
+	std::vector<std::string> getPrettyCommands () const
 	{
 		std::vector<std::string> ret;
 		for (auto & elem : m_factory)
@@ -133,7 +143,20 @@ public:
 		ret.push_back (getStdColor (ANSI_COLOR::BOLD) + "help" + getStdColor (ANSI_COLOR::RESET) + "\t" +
 			       "View the man page of a tool");
 		ret.push_back (getStdColor (ANSI_COLOR::BOLD) + "list-tools" + getStdColor (ANSI_COLOR::RESET) + "\t" +
-			       "List all external tool");
+			       "List all external tools");
+		return ret;
+	}
+
+	/**Returns a list of available commands */
+	std::vector<std::string> getCommands () const
+	{
+		std::vector<std::string> ret;
+		for (auto & elem : m_factory)
+		{
+			ret.push_back (elem.first);
+		}
+		ret.push_back ("help");
+		ret.push_back ("list-tools");
 		return ret;
 	}
 

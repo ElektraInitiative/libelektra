@@ -8,7 +8,7 @@ files found on a system.  To elektrify an application means to change
 the application so that it uses Elektra afterwards.
 
 Information on Elektra can be found on the
-[website](http://www.libelektra.org).
+[website](https://www.libelektra.org).
 For introduction in the terminology, make sure to read
 [the glossary](elektra-glossary.md).
 
@@ -17,24 +17,18 @@ For introduction in the terminology, make sure to read
 
 ## Why Elektra?
 
-Configurations, settings and preferences are hierarchical data
+Configurations settings are hierarchical data
 structures of keys, each consisting of a name and a value. They can be
 used to configure software for the user's needs. Because these settings
 stay the same across restarts of the program, they need to be stored
 permanently. In the beginning this was done with primitive text files.
 Possibilities to structure the text were added later.
 
-Nearly every system developed its own way to read preferences, but some
-systems can also change them.  Because the graphical user interface can
-be tweaked in many ways, the most encompassing systems emerged from this
-area.  Some got a de facto standard for a desktop environment (kconfig,
+Nearly every system developed its own way to read configuration settings.
+Some got a de facto standard for a desktop environment (kconfig,
 gconfig) or even an operating system (Windows Registry, Open Directory).
 But they have a common problem: they are bound to the platform for which
-they were developed. On the other hand, there are many libraries that do
-a good job in parsing and writing configuration files.  These tools are,
-however, not powerful enough to keep the configuration independent from
-the operating system's details, for example, how to resolve the file
-name of the configuration file.
+they were developed.
 
 That is where Elektra comes in to fill the gap.  On the one hand,
 Elektra is not tied to any platform or operating system.  On the other

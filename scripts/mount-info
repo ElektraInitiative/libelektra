@@ -10,7 +10,7 @@
 #
 # E.g.: kdb mount-info ~e/doc
 
-set -x
+#set -x
 
 if [ -z "$KDB" ]; then
 	KDB=kdb

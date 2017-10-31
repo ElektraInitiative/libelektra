@@ -3,9 +3,9 @@ kdb-set(1) -- Set the value of a key
 
 ## SYNOPSIS
 
-`kdb set <key-name> [<value>]`
+`kdb set <key name> [<value>]`
 
-Where `key-name` is the path to the key you wish to set the value of (or create) and `value` is the value you would like to set the key to.
+Where `key name` is the name of the key you wish to set the value of (or create) and `value` is the value you would like to set the key to.
 If the `value` argument is not passed, the key will be set to a value of `null`.
 
 ## DESCRIPTION
@@ -22,17 +22,17 @@ To set a key to an empty value, `""` should be passed for the `value` argument.
   Show the man page.
 - `-V`, `--version`:
   Print version info.
-- `-p`, `--profile`=<profile>:
+- `-p`, `--profile <profile>`:
   Use a different kdb profile.
+- `-C`, `--color <when>`:
+  Print never/auto(default)/always colored output.
 - `-v`, `--verbose`:
   Explain what is happening.
 - `-q`, `--quiet`:
   Suppress non-error messages.
-- `-N`, `--namespace`=<ns>:
+- `-N`, `--namespace=NS`:
   Specify the namespace to use when writing cascading keys.
   See [below in KDB](#KDB).
-- `-C`, `--color`=[when]:
-  Print never/auto(default)/always colored output.
 
 ## KDB
 
@@ -68,4 +68,5 @@ followed by:
 ## SEE ALSO
 
 - [kdb(1)](kdb.md) for how to configure the kdb utility and use the bookmarks.
-- For difference between empty and null values, see [elektra-values(7)](elektra-values.md)
+- [elektra-key-names(7)](elektra-key-names.md) for an explanation of key names.
+- [elektra-values(7)](elektra-values.md) for the difference between empty and null values.

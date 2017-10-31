@@ -51,6 +51,10 @@ namespace
 {
 bool startsWith (std::string const & str, std::string const & start)
 {
+	if (str.length () < start.length ())
+	{
+		return false;
+	}
 	return std::equal (start.begin (), start.end (), str.begin ());
 }
 
@@ -60,10 +64,16 @@ bool isToBeIgnored (std::string const & name)
 	return startsWith (name, "infos") || startsWith (name, "exports") || startsWith (name, "constants") ||
 	       startsWith (name, "exports") ||
 
+	       // spec-plugin
+	       startsWith (name, "conflict") || startsWith (name, "require") || startsWith (name, "array/") ||
+
 	       startsWith (name, "fallback") || startsWith (name, "override") || startsWith (name, "namespace") || name == "default" ||
 	       name == "context" ||
 
-	       startsWith (name, "callback") || startsWith (name, "required") ||
+	       // always ignore stuff internal to plugins
+	       startsWith (name, "internal") ||
+
+	       startsWith (name, "callback") ||
 
 	       startsWith (name, "binary") ||
 
@@ -152,8 +162,17 @@ SpecBackendBuilder SpecMountpointReader::readMountpointSpecification (KeySet con
 
 void SpecReader::readSpecification (KeySet const & cks)
 {
-	KeySet ks (cks);
+	KeySet ks;
 	Key mp;
+
+	// only accept keys in 'spec' namespace
+	for (Key k : cks)
+	{
+		if (k.isSpec ())
+		{
+			ks.append (k);
+		}
+	}
 
 	ks.rewind (); // we need old fashioned loop, because it can handle ks.cut during iteration
 	for (Key k = ks.next (); k; k = ks.next ())

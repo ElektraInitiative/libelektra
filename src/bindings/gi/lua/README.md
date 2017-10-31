@@ -1,7 +1,7 @@
-# GI Lua #
+# GI Lua
 
 This binding is deprecated, please use `swig_lua` instead.
 
-## Dependencies ##
+## Dependencies
 
 	apt-get install liblua5.2-dev libgirepository1.0-dev gobject-introspection lua-lgi-dev

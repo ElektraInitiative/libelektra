@@ -3,7 +3,7 @@
  *
  * @brief Implements a way to build backends
  *
- * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  *
  */
 
@@ -38,15 +38,16 @@ namespace tools
 class BackendBuilderInit
 {
 private:
-	typedef std::shared_ptr<PluginDatabase> PluginDatabasePtr;
+	// typedef std::shared_ptr<PluginDatabase> PluginDatabasePtr;
+	// -> moved to plugindatabase.hpp since it is used in public API
 	PluginDatabasePtr pluginDatabase;
 
 	BackendFactory backendFactory;
 
 public:
 	BackendBuilderInit ();
-	BackendBuilderInit (PluginDatabasePtr const & plugins);
-	BackendBuilderInit (BackendFactory const & bf);
+	explicit BackendBuilderInit (PluginDatabasePtr const & plugins);
+	explicit BackendBuilderInit (BackendFactory const & bf);
 	BackendBuilderInit (PluginDatabasePtr const & plugins, BackendFactory const & bf);
 	BackendBuilderInit (BackendFactory const & bf, PluginDatabasePtr const & plugins);
 
@@ -82,7 +83,8 @@ private:
 	/// Recommended plugins (not yet added)
 	std::vector<std::string> recommendedPlugins;
 
-	typedef std::shared_ptr<PluginDatabase> PluginDatabasePtr;
+	// typedef std::shared_ptr<PluginDatabase> PluginDatabasePtr;
+	// -> moved to plugindatabase.hpp since it is used in public API
 	PluginDatabasePtr pluginDatabase;
 
 	BackendFactory backendFactory;

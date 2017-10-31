@@ -3,7 +3,7 @@
  *
  * @brief Methods for Key value manipulation.
  *
- * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
 
@@ -514,7 +514,7 @@ ssize_t keySetRaw (Key * key, const void * newBinary, size_t dataSize)
 		if (key->data.v)
 		{
 			elektraFree (key->data.v);
-			key->data.v = 0;
+			key->data.v = NULL;
 		}
 		key->dataSize = 0;
 		set_bit (key->flags, KEY_FLAG_SYNC);
@@ -525,20 +525,26 @@ ssize_t keySetRaw (Key * key, const void * newBinary, size_t dataSize)
 	key->dataSize = dataSize;
 	if (key->data.v)
 	{
-		char * p = 0;
-		p = realloc (key->data.v, key->dataSize);
-		if (0 == p) return -1;
-		key->data.v = p;
+		char * previous = key->data.v;
+		if (-1 == elektraRealloc ((void **)&key->data.v, key->dataSize)) return -1;
+		if (previous == key->data.v)
+		{
+			// In case the regions overlap, use memmove to stay safe
+			memmove (key->data.v, newBinary, key->dataSize);
+		}
+		else
+		{
+			memcpy (key->data.v, newBinary, key->dataSize);
+		}
 	}
 	else
 	{
 		char * p = elektraMalloc (key->dataSize);
-		if (0 == p) return -1;
+		if (NULL == p) return -1;
 		key->data.v = p;
+		memcpy (key->data.v, newBinary, key->dataSize);
 	}
 
-
-	memcpy (key->data.v, newBinary, key->dataSize);
 	set_bit (key->flags, KEY_FLAG_SYNC);
 	return keyGetValueSize (key);
 }

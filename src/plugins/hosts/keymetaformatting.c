@@ -3,7 +3,7 @@
  *
  * @brief Utility functions for comment metakeys
  *
- * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  *
  */
 
@@ -50,7 +50,7 @@ static void elektraAddCommentInfo (KeySet * comments, Key * commentBase, size_t 
  *
  * The following rules apply to the comment subkeys (i.e. space, start)
  * - a space key is only omitted for newline comments that do not contain spaces
- *   each other line comment will have a space key (probably with he value 0)
+ *   each other line comment will have a space key (probably with the value 0)
  * - the start key is only present if the comment start sequence is not NULL
  *
  * @param comments the keyset that should hold the created keys
@@ -72,7 +72,7 @@ void elektraAddLineComment (KeySet * comments, size_t spaces, const char * comme
 	}
 	else
 	{
-		// TODO: doing all this every time is very unefficient. Arrayhandling
+		// TODO: doing all this every time is very inefficient. Arrayhandling
 		// definitely needs to be improved
 		Key * arrayBase = keyNew ("comment", KEY_META_NAME, KEY_END);
 		KeySet * array = elektraArrayGet (arrayBase, comments);

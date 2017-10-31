@@ -2,7 +2,7 @@
  * @file
  *
  * @brief A plugin that reads configuration files and saves keys on a line by line basis *
- * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  *
  */
 
@@ -22,7 +22,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-static inline KeySet * elektraLineContract ()
+static inline KeySet * elektraLineContract (void)
 {
 	return ksNew (30, keyNew ("system/elektra/modules/line", KEY_VALUE, "line plugin waits for your orders", KEY_END),
 		      keyNew ("system/elektra/modules/line/exports", KEY_END),
@@ -127,8 +127,12 @@ int elektraLineSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 	}
 
 	Key * cur;
-	ksRewind (returned);
-	ksNext (returned); // ignore parentKey
+	if (!ksLookup (returned, parentKey, 0))
+	{
+		// ignore parentKey if found
+		ksRewind (returned);
+	}
+
 	while ((cur = ksNext (returned)) != 0)
 	{
 		fprintf (fp, "%s\n", keyString (cur));

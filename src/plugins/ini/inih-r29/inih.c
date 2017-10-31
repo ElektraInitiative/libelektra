@@ -144,6 +144,11 @@ int ini_parse_file (FILE * file, const struct IniConfig * config, void * user)
 			continue;
 		}
 		start = lskip (line);
+		if (*start == '\0')
+		{
+			if (!config->commentHandler (user, "") && !error) error = lineno;
+			continue;
+		}
 		if (isContinuation (line, config) && config->supportMultiline && *prev_name)
 		{
 			start = line + strlen (config->continuationString);
@@ -195,7 +200,6 @@ int ini_parse_file (FILE * file, const struct IniConfig * config, void * user)
 						}
 						else
 						{
-							end = line + (strlen (line) - 1);
 							strncpy0 (section + strlen (section), line, sizeof (section) - strlen (section));
 						}
 					}
@@ -366,7 +370,6 @@ int ini_parse_file (FILE * file, const struct IniConfig * config, void * user)
 				}
 				else
 				{
-					end = find_char_or_comment (start, '\0');
 					name = rstrip (start);
 					strncpy0 (prev_name, name, sizeof (prev_name));
 					if (!config->keyHandler (user, section, name, NULL, 0) && !error) error = lineno;
@@ -394,12 +397,10 @@ int ini_parse_file (FILE * file, const struct IniConfig * config, void * user)
 						if (*(ptr + 1) == '"')
 						{
 							*(ptr + 1) = '\0';
-							end = (ptr + 2);
 						}
 						else if (*(ptr + 2) == '"')
 						{
 							*(ptr + 2) = '\0';
-							end = (ptr + 3);
 						}
 						if (*(ptr - 1) == '"')
 							*(ptr - 1) = '\0';
@@ -410,7 +411,7 @@ int ini_parse_file (FILE * file, const struct IniConfig * config, void * user)
 					else if (*ptr == delim)
 					{
 						*ptr = '\0';
-						end = rstrip (start);
+						rstrip (start);
 						if (*start == '"') ++start;
 						if (*(ptr - 1) == '"')
 							*(ptr - 1) = '\0';
@@ -423,7 +424,7 @@ int ini_parse_file (FILE * file, const struct IniConfig * config, void * user)
 						if (!end) end = strrstr (start + 1, tmpDel);
 						*end = '\0';
 						ptr = end + 2;
-						end = rstrip (start);
+						rstrip (start);
 						name = start;
 					}
 					value = ptr + 1;
@@ -449,7 +450,25 @@ int ini_parse_file (FILE * file, const struct IniConfig * config, void * user)
 				{
 					rstrip (start);
 					name = start;
-					value = NULL;
+					end = strchr (start, delim);
+					if (!end)
+					{
+						value = NULL;
+					}
+					else
+					{
+						if (*end == delim) *end = '\0';
+						rstrip (end - 1);
+						value = lskip (end + 1);
+						rstrip (value);
+						if (*value == '"')
+						{
+							*(value++) = '\0';
+							while ((*end != '"') && !isprint (*end) && end > value)
+								--end;
+							if (*end == '"') *end = '\0';
+						}
+					}
 				}
 				strncpy0 (prev_name, name, sizeof (prev_name));
 

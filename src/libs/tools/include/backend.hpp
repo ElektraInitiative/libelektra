@@ -3,7 +3,7 @@
  *
  * @brief Implements a way to deal with a backend
  *
- * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  *
  */
 
@@ -133,7 +133,7 @@ class BackendFactory
 	std::string which;
 
 public:
-	BackendFactory (std::string whichBackend) : which (whichBackend)
+	explicit BackendFactory (std::string whichBackend) : which (whichBackend)
 	{
 	}
 
@@ -192,15 +192,12 @@ public:
  */
 class ImportExportBackend : public PluginAdder
 {
-	Modules modules;
-
-	/**
-	 * @brief A list of plugins for each ordering
-	 */
-	std::unordered_map<std::string, std::deque<std::shared_ptr<Plugin>>> plugins;
 
 public:
-	ImportExportBackend ();
+	ImportExportBackend ()
+	{
+	}
+
 	void status (std::ostream & os) const;
 	void importFromFile (KeySet & ks, Key const & parentKey) const;
 	void exportToFile (KeySet const & ks, Key const & parentKey) const;

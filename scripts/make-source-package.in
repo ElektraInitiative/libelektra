@@ -6,22 +6,22 @@ git archive --prefix=elektra-${KDB_VERSION}/ --format=tar ${KDB_VERSION} | gzip 
 
 hashsum ()
 {
-	echo -n "name: "
+	printf "name: "
 	basename `ls $1`
 
-	echo -n "size: "
+	printf "size: "
 	ls -l $1 | awk '{print $5;}'
 
-	echo -n "md5sum: "
+	printf "md5sum: "
 	md5sum $1 | awk '{print $1;}'
 
-	echo -n "sha1: "
+	printf "sha1: "
 	sha1sum $1 | awk '{print $1;}'
 
-	echo -n "sha256: "
+	printf "sha256: "
 	sha256sum $1 | awk '{print $1;}'
 
-	echo -n "sha512: "
+	printf "sha512: "
 	sha512sum $1 | awk '{print $1;}'
 }
 

@@ -3,7 +3,7 @@
  *
  * @brief
  *
- * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
 #include <kdb.h>
@@ -14,9 +14,6 @@
 #include <string.h>
 
 #include <kdberrors.h>
-
-#define STRINGIFY(x) STRINGIFY2 (x)
-#define STRINGIFY2(x) #x
 
 int elektraConstantsGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED);
 int elektraConstantsSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED);
@@ -181,6 +178,12 @@ static void elektraAddConstants (KeySet * ks, Key * parentKey)
 
 
 	key = keyDup (parentKey);
+	keyAddName (key, "cmake/TARGET_TOOL_DATA_FOLDER");
+	keySetString (key, "@TARGET_TOOL_DATA_FOLDER@");
+	ksAppendKey (ks, key);
+
+
+	key = keyDup (parentKey);
 	keyAddName (key, "cmake/TARGET_TEST_DATA_FOLDER");
 	keySetString (key, "@TARGET_TEST_DATA_FOLDER@");
 	ksAppendKey (ks, key);
@@ -211,7 +214,7 @@ static void elektraAddConstants (KeySet * ks, Key * parentKey)
 
 	key = keyDup (parentKey);
 	keyAddName (key, "compiler/c_flags");
-	keySetString (key, "@CMAKE_C_FLAGS@");
+	keySetString (key, "@C_FLAGS_ESCAPED@");
 	ksAppendKey (ks, key);
 
 
@@ -229,7 +232,7 @@ static void elektraAddConstants (KeySet * ks, Key * parentKey)
 
 	key = keyDup (parentKey);
 	keyAddName (key, "compiler/cxx_flags");
-	keySetString (key, "@CMAKE_CXX_FLAGS@");
+	keySetString (key, "@CXX_FLAGS_ESCAPED@");
 	ksAppendKey (ks, key);
 
 
@@ -253,31 +256,31 @@ static void elektraAddConstants (KeySet * ks, Key * parentKey)
 
 	key = keyDup (parentKey);
 	keyAddName (key, "macros/KDB_MAX_PATH_LENGTH");
-	keySetString (key, STRINGIFY (KDB_MAX_PATH_LENGTH));
+	keySetString (key, ELEKTRA_STRINGIFY (KDB_MAX_PATH_LENGTH));
 	ksAppendKey (ks, key);
 
 
 	key = keyDup (parentKey);
 	keyAddName (key, "macros/KDB_FILE_MODE");
-	keySetString (key, STRINGIFY (KDB_FILE_MODE));
+	keySetString (key, ELEKTRA_STRINGIFY (KDB_FILE_MODE));
 	ksAppendKey (ks, key);
 
 
 	key = keyDup (parentKey);
 	keyAddName (key, "macros/KDB_DIR_MODE");
-	keySetString (key, STRINGIFY (KDB_DIR_MODE));
+	keySetString (key, ELEKTRA_STRINGIFY (KDB_DIR_MODE));
 	ksAppendKey (ks, key);
 
 
 	key = keyDup (parentKey);
 	keyAddName (key, "macros/KDB_PATH_SEPARATOR");
-	keySetString (key, STRINGIFY (KDB_PATH_SEPARATOR));
+	keySetString (key, ELEKTRA_STRINGIFY (KDB_PATH_SEPARATOR));
 	ksAppendKey (ks, key);
 
 
 	key = keyDup (parentKey);
 	keyAddName (key, "macros/KDB_PATH_ESCAPE");
-	keySetString (key, STRINGIFY (KDB_PATH_ESCAPE));
+	keySetString (key, ELEKTRA_STRINGIFY (KDB_PATH_ESCAPE));
 	ksAppendKey (ks, key);
 
 

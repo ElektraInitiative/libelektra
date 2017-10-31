@@ -3,13 +3,13 @@ kdb-editor(1) -- Use your editor for editing KDB
 
 ## SYNOPSIS
 
-`kdb editor <key-name> [<format>]`
+`kdb editor <path> [<format>]`
 
-Where `key-name` is the destination where the user wants to edit keys and `format` is the format in which the keys should be edited.
+Where `path` is the destination where the user wants to edit keys and `format` is the format in which the keys should be edited.
 If the `format` argument is not passed, then the default format will be used as determined by the value of the `sw/kdb/current/format` key.
 By default, that key contains `storage`.
 The `storage` plugin can be configured at compile-time or changed by the link `libelektra-storage.so`.
-The `format` attribute relies on Elektra's plugin system to properly import the configuration. The user can view all plugins available for use by running the kdb-list(1) command.
+The `format` attribute relies on Elektra’s plugin system to properly import the configuration. The user can view all plugins available for use by running the kdb-list(1) command.
 To learn about any plugin, the user can simply use the kdb-info(1) command.
 
 ## DESCRIPTION
@@ -40,16 +40,16 @@ The user should specify the format that the current configuration or keys are in
   Show the man page.
 - `-V`, `--version`:
   Print version info.
-- `-p`, `--profile`=<profile>:
+- `-p`, `--profile <profile>`:
   Use a different kdb profile.
-- `s`, `--strategy <name>`:
+- `-C`, `--color <when>`:
+  Print never/auto(default)/always colored output.
+- `-s`, `--strategy <name>`:
   Specify which strategy should be used to resolve conflicts.
 - `-v`, `--verbose`:
   Explain what is happening.
 - `-e`, `--editor <editor>`:
   Which editor to use.
-- `-C`, `--color`=[when]:
-  Print never/auto(default)/always colored output.
 - `-N`, `--namespace`=<ns>:
   Specify the namespace to use when writing cascading keys (`validation` strategy only).
   See [below in KDB](#KDB).
@@ -57,7 +57,7 @@ The user should specify the format that the current configuration or keys are in
 ## Strategies
 
 - `validate`: 
-  apply meta data as received from base, and then cut+append all keys as imported.
+  apply metadata as received from base, and then cut+append all keys as imported.
   If the appended keys do not have a namespace, the namespace given by `-N`
   is added.
 
@@ -89,3 +89,4 @@ Or set a new editor as default using:
 ## SEE ALSO
 
 - [elektra-merge-strategy(7)](elektra-merge-strategy.md)
+- [elektra-key-names(7)](elektra-key-names.md) for an explanation of key names.

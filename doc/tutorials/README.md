@@ -19,13 +19,14 @@ to participate in the global key database Elektra
 provides.
 
 - [Integration of your Application](application-integration.md)
+- [Hello, Elektra](hello-elektra.md)
 - [Plugins Introduction](plugins.md)
 - [Compilation Variants of plugins](compilation-variants.md) (advanced topic)
 - [Python Bindings](python-kdb.md)
 - [Ruby Bindings](/src/bindings/swig/ruby/README.md)
-- [code generation](/src/tools/gen/README.md)
+- [Code Generation](/src/tools/gen/README.md)
 
-## System Administrator
+## System Administrators
 
 For these tutorials we assume that you want to
 work with the configuration of applications
@@ -44,3 +45,11 @@ For these tutorials we assume that you maintain
 upstream packages.
 
 - [Merge Configuration Files](elektra-merge-integration.md)
+
+## Installation Manuals
+
+These tutorials provide additional information on how to
+install and set up specific plugins and tools.
+
+- [Snippet Sharing REST-Service](snippet-sharing-rest-service.md)
+

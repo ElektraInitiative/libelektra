@@ -261,6 +261,7 @@ option (BUILD_DOCUMENTATION "Build the documentation (API, man pages)" ON)
 if (BUILD_DOCUMENTATION)
 	option (INSTALL_DOCUMENTATION "Install the documentation (API, man pages)" ON)
 	option (BUILD_PDF "Build the documentation also in PDF form" OFF)
+	option (BUILD_DOCSET "Generate a DocSet usable in applications such as Xcode, Dash and Zeal" OFF)
 else (BUILD_DOCUMENTATION)
 	#install documentation makes no sense if it is not build
 	#(even though the option would not harm)
@@ -300,7 +301,7 @@ endif ()
 
 option (INSTALL_BUILD_TOOLS "Install build tools for cross-compilation" OFF)
 
-option (ENABLE_OPTIMIZATIONS "Turn on optimizations that trade memory for speed" ON)
+option (ENABLE_OPTIMIZATIONS "Turn on optimizations that trade memory for speed" OFF)
 
 
 #
@@ -389,6 +390,12 @@ set (TARGET_TOOL_EXEC_FOLDER
 		"This folder (below prefix) will be used to install additional kdb-tools"
     )
 
+set (TARGET_TOOL_DATA_FOLDER
+		"share/elektra/tool_data"
+		CACHE STRING
+		"The folder (below prefix) where to install tool data files."
+    )
+
 set (TARGET_TEST_DATA_FOLDER
 		"share/elektra/test_data"
 		CACHE STRING
@@ -410,6 +417,16 @@ set (TARGET_LUA_LMOD_FOLDER "share/lua/5.2"
 	CACHE STRING
 	"Directory to install Lua source modules, should be in LUA_PATH)"
     )
+
+if (NOT TARGET_PLUGIN_FOLDER STREQUAL "")
+	if (CMAKE_SKIP_INSTALL_RPATH)
+		message (WARNING "You specified to remove RPATH, but TARGET_PLUGIN_FOLDER is not an empty string. Please read doc/COMPILE.md#RPATH")
+	endif ()
+endif ()
+
+if (CMAKE_SKIP_BUILD_RPATH AND BUILD_TESTING)
+	message (WARNING "You specified to remove RPATH, but did not disable tests. Please read doc/COMPILE.md#RPATH")
+endif ()
 
 #
 # Misc.
@@ -437,22 +454,35 @@ set(DISCLAMER "
 
 
 MARK_AS_ADVANCED(FORCE
-	# might be relevant to users:
+	# might be relevant to a few users:
 	GTEST_ROOT
 	COVERAGE_PREFIX
-	Boost_DIR
+	CMAKE_PIC_FLAGS
+	CMAKE_STATIC_FLAGS
 
-	# are kind of internal:
-	SWIG_DIR SWIG_EXECUTABLE SWIG_VERSION
+	SWIG_EXECUTABLE
+	MAVEN_EXECUTABLE
+	NPM_EXECUTABLE
+	RONN_LOC
+
+	Boost_DIR
+	BOTAN_INCLUDE_DIRS
+	LIBGCRYPT_INCLUDE_DIR
+	XercesC_DIR
+	OPENSSL_INCLUDE_DIR
+	LUA_EXECUTABLE
+
+	# others are internal (not to be changed by users):
+	SWIG_DIR
+	SWIG_VERSION
 	gtest_build_samples gtest_build_tests gtest_disable_pthreads
 	gtest_force_shared_crt BUILD_SHARED_LIBS
 
-	ADDED_DIRECTORIES
-	ADDED_PLUGINS
-	REMOVED_PLUGINS
+	BOOST_THREAD_LIBRARY
+
+	ADDED_DIRECTORIES ADDED_PLUGINS REMOVED_PLUGINS
 
 	LIBGCRYPTCONFIG_EXECUTABLE
-	RONN_LOC
 
 	jna
 
@@ -464,4 +494,6 @@ MARK_AS_ADVANCED(FORCE
 	Qt5Test_DIR
 	Qt5Widgets_DIR
 	Qt5_DIR
+	Qt5DBus_DIR
+	Qt5Svg_DIR
 	)

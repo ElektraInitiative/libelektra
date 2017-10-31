@@ -3,7 +3,7 @@
  *
  * @brief Implementation of plugin
  *
- * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  *
  */
 
@@ -14,7 +14,7 @@
 #include <kdb.h>
 #include <kdbmodule.h>
 #include <kdbplugin.h>
-#include <kdbprivate.h> // currently needed for plugin handling
+#include <kdbprivate.h> // currently needed for plugin handling (struct _Plugin)
 #include <plugindatabase.hpp>
 
 #include <algorithm>

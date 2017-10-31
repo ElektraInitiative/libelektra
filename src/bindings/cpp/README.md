@@ -1,7 +1,7 @@
 The C++ binding is a 1:1 mapping of all C-functions into C++. In this
 README the advantages are described.
 
-## No explicit delete necessary ##
+## No explicit delete necessary
 
 The objects will automatically be freed when they leave the scope. E.g.
 
@@ -14,7 +14,7 @@ The objects will automatically be freed when they leave the scope. E.g.
 The references are automatically tracked whenever a key is appended or
 removed to a KeySet. This takes away the major causes of memleaks.
 
-## Exceptions and IO ##
+## Exceptions and IO
 
 No return values need to be checked. Instead on problems an exception is
 thrown:
@@ -50,7 +50,7 @@ This can be [customized](examples/cpp_example_userio.cpp).
 It can also be changed which exceptions are [thrown as shown
 here](examples/cpp_example_userexception.cpp).
 
-## Allow iterations ##
+## Allow iterations
 
 Next to the C-style fashioned loop:
 
@@ -71,7 +71,7 @@ The C++ interface also supports real iterators:
 Also C++11 iterators are supported, and of course reverse and const
 iterators, too.
 
-## Type safety ##
+## Type safety
 
 [Contextual Values](include/contextual.hpp) allow a key to be used as
 native variables, see [here how they can be

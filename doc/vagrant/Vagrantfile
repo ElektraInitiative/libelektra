@@ -1,0 +1,33 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure(2) do |config|
+	config.vm.box = "debian/jessie64"
+
+	config.vm.provision :file, source: "buildelektra.sh", destination: "/tmp/buildelektra"
+	config.vm.provision :shell, inline: <<-SCRIPT
+		mv /tmp/buildelektra /usr/bin
+		chown root:root /usr/bin
+	SCRIPT
+
+	config.vm.provision :shell, path: "provision.sh"
+
+	config.vm.provider "virtualbox" do |v|
+		config.vm.provision "guestAdditions",
+		type: "shell",
+		preserve_order: true,
+		# you might want to adapt this to your virtualbox version
+		# --> http://download.virtualbox.org/virtualbox/
+		args: "http://download.virtualbox.org/virtualbox/5.1.14/VBoxGuestAdditions_5.1.14.iso",
+		inline: <<-SCRIPT
+			apt-get -qq update && apt-get -qq -y install linux-headers-amd64
+			cd /tmp
+			wget -q -O VBoxGuestAdditions.iso "$1"
+			mkdir /media/VBoxGuestAdditions
+			mount VBoxGuestAdditions.iso -o loop /media/VBoxGuestAdditions
+			/media/VBoxGuestAdditions/VBoxLinuxAdditions.run --nox11
+			umount /media/VBoxGuestAdditions && rmdir /media/VBoxGuestAdditions
+			rm VBoxGuestAdditions.iso
+		SCRIPT
+	end
+end

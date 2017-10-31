@@ -3,7 +3,7 @@
  *
  * @brief A plugin that makes use of libaugeas to read and write configuration files
  *
- * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  *
  */
 
@@ -305,6 +305,13 @@ int main (int argc, char ** argv)
 
 	init (argc, argv);
 
+	/* output all lenses:
+	KeySet * ks = ksNew (5, KS_END);
+	elektraAugeasGenConf (ks, 0);
+	output_keyset (ks);
+	ksDel (ks);
+	*/
+
 	test_hostLensRead ("augeas/hosts-read");
 	test_hostLensWrite ("augeas/hosts-write");
 	test_hostLensModify ("augeas/hosts-modify-in", "augeas/hosts-modify");
@@ -312,7 +319,7 @@ int main (int argc, char ** argv)
 	test_hostLensFormatting ("augeas/hosts-formatting");
 	test_order ("augeas/hosts-big");
 
-	printf ("\ntest_augeas RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
+	print_result ("test_augeas");
 
 	return nbError;
 }

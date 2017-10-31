@@ -3,7 +3,7 @@
  *
  * @brief Header for curlget plugin
  *
- * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  *
  */
 
@@ -15,7 +15,7 @@
 
 int elektraCurlgetGet (Plugin * handle, KeySet * ks, Key * parentKey);
 int elektraCurlgetSet (Plugin * handle, KeySet * ks, Key * parentKey);
-
+int elektraCurlgetOpen (Plugin * handle, Key * errorKey);
 Plugin * ELEKTRA_PLUGIN_EXPORT (curlget);
 
 #endif

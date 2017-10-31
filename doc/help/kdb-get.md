@@ -3,16 +3,16 @@ kdb-get(1) -- Get the value of a key stored in the key database
 
 ## SYNOPSIS
 
-`kdb get <path>`
+`kdb get <key name>`
 
-Where `path` is the full path to the key.
+Where `key name` is the name of the key.
 
 ## DESCRIPTION
 
 This command is used to retrieve the value of a key.
 
-If you enter a `path` starting with a leading `/`, then a cascading lookup will be performed in order to attempt to locate the key.
-In this case, using the `-v` option allows the user to see the full `path` of the key if it is found.
+If you enter a `key name` starting with a leading `/`, then a cascading lookup will be performed in order to attempt to locate the key.
+In this case, using the `-v` option allows the user to see the full key name of the key if it is found.
 
 Note: There is a current limitation where only keys that are mounted will be considered during a cascading lookup.
 A workaround that will lookup all keys is to pass the `-a` option.
@@ -25,8 +25,10 @@ Additionally, a user can use the command `kdb ls <same key>` to see if an overri
   Show the man page.
 - `-V`, `--version`:
   Print version info.
-- `-p`, `--profile`=<profile>:
+- `-p`, `--profile <profile>`:
   Use a different kdb profile.
+- `-C`, `--color <when>`:
+  Print never/auto(default)/always colored output.
 - `-a`, `--all`:
   Consider all of the keys.
 - `-n`, `--no-newline`:
@@ -35,8 +37,6 @@ Additionally, a user can use the command `kdb ls <same key>` to see if an overri
   Explain what is happening.
   Gives a complete trace of all tried keys.
   Very useful to debug fallback and overrides.
-- `-C`, `--color`=[when]:
-  Print never/auto(default)/always colored output.
 
 
 ## EXAMPLES
@@ -64,3 +64,4 @@ This command will actually get `user/sw/elektra/kdb/#0/current/format` if the bo
 - [kdb(1)](kdb.md) for how to configure the kdb utility and use the bookmarks.
 - For more about cascading keys see [elektra-cascading(7)](elektra-cascading.md)
 - To get keys in shell scripts, you also can use [kdb-sget(1)](kdb-sget.md)
+- [elektra-key-names(7)](elektra-key-names.md) for an explanation of key names.

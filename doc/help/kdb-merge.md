@@ -54,16 +54,18 @@ To interactively resolve conflicts, use the `-i` option.
   Show the man page.
 - `-V`, `--version`:
   Print version info.
-- `-p`, `--profile`=<profile>:
+- `-p`, `--profile <profile>`:
   Use a different kdb profile.
-- `s`, `--strategy <name>`:
+- `-C`, `--color <when>`:
+  Print never/auto(default)/always colored output.
+- `-f`, `--force`:
+   Will remove existing keys from `resultpath` instead of failing.
+- `-s`, `--strategy <name>`:
   Specify which strategy should be used to resolve conflicts.
 - `-v`, `--verbose`:
   Explain what is happening.
 - `-i`, `--interactive`
   Interactively resolve the conflicts.
-- `-C`, `--color`=[when]:
-  Print never/auto(default)/always colored output.
 
 
 ## EXAMPLES
@@ -80,3 +82,4 @@ To complete a three-way merge and overwrite all current keys in the `resultpath`
 ## SEE ALSO
 
 - [elektra-merge-strategy(7)](elektra-merge-strategy.md)
+- [elektra-key-names(7)](elektra-key-names.md) for an explanation of key names.

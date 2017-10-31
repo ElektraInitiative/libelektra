@@ -3,7 +3,7 @@
  *
  * @brief
  *
- * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
 #ifndef LS_H
@@ -25,7 +25,7 @@ public:
 
 	virtual std::string getShortOptions () override
 	{
-		return "v0C";
+		return "mMv0d";
 	}
 
 	virtual std::string getSynopsis () override
@@ -46,6 +46,12 @@ public:
 	}
 
 	virtual int execute (Cmdline const & cmdline) override;
+
+private:
+	void checkArguments (Cmdline const & cl);
+	void printResults (kdb::KeySet const & part, const int rootDepth, Cmdline const & cl);
+	int getDepth (kdb::Key const & key);
+	bool shallShowNextLevel (const std::string argument);
 };
 
 #endif

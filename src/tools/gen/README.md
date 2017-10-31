@@ -46,7 +46,7 @@ and access the keys as if they were variables:
 
 	std::cout << "delay: " << par.test.lift.emergency.delay << std::endl;
 
-For a full example, see [here](tests/lift_context.cpp).
+For a full example, see [here](tests/lift.cpp), or [here for a thread-safe version](tests/lift_context.cpp).
 
 
 ## Contextual Values
@@ -107,10 +107,10 @@ makes sure that all contextual values that contain the placeholder
 If no placeholder exists `%` will be used.
 
 
-## Commandline Arguments
+## Command-line Options
 
 Now if we want to implement the -P commandline option, we can do so very 
-easily using Elektra's code generator. We simply add another
+easily using Elektra’s code generator. We simply add another
 item in the specification:
 
 	[/firefox/profile]
@@ -136,5 +136,25 @@ commandline:
 
 	par.activate<ProfileLayer>(par.profile);
 
-If you want to know more read
-[this paper](http://www.markus-raab.org/ftp/papers/cop2014program.pdf).
+## Limitations
+
+This is an experimental prototype. You should have a look at the
+test cases to see what is actually working.
+
+The code generator has little (none) checks for valid specifications.
+For problems in the specification you usually get hard-to-interpret
+compile errors.
+
+Not all of Elektra's types are supported, for example, char and octet
+do not work.
+
+Please open an issue if you plan to use the code.
+
+
+## See also
+
+If you want to know more read:
+
+- [introduction paper](http://www.markus-raab.org/ftp/papers/cop2014program.pdf).
+- [multi-threaded extension](http://www.markus-raab.org/ftp/papers/seus2015global.pdf)
+- [multi-process extension](http://www.markus-raab.org/ftp/papers/mobile2016persistent.pdf)

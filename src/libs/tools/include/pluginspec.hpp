@@ -3,7 +3,7 @@
  *
  * @brief Interface to specify which plugin is meant
  *
- * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  *
  */
 
@@ -31,6 +31,10 @@ namespace tools
 class PluginSpec
 {
 public:
+	PluginSpec ()
+	{
+	}
+
 	explicit PluginSpec (std::string pluginName, KeySet pluginConfig = KeySet ());
 
 	explicit PluginSpec (std::string pluginName, std::string refName, KeySet pluginConfig = KeySet ());

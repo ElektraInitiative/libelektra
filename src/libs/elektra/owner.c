@@ -3,7 +3,7 @@
  *
  * @brief Obsolete owner methods.
  *
- * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
 #include <kdb.h>

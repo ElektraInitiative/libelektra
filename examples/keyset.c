@@ -3,7 +3,7 @@
  *
  * @brief
  *
- * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
 #include <assert.h>
@@ -38,7 +38,7 @@ void h (Key * k)
 
 // clang-format off
 
-void simpleAppend ()
+void simpleAppend (void)
 {
 //! [simple append]
 KeySet * ks = ksNew (1, KS_END);
@@ -49,7 +49,7 @@ ksDel (ks);
 }
 
 
-void refAppend ()
+void refAppend (void)
 {
 //! [ref append]
 KeySet * ks = ksNew (1, KS_END);
@@ -63,7 +63,7 @@ keyDel (k);
 //! [ref append]
 }
 
-void dupAppend ()
+void dupAppend (void)
 {
 //! [dup append]
 KeySet * ks = ksNew (1, KS_END);
@@ -75,7 +75,7 @@ keyDel (k);
 //! [dup append]
 }
 
-int main ()
+int main (void)
 {
 	Key * origKey;
 	KeySet * ks = ksNew (0, KS_END);

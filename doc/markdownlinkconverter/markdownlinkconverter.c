@@ -3,7 +3,7 @@
  *
  * @brief
  *
- * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
 #include <ctype.h>
@@ -101,7 +101,7 @@ static inline int linkNolink (int old UNUSED, int new)
 	return new == 0 || new == 1;
 }
 
-struct transitionLink genLinkTransitionTable ()
+struct transitionLink genLinkTransitionTable (void)
 {
 	struct transitionLink out = { {
 		// char\state    0  1  2  3  4  5  6(trap)
@@ -135,7 +135,7 @@ static inline int titleIsGoal (int old, int new)
 	return old == 3 && new == 0;
 }
 
-struct transitionTitle genTitleTransitionTable ()
+struct transitionTitle genTitleTransitionTable (void)
 {
 	struct transitionTitle out = { {
 		// char\state    0  1  2  3
@@ -219,7 +219,7 @@ static void convertLinks (FILE * input, FILE * output, char * inputFilename, int
 	FILE * httplinks = fopen (HTTPLINK_FILENAME, "a");
 	if (!httplinks)
 	{
-		fprintf (stderr, "WARNING http link file %s cound not be opened\n", HTTPLINK_FILENAME);
+		fprintf (stderr, "WARNING http link file %s could not be opened\n", HTTPLINK_FILENAME);
 	}
 	int lineCount = 0;
 	int c;
@@ -495,8 +495,8 @@ static void printTarget (FILE * output, char * target, char * inputFilename, int
 					return;
 				}
 			}
+			strcpy (++lastFolderDelimiter, target);
 		}
-		strcpy (++lastFolderDelimiter, target);
 	}
 	else
 	{

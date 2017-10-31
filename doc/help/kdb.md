@@ -11,13 +11,14 @@ external dependency. Elektra abstracts from cross-platform-related issues
 with an consistent API, and allows applications to be aware of other
 applications' configurations, leveraging easy application integration.
 
+
 ## OVERVIEW
 
 The man pages can also be viewed online at:
-http://doc.libelektra.org/api/current/html/pages.html
+https://doc.libelektra.org/api/current/html/pages.html
 
 And the page you are currently reading at:
-http://doc.libelektra.org/api/current/html/md_doc_help_kdb.html
+https://doc.libelektra.org/api/current/html/md_doc_help_kdb.html
 
 Concepts are in man page section 7 and are prefixed with `elektra-`.
 You should start reading [elektra-introduction(7)](elektra-introduction.md).
@@ -29,6 +30,7 @@ Documentation of plugins is available using the
 [kdb-info(1)](kdb-info.md) tool.
 Run `kdb list` for a list of plugins.
 
+
 ## BASIC OPTIONS
 
 Every core-tool has the following options:
@@ -37,8 +39,10 @@ Every core-tool has the following options:
   Show the man page.
 - `-V`, `--version`:
   Print version info.
-- `-p`, `--profile`=<profile>:
+- `-p`, `--profile <profile>`:
   Use a different kdb profile, see below.
+- `-C`, `--color <when>`:
+  Print never/auto(default)/always colored output.
 
 ## COMMON OPTIONS
 
@@ -48,8 +52,6 @@ Most tools have the following options:
   Explain what is happening.
 - `-q`, `--quiet`:
   Suppress non-error messages.
-- `-C`, `--color`=[when]:
-  Print never/auto(default)/always colored output.
 
 ## KDB
 
@@ -74,7 +76,7 @@ For example, to permanently change verbosity one can use:
 
 Profiles allow users to change many/all configuration options of a tool
 at once. It influences from where the KDB entries are read.
-For example if you use: 
+For example if you use:
 	`kdb export -p admin system`
 
 It will read its format configuration from `/sw/elektra/kdb/#0/admin/format`.
@@ -86,7 +88,7 @@ be chosen automatically according to the current user or current working directo
 Sometimes it is useful to start with default options, for example it is not
 possible to invert the `-q` option.
 In such situations one can simply select a non-existing profile, then `-q`
-works as usual: 
+works as usual:
 	`kdb mount -p nonexist -q /abc dir/abc`
 
 ## BOOKMARKS
@@ -96,23 +98,23 @@ because it ensures flexibility in the future (e.g. to use profiles and have a co
 path for new major versions of configuration).
 
 Long paths are, however, cumbersome to enter in the CLI.
-Thus one can define bookmarks. Bookmarks are key-names that start with `+`.
+Thus one can define bookmarks. Bookmarks are keys whose key name starts with `+`.
 They are only recognized by the `kdb` tool or tools that explicit have
 support for it. Your applications should not depend on the presence of a
 bookmark.
 
-Bookmarks are stored below: 
+Bookmarks are stored below:
 	`/sw/elektra/kdb/#0/current/bookmarks`
 
 For every key found there, a new bookmark will be introduced.
 
-Bookmarks can be used to start key-names by using `+` (plus) as first character.
+Bookmarks can be used to start key names by using `+` (plus) as first character.
 The string until the first `/` will be considered as bookmark.
 
 For example, if you set the bookmark kdb:
 
 	kdb set user/sw/elektra/kdb/#0/current/bookmarks
-	kdb set user/sw/elektra/kdb/#0/current/bookmarks/kdb user/sw/elektra/kdb/#0/current`
+	kdb set user/sw/elektra/kdb/#0/current/bookmarks/kdb user/sw/elektra/kdb/#0/current
 
 You are able to use:
 
@@ -129,28 +131,22 @@ You are able to use:
 - 2:
   Invalid arguments passed.
 - 3:
-  Command terminated unsuccessfully.
+  Command terminated unsuccessfully without specifying error code.
 - 4:
   Unknown command.
 - 5:
   KDB Error, could not read/write from/to KDB.
-- 7-8:
-  Unkown errors, wrong exceptions thrown.
-- 9-10:
+- 6:
+  Reserved error code.
+- 7:
+  Unknown errors, wrong exceptions thrown.
+- 8-10:
   Reserved error codes.
-
-## OPTIONS
-
-Commonly used options for all programs:
-
-- `-H`, `--help`:
-   Show the man page.
-- `-V`, `--version`:
-   Print version info.
-- `-p <profile>`, `--profile <profile>`:
-   Use a different profile instead of current.
+- 11-20:
+  Command-specific error codes. See man page of specific command.
 
 ## SEE ALSO
 
 - [elektra-introduction(7)](elektra-introduction.md)
 - [kdb-introduction(1)](kdb-introduction.md)
+- Get a [big picture about Elektra](/doc/BIGPICTURE.md)

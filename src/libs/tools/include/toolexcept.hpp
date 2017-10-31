@@ -3,7 +3,7 @@
  *
  * @brief Implementation of all exceptions elektratools library might throw
  *
- * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  *
  */
 
@@ -14,6 +14,13 @@
 #include <stdexcept>
 
 #include <kdbio.hpp>
+
+/* SWIG cpp preprocessor is not aware of the override statement */
+#ifndef SWIG_WITHOUT_OVERRIDE
+#define ELEKTRA_OVERRIDE override
+#else
+#define ELEKTRA_OVERRIDE
+#endif
 
 namespace kdb
 {
@@ -40,12 +47,12 @@ struct ToolException : public std::runtime_error
 	: runtime_error (
 		  "When you read this, that means there was something wrong with Elektra Tools.\n"
 		  "Seems like a wrong exception was thrown."){};
-	ToolException (std::string message) : runtime_error (message){};
+	explicit ToolException (std::string message) : runtime_error (message){};
 };
 
 struct ParseException : public ToolException
 {
-	ParseException (std::string str) : m_str (std::move (str))
+	explicit ParseException (std::string str) : m_str (std::move (str))
 	{
 	}
 
@@ -53,7 +60,7 @@ struct ParseException : public ToolException
 	{
 	}
 
-	virtual const char * what () const throw () override
+	virtual const char * what () const throw () ELEKTRA_OVERRIDE
 	{
 		return m_str.c_str ();
 	}
@@ -63,7 +70,7 @@ struct ParseException : public ToolException
 
 struct PluginCheckException : public ToolException
 {
-	virtual const char * what () const throw () override
+	virtual const char * what () const throw () ELEKTRA_OVERRIDE
 	{
 		return "When you read this, that means there was something wrong with the plugin.\n"
 		       "Seems like a check could not specify the error any further";
@@ -72,7 +79,7 @@ struct PluginCheckException : public ToolException
 
 struct BackendCheckException : public ToolException
 {
-	virtual const char * what () const throw () override
+	virtual const char * what () const throw () ELEKTRA_OVERRIDE
 	{
 		return "When you read this, that means there was something wrong with the backend.\n"
 		       "Seems like a check could not specify the error any further";
@@ -81,7 +88,7 @@ struct BackendCheckException : public ToolException
 
 struct FileNotValidException : public BackendCheckException
 {
-	virtual const char * what () const throw () override
+	virtual const char * what () const throw () ELEKTRA_OVERRIDE
 	{
 		return "The path you entered is invalid.\n"
 		       "Try to add another path instead.\n"
@@ -90,13 +97,13 @@ struct FileNotValidException : public BackendCheckException
 		       "resolver) not allowed to contain '..'.\n"
 		       "\n"
 		       "For more information see:\n"
-		       " kdb info <your resolver>\n";
+		       " kdb info <your resolver>";
 	}
 };
 
 struct MountpointInvalidException : public BackendCheckException
 {
-	virtual const char * what () const throw () override
+	virtual const char * what () const throw () ELEKTRA_OVERRIDE
 	{
 		return "Given mountpoint is not a valid keyname, will abort\n"
 		       "Examples: system/hosts or user/sw/app";
@@ -105,7 +112,7 @@ struct MountpointInvalidException : public BackendCheckException
 
 struct MountpointAlreadyInUseException : public BackendCheckException
 {
-	MountpointAlreadyInUseException (std::string str) : m_str (std::move (str))
+	explicit MountpointAlreadyInUseException (std::string str) : m_str (std::move (str))
 	{
 	}
 
@@ -113,7 +120,7 @@ struct MountpointAlreadyInUseException : public BackendCheckException
 	{
 	}
 
-	virtual const char * what () const throw () override
+	virtual const char * what () const throw () ELEKTRA_OVERRIDE
 	{
 		return m_str.c_str ();
 	}
@@ -131,7 +138,7 @@ struct NoSuchBackend : public BackendCheckException
 	{
 	}
 
-	virtual const char * what () const throw () override
+	virtual const char * what () const throw () ELEKTRA_OVERRIDE
 	{
 		return m_str.c_str ();
 	}
@@ -143,13 +150,13 @@ private:
 struct PluginAlreadyInserted : public PluginCheckException
 {
 	explicit PluginAlreadyInserted (std::string name)
+	: m_str ("It is not allowed to insert the same plugin (" + name +
+		 ") again!\n"
+		 "Try to add other plugins or other refnames (part after #) instead.")
 	{
-		m_str = "It is not allowed to insert the same plugin (" + name +
-			") again!\n"
-			"Try to add other plugins or other refnames (part after #) instead.";
 	}
 
-	virtual const char * what () const throw () override
+	virtual const char * what () const throw () ELEKTRA_OVERRIDE
 	{
 		return m_str.c_str ();
 	}
@@ -171,7 +178,7 @@ struct PluginConfigInvalid : public PluginCheckException
 	{
 	}
 
-	virtual const char * what () const throw () override
+	virtual const char * what () const throw () ELEKTRA_OVERRIDE
 	{
 		if (m_str.empty ())
 		{
@@ -193,16 +200,16 @@ private:
 struct BadPluginName : public PluginCheckException
 {
 	explicit BadPluginName (std::string name)
+	: m_str ("You entered a bad name (" + name +
+		 ") for a plugin!\n"
+		 "A valid name of a plugin is either\n"
+		 "modulename or modulename#refname\n"
+		 "where both modulename and refname must start with a-z\n"
+		 "and then a-z, 0-9 and underscore (_) only")
 	{
-		m_str = "You entered a bad name (" + name +
-			") for a plugin!\n"
-			"A valid name of a plugin is either\n"
-			"modulename or modulename#refname\n"
-			"where both modulename and refname must start with a-z\n"
-			"and then a-z, 0-9 and underscore (_) only";
 	}
 
-	virtual const char * what () const throw () override
+	virtual const char * what () const throw () ELEKTRA_OVERRIDE
 	{
 		return m_str.c_str ();
 	}
@@ -212,7 +219,7 @@ struct BadPluginName : public PluginCheckException
 
 struct TooManyPlugins : public PluginCheckException
 {
-	TooManyPlugins (std::string str) : m_str (std::move (str))
+	explicit TooManyPlugins (std::string str) : m_str (std::move (str))
 	{
 	}
 
@@ -220,7 +227,7 @@ struct TooManyPlugins : public PluginCheckException
 	{
 	}
 
-	virtual const char * what () const throw () override
+	virtual const char * what () const throw () ELEKTRA_OVERRIDE
 	{
 		return m_str.c_str ();
 	}
@@ -230,7 +237,7 @@ struct TooManyPlugins : public PluginCheckException
 
 struct OrderingViolation : public PluginCheckException
 {
-	virtual const char * what () const throw () override
+	virtual const char * what () const throw () ELEKTRA_OVERRIDE
 	{
 		return "Ordering Violation!\n"
 		       "You tried to add a plugin which requests another plugin to be positioned first.\n"
@@ -240,7 +247,7 @@ struct OrderingViolation : public PluginCheckException
 
 struct CyclicOrderingViolation : public OrderingViolation
 {
-	virtual const char * what () const throw () override
+	virtual const char * what () const throw () ELEKTRA_OVERRIDE
 	{
 		return "Ordering Violation!\n"
 		       "Could not order plugins by their dependency because of cycle.\n"
@@ -251,7 +258,7 @@ struct CyclicOrderingViolation : public OrderingViolation
 
 struct ConflictViolation : public PluginCheckException
 {
-	virtual const char * what () const throw () override
+	virtual const char * what () const throw () ELEKTRA_OVERRIDE
 	{
 		return "Conflict Violation!\n"
 		       "You tried to add a plugin which conflicts with another.\n"
@@ -274,7 +281,7 @@ struct NoPlugin : public PluginCheckException
 	{
 	}
 
-	virtual const char * what () const throw () override
+	virtual const char * what () const throw () ELEKTRA_OVERRIDE
 	{
 		if (m_str.empty ())
 		{
@@ -305,7 +312,7 @@ private:
 
 struct ReferenceNotFound : public PluginCheckException
 {
-	virtual const char * what () const throw () override
+	virtual const char * what () const throw () ELEKTRA_OVERRIDE
 	{
 		return "Could not find a reference!\n"
 		       "Seems you forgot to create the reference before using it.\n"
@@ -316,14 +323,13 @@ struct ReferenceNotFound : public PluginCheckException
 struct MissingNeeded : public PluginCheckException
 {
 	std::string msg;
-	MissingNeeded (std::string need)
+	explicit MissingNeeded (std::string need) : msg ("The plugin " + need + " is needed by this plugin but it is not provided.")
 	{
-		msg = std::string (std::string ("The plugin ") + need + " is needed by this plugin but it is not provided.");
 	}
 	~MissingNeeded () throw ()
 	{
 	}
-	virtual const char * what () const throw () override
+	virtual const char * what () const throw () ELEKTRA_OVERRIDE
 	{
 		return msg.c_str ();
 	}
@@ -332,14 +338,13 @@ struct MissingNeeded : public PluginCheckException
 struct MissingSymbol : public PluginCheckException
 {
 	std::string msg;
-	MissingSymbol (std::string symbol)
+	explicit MissingSymbol (std::string symbol) : msg ("The necessary symbol \"" + symbol + "\" is missing in that plugin!")
 	{
-		msg = std::string (std::string ("The necessary symbol \"") + symbol + "\" is missing in that plugin!");
 	}
 	~MissingSymbol () throw ()
 	{
 	}
-	virtual const char * what () const throw () override
+	virtual const char * what () const throw () ELEKTRA_OVERRIDE
 	{
 		return msg.c_str ();
 	}
@@ -348,14 +353,13 @@ struct MissingSymbol : public PluginCheckException
 struct WrongStatus : public PluginCheckException
 {
 	std::string msg;
-	WrongStatus (std::string status)
+	explicit WrongStatus (std::string status) : msg ("The status \"" + status + "\" is neither a valid enum value nor an integer!")
 	{
-		msg = std::string (std::string ("The status \"") + status + "\" is neither a valid enum value nor an integer!");
 	}
 	~WrongStatus () throw ()
 	{
 	}
-	virtual const char * what () const throw () override
+	virtual const char * what () const throw () ELEKTRA_OVERRIDE
 	{
 		return msg.c_str ();
 	}
@@ -365,14 +369,13 @@ struct WrongStatus : public PluginCheckException
 struct SymbolMismatch : public PluginCheckException
 {
 	std::string msg;
-	SymbolMismatch (std::string symbol)
+	explicit SymbolMismatch (std::string symbol) : msg ("The symbol \"" + symbol + "\" does not match with other exported information!")
 	{
-		msg = std::string (std::string ("The symbol \"") + symbol + "\" does not match with other exported information!");
 	}
 	~SymbolMismatch () throw ()
 	{
 	}
-	virtual const char * what () const throw () override
+	virtual const char * what () const throw () ELEKTRA_OVERRIDE
 	{
 		return msg.c_str ();
 	}
@@ -381,14 +384,13 @@ struct SymbolMismatch : public PluginCheckException
 struct NoGlobalPlugin : public PluginCheckException
 {
 	std::string msg;
-	NoGlobalPlugin (std::string plugin)
+	explicit NoGlobalPlugin (std::string plugin) : msg ("The plugin \"" + plugin + "\" is not suitable to be mounted as global plugin!")
 	{
-		msg = std::string (std::string ("The plugin \"") + plugin + "\" is not suitable to be mounted as global plugin!");
 	}
 	~NoGlobalPlugin () throw ()
 	{
 	}
-	virtual const char * what () const throw () override
+	virtual const char * what () const throw () ELEKTRA_OVERRIDE
 	{
 		return msg.c_str ();
 	}
@@ -398,14 +400,13 @@ struct NoGlobalPlugin : public PluginCheckException
 struct SymbolDuplicate : public PluginCheckException
 {
 	std::string msg;
-	SymbolDuplicate (std::string symbol)
+	explicit SymbolDuplicate (std::string symbol) : msg ("The symbol \"" + symbol + "\" has the same value as another symbol!")
 	{
-		msg = std::string (std::string ("The symbol \"") + symbol + "\" has the same value as another symbol!");
 	}
 	~SymbolDuplicate () throw ()
 	{
 	}
-	virtual const char * what () const throw () override
+	virtual const char * what () const throw () ELEKTRA_OVERRIDE
 	{
 		return msg.c_str ();
 	}
@@ -413,7 +414,7 @@ struct SymbolDuplicate : public PluginCheckException
 
 struct StoragePlugin : public PluginCheckException
 {
-	virtual const char * what () const throw () override
+	virtual const char * what () const throw () ELEKTRA_OVERRIDE
 	{
 		return "There need to be exactly one storage plugin!";
 	}
@@ -422,7 +423,7 @@ struct StoragePlugin : public PluginCheckException
 
 struct ResolverPlugin : public PluginCheckException
 {
-	virtual const char * what () const throw () override
+	virtual const char * what () const throw () ELEKTRA_OVERRIDE
 	{
 		return "There need to be exactly one resolver plugin!";
 	}
@@ -430,7 +431,7 @@ struct ResolverPlugin : public PluginCheckException
 
 struct PluginNoContract : public PluginCheckException
 {
-	virtual const char * what () const throw () override
+	virtual const char * what () const throw () ELEKTRA_OVERRIDE
 	{
 		return "No contract found for that plugin!\n"
 		       "Make sure you export kdbGet correctly!";
@@ -439,7 +440,7 @@ struct PluginNoContract : public PluginCheckException
 
 struct PluginNoInfo : public PluginCheckException
 {
-	virtual const char * what () const throw () override
+	virtual const char * what () const throw () ELEKTRA_OVERRIDE
 	{
 		return "No info found for that plugin within contract!";
 	}
@@ -447,7 +448,7 @@ struct PluginNoInfo : public PluginCheckException
 
 struct VersionInfoMismatch : public PluginCheckException
 {
-	virtual const char * what () const throw () override
+	virtual const char * what () const throw () ELEKTRA_OVERRIDE
 	{
 		return "Version info does not match with library!";
 	}

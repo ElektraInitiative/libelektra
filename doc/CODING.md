@@ -1,11 +1,11 @@
-# CODING #
+# CODING
 
 This document provides an introduction in how the source code of
 libelektra is organized and how and where to add functionality.
 
 Make sure to read [DESIGN](/doc/DESIGN.md) together with this document.
 
-## Folder structure ##
+## Folder structure
 
 After you downloaded and unpacked Elektra you should see some folders.
 The most important are:
@@ -15,7 +15,7 @@ The most important are:
  * **examples:** Examples on how to use the core library.
  * **tests:** Contains the testing framework for the source (**src**).
 
-## Source Code ##
+## Source Code
 
 libelektra is the ANSI/ISO C99-Core which coordinates the interactions
 between the user and the plugins.
@@ -30,7 +30,7 @@ for static linking and win32.
 
 kdb is the commandline-tool to access and initialize the Elektra database.
 
-### General Guidelines ###
+### General Guidelines
 
 You are only allowed to break a guideline if there is a good reason
 to do so. When you do, document the fact as comment next to the code.
@@ -49,7 +49,7 @@ intent to add a new rule here.
 
 See [DESIGN](/doc/DESIGN.md) document too, they complement each other.
 
-### Code Comments ###
+### Code Comments
 
 Code is not only for the computer, but it should be readable for humans, too.
 Up-to-date code comments are essential to make code understandable for others.
@@ -57,34 +57,30 @@ Thus please use following techniques (in order of preference):
 
 1. Comment functions with `/**/` and Doxygen, see below.
 
-2. You should use also add assertions to state what should be true at a specific
+2. You should also add assertions to state what should be true at a specific
    position in the code. Their syntax is checked and they are automatically
    verified at run-time. So they are not only useful for people reading the
    code but also for tools. Assertions in Elektra are used by:
 
-   `#include <kdbassert.h>` 
+   `#include <kdbassert.h>`
 
-   `ELEKTRA_ASSERT (condition, "formatted text to be printed when assert fails", ...)` 
+   `ELEKTRA_ASSERT (condition, "formatted text to be printed when assert fails", ...)`
 
    Note: Do not use assert for user-APIs, always handle arguments of user-APIs like
    untrusted input.
 
 3. If the "comment" might be useful to be printed during execution, use logging:
 
-   `#include <kdblogger.h>` 
+   `#include <kdblogger.h>`
 
-   `ELEKTRA_LOG ("formatted text to be printed according log filters", ...)` 
+   `ELEKTRA_LOG ("formatted text to be printed according log filters", ...)`
 
-   There are four log levels:
-   - ELEKTRA_LOG_WARNING, something critical that should be shown the user (e.g. API misuse), see #ELEKTRA_LOG_LEVEL_WARNING
-   - ELEKTRA_LOG_NOTICE, something important developers are likely interested in, see #ELEKTRA_LOG_LEVEL_NOTICE
-   - ELEKTRA_LOG, standard level gives information what the code is doing without flooding the log, see #ELEKTRA_LOG_LEVEL_INFO
-   - ELEKTRA_LOG_DEBUG, for less important logs, see #ELEKTRA_LOG_LEVEL_DEBUG
+   Read [HERE](/doc/dev/logging.md) for how to enable the logger.
 
 4. Otherwise comment within source with `//` or with `/**/` for multi-line
    comments.
 
-### Coding Style ###
+### Coding Style
 
 - Limits
 
@@ -122,20 +118,21 @@ Rationale: Readability with split windows.
  * Use space after `,` of every function argument.
 
 The [reformat script](/scripts/reformat-source) can ensure most code style rules,
-but it is obviouly not capable of ensuring everything (e.g. naming conventions).
+but it is obviously not capable of ensuring everything (e.g. naming conventions).
 So do not give this responsibility out of hands entirely.
 
-### C Guidelines ###
+### C Guidelines
 
  * The compiler shall not emit any warning (or error).
  * Use goto only for error situations.
  * Use `const` as much as possible.
  * Use `static` methods if they should not be externally visible.
  * C-Files have extension `.c`, Header files `.h`.
+ * Use internal functions: prefer to use elektraMalloc, elektraFree.
 
 **Example:** [src/libs/elektra/kdb.c](/src/libs/elektra/kdb.c)
 
-### C++ Guidelines ###
+### C++ Guidelines
 
  * Everything as in C if not noted otherwise.
  * Do not use goto at all, use RAII instead.
@@ -147,12 +144,23 @@ So do not give this responsibility out of hands entirely.
 
 **Example:** [src/bindings/cpp/include/kdb.hpp](/src/bindings/cpp/include/kdb.hpp)
 
-### Doxygen Guidelines ###
+### Markdown Guidelines
+
+ * File Ending is `.md` or integrated within Doxygen comments
+ * Only use `#` characters at the left side of headers/titles
+ * Use tabs or fences for code/examples
+ * Prefer fences which indicate the used language for better syntax highlighting
+ * Fences with sh are for the [shell recorder syntax](/tests/shell/shell_recorder/tutorial_wrapper)
+ * `README.md` and tutorials should be written exclusively with shell recorder syntax
+   so that we know that the code in the tutorial produces output as expected
+
+
+### Doxygen Guidelines
 
 `doxygen` is used to document the API and to build the html and pdf output.
 We also support the import of Markdown pages. Doxygen 1.8.8 or later
 is required for this feature (Anyways you can find the
-[API Doc](http://doc.libelektra.org/api/latest/html/) online).
+[API Doc](https://doc.libelektra.org/api/latest/html/) online).
 Links between Markdown files will be converted with the
 [Markdown Link Converter](/doc/markdownlinkconverter/README.md).
 **Markdown pages are used in the pdf, therefore watch which characters you use and
@@ -162,7 +170,7 @@ provide a proper encoding!**
  * Do not duplicate information available in git in Doxygen comments.
  * Use `@copydoc`, `@copybrief` and `@copydetails` intensively (except for file headers).
 
-### File Headers ###
+### File Headers
 
 Files should start with:
 
@@ -173,7 +181,7 @@ Files should start with:
 	 *
 	 * @brief <short statement about the content of the file>
 	 *
-	 * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+	 * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
 	 */
 
 \endverbatim
@@ -182,7 +190,7 @@ Note:
 
 - `@` `file` has *no* parameters.
 - `@` `brief` should contain a short statement about the content of the file and is needed
-  so that your file gets listed at http://doc.libelektra.org/api/latest/html/files.html
+  so that your file gets listed at https://doc.libelektra.org/api/latest/html/files.html
 
 The duplication of the filename, author and date is not needed, because
-this information is tracked using git and doc/AUTHORS already.
+this information is tracked using git and [doc/AUTHORS.md](AUTHORS.md) already.

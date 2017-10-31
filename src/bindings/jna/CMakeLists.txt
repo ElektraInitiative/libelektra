@@ -1,50 +1,94 @@
-#versioning for libelektra.jar
-set(CMAKE_JAVA_TARGET_VERSION ${KDB_VERSION})
+find_program (MAVEN_EXECUTABLE mvn)
+find_package (Java)
 
-find_package(Java)
-include(UseJava)
+if (Java_JAVAC_EXECUTABLE)
+# the version schemes are different on the jdks
+# on osx/oracle jdk its called java 9.0.1
+# osx/oracle jdk 8 is called java 1.8.x
+# on ubuntu/open jdk its called java 1.9.0
+# therefore this workaround should work in all cases
+# as 9.x.x > 1.8 and 1.8.x > 1.8 and 1.9.x > 1.8
+if ((${Java_VERSION} VERSION_GREATER "1.8.0") OR (${Java_VERSION} VERSION_EQUAL "1.8.0"))
+if (MAVEN_EXECUTABLE) # set by find_program
+	file (
+		MAKE_DIRECTORY libelektra4j
+	)
 
-if (CMAKE_MAJOR_VERSION EQUAL 2 AND CMAKE_MINOR_VERSION EQUAL 8)
-	if (CMAKE_PATCH_VERSION LESS 11)
-		#2.8.11 needed for add_jar INCLUDE_JARS
-		remove_binding(jna "cmake 2.8.11 needed for add_jar")
-		return()
-	endif()
-endif()
+	# first fill the elektra version in the pom file
+	# @ONLY to avoid replacing pom.xml placeholders which also use the format ${}
+	configure_file (
+		"${CMAKE_CURRENT_SOURCE_DIR}/libelektra4j/pom.xml.in"
+		"${CMAKE_CURRENT_BINARY_DIR}/libelektra4j/pom.xml"
+		@ONLY
+	)
 
-if (Java_VERSION_MAJOR GREATER 0 AND Java_VERSION_MINOR GREATER 7)
-	file(GLOB files elektra/*.java)
-	file(GLOB pfiles elektra/plugin/*.java)
+	# required to have a recognizable name for the pom upon installation in case other software installs
+	# a pom to the target directory and calls it pom.xml
+	file (
+		GENERATE OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/libelektra4j/libelektra4j-${KDB_VERSION}.pom.xml"
+		INPUT "${CMAKE_CURRENT_BINARY_DIR}/libelektra4j/pom.xml"
+	)
 
-# find_jar(<VAR>
-#          name | NAMES name1 [name2 ...]
-#          [PATHS path1 [path2 ... ENV var]]
-#          [VERSIONS version1 [version2]]
-#          [DOC "cache documentation string"]
-#         )
+	# then copy over the source files in the build folder as thats the easiest way to handle it
+	file (
+		COPY "${CMAKE_CURRENT_SOURCE_DIR}/libelektra4j"
+		DESTINATION "${CMAKE_CURRENT_BINARY_DIR}"
+	)
 
-	find_jar(jna
-		NAMES jna
-		PATHS /usr/share/java
+	# compile it and build the jar
+	add_custom_command (
+		OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/libelektra4j/target/libelektra4j-${KDB_VERSION}.jar"
+		COMMAND ${MAVEN_EXECUTABLE} -q -B -DskipTests=true package
+		WORKING_DIRECTORY libelektra4j
+		DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/libelektra4j/pom.xml"
+	)
+	add_custom_target(jna ALL DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/libelektra4j/target/libelektra4j-${KDB_VERSION}.jar")
+
+	install (
+		FILES
+			"${CMAKE_CURRENT_BINARY_DIR}/libelektra4j/target/libelektra4j-${KDB_VERSION}.jar"
+			"${CMAKE_CURRENT_BINARY_DIR}/libelektra4j/libelektra4j-${KDB_VERSION}.pom.xml"
+		DESTINATION "share/java"
+	)
+
+	# and add maven test to execute with ctest in the testing phase
+	if ( (CMAKE_SYSTEM_NAME STREQUAL "Darwin") AND NOT (CMAKE_SYSTEM_VERSION VERSION_LESS 15) )
+		# we cannot set DYLD_LIBRARY_PATH on new macOS versions, making the kdb tests
+		# fail if its not installed in the system
+		set (MAVEN_TEST_ENV "env-test-without-kdb")
+	else ()
+		set (MAVEN_TEST_ENV "env-test")
+	endif ()
+
+
+	if (NOT ENABLE_ASAN)
+		add_test (
+			NAME testjna_maven
+			COMMAND ${MAVEN_EXECUTABLE} -q -B -e -P ${MAVEN_TEST_ENV} test
+			WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/libelektra4j"
 		)
 
-	if (jna)
-		# should work, too
-		# http://www.cmake.org/cmake/help/v3.0/module/UseJava.html
-		#set(CMAKE_JAVA_INCLUDE_PATH ${jna})
-		add_jar(libelektra
-			INCLUDE_JARS ${jna}
-			SOURCES ${files} ${pfiles}
-			VERSION 1
-			OUTPUT_NAME libelektra
-			)
+		set_property (
+			TEST testjna_maven
+			PROPERTY ENVIRONMENT
+				"LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib"
+		)
 
-		install_jar(libelektra share/java)
+		set_property (
+			TEST testjna_maven
+			PROPERTY LABELS bindings memleak
+		)
+	endif (NOT ENABLE_ASAN)
+else (MAVEN_EXECUTABLE)
+	remove_binding (jna "Maven Executable not found, but required to build the jna bindings")
+endif (MAVEN_EXECUTABLE)
+else ((${Java_VERSION} VERSION_GREATER "1.8.0") OR (${Java_VERSION} VERSION_EQUAL "1.8.0"))
+	remove_binding (jna "At least Java 8 is required, but ${Java_VERSION_STRING} was found")
+endif ((${Java_VERSION} VERSION_GREATER "1.8.0") OR (${Java_VERSION} VERSION_EQUAL "1.8.0"))
+else (Java_JAVAC_EXECUTABLE)
+	remove_binding (jna "javac (java compiler) not found, which is only included in a jdk")
+endif (Java_JAVAC_EXECUTABLE)
 
-	else(jna)
-		remove_binding(jna "jna jar file not found, searched in standard paths and /usr/share/java")
-	endif(jna)
-
-else()
-	remove_binding(jna "Java is not greater version 8, but ${Java_VERSION} was found")
-endif()
+mark_as_advanced (
+	MAVEN_EXECUTABLE
+)

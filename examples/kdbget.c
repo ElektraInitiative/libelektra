@@ -3,22 +3,22 @@
  *
  * @brief
  *
- * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
 #include <kdb.h>
 #include <stdio.h>
 
-int main ()
+int main (void)
 {
 	KeySet * myConfig = ksNew (0, KS_END);
-	Key * key = keyNew ("/sw/MyApp", KEY_CASCADING_NAME, KEY_END);
-	KDB * handle = kdbOpen (key);
 
-	// to get an intention of proper error handling see kdbget_error.c
+	// for error handling see kdbget_error.c
 
 	// clang-format off
 //! [basic usage]
+Key * key = keyNew ("/sw/tests/myapp/#0/current/",  KEY_END);
+KDB * handle = kdbOpen (key);
 kdbGet (handle, myConfig, key);
 Key * result = ksLookupByName (myConfig, "/sw/tests/myapp/#0/current/testkey1", 0);
 //! [basic usage]

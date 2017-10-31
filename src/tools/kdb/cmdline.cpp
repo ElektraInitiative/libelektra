@@ -3,7 +3,7 @@
  *
  * @brief
  *
- * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
 #include <cmdline.hpp>
@@ -33,13 +33,13 @@
 using namespace std;
 
 Cmdline::Cmdline (int argc, char ** argv, Command * command)
-: helpText (), invalidOpt (false),
+: synopsis (command->getSynopsis ()), helpText (), invalidOpt (false),
 
   /*XXX: Step 2: initialise your option here.*/
-  debug (), force (), load (), humanReadable (), help (), interactive (), noNewline (), test (), recursive (), resolver (KDB_RESOLVER),
-  strategy ("preserve"), verbose (), quiet (), version (), withoutElektra (), null (), first (true), second (true), third (true),
-  withRecommends (false), all (), format (KDB_STORAGE), plugins ("sync"), globalPlugins ("spec"), pluginsConfig (""), color ("auto"),
-  ns (""), editor (), bookmarks (), profile ("current"),
+  debug (), force (), load (), humanReadable (), help (), interactive (), minDepth (0), maxDepth (numeric_limits<int>::max ()),
+  noNewline (), test (), recursive (), resolver (KDB_RESOLVER), strategy ("preserve"), verbose (), quiet (), version (), withoutElektra (),
+  null (), first (true), second (true), third (true), withRecommends (false), all (), format (KDB_STORAGE), plugins ("sync"),
+  globalPlugins ("spec"), pluginsConfig (""), color ("auto"), ns (""), editor (), bookmarks (), profile ("current"),
 
   executable (), commandName ()
 {
@@ -50,16 +50,15 @@ Cmdline::Cmdline (int argc, char ** argv, Command * command)
 
 	size_t optionPos;
 
-	synopsis = command->getSynopsis ();
-
 	helpText += command->getShortHelpText ();
 	helpText += "\n";
 	helpText += command->getLongHelpText ();
 	helpText += "\n";
 
 	string allOptions = command->getShortOptions ();
-	allOptions += "HVp";
+	allOptions += "HVCp";
 
+	// Make sure to use the unsorted allOptions for getopt to preserve argument chars : and ::
 	std::set<string::value_type> unique_sorted_chars (allOptions.begin (), allOptions.end ());
 	string acceptedOptions (unique_sorted_chars.begin (), unique_sorted_chars.end ());
 
@@ -106,6 +105,22 @@ Cmdline::Cmdline (int argc, char ** argv, Command * command)
 		option o = { "interactive", no_argument, nullptr, 'i' };
 		long_options.push_back (o);
 		helpText += "-i --interactive         Ask the user interactively.\n";
+	}
+	optionPos = acceptedOptions.find ('m');
+	if (optionPos != string::npos)
+	{
+		acceptedOptions.insert (optionPos + 1, ":");
+		option o = { "min-depth", required_argument, nullptr, 'm' };
+		long_options.push_back (o);
+		helpText += "-m --min-depth <min>     Specify the minimum depth (default 0).\n";
+	}
+	optionPos = acceptedOptions.find ('M');
+	if (optionPos != string::npos)
+	{
+		acceptedOptions.insert (optionPos + 1, ":");
+		option o = { "max-depth", required_argument, nullptr, 'M' };
+		long_options.push_back (o);
+		helpText += "-M --max-depth <max>     Specify the maximum depth (unlimited by default).\n";
 	}
 	if (acceptedOptions.find ('n') != string::npos)
 	{
@@ -179,7 +194,7 @@ Cmdline::Cmdline (int argc, char ** argv, Command * command)
 		acceptedOptions.insert (optionPos + 1, ":");
 		option o = { "editor", required_argument, 0, 'e' };
 		long_options.push_back (o);
-		helpText += "-e --editor              Which external editor to use.\n";
+		helpText += "-e --editor <editor>     Which external editor to use.\n";
 	}
 	if (acceptedOptions.find ('W') != string::npos)
 	{
@@ -217,7 +232,7 @@ Cmdline::Cmdline (int argc, char ** argv, Command * command)
 		acceptedOptions.insert (optionPos + 1, ":");
 		option o = { "namespace", required_argument, nullptr, 'N' };
 		long_options.push_back (o);
-		helpText += "-N --namespace ns        Specify the namespace to use for cascading keys.\n";
+		helpText += "-N --namespace <ns>      Specify the namespace to use for cascading keys.\n";
 	}
 	optionPos = acceptedOptions.find ('c');
 	if (optionPos != string::npos)
@@ -225,14 +240,15 @@ Cmdline::Cmdline (int argc, char ** argv, Command * command)
 		acceptedOptions.insert (optionPos + 1, ":");
 		option o = { "plugins-config", required_argument, nullptr, 'c' };
 		long_options.push_back (o);
-		helpText += "-c --plugins-config      Add a plugin configuration.\n";
+		helpText += "-c --plugins-config <c>  Add a plugin configuration.\n";
 	}
 	optionPos = acceptedOptions.find ('C');
 	if (optionPos != string::npos)
 	{
-		option o = { "color", optional_argument, nullptr, 'C' };
+		acceptedOptions.insert (optionPos + 1, ":");
+		option o = { "color", required_argument, nullptr, 'C' };
 		long_options.push_back (o);
-		helpText += "-C --color[=WHEN]        Print never/auto(default)/always colored output.\n";
+		helpText += "-C --color <when>       Print never/auto(default)/always colored output.\n";
 	}
 
 	int index = 0;
@@ -344,12 +360,12 @@ Cmdline::Cmdline (int argc, char ** argv, Command * command)
 			all = true;
 			break;
 		case 'C':
-			if (!optarg)
-			{
-				color = "auto";
-				break;
-			}
 			color = optarg;
+			if (color != "never" && color != "auto" && color != "always")
+			{
+				std::cerr << argv[0] << ": -C --color needs never, auto, or always as argument\n";
+				invalidOpt = true;
+			}
 			break;
 		case 'd':
 			debug = true;
@@ -371,6 +387,33 @@ Cmdline::Cmdline (int argc, char ** argv, Command * command)
 			break;
 		case 'i':
 			interactive = true;
+			break;
+		case 'm':
+			try
+			{
+				minDepth = stoi (optarg);
+			}
+			catch (std::invalid_argument & ia)
+			{
+				std::cerr << argv[0] << ": -m --min-depth needs a valid number as argument\n";
+				invalidOpt = true;
+			}
+			break;
+		case 'M':
+			try
+			{
+				maxDepth = stoi (optarg);
+			}
+			catch (std::invalid_argument & ia)
+			{
+				std::cerr << argv[0] << ": -M --max-depth needs a valid number as argument\n";
+				invalidOpt = true;
+			}
+
+			if (maxDepth == -1)
+			{
+				maxDepth = numeric_limits<int>::max ();
+			}
 			break;
 		case 'n':
 			noNewline = true;
@@ -482,10 +525,43 @@ kdb::Key Cmdline::createKey (int pos) const
 	// for (auto const & n : bookmarks) std::cout << "nks: " << n.second << std::endl;
 	if (name.empty ())
 	{
-		throw invalid_argument ("<empty string> is not a valid keyname");
+		throw invalid_argument ("<empty string> is not a valid keyname. Please enter a valid one.");
 	}
 
+	kdb::Key root (name, KEY_END);
+
 	if (name[0] == '+')
+	{
+		kdb::Key bookmark = resolveBookmark (name);
+		if (!bookmark.isValid ())
+		{
+			throw invalid_argument ("cannot find bookmark " + bookmark.getFullName ());
+		}
+		root = bookmark;
+	}
+
+	if (!root.isValid ())
+	{
+		throw invalid_argument (name + " is not a valid keyname" + "\n\n" +
+					"For absolute keys (starting without '/'), please note that only one of the predefined namespaces "
+					"can be used (see 'man elektra-namespaces').\n" +
+					"Please also ensure that the path is separated by a '/'.\n" +
+					"An example for a valid absolute key is user/a/key, and for a valid cascading key /a/key.");
+	}
+
+	return root;
+}
+
+/**
+ * @brief resolve the bookmark with the given name
+ *
+ * @param bookmark the name of the bookmark to resolve
+ *
+ * @return a key to the resolved bookmark, or an invalid key if no bookmark with the given name exists
+ */
+kdb::Key Cmdline::resolveBookmark (std::string name) const
+{
+	if (!name.empty () && name[0] == '+')
 	{
 		size_t found = name.find ('/');
 		std::string bookmark;
@@ -501,33 +577,25 @@ kdb::Key Cmdline::createKey (int pos) const
 		}
 		auto realKeyIt = bookmarks.find (bookmark);
 		std::string realKey;
-		if (realKeyIt == bookmarks.end ())
+		if (realKeyIt != bookmarks.end ())
 		{
-			throw invalid_argument ("cannot find bookmark " + bookmark);
-		}
-		realKey = realKeyIt->second;
-		name = realKey + "/" + restKey;
-		if (verbose)
-		{
-			std::cout << "using bookmark " << bookmark << " which is: " << realKey << "-" << restKey << std::endl;
+			realKey = realKeyIt->second;
+			name = realKey + "/" + restKey;
+			if (verbose)
+			{
+				std::cout << "using bookmark " << bookmark << " which is: " << realKey << "-" << restKey << std::endl;
+			}
+			return kdb::Key (name, KEY_END);
 		}
 	}
-
-	kdb::Key root (name, KEY_END);
-
-	if (!root.isValid ())
-	{
-		throw invalid_argument (name + " is not a valid keyname");
-	}
-
-	return root;
+	return kdb::Key ();
 }
 
 std::ostream & operator<< (std::ostream & os, Cmdline & cl)
 {
 	if (cl.invalidOpt)
 	{
-		os << "Invalid option given\n" << endl;
+		os << "Sorry, I could not process the given options (see errors above)\n" << endl;
 	}
 
 	os << "Usage: " << cl.executable << " " << cl.commandName << " " << cl.synopsis;

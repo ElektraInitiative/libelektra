@@ -3,7 +3,7 @@
  *
  * @brief
  *
- * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
 #ifndef COMMAND_HPP
@@ -24,24 +24,37 @@ class CommandException : public std::exception
 public:
 	virtual const char * what () const throw () override
 	{
-		return "A situation had a appeared where the command had to abort";
+		return "A situation had a appeared where the command had to abort, but no message was given.";
+	}
+
+	virtual int errorCode () const throw ()
+	{
+		return 3;
 	}
 };
 
 class CommandAbortException : public CommandException
 {
-	const char * msg;
+	int m_errorCode;
+	const char * m_msg;
 
 public:
-	CommandAbortException () : msg (0)
+	CommandAbortException () : m_errorCode (3), m_msg (0)
 	{
 	}
-	CommandAbortException (const char * msg_) : msg (msg_)
+
+	explicit CommandAbortException (const char * msg, int errorCode_ = 3) : m_errorCode (errorCode_), m_msg (msg)
 	{
 	}
+
 	virtual const char * what () const throw () override
 	{
-		return msg ? msg : "Command aborted";
+		return m_msg ? m_msg : "A situation had a appeared where the command had to abort, but no message is available.";
+	}
+
+	virtual int errorCode () const throw () override
+	{
+		return m_errorCode;
 	}
 };
 

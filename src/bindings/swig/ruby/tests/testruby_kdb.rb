@@ -4,7 +4,7 @@
 #
 # @brief unit test cases for Kdb::KDB
 #
-# @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+# @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
 #
 
 require 'kdb'
@@ -111,7 +111,7 @@ class KdbTestCases < Test::Unit::TestCase
       assert_equal 1, ret
       assert ks.size > 0
 
-      # close has to be called explicitely
+      # close has to be called explicitly
       db.close
     end
   end
@@ -148,7 +148,7 @@ class KdbTestCases < Test::Unit::TestCase
       # if called with block, nil is returned
       assert_nil block_ret
 
-      # test implicite close, we must not be able to get a keyset again
+      # test implicit close, we must not be able to get a keyset again
       assert_not_nil db_access
       assert_raise Kdb::KDBException do
         db_access.get Kdb::KeySet.new, "/"

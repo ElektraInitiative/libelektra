@@ -3,12 +3,12 @@
  *
  * @brief
  *
- * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
 #include <tests_internal.h>
 
-static void test_ksNew ()
+static void test_ksNew (void)
 {
 	KeySet * ks = 0;
 	KeySet * keys = ksNew (15, KS_END);
@@ -75,7 +75,7 @@ static void test_ksNew ()
 	succeed_if (ksDel (ks2) == 0, "could not delete keyset");
 }
 
-static void test_ksDuplicate ()
+static void test_ksDuplicate (void)
 {
 	printf ("Test bug duplicate\n");
 	KeySet * ks = ksNew (0, KS_END);
@@ -89,7 +89,7 @@ static void test_ksDuplicate ()
 	ksDel (ks);
 }
 
-static void test_ksHole ()
+static void test_ksHole (void)
 {
 	printf ("Test holes in keysets\n");
 	KeySet * ks = ksNew (0, KS_END);
@@ -116,13 +116,12 @@ int fac (int i)
 static void per (int k, Key ** pool, Key ** result)
 {
 	int i;
-	int selected;
 	int cursize = size - 1;
 
 	for (i = 0; i < size - 1; ++i)
 	{
 		// printf ("%d -- ", k);
-		selected = k % (cursize);
+		int selected = k % (cursize);
 		k /= cursize + 1;
 		cursize--;
 
@@ -137,7 +136,7 @@ static void per (int k, Key ** pool, Key ** result)
 	result[size - 1] = 0;
 }
 
-static void test_append ()
+static void test_append (void)
 {
 	printf ("Test if keyset is sorted after appending\n");
 
@@ -315,7 +314,7 @@ static void test_append ()
 	keyDel (s3);
 }
 
-static void test_equal ()
+static void test_equal (void)
 {
 	Key * k1 = keyNew (0);
 	Key * k2 = keyNew (0);
@@ -343,7 +342,7 @@ static void test_equal ()
 	keyDel (k2);
 }
 
-static void test_cmp ()
+static void test_cmp (void)
 {
 	printf ("Compare two keys\n");
 
@@ -381,7 +380,7 @@ static void test_cmp ()
 	keyDel (k2);
 }
 
-static void test_appendowner ()
+static void test_appendowner (void)
 {
 	Key *key, *s1, *s2, *s3;
 	KeySet * ks;
@@ -423,7 +422,7 @@ static void test_appendowner ()
 	ksDel (ks);
 }
 
-static void test_ksLookupCase ()
+static void test_ksLookupCase (void)
 {
 	printf ("Test bug lookup with case\n");
 	KeySet * ks = ksNew (32, keyNew ("system/ay/key", KEY_VALUE, "aykey", KEY_END),
@@ -435,7 +434,7 @@ static void test_ksLookupCase ()
 	ksDel (ks);
 }
 
-static void test_ksLookupOwner ()
+static void test_ksLookupOwner (void)
 {
 	printf ("Test bug lookup with owner\n");
 	Key * found = 0;

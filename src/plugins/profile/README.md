@@ -1,21 +1,21 @@
 - infos = Information about the profile plugin is in keys below
-- infos/author = Name <name@libelektra.org>
+- infos/author = Thomas Waser <thomas.waser@libelektra.org>
 - infos/licence = BSD
 - infos/needs =
 - infos/provides =
 - infos/recommends =
 - infos/placements = postgetstorage presetstorage
-- infos/status = maintained unittest libc nodep global preview unfinished
+- infos/status = maintained libc nodep global preview unfinished
 - infos/metadata =
 - infos/description = helps switching between configuration profiles
 
-## Usage ##
+## Usage
 
 Following the elektra keyname convention application configurations are stored under `/sw/org/myapp/#` and `/sw/org/myapp/#0/current`is the profile to be used.
-The `profile` plugin provides an easy way to switch configuration profiles. 
+The `profile` plugin provides an easy way to switch configuration profiles.
 
 The key `/sw/org/myapp/#0/profile` defines what profile should be used as `current`, e.g. `/sw/org/myapp/#0/profile = myprofile`.
-If a key `/sw/org/myapp/#0/myprofile/key` is found and no key `/sw/org/myapp/#0/current/key` exists an override key will be created linking `/sw/org/myapp/#0/currrent/key` to `/sw/org/myapp/#0/myapp/key` 
+If a key `/sw/org/myapp/#0/myprofile/key` is found and no key `/sw/org/myapp/#0/current/key` exists an override key will be created linking `/sw/org/myapp/#0/currrent/key` to `/sw/org/myapp/#0/myapp/key`
 If neither `/sw/org/myapp/#0/current/key` nor `/sw/org/myapp/#0/myprofile/key` is found, but `/sw/org/myapp/#0/%/key`, `/sw/org/myapp/#0/current/key` will be linked to `/sw/org/myapp/#0/%/key`.
 
 So a cascading lookup will automatically implement following
@@ -26,7 +26,7 @@ preferences (next to the namespace preferences):
 3. Usage of key in the `%` fallback profile
 
 
-## Example ##
+## Example
 
 Suppose we have the configuration file `profile.ini` in `~/.config`:
 
@@ -79,7 +79,7 @@ As we can see with the `-v` option, we will fetch keys from our `myprofile` even
 
 To switch profile we simply have to set one key:
 
-    kdb set user/sw/org/myapp/#0/profile newprofile 
+    kdb set user/sw/org/myapp/#0/profile newprofile
 
 Usually, this will be done via commandline by setting `proc/sw/org/myapp/#0/profile`.
 

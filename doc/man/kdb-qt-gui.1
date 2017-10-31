@@ -1,0 +1,79 @@
+.\" generated with Ronn/v0.7.3
+.\" http://github.com/rtomayko/ronn/tree/0.7.3
+.
+.TH "README" "" "October 2017" "" ""
+.
+.SH "Introduction"
+The tool \fBqt\-gui\fR offers a graphical interface for users of Elektra\. It allows users to create, manage, edit, and delete keys stored in the global key database (KDB)\.
+.
+.SH "Compiling and Installation"
+.
+.SS "Dependencies"
+In order to compile and use the new \fBqt\-gui\fR there are a few dependencies which must be installed\.
+.
+.IP "\(bu" 4
+qt5\.3 or greater
+.
+.IP "\(bu" 4
+libdrm\-dev
+.
+.IP "\(bu" 4
+libdiscount (libmarkdown2\-dev)
+.
+.IP "\(bu" 4
+the following qt5 modules: \fBdeclarative\fR \fBquickcontrols\fR
+.
+.IP "" 0
+.
+.P
+Additionally, you may need \fBqtdeclarative5\-dev\fR which is available in \fBwheezy\-backports\fR\.
+.
+.P
+Optional dependencies are (are automatically deactivated if dependencies are not found): \- \fBQt5Svg\fR for SVG icon themes \- \fBQt5DBus\fR so that \fBqt\-gui\fR will be notified on changes\.
+.
+.P
+I was able to install the correct dependencies on my system, running Kubuntu 14\.10 using the command:
+.
+.br
+\fBsudo apt\-get install qt5\-default qml\-module\-qtquick\-controls qml\-module\-qtquick\-dialogs qml\-module\-qtquick\-layouts qml\-module\-qtgraphicaleffects libdrm\-dev libmarkdown2\-dev libqt5svg5\-dev\fR
+.
+.SS "Change Notification"
+It is recommended to use the viewer mode if DBus notifications are expected\. Use "Settings \-> Viewermode" to activate the viewermode\.
+.
+.P
+To publish changes to KDB via DBus use:
+.
+.P
+\fBkdb global\-mount dbus\fR
+.
+.P
+\fBqt\-gui\fR also subscribes to DBus notifications and automatically synchronizes the configuration when notified\.
+.
+.P
+Known Issue: On reload the current element in the tree view gets unselected, you need to click on the element of interest again\.
+.
+.SS "Compiling"
+Compile Elektra as normal as per the COMPILE document \fI/doc/COMPILE\.md\fR making sure to include the \fBqt\-gui\fR tool using the \fB\-DTOOLS\fR flag\.
+.
+.P
+For instance: \fB\-DTOOLS=ALL\fR or \fB\-DTOOLS=qt\-gui\fR
+.
+.P
+Note: If you install qt5 manually, you must either: \- make sure the qt5 libraries are included in \fBLD_LIBRARY_PATH\fR \- OR make sure to specify \fB\-DCMAKE_PREFIX_PATH=/opt/Qt5\.3\.0/5\.3/gcc_64/lib/cmake\fR
+.
+.SS "Installing"
+You can now install Elektra as you normally would or as described in the install documentation \fI/doc/INSTALL\.md\fR\.
+.
+.SH "To Run"
+The following command will launch the Qt\-GUI:
+.
+.IP "" 4
+.
+.nf
+
+kdb qt\-gui
+.
+.fi
+.
+.IP "" 0
+

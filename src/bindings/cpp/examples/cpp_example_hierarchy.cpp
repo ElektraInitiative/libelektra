@@ -3,7 +3,7 @@
  *
  * @brief
  *
- * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
 #include <keyset.hpp>
@@ -29,13 +29,12 @@ namespace kdb
  */
 std::string nth_level_of_name (Key k, unsigned long n)
 {
-	size_t pos = 0;
 	size_t prev = 0;
 	std::string name = k.getName ();
 
 	for (unsigned long i = 0; i < n; ++i)
 	{
-		pos = name.find ("/", prev);
+		size_t pos = name.find ("/", prev);
 		prev = pos + 1;
 	}
 
@@ -173,7 +172,7 @@ private:
 class KeyHierarchy
 {
 public:
-	KeyHierarchy (KeySet & keyset) : m_userRootNode (0), m_systemRootNode (0), m_keyset (keyset)
+	explicit KeyHierarchy (KeySet & keyset) : m_userRootNode (0), m_systemRootNode (0), m_keyset (keyset)
 	{
 		add (keyset);
 	}

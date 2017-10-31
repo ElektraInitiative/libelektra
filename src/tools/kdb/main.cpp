@@ -3,7 +3,7 @@
  *
  * @brief
  *
- * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
 #include <iostream>
@@ -17,6 +17,7 @@
 #include <command.hpp>
 #include <external.hpp>
 #include <factory.hpp>
+#include <signal.h>
 #include <toolexcept.hpp>
 
 #include <kdb.hpp>
@@ -36,14 +37,14 @@ int displayHelp (std::string app, Factory const & f)
 	std::vector<std::string> commands;
 	try
 	{
-		commands = f.getCommands ();
+		commands = f.getPrettyCommands ();
 	}
 	catch (kdb::KDBException const & ce)
 	{
 		std::cerr << "Sorry, I have a severe problem, it seems like I am not installed correctly!\n"
 			  << "kdbOpen() failed with the info:" << std::endl
 			  << ce.what () << std::endl
-			  << "Please report an issue on http://git.libelektra.org/issues";
+			  << "Please report the issue at https://issues.libelektra.org/";
 		return 8;
 	}
 	for (auto & command : commands)
@@ -79,8 +80,58 @@ void displayVersion ()
 	}
 }
 
+void printSignal (int signum)
+{
+	switch (signum)
+	{
+	case SIGILL:
+		cerr << "SIGILL";
+		break;
+	case SIGABRT:
+		cerr << "SIGABRT";
+		break;
+	case SIGFPE:
+		cerr << "SIGFPE";
+		break;
+	case SIGSEGV:
+		cerr << "SIGSEGV";
+		break;
+	}
+}
+
+
+void catchSignal (int signum)
+{
+	cerr << endl << "Sorry, I crashed by the signal ";
+	printSignal (signum);
+	cerr << endl << "This should not have happened!" << endl;
+	cerr << endl << "Please report the issue at https://issues.libelektra.org/" << std::endl;
+	signal (SIGABRT, SIG_DFL);
+	abort ();
+}
+
+void setupSignal (int signum)
+{
+	if (signal (signum, catchSignal) == SIG_ERR)
+	{
+		cerr << "Sorry, I could not setup signal ";
+		printSignal (signum);
+		cerr << " because: " << strerror (errno) << std::endl;
+		cerr << "Please report the issue at https://issues.libelektra.org/" << std::endl;
+	}
+}
+
+void setupSignals ()
+{
+	setupSignal (SIGILL);
+	setupSignal (SIGABRT);
+	setupSignal (SIGFPE);
+	setupSignal (SIGSEGV);
+}
+
 int main (int argc, char ** argv)
 {
+	setupSignals ();
 	Factory f;
 
 	if (argc < 2)
@@ -148,37 +199,56 @@ int main (int argc, char ** argv)
 		}
 		catch (std::invalid_argument const & ia)
 		{
-			cerr << "Invalid arguments passed: " << ia.what () << endl << endl;
+			cerr << "Sorry, I could not process the arguments: " << ia.what () << endl << endl;
 			cerr << cl << endl;
 			return 2;
 		}
 	}
 	catch (CommandException const & ce)
 	{
-		std::cerr << "The command " << command << " terminated unsuccessfully with the info: " << ce.what () << std::endl;
-		return 3;
+		std::cerr << "The command " << getErrorColor (ANSI_COLOR::BOLD) << argv[0] << " " << command
+			  << getErrorColor (ANSI_COLOR::RESET) << " terminated " << getErrorColor (ANSI_COLOR::RED) << "unsuccessfully"
+			  << getErrorColor (ANSI_COLOR::RESET) << " with the info:\n"
+			  << ce.what () << std::endl;
+		if (ce.errorCode () != 3 && (ce.errorCode () < 11 || ce.errorCode () > 20))
+		{
+			std::cerr << "Command used invalid return value (" << ce.errorCode ()
+				  << "), please report the issue at https://issues.libelektra.org/" << std::endl;
+			return 3;
+		}
+		return ce.errorCode ();
 	}
 	catch (UnknownCommand const & uc)
 	{
-		std::cerr << "The command " << command << " is not known" << std::endl;
+		std::cerr << "The command " << getErrorColor (ANSI_COLOR::BOLD) << argv[0] << " " << command
+			  << getErrorColor (ANSI_COLOR::RESET) << " is " << getErrorColor (ANSI_COLOR::RED) << "not known"
+			  << getErrorColor (ANSI_COLOR::RESET) << std::endl;
 		displayHelp (argv[0], f);
 		return 4;
 	}
 	catch (kdb::KDBException const & ce)
 	{
-		std::cerr << "The command " << command << " failed while accessing the key database with the info:" << std::endl
+		std::cerr << "The command " << getErrorColor (ANSI_COLOR::BOLD) << argv[0] << " " << command
+			  << getErrorColor (ANSI_COLOR::RESET) << getErrorColor (ANSI_COLOR::RED) << " failed"
+			  << getErrorColor (ANSI_COLOR::RESET) << " while accessing the key database with the info:\n"
 			  << ce.what () << std::endl;
 		return 5;
 	}
 	catch (std::exception const & ce)
 	{
-		std::cerr << "The command " << command << " terminated unsuccessfully with the info:" << std::endl
-			  << ce.what () << std::endl;
-		return 6;
+		std::cerr << "The command " << getErrorColor (ANSI_COLOR::BOLD) << argv[0] << " " << command
+			  << getErrorColor (ANSI_COLOR::RESET) << " terminated " << getErrorColor (ANSI_COLOR::RED) << "unsuccessfully"
+			  << getErrorColor (ANSI_COLOR::RESET) << " with the info:" << endl
+			  << ce.what () << endl
+			  << "Please report the issue at https://issues.libelektra.org/" << std::endl;
+		return 7;
 	}
 	catch (...)
 	{
-		std::cerr << "Unknown error" << std::endl;
+		std::cerr << "The command " << getErrorColor (ANSI_COLOR::BOLD) << argv[0] << " " << command
+			  << getErrorColor (ANSI_COLOR::RESET) << " terminated with an " << getErrorColor (ANSI_COLOR::RED)
+			  << "unknown error" << getErrorColor (ANSI_COLOR::RESET) << endl
+			  << "Please report the issue at https://issues.libelektra.org/" << std::endl;
 		displayHelp (argv[0], f);
 		return 7;
 	}

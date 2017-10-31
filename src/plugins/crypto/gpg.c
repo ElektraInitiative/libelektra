@@ -3,7 +3,7 @@
  *
  * @brief module for calling the GPG binary
  *
- * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  *
  */
 
@@ -18,6 +18,39 @@
 #include <sys/wait.h>
 #include <unistd.h>
 
+#define GPG_OUTPUT_DEFAULT_BUFFER_SIZE 1024
+#define GPG_MAX_KEYID_LENGTH 32
+#define GPG_ERROR_MISSING_KEY_LIST                                                                                                         \
+	"Missing GPG key (specified as " ELEKTRA_RECIPIENT_KEY ") in plugin configuration. Available key IDs are: "
+#define GPG_ERROR_MISSING_KEY                                                                                                              \
+	"Missing GPG key (specified as " ELEKTRA_RECIPIENT_KEY                                                                             \
+	") in plugin configuration. GPG could not find any secret keys. Please generate a secret key first!"
+#define GPG_ERROR_INVALID_KEY "'%s' does not identify a valid GPG private key."
+
+enum gpgKeyListState
+{
+	GPG_KEYLIST_STATE_START,
+	GPG_KEYLIST_STATE_FPR2,
+	GPG_KEYLIST_STATE_FPR3,
+	GPG_KEYLIST_STATE_COLON,
+	GPG_KEYLIST_STATE_KEYID
+};
+
+enum gpgCallErrorCode
+{
+	GPG_CALL_DUP_STDIN = 0x4200,
+	GPG_CALL_DUP_STDOUT = 0x4201,
+	GPG_CALL_DUP_STDERR = 0x4202,
+	GPG_CALL_EXECV = 0x4203
+};
+
+struct gpgKeyListElement
+{
+	size_t start;
+	size_t end;
+	struct gpgKeyListElement * next;
+};
+
 static inline void closePipe (int * pipe)
 {
 	close (pipe[0]);
@@ -31,7 +64,7 @@ static inline void closePipe (int * pipe)
  * @retval 1 if the file exists and is executable
  * @retval -1 if the file can not be found
  * @retval -2 if the file exsits but it can not be executed
-*/
+ */
 static int isExecutable (const char * file, Key * errorKey)
 {
 	if (access (file, F_OK))
@@ -96,7 +129,7 @@ static char * genGpgCandidate (Key * errorKey, char * dir, const char * file)
  * @param errorKey holds an error description in case of failure.
  * @param bin the binary file to look for
  * @param result holds an allocated string containing the full path to the binary file or NULL in case of error. Must be freed by the caller.
- * @retval -1 if an error occured. See errorKey for a description.
+ * @retval -1 if an error occurred. See errorKey for a description.
  * @retval 0 if the binary could not be found within PATH.
  * @retval 1 if the binary was found and the full path was stored in result.
  */
@@ -228,6 +261,316 @@ static int getGpgBinary (char ** gpgBin, KeySet * conf, Key * errorKey)
 }
 
 /**
+ * @brief frees a linked list of key ids
+ * @param head holds the pointer to the head of the linked list.
+ */
+static void freeKeyList (struct gpgKeyListElement * head)
+{
+	struct gpgKeyListElement * e;
+	while (head)
+	{
+		e = head;
+		head = head->next;
+		elektraFree (e);
+	}
+}
+
+/**
+ * @brief parses the key IDs from the GPG output and writes it to gpgMissingKeyErrorBuffer.
+ * @param msgKey holds the output of the GPG process
+ * @param totalChars is set to the total number of characters of all key IDs read from the GPG output
+ * @param keyCount is set to the numer of key Ids parsed from the GPG output
+ * @returns a newly allocated linked list of key IDs. Must be freed by the caller!
+ *
+ * The parsing process is expressed as a state machine:
+ *
+ * +-------+-------------+------------+----------------------------+
+ * | State |  Input      | Next State |           Action           |
+ * +-------+-------------+------------+----------------------------+
+ * | START | 'f'         | FPR2       |                            |
+ * | START | *           | START      |                            |
+ * | ----- | ----------- | ---------- | -------------------------- |
+ * | FPR2  | 'p'         | FPR3       |                            |
+ * | FPR2  | *           | START      |                            |
+ * | ----- | ----------- | ---------- | -------------------------- |
+ * | FPR3  | 'r'         | COLON      |                            |
+ * | FPR3  | *           | START      |                            |
+ * | ----- | ----------- | ---------- | -------------------------- |
+ * | COLON | ':'         | COLON      |                            |
+ * | COLON | [A-Za-z0-9] | KEYID      | start new key ID           |
+ * | COLON | *           | START      |                            |
+ * | ----- | ----------- | ---------- | -------------------------- |
+ * | KEYID | [A-Za-z0-9] | KEYID      | save key ID                |
+ * | KEYID | *           | START      | end key ID, append to list |
+ * +-------+-------------+------------+----------------------------+
+ *
+ */
+static struct gpgKeyListElement * parseGpgKeyIdFromOutput (Key * msgKey, size_t * totalChars, size_t * keyCount)
+{
+	// generate a list of secret key IDs
+	const char * input = (char *)keyValue (msgKey);
+	const ssize_t inputLen = keyGetValueSize (msgKey);
+	*totalChars = 0;
+	*keyCount = 0;
+	struct gpgKeyListElement * keylistHead = NULL;
+	enum gpgKeyListState state = GPG_KEYLIST_STATE_START;
+
+	for (int i = 0; i < inputLen; i++)
+	{
+		switch (state)
+		{
+		case GPG_KEYLIST_STATE_START:
+			if (input[i] == 'f')
+			{
+				state = GPG_KEYLIST_STATE_FPR2;
+			}
+			break;
+
+		case GPG_KEYLIST_STATE_FPR2:
+			if (input[i] == 'p')
+			{
+				state = GPG_KEYLIST_STATE_FPR3;
+			}
+			else
+			{
+				state = GPG_KEYLIST_STATE_START;
+			}
+			break;
+
+		case GPG_KEYLIST_STATE_FPR3:
+			if (input[i] == 'r')
+			{
+				state = GPG_KEYLIST_STATE_COLON;
+			}
+			else
+			{
+				state = GPG_KEYLIST_STATE_START;
+			}
+			break;
+
+		case GPG_KEYLIST_STATE_COLON:
+			if (input[i] == ':')
+			{
+				continue;
+			}
+			else if ((input[i] >= 'A' && input[i] <= 'Z') || (input[i] >= 'a' && input[i] <= 'z') ||
+				 (input[i] >= '0' && input[i] <= '9'))
+			{
+				state = GPG_KEYLIST_STATE_KEYID;
+				// start new key id entry
+				if (keylistHead)
+				{
+					struct gpgKeyListElement * elem = elektraMalloc (sizeof (struct gpgKeyListElement));
+					if (!elem)
+					{
+						freeKeyList (keylistHead);
+						*totalChars = 0;
+						*keyCount = 0;
+						return NULL;
+					}
+					elem->start = i;
+					elem->next = keylistHead;
+					keylistHead = elem;
+				}
+				else
+				{
+					keylistHead = elektraMalloc (sizeof (struct gpgKeyListElement));
+					if (!keylistHead)
+					{
+						return NULL;
+					}
+					keylistHead->start = i;
+					keylistHead->next = NULL;
+				}
+				*keyCount += 1;
+			}
+			else
+			{
+				state = GPG_KEYLIST_STATE_START;
+			}
+			break;
+
+		case GPG_KEYLIST_STATE_KEYID:
+			if ((input[i] < 'A' || input[i] > 'Z') && (input[i] < 'a' || input[i] > 'z') && (input[i] < '0' || input[i] > '9'))
+			{
+				keylistHead->end = i;
+				*totalChars += keylistHead->end - keylistHead->start;
+				state = GPG_KEYLIST_STATE_START;
+			}
+			break;
+
+		default:
+			state = GPG_KEYLIST_STATE_START;
+			break;
+		}
+	}
+	return keylistHead;
+}
+
+/**
+ * @brief verifies if given value is a valid GPG private key.
+ * @param conf holds the plugin configuration
+ * @param value to be checked
+ * @retval 1 if value is a valid GPG private key
+ * @retval -1 otherwise
+ */
+static int isValidGpgKey (KeySet * conf, const char * value)
+{
+	// NOTE it is save to discard the const modifier (although it is not pretty) - the value is not being modified
+	char * argv[] = { "", "--batch", "--with-colons", "--fixed-list-mode", "--list-secret-keys", (char *)value, NULL };
+	Key * errorKey = keyNew (0);
+	Key * msgKey = keyNew (0);
+
+	int status = CRYPTO_PLUGIN_FUNCTION (gpgCall) (conf, errorKey, msgKey, argv, 7);
+
+	keyDel (msgKey);
+	keyDel (errorKey);
+
+	return status;
+}
+
+/**
+ * @brief check all keys in conf at and under given root key, whether or not they hold an valid GPG private key identifier.
+ * @param root the root of the configuration key to look for
+ * @param conf holds the plugin configuration
+ * @param errorKey holds error information in case of failure.
+ * @retval 1 on success.
+ * @retval -1 on error, check errorKey for further details.
+ */
+static int verifyGpgKeysInConf (Key * root, KeySet * conf, Key * errorKey)
+{
+	if (!root) return 1; // success
+
+	// verify top level key elements
+	const char * rootValue = keyString (root);
+	if (strlen (rootValue) > 0)
+	{
+		if (isValidGpgKey (conf, rootValue) != 1)
+		{
+			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_GPG_KEY_INVALID, errorKey, GPG_ERROR_INVALID_KEY, rootValue);
+			return -1; // failure
+		}
+	}
+
+	// verify child elements
+	Key * k;
+	ksRewind (conf);
+	while ((k = ksNext (conf)) != 0)
+	{
+		if (keyIsBelow (k, root))
+		{
+			const char * childValue = keyString (k);
+			if (isValidGpgKey (conf, childValue) != 1)
+			{
+				ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_GPG_KEY_INVALID, errorKey, GPG_ERROR_INVALID_KEY, childValue);
+				return -1; // failure
+			}
+		}
+	}
+
+	return 1; // success
+}
+
+/**
+ * @brief verifies that the config only holds valid GPG private key identifiers for encryption or signing.
+ * However, this method does NOT verify that the config does contain any GPG keys at all.
+ *
+ * @param conf holds the plugin configuration
+ * @param errorKey holds an error description in case of failure.
+ * @retval 1 on success
+ * @retval -1 on error. check errorKey for further details.
+ */
+int CRYPTO_PLUGIN_FUNCTION (gpgVerifyGpgKeysInConfig) (KeySet * conf, Key * errorKey)
+{
+	Key * rootEncrypting = ksLookupByName (conf, ELEKTRA_RECIPIENT_KEY, 0);
+	if (verifyGpgKeysInConf (rootEncrypting, conf, errorKey) != 1)
+	{
+		// errorKey has been set by verifyGpgKeysInConf
+		return -1; // failure
+	}
+
+	Key * rootSignature = ksLookupByName (conf, ELEKTRA_SIGNATURE_KEY, 0);
+	if (verifyGpgKeysInConf (rootSignature, conf, errorKey) != 1)
+	{
+		// errorKey has been set by verifyGpgKeysInConf
+		return -1; // failure
+	}
+
+	return 1; // success
+}
+
+/**
+ * @brief prepare the error text in case of missing GPG recipient specification in the configuration.
+ * @param conf holds the backend/plugin configuration
+ * @returns the error text. This pointer must be freed by the caller!
+ */
+char * CRYPTO_PLUGIN_FUNCTION (getMissingGpgKeyErrorText) (KeySet * conf)
+{
+	Key * msgKey = keyNew (0);
+	Key * errorKey = keyNew (0);
+
+	char * errorBuffer;
+	size_t errorBufferLen = 0;
+
+	keySetBinary (msgKey, NULL, 0);
+	char * argv[] = { "", "--batch", "--list-secret-keys", "--with-fingerprint", "--with-colons", "--fixed-list-mode", NULL };
+	if (CRYPTO_PLUGIN_FUNCTION (gpgCall) (conf, errorKey, msgKey, argv, 7) == 1)
+	{
+		size_t totalKeyIdChars = 0;
+		size_t keyCount = 0;
+		struct gpgKeyListElement * listHead = parseGpgKeyIdFromOutput (msgKey, &totalKeyIdChars, &keyCount);
+
+		if (keyCount > 0)
+		{
+			// error message + list of all key ids separated by a coma ',' + null terminator
+			errorBufferLen = strlen (GPG_ERROR_MISSING_KEY_LIST) + totalKeyIdChars + keyCount;
+			errorBuffer = elektraMalloc (errorBufferLen);
+			if (!errorBuffer)
+			{
+				freeKeyList (listHead);
+				return NULL;
+			}
+
+			const char * content = (const char *)keyValue (msgKey);
+
+			size_t index = strlen (GPG_ERROR_MISSING_KEY_LIST);
+			strncpy (errorBuffer, GPG_ERROR_MISSING_KEY_LIST, errorBufferLen);
+
+			// construct the error list with the key ids
+			struct gpgKeyListElement * iterator = listHead;
+			while (iterator)
+			{
+				if (iterator != listHead)
+				{
+					errorBuffer[index++] = ',';
+				}
+
+				strncpy (&errorBuffer[index], &content[iterator->start], iterator->end - iterator->start);
+				index += iterator->end - iterator->start;
+				iterator = iterator->next;
+			}
+			errorBuffer[index] = '\0';
+
+			freeKeyList (listHead);
+			keyDel (msgKey);
+			keyDel (errorKey);
+			return errorBuffer;
+		}
+	}
+
+	// default message - we could not find a GPG secret key
+	errorBufferLen = strlen (GPG_ERROR_MISSING_KEY) + 1;
+	errorBuffer = elektraMalloc (errorBufferLen);
+	if (errorBuffer)
+	{
+		strncpy (errorBuffer, GPG_ERROR_MISSING_KEY, errorBufferLen);
+	}
+	keyDel (msgKey);
+	keyDel (errorKey);
+	return errorBuffer;
+}
+
+/**
  * @brief call the gpg binary to encrypt the random master password.
  *
  * @param conf holds the backend/plugin configuration
@@ -246,7 +589,7 @@ int CRYPTO_PLUGIN_FUNCTION (gpgEncryptMasterPassword) (KeySet * conf, Key * erro
 	// determine the number of total GPG keys to be used
 	kdb_unsigned_short_t recipientCount = 0;
 	kdb_unsigned_short_t testMode = 0;
-	Key * root = ksLookupByName (conf, ELEKTRA_CRYPTO_PARAM_GPG_KEY, 0);
+	Key * root = ksLookupByName (conf, ELEKTRA_RECIPIENT_KEY, 0);
 
 	// check root key crypto/key
 	if (root && strlen (keyString (root)) > 0)
@@ -266,8 +609,9 @@ int CRYPTO_PLUGIN_FUNCTION (gpgEncryptMasterPassword) (KeySet * conf, Key * erro
 
 	if (recipientCount == 0)
 	{
-		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CRYPTO_CONFIG_FAULT, errorKey,
-				    "Missing GPG key (specified as %s) in plugin configuration.", ELEKTRA_CRYPTO_PARAM_GPG_KEY);
+		char * errorDescription = CRYPTO_PLUGIN_FUNCTION (getMissingGpgKeyErrorText) (conf);
+		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_CRYPTO_CONFIG_FAULT, errorKey, errorDescription);
+		elektraFree (errorDescription);
 		return -1;
 	}
 
@@ -363,10 +707,16 @@ int CRYPTO_PLUGIN_FUNCTION (gpgCall) (KeySet * conf, Key * errorKey, Key * msgKe
 	int pipe_stderr[2];
 	char errorBuffer[512] = "";
 	kdb_octet_t * buffer = NULL;
-	const ssize_t bufferSize = 2 * keyGetValueSize (msgKey);
+	ssize_t bufferSize = 2 * keyGetValueSize (msgKey);
 	ssize_t outputLen;
 
 	assert (argc > 1);
+
+	// check if bufferSize is valid
+	if (bufferSize <= 0)
+	{
+		bufferSize = GPG_OUTPUT_DEFAULT_BUFFER_SIZE;
+	}
 
 	// sanitize the argument vector
 	if (getGpgBinary (&argv[0], conf, errorKey) != 1)
@@ -442,25 +792,33 @@ int CRYPTO_PLUGIN_FUNCTION (gpgCall) (KeySet * conf, Key * errorKey, Key * msgKe
 		if (msgKey)
 		{
 			close (STDIN_FILENO);
-			dup (pipe_stdin[0]);
+			if (dup (pipe_stdin[0]) < 0)
+			{
+				exit (GPG_CALL_DUP_STDIN);
+			}
 		}
 		close (pipe_stdin[0]);
 
 		// redirect stdout to pipe
 		close (STDOUT_FILENO);
-		dup (pipe_stdout[1]);
+		if (dup (pipe_stdout[1]) < 0)
+		{
+			exit (GPG_CALL_DUP_STDOUT);
+		}
 		close (pipe_stdout[1]);
 
 		// redirect stderr to pipe
 		close (STDERR_FILENO);
-		dup (pipe_stderr[1]);
+		if (dup (pipe_stderr[1]) < 0)
+		{
+			exit (GPG_CALL_DUP_STDERR);
+		}
 		close (pipe_stderr[1]);
 
 		// finally call the gpg executable
 		if (execv (argv[0], argv) < 0)
 		{
-			ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CRYPTO_GPG, errorKey, "failed to start the gpg binary: %s", argv[0]);
-			return -1;
+			exit (GPG_CALL_EXECV);
 		}
 		// end of the child process
 	}
@@ -471,9 +829,19 @@ int CRYPTO_PLUGIN_FUNCTION (gpgCall) (KeySet * conf, Key * errorKey, Key * msgKe
 	close (pipe_stderr[1]);
 
 	// pass the message to the gpg process
-	if (msgKey)
+	const ssize_t sendMessageSize = keyGetValueSize (msgKey);
+	if (msgKey && sendMessageSize > 0)
 	{
-		write (pipe_stdin[1], keyValue (msgKey), keyGetValueSize (msgKey));
+		if (write (pipe_stdin[1], keyValue (msgKey), sendMessageSize) != sendMessageSize)
+		{
+			ELEKTRA_SET_ERROR (ELEKTRA_ERROR_CRYPTO_GPG, errorKey, "The communication with the GPG process failed.");
+			closePipe (pipe_stdin);
+			closePipe (pipe_stdout);
+			closePipe (pipe_stderr);
+			elektraFree (buffer);
+			elektraFree (argv[0]);
+			return -1;
+		}
 	}
 	close (pipe_stdin[1]);
 
@@ -497,6 +865,22 @@ int CRYPTO_PLUGIN_FUNCTION (gpgCall) (KeySet * conf, Key * errorKey, Key * msgKe
 	case 1:
 		// bad signature
 		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_CRYPTO_GPG, errorKey, "GPG reported a bad signature");
+		break;
+
+	case GPG_CALL_DUP_STDIN:
+		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_CRYPTO_GPG, errorKey, "failed to redirect stdin.");
+		break;
+
+	case GPG_CALL_DUP_STDOUT:
+		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_CRYPTO_GPG, errorKey, "failed to redirect stdout.");
+		break;
+
+	case GPG_CALL_DUP_STDERR:
+		ELEKTRA_SET_ERROR (ELEKTRA_ERROR_CRYPTO_GPG, errorKey, "failed to redirect stderr.");
+		break;
+
+	case GPG_CALL_EXECV:
+		ELEKTRA_SET_ERRORF (ELEKTRA_ERROR_CRYPTO_GPG, errorKey, "failed to start the gpg binary: %s", argv[0]);
 		break;
 
 	default:

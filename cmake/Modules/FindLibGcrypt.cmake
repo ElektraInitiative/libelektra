@@ -17,6 +17,7 @@
 # CHANGES made by Peter Nirschl <peter.nirschl@gmail.com>
 #
 # LIBGCRYPT_INCLUDE_DIR - set to the path where gcrypt's include files are stored
+# HAS_GCRYPT_4SURE - set if a sample program can be compiled and linked against libgcrypt
 #
 
 #search in typical paths for libgcrypt-config
@@ -55,6 +56,23 @@ if (LIBGCRYPT_FOUND)
       string (REPLACE "-I" "" LIBGCRYPT_INCLUDE_DIR "${LIBGCRYPT_CFLAGS}")
    endif ()
    unset (LIBGCRYPT_CFLAGS_LEN)
+
+   # try to compile and link a minimal sample program against libgcrypt
+   try_compile (HAS_GCRYPT_4SURE
+     "${CMAKE_BINARY_DIR}"
+     "${PROJECT_SOURCE_DIR}/src/plugins/crypto/compile_gcrypt.c"
+     CMAKE_FLAGS
+       -DINCLUDE_DIRECTORIES:STRING=${LIBGCRYPT_INCLUDE_DIR}
+       -DLINK_LIBRARIES:PATH=${LIBGCRYPT_LIBRARIES}
+   )
+
+   if (NOT HAS_GCRYPT_4SURE)
+     message (STATUS "libgcrypt compile/linker test failed. Please check if all library and include paths are set properly!")
+     set (LIBGCRYPT_FOUND OFF)
+     set (LIBGCRYPT_LIBRARIES "")
+     set (LIBGCRYPT_CFLAGS "")
+     set (LIBGCRYPT_INCLUDE_DIR "")
+   endif ()
 
 else (LIBGCRYPT_FOUND)
    if (LibGcrypt_FIND_REQUIRED)

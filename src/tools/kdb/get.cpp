@@ -3,7 +3,7 @@
  *
  * @brief
  *
- * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
 #include <get.hpp>
@@ -159,7 +159,21 @@ int GetCommand::execute (Cmdline const & cl)
 		{
 			cout << "The resulting keyname is " << k.getName () << std::endl;
 		}
-		cout << k.getString ();
+
+		if (k.isBinary ())
+		{
+			cout << std::hex;
+			const uint8_t * data = static_cast<const uint8_t *> (k.getValue ());
+			for (auto byte = 0; byte < k.getBinarySize (); byte++)
+			{
+				cout << "\\x" << unsigned(data[byte]);
+			}
+			cout << std::dec;
+		}
+		else
+		{
+			cout << k.getString ();
+		}
 	}
 	else
 	{

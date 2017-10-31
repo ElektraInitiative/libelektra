@@ -3,7 +3,7 @@
  *
  * @brief Interna of plugin functionality.
  *
- * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
 #ifdef HAVE_KDBCONFIG_H
@@ -158,8 +158,6 @@ int elektraProcessPlugins (Plugin ** plugins, KeySet * modules, KeySet * referen
 			char * referenceName = 0;
 			int pluginNumber = 0;
 
-			Key * key;
-
 			if (elektraProcessPlugin (cur, &pluginNumber, &pluginName, &referenceName, errorKey) == -1)
 			{
 				elektraFree (pluginName);
@@ -168,10 +166,9 @@ int elektraProcessPlugins (Plugin ** plugins, KeySet * modules, KeySet * referen
 				return -1;
 			}
 
-
 			if (pluginName)
 			{
-				key = keyDup (cur);
+				Key * key = keyDup (cur);
 				keyAddBaseName (key, "config");
 				KeySet * cutConfig = ksCut (config, key);
 				keyDel (key);

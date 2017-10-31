@@ -16,7 +16,7 @@ nbTest=0
 nbSkip=0
 
 # the script itself
-scriptName=`basename $0`
+scriptName=`basename "$0"`
 
 MOUNTPOINT="/tests/script"
 
@@ -60,6 +60,11 @@ then
 	KDB=${KDB_GETENV};
 fi
 
+# ensure ruby plugin finds Ruby bindings without installation
+# (require both the src and the build dir)
+export RUBYLIB="@CMAKE_SOURCE_DIR@/src/bindings/swig/ruby:@CMAKE_BINARY_DIR@/src/bindings/swig/ruby"
+export SAVE=0 # some Rubies do not accept RUBYLIB if SAVE is not 0
+
 #
 # ASSERTIONS
 #
@@ -99,10 +104,10 @@ end_script()
 		cleanup
 	fi
 
-	echo -n "$scriptName RESULTS: $nbTest test(s) done"
+	printf "$scriptName RESULTS: $nbTest test(s) done"
 	if [ $nbSkip -ne 0 ]
 	then
-		echo -n " $nbSkip skipped"
+		printf " $nbSkip skipped"
 	fi
 	echo " $nbError error(s)."
 	exit "$nbError"
@@ -132,11 +137,11 @@ check_version()
 
 	REAL_KDB_VERSION="`"$KDB" get system/elektra/version/constants/KDB_VERSION 2> /dev/null`"
 	[ "x$REAL_KDB_VERSION" = "x$KDB_VERSION" ]
-	exit_if_fail "Script was not compiled ($KDB_VERSION) with this elektra version ($REAL_KDB_VERSION): KDB_VERSION mismatch use CHECK_VERSION=NO to disable"
+	exit_if_fail "Script was not compiled ($KDB_VERSION) with this elektra version ($REAL_KDB_VERSION): KDB_VERSION mismatch for kdb-tool ($KDB), use CHECK_VERSION=NO to disable"
 
 	REAL_SO_VERSION="`"$KDB" get system/elektra/version/constants/SO_VERSION 2> /dev/null`"
 	[ "x$REAL_SO_VERSION" = "x$SO_VERSION" ]
-	exit_if_fail "Script was not compiled ($SO_VERSION) with this elektra version ($REAL_SO_VERSION): SO_VERSION mismatch"
+	exit_if_fail "Script was not compiled ($SO_VERSION) with this elektra version ($REAL_SO_VERSION): SO_VERSION mismatch for kdb-tool ($KDB), use CHECK_VERSION=NO to disable"
 }
 
 check_remaining_files()
@@ -211,7 +216,9 @@ is_not_rw_storage()
 	-o "x$PLUGIN" = "xregexstore" \
 	-o "x$PLUGIN" = "xpasswd" \
 	-o "x$PLUGIN" = "xsimplespeclang" \
-	-o "x$PLUGIN" = "xmozprefs"
+	-o "x$PLUGIN" = "xmozprefs" \
+	-o "x$PLUGIN" = "xfile" \
+	-o "x$PLUGIN" = "xruby"
 }
 
 is_plugin_available()
@@ -236,17 +243,9 @@ mktempfile_elektra()
 	mktemp -t elektraenv.XXXXXXXXX 2>/dev/null || mktemp -t 'elektraenv'
 }
 
-
-
-
-
-
-
-
-
-
-
-
+replace_newline_return () {
+	awk '{if (NR>1) {printf("%s⏎", line);} line=$0;} END { printf("%s", line); }'
+}
 
 
 

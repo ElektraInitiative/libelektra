@@ -3,7 +3,7 @@
  *
  * @brief cryptographic interface using the libcrypto library (part of the OpenSSL project)
  *
- * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  *
  */
 
@@ -18,7 +18,7 @@
 
 char * elektraCryptoOpenSSLCreateRandomString (Key * errorKey, const kdb_unsigned_short_t length);
 int elektraCryptoOpenSSLInit (Key * errorKey);
-int elektraCryptoOpenSSLHandleCreate (elektraCryptoHandle ** handle, KeySet * config, Key * errorKey, Key * k,
+int elektraCryptoOpenSSLHandleCreate (elektraCryptoHandle ** handle, KeySet * config, Key * errorKey, Key * masterKey, Key * k,
 				      const enum ElektraCryptoOperation op);
 void elektraCryptoOpenSSLHandleDestroy (elektraCryptoHandle * handle);
 int elektraCryptoOpenSSLEncrypt (elektraCryptoHandle * handle, Key * k, Key * errorKey);

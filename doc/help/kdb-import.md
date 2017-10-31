@@ -11,7 +11,7 @@ Where `destination` is the destination where the user wants the keys to be impor
 ## DESCRIPTION
 
 If the `format` argument is not passed, then the default format will be used as determined by the value of the `sw/kdb/current/format` key. By default, that key is set to the `storage` format.
-The `format` attribute relies on Elektra's plugin system to properly import the configuration. The user can view all plugins available for use by running the kdb-list(1) command. To learn about any plugin, the user can simply use the kdb-info(1) command.
+The `format` attribute relies on Elektra’s plugin system to properly import the configuration. The user can view all plugins available for use by running the kdb-list(1) command. To learn about any plugin, the user can simply use the kdb-info(1) command.
 
 This command allows a user to import an existing configuration into the key database.
 The configuration that the user wants to import is read from `stdin`.
@@ -27,7 +27,7 @@ Conflicts when importing can be resolved using a strategy with the `-s` argument
 Specific to `kdb import` the following strategy exists:
 
 - `validate`: 
-  apply meta data as received from base, and then cut+append all keys as imported.
+  apply metadata as received from base, and then cut+append all keys as imported.
   If the appended keys do not have a namespace, the namespace given by `-N`
   is added.
 
@@ -40,17 +40,17 @@ The other strategies are implemented by the merge framework and are documented i
   Show the man page.
 - `-V`, `--version`:
   Print version info.
-- `-p`, `--profile`=<profile>:
+- `-p`, `--profile <profile>`:
   Use a different kdb profile.
+- `-C`, `--color <when>`:
+  Print never/auto(default)/always colored output.
 - `-s`, `--strategy <name>`:
   Specify which strategy should be used to resolve conflicts.
 - `-v`, `--verbose`:
   Explain what is happening.
 - `-c`, `--plugins-config`:
   Add a configuration to the format plugin.
-- `-C`, `--color`=[when]:
-  Print never/auto(default)/always colored output.
-- `-N`, `--namespace`=<ns>:
+- `-N`, `--namespace <namespace>`:
   Specify the namespace to use when writing cascading keys (`validate` strategy only).
   See [below in KDB](#KDB).
 

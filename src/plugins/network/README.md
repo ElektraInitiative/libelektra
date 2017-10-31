@@ -8,13 +8,13 @@
 - infos/metadata = check/ipaddr
 - infos/description = Checks keys if they contain a valid ip address
 
-## Introduction ##
+## Introduction
 
 This plugin is a check plugin that checks if a key contains a valid ip
 address. It uses the `POSIX.1-2001` interface `getaddrinfo()` in order
 to check if an ip address is valid.
 
-## Purpose ##
+## Purpose
 
 While, in theory, a regular expression can express if a string is a
 network address, in practice, such an attempt does not work well. The
@@ -32,7 +32,7 @@ address translator is provided with the interface `getaddrinfo()`. It
 is a common network address translation for both IPv4 and IPv6. We used
 it to implement this plugin.
 
-## Usage ##
+## Usage
 
 Every key tagged with the metakey `check/ipaddr` will be checked
 using `getaddrinfo()`.  If additionally the values `ipv4` or `ipv6`

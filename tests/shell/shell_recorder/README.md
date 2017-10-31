@@ -1,308 +1,149 @@
-# Shell Recorder #
+# Shell Recorder
 
-## Configuration ##
+## Overview
 
-### Mountpoint: ###
+The Shell Recorder is a test tool that checks the output and return values of shell commands such as `kdb`. It allows you to write unit and
+regression tests. Lets take a look at a simple Shell Recorder test first. We store the text:
 
-This is the only configuration Variable that has to be set. It is used to determine where the shell_recorder should look for changes.
-e.g. `Mountpoint: user/test` tells the shell_recorder that you will be working under `user/test`.
+```
+Mountpoint: user/examples/shellrecorder
 
-### DiffType: ###
+STDOUT: Create a new key user/examples/shellrecorder/key with string "value"
+RET: 0
+< kdb set user/examples/shellrecorder/key value
+```
 
-Available:
+in a file called `test.esr` in the folder `Documents` in the home directory (`~/Documents/test.esr`). Shell Recorder tests start with a
+list of global values. The only required value is `Mountpoint`. It specifies the location in the KDB that the Shell Recorder will save
+before it runs the tests and restore after it is finished. In our example the Shell Recorder will backup and restore everything below the
+namespace `user/examples/shellrecorder`. After the global values a Shell Recorder file contains a list of tests.
 
-`Dump`, `Ini` exports the keys below `Mountpoint` using either the dump or ini format and diffs the changes.
-`File` does a diff on the configuration file mounted to `Mountpoint`.
+As you can see above, we specify the command we want to test after an initial smaller-than sign (`<`). In our case we want to test the
+command `kdb set /examples/shellrecorder/key value`. The words above the command are directives that tell the Shell Recorder what it should
+test. In our case we want to make sure, that the command prints the text
+`Create a new key user/examples/shellrecorder/key with string"value"` to `stdout`, and that the exit code of the command (return value)
+is `0`.
 
-### File: ###
+Before we use the Shell Recorder we need to [build Elektra](/doc/COMPILE.md). If we assume that we built Elektra in the root of the
+repository in a folder called `build`, then the Shell Recorder is located at `build/tests/shell/shell_recorder/shell_recorder.sh`. To start
+our test we call the Shell Recorder from the root of the repository. The root directory of the repo is also the **default working directory** for tests (`*.esr`) located in this folder. We specify our test file as argument for the Shell Recorder:
 
-Tells the shell_recorder what file to use for diffs.
-If File is preset but empty a fresh database temp file will be provided for every run.
+```sh
+build/tests/shell/shell_recorder/shell_recorder.sh ~/Documents/test.esr
+```
 
+. The Shell Recorder should then print something like the following text:
 
-## Checks ##
+```
+kdb set user/examples/shellrecorder/key value
+shell_recorder /Users/rene/Documents/test.esr RESULTS: 2 test(s) done 0 error(s).
+```
 
-Posix-extended regex is used to check and validate return values and outputs.
+. If we want to check that the Shell Recorder really works we can modify the test:
 
-**Remark:** Shell Recorder uses the `⏎` symbol as line terminator. This means that you need to use the character `⏎`  (instead of `\n`) if you want to match a line ending in a multiline output. For example: Assume there are exactly two keys with the name `key1` and `key2` located under the path `user/test`. The output of the command `kdb ls user/test` would then be the following
+```
+Mountpoint: user/examples/shellrecorder
+
+STDOUT: NaNaNaNaNaNaNa
+RET: 1337
+< kdb set user/examples/shellrecorder/key value
+```
+
+. Now the output should look something like this:
+
+```
+kdb set user/examples/shellrecorder/key value
+Return value “0” does not match “1337”
+
+ERROR - STDOUT:
+“Create a new key user/examples/shellrecorder/key with string "value"”
+does not match
+“NaNaNaNaNaNaNa”
+
+shell_recorder /Users/rene/Documents/test.esr RESULTS: 2 test(s) done 2 error(s).
+📕  Protocol File: /var/folders/hx/flbncdhj4fs87095gzxvnj3h0000gn/T/elektraenv.XXXXXXXXX.gWyTCr2O
+```
+
+. We see that both checks failed. The protocol file at the end of the output contain the real output and  return value of the command:
+
+```
+…
+RET: 0
+…
+STDOUT: Create a new key user/examples/shellrecorder/key with string "value"
+…
+```
+
+.
+
+## Configuration
+
+You can use the global values below at the start of Shell Recorder test. The basic syntax is `Variable: Value`.
+
+### Mountpoint
+
+This is the only configuration variable that has to be set. It is used to determine where the `shell_recorder` should look for changes.
+e.g. `Mountpoint: user/test` tells `shell_recorder` that you will be working under `user/test`.
+
+### DiffType
+
+Use either `Dump` or `Ini` to tell the Shell Recorder to
+
+1. export the keys below `Mountpoint` using the Dump or INI format,
+2. and diff the changes with the last recorded output.
+
+If you use the option `File`, then Shell Recorder does a diff on the configuration file mounted to `Mountpoint`.
+
+### File
+
+Tells `shell_recorder` what file it should use for diffs.
+If `File` is present but empty a fresh database file will be provided for every run.
+
+## Checks
+
+Posix-extended regular expressions are used to check and validate return values and outputs.
+
+**Remark:** Shell Recorder uses the `⏎` symbol as line terminator. This means that you need to use the character `⏎` (instead of `\n`) if
+you want to match a line ending in a multiline output. For example: Assume there are exactly two keys with the name `key1` and `key2`
+located under the path `user/test`. The output of the command `kdb ls user/test` would then be the following
 
 ```
 user/test/key1
 user/test/key2
 ```
 
-You can check this exact output in a shell recorder script via the following code:
+. You can check this exact output in a Shell Recorder script via the following code:
 
 ```
 STDOUT: user/test/key1⏎user/test/key2
-< ls user/test
+< kdb ls user/test
 ```
 
-If you only want to check that `key1` and `key2` are part of the output you can use the regex `key1.*key2` instead:
+. If you only want to check that `key1` and `key2` are part of the output you can use the regex `key1.*key2` instead:
 
 ```
-STDOUT: key1.*key2
-< ls user/test
+STDOUT-REGEX: key1.*key2
+< kdb ls user/test
 ```
 
-As you can see the line ending is considered  a normal character (`.`) in the output.
+. As you can see the line ending is considered  a normal character (`.`) in the output.
 
-Options:
+### Options
 
-* STDOUT:
-* STDERR:
-* RET:
-* WARNINGS:
-* ERRORS:
-* DIFF:
+The Shell Recorder provides the following checks
 
-## Commands ##
+- `STDOUT:` The Shell Recorder matches the **text** after this directive 1:1 with the standard output of the command.
+- `STDOUT-REGEX:` Use this directive if you want to compare the standard output of the command with a **regular expression**.
+* `STDERR:` The Shell Recorder compares the **regular expression** after this directive with the standard error output of the command.
+* `RET:` The Shell Recorder compares this **regular expression** with the return code (exit status) of the command.
+* `WARNINGS:` This **comma separated list** of numbers is compared with the warnings thrown by a `kdb` command.
+* `ERROR:` The Shell Recorder compares this number to the error thrown by a `kdb` command.
+* `DIFF:` This **regular expression** is compared with the output of a `diff` command. The input for the `diff` command is the last and current state of the key database. The directive `DiffType` specifies if the the Shell Recorder compares the file of the storage plugin (`File`) directly, or if it uses the INI (`Ini`) or Dump (`Dump`) format.
 
-A command starts with `<` followed by the usual kdb commands.
+## Commands
 
+A command starts with `<` followed by kdb or shell commands.
 
-## Examples ##
+## Examples
 
-### Basic ###
-
-This testcase uses the dump-format to validate database changes. the first DIFF tells the shell recorder to watch for the line `> keyNew.*user/test/key3` in the diff of the config files after the command `kdb set /test/key val` is executed. The second DIFF + set work the same, but, because this time the line `> keyNew.*user/test/key3` can't be found in the diff, yields an error
-```
- % cat db_changes.dat
-
-DiffType: Dump
-Mountpoint: user
-
-DIFF: (> keyNew.*user/test/key)
-< set /test/key val
-
-DIFF: (> keyNew.*user/test/key3)
-< set /test/key2 val2
-
- % ./shell_recorder.sh db_changes.dat
-set /test/key val
-set /test/key2 val2
-Changes to /home/thomas/.config/default.ecf don't match (> keyNew.*user/test/key3)
-
- % cat protocol
-CMD: set /test/key val
-RET: 0
-STDERR:
-STDOUT: Using name user/test/key
-Create a new key user/test/key with string val
-WARNINGS:
-ERRORS:
-DIFF: 2c2,5
-< ksNew 0
----
-> ksNew 1
-> keyNew 14 4
-> user/test/keyval
-> keyEnd
-
-CMD: set /test/key2 val2
-RET: 0
-STDERR:
-STDOUT: Using name user/test/key2
-Create a new key user/test/key2 with string val2
-WARNINGS:
-ERRORS:
-DIFF: 2c2
-< ksNew 1
----
-> ksNew 2
-4a5,7
-> keyEnd
-> keyNew 15 5
-> user/test/key2val2
-=== FAILED changes to database file () don't match (> keyNew.*user/test/key3)
-```
-
-
-### Replay ###
-
-```
- % cat old_protocol
-CMD: set /tmount/key $RANDOM
-RET: 0
-STDERR:
-STDOUT: Using name user/tmount/key
-Create a new key user/tmount/key with string 31371
-WARNINGS:
-ERRORS:
-DIFF: 2,5c2
-< ksNew 2
-< keyNew 16 6
-< user/tmount/key31371
-< keyEnd
----
-> ksNew 1
-
-
- % cat replay_test_fail.dat
-Mountpoint: /tmount
-DiffType: File
-
-< set $Mountpoint/key $RANDOM
-
-
- % ./shell_recorder.sh replay_test_fail.dat old_protocol
-set /tmount/key $RANDOM
-=======================================
-Replay test failed, protocols differ
-5c5
-< Create a new key user/tmount/key with string 31371
----
-> Create a new key user/tmount/key with string 26223
-11c11
-< < user/tmount/key31371
----
-> < user/tmount/key26223
-
-```
-
-### another example ###
-
-```
- % cat script.dat
-Storage: dump
-Mountpoint: system/testmount/test
-File: /tmp/test.dump
-MountArgs:
-DiffType: File
-
-< set $Mountpoint/test bla
-
-RET: 0
-< mount $File $Mountpoint $Storage
-
-RET: 2
-< set $Mountpoint teststring
-
-< set $Mountpoint/testkey testval
-
-< get $Mountpoint/testkey
-
-STDOUT: test.?ey
-STDERR: blaaaa
-< ls $Mountpoint
-
-< setmeta $Mountpoint/testkey metacomment "comment blaa"
-
-< get $Mountpoint/michgibtsgarnicht
-
-WARNINGS: 79|80
-< umount $Mountpoint
-
-
-
-
- % ./shell_recorder.sh script.dat
-set system/testmount/test/test bla
-mount /tmp/test.dump system/testmount/test dump
-set system/testmount/test teststring
-Return value 0 doesn't match 2
-set system/testmount/test/testkey testval
-get system/testmount/test/testkey
-ls system/testmount/test
-STDERR doesn't match blaaaa
-setmeta system/testmount/test/testkey metacomment "comment blaa"
-get system/testmount/test/michgibtsgarnicht
-umount system/testmount/test
-WARNINGS doesn't match 79|80
-
-
-
-
- % cat protocol
-CMD: set system/testmount/test/test bla
-RET: 0
-STDERR:
-STDOUT: Create a new key system/testmount/test/test with string bla
-WARNINGS:
-ERRORS:
-DIFF:
-
-CMD: mount /tmp/test.dump system/testmount/test dump
-RET: 0
-STDERR:
-STDOUT:
-WARNINGS:
-ERRORS:
-DIFF:
-
-CMD: set system/testmount/test teststring
-RET: 0
-=== FAILED return value doesn't match expected pattern 2
-STDERR:
-STDOUT: Create a new key system/testmount/test with string teststring
-WARNINGS:
-ERRORS:
-DIFF: 1,6d0
-< kdbOpen 1
-< ksNew 1
-< keyNew 22 11
-< system/testmount/testteststring
-< keyEnd
-< ksEnd
-
-CMD: set system/testmount/test/testkey testval
-RET: 0
-STDERR:
-STDOUT: Create a new key system/testmount/test/testkey with string testval
-WARNINGS:
-ERRORS:
-DIFF: 2c2
-< ksNew 2
----
-> ksNew 1
-5,7d4
-< keyEnd
-< keyNew 30 8
-< system/testmount/test/testkeytestval
-
-CMD: get system/testmount/test/testkey
-RET: 0
-STDERR:
-STDOUT: testval
-WARNINGS:
-ERRORS:
-DIFF:
-
-CMD: ls system/testmount/test
-RET: 0
-STDERR:
-=== FAILED stderr doesn't match expected patter blaaaa
-STDOUT: system/testmount/test
-system/testmount/test/testkey
-WARNINGS:
-ERRORS:
-DIFF:
-
-CMD: setmeta system/testmount/test/testkey metacomment "comment blaa"
-RET: 0
-STDERR:
-STDOUT:
-WARNINGS:
-ERRORS:
-DIFF: 8,9d7
-< keyMeta 12 13
-< metacommentcomment blaa
-
-CMD: get system/testmount/test/michgibtsgarnicht
-RET: 1
-STDERR: Did not find key
-STDOUT:
-WARNINGS:
-ERRORS:
-DIFF:
-
-CMD: umount system/testmount/test
-RET: 0
-STDERR:
-STDOUT:
-WARNINGS:
-=== FAILED Warnings don't match expected pattern 79|80
-ERRORS:
-DIFF:
-
-```
+Please take a look at the examples files (`*.esr`) located inside this folder.

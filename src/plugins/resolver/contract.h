@@ -3,7 +3,7 @@
  *
  * @brief
  *
- * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
 // clang-format off
@@ -46,6 +46,12 @@ ksNew (50,
 		KEY_END),
 	keyNew ("system/elektra/modules/" ELEKTRA_PLUGIN_NAME "/exports/checkfile",
 		KEY_FUNC, ELEKTRA_PLUGIN_FUNCTION(resolver, checkFile),
+		KEY_END),
+	keyNew ("system/elektra/modules/" ELEKTRA_PLUGIN_NAME "/exports/filename",
+		KEY_FUNC, ELEKTRA_PLUGIN_FUNCTION(resolver, filename),
+		KEY_END),
+	keyNew ("system/elektra/modules/" ELEKTRA_PLUGIN_NAME "/exports/freeHandle",
+		KEY_FUNC, ELEKTRA_PLUGIN_FUNCTION(resolver, freeHandle),
 		KEY_END),
 #include ELEKTRA_README(resolver)
 	keyNew ("system/elektra/modules/" ELEKTRA_PLUGIN_NAME "/infos/version",

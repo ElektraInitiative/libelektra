@@ -3,7 +3,7 @@
  *
  * @brief
  *
- * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
 #include <check.hpp>
@@ -24,7 +24,7 @@ CheckCommand::CheckCommand ()
 {
 }
 
-int printProblems (Key k, std::string action, int off)
+int printProblems (Key const & k, std::string const & action, int off)
 {
 	bool wo = k.getMeta<const kdb::Key> ("warnings");
 	bool eo = k.getMeta<const kdb::Key> ("error");
@@ -114,7 +114,7 @@ int CheckCommand::execute (Cmdline const & cl)
 
 	if (warnings.size () > 0)
 	{
-		cerr << "There are " << warnings.size () << " Warnings for this plugin" << endl;
+		cerr << "There are " << warnings.size () << " warnings for this plugin" << endl;
 		cerr << "For high quality plugins there should be no warning" << endl;
 
 		for (size_t i = 0; i < warnings.size (); ++i)

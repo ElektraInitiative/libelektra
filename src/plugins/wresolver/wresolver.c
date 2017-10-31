@@ -3,7 +3,7 @@
  *
  * @brief
  *
- * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
 #ifndef HAVE_KDBCONFIG
@@ -273,15 +273,19 @@ int elektraWresolverOpen (Plugin * handle, Key * errorKey)
 	case KEY_NS_SPEC:
 		resolverInit (&p->spec, path);
 		elektraResolveSpec (&p->spec, errorKey);
+	// FALLTHROUGH
 	case KEY_NS_DIR:
 		resolverInit (&p->dir, path);
 		elektraResolveDir (&p->dir, errorKey);
+	// FALLTHROUGH
 	case KEY_NS_USER:
 		resolverInit (&p->user, path);
 		elektraResolveUser (&p->user, errorKey);
+	// FALLTHROUGH
 	case KEY_NS_SYSTEM:
 		resolverInit (&p->system, path);
 		elektraResolveSystem (&p->system, errorKey);
+	// FALLTHROUGH
 	case KEY_NS_PROC:
 	case KEY_NS_EMPTY:
 	case KEY_NS_NONE:
@@ -304,13 +308,13 @@ int elektraWresolverClose (Plugin * handle, Key * errorKey ELEKTRA_UNUSED)
 		switch (KEY_NS_SPEC)
 		{
 		case KEY_NS_SPEC:
-			resolverClose (&ps->spec);
+			resolverClose (&ps->spec); // FALLTHROUGH
 		case KEY_NS_DIR:
-			resolverClose (&ps->dir);
+			resolverClose (&ps->dir); // FALLTHROUGH
 		case KEY_NS_USER:
-			resolverClose (&ps->user);
+			resolverClose (&ps->user); // FALLTHROUGH
 		case KEY_NS_SYSTEM:
-			resolverClose (&ps->system);
+			resolverClose (&ps->system); // FALLTHROUGH
 		case KEY_NS_PROC:
 		case KEY_NS_EMPTY:
 		case KEY_NS_NONE:

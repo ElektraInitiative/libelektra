@@ -3,7 +3,7 @@
  *
  * @brief helper functions for the crypto plugin
  *
- * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  *
  */
 
@@ -61,9 +61,7 @@ int CRYPTO_PLUGIN_FUNCTION (getSaltFromMetakey) (Key * errorKey, Key * k, kdb_oc
 int CRYPTO_PLUGIN_FUNCTION (getSaltFromPayload) (Key * errorKey, Key * k, kdb_octet_t ** salt, kdb_unsigned_long_t * saltLen)
 {
 	static const size_t headerLen = sizeof (kdb_unsigned_long_t);
-	const ssize_t payloadLen = keyGetValueSize (k);
-	const kdb_octet_t * payload = (kdb_octet_t *)keyValue (k);
-	kdb_unsigned_long_t restoredSaltLen = 0;
+	const ssize_t payloadLen = keyGetValueSize (k) - ELEKTRA_CRYPTO_MAGIC_NUMBER_LEN;
 
 	// validate payload length
 	if ((size_t)payloadLen < sizeof (size_t) || payloadLen < 0)
@@ -73,6 +71,10 @@ int CRYPTO_PLUGIN_FUNCTION (getSaltFromPayload) (Key * errorKey, Key * k, kdb_oc
 		if (salt) *salt = NULL;
 		return -1;
 	}
+
+	const kdb_octet_t * value = (kdb_octet_t *)keyValue (k);
+	const kdb_octet_t * payload = &value[ELEKTRA_CRYPTO_MAGIC_NUMBER_LEN];
+	kdb_unsigned_long_t restoredSaltLen = 0;
 
 	// restore salt length
 	memcpy (&restoredSaltLen, payload, headerLen);

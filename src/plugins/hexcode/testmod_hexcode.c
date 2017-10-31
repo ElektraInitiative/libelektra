@@ -3,7 +3,7 @@
  *
  * @brief
  *
- * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
 #ifdef HAVE_KDBCONFIG_H
@@ -25,7 +25,7 @@
 const char encoded_string[] = "a\\20value\\20with\\3D\\3B\\23\\20and\\20\\5C\\20itself";
 const char decoded_string[] = "a value with=;# and \\ itself";
 
-void test_encode ()
+void test_encode (void)
 {
 	printf ("test encode\n");
 
@@ -50,7 +50,7 @@ void test_encode ()
 	keyDel (test);
 }
 
-void test_decode ()
+void test_decode (void)
 {
 	printf ("test decode\n");
 
@@ -96,7 +96,7 @@ void check_reversibility (const char * msg)
 	keyDel (encode);
 }
 
-void test_reversibility ()
+void test_reversibility (void)
 {
 	printf ("test reversibility\n");
 
@@ -113,7 +113,7 @@ void test_reversibility ()
 	check_reversibility ("\n\\");
 }
 
-void test_config ()
+void test_config (void)
 {
 	KeySet * config =
 		ksNew (20, keyNew ("user/chars", KEY_END), keyNew ("user/chars/20", KEY_END), keyNew ("user/chars/23", KEY_END),
@@ -141,8 +141,8 @@ void test_config ()
 
 int main (int argc, char ** argv)
 {
-	printf ("   ICONV   TESTS\n");
-	printf ("====================\n\n");
+	printf ("HEXCODE   TESTS\n");
+	printf ("===============\n\n");
 
 	init (argc, argv);
 
@@ -151,7 +151,7 @@ int main (int argc, char ** argv)
 	test_reversibility ();
 	test_config ();
 
-	printf ("\ntestmod_hexcode RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
+	print_result ("testmod_hexcode");
 
 	return nbError;
 }

@@ -4,7 +4,7 @@
 #
 # @brief main module for kdb
 #
-# @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+# @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
 #
 # This module is an extension to the SWIG created wrapper to libelektra
 #
@@ -85,5 +85,32 @@ module Kdb
         puts k.to_s
       end
     end
+  end
+
+
+  # Boilerplate for a Ruby based Elektra plugin
+  #
+  class Plugin
+
+    def open(warningsKey)
+      return 0
+    end
+
+    def close(warningsKey)
+      return 0
+    end
+
+    def get(returned, warningsKey)
+      return 0
+    end
+
+    def set(returned, warningsKey)
+      return 0
+    end
+
+    def error(returned, warningsKey)
+      return 0
+    end
+
   end
 end

@@ -3,7 +3,7 @@
  *
  * @brief
  *
- * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
 #include <benchmarks.h>
@@ -81,7 +81,7 @@ int natcmp (const char * str1, const char * str2)
 }
 
 
-int main ()
+int main (void)
 {
 	long long nrIterations = 100000000;
 	const char str1[] = "some string to be compared with/some\\/more with a long common part, and only a bit different";

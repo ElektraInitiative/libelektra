@@ -3,7 +3,7 @@
  *
  * @brief Implementation of proposed API enhancements.
  *
- * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  *
  */
 
@@ -233,22 +233,34 @@ Key * keyAsCascading (const Key * key)
 	}
 	else
 	{
-		const char * name = keyName (key);
-		const char * ptr = strchr (name, '/');
-		if (!ptr)
+		elektraNamespace ns = keyGetNamespace (key);
+		if (ns == KEY_NS_META || ns == KEY_NS_EMPTY || ns == KEY_NS_NONE)
 		{
-			return keyNew ("/", KEY_CASCADING_NAME, KEY_END);
+			// For metakeys or keys without namespace just prefix the keyname with a "/"
+			Key * cKey = keyNew ("/", KEY_CASCADING_NAME, KEY_END);
+			keyAddName (cKey, keyName (key));
+			return cKey;
 		}
 		else
 		{
-			ssize_t length = keyGetNameSize (key);
-			if ((ptr - name) == (length - 1))
+			// Skip namespace
+			const char * name = keyName (key);
+			const char * ptr = strchr (name, '/');
+			if (!ptr)
 			{
 				return keyNew ("/", KEY_CASCADING_NAME, KEY_END);
 			}
 			else
 			{
-				return keyNew (ptr, KEY_CASCADING_NAME, KEY_END);
+				ssize_t length = keyGetNameSize (key);
+				if ((ptr - name) == (length - 1))
+				{
+					return keyNew ("/", KEY_CASCADING_NAME, KEY_END);
+				}
+				else
+				{
+					return keyNew (ptr, KEY_CASCADING_NAME, KEY_END);
+				}
 			}
 		}
 	}

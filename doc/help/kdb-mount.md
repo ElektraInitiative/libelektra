@@ -21,7 +21,7 @@ kdb-mount(1) - Mount a file to the key database
 This command allows a user to mount a new *backend*.
 The idea of mounting is explained [in elektra-mounting(7)](elektra-mounting.md).
 
-Mounting in Elektra allows the user to mount a file into the current key database like a user may mount a partition into the current filesystem.
+Mounting in Elektra allows the user to mount a file into the current key database like a user may mount a partition into the current file system.
 This functionality is key to Elektra as it allows users to build a global key database comprised of many different configuration files.
 A backend acts as a worker to allow Elektra to interpret configuration files as keys in the central key database such that any edits to the keys are reflected in the file and vice versa.
 Additionally, the user can use this command to list the currently mounted backends by running the command with no arguments.
@@ -49,15 +49,17 @@ Use `kdb file <path>` to determine where the file(s) are.
   Show the man page.
 - `-V`, `--version`:
   Print version info.
-- `-p`, `--profile`=<profile>:
+- `-p`, `--profile <profile>`:
   Use a different kdb profile.
+- `-C`, `--color <when>`:
+  Print never/auto(default)/always colored output.
 - `-d`, `--debug`:
   Give debug information or ask debug questions (in interactive mode).
 - `-q`, `--quiet`:
   Suppress non-error messages.
 - `-i`, `--interactive`:
   Instead of passing all mounting information by parameters ask the user interactively.
-- `-R`, `--resolver`=<name>:
+- `-R`, `--resolver <resolver>`
   Specify the resolver plugin to use if no resolver is given, the default resolver is used.
   See also [below in KDB](#KDB).
 - `-0`, `--null`:
@@ -68,10 +70,8 @@ Use `kdb file <path>` to determine where the file(s) are.
   Suppress the second column.
 - `-3`, `--third`:
   Suppress the third column.
-- `-c`, `--plugins-config`=<config>:
+- `-c`, `--plugins-config <plugins-config>`:
   Add a plugin configuration for all plugins.
-- `-C`, `--color`=[when]:
-  Print never/auto(default)/always colored output.
 - `-W`, `--with-recommends`:
   Also add recommended plugins and warn if they are not available.
 
@@ -119,4 +119,3 @@ To recode and rename a configuration file using Elektra:
 - [kdb-spec-mount(7)](kdb-spec-mount.md).
 - [kdb-umount(7)](kdb-umount.md).
 - [elektra-mounting(7)](elektra-mounting.md).
-- [elektra-plugins-framework(7)](elektra-plugins-framework.md).

@@ -3,7 +3,7 @@
  *
  * @brief Logger Interface
  *
- * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
 #ifndef KDBLOGGER_H
@@ -53,11 +53,6 @@ enum ElektraLogLevel
 	ELEKTRA_LOG_LEVEL_INFO = 2,
 
 	/**
-	 * @brief Alias for the standard log level.
-	 */
-	ELEKTRA_LOG_LEVEL = ELEKTRA_LOG_LEVEL_INFO,
-
-	/**
 	 * @brief The debug log level.
 	 *
 	 * Can be used to log anything which was useful to debug
@@ -67,6 +62,11 @@ enum ElektraLogLevel
 	 * suppressions in log.c).
 	 */
 	ELEKTRA_LOG_LEVEL_DEBUG = 1,
+
+	/**
+	 * @brief Alias for the standard log level.
+	 */
+	ELEKTRA_LOG_LEVEL = ELEKTRA_LOG_LEVEL_INFO,
 };
 
 #ifdef __cplusplus
@@ -86,10 +86,10 @@ int elektraLog (int level, const char * function, const char * file, const int l
 
 #ifdef HAVE_LOGGER
 
-#define ELEKTRA_LOG_WARNING(...) elektraLog (ELEKTRA_LOG_LEVEL_WARNING, __func__, __FILE__, __LINE__, ##__VA_ARGS__)
-#define ELEKTRA_LOG_NOTICE(...) elektraLog (ELEKTRA_LOG_LEVEL_NOTICE, __func__, __FILE__, __LINE__, ##__VA_ARGS__)
-#define ELEKTRA_LOG(...) elektraLog (ELEKTRA_LOG_LEVEL, __func__, __FILE__, __LINE__, ##__VA_ARGS__)
-#define ELEKTRA_LOG_DEBUG(...) elektraLog (ELEKTRA_LOG_LEVEL_DEBUG, __func__, __FILE__, __LINE__, ##__VA_ARGS__)
+#define ELEKTRA_LOG_WARNING(...) elektraLog (ELEKTRA_LOG_LEVEL_WARNING, __func__, __FILE__, __LINE__, __VA_ARGS__)
+#define ELEKTRA_LOG_NOTICE(...) elektraLog (ELEKTRA_LOG_LEVEL_NOTICE, __func__, __FILE__, __LINE__, __VA_ARGS__)
+#define ELEKTRA_LOG(...) elektraLog (ELEKTRA_LOG_LEVEL, __func__, __FILE__, __LINE__, __VA_ARGS__)
+#define ELEKTRA_LOG_DEBUG(...) elektraLog (ELEKTRA_LOG_LEVEL_DEBUG, __func__, __FILE__, __LINE__, __VA_ARGS__)
 
 #else
 

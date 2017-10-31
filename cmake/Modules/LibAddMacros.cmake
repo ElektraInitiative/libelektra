@@ -32,6 +32,10 @@ macro (create_lib_symlink src dest)
 		WORKING_DIRECTORY "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}"
 		)
 
+	if (NOT EXISTS "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/${dest}")
+		file(WRITE "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/${dest}" "to be overwritten, file needs to exists for some IDEs." )
+	endif ()
+
 	if (ARG_PLUGIN)
 		set (LIB_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/lib${LIB_SUFFIX}/${TARGET_PLUGIN_FOLDER}")
 	else ()
@@ -146,7 +150,7 @@ endmacro(find_swig)
 #
 # Parameters:
 #
-# 1. util        [in] : the utility fo search for. Must be added using
+# 1. util        [in] : the utility to search for. Must be added using
 #                       add_executable first.
 # 2. EXE_SYM_LOC [out]: a name for a variable where the program to be executed
 #                       is written to.
@@ -182,7 +186,7 @@ function(find_util util output_loc output_arg)
 			find_program (${util}_EXE_LOC ${util})
 		endif ()
 	else (CMAKE_CROSSCOMPILING)
-		get_target_property (${util}_EXE_LOC ${util} LOCATION)
+		set(${util}_EXE_LOC $<TARGET_FILE:${util}>)
 	endif (CMAKE_CROSSCOMPILING)
 	set (${output_loc} ${${util}_EXE_LOC} PARENT_SCOPE)
 	set (${output_arg} ${ARG_LOC} PARENT_SCOPE)
@@ -233,11 +237,11 @@ endmacro (add_cppheaders)
 
 macro (add_toolheaders HDR_FILES)
 	include_directories ("${PROJECT_BINARY_DIR}/src/libs/tools/include")
-	file (GLOB BIN_HDR_FILES ${PROJECT_BINARY_DIR}/src/libtools/include/*)
+	file (GLOB_RECURSE BIN_HDR_FILES ${PROJECT_BINARY_DIR}/src/libtools/include/*)
 	list (APPEND ${HDR_FILES} ${BIN_HDR_FILES})
 
 	include_directories ("${PROJECT_SOURCE_DIR}/src/libs/tools/include")
-	file (GLOB SRC_HDR_FILES ${PROJECT_SOURCE_DIR}/src/libs/tools/include/*)
+	file (GLOB_RECURSE SRC_HDR_FILES ${PROJECT_SOURCE_DIR}/src/libs/tools/include/*)
 	list (APPEND ${HDR_FILES} ${SRC_HDR_FILES})
 endmacro (add_toolheaders)
 
@@ -499,8 +503,6 @@ endmacro()
 
 
 function (generate_manpage NAME)
-if (BUILD_DOCUMENTATION AND RONN_LOC) # disable function when RONN_LOC is not set
-
 	cmake_parse_arguments (ARG
 		"" # optional keywords
 		"SECTION;FILENAME" # one value keywords
@@ -520,16 +522,17 @@ if (BUILD_DOCUMENTATION AND RONN_LOC) # disable function when RONN_LOC is not se
 		set(MDFILE ${CMAKE_CURRENT_SOURCE_DIR}/${NAME}.md)
 	endif ()
 
-	set(OUTFILE ${CMAKE_CURRENT_BINARY_DIR}/${NAME}.${SECTION})
+	set(OUTFILE ${CMAKE_SOURCE_DIR}/doc/man/${NAME}.${SECTION})
 
-	add_custom_command(
-		OUTPUT ${OUTFILE}
-		DEPENDS ${MDFILE}
-		COMMAND ${RONN_LOC}
-		ARGS -r --pipe ${MDFILE} > ${OUTFILE}
+	if (RONN_LOC)
+		add_custom_command(
+			OUTPUT ${OUTFILE}
+			DEPENDS ${MDFILE}
+			COMMAND export RUBYOPT="-Eutf-8" && ${RONN_LOC} ARGS -r --pipe ${MDFILE} > ${OUTFILE}
 		)
-	add_custom_target(man-${NAME} ALL DEPENDS ${OUTFILE})
-	add_dependencies(man man-${NAME})
+		add_custom_target(man-${NAME} ALL DEPENDS ${OUTFILE})
+		add_dependencies(man man-${NAME})
+	endif (RONN_LOC)
 
 	if (INSTALL_DOCUMENTATION)
 		install(
@@ -537,7 +540,6 @@ if (BUILD_DOCUMENTATION AND RONN_LOC) # disable function when RONN_LOC is not se
 			DESTINATION share/man/man${SECTION}
 			)
 	endif ()
-endif (BUILD_DOCUMENTATION AND RONN_LOC)
 endfunction ()
 
 
@@ -577,7 +579,7 @@ function (generate_readme p)
 	STRING(REGEX REPLACE "\n" "\\\\n\"\n\"" contents "${contents}")
 	STRING(REGEX REPLACE "- infos = ([a-zA-Z0-9 ]*)\\\\n\"" "keyNew(\"system/elektra/modules/${p}/infos\",\nKEY_VALUE, \"\\1\", KEY_END)," contents "${contents}")
 	STRING(REGEX REPLACE "\"- +infos/licence *= *([a-zA-Z0-9 ]*)\\\\n\"" "keyNew(\"system/elektra/modules/${p}/infos/licence\",\nKEY_VALUE, \"\\1\", KEY_END)," contents "${contents}")
-	STRING(REGEX REPLACE "\"- +infos/author *= *([.@<>a-zA-Z0-9 %_-]*)\\\\n\"" "keyNew(\"system/elektra/modules/${p}/infos/author\",\nKEY_VALUE, \"\\1\", KEY_END)," contents "${contents}")
+	STRING(REGEX REPLACE "\"- +infos/author *= *([.@<>a-zéA-Z0-9 %_-]*)\\\\n\"" "keyNew(\"system/elektra/modules/${p}/infos/author\",\nKEY_VALUE, \"\\1\", KEY_END)," contents "${contents}")
 
 	STRING(REGEX MATCH "\"- +infos/provides *= *([a-zA-Z0-9/ ]*)\\\\n\"" PROVIDES "${contents}")
 	STRING(REGEX REPLACE "\"- +infos/provides *= *([a-zA-Z0-9/ ]*)\\\\n\"" "\\1" PROVIDES "${PROVIDES}")
@@ -586,7 +588,7 @@ function (generate_readme p)
 	STRING(REGEX REPLACE ";" " " PROVIDES "${PROVIDES}")
 	STRING(REGEX REPLACE "\"- +infos/provides *= *([a-zA-Z0-9/ ]*)\\\\n\"" "keyNew(\"system/elektra/modules/${p}/infos/provides\",\nKEY_VALUE, \"${PROVIDES}\", KEY_END)," contents "${contents}")
 
-	STRING(REGEX REPLACE "\"- +infos/placements *= *([a-zA-Z0-9 ]*)\\\\n\"" "keyNew(\"system/elektra/modules/${p}/infos/placements\",\nKEY_VALUE, \"\\1\", KEY_END)," contents "${contents}")
+	STRING(REGEX REPLACE "\"- +infos/placements *= *([a-zA-Z0-9/ ]*)\\\\n\"" "keyNew(\"system/elektra/modules/${p}/infos/placements\",\nKEY_VALUE, \"\\1\", KEY_END)," contents "${contents}")
 	STRING(REGEX REPLACE "\"- +infos/recommends *= *([a-zA-Z0-9 ]*)\\\\n\"" "keyNew(\"system/elektra/modules/${p}/infos/recommends\",\nKEY_VALUE, \"\\1\", KEY_END)," contents "${contents}")
 	STRING(REGEX REPLACE "\"- +infos/ordering *= *([a-zA-Z0-9 ]*)\\\\n\"" "keyNew(\"system/elektra/modules/${p}/infos/ordering\",\nKEY_VALUE, \"\\1\", KEY_END)," contents "${contents}")
 	STRING(REGEX REPLACE "\"- +infos/stacking *= *([a-zA-Z0-9 ]*)\\\\n\"" "keyNew(\"system/elektra/modules/${p}/infos/stacking\",\nKEY_VALUE, \"\\1\", KEY_END)," contents "${contents}")

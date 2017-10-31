@@ -1,4 +1,4 @@
-# Goals #
+# Goals
 
 - Improve robustness of configuration systems by
   - rejecting invalid configuration.
@@ -8,11 +8,11 @@
   - Syntax of the configuration file(s)
   - Side effects (e.g. logging, vcs commit, notifications)
   - Flexible adoption to specific needs
-  - Adoption of standards (xdg, xml, json)
+  - Adoption of standards (xdg, xml, JSON)
 - Reduce duplication of code (a single parser/generator used by
   everyone accessing a specific part of the configuration).
 
-## Target ##
+## Target
 
 - Embedded: Elektra is on the frontier for embedded systems because of
   its tiny core and the many possibilities with its plugins.
@@ -24,7 +24,7 @@
   configuration tree. Missing is a description (schema) so that these
   values actually can be shared.
 
-## Quality Goals ##
+## Quality Goals
 
 1.) Simplicity
 
@@ -45,16 +45,17 @@ Special care for simplicity is taken for the users:
 - Application's Maintainers to correctly setup and upgrade KDB
 - Administrators that want to change the maintainers' setup
   according to their needs
+- Key-value uniformity that allows introspection
 
 2.) Robustness
 
 Configuration systems today suffer badly from:
 
-- Different behaviour on different systems
+- Different behavior on different systems
 - Weak input validation
 - Faulty transformations from strings to other types
 - No error messages
-- Undefined behaviour
+- Undefined behavior
 - Migration from one version to another
 
 We want to tackle this problem by introducing an abstraction layer where
@@ -75,20 +76,20 @@ Nearly every aspect of Elektra must be extremely extensible.
 On the other side semantics must be very clear and well defined
 so that this extensible system works reproducible and predictable.
 
-Only key/value pairs are the common factor and a way to get and set
+Only key-value pairs are the common factor and a way to get and set
 them, everything else is an extension.
 
 4.) Performance
 
-Configuration is the main impact for bootup and startup time.
+Configuration is the main impact for bootup and startup-time.
 Elektra needs to be similar fast then current solutions.
 Ideally it should get faster because of centralized optimization
 endeavours where everyone using Elektra can benefit from.
 
 Only pay for what you need.
 
-## Non-Goals ##
+## Non-Goals
 
-- Support semantics that do not fit into the KeySet (key/value pairs) with an `kdbGet()`/`kdbSet()` interface.
-- Support for non-configuration issues, e.g. storing any key/value data.
-- Elektra is not a distributed CM, use Puppet, CFEngine on top or a distributed filesystem below Elektra.
+- Support semantics that do not fit into the KeySet (key-value pairs) with an `kdbGet()`/`kdbSet()` interface.
+- Support for non-configuration issues, e.g. storing any key-value data.
+- Elektra is not a distributed CM, use Puppet, CFEngine on top or a distributed file system below Elektra.

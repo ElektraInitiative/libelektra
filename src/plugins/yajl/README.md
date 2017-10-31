@@ -1,4 +1,4 @@
-- infos = Information about YAIL plugin is in keys below
+- infos = Information about YAJL plugin is in keys below
 - infos/author = Markus Raab <elektra@libelektra.org>
 - infos/licence = BSD
 - infos/provides = storage/json
@@ -6,33 +6,33 @@
 - infos/recommends = rebase directoryvalue comment type
 - infos/placements = getstorage setstorage
 - infos/status = maintained coverage unittest
-- infos/description = JSON using YAIL
+- infos/description = JSON using YAJL
 
-## Introduction ##
+## Introduction
 
-This is a plugin reading and writing json files
+This is a plugin reading and writing JSON files
 using the library [yail](http://lloyd.github.com/yajl/)
 
 The plugin was tested with yajl version 1.0.8-1 from Debian 6
 and yajl version 2.0.4-2 from Debian 7.
 
 Examples of files which are used for testing can be found
-below the folder in "src/plugins/yajl/examples".
+below the folder in "src/plugins/yajl/yajl".
 
-The json grammar can be found [here](http://www.ietf.org/rfc/rfc4627.txt).
+The JSON grammar can be found [here](http://www.ietf.org/rfc/rfc4627.txt).
 
 A validator can be found [here](http://jsonlint.com/).
 
 Supports every KeySet except when arrays are intermixed with other keys.
 Has only limited support for metadata.
 
-## Dependencies ##
+## Dependencies
 
 - `libyajl-dev` (version 1 and 2 should work)
 
-## Types ##
+## Types
 
-My metadata `type` the used types can be chosen:
+The type of the data is available via the metadata `type`:
 
 - `string`:
   The JSON string type.
@@ -50,9 +50,9 @@ Any other type/value will still be treated as string, but
 the warning `#78` will be added because of the potential
 data loss.
 
-## Special values ##
+## Special values
 
-In json it is possible to have empty arrays and objects.
+In JSON it is possible to have empty arrays and objects.
 In Elektra this is mapped using the special names
 
     ###empty_array
@@ -61,25 +61,65 @@ and
 
     ___empty_map
 
-Arrays are mapped to Elektra's array convention #0, #1,..
+Arrays are mapped to Elektra’s array convention #0, #1,..
 
-## Restrictions ##
+## Restrictions
 
 - Only UTF-8 is supported. Use the `iconv` plugin if your locale are
   not UTF-8. When using non-UTF-8 the plugin will be able to write
   the file, but cannot parse it back again. You will error #77,
   invalid bytes in UTF8 string.
 - Everything is string if not tagged by metakey "type"
-  Only valid json types can be used in type, otherwise there are some
+  Only valid JSON types can be used in type, otherwise there are some
   fall backs to string but warnings are produced.
 - Values in non-leaves are discarded.
 - Arrays will be normalized (to #0, #1, ..)
-- Comments of various json-dialects are discarded.
+- Comments of various JSON-dialects are discarded.
 
 Because of these potential problems a type checker,
 comments filter and directory value filter are highly recommended.
 
-## OpenICC Device Config ##
+## Usage
+
+The following example shows you how you can read and write data using this plugin.
+
+```sh
+# Mount the plugin to the cascading namespace `/examples/yajl`
+sudo kdb mount config.json /examples/yajl yajl
+
+# Manually add a key-value pair to the database
+printf '{ "number": 1337 }' > `kdb file /examples/yajl`
+
+# Retrieve the new value
+kdb get /examples/yajl/number
+#> 1337
+
+# Determine the data type of the value
+kdb getmeta /examples/yajl/number type
+#> double
+
+# Add another key-value pair
+kdb set /examples/yajl/key value
+#> Using name user/examples/yajl/key
+#> Create a new key user/examples/yajl/key with string "value"
+
+# Retrieve the new value
+kdb get /examples/yajl/key
+#> value
+
+# Check the format of the configuration file
+kdb file user/examples/yajl/ | xargs cat
+#> {
+#>     "key": "value",
+#>     "number": 1337
+#> }
+
+# Undo modifications to the database
+kdb rm -r /examples/yajl
+sudo kdb umount /examples/yajl
+```
+
+## OpenICC Device Config
 
 This plugin was specifically designed and tested for the
 `OpenICC_device_config_DB` although it is of course not limited
@@ -105,7 +145,7 @@ prints out then all device entries available in the config
 
     kdb get system/org/freedesktop/openicc/device/camera/0/EXIF_manufacturer
 
-prints out "Glasshuette" with the example config in souce
+prints out "Glasshuette" with the example config in source
 
 You can export the whole system openicc config to ini with:
 

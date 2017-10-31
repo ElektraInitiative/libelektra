@@ -3,7 +3,7 @@
  *
  * @brief
  *
- * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
 #include <kdbthread.hpp>
@@ -112,6 +112,7 @@ public:
 	}
 };
 
+
 bool g_toggle = false;
 
 void toggleOn ()
@@ -136,14 +137,18 @@ void activate1 (Coordinator & gc, KeySet & ks)
 	c1.activate<Activate> ();
 	ASSERT_TRUE (g_toggle);
 	ASSERT_EQ (v1, 22);
-	std::this_thread::sleep_for (std::chrono::milliseconds (100));
+	std::this_thread::sleep_for (std::chrono::milliseconds (200));
 	ASSERT_EQ (v1, 22);
 	c1.deactivate<Activate> ();
 	ASSERT_FALSE (g_toggle);
 	ASSERT_EQ (v1, 10);
 }
 
+#if defined(__APPLE__)
+TEST (DISABLED_test_contextual_thread, activate)
+#else
 TEST (test_contextual_thread, activate)
+#endif
 {
 	Key specKey ("/act/%activate%", KEY_CASCADING_NAME, KEY_END);
 
@@ -161,7 +166,7 @@ TEST (test_contextual_thread, activate)
 
 	std::thread t1 (activate1, std::ref (gc), std::ref (ks));
 	ASSERT_EQ (v, 10);
-	std::this_thread::sleep_for (std::chrono::milliseconds (50));
+	std::this_thread::sleep_for (std::chrono::milliseconds (100));
 	ASSERT_TRUE (g_toggle);
 	c.syncLayers ();
 	ASSERT_EQ (v, 22);
@@ -205,11 +210,8 @@ TEST (test_contextual_thread, ThreadNoContext)
 class Dep : public kdb::Layer
 {
 public:
-	Dep (ThreadValue<int> const & i) : m_i ()
+	explicit Dep (ThreadValue<int> const & i) : m_i (std::to_string (static_cast<int> (i)))
 	{
-		std::ostringstream is;
-		is << static_cast<int> (i);
-		m_i = is.str ();
 		// capture current value of contextual value here
 	}
 	std::string id () const override
@@ -291,7 +293,55 @@ TEST (test_contextual_thread, activateWithDependency)
 	c1.activate<Dep> (v1);
 	ASSERT_EQ (c1.size (), 2);
 	ASSERT_EQ (c1["dep"], "22") << "dependency not correct, activate does not do syncLayer";
+	ASSERT_EQ (c1["activate"], "active");
 	ASSERT_EQ (c2["activate"], "active");
+}
+
+class StrDep : public kdb::Layer
+{
+public:
+	explicit StrDep (ThreadValue<std::string> const & i) : m_i (i)
+	{
+	}
+	std::string id () const override
+	{
+		return "dep";
+	}
+	std::string operator() () const override
+	{
+		return m_i;
+	}
+	std::string m_i;
+};
+
+
+TEST (test_contextual_thread, activateWithDirectDependency)
+{
+	Key specKey ("/act/%activate%", KEY_END);
+
+	KeySet ks;
+	ks.append (Key ("user/act/%", KEY_VALUE, "inactive", KEY_END));
+	ks.append (Key ("user/act/active", KEY_VALUE, "active", KEY_END));
+
+	Coordinator gc;
+	ThreadContext c1 (gc);
+	ThreadContext c2 (gc);
+	ThreadValue<std::string> v1 (ks, c1, specKey);
+	ThreadValue<std::string> v2 (ks, c2, specKey);
+	ThreadValue<std::string> vd (ks, c2, specKey);
+	ASSERT_EQ (std::string (v1), "inactive");
+	ASSERT_EQ (std::string (v2), "inactive");
+	ASSERT_EQ (std::string (vd), "inactive");
+
+	c1.activate<Activate> ();
+	ASSERT_EQ (std::string (v1), "active");
+	ASSERT_EQ (std::string (v2), "inactive");
+	ASSERT_EQ (std::string (vd), "inactive");
+
+	c2.activate<StrDep> (vd);
+	ASSERT_EQ (std::string (v1), "active");
+	ASSERT_EQ (std::string (v2), "active");
+	ASSERT_EQ (std::string (vd), "active");
 }
 
 

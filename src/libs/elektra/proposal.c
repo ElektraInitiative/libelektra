@@ -3,7 +3,7 @@
  *
  * @brief Implementation of proposed API enhancements.
  *
- * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  *
  */
 
@@ -18,7 +18,7 @@
 Key * elektraKsPrev (KeySet * ks)
 {
 	if (ks->size == 0) return 0;
-	if (ks->current <= 0)
+	if (ks->current == 0)
 	{
 		ksRewind (ks);
 		return 0;

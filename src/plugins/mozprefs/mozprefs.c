@@ -3,13 +3,14 @@
  *
  * @brief Source for mozprefs plugin
  *
- * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  *
  */
 
 #include "mozprefs.h"
 
 #include <kdbhelper.h>
+#include <kdbutility.h>
 
 #include <ctype.h>
 #include <stdio.h>
@@ -28,23 +29,6 @@ typedef enum {
 const char * function[] = { "pref", "user_pref", "lockPref", "sticky_pref" };
 const char * prefix[] = { "pref", "user", "lock", "sticky" };
 
-
-static inline void lskip (char ** p)
-{
-	while (**p && isspace (**p))
-		++(*p);
-}
-
-static inline void rstrip (const char * s, char ** p)
-{
-	while ((*p > s) && **p && isspace (**p))
-	{
-		**p = '\0';
-		--(*p);
-	}
-}
-
-
 static Key * prefToKey (Key * parentKey, PrefType type, const char * pref)
 {
 	Key * key = keyNew (keyName (parentKey), KEY_END);
@@ -56,7 +40,7 @@ static Key * prefToKey (Key * parentKey, PrefType type, const char * pref)
 	++sPtr;
 	*sPtr++ = '\0';
 	char * ePtr = cPtr - 1;
-	rstrip (sPtr, &ePtr);
+	elektraRstrip (sPtr, &ePtr);
 	size_t keyLen = ePtr - sPtr;
 	char * prefKey = elektraMalloc (keyLen + 1);
 	snprintf (prefKey, keyLen + 1, "%s", sPtr);
@@ -68,10 +52,10 @@ static Key * prefToKey (Key * parentKey, PrefType type, const char * pref)
 	}
 	elektraFree (prefKey);
 	sPtr = cPtr + 1;
-	lskip (&sPtr);
+	sPtr = elektraLskip (sPtr);
 	ePtr = strrchr (sPtr, ')');
 	*ePtr-- = '\0';
-	rstrip (sPtr, &ePtr);
+	elektraRstrip (sPtr, &ePtr);
 	size_t argLen = ePtr - sPtr + 1;
 	char * prefArg = elektraMalloc (argLen + 1);
 	snprintf (prefArg, argLen + 1, "%s", sPtr);
@@ -136,7 +120,7 @@ int elektraMozprefsGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key *
 			buffer[strlen (buffer) - 1] = '\0';
 		}
 		char * ptr = buffer;
-		lskip (&ptr);
+		ptr = elektraLskip (ptr);
 		if (!strncmp (buffer, "//", 2)) continue;
 		for (PrefType p = PREF; p < PREF_END; ++p)
 		{

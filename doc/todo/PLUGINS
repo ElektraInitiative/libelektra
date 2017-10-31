@@ -3,8 +3,6 @@ Prefer using great frameworks to do that in short time with high quality.
 
 ## TYPE ##
 
-range: check/range 5-20,23-45 (for number types)
-
 units-of-measurements
 	(e.g. 20m, 5kg, A, ..)
 
@@ -17,9 +15,18 @@ allow numbers to enter:
 calculate default values
 	same as assign, but with very low priority
 
-(dependend) optionality:
+(dependent) optionality:
 	make a key only optional on some condition
 	otherwise fail if key is not present
+
+### Function plugin ###
+
+allow to use functional programming in Elektra
+	e.g. if(true(abc), isnull(aaa), not('ab'))
+
+allow to load function (foo) of another plugin (check), too:
+	e.g. check::foo('abc', def)
+
 
 
 ## REWRITE plugin ##
@@ -35,6 +42,12 @@ and binary (including encoding of null bytes and terminating null?)
 should play together with recode plugins nicely
 
 
+## Plugin nesting
+
+lazy loading of plugins
+
+execute plugin within a separate process
+
 
 
 ## LOGGING ##
@@ -46,37 +59,24 @@ logging API:
 
 ## Others
 
-lock plugin
+fix semlock plugin
 
 inherit/copy metadata/bind mounts:
 	kdb setmeta spec/something inherit/override/# '"/elsewhere/key/" + basename'
 	und ein inherit-Plugin kopiert dann automatisch ein override /elsewhere/key/ (mit dem richtigen basename dran) in alle Subkeys (die nicht ein anderes inherit/override haben).
 
 werror plugin:
-	turn specified warnings into errors (for both get+set pathes)
+	turn specified warnings into errors (for both get+set paths)
 
 logging plugin:
 	improve error messages for validation
-
-List plugin:
-	Whitelist (ignore error codes, transform error->warning)
-	lazy loading of plugins (already implemented?)
-
-## Function plugin
-
-allow to use functional programming in Elektra
-	e.g. if(true(abc), isnull(aaa), not('ab'))
-
-allow to load function (foo) of another plugin (check), too:
-
-	e.g. check::foo('abc', def)
-
 
 ## Rework plugins
 
 fix comments:
 	all plugins should use new comment-approach
 	(also iconv)
+	also handle whitespaces in comments?
 
 fix absolute plugins (should be relative, at least by default)
 	see #51
@@ -98,9 +98,16 @@ uname also to set
 
 other syscalls
 /proc and /sys files
+	e.g. battery
+
+cpu infos:
+	sysconf with _SC_PHYS_PAGES _SC_AVPHYS_PAGES
+
+RAM infos:
+	sysconf with _SC_NPROCESSORS_CONF _SC_NPROCESSORS_ONLN
 
 
-## logging
+## logging ##
 
 undo plugin
 write log files on every kdbSet() that allow to undo what happened in this commit
@@ -177,15 +184,7 @@ lexer plugin:
 ## JSON ##
 
 types
-make validator that fails for inconsistent arrays #
-
-
-== Elektra types ==
-
-customized type checkers
-	which can be integrated within Frontend generator
-	(for checking default values and preloading)
-	maybe even checking of values within frontend
+make validator that fails for inconsistent arrays
 
 
 == Schema ==
@@ -211,8 +210,8 @@ html plugin (to show elektra config in html format)
 literate data
 	good for documentation
 	everything is ignored except special introduced key/value pairs
-	<start><key><seperator><value><terminator>
-	needs two more special characters next to seperator, but is
+	<start><key><separator><value><terminator>
+	needs two more special characters next to separator, but is
 	otherwise alike
 
 ## folders ##
@@ -233,15 +232,6 @@ folder:
 
 ## library supported ##
 
-https://github.com/toml-lang/toml
-
-https://github.com/martinh/libconfuse
-
-MacOSX plist files
-
-http://rfc.zeromq.org/spec:4/ZPL
-	https://github.com/zeromq/czmq/blob/master/src/zconfig.c
-
 xpath plugin:
 	on an xml file with an mapping from (reduced) xpath<->elektra keys
 
@@ -249,19 +239,14 @@ C/C++ serialization
 	(ksNew(keyNew()))
 	reading with llvm?
 
-/etc/groups plugin
+/etc/groups plugin (could be done with csvstorage)
 
 other file formats:
 	xfree
 	apache
 	kde-ini
 	gconf
-	xml
 	inittab
-
-tcl:
-	parse output?
-	struct output!
 
 compile lenses as plugin:
 	+ no dependency at runtime
@@ -274,9 +259,10 @@ xfconf file storage (see #47)
 
 (may need orphan search or one file per plugin)
 
+Lightning Memory-Mapped Database (LMDB)
+
 Kyoto Cabinet
 unqlite
-libconfig
 eet
 tdb.samba (using tdb_traverse)
 sqlite
@@ -383,7 +369,7 @@ curl resolver:
 
 roresolver: check if something is modified
 	for version, constants, uname
-	and/or remove value comparision in those plugins
+	and/or remove value comparison in those plugins
 	kdbGet should return 0 if nothing modified, too
 
 noresolver: make it always return 0?
@@ -396,9 +382,9 @@ resolver-debug for tests
 	concurrency: sets breakpoints within (done!)
 	folder: write into folders controlled by env
 resolver-xdg-passwd
-	use passwd with XDG overides
+	use passwd with XDG overrides
 resolver-xdg
-	use $HOME with XDG overides
+	use $HOME with XDG overrides
 resolver-hardcoded
 	(just use KDB_DB_* for single users embedded systems)
 	done! (needs better docu)

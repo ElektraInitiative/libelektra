@@ -111,6 +111,10 @@ MenuBar {
 		MenuItem {
 			action: guiActions.chooseAppearanceAction
 		}
+		MenuSeparator{}
+		MenuItem {
+			action: guiActions.toggleViewerAction
+		}
 	}
 
 	Menu {

@@ -11,7 +11,7 @@
 /debian/patches/
 
 #ignore all build directories of cmake
-build*
+build*/
 
 #ignore ctags + gdb history files
 .ctags
@@ -25,3 +25,10 @@ build*
 
 #ignore vim swp files
 *.swp
+
+#ignore netbeans project files
+nbproject/
+
+#ignore macOS folder attribute files
+.DS_Store
+.directory

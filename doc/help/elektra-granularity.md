@@ -21,16 +21,16 @@ application requests all keys anyway.
 
 Let us assume that many keys reside in `user/sw` and an
 application only needs the keys in `user/sw/org/app`.  To save memory
-and get better startup times for the application, a new backend can be
+and get better startup-times for the application, a new backend can be
 mounted at `user/sw/org/app`. On the other hand, every mounted backend
-causes a small run time overhead in the overall configuration system.
+causes a small run-time overhead in the overall configuration system.
 
 The solution in Elektra is flexible, because the user decides the
 granularity.  It is possible to mount a backend on every single key, so
 that every key can be requested for itself.  If no backends are mounted,
 all keys reside in the default backend.
 
-To sum up, Elektra's core searches for the nearest mountpoint and gets
+To sum up, Elektra’s core searches for the nearest mountpoint and gets
 the configuration from there.  It is possible that the user gets more
 configuration than requested.  The user can decide by means of mounting
 how much configuration on specific requests are returned.

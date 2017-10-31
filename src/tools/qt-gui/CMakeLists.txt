@@ -2,9 +2,15 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(DISCOUNT_FIND_QUIETLY ON)
 
+# Disable warnings about policies in Qt’s CMake code
+if (POLICY CMP0053)
+	cmake_policy(SET CMP0053 OLD)
+endif ()
+
 set(QCOMPONENTS Core Quick Gui Qml Widgets Test)
 find_package(Qt5 COMPONENTS ${QCOMPONENTS})
 find_package(Qt5 OPTIONAL_COMPONENTS Svg QUIET)
+find_package(Qt5 OPTIONAL_COMPONENTS DBus QUIET)
 find_package(Discount)
 
 if (NOT Qt5_FOUND)
@@ -15,6 +21,13 @@ else()
 
 if (NOT Qt5Svg_FOUND)
 	message(WARNING "No Qt5 svg module found. Svg icons themes will not be supported.")
+endif ()
+
+if (NOT Qt5DBus_FOUND)
+	message(WARNING "No Qt5 DBus module found. Listening to DBus will not be supported.")
+	add_definitions(-DHAVE_DBUS=0)
+else ()
+	add_definitions(-DHAVE_DBUS=1)
 endif ()
 
 include_directories (
@@ -56,11 +69,14 @@ target_link_libraries(qt-gui ${DISCOUNT_LIBRARIES})
 
 target_link_libraries(qt-gui ${Qt5Quick_LIBRARIES} ${Qt5Gui_LIBRARIES}
 	${Qt5Core_LIBRARIES} ${Qt5Qml_LIBRARIES} ${Qt5Widgets_LIBRARIES}
-	${Qt5Svg_LIBRARIES} ${Qt5Test_LIBRARIES})
+        ${Qt5Svg_LIBRARIES} ${Qt5Test_LIBRARIES} ${Qt5DBus_LIBRARIES})
 tool_link_elektratools(qt-gui elektra-ease)
 
 install(TARGETS qt-gui DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
-install(PROGRAMS ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/qt-gui DESTINATION bin RENAME elektra-qt-editor)
+configure_file(
+	"${CMAKE_CURRENT_SOURCE_DIR}/elektra-qt-editor.in"
+	"${CMAKE_CURRENT_BINARY_DIR}/elektra-qt-editor")
+install (PROGRAMS "${CMAKE_CURRENT_BINARY_DIR}/elektra-qt-editor" DESTINATION bin)
 install(FILES org.libelektra.elektra-qt-editor.desktop DESTINATION share/applications)
 install(FILES org.libelektra.elektra-qt-editor.appdata.xml DESTINATION share/appdata)
 install(FILES ../../../doc/images/circle.svg DESTINATION share/icons/hicolor/scalable/apps RENAME elektra.svg)

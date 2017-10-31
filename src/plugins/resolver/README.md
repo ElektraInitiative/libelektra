@@ -7,7 +7,7 @@
 - infos/status = productive maintained specific unittest tested libc nodep configurable
 - infos/description = system independent resolver
 
-## Introduction ##
+## Introduction
 
 The @PLUGIN_SHORT_NAME@ handles operating system dependent tasks.
 One task is the resolving of the filenames for user and system (hence its name).
@@ -60,7 +60,7 @@ For an relative path example.ini, you might get following values:
 See [the mount tutorial](/doc/tutorials/mount.md) for more examples.
 
 
-## Variants ##
+## Variants
 
 Many variants exist that additionally influence the resolving
 process, typically by using environment variables.
@@ -77,7 +77,7 @@ See [COMPILE.md](/doc/COMPILE.md) for a documentation of possible
 variants.
 
 
-### XDG Compatibility ###
+### XDG Compatibility
 
 The resolver is fully [XDG compatible](http://standards.freedesktop.org/basedir-spec/basedir-spec-latest.html)
 if configured with the variant:
@@ -97,13 +97,13 @@ way:
  - if no file was found, the least important element will be used for
    potential write attempts.
 
-## Reading Configuration ##
+## Reading Configuration
 
 1. If no update needed (unchanged modification time): quit successfully
 2. Otherwise call (storage) plugin(s) to read configuration
 3. remember the last stat time (last update)
 
-## Writing Configuration ##
+## Writing Configuration
 
 0. On unchanged configuration: quit successfully
 1. On empty configuration: remove the configuration file and quit successfully
@@ -124,3 +124,36 @@ A conflict will be raised in that situation.  When processes do not lock
 the file it might be overwritten. This is, however, very unlikely on
 file systems with nanosecond precision.
 
+
+## Exported Functions and Data
+
+The resolver provides 2 functions for other plugins to use.
+
+### filename
+
+resolves `path` in with namespace `namespace`, creates a temporary file to work on and returns a struct containing the resolved data.
+
+Signature:
+    `ElektraResolved * filename (elektraNamespace namespace, const char * path, ElektraResolveTempfile tempFile, Key * warningsKey)`
+
+`ElektraResolved` and `ElektraResolveTempfile` are both defined in [shared.h](shared.h). 
+
+`ElektraResolved` is a struct with the following members:
+ - `relPath`: contains the path relative to the namespace.
+ - `dirname`: contains the parent directory of the resolved file.
+ - `fullPath`: contains the full path of the resolved file.
+ - `tmpFile`: contains the full path of the created temporary file.
+
+`ElektraResolveTempfile` dictates if and where a temporarey file should be created. Possible values:
+ - `ELEKTRA_RESOLVER_TEMPFILE_NONE`: don't create a temporary file.
+ - `ELEKTRA_RESOLVER_TEMPFILE_SAMEDIR`: create a temporary file in the same directory as the resolved file.
+ - `ELEKTRA_RESOLVER_TEMPFILE_TMPDIR`: create a temporary file in `/tmp`.
+
+### freeHandle
+
+frees the handle returned by `filename`.
+
+Signature:
+    `void * freeHandle (ElektraResolved * handle)`
+
+where `handle` is the handle returned by `filename`.

@@ -22,7 +22,7 @@
  * files!
  *
  *
- * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
 #include <stdexcept>
@@ -60,7 +60,7 @@ public:
 class KeyNotFoundException : public Exception
 {
 public:
-	KeyNotFoundException (std::string const &)
+	explicit KeyNotFoundException (std::string const &)
 	{
 	}
 	virtual const char * what () const throw ()
@@ -108,7 +108,7 @@ namespace kdb
 class KDBException : public Exception
 {
 public:
-	KDBException (Key key) : m_key (key)
+	explicit KDBException (Key key) : m_key (key)
 	{
 	}
 

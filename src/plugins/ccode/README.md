@@ -8,7 +8,7 @@
 - infos/status = maintained unittest nodep libc configurable
 - infos/description = Decoding/Encoding engine which escapes unwanted characters.
 
-## Introduction ##
+## Introduction
 
 When writing a C string in C code some characters cannot be expressed
 directly but have a special one letter abbreviation.
@@ -16,7 +16,7 @@ The ccode plugin allows us to map any single escaped
 character to be replaced by another single character and vice versa.
 The user can configure this mapping.
 
-## Restrictions ##
+## Restrictions
 
 This method of encoding characters is not as powerful as the hexcode plugin in terms of reduction.
 The hexcode plugin allows reduction of the character set to '0'-'9', 'a'-'f' and one escape character.
@@ -29,7 +29,7 @@ But it is perfectly suitable to reduce by some characters.
 The advantages are that the size only doubles in the worst case and that
 it is much easier to read.
 
-## C ##
+## C
 
 In the C language, the following escape characters are present.
 
@@ -46,6 +46,6 @@ In the C language, the following escape characters are present.
 
 This is also the default mapping.
 
-### Contract ###
+### Contract
 
 Add `ccode` to `infos/needs` for any plugin that you want to be filtered by ccode.

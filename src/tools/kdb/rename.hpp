@@ -3,7 +3,7 @@
  *
  * @brief
  *
- * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
 #include <key.hpp>
@@ -12,8 +12,8 @@
 #include <string>
 
 /** @return a renamed key
-  */
-inline kdb::Key rename_key (kdb::Key k, std::string sourceName, std::string newDirName, bool verbose)
+ */
+inline kdb::Key rename_key (kdb::Key & k, std::string const & sourceName, std::string const & newDirName, bool verbose)
 {
 	std::string otherName = k.getName ();
 	std::string baseName = otherName.substr (sourceName.length ());

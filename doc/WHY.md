@@ -1,4 +1,4 @@
-# Why should I use Elektra? #
+# Why should I use Elektra?
 
 The three main points relevant for most people are:
 
@@ -20,7 +20,7 @@ The three main points relevant for most people are:
    - [and much more](/src/plugins/README.md)
 
 
-## Why not other solutions? ##
+## Why not other solutions?
 
 Some might ask: isn't this solution overkill?
 Why not tackle these three issues separately?
@@ -56,7 +56,7 @@ file and getting feedback of the **semantics** (you might get validation
 errors and you can receive the value exactly as the application will get it).
 
 
-## Who should use Elektra? ##
+## Who should use Elektra?
 
 Elektra targets different kinds of users:
 
@@ -69,7 +69,7 @@ Elektra targets different kinds of users:
    If you want to specify or automate configuration tasks, you are in the
    target group.
 
-## Unique Features ##
+## Unique Features
 
 Features that rarely can be found elsewhere (at least in this combination):
 
@@ -79,12 +79,12 @@ Features that rarely can be found elsewhere (at least in this combination):
   - Cascading between `/etc`, `$HOME`, `cwd` and so on.
   - You can change which Elektra path is connected to which configuration
     file with [mounting](/doc/help/elektra-mounting.md).
-  - Portable across OS (Linux, BSD, w64, mac os x,.. ) and desktop systems (GNOME, KDE,...).
+  - Portable across OS (Linux, BSD, w64, macOS,.. ) and desktop systems (GNOME, KDE,...).
 - No daemon, so no single point of failure but still having guarantees of consistent,
   validated files with good performance.
 - Provides 3-way merging for configuration upgrades.
 
-## Further Reasons ##
+## Further Reasons
 
 - Links and automatic calculation of values:
    unlike with other solutions you do not need to duplicate
@@ -101,7 +101,7 @@ Features that rarely can be found elsewhere (at least in this combination):
 - `kdb editor` allows you to edit any path of Elektra with your favourite
   syntax (independent of the actual syntax of the configuration files
   that store values of this path).
-- Allows us to also (integrate commandline arguments and environment)[/src/libs/getenv]
+- Allows us to also [integrate command-line arguments and environment](/src/bindings/intercept/env)
   into a consistent place for configuration.
 - Reduces huge amount of code: Nearly every application has very similar code:
   - finding the correct configuration file (for different OS)
@@ -118,11 +118,12 @@ Features that rarely can be found elsewhere (at least in this combination):
   - Regular releases.
 
 
-## Further Readings ##
+## Further Readings
 
 
-- Get a [big picture](BIGPICTURE.md)
+- Continue reading [big picture](BIGPICTURE.md)
 - Look into [the glossary](/doc/help/elektra-glossary.md).
 - For more about tools go on reading [here](/doc/help/kdb.md).
 - Another viewpoint [why to use Elektra is described here](/doc/help/elektra-introduction.md)
+- [Compile](COMPILE.md) and [Install](INSTALL.md) Elektra
 

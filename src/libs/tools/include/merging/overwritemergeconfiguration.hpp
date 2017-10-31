@@ -3,7 +3,7 @@
  *
  * @brief A configuration for a simple automerge and guaranteed conflict resolution by one side
  *
- * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  *
  */
 
@@ -33,7 +33,7 @@ private:
 	ConflictResolutionSide winningSide;
 
 public:
-	OverwriteMergeConfiguration (ConflictResolutionSide _winningSide) : winningSide (_winningSide)
+	explicit OverwriteMergeConfiguration (ConflictResolutionSide _winningSide) : winningSide (_winningSide)
 	{
 	}
 	virtual void configureMerger (ThreeWayMerge & merger) override;

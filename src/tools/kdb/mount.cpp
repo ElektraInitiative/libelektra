@@ -3,7 +3,7 @@
  *
  * @brief source file of mount command
  *
- * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  *
  */
 
@@ -77,7 +77,7 @@ void MountCommand::processArguments (Cmdline const & cl)
 {
 	if (!cl.interactive && cl.arguments.size () == 1)
 	{
-		throw invalid_argument ("wrong number of arguments, 0 or more then 1 needed");
+		throw invalid_argument ("wrong number of arguments, 0 or more than 1 needed");
 	}
 
 	if (cl.interactive)

@@ -1,26 +1,26 @@
-# GIT #
+# GIT
 
-## Basic GIT Commands##
+## Basic GIT Commands
 
 	git add readme.md   // adds the changes of the file `readme.md` to the staging area
 	git add .           // adds all changes of files in the current directory (recursively) to the staging area
 	git add --all       // adds all changes of files in the repository to the staging area
 	git commit -a       // executes a commit that automatically stages all changed and deleted files before
 
-## Basic Configuration ##
+## Basic Configuration
 
 make sure to do:
 
 	git config --global merge.ff false
 	git config merge.ff false
 
-## The Commit Message ##
+## The Commit Message
 
 A commit message should have the following syntax:
 `component: short change description`
 
 For a clean and meaningful log the commit
-message should fullfil the following:
+message should fulfil the following:
 
 - use imperative in the subject line
 - the subject line should not be longer than 50 characters
@@ -31,7 +31,7 @@ message should fullfil the following:
 
 Most commits should have a longer description in the body.
 
-## Remote Branches ##
+## Remote Branches
 
 To list all remote branches use:
 
@@ -64,7 +64,7 @@ should be on the debian branch - otherwise
 it should only contain --no-ff merges from
 master. (see config option above)
 
-## Local Branches ##
+## Local Branches
 
 You should always make your own feature branch with:
 
@@ -86,9 +86,9 @@ you can do:
 
 	git-ref-log # recover
 
-## Github ##
+## Github
 
-When doing merge requests our [buildserver](http://build.libelektra.org:8080)
+When doing merge requests our [buildserver](https://build.libelektra.org)
 will build authorized users. If you are not yet authorized, the following
 question will be asked (by user markus2330):
 
@@ -115,37 +115,41 @@ or if just a single build of the mergerequest should be started:
 
 or if specific jobs should be started:
 
-* jenkins build [bindings](http://build.libelektra.org:8080/job/elektra-test-bindings/) please
-* jenkins build [clang](http://build.libelektra.org:8080/job/elektra-clang/) please
-* jenkins build [clang-asan](http://build.libelektra.org:8080/job/elektra-clang-asan/) please
-* jenkins build [gcc-asan](http://build.libelektra.org:8080/job/elektra-gcc-asan/) please
-* jenkins build [fast](http://build.libelektra.org:8080/job/elektra-mergerequests-fast/) please
-* jenkins build [gcc](http://build.libelektra.org:8080/job/elektra-gcc/) please
-* jenkins build [gcc-configure-debian](http://build.libelektra.org:8080/job/elektra-gcc-configure-debian/) please
-* jenkins build [gcc-configure-debian-debug](http://build.libelektra.org:8080/job/elektra-gcc-configure-debian-debug) please
-* jenkins build [gcc-configure-debian-intree](http://build.libelektra.org:8080/job/elektra-gcc-configure-debian-intree/) please
-* jenkins build [gcc-configure-debian-log](http://build.libelektra.org:8080/job/elektra-gcc-configure-debian-log) please
-* jenkins build [gcc-configure-debian-musl](http://build.libelektra.org:8080/job/elektra-gcc-configure-debian-musl/) please
-* jenkins build [gcc-configure-debian-nokdbtest](http://build.libelektra.org:8080/job/elektra-gcc-configure-debian-nokdbtest/) please
-* jenkins build [gcc-configure-debian-notest](http://build.libelektra.org:8080/job/elektra-gcc-configure-debian-notest/) please
-* jenkins build [gcc-configure-debian-shared](http://build.libelektra.org:8080/job/elektra-gcc-configure-debian-shared/) please
-* jenkins build [gcc-configure-debian-stretch](http://build.libelektra.org:8080/job/elektra-gcc-configure-debian-stretch/) please
-* jenkins build [gcc-configure-debian-wheezy](http://build.libelektra.org:8080/job/elektra-gcc-configure-debian-wheezy/) please
-* jenkins build [gcc-configure-debian-withspace](http://build.libelektra.org:8080/job/elektra-gcc-configure-debian-withspace/) please
-* jenkins build [gcc-configure-xdg](http://build.libelektra.org:8080/job/elektra-gcc-configure-xdg/) please
-* jenkins build [gcc-i386](http://build.libelektra.org:8080/job/elektra-gcc-i386/) please
-* jenkins build [gcc47-all](http://build.libelektra.org:8080/job/elektra-gcc47-all/) please
-* jenkins build [git-buildpackage-jessie](http://build.libelektra.org:8080/job/elektra-git-buildpackage-jessie/) please
-* jenkins build [git-buildpackage-wheezy](http://build.libelektra.org:8080/job/elektra-git-buildpackage-wheezy/) please
-* jenkins build [icc](http://build.libelektra.org:8080/job/elektra-icc/) please
-* jenkins build [ini](http://build.libelektra.org:8080/job/elektra-ini-mergerequests/) please
-* jenkins build [local-installation](http://build.libelektra.org:8080/job/elektra-local-installation/) please
-* jenkins build [mingw64](http://build.libelektra.org:8080/job/elektra-gcc-configure-mingw-w64/) please
-* jenkins build [multiconfig-gcc-stable](http://build.libelektra.org:8080/job/elektra-multiconfig-gcc-stable/) please
-* jenkins build [multiconfig-gcc47-cmake-options](http://build.libelektra.org:8080/job/elektra-multiconfig-gcc47-cmake-options/) please
-* jenkins build [source-package-test](http://build.libelektra.org:8080/job/elektra-source-package-test/) please
-* jenkins build [stable](http://build.libelektra.org:8080/job/elektra-mergerequests-stable/) please
-* jenkins build [unstable](http://build.libelektra.org:8080/job/elektra-mergerequests-unstable/) please
+* jenkins build [bindings](https://build.libelektra.org/job/elektra-test-bindings/) please
+* jenkins build [clang](https://build.libelektra.org/job/elektra-clang/) please
+* jenkins build [clang-asan](https://build.libelektra.org/job/elektra-clang-asan/) please
+* jenkins build [gcc-asan](https://build.libelektra.org/job/elektra-gcc-asan/) please
+* jenkins build [fast](https://build.libelektra.org/job/elektra-mergerequests-fast/) please
+* jenkins build [gcc](https://build.libelektra.org/job/elektra-gcc/) please
+* jenkins build [gcc-configure-debian](https://build.libelektra.org/job/elektra-gcc-configure-debian/) please
+* jenkins build [gcc-configure-debian-debug](https://build.libelektra.org/job/elektra-gcc-configure-debian-debug) please
+* jenkins build [gcc-configure-debian-intree](https://build.libelektra.org/job/elektra-gcc-configure-debian-intree/) please
+* jenkins build [gcc-configure-debian-log](https://build.libelektra.org/job/elektra-gcc-configure-debian-log) please
+* jenkins build [gcc-configure-debian-musl](https://build.libelektra.org/job/elektra-gcc-configure-debian-musl/) please
+* jenkins build [gcc-configure-debian-nokdbtest](https://build.libelektra.org/job/elektra-gcc-configure-debian-nokdbtest/) please
+* jenkins build [gcc-configure-debian-notest](https://build.libelektra.org/job/elektra-gcc-configure-debian-notest/) please
+* jenkins build [gcc-configure-debian-shared](https://build.libelektra.org/job/elektra-gcc-configure-debian-shared/) please
+* jenkins build [gcc-configure-debian-stretch](https://build.libelektra.org/job/elektra-gcc-configure-debian-stretch/) please
+* jenkins build [gcc-configure-debian-optimizations](https://build.libelektra.org/job/elektra-gcc-configure-debian-optimizations/) please
+* jenkins build [gcc-configure-debian-wheezy](https://build.libelektra.org/job/elektra-gcc-configure-debian-wheezy/) please
+* jenkins build [gcc-configure-debian-withspace](https://build.libelektra.org/job/elektra-gcc-configure-debian-withspace/) please
+* jenkins build [gcc-configure-xdg](https://build.libelektra.org/job/elektra-gcc-configure-xdg/) please
+* jenkins build [gcc-i386](https://build.libelektra.org/job/elektra-gcc-i386/) please
+* jenkins build [gcc47-all](https://build.libelektra.org/job/elektra-gcc47-all/) please
+* jenkins build [git-buildpackage-jessie](https://build.libelektra.org/job/elektra-git-buildpackage-jessie/) please
+* jenkins build [git-buildpackage-wheezy](https://build.libelektra.org/job/elektra-git-buildpackage-wheezy/) please
+* jenkins build [icc](https://build.libelektra.org/job/elektra-icc/) please
+* jenkins build [ini](https://build.libelektra.org/job/elektra-ini-mergerequests/) please
+* jenkins build [local-installation](https://build.libelektra.org/job/elektra-local-installation/) please
+* jenkins build [mingw64](https://build.libelektra.org/job/elektra-gcc-configure-mingw-w64/) please
+* jenkins build [multiconfig-gcc-stable](https://build.libelektra.org/job/elektra-multiconfig-gcc-stable/) please
+* jenkins build [multiconfig-gcc47-cmake-options](https://build.libelektra.org/job/elektra-multiconfig-gcc47-cmake-options/) please
+* jenkins build [source-package-test](https://build.libelektra.org/job/elektra-source-package-test/) please
+* jenkins build [stable](https://build.libelektra.org/job/elektra-mergerequests-stable/) please
+* jenkins build [unstable](https://build.libelektra.org/job/elektra-mergerequests-unstable/) please
+* jenkins build [homepage](https://build.libelektra.org/job/elektra-homepage/) please
+* jenkins build [gcc-configure-debian-stretch-minimal](https://build.libelektra.org/job/elektra-gcc-configure-debian-stretch-minimal/) please
+* jenkins build [gcc-configure-debian-jessie-minimal](https://build.libelektra.org/job/elektra-gcc-configure-debian-jessie-minimal/) please
 
 If you want any configuration changes, please contact
 `Markus Raab <elektra@markus-raab.org>`.

@@ -3,7 +3,7 @@
  *
  * @brief Tests for the Backend builder class
  *
- * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  *
  */
 
@@ -29,6 +29,8 @@ std::vector<std::string> getAllPlugins ()
 	std::vector<std::string> plugins = mpd.listAllPlugins ();
 
 	// remove known problems
+	plugins.erase (std::remove (plugins.begin (), plugins.end (), "xerces"), plugins.end ());
+	plugins.erase (std::remove (plugins.begin (), plugins.end (), "ruby"), plugins.end ());
 	plugins.erase (std::remove (plugins.begin (), plugins.end (), "jni"), plugins.end ());
 	plugins.erase (std::remove (plugins.begin (), plugins.end (), "crypto_gcrypt"), plugins.end ());
 	plugins.erase (std::remove (plugins.begin (), plugins.end (), "crypto_openssl"), plugins.end ());

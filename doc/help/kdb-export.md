@@ -15,7 +15,7 @@ This command can also be used to view full key(s) including their values.
 
 Where `source` is the path of the key(s) you want to export.  
 Additionally, the user can specify a format to use by passing it as the option argument `format`.  
-The `format` attribute relies on Elektra's plugin system to export the keys in the desired format.The user can view all plugins available for use by running the kdb-list(1) command. To learn about any plugin, the user can simply use the kdb-info(1) command.  
+The `format` attribute relies on Elektra’s plugin system to export the keys in the desired format.The user can view all plugins available for use by running the kdb-list(1) command. To learn about any plugin, the user can simply use the kdb-info(1) command.  
 The `storage` plugin can be configured at compile-time or changed by the link `libelektra-storage.so`.
 
 
@@ -25,14 +25,14 @@ The `storage` plugin can be configured at compile-time or changed by the link `l
   Show the man page.
 - `-V`, `--version`:
   Print version info.
-- `-p`, `--profile`=<profile>:
+- `-p`, `--profile <profile>`:
   Use a different kdb profile.
+- `-C`, `--color <when>`:
+  Print never/auto(default)/always colored output.
 - `-E`, `--without-elektra`:
   Omit the `system/elektra` directory.
-- `-c`, `--plugins-config`=<pluginconfig>:
+- `-c`, `--plugins-config <plugins-config>`:
   Add a configuration to the format plugin.
-- `-C`, `--color`=[when]:
-  Print never/auto(default)/always colored output.
 
 ## KDB
 
@@ -41,10 +41,10 @@ The `storage` plugin can be configured at compile-time or changed by the link `l
 
 ## EXAMPLES
 
-To view your full key database in Elektra's `storage` format:  
+To view your full key database in Elektra’s `storage` format:  
 `kdb export /`  
 
-To backup your full key database in Elektra's `storage` format to a file called `full-backup.ecf`:  
+To backup your full key database in Elektra’s `storage` format to a file called `full-backup.ecf`:  
 `kdb export / > full-backup.ecf`  
 
 To view a keyset stored in `user/keyset` in the XML format:  
@@ -56,8 +56,6 @@ To backup a keyset stored in `user/keyset` in the `ini` format to a file called 
 Change default format to `simpleini`:  
 `kdb set /sw/elektra/kdb/#0/current/format simpleini`
 
+## Note
 
-## SEE ALSO
-
-- For an introductions into plugins, read [elektra-plugins-framework(7)](elektra-plugins-framework.md).
 - Only storage plugins can be used for formatting.

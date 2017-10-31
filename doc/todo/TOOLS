@@ -3,7 +3,7 @@
 
 == MOUNT ==
 
-lazy-mount
+lazy-mount (vs. directly improve all mountpoints with lazy wrapper?)
 
 allow --no-env --no-arg --no-default arguments?
 
@@ -52,14 +52,26 @@ more testing
 ncurses interface
 pstree like visualization
 
+kdb-grep
+
+interface that makes auto-completion happy
 
 
+
+
+
+== REST-BACKEND ==
+
+make nice interface for JWT library
+make use of cachefilter plugin
 
 
 
 
 
 == KDB ==
+
+get size of key
 
 generic fstab:
 	allow to specify templates that are filled out by the given arguments e.g.:
@@ -76,14 +88,15 @@ generic fstab:
 kdb tool should work with arrays (add_entry, remove_entry)
 	or also kdb setmeta user/abc check/enum -a "first enum" "second enum" "third enum"
 	or also kdb set user/abc -a "first array entry" "second" "third array entry"
+	allow key array increments with kdb tool
+
+easier handling for comments (special case of array), maybe with generic meta-template that supports arrays?
 
 kdb tool should work with files (read in as value)
 	kdb set user/abc -F filename.txt
 
 cascading export, e.g. for nickel?
 	+ remember what was exported
-
-allow key array increments with kdb tool
 
 list existing plugins
 	dynamically detect them when installed
@@ -110,7 +123,7 @@ kdb tool:
 == GEN ==
 
 install kdb gen properly
-	search by default in installed pathes
+	search by default in installed paths
 
 using python kdb for gen
 
@@ -161,6 +174,17 @@ with constraint checking+solving and so on.
 
 
 
+
+## HOMEPAGE ##
+
+- show front page also without javascript
+
+
+
+
+
+
+
 == GUI ==
 
 support for binary keys, see #234
@@ -193,7 +217,3 @@ Daemon which exports whole elektra configuration
 uninstall:
 	let user find configuration of uninstalled software
 upgrade
-
-web2.0:
-	share elektra xml files
-	web frontent to kdb with xml/generate output/paste

@@ -7,7 +7,7 @@
 - infos/status = maintained tested nodep global nodoc
 - infos/description = Logs set and error calls to syslog.
 
-## Introduction ##
+## Introduction
 
 This plugin is a logging plugin which adds a log entry to syslog on
 commit and rollback of the configuration.

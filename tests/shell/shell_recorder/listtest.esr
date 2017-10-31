@@ -5,15 +5,15 @@ MountArgs: list placements=,placements/set="presetstorage precommit postcommit",
 DiffType: File
 
 RET: 0
-< set /sw/kdb/current/plugins
+< kdb set /sw/kdb/current/plugins
 
-< mount $File $Mountpoint $Storage $MountArgs
+< kdb mount $File $Mountpoint $Storage $MountArgs
 
-STDOUT: (tracer.*){3}
+STDOUT-REGEX: (tracer.*){3}
 STDERR: (set.*di.*pos.*){2}
 RET: 0
-< set $Mountpoint test
+< kdb set $Mountpoint test
 
-< ls $Mountpoint 
+< kdb ls $Mountpoint
 
-< umount $Mountpoint
+< kdb umount $Mountpoint

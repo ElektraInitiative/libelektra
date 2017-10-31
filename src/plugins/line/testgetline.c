@@ -3,7 +3,7 @@
  *
  * @brief
  *
- * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
 #include <stdio.h>
@@ -11,9 +11,9 @@
 int main (void)
 {
 
-	char * line;
+	char * line = 0;
 	size_t len = 0;
-	FILE * fp;
+	FILE * fp = 0;
 	getline (&line, &len, fp);
 	return 0;
 }

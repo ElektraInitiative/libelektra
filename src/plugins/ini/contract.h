@@ -3,14 +3,14 @@
  *
  * @brief
  *
- * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
 #ifndef CONTRACT_H_
 #define CONTRACT_H_
 
 
-static inline KeySet * getPluginContract ()
+static inline KeySet * getPluginContract (void)
 {
 	// clang-formater off
 	return ksNew (30, keyNew ("system/elektra/modules/ini", KEY_VALUE, "Ini plugin waits for your orders", KEY_END),

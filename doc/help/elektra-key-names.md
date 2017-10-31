@@ -47,8 +47,8 @@ between two keys.
 ## Conventions
 
 For computers Elektra would work without any conventions, because it is
-possible to rename keys with plugins and link and transform any key/value
-to any other key/value. Obviously, for humans such chaos would be confusing and
+possible to rename keys with plugins and link and transform any key-value
+to any other key-value. Obviously, for humans such chaos would be confusing and
 harder to use, thus we encourage everyone to use the following conventions:
 
 ### Arrays
@@ -61,7 +61,8 @@ results and the names are still very compact.
 
 As decided [here](https://github.com/ElektraInitiative/libelektra/issues/302),
 the key names of software-applications should always start with:
-`/sw/org/myapp/#0/current/name/full`
+
+	/sw/org/myapp/#0/current/name/full
 
 - `sw` is for software, `hw` for hardware, `elektra` for internals
 - `org` is a URL/organisation name to avoid name clashes with other
@@ -103,6 +104,7 @@ the key names of software-applications should always start with:
 
 - [see application integration tutorial](/doc/tutorials/application-integration.md)
 - [see namespaces tutorial](/doc/tutorials/namespaces.md)
+- [key name source file](/src/libs/elektra/keyname.c) or [its rendered API documentation](https://doc.libelektra.org/api/latest/html/group__keyname.html#details)
 
 - [elektra-namespaces(7)](elektra-namespaces.md)
 - [elektra-cascading(7)](elektra-cascading.md)

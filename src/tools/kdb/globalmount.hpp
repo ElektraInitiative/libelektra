@@ -3,7 +3,7 @@
  *
  * @brief header file of spec mount command
  *
- * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  *
  */
 
@@ -24,6 +24,7 @@ class MountBackendInterface;
 class GlobalMountCommand : public MountBaseCommand
 {
 	void outputMtab (Cmdline const & cl);
+	std::vector<std::string> getMtab ();
 	void setMountpoint (Cmdline const & cl);
 	void buildBackend (Cmdline const & cl);
 
@@ -33,17 +34,17 @@ public:
 
 	virtual std::string getShortOptions () override
 	{
-		return "WC"; // TODO: c not implemented
+		return "W"; // TODO: c not implemented
 	}
 
 	virtual std::string getSynopsis () override
 	{
-		return "[mountpoint] [plugin [config] [..]]";
+		return "[plugin [config] [..]]";
 	}
 
 	virtual std::string getShortHelpText () override
 	{
-		return "Globally mount given plugins, overwriting previous ones.";
+		return "Globally mount given plugins.";
 	}
 
 	virtual std::string getLongHelpText () override

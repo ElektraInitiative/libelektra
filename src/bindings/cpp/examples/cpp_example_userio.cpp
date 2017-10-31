@@ -1,7 +1,7 @@
 /**
  * @file
  *
- * @brief This examples show how Elektra's KDBException can be changed in a way so that it has user defined output.
+ * @brief This examples show how Elektra’s KDBException can be changed in a way so that it has user defined output.
  *
  *
  * It works -- because of binary compatibility -- if only the receiver
@@ -12,7 +12,7 @@
  * The output operators of Key and KeySet can be redefined without any
  * macro by simply not including \<keyio.hpp\> and \<keysetio.hpp\>.
  *
- * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
 #define USER_DEFINED_IO

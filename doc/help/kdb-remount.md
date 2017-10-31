@@ -19,15 +19,15 @@ This command allows a user to use an existing backend (such as one from a previo
   Show the man page.
 - `-V`, `--version`:
   Print version info.
-- `-p`, `--profile`=<profile>:
+- `-p`, `--profile <profile>`:
   Use a different kdb profile.
+- `-C`, `--color <when>`:
+  Print never/auto(default)/always colored output.
 - `-d`, `--debug`:
   Give debug information or ask debug questions (in interactive mode).
 - `-i`, `--interactive`:
   Instead of passing all information by parameters
   ask the user interactively.
-- `-C`, `--color`=[when]:
-  Print never/auto(default)/always colored output.
 
 ## EXAMPLES
 

@@ -3,7 +3,7 @@
  *
  * @brief Internal methods for Elektra.
  *
- * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
 #ifdef HAVE_KDBCONFIG_H
@@ -147,7 +147,7 @@ int elektraStrCaseCmp (const char * s1, const char * s2)
 
 /**
  * @brief Compare two memory regions but make cmp chars uppercase before
- * comparision.
+ * comparison.
  *
  * @param s1 The first string to be compared
  * @param s2 The second string to be compared
@@ -258,12 +258,14 @@ void * elektraCalloc (size_t size)
 	return ret;
 }
 
-/**Free memory of elektra or its backends.
+/**Free memory of Elektra or its backends.
  *
- *@param ptr the pointer to free
+ * @param ptr the pointer to free
+ *
+ * If ptr is NULL, no operation is performed.
  *
  * @ingroup internal
- *@see elektraMalloc
+ * @see elektraMalloc
  */
 void elektraFree (void * ptr)
 {
@@ -354,7 +356,7 @@ size_t elektraStrLen (const char * s)
 }
 
 /**
- * @brief Does string formating in fresh allocated memory
+ * @brief Does string formatting in fresh allocated memory
  *
  * @param format as in printf()
  * @param ... as in printf()
@@ -373,7 +375,7 @@ char * elektraFormat (const char * format, ...)
 }
 
 /**
- * @brief Does string formating in fresh allocated memory
+ * @brief Does string formatting in fresh allocated memory
  *
  * @param format as in vprintf()
  * @param arg_list as in vprintf()
@@ -396,6 +398,7 @@ char * elektraVFormat (const char * format, va_list arg_list)
 	if (calculated_length == -1)
 	{
 		va_end (arg_list_adj);
+		elektraFree (buffer);
 		// before Glibc 2.0.6, always -1 is returned
 		// we won't do Glibc job, please upgrade
 		return 0;
@@ -409,7 +412,7 @@ char * elektraVFormat (const char * format, va_list arg_list)
 		return buffer;
 	}
 
-	// String is longer then default_size.
+	// String is longer than default_size.
 	// Allocate an intermediate buffer
 	// according to the calculated length from our last try
 	size_t const adjusted_buffer_size = calculated_length + 1;
@@ -509,7 +512,7 @@ static void elektraWriteBackslashes (char ** dest, size_t number)
  *
  * @retval 0 if nothing was done (dest unmodified) and escaping of
  *         string needs to be done
- * @retval 1 if key name part was handeled correctly (dest might be
+ * @retval 1 if key name part was handled correctly (dest might be
  *         updated if it was needed)
  */
 int elektraUnescapeKeyNamePartBegin (const char * source, size_t size, char ** dest)
@@ -678,7 +681,7 @@ size_t elektraUnescapeKeyName (const char * source, char * dest)
 
 	ELEKTRA_ASSERT (sp != NULL && dp != NULL, "Got null pointer sp: %p dp: %p", (void *)sp, (void *)dp);
 
-	if (*source == '/')
+	if (*sp == '/')
 	{
 		// handling for cascading names
 		*dp = 0;
@@ -763,7 +766,7 @@ int elektraEscapeKeyNamePartBegin (const char * source, char * dest)
  *       Do not use the source string as destination string.
  *
  * @param source the source pointer where escaping should start
- * @param dest the destination to write to (twice the size as sp
+ * @param dest the destination to write to (twice the size as sp)
  *
  * @return pointer to destination
  */

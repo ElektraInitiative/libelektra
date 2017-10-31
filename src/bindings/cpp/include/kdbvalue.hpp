@@ -3,7 +3,7 @@
  *
  * @brief
  *
- * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
 #ifndef ELEKTRA_KDBVALUE_HPP
@@ -85,7 +85,7 @@ public:
 class WrapLayer : public Layer
 {
 public:
-	WrapLayer (Wrapped const & wrapped) : m_wrapped (wrapped)
+	explicit WrapLayer (Wrapped const & wrapped) : m_wrapped (wrapped)
 	{
 	}
 
@@ -661,11 +661,12 @@ private:
 	void unsafeSyncCache () const
 	{
 		assert (m_key);
-		m_cache = m_key.get<type> ();
 
 #if DEBUG && VERBOSE
-		std::cout << "got name: " << m_key.getName () << " value: " << m_key.getString () << std::endl;
+		std::cout << "will get name: " << m_key.getName () << " value: " << m_key.getString () << std::endl;
 #endif
+
+		m_cache = m_key.get<type> ();
 	}
 
 	/**

@@ -3,7 +3,7 @@
  *
  * @brief
  *
- * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
 #include "hexcode.h"
@@ -285,7 +285,6 @@ int elektraHexcodeOpen (Plugin * handle, Key * key ELEKTRA_UNUSED)
 	}
 
 	Key * root = ksLookupByName (config, "/chars", 0);
-	Key * cur = 0;
 	if (!root)
 	{
 		/* Some default config */
@@ -296,6 +295,7 @@ int elektraHexcodeOpen (Plugin * handle, Key * key ELEKTRA_UNUSED)
 	}
 	else
 	{
+		Key * cur = 0;
 		while ((cur = ksNext (config)) != 0)
 		{
 			/* ignore all keys not direct below */

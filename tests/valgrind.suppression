@@ -251,10 +251,66 @@
    semlock plugin sem_open
    Memcheck:Param
    write(buf)
-   fun:__write_nocancel
+   fun:*
    fun:sem_open
    ...
    fun:elektraSemlockOpen
    fun:elektraPluginOpen
    ...
+}
+{
+   rest-backend loadEnabledFormats jni plugin
+   Memcheck:Leak
+   match-leak-kinds: all
+   fun:malloc
+   fun:elektraMalloc
+   fun:elektraJniOpen
+   fun:elektraPluginOpen
+   ...
+   fun:_ZN61kdbrestServicesConvertengineTest_FindSuitablePluginCheck_Test8TestBodyEv
+   ...
+}
+{
+   testmod_range setlocale memleak
+   Memcheck:Addr1
+   ...
+   fun:setlocale
+   fun:main
+}
+{
+   ruby plugin open
+   Memcheck:Leak
+   match-leak-kinds: reachable,possible
+   ...
+   obj:*/libruby*.so*
+   ...
+   fun:elektraPluginOpen
+}
+{
+   ruby plugin open on debian - malloc
+   Memcheck:Leak
+   match-leak-kinds: all
+   fun:*alloc
+   fun:*
+   fun:*
+   fun:*
+   ...
+   fun:elektraPluginOpen
+}
+{
+   ruby plugin open on debian - memalign
+   Memcheck:Leak
+   match-leak-kinds: all
+   fun:memalign
+   fun:*
+   fun:*
+   fun:*
+   ...
+   fun:elektraPluginOpen
+}
+{
+   ruby plugin open - init ruby VM
+   Memcheck:Addr1
+   ...
+   fun:ruby_setup
 }

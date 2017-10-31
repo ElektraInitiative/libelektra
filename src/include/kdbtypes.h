@@ -1,7 +1,7 @@
 /**
  * @file
  *
- * @brief Elektra's data types for C and C++11.
+ * @brief Elektra’s data types for C and C++11.
  *
  * This header file defines portable Types used in Elektra for C and
  * C++11.
@@ -16,7 +16,7 @@
  *
  * This files defines mappings to C89, C++03 and C++11.
  *
- * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
 #ifndef KDBTYPES_H

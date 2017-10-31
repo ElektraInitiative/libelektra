@@ -3,13 +3,15 @@
  *
  * @brief
  *
- * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
 #ifndef PLUGIN_RESOLVER_H
 #define PLUGIN_RESOLVER_H
 
 #define _GNU_SOURCE // needed for recursive mutex
+
+#include "shared.h"
 
 #include <sys/stat.h>
 
@@ -55,8 +57,9 @@ struct _resolverHandles
 	resolverHandle system;
 };
 
+void ELEKTRA_PLUGIN_FUNCTION (resolver, freeHandle) (ElektraResolved *);
 int ELEKTRA_PLUGIN_FUNCTION (resolver, checkFile) (const char * filename);
-int ELEKTRA_PLUGIN_FUNCTION (resolver, filename) (Key * forKey, resolverHandle * p, Key * warningsKey);
+ElektraResolved * ELEKTRA_PLUGIN_FUNCTION (resolver, filename) (elektraNamespace, const char *, ElektraResolveTempfile, Key *);
 
 int ELEKTRA_PLUGIN_FUNCTION (resolver, open) (Plugin * handle, Key * errorKey);
 int ELEKTRA_PLUGIN_FUNCTION (resolver, close) (Plugin * handle, Key * errorKey);

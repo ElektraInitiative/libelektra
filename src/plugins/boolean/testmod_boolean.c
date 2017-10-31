@@ -4,7 +4,7 @@
  *
  * @brief Tests for boolean plugin
  *
- * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  *
  */
 
@@ -15,19 +15,19 @@
 
 #include <tests_plugin.h>
 
-static void test_default ()
+static void test_default (const char * type)
 {
 	Key * parentKey = keyNew ("user/tests/boolean", KEY_END);
 	KeySet * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("boolean");
-	KeySet * ks = ksNew (30, keyNew ("user/tests/boolean/t1", KEY_VALUE, "true", KEY_META, "type", "boolean", KEY_END),
-			     keyNew ("user/tests/boolean/t2", KEY_VALUE, "tRUe", KEY_META, "type", "boolean", KEY_END),
-			     keyNew ("user/tests/boolean/nt", KEY_VALUE, "i'm not true", KEY_META, "type", "boolean", KEY_END),
-			     keyNew ("user/tests/boolean/f1", KEY_VALUE, "false", KEY_META, "type", "boolean", KEY_END),
-			     keyNew ("user/tests/boolean/f2", KEY_VALUE, "falsE", KEY_META, "type", "boolean", KEY_END),
-			     keyNew ("user/tests/boolean/nf", KEY_VALUE, "i'm not false", KEY_META, "type", "boolean", KEY_END),
-			     keyNew ("user/tests/boolean/off", KEY_VALUE, "off", KEY_META, "type", "boolean", KEY_END),
-			     keyNew ("user/tests/boolean/on", KEY_VALUE, "on", KEY_META, "type", "boolean", KEY_END), KS_END);
+	KeySet * ks = ksNew (30, keyNew ("user/tests/boolean/t1", KEY_VALUE, "true", KEY_META, type, "boolean", KEY_END),
+			     keyNew ("user/tests/boolean/t2", KEY_VALUE, "tRUe", KEY_META, type, "boolean", KEY_END),
+			     keyNew ("user/tests/boolean/nt", KEY_VALUE, "i'm not true", KEY_META, type, "boolean", KEY_END),
+			     keyNew ("user/tests/boolean/f1", KEY_VALUE, "false", KEY_META, type, "boolean", KEY_END),
+			     keyNew ("user/tests/boolean/f2", KEY_VALUE, "falsE", KEY_META, type, "boolean", KEY_END),
+			     keyNew ("user/tests/boolean/nf", KEY_VALUE, "i'm not false", KEY_META, type, "boolean", KEY_END),
+			     keyNew ("user/tests/boolean/off", KEY_VALUE, "off", KEY_META, type, "boolean", KEY_END),
+			     keyNew ("user/tests/boolean/on", KEY_VALUE, "on", KEY_META, type, "boolean", KEY_END), KS_END);
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) >= 1, "call to kdbGet was not successful");
 	succeed_if (!strcmp (keyString (ksLookupByName (ks, "user/tests/boolean/t1", 0)), "1"), "key t1 has wrong value");
 	succeed_if (!strcmp (keyString (ksLookupByName (ks, "user/tests/boolean/t2", 0)), "1"), "key t2 has wrong value");
@@ -44,17 +44,17 @@ static void test_default ()
 	PLUGIN_CLOSE ();
 }
 
-static void test_defaultRestore ()
+static void test_defaultRestore (const char * type)
 {
 	Key * parentKey = keyNew ("user/tests/boolean", KEY_END);
 	KeySet * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("boolean");
-	KeySet * ks = ksNew (30, keyNew ("user/tests/boolean/t1", KEY_VALUE, "true", KEY_META, "type", "boolean", KEY_END),
-			     keyNew ("user/tests/boolean/t2", KEY_VALUE, "tRUe", KEY_META, "type", "boolean", KEY_END),
-			     keyNew ("user/tests/boolean/f1", KEY_VALUE, "false", KEY_META, "type", "boolean", KEY_END),
-			     keyNew ("user/tests/boolean/f2", KEY_VALUE, "falsE", KEY_META, "type", "boolean", KEY_END),
-			     keyNew ("user/tests/boolean/off", KEY_VALUE, "off", KEY_META, "type", "boolean", KEY_END),
-			     keyNew ("user/tests/boolean/on", KEY_VALUE, "on", KEY_META, "type", "boolean", KEY_END), KS_END);
+	KeySet * ks = ksNew (30, keyNew ("user/tests/boolean/t1", KEY_VALUE, "true", KEY_META, type, "boolean", KEY_END),
+			     keyNew ("user/tests/boolean/t2", KEY_VALUE, "tRUe", KEY_META, type, "boolean", KEY_END),
+			     keyNew ("user/tests/boolean/f1", KEY_VALUE, "false", KEY_META, type, "boolean", KEY_END),
+			     keyNew ("user/tests/boolean/f2", KEY_VALUE, "falsE", KEY_META, type, "boolean", KEY_END),
+			     keyNew ("user/tests/boolean/off", KEY_VALUE, "off", KEY_META, type, "boolean", KEY_END),
+			     keyNew ("user/tests/boolean/on", KEY_VALUE, "on", KEY_META, type, "boolean", KEY_END), KS_END);
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) >= 1, "call to kdbGet was not successful");
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) >= 1, "call to kdbSet was not successful");
 	succeed_if (!strcmp (keyString (ksLookupByName (ks, "user/tests/boolean/t2", 0)), "tRUe"), "restoring value in key t2 failed");
@@ -64,19 +64,19 @@ static void test_defaultRestore ()
 	PLUGIN_CLOSE ();
 }
 
-static void test_defaultError ()
+static void test_defaultError (const char * type)
 {
 	Key * parentKey = keyNew ("user/tests/boolean", KEY_END);
 	KeySet * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("boolean");
-	KeySet * ks = ksNew (30, keyNew ("user/tests/boolean/t1", KEY_VALUE, "true", KEY_META, "type", "boolean", KEY_END),
-			     keyNew ("user/tests/boolean/t2", KEY_VALUE, "tRUe", KEY_META, "type", "boolean", KEY_END),
-			     keyNew ("user/tests/boolean/nt", KEY_VALUE, "i'm not true", KEY_META, "type", "boolean", KEY_END),
-			     keyNew ("user/tests/boolean/f1", KEY_VALUE, "false", KEY_META, "type", "boolean", KEY_END),
-			     keyNew ("user/tests/boolean/f2", KEY_VALUE, "falsE", KEY_META, "type", "boolean", KEY_END),
-			     keyNew ("user/tests/boolean/nf", KEY_VALUE, "i'm not false", KEY_META, "type", "boolean", KEY_END),
-			     keyNew ("user/tests/boolean/off", KEY_VALUE, "off", KEY_META, "type", "boolean", KEY_END),
-			     keyNew ("user/tests/boolean/on", KEY_VALUE, "on", KEY_META, "type", "boolean", KEY_END), KS_END);
+	KeySet * ks = ksNew (30, keyNew ("user/tests/boolean/t1", KEY_VALUE, "true", KEY_META, type, "boolean", KEY_END),
+			     keyNew ("user/tests/boolean/t2", KEY_VALUE, "tRUe", KEY_META, type, "boolean", KEY_END),
+			     keyNew ("user/tests/boolean/nt", KEY_VALUE, "i'm not true", KEY_META, type, "boolean", KEY_END),
+			     keyNew ("user/tests/boolean/f1", KEY_VALUE, "false", KEY_META, type, "boolean", KEY_END),
+			     keyNew ("user/tests/boolean/f2", KEY_VALUE, "falsE", KEY_META, type, "boolean", KEY_END),
+			     keyNew ("user/tests/boolean/nf", KEY_VALUE, "i'm not false", KEY_META, type, "boolean", KEY_END),
+			     keyNew ("user/tests/boolean/off", KEY_VALUE, "off", KEY_META, type, "boolean", KEY_END),
+			     keyNew ("user/tests/boolean/on", KEY_VALUE, "on", KEY_META, type, "boolean", KEY_END), KS_END);
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) >= 1, "call to kdbGet was not successful");
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == -1, "call to kdbSet was not successful");
 	ksDel (ks);
@@ -85,14 +85,14 @@ static void test_defaultError ()
 	PLUGIN_CLOSE ();
 }
 
-static void test_userValue ()
+static void test_userValue (const char * type)
 {
 	Key * parentKey = keyNew ("user/tests/boolean", KEY_END);
 	KeySet * conf = ksNew (10, keyNew ("system/on/true", KEY_VALUE, "7", KEY_END),
 			       keyNew ("system/true", KEY_VALUE, "strangeTrueValue", KEY_END), KS_END);
 	PLUGIN_OPEN ("boolean");
 	KeySet * ks =
-		ksNew (30, keyNew ("user/tests/boolean/t1", KEY_VALUE, "strangeTrueValue", KEY_META, "type", "boolean", KEY_END), KS_END);
+		ksNew (30, keyNew ("user/tests/boolean/t1", KEY_VALUE, "strangeTrueValue", KEY_META, type, "boolean", KEY_END), KS_END);
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) >= 1, "call to kdbGet was not successful");
 	succeed_if (!strcmp (keyString (ksLookupByName (ks, "user/tests/boolean/t1", 0)), "7"), "key t1 has wrong value");
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) >= 1, "call to kdbSet was not successful");
@@ -111,11 +111,15 @@ int main (int argc, char ** argv)
 
 	init (argc, argv);
 
-	test_default ();
-	test_defaultRestore ();
-	test_defaultError ();
-	test_userValue ();
-	printf ("\ntestmod_boolean RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
+	test_default ("type");
+	test_defaultRestore ("type");
+	test_defaultError ("type");
+	test_userValue ("type");
+	test_default ("check/type");
+	test_defaultRestore ("check/type");
+	test_defaultError ("check/type");
+	test_userValue ("check/type");
+	print_result ("testmod_boolean");
 
 	return nbError;
 }

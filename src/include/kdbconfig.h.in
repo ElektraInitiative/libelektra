@@ -3,7 +3,7 @@
  *
  * @brief Build system configuration
  *
- * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
 // clang-format off
@@ -56,11 +56,11 @@
 
 /** To be used if you want the currently
   * build-in default storage, whatever it is. */
-#define KDB_STORAGE      "storage"
+#define KDB_STORAGE              "storage"
 
 /** To be used if you want the currently
   * build-in default resolver, whatever it is. */
-#define KDB_RESOLVER     "resolver"
+#define KDB_RESOLVER             "resolver"
 
 #define ELEKTRA_PLUGINS          "@ADDED_PLUGINS@"
 
@@ -68,6 +68,9 @@
 
 /** Declares a parameter as unused. */
 #define ELEKTRA_UNUSED           @ELEKTRA_UNUSED@
+
+/** Declares a switch fallthrough case. */
+#define ELEKTRA_FALLTHROUGH      @ELEKTRA_FALLTHROUGH@
 
 /** Declares an API as deprecated. */
 #define ELEKTRA_DEPRECATED       @ELEKTRA_DEPRECATED@
@@ -96,7 +99,10 @@
 #endif
 
 /* ENABLE_OPTIMIZATIONS */
-#define ELEKTRA_ENABLE_OPTIMIZATIONS @ELEKTRA_ENABLE_OPTIMIZATIONS@
+#cmakedefine ELEKTRA_ENABLE_OPTIMIZATIONS
+
+/* ENDIANNESS */
+#cmakedefine ELEKTRA_BIG_ENDIAN
 
 /* debug mode */
 #define DEBUG @DEBUG@
@@ -182,5 +188,15 @@
 #ifndef HAVE_UNISTD_H
 #cmakedefine HAVE_UNISTD_H
 #endif
+
+/* define if your system has the `hsearch_r' function family. */
+#ifndef HAVE_HSEARCHR
+#cmakedefine HAVE_HSEARCHR
+#endif
+
+
+
+
+
 
 #endif

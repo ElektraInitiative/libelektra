@@ -3,7 +3,7 @@
  *
  * @brief Private declarations.
  *
- * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
 #ifndef KDBPRIVATE_H
@@ -20,6 +20,7 @@
 #ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
 #include <kdbopmphm.h>
 #endif
+#include <kdbglobal.h>
 
 #include <limits.h>
 
@@ -237,25 +238,14 @@ struct _KeySet
 	 * Some control and internal flags.
 	 */
 	ksflag_t flags;
+#ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
+	/**
+	 * The Order Preserving Minimal Perfect Hash Map.
+	 */
+	Opmphm * opmphm;
+#endif
 };
 
-
-/**
- * Helper for identifying global plugin positions
- */
-
-typedef enum {
-	PREROLLBACK = 0,
-	POSTROLLBACK,
-	PREGETSTORAGE,
-	POSTGETSTORAGE,
-	POSTGETCLEANUP,
-	PRESETSTORAGE,
-	PRESETCLEANUP,
-	PRECOMMIT,
-	POSTCOMMIT,
-	NR_GLOBAL_PLUGINS
-} GlobalpluginPositions;
 
 /**
  * The access point to the key database.
@@ -289,7 +279,7 @@ struct _KDB
 
 	Backend * initBackend; /*!< The init backend for bootstrapping.*/
 
-	Plugin * globalPlugins[NR_GLOBAL_PLUGINS];
+	Plugin * globalPlugins[NR_GLOBAL_POSITIONS][NR_GLOBAL_SUBPOSITIONS];
 };
 
 
@@ -359,7 +349,7 @@ struct _Plugin
 	KeySet * config; /*!< This keyset contains configuration for the plugin.
 	 Direct below system/ there is the configuration supplied for the backend.
 	 Direct below user/ there is the configuration supplied just for the
-	 plugin, which should be of course prefered to the backend configuration.
+	 plugin, which should be of course preferred to the backend configuration.
 	 The keys inside contain information like /path which path should be used
 	 to write configuration to or /host to which host packets should be send.
 	 @see elektraPluginGetConfig() */
@@ -382,14 +372,6 @@ struct _Plugin
 
 
 /**
- * @defgroup internaldatastructs Internal Datastructures
- * @brief Internal used Datastructures
- */
-
-
-/**
- * @defgroup trie Trie
- * @ingroup internaldatastructs
  *
  * The private trie structure.
  *
@@ -478,12 +460,12 @@ int backendClose (Backend * backend, Key * errorKey);
 int backendUpdateSize (Backend * backend, Key * parent, int size);
 
 /*Plugin handling*/
+Plugin * elektraPluginOpen (const char * backendname, KeySet * modules, KeySet * config, Key * errorKey);
+int elektraPluginClose (Plugin * handle, Key * errorKey);
 int elektraProcessPlugin (Key * cur, int * pluginNumber, char ** pluginName, char ** referenceName, Key * errorKey);
 int elektraProcessPlugins (Plugin ** plugins, KeySet * modules, KeySet * referencePlugins, KeySet * config, KeySet * systemConfig,
 			   Key * errorKey);
 
-Plugin * elektraPluginOpen (const char * backendname, KeySet * modules, KeySet * config, Key * errorKey);
-int elektraPluginClose (Plugin * handle, Key * errorKey);
 Plugin * elektraPluginMissing (void);
 Plugin * elektraPluginVersion (void);
 
@@ -527,7 +509,6 @@ ssize_t ksSearchInternal (const KeySet * ks, const Key * toAppend);
 ssize_t elektraMemcpy (Key ** array1, Key ** array2, size_t size);
 ssize_t elektraMemmove (Key ** array1, Key ** array2, size_t size);
 
-char * elektraStrNDup (const char * s, size_t l);
 ssize_t elektraFinalizeName (Key * key);
 ssize_t elektraFinalizeEmptyName (Key * key);
 
@@ -538,6 +519,7 @@ int elektraUnescapeKeyNamePartBegin (const char * source, size_t size, char ** d
 char * elektraUnescapeKeyNamePart (const char * source, size_t size, char * dest);
 
 int elektraValidateKeyName (const char * name, size_t size);
+
 
 /*Internally used for array handling*/
 int elektraArrayValidateName (const Key * key);
@@ -559,6 +541,11 @@ int keyNameIsProc (const char * keyname);
 int keyNameIsDir (const char * keyname);
 int keyNameIsSystem (const char * keyname);
 int keyNameIsUser (const char * keyname);
+
+/* global plugin calls */
+void elektraGlobalGet (KDB * handle, KeySet * ks, Key * parentKey, int position, int subPosition);
+void elektraGlobalSet (KDB * handle, KeySet * ks, Key * parentKey, int position, int subPosition);
+void elektraGlobalError (KDB * handle, KeySet * ks, Key * parentKey, int position, int subPosition);
 
 /** Test a bit. @see set_bit(), clear_bit() */
 #define test_bit(var, bit) ((var) & (bit))

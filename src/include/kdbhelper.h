@@ -6,7 +6,7 @@
  * Should be always preferred.
  * Can be used for profiling and tracing.
  *
- * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
 #ifndef KDB_HELPER
@@ -31,8 +31,11 @@ extern "C" {
 void * elektraMalloc (size_t size);
 void * elektraCalloc (size_t size);
 void elektraFree (void * ptr);
-char * elektraStrDup (const char * s);
 int elektraRealloc (void ** buffer, size_t size);
+
+char * elektraStrDup (const char * s);
+char * elektraStrNDup (const char * s, size_t l);
+
 char * elektraFormat (const char * format, ...);
 char * elektraVFormat (const char * format, va_list arg_list);
 

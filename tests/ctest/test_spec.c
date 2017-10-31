@@ -3,14 +3,14 @@
  *
  * @brief
  *
- * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
 #include <tests.h>
 
 #include <kdbproposal.h>
 
-static void test_lookupSingle ()
+static void test_lookupSingle (void)
 {
 	printf ("Test lookup single\n");
 
@@ -31,7 +31,7 @@ static void test_lookupSingle ()
 	ksDel (ks);
 }
 
-static void test_lookupChain ()
+static void test_lookupChain (void)
 {
 	printf ("Test lookup chain\n");
 
@@ -59,7 +59,7 @@ static void test_lookupChain ()
 	ksDel (ks);
 }
 
-static void test_lookupChainLast ()
+static void test_lookupChainLast (void)
 {
 	printf ("Test lookup chain last\n");
 
@@ -97,7 +97,7 @@ static void test_lookupChainLast ()
 }
 
 
-static void test_lookupChainRealWorld ()
+static void test_lookupChainRealWorld (void)
 {
 	printf ("Test lookup chain real world\n");
 
@@ -134,7 +134,7 @@ static void test_lookupChainRealWorld ()
 	ksDel (ks);
 }
 
-static void test_lookupNoOverride ()
+static void test_lookupNoOverride (void)
 {
 	printf ("Test lookup with override not found\n");
 
@@ -165,7 +165,7 @@ static void test_lookupNoOverride ()
 	keyDel (dup);
 }
 
-static void test_lookupDefault ()
+static void test_lookupDefault (void)
 {
 	printf ("Test lookup default\n");
 
@@ -194,7 +194,7 @@ static void test_lookupDefault ()
 	ksDel (ks);
 }
 
-static void test_lookupNoascading ()
+static void test_lookupNoascading (void)
 {
 	printf ("Test lookup without cascading\n");
 
@@ -242,7 +242,7 @@ static void test_lookupNoascading ()
 	keyDel (specKey);
 }
 
-static void test_lookupDefaultCascading ()
+static void test_lookupDefaultCascading (void)
 {
 	printf ("Test lookup default with cascading\n");
 
@@ -270,7 +270,7 @@ static void test_lookupDefaultCascading ()
 	ksDel (ks);
 }
 
-static void test_lookupLongChain ()
+static void test_lookupLongChain (void)
 {
 	printf ("Test lookup long chain\n");
 
@@ -318,7 +318,7 @@ static void test_lookupLongChain ()
 	ksDel (ks);
 }
 
-static void test_lookupCascading ()
+static void test_lookupCascading (void)
 {
 	printf ("Test lookup cascading\n");
 
@@ -341,7 +341,7 @@ static void test_lookupCascading ()
 	ksDel (ks);
 }
 
-static void test_lookupNamespace ()
+static void test_lookupNamespace (void)
 {
 	printf ("Test lookup namespace\n");
 
@@ -378,7 +378,7 @@ static void test_lookupNamespace ()
 	keyDel (specKey);
 }
 
-static void test_lookupIndirect ()
+static void test_lookupIndirect (void)
 {
 	printf ("Test lookup by indirect spec\n");
 
@@ -431,7 +431,7 @@ static void test_lookupIndirect ()
 	ksDel (ks);
 }
 
-static void test_lookupDoubleIndirect ()
+static void test_lookupDoubleIndirect (void)
 {
 	printf ("Test lookup by double indirect spec\n");
 
@@ -475,7 +475,7 @@ static void test_lookupDoubleIndirect ()
 	ksDel (ks);
 }
 
-static void test_lookupDoubleIndirectDefault ()
+static void test_lookupDoubleIndirectDefault (void)
 {
 	printf ("Test lookup by double indirect spec with default\n");
 

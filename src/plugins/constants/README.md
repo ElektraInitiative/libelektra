@@ -8,13 +8,13 @@
 - infos/status = maintained nodep libc readonly limited nodoc concept
 - infos/description = includes constants information into kdb
 
-## Introduction ##
+## Introduction
 
 Includes constants information into the key database. The constants are defined during CMake build.
 
 The plugin is readonly.
 
-## Usage ##
+## Usage
 
 To mount it, use
 

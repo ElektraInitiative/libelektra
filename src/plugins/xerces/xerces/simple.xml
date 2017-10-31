@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+<xerces>  value of<!-- Comment inside text --> xerces  
+	<!-- this is an attribute -->
+	<fizz buzz="fizzBuzz" />
+	<fizz />
+	<fizz without="buzz" />
+	<userKey user="key">withValue</userKey>
+	<!-- those need escaping: " ' < > &  -->
+	<späciöl_-keüs1 attr='"' attr2="$%(){}``äüö²[/\'>&quot;&lt;&apos;&amp;">>"&amp;&lt;'</späciöl_-keüs1>
+	<cdata more-s_päcials="1 &amp; 2 are &lt; &#51; &#x0A;"><![CDATA[this is some cdata text "'<>&ä "]]></cdata>
+</xerces>

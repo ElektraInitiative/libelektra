@@ -1,30 +1,62 @@
-# Ruby bindings #
+# Ruby bindings
 
-This module is a SWIG generated binding for KDB (http://www.libelektra.org),
-therefore the module provides wrapper classes to KDBs C++ interface and is
-mainly a 1 to 1 relation. However, to provide a more Ruby-style API to KDB,
-this module differs to the C++ API in the following way:
- * C++ iterators for Key/KeySet are excluded. Instead KeySet implements
-   a 'each' method and includes 'Enumerable'. Therefore it is very similar to
-   a Ruby-Array. However, the KeySet cursor methods are still available.
- * Access to native C-level KDB structures (such as ckdb::Key) is not
-   possible, as this does not make much sense within Ruby.
+This module is a SWIG generated Ruby binding for Elektra Core API - KDB
+(https://www.libelektra.org) and its libtools library. So it consists of the two
+Ruby modules:
+ * `Kdb` wrapping Elektra's core API
+ * `Kdbtools` wrapping Elektra's libtools API
+
+The two modules provides wrapper classes the C++ interface and are
+mainly a 1 to 1 mapping. However, to provide a more Ruby-style API,
+the modules differs to the C++ API in the following way:
+
+## Ruby `Kdb` differences to C++ API
+
+ * C++ iterators for `Key`/`KeySet` are excluded. Instead `KeySet` implements
+   an `each` method and includes `Enumerable`. Therefore it is very similar to
+   a Ruby-Array. However, the `KeySet` cursor methods are still available.
  * Method names are renamed to follow Ruby naming conventions
- * Key and KeySet methods directly modify the underlying Key/KeySet
+ * Access to native C-level `KDB` structures (such as `ckdb::Key`) is not
+   possible, as this does not make much sense within Ruby.
+ * Key and `KeySet` implement a `pretty_print` method very suitable for debugging
+ * The `Kdb` module has a static `open` method taking a block, which can be
+   used to access the opened KDB handle within a block, whereas the handle is
+   closed afterwards (similar to `File.open`).
+ * `Key.new` accepts an Hash-like argument list, imitating the C++ variable
+   arguments feature. However, we do not relay on the `KEY_END` flat to
+   indicate the end of a list.
+ * Additional to `Key`s and `KeySet`s, the `KeySet`.new method also accepts a
+   Ruby-Array of `Key`s for `KeySet` creation. This allows a very short
+   KeySet creation.
+ * `KeySet` implements the usual `<<` operator for appending `Key`s and
+   `KeySet`s.
+ * `Key` and `KeySet` methods directly modify the underlying `Key`/`KeySet`
  * The `Key.setCallback` and `Key.getFunc` methods are not supported
 
-Below, we show some specifics of the Ruby binding.
+## Ruby `Kdbtools` differences to C++ API
 
-## Quick start guide ##
+These bindings do not really change anything to the API and are basically a
+direct 1:1 mapping. However the usual renaming from C++ camelcase to Rubys
+naming conventions also was done here.
+
+ * methods for fetching library symbol function pointers are excluded
+
+## Examples
+
+Example and demo applications which a lot of documentation in it can be found
+in the Ruby-bindings source tree under 'examples'. Also the test cases (under
+'tests') can be a good point to look if you need more information.
+
+## Quick start guide
 
 This is a short example and illustrates how to use the binding:
-	
+
 	require 'kdb'
-	
+
 	Kdb.open do |db|
 		ks = Kdb::KeySet.new
 		db.get ks, '/'
-		
+
 		k = ks.lookup "/org/sw/myapp/#1/current/setting1"
 		if !k.nil?
 			k.value = "new value"
@@ -36,7 +68,7 @@ This is a short example and illustrates how to use the binding:
 		db.set ks, '/'
 	end
 
-## Get a KDB handle ##
+## Get a KDB handle
 
 There are two ways to create a KDB handle:
 
@@ -46,24 +78,24 @@ Creating a new KDB instance:
 	# requires a db.close afterwards
 
 or with the `open` method:
-	
+
 	db = Kdb.open
 	# requires a db.close afterwards
 
 This `open` method supports also a block:
-	
+
 	Kdb.open do |db|
 		...
 	end
 	# db.close is called implecitly
 
-Note: after the block was executed, `db.close` is called implicitly, Thus you 
+Note: after the block was executed, `db.close` is called implicitly, Thus you
 can not use the handle afterwards.
 
-## Exception handling ##
+## Exception handling
 
 Exception handling is directly mapped from the C++ binding:
-	
+
 	begin
 		db = Kdb.open
 		...
@@ -73,20 +105,20 @@ Exception handling is directly mapped from the C++ binding:
 		db.close
 	end
 
-## KeySet creation ##
+## KeySet creation
 
 A KeySet can be created in different ways:
 
 An empty key set:
-	
+
 	ks = Kdb::KeySet.new
 
 A key set with one initial key:
-	
+
 	ks = Kdb::KeySet.new Kdb::Key.new("user/sw/key1")
 
 Passing an array of initial keys:
-	
+
 	ks = Kdb::KeySet.new [
 		Kdb::Key.new "user/sw/key1"
 		Kdb::Key.new "user/sw/key2"
@@ -94,55 +126,58 @@ Passing an array of initial keys:
 	]
 
 Passing a KeySet of initial keys:
-	
+
 	ks2 = Kdb::KeySet.new ks
 
 
-## Appending keys ##
+## Appending keys
 
 `KeySet` supports Ruby's "append" operator `<<`
-	
+
 	ks << Kdb::Key.new("user/sw/key1")
 
-## iteration ##
+## iteration
 
 `KeySet` has an `each` method and includes `Enumerable`
-	
+
 	ks.each { |k| puts k.to_s }
 	ks.any? { |k| k.has_meta? "owner" }
 
-## Deleting Keys ##
+## Deleting Keys
 
 Similar to the Ruby `Array`, `KeySet` also implements `delete` and `delete_at`
 methods, which can be used to delete a key by name or by index:
-	
+
 	ks.delete "user/sw/key1"
 	ks.delete_at 2
 
-## Key creation ##
+## Key creation
 
 Keys can be created with a Hash-like variable argument list:
-	
+
 	Kdb::Key.new "user/sw/key1", value: "v1", owner: "me"
 
-The first argument is the name of the `Key`, followed by an optional list of 
+The first argument is the name of the `Key`, followed by an optional list of
 symbol value pairs. The symbol value pairs are interpreted as follows:
 - `value`: this will set the value of the newly created key
 - `flags`: pass a ORed list of Key flags
-- any other symbol is interpreted as meta data key and therefore will add a new
+- any other symbol is interpreted as metadata key and therefore will add a new
   metadata key.
 
-## Key meta data iteration ##
+## Key metadata iteration
 
 This is very similar to the `KeySet` iteration and can be accessed with `meta`:
-	
+
 	k.meta.each do |m|
 		puts "#{m.name}: #{m.value}"
 	end
 
-## Building ##
+## Building
 
-Note that cmake does *not* automatically rebuild SWIG bindings
-when header files are changed. Remove the build directory
-in that case.
+Building the Ruby bindings from Elektra src tree requires to have SWIG >= 3.0.8
+installed. Additionally ruby header files (Debian/Ubuntu ruby-dev) are required
+too. 
+
+The bindings where tested with Ruby >= 2.1.0, lower version might work but are
+not tested.
 

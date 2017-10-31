@@ -1,0 +1,6 @@
+*/
+sitemap.xml
+!assets/
+!pages/
+!templates/
+!vendor/

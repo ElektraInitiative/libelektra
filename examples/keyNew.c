@@ -3,7 +3,7 @@
  *
  * @brief
  *
- * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
 // clang-format off
@@ -11,7 +11,7 @@
 #include <kdb.h>
 #include <stdio.h>
 
-static void shortExamples()
+static void shortExamples(void)
 {
 {
 //! [Simple]
@@ -168,7 +168,7 @@ keyDel (k); // k is now deleted
 
 }
 
-int main()
+int main(void)
 {
 	shortExamples();
 }

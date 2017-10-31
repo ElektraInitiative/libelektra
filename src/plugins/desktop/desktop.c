@@ -3,7 +3,7 @@
  *
  * @brief Source for desktop plugin
  *
- * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  *
  */
 
@@ -52,7 +52,7 @@ int elektraDesktopGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA
 	{
 		ksAppendKey (returned, keyNew (keyName (parentKey), KEY_VALUE, "tde", KEY_END));
 	}
-	else if (!strcasecmp (getenv ("DESKTOP_SESSION"), "unity"))
+	else if ((desktop = getenv ("DESKTOP_SESSION")) && !strcasecmp (desktop, "unity"))
 	{
 		ksAppendKey (returned, keyNew (keyName (parentKey), KEY_VALUE, "unity", KEY_END));
 	}

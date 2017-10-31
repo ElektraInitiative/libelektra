@@ -3,7 +3,7 @@
  *
  * @brief Tests for template plugin
  *
- * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  *
  */
 
@@ -14,7 +14,7 @@
 
 #include <tests_plugin.h>
 
-static void test_basics ()
+static void test_basics (void)
 {
 	printf ("test basics\n");
 
@@ -24,15 +24,15 @@ static void test_basics ()
 
 	KeySet * ks = ksNew (0, KS_END);
 
-	succeed_if (plugin->kdbOpen (plugin, parentKey) == 1, "call to kdbOpen was not successful");
+	succeed_if (plugin->kdbOpen (plugin, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbOpen was not successful");
 
-	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "call to kdbGet was not successful");
+	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_NO_UPDATE, "call to kdbGet was not successful");
 
-	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 1, "call to kdbSet was not successful");
+	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_NO_UPDATE, "call to kdbSet was not successful");
 
-	succeed_if (plugin->kdbError (plugin, ks, parentKey) == 1, "call to kdbError was not successful");
+	succeed_if (plugin->kdbError (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbError was not successful");
 
-	succeed_if (plugin->kdbClose (plugin, parentKey) == 1, "call to kdbClose was not successful");
+	succeed_if (plugin->kdbClose (plugin, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbClose was not successful");
 
 	keyDel (parentKey);
 	ksDel (ks);
@@ -49,7 +49,7 @@ int main (int argc, char ** argv)
 
 	test_basics ();
 
-	printf ("\ntestmod_template RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
+	print_result ("testmod_template");
 
 	return nbError;
 }

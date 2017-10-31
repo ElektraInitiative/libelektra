@@ -3,7 +3,7 @@
  *
  * @brief Tests for KDB
  *
- * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  *
  */
 
@@ -93,6 +93,9 @@ TEST_F (Error, Again)
 	ASSERT_EQ (ks.size (), 1) << "did not keep key at set (again)" << ks;
 }
 
+// The following test requires a filesystem that supports sub-second timestamps.
+// The default filesystem on macOS, HFS+ does not support such precise timestamps.
+#if !defined(__APPLE__)
 TEST_F (Error, AgainRepeat)
 {
 	using namespace kdb;
@@ -128,7 +131,7 @@ TEST_F (Error, AgainRepeat)
 		ASSERT_EQ (ks.size (), 1) << "did not keep key at set (again)" << ks;
 	}
 }
-
+#endif
 
 TEST_F (Error, CSimple)
 {

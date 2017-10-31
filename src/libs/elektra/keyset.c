@@ -3,7 +3,7 @@
  *
  * @brief Methods for key sets.
  *
- * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
 #ifdef HAVE_KDBCONFIG_H
@@ -166,7 +166,6 @@ KeySet * ksNew (size_t alloc, ...)
 KeySet * ksVNew (size_t alloc, va_list va)
 {
 	KeySet * keyset = 0;
-	Key * key = 0;
 
 	keyset = (KeySet *)elektraMalloc (sizeof (KeySet));
 	if (!keyset)
@@ -192,7 +191,7 @@ KeySet * ksVNew (size_t alloc, va_list va)
 
 	if (alloc != 1) // is >0 because of increment earlier
 	{
-		key = (struct _Key *)va_arg (va, struct _Key *);
+		Key * key = (struct _Key *)va_arg (va, struct _Key *);
 		while (key)
 		{
 			ksAppendKey (keyset, key);
@@ -250,7 +249,7 @@ KeySet * ksDup (const KeySet * source)
  *
  * @param source has to be an initialized source KeySet
  * @return a deep copy of source on success
- * @retval 0 on NULL pointer
+ * @retval 0 on NULL pointer or a memory error happened
  * @see ksNew(), ksDel()
  * @see keyDup() for key duplication
  * @see ksDup() for flat copy
@@ -272,7 +271,11 @@ KeySet * ksDeepDup (const KeySet * source)
 		{
 			keyClearSync (d);
 		}
-		ksAppendKey (keyset, d);
+		if (ksAppendKey (keyset, d) == -1)
+		{
+			ksDel (keyset);
+			return 0;
+		}
 	}
 
 	return keyset;
@@ -370,7 +373,7 @@ int ksDel (KeySet * ks)
  *
  * @param ks the keyset object to work with
  * @see ksAppendKey() for details on how keys are inserted in KeySets
- * @retval 0 on sucess
+ * @retval 0 on success
  * @retval -1 on failure (memory)
  */
 int ksClear (KeySet * ks)
@@ -386,6 +389,9 @@ int ksClear (KeySet * ks)
 	}
 	ks->alloc = KEYSET_SIZE;
 
+#ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
+	ks->opmphm = opmphmNew ();
+#endif
 
 	return 0;
 }
@@ -484,7 +490,7 @@ static int keyCompareByNameCase (const void * p1, const void * p2)
 /**
  * @brief Compare only the owner of two keys (not the name)
  *
- * @return comparision result
+ * @return comparison result
  */
 static int keyCompareByOwner (const void * p1, const void * p2)
 {
@@ -564,7 +570,7 @@ static int keyCompareByNameOwnerCase (const void * p1, const void * p2)
  * @note the owner will only be used if the names are equal.
  *
  * Often is enough to know if the other key is
- * less then or greater then the other one.
+ * less then or greater than the other one.
  * But Sometimes you need more precise information,
  * see keyRel().
  *
@@ -818,7 +824,14 @@ ssize_t ksAppendKey (KeySet * ks, Key * toAppend)
 		/* We want to append a new key
 		  in position insertpos */
 		++ks->size;
-		if (ks->size >= ks->alloc) ksResize (ks, ks->alloc * 2 - 1);
+		if (ks->size >= ks->alloc)
+		{
+			if (ksResize (ks, ks->alloc * 2 - 1) == -1)
+			{
+				--ks->size;
+				return -1;
+			}
+		}
 		keyIncRef (toAppend);
 
 		if (insertpos == (ssize_t)ks->size - 1)
@@ -871,7 +884,7 @@ ssize_t ksAppend (KeySet * ks, const KeySet * toAppend)
 	if (!ks) return -1;
 	if (!toAppend) return -1;
 
-	if (toAppend->size <= 0) return ks->size;
+	if (toAppend->size == 0) return ks->size;
 
 	/* Do only one resize in advance */
 	for (toAlloc = ks->alloc; ks->size + toAppend->size >= toAlloc; toAlloc *= 2)
@@ -911,7 +924,7 @@ ssize_t ksCopyInternal (KeySet * ks, size_t to, size_t from)
 	ELEKTRA_ASSERT (length >= 0, "length %zu too small", length);
 	ELEKTRA_ASSERT (ks->size >= to, "ks->size %zu smaller than %zu", ks->size, to);
 
-	ks->size += sizediff;
+	ks->size = ssize + sizediff;
 
 	if (length != 0)
 	{
@@ -1178,7 +1191,7 @@ Key * ksPop (KeySet * ks)
 
 	ks->flags |= KS_FLAG_SYNC;
 
-	if (ks->size <= 0) return 0;
+	if (ks->size == 0) return 0;
 
 	--ks->size;
 	if (ks->size + 1 < ks->alloc / 2) ksResize (ks, ks->alloc / 2 - 1);
@@ -1236,11 +1249,15 @@ int ksRewind (KeySet * ks)
  *
  * @note You must not delete or change the key, use ksPop() if you want to delete it.
  *
+ * @note That applications must do ksLookup() with an cascading key for every single
+ * key before using it, because specifications allow to hide or override keys.
+ *
  * @param ks the keyset object to work with
  * @return the new current Key
  * @retval 0 when the end is reached
  * @retval 0 on NULL pointer
  * @see ksRewind(), ksCurrent()
+ * @see ksLookup() to honor specifications
  */
 Key * ksNext (KeySet * ks)
 {
@@ -1907,12 +1924,20 @@ static Key * elektraLookupCreateKey (KeySet * ks, Key * key, ELEKTRA_UNUSED opti
 /**
  * Look for a Key contained in @p ks that matches the name of the @p key.
  *
- * @p ksLookup() is designed to let you work with
- * entirely pre-loaded KeySets. The
- * idea is to fully kdbGet() for your application root key and
- * process it all at once with @p ksLookup().
+ * @note Applications should only use ksLookup() with cascading
+ * keys (key name starting with `/`).
+ * Furthermore, a lookup should be done for every key (also when iterating
+ * over keys) so that the specifications are honored correctly.
+ * Keys of all namespaces need to be present so that ksLookup()
+ * can work correctly, so make sure to also use kdbGet() with a cascading
+ * key.
  *
- * This function is efficient by using binary search. Together with
+ * @p ksLookup() is designed to let you work with a
+ * KeySet containing all keys of the application. The
+ * idea is to fully kdbGet() the whole configuration of your application and
+ * process it all at once with many @p ksLookup().
+ *
+ * This function is efficient (at least using binary search). Together with
  * kdbGet() which can you load the whole configuration
  * you can write very effective but short code for configuration:
  *
@@ -1921,16 +1946,16 @@ static Key * elektraLookupCreateKey (KeySet * ks, Key * key, ELEKTRA_UNUSED opti
  * This is the way programs should get their configuration and
  * search after the values. It is guaranteed that more namespaces can be
  * added easily and that all values can be set by admin and user.
- * Furthermore, using the kdb-tool, it is possible to find out which value
- * an application will find.
+ * Furthermore, using the kdb-tool, it is possible to introspect which values
+ * an application will get (by doing the same cascading lookup).
  *
  * If found, @p ks internal cursor will be positioned in the matched key
  * (also accessible by ksCurrent()), and a pointer to the Key is returned.
  * If not found, @p ks internal cursor will not move, and a NULL pointer is
  * returned.
  *
- * Cascading is done if the first character is a /. This leads to search in
- * all namespaces proc/, dir/, user/ and system/, but also correctly considers
+ * Cascading lookups will by default search in
+ * all namespaces (proc/, dir/, user/ and system/), but will also correctly consider
  * the specification (=metadata) in spec/:
  *
  * - @p override/# will make sure that another key is considered before
@@ -1944,9 +1969,8 @@ static Key * elektraLookupCreateKey (KeySet * ks, Key * key, ELEKTRA_UNUSED opti
  *
  * @note override and fallback work recursively, while default does not.
  *
- * This process is very flexible, but it would be boring to follow all this links
- * in the head to find out which key will be taken.
- * So use `kdb get -v` to trace the keys.
+ * This process is very flexible, but it would be boring to manually follow all this links
+ * to find out which key will be taken in the end. Use `kdb get -v` to trace the keys.
  *
  *
  * @par KDB_O_POP
@@ -2050,50 +2074,7 @@ Key * ksLookup (KeySet * ks, Key * key, option_t options)
 /**
  * Convenience method to look for a Key contained in @p ks that matches @p name.
  *
- * @p ksLookupByName() is designed to let you work with
- * entirely pre-loaded KeySets, so instead of kdbGetKey(), key by key, the
- * idea is to fully kdbGetByName() for your application root key and
- * process it all at once with @p ksLookupByName().
- *
- * This function is very efficient by using binary search. Together with
- * kdbGetByName() which can you load the whole configuration with only
- * some communication to backends you can write very effective but short
- * code for configuration.
- *
- * If found, @p ks internal cursor will be positioned in the matched key
- * (also accessible by ksCurrent()), and a pointer to the Key is returned.
- * If not found, @p ks internal cursor will not move, and a NULL pointer is
- * returned.
- * If requested to pop the key, the cursor will be rewinded.
- *
- * @section cascading Cascading
- *
- * Cascading is done if the first character is a /. This leads to ignoring
- * the prefix like system/ and user/.
- * @code
-if (kdbGet(handle, "/sw/tests/myapp/#0/current", myConfig, parentKey ) == -1)
-	errorHandler ("Could not get Keys", parentKey);
-
-if ((myKey = ksLookupByName (myConfig, "/sw/tests/myapp/#0/current/key", 0)) == NULL)
-	errorHandler ("Could not Lookup Key");
- * @endcode
- *
- * This is the way multi user programs should get their configuration and
- * search after the values. It is guaranteed that more namespaces can be
- * added easily and that all values can be set by admin and user.
- * Also profile-features are available via plugins.
- * Applications should not implement cascading algorithms, but only
- * do a single lookup and put cascading functionality into plugins.
- *
- * @section fullsearch Full Search
- *
- * When KDB_O_NOALL is set the keyset will be only searched from ksCurrent()
- * to ksTail(). You need to ksRewind() the keyset yourself. ksCurrent() is
- * always set properly after searching a key, so you can go on searching
- * another key after the found key.
- *
- * When KDB_O_NOALL is not set the cursor will stay untouched and all keys
- * are considered. A much more efficient binary search will be used then.
+ * @see ksLookup() for explanation of the functionality and example.
  *
  * @param ks where to look for
  * @param name key name you are looking for
@@ -2104,7 +2085,7 @@ if ((myKey = ksLookupByName (myConfig, "/sw/tests/myapp/#0/current/key", 0)) == 
  *
  * @return pointer to the Key found, 0 otherwise
  * @retval 0 on NULL pointers
- * @see keyCompare() for very powerful Key lookups in KeySets
+ * @see ksLookup() to search with a given key
  * @see ksCurrent(), ksRewind(), ksNext()
  */
 Key * ksLookupByName (KeySet * ks, const char * name, option_t options)
@@ -2359,7 +2340,7 @@ size_t ksGetAlloc (const KeySet * ks)
  * cleaned with ksClear().
  *
  * @see ksNew(), ksClose(), keyInit()
- * @retval 1 on success
+ * @retval 0 on success
  */
 int ksInit (KeySet * ks)
 {
@@ -2371,7 +2352,11 @@ int ksInit (KeySet * ks)
 
 	ksRewind (ks);
 
-	return 1;
+#ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
+	ks->opmphm = opmphmNew ();
+#endif
+
+	return 0;
 }
 
 
@@ -2381,7 +2366,7 @@ int ksInit (KeySet * ks)
  * KeySet object initializer.
  *
  * @see ksDel(), ksNew(), keyInit()
- * @retval 1 on success
+ * @retval 0 on success
  */
 int ksClose (KeySet * ks)
 {
@@ -2399,6 +2384,10 @@ int ksClose (KeySet * ks)
 	ks->alloc = 0;
 
 	ks->size = 0;
+
+#ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
+	if (ks->opmphm) opmphmDel (ks->opmphm);
+#endif
 
 	return 0;
 }

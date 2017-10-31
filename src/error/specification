@@ -120,7 +120,7 @@ severity:warning
 ingroup:kdb
 
 number:19
-description:names of Plugins must start have the position number as second char
+description:names of Plugins must start with the position number as second char
 severity:warning
 ingroup:kdb
 
@@ -229,7 +229,7 @@ severity:error
 ingroup:kdb
 
 number:38
-description:could not buildup split
+description:could not build up split
 severity:error
 ingroup:kdb
 
@@ -363,7 +363,7 @@ description:invalid line encountered
 severity:error
 ingroup:plugin
 macro:NOEOF
-module:simpleini
+module:storage
 
 number:61
 description:parse error
@@ -467,6 +467,7 @@ description:error while reading file
 severity:error
 ingroup:plugin
 module:storage
+macro:READ_FAILED
 
 number:77
 description:Yajl parser error
@@ -527,6 +528,7 @@ number:87
 description:memory allocation error
 severity:error
 ingroup:plugin
+macro:MALLOC
 
 number:88
 description:could not sync directory
@@ -589,7 +591,7 @@ ingroup:plugin
 module:storage
 
 number:99
-description:could not update time of file
+description:could not update metadata of file
 severity:warning
 ingroup:plugin
 module:resolver
@@ -889,7 +891,7 @@ module:gitresolver
 macro:GITRESOLVER_RESOLVING_ISSUE
 
 number:148
-description:a conflict occured. There are new commits in the repository.
+description:a conflict occurred. There are new commits in the repository.
 severity:error
 ingroup:plugin
 module:gitresolver
@@ -998,3 +1000,170 @@ severity:warning
 ingroup:plugin
 module:fcrypt
 macro:FCRYPT_FUTIMENS
+
+number:164
+description:failed to upload config file.
+severity:error
+ingroup:plugin
+module:curlget
+macro:CURL_UPLOAD_FAILED
+
+number:165
+description:could not fetch file from remote host, try falling back to local copy.
+severity:warning
+ingroup:plugin
+module:curlget
+macro:CURL_LOCAL_FALLBACK
+
+number:166
+description:failed to fetch configuration file.
+severity:error
+ingroup:plugin
+module:curlget
+macro:CURL_FETCH_FAILED
+
+number:167
+description:invalid plugin configuration.
+severity:error
+ingroup:plugin
+module:curlget
+macro:CURL_CONFIG_INVALID
+
+number:168
+description:validation of date/time string failed.
+severity:error
+ingroup:plugin
+module:date
+macro:D_T_FMT
+
+number:169
+description:could not stat file
+severity:error
+ingroup:plugin
+module:file
+macro:STAT_FAILED
+
+number:170
+description:invalid range syntax.
+severity:error
+ingroup:plugin
+module:range
+macro:RANGE_SYNTAX
+
+number:171
+description:value not within specified range.
+severity:error
+ingroup:plugin
+module:range
+macro:INVALID_RANGE
+
+number:172
+description:multifile globbing failed.
+severity:error
+ingroup:plugin
+module:multifile
+macro:MULTI_GLOB_FAILED
+
+number:173
+description:invalid line format pattern
+severity:error
+ingroup:plugin
+macro:INVALID_FORMAT
+module:simpleini
+
+number:174
+description:general xml error
+severity:error
+ingroup:plugin
+module:xerces
+
+number:175
+description:Not a valid key value pair
+severity:warning
+ingroup:plugin
+macro:NOT_VALID_KEY_VALUE_PAIR
+module:mini
+
+number:176
+description:Neither a GPG recipient (specified as encrypt/key) nor a GPG signature key (specified as sign/key) has been provided. Please provide at least one key.
+severity:error
+ingroup:plugin
+macro:FCRYPT_OPERATION_MODE
+module:fcrypt
+
+number:177
+description:The provided argument does not identify a valid and useable GPG key.
+severity:error
+ingroup:plugin
+macro:GPG_KEY_INVALID
+module:fcrypt
+
+number:178
+description:The plugin is in an invalid state. Please report this issue.
+severity:error
+ingroup:plugin
+macro:FCRYPT_STATE
+module:fcrypt
+
+number:179
+description:Failed to close a file descriptor.
+severity:warning
+ingroup:plugin
+macro:FCRYPT_CLOSE
+module:fcrypt
+
+number:180
+description:Failed to unlink a temporary file. WARNING: unencrypted data may leak! Please try to delete the file manually.
+severity:warning
+ingroup:plugin
+macro:FCRYPT_UNLINK
+module:fcrypt
+
+number:181
+description:The provided data could not be recognized as valid cryptographic payload. The data is possibly corrupted.
+severity:error
+ingroup:plugin
+macro:CRYPTO_PAYLOAD
+module:crypto
+
+number:182
+description:The version of the cryptographic payload is not compatible with the version of the plugin.
+severity:error
+ingroup:plugin
+macro:CRYPTO_VERSION
+module:crypto
+
+number:183
+description:Unable to write to file
+severity:error
+ingroup:plugin
+module:yamlcpp
+macro:YAMLCPP_WRITE_FAILED
+
+number:184
+description:Something went wrong while emitting YAML data
+severity:error
+ingroup:plugin
+module:yamlcpp
+macro:YAMLCPP_EMITTER_FAILED
+
+number:185
+description:Failed to retrieve YAML representation
+severity:error
+ingroup:plugin
+module:yamlcpp
+macro:YAMLCPP_REPRESENTATION
+
+number:186
+description:ruby warning
+severity:warning
+ingroup:plugin
+module:ruby
+macro:RUBY_GEN_WARN
+
+number:187
+description:ruby error
+severity:error
+ingroup:plugin
+module:ruby
+macro:RUBY_GEN_ERROR

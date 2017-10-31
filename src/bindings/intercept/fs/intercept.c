@@ -109,7 +109,7 @@ static const char * genTemporaryFilename (void)
 
 static void init (void) __attribute__ ((constructor));
 static void cleanup (void) __attribute__ ((destructor));
-void init ()
+void init (void)
 {
 	char cwd[PATH_MAX];
 	getcwd (cwd, PATH_MAX);
@@ -192,7 +192,7 @@ CleanUp:
 }
 
 
-void cleanup ()
+void cleanup (void)
 {
 	Node * current = head;
 	while (current)
