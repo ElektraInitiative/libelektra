@@ -4,12 +4,12 @@
 - infos/provides =
 - infos/needs =
 - infos/placements =
-- infos/status = unittest configurable memleak experimental -500
+- infos/status = unittest configurable memleak experimental discouraged
 - infos/description = generic Java plugin
 
 ## Introduction
 
-Allows you to write plugins in Nava.
+Allows you to write plugins in Java.
 
 Needs Java 8 or later. While the plugin internally uses JNI, the Java
 binding for your Java plugin may use something different, e.g. JNA.
@@ -32,19 +32,8 @@ The Java plugin itself needs to have the following methods:
 
 ### Java prerequisites on Debian 9
 
-Install openjdk-9-jdk openjdk-9-jdk-headless openjdk-9-jre from backports.
+openjdk-8 and 9 does not work reliable: jvm crashes without usable backtrace.
 
-Make sure that 9 is also default java, otherwise CMake will not be able to locate it:
-`/usr/lib/jvm/default-java -> java-9-openjdk-amd64`
-
-When manually executing testcases the following LD_LIBRARY_PATH might be needed:
-`/usr/lib/jvm/default-java/lib:/usr/lib/jvm/default-java/lib/server`
-
-It also works with Java 8 from Oracle, but then the LD_LIBRARY_PATH needs to be:
-`/usr/lib/jvm/default-java/jre/lib/amd64:/usr/lib/jvm/default-java/jre/lib/amd64/server`
-
-
-openjdk-8 is known not to work (jvm crashes without usable backtrace).
 
 
 ### Java prerequisites on Debian 8
@@ -148,11 +137,11 @@ Also explained
 
 ## Issues
 
-(Argumentation for -500 in status)
+Argumentation for discouraged:
 
-- In Debian Wheezy/Jessie you cannot use openjdk:
-  you get a linker error because of some missing private SUN symbols.
-  Maybe just the cmake mechanism to find java is broken.
+- You cannot use the plugin with openjdk:
+  You get a linker error because of some missing private SUN symbols.
+  In Debian9 it crashes with openjdk8/9.
 - Only a single java plugin can be loaded
 - When this plugin is enabled, valgrind detects memory problems even if
   the plugin is not mounted.
