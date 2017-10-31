@@ -84,7 +84,7 @@ To configure Elektra graphically (with curses) run (`..` belongs to command):
 
     mkdir build && cd build && ccmake ..
 
-and press 'c' to configure the cache (might be necessary multiple times, and once on the first time in case you dont see any settings).
+and press 'c' to configure the cache (might be necessary multiple times, and once on the first time in case you don‘t see any settings).
 After applying the desired settings, press 'g' to generate the make file.
 
 

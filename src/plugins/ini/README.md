@@ -197,12 +197,11 @@ Example:
 ```sh
 sudo kdb mount test.ini /examples/ini ini
 
-cat > `kdb file /examples/ini` <<EOF \
-[Section1]\
-key1 = val1\
-[Section3]\
-key3 = val3\
-EOF
+echo '[Section1]'  >  `kdb file /examples/ini`
+echo 'key1 = val1' >> `kdb file /examples/ini`
+echo '[Section3]'  >> `kdb file /examples/ini`
+echo 'key3 = val3' >> `kdb file /examples/ini`
+
 kdb file /examples/ini | xargs cat
 #> [Section1]
 #> key1 = val1

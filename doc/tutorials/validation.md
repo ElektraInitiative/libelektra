@@ -213,17 +213,20 @@ Let us create an example _Specfile_ in the dump format, which supports metadata
 the human readable [ni format](/src/plugins/ni/README.md) by using `kdb import`):
 ```sh
 sudo kdb mount tutorial.dump spec/tutorial dump
-cat << HERE | kdb import spec/tutorial ni  \
-[]                                         \
- mountpoint = tutorial.dump                \
- infos/plugins = dump validation           \
-                                           \
-[/links/_]                                 \
-check/validation = https?://.*\..*         \
-check/validation/match = LINE              \
-check/validation/message = not a valid URL \
-description = A link to some website       \
-HERE
+
+mkdir /tmp/elekra
+echo '[]                                        ' >  /tmp/elekra/import.ini
+echo 'mountpoint = tutorial.dump                ' >> /tmp/elekra/import.ini
+echo 'infos/plugins = dump validation           ' >> /tmp/elekra/import.ini
+echo '                                          ' >> /tmp/elekra/import.ini
+echo '[/links/_]                                ' >> /tmp/elekra/import.ini
+echo 'check/validation = https?://.*\..*        ' >> /tmp/elekra/import.ini
+echo 'check/validation/match = LINE             ' >> /tmp/elekra/import.ini
+echo 'check/validation/message = not a valid URL' >> /tmp/elekra/import.ini
+echo 'description = A link to some website      ' >> /tmp/elekra/import.ini
+cat /tmp/elekra/import.ini | kdb import spec/tutorial ni
+rm -r /tmp/elekra
+
 kdb lsmeta spec/tutorial
 #> infos/plugins
 #> mountpoint

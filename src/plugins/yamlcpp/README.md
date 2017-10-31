@@ -256,6 +256,15 @@ echo 'bin: !!binary aGk=' > `kdb file /examples/binary`
 kdb get /examples/binary/bin
 #> \x68\x69
 
+# We can use `ruby` to convert the hexadecimal value returned by `kdb get`
+# to its ASCII representation. If you use `bash` or `fish` as shell then
+#     printf `kdb get /examples/binary/bin` # Bash
+# or
+#     printf (kdb get /examples/binary/bin) # fish
+# should work too.
+ruby -e "print ARGV[0].split('\x')[1..-1].map {|byte| byte.to_i(16).chr }.join" `kdb get /examples/binary/bin`
+#> hi
+
 # Add a string value to the database
 kdb set /examples/binary/text mate
 # Base 64 does not modify textual values

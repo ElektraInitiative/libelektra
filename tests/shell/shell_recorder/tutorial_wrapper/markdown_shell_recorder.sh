@@ -1,133 +1,60 @@
 #!/bin/bash
-INFILE="$1"
 
 @INCLUDE_COMMON@
 
-BLOCKS=$(sed -n '/```sh/,/```\n/p' "$1")
-BUF=
-SHELL_RECORDER_ERROR=0
+# -- Functions -----------------------------------------------------------------------------------------------------------------------------
 
-COMMAND=
-RET=
-ERRORS=
-WARNINGS=
-STDOUT=
-STDOUTRE=
-STDOUTGLOB=
-STDERR=
-DIFF=
-OUTBUF=
-MOUNTPOINT=
-
-writeBlock()
+resetGlobals()
 {
-	OUTFILE="$1"
-	if [ ! -z "$RET" ];
-	then
-		echo "RET: $RET" >> "$TMPFILE"
-	else
-		if [ -z "$ERRORS" ];
-		then
-			echo "RET: 0" >> "$TMPFILE"
-		fi
-	fi
-	if [ ! -z "$ERRORS" ];
-	then
-		echo "ERRORS: $ERRORS" >> "$TMPFILE"
-	fi
-	if [ ! -z "$WARNINGS" ];
-	then
-		echo "WARNINGS: $WARNINGS" >> "$TMPFILE"
-	fi
-	if [ ! -z "$DIFF" ];
-	then
-		echo "DIFF: $DIFF" >> "$TMPFILE"
-	fi
-	if [ ! -z "$STDERR" ];
-	then
-		echo "STDERR: $STDERR" >> "$TMPFILE"
-	fi
-	if [ ! -z "$OUTBUF" ];
-	then
-		tmp=$(replace_newline_return <<< "$OUTBUF")
-		tmp=$(echo "$tmp" | regex_escape)
-		echo "STDOUT: $tmp" >> "$TMPFILE"
-	elif [ ! -z "$STDOUT" ];
-	then
-		tmp=$(replace_newline_return <<< "$STDOUT")
-		tmp=$(echo "$tmp" | regex_escape)
-		echo "STDOUT: $tmp" >> "$TMPFILE"
-	else
-		if [ ! -z "$STDOUTRE" ]
-		then
-			echo "STDOUT-REGEX: $STDOUTRE" >> "$TMPFILE"
-		else
-			if [ ! -z "$STDOUTGLOB" ];
-			then
-				echo "STDOUT-GLOB: $STDOUT"
-			fi
-		fi
-	fi
-	COMMAND=$(sed s/sudo\ //g <<<"$COMMAND")
-	echo "< $COMMAND" >> "$TMPFILE"
-
 	COMMAND=
 	RET=
 	ERRORS=
 	WARNINGS=
 	STDOUT=
 	STDOUTRE=
-	STDOUTGLOB=
 	STDERR=
 	DIFF=
 	OUTBUF=
+	MOUNTPOINT=
+}
+
+writeBlock()
+{
+	OUTFILE="$1"
+	[ -n "$RET" ] && echo "RET: $RET" >> "$TMPFILE" || { [ -z "$ERRORS" ] && echo 'RET: 0' >> "$TMPFILE"; }
+	[ -n "$ERRORS" ] && echo "ERRORS: $ERRORS" >> "$TMPFILE"
+	[ -n "$WARNINGS" ] && echo "WARNINGS: $WARNINGS" >> "$TMPFILE"
+	[ -n "$DIFF" ] && echo "DIFF: $DIFF" >> "$TMPFILE"
+	[ -n "$STDERR" ] && echo "STDERR: $STDERR" >> "$TMPFILE"
+	if [ -n "$OUTBUF" ]; then echo "STDOUT: $OUTBUF" >> "$TMPFILE"
+	elif [ -n "$STDOUT" ]; then echo "STDOUT: $STDOUT" >> "$TMPFILE"
+	elif [ -n "$STDOUTRE" ]; then echo "STDOUT-REGEX: $STDOUTRE" >> "$TMPFILE"
+	fi
+	COMMAND=$(sed s/sudo\ //g <<< "$COMMAND")
+	echo "< $COMMAND" >> "$TMPFILE"
+	resetGlobals
 }
 
 translate()
 {
 	TMPFILE=$(mktemp)
 	MOUNTPOINT=$(echo "$BUF" | head -n 1)
-	grep -Eq "Backup-and-Restore:" <<< "$MOUNTPOINT"
-	if [ "$?" -eq 0 ];
-	then
-		MOUNTPOINT=$(echo "$MOUNTPOINT" | cut -d ':' -f2)
-		echo "Mountpoint: $MOUNTPOINT" >> "$TMPFILE"
-	else
-		echo "Mountpoint: /examples" >> "$TMPFILE"
+	if grep -Eq 'Backup-and-Restore:' <<< "$MOUNTPOINT"; then echo "Mountpoint: $(cut -d ':' -f2 <<< "$MOUNTPOINT")" >> "$TMPFILE"
+	else echo 'Mountpoint: /examples' >> "$TMPFILE"
 	fi
-	COMMAND=
-	RET=
-	ERRORS=
-	WARNINGS=
-	STDOUT=
-	STDOUTRE=
-	STDOUTGLOB=
-	STDERR=
-	DIFF=
-	OUTBUF=
-	MOUNTPOINT=
-	IFS=''
+
+	resetGlobals
 	while read -r line;
 	do
-		grep -Eq "^(\s)*#>" <<< "$line"
-		if [ "$?" -eq 0 ];
-		then
-			if [ -z "$OUTBUF" ];
-			then
-				tmp=$(sed -n 's/\(\s\)*#> \(.*\)/\2/p' <<<"$line")
-				OUTBUF="$tmp"
-			else
-				tmp=$(sed -n 's/\(\s\)*#> \(.*\)/\2/p' <<<"$line")
-				[ -z "$tmp" ] && OUTBUF="${OUTBUF}⏎" || OUTBUF=$(echo -en "${OUTBUF}\n$tmp")
-			fi
+		if grep -Eq '^\s*#>' <<< "$line"; then
+			output=$(sed -n 's/\s*#> \(.*\)/\1/p' <<< "$line")
+			[ -z "$OUTBUF" ] && OUTBUF="$output" || OUTBUF="${OUTBUF}⏎$output"
 		fi
 
-		grep -Eq "^(\s*)#" <<< "$line"
-		if [ "$?" -eq 0 ];
-		then
-			tmp=$(sed -n 's/\(\s\)*# \(.*\)/\2/p' <<<"$line")
-			cmd=$(cut -d ':' -f1 <<< "$tmp")
-			arg=$(cut -d ':' -f2- <<< "$tmp" | sed 's/[[:space:]]*//')
+		if grep -Eq "^(\s*)#" <<< "$line"; then
+			directive=$(sed -n 's/\s*# \(.*\)/\1/p' <<< "$line")
+			cmd=$(cut -d ':' -f1 <<< "$directive")
+			arg=$(cut -d ':' -f2- <<< "$directive" | sed 's/[[:space:]]*//')
 
 			case "$cmd" in
 				RET)
@@ -138,9 +65,6 @@ translate()
 					;;
 				STDOUT-REGEX)
 					STDOUTRE="$arg"
-					;;
-				STDOUT-GLOB)
-					STDOUTGLOB="$arg"
 					;;
 				STDERR)
 					STDERR="$arg"
@@ -159,38 +83,33 @@ translate()
 			esac
 			continue
 		fi
-		if [ ! -z "$line" ];
+		if [ -n "$line" ];
 		then
-			if [ ! -z "$COMMAND" ];
-			then
-				writeBlock "$TMPFILE"
-			fi
-			COMMAND=$(grep -Eo "[^ \\t].*" <<< "$line")
-			COMMAND=$(sed "s/^sudo\ //" <<< "$COMMAND")
-			COMMAND=$(sed "s/\`[[:blank:]]*sudo\ /\`/" <<< "$COMMAND")
-			if [ "${line: -1}" == "\\" ];
-			then
-				COMMAND="${COMMAND%?}"
-			fi
-			while [ "${line: -1}" == "\\" ];
+			[ -n "$COMMAND" ] && writeBlock "$TMPFILE"
+			COMMAND=$(grep -Eo '[^ \t].*' <<< "$line")
+			[ "${line: -1}" == '\' ] && COMMAND="${COMMAND%?}"
+			while [ "${line: -1}" == '\' ];
 			do
 				read -r line
-				line=$(sed "s/^sudo\ //" <<< "$line")
-				line=$(sed "s/\`[[:blank:]]*sudo\ /\`/" <<< "$line")
-				if [ "${line: -1}" == "\\" ];
-				then
-					COMMAND=$(printf "%s\\\n%s" "$COMMAND" "${line%?}")
-				else
-					COMMAND=$(printf "%s\\\n%s\\\n" "$COMMAND" "$line")
+				if [ "${line: -1}" == '\' ]; then COMMAND=$(printf '%s\\n%s' "$COMMAND" "${line%?}")
+				else COMMAND=$(printf '%s\\n%s\\n' "$COMMAND" "$line")
 				fi
 			done
 			continue
 		fi
-	done <<<"$BUF"
+	done <<< "$BUF"
 	writeBlock "$TMPFILE"
 	"@CMAKE_CURRENT_BINARY_DIR@"/shell_recorder.sh "$TMPFILE" || SHELL_RECORDER_ERROR=1
 	rm "$TMPFILE"
 }
+
+# -- Main ----------------------------------------------------------------------------------------------------------------------------------
+
+resetGlobals
+
+BLOCKS=$(sed -n '/```sh/,/```\n/p' "$1")
+BUF=
+SHELL_RECORDER_ERROR=0
 INBLOCK=0
 IFS=''
 
@@ -198,29 +117,11 @@ MOUNTPOINTS_BACKUP=$("$KDBCOMMAND" mount)
 
 while read -r line;
 do
-	grep -Eq '(\s)*```sh$' <<<"$line"
-	if [ "$?" -eq 0 ];
-	then
-		INBLOCK=1
-		continue;
-	fi
-	grep -Eq '(\s)*```$' <<<"$line"
-	if [ "$?" -eq 0 ];
-	then
-		INBLOCK=0
-		continue
-	fi
-	if [ $INBLOCK -eq 0 ];
-	then
-		continue
-	fi
-	if [ -z "$BUF" ];
-	then
-		BUF="$line"
-	else
-		BUF=$(printf "%s\n%s" "${BUF}" "${line}")
-	fi
-done <<<"$BLOCKS"
+	grep -Eq '\s*```sh$' <<< "$line" && { INBLOCK=1; continue; }
+	grep -Eq '\s*```$' <<< "$line" && INBLOCK=0
+	[ $INBLOCK -eq 0 ] && continue
+	[ -z "$BUF" ] && BUF="$line" || BUF=$(printf '%s\n%s' "$BUF" "$line")
+done <<< "$BLOCKS"
 
 translate
 
@@ -233,7 +134,7 @@ IFS='
 	TOUMOUNT=$(diff <(echo "$MOUNTPOINTS_BACKUP") <(echo "$MOUNTPOINTS") | grep -Eo "^>.*")
 	for line in $TOUMOUNT;
 	do
-		mp=$(sed -n 's/\(.*\)with name \(.*\)/\2/p' <<< "$line")
+		mp=$(sed -n 's/.*with name \(.*\)/\1/p' <<< "$line")
 		"$KDBCOMMAND" umount "$mp"
 	done
 fi

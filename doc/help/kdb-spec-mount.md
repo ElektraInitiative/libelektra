@@ -6,7 +6,7 @@ kdb-spec-mount(1) - Mount a spec file to the key database
 `kdb spec-mount [/<mountpoint>] [<plugin> [<config>] [..]]`
 
 - `mountpoint` is where in the key database the new backend should be mounted to.
-  It must be a cascading mount pount, i.e., `mountpoint` must start with `/`.
+  It must be a cascading mount point, i.e., `mountpoint` must start with `/`.
 - `plugin` are extra Elektra plugins to be used (next to the one specified in `spec/`).
 - Plugins may be followed by a `,` separated list of `keys=values` pairs which will be used as plugin configuration.
 

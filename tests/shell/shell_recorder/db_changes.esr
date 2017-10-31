@@ -4,10 +4,10 @@ File: dbtest.ecf
 
 < kdb mount $File $Mountpoint dump
 
-DIFF: (> keyNew.*user/tmount/db/key)
+DIFF: > keyNew.*user/tmount/db/key
 < kdb set $Mountpoint/key val
 
-DIFF: (> keyNew.*user/tmount/db/key3)
+DIFF: > keyNew.*user/tmount/db/key3
 < kdb set $Mountpoint/key3 val2
 
 STDOUT: user/tmount/db/key⏎user/tmount/db/key3

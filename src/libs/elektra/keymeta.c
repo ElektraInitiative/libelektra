@@ -386,11 +386,9 @@ int keyCopyAllMeta (Key * dest, const Key * source)
 	return 0;
 }
 
-/**Returns the value of a meta-information given by name.
+/** Returns the value of a meta-information given by name.
  *
- * This is a much more efficient version of keyGetMeta().
- * But unlike with keyGetMeta you are not allowed to modify
- * the resulting string.
+ * You are not allowed to modify the resulting key.
  *
  * @code
 int f(Key *k)
@@ -410,7 +408,7 @@ int f(Key *k)
  * @retval 0 if the key or metaName is 0
  * @retval 0 if no such metaName is found
  * @return value of meta-information if meta-information is found
- * @see keyGetMeta(), keySetMeta()
+ * @see keySetMeta()
  * @ingroup keymeta
  **/
 const Key * keyGetMeta (const Key * key, const char * metaName)
